@@ -178,6 +178,7 @@ switch($idx)
         $macl->addtable( BAB_FORUMSVIEW_GROUPS_TBL,bab_translate("Who can read posts?"));
 		$macl->addtable( BAB_FORUMSPOST_GROUPS_TBL,bab_translate("Who can post?"));
         $macl->addtable( BAB_FORUMSREPLY_GROUPS_TBL,bab_translate("Who can reply?"));
+		$macl->addtable( BAB_FORUMSFILES_GROUPS_TBL,bab_translate("Who can join dependent files?"));
 		$macl->addtable( BAB_FORUMSMAN_GROUPS_TBL,bab_translate("Who can manage this forum?"));
 		$macl->filter(0,0,1,1,1);
         $macl->babecho();

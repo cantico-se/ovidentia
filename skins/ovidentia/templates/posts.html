@@ -1,27 +1,35 @@
 <!--#begin postcreate -->
 <table border="0" width="95%" cellpadding="1" cellspacing="0" align="center">
-<tr>
-<td>
-<table class="BabForumBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
-<tr> 
-<td  colspan="2" height="19" class="BabForumTopicsNavTitle" width="100%">{ postsubject }</td>
-</tr>
-<tr> 
-<td colspan="2" class="BabForumBackground"><br>
-{ postmessage }
-<br>
-&nbsp;</td>
-</tr>
-<tr> 
-<td class="BabForumTopicsNavDate" nowrap width="60%">{ postdate }</td>
-<td class="BabForumTopicsNavAuthor" align="right" nowrap width="40%">{ postauthor }</td>
-</tr>
+	<tr>
+		<td>
+			<table class="BabForumBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
+				<tr> 
+					<td  colspan="2" height="19" class="BabForumTopicsNavTitle" width="100%">{ postsubject }</td>
+				</tr>
+				<tr> 
+					<td colspan="2" class="BabForumBackground"><br>
+						{ postmessage }
+
+						<!--#if files -->
+						<dl class="files">
+							<dt>{ t_files }:</dt>
+							<!--#in getnextfile -->
+							<dd><a href="{ file[url] }">{ file[name] }</a></dd>
+							<!--#endin getnextfile -->
+						</dl>
+						<!--#endif files -->
+					</td>
+				</tr>
+				<tr> 
+					<td class="BabForumTopicsNavDate" nowrap width="60%">{ postdate }</td>
+					<td class="BabForumTopicsNavAuthor" align="right" nowrap width="40%">{ postauthor }</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
 </table>
-</td>
-</tr>
-</table>
 <br>
-<form name="postcr" method="post" action="{ babPhpSelf }">
+<form name="postcr" method="post" action="{ babPhpSelf }" enctype="multipart/form-data">
 <input type="hidden" name="tg" value="posts">
 <input type="hidden" name="idx" value="List">
 <input type="hidden" name="forum" value="{ forum }">
@@ -29,136 +37,98 @@
 <input type="hidden" name="postid" value="{ postid }">
 <input type="hidden" name="flat" value="{ flat }">
 <input type="hidden" name="add" value="addreply">
+<!--#if allow_post_files -->
+<input type="hidden" name="MAX_FILE_SIZE" value="{ maxfilesize }">
+<input type="hidden" name="files_fields" value="1">
+<!--#endif allow_post_files -->
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabLoginMenuBackground" width="30%" align="right" valign="middle">{ name }:</td>
-<td class="BabLoginMenuBackground" width="70%" valign="middle" nowrap> 
-<!--#if anonyme "== 0" -->
-<b>{ username }</b> 
-<!--#endif anonyme -->
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+	<tr> 
+		<td width="30%" align="right" valign="middle">{ name }:</td>
+		<td width="70%" valign="middle" nowrap> 
+		<!--#if anonyme "== 0" -->
+		<b>{ username }</b> 
+		<!--#endif anonyme -->
 
-<!--#if anonyme "== 1" -->
-<input type="text" name="author" size="45" maxlength="60">
-<!--#endif anonyme -->
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ subject }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="subject" size="45" maxlength="60" value="{ subjectval }">
-</td>
-</tr>
-<!-- Instanciation de la barre d'outils -->
-<!--#if msie "== 1" -->
-<!--#if babOldEditor -->
-<script src="{ babScriptPath }{ babLanguage }/editorlang.js"></script>
-<script src="{ babScriptPath }editor.js"></script>
-<tr> 
-<td class="BabLoginMenuBackground">&nbsp;</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<textarea cols="1" rows="1" style="VISIBILITY: hidden" name="message"></textarea>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" nowrap valign="middle" colspan="2" align="center"> 
-<script language="JavaScript"> 
-	var idGenerator = new IDGenerator(0);
-	var editor = new Editor(idGenerator, '{ babEditorImages }');
-	editor.ToolBar();
-	</script>
-</td>
-</tr>
-<!--#else babOldEditor -->
-<style type="text/css">
-@import url('{ babUrl }{ babScriptPath }htmlarea/htmlarea.css');
-</style>
+		<!--#if anonyme "== 1" -->
+		<input type="text" name="author" size="45" maxlength="60">
+		<!--#endif anonyme -->
+		</td>
+	</tr>
+	<tr> 
+		<td align="right" nowrap valign="middle">{ subject }:</td>
+		<td> 
+		<input type="text" name="subject" size="45" maxlength="60" value="{ subjectval }">
+		</td>
+	</tr>
+	<tr>
+		<td colspan="2">
+		{ editor }
 
-<script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/htmlarea.js"></script>
-<script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/htmlarea-lang-{ babLanguage }.js"></script>
-<script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/dialog.js"></script>
-<script type="text/javascript" src="{ babUrlScript }?tg=htmlarea&idx=js"></script>
-<script language="JavaScript">
-initEditorVars('{ babUrl }','{ babInstallPath }','{ babLanguage }','{ babPhpSelf }');
-</script>
-<!--#endif babOldEditor -->
-<!--#endif msie -->
-<tr>
-<td class="BabLoginMenuBackground" align="center" colspan="2">{ message }</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="center" colspan="2"> 
-<!--#if msie "== 1" -->
-<!--#if babOldEditor -->
-<script language="JavaScript">
-	editor.InFrame(0, "message", "postcr", "90%", "160");
-	</script>
-<!--#else babOldEditor -->
-<iframe width="0" height="0" style="visibility: hidden" onload="initEditor('0','message')">
-</iframe>
-<textarea id="message" name="message"  onfocus="savef(document.postcr.message)" style="width:100%" rows="20"></textarea>
-<!--#endif babOldEditor -->
-<!--#else msie -->
-<textarea id="message" name="message" onblur="this.focus()" onfocus="savef(document.postcr.message)" style="width:100%" rows="20"></textarea>
-<!--#endif msie -->
+<!--#if allow_post_files -->
+		<script type="text/javascript">
+		<!--
+		function add_field()
+			{
+			var f = document.forms['postcr'];
+			var d = document.getElementById('post_addfiles');
+			var n = parseInt(f.files_fields.value);
 
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground">&nbsp;</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<!--#if msie "== 1" -->
-<!--#if babOldEditor -->
-<input onClick="SetVals()" type="submit" name="submit" value="{ add }">
-<script language="JavaScript">
-			editor.FinalInstantiate(0);
-			editor.CloseInitSection();
-			</script>
-<!--#else babOldEditor -->
-<input type="submit" name="submit" value="{ add }">
-<!--#endif babOldEditor -->
-<!--#else msie -->
-<input type="submit" name="submit" value="{ add }">
-<!--#endif msie -->
-<br>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" valign="middle" colspan="2">{ noteforum }</td> 
-</tr>
-</table>
+			f.files_fields.value = n  + 1;
+			var html = '';
+
+			for (var i = 0 ; i < n+1 ; i++ )
+				{
+				html += '<input type="file" name="file'+i+'" /><br />';
+				}
+
+			d.innerHTML = html;
+			}
+
+		function remove_field()
+			{
+			var f = document.forms['postcr'];
+			var d = document.getElementById('post_addfiles');
+			var n = parseInt(f.files_fields.value);
+			var html = '';
+
+			if (n > 0)
+				f.files_fields.value = n - 1;
+
+			for (var i = 0 ; i < n-1 ; i++ )
+				{
+				html += '<input type="file" name="file'+i+'" /><br />';
+				}
+
+			d.innerHTML = html;
+			}
+		</script>
+
+		<h4>{ t_files }:</h4>
+		<div id="post_addfiles">
+			<input type="file" name="file0" />
+		</div>
+		<p>
+			<a href="javascript:add_field()">{ t_add_field }</a> - 
+			<a href="javascript:remove_field()">{ t_remove_field }</a>
+		</p>
+<!--#endif allow_post_files -->
+
+		</td>
+	</tr>
+	<tr> 
+		<td align="center" colspan="2">
+		<input type="submit" name="submit" value="{ add }">
+		<br />
+		{ noteforum }</td> 
+	</tr>
+	</table>
 </td>
 </tr>
 </table>
 </form>
-<!--#if msie "!= 1" -->
-<script type="text/javascript">
-<!--
-var ctrlf = null;
-function onInsertFile(idf,txt)
-{
-if(ctrlf != null)
-ctrlf.value = ctrlf.value + '$FILE('+idf+','+txt+')';
-}
-
-function onInsertImage(txt)
-{
-if(ctrlf != null)
-ctrlf.value = ctrlf.value + '<img src="' + txt + '" border=0  hspace=5 vspace=5>';
-}
-
-function savef(t)
-{
-ctrlf = t;
-}
-
-savef(document.createart.headtext);
-//-->
-</script>
-<!--#endif msie -->
-<br>
 <!--#end postcreate -->
 
 <!--#begin postedit -->
@@ -173,122 +143,33 @@ savef(document.createart.headtext);
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ name }:</td>
-<td class="BabLoginMenuBackground" width="70%" valign="middle"><b>{ arr[author] }</b></td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ subject }</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="subject" size="45" maxlength="60" value="{ arr[subject] }">
-</td>
-</tr>
-<!-- Instanciation de la barre d'outils -->
-<!--#if msie "== 1" -->
-<!--#if babOldEditor -->
-<script src="{ babScriptPath }{ babLanguage }/editorlang.js"></script>
-<script src="{ babScriptPath }editor.js"></script>
-<tr> 
-<td class="BabLoginMenuBackground" nowrap>&nbsp;</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<textarea cols="1" rows="1" style="VISIBILITY: hidden" name="message">{ arr[message] }</textarea>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="center" nowrap valign="middle" colspan="2"> 
-<script language="JavaScript"> 
-	var idGenerator = new IDGenerator(0);
-	var editor = new Editor(idGenerator, '{ babEditorImages }');
-	editor.ToolBar();
-	</script>
-</td>
-</tr>
-<!--#else babOldEditor -->
-<style type="text/css">
-@import url('{ babUrl }{ babScriptPath }htmlarea/htmlarea.css');
-</style>
-
-<script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/htmlarea.js"></script>
-<script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/htmlarea-lang-{ babLanguage }.js"></script>
-<script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/dialog.js"></script>
-<script type="text/javascript" src="{ babUrlScript }?tg=htmlarea&idx=js"></script>
-<script language="JavaScript">
-initEditorVars('{ babUrl }','{ babInstallPath }','{ babLanguage }','{ babPhpSelf }');
-</script>
-<!--#endif babOldEditor -->
-<!--#endif msie -->
-<tr> 
-<td class="BabLoginMenuBackground" align="center" colspan="2">{ message } </td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="center" colspan="2"> 
-<!--#if msie "== 1" -->
-<!--#if babOldEditor -->
-<script language="JavaScript">
-	editor.InFrame(0, "message", "posted", "90%", "160");
-	</script>
-<!--#else babOldEditor -->
-<iframe width="0" height="0" style="visibility: hidden" onload="initEditor('0','message')">
-</iframe>
-<textarea id="message" name="message" onfocus="savef(document.posted.message)" style="width:100%" rows="20">{ arr[message] }</textarea>
-<!--#endif babOldEditor -->
-<!--#else msie -->
-<textarea id="message" name="message" onblur="this.focus()" onfocus="savef(document.posted.message)" style="width:100%" rows="20">{ arr[message] }</textarea>
-<!--#endif msie -->
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" nowrap>&nbsp;</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<!--#if msie "== 1" -->
-<!--#if babOldEditor -->
-<input onClick="SetVals()" type="submit" name="submit" value="{ update }">
-<script language="JavaScript">
-	editor.FinalInstantiate(0);
-	editor.CloseInitSection();
-</script>
-<!--#else babOldEditor -->
-<input type="submit" name="submit" value="{ update }">
-<!--#endif babOldEditor -->
-<!--#else msie -->
-<input type="submit" name="submit" value="{ update }">
-<!--#endif msie -->
-<br>
-</td>
-</tr>
-</table>
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+	<tr> 
+	<td width="30%" align="right" nowrap valign="middle">{ name }:</td>
+	<td width="70%" valign="middle"><b>{ arr[author] }</b></td>
+	</tr>
+	<tr> 
+		<td align="right">{ subject }</td>
+		<td> 
+			<input type="text" name="subject" size="45" maxlength="60" value="{ arr[subject] }" />
+		</td>
+	</tr>
+	<tr>
+		<td colspan="2">
+			{ editor }
+		</td>
+	<tr>
+		<td colspan="2" align="center">
+			<input type="submit" name="submit" value="{ update }" />
+		</td>
+	</tr>
+	</table>
 </td>
 </tr>
 </table>
 </form>
-<!--#if msie "!= 1" -->
-<script type="text/javascript">
-<!--
-var ctrlf = null;
-function onInsertFile(idf,txt)
-{
-if(ctrlf != null)
-ctrlf.value = ctrlf.value + '$FILE('+idf+','+txt+')';
-}
-
-function onInsertImage(txt)
-{
-if(ctrlf != null)
-ctrlf.value = ctrlf.value + '<img src="' + txt + '" border=0  hspace=5 vspace=5>';
-}
-
-function savef(t)
-{
-ctrlf = t;
-}
-
-savef(document.createart.headtext);
-//-->
-</script>
-<!--#endif msie -->
-<br>
 <!--#end postedit -->
+
 <!--#begin newpostslist -->
 <!--#if postid "> 0" -->
 <table border="0" width="99%" cellpadding="1" cellspacing="0" align="center">
@@ -296,12 +177,11 @@ savef(document.createart.headtext);
     <td valign="middle"> 
       <table class="BabForumBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
         <tr> 
-          <td valign="middle" class="BabForumTopicsNavTitle">{ postsubject 
+          <td class="BabForumTopicsNavTitle">{ postsubject 
             }
           
           </td>
-          <td align="right" valign="middle" class="BabForumTopicsNavTitle"><a 
-class="BabForumTopicsConfirm" href="{ flaturl }"><img src="{ babSkinPath }images/Puces/PuceForumFlat.gif" border=0 alt="{ altflattxt }" align="absmiddle"></a></td>
+          <td align="right" class="BabForumTopicsNavTitle"><a class="BabForumTopicsConfirm" href="{ flaturl }"><img src="{ babSkinPath }images/Puces/PuceForumFlat.gif" border=0 alt="{ altflattxt }" align="absmiddle"></a></td>
         </tr>
         
           
@@ -320,28 +200,31 @@ class="BabForumTopicsConfirm" href="{ moreurl }">{ morename }</a><img src="{ bab
         <!--#if more -->
         <tr>
 		  <td colspan="2" align="right" valign="middle" class="BabForumBackground">  
-       <img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ 
-            more }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">
+       <img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ more }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">
       </td>
         </tr>
         <!--#else more -->
         <!--#endif more -->
 		   
         <!--#endif what -->
-		  
-		  
-		  
-		  
-		  
-     
+
         <tr>
-          <td colspan="2" class="BabForumBackground">{ postmessage }</td>
+			<td colspan="2" class="BabForumBackground">
+				{ postmessage }
+
+				<!--#if files -->
+				<dl class="BabForumFiles">
+					<dt>{ t_files }:</dt>
+					<!--#in getnextfile -->
+					<dd><a href="{ file[url] }">{ file[name] }</a> <span>( { file[size] } )</span></dd>
+					<!--#endin getnextfile -->
+				</dl>
+				<!--#endif files -->
+			</td>
         </tr>
         <tr> 
-          <td class="BabForumTopicsNavDate" nowrap width="100%" valign="middle">{ 
-            postdate }</td>
-          <td class="BabForumTopicsNavAuthor" nowrap width="40%" align="right" valign="middle" >{ 
-            postauthor }</td>
+          <td class="BabForumTopicsNavDate" nowrap width="60%">{ postdate }</td>
+          <td class="BabForumTopicsNavAuthor" nowrap width="40%" align="right">{ postauthor }</td>
         </tr>
       </table>
 </td>
@@ -463,7 +346,18 @@ class="BabForumTopicsConfirm" href="{ moreurl }">{ morename }</a><img src="{ bab
 		  
      
         <tr>
-          <td colspan="2" class="BabForumBackground">{ postmessage }</td>
+          <td colspan="2" class="BabForumBackground">
+			{ postmessage }
+		  
+			<!--#if files -->
+			<dl class="BabForumFiles">
+				<dt>{ t_files }:</dt>
+				<!--#in getnextfile -->
+				<dd><a href="{ file[url] }">{ file[name] }</a></dd>
+				<!--#endin getnextfile -->
+			</dl>
+			<!--#endif files -->
+		  </td>
         </tr>
         <tr> 
           <td class="BabForumTopicsNavDate" nowrap width="100%" valign="middle">{ 

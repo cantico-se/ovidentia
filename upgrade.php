@@ -4196,4 +4196,29 @@ if( !$res)
 
 return $ret;
 }
+
+
+function upgrade541to542()
+{
+	$ret = "";
+	$db = &$GLOBALS['babDB'];
+	$res = $db->db_query("CREATE TABLE `".BAB_FORUMSFILES_GROUPS_TBL."` (
+						  `id` int(11) unsigned NOT NULL auto_increment,
+						  `id_object` int(11) unsigned NOT NULL default '0',
+						  `id_group` int(11) unsigned NOT NULL default '0',
+						  PRIMARY KEY  (`id`),
+						  KEY `id_object` (`id_object`),
+						  KEY `id_group` (`id_group`)
+						) TYPE=MyISAM");
+
+
+	if( !$res)
+	{
+	$ret = "Upgrade of <b>".BAB_FORUMSFILES_GROUPS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+return $ret;
+
+}
 ?>

@@ -64,11 +64,12 @@ function listPosts($forum, $thread, $post)
 			$this->altnoflattxt = bab_translate("View thread as hierarchical list");
 			$this->altflattxt = bab_translate("View thread as flat list");
 			$this->altrecentposts = bab_translate("Recent posts");
+			$this->t_files = bab_translate("Dependent files");
 			$this->forum = $forum;
 			$this->thread = $thread;
 			$this->alternate = 0;
 			$this->more = "";
-			$this->db = $GLOBALS['babDB'];
+			$this->db = &$GLOBALS['babDB'];
 			if( $views == "1")
 				{
 				//update views
@@ -141,6 +142,8 @@ function listPosts($forum, $thread, $post)
 					$this->moreurl = $GLOBALS['babUrlScript']."?tg=posts&idx=Modify&forum=".$this->forum."&thread=".$this->thread."&post=".$arr['id']."&flat=".$flat;
 					$this->morename = bab_translate("Edit");
 					}
+
+				$this->files = bab_getPostFiles($this->forum, $this->postid);
 				}
 
 
@@ -182,7 +185,11 @@ function listPosts($forum, $thread, $post)
 				if( $this->arrresult["leaf"][$iparent] == 1)
 					$tab[$this->arrresult["delta"][$p]] = 0;
 				else
+					{
+					if (!isset($this->arrresult["delta"][$p]))
+						$this->arrresult["delta"][$p] = '';
 					$tab[$this->arrresult["delta"][$p]] = 1;
+					}
 				}
 			$this->arrresult["schema"][$k] = $tab;
 
@@ -310,6 +317,17 @@ function listPosts($forum, $thread, $post)
 				}
 			}
 
+		function getnextfile()
+			{
+			if ($this->file = current($this->files))
+				{
+				next($this->files);
+				return true;
+				}
+			else
+				return false;
+			}
+
 		}
 	
 	$temp = new temp($forum, $thread, $post);
@@ -363,6 +381,7 @@ function listPostsFlat($forum, $thread, $open)
 			$this->backtotoptxt = bab_translate("Back to top");
 			$this->replytxt = bab_translate("Reply");
 			$this->altrecentposts = bab_translate("Recent posts");
+			$this->t_files = bab_translate("Dependent files");
 			$this->forum = $forum;
 			$this->thread = $thread;
 			$this->alternate = 0;
@@ -406,6 +425,7 @@ function listPostsFlat($forum, $thread, $open)
 				{
 				$arr = $this->db->db_fetch_array($this->res);
 				$GLOBALS['babWebStat']->addForumPost($arr['id']);
+				$this->files = bab_getPostFiles($this->forum,$arr['id']);
 				$this->what = $arr['confirmed'];
 				$this->postdate = bab_strftime(bab_mktime($arr['date']));
 				$this->postauthor = $arr['author'];
@@ -471,6 +491,17 @@ function listPostsFlat($forum, $thread, $open)
 				return false;
 			}
 
+		function getnextfile()
+			{
+			if ($this->file = current($this->files))
+				{
+				next($this->files);
+				return true;
+				}
+			else
+				return false;
+			}
+
 		}
 	
 	$temp = new temp($forum, $thread, $open);
@@ -506,6 +537,9 @@ function newReply($forum, $thread, $post)
 			$this->name = bab_translate("Your Name");
 			$this->message = bab_translate("Message");
 			$this->add = bab_translate("New reply");
+			$this->t_files = bab_translate("Dependent files");
+			$this->t_add_field = bab_translate("Add field");
+			$this->t_remove_field = bab_translate("Remove field");
 			$this->forum = $forum;
 			$this->thread = $thread;
 			$this->postid = $post;
@@ -526,10 +560,7 @@ function newReply($forum, $thread, $post)
 				$this->anonyme = 0;
 				$this->username = $BAB_SESS_USER;
 				}
-			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
-				$this->msie = 1;
-			else
-				$this->msie = 0;	
+			$this->editor = bab_editor('', 'message', 'postcr');
 
 			$this->postdate = bab_strftime(bab_mktime($arr['date']));
 			$this->postauthor = $arr['author'];
@@ -539,6 +570,20 @@ function newReply($forum, $thread, $post)
 				$this->noteforum = bab_translate("Note: Posts are moderate and consequently your post will not be visible immediately");
 			else
 				$this->noteforum = "";
+
+			$this->files = bab_getPostFiles($this->forum,$post);
+			$this->allow_post_files = bab_isAccessValid(BAB_FORUMSFILES_GROUPS_TBL,$forum);
+			}
+
+		function getnextfile()
+			{
+			if ($this->file = current($this->files))
+				{
+				next($this->files);
+				return true;
+				}
+			else
+				return false;
 			}
 		}
 
@@ -578,10 +623,7 @@ function editPost($forum, $thread, $post)
 			$req = "select * from ".BAB_POSTS_TBL." where id='$post'";
 			$res = $db->db_query($req);
 			$this->arr = $db->db_fetch_array($res);
-			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
-				$this->msie = 1;
-			else
-				$this->msie = 0;	
+			$this->editor = bab_editor($this->arr['message'], 'message', 'posted');
 			}
 		}
 
@@ -703,6 +745,9 @@ function saveReply($forum, $thread, $post, $name, $subject, $message)
 	$req .= "', '". $confirmed."', '". $post. "')";
 	$res = $db->db_query($req);
 	$idpost = $db->db_insert_id();
+
+	if (bab_isAccessValid(BAB_FORUMSFILES_GROUPS_TBL,$forum))
+		bab_uploadPostFiles($idpost);
 	
 	$req = "update ".BAB_THREADS_TBL." set lastpost='$idpost' where id='$thread'";
 	$res = $db->db_query($req);
@@ -843,6 +888,31 @@ function confirmDeleteThread($forum, $thread)
 	$req = "delete from ".BAB_THREADS_TBL." where id = '$thread'";
 	$res = $db->db_query($req);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=threads&forum=".$forum);
+	}
+
+
+function dlfile($forum,$post,$name)
+	{
+	if (!bab_isAccessValid(BAB_FORUMSVIEW_GROUPS_TBL, $forum))
+		return;
+	$name = urldecode($name);
+	$files = bab_getPostFiles($forum,$post);
+	foreach ($files as $file)
+		{
+		if ($name == $file['name'])
+			{
+			header('Content-Type:application/octet-stream');
+			header('Content-Disposition: attachment; filename="'.$file['name'].'"');
+			$handle = fopen($file['path'], "r");
+			while (!feof($handle)) {
+			   $buffer = fgets($handle, 4096);
+			   echo $buffer;
+			}
+			fclose($handle);
+			die();
+			}
+		}
+	trigger_error('File has been deleted or upload directory has moved');
 	}
 
 /* main */
@@ -1002,6 +1072,12 @@ switch($idx)
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=threads&idx=List&forum=".$forum);
 		exit;
 		break;
+
+	case "dlfile":
+		dlfile($_GET['forum'],$_GET['post'],$_GET['file']);
+		
+		break;
+
 	case "List":
 	default:
 		$babBody->title = bab_getForumName($forum);

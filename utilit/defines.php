@@ -101,6 +101,7 @@ define("BAB_FORUMSMAN_GROUPS_TBL", "bab_forumsman_groups");
 define("BAB_FORUMSPOST_GROUPS_TBL", "bab_forumspost_groups");
 define("BAB_FORUMSREPLY_GROUPS_TBL", "bab_forumsreply_groups");
 define("BAB_FORUMSVIEW_GROUPS_TBL", "bab_forumsview_groups");
+define("BAB_FORUMSFILES_GROUPS_TBL", "bab_forumsfiles_groups");
 define("BAB_GROUPS_TBL", "bab_groups");
 define("BAB_HOMEPAGES_TBL", "bab_homepages");
 define("BAB_IMAGES_TEMP_TBL", "bab_images_temp");

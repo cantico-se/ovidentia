@@ -247,4 +247,57 @@ function notifyThreadAuthor($threadTitle, $email, $author)
 
 	$mail->send();
 	}
+
+
+function bab_uploadPostFiles($postid)
+	{
+	$baseurl = $GLOBALS['babUploadPath'].'/forums/';
+	if (!is_dir($baseurl))
+		{
+		if (!@bab_mkdir($baseurl))
+			{
+			$GLOBALS['babBody']->msgerror = bab_translate("Can't create forums directory in").' '.$GLOBALS['babUploadPath'];
+			return false;
+			}
+		}
+
+	foreach ($_FILES as $file)
+		{
+		if( bab_isMagicQuotesGpcOn())
+			{
+			$file['name'] = stripslashes($file['name']);
+			}
+		if( isset($GLOBALS['babFileNameTranslation']))
+			{
+			$file['name'] = strtr($file['name'], $GLOBALS['babFileNameTranslation']);
+			}
+		move_uploaded_file($file['tmp_name'],$baseurl.$postid.','.$file['name']);
+		}
+
+	return true;
+	}
+
+function bab_getPostFiles($forum,$postid)
+	{
+	$out = array();
+	$baseurl = $GLOBALS['babUploadPath'].'/forums/';
+	if (is_dir($baseurl) && $h = opendir($baseurl))
+		{
+		while (false !== ($file = readdir($h))) 
+			{
+			if (substr($file,0,strpos($file,',')) == $postid)
+				{
+				$name = substr($file,strstr(',',$file)+2);
+				$out[] = array(
+						'url' => $GLOBALS['babUrlScript']."?tg=posts&idx=dlfile&forum=".$forum."&post=".$postid."&file=".urlencode($name),
+						'path' => $baseurl.$file,
+						'name' => $name,
+						'size' => round(filesize($baseurl.$file)/1024).' '.bab_translate('Kb')
+						);
+				}
+			}
+		}
+	return $out;
+	}
+
 ?>

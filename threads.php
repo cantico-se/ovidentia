@@ -265,6 +265,9 @@ function newThread($forum)
 			$this->message = bab_translate("Message");
 			$this->add = bab_translate("New thread");
 			$this->post = bab_translate("Post");
+			$this->t_files = bab_translate("Dependent files");
+			$this->t_add_field = bab_translate("Add field");
+			$this->t_remove_field = bab_translate("Remove field");
 			$this->forum = $forum;
 			if( empty($BAB_SESS_USER))
 				$this->anonyme = 1;
@@ -273,10 +276,8 @@ function newThread($forum)
 				$this->anonyme = 0;
 				$this->username = $BAB_SESS_USER;
 				}
-			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
-				$this->msie = 1;
-			else
-				$this->msie = 0;
+			$this->editor = bab_editor('', 'message', 'threadcr');
+			$this->allow_post_files = bab_isAccessValid(BAB_FORUMSFILES_GROUPS_TBL,$forum);
 
 			if( bab_isForumModerated($forum))
 				$this->noteforum = bab_translate("Note: Posts are moderate and consequently your post will not be visible immediately");
@@ -347,6 +348,9 @@ function saveThread($forum, $name, $subject, $message, $notifyme)
 	$req .= "', '". $confirmed. "')";
 	$res = $db->db_query($req);
 	$idpost = $db->db_insert_id();
+
+	if (bab_isAccessValid(BAB_FORUMSFILES_GROUPS_TBL,$forum))
+		bab_uploadPostFiles($idpost);
 	
 	$req = "update ".BAB_THREADS_TBL." set lastpost='$idpost', post='$idpost' where id = '$idthread'";
 	$res = $db->db_query($req);

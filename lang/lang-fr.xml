@@ -1595,4 +1595,8 @@
 <string id="The event is in conflict with a calendar">L'évenement est en conflit avec la disponibilitée des agendas</string>
 <string id="on the event">sur l'évenement</string>
 <string id="Test conflicts">Tester les conflits</string>
+<string id="Who can join dependent files?">Qui peut charger des fichiers?</string>
+<string id="Dependent files">Fichiers associés</string>
+<string id="Add field">Ajouter un champ</string>
+<string id="Remove field">Enlever un champ</string>
 </fr>
