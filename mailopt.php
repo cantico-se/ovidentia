@@ -642,7 +642,7 @@ function addAccount($fullname, $email, $account, $password1, $password2, $domain
 		$res = $db->db_query($req);
 		}
 	$req = "insert into mail_accounts (name, email, password, account, domain, owner, maxrows, prefered, format) values ";	
-	$req .= "('".$fullname."', '".$email."', '".$password1."', '".$account."', '".$domain."', '".$BAB_SESS_USERID."', '".$maxrows."', '".$prefered."', '".$prefformat."')";	
+	$req .= "('".$fullname."', '".$email."', ENCODE(\"".$password1."\",\"".$BAB_HASH_VAR."\"), '".$account."', '".$domain."', '".$BAB_SESS_USERID."', '".$maxrows."', '".$prefered."', '".$prefformat."')";	
 	$res = $db->db_query($req);
 
 }
@@ -681,7 +681,7 @@ function modifyAccount($fullname, $email, $account, $password1, $password2, $dom
 	if( empty($password1) )
 		$req = "update mail_accounts set name='$fullname', email='$email', account='$account', domain='$domain', prefered='$prefacc', maxrows='$maxrows', format='$prefformat' where id='$item'";
 	else
-		$req = "update mail_accounts set name='$fullname', email='$email', password='$password1', account='$account', domain='$domain', prefered='$prefacc', format='$prefformat', maxrows='$maxrows' where id='$item'";
+		$req = "update mail_accounts set name='$fullname', email='$email', password='ENCODE(\"".$password1."\",\"".$BAB_HASH_VAR."\")',  account='$account', domain='$domain', prefered='$prefacc', format='$prefformat', maxrows='$maxrows' where id='$item'";
 	$res = $db->db_query($req);
 
 }
