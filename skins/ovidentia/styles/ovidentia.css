@@ -1,4 +1,4 @@
-body {  margin: 0px 0px; background: url(../images/cs/bgbab.jpg)}
+body {  margin: 0px 0px; background: #CCCCCC}
 
 /* input */
 INPUT { font-family: Verdana;font-size:10px; color:#000000;background-color:#FFFFFF;border-width:1;border-color:#000000;font-weight:bold }
@@ -12,12 +12,12 @@ a.copy:link {color: #000000; font-family: Arial, Helvetica, sans-serif; font-siz
 a.copy:active {color: #000000; font-family: Arial, Helvetica, sans-serif; font-size: 11px}
 a.copy:visited {COLOR: #000000; font-family: Arial, Helvetica, sans-serif; font-size: 11px}
 
-.BabHeaderBackground	{ background: url(../images/cs/bgbab.jpg)}
+.BabHeaderBackground	{ background: #CCCCCC}
 .BabCnxMenuBackground { background: #111166}
-.BabMenuBackground { background: url(../images/cs/bgbab.jpg)}
+.BabMenuBackground { background: #CCCCCC}
 .BabContentBackground {  background: #111166}
-.BabFooterBackground {background: url(../images/cs/bgbab.jpg) ;COLOR: #000000; font-family : Verdana, Arial, sans-serif; font-size : 10px }
-.BabSectionsColBackground {background: url(../images/cs/bgbab.jpg)}
+.BabFooterBackground {background: #CCCCCC ;COLOR: #000000; font-family : Verdana, Arial, sans-serif; font-size : 10px }
+.BabSectionsColBackground {background: #CCCCCC}
 
 .Babhighlight { background: #FF0000}
 .Blackbg { background: #000000}
