@@ -880,10 +880,8 @@ function notifyMembers($file, $path, $idgrp, $bnew)
 
 	$tempa = new tempb($file, $path, $idgrp, $bnew);
 	$message = bab_printTemplate($tempa,"mailinfo.html", "fileuploaded");
-	$mail->mailBody($message, "html");
 
-	$message = bab_printTemplate($tempa,"mailinfo.html", "fileuploadedtxt");
-	$mail->mailAltBody($message);
+	$messagetxt = bab_printTemplate($tempa,"mailinfo.html", "fileuploadedtxt");
 
 	$db = $GLOBALS['babDB'];
 	$res = $db->db_query("select id_group from ".BAB_FMDOWNLOAD_GROUPS_TBL." where  id_object='".$idgrp."'");
@@ -914,6 +912,8 @@ function notifyMembers($file, $path, $idgrp, $bnew)
 					$count++;
 					if( $count == 25 )
 						{
+						$mail->mailBody($message, "html");
+						$mail->mailAltBody($messagetxt);
 						$mail->send();
 						$mail->clearBcc();
 						$count = 0;
@@ -921,7 +921,11 @@ function notifyMembers($file, $path, $idgrp, $bnew)
 					}
 
 				if( $count > 0 )
+					{
+					$mail->mailBody($message, "html");
+					$mail->mailAltBody($messagetxt);
 					$mail->send();
+					}
 				}
 			}
 		}
