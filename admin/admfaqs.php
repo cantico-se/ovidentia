@@ -64,9 +64,12 @@ function listCategories()
 		var $checked;
 		var $urlcategory;
 		var $namecategory;
+		var $access;
+		var $accessurl;
 
 		function temp()
 			{
+			$this->access = babTranslate("Access");
 			$this->db = new db_mysql();
 			$req = "select * from faqcat";
 			$this->res = $this->db->db_query($req);
@@ -85,6 +88,7 @@ function listCategories()
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->arr['description'] = $this->arr['description'];// nl2br($this->arr['description']);
 				$this->urlcategory = $GLOBALS['babUrl']."index.php?tg=admfaq&idx=Modify&item=".$this->arr['id'];
+				$this->accessurl = $GLOBALS['babUrl']."index.php?tg=admfaq&idx=Groups&item=".$this->arr['id'];
 				$this->namecategory = $this->arr['category'];
 				$i++;
 				return true;
@@ -148,21 +152,21 @@ if( isset($add))
 
 switch($idx)
 	{
-	case "Add Category":
-		$body->title = babTranslate("Add a new category");
+	case "Add":
+		$body->title = babTranslate("Add a new faq");
 		addCategory();
 		$body->addItemMenu("Categories", babTranslate("Faqs"), $GLOBALS['babUrl']."index.php?tg=admfaqs&idx=Categories");
-		$body->addItemMenu("Add Category", babTranslate("Add Category"), $GLOBALS['babUrl']."index.php?tg=admfaqs&idx=Add Category");
+		$body->addItemMenu("Add", babTranslate("Add"), $GLOBALS['babUrl']."index.php?tg=admfaqs&idx=Add");
 		break;
 
 	default:
 	case "Categories":
-		$body->title = babTranslate("List of all categories");
+		$body->title = babTranslate("List of all faqs");
 		if( listCategories() > 0 )
 			{
 			$body->addItemMenu("Categories", babTranslate("Faqs"), $GLOBALS['babUrl']."index.php?tg=admfaqs&idx=Categories");
 			}
-		$body->addItemMenu("Add Category", babTranslate("Add Category"), $GLOBALS['babUrl']."index.php?tg=admfaqs&idx=Add Category");
+		$body->addItemMenu("Add", babTranslate("Add"), $GLOBALS['babUrl']."index.php?tg=admfaqs&idx=Add");
 
 		break;
 	}
