@@ -1361,4 +1361,8 @@
 <string id="Ok">Ok</string>
 <string id="Associated comments">Commentaires associés</string>
 <string id="Publication">Publication</string>
+<string id="Utilities">Utilitaires</string>
+<string id="Total users">Nombre d'utilisateurs total</string>
+<string id="Unconfirmed users">Utilisateurs non confirmés</string>
+<string id="Delete unconfirmed users from">Effacer les utilisateurs non confirmés depuis</string>
 </fr>
