@@ -1,0 +1,42 @@
+<!--#begin sectionslist --> 
+<form method="post" action="{ babPhpSelf }" name="listform">
+<input type="hidden" name="tg" value="sectopt">
+<input type="hidden" name="idx" value="list">
+<input type="hidden" name="update" value="enable">
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+        <table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+          <tr> 
+<td class="BabSiteAdminTitleFontBackground" nowrap valign="middle">{ title }</td>
+<td class="BabSiteAdminTitleFontBackground" valign="middle">{ description }</td>
+<td class="BabSiteAdminTitleFontBackground" width="1%" align="center" nowrap>{ enabled }</td>
+</tr><!--#in getnextp -->
+<tr> 
+<td class="BabSiteAdminFontBackground" nowrap valign="middle">{ titleval }</td>
+<td class="BabSiteAdminFontBackground" valign="middle">{ descval }</td>
+<td class="BabSiteAdminFontBackground" valign="middle" width="0%" align="center" nowrap><input type="checkbox" name="sections[]" { secchecked } value="{ idvalue }"></td>
+</tr><!--#endin getnextp --><!--#in getnextcat -->
+<tr> 
+<td class="BabSiteAdminFontBackground" nowrap valign="middle">{ titleval }</td>
+<td class="BabSiteAdminFontBackground" valign="middle">{ descval  }</td>
+<td class="BabSiteAdminFontBackground" valign="middle" width="0%" align="center" nowrap><input type="checkbox" name="sections[]" { secchecked } value="{ idvalue }"></td>
+</tr><!--#endin getnextcat --><!--#in getnext -->
+<tr> 
+<td class="BabSiteAdminFontBackground" nowrap valign="middle">{ titleval }</td>
+<td class="BabSiteAdminFontBackground" valign="middle">{ descval }</td>
+<td class="BabSiteAdminFontBackground" valign="middle" width="0%" align="center" nowrap><input type="checkbox" name="sections[]" { secchecked } value="{ idvalue }"></td>
+</tr><!--#endin getnext -->
+<tr> 
+<td class="BabSiteAdminTitleFontBackground" nowrap valign="middle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+<td class="BabSiteAdminTitleFontBackground" valign="middle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+<td class="BabSiteAdminTitleFontBackground" width="1%" align="center" nowrap><a href="javascript:onCheckAll('sections', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('sections', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
+</table>
+</td>
+</tr>
+</table>
+<br>
+<div align="center"><input type="submit" name="submit" value="{ update }"></div>
+<br>
+</form>
+<!--#end sectionslist -->

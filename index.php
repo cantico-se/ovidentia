@@ -616,6 +616,12 @@ switch($tg)
 		if( $BAB_SESS_LOGGED)
     		$incl = "calopt";
 		break;
+	case "sectopt":
+		$babLevelOne = bab_translate("User's section");
+		$babLevelTwo = bab_translate("Options");
+		if( $BAB_SESS_LOGGED)
+    		$incl = "sectopt";
+		break;
 	case "vacuser":
 		$babLevelOne = bab_translate("User's section");
 		$babLevelTwo = bab_translate("Vacation");

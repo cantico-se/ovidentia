@@ -644,6 +644,7 @@ switch($idx)
 		}
 		if( bab_mailAccessLevel())
 			$babBody->addItemMenu("options", bab_translate("Mail"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=listacc");
+		$babBody->addItemMenu("list", bab_translate("Sections"), $GLOBALS['babUrlScript']."?tg=sectopt&idx=list");
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);

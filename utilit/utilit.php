@@ -476,9 +476,10 @@ function babAdminSection($close)
 		{
 		$this->array_urls[bab_translate("Delegation")] = $GLOBALS['babUrlScript']."?tg=delegat";
 		$this->array_urls[bab_translate("Sites")] = $GLOBALS['babUrlScript']."?tg=sites";
-		$this->array_urls[bab_translate("Users")] = $GLOBALS['babUrlScript']."?tg=users";
 		}
 
+	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentAdmGroup != 0)
+		$this->array_urls[bab_translate("Users")] = $GLOBALS['babUrlScript']."?tg=users";
 	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['groups'] == 'Y')
 		$this->array_urls[bab_translate("Groups")] = $GLOBALS['babUrlScript']."?tg=groups";
 	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['sections'] == 'Y')
@@ -1141,7 +1142,24 @@ function loadSections()
 	$res = $babDB->db_query($req);
 	while( $arr =  $babDB->db_fetch_array($res))
 		{
-		$close = $BAB_SESS_USERID == "" ? 0: $this->isSectionClose($arr['id_section'], $arr['type']);
+		$hidden = false;
+		$close = 0;
+		$res2 = $babDB->db_query("select * from ".BAB_SECTIONS_STATES_TBL." where id_section='".$arr['id_section']."' and id_user='".$BAB_SESS_USERID."' and type='".$arr['type']."'");
+		if( $res2 && $babDB->db_num_rows($res2) > 0)
+			{
+			$arrst = $babDB->db_fetch_array($res2);
+			if( $arrst['closed'] == "Y")
+				{
+				$close = 1;
+				}		
+			if( $arrst['hidden'] == "Y")
+				{
+				$hidden = true;
+				}		
+			}
+		else
+			$arrst = array();
+
 		$add = false;
 		switch( $arr['type'] )
 			{
@@ -1157,7 +1175,7 @@ function loadSections()
 							}
 						break;
 					case 2: // month
-						if( $r['enabled'] == "Y" )
+						if( $r['enabled'] == "Y" && ( $r['optional'] == 'N' || !$hidden ))
 							{
 							$add = true;
 							$sec = new babMonthA();
@@ -1167,7 +1185,7 @@ function loadSections()
 						$sec = new babTopcatSection($close);
 						if( $sec->count > 0 )
 							{
-							if( $r['enabled'] == "Y" )
+							if( $r['enabled'] == "Y" && !$hidden)
 								$add = true;
 							}
 						break;
@@ -1175,7 +1193,7 @@ function loadSections()
 						$sec = new babForumsSection($close);
 						if( $sec->count > 0 )
 							{
-							if( $r['enabled'] == "Y" )
+							if( $r['enabled'] == "Y"  && !$hidden)
 								$add = true;
 							}
 						break;
@@ -1187,8 +1205,8 @@ function loadSections()
 					}
 				break;
 			case "3": // BAB_TOPICS_CATEGORIES_TBL sections
-				$r = $babDB->db_fetch_array($babDB->db_query("select id, enabled from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$arr['id_section']."'"));
-				if( $r['enabled'] == "Y")
+				$r = $babDB->db_fetch_array($babDB->db_query("select id, enabled, optional from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$arr['id_section']."'"));
+				if( $r['enabled'] == "Y" && ( $r['optional'] == 'N' || !$hidden ))
 					{
 					$sec = new babTopicsSection($r['id'], $close);
 					if( $sec->count > 0 )
@@ -1235,15 +1253,20 @@ function loadSections()
 					if( $res2 && $babDB->db_num_rows($res2) > 0)
 						{
 						$arr2 = $babDB->db_fetch_array($res2);
-						if( !$close )
+						if( $arr2['optional'] == 'N' || !$hidden )
 							{
-							if( $arr2['script'] == "Y")
-								eval("\$arr2['content'] = \"".$arr2['content']."\";");
-							$sec = new babSection($arr2['title'], $arr2['content']);
+							if( !$close )
+								{
+								if( $arr2['script'] == "Y")
+									eval("\$arr2['content'] = \"".$arr2['content']."\";");
+								$sec = new babSection($arr2['title'], $arr2['content']);
+								}
+							else
+								$sec = new babSection($arr2['title'], "");
+							$sec->setTemplate($arr2['template']);
 							}
 						else
-							$sec = new babSection($arr2['title'], "");
-						$sec->setTemplate($arr2['template']);
+							$add = false;
 						}
 					else
 						$add = false;

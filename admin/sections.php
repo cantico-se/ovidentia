@@ -68,6 +68,7 @@ function sectionsList()
 		var $access;
 		var $accessurl;
 		var $groups;
+		var $opttxt;
 
 		function temp()
 			{
@@ -80,6 +81,7 @@ function sectionsList()
 			$this->update = bab_translate("Update");
 			$this->access = bab_translate("Access");
 			$this->groups = bab_translate("View");
+			$this->opttxt = bab_translate("Optional");
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_SECTIONS_TBL." where id_dgowner='".$babBody->currentAdmGroup."'";
 			$this->res = $this->db->db_query($req);
@@ -111,6 +113,10 @@ function sectionsList()
 					$this->secchecked = "checked";
 				else
 					$this->secchecked = "";
+				if( $this->arr['optional'] == "Y")
+					$this->optchecked = "checked";
+				else
+					$this->optchecked = "";
 				$i++;
 				return true;
 				}
@@ -132,6 +138,10 @@ function sectionsList()
 					$this->secchecked = "checked";
 				else
 					$this->secchecked = "";
+				if( $this->arr['optional'] == "Y")
+					$this->optchecked = "checked";
+				else
+					$this->optchecked = "";
 				$i++;
 				return true;
 				}
@@ -153,6 +163,10 @@ function sectionsList()
 					$this->secchecked = "checked";
 				else
 					$this->secchecked = "";
+				if( $this->arr['optional'] == "Y")
+					$this->optchecked = "checked";
+				else
+					$this->optchecked = "";
 				$i++;
 				return true;
 				}
@@ -304,6 +318,11 @@ function sectionCreate($jscript)
 		var $arrtmpl;
 		var $counttmpl;
 		var $templatetxt;
+		var $optionaltxt;
+		var $yes;
+		var $no;
+		var $nselected;
+		var $yselected;
 
 		function temp($jscript)
 			{
@@ -316,6 +335,9 @@ function sectionCreate($jscript)
 			$this->right = bab_translate("Right");
 			$this->script = bab_translate("PHP script");
 			$this->templatetxt = bab_translate('Template');
+			$this->optionaltxt = bab_translate('Optional');
+			$this->yes = bab_translate('Yes');
+			$this->no = bab_translate('No');
 			$this->langLabel = bab_translate('Language');
 			$this->langFiles = $GLOBALS['babLangFilter']->getLangFiles();
 			$this->countLangFiles = count($this->langFiles);
@@ -324,6 +346,8 @@ function sectionCreate($jscript)
 				$this->msie = 1;
 			else
 				$this->msie = 0;	
+			$this->nselected = 'selected';
+			$this->yselected = '';
 
 			$file = "sectiontemplate.html";
 			$filepath = "skins/".$GLOBALS['babSkin']."/templates/". $file;
@@ -384,7 +408,7 @@ function sectionCreate($jscript)
 
 
 
-function sectionSave($title, $pos, $desc, $content, $script, $js, $template, $lang)
+function sectionSave($title, $pos, $desc, $content, $script, $js, $template, $lang, $opt)
 	{
 	global $babBody;
 	if( empty($title))
@@ -421,7 +445,7 @@ function sectionSave($title, $pos, $desc, $content, $script, $js, $template, $la
 			$js = "Y";
 		else
 			$js = "N";
-		$query = "insert into ".BAB_SECTIONS_TBL." (title, position, description, content, script, jscript, template, lang, id_dgowner) VALUES ('" .$title. "', '" . $pos. "', '" . $desc. "', '" . bab_stripDomainName($content). "', '" . $php. "', '" . $js."', '". $template."', '" .$lang."', '" .$babBody->currentAdmGroup. "')";
+		$query = "insert into ".BAB_SECTIONS_TBL." (title, position, description, content, script, jscript, template, lang, id_dgowner, optional) VALUES ('" .$title. "', '" . $pos. "', '" . $desc. "', '" . bab_stripDomainName($content). "', '" . $php. "', '" . $js."', '". $template."', '" .$lang."', '" .$babBody->currentAdmGroup."', '" .$opt. "')";
 		$db->db_query($query);
 		$id = $db->db_insert_id();
 		if( $babBody->currentAdmGroup == 0 )
@@ -462,10 +486,12 @@ function saveSectionsOrder($listleft, $listright)
 
 	}
 
-function disableSections($sections)
+function disableSections($sections, $sectopt)
 	{
+	global $babBody;
+
 	$db = $GLOBALS['babDB'];
-	$req = "select id from ".BAB_SECTIONS_TBL."";
+	$req = "select id from ".BAB_SECTIONS_TBL." where id_dgowner='".$babBody->currentAdmGroup."'";
 	$res = $db->db_query($req);
 	while( $row = $db->db_fetch_array($res))
 		{
@@ -474,24 +500,37 @@ function disableSections($sections)
 		else
 			$enabled = "Y";
 
-		$req = "update ".BAB_SECTIONS_TBL." set enabled='".$enabled."' where id='".$row['id']."'";
-		$db->db_query($req);
-		}
-
-	$req = "select id from ".BAB_PRIVATE_SECTIONS_TBL."";
-	$res = $db->db_query($req);
-	while( $row = $db->db_fetch_array($res))
-		{
-		if( count($sections) > 0 && in_array($row['id']."-1", $sections))
-			$enabled = "N";
+		if( count($sectopt) > 0 && in_array($row['id']."-2", $sectopt))
+			$optional = "Y";
 		else
-			$enabled = "Y";
+			$optional = "N";
 
-		$req = "update ".BAB_PRIVATE_SECTIONS_TBL." set enabled='".$enabled."' where id='".$row['id']."'";
+		$req = "update ".BAB_SECTIONS_TBL." set enabled='".$enabled."', optional='".$optional."' where id='".$row['id']."'";
 		$db->db_query($req);
 		}
 
-	$req = "select id from ".BAB_TOPICS_CATEGORIES_TBL."";
+	if( $babBody->currentAdmGroup == 0 )
+		{
+		$req = "select id from ".BAB_PRIVATE_SECTIONS_TBL."";
+		$res = $db->db_query($req);
+		while( $row = $db->db_fetch_array($res))
+			{
+			if( count($sections) > 0 && in_array($row['id']."-1", $sections))
+				$enabled = "N";
+			else
+				$enabled = "Y";
+
+			if( count($sectopt) > 0 && in_array($row['id']."-1", $sectopt))
+				$optional = "Y";
+			else
+				$optional = "N";
+
+			$req = "update ".BAB_PRIVATE_SECTIONS_TBL." set enabled='".$enabled."', optional='".$optional."' where id='".$row['id']."'";
+			$db->db_query($req);
+			}
+		}
+
+	$req = "select id from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."'";
 	$res = $db->db_query($req);
 	while( $row = $db->db_fetch_array($res))
 		{
@@ -500,7 +539,11 @@ function disableSections($sections)
 		else
 			$enabled = "Y";
 
-		$req = "update ".BAB_TOPICS_CATEGORIES_TBL." set enabled='".$enabled."' where id='".$row['id']."'";
+		if( count($sectopt) > 0 && in_array($row['id']."-3", $sectopt))
+			$optional = "Y";
+		else
+			$optional = "N";
+		$req = "update ".BAB_TOPICS_CATEGORIES_TBL." set enabled='".$enabled."', optional='".$optional."' where id='".$row['id']."'";
 		$db->db_query($req);
 		}
 	}
@@ -514,7 +557,7 @@ if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['sections'] != 'Y')
 
 if( isset($create))
 	{
-	sectionSave($title, $position, $description, $content, $script, $js, $template, $lang);
+	sectionSave($title, $position, $description, $content, $script, $js, $template, $lang, $opt);
 	}
 
 if( isset($update))
@@ -522,7 +565,7 @@ if( isset($update))
 	if( $update == "order" && $babBody->isSuperAdmin)
 		saveSectionsOrder($listleft, $listright);
 	else if( $update == "disable" )
-		disableSections($sections);
+		disableSections($sections, $sectopt);
 	}
 
 if( !isset($idx))

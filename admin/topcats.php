@@ -181,9 +181,12 @@ function addTopCat($name, $description, $benabled, $template)
 		$db->db_query($req);
 
 		$id = $db->db_insert_id();
-		$req = "select max(ordering) from ".BAB_SECTIONS_ORDER_TBL." where position='0'";
+		$req = "select max(ordering) from ".BAB_SECTIONS_ORDER_TBL." so, ".BAB_TOPICS_CATEGORIES_TBL." tc where so.position='0' and type='3' and tc.id=so.id_section and tc.id_dgowner='".$babBody->currentAdmGroup."'";
 		$res = $db->db_query($req);
 		$arr = $db->db_fetch_array($res);
+		if( empty($arr[0]))
+			$arr[0] = 0;
+		$db->db_query("update ".BAB_SECTIONS_ORDER_TBL." set odering=ordering+1 where pos='0' and ordering > '".$arr[0]."'");
 		$req = "insert into ".BAB_SECTIONS_ORDER_TBL." (id_section, position, type, ordering) VALUES ('" .$id. "', '0', '3', '" . ($arr[0]+1). "')";
 		$db->db_query($req);
 		}

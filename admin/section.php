@@ -76,6 +76,11 @@ function sectionModify($id)
 		var $counttmpl;
 		var $templatetxt;
 		var $tmplselected;
+		var $optionaltxt;
+		var $yes;
+		var $no;
+		var $nselected;
+		var $yselected;
 
 		function temp($id)
 			{
@@ -89,6 +94,9 @@ function sectionModify($id)
 			$this->modify = bab_translate("Modify");
 			$this->delete = bab_translate("Delete");
 			$this->templatetxt = bab_translate('Template');
+			$this->optionaltxt = bab_translate('Optional');
+			$this->yes = bab_translate('Yes');
+			$this->no = bab_translate('No');
 			$this->langLabel = bab_translate('Language');
 			$this->langFiles = $GLOBALS['babLangFilter']->getLangFiles();
 			$this->countLangFiles = count($this->langFiles);
@@ -107,6 +115,16 @@ function sectionModify($id)
 					$this->ischecked = "checked";
 				else
 					$this->ischecked = "";
+				if( $this->arr['optional'] == "Y")
+					{
+					$this->nselected = "";
+					$this->yselected = "selected";
+					}
+				else
+					{
+					$this->nselected = "selected";
+					$this->yselected = "";
+					}
 				}
 			if(( $this->arr['jscript'] == "N" && strtolower(bab_browserAgent()) == "msie") && (bab_browserOS() == "windows"))
 				$this->msie = 1;
@@ -209,7 +227,7 @@ function sectionDelete($id)
 	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
 
-function sectionUpdate($id, $title, $desc, $content, $script, $template, $lang)
+function sectionUpdate($id, $title, $desc, $content, $script, $template, $lang, $opt)
 	{
 	global $babBody;
 
@@ -236,7 +254,7 @@ function sectionUpdate($id, $title, $desc, $content, $script, $template, $lang)
 		$title = addslashes($title);
 		$template = addslashes($template);
 		}
-	$query = "update ".BAB_SECTIONS_TBL." set title='".$title."', description='".$desc."', content='".bab_stripDomainName($content)."', script='".$php."', template='".$template."', lang='".$lang."' where id='".$id."'";
+	$query = "update ".BAB_SECTIONS_TBL." set title='".$title."', description='".$desc."', content='".bab_stripDomainName($content)."', script='".$php."', template='".$template."', lang='".$lang."', optional='".$opt."' where id='".$id."'";
 	$db->db_query($query);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sections&idx=List");
 	}
@@ -259,7 +277,7 @@ if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['sections'] != 'Y')
 if( isset($modify))
 	{
 	if( isset($submit))
-		sectionUpdate($item, $title, $description, $content, $script, $template, $lang);
+		sectionUpdate($item, $title, $description, $content, $script, $template, $lang, $opt);
 	else if(isset($secdel))
 		$idx = "Delete";
 	}

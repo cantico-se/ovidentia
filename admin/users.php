@@ -280,7 +280,14 @@ if( !isset($pos))
 	$pos = "A";
 
 if( !isset($grp) || empty($grp))
-	$grp = 3;
+	{
+	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
+		$grp = 3;
+	else if( $babBody->currentAdmGroup != 0 )
+		{
+		$grp = $babBody->currentAdmGroup;
+		}
+	}
 
 if( !isset($idx))
 	$idx = "List";
