@@ -332,8 +332,16 @@ function summaryDbContact($id, $idu, $update=true)
 					}
 
 				$this->idu = $idu;
+				$this->arrorgid = array();
 				$this->resorg = $this->db->db_query("SELECT distinct oct.name, oct.id, oct.id_directory from ".BAB_ORG_CHARTS_TBL." oct left join ".BAB_OC_ROLES_TBL." ocrt on oct.id=ocrt.id_oc left join ".BAB_OC_ROLES_USERS_TBL." ocrut on ocrt.id=ocrut.id_role where ocrut.id_user='".$idu."'");
-				$this->orgcount = $this->db->db_num_rows($this->resorg);
+				while( $rr = $this->db->db_fetch_array($this->resorg))
+					{
+					if( bab_isAccessValid(BAB_OCVIEW_GROUPS_TBL, $rr['id']))
+						{
+						$this->arrorgid[] = array($rr['id'], $rr['name']);
+						}
+					}
+				$this->orgcount = count($this->arrorgid);
 				if( $this->orgcount > 0 )
 					{
 					$this->vieworg = bab_translate("View this organizational chart");
@@ -372,20 +380,13 @@ function summaryDbContact($id, $idu, $update=true)
 				return false;
 			}
 
-		function getnextorg(&$skip)
+		function getnextorg()
 			{
 			static $i = 0;
 			if( $i < $this->orgcount)
 				{
-				$arr = $this->db->db_fetch_array($this->resorg);
-				if( !bab_isAccessValid(BAB_OCVIEW_GROUPS_TBL, $arr['id']))
-					{
-					$skip = true;
-					$i++;
-					return true;
-					}
-				$this->orgn = $arr['name'];
-				$this->orgid = $arr['id'];
+				$this->orgid = $this->arrorgid[$i][0];
+				$this->orgn = $this->arrorgid[$i][1];
 				$res = $this->db->db_query("SELECT  ocrt.id_entity FROM ".BAB_OC_ROLES_TBL." ocrt LEFT JOIN ".BAB_OC_ROLES_USERS_TBL." ocrut ON ocrt.id = ocrut.id_role WHERE ocrut.id_user='".$this->idu."' and ocrt.id_oc='".$this->orgid."' and ocrut.isprimary='Y' ");
 				if( $res && $this->db->db_num_rows($res) > 0 )
 					{
