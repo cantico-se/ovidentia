@@ -60,10 +60,10 @@ function listContacts($pos)
 				$this->namesearch2 = "lastname";
 			break;}
 
-			if( isset($pos[0]) && $pos[0] == "-" )
+			if( substr($pos,0,1) == "-" )
 				{
-				$this->pos = $pos[1];
-				$this->ord = $pos[0];
+				$this->pos = '-';
+				$this->ord = substr($pos,1);
 				$req = "select * from ".BAB_CONTACTS_TBL." where owner='".$BAB_SESS_USERID."' and ".$this->namesearch2." like '".$this->pos."%' order by ".$this->namesearch2.", ".$this->namesearch." asc";
 				$this->fullname = bab_composeUserName(bab_translate("Lastname"),bab_translate("Firstname"));
 				$this->urlfullname = $GLOBALS['babUrlScript']."?tg=contacts&idx=chg&pos=".$pos;
