@@ -90,8 +90,7 @@ function listUsers($pos, $grp)
 				$this->userid = $this->arr['id'];
 				$req = "select * from ".BAB_USERS_LOG_TBL." where id_user='".$this->arr['id']."'";
 				$res = $this->db->db_query($req);
-				$arr2 = $this->db->db_fetch_array($res);
-				if( $arr2['islogged'] == "Y")
+				if( $res && $this->db->db_num_rows($res) > 0)
 					$this->status ="*";
 				else
 					$this->status ="";

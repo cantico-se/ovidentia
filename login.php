@@ -59,18 +59,21 @@ function signOn( $nickname, $password)
 		return false;
 
 	$db = $GLOBALS['babDB'];
-	$req="select * from ".BAB_USERS_LOG_TBL." where id_user='$BAB_SESS_USERID'";
+	$res=$db->db_query("select datelog from ".BAB_USERS_TBL." where id='".$BAB_SESS_USERID."'");
+	if( $res && $db->db_num_rows($res) > 0)
+		{
+		$arr = $db->db_fetch_array($res);
+		$req="update ".BAB_USERS_TBL." set datelog=now(), lastlog='".$arr['datelog']."' where id_user='".$BAB_SESS_USERID."'";
+		}
+
+	$req="select * from ".BAB_USERS_LOG_TBL." where id_user='0' and sessid='".session_id()."'";
 	$res=$db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		$req="update ".BAB_USERS_LOG_TBL." set datelog=now(), lastlog='".$arr['datelog']."', dateact=now(),islogged='Y' where id_user='$BAB_SESS_USERID'";
+		$db->db_query("update ".BAB_USERS_LOG_TBL." set id_user='".$BAB_SESS_USERID."' where id='".$arr['id']."'");
 		}
-	else
-		{
-		$req="insert into ".BAB_USERS_LOG_TBL." (id_user, datelog, lastlog, dateact,islogged) values ('$BAB_SESS_USERID', now(), now(), now(), 'Y')";
-		}
-	$res=$db->db_query($req);
+
 	return true;
 	}
 
@@ -79,13 +82,7 @@ function signOff()
 	global $babBody, $BAB_HASH_VAR, $BAB_SESS_USER, $BAB_SESS_EMAIL, $BAB_SESS_USERID, $BAB_SESS_HASHID,$BAB_SESS_LOGGED;
 	
 	$db = $GLOBALS['babDB'];
-	$req="select * from ".BAB_USERS_LOG_TBL." where id_user='$BAB_SESS_USERID'";
-	$res=$db->db_query($req);
-	if( $res && $db->db_num_rows($res) > 0)
-		{
-		$req="update ".BAB_USERS_LOG_TBL." set islogged='N' where id_user='$BAB_SESS_USERID'";
-		$res=$db->db_query($req);
-		}
+	$db->db_query("delete from ".BAB_USERS_LOG_TBL." where id_user='".$BAB_SESS_USERID."' and sessid='".session_id()."'");
 
 	$BAB_SESS_NICKNAME = "";
 	$BAB_SESS_USER = "";

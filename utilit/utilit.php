@@ -1276,48 +1276,64 @@ function printout()
 function bab_updateUserSettings()
 {
 	global $babBody,$BAB_SESS_USERID;
-	if( isset($BAB_SESS_USERID) && !empty($BAB_SESS_USERID))
+	$db = $GLOBALS['babDB'];
+
+	if( !empty($BAB_SESS_USERID))
 		{
-		$db = $GLOBALS['babDB'];
-
-		$req="select * from ".BAB_USERS_TBL." where id='$BAB_SESS_USERID'";
-		$res=$db->db_query($req);
-
-        if( $res && $db->db_num_rows($res) > 0 )
-            {
-            $arr = $db->db_fetch_array($res);
-            if( $arr['lang'] != "")
-                {
-                $GLOBALS['babLanguage'] = $arr['lang'];
-                }
-            if( $arr['skin'] != "" && is_dir($GLOBALS['babInstallPath']."skins/".$arr['skin']))
-                {
-                $GLOBALS['babSkin'] = $arr['skin'];
-                }
-            if( $arr['style'] != "" && is_file($GLOBALS['babInstallPath']."skins/".$arr['skin']."/styles/".$arr['style']))
-                {
-                $GLOBALS['babStyle'] = $arr['style'];
-                }
-            /*
-            $req="select * from ".BAB_USERS_LOG_TBL." where id_user='$BAB_SESS_USERID'";
-            $res=$db->db_query($req);
-            if( $res && $db->db_num_rows($res) > 0)
-                {
-                $arr = $db->db_fetch_array($res);
-                if( time() - bab_mktime($arr['dateact']) > $babTimeOut*60)
-                    {
-                    }
-                }
-            */
-            $req="update ".BAB_USERS_LOG_TBL." set dateact=now() where id_user='$BAB_SESS_USERID'";
-            $res=$db->db_query($req);
-
-			$req="select * from ".BAB_USERS_LOG_TBL." where id_user='$BAB_SESS_USERID'";
-			$res=$db->db_query($req);
+		$res=$db->db_query("select * from ".BAB_USERS_TBL." where id='".$BAB_SESS_USERID."'");
+		if( $res && $db->db_num_rows($res) > 0 )
+			{
 			$arr = $db->db_fetch_array($res);
+			if( $arr['lang'] != "")
+				{
+				$GLOBALS['babLanguage'] = $arr['lang'];
+				}
+			if( $arr['skin'] != "" && is_dir($GLOBALS['babInstallPath']."skins/".$arr['skin']))
+				{
+				$GLOBALS['babSkin'] = $arr['skin'];
+				}
+			if( $arr['style'] != "" && is_file($GLOBALS['babInstallPath']."skins/".$arr['skin']."/styles/".$arr['style']))
+				{
+				$GLOBALS['babStyle'] = $arr['style'];
+				}
+
 			$babBody->lastlog = $arr['lastlog'];
-            }
+			}
 		}
+
+	$res = $db->db_query("select * from ".BAB_USERS_LOG_TBL." where sessid='".session_id()."'");
+	if( $res && $db->db_num_rows($res) > 0)
+		{
+		$db->db_query("update ".BAB_USERS_LOG_TBL." set dateact=now(), remote_addr='".$GLOBALS['REMOTE_ADDR']."', forwarded_for='".$GLOBALS['HTTP_X_FORWARDED_FOR']."' where sessid = '".session_id()."'");
+		}
+	else
+		{
+		if( !empty($BAB_SESS_USERID))
+			$userid = $BAB_SESS_USERID;
+		else
+			$userid = 0;
+
+		$db->db_query("insert into ".BAB_USERS_LOG_TBL." (id_user, sessid, dateact, remote_addr, forwarded_for) values ('".$userid."', '".session_id()."', now(), '".$GLOBALS['REMOTE_ADDR']."', '".$GLOBALS['HTTP_X_FORWARDED_FOR']."')");
+		}
+
+	$res = $db->db_query("select id, UNIX_TIMESTAMP(dateact) as time from ".BAB_USERS_LOG_TBL);
+	while( $row  = $db->db_fetch_array($res))
+		{
+		if( $row['time'] + get_cfg_var('session.gc_maxlifetime') < time()) 
+			$db->db_query("delete from ".BAB_USERS_LOG_TBL." where id='".$row['id']."'");
+		}
+
+	/*
+	$req="select * from ".BAB_USERS_LOG_TBL." where id_user='$BAB_SESS_USERID'";
+	$res=$db->db_query($req);
+	if( $res && $db->db_num_rows($res) > 0)
+		{
+		$arr = $db->db_fetch_array($res);
+		if( time() - bab_mktime($arr['dateact']) > $babTimeOut*60)
+			{
+			}
+		}
+	*/
 }
 
 function bab_updateSiteSettings()

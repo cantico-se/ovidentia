@@ -142,18 +142,45 @@ function bab_isAccessValid($table, $idobject)
 }
 
 /* for all users */
-function bab_isUserAlreadyLogged($iduser)
+function bab_isUserLogged($iduser = "")
 {
-	$db = $GLOBALS['babDB'];
-	$req="select islogged from ".BAB_USERS_LOG_TBL." where id_user='$iduser'";
-	$res=$db->db_query($req);
-	if( $res && $db->db_num_rows($res) > 0)
+	global $BAB_SESS_NICKNAME, $BAB_HASH_VAR, $BAB_SESS_HASHID,$BAB_SESS_LOGGED;
+	
+	if( !isset($iduser) || empty($iduser) || $iduser == $GLOBALS['BAB_SESS_USERID'])
 		{
-		$arr = $db->db_fetch_array($res);
-		if( $arr['islogged'] == "Y")
-			return true;		
+		if (isset($BAB_SESS_LOGGED))
+			{
+			return $BAB_SESS_LOGGED;
+			}
+
+		if (!empty($BAB_SESS_NICKNAME) && !empty($BAB_SESS_HASHID))
+			{
+			$hash=md5($BAB_SESS_NICKNAME.$BAB_HASH_VAR);
+			if ($hash == $BAB_SESS_HASHID)
+				{
+				$BAB_SESS_LOGGED=true;
+				}
+			else
+				{
+				$BAB_SESS_LOGGED=false;
+				}
+			}
+		else
+			{
+			$BAB_SESS_LOGGED=false;
+			}
+		return $BAB_SESS_LOGGED;
 		}
-	return false;
+	else
+	{
+		if( $iduser == 0)
+			return false;
+		$db = $GLOBALS['babDB'];
+		$res=$db->db_query("select * from ".BAB_USERS_LOG_TBL." where id_user='".$iduser."'");
+		if( $res && $db->db_num_rows($res) > 0)
+			return true;		
+		return false;
+	}
 }
 
 /* for current user */

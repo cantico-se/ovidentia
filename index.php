@@ -18,7 +18,7 @@ $babUrlScript = $babUrl.$babPhpSelf;
 $babAddonsPath = $GLOBALS['babInstallPath']."addons/";
 
 
-bab_userIsloggedin();
+bab_isUserLogged();
 bab_updateSiteSettings();
 bab_updateUserSettings();
 $babSkinPath = $babInstallPath."skins/".$babSkin."/";
