@@ -78,10 +78,6 @@ function printBody()
 			$this->babBanner = "";
 			$this->babMeta = "";
 
-			$this->sitename = $babSiteName;
-			$this->style = $babStyle;
-			$this->slogan = $babSlogan;
-
 			$this->babCss = babPrintTemplate($this, "config.html", "babCss");
 			$this->babLogoLT = babPrintTemplate($this, "config.html", "babLogoLT");
 			$this->babLogoRT = babPrintTemplate($this, "config.html", "babLogoRT");

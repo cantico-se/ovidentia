@@ -399,15 +399,12 @@ function viewArticle($article, $w)
 	
 		var $content;
 		var $title;
-		var $style;
-		var $babUrl;
-		var $sitename;
+		var $topic;
+		var $babCss;
 
 		function temp($article, $w)
 			{
-			$this->style = $GLOBALS[babStyle];
-			$this->babUrl = $GLOBALS[babUrl];
-			$this->sitename = $GLOBALS[babSiteName];
+			$this->babCss = babPrintTemplate($this,"config.html", "babCss");
 			$db = new db_mysql();
 			$req = "select * from articles where id='$article' and confirmed='Y'";
 			$res = $db->db_query($req);
@@ -415,6 +412,7 @@ function viewArticle($article, $w)
 	
 			$this->content = highlightWord( $w, locateArticle($arr[body]));
 			$this->title = highlightWord( $w, $arr[title]);
+			$this->topic =getCategoryTitle($arr[id_topic]);
 			}
 		}
 	
@@ -433,13 +431,11 @@ function viewComment($topics, $article, $com, $w)
 		var $topics;
 		var $article;
 		var $arr = array();
-		var $style;
-		var $babUrl;
-		var $sitename;
+		var $babCss;
 
 		function ctp($topics, $article, $com, $w)
 			{
-			$this->style = $GLOBALS[babStyle];
+			$this->babCss = babPrintTemplate($this,"config.html", "babCss");
 			$this->babUrl = $GLOBALS[babUrl];
 			$this->sitename = $GLOBALS[babSiteName];
 			$this->title = getArticleTitle($article);
@@ -474,15 +470,10 @@ function viewPost($thread, $post, $w)
 		var $postdate;
 		var $postauthor;
 		var $title;
-		var $style;
-		var $babUrl;
-		var $sitename;
+		var $babCss;
 
 		function temp($thread, $post, $w)
 			{
-			$this->style = $GLOBALS[babStyle];
-			$this->babUrl = $GLOBALS[babUrl];
-			$this->sitename = $GLOBALS[babSiteName];
 			$db = new db_mysql();
 			$req = "select forum from threads where id='".$thread."'";
 			$arr = $db->db_fetch_array($db->db_query($req));
@@ -495,6 +486,7 @@ function viewPost($thread, $post, $w)
 			$this->postmessage = $arr[message];
 			$this->postsubject = highlightWord( $w, $arr[subject]);
 			$this->postmessage = highlightWord( $w, $arr[message]);
+			$this->babCss = babPrintTemplate($this,"config.html", "babCss");
 			}
 		}
 	
@@ -510,15 +502,11 @@ function viewQuestion($idcat, $id, $w)
 		var $arr = array();
 		var $db;
 		var $res;
-		var $style;
-		var $babUrl;
-		var $sitename;
+		var $babCss;
 
 		function temp($idcat, $id, $w)
 			{
-			$this->style = $GLOBALS[babStyle];
-			$this->babUrl = $GLOBALS[babUrl];
-			$this->sitename = $GLOBALS[babSiteName];
+			$this->babCss = babPrintTemplate($this,"config.html", "babCss");
 			$this->db = new db_mysql();
 			$req = "select * from faqqr where id='$id'";
 			$this->res = $this->db->db_query($req);

@@ -131,18 +131,13 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
 		var $urlto;
 		var $msie;
 		var $bhtml;
-		var $style;
-		var $sitename;
-		var $babUrl;
+		var $babCss;
 		var $msgerror;
 
 
 		function temp($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, $pfiles, $pformat, $pmsg, $psigid, $error)
 			{
 			global $BAB_SESS_USERID,$BAB_SESS_USER,$BAB_SESS_EMAIL;
-			$this->style = $GLOBALS[babStyle];
-			$this->babUrl = $GLOBALS[babUrl];
-			$this->sitename = $GLOBALS[babSiteName];
 			$this->psigid = $psigid;
 			$this->msgerror = $error;
 			$this->toval = "";
@@ -242,6 +237,7 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
 			$req = "select * from contacts where owner='".$BAB_SESS_USERID."' order by lastname asc";
 			$this->rescl = $this->db->db_query($req);
 			$this->countcl = $this->db->db_num_rows($this->rescl);
+			$this->babCss = babPrintTemplate($this,"config.html", "babCss");
 			}
 
         function getnextsig()
@@ -464,18 +460,14 @@ function mailUnload()
 	{
 	class temp
 		{
-		var $style;
-		var $babUrl;
-		var $sitename;
+		var $babCss;
 		var $message;
 		var $close;
 		var $url;
 
 		function temp()
 			{
-			$this->style = $GLOBALS[babStyle];
-			$this->babUrl = $GLOBALS[babUrl];
-			$this->sitename = $GLOBALS[babSiteName];
+			$this->babCss = babPrintTemplate($this,"config.html", "babCss");
 			$this->message = babTranslate("Your message has been sent");
 			$this->close = babTranslate("Close");
 			}

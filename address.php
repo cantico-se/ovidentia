@@ -34,9 +34,7 @@ function listAddress($pos)
 		var $allurl;
 		var $allname;
 		var $urlmail;
-		var $style;
-		var $babUrl;
-		var $sitename;
+		var $babCss;
 
 		var $totourl;
 		var $toccurl;
@@ -67,11 +65,9 @@ function listAddress($pos)
 			$this->toccurl = "javascript:updateDestination('cc')";
 			$this->tobccurl = "javascript:updateDestination('bcc')";
 			$this->closeurl = "javascript:this.close()";
+			$this->babCss = babPrintTemplate($this,"config.html", "babCss");
 
 			$this->db = new db_mysql();
-			$this->style = $GLOBALS[babStyle];
-			$this->babUrl = $GLOBALS[babUrl];
-			$this->sitename = $GLOBALS[babSiteName];
 
 			$req = "select * from contacts where owner='".$BAB_SESS_USERID."' and firstname like '".$pos."%' order by firstname, lastname asc";
 			$this->res = $this->db->db_query($req);

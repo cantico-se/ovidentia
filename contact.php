@@ -35,18 +35,13 @@ function contactCreate($id, $firstname, $lastname, $email, $compagny, $hometel, 
 		var $id;
 		var $what;
 		var $cancel;
-		var $style;
-		var $babUrl;
-		var $sitename;
+		var $babCss;
 
 		function temp($id, $firstname, $lastname, $email, $compagny, $hometel, $mobiletel, $businesstel, $businessfax, $jobtitle, $baddress, $haddress, $bliste)
 			{
 			global $msgerror;
 			$this->id = $id;
 			$this->bliste = $bliste;
-			$this->style = $GLOBALS[babStyle];
-			$this->babUrl = $GLOBALS[babUrl];
-			$this->sitename = $GLOBALS[babSiteName];
 			$this->firstname = babTranslate("First Name");
 			$this->lastname = babTranslate("Last Name");
 			$this->email = babTranslate("Email");
@@ -60,6 +55,7 @@ function contactCreate($id, $firstname, $lastname, $email, $compagny, $hometel, 
 			$this->homeaddress = babTranslate("Home Address");
 			$this->cancel = babTranslate("Cancel");
 			$this->msgerror = $msgerror;
+			$this->babCss = babPrintTemplate($this,"config.html", "babCss");
 			if( empty($id))
 				{
 				$this->addcontact = babTranslate("Add Contact");
@@ -94,9 +90,7 @@ function contactUnload($pos, $bliste)
 	{
 	class temp
 		{
-		var $style;
-		var $babUrl;
-		var $sitename;
+		var $babCss;
 		var $message;
 		var $close;
 		var $url;
@@ -104,9 +98,7 @@ function contactUnload($pos, $bliste)
 
 		function temp($pos, $bliste)
 			{
-			$this->style = $GLOBALS[babStyle];
-			$this->babUrl = $GLOBALS[babUrl];
-			$this->sitename = $GLOBALS[babSiteName];
+			$this->babCss = babPrintTemplate($this,"config.html", "babCss");
 			$this->message = babTranslate("Your contacts list has been updated");
 			$this->close = babTranslate("Close");
 			$this->url = $GLOBALS[babUrl]."index.php?tg=contacts&idx=list&pos=".$pos;

@@ -290,9 +290,7 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 		var $addurl;
 		var $addname;
 		var $addcontact;
-		var $style;
-		var $babUrl;
-		var $sitename;
+		var $babCss;
 		var $criteria;
 		var $reverse;
 		var $start;
@@ -317,12 +315,10 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 			$this->replyname = babTranslate("Reply");
 			$this->replyaname = babTranslate("Reply to all");
 			$this->forwardname = babTranslate("Forward");
-			$this->style = $GLOBALS[babStyle];
-			$this->babUrl = $GLOBALS[babUrl];
-			$this->sitename = $GLOBALS[babSiteName];
 			$this->criteria = $criteria;
 			$this->reverse = $reverse;
 			$this->start = $start;
+			$this->babCss = babPrintTemplate($this,"config.html", "babCss");
 
 			$this->replyurl = $GLOBALS[babUrl]."index.php?tg=mail&idx=reply&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse."&idreply=".$msg;	$this->replyaurl = $GLOBALS[babUrl]."index.php?tg=mail&idx=replyall&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse."&idreply=".$msg."&all=1";
 			$this->forwardurl = $GLOBALS[babUrl]."index.php?tg=mail&idx=forward&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse."&idreply=".$msg."&all=1&fw=1";
