@@ -825,6 +825,7 @@ function modifyArticle($topics, $article)
 				{
 				$this->rfurl = $rfurl;
 				}
+				
 			if( $access )
 				{
 				list($this->blog) = $babDB->db_fetch_row($babDB->db_query("select count(id) as total from ".BAB_ART_LOG_TBL." where id_article='".$article."'"));
@@ -1210,7 +1211,12 @@ function getDocumentArticle($idf, $topics)
 /* main */
 $arrtop = array();
 
-if( count($babBody->topview) == 0 || !isset($babBody->topview[$topics]))
+if(!isset($idx))
+	{
+	$idx = "Articles";
+	}
+
+if( count($babBody->topview) == 0 || (!isset($babBody->topview[$topics]) && in_array($idx, array('Articles','getf','More','Print','larch')) ))
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	$idx = 'denied';
@@ -1221,10 +1227,7 @@ $res = $babDB->db_query("select * from ".BAB_TOPICS_TBL." where id='".$topics."'
 $arrtop = $babDB->db_fetch_array($res);
 }
 
-if(!isset($idx))
-	{
-	$idx = "Articles";
-	}
+
 
 if( isset($conf) && $conf == "mod" )
 {
@@ -1288,6 +1291,7 @@ switch($idx)
 	case "Modify":
 		$babBodyPopup = new babBodyPopup();
 		$babBodyPopup->title = bab_translate("Reason of the modification");
+		
 		$blog = modifyArticle($topics, $article);
 		
 		$babBodyPopup->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$topics."&article=".$article.$supp_rfurl);
