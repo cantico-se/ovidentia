@@ -306,6 +306,9 @@ function confirmDeleteUser($id)
 	$req = "delete from sections_states where id_user='$id'";
 	$res = $db->db_query($req);	
 
+	// delete files owned by this user
+	deleteUserFiles("N", $id);
+
 	// delete user
 	$req = "delete from users where id='$id'";
 	$res = $db->db_query($req);	

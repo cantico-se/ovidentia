@@ -4,13 +4,7 @@
  ************************************************************************
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
-function getFullPath($gr, $id)
-{
-	if( $gr == "Y")
-		return $GLOBALS['babUploadPath']."/G".$id."/";
-	else
-		return $GLOBALS['babUploadPath']."/U".$id."/";
-}
+include $babInstallPath."utilit/fileincl.php";
 
 function formatSize($size, $roundoff = true)
 {

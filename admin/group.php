@@ -5,6 +5,7 @@
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
 include $babInstallPath."utilit/grpincl.php";
+include $babInstallPath."utilit/fileincl.php";
 
 function groupModify($id)
 	{
@@ -493,6 +494,9 @@ function confirmDeleteGroup($id)
 	// delete user from mail_domains
 	$req = "delete from mail_domains where owner='$id' and bgroup='Y'";
 	$res = $db->db_query($req);	
+
+	// delete files owned by this group
+	deleteUserFiles("Y", $id);
 
     // delete group
 	$req = "delete from groups where id='$id'";
