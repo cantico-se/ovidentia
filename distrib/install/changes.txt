@@ -1,4 +1,11 @@
 /************************************************************************/
+Novembre 2004: Version 5.4.6
+/************************************************************************/
+- Vacation: improvement and fixe of bugs
+- Resource and public calendars can now use workflow approbation
+- Fixed some minors bugs
+
+/************************************************************************/
 October 2004: Version 5.4.5
 /************************************************************************/
 - Vacation: improvement
