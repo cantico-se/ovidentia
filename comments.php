@@ -83,6 +83,7 @@ function addComment($topics, $article, $subject, $com="")
 		var $title;
 		var $titleval;
 		var $com;
+		var $msie;
 
 		function temp($topics, $article, $subject, $com)
 			{
@@ -109,6 +110,10 @@ function addComment($topics, $article, $subject, $com="")
 			$res = $db->db_query($req);
 			$arr = $db->db_fetch_array($res);
 			$this->titleval = $arr[title];
+			if( strtolower(browserAgent()) == "msie")
+				$this->msie = 1;
+			else
+				$this->msie = 0;	
 			}
 		}
 
