@@ -105,14 +105,13 @@ class listFiles
 				$this->arrmgrp[] = $babBody->aclfm['id'][$i];
 			else
 				$this->arrgrp[] = $babBody->aclfm['id'][$i];
-
 			if( $babBody->aclfm['id'][$i] == $id )
 				{
 				$this->bdownload = $babBody->aclfm['down'][$i];
 
 				if( $what == "list" && $gr == "Y" && $babBody->aclfm['idsa'][$i] != 0 && ($this->buaf = isUserApproverFlow($babBody->aclfm['idsa'][$i], $BAB_SESS_USERID)) )
 					{
-					$req = "select ".BAB_FILES_TBL.".* from ".BAB_FILES_TBL." join ".BAB_FAR_INSTANCES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and state='' and path='".addslashes($path)."' and confirmed='N' and ".BAB_FAR_INSTANCES_TBL.".idschi=".BAB_FILES_TBL.".idfai and ".BAB_FAR_INSTANCES_TBL.".iduser='".$BAB_SESS_USERID."' and ".BAB_FAR_INSTANCES_TBL.".result='' and  ".BAB_FAR_INSTANCES_TBL.".notified='Y'";
+					$req = "select f.* from ".BAB_FILES_TBL." f join ".BAB_FAR_INSTANCES_TBL." i where id_owner='".$id."' and bgroup='".$gr."' and state='' and path='".addslashes($path)."' and confirmed='N' and i.idschi=f.idfai and i.iduser='".$BAB_SESS_USERID."' and i.result='' and  i.notified='Y'";
 					$this->reswf = $this->db->db_query($req);
 					$this->countwf = $this->db->db_num_rows($this->reswf);
 					}
@@ -152,13 +151,15 @@ class listFiles
 				if ($f != "." and $f != ".." and $f != BAB_FVERSION_FOLDER) 
 					{
 					if (is_dir($this->fullpath.$path."/".$f))
-						{
 						$this->arrdir[] = $f;
-						$this->arrudir[] = $GLOBALS['babUrlScript']."?tg=fileman&idx=".$what."&id=".$id."&gr=".$gr."&path=".$path.($path ==""?"":"/").$f;
-						}
 					}
 				}
 			closedir($h);
+			sort ($this->arrdir);
+			reset ($this->arrdir);
+			foreach ( $this->arrdir as $f )
+				$this->arrudir[] = $GLOBALS['babUrlScript']."?tg=fileman&idx=".$what."&id=".$id."&gr=".$gr."&path=".$path.($path ==""?"":"/").$f;
+
 			$req = "select * from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and state='' and path='".addslashes($path)."' and confirmed='Y'";
 			$req .= " order by name asc";
 			$this->res = $this->db->db_query($req);

@@ -278,7 +278,7 @@ function accountModify($item)
 			{
 			global $BAB_SESS_USERID, $BAB_SESS_EMAIL, $BAB_SESS_USER;
 			$this->fullname = bab_translate("User Name");
-			$this->account = bab_translate("Account");
+			$this->account = bab_translate("Account name");
 			$this->email = bab_translate("Email");
 			$this->password = bab_translate("Password");
 			$this->repassword = bab_translate("Retype Password");
