@@ -418,6 +418,7 @@ function listArchiveArticles($topics, $pos)
 				$arr = $this->db->db_fetch_array($this->resf);
 				$this->docurl = $GLOBALS['babUrlScript']."?tg=articles&idx=getf&topics=".$this->topics."&idf=".$arr['id'];
 				$this->docname = $arr['name'];
+				$this->docdesc = $arr['description'];
 				$i++;
 				return true;
 				}

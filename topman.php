@@ -185,7 +185,7 @@ function listArticles($id)
 			$this->archivehelp = bab_translate("Click on this image to archive selected articles");
 			$this->homepages = bab_translate("Customize home pages ( Registered and unregistered users )");
 			$this->datepublicationtxt = bab_translate("Publication date");
-			$this->datearchivingtxt = bab_translate("Archive date");
+			$this->datearchivingtxt = bab_translate("Archiving date");
 			$this->previewtxt = bab_translate("Preview");
 			$this->badmin = bab_isUserAdministrator();
 
