@@ -1,0 +1,124 @@
+/* CORE CSS SKIN */
+
+body {  
+	margin: 0;
+	padding: 0;
+	background-color: #fff;
+	}
+	
+body, td, th {
+	font-family: Verdana,Geneva,Arial,Helvetica,sans-serif;
+	font-size: .70em;
+	color: #000;
+}
+
+/* input */
+input { 
+	color:#000;
+	background-color:#fff;
+	border:#000 1px solid;
+	font-weight:bold;
+	}
+	
+ 
+/* general links */
+a:link, 
+a:visited {
+	color: #36f;
+	}
+a:hover {
+	color: red;
+	}
+
+
+.BabHeaderBackground {
+	background-color: #ccc;
+	}
+
+	
+.BabSloganFont { 
+	color: #FFFFFF; 
+	font-weight: bold;
+	font-size: 1.1em;
+	}
+
+a.BabCnxLink:Link,
+a.BabCnxLink:Visited {
+	color: #FFFFFF;  
+	font-weight: bolder;
+	font-size: 1.05em;
+	text-decoration:none;
+	}
+	
+a.BabCnxLink:Hover {
+	color:#CCCCCC;
+	}
+
+
+
+
+/**** SCRIPT FOR FORMATTING MESSAGES WYSIWYG ********************/
+
+.ButtonNormal {
+
+	BORDER-RIGHT: buttonface 1px solid; BORDER-TOP: buttonface 1px solid; 
+	BORDER-LEFT: buttonface 1px solid; BORDER-BOTTOM: buttonface 1px solid; 
+	BACKGROUND-color: #CCCCCC }
+
+.ButtonPressed {
+
+	BORDER-RIGHT: buttonhighlight 1px solid; BORDER-TOP: buttonshadow 1px solid; 
+	BORDER-LEFT: buttonshadow 1px solid; BORDER-BOTTOM: buttonhighlight 1px solid; 
+	BACKGROUND-color: #CCCCCC }
+
+.ButtonMouseOver {
+
+	BORDER-RIGHT: buttonshadow 1px solid; BORDER-TOP: buttonhighlight 1px solid; 
+	BORDER-LEFT: buttonhighlight 1px solid; BORDER-BOTTOM: buttonshadow 1px solid; 
+	BACKGROUND-color: #CCCCCC }
+
+.ButtonDisabled {
+
+	BORDER-RIGHT: buttonface 1px solid; BORDER-TOP: buttonface 1px solid; 
+	BORDER-LEFT: buttonface 1px solid; BORDER-BOTTOM: buttonface 1px solid; 
+	BACKGROUND-color: #CCCCCC }
+
+.Image {
+
+	WIDTH: 22px; HEIGHT: 22px }
+
+.Toolbar {
+
+	BORDER-RIGHT: buttonshadow 1px solid; BORDER-TOP: buttonhighlight 1px solid; 
+	BORDER-LEFT: buttonhighlight 1px solid; BORDER-BOTTOM: buttonshadow 1px solid; 
+	HEIGHT: 30px;background-color: #CCCCCC }
+
+.Divider {
+
+	BORDER-RIGHT: buttonhighlight 1px solid; BORDER-TOP: buttonshadow 1px solid; 
+	BORDER-LEFT: buttonshadow 1px solid; WIDTH: 2px; 
+	BORDER-BOTTOM: buttonhighlight 1px solid; HEIGHT: 24px;background-color: #CCCCCC }
+
+.Swatch {
+
+	BORDER-RIGHT: buttonshadow 1px solid; BORDER-TOP: buttonhighlight 1px solid; 
+	BORDER-LEFT: buttonhighlight 1px solid; WIDTH: 3px; 
+	BORDER-BOTTOM: buttonshadow 1px solid; HEIGHT: 24px;background-color: #CCCCCC }
+
+.Space {
+
+	WIDTH: 0px; HEIGHT: 24px;background-color: buttonface }
+
+.List {
+
+	background-color: #FFFFFF; color: #000000; FONT: 8px Verdana, Arial, sans-serif  }
+
+.Text {
+
+	FONT: 8pt Verdana, Arial, sans-serif }
+
+.Heading {
+
+	background-color: #FFFFFF; color: #000000 }
+
+/**** END Classes USED BY THE SCRIPT FOR FORMATTING MESSAGES WYSIWYG */

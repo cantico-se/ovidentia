@@ -442,42 +442,45 @@ window.focus();
 
 <!--#begin tableofcontents -->
 <table class="BabTopicsBackground" border="0" width="99%" cellpadding="2" cellspacing="0" align="center">
-<tr>
-<td colspan="2"><h3>{ faqname }</h3></td>
-</tr>
-<!--#in getnextchild -->
-<tr>
-<td width="1"><!--#if update --><!--#if burl --><a class="BabTopicsFooterLink" href="{ modifycurl }"><IMG src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="8" height="1" border="0" alt=""><img src="{ babSkinPath }images/Puces/edit.gif"  border="0" alt="{ modifytxt }" align="absmiddle"></a><!--#else burl --><!--#endif burl --><!--#else update --><!--#endif update --></td>
-<td width="99%">
-<table width="100%" border="0" cellpadding="0" cellspacing="0">
-<tr>
-<!--#in getnextpad -->
-<TD width="1"><IMG src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="12" height="1" border="0" alt=""></TD>
-<!--#endin getnextpad -->
-<TD width="1"><IMG src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="5" height="1" border="0" alt=""></TD>
-<td><h4><!--#if countq --><a href="{ subcaturl }">{ subcatname }</a><!--#else countq -->{ subcatname }<!--#endif countq --></h4></td>
-</tr>
-</table>
+<tr><td>
+	<h3>{ faqname }</h3>
+	<dl>
+	<!--#in getnextchild -->
+		<dt>
+			<table width="100%" border="0" cellpadding="0" cellspacing="0">
+				<tr>
+				<!--#in getnextpad -->
+					<td width="12"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="12" height="1" border="0" alt=""></td>
+				<!--#endin getnextpad -->
+					<td>
+						<h4>
+							<!--#if update --><!--#if burl --><a class="BabTopicsFooterLink" href="{ modifycurl }"><IMG src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="8" height="1" border="0" alt=""><img src="{ babSkinPath }images/Puces/edit.gif"  border="0" alt="{ modifytxt }" align="absmiddle"></a><!--#else burl --><!--#endif burl --><!--#else update --><!--#endif update -->&nbsp;&nbsp;<!--#if countq --><a href="{ subcaturl }">{ subcatname }</a><!--#else countq -->{ subcatname }<!--#endif countq -->
+						</h4>
+					</td>
+				</tr>
+			</table>
+		</dt>
+
+		<!--#in getnextquestion -->
+		<dd>
+			<table width="100%" border="0" cellpadding="0" cellspacing="0">
+				<tr>
+					<!--#in getnextpad -->
+					<td width="12"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="12" height="1" border="0" alt=""></td>
+					<!--#endin getnextpad -->
+					<td>
+						<h5>
+							<!--#if update --><a class="BabTopicsFooterLink" href="{ modifyqurl }"><IMG src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="8" height="1" border="0" alt=""><img src="{ babSkinPath }images/Puces/edit.gif"  border="0" alt="{ modifytxt }" align="absmiddle"></a><!--#else update --><!--#endif update -->&nbsp;&nbsp;<a href="{ questionurl }#{ idq }">{ questionname }</a>
+						</h5>
+					</td>
+				</tr>
+			</table>
+		</dd>
+		<!--#endin getnextquestion -->
+	<!--#endin getnextchild -->
+	</dl>
 </td>
 </tr>
-<!--#in getnextquestion -->
-<tr>
-<td width="1"><!--#if update --><a class="BabTopicsFooterLink" href="{ modifyqurl }"><IMG src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="8" height="1" border="0" alt=""><img src="{ babSkinPath }images/Puces/edit.gif"  border="0" alt="{ modifytxt }" align="absmiddle"></a><!--#else update --><!--#endif update --></td>
-<td width="99%">
-<table width="100%" border="0" cellpadding="0" cellspacing="0">
-<tr>
-<TD width="1"><IMG src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="12" height="1" border="0" alt=""></TD>
-<!--#in getnextpad -->
-<TD width="1"><IMG src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="12" height="1" border="0" alt=""></TD>
-<!--#endin getnextpad -->
-<TD width="1"><IMG src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="5" height="1" border="0" alt=""></TD>
-<td><a href="{ questionurl }#{ idq }">{ questionname }</a></td>
-</tr>
-</table>
-</td>
-</tr>
-<!--#endin getnextquestion -->
-<!--#endin getnextchild -->
 </table>
 <!--#end tableofcontents -->
 

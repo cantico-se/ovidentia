@@ -43,77 +43,66 @@ window.focus();
 <TITLE>{ babSiteName }</TITLE>
 { babMeta }
 { babCss }
+
 <script type="text/javascript">
 <!--
 window.focus();
 //-->
 </script>
 <BODY>
-<br>
 <a name="top"></a>
 <table class="BabTopicsBackground" border="0" width="99%" cellpadding="2" cellspacing="0" align="center">
 	<tr>
-	<td colspan="2"><h3>{ faqname }</h3></td>
-	</tr>
+	<td>
+	<h3>{ faqname }</h3>
+
+	<dl>
 	<!--#in getnextchild -->
-	<tr>
-		<td width="1"><IMG src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="1" height="1" border="0" alt=""></td>
-		<td width="99%">
-			<table width="100%" border="0" cellpadding="0" cellspacing="0">
-			<tr>
+	<dt>
+		<table width="100%" border="0" cellpadding="0" cellspacing="0">
+		<tr>
 			<!--#in getnextpad -->
-			<TD width="1"><IMG src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="12" height="1" border="0" alt=""></TD>
+			<td width="12"><IMG src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="12" height="1" border="0" alt=""></td>
 			<!--#endin getnextpad -->
-			<TD width="1"><IMG src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="5" height="1" border="0" alt=""></TD>
+			
 			<td><h4>{ subcatname }</h4></td>
-			</tr>
-			</table>
-		</td>
-	</tr>
+		</tr>
+		</table>
+	</dt>
 	<!--#in getnextquestion -->
-<tr>
-<td width="1"><IMG src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="1" height="1" border="0" alt=""></td>
-<td width="99%">
-<table width="100%" border="0" cellpadding="0" cellspacing="0">
-<tr>
-<TD width="1"><IMG src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="12" height="1" border="0" alt=""></TD>
-<!--#in getnextpad -->
-<TD width="1"><IMG src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="12" height="1" border="0" alt=""></TD>
-<!--#endin getnextpad -->
-<TD width="1"><IMG src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="5" height="1" border="0" alt=""></TD>
-<td><a href="#{ idq }">{ questionname }</a></td>
-</tr>
-</table>
+	<dd>
+		<table width="100%" border="0" cellpadding="0" cellspacing="0">
+		<tr>
+			<!--#in getnextpad -->
+			<td width="12"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="12" height="1" border="0" alt=""></td>
+			<!--#endin getnextpad -->
+			<td><h5><a href="#{ idq }">{ questionname }</a></h5></td>
+		</tr>
+		</table>
+	</dd>
+	<!--#endin getnextquestion -->
+	<!--#endin getnextchild -->
+	</dl>
+
+<hr />
+
+	
+	<!--#in getnextchild -->
+	
+	<h4>{ subcatname }</h4>
+	<dl>
+	<!--#in getnextquestion -->
+	<dt><h5>{ questionname }</h5><a name="{ idq }"></a></dt>
+	<dd>
+		{ response }
+		<div align="right"><a href="#top">{ return }</a></div>
+	</dd>
+	<!--#endin getnextquestion -->
+	</dl>
+	<!--#endin getnextchild -->
+
 </td>
 </tr>
-<!--#endin getnextquestion -->
-<!--#endin getnextchild -->
-</table><br>
-
-
-<table class="BabTopicsBackground" border="0" width="99%" cellpadding="2" cellspacing="0" align="center">
-<!--#in getnextchild -->
-<tr>
-<td>
-<A name="top"></A>
-<h3>{ subcatname }</h3>
-<!--#in getnextquestion -->
-<TABLE width="100%">
-<TR>
-<TD><h5>{ questionname }</h5><a name="{ idq }"></a></TD>
-</TR>
-<TR>
-<TD>{ response }</TD>
-</TR>
-<TR>
-<TD align="right" valign="middle"><a href="#top">{ return }</a></TD>
-</TR>
-</TABLE>
-<!--#endin getnextquestion -->
-</td>
-</tr>
-<!--#endin getnextchild -->
 </table>
-
 </BODY>
 <!--#end contents -->
