@@ -747,4 +747,17 @@
 <string id="Sending error( Mail sending disabled )">Sendefehler( Mailversand deaktiviert )</string>
 <string id="Available domains list">Liste verf&uuml;gbarer Dom&auml;nen</string>
 <string id="Shared">Gemeinsam</string>
+<string id="Ovidentia Administrator">Ovidentia Administrator</string>
+<string id="Max image size ( Kb )">Max image size ( Kb )</string>
+<string id="Index of questions">Index of questions</string>
+<string id="comments-Title">comments-Title</string>
+<string id="comments-Comment">comments-Comment</string>
+<string id="comments - ERROR: You must provide a title">comments - ERROR: You must provide a title</string>
+<string id="comments - ERROR: You must provide a comment">comments - ERROR: You must provide a comment</string>
+<string id="View categories">View categories</string>
+<string id="ERROR: You must provide a head for your article">ERROR: You must provide a head for your article</string>
+<string id="Today, there are no article">Today, there are no article</string>
+<string id="Image size must not exceed">Image size must not exceed</string>
+<string id="Invalid image extension">Invalid image extension</string>
+<string id="Alignment">Alignment</string>
 </de>

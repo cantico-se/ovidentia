@@ -747,4 +747,22 @@
 <string id="Sending error( Mail sending disabled )">Erreur d'envoi ( L'envoi d'email est désactivé )</string>
 <string id="Available domains list">Liste des domaines disponibles</string>
 <string id="Shared">Partagé</string>
+<string id="Mail Webmaster">Ecrire au Webmaster</string>
+<string id="Tâches">Tâches</string>
+<string id="Mailto">Mailto</string>
+<string id="There is no contact">Il n'y a pas de contact</string>
+<string id="This section lists month days">Section du mois courant</string>
+<string id="This section lists topics">Section de la liste des catégories</string>
+<string id="This section lists forums">Section de la liste des forums</string>
+<string id="This section is for User">Section utilisateur</string>
+<string id="Image size must not exceed">La taille de l'image ne doit pas excéder</string>
+<string id="Invalid image extension">L'extension du fichier est invalide</string>
+<string id="ERROR: You must provide a head for your article">ERREUR: L'introduction de l'article ne doit pas être vide</string>
+<string id="News">Nouvelles</string>
+<string id="Today, there are no article">Aujourd'hui, il n'y a pas d'articles</string>
+<string id="Ovidentia Administrator">Administrateur d'Ovidentia</string>
+<string id="Max image size ( Kb )">Taille maximale d'une image ( Ko )</string>
+<string id="Index of questions">Liste des questions</string>
+<string id="comments - ERROR: You must provide a title">ERREUR: vous devez fournir un titre à votre commentaire</string>
+<string id="comments - ERROR: You must provide a comment">ERREUR: vous devez fournir un commentaire</string>
 </fr>
