@@ -300,60 +300,48 @@ function createMail($accid, $to, $cc, $bcc, $subject, $message, $files, $files_n
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where id='".$arr['domain']."'";
-		$res = $db->db_query($req);
-		if( $res && $db->db_num_rows($res) > 0)
+		addAddress($to, "mailTo", $mail);
+		$mail->mailFrom($arr['email'], $arr['name']);
+		if( bab_isMagicQuotesGpcOn())
 			{
-			$arr2 = $db->db_fetch_array($res);
-			if( !empty($arr2['outserver']))
-				$mail->setSmtpServer($arr2['outserver'], $arr2['outport']);
-			addAddress($to, "mailTo", $mail);
-			$mail->mailFrom($arr['email'], $arr['name']);
-			if( bab_isMagicQuotesGpcOn())
+			$message = stripslashes($message);
+			$subject = stripslashes($subject);
+			}
+		if( $sigid != 0)
+			{
+			$req = "select * from ".BAB_MAIL_SIGNATURES_TBL." where id='".$sigid."' and owner='".$BAB_SESS_USERID."'";
+			$res = $db->db_query($req);
+			if( $res && $db->db_num_rows($res) > 0)
 				{
-				$message = stripslashes($message);
-				$subject = stripslashes($subject);
-				}
-            if( $sigid != 0)
-                {
-                $req = "select * from ".BAB_MAIL_SIGNATURES_TBL." where id='".$sigid."' and owner='".$BAB_SESS_USERID."'";
-                $res = $db->db_query($req);
-                if( $res && $db->db_num_rows($res) > 0)
-                    {
-                    $arr = $db->db_fetch_array($res);
-                    $message .= $arr['text'];
-                    }
-
-                }
-			$mail->mailBody($message, $format);
-			$mail->mailSubject($subject);
-			if(!empty($cc))
-				{
-				addAddress($cc, "mailCc", $mail);
+				$arr = $db->db_fetch_array($res);
+				$message .= $arr['text'];
 				}
 
-			if(!empty($bcc))
-				{
-				addAddress($bcc, "mailBcc", $mail);
-				}
+			}
+		$mail->mailBody($message, $format);
+		$mail->mailSubject($subject);
+		if(!empty($cc))
+			{
+			addAddress($cc, "mailCc", $mail);
+			}
 
-			for($i=0; $i < count($files); $i++)
-				if( !empty($files_name[$i]))
-					$mail->mailFileAttach($files[$i], $files_name[$i], $files_type[$i]);
-			if(!$mail->send())
-				{
-				$babBody->msgerror = bab_translate("Error occured when sending email !!");
-				}
-			else
-				{
-				return true;
-				Header("Location: ". $GLOBALS['babUrlScript']."?tg=inbox&idx=list&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse);
-				}
+		if(!empty($bcc))
+			{
+			addAddress($bcc, "mailBcc", $mail);
+			}
+
+		for($i=0; $i < count($files); $i++)
+			if( !empty($files_name[$i]))
+				$mail->mailFileAttach($files[$i], $files_name[$i], $files_type[$i]);
+		if(!$mail->send())
+			{
+			$babBody->msgerror = bab_translate("Error occured when sending email !!");
+			return false;
 			}
 		else
 			{
-			$babBody->msgerror = bab_translate("Invalid mail domain !!");
-			return false;
+			return true;
+			Header("Location: ". $GLOBALS['babUrlScript']."?tg=inbox&idx=list&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse);
 			}
 		}
 	else
