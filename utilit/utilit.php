@@ -22,6 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
+include_once $babInstallPath."utilit/addonapi.php";
 include_once $babInstallPath."utilit/template.php";
 include_once $babInstallPath."utilit/userincl.php";
 include_once $babInstallPath."utilit/mailincl.php";
@@ -65,78 +66,6 @@ function bab_decrypt($txt,$key)
 		}
 	return '';
 	}
-
-function bab_mkdir($path, $mode='')
-{
-	if( substr($path, -1) == "/" )
-		{
-		$path = substr($path, 0, -1);
-		}
-	$umask = umask($GLOBALS['babUmaskMode']);
-	if( $mode === '' )
-	{
-		$mode = $GLOBALS['babMkdirMode'];
-	}
-	$res = mkdir($path, $mode);
-	umask($umask);
-	return $res;
-}
-
-function bab_formatDate($format, $time)
-{
-	global $babDays, $babMonths, $babShortMonths;
-	$txt = $format;
-	if(preg_match_all("/%(.)/", $format, $m))
-		{
-		for( $i = 0; $i< count($m[1]); $i++)
-			{
-			switch($m[1][$i])
-				{
-				case 'd': /* A short textual representation of a day, three letters */
-					$val = substr($babDays[date("w", $time)], 0 , 3);
-					break;
-				case 'D': /* day */
-					$val = $babDays[date("w", $time)];
-					break;
-				case 'j': /* Day of the month with leading zeros */ 
-					$val = date("d", $time);
-					break;
-				case 'm': /* A short textual representation of a month, three letters */
-					$val = $babShortMonths[date("n", $time)];
-					break;
-				case 'M': /* Month */
-					$val = $babMonths[date("n", $time)];
-					break;
-				case 'n': /* Numeric representation of a month, with leading zeros */
-					$val = date("m", $time);
-					break;
-				case 'Y': /* A full numeric representation of a year, 4 digits */
-					$val = date("Y", $time);
-					break;
-				case 'y': /* A two digit representation of a year */
-					$val = date("y", $time);
-					break;
-				case 'H': /* 24-hour format of an hour with leading zeros */
-					$val = date("H", $time);
-					break;
-				case 'i': /* Minutes with leading zeros */
-					$val = date("i", $time);
-					break;
-				case 'S': /* user short date  */
-					$val = bab_shortDate($time, false);
-					break;
-				case 'L': /* user long date  */
-					$val = bab_longDate($time, false);
-					break;
-				case 'T': /* user time format  */
-					$val = bab_time($time);
-					break;
-				}
-			$txt = preg_replace("/".preg_quote($m[0][$i])."/", $val, $txt);
-			}
-		}
-	return $txt;
-}
 
 function bab_formatAuthor($format, $id)
 {
@@ -209,30 +138,6 @@ function bab_getCssUrl()
 	return $filepath;
 	}
 
-function bab_isMagicQuotesGpcOn()
-	{
-	$mqg = ini_get("magic_quotes_gpc");
-	if( $mqg == 0 || strtolower($mqg) == "off" || !get_cfg_var("magic_quotes_gpc"))
-		return false;
-	else
-		return true;
-	}
-
-function bab_mktime($time)
-	{
-	$arr = explode(" ", $time);
-	$arr0 = explode("-", $arr[0]);
-	if (isset($arr[1]))
-		{
-		$arr1 = explode(":", $arr[1]);
-		return mktime( $arr1[0],$arr1[1],$arr1[2],$arr0[1],$arr0[2],$arr0[0]);
-		}
-	else
-		{
-		return mktime( 0,0,0,$arr0[1],$arr0[2],$arr0[0]);
-		}
-	}
-
 function bab_getDateFormat($format)
 {
 	$format = preg_replace("/(?<!M)M(?!M)/i", "$1%n$2", $format);
@@ -281,83 +186,6 @@ function bab_getTimeFormat($format)
 	return $format;
 }
 
-function bab_strftime($time, $hour=true)
-	{
-	return bab_longDate($time, $hour);
-	}
-
-function bab_shortDate($time, $hour=true)
-	{
-	if( $time < 0)
-		return "";
-
-	if( !$hour )
-		{
-		return bab_formatDate($GLOBALS['babShortDateFormat'], $time );
-		}
-	else
-		{
-		return bab_formatDate($GLOBALS['babShortDateFormat'], $time )." ".date($GLOBALS['babTimeFormat'], $time);
-		}
-	}
-
-function bab_longDate($time, $hour=true)
-	{
-	if( $time < 0)
-		return "";
-
-	if( !$hour )
-		{
-		return bab_formatDate($GLOBALS['babLongDateFormat'], $time );
-		}
-	else
-		{
-		return bab_formatDate($GLOBALS['babLongDateFormat'], $time )." ".date($GLOBALS['babTimeFormat'], $time);
-		}
-	}
-
-function bab_time($time)
-	{
-	if( $time < 0)
-		return "";
-	return date($GLOBALS['babTimeFormat'], $time);
-	}
-
-function bab_getAvailableLanguages()
-	{
-	$langs = array();
-	$h = opendir($GLOBALS['babInstallPath']."lang/"); 
-	while ( $file = readdir($h))
-		{ 
-		if ($file != "." && $file != "..")
-			{
-			if( eregi("lang-([^.]*)", $file, $regs))
-				{
-				if( $file == "lang-".$regs[1].".xml")
-					$langs[] = $regs[1]; 
-				}
-			} 
-		}
-	closedir($h);
-	return $langs;
-	}
-
-function bab_printTemplate( &$class, $file, $section="")
-	{
-	global $babInstallPath, $babSkinPath;
-	$filepath = "skins/".$GLOBALS['babSkin']."/templates/". $file;
-	if( !file_exists( $filepath ) )
-		{
-		$filepath = $babSkinPath."templates/". $file;
-		if( !file_exists( $filepath ) )
-			{
-			$filepath = $babInstallPath."skins/ovidentia/templates/". $file;
-			}
-		}
-	$tpl = new babTemplate();
-	return $tpl->printTemplate($class,$filepath, $section);
-	}
-
 function bab_printOvmlTemplate( $file, $args=array())
 	{
 	global $babInstallPath, $babSkinPath, $babOvmlPath;
@@ -381,66 +209,6 @@ function bab_printOvmlTemplate( $file, $args=array())
 	include_once $GLOBALS['babInstallPath']."utilit/omlincl.php";
 	$tpl = new babOvTemplate($args);
 	return $tpl->printout(implode("", file($filepath)));
-	}
-
-function bab_composeUserName( $F, $L)
-{
-global $babBody;
-return trim(sprintf("%s %s", ${$babBody->nameorder[0]}, ${$babBody->nameorder[1]}));
-}
-
-function bab_browserOS()
-	{
-	global $HTTP_USER_AGENT;
-	if ( stristr($HTTP_USER_AGENT, "windows"))
-		{
-	 	return "windows";
-		}
-	if ( stristr($HTTP_USER_AGENT, "mac"))
-		{
-		return "macos";
-		}
-	if ( stristr($HTTP_USER_AGENT, "linux"))
-		{
-		return "linux";
-		}
-	return "";
-	}
-
-function bab_browserAgent()
-	{
-	global $HTTP_USER_AGENT;
-	if ( stristr($HTTP_USER_AGENT, "konqueror"))
-		{
-		return "konqueror";
-		}
-	if( stristr($HTTP_USER_AGENT, "opera"))
-		{
-		return "opera";
-		}
-	if( stristr($HTTP_USER_AGENT, "msie"))
-		{
-		return "msie";
-		}
-	if( stristr($HTTP_USER_AGENT, "mozilla"))
-		{
-		if(stristr($HTTP_USER_AGENT, "gecko"))
-			return "nn6";
-		else
-			return "nn4";
-		}
-	return "";
-	}
-
-function bab_browserVersion()
-	{
-	global $HTTP_USER_AGENT;
-	$tab = explode(";", $HTTP_USER_AGENT);
-	if( ereg("([^(]*)([0-9].[0-9]{1,2})",$tab[1],$res))
-		{
-		return trim($res[2]);
-		}
-	return 0;
 	}
 
 function babLoadLanguage($lang, $folder, &$arr)
@@ -546,91 +314,6 @@ function babLoadLanguage($lang, $folder, &$arr)
 	}
 
 
-function bab_translate($str, $folder = "", $lang="")
-{
-	static $babLA = array();
-
-	if( empty($lang))
-		$lang = $GLOBALS['babLanguage'];
-
-	if( empty($lang) || empty($str))
-		return $str;
-
-	if( !empty($folder))
-		$tag = $folder."/".$lang;
-	else
-		$tag = "bab/".$lang;
-
-	if( !isset($babLA[$tag]))
-		babLoadLanguage($lang, $folder, $babLA[$tag]);
-
-	if(isset($babLA[$tag][$str]))
-		{
-			return $babLA[$tag][$str];
-		}
-	else
-		{
-			return $str;
-		}
-}
-
-function bab_translate_old($str, $folder = "")
-{
-	static $langcontent;
-
-	if( empty($GLOBALS['babLanguage']) || empty($str))
-		return $str;
-
-	if( empty($folder))
-		{
-		$tmp = &$langcontent;
-		$filename = "lang/lang-".$GLOBALS['babLanguage'].".xml";
-		if (!file_exists($filename))
-			$filename = $GLOBALS['babInstallPath']."lang/lang-".$GLOBALS['babLanguage'].".xml";
-		}
-	else
-		{
-		$tmp = "";
-		$filename = "lang/addons/".$folder."/lang-".$GLOBALS['babLanguage'].".xml";
-		if (!file_exists($filename))
-			$filename = $GLOBALS['babInstallPath']."lang/addons/".$folder."/lang-".$GLOBALS['babLanguage'].".xml";
-		}
-
-	if( empty($tmp))
-		{
-		clearstatcache();
-		if( !file_exists($filename))
-			{
-			if( !empty($folder) && !is_dir($GLOBALS['babInstallPath']."lang/addons/".$folder))
-				bab_mkdir($GLOBALS['babInstallPath']."lang/addons/".$folder, $GLOBALS['babMkdirMode']);
-			$file = @fopen($filename, "w");
-			if( $file )
-				fclose($file);
-			}
-		else
-			{
-			$file = @fopen($filename, "r");
-			$tmp = fread($file, filesize($filename));
-			fclose($file);
-			}
-		}
-	if( preg_match("/<".$GLOBALS['babLanguage'].">(.*)<string\s+id=\"".preg_quote($str)."\">(.*?)<\/string>(.*)<\/".$GLOBALS['babLanguage'].">/s", $tmp, $m))
-		return $m[2];
-	else
-		{
-		$file = @fopen($filename, "w");
-		if( $file )
-			{
-			preg_match("/<".$GLOBALS['babLanguage'].">(.*)<\/".$GLOBALS['babLanguage'].">/s", $tmp, $m);
-			$tmp = "<".$GLOBALS['babLanguage'].">".$m[1];
-			$tmp .= "<string id=\"".$str."\">".$str."</string>\r\n";
-			$tmp .= "</".$GLOBALS['babLanguage'].">";
-			fputs($file, $tmp);
-			fclose($file);
-			}
-		}
-	return $str;
-}
 
 function bab_callAddonsFunction($func)
 {
