@@ -6,6 +6,7 @@
  ***********************************************************************/
 include $babInstallPath."admin/register.php";
 include $babInstallPath."utilit/grpincl.php";
+include $babInstallPath."utilit/fileincl.php";
 
 
 function modifyUser($id)
