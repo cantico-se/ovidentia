@@ -105,7 +105,7 @@ include_once "base.php";
 include_once $babInstallPath."utilit/defines.php";
 include_once $babInstallPath."utilit/dbutil.php";
 $babDB = new babDatabase();
-if( $tg != 'version' )
+if( !isset($tg) || $tg != 'version' )
 {
 include_once $babInstallPath."utilit/statincl.php";
 }
