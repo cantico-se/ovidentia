@@ -486,7 +486,10 @@ function bab_getUserGroups($id = "")
 function bab_replace( $txt )
 {
 	$db = $GLOBALS['babDB'];
-	$reg = "/\\\$ARTICLE\((.*?)\)/";
+	$artarray = array("ARTICLEPOPUP", "ARTICLE");
+	for( $i = 0; $i < count($artarray); $i++)
+	{
+	$reg = "/\\\$".$artarray[$i]."\((.*?)\)/";
 	if( preg_match_all($reg, $txt, $m))
 		{
 		for ($k = 0; $k < count($m[1]); $k++ )
@@ -545,13 +548,19 @@ function bab_replace( $txt )
 			if( $res && $db->db_num_rows($res) > 0)
 				{
 				$arr = $db->db_fetch_array($res);
-				if(bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $arr['id_topic'])) 
-					$txt = preg_replace("/\\\$ARTICLE\(".preg_quote($m[1][$k])."\)/", "<a href=\"javascript:{var d=window.open('".$GLOBALS['babUrlScript']."?tg=topic&idx=viewa&item=".$arr['id']."', 'Article', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');}\">".$arr['title']."</a>", $txt);
+				if(bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $arr['id_topic']))
+					{
+					if( $i == 0 )
+						$txt = preg_replace("/\\\$".$artarray[$i]."\(".preg_quote($m[1][$k])."\)/", "<a href=\"javascript:Start('".$GLOBALS['babUrlScript']."?tg=articles&idx=viewa&article=".$arr['id']."', 'Article', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');\">".$arr['title']."</a>", $txt);
+					else
+						$txt = preg_replace("/\\\$".$artarray[$i]."\(".preg_quote($m[1][$k])."\)/", "<a href=\"".$GLOBALS['babUrlScript']."?tg=articles&idx=More&article=".$arr['id']."&topics=".$arr['id_topic']."\">".$arr['title']."</a>", $txt);
+					}
 				else
-					$txt = preg_replace("/\\\$ARTICLE\(".preg_quote($m[1][$k])."\)/", $arr['title'], $txt);
+					$txt = preg_replace("/\\\$".$artarray[$i]."\(".preg_quote($m[1][$k])."\)/", $arr['title'], $txt);
 				}
 			}
 		}
+	}
 
 	$reg = "/\\\$CONTACT\((.*?),(.*?)\)/";
 	if( preg_match_all($reg, $txt, $m))
@@ -563,7 +572,7 @@ function bab_replace( $txt )
 			if( $res && $db->db_num_rows($res) > 0)
 				{
 				$arr = $db->db_fetch_array($res);
-				$txt = preg_replace("/\\\$CONTACT\(".preg_quote($m[1][$k]).",".preg_quote($m[2][$k])."\)/", "<a href=\"javascript:{var d=window.open('".$GLOBALS['babUrlScript']."?tg=contact&idx=modify&item=".$arr['id']."&bliste=0', 'Contact', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');}\">".$m[1][$k]." ".$m[2][$k]."</a>", $txt);
+				$txt = preg_replace("/\\\$CONTACT\(".preg_quote($m[1][$k]).",".preg_quote($m[2][$k])."\)/", "<a href=\"javascript:Start('".$GLOBALS['babUrlScript']."?tg=contact&idx=modify&item=".$arr['id']."&bliste=0', 'Contact', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');\">".$m[1][$k]." ".$m[2][$k]."</a>", $txt);
 				}
 			else
 				$txt = preg_replace("/\\\$CONTACT\(".preg_quote($m[1][$k]).",".preg_quote($m[2][$k])."\)/", $m[1][$k]." ".$m[2][$k], $txt);
@@ -588,7 +597,7 @@ function bab_replace( $txt )
 					if( $res && $db->db_num_rows($res) > 0)
 						{
 						$arr = $db->db_fetch_array($res);
-						$txt = preg_replace("/\\\$FAQ\(".preg_quote($m[1][$k]).",".preg_quote($m[2][$k])."\)/", "<a href=\"javascript:{var d=window.open('".$GLOBALS['babUrlScript']."?tg=faq&idx=viewpq&item=".$arr['id']."', 'Faq', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');}\">".$m[2][$k]."</a>", $txt);
+						$txt = preg_replace("/\\\$FAQ\(".preg_quote($m[1][$k]).",".preg_quote($m[2][$k])."\)/", "<a href=\"javascript:Start('".$GLOBALS['babUrlScript']."?tg=faq&idx=viewpq&item=".$arr['id']."', 'Faq', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');\">".$m[2][$k]."</a>", $txt);
 						$repl = true;
 						}
 					}
