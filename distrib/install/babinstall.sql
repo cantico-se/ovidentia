@@ -808,11 +808,11 @@ CREATE TABLE bab_addons_groups (
 );
 
 CREATE TABLE bab_ini (
-	option char(255) NOT NULL default '',
-	value char(255) NOT NULL default '',
-	UNIQUE KEY option (option)
+	foption char(255) NOT NULL default '',
+	fvalue char(255) NOT NULL default '',
+	UNIQUE KEY foption (foption)
 );
 
-INSERT INTO bab_ini VALUES ('ver_major', '3')");
-INSERT INTO bab_ini VALUES ('ver_minor', '3')");
-INSERT INTO bab_ini VALUES ('ver_build', '1')");
+INSERT INTO bab_ini VALUES ('ver_major', '3');
+INSERT INTO bab_ini VALUES ('ver_minor', '3');
+INSERT INTO bab_ini VALUES ('ver_build', '1');
