@@ -26,6 +26,9 @@ CREATE TABLE bab_articles (
   id_modifiedby int(11) unsigned NOT NULL default '0',
   PRIMARY KEY  (id),
   KEY id_topic (id_topic),
+  KEY id_author (id_author),
+  KEY date_publication (date_publication),
+  KEY date_archiving (date_archiving),
   KEY date (date)
 );
 
@@ -51,6 +54,7 @@ CREATE TABLE bab_comments (
    PRIMARY KEY (id),
    KEY id_article (id_article),
    KEY id_topic (id_topic),
+   KEY idfai (idfai),
    KEY date (date)
 );
 
@@ -112,7 +116,6 @@ CREATE TABLE bab_forums (
    id smallint(6) unsigned NOT NULL auto_increment,
    name varchar(30) NOT NULL,
    description varchar(100) NOT NULL,
-   moderator int(11) unsigned DEFAULT '0' NOT NULL,
    moderation enum('N','Y') DEFAULT 'N' NOT NULL,
    notification enum('N','Y') DEFAULT 'N' NOT NULL,
    display int(11) unsigned DEFAULT '0' NOT NULL,
@@ -1517,10 +1520,10 @@ INSERT INTO bab_org_charts VALUES (1, 'Ovidentia', 'Ovidentia organizational cha
 #
 
 CREATE TABLE bab_ocupdate_groups (
-  id tinyint(10) NOT NULL auto_increment,
-  id_object tinyint(10) NOT NULL default '0',
-  id_group tinyint(10) NOT NULL default '0',
-  UNIQUE KEY id (id),
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
   KEY id_object (id_object),
   KEY id_group (id_group)
 );
@@ -1531,10 +1534,10 @@ CREATE TABLE bab_ocupdate_groups (
 #
 
 CREATE TABLE bab_ocview_groups (
-  id tinyint(10) NOT NULL auto_increment,
-  id_object tinyint(10) NOT NULL default '0',
-  id_group tinyint(10) NOT NULL default '0',
-  UNIQUE KEY id (id),
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
   KEY id_object (id_object),
   KEY id_group (id_group)
 );
@@ -1571,6 +1574,7 @@ CREATE TABLE bab_oc_roles (
   cardinality enum('N','Y') NOT NULL default 'N',
   PRIMARY KEY  (id),
   KEY id_oc (id_oc),
+  KEY type (type),
   KEY id_entity (id_entity)
 );
 
@@ -1645,14 +1649,14 @@ CREATE TABLE bab_faq_trees (
 # Structure de la table `bab_ldap_sites_fields`
 #
 
-CREATE TABLE `bab_ldap_sites_fields` (
-  `id` int(11) unsigned NOT NULL auto_increment,
-  `name` varchar(255) NOT NULL default '',
-  `x_name` varchar(255) NOT NULL default '',
-  `id_site` int(11) unsigned NOT NULL default '0',
-  PRIMARY KEY  (`id`),
-  KEY `name` (`name`),
-  KEY `id_site` (`id_site`)
+CREATE TABLE bab_ldap_sites_fields (
+  id int(11) unsigned NOT NULL auto_increment,
+  name varchar(255) NOT NULL default '',
+  x_name varchar(255) NOT NULL default '',
+  id_site int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY name (name),
+  KEY id_site (id_site)
 );
 
 

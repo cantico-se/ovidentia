@@ -2786,6 +2786,18 @@ $db->db_query("ALTER TABLE ".BAB_OC_ROLES_USERS_TBL." ADD INDEX ( id_role )");
 $db->db_query("ALTER TABLE ".BAB_OC_ROLES_USERS_TBL." ADD INDEX ( id_user )");
 $db->db_query("ALTER TABLE ".BAB_OC_ROLES_USERS_TBL." ADD INDEX ( isprimary )");
 
+$db->db_query("ALTER TABLE ".BAB_OC_ROLES_TBL." ADD INDEX ( type )");
+
+$db->db_query("ALTER TABLE ".BAB_OCVIEW_GROUPS_TBL." CHANGE id id INT( 11 ) UNSIGNED NOT NULL AUTO_INCREMENT");
+$db->db_query("ALTER TABLE ".BAB_OCVIEW_GROUPS_TBL." CHANGE id_object id_object INT( 11 ) UNSIGNED DEFAULT '0' NOT NULL");
+$db->db_query("ALTER TABLE ".BAB_OCVIEW_GROUPS_TBL." CHANGE id_group id_group INT( 11 ) UNSIGNED DEFAULT '0' NOT NULL");
+$db->db_query("ALTER TABLE ".BAB_OCVIEW_GROUPS_TBL." DROP INDEX id , ADD PRIMARY KEY ( id )");
+
+$db->db_query("ALTER TABLE ".BAB_OCUPDATE_GROUPS_TBL." CHANGE id id INT( 11 ) UNSIGNED NOT NULL AUTO_INCREMENT");
+$db->db_query("ALTER TABLE ".BAB_OCUPDATE_GROUPS_TBL." CHANGE id_object id_object INT( 11 ) UNSIGNED DEFAULT '0' NOT NULL");
+$db->db_query("ALTER TABLE ".BAB_OCUPDATE_GROUPS_TBL." CHANGE id_group id_group INT( 11 ) UNSIGNED DEFAULT '0' NOT NULL");
+$db->db_query("ALTER TABLE ".BAB_OCUPDATE_GROUPS_TBL." DROP INDEX id , ADD PRIMARY KEY ( id )");
+
 $req = "CREATE TABLE ".BAB_ART_DRAFTS_TBL." (";
 $req .= "id int(11) unsigned NOT NULL auto_increment,";
 $req .= "id_author int(11) unsigned NOT NULL default '0',";
@@ -3063,6 +3075,10 @@ if( !$res)
 	return $ret;
 	}
 
+$db->db_query("ALTER TABLE ".BAB_ARTICLES_TBL." ADD INDEX ( id_author )");
+$db->db_query("ALTER TABLE ".BAB_ARTICLES_TBL." ADD INDEX ( date_publication )");
+$db->db_query("ALTER TABLE ".BAB_ARTICLES_TBL." ADD INDEX ( date_archiving )");
+
 $res = $db->db_query("select * from ".BAB_ARTICLES_TBL." where idfai!='0' and confirmed='N'");
 if( $res && $db->db_num_rows($res) > 0 )
 	{
@@ -3084,6 +3100,9 @@ $db->db_query("update ".BAB_ARTICLES_TBL." set id_modifiedby=id_author");
 
 $db->db_query("ALTER TABLE ".BAB_ARTICLES_TBL." DROP confirmed");
 $db->db_query("ALTER TABLE ".BAB_ARTICLES_TBL." DROP idfai");
+
+$db->db_query("ALTER TABLE ".BAB_COMMENTS_TBL." ADD INDEX ( idfai )");
+
 
 $req = "CREATE TABLE ".BAB_FORUMSMAN_GROUPS_TBL." (";
 $req .= "id int(11) unsigned NOT NULL auto_increment,";
