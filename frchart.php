@@ -798,12 +798,12 @@ function displayUsersList($ocid, $oeid, $update, $pos, $xf, $q)
 
 
 
-function browseRoles($ocid, $oeid, $role, $type, $vpos, $update)
+function browseRoles($ocid, $oeid, $role, $swhat, $word, $type, $vpos, $update)
 	{
 	global $babBody;
 	class temp
 		{
-		function temp($ocid, $oeid, $role, $type, $vpos, $update)
+		function temp($ocid, $oeid, $role, $swhat, $word, $type, $vpos, $update)
 			{
 			global $babBody, $babDB;
 			$this->ocid = $ocid;
@@ -818,6 +818,8 @@ function browseRoles($ocid, $oeid, $role, $type, $vpos, $update)
 			$this->usernametxt = bab_translate("Fullname");
 			$this->provided = bab_translate("Provided role");
 			$this->notprovided = bab_translate("Vacant role");
+			$this->searchtxt = bab_translate("Search");
+			$this->alltxt = bab_translate("All");
 			$this->topurl = "";
 			$this->bottomurl = "";
 			$this->nexturl = "";
@@ -860,6 +862,35 @@ function browseRoles($ocid, $oeid, $role, $type, $vpos, $update)
 			if( $oeid )
 				{
 				$req .= " and ocet.id='".$oeid."'";
+				}
+
+			$this->wordval = stripslashes($word);
+			switch($swhat)
+				{
+				case 1:
+					$this->sentities = 'selected';
+					$this->sfunctions = '';
+					if( !empty($this->wordval))
+					{
+						$req .= " and ocet.name like '%".addslashes($this->wordval)."%'";
+					}
+					break;
+				case 2:
+					$this->sentities = '';
+					$this->sfunctions = 'selected';
+					if( !empty($this->wordval))
+					{
+						$req .= " and ocrt.name like '%".addslashes($this->wordval)."%'";
+					}
+					break;
+				default:
+					$this->sentities = '';
+					$this->sfunctions = '';
+					if( !empty($this->wordval))
+					{
+						$req .= " and ( ocet.name like '%".addslashes($this->wordval)."%' or ocrt.name like '%".addslashes($this->wordval)."%')";
+					}
+					break;
 				}
 
 			list($total) = $babDB->db_fetch_row($babDB->db_query("select count(ocrt.id) as total from ".$req));
@@ -984,7 +1015,7 @@ function browseRoles($ocid, $oeid, $role, $type, $vpos, $update)
 		
 		}
 
-	$temp = new temp($ocid, $oeid, $role, $type, $vpos, $update);
+	$temp = new temp($ocid, $oeid, $role, $swhat, $word, $type, $vpos, $update);
 	echo bab_printTemplate($temp, "frchart.html", "browseroles");
 	}
 
@@ -1176,7 +1207,9 @@ switch($idx)
 				if( !isset($vpos)) $vpos =0;
 				if( !isset($type)) $type ='';
 				if( !isset($eid)) $eid =0;
-				browseRoles($ocid, $eid, $role, $type, $vpos, $update);
+				if( !isset($word)) $word ='';
+				if( !isset($swhat)) $swhat =0;
+				browseRoles($ocid, $eid, $role, $swhat, $word, $type, $vpos, $update);
 				break;
 			case "disp5":
 				include_once $babInstallPath."utilit/dirincl.php";

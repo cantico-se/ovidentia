@@ -682,14 +682,13 @@ function org_mm()
 <!--#if update -->
   document.forms.eorgform.role.value=document.eorgform.srole.options[document.eorgform.srole.selectedIndex].value;
 <!--#endif update -->
-  document.forms.eorgform.submit();
+  document.forms.eorgform.role.value=document.eorgform.srole.options[document.eorgform.srole.selectedIndex].value;
 }
 //-->
 </script>
 </HEAD>
 <BODY>
 <br>
-<!--#if count -->
 <table width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
 
 <tr> 
@@ -706,6 +705,13 @@ function org_mm()
 <input type="hidden" name="role" value="{ role }">
 <table width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
 <tr valign="middle">
+<td class="BabLetterlists"><input type="submit" name="submit" value="{ searchtxt }">&nbsp;&nbsp;<input type="text" name="word" value="{ wordval }">&nbsp;&nbsp;
+<select name="swhat" onchange="org_mm()">
+<option value="0">{ alltxt }</option>
+<option value="1" { sentities }>{ entitytxt }</option>
+<option value="2" { sfunctions }>{ roletxt }</option>
+</select>
+</td>
 <!--#if update -->
 <td align="right" class="BabLetterlists">{ roletxt }&nbsp;&nbsp;
 <select name="srole" onchange="org_mm()">
@@ -739,6 +745,7 @@ function org_mm()
 </tr>
 
 
+<!--#if count -->
 <tr> 
 <td class="BabLoginCadreBackground"> 
 
@@ -780,10 +787,12 @@ updateFlbFrame('{ entityid }&idx=detr&iduser={ userid }');updateFltFrame('{ enti
 
 </tr>
 <!--#endin getnextrow -->
+<!--#endif count -->
 </table>
 </td>
 </tr>
 </table>
+<!--#if count -->
 <script type="text/javascript">
 <!--
 updateFlbFrame('{ cuoeid }&idx=detr&iduser={ cuserid }'); 
