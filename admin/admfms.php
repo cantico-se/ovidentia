@@ -30,7 +30,6 @@ function addFolder()
 		{
 		var $name;
 		var $description;
-		var $moderator;
 		var $moderation;
 		var $notification;
 		var $usersbrowurl;
@@ -50,11 +49,9 @@ function addFolder()
 			global $babBody, $babDB;
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
-			$this->moderator = bab_translate("Manager");
 			$this->moderation = bab_translate("Approbation schema");
 			$this->notification = bab_translate("Notification");
 			$this->version = bab_translate("Versioning");
-			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&cb=";
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
 			$this->add = bab_translate("Add");
@@ -96,7 +93,6 @@ function listFolders()
 	class temp
 		{
 		var $fullname;
-		var $manager;
 		var $notify;
 		var $access;
 		var $modify;
@@ -124,7 +120,6 @@ function listFolders()
 			{
 			global $babBody, $babDB;
 			$this->fullname = bab_translate("Folders");
-			$this->manager = bab_translate("Manager");
 			$this->notify = bab_translate("Notify");
 			$this->version = bab_translate("Versioning");
 			$this->access = bab_translate("Access");
@@ -164,7 +159,6 @@ function listFolders()
 				$this->fid = $arr['id'];
 				$this->url = $GLOBALS['babUrlScript']."?tg=admfm&idx=modify&fid=".$arr['id'];
 				$this->urlname = $arr['folder'];
-				$this->managername = bab_getUserName($arr['manager']);
 				$this->urlrights = $GLOBALS['babUrlScript']."?tg=admfm&idx=rights&fid=".$arr['id'];
 				
 				$this->access = bab_translate("Access");
@@ -183,18 +177,12 @@ function listFolders()
 	return $temp->count;
 	}
 
-function saveFolder($fname, $managerid, $active, $said, $notification, $version)
+function saveFolder($fname, $active, $said, $notification, $version)
 {
 	global $babBody, $babDB;
 	if( empty($fname))
 		{
 		$babBody->msgerror = bab_translate("ERROR: You must provide a name !!");
-		return false;
-		}
-
-	if( !is_numeric($managerid))
-		{
-		$babBody->msgerror = bab_translate("ERROR: You must provide manager !!");
 		return false;
 		}
 
@@ -211,14 +199,11 @@ function saveFolder($fname, $managerid, $active, $said, $notification, $version)
 		}
 	else
 		{
-		if( empty($managerid))
-			$managerid = 0;
 		if( empty($said))
 			$said = 0;
-		$babDB->db_query("insert into ".BAB_FM_FOLDERS_TBL." (folder, manager, idsa, filenotify, active, version, id_dgowner) VALUES ('" .$fname. "', '" . $managerid. "', '". $said. "', '" . $notification. "', '" . $active. "', '" . $version. "', '" . $babBody->currentAdmGroup. "')");
+		$babDB->db_query("insert into ".BAB_FM_FOLDERS_TBL." (folder, idsa, filenotify, active, version, id_dgowner) VALUES ('" .$fname. "', '". $said. "', '" . $notification. "', '" . $active. "', '" . $version. "', '" . $babBody->currentAdmGroup. "')");
 		return true;
 		}
-
 }
 
 function updateFolders($notifies, $actives, $versions)
@@ -258,7 +243,7 @@ if( !isset($idx))
 	$idx = "list";
 
 if( isset($add) && $add == "addfolder")
-	if (!saveFolder($fname, $managerid, $active, $said, $notification, $version))
+	if (!saveFolder($fname, $active, $said, $notification, $version))
 		$idx = "addf";
 
 if( isset($update) && $update == "folders")

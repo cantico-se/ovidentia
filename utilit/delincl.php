@@ -257,17 +257,10 @@ function bab_deleteForum($id)
 
 	$db->db_query("delete from ".BAB_THREADS_TBL." where forum='".$id."'");
 
-	$req = "delete from ".BAB_FORUMSVIEW_GROUPS_TBL." where id_object='$id'";
-	$res = $db->db_query($req);
-	
-	$req = "delete from ".BAB_FORUMSPOST_GROUPS_TBL." where id_object='$id'";
-	$res = $db->db_query($req);
-
-	$req = "delete from ".BAB_FORUMSREPLY_GROUPS_TBL." where id_object='$id'";
-	$res = $db->db_query($req);
-
-	$req = "delete from ".BAB_FORUMSMAN_GROUPS_TBL." where id_object='$id'";
-	$res = $db->db_query($req);
+	$db->db_query("delete from ".BAB_FORUMSVIEW_GROUPS_TBL." where id_object='".$id."'");
+	$db->db_query("delete from ".BAB_FORUMSPOST_GROUPS_TBL." where id_object='".$id."'");
+	$db->db_query("delete from ".BAB_FORUMSREPLY_GROUPS_TBL." where id_object='".$id."'");
+	$db->db_query("delete from ".BAB_FORUMSMAN_GROUPS_TBL." where id_object='".$id."'");
 
 	$req = "delete from ".BAB_FORUMS_TBL." where id='$id'";
 	$res = $db->db_query($req);
@@ -358,6 +351,10 @@ function bab_deleteFolder($fid)
 
 	$babDB->db_query("delete from ".BAB_FM_FIELDS_TBL." where id_folder='".$fid."'");
 
+	$babDB->db_query("delete from ".BAB_FMUPLOAD_GROUPS_TBL." where id_object='".$fid."'");
+	$babDB->db_query("delete from ".BAB_FMUPDATE_GROUPS_TBL." where id_object='".$fid."'");
+	$babDB->db_query("delete from ".BAB_FMDOWNLOAD_GROUPS_TBL." where id_object='".$fid."'");
+	$babDB->db_query("delete from ".BAB_FMMANAGERS_GROUPS_TBL." where id_object='".$fid."'");
 	// delete folder
 	$babDB->db_query("delete from ".BAB_FM_FOLDERS_TBL." where id='".$fid."'");
 }
@@ -407,6 +404,7 @@ function bab_deleteGroup($id)
 	$db->db_query("delete from ".BAB_FMDOWNLOAD_GROUPS_TBL." where id_group='".$id."'");	
 	$db->db_query("delete from ".BAB_FMUPDATE_GROUPS_TBL." where id_group='".$id."'");	
 	$db->db_query("delete from ".BAB_FMUPLOAD_GROUPS_TBL." where id_group='".$id."'");	
+	$db->db_query("delete from ".BAB_FMMANAGERS_GROUPS_TBL." where id_group='".$id."'");
 
 	$db->db_query("delete from ".BAB_OCVIEW_GROUPS_TBL." where id_group='".$id."'");	
 	$db->db_query("delete from ".BAB_OCUPDATE_GROUPS_TBL." where id_group='".$id."'");	
@@ -418,6 +416,11 @@ function bab_deleteGroup($id)
 	$db->db_query("delete from ".BAB_CAL_RES_GRP_GROUPS_TBL." where id_group='".$id."'");	
 	$db->db_query("delete from ".BAB_CAL_RES_MAN_GROUPS_TBL." where id_group='".$id."'");	
 	$db->db_query("delete from ".BAB_CAL_RES_VIEW_GROUPS_TBL." where id_group='".$id."'");	
+
+	$db->db_query("delete from ".BAB_FORUMSVIEW_GROUPS_TBL." where id_group='".$id."'");
+	$db->db_query("delete from ".BAB_FORUMSPOST_GROUPS_TBL." where id_group='".$id."'");
+	$db->db_query("delete from ".BAB_FORUMSREPLY_GROUPS_TBL." where id_group='".$id."'");
+	$db->db_query("delete from ".BAB_FORUMSMAN_GROUPS_TBL." where id_group='".$id."'");
 
 	// delete user from BAB_MAIL_DOMAINS_TBL
 	$db->db_query("delete from ".BAB_MAIL_DOMAINS_TBL." where owner='".$id."' and bgroup='Y'");	

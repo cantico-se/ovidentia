@@ -97,6 +97,7 @@ define("BAB_FM_FOLDERS_TBL", "bab_fm_folders");
 define("BAB_FMUPLOAD_GROUPS_TBL", "bab_fmupload_groups");
 define("BAB_FMDOWNLOAD_GROUPS_TBL", "bab_fmdownload_groups");
 define("BAB_FMUPDATE_GROUPS_TBL", "bab_fmupdate_groups");
+define("BAB_FMMANAGERS_GROUPS_TBL", "bab_fmmanagers_groups");
 define("BAB_FILES_TBL", "bab_files");
 define("BAB_FORUMS_TBL", "bab_forums");
 define("BAB_FORUMSMAN_GROUPS_TBL", "bab_forumsman_groups");

@@ -928,14 +928,15 @@ function bab_fileManagerAccessLevel()
 			}
 		}
 	
-	$res = $babDB->db_query("select id, manager, idsa, folder from ".BAB_FM_FOLDERS_TBL." where active='Y' ORDER BY folder");
+	$res = $babDB->db_query("select id, idsa, folder from ".BAB_FM_FOLDERS_TBL." where active='Y' ORDER BY folder");
 	while($row = $babDB->db_fetch_array($res))
 		{
 		$uplo = bab_isAccessValid(BAB_FMUPLOAD_GROUPS_TBL, $row['id']);
 		$down = bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $row['id']);
 		$upda = bab_isAccessValid(BAB_FMUPDATE_GROUPS_TBL, $row['id']);
+		$man = bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $row['id']);
 
-		if( $down || $uplo || $upda || $row['manager'] == $BAB_SESS_USERID)
+		if( $down || $uplo || $upda || $man == $BAB_SESS_USERID)
 			{
 			$babBody->aclfm['id'][] = $row['id'];
 			$babBody->aclfm['folder'][] = $row['folder'];
@@ -943,7 +944,7 @@ function bab_fileManagerAccessLevel()
 			$babBody->aclfm['uplo'][] = $uplo;
 			$babBody->aclfm['upda'][] = $upda;
 			$babBody->aclfm['idsa'][] = $row['idsa'];
-			if( $row['manager'] != 0 && $row['manager'] == $BAB_SESS_USERID)
+			if( $man )
 				$babBody->aclfm['ma'][] = 1;
 			else
 				$babBody->aclfm['ma'][] = 0;

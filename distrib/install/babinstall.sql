@@ -1040,6 +1040,19 @@ CREATE TABLE bab_fm_folders (
 );
 
 #
+# Structure de la table `bab_fmmanagers_groups`
+#
+
+CREATE TABLE bab_fmmanagers_groups (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group)
+);
+
+#
 # Structure de la table `bab_fmdownload_groups`
 #
 

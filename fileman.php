@@ -1901,9 +1901,17 @@ function viewFile( $idf)
 						}
 					$this->bviewnf = true;
 
+					$this->arrfolders = array();
 					$this->movetofolder = bab_translate("Move to folder");
-					$this->resfm = $db->db_query("select id, folder from ".BAB_FM_FOLDERS_TBL." where manager='".$GLOBALS['BAB_SESS_USERID']."' and id !='".$arr['id_owner']."'");
-					$this->countfm = $db->db_num_rows($this->resfm);
+					$res = $db->db_query("select id, folder from ".BAB_FM_FOLDERS_TBL." where id !='".$arr['id_owner']."'");
+					while($arrf = $db->db_fetch_array($res))
+						{
+						if( bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $arrf['id']))
+							{
+							$this->arrfolders[] = $arrf;
+							}
+						}
+					$this->countfm = count($this->arrfolders);
 					}
 				else
 					$this->countfm = 0;
@@ -1928,9 +1936,8 @@ function viewFile( $idf)
 			static $i=0;
 			if( $i < $this->countfm )
 				{
-				$arr = $babDB->db_fetch_array($this->resfm);
-				$this->folder = $arr['folder'];
-				$this->folderid = $arr['id'];
+				$this->folder = $this->arrfolders[$i]['folder'];
+				$this->folderid = $this->arrfolders[$i]['id'];
 				$i++;
 				return true;
 				}

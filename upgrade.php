@@ -3138,7 +3138,7 @@ while( $arr = $db->db_fetch_array($res))
 				$description = bab_translate("Forums manager");
 				$db->db_query("insert into ".BAB_GROUPS_TBL." (name, description, mail, manager, id_dggroup, notes, contacts, pcalendar, id_dgowner) VALUES ('" .$grpname. "', '" . $description. "', 'N', '0', '0', 'N', 'N', 'N','0')");
 				$id = $db->db_insert_id();
-				$db->db_query("insert into ".BAB_USERS_GROUPS_TBL." (id_object, id_group) values ('".$arr['id_approver']."','".$id."')");
+				$db->db_query("insert into ".BAB_USERS_GROUPS_TBL." (id_object, id_group) values ('".$arr['moderator']."','".$id."')");
 				$arrusersgroups[$arr['moderator']] = $id;
 				$req = "insert into ".BAB_CALENDAR_TBL." (owner, actif, type) VALUES ('" .$id. "', 'N', '2')";
 				$db->db_query($req);
@@ -4527,16 +4527,23 @@ function upgrade553to554()
 $ret = "";
 $db = & $GLOBALS['babDB'];
 
-$req = "ALTER TABLE ".BAB_CAL_EVENTS_TBL." ADD location VARCHAR(255) NOT NULL AFTER description";
-$res = $db->db_query($req);
-if( !$res)
+$arr = $db->db_fetch_array($db->db_query("DESCRIBE ".BAB_CAL_EVENTS_TBL." location"));
+if ( $arr[0] != 'location' )
 	{
-	$ret = "Alteration of <b>".BAB_CAL_EVENTS_TBL."</b> table failed !<br>";
-	return $ret;
+	$req = "ALTER TABLE ".BAB_CAL_EVENTS_TBL." ADD location VARCHAR(255) NOT NULL AFTER description";
+	$res = $db->db_query($req);
+	if( !$res)
+		{
+		$ret = "Alteration of <b>".BAB_CAL_EVENTS_TBL."</b> table failed !<br>";
+		return $ret;
+		}
 	}
 
 
-$res = $db->db_query("CREATE TABLE ".BAB_CAL_EVENTS_NOTES_TBL." (
+$arr = $db->db_fetch_array($db->db_query("SHOW TABLES LIKE '".BAB_CAL_EVENTS_NOTES_TBL."'"));
+if ( $arr[0] != BAB_CAL_EVENTS_NOTES_TBL )
+	{
+	$res = $db->db_query("CREATE TABLE ".BAB_CAL_EVENTS_NOTES_TBL." (
 					id_event int(10) unsigned NOT NULL default '0',
 					id_user int(10) unsigned NOT NULL default '0',
 					note text NOT NULL,
@@ -4544,13 +4551,17 @@ $res = $db->db_query("CREATE TABLE ".BAB_CAL_EVENTS_NOTES_TBL." (
 					)");
 
 
-if( !$res)
-	{
-	$ret = "Creation of <b>".BAB_CAL_EVENTS_NOTES_TBL."</b> table failed !<br>";
-	return $ret;
+	if( !$res)
+		{
+		$ret = "Creation of <b>".BAB_CAL_EVENTS_NOTES_TBL."</b> table failed !<br>";
+		return $ret;
+		}
 	}
 
-$res = $db->db_query("CREATE TABLE ".BAB_CAL_EVENTS_REMINDERS_TBL." (
+$arr = $db->db_fetch_array($db->db_query("SHOW TABLES LIKE '".BAB_CAL_EVENTS_REMINDERS_TBL."'"));
+if ( $arr[0] != BAB_CAL_EVENTS_REMINDERS_TBL )
+	{
+	$res = $db->db_query("CREATE TABLE ".BAB_CAL_EVENTS_REMINDERS_TBL." (
 						  id_event int(11) unsigned NOT NULL default '0',
 						  id_user int(11) unsigned NOT NULL default '0',
 						  day smallint(3) NOT NULL default '0',
@@ -4561,13 +4572,64 @@ $res = $db->db_query("CREATE TABLE ".BAB_CAL_EVENTS_REMINDERS_TBL." (
 						  KEY id_event (id_event,id_user)
 						)");
 
-if( !$res)
+	if( !$res)
+		{
+		$ret = "Creation of <b>".BAB_CAL_EVENTS_REMINDERS_TBL."</b> table failed !<br>";
+		return $ret;
+		}
+	}
+
+$arr = $db->db_fetch_array($db->db_query("SHOW TABLES LIKE '".BAB_FMMANAGERS_GROUPS_TBL."'"));
+if ( $arr[0] != BAB_FMMANAGERS_GROUPS_TBL )
 	{
-	$ret = "Creation of <b>".BAB_CAL_EVENTS_REMINDERS_TBL."</b> table failed !<br>";
-	return $ret;
+	$req = "CREATE TABLE ".BAB_FMMANAGERS_GROUPS_TBL." (";
+	$req .= "id int(11) unsigned NOT NULL auto_increment,";
+	$req .= "id_object int(11) unsigned NOT NULL default '0',";
+	$req .= "id_group int(11) unsigned NOT NULL default '0',";
+	$req .= "PRIMARY KEY  (id),";
+	$req .= "KEY id_object (id_object),";
+	$req .= "KEY id_group (id_group)";
+	$req .= ");";
+
+	$res = $db->db_query($req);
+	if( !$res)
+		{
+		$ret = "Creation of <b>".BAB_FMMANAGERS_GROUPS_TBL."</b> table failed !<br>";
+		return $ret;
+		}
+
+	$res = $db->db_query("select id, manager, id_dgowner from ".BAB_FM_FOLDERS_TBL."");
+	$arrusersgroups = array();
+	while( $arr = $db->db_fetch_array($res))
+		{
+		if( $arr['manager'] != 0 )
+			{
+			if( !isset($arrusersgroups[$arr['manager']])) 
+				{
+				$res2 = $db->db_query("select firstname, lastname from ".BAB_USERS_TBL." where id='".$arr['manager']."'");
+				$rr = $db->db_fetch_array($res2);
+				if( $res2 && $db->db_num_rows($res2) > 0 )
+					{
+					$grpname = "OVFM_".$rr['firstname']."_".$rr['lastname'];
+					$description = bab_translate("Folder manager");
+					$db->db_query("insert into ".BAB_GROUPS_TBL." (name, description, mail, manager, id_dggroup, notes, contacts, pcalendar, id_dgowner) VALUES ('" .$grpname. "', '" . $description. "', 'N', '0', '".$arr['id_dgowner']."', 'N', 'N', 'N','0')");
+					$id = $db->db_insert_id();
+					$db->db_query("insert into ".BAB_USERS_GROUPS_TBL." (id_object, id_group) values ('".$arr['manager']."','".$id."')");
+					$arrusersgroups[$arr['manager']] = $id;
+					$req = "insert into ".BAB_CALENDAR_TBL." (owner, actif, type) VALUES ('" .$id. "', 'N', '2')";
+					$db->db_query($req);
+					}
+				}
+			if( isset($arrusersgroups[$arr['manager']])) 
+				{
+				$db->db_query("insert into ".BAB_FMMANAGERS_GROUPS_TBL." (id_object, id_group) values ('".$arr['id']."','".$arrusersgroups[$arr['manager']]."')");
+				}
+			}
+		}
+
+	$db->db_query("ALTER TABLE ".BAB_FM_FOLDERS_TBL." DROP manager");
 	}
 
 return $ret;
 }
-
 ?>

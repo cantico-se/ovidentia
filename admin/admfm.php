@@ -32,7 +32,6 @@ function modifyFolder($fid)
 		{
 		var $name;
 		var $description;
-		var $moderator;
 		var $moderation;
 		var $notification;
 		var $usersbrowurl;
@@ -61,11 +60,9 @@ function modifyFolder($fid)
 			global $babDB;
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
-			$this->moderator = bab_translate("Manager");
 			$this->moderation = bab_translate("Approbation schema");
 			$this->notification = bab_translate("Notification");
 			$this->version = bab_translate("Versioning");
-			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&cb=";
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
 			$this->add = bab_translate("Update");
@@ -75,8 +72,6 @@ function modifyFolder($fid)
 			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FM_FOLDERS_TBL." where id ='".$fid."'"));
 			$this->folderval = $arr['folder'];
 			$this->said = $arr['idsa'];
-			$this->manager = bab_getUserName($arr['manager']);
-			$this->managerid = $arr['manager'];
 			$this->none = bab_translate("None");
 			if( $arr['active'] == "Y" )
 				{
@@ -355,7 +350,7 @@ function deleteFieldsFolder($fid, $fields)
 	}
 
 
-function updateFolder($fid, $fname, $managerid, $active, $said, $notification, $version)
+function updateFolder($fid, $fname, $active, $said, $notification, $version)
 {
 	global $babBody, $babDB;
 	if( empty($fname))
@@ -376,8 +371,6 @@ function updateFolder($fid, $fname, $managerid, $active, $said, $notification, $
 		}
 	else
 		{
-		if( empty($managerid))
-			$managerid = 0;
 		if( empty($said))
 			$said = 0;
 
@@ -429,7 +422,7 @@ function updateFolder($fid, $fname, $managerid, $active, $said, $notification, $
 			}
 
 		
-		$babDB->db_query("update ".BAB_FM_FOLDERS_TBL." set folder='".$fname."', manager='".$managerid."', idsa='".$said."', filenotify='".$notification."', active='".$active."', version='".$version."' where id ='".$fid."'");
+		$babDB->db_query("update ".BAB_FM_FOLDERS_TBL." set folder='".$fname."', idsa='".$said."', filenotify='".$notification."', active='".$active."', version='".$version."' where id ='".$fid."'");
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
 		exit;
 		}
@@ -507,7 +500,7 @@ if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['filemanager'] != 'Y')
 if( isset($mod) && $mod == "modfolder")
 {
 	if( isset($bupdate))
-		updateFolder($fid, $fname, $managerid, $active, $said, $notification, $version);
+		updateFolder($fid, $fname, $active, $said, $notification, $version);
 	else if(isset($bdel))
 		$idx = "delf";
 }
@@ -546,6 +539,8 @@ switch($idx)
 		$macl->addtable( BAB_FMUPLOAD_GROUPS_TBL,bab_translate("Upload"));
 		$macl->addtable( BAB_FMDOWNLOAD_GROUPS_TBL,bab_translate("Download"));
 		$macl->addtable( BAB_FMUPDATE_GROUPS_TBL,bab_translate("Update"));
+		$macl->addtable( BAB_FMMANAGERS_GROUPS_TBL,bab_translate("Manage"));
+		$macl->filter(0,0,1,1,1);
 		$macl->babecho();
 		
 		$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
