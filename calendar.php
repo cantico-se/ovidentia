@@ -697,10 +697,18 @@ function calendarDay($calid, $day, $month, $year, $starttime, $caltype, $owner, 
 		var $curhour;
 		var $colspan;
 		var $babCalendarUsebgColor;
+		var $prevdayurl;
+		var $nextdayurl;
+		var $prevdaytxt;
+		var $nextdaytxt;
 	
 		function temp($calid, $day, $month, $year, $starttime, $caltype, $owner, $bmanager)
 			{
 			global $BAB_SESS_USERID;
+			$this->prevdaytxt = babTranslate("Previous day");
+			$this->nextdaytxt = babTranslate("Next day");
+			$this->prevtimetxt = babTranslate("Previous time");
+			$this->nexttimetxt = babTranslate("Next time");
 			$this->db = new db_mysql();
 			$this->view = "viewd";
 			$this->colspan ="";
@@ -754,6 +762,12 @@ function calendarDay($calid, $day, $month, $year, $starttime, $caltype, $owner, 
 					$this->bmanager = 0;
 					break;	
 				}
+			$this->prevdayurl = $GLOBALS[babUrl]."index.php?tg=calendar&idx=viewd&day=".date("j", mktime( 0,0,0, $month, $day-1, $year));
+			$this->prevdayurl .= "&month=".date("n", mktime( 0,0,0, $month, $day-1, $year));
+			$this->prevdayurl .= "&year=".date("Y", mktime( 0,0,0, $month, $day-1, $year)). "&calid=".$this->calid."&start=".$starttime;
+			$this->nextdayurl = $GLOBALS[babUrl]."index.php?tg=calendar&idx=viewd&day=".date("j", mktime( 0,0,0, $month, $day+1, $year));
+			$this->nextdayurl .= "&month=".date("n", mktime( 0,0,0, $month, $day+1, $year));
+			$this->nextdayurl .= "&year=".date("Y", mktime( 0,0,0, $month, $day+1, $year)). "&calid=".$this->calid."&start=".$starttime;
 			if( $starttime == 1)
 				{
 				$this->prevtimeurl = $GLOBALS[babUrl]."index.php?tg=calendar&idx=viewd&day=".date("j", mktime( 0,0,0, $month, $day-1, $year));
