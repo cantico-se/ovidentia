@@ -1686,7 +1686,7 @@ if( !$res)
 return $ret;
 }
 
-function upgrade400to410()
+function upgrade400to401()
 {
 $ret = "";
 $db = $GLOBALS['babDB'];
