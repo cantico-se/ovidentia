@@ -79,4 +79,44 @@ function getEventTitle($evtid)
 		}
 }
 
+function getCalendarOwnerName($idcal, $type)
+{
+	$ret = "";
+	$db = new db_mysql();
+	$query = "select * from calendar where id='$idcal'";
+	$res = $db->db_query($query);
+	if( $res && $db->db_num_rows($res) > 0)
+		{
+		if( $type == 1)
+			{
+			$arr = $db->db_fetch_array($res);
+			$query = "select * from users where id='".$arr[owner]."'";
+			$res = $db->db_query($query);
+			$arr = $db->db_fetch_array($res);
+			$ret = $arr[fullname];
+			}
+		else if( $type == 2)
+			{
+			$arr = $db->db_fetch_array($res);
+			$query = "select * from groups where id='".$arr[owner]."'";
+			$res = $db->db_query($query);
+			$arr = $db->db_fetch_array($res);
+			$ret = $arr[name];
+			}
+		else if( $type == 3)
+			{
+			$arr = $db->db_fetch_array($res);
+			$query = "select * from resourcescal where id='".$arr[owner]."'";
+			$res = $db->db_query($query);
+			$arr = $db->db_fetch_array($res);
+			$ret = $arr[name];
+			}
+		return $ret;
+		}
+	else
+		{
+		return $ret;
+		}
+}
+
 ?>
