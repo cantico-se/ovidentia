@@ -2365,6 +2365,17 @@ function upgrade407to408()
 {
 $ret = "";
 $db = $GLOBALS['babDB'];
+ 
+
+$req = "ALTER TABLE ".BAB_SITES_TBL." ADD adminname VARCHAR( 255 ) NOT NULL AFTER adminemail";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_SITES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$db->db_query("update ".BAB_SITES_TBL." set adminname='Ovidentia Administrator'");
 
 return $ret;
 }

@@ -737,6 +737,7 @@ CREATE TABLE `bab_sites` (
   `description` varchar(100) NOT NULL default '',
   `lang` varchar(10) NOT NULL default '',
   `adminemail` varchar(255) NOT NULL default '',
+  `adminname` varchar(255) NOT NULL default '',
   `skin` varchar(255) NOT NULL default '',
   `style` varchar(255) NOT NULL default '',
   `registration` enum('Y','N') NOT NULL default 'Y',
@@ -764,7 +765,7 @@ CREATE TABLE `bab_sites` (
 ) TYPE=MyISAM AUTO_INCREMENT=16 ;
 
 
-INSERT INTO bab_sites (name, description, lang, adminemail, skin, style) values ('Ovidentia', 'Ovidentia site', 'en', 'admin@your-domain.com', 'ovidentia', 'ovidentia.css');
+INSERT INTO bab_sites (name, description, lang, adminemail, adminemail, skin, style) values ('Ovidentia', 'Ovidentia site', 'en', 'admin@your-domain.com', 'Ovidentia Administrator', 'ovidentia', 'ovidentia.css');
 
 # --------------------------------------------------------
 #

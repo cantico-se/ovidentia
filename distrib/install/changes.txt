@@ -1,6 +1,14 @@
 /************************************************************************/
 Juillet 2003: Version 4.0.7
 /************************************************************************/
+- Bug: Administrateur can register user with blank nickname
+- Improved mail template
+- Emails sent uses Bcc
+- Fixed some minors bugs
+
+/************************************************************************/
+Juillet 2003: Version 4.0.7
+/************************************************************************/
 - Enhanced OvML : It is possible to imbricate the containers  
 - An improved add-ons management
 - Bug: "Empty database query" when you try to notify members when
