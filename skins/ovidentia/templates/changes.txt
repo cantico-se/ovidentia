@@ -30,15 +30,23 @@ admvacs.html					        changed action="index.php" to action="{ babPhpSelf }"
 artcileprint.html
 articles.html					        changed action="index.php" to action="{ babPhpSelf }"
                         introlist       Added <!--#if barch --> ... <!--#endif barch -->
+                                        Added <!--#if blen "> 0" --> ... <!--#endif blen -->
+                                        Added <a href="{ printurl }" target="_blank"><img src="{ babSkinPath }images/Puces/Print.gif" border="0" alt="{ printable }"></a>
 calendar.html					        changed action="index.php" to action="{ babPhpSelf }"
 calopt.html					            changed action="index.php" to action="{ babPhpSelf }"
 calview.html
 comments.html					        changed action="index.php" to action="{ babPhpSelf }"
-                        commentcreate   Added <script .... href="{ urlsee }">{ see }</a></center>
+                        commentcreate   Removed Javascript <script language="javascript">...</script>
+                                        Added <center><a class="BabSiteAdminListLink" href="javascript: var t=document.open('{ urlsee }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ see }</a></center>                                        
+
 confcals.html					        changed action="index.php" to action="{ babPhpSelf }"
 config.html
 contact.html					        changed action="index.php" to action="{ babPhpSelf }"
 contacts.html					        changed action="index.php" to action="{ babPhpSelf }"
+                        contactslist    Removed Javascript
+                                        Added an icon to delete contacts
+                                        Added a link "Add" to add contact
+                                        Changed href="{ urlmail }" to javascript
 entry.html
 event.html					            changed action="index.php" to action="{ babPhpSelf }"
 faq.html					            changed action="index.php" to action="{ babPhpSelf }"
@@ -49,6 +57,14 @@ forums.html					            changed action="index.php" to action="{ babPhpSelf }
 forumssection.html
 groups.html					            changed action="index.php" to action="{ babPhpSelf }"
 inbox.html					            changed action="index.php" to action="{ babPhpSelf }"
+                        maillist        Removed JavaScript
+                                        Changed href="{ msgfromurl }" to javascript call
+                                        Changed href="{ msgsubjecturl }" to javascript call
+                                        Added an icon to delete emails
+                        mailview        Removed Meta tags
+                                        Removed JavaScript
+                                        Changed href="{ addurl }" to javascript call
+                                        
 login.html					            changed action="index.php" to action="{ babPhpSelf }"
 mail.html					            changed action="index.php" to action="{ babPhpSelf }"
 maildoms.html					        changed action="index.php" to action="{ babPhpSelf }"
@@ -67,7 +83,7 @@ options.html					        changed action="index.php" to action="{ babPhpSelf }"
                         changeskin      Added to form tag : name="formskin"
                         changeskin      Added <select name="style"> ... </select>
 
-page.html
+page.html                               Addded Javascript
 
 posts.html					            changed action="index.php" to action="{ babPhpSelf }"
                         newpostslist    added <!--#if replymail "!= 0" -->...<!--#endif replymail -->
@@ -98,8 +114,23 @@ topman.html					            changed action="index.php" to action="{ babPhpSelf }
                                         Added oldarticleslist section
 topusr.html
 users.html					            changed action="index.php" to action="{ babPhpSelf }"
+                        userslist       Removed javascript
+                                        Added <input type="hidden" name="pos" value="{ pos }">
+                                        Added <br><center><input type="submit" name="Updateg" value="{ update }"></center>
+                                                             
+                        usersmodify     Addded <input type="hidden" name="pos" value="{ pos }">
+                                        Addded <input type="hidden" name="grp" value="{ grp }">
+                                        Renamed name="submit2" to name="bupdate"
+                                        Added &nbsp;&nbsp;<input type="submit" name="bdelete" value="{ delete }">
+
+                        usersgroups     Addded <input type="hidden" name="pos" value="{ pos }">
+                                        Addded <input type="hidden" name="grp" value="{ grp }">
+                                        Added <br><center><input type="submit" name="Updateg" value="{ updategroups }"></center>
+
 usersection.html        template        Added <!--#in addAddonUrl --> ... <!--#endin addAddonUrl -->
 vacapp.html					            changed action="index.php" to action="{ babPhpSelf }"
 vacation.html					        changed action="index.php" to action="{ babPhpSelf }"
 waiting.html					        changed action="index.php" to action="{ babPhpSelf }"
 warning.html
+
+

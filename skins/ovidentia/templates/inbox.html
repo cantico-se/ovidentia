@@ -1,40 +1,11 @@
 
 <!--#begin maillist -->
-<script language="javascript">
-function onCheckAll(ctrlPrefix, state)
-
-{
-	var i;
-	var objCtrl;
-	for (i = 0; i < document.forms.listform.elements.length; i++)
-		{
-		objCtrl = document.forms.listform.elements[i];
-		if (objCtrl.name.substring(0,ctrlPrefix.length) == ctrlPrefix)
-			objCtrl.checked = state;
-		}
-}
-function submitForm(cmd) 
-{ 
-if( typeof document.forms.listform != "object" ) return;
-document.forms.listform.idx.value = cmd;
-document.forms.listform.submit();
-}
-function Start(page)
-{
-	var dummy;
-	OpenWin = this.open(page, "", "width=650,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes");
-}
-
-</script>
-
 <form method="post" action="{ babPhpSelf }" name="listform">
 <input type="hidden" name="tg" value="inbox">
 <input type="hidden" name="idx" value="">
 <input type="hidden" name="accid" value="{ accid }">
 <input type="hidden" name="criteria" value="{ criteria }">
 <input type="hidden" name="reverse" value="{ reverse }">
-
-
 <table border="0" width="95%" cellpadding="1" cellspacing="0" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
@@ -68,17 +39,18 @@ href="{ dateurl }">{ datename }</a></td>
 <img src="{ babSkinPath }images/Puces/PuceImportant.gif"> 
 <!--#endif priority -->
 </td>
-<td valign="middle"><a class="BabContentLinkColor" href="{ msgfromurl }">{ msgfromurlname 
+<td valign="middle"><a class="BabContentLinkColor" href="javascript: var t=document.open('{ msgfromurl }', '', 'width=650,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ msgfromurlname 
 }</a></td>
 <td width="10">&nbsp;</td>
-<td valign="middle"><a class="BabContentLinkColor" href="{ msgsubjecturl }">{ 
+<td valign="middle"><a class="BabContentLinkColor" href="javascript: var t=document.open('{ msgsubjecturl }', '', 'width=650,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ 
 msgsubjecturlname }</a></td>
 <td width="10">&nbsp;</td>
 <td class="BabCalendarBodyFont" valign="middle">{ msgdate }</td>
 <!--#endin getnext -->
 </tr>
 <tr> 
-<td class="BabCalendarBodyFont" colspan="8" height="5"> &nbsp; 
+<td width="1%" align="center"><a href="javascript:submitForm('delete','listform')"><img src="{ babSkinPath }images/Puces/PuceDelete.png" alt="{ deletealt }" width="20" height="20" border="0"></a></td>
+<td class="BabCalendarBodyFont" colspan="7" height="5"> &nbsp; 
 <!--#in getnextpart -->
 <!--#if burl "== 1" -->
 { partname }&nbsp; 
@@ -126,33 +98,18 @@ msgsubjecturlname }</a></td>
 <br><br><br><br><br>
 
 <!--#begin mailview -->
-
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
 <HEAD>
 <TITLE>{ babSiteName }</TITLE>
-<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
-<META NAME="Generator" CONTENT="Ovidentia">
-<META NAME="Author" CONTENT="Ovidentia Community">
-<META NAME="Keywords" CONTENT="">
-<META NAME="Description" CONTENT="">
+{ babMeta }
 { babCss }
-
-
-<script type="text/javascript">
-
+<script type="text/javascript" src="{ babOvidentiaJs }">
 <!--
-function Start(page)
-{
-	var dummy;
-	OpenWin = this.open(page, "", "width=550,height=550,status=no,resizable=yes,top=200,left=200");
-}
 //-->
 </script>
 </HEAD>
-
 <BODY>
-
 <center>
 <br>
 <a class="BabContentLinkColor" href="{ replyurl }">{ replyname }</a>&nbsp;&nbsp;<a class="BabContentLinkColor" href="{ replyaurl }">{ replyaname }</a>&nbsp;&nbsp;<a class="BabContentLinkColor" href="{ forwardurl }">{ forwardname }</a>
@@ -167,7 +124,7 @@ function Start(page)
 fromname }</td>
 <td class="BabSiteAdminTitleFontBackground" width="85%" valign="top"> 
 <!--#in getnextfrom -->
-{ addname }&nbsp;&nbsp;<a class="BabSiteAdminListLink" href="{ addurl }">{ addcontact 
+{ addname }&nbsp;&nbsp;<a class="BabSiteAdminListLink" href="javascript: var t=document.open('{ addurl }', '', 'width=550,height=550,status=no,resizable=yes,top=200,left=200');">{ addcontact 
 }</a>&nbsp;<br>
 <!--#endin getnextfrom -->
 &nbsp; </td>
@@ -176,7 +133,7 @@ fromname }</td>
 <td class="BabSiteAdminTitleFontBackground" nowrap valign="top" align="right">{ toname }</td>
 <td class="BabSiteAdminTitleFontBackground" valign="top"> 
 <!--#in getnextto -->
-{ addname }&nbsp;&nbsp;<a class="BabSiteAdminListLink" href="{ addurl }">{ addcontact 
+{ addname }&nbsp;&nbsp;<a class="BabSiteAdminListLink" href="javascript: var t=document.open('{ addurl }', '', 'width=550,height=550,status=no,resizable=yes,top=200,left=200');">{ addcontact 
 }</a>&nbsp;<br>
 <!--#endin getnextto -->
 &nbsp; </td>
@@ -185,7 +142,7 @@ fromname }</td>
 <td class="BabSiteAdminTitleFontBackground" nowrap valign="top" align="right">{ ccname }</td>
 <td class="BabSiteAdminTitleFontBackground" valign="top"> 
 <!--#in getnextcc -->
-{ addname }&nbsp;&nbsp;<a class="BabSiteAdminListLink" href="{ addurl }">{ addcontact 
+{ addname }&nbsp;&nbsp;<a class="BabSiteAdminListLink" href="javascript: var t=document.open('{ addurl }', '', 'width=550,height=550,status=no,resizable=yes,top=200,left=200');">{ addcontact 
 }</a>&nbsp;<br>
 <!--#endin getnextcc -->
 &nbsp;

@@ -53,6 +53,8 @@ function listContacts($pos)
 			$this->uncheckall = bab_translate("Uncheck all");
 			$this->checkall = bab_translate("Check all");
 			$this->allname = bab_translate("All");
+			$this->addcontact = bab_translate("Add");
+			$this->deletealt = bab_translate("Delete Contacts");
 			$this->db = $GLOBALS['babDB'];
 			$this->res = $this->db->db_query($req);
 			if( $this->res )
@@ -65,6 +67,7 @@ function listContacts($pos)
 			else
 				$this->allselected = 0;
 			$this->allurl = $GLOBALS['babUrlScript']."?tg=contacts&idx=list&pos=";
+			$this->addurl = $GLOBALS['babUrlScript']."?tg=contact&idx=create&bliste=1";
 
 			/* find prefered mail account */
 			$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$BAB_SESS_USERID."' and prefered='Y'";
@@ -90,8 +93,8 @@ function listContacts($pos)
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->url = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=contact&idx=modify&item=".$this->arr['id']."&bliste=1');";
-				$this->urlmail = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".$this->accid."&to=".$this->arr['email']."');";
+				$this->url =$GLOBALS['babUrlScript']."?tg=contact&idx=modify&item=".$this->arr['id']."&bliste=1";
+				$this->urlmail =$GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".$this->accid."&to=".$this->arr['email'];
 				if( $this->ord == "-" )
 					$this->urlname = bab_composeUserName( $this->arr['lastname'], $this->arr['firstname']);
 				else
@@ -229,8 +232,6 @@ switch($idx)
 		$babBody->title = bab_translate("Delete contact");
 		contactsDelete($item, $pos);
 		$babBody->addItemMenu("list", bab_translate("Contacts"),$GLOBALS['babUrlScript']."?tg=contacts&idx=list");
-		$babBody->addItemMenu("create", bab_translate("Create"), "javascript:Start('".$GLOBALS['babUrlScript']."?tg=contact&idx=create&bliste=1')");
-		$babBody->addItemMenu("delete", bab_translate("Delete"), "javascript:(submitForm('delete'))");
 		break;
 
 	case "chg":
@@ -244,11 +245,6 @@ switch($idx)
 		$babBody->title = bab_translate("Contacts list");
 		$count = listContacts($pos);
 		$babBody->addItemMenu("list", bab_translate("Contacts"),$GLOBALS['babUrlScript']."?tg=contacts&idx=list");
-		$babBody->addItemMenu("create", bab_translate("Create"), "javascript:Start('".$GLOBALS['babUrlScript']."?tg=contact&idx=create&bliste=1')");
-		if( $count > 0 )
-			{
-			$babBody->addItemMenu("delete", bab_translate("Delete"), "javascript:(submitForm('delete'))");
-			}
 		break;
 	}
 

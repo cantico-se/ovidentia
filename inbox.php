@@ -59,6 +59,7 @@ function listMails($accid, $criteria, $reverse, $start)
 			$this->datename = bab_translate("Date");
 			$this->uncheckall = bab_translate("Uncheck all mails");
 			$this->checkall = bab_translate("Check all mails");
+			$this->deletealt = bab_translate("Delete");
 
 			if( $reverse )
 				{
@@ -193,7 +194,7 @@ function listMails($accid, $criteria, $reverse, $start)
 					$this->msgfromurlname = $headinfo->from[0]->personal;
 				$arr = imap_mime_header_decode($this->msgfromurlname);
 				$this->msgfromurlname = htmlentities($arr[0]->text);
-				$this->msgfromurl = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=inbox&idx=view&accid=".$this->accid."&msg=".$this->msgid."&criteria=".$this->criteria."&reverse=".$this->reverse."')";
+				$this->msgfromurl = $GLOBALS['babUrlScript']."?tg=inbox&idx=view&accid=".$this->accid."&msg=".$this->msgid."&criteria=".$this->criteria."&reverse=".$this->reverse;
 				//$this->msgfromurl = $GLOBALS['babUrlScript']."?tg=inbox&idx=view&accid=".$this->accid."&msg=".$this->msgid."&criteria=".$this->criteria."&reverse=".$this->reverse;
 				$arr = imap_mime_header_decode($headinfo->subject);
 				$this->msgsubjecturlname = htmlentities($arr[0]->text);
@@ -290,6 +291,7 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 		var $addname;
 		var $addcontact;
 		var $babCss;
+		var $babMeta;
 		var $criteria;
 		var $reverse;
 		var $start;
@@ -318,6 +320,7 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 			$this->reverse = $reverse;
 			$this->start = $start;
 			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
+			$this->babMeta = bab_printTemplate($this,"config.html", "babMeta");
 
 			$this->replyurl = $GLOBALS['babUrlScript']."?tg=mail&idx=reply&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse."&idreply=".$msg;	$this->replyaurl = $GLOBALS['babUrlScript']."?tg=mail&idx=replyall&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse."&idreply=".$msg."&all=1";
 			$this->forwardurl = $GLOBALS['babUrlScript']."?tg=mail&idx=forward&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse."&idreply=".$msg."&all=1&fw=1";
@@ -430,7 +433,7 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 					$firstn = $arr[0];
 					$lastn = $arr[1];
 					}
-				$this->addurl = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=contact&idx=create&firstname=".$firstn."&lastname=".$lastn."&email=".$this->arrto[$i][1]."&bliste=0')";
+				$this->addurl = $GLOBALS['babUrlScript']."?tg=contact&idx=create&firstname=".$firstn."&lastname=".$lastn."&email=".$this->arrto[$i][1]."&bliste=0";
 				$this->addname = $this->arrto[$i][0]. " &lt;" . $this->arrto[$i][1] . "&gt;";
 				$i++;
 				return true;
@@ -458,7 +461,7 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 					$firstn = $arr[0];
 					$lastn = $arr[1];
 					}
-				$this->addurl = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=contact&idx=create&firstname=".$firstn."&lastname=".$lastn."&email=".$this->arrfrom[$i][1]."&bliste=0')";
+				$this->addurl = $GLOBALS['babUrlScript']."?tg=contact&idx=create&firstname=".$firstn."&lastname=".$lastn."&email=".$this->arrfrom[$i][1]."&bliste=0";
 				$this->addname = $this->arrfrom[$i][0]. " &lt;" . $this->arrfrom[$i][1] . "&gt;";
 				$i++;
 				return true;
@@ -485,7 +488,7 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 					$firstn = $arr[0];
 					$lastn = $arr[1];
 					}
-				$this->addurl = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=contact&idx=create&firstname=".$firstn."&lastname=".$lastn."&email=".$this->arrcc[$i][1]."&bliste=0')";
+				$this->addurl = $GLOBALS['babUrlScript']."?tg=contact&idx=create&firstname=".$firstn."&lastname=".$lastn."&email=".$this->arrcc[$i][1]."&bliste=0";
 				$this->addname = $this->arrcc[$i][0]. " &lt;" . $this->arrcc[$i][1] . "&gt;";
 				$i++;
 				return true;
@@ -806,8 +809,6 @@ switch($idx)
 		$babBody->addItemMenu("list", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=inbox&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse);
 		$babBody->addItemMenu("refresh", bab_translate("Refresh"), $GLOBALS['babUrlScript']."?tg=inbox&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse);
 		$babBody->addItemMenu("compose", bab_translate("Compose"), "javascript:Start('".$GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse."')");
-		if( $nbm['count'] > 0)
-			$babBody->addItemMenu("delete", bab_translate("Delete"), "javascript:(submitForm('delete'))");
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);

@@ -24,6 +24,7 @@ bab_updateUserSettings();
 $babSkinPath = $babInstallPath."skins/".$babSkin."/";
 $babScriptPath = $babInstallPath."scripts/";
 $babEditorImages = $babInstallPath."scripts/".$babLanguage."/";
+$babOvidentiaJs = $babScriptPath."ovidentia.js";
 
 $babMonths = array(1=>bab_translate("January"), bab_translate("February"), bab_translate("March"), bab_translate("April"),
                         bab_translate("May"), bab_translate("June"), bab_translate("July"), bab_translate("August"),
@@ -83,6 +84,7 @@ function printBody()
 			$this->babBanner = "";
 			$this->babMeta = "";
 
+			$this->babJs = $GLOBALS['babScriptPath']."ovidentia.js";
 			$this->babCss = bab_printTemplate($this, "config.html", "babCss");
 			$this->babLogoLT = bab_printTemplate($this, "config.html", "babLogoLT");
 			$this->babLogoRT = bab_printTemplate($this, "config.html", "babLogoRT");

@@ -79,7 +79,12 @@
 </tr>
 <tr> 
 <td class="BabTopicsAuthorBackground" nowrap width="80%">{ author }</td>
-<td class="BabTopicsAuthorBackground" align="right" nowrap width="20%"><a class="BabTopicsFooterLink" href="{ commentsurl }">{ commentsname }</a>&nbsp;&nbsp;&nbsp;<a class="BabTopicsFooterLink" href="{ moreurl }">{ morename }</a></td>
+<td class="BabTopicsAuthorBackground" align="right" nowrap width="20%"><a href="{ printurl }" target="_blank"><img src="{ babSkinPath }images/Puces/Print.gif" border="0" alt="{ printable }"></a>&nbsp;&nbsp;&nbsp;<a class="BabTopicsFooterLink" href="{ commentsurl }">{ commentsname }</a>&nbsp;&nbsp;&nbsp;
+<!--#if blen "> 0" -->
+<a class="BabTopicsFooterLink" href="{ moreurl }">{ morename }</a></td>
+<!--#else blen -->
+{ morename }
+<!--#endif blen -->
 </tr>
 </table>
 <br>

@@ -113,7 +113,7 @@ function addComment($topics, $article, $subject, $com="")
 				$this->username = $BAB_SESS_USER;
 				}
 			$db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_ARTICLES_TBL." where id='$article'";
+			$req = "select title from ".BAB_ARTICLES_TBL." where id='$article'";
 			$res = $db->db_query($req);
 			$arr = $db->db_fetch_array($res);
 			$this->titleval = $arr['title'];
@@ -121,9 +121,15 @@ function addComment($topics, $article, $subject, $com="")
 				$this->msie = 1;
 			else
 				$this->msie = 0;
-			$this->urlsee = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=topman&idx=viewa&item=".$article."');";
+			//$this->urlsee = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=topman&idx=viewa&item=".$article."');";
+			$this->urlsee = $GLOBALS['babUrlScript']."?tg=topman&idx=viewa&item=".$article;
 			$res = $db->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$topics."' and archive='Y'");
 			list($this->nbarch) = $db->db_fetch_row($res);
+			$arr = $db->db_fetch_array($db->db_query("select mod_com from ".BAB_TOPICS_TBL." where id='".$topics."'"));
+			if( $arr['mod_com'] == "Y" )
+				$this->notcom = bab_translate("Note: for this topic, comments are moderated");
+			else
+				$this->notcom = "";
 			}
 		}
 

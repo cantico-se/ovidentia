@@ -1,33 +1,5 @@
 
 <!--#begin contactslist -->
-<script language="javascript">
-function onCheckAll(ctrlPrefix, state)
-{
-	var i;
-	var objCtrl;
-
-	for (i = 0; i < document.forms.listform.elements.length; i++)
-		{
-		objCtrl = document.forms.listform.elements[i];
-		if (objCtrl.name.substring(0,ctrlPrefix.length) == ctrlPrefix)
-			objCtrl.checked = state;
-		}
-}
-function submitForm(cmd) 
-{ 
-if( typeof document.forms.listform != "object" ) return;
-document.forms.listform.idx.value = cmd;
-document.forms.listform.submit();
-}
-
-function Start(page)
-{
-	var dummy;
-	OpenWin = this.open(page, "", "width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes");
-}
-
-</script>
-
 <form method="post" action="{ babPhpSelf }" name="listform">
 <input type="hidden" name="tg" value="contacts">
 <input type="hidden" name="idx" value="delete">
@@ -37,7 +9,7 @@ function Start(page)
 <td> 
 <table class="BabMailBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
 <tr> 
-<td class="BabLetterlists" colspan="9"> 
+<td class="BabLetterlists" colspan="5"> 
 <!--#if allselected "== 1" -->
 { allname }&nbsp;&nbsp; 
 <!--#else allselected -->
@@ -51,7 +23,9 @@ function Start(page)
 <!--#endif selected -->
 <!--#endin getnextselect -->
 </td>
-</tr>
+<td class="BabLetterlists" align="right">&nbsp;
+<a class="BabAlphabetLink" href="javascript: var t=document.open('{ addurl }', '', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ addcontact }</a>
+</td></tr>
 <tr> 
               
 <td class="BabSiteAdminSmall" width="1%"><a href="javascript:onCheckAll('item', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('item', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
@@ -66,23 +40,23 @@ function Start(page)
 <td valign="middle" width="1%"> 
 <input type="checkbox" name="item[]" value="{ arr[id] }">
 </td>
-<td valign="middle" width="20%" nowrap><a class="BabNameEmailLink" href="{ url }">{ 
+<td valign="middle" width="20%" nowrap><a class="BabNameEmailLink" href="javascript: var t=document.open('{ url }', '', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ 
 urlname }</a></td>
 <!--#if accid "!= 0" -->
-<td width="20%" nowrap><a class="BabNameEmailLink" href="{ urlmail }">{ arr[email] }</a></td>
+<td width="20%" nowrap><a class="BabNameEmailLink" href="javascript: var t=document.open('{ urlmail }', '', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ arr[email] }</a></td>
 <!--#else accid -->
 <td width="20%" nowrap><a href="mailto:{ arr[email] }" target=_top class="BabNameEmailLink">{ 
 arr[email] }</a></td>
 <!--#endif accid -->
-<td class="BabFontBackground" valign="middle" width="20%">&nbsp;{ arr[compagny] 
-}</td>
-<td class="BabFontBackground" valign="middle" width="20%">&nbsp;{ arr[businesstel] 
-}</td>
-<td class="BabFontBackground" valign="middle" width="20%">&nbsp;{ arr[mobiletel] 
-}</td>
+<td class="BabFontBackground" valign="middle" width="20%">&nbsp;{ arr[compagny] }</td>
+<td class="BabFontBackground" valign="middle" width="20%">&nbsp;{ arr[businesstel] }</td>
+<td class="BabFontBackground" valign="middle" width="20%">&nbsp;{ arr[mobiletel] }</td>
 </tr> 
 <!--#endin getnext -->
-</table>
+<tr> 
+<td class="BabSiteAdminSmall" width="1%" align="center"><a href="javascript:submitForm('delete','listform')"><img src="{ babSkinPath }images/Puces/PuceDelete.png" alt="{ deletealt }" width="20" height="20" border="0"></a></td>
+<td class="BabSiteAdminSmall" colspan="5">&nbsp;</td>
+</tr></table>
 </td>
 </tr>
 </table>

@@ -32,8 +32,9 @@ function listArticles($topics, $newc)
 
 		function temp($topics, $newc)
 			{
+			$this->printable = bab_translate("Print Friendly");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='$topics' and confirmed='Y' and archive='N' order by date desc";
+			$req = "select id, title, head, LENGTH(body) as blen from ".BAB_ARTICLES_TBL." where id_topic='$topics' and confirmed='Y' and archive='N' order by date desc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			$this->topics = $topics;
@@ -56,6 +57,8 @@ function listArticles($topics, $newc)
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->author = bab_translate("by") . " ". bab_getArticleAuthor($this->arr['id']). " - ". bab_getArticleDate($this->arr['id']);
 				$this->content = bab_replace($this->arr['head']);
+				$this->blen = $this->arr['blen'];
+				$this->printurl = $GLOBALS['babUrlScript']."?tg=articles&idx=Print&topics=".$this->topics."&article=".$this->arr['id'];
 
 				if( $this->com)
 					{
@@ -134,6 +137,7 @@ function listOldArticles($topics, $pos)
 			$this->bottomname = "";
 			$this->nextname = "";
 			$this->prevname = "";
+			$this->printable = bab_translate("Print Friendly");
 			$this->db = $GLOBALS['babDB'];
 
 			$res = $this->db->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='$topics' and confirmed='Y' and archive='Y'");
@@ -174,7 +178,7 @@ function listOldArticles($topics, $pos)
 				$this->barch = false;
 
 
-			$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='$topics' and confirmed='Y' and archive='Y' order by date desc";
+			$req = "select id, title, head, LENGTH(body) as blen from ".BAB_ARTICLES_TBL." where id_topic='$topics' and confirmed='Y' and archive='Y' order by date desc";
 			if( $total > MAX_ARTICLES)
 				{
 				$req .= " limit ".$pos.",".MAX_ARTICLES;
@@ -198,6 +202,8 @@ function listOldArticles($topics, $pos)
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->author = bab_translate("by") . " ". bab_getArticleAuthor($this->arr['id']). " - ". bab_getArticleDate($this->arr['id']);
 				$this->content = bab_replace($this->arr['head']);
+				$this->blen = $this->arr['blen'];
+				$this->printurl = $GLOBALS['babUrlScript']."?tg=articles&idx=Print&topics=".$this->topics."&article=".$this->arr['id'];
 
 				if( $this->com)
 					{
