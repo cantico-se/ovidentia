@@ -436,15 +436,15 @@ function addDbDirectory($name, $description, $fields, $rw, $rq, $ml)
 		$res = $db->db_query("select * from ".ADDON_FIELDS_TBL);
 		while( $arr = $db->db_fetch_array($res))
 			{
-			if( in_array($arr['id'], $rw))
+			if( count($rw) > 0 && in_array($arr['id'], $rw))
 				$modifiable = "Y";
 			else
 				$modifiable = "N";
-			if( in_array($arr['id'], $rq))
+			if( count($rq) > 0 && in_array($arr['id'], $rq))
 				$required = "Y";
 			else
 				$required = "N";
-			if( in_array($arr['id'], $ml))
+			if( count($ml) > 0 && in_array($arr['id'], $ml))
 				$multilignes = "Y";
 			else
 				$multilignes = "N";
