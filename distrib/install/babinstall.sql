@@ -670,9 +670,10 @@ CREATE TABLE bab_mail_domains (
 
 CREATE TABLE bab_mail_accounts (
 	id INT (11) UNSIGNED not null AUTO_INCREMENT,
+	account_name VARCHAR (255) not null,
 	name VARCHAR (255) not null,
 	email VARCHAR (255) not null,
-	account VARCHAR (255) not null,
+	login VARCHAR (255) not null,
 	password blob not null,
 	domain INT (11) UNSIGNED not null,
 	owner INT (11) UNSIGNED not null,

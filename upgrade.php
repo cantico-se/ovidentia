@@ -2385,6 +2385,28 @@ if( !$res)
 	return $ret;
 	}
 
+$req = "ALTER TABLE `bab_mail_accounts` ADD `account_name` VARCHAR( 255 ) NOT NULL AFTER `id`";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_SITES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "SELECT id,account FROM `bab_mail_accounts`";
+$res = $db->db_query($req);
+while ($arr = $db->db_fetch_array($res))
+	 $db->db_query("UPDATE `bab_mail_accounts` SET `account_name` = '".$arr['account']."' WHERE `id` = '".$arr['id']."' LIMIT 1");
+
+$req = "ALTER TABLE `bab_mail_accounts` CHANGE `account` `login` VARCHAR( 255 ) NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_SITES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+
 return $ret;
 }
 ?>
