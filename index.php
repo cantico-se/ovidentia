@@ -87,6 +87,7 @@ $babSiteName = substr($babSiteName, 0, 30);
 include_once "base.php";
 include $babInstallPath."utilit/utilit.php";
 unset($BAB_SESS_LOGGED);
+if ($babNTauth) include "utilit/ntident.php";
 
 $babPhpSelf = substr($PHP_SELF,-strpos(strrev($PHP_SELF),'/'));
 $babUrlScript = $babUrl.$babPhpSelf;

@@ -1,6 +1,7 @@
 /************************************************************************/
 Juin 2003: Version 4.0.5
 /************************************************************************/
+- Enhanced OvML ( See documentation )
 - Users can update their personnal information stored in Ovidentia directory
 - Now Administrators can disable user's calendar
 - Fixed some minors bugs
@@ -10,7 +11,7 @@ Juin 2003: Version 4.0.4
 /************************************************************************/
 - Enhanced OvML ( See documentation )
 - New HTML editor ( HTMLArea )
-- Sections can be otptional
+- Sections can be optional
 - Now you can attach a template to one topic category for use in topics display
 - Now you can attach a template to one topic for use in articles display
 - Now you can attach an article's model to one topic for editing
