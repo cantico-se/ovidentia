@@ -202,7 +202,7 @@ if( isset($add))
 	{
 	if( isset($submit))
 		{
-		if(!updateCategory($item, $category, $description, $managerid, $lang))
+		if(!updateCategory($item, $category, $faqdesc, $managerid, $lang))
 			$idx = "Modify";
 		}
 	else if( isset($faqdel))

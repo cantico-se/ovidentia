@@ -222,7 +222,7 @@ if(!isset($idx))
 
 if( isset($add))
 	{
-	saveCategory($category, $description, $managerid, $lang);
+	saveCategory($category, $faqdesc, $managerid, $lang);
 	}
 
 switch($idx)
