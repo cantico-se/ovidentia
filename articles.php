@@ -892,31 +892,33 @@ function viewArticle($article)
 			$req = "select * from ".BAB_ARTICLES_TBL." where id='$article'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
-			if( bab_isUserTopicManager($this->arr['id_topic']))
+			$this->countf = 0;
+			$this->countcom = 0;
+			if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $this->arr['id_topic']) )
 				{
 				$this->content = bab_replace($this->arr['body']);
 				$this->head = bab_replace($this->arr['head']);
+
+				$this->resf = $this->db->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$article."'");
+				$this->countf = $this->db->db_num_rows($this->resf);
+
+				if( $this->countf > 0 )
+					{
+					$this->battachments = true;
+					}
+				else
+					{
+					$this->battachments = false;
+					}
+
+				$this->rescom = $this->db->db_query("select * from ".BAB_COMMENTS_TBL." where id_article='".$article."' and confirmed='Y' order by date desc");
+				$this->countcom = $this->db->db_num_rows($this->rescom);
 				}
 			else
 				{
 				$this->content = "";
 				$this->head = bab_translate("Access denied");
 				}
-
-			$this->resf = $this->db->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$article."'");
-			$this->countf = $this->db->db_num_rows($this->resf);
-
-			if( $this->countf > 0 )
-				{
-				$this->battachments = true;
-				}
-			else
-				{
-				$this->battachments = false;
-				}
-
-			$this->rescom = $this->db->db_query("select * from ".BAB_COMMENTS_TBL." where id_article='".$article."' and confirmed='Y' order by date desc");
-			$this->countcom = $this->db->db_num_rows($this->rescom);
 			}
 
 		function getnextdoc()

@@ -1579,7 +1579,6 @@ function addDocumentArticleDraft($idart, $docf_name, $doc_f, $description, &$mes
 			if( bab_isMagicQuotesGpcOn())
 				{
 				$filename = stripslashes($filename);
-				$description = stripslashes($description);
 				}
 
 			if( isset($GLOBALS['babFileNameTranslation']))
