@@ -918,7 +918,9 @@ function bab_getDocumentArticle( $idf )
 	header("Content-Length: ". $fsize."\n");
 	header("Content-transfert-encoding: binary"."\n");
 	$fp=fopen($fullpath,"rb");
-	print fread($fp,$fsize);
+	while(!feof($fp)) {
+		echo fread($fp,4096);
+		}
 	fclose($fp);
 	}
 
