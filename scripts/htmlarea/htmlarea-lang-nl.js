@@ -37,7 +37,8 @@ HTMLArea.I18N = {
 		undo:			"Ongedaan maken",
 		redo:			"Terug uitvoeren",
 		babarticle:		"Ovidentia Article link",
-		babfaq:			"Ovidentia FAQ link"
+		babfaq:			"Ovidentia FAQ link",
+		babovml:		"Ovidentia OVML link"
 	}
 };
 
