@@ -462,6 +462,27 @@ function bab_getUserId( $name )
 		return 0;
 	}
 
+function bab_getUserGroups($id = "")
+	{
+	$arr = array();
+	if( empty($id))
+		$id = $GLOBALS['BAB_SESS_USERID'];
+	if( !empty($id))
+		{
+		$db = $GLOBALS['babDB'];
+		$res = $db->query("select ".BAB_GROUPS_TBL.".id, ".BAB_GROUPS_TBL.".name from ".BAB_USERS_GROUPS_TBL." join ".BAB_GROUPS_TBL." where id_object=".$id." and ".BAB_GROUPS_TBL.".id=".BAB_USERS_GROUPS_TBL.".id_group");
+		if( $res && $db->db->num_rows($res) > 0 )
+			{
+			while( $r = $db->db_fetch_array($res)
+				{
+				$arr['id'][] = $r['id'];
+				$arr['name'][] = $r['name'];
+				}
+			}
+		}
+	return $arr;
+	}
+
 function bab_replace( $txt )
 {
 	$db = $GLOBALS['babDB'];
@@ -477,8 +498,12 @@ function bab_replace( $txt )
 				$topic = trim($tab[0]);
 				if( $topic[0] == '"' )
 					$topic = substr($topic, 1);
+				if( $topic[strlen($topic)-1] == '"' )
+					$topic = substr($topic, 0, -1);
 
 				$article = trim($tab[1]);
+				if( $article[0] == '"' )
+					$article = substr($article, 1);
 				if( $article[strlen($article)-1] == '"' )
 					$article = substr($article, 0, -1);
 				$req = "select * from ".BAB_TOPICS_TBL." where category='".addslashes($topic)."'";
@@ -494,7 +519,7 @@ function bab_replace( $txt )
 				$tab = preg_split("/[,]+/", $m[1][$k]);
 				if( sizeof( $tab ) > 1 )
 					{
-					$article = trim($tab[0]);
+					$article = trim($tab[1]);
 					$req = "select * from ".BAB_TOPICS_TBL." where category='".addslashes(trim($tab[0]))."'";
 					$res = $db->db_query($req);
 					if( $res && $db->db_num_rows($res) > 0)
