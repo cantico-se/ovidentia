@@ -221,7 +221,7 @@ function searchKeyword($item , $option = "OR")
 			$this->acces['a'] = true;
 			$this->acces['b'] = false;
 			$this->acces['c'] = false;
-			$this->acces['d'] = $GLOBALS['BAB_SESS_LOGGED'];
+			$this->acces['d'] = false;
 			$this->acces['e'] = false;
 			$this->acces['f'] = $GLOBALS['BAB_SESS_LOGGED'] && bab_contactsAccess();
 			$this->acces['g'] = $this->countdirs;
@@ -242,6 +242,15 @@ function searchKeyword($item , $option = "OR")
 				if(bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $row['id']))
 					{
 					$this->acces['c'] = true;
+					break;
+					}
+				}
+			$res = $this->db->db_query("select id from ".BAB_GROUPS_TBL." WHERE notes='Y'");
+			while( $row = $this->db->db_fetch_array($res))
+				{
+				if(bab_isMemberOfGroup($row['id']))
+					{
+					$this->acces['d'] = true;
 					break;
 					}
 				}
