@@ -1,130 +1,49 @@
-body {  
-	margin: 0;
-	padding: 0;
-	background-color: #FFFFFF;
-	}
-	
-body, td, th {
-	font-family: Verdana,Geneva,Arial,Helvetica,sans-serif;
-	font-size: .70em;
-	color: #000000;
-}
+/* PRIVATE CSS (do not include this file in third party skins) */
+@import url('../../../styles/core.css');
 
-/* input */
-input { 
-	color:#000000;
-	background-color:#FFFFFF;
-	border:#000000 1px solid;
-	font-weight:bold;
-	}
-	
 
- form {
- 	margin: 0;
-	padding: 0;
-	}
+/* PUBLIC CSS */
 
- 
-/* general links */
-a:link, 
-a:visited {
-	color: #3366FF;
-	}
-a:hover {
-	color: red;
-	}
-
-/* copyrightlink */
-a.copy:link, 
-a.copy:active, 
-a.copy:visited {
-	color: #000000; 
-	}
-
-.BabHeaderBackground,
 .BabCalendarBodyBadMonthBackground {
-	background-color: #CCCCCC;
+	background-color: #ccc;
 	}
 
 .BabContentBackground,
-.BabCnxMenuBackground,
-.BabMenuActiveBackground,
-.BabSectionBackground,
-.BabDayCalendarTitleFont,
-.BabToChoiceMailPopupCadreFontBackground {
-	 background-color: #111166;
-	 color:#FFFFFF;
+.BabMenuActiveBackground {
+	 background-color: #116;
+	 color:#fff;
 	 font-weight:bold;
 	 }
 
+.BabCalendarMenuActiveBackground {
+	background-color: #fff; 
+	color: #116; 
+	font-weight: bold;
+	}
+
 .BabLoginCadreBackground { 
-	background-color: #FFFFFF;
+	background-color: #fff;
 	}
 	 
-.BabMenuTabBackground,
+
 .BabBodyTitleBackground,
-.BabForumNavigationBackground,
-.BabToChoiceMailPopupTitleFontBackground,
-.BabLoginMenuBackground,
-.BabTitleBg,
-.BabTitleSectionBackground,
-.BabSummaryTitleFontBackground,
-.BabCalendarCadreBackground,
-.BabCalendarMenuBackground,
-.BabForumTitle,
-.BabFaqAdminTitleBackground { 
+.BabLoginMenuBackground { 
 	background-color: #D1D1D9; 
-	color: #000000; 
+	color: #000; 
 	font-weight: bold;
 	}
 
-.BabCalendarMenuActiveBackground {
-	background-color: #FFFFFF; 
-	color: #111166; 
-	font-weight: bold;
-	}
-	
 
-/* background content */
-.BabSummaryContentBackground,
-.BabForumTopicsNavTreeDate,
-.BabForumTopicsNavTreeAuthor,
-.BabFaqAdminBodyFontBackground,
-.BabFaqBodyFontBg,
 .BabSiteAdminFontBackground,
-.BabToChoiceMailPopupBodyFontBackground,
-.BabFontBackground,
-.BabDatesFont,
-.BabMenuBackground,
-.BabSectionsColBackground,
-.BabFooterBackground,
 .BabTopicsBackground,
-.BabTopicsButtonBackground { 
-	background-color: #FFFFFF; 
-	color: #000000;  
+.BabTopicsButtonBackground {
+	background-color: #fff; 
+	color: #000;
 	}
+
 
 .Babhighlight { 
-	background-color: #FF0000;
-	}
-
-	
-.BabSloganFont { 
-	color: #FFFFFF; 
-	font-weight: bold;
-	font-size: 1.1em;
-	}
-
-a.BabCnxLink:Link,
-a.BabCnxLink:Visited {
-	color: #FFFFFF;  
-	font-weight: bolder;
-	font-size: 1.05em;
-	text-decoration:none;
-	}
-	
-a.BabCnxLink:Hover {
-	color:#CCCCCC;
+	background-color: #f00;
 	}
 
 a.BabMenuLink,
@@ -138,30 +57,26 @@ a.BabMenuLink:Hover {
 	}
 
 
-
 /* background and font error messages  */
-.BabErrorMessage,
-.BabWarningTitleBackground {
-	background-color: #FFFFFF; 
-	color: #FF3333;  
+.BabErrorMessage {
+	background-color: #fff; 
+	color: #f33;  
 	font-weight: bold;
 	}
 	
-.BabWarningBodyBackground,
-.BabWarningObjectBackground  {
-	background-color: #FFFFFF; 
-	color: #000000;  
+.BabWarningBodyBackground  {
+	background-color: #fff; 
+	color: #000;  
 	font-weight: bold;
 	}
 
-a.BabWarningLinkColor,
-a.BabWarningLinkColor:Link,
-a.BabWarningLinkColor:Visited { 
-	color: #0000CC; 
+.BabWarningBodyBackground a:Link,
+.BabWarningBodyBackground a:Visited { 
+	color: #00c; 
 	font-weight: bold;
 	}
 
-a.BabWarningLinkColor:Hover {
+.BabWarningBodyBackground a:Hover {
 	color: #FF3333; 
 	}
 
@@ -170,10 +85,9 @@ a.BabWarningLinkColor:Hover {
 	color: #000000; 
 	background-color: #FFFFFF;  
 	font-weight: bold;
-	font-size: .7em;
 	}
 
-.BabLetterlists a,
+.BabLetterlists a:link,
 a.BabAlphabetLink:Link,
 a.BabAlphabetLink:Visited { 
 	color: #009933; 
@@ -762,75 +676,6 @@ a.BabSiteAdminFileLink:Hover {
 	color: #4990B1; 
 	text-decoration: underline;
 	}
-
-
-
-/**** SCRIPT FOR FORMATTING MESSAGES WYSIWYG ********************/
-
-.ButtonNormal {
-
-	BORDER-RIGHT: buttonface 1px solid; BORDER-TOP: buttonface 1px solid; 
-	BORDER-LEFT: buttonface 1px solid; BORDER-BOTTOM: buttonface 1px solid; 
-	BACKGROUND-color: #CCCCCC }
-
-.ButtonPressed {
-
-	BORDER-RIGHT: buttonhighlight 1px solid; BORDER-TOP: buttonshadow 1px solid; 
-	BORDER-LEFT: buttonshadow 1px solid; BORDER-BOTTOM: buttonhighlight 1px solid; 
-	BACKGROUND-color: #CCCCCC }
-
-.ButtonMouseOver {
-
-	BORDER-RIGHT: buttonshadow 1px solid; BORDER-TOP: buttonhighlight 1px solid; 
-	BORDER-LEFT: buttonhighlight 1px solid; BORDER-BOTTOM: buttonshadow 1px solid; 
-	BACKGROUND-color: #CCCCCC }
-
-.ButtonDisabled {
-
-	BORDER-RIGHT: buttonface 1px solid; BORDER-TOP: buttonface 1px solid; 
-	BORDER-LEFT: buttonface 1px solid; BORDER-BOTTOM: buttonface 1px solid; 
-	BACKGROUND-color: #CCCCCC }
-
-.Image {
-
-	WIDTH: 22px; HEIGHT: 22px }
-
-.Toolbar {
-
-	BORDER-RIGHT: buttonshadow 1px solid; BORDER-TOP: buttonhighlight 1px solid; 
-	BORDER-LEFT: buttonhighlight 1px solid; BORDER-BOTTOM: buttonshadow 1px solid; 
-	HEIGHT: 30px;background-color: #CCCCCC }
-
-.Divider {
-
-	BORDER-RIGHT: buttonhighlight 1px solid; BORDER-TOP: buttonshadow 1px solid; 
-	BORDER-LEFT: buttonshadow 1px solid; WIDTH: 2px; 
-	BORDER-BOTTOM: buttonhighlight 1px solid; HEIGHT: 24px;background-color: #CCCCCC }
-
-.Swatch {
-
-	BORDER-RIGHT: buttonshadow 1px solid; BORDER-TOP: buttonhighlight 1px solid; 
-	BORDER-LEFT: buttonhighlight 1px solid; WIDTH: 3px; 
-	BORDER-BOTTOM: buttonshadow 1px solid; HEIGHT: 24px;background-color: #CCCCCC }
-
-.Space {
-
-	WIDTH: 0px; HEIGHT: 24px;background-color: buttonface }
-
-.List {
-
-	background-color: #FFFFFF; color: #000000; FONT: 8px Verdana, Arial, sans-serif  }
-
-.Text {
-
-	FONT: 8pt Verdana, Arial, sans-serif }
-
-.Heading {
-
-	background-color: #FFFFFF; color: #000000 }
-
-/**** END Classes USED BY THE SCRIPT FOR FORMATTING MESSAGES WYSIWYG */
-
 
 
 /*BAB_EDITOR_CSS_BEGIN*/

@@ -10,38 +10,29 @@
 window.focus();
 //-->
 </script>
-<BODY>
-<br>
-<table class="BabFaqBodyFontBg" border="0" width="99%" cellpadding="2" cellspacing="0" align="center">
-<tr>
-<td>
-<A name="top"></A>
-<span style="font-size:200%;font-weight:bold">{ subcatname }</span><BR><BR>
+<body>
+<div class="BabTopicsBackground">
+	<a name="top"></a>
+	<dl>
+		<dt><h3>{ subcatname }</h3></dt>
 
-      <TABLE width="100%" cellpadding="2">
-       <!--#in getnext --> <TR>
-	      <TD><span style="font-size:110%;font-weight:bold"><A href="#{ idq }">{ question }</A></span></TD>
-        </TR><!--#endin getnext -->
-      </TABLE>
+		   <!--#in getnext -->
+			<dd><h5><a href="#{ idq }">{ question }</a></h5></dd>
+			<!--#endin getnext -->
+	</dl>
 
-      <br>
-<!--#in getnextbis -->
+		  <br />
 
-      <TABLE width="100%">
-        <TR>
-	      <TD><span style="font-size:120%;font-weight:bold">{ question }</span><a name="{ idq }"></a></TD>
-        </TR>
-        <TR>
-	      <TD>{ response }</TD>
-        </TR>
-        <TR>
-	      <TD align="right" valign="middle"><A href="#top">{ return }</A></TD>
-        </TR>
-      </TABLE>
-<!--#endin getnextbis -->
-</tr>
-</table>
-</BODY>
+	<dl>
+	<!--#in getnextbis -->
+		 <dt><h4>{ question }</h4><a name="{ idq }"></a></dt>
+			<dd>
+				{ response }
+				<p align="right"><a href="#top">{ return }</a></p>
+			</dd>
+	<!--#endin getnextbis -->
+</div>
+</body>
 <!--#end subcategory -->
 
 
@@ -59,27 +50,27 @@ window.focus();
 </script>
 <BODY>
 <br>
-<A name="top"></A>
-<table class="BabFaqBodyFontBg" border="0" width="99%" cellpadding="2" cellspacing="0" align="center">
-<tr>
-<td colspan="2"><span style="font-size:200%;font-weight:bold">{ faqname }</span></td>
-</tr>
-<!--#in getnextchild -->
-<tr>
-<td width="1"><IMG src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="1" height="1" border="0" alt=""></td>
-<td width="99%">
-<table width="100%" border="0" cellpadding="0" cellspacing="0">
-<tr>
-<!--#in getnextpad -->
-<TD width="1"><IMG src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="12" height="1" border="0" alt=""></TD>
-<!--#endin getnextpad -->
-<TD width="1"><IMG src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="5" height="1" border="0" alt=""></TD>
-<td><span style="font-size:130%;font-weight:bold">{ subcatname }</span></td>
-</tr>
-</table>
-</td>
-</tr>
-<!--#in getnextquestion -->
+<a name="top"></a>
+<table class="BabTopicsBackground" border="0" width="99%" cellpadding="2" cellspacing="0" align="center">
+	<tr>
+	<td colspan="2"><h3>{ faqname }</h3></td>
+	</tr>
+	<!--#in getnextchild -->
+	<tr>
+		<td width="1"><IMG src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="1" height="1" border="0" alt=""></td>
+		<td width="99%">
+			<table width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tr>
+			<!--#in getnextpad -->
+			<TD width="1"><IMG src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="12" height="1" border="0" alt=""></TD>
+			<!--#endin getnextpad -->
+			<TD width="1"><IMG src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="5" height="1" border="0" alt=""></TD>
+			<td><h4>{ subcatname }</h4></td>
+			</tr>
+			</table>
+		</td>
+	</tr>
+	<!--#in getnextquestion -->
 <tr>
 <td width="1"><IMG src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="1" height="1" border="0" alt=""></td>
 <td width="99%">
@@ -100,22 +91,22 @@ window.focus();
 </table><br>
 
 
-<table class="BabFaqBodyFontBg" border="0" width="99%" cellpadding="2" cellspacing="0" align="center">
+<table class="BabTopicsBackground" border="0" width="99%" cellpadding="2" cellspacing="0" align="center">
 <!--#in getnextchild -->
 <tr>
 <td>
 <A name="top"></A>
-<span style="font-size:200%;font-weight:bold">{ subcatname }</span>
+<h3>{ subcatname }</h3>
 <!--#in getnextquestion -->
 <TABLE width="100%">
 <TR>
-<TD><span style="font-size:120%;font-weight:bold">{ questionname }</span><a name="{ idq }"></a></TD>
+<TD><h5>{ questionname }</h5><a name="{ idq }"></a></TD>
 </TR>
 <TR>
 <TD>{ response }</TD>
 </TR>
 <TR>
-<TD align="right" valign="middle"><A href="#top">{ return }</A></TD>
+<TD align="right" valign="middle"><a href="#top">{ return }</a></TD>
 </TR>
 </TABLE>
 <!--#endin getnextquestion -->

@@ -182,20 +182,11 @@ window.focus();
 					<td class="BabLoginMenuBackground"> 
 						<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 						<!--#in getnextcom -->
-						<!--#if altbg -->
-						<tr class="BabSummaryContentBackground">
-						<!--#else altbg -->
-						<tr class="BabTopicsAuthorBackground">
-						<!--#endif altbg -->
+						<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
 						<td>{ authorname }</td>
-						<td align="left"><span style="font-Size:9">{ commenttitle }</span>
-						</td>
+						<td align="left">{ commenttitle }</td>
 						</tr>
-						<!--#if altbg -->
-						<tr class="BabSummaryContentBackground">
-						<!--#else altbg -->
-						<tr class="BabTopicsAuthorBackground">
-						<!--#endif altbg -->
+						<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
 						<td>{ commentdate }</td>
 						<td align="left">{ commentbody }&nbsp;
 						</td>

@@ -20,7 +20,7 @@
 <tr> 
 	<td class="BabContentBackground" valign="top"> 
 <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
-<tr class="BabMenuBackground"> 
+<tr> 
 	<td> 
 		<table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
 		<tr> 
@@ -32,7 +32,7 @@
 			<td align="center" valign="middle" nowrap width="20%" class="BabMenuActiveBackground"> 
 			<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0">{ menutext }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"></td>
 			<!--#else enabled -->
-			<td width="20%" align="center" valign="middle" nowrap class="BabMenuTabBackground"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"><a class="BabMenuLink" href="{ menuurl }" { menuattribute }>{ 
+			<td width="20%" align="center" valign="middle" nowrap class="BabLoginMenuBackground"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"><a class="BabMenuLink" href="{ menuurl }" { menuattribute }>{ 
 			 menutext }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"></td>
 			<!--#endif enabled -->
 			<!--#endin getNextMenu -->
@@ -59,7 +59,7 @@
 			<!--#if title -->
 			<table border="0" width="100%" cellpadding="1" cellspacing="0" align="center">
 			  <tr>
-				<td class="BabTitleBg" align="center" >{ title }</td>
+				<td class="BabLoginMenuBackground" align="center" >{ title }</td>
 			</tr></table><br>
 			<!--#endif title --> 
 			{ content }
@@ -297,7 +297,7 @@ function fulltext(el)
 </td>
 </tr>
 <tr> 
-<td class="BabCalendarCadreBackground" width="100%" align="center" valign="middle"> 
+<td class="BabLoginMenuBackground" width="100%" align="center" valign="middle"> 
 <span id="parententityfulltext" style="width:100%"></span>
 <select name="parentid" style="width:100%" onchange="fulltext(this)">
 <!--#in getnextparent -->
@@ -459,7 +459,7 @@ function closepop()
 </script>
 <table border="0" width="100%" cellpadding="1" cellspacing="0" align="center">
 <tr>
-<td class="BabTitleBg" align="center" >{ roletitle }</td>
+<td class="BabLoginMenuBackground" align="center" >{ roletitle }</td>
 </tr></table><br>
 <form method="post" action="{ babPhpSelf }" name="listform">
 <input type="hidden" name="tg" value="flbchart">
@@ -555,7 +555,7 @@ valign="middle">{  name }:
 <!--#begin ocrmodify -->
 <table border="0" width="100%" cellpadding="1" cellspacing="0" align="center">
 <tr>
-<td class="BabTitleBg" align="center" >{ roletitle }</td>
+<td class="BabLoginMenuBackground" align="center" >{ roletitle }</td>
 </tr></table><br>
 <form name="ocrcreate" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="flbchart">

@@ -5,7 +5,7 @@
 <td class="BabLoginCadreBackground"> 
 <table width="100%" border="0" cellspacing="0" cellpadding="2">
         <tr> 
-          <td class="BabSummaryTitleFontBackground" width="90%" valign="middle">{ newevents }</td>
+          <td class="BabLoginMenuBackground" width="90%" valign="middle">{ newevents }</td>
         </tr>
       </table>
 </td>
@@ -14,41 +14,24 @@
 <table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
 <tr>
 <td class="BabLoginCadreBackground"> 
-<table border="0" width="100%" cellpadding="3" cellspacing="0">
-<!--#in getevent -->
-<!--#if alternate "== 1" -->
-<tr>
-<td  class="BabSummaryContentBackground">{ startdate }</td>
-<td  class="BabSummaryContentBackground"><a class="BabSummaryLinkColor" href="javascript:bab_popup('{ titleurl }',2)">{ 
-title }</a></td>
-<td  class="BabSummaryContentBackground" align="center" width="20%">{ enddate }</td>
-</tr>
-<!--#else alternate -->
-<tr>
-<td class="BabSummaryContentBackground">{ startdate }</td>
-<td class="BabSummaryContentBackground"><a class="BabSummaryLinkColor" href="javascript:bab_popup('{ titleurl }',2)">{ title }</a>
-</td>
-<td class="BabSummaryContentBackground" align="center">{ enddate }</td>
-</tr>
-<!--#endif alternate -->
-<!--#endin getevent -->
-<!--#in getgrpevent -->
-<!--#if alternate "== 1" -->
-<tr>
-<td class="BabSummaryContentBackground">{ startdate }</td>
-<td class="BabSummaryContentBackground"><a class="BabSummaryLinkColor" href="javascript:bab_popup('{ titleurl }',2)">{ 
-title }</a></td>
-<td class="BabSummaryContentBackground" align="center">{ enddate }</td>
-</tr>
-<!--#else alternate -->
-<tr>
-<td class="BabSummaryContentBackground">{ startdate }</td>
-<td class="BabSummaryContentBackground"><a class="BabSummaryLinkColor" href="javascript:bab_popup('{ titleurl }',2)">{ title }</a></td>
-<td class="BabSummaryContentBackground" align="center">{ enddate }</td>
-</tr>
-<!--#endif alternate -->
-<!--#endin getgrpevent -->
-</table>
+	<table border="0" width="100%" cellpadding="3" cellspacing="0">
+	<!--#in getevent -->
+	
+	<!--#if alternate --><tr class="BabSiteAdminFontBackground"> <!--#else alternate --><tr class="BabForumBackground1"><!--#endif alternate -->
+		<td>{ startdate }</td>
+		<td><a class="BabSummaryLinkColor" href="javascript:bab_popup('{ titleurl }',2)">{ title }</a></td>
+		<td align="center" width="20%">{ enddate }</td>
+	</tr>
+	<!--#endin getevent -->
+
+	<!--#in getgrpevent -->
+	<!--#if alternate --><tr class="BabSiteAdminFontBackground"> <!--#else alternate --><tr class="BabForumBackground1"><!--#endif alternate -->
+		<td>{ startdate }</td>
+		<td><a class="BabSummaryLinkColor" href="javascript:bab_popup('{ titleurl }',2)">{ title }</a></td>
+		<td align="center">{ enddate }</td>
+	</tr>
+	<!--#endin getgrpevent -->
+	</table>
 </td>
 </tr>
 </table>
@@ -61,7 +44,7 @@ title }</a></td>
 <td class="BabLoginCadreBackground"> 
 <table width="100%" border="0" cellspacing="0" cellpadding="2">
         <tr> 
-          <td class="BabSummaryTitleFontBackground" width="90%" valign="middle">{ newmails }</td>
+          <td class="BabLoginMenuBackground" width="90%" valign="middle">{ newmails }</td>
         </tr>
       </table>
 </td>
@@ -70,13 +53,12 @@ title }</a></td>
 <table border="0" cellpadding="2" cellspacing="0" align="center" width="95%">
 <tr>
 <td class="BabLoginCadreBackground"> 
-<table class="BabSummaryContentBackground" border="0" width="100%" cellpadding="3" cellspacing="0">
+<table class="BabLoginMenuBackground" border="0" width="100%" cellpadding="3" cellspacing="0">
 <!--#in getmail -->
-<tr> 
-<td class="BabSummaryContentBackground" nowrap valign="middle" width="1%"><a 
-class="BabSummaryLinkColor" href="{ domainurl }">{ domain }&nbsp;</a></td>
-<td class="BabSummaryNbrMessage" valign="middle">&nbsp;{ nbemails }</td>
-</tr>
+	<tr> 
+		<td nowrap valign="middle" width="1%"><a href="{ domainurl }">{ domain }&nbsp;</a></td>
+		<td valign="middle">&nbsp;{ nbemails }</td>
+	</tr>
 <!--#endin getmail -->
 </table>
 </td>

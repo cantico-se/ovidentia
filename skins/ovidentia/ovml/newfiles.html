@@ -6,7 +6,7 @@
 	<td class="BabLoginCadreBackground"> 
 		<table width="100%" border="0" cellspacing="0" cellpadding="2">
 		<tr> 
-		<td class="BabSummaryTitleFontBackground" width="90%" valign="middle"><OFTranslate text="New files"></td>
+		<td class="BabLoginMenuBackground" width="90%" valign="middle"><OFTranslate text="New files"></td>
 		</tr>
 		</table>
 	</td>
@@ -15,11 +15,11 @@
 <table border="0" cellpadding="2" cellspacing="0" align="center" width="95%">
 	<tr>
 	<td class="BabLoginCadreBackground"> 
-		<table class="BabSummaryContentBackground" border="0" width="100%" cellpadding="3" cellspacing="0">
-			<tr>
-				<td class="BabTitleSmallFontBg"><OFTranslate text="Date">&nbsp;</td>
-				<td class="BabTitleSmallFontBg"><OFTranslate text="File">&nbsp;</td>
-				<td class="BabTitleSmallFontBg"><OFTranslate text="Author">&nbsp;</td>
+		<table border="0" width="100%" cellpadding="3" cellspacing="0">
+			<tr class="BabSiteAdminTitleFontBackground">
+				<td><OFTranslate text="Date">&nbsp;</td>
+				<td><OFTranslate text="File">&nbsp;</td>
+				<td><OFTranslate text="Author">&nbsp;</td>
 			</tr>
 			<OCRecentFiles from_lastlog="<OVnbdays>">
 				<OCIfEqual expr1="<OVCIndex>" expr2="0">
@@ -28,10 +28,10 @@
 				</script>
 				</OCIfEqual>
 			<OFAOModulus expr1="<OVCIndex>" expr2="2" saveas="modulo">
-			<tr class="<OCIfEqual expr1="<OVmodulo>" expr2="0">BabSummaryContentBackground</OCIfEqual><OCIfNotEqual expr1="<OVmodulo>" expr2="0">BabTopicsAuthorBackground</OCIfNotEqual>">
+			<tr class="<OCIfEqual expr1="<OVmodulo>" expr2="0">BabSiteAdminFontBackground</OCIfEqual><OCIfNotEqual expr1="<OVmodulo>" expr2="0">BabForumBackground1</OCIfNotEqual>">
 				<td width="120"><OVFileDate date="%S %T"></td>
 				<td colspan="2"><OCFolders folderid="<OVFileFolderId>"><OVFolderName></OCFolders>/ <OVFilePath></td>
-			<tr class="<OCIfEqual expr1="<OVmodulo>" expr2="0">BabSummaryContentBackground</OCIfEqual><OCIfNotEqual expr1="<OVmodulo>" expr2="0">BabTopicsAuthorBackground</OCIfNotEqual>">
+			<tr class="<OCIfEqual expr1="<OVmodulo>" expr2="0">BabSiteAdminFontBackground</OCIfEqual><OCIfNotEqual expr1="<OVmodulo>" expr2="0">BabForumBackground1</OCIfNotEqual>">
 				<td>&nbsp;</td>
 				<td nowrap valign="middle"><a class="BabSummaryLinkColor" href="javascript: Start('<OVFilePopupUrl>', 'OviFile', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');" title="<OVFileDescription>"><OVFileName>&nbsp;</a></td>
 				<td width="130"><OVFileAuthor author="%F %L"></td>

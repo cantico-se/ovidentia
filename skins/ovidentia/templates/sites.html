@@ -1050,15 +1050,15 @@ function hideShowCnx()
 	<tr> 
 		<td class="BabSiteAdminTitleFontBackground" width="80%" align="left" nowrap valign="middle" colspan="2">{ disclaimertxt }</td>
 	</tr>
-	<tr class="BabSummaryContentBackground">
+	<tr class="BabSiteAdminFontBackground">
 		<td align="right"><input type="checkbox" name="cdp" value="Y" { dpchecked }></td>
 		<td>{ disclaimer }&nbsp;(&nbsp;<a href="javascript: bab_popup('{ urleditdp }',6);">{ editdptxt }</a>&nbsp;)</td>
 	</tr>
-	<tr class="BabSummaryContentBackground">
+	<tr class="BabSiteAdminFontBackground">
 		<td align="right"><input type="checkbox" name="cen" value="Y" { enchecked } /></td>
 		<td>{ emailnotification }</td>
 	</tr>
-	<tr class="BabSummaryContentBackground">
+	<tr class="BabSiteAdminFontBackground">
 		<td align="right">
 			<select name="group">
 				<option value="0">{ none }</option>
@@ -1084,11 +1084,7 @@ function hideShowCnx()
 		<td width="10%" align="left" nowrap>{ multilignes }</td>
 	</tr>
 	<!--#in getnextfield -->
-	<!--#if altbg -->
-	<tr class="BabSummaryContentBackground">
-	<!--#else altbg -->
-	<tr class="BabTopicsAuthorBackground">
-	<!--#endif altbg -->
+	<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
 	<!--#if disabled -->
 		<td><input type="checkbox" { rwchecked } disabled />
 			<input type="hidden" name="rw[]" value="{ fieldid }" />&nbsp;{ fieldn }</td>

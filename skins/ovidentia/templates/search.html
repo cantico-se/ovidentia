@@ -412,7 +412,7 @@ setselects(document.forms.searchForm.g_directory);
 	 { intro }<br />
 	 
 	<!--#if BAB_SESS_LOGGED -->
-	 <a class="BabDayCalendarEventLink" href="mailto:{ authormail }"><!--#endif BAB_SESS_LOGGED -->{ artauthor }<!--#if BAB_SESS_LOGGED --></a><!--#endif BAB_SESS_LOGGED --> - <span class="BabForumTopicsNavTreeDate"><i>{ artdate }</i></span>
+	 <a class="BabDayCalendarEventLink" href="mailto:{ authormail }"><!--#endif BAB_SESS_LOGGED -->{ artauthor }<!--#if BAB_SESS_LOGGED --></a><!--#endif BAB_SESS_LOGGED --> - <em>{ artdate }</em>
 	 </p>
 	</li>
 	<!--#endin getnextart -->
@@ -439,7 +439,7 @@ setselects(document.forms.searchForm.g_directory);
 
 	 { intro }<br />
 	 
-	 <!--#if BAB_SESS_LOGGED --><a class="BabDayCalendarEventLink" href="mailto:{ authormail }"><!--#endif BAB_SESS_LOGGED -->{ artauthor }<!--#if BAB_SESS_LOGGED --></a><!--#endif BAB_SESS_LOGGED --> - <span class="BabForumTopicsNavTreeDate"><i>{ artdate }</i></span>
+	 <!--#if BAB_SESS_LOGGED --><a class="BabDayCalendarEventLink" href="mailto:{ authormail }"><!--#endif BAB_SESS_LOGGED -->{ artauthor }<!--#if BAB_SESS_LOGGED --></a><!--#endif BAB_SESS_LOGGED --> - <em>{ artdate }</em>
 	 </p>
 	</li>
 	<!--#endin getnextcom -->
@@ -457,7 +457,7 @@ setselects(document.forms.searchForm.g_directory);
 	<a class="BabFaqLink" href="{ posturl }">{ post }</a> 
 	[ <a href="javascript: Start('{ posturlpop }', 'OviSearchA', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ popup }</a> ]</strong><br />
 	 { intro }<br />
-	 { postauthor } - <span class="BabForumTopicsNavTreeDate"><i>{ postdate }</i></span>
+	 { postauthor } - <em>{ postdate }</em>
 	 </p>
 	</li>
 <!--#endin getnextfor -->
@@ -587,7 +587,7 @@ setselects(document.forms.searchForm.g_directory);
 	<strong>{ agecat } &gt; 
 	<a class="BabFaqLink" href="javascript:bab_popup('{ ageurl }')" title="{ agecatdesc }">{ agetitle }</a></strong><br /> 
 	 { agedescription }<br />
-	 <!--#if agecreator --><!--#if BAB_SESS_LOGGED --><!--#if agecreatormail --><a class="BabDayCalendarEventLink" href="mailto:{ agecreatormail }"><!--#endif agecreatormail --><!--#endif BAB_SESS_LOGGED -->{ agecreator }<!--#if BAB_SESS_LOGGED --><!--#if agecreatormail --></a><!--#endif agecreatormail --><!--#endif BAB_SESS_LOGGED --> -  <!--#endif agecreator --><span class="BabForumTopicsNavTreeDate"><i>{ agestart_date }</i></span> <span class="BabErrorMessage">&gt;</span> <span class="BabForumTopicsNavTreeDate"><i>{ ageend_date }</i></span>
+	 <!--#if agecreator --><!--#if BAB_SESS_LOGGED --><!--#if agecreatormail --><a class="BabDayCalendarEventLink" href="mailto:{ agecreatormail }"><!--#endif agecreatormail --><!--#endif BAB_SESS_LOGGED -->{ agecreator }<!--#if BAB_SESS_LOGGED --><!--#if agecreatormail --></a><!--#endif agecreatormail --><!--#endif BAB_SESS_LOGGED --> -  <!--#endif agecreator --><em>{ agestart_date }</em> <span class="BabErrorMessage">&gt;</span> <em>{ ageend_date }</em>
 	  </p>
  </li>
 <!--#endin getnextage -->
@@ -669,20 +669,12 @@ window.focus();
 					<td class="BabLoginMenuBackground"> 
 						<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 						<!--#in getnextcom -->
-						<!--#if altbg -->
-						<tr class="BabSummaryContentBackground">
-						<!--#else altbg -->
-						<tr class="BabTopicsAuthorBackground">
-						<!--#endif altbg -->
+						<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
 						<td>{ authorname }</td>
 						<td align="left"><span style="font-Size:9">{ commenttitle }</span>
 						</td>
 						</tr>
-						<!--#if altbg -->
-						<tr class="BabSummaryContentBackground">
-						<!--#else altbg -->
-						<tr class="BabTopicsAuthorBackground">
-						<!--#endif altbg -->
+						<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
 						<td>{ commentdate }</td>
 						<td align="left">{ commentbody }&nbsp;
 						</td>
@@ -839,7 +831,7 @@ window.focus();
 <td class="BabFaqQuestion" nowrap valign="middle">{ arr[question] }</td>
   </tr>
 <tr colspan="2"> 
-<td class="BabFaqBodyFontBg" valign="top">{ arr[response] }</td>
+<td class="BabSiteAdminFontBackground" valign="top">{ arr[response] }</td>
 </tr>
 </table>
 <br>

@@ -41,15 +41,15 @@ setTimeout('SessTimeoutCtrl()',60000);
 <td align="center" valign="middle"> { babBanner } </td>
 <td align="center" valign="middle"> { babLogoRT } </td>
 </tr>
-<tr class="BabCnxMenuBackground"> 
+<tr class="BabMenuActiveBackground"> 
 <td align="left"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><!--#if bsearch "== 1" --><a class="BabCnxLink" href="{ searchurl }">{ search }</a><!--#endif bsearch --></td>
 <td class="BabSloganFont" valign="middle">{ babSlogan }</td>
 <td align="right" valign="bottom"><a class="BabCnxLink" href="{ homeurl }">{ home }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"><a class="BabCnxLink" href="{ logurl }">{ login }</a></td>
 </tr>
-<tr class="BabMenuBackground"> 
+<tr class="BabSiteAdminFontBackground"> 
 <td colspan="3"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="10" border="0"></td>
 </tr>
-<tr class="BabMenuBackground"> 
+<tr class="BabSiteAdminFontBackground"> 
 <td><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
 <td> 
 <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
@@ -62,7 +62,7 @@ setTimeout('SessTimeoutCtrl()',60000);
 <td align="center" valign="middle" nowrap width="20%" class="BabMenuActiveBackground"> 
 <img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0">{ menutext }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"></td>
 <!--#else enabled -->
-<td width="20%" align="center" valign="middle" nowrap class="BabMenuTabBackground"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"><a class="BabMenuLink" href="{ menuurl }" { menuattribute }>{ 
+<td width="20%" align="center" valign="middle" nowrap class="BabLoginMenuBackground"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"><a class="BabMenuLink" href="{ menuurl }" { menuattribute }>{ 
  menutext }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"></td>
 <!--#endif enabled -->
 <!--#endin getNextMenu -->
@@ -76,7 +76,7 @@ setTimeout('SessTimeoutCtrl()',60000);
 <td><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
 </tr>
 <tr> 
-<td class="BabSectionsColBackground" valign="top"> 
+<td class="BabTopicsBackground" valign="top"> 
 <table width="100%" border="0" cellspacing="0" cellpadding="5">
 <tr>
 <td valign="top"><!--#in getNextSectionLeft -->{ sectionleft }<!--#endin getNextSectionLeft --></td>
@@ -92,7 +92,7 @@ setTimeout('SessTimeoutCtrl()',60000);
 </tr>
 </table>
 </td>
-<td class="BabSectionsColBackground" align="right" valign="top"> 
+<td class="BabTopicsBackground" align="right" valign="top"> 
 <table width="100%" border="0" cellspacing="0" cellpadding="5">
 <tr>
 <td>
@@ -106,10 +106,11 @@ setTimeout('SessTimeoutCtrl()',60000);
 </td>
 </tr>
 <tr> 
-<td class="BabFooterBackground" align="center" valign="middle"> { babLogoLB } </td>
-<td class="BabFooterBackground" align="center" valign="bottom"><a href="mailto:{ babAdminEmail }" class="copy">Webmaster</a>&nbsp;-&nbsp;Powered by <A HREF="http://www.ovidentia.org/" target="_Blank" class="copy">Ovidentia - { version }</a><BR>Ovidentia&trade; is a registered trademark of <a href="http://www.cantico.fr" target="_blank" class="copy">Cantico</a>. <br>
+<td class="BabTopicsBackground" align="center" valign="middle"> { babLogoLB } </td>
+<td class="BabTopicsBackground" align="center" valign="bottom">
+	<address><a href="mailto:{ babAdminEmail }">Webmaster</a>&nbsp;-&nbsp;Powered by <a href="http://www.ovidentia.org/" target="_Blank">Ovidentia - { version }</a><br />Ovidentia&trade; is a registered trademark of <a href="http://www.cantico.fr" target="_blank">Cantico</a>. </address>
 </td>
-<td class="BabFooterBackground" align="center" valign="middle"> { babLogoRB } 
+<td class="BabTopicsBackground" align="center" valign="middle"> { babLogoRB } 
 </td>
 </tr>
 </table>

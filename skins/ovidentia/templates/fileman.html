@@ -294,61 +294,55 @@ window.focus();
 //-->
 </script>
 </HEAD>
-<BODY class="BabBackground">
+<BODY>
 <br>
-<table class="BabMailBackground" width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabBodyTitleBackground" width="40%">{ grouptxt }</td>
-<td class="BabBodyTitleBackground" width="20%">{ diskspacetxt }</td>
-<td class="BabBodyTitleBackground" width="20%">{ allowedspacetxt }</td>
-<td class="BabBodyTitleBackground" width="20%">{ remainingspacetxt }</td>
-</tr>
-<!--#in getprivatespace -->
-<tr> 
-<td class="BabSiteAdminFontBackground" width="40%">{ groupname }</td>
-<td class="BabSiteAdminFontBackground" width="20%">{ diskspace }</td>
-<td class="BabSiteAdminFontBackground" width="20%">{ allowedspace }</td>
-<td class="BabSiteAdminFontBackground" width="20%">{ remainingspace }</td>
-</tr>
-<!--#endin getprivatespace -->
-<!--#in getnextgrp -->
-<tr> 
-<td class="BabSiteAdminFontBackground" width="40%">{ groupname }</td>
-<td class="BabSiteAdminFontBackground" width="20%">{ diskspace }</td>
-<td class="BabSiteAdminFontBackground" width="20%">{ allowedspace }</td>
-<td class="BabSiteAdminFontBackground" width="20%">{ remainingspace }</td>
-</tr>
-<!--#endin getnextgrp -->
-<!--#in getnextmgrp -->
-<tr> 
-<td class="BabSiteAdminFontBackground" width="40%">{ groupname }</td>
-<td class="BabSiteAdminFontBackground" width="20%">{ diskspace }</td>
-<td class="BabSiteAdminFontBackground" width="20%">{ allowedspace }</td>
-<td class="BabSiteAdminFontBackground" width="20%">{ remainingspace }</td>
-</tr>
-<!--#endin getnextmgrp -->
-<tr> 
-<td class="BabSiteAdminFontBackground" width="40%">&nbsp;</td>
-<td class="BabSiteAdminFontBackground" width="20%">&nbsp;</td>
-<td class="BabSiteAdminFontBackground" width="20%">&nbsp;</td>
-<td class="BabSiteAdminFontBackground" width="20%">&nbsp;</td>
-</tr>
-<!--#in getglobalspace -->
-<tr> 
-<td class="BabSiteAdminFontBackground" width="40%">{ groupname }</td>
-<td class="BabSiteAdminFontBackground" width="20%">{ diskspace }</td>
-<td class="BabSiteAdminFontBackground" width="20%">{ allowedspace }</td>
-<td class="BabSiteAdminFontBackground" width="20%">{ remainingspace }</td>
-</tr>
-<!--#endin getglobalspace -->
-<tr> 
-<td class="BabMailBackground"> 
-<input type="button" name="cancel" value="{ cancel }"  onClick="window.close()">
-</td>
-<td class="BabMailBackground">&nbsp;</td>
-</tr>
+<table class="BabSiteAdminFontBackground" width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr class="BabSiteAdminTitleFontBackground"> 
+		<td width="40%">{ grouptxt }</td>
+		<td width="20%">{ diskspacetxt }</td>
+		<td width="20%">{ allowedspacetxt }</td>
+		<td width="20%">{ remainingspacetxt }</td>
+	</tr>
+	<!--#in getprivatespace -->
+	<tr> 
+		<td>{ groupname }</td>
+		<td>{ diskspace }</td>
+		<td>{ allowedspace }</td>
+		<td>{ remainingspace }</td>
+	</tr>
+	<!--#endin getprivatespace -->
+	<!--#in getnextgrp -->
+	<tr> 
+		<td>{ groupname }</td>
+		<td>{ diskspace }</td>
+		<td>{ allowedspace }</td>
+		<td>{ remainingspace }</td>
+	</tr>
+	<!--#endin getnextgrp -->
+	<!--#in getnextmgrp -->
+	<tr> 
+		<td>{ groupname }</td>
+		<td>{ diskspace }</td>
+		<td>{ allowedspace }</td>
+		<td>{ remainingspace }</td>
+	</tr>
+	<!--#endin getnextmgrp -->
+	<tr> 
+		<td colspan="4">&nbsp;</td>
+	</tr>
+	<!--#in getglobalspace -->
+	<tr> 
+		<td>{ groupname }</td>
+		<td>{ diskspace }</td>
+		<td>{ allowedspace }</td>
+		<td>{ remainingspace }</td>
+	</tr>
+	<!--#endin getglobalspace -->
+	<tr> 
+		<td class="BabSiteAdminTitleFontBackground" colspan="4"><input type="button" name="cancel" value="{ cancel }"  onClick="window.close()"></td>
+	</tr>
 </table>
-<br>
+
 </BODY>
 </HTML>
 <!--#end diskspace -->
@@ -366,19 +360,15 @@ window.focus();
 //-->
 </script>
 </HEAD>
-<BODY class="BabBackground">
-<br>
-<table width="90%" border="0" cellspacing="0" cellpadding="0" align="center">
-<tr>
-<td class="BabMailBackground" align="center">
-<table border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
-<tr>
-<td class="BabBodyTitleBackground" align="center"> { title } </td>
-</tr>
+<BODY>
+<br />
+
+<table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
+	<tr>
+	<td class="BabLoginMenuBackground" align="center"> { title } </td>
+	</tr>
 </table>
-</td>
-</tr>
-</table>
+
 
 <!--#if access -->
 <br>

@@ -18,10 +18,10 @@ window.focus();
 <td class="BabSectionBackground"> 
 <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
 <tr> 
-<td class="BabTitleSectionBackground"> 
+<td class="BabLoginMenuBackground"> 
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
 <tr> 
-<td class="BabTitleSectionBackground" width="20" align="center" valign="middle"><img src="{ babSkinPath }images/Puces/PuceAgenda.gif" width="15" height="15" border="0" alt=""></td>
+<td class="BabLoginMenuBackground" width="20" align="center" valign="middle"><img src="{ babSkinPath }images/Puces/PuceAgenda.gif" width="15" height="15" border="0" alt=""></td>
 <td class="BabTitleSectionFont" width="130" align="center" valign="middle">{ curmonth } { curyear }</td>
 </tr>
 </table>
@@ -157,8 +157,8 @@ function bab_calendar(year,month)
    firstDay.setDate(1);
    startDay = thisDate.getDay();
 
-   out = '<table class="class="BabSectionBackground" width="150" cellpadding="2" cellspacing="0" border="0" align="center">';
-   out += '<tr class="BabTitleSectionBackground"><td align="left">';
+   out = '<table class="class="BabContentBackground" width="150" cellpadding="2" cellspacing="0" border="0" align="center">';
+   out += '<tr class="BabLoginMenuBackground"><td align="left">';
    if (month > 0)
 		out += '<a href="javascript:prev_month()" title="{ t_previous_month }"><img src="{ babSkinPath }images/Puces/arrowPrev3a.gif" border="0" alt="{ t_previous_month }" /></a>';
 	out += '&nbsp;</td><td align="center" colspan="5">'+monthName[thismonth]+' '+year+'</td><td align="right">&nbsp;';

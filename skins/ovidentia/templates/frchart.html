@@ -281,7 +281,7 @@ location.href = '#ENT{ coeid }';
 	<!--#endif first -->
 	<td valign="bottom">
 		<table cellspacing="0" height="65" width="240" cellpadding="0" border="0" style="border:#000000 1px solid;">
-			<tr id="ENT{ oeid }" class="BabForumNavigationBackground">
+			<tr id="ENT{ oeid }" class="BabLoginMenuBackground">
 				<td>
 				{ nodecell }
 				</td>
@@ -347,7 +347,7 @@ location.href = '#ENT{ coeid }';
 		<td width="2">&nbsp;</td>
 		 <td width="180">
       <table width="180" border="0" cellspacing="0" cellpadding="1"  style="border:#000000 1px solid;">
-        <tr  id="ENT{ oeid }"  class="BabForumNavigationBackground"> 
+        <tr  id="ENT{ oeid }"  class="BabLoginMenuBackground"> 
           <td width="100%">{ nodecell }</td>
         </tr>
       </table>
@@ -551,7 +551,7 @@ if (disp)
           <!--#endin getnextcol -->
         </tr>
         <!--#in getnext -->
-        <!--#if altbg --><tr class="BabFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg --> 
+        <!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg --> 
           <td align="center" valign="middle" width="1%" > 
             <!--#if accid "!= 0" -->
             <a class="BabNameEmailLink" href="javascript: Start('{ urlmail }', '', 'width=600,height=700,status=no,resizable=yes,top=20,left=200,scrollbars=yes');">
@@ -643,7 +643,7 @@ if (disp)
           <!--#endin getnextcol -->
         </tr>
         <!--#in getnext -->
-        <!--#if altbg --><tr class="BabFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg --> 
+        <!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg --> 
           <td align="center" valign="middle" width="1%" >&nbsp;</td>
           <td align="center" valign="middle" width="1%" ><a class="BabNameEmailLink" href="javascript:updateFlbFrame('{ uoeid }&idx=detr&iduser={ userid }');updateFltFrame('{ uoeid }&idx=listr')"><img src="{ babSkinPath }images/Puces/contact.png" border="0"></a></td>
           <!--#in getnextcolval -->
@@ -766,7 +766,7 @@ function org_mm()
 </tr>
 <!--#in getnextrow -->
 <!--#if altbg -->
-<tr class="BabFontBackground">
+<tr class="BabSiteAdminFontBackground">
 <!--#else altbg -->
 <tr class="BabForumBackground1">
 <!--#endif altbg --> 

@@ -11,7 +11,7 @@
 class="BabFaqLink" href="{ urlcategory }">{ namecategory }</a> </td>
 </tr>
 <tr> 
-<td class="BabFaqBodyFontBg" valign="top">{ arr[description] } </td>
+<td class="BabTopicsBackground" valign="top">{ arr[description] } </td>
 </tr>
 </table>
 </td>
@@ -398,7 +398,7 @@ savef(document.qmod.response);
 <td class="BabFaqQuestion" nowrap valign="middle">{ arr[question] }</td>
 </tr>
 <tr> 
-<td class="BabFaqBodyFontBg" valign="top">{ arr[response] }</td>
+<td class="BabSiteAdminFontBackground" valign="top">{ arr[response] }</td>
 </tr>
 <tr> 
 <td class="BabFaqTitleFontBg" valign="top" align="right"><a class="BabFaqLink" 
@@ -427,7 +427,7 @@ window.focus();
 <td class="BabFaqQuestion" nowrap valign="middle">{ arr[question] }</td>
 </tr>
 <tr> 
-<td class="BabFaqBodyFontBg" valign="top">{ arr[response] }</td>
+<td class="BabSiteAdminFontBackground" valign="top">{ arr[response] }</td>
 </tr>
 </table>
 <br>
@@ -441,9 +441,9 @@ window.focus();
 <!--#end popupquestion -->
 
 <!--#begin tableofcontents -->
-<table class="BabFaqBodyFontBg" border="0" width="99%" cellpadding="2" cellspacing="0" align="center">
+<table class="BabTopicsBackground" border="0" width="99%" cellpadding="2" cellspacing="0" align="center">
 <tr>
-<td colspan="2"><span style="font-size:200%;font-weight:bold">{ faqname }</span></td>
+<td colspan="2"><h3>{ faqname }</h3></td>
 </tr>
 <!--#in getnextchild -->
 <tr>
@@ -455,7 +455,7 @@ window.focus();
 <TD width="1"><IMG src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="12" height="1" border="0" alt=""></TD>
 <!--#endin getnextpad -->
 <TD width="1"><IMG src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="5" height="1" border="0" alt=""></TD>
-<td><span style="font-size:130%;font-weight:bold"><!--#if countq --><a href="{ subcaturl }">{ subcatname }</a><!--#else countq -->{ subcatname }<!--#endif countq --></span></td>
+<td><h4><!--#if countq --><a href="{ subcaturl }">{ subcatname }</a><!--#else countq -->{ subcatname }<!--#endif countq --></h4></td>
 </tr>
 </table>
 </td>
@@ -482,33 +482,28 @@ window.focus();
 <!--#end tableofcontents -->
 
 <!--#begin subcatquestions -->
-<table class="BabFaqBodyFontBg" border="0" width="99%" cellpadding="2" cellspacing="0" align="center">
+<table class="BabTopicsBackground" border="0" width="99%" cellpadding="2" cellspacing="0" align="center">
 <tr>
 <td>
-<A name="top"></A>
-<span style="font-size:200%;font-weight:bold">{ subcatname }</span><BR><BR>
+<a name="top"></a>
+	<dl>
+		<dt><h3>{ subcatname }</h3></dt>
 
-      <TABLE width="100%" cellpadding="2">
-       <!--#in getnext --> <TR>
-	      <TD><span style="font-size:110%;font-weight:bold"><A href="#{ idq }">{ question }</A></span></TD>
-        </TR><!--#endin getnext -->
-      </TABLE>
+		   <!--#in getnext -->
+			<dd><h5><a href="#{ idq }">{ question }</a></h5></dd>
+			<!--#endin getnext -->
+	</dl>
 
-      <br>
-<!--#in getnextbis -->
+		  <br />
 
-      <TABLE width="100%">
-        <TR>
-	      <TD><span style="font-size:120%;font-weight:bold">{ question }</span><a name="{ idq }"></a></TD>
-        </TR>
-        <TR>
-	      <TD>{ response }</TD>
-        </TR>
-        <TR>
-	      <TD align="right" valign="middle"><A href="#top">{ return }</A></TD>
-        </TR>
-      </TABLE>
-<!--#endin getnextbis -->
+	<dl>
+	<!--#in getnextbis -->
+		 <dt><h4>{ question }</h4><a name="{ idq }"></a></dt>
+			<dd>
+				{ response }
+				<p align="right"><a href="#top">{ return }</a></p>
+			</dd>
+	<!--#endin getnextbis -->
 </tr>
 </table>
 <!--#end subcatquestions -->
