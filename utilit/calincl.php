@@ -238,9 +238,9 @@ function getAvailableResourcesCalendars($bwrite = false)
 }
 
 
-function createEvent($idcals, $title, $description, $startdate, $enddate, $category, $color, $status, $hash='')
+function createEvent($idcals, $title, $description, $startdate, $enddate, $category, $color, $hash='')
 {
-	global $babDB, $babDB;
+	global $babDB, $babBody;
 
 	if( bab_isMagicQuotesGpcOn())
 		{
@@ -252,20 +252,59 @@ function createEvent($idcals, $title, $description, $startdate, $enddate, $categ
 	
 	$id_event = $babDB->db_insert_id();
 
+	$arrcals = array();
+
 	foreach($idcals as $id_cal)
 		{
+		$add = false;
 		$arr = $babBody->icalendars->getCalendarInfo($id_cal);
-		if( $arr['type'] == BAB_CAL_USER_TYPE && $arr['idowner'] ==  $GLOBALS['BAB_SESS_USERID'] )
+		switch($arr['type'])
 			{
-			$ustatus = BAB_CAL_STATUS_ACCEPTED;
-			}
-		else
-			{
-			$ustatus = $status;
+			case BAB_CAL_USER_TYPE:
+				if( $arr['idowner'] ==  $GLOBALS['BAB_SESS_USERID'] )
+					{
+					$add = true;
+					$ustatus = BAB_CAL_STATUS_ACCEPTED;
+					}
+				elseif( $arr['access'] == BAB_CAL_ACCESS_UPDATE )
+					{
+					$add = true;
+					$ustatus = BAB_CAL_STATUS_NONE;
+					}
+				elseif( $arr['access'] == BAB_CAL_ACCESS_FULL )
+					{
+					$add = true;
+					$ustatus = BAB_CAL_STATUS_ACCEPTED;
+					}
+				break;
+			case BAB_CAL_PUB_TYPE:
+				$ustatus = BAB_CAL_STATUS_ACCEPTED;
+				if( $arr['manager'] )
+					{
+					$add = true;
+					}
+				break;
+			case BAB_CAL_RES_TYPE:
+				$ustatus = BAB_CAL_STATUS_ACCEPTED;
+				if( $arr['manager'] )
+					{
+					$add = true;
+					}
+				break;
 			}
 
-		$babDB->db_query("INSERT INTO ".BAB_CAL_EVENTS_OWNERS_TBL." (id_event,id_cal, status) VALUES ('".$id_event."','".$id_cal."', '".$status."')");
+		if( $add )
+			{
+			$arrcals[] = $id_cal;
+			$babDB->db_query("INSERT INTO ".BAB_CAL_EVENTS_OWNERS_TBL." (id_event,id_cal, status) VALUES ('".$id_event."','".$id_cal."', '".$ustatus."')");
+			}
 		}
+
+	if( count($arrcals) == 0 )
+		{
+		$babDB->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id='".$id_event."'");
+		}
+	return $arrcals;
 }
 
 
@@ -711,104 +750,5 @@ function bab_deleteCalendar($idcal)
 		}
 	$babDB->db_query("delete from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_cal='".$idcal."'");	
 	$babDB->db_query("delete from ".BAB_CALENDAR_TBL." where id='".$idcal."'");	
-}
-
-
-
-function calendarchoice($formname)
-{
-class calendarchoice
-	{
-	function calendarchoice($formname)
-		{
-		$this->formname = $formname;
-		$this->db = $GLOBALS['babDB'];
-		$icalendars = &$GLOBALS['babBody']->icalendars;
-		$icalendars->initializeCalendars();
-		$this->selectedCalendars = !empty($_REQUEST['calid']) ? explode(',',$_REQUEST['calid']) : isset($icalendars->user_calendarids) ? explode(',',$icalendars->user_calendarids) : array();
-
-		$this->usrcalendarstxt = bab_translate('Users');
-		$this->grpcalendarstxt = bab_translate('Collectifs');
-		$this->rescalendarstxt = bab_translate('Resources');
-		$this->t_goright = bab_translate('Push right');
-		$this->t_goleft = bab_translate('Push left');
-
-		$this->resuser = $icalendars->usercal;
-		$this->respub = $icalendars->pubcal;
-		$this->resres = $icalendars->rescal;
-
-		if (!empty($icalendars->id_percal))
-			{
-			$this->personal = $icalendars->id_percal;
-			$this->selected = in_array($icalendars->id_percal, $this->selectedCalendars) ? 'selected' : '';
-			}
-		}
-
-	function getnextusrcal()
-		{
-		$out = list($this->id, $name) = each($this->resuser);
-		if ($out)
-			{
-			$this->name = isset($name['name']) ? $name['name'] : '';
-			$this->selected = in_array($this->id,$this->selectedCalendars) ? 'selected' : '';
-			}
-		return $out;
-		}
-
-	function getnextpubcal()
-		{
-		$out = list($this->id, $cal) = each($this->respub);
-		if ($out)
-			{
-			$this->name = $cal['name'];
-			$this->selected = in_array($this->id,$this->selectedCalendars) ? 'selected' : '';
-			}
-		return $out;
-		}
-
-	function getnextrescal()
-		{
-		$out = list($this->id, $cal) = each($this->resres);
-		if ($out)
-			{
-			$this->name = $cal['name'];
-			$this->selected = in_array($this->id,$this->selectedCalendars) ? 'selected' : '';
-			}
-		return $out;
-		}
-
-	function printhtml()
-		{
-		return bab_printTemplate($this,"calendar.html", "calendarchoice");
-		}
-	}
-
-$temp = new calendarchoice($formname);
-return $temp->printhtml();
-}
-
-
-function record_calendarchoice()
-{
-global $babBody;
-
-$selected = isset($_POST['selected_calendars']) ? $_POST['selected_calendars'] : array();
-
-if ($GLOBALS['BAB_SESS_LOGGED'])
-	{
-	$babBody->icalendars->user_calendarids = implode(',',$selected);
-	
-	$db = &$GLOBALS['babDB'];
-	list($n) = $db->db_fetch_array($db->db_query("SELECT COUNT(*) FROM ".BAB_CAL_USER_OPTIONS_TBL." WHERE id_user='".$GLOBALS['BAB_SESS_USERID']."'"));
-	if ($n > 0)
-		{
-		$db->db_query("UPDATE ".BAB_CAL_USER_OPTIONS_TBL." SET  user_calendarids='".$babBody->icalendars->user_calendarids."' WHERE id_user='".$GLOBALS['BAB_SESS_USERID']."'");
-		}
-	else
-		{
-		$db->db_query("insert into ".BAB_CAL_USER_OPTIONS_TBL." ( id_user, startday, allday, start_time, end_time, usebgcolor, elapstime, defaultview, work_days, week_numbers, user_calendarids) values ('".$GLOBALS['BAB_SESS_USERID']."', '1', 'N', '08:00:00', '18:00:00', 'Y', '30', '0', '1,2,3,4,5', 'N', '".$babBody->icalendars->user_calendarids."')");
-		}
-	}
-
 }
 ?>

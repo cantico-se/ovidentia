@@ -23,6 +23,7 @@
 ************************************************************************/
 include_once "base.php";
 include_once $babInstallPath."utilit/calincl.php";
+include_once $babInstallPath."utilit/evtincl.php";
 
 function displayAttendees($evtid, $idcal)
 {
@@ -217,8 +218,8 @@ function confirmEvent($evtid, $idcal, $bconfirm, $comment)
 				$bconfirm = BAB_CAL_STATUS_DECLINED;
 				}
 			$babDB->db_query("update ".BAB_CAL_EVENTS_OWNERS_TBL." set status='".$bconfirm."' where id_event='".$evtid."' and id_cal='".$idcal."'");
+			notifyEventApprobation($evtid, $bconfirm, $comment);
 			}
-
 		}
 }
 

@@ -325,8 +325,7 @@ class bab_icalendar
 					}
 				}
 			$this->events = array();
-			$res = $babDB->db_query("select ceo.*, ce.* from ".BAB_CAL_EVENTS_OWNERS_TBL." ceo left join ".BAB_CAL_EVENTS_TBL." ce on ceo.id_event=ce.id where ceo.id_cal='".$calid."' and ce.start_date <= '".$enddate."' and  ce.end_date >= '".$startdate."' order by ce.start_date asc");
-			//echo "select ceo.*, ce.* from ".BAB_CAL_EVENTS_OWNERS_TBL." ceo left join ".BAB_CAL_EVENTS_TBL." ce on ceo.id_event=ce.id where ceo.id_cal='".$calid."' and ce.start_date <= '".$enddate."' and  ce.end_date >= '".$startdate."' order by ce.start_date asc";
+			$res = $babDB->db_query("select ceo.*, ce.* from ".BAB_CAL_EVENTS_OWNERS_TBL." ceo left join ".BAB_CAL_EVENTS_TBL." ce on ceo.id_event=ce.id where ceo.id_cal='".$calid."' and ceo.status != '".BAB_CAL_STATUS_DECLINED."' and ce.start_date <= '".$enddate."' and  ce.end_date >= '".$startdate."' order by ce.start_date asc");
 			while( $arr = $babDB->db_fetch_array($res))
 				{
 				list($arr['nbowners']) = $babDB->db_fetch_row($babDB->db_query("select count(ceo.id_cal) from ".BAB_CAL_EVENTS_OWNERS_TBL." ceo where ceo.id_event='".$arr['id']."' and ceo.id_cal != '".$calid."'"));
@@ -482,4 +481,103 @@ class cal_wmdbaseCls
 
 	}
 }
+
+
+function calendarchoice($formname)
+{
+class calendarchoice
+	{
+	function calendarchoice($formname)
+		{
+		$this->formname = $formname;
+		$this->db = $GLOBALS['babDB'];
+		$icalendars = &$GLOBALS['babBody']->icalendars;
+		$icalendars->initializeCalendars();
+		$this->selectedCalendars = !empty($_REQUEST['calid']) ? explode(',',$_REQUEST['calid']) : isset($icalendars->user_calendarids) ? explode(',',$icalendars->user_calendarids) : array();
+
+		$this->usrcalendarstxt = bab_translate('Users');
+		$this->grpcalendarstxt = bab_translate('Collectifs');
+		$this->rescalendarstxt = bab_translate('Resources');
+		$this->t_goright = bab_translate('Push right');
+		$this->t_goleft = bab_translate('Push left');
+
+		$this->resuser = $icalendars->usercal;
+		$this->respub = $icalendars->pubcal;
+		$this->resres = $icalendars->rescal;
+
+		if (!empty($icalendars->id_percal))
+			{
+			$this->personal = $icalendars->id_percal;
+			$this->selected = in_array($icalendars->id_percal, $this->selectedCalendars) ? 'selected' : '';
+			}
+		}
+
+	function getnextusrcal()
+		{
+		$out = list($this->id, $name) = each($this->resuser);
+		if ($out)
+			{
+			$this->name = isset($name['name']) ? $name['name'] : '';
+			$this->selected = in_array($this->id,$this->selectedCalendars) ? 'selected' : '';
+			}
+		return $out;
+		}
+
+	function getnextpubcal()
+		{
+		$out = list($this->id, $cal) = each($this->respub);
+		if ($out)
+			{
+			$this->name = $cal['name'];
+			$this->selected = in_array($this->id,$this->selectedCalendars) ? 'selected' : '';
+			}
+		return $out;
+		}
+
+	function getnextrescal()
+		{
+		$out = list($this->id, $cal) = each($this->resres);
+		if ($out)
+			{
+			$this->name = $cal['name'];
+			$this->selected = in_array($this->id,$this->selectedCalendars) ? 'selected' : '';
+			}
+		return $out;
+		}
+
+	function printhtml()
+		{
+		return bab_printTemplate($this,"calendar.html", "calendarchoice");
+		}
+	}
+
+$temp = new calendarchoice($formname);
+return $temp->printhtml();
+}
+
+
+function record_calendarchoice()
+{
+global $babBody;
+
+$selected = isset($_POST['selected_calendars']) ? $_POST['selected_calendars'] : array();
+
+if ($GLOBALS['BAB_SESS_LOGGED'])
+	{
+	$babBody->icalendars->user_calendarids = implode(',',$selected);
+	
+	$db = &$GLOBALS['babDB'];
+	list($n) = $db->db_fetch_array($db->db_query("SELECT COUNT(*) FROM ".BAB_CAL_USER_OPTIONS_TBL." WHERE id_user='".$GLOBALS['BAB_SESS_USERID']."'"));
+	if ($n > 0)
+		{
+		$db->db_query("UPDATE ".BAB_CAL_USER_OPTIONS_TBL." SET  user_calendarids='".$babBody->icalendars->user_calendarids."' WHERE id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+		}
+	else
+		{
+		$db->db_query("insert into ".BAB_CAL_USER_OPTIONS_TBL." ( id_user, startday, allday, start_time, end_time, usebgcolor, elapstime, defaultview, work_days, week_numbers, user_calendarids) values ('".$GLOBALS['BAB_SESS_USERID']."', '1', 'N', '08:00:00', '18:00:00', 'Y', '30', '0', '1,2,3,4,5', 'N', '".$babBody->icalendars->user_calendarids."')");
+		}
+	}
+
+}
+
 ?>

@@ -23,7 +23,9 @@
 ************************************************************************/
 include_once "base.php";
 include_once $babInstallPath."utilit/calincl.php";
+include_once $babInstallPath."utilit/mcalincl.php";
 include_once $babInstallPath."utilit/uiutil.php";
+include_once $babInstallPath."utilit/evtincl.php";
 
 function bab_getCalendarEventTitle($evtid)
 {
@@ -324,7 +326,7 @@ function newEvent()
 	}
 
 
-function modifyEvent($calendarid, $evtid, $view, $bmodif)
+function modifyEvent($idcal, $evtid)
 	{
 	global $babBody,$babBodyPopup;
 	class temp
@@ -361,19 +363,35 @@ function modifyEvent($calendarid, $evtid, $view, $bmodif)
 		var $thisone;
 		var $updaterec;
 
-		function temp($calendarid, $evtid, $view, $bmodif)
+		function temp($idcal, $evtid)
 			{
-			global $BAB_SESS_USERID, $babBodyPopup;
+			global $babBody, $BAB_SESS_USERID, $babBodyPopup;
 
 			$this->delete = bab_translate("Delete");
 			$this->db = $GLOBALS['babDB'];
-			$this->calid = $calendarid;
+			$this->calid = $idcal;
 			$this->evtid = $evtid;
-			$this->bmodif = $bmodif;
-			$this->caltype = bab_getCalendarType($calendarid);
-			$babBodyPopup->title = bab_translate("Calendar"). "  ". bab_getCalendarOwnerName($this->calid, $this->caltype);
+			$this->bmodif = false;
+			$iarr = $babBody->icalendars->getCalendarInfo($this->calid);
+			switch( $iarr['type'] )
+				{
+				case BAB_CAL_USER_TYPE:
+					if( $iarr['idowner'] ==  $GLOBALS['BAB_SESS_USERID'] || $iarr['access'] != BAB_CAL_ACCESS_VIEW )
+						{
+						$this->bmodif = true;
+						}
+					break;
+				case BAB_CAL_PUB_TYPE:
+				case BAB_CAL_RES_TYPE:
+					if( $iarr['manager'] )
+						{
+						$this->bmodif = true;
+						}
+					break;
+				}
+			$babBodyPopup->title = bab_translate("Calendar"). ":  ". bab_getCalendarOwnerName($this->calid, $iarr['type']);
 
-			$res = $this->db->db_query("select * from ".BAB_CAL_EVENTS_TBL." where id='$evtid'");
+			$res = $this->db->db_query("select * from ".BAB_CAL_EVENTS_TBL." where id='".$evtid."'");
 			$this->evtarr = $this->db->db_fetch_array($res);
 			if( $this->evtarr['hash'] != "" && $this->evtarr['hash'][0] == 'R')
 				{
@@ -384,7 +402,9 @@ function modifyEvent($calendarid, $evtid, $view, $bmodif)
 				$this->thisone = bab_translate("This occurence");
 				}
 			else
+				{
 				$this->brecevt = false;
+				}
 			$this->evtarr['description'] = bab_replace($this->evtarr['description']);
 			$this->ymin = 2;
 			$this->ymax = 5;
@@ -397,8 +417,8 @@ function modifyEvent($calendarid, $evtid, $view, $bmodif)
 			$this->dayend = substr($this->evtarr['end_date'], 8, 2);
 			$this->monthend = substr($this->evtarr['end_date'], 5, 2);
 			$this->nbdaysend = date("t", mktime(0,0,0, $this->monthend, $this->dayend,$this->yearend));
-			$this->timebegin = substr($this->evtarr['start_time'], 0, 5);
-			$this->timeend = substr($this->evtarr['end_time'], 0, 5);
+			$this->timebegin = substr($this->evtarr['start_date'], 11, 5);
+			$this->timeend = substr($this->evtarr['end_date'], 11, 5);
 			$this->datebegin = $GLOBALS['babUrlScript']."?tg=month&callback=dateBegin&ymin=".$this->ymin."&ymax=".$this->ymax."&month=".$this->monthbegin."&year=".$this->yearbegin;
 			$this->datebegintxt = bab_translate("Begin date");
 			$this->dateend = $GLOBALS['babUrlScript']."?tg=month&callback=dateEnd&ymin=".$this->ymin."&ymax=".$this->ymax."&month=".$this->monthend."&year=".$this->yearend;
@@ -409,20 +429,11 @@ function modifyEvent($calendarid, $evtid, $view, $bmodif)
 			$this->title = bab_translate("Title");
 			$this->description = bab_translate("Description");
 			$this->category = bab_translate("Category");
-			$this->descurl = $GLOBALS['babUrlScript']."?tg=event&idx=updesc&calid=".$calendarid."&evtid=".$evtid;
+			$this->descurl = $GLOBALS['babUrlScript']."?tg=event&idx=updesc&calid=".$this->calid."&evtid=".$evtid;
 
-
-			$res = $this->db->db_query("select * from ".BAB_CALOPTIONS_TBL." where id_user='".$BAB_SESS_USERID."'");
-			$this->elapstime = 30;
-			$this->ampm = false;
-			if( $res && $this->db->db_num_rows($res))
-				{
-				$arr = $this->db->db_fetch_array($res);
-				if( isset($arr['elapstime'] ) && $arr['elapstime'] != "" )
-					$this->elapstime = $arr['elapstime'];
-				if( $arr['ampm'] == "Y")
-					$this->ampm = true;
-				}
+			$this->editor = bab_editor($this->evtarr['description'], 'evtdesc', 'vacform',150);
+			$this->elapstime = $babBody->icalendars->elapstime;
+			$this->ampm = $babBody->ampm;
 			}
 
 		function getnextday()
@@ -555,7 +566,7 @@ function modifyEvent($calendarid, $evtid, $view, $bmodif)
 
 		}
 
-	$temp = new temp($calendarid, $evtid, $view, $bmodif);
+	$temp = new temp($idcal, $evtid);
 	$babBodyPopup->babecho(	bab_printTemplate($temp,"event.html", "scripts"));
 	$babBodyPopup->babecho(	bab_printTemplate($temp,"event.html", "modifyevent"));
 	}
@@ -781,6 +792,8 @@ function addEvent(&$message)
 		return false;
 		}
 
+	$arrnotify = array();
+
 	if( $_POST['repeat'] != 0)
 		{
 		$hash = "R_".md5(uniqid(rand(),1));
@@ -813,7 +826,8 @@ function addEvent(&$message)
 					$time = $begin;
 					do
 						{
-						createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, BAB_CAL_STATUS_ACCEPTED, $hash);
+						$arrf = createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, $hash);
+						$arrnotify = array_unique(array_merge($arrnotify, $arrf));
 						$time += $rtime;
 						}
 					while( $time < $repeatdate );
@@ -831,8 +845,9 @@ function addEvent(&$message)
 						$time = mktime( $tb[0],$tb[1],0,$monthbegin, $daybegin+$delta, $yearbegin );
 						do
 							{
-							createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, BAB_CAL_STATUS_ACCEPTED, $hash);
+							$arrf = createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, $hash);
 							$time += 24*3600*7;
+							$arrnotify = array_unique(array_merge($arrnotify, $arrf));
 							}
 						while( $time < $repeatdate );
 						}
@@ -852,8 +867,9 @@ function addEvent(&$message)
 				$time = $begin;
 				do
 					{
-					createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, BAB_CAL_STATUS_ACCEPTED, $hash);
+					$arrf = createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, $hash);
 					$time = mktime( $tb[0],$tb[1],0,date("m", $time)+1, date("j", $time), date("Y", $time) );
+					$arrnotify = array_unique(array_merge($arrnotify, $arrf));
 					}
 				while( $time < $repeatdate );
 				break;
@@ -870,8 +886,9 @@ function addEvent(&$message)
 				$time = $begin;
 				do
 					{
-					createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, BAB_CAL_STATUS_ACCEPTED, $hash);
+					$arrf = createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, $hash);
 					$time = mktime( $tb[0],$tb[1],0,date("m", $time), date("j", $time), date("Y", $time)+1 );
+					$arrnotify = array_unique(array_merge($arrnotify, $arrf));
 					}
 				while( $time < $repeatdate );
 				break;
@@ -892,8 +909,9 @@ function addEvent(&$message)
 				$time = $begin;
 				do
 					{
-					createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, BAB_CAL_STATUS_ACCEPTED, $hash);
+					$arrf = createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, $hash);
 					$time += $rtime;
+					$arrnotify = array_unique(array_merge($arrnotify, $arrf));
 					}
 				while( $time < $repeatdate );
 				break;
@@ -902,9 +920,49 @@ function addEvent(&$message)
 		}
 	else
 		{
-		createEvent(explode(',', $GLOBALS['calid']), $title, $description, $begin, $end, $category, $color, 0, '');
+		$arrnotify = createEvent(explode(',', $GLOBALS['calid']), $title, $description, $begin, $end, $category, $color, '');
 		}
 
+	if( count($arrnotify) > 0 )
+		{
+		$arrusr = array();
+		$arrres = array();
+		$arrpub = array();
+		for( $i = 0; $i < count($arrnotify); $i++ )
+			{
+			$arr = $babBody->icalendars->getCalendarInfo($arrnotify[$i]);
+			switch($arr['type'])
+				{
+				case BAB_CAL_USER_TYPE:
+					if( $arr['idowner'] != $GLOBALS['BAB_SESS_USERID'] )
+						{
+						$arrusr[] = $arrnotify[$i];
+						}
+					break;
+				case BAB_CAL_PUB_TYPE:
+					$arrres[] = $arrnotify[$i];
+					break;
+				case BAB_CAL_RES_TYPE:
+					$arrpub[] = $arrnotify[$i];
+					break;
+				}
+			}
+
+		$startdate = bab_longDate($begin);
+		$enddate = bab_longDate($end);
+		if( count($arrusr) > 0 )
+			{
+			notifyPersonalEvent($title, $description, $startdate, $enddate, $arrusr);
+			}
+		if( count($arrres) > 0 )
+			{
+			notifyResourceEvent($title, $description, $startdate, $enddate, $arrres);
+			}
+		if( count($arrpub) > 0 )
+			{
+			notifyPublicEvent($title, $description, $startdate, $enddate, $arrpub);
+			}
+		}
 	return true;	
 	}
 
@@ -1063,13 +1121,12 @@ function calendarquerystring()
 /* main */
 $idx = isset($_REQUEST['idx']) ? $_REQUEST['idx'] : "newevent";
 //record_calendarchoice();
-$calid = isset($_REQUEST['selected_calendars'])? implode($_REQUEST['selected_calendars']): $calid;
-
+$calid = isset($_POST['selected_calendars'])? implode(',', $_POST['selected_calendars']): $calid;
 
 $calid = bab_isCalendarAccessValid($calid);
 if( !$calid )
 	{
-	$babBody->title = bab_translate("Access denied");
+	echo bab_translate("Access denied");
 	exit;
 	}
 
@@ -1080,11 +1137,6 @@ if (isset($_POST['action']))
 		case 'yes':
 			confirmDeleteEvent($calid, $evtid, $bupdrec);
 			Header("Location: ". $GLOBALS['babUrlScript']."?tg=calendar&idx=".$view.calendarquerystring());
-			break;
-
-		case 'desc':
-			updateDescription($calid, $evtid, $content, $bupdrec);
-			$idx = "unload";
 			break;
 
 		case 'addevent':
@@ -1134,19 +1186,9 @@ switch($idx)
 		exit;
 		break;
 
-	case "updesc":
-		editDescription($calid, $evtid);
-		exit;
-		break;
-
-
-	case "modify":
-		$bmodif = isUpdateEvent($calid, $evtid);
+	case "modevent":
 		$babBodyPopup = new babBodyPopup();
-		if( $bmodif )
-			modifyEvent($calid, $evtid, $view, $bmodif);
-		else
-			viewEvent($calid, $evtid);
+		modifyEvent($calid, $evtid);
 		printBabBodyPopup();
 		exit;
 		break;

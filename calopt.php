@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-
+include_once $babInstallPath."utilit/mcalincl.php";
 
 function browseUsers($pos, $cb, $idcal)
 	{

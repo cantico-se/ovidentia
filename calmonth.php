@@ -165,11 +165,11 @@ class cal_monthCls  extends cal_wmdbaseCls
 			$arr = $this->evtarr[$i];
 			$this->idcal = $arr['id_cal'];
 			$this->status = $arr['status'];
+			$iarr = $babBody->icalendars->getCalendarInfo($arr['id_cal']);
 			if( $this->status == BAB_CAL_STATUS_NONE )
 				{
 				$this->statusurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=confvent&evtid=".$arr['id']."&idcal=".$arr['id_cal'];
 				$this->bstatus = true;
-				$iarr = $babBody->icalendars->getCalendarInfo($arr['id_cal']);
 				if( $iarr['type'] == BAB_CAL_USER_TYPE && $iarr['idowner'] ==  $GLOBALS['BAB_SESS_USERID'] )
 					{
 					$this->bstatusurl = true;
@@ -203,6 +203,22 @@ class cal_monthCls  extends cal_wmdbaseCls
 			$this->title = $this->startdate." ".$this->starttime. "-".$this->enddate." ".$this->endtime." ".$arr['title'];
 			$this->titleten = htmlentities(substr($arr['title'], 0, 10));
 			$this->titletenurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$arr['id']."&idcal=".$arr['id_cal'];
+			switch( $iarr['type'] )
+				{
+				case BAB_CAL_USER_TYPE:
+					if( $iarr['idowner'] ==  $GLOBALS['BAB_SESS_USERID'] || $iarr['access'] != BAB_CAL_ACCESS_VIEW )
+						{
+						$this->titletenurl = $GLOBALS['babUrlScript']."?tg=event&idx=modevent&evtid=".$arr['id']."&calid=".$arr['id_cal'];
+						}
+					break;
+				case BAB_CAL_PUB_TYPE:
+				case BAB_CAL_RES_TYPE:
+					if( $iarr['manager'] )
+						{
+						$this->titletenurl = $GLOBALS['babUrlScript']."?tg=event&idx=modevent&evtid=".$arr['id']."&calid=".$arr['id_cal'];
+						}
+					break;
+				}
 			$this->attendeesurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=attendees&evtid=".$arr['id']."&idcal=".$arr['id_cal'];
 			$this->vieweventurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$arr['id']."&idcal=".$arr['id_cal'];
 			$i++;
