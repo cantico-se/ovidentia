@@ -126,18 +126,19 @@ close }</a> </td>
 	  textarea_id = new Array("{ editname }");
 
 </script>
-
-<script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/htmlarea.js"></script>
-<script type="text/javascript" src="{ babUrlScript }?tg=htmlarea&idx=js&mode={ what }"></script>
 <!--#endif loadscripts -->
 <script type="text/javascript" src="{ babUrl }{ babScriptPath }text_toolbar.js"></script>
 
 <div align="left">
 	{ text_toolbar }
 <textarea id="{ editname }" name="{ editname }" style="width:100%;height:{ heightpx }px" rows="20">{ contentval }</textarea>
+<input type="hidden" name="bab_editor_textmode[]" value="{ editname }" />
 </div>
 
-
+<!--#if loadscripts -->
+<script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/htmlarea.js"></script>
+<script type="text/javascript" src="{ babUrlScript }?tg=htmlarea&idx=js&mode={ what }"></script>
+<!--#endif loadscripts -->
 <!--#end babeditortemplate -->
 
 
@@ -158,4 +159,5 @@ close }</a> </td>
 
 		<a href="javascript:bab_tt_popup('{ editname }', '{ babUrlScript }?tg=editorcontdir')" title="{ t_bab_contdir }"><img src="{ babScriptPath }htmlarea/images/ed_bab_contdir.gif" alt="{ t_bab_contdir }" /></a>
 </div>
+<input type="hidden" id="{ editname }_textmode" name="bab_editor_textmode[]" value="{ editname }" />
 <!--#end babtexttoolbartemplate -->

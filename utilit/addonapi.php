@@ -161,7 +161,7 @@ function bab_editor($content, $editname, $formname, $heightpx=300, $what=3)
 				// do not load script for ie < 5.5 to avoid javascript parsing errors
 
 				preg_match("/MSIE\s+([\d|\.]*?);/", $_SERVER['HTTP_USER_AGENT'], $matches);
-				$this->loadscripts = !isset($matches[1]) || ($matches[1] > 5.5);
+				$this->loadscripts = !isset($matches[1]) || ($matches[1] >= 5.5);
 
 				if( empty($content))
 					{

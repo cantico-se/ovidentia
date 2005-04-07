@@ -266,10 +266,12 @@ var global_editor = null;
 		if (editor.config)
 			{
 			document.getElementById(textarea_id[i]+'_text_toolbar').style.display = 'none';
+			document.getElementById(textarea_id[i]+'_textmode').value = '';
 			editor.generate();
-			editor._toolbar.style.height = '65px';
+			editor._toolbar.style.height = '67px';
 			}
 	  }
+
 	return false;
 };
 
