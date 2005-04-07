@@ -1792,7 +1792,12 @@ HTMLArea.prototype.execCommand = function(cmdID, UI, param) {
 	    case "forecolor":
 		this._popupDialog("select_color.html", function(color) {
 			if (color) { // selection not canceled
-				editor._doc.execCommand(cmdID, false, "#" + color);
+				if (cmdID == "hilitecolor") {
+					editor.surroundHTML('<span style="background-color:#'+color+'">', '</span>');
+				}
+				else {
+					editor._doc.execCommand(cmdID, false, "#" + color);
+				}
 			}
 		}, HTMLArea._colorToRgb(this._doc.queryCommandValue(cmdID)));
 		break;
