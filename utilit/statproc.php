@@ -572,9 +572,10 @@ class bab_stats_forums extends bab_stats_base
 			$arrt[] = $datas['info']['bab_threads'][$i];
 			}
 
-		if( count($arrt) > 0 )
+		$arru = array_unique($arrt);
+		if( count($arru) > 0 )
 			{
-			$res = $babDB->db_query("select distinct forum from ".BAB_THREADS_TBL." where id in (".implode(',', array_unique($arrt)).")");
+			$res = $babDB->db_query("select distinct forum from ".BAB_THREADS_TBL." where id in (".implode(',', $arru).")");
 			while( $row = $babDB->db_fetch_array($res))
 				{
 				$this->addForum($datas['date'], $datas['hour'], $row['forum']);
@@ -591,9 +592,10 @@ class bab_stats_forums extends bab_stats_base
 			$arrp[] = $datas['info']['bab_posts'][$i];
 			}
 
-		if( count($arrp) > 0 )
+		$arru = array_unique($arrp);
+		if( count($arru) > 0 )
 			{
-			$res = $babDB->db_query("select tt.forum, tt.id from ".BAB_THREADS_TBL." tt left join ".BAB_POSTS_TBL." pt on pt.id_thread=tt.id where pt.id in (".implode(',', array_unique($arrp)).")");
+			$res = $babDB->db_query("select tt.forum, tt.id from ".BAB_THREADS_TBL." tt left join ".BAB_POSTS_TBL." pt on pt.id_thread=tt.id where pt.id in (".implode(',', $arru).")");
 			while( $row = $babDB->db_fetch_array($res))
 				{
 				$this->addForum($datas['date'], $datas['hour'], $row['forum']);
@@ -859,9 +861,10 @@ class bab_stats_faqs extends bab_stats_base
 			$arrt[] = $datas['info']['bab_faqsqr'][$i];
 			}
 
-		if( count($arrt) > 0 )
+		$arru = array_unique($arrt);
+		if( count($arru) > 0 )
 			{
-			$res = $babDB->db_query("select distinct idcat from ".BAB_FAQQR_TBL." where id in (".implode(',', array_unique($arrt)).")");
+			$res = $babDB->db_query("select distinct idcat from ".BAB_FAQQR_TBL." where id in (".implode(',', $arru).")");
 			while( $row = $babDB->db_fetch_array($res))
 				{
 				$this->addFaq($datas['date'], $datas['hour'], $row['idcat']);
