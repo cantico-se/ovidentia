@@ -1,0 +1,23 @@
+.bab_text_toolbar {
+  cursor: default;
+  background: ButtonFace;
+  padding: 3px;
+  border: 1px solid;
+  border-color: ButtonHighlight ButtonShadow ButtonShadow ButtonHighlight;
+}
+
+.bab_text_toolbar a img {
+	border:0px;
+}
+
+.bab_text_toolbar a {
+	background: ButtonFace;
+	  color: ButtonText;
+	  border: 1px solid ButtonFace;
+	  padding: 1px;
+	  margin: 0px;
+}
+
+.bab_text_toolbar a:hover {
+	border-color: ButtonHighlight ButtonShadow ButtonShadow ButtonHighlight;
+}
