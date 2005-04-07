@@ -137,6 +137,53 @@ function bab_strftime($time, $hour=true)
 	}
 
 
+function bab_editor($content, $editname, $formname, $heightpx=300, $what=3)
+	{
+	global $babBody;
+
+	if( !class_exists('babEditorCls'))
+		{
+		class babEditorCls
+			{
+			var $editname;
+			var $formname;
+			var $contentval;
+
+			function babEditorCls($content, $editname, $formname, $heightpx,$what)
+				{
+				$this->editname = $editname;
+				$this->formname = $formname;
+				$this->heightpx = $heightpx;
+				$this->what = $what;
+
+				$this->text_toolbar = bab_editor_text_toolbar($editname,$this->what);
+
+				// do not load script for ie < 5.5 to avoid javascript parsing errors
+
+				preg_match("/MSIE\s+([\d|\.]*?);/", $_SERVER['HTTP_USER_AGENT'], $matches);
+				$this->loadscripts = !isset($matches[1]) || ($matches[1] > 5.5);
+
+				if( empty($content))
+					{
+					$this->contentval = "";
+					}
+				else
+					{
+					$this->contentval = htmlentities($content);
+					}
+
+				if( bab_isMagicQuotesGpcOn())
+					{
+					$this->contentval = stripslashes($this->contentval);
+					}
+				}	
+			}
+		}
+	$temp = new babEditorCls($content, $editname, $formname, $heightpx,$what);
+	return bab_printTemplate($temp,"uiutil.html", "babeditortemplate");
+	}
+
+
 function bab_browserOS()
 	{
 	global $HTTP_USER_AGENT;

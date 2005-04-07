@@ -640,6 +640,19 @@ function bab_editArticle($title, $head, $body, $lang, $template)
 			{
 			global $babDB;
 
+			$this->mode = 1;
+
+			$this->t_bab_image = bab_translate("Insert image");
+			$this->t_bab_file = bab_translate("Insert file link");
+			$this->t_bab_article = bab_translate("Insert article link");
+			$this->t_bab_faq = bab_translate("Insert FAQ link");
+			$this->t_bab_ovml = bab_translate("Insert OVML file");
+			$this->t_bab_contdir = bab_translate("Insert contact link");
+
+			$this->text_toolbar_head = bab_editor_text_toolbar('headtext',1);
+			$this->text_toolbar_body = bab_editor_text_toolbar('bodytext',1);
+
+
 			if( empty($title))
 				{
 				$this->titleval = "";
@@ -701,15 +714,10 @@ function bab_editArticle($title, $head, $body, $lang, $template)
 				}
 			}
 			$this->countLangFiles = count($this->langFiles);
-			$this->urlfiles = $GLOBALS['babUrlScript']."?tg=fileman&idx=brow";
-			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
-				{
-				$this->msie = 1;
-				}
-			else
-				{
-				$this->msie = 0;
-				}
+
+			// do not load script for ie < 5.5 to avoid javascript parsing errors
+			preg_match("/MSIE\s+([\d|\.]*?);/", $_SERVER['HTTP_USER_AGENT'], $matches);
+			$this->loadscripts = !isset($matches[1]) || ($matches[1] > 5.5);
 
 			if( $template != '' && $this->headval == '' && $this->bodyval == '')
 				{

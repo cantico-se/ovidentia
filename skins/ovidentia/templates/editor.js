@@ -262,9 +262,13 @@ var global_editor = null;
 	for(var i in textarea_id)
 	  {
 		var editor = new HTMLArea(textarea_id[i], config);
-		
-		editor.generate();
-		editor._toolbar.style.height = '67px';
+
+		if (editor.config)
+			{
+			document.getElementById(textarea_id[i]+'_text_toolbar').style.display = 'none';
+			editor.generate();
+			editor._toolbar.style.height = '65px';
+			}
 	  }
 	return false;
 };
@@ -273,23 +277,9 @@ var global_editor = null;
 
 
 
-function getSelection()
-{
-var html = global_editor.getSelectedHTML();
-	html = html.replace(/ \w+=[^\s|>]*/gi,'');
-	html = html.replace(/\&nbsp\;/, '');
-	html = html.replace(/<\w+><\/\w+>/i, '');
-	html = html.replace(/<\w+>\s+<\/\w+>/i, '');
-	html = html.replace(/<\w+\s+\/>/i, '');
-	html = html.replace(/<\w+\/>/i, '');
-	html = html.replace(/^\s+/, '');
-	html = html.replace(/\s+$/, '');
-
-return html;
-}
 
 
-function EditorOnCreateImage(param)
+function EditorOnCreateImage_WYSIWYG(param)
 {
 	var editor = global_editor;
 	editor.focusEditor();

@@ -35,50 +35,31 @@ function bab_printOvml($content, $args)
 	return $tpl->printout($content);
 	}
 
-function bab_editor($content, $editname, $formname, $heightpx=300, $what=3)
+function bab_editor_text_toolbar($editname,$mode)
+{
+	if (!class_exists('text_toolbar'))
 	{
-	global $babBody;
-
-	if( !class_exists('babEditorCls'))
+	class text_toolbar
 		{
-		class babEditorCls
+		function text_toolbar()
 			{
-			var $editname;
-			var $formname;
-			var $contentval;
-
-			function babEditorCls($content, $editname, $formname, $heightpx,$what)
-				{
-				$this->editname = $editname;
-				$this->formname = $formname;
-				$this->heightpx = $heightpx;
-				$this->what = $what;
-
-				if( empty($content))
-					{
-					$this->contentval = "";
-					}
-				else
-					{
-					$this->contentval = htmlentities($content);
-					}
-
-				if( bab_isMagicQuotesGpcOn())
-					{
-					$this->contentval = stripslashes($this->contentval);
-					}
-		
-				$this->images = bab_translate("Images");
-				$this->urlimages = $GLOBALS['babUrlScript']."?tg=images";
-				$this->files = bab_translate("Files");
-				$this->urlfiles = $GLOBALS['babUrlScript']."?tg=fileman&idx=brow";
-				
-				}	
+			$this->t_bab_image = bab_translate("Insert image");
+			$this->t_bab_file = bab_translate("Insert file link");
+			$this->t_bab_article = bab_translate("Insert article link");
+			$this->t_bab_faq = bab_translate("Insert FAQ link");
+			$this->t_bab_ovml = bab_translate("Insert OVML file");
+			$this->t_bab_contdir = bab_translate("Insert contact link");
 			}
 		}
-	$temp = new babEditorCls($content, $editname, $formname, $heightpx,$what);
-	return bab_printTemplate($temp,"uiutil.html", "babeditortemplate");
 	}
+
+	$tmp = & new text_toolbar();
+	$tmp->mode = $mode;
+	$tmp->editname = $editname;
+	return bab_printTemplate($tmp,"uiutil.html", "babtexttoolbartemplate");
+
+}
+
 
 
 

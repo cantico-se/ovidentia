@@ -1,4 +1,5 @@
 <!--#begin editarticle -->
+<!--#if loadscripts -->
 <script type="text/javascript">
       _editor_url = "{ babUrl }{ babScriptPath }htmlarea/";
       _editor_lang = "{ babLanguage }";
@@ -7,7 +8,9 @@
 </script>
 
 <script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/htmlarea.js"></script>
-<script type="text/javascript" src="{ babUrlScript }?tg=htmlarea&idx=js&mode=1"></script>
+<script type="text/javascript" src="{ babUrlScript }?tg=htmlarea&idx=js&mode={ mode }"></script>
+<!--#endif loadscripts -->
+<script type="text/javascript" src="{ babUrl }{ babScriptPath }text_toolbar.js"></script>
 
 
 <table width="95%" class="BabLoginCadreBackground" border="0" cellspacing="0" cellpadding="2" align="center">
@@ -28,6 +31,7 @@
 <tr> 
 <td align="center" valign="middle"> 
 	<div align="left">
+		{ text_toolbar_head }
 		<textarea id="headtext" name="headtext" style="width:100%" rows="20">{ headval }</textarea>
 	</div>
 </td>
@@ -38,6 +42,7 @@
 <tr> 
 <td align="center" valign="middle"> 
 	<div align="left">
+		{ text_toolbar_body }
 		<textarea id="bodytext" name="bodytext" style="width:100%" rows="20">{ bodyval } </textarea>
 	</div>
 </td>
