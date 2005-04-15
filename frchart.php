@@ -539,7 +539,7 @@ function displayUsersList($ocid, $oeid, $update, $pos, $xf, $q)
 			if(bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $this->iddir))
 				{
 				$this->idgroup = $arr['id_group'];
-				$res = $this->db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($this->idgroup != 0? 0: $this->id)."'");
+				$res = $this->db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($this->idgroup != 0? 0: $this->iddir)."'");
 				$dbdirfields = array();
 				$dbdirxfields = array();
 				$dbdirfields[] = 'id';
@@ -607,7 +607,7 @@ function displayUsersList($ocid, $oeid, $update, $pos, $xf, $q)
 					}
 
 
-				$rescol = $this->db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($this->idgroup != 0? 0: $this->id)."' and ordering!='0' order by ordering asc");
+				$rescol = $this->db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($this->idgroup != 0? 0: $this->iddir)."' and ordering!='0' order by ordering asc");
 				while( $row = $this->db->db_fetch_array($rescol))
 					{
 					if( $row['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
@@ -1150,10 +1150,11 @@ if( !$update && !bab_isAccessValid(BAB_OCVIEW_GROUPS_TBL, $ocid))
 }
 if (!$update)
 {
-$ocinfo['id_closed_nodes'] = isset($GLOBALS['BAB_SESS_CHARTCN-'.$ocid])? $GLOBALS['BAB_SESS_CHARTCN-'.$ocid]: '';
-$ocinfo['id_first_node'] = isset($GLOBALS['BAB_SESS_CHARTRN-'.$ocid])?$GLOBALS['BAB_SESS_CHARTRN-'.$ocid]:0;
+$ocinfo['id_closed_nodes'] = isset($_SESSION['BAB_SESS_CHARTCN-'.$ocid])? $_SESSION['BAB_SESS_CHARTCN-'.$ocid]: '';
+$ocinfo['id_first_node'] = isset($_SESSION['BAB_SESS_CHARTRN-'.$ocid])?$_SESSION['BAB_SESS_CHARTRN-'.$ocid]:0;
 }
-$oeid = !isset($oeid)?$GLOBALS['BAB_SESS_CHARTOEID-'.$ocid]:$oeid;
+$oeid = !isset($oeid)? $_SESSION['BAB_SESS_CHARTOEID-'.$ocid] :$oeid;
+
 
 if(!isset($idx))
 	{

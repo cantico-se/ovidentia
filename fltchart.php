@@ -407,6 +407,7 @@ if( !$access )
 	echo bab_translate("Access denied");
 	return;
 }
+
 if( $oeid )
 {
 $oeinfo = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_OC_ENTITIES_TBL." where id='".$oeid."'"));
@@ -419,6 +420,9 @@ if( isset($updr) && $updr == "updr" && $update)
 {
 	updateOrgChartPrimaryRoleUser($ocid, $oeid, $iduser, $prole);
 }
+
+if (!isset($iduser))
+	$iduser = 0;
 
 switch($idx)
 	{
