@@ -124,25 +124,25 @@ function topcatModify($id)
 				}
 			$this->countdisptmpl = count($this->arrdisptmpl);
 
-			function arr_child($id)
-				{
-				$out[] = $id;
-				global $babDB;
-				$res = $babDB->db_query("SELECT id FROM ".BAB_TOPICS_CATEGORIES_TBL." WHERE id_parent='".$id."'");
-				while ($arr = $babDB->db_fetch_array($res))
-					{
-					$add =  arr_child($arr['id']);
-					if (is_array($add))
-						$out = array_merge($out, $add);
-					}
-				return $out;
-				}
-
-			$arr_exclude = arr_child($id);
+			$arr_exclude = $this->arr_child($id);
 
 			$this->res = $babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."' and id NOT IN(".implode(',',$arr_exclude).") order by title asc");
 			$this->count = $babDB->db_num_rows($this->res);
 
+			}
+
+		function arr_child($id)
+			{
+			$out[] = $id;
+			global $babDB;
+			$res = $babDB->db_query("SELECT id FROM ".BAB_TOPICS_CATEGORIES_TBL." WHERE id_parent='".$id."'");
+			while ($arr = $babDB->db_fetch_array($res))
+				{
+				$add =  arr_child($arr['id']);
+				if (is_array($add))
+					$out = array_merge($out, $add);
+				}
+			return $out;
 			}
 
 		function getnexttemplate()
