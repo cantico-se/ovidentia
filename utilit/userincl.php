@@ -1038,7 +1038,7 @@ function bab_replace_ref( &$txt, $remove = '')
 									$tmp = explode('=', $param[$i]);
 									if( is_array($tmp) && count($tmp) == 2 )
 										{
-										$args[$tmp[0]] = trim($tmp[1], '"');
+										$args[trim($tmp[0])] = trim($tmp[1], '"');
 										}
 								}
 							}
