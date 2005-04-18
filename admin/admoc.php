@@ -71,7 +71,7 @@ function modifyOrgChart($id)
 			$this->db = $GLOBALS['babDB'];
 			$this->res = $this->db->db_query("select * from ".BAB_ORG_CHARTS_TBL." where id='".$id."'");
 			$this->arr = $this->db->db_fetch_array($this->res);
-			if( $this->arr['id'] == 1 )
+			if( $this->arr['isprimary'] == 'Y' )
 				{
 				$this->bdelete = false;
 				}
