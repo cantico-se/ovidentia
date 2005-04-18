@@ -161,7 +161,6 @@ function listVacationRequestsb($idstatus, $userid, $dateb, $datee, $vpos)
 		var $begindatetxt;
 		var $enddatetxt;
 		var $quantitytxt;
-		var $quantitytxt;
 		var $statustxt;
 		var $begindate;
 		var $enddate;
@@ -413,16 +412,11 @@ function editVacationRequest($vrid)
 		var $vactype;
 		var $addvac;
 
-		var $daybegin;
 		var $daybeginid;
-		var $monthbegin;
 		var $monthbeginid;
 		var $nbdaystxt;
-		var $nbdays;
-		var $invaliddate;
 
 		var $remark;
-		var $yearbegin;
 
 		var $db;
 		var $res;
@@ -786,7 +780,6 @@ function exportVacationRequests()
 		var $dateformattxt;
 		var $vactype;
 		var $statustxt;
-		var $statusid;
 		var $dateburl;
 		var $dateeurl;
 		var $statarr;
