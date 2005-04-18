@@ -620,12 +620,6 @@ function saveOrgChartEntity($ocid, $name, $description, $oeid, $hsel, $grpid)
 		return false;
 		}
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$name = addslashes($name);
-		$description = addslashes($description);
-		}
-
 	$babTree = new bab_dbtree(BAB_OC_TREES_TBL, $ocid);
 	
 	if( !isset($oeid) || $oeid == 0 )
@@ -670,6 +664,12 @@ function saveOrgChartEntity($ocid, $name, $description, $oeid, $hsel, $grpid)
 			default:
 				$idgroup = $grpid;
 				break;
+			}
+
+		if( !bab_isMagicQuotesGpcOn())
+			{
+			$name = addslashes($name);
+			$description = addslashes($description);
 			}
 
 		$query = "insert into ".BAB_OC_ENTITIES_TBL." (name, description, id_oc, id_node, id_group) values ('" .$name. "', '" . $description. "', '".$ocid."', '".$idnode."', '".$idgroup."')";
