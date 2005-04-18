@@ -510,9 +510,16 @@ class cal_wmdbaseCls
 		$this->commonurl = $GLOBALS['babUrlScript']."?tg=".$tg."&idx=".$idx."&calid=".$this->currentidcals;
 
 		$time = mktime( 0,0,0, $this->month-1, $this->day, $this->year);
-		$this->previousmonthurl = $this->commonurl."&date=".date("Y", $time).",".date("n", $time).",".date("j", $time);
+		$tmp = mktime( 0,0,0, $this->month-1, 1, $this->year);
+		$m = date("t", $tmp) < $this->day ? date("n", $tmp) : date("n", $time);
+		$j = date("t", $tmp) < $this->day ? date("t", $tmp) : date("j", $time);
+		$this->previousmonthurl = $this->commonurl."&date=".date("Y", $time).",".$m.",".$j;
+
 		$time = mktime( 0,0,0, $this->month+1, $this->day, $this->year);
-		$this->nextmonthurl = $this->commonurl."&date=".date("Y", $time).",".date("n", $time).",".date("j", $time);
+		$tmp = mktime( 0,0,0, $this->month+1, 1, $this->year);
+		$m = date("t", $tmp) < $this->day ? date("n", $tmp) : date("n", $time);
+		$j = date("t", $tmp) < $this->day ? date("t", $tmp) : date("j", $time);
+		$this->nextmonthurl = $this->commonurl."&date=".date("Y", $time).",".$m.",".$j;
 
 		$time = mktime( 0,0,0, $this->month, $this->day, $this->year-1);
 		$this->previousyearurl = $this->commonurl."&date=".date("Y", $time).",".date("n", $time).",".date("j", $time);
