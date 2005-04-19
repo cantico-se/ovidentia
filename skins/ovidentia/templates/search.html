@@ -37,19 +37,26 @@ function setselects(obj)
 			select[{ fieldcounter }] = "{ name }";
 			<!--#endif selected -->
 		<!--#endin selectname -->
+
+		<!--#in getnextdir -->
+		<!--#if fieldcounter "== 0" -->
+		fields[{ topicid }]=new Array();
+		<!--#endif fieldcounter -->
+			<!--#in getnextfield -->
+			
+			<!--#if fieldcounter "== 0" -->
+			fields[{ topicid }][{ fieldindex }] = "{ fieldnamefromdir }";
+			full["{ name }"] = "{ description }";
+			<!--#endif fieldcounter -->
+			<!--#if selected -->
+			select[{ fieldcounter }] = "{ name }";
+			<!--#endif selected -->
+			<!--#endin getnextfield -->
+		<!--#endin getnextdir -->
+
 	<!--#endin getnextfieldtosearch -->
 
-	<!--#in getnextdir -->
-	fields[{ topicid }]=new Array();
-		<!--#in getnextfield -->
-		//
-		fields[{ topicid }][{ fieldindex }] = "{ fieldnamefromdir }";
-		full["{ name }"] = "{ description }";
-		<!--#if selected -->
-		select[{ fieldcounter }] = "{ name }";
-		<!--#endif selected -->
-		<!--#endin getnextfield -->
-	<!--#endin getnextdir -->
+	
 	
 
 	<!--#in getnextfieldtosearch -->

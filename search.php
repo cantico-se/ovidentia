@@ -450,7 +450,10 @@ function searchKeyword($item , $option = "OR")
 				$this->description = $this->tblxfields[$k]['description'];
 				$this->fieldindex = $k;
 				if ( isset($this->fields['dirselect_'.$this->j]) && $this->fields['dirselect_'.$this->j] == $this->name)
+					{
+					
 					$this->selected = "selected";
+					}
 				else	
 					$this->selected = false;
 				$k++;
