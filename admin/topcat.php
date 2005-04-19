@@ -206,7 +206,7 @@ function topcatModify($id)
 	}
 
 
-function topcatDelete($id)
+function topcatDelete($id, $idp)
 	{
 	global $babBody;
 	
@@ -220,14 +220,14 @@ function topcatDelete($id)
 		var $yes;
 		var $no;
 
-		function temp($id)
+		function temp($id, $idp)
 			{
 			$this->message = bab_translate("Are you sure you want to delete this topic category");
 			$this->title = bab_getTopicCategoryTitle($id);
 			$this->warning = bab_translate("WARNING: This operation will delete the topic category with all references"). "!";
-			$this->urlyes = $GLOBALS['babUrlScript']."?tg=topcat&idx=Delete&group=".$id."&action=Yes";
+			$this->urlyes = $GLOBALS['babUrlScript']."?tg=topcat&idx=Delete&group=".$id."&action=Yes"."&idp=".$idp;
 			$this->yes = bab_translate("Yes");
-			$this->urlno = $GLOBALS['babUrlScript']."?tg=topcat&idx=Modify&item=".$id;
+			$this->urlno = $GLOBALS['babUrlScript']."?tg=topcat&idx=Modify&item=".$id."&idp=".$idp;
 			$this->no = bab_translate("No");
 			}
 		}
@@ -240,7 +240,7 @@ function topcatDelete($id)
 		return false;
 		}
 
-	$temp = new temp($id);
+	$temp = new temp($id, $idp);
 	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	return true;
 	}
@@ -327,11 +327,11 @@ if( isset($action) && $action == "Yes")
 switch($idx)
 	{
 	case "Delete":
-		if(topcatDelete($item))
+		if(topcatDelete($item, $idp))
 			{
 			$babBody->title = bab_translate("Delete topic category");
-			$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List");
-			$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=topcat&idx=Modify&item=".$item);
+			$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List&idp=".$idp);
+			$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=topcat&idx=Modify&item=".$item."&idp=".$idp);
 			$babBody->addItemMenu("Delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=topcat&idx=Delete&item=".$item);
 			$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$item);
 			break;
