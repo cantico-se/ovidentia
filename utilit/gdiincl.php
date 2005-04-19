@@ -100,8 +100,24 @@ function bab_getResizedImage($imgf, $w, $h)
 					$wimg = (real)( ((real)(($himg/$htmp)*100) * $wtmp)/100);  
 					}
 				
-				$out = imagecreatetruecolor($wimg, $himg);
-				imagecopyresampled($out, $tmp, 0, 0, 0, 0, $wimg, $himg, $imgsize[0], $imgsize[1]);
+				function chkgd2(){
+					  $testGD = get_extension_funcs("gd"); // Grab function list
+					  if (!$testGD){ echo "GD not even installed."; exit; }
+					  if (in_array ("imagegd2",$testGD)) $gd_version = "<2"; // Check
+					  if ($gd_version == "<2") return false; else return true;
+					}
+
+				if (chkgd2())
+					{
+					$out = ImageCreateTrueColor($wimg, $himg);
+					imagecopyresampled($out, $tmp, 0, 0, 0, 0, $wimg, $himg, $imgsize[0], $imgsize[1]);
+					}
+				else
+					{
+					$out = ImageCreate($wimg, $himg);
+					imagecopyresized($out, $tmp, 0, 0, 0, 0, $wimg, $himg, $imgsize[0], $imgsize[1]);
+					}
+				
 				imagedestroy($tmp);
 					
 				switch($imgsize[2])
