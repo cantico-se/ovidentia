@@ -663,7 +663,7 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 
 			
 
-			$this->rescat = $this->db->db_query("select * from ".BAB_CAL_CATEGORIES_TBL."");
+			$this->rescat = $this->db->db_query("select * from ".BAB_CAL_CATEGORIES_TBL." ORDER BY name");
 			$this->rescount = $this->db->db_num_rows($this->rescat);
 			}
 
