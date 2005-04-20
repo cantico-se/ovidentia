@@ -639,8 +639,11 @@ return true;
 
 function stepChangeTopic(cmd, fmname) 
 { 
+//}
+if (!confirm('{ warnfilemessage }'))
+	return false;
 if( typeof document.forms[fmname] != "object" ) return;
-document.forms[fmname].submit();
+	document.forms[fmname].submit();
 return true;
 }
 
@@ -858,12 +861,6 @@ return true;
 </select>
 </td>
 </tr>
-<!--#if allowattachments -->
-<tr>
-<td class="BabErrorMessage" align="center" valign="middle">{ warnfilemessage }
-</td>
-</tr>
-<!--#endif allowattachments -->
 <!--#else bshowtopics -->
 <input type="hidden" name="topicid" value="{ drafttopic }">
 <!--#endif bshowtopics -->
