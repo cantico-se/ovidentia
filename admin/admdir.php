@@ -544,9 +544,9 @@ function displayDb($id)
 				{
 				$iddir = $id;
 				}
-			$this->resf = $babDB->db_query("select id, id_field from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$iddir."' and ordering='0'");
+			$this->resf = $babDB->db_query("select id, id_field from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$iddir."' and ordering='0' AND id_field<>5");
 			$this->countf = $babDB->db_num_rows($this->resf);
-			$this->resfd = $babDB->db_query("select id, id_field from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$iddir."' and ordering!='0' order by ordering asc");
+			$this->resfd = $babDB->db_query("select id, id_field from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$iddir."' and ordering!='0' AND id_field<>5 order by ordering asc");
 			$this->countfd = $babDB->db_num_rows($this->resfd);
 			}
 
