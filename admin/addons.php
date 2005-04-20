@@ -87,6 +87,29 @@ function getAddonName($id)
 		}
 	}
 
+
+function callSingleAddonFunction($id,$name,$func)
+{
+
+	$addonpath = $GLOBALS['babAddonsPath'].$name;
+	if( is_file($addonpath."/init.php" ))
+		{
+		$GLOBALS['babAddonFolder'] = $name;
+		$GLOBALS['babAddonTarget'] = "addon/".$id;
+		$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$id."/";
+		$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$name."/";
+		$GLOBALS['babAddonHtmlPath'] = "addons/".$name."/";
+		$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath']."/addons/".$name."/";
+		require_once( $addonpath."/init.php" );
+		$call = $name."_".$func;
+		if( function_exists($call) )
+			{
+			return $call();
+			}
+		}
+	return true;
+}
+
 function addonsList($upgradeall)
 	{
 	global $babBody;
@@ -135,7 +158,7 @@ function addonsList($upgradeall)
 					{
 					if (is_dir($GLOBALS['babAddonsPath'].$f) && is_file($GLOBALS['babAddonsPath'].$f."/init.php"))
 						{
-						$res = $this->db->db_query("select * from ".BAB_ADDONS_TBL." where title='".$f."'");
+						$res = $this->db->db_query("select * from ".BAB_ADDONS_TBL." where title='".$f."' ORDER BY title ASC");
 						if( $res && $this->db->db_num_rows($res) < 1)
 							{
 							$this->db->db_query("insert into ".BAB_ADDONS_TBL." (title, enabled) values ('".$f."', 'Y')");
@@ -322,6 +345,8 @@ function upgrade($id)
 
 function export($id)
 	{
+		
+
 	function rd($d)
 		{
 		$res = array();
@@ -352,9 +377,14 @@ function export($id)
 			}
 		}
 	
-	$db = $GLOBALS['babDB'];
+	$db = &$GLOBALS['babDB'];
 	$res = $db->db_query("select * from ".BAB_ADDONS_TBL." where id='".$id."'");
 	$row = $db->db_fetch_array($res);
+
+	if (!callSingleAddonFunction($row['id'], $row['title'], 'onPackageAddon'))
+		{
+		return;
+		}
 	
 	if (is_dir($GLOBALS['babAddonsPath'].$row['title']) && is_file($GLOBALS['babAddonsPath'].$row['title']."/addonini.php"))
 		{
@@ -418,6 +448,11 @@ function del($id)
 	$db = $GLOBALS['babDB'];
 	$res = $db->db_query("select * from ".BAB_ADDONS_TBL." where id='".$id."'");
 	$row = $db->db_fetch_array($res);
+
+	if (!callSingleAddonFunction($row['id'], $row['title'], 'onDeleteAddon'))
+		{
+		return;
+		}
 
 	if (is_dir($GLOBALS['babAddonsPath'].$row['title']) && is_file($GLOBALS['babAddonsPath'].$row['title']."/addonini.php"))
 		{
@@ -658,9 +693,7 @@ switch($idx)
 		upload();
 		break;
 
-	case "export":
-		export($item);
-		break;
+	
 
 	case "history":
 		history($_GET['item']);
@@ -673,7 +706,12 @@ switch($idx)
 		
 	case "del":
 		del($item);
+
+	case "export":
+		if ($idx == 'export') 
+			export($item);
 		$idx = 'list';
+
 	case "list":
 	default:
 		if (isset($errormsg)) $babBody->msgerror = urldecode($errormsg);
