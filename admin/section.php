@@ -125,7 +125,7 @@ function sectionModify($id)
 					$this->yselected = "";
 					}
 				}
-			if ($this->arr['script'] == 'N')
+			if ($this->arr['jscript'] == 'N')
 				$this->editor = bab_editor($this->arr['content'], 'content', 'secmod');
 			else
 				$this->editor = false;
