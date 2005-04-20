@@ -378,7 +378,7 @@ function notifyResourceEvent($title, $description, $startdate, $enddate, $idcals
 		$arrusers = array();
 		for( $i = 0; $i < count($idcals); $i++ )
 			{
-			$tempc->calendar = bab_getCalendarOwnerName($idcals, BAB_CAL_RES_TYPE);
+			$tempc->calendar = bab_getCalendarOwnerName($idcals[$i], BAB_CAL_RES_TYPE);
 			$message = $mail->mailTemplate(bab_printTemplate($tempc,"mailinfo.html", "newevent"));
 			$mail->mailSubject(bab_translate("New appointement"));
 			$mail->mailBody($message, "html");
