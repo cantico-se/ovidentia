@@ -88,6 +88,11 @@ function listUserAds()
 					}
 				}
 			$this->countdb = count($this->dbid);
+
+			if ($this->countldap == 0 && $this->countdb == 0)
+				{
+				$GLOBALS['babBody']->msgerror = bab_translate("Access denied");
+				}
 			}
 
 		function getnextldap()
@@ -314,6 +319,7 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 				}
 			else
 				{
+				$GLOBALS['babBody']->msgerror = bab_translate("Access denied");
 				$this->countcol = 0;
 				$this->count = 0;
 				}
