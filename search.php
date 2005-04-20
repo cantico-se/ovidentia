@@ -987,7 +987,6 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			// --------------------------------------------- DIRECTORIES
 			if( empty($item) || $item == "g")
 				{
-
 				$id_directory = isset($this->fields['g_directory']) ? $this->fields['g_directory'] : '';
 				$crit_fields = array();
 				
@@ -1173,35 +1172,35 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 								list($bdir) = $this->db->db_fetch_array($this->db->db_query("select directory from ".BAB_GROUPS_TBL." where  id='".$row['id_group']."'"));
 								if( $bdir == 'Y' )
 									{
-									$existing = array();
-									$res_existing = $this->db->db_query("SELECT id FROM dirresults");
-									while(list($existing_id) = $this->db->db_fetch_array($res_existing))
-										{
-										$existing[] = $existing_id;
-										}
+									
 
 									if ($row['id_group'] == 1)
 										{
-										$req = "insert into dirresults select ".implode(',', $arrfields).", '".$dirname."' name from ".BAB_DBDIR_ENTRIES_TBL." det where";
+										$req = "insert into dirresults select ".implode(',', $arrfields).", '".$dirname."' name from ".BAB_DBDIR_ENTRIES_TBL." det where 1=1";
 										}
 									else
 										{
-										$req = "insert into dirresults select ".implode(',', $arrfields).", '".$dirname."' name from ".BAB_DBDIR_ENTRIES_TBL." det, ".BAB_USERS_GROUPS_TBL." grp where grp.id_object=det.id_user AND grp.id_group='".$row['id_group']."' AND";
+										$req = "insert into dirresults select ".implode(',', $arrfields).", '".$dirname."' name from ".BAB_DBDIR_ENTRIES_TBL." det, ".BAB_USERS_GROUPS_TBL." grp where grp.id_object=det.id_user AND grp.id_group='".$row['id_group']."'";
+										}
+
+									$this->tmptable_inserted_id('dirresults');
+									if (count($this->tmp_inserted_id) > 0)
+										{
+										$req .= " AND det.id NOT IN('".implode("','",$this->tmp_inserted_id)."')";
 										}
 
 									if( !empty($likedir))
 										{
-										$req .= " ".$likedir." and";
+										$req .= " and ".$likedir." ";
 										}
-									$req .= " det.id_directory='0'";
+									$req .= " and det.id_directory='0'";
 									if( !empty($crit_fields) )
 										{
-										$req .= " and ".$crit_fields;
+										$req .= " and (".$crit_fields.")";
 										}
-									if (count($existing) > 0)
-										{
-										$req .= " and det.id NOT IN(".implode(',',$existing).")";
-										}
+
+									
+									
 									$req .= " group by det.id order by sn asc,givenname asc";
 									$this->db->db_query($req);
 
@@ -1214,7 +1213,15 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 										$rs3 = $this->db->db_query("select id from dirresults where id='".$rr['id_entry']."'");
 										if( !$rs3 || $this->db->db_num_rows($rs3) == 0 )
 											{
+											$this->tmptable_inserted_id('dirresults');
+
 											$req = "insert into dirresults select ".implode(',', $arrfields).",'".$dirname."' name from ".BAB_DBDIR_ENTRIES_TBL." det where ";
+
+											if (count($this->tmp_inserted_id) > 0)
+												{
+												$req .= " det.id NOT IN('".implode("','",$this->tmp_inserted_id)."') AND ";
+												}
+
 											if( !empty($likedir))
 												{
 												$req .= " ".$likedir." and";
@@ -1222,9 +1229,8 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 											$req .= " det.id='".$rr['id_entry']."' ";
 											if( !empty($crit_fields) )
 												{
-												$req .= " and ".$crit_fields;
+												$req .= " and (".$crit_fields.")";
 												}
-
 											$this->db->db_query($req);
 											}
 										}
@@ -1233,7 +1239,16 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 								}
 							else
 								{
+								
+								$this->tmptable_inserted_id('dirresults');
+
 								$req = "insert into dirresults select ".implode(',', $arrfields).",'".$dirname."' name from ".BAB_DBDIR_ENTRIES_TBL." det where";
+
+								if (count($this->tmp_inserted_id) > 0)
+									{
+									$req .= " det.id NOT IN('".implode("','",$this->tmp_inserted_id)."') AND ";
+									}
+
 								if( !empty($likedir))
 									{
 									$req .= " ".$likedir." and";
@@ -1241,7 +1256,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 								$req .= " id_directory='".($row['id_group'] != 0? 0: $row['id'])."'";
 								if( !empty($crit_fields))
 									{
-									$req .= " and ".$crit_fields;
+									$req .= " and (".$crit_fields.")";
 									}
 								$req .= " group by det.id order by sn asc,givenname asc";
 								$this->db->db_query($req);
@@ -1400,6 +1415,18 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$babBody->msgerror = bab_translate("Search result empty");
 				}
 
+			}
+
+		function tmptable_inserted_id($tablename)
+			{
+			$db = &$GLOBALS['babDB'];
+			$res = $db->db_query("SELECT id FROM ".$tablename);
+			$this->tmp_inserted_id = array();
+			while ($arr = $db->db_fetch_assoc($res))
+				{
+				//print_r($arr);
+				$this->tmp_inserted_id[] = $arr['id'];
+				}
 			}
 
 		function dateformat($time)
