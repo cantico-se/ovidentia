@@ -1763,4 +1763,16 @@
 <string id="Paragraph">Paragraphe</string>
 <string id="Address">Adresse</string>
 <string id="Formated">Formaté</string>
+<string id="Editor">Editeur</string>
+<string id="Use WYSIWYG editor">Utiliser l'éditeur WYSIWYG</string>
+<string id="Filter and remove HTML elements">Filtrer et enlever les éléments HTML</string>
+<string id="Allow elements on the filter">Autoriser les éléments dans le filtre</string>
+<string id="Presentation tags">Balises de présentation</string>
+<string id="Ordered lists, unordered lists, definitions lists">Listes odonnées, listes non ordonnées, listes de définitions</string>
+<string id="Tables">Tableaux</string>
+<string id="Scripts and plugins">Scripts et plugins</string>
+<string id="Images">Images</string>
+<string id="Frames (open external url into document body)">Cadres (ouvre des adresses externe dans le corps du document)</string>
+<string id="Forms">Formulaires</string>
+<string id="Targets on links (open links in new windows)">Cible sur les liens (ouvrir les liens dans des nouvelles fenêtres)</string>
 </fr>

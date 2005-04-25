@@ -4773,6 +4773,32 @@ function upgrade555to556()
 $ret = "";
 $db = & $GLOBALS['babDB'];
 
+
+$arr = $db->db_fetch_array($db->db_query("SHOW TABLES LIKE '".BAB_SITES_EDITOR_TBL."'"));
+if ( $arr[0] != BAB_SITES_EDITOR_TBL )
+	{
+	$res = $db->db_query("
+		CREATE TABLE `".BAB_SITES_EDITOR_TBL."` (
+			  `id` int(10) unsigned NOT NULL default '0',
+			  `id_site` int(10) unsigned NOT NULL default '0',
+			  `use_editor` tinyint(3) unsigned NOT NULL default '1',
+			  `filter_html` tinyint(3) unsigned NOT NULL default '0',
+			  `tags` text NOT NULL,
+			  `attributes` text NOT NULL,
+			  `verify_href` tinyint(3) unsigned NOT NULL default '0',
+			  `bitstring` varchar(255) NOT NULL default '',
+			  PRIMARY KEY  (`id`),
+			  KEY `id_site` (`id_site`)
+			)
+		");
+
+	if( !$res)
+		{
+		$ret = "Creation of <b>".BAB_SITES_EDITOR_TBL."</b> table failed !<br>";
+		return $ret;
+		}
+	}
+
 return $ret;
 }
 

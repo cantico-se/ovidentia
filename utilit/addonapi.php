@@ -139,7 +139,6 @@ function bab_strftime($time, $hour=true)
 
 function bab_editor($content, $editname, $formname, $heightpx=300, $what=3)
 	{
-	global $babBody;
 
 	if( !class_exists('babEditorCls'))
 		{
@@ -155,13 +154,18 @@ function bab_editor($content, $editname, $formname, $heightpx=300, $what=3)
 				$this->formname = $formname;
 				$this->heightpx = $heightpx;
 				$this->what = $what;
+				$db = &$GLOBALS['babDB'];
+				if (!list($use_editor) = $db->db_fetch_array($db->db_query("SELECT use_editor FROM ".BAB_SITES_EDITOR_TBL." WHERE id_site='".$GLOBALS['babBody']->babsite['id']."'")))
+					{
+					$use_editor = 1;
+					}
 
 				$this->text_toolbar = bab_editor_text_toolbar($editname,$this->what);
 
 				// do not load script for ie < 5.5 to avoid javascript parsing errors
 
 				preg_match("/MSIE\s+([\d|\.]*?);/", $_SERVER['HTTP_USER_AGENT'], $matches);
-				$this->loadscripts = !isset($matches[1]) || ($matches[1] >= 5.5);
+				$this->loadscripts = $use_editor && (!isset($matches[1]) || ($matches[1] >= 5.5));
 
 				if( empty($content))
 					{
@@ -181,6 +185,83 @@ function bab_editor($content, $editname, $formname, $heightpx=300, $what=3)
 		}
 	$temp = new babEditorCls($content, $editname, $formname, $heightpx,$what);
 	return bab_printTemplate($temp,"uiutil.html", "babeditortemplate");
+	}
+
+
+function bab_editor_record(&$str)
+	{
+	$str = eregi_replace("((href|src)=['\"]?)".$GLOBALS['babUrl'], "\\1", $str);
+
+	$db = &$GLOBALS['babDB'];
+
+	if (!$arr = $db->db_fetch_array($db->db_query("SELECT * FROM ".BAB_SITES_EDITOR_TBL." WHERE id_site='".$GLOBALS['babBody']->babsite['id']."'")))
+		{
+		return;
+		}
+
+	if ($arr['filter_html'] == 0)
+		{
+		return;
+		}
+
+	$allowed_tags = explode(' ',$arr['tags']);
+	$allowed_tags = array_flip($allowed_tags);
+
+	$allowed_attributes = explode(' ',$arr['attributes']);
+	$allowed_attributes = array_flip($allowed_attributes);
+
+	$worked = array();
+
+	preg_match_all("/<\/?([^>]+?)\/?>/i",$str,$out);
+
+	$nbtags = count($out[0]);
+	for($i = 0; $i < $nbtags ; $i++)
+		{
+		$tag  = &$out[0][$i];
+		
+		list($tmp) = explode(' ',trim($out[1][$i]));
+		$name = strtolower($tmp);
+
+		if (!isset($worked[$tag]))
+			{
+			$worked[$tag] = 1;
+			if (isset($allowed_tags[$name]))
+				{
+				// work on attributes
+				preg_match_all("/(\w+)\s*=\s*([\"'])(.*?)\\2/", $out[1][$i], $elements);
+
+				$worked_attributes = array();
+
+				for($j = 0 ; $j < count($elements[0]) ; $j++ )
+					{
+					$att_elem = &$elements[0][$j];
+					$att_name = strtolower($elements[1][$j]);
+
+					if (!empty($att_name) && !isset($allowed_attributes[$att_name]))
+						{
+						$worked_attributes[$att_elem] = 1;
+						$replace_tag = str_replace($att_elem,'',$tag);
+						$str = preg_replace("/".preg_quote($tag,"/")."/", $replace_tag, $str);
+						}
+
+
+					if (!empty($att_name) && isset($allowed_attributes[$att_name]) && $att_name == 'href' && $arr['verify_href'] == 1)
+						{
+						$worked_attributes[$att_elem] = 1;
+						$clean_href = ereg_replace("[\"']([^(http|ftp)].*)[\"']", '"#"', $att_elem);
+						$replace_tag = str_replace($att_elem, $clean_href, $tag);
+
+						$str = preg_replace("/".preg_quote($tag,"/")."/", $replace_tag, $str);
+
+						}
+					}
+				}
+			else
+				{
+				$str = preg_replace("/".preg_quote($tag,"/")."/", ' ', $str);
+				}
+			}
+		}
 	}
 
 

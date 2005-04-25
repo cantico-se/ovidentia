@@ -1027,6 +1027,136 @@ function editDisclaimerPrivacy($id, $content)
 	}
 
 
+
+function editor_configuration($id_site)
+	{
+	global $babBody;
+
+	class temp
+		{
+		function temp($id_site)
+			{
+			$this->id_site = $id_site;
+			$this->db = &$GLOBALS['babDB'];
+
+			$this->t_use_editor = bab_translate("Use WYSIWYG editor");
+			$this->t_filter_html = bab_translate("Filter and remove HTML elements");
+			$this->t_allow_elements = bab_translate("Allow elements on the filter");
+			$this->t_presentation = bab_translate("Presentation tags");
+			$this->t_lists = bab_translate("Ordered lists, unordered lists, definitions lists");
+			$this->t_tables = bab_translate("Tables");
+			$this->t_nonhtml = bab_translate("Scripts and plugins");
+			$this->t_images = bab_translate("Images");
+			$this->t_iframes = bab_translate("Frames (open external url into document body)");
+			$this->t_forms = bab_translate("Forms");
+			$this->t_target = bab_translate("Targets on links (open links in new windows)");
+			$this->t_submit = bab_translate("Submit");
+
+			$res = $this->db->db_query("SELECT use_editor, filter_html, bitstring FROM ".BAB_SITES_EDITOR_TBL." WHERE id_site='".$id_site."'");
+
+			$this->arr = $this->db->db_fetch_assoc($res);
+				
+			if (!$this->arr)
+				{
+				$this->arr = array(
+						'use_editor' => 1,
+						'filter_html' => 0,
+						'bitstring' => '00000000'
+					);
+				}
+
+			$this->bitstring = preg_split('//', $this->arr['bitstring'], -1, PREG_SPLIT_NO_EMPTY);
+			$this->bitstring_len = count($this->bitstring);
+			}
+		}
+
+	$temp = new temp($id_site);
+	$babBody->babecho(bab_printTemplate($temp,"sites.html", "editor"));
+	}
+
+
+function record_editor_configuration($id_site)
+{
+	$db = &$GLOBALS['babDB'];
+
+	$bitstring = array();
+	for ($i = 0; $i < $_POST['bitstring_len']; $i++)
+		{
+		$bitstring[$i] = in_array($i,$_POST['bitstring']) ? 1 : 0;
+		}
+
+
+	$arr_tags = array(
+			0 => 'font b a strong span div h1 h2 h3 h4 h5 p code i sup sub strike i em u abbr acronym del cite dfn ins kbd samp map area address br blockquote center hr q',
+			1 => 'ul ol li dl dt dd',
+			2 => 'table thead tbody tfoot tr td th caption colgroup col',
+			3 => 'object script noscript param embed applet',
+			4 => 'img',
+			5 => 'iframe',
+			6 => 'form input select optgroup textarea label fieldset button'
+		);
+
+	$arr_attributes = array(
+			0 => 'src href accesskey coords hreflang rel rev shape tabindex type class dir id lang title style align border height width alt bgcolor usemap vspace hspace abbr background hspace nowrap char bordercolor bordercolordark bordercolorlight cite',
+			2 => 'cellpadding cellspacing cols rules summary axis colspan rowspan scope',
+			3 => 'onclick ondbclick onkeydown onkeypress onkeyup onmousedown onmousemove onmouseout onmouseover onmouseup onload onselect onfocus onblur onchange archive code codebase mayscript object units pluginspage palette hidden classid data declare notab shapes standby defer charset language',
+			4 => 'longdesc',
+			6 => 'value for',
+			7 => 'target'
+		);
+
+	$use_editor = isset($_POST['use_editor']) ? 1 : 0;
+	$filter_html = isset($_POST['filter_html']) ? 1 : 0;
+	$tags = '';
+	$attributes = '';
+	$verify_href = $bitstring[3] ? 0 : 1;
+	$i = 0;
+	foreach ($bitstring as $bit)
+		{
+		if (isset($arr_tags[$i]) && $bit == 1)
+			{
+			$tags .= ' '.$arr_tags[$i];
+			}
+
+		if (isset($arr_attributes[$i]) && $bit == 1)
+			{
+			$attributes .= ' '.$arr_attributes[$i];
+			}
+		$i++;
+		}
+
+	$res = $db->db_query("SELECT id FROM ".BAB_SITES_EDITOR_TBL." WHERE id_site='".$id_site."'");
+	if ($db->db_num_rows($res) > 0)
+		{
+		$db->db_query("UPDATE ".BAB_SITES_EDITOR_TBL." 
+						SET 
+							use_editor='".$use_editor."', 
+							filter_html='".$filter_html."', 
+							tags='".trim($tags)."', 
+							attributes='".trim($attributes)."', 
+							verify_href='".$verify_href."', 
+							bitstring='".implode('',$bitstring)."' 
+						WHERE 
+							id_site='".$id_site."'
+						");
+		}
+	else
+		{
+		$db->db_query("INSERT INTO ".BAB_SITES_EDITOR_TBL." 
+						(use_editor, filter_html, tags, attributes, verify_href, bitstring, id_site)
+						VALUES
+							('".$use_editor."', 
+							'".$filter_html."', 
+							'".trim($tags)."', 
+							'".trim($attributes)."', 
+							'".$verify_href."', 
+							'".implode('',$bitstring)."',
+							'".$id_site."')
+						");
+		}
+}
+
+
 function siteUpdate_bloc1($id, $name, $description, $lang, $style, $siteemail, $skin, $register, $statlog, $mailfunc, $server, $serverport, $imgsize, $smtpuser, $smtppass, $smtppass2, $langfilter, $adminname)
 	{
 	global $babBody;
@@ -1411,6 +1541,11 @@ if( isset($action) && $action == "Yes")
 	confirmDeleteSite($site);
 	}
 
+if( isset($_POST['action']) && $_POST['action'] == "editor_configuration")
+	{
+	record_editor_configuration($_POST['id_site']);
+	}
+
 switch($idx)
 	{
 	case "unload":
@@ -1433,6 +1568,7 @@ switch($idx)
 		$babBody->addItemMenu("hman", bab_translate("Managers"),$GLOBALS['babUrlScript']."?tg=site&idx=hman&item=".$item);
 		$babBody->addItemMenu("auth", bab_translate("Authentification"),$GLOBALS['babUrlScript']."?tg=site&idx=auth&item=".$item);
 		$babBody->addItemMenu("cnx", bab_translate("Registration"),$GLOBALS['babUrlScript']."?tg=site&idx=cnx&item=".$item);
+		$babBody->addItemMenu("editor", bab_translate("Editor"),$GLOBALS['babUrlScript']."?tg=site&idx=editor&item=".$item);
 		break;
 
 	case "auth":
@@ -1443,6 +1579,7 @@ switch($idx)
 		$babBody->addItemMenu("hman", bab_translate("Managers"),$GLOBALS['babUrlScript']."?tg=site&idx=hman&item=".$item);
 		$babBody->addItemMenu("auth", bab_translate("Authentification"),$GLOBALS['babUrlScript']."?tg=site&idx=auth&item=".$item);
 		$babBody->addItemMenu("cnx", bab_translate("Registration"),$GLOBALS['babUrlScript']."?tg=site&idx=cnx&item=".$item);
+		$babBody->addItemMenu("editor", bab_translate("Editor"),$GLOBALS['babUrlScript']."?tg=site&idx=editor&item=".$item);
 		break;
 
 	case "hman":
@@ -1456,6 +1593,23 @@ switch($idx)
 		$babBody->addItemMenu("hman", bab_translate("Managers"),$GLOBALS['babUrlScript']."?tg=site&idx=hman&item=".$item);
 		$babBody->addItemMenu("auth", bab_translate("Authentification"),$GLOBALS['babUrlScript']."?tg=site&idx=auth&item=".$item);
 		$babBody->addItemMenu("cnx", bab_translate("Registration"),$GLOBALS['babUrlScript']."?tg=site&idx=cnx&item=".$item);
+		$babBody->addItemMenu("editor", bab_translate("Editor"),$GLOBALS['babUrlScript']."?tg=site&idx=editor&item=".$item);
+		break;
+
+	case "editor":
+		if (isset($_POST['id_site']))
+			$item = $_POST['id_site'];
+
+		$babBody->title = bab_translate("Editor").": ".getSiteName($item);
+
+		editor_configuration($item);
+
+		$babBody->addItemMenu("List", bab_translate("Sites"),$GLOBALS['babUrlScript']."?tg=sites&idx=list");
+		$babBody->addItemMenu("modify", bab_translate("Modify"),$GLOBALS['babUrlScript']."?tg=site&idx=modify&item=".$item);
+		$babBody->addItemMenu("hman", bab_translate("Managers"),$GLOBALS['babUrlScript']."?tg=site&idx=hman&item=".$item);
+		$babBody->addItemMenu("auth", bab_translate("Authentification"),$GLOBALS['babUrlScript']."?tg=site&idx=auth&item=".$item);
+		$babBody->addItemMenu("cnx", bab_translate("Registration"),$GLOBALS['babUrlScript']."?tg=site&idx=cnx&item=".$item);
+		$babBody->addItemMenu("editor", bab_translate("Editor"),$GLOBALS['babUrlScript']."?tg=site&idx=editor&item=".$item);
 		break;
 
 	case "Delete":
@@ -1474,6 +1628,7 @@ switch($idx)
 		$babBody->addItemMenu("hman", bab_translate("Managers"),$GLOBALS['babUrlScript']."?tg=site&idx=hman&item=".$item);
 		$babBody->addItemMenu("auth", bab_translate("Authentification"),$GLOBALS['babUrlScript']."?tg=site&idx=auth&item=".$item);
 		$babBody->addItemMenu("cnx", bab_translate("Registration"),$GLOBALS['babUrlScript']."?tg=site&idx=cnx&item=".$item);
+		$babBody->addItemMenu("editor", bab_translate("Editor"),$GLOBALS['babUrlScript']."?tg=site&idx=editor&item=".$item);
 		break;
 	}
 

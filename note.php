@@ -66,11 +66,16 @@ function deleteNotes($id)
 
 function updateNotes($id, $content)
 	{
-	$db = $GLOBALS['babDB'];
-	if( !bab_isMagicQuotesGpcOn())
+	$db = &$GLOBALS['babDB'];
+
+	if (bab_isMagicQuotesGpcOn())
 		{
-		$content = addslashes(bab_stripDomainName($content));
+		$content = stripslashes($content);
 		}
+
+	bab_editor_record($content);
+	$content = $db->db_escape_string($content);
+
 	$query = "update ".BAB_NOTES_TBL." set content='$content' where id = '$id'";
 	$db->db_query($query);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=notes&idx=List");

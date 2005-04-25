@@ -1525,3 +1525,91 @@ drop_table_check(document.forms['database'].structure);
 //-->
 </script>
 <!--#end database -->
+
+
+<!--#begin editor -->
+<script type="text/javascript">
+function show_hide_el(obj)
+{
+	var tr = document.getElementById('allow_elements');
+	if (obj.checked)
+		{
+		tr.style.display = '';
+		}
+	else
+		{
+		tr.style.display = 'none';
+		}
+}
+</script>
+<form name="editor" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="site" />
+<input type="hidden" name="idx" value="editor" />
+<input type="hidden" name="action" value="editor_configuration" />
+<input type="hidden" name="id_site" value="{ id_site }" />
+<input type="hidden" name="bitstring_len" value="{ bitstring_len }" />
+
+<table class="BabLoginCadreBackground"  width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td> 
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5">
+	<tr>
+		<td align="right" width="40%">{ t_use_editor } :</td>
+		<td><input type="checkbox" name="use_editor" value="1" <!--#if arr[use_editor] --> checked="checked"<!--#endif arr[use_editor] --> /></td>
+	</tr>
+	<tr>
+		<td align="right">{ t_filter_html } :</td>
+		<td><input type="checkbox" name="filter_html" value="1" onclick="show_hide_el(this);" <!--#if arr[filter_html] --> checked="checked"<!--#endif arr[filter_html] --> /></td>
+	</tr>
+	<tr id="allow_elements">
+		<td align="right" valign="top">{ t_allow_elements } :</td>
+		<td>
+
+		<p>
+		<input type="checkbox" name="bitstring[]" value="0" id="tags_presentation" <!--#if bitstring[0] --> checked="checked"<!--#endif bitstring[0] --> /><label for="tags_presentation">{ t_presentation }</label>
+		</p>
+
+		<p>
+		<input type="checkbox" name="bitstring[]" value="1" id="tags_lists" <!--#if bitstring[1] --> checked="checked"<!--#endif bitstring[1] --> /><label for="tags_lists">{ t_lists }</label>
+		</p>
+
+		<p>
+		<input type="checkbox" name="bitstring[]" value="2" id="tags_tables" <!--#if bitstring[2] --> checked="checked"<!--#endif bitstring[2] --> /><label for="tags_tables">{ t_tables }</label>
+		</p>
+
+		<P>
+		<input type="checkbox" name="bitstring[]" value="3" id="tags_nonhtml" <!--#if bitstring[3] --> checked="checked"<!--#endif bitstring[3] --> /><label for="tags_nonhtml">{ t_nonhtml }</label>
+		</p>
+
+		<p>
+		<input type="checkbox" name="bitstring[]" value="4" id="tags_images" <!--#if bitstring[4] --> checked="checked"<!--#endif bitstring[4] --> /><label for="tags_images">{ t_images }</label>
+		</p>
+
+		<p>
+		<input type="checkbox" name="bitstring[]" value="5" id="tags_iframe" <!--#if bitstring[5] --> checked="checked"<!--#endif bitstring[5] --> /><label for="tags_iframe">{ t_iframes }</label>
+		</p>
+
+		<p>
+		<input type="checkbox" name="bitstring[]" value="6" id="tags_forms" <!--#if bitstring[6] --> checked="checked"<!--#endif bitstring[6] --> /><label for="tags_forms">{ t_forms }</label>
+		</p>
+
+		<p>
+		<input type="checkbox" name="bitstring[]" value="7" id="attrib_target" <!--#if bitstring[7] --> checked="checked"<!--#endif bitstring[7] --> /><label for="attrib_target">{ t_target }</label>
+		</p>
+		</td>
+	</tr>
+
+	<tr>
+		<td align="center" colspan="2">
+			<input type="submit" value="{ t_submit }" />
+		</td>
+	</tr>
+	</table>
+</td>
+</tr>
+</table>
+</form>
+<script type="text/javascript">
+show_hide_el(document.forms['editor'].filter_html);
+</script>
+<!--#end editor -->

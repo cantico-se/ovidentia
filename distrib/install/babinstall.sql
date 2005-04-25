@@ -2521,3 +2521,17 @@ CREATE TABLE bab_cal_events_reminders (
   processed enum('N','Y') NOT NULL default 'N',
   KEY id_event (id_event,id_user)
 );
+
+
+CREATE TABLE `bab_sites_editor` (
+  `id` int(10) unsigned NOT NULL default '0',
+  `id_site` int(10) unsigned NOT NULL default '0',
+  `use_editor` tinyint(3) unsigned NOT NULL default '1',
+  `filter_html` tinyint(3) unsigned NOT NULL default '0',
+  `tags` text NOT NULL,
+  `attributes` text NOT NULL,
+  `verify_href` tinyint(3) unsigned NOT NULL default '0',
+  `bitstring` varchar(255) NOT NULL default '',
+  PRIMARY KEY  (`id`),
+  KEY `id_site` (`id_site`)
+);

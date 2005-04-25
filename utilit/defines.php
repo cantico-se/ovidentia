@@ -141,6 +141,7 @@ define("BAB_SITES_FIELDS_REGISTRATION_TBL", "bab_sites_fields_registration");
 define("BAB_SITES_DISCLAIMERS_TBL", "bab_sites_disclaimers");
 define("BAB_SITES_NONWORKING_CONFIG_TBL", "bab_sites_nonworking_config");
 define("BAB_SITES_NONWORKING_DAYS_TBL", "bab_sites_nonworking_days");
+define("BAB_SITES_EDITOR_TBL", "bab_sites_editor");
 define("BAB_STATS_EVENTS_TBL", "bab_stats_events");
 define("BAB_STATS_ADDONS_TBL", "bab_stats_addons");
 define("BAB_STATS_ARTICLES_TBL", "bab_stats_articles");
