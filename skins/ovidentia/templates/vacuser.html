@@ -491,10 +491,10 @@ window.focus();
 				<td  class="weekend" title="{ titledate } : { t_weekend }">
 				<!--#else weekend -->
 					<!--#if bvac -->
-					<td class="{ classname }" <!--#if color --> style="background-color:#{ color }" <!--#endif color --> title="{ titledate } : { vacapprovedtxt }">ok
+					<td class="{ classname }" <!--#if color --> style="background-color:#{ color }" <!--#endif color --> title="{ titledate }<!--#if tdtext --> : { vacapprovedtxt }<!--#endif tdtext -->"><!--#if tdtext -->ok<!--#endif tdtext -->
 					<!--#else bvac -->
 						<!--#if bwait -->
-						<td class="{ classname }" <!--#if color --> style="background-color:#{ color }" <!--#endif color --> title="{ titledate } : { vacwaitingtxt }">?
+						<td class="{ classname }" <!--#if color --> style="background-color:#{ color }" <!--#endif color --> title="{ titledate }<!--#if tdtext --> : { vacwaitingtxt }<!--#endif tdtext -->"><!--#if tdtext -->?<!--#endif tdtext -->
 						<!--#else bwait -->
 						<td <!--#if period --> class="free" onclick="setPeriod(this)" <!--#else period --> class="default" <!--#endif period -->  id="{ date }" title="{ titledate }">
 						<!--#endif bwait -->
@@ -651,6 +651,9 @@ function setPeriod2()
 		{
 		nbd -= 1;
 		}
+
+	if (nbd < 0)
+		nbd = 0;
 
 	f.period_nbdays.value = nbd;
 	window.status = '{ t_period_nbdays } : '+nbd;
@@ -891,12 +894,11 @@ dateEnd( dayend, monthend, yearend);
 
 }
 
-
-if (td = document.getElementById('{ yearbegin }-{ monthbegin }-{ daybegin }'))
-	setPeriod(td);
+begindate = '{ yearbegin }-{ monthbegin }-{ daybegin }';
 if (td = document.getElementById('{ yearend }-{ monthend }-{ dayend }'))
 	setPeriod(td);
 
+initialize();
 -->
 </script>
 <!--#end period -->

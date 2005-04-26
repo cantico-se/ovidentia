@@ -83,12 +83,16 @@
 	background-repeat:no-repeat;
 	}
 
-#vacationcalendar .used.morning {
+#vacationcalendar .morning {
 	background-image:url('../skins/ovidentia/images/vac-morning.gif');
 	}
 
-#vacationcalendar .used.afternoon {
+#vacationcalendar .afternoon {
 	background-image:url('../skins/ovidentia/images/vac-afternoon.gif');
+	}
+
+#vacationcalendar .morning.afternoon {
+	background-image:url('../skins/ovidentia/images/vac-morn-after.gif');
 	}
 
 #vacationcalendar .noday {

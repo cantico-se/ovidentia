@@ -97,8 +97,6 @@ function requestVacation($begin,$end, $halfdaybegin, $halfdayend, $id)
 			$this->username = bab_getUserName($this->id_user);
 			$this->t_period = bab_translate("The period contain");
 			$this->t_days = bab_translate("working days");
-			$this->period_nbdays = $_POST['period_nbdays'];
-
 
 			$this->db = & $GLOBALS['babDB'];
 
@@ -109,11 +107,33 @@ function requestVacation($begin,$end, $halfdaybegin, $halfdayend, $id)
 			$end = mktime(0, 0, 0, $monthend, $dayend, $yearend);
 
 			$calcul = round(($end - $begin)/86400) + 1;
-			if (empty($this->period_nbdays) || ($this->period_nbdays == 1 && $calcul > 1))
+
+			if ($halfdaybegin == 2 && $halfdayend == 3 && $calcul == 1)
 				{
-				$this->period_nbdays = $calcul;
-				$this->t_days = bab_translate("Day(s)");
+				$calcul = $calcul;
 				}
+			else if (($halfdaybegin == 2 && $halfdayend == 2 && $calcul == 1) || ($halfdaybegin == 3 && $halfdayend == 3 && $calcul == 1))
+				{
+				$calcul -= 0.5;
+				}
+			else if (($halfdaybegin >= 2 && $halfdayend == 1) || ($halfdayend >= 2 && $halfdaybegin == 1))
+				{
+				$calcul -= 0.5;
+				}
+			else if (($halfdaybegin == 2 && $halfdayend == 2) || ($halfdaybegin == 3 && $halfdayend == 3))
+				{
+				$calcul -= 0.5;
+				}
+			else if ($halfdaybegin >= 2 && $halfdayend >= 2)
+				{
+				$calcul -= 1;
+				}
+
+			if ($calcul < 0)
+				$calcul = 0;
+
+			$this->period_nbdays = $calcul;
+			$this->t_days = bab_translate("Day(s)");
 
 			$this->period_nbdays2 = $this->period_nbdays;
 
@@ -675,11 +695,46 @@ function test_period2($id_entry,$id_user,$begin,$end,$halfdaybegin,$halfdayend)
 	$date_end = date('Y-m-d',$end);
 
 	
-	$req = "SELECT * FROM ".BAB_VAC_ENTRIES_TBL." WHERE id_user='".$id_user."' AND ((date_begin BETWEEN '".$date_begin."' AND '".$date_end."' ) OR ( date_end BETWEEN '".$date_begin."' AND '".$date_end."')) AND id <> '".$id_entry."' AND status<>'N'";
+	$req = "SELECT 
+				date_begin,date_end, 
+				day_begin, day_end 
+		FROM ".BAB_VAC_ENTRIES_TBL." 
+			WHERE 
+			id_user='".$id_user."' 
+			AND (
+					(date_begin BETWEEN '".$date_begin."' AND '".$date_end."' ) 
+					OR 
+					( date_end BETWEEN '".$date_begin."' AND '".$date_end."')
+				) 
+			AND id <> '".$id_entry."' 
+			AND status<>'N'";
+
 	$res = $db->db_query($req);
 
 	if ($db->db_num_rows($res) > 0)
 		{
+		$arr = $db->db_fetch_assoc($res);
+
+		if ($arr['day_begin'] > 1)
+			{
+			$disp_date_begin = $arr['day_begin'] == 2 ? 3 : 2;
+			}
+
+		if ($arr['day_end'] > 1)
+			{
+			$disp_date_end = $arr['day_end'] == 2 ? 3 : 2;
+			}
+
+
+		if (isset($disp_date_begin) && $disp_date_begin == $halfdayend)
+			return true;
+
+		if (isset($disp_date_end) && $disp_date_end == $halfdaybegin)
+			return true;
+
+
+		echo $disp_date_end.' '.$halfdaybegin;
+
 		$babBody->msgerror = bab_translate("ERROR: a request is allready defined on this period");
 		return false;
 		}

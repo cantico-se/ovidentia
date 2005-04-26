@@ -433,16 +433,35 @@ function viewVacationCalendar($users, $period = false )
 
 			$res = $this->db->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where id_user IN(".implode(',',$this->idusers).") and status!='N' and (date_end >= '".$dateb."' OR date_begin <='".$datee."')");
 
+			
+
 			while( $row = $this->db->db_fetch_array($res))
 				{
+				$sup = 0;
+
+				if ($row['date_begin'] != $row['date_end'])
+					{
+					if ($row['day_begin'] > 1)
+						{
+						$sup += 0.5;
+						}
+
+					if ($row['day_end'] > 1)
+						{
+						$sup += 0.5;
+						}
+					}
+
 				$colors = array();
-				$req = "select e.quantity,t.color,e.id_type from ".BAB_VAC_ENTRIES_ELEM_TBL." e,".BAB_VAC_RIGHTS_TBL." r, ".BAB_VAC_TYPES_TBL." t  where e.id_entry='".$row['id']."' AND r.id=e.id_type AND t.id=r.id_type";
+				$req = "select e.quantity, t.color, e.id_type from ".BAB_VAC_ENTRIES_ELEM_TBL." e,".BAB_VAC_RIGHTS_TBL." r, ".BAB_VAC_TYPES_TBL." t  where e.id_entry='".$row['id']."' AND r.id=e.id_type AND t.id=r.id_type";
 
 				$res2 = $this->db->db_query($req);
 				while ($arr = $this->db->db_fetch_array($res2))
 					{
-					for ($i = 0 ; $i < $arr['quantity'] ; $i++)
+					for ($i = 0 ; $i < ($arr['quantity']+$sup) ; $i++)
 						$colors[] = $arr['color'];
+
+					$sup = 0;
 					}
 
 				if (!$this->period || !isset($_REQUEST['id']) || $_REQUEST['id'] != $row['id'])
@@ -559,10 +578,12 @@ function viewVacationCalendar($users, $period = false )
 					if( $startmonth <= $this->entries[$k]['db'] && $endmonth >= $this->entries[$k]['db'] || $startmonth <= $this->entries[$k]['de'] && $endmonth >= $this->entries[$k]['de'] || $this->entries[$k]['db'] <= $startmonth &&  $this->entries[$k]['de'] >= $endmonth )
 						{
 						$this->month_entries[] = $k;
+						
 						if (!in_array($this->entries[$k]['id_user'],$this->month_users))
 							$this->month_users[] = $this->entries[$k]['id_user'];
 						}
 					}
+
 				if (count($this->month_users) == 0 && $this->nbusers == 1)
 					{
 					$this->month_users = $this->idusers;
@@ -595,39 +616,50 @@ function viewVacationCalendar($users, $period = false )
 					$this->nonworking_text = $this->nonworking ? $this->nonWorkingDays[$this->date] : '';
 					$this->bvac = false;
 					$this->bwait = false;
+					$this->tdtext = true;
+					$classname = array();
 
-					foreach( $this->month_entries as $k)
+					for ($i = 0 ; $i < count($this->month_entries) ; $i++)
 						{
+						$k = $this->month_entries[$i];
+
 						if( $this->date >= $this->entries[$k]['db'] && $this->date <= $this->entries[$k]['de'] && $this->entries[$k]['id_user'] == $this->id_user )
 							{
-
 							if( $this->entries[$k]['st'] == "")
+								{
+								if ($this->bwait) $this->tdtext = false;
 								$this->bwait = true;
+								}
 							else
+								{
+								if ($this->bvac) $this->tdtext = false;
 								$this->bvac = true;
+								}
 
-							$this->classname = 'used';
+							$classname[] = !in_array('used',$classname) ? 'used' : '';
 							if ($this->date == $this->entries[$k]['db'] && $this->entries[$k]['hdb'] == 2)
-								$this->classname .= ' morning';
+								$classname[] = 'morning';
+							else if ($this->date == $this->entries[$k]['de'] && $this->entries[$k]['hde'] == 2)
+								$classname[] = 'morning';
 
 							if ($this->date == $this->entries[$k]['db'] && $this->entries[$k]['hdb'] == 3)
-								$this->classname .= ' afternoon';
+								$classname[]= 'afternoon';
 
-							if ($this->date == $this->entries[$k]['de'] && $this->entries[$k]['hde'] == 2)
-								$this->classname .= ' morning';
+							else if ($this->date == $this->entries[$k]['de'] && $this->entries[$k]['hde'] == 3)
+								$classname[] = 'afternoon';
 
-							if ($this->date == $this->entries[$k]['de'] && $this->entries[$k]['hde'] == 3)
-								$this->classname .= ' afternoon';
+							
 
 							if (!$this->nonworking && !$this->weekend)
 								{
 								$this->color = current($this->entries[$k]['color']);
 								unset($this->entries[$k]['color'][key($this->entries[$k]['color'])]);
 								}
-
-							break;
 							}
 						}
+
+					$this->classname = implode(' ',$classname);
+
 					$this->noday = false;
 					}
 				else
