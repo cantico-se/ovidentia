@@ -107,6 +107,8 @@ function notesList($id)
 function saveNotes($content)
 	{
 	global $BAB_SESS_USERID;
+	$db = &$GLOBALS['babDB'];
+
 	if( empty($content) || empty($BAB_SESS_USERID))
 		{
 		return;
@@ -119,7 +121,7 @@ function saveNotes($content)
 	bab_editor_record($content);
 	$content = $db->db_escape_string($content);
 
-	$db = &$GLOBALS['babDB'];
+	
 	$query = "insert into ".BAB_NOTES_TBL." (id_user, date, content) VALUES ('". $BAB_SESS_USERID. "',now(), '" . $content. "')";
 	$db->db_query($query);
 	}
