@@ -932,11 +932,13 @@ function saveQuestion($item, $idscat, $question, $response)
 		}
 	if( bab_isMagicQuotesGpcOn())
 		{
-		$question = stripslashes(bab_stripDomainName($question));
-		$response = stripslashes(bab_stripDomainName($response));
+		$question = stripslashes($question);
+		$response = stripslashes($response);
 		}
 
-	$db = $GLOBALS['babDB'];
+	
+
+	$db = &$GLOBALS['babDB'];
 
 	if( empty($idscat))
 		{
@@ -950,7 +952,9 @@ function saveQuestion($item, $idscat, $question, $response)
 	$ar = array();
 	$response = imagesReplace($response, $id."_faq_", $ar);
 
-	$query = "update ".BAB_FAQQR_TBL." set response='".addslashes(bab_stripDomainName($response))."' where id='".$id."'";
+	bab_editor_record($response);
+
+	$query = "update ".BAB_FAQQR_TBL." set response='".$db->db_escape_string($response)."' where id='".$id."'";
 	$db->db_query($query);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item);
 	}
@@ -966,7 +970,7 @@ function saveSubCategory($item, $idscat, $subcat)
 		}
 	if( bab_isMagicQuotesGpcOn())
 		{
-		$subcat = stripslashes(bab_stripDomainName($subcat));
+		$subcat = stripslashes($subcat);
 		}
 
 	$db = $GLOBALS['babDB'];
@@ -995,7 +999,7 @@ function updateSubCategory($item, $idscat, $ids, $subcat)
 		}
 	if( bab_isMagicQuotesGpcOn())
 		{
-		$subcat = stripslashes(bab_stripDomainName($subcat));
+		$subcat = stripslashes($subcat);
 		}
 
 	$db = $GLOBALS['babDB'];
@@ -1032,15 +1036,17 @@ function updateQuestion($idq, $newidscat, $question, $response)
 
 	if( bab_isMagicQuotesGpcOn())
 		{
-		$question = stripslashes(bab_stripDomainName($question));
-		$response = stripslashes(bab_stripDomainName($response));
+		$question = stripslashes($question);
+		$response = stripslashes($response);
 		}
 
 	$ar = array();
 	$response = imagesReplace($response, $idq."_faq_", $ar);
 
-	$db = $GLOBALS['babDB'];
-	$query = "update ".BAB_FAQQR_TBL." set question='".addslashes($question)."', response='".addslashes(bab_stripDomainName($response))."', id_subcat='".$newidscat."' where id = '".$idq."'";
+	bab_editor_record($response);
+
+	$db = &$GLOBALS['babDB'];
+	$query = "update ".BAB_FAQQR_TBL." set question='".$db->db_escape_string($question)."', response='".$db->db_escape_string($response)."', id_subcat='".$newidscat."' where id = '".$idq."'";
 	$db->db_query($query);
 
 	}

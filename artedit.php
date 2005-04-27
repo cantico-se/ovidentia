@@ -1780,7 +1780,13 @@ function updateArticleDraft($idart, $title, $headtext, $bodytext, $lang, $approb
 	$headtext = imagesReplace($headtext, $idart."_draft_", $ar);
 	$bodytext = imagesReplace($bodytext, $idart."_draft_", $ar);
 
-	$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set title='".addslashes($title)."', head='".addslashes(bab_stripDomainName($headtext))."', body='".addslashes(bab_stripDomainName($bodytext))."', date_modification=now(), lang='" .$lang. "', approbation='".$approbid."' where id='".$idart."'");
+	bab_editor_record($headtext);
+	$headtext = $db->db_escape_string($headtext);
+
+	bab_editor_record($bodytext);
+	$bodytext = $db->db_escape_string($bodytext);
+
+	$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set title='".addslashes($title)."', head='".$headtext."', body='".$bodytext."', date_modification=now(), lang='" .$lang. "', approbation='".$approbid."' where id='".$idart."'");
 	return true;
 }
 

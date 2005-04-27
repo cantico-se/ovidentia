@@ -155,10 +155,13 @@ function bab_editor($content, $editname, $formname, $heightpx=300, $what=3)
 				$this->heightpx = $heightpx;
 				$this->what = $what;
 				$db = &$GLOBALS['babDB'];
-				if (!list($use_editor) = $db->db_fetch_array($db->db_query("SELECT use_editor FROM ".BAB_SITES_EDITOR_TBL." WHERE id_site='".$GLOBALS['babBody']->babsite['id']."'")))
+				if (!list($use_editor,$this->filter_html) = $db->db_fetch_array($db->db_query("SELECT use_editor, filter_html FROM ".BAB_SITES_EDITOR_TBL." WHERE id_site='".$GLOBALS['babBody']->babsite['id']."'")))
 					{
 					$use_editor = 1;
+					$this->filter_html = 0;
 					}
+
+				$this->t_filter_html = bab_translate("In this configuration, some html tags may be removed for security reasons");
 
 				$this->text_toolbar = bab_editor_text_toolbar($editname,$this->what);
 

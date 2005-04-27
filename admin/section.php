@@ -245,15 +245,24 @@ function sectionUpdate($id, $title, $desc, $content, $script, $template, $lang, 
 	$res = $db->db_query($query);
 	$arr = $db->db_fetch_array($res);
 
-	$content = bab_stripDomainName($content);
-	if( !bab_isMagicQuotesGpcOn())
+
+	if( bab_isMagicQuotesGpcOn())
 		{
-		$desc = addslashes($desc);
-		$content = addslashes(bab_stripDomainName($content));
-		$title = addslashes($title);
-		$template = addslashes($template);
+		$desc = stripslashes($desc);
+		$content = stripslashes($content);
+		$title = stripslashes($title);
+		$template = stripslashes($template);
 		}
-	$query = "update ".BAB_SECTIONS_TBL." set title='".$title."', description='".$desc."', content='".bab_stripDomainName($content)."', script='".$php."', template='".$template."', lang='".$lang."', optional='".$opt."' where id='".$id."'";
+
+	bab_editor_record($content);
+
+	$desc = $db->db_escape_string($desc);
+	$content = $db->db_escape_string($content);
+	$title = $db->db_escape_string($title);
+	$template = $db->db_escape_string($template);
+
+
+	$query = "update ".BAB_SECTIONS_TBL." set title='".$title."', description='".$desc."', content='".$content."', script='".$php."', template='".$template."', lang='".$lang."', optional='".$opt."' where id='".$id."'";
 	$db->db_query($query);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sections&idx=List");
 	}

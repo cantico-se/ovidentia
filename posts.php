@@ -734,12 +734,19 @@ function saveReply($forum, $thread, $post, $name, $subject, $message)
 	else
 		$confirmed = "Y";
 
+	if (bab_isMagicQuotesGpcOn())
+		{
+		$subject = stripslashes($subject);
+		$message = stripslashes($message);
+		$name = stripslashes($name);
+		}
+
+	bab_editor_record($message);
+
+
 	$req = "insert into ".BAB_POSTS_TBL." (id_thread, date, subject, message, author, confirmed, id_parent) values ";
 	$req .= "('" .$thread. "', now(), '";
-	if( !bab_isMagicQuotesGpcOn())
-		$req .= addslashes(bab_stripDomainName($subject)). "', '" . addslashes(bab_stripDomainName($message)). "', '". addslashes($name);
-	else
-		$req .= bab_stripDomainName($subject). "', '" . bab_stripDomainName($message). "', '". $name;
+	$req .= $db->db_escape_string($subject). "', '" . $db->db_escape_string($message). "', '". $db->db_escape_string($name);
 	$req .= "', '". $confirmed."', '". $post. "')";
 	$res = $db->db_query($req);
 	$idpost = $db->db_insert_id();
@@ -765,7 +772,7 @@ function saveReply($forum, $thread, $post, $name, $subject, $message)
 	if( $arr['notification'] == "Y" )
 		{
 		$url = $GLOBALS['babUrlScript'] ."?tg=posts&idx=List&forum=".$forum."&thread=".$thread."&flat=1";
-	    notifyModerator($forum, stripslashes($subject), stripslashes($name), $arr['name'],$url);
+	    notifyModerator($forum, $subject, $name, $arr['name'],$url);
 		}
 	if (!isset($flat)) $flat = '';
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$forum."&thread=".$thread."&post=".$post."&flat=".$flat);
@@ -810,12 +817,18 @@ function updateReply($forum, $thread, $subject, $message, $post)
 		return;
 		}
 
-	$db = $GLOBALS['babDB'];
+	$db = &$GLOBALS['babDB'];
 
-	if( !bab_isMagicQuotesGpcOn())
-		$req = "update ".BAB_POSTS_TBL." set message='".addslashes(bab_stripDomainName($message))."', subject='".addslashes(bab_stripDomainName($subject))."', dateupdate=now() where id='$post'";
-	else
-		$req = "update ".BAB_POSTS_TBL." set message='".bab_stripDomainName($message)."', subject='".bab_stripDomainName($subject)."', dateupdate=now() where id='$post'";
+	if( bab_isMagicQuotesGpcOn())
+		{
+		$subject = stripslashes($subject);
+		$message = stripslashes($message);
+		}
+
+	bab_editor_record($message);
+
+	$req = "update ".BAB_POSTS_TBL." set message='".$db->db_escape_string($message)."', subject='".$db->db_escape_string($subject)."', dateupdate=now() where id='$post'";
+
 
 	$res = $db->db_query($req);
 

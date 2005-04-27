@@ -1775,4 +1775,5 @@
 <string id="Frames (open external url into document body)">Cadres (ouvre des adresses externe dans le corps du document)</string>
 <string id="Forms">Formulaires</string>
 <string id="Targets on links (open links in new windows)">Cible sur les liens (ouvrir les liens dans des nouvelles fenêtres)</string>
+<string id="In this configuration, some html tags may be removed for security reasons">Dans cette configuration, certaines balises html pourrons êtres supprimées lors de l'enregistrement pour des raisons de sécuritée</string>
 </fr>

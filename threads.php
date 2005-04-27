@@ -338,12 +338,19 @@ function saveThread($forum, $name, $subject, $message, $notifyme)
 	else
 		$confirmed = "Y";
 
+	if( bab_isMagicQuotesGpcOn())
+		{
+		$subject = stripslashes($subject);
+		$message = stripslashes($message);
+		$name = stripslashes($name);
+		}
+
+	bab_editor_record($message);
+
 	$req = "insert into ".BAB_POSTS_TBL." (id_thread, date, subject, message, author, confirmed) values ";
 	$req .= "('" .$idthread. "', now(), '";
-	if( !bab_isMagicQuotesGpcOn())
-		$req .= addslashes(bab_stripDomainName($subject)). "', '" . addslashes(bab_stripDomainName($message)). "', '". addslashes($name);
-	else
-		$req .= bab_stripDomainName($subject). "', '" . bab_stripDomainName($message). "', '". $name;
+	$req .= $db->db_escape_string($subject). "', '" . $db->db_escape_string($message). "', '". $db->db_escape_string($name);
+
 
 	$req .= "', '". $confirmed. "')";
 	$res = $db->db_query($req);

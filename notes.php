@@ -111,12 +111,15 @@ function saveNotes($content)
 		{
 		return;
 		}
-	if( !bab_isMagicQuotesGpcOn())
+	if( bab_isMagicQuotesGpcOn())
 		{
-		$content = addslashes(bab_stripDomainName($content));
+		$content = stripslashes($content);
 		}
 
-	$db = $GLOBALS['babDB'];
+	bab_editor_record($content);
+	$content = $db->db_escape_string($content);
+
+	$db = &$GLOBALS['babDB'];
 	$query = "insert into ".BAB_NOTES_TBL." (id_user, date, content) VALUES ('". $BAB_SESS_USERID. "',now(), '" . $content. "')";
 	$db->db_query($query);
 	}

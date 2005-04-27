@@ -530,16 +530,23 @@ function sectionSave($title, $pos, $desc, $content, $script, $js, $template, $la
 		return;
 		}
 
-	$content = bab_stripDomainName($content);
-	if( !bab_isMagicQuotesGpcOn())
+	
+	if( bab_isMagicQuotesGpcOn())
 		{
-		$desc = addslashes($desc);
-		$content = addslashes($content);
-		$title = addslashes($title);
-		$template = addslashes($template);
+		$desc = stripslashes($desc);
+		$content = stripslashes($content);
+		$title = stripslashes($title);
+		$template = stripslashes($template);
 		}
 
-	$db = $GLOBALS['babDB'];
+	bab_editor_record($content);
+
+	$desc = $db->db_escape_string($desc);
+	$content = $db->db_escape_string($content);
+	$title = $db->db_escape_string($title);
+	$template = $db->db_escape_string($template);
+
+	$db = &$GLOBALS['babDB'];
 	$query = "select * from ".BAB_SECTIONS_TBL." where title='$title'";	
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) > 0)
@@ -558,7 +565,7 @@ function sectionSave($title, $pos, $desc, $content, $script, $js, $template, $la
 			$js = "Y";
 		else
 			$js = "N";
-		$query = "insert into ".BAB_SECTIONS_TBL." (title, position, description, content, script, jscript, template, lang, id_dgowner, optional) VALUES ('" .$title. "', '" . $pos. "', '" . $desc. "', '" . bab_stripDomainName($content). "', '" . $php. "', '" . $js."', '". $template."', '" .$lang."', '" .$babBody->currentAdmGroup."', '" .$opt. "')";
+		$query = "insert into ".BAB_SECTIONS_TBL." (title, position, description, content, script, jscript, template, lang, id_dgowner, optional) VALUES ('" .$title. "', '" . $pos. "', '" . $desc. "', '" . $content. "', '" . $php. "', '" . $js."', '". $template."', '" .$lang."', '" .$babBody->currentAdmGroup."', '" .$opt. "')";
 		$db->db_query($query);
 		$id = $db->db_insert_id();
 		if( $babBody->currentAdmGroup == 0 )
