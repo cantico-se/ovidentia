@@ -558,14 +558,18 @@ function saveCategory($category, $description, $cat, $sacom, $saart, $saupd, $bn
 		return false;
 		}
 
+	$db = &$GLOBALS['babDB'];
 
-	if( !bab_isMagicQuotesGpcOn())
+	if( bab_isMagicQuotesGpcOn())
 		{
-		$category = addslashes($category);
-		$description = addslashes($description);
+		$category = stripslashes($category);
+		$description = stripslashes($description);
 		}
 
-	$db = $GLOBALS['babDB'];
+	bab_editor_record($content);
+	$category = $db->db_escape_string($category);
+	$description = $db->db_escape_string($description);
+	
 	$query = "select * from ".BAB_TOPICS_TBL." where category='".$category."' and id_cat='".$cat."'";	
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) > 0)

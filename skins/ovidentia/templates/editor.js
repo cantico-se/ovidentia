@@ -9,6 +9,7 @@ var global_editor = null;
 	config.statusBar = false;
 	config.sizeIncludesToolbar = false;
 
+	config.debug = false;
 
 	config.toolbar = [
 	[ "fontname", "space", "fontsize", "space", "formatblock", "space" <!--#if arr_classname -->,"cssstyles" <!--#endif arr_classname -->],
@@ -30,6 +31,7 @@ var global_editor = null;
 		 <!--#endif mode -->
 		]
 	];
+
 
 
 	config.btnList.removeformat[0] = '{ t_removeformat }';
@@ -258,19 +260,23 @@ var global_editor = null;
 			  }
 	});
 
+	setTimeout ( function() { 
+		for(var i in textarea_id)
+		  {
+			var editor = new HTMLArea(textarea_id[i], config);
 
-	for(var i in textarea_id)
-	  {
-		var editor = new HTMLArea(textarea_id[i], config);
+			if (editor.config)
+				{
+				document.getElementById(textarea_id[i]+'_text_toolbar').style.display = 'none';
+				document.getElementById(textarea_id[i]+'_textmode').value = '';
+				
+				editor.generate(); 
+				editor._toolbar.style.height = '67px'; 
+				
+				}
 
-		if (editor.config)
-			{
-			document.getElementById(textarea_id[i]+'_text_toolbar').style.display = 'none';
-			document.getElementById(textarea_id[i]+'_textmode').value = '';
-			editor.generate();
-			editor._toolbar.style.height = '67px';
-			}
-	  }
+		  }
+		}, 10 );
 
 	return false;
 };

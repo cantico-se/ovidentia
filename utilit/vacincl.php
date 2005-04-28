@@ -627,12 +627,12 @@ function viewVacationCalendar($users, $period = false )
 							{
 							if( $this->entries[$k]['st'] == "")
 								{
-								if ($this->bwait) $this->tdtext = false;
+								if ($this->bwait || $this->bvac) $this->tdtext = false;
 								$this->bwait = true;
 								}
 							else
 								{
-								if ($this->bvac) $this->tdtext = false;
+								if ($this->bwait || $this->bvac) $this->tdtext = false;
 								$this->bvac = true;
 								}
 
@@ -798,8 +798,9 @@ function listVacationRequests($id_user)
 			list($total) = $this->db->db_fetch_row($this->db->db_query("select count(*) as total from ".$req));
 			if( $total > VAC_MAX_REQUESTS_LIST )
 				{
+				$idx = isset($_REQUEST['idx']) ? $_REQUEST['idx'] : '';
 				$ide = isset($_REQUEST['ide']) ? $_REQUEST['ide'] : '';
-				$tmpurl = $GLOBALS['babUrlScript']."?tg=".$_REQUEST['tg']."&idx=".$_REQUEST['idx']."&ide=".$ide."&pos=";
+				$tmpurl = $GLOBALS['babUrlScript']."?tg=".$_REQUEST['tg']."&idx=".$idx."&ide=".$ide."&pos=";
 				if( $this->pos > 0)
 					{
 					$this->topurl = $tmpurl."0";

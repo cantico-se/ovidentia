@@ -78,7 +78,12 @@ HTMLArea.I18N = {
 		"système est Windows 9x, il est possible que vous subissiez une erreur de type " +
 		"«General Protection Fault» et que vous ayez à redémarrer votre ordinateur." +
 		"\n\nConsidérez-vous comme ayant été avisé.  Appuyez sur OK si vous désirez tout " +
-		"de même essayer le mode plein écran de l'éditeur."
+		"de même essayer le mode plein écran de l'éditeur.",
+		
+		"Moz-Clipboard" :
+		"Le programme ne peur pas accéder aux fonctions couper/copier/coller " +
+		"pour des raisons de sécurité. Sur les navigateurs comme Mozilla ou Firefox il est préférable d'utiliser" +
+		"Les racourcis clavier Ctrl+X, Ctrl+C, Ctrl+V"
 	},
 
 	dialogs: {

@@ -1011,14 +1011,9 @@ function editDisclaimerPrivacy($id, $content)
 				{
 				$this->disclaimerval = $content;
 				}
-			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
-				{
-				$this->msie = 1;
-				}
-			else
-				{
-				$this->msie = 0;
-				}
+
+			$this->editor = bab_editor($this->disclaimerval, 'content', 'discmod');
+
 			}
 		}
 
@@ -1441,10 +1436,16 @@ function siteUpdateDisclaimer($item, $content)
 	{
 	global $babDB;
 
-	if( !bab_isMagicQuotesGpcOn())
+	if( bab_isMagicQuotesGpcOn())
 		{
-		$content = addslashes($content);
+		$content = stripslashes($content);
 		}
+
+	bab_editor_record($content);
+
+	$db = &$GLOBALS['babDB'];
+	$content = $db->db_escape_string($content);
+
 	$babDB->db_query("update ".BAB_SITES_DISCLAIMERS_TBL." set disclaimer_text='".$content."' where id_site='".$item."'");
 	return true;
 	}

@@ -774,18 +774,23 @@ function updateCategory($id, $category, $description, $cat, $saart, $sacom, $sau
 		return false;
 		}
 
-	if( !bab_isMagicQuotesGpcOn())
+	$db = &$GLOBALS['babDB'];
+
+	if( bab_isMagicQuotesGpcOn())
 		{
-		$category = addslashes($category);
-		$description = addslashes($description);
+		$category = stripslashes($category);
+		$description = stripslashes($description);
 		}
+
+	bab_editor_record($content);
+	$category = $db->db_escape_string($category);
+	$description = $db->db_escape_string($description);
 
 	if( empty($maxarts))
 		{
 		$maxarts = 10;
 		}
-
-	$db = $GLOBALS['babDB'];
+	
 	$arr = $db->db_fetch_array($db->db_query("select * from ".BAB_TOPICS_TBL." where id='".$id."'"));
 	if( $arr['idsaart'] != $saart )
 		{

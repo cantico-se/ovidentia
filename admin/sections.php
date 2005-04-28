@@ -541,12 +541,14 @@ function sectionSave($title, $pos, $desc, $content, $script, $js, $template, $la
 
 	bab_editor_record($content);
 
+	$db = &$GLOBALS['babDB'];
+
 	$desc = $db->db_escape_string($desc);
 	$content = $db->db_escape_string($content);
 	$title = $db->db_escape_string($title);
 	$template = $db->db_escape_string($template);
 
-	$db = &$GLOBALS['babDB'];
+	
 	$query = "select * from ".BAB_SECTIONS_TBL." where title='$title'";	
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) > 0)
