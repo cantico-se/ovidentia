@@ -305,7 +305,7 @@
 <string id="ERROR: You must provide a title">ERREUR: Vous devez fournir un titre</string>
 <string id="ERROR: You must provide a valid email address">ERREUR: Vous devez donner une adresse e-mail valide</string>
 <string id="ERROR: You must provide account field !!">ERREUR: Vous devez spécifier un compte !!</string>
-<string id="ERROR: You must provide at least one approver !!">ERREUR: vous devez indiquez au moins un approbateur !!</string>
+<string id="ERROR: You must provide at least one approver !!">ERREUR: vous devez indiquer au moins un approbateur !!</string>
 <string id="ERROR: You must provide question and response !!">ERREUR: Vous devez donner une question et une réponse !!</string>
 <string id="ERROR: You must provide server address !!">ERREUR: Vous devez donner l'adresse d'un serveur !!</string>
 <string id="ERROR: You must provide signature !!">ERREUR: Vous devez spécifier une signature !!</string>
@@ -910,7 +910,7 @@
 <string id="You must provide an outgoing mail server">Vous devez spécifier un serveur de messagerie sortant</string>
 <string id="You must select at least one calendar type">Vous devez sélectionner au moins un type de calendrier</string>
 <string id="You must select at least one group">Vous devez sélectionner au moins un groupe</string>
-<string id="You must specify a correct number days">Vous devez indiquez un nombre de jours correct</string>
+<string id="You must specify a correct number days">Vous devez indiquer un nombre de jours correct</string>
 <string id="You must specify a user or collection">Vous devez spécifier un utilisateur ou un régime</string>
 <string id="You must specify a user or group">Vous devez spécifier un utilisateur ou un groupe</string>
 <string id="You must specify a vacation collection">Vous devez spécifier un régime</string>
