@@ -1031,8 +1031,30 @@ function delUserOrgChartRole($ocid, $oeid, $ocfid)
 	global $babBody, $babDB, $babLittleBody, $ocinfo, $oeinfo;
 	for($i= 0; $i < count($ocfid); $i++ )
 	{
-	list($idduser) = $babDB->db_fetch_row($babDB->db_query("select id_user from ".BAB_OC_ROLES_USERS_TBL." where id='".$ocfid[$i]."'"));
+	list($idduser, $isprimary) = $babDB->db_fetch_row($babDB->db_query("select id_user, isprimary from ".BAB_OC_ROLES_USERS_TBL." where id='".$ocfid[$i]."'"));
 	$babDB->db_query("delete from ".BAB_OC_ROLES_USERS_TBL." where id='".$ocfid[$i]."'");
+
+	if( $isprimary == 'Y' )
+		{		
+		$res = $babDB->db_query("select ocrut.id from  ".BAB_OC_ROLES_USERS_TBL." ocrut left join ".BAB_OC_ROLES_TBL." ocrt on ocrut.id_role=ocrt.id where ocrt.id_oc='".$ocid."' and  ocrut.id_user='".$idduser."'");
+		if( $res && $babDB->db_num_rows($res) > 0 )
+			{
+			$k = 0; 
+			while( $arr = $babDB->db_fetch_array($res))
+				{
+				if( $k == 0 ) //user must have a primary role, use the first
+					{
+					$babDB->db_query("update ".BAB_OC_ROLES_USERS_TBL." set isprimary='Y' where id='".$arr['id']."'");
+					}
+				else
+					{
+					$babDB->db_query("update ".BAB_OC_ROLES_USERS_TBL." set isprimary='N' where id='".$arr['id']."'");
+					}
+				$k++;
+				}
+			}
+		}
+
 	if( $ocinfo['isprimary'] == 'Y' && $ocinfo['id_group'] == 1 && $oeinfo['id_group'] != 0)
 		{
 		list($total) = $babDB->db_fetch_row($babDB->db_query("select count(orut.id) as total from ".BAB_OC_ROLES_USERS_TBL." orut left join ".BAB_OC_ROLES_TBL." ort on ort.id=orut.id_role left join ".BAB_OC_ENTITIES_TBL." oct on oct.id=ort.id_entity where orut.id_user='".$idduser."' and ort.id_entity='".$oeid."'"));
