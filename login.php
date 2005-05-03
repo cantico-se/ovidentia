@@ -24,6 +24,18 @@
 include_once "base.php";
 include_once $babInstallPath."admin/register.php";
 
+function bab_utf8_decode($str)
+{
+	if( $babBody->babsite['authentification'] == '2' ) // AD
+		{
+		return $str;
+		}
+	else
+		{
+		return utf8_decode($str);
+		}
+}
+
 function displayLogin($url)
 	{
 	global $babBody;
@@ -634,7 +646,7 @@ function userLogin($nickname,$password)
 					$sn = isset($updattributes['sn'])?$entries[0][$updattributes['sn']][0]:$entries[0]['sn'][0];
 					$mn = isset($updattributes['mn'])?$entries[0][$updattributes['mn']][0]:'';
 					$mail = isset($updattributes['email'])?$entries[0][$updattributes['email']][0]:$entries[0]['mail'][0];
-					$iduser = registerUser(utf8_decode($givenname), utf8_decode($sn), utf8_decode($mn), utf8_decode($mail),$nickname, $password, $password, true);
+					$iduser = registerUser(bab_utf8_decode($givenname), bab_utf8_decode($sn), bab_utf8_decode($mn), bab_utf8_decode($mail),$nickname, $password, $password, true);
 					if( $iduser === false )
 						{
 						return false;
@@ -653,13 +665,13 @@ function userLogin($nickname,$password)
 				switch($key)
 					{
 					case "sn":
-						$req .= ", lastname='".addslashes(utf8_decode($entries[0][$key][0]))."'";
+						$req .= ", lastname='".addslashes(bab_utf8_decode($entries[0][$key][0]))."'";
 						break;
 					case "givenname":
-						$req .= ", firstname='".addslashes(utf8_decode($entries[0][$key][0]))."'";
+						$req .= ", firstname='".addslashes(bab_utf8_decode($entries[0][$key][0]))."'";
 						break;
 					case "mail":
-						$req .= ", email='".addslashes(utf8_decode($entries[0][$key][0]))."'";
+						$req .= ", email='".addslashes(bab_utf8_decode($entries[0][$key][0]))."'";
 						break;
 					default:
 						break;
@@ -693,7 +705,7 @@ function userLogin($nickname,$password)
 								}
 							break;
 						case "mail":
-							$req .= ", email='".addslashes(utf8_decode($entries[0][$key][0]))."'";
+							$req .= ", email='".addslashes(bab_utf8_decode($entries[0][$key][0]))."'";
 							break;
 						default:
 							if( substr($val, 0, strlen("babdirf")) == 'babdirf' )
@@ -702,16 +714,16 @@ function userLogin($nickname,$password)
 								$rs = $db->db_query("select id from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$arridfx[$tmp]."' and  id_entry='".$idu."'");
 								if( $rs && $db->db_num_rows($rs) > 0 )
 									{
-									$db->db_query("update ".BAB_DBDIR_ENTRIES_EXTRA_TBL." set field_value='".addslashes(utf8_decode($entries[0][$key][0]))."' where id_fieldx='".$arridfx[$tmp]."' and id_entry='".$idu."'");
+									$db->db_query("update ".BAB_DBDIR_ENTRIES_EXTRA_TBL." set field_value='".addslashes(bab_utf8_decode($entries[0][$key][0]))."' where id_fieldx='".$arridfx[$tmp]."' and id_entry='".$idu."'");
 									}
 								else
 									{
-									$db->db_query("insert into ".BAB_DBDIR_ENTRIES_EXTRA_TBL." ( field_value, id_fieldx, id_entry) values ('".addslashes(utf8_decode($entries[0][$key][0]))."', '".$arridfx[$tmp]."', '".$idu."')");
+									$db->db_query("insert into ".BAB_DBDIR_ENTRIES_EXTRA_TBL." ( field_value, id_fieldx, id_entry) values ('".addslashes(bab_utf8_decode($entries[0][$key][0]))."', '".$arridfx[$tmp]."', '".$idu."')");
 									}
 								}
 							else
 								{
-								$req .= ", ".$val."='".addslashes(utf8_decode($entries[0][$key][0]))."'";
+								$req .= ", ".$val."='".addslashes(bab_utf8_decode($entries[0][$key][0]))."'";
 								}
 							break;
 						}
