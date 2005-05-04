@@ -1132,15 +1132,15 @@ function addEvent(&$message)
 		$enddate = bab_longDate($end);
 		if( count($arrusr) > 0 )
 			{
-			notifyPersonalEvent($title, $description, $startdate, $enddate, $arrusr);
+			notifyPersonalEvent(post_string2('title'), post_string2('evtdesc'), $startdate, $enddate, $arrusr);
 			}
 		if( count($arrres) > 0 )
 			{
-			notifyResourceEvent($title, $description, $startdate, $enddate, $arrres);
+			notifyResourceEvent(post_string2('title'), post_string2('evtdesc'), $startdate, $enddate, $arrres);
 			}
 		if( count($arrpub) > 0 )
 			{
-			notifyPublicEvent($title, $description, $startdate, $enddate, $arrpub);
+			notifyPublicEvent(post_string2('title'), post_string2('evtdesc'), $startdate, $enddate, $arrpub);
 			}
 		}
 	return true;	
