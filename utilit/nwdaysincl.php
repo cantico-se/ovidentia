@@ -23,13 +23,35 @@
 ************************************************************************/
 include_once "base.php";
 
+
+if (!function_exists('easter_date'))
+{
+
+	function easter_date($Year) {
+	  
+		 $G = $Year % 19;
+		 $C = (int)($Year / 100);
+		 $H = (int)($C - (int)($C / 4) - (int)((8*$C+13) / 25) + 19*$G + 15) % 30;
+		 $I = (int)$H - (int)($H / 28)*(1 - (int)($H / 28)*(int)(29 / ($H + 1))*((int)(21 - $G) / 11));
+		 $J = ($Year + (int)($Year/4) + $I + 2 - $C + (int)($C/4)) % 7;
+		 $L = $I - $J;
+		 $m = 3 + (int)(($L + 40) / 44);
+		 $d = $L + 28 - 31 * ((int)($m / 4));
+		 $y = $Year;
+		 $E = mktime(0,0,0, $m, $d, $y);
+
+		 return $E;
+	   } 
+}
+
+
 function bab_getNonWorkingDayTypes($with_date = false)
 {
 	$arr[101] = $with_date ? bab_translate("Day") : bab_translate("Non-working day");
 	$arr[102] = $with_date ? bab_translate("Repeat yearly") : bab_translate("Non-working day");
 
 	$arr[1] = bab_translate("Easter");
-	$arr[2] = bab_translate("Ascencion");
+	$arr[2] = bab_translate("Ascension");
 	$arr[3] = bab_translate("Pentecost");
 
 	return $arr;
@@ -89,7 +111,7 @@ function bab_getNonWorkingDays($year)
 
 				case 2:
 					$r_date = date("Y-m-d", easter_date($year) + $DAY*39);
-					$nw_type = 'Ascencion';
+					$nw_type = 'Ascension';
 					break;
 
 				case 3:
