@@ -316,10 +316,13 @@ function createEvent($idcals,$id_owner, $title, $description, $location, $startd
 
 	global $babBody, $babDB;
 
-	$title = stripslashes($title);
-	$description = stripslashes($description);
+	bab_editor_record($description);
 
-	$babDB->db_query("insert into ".BAB_CAL_EVENTS_TBL." ( title, description, location, start_date, end_date, id_cat, id_creator, color, bprivate, block, bfree, hash) values ('".addslashes($title)."', '".addslashes($description)."', '".addslashes($location)."', '".date('Y-m-d H:i:s',$startdate)."', '".date('Y-m-d H:i:s',$enddate)."', '".$category."', '".$id_owner."', '".$color."', '".$private."', '".$lock."', '".$free."', '".$hash."')");
+	$db_title = $babDB->db_escape_string($title);
+	$db_description = $babDB->db_escape_string($description);
+	$db_location = $babDB->db_escape_string($location);
+
+	$babDB->db_query("insert into ".BAB_CAL_EVENTS_TBL." ( title, description, location, start_date, end_date, id_cat, id_creator, color, bprivate, block, bfree, hash) values ('".$db_title."', '".$db_description."', '".$db_location."', '".date('Y-m-d H:i:s',$startdate)."', '".date('Y-m-d H:i:s',$enddate)."', '".$category."', '".$id_owner."', '".$color."', '".$private."', '".$lock."', '".$free."', '".$hash."')");
 	
 	$id_event = $babDB->db_insert_id();
 

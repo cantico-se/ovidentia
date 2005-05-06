@@ -923,9 +923,9 @@ function addEvent(&$message)
 		$arralert = false;
 		}
 
-	$description = post_string('evtdesc');
-	$title = post_string('title');
-	$location = stripslashes($_POST['location']);
+	$description = post_string2('evtdesc');
+	$title = post_string2('title');
+	$location = post_string2('location');
 		
 	$category = empty($_POST['category']) ? '0' : $_POST['category'];
 	$color = empty($_POST['color']) ? '' : $_POST['color'];
@@ -1156,11 +1156,15 @@ function updateEvent(&$message)
 		return false;
 		}
 
-	$description = post_string('evtdesc');
+	
 	$title = post_string('title');
 	$location = post_string('location');
 		
 	$db = &$GLOBALS['babDB'];
+
+	$description = post_string2('evtdesc');
+	bab_editor_record($description);
+	$description = $db->db_escape_string($description);
 
 	if( empty($_POST['category']))
 		$catid = 0;
