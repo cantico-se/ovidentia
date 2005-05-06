@@ -363,9 +363,17 @@ function viewVacationCalendar($users, $period = false )
 			$this->month = $month;
 			$this->year = $year;
 
-			$this->idusers = $users;
+			$this->userNameArr = array();
+			foreach ($users as $uid)
+				{
+				$this->userNameArr[$uid] = bab_getUserName($uid);
+				}
+
+			natcasesort($this->userNameArr);
+
+			$this->idusers = array_keys($this->userNameArr);
 			$this->nbusers = count($this->idusers);
-			$this->firstuser = bab_getUserName($this->idusers[0]);
+			$this->firstuser = current($this->userNameArr);
 			
 			$this->period = $period;
 			$this->vacwaitingtxt = bab_translate("Waiting vacation request");
@@ -529,12 +537,12 @@ function viewVacationCalendar($users, $period = false )
 				if ($this->emptylines)
 					{
 					$this->id_user = $this->idusers[$i];
-					$this->username = bab_getUserName($this->id_user);
+					$this->username = $this->userNameArr[$this->id_user];
 					}
 				elseif (isset($this->month_users[$i]))
 					{
 					$this->id_user = $this->month_users[$i];
-					$this->username = bab_getUserName($this->id_user);
+					$this->username = $this->userNameArr[$this->id_user];
 					}
 				else
 					{
