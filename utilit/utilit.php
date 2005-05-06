@@ -1796,7 +1796,7 @@ function bab_updateUserSettings()
 	if (!isset($GLOBALS['HTTP_X_FORWARDED_FOR'])) $GLOBALS['HTTP_X_FORWARDED_FOR'] = '0.0.0.0';
 
 
-	$res = $babDB->db_query("select id from ".BAB_USERS_LOG_TBL." where sessid='".session_id()."' and (remote_addr!='".$GLOBALS['REMOTE_ADDR']."' or forwarded_for!='".$GLOBALS['HTTP_X_FORWARDED_FOR']."')");
+	$res = $babDB->db_query("select id from ".BAB_USERS_LOG_TBL." where sessid='".session_id()."' and remote_addr!='".$GLOBALS['REMOTE_ADDR']."'");
 	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
 		die(bab_translate("Access denied"));
