@@ -549,7 +549,7 @@ else if( isset($action2) )
 switch($idx)
 	{
 	case "Deletem":
-		if( count($users) > 0)
+		if( isset($users) && count($users) > 0)
 			{
 			deleteMembers($users, $item);
 			$babBody->title = bab_translate("Delete group's members");
