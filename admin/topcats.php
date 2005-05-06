@@ -306,7 +306,6 @@ function orderTopcat($idp)
 				$req = "select * from ".BAB_TOPCAT_ORDER_TBL." where id_parent='".$idp."' order by ordering asc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
-			$this->idcat = $cat;
 			}
 
 		function getnext()
