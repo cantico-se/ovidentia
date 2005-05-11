@@ -385,6 +385,10 @@ address a:link, address a:visited {
 	color:#330;
 	}
 
+#bab_usersection ul .addon a {
+	background-color:#EEFAD2;
+	}
+
 #bab_usersection ul a:hover {
 	background-color:#B9D987;
 	}
@@ -400,6 +404,10 @@ address a:link, address a:visited {
 
 #bab_adminsection ul a {
 	color:#600;
+	}
+
+#bab_adminsection ul .addon a {
+	background-color:#FFEDE7;
 	}
 
 #bab_adminsection ul a:hover {
