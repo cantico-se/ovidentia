@@ -597,6 +597,8 @@ function babAdminSection($close)
 				}
 			}
 		}
+	ksort($this->array_urls);
+	ksort($this->addon_urls);
 	}
 
 function addUrl()
@@ -837,7 +839,8 @@ function babUserSection($close)
 				}
 			}
 		}
-
+	ksort($this->array_urls);
+	ksort($this->addon_urls);
 	}
 
 function addUrl()
