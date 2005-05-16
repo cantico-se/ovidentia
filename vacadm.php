@@ -292,8 +292,10 @@ function addVacationCollection($vcid, $what, $tname, $description, $vtypeids, $c
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 
-			$this->rescat = $this->db->db_query("SELECT * FROM ".BAB_CAL_CATEGORIES_TBL." ORDER BY name");
-			$this->catcount = $this->db->db_num_rows($this->rescat);
+			include_once $GLOBALS['babInstallPath']."utilit/calapi.php";
+			$this->categs = bab_calGetCategories();
+
+			$this->catcount = count($this->categs);
 			}
 
 		function getnext()
@@ -321,9 +323,8 @@ function addVacationCollection($vcid, $what, $tname, $description, $vtypeids, $c
 			static $i = 0;
 			if( $i < $this->catcount)
 				{
-				$arr = $this->db->db_fetch_array($this->rescat);
-				$this->categid = $arr['id'];
-				$this->categname = $arr['name'];
+				$this->categid = $this->categs[$i]['id'];
+				$this->categname = $this->categs[$i]['name'];
 				if( $this->categid == $this->categoryval )
 					{
 					$this->selected = 'selected';

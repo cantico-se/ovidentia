@@ -4802,4 +4802,12 @@ if ( $arr[0] != BAB_SITES_EDITOR_TBL )
 return $ret;
 }
 
+function upgrade556to557()
+{
+$ret = "";
+$db = & $GLOBALS['babDB'];
+
+return $ret;
+}
+
 ?>

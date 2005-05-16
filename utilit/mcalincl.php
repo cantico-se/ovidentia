@@ -871,7 +871,277 @@ if ($GLOBALS['BAB_SESS_LOGGED'] && !empty($_POST['database_record']))
 
 }
 
+/* idcals array, $date0 and $date1 sql date, $gap in seconds, $bopt='Y' if you want to use user'soptions */
+function cal_getFreeEvents($idcals, $date0, $date1, $gap, $bopt)
+{
+	global $babDB;
 
+	$freeevents = array();
+	if( !is_array($idcals) || count($idcals) == 0 )
+		{
+		return $freeevents;
+		}
+
+	$workdays = array();
+	$workdays_user = array();
+
+	function time_to_sec($time)
+		{
+		list($h,$m,$s) = explode(':',$time);
+		return $h*3600 + $m*60 + $s;
+		}
+
+	function sec_to_time($sec)
+		{
+		$min = $sec%3600;
+		return sprintf("%02s:%02s:%02s", ($sec/3600), ($min/60), ($min%60));
+		}
+
+	$sdate = $date0.' 00:00:00';
+	$edate = $date1.' 23:59:00';
+
+	$mcals = & new bab_mcalendars($sdate, $edate, $idcals);
+
+	$starttime_sec = 0;
+	$endtime_sec = 3600*24;
+
+	$calopt = array();
+
+	$res = $babDB->db_query("SELECT c.id,o.workdays, o.start_time, o.end_time FROM ".BAB_CAL_USER_OPTIONS_TBL." o, ".BAB_CALENDAR_TBL." c WHERE c.id IN(".implode(',',$idcals).") AND o.id_user = c.owner AND c.type='1'");
+
+	while ($arr = $babDB->db_fetch_array($res))
+		{
+		$calopt[$arr['id']] = explode( ',', $arr['workdays'] );
+		$workdays = array_merge ($workdays,  $calopt[$arr['id']]);
+		
+		$s = time_to_sec($arr['start_time']);
+		$starttime_sec = $s > $starttime_sec ? $s : $starttime_sec;
+		$s = time_to_sec($arr['end_time']);
+		$endtime_sec = $s < $endtime_sec ? $s : $endtime_sec;
+		}
+
+	$workdays = array_unique($workdays);
+
+	foreach ($calopt as $user)
+		{
+		foreach ($workdays as $k => $day)
+			{
+			if (!in_array($day,$user))
+				{
+				unset($workdays[$k]);
+				}
+			}
+		}
+
+	$starttime = sec_to_time($starttime_sec);
+	$endtime = sec_to_time($endtime_sec);
+
+	while( $mcals->getNextFreeEvent($sdate, $edate, $arr, $gap))
+		{
+		$free = $arr[2] == 0;
+		if( $free )
+			{
+			if( $bopt == 'Y')
+				{
+				$rr = explode(' ', $arr[0]);
+				$time0 = bab_mktime($rr[0].' 00:00:00');
+				$rr = explode(' ', $arr[1]);
+				$time1 = bab_mktime($rr[0].' 23:59:00');
+
+				while( $time0 < $time1 )
+					{
+					if( count($workdays) == 0 || in_array(date('w', $time0), $workdays))
+						{
+						$cdate = sprintf("%04s-%02s-%02s", date("Y", $time0), date("n", $time0), date("j", $time0));
+
+						$workdate0 = $cdate.' '.$starttime;
+						$workdate1 = $cdate.' '.$endtime;
+
+						if( $arr[1] > $workdate0 && $arr[0] < $workdate1 )
+							{
+							if( $arr[0] <= $workdate0 )
+								{
+								$startdate = $workdate0;
+								}
+							else
+								{
+								$startdate = $arr[0];
+								}
+
+							if( $arr[1] >= $workdate1 )
+								{
+								$enddate = $workdate1;
+								}
+							else
+								{
+								$enddate = $arr[1];
+								}
+							$stime = bab_mktime($startdate);
+							$etime = bab_mktime($enddate);
+							if( $gap <= $etime - $stime )
+								{
+								$freeevents[] = array($stime, $etime);
+								}
+							}
+						}
+					$time0 += 24*3600;
+					}
+				}
+			else
+				{
+				$freeevents[] = array(bab_mktime($arr[0]), bab_mktime($arr[1]));
+				}
+			}
+		}
+
+	return $freeevents;
+}
+
+function cal_searchAvailability($tg, $calid, $date, $date0, $date1, $gap, $bopt)
+{
+	global $babBodyPopup;
+	class cal_searchAvailabilityCls
+		{
+
+		function cal_searchAvailabilityCls($tg, $calid, $date, $date0, $date1, $gap, $bopt)
+			{
+			global $babBodyPopup, $babBody;
+			
+			$this->datebegintxt = bab_translate("Begin date")." ".bab_translate("dd-mm-yyyy");
+			$this->dateendtxt = bab_translate("Until date")." ".bab_translate("dd-mm-yyyy");
+			$this->searchtxt = bab_translate("Search");
+			$this->gaptxt = bab_translate("Minimum interval time");
+			$this->datestxt = bab_translate("Dates");
+			$this->intervaltxt = bab_translate("Duration");
+			$this->yes = bab_translate("Yes");
+			$this->no = bab_translate("No");
+			$this->optiontxt = bab_translate("Use calendar options");
+
+			$this->bopt = $bopt;
+			$this->tg = $tg;
+			$this->gap = $gap;
+			$this->calid = $calid;
+			$this->idcals = explode(",", $calid);
+			$this->date = $date;
+			$this->date0 = $date0;
+			$this->date1 = $date1;
+			if( $this->date0 > $this->date1)
+				{
+				$babBodyPopup->msgerror = bab_translate("End date must be older")." !!";
+				}
+
+			$rr = explode(',', $date0);
+			$sqdate = sprintf("%s-%02s-%02s", $rr[0], $rr[1], $rr[2]);
+			$this->date0val = $rr[2]."-".$rr[1]."-".$rr[0];
+			$rr = explode(',', $date1);
+			$eqdate = sprintf("%s-%02s-%02s", $rr[0], $rr[1], $rr[2]);
+			$this->date1val = $rr[2]."-".$rr[1]."-".$rr[0];
+
+			$this->freeevents = cal_getFreeEvents($this->idcals, $sqdate, $eqdate, $gap, $bopt);
+
+			$this->ymin = 2;
+			$this->ymax = 5;
+			list($this->curyear,$this->curmonth,$this->curday) = explode(',', $this->date);
+			$this->datebeginurl = $GLOBALS['babUrlScript']."?tg=month&callback=dateBegin&ymin=".$this->ymin."&ymax=".$this->ymax."&month=".$this->curmonth."&year=".$this->curyear; 
+			$this->dateendurl = $GLOBALS['babUrlScript']."?tg=month&callback=dateEnd&ymin=".$this->ymin."&ymax=".$this->ymax."&month=".$this->curmonth."&year=".$this->curyear;
+			
+			$this->gaparr = array();
+			$this->gaparr[] = array("name" => bab_translate("One hour"), "val" => 3600);
+			$this->gaparr[] = array("name" => bab_translate("Two hours"), "val" => 7200);
+			$this->gaparr[] = array("name" => bab_translate("Three hours"), "val" => 10800);
+			$this->gaparr[] = array("name" => bab_translate("Four hours"), "val" => 14400);
+			$this->gaparr[] = array("name" => bab_translate("Five hours"), "val" => 18000);
+			$this->gaparr[] = array("name" => bab_translate("Six hours"), "val" => 21600);
+			$this->gaparr[] = array("name" => bab_translate("Seven hours"), "val" => 25200);
+			$this->gaparr[] = array("name" => bab_translate("Eight hours"), "val" => 28800);
+
+			$this->gaparr[] = array("name" => bab_translate("One day"), "val" => 86400);
+			$this->gaparr[] = array("name" => bab_translate("Two days"), "val" => 172800);
+			$this->countgap = count($this->gaparr);
+			$this->altbg = true;
+
+			$this->daystxt = bab_translate("Days");
+			$this->hourstxt = bab_translate("Hours");
+			$this->minutestxt = bab_translate("Minutes");
+
+
+			$this->countfree = count($this->freeevents);
+			}
+
+
+		function getnextfreeevent()
+			{
+			static $i=0;
+			global $babBody;
+			if( $i < $this->countfree )
+				{
+				$this->altbg != $this->altbg;
+				$time0 = $this->freeevents[$i][0];
+				$this->starttime = bab_time($time0);
+				$this->startdate = bab_shortDate($time0, false);
+				$time1 = $this->freeevents[$i][1];
+				$this->endtime = bab_time($time1);
+				$this->enddate = bab_shortDate($time1, false);
+				$this->refurl = $GLOBALS['babUrlScript']."?tg=".$this->tg."&idx=unload&date=".date("Y,n,j", $time1)."&calid=".implode(',',$this->idcals);
+				$interval = $time1 - $time0;
+				$tmp = (int)($interval / 86400);
+				if( $tmp )
+					{
+					$this->interval = $tmp." ".$this->daystxt;
+					}
+				else
+					{
+					$tmp = (int)($interval / 3600);
+					if( $tmp )
+						{
+						$this->interval = $tmp." ".$this->hourstxt;
+						}
+					else
+						{
+						$this->interval = (int)($interval / 60)." ".$this->minutestxt;
+						}
+					}
+				$i++;
+				return true;
+				}
+			else
+				{
+				return false;
+				}
+			}
+
+		function getnextgap()
+			{
+			static $i = 0;
+			if( $i < $this->countgap)
+				{
+				$this->gapname = $this->gaparr[$i]['name'];
+				$this->gapval = $this->gaparr[$i]['val'];
+				if( $this->gap == $this->gapval )
+					{
+					$this->selected = 'selected';
+					}
+				else
+					{
+					$this->selected = '';
+					}
+				$i++;
+				return true;
+				}
+			else
+				{
+				return false;
+				}
+
+			}
+	
+		}
+
+	$temp = new cal_searchAvailabilityCls($tg, $calid, $date, $date0, $date1, $gap, $bopt);
+	$babBodyPopup->babecho(bab_printTemplate($temp, "calendar.html", "searchavailability"));
+}
+
+/*
 function cal_searchAvailability($tg, $calid, $date, $date0, $date1, $gap, $bopt)
 {
 	global $babBodyPopup;
@@ -1127,5 +1397,5 @@ function cal_searchAvailability($tg, $calid, $date, $date0, $date1, $gap, $bopt)
 	$temp = new cal_searchAvailabilityCls($tg, $calid, $date, $date0, $date1, $gap, $bopt);
 	$babBodyPopup->babecho(bab_printTemplate($temp, "calendar.html", "searchavailability"));
 }
-
+*/
 ?>
