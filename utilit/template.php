@@ -179,7 +179,20 @@ function processTemplate(&$class, $str)
 		for ($i = 0; $i < count($m[1]); $i++ )
 			{
 			$reg = "/".$this->startPatternV."\s+\\\$OVML\(" . preg_quote($m[1][$i], "/"). "\)\s+".$this->endPatternV."/";
-			$str = preg_replace($reg, bab_printOvmlTemplate($m[1][$i]), $str);
+			$param = explode(',', $m[1][$i]);
+			$args = array();
+			if( ($cnt = count($param)) > 1 )
+				{
+					for( $i=1; $i < $cnt; $i++)
+					{
+						$tmp = explode('=', $param[$i]);
+						if( is_array($tmp) && count($tmp) == 2 )
+							{
+							$args[trim($tmp[0])] = trim($tmp[1], '"');
+							}
+					}
+				}
+			$str = preg_replace($reg, bab_printOvmlTemplate($param[0], $args), $str);
 			}
 		}
 
