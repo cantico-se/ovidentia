@@ -129,8 +129,32 @@ function requestVacation($begin,$end, $halfdaybegin, $halfdayend, $id)
 				$calcul -= 1;
 				}
 
-			if ($calcul < 0)
+			if ($calcul <= 0)
 				$calcul = 0;
+			else
+				{
+				include_once $GLOBALS['babInstallPath']."utilit/nwdaysincl.php";
+				$beginY = date('Y',$begin);
+				$endY = date('Y',$end);
+
+				if ($beginY != $endY)
+					{
+					$nonWorkingDays = array_merge(bab_getNonWorkingDays($beginY), bab_getNonWorkingDays($endY));
+					}
+				else
+					{
+					$nonWorkingDays = bab_getNonWorkingDays($beginY);
+					}
+
+				$workdays = array_flip(explode(',',$babBody->icalendars->workdays));
+
+				for ($i = $begin; $i <= $end ; $i += 86400)
+					{
+					if (!isset($workdays[date('w',$i )]) || isset($nonWorkingDays[date('Y-m-d',$i )]))
+						$calcul--;
+					}
+				}
+
 
 			$this->period_nbdays = $calcul;
 			$this->t_days = bab_translate("Day(s)");
