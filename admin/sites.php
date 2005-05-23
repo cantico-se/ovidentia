@@ -605,7 +605,7 @@ function unzipcore()
 	
 	$core = 'ovidentia/';
 	$files_to_extract = array();
-	ini_set('max_execution_time',120);
+	ini_set('max_execution_time',1200);
 	
 	if (!is_dir($GLOBALS['babUploadPath'].'tmp/'))
 		bab_mkdir($GLOBALS['babUploadPath'].'tmp/',$GLOBALS['babMkdirMode']);
@@ -704,7 +704,7 @@ class bab_sqlExport
 	{
 	function bab_sqlExport()
 		{
-		ini_set('max_execution_time','240');
+		ini_set('max_execution_time','2400');
 		
 		$this->opt_structure = !empty($_POST['structure']) ? 1 : 0;
 		$this->opt_drop_table = !empty($_POST['drop_table']) ? 1 : 0;
