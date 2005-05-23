@@ -138,7 +138,7 @@ function topcatModify($id)
 			$res = $babDB->db_query("SELECT id FROM ".BAB_TOPICS_CATEGORIES_TBL." WHERE id_parent='".$id."'");
 			while ($arr = $babDB->db_fetch_array($res))
 				{
-				$add =  arr_child($arr['id']);
+				$add =  $this->arr_child($arr['id']);
 				if (is_array($add))
 					$out = array_merge($out, $add);
 				}
