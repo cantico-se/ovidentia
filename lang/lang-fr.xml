@@ -1480,6 +1480,7 @@
 <string id="Online anonymous users">Utilisateurs anonymes en ligne</string>
 <string id="Rights for resource calendar">Droits pour un agenda de ressource</string>
 <string id="Who can view this calendar">Qui peut consulter cet agenda</string>
+<string id="Who can add events to this calendar">Qui peut ajouter des événements dans cet agenda</string>
 <string id="Who can manage this calendar">Qui peut gérer cet agenda</string>
 <string id="Users groups that will be notified">Les utilisateurs qui seront notifiés</string>
 <string id="Personal">Personnel</string>

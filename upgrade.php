@@ -4810,4 +4810,20 @@ $db = & $GLOBALS['babDB'];
 return $ret;
 }
 
+function upgrade557to558()
+{
+$ret = "";
+$db = & $GLOBALS['babDB'];
+
+return $ret;
+}
+
+function upgrade558to559()
+{
+$ret = "";
+$db = & $GLOBALS['babDB'];
+
+return $ret;
+}
+
 ?>

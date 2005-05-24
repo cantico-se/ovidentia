@@ -227,7 +227,7 @@ function getAvailableResourcesCalendars($bwrite = false)
 					$tab[] = array('idcal' => $row[0], 'name' => $row[1]['name']);
 					}
 				}
-			elseif( $row[1]['view'] || $row[1]['manager'])
+			elseif( $row[1]['view'] || $row[1]['manager'] || $row[1]['add'])
 				{
 				$tab[] =  array('idcal' => $row[0], 'name' => $row[1]['name']);
 				}
@@ -376,7 +376,7 @@ function createEvent($idcals,$id_owner, $title, $description, $location, $startd
 					$ustatus = BAB_CAL_STATUS_ACCEPTED;
 					}
 
-				if( $arr['manager'] )
+				if( $arr['manager'] || $arr['add'])
 					{
 					$add = true;
 					}
@@ -534,6 +534,7 @@ class bab_icalendars
 			$bgroup = bab_isAccessValid(BAB_CAL_RES_GRP_GROUPS_TBL, $arr['idcal']);
 			$bview = bab_isAccessValid(BAB_CAL_RES_VIEW_GROUPS_TBL, $arr['idcal']);
 			$bman = bab_isAccessValid(BAB_CAL_RES_MAN_GROUPS_TBL, $arr['idcal']);
+			$badd = bab_isAccessValid(BAB_CAL_RES_ADD_GROUPS_TBL, $arr['idcal']);
 
 			if ($bgroup || $bview || $bman)
 				{
@@ -546,6 +547,7 @@ class bab_icalendars
 				$this->rescal[$arr['idcal']]['group'] = $bgroup;
 				$this->rescal[$arr['idcal']]['view'] = $bview;
 				$this->rescal[$arr['idcal']]['manager'] = $bman;
+				$this->rescal[$arr['idcal']]['add'] = $badd;
 				}
 
 		}
