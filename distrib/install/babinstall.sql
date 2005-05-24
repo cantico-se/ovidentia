@@ -2193,20 +2193,6 @@ CREATE TABLE bab_cal_res_add_groups (
 
 # --------------------------------------------------------
 #
-# Structure de la table 'bab_cal_res_add_groups'
-#
-
-CREATE TABLE bab_cal_res_grp_groups (
-   id int(11) unsigned NOT NULL auto_increment,
-   id_object int(11) unsigned DEFAULT '0' NOT NULL,
-   id_group int(11) unsigned DEFAULT '0' NOT NULL,
-   PRIMARY KEY (id),
-   KEY id_object (id_object),
-   KEY id_group (id_group)
-);
-
-# --------------------------------------------------------
-#
 # Table structure for table `bab_cal_user_options`
 #
 
