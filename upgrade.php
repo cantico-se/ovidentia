@@ -4841,6 +4841,7 @@ if ( $arr[0] != BAB_CAL_RES_ADD_GROUPS_TBL )
 		$ret = "Creation of <b>".BAB_CAL_RES_ADD_GROUPS_TBL."</b> table failed !<br>";
 		return $ret;
 		}
+	}
 
 return $ret;
 }
