@@ -578,10 +578,8 @@ function babAdminSection($close)
 
 	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
 		{
-		reset($babBody->babaddons);
-		while( $row = each($babBody->babaddons) ) 
+		foreach($babBody->babaddons as $row)
 			{
-			$row = $row[1];
 			if($row['access'])
 				{
 				$addonpath = $GLOBALS['babAddonsPath'].$row['title'];
