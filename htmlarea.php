@@ -66,13 +66,18 @@ function editor_js($mode)
 				$arr = file( $filename );
 				$arr = array_map('trim',$arr);
 				$fcontents = implode(' ',$arr );
+				$this->css_styles = $fcontents;
+
+				$this->css_styles .= "body { padding:.5em; background-color:#fff; color:#000; }";
 
 				$values = array();
 
 				preg_match("/\/\*BAB_EDITOR_PAGE_BEGIN\*\/.*\{(.*)\}\s+\/\*BAB_EDITOR_PAGE_END\*\//s",  $fcontents, $m);
 
 				if (isset($m[1]))
-					$this->css_styles = "body {".$m[1]."}";
+					$this->css_styles .= "body {".$m[1]."}";
+
+				$this->css_styles = str_replace("'","\'",$this->css_styles);
 
 				preg_match("/\/\*BAB_EDITOR_CSS_BEGIN\*\/(.*)\/\*BAB_EDITOR_CSS_END\*\//s",  $fcontents, $m);
 				if (isset($m[1]))

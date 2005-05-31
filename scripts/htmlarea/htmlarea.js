@@ -2000,6 +2000,10 @@ HTMLArea.prototype.convertNode = function(el, newTagName) {
 HTMLArea.prototype.ie_checkBackspace = function() {
 	var sel = this._getSelection();
 	var range = this._createRange(sel);
+	if (typeof range.text == 'undefined')
+		{
+		return false;
+		}
 	var r2 = range.duplicate();
 	r2.moveStart("character", -1);
 	var a = r2.parentElement();
