@@ -4846,4 +4846,12 @@ if ( $arr[0] != BAB_CAL_RES_ADD_GROUPS_TBL )
 return $ret;
 }
 
+function upgrade559to560()
+{
+$ret = "";
+$db = & $GLOBALS['babDB'];
+
+return $ret;
+}
+
 ?>
