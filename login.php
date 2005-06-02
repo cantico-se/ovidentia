@@ -26,6 +26,8 @@ include_once $babInstallPath."admin/register.php";
 
 function bab_utf8_decode($str)
 {
+	global $babBody;
+
 	if( $babBody->babsite['authentification'] == '2' ) // AD
 		{
 		return $str;
