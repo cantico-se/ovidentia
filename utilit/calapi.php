@@ -125,6 +125,22 @@ function bab_getResourceCalendars()
 		$tmp['id'] = $arr['idcal'];
 		$tmp['name'] = $arr['name'];
 		$tmp['description'] = $arr['description'];
+		if( bab_isAccessValid(BAB_CAL_RES_MAN_GROUPS_TBL, $arr['idcal']) || bab_isAccessValid(BAB_CAL_RES_ADD_GROUPS_TBL, $arr['idcal']))
+			{
+			$tmp['rights']['add'] = true;
+			}
+		else
+			{
+			$tmp['rights']['add'] = false;
+			}
+		if( bab_isAccessValid(BAB_CAL_RES_VIEW_GROUPS_TBL, $arr['idcal']))
+			{
+			$tmp['rights']['view'] = true;
+			}
+		else
+			{
+			$tmp['rights']['view'] = false;
+			}
 		$rescals[] = $tmp;
 		}
 
@@ -142,6 +158,22 @@ function bab_getPublicCalendars()
 		$tmp['id'] = $arr['idcal'];
 		$tmp['name'] = $arr['name'];
 		$tmp['description'] = $arr['description'];
+		if( bab_isAccessValid(BAB_CAL_PUB_MAN_GROUPS_TBL, $arr['idcal']))
+			{
+			$tmp['rights']['add'] = true;
+			}
+		else
+			{
+			$tmp['rights']['add'] = false;
+			}
+		if( bab_isAccessValid(BAB_CAL_PUB_VIEW_GROUPS_TBL, $arr['idcal']))
+			{
+			$tmp['rights']['view'] = true;
+			}
+		else
+			{
+			$tmp['rights']['view'] = false;
+			}
 		$rescals[] = $tmp;
 		}
 
@@ -149,10 +181,16 @@ function bab_getPublicCalendars()
 }
 
 /* idcals array, $date0 and $date1 sql dates, $gap in seconds, $bopt='Y' if you want to use user's options */
-function bab_getFreeEvents($idcals, $date0, $date1, $gap, $bopt)
+function bab_getFreeEvents($idcals, $sdate, $edate, $gap, $bopt)
 {
 	include_once $GLOBALS['babInstallPath'].'utilit/mcalincl.php';
-	return cal_getFreeEvents($idcals, $date0, $date1, $gap, $bopt);
+	return cal_getFreeEvents($idcals, $sdate, $edate, $gap, $bopt);
 }
 
+
+function bab_newEvent($idcals, $args, &$msgerror)
+{
+	include_once $GLOBALS['babInstallPath'].'utilit/evtincl.php';
+	return bab_createEvent($idcals,$args, $msgerror);
+}
 ?>

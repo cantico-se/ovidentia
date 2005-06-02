@@ -136,9 +136,6 @@ class bab_event
 	}
 
 
-
-
-
 function newEvent()
 	{
 	global $babBodyPopup;
@@ -911,36 +908,42 @@ function addEvent(&$message)
 		return false;
 		}
 
+	$args = array();
+
 	if( !empty($GLOBALS['BAB_SESS_USERID']) && isset($_POST['creminder']) && $_POST['creminder'] == 'Y')
 		{
-		$arralert['day'] = $_POST['rday'];
-		$arralert['hour'] = $_POST['rhour'];
-		$arralert['minute'] = $_POST['rminute'];
-		$arralert['email'] = isset($_POST['remail'])? $_POST['remail']: 'N';
-		}
-	else
-		{
-		$arralert = false;
+		$args['alert']['day'] = $_POST['rday'];
+		$args['alert']['hour'] = $_POST['rhour'];
+		$args['alert']['minute'] = $_POST['rminute'];
+		$args['alert']['email'] = isset($_POST['remail'])? $_POST['remail']: 'N';
 		}
 
-	$description = post_string2('evtdesc');
-	$title = post_string2('title');
-	$location = post_string2('location');
+	$args['description'] = post_string2('evtdesc');
+	$args['title'] = post_string2('title');
+	$args['location'] = post_string2('location');
 		
-	$category = empty($_POST['category']) ? '0' : $_POST['category'];
-	$color = empty($_POST['color']) ? '' : $_POST['color'];
+	$args['category'] = empty($_POST['category']) ? '0' : $_POST['category'];
+	$args['color'] = empty($_POST['color']) ? '' : $_POST['color'];
 
-	$yearbegin = $_POST['yearbegin'];
-	$monthbegin = $_POST['monthbegin'];
-	$daybegin = $_POST['daybegin'];
+	$args['startdate']['year'] = $_POST['yearbegin'];
+	$args['startdate']['month'] = $_POST['monthbegin'];
+	$args['startdate']['day'] = $_POST['daybegin'];
 	$timebegin = isset($_POST['timebegin']) ? $_POST['timebegin'] : $babBody->icalendars->starttime;
-	$yearend = $_POST['yearend'];
-	$monthend = $_POST['monthend'];
-	$dayend = $_POST['dayend'];
+	$tb = explode(':',$timebegin);
+	$args['startdate']['hours'] = $tb[0];
+	$args['startdate']['minutes'] = $tb[1];
+
+	$args['enddate']['year'] = $_POST['yearend'];
+	$args['enddate']['month'] = $_POST['monthend'];
+	$args['enddate']['day'] = $_POST['dayend'];
 	$timeend = isset($_POST['timeend']) ? $_POST['timeend'] : $babBody->icalendars->endtime;
-	$bprivate = isset($_POST['bprivate']) ? $_POST['bprivate'] : 'N';
-	$block = isset($_POST['block']) ? $_POST['block'] : 'N';
-	$bfree = isset($_POST['bfree']) ? $_POST['bfree'] : 'N';
+	$tb = explode(':',$timeend);
+	$args['enddate']['hours'] = $tb[0];
+	$args['enddate']['minutes'] = $tb[1];
+
+	$args['private'] = isset($_POST['bprivate']) ? $_POST['bprivate'] : 'N';
+	$args['lock'] = isset($_POST['block']) ? $_POST['block'] : 'N';
+	$args['free'] = isset($_POST['bfree']) ? $_POST['bfree'] : 'N';
 
 	
 	$id_owner = $GLOBALS['BAB_SESS_USERID'];
@@ -951,13 +954,10 @@ function addEvent(&$message)
 		$arr = $db->db_fetch_array($db->db_query("SELECT owner FROM ".BAB_CALENDAR_TBL." WHERE id='".$_POST['event_owner']."'"));
 		$id_owner = isset($arr['owner']) ? $arr['owner'] : $GLOBALS['BAB_SESS_USERID'];
 		}
+	$args['owner'] = $id_owner;
 
-
-	$tb = explode(':',$timebegin);
-	$te = explode(':',$timeend);
-
-	$begin = mktime( $tb[0],$tb[1],0,$monthbegin, $daybegin, $yearbegin );
-	$end = mktime( $te[0],$te[1],0,$monthend, $dayend, $yearend );
+	$begin = mktime( $args['startdate']['hours'],$args['startdate']['minutes'],0,$args['startdate']['month'], $args['startdate']['day'], $args['startdate']['year'] );
+	$end = mktime( $args['enddate']['hours'],$args['enddate']['minutes'],0,$args['enddate']['month'], $args['enddate']['day'], $args['enddate']['year'] );
 	$repeatdate = mktime( 23,59,59,$_POST['repeat_monthend'], $_POST['repeat_dayend'], $_POST['repeat_yearend'] );
 
 	if( $begin > $end)
@@ -966,185 +966,62 @@ function addEvent(&$message)
 		return false;
 		}
 
-	$arrnotify = array();
-
 	if( isset($_POST['repeat_cb']) && $_POST['repeat_cb'] != 0)
 		{
-		$hash = "R_".md5(uniqid(rand(),1));
-		$duration = $end - $begin;
+		$args['until'] = array('year'=>$_POST['repeat_yearend'], 'month'=>$_POST['repeat_monthend'], 'day'=>$_POST['repeat_dayend']);
 		switch($_POST['repeat'] )
 			{
-			case '2': /* weekly */
+			case BAB_CAL_RECUR_WEEKLY: /* weekly */
+				$args['rrule'] = BAB_CAL_RECUR_WEEKLY;
 				if( empty($_POST['repeat_n_2']))
 					{
 					$_POST['repeat_n_2'] = 1;
 					}
 
-				$rtime = 24*3600*7*$_POST['repeat_n_2'];
+				$args['nweeks'] = $_POST['repeat_n_2'];
 
-				if( $duration > $rtime)
+				if( isset($_POST['repeat_wd']) )
 					{
-					$message = bab_translate("The duration of the event must be shorter than how frequently it occurs")." !";
-					return false;					
-					}
-
-				if( !isset($_POST['repeat_wd']) )
-					{
-					$day = $daybegin;
-					$time = mktime( $tb[0],$tb[1],0,$monthbegin, $day, $yearbegin );
-					do
-						{
-						$arrf = createEvent(explode(',', $GLOBALS['calid']), $id_owner, $title, $description, $location, $time, $time+$duration, $category, $color, $bprivate, $block, $bfree, $hash, $arralert);
-						$arrnotify = array_unique(array_merge($arrnotify, $arrf));
-						$day += 7;
-						$time = mktime( $tb[0],$tb[1],0,$monthbegin, $day, $yearbegin );
-						}
-					while( $time < $repeatdate );
-					}
-				else
-					{
-					if( $duration > 24*3600 )
-						{
-						$message = bab_translate("The duration of the event must be shorter than how frequently it occurs")." !";
-						return false;					
-						}
-
-					for( $i = 0; $i < count($_POST['repeat_wd']); $i++ )
-						{
-						$delta = $_POST['repeat_wd'][$i] - Date("w", $begin);
-						if( $delta < 0 )
-							{
-							$delta = 7 - Abs($delta);
-							}
-
-						$day = $daybegin+$delta;
-						$time = mktime( $tb[0],$tb[1],0,$monthbegin, $day, $yearbegin );
-						do
-							{
-							$arrf = createEvent(explode(',', $GLOBALS['calid']), $id_owner, $title, $description, $location, $time, $time+$duration, $category, $color, $bprivate, $block, $bfree, $hash, $arralert);
-							$day += 7;					
-							$arrnotify = array_unique(array_merge($arrnotify, $arrf));
-							$time = mktime( $tb[0],$tb[1],0,$monthbegin, $day, $yearbegin );
-							}
-						while( $time < $repeatdate );
-						}
+					$args['rdays'] = $_POST['repeat_wd'];
 					}
 
 				break;
-			case '3': /* monthly */
+			case BAB_CAL_RECUR_MONTHLY: /* monthly */
+				$args['rrule'] = BAB_CAL_RECUR_MONTHLY;
 				if( empty($_POST['repeat_n_3']))
 					{
 					$_POST['repeat_n_3'] = 1;
 					}
-				if( $duration > 24*3600*28*$_POST['repeat_n_3'])
-					{
-					$message = bab_translate("The duration of the event must be shorter than how frequently it occurs")." !";
-					return false;					
-					}
-				$time = $begin;
-				do
-					{
-					$arrf = createEvent(explode(',', $GLOBALS['calid']), $id_owner, $title, $description, $location, $time, $time+$duration, $category, $color, $bprivate, $block, $bfree, $hash, $arralert);
-					$time = mktime( $tb[0],$tb[1],0,date("m", $time)+1, date("j", $time), date("Y", $time) );
-					$arrnotify = array_unique(array_merge($arrnotify, $arrf));
-					}
-				while( $time < $repeatdate );
+
+				$args['nmonths'] = $_POST['repeat_n_3'];
 				break;
-			case '4': /* yearly */
+			case BAB_CAL_RECUR_YEARLY: /* yearly */
+				$args['rrule'] = BAB_CAL_RECUR_YEARLY;
 				if( empty($_POST['repeat_n_4']))
 					{
 					$_POST['repeat_n_4'] = 1;
 					}
-				if( $duration > 24*3600*365*$_POST['repeat_n_4'])
-					{
-					$message = bab_translate("The duration of the event must be shorter than how frequently it occurs")." !";
-					return false;					
-					}
-				$time = $begin;
-				do
-					{
-					$arrf = createEvent(explode(',', $GLOBALS['calid']), $id_owner, $title, $description, $location, $time, $time+$duration, $category, $color, $bprivate, $block, $bfree, $hash, $arralert);
-					$time = mktime( $tb[0],$tb[1],0,date("m", $time), date("j", $time), date("Y", $time)+1 );
-					$arrnotify = array_unique(array_merge($arrnotify, $arrf));
-					}
-				while( $time < $repeatdate );
+				$args['nyears'] = $_POST['repeat_n_4'];
 				break;
-			case '1': /* daily */
+			case BAB_CAL_RECUR_DAILY: /* daily */
 			default:
+				$args['rrule'] = BAB_CAL_RECUR_DAILY;
 				if( empty($_POST['repeat_n_1']))
 					{
 					$_POST['repeat_n_1'] = 1;
 					}
+
+				$args['ndays'] = $_POST['repeat_n_1'];
 				$rtime = 24*3600*$_POST['repeat_n_1'];
-
-				if( $duration > $rtime )
-					{
-					$message = bab_translate("The duration of the event must be shorter than how frequently it occurs")." !";
-					return false;
-					}
-
-				$day = $daybegin;
-				$time = mktime( $tb[0],$tb[1],0,$monthbegin, $day, $yearbegin );
-				do
-					{
-					$arrf = createEvent(explode(',', $GLOBALS['calid']), $id_owner, $title, $description, $location, $time, $time+$duration, $category, $color, $bprivate, $block, $bfree, $hash, $arralert);
-					$day += $_POST['repeat_n_1'];
-					$arrnotify = array_unique(array_merge($arrnotify, $arrf));
-					$time = mktime( $tb[0],$tb[1],0,$monthbegin, $day, $yearbegin );
-					}
-				while( $time < $repeatdate );
 				break;
 			}
 
 		}
-	else
-		{
-		$arrnotify = createEvent(explode(',', $GLOBALS['calid']), $id_owner, $title, $description, $location, $begin, $end, $category, $color, $bprivate, $block, $bfree, '', $arralert);
-		}
 
-
-	if( count($arrnotify) > 0 )
-		{
-		$arrusr = array();
-		$arrres = array();
-		$arrpub = array();
-		for( $i = 0; $i < count($arrnotify); $i++ )
-			{
-			$arr = $babBody->icalendars->getCalendarInfo($arrnotify[$i]);
-			switch($arr['type'])
-				{
-				case BAB_CAL_USER_TYPE:
-					if( $arr['idowner'] != $GLOBALS['BAB_SESS_USERID'] )
-						{
-						$arrusr[] = $arrnotify[$i];
-						}
-					break;
-				case BAB_CAL_PUB_TYPE:
-					$arrpub[] = $arrnotify[$i];
-					break;
-				case BAB_CAL_RES_TYPE:
-					$arrres[] = $arrnotify[$i];
-					break;
-				}
-			}
-
-		$startdate = bab_longDate($begin);
-		$enddate = bab_longDate($end);
-		if( count($arrusr) > 0 )
-			{
-			notifyPersonalEvent(post_string2('title'), post_string2('evtdesc'), $startdate, $enddate, $arrusr);
-			}
-		if( count($arrres) > 0 )
-			{
-			notifyResourceEvent(post_string2('title'), post_string2('evtdesc'), $startdate, $enddate, $arrres);
-			}
-		if( count($arrpub) > 0 )
-			{
-			notifyPublicEvent(post_string2('title'), post_string2('evtdesc'), $startdate, $enddate, $arrpub);
-			}
-		}
-	return true;	
+	return bab_createEvent(explode(',', $GLOBALS['calid']), $args, $message);
 	}
+
+
 
 function updateEvent(&$message)
 {

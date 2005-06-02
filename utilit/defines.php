@@ -41,6 +41,12 @@ define("BAB_CAL_STATUS_ACCEPTED", 0);
 define("BAB_CAL_STATUS_NONE",  1);
 define("BAB_CAL_STATUS_DECLINED",  2);
 
+define("BAB_CAL_RECUR_DAILY",	1);
+define("BAB_CAL_RECUR_WEEKLY",	2);
+define("BAB_CAL_RECUR_MONTHLY",	3);
+define("BAB_CAL_RECUR_YEARLY",	4);
+
+
 define("BAB_ADDONS_GROUPS_TBL", "bab_addons_groups");
 define("BAB_ADDONS_TBL", "bab_addons");
 define("BAB_ARTICLES_TBL", "bab_articles");

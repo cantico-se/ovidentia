@@ -22,6 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
+include_once $babInstallPath."utilit/evtincl.php";
 include_once $babInstallPath."utilit/calincl.php";
 
 function modifyCalendarCategory($idcat, $catname, $catdesc, $bgcolor)
