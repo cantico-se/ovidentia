@@ -129,7 +129,9 @@ function createEvent($idcals,$id_owner, $title, $description, $location, $startd
 	$args['rrule'] : // BAB_CAL_RECUR_DAILY, ...
 	$args['until'] : array('month', 'day', 'year')
 	$args['rdays'] : repeat days array(0,1,2,3,4,5,6)
+	$args['ndays'] : nb days 
 	$args['nweeks'] : nb weeks 
+	$args['nmonths'] : nb weeks 
 	$args['category'] : id of the category
 	$args['private'] : if the event is private
 	$args['lock'] : to lock the event
@@ -146,7 +148,7 @@ function bab_createEvent($idcals, $args, &$msgerror)
 	$end = mktime( $args['enddate']['hours'],$args['enddate']['minutes'],0,$args['enddate']['month'], $args['enddate']['day'], $args['enddate']['year'] );
 
 
-	if( isset($args['rrule']) )
+	if( isset($args['rrule']) && $args['rrule'] != 0 )
 		{
 		$repeatdate = mktime( 23,59,59, $args['until']['month'], $args['until']['day'], $args['until']['year'] );
 		}
@@ -165,17 +167,29 @@ function bab_createEvent($idcals, $args, &$msgerror)
 		$args['alert'] = false;
 		}
 
-	if( !isset($args['lock']))
+	if( isset($args['lock']) && $args['lock'] )
+		{
+		$args['lock'] = 'Y';
+		}
+	else
 		{
 		$args['lock'] = 'N';
 		}
 
-	if( !isset($args['private']))
+	if( isset($args['private']) && $args['private'] )
+		{
+		$args['private'] = 'Y';
+		}
+	else
 		{
 		$args['private'] = 'N';
 		}
 
-	if( !isset($args['free']))
+	if( isset($args['free']) && $args['free'])
+		{
+		$args['free'] = 'Y';
+		}
+	else
 		{
 		$args['free'] = 'N';
 		}
