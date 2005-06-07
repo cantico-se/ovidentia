@@ -681,7 +681,7 @@ if (isset($action) && $action == 'import')
 switch($idx)
 	{
 	case "view":
-		$babBody->title = bab_translate("Access to Add-on")." :".getAddonName($item);
+		$babBody->title = bab_translate("Access to Add-on")." ".getAddonName($item);
 		aclGroups("addons", "list", BAB_ADDONS_GROUPS_TBL, $item, "acladd");
 		$babBody->addItemMenu("list", bab_translate("Add-ons"), $GLOBALS['babUrlScript']."?tg=addons&idx=list");
 		$babBody->addItemMenu("view", bab_translate("Access"), $GLOBALS['babUrlScript']."?tg=addons&idx=view&item=".$item);
