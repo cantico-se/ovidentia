@@ -88,10 +88,10 @@
 <string id="Are you sure you want to delete this calendar category">Êtes-vous certain de vouloir supprimer cette catégorie d'agenda</string>
 <string id="Are you sure you want to delete this calendar resource">Êtes-vous certain de vouloir supprimer cette ressource</string>
 <string id="Are you sure you want to delete this comment">Êtes-vous certain de vouloir supprimer ce commentaire</string>
-<string id="Are you sure you want to delete this directory">Êtes-vous sûr de vouloir supprimer cet annuaire</string>
+<string id="Are you sure you want to delete this directory">Êtes-vous certain de vouloir supprimer cet annuaire</string>
 <string id="Are you sure you want to delete this event">Êtes-vous certain de vouloir détruire cet événement</string>
-<string id="Are you sure you want to delete this faq">Êtes-vous certain de bien vouloir supprimer cette FAQ</string>
-<string id="Are you sure you want to delete this folder">Êtes-vous sûr de vouloir supprimer ce répertoire</string>
+<string id="Are you sure you want to delete this faq">Êtes-vous certain de vouloir supprimer cette FAQ</string>
+<string id="Are you sure you want to delete this folder">Êtes-vous certain de vouloir supprimer ce répertoire</string>
 <string id="Are you sure you want to delete this forum">Êtes-vous certain de vouloir détruire ce forum</string>
 <string id="Are you sure you want to delete this group">Êtes-vous certain de vouloir détruire ce groupe</string>
 <string id="Are you sure you want to delete this mail account">Êtes-vous certain de vouloir supprimer ce compte de messagerie</string>
@@ -108,10 +108,10 @@
 <string id="Are you sure you want to delete those articles">Êtes-vous certain de vouloir supprimer ces articles</string>
 <string id="Are you sure you want to delete those contacts">Êtes-vous certain de vouloir supprimer ces contacts</string>
 <string id="Are you sure you want to delete those members">Êtes-vous certain de vouloir supprimer ces utilisateurs</string>
-<string id="Are you sure you want to empty this directory">Êtes-vous sûr de vouloir vider cet annuaire</string>
-<string id="Are you sure you want to remove the requests which finish before the following date ">Êtes-vous sûr de vouloir supprimer les demandes dont la date de fin est avant la date suivante </string>
-<string id="Are you sure you want to remove this request">Êtes-vous sûr de vouloir supprimer cette demande de congé</string>
-<string id="Are you sure you want to remove those users">Êtes-vous sûr de vouloir supprimer ces utilisateurs</string>
+<string id="Are you sure you want to empty this directory">Êtes-vous certain de vouloir vider cet annuaire</string>
+<string id="Are you sure you want to remove the requests which finish before the following date ">Êtes-vous certain de vouloir supprimer les demandes dont la date de fin est avant la date suivante </string>
+<string id="Are you sure you want to remove this request">Êtes-vous certain de vouloir supprimer cette demande de congé</string>
+<string id="Are you sure you want to remove those users">Êtes-vous certain de vouloir supprimer ces utilisateurs</string>
 <string id="Are you sure you want to delete this add-on">Êtes-vous certain de vouloir supprimer ce module</string>
 <string id="Article">Article</string>
 <string id="Article(s)">Article(s)</string>
@@ -142,7 +142,7 @@
 <string id="Calendar resources list">Liste des ressources</string>
 <string id="Calendar">Agenda</string>
 <string id="Can user change password ?">L'utilisateur peut-il changer le mot de passe ?</string>
-<string id="Can't create directory: ">Impossible de créer le répertoire: </string>
+<string id="Can't create directory: ">Impossible de créer le répertoire : </string>
 <string id="Can't delete this vacation right. It's used elsewhere">Impossible de supprimer ce droit de congé. Il est utilisé ailleurs</string>
 <string id="Cancel">Annuler</string>
 <string id="Cannot create temporary file">Impossible de créer un fichier temporaire</string>
@@ -207,7 +207,7 @@
 <string id="Cut">Couper</string>
 <string id="Database Directory">Annuaire Base de données</string>
 <string id="Database server version">Version de la base de données</string>
-<string id="Databases Directories list">Liste des annuaires ( base de données )</string>
+<string id="Databases Directories list">Liste des annuaires (base de données)</string>
 <string id="Date">Date</string>
 <string id="Day">Jour</string>
 <string id="Day(s)">Jour(s)</string>
@@ -322,7 +322,7 @@
 <string id="End date must be older">La date de fin doit être postérieure</string>
 <string id="End date">Date de fin</string>
 <string id="End">Fin</string>
-<string id="Entry date ( dd-mm-yyyy )">Date d'écriture ( jj-mm-aaaa )</string>
+<string id="Entry date ( dd-mm-yyyy )">Date d'écriture (jj-mm-aaaa)</string>
 <string id="Entry date">Date d'écriture</string>
 <string id="Error occured when sending email !!">Une erreur est survenue à l'émission du message !</string>
 <string id="Events categories">Catégories d'événements</string>
@@ -404,8 +404,8 @@
 <string id="Introduction Tag">Balise d'introduction</string>
 <string id="Invalid begin date">Date de début invalide</string>
 <string id="Invalid end date">Date de fin invalide</string>
-<string id="Invalid entry!  Only numbers are accepted and . !">Saisie invalide!  Seuls les chiffres et le point sont acceptés!</string>
-<string id="Invalid entry!  Only numbers are accepted or . !">Saisie invalide!  Seuls les chiffres et le point sont acceptés !</string>
+<string id="Invalid entry!  Only numbers are accepted and . !">Saisie invalide !  Seuls les chiffres et le point sont acceptés!</string>
+<string id="Invalid entry!  Only numbers are accepted or . !">Saisie invalide !  Seuls les chiffres et le point sont acceptés !</string>
 <string id="Invalid entry">Saisie invalide</string>
 <string id="Invalid image extension">Extension du fichier invalide</string>
 <string id="Invalid mail account !!">Compte de messagerie invalide</string>
@@ -455,7 +455,7 @@
 <string id="March">Mars</string>
 <string id="Max days authorized">Nombre de jours max. autorisés</string>
 <string id="Max days number">Nombre de jours max.</string>
-<string id="Max image size ( Kb )">Taille maximale d'une image ( Ko )</string>
+<string id="Max image size ( Kb )">Taille maximale d'une image (Ko)</string>
 <string id="Max">Max</string>
 <string id="May">Mai</string>
 <string id="Members">Membres</string>
@@ -528,15 +528,15 @@
 <string id="No filter">Pas de filtre</string>
 <string id="No">Non</string>
 <string id="None">Aucun</string>
-<string id="Note: Articles are moderate and consequently your article will not be visible immediately">Attention: les articles sont modérés et, par conséquent, votre article ne sera pas visible immédiatement</string>
-<string id="Note: Posts are moderate and consequently your post will not be visible immediately">Attention: les contributions sont modérées et, par conséquent, votre contribution ne sera pas visible immédiatement</string>
-<string id="Note: for this topic, comments are moderate">Attention: pour ce thème d'articles, les commentaires sont modérés</string>
+<string id="Note: Articles are moderate and consequently your article will not be visible immediately">Attention : les articles sont modérés et, par conséquent, votre article ne sera pas visible immédiatement</string>
+<string id="Note: Posts are moderate and consequently your post will not be visible immediately">Attention : les contributions sont modérées et, par conséquent, votre contribution ne sera pas visible immédiatement</string>
+<string id="Note: for this topic, comments are moderate">Attention : pour ce thème d'articles, les commentaires sont modérés</string>
 <string id="Notes list">Liste des notes</string>
 <string id="Notes">Notes</string>
 <string id="Nothing Changed">Rien n'a été modifié</string>
 <string id="Notification">Notification</string>
 <string id="Notify group members by mail">Notifier les membres du groupe par email</string>
-<string id="Notify me whenever someone replies ( only valid for registered users )">Me prévenir par email quand quelqu'un contribue ( uniquement pour les utilisateurs enregistrés )</string>
+<string id="Notify me whenever someone replies ( only valid for registered users )">Me prévenir par email quand quelqu'un contribue (uniquement pour les utilisateurs enregistrés)</string>
 <string id="Notify members group">Notifier les membres du groupe</string>
 <string id="Notify moderator">Notifier le modérateur</string>
 <string id="Notify user">Notifier l'utilisateur</string>
@@ -631,7 +631,7 @@
 <string id="Remarks">Remarques</string>
 <string id="Rename">Renommer</string>
 <string id="Repeat">Répéter</string>
-<string id="Replace duplicates with items imported">Remplacer chaque doublon par la valeur importatée</string>
+<string id="Replace duplicates with items imported">Remplacer chaque doublon par la valeur importée</string>
 <string id="Replies">Contributions</string>
 <string id="Reply to all">Répondre à tous</string>
 <string id="Reply">Répondre</string>
@@ -673,7 +673,7 @@
 <string id="Send email confirmation">Envoyer un email de confirmation</string>
 <string id="Send password with email">Envoyer le mot de passe avec l'email</string>
 <string id="Send">Envoyer</string>
-<string id="Sending error( Mail sending disabled )">Erreur d'envoi ( L'envoi d'email est désactivé )</string>
+<string id="Sending error( Mail sending disabled )">Erreur d'envoi (L'envoi d'email est désactivé)</string>
 <string id="Separator">Séparateur</string>
 <string id="September">Septembre</string>
 <string id="Server port">Port du serveur</string>
@@ -681,7 +681,7 @@
 <string id="Show disk space usage">Montrer l'espace disque utilisé</string>
 <string id="Signature">Signature</string>
 <string id="Signatures">Signatures</string>
-<string id="Since your last connection:">Depuis votre dernière connexion:</string>
+<string id="Since your last connection:">Depuis votre dernière connexion :</string>
 <string id="Site directory">Annuaire</string>
 <string id="Site name">Nom de site</string>
 <string id="Sites list">Liste des sites</string>
@@ -724,8 +724,8 @@
 <string id="This folder already exists">Ce répertoire existe déjà</string>
 <string id="This group already exists">Ce groupe existe déjà</string>
 <string id="This is a reccuring event.Are you sure you want to delete this event and all occurrences">Ceci est un événement répétitif. Êtes-vous sûr de vouloir supprimer toute la série</string>
-<string id="This is recurring event. Do you want to update this occurence or series?">Ceci est un événement répétitif. Voulez-vous mettre à jour cet événement ou toute la série?</string>
-<string id="This is recurring event. Do you want to update this ocuurence or series?">Ceci est un événement répétitif. Voulez-vous mettre à jour cet événement ou toute la série?</string>
+<string id="This is recurring event. Do you want to update this occurence or series?">Ceci est un événement répétitif. Voulez-vous mettre à jour cet événement ou toute la série ?</string>
+<string id="This is recurring event. Do you want to update this ocuurence or series?">Ceci est un événement répétitif. Voulez-vous mettre à jour cet événement ou toute la série ?</string>
 <string id="This nickname already exists !!">Cet identifiant existe déjà</string>
 <string id="This occurence">Cet événement</string>
 <string id="This resource already exists">Cette ressource existe déjà</string>
@@ -818,7 +818,7 @@
 <string id="Vacation request is waiting to be validated">Une demande de congé est en attente de validation</string>
 <string id="Vacation request">Demande de congés</string>
 <string id="Vacation requests list">Liste des demandes de congés</string>
-<string id="Vacation rights of:">Droits de congé de:</string>
+<string id="Vacation rights of:">Droits de congé de :</string>
 <string id="Vacation type">Type de congés</string>
 <string id="Vacation">Congés</string>
 <string id="Vacations rights">Droits de congés</string>
@@ -923,7 +923,7 @@
 <string id="Your contact has been deleted">Votre contact a été supprimé</string>
 <string id="Your contact has been updated">Votre contact a été mis à jour</string>
 <string id="Your contacts list has been updated">Votre liste de contacts a été mise à jour</string>
-<string id="Your email is not valid !!">Votre adresse email n'est pas correcte !!</string>
+<string id="Your email is not valid !!">Votre adresse email n'est pas correcte !</string>
 <string id="Your event has been updated">Votre événement a été mis à jour</string>
 <string id="Your file list has been updated">Votre fichier a été mis à jour</string>
 <string id="Your message has been sent">Votre message a été envoyé</string>
@@ -1064,7 +1064,7 @@
 <string id="This file is already locked">Ce fichier est déjà verrouillé</string>
 <string id="This file is not locked">Ce fichier n'est pas verrouillé</string>
 <string id="Warning! A new version of this file is waiting to be validate. If you unlock this file, this version will be deleted!">Attention ! Une nouvelle version de ce fichier est en attente de validation. Si vous déverrouillez le fichier, la version en attente sera supprimée</string>
-<string id="New major version?">Nouvelle version majeure?</string>
+<string id="New major version?">Nouvelle version majeure ?</string>
 <string id="Confirm file">Confirmer le fichier</string>
 <string id="Hour">Heure</string>
 <string id="Clean log">Purger le log</string>
@@ -1206,7 +1206,7 @@
 <string id="WARNING!: If you rename this folder, the articles containing the a picture from this folder will be corrupted. Do really whant to rename this directory">ATTENTION : si vous renommez ce répertoire, les articles contenant une image issue de ce répertoire seront corrompus. Voulez-vous vraiment renommer</string>
 <string id="Keywords (separated by spaces)">Mots clés (séparés par des espaces)</string>
 <string id="Update personnal informations">Mise à jour des informations personnelles</string>
-<string id="Your password has been modified">Votre mot de passe à été modifié</string>
+<string id="Your password has been modified">Votre mot de passe a été modifié</string>
 <string id="Server must have imap functions on">Les fonctions imap doivent être activées sur le serveur</string>
 <string id="Charts">Organigrammes</string>
 <string id="Delegations">Délégations</string>
@@ -1291,10 +1291,10 @@
 <string id="LDAP bind failed. Please contact your administrator">La liaison LDAP a échoué. Contactez l'administrateur</string>
 <string id="With/without introduction">Avec/sans introduction</string>
 <string id="With/without body">Avec/sans corps</string>
-<string id="Who can read posts?">Qui peut lire les contributions?</string>
-<string id="Who can post?">Qui peut contribuer?</string>
-<string id="Who can reply?">Qui peut répondre?</string>
-<string id="Who can manage this forum?">Qui peut gérer ce forum?</string>
+<string id="Who can read posts?">Qui peut lire les contributions ?</string>
+<string id="Who can post?">Qui peut contribuer ?</string>
+<string id="Who can reply?">Qui peut répondre ?</string>
+<string id="Who can manage this forum?">Qui peut gérer ce forum ?</string>
 <string id="Approbation schema for articles modification">Schéma d'approbation pour la modification</string>
 <string id="Allow author to purpose articles for homes pages">Permettre aux auteurs de proposer leur article pour les pages d'accueil </string>
 <string id="Allow author to specify dates of publication">Permettre aux auteurs de spécifier des dates de publication</string>
@@ -1304,11 +1304,11 @@
 <string id="Max articles on the archives page">Nombre maximum d'articles sur la page des archives</string>
 <string id="Yes with approbation">Oui avec approbation</string>
 <string id="Yes without approbation">Oui sans approbation</string>
-<string id="Who can read articles from this topic?">Qui peut lire les articles de ce thème?</string>
-<string id="Who can submit new articles?">Qui peut soumettre de nouveaux articles?</string>
-<string id="Who can post comment?">Qui peut soumettre des commentaires?</string>
-<string id="Who can modify articles?">Qui peut modifier les articles?</string>
-<string id="Who can manage this topic?">Qui peut gérer ce thème?</string>
+<string id="Who can read articles from this topic?">Qui peut lire les articles de ce thème ?</string>
+<string id="Who can submit new articles?">Qui peut soumettre de nouveaux articles ?</string>
+<string id="Who can post comment?">Qui peut soumettre des commentaires ?</string>
+<string id="Who can modify articles?">Qui peut modifier les articles ?</string>
+<string id="Who can manage this topic?">Qui peut gérer ce thème ?</string>
 <string id="Submission">Soumission</string>
 <string id="Properties">Propriétés</string>
 <string id="Preview">Prévisualiser</string>
@@ -1480,6 +1480,7 @@
 <string id="Online anonymous users">Utilisateurs anonymes en ligne</string>
 <string id="Rights for resource calendar">Droits pour un agenda de ressource</string>
 <string id="Who can view this calendar">Qui peut consulter cet agenda</string>
+<string id="Who can add events to this calendar">Qui peut ajouter des événements dans cet agenda</string>
 <string id="Who can manage this calendar">Qui peut gérer cet agenda</string>
 <string id="Users groups that will be notified">Les utilisateurs qui seront notifiés</string>
 <string id="Personal">Personnel</string>
@@ -1499,7 +1500,7 @@
 <string id="Personal calendars List">Liste des groupes ayant des agendas personnels</string>
 <string id="Resources calendars List">Liste des agendas de ressources</string>
 <string id="Public calendars List">Liste des agendas collectifs</string>
-<string id="Who can view statistics?">Qui peut consulter les statistiques?</string>
+<string id="Who can view statistics?">Qui peut consulter les statistiques ?</string>
 <string id="Ovidentia database dump">Exporter la base de données d'Ovidentia (sql)</string>
 <string id="New appointement">Nouvel événement</string>
 <string id="Appointement accepted by ">Rendez-vous accepté par </string>
@@ -1641,7 +1642,7 @@
 <string id="Rule">Règle</string>
 <string id="Remain">Reste</string>
 <string id="Account user is already confirmed">Le compte de l'utilisateur a déjà été confirmé</string>
-<string id="Confirm account by validationg address email">Confirmer le compte par envoi de message éléctronique</string>
+<string id="Confirm account by validationg address email">Confirmer le compte par envoi de message électronique</string>
 <string id="Don't validate adresse email">Ne pas valider l'adresse de messagerie</string>
 <string id="Confirm account without address email validation">Confirmer le compte sans validation d'une adresse électronique</string>
 <string id="Domain name">Nom de domaine</string>
@@ -1672,7 +1673,7 @@
 <string id="ERROR: a request is allready defined on this period">ERREUR : une demande est déja définie sur cette période</string>
 <string id="Print in landscape">Imprimer en mode paysage</string>
 <string id="The event isn't on displayed hours for all calendars">L'événement ne sera pas visible sur les vues jour et semaine</string>
-<string id="Show / hide finished events">Afficher / cacher les événements terminés</string>
+<string id="Show / hide finished events">Afficher/cacher les événements terminés</string>
 <string id="Avariable days">Jours disponibles</string>
 <string id="Waiting days">Jours en attente d'approbation</string>
 <string id="ERROR: No members">ERREUR : aucun membre</string>
@@ -1744,7 +1745,7 @@
 <string id="Vacation has been updated">La période de congé a été mise à jour</string>
 <string id="Vacation has been deleted">La période de congé a été annulée</string>
 <string id="Vacation has been scheduled">La période de congé suivante a été programmée</string>
-<string id="Show / hide left pane">Cacher / afficher le panneau latéral</string>
+<string id="Show / hide left pane">Cacher/afficher le panneau latéral</string>
 <string id="CSS styles">Styles CSS</string>
 <string id="Insert image">Insérer une image</string>
 <string id="Insert file link">Insérer un lien vers un fichier</string>
@@ -1772,5 +1773,5 @@
 <string id="Frames (open external url into document body)">Cadres (ouvre des adresses externe dans le corps du document)</string>
 <string id="Forms">Formulaires</string>
 <string id="Targets on links (open links in new windows)">Cible sur les liens (ouvrir les liens dans des nouvelles fenêtres)</string>
-<string id="In this configuration, some html tags may be removed for security reasons">Dans cette configuration, certaines balises html pourrons êtres supprimées lors de l'enregistrement pour des raisons de sécuritée</string>
+<string id="In this configuration, some html tags may be removed for security reasons">Dans cette configuration, certaines balises html pourront être supprimées lors de l'enregistrement pour des raisons de sécurité</string>
 </fr>
