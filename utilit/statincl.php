@@ -39,8 +39,9 @@ class bab_WebStatEvent
 		{
 			return;
 		}
+		$this->tg = isset($GLOBALS['tg'])?$GLOBALS['tg']:'';
 
-		switch($GLOBALS['tg'])
+		switch($this->tg)
 		{
 			case 'calnotif':
 			case 'statproc':
@@ -78,7 +79,6 @@ class bab_WebStatEvent
 		$this->referer = isset($_SERVER["HTTP_REFERER"])? $_SERVER["HTTP_REFERER"]: '';
 		$this->client = $_SERVER["HTTP_USER_AGENT"];
 		$this->url = $_SERVER["REQUEST_URI"];
-		$this->tg = isset($GLOBALS['tg'])?$GLOBALS['tg']:'';
 		if( $this->tg != 'version' )
 			{
 			$this->logEvent();
