@@ -21,6 +21,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
+function bab_unset(&$arr)
+{
+	unset($arr['babInstallPath'], $arr['babDBHost'], $arr['babDBLogin'], $arr['babDBPasswd'], $arr['babDBName']);
+	unset($arr['babUrl'], $arr['babFileNameTranslation'], $arr['babVersion']);
+	unset($GLOBALS['babTmp']);
+}
+
 if(!session_id())
 	session_start();
 if (!session_is_registered('BAB_SESS_NICKNAME')) { session_register("BAB_SESS_NICKNAME"); $BAB_SESS_NICKNAME = ""; }
@@ -36,28 +43,30 @@ if (!empty($_GET))
 	$babTmp =& $_GET;
 else  if (!empty($HTTP_GET_VARS)) 
 	$babTmp =& $HTTP_GET_VARS;
-if( !empty($babTmp)) extract($babTmp, EXTR_SKIP);
-unset($babTmp);
+if( isset($babTmp)) { extract($babTmp, EXTR_SKIP); bab_unset($babTmp); }
+
 if (!empty($_POST))
 	$babTmp =& $_POST;
 else  if (!empty($HTTP_POST_VARS)) 
 	$babTmp =& $HTTP_POST_VARS;
-if( !empty($babTmp)) extract($babTmp, EXTR_SKIP);
-unset($babTmp);
+if( isset($babTmp)) { extract($babTmp, EXTR_SKIP); bab_unset($babTmp); }
 
 if (!empty($_SESSION))
 	$babTmp =& $_SESSION;
 else  if (!empty($HTTP_SESSION_VARS)) 
 	$babTmp =& $HTTP_SESSION_VARS;
-if( !empty($babTmp)) extract($babTmp, EXTR_SKIP);
-unset($babTmp);
+if( isset($babTmp)) { extract($babTmp, EXTR_SKIP); bab_unset($babTmp); }
 
 if (!empty($_SERVER))
 	$babTmp =& $_SERVER;
 else  if (!empty($HTTP_SERVER_VARS)) 
 	$babTmp =& $HTTP_SERVER_VARS;
-if( !empty($babTmp)) extract($babTmp, EXTR_SKIP);
-unset($babTmp);
+if( isset($babTmp)) { extract($babTmp, EXTR_SKIP); bab_unset($babTmp); }
+
+bab_unset($_REQUEST);
+bab_unset($_SERVER);
+bab_unset($_SESSION);
+bab_unset($_COOKIE);
 
 if (!empty($_FILES))
 	{
