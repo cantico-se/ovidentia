@@ -36,27 +36,27 @@ if (!empty($_GET))
 	$babTmp =& $_GET;
 else  if (!empty($HTTP_GET_VARS)) 
 	$babTmp =& $HTTP_GET_VARS;
-if( !empty($babTmp)) extract($babTmp);
+if( !empty($babTmp)) extract($babTmp, EXTR_SKIP);
 unset($babTmp);
 if (!empty($_POST))
 	$babTmp =& $_POST;
 else  if (!empty($HTTP_POST_VARS)) 
 	$babTmp =& $HTTP_POST_VARS;
-if( !empty($babTmp)) extract($babTmp);
+if( !empty($babTmp)) extract($babTmp, EXTR_SKIP);
 unset($babTmp);
 
 if (!empty($_SESSION))
 	$babTmp =& $_SESSION;
 else  if (!empty($HTTP_SESSION_VARS)) 
 	$babTmp =& $HTTP_SESSION_VARS;
-if( !empty($babTmp)) extract($babTmp);
+if( !empty($babTmp)) extract($babTmp, EXTR_SKIP);
 unset($babTmp);
 
 if (!empty($_SERVER))
 	$babTmp =& $_SERVER;
 else  if (!empty($HTTP_SERVER_VARS)) 
 	$babTmp =& $HTTP_SERVER_VARS;
-if( !empty($babTmp)) extract($babTmp);
+if( !empty($babTmp)) extract($babTmp, EXTR_SKIP);
 unset($babTmp);
 
 if (!empty($_FILES))
