@@ -40,7 +40,7 @@ function getContactId( $name )
 		return 0;
 	}
 
-function addAddress( $val, $to, &$class)
+function addAddress( $val, $to, &$adarr)
 {
 	if( !empty($val))
 	{
@@ -51,7 +51,7 @@ function addAddress( $val, $to, &$class)
 			$addr = trim($tmp[$i]);
 			if( eregi("(.*@.*\..*)", $addr, $res))
 			{
-				$class->$to($addr,$addr);
+				$adarr[$to][] = array($addr,$addr);
 			}
 			else if( strtolower(substr($addr, -3)) == "(g)")
 			{
@@ -67,7 +67,7 @@ function addAddress( $val, $to, &$class)
 						{
 						while( $arr = $db->db_fetch_array($res))
 							{
-							$class->$to($arr['email'], bab_composeUserName($arr['firstname'], $arr['lastname']));
+							$adarr[$to][] = array($arr['email'], bab_composeUserName($arr['firstname'], $arr['lastname']));
 							}
 						}
 					}
@@ -79,7 +79,7 @@ function addAddress( $val, $to, &$class)
 					if( $db->db_num_rows($res) > 0)
 						{
 						$arr = $db->db_fetch_array($res);
-						$class->$to($arr['email'], bab_composeUserName($arr['firstname'], $arr['lastname']));
+						$adarr[$to][] = array($arr['email'], bab_composeUserName($arr['firstname'], $arr['lastname']));
 						}
 				}
 			}
@@ -96,7 +96,7 @@ function addAddress( $val, $to, &$class)
 					if( $db->db_num_rows($res) > 0)
 						{
 						$arr = $db->db_fetch_array($res);
-						$class->$to($arr['email'], bab_composeUserName($arr['firstname'], $arr['lastname']));
+						$adarr[$to][] = array($arr['email'], bab_composeUserName($arr['firstname'], $arr['lastname']));
 						}
 				}
 			}
@@ -315,14 +315,30 @@ function createMail($accid, $to, $cc, $bcc, $subject, $message, $files, $files_n
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
+		$adarr = array();
+		$adarr['to'] = array();
+		$adarr['cc'] = array();
+		$adarr['bcc'] = array();
 		$arr = $db->db_fetch_array($res);
-		addAddress($to, "mailTo", $mail);
+		addAddress($to, "to", $adarr);
+		if(!empty($cc))
+			{
+			addAddress($cc, "cc", $adarr);
+			}
+
+		if(!empty($bcc))
+			{
+			addAddress($bcc, "bcc", $adarr);
+			}
+
 		$mail->mailFrom($arr['email'], $arr['name']);
+
 		if( bab_isMagicQuotesGpcOn())
 			{
 			$message = stripslashes($message);
 			$subject = stripslashes($subject);
 			}
+
 		if( $sigid != 0)
 			{
 			$req = "select * from ".BAB_MAIL_SIGNATURES_TBL." where id='".$sigid."' and owner='".$BAB_SESS_USERID."'";
@@ -336,29 +352,74 @@ function createMail($accid, $to, $cc, $bcc, $subject, $message, $files, $files_n
 			}
 		$mail->mailBody($message, $format);
 		$mail->mailSubject($subject);
-		if(!empty($cc))
-			{
-			addAddress($cc, "mailCc", $mail);
-			}
-
-		if(!empty($bcc))
-			{
-			addAddress($bcc, "mailBcc", $mail);
-			}
 
 		for($i=0; $i < count($files); $i++)
 			if( !empty($files_name[$i]))
 				$mail->mailFileAttach($files[$i], $files_name[$i], $files_type[$i]);
-		if(!$mail->send())
+		$nto = count($adarr['to']);
+		$ncc = count($adarr['cc']);
+		$nbcc = count($adarr['bcc']);
+
+		$countto = 0;
+		$countcc = 0;
+		$countbcc = 0;
+		while( $nto || $ncc || $nbcc )
 			{
-			$babBody->msgerror = bab_translate("Error occured when sending email !!");
-			return false;
+
+			if( $nto > 0 )
+				{
+				$mail->mailTo($adarr['to'][$nto-1][0], $adarr['to'][$nto-1][1]);
+				$nto--;
+				$countto++;
+				}
+
+			if( $ncc > 0 )
+				{
+				$mail->mailCc($adarr['cc'][$ncc-1][0], $adarr['cc'][$ncc-1][1]);
+				$ncc--;
+				$countcc++;
+				}
+
+			if( $nbcc > 0 )
+				{
+				$mail->mailBcc($adarr['bcc'][$nbcc-1][0], $adarr['bcc'][$nbcc-1][1]);
+				$nbcc--;
+				$countbcc++;
+				}
+
+			if( $countto == 25 || $countcc == 25 || $countbcc == 25)
+				{
+				if(!$mail->send())
+					{
+					$babBody->msgerror = bab_translate("Error occured when sending email !!");
+					return false;
+					}
+				$mail->clearBcc();
+				$mail->clearTo();
+				$mail->clearCc();
+				$countto = 0;
+				$countcc = 0;
+				$countbcc = 0;
+				}
+
 			}
-		else
+
+		if( $countto || $countcc || $countbcc )
 			{
-			return true;
-			Header("Location: ". $GLOBALS['babUrlScript']."?tg=inbox&idx=list&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse);
+			if(!$mail->send())
+				{
+				$babBody->msgerror = bab_translate("Error occured when sending email !!");
+				return false;
+				}
+			$mail->clearBcc();
+			$mail->clearTo();
+			$mail->clearCc();
+			$countto = 0;
+			$countcc = 0;
+			$countbcc = 0;
 			}
+
+		return true;
 		}
 	else
 		{
