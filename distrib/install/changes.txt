@@ -2,6 +2,7 @@
 June 2005: Version 5.6.1
 /************************************************************************/
 - Improved security
+- Improvement of the sending of the emails
 - Fixed some minors bugs
 
 /************************************************************************/
