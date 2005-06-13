@@ -24,6 +24,10 @@
 include_once "base.php";
 define("BAB_DBDIR_MAX_COMMON_FIELDS", 100);
 
+define("BAB_REGISTERED_GROUP",		1);
+define("BAB_UNREGISTERED_GROUP",	2);
+
+
 /* calendars */
 define("BAB_CAL_USER_TYPE", 1);
 define("BAB_CAL_PUB_TYPE", 2);

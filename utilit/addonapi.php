@@ -21,7 +21,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
- 
+include_once "base.php";
+
 function bab_time($time)
 	{
 	if( $time < 0)
@@ -767,6 +768,20 @@ function bab_isAccessValid($table, $idobject, $iduser='')
 		}
 	}
 	return $ok;
+}
+
+function bab_getGroupsAccess($table, $idobject)
+{
+	global $babBody, $BAB_SESS_USERID, $BAB_SESS_LOGGED;
+	if( !isset($babBody->acltables[$table]))
+		{
+		bab_isAccessValid($table, $idobject);
+		}
+
+	if( isset($babBody->acltables[$table][$idobject]))
+		return array_keys($babBody->acltables[$table][$idobject]);
+	else
+		return array();
 }
 
 function bab_calendarPopup($callback, $month='', $year='', $low='', $high='')
