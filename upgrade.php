@@ -4862,4 +4862,12 @@ $db = & $GLOBALS['babDB'];
 return $ret;
 }
 
+function upgrade561to562()
+{
+$ret = "";
+$db = & $GLOBALS['babDB'];
+
+return $ret;
+}
+
 ?>
