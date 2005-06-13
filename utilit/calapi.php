@@ -60,7 +60,21 @@ function bab_calGetEvents(&$params)
 
 	$events = array();
 
-	$req = "select ce.*, cc.name as cat_name, cc.description as cat_desc, cc.bgcolor as cat_color from ".BAB_CAL_EVENTS_TBL." ce left join ".BAB_CAL_EVENTS_OWNERS_TBL." ceo on ceo.id_event=ce.id left join ".BAB_CAL_CATEGORIES_TBL." cc on cc.id=ce.id_cat where ceo.id_cal='".$params['id_cal']."' and ceo.status = '".BAB_CAL_STATUS_ACCEPTED."' and ce.start_date <= '".$params['enddate']."' and  ce.end_date >= '".$params['begindate']."'";
+	if( is_array($params['id_cal']) )
+		{
+		$cals = count($params['id_cal']) > 0 ? implode(',', $params['id_cal']): '';
+		}
+	else
+		{
+		$cals = $params['id_cal'];
+		}
+
+	if( empty($cals))
+		{
+		return $events;
+		}
+
+	$req = "select ce.*, cc.name as cat_name, cc.description as cat_desc, cc.bgcolor as cat_color, ceo.status as status, ceo.id_cal as id_calendar from ".BAB_CAL_EVENTS_TBL." ce left join ".BAB_CAL_EVENTS_OWNERS_TBL." ceo on ceo.id_event=ce.id left join ".BAB_CAL_CATEGORIES_TBL." cc on cc.id=ce.id_cat where ceo.id_cal='".$params['id_cal']."' and ceo.status != '".BAB_CAL_STATUS_DECLINED."' and ce.start_date <= '".$params['enddate']."' and  ce.end_date >= '".$params['begindate']."'";
 
 	if( isset($params['id_category']))
 		{
@@ -107,6 +121,8 @@ function bab_calGetEvents(&$params)
 		$tmp['private'] = $arr['bprivate'] ==  'Y'? true: false;
 		$tmp['lock'] = $arr['block'] ==  'Y'? true: false;
 		$tmp['free'] = $arr['bfree'] ==  'Y'? true: false;
+		$tmp['status'] = $arr['status'];
+		$tmp['id_calendar'] = $arr['id_calendar'];
 		$events[] = $tmp;
 	}
 
