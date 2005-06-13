@@ -941,11 +941,34 @@ function addEvent(&$message)
 	$args['enddate']['hours'] = $tb[0];
 	$args['enddate']['minutes'] = $tb[1];
 
-	$args['private'] = isset($_POST['bprivate']) ? $_POST['bprivate'] : 'N';
-	$args['lock'] = isset($_POST['block']) ? $_POST['block'] : 'N';
-	$args['free'] = isset($_POST['bfree']) ? $_POST['bfree'] : 'N';
 
-	
+	if( isset($_POST['bprivate']) && $_POST['bprivate'] ==  'Y' )
+		{
+		$args['private'] = true;
+		}
+	else
+		{
+		$args['private'] = false;
+		}
+
+	if( isset($_POST['block']) && $_POST['block'] ==  'Y' )
+		{
+		$args['lock'] = true;
+		}
+	else
+		{
+		$args['lock'] = false;
+		}
+
+	if( isset($_POST['bfree']) && $_POST['bfree'] ==  'Y' )
+		{
+		$args['free'] = true;
+		}
+	else
+		{
+		$args['free'] = false;
+		}
+
 	$id_owner = $GLOBALS['BAB_SESS_USERID'];
 
 	if (isset($_POST['event_owner']) && isset($babBody->icalendars->usercal[$_POST['event_owner']]) )
