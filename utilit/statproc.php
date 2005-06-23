@@ -1303,6 +1303,7 @@ switch($idx)
 		break;
 	}
 
+@set_time_limit(0);
 
 $st = new bab_stats_handler($statrows, $statlimit, $statecho);
 
