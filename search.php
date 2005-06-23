@@ -661,7 +661,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 // ---------------------------------------- SEARCH ARTICLES AND ARTICLES COMMENTS ---------
 			if( empty($item) || $item == "a")
 				{
-				$req = "create temporary table artresults SELECT a.id, a.id_topic, a.archive, a.title, a.head, a.body, a.restriction, T.category topic, concat( U.lastname, ' ', U.firstname ) author,a.id_author, 'yyyy-mm-dd' date from ".BAB_ARTICLES_TBL." a, ".BAB_TOPICS_TBL." T, ".BAB_USERS_TBL." U where a.id_topic = T.id AND a.id_author = U.id AND 0";
+				$req = "create temporary table artresults SELECT a.id, a.id_topic, a.archive, a.title, a.head, a.body, a.restriction, T.category topic, concat( U.lastname, ' ', U.firstname ) author,U.email, UNIX_TIMESTAMP(a.date) date from ".BAB_ARTICLES_TBL." a, ".BAB_TOPICS_TBL." T LEFT JOIN ".BAB_USERS_TBL." U ON a.id_author = U.id WHERE a.id_topic = T.id and 0";
 				$this->db->db_query($req);
 				$req = "alter table artresults add unique (id)";
 				$this->db->db_query($req);
@@ -704,7 +704,8 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					if ($this->like || $this->like2)
 						$reqsup = "and (".finder($this->like,"title",$option,$this->like2)." or ".finder($this->like,"head",$option,$this->like2)." or ".finder($this->like,"body",$option,$this->like2).")";
 					
-					$req = "insert into artresults SELECT a.id, a.id_topic, a.archive, a.title title,a.head, LEFT(a.body,100) body, a.restriction, T.category topic, concat( U.lastname, ' ', U.firstname ) author,a.id_author, UNIX_TIMESTAMP(a.date) date  from ".BAB_ARTICLES_TBL." a, ".BAB_TOPICS_TBL." T, ".BAB_USERS_TBL." U where a.id_topic = T.id AND a.id_author = U.id ".$reqsup." ".$inart." ".$crit_art." order by $order ";
+					$req = "INSERT INTO artresults SELECT a.id, a.id_topic, a.archive, a.title title,a.head, LEFT(a.body,100) body, a.restriction, T.category topic, concat( U.lastname, ' ', U.firstname ) author, U.email, UNIX_TIMESTAMP(a.date) date  from ".BAB_ARTICLES_TBL." a, ".BAB_TOPICS_TBL." T LEFT JOIN ".BAB_USERS_TBL." U ON a.id_author = U.id WHERE a.id_topic = T.id ".$reqsup." ".$inart." ".$crit_art." order by $order ";
+
 					$this->db->db_query($req);
 
 					$res = $this->db->db_query("select id, restriction from artresults where restriction!=''");
@@ -1424,7 +1425,6 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			$this->tmp_inserted_id = array();
 			while ($arr = $db->db_fetch_assoc($res))
 				{
-				//print_r($arr);
 				$this->tmp_inserted_id[] = $arr['id'];
 				}
 			}
@@ -1442,7 +1442,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$arr = $this->db->db_fetch_array($this->resart);
 				$this->article = put_text($arr['title']);
 				$this->artdate = bab_shortDate($arr['date'], true);
-				$this->artauthor = $arr['author'];
+				$this->artauthor = empty($arr['author']) ? bab_translate("Anonymous") : $arr['author'];
 				$this->archive = 'Y' == $arr['archive'];
 				$this->arttopic = returnCategoriesHierarchy($arr['id_topic']);
 				$this->arttopicid = $arr['id_topic'];
@@ -1463,7 +1463,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 						}
 					$this->articleurl = $GLOBALS['babUrlScript']."?tg=articles&idx=".$urlidx."&topics=".$arr['id_topic']."#art".$arr['id'];
 					}
-				$this->authormail = bab_getUserEmail($arr['id_author']);
+				$this->authormail = isset($arr['email']) ? $arr['email'] : '';
 				$this->intro = put_text($arr['head'],300);
 				$i++;
 				return true;
