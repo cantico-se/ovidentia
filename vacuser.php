@@ -171,6 +171,15 @@ function requestVacation($begin,$end, $halfdaybegin, $halfdayend, $id)
 			$this->rfrom = isset($_POST['rfrom'])? $_POST['rfrom'] : 0;
 			$this->rights = bab_getRightsOnPeriod($this->begin, $this->end, $this->id_user, $this->rfrom);
 
+			if (!empty($this->id))
+				{
+				$res = $this->db->db_query("SELECT id_type, quantity FROM ".BAB_VAC_ENTRIES_ELEM_TBL." WHERE id_entry='".$this->id."'");
+				while ($arr = $this->db->db_fetch_array($res))
+					{
+					$this->current[$arr['id_type']] = $arr['quantity'];
+					}
+				}
+
 			$this->recorded = array();
 			if (!empty($this->id))
 				{
@@ -215,7 +224,11 @@ function requestVacation($begin,$end, $halfdaybegin, $halfdayend, $id)
 
 			if (list(,$this->right) = each($this->rights))
 				{
+				
+				$this->right['waiting'] -= isset($this->current[$this->right['id']]) ? $this->current[$this->right['id']] : 0;
 				$this->right['quantitydays'] = $this->right['quantitydays'] - $this->right['waiting'];
+
+
 				if (isset($_POST['nbdays'.$this->right['id']]))
 					{
 					$this->nbdays = $_POST['nbdays'.$this->right['id']];
@@ -494,6 +507,16 @@ function addNewVacation($id_user, $id_request, $begin,$end, $halfdaybegin, $half
 			}
 		}
 
+
+	if (!empty($id_request))
+		{
+		$res = $babDB->db_query("SELECT id_type, quantity FROM ".BAB_VAC_ENTRIES_ELEM_TBL." WHERE id_entry='".$id_request."'");
+		while ($arr = $babDB->db_fetch_array($res))
+			{
+			$current[$arr['id_type']] = $arr['quantity'];
+			}
+		}
+
 	$rights = bab_getRightsOnPeriod($begin, $end, $id_user, $rfrom);
 
 	$ntotal = 0;
@@ -508,6 +531,8 @@ function addNewVacation($id_user, $id_request, $begin,$end, $halfdaybegin, $half
 				$babBody->msgerror = bab_translate("You must specify a correct number days") ." !";
 				return false;
 				}
+
+			$arr['waiting'] -= isset($current[$arr['id']]) ? $current[$arr['id']] : 0;
 
 			if (!empty($nbd) && $arr['cbalance'] != 'Y' && ($arr['quantitydays'] - $arr['waiting'] - $nbd) < 0)
 				{
