@@ -641,15 +641,21 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 				$this->urlimg = "";
 				}
 
-			$res = $this->db->db_query("select modifiable from ".BAB_DBDIR_FIELDSEXTRA_TBL." join ".BAB_DBDIR_FIELDS_TBL." where id_directory='".($this->idgroup != 0? 0: $this->id)."' and id_field=".BAB_DBDIR_FIELDS_TBL.".id and ".BAB_DBDIR_FIELDS_TBL.".name='jpegphoto'");
+			$res = $this->db->db_query("select modifiable, required from ".BAB_DBDIR_FIELDSEXTRA_TBL." join ".BAB_DBDIR_FIELDS_TBL." where id_directory='".($this->idgroup != 0? 0: $this->id)."' and id_field=".BAB_DBDIR_FIELDS_TBL.".id and ".BAB_DBDIR_FIELDS_TBL.".name='jpegphoto'");
 
 			$this->modify = false;
+			$this->phrequired = false;
 			if( $res && $this->db->db_num_rows($res) > 0)
 				{
 				$arr = $this->db->db_fetch_array($res);
 				if( $this->badd || ($this->bupd && $arr['modifiable'] == "Y"))
 					{
 					$this->modify = true;
+					}
+
+				if ($arr['required'] == 'Y')
+					{
+					$this->phrequired = true;
 					}
 				}
 
@@ -1451,7 +1457,7 @@ function processImportDbFile( $pfile, $id, $separ )
 
 function getDbContactImage($id, $idu)
 	{
-	$db = $GLOBALS['babDB'];
+	$db = &$GLOBALS['babDB'];
 	list($idgroup) = $db->db_fetch_array($db->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
 	$res = $db->db_query("select photo_data, photo_type from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".($idgroup !=0 ? 0: $id)."' and id='".$idu."'");
 	if( $res && $db->db_num_rows($res) > 0 )
@@ -1511,7 +1517,7 @@ function getLdapContactImage($id, $cn)
 function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 	{
 	global $babBody;
-	$db = $GLOBALS['babDB'];
+	$db = &$GLOBALS['babDB'];
 
 	list($idgroup, $allowuu) = $db->db_fetch_array($db->db_query("select id_group, user_update from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
 
@@ -1519,18 +1525,33 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 
 	if(bab_isAccessValid(BAB_DBDIRUPDATE_GROUPS_TBL, $id) || ($idgroup != '0' && $allowuu == "Y" && $iduser == $GLOBALS['BAB_SESS_USERID']))
 		{
-		$res = $db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL." where name !='jpegphoto'");
+		$res = $db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL."");
 		$req = "";
 		while( $arr = $db->db_fetch_array($res))
 			{
-			if( isset($fields[$arr['name']]))
+
+			$rr = $db->db_fetch_array($db->db_query("select required from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup !=0 ? 0: $id)."' and id_field='".$arr['id']."'"));
+
+			if ($arr['name'] == 'jpegphoto' && $rr['required'] == "Y" && (empty($file) || $file == "none"))
 				{
-				$rr = $db->db_fetch_array($db->db_query("select required from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup !=0 ? 0: $id)."' and id_field='".$arr['id']."'"));
-				if( $rr['required'] == "Y" && empty($fields[$arr['name']]))
+				$tmp = $db->db_fetch_assoc($db->db_query("select photo_data from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".($idgroup !=0 ? 0: $id)."' and id='".$idu."'"));
+
+				if (empty($tmp['photo_data']))
 					{
 					$babBody->msgerror = bab_translate("You must complete required fields");
 					return false;
 					}
+				}
+
+
+			if( isset($fields[$arr['name']]))
+				{
+				if( $arr['name'] != 'jpegphoto' && $rr['required'] == "Y" && empty($fields[$arr['name']]))
+					{
+					$babBody->msgerror = bab_translate("You must complete required fields");
+					return false;
+					}
+
 				$req .= $arr['name']."='".addslashes($fields[$arr['name']])."',";
 				}
 			}
@@ -1565,7 +1586,7 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 			}
 		if( !empty($file) && $file != "none")
 			{
-			if ($babBody->babsite['imgsize']*1000 < filesize($tmp_file))
+			if ($babBody->babsite['imgsize'] > 0 && $babBody->babsite['imgsize']*1000 < filesize($tmp_file))
 				{
 				$babBody->msgerror = bab_translate("The image file is too big, maximum is :").$babBody->babsite['imgsize'].bab_translate("Kb");
 				return false;
@@ -1630,17 +1651,29 @@ function confirmAddDbContact($id, $fields, $file, $tmp_file, $password1, $passwo
 		return false;
 		}
 
-	$res = $db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL." where name !='jpegphoto'");
+	$res = $db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL."");
 	$req = "";
 	while( $arr = $db->db_fetch_array($res))
 		{
 		$rr = $db->db_fetch_array($db->db_query("select required from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup !=0 ? 0: $id)."' and id_field='".$arr['id']."'"));
-		if( $rr['required'] == "Y" && empty($fields[$arr['name']]))
+		if( $arr['name'] != 'jpegphoto' && $rr['required'] == "Y" && empty($fields[$arr['name']]))
 			{
 			$babBody->msgerror = bab_translate("You must complete required fields");
 			return false;
 			}
-		if( isset($fields[$arr['name']]))
+
+		if ( $arr['name'] == 'jpegphoto' && $rr['required'] == "Y" && (empty($file) || $file == "none"))
+			{
+			$tmp = $db->db_fetch_assoc($db->db_query("select photo_data from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".($idgroup !=0 ? 0: $id)."' and id='".$idu."'"));
+
+			if (empty($tmp['photo_data']))
+				{
+				$babBody->msgerror = bab_translate("You must complete required fields");
+				return false;
+				}
+			}
+
+		if( isset($fields[$arr['name']]) && $arr['name'] != 'jpegphoto')
 			{
 			if( $idgroup > 0 )
 				$req .= $arr['name']."='".addslashes($fields[$arr['name']])."',";
@@ -1701,6 +1734,12 @@ function confirmAddDbContact($id, $fields, $file, $tmp_file, $password1, $passwo
 
 	if( !empty($file) && $file != "none")
 		{
+		if ($babBody->babsite['imgsize'] > 0 && $babBody->babsite['imgsize']*1000 < filesize($tmp_file))
+			{
+			$babBody->msgerror = bab_translate("The image file is too big, maximum is :").$babBody->babsite['imgsize'].bab_translate("Kb");
+			return false;
+			}
+
 		$fp=fopen($tmp_file,"rb");
 		if( $fp )
 			{

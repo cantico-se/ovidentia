@@ -461,6 +461,7 @@ function redimimg()
 &nbsp;<!--#if del -->
 <a class="BabAlphabetLink" href="{ delurl }">{ deltxt }</a>
 <!--#endif del -->
+&nbsp; <a class="BabAlphabetLink" href="javascript:window.print()">{ t_print }</a>
 </td>
 </tr>
 </table>
@@ -565,9 +566,9 @@ this.close();
 <br>
 <!--#begin modifycontact -->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE>{ babSiteName }</TITLE>
+<html>
+<head>
+<title>{ babSiteName }</title>
 { babMeta }
 { babCss }
 <script type="text/javascript">
@@ -575,8 +576,8 @@ this.close();
 window.focus();
 //-->
 </script>
-</HEAD>
-<BODY>
+</head>
+<body>
 <form name="admodify" method="post" action="{ babPhpSelf }" enctype="multipart/form-data">
 <input type="hidden" name="tg" value="directory">
 <input type="hidden" name="idx" value="list">
@@ -588,7 +589,7 @@ window.focus();
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
-	<table border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+	<table class="BabSiteAdminFontBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
 	<!--#if error -->
 	<tr>
 		<td class="BabErrorMessage" align="center" colspan="2">
@@ -601,7 +602,7 @@ window.focus();
 	</tr>
 
 	<tr>
-		<td align="center" class="BabSiteAdminFontBackground" colspan="2">
+		<td align="center" colspan="2">
 		<br>
 		<!--#if showph -->
 		<img name="photo" src="{ urlimg }" border="0" alt="{ name }"><br>
@@ -628,39 +629,38 @@ window.focus();
 		</script>
 		<!--#endif showph -->
 		<!--#if modify -->
-		<b>{ file }:</b>&nbsp;&nbsp;<input type="file" name="photof" size="40" maxlength="255" value="">
+		<p><b><!--#if phrequired "== Y" -->*&nbsp;<!--#endif phrequired -->{ file }:</b>&nbsp;&nbsp;<input type="file" name="photof" size="40" maxlength="255" value=""></p>
 		<!--#endif modify -->
-		<br><br>
 		</td>
 	</tr>
 	<!--#if buserinfo -->
 	<tr>
-		<td class="BabSiteAdminFontBackground" align="right"><b>*&nbsp;{ nickname }</b></td>
-		<td class="BabSiteAdminFontBackground"><input type="text" name="nickname" size="30" maxlength="60" value=""></td>
+		<td align="right"><b>*&nbsp;{ nickname }</b></td>
+		<td ><input type="text" name="nickname" size="30" maxlength="60" value=""></td>
 	</tr>
 	<tr>
-		<td class="BabSiteAdminFontBackground" align="right"><b>*&nbsp;{ password }</b></td>
-		<td class="BabSiteAdminFontBackground"><input type="password" name="password1" size="20" maxlength="15" value=""></td>
+		<td  align="right"><b>*&nbsp;{ password }</b></td>
+		<td ><input type="password" name="password1" size="20" maxlength="15" value=""></td>
 	</tr>
 	<tr>
-		<td class="BabSiteAdminFontBackground" align="right"><b>*&nbsp;{ repassword }</b></td>
-		<td class="BabSiteAdminFontBackground"><input type="password" name="password2" size="20" maxlength="15" value=""></td>
+		<td align="right"><b>*&nbsp;{ repassword }</b></td>
+		<td><input type="password" name="password2" size="20" maxlength="15" value=""></td>
 	</tr>
 	<tr>
-		<td class="BabSiteAdminFontBackground" align="right"><b>&nbsp;{ notifyuser }</b></td>
-		<td class="BabSiteAdminFontBackground"><select name="notifyuser"><option value="Y" selected>{ yes }</option><option value="N">{ no }</option></select></td>
+		<td align="right"><b>&nbsp;{ notifyuser }</b></td>
+		<td><select name="notifyuser"><option value="Y" selected>{ yes }</option><option value="N">{ no }</option></select></td>
 	</tr>
 	<tr>
-		<td class="BabSiteAdminFontBackground" align="right"><b>&nbsp;{ sendpassword }</b></td>
-		<td class="BabSiteAdminFontBackground"><select name="sendpwd"><option value="Y">{ yes }</option><option value="N" selected>{ no }</option></select></td>
+		<td align="right"><b>&nbsp;{ sendpassword }</b></td>
+		<td><select name="sendpwd"><option value="Y">{ yes }</option><option value="N" selected>{ no }</option></select></td>
 	</tr>
 	<!--#endif buserinfo -->
 	<!--#in getnextfield -->
 	<tr> 
-		<td class="BabSiteAdminFontBackground" align="right"><b><!--#if required "== Y" -->*&nbsp;<!--#endif required -->
+		<td align="right"><b><!--#if required "== Y" -->*&nbsp;<!--#endif required -->
 		{ fieldn }</b>
 		</td>
-		<td class="BabSiteAdminFontBackground">
+		<td>
 		<!--#if modify -->
 		<!--#if multivalues -->
 <select name="fields[{ fieldv }]">
@@ -687,12 +687,12 @@ window.focus();
 	</tr>
 	<!--#endin getnextfield -->
 	<tr>
-		<td class="BabSiteAdminFontBackground" valign="middle" colspan="2">
+		<td colspan="2">
 		<center><input type="submit" name="dbcupdate" value="{ update }"></center>
 		</td>
 	</tr>
 	<tr>
-		<td class="BabSiteAdminFontBackground" valign="middle" colspan="2"><center><b>*&nbsp;{ helpfields }</b></center>
+		<td colspan="2"><center><b>*&nbsp;{ helpfields }</b></center>
 		</td>
 	</tr>
 	</table>
@@ -702,8 +702,8 @@ window.focus();
 <br>
 </form>
 
-</BODY>
-</HTML>
+</body>
+</html>
 <!--#end modifycontact -->
 
 <!--#begin dbcontactunload -->
