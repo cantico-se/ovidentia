@@ -179,7 +179,7 @@ function addonsList($upgradeall)
 					$this->db->db_query("delete from ".BAB_SECTIONS_STATES_TBL." where id_section='".$row['id']."' and type='4'");
 					}
 				}
-			$this->res = $this->db->db_query("select * from ".BAB_ADDONS_TBL."");
+			$this->res = $this->db->db_query("select * from ".BAB_ADDONS_TBL." ORDER BY title ASC");
 			$this->count = $this->db->db_num_rows($this->res);
 			}
 
