@@ -190,7 +190,7 @@ function registerUser( $firstname, $lastname, $middlename, $email, $nickname, $p
 		}
 
 	$db = $GLOBALS['babDB'];
-	$query = "select * from ".BAB_USERS_TBL." where nickname='".$nickname."'";	
+	$query = "select * from ".BAB_USERS_TBL." where nickname='".$db->db_escape_string($nickname)."'";	
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) > 0)
 		{
