@@ -907,15 +907,15 @@ function addNewUser( $nickname, $password1, $password2)
 		if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
 			{
 			$rr = $babDB->db_fetch_array($babDB->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
-			$this->fieldv = $rr['name'];
+			$fieldv = $rr['name'];
 			}
 		else
 			{
 			$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
-			$this->fieldv = "babdirf".$arr['id'];
+			$fieldv = "babdirf".$arr['id'];
 			}
 
-		if( $this->fieldv ==  'jpegphoto')
+		if( $fieldv ==  'jpegphoto')
 			{
 			if($arr['required'] == 'Y' && !isset($photof_name))
 				{
@@ -929,14 +929,14 @@ function addNewUser( $nickname, $password1, $password2)
 			}
 		else
 			{
-			if( $arr['required'] == 'Y' && empty($fields[$this->fieldv]))
+			if( $arr['required'] == 'Y' && empty($fields[$fieldv]))
 				{
 				$babBody->msgerror = bab_translate( "You must complete all fields !!");
 				return false;
 				}
 			if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
 				{
-				$req .= $this->fieldv."='".addslashes($fields[$this->fieldv])."',";
+				$req .= $fieldv."='".addslashes($fields[$fieldv])."',";
 				}
 			else
 				{
