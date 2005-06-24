@@ -1859,7 +1859,7 @@ function exportDbDirectory($id, $wsepar, $separ)
 
 	$arridfx = array();
 	$arrnamef = array();
-	$res = $db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup != 0? 0: $id)."'");
+	$res = $db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup != 0? 0: $id)."' order by list_ordering asc");
 	while( $arr = $db->db_fetch_array($res))
 		{
 		if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
