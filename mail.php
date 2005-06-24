@@ -447,7 +447,13 @@ function mailReply($accid, $criteria, $reverse, $idreply, $all, $fw)
             {
 			
             $arr2 = $db->db_fetch_array($res2);
-            $cnxstring = "{".$arr2['inserver']."/".$arr2['access'].":".$arr2['inport']."}INBOX";
+			$protocol = '';
+			if( isset($GLOBALS['babImapProtocol']) && count($GLOBALS['babImapProtocol'])) 
+				{
+				$protocol = '/'.implode('/', $GLOBALS['babImapProtocol']);
+				}
+
+			$cnxstring = "{".$arr2['inserver'].":".$arr2['inport']."/".$arr2['access'].$protocol."}INBOX";
             $mbox = @imap_open($cnxstring, $arr['login'], $arr['accpass']);
             if(!$mbox)
                 {

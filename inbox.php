@@ -154,8 +154,13 @@ function listMails($accid, $criteria, $reverse, $start)
 					{
 					$arr2 = $this->db->db_fetch_array($res2);
 					$this->access = $arr2['access'];
-					//$cnxstring = "{".$arr2['inserver']."/".$arr2['access'].":".$arr2['inport']."}INBOX";
-					$cnxstring = "{".$arr2['inserver'].":".$arr2['inport']."/".$arr2['access']."}INBOX";
+					$protocol = '';
+					if( isset($GLOBALS['babImapProtocol']) && count($GLOBALS['babImapProtocol'])) 
+						{
+						$protocol = '/'.implode('/', $GLOBALS['babImapProtocol']);
+						}
+
+					$cnxstring = "{".$arr2['inserver'].":".$arr2['inport']."/".$arr2['access'].$protocol."}INBOX";
 					$this->mbox = @imap_open($cnxstring, $arr['login'], $arr['accpass']);
 					if(!$this->mbox)
 						{
@@ -374,7 +379,13 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 				if( $res2 && $db->db_num_rows($res2) > 0 )
 					{
 					$arr2 = $db->db_fetch_array($res2);
-					$cnxstring = "{".$arr2['inserver'].":".$arr2['inport']."/".$arr2['access']."}INBOX";
+					$protocol = '';
+					if( isset($GLOBALS['babImapProtocol']) && count($GLOBALS['babImapProtocol'])) 
+						{
+						$protocol = '/'.implode('/', $GLOBALS['babImapProtocol']);
+						}
+
+					$cnxstring = "{".$arr2['inserver'].":".$arr2['inport']."/".$arr2['access'].$protocol."}INBOX";
 					$this->mbox = @imap_open($cnxstring, $arr['login'], $arr['accpass']);
 					if(!$this->mbox)
 						{
@@ -695,7 +706,13 @@ function showPart($accid, $msg, $cid)
 		if( $res2 && $db->db_num_rows($res2)> 0)
 			{
 			$arr2 = $db->db_fetch_array($res2);
-			$cnxstring = "{".$arr2['inserver'].":".$arr2['inport']."/".$arr2['access']."}INBOX";
+			$protocol = '';
+			if( isset($GLOBALS['babImapProtocol']) && count($GLOBALS['babImapProtocol'])) 
+				{
+				$protocol = '/'.implode('/', $GLOBALS['babImapProtocol']);
+				}
+
+			$cnxstring = "{".$arr2['inserver'].":".$arr2['inport']."/".$arr2['access'].$protocol."}INBOX";
 			$mbox = @imap_open($cnxstring, $arr['login'], $arr['accpass']);
 			if($mbox)
 				{
@@ -726,7 +743,13 @@ function getAttachment($accid, $msg, $part, $mime, $enc, $file)
 		if( $res2 && $db->db_num_rows($res2)> 0)
 			{
 			$arr2 = $db->db_fetch_array($res2);
-			$cnxstring = "{".$arr2['inserver'].":".$arr2['inport']."/".$arr2['access']."}INBOX";
+			$protocol = '';
+			if( isset($GLOBALS['babImapProtocol']) && count($GLOBALS['babImapProtocol'])) 
+				{
+				$protocol = '/'.implode('/', $GLOBALS['babImapProtocol']);
+				}
+
+			$cnxstring = "{".$arr2['inserver'].":".$arr2['inport']."/".$arr2['access'].$protocol."}INBOX";
 			$mbox = @imap_open($cnxstring, $arr['login'], $arr['accpass']);
 			if($mbox)
 				{
@@ -791,7 +814,13 @@ function deleteMails($item, $accid, $criteria, $reverse)
 		if( $res2 && $db->db_num_rows($res2)> 0)
 			{
 			$arr2 = $db->db_fetch_array($res2);
-			$cnxstring = "{".$arr2['inserver'].":".$arr2['inport']."/".$arr2['access']."}INBOX";
+			$protocol = '';
+			if( isset($GLOBALS['babImapProtocol']) && count($GLOBALS['babImapProtocol'])) 
+				{
+				$protocol = '/'.implode('/', $GLOBALS['babImapProtocol']);
+				}
+
+			$cnxstring = "{".$arr2['inserver'].":".$arr2['inport']."/".$arr2['access'].$protocol."}INBOX";
 			$mbox = @imap_open($cnxstring, $arr['login'], $arr['accpass']);
 			if($mbox)
 				{
