@@ -90,7 +90,7 @@ function listUsers($pos, $grp)
 					$this->namesearch2 = "lastname";
 				break; }
 
-			$req = "select u.*, dbt.id as idu from ".BAB_USERS_TBL." u left join ".BAB_DBDIR_ENTRIES_TBL." dbt on u.id=dbt.id_user and dbt.id_directory='0'";
+			$req = "select u.*, dbt.id as idu, g.id as ingroup from ".BAB_USERS_TBL." u left join ".BAB_DBDIR_ENTRIES_TBL." dbt on u.id=dbt.id_user and dbt.id_directory='0' LEFT JOIN ".BAB_USERS_GROUPS_TBL." g ON id_object=u.id and id_group='".$this->grp."'";
 
 			if( isset($pos) &&  strlen($pos) > 0 && $pos[0] == "-" )
 				{
@@ -154,9 +154,7 @@ function listUsers($pos, $grp)
 				else
 					$this->status ="";
 
-				$req = "select * from ".BAB_USERS_GROUPS_TBL." where id_object='".$this->arr['id']."' and id_group='".$this->grp."'";
-				$res = $this->db->db_query($req);
-				if( $res && $this->db->db_num_rows($res) > 0)
+				if( !empty($this->arr['ingroup']))
 					{
 					$this->checked = "checked";
 					if( empty($this->userst))
@@ -187,31 +185,11 @@ function listUsers($pos, $grp)
 				{
 				$this->selectname = substr($t, $k, 1);
 				$this->selecturl = $GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$this->ord.$this->selectname."&grp=".$this->grp;
-
+				$this->selected = 0;
+				
 				if( $this->pos == $this->selectname)
 					$this->selected = 1;
-				else 
-					{
-					if( $this->ord == "-" )
-						{
-						if( $babBody->currentAdmGroup == 0)
-							$req = "select id from ".BAB_USERS_TBL." where ".$this->namesearch2." like '".$this->selectname."%'";
-						else
-							$req = "select u.id from ".BAB_USERS_TBL." u,  ".BAB_USERS_GROUPS_TBL." ug where ug.id_object=u.id and ug.id_group='".$babBody->currentAdmGroup."' and u.".$this->namesearch2." like '".$this->selectname."%'";
-						}
-					else
-						{
-						if( $babBody->currentAdmGroup == 0)
-							$req = "select id from ".BAB_USERS_TBL." where ".$this->namesearch." like '".$this->selectname."%'";
-						else
-							$req = "select u.id from ".BAB_USERS_TBL." u,  ".BAB_USERS_GROUPS_TBL." ug where ug.id_object=u.id and ug.id_group='".$babBody->currentAdmGroup."' and u.".$this->namesearch." like '".$this->selectname."%'";
-						}
-					$res = $this->db->db_query($req);
-					if( $this->db->db_num_rows($res) > 0 )
-						$this->selected = 0;
-					else
-						$this->selected = 1;
-					}
+
 				$k++;
 				return true;
 				}
