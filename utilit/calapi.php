@@ -74,7 +74,7 @@ function bab_calGetEvents(&$params)
 		return $events;
 		}
 
-	$req = "select ce.*, cc.name as cat_name, cc.description as cat_desc, cc.bgcolor as cat_color, ceo.status as status, ceo.id_cal as id_calendar from ".BAB_CAL_EVENTS_TBL." ce left join ".BAB_CAL_EVENTS_OWNERS_TBL." ceo on ceo.id_event=ce.id left join ".BAB_CAL_CATEGORIES_TBL." cc on cc.id=ce.id_cat where ceo.id_cal='".$params['id_cal']."' and ceo.status != '".BAB_CAL_STATUS_DECLINED."' and ce.start_date <= '".$params['enddate']."' and  ce.end_date >= '".$params['begindate']."'";
+	$req = "select ce.*, cc.name as cat_name, cc.description as cat_desc, cc.bgcolor as cat_color, ceo.status as status, ceo.id_cal as id_calendar from ".BAB_CAL_EVENTS_TBL." ce left join ".BAB_CAL_EVENTS_OWNERS_TBL." ceo on ceo.id_event=ce.id left join ".BAB_CAL_CATEGORIES_TBL." cc on cc.id=ce.id_cat where ceo.id_cal='".$cals."' and ceo.status != '".BAB_CAL_STATUS_DECLINED."' and ce.start_date <= '".$params['enddate']."' and  ce.end_date >= '".$params['begindate']."'";
 
 	if( isset($params['id_category']))
 		{
