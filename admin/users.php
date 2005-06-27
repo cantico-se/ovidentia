@@ -75,7 +75,7 @@ function listUsers($pos, $grp)
 			$this->t_disabled = bab_translate("Disabled");
 			$this->t_dirdetail = bab_translate("Detail");
 
-			$this->db = $GLOBALS['babDB'];
+			$this->db = &$GLOBALS['babDB'];
 			$this->group = bab_getGroupName($grp);
 			$this->grp = $grp;
 
@@ -90,7 +90,24 @@ function listUsers($pos, $grp)
 					$this->namesearch2 = "lastname";
 				break; }
 
-			$req = "select u.*, dbt.id as idu, g.id as ingroup from ".BAB_USERS_TBL." u left join ".BAB_DBDIR_ENTRIES_TBL." dbt on u.id=dbt.id_user and dbt.id_directory='0' LEFT JOIN ".BAB_USERS_GROUPS_TBL." g ON id_object=u.id and id_group='".$this->grp."'";
+			// group members
+			$this->group_members = array();
+			$res = $this->db->db_query("SELECT id_object FROM ".BAB_USERS_GROUPS_TBL." WHERE id_group='".$this->grp."'");
+			while (list($id_user) = $this->db->db_fetch_array($res))
+				{
+				$this->group_members[$id_user] = $id_user;
+				}
+
+			// User login status
+			$this->users_logged = array();
+			$res = $this->db->db_query("SELECT id_user FROM ".BAB_USERS_LOG_TBL."");
+			while (list($id_user) = $this->db->db_fetch_array($res))
+				{
+				$this->users_logged[$id_user] = $id_user;
+				}
+
+
+			$req = "select u.* from ".BAB_USERS_TBL." u";
 
 			if( isset($pos) &&  strlen($pos) > 0 && $pos[0] == "-" )
 				{
@@ -129,7 +146,7 @@ function listUsers($pos, $grp)
 				$this->bmodname = false;
 
 			$this->userst = '';
-			list($this->iddir) = $this->db->db_fetch_row($this->db->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group='1'"));
+			
 
 			}
 
@@ -147,14 +164,13 @@ function listUsers($pos, $grp)
 					$this->urlname = bab_composeUserName($this->arr['firstname'],$this->arr['lastname']);
 
 				$this->userid = $this->arr['id'];
-				$req = "select * from ".BAB_USERS_LOG_TBL." where id_user='".$this->arr['id']."'";
-				$res = $this->db->db_query($req);
-				if( $res && $this->db->db_num_rows($res) > 0)
+
+				if( isset($this->users_logged[$this->userid]))
 					$this->status ="*";
 				else
 					$this->status ="";
 
-				if( !empty($this->arr['ingroup']))
+				if( isset($this->group_members[$this->userid]))
 					{
 					$this->checked = "checked";
 					if( empty($this->userst))
@@ -167,7 +183,9 @@ function listUsers($pos, $grp)
 					$this->checked = "";
 					}
 
-				$this->dirdetailurl = $GLOBALS['babUrlScript']."?tg=directory&idx=ddb&id=".$this->iddir."&idu=".$this->arr['idu']."&pos=&xf=";
+				//$this->dirdetailurl = $GLOBALS['babUrlScript']."?tg=directory&idx=ddb&id=".$this->iddir."&idu=".$this->arr['idu']."&pos=&xf=";
+
+				$this->dirdetailurl = $GLOBALS['babUrlScript']."?tg=users&idx=dirv&id_user=".$this->userid;
 				$i++;
 				return true;
 				}
@@ -312,6 +330,21 @@ function updateGroup( $grp, $users, $userst)
 	}
 }
 
+
+
+function dir_view($id_user)
+{
+$db = &$GLOBALS['babDB'];
+
+$arr = $db->db_fetch_array($db->db_query("SELECT dbt.id FROM ".BAB_DBDIR_ENTRIES_TBL." dbt WHERE '".$id_user."'=dbt.id_user and dbt.id_directory='0'"));
+
+list($iddir) = $db->db_fetch_row($db->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group='1'"));
+
+Header("Location: ". $GLOBALS['babUrlScript']."?tg=directory&idx=ddb&id=".$iddir."&idu=".$arr['id']."&pos=&xf=");
+
+}
+
+
 /* main */
 if( !isset($pos))
 	$pos = "A";
@@ -381,7 +414,13 @@ if( $idx == "Create" && !$babBody->isSuperAdmin )
 
 
 switch($idx)
-	{	
+	{
+	case "dirv": 
+
+		 dir_view($_GET['id_user']);
+		exit;
+		break;
+
 	case "brow": // Used by add-ons
 		if( $babBody->isSuperAdmin || $babBody->currentAdmGroup != 0 )
 			{
