@@ -712,62 +712,23 @@ function bab_isAccessValid($table, $idobject, $iduser='')
 		return bab_isAccessValidByUser($table, $idobject, $iduser);
 		}
 
-	$ok = false;
 	if( !isset($babBody->acltables[$table]))
 		{
 		$babBody->acltables[$table] = array();
-		$db = $GLOBALS['babDB'];
-		$res = $db->db_query("select * from ".$table."");
-		while( $row = $db->db_fetch_array($res))
-			{
-			switch($row['id_group'])
-				{
-				case "0": // everybody
-					$babBody->acltables[$table][$row['id_object']][1] = 1;
-					$babBody->acltables[$table][$row['id_object']][2] = 1;
-					break;
-				case "1": // users
-					$babBody->acltables[$table][$row['id_object']][1] = 1;
-					break;
-				case "2": // guests
-					$babBody->acltables[$table][$row['id_object']][2] = 1;
-					break;
-				default:  //groups
-					$babBody->acltables[$table][$row['id_object']][$row['id_group']]=1;
-					break;
-				}
+		$arrgrp = $babBody->usergroups;
+		$arrgrp[] = 0;	
+		$arrgrp[] = $BAB_SESS_LOGGED ? 1 : 2;
 
+		$db = &$GLOBALS['babDB'];
+		$res = &$db->db_query("select id_object from ".$table." WHERE id_group IN(".implode(',',$arrgrp).")");
+		
+		while( $row = $db->db_fetch_assoc($res))
+			{
+			$babBody->acltables[$table][$row['id_object']] = 1;
 			}
 		}
 
-
-	if( !$BAB_SESS_LOGGED )
-		{
-		if( isset($babBody->acltables[$table][$idobject][2]))
-			{
-			$ok = true;
-			}
-		}
-	else
-	{
-		if( isset($babBody->acltables[$table][$idobject][1]))
-			{
-			$ok = true;
-			}
-		else
-		{
-			for( $i = 0; $i < count($babBody->usergroups); $i++)
-			{
-				if( isset($babBody->acltables[$table][$idobject][$babBody->usergroups[$i]]))
-				{
-					$ok = true;
-					break;
-				}
-
-			}
-		}
-	}
-	return $ok;
+	return isset($babBody->acltables[$table][$idobject]);
 }
 
 function bab_getGroupsAccess($table, $idobject)
