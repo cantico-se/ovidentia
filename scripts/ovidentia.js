@@ -123,7 +123,18 @@ function bab_showOnMouse(id,on)
 	else
 		return false;
 
-	if (!on)
+	if (on)
+		{
+		try
+			{
+			document.getElementsByTagName('body')[0].appendChild(bab_tooltip_obj);
+			bab_tooltip_obj.style.position = 'absolute';
+			}
+		catch (e)
+			{
+			}
+		}
+	else
 		{
 		bab_tooltip_obj.style.visibility = 'hidden';
 		bab_tooltip_obj = false;

@@ -11,9 +11,15 @@
 	display:none;
 	}
 
-.bab_calnavbar .prev span,
-.bab_calnavbar .next span,
-.bab_calendar .calfreeover {
+#cal_btn_prev_day,
+#cal_btn_prev_week,
+#cal_btn_prev_month,
+#cal_btn_prev_year,
+#cal_btn_next_day,
+#cal_btn_next_week,
+#cal_btn_next_month,
+#cal_btn_next_year,
+.calfreeover {
 	visibility: hidden;
 	position:absolute;
 	background-color:#fff;
@@ -108,8 +114,8 @@ a img {
 	background-color:#eee;
 	}
 
-.bab_calendar .bab_tooltip {
-	position: absolute;
+.bab_cal_tooltip {
+	position:absolute;
 	width: 200px;
 	border: 1px solid black;
 	padding: 2px;
@@ -119,32 +125,32 @@ a img {
 	text-align:left;
 	}
 
-.bab_calendar .bab_tooltip h3 {
+.bab_cal_tooltip h3 {
 	background-color:#fff;
 	margin:0;
 	padding:2px;
 	font-size:11px;
 	}
 
-.bab_calendar .bab_tooltip h5 {
+.bab_cal_tooltip h5 {
 	font-size:10px;
 	font-weight:normal;
 	margin-top:3px;
 	margin-bottom:3px;
 	}
 
-.bab_calendar .bab_tooltip h5 p {
+.bab_cal_tooltip h5 p {
 	margin:0;
 	padding:0;
 	}
 
-.bab_calendar .bab_tooltip h5 strong {
+.bab_cal_tooltip h5 strong {
 	text-align:right;
 	float:left;
 	width:33%;
 	}
 
-.bab_calendar .bab_tooltip .description {
+.bab_cal_tooltip .description {
 	background-color:#fff;
 	padding:2px;
 	}
@@ -328,7 +334,7 @@ a img {
 	background-image:url('../skins/ovidentia/images/Puces/stripsbackground.gif');
 	}
 
-.bab_calendar .used .bab_tooltip {
+.bab_calendar .used .bab_cal_tooltip {
 	background-color:lightgrey;
 	}
 
