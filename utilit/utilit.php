@@ -819,10 +819,8 @@ function babUserSection($close)
 		$this->array_urls[bab_translate("Statistics")] = $GLOBALS['babUrlScript']."?tg=stat";
 		}
 
-	reset($babBody->babaddons);
-	while( $row = each($babBody->babaddons) ) 
+	foreach( $babBody->babaddons as $row ) 
 		{
-		$row = $row[1];
 		if($row['access'])
 			{
 			$addonpath = $GLOBALS['babAddonsPath'].$row['title'];
