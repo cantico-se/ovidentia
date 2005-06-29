@@ -576,8 +576,7 @@ function listWaitingAddons()
 		function listWaitingAddonsCls()
 			{
 			$babBody = & $GLOBALS['babBody'];
-			reset($babBody->babaddons);
-			while( list($key,$row)=each($babBody->babaddons) ) 
+			foreach( $babBody->babaddons as $key => $row)
 				{
 				$addonpath = $GLOBALS['babAddonsPath'].$row['title'];
 				if($row['access'] && is_file($addonpath."/init.php" ))
