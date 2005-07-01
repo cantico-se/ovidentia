@@ -318,8 +318,8 @@ function babLoadLanguage($lang, $folder, &$arr)
 function bab_callAddonsFunction($func)
 {
 	$babBody = & $GLOBALS['babBody'];
-	reset($babBody->babaddons);
-	while( list($key,$row) = each($babBody->babaddons) ) 
+
+	foreach($babBody->babaddons as $key => $row)
 		{ 
 		if($row['access'])
 			{
