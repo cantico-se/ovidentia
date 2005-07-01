@@ -782,7 +782,7 @@ CREATE TABLE `bab_sites` (
   `style` varchar(255) NOT NULL default '',
   `registration` enum('Y','N') NOT NULL default 'Y',
   `display_disclaimer` enum('N','Y') NOT NULL default 'N',
-  `email_confirm` enum('Y','N') NOT NULL default 'Y',
+  `email_confirm` tinyint( 2 ) unsigned NOT NULL default '0',
   `mailfunc` varchar(20) NOT NULL default 'mail',
   `smtpserver` varchar(255) NOT NULL default '',
   `smtpport` varchar(20) NOT NULL default '25',
