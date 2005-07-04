@@ -7,17 +7,16 @@
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<table class="BabLoginMenuBackground"  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
-<td class="BabLoginMenuBackground" width="30%" align="right" nowrap 
-valign="middle">{  name }:</td>
-<td class="BabLoginMenuBackground" width="70%" valign="middle"> 
-<input type="text" name="fname" size="30" maxlength="30" value="">
+<td width="30%" align="right">{  name }:</td>
+<td> 
+<input type="text" name="fname" size="30" maxlength="100" value="">
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ active }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
+<td align="right">{ active }:</td>
+<td> 
 <select name="active">
 <option value="Y" selected >{ yes }</option>
 <option value="N" >{ no }</option>
@@ -25,8 +24,8 @@ valign="middle">{  name }:</td>
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ moderation }:</td>
-<td class="BabLoginMenuBackground" valign="middle">
+<td align="right">{ moderation }:</td>
+<td>
 <select name="said">
 <option value="0">{ none }</option>
 <!--#in getnextschapp -->
@@ -36,8 +35,8 @@ valign="middle">{  name }:</td>
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ notification }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
+<td align="right">{ notification }:</td>
+<td> 
 <select name="notification">
 <option value="Y">{ yes }</option>
 <option value="N" selected>{ no }</option>
@@ -45,8 +44,8 @@ valign="middle">{  name }:</td>
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ version }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
+<td align="right">{ version }:</td>
+<td> 
 <select name="version">
 <option value="Y">{ yes }</option>
 <option value="N" selected>{ no }</option>
@@ -54,8 +53,8 @@ valign="middle">{  name }:</td>
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" nowrap>&nbsp;</td>
-<td class="BabLoginMenuBackground" valign="middle">
+<td>&nbsp;</td>
+<td>
 <input type="submit" name="Submit" value="{ add }">
 <br>
 </td>
@@ -132,24 +131,23 @@ function submitCtr()
 </script>
 
 <form name="fmcreate" method="post" action="{ babPhpSelf }" <!--#if js_appflowlock -->onSubmit="return(submitCtr())"<!--#endif js_appflowlock -->>
-<input type="hidden" name="tg" value="admfm">
-<input type="hidden" name="idx" value="list">
-<input type="hidden" name="fid" value="{ fid }">
-<input type="hidden" name="mod" value="modfolder">
+<input type="hidden" name="tg" value="admfm" />
+<input type="hidden" name="idx" value="list" />
+<input type="hidden" name="fid" value="{ fid }" />
+<input type="hidden" name="mod" value="modfolder" />
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
-<td class="BabLoginMenuBackground" width="30%" align="right" nowrap 
-valign="middle">{  name }:</td>
-<td class="BabLoginMenuBackground" width="70%" valign="middle"> 
-<input type="text" name="fname" size="30" maxlength="30" value="{ folderval }">
+<td width="30%" align="right">{  name }:</td>
+<td> 
+<input type="text" name="fname" size="30" maxlength="100" value="{ folderval }" />
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ active }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
+<td align="right">{ active }:</td>
+<td> 
 <select name="active">
 <option value="Y" { yactsel }>{ yes }</option>
 <option value="N" { nactsel }>{ no }</option>
@@ -157,8 +155,8 @@ valign="middle">{  name }:</td>
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ moderation }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
+<td align="right">{ moderation }:</td>
+<td> 
 <select name="said">
 <option value="0">{ none }</option>
 <!--#in getnextschapp -->
@@ -168,8 +166,8 @@ valign="middle">{  name }:</td>
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ notification }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
+<td align="right">{ notification }:</td>
+<td> 
 <select name="notification">
 <option value="Y" { ynfsel }>{ yes }</option>
 <option value="N" { nnfsel }>{ no }</option>
@@ -177,8 +175,8 @@ valign="middle">{  name }:</td>
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ version }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
+<td align="right">{ version }:</td>
+<td> 
 <select name="version">
 <option value="Y" { yversel }>{ yes }</option>
 <option value="N" { nversel }>{ no }</option>
@@ -186,9 +184,9 @@ valign="middle">{  name }:</td>
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" nowrap>&nbsp;</td>
-<td class="BabLoginMenuBackground" valign="middle">
-<input type="submit" name="bupdate" value="{ add }">&nbsp;&nbsp;<input type="submit" name="bdel" value="{ del }">
+<td>&nbsp;</td>
+<td>
+<input type="submit" name="bupdate" value="{ add }" />&nbsp;&nbsp;<input type="submit" name="bdel" value="{ del }" />
 <br>
 </td>
 </tr>
