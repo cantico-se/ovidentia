@@ -62,10 +62,11 @@ global $babBody;
 					$this->entities[$arr2[$i]['id']] = $arr2[$i];
 					}
 				if (!isset($this->entities[$arr['id']]))
-				$this->entities[$arr['id']] = $arr;
+					$this->entities[$arr['id']] = $arr;
 				}
-
-			$this->entities = & _array_sort($this->entities, 'name');
+			
+			if (count($this->entities) > 0)
+				$this->entities = & _array_sort($this->entities, 'name');
 
 			$this->t_name = bab_translate('Name');
 			$this->t_description = bab_translate('Description');

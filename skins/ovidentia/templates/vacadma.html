@@ -24,7 +24,6 @@ function dateEnd(day, month, year)
 			<td>{ typetxt }</td>
 			<td align="center">{ quantitytxt }</td>
 			<td>{ creditortxt }</td>
-			<td>{ datetxt }</td>
 			<td>&nbsp;</td>
 		</tr>
         <!--#in getnext -->
@@ -39,12 +38,11 @@ function dateEnd(day, month, year)
 			<td>{ typename }</td>
 			<td align="center">{ quantity }</td>
 			<td>{ creditor }</td>
-			<td>{ date }</td>
 			<td width="1%"><a href="javascript: Start('{ urllistp }', 'OviListPr', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');"><img src="{ babSkinPath }images/Puces/PuceUserAttrib.gif" alt="{ altlistp }" border="0" align="middle" /></a></td>
         </tr>
         <!--#endin getnext -->
 		<tr>
-			<td colspan="8" class="BabSiteAdminTitleFontBackground"> 
+			<td colspan="7" class="BabSiteAdminTitleFontBackground"> 
 				<table border="0" cellpadding="0" cellspacing="0" align="right" class="BabSiteAdminTitleFontBackground">
 				<tr> 
 					<td width="1%" nowrap>&nbsp;</td>
@@ -72,16 +70,13 @@ function dateEnd(day, month, year)
 <td class="BabLoginCadreBackground"> 
 	<table border="0" width="100%" cellpadding="2" cellspacing="0" class="BabLoginMenuBackground">
 	<tr  align="center"> 
-		<td>&nbsp;</td>
 		<td>{ typetxt }</td>
 		<td>{ statustxt }</td>
 		<td>{ creditortxt }</td>
-		<td>{ date2txt }</td>
+		<td></td>
 	</tr>
 	<tr align="center"> 
-		<td>
-			<input type="submit" name="submit" value="{ filteron }" />
-		</td>
+		
 		<td> 
 			<select name="idtype">
 			<option value=""></option>
@@ -105,11 +100,20 @@ function dateEnd(day, month, year)
 			<!--#endin getnextcreditor -->
 			</select>
 		</td>
-		<td>
+	</tr>
+
+	<tr>
+		
+		<td colspan="3"> { date2txt } : 
 			<a href="javascript: Start('{ dateburl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ begintxt }</a> 
 			<input type="text" name="dateb" size="10" maxlength="10" value="{ dateb }" />
 			&nbsp;<a href="javascript: Start('{ dateeurl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ endtxt }</a> 
 			<input type="text" name="datee" size="10" maxlength="10" value="{ datee }" />
+		</td>
+	</tr>
+	<tr>
+		<td colspan="3" align="center">
+			<input type="submit" name="submit" value="{ filteron }" />
 		</td>
 	</tr>
 	</table>
