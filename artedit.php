@@ -1130,39 +1130,41 @@ function showSetArticleProperties($idart)
 						if( $this->resgrp )
 							{
 							$this->countgrp = $babDB->db_num_rows($this->resgrp);
+							if( strchr($arr['restriction'], "&"))
+								{
+								$this->arrrest = explode('&', $arr['restriction']);
+								$this->operatororysel = '';
+								$this->operatorornsel = 'selected';
+								}
+							else if( strchr($arr['restriction'], ","))
+								{
+								$this->arrrest = explode(',', $arr['restriction']);
+								$this->operatororysel = 'selected';
+								$this->operatorornsel = '';
+								}
+							else
+								{
+								$this->arrrest = array($arr['restriction']);
+								$this->operatororysel = '';
+								$this->operatorornsel = '';
+								}
+
+							if( empty($arr['restriction']))
+								{
+								$this->norestrictsel = 'selected';
+								$this->yesrestrictsel = '';
+								}
+							else
+								{
+								$this->norestrictsel = '';
+								$this->yesrestrictsel = 'selected';
+								}
+
 							}
 						else
 							{
 							$this->countgrp = 0;
-							}
-						if( strchr($arr['restriction'], "&"))
-							{
-							$this->arrrest = explode('&', $arr['restriction']);
-							$this->operatororysel = '';
-							$this->operatorornsel = 'selected';
-							}
-						else if( strchr($arr['restriction'], ","))
-							{
-							$this->arrrest = explode(',', $arr['restriction']);
-							$this->operatororysel = 'selected';
-							$this->operatorornsel = '';
-							}
-						else
-							{
-							$this->arrrest = array($arr['restriction']);
-							$this->operatororysel = '';
-							$this->operatorornsel = '';
-							}
-
-						if( empty($arr['restriction']))
-							{
-							$this->norestrictsel = 'selected';
-							$this->yesrestrictsel = '';
-							}
-						else
-							{
-							$this->norestrictsel = '';
-							$this->yesrestrictsel = 'selected';
+							$this->restrictaccess = false;
 							}
 						}
 
