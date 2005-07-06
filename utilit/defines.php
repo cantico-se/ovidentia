@@ -77,7 +77,6 @@ define("BAB_CAL_RESOURCES_TBL", "bab_cal_resources");
 define("BAB_CALACCESS_USERS_TBL", "bab_calaccess_users");
 define("BAB_CALENDAR_TBL", "bab_calendar");
 define("BAB_CALOPTIONS_TBL", "bab_caloptions");
-define("BAB_CATEGORIESCAL_TBL", "bab_categoriescal");
 define("BAB_COMMENTS_TBL", "bab_comments");
 define("BAB_CONTACTS_TBL", "bab_contacts");
 define("BAB_DB_DIRECTORIES_TBL", "bab_db_directories");

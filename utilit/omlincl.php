@@ -3348,7 +3348,7 @@ class bab_CalendarCategories extends bab_handler
 	{
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
-		$req = "select * from ".BAB_CATEGORIESCAL_TBL." order by name asc";
+		$req = "select * from ".BAB_CAL_CATEGORIES_TBL." order by name asc";
 
 		$this->res = $babDB->db_query($req);
 		$this->count = $babDB->db_num_rows($this->res);
