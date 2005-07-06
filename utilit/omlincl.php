@@ -3424,7 +3424,7 @@ class bab_CalendarUserEvents extends bab_handler
 				reset($babBody->icalendars->usercal);
 				while( $row=each($babBody->icalendars->usercal) ) 
 					{
-					if( in_array($row['idowner'], $rr) )
+					if( in_array($row[1]['idowner'], $rr) )
 						{
 						$ar[] = $row[0];
 						}
