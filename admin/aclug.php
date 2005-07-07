@@ -105,6 +105,15 @@ function aclUsersGroups($pos, $table, $target, $idgroup)
 			else
 				$this->allselected = 0;
 			$this->allurl = $GLOBALS['babUrlScript']."?tg=aclug&idx=list&pos=".$this->urltrail;
+
+			// dg group members
+			$this->dg_group_members = array();
+			$res = $this->db->db_query("select id_object from ".$this->table." where id_group='".$this->idgroup."'");
+			while (list($id_object) = $this->db->db_fetch_array($res))
+				{
+				$this->dg_group_members[$id_object] = $id_object;
+				}
+
 			}
 
 		function getnext()
@@ -120,9 +129,7 @@ function aclUsersGroups($pos, $table, $target, $idgroup)
 
 				$this->userid = $this->arr['id'];
 
-				$req = "select * from ".$this->table." where id_object='".$this->arr['id']."' and id_group='".$this->idgroup."'";
-				$res = $this->db->db_query($req);
-				if( $res && $this->db->db_num_rows($res) > 0)
+				if( isset($this->dg_group_members[$this->userid]))
 					{
 					$this->checked = "checked";
 					if( empty($this->userst))
@@ -152,21 +159,10 @@ function aclUsersGroups($pos, $table, $target, $idgroup)
 				{
 				$this->selectname = substr($t, $k, 1);
 				$this->selecturl = $GLOBALS['babUrlScript']."?tg=aclug&idx=list&pos=".$this->ord.$this->selectname.$this->urltrail;
+				$this->selected = 0;
 
 				if( $this->pos == $this->selectname)
 					$this->selected = 1;
-				else 
-					{
-					if( $this->ord == "-" )
-						$req = "select * from ".BAB_USERS_TBL." where ".$this->namesearch2." like '".$this->selectname."%'";
-					else
-						$req = "select * from ".BAB_USERS_TBL." where ".$this->namesearch." like '".$this->selectname."%'";
-					$res = $this->db->db_query($req);
-					if( $this->db->db_num_rows($res) > 0 )
-						$this->selected = 0;
-					else
-						$this->selected = 1;
-					}
 				$k++;
 				return true;
 				}
