@@ -717,7 +717,7 @@ function bab_isAccessValid($table, $idobject, $iduser='')
 		$babBody->acltables[$table] = array();
 		$arrgrp = $babBody->usergroups;
 		$arrgrp[] = 0;	
-		$arrgrp[] = $BAB_SESS_LOGGED ? 1 : 2;
+		$arrgrp[] = $BAB_SESS_LOGGED ? BAB_REGISTERED_GROUP : BAB_UNREGISTERED_GROUP;
 
 		$db = &$GLOBALS['babDB'];
 		$res = &$db->db_query("select id_object from ".$table." WHERE id_group IN(".implode(',',$arrgrp).")");
@@ -733,16 +733,31 @@ function bab_isAccessValid($table, $idobject, $iduser='')
 
 function bab_getGroupsAccess($table, $idobject)
 {
-	global $babBody, $BAB_SESS_USERID, $BAB_SESS_LOGGED;
-	if( !isset($babBody->acltables[$table]))
-		{
-		bab_isAccessValid($table, $idobject);
-		}
+	$db = &$GLOBALS['babDB'];
 
-	if( isset($babBody->acltables[$table][$idobject]))
-		return array_keys($babBody->acltables[$table][$idobject]);
-	else
-		return array();
+	$ret = array();
+
+	$res = $db->db_query("select id_group from ".$table." where id_object='".$idobject."'");
+	while( $row = $db->db_fetch_array($res))
+		{
+		switch($row['id_group'])
+			{
+			case "0": // everybody
+				$ret[] = BAB_REGISTERED_GROUP;
+				$ret[] = BAB_UNREGISTERED_GROUP;
+				break;
+			case "1": // users
+				$ret[] = BAB_REGISTERED_GROUP;
+				break;
+			case "2": // guests
+				$ret[] = BAB_UNREGISTERED_GROUP;
+				break;
+			default:  //groups
+				$ret[] = $row['id_group'];
+				break;
+			}
+		}
+	return $ret;
 }
 
 function bab_calendarPopup($callback, $month='', $year='', $low='', $high='')
