@@ -936,11 +936,14 @@ function siteHomePage0($id)
 			$this->create = bab_translate("Modify");
 			$this->id = $id;
 
-			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_HOMEPAGES_TBL." where id_group='2' and id_site='$id' and ordering='0'";
+			$this->db =& $GLOBALS['babDB'];
+			$req = "select at.title, ht.id_article from ".BAB_ARTICLES_TBL." at left join ".BAB_HOMEPAGES_TBL." ht on at.id=ht.id_article where ht.id_group='2' and ht.id_site='".$id."' and ht.ordering='0' and at.date_publication <= now()";
+
 			$this->reshome0 = $this->db->db_query($req);
 			$this->counthome0 = $this->db->db_num_rows($this->reshome0);
-			$req = "select * from ".BAB_HOMEPAGES_TBL." where id_group='2' and id_site='$id' and ordering!='0' order by ordering asc";
+
+			$req = "select at.title, ht.id_article from ".BAB_ARTICLES_TBL." at left join ".BAB_HOMEPAGES_TBL." ht on at.id=ht.id_article where ht.id_group='2' and ht.id_site='".$id."' and ht.ordering!='0' order by ht.ordering asc";
+
 			$this->respage0 = $this->db->db_query($req);
 			$this->countpage0 = $this->db->db_num_rows($this->respage0);
 			}
@@ -952,9 +955,6 @@ function siteHomePage0($id)
 				{
 				$arr = $this->db->db_fetch_array($this->reshome0 );
 				$this->home0id = $arr['id_article'];
-				$req = "select * from ".BAB_ARTICLES_TBL." where id='".$this->home0id."'";
-				$res = $this->db->db_query($req);
-				$arr = $this->db->db_fetch_array($res);
 				$this->home0val = $arr['title'];
 				$i++;
 				return true;
@@ -970,9 +970,6 @@ function siteHomePage0($id)
 				{
 				$arr = $this->db->db_fetch_array($this->respage0 );
 				$this->page0id = $arr['id_article'];
-				$req = "select * from ".BAB_ARTICLES_TBL." where id='".$this->page0id."'";
-				$res = $this->db->db_query($req);
-				$arr = $this->db->db_fetch_array($res);
 				$this->page0val = $arr['title'];
 				$k++;
 				return true;
@@ -1017,13 +1014,17 @@ function siteHomePage1($id)
 			$this->create = bab_translate("Modify");
 			$this->id = $id;
 
-			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_HOMEPAGES_TBL." where id_group='1' and id_site='$id' and ordering='0'";
+			$this->db =& $GLOBALS['babDB'];
+			$req = "select at.title, ht.id_article from ".BAB_ARTICLES_TBL." at left join ".BAB_HOMEPAGES_TBL." ht on at.id=ht.id_article where ht.id_group='1' and ht.id_site='".$id."' and ht.ordering='0' and at.date_publication <= now()";
+
 			$this->reshome1 = $this->db->db_query($req);
 			$this->counthome1 = $this->db->db_num_rows($this->reshome1);
-			$req = "select * from ".BAB_HOMEPAGES_TBL." where id_group='1' and id_site='$id' and ordering!='0' order by ordering asc";
+
+			$req = "select at.title, ht.id_article from ".BAB_ARTICLES_TBL." at left join ".BAB_HOMEPAGES_TBL." ht on at.id=ht.id_article where ht.id_group='1' and ht.id_site='".$id."' and ht.ordering!='0' order by ht.ordering asc";
+
 			$this->respage1 = $this->db->db_query($req);
 			$this->countpage1 = $this->db->db_num_rows($this->respage1);
+
 			}
 
 		function getnexthome1()
@@ -1033,9 +1034,6 @@ function siteHomePage1($id)
 				{
 				$arr = $this->db->db_fetch_array($this->reshome1 );
 				$this->home1id = $arr['id_article'];
-				$req = "select * from ".BAB_ARTICLES_TBL." where id='".$this->home1id."'";
-				$res = $this->db->db_query($req);
-				$arr = $this->db->db_fetch_array($res);
 				$this->home1val = $arr['title'];
 				$i++;
 				return true;
@@ -1051,9 +1049,6 @@ function siteHomePage1($id)
 				{
 				$arr = $this->db->db_fetch_array($this->respage1 );
 				$this->page1id = $arr['id_article'];
-				$req = "select * from ".BAB_ARTICLES_TBL." where id='".$this->page1id."'";
-				$res = $this->db->db_query($req);
-				$arr = $this->db->db_fetch_array($res);
 				$this->page1val = $arr['title'];
 				$k++;
 				return true;
