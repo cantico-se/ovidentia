@@ -667,6 +667,8 @@ function viewVacationCalendar($users, $period = false )
 						}
 
 					$this->classname = implode(' ',$classname);
+					$this->classname = preg_replace('/(afternoon\s+morning)|(morning\s+afternoon)/', 'morningafternoon', $this->classname);
+					
 
 					$this->noday = false;
 					}
