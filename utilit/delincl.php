@@ -497,6 +497,7 @@ function bab_deleteUser($id)
 	$db->db_query("delete from ".BAB_VAC_MANAGERS_TBL." where id_user='".$id."'");
 	$db->db_query("delete from ".BAB_VAC_USERS_RIGHTS_TBL." where id_user='".$id."'");
 	$db->db_query("delete from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$id."'");
+	$db->db_query("delete from ".BAB_VAC_PLANNING_TBL." where id_user='".$id."'");
 	$res = 	$db->db_query("select id from ".BAB_VAC_ENTRIES_TBL." where id_user='".$id."'");
 	while( $arr = $db->db_fetch_array($res))
 	{
@@ -533,6 +534,18 @@ function bab_deleteOrgChart($id)
 	{
 		$babDB->db_query("delete from ".BAB_OC_ROLES_USERS_TBL." where id_role IN (".implode(',', $ru).")");
 	}
+
+	$res = 	$babDB->db_query("select id from ".BAB_OC_ENTITIES_TBL." where id_oc='".$id."'");
+	while( $arr = $babDB->db_fetch_array($res))
+	{
+		$entities[] = $arr['id'];
+	}
+
+	if( count($entities) > 0 )
+	{
+		$babDB->db_query("delete from ".BAB_VAC_PLANNING_TBL." where id_entity IN (".implode(',', $entities).")");
+	}
+
 	$babDB->db_query("delete from ".BAB_OC_ROLES_TBL." where id_oc='".$id."'");
 	$babDB->db_query("delete from ".BAB_OC_ENTITIES_TBL." where id_oc='".$id."'");
 	$babDB->db_query("delete from ".BAB_OCUPDATE_GROUPS_TBL." where id_object='".$id."'");

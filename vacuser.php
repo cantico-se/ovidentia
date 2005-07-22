@@ -997,6 +997,15 @@ switch($idx)
 			$babBody->addItemMenu("entities", bab_translate("Delegate management"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entities");
 		break;
 	}
+
+if ( bab_isPlanningAccessValid())
+{
+	$babBody->addItemMenu("planning", bab_translate("Planning"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=planning");
+}
+
+
+
+
 $babBody->setCurrentItemMenu($idx);
 
 ?>

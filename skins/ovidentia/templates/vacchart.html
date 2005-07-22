@@ -6,15 +6,14 @@
 	<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 		<tr class="BabSiteAdminTitleFontBackground"> 
 			<td>{ t_name }</td>
-			<td>{ t_description }</td>
 			<td>{ t_members }</td>
 			<td>{ t_calendar }</td>
 			<td>{ t_requests }</td>
+			<td align="center">{ t_planning }</td>
 		</tr>
 		<!--#in getnext -->
 		<tr class="BabSiteAdminFontBackground"> 
-			<td>{ arr[name] }</td>
-			<td>{ arr[description] }</td>
+			<td title="{ arr[description] }">{ arr[name] }</td>
 			<td>
 				<a href="{ babUrlScript }?tg=vacchart&idx=entity_members&ide={ arr[id] }"><img src="{ babSkinPath }images/Puces/head.gif" alt="{ t_members }" border="0" /></a>
 			</td>
@@ -24,6 +23,9 @@
 			<td>
 				<a href="{ babUrlScript }?tg=vacchart&idx=entity_requests&ide={ arr[id] }">{ t_requests }</a>
 			</td>
+			<td align="center">
+				<a href="{ babUrlScript }?tg=vacchart&idx=entity_planning&ide={ arr[id] }" title="{ t_planning }"><img src="{ babSkinPath }images/Puces/planning.gif" alt="{ t_planning }" border="0" /></a>
+			</td>
 		</tr>
 		<!--#endin getnext -->
 	</table>
@@ -32,6 +34,39 @@
 </table>
 
 <!--#end entities -->
+
+
+<!--#begin planning -->
+
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+	<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+		<tr class="BabSiteAdminTitleFontBackground"> 
+			<td>{ t_name }</td>
+			<td>{ t_description }</td>
+			<td>{ t_members }</td>
+			<td>{ t_calendar }</td>
+		</tr>
+		<!--#in getnext -->
+		<tr class="BabSiteAdminFontBackground"> 
+			<td>{ arr[name] }</td>
+			<td>{ arr[description] }</td>
+			<td>
+				<a href="{ babUrlScript }?tg=vacchart&idx=planning_members&ide={ arr[id] }"><img src="{ babSkinPath }images/Puces/head.gif" alt="{ t_members }" border="0" /></a>
+			</td>
+			<td>
+				<a href="{ babUrlScript }?tg=vacchart&idx=entity_cal&ide={ arr[id] }&popup=1&emptylines=1" onclick="bab_popup(this.href,4,1);return false;"><img src="{ babSkinPath }images/Puces/PuceCalendar.gif" alt="{ t_calendar }" border="0" /></a>
+			</td>
+
+		</tr>
+		<!--#endin getnext -->
+	</table>
+</td>
+</tr>
+</table>
+
+<!--#end planning -->
 
 
 <!--#begin entity_members -->
@@ -125,6 +160,68 @@ if (users != '')
 </form>
 <!--#end entity_members -->
 
+
+<!--#begin planning_members -->
+<script type="text/javascript">
+<!--
+function view_calendar_checkbox()
+{
+var f = document.forms['listform'];
+var users = '';
+for (i = 0; i < f.elements.length; i++)
+	{
+		var objCtrl = f.elements[i];;
+		if (objCtrl.checked)
+			{
+			if (users != '')
+				users += ',';
+			users += objCtrl.value;
+			}
+	}
+if (users != '')
+	{
+	//}
+	bab_popup('{ babUrlScript }?tg=vacuser&idx=cal&idu='+users+'&popup=1&emptylines=1',4,1);
+	}
+}
+-->
+</script>
+<form name="listform">
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+	<table width="100%" border="0" cellspacing="0" cellpadding="3" align="center">
+		<tr class="BabSiteAdminTitleFontBackground"> 
+			<td>{ t_name }</td>
+			<td>{ t_collection }</td>
+			<td>
+				<a href="javascript:onCheckAll('userids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" border="0"></a><a href="javascript:onCheckAll('userids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" border="0"></a>
+			</td>
+		</tr>
+		<!--#if superior_id -->
+		<tr class="BabSiteAdminFontBackground"> 
+			<td><strong>{ superior_name }</strong></td>
+			<td>{ s_collection }</td>
+			<td><input type="checkbox" name="userids[]" value="{ superior_id }" /></td>
+		</tr>
+		<!--#endif superior_id -->
+		<!--#in getnext -->
+		<tr class="BabSiteAdminFontBackground"> 
+			<td>{ name }</td>
+			<td>{ collection }</td>
+			<td><input type="checkbox" name="userids[]" value="{ id_user }" /></td>
+		</tr>
+		<!--#endin getnext -->
+		<tr class="BabSiteAdminTitleFontBackground">
+			<td colspan="3" align="right"><a href="javascript:view_calendar_checkbox()">{ t_view_calendar }</a></td>
+		</tr>
+	</table>
+</td>
+</tr>
+</table>
+</form>
+<!--#end planning_members -->
+
 <!--#begin user_rights -->
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
@@ -155,3 +252,37 @@ if (users != '')
 </tr>
 </table>
 <!--#end user_rights -->
+
+
+<!--#begin entity_planning -->
+<form method="post" action="{ babPhpSelf }" name="listform">
+<input type="hidden" name="tg" value="vacchart">
+<input type="hidden" name="idx" value="entities">
+<input type="hidden" name="ide" value="{ ide }">
+<input type="hidden" name="add" value="planning">
+<table width="55%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+	<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+		<tr class="BabSiteAdminTitleFontBackground"> 
+			<td><a href="javascript:onCheckAll('userids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('userids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
+			<td>{ t_members }</td>
+		</tr>
+		<!--#in getnext -->
+		<tr class="BabSiteAdminFontBackground"> 
+			<td><input type="checkbox" name="userids[]" value="{ id_user }" <!--#if checked --> checked="checked" <!--#endif checked --> /></td>
+			<td>
+				{ name }
+			</td>
+		</tr>
+		<!--#endin getnext -->
+	</table>
+</td>
+</tr>
+</table>
+<br />
+<div align="center">
+	<input type="submit" value="{ t_record }" />
+</div>
+</form>
+<!--#end entity_planning -->

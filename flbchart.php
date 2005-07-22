@@ -773,6 +773,7 @@ function removeOrgChartEntity($ids, $all)
 		}
 	}
 	$babDB->db_query("delete from ".BAB_OC_ENTITIES_TBL." where id IN (".$oeids.")");
+	$babDB->db_query("delete from ".BAB_VAC_PLANNING_TBL." where id_entity IN (".$oeids.")");
 }
 
 function confirmDeleteOrgChartEntity($ocid, $oeid, $what)
@@ -1033,6 +1034,7 @@ function delUserOrgChartRole($ocid, $oeid, $ocfid)
 	{
 	list($idduser, $isprimary) = $babDB->db_fetch_row($babDB->db_query("select id_user, isprimary from ".BAB_OC_ROLES_USERS_TBL." where id='".$ocfid[$i]."'"));
 	$babDB->db_query("delete from ".BAB_OC_ROLES_USERS_TBL." where id='".$ocfid[$i]."'");
+	$babDB->db_query("delete from ".BAB_VAC_PLANNING_TBL." where id_user='".$idduser."'");
 
 	if( $isprimary == 'Y' )
 		{		

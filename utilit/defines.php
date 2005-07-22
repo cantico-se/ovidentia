@@ -199,4 +199,5 @@ define("BAB_VAC_RIGHTS_RULES_TBL", "bab_vac_rights_rules");
 define("BAB_VAC_USERS_RIGHTS_TBL", "bab_vac_users_rights");
 define("BAB_VAC_ENTRIES_TBL", "bab_vac_entries");
 define("BAB_VAC_ENTRIES_ELEM_TBL", "bab_vac_entries_elem");
+define("BAB_VAC_PLANNING_TBL", "bab_vac_planning");
 ?>

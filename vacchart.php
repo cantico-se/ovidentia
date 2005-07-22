@@ -25,7 +25,8 @@ include_once "base.php";
 include_once $babInstallPath."utilit/vacincl.php";
 
 
-function entities()
+
+function entities($template)
 {
 global $babBody;
 
@@ -71,8 +72,9 @@ global $babBody;
 			$this->t_name = bab_translate('Name');
 			$this->t_description = bab_translate('Description');
 			$this->t_members = bab_translate('Members');
-			$this->t_calendar = bab_translate('Calendar');
+			$this->t_calendar = bab_translate('Planning');
 			$this->t_requests = bab_translate('Requests');
+			$this->t_planning = bab_translate('Planning acces');
 			}
 
 		function getnext()
@@ -89,12 +91,12 @@ global $babBody;
 		}
 
 	$temp = new temp();
-	$babBody->babecho(bab_printTemplate($temp, "vacchart.html", "entities"));
+	$babBody->babecho(bab_printTemplate($temp, "vacchart.html", $template));
 	
 }
 
 
-function entity_members($ide)
+function entity_members($ide, $template)
 {
 	global $babBody;
 
@@ -112,7 +114,7 @@ function entity_members($ide)
 				$this->superior_name = bab_composeUserName($superior['firstname'], $superior['lastname']);
 				}
 			$this->t_name = bab_translate('Name');
-			$this->t_calendar = bab_translate('Calendar');
+			$this->t_calendar = bab_translate('Planning');
 			$this->t_rights = bab_translate('Rights');
 			$this->t_asks = bab_translate('Requests');
 			$this->t_view_calendar = bab_translate('View calendars');
@@ -181,7 +183,7 @@ function entity_members($ide)
 		}
 
 	$temp = new temp($ide);
-	$babBody->babecho(bab_printTemplate($temp, "vacchart.html", "entity_members"));
+	$babBody->babecho(bab_printTemplate($temp, "vacchart.html", $template));
 	
 }
 
@@ -204,7 +206,7 @@ function entity_cal($ide )
 
 }
 
-function entity_requests($ide )
+function entity_users($ide)
 {
 	$users = bab_OCGetCollaborators($ide);
 	$superior = bab_OCGetSuperior($ide);
@@ -217,97 +219,82 @@ function entity_requests($ide )
 
 	if (!isset($tmp[$superior['id_user']]) && !empty($superior['id_user']))
 		$tmp[$superior['id_user']] = $superior['id_user'];
-	
-	listVacationRequests(array_keys($tmp));
 
+	return array_keys($tmp);
 }
 
-/*
+function entity_requests($ide )
+{
+	listVacationRequests(entity_users($ide));
+}
 
-function user_rights($id_user)
-{	
+
+
+function entity_planning($ide)
+{
+	global $babBody;
 	class temp
 		{
-		function temp($id_user)
+		function temp($ide)
 			{
-			$db = & $GLOBALS['babDB'];
-			
-			$this->t_description = bab_translate('Name');
-			$this->t_date_begin = bab_translate('Begin date');
-			$this->t_date_end = bab_translate('End date');
-			$this->t_quantity = bab_translate('Quantity');
-			$this->t_used = bab_translate('Used');
-			$this->t_rule = bab_translate('Rule');
-			$this->t_remain = bab_translate('Remain');
-			$this->t_yes = bab_translate('Yes');
-			$this->t_no = bab_translate('No');
+			$this->ide = $ide;
+			$this->users = entity_users($ide);
+			$this->t_members = bab_translate("Entity members");
+			$this->t_record = bab_translate("Record");
 
-			$this->rights = array();
-			
+			$e =  bab_OCGetEntity($this->ide);
 
-			$res = $db->db_query("select r.*, rules.id id_rule, ur.quantity ur_quantity from ".BAB_VAC_TYPES_TBL." t, ".BAB_VAC_COLL_TYPES_TBL." c, ".BAB_VAC_RIGHTS_TBL." r, ".BAB_VAC_USERS_RIGHTS_TBL." ur, ".BAB_VAC_PERSONNEL_TBL." p LEFT JOIN ".BAB_VAC_RIGHTS_RULES_TBL." rules ON rules.id_right = r.id where t.id = c.id_type and c.id_coll=p.id_coll AND p.id_user='".$id_user."' AND r.active='Y' and ur.id_user='".$id_user."' and ur.id_right=r.id and r.id_type=t.id GROUP BY r.id  ORDER BY r.description");
-			
-			while ( $arr = $db->db_fetch_array($res) )
+			$GLOBALS['babBody']->title = bab_translate("Planning acces").' : '.$e['name'];
+
+			$db = &$GLOBALS['babDB'];
+			$res = $db->db_query("SELECT id_user FROM ".BAB_VAC_PLANNING_TBL." WHERE id_entity='".$this->ide."'");
+			$this->selected_users = array();
+			while (list($id) = $db->db_fetch_array($res))
 				{
-				$row = $db->db_fetch_array($db->db_query("select sum(quantity) as total from ".BAB_VAC_ENTRIES_ELEM_TBL." el, ".BAB_VAC_ENTRIES_TBL." e where e.id_user='".$id_user."' and e.status='Y' and el.id_type='".$arr['id']."' and el.id_entry=e.id"));
-
-				$quantity = $arr['ur_quantity'] != '' ? $arr['ur_quantity'] : $arr['quantity'];
-				$total = isset($row['total'])? $row['total'] : 0;
-
-				$this->rights[] = array(
-										'id' => $arr['id'],
-										'description' => $arr['description'],
-										'date_begin' => bab_shortdate(bab_mktime($arr['date_begin']),false),
-										'date_end' => bab_shortdate(bab_mktime($arr['date_end']),false),
-										'quantity' => $quantity,
-										'used' => $total,
-										'remain' => $quantity - $total,
-										'rule' => !empty($arr['id_rule'])
-										);
+				$this->selected_users[$id] = 1;
 				}
-
 			}
 
 		function getnext()
 			{
-			return list(,$this->arr) = each($this->rights);
-			}
-
-		function printhtml()
-			{
-			$html = & bab_printTemplate($this,"vacchart.html", "user_rights");
-
-			if (isset($_GET['popup']) && $_GET['popup'] == 1)
+			if (list(,$this->id_user) = each($this->users))
 				{
-				include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
-				$GLOBALS['babBodyPopup'] = new babBodyPopup();
-				$GLOBALS['babBodyPopup']->title = $GLOBALS['babBody']->title;
-				$GLOBALS['babBodyPopup']->msgerror = $GLOBALS['babBody']->msgerror;
-				$GLOBALS['babBodyPopup']->babecho($html);
-				printBabBodyPopup();
-				die();
+				$this->name = bab_getUserName($this->id_user);
+				$this->checked = isset($this->selected_users[$this->id_user]);
+				return true;
 				}
 			else
-				{
-				$GLOBALS['babBody']->babecho($html);
-				}
+				return false;
 			}
 		}
 
-	$temp = new temp($id_user);
-	$temp->printhtml();
+	$temp = new temp($ide);
+	$babBody->babecho(bab_printTemplate($temp, "vacchart.html", "entity_planning"));
 }
 
-*/
 
+function savePlanning($ide, $userids)
+{
+	$db = &$GLOBALS['babDB'];
+	$db->db_query("DELETE FROM ".BAB_VAC_PLANNING_TBL." WHERE id_entity = '".$ide."'");
+
+	foreach ($userids as $uid)
+	{
+		$db->db_query("INSERT INTO ".BAB_VAC_PLANNING_TBL." (id_user, id_entity) VALUES ('".$uid."','".$ide."')");
+	}
+	
+	return true;
+}
 
 
 // main
+$userentities = & bab_OCGetUserEntities($GLOBALS['BAB_SESS_USERID']);
+$entities_access = count($userentities['superior']);
 
 $idx = isset($_REQUEST['idx']) ? $_REQUEST['idx'] : '';
 
 
-if( isset($_POST['add']) )
+if( isset($_POST['add']) && $entities_access > 0 )
 	{
 	switch($_POST['add'])
 		{
@@ -332,10 +319,18 @@ if( isset($_POST['add']) )
 				}
 			else
 				{
-				if(!saveVacationPersonnel($_POST['userid'], $_POST['idcol'], $_POST['idsa']))
+				if( !saveVacationPersonnel($_POST['userid'], $_POST['idcol'], $_POST['idsa']))
 					{
 					$idx ='addp';
 					}
+				}
+			break;
+
+		case 'planning':
+			$userids = isset($_POST['userids']) ? $_POST['userids'] : array();
+			if(!savePlanning($_POST['ide'], $userids))
+				{
+				$idx ='entity_planning';
 				}
 			break;
 
@@ -356,15 +351,38 @@ switch($idx)
 	case 'entity_members':
 		$babBody->title = bab_translate("Entity members");
 		$babBody->addItemMenu("entity_members", bab_translate("Entity members"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entity_members");
-		entity_members($_REQUEST['ide']);
+		if ($entities_access > 0)
+			entity_members($_REQUEST['ide'], 'entity_members');
+		else
+			{
+			$babBody->title = bab_translate("Access denied");
+			}
+		break;
+
+	case 'planning_members':
+		if (bab_isPlanningAccessValid())
+			{
+			$babBody->title = bab_translate("Entity members");
+			$babBody->addItemMenu("planning", bab_translate("Planning"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=planning");
+			$babBody->addItemMenu("planning_members", bab_translate("Entity members"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=planning_members");
+			entity_members($_REQUEST['ide'], 'planning_members');
+			}
+		else
+			{
+			$babBody->title = bab_translate("Access denied");
+			}
 		break;
 
 	case 'entity_cal':
-		entity_cal($_REQUEST['ide']);
+		if ($entities_access > 0 || bab_isPlanningAccessValid())
+			entity_cal($_REQUEST['ide']);
+		else
+			{
+			$babBody->title = bab_translate("Access denied");
+			}
 		break;
 
 	case 'rights':
-		
 		if (bab_IsUserUnderSuperior($_GET['id_user']) && $_GET['id_user'] != $GLOBALS['BAB_SESS_USERID'])
 			{
 			listRightsByUser($_GET['id_user']);
@@ -395,9 +413,23 @@ switch($idx)
 		break;
 
 	case 'entity_requests':
-		$babBody->addItemMenu("entity_requests", bab_translate("Requests"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entity_requests");
-		$babBody->title = bab_translate("Vacation requests list");
-		entity_requests($_GET['ide']);
+		if ($entities_access > 0)
+			{
+			$babBody->addItemMenu("entity_requests", bab_translate("Requests"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entity_requests");
+			$babBody->title = bab_translate("Vacation requests list");
+			entity_requests($_GET['ide']);
+			}
+		else
+			{
+			$babBody->title = bab_translate("Access denied");
+			}
+		break;
+
+	case 'entity_planning':
+		$babBody->addItemMenu("entity_planning", bab_translate("Planning accès"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entity_requests");
+		
+		if ($entities_access > 0 && !empty($_GET['ide']))
+			entity_planning($_GET['ide']);
 		break;
 
 	case "modp":
@@ -429,10 +461,22 @@ switch($idx)
 			}
 		break;
 
+	case 'planning':
+		if (bab_isPlanningAccessValid())
+			{
+			$babBody->addItemMenu("planning", bab_translate("Planning"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=planning");
+			$babBody->title = bab_translate("Planning list");
+			entities('planning');
+			}
+		break;
+
 	default:
 	case 'entities':
-		$babBody->title = bab_translate("Entities list");
-		entities();
+		if ($entities_access > 0)
+			{
+			$babBody->title = bab_translate("Entities list");
+			entities('entities');
+			}
 		break;
 	}
 

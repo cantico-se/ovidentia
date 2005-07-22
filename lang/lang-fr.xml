@@ -1650,7 +1650,7 @@
 <string id="Vacation request has been deleted">La demande de congé a été supprimée</string>
 <string id="Week-end">Week-end</string>
 <string id="Add/Modify by group">Ajouter/modifier par groupe</string>
-<string id="View calendars">Voir les agendas</string>
+<string id="View calendars">Voir les plannings</string>
 <string id="Add or modify users by group">Ajouter ou modifer les utilisateurs par groupe</string>
 <string id="Old collection">Ancien régime</string>
 <string id="New collection">Nouveau régime</string>
@@ -1774,4 +1774,7 @@
 <string id="Forms">Formulaires</string>
 <string id="Targets on links (open links in new windows)">Cible sur les liens (ouvrir les liens dans des nouvelles fenêtres)</string>
 <string id="In this configuration, some html tags may be removed for security reasons">Dans cette configuration, certaines balises html pourront être supprimées lors de l'enregistrement pour des raisons de sécurité</string>
+<string id="Include uers without requests on the period">Inclure les utilisateurs qui n'ont pas de demande dans la période</string>
+<string id="Planning acces">Accès au planning</string>
+<string id="Planning list">Liste des plannings</string>
 </fr>

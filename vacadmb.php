@@ -805,9 +805,12 @@ function exportVacationRequests()
 			$this->tab = bab_translate("Tab");
 			$this->export = bab_translate("Export");
 			$this->sepdectxt = bab_translate("Decimal separator");
+			$this->t_yes = bab_translate("Yes");
+			$this->t_no = bab_translate("No");
+			$this->t_users_without_requests = bab_translate("Include uers without requests on the period");
 
-			$this->dateburl = $GLOBALS['babUrlScript']."?tg=month&callback=dateBegin&ymin=0&ymax=3";
-			$this->dateeurl = $GLOBALS['babUrlScript']."?tg=month&callback=dateEnd&ymin=0&ymax=3";
+			$this->dateburl = $GLOBALS['babUrlScript']."?tg=month&callback=dateBegin&ymin=6&ymax=3";
+			$this->dateeurl = $GLOBALS['babUrlScript']."?tg=month&callback=dateEnd&ymin=6&ymax=3";
 			$this->statarr = array(bab_translate("Waiting"), bab_translate("Accepted"), bab_translate("Refused"));
 			}
 
@@ -1031,7 +1034,7 @@ function updateVacationRequest($daybegin, $monthbegin, $yearbegin,$dayend, $mont
 	return true;
 }
 
-function doExportVacationRequests($dateb, $datee, $idstatus, $wsepar, $separ, $sepdec)
+function doExportVacationRequests($dateb, $datee, $idstatus, $wsepar, $separ, $sepdec, $users_without_requests)
 {
 	global $babDB;
 	$statarr = array(bab_translate("Waiting"), bab_translate("Accepted"), bab_translate("Refused"));
@@ -1050,7 +1053,19 @@ function doExportVacationRequests($dateb, $datee, $idstatus, $wsepar, $separ, $s
 			break;
 		}
 
-	$req = "select * from ".BAB_VAC_ENTRIES_TBL;
+	$date_begin = '';
+	$date_end = '';
+
+	$req = "SELECT 
+				e.id, 
+				e.id_user, 
+				UNIX_TIMESTAMP(e.date_begin) date_begin, 
+				UNIX_TIMESTAMP(e.date_end) date_end,
+				u.firstname,
+				u.lastname,
+				e.status 
+			FROM 
+				".BAB_VAC_ENTRIES_TBL." e,".BAB_USERS_TBL." u";
 	if( count($idstatus) < 3 || $dateb != "" || $datee != "")
 		{
 
@@ -1060,11 +1075,11 @@ function doExportVacationRequests($dateb, $datee, $idstatus, $wsepar, $separ, $s
 			switch($idstatus)
 				{
 				case 0:
-					$aaareq[] = "status=''"; break;
+					$aaareq[] = "e.status=''"; break;
 				case 1:
-					$aaareq[] = "status='Y'"; break;
+					$aaareq[] = "e.status='Y'"; break;
 				case 2:
-					$aaareq[] = "status='N'"; break;
+					$aaareq[] = "e.status='N'"; break;
 				}
 			}
 
@@ -1072,75 +1087,136 @@ function doExportVacationRequests($dateb, $datee, $idstatus, $wsepar, $separ, $s
 			{
 			$ar = explode("-", $dateb);
 			$dateb = $ar[2]."-".$ar[1]."-".$ar[0];
+			$date_begin = bab_shortDate(bab_mktime($dateb), false);
 			}
 
 		if( $datee != "" )
 			{
 			$ar = explode("-", $datee);
 			$datee = $ar[2]."-".$ar[1]."-".$ar[0];
+			$date_end = bab_shortDate(bab_mktime($datee), false);
 			}
 
-		if( $dateb != "" )
+		if( $dateb != "" && $datee != "" )
 			{
-			$aaareq[] = "date_begin >= '".$dateb."'";
-			}
-
-		if( $datee != "" )
-			{
-			$aaareq[] = "date_end <= '".$datee."'";
+			$aaareq[] = "((e.date_end >= '".$dateb."' AND e.date_begin < '".$dateb."') OR (e.date_begin <= '".$datee."' AND e.date_end > '".$datee."') OR (e.date_end <= '".$datee."' AND e.date_begin >= '".$dateb."'))";
 			}
 		}
 
-	if( sizeof($aaareq) > 0 )
-		{
-		$req .= " where ";
-		if( sizeof($aaareq) > 1 )
-			$req .= implode(' and ', $aaareq);
-		else
-			$req .= $aaareq[0];
-		}
-	$req .= " order by date desc";
-	$res = $babDB->db_query($req);
+	$aaareq[] = "e.id_user = u.id";
+
+	$req .= " WHERE ";
+	if( sizeof($aaareq) > 1 )
+		$req .= implode(' and ', $aaareq);
+	else
+		$req .= $aaareq[0];
+	
+	
+
+	function arr_csv(&$value)
+	{
+		$value = str_replace("\n"," ",$value);
+		$value = str_replace('"',"'",$value);
+		$value = '"'.$value.'"';
+	}
 
 	$output = "";
-	$output .= bab_translate("Fullname").$separ;
-	$output .= bab_translate("Begin date").$separ;
-	$output .= bab_translate("End date").$separ;
-	$output .= bab_translate("Vacation type").$separ;
-	$output .= bab_translate("Quantity").$separ;
-	$output .= bab_translate("Status")."\n";
+	$line = array();
+	$types = array();
+	$users_with_requests = array();
+
+	$line[] = bab_translate("lastname");
+	$line[] = bab_translate("firstname");
+	$line[] = bab_translate("Begin date");
+	$line[] = bab_translate("End date");
+	$line[] = bab_translate("Status");
+	$line[] = bab_translate("Quantity");
+
+	$res = $babDB->db_query("SELECT id,name FROM ".BAB_VAC_TYPES_TBL."");
+	while ($arr = $babDB->db_fetch_array($res))
+		{
+		$line[] = $arr['name'];
+		$types[] = $arr['id'];
+		}
+
+	array_walk($line, 'arr_csv');
+	$output .= implode($separ,$line)."\n";
+	
+	$req .= " ORDER BY e.date DESC";
+	$res = $babDB->db_query($req);
 
 	while( $row = $babDB->db_fetch_array($res))
 	{
-		$fullname = bab_getUserName($row['id_user']);
-		$datb = bab_shortDate(bab_mktime($row['date_begin']." 00:00:00"), false);
-		$date = bab_shortDate(bab_mktime($row['date_end']." 00:00:00"), false);
+		$users_with_requests[] = $row['id_user'];
+		
+		$line = array();
+		$line[] = $row['firstname'];
+		$line[] = $row['lastname'];
+		$line[] = bab_shortDate($row['date_begin'], false);
+		$line[] = bab_shortDate($row['date_end'], false);
 
+		switch($row['status'])
+			{
+			case 'Y':
+				$line[] = $statarr[1];
+				break;
+			case 'N':
+				$line[] = $statarr[2];
+				break;
+			default:
+				$line[] = $statarr[0];
+				break;
+			}
 
-		$res2 = $babDB->db_query("select * from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry='".$row['id']."'");
+		
+
+		$entry_type = array();
+		$sum = 0;
+		$res2 = $babDB->db_query("select e.quantity,r.id_type from ".BAB_VAC_ENTRIES_ELEM_TBL." e,".BAB_VAC_RIGHTS_TBL." r where id_entry='".$row['id']."' AND r.id=e.id_type");
 		while( $arr = $babDB->db_fetch_array($res2))
 		{
-			$output .= $fullname.$separ;
-			$output .= $datb.$separ;
-			$output .= $date.$separ;
-			list($type) = $babDB->db_fetch_array($babDB->db_query("select description from ".BAB_VAC_RIGHTS_TBL." where id='".$arr['id_entry']."'"));
-			$output .= $type.$separ;
-			$output .= number_format($arr['quantity'], 1, $sepdec, '').$separ;
-			switch($row['status'])
-				{
-				case 'Y':
-					$status = $statarr[1];
-					break;
-				case 'N':
-					$status = $statarr[2];
-					break;
-				default:
-					$status = $statarr[0];
-					break;
-				}
-			$output .= $status."\n";
+			$entry_type[$arr['id_type']] = number_format($arr['quantity'], 1, $sepdec, '');
+			$sum += $arr['quantity'];
 		}
+
+		$line[] = number_format($sum, 1, $sepdec, '');
+
+		foreach($types as $type)
+		{
+		if (isset($entry_type[$type]))
+			{
+			$line[] = $entry_type[$type];
+			}
+		else $line[] = 0;
+		}
+
+	array_walk($line, 'arr_csv');
+	$output .= implode($separ,$line)."\n";
 	}
+
+	if ($users_without_requests)
+		{
+		$req = "SELECT u.firstname, u.lastname FROM ".BAB_VAC_PERSONNEL_TBL." p,".BAB_USERS_TBL." u WHERE p.id_user=u.id ";
+		if (count($users_with_requests) > 0)
+			{
+			$req .= " AND p.id_user NOT IN('".implode("','",$users_with_requests)."')";
+			}
+		$res = $babDB->db_query($req);
+
+		while ($arr = $babDB->db_fetch_array($res))
+			{
+			$line = array();
+			$line[] = $arr['firstname'];
+			$line[] = $arr['lastname'];
+			$line[] = $date_begin;
+			$line[] = $date_end;
+			$line[] = '';
+			$line = array_merge($line, array_fill(5, count($types)+1, 0));
+			
+			array_walk($line, 'arr_csv');
+			$output .= implode($separ,$line)."\n";
+			}
+		}
 
 	header("Content-Disposition: attachment; filename=\"".bab_translate("Vacation").".csv\""."\n");
 	header("Content-Type: text/plain"."\n");
@@ -1207,9 +1283,9 @@ if( isset($add) && $add == "modvr")
 		$idx = "delur";
 	}
 }
-else if( isset($bexport))
+else if( isset($_POST['bexport']))
 {
-	doExportVacationRequests($dateb, $datee, $idstatus, $wsepar, $separ, $sepdec);
+	doExportVacationRequests($_POST['dateb'], $_POST['datee'], $_POST['idstatus'], $_POST['wsepar'], $_POST['separ'], $_POST['sepdec'], $_POST['users_without_requests']);
 }
 else if( isset($action) && $action == "Yes")
 	{

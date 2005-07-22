@@ -68,7 +68,8 @@
 #vacationcalendar .calendar tbody th {
 	text-align:right;
 	font-size:1em;
-	border:#000 1px solid;
+	border-left:#000 1px solid;
+	border-bottom:#000 1px solid;
 	}
 
 #vacationcalendar td {
@@ -128,7 +129,8 @@
 	cursor:pointer;
 	}
 
-#vac_calendar_body .first td {
+#vac_calendar_body .first td,
+#vac_calendar_body .first th {
 	border-top:#000 2px solid;
 	border-bottom:#888 1px solid;
 	}

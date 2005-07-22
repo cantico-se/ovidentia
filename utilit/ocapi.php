@@ -114,6 +114,22 @@ function bab_OCGetEntities($idoc='')
 }
 
 
+function bab_OCGetEntity($ide)
+{
+	global $babDB;
+	
+	$res = $babDB->db_query("select * from ".BAB_OC_ENTITIES_TBL." where id='".$ide."'");
+	if( $res && $babDB->db_num_rows($res) > 0 )
+	{
+		$arr = $babDB->db_fetch_array($res);
+		return array( 'name' => $arr['name'], 'description' => $arr['description']);
+
+	}
+
+	return false;
+}
+
+
 function bab_OCGetChildsEntities($idroot='', $idoc='')
 {
 	global $babBody, $babDB;

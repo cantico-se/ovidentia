@@ -588,9 +588,12 @@ function viewVacationCalendar($users, $period = false )
 						$this->month_entries[] = $k;
 						
 						if (!in_array($this->entries[$k]['id_user'],$this->month_users))
-							$this->month_users[] = $this->entries[$k]['id_user'];
+							$this->month_users[$this->entries[$k]['id_user']] = bab_getUserName($this->entries[$k]['id_user']);
 						}
 					}
+
+				natcasesort($this->month_users);
+				$this->month_users = array_keys($this->month_users);
 
 				if (count($this->month_users) == 0 && $this->nbusers == 1)
 					{
@@ -1547,4 +1550,13 @@ function notifyOnVacationChange($idusers, $quantity, $date_begin, $day_begin, $d
 			}
 		}
 	}
+
+
+function bab_isPlanningAccessValid()
+{
+	global $babDB;
+	$res = $babDB->db_query("SELECT id_user FROM ".BAB_VAC_PLANNING_TBL." WHERE id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+	return  $babDB->db_num_rows($res) > 0;
+}
+
 ?>
