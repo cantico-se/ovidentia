@@ -2549,3 +2549,11 @@ CREATE TABLE `bab_sites_editor` (
   PRIMARY KEY  (`id`),
   KEY `id_site` (`id_site`)
 );
+
+
+
+CREATE TABLE `bab_vac_planning` (
+  `id_entity` int(10) unsigned NOT NULL default '0',
+  `id_user` int(10) unsigned NOT NULL default '0',
+  KEY `id_user` (`id_user`)
+);

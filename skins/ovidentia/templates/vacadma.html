@@ -23,26 +23,24 @@ function dateEnd(day, month, year)
 			<td>{ statustxt }</td>
 			<td>{ typetxt }</td>
 			<td align="center">{ quantitytxt }</td>
-			<td>{ creditortxt }</td>
 			<td>&nbsp;</td>
 		</tr>
         <!--#in getnext -->
         <tr class="BabSiteAdminFontBackground">
 			<td>
-				<a class="BabSiteAdminListLink" href="javascript: Start('{ vrviewurl }', 'OviListPr', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ description }</a>
+				<a href="javascript: Start('{ vrviewurl }', 'OviListPr', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ description }</a>
 			</td>
 			<td align="center">
-				<a href="{ vrurl }"><img src="{ babSkinPath }images/Puces/edit.gif" border="0" alt="{ alttxt }" /></a>
+				<a href="{ vrurl }" title="{ creditortxt } : { creditor }"><img src="{ babSkinPath }images/Puces/edit.gif" border="0" alt="{ alttxt }" /></a>
 			</td>
 			<td>{ statusval }</td>
 			<td>{ typename }</td>
 			<td align="center">{ quantity }</td>
-			<td>{ creditor }</td>
-			<td width="1%"><a href="javascript: Start('{ urllistp }', 'OviListPr', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');"><img src="{ babSkinPath }images/Puces/PuceUserAttrib.gif" alt="{ altlistp }" border="0" align="middle" /></a></td>
+			<td width="1%"><a href="javascript: Start('{ urllistp }', 'OviListPr', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');" title="{ altlistp }"><img src="{ babSkinPath }images/Puces/PuceUserAttrib.gif" alt="{ altlistp }" border="0" align="middle" /></a></td>
         </tr>
         <!--#endin getnext -->
 		<tr>
-			<td colspan="7" class="BabSiteAdminTitleFontBackground"> 
+			<td colspan="6" class="BabSiteAdminTitleFontBackground"> 
 				<table border="0" cellpadding="0" cellspacing="0" align="right" class="BabSiteAdminTitleFontBackground">
 				<tr> 
 					<td width="1%" nowrap>&nbsp;</td>
@@ -624,86 +622,65 @@ function babReset()
 
 
 <!--#begin vrpersonnellist -->
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE>{ babSiteName }</TITLE>
-{ babMeta }
-{ babCss }
-<script type="text/javascript" src="{ babOvidentiaJs }">
-<!--
-//-->
-</script>
-<script type="text/javascript">
-<!--
-window.focus();
-//-->
-</script>
-</HEAD>
-<BODY class="BabBackground">
-<br>
-<center>
-<a href="javascript:submitForm('delvru','listform')" class="BabSiteAdminListLink">{ 
-modify }</a>
-</center><br>
+
+
 <form method="post" action="{ babPhpSelf }" name="listform">
 <input type="hidden" name="tg" value="vacadma">
-<input type="hidden" name="idx" value="lvrp">
+<input type="hidden" name="idx" value="delvru">
 <input type="hidden" name="idvr" value="{ idvr }">
 <input type="hidden" name="pos" value="{ pos }">
-<table border="0" width="95%" cellpadding="1" cellspacing="0" align="center">
+<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
 <tr> 
-<td class="BabMailBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="3" align="center">
-<tr> 
-<td colspan="3" nowrap class="BabLetterlists">
-<!--#if allselected "== 1" -->
-{ allname }&nbsp;&nbsp;
-<!--#else allselected -->
-<a class="BabAlphabetLink" href="{ allurl }">{ allname }</a>&nbsp;&nbsp;
-<!--#endif allselected -->
-<!--#in getnextselect -->
-<!--#if selected "== 1" -->
-{ selectname }&nbsp;&nbsp;
-<!--#else selected -->
-<a class="BabAlphabetLink" href="{ selecturl }">{ selectname }</a>&nbsp;&nbsp;
-<!--#endif selected -->
-<!--#endin getnextselect -->
-</td>
-</tr>
-<tr>         
-<td class="BabSiteAdminSmall" width="1%"><a href="javascript:onCheckAll('userids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('userids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
-<td width="50%" valign="middle" nowrap class="BabSiteAdminSmall"><a class="BabNameEmailLink" href="{ fullnameurl }">{ 
-fullname }</a></td>
-<td width="49%" valign="middle" nowrap class="BabSiteAdminSmall">{ quantitytxt 
-}</td>
-</tr>
-<!--#in getnext -->
-<!--#if bview -->
-<tr> 
-<td valign="middle" width="1%"> 
-<input type="checkbox" name="userids[]" value="{ userid }" { selected }>
-<input type="hidden" name="nuserids[]" value="{ nuserid }">
-</td>
-<td class="BabSiteAdminFontBackground" valign="middle" width="20%" nowrap>{ urlname }</td>
-<td class="BabSiteAdminFontBackground" valign="middle" width="20%" nowrap>{ quantity }</td>
-</tr> 
-<!--#endif bview -->
-<!--#endin getnext -->
-<tr> 
-<td class="BabSiteAdminSmall" width="1%" align="center">&nbsp;</td>
-<td colspan="2" class="BabSiteAdminSmall">&nbsp;</td>
-</tr></table>
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+	<table  width="100%" border="0" cellspacing="0" cellpadding="3" align="center">
+	<tr class="BabSiteAdminTitleFontBackground"> 
+		<td colspan="4" class="BabLetterlists">
+		<!--#if allselected "== 1" -->
+		{ allname }&nbsp;
+		<!--#else allselected -->
+		<a href="{ allurl }">{ allname }</a>&nbsp;
+		<!--#endif allselected -->
+		<!--#in getnextselect -->
+		<!--#if selected "== 1" -->
+		{ selectname }&nbsp;
+		<!--#else selected -->
+		<a href="{ selecturl }">{ selectname }</a>&nbsp;
+		<!--#endif selected -->
+		<!--#endin getnextselect -->
+		</td>
+	</tr>
+	<tr class="BabSiteAdminTitleFontBackground">         
+		<td width="1%">
+			<a href="javascript:onCheckAll('userids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('userids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
+			<td><a href="{ fullnameurl }">{ fullname }</a>
+		</td>
+		<td>{ quantitytxt }</td>
+		<td>{ t_used }</td>
+	</tr>
+	<!--#in getnext -->
+	<!--#if bview -->
+	<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+		<td> 
+			<input type="checkbox" name="userids[]" value="{ userid }" { selected } />
+			<input type="hidden" name="nuserids[]" value="{ nuserid }" />
+		</td>
+		<td>{ urlname }</td>
+		<td>{ quantity }</td>
+		<td>{ used }</td>
+	</tr> 
+	<!--#endif bview -->
+	<!--#endin getnext -->
+	</table>
 </td>
 </tr>
 </table>
+<br />
+<div align="center">
+	<input type="submit" value="{ modify }" /> &nbsp;
+	<input type="button" onclick="window.close()" value="{ t_close }" />
+</div>
 </form>
-<center>
-<a href="javascript:submitForm('delvru','listform')" class="BabSiteAdminListLink">{ 
-modify }</a>
-</center><br>
-</BODY>
-</HTML>
+
 <!--#end vrpersonnellist -->
 
 <!--#begin browseusers -->

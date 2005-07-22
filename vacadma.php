@@ -930,6 +930,7 @@ function listVacationRightPersonnel($pos, $idvr)
 		var $modify;
 		var $quantitytxt;
 		var $quantity;
+		var $altbg = true;
 
 
 		function temp($pos, $idvr)
@@ -940,6 +941,9 @@ function listVacationRightPersonnel($pos, $idvr)
 			$this->deletealt = bab_translate("Delete");
 			$this->modify = bab_translate("Modify");
 			$this->quantitytxt = bab_translate("Quantity");
+			$this->t_used = bab_translate("Used");
+			$this->t_close = bab_translate("Close");
+
 			$this->db = $GLOBALS['babDB'];
 			$this->idvr = $idvr;
 			list($this->idtype) = $this->db->db_fetch_row($this->db->db_query("select id_type from ".BAB_VAC_RIGHTS_TBL." where id='".$idvr."'")); 
@@ -978,6 +982,7 @@ function listVacationRightPersonnel($pos, $idvr)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->bview = false;
+				$this->used = 0;
 				$this->selected = "";
 				$this->nuserid = "";
 				$res2 = $this->db->db_query("select id from ".BAB_VAC_COLL_TYPES_TBL." where id_type='".$this->idtype."' and id_coll ='".$this->arr['id_coll']."'");
@@ -988,12 +993,20 @@ function listVacationRightPersonnel($pos, $idvr)
 
 				if( $this->bview )
 				{
+					$this->altbg = !$this->altbg;
+
 					$res2 = $this->db->db_query("select id, quantity from ".BAB_VAC_USERS_RIGHTS_TBL." where id_user='".$this->arr['id']."' and id_right ='".$this->idvr."'");
 					if( $res2 && $this->db->db_num_rows($res2) > 0 )
 						{
 						$arr = $this->db->db_fetch_array($res2);
 						$this->selected = "checked";
 						$this->nuserid = $this->arr['id'];
+
+						$res3 = $this->db->db_query("select SUM(e2.quantity) used from ".BAB_VAC_ENTRIES_ELEM_TBL." e2, ".BAB_VAC_ENTRIES_TBL." e1 WHERE  e2.id_type='".$this->idvr."' AND e2.id_entry = e1.id AND e1.id_user='".$this->arr['id']."' AND e1.status='Y'");
+
+						$arr3 = $this->db->db_fetch_array($res3);
+						if (isset($arr3['used']))
+							$this->used = $arr3['used'];
 						}
 					
 					$this->url = $GLOBALS['babUrlScript']."?tg=vacadma&idx=modp&idp=".$this->arr['id']."&pos=".$this->ord.$this->pos."&idvr=".$this->idvr;
@@ -1011,6 +1024,9 @@ function listVacationRightPersonnel($pos, $idvr)
 		
 					$this->userid = $this->arr['id'];
 				}
+				
+				
+
 				$i++;
 				return true;
 				}
@@ -1056,8 +1072,13 @@ function listVacationRightPersonnel($pos, $idvr)
 		}
 
 	$temp = new temp($pos, $idvr);
-	echo bab_printTemplate($temp, "vacadma.html", "vrpersonnellist");
-	return $temp->count;
+
+	include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
+	$GLOBALS['babBodyPopup'] = new babBodyPopup();
+	$GLOBALS['babBodyPopup']->title = $GLOBALS['babBody']->title;
+	$GLOBALS['babBodyPopup']->msgerror = $GLOBALS['babBody']->msgerror;
+	$GLOBALS['babBodyPopup']->babecho(bab_printTemplate($temp, "vacadma.html", "vrpersonnellist"));
+	printBabBodyPopup();
 	}
 
 function viewVacationRightPersonnel($idvr)
