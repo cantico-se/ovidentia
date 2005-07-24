@@ -311,7 +311,7 @@ switch($idx)
 			upComingEvents($idcal);
 		}
 		$bemail = bab_mailAccessLevel();
-		if( $bemail == 1 || $bemail == 2)
+		if( ($bemail == 1 || $bemail == 2) && function_exists('imap_open'))
 			{
 			newEmails();
 			}
