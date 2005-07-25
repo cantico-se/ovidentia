@@ -897,7 +897,10 @@ class bab_Articles extends bab_handler
 
 			if( $offset === false || $offset === '')
 				$offset = "0";
-			$req .= " limit ".$offset.", ".$rows;
+
+			if ($rows != -1)
+				$req .= " limit ".$offset.", ".$rows;
+
 			$res = $babDB->db_query($req);
 
 			while( $arr = $babDB->db_fetch_array($res) )
@@ -1746,7 +1749,8 @@ class bab_Files extends bab_handler
 			if( $offset === false || $offset === '')
 				$offset = "0";
 			$req = "select id from ".BAB_FILES_TBL." where id_owner='".$folderid."' and bgroup='Y' and state='' and path='".addslashes($path)."' and confirmed='Y' order by name asc";
-			$req .= " limit ".$offset.", ".$rows;
+			if ($rows != "-1")
+				$req .= " limit ".$offset.", ".$rows;
 
 			$this->res = $babDB->db_query($req);
 			while($arr = $babDB->db_fetch_array($this->res))
