@@ -125,7 +125,7 @@ function notifyAdminRegistration($name, $useremail, $warning)
 			}
 		}
     $mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
-    $mail->mailSubject(bab_translate("Registration Confirmation"));
+    $mail->mailSubject(bab_translate("Inscription notification"));
 
 	$tempb = new tempb($name, $useremail, $warning);
 	$message = $mail->mailTemplate(bab_printTemplate($tempb,"mailinfo.html", "adminregistration"));
