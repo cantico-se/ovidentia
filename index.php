@@ -30,7 +30,7 @@ function bab_unset(&$arr)
 
 if(!session_id())
 	{
-		session_name($babUrl);
+		session_name(sprintf("OV%u", crc32($babUrl)));
 		session_start();
 	}
 if (!session_is_registered('BAB_SESS_NICKNAME')) { session_register("BAB_SESS_NICKNAME"); $BAB_SESS_NICKNAME = ""; }
