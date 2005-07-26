@@ -1598,6 +1598,27 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 				fclose($fp);
 				}
 			}
+
+
+		foreach( $fields as $key => $value )
+			{
+			$value = trim($value);
+			if( empty($value) && substr($key, 0, strlen("babdirf")) == 'babdirf' )
+				{
+				$tmp = substr($key, strlen("babdirf"));
+				$rs = $db->db_query("select d.name from ".BAB_DBDIR_FIELDSEXTRA_TBL." e,".BAB_DBDIR_FIELDS_DIRECTORY_TBL." d where e.id='".$tmp."' AND e.required='Y' AND d.id=(e.id_field-'".BAB_DBDIR_MAX_COMMON_FIELDS."')");
+				if( $rs && $db->db_num_rows($rs) > 0 )
+					{
+					list($name) = $db->db_fetch_array($rs);
+					$babBody->msgerror = bab_translate( "You must complete").' '.$name;
+					return false;
+					}
+				}
+			}
+
+
+
+
 		if( !empty($cphoto))
 			$req .= " photo_data='".$cphoto."'";
 		elseif ($photod == "delete")
@@ -1611,26 +1632,27 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 			$req .= " where id='".$idu."'";
 			$db->db_query($req);
 			}
-		}
+		
 
-	foreach( $fields as $key => $value )
-		{
-		if( substr($key, 0, strlen("babdirf")) == 'babdirf' )
+		foreach( $fields as $key => $value )
 			{
-			$tmp = substr($key, strlen("babdirf"));
-			if( bab_isMagicQuotesGpcOn())
+			if( substr($key, 0, strlen("babdirf")) == 'babdirf' )
 				{
-				$value = addslashes($value);
-				}
+				$tmp = substr($key, strlen("babdirf"));
+				if( bab_isMagicQuotesGpcOn())
+					{
+					$value = addslashes($value);
+					}
 
-			$rs = $db->db_query("select id from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$tmp."' and  id_entry='".$idu."'");
-			if( $rs && $db->db_num_rows($rs) > 0 )
-				{
-				$db->db_query("update ".BAB_DBDIR_ENTRIES_EXTRA_TBL." set field_value='".$value."' where id_fieldx='".$tmp."' and id_entry='".$idu."'");
-				}
-			else
-				{
-				$db->db_query("insert into ".BAB_DBDIR_ENTRIES_EXTRA_TBL." ( field_value, id_fieldx, id_entry) values ('".$value."', '".$tmp."', '".$idu."')");
+				$rs = $db->db_query("select id from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$tmp."' and  id_entry='".$idu."'");
+				if( $rs && $db->db_num_rows($rs) > 0 )
+					{
+					$db->db_query("update ".BAB_DBDIR_ENTRIES_EXTRA_TBL." set field_value='".$value."' where id_fieldx='".$tmp."' and id_entry='".$idu."'");
+					}
+				else
+					{
+					$db->db_query("insert into ".BAB_DBDIR_ENTRIES_EXTRA_TBL." ( field_value, id_fieldx, id_entry) values ('".$value."', '".$tmp."', '".$idu."')");
+					}
 				}
 			}
 		}

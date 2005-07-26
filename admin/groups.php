@@ -357,7 +357,7 @@ function saveGroupsOptions($mailgrpids, $notgrpids, $congrpids, $pdsgrpids, $dir
 		$res = $db->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group='".$dirgrpids[$i]."'");
 		if( !$res || $db->db_num_rows($res) == 0 )
 		{
-			$db->db_query("insert into ".BAB_DB_DIRECTORIES_TBL." (name, description, id_group, id_dgowner) values ('".addslashes(stripslashes(bab_getGroupName($dirgrpids[$i])))."','','".$dirgrpids[$i]."', '".$babBody->currentAdmGroup."')");
+			$db->db_query("insert into ".BAB_DB_DIRECTORIES_TBL." (name, description, id_group, id_dgowner) values ('".$db->db_escape_string(bab_getGroupName($dirgrpids[$i]))."','','".$dirgrpids[$i]."', '".$babBody->currentAdmGroup."')");
 		}
 	}
 
