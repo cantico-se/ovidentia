@@ -255,7 +255,7 @@
 		</td>
 	</tr>
 	<tr> 
-<SCRIPT language="JavaScript">
+<script language="JavaScript">
 <!--
 function ed()
 {
@@ -280,7 +280,7 @@ else
 	}
 }
 //-->
-</SCRIPT>
+</script>
 		<td colspan="2" align="center">
 		<input type="checkbox" name="creminder" value="Y" { rcheckedval }  OnClick="ed()" />&nbsp;<b>{ alerttxt }</b>&nbsp;<select name="rday">
 <!--#in getnextreminderday -->
@@ -357,7 +357,7 @@ ed();
 <input type="hidden" name="evtid" value="{ evtid }" />
 <input type="hidden" name="action" value="modifyevent" />
 <input type="hidden" name="avariability" value="{ avariability }" />
-<table class="BabLoginCadreBackground" width="60%" border="0" cellspacing="0" cellpadding="2" align="center">
+<table class="BabLoginCadreBackground" width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
 <td>
 	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="3">
@@ -469,13 +469,10 @@ ed();
 		<td align="right">{ location }:</td>
 		<td><input type="text" name="location" size="50" maxlength="255" value="{ evtarr[location] }" /></td>
 	</tr>
-	<tr>
 	<tr> 
-		<td colspan="2">&nbsp;</td>
-	</tr>
-	<tr> 
-		<td align="right">{ description }</td>
-		<td>{ editor }</td>
+		<td colspan="2"><p align="center">{ description }:</p>
+		{ editor }
+		</td>
 	</tr>
 	<tr> 
 		<td colspan="2">&nbsp;</td>
@@ -501,8 +498,9 @@ ed();
 	</tr>
 
 	<tr> 
-		<td align="right">{ t_bprivate }:</td>
-		<td> 
+		<td colspan="2" align="center">
+		
+		{ t_bprivate }:
 			<select name="bprivate">
 				<!--#if evtarr[bprivate] "== Y" -->
 				<option value="Y" selected>{ t_yes }</option>
@@ -512,12 +510,9 @@ ed();
 				<option value="N" selected>{ t_no }</option>
 				<!--#endif evtarr[bprivate] -->
 			</select>
-		</td>
-	</tr>
-	<tr> 
-		<td align="right">{ t_block }:</td>
-		<td> 
-			<select name="block">
+
+		 &nbsp;&nbsp; { t_block }:
+		<select name="block">
 				<!--#if evtarr[block] "== Y" -->
 				<option value="Y" selected>{ t_yes }</option>
 				<option value="N">{ t_no }</option>
@@ -526,12 +521,9 @@ ed();
 				<option value="N" selected>{ t_no }</option>
 				<!--#endif evtarr[block] -->
 			</select>
-		</td>
-	</tr>
-	<tr> 
-		<td align="right">{ t_bfree }:</td>
-		<td> 
-			<select name="bfree">
+
+		 &nbsp;&nbsp; { t_bfree }:
+		<select name="bfree">
 				<!--#if evtarr[bfree] "== Y" -->
 				<option value="Y" selected>{ t_yes }</option>
 				<option value="N">{ t_no }</option>
@@ -541,6 +533,9 @@ ed();
 				<!--#endif evtarr[bfree] -->
 			</select>
 		</td>
+	</tr>
+	<tr> 
+		<td colspan="2">&nbsp;</td>
 	</tr>
 	</tbody>
 	<tr id="avariability_check">

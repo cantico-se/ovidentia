@@ -629,6 +629,12 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 				$this->timeend = substr($this->evtarr['end_date'], 11, 5);
 				}
 
+			$tmp = explode(':',$this->timebegin);
+			$this->minbegin = $tmp[0]*60+$tmp[1];
+
+			$tmp = explode(':',$this->timeend);
+			$this->minend = $tmp[0]*60+$tmp[1];
+
 			$this->evtarr['title'] = htmlentities($this->evtarr['title']);
 			$this->evtarr['location'] = htmlentities($this->evtarr['location']);
 
@@ -795,17 +801,24 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 
 			if( $i < 1440/$this->elapstime)
 				{
-				$this->timeval = sprintf("%02d:%02d", ($i*$this->elapstime)/60, ($i*$this->elapstime)%60);
+				$min = $i*$this->elapstime;
+				$this->timeval = sprintf("%02d:%02d", $min/60, $min%60);
+
+				$previous = $min - ($this->elapstime/2);
+				$next = $min + ($this->elapstime/2);
+
 				if( $this->ampm )
 					$this->time = bab_toAmPm($this->timeval);
 				else
 					$this->time = $this->timeval;
-				if( $tr == 0 &&  $this->timeval == $this->timebegin)
+
+				if( $tr == 0 &&  $next >= $this->minbegin && $this->minbegin > $previous)
 					$this->selected = "selected";
-				else if( $tr == 1 &&  $this->timeval == $this->timeend)
+				else if( $tr == 1 &&  $next > $this->minend && $this->minend >= $previous)
 					$this->selected = "selected";
 				else
 					$this->selected = "";
+
 				$i++;
 				return true;
 				}
