@@ -1642,9 +1642,9 @@
 <string id="Rule">Règle</string>
 <string id="Remain">Reste</string>
 <string id="Account user is already confirmed">Le compte de l'utilisateur a déjà été confirmé</string>
-<string id="Confirm account by validationg address email">Confirmer le compte par envoi de message électronique</string>
-<string id="Don't validate adresse email">Ne pas valider l'adresse de messagerie</string>
-<string id="Confirm account without address email validation">Confirmer le compte sans validation d'une adresse électronique</string>
+<string id="Confirm account by validating address email">Confirmer le compte avec validation de l'adresse électronique</string>
+<string id="Manual confirmation by administrators">Confirmation manuelle par les administrateurs</string>
+<string id="Confirm account without address email validation">Confirmer le compte sans validation de l'adresse électronique</string>
 <string id="Domain name">Nom de domaine</string>
 <string id="Vacation request has been modified">La demande de congé a été modifiée</string>
 <string id="Vacation request has been deleted">La demande de congé a été supprimée</string>
@@ -1778,4 +1778,7 @@
 <string id="Planning acces">Accès au planning</string>
 <string id="Planning list">Liste des plannings</string>
 <string id="You must complete">Vous devez compléter</string>
+<string id="The calendar">L'agenda</string>
+<string id="is restricted with approbation, your event will not appear until it has been approved">est restreint par une approbation, les évènements n'apparaitrons pas aussitôt</string>
+<string id="are restricted with approbation, your event will not appear until it has been approved">sont restreints par une approbation, les évènements n'apparaitrons pas aussitôt</string>
 </fr>

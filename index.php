@@ -29,7 +29,10 @@ function bab_unset(&$arr)
 }
 
 if(!session_id())
-	session_start();
+	{
+		session_name($babUrl);
+		session_start();
+	}
 if (!session_is_registered('BAB_SESS_NICKNAME')) { session_register("BAB_SESS_NICKNAME"); $BAB_SESS_NICKNAME = ""; }
 if (!session_is_registered('BAB_SESS_USER')) { session_register("BAB_SESS_USER"); $BAB_SESS_USER = ""; }
 if (!session_is_registered('BAB_SESS_FIRSTNAME')) { session_register("BAB_SESS_FIRSTNAME"); $BAB_SESS_FIRSTNAME = ""; }

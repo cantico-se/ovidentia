@@ -805,6 +805,8 @@ function calendarchoice($formname)
 {
 class calendarchoice
 	{
+	var $approb = array();
+
 	function calendarchoice($formname)
 		{
 		$this->formname = $formname;
@@ -828,6 +830,7 @@ class calendarchoice
 		$this->t_calendars1 = bab_translate("Available calendars");
 		$this->t_calendars2 = bab_translate("Selected calendars");
 		$this->js_calnum = bab_translate("You must select one calendar");
+		
 
 		$this->resuser = $icalendars->usercal;
 		$this->respub = $icalendars->pubcal;
@@ -883,6 +886,8 @@ class calendarchoice
 			{
 			$this->name = $this->respub[$this->id]['name'];
 			$this->selected = in_array($this->id,$this->selectedCalendars) ? 'selected' : '';
+			if (!empty($this->respub[$this->id]['idsa']))
+				$this->approb[] = $this->name;
 			}
 		return $out;
 		}
@@ -894,8 +899,28 @@ class calendarchoice
 			{
 			$this->name = $this->resres[$this->id]['name'];
 			$this->selected = in_array($this->id,$this->selectedCalendars) ? 'selected' : '';
+			if (!empty($this->resres[$this->id]['idsa']))
+				$this->approb[] = $this->name;
 			}
 		return $out;
+		}
+
+	function getapprob()
+		{
+		if (count($this->approb) == 1)
+			{
+			$this->t_approb = bab_translate("The calendar").' "'.implode('',$this->approb).'" '.bab_translate("is restricted with approbation, your event will not appear until it has been approved");
+			$this->approb = array();
+			return true;
+			}
+
+		if (count($this->approb) > 1)
+			{
+			$this->t_approb = '"'.implode('", "',$this->approb).'" '.bab_translate("are restricted with approbation, your event will not appear until it has been approved");
+			$this->approb = array();
+			return true;
+			}
+		return false;
 		}
 
 	function printhtml()

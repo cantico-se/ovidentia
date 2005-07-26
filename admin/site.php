@@ -822,7 +822,7 @@ function siteRegistration($id)
 			$this->disclaimer = bab_translate("Display link to Disclaimer/Privacy Statement");
 			$this->editdptxt = bab_translate("Edit");
 			$this->groupregistration = bab_translate("Default group for confirmed users");
-			$this->confirmationstxt = array(bab_translate("Confirm account by validationg address email"), bab_translate("Don't validate adresse email"), bab_translate("Confirm account without address email validation"));
+			$this->confirmationstxt = array(bab_translate("Confirm account by validating address email"), bab_translate("Manual confirmation by administrators"), bab_translate("Confirm account without address email validation"));
 			$this->none = bab_translate("None");
 			$this->add = bab_translate("Modify");
 			$this->db = $GLOBALS['babDB'];
