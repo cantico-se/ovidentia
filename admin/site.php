@@ -1303,6 +1303,10 @@ function siteUpdate_bloc4($item)
 			$arr = explode(',',$nonworking);
 			$type = $arr[0];
 			$nw = isset($arr[1]) ? $arr[1] : '';
+			if( !bab_isMagicQuotesGpcOn())
+				{
+				$text = addslashes($text);
+				}
 			$db->db_query("INSERT INTO ".BAB_SITES_NONWORKING_CONFIG_TBL." (id_site, nw_type, nw_day, nw_text) VALUES ('".$item."', '".$type."', '".$nw."', '".$text."')");
 			}
 
