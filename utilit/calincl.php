@@ -694,8 +694,8 @@ function bab_deleteCalendar($idcal)
 	while( $arr = $babDB->db_fetch_array($res))
 		{
 		$babDB->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id='".$arr['id_event']."'");	
-		$babDB->db_query("delete from ".BAB_CAL_EVENTS_NOTES_TBL." where id='".$arr['id_event']."'");	
-		$babDB->db_query("delete from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id='".$arr['id_event']."'");	
+		$babDB->db_query("delete from ".BAB_CAL_EVENTS_NOTES_TBL." where id_event='".$arr['id_event']."'");	
+		$babDB->db_query("delete from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_event='".$arr['id_event']."'");	
 		}
 	$babDB->db_query("delete from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_cal='".$idcal."'");	
 	$babDB->db_query("delete from ".BAB_CALENDAR_TBL." where id='".$idcal."'");	
