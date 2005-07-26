@@ -606,12 +606,14 @@ function unzipcore()
 	$core = 'ovidentia/';
 	$files_to_extract = array();
 	ini_set('max_execution_time',1200);
+
+	$tmpdir = $GLOBALS['babUploadPath'].'/tmp/';
 	
-	if (!is_dir($GLOBALS['babUploadPath'].'tmp/'))
-		bab_mkdir($GLOBALS['babUploadPath'].'tmp/',$GLOBALS['babMkdirMode']);
+	if (!is_dir($tmpdir))
+		bab_mkdir($tmpdir,$GLOBALS['babMkdirMode']);
 
 	$ul = $_FILES['zipfile']['name'];
-	move_uploaded_file($_FILES['zipfile']['tmp_name'],$GLOBALS['babUploadPath'].'tmp/'.$ul);
+	move_uploaded_file($_FILES['zipfile']['tmp_name'],$tmpdir.$ul);
 	
 	if (isset($_POST['core_name_switch']) && $_POST['core_name_switch'] == 'specify' && !empty($_POST['dir_name']))
 		{
@@ -622,16 +624,16 @@ function unzipcore()
 		$new_dir = substr($ul,0,-4);
 		}
 	
-	if (is_file($GLOBALS['babUploadPath'].'tmp/'.$ul))
+	if (is_file($tmpdir.$ul))
 		{
 		include_once $GLOBALS['babInstallPath']."utilit/zip.lib.php";
 		$zip = new Zip;
-		$zipcontents = $zip->get_List($GLOBALS['babUploadPath'].'tmp/'.$ul);
+		$zipcontents = $zip->get_List($tmpdir.$ul);
 		if (count($zipcontents) > 0)
 			{
 			if (is_dir($new_dir))
 				{
-				unlink($GLOBALS['babUploadPath'].'tmp/'.$ul);
+				unlink($tmpdir.$ul);
 				$babBody->msgerror = bab_translate("Directory allready exists");
 				return false;
 				}
@@ -662,10 +664,10 @@ function unzipcore()
 			
 			foreach ($files_to_extract as $key => $value)
 				{
-				$zip->Extract($GLOBALS['babUploadPath'].'tmp/'.$ul,$value,$key,false);
+				$zip->Extract($tmpdir.$ul,$value,$key,false);
 				}
 			
-			unlink($GLOBALS['babUploadPath'].'tmp/'.$ul);
+			unlink($tmpdir.$ul);
 			
 			include_once $GLOBALS['babInstallPath'].'utilit/upgradeincl.php';
 			if (isset($_POST['copy_addons']))
