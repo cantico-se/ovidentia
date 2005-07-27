@@ -137,27 +137,27 @@
 <table  width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr align="center" > 
-<td class="BabSiteAdminTitleFontBackground" nowrap><b>{ fullname }</b></td>
-<td class="BabSiteAdminTitleFontBackground"><b>{ access0txt }</b> </td>
-<td class="BabSiteAdminTitleFontBackground"><b>{ access1txt }</b> </td>
-<td class="BabSiteAdminTitleFontBackground"><b>{ access2txt }</b> </td>
-<td class="BabSiteAdminTitleFontBackground">{ deletetxt }</td>
-</tr>
-<!--#in getnext -->
-<tr> 
-<td class="BabSiteAdminFontBackground" nowrap>{ fullnameval }</td>
-<td class="BabSiteAdminFontBackground" align="center"><input type="radio" name="acc_{ userid }" value="0" { cheched0 }></td>
-<td class="BabSiteAdminFontBackground" align="center"><input type="radio" name="acc_{ userid }" value="1" { cheched1 }></td>
-<td class="BabSiteAdminFontBackground" align="center"><input type="radio" name="acc_{ userid }" value="2" { cheched2 }></td>
-<td class="BabSiteAdminFontBackground" align="center"><input type="checkbox" name="users[]" value="{ userid }"></td>
-</tr>
-<!--#endin getnext -->
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" colspan="5">&nbsp;</td>
-</tr>
-</table>
+	<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+	<tr class="BabSiteAdminTitleFontBackground" align="center"> 
+	<td>{ fullname }</td>
+	<td>{ access0txt }</td>
+	<td>{ access1txt }</td>
+	<td>{ access2txt }</td>
+	<td>{ deletetxt }</td>
+	</tr>
+	<!--#in getnext -->
+	<tr class="BabSiteAdminFontBackground" align="center"> 
+	<td align="left">{ fullnameval }</td>
+	<td><input type="radio" name="acc_{ userid }" value="0" { cheched0 } /></td>
+	<td><input type="radio" name="acc_{ userid }" value="1" { cheched1 } /></td>
+	<td><input type="radio" name="acc_{ userid }" value="2" { cheched2 } /></td>
+	<td><input type="checkbox" name="users[]" value="{ userid }" /></td>
+	</tr>
+	<!--#endin getnext -->
+	<tr> 
+	<td class="BabSiteAdminTitleFontBackground" colspan="5">&nbsp;</td>
+	</tr>
+	</table>
 </td>
 </tr>
 </table>
@@ -191,25 +191,25 @@ else
 <input type="hidden" name="urla" value="{ urla }">
 <input type="hidden" name="idcal" value="{ calid }">
 <input type="hidden" name="add" value="addu">
-<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<table  width="60%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle"><a class="BabAlphabetLink" href="javascript: openPopup('{ usersbrowurl }');">{ usertxt }</a>:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="nuser" size="45" maxlength="255" value="" disabled>
-<input type="hidden" name="nuserid" value="">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground">&nbsp;</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="submit" name="submit" value="{ addtxt }">
-<br>
-</td>
-</tr>
-</table>
+	<table class="BabLoginMenuBackground"  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+	<tr> 
+	<td align="right"><a class="BabAlphabetLink" href="javascript: openPopup('{ usersbrowurl }');">{ usertxt }</a>:</td>
+	<td> 
+		<input type="text" name="nuser" size="40" maxlength="255" value="" disabled="disabled" />
+		<input type="hidden" name="nuserid" value="" />
+	</td>
+	</tr>
+	<tr> 
+	<td>&nbsp;</td>
+	<td> 
+		<input type="submit" name="submit" value="{ addtxt }" />
+	<br>
+	</td>
+	</tr>
+	</table>
 </td>
 </tr>
 </table>

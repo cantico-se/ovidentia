@@ -164,26 +164,26 @@ valign="middle">{ password }:</td>
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-	<TABLE  width="100%" border="0" cellspacing="0" cellpadding="5" align="center" class="BabLoginMenuBackground">
-	<TR><TD align="center" valign="middle">
+	<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center" class="BabLoginMenuBackground">
+	<tr><td align="center" valign="middle">
 	<form method="post" action="javascript: Start('{ urldbmod }', 'OviDir', 'width=550,height=500,status=no,resizable=yes,top=50,left=200,scrollbars=yes');">
 	<input type="submit" name="submit" value="{ updateuserinfo }">
 	</form>
-	</TD></TR></TABLE>
-</TD></TR></TABLE>
+	</td></tr></table>
+</td></tr></table>
 <br>
 <!--#endif bupdateuserinfo -->
 <!--#if changepassword -->
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-	<TABLE  width="100%" border="0" cellspacing="0" cellpadding="5" align="center" class="BabLoginMenuBackground">
-	<TR><TD align="center" valign="middle">
+	<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center" class="BabLoginMenuBackground">
+	<tr><td align="center" valign="middle">
 
 	<input type="button" value="{ changepassword }" onclick="javascript: Start('{ urlchangepassword }', 'OviDir', 'width=450,height=170,status=no,resizable=yes,top=50,left=200,scrollbars=yes');">
 
-	</TD></TR></TABLE>
-</TD></TR></TABLE>
+	</td></tr></table>
+</td></tr></table>
 <br>
 <!--#endif changepassword -->
 <!--#if changenickname -->
@@ -228,57 +228,47 @@ valign="middle">{ password }:</td>
 <form method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="options">
 <input type="hidden" name="update" value="lang">
-<table width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center" class="BabLoginMenuBackground">
-<tr> 
-<td align="center" nowrap valign="middle"> 
-<table width="90%" border="0" cellspacing="0" cellpadding="2" align="center" class="BabLoginMenuBackground">
-<tr> 
-<td align="center" valign="middle" width="95%"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center" class="BabLoginMenuBackground">
-<tr> 
-<td colspan="2" align="center">{ title } </td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
-</td>
-</tr>
-<tr> 
-<td align="center" nowrap valign="middle"> 
-<select name="lang">
-<!--#in getnextlang -->
-<option value="{ langval }" { langselected }>{ langname }</option>
+	<table width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+	<td class="BabLoginCadreBackground"> 
+		<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center" class="BabLoginMenuBackground">
+		<tr> 
+		<td align="center" nowrap valign="middle"> 
+			{ title }
+		</td>
+		</tr>
+		<tr> 
+		<td align="center" nowrap valign="middle"> 
+		<select name="lang">
+		<!--#in getnextlang -->
+		<option value="{ langval }" { langselected }>{ langname }</option>
 
-<!--#endin getnextlang -->
-</select>
-</td>
-</tr>
-<tr> 
-<td align="center">{ langfiltertxt } </td>
-</tr>
-<tr>
-<td align="center" nowrap valign="middle">
-<select name="langfilter">
-<!--#in getnextlangfilter -->
-<option value="{ langfilterval }" { langfilterselected }>{ langfilterval }</option>
-<!--#endin getnextlangfilter -->
-</select>
-</td>
-</tr>
-<tr> 
-<td align="center"> 
-<input type="submit" name="submit" value="{ update }">
-<br>
-</td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
+		<!--#endin getnextlang -->
+		</select>
+		</td>
+		</tr>
+		<tr> 
+		<td align="center">{ langfiltertxt } </td>
+		</tr>
+		<tr>
+		<td align="center" nowrap valign="middle">
+			<select name="langfilter">
+			<!--#in getnextlangfilter -->
+			<option value="{ langfilterval }" { langfilterselected }>{ langfilterval }</option>
+			<!--#endin getnextlangfilter -->
+			</select>
+		</td>
+		</tr>
+		<tr> 
+		<td align="center"> 
+			<input type="submit" name="submit" value="{ update }" />
+		<br>
+		</td>
+		</tr>
+		</table>
+	</td>
+	</tr>
+	</table>
 <br>
 </form>
 <!--#end changelang -->
@@ -294,20 +284,8 @@ valign="middle">{ password }:</td>
 <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center" class="BabLoginMenuBackground">
 <tr> 
 <td align="center" nowrap valign="middle"> 
-<table width="90%" border="0" cellspacing="0" cellpadding="2" align="center" class="BabLoginMenuBackground">
-<tr> 
-<td align="center" valign="middle" width="95%"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center" class="BabLoginMenuBackground">
-<tr> 
-	<td align="center">{ title } </td>
-</tr>
-<tr> 
-	<td align="center">{ title_style }</td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
+	<p>{ title }</p>
+	<p>{ title_style }</p>
 </td>
 </tr>
 <tr> 

@@ -1262,6 +1262,7 @@ if( isset($add))
 			if (!isset($ml)) { $ml = array(); }
 			if (!isset($rw)) { $rw = array(); }
 			if (!isset($dz)) { $dz = array(); }
+			if (!isset($req)) { $req = array(); }
 			if( !addDbDirectory($adname, $description, $fields, $rw, $req, $ml, $dz))
 				{
 				$idx = "new";
@@ -1287,6 +1288,7 @@ if( isset($modify))
 				if (!isset($ml)) { $ml = array(); }
 				if (!isset($rw)) { $rw = array(); }
 				if (!isset($dz)) { $dz = array(); }
+				if (!isset($req)) { $req = array(); }
 				if (!isset($allowuu)) { $allowuu= ''; }
 				if( !modifyAdDb($id, $adname, $description, $rw, $req, $ml, $dz, $allowuu))
 				{

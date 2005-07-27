@@ -13,54 +13,54 @@
 <table width="95%" class="BabLoginCadreBackground" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td align="center" valign="middle"> 
-<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabLoginMenuBackground" valign="middle" align="center">{ title } </td>
-</tr>
-<tr> 
-<td align="center" valign="middle"> 
-<input type="text" name="title" size="60" value="{ titleval }">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="center" valign="middle">{ head } </td>
-</tr>
-<tr> 
-<td align="center" valign="middle"> 
-	<div align="left">
-		{ text_toolbar_head }
-		<textarea id="headtext" name="headtext" style="width:100%" rows="20">{ headval }</textarea>
-	</div>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="center" valign="middle">{ body }</td>
-</tr>
-<tr> 
-<td align="center" valign="middle"> 
-	<div align="left">
-		{ text_toolbar_body }
-		<textarea id="bodytext" name="bodytext" style="width:100%" rows="20">{ bodyval }</textarea>
-	</div>
-
-<!--#if loadscripts -->
-<script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/htmlarea.js"></script>
-<script type="text/javascript" src="{ babUrlScript }?tg=htmlarea&idx=js&mode={ mode }"></script>
-<!--#endif loadscripts -->
-
-</td>
-</tr>
-<tr>
-	<td align="center" valign="middle">
-		{ langLabel }&nbsp;:&nbsp;
-		<select name="lang">
-			<!--#in getnextlang -->
-			 <option value="{ langValue }" { langSelected }>{ langValue }</option>
-			<!--#endin getnextlang -->
-		</select>
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+	<tr> 
+	<td align="center">{ title } </td>
+	</tr>
+	<tr> 
+	<td align="center" valign="middle"> 
+	<input type="text" name="title" size="60" value="{ titleval }">
 	</td>
-</tr>
-</table>
+	</tr>
+	<tr> 
+	<td align="center">{ head } </td>
+	</tr>
+	<tr> 
+	<td align="center" valign="middle"> 
+		<div align="left">
+			{ text_toolbar_head }
+			<textarea id="headtext" name="headtext" style="width:100%" rows="20">{ headval }</textarea>
+		</div>
+	</td>
+	</tr>
+	<tr> 
+	<td align="center">{ body }</td>
+	</tr>
+	<tr> 
+	<td align="center" valign="middle"> 
+		<div align="left">
+			{ text_toolbar_body }
+			<textarea id="bodytext" name="bodytext" style="width:100%" rows="20">{ bodyval }</textarea>
+		</div>
+
+	<!--#if loadscripts -->
+	<script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/htmlarea.js"></script>
+	<script type="text/javascript" src="{ babUrlScript }?tg=htmlarea&idx=js&mode={ mode }"></script>
+	<!--#endif loadscripts -->
+
+	</td>
+	</tr>
+	<tr>
+		<td align="center" valign="middle">
+			{ langLabel }&nbsp;:&nbsp;
+			<select name="lang">
+				<!--#in getnextlang -->
+				 <option value="{ langValue }" { langSelected }>{ langValue }</option>
+				<!--#endin getnextlang -->
+			</select>
+		</td>
+	</tr>
+	</table>
 </td>
 </tr>
 </table>
@@ -70,16 +70,16 @@
 <center>
 <br>
 <table   border="0" width="99%" cellpadding="3" cellspacing="0" align="center">
-<tr> 
-<td class="BabTopicsTitleBackground">{ titleval }</td>
-<td class="BabTopicsTitleBackground" align="right">
+<tr class="BabTopicsTitleBackground"> 
+<td>{ titleval }</td>
+<td align="right">
 <!--#if countf -->
-<A href="#1"><img valign="absmiddle" src="{ babSkinPath }images/Puces/PuceTrombonne.gif" border="0"></a>
+<a href="#1"><img valign="absmiddle" src="{ babSkinPath }images/Puces/PuceTrombonne.gif" border="0"></a>
 <!--#else countf -->
 &nbsp;
 <!--#endif countf -->
 <!--#if countn -->
-<A href="#2"><img valign="absmiddle" src="{ babSkinPath }images/Puces/text.gif" border="0"></a>
+<a href="#2"><img valign="absmiddle" src="{ babSkinPath }images/Puces/text.gif" border="0"></a>
 <!--#else countn -->
 &nbsp;
 <!--#endif countn -->

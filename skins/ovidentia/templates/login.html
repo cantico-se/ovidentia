@@ -12,26 +12,23 @@
   <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
     <tr> 
       <td class="BabLoginCadreBackground" align="center" valign="middle">
-        <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+        <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
           <tr> 
-            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
-              nickname } : </td>
-            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"> 
+            <td  width="30%" align="right">{ nickname } : </td>
+            <td> 
               <input type="text" name="nickname" value="{ c_nickname }" size="20" maxlength="255">
             </td>
     </tr>
     <tr> 
-            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
-              password } : </td>
-            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"> 
+            <td align="right">{ password } : </td>
+            <td> 
               <input type="password" name="password" size="20" maxlength="30">
             </td>
     </tr>
 	<!--#if babCookieIdent -->
 	    <tr> 
-            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
-              life } : </td>
-            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"> 
+            <td align="right">{ life } : </td>
+            <td> 
             <select name="lifetime">
 				<option value="0" selected>{ nolife }</option>
 				<option value="86400">{ oneday }</option>
@@ -44,7 +41,7 @@
     </tr>
 	<!--#endif babCookieIdent -->
     <tr valign="middle"> 
-      <td class="BabLoginMenuBackground" colspan="2" align="center"> 
+      <td colspan="2" align="center"> 
         <input type="submit" name="submit" value="{ login }">
       </td>
     </tr>

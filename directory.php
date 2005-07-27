@@ -619,7 +619,7 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 				$this->msgerror = $babBody->msgerror;
 				$this->error = true;
 				}
-			$this->db = $GLOBALS['babDB'];
+			$this->db = &$GLOBALS['babDB'];
 			
 			$arr = $this->db->db_fetch_array($this->db->db_query("select id_group, user_update from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
 			$this->idgroup = $arr['id_group'];
@@ -1935,7 +1935,7 @@ function exportDbDirectory($id, $wsepar, $separ)
 
 		for( $k=0; $k < count($arrnamef); $k++ )
 			{
-			$output .= $row[$arrnamef[$k]].$separ;
+			$output .= stripslashes($row[$arrnamef[$k]]).$separ;
 			}
 
 		for( $k=0; $k < count($arridfx); $k++ )
@@ -1944,7 +1944,7 @@ function exportDbDirectory($id, $wsepar, $separ)
 			if( $res3 && $db->db_num_rows($res3))
 				{
 				$rr = $db->db_fetch_array($res3);
-				$output .= $rr['field_value'].$separ;
+				$output .= stripslashes($rr['field_value']).$separ;
 				}
 			else
 				{
