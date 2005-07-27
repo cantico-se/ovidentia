@@ -170,11 +170,13 @@ function browseLdapDirectory($id, $pos)
 		var $selecturl;
 		var $selected;
 		var $badd;
+		var $altbg = true;
 
 		function temp($id, $pos)
 			{
 			$this->allname = bab_translate("All");
-			$this->cntxt = bab_translate("Name");
+			$this->sntxt = bab_translate("Name");
+			$this->givennametxt = bab_translate("Firstname");
 			$this->bteltxt = bab_translate("Business Phone");
 			$this->hteltxt = bab_translate("Home Phone");
 			$this->emailtxt = bab_translate("Email");
@@ -197,15 +199,23 @@ function browseLdapDirectory($id, $pos)
 				$this->ldap = new babLDAP($arr['host'], "", true);
 				$this->ldap->connect();
 				$this->ldap->bind($arr['userdn'], $arr['adpass']);
-				$this->entries = $this->ldap->search($arr['basedn'], "(|(cn=".$pos."*))", array("cn", "telephonenumber", "mail", "homephone"));
+				$this->entries = $this->ldap->search($arr['basedn'], "(|(sn=".$pos."*))", array("sn","givenname","cn", "telephonenumber", "mail", "homephone"));
 				if( is_array($this->entries))
 					{
 					$this->count = $this->entries['count'];
+					$this->order = array();
+					for ($i = 0 ; $i < $this->count ; $i++)
+						{
+						$this->order[$i] = utf8_decode($this->entries[$i]['sn'][0]);
+						}
+
+					natcasesort($this->order);
+					$this->order = array_keys($this->order);
 					}
 				}
 
 			/* find prefered mail account */
-			$this->db = $GLOBALS['babDB'];
+			$this->db = &$GLOBALS['babDB'];
 			$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$GLOBALS['BAB_SESS_USERID']."' and prefered='Y'";
 			$res = $this->db->db_query($req);
 			if( !$res || $this->db->db_num_rows($res) == 0 )
@@ -220,7 +230,7 @@ function browseLdapDirectory($id, $pos)
 				$this->accid = $arr['id'];
 				}
 			else
-				$this->accid = 0;			
+				$this->accid = 0;
 			}
 
 		function getnext()
@@ -228,16 +238,19 @@ function browseLdapDirectory($id, $pos)
 			static $i = 0;
 			if( $i < $this->count)
 				{
+				$o = $this->order[$i];
+				$this->altbg = !$this->altbg;
 				$this->cn = "";
 				$this->url = "";
 				$this->btel = "";
 				$this->htel = "";
 				$this->email = "";
-				$this->cn = utf8_decode($this->entries[$i]['cn'][0]);
-				$this->url = $GLOBALS['babUrlScript']."?tg=directory&idx=dldap&id=".$this->id."&cn=".quoted_printable_decode($this->entries[$i]['cn'][0])."&pos=".$this->pos;
-				$this->btel = isset($this->entries[$i]['telephonenumber'][0])?utf8_decode($this->entries[$i]['telephonenumber'][0]):"";
-				$this->htel = isset($this->entries[$i]['homephone'][0])?utf8_decode($this->entries[$i]['homephone'][0]):"";
-				$this->email = isset($this->entries[$i]['mail'][0])?utf8_decode($this->entries[$i]['mail'][0]):"";
+				$this->sn = utf8_decode($this->entries[$o]['sn'][0]);
+				$this->givenname = utf8_decode($this->entries[$o]['givenname'][0]);
+				$this->url = $GLOBALS['babUrlScript']."?tg=directory&idx=dldap&id=".$this->id."&cn=".urlencode(quoted_printable_decode($this->entries[$o]['cn'][0]))."&pos=".$this->pos;
+				$this->btel = isset($this->entries[$o]['telephonenumber'][0])?utf8_decode($this->entries[$o]['telephonenumber'][0]):"";
+				$this->htel = isset($this->entries[$o]['homephone'][0])?utf8_decode($this->entries[$o]['homephone'][0]):"";
+				$this->email = isset($this->entries[$o]['mail'][0])?utf8_decode($this->entries[$o]['mail'][0]):"";
 				$this->urlmail = $GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".$this->accid."&to=".$this->email;
 				$i++;
 				return true;

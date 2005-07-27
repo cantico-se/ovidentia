@@ -153,7 +153,7 @@ function addAdLdap($name, $description, $host, $basedn, $userdn)
 		var $vbasedn;
 		var $vuserdn;
 
-		function temp($name, $description, $ldap, $host, $basedn, $userdn)
+		function temp($name, $description, $host, $basedn, $userdn)
 			{
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
@@ -172,14 +172,11 @@ function addAdLdap($name, $description, $host, $basedn, $userdn)
 			$this->vhost = $host == "" ? "" : $host;
 			$this->vbasedn = $basedn == "" ? "" : $basedn;
 			$this->vuserdn = $userdn == "" ? "" : $userdn;
-			if( $ldap == "Y" )
-				$this->yselected = "selected";
-			else
-				$this->nselected = "selected";
+
 			}
 		}
 
-	$temp = new temp($name, $description, $ldap, $host, $basedn, $userdn);
+	$temp = new temp($name, $description, $host, $basedn, $userdn);
 	$babBody->babecho(	bab_printTemplate($temp,"admdir.html", "ldapadd"));
 	}
 

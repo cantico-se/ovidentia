@@ -191,48 +191,48 @@ window.focus();
 </BODY>
 </HTML>
 <!--#end uadbrowse -->
-<br>xxxx
-<br>
-<br>
+
+
 <!--#begin adldapbrowse -->
 <table width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
-<tr valign="middle"> 
-<td colspan="3" class="BabLetterlists"> 
-<!--#if allselected "== 1" -->
-{ allname }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"> 
-<!--#else allselected -->
-<a class="BabAlphabetLink" href="{ allurl }">{ allname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">
-<!--#endif allselected -->
-<!--#in getnextselect -->
-<!--#if selected "== 1" -->
-{ selectname }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"> 
-<!--#else selected -->
-<a class="BabAlphabetLink" href="{ selecturl }">{ selectname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="8" border="0">
-<!--#endif selected -->
-<!--#endin getnextselect -->
-</td>
-<td align="right" class="BabLetterlists"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0">
-<!--#if badd -->
-<a class="BabAlphabetLink" href="javascript: Start('{ addurl }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ addname }</a>
-<!--#endif badd -->
-</td>
-</tr><tr> 
-<td class="BabSiteAdminSmall" valign="middle" nowrap ><b>{ cntxt }</b> </td>
-<td class="BabSiteAdminSmall" valign="middle" align="left"><b><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0">{ emailtxt }</b></td>
-<td class="BabSiteAdminSmall" valign="middle" align="left"><b><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0">{ bteltxt }</b></td>
-<td class="BabSiteAdminSmall" valign="middle" align="left"><b><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0">{ hteltxt }</b></td>
-</tr>
-<!--#in getnext -->
-<tr><td class="BabSiteAdminFontBackground"valign="middle"><a class="BabNameEmailLink" href="javascript: Start('{ url }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ cn }</a></td>
-<td class="BabSiteAdminFontBackground" align="left" valign="middle"><!--#if accid "!= 0" --><a class="BabNameEmailLink" href="javascript: Start('{ urlmail }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ email }</a><!--#else accid --><a class="BabNameEmailLink" href="mailto:{ email }" target=_top>{ email }</a><!--#endif accid --></td>
-<td class="BabSiteAdminFontBackground" align="left" valign="middle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0">{ btel }</td>
-<td class="BabSiteAdminFontBackground" align="left" valign="middle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0">{ htel }</td>
-</tr>
-<!--#endin getnext -->
-</table>
+	<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr valign="middle"> 
+	<td colspan="4" class="BabLetterlists"> 
+	<!--#if allselected "== 1" -->
+	{ allname } &nbsp;
+	<!--#else allselected -->
+	<a href="{ allurl }">{ allname }</a> &nbsp;
+	<!--#endif allselected -->
+	<!--#in getnextselect -->
+	<!--#if selected "== 1" -->
+	{ selectname } &nbsp;
+	<!--#else selected -->
+	<a href="{ selecturl }">{ selectname }</a> &nbsp;
+	<!--#endif selected -->
+	<!--#endin getnextselect -->
+	</td>
+	</tr>
+	<tr  class="BabSiteAdminTitleFontBackground"> 
+		<td>{ sntxt }</td>
+		<td>{ givennametxt }</td>
+		<td>{ emailtxt }</td>
+		<td>{ bteltxt }</td>
+	</tr>
+	<!--#in getnext -->
+	<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+		<td>
+			<a href="javascript: Start('{ url }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ sn }</a>
+		</td>
+		<td>{ givenname }</td>
+		<td>
+			<!--#if accid "!= 0" --><a href="javascript: Start('{ urlmail }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ email }</a><!--#else accid --><a  href="mailto:{ email }">{ email }</a><!--#endif accid -->
+		</td>
+		<td <!--#if htel --> title="{ hteltxt } : { htel }" <!--#endif htel --> >{ btel }</td>
+	</tr>
+	<!--#endin getnext -->
+	</table>
 </td>
 </tr>
 </table>
@@ -249,16 +249,16 @@ window.focus();
 <table  width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<table class="BabLoginMenuBackground"  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ name }</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
+<td align="right" nowrap valign="middle">{ name }</td>
+<td> 
 <input type="file" name="uploadf" size="40" maxlength="255" value="">
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ separator }</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
+<td align="right" nowrap valign="middle">{ separator }</td>
+<td > 
 <select name="wsepar">
 <option value="0">{ other }</option>
 <option value="1" selected >{ comma }</option>
@@ -268,8 +268,8 @@ window.focus();
 </td>
 </tr>
 <tr>
-<td class="BabLoginMenuBackground" nowrap>&nbsp;</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
+<td >&nbsp;</td>
+<td > 
 <input type="submit" name="Submit" value="{ import }">
 <br>
 </td>
