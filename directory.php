@@ -836,7 +836,7 @@ function addDbContact($id, $fields)
 				$this->error = true;
 				}
 
-			$this->db = $GLOBALS['babDB'];
+			$this->db = &$GLOBALS['babDB'];
 
 			$this->name = "";
 			$this->urlimg = $GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$id."&idu=";
@@ -902,7 +902,10 @@ function addDbContact($id, $fields)
 
 				if( isset($this->fields[$this->fieldv]) )
 					{
-					$this->fvalue = $this->fields[$this->fieldv];
+					if (bab_isMagicQuotesGpcOn())
+						$this->fvalue = stripslashes($this->fields[$this->fieldv]);
+					else
+						$this->fvalue = $this->fields[$this->fieldv];
 					}
 				else
 					{

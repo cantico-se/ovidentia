@@ -111,19 +111,7 @@
 <!--#end waitingcomments --> 
 
 <!--#begin confirmarticle -->
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE>{ babSiteName }</TITLE>
-{ babMeta }
-{ babCss }
-<script type="text/javascript" src="{ babOvidentiaJs }">
-<!--
-window.focus();
-//-->
-</script>
-</HEAD>
-<BODY class="BabBackground">
+
 <br>
 <form method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="approb">
@@ -133,58 +121,41 @@ window.focus();
 <br>
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
-<td class="BabLoginMenuBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr>
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ arttxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ arttitle }</td>
-</tr>
-<tr>
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ pathtxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ pathname }</td>
-</tr>
-<tr>
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ authortxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ author }</td>
-</tr>
-<tr>
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ confirmtxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">
-<select name="bconfirm">
-<option value="Y">{ yes }</option>
-<option value="N">{ no }</option>
-</select>
-</td>
-</tr>
-<tr>
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ commenttxt }:</b></td><td class="BabSiteAdminFontBackground" align="left"><textarea cols="40" rows="10" name="comment"></textarea>
-</td>
-</tr>
-<tr>
-<td class="BabSiteAdminFontBackground" align="right" width="30%">&nbsp;</td><td class="BabSiteAdminFontBackground" align="left"><input type="submit" name="block" value="{ updatetxt }">
-</td>
-</tr>
-</table>
+<td class="BabLoginCadreBackground"> 
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+	<tr>
+	<td align="right" width="30%">{ arttxt }:</td><td>{ arttitle }</td>
+	</tr>
+	<tr>
+	<td align="right" width="30%">{ pathtxt }:</td><td>{ pathname }</td>
+	</tr>
+	<tr>
+	<td align="right" width="30%">{ authortxt }:</td><td>{ author }</td>
+	</tr>
+	<tr>
+	<td align="right" width="30%">{ confirmtxt }:</td><td>
+		<select name="bconfirm">
+		<option value="Y">{ yes }</option>
+		<option value="N">{ no }</option>
+		</select>
+	</td>
+	</tr>
+	<tr>
+	<td align="right" width="30%">{ commenttxt }:</td><td><textarea cols="40" rows="10" name="comment"></textarea>
+	</td>
+	</tr>
+	<tr>
+	<td align="right" width="30%">&nbsp;</td><td><input type="submit" name="block" value="{ updatetxt }">
+	</td>
+	</tr>
+	</table>
 </td>
 </tr>
 </table>
 </form>
-<br>
-</BODY>
-</HTML>
 <!--#end confirmarticle -->
 
 <!--#begin confirmcomment -->
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE>{ babSiteName }</TITLE>
-{ babMeta }
-{ babCss }
-<script type="text/javascript" src="{ babOvidentiaJs }">
-<!--
-window.focus();
-//-->
-</script>
-</HEAD>
-<BODY class="BabBackground">
-<br>
 <form method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="approb">
 <input type="hidden" name="idx" value="unload">
@@ -193,45 +164,42 @@ window.focus();
 <br>
 <table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
-<td class="BabLoginMenuBackground"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabSiteAdminFontBackground" align="right" nowrap valign="middle"><b>{ action }:</b></td>
-<td class="BabSiteAdminFontBackground" valign="middle"> 
-<select name="action">
-  <option value="1" selected>{ confirm }</option>
-  <option value="0" >{ refuse }</option>
-</select>
-</td>
-</tr>
-<tr> 
-<td class="BabSiteAdminFontBackground" nowrap>&nbsp;</td>
-<td class="BabSiteAdminFontBackground" valign="middle"> 
-<input type="checkbox" name="send" value="1">
-&nbsp;{ what } </td>
-</tr>
-<tr> 
-<td class="BabSiteAdminFontBackground" align="right" nowrap valign="top"><b>{ message }:</b></td>
-<td class="BabSiteAdminFontBackground" valign="middle"> 
-<textarea cols="50" rows="10" name="message"></textarea>
-</td>
-</tr>
-<tr> 
-<td class="BabSiteAdminFontBackground" nowrap>&nbsp;</td>
-<td class="BabSiteAdminFontBackground" valign="top"> 
-<input type="submit" name="submit" value="{ modify }">
-<br>
-</td>
-</tr>
-</table>
+<td class="BabLoginCadreBackground"> 
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+	<tr> 
+	<td align="right">{ action }:</td>
+	<td> 
+	<select name="action">
+	  <option value="1" selected>{ confirm }</option>
+	  <option value="0" >{ refuse }</option>
+	</select>
+	</td>
+	</tr>
+	<tr> 
+	<td>&nbsp;</td>
+	<td> 
+		<input type="checkbox" name="send" value="1">
+		&nbsp;{ what } </td>
+	</tr>
+	<tr> 
+	<td align="right" valign="top">{ message }:</td>
+	<td > 
+		<textarea cols="50" rows="10" name="message"></textarea>
+	</td>
+	</tr>
+	<tr> 
+	<td>&nbsp;</td>
+	<td> 
+		<input type="submit" name="submit" value="{ modify }">
+	<br>
+	</td>
+	</tr>
+	</table>
 </td>
 </tr>
 </table>
 <br>
 </form>
-<br>
-</BODY>
-</HTML>
 <!--#end confirmcomment -->
 
 <!--#begin previewarticle -->
@@ -510,47 +478,30 @@ window.focus();
 <!--#end confirmvacation -->
 
 <!--#begin confirmpost -->
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE>{ babSiteName }</TITLE>
-{ babMeta }
-{ babCss }
-<script type="text/javascript">
-<!--
-window.focus();
-//-->
-</script>
-</HEAD>
-<BODY class="BabBackground">
-<br>
+
 <table width="90%" border="0" cellspacing="0" cellpadding="0" align="center">
 <tr>
-<td class="BabMailBackground"> 
-<table border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
-<tr>
-<td class="BabFaqTitleFontBg" align="center" >{ title }</td>
-</tr>
+<td class="BabLoginCadreBackground"> 
+		
+		<table class="BabSiteAdminFontBackground" border="0" width="90%" cellpadding="2" cellspacing="0" align="center">
+		<tr> 
+		<td width="100%" colspan="2">{ postsubject }</td>
+		</tr>
+		<tr> 
+		<td colspan="2"><br>{ postmessage }<br>
+		</td>
+		</tr>
+		<tr> 
+		<td width="60%">{ postdate }</td>
+		<td width="40%" align="right">{ postauthor }</td>
+		</tr>
+		</table>
+	<br>
+	</td>
+	</tr>
 </table>
 <br>
-<table class="" border="0" width="90%" cellpadding="2" cellspacing="0" align="center">
-<tr> 
-<td class="BabForumTopicsNavTitle" width="100%" colspan="2">{ postsubject }</td>
-</tr>
-<tr> 
-<td class="BabForumBackground" colspan="2"><br>{ postmessage }<br>
-</td>
-</tr>
-<tr> 
-<td class="BabForumTopicsNavDate" nowrap width="60%">{ postdate }</td>
-<td class="BabForumTopicsNavAuthor" nowrap width="40%" align="right">{ postauthor }</td>
-</tr>
-</table>
-<br>
-</td>
-</tr>
-</table>
-<br>
+
 <form method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="approb">
 <input type="hidden" name="idx" value="sunload">
@@ -558,34 +509,31 @@ window.focus();
 <input type="hidden" name="thread" value="{ thread }">
 <input type="hidden" name="idpost" value="{ idpost }">
 <br>
-<table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginMenuBackground"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabSiteAdminFontBackground" align="right" nowrap valign="middle"><b>{ action }:</b></td>
-<td class="BabSiteAdminFontBackground" valign="middle"> 
-<select name="action">
-  <option value="1" selected>{ confirm }</option>
-  <option value="0" >{ refuse }</option>
-</select>
-</td>
-</tr>
-<tr> 
-<td class="BabSiteAdminFontBackground" nowrap>&nbsp;</td>
-<td class="BabSiteAdminFontBackground" valign="top"> 
-<input type="submit" name="submit" value="{ modify }">
-<br>
-</td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
+	<table  width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+	<td class="BabLoginCadreBackground"> 
+		<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+		<tr> 
+		<td align="right">{ action }:</td>
+		<td> 
+		<select name="action">
+		  <option value="1" selected>{ confirm }</option>
+		  <option value="0" >{ refuse }</option>
+		</select>
+		</td>
+		</tr>
+		<tr> 
+		<td>&nbsp;</td>
+		<td> 
+		<input type="submit" name="submit" value="{ modify }">
+		<br>
+		</td>
+		</tr>
+		</table>
+	</td>
+	</tr>
+	</table>
 </form>
-<br>
-</body>
-</html>
 <!--#end confirmpost -->
 
 <!--#begin waitingevents --> 
@@ -645,90 +593,60 @@ window.focus();
 <!--#end waitingevents --> 
 
 <!--#begin confirmevent -->
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE>{ babSiteName }</TITLE>
-{ babMeta }
-{ babCss }
-<script type="text/javascript" src="{ babOvidentiaJs }">
-<!--
-window.focus();
-//-->
-</script>
-</HEAD>
-<BODY class="BabBackground">
-<!--#if recurrent -->
-<br />
-<table border="0" width="100%" cellpadding="1" cellspacing="0" align="center">
-<tr>
-<td class="BabErrorMessage" align="center" >{ warningmsg }</td>
-</tr>
-</table>
-<!--#endif recurrent -->
-<br />
-<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr>
-<td class="BabLoginMenuBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabSiteAdminFontBackground" align="right">&nbsp;</td>
-<td class="BabSiteAdminFontBackground" align="left"><strong>{ eventtitle }</strong></td>
-</tr>
-<tr> 
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ eventstartdatetxt }:</b></td>
-<td class="BabSiteAdminFontBackground" align="left">{ eventstartdate }</td>
-</tr>
-<tr> 
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ eventenddatetxt }:</b></td>
-<td class="BabSiteAdminFontBackground" align="left">{ eventenddate }</td>
-</tr>
-<tr> 
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ eventdescriptiontxt 
-}:</b></td>
-<td class="BabSiteAdminFontBackground" align="left">{ eventdescription }</td>
-</tr>
-<!--#if count -->
-<tr> 
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ eventattendeestxt 
-}:</b></td>
-<td class="BabSiteAdminFontBackground" align="left">
-<!--#in getnextattendee -->
-{ eventattendee }
-<!--#endin getnextattendee -->
-</td>
-</tr>
-<!--#endif count -->
-</table>
-</td>
-</tr>
-</table>
-<br>
+
 <form method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="approb">
 <input type="hidden" name="idx" value="unload">
 <input type="hidden" name="conf" value="evt">
 <input type="hidden" name="idevent" value="{ idevent }">
 <input type="hidden" name="idcal" value="{ idcal }">
-<table class="BabLoginCadreBackground" width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginMenuBackground" align="center" valign="middle">{ commenttxt }: </td>
-</tr> 
-<tr> 
-<td class="BabLoginMenuBackground" align="center" valign="middle">
-<textarea cols="40" rows="10" name="remarks"></textarea>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="center" valign="middle">
-<div align="center"><input type="submit" name="confirm" value="{ confirm }">&nbsp;&nbsp;<input type="submit" name="refuse" value="{ refuse }"></div>
-</td>
-</tr>
-</table>
+
+<table width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr>
+<td class="BabLoginCadreBackground"> 
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+	<!--#if recurrent -->
+	<tr><td colspan="2" align="center">{ warningmsg }</td></tr>
+	<!--#endif recurrent -->
+	<tr> 
+	<td align="right" width="30%">{ eventstartdatetxt }:</td>
+	<td>{ eventstartdate }</td>
+	</tr>
+	<tr> 
+	<td align="right">{ eventenddatetxt }:</td>
+	<td>{ eventenddate }</td>
+	</tr>
+	<tr> 
+	<td align="right">{ eventdescriptiontxt }:</td>
+	<td>{ eventdescription }</td>
+	</tr>
+	<!--#if count -->
+	<tr> 
+	<td align="right">{ eventattendeestxt }:</td>
+	<td>
+	<!--#in getnextattendee -->
+	{ eventattendee }
+	<!--#endin getnextattendee -->
+	</td>
+	</tr>
+	<!--#endif count -->
+	
+	<tr> 
+	<td align="center" colspan="2"><br /><br />{ commenttxt }: </td>
+	</tr> 
+	<tr> 
+	<td align="center" colspan="2">
+	<textarea cols="40" rows="10" name="remarks"></textarea>
+	</td>
+	</tr>
+	<tr> 
+	<td align="center" colspan="2">
+	<input type="submit" name="confirm" value="{ confirm }">&nbsp;&nbsp;<input type="submit" name="refuse" value="{ refuse }"></div>
+	</td>
+	</tr>
+	</table>
 </td>
 </tr>
 </table>
 </form>
-</BODY>
-</HTML>
 <!--#end confirmevent -->

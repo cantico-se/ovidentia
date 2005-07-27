@@ -647,11 +647,28 @@ function listWaitingAddons()
 }
 
 
+class bab_confirmWaiting
+{
+	function getHtml($file, $template)
+	{
+	include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
+
+	$GLOBALS['babBodyPopup'] = & new babBodyPopup();
+
+	$GLOBALS['babBodyPopup']->title = & $GLOBALS['babBody']->title;
+	$GLOBALS['babBodyPopup']->msgerror = & $GLOBALS['babBody']->msgerror;
+
+	$GLOBALS['babBodyPopup']->babecho(bab_printTemplate($this, $file, $template));
+	printBabBodyPopup();
+	}
+}
+
+
 function confirmWaitingVacation($id)
 	{
 	global $babBody;
 
-	class temp
+	class temp extends bab_confirmWaiting
 		{
 		var $datebegintxt;
 		var $datebegin;
@@ -735,19 +752,14 @@ function confirmWaitingVacation($id)
 		}
 
 	$temp = new temp($id);
-
-	include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
-	$GLOBALS['babBodyPopup'] = & new babBodyPopup();
-	$GLOBALS['babBodyPopup']->babecho(bab_printTemplate($temp, "approb.html", "confirmvacation"));
-	printBabBodyPopup();
-
+	$temp->getHtml("approb.html", "confirmvacation");
 	return $temp->count;
 	}
 
 function confirmWaitingArticle($idart)
 {
 	global $babBody;
-	class temp
+	class temp extends bab_confirmWaiting
 		{
 		var $arttxt;
 
@@ -777,19 +789,19 @@ function confirmWaitingArticle($idart)
 					}
 				else
 					{
-					echo bab_translate("Access denied");
+					$GLOBALS['babBody']->msgerror = bab_translate("Access denied");
 					}
 				}
 			else
 				{
-				echo bab_translate("Access denied");
+				$GLOBALS['babBody']->msgerror = bab_translate("Access denied");
 				}
 			}
 
 		}
 
 	$temp = new temp($idart);
-	echo bab_printTemplate($temp, "approb.html", "confirmarticle");
+	$temp->getHtml("approb.html", "confirmarticle");
 }
 
 
@@ -797,7 +809,7 @@ function confirmWaitingPost($thread, $post)
 	{
 	global $babBody;
 
-	class confirmWaitingPostCls
+	class confirmWaitingPostCls extends bab_confirmWaiting
 		{
 	
 		var $postmessage;
@@ -817,7 +829,7 @@ function confirmWaitingPost($thread, $post)
 			
 			$arr = $db->db_fetch_array($db->db_query($req));
 			
-			$this->title = $arr['forumname'];
+			$GLOBALS['babBody']->title = $arr['forumname'];
 			$this->postdate = bab_strftime(bab_mktime($arr['date']));
 			$this->postauthor = $arr['author'];
 			$this->postsubject = bab_replace($arr['subject']);
@@ -830,7 +842,7 @@ function confirmWaitingPost($thread, $post)
 			}
 		}
 	$temp = new confirmWaitingPostCls($thread, $post);
-	echo bab_printTemplate($temp,"approb.html", "confirmpost");
+	$temp->getHtml("approb.html", "confirmpost");
 	}
 
 
@@ -838,7 +850,7 @@ function confirmWaitingPost($thread, $post)
 function confirmWaitingComment($idcom)
 	{
 
-	class confirmWaitingCommentCls
+	class confirmWaitingCommentCls extends bab_confirmWaiting
 		{
 		var $action;
 		var $confirm;
@@ -871,13 +883,13 @@ function confirmWaitingComment($idcom)
 				}
 			else
 				{
-				echo bab_translate("Access denied");
+				$GLOBALS['babBody']->msgerror = bab_translate("Access denied");
 				}
 			}
 		}
 	
 	$temp = new confirmWaitingCommentCls($idcom);
-	echo bab_printTemplate($temp,"approb.html", "confirmcomment");
+	$temp->getHtml("approb.html", "confirmcomment");
 	}
 
 
@@ -885,7 +897,7 @@ function confirmWaitingEvent($idevent, $idcal)
 	{
 	global $babBody;
 
-	class temp
+	class temp extends bab_confirmWaiting
 		{
 		var $datebegintxt;
 
@@ -903,7 +915,7 @@ function confirmWaitingEvent($idevent, $idcal)
 			$this->idcal = $idcal;
 			$res = $babDB->db_query("select cet.*, ceot.id_cal from ".BAB_CAL_EVENTS_TBL." cet left join ".BAB_CAL_EVENTS_OWNERS_TBL." ceot on cet.id=ceot.id_event where ceot.id_cal='".$idcal."' and ceot.id_event='".$idevent."'");
 			$arr = $babDB->db_fetch_array($res);
-			$this->eventtitle = $arr['title'];
+			$GLOBALS['babBody']->title = $arr['title'];
 			$this->eventstartdate = bab_shortDate(bab_mktime($arr['start_date']), true);
 			$this->eventenddate = bab_shortDate(bab_mktime($arr['end_date']), true);
 			$this->eventdescription = $arr['description'];
@@ -940,7 +952,7 @@ function confirmWaitingEvent($idevent, $idcal)
 		}
 
 	$temp = new temp($idevent, $idcal);
-	echo bab_printTemplate($temp, "approb.html", "confirmevent");
+	$temp->getHtml("approb.html", "confirmevent");
 	return $temp->count;
 	}
 

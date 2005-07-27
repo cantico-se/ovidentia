@@ -291,26 +291,26 @@ window.focus();
 <table  width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ separator }</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<select name="wsepar">
-<option value="0">{ other }</option>
-<option value="1" selected >{ comma }</option>
-<option value="2">{ tab }</option>
-</select>&nbsp;&nbsp;
-<input type="text" name="separ" size="1" maxlength="1" value="">
-</td>
-</tr>
-<tr>
-<td class="BabLoginMenuBackground" nowrap>&nbsp;</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="submit" name="expfile" value="{ export }">
-<br>
-</td>
-</tr>
-</table>
+	<table class="BabLoginMenuBackground"  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+	<tr> 
+	<td align="right">{ separator }</td>
+	<td> 
+	<select name="wsepar">
+	<option value="0">{ other }</option>
+	<option value="1" selected >{ comma }</option>
+	<option value="2">{ tab }</option>
+	</select>&nbsp;&nbsp;
+	<input type="text" name="separ" size="1" maxlength="1" value="">
+	</td>
+	</tr>
+	<tr>
+	<td>&nbsp;</td>
+	<td valign="middle"> 
+	<input type="submit" name="expfile" value="{ export }">
+	<br>
+	</td>
+	</tr>
+	</table>
 </td>
 </tr>
 </table>
@@ -334,18 +334,18 @@ window.focus();
 <td width="50%" align="center" nowrap valign="middle" colspan="2"><font color="red">*</font>&nbsp;{ helpfields }</td>
 </tr><!--#if buserinfo -->
 <tr> 
-<td class="BabLoginMenuBackground" width="50%" align="right" nowrap valign="middle">{ password }&nbsp;<font color="red">*</font></td>
-<td class="BabLoginMenuBackground" width="50%" valign="middle"><input type="password" name="password1" size="20" maxlength="15" value="">
+<td width="50%" align="right">{ password }&nbsp;<font color="red">*</font></td>
+<td width="50%"><input type="password" name="password1" size="20" maxlength="15" value="">
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" width="50%" align="right" nowrap valign="middle">{ repassword }&nbsp;<font color="red">*</font></td>
-<td class="BabLoginMenuBackground" width="50%" valign="middle"><input type="password" name="password2" size="20" maxlength="15" value="">
+<td  align="right">{ repassword }&nbsp;<font color="red">*</font></td>
+<td><input type="password" name="password2" size="20" maxlength="15" value="">
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" width="50%" align="right" nowrap valign="middle">{ nickname }&nbsp;<font color="red">*</font></td>
-<td class="BabLoginMenuBackground" width="50%" valign="middle">
+<td align="right">{ nickname }&nbsp;<font color="red">*</font></td>
+<td>
 <select name="nickname">
 <option value=""></option>
 <!--#in getnextval -->
@@ -357,8 +357,8 @@ window.focus();
 <!--#endif buserinfo -->
 <!--#in getnextfield -->
 <tr> 
-<td class="BabLoginMenuBackground" width="50%" align="right" nowrap valign="middle">{ ofieldname }&nbsp;<!--#if required "== Y" --><font color="red">*</font><!--#endif required --></td>
-<td class="BabLoginMenuBackground" width="50%" valign="middle">
+<td  align="right">{ ofieldname }&nbsp;<!--#if required "== Y" --><font color="red">*</font><!--#endif required --></td>
+<td>
 <select name="{ ofieldv }">
 <option value=""></option>
 <!--#in getnextval -->
