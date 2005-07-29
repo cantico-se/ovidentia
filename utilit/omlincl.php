@@ -264,7 +264,7 @@ class bab_Addon extends bab_handler
 				$this->AddonHtmlPath =  isset($GLOBALS['babAddonHtmlPath'])? $GLOBALS['babAddonHtmlPath']: '';
 				$this->AddonUpload =  isset($GLOBALS['babAddonUpload'])? $GLOBALS['babAddonUpload']: '';
 
-				$GLOBALS['babAddonFolder'] = $babBody->babaddons[$addonid]['title']['title'];
+				$GLOBALS['babAddonFolder'] = $babBody->babaddons[$addonid]['title'];
 				$GLOBALS['babAddonTarget'] = "addon/".$addonid;
 				$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$addonid."/";
 				$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$babBody->babaddons[$addonid]['title']."/";
@@ -4558,6 +4558,77 @@ function bab_Header($args)
 			}
 		header($value);
 		}
+	}
+
+
+function bab_Addon($args)
+	{
+	global $babBody;
+	$output = '';
+	if($this->match_args($args, $mm))
+		{
+		$function_args = array();
+		for( $j = 0; $j< count($mm[1]); $j++)
+			{
+			switch(strtolower(trim($mm[1][$j])))
+				{
+				case 'name':
+					foreach ($babBody->babaddons as $value)
+						{
+						if ($value['title'] == $mm[3][$j])
+							{
+							$addonid = $value['id'];
+							break;
+							}
+						}
+					break;
+				
+				case 'function':
+					$function = $mm[3][$j];
+					break;
+				default:
+					$function_args[] = $mm[3][$j];
+					break;
+				}
+			}
+
+		if (!empty($addonid) && !empty($function))
+			{
+			$addonpath = $GLOBALS['babAddonsPath'].$babBody->babaddons[$addonid]['title'];
+			if( is_file($addonpath."/ovml.php" ))
+				{
+				/* save old vars */
+				$oldAddonFolder = isset($GLOBALS['babAddonFolder'])? $GLOBALS['babAddonFolder']: '';
+				$oldAddonTarget = isset($GLOBALS['babAddonTarget'])? $GLOBALS['babAddonTarget']: '';
+				$oldAddonUrl =  isset($GLOBALS['babAddonUrl'])? $GLOBALS['babAddonUrl']: '';
+				$oldAddonPhpPath =  isset($GLOBALS['babAddonPhpPath'])? $GLOBALS['babAddonPhpPath']: '';
+				$oldAddonHtmlPath =  isset($GLOBALS['babAddonHtmlPath'])? $GLOBALS['babAddonHtmlPath']: '';
+				$oldAddonUpload =  isset($GLOBALS['babAddonUpload'])? $GLOBALS['babAddonUpload']: '';
+
+				$GLOBALS['babAddonFolder'] = $babBody->babaddons[$addonid]['title'];
+				$GLOBALS['babAddonTarget'] = "addon/".$addonid;
+				$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$addonid."/";
+				$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$babBody->babaddons[$addonid]['title']."/";
+				$GLOBALS['babAddonHtmlPath'] = "addons/".$babBody->babaddons[$addonid]['title']."/";
+				$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath']."/addons/".$babBody->babaddons[$addonid]['title']."/";
+				require_once( $addonpath."/ovml.php" );
+
+				$call = $babBody->babaddons[$addonid]['title']."_".$function;
+				if( !empty($call)  && function_exists($call) )
+					{
+					$output = call_user_func_array ( $call, $function_args );
+					}
+
+				$GLOBALS['babAddonFolder'] = $oldAddonFolder;
+				$GLOBALS['babAddonTarget'] = $oldAddonTarget;
+				$GLOBALS['babAddonUrl'] = $oldAddonUrl;
+				$GLOBALS['babAddonPhpPath'] = $oldAddonPhpPath;
+				$GLOBALS['babAddonHtmlPath'] = $oldAddonHtmlPath;
+				$GLOBALS['babAddonUpload'] = $oldAddonUpload;
+				}
+			}
+		}
+	return $output;
 	}
 
 function printout($txt)

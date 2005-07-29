@@ -285,7 +285,7 @@ class bab_synchronizeSql
 				}
 			else
 				{
-				$this->db->db_query(trim($this->tables[$table]['create']," ;"));
+				$this->db->db_query(trim($this->create[$table]['create']," ;"));
 				$this->return[$table] = 1;
 				}
 			}
