@@ -1211,7 +1211,8 @@ function doExportVacationRequests($dateb, $datee, $idstatus, $wsepar, $separ, $s
 			$line[] = $date_begin;
 			$line[] = $date_end;
 			$line[] = '';
-			$line = array_merge($line, array_fill(5, count($types)+1, 0));
+			for ($i = 0; $i <= count($types) ; $i++)
+				$line[] = 0;
 			
 			array_walk($line, 'arr_csv');
 			$output .= implode($separ,$line)."\n";
