@@ -180,7 +180,7 @@ function changeNickname($nickname)
 				{
 				list($idu) = $babDB->db_fetch_array($babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='0' and id_user='".$GLOBALS['BAB_SESS_USERID']."'"));
 				$this->bupdateuserinfo = true;
-				$this->urldbmod = $GLOBALS['babUrlScript']."?tg=directory&idx=dbmod&id=".$id."&idu=".$idu."&refresh=1";
+				$this->urldbmod = $GLOBALS['babUrlScript']."?tg=directory&idx=dbmod&id=".$id."&refresh=1";
 				$this->updateuserinfo = bab_translate("Update personal informations");
 				}
 

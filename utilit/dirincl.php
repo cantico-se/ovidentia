@@ -380,6 +380,10 @@ function summaryDbContact($id, $idu, $update=true)
 
 		function temp($id, $idu, $update)
 			{
+			if (!bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL,$id))
+				{
+				die( bab_translate('Access denied') );
+				}
 			$this->t_print = bab_translate("Print");
 
 			$this->db = &$GLOBALS['babDB'];

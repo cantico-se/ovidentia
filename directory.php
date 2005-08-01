@@ -606,7 +606,7 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 			$this->file = bab_translate("File");
 			$this->update = bab_translate("Update");
 			$this->id = $id;
-			$this->idu = $idu;
+			
 			$this->fields = $fields;
 			$this->what = "dbc";
 			$this->badd = bab_isAccessValid(BAB_DBDIRADD_GROUPS_TBL, $id);
@@ -619,12 +619,25 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 				$this->msgerror = $babBody->msgerror;
 				$this->error = true;
 				}
+
 			$this->db = &$GLOBALS['babDB'];
 			
 			$arr = $this->db->db_fetch_array($this->db->db_query("select id_group, user_update from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
 			$this->idgroup = $arr['id_group'];
 			$allowuu = $arr['user_update'];
 
+			if ( (!$this->bupd && $allowuu == 'N') || ($allowuu == 'Y' && false !== $idu ) )
+				{
+				die( bab_translate('Access denied'));
+				}
+
+			if (false === $idu)
+				{
+				$req = "select id from ".BAB_DBDIR_ENTRIES_TBL." where id_user='".$GLOBALS['BAB_SESS_USERID']."'";
+				list($idu) = $this->db->db_fetch_array($this->db->db_query($req));
+				}
+
+			$this->idu = $idu;
 			$this->showph = false;
 			$res = $this->db->db_query("select *, LENGTH(photo_data) as plen from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".($this->idgroup != 0? 0: $this->id)."' and id='".$idu."'");
 			if( $res && $this->db->db_num_rows($res) > 0)
@@ -644,8 +657,7 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 					$this->delete = bab_translate("Delete this picture");
 					}
 
-				if( $this->bupd == false && $allowuu == "Y" && $this->arr['id_user'] == $GLOBALS['BAB_SESS_USERID'] )
-					$this->bupd = true;
+				
 
 				}
 			else
@@ -2042,7 +2054,9 @@ switch($idx)
 	case "dbmod":
 		if (!isset($fields)) {$fields = array();}
 		if (!isset($refresh)) {$refresh = '';}
+		$idu = isset($_REQUEST['idu']) ? $_REQUEST['idu'] : false;
 		modifyDbContact($id, $idu, $fields, $refresh);
+		
 		exit;
 		break;
 	case "getimg":

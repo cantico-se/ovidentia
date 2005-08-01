@@ -166,9 +166,7 @@ valign="middle">{ password }:</td>
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
 	<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center" class="BabLoginMenuBackground">
 	<tr><td align="center" valign="middle">
-	<form method="post" action="javascript: Start('{ urldbmod }', 'OviDir', 'width=550,height=500,status=no,resizable=yes,top=50,left=200,scrollbars=yes');">
-	<input type="submit" name="submit" value="{ updateuserinfo }">
-	</form>
+	<input type="button" value="{ updateuserinfo }" onclick="javascript: Start('{ urldbmod }', 'OviDir', 'width=550,height=500,status=no,resizable=yes,top=50,left=200,scrollbars=yes');" />
 	</td></tr></table>
 </td></tr></table>
 <br>
@@ -180,7 +178,7 @@ valign="middle">{ password }:</td>
 	<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center" class="BabLoginMenuBackground">
 	<tr><td align="center" valign="middle">
 
-	<input type="button" value="{ changepassword }" onclick="javascript: Start('{ urlchangepassword }', 'OviDir', 'width=450,height=170,status=no,resizable=yes,top=50,left=200,scrollbars=yes');">
+	<input type="button" value="{ changepassword }" onclick="javascript: Start('{ urlchangepassword }', 'OviDir', 'width=450,height=170,status=no,resizable=yes,top=50,left=200,scrollbars=yes');" />
 
 	</td></tr></table>
 </td></tr></table>
@@ -222,9 +220,9 @@ valign="middle">{ password }:</td>
 <br>
 <!--#endif changenickname -->
 <!--#end changenickname -->
-<br><br><br><br>
+
+
 <!--#begin changelang -->
-<br>
 <form method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="options">
 <input type="hidden" name="update" value="lang">
@@ -272,9 +270,9 @@ valign="middle">{ password }:</td>
 <br>
 </form>
 <!--#end changelang -->
-<br><br><br><br>
+
+
 <!--#begin changeskin -->
-<br>
 <form name="formskin" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="options">
 <input type="hidden" name="update" value="skin">
@@ -309,8 +307,8 @@ valign="middle">{ password }:</td>
 </td>
 </tr>
 </table>
-<br>
 </form>
+<br />
 <script type="text/javascript">
 <!--
 var sksel = { skselectedindex };
