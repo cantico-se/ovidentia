@@ -4592,7 +4592,7 @@ function bab_Addon($args)
 				}
 			}
 
-		if (!empty($addonid) && !empty($function))
+		if (!empty($addonid) && !empty($function) && isset($babBody->babaddons[$addonid]) && $babBody->babaddons[$addonid]['access'])
 			{
 			$addonpath = $GLOBALS['babAddonsPath'].$babBody->babaddons[$addonid]['title'];
 			if( is_file($addonpath."/ovml.php" ))
