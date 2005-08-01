@@ -182,124 +182,121 @@
 <!--#end emailpassword -->
 
 <!--#begin registration -->
-<br>
-	
-<table border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
-<tr>
-<td class="BabBodyTitleBackground" align="center" >{ infotxt1 }<br />{ infotxt2 }<br /></td>
-</tr></table>
-<br>
 <!--#if bphoto -->
 <form method="post" action="{ babPhpSelf }" enctype="multipart/form-data">
 <!--#else bphoto -->
 <form method="post" action="{ babPhpSelf }">
 <!--#endif bphoto -->
-<input type="hidden" name="tg" value="login">
-<input type="hidden" name="adduser" value="register">
+<input type="hidden" name="tg" value="login" />
+<input type="hidden" name="adduser" value="register" />
 
 <center>
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle"><font color="red">*</font>{ nickname } : </td>
-<td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"><input type="text" name="nickname" size="30" maxlength="60" value="{ nicknameval }"></td>
-</tr>
-<!--#in getnextfield -->
-<tr> 
-<td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">
-<!--#if required "== Y" --><font color="red">*</font><!--#endif required -->
-{ fieldname } :
-</td>
-<td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
-<!--#if bfieldphoto -->
-<input type="file" name="photof" size="30" maxlength="255" value="">
-<!--#else bfieldphoto -->
+	<table class="BabLoginMenuBackground"  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+	<tr>
+		<td colspan="2" align="center"><br />{ infotxt1 }<br />{ infotxt2 }<br /><br /></td>
+	</tr>
+	
+	<tr> 
+	<td width="30%" align="right"><font color="red">*</font>{ nickname } : </td>
+	<td><input type="text" name="nickname" size="30" maxlength="60" value="{ nicknameval }" /></td>
+	</tr>
+	<!--#in getnextfield -->
+	<tr> 
+	<td align="right">
+	<!--#if required "== Y" --><font color="red">*</font><!--#endif required -->
+	{ fieldname } :
+	</td>
+	<td>
+	<!--#if bfieldphoto -->
+	<input type="file" name="photof" size="30" maxlength="255" value="" />
+	<!--#else bfieldphoto -->
 
-<!--#if multivalues -->
-<select name="fields[{ fieldv }]">
-<!--#if required "!= Y" -->
-<option value=""></option>
-<!--#endif required -->
-<!--#in getnextfxv -->
-<option value="{ fxvvalue }" { selected }>{ fxvvalue }</option>
-<!--#endin getnextfxv -->
-</select>
-<!--#else multivalues -->
+	<!--#if multivalues -->
+	<select name="fields[{ fieldv }]">
+	<!--#if required "!= Y" -->
+	<option value=""></option>
+	<!--#endif required -->
+	<!--#in getnextfxv -->
+	<option value="{ fxvvalue }" { selected }>{ fxvvalue }</option>
+	<!--#endin getnextfxv -->
+	</select>
+	<!--#else multivalues -->
 
-<!--#if fieldt "== N" -->
-<input type="text" name="fields[{ fieldv }]" size="40" value="{ fieldval }">
-<!--#else fieldt -->
-<textarea cols="30" rows="4" name="fields[{ fieldv }]">{ fieldval }</textarea>
-<!--#endif fieldt -->
+	<!--#if fieldt "== N" -->
+	<input type="text" name="fields[{ fieldv }]" size="40" value="{ fieldval }" />
+	<!--#else fieldt -->
+	<textarea cols="30" rows="4" name="fields[{ fieldv }]">{ fieldval }</textarea>
+	<!--#endif fieldt -->
 
-<!--#endif multivalues -->
+	<!--#endif multivalues -->
 
-<!--#endif bfieldphoto -->
-</td>
-</tr>
-<!--#endin getnextfield -->
-<tr> 
-<td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle"><font color="red">*</font>{ password } : </td>
-<td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"><input type="password" name="password1" size="20" maxlength="15">&nbsp;{ passwordlengthtxt }</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle"><font color="red">*</font>{ repassword } : </td>
-<td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"><input type="password" name="password2" size="20" maxlength="15"></td>
-</tr>
-<!--#if bagree -->
-<tr> 
-<td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle"><font color="red">*</font></td>
-<td class="BabLoginMenuBackground" width="70%" align="left" nowrap valign="middle"><input type="checkbox" name="cagree" value="Y" { cagreechecked }>&nbsp;{ disclaimer }&nbsp;(&nbsp;<a href="javascript: Start('{ urlshowdp }', 'OviRegisterDP', 'width=600,height=1000,status=no,resizable=yes,top=10,left=200,scrollbars=yes');">{ readtxt }</a>&nbsp;)</td>
-</tr>
-<!--#endif bagree -->
-<!--#in getnextprofile -->
-<tr valign="middle"> 
-<td class="BabLoginMenuBackground" colspan="2" align="center">
-<table border="0" width="90%" cellpadding="2" cellspacing="0">
-<tr class="BabSiteAdminTitleFontBackground">
-<td valign="middle" width="1%">&nbsp;</td>
-<td valign="middle"><!--#if brequired --><font color="red">*</font><!--#endif brequired -->&nbsp;{ pdesc } </td>
-</tr>
-<!--#if bmultiplicity -->
-<!--#in getnextgrp -->
-<!--#if altbg -->
-<tr class="BabSiteAdminFontBackground">
-<!--#else altbg -->
-<tr class="BabForumBackground1">
-<!--#endif altbg --> 
-<td valign="middle" width="1%" align="right"> 
-<input type="checkbox" name="grpids{ idprofile }[]" { grpcheck } value="{ grpid }">
-</td>
-<td valign="middle">{ grpdesc }</td>
-</tr>
-<!--#else bmultiplicity -->
-<tr class="BabSiteAdminTitleFontBackground">
-<td valign="middle" width="1%">&nbsp;</td>
-<td valign="middle">
-<select name="grpids{ idprofile }[]">
-<option value=""></option>
-<!--#in getnextgrp -->
-<option value="{ grpid }" { grpcheck }>{ grpdesc }</option>
-<!--#endin getnextgrp -->
-</select>
-</td>
-</tr>
-<!--#endif bmultiplicity -->
-</tr>        
-<!--#endin getnextgrp -->
-</table>
-</td>
-</tr>
-<!--#endin getnextprofile -->
-<tr> 
-<td class="BabLoginMenuBackground" colspan="2" nowrap valign="middle" align="center"><font color="red">*</font>&nbsp;{ requiredtxt }</td>
-</tr>
-<tr valign="middle"> 
-<td class="BabLoginMenuBackground" colspan="2" align="center"><input type="submit" name="Submit2" value="{ adduser }"></td>
-</tr>
-</table>
+	<!--#endif bfieldphoto -->
+	</td>
+	</tr>
+	<!--#endin getnextfield -->
+	<tr> 
+	<td align="right"><font color="red">*</font>{ password } : </td>
+	<td><input type="password" name="password1" size="20" maxlength="15" />&nbsp;{ passwordlengthtxt }</td>
+	</tr>
+	<tr> 
+	<td align="right"><font color="red">*</font>{ repassword } : </td>
+	<td><input type="password" name="password2" size="20" maxlength="15" /></td>
+	</tr>
+	<!--#if bagree -->
+	<tr> 
+	<td align="right"><font color="red">*</font></td>
+	<td><input type="checkbox" name="cagree" value="Y" { cagreechecked } />&nbsp;{ disclaimer }&nbsp;(&nbsp;<a href="javascript: Start('{ urlshowdp }', 'OviRegisterDP', 'width=600,height=1000,status=no,resizable=yes,top=10,left=200,scrollbars=yes');">{ readtxt }</a>&nbsp;)</td>
+	</tr>
+	<!--#endif bagree -->
+	<!--#in getnextprofile -->
+	<tr valign="middle"> 
+	<td colspan="2" align="center">
+		<table border="0" width="90%" cellpadding="2" cellspacing="0">
+		<tr class="BabSiteAdminTitleFontBackground">
+		<td width="1%">&nbsp;</td>
+		<td><!--#if brequired --><font color="red">*</font><!--#endif brequired -->&nbsp;{ pdesc } </td>
+		</tr>
+		<!--#if bmultiplicity -->
+		<!--#in getnextgrp -->
+		<!--#if altbg -->
+		<tr class="BabSiteAdminFontBackground">
+		<!--#else altbg -->
+		<tr class="BabForumBackground1">
+		<!--#endif altbg --> 
+		<td valign="middle" width="1%" align="right"> 
+		<input type="checkbox" name="grpids{ idprofile }[]" { grpcheck } value="{ grpid }">
+		</td>
+		<td valign="middle">{ grpdesc }</td>
+		</tr>
+		<!--#else bmultiplicity -->
+		<tr class="BabSiteAdminTitleFontBackground">
+		<td width="1%">&nbsp;</td>
+		<td>
+			<select name="grpids{ idprofile }[]">
+			<option value=""></option>
+			<!--#in getnextgrp -->
+			<option value="{ grpid }" { grpcheck }>{ grpdesc }</option>
+			<!--#endin getnextgrp -->
+			</select>
+		</td>
+		</tr>
+		<!--#endif bmultiplicity -->
+		</tr>        
+		<!--#endin getnextgrp -->
+		</table>
+	</td>
+	</tr>
+	<!--#endin getnextprofile -->
+	<tr> 
+	<td colspan="2" align="center"><font color="red">*</font>&nbsp;{ requiredtxt }</td>
+	</tr>
+	<tr> 
+	<td colspan="2" align="center"><input type="submit" name="Submit2" value="{ adduser }" /></td>
+	</tr>
+	</table>
 </td>
 </tr>
 </table>

@@ -948,7 +948,7 @@ class bab_sqlExport
 					case 'int':
 					case 'bigint':
 					case 'timestamp':
-						$value[$i] = $line[$col];
+						$value[$i] = "'".$line[$col]."'";
 						break;
 					case 'blob':
 					case 'mediumblob':

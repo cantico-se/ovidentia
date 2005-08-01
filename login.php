@@ -198,10 +198,22 @@ function displayRegistration($nickname, $fields, $cagree)
 			$this->password = bab_translate("Password");
 			$this->repassword = bab_translate("Retype Password");
 			$this->adduser = bab_translate("Register");
-			$this->infotxt1 = bab_translate("Please provide a valid email.");
-			$this->infotxt2 = bab_translate("We will send you an email for confirmation before you can use our services");
+			
 			$this->requiredtxt = bab_translate("Those fields are required");
 			$this->passwordlengthtxt = bab_translate("At least 6 characters");
+
+			list($email_confirm) = $babDB->db_fetch_array($babDB->db_query("select email_confirm FROM ".BAB_SITES_TBL." where id='".$babBody->babsite['id']."'"));
+
+			if ($email_confirm == 'Y')
+				{
+				$this->infotxt1 = bab_translate("Please provide a valid email.");
+				$this->infotxt2 = bab_translate("We will send you an email for confirmation before you can use our services");
+				}
+			else
+				{
+				$this->infotxt1 = '';
+				$this->infotxt2 = bab_translate("Your acount will be activated only after validation");
+				}
 
 			if( $babBody->babsite['display_disclaimer'] == "Y" )
 				{
