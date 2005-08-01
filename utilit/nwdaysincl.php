@@ -124,7 +124,7 @@ function bab_getNonWorkingDays($year)
 				{
 				$return[$r_date] = bab_translate($nw_type);
 
-				$db->db_query("INSERT INTO ".BAB_SITES_NONWORKING_DAYS_TBL." (id_site,nw_day,nw_type) VALUES ('".$id_site."', '".$r_date."', '".$nw_type."')");
+				$db->db_query("INSERT INTO ".BAB_SITES_NONWORKING_DAYS_TBL." (id_site,nw_day,nw_type) VALUES ('".$id_site."', '".$r_date."', '".$db->db_escape_string($nw_type)."')");
 				}
 			}
 		}

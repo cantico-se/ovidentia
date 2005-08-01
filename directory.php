@@ -656,9 +656,9 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 					$this->urlimg = $GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$this->id."&idu=".$idu;
 					$this->delete = bab_translate("Delete this picture");
 					}
-
 				
-
+				if( $this->bupd == false && $allowuu == "Y" && $this->arr['id_user'] == $GLOBALS['BAB_SESS_USERID'] )
+					$this->bupd = true;
 				}
 			else
 				{
