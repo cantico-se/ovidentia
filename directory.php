@@ -626,7 +626,7 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 			$this->idgroup = $arr['id_group'];
 			$allowuu = $arr['user_update'];
 
-			if ( (!$this->bupd && $allowuu == 'N') || ($allowuu == 'Y' && false !== $idu ) )
+			if ( (!$this->bupd && $allowuu == 'N') || (!$this->bupd && $allowuu == 'Y' && false !== $idu ) )
 				{
 				die( bab_translate('Access denied'));
 				}
