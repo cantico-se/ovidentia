@@ -639,11 +639,13 @@ return true;
 
 function stepChangeTopic(cmd, fmname) 
 { 
+<!--#if warnfilemessage -->
 //}
 if (!confirm('{ warnfilemessage }'))
 	return false;
 if( typeof document.forms[fmname] != "object" ) return;
 	document.forms[fmname].submit();
+<!--#endif warnfilemessage -->
 return true;
 }
 
@@ -832,43 +834,37 @@ return true;
 <tr> 
 <td>
 <br>
-<table class="BabLoginCadreBackground" width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
+<table class="BabLoginCadreBackground" width="97%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td> 
-<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
-<tr> 
-<td align="center" valign="right">{ titletxt }:</td>
-<td valign="left"><b>{ draftname }</b></td>
-</tr>
-</table>
-</td>
-</tr>
-</table><table class="BabLoginCadreBackground" width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td> 
-<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
-<tr> 
-<td align="center" valign="middle"><b>{ topicpath }</b></td>
-</tr>
-<!--#if bshowtopics -->
-<tr> 
-<td align="center" valign="middle"><b>{ topictxt }:</b>&nbsp;&nbsp;
-<select name="topicid" onchange="javascript:stepChangeTopic('proptop','propform');">
-<option value="0"></option>
-<!--#in getnexttopic -->
-<option value="{ idtopic }" { selected }>{ topicname }</option>
-<!--#endin getnexttopic -->
-</select>
-</td>
-</tr>
-<!--#else bshowtopics -->
-<input type="hidden" name="topicid" value="{ drafttopic }">
-<!--#endif bshowtopics -->
-</table>
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
+	<tr> 
+	<td align="center">{ titletxt } : { draftname }</td>
+	</tr>
+	<tr> 
+	<td align="center" valign="middle"><b>{ topicpath }</b></td>
+	</tr>
+	<!--#if bshowtopics -->
+	<tr> 
+	<td align="center" valign="middle">{ topictxt }:&nbsp; 
+	<select name="topicid" onchange="javascript:stepChangeTopic('proptop','propform');">
+	<option value="0"></option>
+	<!--#in getnexttopic -->
+	<option value="{ idtopic }" { selected }>{ topicname }</option>
+	<!--#endin getnexttopic -->
+	</select>
+	</td>
+	</tr>
+	<!--#else bshowtopics -->
+	<input type="hidden" name="topicid" value="{ drafttopic }">
+	<!--#endif bshowtopics -->
+	</table>
 </td>
 </tr>
 </table>
-<table class="BabLoginCadreBackground" width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
+<br />
+
+<table class="BabLoginCadreBackground" width="97%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td> 
 <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
@@ -990,8 +986,10 @@ return true;
 </td>
 </tr>
 </table>
+<br />
+
 <!--#if allowhpages -->
-<table class="BabLoginCadreBackground" width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
+<table class="BabLoginCadreBackground" width="97%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td> 
 <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
@@ -1016,114 +1014,121 @@ return true;
 </td>
 </tr>
 </table>
+<br />
+
 <!--#endif allowhpages -->
 <!--#if allowattachments -->
-<table class="BabLoginCadreBackground" width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
+<table class="BabLoginCadreBackground" width="97%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td> 
-<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
-<tr> 
-<td align="left" valign="middle" colspan="3"><b>{ filetitle }:</b></td>
-</tr>
-<tr> 
-<td align="right" valign="middle">{ filetxt }:</td>
-<td align="left" valign="middle"><input type="file" name="docf" size="50" maxlength="255" value="">&nbsp;&nbsp;{ maxsizetxt }
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
+	<tr> 
+	<td align="left" valign="middle" colspan="3"><b>{ filetitle }:</b></td>
+	</tr>
+	<tr> 
+	<td align="right">{ filetxt }:</td>
+	<td><input type="file" name="docf" maxlength="255" value=""> &nbsp; { maxsizetxt }
+	</td>
+	<td>&nbsp;</td>
+	</tr>
+	<tr> 
+	<td align="right" valign="middle">{ desctxt }:</td>
+	<td align="left" valign="middle"><input type="text" name="docdesc" maxlength="255" value=""> &nbsp; <input type="submit" name="badd" value="{ addtxt }" onclick="javascript:stepSubmitForm('fadd','propform');">
+	</td>
+	<td align="right" valign="middle">&nbsp;
+	</td>
+	</tr>
+	<!--#if countfiles -->
+	<!--#in getnextfile -->
+	<tr> 
+	<td align="center" valign="middle" colspan="3">
+		<table width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
+		<tr>
+		<td width="1%"><a title="{ deletetxt }" href="{ deleteurl }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/del.gif" alt="{ deletetxt }" border="0"></a></td>
+		<td width="20%" align="left" valign="middle"><a href="{ urlfile }">{ name }</a></td>
+		<td align="left" valign="middle">{ docdesc }</td>
+		</tr>
+		</table>
+	</td>
+	</tr>
+	<!--#endin getnextfile -->
+	<!--#endif countfiles -->
+	</table>
 </td>
-<td align="right" valign="middle">&nbsp;
-</td>
-</tr>
-<tr> 
-<td align="right" valign="middle">{ desctxt }:</td>
-<td align="left" valign="middle"><input type="text" name="docdesc" size="50" maxlength="255" value="">&nbsp;<input type="submit" name="badd" value="{ addtxt }" onclick="javascript:stepSubmitForm('fadd','propform');">
-</td>
-<td align="right" valign="middle">&nbsp;
-</td>
-</tr>
-<!--#if countfiles -->
-<!--#in getnextfile -->
-<tr> 
-<td width="1%" align="center" valign="middle" colspan="3">
-<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
-<tr>
-<td width="1%"><a class="BabForumTopicsNavContribution" title="{ deletetxt }" href="{ deleteurl }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/del.gif" alt="{ deletetxt }" border="0"></a></td>
-<td width="20%" align="left" valign="middle"><a class="BabForumTopicsNavContribution" href="{ urlfile }">{ name }</a></td>
-<td align="left" valign="middle">{ docdesc }</td>
 </tr>
 </table>
-</td>
-</tr>
-<!--#endin getnextfile -->
-<!--#endif countfiles -->
-</table>
-</td>
-</tr>
-</table>
+<br />
+
 <!--#endif allowattachments -->
 <!--#if notifymembers -->
-<table class="BabLoginCadreBackground" width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
+<table class="BabLoginCadreBackground" width="97%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td> 
-<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
-<tr> 
-<td align="left" valign="middle"><b>{ notifytitle }:</b></td>
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
+	<tr> 
+	<td align="left" valign="middle"><b>{ notifytitle }:</b></td>
+	</td>
+	</tr>
+	<tr> 
+	<td valign="middle"> 
+	<input type="checkbox" name="notifm" value="Y" { cnotifmcheck }>&nbsp;&nbsp;{ notifmtxt }</td>
+	</tr>
+	<tr> 
+	<td valign="middle" align="right"> 
+	&nbsp;</td>
+	</tr>
+	</table>	
 </td>
 </tr>
-<tr> 
-<td valign="middle"> 
-<input type="checkbox" name="notifm" value="Y" { cnotifmcheck }>&nbsp;&nbsp;{ notifmtxt }</td>
-</tr>
-<tr> 
-<td valign="middle" align="right"> 
-&nbsp;</td>
-</tr>
 </table>
-</td>
-</tr>
-</table>
+<br />
+
 <!--#endif notifymembers -->
 <!--#if restrictaccess -->
-<table class="BabLoginCadreBackground" width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
+<table class="BabLoginCadreBackground" width="97%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td > 
-<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
-<tr> 
-<td align="left" valign="middle" colspan="2"><b>{ restrictiontitletxt }:</b></td>
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
+	<tr> 
+	<td align="left" valign="middle" colspan="2"><b>{ restrictiontitletxt }:</b></td>
+	</td>
+	</tr>
+	<tr> 
+	<td align="right">{ restrictiontxt }:</td>
+	<td> 
+	<select name="restriction">
+	<option value="" { norestrictsel }>{ norestricttxt }</option>
+	<option value="1" { yesrestrictsel }>{ yesrestricttxt }</option>
+	</select>
+	</td>
+	</tr>
+	<tr> 
+	<td align="right">{ operatortxt }:</td>
+	<td> 
+	<select name="operator">
+	<option value="," { operatororysel }>{ ortxt }</option>
+	<option value="&" { operatorornsel }>{ andtxt }</option>
+	</select>
+	</td>
+	</tr>
+	<tr> 
+	<td align="right">{ groupstxt }:</td>
+	<td> 
+	<!--#in getnextgroup -->
+	<br><input type="checkbox" name="grpids[]" value="{ grpid }" { grpcheck } >&nbsp;{ grpname }
+	<!--#endin getnextgroup -->
+	</td>
+	</tr>
+	<tr> 
+	<td colspan="2"> 
+	&nbsp;</td>
+	</tr>
+	</table>
 </td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ restrictiontxt }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<select name="restriction">
-<option value="" { norestrictsel }>{ norestricttxt }</option>
-<option value="1" { yesrestrictsel }>{ yesrestricttxt }</option>
-</select>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ operatortxt }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<select name="operator">
-<option value="," { operatororysel }>{ ortxt }</option>
-<option value="&" { operatorornsel }>{ andtxt }</option>
-</select>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ groupstxt }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<!--#in getnextgroup -->
-<br><input type="checkbox" name="grpids[]" value="{ grpid }" { grpcheck } >&nbsp;{ grpname }
-<!--#endin getnextgroup -->
-</td>
-</tr>
-<tr> 
-<td colspan="2" class="BabLoginMenuBackground" valign="middle" align="right"> 
-&nbsp;</td>
 </tr>
 </table>
-</td>
-</tr>
-</table>
+<br />
+
 <!--#endif restrictaccess -->
 <br>
 <table width="97%" border="0" cellspacing="0" cellpadding="2" align="center">
