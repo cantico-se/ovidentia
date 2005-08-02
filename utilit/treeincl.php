@@ -50,9 +50,13 @@ class bab_dbtree
 		}
 		else
 		{
-			$where = $table.".id_user='".$this->iduser."'";
-			if( !empty($this->userinfo))
-				$this->where .= " and ".$table.".info_user='".$this->userinfo."'";
+			$where = '';
+			if (!empty($this->iduser))
+				{
+				$where = $table.".id_user='".$this->iduser."'";
+				if( !empty($this->userinfo))
+					$where .= " and ".$table.".info_user='".$this->userinfo."'";
+				}
 			return $where;
 		}
 	}
@@ -112,7 +116,10 @@ class bab_dbtree
 	function getPreviousSibling($id)
 	{
 		global $babDB;
-        $res = $babDB->db_query("SELECT p1.* FROM ".$this->table." p1 ,".$this->table." p2 WHERE ".$this->getWhereClause('p1')." and p2.lf=p1.lr+1 AND p2.id_parent=p1.id_parent AND p2.id='".$id."'");
+		$where = $this->getWhereClause('p1');
+		if (!empty($where))
+			$where .= ' and ';
+        $res = $babDB->db_query("SELECT p1.* FROM ".$this->table." p1 ,".$this->table." p2 WHERE ".$where." p2.lf=p1.lr+1 AND p2.id_parent=p1.id_parent AND p2.id='".$id."'");
 		if( $res && $babDB->db_num_rows($res) > 0 )
 		{
 			return $babDB->db_fetch_array($res);
@@ -126,7 +133,10 @@ class bab_dbtree
 	function getNextSibling($id)
 	{
 		global $babDB;
-		$res = $babDB->db_query("SELECT p1.* FROM ".$this->table." p1 ,".$this->table." p2 WHERE ".$this->getWhereClause('p1')." and p2.lr=p1.lf-1 AND p2.id_parent=p1.id_parent AND p2.id='".$id."'");
+		$where = $this->getWhereClause('p1');
+		if (!empty($where))
+			$where .= ' and ';
+		$res = $babDB->db_query("SELECT p1.* FROM ".$this->table." p1 ,".$this->table." p2 WHERE ".$where." p2.lr=p1.lf-1 AND p2.id_parent=p1.id_parent AND p2.id='".$id."'");
 		if( $res && $babDB->db_num_rows($res) > 0 )
 		{
 			return $babDB->db_fetch_array($res);
@@ -144,7 +154,10 @@ class bab_dbtree
 		$arr = array();
 		if( !$all )
 		{
-			$res = $babDB->db_query("SELECT p2.* FROM ".$this->table." p1 ,".$this->table." p2 WHERE ".$this->getWhereClause('p1')." and p1.id=p2.id_parent AND p1.id='".$id."' order by p2.lf asc");
+			$where = $this->getWhereClause('p1');
+			if (!empty($where))
+				$where .= ' and ';
+			$res = $babDB->db_query("SELECT p2.* FROM ".$this->table." p1 ,".$this->table." p2 WHERE ".$where." p1.id=p2.id_parent AND p1.id='".$id."' order by p2.lf asc");
 		}
 		else
 		{
@@ -295,7 +308,10 @@ class bab_dbtree
 		$rowdata['lf'] = $lr + 1;
 		$rowdata['lr'] = $lr + 2;
 
-		$res = $babDB->db_query("INSERT INTO ".$this->table." (lf, lr, id_parent, id_user, info_user) values ('".$rowdata['lf']."','".$rowdata['lr']."','".$rowdata['id_parent']."','".$this->iduser."','".$this->userinfo."')");
+		$id_user = !empty($this->iduser) ? array(', id_user', ",'".$this->iduser."'") : array('','');
+		$userinfo = !empty($this->userinfo) ? array(', info_user', ",'".$this->userinfo."'") : array('','');
+
+		$res = $babDB->db_query("INSERT INTO ".$this->table." (lf, lr, id_parent".$id_user[0].$userinfo[0].") values ('".$rowdata['lf']."','".$rowdata['lr']."','".$rowdata['id_parent']."'".$id_user[1].$userinfo[1].")");
 		if( $res )
 		{
 			$rowdata['id'] = $babDB->db_insert_id();
@@ -308,7 +324,6 @@ class bab_dbtree
 	function remove($id)
 	{
 		global $babDB;
-
 
 		$nodeinfo = $this->getNodeInfo($id);
 		if( !$nodeinfo )

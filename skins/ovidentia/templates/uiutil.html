@@ -55,7 +55,10 @@ close }</a> </td>
 	{ babMeta }
 	{ babCss }
 
-	<style type="text/css" media="screen">
+	<style type="text/css">
+	<!--#in getnextstylesheet -->
+	@import url('{ babInstallPath }styles/{ file }');
+	<!--#endin getnextstylesheet -->
 
 	.babbodypopup div.BabContentBackground {
 		width:98%;
@@ -168,3 +171,11 @@ close }</a> </td>
 </div>
 <input type="hidden" id="{ editname }_textmode" name="bab_editor_textmode[]" value="{ editname }" />
 <!--#end babtexttoolbartemplate -->
+
+<!--#begin styleSheet -->
+<style type="text/css">
+<!--#in getnextstylesheet -->
+@import url('{ babInstallPath }styles/{ file }');
+<!--#endin getnextstylesheet -->
+</style>
+<!--#end styleSheet -->

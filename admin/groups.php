@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-
+include_once $babInstallPath."utilit/grptreeincl.php";
 
 function groupCreate()
 	{
@@ -104,80 +104,61 @@ function groupCreate()
 	$babBody->babecho(	bab_printTemplate($temp,"groups.html", "groupscreate"));
 	}
 
+
+class bab_grp_node
+{
+	function bab_grp_node(&$tree, $id_group)
+	{
+	$this->tree = &$tree;
+	$this->childs = $tree->getChilds($id_group);
+	}
+
+	function getnextgroup()
+	{
+	if ($this->childs && list(,$this->arr) = each($this->childs))
+		{
+		if ($this->arr['id'] < 4)
+			{
+			$this->arr['name'] = bab_translate($this->arr['name']);
+			$this->arr['description'] = htmlentities(bab_translate($this->arr['description']));
+			}
+		$this->subtree = bab_grp_node_html($this->tree, $this->arr['id']);
+		return true;
+		}
+	else 
+		{
+		return false;
+		}
+	}
+}
+
+function bab_grp_node_html(&$tree, $id_group)
+{
+	$temp = & new bab_grp_node($tree, $id_group);
+	if ($temp->childs)
+		return bab_printTemplate($temp, "groups.html", "grp_childs");
+	else return '';
+}
+
+
 function groupList()
 	{
+
 	global $babBody;
+
 	class temp
 		{
-		var $name;
-		var $mail;
-		var $urlname;
-		var $url;
-		var $description;
-		var $descval;
-		var $dgtxt;
-		var $dgval;
-				
-		var $arr = array();
-		var $db;
-		var $count;
-		var $res;
-		var $checked;
-		var $altbg = true;
-
 		function temp()
 			{
-			global $babBody;
-			$this->name = bab_translate("Name");
-			$this->mail = bab_translate("Mail");
-			$this->description = bab_translate("Description");
-			$this->manager = bab_translate("Manager");
-			if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0)
-				$this->dgtxt = bab_translate("Delegation");
-			else
-				$this->dgtxt = "";
-			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_GROUPS_TBL." where id > 2 and id_dgowner='".$babBody->currentAdmGroup."' order by name asc";
-			$this->res = $this->db->db_query($req);
-			$this->count = $this->db->db_num_rows($this->res);
-			}
-
-		function getnext()
-			{
-			static $i = 0;
-			if( $i < $this->count)
-				{
-				$this->altbg = $this->altbg ? false : true;
-				if( $i == 0)
-					$this->checked = "checked";
-				else
-					$this->checked = "";
-				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->url = $GLOBALS['babUrlScript']."?tg=group&idx=Modify&item=".$this->arr['id'];
-				$this->urlname = $this->arr['name'];
-				$this->descval = $this->arr['description'];
-				$this->managername = bab_getUserName($this->arr['manager']);
-				if( $this->arr['mail'] == "Y")
-					$this->arr['mail'] = bab_translate("Yes");
-				else
-					$this->arr['mail'] = bab_translate("No");
-				if( $this->arr['id_dggroup'] != 0 )
-					{
-					list($this->dgval) = $this->db->db_fetch_row($this->db->db_query("select name from ".BAB_DG_GROUPS_TBL." where id='".$this->arr['id_dggroup']."'"));
-					}
-				else
-					$this->dgval = '';					
-				$i++;
-				return true;
-				}
-			else
-				return false;
-
+			$this->t_ovusers = bab_translate("Ovidentia users");
+			$tree = & new bab_grptree();
+			$this->tpl_tree = bab_grp_node_html($tree, 0);
 			}
 		}
 
 	$temp = new temp();
-	$babBody->babecho(	bab_printTemplate($temp, "groups.html", "groupslist"));
+	$babBody->addStyleSheet('groups.css');
+	$babBody->babecho(bab_printTemplate($temp, "groups.html", "grp_maintree"));
 	}
 
 function groupsOptions()
@@ -416,7 +397,6 @@ switch($idx)
 			$babBody->title = bab_translate("Options");
 			$babBody->addItemMenu("List", bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=groups&idx=List");
 			$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=groups&idx=options");
-			$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=groups&idx=Create");
 			$babBody->addItemMenu("plist", bab_translate("Profiles"), $GLOBALS['babUrlScript']."?tg=profiles&idx=plist");
 		}
 		else
@@ -431,7 +411,6 @@ switch($idx)
 			$babBody->title = bab_translate("Create a group");
 			$babBody->addItemMenu("List", bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=groups&idx=List");
 			$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=groups&idx=options");
-			$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=groups&idx=Create");
 			$babBody->addItemMenu("plist", bab_translate("Profiles"), $GLOBALS['babUrlScript']."?tg=profiles&idx=plist");
 		}
 		else
@@ -447,7 +426,6 @@ switch($idx)
 			$babBody->title = bab_translate("Groups list");
 			$babBody->addItemMenu("List", bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=groups&idx=List");
 			$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=groups&idx=options");
-			$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=groups&idx=Create");
 			$babBody->addItemMenu("plist", bab_translate("Profiles"), $GLOBALS['babUrlScript']."?tg=profiles&idx=plist");
 		}
 		else

@@ -1,6 +1,3 @@
-
-<!-- groups -->
-
 <!--#begin groupscreate -->
 <script type="text/javascript">
 <!--
@@ -83,38 +80,7 @@ else
 
 <!--#end groupscreate -->
 
-<br><br><br><br>
-<!--#begin groupslist -->
-<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground" align="center" valign="middle"> 
 
-<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" valign="middle">{ name } </td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle">{ manager } </td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle">{ description } </td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle">{ dgtxt } </td>
-</tr>
-
-<!--#in getnext --> 
-<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
-<td valign="top"><a class="BabSiteAdminListLink" href="{ url }">{ urlname }</a></td>
-<td valign="top" nowrap>{ managername } </td>
-<td valign="top">{ descval }</td>
-<td valign="top">{ dgval }</td>
-</tr>
-
-<!--#endin getnext -->
-
-</table>
-
-</td></tr></table>
-
-<br>
-
-<!--#end groupslist -->
-<br><br><br><br>
 <!--#begin memberslist -->
 <form method="post" action="{ babPhpSelf }" name="listform">
 <input type="hidden" name="tg" value="group">
@@ -307,3 +273,31 @@ window.focus();
 </BODY>
 </HTML>
 <!--#end browsegroups -->
+
+
+
+<!--#begin grp_maintree -->
+<script type="text/javascript" src="{ babInstallPath }scripts/ul_tree.js"></script>
+<div id="bab_groups_tree">
+
+<p>
+<a href="javascript:tree.expand();">{ t_expand_all }</a> 
+<a href="javascript:tree.collapse();">{ t_collapse_all }</a>
+</p>
+<h3>{ t_ovusers }</h3>
+{ tpl_tree }
+</div>
+<script type="text/javascript">
+var tree = new bab_ul_tree('bab_groups_tree');
+tree.processList();
+</script>
+<!--#end grp_maintree -->
+
+<!--#begin grp_childs -->
+<ul>
+	<!--#in getnextgroup -->
+	<li id="bab_ovgroup_{ arr[id] }"><a href="" title="{ arr[description] }">{ arr[name] }</a></li>
+	{ subtree }
+	<!--#endin getnextgroup -->
+</ul>
+<!--#end grp_childs -->

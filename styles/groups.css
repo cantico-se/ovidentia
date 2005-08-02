@@ -1,0 +1,31 @@
+#bab_groups_tree ul {
+	list-style-type:none;
+	margin:0;
+	padding:0;
+	margin-left:2%;
+}
+
+#bab_groups_tree li {
+	margin:.5em 0;
+	padding:0;
+}
+
+#bab_groups_tree li .bullet { padding-left: 15px; }
+
+#bab_groups_tree .bab_ul_tree_open .bullet { 
+	cursor: pointer; 
+	background: url(../skins/ovidentia/images/Puces/minus.gif) center left no-repeat; 
+	}
+
+#bab_groups_tree .bab_ul_tree_closed .bullet { 
+	cursor: pointer; 
+	background: url(../skins/ovidentia/images/Puces/plus.gif) center left no-repeat; 
+	}
+
+#bab_groups_tree .bab_ul_tree_leaf .bullet { 
+	cursor: default; 
+	background: none;
+	}
+
+#bab_groups_tree ul.bab_ul_tree_open { display: block; }
+#bab_groups_tree ul.bab_ul_tree_closed { display: none; }

@@ -52,6 +52,7 @@ var $msgerror;
 var $content;
 var $title;
 var $message;
+var $styleSheet = array();
 
 function babBodyPopup()
 {
@@ -87,6 +88,13 @@ function setCurrentItemMenu($title, $enabled=false)
 {
 	$this->menu->setCurrent($title, $enabled);
 }
+
+function addStyleSheet($file)
+{
+	$this->styleSheet[] = $file;
+}
+
+
 
 function printout()
 {
@@ -124,9 +132,10 @@ function printBabBodyPopup()
 			$this->menuvals = array_values($babBodyPopup->menu->items);
 			$this->menuitems = count($this->menukeys);
 
-			$this->content = $babBodyPopup->printout();
-			$this->title = $babBodyPopup->title;
-			$this->msgerror = $babBodyPopup->msgerror;
+			$this->content = &$babBodyPopup->printout();
+			$this->title = &$babBodyPopup->title;
+			$this->msgerror = &$babBodyPopup->msgerror;
+			$this->styleSheet = &$babBodyPopup->styleSheet;
 			}
 
 		function getNextMenu()
@@ -163,6 +172,11 @@ function printBabBodyPopup()
 				}
 			else
 				return false;
+			}
+
+		function getnextstylesheet()
+			{
+			return list(,$this->file) = each($this->styleSheet);
 			}
 
 	}

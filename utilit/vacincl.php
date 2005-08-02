@@ -713,14 +713,16 @@ function viewVacationCalendar($users, $period = false )
 				{
 				include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 				$GLOBALS['babBodyPopup'] = & new babBodyPopup();
-				$GLOBALS['babBodyPopup']->title = $GLOBALS['babBody']->title;
-				$GLOBALS['babBodyPopup']->msgerror = $GLOBALS['babBody']->msgerror;
+				$GLOBALS['babBodyPopup']->addStyleSheet('vacation.css');
+				$GLOBALS['babBodyPopup']->title = &$GLOBALS['babBody']->title;
+				$GLOBALS['babBodyPopup']->msgerror = &$GLOBALS['babBody']->msgerror;
 				$GLOBALS['babBodyPopup']->babecho($html);
 				printBabBodyPopup();
 				die();
 				}
 			else
 				{
+				$GLOBALS['babBody']->addStyleSheet('vacation.css');
 				$GLOBALS['babBody']->babecho($html);
 				}
 			}

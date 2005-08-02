@@ -1235,6 +1235,7 @@ var $waitapprobations; /* true if there are waiting approbations */
 var $acltables = array();
 var $idprimaryoc = 0; /* id of primary organizational chart */
 var $substitutes = array();
+var $styleSheet = array();
 
 //var $aclfm;
 //var $babsite;
@@ -1573,9 +1574,25 @@ function setCurrentItemMenu($title, $enabled=false)
 	$this->menu->setCurrent($title, $enabled);
 }
 
+function addStyleSheet($file)
+{
+	$this->styleSheet[] = $file;
+}
+
+function getnextstylesheet()
+{
+return list(,$this->file) = each($this->styleSheet);
+}
+
+
 function printout()
 {
-    if(!empty($this->msgerror))
+    if (count($this->styleSheet) > 0)
+		{
+		$this->content = bab_printTemplate($this,"uiutil.html", "styleSheet").$this->content;
+		}
+	
+	if(!empty($this->msgerror))
 		{
 		$this->message = bab_printTemplate($this,"warning.html", "texterror");
 		//return "";
