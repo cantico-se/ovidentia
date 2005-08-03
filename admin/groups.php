@@ -24,10 +24,10 @@
 include_once "base.php";
 include_once $babInstallPath."utilit/grptreeincl.php";
 
-function groupCreate()
+function groupCreateMod()
 	{
 	global $babBody;
-	class temp
+	class CreateMod
 		{
 		var $name;
 		var $description;
@@ -50,47 +50,95 @@ function groupCreate()
 		var $bdggroup;
 
 
-		function temp()
+		function CreateMod()
 			{
-			global $babBody, $babDB;
-			$this->name = bab_translate("Name");
+			global $babBody;
+			$this->t_name = bab_translate("Name");
 			$this->description = bab_translate("Description");
 			$this->managertext = bab_translate("Manager");
 			$this->useemail = bab_translate("Use email");
 			$this->no = bab_translate("No");
 			$this->yes = bab_translate("Yes");
-			$this->add = bab_translate("Add Group");
+			$this->t_record = bab_translate("Record");
 			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&cb=";
 			$this->grpdgtxt = bab_translate("Delegation group");
-			$this->noselected = "selected";
-			$this->yesselected = "";
-			$this->grpid = "";
-			$this->grpname = "";
-			$this->grpdesc = "";
-			$this->managerval = "";
-			$this->managerid = "";
-			$this->bdel = false;
+			$this->t_parent = bab_translate("Parent");
+			$this->t_delete = bab_translate("Delete");
+			$this->t_ovidentia_users = bab_translate("Ovidentia users");
+			$this->db = &$GLOBALS['babDB'];
 			$this->bdggroup = false;
-			$this->tgval = "groups";
-			$this->selected = "";
+			$this->bdel =false;
+			$this->maingroup = false;
+
+			if (isset($_REQUEST['id_group']))
+				{
+				$req = "select * from ".BAB_GROUPS_TBL." where id='".$_REQUEST['id_group']."'";
+				$res = $this->db->db_query($req);
+				$this->arr = $this->db->db_fetch_array($res);
+
+				$this->arr['managerval'] = bab_getUserName($this->arr['manager']);
+
+				if ($this->arr['id'] < 3)
+					{
+					$this->maingroup = true;
+					}
+				elseif ($this->arr['id'] > 3)
+					{
+					$this->bdel =true;
+					}
+				}
+
+			else
+				{
+				$this->arr = array(
+						'id' => '',
+						'name' => '',
+						'description' => '',
+						'manager' => 0,
+						'managerval' => '',
+						'id_parent' => BAB_REGISTERED_GROUP,
+						'id_dggroup' => 0
+					);
+
+				}
+
+
 			if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0)
 				{
-				$this->res = $babDB->db_query("select * from ".BAB_DG_GROUPS_TBL."");
-				$this->count = $babDB->db_num_rows($this->res);
+				$this->res = $this->db->db_query("select * from ".BAB_DG_GROUPS_TBL."");
+				$this->count = $this->db->db_num_rows($this->res);
 				if( $this->count > 0 )
 					$this->bdggroup = true;
+				}
+			
+
+			$tree = new bab_grptree();
+			$this->groups = $tree->getGroups(0, '&nbsp; &nbsp; &nbsp; %2$s');
+			unset($this->groups[BAB_UNREGISTERED_GROUP]);
+			}
+
+		function getnextgroup()
+			{
+			if (list($this->id, $this->name) = each($this->groups))
+				{
+				$this->selected = $this->id == $this->arr['id_parent'];
+				return true;
+				}
+			else
+				{
+				return false;
 				}
 			}
 
 		function getnext()
 			{
-			global $babDB;
 			static $i = 0;	
 			if( $i < $this->count)
 				{
-				$arr = $babDB->db_fetch_array($this->res);
+				$arr = $this->db->db_fetch_array($this->res);
 				$this->grpdgname = $arr['name'];
 				$this->grpdgid = $arr['id'];
+				$this->selected = $this->grpdgid == $this->arr['id_dggroup'];
 				$i++;
 				return true;
 				}
@@ -100,7 +148,7 @@ function groupCreate()
 
 		}
 
-	$temp = new temp();
+	$temp = new CreateMod();
 	$babBody->babecho(	bab_printTemplate($temp,"groups.html", "groupscreate"));
 	}
 
@@ -109,6 +157,10 @@ class bab_grp_node
 {
 	function bab_grp_node(&$tree, $id_group)
 	{
+	$this->t_group_set_d = bab_translate("Users group with delegation and group set associated");
+	$this->t_group_d = bab_translate("Users group with delegation");
+	$this->t_group_set = bab_translate("Group associated with one or more sets of groups");
+	$this->t_group = bab_translate("Users group");
 	$this->tree = &$tree;
 	$this->childs = $tree->getChilds($id_group);
 	}
@@ -120,8 +172,10 @@ class bab_grp_node
 		if ($this->arr['id'] < 4)
 			{
 			$this->arr['name'] = bab_translate($this->arr['name']);
-			$this->arr['description'] = htmlentities(bab_translate($this->arr['description']));
+			$this->arr['description'] = bab_translate($this->arr['description']);
 			}
+		$this->arr['description'] = htmlentities($this->arr['description']);
+		$this->arr['managerval'] = htmlentities(bab_getUserName($this->arr['manager']));
 		$this->subtree = bab_grp_node_html($this->tree, $this->arr['id']);
 		return true;
 		}
@@ -150,8 +204,14 @@ function groupList()
 		{
 		function temp()
 			{
-			$this->t_ovusers = bab_translate("Ovidentia users");
+			$this->t_expand_all = bab_translate("Expand all");
+			$this->t_collapse_all = bab_translate("Collapse all");
+			$this->t_newgroup = bab_translate("New group");
+			$this->t_group = bab_translate("Main groups folder");
 			$tree = & new bab_grptree();
+			$this->arr = $tree->getNodeInfo(0);
+			$this->arr['name'] = bab_translate($this->arr['name']);
+			$this->arr['description'] = htmlentities(bab_translate($this->arr['description']));
 			$this->tpl_tree = bab_grp_node_html($tree, 0);
 			}
 		}
@@ -290,11 +350,20 @@ function groupsOptions()
 	$babBody->babecho(	bab_printTemplate($temp, "groups.html", "groupsoptions"));
 	}
 
-function addGroup($name, $description, $managerid, $bemail, $grpdg)
+function addModGroup()
 	{
 	global $babBody;
 	include_once $GLOBALS['babInstallPath']."utilit/grpincl.php";
-	$id = bab_addGroup($name, $description, $managerid, $grpdg);
+
+	if ( is_numeric($_POST['idgrp']) )
+		{
+
+		}
+	else
+		{
+		$id = bab_addGroup($name, $description, $managerid, $grpdg);
+		}
+
 	if( !$id)
 		{
 		return false;
@@ -365,11 +434,9 @@ function saveGroupsOptions($mailgrpids, $notgrpids, $congrpids, $pdsgrpids, $dir
 if( !isset($idx))
 	$idx = "List";
 
-if( isset($add) && ($babBody->isSuperAdmin || $babBody->currentDGGroup['groups'] == 'Y'))
+if( isset($_POST['add']) && ($babBody->isSuperAdmin || $babBody->currentDGGroup['groups'] == 'Y'))
 	{
-	if( !isset($bemail)) { $bemail =''; }
-	if( !isset($grpdg)) { $grpdg = ''; }
-	addGroup($name, $description, $managerid, $bemail, $grpdg);
+	addModGroup();
 	}
 
 if( isset($update) && $update == "options" && ($babBody->isSuperAdmin || $babBody->currentDGGroup['groups'] == 'Y'))
@@ -407,9 +474,10 @@ switch($idx)
 	case "Create":
 		if( $babBody->isSuperAdmin || $babBody->currentDGGroup['groups'] == 'Y')
 		{
-			groupCreate();
+			groupCreateMod();
 			$babBody->title = bab_translate("Create a group");
 			$babBody->addItemMenu("List", bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=groups&idx=List");
+			$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=groups&idx=Create");
 			$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=groups&idx=options");
 			$babBody->addItemMenu("plist", bab_translate("Profiles"), $GLOBALS['babUrlScript']."?tg=profiles&idx=plist");
 		}
@@ -423,6 +491,7 @@ switch($idx)
 		if( $babBody->isSuperAdmin || $babBody->currentDGGroup['groups'] == 'Y')
 		{
 			groupList();
+			groupCreateMod();
 			$babBody->title = bab_translate("Groups list");
 			$babBody->addItemMenu("List", bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=groups&idx=List");
 			$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=groups&idx=options");

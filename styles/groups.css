@@ -1,16 +1,44 @@
+#bab_groups_tree {
+	
+	margin:0 .5em;
+	padding:2px;
+	margin-bottom:2em;
+}
+
+
+
 #bab_groups_tree ul {
 	list-style-type:none;
 	margin:0;
 	padding:0;
-	margin-left:2%;
+	margin-left:2em;
 }
 
-#bab_groups_tree li {
+#bab_groups_tree .tree {
+	background:#fff;
+	padding:1em 0;
+	margin:0;
+}
+
+
+#bab_groups_tree li, #bab_groups_tree h3 {
 	margin:.5em 0;
 	padding:0;
+	font-size:1em;
+	font-weight:normal;
+	color:#000;
 }
 
-#bab_groups_tree li .bullet { padding-left: 15px; }
+#bab_groups_tree li a {
+	text-decoration:none;
+	color:#000;
+}
+
+#bab_groups_tree li a:hover {
+	text-decoration:underline;
+}
+
+#bab_groups_tree li .bullet, #bab_groups_tree h3 { padding-left: 15px; }
 
 #bab_groups_tree .bab_ul_tree_open .bullet { 
 	cursor: pointer; 
@@ -27,5 +55,40 @@
 	background: none;
 	}
 
-#bab_groups_tree ul.bab_ul_tree_open { display: block; }
-#bab_groups_tree ul.bab_ul_tree_closed { display: none; }
+#bab_groups_tree .bab_ul_tree_open ul { display: block; }
+#bab_groups_tree .bab_ul_tree_closed ul { display: none; }
+
+#bab_groups_tree p.BabSiteAdminTitleFontBackground { /* buttons bar */
+	padding:.3em .5em;
+	margin:0;
+}
+
+#bab_groups_tree p.BabSiteAdminTitleFontBackground a {
+	margin:5px;
+	text-decoration:none;
+	background-position:0 50%;
+	background-repeat: no-repeat;
+	padding-left:15px;
+	}
+
+#bab_groups_tree p.BabSiteAdminTitleFontBackground a:hover {
+	text-decoration:underline;
+	}
+
+#bab_groups_tree .expand {
+	voice-family: "\"}\"";
+	voice-family:inherit;
+	background-image:url('../skins/ovidentia/images/Puces/PuceExpand.gif');
+	}
+
+#bab_groups_tree .collapse {
+	voice-family: "\"}\"";
+	voice-family:inherit;
+	background-image:url('../skins/ovidentia/images/Puces/PuceCollapse.gif');
+	}
+
+#bab_groups_tree .newgroup {
+	voice-family: "\"}\"";
+	voice-family:inherit;
+	background-image:url('../skins/ovidentia/images/Puces/PuceGroup.gif');
+	}

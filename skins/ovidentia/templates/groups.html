@@ -3,8 +3,8 @@
 <!--
 function onApprover(id, fn)
 {
-document.forms.gcreate.manager.value=fn;
-document.forms.gcreate.managerid.value=id;
+document.forms['gcreatemod'].managerval.value=fn;
+document.forms['gcreatemod'].manager.value=id;
 this.focus();
 op.close();
 }
@@ -20,58 +20,72 @@ else
 //-->
 </script>
 
-<form name="gcreate" method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="{ tgval }">
+<form name="gcreatemod" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="groups">
 <input type="hidden" name="idx" value="List">
-<input type="hidden" name="grpid" value="{ grpid }">
+<input type="hidden" name="grpid" value="{ arr[id] }">
 <input type="hidden" name="add" value="add">
-<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<table  width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ name }:</td>
-<td class="BabLoginMenuBackground" width="70%" valign="middle"> 
-<input type="text" name="name" size="20" maxlength="255" value="{ grpname }">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ description }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="description" size="45" maxlength="255" value="{ grpdesc }">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle"><a class="BabAlphabetLink" href="javascript: openPopup('{ usersbrowurl }');">{ managertext }</a>:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="manager" size="45" maxlength="255" value="{ managerval }" disabled>
-<input type="hidden" name="managerid" value="{ managerid }">
-</td>
-</tr>
-<!--#if bdggroup -->
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ grpdgtxt }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<select name="grpdg">
-<option value="0"></option>
-<!--#in getnext -->
-<option value="{ grpdgid }" { selected }>{ grpdgname }</option>
-<!--#endin getnext -->
-</select>
-</td>
-</tr>
-<!--#endif bdggroup -->
-<tr> 
-<td class="BabLoginMenuBackground">&nbsp;</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="submit" name="submit" value="{ add }">
-<!--#if bdel -->
-&nbsp;&nbsp;<input type="submit" name="deleteg" value="{ delete }">
-<!--#endif bdel -->
-<br>
-</td>
-</tr>
-</table>
+	<table class="BabLoginMenuBackground"  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+	<tr> 
+	<td align="right">{ t_name }:</td>
+	<td> 
+	<input type="text" name="name" size="20" maxlength="255" value="{ arr[name] }">
+	</td>
+	</tr>
+	<tr> 
+	<td align="right">{ description }:</td>
+	<td> 
+	<input type="text" name="description" size="45" maxlength="255" value="{ arr[description] }">
+	</td>
+	</tr>
+	<tr> 
+	<td align="right"><a href="javascript: openPopup('{ usersbrowurl }');">{ managertext }</a>:</td>
+	<td> 
+	<input type="text" name="managerval" size="45" value="{ arr[managerval] }" disabled="disabled" />
+	<input type="hidden" name="manager" value="{ arr[manager] }" />
+	</td>
+	</tr>
+	<tr> 
+	<td align="right">{ t_parent }:</td>
+	<td> 
+	<!--#if maingroup -->
+		{ t_ovidentia_users }
+	<!--#else maingroup -->
+	<select name="parent">
+	<!--#in getnextgroup -->
+	<option value="{ id }" <!--#if selected --> selected="selected" <!--#endif selected --> >{ name }</option>
+	<!--#endin getnextgroup -->
+	</select>
+	<!--#endif maingroup -->
+	</td>
+	</tr>
+	<!--#if bdggroup -->
+	<tr> 
+	<td align="right">{ grpdgtxt }:</td>
+	<td> 
+	<select name="grpdg">
+	<option value="0"></option>
+	<!--#in getnext -->
+	<option value="{ grpdgid }" <!--#if selected --> selected="selected" <!--#endif selected --> >{ grpdgname }</option>
+	<!--#endin getnext -->
+	</select>
+	</td>
+	</tr>
+	<!--#endif bdggroup -->
+	<tr> 
+	<td>&nbsp;</td>
+	<td> 
+	<input type="submit" name="submit" value="{ t_record }">
+	<!--#if bdel -->
+	&nbsp;&nbsp;<input type="submit" name="deleteg" value="{ t_delete }">
+	<!--#endif bdel -->
+	<br>
+	</td>
+	</tr>
+	</table>
 </td>
 </tr>
 </table>
@@ -278,26 +292,116 @@ window.focus();
 
 <!--#begin grp_maintree -->
 <script type="text/javascript" src="{ babInstallPath }scripts/ul_tree.js"></script>
-<div id="bab_groups_tree">
-
-<p>
-<a href="javascript:tree.expand();">{ t_expand_all }</a> 
-<a href="javascript:tree.collapse();">{ t_collapse_all }</a>
-</p>
-<h3>{ t_ovusers }</h3>
-{ tpl_tree }
+<div id="bab_groups_tree" class="BabLoginCadreBackground">
+	<p class="BabSiteAdminTitleFontBackground">
+	<a href="javascript:tree.expand();" class="expand">{ t_expand_all }</a> 
+	<a href="javascript:tree.collapse();" class="collapse">{ t_collapse_all }</a>
+	<a href="{ babUrlScript }?tg=groups&amp;idx=Create" onclick="return load_clear();" class="newgroup">{ t_newgroup }</a>
+	</p>
+	<ul class="tree">
+	<li id="bab_ovgroup_0"><img src="{ babSkinPath }images/Puces/folder_treehead.gif" alt="{ t_group }" />
+		<a href="{ babUrlScript }?tg=groups&amp;idx=Create&amp;id_group=0" title="{ arr[description] }" onclick="return load_edit_form(this);">{ arr[name] }</a>
+			<input type="hidden" id="bab_ovgroup_0_manager" value="0" />
+			<input type="hidden" id="bab_ovgroup_0_managerval" value="" />
+			<input type="hidden" id="bab_ovgroup_0_dggroup" value="{ arr[id_dggroup] }" />
+		{ tpl_tree }
+		</li>
+	</ul>
 </div>
+
 <script type="text/javascript">
 var tree = new bab_ul_tree('bab_groups_tree');
 tree.processList();
+tree.expandToItem('bab_ovgroup_3');
+
+function load_edit_form(a)
+{
+	var htmlid		 = a.parentNode.id;
+	var htmlparent	 = a.parentNode.parentNode.parentNode.id;
+	var tmp = htmlid.split('_');
+	var groupid		 = parseInt(tmp[2]);
+	tmp = htmlparent.split('_');
+	var parent		 = parseInt(tmp[2]);
+	var name		 = a.innerHTML;
+	var description	 = a.title;
+	var manager		 = document.getElementById(htmlid+'_manager').value;
+	var managerval	 = document.getElementById(htmlid+'_managerval').value;
+	var dggroup		 = document.getElementById(htmlid+'_dggroup').value;
+
+	if (typeof document.forms['gcreatemod'].elements == 'undefined')
+		return;
+
+	var el = document.forms['gcreatemod'].elements;
+
+	el['grpid'].value		 = groupid;
+	el['name'].value		 = name;
+	el['description'].value	 = description;
+	el['manager'].value		 = manager;
+	el['managerval'].value	 = managerval;
+	el['grpdg'].value		 = dggroup;
+
+	if (groupid > 2)
+		{
+		el['parent'].style.visibility = 'visible';
+		el['parent'].value = parent;
+		}
+	else
+		{
+		el['parent'].style.visibility = 'hidden';
+		}
+
+	return false;
+}
+
+
+function load_clear()
+{
+	if (typeof document.forms['gcreatemod'].elements == 'undefined')
+		return;
+
+	var el = document.forms['gcreatemod'].elements;
+
+	el['grpid'].value		 = '';
+	el['name'].value		 = '';
+	el['description'].value	 = '';
+	el['manager'].value		 = 0;
+	el['managerval'].value	 = '';
+	el['grpdg'].value		 = 0;
+	el['parent'].value		 = 1;
+	el['parent'].style.visibility = 'visible';
+
+	document.location.href='#bab_groups_tree_end';
+	return false;
+}
+
 </script>
+
+<a name="bab_groups_tree_end"></a>
 <!--#end grp_maintree -->
 
 <!--#begin grp_childs -->
-<ul>
-	<!--#in getnextgroup -->
-	<li id="bab_ovgroup_{ arr[id] }"><a href="" title="{ arr[description] }">{ arr[name] }</a></li>
-	{ subtree }
-	<!--#endin getnextgroup -->
-</ul>
+	<ul>
+		<!--#in getnextgroup -->
+		<li id="bab_ovgroup_{ arr[id] }">
+			<!--#if arr[id_dggroup] -->
+				<!--#if arr[nb_set] -->
+				<img src="{ babSkinPath }images/Puces/folder_group_set_d.gif" alt="{ t_group_set_d }" />
+				<!--#else arr[nb_set] -->
+				<img src="{ babSkinPath }images/Puces/folder_group_d.gif" alt="{ t_group_d }" />
+				<!--#endif arr[nb_set] -->
+			<!--#else arr[id_dggroup] -->
+				<!--#if arr[nb_set] -->
+				<img src="{ babSkinPath }images/Puces/folder_group_set.gif" alt="{ t_group_set }" />
+				<!--#else arr[nb_set] -->
+				<img src="{ babSkinPath }images/Puces/folder_group.gif" alt="{ t_group }" />
+				<!--#endif arr[nb_set] -->
+			<!--#endif arr[id_dggroup] -->
+			<a href="{ babUrlScript }?tg=groups&amp;idx=Create&amp;id_group={ arr[id] }" title="{ arr[description] }" onclick="return load_edit_form(this);">{ arr[name] }</a>
+			<input type="hidden" id="bab_ovgroup_{ arr[id] }_manager" value="{ arr[manager] }" />
+			<input type="hidden" id="bab_ovgroup_{ arr[id] }_managerval" value="{ arr[managerval] }" />
+			<input type="hidden" id="bab_ovgroup_{ arr[id] }_dggroup" value="{ arr[id_dggroup] }" />
+			{ subtree }
+		</li>
+		<!--#endin getnextgroup -->
+	</ul>
 <!--#end grp_childs -->

@@ -108,8 +108,9 @@ function getGroupsMembers($id_grp)
 		return false;
 	}
 
-function bab_addGroup($name, $description, $managerid, $grpdg)
+function bab_addGroup($name, $description, $managerid, $grpdg, $parent = 1)
 	{
+	
 	global $babBody;
 	if( empty($name))
 		{
@@ -134,13 +135,13 @@ function bab_addGroup($name, $description, $managerid, $grpdg)
 		}
 	else
 		{
-		if( empty($managerid))
-			$managerid = 0;
-		if( empty($grpdg))
-			$grpdg = 0;
-		$req = "insert into ".BAB_GROUPS_TBL." (name, description, mail, manager, id_dggroup, notes, contacts, pcalendar, id_dgowner) VALUES ('" .$name. "', '" . $description. "', 'N', '" . $managerid. "', '".$grpdg. "', 'N', 'N', 'N','".$babBody->currentAdmGroup."')";
-		$db->db_query($req);
-		$id = $db->db_insert_id();
+		
+		include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
+
+		$tree = & new bab_grptree();
+		$id = $tree->addAlpha($parent, $name);
+
+	
 		bab_callAddonsFunction('onGroupCreate', $id);
 		return $id;
 		}

@@ -33,14 +33,67 @@ class bab_grptree extends bab_dbtree
 	function bab_grptree()
 	{
 	$this->table = BAB_GROUPS_TBL;
-	$this->where = '';
 
 	$this->dg_lf = &$GLOBALS['babBody']->currentDGGroup['lf'];
 	$this->dg_lr = &$GLOBALS['babBody']->currentDGGroup['lr'];
 
-	$this->where = "lf>='".$this->dg_lf."' AND lr<='".$this->dg_lr."'";
+	if ($GLOBALS['babBody']->currentAdmGroup > 0)
+		$this->where = "lf>='".$this->dg_lf."' AND lr<='".$this->dg_lr."'";
+	else
+		$this->where = '';
 	}
 
+	function getGroups($id_parent, $format = '%s &gt; %s')
+	{
+	$grp = array();
+
+	$groups = & $this->getChilds($id_parent, 1);
+	if (false !== $groups)
+	foreach ($groups as $arr)
+		{
+		if ($arr['id'] < 4)
+			{
+			$arr['name'] = bab_translate($arr['name']);
+			}
+
+		if (isset($grp[$arr['id_parent']]))
+			{
+			$arr['name'] = sprintf($format,$grp[$arr['id_parent']],$arr['name']);
+			}
+		
+		$grp[$arr['id']] = $arr['name'];
+		}
+	return $grp;
+	}
+
+
+	function addAlpha($id_parent, $childname)
+	{
+	$groups = & $this->getChilds($id_parent);
+	$grp = array();
+	foreach ($groups as $arr)
+		{
+		$grp[$arr['id']] = $arr['name'];
+		}
+	$grp['new'] = $childname;
+	natcasesort($grp);
+
+	foreach($grp as $key => $value)
+		{
+		if ('new' == $key && isset($id_previous))
+			{
+			return $this->add($id_parent,$id_previous);
+			}
+		elseif ('new' == $key)
+			{
+			return $this->add($id_parent,,false);
+			}
+
+		$id_previous = $key;
+		}
+	
+	
+	}
 }
 
 

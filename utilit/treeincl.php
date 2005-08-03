@@ -63,7 +63,12 @@ class bab_dbtree
 	function getNodeInfo($id)
 	{
 		global $babDB;
-		$res = $babDB->db_query("SELECT * from ".$this->table." where ".$this->getWhereClause()." and id='".$id."'" );
+		$where = $this->getWhereClause();
+		if (!empty($where))
+			{
+			$where .= " and";
+			}
+		$res = $babDB->db_query("SELECT * from ".$this->table." where ".$where." id='".$id."'" );
 		if( $res && $babDB->db_num_rows($res) > 0 )
 		{
 			return $babDB->db_fetch_array($res);
@@ -94,22 +99,28 @@ class bab_dbtree
 
 		$offset *= 2; 
 
+		$where = $this->getWhereClause();
+		if (!empty($where))
+			{
+			$where = ' and '.$where;
+			}
+
 		if( $positive )
 		{
-			$babDB->db_query("UPDATE ".$this->table." set lr = lr+".$offset." where lr > '".$lr."' and ".$this->getWhereClause());
+			$babDB->db_query("UPDATE ".$this->table." set lr = lr+".$offset." where lr > '".$lr."'".$where);
 		}
 		else
 		{
-			$babDB->db_query("UPDATE ".$this->table." set lr = lr-".$offset." where lr > '".$lr."' and ".$this->getWhereClause());
+			$babDB->db_query("UPDATE ".$this->table." set lr = lr-".$offset." where lr > '".$lr."'".$where);
 		}
 		
 		if( $positive )
 		{
-			$babDB->db_query("UPDATE ".$this->table." set lf = lf+".$offset." where lf > '".$lr."' and ".$this->getWhereClause());
+			$babDB->db_query("UPDATE ".$this->table." set lf = lf+".$offset." where lf > '".$lr."'".$where);
 		}
 		else
 		{
-			$babDB->db_query("UPDATE ".$this->table." set lf = lf-".$offset." where lf > '".$lr."' and ".$this->getWhereClause());
+			$babDB->db_query("UPDATE ".$this->table." set lf = lf-".$offset." where lf > '".$lr."'".$where);
 		}
 	}
 
@@ -170,7 +181,12 @@ class bab_dbtree
 			{
 				return $arr;
 			}
-			$res = $babDB->db_query("SELECT * FROM ".$this->table." WHERE ".$this->getWhereClause()." and lf > '".$nodeinfo['lf']."' and lr < '".$nodeinfo['lr']."'");
+			$where = $this->getWhereClause();
+			if (!empty($where))
+				{
+				$where .= " and";
+				}
+			$res = $babDB->db_query("SELECT * FROM ".$this->table." WHERE ".$where." lf > '".$nodeinfo['lf']."' and lr < '".$nodeinfo['lr']."' order by lf asc");
 		}
 
 		if( $res && $babDB->db_num_rows($res) > 0 )

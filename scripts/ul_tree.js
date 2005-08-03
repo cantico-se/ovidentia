@@ -12,40 +12,32 @@ function bab_ul_tree(id)
 }
 
 
-bab_ul_tree.prototype.nextTagSibbling = function(obj) {
-	obj = obj.nextSibling
-	while(obj && obj.nodeType != 1){
-		obj = obj.nextSibling
-		}
-	return obj;
-}
-
-
 bab_ul_tree.prototype.processList = function(ul) {
 	if (null == ul)
 		{	
 		ul = this.treeId;
 		}
+		
 	if (!ul.childNodes || ul.childNodes.length==0) { return; }
 	// Iterate LIs
 	for (var itemi=0;itemi<ul.childNodes.length;itemi++) {
 		var item = ul.childNodes[itemi];
-		if (item.nodeName == "LI") {
-			var next = this.nextTagSibbling(item);
+		if ("LI" == item.nodeName) {
 			var subLists = false;
-			if (next && next.nodeName=="UL") {
-				subLists = true;
-				this.processList(next);
-				}	
+			for (var sitemi=0;sitemi<item.childNodes.length;sitemi++) {
+				var sitem = item.childNodes[sitemi];
+				if (sitem.nodeName=="UL") {
+					subLists = true;
+					this.processList(sitem);
+				}
+			}	
 
 			var s= document.createElement("SPAN");
 			var t= '\u00A0'; // &nbsp;
 			s.className = this.nodeLinkClass;
 			if (subLists) {
-				// This LI has UL's in it, so it's a +/- node
 				if ( item.className==null || item.className=="" ) {
 					item.className = this.nodeClosedClass;
-					next.className = this.nodeClosedClass;
 				}
 				// If it's just text, make the text work as the link also
 				if (item.firstChild.nodeName=="#text") {
@@ -53,18 +45,7 @@ bab_ul_tree.prototype.processList = function(ul) {
 					item.removeChild(item.firstChild);
 				}
 				s.onclick = function () {
-					var newclass = (this.parentNode.className == 'bab_ul_tree_open') ? 'bab_ul_tree_closed' : 'bab_ul_tree_open';
-					this.parentNode.className = newclass;
-					obj = this.parentNode;
-					obj = obj.nextSibling;
-					while(obj && obj.nodeType != 1){
-						obj = obj.nextSibling;
-						}
-					
-					if (obj.nodeName=="UL")
-					{
-						obj.className = newclass;
-					}
+					this.parentNode.className = (this.parentNode.className=='bab_ul_tree_open') ? 'bab_ul_tree_closed' : 'bab_ul_tree_open';
 					return false;
 				}
 			}
@@ -91,20 +72,21 @@ bab_ul_tree.prototype.expandCollapseList = function(ul,cName,itemId) {
 		var item = ul.childNodes[itemi];
 		if (itemId!=null && item.id==itemId) { return true; }
 		if (item.nodeName == "LI") {
-			var next = this.nextTagSibbling(item);
 			var subLists = false;
-			if (next && next.nodeName=="UL") {
-				subLists = true;
-				var ret = this.expandCollapseList(next,cName,itemId);
+			for (var sitemi=0;sitemi<item.childNodes.length;sitemi++) {
+				var sitem = item.childNodes[sitemi];
+				if (sitem.nodeName=="UL") {
+					subLists = true;
+					var ret = this.expandCollapseList(sitem,cName,itemId);
 					if (itemId!=null && ret) {
 						item.className = cName;
 						return true;
 					}
-				}	
-			
+				}
+			}
+
 			if (subLists && itemId==null) {
 				item.className = cName;
-				next.className = cName;
 			}
 		}
 	}
@@ -119,4 +101,14 @@ bab_ul_tree.prototype.collapse = function() {
 
 bab_ul_tree.prototype.expand = function() {
 	this.expandCollapseList(this.treeId,this.nodeOpenClass);
+}
+
+bab_ul_tree.prototype.expandToItem = function(itemId, focus) {
+	var ret = this.expandCollapseList(this.treeId,this.nodeOpenClass,itemId);
+	if (ret && null != focus) {
+		var o = document.getElementById(itemId);
+		if (o.scrollIntoView) {
+			o.scrollIntoView(false);
+		}
+	}
 }
