@@ -626,18 +626,28 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 			$this->idgroup = $arr['id_group'];
 			$allowuu = $arr['user_update'];
 
-			if ( (!$this->bupd && $allowuu == 'N') || (!$this->bupd && $allowuu == 'Y' && false !== $idu ) )
-				{
-				die( bab_translate('Access denied'));
-				}
+			$personnal = false;
 
 			if (false === $idu)
 				{
 				$req = "select id from ".BAB_DBDIR_ENTRIES_TBL." where id_user='".$GLOBALS['BAB_SESS_USERID']."'";
 				list($idu) = $this->db->db_fetch_array($this->db->db_query($req));
+				$personnal = true;
+				}
+			else
+				{
+				$req = "select id from ".BAB_DBDIR_ENTRIES_TBL." where id='".$idu."' AND id_user='".$GLOBALS['BAB_SESS_USERID']."'";
+				$res =$this->db->db_query($req);
+				$personnal = $this->db->db_num_rows($res) > 0;
 				}
 
 			$this->idu = $idu;
+
+			if ( (!$this->bupd && $allowuu == 'N') || (!$this->bupd && $allowuu == 'Y' && !$personnal ) )
+				{
+				die( bab_translate('Access denied'));
+				}
+
 			$this->showph = false;
 			$res = $this->db->db_query("select *, LENGTH(photo_data) as plen from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".($this->idgroup != 0? 0: $this->id)."' and id='".$idu."'");
 			if( $res && $this->db->db_num_rows($res) > 0)
