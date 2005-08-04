@@ -239,37 +239,7 @@ function groupMembers($id)
 	$babBody->babecho(	bab_printTemplate($temp, "groups.html", "memberslist"));
 	}
 
-function groupDelete($id)
-	{
-	global $babBody;
-	
-	class temp
-		{
-		var $warning;
-		var $message;
-		var $title;
-		var $urlyes;
-		var $urlno;
-		var $yes;
-		var $no;
-		var $topics;
-		var $article;
 
-		function temp($id)
-			{
-			$this->message = bab_translate("Are you sure you want to delete this group");
-			$this->title = bab_getGroupName($id);
-			$this->warning = bab_translate("WARNING: This operation will delete the group with all references"). "!";
-			$this->urlyes = $GLOBALS['babUrlScript']."?tg=group&idx=Delete&group=".$id."&action=Yes";
-			$this->yes = bab_translate("Yes");
-			$this->urlno = $GLOBALS['babUrlScript']."?tg=group&idx=Modify&item=".$id;
-			$this->no = bab_translate("No");
-			}
-		}
-
-	$temp = new temp($id);
-	$babBody->babecho( bab_printTemplate($temp,"warning.html", "warningyesno"));
-	}
 
 function groupAdmDelete($id)
 	{
@@ -415,28 +385,29 @@ function confirmDeleteGroup($id)
 		return;
 
 	$redirect = false;
-	$db = $GLOBALS['babDB'];
-	$res = $db->db_query("select id from ".BAB_GROUPS_TBL." where id_dgowner='".$id."' and id !='".$id."' limit 0,1");
+	$db = &$GLOBALS['babDB'];
+
+	$res = $db->db_query("select id from ".BAB_SECTIONS_TBL." where id_dgowner='".$id."' limit 0,1");
 	if( $res && $db->db_num_rows($res) > 0 )
 		$redirect = true;
 	else
 		{
-		$res = $db->db_query("select id from ".BAB_SECTIONS_TBL." where id_dgowner='".$id."' limit 0,1");
+		$res = $db->db_query("select id from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$id."' limit 0,1");
 		if( $res && $db->db_num_rows($res) > 0 )
 			$redirect = true;
 		else
 			{
-			$res = $db->db_query("select id from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$id."' limit 0,1");
+			$res = $db->db_query("select id from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$id."'");
 			if( $res && $db->db_num_rows($res) > 0 )
 				$redirect = true;
 			else
 				{
-				$res = $db->db_query("select id from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$id."'");
+				$res = $db->db_query("select id from ".BAB_FORUMS_TBL." where id_dgowner='".$id."' limit 0,1");
 				if( $res && $db->db_num_rows($res) > 0 )
 					$redirect = true;
 				else
 					{
-					$res = $db->db_query("select id from ".BAB_FORUMS_TBL." where id_dgowner='".$id."' limit 0,1");
+					$res = $db->db_query("select id from ".BAB_FAQCAT_TBL." where id_dgowner='".$id."' limit 0,1");
 					if( $res && $db->db_num_rows($res) > 0 )
 						$redirect = true;
 					else
@@ -446,28 +417,22 @@ function confirmDeleteGroup($id)
 							$redirect = true;
 						else
 							{
-							$res = $db->db_query("select id from ".BAB_FAQCAT_TBL." where id_dgowner='".$id."' limit 0,1");
+							$res = $db->db_query("select id from ".BAB_FM_FOLDERS_TBL." where id_dgowner='".$id."' limit 0,1");
 							if( $res && $db->db_num_rows($res) > 0 )
 								$redirect = true;
 							else
 								{
-								$res = $db->db_query("select id from ".BAB_FM_FOLDERS_TBL." where id_dgowner='".$id."' limit 0,1");
+								$res = $db->db_query("select id from ".BAB_LDAP_DIRECTORIES_TBL." where id_dgowner='".$id."' limit 0,1");
 								if( $res && $db->db_num_rows($res) > 0 )
 									$redirect = true;
 								else
 									{
-									$res = $db->db_query("select id from ".BAB_LDAP_DIRECTORIES_TBL." where id_dgowner='".$id."' limit 0,1");
+									$res = $db->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_dgowner='".$id."' limit 0,1");
 									if( $res && $db->db_num_rows($res) > 0 )
 										$redirect = true;
 									else
 										{
-										$res = $db->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_dgowner='".$id."' limit 0,1");
-										if( $res && $db->db_num_rows($res) > 0 )
-											$redirect = true;
-										else
-											{
-											$res = $db->db_query("select id from ".BAB_FAQCAT_TBL." where id_dgowner='".$id."' limit 0,1");
-											}
+										$res = $db->db_query("select id from ".BAB_FAQCAT_TBL." where id_dgowner='".$id."' limit 0,1");
 										}
 									}
 								}
@@ -477,6 +442,7 @@ function confirmDeleteGroup($id)
 				}
 			}
 		}
+		
 
 
 	if( $redirect)
@@ -515,11 +481,6 @@ if( isset($add))
 			Header("Location: ". $GLOBALS['babUrlScript']."?tg=groups&idx=List");
 			exit;
 			}
-		}
-	else if( isset($deleteg) )
-		{
-		$item = $grpid;
-		$idx = "Delete";
 		}
 	}
 
@@ -568,15 +529,6 @@ switch($idx)
 			$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=group&idx=Modify&item=".$item);
 		$babBody->addItemMenu("Members", bab_translate("Members"), $GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$item);
 		$babBody->addItemMenu("Add", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=users&idx=List&grp=".$item);
-		break;
-	case "Delete":
-		if( $item > 3 )
-			groupDelete($item);
-		$babBody->title = bab_translate("Delete group");
-		$babBody->addItemMenu("List", bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=groups&idx=List");
-		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=group&idx=Modify&item=".$item);
-		$babBody->addItemMenu("Members", bab_translate("Members"), $GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$item);
-		$babBody->addItemMenu("Delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=group&idx=Delete&item=".$item);
 		break;
 	case "deldg":
 		if( $item > 3 )

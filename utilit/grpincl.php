@@ -108,6 +108,44 @@ function getGroupsMembers($id_grp)
 		return false;
 	}
 
+
+function bab_updateGroupInfo($id, $name, $description, $managerid, $grpdg , $id_parent)
+	{
+	include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
+
+	$tree = & new bab_grptree();
+	$node = $tree->getNodeInfo($id);
+
+	$db = &$GLOBALS['babDB'];
+
+	$db->db_query("UPDATE ".BAB_GROUPS_TBL." 
+			SET 
+				name='".$name."', 
+				description = '".$description."',
+				manager = '".$managerid."',
+				id_dggroup = '".$grpdg."'
+			WHERE
+				id='".$id."'
+			");
+
+	switch($id)
+		{
+		case 0:
+			$id_parent = NULL;
+			break;
+		case 1:
+		case 2:
+			$id_parent = 0;
+			break;
+		}
+
+	if ($node['id_parent'] != $id_parent)
+		{
+		$tree->moveAlpha($id, $id_parent, $name);
+		}
+	}
+
+
 function bab_addGroup($name, $description, $managerid, $grpdg, $parent = 1)
 	{
 	
@@ -118,7 +156,7 @@ function bab_addGroup($name, $description, $managerid, $grpdg, $parent = 1)
 		return 0;
 		}
 
-	$db = $GLOBALS['babDB'];
+	$db = &$GLOBALS['babDB'];
 
 	if( !bab_isMagicQuotesGpcOn())
 		{
@@ -135,17 +173,18 @@ function bab_addGroup($name, $description, $managerid, $grpdg, $parent = 1)
 		}
 	else
 		{
-		
 		include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
 
 		$tree = & new bab_grptree();
 		$id = $tree->addAlpha($parent, $name);
 
+		bab_updateGroupInfo($id, $name, $description, $managerid, $grpdg , $parent);
 	
 		bab_callAddonsFunction('onGroupCreate', $id);
 		return $id;
 		}
 	}
+
 
 function confirmDeleteAdmGroup($id, $action)
 	{

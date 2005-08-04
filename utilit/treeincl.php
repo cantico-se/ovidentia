@@ -36,6 +36,8 @@ class bab_dbtree
 		$this->table = $table;
 		$this->iduser = $id;
 		$this->userinfo = $userinfo;
+		$this->firstnode = 1;
+		$this->firstnode_parent = 0;
 
 		$this->where = "id_user='".$id."'";
 		if( !empty($userinfo))
@@ -242,7 +244,7 @@ class bab_dbtree
 				}
 
 				$rowdata['id_parent'] = $previnfo['id_parent'];
-				if( $rowdata['id_parent'] == 0 )
+				if( $rowdata['id_parent'] == $this->firstnode_parent )
 				{
 					$rowdata['id_parent'] = $previousId;					
 					$lastchild = $this->getLastChild($previousId);
@@ -350,16 +352,20 @@ class bab_dbtree
 
 		$lf = $nodeinfo['lf'];
 		$lr = $nodeinfo['lr'];
+
+		$where = $this->getWhereClause();
+		if (!empty($where))
+			$where = ' AND '.$where;
 		
 		if(  $lr - $lf > 1 )
 		{
-			$babDB->db_query("UPDATE ".$this->table." set lr = lr-1, lf=lf-1 where lf > '".$lf."' and lr < '".$lr."' and ".$this->getWhereClause());
+			$babDB->db_query("UPDATE ".$this->table." set lr = lr-1, lf=lf-1 where lf > '".$lf."' and lr < '".$lr."'".$where);
 
-			$babDB->db_query("UPDATE ".$this->table." set id_parent='".$nodeinfo['id_parent']."' where ".$this->getWhereClause()." and id_parent='".$id."'");
+			$babDB->db_query("UPDATE ".$this->table." set id_parent='".$nodeinfo['id_parent']."' where id_parent='".$id."'".$where);
 
 		}
 		$this->update(	$lr, 1, false);
-		$babDB->db_query("DELETE from ".$this->table." where id='".$id."' and ".$this->getWhereClause());
+		$babDB->db_query("DELETE from ".$this->table." where id='".$id."'".$where);
 
 		return true;
 	}
@@ -397,7 +403,7 @@ class bab_dbtree
 		if( !$nodeinfo )
 			return false;
 
-		if( $nodeinfo['id_parent'] == 0 )
+		if( $nodeinfo['id_parent'] == $this->firstnode_parent )
 			return false;
 
 		if( $parentId || $previousId )
@@ -405,7 +411,7 @@ class bab_dbtree
 			if( $previousId )
 			{
 				$previousinfo = $this->getNodeInfo($previousId);
-				if( !$previousinfo || $previousinfo['id_parent'] == 0)
+				if( !$previousinfo || $previousinfo['id_parent'] == $this->firstnode_parent )
 					return false;
 
 			}

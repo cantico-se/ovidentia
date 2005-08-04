@@ -437,7 +437,11 @@ function bab_deleteGroup($id)
 	$db->db_query("update ".BAB_OC_ENTITIES_TBL." set id_group='0' where id_group='".$id."'");	
 
 	// delete group
-	$db->db_query("delete from ".BAB_GROUPS_TBL." where id='".$id."'");
+	
+	include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
+	$tree = & new bab_grptree();
+	$tree->remove($id);
+
 	bab_callAddonsFunction('onGroupDelete', $id);
 }
 

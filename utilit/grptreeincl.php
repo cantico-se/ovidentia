@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-include_once $babInstallPath."utilit/treeincl.php";
+include_once $GLOBALS['babInstallPath']."utilit/treeincl.php";
 
 class bab_grptree extends bab_dbtree
 {
@@ -33,6 +33,8 @@ class bab_grptree extends bab_dbtree
 	function bab_grptree()
 	{
 	$this->table = BAB_GROUPS_TBL;
+	$this->firstnode = 0;
+	$this->firstnode_parent = NULL;
 
 	$this->dg_lf = &$GLOBALS['babBody']->currentDGGroup['lf'];
 	$this->dg_lr = &$GLOBALS['babBody']->currentDGGroup['lr'];
@@ -43,10 +45,10 @@ class bab_grptree extends bab_dbtree
 		$this->where = '';
 	}
 
-	function getGroups($id_parent, $format = '%s &gt; %s')
+	function getGroups($id_parent, $format = '%2$s &gt; ')
 	{
 	$grp = array();
-
+	$prefix = array();
 	$groups = & $this->getChilds($id_parent, 1);
 	if (false !== $groups)
 	foreach ($groups as $arr)
@@ -56,27 +58,49 @@ class bab_grptree extends bab_dbtree
 			$arr['name'] = bab_translate($arr['name']);
 			}
 
-		if (isset($grp[$arr['id_parent']]))
+		if (isset($prefix[$arr['id_parent']]))
 			{
-			$arr['name'] = sprintf($format,$grp[$arr['id_parent']],$arr['name']);
+			$prefix[$arr['id']] = sprintf($format, $prefix[$arr['id_parent']], $grp[$arr['id_parent']]['name']);
 			}
+		else
+			{
+			$prefix[$arr['id']] = '';
+			}
+
+		$arr['name'] = $prefix[$arr['id']].$arr['name'];
 		
-		$grp[$arr['id']] = $arr['name'];
+		$grp[$arr['id']] = $arr;
 		}
 	return $grp;
 	}
 
 
-	function addAlpha($id_parent, $childname)
+	function setAlphaChild($id_parent, $childname)
 	{
 	$groups = & $this->getChilds($id_parent);
 	$grp = array();
-	foreach ($groups as $arr)
+	if (is_array($groups))
 		{
-		$grp[$arr['id']] = $arr['name'];
+		foreach ($groups as $arr)
+			{
+			$grp[$arr['id']] = $arr['name'];
+			}
 		}
 	$grp['new'] = $childname;
 	natcasesort($grp);
+
+	if (count($groups) > 0)
+		$firstchild = $groups[0]['id'];
+	else
+		$firstchild = 0;
+
+	return array($grp,$firstchild);
+	}
+
+
+	function addAlpha($id_parent, $childname)
+	{
+	list($grp, $firstchild) = $this->setAlphaChild($id_parent, $childname);
 
 	foreach($grp as $key => $value)
 		{
@@ -86,15 +110,86 @@ class bab_grptree extends bab_dbtree
 			}
 		elseif ('new' == $key)
 			{
-			return $this->add($id_parent,,false);
+			return $this->add($id_parent, $firstchild, false);
 			}
 
 		$id_previous = $key;
 		}
-	
-	
+	}
+
+	function moveAlpha($id, $id_parent, $childname)
+	{
+	if ($id_parent == $id)
+		return false;
+
+	list($grp, $firstchild) = $this->setAlphaChild($id_parent, $childname);
+
+	foreach($grp as $key => $value)
+		{
+		if ('new' == $key && isset($id_previous))
+			{
+			return $this->move($id, $id_parent, $id_previous);
+			}
+		elseif ('new' == $key)
+			{
+			return $this->move($id, $id_parent, $firstchild, false);
+			}
+
+		$id_previous = $key;
+		}
 	}
 }
+
+
+
+class bab_grp_node
+{
+	function bab_grp_node(&$tree, $id_group)
+	{
+	$this->t_group_set_d = bab_translate("Users group with delegation and group set associated");
+	$this->t_group_d = bab_translate("Users group with delegation");
+	$this->t_group_set = bab_translate("Group associated with one or more sets of groups");
+	$this->t_group = bab_translate("Users group");
+	$this->tree = &$tree;
+	$this->childs = $tree->getChilds($id_group);
+	}
+
+	function getnextgroup()
+	{
+	if ($this->childs && list(,$this->arr) = each($this->childs))
+		{
+		if ($this->arr['id'] < 4)
+			{
+			$this->arr['name'] = bab_translate($this->arr['name']);
+			$this->arr['description'] = bab_translate($this->arr['description']);
+			}
+		$this->arr['description'] = htmlentities($this->arr['description']);
+		$this->arr['managerval'] = htmlentities(bab_getUserName($this->arr['manager']));
+		$this->subtree = bab_grp_node_html($this->tree, $this->arr['id'], $this->file, $this->template);
+		return true;
+		}
+	else 
+		{
+		return false;
+		}
+	}
+
+	function get()
+	{
+	if ($this->childs)
+		return bab_printTemplate($this, $this->file, $this->template);
+	else return '';
+	}
+}
+
+function bab_grp_node_html(&$tree, $id_group, $file, $template)
+{
+	$obj = & new bab_grp_node($tree, $id_group);
+	$obj->file = $file;
+	$obj->template = $template;
+	return $obj->get();
+}
+
 
 
 ?>

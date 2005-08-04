@@ -79,9 +79,9 @@ else
 	<td>&nbsp;</td>
 	<td> 
 	<input type="submit" name="submit" value="{ t_record }">
-	<!--#if bdel -->
-	&nbsp;&nbsp;<input type="submit" name="deleteg" value="{ t_delete }">
-	<!--#endif bdel -->
+
+	&nbsp;&nbsp;<input type="submit" name="deleteg" <!--#if bdel --> <!--#else bdel --> style="visibility:hidden"<!--#endif bdel --> value="{ t_delete }">
+
 	<br>
 	</td>
 	</tr>
@@ -298,21 +298,24 @@ window.focus();
 	<a href="javascript:tree.collapse();" class="collapse">{ t_collapse_all }</a>
 	<a href="{ babUrlScript }?tg=groups&amp;idx=Create" onclick="return load_clear();" class="newgroup">{ t_newgroup }</a>
 	</p>
-	<ul class="tree">
+	<div class="tree">
+	<ul>
 	<li id="bab_ovgroup_0"><img src="{ babSkinPath }images/Puces/folder_treehead.gif" alt="{ t_group }" />
-		<a href="{ babUrlScript }?tg=groups&amp;idx=Create&amp;id_group=0" title="{ arr[description] }" onclick="return load_edit_form(this);">{ arr[name] }</a>
+		<a href="{ babUrlScript }?tg=groups&amp;idx=Create&amp;grpid=0" title="{ arr[description] }" onclick="return load_edit_form(this);">{ arr[name] }</a>
 			<input type="hidden" id="bab_ovgroup_0_manager" value="0" />
 			<input type="hidden" id="bab_ovgroup_0_managerval" value="" />
 			<input type="hidden" id="bab_ovgroup_0_dggroup" value="{ arr[id_dggroup] }" />
 		{ tpl_tree }
 		</li>
 	</ul>
+	<br />
+	</div>
 </div>
 
 <script type="text/javascript">
 var tree = new bab_ul_tree('bab_groups_tree');
 tree.processList();
-tree.expandToItem('bab_ovgroup_3');
+tree.expandToItem('bab_ovgroup_{ id_expand_to }');
 
 function load_edit_form(a)
 {
@@ -340,15 +343,26 @@ function load_edit_form(a)
 	el['managerval'].value	 = managerval;
 	el['grpdg'].value		 = dggroup;
 
+
 	if (groupid > 2)
 		{
 		el['parent'].style.visibility = 'visible';
 		el['parent'].value = parent;
+		el['deleteg'].style.visibility = 'visible';
+		}
+	else if (groupid == 2)
+		{
+		el['parent'].style.visibility = 'visible';
+		el['parent'].value = parent;
+		el['deleteg'].style.visibility = 'hidden';
 		}
 	else
 		{
 		el['parent'].style.visibility = 'hidden';
+		el['deleteg'].style.visibility = 'hidden';
 		}
+
+	
 
 	return false;
 }
@@ -369,6 +383,7 @@ function load_clear()
 	el['grpdg'].value		 = 0;
 	el['parent'].value		 = 1;
 	el['parent'].style.visibility = 'visible';
+	el['deleteg'].style.visibility = 'hidden';
 
 	document.location.href='#bab_groups_tree_end';
 	return false;
@@ -383,6 +398,7 @@ function load_clear()
 	<ul>
 		<!--#in getnextgroup -->
 		<li id="bab_ovgroup_{ arr[id] }">
+			
 			<!--#if arr[id_dggroup] -->
 				<!--#if arr[nb_set] -->
 				<img src="{ babSkinPath }images/Puces/folder_group_set_d.gif" alt="{ t_group_set_d }" />
@@ -396,10 +412,11 @@ function load_clear()
 				<img src="{ babSkinPath }images/Puces/folder_group.gif" alt="{ t_group }" />
 				<!--#endif arr[nb_set] -->
 			<!--#endif arr[id_dggroup] -->
-			<a href="{ babUrlScript }?tg=groups&amp;idx=Create&amp;id_group={ arr[id] }" title="{ arr[description] }" onclick="return load_edit_form(this);">{ arr[name] }</a>
+			<a href="{ babUrlScript }?tg=groups&amp;idx=Create&amp;grpid={ arr[id] }" title="{ arr[description] }" onclick="return load_edit_form(this);">{ arr[name] }</a>
 			<input type="hidden" id="bab_ovgroup_{ arr[id] }_manager" value="{ arr[manager] }" />
 			<input type="hidden" id="bab_ovgroup_{ arr[id] }_managerval" value="{ arr[managerval] }" />
 			<input type="hidden" id="bab_ovgroup_{ arr[id] }_dggroup" value="{ arr[id_dggroup] }" />
+			<div class="right">%</div>
 			{ subtree }
 		</li>
 		<!--#endin getnextgroup -->

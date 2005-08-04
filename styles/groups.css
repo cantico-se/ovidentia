@@ -21,12 +21,18 @@
 }
 
 
-#bab_groups_tree li, #bab_groups_tree h3 {
+#bab_groups_tree li {
 	margin:.5em 0;
 	padding:0;
 	font-size:1em;
 	font-weight:normal;
 	color:#000;
+}
+
+#bab_groups_tree li .right {
+	float:right;
+	margin-top:-1.3em;
+	margin-right:.5em;
 }
 
 #bab_groups_tree li a {
@@ -38,7 +44,9 @@
 	text-decoration:underline;
 }
 
-#bab_groups_tree li .bullet, #bab_groups_tree h3 { padding-left: 15px; }
+#bab_groups_tree li .bullet { 
+	padding-left: 15px; 
+	}
 
 #bab_groups_tree .bab_ul_tree_open .bullet { 
 	cursor: pointer; 

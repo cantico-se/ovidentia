@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-
+include_once $babInstallPath."utilit/grptreeincl.php";
 
 function profileCreate($pname, $pdesc, $grpids, $cinscription, $cmultiple, $crequired)
 	{
@@ -50,8 +50,8 @@ function profileCreate($pname, $pdesc, $grpids, $cinscription, $cmultiple, $creq
 			$this->requiredtxt = bab_translate("Required");
 			$this->no = bab_translate("No");
 			$this->yes = bab_translate("Yes");
-			$this->res = $babDB->db_query("select id, name, description from ".BAB_GROUPS_TBL." where id > 2 and id_dgowner='".$babBody->currentAdmGroup."' order by name asc");
-			$this->count = $babDB->db_num_rows($this->res);
+			$tree = new bab_grptree();
+			$this->groups = $tree->getGroups(1);
 			$this->altbg = true;
 
 			$this->bdel = false;
@@ -89,10 +89,9 @@ function profileCreate($pname, $pdesc, $grpids, $cinscription, $cmultiple, $creq
 		function getnext()
 			{
 			global $babDB;
-			static $i = 0;	
-			if( $i < $this->count)
+
+			if( list(,$arr) = each($this->groups) )
 				{
-				$arr = $babDB->db_fetch_array($this->res);
 				$this->altbg = !$this->altbg;
 				$this->grpid = $arr['id'];
 				$this->grpname = $arr['name'];
@@ -105,7 +104,6 @@ function profileCreate($pname, $pdesc, $grpids, $cinscription, $cmultiple, $creq
 					{
 					$this->grpcheck = '';
 					}
-				$i++;
 				return true;
 				}
 			return false;
@@ -147,8 +145,8 @@ function profileModify($idprof,$pname, $pdesc, $grpids, $cinscription, $cmultipl
 			$res = $babDB->db_query("select * from ".BAB_PROFILES_TBL." where id ='".$idprof."'");
 			$arr = $babDB->db_fetch_array($res);
 			
-			$this->res = $babDB->db_query("select id, name, description from ".BAB_GROUPS_TBL." where id > 2 and id_dgowner='".$babBody->currentAdmGroup."' order by name asc");
-			$this->count = $babDB->db_num_rows($this->res);
+			$tree = new bab_grptree();
+			$this->groups = $tree->getGroups(1);
 			
 			$this->altbg = true;
 			$this->bdel = true;
@@ -231,10 +229,9 @@ function profileModify($idprof,$pname, $pdesc, $grpids, $cinscription, $cmultipl
 		function getnext()
 			{
 			global $babDB;
-			static $i = 0;	
-			if( $i < $this->count)
+			
+			if( list(,$arr) = each($this->groups))
 				{
-				$arr = $babDB->db_fetch_array($this->res);
 				$this->altbg = !$this->altbg;
 				$this->grpid = $arr['id'];
 				$this->grpname = $arr['name'];
@@ -247,7 +244,6 @@ function profileModify($idprof,$pname, $pdesc, $grpids, $cinscription, $cmultipl
 					{
 					$this->grpcheck = '';
 					}
-				$i++;
 				return true;
 				}
 			return false;
