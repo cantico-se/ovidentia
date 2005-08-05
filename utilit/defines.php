@@ -24,8 +24,10 @@
 include_once "base.php";
 define("BAB_DBDIR_MAX_COMMON_FIELDS", 100);
 
+define("BAB_ALLUSERS_GROUP",		0);
 define("BAB_REGISTERED_GROUP",		1);
 define("BAB_UNREGISTERED_GROUP",	2);
+define("BAB_ADMINISTRATOR_GROUP",	3);
 
 
 /* calendars */
@@ -117,6 +119,8 @@ define("BAB_FORUMSREPLY_GROUPS_TBL", "bab_forumsreply_groups");
 define("BAB_FORUMSVIEW_GROUPS_TBL", "bab_forumsview_groups");
 define("BAB_FORUMSFILES_GROUPS_TBL", "bab_forumsfiles_groups");
 define("BAB_GROUPS_TBL", "bab_groups");
+define("BAB_GROUPS_SET_TBL", "bab_groups_set");
+define("BAB_GROUPS_SET_ASSOC_TBL", "bab_groups_set_assoc");
 define("BAB_HOMEPAGES_TBL", "bab_homepages");
 define("BAB_IMAGES_TEMP_TBL", "bab_images_temp");
 define("BAB_INI_TBL", "bab_ini");

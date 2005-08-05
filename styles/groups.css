@@ -14,25 +14,43 @@
 	margin-left:2em;
 }
 
+#bab_groups_tree a img {
+	border:0;
+}
+
 #bab_groups_tree .tree {
 	background:#fff;
 	padding:1em 0;
 	margin:0;
 }
 
+#bab_groups_tree ul.first {
+	margin:0;
+}
+
 
 #bab_groups_tree li {
-	margin:.5em 0;
+	margin:0;
 	padding:0;
 	font-size:1em;
 	font-weight:normal;
 	color:#000;
 }
 
+#bab_groups_tree li div.line {
+	padding:.3em 0;
+	border-bottom:#fff 1px dashed;
+}
+
+#bab_groups_tree li div.hover {
+	border-bottom-color:#ccc;
+}
+
 #bab_groups_tree li .right {
 	float:right;
-	margin-top:-1.3em;
-	margin-right:.5em;
+	margin-top:-1.5em;
+	margin-bottom:-1.5em;
+	margin-right:1em;
 }
 
 #bab_groups_tree li a {
@@ -99,4 +117,11 @@
 	voice-family: "\"}\"";
 	voice-family:inherit;
 	background-image:url('../skins/ovidentia/images/Puces/PuceGroup.gif');
+	}
+
+
+#bab_groups_tree .expandchecked {
+	voice-family: "\"}\"";
+	voice-family:inherit;
+	background-image:url('../skins/ovidentia/images/Puces/PuceCheckbox.gif');
 	}

@@ -9,6 +9,8 @@ function bab_ul_tree(id)
 	this.nodeOpenClass = 'bab_ul_tree_open';
 	this.nodeBulletClass = 'bab_ul_tree_leaf';
 	this.nodeLinkClass = 'bullet';
+	this.nodeLineClass = 'line';
+	this.nodeLineHoverClass = 'line hover';
 }
 
 
@@ -45,7 +47,7 @@ bab_ul_tree.prototype.processList = function(ul) {
 					item.removeChild(item.firstChild);
 				}
 				s.onclick = function () {
-					this.parentNode.className = (this.parentNode.className=='bab_ul_tree_open') ? 'bab_ul_tree_closed' : 'bab_ul_tree_open';
+					this.parentNode.parentNode.className = (this.parentNode.parentNode.className=='bab_ul_tree_open') ? 'bab_ul_tree_closed' : 'bab_ul_tree_open';
 					return false;
 				}
 			}
@@ -55,6 +57,14 @@ bab_ul_tree.prototype.processList = function(ul) {
 				s.onclick = function () { return false; }
 			}
 			s.appendChild(document.createTextNode(t));
+			item = item.getElementsByTagName('div')[0];
+			item.className = this.nodeLineClass;
+			item.onmouseover = function() {
+				this.className='line hover';
+				}
+			item.onmouseout = function() {
+				this.className='line';
+				}
 			item.insertBefore(s,item.firstChild);
 		}
 	}
@@ -103,12 +113,27 @@ bab_ul_tree.prototype.expand = function() {
 	this.expandCollapseList(this.treeId,this.nodeOpenClass);
 }
 
+
 bab_ul_tree.prototype.expandToItem = function(itemId, focus) {
 	var ret = this.expandCollapseList(this.treeId,this.nodeOpenClass,itemId);
 	if (ret && null != focus) {
 		var o = document.getElementById(itemId);
 		if (o.scrollIntoView) {
 			o.scrollIntoView(false);
+		}
+	}
+}
+
+bab_ul_tree.prototype.expandChecked = function() {
+	var input = this.treeId.getElementsByTagName('input');
+	for (var i =0; i < input.length ; i++ )
+	{
+		if ('checkbox' == input[i].type && input[i].checked) {
+		li = input[i];
+		while (li.parentNode && li.parentNode.nodeName != 'LI') {
+			li = li.parentNode;
+			}
+		this.expandToItem(li.parentNode.id);
 		}
 	}
 }

@@ -72,7 +72,8 @@ function groupCreateMod()
 
 			
 			$tree = new bab_grptree();
-			$this->groups = $tree->getGroups(0, '%s &nbsp; &nbsp; &nbsp; ');
+			$root = $tree->getRootInfo();
+			$this->groups = $tree->getGroups($root['id'], '%s &nbsp; &nbsp; &nbsp; ');
 			unset($this->groups[BAB_UNREGISTERED_GROUP]);
 
 
@@ -176,6 +177,7 @@ function groupList()
 			$this->arr = $tree->getNodeInfo(0);
 			$this->arr['name'] = bab_translate($this->arr['name']);
 			$this->arr['description'] = htmlentities(bab_translate($this->arr['description']));
+			$this->arr['managerval'] = htmlentities(bab_getUserName($this->arr['manager']));
 			$this->tpl_tree = bab_grp_node_html($tree, 0, 'groups.html', 'grp_childs');
 
 			$this->id_expand_to = isset($_REQUEST['expand_to']) ? $_REQUEST['expand_to'] : 3;
@@ -292,7 +294,7 @@ function groupsOptions()
 				}
 			
 			$tree = new bab_grptree();
-			$this->groups = $tree->getGroups(0);
+			$this->groups = $tree->getGroups(BAB_ALLUSERS_GROUP);
 			unset($this->groups[BAB_UNREGISTERED_GROUP]);					
 			}
 
@@ -325,14 +327,8 @@ function groupsOptions()
 					$this->dircheck = "checked";
 				else
 					$this->dircheck = "";
-				if( $this->arr['id'] < 3 )
-					{
-					$this->urlname = bab_getGroupName($this->arr['id']);
-					}
-				else
-					{
-					$this->urlname = $this->arr['name'];
-					}
+
+				$this->urlname = $this->arr['name'];
 				return true;
 				}
 			else
@@ -345,41 +341,6 @@ function groupsOptions()
 	$babBody->babecho(	bab_printTemplate($temp, "groups.html", "groupsoptions"));
 	}
 
-
-function setList()
-{
-global $babBody;
-	class temp
-		{
-
-		var $altbg = true;
-
-		function temp()
-			{
-			global $babBody;
-			$this->fullname = bab_translate("Groups");
-			
-			$tree = new bab_grptree();
-			$this->groups = $tree->getGroups(0);
-			unset($this->groups[BAB_UNREGISTERED_GROUP]);					
-			}
-
-		function getnext()
-			{
-			if (list(,$this->arr) = each($this->groups))
-				{
-				$this->altbg = !$this->altbg;
-				return true;
-				}
-			else
-				return false;
-
-			}
-		}
-
-	$temp = new temp();
-	$babBody->babecho(	bab_printTemplate($temp, "groups.html", "setlist"));
-}
 
 
 function addModGroup()
@@ -527,7 +488,7 @@ if( isset($update) && $update == "options" && ($babBody->isSuperAdmin || $babBod
 if ($idx != "brow")
 	{
 	$babBody->addItemMenu("List", bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=groups&idx=List");
-	$babBody->addItemMenu("sets", bab_translate("Sets of Group"), $GLOBALS['babUrlScript']."?tg=groups&idx=sets");
+	$babBody->addItemMenu("sets", bab_translate("Sets of Group"), $GLOBALS['babUrlScript']."?tg=setsofgroups&idx=list");
 	$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=groups&idx=options");
 	$babBody->addItemMenu("plist", bab_translate("Profiles"), $GLOBALS['babUrlScript']."?tg=profiles&idx=plist");
 
@@ -569,10 +530,6 @@ switch($idx)
 			groupDelete($item);
 		$babBody->title = bab_translate("Delete group");
 		$babBody->addItemMenu("Delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=group&idx=Delete&item=".$item);
-		break;
-	case "sets":
-		setList();
-		$babBody->title = bab_translate("Sets of Group");
 		break;
 	case "List":
 	default:

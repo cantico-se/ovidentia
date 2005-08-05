@@ -299,12 +299,15 @@ window.focus();
 	<a href="{ babUrlScript }?tg=groups&amp;idx=Create" onclick="return load_clear();" class="newgroup">{ t_newgroup }</a>
 	</p>
 	<div class="tree">
-	<ul>
-	<li id="bab_ovgroup_0"><img src="{ babSkinPath }images/Puces/folder_treehead.gif" alt="{ t_group }" />
-		<a href="{ babUrlScript }?tg=groups&amp;idx=Create&amp;grpid=0" title="{ arr[description] }" onclick="return load_edit_form(this);">{ arr[name] }</a>
-			<input type="hidden" id="bab_ovgroup_0_manager" value="0" />
-			<input type="hidden" id="bab_ovgroup_0_managerval" value="" />
-			<input type="hidden" id="bab_ovgroup_0_dggroup" value="{ arr[id_dggroup] }" />
+	<ul class="first">
+	<li id="bab_ovgroup_{ arr[id] }">
+		<div class="line">
+		<img src="{ babSkinPath }images/Puces/folder_treehead.gif" alt="{ t_group }" />
+		<a href="{ babUrlScript }?tg=groups&amp;idx=Create&amp;grpid={ arr[id] }" title="{ arr[description] }" onclick="return load_edit_form(this);">{ arr[name] }</a>
+			<input type="hidden" id="bab_ovgroup_{ arr[id] }_manager" value="{ arr[manager] }" />
+			<input type="hidden" id="bab_ovgroup_{ arr[id] }_managerval" value="{ arr[managerval] }" />
+			<input type="hidden" id="bab_ovgroup_{ arr[id] }_dggroup" value="{ arr[id_dggroup] }" />
+		</div>
 		{ tpl_tree }
 		</li>
 	</ul>
@@ -319,8 +322,8 @@ tree.expandToItem('bab_ovgroup_{ id_expand_to }');
 
 function load_edit_form(a)
 {
-	var htmlid		 = a.parentNode.id;
-	var htmlparent	 = a.parentNode.parentNode.parentNode.id;
+	var htmlid		 = a.parentNode.parentNode.id;
+	var htmlparent	 = a.parentNode.parentNode.parentNode.parentNode.id;
 	var tmp = htmlid.split('_');
 	var groupid		 = parseInt(tmp[2]);
 	tmp = htmlparent.split('_');
@@ -398,7 +401,7 @@ function load_clear()
 	<ul>
 		<!--#in getnextgroup -->
 		<li id="bab_ovgroup_{ arr[id] }">
-			
+			<div>
 			<!--#if arr[id_dggroup] -->
 				<!--#if arr[nb_set] -->
 				<img src="{ babSkinPath }images/Puces/folder_group_set_d.gif" alt="{ t_group_set_d }" />
@@ -416,7 +419,12 @@ function load_clear()
 			<input type="hidden" id="bab_ovgroup_{ arr[id] }_manager" value="{ arr[manager] }" />
 			<input type="hidden" id="bab_ovgroup_{ arr[id] }_managerval" value="{ arr[managerval] }" />
 			<input type="hidden" id="bab_ovgroup_{ arr[id] }_dggroup" value="{ arr[id_dggroup] }" />
-			<div class="right">%</div>
+			<!--#if arr[id] "> 2" -->
+			<div class="right">
+				<a href="{ babUrlScript }?tg=group&amp;idx=Members&amp;item={ arr[id] }" title="{ t_group_members }"><img src="{ babSkinPath }images/Puces/head.gif" alt="{ t_group_members }" /> { t_members }</a>
+			</div>
+			<!--#endif arr[id] -->
+			</div>
 			{ subtree }
 		</li>
 		<!--#endin getnextgroup -->

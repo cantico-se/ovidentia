@@ -456,6 +456,12 @@ switch($tg)
 		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && ($babBody->isSuperAdmin || $babBody->currentAdmGroup != 0))
 			$incl = "admin/group";
 		break;
+	case "setsofgroups":
+		$babLevelOne = bab_translate("Administration");
+		$babLevelTwo = bab_translate("Sets of groups");
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && ($babBody->isSuperAdmin || $babBody->currentAdmGroup != 0))
+			$incl = "admin/setsofgroups";
+		break;
 	case "profiles":
 		$babLevelOne = bab_translate("Administration");
 		$babLevelTwo = bab_translate("Profiles");

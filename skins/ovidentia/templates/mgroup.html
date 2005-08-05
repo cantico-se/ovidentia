@@ -1,0 +1,69 @@
+<!--#begin grp_maintree -->
+<script type="text/javascript" src="{ babInstallPath }scripts/ul_tree.js"></script>
+<form method="post" action="{ babPhpSelf }" name="listform">
+<input type="hidden" name="tg" value="{ tgval }" />
+<input type="hidden" name="idx" value="{ idxval }" />
+<!--#in getNextField -->
+<input type="hidden" name="{ field[0] }" value="{ field[1] }" />
+<!--#endin getNextField -->
+
+<div id="bab_groups_tree" class="BabLoginCadreBackground">
+	<p class="BabSiteAdminTitleFontBackground">
+	<a href="javascript:tree.expand();" class="expand">{ t_expand_all }</a> 
+	<a href="javascript:tree.collapse();" class="collapse">{ t_collapse_all }</a>
+	<a href="javascript:tree.expandChecked();" class="expandchecked">{ t_expand_checked }</a>
+	</p>
+	<div class="tree">
+	<ul class="first">
+	<li id="bab_ovgroup_{ arr[id] }">
+		<div>
+			<img src="{ babSkinPath }images/Puces/folder_treehead.gif" alt="{ t_group }" /> <label for="bab_group_chk_{ arr[id] }">{ arr[name] }</label>
+			<div class="right"><input type="checkbox" id="bab_group_chk_{ arr[id] }" name="mgroups[]" value="{ arr[id] }" <!--#if option[checked) --> checked="checked" <!--#endif option[checked) --> <!--#if option[disabled] --> disabled="disabled" <!--#endif option[disabled] --> /></div>
+		</div>
+		{ tpl_tree }
+		</li>
+	</ul>
+	<br />
+	</div>
+</div>
+<div align="center">
+	<input type="submit" value="{ t_record }" /> 
+</div>
+</form>
+
+<script type="text/javascript">
+var tree = new bab_ul_tree('bab_groups_tree');
+tree.processList();
+tree.expandToItem('bab_ovgroup_{ id_expand_to }');
+</script>
+
+<a name="bab_groups_tree_end"></a>
+<!--#end grp_maintree -->
+
+
+<!--#begin grp_childs -->
+	<ul>
+		<!--#in getnextgroup -->
+		<li id="bab_ovgroup_{ arr[id] }" title="{ arr[description] }">
+			<div>
+				<!--#if arr[id_dggroup] -->
+					<!--#if arr[nb_set] -->
+					<img src="{ babSkinPath }images/Puces/folder_group_set_d.gif" alt="{ t_group_set_d }" />
+					<!--#else arr[nb_set] -->
+					<img src="{ babSkinPath }images/Puces/folder_group_d.gif" alt="{ t_group_d }" />
+					<!--#endif arr[nb_set] -->
+				<!--#else arr[id_dggroup] -->
+					<!--#if arr[nb_set] -->
+					<img src="{ babSkinPath }images/Puces/folder_group_set.gif" alt="{ t_group_set }" />
+					<!--#else arr[nb_set] -->
+					<img src="{ babSkinPath }images/Puces/folder_group.gif" alt="{ t_group }" />
+					<!--#endif arr[nb_set] -->
+				<!--#endif arr[id_dggroup] -->
+				<label for="bab_group_chk_{ arr[id] }">{ arr[name] }</label>
+				<div class="right"><input type="checkbox" id="bab_group_chk_{ arr[id] }" name="mgroups[]" value="{ arr[id] }" <!--#if option[checked] --> checked="checked" <!--#endif option[checked] --> <!--#if option[disabled] --> disabled="disabled" <!--#endif option[disabled] --> /></div>
+			</div>
+			{ subtree }
+		</li>
+		<!--#endin getnextgroup -->
+	</ul>
+<!--#end grp_childs -->

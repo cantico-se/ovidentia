@@ -27,11 +27,66 @@ include_once $babInstallPath."utilit/grptreeincl.php";
 
 class mgroups
 {
-	function mgroups()
+	function mgroups($tg, $idx, $id_parent = BAB_ALLUSERS_GROUP)
 	{
+	$this->t_expand_all = bab_translate("Expand all");
+	$this->t_collapse_all = bab_translate("Collapse all");
+	$this->t_expand_checked = bab_translate("Expand to checked boxes");
+	$this->t_group = bab_translate("Main groups folder");
+	$this->t_record = bab_translate("Record");
+	$this->id_parent = &$id_parent;
+	$this->tgval = &$tg;
+	$this->idxval = &$idx;
+	$this->options = array();
+	$this->fields = array();
+	$this->id_expand_to = isset($_REQUEST['expand_to']) ? $_REQUEST['expand_to'] : 3;
+	}
 
+	function setField($name, $value)
+	{
+	$this->fields[$name] = $value;
+	}
+
+	function setGroupOption($id_group, $name, $value)
+	{
+	$this->options[$id_group][$name] = $value;
+	}
+
+	function setGroupsOptions($arr_groups, $name, $value)
+	{
+	foreach($arr_groups as $id_group)
+		$this->setGroupOption($id_group, $name, $value);
+	}
+
+	function getNextField()
+	{
+	return $this->field = each($this->fields);
+	}
+
+	function babecho()
+	{
+	$tree = & new bab_grptree();
+	$this->arr = $tree->getNodeInfo($this->id_parent);
+	$this->arr['name'] = bab_translate($this->arr['name']);
+	$this->arr['description'] = htmlentities(bab_translate($this->arr['description']));
+	$this->option = isset($this->options[$this->arr['id']]) ? $this->options[$this->arr['id']] : false;
+	$this->tpl_tree = bab_grp_node_html($tree, $this->arr['id'], 'mgroup.html', 'grp_childs', $this->options);
+
+	global $babBody;
+	$babBody->addStyleSheet('groups.css');
+	$babBody->babecho(	bab_printTemplate($this, "mgroup.html", "grp_maintree"));
 	}
 }
 
+
+function mgroups_getSelected()
+{
+	if (isset($_POST['mgroups']) && count($_POST['mgroups']) > 0)
+		{
+		return $_POST['mgroups'];
+		}
+	else
+		return array();
+}
 
 ?>

@@ -144,28 +144,31 @@ class bab_grptree extends bab_dbtree
 
 class bab_grp_node
 {
-	function bab_grp_node(&$tree, $id_group)
+	function bab_grp_node(&$tree,$id_group)
 	{
+	$this->tree = &$tree;
 	$this->t_group_set_d = bab_translate("Users group with delegation and group set associated");
 	$this->t_group_d = bab_translate("Users group with delegation");
 	$this->t_group_set = bab_translate("Group associated with one or more sets of groups");
 	$this->t_group = bab_translate("Users group");
-	$this->tree = &$tree;
-	$this->childs = $tree->getChilds($id_group);
+	$this->t_group_members = bab_translate("Group's members");
+	$this->t_members = bab_translate("Members");
+	$this->childs = $this->tree->getChilds($id_group);
 	}
 
 	function getnextgroup()
 	{
 	if ($this->childs && list(,$this->arr) = each($this->childs))
 		{
-		if ($this->arr['id'] < 4)
+		if ($this->arr['id'] <= BAB_ADMINISTRATOR_GROUP)
 			{
 			$this->arr['name'] = bab_translate($this->arr['name']);
 			$this->arr['description'] = bab_translate($this->arr['description']);
 			}
 		$this->arr['description'] = htmlentities($this->arr['description']);
 		$this->arr['managerval'] = htmlentities(bab_getUserName($this->arr['manager']));
-		$this->subtree = bab_grp_node_html($this->tree, $this->arr['id'], $this->file, $this->template);
+		$this->option = isset($this->options[$this->arr['id']]) ? $this->options[$this->arr['id']] : false;
+		$this->subtree = bab_grp_node_html($this->tree, $this->arr['id'], $this->file, $this->template, $this->options);
 		return true;
 		}
 	else 
@@ -182,11 +185,12 @@ class bab_grp_node
 	}
 }
 
-function bab_grp_node_html(&$tree, $id_group, $file, $template)
+function bab_grp_node_html(&$tree, $id_group, $file, $template, $options = array())
 {
 	$obj = & new bab_grp_node($tree, $id_group);
-	$obj->file = $file;
-	$obj->template = $template;
+	$obj->file = &$file;
+	$obj->template = &$template;
+	$obj->options = &$options;
 	return $obj->get();
 }
 

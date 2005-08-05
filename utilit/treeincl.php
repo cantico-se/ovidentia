@@ -84,7 +84,10 @@ class bab_dbtree
 	function getRootInfo()
 	{
 		global $babDB;
-		$res = $babDB->db_query("SELECT * from ".$this->table." where ".$this->getWhereClause()." order by lf asc limit 0,1" );
+		$where = $this->getWhereClause();
+		if (!empty($where ))
+			$where = 'where '.$where ;
+		$res = $babDB->db_query("SELECT * from ".$this->table." ".$where." order by lf asc limit 0,1" );
 		if( $res && $babDB->db_num_rows($res) > 0 )
 		{
 			return $babDB->db_fetch_array($res);
