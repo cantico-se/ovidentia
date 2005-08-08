@@ -113,7 +113,7 @@ function listUsers($pos, $grp)
 				{
 				$this->pos = strlen($pos)>1? $pos[1]: '';
 				$this->ord = $pos[0];
-				if( $babBody->currentAdmGroup == 0)
+				if( $babBody->currentAdmGroup == NULL)
 					$req .= " where ".$this->namesearch2." like '".$this->pos."%' order by ".$this->namesearch2.", ".$this->namesearch." asc";
 				else
 					$req .= ", ".BAB_USERS_GROUPS_TBL." ug where u.disabled != '1' and ug.id_object=u.id and ug.id_group='".$babBody->currentAdmGroup."' and u.".$this->namesearch2." like '".$this->pos."%' order by u.".$this->namesearch2.", u.".$this->namesearch." asc";
@@ -124,7 +124,7 @@ function listUsers($pos, $grp)
 				{
 				$this->pos = $pos;
 				$this->ord = "";
-				if( $babBody->currentAdmGroup == 0)
+				if( $babBody->currentAdmGroup == NULL)
 					$req .= " where ".$this->namesearch." like '".$this->pos."%' order by ".$this->namesearch.", ".$this->namesearch2." asc";
 				else
 					$req .= ", ".BAB_USERS_GROUPS_TBL." ug where u.disabled != '1' and ug.id_object=u.id and ug.id_group='".$babBody->currentAdmGroup."' and u.".$this->namesearch." like '".$this->pos."%' order by u.".$this->namesearch.", u.".$this->namesearch2." asc";
@@ -140,7 +140,7 @@ function listUsers($pos, $grp)
 				$this->allselected = 0;
 			$this->allurl = $GLOBALS['babUrlScript']."?tg=users&idx=List&pos=&grp=".$this->grp;
 			$this->groupurl = $GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$this->grp;
-			if( $babBody->currentAdmGroup == 0 && $this->grp == 3 )
+			if( $babBody->currentAdmGroup == NULL && $this->grp == 3 )
 				$this->bmodname = true;
 			else
 				$this->bmodname = false;
@@ -351,9 +351,9 @@ if( !isset($pos))
 
 if( !isset($grp) || empty($grp))
 	{
-	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
+	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == NULL )
 		$grp = 3;
-	else if( $babBody->currentAdmGroup != 0 )
+	else if( $babBody->currentAdmGroup != NULL )
 		{
 		$grp = $babBody->currentAdmGroup;
 		}
@@ -399,7 +399,7 @@ if( $idx == "chg")
 	$idx = "List";
 }
 
-if( isset($Updateg) && ($babBody->isSuperAdmin || $babBody->currentAdmGroup != 0 ))
+if( isset($Updateg) && ($babBody->isSuperAdmin || $babBody->currentAdmGroup != NULL ))
 {
 	updateGroup($grp, $users, $userst);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp);
@@ -422,7 +422,7 @@ switch($idx)
 		break;
 
 	case "brow": // Used by add-ons
-		if( $babBody->isSuperAdmin || $babBody->currentAdmGroup != 0 )
+		if( $babBody->isSuperAdmin || $babBody->currentAdmGroup != NULL )
 			{
 			browseUsers($pos, $cb);
 			}
@@ -444,13 +444,13 @@ switch($idx)
 		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=users&idx=Create&pos=".$pos);
 		break;
 	case "List":
-		if( $babBody->isSuperAdmin || $babBody->currentAdmGroup != 0 )
+		if( $babBody->isSuperAdmin || $babBody->currentAdmGroup != NULL )
 			{
 			$babBody->title = bab_translate("Users list");
 			$cnt = listUsers($pos, $grp);
 			if ($grp != 3 && $grp != $babBody->currentAdmGroup) $babBody->addItemMenu("cancel", bab_translate("Group's members"),$GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$grp);
 			$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List");
-			if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0)
+			if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == NULL)
 				{
 				$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=users&idx=Create&pos=".$pos."&grp=".$grp);
 				$babBody->addItemMenu("utilit", bab_translate("Utilities"), $GLOBALS['babUrlScript']."?tg=users&idx=utilit");
@@ -462,7 +462,7 @@ switch($idx)
 			}
 		break;
 	case "utilit":
-		if ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0)
+		if ($babBody->isSuperAdmin && $babBody->currentAdmGroup == NULL)
 			{
 			if (isset($_POST['action']) && $_POST['action'] == 'delete_unconfirmed')
 				delete_unconfirmed();

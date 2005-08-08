@@ -45,10 +45,11 @@ function changeAdmGroup()
 			$this->groups = $babBody->dgAdmGroups;
 			$this->count = count($this->groups);
 
+			
 			if( $babBody->isSuperAdmin )
 				{
 				$this->count += 1;
-				$this->groups[] = 0;
+				$this->groups[] = NULL;
 				}
 			}
 
@@ -58,18 +59,18 @@ function changeAdmGroup()
 			static $i = 0;	
 			if( $i < $this->count)
 				{
-				if( $this->groups[$i] == 0 )
+				if( $this->groups[$i] == NULL )
 					{
 					$this->grpdgname = bab_translate("All site");
-					$this->grpdgid = 0;
+					$this->grpdgid = 'NULL';
 					}
 				else
 					{
-					$this->grpdgname = bab_getGroupName($this->groups[$i]);
+					$this->grpdgname = $babBody->ovgroups[$this->groups[$i]]['dg_group_name'];
 					$this->grpdgid = $this->groups[$i];
 					}
 
-				if( $this->groups[$i] == $babBody->currentAdmGroup )
+				if( $this->groups[$i] === $babBody->currentAdmGroup )
 					$this->selected = "selected";
 				else
 					$this->selected = "";
@@ -90,18 +91,24 @@ function updateAdmGroup($grpdg)
 {
 	global $babBody, $babDB;
 
-	if( $grpdg != 0 )
+
+
+	
+	if ($_POST['grpdg'] === 'NULL')
 		{
-		$babBody->currentAdmGroup = $grpdg;
-		$babBody->currentDGGroup = $babDB->db_fetch_array($babDB->db_query("select dg.*, g.lf, g.lr from ".BAB_DG_GROUPS_TBL." dg, ".BAB_GROUPS_TBL." g where g.id='".$babBody->dgAdmGroups[0]."' and dg.id=g.id_dggroup"));
+		$babBody->currentAdmGroup = NULL;
+		$babBody->currentDGGroup = array();
+		$dbAdmGroup = 'NULL';
 		}
 	else
 		{
-		$babBody->currentAdmGroup = 0;
-		$babBody->currentDGGroup = array();
+		$babBody->currentAdmGroup = $grpdg;
+		$babBody->currentDGGroup = $babDB->db_fetch_array($babDB->db_query("select dg.*, g.lf, g.lr from ".BAB_DG_GROUPS_TBL." dg, ".BAB_GROUPS_TBL." g where g.id='".$grpdg."' and dg.id=g.id_dggroup"));
+		$dbAdmGroup = "'".$grpdg."'";
 		}
 
-	$babDB->db_query("update ".BAB_USERS_LOG_TBL." set id_dggroup='".$babBody->currentAdmGroup."' where sessid='".session_id()."'");
+	
+	$babDB->db_query("update ".BAB_USERS_LOG_TBL." set id_dggroup=".$dbAdmGroup." where sessid='".session_id()."'");
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=delegusr");
 }
 

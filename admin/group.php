@@ -114,7 +114,7 @@ function groupModify($id)
 			$this->tgval = "group";
 			$this->selected = "";
 			$this->bdggroup = false;
-			if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0)
+			if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == NULL)
 				{
 				$this->res = $babDB->db_query("select * from ".BAB_DG_GROUPS_TBL."");
 				$this->count = $babDB->db_num_rows($this->res);
@@ -176,29 +176,22 @@ function groupMembers($id)
 			global $babBody;
 
 			$this->grpid = $id;
-			$this->fullname = bab_translate("Full Name");
+			$this->t_lastname = bab_translate("Lastname");
+			$this->t_firstname = bab_translate("Firstname");
+			$this->t_upgrade = bab_translate("Upgrade");
+			$this->t_delete = bab_translate("Delete");
 			$this->deletealt = bab_translate("Delete group's members");
 			$this->uncheckall = bab_translate("Uncheck all");
 			$this->checkall = bab_translate("Check all");
 			$this->idgroup = $id;
-			$this->group = bab_getGroupName($id);
-			$this->db = $GLOBALS['babDB'];
-			$this->identity = 0;
+			
+			$this->db = &$GLOBALS['babDB'];
 
-			$req = "select ut.*, ugt.isprimary from ".BAB_USERS_TBL." ut left join ".BAB_USERS_GROUPS_TBL." ugt on ut.id=ugt.id_object where ugt.id_group= '".$id."'";
-			if( $babBody->nameorder[0] == 'F' )
-				{
-				$orderby = " order by ut.firstname asc";
-				}
-			else
-				{
-				$orderby = " order by ut.lastname asc";
-				}
-			$req .= $orderby;
+			$req = "select ut.*, ugt.isprimary from ".BAB_USERS_TBL." ut left join ".BAB_USERS_GROUPS_TBL." ugt on ut.id=ugt.id_object where ugt.id_group= '".$id."' order by ut.lastname asc";
 			
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
-			if( $babBody->currentAdmGroup == 0)
+			if( $babBody->currentAdmGroup == NULL)
 				{
 				$this->bmodname = true;
 				}
@@ -216,14 +209,6 @@ function groupMembers($id)
 				{
 				$this->altbg = $this->altbg ? false : true;
 				$this->arr = $this->db->db_fetch_array($this->res);
-				if( $this->arr['isprimary'] == "Y")
-					{
-					$this->primary = "Y";
-					}
-				else
-					{
-					$this->primary = "";
-					}
 				$this->url = $GLOBALS['babUrlScript']."?tg=user&idx=Groups&item=".$this->arr['id'];
 				$this->urlname = bab_composeUserName($this->arr['firstname'], $this->arr['lastname']);
 				$i++;
@@ -523,7 +508,7 @@ switch($idx)
 		/* no break */
 	case "Members":
 		groupMembers($item);
-		$babBody->title = bab_translate("Group's members");
+		$babBody->title = bab_translate("Group's members").' : '.bab_getGroupName($item);
 		$babBody->addItemMenu("List", bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=groups&idx=List");
 		if( $babBody->currentAdmGroup != $item )
 			$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=group&idx=Modify&item=".$item);

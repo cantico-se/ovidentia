@@ -30,5 +30,5 @@ $babSlogan = "Ovidentia: enterprise portal"; /* your slogan */
 $babSiteName = "Ovidentia"; /* your site name */
 $babUrl = "http://yourdomain/"; /* url to access to your site */
 $babVersion = "5.5"; /* current version */
-$babFileNameTranslation = array("&" => "_","\"" => "_","'" => "_","'" => "_",";"=>"_","~"=>"-","+"=>""); /* translation characters for files names.*/
+$babFileNameTranslation = array("&" => "_","\"" => "_","'" => "_",";"=>"_","~"=>"-","+"=>""); /* translation characters for files names.*/
 ?>

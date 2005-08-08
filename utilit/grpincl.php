@@ -177,9 +177,18 @@ function bab_addGroup($name, $description, $managerid, $grpdg, $parent = 1)
 
 		$tree = & new bab_grptree();
 		$id = $tree->addAlpha($parent, $name);
+		unset($tree);
 
-		bab_updateGroupInfo($id, $name, $description, $managerid, $grpdg , $parent);
-	
+		$db->db_query("UPDATE ".BAB_GROUPS_TBL." 
+			SET 
+				name='".$name."', 
+				description = '".$description."',
+				manager = '".$managerid."',
+				id_dggroup = '".$grpdg."'
+			WHERE
+				id='".$id."'
+			");
+
 		bab_callAddonsFunction('onGroupCreate', $id);
 		return $id;
 		}

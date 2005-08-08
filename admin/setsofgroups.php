@@ -90,17 +90,14 @@ function glist()
 			$this->confirmdelete = bab_translate("Do you really want to delete the selected items ?");
 			
 			
-			$this->res = $this->db->db_query("SELECT id_group FROM ".BAB_GROUPS_SET_ASSOC_TBL." WHERE id_set='".$_REQUEST['sid']."'");
+			$this->res = $this->db->db_query("SELECT g.* FROM ".BAB_GROUPS_SET_ASSOC_TBL." a, ".BAB_GROUPS_TBL." g WHERE a.id_set='".$_REQUEST['sid']."' AND g.id=a.id_group");
 
-			$tree = new bab_grptree();
-			$this->groups = $tree->getGroups(BAB_REGISTERED_GROUP);
 			}
 
 		function getnext()
 			{
-			if( list($id_group) = $this->db->db_fetch_array($this->res))
+			if( $this->arr = $this->db->db_fetch_array($this->res))
 				{
-				$this->arr = &$this->groups[$id_group];
 				$this->altbg = !$this->altbg;
 				return true;
 				}

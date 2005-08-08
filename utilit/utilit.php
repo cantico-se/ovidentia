@@ -532,51 +532,50 @@ function babAdminSection($close)
 			}
 		}
 
-	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0)
+	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == NULL)
 		{
 		$this->array_urls[bab_translate("Delegation")] = $GLOBALS['babUrlScript']."?tg=delegat";
 		$this->array_urls[bab_translate("Sites")] = $GLOBALS['babUrlScript']."?tg=sites";
 		}
 
-	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentAdmGroup != 0)
-		$this->array_urls[bab_translate("Users")] = $GLOBALS['babUrlScript']."?tg=users";
-	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['groups'] == 'Y')
+	$this->array_urls[bab_translate("Users")] = $GLOBALS['babUrlScript']."?tg=users";
+	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == NULL) || $babBody->currentDGGroup['groups'] == 'Y')
 		$this->array_urls[bab_translate("Groups")] = $GLOBALS['babUrlScript']."?tg=groups";
-	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['sections'] == 'Y')
+	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == NULL) || $babBody->currentDGGroup['sections'] == 'Y')
 		$this->array_urls[bab_translate("Sections")] = $GLOBALS['babUrlScript']."?tg=sections";
-	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['faqs'] == 'Y')
+	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == NULL) || $babBody->currentDGGroup['faqs'] == 'Y')
 		$this->array_urls[bab_translate("Faq")] = $GLOBALS['babUrlScript']."?tg=admfaqs";
-	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['articles'] == 'Y')
+	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == NULL) || $babBody->currentDGGroup['articles'] == 'Y')
 		$this->array_urls[bab_translate("Articles")] = $GLOBALS['babUrlScript']."?tg=topcats";
-	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['forums'] == 'Y')
+	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == NULL) || $babBody->currentDGGroup['forums'] == 'Y')
 		$this->array_urls[bab_translate("Forums")] = $GLOBALS['babUrlScript']."?tg=forums";
-	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
+	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == NULL )
 		$this->array_urls[bab_translate("Vacation")] = $GLOBALS['babUrlScript']."?tg=admvacs";
-	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['calendars'] == 'Y')
+	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == NULL) || $babBody->currentDGGroup['calendars'] == 'Y')
 		$this->array_urls[bab_translate("Calendar")] = $GLOBALS['babUrlScript']."?tg=admcals";
-	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['mails'] == 'Y')
+	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == NULL) || $babBody->currentDGGroup['mails'] == 'Y')
 		$this->array_urls[bab_translate("Mail")] = $GLOBALS['babUrlScript']."?tg=maildoms&userid=0&bgrp=y";
-	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['filemanager'] == 'Y')
+	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == NULL) || $babBody->currentDGGroup['filemanager'] == 'Y')
 		$this->array_urls[bab_translate("File manager")] = $GLOBALS['babUrlScript']."?tg=admfms";
-	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['approbations'] == 'Y')
+	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == NULL) || $babBody->currentDGGroup['approbations'] == 'Y')
 		$this->array_urls[bab_translate("Approbations")] = $GLOBALS['babUrlScript']."?tg=apprflow";
-	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['directories'] == 'Y')
+	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == NULL) || $babBody->currentDGGroup['directories'] == 'Y')
 		$this->array_urls[bab_translate("Directories")] = $GLOBALS['babUrlScript']."?tg=admdir";
-	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || (isset($babBody->currentDGGroup['orgchart']) && $babBody->currentDGGroup['orgchart'] == 'Y'))
+	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == NULL) || (isset($babBody->currentDGGroup['orgchart']) && $babBody->currentDGGroup['orgchart'] == 'Y'))
 		$this->array_urls[bab_translate("Charts")] = $GLOBALS['babUrlScript']."?tg=admocs";
 	
-	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
+	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == NULL )
 		$this->array_urls[bab_translate("Add-ons")] = $GLOBALS['babUrlScript']."?tg=addons";
-	
-	$this->array_urls[bab_translate("Statistics")] = $GLOBALS['babUrlScript']."?tg=admstats";
+	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == NULL )
+		$this->array_urls[bab_translate("Statistics")] = $GLOBALS['babUrlScript']."?tg=admstats";
 	$this->head = bab_translate("Currently you administer ");
-	if( $babBody->currentAdmGroup == 0 )
+	if( $babBody->currentAdmGroup == NULL )
 		$this->head .= bab_translate("all site");
 	else
-		$this->head .= bab_getGroupName($babBody->currentAdmGroup);
+		$this->head .= $babBody->ovgroups[$babBody->currentAdmGroup]['dg_group_name'];
 	$this->foot = "";
 
-	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
+	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == NULL )
 		{
 		foreach($babBody->babaddons as $row)
 			{
@@ -1258,7 +1257,7 @@ function babBody()
 	$this->newfiles = 0;
 	$this->calaccess = false;
 	$this->isSuperAdmin = false;
-	$this->currentAdmGroup = 0;
+	$this->currentAdmGroup = NULL;
 	$this->currentDGGroup = array();
 	$this->dgAdmGroups = array();
 	$this->usergroups = array();
@@ -2077,6 +2076,7 @@ function bab_updateUserSettings()
 				}
 			}
 		}
+
 	
 	$res = $babDB->db_query("select id, id_dggroup, id_user, cpw from ".BAB_USERS_LOG_TBL." where sessid='".session_id()."'");
 	if( $res && $babDB->db_num_rows($res) > 0)
@@ -2087,10 +2087,10 @@ function bab_updateUserSettings()
 			$GLOBALS['babUserPassword'] = bab_decrypt($arr['cpw'], md5($arr['id'].session_id().$BAB_SESS_USERID.$GLOBALS['babEncryptionKey']));
 			}
 
-		if( $arr['id_dggroup'] != 0 && count($babBody->dgAdmGroups) > 0 && in_array($arr['id_dggroup'], $babBody->dgAdmGroups ))
+		if( NULL !== $arr['id_dggroup'] && count($babBody->dgAdmGroups) > 0 && in_array($arr['id_dggroup'], $babBody->dgAdmGroups ))
 			{
 			$babBody->currentAdmGroup = $arr['id_dggroup'];
-			$babBody->currentDGGroup = $babDB->db_fetch_array($babDB->db_query("select dg.* from ".BAB_DG_GROUPS_TBL." dg, ".BAB_GROUPS_TBL." g where g.id='".$babBody->currentAdmGroup."' and dg.id=g.id_dggroup"));
+			$babBody->currentDGGroup = $babDB->db_fetch_array($babDB->db_query("select dg.*, g.lf, g.lr from ".BAB_DG_GROUPS_TBL." dg, ".BAB_GROUPS_TBL." g where g.id='".$babBody->currentAdmGroup."' and dg.id=g.id_dggroup"));
 			}
 		else if( !$babBody->isSuperAdmin && count($babBody->dgAdmGroups) > 0 )
 			{
@@ -2098,7 +2098,9 @@ function bab_updateUserSettings()
 			$babBody->currentDGGroup = $babDB->db_fetch_array($babDB->db_query("select dg.* from ".BAB_DG_GROUPS_TBL." dg, ".BAB_GROUPS_TBL." g where g.id='".$babBody->dgAdmGroups[0]."' and dg.id=g.id_dggroup"));
 			}
 
-		$babDB->db_query("update ".BAB_USERS_LOG_TBL." set dateact=now(), remote_addr='".$GLOBALS['REMOTE_ADDR']."', forwarded_for='".$GLOBALS['HTTP_X_FORWARDED_FOR']."', id_dggroup='".$babBody->currentAdmGroup."' where id = '".$arr['id']."'");
+		$dbAdmGroup = is_null($babBody->currentAdmGroup) ? 'NULL' : "'".$babBody->currentAdmGroup."'";
+
+		$babDB->db_query("update ".BAB_USERS_LOG_TBL." set dateact=now(), remote_addr='".$GLOBALS['REMOTE_ADDR']."', forwarded_for='".$GLOBALS['HTTP_X_FORWARDED_FOR']."', id_dggroup=".$dbAdmGroup." where id = '".$arr['id']."'");
 		}
 	else
 		{

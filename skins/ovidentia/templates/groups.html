@@ -62,19 +62,14 @@ else
 	<!--#endif maingroup -->
 	</td>
 	</tr>
-	<!--#if bdggroup -->
+	<!--#if arr[dg_group_name] -->
 	<tr> 
 	<td align="right">{ grpdgtxt }:</td>
-	<td> 
-	<select name="grpdg">
-	<option value="0"></option>
-	<!--#in getnext -->
-	<option value="{ grpdgid }" <!--#if selected --> selected="selected" <!--#endif selected --> >{ grpdgname }</option>
-	<!--#endin getnext -->
-	</select>
+	<td id="dg_group_name"> 
+		{ arr[dg_group_name] }
 	</td>
 	</tr>
-	<!--#endif bdggroup -->
+	<!--#endif arr[dg_group_name] -->
 	<tr> 
 	<td>&nbsp;</td>
 	<td> 
@@ -100,65 +95,51 @@ else
 <input type="hidden" name="tg" value="group">
 <input type="hidden" name="idx" value="Deletem">
 <input type="hidden" name="item" value="{ grpid }">
-<table border="0" cellpadding="3" cellspacing="0" align="center">
-<tr>
-	<td class="BabLoginMenuBackground" align="center" valign="middle">{ group }</td>
-</tr>
-</table>
-<br>
-<table border="0" width="50%" cellpadding="1" cellspacing="0" align="center" class="BabLoginCadreBackground">
+<table border="0" width="80%" cellpadding="2" cellspacing="0" align="center" class="BabLoginCadreBackground">
 <tr> 
 <td> 
 
-<table class="BabLoginCadreBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
-<tr class="BabSiteAdminTitleFontBackground"> 
-	<td width="1%" colspan="2">
-		<!--#if identity -->&nbsp;
-		<!--#else identity -->
-		<a href="javascript:onCheckAll('users', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" border="0" /></a>
-		<a href="javascript:onCheckAll('users', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" border="0" /></a>
-		<!--#endif identity -->
-	</td>
-	<td>&nbsp;</td>
-	<td>{ fullname } </td>
-</tr>
-<!--#in getnext -->
-<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
-	<td valign="middle" width="1%">
-	<!--#if identity -->&nbsp;
-	<!--#else identity -->
-	<input type="checkbox" name="users[]" value="{ arr[id] }"> 
-	<!--#endif identity -->
-	</td>
-	<td valign="middle" width="1%">&nbsp;</td>
-	<td valign="middle" nowrap> 
-	<!--#if primary "== Y" -->
-	<img src="{ babSkinPath }images/Puces/PuceDefaultGroup.gif"  alt="{ primary }" border="0"> 
-	<!--#endif primary -->
-	&nbsp;</td>
-	<td valign="middle">
-	<!--#if bmodname -->
-	<a href="{ url }">{ urlname }</a>
-	<!--#else bmodname -->
-	{ urlname }
-	<!--#endif bmodname -->
-	</td>
-</tr>
-<!--#endin getnext -->
-<tr> 
-<td colspan="2" align="center" width="20">
-<!--#if identity -->&nbsp;
-<!--#else identity -->
-<a href="javascript:submitForm('Deletem','listform')"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deletealt }" border="0"></a>
-<!--#endif identity -->
-</td>
-<td>&nbsp;</td>
-<td>&nbsp;</td>
-</tr>
-</table>
+	<table class="BabLoginCadreBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
+	<tr class="BabSiteAdminTitleFontBackground"> 
+		
+		<td width="30%">{ t_lastname }</td>
+		<td>{ t_firstname }</td>
+		<td width="2%">
+			{ t_delete }
+		</td>
+	</tr>
+	<!--#in getnext -->
+	<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+		
+		<td> 
+			<!--#if bmodname -->
+			<a href="{ url }">{ arr[lastname] }</a>
+			<!--#else bmodname -->
+			{ arr[lastname] }
+			<!--#endif bmodname -->
+		</td>
+		<td> 
+			{ arr[firstname] }
+		</td>
+		<td align="center">
+			<input type="checkbox" name="users[]" value="{ arr[id] }"> 
+		</td>
+	</tr>
+	<!--#endin getnext -->
+	<tr class="BabSiteAdminTitleFontBackground"> 
+		
+		<td colspan="2">&nbsp;</td>
+		<td width="2%" align="center">
+			<a href="javascript:onCheckAll('users', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" border="0" /></a><a href="javascript:onCheckAll('users', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" border="0" /></a>
+		</td>
+	</tr>
+	</table>
 </td></tr></table>
+<br />
+<div align="center">
+	<input type="submit" value="{ t_upgrade }" />
+</div>
 </form>
-<br>
 
 <!--#end memberslist -->
 
@@ -222,7 +203,7 @@ else
 <!--#endif bdgpds -->
 </tr>        
 <!--#endin getnext -->
-<tr> 
+<tr class="BabSiteAdminTitleFontBackground"> 
 <td valign="middle">&nbsp;</td>
 <!--#if bdgmail -->
 <td width="1%" align="center"><a href="javascript:onCheckAll('mailgrpids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('mailgrpids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
@@ -302,11 +283,15 @@ window.focus();
 	<ul class="first">
 	<li id="bab_ovgroup_{ arr[id] }">
 		<div class="line">
-		<img src="{ babSkinPath }images/Puces/folder_treehead.gif" alt="{ t_group }" />
+		<!--#if arr[id_dggroup] -->
+		<img src="{ babSkinPath }images/Puces/folder_group_d.gif" alt="{ t_group }" />
+		<!--#else arr[id_dggroup] -->
+		<img src="{ babSkinPath }images/Puces/folder_group.gif" alt="{ t_group }" />
+		<!--#endif arr[id_dggroup] -->
 		<a href="{ babUrlScript }?tg=groups&amp;idx=Create&amp;grpid={ arr[id] }" title="{ arr[description] }" onclick="return load_edit_form(this);">{ arr[name] }</a>
 			<input type="hidden" id="bab_ovgroup_{ arr[id] }_manager" value="{ arr[manager] }" />
 			<input type="hidden" id="bab_ovgroup_{ arr[id] }_managerval" value="{ arr[managerval] }" />
-			<input type="hidden" id="bab_ovgroup_{ arr[id] }_dggroup" value="{ arr[id_dggroup] }" />
+			<input type="hidden" id="bab_ovgroup_{ arr[id] }_dggroup" value="{ arr[dg_group_name] }" />
 		</div>
 		{ tpl_tree }
 		</li>
@@ -344,25 +329,17 @@ function load_edit_form(a)
 	el['description'].value	 = description;
 	el['manager'].value		 = manager;
 	el['managerval'].value	 = managerval;
-	el['grpdg'].value		 = dggroup;
+	document.getElementById('dg_group_name').innerHTML	= dggroup;
 
 
 	if (groupid > 2)
 		{
 		el['parent'].style.visibility = 'visible';
 		el['parent'].value = parent;
-		el['deleteg'].style.visibility = 'visible';
-		}
-	else if (groupid == 2)
-		{
-		el['parent'].style.visibility = 'visible';
-		el['parent'].value = parent;
-		el['deleteg'].style.visibility = 'hidden';
 		}
 	else
 		{
 		el['parent'].style.visibility = 'hidden';
-		el['deleteg'].style.visibility = 'hidden';
 		}
 
 	
@@ -383,10 +360,9 @@ function load_clear()
 	el['description'].value	 = '';
 	el['manager'].value		 = 0;
 	el['managerval'].value	 = '';
-	el['grpdg'].value		 = 0;
+	document.getElementById('dg_group_name').innerHTML = '';
 	el['parent'].value		 = 1;
 	el['parent'].style.visibility = 'visible';
-	el['deleteg'].style.visibility = 'hidden';
 
 	document.location.href='#bab_groups_tree_end';
 	return false;
@@ -418,7 +394,7 @@ function load_clear()
 			<a href="{ babUrlScript }?tg=groups&amp;idx=Create&amp;grpid={ arr[id] }" title="{ arr[description] }" onclick="return load_edit_form(this);">{ arr[name] }</a>
 			<input type="hidden" id="bab_ovgroup_{ arr[id] }_manager" value="{ arr[manager] }" />
 			<input type="hidden" id="bab_ovgroup_{ arr[id] }_managerval" value="{ arr[managerval] }" />
-			<input type="hidden" id="bab_ovgroup_{ arr[id] }_dggroup" value="{ arr[id_dggroup] }" />
+			<input type="hidden" id="bab_ovgroup_{ arr[id] }_dggroup" value="{ arr[dg_group_name] }" />
 			<!--#if arr[id] "> 2" -->
 			<div class="right">
 				<a href="{ babUrlScript }?tg=group&amp;idx=Members&amp;item={ arr[id] }" title="{ t_group_members }"><img src="{ babSkinPath }images/Puces/head.gif" alt="{ t_group_members }" /> { t_members }</a>

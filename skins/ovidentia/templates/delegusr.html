@@ -7,25 +7,25 @@
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ groupname }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<select name="grpdg">
-<!--#in getnext -->
-<option value="{ grpdgid }" { selected }>{ grpdgname }</option>
-<!--#endin getnext -->
-</select>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground">&nbsp;</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="submit" name="submit" value="{ modify }">
-<br>
-</td>
-</tr>
-</table>
+	<table class="BabLoginMenuBackground"  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+	<tr> 
+	<td align="right">{ groupname }:</td>
+	<td> 
+	<select name="grpdg">
+	<!--#in getnext -->
+	<option value="{ grpdgid }" { selected }>{ grpdgname }</option>
+	<!--#endin getnext -->
+	</select>
+	</td>
+	</tr>
+	<tr> 
+	<td>&nbsp;</td>
+	<td> 
+	<input type="submit" name="submit" value="{ modify }">
+	<br>
+	</td>
+	</tr>
+	</table>
 </td>
 </tr>
 </table>

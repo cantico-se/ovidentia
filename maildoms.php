@@ -130,7 +130,7 @@ function domainsList($userid, $grpid, $bgrp)
 			$this->countusr = 0;
 			if( $bgrp == "y" && $userid == 0)
 				{
-				if( $babBody->currentAdmGroup == 0 )
+				if( $babBody->currentAdmGroup == NULL )
 					$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where bgroup='Y' and owner='1' and id_dgowner='".$babBody->currentAdmGroup."'";
 				else
 					$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where bgroup='Y' and owner='1'";

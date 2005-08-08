@@ -17,8 +17,13 @@
 	<ul class="first">
 	<li id="bab_ovgroup_{ arr[id] }">
 		<div>
-			<img src="{ babSkinPath }images/Puces/folder_treehead.gif" alt="{ t_group }" /> <label for="bab_group_chk_{ arr[id] }">{ arr[name] }</label>
-			<div class="right"><input type="checkbox" id="bab_group_chk_{ arr[id] }" name="mgroups[]" value="{ arr[id] }" <!--#if option[checked) --> checked="checked" <!--#endif option[checked) --> <!--#if option[disabled] --> disabled="disabled" <!--#endif option[disabled] --> /></div>
+			<!--#if arr[id_dggroup] -->
+			<img src="{ babSkinPath }images/Puces/folder_group_d.gif" alt="{ t_group }" />
+			<!--#else arr[id_dggroup] -->
+			<img src="{ babSkinPath }images/Puces/folder_group.gif" alt="{ t_group }" />
+			<!--#endif arr[id_dggroup] -->
+			<label for="bab_group_chk_{ arr[id] }">{ arr[name] }</label>
+			<div class="right"><input type="checkbox" id="bab_group_chk_{ arr[id] }" name="mgroups[]" value="{ arr[id] }" <!--#if option[checked] --> checked="checked" <!--#endif option[checked] --> <!--#if option[disabled] --> disabled="disabled" <!--#endif option[disabled] --> /></div>
 		</div>
 		{ tpl_tree }
 		</li>

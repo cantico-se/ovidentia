@@ -40,20 +40,20 @@ function calendarsPersonal()
 			$this->uncheckall = bab_translate("Uncheck all");
 			$this->checkall = bab_translate("Check all");
 
-			$req = "select id, pcalendar, name from ".BAB_GROUPS_TBL." where id!='2' and id_dgowner='".$babBody->currentAdmGroup."' order by name asc";
-			$this->db = $GLOBALS['babDB'];
-			$this->res = $this->db->db_query($req);
-			$this->count = $this->db->db_num_rows($this->res);
+			include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
+
+			$tree = new bab_grptree();
+			$this->allgroups = $tree->getGroups(BAB_ALLUSERS_GROUP);
+			unset($this->allgroups[BAB_UNREGISTERED_GROUP]);
 			$this->altbg = false;
 			}
 
 		function getnext()
 			{
-			static $i = 0;
-			if( $i < $this->count)
+			if( list(,$this->arr) = each($this->allgroups))
 				{
 				$this->altbg = !$this->altbg;
-				$this->arr = $this->db->db_fetch_array($this->res);
+				
 				$this->grpid = $this->arr['id'];
 
 				if( $this->arr['id'] < 3 )
@@ -70,7 +70,6 @@ function calendarsPersonal()
 				else
 					$this->pcalcheck = "";
 
-				$i++;
 				return true;
 				}
 			else

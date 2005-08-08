@@ -148,18 +148,17 @@ function listGroups($id, $pos, $grp)
 			if( $this->count1 < 1)
 				$this->select = "selected";
 
-			$req = "select * from ".BAB_GROUPS_TBL." where id > 2  and id_dgowner='".$babBody->currentAdmGroup."' order by name asc";
-			$this->res2 = $this->db->db_query($req);
-			$this->count2 = $this->db->db_num_rows($this->res2);
+			include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
+
+			$tree = new bab_grptree();
+			$this->allgroups = $tree->getGroups(BAB_REGISTERED_GROUP);
 			}
 
 		function getnextgroup()
 			{
-			static $i = 0;
 			
-			if( $i < $this->count2)
+			if( list(,$this->arrgroups) = each($this->allgroups))
 				{
-				$this->arrgroups = $this->db->db_fetch_array($this->res2);
 				$this->groupid = $this->arrgroups['id'];
 				$this->groupname = $this->arrgroups['name'];
 				$this->groupurl = $GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$this->arrgroups['id'];
@@ -194,7 +193,6 @@ function listGroups($id, $pos, $grp)
 					{
 					$this->ocentity = false;
 					}
-				$i++;
 				return true;
 				}
 			else

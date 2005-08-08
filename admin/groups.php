@@ -106,13 +106,14 @@ function groupCreateMod()
 						'manager' => 0,
 						'managerval' => '',
 						'id_parent' => BAB_REGISTERED_GROUP,
-						'id_dggroup' => 0
+						'id_dggroup' => 0,
+						'dg_group_name' => ' '
 					);
 
 				}
 
 
-			if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0)
+			if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == NULL)
 				{
 				$this->res = $this->db->db_query("select * from ".BAB_DG_GROUPS_TBL."");
 				$this->count = $this->db->db_num_rows($this->res);
@@ -174,13 +175,31 @@ function groupList()
 			$this->t_newgroup = bab_translate("New group");
 			$this->t_group = bab_translate("Main groups folder");
 			$tree = & new bab_grptree();
-			$this->arr = $tree->getNodeInfo(0);
+			$this->arr = $tree->getNodeInfo($tree->firstnode);
 			$this->arr['name'] = bab_translate($this->arr['name']);
 			$this->arr['description'] = htmlentities(bab_translate($this->arr['description']));
 			$this->arr['managerval'] = htmlentities(bab_getUserName($this->arr['manager']));
-			$this->tpl_tree = bab_grp_node_html($tree, 0, 'groups.html', 'grp_childs');
+			$this->tpl_tree = bab_grp_node_html($tree, $tree->firstnode, 'groups.html', 'grp_childs');
 
-			$this->id_expand_to = isset($_REQUEST['expand_to']) ? $_REQUEST['expand_to'] : 3;
+			if (isset($_REQUEST['expand_to']))
+				{
+				$this->id_expand_to = &$_REQUEST['expand_to'];
+				}
+			else
+				{
+				if ($GLOBALS['babBody']->currentAdmGroup > 0)
+					{
+					$firstchild = $tree->getFirstChild($tree->firstnode);
+					if ($firstchild) {
+						$this->id_expand_to = $firstchild['id'];
+						}
+					}
+				else
+					{
+					$this->id_expand_to = BAB_ADMINISTRATOR_GROUP;
+					}
+				}
+			
 			}
 		}
 
@@ -264,7 +283,7 @@ function groupsOptions()
 			$this->uncheckall = bab_translate("Uncheck all");
 			$this->checkall = bab_translate("Check all");
 
-			if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
+			if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == NULL )
 				{
 				$this->bdgmail = true;
 				$this->bdgnotes = true;
@@ -345,8 +364,22 @@ function groupsOptions()
 
 function addModGroup()
 	{
+	include_once $GLOBALS['babInstallPath']."utilit/grpincl.php";
+
 	global $babBody;
 	$db = &$GLOBALS['babDB'];
+
+	$id_parent = &$_POST['parent'];
+	$grpdg = isset($_POST['grpdg']) ? $_POST['grpdg'] : 0;
+
+	if ( !is_numeric($_POST['grpid']) )
+		{
+		$ret = bab_addGroup($_POST['name'], $_POST['description'], $_POST['manager'], $grpdg, $id_parent);
+		if ($ret)
+			Header("Location: ". $GLOBALS['babUrlScript']."?tg=groups&idx=List&expand_to=".$ret);
+		else
+			return $ret;
+		}
 
 	if( empty($_POST['name']))
 		{
@@ -372,28 +405,9 @@ function addModGroup()
 		return false;
 		}
 
-	$id_parent = &$_POST['parent'];
 
-	if ( is_numeric($_POST['grpid']) )
-		{
-		$idgrp = &$_POST['grpid'];
-		}
-	else
-		{
-		$tree = & new bab_grptree();
-
-		if (!is_numeric($id_parent) || 0 == $id_parent || 2 == $id_parent)
-			$id_parent = 1;
-
-		$idgrp = $tree->addAlpha($id_parent, $name);
-		bab_callAddonsFunction('onGroupCreate', $idgrp);
-
-		$id_parent = false;
-		}
-
-	include_once $GLOBALS['babInstallPath']."utilit/grpincl.php";
-
-	bab_updateGroupInfo($idgrp, $name, $description, $_POST['manager'], $_POST['grpdg'] , $id_parent);
+	$idgrp = &$_POST['grpid'];
+	bab_updateGroupInfo($idgrp, $name, $description, $_POST['manager'], $grpdg , $id_parent);
 
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=groups&idx=List&expand_to=".$idgrp);
 	return true;
@@ -488,7 +502,8 @@ if( isset($update) && $update == "options" && ($babBody->isSuperAdmin || $babBod
 if ($idx != "brow")
 	{
 	$babBody->addItemMenu("List", bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=groups&idx=List");
-	$babBody->addItemMenu("sets", bab_translate("Sets of Group"), $GLOBALS['babUrlScript']."?tg=setsofgroups&idx=list");
+	if (0 == $babBody->currentAdmGroup)
+		$babBody->addItemMenu("sets", bab_translate("Sets of Group"), $GLOBALS['babUrlScript']."?tg=setsofgroups&idx=list");
 	$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=groups&idx=options");
 	$babBody->addItemMenu("plist", bab_translate("Profiles"), $GLOBALS['babUrlScript']."?tg=profiles&idx=plist");
 

@@ -51,7 +51,7 @@ function profileCreate($pname, $pdesc, $grpids, $cinscription, $cmultiple, $creq
 			$this->no = bab_translate("No");
 			$this->yes = bab_translate("Yes");
 			$tree = new bab_grptree();
-			$this->groups = $tree->getGroups(1);
+			$this->groups = $tree->getGroups(BAB_REGISTERED_GROUP);
 			$this->altbg = true;
 
 			$this->bdel = false;
@@ -146,7 +146,7 @@ function profileModify($idprof,$pname, $pdesc, $grpids, $cinscription, $cmultipl
 			$arr = $babDB->db_fetch_array($res);
 			
 			$tree = new bab_grptree();
-			$this->groups = $tree->getGroups(1);
+			$this->groups = $tree->getGroups(BAB_REGISTERED_GROUP);
 			
 			$this->altbg = true;
 			$this->bdel = true;
@@ -251,7 +251,7 @@ function profileModify($idprof,$pname, $pdesc, $grpids, $cinscription, $cmultipl
 		}
 
 	$temp = new temp($idprof,$pname, $pdesc, $grpids, $cinscription, $cmultiple, $crequired);
-	$babBody->babecho(	bab_printTemplate($temp,"profiles.html", "profilecreate"));
+	$babBody->babecho(	bab_printTemplate($temp, "profiles.html", "profilecreate"));
 	}
 
 function profilesList()

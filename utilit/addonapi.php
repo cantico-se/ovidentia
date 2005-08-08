@@ -456,15 +456,7 @@ function bab_getUserSetting($id, $what)
 function bab_getGroupName($id)
 	{
 	global $babBody;
-	switch( $id )
-		{
-		case 1:
-			return bab_translate("Registered users");
-		case 2:
-			return bab_translate("Unregistered users");
-		default:
-			return isset($babBody->ovgroups[$id]) ? $babBody->ovgroups[$id]['name'] : '';
-		}
+	return isset($babBody->ovgroups[$id]) ? $babBody->ovgroups[$id]['name'] : '';
 	}
 
 function bab_getPrimaryGroupId($userid)

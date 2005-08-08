@@ -52,16 +52,17 @@ class macl
 		$this->db = $GLOBALS['babDB'];
 		$this->multiple = false;
 
-		if( $babBody->currentAdmGroup == 0 )
+		if( $babBody->currentAdmGroup == NULL )
 			$this->ballsite = true;
 		else
 			$this->ballsite = false;
 		
 		
 
-		$req = "select * from ".BAB_GROUPS_TBL." where id > 2 and id_dgowner='".$babBody->currentAdmGroup."' order by name asc";
-		$this->res2 = $this->db->db_query($req);
-		$this->count2 = $this->db->db_num_rows($this->res2);
+		include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
+
+		$tree = new bab_grptree();
+		$this->allgroups = $tree->getGroups(BAB_REGISTERED_GROUP);
 		}
 		
 	function addtable($table,$name = '')
@@ -100,7 +101,7 @@ class macl
 						break;
 					}
 				}
-			else if( $babBody->currentAdmGroup != 0 && $arr['id_group'] == $babBody->currentAdmGroup )
+			else if( $babBody->currentAdmGroup != NULL && $arr['id_group'] == $babBody->currentAdmGroup )
 				{
 				$this->tables[$tblindex]['what']['everybody'] = "selected";
 				}
@@ -146,15 +147,12 @@ class macl
 
 	function getnextgroup(&$skip)
 		{
-		static $i = 0;
 		
-		if( $i < $this->count2)
+		if( list(,$this->arrgroups) = each($this->allgroups))
 			{
-			$this->arrgroups = $this->db->db_fetch_array($this->res2);
 			if (in_array($this->arrgroups['id'],$this->groupsfilter))
 				{
 				$skip = true;
-				$i++;
 				return true;
 				}
 			$this->arrgroups['select'] = "";
@@ -171,13 +169,11 @@ class macl
 						}
 					}
 				}
-			$i++;
 			return true;
 			}
 		else
 			{
-			if ($this->count2 > 0)
-				$this->db->db_data_seek($this->res2, 0);
+			reset($this->allgroups);
 			$i = 0;
 			return false;
 			}
@@ -227,7 +223,7 @@ function maclGroups()
 				}
 			else if( $what != -1)
 				{
-				if( $what == '0' && $babBody->currentAdmGroup != 0 )
+				if( $what == '0' && $babBody->currentAdmGroup != NULL )
 					$what = $babBody->currentAdmGroup;
 				$req = "insert into ".$table." (id_object, id_group) values ('". $id. "', '" . $what. "')";
 				$res = $db->db_query($req);

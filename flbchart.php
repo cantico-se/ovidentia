@@ -63,26 +63,20 @@ function addOrgChartEntity($ocid, $oeid, $nameval, $descriptionval)
 				$this->nonetxt = "--- ".bab_translate("None")." ---";
 				$this->newgrouptxt = "--- ".bab_translate("New group")." ---";
 				$this->grouptxt = bab_translate("Group");
-				$req = "select * from ".BAB_GROUPS_TBL." where id > 2 and id_dgowner='".$babBody->currentAdmGroup."' and id_ocentity='0' order by name asc";
-				$this->res = $babDB->db_query($req);
-				$this->count = $babDB->db_num_rows($this->res);
-				}
-			else
-				{
-				$this->count = 0;
+				include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
+
+				$tree = new bab_grptree();
+				$this->allgroups = $tree->getGroups(BAB_REGISTERED_GROUP);
 				}
 			}
 
 		function getnextgroup()
 			{
 			global $babDB;
-			static $i = 0;
-			if( $i < $this->count)
+			if( list(,$this->arr) = each($this->allgroups))
 				{
-				$this->arr = $babDB->db_fetch_array($this->res);
 				$this->groupname = $this->arr['name'];
 				$this->grpid = $this->arr['id'];
-				$i++;
 				return true;
 				}
 			else

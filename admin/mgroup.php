@@ -27,7 +27,7 @@ include_once $babInstallPath."utilit/grptreeincl.php";
 
 class mgroups
 {
-	function mgroups($tg, $idx, $id_parent = BAB_ALLUSERS_GROUP)
+	function mgroups($tg, $idx, $id_parent = false)
 	{
 	$this->t_expand_all = bab_translate("Expand all");
 	$this->t_collapse_all = bab_translate("Collapse all");
@@ -66,7 +66,18 @@ class mgroups
 	function babecho()
 	{
 	$tree = & new bab_grptree();
+	if (false === $this->id_parent)
+		{
+		$this->id_parent = $tree->firstnode;
+		}
+
 	$this->arr = $tree->getNodeInfo($this->id_parent);
+
+	if ($this->arr['lf'] <= $tree->firstnode_info['lf'] || $this->arr['lr'] >= $tree->firstnode_info['lr'] )
+		{
+		$this->arr = $tree->firstnode_info;
+		}
+
 	$this->arr['name'] = bab_translate($this->arr['name']);
 	$this->arr['description'] = htmlentities(bab_translate($this->arr['description']));
 	$this->option = isset($this->options[$this->arr['id']]) ? $this->options[$this->arr['id']] : false;
@@ -74,7 +85,7 @@ class mgroups
 
 	global $babBody;
 	$babBody->addStyleSheet('groups.css');
-	$babBody->babecho(	bab_printTemplate($this, "mgroup.html", "grp_maintree"));
+	$babBody->babecho(bab_printTemplate($this, "mgroup.html", "grp_maintree"));
 	}
 }
 

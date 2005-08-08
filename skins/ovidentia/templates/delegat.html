@@ -3,11 +3,11 @@
 <tr> 
 <td class="BabLoginCadreBackground"> 
 <table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabSiteAdminTitleFontBackground">&nbsp;{ delegtxt }</td>
-<td class="BabSiteAdminTitleFontBackground">&nbsp;{ delegdesctxt }</td>
-<td class="BabSiteAdminTitleFontBackground" align="center">&nbsp;{ grpmtxt }</td>
-<td class="BabSiteAdminTitleFontBackground" align="right" width="10%">&nbsp;{ delegadmintxt }</td>
+<tr class="BabSiteAdminTitleFontBackground"> 
+<td>&nbsp;{ delegtxt }</td>
+<td>&nbsp;{ delegdesctxt }</td>
+<td align="center">&nbsp;{ grpmtxt }</td>
+<td align="right" width="10%">&nbsp;{ delegadmintxt }</td>
 </tr>
 <!--#in getnext -->
 <!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
@@ -47,14 +47,6 @@ this.focus();
 op.close();
 }
 
-function selectnone()
-{
-var it = document.forms.dgcreate.groups;
-for(i=0;i<it.length;i++)
-	{
-	it[i].selected = false;
-	}
-}
 //-->
 </script>
 <form name="dgcreate" method="post" action="{ babPhpSelf }">
@@ -65,46 +57,50 @@ for(i=0;i<it.length;i++)
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
-<td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ name }:</td>
-<td class="BabLoginMenuBackground" width="70%" valign="middle"> 
+<td width="30%" align="right">{ name }:</td>
+<td> 
 <input type="text" name="gname" size="45" maxlength="255" value="{ grpname }">
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ description }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
+<td align="right">{ description }:</td>
+<td> 
 <input type="text" name="description" size="45" maxlength="255" value="{ grpdesc }">
 </td>
 </tr>
 <tr>
-	<td class="BabLoginMenuBackground" align="right">&nbsp;{ functions }:</td>
-	<td class="BabLoginMenuBackground">&nbsp;</td>
+	<td align="right">&nbsp;{ functions }:</td>
+	<td>&nbsp;</td>
 </tr>
 <!--#in getnext -->
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle"><input type="checkbox" name="delegitems[]" value="{ delegitem }" { checked }></td>
-<td class="BabLoginMenuBackground" valign="middle">{ delegitemdesc }</td>
+<td align="right"><input type="checkbox" name="delegitems[]" value="{ delegitem }" { checked }></td>
+<td>{ delegitemdesc }</td>
 </tr>
 <!--#endin getnext -->
 <tr>
-	<td class="BabLoginMenuBackground">&nbsp;</td>
-	<td class="BabLoginMenuBackground">&nbsp;</td>
+	<td>&nbsp;</td>
+	<td>&nbsp;</td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="top">{ grp_members }:<br><a class="BabAlphabetLink" href="javascript:selectnone()">{ none }</a></td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-	<select multiple name="groups[]" id="groups" size="6">
+<td align="center" colspan="2">{ grp_members } : </td>
+</tr>
+<tr>
+<td align="center" colspan="2"> 
+	<select name="group">
 	<!--#in getnextgroup -->
-	<option value="{ arrgroups[id] }" { arrgroups[select] }>{ arrgroups[name] }</option>
+		<option value="{ arrgroups[id] }" <!--#if arrgroups[select] --> selected="selected" <!--#endif arrgroups[select] -->>{ arrgroups[name] }</option>
 	<!--#endin getnextgroup -->
 	</select>
+	<br />
+	<br />
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground">&nbsp;</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
+<td>&nbsp;</td>
+<td> 
 <input type="submit" name="submit" value="{ add }">
 <!--#if bdel -->
 &nbsp;&nbsp;<input type="submit" name="deleteg" value="{ delete }">

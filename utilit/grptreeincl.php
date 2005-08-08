@@ -32,25 +32,52 @@ class bab_grptree extends bab_dbtree
 
 	function bab_grptree()
 	{
+	global $babBody;
 	$this->table = BAB_GROUPS_TBL;
 	$this->firstnode = 0;
 	$this->firstnode_parent = NULL;
+	$this->where = '';
 
-	$this->dg_lf = &$GLOBALS['babBody']->currentDGGroup['lf'];
-	$this->dg_lr = &$GLOBALS['babBody']->currentDGGroup['lr'];
+	if ($babBody->currentAdmGroup > 0)
+		{
+		$this->firstnode_info = $this->getNodeInfo($babBody->currentAdmGroup);
 
-	if ($GLOBALS['babBody']->currentAdmGroup > 0)
-		$this->where = "lf>='".$this->dg_lf."' AND lr<='".$this->dg_lr."'";
+		$this->setDelegation($babBody->currentDGGroup['lf'], $babBody->currentDGGroup['lr']);
+		$this->firstnode = $babBody->currentAdmGroup;
+
+		$this->firstnode_parent = $this->firstnode_info['id_parent'];
+		}
 	else
-		$this->where = '';
+		{
+		$this->firstnode_info = $this->getNodeInfo($this->firstnode);
+		}
+	}
+
+	function setDelegation($lf, $lr)
+	{
+	$this->where = "lf>='".$lf."' AND lr<='".$lr."'";
 	}
 
 	function getGroups($id_parent, $format = '%2$s &gt; ')
 	{
 	$grp = array();
 	$prefix = array();
-	$groups = & $this->getChilds($id_parent, 1);
-	if (false !== $groups)
+
+	$groups = $this->getChilds($id_parent, 1);
+
+	if (!$groups)
+		{
+		$id_parent = $this->firstnode;
+		$groups = $this->getChilds($this->firstnode, 1);
+		if (!$groups)
+			return array();
+		}
+
+
+	if ($id_parent == $this->firstnode_parent)
+		array_unshift ($groups, $this->getNodeInfo($id_parent));
+
+
 	foreach ($groups as $arr)
 		{
 		if ($arr['id'] < 4)

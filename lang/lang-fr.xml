@@ -1190,7 +1190,7 @@
 <string id="Managing administrators">Administrateurs délégués</string>
 <string id="It is necessary to remove all associations with the users groups">Il est nécessaire d'enlever toutes les associations avec les groupes utilisateurs</string>
 <string id="Administrators of delegation">Les administrateurs de la délégation</string>
-<string id="Managed groups">Groupes administrés</string>
+<string id="Managed group">Groupe administré</string>
 <string id="Change administration">Changer d'administration</string>
 <string id="Deputy functions">Fonctions déléguées</string>
 <string id="Name to use for notification emails">Nom à utiliser pour les emails de notifications</string>
