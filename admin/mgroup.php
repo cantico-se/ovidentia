@@ -77,7 +77,7 @@ class mgroups
 		{
 		$this->arr = $tree->firstnode_info;
 		}
-
+	$this->delegat = isset($tree->delegat[$this->arr['id']]);
 	$this->arr['name'] = bab_translate($this->arr['name']);
 	$this->arr['description'] = htmlentities(bab_translate($this->arr['description']));
 	$this->option = isset($this->options[$this->arr['id']]) ? $this->options[$this->arr['id']] : false;

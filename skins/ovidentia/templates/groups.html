@@ -62,14 +62,6 @@ else
 	<!--#endif maingroup -->
 	</td>
 	</tr>
-	<!--#if arr[dg_group_name] -->
-	<tr> 
-	<td align="right">{ grpdgtxt }:</td>
-	<td id="dg_group_name"> 
-		{ arr[dg_group_name] }
-	</td>
-	</tr>
-	<!--#endif arr[dg_group_name] -->
 	<tr> 
 	<td>&nbsp;</td>
 	<td> 
@@ -283,15 +275,14 @@ window.focus();
 	<ul class="first">
 	<li id="bab_ovgroup_{ arr[id] }">
 		<div class="line">
-		<!--#if arr[id_dggroup] -->
+		<!--#if delegat -->
 		<img src="{ babSkinPath }images/Puces/folder_group_d.gif" alt="{ t_group }" />
-		<!--#else arr[id_dggroup] -->
+		<!--#else delegat -->
 		<img src="{ babSkinPath }images/Puces/folder_group.gif" alt="{ t_group }" />
-		<!--#endif arr[id_dggroup] -->
+		<!--#endif delegat -->
 		<a href="{ babUrlScript }?tg=groups&amp;idx=Create&amp;grpid={ arr[id] }" title="{ arr[description] }" onclick="return load_edit_form(this);">{ arr[name] }</a>
 			<input type="hidden" id="bab_ovgroup_{ arr[id] }_manager" value="{ arr[manager] }" />
 			<input type="hidden" id="bab_ovgroup_{ arr[id] }_managerval" value="{ arr[managerval] }" />
-			<input type="hidden" id="bab_ovgroup_{ arr[id] }_dggroup" value="{ arr[dg_group_name] }" />
 		</div>
 		{ tpl_tree }
 		</li>
@@ -317,7 +308,6 @@ function load_edit_form(a)
 	var description	 = a.title;
 	var manager		 = document.getElementById(htmlid+'_manager').value;
 	var managerval	 = document.getElementById(htmlid+'_managerval').value;
-	var dggroup		 = document.getElementById(htmlid+'_dggroup').value;
 
 	if (typeof document.forms['gcreatemod'].elements == 'undefined')
 		return;
@@ -329,7 +319,6 @@ function load_edit_form(a)
 	el['description'].value	 = description;
 	el['manager'].value		 = manager;
 	el['managerval'].value	 = managerval;
-	document.getElementById('dg_group_name').innerHTML	= dggroup;
 
 
 	if (groupid > 2)
@@ -360,7 +349,6 @@ function load_clear()
 	el['description'].value	 = '';
 	el['manager'].value		 = 0;
 	el['managerval'].value	 = '';
-	document.getElementById('dg_group_name').innerHTML = '';
 	el['parent'].value		 = 1;
 	el['parent'].style.visibility = 'visible';
 
@@ -378,23 +366,22 @@ function load_clear()
 		<!--#in getnextgroup -->
 		<li id="bab_ovgroup_{ arr[id] }">
 			<div>
-			<!--#if arr[id_dggroup] -->
+			<!--#if delegat -->
 				<!--#if arr[nb_set] -->
 				<img src="{ babSkinPath }images/Puces/folder_group_set_d.gif" alt="{ t_group_set_d }" />
 				<!--#else arr[nb_set] -->
 				<img src="{ babSkinPath }images/Puces/folder_group_d.gif" alt="{ t_group_d }" />
 				<!--#endif arr[nb_set] -->
-			<!--#else arr[id_dggroup] -->
+			<!--#else delegat -->
 				<!--#if arr[nb_set] -->
 				<img src="{ babSkinPath }images/Puces/folder_group_set.gif" alt="{ t_group_set }" />
 				<!--#else arr[nb_set] -->
 				<img src="{ babSkinPath }images/Puces/folder_group.gif" alt="{ t_group }" />
 				<!--#endif arr[nb_set] -->
-			<!--#endif arr[id_dggroup] -->
+			<!--#endif delegat -->
 			<a href="{ babUrlScript }?tg=groups&amp;idx=Create&amp;grpid={ arr[id] }" title="{ arr[description] }" onclick="return load_edit_form(this);">{ arr[name] }</a>
 			<input type="hidden" id="bab_ovgroup_{ arr[id] }_manager" value="{ arr[manager] }" />
 			<input type="hidden" id="bab_ovgroup_{ arr[id] }_managerval" value="{ arr[managerval] }" />
-			<input type="hidden" id="bab_ovgroup_{ arr[id] }_dggroup" value="{ arr[dg_group_name] }" />
 			<!--#if arr[id] "> 2" -->
 			<div class="right">
 				<a href="{ babUrlScript }?tg=group&amp;idx=Members&amp;item={ arr[id] }" title="{ t_group_members }"><img src="{ babSkinPath }images/Puces/head.gif" alt="{ t_group_members }" /> { t_members }</a>

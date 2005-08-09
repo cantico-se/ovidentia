@@ -72,7 +72,7 @@ function browseUsers($pos, $cb)
 				{
 				$this->pos = strlen($pos)>1? $pos[1]: '';
 				$this->ord = $pos[0];
-				if( $babBody->currentAdmGroup == NULL)
+				if( $babBody->currentAdmGroup == 0)
 					$req = "select * from ".BAB_USERS_TBL." where disabled != '1' and ".$this->namesearch2." like '".$this->pos."%' order by ".$this->namesearch2.", ".$this->namesearch." asc";
 				else
 					$req = "select u.* from ".BAB_USERS_TBL." u, ".BAB_USERS_GROUPS_TBL." ug where u.disabled != '1' and ug.id_object=u.id and ug.id_group='".$babBody->currentAdmGroup."' and u.".$this->namesearch2." like '".$this->pos."%' order by u.".$this->namesearch2.", u.".$this->namesearch." asc";
@@ -83,7 +83,7 @@ function browseUsers($pos, $cb)
 				{
 				$this->pos = $pos;
 				$this->ord = "";
-				if( $babBody->currentAdmGroup == NULL)
+				if( $babBody->currentAdmGroup == 0)
 					$req = "select * from ".BAB_USERS_TBL." where disabled != '1' and ".$this->namesearch." like '".$this->pos."%' order by ".$this->namesearch.", ".$this->namesearch2." asc";
 				else
 					$req = "select u.* from ".BAB_USERS_TBL." u, ".BAB_USERS_GROUPS_TBL." ug where u.disabled != '1' and ug.id_object=u.id and ug.id_group='".$babBody->currentAdmGroup."' and u.".$this->namesearch." like '".$this->pos."%' order by u.".$this->namesearch.", u.".$this->namesearch2." asc";
@@ -139,14 +139,14 @@ function browseUsers($pos, $cb)
 					{
 					if( $this->ord == "-" )
 						{
-						if( $babBody->currentAdmGroup == NULL)
+						if( $babBody->currentAdmGroup == 0)
 							$req = "select id from ".BAB_USERS_TBL." where ".$this->namesearch2." like '".$this->selectname."%'";
 						else
 							$req = "select u.id from ".BAB_USERS_TBL." u,  ".BAB_USERS_GROUPS_TBL." ug where ug.id_object=u.id and ug.id_group='".$babBody->currentAdmGroup."' and u.".$this->namesearch2." like '".$this->selectname."%'";
 						}
 					else
 						{
-						if( $babBody->currentAdmGroup == NULL)
+						if( $babBody->currentAdmGroup == 0)
 							$req = "select id from ".BAB_USERS_TBL." where ".$this->namesearch." like '".$this->selectname."%'";
 						else
 							$req = "select u.id from ".BAB_USERS_TBL." u,  ".BAB_USERS_GROUPS_TBL." ug where ug.id_object=u.id and ug.id_group='".$babBody->currentAdmGroup."' and u.".$this->namesearch." like '".$this->selectname."%'";

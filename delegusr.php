@@ -42,39 +42,31 @@ function changeAdmGroup()
 			$this->groupname = bab_translate("Administration");
 			$this->modify = bab_translate("Modify");
 			$this->selected = "";
-			$this->groups = $babBody->dgAdmGroups;
-			$this->count = count($this->groups);
+			$this->delegat = array();
 
-			
 			if( $babBody->isSuperAdmin )
 				{
-				$this->count += 1;
-				$this->groups[] = NULL;
+				$this->delegat[0] = bab_translate("All site");
 				}
+
+			$res = $babDB->db_query("SELECT id,name FROM ".BAB_DG_GROUPS_TBL." WHERE id IN('".implode("','",$babBody->dgAdmGroups)."')");
+			while ($arr = $babDB->db_fetch_assoc($res))
+				{
+				$this->delegat[$arr['id']] = $arr['name'];
+				}
+
+			
 			}
 
 		function getnext()
 			{
-			global $babBody, $babDB;
-			static $i = 0;	
-			if( $i < $this->count)
+			global $babBody;	
+			if( list($this->grpdgid,$this->grpdgname ) = each($this->delegat))
 				{
-				if( $this->groups[$i] == NULL )
-					{
-					$this->grpdgname = bab_translate("All site");
-					$this->grpdgid = 'NULL';
-					}
-				else
-					{
-					$this->grpdgname = $babBody->ovgroups[$this->groups[$i]]['dg_group_name'];
-					$this->grpdgid = $this->groups[$i];
-					}
-
-				if( $this->groups[$i] === $babBody->currentAdmGroup )
+				if( $this->grpdgid == $babBody->currentDGGroup['id'] )
 					$this->selected = "selected";
 				else
 					$this->selected = "";
-				$i++;
 				return true;
 				}
 			return false;
@@ -91,25 +83,24 @@ function updateAdmGroup($grpdg)
 {
 	global $babBody, $babDB;
 
-
-
+	$babBody->currentDGGroup = $babDB->db_fetch_array($babDB->db_query("select dg.*, g.lf, g.lr from ".BAB_DG_GROUPS_TBL." dg, ".BAB_GROUPS_TBL." g where g.id=dg.id_group and dg.id='".$grpdg."'"));
 	
-	if ($_POST['grpdg'] === 'NULL')
+	if ($grpdg > 0 && isset($babBody->currentDGGroup['id_group']))
 		{
-		$babBody->currentAdmGroup = NULL;
-		$babBody->currentDGGroup = array();
-		$dbAdmGroup = 'NULL';
+		$babBody->currentAdmGroup = &$babBody->currentDGGroup['id'];
+		}
+	elseif ($grpdg == 0)
+		{
+		$babBody->currentAdmGroup = 0;
 		}
 	else
 		{
-		$babBody->currentAdmGroup = $grpdg;
-		$babBody->currentDGGroup = $babDB->db_fetch_array($babDB->db_query("select dg.*, g.lf, g.lr from ".BAB_DG_GROUPS_TBL." dg, ".BAB_GROUPS_TBL." g where g.id='".$grpdg."' and dg.id=g.id_dggroup"));
-		$dbAdmGroup = "'".$grpdg."'";
+		trigger_error('no group in delegation');
 		}
 
-	
-	$babDB->db_query("update ".BAB_USERS_LOG_TBL." set id_dggroup=".$dbAdmGroup." where sessid='".session_id()."'");
+	$babDB->db_query("update ".BAB_USERS_LOG_TBL." set id_dg='".$grpdg."' where sessid='".session_id()."'");
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=delegusr");
+		
 }
 
 /* main */

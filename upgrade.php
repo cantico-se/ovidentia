@@ -4895,4 +4895,99 @@ if ( $arr[0] != BAB_VAC_PLANNING_TBL )
 return $ret;
 }
 
+
+
+function upgrade562to564()
+{
+$objDelegat = array(
+	BAB_SECTIONS_TBL, 
+	BAB_TOPICS_CATEGORIES_TBL,
+	BAB_FLOW_APPROVERS_TBL,
+	BAB_FORUMS_TBL,
+	BAB_FAQCAT_TBL,
+	BAB_FM_FOLDERS_TBL,
+	BAB_LDAP_DIRECTORIES_TBL,
+	BAB_DB_DIRECTORIES_TBL,
+	BAB_ORG_CHARTS_TBL
+	);
+
+
+$ret = "";
+$db = & $GLOBALS['babDB'];
+
+$arr = $db->db_fetch_array($db->db_query("DESCRIBE ".BAB_DG_GROUPS_TBL." id_group"));
+if ($arr[0] != 'id_group')
+	{
+	$db->db_query("ALTER TABLE `".BAB_DG_GROUPS_TBL."` ADD `id_group` INT UNSIGNED NOT NULL");
+	$db->db_query("ALTER TABLE `".BAB_DG_GROUPS_TBL."` ADD INDEX ( `id_group` )");
+
+	$db->db_query("
+		CREATE TABLE `".BAB_DG_ADMIN_TBL."` (
+		`id_user` INT UNSIGNED NOT NULL ,
+		`id_dg` INT UNSIGNED NOT NULL ,
+		INDEX ( `id_user` )
+		)");
+
+	$res = $db->db_query("SELECT id, id_dggroup, name FROM ".BAB_GROUPS_TBL." WHERE id_dggroup>'0'");
+	while ($arr = $db->db_fetch_array($res))
+		{
+		$current = $db->db_fetch_array($db->db_query("SELECT id_group FROM ".BAB_DG_GROUPS_TBL." WHERE id='".$arr['id_dggroup']."'"));
+		if ($current['id_group'] == 0)
+			{
+			$db->db_query("UPDATE `".BAB_DG_GROUPS_TBL."` SET id_group='".$arr['id']."' WHERE id='".$arr['id_dggroup']."'");
+			$id = $arr['id_dggroup'];
+			}
+		else
+			{
+			$db->db_query("INSERT INTO `".BAB_DG_GROUPS_TBL."` (name, description, groups, sections, articles, faqs, forums, calendars, mails, directories, approbations, filemanager, orgchart, id_group) VALUES (
+				'".$current['name'].' - '.$arr['name']."', 
+				'".$current['description']."',
+				'".$current['groups']."',
+				'".$current['sections']."', 
+				'".$current['articles']."', 
+				'".$current['faqs']."', 
+				'".$current['forums']."', 
+				'".$current['calendars']."', 
+				'".$current['mails']."', 
+				'".$current['directories']."', 
+				'".$current['approbations']."', 
+				'".$current['filemanager']."', 
+				'".$current['orgchart']."', 
+				'".$arr['id']."'
+				)");
+
+			$id = $db->db_insert_id();
+			}
+
+		$res = $db->db_query("SELECT id_object FROM ".BAB_DG_USERS_GROUPS_TBL." WHERE id_group='".$id."'");
+		while ($row = $db->db_fetch_array($res))
+			{
+			$db->db_query("INSERT INTO ".BAB_DG_ADMIN_TBL." (id_user, id_dg) VALUES ('".$row['id_object']."','".$id."')");
+			}
+
+		// DROP TABLE BAB_DG_USERS_GROUPS_TBL
+
+		foreach($objDelegat as $table)
+			{
+			$db->db_query("UPDATE `".$table."` SET id_dgowner='".$id."' WHERE id_dgowner='".$arr['id']."'");
+			}
+		}
+
+	$db->db_query("ALTER TABLE `".BAB_GROUPS_TBL."` DROP `id_dggroup`");
+	$db->db_query("ALTER TABLE `".BAB_GROUPS_TBL."` DROP `id_dgowner`");
+	}
+
+$db->db_query("ALTER TABLE `".BAB_USERS_LOG_TBL."` CHANGE `id_dggroup` `id_dg` INT( 11 ) UNSIGNED DEFAULT '0' NOT NULL");
+
+
+
+
+
+
+
+
+
+return $ret;
+}
+
 ?>

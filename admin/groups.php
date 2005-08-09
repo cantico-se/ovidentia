@@ -113,7 +113,7 @@ function groupCreateMod()
 				}
 
 
-			if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == NULL)
+			if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0)
 				{
 				$this->res = $this->db->db_query("select * from ".BAB_DG_GROUPS_TBL."");
 				$this->count = $this->db->db_num_rows($this->res);
@@ -179,6 +179,7 @@ function groupList()
 			$this->arr['name'] = bab_translate($this->arr['name']);
 			$this->arr['description'] = htmlentities(bab_translate($this->arr['description']));
 			$this->arr['managerval'] = htmlentities(bab_getUserName($this->arr['manager']));
+			$this->delegat = isset($tree->delegat[$this->arr['id']]);
 			$this->tpl_tree = bab_grp_node_html($tree, $tree->firstnode, 'groups.html', 'grp_childs');
 
 			if (isset($_REQUEST['expand_to']))
@@ -283,7 +284,7 @@ function groupsOptions()
 			$this->uncheckall = bab_translate("Uncheck all");
 			$this->checkall = bab_translate("Check all");
 
-			if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == NULL )
+			if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
 				{
 				$this->bdgmail = true;
 				$this->bdgnotes = true;

@@ -83,13 +83,13 @@ function sectionsList()
 			$this->access = bab_translate("Access");
 			$this->groups = bab_translate("View");
 			$this->opttxt = bab_translate("Optional(fem)");
-			$this->db = $GLOBALS['babDB'];
+			$this->db = &$GLOBALS['babDB'];
 			$req = "select * from ".BAB_SECTIONS_TBL." where id_dgowner='".$babBody->currentAdmGroup."'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 
 			/* don't get Administrator section */
-			if( $babBody->currentAdmGroup == NULL )
+			if( $babBody->currentAdmGroup == 0 )
 				{
 				$this->resa = $this->db->db_query("select * from ".BAB_PRIVATE_SECTIONS_TBL." where id > '1'");
 				$this->counta = $this->db->db_num_rows($this->resa);
@@ -222,7 +222,7 @@ function sectionsOrder()
 				switch( $arr['type'] )
 					{
 					case "1":
-						if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == NULL )
+						if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
 							{
 							if( $arr['position'] == 0 )
 								$this->arrleft[] = $arr['id'];
@@ -232,7 +232,7 @@ function sectionsOrder()
 						break;
 					case "3":
 						$rr = $this->db->db_fetch_array($this->db->db_query("select id, id_dgowner from ".BAB_TOPICS_CATEGORIES_TBL." where id ='".$arr['id_section']."'"));
-						if( $babBody->currentAdmGroup == NULL  && $babBody->isSuperAdmin)
+						if( $babBody->currentAdmGroup == 0  && $babBody->isSuperAdmin)
 						{
 							if( $rr['id_dgowner'] == 0 )
 							{
@@ -264,7 +264,7 @@ function sectionsOrder()
 						}
 						break;
 					case "4":
-						if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == NULL )
+						if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
 							{
 							if( $arr['position'] == 0 )
 								$this->arrleft[] = $arr['id'];
@@ -274,7 +274,7 @@ function sectionsOrder()
 						break;
 					default:
 						$rr = $this->db->db_fetch_array($this->db->db_query("select id, id_dgowner from ".BAB_SECTIONS_TBL." where id ='".$arr['id_section']."'"));
-						if( $babBody->currentAdmGroup == NULL  && $babBody->isSuperAdmin)
+						if( $babBody->currentAdmGroup == 0  && $babBody->isSuperAdmin)
 						{
 							if( $rr['id_dgowner'] == 0 )
 							{
@@ -570,7 +570,7 @@ function sectionSave($title, $pos, $desc, $content, $script, $js, $template, $la
 		$query = "insert into ".BAB_SECTIONS_TBL." (title, position, description, content, script, jscript, template, lang, id_dgowner, optional) VALUES ('" .$title. "', '" . $pos. "', '" . $desc. "', '" . $content. "', '" . $php. "', '" . $js."', '". $template."', '" .$lang."', '" .$babBody->currentAdmGroup."', '" .$opt. "')";
 		$db->db_query($query);
 		$id = $db->db_insert_id();
-		if( $babBody->currentAdmGroup == NULL )
+		if( $babBody->currentAdmGroup == 0 )
 			$db->db_query("insert into ".BAB_SECTIONS_GROUPS_TBL." (id_object, id_group) values ('". $id. "', '3')");
 		else
 			$db->db_query("insert into ".BAB_SECTIONS_GROUPS_TBL." (id_object, id_group) values ('". $id. "', '".$babBody->currentAdmGroup."')");
@@ -599,7 +599,7 @@ function saveSectionsOrder($listleft, $listright)
 
 		$db = $GLOBALS['babDB'];
 
-		if( $babBody->currentAdmGroup == NULL )
+		if( $babBody->currentAdmGroup == 0 )
 		{
 			for( $k = 0; $k < 2; $k++ )
 			{
@@ -716,7 +716,7 @@ function disableSections($sections, $sectopt)
 		$db->db_query($req);
 		}
 
-	if( $babBody->currentAdmGroup == NULL )
+	if( $babBody->currentAdmGroup == 0 )
 		{
 		$req = "select id from ".BAB_PRIVATE_SECTIONS_TBL."";
 		$res = $db->db_query($req);
@@ -791,7 +791,7 @@ switch($idx)
 		$babBody->title = bab_translate("Sections order");
 		sectionsOrder();
 		$babBody->addItemMenu("List", bab_translate("Sections"),$GLOBALS['babUrlScript']."?tg=sections&idx=List");
-		if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == NULL)
+		if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0)
 			$babBody->addItemMenu("Order", bab_translate("Order"),$GLOBALS['babUrlScript']."?tg=sections&idx=Order");
 
 		$babBody->addItemMenu("ch", bab_translate("Create")."(html)",$GLOBALS['babUrlScript']."?tg=sections&idx=ch");

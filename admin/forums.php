@@ -150,7 +150,7 @@ function orderForum()
 			$this->res = $this->db->db_query($req);
 			while( $arr = $this->db->db_fetch_array($this->res) )
 				{
-					if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == NULL && $arr['id_dgowner'] == 0)
+					if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 && $arr['id_dgowner'] == 0)
 						{
 						$this->arrid[] = $arr['id'];
 						}
@@ -243,7 +243,7 @@ function saveOrderForums($listforums)
 	global $babBody;
 	$db = $GLOBALS['babDB'];
 	
-	if( $babBody->currentAdmGroup == NULL )
+	if( $babBody->currentAdmGroup == 0 )
 		{
 		$pos = 1;
 		for($i=0; $i < count($listforums); $i++)

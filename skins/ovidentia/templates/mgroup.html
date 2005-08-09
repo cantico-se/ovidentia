@@ -17,11 +17,11 @@
 	<ul class="first">
 	<li id="bab_ovgroup_{ arr[id] }">
 		<div>
-			<!--#if arr[id_dggroup] -->
+			<!--#if delegat -->
 			<img src="{ babSkinPath }images/Puces/folder_group_d.gif" alt="{ t_group }" />
-			<!--#else arr[id_dggroup] -->
+			<!--#else delegat -->
 			<img src="{ babSkinPath }images/Puces/folder_group.gif" alt="{ t_group }" />
-			<!--#endif arr[id_dggroup] -->
+			<!--#endif delegat -->
 			<label for="bab_group_chk_{ arr[id] }">{ arr[name] }</label>
 			<div class="right"><input type="checkbox" id="bab_group_chk_{ arr[id] }" name="mgroups[]" value="{ arr[id] }" <!--#if option[checked] --> checked="checked" <!--#endif option[checked] --> <!--#if option[disabled] --> disabled="disabled" <!--#endif option[disabled] --> /></div>
 		</div>
@@ -51,19 +51,19 @@ tree.expandToItem('bab_ovgroup_{ id_expand_to }');
 		<!--#in getnextgroup -->
 		<li id="bab_ovgroup_{ arr[id] }" title="{ arr[description] }">
 			<div>
-				<!--#if arr[id_dggroup] -->
+				<!--#if delegat -->
 					<!--#if arr[nb_set] -->
 					<img src="{ babSkinPath }images/Puces/folder_group_set_d.gif" alt="{ t_group_set_d }" />
 					<!--#else arr[nb_set] -->
 					<img src="{ babSkinPath }images/Puces/folder_group_d.gif" alt="{ t_group_d }" />
 					<!--#endif arr[nb_set] -->
-				<!--#else arr[id_dggroup] -->
+				<!--#else delegat -->
 					<!--#if arr[nb_set] -->
 					<img src="{ babSkinPath }images/Puces/folder_group_set.gif" alt="{ t_group_set }" />
 					<!--#else arr[nb_set] -->
 					<img src="{ babSkinPath }images/Puces/folder_group.gif" alt="{ t_group }" />
 					<!--#endif arr[nb_set] -->
-				<!--#endif arr[id_dggroup] -->
+				<!--#endif delegat -->
 				<label for="bab_group_chk_{ arr[id] }">{ arr[name] }</label>
 				<div class="right"><input type="checkbox" id="bab_group_chk_{ arr[id] }" name="mgroups[]" value="{ arr[id] }" <!--#if option[checked] --> checked="checked" <!--#endif option[checked] --> <!--#if option[disabled] --> disabled="disabled" <!--#endif option[disabled] --> /></div>
 			</div>

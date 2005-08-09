@@ -259,16 +259,9 @@ function confirmDeleteAdmGroup($id, $action)
 			{
 			bab_deleteOrgChart($arr['id']);
 			}
-
-		$res = $babDB->db_query("select id from ".BAB_GROUPS_TBL." where id_dgowner='".$id."'");
-		while($arr = $babDB->db_fetch_array($res))
-			{
-			bab_deleteGroup($arr['id']);
-			}
 		}
 	else
 		{
-		$db->db_query("update ".BAB_GROUPS_TBL." set id_dgowner='0' where id_dgowner='".$id."'");	
 		$db->db_query("update ".BAB_SECTIONS_TBL." set id_dgowner='0' where id_dgowner='".$id."'");	
 		$db->db_query("update ".BAB_TOPICS_CATEGORIES_TBL." set id_dgowner='0' where id_dgowner='".$id."'");	
 		$db->db_query("update ".BAB_FLOW_APPROVERS_TBL." set id_dgowner='0' where id_dgowner='".$id."'");	
@@ -279,8 +272,6 @@ function confirmDeleteAdmGroup($id, $action)
 		$db->db_query("update ".BAB_DB_DIRECTORIES_TBL." set id_dgowner='0' where id_dgowner='".$id."'");	
 		$db->db_query("update ".BAB_ORG_CHARTS_TBL." set id_dgowner='0' where id_dgowner='".$id."'");	
 		}
-
-	bab_deleteGroup($id);
 	}
 
 

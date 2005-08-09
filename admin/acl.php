@@ -52,7 +52,7 @@ class macl
 		$this->db = $GLOBALS['babDB'];
 		$this->multiple = false;
 
-		if( $babBody->currentAdmGroup == NULL )
+		if( $babBody->currentAdmGroup == 0 )
 			$this->ballsite = true;
 		else
 			$this->ballsite = false;
@@ -101,7 +101,7 @@ class macl
 						break;
 					}
 				}
-			else if( $babBody->currentAdmGroup != NULL && $arr['id_group'] == $babBody->currentAdmGroup )
+			else if( $babBody->currentAdmGroup != 0 && $arr['id_group'] == $babBody->currentAdmGroup )
 				{
 				$this->tables[$tblindex]['what']['everybody'] = "selected";
 				}
@@ -223,8 +223,8 @@ function maclGroups()
 				}
 			else if( $what != -1)
 				{
-				if( $what == '0' && $babBody->currentAdmGroup != NULL )
-					$what = $babBody->currentAdmGroup;
+				if( $what == '0' && $babBody->currentAdmGroup != 0 )
+					$what = $babBody->currentDGGroup['id_group'];
 				$req = "insert into ".$table." (id_object, id_group) values ('". $id. "', '" . $what. "')";
 				$res = $db->db_query($req);
 				}

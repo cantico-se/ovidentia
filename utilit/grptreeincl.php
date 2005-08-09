@@ -40,16 +40,27 @@ class bab_grptree extends bab_dbtree
 
 	if ($babBody->currentAdmGroup > 0)
 		{
-		$this->firstnode_info = $this->getNodeInfo($babBody->currentAdmGroup);
+		$this->firstnode_info = $this->getNodeInfo($babBody->currentDGGroup['id_group']);
 
 		$this->setDelegation($babBody->currentDGGroup['lf'], $babBody->currentDGGroup['lr']);
-		$this->firstnode = $babBody->currentAdmGroup;
+		$this->firstnode = $babBody->currentDGGroup['id_group'];
 
 		$this->firstnode_parent = $this->firstnode_info['id_parent'];
 		}
 	else
 		{
 		$this->firstnode_info = $this->getNodeInfo($this->firstnode);
+		}
+
+
+	//delegation 
+	$this->delegat = array();
+
+	global $babDB;
+	$res = $babDB->db_query("SELECT id_group FROM ".BAB_DG_GROUPS_TBL."");
+	while ($arr = $babDB->db_fetch_assoc($res))
+		{
+		$this->delegat[$arr['id_group']] = 1;
 		}
 	}
 
@@ -194,6 +205,7 @@ class bab_grp_node
 			}
 		$this->arr['description'] = htmlentities($this->arr['description']);
 		$this->arr['managerval'] = htmlentities(bab_getUserName($this->arr['manager']));
+		$this->delegat = isset($this->tree->delegat[$this->arr['id']]);
 		$this->option = isset($this->options[$this->arr['id']]) ? $this->options[$this->arr['id']] : false;
 		$this->subtree = bab_grp_node_html($this->tree, $this->arr['id'], $this->file, $this->template, $this->options);
 		return true;

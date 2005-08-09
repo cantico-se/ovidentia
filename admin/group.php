@@ -114,7 +114,7 @@ function groupModify($id)
 			$this->tgval = "group";
 			$this->selected = "";
 			$this->bdggroup = false;
-			if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == NULL)
+			if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0)
 				{
 				$this->res = $babDB->db_query("select * from ".BAB_DG_GROUPS_TBL."");
 				$this->count = $babDB->db_num_rows($this->res);
@@ -191,7 +191,7 @@ function groupMembers($id)
 			
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
-			if( $babBody->currentAdmGroup == NULL)
+			if( $babBody->currentAdmGroup == 0)
 				{
 				$this->bmodname = true;
 				}
@@ -510,7 +510,7 @@ switch($idx)
 		groupMembers($item);
 		$babBody->title = bab_translate("Group's members").' : '.bab_getGroupName($item);
 		$babBody->addItemMenu("List", bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=groups&idx=List");
-		if( $babBody->currentAdmGroup != $item )
+		if( $babBody->currentDGGroup['id_group'] != $item )
 			$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=group&idx=Modify&item=".$item);
 		$babBody->addItemMenu("Members", bab_translate("Members"), $GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$item);
 		$babBody->addItemMenu("Add", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=users&idx=List&grp=".$item);
