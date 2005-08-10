@@ -103,108 +103,6 @@ function modifyUser($id, $pos, $grp)
 	$babBody->babecho(	bab_printTemplate($temp, "users.html", "usersmodify"));
 	}
 
-function listGroups($id, $pos, $grp)
-	{
-	global $babBody;
-	if( !isset($id))
-		{
-		$babBody->msgerror = bab_translate("ERROR: You must choose a valid user !!");
-		return;
-		}
-	class temp
-		{
-		var $name;
-		var $updategroups;
-		var $group;
-
-		var $db;
-		var $id;
-		var $count;
-		var $res1;
-		var $res2;
-		var $groups;
-		var $arrgroups;
-		var $checked;
-		var $primary;
-		var $groupid;
-		var $groupst;
-		var $groupurl;
-		var $groupname;
-
-		function temp($id, $pos, $grp)
-			{
-			global $babBody;
-			$this->name = bab_translate("Groups Names");
-			$this->group = bab_translate("Group");
-			$this->updategroups = bab_translate("Update Groups");
-			$this->pos = $pos;
-			$this->grp = $grp;
-			$this->groupst = "";
-			$this->id = $id;
-			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_USERS_GROUPS_TBL." where id_object='$id'";
-			$this->res1 = $this->db->db_query($req);
-			$this->count1 = $this->db->db_num_rows($this->res1);
-			if( $this->count1 < 1)
-				$this->select = "selected";
-
-			include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
-
-			$tree = new bab_grptree();
-			$this->allgroups = $tree->getGroups(BAB_REGISTERED_GROUP);
-			}
-
-		function getnextgroup()
-			{
-			
-			if( list(,$this->arrgroups) = each($this->allgroups))
-				{
-				$this->groupid = $this->arrgroups['id'];
-				$this->groupname = $this->arrgroups['name'];
-				$this->groupurl = $GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$this->arrgroups['id'];
-				$this->checked = "";
-				$this->primary = "";
-				if($this->count1 > 0)
-					{
-					$this->db->db_data_seek($this->res1, 0);
-					$this->primary = "";
-					$this->checked = "";
-					for( $j = 0; $j < $this->count1; $j++)
-						{
-						$this->groups = $this->db->db_fetch_array($this->res1);
-						if( $this->groups['id_group'] == $this->arrgroups['id'])
-							{
-							if( $this->groups['isprimary'] == "Y")
-								$this->primary = "Y"; 
-							$this->checked = "checked";
-							if( empty($this->groupst))
-								$this->groupst = $this->arrgroups['id'];
-							else
-								$this->groupst .= ",".$this->arrgroups['id'];
-							}
-						}
-					}
-
-				if( $this->arrgroups['id_ocentity'] )
-					{
-					list($this->ocentity) = $this->db->db_fetch_array($this->db->db_query("select name from ".BAB_OC_ENTITIES_TBL." where id='".$this->arrgroups['id_ocentity']."'"));
-					}
-				else
-					{
-					$this->ocentity = false;
-					}
-				return true;
-				}
-			else
-				{
-				return false;
-				}
-
-			}
-		}
-	$temp = new temp($id, $pos, $grp);
-	$babBody->babecho(	bab_printTemplate($temp, "users.html", "usersgroups"));
-	}
 
 function deleteUser($id)
 	{
@@ -323,29 +221,32 @@ function notifyUserconfirmation($name, $email)
 	$mail->send();
 	}
 
-function updateGroups($id, $groups, $groupst)
+function updateGroups()
 	{
-	$db = $GLOBALS['babDB'];
+	include_once $GLOBALS['babInstallPath']."admin/mgroup.php";
 
-	if( !empty($groupst))
-		$tab = explode(",", $groupst);
-	else
-		$tab = array();
-	for( $i = 0; $i < count($tab); $i++)
-	{
-		if( count($groups) < 1  || !in_array($tab[$i], $groups))
-		{
-			bab_removeUserFromGroup($id, $tab[$i]);
-		}
-	}
-	for( $i = 0; $i < count($groups); $i++)
-	{
-		if( count($tab) < 1 || !in_array($groups[$i], $tab))
-		{
-			bab_addUserToGroup($id, $groups[$i]);
-		}
-	}
+	$id_user = $_POST['item'];
+	$selected_groups = mgroups_getSelected();
+	$arr = bab_getUserGroups($_REQUEST['item']);
+	$user_groups = &$arr['id'];
 
+
+	if (isset($user_groups))
+		foreach($user_groups as $id_group)
+			{
+			if (!in_array($id_group, $selected_groups))
+				{
+				bab_removeUserFromGroup($id_user, $id_group);
+				}
+			}
+
+	foreach($selected_groups as $id_group)
+		{
+		if (!in_array($id_group, $user_groups))
+			{
+			bab_addUserToGroup($id_user, $id_group);
+			}
+		}
 	}
 
 
@@ -472,12 +373,13 @@ if( isset($action) && $action == "Yes")
 	confirmDeleteUser($user);
 	}
 
-if( isset($updategroups) && $updategroups == "update")
-	{
-	updateGroups($item, $groups, $groupst);
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=user&idx=Groups&pos=".$pos."&grp=".$grp."&item=".$item);
-	exit;
-	}
+if( isset($_POST['action']))
+	switch($_POST['action'])
+		{
+			case 'updategroups':
+			updateGroups();
+			break;
+		}
 
 switch($idx)
 	{
@@ -492,15 +394,30 @@ switch($idx)
 		$babBody->addItemMenu("Delete", bab_translate("Delete"),$GLOBALS['babUrlScript']."?tg=user&idx=Delete&item=".$item."&pos=".$pos."&grp=".$grp);
 		$babBody->addItemMenu("unav", bab_translate("Unavailability"), $GLOBALS['babUrlScript']."?tg=options&idx=unav&iduser=".$item );
 		break;
+
 	case "Groups":
 		$babBody->title = bab_getUserName($item) . bab_translate(" is member of");
-		if( !isset($pos)) {$pos='';}
-		if( !isset($grp)) {$grp='';}
-		listGroups($item, $pos, $grp);
+
+		include_once $babInstallPath."admin/mgroup.php";
+
+		$mgroups = new mgroups('user','Groups',BAB_REGISTERED_GROUP);
+		$mgroups->setField('action', 'updategroups');
+		$mgroups->setField('item', $_REQUEST['item']);
+		$mgroups->setField('pos', $_REQUEST['pos']);
+		$mgroups->setField('grp', $_REQUEST['grp']);
+		$mgroups->setGroupOption(BAB_REGISTERED_GROUP,'disabled',true);
+		$arr = bab_getUserGroups($_REQUEST['item']);
+		if (isset($arr['id']))
+			$mgroups->setGroupsOptions($arr['id'],'checked',true);
+		$mgroups->babecho();
+
 		$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp);
 		$babBody->addItemMenu("Modify", bab_translate("User"),$GLOBALS['babUrlScript']."?tg=user&idx=Modify&item=".$item."&pos=".$pos."&grp=".$grp);
 		$babBody->addItemMenu("Groups", bab_translate("Groups"),$GLOBALS['babUrlScript']."?tg=user&idx=Groups&item=".$item."&pos=".$pos."&grp=".$grp);
-		$babBody->addItemMenu("unav", bab_translate("Unavailability"), $GLOBALS['babUrlScript']."?tg=options&idx=unav&iduser=".$item );	break;
+		$babBody->addItemMenu("unav", bab_translate("Unavailability"), $GLOBALS['babUrlScript']."?tg=options&idx=unav&iduser=".$item );	
+		
+		break;
+
 	case "Modify":
 		$babBody->title = bab_getUserName($item);
 		if( !isset($pos)) {$pos='';}

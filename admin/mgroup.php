@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-include_once $babInstallPath."utilit/grptreeincl.php";
+include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
 
 
 class mgroups

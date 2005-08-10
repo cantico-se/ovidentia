@@ -394,7 +394,7 @@ function bab_deleteGroup($id)
 	if( $id <= 3)
 		return;
 
-	$db = $GLOBALS['babDB'];
+	$db = &$GLOBALS['babDB'];
 	$db->db_query("delete from ".BAB_TOPICSVIEW_GROUPS_TBL." where id_group='".$id."'");	
 	$db->db_query("delete from ".BAB_TOPICSCOM_GROUPS_TBL." where id_group='".$id."'");	
 	$db->db_query("delete from ".BAB_TOPICSSUB_GROUPS_TBL." where id_group='".$id."'");	
@@ -433,6 +433,8 @@ function bab_deleteGroup($id)
 		{
 		bab_deleteDbDirectory($arr['id']);
 		}
+
+	$db->db_query("delete from ".BAB_GROUPS_SET_ASSOC_TBL." where id_group='".$id."'");
 
 	$db->db_query("update ".BAB_OC_ENTITIES_TBL." set id_group='0' where id_group='".$id."'");
 	$db->db_query("update ".BAB_DG_GROUPS_TBL." set id_group=NULL where id_group='".$id."'");	

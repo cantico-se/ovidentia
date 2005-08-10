@@ -4965,7 +4965,7 @@ if ($arr[0] != 'id_group')
 			$db->db_query("INSERT INTO ".BAB_DG_ADMIN_TBL." (id_user, id_dg) VALUES ('".$row['id_object']."','".$id."')");
 			}
 
-		// DROP TABLE BAB_DG_USERS_GROUPS_TBL
+		$db->db_query("DROP table ".BAB_DG_USERS_GROUPS_TBL."");
 
 		foreach($objDelegat as $table)
 			{
@@ -4975,10 +4975,36 @@ if ($arr[0] != 'id_group')
 
 	$db->db_query("ALTER TABLE `".BAB_GROUPS_TBL."` DROP `id_dggroup`");
 	$db->db_query("ALTER TABLE `".BAB_GROUPS_TBL."` DROP `id_dgowner`");
+	$db->db_query("ALTER TABLE `".BAB_USERS_LOG_TBL."` CHANGE `id_dggroup` `id_dg` INT( 11 ) UNSIGNED DEFAULT '0' NOT NULL");
+
 	}
 
-$db->db_query("ALTER TABLE `".BAB_USERS_LOG_TBL."` CHANGE `id_dggroup` `id_dg` INT( 11 ) UNSIGNED DEFAULT '0' NOT NULL");
+$arr = $db->db_fetch_array($db->db_query("SHOW TABLES LIKE '".BAB_GROUPS_SET_TBL."'"));
+if ( $arr[0] != BAB_GROUPS_SET_TBL )
+	{
+	$db->db_query("
+			CREATE TABLE `".BAB_GROUPS_SET_TBL."` (
+		  `id` int(10) unsigned NOT NULL auto_increment,
+		  `name` varchar(128) NOT NULL default '',
+		  `description` varchar(255) NOT NULL default '',
+		  `nb_groups` int(10) unsigned NOT NULL default '0',
+		  PRIMARY KEY  (`id`)
+		)");
+	}
 
+
+$arr = $db->db_fetch_array($db->db_query("SHOW TABLES LIKE '".BAB_GROUPS_SET_ASSOC_TBL."'"));
+if ( $arr[0] != BAB_GROUPS_SET_ASSOC_TBL )
+	{
+	$db->db_query("
+			CREATE TABLE `".BAB_GROUPS_SET_ASSOC_TBL."` (
+		  `id` int(10) unsigned NOT NULL auto_increment,
+		  `id_group` int(10) unsigned NOT NULL default '0',
+		  `id_set` int(10) unsigned NOT NULL default '0',
+		  PRIMARY KEY  (`id`),
+		  KEY `id_group` (`id_group`,`id_set`)
+		)");
+	}
 
 return $ret;
 }
