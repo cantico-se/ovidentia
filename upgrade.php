@@ -4918,7 +4918,7 @@ $db = & $GLOBALS['babDB'];
 $arr = $db->db_fetch_array($db->db_query("DESCRIBE ".BAB_DG_GROUPS_TBL." id_group"));
 if ($arr[0] != 'id_group')
 	{
-	$db->db_query("ALTER TABLE `".BAB_DG_GROUPS_TBL."` ADD `id_group` INT UNSIGNED NOT NULL");
+	$db->db_query("ALTER TABLE `".BAB_DG_GROUPS_TBL."` ADD `id_group` INT( 10 ) UNSIGNED");
 	$db->db_query("ALTER TABLE `".BAB_DG_GROUPS_TBL."` ADD INDEX ( `id_group` )");
 
 	$db->db_query("
@@ -4978,13 +4978,6 @@ if ($arr[0] != 'id_group')
 	}
 
 $db->db_query("ALTER TABLE `".BAB_USERS_LOG_TBL."` CHANGE `id_dggroup` `id_dg` INT( 11 ) UNSIGNED DEFAULT '0' NOT NULL");
-
-
-
-
-
-
-
 
 
 return $ret;

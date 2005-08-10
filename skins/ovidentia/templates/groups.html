@@ -141,7 +141,7 @@ else
 <input type="hidden" name="tg" value="groups">
 <input type="hidden" name="idx" value="options">
 <input type="hidden" name="update" value="options">
-<table border="0" width="70%" cellpadding="2" cellspacing="0" align="center">
+<table border="0" width="90%" cellpadding="2" cellspacing="0" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
 <table class="BabMailBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
@@ -321,14 +321,22 @@ function load_edit_form(a)
 	el['managerval'].value	 = managerval;
 
 
-	if (groupid > 2)
+	if (groupid > 3)
 		{
 		el['parent'].style.visibility = 'visible';
 		el['parent'].value = parent;
+		el['deleteg'].style.visibility = 'visible';
+		}
+	else if(groupid == 3)
+		{
+		el['parent'].style.visibility = 'visible';
+		el['parent'].value = parent;
+		el['deleteg'].style.visibility = 'hidden';
 		}
 	else
 		{
 		el['parent'].style.visibility = 'hidden';
+		el['deleteg'].style.visibility = 'hidden';
 		}
 
 	
@@ -351,6 +359,7 @@ function load_clear()
 	el['managerval'].value	 = '';
 	el['parent'].value		 = 1;
 	el['parent'].style.visibility = 'visible';
+	el['deleteg'].style.visibility = 'visible';
 
 	document.location.href='#bab_groups_tree_end';
 	return false;

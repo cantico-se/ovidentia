@@ -226,38 +226,6 @@ function groupMembers($id)
 
 
 
-function groupAdmDelete($id)
-	{
-	global $babBody;
-	
-	class temp
-		{
-		var $warning;
-		var $message;
-		var $title;
-		var $urlyes;
-		var $urlno;
-		var $yes;
-		var $no;
-		var $topics;
-		var $article;
-
-		function temp($id)
-			{
-			$this->message = bab_translate("Are you sure you want to delete this group and all its objects");
-			$this->title = bab_getGroupName($id);
-			$this->warning = bab_translate("WARNING: This group is used for delegation of administration. You can delete this group and all objects owned by this group. Or attach those objects to all site"). "!";
-			$this->urlyes = $GLOBALS['babUrlScript']."?tg=group&idx=list&group=".$id."&action2=1";
-			$this->yes = bab_translate("Delete all");
-			$this->urlno = $GLOBALS['babUrlScript']."?tg=group&idx=list&item=".$id."&action2=0";
-			$this->no = bab_translate("Delete only group");
-			}
-		}
-
-	$temp = new temp($id);
-	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
-	}
-
 function deleteMembers($users, $item)
 	{
 	global $babBody, $idx;
@@ -295,7 +263,7 @@ function deleteMembers($users, $item)
 			$this->warning = bab_translate("WARNING: This operation will delete members and their references"). "!";
 			$this->urlyes = $GLOBALS['babUrlScript']."?tg=group&idx=Deletem&item=".$item."&action=Yes&names=".$names;
 			$this->yes = bab_translate("Yes");
-			$this->urlno = $GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$item;
+			$this->urlno = $GLOBALS['babUrlScript']."?tg=groups";
 			$this->no = bab_translate("No");
 			}
 		}
@@ -369,73 +337,6 @@ function confirmDeleteGroup($id)
 	if( $id <= 3)
 		return;
 
-	$redirect = false;
-	$db = &$GLOBALS['babDB'];
-
-	$res = $db->db_query("select id from ".BAB_SECTIONS_TBL." where id_dgowner='".$id."' limit 0,1");
-	if( $res && $db->db_num_rows($res) > 0 )
-		$redirect = true;
-	else
-		{
-		$res = $db->db_query("select id from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$id."' limit 0,1");
-		if( $res && $db->db_num_rows($res) > 0 )
-			$redirect = true;
-		else
-			{
-			$res = $db->db_query("select id from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$id."'");
-			if( $res && $db->db_num_rows($res) > 0 )
-				$redirect = true;
-			else
-				{
-				$res = $db->db_query("select id from ".BAB_FORUMS_TBL." where id_dgowner='".$id."' limit 0,1");
-				if( $res && $db->db_num_rows($res) > 0 )
-					$redirect = true;
-				else
-					{
-					$res = $db->db_query("select id from ".BAB_FAQCAT_TBL." where id_dgowner='".$id."' limit 0,1");
-					if( $res && $db->db_num_rows($res) > 0 )
-						$redirect = true;
-					else
-						{
-						$res = $db->db_query("select id from ".BAB_FAQCAT_TBL." where id_dgowner='".$id."' limit 0,1");
-						if( $res && $db->db_num_rows($res) > 0 )
-							$redirect = true;
-						else
-							{
-							$res = $db->db_query("select id from ".BAB_FM_FOLDERS_TBL." where id_dgowner='".$id."' limit 0,1");
-							if( $res && $db->db_num_rows($res) > 0 )
-								$redirect = true;
-							else
-								{
-								$res = $db->db_query("select id from ".BAB_LDAP_DIRECTORIES_TBL." where id_dgowner='".$id."' limit 0,1");
-								if( $res && $db->db_num_rows($res) > 0 )
-									$redirect = true;
-								else
-									{
-									$res = $db->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_dgowner='".$id."' limit 0,1");
-									if( $res && $db->db_num_rows($res) > 0 )
-										$redirect = true;
-									else
-										{
-										$res = $db->db_query("select id from ".BAB_FAQCAT_TBL." where id_dgowner='".$id."' limit 0,1");
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		
-
-
-	if( $redirect)
-		{
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=group&idx=deldg&item=".$id);
-		exit;
-		}
-
 	include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
 	bab_deleteGroup($id);
 	}
@@ -484,12 +385,6 @@ if( isset($action) && $action == "Yes")
 		exit;
 		}
 	}
-else if( isset($action2) )
-	{
-	confirmDeleteAdmGroup($group, $action2);
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=groups&idx=List");
-	exit;
-	}
 
 
 switch($idx)
@@ -500,7 +395,6 @@ switch($idx)
 			deleteMembers($users, $item);
 			$babBody->title = bab_translate("Delete group's members");
 			$babBody->addItemMenu("List", bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=groups&idx=List");
-			$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=group&idx=Modify&item=".$item);
 			$babBody->addItemMenu("Members", bab_translate("Members"), $GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$item);
 			$babBody->addItemMenu("Deletem", bab_translate("Delete"), "");
 			break;
@@ -510,8 +404,10 @@ switch($idx)
 		groupMembers($item);
 		$babBody->title = bab_translate("Group's members").' : '.bab_getGroupName($item);
 		$babBody->addItemMenu("List", bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=groups&idx=List");
-		if( $babBody->currentDGGroup['id_group'] != $item )
+		if( $babBody->currentAdmGroup > 0 && $babBody->currentDGGroup['id_group'] != $item )
+			{
 			$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=group&idx=Modify&item=".$item);
+			}
 		$babBody->addItemMenu("Members", bab_translate("Members"), $GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$item);
 		$babBody->addItemMenu("Add", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=users&idx=List&grp=".$item);
 		break;

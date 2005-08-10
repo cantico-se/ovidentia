@@ -749,21 +749,11 @@ function removeOrgChartEntity($ids, $all)
 	if( !empty($all) && $ocinfo['isprimary'] == 'Y' && $ocinfo['id_group'] == 1)
 	{
 	include_once $GLOBALS['babInstallPath']."utilit/grpincl.php";
-	$res = $babDB->db_query("select id_group from ".BAB_OC_ENTITIES_TBL." where id IN (".$oeids.")");
+	$res = $babDB->db_query("select id_group from ".BAB_OC_ENTITIES_TBL." where id IN (".$oeids.") AND id_group>'0'");
 	$all = 'N'; /* Forced to No for moment. DON'T CHANGE THIS LINE */
 	while( $arr = $babDB->db_fetch_array($res))
 		{
-		if( $arr['id_group'] != 0 )
-			{
-			if( $all == 'Y' )
-				{
-				confirmDeleteAdmGroup($arr['id_group'], 1);
-				}
-			else
-				{
-				$babDB->db_query("update ".BAB_GROUPS_TBL." set id_ocentity='0' where id='".$arr['id_group']."'");
-				}
-			}
+		$babDB->db_query("update ".BAB_GROUPS_TBL." set id_ocentity='0' where id='".$arr['id_group']."'");
 		}
 	}
 	$babDB->db_query("delete from ".BAB_OC_ENTITIES_TBL." where id IN (".$oeids.")");

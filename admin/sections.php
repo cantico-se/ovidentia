@@ -554,6 +554,7 @@ function sectionSave($title, $pos, $desc, $content, $script, $js, $template, $la
 	if( $db->db_num_rows($res) > 0)
 		{
 		$babBody->msgerror = bab_translate("ERROR: This section already exists");
+
 		}
 	else
 		{

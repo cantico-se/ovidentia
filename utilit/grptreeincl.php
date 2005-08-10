@@ -85,7 +85,7 @@ class bab_grptree extends bab_dbtree
 		}
 
 
-	if ($id_parent == $this->firstnode_parent)
+	if ($id_parent === $this->firstnode_parent)
 		array_unshift ($groups, $this->getNodeInfo($id_parent));
 
 
@@ -203,6 +203,9 @@ class bab_grp_node
 			$this->arr['name'] = bab_translate($this->arr['name']);
 			$this->arr['description'] = bab_translate($this->arr['description']);
 			}
+
+		//$this->arr['name'] = '['.$this->arr['lf'].','.$this->arr['lr'].'] '.$this->arr['name'];
+
 		$this->arr['description'] = htmlentities($this->arr['description']);
 		$this->arr['managerval'] = htmlentities(bab_getUserName($this->arr['manager']));
 		$this->delegat = isset($this->tree->delegat[$this->arr['id']]);

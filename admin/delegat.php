@@ -168,14 +168,14 @@ function groupDelegatModify($gname, $description, $id = '')
 			global $babDB;
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
-			$this->add = bab_translate("Modify");
+			$this->add = bab_translate("Record");
 			$this->delete = bab_translate("Delete");
 			$this->alert_msg = bab_translate("It is necessary to remove all associations with the users groups");
 			$this->grp_members = bab_translate("Managed group");
 			$this->functions = bab_translate("Deputy functions");
 			$this->none = bab_translate("None");
-			$db = $GLOBALS['babDB'];
-			$this->db = $db;
+			$db = &$GLOBALS['babDB'];
+			$this->db = &$db;
 			$res = $db->db_query("select * from ".BAB_DG_GROUPS_TBL." where id='".$id."'");
 			$this->arr = $db->db_fetch_array($res);
 			$this->id = $id;
@@ -183,10 +183,12 @@ function groupDelegatModify($gname, $description, $id = '')
 			if (!empty($this->id))
 				{
 				$this->idGrp = &$this->arr['id_group'];
+				$this->bdel = true;
 				}
 			else
 				{
 				$this->idGrp = false;
+				$this->bdel = false;
 				}
 
 			$tree = new bab_grptree();
@@ -194,12 +196,6 @@ function groupDelegatModify($gname, $description, $id = '')
 			unset($this->groups[BAB_UNREGISTERED_GROUP]);
 			$this->count2 = count($this->groups);
 
-			if( $this->idGrp )
-				{
-				$this->bdel = false;
-				$this->control = true; }
-			else
-				$this->bdel = true;
 
 			if( bab_isMagicQuotesGpcOn())
 				{
@@ -270,7 +266,7 @@ function groupDelegatModify($gname, $description, $id = '')
 
 function deleteDelegatGroup($id)
 	{
-	global $babBody;
+	global $babBody,$babDB;
 
 	class temp
 		{
@@ -287,16 +283,16 @@ function deleteDelegatGroup($id)
 			global $babDB;
 			$this->message = bab_translate("Are you sure you want to delete this delegation group");
 			list($this->title) = $babDB->db_fetch_row($babDB->db_query("select name from ".BAB_DG_GROUPS_TBL." where id='".$id."'"));
-			$this->warning = bab_translate("WARNING: This operation will delete delegation group and all references"). "!";
-			$this->urlyes = $GLOBALS['babUrlScript']."?tg=delegat&idx=list&id=".$id."&action=Yes";
-			$this->yes = bab_translate("Yes");
-			$this->urlno = $GLOBALS['babUrlScript']."?tg=delegat&idx=mod&id=".$id;
-			$this->no = bab_translate("No");
+
+			$this->t_delete_all = bab_translate("Delete all objects created in the delegation");
+			$this->t_set_to_admin = bab_translate("Attach objects to all site");
+
+			$this->t_confirm = bab_translate("Confirm");
 			}
 		}
 
 	$temp = new temp($id);
-	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
+	$babBody->babecho(	bab_printTemplate($temp,"delegat.html", "delegatdelete"));
 	}
 
 
@@ -331,9 +327,11 @@ function addDelegatGroup($name, $description, $delegitems)
 			$req1 .= ", ". $delegitems[$i];
 			$req2 .= ", 'Y'";
 			}
+
+		$group = $_POST['group'] == 'NULL' ? 'NULL' : "'".$_POST['group']."'";
 		
 		$req1 .= ",id_group )";
-		$req2 .= ",'".$_POST['group']."')";
+		$req2 .= ", ".$group." )";
 		$babDB->db_query("insert into ".BAB_DG_GROUPS_TBL." ".$req1." VALUES ".$req2);
 		$id = $babDB->db_insert_id();
 		}
@@ -377,7 +375,9 @@ function modifyDelegatGroup($name, $description, $delegitems, $id)
 				$req .= ", ". $babDG[$i][0]."='N'";
 			}
 
-		$req .= ", id_group='".$_POST['group']."'";
+		$group = $_POST['group'] == 'NULL' ? 'NULL' : "'".$_POST['group']."'";
+
+		$req .= ", id_group=".$group;
 
 		$babDB->db_query($req ." where id='".$id."'");
 
@@ -421,9 +421,79 @@ function deleteDelegatMembers()
 function confirmDeleteDelegatGroup($id)
 {
 	global $babDB;
-	list($total) = $babDB->db_fetch_row($babDB->db_query("select count(id) as total from ".BAB_GROUPS_TBL." where id_dggroup='".$id."'"));
-	if( $total > 0 )
-		return;
+	
+	if( 0 == $_POST['doaction'] )
+		{
+		include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
+		$res = $babDB->db_query("select id from ".BAB_SECTIONS_TBL." where id_dgowner='".$id."'");
+		while($arr = $babDB->db_fetch_array($res))
+			{
+			bab_deleteSection($arr['id']);
+			}
+
+		$res = $babDB->db_query("select id from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$id."'");
+		while($arr = $babDB->db_fetch_array($res))
+			{
+			bab_deleteTopicCategory($arr['id']);
+			}
+
+		$res = $babDB->db_query("select id from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$id."'");
+		while($arr = $babDB->db_fetch_array($res))
+			{
+			bab_deleteApprobationSchema($arr['id']);
+			}
+
+		$res = $babDB->db_query("select id from ".BAB_FORUMS_TBL." where id_dgowner='".$id."'");
+		while($arr = $babDB->db_fetch_array($res))
+			{
+			bab_deleteForum($arr['id']);
+			}
+
+		$res = $babDB->db_query("select id from ".BAB_FAQCAT_TBL." where id_dgowner='".$id."'");
+		while($arr = $babDB->db_fetch_array($res))
+			{
+			bab_deleteFaq($arr['id']);
+			}
+
+		$res = $babDB->db_query("select id from ".BAB_FM_FOLDERS_TBL." where id_dgowner='".$id."'");
+		while($arr = $babDB->db_fetch_array($res))
+			{
+			bab_deleteFolder($arr['id']);
+			}
+
+		$res = $babDB->db_query("select id from ".BAB_LDAP_DIRECTORIES_TBL." where id_dgowner='".$id."'");
+		while($arr = $babDB->db_fetch_array($res))
+			{
+			bab_deleteLdapDirectory($arr['id']);
+			}
+
+		$res = $babDB->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_dgowner='".$id."'");
+		while($arr = $babDB->db_fetch_array($res))
+			{
+			bab_deleteDbDirectory($arr['id']);
+			}
+
+		$res = $babDB->db_query("select id from ".BAB_ORG_CHARTS_TBL." where id_dgowner='".$id."'");
+		while($arr = $babDB->db_fetch_array($res))
+			{
+			bab_deleteOrgChart($arr['id']);
+			}
+		}
+	else
+		{
+		$babDB->db_query("update ".BAB_SECTIONS_TBL." set id_dgowner='0' where id_dgowner='".$id."'");	
+		$babDB->db_query("update ".BAB_TOPICS_CATEGORIES_TBL." set id_dgowner='0' where id_dgowner='".$id."'");	
+		$babDB->db_query("update ".BAB_FLOW_APPROVERS_TBL." set id_dgowner='0' where id_dgowner='".$id."'");	
+		$babDB->db_query("update ".BAB_FORUMS_TBL." set id_dgowner='0' where id_dgowner='".$id."'");	
+		$babDB->db_query("update ".BAB_FAQCAT_TBL." set id_dgowner='0' where id_dgowner='".$id."'");	
+		$babDB->db_query("update ".BAB_FM_FOLDERS_TBL." set id_dgowner='0' where id_dgowner='".$id."'");	
+		$babDB->db_query("update ".BAB_LDAP_DIRECTORIES_TBL." set id_dgowner='0' where id_dgowner='".$id."'");	
+		$babDB->db_query("update ".BAB_DB_DIRECTORIES_TBL." set id_dgowner='0' where id_dgowner='".$id."'");	
+		$babDB->db_query("update ".BAB_ORG_CHARTS_TBL." set id_dgowner='0' where id_dgowner='".$id."'");	
+		}
+
+
+
 	$babDB->db_query("delete from ".BAB_DG_ADMIN_TBL." where id_dg='".$id."'");
 	$babDB->db_query("delete from ".BAB_DG_GROUPS_TBL." where id='".$id."'");
 }
@@ -477,14 +547,13 @@ switch($_POST['action'])
 	case 'del':
 		deleteDelegatMembers();
 		break;
+	case 'delete':
+		confirmDeleteDelegatGroup($_POST['id']);
+		$idx = 'list';
+		break;
 	}
 
 
-if( isset($action) && $action == "Yes")
-	{
-	confirmDeleteDelegatGroup($id);
-	$idx = 'list';
-	}
 
 if( $idx == 'list' )
 {

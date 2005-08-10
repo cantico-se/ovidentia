@@ -233,7 +233,7 @@ function groupDelete($id)
 			$this->warning = bab_translate("WARNING: This operation will delete the group with all references"). "!";
 			$this->urlyes = $GLOBALS['babUrlScript']."?tg=group&idx=Delete&group=".$id."&action=Yes";
 			$this->yes = bab_translate("Yes");
-			$this->urlno = $GLOBALS['babUrlScript']."?tg=group&idx=Modify&item=".$id;
+			$this->urlno = $GLOBALS['babUrlScript']."?tg=groups";
 			$this->no = bab_translate("No");
 			}
 		}
@@ -421,7 +421,14 @@ function saveGroupsOptions($mailgrpids, $notgrpids, $congrpids, $pdsgrpids, $dir
 
 	$db = &$GLOBALS['babDB'];
 
-	$db->db_query("update ".BAB_GROUPS_TBL." set mail='N', notes='N', contacts='N', ustorage='N', directory='N' where  id_dgowner='".$babBody->currentAdmGroup."'"); 
+	if ($babBody->currentAdmGroup > 0)
+		{
+		$db->db_query("update ".BAB_GROUPS_TBL." set mail='N', notes='N', contacts='N', ustorage='N', directory='N' where  lf>'".$babBody->currentDGGroup['lf']."' AND lr<'".$babBody->currentDGGroup['lr']."'");
+		}
+	else
+		{
+		$db->db_query("update ".BAB_GROUPS_TBL." set mail='N', notes='N', contacts='N', ustorage='N', directory='N'");
+		}
 
 	for( $i=0; $i < count($mailgrpids); $i++)
 	{
@@ -465,9 +472,12 @@ function saveGroupsOptions($mailgrpids, $notgrpids, $congrpids, $pdsgrpids, $dir
 	}
 	$grpdirectories[] = 0;
 	$grpdirectories[] = 1;
-	
-	$db->db_query("DELETE FROM ".BAB_DB_DIRECTORIES_TBL." where id_group NOT IN('".implode("','",$grpdirectories)."')");	
 
+	if ($babBody->currentAdmGroup == 0)
+	{
+	$db->db_query("DELETE FROM ".BAB_DB_DIRECTORIES_TBL." where id_group NOT IN('".implode("','",$grpdirectories)."') AND idgowner='".$babBody->currentAdmGroup."'");	
+	}
+	
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=groups&idx=options");
 	exit;
 }

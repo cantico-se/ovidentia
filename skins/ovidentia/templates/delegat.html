@@ -86,6 +86,7 @@ op.close();
 <tr>
 <td align="center" colspan="2"> 
 	<select name="group">
+		<option value="NULL"></option>
 	<!--#in getnextgroup -->
 		<option value="{ arrgroups[id] }" <!--#if arrgroups[select] --> selected="selected" <!--#endif arrgroups[select] -->>{ arrgroups[name] }</option>
 	<!--#endin getnextgroup -->
@@ -115,6 +116,37 @@ op.close();
 </form>
 <br>
 <!--#end delegatcreate -->
+
+
+<!--#begin delegatdelete -->
+
+<form name="dgcreate" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="delegat" />
+<input type="hidden" name="idx" value="list" />
+<input type="hidden" name="id" value="{ id }" />
+<input type="hidden" name="action" value="delete" />
+<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+		<tr> 
+		<td>
+			<h3>{ title }</h3>
+			<p>{ message }?</p>
+			<p>
+				<input type="radio" name="doaction" value="0" checked="checked" /> { t_delete_all }<br />
+				<input type="radio" name="doaction" value="1" /> { t_set_to_admin }<br />
+			</p>
+
+			<p align="center"><input type="submit" value="{ t_confirm }" /></p>
+		</td>
+		</tr>
+	</table>
+</td>
+</tr>
+</table>
+</form>
+<!--#end delegatdelete -->
 
 
 <!--#begin delegatmembers -->

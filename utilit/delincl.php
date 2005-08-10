@@ -434,7 +434,8 @@ function bab_deleteGroup($id)
 		bab_deleteDbDirectory($arr['id']);
 		}
 
-	$db->db_query("update ".BAB_OC_ENTITIES_TBL." set id_group='0' where id_group='".$id."'");	
+	$db->db_query("update ".BAB_OC_ENTITIES_TBL." set id_group='0' where id_group='".$id."'");
+	$db->db_query("update ".BAB_DG_GROUPS_TBL." set id_group=NULL where id_group='".$id."'");	
 
 	// delete group
 	
@@ -460,7 +461,8 @@ function bab_deleteUser($id)
 	$res = $db->db_query("delete from ".BAB_NOTES_TBL." where id_user='$id'");	
 
 	// delete user from groups
-	$res = $db->db_query("delete from ".BAB_USERS_GROUPS_TBL." where id_object='$id'");	
+	$res = $db->db_query("delete from ".BAB_USERS_GROUPS_TBL." where id_object='$id'");
+	$res = $db->db_query("UPDATE ".BAB_GROUPS_TBL." SET manager='0' WHERE manager='$id'");
 					
 	$res = $db->db_query("select * from ".BAB_CALENDAR_TBL." where owner='$id' and type='1'");
 	$arr = $db->db_fetch_array($res);
@@ -469,6 +471,9 @@ function bab_deleteUser($id)
 	bab_deleteCalendar($arr['id']);
 	$db->db_query("delete from ".BAB_CAL_EVENTS_NOTES_TBL." where id_user='".$id."'");	
 	$db->db_query("delete from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_user='".$id."'");	
+
+	// delegation administrators
+	$db->db_query("DELETE from ".BAB_DG_ADMIN_TBL." where id_user='$id'");	
 
 	// delete user from BAB_USERS_LOG_TBL
 	$res = $db->db_query("delete from ".BAB_USERS_LOG_TBL." where id_user='$id'");	
