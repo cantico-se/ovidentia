@@ -49,7 +49,9 @@ function summaryDelegatList($col, $order)
 			$this->summaryBaseCls();
 			$this->grouptxt = bab_translate("Group");
 			$this->delegtxt = bab_translate("Delegation");
-			$res = $babDB->db_query("select gt.id as idgroup, gt.name as grpname, dgt.* from ".BAB_GROUPS_TBL." gt left join ".BAB_DG_GROUPS_TBL." dgt on dgt.id=gt.id_dggroup where gt.id_dggroup != '0' group by gt.id");
+			
+			$res = $babDB->db_query("select dg.*,g.lf,g.lr from ".BAB_GROUPS_TBL." g, ".BAB_DG_GROUPS_TBL." dg where g.id=dg.id_group ORDER BY dg.name");
+
 			$this->babDG = array(	array("groups", bab_translate("Groups")),
 				array("sections", bab_translate("Sections")),
 				array("topcats", bab_translate("Topics categories")),
@@ -69,22 +71,22 @@ function summaryDelegatList($col, $order)
 				{
 				$tmparr = array();
 				$tmparr['dgname'] = $arr['name'];
-				$tmparr['grpname'] = $arr['grpname'];
-				list($tmparr['groups']) = $babDB->db_fetch_row($babDB->db_query("select count(id) from ".BAB_GROUPS_TBL." where id_dgowner = '".$arr['idgroup']."'"));
-				list($tmparr['sections']) = $babDB->db_fetch_row($babDB->db_query("select count(id) from ".BAB_SECTIONS_TBL." where id_dgowner = '".$arr['idgroup']."'"));
-				list($tmparr['topcats']) = $babDB->db_fetch_row($babDB->db_query("select count(id) from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner = '".$arr['idgroup']."'"));
-				list($tmparr['faqs']) = $babDB->db_fetch_row($babDB->db_query("select count(id) from ".BAB_FAQCAT_TBL." where id_dgowner = '".$arr['idgroup']."'"));
-				list($tmparr['forums']) = $babDB->db_fetch_row($babDB->db_query("select count(id) from ".BAB_FORUMS_TBL." where id_dgowner = '".$arr['idgroup']."'"));
-				list($tmparr['directories']) = $babDB->db_fetch_row($babDB->db_query("select count(id) from ".BAB_DB_DIRECTORIES_TBL." where id_dgowner = '".$arr['idgroup']."'"));
-				list($tmparr['folders']) = $babDB->db_fetch_row($babDB->db_query("select count(*) from ".BAB_FM_FOLDERS_TBL." where id_dgowner = '".$arr['idgroup']."'"));
-				list($tmparr['orgcharts']) = $babDB->db_fetch_row($babDB->db_query("select count(*) from ".BAB_ORG_CHARTS_TBL." where id_dgowner = '".$arr['idgroup']."'"));
+
+				list($tmparr['groups']) = $babDB->db_fetch_row($babDB->db_query("select count(id) from ".BAB_GROUPS_TBL." where nb_set>='0' AND lf>'".$arr['lf']."' AND lr<'".$arr['lr']."'"));
+				list($tmparr['sections']) = $babDB->db_fetch_row($babDB->db_query("select count(id) from ".BAB_SECTIONS_TBL." where id_dgowner = '".$arr['id']."'"));
+				list($tmparr['topcats']) = $babDB->db_fetch_row($babDB->db_query("select count(id) from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner = '".$arr['id']."'"));
+				list($tmparr['faqs']) = $babDB->db_fetch_row($babDB->db_query("select count(id) from ".BAB_FAQCAT_TBL." where id_dgowner = '".$arr['id']."'"));
+				list($tmparr['forums']) = $babDB->db_fetch_row($babDB->db_query("select count(id) from ".BAB_FORUMS_TBL." where id_dgowner = '".$arr['id']."'"));
+				list($tmparr['directories']) = $babDB->db_fetch_row($babDB->db_query("select count(id) from ".BAB_DB_DIRECTORIES_TBL." where id_dgowner = '".$arr['id']."'"));
+				list($tmparr['folders']) = $babDB->db_fetch_row($babDB->db_query("select count(*) from ".BAB_FM_FOLDERS_TBL." where id_dgowner = '".$arr['id']."'"));
+				list($tmparr['orgcharts']) = $babDB->db_fetch_row($babDB->db_query("select count(*) from ".BAB_ORG_CHARTS_TBL." where id_dgowner = '".$arr['id']."'"));
 				$this->arrinfo[] = $tmparr;
 				}
 
 			usort($this->arrinfo, array($this, 'compare'));
 			$this->count = count($this->arrinfo);
 
-			$this->urlordgr = $GLOBALS['babUrlScript']."?tg=stat&idx=delegat&order=".($col == 'grpname'? $this->sortord: $this->oldorder)."&col=grpname";
+			$this->urlordgr = $GLOBALS['babUrlScript']."?tg=stat&idx=delegat&order=".($col == 'dgname'? $this->sortord: $this->oldorder)."&col=dgname";
 			$this->current = 0;
 			}
 
@@ -96,7 +98,6 @@ function summaryDelegatList($col, $order)
 				{
 				$this->altbg = !$this->altbg;
 				$this->delegname = $this->arrinfo[$k]['dgname'];
-				$this->groupname = $this->arrinfo[$k]['grpname'];
 				$k++;
 				$this->current = $k - 1;
 				return true;
@@ -211,7 +212,10 @@ function summarySections($col, $order)
 			$this->db = $GLOBALS['babDB'];
 
 			list($this->utotal) = $this->db->db_fetch_row($this->db->db_query("select count(id) from ".BAB_USERS_TBL.""));
-			$req = "select st.*, dgt.name as dgname from ".BAB_SECTIONS_TBL." st left join ".BAB_GROUPS_TBL." gt on st.id_dgowner=gt.id left join ".BAB_DG_GROUPS_TBL." dgt on gt.id_dggroup=dgt.id where st.optional='Y'";
+			
+			//$req = "select st.*, dgt.name as dgname from ".BAB_SECTIONS_TBL." st left join ".BAB_GROUPS_TBL." gt on st.id_dgowner=gt.id left join ".BAB_DG_GROUPS_TBL." dgt on gt.id_dggroup=dgt.id where st.optional='Y'";
+
+			$req = "select st.*, dg.name as dgname from ".BAB_SECTIONS_TBL." st left join ".BAB_DG_GROUPS_TBL." dg on st.id_dgowner=dg.id where st.optional='Y'";
 			$ressec = $this->db->db_query($req);
 
 			$this->arrinfo = array();
@@ -314,7 +318,7 @@ function summarySections($col, $order)
 					}
 				}
 
-			$req = "select tct.*, dgt.name as dgname  from ".BAB_TOPICS_CATEGORIES_TBL." tct left join ".BAB_GROUPS_TBL." gt on tct.id_dgowner=gt.id left join ".BAB_DG_GROUPS_TBL." dgt on gt.id_dggroup=dgt.id where tct.optional='Y'";
+			$req = "select tct.*, dg.name as dgname  from ".BAB_TOPICS_CATEGORIES_TBL." tct left join ".BAB_DG_GROUPS_TBL." dg on tct.id_dgowner=dg.id where tct.optional='Y'";
 			$rescat = $this->db->db_query($req);
 
 			while( $arr = $this->db->db_fetch_array($rescat) )

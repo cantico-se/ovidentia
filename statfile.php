@@ -47,7 +47,7 @@ function summaryFileManager($col, $order)
 			$this->filestxt = bab_translate("Files");
 			$this->versionstxt = bab_translate("Versions");
 			$this->kilooctet = " ".bab_translate("Kb");
-			$res = $babDB->db_query("select fft.*, dgt.name as dgname, count(ft.id) as files from ".BAB_FM_FOLDERS_TBL." fft left join ".BAB_GROUPS_TBL." gt on fft.id_dgowner=gt.id left join ".BAB_DG_GROUPS_TBL." dgt on gt.id_dggroup=dgt.id left join ".BAB_FILES_TBL." ft on ft.id_owner=fft.id group by fft.id");		
+			$res = $babDB->db_query("select fft.*, dg.name as dgname, count(ft.id) as files from ".BAB_FM_FOLDERS_TBL." fft left join ".BAB_DG_GROUPS_TBL." dg on fft.id_dgowner=dg.id left join ".BAB_FILES_TBL." ft on ft.id_owner=fft.id group by fft.id");		
 			$order = strtolower($order);
 			$this->sortord = $order == "asc"? "desc": "asc";
 			$this->sortcol = $col;

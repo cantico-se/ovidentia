@@ -27,7 +27,7 @@ include_once $babInstallPath."admin/mgroup.php";
 function setOfGroupsName($sid)
 {
 	$db = &$GLOBALS['babDB'];
-	$req = "SELECT name FROM ".BAB_GROUPS_SET_TBL." WHERE id='".$sid."'";
+	$req = "SELECT name FROM ".BAB_GROUPS_TBL." WHERE id='".$sid."' AND nb_groups>='0'";
 	$arr = $db->db_fetch_assoc($db->db_query($req));
 	return $arr['name'];
 }
@@ -49,7 +49,7 @@ function slist()
 			$this->t_modify = bab_translate("Modify");
 			$this->t_add_group = bab_translate("Add");
 			
-			$this->res = $this->db->db_query("SELECT * FROM ".BAB_GROUPS_SET_TBL."");
+			$this->res = $this->db->db_query("SELECT * FROM ".BAB_GROUPS_TBL." WHERE nb_groups>='0'");
 
 			}
 
@@ -129,7 +129,7 @@ function sedit()
 
 			if (isset($_REQUEST['sid']))
 				{
-				$this->arr = $this->db->db_fetch_array($this->db->db_query("SELECT * FROM ".BAB_GROUPS_SET_TBL." WHERE id='".$_REQUEST['sid']."'"));
+				$this->arr = $this->db->db_fetch_array($this->db->db_query("SELECT * FROM ".BAB_GROUPS_TBL." WHERE id='".$_REQUEST['sid']."' AND nb_groups>='0'"));
 				$this->bdel = true;
 				}
 			
@@ -180,7 +180,7 @@ function sedit_record()
 		$_POST['name'] = $db->db_escape_string($_POST['name']);
 		}
 
-	list($n) = $db->db_fetch_array($db->db_query("SELECT COUNT(*) FROM ".BAB_GROUPS_SET_TBL." WHERE name='".$_POST['name']."'"));
+	list($n) = $db->db_fetch_array($db->db_query("SELECT COUNT(*) FROM ".BAB_GROUPS_TBL." WHERE name='".$_POST['name']."' AND nb_groups>='0'"));
 	if ($n > 0)
 		{
 		$babBody->msgerror = bab_translate("This set of groups allready exists");
@@ -189,11 +189,11 @@ function sedit_record()
 
 	if (empty($_POST['sid']))
 		{
-		$db->db_query("INSERT INTO ".BAB_GROUPS_SET_TBL." (name) VALUES ('".$_POST['name']."')");
+		$db->db_query("INSERT INTO ".BAB_GROUPS_TBL." (name,nb_groups) VALUES ('".$_POST['name']."',0)");
 		}
 	else
 		{
-		$db->db_query("UPDATE ".BAB_GROUPS_SET_TBL." SET name='".$_POST['name']."' WHERE id='".$_POST['sid']."'");
+		$db->db_query("UPDATE ".BAB_GROUPS_TBL." SET name='".$_POST['name']."' WHERE id='".$_POST['sid']."'");
 		}
 
 	return true;
@@ -210,7 +210,7 @@ function sedit_delete()
 	}
 
 	$db->db_query("DELETE FROM ".BAB_GROUPS_SET_ASSOC_TBL." WHERE id_set='".$_POST['sid']."'");
-	$db->db_query("DELETE FROM ".BAB_GROUPS_SET_TBL." WHERE id='".$_POST['sid']."'");
+	$db->db_query("DELETE FROM ".BAB_GROUPS_TBL." WHERE id='".$_POST['sid']."' AND nb_groups>='0'");
 }
 
 function record_setOfGroups($arr)
@@ -229,7 +229,7 @@ function record_setOfGroups($arr)
 		unset($current[$idgroup]);
 		}
 
-	$db->db_query("UPDATE ".BAB_GROUPS_SET_TBL." SET nb_groups='".count($arr)."' WHERE id='".$_POST['sid']."'");
+	$db->db_query("UPDATE ".BAB_GROUPS_TBL." SET nb_groups='".count($arr)."' WHERE id='".$_POST['sid']."' AND nb_groups>= '0'");
 
 	if (count($current) > 0)
 		{
@@ -246,7 +246,7 @@ function delete_glist()
 		$db->db_query("DELETE FROM ".BAB_GROUPS_SET_ASSOC_TBL." WHERE id_set='".$_POST['sid']."' AND id_group IN('".implode("','",$_POST['groups'])."')");
 
 		$db->db_query("UPDATE ".BAB_GROUPS_TBL." SET nb_set=nb_set-'1' WHERE id IN('".implode("','",$_POST['groups'])."')");
-		$db->db_query("UPDATE ".BAB_GROUPS_SET_TBL." SET nb_groups=nb_groups-'".count($_POST['groups'])."' WHERE id='".$_POST['sid']."'");
+		$db->db_query("UPDATE ".BAB_GROUPS_TBL." SET nb_groups=nb_groups-'".count($_POST['groups'])."' WHERE id='".$_POST['sid']."' AND nb_groups>='0'");
 		}
 
 	

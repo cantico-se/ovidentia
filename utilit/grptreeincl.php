@@ -36,7 +36,7 @@ class bab_grptree extends bab_dbtree
 	$this->table = BAB_GROUPS_TBL;
 	$this->firstnode = 0;
 	$this->firstnode_parent = NULL;
-	$this->where = '';
+	$this->where = 'nb_set >= 0';
 
 	if ($babBody->currentAdmGroup > 0)
 		{
@@ -66,7 +66,7 @@ class bab_grptree extends bab_dbtree
 
 	function setDelegation($lf, $lr)
 	{
-	$this->where = "lf>='".$lf."' AND lr<='".$lr."'";
+	$this->where .= " AND lf>='".$lf."' AND lr<='".$lr."'";
 	}
 
 	function getGroups($id_parent, $format = '%2$s &gt; ')

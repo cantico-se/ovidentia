@@ -195,42 +195,32 @@ CREATE TABLE `bab_groups` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `name` varchar(255) NOT NULL default '',
   `description` varchar(255) NOT NULL default '',
-  `mail` enum('N','Y') NOT NULL default 'N',
+  `mail` enum('N','Y') default NULL,
   `manager` int(11) unsigned NOT NULL default '0',
-  `ustorage` enum('N','Y') NOT NULL default 'N',
-  `notes` enum('Y','N') NOT NULL default 'Y',
-  `contacts` enum('Y','N') NOT NULL default 'Y',
-  `directory` enum('N','Y') NOT NULL default 'N',
-  `pcalendar` enum('Y','N') NOT NULL default 'Y',
-  `id_ocentity` int(11) unsigned NOT NULL default '0',
+  `ustorage` enum('N','Y') default NULL,
+  `notes` enum('Y','N') default NULL,
+  `contacts` enum('Y','N') default NULL,
+  `directory` enum('N','Y') default NULL,
+  `pcalendar` enum('Y','N') default NULL,
+  `id_ocentity` int(11) unsigned default '0',
   `id_parent` int(10) unsigned default NULL,
   `lf` int(10) unsigned NOT NULL default '0',
   `lr` int(10) unsigned NOT NULL default '0',
-  `nb_set` int(10) unsigned NOT NULL default '0',
+  `nb_set` int(10) unsigned default NULL,
+  `nb_groups` int(10) unsigned default NULL,
   PRIMARY KEY  (`id`),
   KEY `manager` (`manager`),
+  KEY `nb_set` (`nb_set`,`nb_groups`),
   KEY `id_parent` (`id_parent`,`lf`,`lr`)
 );
 
-INSERT INTO bab_groups (id, name, description, mail, ustorage, notes, contacts, directory, pcalendar, id_parent, lf, lr) VALUES ( '0', 'Ovidentia users', '', 'N', 'N', 'N', 'N', 'N', 'N', NULL, '1', '8');
+INSERT INTO bab_groups (id, name, description, mail, ustorage, notes, contacts, directory, pcalendar, id_parent, lf, lr) VALUES ( '0', 'Ovidentia users', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '1', '8');
 INSERT INTO bab_groups (id, name, description, mail, ustorage, notes, contacts, directory, pcalendar, id_parent, lf, lr) VALUES ( '1', 'Registered', 'All registered users', 'N', 'N', 'Y', 'Y', 'Y', 'Y', '0', '2', '5');
-INSERT INTO bab_groups (id, name, description, mail, ustorage, notes, contacts, directory, pcalendar, id_parent, lf, lr) VALUES ( '2', 'Guests', 'all not registered users', 'N', 'N', 'N', 'N', 'N', 'N', '0', '6', '7');
+INSERT INTO bab_groups (id, name, description, mail, ustorage, notes, contacts, directory, pcalendar, id_parent, lf, lr) VALUES ( '2', 'Guests', 'all not registered users', NULL, NULL, NULL, NULL, NULL, NULL, '0', '6', '7');
 INSERT INTO bab_groups (id, name, description, mail, ustorage, notes, contacts, directory, pcalendar, id_parent, lf, lr) VALUES ( '3', 'Administrators', 'Manage the site', 'N', 'N', 'Y', 'Y', 'N', 'Y', '1', '3', '4');
 
 
 
-# --------------------------------------------------------
-#
-# Structure de la table 'bab_groups_set'
-#
-
-CREATE TABLE `bab_groups_set` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `name` varchar(128) NOT NULL default '',
-  `description` varchar(255) NOT NULL default '',
-  `nb_groups` int(10) unsigned NOT NULL default '0',
-  PRIMARY KEY  (`id`)
-);
 
 
 # --------------------------------------------------------

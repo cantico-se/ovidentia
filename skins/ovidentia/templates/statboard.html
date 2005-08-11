@@ -5,15 +5,15 @@
 <table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
 <td class="BabSiteAdminTitleFontBackground">
-<a class="BabSiteAdminListLink" href="{ urlordgr }" title="{ sorttxt }">{ grouptxt }</a>
-<!--#if sortcol "== grpname" -->
+<a class="BabSiteAdminListLink" href="{ urlordgr }" title="{ sorttxt }">{ delegtxt }</a>
+<!--#if sortcol "== dgname" -->
 <!--#if sortord "== asc" -->
 &nbsp;<img src="{ babSkinPath }images/Puces/sortasc.gif" alt="{ sorttxt }" border="0">
 <!--#else sortord -->
 &nbsp;<img src="{ babSkinPath }images/Puces/sortdesc.gif" alt="{ sorttxt }" border="0">
 <!--#endif sortord -->
 <!--#endif sortcol -->
-<br>({ delegtxt })</td>
+</td>
 <!--#in getnextdg -->
 <td class="BabSiteAdminTitleFontBackground">
 <a class="BabSiteAdminListLink" href="{ urlord }" title="{ sorttxt }">{ delegitemdesc }</a>
@@ -29,7 +29,7 @@
 </tr>
 <!--#in getnext -->
 <!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
-<td><b>{ groupname }</b><br>({ delegname })</td>
+<td>{ delegname }</td>
 <!--#in getnextdg -->
 <td align="center">{ total }</td>
 <!--#endin getnextdg -->

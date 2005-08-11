@@ -50,28 +50,21 @@ function browseGroups($cb)
 			$this->cb = $cb;
 
 			$this->fullname = bab_translate("Group");
-			$this->res = $this->db->db_query("select * from ".BAB_GROUPS_TBL." where id!='2' and id_dgowner='".$babBody->currentAdmGroup."' order by name asc");
-			$this->count = $this->db->db_num_rows($this->res);
+
+			include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
+
+			$tree = new bab_grptree();
+			$this->groups = $tree->getGroups(BAB_REGISTERED_GROUP);
 			}
 
 		function getnext()
 			{
-			static $i = 0;
-			if( $i < $this->count)
+			if (list(,$arr) = each($this->groups))
 				{
-				$arr = $this->db->db_fetch_array($this->res);
 				$this->groupid = $arr['id'];
-				if( $arr['id'] < 3 )
-					{
-					$this->groupname = bab_getGroupName($arr['id']);
-					}
-				else
-					{
-					$this->groupname = $arr['name'];
-					}
+				$this->groupname = $arr['name'];
 				$this->jgroupname = str_replace("'", "\'", $this->groupname);
-				$this->jgroupname = str_replace('"', "'+String.fromCharCode(34)+'",$this->jgroupname);				
-				$i++;
+				$this->jgroupname = str_replace('"', "'+String.fromCharCode(34)+'",$this->jgroupname);
 				return true;
 				}
 			else
@@ -82,7 +75,13 @@ function browseGroups($cb)
 		}
 
 	$temp = new temp($cb);
-	echo bab_printTemplate($temp, "groups.html", "browsegroups");
+
+	include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
+	$GLOBALS['babBodyPopup'] = new babBodyPopup();
+	$GLOBALS['babBodyPopup']->title = bab_translate("Group");
+	$GLOBALS['babBodyPopup']->babecho(bab_printTemplate($temp, "groups.html", "browsegroups"));
+	printBabBodyPopup();
+	die();
 	}
 
 // used in add-ons from v4.08
@@ -122,8 +121,7 @@ function bab_updateGroupInfo($id, $name, $description, $managerid, $grpdg , $id_
 			SET 
 				name='".$name."', 
 				description = '".$description."',
-				manager = '".$managerid."',
-				id_dggroup = '".$grpdg."'
+				manager = '".$managerid."'
 			WHERE
 				id='".$id."'
 			");
@@ -184,7 +182,13 @@ function bab_addGroup($name, $description, $managerid, $grpdg, $parent = 1)
 				name='".$name."', 
 				description = '".$description."',
 				manager = '".$managerid."',
-				id_dggroup = '".$grpdg."'
+				nb_set = '0', 	
+				mail = 'N', 
+				ustorage = 'N', 
+				notes = 'N', 
+				contacts = 'N', 
+				directory = 'N', 
+				pcalendar = 'N'
 			WHERE
 				id='".$id."'
 			");

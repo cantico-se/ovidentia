@@ -465,7 +465,7 @@ switch($idx)
 		break;
 
 	case "delegat":
-		if( !isset($col)) { $col = 'grpname';}
+		if( !isset($col)) { $col = 'dgname';}
 		if( !isset($order)) { $order = 'desc';}
 		include_once $babInstallPath."statboard.php";
 		summaryDelegatList($col, $order);

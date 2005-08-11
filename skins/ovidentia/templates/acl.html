@@ -1,33 +1,5 @@
 <!--#begin maclgroups --> 
-<script type="text/javascript">
-<!--
-function macl_lock(what,groups)
-	{
-	var f = document.forms.macl;
-	var what = document.getElementById(what);
-	var groups = document.getElementById(groups);
-	if (what.value != "") 
-		{groups.disabled = true;}
-	else {groups.disabled = false;}
-	}
-	
-function macl_switch_view_on(tbl)
-	{
-	var nav = navigator.userAgent.toLowerCase();
-	if (!document.getElementById || nav.indexOf('konqueror') != -1) return false;
-	<!--#in getnexttable -->
-	if (typeof tbl == 'undefined')
-		var tbl = '{ table }';
 
-	document.getElementById('macl_tr_table_{ table }').style.display = 'none';
-	document.getElementById('macl_link_table_{ table }').className = '';
-	<!--#endin getnexttable -->
-
-	document.getElementById('macl_tr_table_'+tbl).style.display = '';
-	document.getElementById('macl_link_table_'+tbl).className = 'BabMenuActiveBackground';
-	}
--->
-</script>
 <form method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="{ target }">
 <input type="hidden" name="idx" value="{ index }">
@@ -76,11 +48,7 @@ function macl_switch_view_on(tbl)
 					<option value="{ arrgroups[id] }" { arrgroups[select] }>{ arrgroups[name] }</option>
 					<!--#endin getnextgroup -->
 				</select>
-			<script type="text/javascript">
-			<!--
-			macl_lock('macl_what_{ table }','macl_groups_{ table }');
-			-->
-			</script>
+
 			<!--#endif listgroups -->
 			</td>
 		</tr>
@@ -95,11 +63,145 @@ function macl_switch_view_on(tbl)
 </tr>
 </table>
 </form>
-<!--#if multiple -->
-<script type="text/javascript">
-<!--
- macl_switch_view_on();
--->
-</script>
-<!--#endif multiple -->
 <!--#end maclgroups -->
+
+
+
+<!--#begin grp_maintree -->
+<script type="text/javascript" src="{ babInstallPath }scripts/ul_tree.js"></script>
+
+<script type="text/javascript">
+
+function table_name(objname)
+{
+	if (objname.match(/\[(.*?)\]\[/i))
+		return RegExp.$1;
+}
+
+function macl_switch_view_on(table)
+{
+	var menu = document.getElementById('bab_groups_acl').getElementsByTagName('li');
+	for(var i = 0; i < menu.length; i++ )
+		{
+		menu[i].className = '';
+		}
+	
+	if (null == table) {
+		table = menu[0].id.substr(16);
+		}
+
+	document.getElementById('macl_link_table_'+table).className = 'BabMenuActiveBackground';
+
+	var checkbox = document.getElementById('bab_groups_tree').getElementsByTagName('input');
+	for(var i = 0; i < checkbox.length; i++ )
+		{
+		if (table_name(checkbox[i].name) != table) {
+			checkbox[i].style.display = 'none';
+			}
+		else {
+			checkbox[i].style.display = '';
+			}
+
+		if ('tree' == checkbox[i].name.substr(0,4))
+			{
+			checkbox[i].onclick = function() {
+				var tree = document.getElementById(this.parentNode.parentNode.id).getElementsByTagName('input');
+				for (var j = 0; j < tree.length ; j++)
+					{
+					if (this.name != tree[j].name || this.value != tree[j].value)
+						tree[j].disabled = this.checked;
+					}
+				}
+			}
+		}
+
+}
+</script>
+
+<div id="bab_groups_acl" class="BabLoginCadreBackground">
+<ul class="BabLoginMenuBackground">
+	<!--#in getnexttable -->
+	<li id="macl_link_table_{ table }" onclick="macl_switch_view_on('{ table }')">{ title }</li>
+	<!--#endin getnexttable -->
+</ul>
+</div>
+
+<form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="{ target }">
+<input type="hidden" name="idx" value="{ index }">
+<input type="hidden" name="item" value="{ id_object }">
+<input type="hidden" name="table" value="">
+<input type="hidden" name="what" value="">
+<input type="hidden" name="{ return }" value="update">
+
+
+<div id="bab_groups_tree" class="BabLoginCadreBackground">
+	<p class="BabSiteAdminTitleFontBackground">
+	<a href="javascript:tree.expand();" class="expand">{ t_expand_all }</a> 
+	<a href="javascript:tree.collapse();" class="collapse">{ t_collapse_all }</a>
+	<a href="javascript:tree.expandChecked();" class="expandchecked">{ t_expand_checked }</a>
+	</p>
+	<div class="tree">
+	<ul class="first">
+	<!--#in firstnode -->
+	<li id="bab_ovgroup_{ arr[id] }">
+		<div class="line">
+		
+		<img src="{ babSkinPath }images/Puces/folder_group.gif" alt="{ t_group }" />
+		<!--#in getnexttable -->
+		<input type="checkbox" name="tree[{ table }][]" value="{ arr[id] }" />
+		<!--#endin getnexttable -->
+		{ arr[name] }
+
+			<div class="right">
+				<!--#in getnexttable -->
+				<input type="checkbox" name="group[{ table }][]" value="{ id_group }" <!--#if checked --> checked="checked" <!--#endif checked --> <!--#if disabled --> disabled="disabled" <!--#endif disabled --> />
+				<!--#endin getnexttable -->
+			</div>
+		</div>
+		{ tpl_tree }
+		</li>
+	<!--#endin firstnode -->
+	</ul>
+	<br />
+	</div>
+</div>
+
+<div align="center">
+	<input type="submit" value="{ t_record }" />
+</div>
+
+</form>
+
+<script type="text/javascript">
+var tree = new bab_ul_tree('bab_groups_tree');
+tree.processList();
+tree.expandChecked();
+macl_switch_view_on();
+</script>
+<!--#end grp_maintree -->
+
+<!--#begin grp_childs -->
+	<ul>
+		<!--#in getnextgroup -->
+		<li id="bab_ovgroup_{ arr[id] }">
+			<div>
+			<img src="{ babSkinPath }images/Puces/folder_group.gif" alt="{ t_group }" />
+			<!--#in getnexttable -->
+			<input type="checkbox" name="tree[{ table }][]" value="{ arr[id] }" />
+			<!--#endin getnexttable -->
+			
+			{ arr[name] }
+
+			<div class="right">
+				<!--#in getnexttable -->
+				<input type="checkbox" name="group[{ table }][]" value="{ id_group }" <!--#if checked --> checked="checked" <!--#endif checked --> <!--#if disabled --> disabled="disabled" <!--#endif disabled --> />
+				<!--#endin getnexttable -->
+			</div>
+
+			</div>
+			{ subtree }
+		</li>
+		<!--#endin getnextgroup -->
+	</ul>
+<!--#end grp_childs -->

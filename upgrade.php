@@ -4976,20 +4976,6 @@ if ($arr[0] != 'id_group')
 	$db->db_query("ALTER TABLE `".BAB_GROUPS_TBL."` DROP `id_dggroup`");
 	$db->db_query("ALTER TABLE `".BAB_GROUPS_TBL."` DROP `id_dgowner`");
 	$db->db_query("ALTER TABLE `".BAB_USERS_LOG_TBL."` CHANGE `id_dggroup` `id_dg` INT( 11 ) UNSIGNED DEFAULT '0' NOT NULL");
-
-	}
-
-$arr = $db->db_fetch_array($db->db_query("SHOW TABLES LIKE '".BAB_GROUPS_SET_TBL."'"));
-if ( $arr[0] != BAB_GROUPS_SET_TBL )
-	{
-	$db->db_query("
-			CREATE TABLE `".BAB_GROUPS_SET_TBL."` (
-		  `id` int(10) unsigned NOT NULL auto_increment,
-		  `name` varchar(128) NOT NULL default '',
-		  `description` varchar(255) NOT NULL default '',
-		  `nb_groups` int(10) unsigned NOT NULL default '0',
-		  PRIMARY KEY  (`id`)
-		)");
 	}
 
 
