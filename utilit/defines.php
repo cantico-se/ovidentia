@@ -29,6 +29,8 @@ define("BAB_REGISTERED_GROUP",		1);
 define("BAB_UNREGISTERED_GROUP",	2);
 define("BAB_ADMINISTRATOR_GROUP",	3);
 
+define("BAB_ACL_GROUP_TREE", 1000000000);
+
 
 /* calendars */
 define("BAB_CAL_USER_TYPE", 1);

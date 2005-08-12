@@ -1007,6 +1007,7 @@ switch($idx)
 	case "Articles":
 		$babBody->title = bab_translate("List of articles").": ".bab_getCategoryTitle($item);
 		listArticles($item);
+		warnRestrictionArticle($item);
 		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 		$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=topic&idx=Articles&item=".$item);
 		break;
@@ -1021,7 +1022,6 @@ switch($idx)
         $macl->addtable( BAB_TOPICSMAN_GROUPS_TBL,bab_translate("Who can manage this topic?"));
 		$macl->filter(0,0,1,1,1);
         $macl->babecho();
-		warnRestrictionArticle($item);
 		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=topic&idx=Modify&item=".$item);
 		$babBody->addItemMenu("rights", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=topic&idx=rights&item=".$item);

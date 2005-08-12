@@ -154,3 +154,21 @@
 	cursor:pointer; 
 	cursor:hand;
 }
+
+#bab_groups_tree .sets {
+	padding:0;
+}
+
+#bab_groups_tree .sets ul {
+	margin:0;
+	padding:0;
+}
+
+#bab_groups_tree .sets li {
+	padding-left:1em;
+}
+
+#bab_groups_tree .sets .line {
+	border-width:0;
+	padding:.5em 0;
+}

@@ -28,13 +28,7 @@ include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
 class macl
 	{
 	var $tables = array();
-	var $groupsfilter = array();
-	var $arr_listgroups = array();
-	var $arr_disabled = array();
-	var $arr_everybody = array();
-	var $arr_users = array();
-	var $arr_guests = array();
-	var $arr_groupsfilter = array();
+	var $altbg = true;
 		
 	function macl($target, $index,$id_object, $return)
 		{
@@ -49,14 +43,23 @@ class macl
 		$this->t_expand_checked = bab_translate("Expand to checked boxes");
 		$this->t_group = bab_translate("Group");
 		$this->t_record = bab_translate("Record");
+		$this->t_sets_of_groups = bab_translate("Sets of groups");
 
 		
 
 		$this->db = &$GLOBALS['babDB'];
 
 		$this->tree = & new bab_grptree();
-		$this->df_groups = $this->tree->getGroups(NULL);
+		//$this->df_groups = $this->tree->getGroups(NULL);
 
+		$res = $this->db->db_query("SELECT * FROM ".BAB_GROUPS_TBL."");
+		while ($arr = $this->db->db_fetch_assoc($res))
+			{
+			$this->df_groups[$arr['id']] = 1;
+			}
+
+		$this->resset = $this->db->db_query("SELECT * FROM ".BAB_GROUPS_TBL." WHERE nb_groups>='0'");
+		$this->countsets = $this->db->db_num_rows($this->resset);
 		}
 		
 	function addtable($table,$name = '')
@@ -123,12 +126,21 @@ class macl
 			$this->title = $this->tables[$i]['title'];
 			$this->disabled = true;
 			$this->checked = false;
-			if (isset($this->id_group) && isset($this->tables[$i]['groups'][$this->id_group]))
+			$this->treechecked = false;
+			if (isset($this->id_group))
 				{
-				$this->disabled = false;
-				if (isset($this->tables[$i]['checked'][$this->id_group]))
+				$tree = $this->id_group + BAB_ACL_GROUP_TREE;
+				if ( isset($this->tables[$i]['checked'][$tree]) )
 					{
-					$this->checked = true;
+					$this->treechecked = true;
+					}
+				elseif ( isset($this->tables[$i]['groups'][$this->id_group]) )
+					{
+					$this->disabled = false;
+					if (isset($this->tables[$i]['checked'][$this->id_group]))
+						{
+						$this->checked = true;
+						}
 					}
 				}
 			
@@ -142,11 +154,21 @@ class macl
 			}
 		}
 
+	function getnextset()
+		{
+		if ($this->arr = $this->db->db_fetch_assoc($this->resset))
+			{
+			$this->id_group = $this->arr['id'];
+			$this->altbg = !$this->altbg;
+			return true;
+			}
+		return false;
+		}
+
 	function firstnode()
 		{
 		if (!isset($this->id_group))
 			{
-			
 			$this->arr = $this->tree->getNodeInfo($this->tree->firstnode);
 			$this->id_group = $this->arr['id'];
 			$this->arr['name'] = bab_translate($this->arr['name']);
@@ -225,45 +247,65 @@ function acl_grp_node_html(&$acl, $id_group)
 	
 function maclGroups()
 	{
-		print_r($_POST);
-		die();
 	global $babBody;
-	$db = $GLOBALS['babDB'];
-	$prefix = 'macl_what_';
-	foreach($_POST as $field => $value)
-		{
-		if (substr_count($field,$prefix) == 1)
+	$db = &$GLOBALS['babDB'];
+	$id_object = &$_POST['item'];
+
+
+	if (isset($_POST['group']) && count($_POST['group']) > 0) {
+		foreach($_POST['group'] as $table => $groups)
 			{
-			$table = substr($field,strlen($prefix));
-			$id = $_POST['item'];
-			$what = $_POST['macl_what_'.$table];
-			$groups = isset($_POST['macl_groups_'.$table])?$_POST['macl_groups_'.$table]:array();
-			
-			$req = "delete from ".$table." where id_object = '".$id."'";
-			$res = $db->db_query($req);
-		
-			$arr = array();
-		
-			if( $what == "")
+			$db->db_query("DELETE FROM ".$table." WHERE id_object='".$id_object."' AND id_group NOT IN('".implode("','",$groups)."') AND id_group < '".BAB_ACL_GROUP_TREE."'");
+
+			$groups = array_flip($groups);
+
+			$res = $db->db_query("SELECT id_group FROM ".$table." WHERE id_object='".$id_object."' AND id_group < '".BAB_ACL_GROUP_TREE."'");
+			while ($arr = $db->db_fetch_assoc($res))
 				{
-				$cnt = count($groups);
-				if( $cnt > 0)
-					{
-					for( $i = 0; $i < $cnt; $i++)
-						{
-						$req = "insert into ".$table." (id_object, id_group) values ('". $id. "', '" . $groups[$i]. "')";
-						$res = $db->db_query($req);
-						}
+				if (isset($groups[$arr['id_group']])) {
+					unset($groups[$arr['id_group']]);
 					}
 				}
-			else if( $what != -1)
+
+			foreach ($groups as $id => $value)
 				{
-				if( $what == '0' && $babBody->currentAdmGroup != 0 )
-					$what = $babBody->currentDGGroup['id_group'];
-				$req = "insert into ".$table." (id_object, id_group) values ('". $id. "', '" . $what. "')";
-				$res = $db->db_query($req);
+				$db->db_query("INSERT INTO ".$table."  (id_object, id_group) VALUES ('".$id_object."', '".$id."')");
 				}
 			}
+		}
+	else
+		{
+		foreach($_POST['tablelist'] as $table)
+			$db->db_query("DELETE FROM ".$table." WHERE id_object='".$id_object."' AND id_group < '".BAB_ACL_GROUP_TREE."'");
+		}
+	
+	if (isset($_POST['tree']) && count($_POST['tree']) > 0) {
+		foreach($_POST['tree'] as $table => $groups)
+			{
+			array_walk($groups, create_function('&$v,$k','$v += BAB_ACL_GROUP_TREE;'));
+			
+			$db->db_query("DELETE FROM ".$table." WHERE id_object='".$id_object."' AND id_group NOT IN('".implode("','",$groups)."') AND id_group > '".BAB_ACL_GROUP_TREE."'");
+
+			$groups = array_flip($groups);
+
+			$res = $db->db_query("SELECT id_group FROM ".$table." WHERE id_object='".$id_object."' AND id_group > '".BAB_ACL_GROUP_TREE."'");
+			while ($arr = $db->db_fetch_assoc($res))
+				{
+				if (isset($groups[$arr['id_group']])) {
+					unset($groups[$arr['id_group']]);
+					}
+				}
+
+			foreach ($groups as $id => $value)
+				{
+				$db->db_query("INSERT INTO ".$table."  (id_object, id_group) VALUES ('".$id_object."', '".$id."')");
+				}
+			}
+		}
+	else
+		{
+		foreach($_POST['tablelist'] as $table)
+			$db->db_query("DELETE FROM ".$table." WHERE id_object='".$id_object."' AND id_group > '".BAB_ACL_GROUP_TREE."'");
 		}
 	}
 	

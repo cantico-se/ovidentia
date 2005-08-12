@@ -125,6 +125,7 @@ bab_ul_tree.prototype.expandToItem = function(itemId, focus) {
 }
 
 bab_ul_tree.prototype.expandChecked = function() {
+	this.collapse();
 	var input = this.treeId.getElementsByTagName('input');
 	for (var i =0; i < input.length ; i++ )
 	{
