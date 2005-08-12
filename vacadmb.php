@@ -1069,18 +1069,17 @@ function doExportVacationRequests($dateb, $datee, $idstatus, $wsepar, $separ, $s
 	if( count($idstatus) < 3 || $dateb != "" || $datee != "")
 		{
 
-
-		if( count($idstatus) < 3)
+		if (count($idstatus) < 3)
 			{
-			switch($idstatus)
-				{
-				case 0:
-					$aaareq[] = "e.status=''"; break;
-				case 1:
-					$aaareq[] = "e.status='Y'"; break;
-				case 2:
-					$aaareq[] = "e.status='N'"; break;
-				}
+			$tmp = array();
+			if (in_array(0,$idstatus))
+				$tmp[] = "e.status=''";
+			if (in_array(1,$idstatus))
+				$tmp[] = "e.status='Y'";
+			if (in_array(2,$idstatus))
+				$tmp[] = "e.status='N'";
+
+			$aaareq[] = '('.implode(' OR ', $tmp).')';
 			}
 
 		if( $dateb != "" )
@@ -1172,7 +1171,7 @@ function doExportVacationRequests($dateb, $datee, $idstatus, $wsepar, $separ, $s
 
 		$entry_type = array();
 		$sum = 0;
-		$res2 = $babDB->db_query("select e.quantity,r.id_type from ".BAB_VAC_ENTRIES_ELEM_TBL." e,".BAB_VAC_RIGHTS_TBL." r where id_entry='".$row['id']."' AND r.id=e.id_type");
+		$res2 = $babDB->db_query("select SUM(e.quantity) quantity,r.id_type from ".BAB_VAC_ENTRIES_ELEM_TBL." e,".BAB_VAC_RIGHTS_TBL." r where e.id_entry='".$row['id']."' AND r.id=e.id_type GROUP BY r.id_type");
 		while( $arr = $babDB->db_fetch_array($res2))
 		{
 			$entry_type[$arr['id_type']] = number_format($arr['quantity'], 1, $sepdec, '');
