@@ -742,6 +742,8 @@ function bab_addUserToGroup($iduser, $idgroup, $oc = true)
 		$res = $babDB->db_query("insert into ".BAB_USERS_GROUPS_TBL." (id_group, id_object) VALUES ('" .$idgroup. "', '" . $iduser. "')");
 		$babBody->usergroups[] = $idgroup;
 		}
+
+	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 }
 
 function bab_removeUserFromGroup($iduser, $idgroup)
@@ -764,6 +766,8 @@ function bab_removeUserFromGroup($iduser, $idgroup)
 			$babDB->db_query("delete from ".BAB_OC_ROLES_USERS_TBL." where id='".$row['id']."'");
 			}
 		}
+
+	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 }
 
 

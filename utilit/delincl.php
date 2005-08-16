@@ -438,6 +438,7 @@ function bab_deleteGroup($id)
 
 	$db->db_query("update ".BAB_OC_ENTITIES_TBL." set id_group='0' where id_group='".$id."'");
 	$db->db_query("update ".BAB_DG_GROUPS_TBL." set id_group=NULL where id_group='".$id."'");	
+	$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 
 	// delete group
 	

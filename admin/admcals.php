@@ -593,9 +593,15 @@ function updatePersonalCalendars($calperids)
 {
 	global $babBody;
 
-	$db = $GLOBALS['babDB'];
+	$db = &$GLOBALS['babDB'];
 
-	$db->db_query("update ".BAB_GROUPS_TBL." set pcalendar='N' where  id_dgowner='".$babBody->currentAdmGroup."'"); 
+	$req = "update ".BAB_GROUPS_TBL." set pcalendar='N'";
+	if ($babBody->currentAdmGroup > 0)
+		{
+		$req .= " where id='".$babBody->currentDGGroup['id_group']."'");
+		}
+
+	$db->db_query($req);
 
 	for( $i = 0; $i < count($calperids); $i++)
 	{

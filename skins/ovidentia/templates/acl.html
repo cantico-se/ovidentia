@@ -56,6 +56,15 @@ function macl_switch_view_on(table)
 		}
 
 }
+
+
+function hideNonMultipleTable()
+{
+ if (document.getElementById('bab_groups_acl').getElementsByTagName('li').length <= 1)
+	{
+	document.getElementById('bab_groups_acl').style.display = 'none';
+	}
+}
 </script>
 
 <form method="post" action="{ babPhpSelf }">
@@ -123,7 +132,7 @@ function macl_switch_view_on(table)
 			</div>
 		</li>
 	<!--#endin getnextset -->
-	</ul>
+	</ul><br />
 	</div>
 	<!--#endif countsets -->
 </div>
@@ -139,6 +148,7 @@ var tree = new bab_ul_tree('bab_groups_tree');
 tree.processList();
 tree.expandChecked();
 macl_switch_view_on();
+hideNonMultipleTable();
 </script>
 <!--#end grp_maintree -->
 
@@ -149,9 +159,7 @@ macl_switch_view_on();
 			<div>
 			<img src="{ babSkinPath }images/Puces/folder_group.gif" alt="{ t_group }" />
 			<!--#in getnexttable -->
-			<!--#if id_group "> 2" -->
-			<input type="checkbox" name="tree[{ table }][]" value="{ arr[id] }" <!--#if treechecked --> checked="checked" <!--#endif treechecked --> />
-			<!--#endif id_group -->
+			<!--#if id_group "> 2" --><input type="checkbox" name="tree[{ table }][]" value="{ arr[id] }" <!--#if treechecked --> checked="checked" <!--#endif treechecked --> /><!--#endif id_group -->
 			<!--#endin getnexttable -->
 			
 			{ arr[name] }

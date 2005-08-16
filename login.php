@@ -537,6 +537,7 @@ function userLogin($nickname,$password)
 	$iduser = 0;
 	$logok = true;
 
+	$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 	$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET cnx_try=cnx_try+1 WHERE sessid='".session_id()."'");
 	list($cnx_try) = $db->db_fetch_array($db->db_query("SELECT cnx_try FROM ".BAB_USERS_LOG_TBL." WHERE sessid='".session_id()."'"));
 	if( $cnx_try > 5)

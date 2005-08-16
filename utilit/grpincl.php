@@ -171,6 +171,7 @@ function bab_addGroup($name, $description, $managerid, $grpdg, $parent = 1)
 		}
 	else
 		{
+		$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 		include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
 
 		$tree = & new bab_grptree();

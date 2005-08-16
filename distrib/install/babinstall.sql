@@ -191,6 +191,7 @@ CREATE TABLE bab_forumsview_groups (
 # Structure de la table 'bab_groups'
 #
 
+
 CREATE TABLE `bab_groups` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `name` varchar(255) NOT NULL default '',
@@ -210,7 +211,6 @@ CREATE TABLE `bab_groups` (
   `nb_groups` int(10) unsigned default NULL,
   PRIMARY KEY  (`id`),
   KEY `manager` (`manager`),
-  KEY `nb_set` (`nb_set`,`nb_groups`),
   KEY `id_parent` (`id_parent`,`lf`,`lr`)
 );
 
@@ -566,18 +566,19 @@ INSERT INTO bab_users_groups VALUES ( '1', '1', '3', 'N');
 # Structure de la table 'bab_users_log'
 #
 
-CREATE TABLE bab_users_log (
-   id int(11) unsigned NOT NULL auto_increment,
-   id_user int(11) unsigned DEFAULT '0' NOT NULL,
-   dateact timestamp(14) NOT NULL,
-   sessid tinytext NOT NULL,
-   remote_addr varchar(255) NOT NULL default '',
-   forwarded_for varchar(255) NOT NULL default '',
-   id_dggroup int(11) unsigned NOT NULL default '0',
-   cnx_try int(2) unsigned NOT NULL default '0',
-   cpw varchar(255) NOT NULL default '',
-   PRIMARY KEY (id),
-   KEY id_user (id_user)
+CREATE TABLE `bab_users_log` (
+  `id` int(11) unsigned NOT NULL auto_increment,
+  `id_user` int(11) unsigned NOT NULL default '0',
+  `dateact` timestamp(14) NOT NULL,
+  `sessid` tinytext NOT NULL,
+  `remote_addr` varchar(255) NOT NULL default '',
+  `forwarded_for` varchar(255) NOT NULL default '',
+  `id_dg` int(11) unsigned NOT NULL default '0',
+  `grp_change` tinyint(1) unsigned default NULL,
+  `cnx_try` int(2) unsigned NOT NULL default '0',
+  `cpw` varchar(255) NOT NULL default '',
+  PRIMARY KEY  (`id`),
+  KEY `id_user` (`id_user`)
 );
 
 # --------------------------------------------------------

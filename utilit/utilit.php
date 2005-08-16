@@ -1227,6 +1227,7 @@ var $currentAdmGroup; /* current group administrated by current user */
 var $currentDGGroup; /* contains database row of current delegation groups */
 var $dgAdmGroups; /* all groups administrated by current user */
 var $ovgroups; /* all ovidentia groups */
+var $groupPathName; /* see function getGroupPathName */
 var $babsite;
 var $ocids; /* orgnization chart ids */
 var $ampm; /* true: use am/pm */
@@ -1267,14 +1268,64 @@ function babBody()
 	$this->substitutes[0] = array(); /* nominatif */
 	$this->substitutes[1] = array(); /* fonctionnel */
 
-	$res = $babDB->db_query("select * from ".BAB_GROUPS_TBL."");
-	while( $arr = $babDB->db_fetch_array($res))
-	{
-		$arr['member'] = 'N';
-		$arr['primary'] = 'N';
-		$this->ovgroups[$arr['id']] = $arr;
-	}
 
+	if (!isset($GLOBALS['REMOTE_ADDR'])) $GLOBALS['REMOTE_ADDR'] = '0.0.0.0';
+	if (!isset($GLOBALS['HTTP_X_FORWARDED_FOR'])) $GLOBALS['HTTP_X_FORWARDED_FOR'] = '0.0.0.0';
+
+
+	$res = $babDB->db_query("select remote_addr, grp_change from ".BAB_USERS_LOG_TBL." where sessid='".session_id()."'");
+	if( $res && $babDB->db_num_rows($res) > 0 )
+		{
+		$arr = $babDB->db_fetch_array($res);
+		if ($arr['remote_addr'] != $GLOBALS['REMOTE_ADDR'])
+			{
+			die(bab_translate("Access denied, invalid session"));
+			}
+
+		if (1 == $arr['grp_change'] && isset($_SESSION['bab_groupAccess']))
+			{
+			unset($_SESSION['bab_groupAccess']);
+			}
+		}
+
+	
+
+	if (isset($_SESSION['bab_groupAccess']))
+		{
+		$this->ovgroups = &$_SESSION['bab_groupAccess']['ovgroups'];
+		$this->usergroups = &$_SESSION['bab_groupAccess']['usergroups'];
+		}
+	else
+		{
+		$res = $babDB->db_query("select * from ".BAB_GROUPS_TBL."");
+		while( $arr = $babDB->db_fetch_array($res))
+			{
+			$arr['member'] = 'N';
+			$arr['primary'] = 'N';
+			$this->ovgroups[$arr['id']] = $arr;
+			}
+
+		$_SESSION['bab_groupAccess']['ovgroups'] = &$this->ovgroups;
+		$_SESSION['bab_groupAccess']['usergroups'] = &$this->usergroups;
+		}
+}
+
+function getGroupPathName($id_group)
+{
+	if (isset($this->groupPathName[$id_group]))
+		return $this->groupPathName[$id_group];
+	
+	include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
+
+	$tree = new bab_grptree();
+	$groups = $tree->getGroups(BAB_REGISTERED_GROUP);
+	$arr = array();
+	foreach ($groups as $row)
+		{
+		$this->groupPathName[$row['id']] = $row['name'];
+		}
+
+	return isset($this->groupPathName[$id_group]) ? $this->groupPathName[$id_group] : '';
 }
 
 function resetContent()
@@ -1803,33 +1854,101 @@ function printout()
 }
 
 
+
+function bab_isMemberOfTree($id_group, $id_user = '')
+{
+	global $babBody;
+
+	$lf = &$babBody->ovgroups[$id_group]['lf'];
+	$lr = &$babBody->ovgroups[$id_group]['lr'];
+
+	if (!empty($id_user))
+		{
+		if ($id_group == 0 || $id_group == 1)
+			return true;
+
+		$db = &$GLOBALS['babDB'];
+		$res = $db->db_query("SELECT COUNT(g.*) FROM ".BAB_GROUPS_TBL." g, ".BAB_USERS_GROUPS_TBL." u WHERE u.id_group=g.id AND u.id_object='".$id_user."' AND g.lf >= '".$babBody->ovgroups[$id_group]['lf']."' AND g.lr <= '".$babBody->ovgroups[$id_group]['lr']."'");
+		list($n) = $db->db_fetch_array($res);
+		return $n > 0 ? true : false;
+		}
+	
+	foreach($babBody->usergroups as $idg)
+	{
+	if ($babBody->ovgroups[$idg]['lf'] >= $lf && $babBody->ovgroups[$idg]['lr'] <= $lr)
+		{
+		return true;
+		}
+	}
+	return false;
+}
+
+
+
+function bab_getUserIdObjects($table)
+{
+global $babBody;
+if( !isset($_SESSION['bab_groupAccess']['acltables'][$table]))
+	{
+	$_SESSION['bab_groupAccess']['acltables'][$table] = array();
+	
+	$db = &$GLOBALS['babDB'];
+	$res = &$db->db_query("select id_object, id_group from ".$table." WHERE id_group IN('".implode("','",$babBody->usergroups)."') OR id_group>='".BAB_ACL_GROUP_TREE."'");
+	
+	while( $row = $db->db_fetch_assoc($res))
+		{
+		if ($row['id_group'] >= BAB_ACL_GROUP_TREE )
+			{
+			$row['id_group'] -= BAB_ACL_GROUP_TREE;
+			if (bab_isMemberOfTree($row['id_group']))
+				$_SESSION['bab_groupAccess']['acltables'][$table][$row['id_object']] = 1;
+			}
+		else
+			$_SESSION['bab_groupAccess']['acltables'][$table][$row['id_object']] = 1;
+		}
+	}
+
+	return $_SESSION['bab_groupAccess']['acltables'][$table];
+}
+
+
 function bab_updateUserSettings()
 {
 	global $babDB, $babBody,$BAB_SESS_USERID;
 
-	if (!isset($GLOBALS['REMOTE_ADDR'])) $GLOBALS['REMOTE_ADDR'] = '0.0.0.0';
-	if (!isset($GLOBALS['HTTP_X_FORWARDED_FOR'])) $GLOBALS['HTTP_X_FORWARDED_FOR'] = '0.0.0.0';
-
-
-	$res = $babDB->db_query("select id from ".BAB_USERS_LOG_TBL." where sessid='".session_id()."' and remote_addr!='".$GLOBALS['REMOTE_ADDR']."'");
-	if( $res && $babDB->db_num_rows($res) > 0 )
+	
+	if( 0 == count($babBody->usergroups) )
 		{
-		die(bab_translate("Access denied"));
-		}
+		$babBody->ovgroups[BAB_ALLUSERS_GROUP]['member'] = 'Y';
+		$babBody->usergroups[] = BAB_ALLUSERS_GROUP;
 
-	if( !empty($BAB_SESS_USERID))
-		{		
-		$res=$babDB->db_query("select id_group, isprimary from ".BAB_USERS_GROUPS_TBL." where id_object='".$BAB_SESS_USERID."'");
-		$babBody->ovgroups[1]['member'] = 'Y'; /* registered user */
-		while( $arr = $babDB->db_fetch_array($res))
+		if( !empty($BAB_SESS_USERID))
+			{		
+			$res=$babDB->db_query("select id_group, isprimary from ".BAB_USERS_GROUPS_TBL." where id_object='".$BAB_SESS_USERID."'");
+			$babBody->ovgroups[BAB_REGISTERED_GROUP]['member'] = 'Y';
+			$babBody->usergroups[] = BAB_REGISTERED_GROUP;
+			while( $arr = $babDB->db_fetch_array($res))
+				{
+				$babBody->usergroups[] = $arr['id_group'];
+				$babBody->ovgroups[$arr['id_group']]['member'] = 'Y';
+				$babBody->ovgroups[$arr['id_group']]['primary'] = $arr['isprimary'];
+				}
+
+			$res=$babDB->db_query("select id_group, id_set from ".BAB_GROUPS_SET_ASSOC_TBL." where id_group IN('".implode("','",$babBody->usergroups)."')");
+			while( $arr = $babDB->db_fetch_array($res))
+				{
+				$babBody->usergroups[] = $arr['id_set'];
+				$babBody->ovgroups[$arr['id_set']]['member'] = 'Y';
+				}
+			}
+		else
 			{
-			$babBody->usergroups[] = $arr['id_group'];
-			$babBody->ovgroups[$arr['id_group']]['member'] = 'Y';
-			$babBody->ovgroups[$arr['id_group']]['primary'] = $arr['isprimary'];
+			$babBody->ovgroups[BAB_UNREGISTERED_GROUP]['member'] = 'Y';
+			$babBody->usergroups[] = BAB_UNREGISTERED_GROUP;
 			}
 		}
 
-	//bab_getCalendarIds();
+
 	$babBody->icalendars =& new bab_icalendars();
 
 	$res = $babDB->db_query("select * from ".BAB_ADDONS_TBL." where enabled='Y' AND installed='Y'");
@@ -1847,43 +1966,16 @@ function bab_updateUserSettings()
 		$babBody->babaddons[$arr['id']] = $arr;
 		}
 
-	if( !empty($BAB_SESS_USERID))
-		{
-		$sqlgrp = implode(',', array_merge($babBody->usergroups, array(0,1)));
-		}
-	else
-		{
-		$sqlgrp = "0,2";
-		}
 
-	$res = $babDB->db_query("select distinct * from ".BAB_TOPICSMAN_GROUPS_TBL." where id_group in(".$sqlgrp.")");
+	$babBody->topman = bab_getUserIdObjects(BAB_TOPICSMAN_GROUPS_TBL);
+	$babBody->topsub = bab_getUserIdObjects(BAB_TOPICSSUB_GROUPS_TBL);
+	$babBody->topcom = bab_getUserIdObjects(BAB_TOPICSCOM_GROUPS_TBL);
+	$babBody->topmod = bab_getUserIdObjects(BAB_TOPICSMOD_GROUPS_TBL);
+	$babBody->topview = bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL);
+
+	$res = $babDB->db_query("select id_cat from ".BAB_TOPICS_TBL." where id in('".implode("','",array_keys($babBody->topview))."')");
 	while( $row = $babDB->db_fetch_array($res))
 		{
-		$babBody->topman[$row['id_object']] = 1;
-		}
-
-	$res = $babDB->db_query("select distinct * from ".BAB_TOPICSSUB_GROUPS_TBL." where id_group in(".$sqlgrp.")");
-	while( $row = $babDB->db_fetch_array($res))
-		{
-		$babBody->topsub[$row['id_object']] = 1;
-		}
-
-	$res = $babDB->db_query("select distinct * from ".BAB_TOPICSCOM_GROUPS_TBL." where id_group in(".$sqlgrp.")");
-	while( $row = $babDB->db_fetch_array($res))
-		{
-		$babBody->topcom[$row['id_object']] = 1;
-		}
-
-	$res = $babDB->db_query("select distinct * from ".BAB_TOPICSMOD_GROUPS_TBL." where id_group in(".$sqlgrp.")");
-	while( $row = $babDB->db_fetch_array($res))
-		{
-		$babBody->topmod[$row['id_object']] = 1;
-		}
-
-	$res = $babDB->db_query("select distinct *, tt.id_cat as id_cat from ".BAB_TOPICSVIEW_GROUPS_TBL." tgp left join ".BAB_TOPICS_TBL." tt on tt.id=tgp.id_object where tgp.id_group in(".$sqlgrp.")");
-	while( $row = $babDB->db_fetch_array($res))
-		{
-		$babBody->topview[$row['id_object']] = 1;
 		if( !isset($babBody->topcatview[$row['id_cat']]))
 			{
 			$babBody->topcatview[$row['id_cat']] = 1;
@@ -2006,7 +2098,7 @@ function bab_updateUserSettings()
 			else
 				$babBody->newfiles = 0;
 
-			if( $babBody->ovgroups[3]['member'] == 'Y')
+			if( $babBody->ovgroups[BAB_ADMINISTRATOR_GROUP]['member'] == 'Y')
 				$babBody->isSuperAdmin = true;
 
 			$res = $babDB->db_query("SELECT dg.id FROM ".BAB_DG_ADMIN_TBL." da,".BAB_DG_GROUPS_TBL." dg where da.id_user='".$BAB_SESS_USERID."' AND da.id_dg=dg.id AND dg.id_group >= '0'");
@@ -2100,7 +2192,7 @@ function bab_updateUserSettings()
 			}
 
 
-		$babDB->db_query("update ".BAB_USERS_LOG_TBL." set dateact=now(), remote_addr='".$GLOBALS['REMOTE_ADDR']."', forwarded_for='".$GLOBALS['HTTP_X_FORWARDED_FOR']."', id_dg='".$babBody->currentDGGroup['id']."' where id = '".$arr['id']."'");
+		$babDB->db_query("update ".BAB_USERS_LOG_TBL." set dateact=now(), remote_addr='".$GLOBALS['REMOTE_ADDR']."', forwarded_for='".$GLOBALS['HTTP_X_FORWARDED_FOR']."', id_dg='".$babBody->currentDGGroup['id']."', grp_change=NULL  where id = '".$arr['id']."'");
 		}
 	else
 		{
@@ -2118,7 +2210,7 @@ function bab_updateUserSettings()
 			$userid = 0;
 			}
 
-		$babDB->db_query("insert into ".BAB_USERS_LOG_TBL." (id_user, sessid, dateact, remote_addr, forwarded_for, id_dg) values ('".$userid."', '".session_id()."', now(), '".$GLOBALS['REMOTE_ADDR']."', '".$GLOBALS['HTTP_X_FORWARDED_FOR']."', '".$babBody->currentDGGroup['id']."')");
+		$babDB->db_query("insert into ".BAB_USERS_LOG_TBL." (id_user, sessid, dateact, remote_addr, forwarded_for, id_dg, grp_change) values ('".$userid."', '".session_id()."', now(), '".$GLOBALS['REMOTE_ADDR']."', '".$GLOBALS['HTTP_X_FORWARDED_FOR']."', '".$babBody->currentDGGroup['id']."', NULL)");
 		}
 
 	$res = $babDB->db_query("select id, UNIX_TIMESTAMP(dateact) as time from ".BAB_USERS_LOG_TBL);

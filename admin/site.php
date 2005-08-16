@@ -838,8 +838,12 @@ function siteRegistration($id)
 			$this->altbg = true;
 			$this->urleditdp = $GLOBALS['babUrlScript']."?tg=site&idx=editdp&item=".$id;
 
-			$this->grpres = $this->db->db_query("select id, name from ".BAB_GROUPS_TBL." where id > '3'");
-			$this->grpcount = $this->db->db_num_rows($this->grpres);
+			
+			include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
+
+			$tree = new bab_grptree();
+			$this->groups = $tree->getGroups(BAB_REGISTERED_GROUP, '%s &nbsp; &nbsp; &nbsp; ');
+			unset($this->groups[BAB_ADMINISTRATOR_GROUP]);
 
 			$this->arrsite = $this->db->db_fetch_array($this->db->db_query("select email_confirm, display_disclaimer, idgroup from ".BAB_SITES_TBL." where id='".$id."'"));
 			if( $this->arrsite['display_disclaimer'] == "Y")
@@ -918,10 +922,9 @@ function siteRegistration($id)
 
 		function getnextgrp()
 			{
-			static $i = 0;
-			if( $i < $this->grpcount)
+
+			if( list(,$arr) = each($this->groups) )
 				{
-				$arr = $this->db->db_fetch_array($this->grpres);
                 $this->grpname = $arr['name'];
                 $this->grpid = $arr['id'];
 				if( $this->arrsite['idgroup'] == $this->grpid )
@@ -932,7 +935,6 @@ function siteRegistration($id)
 					{
 					$this->grpsel = "";
 					}
-				$i++;
 				return true;
 				}
 			else

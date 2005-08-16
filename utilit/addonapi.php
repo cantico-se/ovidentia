@@ -456,7 +456,7 @@ function bab_getUserSetting($id, $what)
 function bab_getGroupName($id)
 	{
 	global $babBody;
-	return isset($babBody->ovgroups[$id]) ? $babBody->ovgroups[$id]['name'] : '';
+	return $babBody->getGroupPathName($id);
 	}
 
 function bab_getPrimaryGroupId($userid)
@@ -486,16 +486,32 @@ function bab_getGroupsMembers($ids)
 
 	if( is_array($ids) && count($ids) > 0 )
 		{
-		if( in_array(1, $ids))
+		$db = &$GLOBALS['babDB'];
+
+		if( in_array(BAB_REGISTERED_GROUP, $ids))
 			{
 			$req = "SELECT id, email, firstname, lastname FROM ".BAB_USERS_TBL." where disabled='0' and is_confirmed='1'";
 			}
 		else
 			{
+			global $babBody;
+
+			foreach($ids as $idg)
+				{
+				if ($babBody->ovgroups[$idg]['nb_groups'] > 0)
+					{
+					$res = $db->db_query("SELECT id_group FROM ".BAB_GROUPS_SET_ASSOC_TBL." WHERE id_set='".$idg."'");
+					while ($arr = $db->db_fetc_assoc($res))
+						{
+						$ids[] = $arr['id_group'];
+						}
+					}
+				}
+
 			$req = "SELECT distinct u.id, u.email, u.firstname, u.lastname FROM ".BAB_USERS_GROUPS_TBL." g, ".BAB_USERS_TBL." u WHERE u.disabled='0' and u.is_confirmed='1' and g.id_group IN (".implode(',', $ids).") AND g.id_object=u.id";
 			}
 
-		$db = $GLOBALS['babDB'];
+		
 		$res = $db->db_query($req);
 		$users = array();
 		if( $res && $db->db_num_rows($res) > 0)
@@ -522,7 +538,7 @@ function bab_isMemberOfGroup($groupname, $userid="")
 		{
 		if( $userid == "")
 			$userid = $BAB_SESS_USERID;
-		$db = $GLOBALS['babDB'];
+		$db = &$GLOBALS['babDB'];
 		$req = "select id from ".BAB_GROUPS_TBL." where name='$groupname'";
 		$res = $db->db_query($req);
 		if( $res && $db->db_num_rows($res) > 0)
@@ -582,21 +598,24 @@ function bab_getUserGroups($id = "")
 		{
 		for( $i = 0; $i < count($babBody->usergroups); $i++ )
 			{
-			$arr['id'][] = $babBody->usergroups[$i];
-			$arr['name'][] = $babBody->ovgroups[$babBody->usergroups[$i]]['name'];
+			if( $babBody->usergroups[$i] != BAB_REGISTERED_GROUP && $babBody->usergroups[$i] != BAB_UNREGISTERED_GROUP && $babBody->usergroups[$i] != BAB_ALLUSERS_GROUP)
+				{
+				$arr['id'][] = $babBody->usergroups[$i];
+				$arr['name'][] = $babBody->getGroupPathName($babBody->usergroups[$i]);
+				}
 			}
 		return $arr;
 		}
 	if( !empty($id))
 		{
-		$db = $GLOBALS['babDB'];
-		$res = $db->db_query("select ".BAB_GROUPS_TBL.".id, ".BAB_GROUPS_TBL.".name from ".BAB_USERS_GROUPS_TBL." join ".BAB_GROUPS_TBL." where id_object=".$id." and ".BAB_GROUPS_TBL.".id=".BAB_USERS_GROUPS_TBL.".id_group");
+		$db = &$GLOBALS['babDB'];
+		$res = $db->db_query("select id_group from ".BAB_USERS_GROUPS_TBL." where id_object=".$id."");
 		if( $res && $db->db_num_rows($res) > 0 )
 			{
 			while( $r = $db->db_fetch_array($res))
 				{
-				$arr['id'][] = $r['id'];
-				$arr['name'][] = $r['name'];
+				$arr['id'][] = $r['id_group'];
+				$arr['name'][] = $babBody->getGroupPathName($r['id_group']);
 				}
 			}
 		}
@@ -605,17 +624,17 @@ function bab_getUserGroups($id = "")
 
 function bab_getGroups()
 	{
-	global $babBody;
+	include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
+
+	$tree = new bab_grptree();
+	$groups = $tree->getGroups(BAB_REGISTERED_GROUP);
 	$arr = array();
-	reset($babBody->ovgroups);
-	while( $row=each($babBody->ovgroups) ) 
-		{ 
-		if( $row[1]['id'] != 1 && $row[1]['id'] != 2)
-			{
-			$arr['id'][] = $row[1]['id'];
-			$arr['name'][] = $row[1]['name'];
-			}
+	foreach ($groups as $row)
+		{
+		$arr['id'][] = $row['id'];
+		$arr['name'][] = $row['name'];
 		}
+
 	return $arr;
 	}
 
@@ -655,73 +674,48 @@ function bab_userIsloggedin()
 
 function bab_isAccessValidByUser($table, $idobject, $iduser)
 {
-	global $babBody;
-	$add = false;
-	$db = $GLOBALS['babDB'];
-	$res = $db->db_query("select id_group from ".$table." where id_object='".$idobject."'");
+	$db = &$GLOBALS['babDB'];
+
+	$res = $db->db_query("select 
+							t.id_group 
+						FROM 
+								".$table." t, 
+								".BAB_USERS_GROUPS_TBL." u  
+						WHERE 
+								t.id_object='".$idobject."' 
+								AND (
+								(u.id_object='".$iduser."' AND u.id_group = t.id_group) 
+								OR 
+								t.id_group >= '".BAB_ACL_GROUP_TREE."')
+							");
+
 	if( $res && $db->db_num_rows($res) > 0)
 		{
-		$row = $db->db_fetch_array($res);
-		switch($row['id_group'])
+		$row = $db->db_fetch_assoc($res);
+		if ($row['id_group'] >= BAB_ACL_GROUP_TREE)
 			{
-			case "0": // everybody
-				$add = true;
-				break;
-			case "1": // users
-					$res = $db->db_query("select id from ".BAB_USERS_TBL." where id='".$iduser."' and disabled!='1'");
-					if( $res && $db->db_num_rows($res) > 0 )
-						{
-						$add = true;
-						}
-				break;
-			case "2": // guests
-				if( $iduser == 0 )
-					{
-					$add = true;
-					}
-				break;
-			default:  //groups
-				if( $iduser != 0 )
-					{
-					$res = $db->db_query("select ".BAB_USERS_GROUPS_TBL.".id from ".BAB_USERS_GROUPS_TBL." join ".$table." where ".$table.".id_object=".$idobject." and ".$table.".id_group=".BAB_USERS_GROUPS_TBL.".id_group and ".BAB_USERS_GROUPS_TBL.".id_object = '".$iduser."'");
-					if( $res && $db->db_num_rows($res) > 0 )
-						{
-						$add = true;
-						}
-					}
-				break;
+			return bab_isMemberOfTree($row['id_group'], $iduser);
 			}
+		return true;
 		}
-	return $add;
+	return false;
 }
 
 function bab_isAccessValid($table, $idobject, $iduser='')
 {
-	global $babBody, $BAB_SESS_USERID, $BAB_SESS_LOGGED;
-
 	if( $iduser != '')
 		{
 		return bab_isAccessValidByUser($table, $idobject, $iduser);
 		}
 
-	if( !isset($babBody->acltables[$table]))
+	if( !isset($_SESSION['bab_groupAccess']['acltables'][$table]))
 		{
-		$babBody->acltables[$table] = array();
-		$arrgrp = $babBody->usergroups;
-		$arrgrp[] = 0;	
-		$arrgrp[] = $BAB_SESS_LOGGED ? BAB_REGISTERED_GROUP : BAB_UNREGISTERED_GROUP;
-
-		$db = &$GLOBALS['babDB'];
-		$res = &$db->db_query("select id_object from ".$table." WHERE id_group IN(".implode(',',$arrgrp).")");
-		
-		while( $row = $db->db_fetch_assoc($res))
-			{
-			$babBody->acltables[$table][$row['id_object']] = 1;
-			}
+		bab_getUserIdObjects($table);
 		}
 
-	return isset($babBody->acltables[$table][$idobject]);
+	return isset($_SESSION['bab_groupAccess']['acltables'][$table][$idobject]);
 }
+
 
 function bab_getGroupsAccess($table, $idobject)
 {
@@ -732,21 +726,20 @@ function bab_getGroupsAccess($table, $idobject)
 	$res = $db->db_query("select id_group from ".$table." where id_object='".$idobject."'");
 	while( $row = $db->db_fetch_array($res))
 		{
-		switch($row['id_group'])
+		if ($row['id_group'] >= BAB_ACL_GROUP_TREE)
 			{
-			case "0": // everybody
-				$ret[] = BAB_REGISTERED_GROUP;
-				$ret[] = BAB_UNREGISTERED_GROUP;
-				break;
-			case "1": // users
-				$ret[] = BAB_REGISTERED_GROUP;
-				break;
-			case "2": // guests
-				$ret[] = BAB_UNREGISTERED_GROUP;
-				break;
-			default:  //groups
-				$ret[] = $row['id_group'];
-				break;
+			$row['id_group'] -= BAB_ACL_GROUP_TREE;
+			foreach($babBody->ovgroups as $arr)
+				{
+				if ($arr['lf'] >= $babBody->ovgroups[$row['id_group']]['lf'] && $arr['lr'] <= $babBody->ovgroups[$row['id_group']]['lr'])
+					{
+					$ret[] = $arr['id'];
+					}
+				}
+			}
+		else
+			{
+			$ret[] = $row['id_group'];
 			}
 		}
 	return $ret;

@@ -50,7 +50,6 @@ class macl
 		$this->db = &$GLOBALS['babDB'];
 
 		$this->tree = & new bab_grptree();
-		//$this->df_groups = $this->tree->getGroups(NULL);
 
 		$res = $this->db->db_query("SELECT * FROM ".BAB_GROUPS_TBL."");
 		while ($arr = $this->db->db_fetch_assoc($res))
@@ -251,6 +250,8 @@ function maclGroups()
 	$db = &$GLOBALS['babDB'];
 	$id_object = &$_POST['item'];
 
+	$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
+
 
 	if (isset($_POST['group']) && count($_POST['group']) > 0) {
 		foreach($_POST['group'] as $table => $groups)
@@ -314,7 +315,7 @@ function aclGroups($target, $index, $table, $id, $return)
 	global $babBody;
 	$macl = new macl($target, $index, $id, $return);
 	$macl->addtable($table);
-	$babBody->babecho(	bab_printTemplate($macl, "acl.html", "maclgroups"));
+	$macl->babecho();
 	}
 
 function aclUpdate($table, $id, $groups, $what)

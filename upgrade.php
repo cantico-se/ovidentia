@@ -4931,6 +4931,8 @@ if ($arr[0] != 'id_group')
 	$res = $db->db_query("SELECT id, id_dggroup, name FROM ".BAB_GROUPS_TBL." WHERE id_dggroup>'0'");
 	while ($arr = $db->db_fetch_array($res))
 		{
+		$level3[$arr['id']] = $arr['name'];
+
 		$current = $db->db_fetch_array($db->db_query("SELECT id_group FROM ".BAB_DG_GROUPS_TBL." WHERE id='".$arr['id_dggroup']."'"));
 		if ($current['id_group'] == 0)
 			{
@@ -4973,9 +4975,44 @@ if ($arr[0] != 'id_group')
 			}
 		}
 
+	
+	
+
 	$db->db_query("ALTER TABLE `".BAB_GROUPS_TBL."` DROP `id_dggroup`");
 	$db->db_query("ALTER TABLE `".BAB_GROUPS_TBL."` DROP `id_dgowner`");
+	$db->db_query("ALTER TABLE `".BAB_GROUPS_TBL."` ADD `id_parent` int(10) unsigned default NULL");
+	$db->db_query("ALTER TABLE `".BAB_GROUPS_TBL."` ADD `lf` int(10) unsigned NOT NULL default '0'");
+	$db->db_query("ALTER TABLE `".BAB_GROUPS_TBL."` ADD `lr` int(10) unsigned NOT NULL default '0'");
+	$db->db_query("ALTER TABLE `".BAB_GROUPS_TBL."` ADD `nb_set` int(10) unsigned default NULL");
+	$db->db_query("ALTER TABLE `".BAB_GROUPS_TBL."` ADD `nb_groups` int(10) unsigned default NULL");
+
+	$db->db_query("ALTER TABLE `".BAB_GROUPS_TBL."` CHANGE `mail` `mail` enum('N','Y') default NULL");
+	$db->db_query("ALTER TABLE `".BAB_GROUPS_TBL."` CHANGE `ustorage` `ustorage` enum('N','Y') default NULL");
+	$db->db_query("ALTER TABLE `".BAB_GROUPS_TBL."` CHANGE `notes` `notes` enum('Y','N') default NULL");
+	$db->db_query("ALTER TABLE `".BAB_GROUPS_TBL."` CHANGE `contacts` `contacts` enum('Y','N') default NULL");
+	$db->db_query("ALTER TABLE `".BAB_GROUPS_TBL."` CHANGE `directory` `directory` enum('N','Y') default NULL");
+	$db->db_query("ALTER TABLE `".BAB_GROUPS_TBL."` CHANGE `pcalendar` `pcalendar` enum('Y','N') default NULL");
+
+	$db->db_query("ALTER TABLE `".BAB_GROUPS_TBL."` ADD INDEX ( `id_parent` )");
+	$db->db_query("ALTER TABLE `".BAB_GROUPS_TBL."` ADD INDEX ( `lf` )");
+	$db->db_query("ALTER TABLE `".BAB_GROUPS_TBL."` ADD INDEX ( `lr` )");
+
+
+	natcasesort($level3);
+	$n = 3;
+	foreach($level3 as $id_group => $name)
+		{
+		$db->db_query("UPDATE `".BAB_GROUPS_TBL."` SET id_parent='".BAB_REGISTERED_GROUP."', lf='".$n."', lr='".($n+1)."', nb_set='0' WHERE id='".$id_group."'");
+		$n = 2 + $n;
+		}
+
+	$db->db_query("UPDATE `".BAB_GROUPS_TBL."` SET id_parent='".BAB_ALLUSERS_GROUP."', lf='2', lr='".$n."', nb_set='0' WHERE id='".BAB_REGISTERED_GROUP."'");
+	$db->db_query("UPDATE `".BAB_GROUPS_TBL."` SET id_parent='".BAB_ALLUSERS_GROUP."', lf='".($n+1)."', lr='".($n+2)."', nb_set='0' WHERE id='".BAB_UNREGISTERED_GROUP."'");
+	$db->db_query("INSERT INTO `".BAB_GROUPS_TBL."` (id, name, id_parent, lf, lr, nb_set) VALUES ('0', 'Ovidentia users',NULL,'1','".($n+3)."', '0')");
+
+
 	$db->db_query("ALTER TABLE `".BAB_USERS_LOG_TBL."` CHANGE `id_dggroup` `id_dg` INT( 11 ) UNSIGNED DEFAULT '0' NOT NULL");
+	$db->db_query("ALTER TABLE `".BAB_USERS_LOG_TBL."` ADD `grp_change` tinyint(1) unsigned default NULL");
 	}
 
 
