@@ -3823,7 +3823,6 @@ class bab_CalendarResourceEvents extends bab_handler
 			$req .= " and cet.id_cat IN (".$categoryid.")";
 			}
 		$req .= " order by start_date asc";
-		echo $req;
 		$this->res = $babDB->db_query($req);
 		$this->count = $babDB->db_num_rows($this->res);
 		}
