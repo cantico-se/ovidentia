@@ -193,7 +193,7 @@ CREATE TABLE bab_forumsview_groups (
 
 
 CREATE TABLE `bab_groups` (
-  `id` int(11) unsigned NOT NULL auto_increment,
+  `id` int(11) unsigned NOT NULL default '0',
   `name` varchar(255) NOT NULL default '',
   `description` varchar(255) NOT NULL default '',
   `mail` enum('N','Y') default NULL,

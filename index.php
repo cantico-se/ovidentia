@@ -115,6 +115,9 @@ $babUrlScript = $babUrl.$babPhpSelf;
 $babAddonsPath = $GLOBALS['babInstallPath']."addons/";
 $babSiteName = substr($babSiteName, 0, 30);
 
+if( !isset($tg))
+	$tg = '';
+
 include_once "base.php";
 include_once $babInstallPath."utilit/defines.php";
 include_once $babInstallPath."utilit/dbutil.php";
@@ -124,9 +127,6 @@ $babWebStat =& new bab_WebStatEvent();
 
 include $babInstallPath."utilit/utilit.php";
 unset($BAB_SESS_LOGGED);
-
-if( !isset($tg))
-	$tg = '';
 
 if( $tg != "version" || $idx != "upgrade")
 	{

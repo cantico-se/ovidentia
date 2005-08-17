@@ -4928,50 +4928,56 @@ if ($arr[0] != 'id_group')
 		INDEX ( `id_user` )
 		)");
 
-	$res = $db->db_query("SELECT id, id_dggroup, name FROM ".BAB_GROUPS_TBL." WHERE id_dggroup>'0'");
+	$level3 = array();
+
+	$res = $db->db_query("SELECT id, id_dggroup, name FROM ".BAB_GROUPS_TBL."");
 	while ($arr = $db->db_fetch_array($res))
 		{
-		$level3[$arr['id']] = $arr['name'];
+		if ($arr['id'] > 2)
+			$level3[$arr['id']] = $arr['name'];
 
-		$current = $db->db_fetch_array($db->db_query("SELECT id_group FROM ".BAB_DG_GROUPS_TBL." WHERE id='".$arr['id_dggroup']."'"));
-		if ($current['id_group'] == 0)
+		if ($arr['id_dggroup'] > 0)
 			{
-			$db->db_query("UPDATE `".BAB_DG_GROUPS_TBL."` SET id_group='".$arr['id']."' WHERE id='".$arr['id_dggroup']."'");
-			$id = $arr['id_dggroup'];
-			}
-		else
-			{
-			$db->db_query("INSERT INTO `".BAB_DG_GROUPS_TBL."` (name, description, groups, sections, articles, faqs, forums, calendars, mails, directories, approbations, filemanager, orgchart, id_group) VALUES (
-				'".$current['name'].' - '.$arr['name']."', 
-				'".$current['description']."',
-				'".$current['groups']."',
-				'".$current['sections']."', 
-				'".$current['articles']."', 
-				'".$current['faqs']."', 
-				'".$current['forums']."', 
-				'".$current['calendars']."', 
-				'".$current['mails']."', 
-				'".$current['directories']."', 
-				'".$current['approbations']."', 
-				'".$current['filemanager']."', 
-				'".$current['orgchart']."', 
-				'".$arr['id']."'
-				)");
+			$current = $db->db_fetch_array($db->db_query("SELECT id_group FROM ".BAB_DG_GROUPS_TBL." WHERE id='".$arr['id_dggroup']."'"));
+			if ($current['id_group'] == 0)
+				{
+				$db->db_query("UPDATE `".BAB_DG_GROUPS_TBL."` SET id_group='".$arr['id']."' WHERE id='".$arr['id_dggroup']."'");
+				$id = $arr['id_dggroup'];
+				}
+			else
+				{
+				$db->db_query("INSERT INTO `".BAB_DG_GROUPS_TBL."` (name, description, groups, sections, articles, faqs, forums, calendars, mails, directories, approbations, filemanager, orgchart, id_group) VALUES (
+					'".$current['name'].' - '.$arr['name']."', 
+					'".$current['description']."',
+					'".$current['groups']."',
+					'".$current['sections']."', 
+					'".$current['articles']."', 
+					'".$current['faqs']."', 
+					'".$current['forums']."', 
+					'".$current['calendars']."', 
+					'".$current['mails']."', 
+					'".$current['directories']."', 
+					'".$current['approbations']."', 
+					'".$current['filemanager']."', 
+					'".$current['orgchart']."', 
+					'".$arr['id']."'
+					)");
 
-			$id = $db->db_insert_id();
-			}
+				$id = $db->db_insert_id();
+				}
 
-		$res = $db->db_query("SELECT id_object FROM ".BAB_DG_USERS_GROUPS_TBL." WHERE id_group='".$id."'");
-		while ($row = $db->db_fetch_array($res))
-			{
-			$db->db_query("INSERT INTO ".BAB_DG_ADMIN_TBL." (id_user, id_dg) VALUES ('".$row['id_object']."','".$id."')");
-			}
+			$res = $db->db_query("SELECT id_object FROM ".BAB_DG_USERS_GROUPS_TBL." WHERE id_group='".$id."'");
+			while ($row = $db->db_fetch_array($res))
+				{
+				$db->db_query("INSERT INTO ".BAB_DG_ADMIN_TBL." (id_user, id_dg) VALUES ('".$row['id_object']."','".$id."')");
+				}
 
-		$db->db_query("DROP table ".BAB_DG_USERS_GROUPS_TBL."");
+			$db->db_query("DROP table ".BAB_DG_USERS_GROUPS_TBL."");
 
-		foreach($objDelegat as $table)
-			{
-			$db->db_query("UPDATE `".$table."` SET id_dgowner='".$id."' WHERE id_dgowner='".$arr['id']."'");
+			foreach($objDelegat as $table)
+				{
+				$db->db_query("UPDATE `".$table."` SET id_dgowner='".$id."' WHERE id_dgowner='".$arr['id']."'");
+				}
 			}
 		}
 
@@ -4997,6 +5003,8 @@ if ($arr[0] != 'id_group')
 	$db->db_query("ALTER TABLE `".BAB_GROUPS_TBL."` ADD INDEX ( `lf` )");
 	$db->db_query("ALTER TABLE `".BAB_GROUPS_TBL."` ADD INDEX ( `lr` )");
 
+	$db->db_query("ALTER TABLE `bab_groups` CHANGE `id` `id` INT( 11 ) UNSIGNED NOT NULL"); // remove auto_increment
+
 
 	natcasesort($level3);
 	$n = 3;
@@ -5008,6 +5016,7 @@ if ($arr[0] != 'id_group')
 
 	$db->db_query("UPDATE `".BAB_GROUPS_TBL."` SET id_parent='".BAB_ALLUSERS_GROUP."', lf='2', lr='".$n."', nb_set='0' WHERE id='".BAB_REGISTERED_GROUP."'");
 	$db->db_query("UPDATE `".BAB_GROUPS_TBL."` SET id_parent='".BAB_ALLUSERS_GROUP."', lf='".($n+1)."', lr='".($n+2)."', nb_set='0' WHERE id='".BAB_UNREGISTERED_GROUP."'");
+
 	$db->db_query("INSERT INTO `".BAB_GROUPS_TBL."` (id, name, id_parent, lf, lr, nb_set) VALUES ('0', 'Ovidentia users',NULL,'1','".($n+3)."', '0')");
 
 

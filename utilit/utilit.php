@@ -1273,21 +1273,23 @@ function babBody()
 	if (!isset($GLOBALS['HTTP_X_FORWARDED_FOR'])) $GLOBALS['HTTP_X_FORWARDED_FOR'] = '0.0.0.0';
 
 
-	$res = $babDB->db_query("select remote_addr, grp_change from ".BAB_USERS_LOG_TBL." where sessid='".session_id()."'");
-	if( $res && $babDB->db_num_rows($res) > 0 )
+	if ( $GLOBALS['tg'] != 'version' || $GLOBALS['idx'] != 'upgrade')
 		{
-		$arr = $babDB->db_fetch_array($res);
-		if ($arr['remote_addr'] != $GLOBALS['REMOTE_ADDR'])
+		$res = $babDB->db_query("select remote_addr, grp_change from ".BAB_USERS_LOG_TBL." where sessid='".session_id()."'");
+		if( $res && $babDB->db_num_rows($res) > 0 )
 			{
-			die(bab_translate("Access denied, invalid session"));
-			}
+			$arr = $babDB->db_fetch_array($res);
+			if ($arr['remote_addr'] != $GLOBALS['REMOTE_ADDR'])
+				{
+				die(bab_translate("Access denied, invalid session"));
+				}
 
-		if (1 == $arr['grp_change'] && isset($_SESSION['bab_groupAccess']))
-			{
-			unset($_SESSION['bab_groupAccess']);
+			if (1 == $arr['grp_change'] && isset($_SESSION['bab_groupAccess']))
+				{
+				unset($_SESSION['bab_groupAccess']);
+				}
 			}
 		}
-
 	
 
 	if (isset($_SESSION['bab_groupAccess']))

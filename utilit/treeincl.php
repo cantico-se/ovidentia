@@ -230,7 +230,7 @@ class bab_dbtree
 		return $arr[count($arr) -1];
 	}
 
-	function add($parentId = 0, $previousId=0, $bprev=true)
+	function add($parentId = 0, $previousId=0, $bprev=true, $id_node=false)
 	{
 		global $babDB;
 		$rowdata = array();
@@ -332,12 +332,27 @@ class bab_dbtree
 		$id_user = !empty($this->iduser) ? array(', id_user', ",'".$this->iduser."'") : array('','');
 		$userinfo = !empty($this->userinfo) ? array(', info_user', ",'".$this->userinfo."'") : array('','');
 
-		$res = $babDB->db_query("INSERT INTO ".$this->table." (lf, lr, id_parent".$id_user[0].$userinfo[0].") values ('".$rowdata['lf']."','".$rowdata['lr']."','".$rowdata['id_parent']."'".$id_user[1].$userinfo[1].")");
-		if( $res )
-		{
-			$rowdata['id'] = $babDB->db_insert_id();
-			return $rowdata['id'];
-		}
+		if (false === $id_node)
+			{
+			$res = $babDB->db_query("INSERT INTO ".$this->table." (lf, lr, id_parent".$id_user[0].$userinfo[0].") values ('".$rowdata['lf']."','".$rowdata['lr']."','".$rowdata['id_parent']."'".$id_user[1].$userinfo[1].")");
+
+			if( $res )
+				{
+					$rowdata['id'] = $babDB->db_insert_id();
+					return $rowdata['id'];
+				}
+			}
+		else
+			{
+			$res = $babDB->db_query("INSERT INTO ".$this->table." (id, lf, lr, id_parent".$id_user[0].$userinfo[0].") values ('".$id_node."', '".$rowdata['lf']."','".$rowdata['lr']."','".$rowdata['id_parent']."'".$id_user[1].$userinfo[1].")");
+
+			if( $res )
+				{
+					$rowdata['id'] = $id_node;
+					return $rowdata['id'];
+				}
+			}
+
 
 		return 0;
 	}

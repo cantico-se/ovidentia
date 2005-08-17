@@ -268,10 +268,9 @@ class bab_icalendars
 
 		if( !empty($GLOBALS['BAB_SESS_USERID']))
 		{
-		reset($babBody->ovgroups);
-		while( $row=each($babBody->ovgroups) ) 
-			{ 
-			if( $row[1]['member'] == 'Y' && $row[1]['pcalendar'] == 'Y')
+		foreach($babBody->usergroups as $idg)
+			{
+			if( isset($babBody->ovgroups[$idg]['pcalendar']) && $babBody->ovgroups[$idg]['pcalendar'] == 'Y')
 				{
 				$pcalendar = true;
 				}
