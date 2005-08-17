@@ -45,7 +45,7 @@ function slist()
 			$this->db = &$GLOBALS['babDB'];
 			$this->t_name = bab_translate("Name");
 			$this->t_groups = bab_translate("groups");
-			$this->t_new = bab_translate("Nouveau");
+			$this->t_new = bab_translate("New");
 			$this->t_modify = bab_translate("Modify");
 			$this->t_add_group = bab_translate("Add");
 			

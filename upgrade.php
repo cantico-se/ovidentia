@@ -4897,7 +4897,7 @@ return $ret;
 
 
 
-function upgrade562to564()
+function upgrade563to564()
 {
 $objDelegat = array(
 	BAB_SECTIONS_TBL, 

@@ -26,14 +26,14 @@ include_once $GLOBALS['babInstallPath']."utilit/imgincl.php";
 include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 include_once $GLOBALS['babInstallPath']."utilit/artincl.php";
 include_once $GLOBALS['babInstallPath']."utilit/forumincl.php";
+include_once $GLOBALS['babInstallPath']."admin/acl.php";
 
 function bab_deleteSection($id)
 {
 	$db = $GLOBALS['babDB'];
 
 	// delete refernce group
-	$req = "delete from ".BAB_SECTIONS_GROUPS_TBL." where id_object='$id'";
-	$res = $db->db_query($req);	
+	aclDelete(BAB_SECTIONS_GROUPS_TBL, $id);
 
 	// delete from ".BAB_SECTIONS_ORDER_TBL
 	$req = "delete from ".BAB_SECTIONS_ORDER_TBL." where id_section='$id' and type='2'";
@@ -107,20 +107,12 @@ function bab_confirmDeleteTopic($id)
 	
 	$db->db_query("update ".BAB_ART_DRAFTS_TBL." set result='0', idfai='0', id_topic='0' where id_topic='".$id."'");
 
-	$req = "delete from ".BAB_TOPICSCOM_GROUPS_TBL." where id_object='".$id."'";
-	$res = $db->db_query($req);
-	
-	$req = "delete from ".BAB_TOPICSSUB_GROUPS_TBL." where id_object='".$id."'";
-	$res = $db->db_query($req);
+	aclDelete(BAB_TOPICSCOM_GROUPS_TBL, $id);
+	aclDelete(BAB_TOPICSSUB_GROUPS_TBL, $id);
+	aclDelete(BAB_TOPICSVIEW_GROUPS_TBL, $id);
+	aclDelete(BAB_TOPICSMOD_GROUPS_TBL, $id);
+	aclDelete(BAB_TOPICSMAN_GROUPS_TBL, $id);
 
-	$req = "delete from ".BAB_TOPICSVIEW_GROUPS_TBL." where id_object='".$id."'";
-	$res = $db->db_query($req);
-
-	$req = "delete from ".BAB_TOPICSMOD_GROUPS_TBL." where id_object='".$id."'";
-	$res = $db->db_query($req);
-
-	$req = "delete from ".BAB_TOPICSMAN_GROUPS_TBL." where id_object='".$id."'";
-	$res = $db->db_query($req);
 
 	// delete from BAB_TOPCAT_ORDER_TBL
 	$req = "delete from ".BAB_TOPCAT_ORDER_TBL." where id_topcat='".$id."' and type='2'";
@@ -257,10 +249,10 @@ function bab_deleteForum($id)
 
 	$db->db_query("delete from ".BAB_THREADS_TBL." where forum='".$id."'");
 
-	$db->db_query("delete from ".BAB_FORUMSVIEW_GROUPS_TBL." where id_object='".$id."'");
-	$db->db_query("delete from ".BAB_FORUMSPOST_GROUPS_TBL." where id_object='".$id."'");
-	$db->db_query("delete from ".BAB_FORUMSREPLY_GROUPS_TBL." where id_object='".$id."'");
-	$db->db_query("delete from ".BAB_FORUMSMAN_GROUPS_TBL." where id_object='".$id."'");
+	aclDelete(BAB_FORUMSVIEW_GROUPS_TBL, $id);
+	aclDelete(BAB_FORUMSPOST_GROUPS_TBL, $id);
+	aclDelete(BAB_FORUMSREPLY_GROUPS_TBL, $id);
+	aclDelete(BAB_FORUMSMAN_GROUPS_TBL, $id);
 
 	$req = "delete from ".BAB_FORUMS_TBL." where id='$id'";
 	$res = $db->db_query($req);
@@ -276,8 +268,8 @@ function bab_deleteFaq($id)
 	$db->db_query("delete from ".BAB_FAQ_TREES_TBL." where id_user='".$id."'");	
 
 	// delete faq from groups
-	$db->db_query("delete from ".BAB_FAQCAT_GROUPS_TBL." where id_object='".$id."'");	
-	$db->db_query("delete from ".BAB_FAQMANAGERS_GROUPS_TBL." where id_object='".$id."'");	
+	aclDelete(BAB_FAQCAT_GROUPS_TBL, $id);
+	aclDelete(BAB_FAQMANAGERS_GROUPS_TBL, $id);
 
 	$db->db_query("delete from ".BAB_FAQ_SUBCAT_TBL." where id_cat='".$id."'");
 
@@ -353,10 +345,11 @@ function bab_deleteFolder($fid)
 
 	$babDB->db_query("delete from ".BAB_FM_FIELDS_TBL." where id_folder='".$fid."'");
 
-	$babDB->db_query("delete from ".BAB_FMUPLOAD_GROUPS_TBL." where id_object='".$fid."'");
-	$babDB->db_query("delete from ".BAB_FMUPDATE_GROUPS_TBL." where id_object='".$fid."'");
-	$babDB->db_query("delete from ".BAB_FMDOWNLOAD_GROUPS_TBL." where id_object='".$fid."'");
-	$babDB->db_query("delete from ".BAB_FMMANAGERS_GROUPS_TBL." where id_object='".$fid."'");
+	aclDelete(BAB_FMUPLOAD_GROUPS_TBL, $id);
+	aclDelete(BAB_FMUPDATE_GROUPS_TBL, $id);
+	aclDelete(BAB_FMDOWNLOAD_GROUPS_TBL, $id);
+	aclDelete(BAB_FMMANAGERS_GROUPS_TBL, $id);
+
 	// delete folder
 	$babDB->db_query("delete from ".BAB_FM_FOLDERS_TBL." where id='".$fid."'");
 }
@@ -560,8 +553,8 @@ function bab_deleteOrgChart($id)
 
 	$babDB->db_query("delete from ".BAB_OC_ROLES_TBL." where id_oc='".$id."'");
 	$babDB->db_query("delete from ".BAB_OC_ENTITIES_TBL." where id_oc='".$id."'");
-	$babDB->db_query("delete from ".BAB_OCUPDATE_GROUPS_TBL." where id_object='".$id."'");
-	$babDB->db_query("delete from ".BAB_OCVIEW_GROUPS_TBL." where id_object='".$id."'");
+	aclDelete(BAB_OCUPDATE_GROUPS_TBL, $id);
+	aclDelete(BAB_OCVIEW_GROUPS_TBL, $id);
 	$babDB->db_query("delete from ".BAB_ORG_CHARTS_TBL." where id='".$id."'");
 
 	$babTree = new bab_dbtree(BAB_OC_TREES_TBL, $id);

@@ -471,7 +471,8 @@ function updateProfile($idprof, $pname, $pdesc, $grpids, $cinscription, $cmultip
 			}
 		if( $inscription == 'Y' )
 			{
-			$babDB->db_query("delete from ".BAB_PROFILES_GROUPS_TBL." where id_object='".$idprof."'");
+			include_once $GLOBALS['babInstallPath']."admin/acl.php";
+			aclDelete(BAB_PROFILES_GROUPS_TBL, $idprof);
 			$babDB->db_query("insert into ".BAB_PROFILES_GROUPS_TBL." (id_object, id_group) values ('". $idprof. "', '1')");
 			}
 		return true;
@@ -485,7 +486,8 @@ function confirmDeleteProfile($idprof)
 
 	$babDB->db_query("delete from ".BAB_PROFILES_TBL." where id='".$idprof."'");
 	$babDB->db_query("delete from ".BAB_PROFILES_GROUPSSET_TBL." where id_object='".$idprof."'");
-	$babDB->db_query("delete from ".BAB_PROFILES_GROUPS_TBL." where id_object='".$idprof."'");
+	include_once $GLOBALS['babInstallPath']."admin/acl.php";
+	aclDelete(BAB_PROFILES_GROUPS_TBL, $idprof);
 }
 
 /* main */

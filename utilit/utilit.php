@@ -1310,7 +1310,7 @@ function babBody()
 		}
 }
 
-function getGroupPathName($id_group)
+function getGroupPathName($id_group, $id_parent = BAB_REGISTERED_GROUP)
 {
 	if (isset($this->groupPathName[$id_group]))
 		return $this->groupPathName[$id_group];
@@ -1318,7 +1318,7 @@ function getGroupPathName($id_group)
 	include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
 
 	$tree = new bab_grptree();
-	$groups = $tree->getGroups(BAB_REGISTERED_GROUP);
+	$groups = $tree->getGroups($id_parent);
 	$arr = array();
 	foreach ($groups as $row)
 		{

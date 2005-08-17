@@ -215,10 +215,10 @@ function updateVacation($id, $name, $description, $defaultnday, $maxdays, $maxda
 function confirmDeleteVacation($id)
 	{
 	
-	$db = $GLOBALS['babDB'];
+	$db = &$GLOBALS['babDB'];
 
-	$req = "delete from ".BAB_VACATIONSVIEW_GROUPS_TBL." where id_object='$id'";
-	$res = $db->db_query($req);
+	include_once $GLOBALS['babInstallPath']."admin/acl.php";
+	aclDelete(BAB_VACATIONSVIEW_GROUPS_TBL, $id);
 	
 	$req = "delete from ".BAB_VACATIONS_TYPES_TBL." where id='$id'";
 	$res = $db->db_query($req);

@@ -669,19 +669,21 @@ function bab_deleteCalendar($idcal)
 
 	list($type, $owner) = $babDB->db_fetch_row($babDB->db_query("select type, owner from ".BAB_CALENDAR_TBL." where id='".$idcal."'"));
 
+	include_once $GLOBALS['babInstallPath']."admin/acl.php";
+
 	switch( $type )
 		{
 		case BAB_CAL_PUB_TYPE:
 			$babDB->db_query("delete from ".BAB_CAL_PUBLIC_TBL." where id='".$owner."'");
-			$babDB->db_query("delete from ".BAB_CAL_PUB_MAN_GROUPS_TBL." where id_object='".$owner."'");
-			$babDB->db_query("delete from ".BAB_CAL_PUB_GRP_GROUPS_TBL." where id_object='".$owner."'");
-			$babDB->db_query("delete from ".BAB_CAL_PUB_VIEW_GROUPS_TBL." where id_object='".$owner."'");
+			aclDelete(BAB_CAL_PUB_MAN_GROUPS_TBL, $owner);
+			aclDelete(BAB_CAL_PUB_GRP_GROUPS_TBL, $owner);
+			aclDelete(BAB_CAL_PUB_VIEW_GROUPS_TBL, $owner);
 			break;
 		case BAB_CAL_RES_TYPE:
 			$babDB->db_query("delete from ".BAB_CAL_RESOURCES_TBL." where id='".$owner."'");
-			$babDB->db_query("delete from ".BAB_CAL_RES_MAN_GROUPS_TBL." where id_object='".$owner."'");
-			$babDB->db_query("delete from ".BAB_CAL_RES_GRP_GROUPS_TBL." where id_object='".$owner."'");
-			$babDB->db_query("delete from ".BAB_CAL_RES_VIEW_GROUPS_TBL." where id_object='".$owner."'");
+			aclDelete(BAB_CAL_RES_MAN_GROUPS_TBL, $owner);
+			aclDelete(BAB_CAL_RES_GRP_GROUPS_TBL, $owner);
+			aclDelete(BAB_CAL_RES_VIEW_GROUPS_TBL, $owner);
 			break;
 		case BAB_CAL_USER_TYPE:
 			$babDB->db_query("delete from ".BAB_CALACCESS_USERS_TBL." where id_cal='".$idcal."'");	

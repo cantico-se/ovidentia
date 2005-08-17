@@ -322,4 +322,11 @@ function aclUpdate($table, $id, $groups, $what)
 	{
 	maclGroups();
 	}
+
+function aclDelete($table, $id_object)
+	{
+	$db = &$GLOBALS['babDB'];
+	$db->db_query("DELETE FROM ".$table." WHERE id_object='".$id_object."'");
+	$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
+	}
 ?>

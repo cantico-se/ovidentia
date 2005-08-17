@@ -55,16 +55,7 @@ function calendarsPersonal()
 				$this->altbg = !$this->altbg;
 				
 				$this->grpid = $this->arr['id'];
-
-				if( $this->arr['id'] < 3 )
-					{
-					$this->urlname = bab_getGroupName($this->arr['id']);
-					}
-				else
-					{
-					$this->urlname = $this->arr['name'];
-					}
-
+				$this->urlname = $this->arr['name'];
 				if( $this->arr['pcalendar'] == "Y")
 					$this->pcalcheck = "checked";
 				else
@@ -598,7 +589,7 @@ function updatePersonalCalendars($calperids)
 	$req = "update ".BAB_GROUPS_TBL." set pcalendar='N'";
 	if ($babBody->currentAdmGroup > 0)
 		{
-		$req .= " where id='".$babBody->currentDGGroup['id_group']."'");
+		$req .= " where id='".$babBody->currentDGGroup['id_group']."'";
 		}
 
 	$db->db_query($req);
