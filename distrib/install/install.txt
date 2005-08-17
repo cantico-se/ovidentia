@@ -1,21 +1,16 @@
 Ovidentia is free (GPL Project) initiated by CANTICO.
-A this time, the documentation is under development.
-
-You can browse documentation development here : 
-	-Installation Guide : http://ovidentia.koblix.org/documentation/ig-en.html 
-	-Developper Guide : http://ovidentia.koblix.org/documentation/dg-en.html 
-	-User Guide : http://ovidentia.koblix.org/documentation/ug-en.html
+This documentation is provided to aid in basic installation. Please consult the forums on ovidentia.org for further instruction.
 
 If you have any comment or remarks please send an email to community@ovidentia.org
 
-OVIDENTIA 5.5
+OVIDENTIA 6.x
 ==============
 
 Base Requirements
 -----------------
 In order to setup Ovidentia the folowing prerequisits are necessary.
-- A Linux Box (http://www.linux.org)  or Microsoft Windows NT/2000/XP (http://www.microsoft.com)
-- Apache Web Server (http://www.apache.org) under Windows/Linux or
+- A Linux Box (http://www.linux.org), Mac OS X (http://developer.apple.com) or Microsoft Windows NT/2000/XP (http://www.microsoft.com)
+- Apache Web Server (http://www.apache.org) under Windows/Linux/OS X or
   Internet Information Server under Microsoft Windows (http://www.microsoft.com)
 - PHP 4.0.3 (http://www.php.net)
 - MySQL 3.23 database server (http://www.mysql.com)
@@ -33,6 +28,11 @@ server, if you're unsure where that is, ask you system administrator.
 1) Create a database called, for example, ovidentia:
 
     mysqladmin create ovidentia  
+    
+    It is recommended that you create a MySQL user that only has priveledges to to access this database and does not have "grant priveledges" rights. 
+    For example, create the MySQL user "ovuser" with a secure password. This user should have no general MySQL rights. Only grant this user database level permissions to the ovidentia database. Do not grant this user "grant priveledges" database permissions. 
+
+**** At this point, you may point your browser to http://yourdomain.com/install.php and skip steps 2 and 3 or continue manually ****
 
 2) Now fill the databases with the tables in babinstall.sql file located in "install" folder:
     
@@ -41,17 +41,10 @@ server, if you're unsure where that is, ask you system administrator.
 3) Modify the config.php file with your site parameters
 	
 	$babDBHost = "localhost"; /* MySql database server */
-	$babDBLogin = "root"; /* MySql database login */
-	$babDBPasswd = ""; /* MySql database password */
+	$babDBLogin = "ovuser"; /* MySql database login */
+	$babDBPasswd = "securepass"; /* MySql database password */
 	$babDBName ="ovidentia"; /* MySql database name */
 	$babUrl = "http://yourdomain.com/"; /* url to access to your site */
-	$babUploadPath = "/uploads-directory"; /* where to upload files */
-
-    Be sure to chmod 777 "/uploads-directory" where users upload their files, if
-    upload functionnality is enabled ( ATTENTION!!: this can have some
-    security issues. Please consult your system Administrator )
-
-   Also be sure to chmod 666 all languages files located in "lang" folder.
 
 4) After that, point your browser to:
     http://yourdomain.com/ and choose the menu "Login"
@@ -60,12 +53,26 @@ server, if you're unsure where that is, ask you system administrator.
 	User    : admin@admin.bab
 	Password: 012345678
    
-   You are logged as administrator
-   Before all, change administrator password by clicking 'Options' menu in 'User's Box'
-   section.
-   After this, you can manage your site by using menus in 'Administrator' section
-   ( see documentation )
-   and it's done ....
+   You are logged as the administrator.
+   ***Change administrator password by clicking the 'Options' menu in the 'User's
+   section'.
+   ***Choose 'sites' from the 'Administration section' and be sure to set your upload path. This is the server location where user uploaded files will be stored. It is recommended that this location not be within your webroot. For example: /home/upload 
+   
+5)  Be sure apache has group and ownership rights recursively from the site root.
+    
+    For UNIX/Linux installations: Recursively chmod 754 on the following:
+    upload directory (declared in step 4)
+    siteroot/images
+    
+    chmod 666 all languages files located in the "lang" folder.   
+   
+You may now manage your site by using the menu options located in the 'Administration section'
+   
+See the documentation for more information about administring Ovidentia. 
+You can browse documentation development here : 
+	-Installation Guide : http://ovidentia.koblix.org/documentation/ig-en.html 
+	-Developper Guide : http://ovidentia.koblix.org/documentation/dg-en.html 
+	-User Guide : http://ovidentia.koblix.org/documentation/ug-en.html
 
-   If you have any comment or remarks please send an email to community@ovidentia.org
-
+Again, if you have any comment or remarks please send an email to community@ovidentia.org
+[[documentation last updated by e-angel, 08-Aug-05]]
