@@ -35,6 +35,8 @@ function bab_cpaddons($from,$to)
               }
                closedir($handle);
          }
+		 if (!isset($files))
+			 return array();
         $arr=explode("\n",$files);
          return $arr;
      }
@@ -53,6 +55,7 @@ function bab_cpaddons($from,$to)
 	function create($path)
 	{
 	$el = explode("/",$path);
+	$memo = '';
 	foreach ($el as $rep)
 		{
 		if (!is_dir($memo.$rep)) { bab_mkdir($memo.$rep,$GLOBALS['babMkdirMode']); }
