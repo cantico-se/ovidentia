@@ -470,13 +470,10 @@ function saveGroupsOptions($mailgrpids, $notgrpids, $congrpids, $pdsgrpids, $dir
 
 		$grpdirectories[] = $id;
 	}
-	$grpdirectories[] = 0;
-	$grpdirectories[] = 1;
 
-	if ($babBody->currentAdmGroup == 0)
-	{
-	$db->db_query("DELETE FROM ".BAB_DB_DIRECTORIES_TBL." where id_group NOT IN('".implode("','",$grpdirectories)."') AND idgowner='".$babBody->currentAdmGroup."'");	
-	}
+
+	$db->db_query("DELETE FROM ".BAB_DB_DIRECTORIES_TBL." where id NOT IN('".implode("','",$grpdirectories)."') AND id_dgowner='".$babBody->currentAdmGroup."' AND id_group>'0'");	
+
 	
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=groups&idx=options");
 	exit;

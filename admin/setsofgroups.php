@@ -166,6 +166,7 @@ function getGroupsFromSet($ids)
 function sedit_record()
 {
 	
+
 	global $babBody;
 	$db = &$GLOBALS['babDB'];
 
@@ -189,7 +190,10 @@ function sedit_record()
 
 	if (empty($_POST['sid']))
 		{
-		$db->db_query("INSERT INTO ".BAB_GROUPS_TBL." (name,nb_groups) VALUES ('".$_POST['name']."',0)");
+		include_once $GLOBALS['babInstallPath']."utilit/grpincl.php";
+		$node_id = getNextAvariableId();
+
+		$db->db_query("INSERT INTO ".BAB_GROUPS_TBL." (id,name,nb_groups) VALUES ('".$node_id."','".$_POST['name']."',0)");
 		}
 	else
 		{

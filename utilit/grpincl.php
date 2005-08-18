@@ -211,4 +211,24 @@ function confirmDeleteAdmGroup($id, $action)
 	}
 
 
+function getNextAvariableId()
+{
+	$db = &$GLOBALS['babDB'];
+
+	$res = $db->db_query("SELECT id FROM ".BAB_GROUPS_TBL." ORDER BY id");
+	$ids = array();
+	while ($arr = $db->db_fetch_assoc($res))
+		{
+		$ids[$arr['id']] = 1;
+		}
+
+	for ($i = 0; $i < BAB_ACL_GROUP_TREE ; $i ++)
+		{
+		if (!isset($ids[$i]))
+			return $i;
+		}
+
+	die('too many groups, max : '.BAB_ACL_GROUP_TREE);
+}
+
 ?>

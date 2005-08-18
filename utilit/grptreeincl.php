@@ -139,27 +139,9 @@ class bab_grptree extends bab_dbtree
 	function addAlpha($id_parent, $childname)
 	{
 	global $babDB;
-	$res = $babDB->db_query("SELECT id FROM ".BAB_GROUPS_TBL." ORDER BY id");
-	$previous_id = 0;
-	while ($arr = $babDB->db_fetch_assoc($res))
-		{
-		if ($arr['id']-1 > $previous_id)
-			{
-			$node_id = $arr['id']-1;
-			break;
-			}
-		$previous_id = $arr['id'];
-		}
-
-	if (!isset($node_id))
-		{
-		if ($arr['id']+1 < BAB_ACL_GROUP_TREE)
-			$node_id = $arr['id']+1;
-		else
-			{
-			die('too many groups, max : '.BAB_ACL_GROUP_TREE);
-			}
-		}
+	
+	include_once $GLOBALS['babInstallPath']."utilit/grpincl.php";
+	$node_id = getNextAvariableId();
 
 	list($grp, $firstchild) = $this->setAlphaChild($id_parent, $childname);
 
