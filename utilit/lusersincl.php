@@ -54,7 +54,7 @@ function browseUsers($pos, $cb)
 
 			$this->allname = bab_translate("All");
 			$this->nickname = bab_translate("Nickname");
-			$this->db = $GLOBALS['babDB'];
+			$this->db = &$GLOBALS['babDB'];
 			$this->cb = $cb;
 
 			switch ($babBody->nameorder[0]) {
@@ -131,7 +131,7 @@ function browseUsers($pos, $cb)
 			if( $k < 26)
 				{
 				$this->selectname = substr($t, $k, 1);
-				$this->selecturl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&pos=".$this->ord.$this->selectname."&cb=".$this->cb;
+				$this->selecturl = $GLOBALS['babUrlScript']."?tg=".$_REQUEST['tg']."&idx=".$_REQUEST['idx']."&pos=".$this->ord.$this->selectname."&cb=".$this->cb;
 
 				if( $this->pos == $this->selectname)
 					$this->selected = 1;
