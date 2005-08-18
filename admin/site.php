@@ -661,12 +661,16 @@ function siteAuthentification($id)
 					}
 				else
 					{
+					$this->required = false;
 					$arr = $this->db->db_fetch_array($this->resf);
 					if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
 						{
 						$rr = $this->db->db_fetch_array($this->db->db_query("select name, description from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
 						$this->ofieldname = translateDirectoryField($rr['description']);
 						$filedname = $rr['name'];
+
+						if (in_array($filedname,array('sn','givenname','email')))
+							$this->required = true;
 						}
 					else
 						{
@@ -676,7 +680,7 @@ function siteAuthentification($id)
 						}
 
 
-					$this->required = false;				
+									
 					$this->ofieldv = $filedname;
 					$this->x_ofieldv = $arr['x_name'];
 
