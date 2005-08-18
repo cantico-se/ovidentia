@@ -947,7 +947,7 @@ function addDbContact($id, $fields)
 					$this->fvalue = "";
 					}
 
-				$this->resfxv = $this->db->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." where id_fieldextra='".$arr['id']."'");
+				$this->resfxv = $this->db->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." where id_fieldextra='".$arr['id']."' ORDER BY field_value");
 				$this->countfxv = $this->db->db_num_rows($this->resfxv); 
 
 				$this->required = $arr['required'];
