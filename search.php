@@ -642,6 +642,8 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$this->like = $this->fields['what2'];
 				}
 
+			$this->option = &$option;
+
 			
 			$this->what = urlencode(addslashes($what." ".$this->fields['what2']));
 			$this->countart = 0;
@@ -1007,9 +1009,11 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					{
 					$crit_fields = '';
 					}
+
+
 				$dir_fields = array('name'=>array(),'description'=>array());
 				
-				$likedir = "(";
+
 				
 				$arrfields = array();
 				$arrfields[] = 'det.id';
@@ -1019,18 +1023,14 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					$arrfields[] = "det.".$arr['name'];
 					$dir_fields['name'][$arr['id']] = $arr['name'];
 					$dir_fields['description'][$arr['id']] = $arr['description'];
-					if ($likedir != "(")
-						$likedir .= " or ";
-					$likedir .= $this->like || $this->like2 ? finder($this->like,$arr['name'],$option,$this->like2) : '';
 					}
-				$likedir .= ") ";
-
-				if (!$this->like && !$this->like2)
-					$likedir = '';
 
 				$req = "create temporary table dirresults select ".implode(",", $arrfields).",det.sn name from ".BAB_DBDIR_ENTRIES_TBL." det where 0";
 				$this->db->db_query($req);
 				$req = "alter table dirresults add unique (id)";
+				$this->db->db_query($req);
+
+				$req = "create temporary table bab_dbdir_temptable select ".implode(',', $arrfields).", det.sn name from ".BAB_DBDIR_ENTRIES_TBL." det where 0";
 				$this->db->db_query($req);
 				
 				if (trim($id_directory) != "") 
@@ -1041,23 +1041,11 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 					if(bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $row['id']))
 						{
-						if( !bab_isMagicQuotesGpcOn())
-							$dirname = addslashes($row['name']);
-						else
-							$dirname = $row['name'];
+						$dirname = $row['name'];
 	
-						$res = $this->db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($row['id_group'] != 0? 0: $row['id'])."' and id_field >".BAB_DBDIR_MAX_COMMON_FIELDS);
 						$dbdirfields = array();
-						$dbdirxfields = array();
 						$dbdirfields[] = 'id';
-						while( $row2 = $this->db->db_fetch_array($res))
-							{
-							$rr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($row2['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
-							$dbdirxfields[] = "babdirf".$row2['id'];
-							}
 
-						$req = "create temporary table bab_dbdir_temptable select ".implode(',', $arrfields).", det.sn name from ".BAB_DBDIR_ENTRIES_TBL." det where 0";
-						$this->db->db_query($req);
 
 						if( $row['id_group'] > 0 )
 							{
@@ -1065,11 +1053,10 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 							if( $bdir == 'Y' )
 								{
 								$grp = ($row['id_group'] > 1) ? "UG.id_group='".$row['id_group']."' and ":'';
-								$req = "insert into bab_dbdir_temptable select ".implode(",", $arrfields).", '".$dirname."' name from ".BAB_DBDIR_ENTRIES_TBL." det";
+								$req = "insert into bab_dbdir_temptable select ".implode(",", $arrfields).", '".$this->db->db_escape_string($dirname)."' name from ".BAB_DBDIR_ENTRIES_TBL." det";
 
 								if( $row['id_group'] > 1 )
 									{
-									
 									$req .= " left join ".BAB_USERS_GROUPS_TBL." UG on UG.id_object=det.id_user";
 									}
 								$req .= " where det.id_directory='0'";
@@ -1077,42 +1064,22 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 									{
 									$req .= " and UG.id_group='".$row['id_group']."'";
 									}
+
 								$this->db->db_query($req);
 								}
 							}
 						else
 							{
-							$req = "insert into bab_dbdir_temptable select ".implode(",", $arrfields).",'".$dirname."' name from ".BAB_DBDIR_ENTRIES_TBL." det where id_directory='".($row['id_group'] != 0? 0: $row['id'])."'";
+							$req = "insert into bab_dbdir_temptable select ".implode(",", $arrfields).",'".$this->db->db_escape_string($dirname)."' name from ".BAB_DBDIR_ENTRIES_TBL." det where id_directory='".($row['id_group'] != 0? 0: $row['id'])."'";
 							$this->db->db_query($req);
 							}
 
-						
+						$this->addDirectoryOptFields($row['id'],$row['id_group']);
 
-						if( count($dbdirxfields) > 0 )
-							{
-							for( $m=0; $m < count($dbdirxfields); $m++)
-								{
-								$this->db->db_query("alter table bab_dbdir_temptable add ".$dbdirxfields[$m]." VARCHAR( 255 ) NOT NULL");
-								$this->db->db_query("alter table dirresults add ".$dbdirxfields[$m]." VARCHAR( 255 ) NOT NULL");
-								}
-
-							$res = $this->db->db_query("select id from bab_dbdir_temptable");
-							while( $arr = $this->db->db_fetch_array($res))
-								{
-								$tmp = array();
-								$res2 = $this->db->db_query("select * from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_entry='".$arr['id']."'");
-								while( $rr = $this->db->db_fetch_array($res2))
-									{
-									$tmp[] = "babdirf".$rr['id_fieldx']." = '".$this->db->db_escape_string($rr['field_value'])."'";
-									}
-								if( count($tmp) > 0 )
-									{
-									$this->db->db_query("update bab_dbdir_temptable set ".implode(',', $tmp)." where id='".$arr['id']."'");
-									}
-								}
-							}
+						$likedir = $this->searchInAllCols('dirresults');
 							
 						$req = "insert into dirresults select g.* from bab_dbdir_temptable g";
+
 						if( !empty($likedir))
 							{
 							$req .= " where ".$likedir;
@@ -1156,9 +1123,6 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				else
 					{
 					// all directories
-					$plus = "";
-					$plus = finder($this->like,"field_value",$option,$this->like2);
-					if ($plus != "") $plus .= " and";
 
 					$req = "select id,id_group, name from ".BAB_DB_DIRECTORIES_TBL."";
 					$res = $this->db->db_query($req);
@@ -1166,119 +1130,64 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 						{
 						if(bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $row['id']))
 							{
-							$dirname = $this->db->db_escape_string($row['name']);
-							
+							$dirname = $row['name'];
 							if( $row['id_group'] >= 1 )
 								{
-								list($bdir) = $this->db->db_fetch_array($this->db->db_query("select directory from ".BAB_GROUPS_TBL." where  id='".$row['id_group']."'"));
-								if( $bdir == 'Y' )
+								if( $babBody->ovgroups[$row['id_group']]['directory'] != 'Y' )
 									{
-									
-
-									if ($row['id_group'] == 1)
-										{
-										$req = "insert into dirresults select ".implode(',', $arrfields).", '".$dirname."' name from ".BAB_DBDIR_ENTRIES_TBL." det where 1=1";
-										}
-									else
-										{
-										$req = "insert into dirresults select ".implode(',', $arrfields).", '".$dirname."' name from ".BAB_DBDIR_ENTRIES_TBL." det, ".BAB_USERS_GROUPS_TBL." grp where grp.id_object=det.id_user AND grp.id_group='".$row['id_group']."'";
-										}
-
-									$this->tmptable_inserted_id('dirresults');
-									if (count($this->tmp_inserted_id) > 0)
-										{
-										$req .= " AND det.id NOT IN('".implode("','",$this->tmp_inserted_id)."')";
-										}
-
-									if( !empty($likedir))
-										{
-										$req .= " and ".$likedir." ";
-										}
-									$req .= " and det.id_directory='0'";
-									if( !empty($crit_fields) )
-										{
-										$req .= " and (".$crit_fields.")";
-										}
-
-									
-									
-									$req .= " group by det.id order by sn asc,givenname asc";
-									$this->db->db_query($req);
-
-									
-
-									$rs2 = $this->db->db_query("select dext.id_entry from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." dext left join ".BAB_DBDIR_ENTRIES_TBL." det on dext.id_entry=det.id left join ".BAB_USERS_GROUPS_TBL." UG on UG.id_object=det.id_user where ".$plus." det.id_directory='0'");
-
-									while( $rr = $this->db->db_fetch_array($rs2))
-										{
-										$rs3 = $this->db->db_query("select id from dirresults where id='".$rr['id_entry']."'");
-										if( !$rs3 || $this->db->db_num_rows($rs3) == 0 )
-											{
-											$this->tmptable_inserted_id('dirresults');
-
-											$req = "insert into dirresults select ".implode(',', $arrfields).",'".$dirname."' name from ".BAB_DBDIR_ENTRIES_TBL." det where ";
-
-											if (count($this->tmp_inserted_id) > 0)
-												{
-												$req .= " det.id NOT IN('".implode("','",$this->tmp_inserted_id)."') AND ";
-												}
-
-											if( !empty($likedir))
-												{
-												$req .= " ".$likedir." and";
-												}
-											$req .= " det.id='".$rr['id_entry']."' ";
-											if( !empty($crit_fields) )
-												{
-												$req .= " and (".$crit_fields.")";
-												}
-											$this->db->db_query($req);
-											}
-										}
-
+									continue;
 									}
+
+								if ($row['id_group'] == 1)
+									{
+									$req = "insert into bab_dbdir_temptable select ".implode(',', $arrfields).", '".$this->db->db_escape_string($dirname)."' name from ".BAB_DBDIR_ENTRIES_TBL." det where 1=1";
+									}
+								else
+									{
+									$req = "insert into bab_dbdir_temptable select ".implode(',', $arrfields).", '".$this->db->db_escape_string($dirname)."' name from ".BAB_DBDIR_ENTRIES_TBL." det, ".BAB_USERS_GROUPS_TBL." grp where grp.id_object=det.id_user AND grp.id_group='".$row['id_group']."'";
+									}
+
+								$req .= " AND det.id_directory='0'";
 								}
 							else
 								{
-								
-								$this->tmptable_inserted_id('dirresults');
+								$this->tmptable_inserted_id('bab_dbdir_temptable');
 
-								$req = "insert into dirresults select ".implode(',', $arrfields).",'".$dirname."' name from ".BAB_DBDIR_ENTRIES_TBL." det where";
-
-								if (count($this->tmp_inserted_id) > 0)
-									{
-									$req .= " det.id NOT IN('".implode("','",$this->tmp_inserted_id)."') AND ";
-									}
-
-								if( !empty($likedir))
-									{
-									$req .= " ".$likedir." and";
-									}
-								$req .= " id_directory='".($row['id_group'] != 0? 0: $row['id'])."'";
-								if( !empty($crit_fields))
-									{
-									$req .= " and (".$crit_fields.")";
-									}
-								$req .= " group by det.id order by sn asc,givenname asc";
-								$this->db->db_query($req);
-
-								
-
-
-								$rs2 = $this->db->db_query("select dext.id_entry from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." dext left join ".BAB_DBDIR_ENTRIES_TBL." det on dext.id_entry=det.id where ".$plus." det.id_directory='".($row['id_group'] != 0? 0: $row['id'])."'");
-								while( $rr = $this->db->db_fetch_array($rs2))
-									{
-									$rs3 = $this->db->db_query("select id from dirresults where id='".$rr['id_entry']."'");
-									if( !$rs3 || $this->db->db_num_rows($rs3) == 0 )
-										{
-										
-										$this->db->db_query("insert into dirresults select ".implode(',', $arrfields).",'".$dirname."' name from ".BAB_DBDIR_ENTRIES_TBL." det where det.id='".$rr['id_entry']."'");
-										}
-									}
+								$req = "insert into bab_dbdir_temptable select ".implode(',', $arrfields).",'".$this->db->db_escape_string($dirname)."' name from ".BAB_DBDIR_ENTRIES_TBL." det where id_directory='".($row['id_group'] != 0? 0: $row['id'])."'";
 								}
-							}
 
+							
+							$this->tmptable_inserted_id('bab_dbdir_temptable');
+							if (count($this->tmp_inserted_id) > 0)
+								{
+								$req .= " AND det.id NOT IN('".implode("','",$this->tmp_inserted_id)."')";
+								}
+							// push all data of a directory into bab_dbdir_temptable
+							$this->db->db_query($req);
+							// and add optional fields
+							$this->addDirectoryOptFields($row['id'],$row['id_group']);
+							}
 						}
+
+					$likedir = $this->searchInAllCols('bab_dbdir_temptable');
+
+					$req = "insert into dirresults select g.* from bab_dbdir_temptable g ";
+					if( !empty($likedir))
+						{
+						$req .= "WHERE ".$likedir." ";
+						if( !empty($crit_fields) )
+							{
+							$req .= " and (".$crit_fields.")";
+							}
+						}
+					elseif( !empty($crit_fields) )
+						{
+						$req .= " WHERE (".$crit_fields.")";
+						}
+					
+					$req .= " group by id order by sn asc,givenname asc";
+					$this->db->db_query($req);
+
 					$this->dirfields['name'] = array($dir_fields['name'][2],$dir_fields['name'][4]);
 					$this->dirfields['description'] = array($dir_fields['description'][2],$dir_fields['description'][4]);
 					}
@@ -1432,6 +1341,65 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 		function dateformat($time)
 			{
 			return bab_shortDate($time, true);
+			}
+
+		function searchInAllCols($table)
+			{
+			if (!$this->like && !$this->like2)
+				return '';
+
+			$res = $this->db->db_query("DESCRIBE ".$table);
+			$like = "(";
+			while (list($colname) = $this->db->db_fetch_array($res))
+				{
+				if ($like != "(")
+						$like .= " or ";
+					$like .= finder($this->like,$colname,$this->option,$this->like2);
+				}
+			$like .= ") ";
+
+			return $like;
+			}
+
+		function addDirectoryOptFields($id_directory, $id_group)
+			{
+			$dbdirxfields = array();
+
+			$res = $this->db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($id_group != 0? 0: $id_directory)."' and id_field >".BAB_DBDIR_MAX_COMMON_FIELDS);
+
+			while( $row2 = $this->db->db_fetch_array($res))
+				{
+				$rr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($row2['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+				$dbdirxfields[] = "babdirf".$row2['id'];
+				}
+
+			if( count($dbdirxfields) > 0 )
+				{
+				// add optionnal fields in temporary table
+				
+				for( $m=0; $m < count($dbdirxfields); $m++)
+					{
+					$this->db->db_query("alter table bab_dbdir_temptable add ".$dbdirxfields[$m]." VARCHAR( 255 ) NOT NULL");
+					$this->db->db_query("alter table dirresults add ".$dbdirxfields[$m]." VARCHAR( 255 ) NOT NULL");
+					}
+
+				list($dirname) = $this->db->db_fetch_array($this->db->db_query("SELECT name FROM ".BAB_DB_DIRECTORIES_TBL." WHERE id='".$id_directory."'"));
+
+				$res = $this->db->db_query("select id from bab_dbdir_temptable WHERE name='".$this->db->db_escape_string($dirname)."'");
+				while( $arr = $this->db->db_fetch_array($res))
+					{
+					$tmp = array();
+					$res2 = $this->db->db_query("select * from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_entry='".$arr['id']."'");
+					while( $rr = $this->db->db_fetch_array($res2))
+						{
+						$tmp[] = "babdirf".$rr['id_fieldx']." = '".$this->db->db_escape_string($rr['field_value'])."'";
+						}
+					if( count($tmp) > 0 )
+						{
+						$this->db->db_query("update bab_dbdir_temptable set ".implode(',', $tmp)." where id='".$arr['id']."'");
+						}
+					}
+				}
 			}
 
 		function getnextart()
