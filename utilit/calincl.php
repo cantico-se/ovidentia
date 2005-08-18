@@ -566,7 +566,7 @@ class bab_icalendars
 	{
 		if( $idcal == $this->id_percal )
 		{
-			return $GLOBALS['BAB_SESS_USER'];
+			return $GLOBALS['BAB_SESS_USERID'];
 		}
 		else
 		{
