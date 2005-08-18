@@ -584,7 +584,16 @@ function siteAuthentification($id)
 				$this->attributetxt = bab_translate("Attribute");
 				$this->ldpachkcnxtxt = bab_translate("Allow administrators to connect if LDAP authentification fails");
 
-				$this->arrayauthpasstype = array('plain' => bab_translate("plaintext"), 'md5-hex' => bab_translate("md5"), 'crypt' => bab_translate("The Unix crypt() hash, based on DES"), 'sha' => bab_translate("sha-1"), 'md5-base64' => bab_translate("md5 encoded with base64"), 'ssha' => bab_translate("Salted SHA-1"), 'smd5' => bab_translate("Salted MD5"));
+				$this->arrayauthpasstype = array(
+					'plain' => bab_translate("plaintext"), 
+					'md5-hex' => bab_translate("md5"), 
+					'crypt' => bab_translate("The Unix crypt() hash, based on DES"), 
+					'sha' => bab_translate("sha-1"), 
+					'md5-base64' => bab_translate("md5 encoded with base64"), 
+					'ssha' => bab_translate("Salted SHA-1"), 
+					'smd5' => bab_translate("Salted MD5")
+					);
+
 				$this->authpasstypetxt = bab_translate("Password encryption type");
 
 				if( $arr['ldap_allowadmincnx']  == 'Y' )
@@ -1330,6 +1339,12 @@ function siteUpdate_authentification($id, $authtype, $host, $hostname, $ldpapchk
 	if (!function_exists('ldap_connect'))
 		{
 		$babBody->msgerror = bab_translate("You must have LDAP enabled on the server");
+		return false;
+		}
+
+	if (!function_exists('utf8_decode'))
+		{
+		$babBody->msgerror = bab_translate("You must have XML enabled on the server");
 		return false;
 		}
 

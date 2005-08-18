@@ -217,7 +217,7 @@
 <string id="Decimal separator">Séparateur décimal</string>
 <string id="Default Value">Valeur par défaut</string>
 <string id="Default days number">Nombre de jours par défaut</string>
-<string id="Default group for confirmed users">Groupe par défaut des utlisateurs confirmés</string>
+<string id="Default group for confirmed users">Groupe par défaut des utilisateurs confirmés</string>
 <string id="Default number of messages to display per screen">Nombre de messages par page affichés dans la liste</string>
 <string id="Default password">Mot de passe par défaut</string>
 <string id="Delete Comment">Supprimer le commentaire</string>
@@ -1700,6 +1700,7 @@
 <string id="Negative balance are not alowed on right">Les soldes négatifs ne sont pas autorisés sur le droit</string>
 <string id="Group schema">Schéma de groupes</string>
 <string id="You must have LDAP enabled on the server">Les fonctions LDAP doivent être activées sur le serveur</string>
+<string id="You must have XML enabled on the server">Les fonctions XML doivent être activées sur le serveur</string>
 <string id="Negative balance">Solde négatif</string>
 <string id="Users with waiting requests will not be modified">Les utilisateurs avec des demandes en attente ne seront pas modifiés</string>
 <string id="Personnel associated with type">Personnel associé au type</string>
