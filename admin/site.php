@@ -45,211 +45,116 @@ function getSiteName($id)
 		}
 	}
 
-function siteModify($id)
-	{
 
-	global $babBody;
-	class temp
-		{
-		var $name;
-		var $description;
-		var $nameval;
-		var $descriptionval;
-		var $lang;
-		var $skin;
-		var $langsite;
-		var $skinsite;
-		var $siteemail;
-		var $siteemailval;
-		var $create;
+class site_configuration_cls
+{
+	var $menu;
 	
-		var $id;
-		var $arr = array();
-		var $db;
-		var $res;
+	function site_configuration_cls($id_site = false)
+	{
+	$this->t_record = bab_translate("Record");
+	$this->yes = bab_translate("Yes");
+	$this->no = bab_translate("No");
 
-        var $langselected;
-        var $siteselected;
-        var $arrfiles = array();
-        var $arrdir = array();
+	$this->item = $id_site;
+	$this->db = &$GLOBALS['babDB'];
 
-		var $registration;
-		var $yes;
-		var $no;
-		var $yselected;
-		var $nselected;
+	$this->menu = array(
+			1 => bab_translate('Site configuration'),
+			2 => bab_translate('Mail configuration'),
+			3 => bab_translate('User options and login configuration'),
+			4 => bab_translate('File upload configuration'),
+			5 => bab_translate('Date format configuration'),
+			6 => bab_translate('Calendar and vacations configuration'),
+			7 => bab_translate('Home page managers'),
+			8 => bab_translate('Authentification configuration'),
+			9 => bab_translate('Inscription configuration'),
+			10=> bab_translate('WYSIWYG editor configuration')
+		);
 
-		var $mailfunction;
-		var $disabled;
-		var $smtp;
-		var $sendmail;
-		var $mail;
-		var $server;
-		var $serverval;
-		var $serverport;
-		var $serverportval;
-		var $mailselected;
-		var $smtpselected;
-		var $sendmailselected;
-		var $disabledselected;
+	if (false !== $id_site)
+		{
+		$res = $this->db->db_query("SELECT *, DECODE(smtppassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as smtppass FROM ".BAB_SITES_TBL." WHERE id='".$id_site."'");
+		$this->row = $this->db->db_fetch_assoc($res);
 
-		var $smtpuser;
-		var $smtpuserval;
-		var $smtppass;
-		var $smtppass2;
-		var $smtppassval;
+		$this->arr = array();
+		foreach($this->row as $k => $val)
+			{
+			$this->arr[$k] = htmlentities($val);
+			}
 
-		var $langfiltertxt;
-		var $langfilterval;
-		var $langfiltersite;
-		var $langfilterselected;		
+		if (isset($_REQUEST['idx']))
+			{
+			$key = (int) substr($_REQUEST['idx'],4);
+			if (isset($this->menu[$key]))
+				$GLOBALS['babBody']->title = $this->menu[$key];
+			}
+		}
+	else
+		{
+		$GLOBALS['babBody']->title = bab_translate("Create site");
+		}
 
-		var $adminnametxt;
-		var $adminnameval;
 
-		var $date_lformat_title;
-		var $date_sformat_title;
-		var $time_format_title;
-		var $date_lformat_val;
-		var $date_sformat_val;
-		var $time_format_val;
 
-		function temp($id)
+	}
+}
+
+
+function site_menu1()
+{
+	global $babBody;
+	class temp extends site_configuration_cls
+		{
+
+		function temp()
 			{
 			$this->name = bab_translate("Site name");
 			$this->description = bab_translate("Description");
 			$this->lang = bab_translate("Lang");
 			$this->skin = bab_translate("Skin");
-			$this->siteemail = bab_translate("Email site");
-			$this->create = bab_translate("Modify");
-			$this->yes = bab_translate("Yes");
-			$this->no = bab_translate("No");
-			$this->delete = bab_translate("Delete");
 			$this->confirmation = bab_translate("Send email confirmation")."?";
-			$this->registration = bab_translate("Activate Registration")."?";
+			
 			$this->stattxt = bab_translate("Enable statistics recording")."?";
 			$this->disabled = bab_translate("Disabled");
-			$this->mailfunction = bab_translate("Mail function");
-			$this->server = bab_translate("Smtp server");
-			$this->serverport = bab_translate("Server port");
 			$this->imagessize = bab_translate("Max image size ( Kb )");
-			$this->none = bab_translate("None");
-			$this->smtpuser = bab_translate("SMTP username");
-			$this->smtppass = bab_translate("SMTP password");
-			$this->smtppass2 = bab_translate("Re-type SMTP password");
+			$this->langfiltertxt = bab_translate("Language filter");
+			$this->siteemail = bab_translate("Email site");
 			$this->adminnametxt = bab_translate("Name to use for notification emails");
-			$this->t_mb = bab_translate("Mb");
-			$this->regsettings_title = bab_translate("Date and Time formats");
-			$this->date_lformat_title = bab_translate("Long date format");
-			$this->date_sformat_title = bab_translate("Short date format");
-			$this->time_format_title = bab_translate("Time format");
-
-			$this->smtp = "smtp";
-			$this->sendmail = "sendmail";
-			$this->mail = "mail";
-			$this->mailselected = "";
-			$this->smtpselected = "";
-			$this->sendmailselected = "";
-			$this->disabledselected = "";
-
-			// bloc 2
+			$this->name_order_title = bab_translate("User name composition");
 			$this->firstlast = bab_translate("Firstname")." ".bab_translate("Lastname");
 			$this->lastfirst = bab_translate("Lastname")." ".bab_translate("Firstname");
-			$this->name_order_title = bab_translate("User name composition");
-			$this->change_nickname_title = bab_translate("User can modifiy his nickname");
-			$this->change_password_title = bab_translate("User can modifiy his password");
-			$this->remember_login_title = bab_translate("Automatic connection");
-			$this->login_only = bab_translate("Login only");
-			$this->email_password_title = bab_translate("Display option 'Lost Password'");
 			$this->babslogan_title = bab_translate("Site slogan");
-			$this->uploadpath_title = bab_translate("Upload path");
-			$this->maxfilesize_title = bab_translate("File manager max file size");
-			$this->folder_diskspace_title = bab_translate("File manager max group directory size");
-			$this->user_diskspace_title = bab_translate("File manager max user directory size");
-			$this->total_diskspace_title = bab_translate("File manager max total size");
-			$this->user_workdays_title = bab_translate("User can modifiy his working days");
-
-			// bloc 4
-			$this->t_workdays = bab_translate("Working days");
-			$this->t_nonworking = bab_translate("Non-working days");
-			$this->t_add = bab_translate("Add");
-			$this->t_ok = bab_translate("Ok");
-			$this->t_delete = bab_translate("Delete");
-			$this->t_load_date = bab_translate("Load date");
-			$this->t_date = bab_translate("Date");
-			$this->t_text = bab_translate("Name");
-			$this->t_type_date = bab_translate("Date type");
-			$this->t_type = bab_getNonWorkingDayTypes(true);
-
-			$this->id = $id;
-			$this->langfiltertxt = bab_translate("Language filter");
-
-			$this->db = $GLOBALS['babDB'];
-			$req = "select *, DECODE(smtppassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as smtppass from ".BAB_SITES_TBL." where id='$id'";
-			$this->res = $this->db->db_query($req);
-			if( $this->db->db_num_rows($this->res) > 0 )
+			
+			
+			$this->skselectedindex = 0;
+			$this->stselectedindex = 0;
+			
+			
+			if (empty($_REQUEST['item']))
 				{
-				$arr = $this->db->db_fetch_array($this->res);
-				$this->nameval = $arr['name'];
-				$this->descriptionval = $arr['description'];
-				$this->langsite = $arr['lang'];
-				$this->skinsite = $arr['skin'];
-				$this->stylesite = $arr['style'];
-				$this->siteemailval = $arr['adminemail'];
-				$this->adminnameval = $arr['adminname'];
-				$this->serverval = $arr['smtpserver'];
-				$this->serverportval = $arr['smtpport'];
-				$this->imgsizeval = $arr['imgsize'];
-				$this->smtpuserval = $arr['smtpuser'];
-				$this->smtppassval = $arr['smtppass'];
-				$this->dbvalue = $arr;
-				$this->dbvalue['babslogan'] = str_replace('"',"''",$GLOBALS['babSlogan']);
-				$this->dbvalue['total_diskspace'] = round($GLOBALS['babMaxTotalSize']/1048576);
-				$this->dbvalue['user_diskspace'] = round($GLOBALS['babMaxUserSize']/1048576);
-				$this->dbvalue['folder_diskspace'] = round($GLOBALS['babMaxGroupSize']/1048576);
-				$this->dbvalue['maxfilesize'] = round($GLOBALS['babMaxFileSize']/1048576);
-				$this->date_lformat_val = $arr['date_longformat'];
-				$this->date_sformat_val = $arr['date_shortformat'];
-				$this->time_format_val = $arr['time_format'];
-				if( $arr['registration'] == "Y")
-					{
-					$this->nregister = "";
-					$this->yregister = "selected";
-					}
-				else
-					{
-					$this->yregister = "";
-					$this->nregister = "selected";
-					}
-				if( $arr['stat_log'] == "Y")
-					{
-					$this->nstatlog = "";
-					$this->ystatlog = "selected";
-					}
-				else
-					{
-					$this->ystatlog = "";
-					$this->nstatlog = "selected";
-					}
-				switch($arr['mailfunc'])
-					{
-					case "mail":
-						$this->mailselected = "selected";
-						break;
-					case "smtp":
-						$this->smtpselected = "selected";
-						break;
-					case "sendmail":
-						$this->sendmailselected = "selected";
-						break;
-					default:
-						$this->disabledselected = "selected";
-						break;
-					}
+				$this->site_configuration_cls();
+				$this->arr = array(
+						'name'			=> '',
+						'description'	=> '',
+						'lang'			=> '',
+						'adminname'		=> '',
+						'adminemail'	=> '',
+						'skin'			=> '',
+						'style'			=> '',
+						'babslogan'		=> '',
+						'langfilter'	=> ''
+					);
 
+				$this->item = '';
 				}
-
-			$this->langfiltersite = $arr['langfilter'];
+			else
+				{
+				$this->site_configuration_cls($_REQUEST['item']);
+				}
+			
+			
+			
 			$this->arrfiles = bab_getAvailableLanguages();
 			$this->count = count($this->arrfiles);
 			sort($this->arrfiles);
@@ -270,83 +175,7 @@ function siteModify($id)
 				closedir($h);
 				$this->cntskins = count($this->arrskins);
 				}
-            $this->skselectedindex = 0;
-            $this->stselectedindex = 0;
 
-			$this->arrlfdate = array();
-			$this->arrlfdate[] = "dd MMMM yyyy";
-			$this->arrlfdate[] = "MMMM dd, yyyy";
-			$this->arrlfdate[] = "dddd, MMMM dd, yyyy";
-			$this->arrlfdate[] = "dddd, dd MMMM, yyyy";
-			$this->arrlfdate[] = "dd MMMM, yyyy";
-
-			$this->arrsfdate = array();
-			$this->arrsfdate[] = "M/d/yyyy";
-			$this->arrsfdate[] = "M/d/yy";
-			$this->arrsfdate[] = "MM/dd/yy";
-			$this->arrsfdate[] = "MM/dd/yyyy";
-			$this->arrsfdate[] = "yy/MM/dd";
-			$this->arrsfdate[] = "yyyy-MM-dd";
-			$this->arrsfdate[] = "dd-MMM-yy";
-			
-			$this->arrtime = array();
-			$this->arrtime[] = "HH:mm";
-			$this->arrtime[] = "HH:mm tt";
-			$this->arrtime[] = "HH:mm TT";
-			$this->arrtime[] = "HH:mm:ss tt";
-			$this->arrtime[] = "HH:mm:ss tt";
-			$this->arrtime[] = "h:mm:ss tt";
-			$this->arrtime[] = "hh:mm:ss tt";
-			$this->arrtime[] = "HH:mm:ss";
-			$this->arrtime[] = "H:m:s";
-
-
-			$this->workdays = array_flip(explode(',',$GLOBALS['babBody']->babsite['workdays']));
-
-			$this->resnw = $this->db->db_query("SELECT * FROM ".BAB_SITES_NONWORKING_CONFIG_TBL." WHERE id_site='".$id."'");
-
-			}
-		
-		function getnextlongdate()
-			{
-			static $i = 0;
-			if( $i < count($this->arrlfdate))
-				{
-                $this->dateval = $this->arrlfdate[$i];
-                $this->datetxt = bab_formatDate( bab_getDateFormat($this->arrlfdate[$i]), mktime() );
-				$i++;
-				return true;
-				}
-			else
-				return false;
-			}
-
-		function getnextshortdate()
-			{
-			static $i = 0;
-			if( $i < count($this->arrsfdate))
-				{
-                $this->dateval = $this->arrsfdate[$i];
-                $this->datetxt = bab_formatDate( bab_getDateFormat($this->arrsfdate[$i]), mktime() );
-				$i++;
-				return true;
-				}
-			else
-				return false;
-			}
-
-		function getnexttime()
-			{
-			static $i = 0;
-			if( $i < count($this->arrtime))
-				{
-                $this->timeval = $this->arrtime[$i];
-                $this->timetxt = date( bab_getTimeFormat($this->arrtime[$i]), mktime() );
-				$i++;
-				return true;
-				}
-			else
-				return false;
 			}
 
 		function getnextlang()
@@ -355,7 +184,7 @@ function siteModify($id)
 			if( $i < $this->count)
 				{
                 $this->langval = $this->arrfiles[$i];
-                if( $this->langsite == $this->langval )
+                if( $this->row['lang'] == $this->langval )
                     $this->langselected = "selected";
                 else
                     $this->langselected = "";
@@ -374,7 +203,7 @@ function siteModify($id)
 				$this->iindex = $i;
                 $this->skinname = $this->arrskins[$i];
                 $this->skinval = $this->arrskins[$i];
-                if( $this->skinname == $this->skinsite )
+                if( $this->skinname == $this->row['skin'] )
 					{
 	                $this->skselectedindex = $i;
                     $this->skinselected = "selected";
@@ -439,7 +268,7 @@ function siteModify($id)
 				{
                 $this->stylename = $this->arrstyles[$j];
                 $this->styleval = $this->arrstyles[$j];
-                if( $this->skinname == $this->skinsite && $this->stylesite == $this->styleval)
+                if( $this->skinname == $this->row['skin'] && $this->row['style'] == $this->styleval)
 					$this->stselectedindex = $j;
 				$j++;
 				return true;
@@ -457,7 +286,7 @@ function siteModify($id)
 			if( $i < ($GLOBALS['babLangFilter']->countFilters()))
 				{
 				$this->langfilterval =	$GLOBALS['babLangFilter']->getFilterStr($i);
-				if($this->langfiltersite == $i )
+				if($this->row['langfilter'] == $i )
 					{
 					$this->langfilterselected = "selected";
 					}
@@ -473,7 +302,228 @@ function siteModify($id)
 			} //getnextlangfilter
 
 
-		function getnextshortday()
+		} // class temp
+
+	$temp = new temp();
+	$babBody->babecho(	bab_printTemplate($temp, "sites.html", "menu1"));
+}
+
+
+function site_menu2($id)
+	{
+
+	global $babBody;
+	class temp extends site_configuration_cls
+		{
+
+		function temp($id)
+			{
+			$this->disabled = bab_translate("Disabled");
+			$this->mailfunction = bab_translate("Mail function");
+			$this->server = bab_translate("Smtp server");
+			$this->serverport = bab_translate("Server port");
+			$this->none = bab_translate("None");
+			$this->smtpuser = bab_translate("SMTP username");
+			$this->smtppass = bab_translate("SMTP password");
+			$this->smtppass2 = bab_translate("Re-type SMTP password");
+			$this->smtp = "smtp";
+			$this->sendmail = "sendmail";
+			$this->mail = "mail";
+
+
+			$this->site_configuration_cls($id);
+			}
+
+
+		} // class temp
+
+	$temp = new temp($id);
+	$babBody->babecho(	bab_printTemplate($temp, "sites.html", "menu2"));
+	}
+
+
+function site_menu3($id)
+	{
+
+	global $babBody;
+	class temp extends site_configuration_cls
+		{
+
+		function temp($id)
+			{
+			$this->change_nickname_title = bab_translate("User can modifiy his nickname");
+			$this->change_password_title = bab_translate("User can modifiy his password");
+			$this->remember_login_title = bab_translate("Automatic connection");
+			$this->login_only = bab_translate("Login only");
+			$this->email_password_title = bab_translate("Display option 'Lost Password'");
+			$this->user_workdays_title = bab_translate("User can modifiy his working days");			
+			$this->change_lang_title = bab_translate("User can modifiy his language");
+			$this->change_skin_title = bab_translate("User can modifiy his skin");
+			$this->change_date_title = bab_translate("User can modifiy his date format");
+
+			$this->site_configuration_cls($id);
+			}
+
+
+		} // class temp
+
+	$temp = new temp($id);
+	$babBody->babecho(	bab_printTemplate($temp, "sites.html", "menu3"));
+	}
+
+
+function site_menu4($id)
+	{
+
+	global $babBody;
+	class temp extends site_configuration_cls
+		{
+
+		function temp($id)
+			{
+			$this->imgsize_title = bab_translate("Max image size ( Kb )");
+			$this->uploadpath_title = bab_translate("Upload path");
+			$this->maxfilesize_title = bab_translate("File manager max file size");
+			$this->folder_diskspace_title = bab_translate("File manager max group directory size");
+			$this->user_diskspace_title = bab_translate("File manager max user directory size");
+			$this->total_diskspace_title = bab_translate("File manager max total size");
+			$this->t_mb = bab_translate("Mb");
+			
+			$this->site_configuration_cls($id);
+			}
+
+
+		} // class temp
+
+	$temp = new temp($id);
+	$babBody->babecho(	bab_printTemplate($temp, "sites.html", "menu4"));
+	}
+
+
+function site_menu5($id)
+	{
+
+	global $babBody;
+	class temp extends site_configuration_cls
+		{
+
+		function temp($id)
+			{
+
+			$this->regsettings_title = bab_translate("Date and Time formats");
+			$this->date_lformat_title = bab_translate("Long date format");
+			$this->date_sformat_title = bab_translate("Short date format");
+			$this->time_format_title = bab_translate("Time format");
+
+			$this->site_configuration_cls($id);
+
+			$this->arrlfdate = array();
+			$this->arrlfdate[] = "dd MMMM yyyy";
+			$this->arrlfdate[] = "MMMM dd, yyyy";
+			$this->arrlfdate[] = "dddd, MMMM dd, yyyy";
+			$this->arrlfdate[] = "dddd, dd MMMM, yyyy";
+			$this->arrlfdate[] = "dd MMMM, yyyy";
+
+			$this->arrsfdate = array();
+			$this->arrsfdate[] = "M/d/yyyy";
+			$this->arrsfdate[] = "M/d/yy";
+			$this->arrsfdate[] = "MM/dd/yy";
+			$this->arrsfdate[] = "MM/dd/yyyy";
+			$this->arrsfdate[] = "yy/MM/dd";
+			$this->arrsfdate[] = "yyyy-MM-dd";
+			$this->arrsfdate[] = "dd-MMM-yy";
+			
+			$this->arrtime = array();
+			$this->arrtime[] = "HH:mm";
+			$this->arrtime[] = "HH:mm tt";
+			$this->arrtime[] = "HH:mm TT";
+			$this->arrtime[] = "HH:mm:ss tt";
+			$this->arrtime[] = "HH:mm:ss tt";
+			$this->arrtime[] = "h:mm:ss tt";
+			$this->arrtime[] = "hh:mm:ss tt";
+			$this->arrtime[] = "HH:mm:ss";
+			$this->arrtime[] = "H:m:s";
+			}
+
+		function getnextlongdate()
+			{
+			static $i = 0;
+			if( $i < count($this->arrlfdate))
+				{
+                $this->dateval = $this->arrlfdate[$i];
+                $this->datetxt = bab_formatDate( bab_getDateFormat($this->arrlfdate[$i]), mktime() );
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+
+		function getnextshortdate()
+			{
+			static $i = 0;
+			if( $i < count($this->arrsfdate))
+				{
+                $this->dateval = $this->arrsfdate[$i];
+                $this->datetxt = bab_formatDate( bab_getDateFormat($this->arrsfdate[$i]), mktime() );
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+
+		function getnexttime()
+			{
+			static $i = 0;
+			if( $i < count($this->arrtime))
+				{
+                $this->timeval = $this->arrtime[$i];
+                $this->timetxt = date( bab_getTimeFormat($this->arrtime[$i]), mktime() );
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+
+
+		} // class temp
+
+	$temp = new temp($id);
+	$babBody->babecho(	bab_printTemplate($temp, "sites.html", "menu5"));
+	}
+
+
+
+function site_menu6($id)
+	{
+
+	global $babBody;
+	class temp extends site_configuration_cls
+		{
+
+		function temp($id)
+			{
+			$this->t_workdays = bab_translate("Working days");
+			$this->t_nonworking = bab_translate("Non-working days");
+			$this->t_add = bab_translate("Add");
+			$this->t_ok = bab_translate("Ok");
+			$this->t_delete = bab_translate("Delete");
+			$this->t_load_date = bab_translate("Load date");
+			$this->t_date = bab_translate("Date");
+			$this->t_text = bab_translate("Name");
+			$this->t_type_date = bab_translate("Date type");
+			$this->t_type = bab_getNonWorkingDayTypes(true);
+			
+			$this->site_configuration_cls($id);
+
+			$this->workdays = array_flip(explode(',',$GLOBALS['babBody']->babsite['workdays']));
+			$this->resnw = $this->db->db_query("SELECT * FROM ".BAB_SITES_NONWORKING_CONFIG_TBL." WHERE id_site='".$id."'");
+
+			}
+
+				function getnextshortday()
 			{
 			global $babDays;
 			static $i = 0;
@@ -498,6 +548,7 @@ function siteModify($id)
 				return false;
 				}
 			}
+
 
 		function getnextnonworking_type()
 			{
@@ -541,12 +592,14 @@ function siteModify($id)
 				return false;
 			}
 
+
 		} // class temp
 
 	$temp = new temp($id);
-	$babBody->babecho(	bab_printTemplate($temp, "sites.html", "sitemodify"));
-	$babBody->babecho(	bab_printTemplate($temp,"sites.html", "skinscripts"));
+	$babBody->babecho(	bab_printTemplate($temp, "sites.html", "menu6"));
 	}
+
+
 
 function siteAuthentification($id)
 	{
@@ -781,7 +834,7 @@ function siteAuthentification($id)
 		}
 
 	$temp = new clsSiteAuthentification($id);
-	$babBody->babecho(	bab_printTemplate($temp, "sites.html", "siteauthentification"));
+	$babBody->babecho(	bab_printTemplate($temp, "sites.html", "menu8"));
 	}
 
 
@@ -827,6 +880,9 @@ function siteRegistration($id)
 			{
 			global $babBody;
 			$this->item = $id;
+			$this->yes = bab_translate("Yes");
+			$this->no = bab_translate("No");
+			$this->registration = bab_translate("Activate Registration")."?";
 			$this->field = bab_translate("Fields to display in registration form");
 			$this->rw = bab_translate("Use in registration");
 			$this->required = bab_translate("Required");
@@ -858,7 +914,7 @@ function siteRegistration($id)
 			$this->groups = $tree->getGroups(BAB_REGISTERED_GROUP, '%s &nbsp; &nbsp; &nbsp; ');
 			unset($this->groups[BAB_ADMINISTRATOR_GROUP]);
 
-			$this->arrsite = $this->db->db_fetch_array($this->db->db_query("select email_confirm, display_disclaimer, idgroup from ".BAB_SITES_TBL." where id='".$id."'"));
+			$this->arrsite = $this->db->db_fetch_array($this->db->db_query("select registration, email_confirm, display_disclaimer, idgroup from ".BAB_SITES_TBL." where id='".$id."'"));
 			if( $this->arrsite['display_disclaimer'] == "Y")
 				{
 				$this->dpchecked = "checked";
@@ -982,7 +1038,7 @@ function siteRegistration($id)
 		}
 
 	$temp = new temp($id);
-	$babBody->babecho( bab_printTemplate($temp,"sites.html", "siteregistration"));
+	$babBody->babecho( bab_printTemplate($temp,"sites.html", "menu9"));
 	}
 
 function editDisclaimerPrivacy($id, $content)
@@ -1081,8 +1137,36 @@ function editor_configuration($id_site)
 		}
 
 	$temp = new temp($id_site);
-	$babBody->babecho(bab_printTemplate($temp,"sites.html", "editor"));
+	$babBody->babecho(bab_printTemplate($temp,"sites.html", "menu10"));
 	}
+
+
+function siteMenu($id_site)
+{
+global $babBody;
+
+	class temp extends site_configuration_cls
+		{
+		function temp($id_site)
+			{
+			$this->t_delete = bab_translate("Delete");
+			$this->site_configuration_cls($id_site);
+			}
+
+		function getnext()
+			{
+			return list($this->page,$this->text) = each($this->menu);
+			}
+		}
+
+	$temp = new temp($id_site);
+	$babBody->babecho(bab_printTemplate($temp,"sites.html", "menu"));
+}
+
+
+
+/* ************************** RECORD ************************** */
+
 
 
 function record_editor_configuration($id_site)
@@ -1208,7 +1292,7 @@ function siteUpdate_bloc1($id, $name, $description, $lang, $style, $siteemail, $
 		$name = stripslashes($name);
 		}
 
-	$db = $GLOBALS['babDB'];
+	$db = &$GLOBALS['babDB'];
 	$query = "select * from ".BAB_SITES_TBL." where name='".$namev."' and id!='".$id."'";
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) > 0)
@@ -1237,42 +1321,204 @@ function siteUpdate_bloc1($id, $name, $description, $lang, $style, $siteemail, $
 			$req .= "name='".$namev."', ";
 			}
 
-		if( !is_numeric($imgsize))
-			$imgsize = 25;
+
 		$req .= "description='".$description."', lang='".$lang."', adminemail='".$siteemail."', adminname='".$adminname."', skin='".$skin."', style='".$style."', registration='".$register."', stat_log='".$statlog."', mailfunc='".$mailfunc."', smtpserver='".$server."', smtpport='".$serverport."', imgsize='".$imgsize."', smtpuser='".$smtpuser."', smtppassword=ENCODE(\"".$smtppass."\",\"".$GLOBALS['BAB_HASH_VAR']."\"), langfilter='" .$langfilter. "' where id='".$id."'";
 		$db->db_query($req);
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
 	}
 
-
-function siteUpdate_bloc2($id,$total_diskspace, $user_diskspace, $folder_diskspace, $maxfilesize, $uploadpath, $babslogan, $remember_login, $email_password, $change_password, $change_nickname, $name_order, $user_workdays)
+function siteSave($name, $description,$babslogan, $lang, $siteemail, $skin, $style, $langfilter, $adminname, $name_order)
 	{
 	global $babBody;
-	if( !bab_isMagicQuotesGpcOn())
+
+
+	$db = &$GLOBALS['babDB'];
+	$query = "select * from ".BAB_SITES_TBL." where name='$name'";	
+	$res = $db->db_query($query);
+	if( $db->db_num_rows($res) > 0)
 		{
-		$babslogan = addslashes($babslogan);
-		$uploadpath = addslashes($uploadpath);
+		$babBody->msgerror = bab_translate("ERROR: This site already exists");
+		return false;
+		}
+	else
+		{
+		if( !is_numeric($imgsize))
+			{
+			$imgsize = 50;
+			}
+		$query = "insert into ".BAB_SITES_TBL." (name, description, lang, adminemail, adminname, skin, style, registration, stat_log, mailfunc, smtpserver, smtpport, imgsize, smtpuser, smtppassword, langfilter,total_diskspace, user_diskspace, folder_diskspace, maxfilesize, uploadpath, babslogan, remember_login, change_password, change_nickname, name_order, user_workdays) VALUES ('" .$name. "', '" . $description. "', '" . $lang. "', '" . $siteemail. "', '" . $adminname. "', '" . $skin. "', '" . $style. "', '" . $register. "', '" . $statlog. "', '" . $mailfunc. "', '" . $server. "', '" . $serverport. "', '" . $imgsize. "', '". $smtpuser. "', ENCODE(\"".$smtppass."\",\"".$GLOBALS['BAB_HASH_VAR']."\"),\"".$langfilter."\",'". $total_diskspace ."','". $user_diskspace ."','". $folder_diskspace."','".$maxfilesize."', '".$uploadpath."','". $babslogan."','". $remember_login."', '".$change_password."','". $change_nickname."','". $name_order."' , '".$user_workdays."')";
+		$db->db_query($query);
+		$idsite = $db->db_insert_id();
+		$db->db_query("insert into ".BAB_SITES_DISCLAIMERS_TBL." (id_site, disclaimer_text) values ('".$idsite."','')");
+
+		$resf = $db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='0'");
+		while( $row = $db->db_fetch_array($resf))
+			{
+			$db->db_query("insert into ".BAB_LDAP_SITES_FIELDS_TBL." (id_field, x_name, id_site) values ('".$row['id_field']."','','".$idsite."')");
+			$db->db_query("insert into ".BAB_SITES_FIELDS_REGISTRATION_TBL." (id_site, id_field, registration, required, multilignes) values ('".$idsite."', '".$row['id_field']."','N','N', 'N')");
+			}
+
+		$db->db_query("update ".BAB_SITES_FIELDS_REGISTRATION_TBL." set registration='Y', required='Y' where id_site='".$idsite."' and id_field IN ('2', '4', '6')");	
+		$db->db_query("update ".BAB_SITES_FIELDS_REGISTRATION_TBL." set registration='Y' where id_site='".$idsite."' and id_field='3'");	
+		}
+	return true;
+	}
+
+function siteUpdate_menu1()
+{
+	$db = &$GLOBALS['babDB'];
+	global $babBody;
+
+	$name			= &$_POST['name'];
+	$description	= &$_POST['description'];
+	$babslogan		= &$_POST['babslogan'];
+	$lang			= &$_POST['lang'];
+	$style			= &$_POST['style'];
+	$siteemail		= &$_POST['siteemail'];
+	$adminname		= &$_POST['adminname'];
+	$skin			= &$_POST['skin'];
+	$langfilter		= &$_POST['langfilter'];
+	$name_order		= &$_POST['name_order'];
+
+	if( empty($name))
+		{
+		$babBody->msgerror = bab_translate("ERROR: You must provide a name !!");
+		return false;
 		}
 
-	if( !is_numeric($total_diskspace) || !is_numeric($user_diskspace) || !is_numeric($folder_diskspace) || !is_numeric($maxfilesize))
+	if( !bab_isMagicQuotesGpcOn())
+		{
+		$description = addslashes($description);
+		$namev = addslashes($name);
+		$adminname = addslashes($adminname);
+		}
+	else
+		{
+		$namev = $name;
+		$name = stripslashes($name);
+		}
+
+
+	if (empty($_POST['item']))
+		{
+		// create
+		return siteSave($name, $description,$babslogan, $lang, $siteemail, $skin, $style, $langfilter, $adminname, $name_order);
+		}
+
+	
+
+	
+	if( !bab_isMagicQuotesGpcOn())
+		{
+		$_POST['server'] = addslashes($_POST['server']);
+		$_POST['smtpuser'] = addslashes($_POST['smtpuser']);
+		$_POST['smtppass'] = addslashes($_POST['smtppass']);
+		}
+
+	$req = "UPDATE ".BAB_SITES_TBL." SET 
+			
+		where id='".$_POST['item']."'";
+
+	$db->db_query($req);
+
+	return true;
+}
+
+
+function siteUpdate_menu2()
+{
+	global $babBody;
+	$db = &$GLOBALS['babDB'];
+
+	if( $_POST['mailfunc'] == "smtp" && empty($_POST['smtpserver']))
+		{
+		$babBody->msgerror = bab_translate("ERROR: You must provide server address !!");
+		return false;
+		}
+
+	if( !empty($_POST['smtppass']) || !empty($_POST['smtppass2']))
+		{
+		if( $_POST['smtppass'] != $_POST['smtppass2'] )
+			{
+			$babBody->msgerror = bab_translate("ERROR: Passwords not match !!");
+			return false;
+			}
+		}
+
+	if( empty($_POST['serverport']))
+		{
+		$_POST['serverport'] = "25";
+		}
+	
+	if( !bab_isMagicQuotesGpcOn())
+		{
+		$_POST['smtpserver'] = addslashes($_POST['smtpserver']);
+		$_POST['smtpuser'] = addslashes($_POST['smtpuser']);
+		$_POST['smtppass'] = addslashes($_POST['smtppass']);
+		}
+
+	$req = "UPDATE ".BAB_SITES_TBL." SET 
+			mailfunc = '".$_POST['mailfunc']."', 
+			smtpserver = '".$_POST['smtpserver']."', 
+			smtpport = '".$_POST['smtpport']."', 
+			smtpuser = '".$_POST['smtpuser']."', 
+			smtppassword=ENCODE(\"".$_POST['smtppass']."\",\"".$GLOBALS['BAB_HASH_VAR']."\") 
+		where id='".$_POST['item']."'";
+
+	$db->db_query($req);
+
+	return true;
+}
+
+
+function siteUpdate_menu3()
+{
+	$db = &$GLOBALS['babDB'];
+
+	$req = "UPDATE ".BAB_SITES_TBL." SET 
+			change_nickname='".$_POST['change_nickname']."',
+			change_password='".$_POST['change_password']."',
+			change_lang='".$_POST['change_lang']."', 
+			change_skin='".$_POST['change_skin']."', 
+			change_date='".$_POST['change_date']."', 
+			user_workdays='".$_POST['user_workdays']."', 
+			remember_login='".$_POST['remember_login']."', 
+			email_password='".$_POST['email_password']."' 
+		WHERE id='".$_POST['item']."'";
+
+	$db->db_query($req);
+
+	return true;
+}
+
+
+function siteUpdate_menu4()
+{
+	if( !bab_isMagicQuotesGpcOn())
+		{
+		$_POST['uploadpath'] = addslashes($_POST['uploadpath']);
+		}
+
+	if( !is_numeric($_POST['maxfilesize']) || !is_numeric($_POST['folder_diskspace']) || !is_numeric($_POST['user_diskspace']) || !is_numeric($_POST['total_diskspace']))
 		{
 		$babBody->msgerror = bab_translate("ERROR: You must provide all file manager size limits !!");
 		return false;
 		}
 
-	$db = $GLOBALS['babDB'];
+	if( !is_numeric($_POST['imgsize']))
+		$_POST['imgsize'] = 25;
 
-	list($oldname) = $db->db_fetch_row($db->db_query("select name from ".BAB_SITES_TBL." where id='".$id."'"));
-	$req = "update ".BAB_SITES_TBL." set ";
+	$db = &$GLOBALS['babDB'];
 
-	$req .= "total_diskspace='".$total_diskspace."', user_diskspace='".$user_diskspace."', folder_diskspace='".$folder_diskspace."', maxfilesize='".$maxfilesize."', uploadpath='".$uploadpath."', babslogan='".$babslogan."', remember_login='".$remember_login."', email_password='".$email_password."', change_password='".$change_password."', change_nickname='".$change_nickname."', name_order='".$name_order."', user_workdays='".$user_workdays."' where id='".$id."'";
+	$req = "UPDATE ".BAB_SITES_TBL." set imgsize='".$_POST['imgsize']."', uploadpath='".$_POST['uploadpath']."', maxfilesize='".$_POST['maxfilesize']."', folder_diskspace='".$_POST['folder_diskspace']."', user_diskspace='".$_POST['user_diskspace']."', total_diskspace='".$_POST['total_diskspace']."'  where id='".$_POST['item']."'";
 	$db->db_query($req);
 
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
-	}
+	return true;
+}
 
-function siteUpdate_bloc3($item,$datelformat, $datesformat, $timeformat)
+
+function siteUpdate_menu5($item,$datelformat, $datesformat, $timeformat)
 	{
 	global $babBody;
 	if( !bab_isMagicQuotesGpcOn())
@@ -1282,15 +1528,15 @@ function siteUpdate_bloc3($item,$datelformat, $datesformat, $timeformat)
 		$timeformat = addslashes($timeformat);
 		}
 
-	$db = $GLOBALS['babDB'];
+	$db = &$GLOBALS['babDB'];
 
 	$req = "update ".BAB_SITES_TBL." set date_longformat='".$datelformat."', date_shortformat='".$datesformat."', time_format='".$timeformat."' where id='".$item."'";
 	$db->db_query($req);
 
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
+	return true;
 	}
 
-function siteUpdate_bloc4($item)
+function siteUpdate_menu6($item)
 	{
 	$db = & $GLOBALS['babDB'];
 
@@ -1328,8 +1574,6 @@ function siteUpdate_bloc4($item)
 		}
 
 	bab_emptyNonWorkingDays($item);
-
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
 	}
 
 function siteUpdate_authentification($id, $authtype, $host, $hostname, $ldpapchkcnx, $searchdn)
@@ -1408,7 +1652,7 @@ function siteUpdateRegistration($item, $rw, $rq, $ml, $cdp, $cen, $group)
 {
 	global $babBody, $babDB;
 
-	$babDB->db_query("update ".BAB_SITES_TBL." set display_disclaimer='".$cdp."', email_confirm='".$cen."', idgroup='".$group."' where id='".$item."'");
+	$babDB->db_query("update ".BAB_SITES_TBL." set registration='".$_POST['register']."',display_disclaimer='".$cdp."', email_confirm='".$cen."', idgroup='".$group."' where id='".$item."'");
 	$res = $babDB->db_query("select id from ".BAB_SITES_FIELDS_REGISTRATION_TBL." where id_site='".$item."'");
 	while( $arr = $babDB->db_fetch_array($res))
 		{
@@ -1482,11 +1726,20 @@ if( !isset($BAB_SESS_LOGGED) || empty($BAB_SESS_LOGGED) ||  !$babBody->isSuperAd
 	return;
 }
 
-if (isset($_POST['modify']))
-{
-switch ($_POST['modify'])
-	{
+$idx = isset($_REQUEST['idx']) ? $_REQUEST['idx'] : 'menusite';
 
+
+
+if( isset($_GET['action']) && $_GET['action'] == "Yes")
+	{
+	confirmDeleteSite($_GET['site']);
+	}
+
+
+if (isset($_POST['action']))
+{
+switch ($_POST['action'])
+	{
 	case 'bloc1':
 		if( !empty($Submit))
 			{
@@ -1499,78 +1752,82 @@ switch ($_POST['modify'])
 			}
 		break;
 
-	case 'bloc2':
+	case 'menu1':
+		if (!siteUpdate_menu1())
+			$idx = 'menu1';
+		break;
+
+	case 'menu2':
+		if (!siteUpdate_menu2())
+			$idx = 'menu2';
+		break;
+
+	case 'menu3':
+		if (!siteUpdate_menu3())
+			$idx = 'menu3';
+		break;
+
+	case 'menu4':
+		if (!siteUpdate_menu4())
+			$idx = 'menu4';
+		break;
+
+	case 'menu5':
+
+		if(!siteUpdate_menu5($_POST['item'],$_POST['date_longformat'], $_POST['date_shortformat'], $_POST['time_format']))
+			$idx = 'menu5';
+
+		break;
+
+	case 'menu6':
+		siteUpdate_menu6($_POST['item']);
+		break;
+
+
+	case 'menu8':
 		if( !empty($Submit))
 			{
-			if(!siteUpdate_bloc2($item,$total_diskspace, $user_diskspace, $folder_diskspace, $maxfilesize, $uploadpath, $babslogan, $remember_login, $email_password,  $change_password, $change_nickname, $name_order, $user_workdays))
-				$idx = "modify";
+			$hostname = isset($_POST['hostname']) ? $_POST['hostname'] : '';
+			$ldpapchkcnx = isset($_POST['ldpapchkcnx']) ? $_POST['ldpapchkcnx'] : 'N';
+			$searchdn = isset($_POST['searchdn']) ? $_POST['searchdn'] : '';
+
+			if(!siteUpdate_authentification($_POST['item'], $_POST['authtype'], $_POST['host'], $hostname, $ldpapchkcnx, $searchdn))
+				$idx = "menu8";
 			}
 		break;
 
-	case 'bloc3':
-		if( !empty($Submit))
-			{
-			if(!siteUpdate_bloc3($item,$datelformat, $datesformat, $timeformat))
-				$idx = "modify";
-			}
+	case 'menu9':
+		$ml = isset($_POST['ml']) ? $_POST['ml'] : array();
+		$rw = isset($_POST['rw']) ? $_POST['rw'] : array();
+		$req = isset($_POST['req']) ? $_POST['req'] : array();
+		$cdp = isset($_POST['cdp']) ? $_POST['cdp'] : 'N';
+		$cen = isset($_POST['cen']) ? $_POST['cen'] : 'O';
+
+		siteUpdateRegistration($_POST['item'], $rw, $req, $ml, $cdp, $cen, $_POST['group']);
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=site&idx=menusite&item=".$_POST['item']);
+		exit;
 		break;
 
-	case 'bloc4':
-		siteUpdate_bloc4($_POST['item']);
-
+	case 'menu10':
+		record_editor_configuration($_POST['item']);
 		break;
 
-
-	case 'auth':
-		if( !empty($Submit))
-			{
-			if( !isset($hostname)) { $hostname='';}
-			if( !isset($ldpapchkcnx)) { $ldpapchkcnx='N';}
-			if(!siteUpdate_authentification($item, $authtype, $host, $hostname, $ldpapchkcnx, $searchdn))
-				$idx = "auth";
-			}
+	case 'updisc':
+		siteUpdateDisclaimer($_POST['item'], $_POST['content']);
+		$popupmessage = bab_translate("Update done");
 		break;
 	}
 }
 
 
-if( isset($update) )
-	{
-	if( $update == "updisc" )
-		{
-		siteUpdateDisclaimer($item, $content);
-		$popupmessage = bab_translate("Update done");
-		}
-	else if( $update == "enreg" )
-		{
-		if (!isset($ml)) { $ml = array(); }
-		if (!isset($rw)) { $rw = array(); }
-		if (!isset($req)) { $req = array(); }
-		if (!isset($cdp)) { $cdp = 'N'; }
-		if (!isset($cen)) { $cen = '0'; }
-		siteUpdateRegistration($item, $rw, $req, $ml, $cdp, $cen, $group);
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
-		exit;
-		}
-	}
-elseif( isset($aclman) )
+if( isset($aclman) )
 	{
 	maclGroups();
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
 	}
 
-if( !isset($idx))
-	$idx = "modify";
 
-if( isset($action) && $action == "Yes")
-	{
-	confirmDeleteSite($site);
-	}
 
-if( isset($_POST['action']) && $_POST['action'] == "editor_configuration")
-	{
-	record_editor_configuration($_POST['id_site']);
-	}
+$babBody->addItemMenu("List", bab_translate("Sites"),$GLOBALS['babUrlScript']."?tg=sites&idx=list");
 
 switch($idx)
 	{
@@ -1585,76 +1842,98 @@ switch($idx)
 		editDisclaimerPrivacy($item, $content);
 		exit;
 		break;
-	case "cnx":
-		$babBody->title = bab_translate("Registration").": ".getSiteName($item);
-		include_once $babInstallPath."utilit/dirincl.php";
-		siteRegistration($item);
+
+	case "Delete":
+		$babBody->title = getSiteName($_REQUEST['item']);
+		sectionDelete($_REQUEST['item']);
 		$babBody->addItemMenu("List", bab_translate("Sites"),$GLOBALS['babUrlScript']."?tg=sites&idx=list");
-		$babBody->addItemMenu("modify", bab_translate("Modify"),$GLOBALS['babUrlScript']."?tg=site&idx=modify&item=".$item);
-		$babBody->addItemMenu("hman", bab_translate("Managers"),$GLOBALS['babUrlScript']."?tg=site&idx=hman&item=".$item);
-		$babBody->addItemMenu("auth", bab_translate("Authentification"),$GLOBALS['babUrlScript']."?tg=site&idx=auth&item=".$item);
-		$babBody->addItemMenu("cnx", bab_translate("Registration"),$GLOBALS['babUrlScript']."?tg=site&idx=cnx&item=".$item);
-		$babBody->addItemMenu("editor", bab_translate("Editor"),$GLOBALS['babUrlScript']."?tg=site&idx=editor&item=".$item);
+		$babBody->addItemMenu("menusite", bab_translate("Modify"),$GLOBALS['babUrlScript']."?tg=site&item=".$_REQUEST['item']);
+		$babBody->addItemMenu("Delete", bab_translate("Delete"),$GLOBALS['babUrlScript']."?tg=site&idx=Delete&item=".$_REQUEST['item']);
+		break;
+	
+	case "create":
+	case "menu1":
+		site_menu1();
+		if (empty($_REQUEST['item']))
+			{
+			
+			$babBody->addItemMenu("create", bab_translate("Create"),$GLOBALS['babUrlScript']."?tg=site&idx=create");
+			}
+		else
+			{
+			$babBody->addItemMenu("menusite", bab_translate("Menu"),$GLOBALS['babUrlScript']."?tg=site&item=".$_REQUEST['item']);
+			$babBody->addItemMenu("menu1", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=site&idx=menu1&item=".$_REQUEST['item']);
+			}
 		break;
 
-	case "auth":
-		$babBody->title = bab_translate("Authentification").": ".getSiteName($item);
-		siteAuthentification($item);
-		$babBody->addItemMenu("List", bab_translate("Sites"),$GLOBALS['babUrlScript']."?tg=sites&idx=list");
-		$babBody->addItemMenu("modify", bab_translate("Modify"),$GLOBALS['babUrlScript']."?tg=site&idx=modify&item=".$item);
-		$babBody->addItemMenu("hman", bab_translate("Managers"),$GLOBALS['babUrlScript']."?tg=site&idx=hman&item=".$item);
-		$babBody->addItemMenu("auth", bab_translate("Authentification"),$GLOBALS['babUrlScript']."?tg=site&idx=auth&item=".$item);
-		$babBody->addItemMenu("cnx", bab_translate("Registration"),$GLOBALS['babUrlScript']."?tg=site&idx=cnx&item=".$item);
-		$babBody->addItemMenu("editor", bab_translate("Editor"),$GLOBALS['babUrlScript']."?tg=site&idx=editor&item=".$item);
+	case "menu2":
+		$babBody->addItemMenu("menusite", bab_translate("Menu"),$GLOBALS['babUrlScript']."?tg=site&item=".$_REQUEST['item']);
+		$babBody->addItemMenu("menu2", bab_translate("Modify"),$GLOBALS['babUrlScript']."?tg=site&idx=menu2&item=".$_REQUEST['item']);
+		site_menu2($_REQUEST['item']);
 		break;
 
-	case "hman":
-		$babBody->title = bab_translate("Home pages managers").": ".getSiteName($item);
-		$macl = new macl("site", "modify", $item, "aclman");
+	case "menu3":
+		$babBody->addItemMenu("menusite", bab_translate("Menu"),$GLOBALS['babUrlScript']."?tg=site&item=".$_REQUEST['item']);
+		$babBody->addItemMenu("menu3", bab_translate("Modify"),$GLOBALS['babUrlScript']."?tg=site&idx=menu3&item=".$_REQUEST['item']);
+		site_menu3($_REQUEST['item']);
+		break;
+
+	case "menu4":
+		$babBody->addItemMenu("menusite", bab_translate("Menu"),$GLOBALS['babUrlScript']."?tg=site&item=".$_REQUEST['item']);
+		$babBody->addItemMenu("menu4", bab_translate("Modify"),$GLOBALS['babUrlScript']."?tg=site&idx=menu4&item=".$_REQUEST['item']);
+		site_menu4($_REQUEST['item']);
+		break;
+
+	case "menu5":
+		$babBody->addItemMenu("menusite", bab_translate("Menu"),$GLOBALS['babUrlScript']."?tg=site&item=".$_REQUEST['item']);
+		$babBody->addItemMenu("menu5", bab_translate("Modify"),$GLOBALS['babUrlScript']."?tg=site&idx=menu5&item=".$_REQUEST['item']);
+		site_menu5($_REQUEST['item']);
+		break;
+
+	case "menu6":
+		$babBody->addItemMenu("menusite", bab_translate("Menu"),$GLOBALS['babUrlScript']."?tg=site&item=".$_REQUEST['item']);
+		$babBody->addItemMenu("menu6", bab_translate("Modify"),$GLOBALS['babUrlScript']."?tg=site&idx=menu6&item=".$_REQUEST['item']);
+		site_menu6($_REQUEST['item']);
+		break;
+
+	
+	case "menu7":
+		$babBody->title = bab_translate("Home pages managers").": ".getSiteName($_REQUEST['item']);
+		$macl = new macl("site", "menusite", $_REQUEST['item'], "aclman");
         $macl->addtable( BAB_SITES_HPMAN_GROUPS_TBL,bab_translate("Who can manage home pages for this site?"));
 		$macl->filter(0,0,1,1,1);
         $macl->babecho();
-		$babBody->addItemMenu("List", bab_translate("Sites"),$GLOBALS['babUrlScript']."?tg=sites&idx=list");
-		$babBody->addItemMenu("modify", bab_translate("Modify"),$GLOBALS['babUrlScript']."?tg=site&idx=modify&item=".$item);
-		$babBody->addItemMenu("hman", bab_translate("Managers"),$GLOBALS['babUrlScript']."?tg=site&idx=hman&item=".$item);
-		$babBody->addItemMenu("auth", bab_translate("Authentification"),$GLOBALS['babUrlScript']."?tg=site&idx=auth&item=".$item);
-		$babBody->addItemMenu("cnx", bab_translate("Registration"),$GLOBALS['babUrlScript']."?tg=site&idx=cnx&item=".$item);
-		$babBody->addItemMenu("editor", bab_translate("Editor"),$GLOBALS['babUrlScript']."?tg=site&idx=editor&item=".$item);
+		$babBody->addItemMenu("menusite", bab_translate("Menu"),$GLOBALS['babUrlScript']."?tg=site&item=".$_REQUEST['item']);
+		$babBody->addItemMenu("menu7", bab_translate("Managers"),$GLOBALS['babUrlScript']."?tg=site&idx=hman&item=".$_REQUEST['item']);
 		break;
 
-	case "editor":
-		if (isset($_POST['id_site']))
-			$item = $_POST['id_site'];
-
-		$babBody->title = bab_translate("Editor").": ".getSiteName($item);
-
-		editor_configuration($item);
-
-		$babBody->addItemMenu("List", bab_translate("Sites"),$GLOBALS['babUrlScript']."?tg=sites&idx=list");
-		$babBody->addItemMenu("modify", bab_translate("Modify"),$GLOBALS['babUrlScript']."?tg=site&idx=modify&item=".$item);
-		$babBody->addItemMenu("hman", bab_translate("Managers"),$GLOBALS['babUrlScript']."?tg=site&idx=hman&item=".$item);
-		$babBody->addItemMenu("auth", bab_translate("Authentification"),$GLOBALS['babUrlScript']."?tg=site&idx=auth&item=".$item);
-		$babBody->addItemMenu("cnx", bab_translate("Registration"),$GLOBALS['babUrlScript']."?tg=site&idx=cnx&item=".$item);
-		$babBody->addItemMenu("editor", bab_translate("Editor"),$GLOBALS['babUrlScript']."?tg=site&idx=editor&item=".$item);
+	case "menu8":
+		$babBody->title = bab_translate("Authentification").": ".getSiteName($_REQUEST['item']);
+		siteAuthentification($_REQUEST['item']);
+		$babBody->addItemMenu("menusite", bab_translate("Menu"),$GLOBALS['babUrlScript']."?tg=site&item=".$_REQUEST['item']);
+		$babBody->addItemMenu("menu8", bab_translate("Authentification"),$GLOBALS['babUrlScript']."?tg=site&idx=auth&item=".$_REQUEST['item']);
 		break;
 
-	case "Delete":
-		$babBody->title = getSiteName($item);
-		sectionDelete($item);
-		$babBody->addItemMenu("List", bab_translate("Sites"),$GLOBALS['babUrlScript']."?tg=sites&idx=list");
-		$babBody->addItemMenu("modify", bab_translate("Modify"),$GLOBALS['babUrlScript']."?tg=site&idx=modify&item=".$item);
-		$babBody->addItemMenu("Delete", bab_translate("Delete"),$GLOBALS['babUrlScript']."?tg=site&idx=Delete&item=".$item);
+	case "menu9":
+		$babBody->title = bab_translate("Registration").": ".getSiteName($_REQUEST['item']);
+		include_once $babInstallPath."utilit/dirincl.php";
+		siteRegistration($_REQUEST['item']);
+		$babBody->addItemMenu("menusite", bab_translate("Menu"),$GLOBALS['babUrlScript']."?tg=site&item=".$_REQUEST['item']);
+		$babBody->addItemMenu("menu9", bab_translate("Registration"),$GLOBALS['babUrlScript']."?tg=site&idx=cnx&item=".$_REQUEST['item']);
 		break;
+
+	case "menu10":
+		$babBody->title = bab_translate("Editor").": ".getSiteName($_REQUEST['item']);
+		editor_configuration($_REQUEST['item']);
+		$babBody->addItemMenu("menusite", bab_translate("Menu"),$GLOBALS['babUrlScript']."?tg=site&item=".$_REQUEST['item']);
+		$babBody->addItemMenu("menu10", bab_translate("Editor"),$GLOBALS['babUrlScript']."?tg=site&idx=editor&item=".$_REQUEST['item']);
+		break;
+
 	default:
-	case "modify":
-		$babBody->title = getSiteName($item);
-		siteModify($item);
-		$babBody->addItemMenu("List", bab_translate("Sites"),$GLOBALS['babUrlScript']."?tg=sites&idx=list");
-		$babBody->addItemMenu("modify", bab_translate("Modify"),$GLOBALS['babUrlScript']."?tg=site&idx=modify&item=".$item);
-		$babBody->addItemMenu("hman", bab_translate("Managers"),$GLOBALS['babUrlScript']."?tg=site&idx=hman&item=".$item);
-		$babBody->addItemMenu("auth", bab_translate("Authentification"),$GLOBALS['babUrlScript']."?tg=site&idx=auth&item=".$item);
-		$babBody->addItemMenu("cnx", bab_translate("Registration"),$GLOBALS['babUrlScript']."?tg=site&idx=cnx&item=".$item);
-		$babBody->addItemMenu("editor", bab_translate("Editor"),$GLOBALS['babUrlScript']."?tg=site&idx=editor&item=".$item);
+	case 'menusite':
+		$babBody->addItemMenu("menusite", bab_translate("Menu"),$GLOBALS['babUrlScript']."?tg=site&item=".$_REQUEST['item']);
+		$babBody->title = getSiteName($_REQUEST['item']);
+		siteMenu($_REQUEST['item']);
 		break;
 	}
 

@@ -793,6 +793,7 @@ CREATE TABLE bab_contacts (
 # Structure de la table 'bab_sites'
 #
 
+
 CREATE TABLE `bab_sites` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `name` varchar(30) NOT NULL default '',
@@ -804,7 +805,7 @@ CREATE TABLE `bab_sites` (
   `style` varchar(255) NOT NULL default '',
   `registration` enum('Y','N') NOT NULL default 'Y',
   `display_disclaimer` enum('N','Y') NOT NULL default 'N',
-  `email_confirm` tinyint( 2 ) unsigned NOT NULL default '0',
+  `email_confirm` tinyint(4) NOT NULL default '0',
   `mailfunc` varchar(20) NOT NULL default 'mail',
   `smtpserver` varchar(255) NOT NULL default '',
   `smtpport` varchar(20) NOT NULL default '25',
@@ -822,22 +823,29 @@ CREATE TABLE `bab_sites` (
   `remember_login` enum('Y','N','L') NOT NULL default 'N',
   `change_password` enum('Y','N') NOT NULL default 'Y',
   `change_nickname` enum('Y','N') NOT NULL default 'Y',
+  `change_lang` enum('Y','N') NOT NULL default 'Y',
+  `change_skin` enum('Y','N') NOT NULL default 'Y',
+  `change_date` enum('Y','N') NOT NULL default 'Y',
   `name_order` enum('F L','L F') NOT NULL default 'F L',
   `email_password` enum('Y','N') NOT NULL default 'Y',
   `authentification` smallint(5) unsigned NOT NULL default '0',
   `ldap_host` tinytext NOT NULL,
   `ldap_domainname` varchar(255) NOT NULL default '',
+  `ldap_basedn` text NOT NULL,
+  `ldap_userdn` text NOT NULL,
+  `ldap_password` tinyblob NOT NULL,
   `ldap_searchdn` text NOT NULL,
   `ldap_attribute` text NOT NULL,
+  `ldap_passwordtype` enum('text','md5','unix','sha') NOT NULL default 'text',
   `ldap_allowadmincnx` enum('Y','N') NOT NULL default 'Y',
   `ldap_encryptiontype` varchar(255) NOT NULL default '',
   `date_longformat` varchar(255) NOT NULL default '',
   `date_shortformat` varchar(255) NOT NULL default '',
   `time_format` varchar(255) NOT NULL default '',
   `stat_update_time` datetime NOT NULL default '0000-00-00 00:00:00',
-  `workdays` varchar(20) NOT NULL default '1,2,3,4,5',
+  `workdays` varchar(20) NOT NULL default '',
   `user_workdays` enum('Y','N') NOT NULL default 'Y',
-  `stat_log` enum('N','Y') NOT NULL default 'N',
+  `stat_log` enum('Y','N') NOT NULL default 'N',
   PRIMARY KEY  (`id`),
   KEY `name` (`name`)
 );

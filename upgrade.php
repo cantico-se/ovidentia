@@ -5038,6 +5038,16 @@ if ( $arr[0] != BAB_GROUPS_SET_ASSOC_TBL )
 		)");
 	}
 
+$arr = $db->db_fetch_array($db->db_query("DESCRIBE ".BAB_SITES_TBL." change_lang"));
+if ($arr[0] != 'change_lang')
+	{
+	$db->db_query("ALTER TABLE `".BAB_SITES_TBL."` ADD `change_lang` ENUM( 'Y', 'N' ) NOT NULL AFTER `change_nickname` ,
+				ADD `change_skin` ENUM( 'Y', 'N' ) NOT NULL AFTER `change_lang` ,
+				ADD `change_date` ENUM( 'Y', 'N' ) NOT NULL AFTER `change_skin`
+				");
+	}
+
+
 return $ret;
 }
 

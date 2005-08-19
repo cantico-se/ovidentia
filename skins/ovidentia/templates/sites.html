@@ -1,312 +1,3 @@
-<!--#begin sitecreate -->
-<script language="javascript">
-function validateNum(field) 
-	{
-	var valid = "0123456789"
-	var temp;
-	for (var i=0; i<field.value.length; i++) {
-		temp = "" + field.value.substring(i, i+1);
-		if (valid.indexOf(temp) == "-1") 
-			field.value = field.value.substring(0, i)+field.value.substring(i+1,field.value.length);
-		}
-	}
-</script>
-
-<form name="formsite" method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="sites" />
-<input type="hidden" name="idx" value="0" />
-<input type="hidden" name="create" value="create" />
-  <table class="BabLoginCadreBackground"  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td> 
-        <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
-          <tr valign="middle"> 
-            <td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ name }</td>
-            <td class="BabLoginMenuBackground" width="70%"> 
-              <input type="text" name="name" size="30" maxlength="30" value="{ nameval }" />
-</td>
-</tr>
-          <tr valign="middle"> 
-            <td class="BabLoginMenuBackground" align="left" nowrap>{ description }</td>
-            <td> 
-              <input type="text" name="description" size="45" maxlength="100" value="{ descriptionval }" />
-</td>
-</tr>
-          <tr valign="middle"> 
-            <td class="BabLoginMenuBackground" align="left" nowrap>{ 
-              lang }</td>
-            <td> 
-              <select name="lang">
-                  <!--#in getnextlang -->
-                  <option value="{ langval }" { langselected }>{ langval }</option>
-                  <!--#endin getnextlang -->
-                </select>
-</td>
-</tr>
-          <tr valign="middle"> 
-            <td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ 
-              langfiltertxt }</td>
-            <td class="BabLoginMenuBackground" width="70%" align="left"> 
-			<select name="langfilter">
-			<!--#in getnextlangfilter -->
-			<option value="{ langfilterval }" { langfilterselected }>{ langfilterval }</option>
-			<!--#endin getnextlangfilter -->
-			</select>
-</td>
-</tr>
-          <tr valign="middle"> 
-            <td class="BabLoginMenuBackground"  align="left" nowrap>{ 
-              skin }</td>
-            <td class="BabLoginMenuBackground" align="left"> 
-              <select name="skin" onChange="mm(document.forms.formsite.skin.selectedIndex)">
-    <!--#in getnextskin -->
-    <option value="{ skinval }" { skinselected }>{ skinval }</option>
-    <!--#endin getnextskin -->
-  </select>
-              <select name="style">
-                </select>
-            </td>
-          </tr>
-          <tr valign="middle"> 
-            <td class="BabLoginMenuBackground"  align="left" nowrap>{ 
-              registration }</td>
-            <td class="BabLoginMenuBackground" align="left"> 
-              <select name="register">
-                  <option value="Y" selected>{ yes }</option>
-                  <option value="N">{ no }</option>
-                </select>
-            </td>
-</tr>
-          <tr valign="middle"> 
-            <td class="BabLoginMenuBackground"  align="left" nowrap>{ 
-              stattxt }</td>
-            <td class="BabLoginMenuBackground" align="left"> 
-              <select name="statlog">
-                  <option value="Y" selected>{ yes }</option>
-                  <option value="N">{ no }</option>
-                </select>
-            </td>
-</tr>
-          <tr valign="middle"> 
-            <td class="BabLoginMenuBackground" align="left" nowrap>{ 
-              siteemail }</td>
-            <td> 
-              <input type="text" name="siteemail" size="30" maxlength="254" value="{ siteemailval }" />
-</td>
-</tr>
-          <tr valign="middle"> 
-            <td class="BabLoginMenuBackground" align="left" nowrap>{ 
-              adminnametxt }</td>
-            <td> 
-              <input type="text" name="adminname" size="30" maxlength="254" value="{ adminnameval }" />
-</td>
-</tr>
-          <tr valign="middle"> 
-            <td class="BabLoginMenuBackground"  align="left" nowrap>{ 
-              mailfunction }</td>
-            <td class="BabLoginMenuBackground" align="left"> 
-              <select name="mailfunc">
-                  <option value="mail" selected>{ mail }</option>
-                  <option value="">{ disabled }</option>
-                  <option value="smtp">{ smtp }</option>
-                  <option value="sendmail">{ sendmail }</option>
-                </select>
-            </td>
-</tr>
-          <tr valign="middle"> 
-            <td class="BabLoginMenuBackground" align="left" nowrap>{ 
-              server }</td>
-            <td> 
-              <input type="text" name="server" size="30" maxlength="254" value="{ serverval }" />
-</td>
-</tr>
-          <tr valign="middle"> 
-            <td class="BabLoginMenuBackground" align="left" nowrap>{ 
-              serverport }</td>
-            <td> 
-              <input type="text" name="serverport" size="5" maxlength="10" value="{ serverportval }" onKeyUp="validateNum(this)" />
-</td>
-          <tr valign="middle"> 
-            <td class="BabLoginMenuBackground" align="left" nowrap>{ smtpuser }</td>
-            <td> 
-              <input type="text" name="smtpuser" size="30" maxlength="255" value="{ smtpuserval }" />
-</td>
-</tr>
-          <tr valign="middle"> 
-            <td class="BabLoginMenuBackground" align="left" nowrap>{ smtppass }</td>
-            <td> 
-              <input type="password" name="smtppass" size="30" maxlength="20" value="" />
-</td>
-</tr>
-          <tr valign="middle"> 
-            <td class="BabLoginMenuBackground" align="left" nowrap>{ smtppass2 }</td>
-            <td> 
-              <input type="password" name="smtppass2" size="30" maxlength="20" value="" />
-</td>
-</tr>
-
-          <tr valign="middle"> 
-            <td class="BabLoginMenuBackground" align="left" nowrap>{ 
-              imagessize }</td>
-            <td> 
-              <input type="text" name="imgsize" size="5" maxlength="10" value="50" onKeyUp="validateNum(this)" />
-</td>
-</tr>
-          <tr valign="middle"> 
-            <td nowrap align="left">&nbsp;</td>
-            <td> 
-<br /><br />              
-<br />
-</td>
-</tr>
-
-          <tr valign="middle"> 
-            <td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ name_order_title }</td>
-            <td width="70%"> 
-				<select name="name_order">
-				<!--#if dbvalue[name_order] "== F L" -->
-				<option value="F L" selected>{ firstlast }</option>
-				<option value="L F">{ lastfirst }</option>
-				<!--#else dbvalue[name_order] -->
-				<option value="F L">{ firstlast }</option>
-				<option value="L F" selected>{ lastfirst }</option>
-				<!--#endif dbvalue[name_order] -->
-				</select>
-			</td>
-		</tr>
-		<tr>
-			<td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ change_nickname_title }</td>
-            <td width="70%"> 
-				<select name="change_nickname">
-				<!--#if dbvalue[change_nickname] "== Y" -->
-				<option value="Y" selected>{ yes }</option>
-				<option value="N">{ no }</option>
-				<!--#else dbvalue[change_nickname] -->
-				<option value="Y">{ yes }</option>
-				<option value="N" selected>{ no }</option>
-				<!--#endif dbvalue[change_nickname] -->
-				</select>
-			</td>
-		</tr>
-		<tr>
-			<td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ change_password_title }</td>
-            <td width="70%"> 
-				<select name="change_password">
-				<!--#if dbvalue[change_password] "== Y" -->
-				<option value="Y" selected>{ yes }</option>
-				<option value="N">{ no }</option>
-				<!--#else dbvalue[change_password] -->
-				<option value="Y">{ yes }</option>
-				<option value="N" selected>{ no }</option>
-				<!--#endif dbvalue[change_password] -->
-				</select>
-			</td>
-		</tr>
-		<tr>
-			<td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ user_workdays_title }</td>
-            <td width="70%"> 
-				<select name="user_workdays">
-				<!--#if dbvalue[user_workdays] "== Y" -->
-				<option value="Y" selected>{ yes }</option>
-				<option value="N">{ no }</option>
-				<!--#else dbvalue[user_workdays] -->
-				<option value="Y">{ yes }</option>
-				<option value="N" selected>{ no }</option>
-				<!--#endif dbvalue[user_workdays] -->
-				</select>
-			</td>
-		</tr>
-		<tr>
-			<td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ remember_login_title }</td>
-            <td width="70%"> 
-				<select name="remember_login">
-				<!--#if dbvalue[remember_login] "== Y" -->
-				<option value="Y" selected>{ yes }</option>
-				<option value="N">{ no }</option>
-				<option value="L">{ login_only }</option>
-				<!--#endif dbvalue[remember_login] -->
-				<!--#if dbvalue[remember_login] "== N" -->
-				<option value="Y">{ yes }</option>
-				<option value="N" selected>{ no }</option>
-				<option value="L">{ login_only }</option>
-				<!--#endif dbvalue[remember_login] -->
-				<!--#if dbvalue[remember_login] "== L" -->
-				<option value="Y">{ yes }</option>
-				<option value="N">{ no }</option>
-				<option value="L" selected>{ login_only }</option>
-				<!--#endif dbvalue[remember_login] -->
-				</select>
-			</td>
-		</tr>
-		<tr>
-			<td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ email_password_title }</td>
-            <td width="70%"> 
-				<select name="email_password">
-				<!--#if dbvalue[email_password] "== Y" -->
-				<option value="Y" selected>{ yes }</option>
-				<option value="N">{ no }</option>
-				<!--#else dbvalue[email_password] -->
-				<option value="Y">{ yes }</option>
-				<option value="N" selected>{ no }</option>
-				<!--#endif dbvalue[email_password] -->
-				</select>
-			</td>
-		</tr>
-		<tr>
-			<td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ babslogan_title }</td>
-            <td width="70%"> 
-				<input type="text" name="babslogan" size="30" maxlength="255" value="{ dbvalue[babslogan] }" />
-			</td>
-		</tr>
-		<tr>
-			<td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ uploadpath_title }</td>
-            <td width="70%"> 
-				<input type="text" name="uploadpath" size="30" maxlength="255" value="{ dbvalue[uploadpath] }" />
-			</td>
-		</tr>
-		<tr>
-			<td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ maxfilesize_title }</td>
-            <td class="BabLoginMenuBackground" width="70%"> 
-				<input type="text" name="maxfilesize" size="20" maxlength="10" value="{ dbvalue[maxfilesize] }" onKeyUp="validateNum(this)" /> { t_mb }
-			</td>
-		</tr>
-		<tr>
-			<td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ folder_diskspace_title }</td>
-            <td class="BabLoginMenuBackground" width="70%"> 
-				<input type="text" name="folder_diskspace" size="20" maxlength="10" value="{ dbvalue[folder_diskspace] }" onKeyUp="validateNum(this)" /> { t_mb }
-			</td>
-		</tr>
-		<tr>
-			<td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ user_diskspace_title }</td>
-            <td class="BabLoginMenuBackground" width="70%"> 
-				<input type="text" name="user_diskspace" size="20" maxlength="10" value="{ dbvalue[user_diskspace] }" onKeyUp="validateNum(this)" /> { t_mb }
-			</td>
-		</tr>
-		<tr>
-			<td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ total_diskspace_title }</td>
-            <td class="BabLoginMenuBackground" width="70%"> 
-				<input type="text" name="total_diskspace" size="20" maxlength="10" value="{ dbvalue[total_diskspace] }" onKeyUp="validateNum(this)" /> { t_mb }
-			</td>
-		</tr>
-		<tr>
-			<td>&nbsp;
-			
-			</td>
-			<td><br />
-			<input type="submit" name="Submit" value="{ create }" />
-			</td>
-		</tr>
-		</table>
-</td>
-</tr>
-</table>
-</form>
-<br />
-<!--#end sitecreate -->
-
-
-
-
 <!--#begin siteslist --> 
 <table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
@@ -335,48 +26,79 @@ function validateNum(field)
 <!--#end siteslist -->
 
 
+<!--#begin menu -->
+<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5">
+		<tr>
+			<td ><h5 align="center">{ arr[name] }</h5></td>
+		</tr>
+		<tr>
+			<td>{ arr[description] }<br /><br /></td>
+		</tr>
+		
+		<!--#in getnext -->
+		<tr onmouseover="this.className='BabMenuActiveBackground'" onmouseout="this.className=''"> 
+			<td align="center"> 
+				<a href="{ babUrlScript }?tg=site&idx=menu{ page }&item={ arr[id] }">{ text }</a>
+			</td>
+		</tr>
+		<!--#endin getnext -->
+		<tr>
+			<td align="center"><br /><br /><input type="button" value="{ t_delete }" onclick="document.location.href='{ babUrlScript }?tg=site&idx=Delete&item={ arr[id] }'" /></td>
+		</tr>
+	</table>
+</td>
+</tr>
+</table>
+<!--#end menu -->
 
 
-<!--#begin sitemodify -->
-<script language="javascript">
-function validateNum(field) 
-	{
-	var valid = "0123456789"
-	var temp;
-	for (var i=0; i<field.value.length; i++) {
-		temp = "" + field.value.substring(i, i+1);
-		if (valid.indexOf(temp) == "-1") 
-			field.value = field.value.substring(0, i)+field.value.substring(i+1,field.value.length);
-		}
-	}
-</script>
+
+
+
+
+
+
+
+
+
+<!--#begin menu1 -->
+
 <form name="formsite" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="site" />
-<input type="hidden" name="idx" value="modify" />
+<input type="hidden" name="idx" value="menusite" />
 <input type="hidden" name="item" value="{ id }" />
-<input type="hidden" name="modify" value="bloc1" />
+<input type="hidden" name="action" value="menu1" />
 <table width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
-        <table width="100%" border="0" cellspacing="0" cellpadding="2" align="center" class="BabLoginMenuBackground">
+        <table width="100%" border="0" cellspacing="0" cellpadding="5" align="center" class="BabLoginMenuBackground">
           <tr> 
             <td>{ name }</td>
             <td> 
-              <input type="text" name="name" size="30" maxlength="30" value="{ nameval }" />
-</td>
-</tr>
+              <input type="text" name="name" size="30" maxlength="30" value="{ arr[name] }" />
+				</td>
+			</tr>
           <tr> 
             <td>{ description }</td>
             <td> 
-              <input type="text" name="description" size="30" maxlength="100" value="{ descriptionval }" />
-</td>
-</tr>
+              <input type="text" name="description" size="30" maxlength="100" value="{ arr[description] }" />
+			</td>
+		</tr>
+		<tr>
+			<td>{ babslogan_title }</td>
+            <td> 
+				<input type="text" name="babslogan" size="30" maxlength="255" value="{ arr[babslogan] }" />
+			</td>
+		</tr>
           <tr> 
             <td>{ lang }</td>
             <td> 
               <select name="lang">
                   <!--#in getnextlang -->
-                  <option value="{ langval }" { langselected }>{ langval }</option>
+                  <option value="{ langval }"  <!--#if langselected --> selected="selected" <!--#endif langselected --> >{ langval }</option>
                   <!--#endin getnextlang -->
                 </select>
 </td>
@@ -386,7 +108,7 @@ function validateNum(field)
             <td> 
 			<select name="langfilter">
 			<!--#in getnextlangfilter -->
-			<option value="{ langfilterval }" { langfilterselected }>{ langfilterval }</option>
+			<option value="{ langfilterval }" <!--#if langfilterselected --> selected="selected" <!--#endif langfilterselected --> >{ langfilterval }</option>
 			<!--#endin getnextlangfilter -->
 			</select>
 </td>
@@ -396,116 +118,41 @@ function validateNum(field)
             <td> 
               <select name="skin" onChange="mm(document.forms.formsite.skin.selectedIndex)">
                   <!--#in getnextskin -->
-                  <option value="{ skinval }" { skinselected }>{ skinval }</option>
+                  <option value="{ skinval }" <!--#if skinselected --> selected="selected" <!--#endif skinselected --> >{ skinval }</option>
                   <!--#endin getnextskin -->
                 </select>
                 <select name="style">
                 </select>
             </td>
-</tr>
-          <tr> 
-            <td>{ registration }</td>
+		</tr>
+		<tr> 
+            <td>{ siteemail }</td>
             <td> 
-              <select name="register">
-                  <option value="Y" { yregister }>{ yes }</option>
-                  <option value="N" { nregister }>{ no }</option>
-                </select>
-            </td>
-</tr>
+              <input type="text" name="siteemail" size="30" maxlength="254" value="{ arr[adminemail] }" />
+			</td>
+		</tr>
+          <tr> 
+            <td>{ adminnametxt }</td>
+            <td> 
+              <input type="text" name="adminname" size="30" maxlength="254" value="{ arr[adminname] }" />
+			  </td>
+			</tr>
+
           <tr> 
             <td>{ stattxt }</td>
             <td> 
               <select name="statlog">
-                  <option value="Y" { ystatlog }>{ yes }</option>
-                  <option value="N" { nstatlog }>{ no }</option>
+				<!--#if arr[stat_log] "== Y" -->
+                  <option value="Y" selected="selected">{ yes }</option>
+                  <option value="N">{ no }</option>
+				 <!--#else arr[stat_log] -->
+				  <option value="Y">{ yes }</option>
+                  <option value="N" selected="selected">{ no }</option>
+				<!--#endif arr[stat_log] -->
                 </select>
             </td>
-</tr>
-          <tr> 
-            <td>{ siteemail }</td>
-            <td> 
-              <input type="text" name="siteemail" size="30" maxlength="254" value="{ siteemailval }" />
-</td>
-</tr>
-          <tr> 
-            <td>{ adminnametxt }</td>
-            <td> 
-              <input type="text" name="adminname" size="30" maxlength="254" value="{ adminnameval }" />
-			  </td>
-</tr>
-          <tr> 
-            <td>{ mailfunction }</td>
-            <td> 
-              <select name="mailfunc">
-                  <option value="mail" { mailselected }>{ mail }</option>
-                  <option value="" { disabledselected }>{ disabled }</option>
-                  <option value="smtp" { smtpselected }>{ smtp }</option>
-                  <option value="sendmail" { sendmailselected }>{ sendmail }</option>
-                </select>
-            </td>
-</tr>
-          <tr> 
-            <td>{ server }</td>
-            <td> 
-              <input type="text" name="server" size="30" maxlength="254" value="{ serverval }" />
-</td>
-</tr>
-          <tr> 
-            <td>{ serverport }</td>
-            <td> 
-              <input type="text" name="serverport" size="5" maxlength="10" value="{ serverportval }" onKeyUp="validateNum(this)" />
-</td>
-</tr>
-          <tr> 
-            <td>{ smtpuser }</td>
-            <td> 
-              <input type="text" name="smtpuser" size="30" maxlength="255" value="{ smtpuserval }" />
-</td>
-</tr>
-          <tr> 
-            <td>{ smtppass }</td>
-            <td> 
-              <input type="password" name="smtppass" size="30" maxlength="20" value="{ smtppassval }" />
-</td>
-</tr>
-          <tr> 
-            <td>{ smtppass2 }</td>
-            <td> 
-              <input type="password" name="smtppass2" size="30" maxlength="20" value="{ smtppassval }" />
-</td>
-</tr>
-          <tr> 
-            <td>{ imagessize }</td>
-            <td> 
-              <input type="text" name="imgsize" size="5" maxlength="10" value="{ imgsizeval }" onKeyUp="validateNum(this)" />
-</td>
-</tr>
-          <tr> 
-            <td>&nbsp;</td>
-            <td> 
-              <input type="submit" name="Submit" value="{ create }">&nbsp;&nbsp;<input type="submit" name="delete" value="{ delete }" />
-<br />
-</td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
-</form>
-<br /><br />
-
-
-<form name="formsite_bloc2" method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="site" />
-<input type="hidden" name="idx" value="modify" />
-<input type="hidden" name="item" value="{ id }" />
-<input type="hidden" name="modify" value="bloc2" />
-
-<table width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground"> 
-        <table width="100%" border="0" cellspacing="0" cellpadding="2" align="center" class="BabLoginMenuBackground">
-          <tr valign="middle"> 
+		</tr>
+		<tr> 
             <td>{ name_order_title }</td>
             <td> 
 				<select name="name_order">
@@ -520,16 +167,151 @@ function validateNum(field)
 			</td>
 		</tr>
 		<tr>
+			<td colspan="2" align="center"><br />
+			<input type="submit" name="Submit" value="{ t_record }" />
+			</td>
+		</tr>
+	</table>
+	</td>
+	</tr>
+</table>
+</form>
+<script type="text/javascript">
+<!--
+var sksel = { skselectedindex };
+var stsel = { stselectedindex };
+var tab = new Array({ cntskins });
+<!--#in getnextskin -->
+tab[{ iindex }] = new Array();
+<!--#in getnextstyle -->
+tab[{ iindex }][tab[{ iindex }].length] = "{ styleval }";
+<!--#endin getnextstyle -->
+<!--#endin getnextskin -->
+
+function mm(index)
+{
+	for (i = document.forms.formsite.style.length; i >= 0; i--) {
+		document.forms.formsite.style.options[i] = null; 
+	}
+	for (var i = 0; i < tab[index].length; i++)
+	{
+	document.forms.formsite.style.options[i] = new Option(tab[index][i],tab[index][i]);
+	}
+	if( index == sksel )
+		document.forms.formsite.style.options[stsel].selected = true;
+
+}
+mm(sksel);
+//-->
+</script>
+<!--#end menu1 -->
+
+
+
+<!--#begin menu2 -->
+<script language="javascript">
+function validateNum(field) 
+	{
+	var valid = "0123456789"
+	var temp;
+	for (var i=0; i<field.value.length; i++) {
+		temp = "" + field.value.substring(i, i+1);
+		if (valid.indexOf(temp) == "-1") 
+			field.value = field.value.substring(0, i)+field.value.substring(i+1,field.value.length);
+		}
+	}
+</script>
+<form name="formsite" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="site" />
+<input type="hidden" name="idx" value="menusite" />
+<input type="hidden" name="item" value="{ item }" />
+<input type="hidden" name="action" value="menu2" />
+<table width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+        <table width="100%" border="0" cellspacing="0" cellpadding="4" align="center" class="BabLoginMenuBackground">
+
+          <tr> 
+            <td>{ mailfunction }</td>
+            <td> 
+              <select name="mailfunc">
+				  <option value="">{ disabled }</option>
+                  <option value="mail" <!--#if arr[mailfunc] "== mail" --> selected="selected"<!--#endif arr[mailfunc] --> >{ mail }</option>
+                  
+                  <option value="smtp" <!--#if arr[mailfunc] "== smtp" --> selected="selected"<!--#endif arr[mailfunc] --> >{ smtp }</option>
+                  <option value="sendmail" <!--#if arr[mailfunc] "== sendmail" --> selected="selected"<!--#endif arr[mailfunc] --> >{ sendmail }</option>
+                </select>
+            </td>
+</tr>
+          <tr> 
+            <td>{ server }</td>
+            <td> 
+              <input type="text" name="smtpserver" size="30" maxlength="254" value="{ arr[smtpserver] }" />
+</td>
+</tr>
+          <tr> 
+            <td>{ serverport }</td>
+            <td> 
+              <input type="text" name="smtpport" size="5" maxlength="10" value="{ arr[smtpport] }" onKeyUp="validateNum(this)" />
+</td>
+</tr>
+          <tr> 
+            <td>{ smtpuser }</td>
+            <td> 
+              <input type="text" name="smtpuser" size="30" maxlength="255" value="{ arr[smtpuser] }" />
+</td>
+</tr>
+          <tr> 
+            <td>{ smtppass }</td>
+            <td> 
+              <input type="password" name="smtppass" size="30" maxlength="20" value="{ arr[smtppassword] }" />
+</td>
+</tr>
+          <tr> 
+            <td>{ smtppass2 }</td>
+            <td> 
+              <input type="password" name="smtppass2" size="30" maxlength="20" value="{ arr[smtppassword] }" />
+</td>
+</tr>
+
+          <tr> 
+            <td>&nbsp;</td>
+            <td> <br />
+              <input type="submit" name="Submit" value="{ t_record }" />
+			<br />
+			</td>
+		</tr>
+</table>
+</td>
+</tr>
+</table>
+</form>
+<!--#end menu2 -->
+
+
+<!--#begin menu3 -->
+<form name="formsite_bloc2" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="site" />
+<input type="hidden" name="idx" value="menusite" />
+<input type="hidden" name="action" value="menu3" />
+<input type="hidden" name="item" value="{ item }" />
+
+<table width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+        <table width="100%" border="0" cellspacing="0" cellpadding="4" align="center" class="BabLoginMenuBackground">
+
+		<tr>
 			<td>{ change_nickname_title }</td>
             <td> 
 				<select name="change_nickname">
-				<!--#if dbvalue[change_nickname] "== Y" -->
-				<option value="Y" selected>{ yes }</option>
+				<!--#if arr[change_nickname] "== Y" -->
+				<option value="Y" selected="selected">{ yes }</option>
 				<option value="N">{ no }</option>
-				<!--#else dbvalue[change_nickname] -->
+				<!--#else arr[change_nickname] -->
 				<option value="Y">{ yes }</option>
-				<option value="N" selected>{ no }</option>
-				<!--#endif dbvalue[change_nickname] -->
+				<option value="N" selected="selected">{ no }</option>
+				<!--#endif arr[change_nickname] -->
 				</select>
 			</td>
 		</tr>
@@ -537,13 +319,55 @@ function validateNum(field)
 			<td>{ change_password_title }</td>
             <td> 
 				<select name="change_password">
-				<!--#if dbvalue[change_password] "== Y" -->
-				<option value="Y" selected>{ yes }</option>
+				<!--#if arr[change_password] "== Y" -->
+				<option value="Y" selected="selected">{ yes }</option>
 				<option value="N">{ no }</option>
-				<!--#else dbvalue[change_password] -->
+				<!--#else arr[change_password] -->
 				<option value="Y">{ yes }</option>
-				<option value="N" selected>{ no }</option>
-				<!--#endif dbvalue[change_password] -->
+				<option value="N" selected="selected">{ no }</option>
+				<!--#endif arr[change_password] -->
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td>{ change_lang_title }</td>
+            <td> 
+				<select name="change_lang">
+				<!--#if arr[change_lang] "== Y" -->
+				<option value="Y" selected="selected">{ yes }</option>
+				<option value="N">{ no }</option>
+				<!--#else arr[change_lang] -->
+				<option value="Y">{ yes }</option>
+				<option value="N" selected="selected">{ no }</option>
+				<!--#endif arr[change_lang] -->
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td>{ change_skin_title }</td>
+            <td> 
+				<select name="change_skin">
+				<!--#if arr[change_skin] "== Y" -->
+				<option value="Y" selected="selected">{ yes }</option>
+				<option value="N">{ no }</option>
+				<!--#else arr[change_skin] -->
+				<option value="Y">{ yes }</option>
+				<option value="N" selected="selected">{ no }</option>
+				<!--#endif arr[change_skin] -->
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td>{ change_date_title }</td>
+            <td> 
+				<select name="change_date">
+				<!--#if arr[change_date] "== Y" -->
+				<option value="Y" selected="selected">{ yes }</option>
+				<option value="N">{ no }</option>
+				<!--#else arr[change_date] -->
+				<option value="Y">{ yes }</option>
+				<option value="N" selected="selected">{ no }</option>
+				<!--#endif arr[change_date] -->
 				</select>
 			</td>
 		</tr>
@@ -551,13 +375,13 @@ function validateNum(field)
 			<td>{ user_workdays_title }</td>
             <td> 
 				<select name="user_workdays">
-				<!--#if dbvalue[user_workdays] "== Y" -->
-				<option value="Y" selected>{ yes }</option>
+				<!--#if arr[user_workdays] "== Y" -->
+				<option value="Y" selected="selected">{ yes }</option>
 				<option value="N">{ no }</option>
-				<!--#else dbvalue[user_workdays] -->
+				<!--#else arr[user_workdays] -->
 				<option value="Y">{ yes }</option>
-				<option value="N" selected>{ no }</option>
-				<!--#endif dbvalue[user_workdays] -->
+				<option value="N" selected="selected">{ no }</option>
+				<!--#endif arr[user_workdays] -->
 				</select>
 			</td>
 		</tr>
@@ -565,21 +389,21 @@ function validateNum(field)
 			<td>{ remember_login_title }</td>
             <td> 
 				<select name="remember_login">
-				<!--#if dbvalue[remember_login] "== Y" -->
-				<option value="Y" selected>{ yes }</option>
+				<!--#if arr[remember_login] "== Y" -->
+				<option value="Y" selected="selected">{ yes }</option>
 				<option value="N">{ no }</option>
 				<option value="L">{ login_only }</option>
-				<!--#endif dbvalue[remember_login] -->
-				<!--#if dbvalue[remember_login] "== N" -->
+				<!--#endif arr[remember_login] -->
+				<!--#if arr[remember_login] "== N" -->
 				<option value="Y">{ yes }</option>
-				<option value="N" selected>{ no }</option>
+				<option value="N" selected="selected">{ no }</option>
 				<option value="L">{ login_only }</option>
-				<!--#endif dbvalue[remember_login] -->
-				<!--#if dbvalue[remember_login] "== L" -->
+				<!--#endif arr[remember_login] -->
+				<!--#if arr[remember_login] "== L" -->
 				<option value="Y">{ yes }</option>
 				<option value="N">{ no }</option>
-				<option value="L" selected>{ login_only }</option>
-				<!--#endif dbvalue[remember_login] -->
+				<option value="L" selected="selected">{ login_only }</option>
+				<!--#endif arr[remember_login] -->
 				</select>
 			</td>
 		</tr>
@@ -587,22 +411,62 @@ function validateNum(field)
 			<td>{ email_password_title }</td>
             <td> 
 				<select name="email_password">
-				<!--#if dbvalue[email_password] "== Y" -->
-				<option value="Y" selected>{ yes }</option>
+				<!--#if arr[email_password] "== Y" -->
+				<option value="Y" selected="selected">{ yes }</option>
 				<option value="N">{ no }</option>
-				<!--#else dbvalue[email_password] -->
+				<!--#else arr[email_password] -->
 				<option value="Y">{ yes }</option>
-				<option value="N" selected>{ no }</option>
-				<!--#endif dbvalue[email_password] -->
+				<option value="N" selected="selected">{ no }</option>
+				<!--#endif arr[email_password] -->
 				</select>
 			</td>
 		</tr>
-		<tr>
-			<td>{ babslogan_title }</td>
-            <td> 
-				<input type="text" name="babslogan" size="30" maxlength="255" value="{ dbvalue[babslogan] }" />
+		 <tr> 
+            <td colspan="2" align="center">
+            <br />
+              <input type="submit" name="Submit" value="{ t_record }" />
+			<br />
 			</td>
 		</tr>
+	</table>
+</td>
+</tr>
+</table>
+</form>
+<!--#end menu3 -->
+
+
+<!--#begin menu4 -->
+<script language="javascript">
+function validateNum(field) 
+	{
+	var valid = "0123456789"
+	var temp;
+	for (var i=0; i<field.value.length; i++) {
+		temp = "" + field.value.substring(i, i+1);
+		if (valid.indexOf(temp) == "-1") 
+			field.value = field.value.substring(0, i)+field.value.substring(i+1,field.value.length);
+		}
+	}
+</script>
+<form name="formsite_bloc2" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="site" />
+<input type="hidden" name="idx" value="menusite" />
+<input type="hidden" name="action" value="menu4" />
+<input type="hidden" name="item" value="{ item }" />
+
+<table width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+        <table width="100%" border="0" cellspacing="0" cellpadding="4" align="center" class="BabLoginMenuBackground">
+		
+		<tr>
+			<td>{ imgsize_title }</td>
+            <td> 
+				<input type="text" name="imgsize" size="30" maxlength="255" value="{ arr[imgsize] }" />
+			</td>
+		</tr>
+		
 		<tr>
 			<td>{ uploadpath_title }</td>
             <td> 
@@ -612,33 +476,31 @@ function validateNum(field)
 		<tr>
 			<td>{ maxfilesize_title }</td>
             <td> 
-				<input type="text" name="maxfilesize" size="20" maxlength="10" value="{ dbvalue[maxfilesize] }" onKeyUp="validateNum(this)" /> { t_mb }
+				<input type="text" name="maxfilesize" size="20" maxlength="10" value="{ arr[maxfilesize] }" onKeyUp="validateNum(this)" /> { t_mb }
 			</td>
 		</tr>
 		<tr>
 			<td>{ folder_diskspace_title }</td>
             <td> 
-				<input type="text" name="folder_diskspace" size="20" maxlength="10" value="{ dbvalue[folder_diskspace] }" onKeyUp="validateNum(this)" /> { t_mb }
+				<input type="text" name="folder_diskspace" size="20" maxlength="10" value="{ arr[folder_diskspace] }" onKeyUp="validateNum(this)" /> { t_mb }
 			</td>
 		</tr>
 		<tr>
 			<td>{ user_diskspace_title }</td>
             <td> 
-				<input type="text" name="user_diskspace" size="20" maxlength="10" value="{ dbvalue[user_diskspace] }" onKeyUp="validateNum(this)" /> { t_mb }
+				<input type="text" name="user_diskspace" size="20" maxlength="10" value="{ arr[user_diskspace] }" onKeyUp="validateNum(this)" /> { t_mb }
 			</td>
 		</tr>
 		<tr>
 			<td>{ total_diskspace_title }</td>
             <td> 
-				<input type="text" name="total_diskspace" size="20" maxlength="10" value="{ dbvalue[total_diskspace] }" onKeyUp="validateNum(this)" /> { t_mb }
+				<input type="text" name="total_diskspace" size="20" maxlength="10" value="{ arr[total_diskspace] }" onKeyUp="validateNum(this)" /> { t_mb }
 			</td>
 		</tr>
 		<tr>
-			<td>&nbsp;
-			
-			</td>
-			<td><br />
-			<input type="submit" name="Submit" value="{ create }" />
+			<td colspan="2" align="center">
+			<br />
+			<input type="submit" name="Submit" value="{ t_record }" />
 			</td>
 		</tr>
 		</table>
@@ -649,10 +511,10 @@ function validateNum(field)
 
 
 </form>
-<br />
+<!--#end menu4 -->
 
 
-<br /><br />
+<!--#begin menu5 -->
 
 <script language="javascript">
 <!--
@@ -667,97 +529,75 @@ document.forms.formsite_bloc3[edit].value = obj.value;
 
 <form name="formsite_bloc3" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="site" />
-<input type="hidden" name="idx" value="modify" />
-<input type="hidden" name="item" value="{ id }" />
-<input type="hidden" name="modify" value="bloc3" />
+<input type="hidden" name="idx" value="menusite" />
+<input type="hidden" name="item" value="{ item }" />
+<input type="hidden" name="action" value="menu5" />
 
 <table  width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center" class="BabLoginMenuBackground">
-<tr> 
-<td align="center" nowrap valign="middle" colspan="2">{ regsettings_title }</td>
-</tr>
-<tr> 
-<td width="30%" align="right" nowrap valign="middle">{ date_lformat_title }:</td>
-<td width="70%" valign="middle"> 
-<table>
-<tr>
-<td>
-<input type="text" name="datelformat" size="30" maxlength="255" value="{ date_lformat_val }">
-</td>
-</tr>
-<tr>
-<td>
-<select name="selldate" onchange="selChange(this, 'datelformat')">
-<option value=""></option>
-<!--#in getnextlongdate -->
-<option value="{ dateval }">{ datetxt }</option>
-<!--#endin getnextlongdate -->
-</select>
-</td>
-</tr>
-</table>
-</td>
-</tr>
-<tr> 
-<td width="30%" align="right" nowrap valign="middle">{ date_sformat_title }:</td>
-<td width="70%" valign="middle"> 
-<table>
-<tr>
-<td>
-<input type="text" name="datesformat" size="30" maxlength="255" value="{ date_sformat_val }">
-</td>
-</tr>
-<tr>
-<td>
-<select name="selsdate" onchange="selChange(this, 'datesformat')">
-<option value=""></option>
-<!--#in getnextshortdate -->
-<option value="{ dateval }">{ datetxt }</option>
-<!--#endin getnextshortdate -->
-</select>
-</td>
-</tr>
-</table>
-</td>
-</tr>
-<tr> 
-<td width="30%" align="right" nowrap valign="middle">{ time_format_title }:</td>
-<td width="70%" valign="middle"> 
-<table>
-<tr>
-<td>
-<input type="text" name="timeformat" size="30" maxlength="255" value="{ time_format_val }">
-</td>
-</tr>
-<tr>
-<td>
-<select name="seltime" onchange="selChange(this, 'timeformat')">
-<option value=""></option>
-<!--#in getnexttime -->
-<option value="{ timeval }">{ timetxt }</option>
-<!--#endin getnexttime -->
-</select>
-</td>
-</tr>
-</table>
-</td>
-</tr>
-<tr> 
-<td nowrap>&nbsp;</td>
-<td valign="middle"> 
-<input type="submit" name="Submit" value="{ create }">
-<br>
-</td>
-</tr>
-</table>
+	<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center" class="BabLoginMenuBackground">
+	<tr> 
+	<td>{ date_lformat_title }:</td>
+	<td> 
+
+		<input type="text" name="date_longformat" size="30" maxlength="255" value="{ arr[date_longformat] }" /> 
+		
+		<select name="selldate" onchange="selChange(this, 'date_longformat')">
+		<option value=""></option>
+		<!--#in getnextlongdate -->
+		<option value="{ dateval }">{ datetxt }</option>
+		<!--#endin getnextlongdate -->
+		</select>
+
+	</td>
+	</tr>
+	<tr> 
+	<td>{ date_sformat_title }:</td>
+	<td> 
+
+		<input type="text" name="date_shortformat" size="30" maxlength="255" value="{ arr[date_shortformat] }" /> 
+
+		<select name="selsdate" onchange="selChange(this, 'date_shortformat')">
+		<option value=""></option>
+		<!--#in getnextshortdate -->
+		<option value="{ dateval }">{ datetxt }</option>
+		<!--#endin getnextshortdate -->
+		</select>
+
+	</td>
+	</tr>
+	<tr> 
+	<td>{ time_format_title }:</td>
+	<td> 
+
+		<input type="text" name="time_format" size="30" maxlength="255" value="{ arr[time_format] }" /> 
+		
+		<select name="seltime" onchange="selChange(this, 'time_format')">
+		<option value=""></option>
+		<!--#in getnexttime -->
+		<option value="{ timeval }">{ timetxt }</option>
+		<!--#endin getnexttime -->
+		</select>
+	</td>
+	</tr>
+	<tr> 
+	<td colspan="2" align="center"> 
+		<br /><input type="submit" value="{ t_record }" />
+	<br>
+	</td>
+	</tr>
+	</table>
 </td>
 </tr>
 </table>
 </form>
-<br />
-<br />
+
+<!--#end menu5 -->
+
+
+
+<!--#begin menu6 -->
 
 <script type="text/javascript">
 <!--
@@ -868,9 +708,9 @@ function changetype(obj)
 
 <form name="formsite_bloc4" method="post" action="{ babPhpSelf }" onsubmit="selectAll()">
 <input type="hidden" name="tg" value="site" />
-<input type="hidden" name="idx" value="modify" />
-<input type="hidden" name="item" value="{ id }" />
-<input type="hidden" name="modify" value="bloc4" />
+<input type="hidden" name="idx" value="menusite" />
+<input type="hidden" name="item" value="{ item }" />
+<input type="hidden" name="action" value="menu6" />
 
 <table  width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
@@ -929,7 +769,7 @@ function changetype(obj)
 		<tr>
 			<td align="center" colspan="2">
 				<br />
-				<input type="submit" value="{ create }" />
+				<input type="submit" value="{ t_record }" />
 			</td>
 		</tr>
 		</table>
@@ -942,7 +782,7 @@ function changetype(obj)
 changetype(document.forms['formsite_bloc4'].nonworking_day_type);
 -->
 </script>
-<!--#end sitemodify -->
+<!--#end menu6 -->
 
 <!--#begin versions -->
 <table  width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
@@ -1108,41 +948,7 @@ function sortList(sortType, list)
 
 
 
-
-
-<!--#begin skinscripts -->
-<script type="text/javascript">
-<!--
-var sksel = { skselectedindex };
-var stsel = { stselectedindex };
-var tab = new Array({ cntskins });
-<!--#in getnextskin -->
-tab[{ iindex }] = new Array();
-<!--#in getnextstyle -->
-tab[{ iindex }][tab[{ iindex }].length] = "{ styleval }";
-<!--#endin getnextstyle -->
-<!--#endin getnextskin -->
-
-function mm(index)
-{
-	for (i = document.forms.formsite.style.length; i >= 0; i--) {
-		document.forms.formsite.style.options[i] = null; 
-	}
-	for (var i = 0; i < tab[index].length; i++)
-	{
-	document.forms.formsite.style.options[i] = new Option(tab[index][i],tab[index][i]);
-	}
-	if( index == sksel )
-		document.forms.formsite.style.options[stsel].selected = true;
-
-}
-mm(sksel);
-//-->
-</script>
-<!--#end skinscripts -->
-
-
-<!--#begin siteauthentification -->
+<!--#begin menu8 -->
 <!--#if showform -->
 <script type="text/javascript">
 <!--
@@ -1183,7 +989,7 @@ function hideShowCnx()
 <input type="hidden" name="tg" value="site" />
 <input type="hidden" name="idx" value="modify" />
 <input type="hidden" name="item" value="{ id }" />
-<input type="hidden" name="modify" value="auth" />
+<input type="hidden" name="action" value="menu8" />
 <table class="BabLoginCadreBackground"  width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td> 
@@ -1247,8 +1053,7 @@ function hideShowCnx()
 	</tr>
 	<!--#endin getnextfield -->
 	<tr> 
-		<td>&nbsp;</td>
-		<td align="right">
+		<td align="center" colspan="2"><br />
 		<input type="Submit" name="Submit" value="{ modify }" />
 		</td>
 	</tr>
@@ -1263,27 +1068,42 @@ hideShowCnx();
 //-->
 </script>
 <!--#endif showform -->
-<!--#end siteauthentification -->
+<!--#end menu8 -->
 
-<!--#begin siteregistration -->
+<!--#begin menu9 -->
 <form name="formsitereg" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="site" />
-<input type="hidden" name="idx" value="list" />
+<input type="hidden" name="idx" value="menusite" />
 <input type="hidden" name="item" value="{ item }" />
-<input type="hidden" name="update" value="enreg" />
+<input type="hidden" name="action" value="menu9" />
 <br />
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
-	<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+	<table class="BabSiteAdminFontBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+      
 	<tr> 
 		<td class="BabSiteAdminTitleFontBackground" width="80%" align="left" nowrap valign="middle" colspan="2">{ disclaimertxt }</td>
 	</tr>
-	<tr class="BabSiteAdminFontBackground">
+	 <tr> 
+		<td align="right">{ registration }</td>
+		<td> 
+		  <select name="register">
+				<!--#if arrsite[registration] "== Y" -->
+				<option value="Y" selected="selected">{ yes }</option>
+				<option value="N">{ no }</option>
+				<!--#else arrsite[registration] -->
+				<option value="Y">{ yes }</option>
+				<option value="N" selected="selected">{ no }</option>
+				<!--#endif arrsite[registration] -->
+			</select>
+		</td>
+	</tr>
+	<tr>
 		<td align="right"><input type="checkbox" name="cdp" value="Y" { dpchecked }></td>
 		<td>{ disclaimer }&nbsp;(&nbsp;<a href="javascript: bab_popup('{ urleditdp }',6);">{ editdptxt }</a>&nbsp;)</td>
 	</tr>
-	<tr class="BabSiteAdminFontBackground">
+	<tr>
 		<td align="center" colspan="2">
 			<select name="cen">
 				<!--#in getnextoption -->
@@ -1292,7 +1112,7 @@ hideShowCnx();
 			</select>
 		</td>
 	</tr>
-	<tr class="BabSiteAdminFontBackground">
+	<tr>
 		<td align="right">
 			<select name="group">
 				<option value="0">{ none }</option>
@@ -1345,14 +1165,14 @@ hideShowCnx();
 <br />
 <div align="center"><input type="submit" name="admod" value="{ add }" /></div>
 </form>
-<!--#end siteregistration -->
+<!--#end menu9 -->
 
 <!--#begin disclaimeredit -->
 <form name="discmod" method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="site">
-<input type="hidden" name="idx" value="unload">
-<input type="hidden" name="item" value="{ item }">
-<input type="hidden" name="update" value="updisc">
+<input type="hidden" name="tg" value="site" />
+<input type="hidden" name="idx" value="unload" />
+<input type="hidden" name="item" value="{ item }" />
+<input type="hidden" name="action" value="updisc" />
 <table class="BabLoginCadreBackground" width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td> 
@@ -1368,7 +1188,7 @@ hideShowCnx();
 
 		<tr> 
 			<td align="center" valign="middle">
-				<input type="submit" name="submit" value="{ modify }">
+				<input type="submit" name="submit" value="{ modify }" />
 			</td>
 		</tr>
 	</table>
@@ -1526,7 +1346,7 @@ drop_table_check(document.forms['database'].structure);
 <!--#end database -->
 
 
-<!--#begin editor -->
+<!--#begin menu10 -->
 <script type="text/javascript">
 function show_hide_el(obj)
 {
@@ -1543,9 +1363,9 @@ function show_hide_el(obj)
 </script>
 <form name="editor" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="site" />
-<input type="hidden" name="idx" value="editor" />
-<input type="hidden" name="action" value="editor_configuration" />
-<input type="hidden" name="id_site" value="{ id_site }" />
+<input type="hidden" name="idx" value="menusite" />
+<input type="hidden" name="action" value="menu10" />
+<input type="hidden" name="item" value="{ id_site }" />
 <input type="hidden" name="bitstring_len" value="{ bitstring_len }" />
 
 <table class="BabLoginCadreBackground"  width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
@@ -1611,4 +1431,4 @@ function show_hide_el(obj)
 <script type="text/javascript">
 show_hide_el(document.forms['editor'].filter_html);
 </script>
-<!--#end editor -->
+<!--#end menu10 -->
