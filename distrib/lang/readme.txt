@@ -1,8 +1,8 @@
 lang/
 
-This folder let you customize language files for a specfic site
+This folder let you customize language files for a specific site
 
-You can browse documentationshere : 
+You can browse documentations here : 
 	-Installation Guide : http://ovidentia.koblix.org/documentation/ig-en.html 
 	-Developper Guide : http://ovidentia.koblix.org/documentation/dg-en.html 
 	-User Guide : http://ovidentia.koblix.org/documentation/ug-en.html
