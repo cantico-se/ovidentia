@@ -1822,4 +1822,21 @@
 <string id="lastname">nom</string>
 <string id="firstname">prénom</string>
 <string id="Planning accès">Accès au planning</string>
+<string id="User can modifiy his language">L'utilisateur peut modifier ces paramètres de langue</string>
+<string id="User can modifiy his skin">L'utilisateur peut modifier son skin</string>
+<string id="User can modifiy his date format">L'utilisateur peut modifier ces formats de date</string>
+<string id="User can modifiy his unavailability">L'utilisateur peut modifier son état d'indisponibilité</string>
+<string id="Menu">Menu</string>
+
+<string id="Site configuration">Configuration du site</string>
+<string id="Mail configuration">Paramètres de la messagerie</string>
+<string id="User options and login configuration">Options de l'utilisateur</string>
+<string id="File upload configuration">Configuration des téléchargements vers le serveur</string>
+<string id="Date format configuration">Configuration des formats de date</string>
+<string id="Calendar and vacations configuration">Options de l'agenda et des congés</string>
+<string id="Home page managers">Gestionnaires de page d'accueil</string>
+<string id="Authentification configuration">Configuration de l'authentification</string>
+<string id="Inscription configuration">Configuration de l'inscription</string>
+<string id="WYSIWYG editor configuration">Paramètres de l'éditeur WYSIWYG</string>
+
 </fr>

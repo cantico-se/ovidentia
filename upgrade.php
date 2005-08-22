@@ -4779,7 +4779,7 @@ if ( $arr[0] != BAB_SITES_EDITOR_TBL )
 	{
 	$res = $db->db_query("
 		CREATE TABLE `".BAB_SITES_EDITOR_TBL."` (
-			  `id` int(10) unsigned NOT NULL default '0',
+			  `id` int(10) unsigned NOT NULL auto_increment,
 			  `id_site` int(10) unsigned NOT NULL default '0',
 			  `use_editor` tinyint(3) unsigned NOT NULL default '1',
 			  `filter_html` tinyint(3) unsigned NOT NULL default '0',
@@ -4921,12 +4921,18 @@ if ($arr[0] != 'id_group')
 	$db->db_query("ALTER TABLE `".BAB_DG_GROUPS_TBL."` ADD `id_group` INT( 10 ) UNSIGNED");
 	$db->db_query("ALTER TABLE `".BAB_DG_GROUPS_TBL."` ADD INDEX ( `id_group` )");
 
-	$db->db_query("
+	$res = $db->db_query("
 		CREATE TABLE `".BAB_DG_ADMIN_TBL."` (
 		`id_user` INT UNSIGNED NOT NULL ,
 		`id_dg` INT UNSIGNED NOT NULL ,
 		INDEX ( `id_user` )
 		)");
+
+	if( !$res)
+		{
+		$ret = "Creation of <b>".BAB_DG_ADMIN_TBL."</b> table failed !<br>";
+		return $ret;
+		}
 
 	$level3 = array();
 
@@ -5028,7 +5034,7 @@ if ($arr[0] != 'id_group')
 $arr = $db->db_fetch_array($db->db_query("SHOW TABLES LIKE '".BAB_GROUPS_SET_ASSOC_TBL."'"));
 if ( $arr[0] != BAB_GROUPS_SET_ASSOC_TBL )
 	{
-	$db->db_query("
+	$res = $db->db_query("
 			CREATE TABLE `".BAB_GROUPS_SET_ASSOC_TBL."` (
 		  `id` int(10) unsigned NOT NULL auto_increment,
 		  `id_group` int(10) unsigned NOT NULL default '0',
@@ -5036,15 +5042,33 @@ if ( $arr[0] != BAB_GROUPS_SET_ASSOC_TBL )
 		  PRIMARY KEY  (`id`),
 		  KEY `id_group` (`id_group`,`id_set`)
 		)");
+
+	if( !$res)
+		{
+		$ret = "Creation of <b>".BAB_GROUPS_SET_ASSOC_TBL."</b> table failed !<br>";
+		return $ret;
+		}
 	}
+
+
+
 
 $arr = $db->db_fetch_array($db->db_query("DESCRIBE ".BAB_SITES_TBL." change_lang"));
 if ($arr[0] != 'change_lang')
 	{
 	$db->db_query("ALTER TABLE `".BAB_SITES_TBL."` ADD `change_lang` ENUM( 'Y', 'N' ) NOT NULL AFTER `change_nickname` ,
 				ADD `change_skin` ENUM( 'Y', 'N' ) NOT NULL AFTER `change_lang` ,
-				ADD `change_date` ENUM( 'Y', 'N' ) NOT NULL AFTER `change_skin`
+				ADD `change_date` ENUM( 'Y', 'N' ) NOT NULL AFTER `change_skin` ,
+				ADD `change_unavailability` ENUM( 'Y', 'N' ) NOT NULL AFTER `change_date`
 				");
+
+	}
+
+
+$arr = $db->db_fetch_assoc($db->db_query("DESCRIBE ".BAB_SITES_EDITOR_TBL." id"));
+if (strtolower($arr['Extra']) != 'auto_increment')
+	{
+	$db->db_query("ALTER TABLE `bab_sites_editor` CHANGE `id` `id` INT( 10 ) UNSIGNED NOT NULL AUTO_INCREMENT");
 	}
 
 

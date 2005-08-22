@@ -134,7 +134,7 @@ function site_menu1()
 			if (empty($_REQUEST['item']))
 				{
 				$this->site_configuration_cls();
-				$this->arr = array(
+				$this->row = $this->arr = array(
 						'name'			=> '',
 						'description'	=> '',
 						'lang'			=> '',
@@ -360,6 +360,7 @@ function site_menu3($id)
 			$this->change_lang_title = bab_translate("User can modifiy his language");
 			$this->change_skin_title = bab_translate("User can modifiy his skin");
 			$this->change_date_title = bab_translate("User can modifiy his date format");
+			$this->change_unavailability_title = bab_translate("User can modifiy his unavailability");
 
 			$this->site_configuration_cls($id);
 			}
@@ -1251,118 +1252,30 @@ function record_editor_configuration($id_site)
 }
 
 
-function siteUpdate_bloc1($id, $name, $description, $lang, $style, $siteemail, $skin, $register, $statlog, $mailfunc, $server, $serverport, $imgsize, $smtpuser, $smtppass, $smtppass2, $langfilter, $adminname)
+
+
+function siteSave($name, $description,$babslogan, $lang, $siteemail, $skin, $style, $langfilter, $adminname, $name_order, $statlog)
 	{
 	global $babBody;
-	if( empty($name))
-		{
-		$babBody->msgerror = bab_translate("ERROR: You must provide a name !!");
-		return false;
-		}
-
-	if( $mailfunc == "smtp" && empty($server))
-		{
-		$babBody->msgerror = bab_translate("ERROR: You must provide server address !!");
-		return false;
-		}
-
-	if( !empty($smtppass) || !empty($smtppass2))
-		{
-		if( $smtppass != $smtppass2 )
-			{
-			$babBody->msgerror = bab_translate("ERROR: Passwords not match !!");
-			return false;
-			}
-		}
-
-	if( empty($serverport))
-		{
-		$serverport = "25";
-		}
-
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$description = addslashes($description);
-		$namev = addslashes($name);
-		$adminname = addslashes($adminname);
-		}
-	else
-		{
-		$namev = $name;
-		$name = stripslashes($name);
-		}
-
 	$db = &$GLOBALS['babDB'];
-	$query = "select * from ".BAB_SITES_TBL." where name='".$namev."' and id!='".$id."'";
-	$res = $db->db_query($query);
-	if( $db->db_num_rows($res) > 0)
+
+	$query = "insert into ".BAB_SITES_TBL." (name, description, lang, adminemail, adminname, skin, style, stat_log,  langfilter, babslogan, name_order) VALUES ('" .$name. "', '" . $description. "', '" . $lang. "', '" . $siteemail. "', '" . $adminname. "', '" . $skin. "', '" . $style. "', '" . $statlog. "','".$langfilter."','". $babslogan."','". $name_order."')";
+	$db->db_query($query);
+	$idsite = $db->db_insert_id();
+
+	$db->db_query("insert into ".BAB_SITES_DISCLAIMERS_TBL." (id_site, disclaimer_text) values ('".$idsite."','')");
+
+	$resf = $db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='0'");
+	while( $row = $db->db_fetch_array($resf))
 		{
-		$babBody->msgerror = bab_translate("ERROR: This site already exists");
-		return false;
+		$db->db_query("insert into ".BAB_LDAP_SITES_FIELDS_TBL." (id_field, x_name, id_site) values ('".$row['id_field']."','','".$idsite."')");
+		$db->db_query("insert into ".BAB_SITES_FIELDS_REGISTRATION_TBL." (id_site, id_field, registration, required, multilignes) values ('".$idsite."', '".$row['id_field']."','N','N', 'N')");
 		}
-	else
-		{
-		list($oldname) = $db->db_fetch_row($db->db_query("select name from ".BAB_SITES_TBL." where id='".$id."'"));
-		$req = "update ".BAB_SITES_TBL." set ";
 
-		if( $oldname != $name)
-			{
-			$filename = "config.php";
-			$file = @fopen($filename, "r");
-			$txt = fread($file, filesize($filename));
-			fclose($file);
-			$reg = "babSiteName[[:space:]]*=[[:space:]]*\"([^\"]*)\"";
-			$res = ereg($reg, $txt, $match);
-			$reg = "babSiteName[[:space:]]*=[[:space:]]*\"".$match[1]."\"";
-			$out = ereg_replace($reg, "babSiteName = \"".$name."\"", $txt);
-			$file = fopen($filename, "w");
-			fputs($file, $out);
-			fclose($file);
-			$req .= "name='".$namev."', ";
-			}
+	$db->db_query("update ".BAB_SITES_FIELDS_REGISTRATION_TBL." set registration='Y', required='Y' where id_site='".$idsite."' and id_field IN ('2', '4', '6')");	
+	$db->db_query("update ".BAB_SITES_FIELDS_REGISTRATION_TBL." set registration='Y' where id_site='".$idsite."' and id_field='3'");	
 
-
-		$req .= "description='".$description."', lang='".$lang."', adminemail='".$siteemail."', adminname='".$adminname."', skin='".$skin."', style='".$style."', registration='".$register."', stat_log='".$statlog."', mailfunc='".$mailfunc."', smtpserver='".$server."', smtpport='".$serverport."', imgsize='".$imgsize."', smtpuser='".$smtpuser."', smtppassword=ENCODE(\"".$smtppass."\",\"".$GLOBALS['BAB_HASH_VAR']."\"), langfilter='" .$langfilter. "' where id='".$id."'";
-		$db->db_query($req);
-		}
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
-	}
-
-function siteSave($name, $description,$babslogan, $lang, $siteemail, $skin, $style, $langfilter, $adminname, $name_order)
-	{
-	global $babBody;
-
-
-	$db = &$GLOBALS['babDB'];
-	$query = "select * from ".BAB_SITES_TBL." where name='$name'";	
-	$res = $db->db_query($query);
-	if( $db->db_num_rows($res) > 0)
-		{
-		$babBody->msgerror = bab_translate("ERROR: This site already exists");
-		return false;
-		}
-	else
-		{
-		if( !is_numeric($imgsize))
-			{
-			$imgsize = 50;
-			}
-		$query = "insert into ".BAB_SITES_TBL." (name, description, lang, adminemail, adminname, skin, style, registration, stat_log, mailfunc, smtpserver, smtpport, imgsize, smtpuser, smtppassword, langfilter,total_diskspace, user_diskspace, folder_diskspace, maxfilesize, uploadpath, babslogan, remember_login, change_password, change_nickname, name_order, user_workdays) VALUES ('" .$name. "', '" . $description. "', '" . $lang. "', '" . $siteemail. "', '" . $adminname. "', '" . $skin. "', '" . $style. "', '" . $register. "', '" . $statlog. "', '" . $mailfunc. "', '" . $server. "', '" . $serverport. "', '" . $imgsize. "', '". $smtpuser. "', ENCODE(\"".$smtppass."\",\"".$GLOBALS['BAB_HASH_VAR']."\"),\"".$langfilter."\",'". $total_diskspace ."','". $user_diskspace ."','". $folder_diskspace."','".$maxfilesize."', '".$uploadpath."','". $babslogan."','". $remember_login."', '".$change_password."','". $change_nickname."','". $name_order."' , '".$user_workdays."')";
-		$db->db_query($query);
-		$idsite = $db->db_insert_id();
-		$db->db_query("insert into ".BAB_SITES_DISCLAIMERS_TBL." (id_site, disclaimer_text) values ('".$idsite."','')");
-
-		$resf = $db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='0'");
-		while( $row = $db->db_fetch_array($resf))
-			{
-			$db->db_query("insert into ".BAB_LDAP_SITES_FIELDS_TBL." (id_field, x_name, id_site) values ('".$row['id_field']."','','".$idsite."')");
-			$db->db_query("insert into ".BAB_SITES_FIELDS_REGISTRATION_TBL." (id_site, id_field, registration, required, multilignes) values ('".$idsite."', '".$row['id_field']."','N','N', 'N')");
-			}
-
-		$db->db_query("update ".BAB_SITES_FIELDS_REGISTRATION_TBL." set registration='Y', required='Y' where id_site='".$idsite."' and id_field IN ('2', '4', '6')");	
-		$db->db_query("update ".BAB_SITES_FIELDS_REGISTRATION_TBL." set registration='Y' where id_site='".$idsite."' and id_field='3'");	
-		}
-	return true;
+	return $idsite;
 	}
 
 function siteUpdate_menu1()
@@ -1380,6 +1293,7 @@ function siteUpdate_menu1()
 	$skin			= &$_POST['skin'];
 	$langfilter		= &$_POST['langfilter'];
 	$name_order		= &$_POST['name_order'];
+	$statlog		= &$_POST['statlog'];
 
 	if( empty($name))
 		{
@@ -1403,26 +1317,63 @@ function siteUpdate_menu1()
 	if (empty($_POST['item']))
 		{
 		// create
-		return siteSave($name, $description,$babslogan, $lang, $siteemail, $skin, $style, $langfilter, $adminname, $name_order);
+
+		$query = "select * from ".BAB_SITES_TBL." where name='$name'";	
+		$res = $db->db_query($query);
+		if( $db->db_num_rows($res) > 0)
+			{
+			$babBody->msgerror = bab_translate("ERROR: This site already exists");
+			return false;
+			}
+
+		return siteSave($namev, $description,$babslogan, $lang, $siteemail, $skin, $style, $langfilter, $adminname, $name_order, $statlog);
 		}
-
 	
-
-	
-	if( !bab_isMagicQuotesGpcOn())
+	$query = "select * from ".BAB_SITES_TBL." where name='$name' AND id<>'".$_POST['item']."'";	
+	$res = $db->db_query($query);
+	if( $db->db_num_rows($res) > 0)
 		{
-		$_POST['server'] = addslashes($_POST['server']);
-		$_POST['smtpuser'] = addslashes($_POST['smtpuser']);
-		$_POST['smtppass'] = addslashes($_POST['smtppass']);
+		$babBody->msgerror = bab_translate("ERROR: This site already exists");
+		return false;
 		}
+
+	list($oldname) = $db->db_fetch_row($db->db_query("select name from ".BAB_SITES_TBL." where id='".$_POST['item']."'"));
+
+	if( $oldname != $name && $GLOBALS['babSiteName'] == $oldname)
+		{
+		$filename = "config.php";
+		$file = @fopen($filename, "r");
+		$txt = fread($file, filesize($filename));
+		fclose($file);
+		$reg = "babSiteName[[:space:]]*=[[:space:]]*\"([^\"]*)\"";
+		$res = ereg($reg, $txt, $match);
+		$reg = "babSiteName[[:space:]]*=[[:space:]]*\"".$match[1]."\"";
+		$out = ereg_replace($reg, "babSiteName = \"".$name."\"", $txt);
+		$file = fopen($filename, "w");
+		fputs($file, $out);
+		fclose($file);
+		}
+
 
 	$req = "UPDATE ".BAB_SITES_TBL." SET 
+
+			name='".$namev."', 
+			description='".$description."', 
+			lang='".$lang."', 
+			adminemail='".$siteemail."', 
+			adminname='".$adminname."', 
+			skin='".$skin."', 
+			style='".$style."', 
+			stat_log='".$statlog."', 
+			langfilter='" .$langfilter. "', 
+			name_order='".$name_order."', 
+			babslogan='".$babslogan."' 
 			
 		where id='".$_POST['item']."'";
 
 	$db->db_query($req);
 
-	return true;
+	return $_POST['item'];
 }
 
 
@@ -1481,7 +1432,8 @@ function siteUpdate_menu3()
 			change_password='".$_POST['change_password']."',
 			change_lang='".$_POST['change_lang']."', 
 			change_skin='".$_POST['change_skin']."', 
-			change_date='".$_POST['change_date']."', 
+			change_date='".$_POST['change_date']."',
+			change_unavailability='".$_POST['change_unavailability']."',
 			user_workdays='".$_POST['user_workdays']."', 
 			remember_login='".$_POST['remember_login']."', 
 			email_password='".$_POST['email_password']."' 
@@ -1740,21 +1692,12 @@ if (isset($_POST['action']))
 {
 switch ($_POST['action'])
 	{
-	case 'bloc1':
-		if( !empty($Submit))
-			{
-			if(!siteUpdate_bloc1($item, $name, $description, $lang, $style, $siteemail, $skin, $register, $statlog, $mailfunc, $server, $serverport, $imgsize, $smtpuser, $smtppass, $smtppass2, $babLangFilter->convertFilterToInt($langfilter), $adminname))
-				$idx = "modify";
-			}
-		else if( !empty($delete))
-			{
-			$idx = "Delete";
-			}
-		break;
-
 	case 'menu1':
-		if (!siteUpdate_menu1())
+		$menu1 = siteUpdate_menu1();
+		if (!$menu1)
 			$idx = 'menu1';
+		else 
+			$_REQUEST['item'] = $menu1;
 		break;
 
 	case 'menu2':

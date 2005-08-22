@@ -14,12 +14,14 @@
 	<table  width="100%" border="0" cellspacing="0" cellpadding="5" class="BabLoginMenuBackground">
 	<tr valign="top"> 
 		<td>
+		<!--#if calweekwork -->
 		<dl>
 			<dt><h5>{ calweekworktxt }</h5><dt>
 			<!--#in getnextshortday -->
 			<dd ><input  type="checkbox" name="workdays[]" id="{ dayid }" value="{ dayid }"  { work_selected } /><label for="{ dayid }">{ shortday }</label></dd>
 			<!--#endin getnextshortday -->
 		</dl>
+		<!--#endif calweekwork -->
 		</td>
 
 		<td>

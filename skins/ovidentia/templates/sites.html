@@ -69,7 +69,7 @@
 <form name="formsite" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="site" />
 <input type="hidden" name="idx" value="menusite" />
-<input type="hidden" name="item" value="{ id }" />
+<input type="hidden" name="item" value="{ item }" />
 <input type="hidden" name="action" value="menu1" />
 <table width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
@@ -156,13 +156,13 @@
             <td>{ name_order_title }</td>
             <td> 
 				<select name="name_order">
-				<!--#if dbvalue[name_order] "== F L" -->
-				<option value="F L" selected>{ firstlast }</option>
+				<!--#if arr[name_order] "== F L" -->
+				<option value="F L" selected="selected">{ firstlast }</option>
 				<option value="L F">{ lastfirst }</option>
-				<!--#else dbvalue[name_order] -->
+				<!--#else arr[name_order] -->
 				<option value="F L">{ firstlast }</option>
-				<option value="L F" selected>{ lastfirst }</option>
-				<!--#endif dbvalue[name_order] -->
+				<option value="L F" selected="selected">{ lastfirst }</option>
+				<!--#endif arr[name_order] -->
 				</select>
 			</td>
 		</tr>
@@ -368,6 +368,20 @@ function validateNum(field)
 				<option value="Y">{ yes }</option>
 				<option value="N" selected="selected">{ no }</option>
 				<!--#endif arr[change_date] -->
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td>{ change_unavailability_title }</td>
+            <td> 
+				<select name="change_unavailability">
+				<!--#if arr[change_unavailability] "== Y" -->
+				<option value="Y" selected="selected">{ yes }</option>
+				<option value="N">{ no }</option>
+				<!--#else arr[change_unavailability] -->
+				<option value="Y">{ yes }</option>
+				<option value="N" selected="selected">{ no }</option>
+				<!--#endif arr[change_unavailability] -->
 				</select>
 			</td>
 		</tr>

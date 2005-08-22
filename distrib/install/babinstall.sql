@@ -2567,7 +2567,7 @@ CREATE TABLE bab_cal_events_reminders (
 
 
 CREATE TABLE `bab_sites_editor` (
-  `id` int(10) unsigned NOT NULL default '0',
+  `id` int(10) unsigned NOT NULL auto_increment,
   `id_site` int(10) unsigned NOT NULL default '0',
   `use_editor` tinyint(3) unsigned NOT NULL default '1',
   `filter_html` tinyint(3) unsigned NOT NULL default '0',

@@ -70,7 +70,7 @@ function sitesList()
 			$this->email = bab_translate("Email");
 			$this->homepages = bab_translate("Home pages");
 			$this->hmanagement = bab_translate("Managers");
-			$this->db = $GLOBALS['babDB'];
+			$this->db = &$GLOBALS['babDB'];
 			$req = "select * from ".BAB_SITES_TBL."";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
@@ -83,7 +83,7 @@ function sitesList()
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->url = $GLOBALS['babUrlScript']."?tg=site&idx=menusite&item=".$this->arr['id'];
-				$this->hmanagementurl = $GLOBALS['babUrlScript']."?tg=site&idx=hman&item=".$this->arr['id'];
+				$this->hmanagementurl = $GLOBALS['babUrlScript']."?tg=site&idx=menu7&item=".$this->arr['id'];
 				$this->urlname = $this->arr['name'];
 				$i++;
 				return true;

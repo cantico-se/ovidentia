@@ -599,6 +599,8 @@ function changeProfiles()
 	global $babBody,$BAB_SESS_USERID;
 	class changeProfilsCls
 		{
+		var $profileaccess = false;
+
 		function changeProfilsCls()
 			{
 			global $babBody,$babDB;
@@ -619,6 +621,7 @@ function changeProfiles()
 				$arr = $babDB->db_fetch_array($this->res);
 				if( bab_IsAccessValid(BAB_PROFILES_GROUPS_TBL, $arr['id']))
 					{
+					$this->profileaccess = true;
 					$this->pname = $arr['name'];
 					$this->pdesc = $arr['description'];
 					$this->idprofile = $arr['id'];
@@ -695,7 +698,7 @@ function changeProfiles()
 		}
 
 	$temp = new changeProfilsCls();
-	if( $temp->countpf > 0 )
+	if( $temp->profileaccess )
 		{
 		$babBody->babecho(bab_printTemplate($temp,"options.html", "profileslist"));
 		}
@@ -1351,7 +1354,7 @@ switch($idx)
 		if( !isset($todate)) { $todate ='';}
 		if( !isset($id_substitute)) { $id_substitute ='';}
 		$babBody->addItemMenu("global", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=options&idx=global");
-		if( $iduser == $GLOBALS['BAB_SESS_USERID'] || bab_isUserAdministrator())
+		if( ('Y' == $babBody->babsite['change_unavailability'] && $iduser == $GLOBALS['BAB_SESS_USERID']) || bab_isUserAdministrator())
 			{
 			showUnavailability($iduser, $fromdate, $todate, $id_substitute);
 			$babBody->addItemMenu("unav", bab_translate("Unavailability"), $GLOBALS['babUrlScript']."?tg=options&idx=unav&iduser=".$iduser);
@@ -1386,9 +1389,12 @@ switch($idx)
 		$idcal = bab_getCalendarId($BAB_SESS_USERID, 1);
 		if( !isset($nickname)) { $nickname = ""; }
 		changeNickname($nickname);
-		changeSkin($skin);
-		changeLanguage();
-		changeRegionalSettings();
+		if ('Y' == $babBody->babsite['change_skin'])
+			changeSkin($skin);
+		if ('Y' == $babBody->babsite['change_lang'])
+			changeLanguage();
+		if ('Y' == $babBody->babsite['change_date'])
+			changeRegionalSettings();
 		changeProfiles();
 		$babBody->addItemMenu("global", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=options&idx=global");
 		if( $idcal != 0 || $babBody->calaccess || bab_calendarAccess() != 0 )
@@ -1400,7 +1406,8 @@ switch($idx)
 			$babBody->addItemMenu("options", bab_translate("Mail"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=listacc");
 			}
 		$babBody->addItemMenu("list", bab_translate("Sections"), $GLOBALS['babUrlScript']."?tg=sectopt&idx=list");
-		$babBody->addItemMenu("unav", bab_translate("Unavailability"), $GLOBALS['babUrlScript']."?tg=options&idx=unav&iduser=".(isset($iduser)?$iduser:$BAB_SESS_USERID ));
+		if ('Y' == $babBody->babsite['change_unavailability'])
+			$babBody->addItemMenu("unav", bab_translate("Unavailability"), $GLOBALS['babUrlScript']."?tg=options&idx=unav&iduser=".(isset($iduser)?$iduser:$BAB_SESS_USERID ));
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);

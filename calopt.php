@@ -333,6 +333,7 @@ function calendarOptions($calid, $urla)
 			$this->elapstime = bab_translate("Time scale");
 			$this->minutes = bab_translate("Minutes");
 			$this->defaultview = bab_translate("Calendar default view");
+			$this->calweekwork = 'Y' == $GLOBALS['babBody']->babsite['user_workdays'];
 			$db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_CAL_USER_OPTIONS_TBL." where id_user='".$BAB_SESS_USERID."'";
 			$res = $db->db_query($req);
