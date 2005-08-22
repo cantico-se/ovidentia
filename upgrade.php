@@ -5068,7 +5068,7 @@ if ($arr[0] != 'change_lang')
 $arr = $db->db_fetch_assoc($db->db_query("DESCRIBE ".BAB_SITES_EDITOR_TBL." id"));
 if (strtolower($arr['Extra']) != 'auto_increment')
 	{
-	$db->db_query("ALTER TABLE `bab_sites_editor` CHANGE `id` `id` INT( 10 ) UNSIGNED NOT NULL AUTO_INCREMENT");
+	$db->db_query("ALTER TABLE `".BAB_SITES_EDITOR_TBL."` CHANGE `id` `id` INT( 10 ) UNSIGNED NOT NULL AUTO_INCREMENT");
 	}
 
 

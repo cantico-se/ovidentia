@@ -826,6 +826,7 @@ CREATE TABLE `bab_sites` (
   `change_lang` enum('Y','N') NOT NULL default 'Y',
   `change_skin` enum('Y','N') NOT NULL default 'Y',
   `change_date` enum('Y','N') NOT NULL default 'Y',
+  `change_unavailability` enum('Y','N') NOT NULL default 'Y',
   `name_order` enum('F L','L F') NOT NULL default 'F L',
   `email_password` enum('Y','N') NOT NULL default 'Y',
   `authentification` smallint(5) unsigned NOT NULL default '0',
