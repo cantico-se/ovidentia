@@ -252,7 +252,7 @@ function printBody()
 		function tpl()
 			{
 			global $babBody, $BAB_SESS_LOGGED, $babSiteName,$babSlogan,$babStyle, $babSearchUrl;
-			$this->version = $GLOBALS['babVersion'];
+			$this->version = isset($GLOBALS['babVersion']) ? $GLOBALS['babVersion'] : '';
 			$this->babLogoLT = "";
 			$this->babLogoRT = "";
 			$this->babLogoLB = "";
