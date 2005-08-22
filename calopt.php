@@ -668,8 +668,7 @@ switch($idx)
 
 	case "access":
 		$babBody->title = bab_translate("Calendar Options");
-		$idcal = bab_getCalendarId($BAB_SESS_USERID, 1);
-		if( $idcal != 0 )
+		if( $babBody->icalendars->id_percal != 0 )
 		{
 			accessCalendar($idcal, $urla);
 			$babBody->addItemMenu("options", bab_translate("Calendar Options"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options&urla=".urlencode($urla));
@@ -685,25 +684,22 @@ switch($idx)
 	default:
 	case "options":
 		$babBody->title = bab_translate("Calendar and Vacations Options");
-		$idcal = bab_getCalendarId($BAB_SESS_USERID, 1);
+		$idcal = & $babBody->icalendars->id_percal;
 
 		calendarOptions($idcal, $urla);
 
 		
 		$babBody->addItemMenu("options", bab_translate("Calendar Options"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options");
 
-		if( $idcal != 0 || $babBody->calaccess || bab_calendarAccess() != 0 )
-		{
-			
-			if( $idcal != 0 )
-				{
-				$babBody->addItemMenu("access", bab_translate("Calendar access"), $GLOBALS['babUrlScript']."?tg=calopt&idx=access&idcal=".$idcal."&urla=".urlencode($urla));
-				}
-			if( isset($urla) && !empty($urla) )
-				{
-				$babBody->addItemMenu("cal", bab_translate("Calendar"), urldecode($urla));
-				}
-		}
+		if( $idcal != 0 )
+			{
+			$babBody->addItemMenu("access", bab_translate("Calendar access"), $GLOBALS['babUrlScript']."?tg=calopt&idx=access&idcal=".$idcal."&urla=".urlencode($urla));	
+			}
+
+		if( isset($urla) && !empty($urla) && $babBody->icalendars->calendarAccess() )
+			{
+			$babBody->addItemMenu("cal", bab_translate("Calendar"), urldecode($urla));
+			}
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);

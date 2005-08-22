@@ -599,6 +599,8 @@ function updatePersonalCalendars($calperids)
 		$db->db_query("update ".BAB_GROUPS_TBL." set pcalendar='Y' where id='".$calperids[$i]."'"); 
 	}
 
+	$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
+
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admcals&idx=user");
 	exit;
 }

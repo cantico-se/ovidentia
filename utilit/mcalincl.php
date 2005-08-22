@@ -54,7 +54,7 @@ class bab_mcalendars
 
 	function getCalendarName($idcal)
 		{
-		if( isset($this->objcals[$idcal]) )
+		if( isset($this->objcals[$idcal]->cal_name) )
 			{
 			return $this->objcals[$idcal]->cal_name;
 			}
@@ -446,6 +446,7 @@ class bab_icalendar
 		{
 		$arr = array();
 		$i = 0;
+		if (isset($this->events))
 		while( $i < count($this->events) )
 			{			
 			if( $enddate >= $this->events[$i]['start_date'] && $startdate <= $this->events[$i]['end_date'] )
