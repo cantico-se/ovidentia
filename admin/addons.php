@@ -431,9 +431,15 @@ function export($id)
 			if (is_file($file))
 				{
 				$rec_into = $loc_out[$k].substr($file,$len);
-				$fp=fopen($file,"r");
-				$contents = fread ($fp, filesize($file));
-				fclose($fp);			
+				$size = filesize($file);
+				if ($size > 0)
+					{
+					$fp=fopen($file,"r");
+					$contents = fread ($fp, $size);
+					fclose($fp);
+					}
+				else
+					$contents = '';			
 				$addarr[] = array($rec_into,$contents);
 				}
 			}
