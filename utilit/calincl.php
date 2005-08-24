@@ -686,8 +686,8 @@ function bab_deleteCalendar($idcal)
 			break;
 		case BAB_CAL_USER_TYPE:
 			$babDB->db_query("delete from ".BAB_CALACCESS_USERS_TBL." where id_cal='".$idcal."'");	
-			$babDB->db_query("delete from ".BAB_CALACCESS_USERS_TBL." where id_user='".$arr['owner']."'");	
-			$babDB->db_query("delete from ".BAB_CAL_USER_OPTIONS_TBL." where id_user='".$arr['owner']."'");	
+			$babDB->db_query("delete from ".BAB_CALACCESS_USERS_TBL." where id_user='".$owner."'");	
+			$babDB->db_query("delete from ".BAB_CAL_USER_OPTIONS_TBL." where id_user='".$owner."'");	
 			break;
 		}
 
