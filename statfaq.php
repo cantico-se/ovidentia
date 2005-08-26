@@ -173,11 +173,12 @@ function summaryFaqs($col, $order, $pos, $startday, $endday)
 			{
 			$output .= " ( - ".bab_strftime(bab_mktime($endday." 00:00:00"), false).")";
 			}
+		$output .= " - ".bab_translate("Total: ").$temp->totalhits;
 		$output .= "\n";
-		$output .= $temp->fullname.",".$temp->hitstxt.",%\n";
+		$output .= $temp->fullname.$GLOBALS['exportchr'].$temp->hitstxt.$GLOBALS['exportchr']."%\n";
 		while($temp->getnext())
 			{
-			$output .= $temp->modulename.",".$temp->nbhits.",".$temp->nbhitspc."\n";
+			$output .= $temp->modulename.$GLOBALS['exportchr'].$temp->nbhits.$GLOBALS['exportchr'].$temp->nbhitspc."\n";
 			}
 		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
 		header("Content-Type: text/plain"."\n");
@@ -346,11 +347,12 @@ function summaryQuestionsFaqs($col, $order, $pos, $startday, $endday)
 			{
 			$output .= " ( - ".bab_strftime(bab_mktime($endday." 00:00:00"), false).")";
 			}
+		$output .= " - ".bab_translate("Total: ").$temp->totalhits;
 		$output .= "\n";
-		$output .= $temp->fullname.",".$temp->hitstxt.",%\n";
+		$output .= $temp->fullname.$GLOBALS['exportchr'].$temp->hitstxt.$GLOBALS['exportchr']."%\n";
 		while($temp->getnext())
 			{
-			$output .= $temp->modulename.",".$temp->nbhits.",".$temp->nbhitspc."\n";
+			$output .= $temp->modulename.$GLOBALS['exportchr'].$temp->nbhits.$GLOBALS['exportchr'].$temp->nbhitspc."\n";
 			}
 		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
 		header("Content-Type: text/plain"."\n");
@@ -433,7 +435,48 @@ function showStatFaq($id, $date)
 
 		}
 	$temp = new showStatFaqCls($id, $date);
-	$babBodyPopup->babecho(bab_printTemplate($temp, "statfaq.html", "summarydetail"));
+
+	if( isset($GLOBALS['export']) && $GLOBALS['export'] == 1 )
+		{
+		$output = bab_translate("Faq").": ".$babBodyPopup->title;
+		$output .= "\n";
+		$output .= bab_translate("Day").": ".$temp->daydate;
+		$output .= "\n";
+		$output .= bab_translate("Hour").$GLOBALS['exportchr'].$temp->hitstxt."\n";
+		while($temp->getnexthour())
+			{
+			$output .= $temp->hour.$GLOBALS['exportchr'].$temp->hits."\n";
+			}
+
+		$output .= "\n";
+		$output .= bab_translate("Month").": ".$temp->monthdate;
+		$output .= "\n";
+		$output .= bab_translate("Day").$GLOBALS['exportchr'].$temp->hitstxt."\n";
+		while($temp->getnextday())
+			{
+			$output .= $temp->day.$GLOBALS['exportchr'].$temp->hits."\n";
+			}
+
+		$output .= "\n";
+		$output .= bab_translate("Year").": ".$temp->yeardate;
+		$output .= "\n";
+		$output .= bab_translate("Month").$GLOBALS['exportchr'].$temp->hitstxt."\n";
+		while($temp->getnextmonth())
+			{
+			$output .= $temp->monthname.$GLOBALS['exportchr'].$temp->hits."\n";
+			}
+
+		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
+		header("Content-Type: text/plain"."\n");
+		header("Content-Length: ". strlen($output)."\n");
+		header("Content-transfert-encoding: binary"."\n");
+		print $output;
+		exit;
+		}
+	else
+		{
+		$babBodyPopup->babecho(bab_printTemplate($temp, "statfaq.html", "summarydetail"));
+		}
 }
 
 function showStatFaqQuestion($id, $date)
@@ -503,7 +546,47 @@ function showStatFaqQuestion($id, $date)
 
 		}
 	$temp = new showStatFaqQuestionCls($id, $date);
-	$babBodyPopup->babecho(bab_printTemplate($temp, "statfaq.html", "summarydetail"));
+	if( isset($GLOBALS['export']) && $GLOBALS['export'] == 1 )
+		{
+		$output = bab_translate("Question").": ".$babBodyPopup->title;
+		$output .= "\n";
+		$output .= bab_translate("Day").": ".$temp->daydate;
+		$output .= "\n";
+		$output .= bab_translate("Hour").$GLOBALS['exportchr'].$temp->hitstxt."\n";
+		while($temp->getnexthour())
+			{
+			$output .= $temp->hour.$GLOBALS['exportchr'].$temp->hits."\n";
+			}
+
+		$output .= "\n";
+		$output .= bab_translate("Month").": ".$temp->monthdate;
+		$output .= "\n";
+		$output .= bab_translate("Day").$GLOBALS['exportchr'].$temp->hitstxt."\n";
+		while($temp->getnextday())
+			{
+			$output .= $temp->day.$GLOBALS['exportchr'].$temp->hits."\n";
+			}
+
+		$output .= "\n";
+		$output .= bab_translate("Year").": ".$temp->yeardate;
+		$output .= "\n";
+		$output .= bab_translate("Month").$GLOBALS['exportchr'].$temp->hitstxt."\n";
+		while($temp->getnextmonth())
+			{
+			$output .= $temp->monthname.$GLOBALS['exportchr'].$temp->hits."\n";
+			}
+
+		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
+		header("Content-Type: text/plain"."\n");
+		header("Content-Length: ". strlen($output)."\n");
+		header("Content-transfert-encoding: binary"."\n");
+		print $output;
+		exit;
+		}
+	else
+		{
+		$babBodyPopup->babecho(bab_printTemplate($temp, "statfaq.html", "summarydetail"));
+		}
 }
 
 ?>

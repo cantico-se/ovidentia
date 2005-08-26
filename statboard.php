@@ -164,7 +164,7 @@ function summaryDelegatList($col, $order)
 
 		while( $temp->getnextdg())
 			{
-			$output .= ",". $temp->delegitemdesc;
+			$output .= $GLOBALS['exportchr']. $temp->delegitemdesc;
 			}
 		$output .= "\n";
 
@@ -173,7 +173,7 @@ function summaryDelegatList($col, $order)
 			$output .= $temp->groupname." (".$temp->delegname.")";
 			while( $temp->getnextdg())
 				{
-				$output .= ",".$temp->total;
+				$output .= $GLOBALS['exportchr'].$temp->total;
 				}
 			$output .= "\n";
 			}
@@ -419,10 +419,10 @@ function summarySections($col, $order)
 	$temp = new summarySectionsCls($col, $order);
 	if( isset($GLOBALS['export']) && $GLOBALS['export'] == 1 )
 		{
-		$output = $temp->sectiontxt.",".$temp->delegattxt.",%\n";
+		$output = $temp->sectiontxt.$GLOBALS['exportchr'].$temp->delegattxt.$GLOBALS['exportchr']."%\n";
 		while($temp->getnext())
 			{
-			$output .= $temp->sectionname.",".$temp->delegation.",".$temp->total."\n";
+			$output .= $temp->sectionname.$GLOBALS['exportchr'].$temp->delegation.$GLOBALS['exportchr'].$temp->total."\n";
 			}
 		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
 		header("Content-Type: text/plain"."\n");

@@ -180,11 +180,12 @@ function summaryForums($col, $order, $pos, $startday, $endday)
 			{
 			$output .= " ( - ".bab_strftime(bab_mktime($endday." 00:00:00"), false).")";
 			}
+		$output .= " - ".bab_translate("Total: ").$temp->totalhits;
 		$output .= "\n";
-		$output .= $temp->fullname.",".$temp->threadstxt.",".$temp->poststxt.",".$temp->hitstxt.",%\n";
+		$output .= $temp->fullname.$GLOBALS['exportchr'].$temp->threadstxt.$GLOBALS['exportchr'].$temp->poststxt.$GLOBALS['exportchr'].$temp->hitstxt.$GLOBALS['exportchr']."%\n";
 		while($temp->getnext())
 			{
-			$output .= $temp->modulename.",".$temp->nbthreads.",".$temp->nbposts.",".$temp->nbhits.",".$temp->nbhitspc."\n";
+			$output .= $temp->modulename.$GLOBALS['exportchr'].$temp->nbthreads.$GLOBALS['exportchr'].$temp->nbposts.$GLOBALS['exportchr'].$temp->nbhits.$GLOBALS['exportchr'].$temp->nbhitspc."\n";
 			}
 		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
 		header("Content-Type: text/plain"."\n");
@@ -354,11 +355,12 @@ function summaryThreads($col, $order, $pos, $startday, $endday)
 			{
 			$output .= " ( - ".bab_strftime(bab_mktime($endday." 00:00:00"), false).")";
 			}
+		$output .= " - ".bab_translate("Total: ").$temp->totalhits;
 		$output .= "\n";
-		$output .= $temp->fullname.",".$temp->forumtxt.",".$temp->hitstxt.",%\n";
+		$output .= $temp->fullname.$GLOBALS['exportchr'].$temp->forumtxt.$GLOBALS['exportchr'].$temp->hitstxt.$GLOBALS['exportchr']."%\n";
 		while($temp->getnext())
 			{
-			$output .= $temp->modulename.",".$temp->forumname.",".$temp->nbhits.",".$temp->nbhitspc."\n";
+			$output .= $temp->modulename.$GLOBALS['exportchr'].$temp->forumname.$GLOBALS['exportchr'].$temp->nbhits.$GLOBALS['exportchr'].$temp->nbhitspc."\n";
 			}
 		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
 		header("Content-Type: text/plain"."\n");
@@ -536,11 +538,12 @@ function summaryPosts($col, $order, $pos, $startday, $endday)
 			{
 			$output .= " ( - ".bab_strftime(bab_mktime($endday." 00:00:00"), false).")";
 			}
+		$output .= " - ".bab_translate("Total: ").$temp->totalhits;
 		$output .= "\n";
-		$output .= $temp->fullname.",".$temp->forumtxt.",".$temp->threadtxt.",".$temp->hitstxt.",%\n";
+		$output .= $temp->fullname.$GLOBALS['exportchr'].$temp->forumtxt.$GLOBALS['exportchr'].$temp->threadtxt.$GLOBALS['exportchr'].$temp->hitstxt.$GLOBALS['exportchr']."%\n";
 		while($temp->getnext())
 			{
-			$output .= $temp->modulename.",".$temp->forumname.",".$temp->threadname.",".$temp->nbhits.",".$temp->nbhitspc."\n";
+			$output .= $temp->modulename.$GLOBALS['exportchr'].$temp->forumname.$GLOBALS['exportchr'].$temp->threadname.$GLOBALS['exportchr'].$temp->nbhits.$GLOBALS['exportchr'].$temp->nbhitspc."\n";
 			}
 		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
 		header("Content-Type: text/plain"."\n");
@@ -624,7 +627,47 @@ function showStatForum($id, $date)
 
 		}
 	$temp = new showStatForumCls($id, $date);
-	$babBodyPopup->babecho(bab_printTemplate($temp, "statfor.html", "summarydetail"));
+	if( isset($GLOBALS['export']) && $GLOBALS['export'] == 1 )
+		{
+		$output = bab_translate("Forum").": ".$babBodyPopup->title;
+		$output .= "\n";
+		$output .= bab_translate("Day").": ".$temp->daydate;
+		$output .= "\n";
+		$output .= bab_translate("Hour").$GLOBALS['exportchr'].$temp->hitstxt."\n";
+		while($temp->getnexthour())
+			{
+			$output .= $temp->hour.$GLOBALS['exportchr'].$temp->hits."\n";
+			}
+
+		$output .= "\n";
+		$output .= bab_translate("Month").": ".$temp->monthdate;
+		$output .= "\n";
+		$output .= bab_translate("Day").$GLOBALS['exportchr'].$temp->hitstxt."\n";
+		while($temp->getnextday())
+			{
+			$output .= $temp->day.$GLOBALS['exportchr'].$temp->hits."\n";
+			}
+
+		$output .= "\n";
+		$output .= bab_translate("Year").": ".$temp->yeardate;
+		$output .= "\n";
+		$output .= bab_translate("Month").$GLOBALS['exportchr'].$temp->hitstxt."\n";
+		while($temp->getnextmonth())
+			{
+			$output .= $temp->monthname.$GLOBALS['exportchr'].$temp->hits."\n";
+			}
+
+		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
+		header("Content-Type: text/plain"."\n");
+		header("Content-Length: ". strlen($output)."\n");
+		header("Content-transfert-encoding: binary"."\n");
+		print $output;
+		exit;
+		}
+	else
+		{
+		$babBodyPopup->babecho(bab_printTemplate($temp, "statfor.html", "summarydetail"));
+		}
 }
 
 function showStatThread($id, $date)
@@ -694,7 +737,47 @@ function showStatThread($id, $date)
 
 		}
 	$temp = new showStatThreadCls($id, $date);
-	$babBodyPopup->babecho(bab_printTemplate($temp, "statfor.html", "summarydetail"));
+	if( isset($GLOBALS['export']) && $GLOBALS['export'] == 1 )
+		{
+		$output = bab_translate("Thread").": ".$babBodyPopup->title;
+		$output .= "\n";
+		$output .= bab_translate("Day").": ".$temp->daydate;
+		$output .= "\n";
+		$output .= bab_translate("Hour").$GLOBALS['exportchr'].$temp->hitstxt."\n";
+		while($temp->getnexthour())
+			{
+			$output .= $temp->hour.$GLOBALS['exportchr'].$temp->hits."\n";
+			}
+
+		$output .= "\n";
+		$output .= bab_translate("Month").": ".$temp->monthdate;
+		$output .= "\n";
+		$output .= bab_translate("Day").$GLOBALS['exportchr'].$temp->hitstxt."\n";
+		while($temp->getnextday())
+			{
+			$output .= $temp->day.$GLOBALS['exportchr'].$temp->hits."\n";
+			}
+
+		$output .= "\n";
+		$output .= bab_translate("Year").": ".$temp->yeardate;
+		$output .= "\n";
+		$output .= bab_translate("Month").$GLOBALS['exportchr'].$temp->hitstxt."\n";
+		while($temp->getnextmonth())
+			{
+			$output .= $temp->monthname.$GLOBALS['exportchr'].$temp->hits."\n";
+			}
+
+		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
+		header("Content-Type: text/plain"."\n");
+		header("Content-Length: ". strlen($output)."\n");
+		header("Content-transfert-encoding: binary"."\n");
+		print $output;
+		exit;
+		}
+	else
+		{
+		$babBodyPopup->babecho(bab_printTemplate($temp, "statfor.html", "summarydetail"));
+		}
 }
 
 function showStatPost($id, $date)
@@ -764,7 +847,48 @@ function showStatPost($id, $date)
 
 		}
 	$temp = new showStatPostCls($id, $date);
-	$babBodyPopup->babecho(bab_printTemplate($temp, "statfor.html", "summarydetail"));
+
+	if( isset($GLOBALS['export']) && $GLOBALS['export'] == 1 )
+		{
+		$output = bab_translate("Post").": ".$babBodyPopup->title;
+		$output .= "\n";
+		$output .= bab_translate("Day").": ".$temp->daydate;
+		$output .= "\n";
+		$output .= bab_translate("Hour").$GLOBALS['exportchr'].$temp->hitstxt."\n";
+		while($temp->getnexthour())
+			{
+			$output .= $temp->hour.$GLOBALS['exportchr'].$temp->hits."\n";
+			}
+
+		$output .= "\n";
+		$output .= bab_translate("Month").": ".$temp->monthdate;
+		$output .= "\n";
+		$output .= bab_translate("Day").$GLOBALS['exportchr'].$temp->hitstxt."\n";
+		while($temp->getnextday())
+			{
+			$output .= $temp->day.$GLOBALS['exportchr'].$temp->hits."\n";
+			}
+
+		$output .= "\n";
+		$output .= bab_translate("Year").": ".$temp->yeardate;
+		$output .= "\n";
+		$output .= bab_translate("Month").$GLOBALS['exportchr'].$temp->hitstxt."\n";
+		while($temp->getnextmonth())
+			{
+			$output .= $temp->monthname.$GLOBALS['exportchr'].$temp->hits."\n";
+			}
+
+		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
+		header("Content-Type: text/plain"."\n");
+		header("Content-Length: ". strlen($output)."\n");
+		header("Content-transfert-encoding: binary"."\n");
+		print $output;
+		exit;
+		}
+	else
+		{
+		$babBodyPopup->babecho(bab_printTemplate($temp, "statfor.html", "summarydetail"));
+		}
 }
 
 ?>

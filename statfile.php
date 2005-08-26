@@ -160,10 +160,10 @@ function summaryFileManager($col, $order)
 	$temp = new summaryFileManagerCls($col, $order);
 	if( isset($GLOBALS['export']) && $GLOBALS['export'] == 1 )
 		{
-		$output = $temp->fullname.",".$temp->dgtxt.",".$temp->diskspacetxt.",".$temp->filestxt.",".$temp->versionstxt."\n";
+		$output = $temp->fullname.$GLOBALS['exportchr'].$temp->dgtxt.$GLOBALS['exportchr'].$temp->diskspacetxt.$GLOBALS['exportchr'].$temp->filestxt.$GLOBALS['exportchr'].$temp->versionstxt."\n";
 		while($temp->getnext())
 			{
-			$output .= $temp->urlname.",".$temp->dgname.",".$temp->diskspace.",".$temp->nbfiles.",".$temp->nbfilesv."\n";
+			$output .= $temp->urlname.$GLOBALS['exportchr'].$temp->dgname.$GLOBALS['exportchr'].$temp->diskspace.$GLOBALS['exportchr'].$temp->nbfiles.$GLOBALS['exportchr'].$temp->nbfilesv."\n";
 			}
 		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
 		header("Content-Type: text/plain"."\n");
@@ -248,7 +248,7 @@ function showPersonalFoldersDetail()
 }
 
 
-function summaryFmDownloads($col, $order, $pos)
+function summaryFmDownloads($col, $order, $pos, $startday, $endday)
 	{
 	global $babBody;
 	class summaryFmDownloadsCls extends summaryBaseCls
@@ -260,7 +260,7 @@ function summaryFmDownloads($col, $order, $pos)
 		var $urlname;
 		var $altbg = true;
 
-		function summaryFmDownloadsCls($col, $order, $pos)
+		function summaryFmDownloadsCls($col, $order, $pos, $startday, $endday)
 			{
 			global $babBody, $babDB;
 			$this->fullname = bab_translate("File");
@@ -268,7 +268,23 @@ function summaryFmDownloads($col, $order, $pos)
 			$this->foldertxt = bab_translate("Folder");
 			$this->pathtxt = bab_translate("Path");
 
-			$req = "select ft.id, ft.name, fft.folder, ft.path, ft.hits from bab_files ft left join bab_fm_folders fft on fft.id=ft.id_owner where ft.bgroup='Y' order by ft.hits desc ";
+			$req = "select ft.id, ft.name, fft.folder, ft.path, ft.hits , sum( sff.st_hits ) FROM ".BAB_STATS_FMFILES_TBL." sff left join ".BAB_FILES_TBL." ft on sff.st_fmfile_id=ft.id left join ".BAB_FM_FOLDERS_TBL." fft on fft.id=ft.id_owner where ft.bgroup='Y'";
+
+			if( !empty($startday) && !empty($endday))
+				{
+				$req .= " and sff.st_date between '".$startday."' and '".$endday."'";
+				}
+			else if( !empty($startday))
+				{
+				$req .= " and sff.st_date >= '".$startday."'";
+				}
+			else if( !empty($endday))
+				{
+				$req .= " and sff.st_date <= '".$endday."'";
+				}
+
+			$req .= " GROUP  by sff.st_fmfile_id order by hits desc";
+
 
 			$res = $babDB->db_query($req);
 			$this->total = $babDB->db_num_rows($res);
@@ -376,13 +392,28 @@ function summaryFmDownloads($col, $order, $pos)
 
 			}
 		}
-	$temp = new summaryFmDownloadsCls($col, $order, $pos);
+	$temp = new summaryFmDownloadsCls($col, $order, $pos, $startday, $endday);
 	if( isset($GLOBALS['export']) && $GLOBALS['export'] == 1 )
 		{
-		$output = $temp->fullname.",".$temp->foldertxt.",".$temp->pathtxt.",".$temp->hitstxt."\n";
+		$output = bab_translate("Downloads");
+		if( !empty($startday) && !empty($endday))
+			{
+			$output .= " (".bab_strftime(bab_mktime($startday." 00:00:00"), false)." - ".bab_strftime(bab_mktime($endday." 00:00:00"), false).")";
+			}
+		else if( !empty($startday))
+			{
+			$output .= " (".bab_strftime(bab_mktime($startday." 00:00:00"), false)." - )";
+			}
+		else if( !empty($endday))
+			{
+			$output .= " ( - ".bab_strftime(bab_mktime($endday." 00:00:00"), false).")";
+			}
+		$output .= " - ".bab_translate("Total: ").$temp->totalhits;
+		$output .= "\n";
+		$output .= $temp->fullname.$GLOBALS['exportchr'].$temp->foldertxt.$GLOBALS['exportchr'].$temp->pathtxt.$GLOBALS['exportchr'].$temp->hitstxt."\n";
 		while($temp->getnext())
 			{
-			$output .= $temp->modulename.",".$temp->foldername.",".$temp->pathname.",".$temp->nbhitspc."\n";
+			$output .= $temp->modulename.$GLOBALS['exportchr'].$temp->foldername.$GLOBALS['exportchr'].$temp->pathname.$GLOBALS['exportchr'].$temp->nbhitspc."\n";
 			}
 		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
 		header("Content-Type: text/plain"."\n");
@@ -548,10 +579,10 @@ function summaryFmFolders($col, $order, $pos, $startday, $endday)
 			$output .= " ( - ".bab_strftime(bab_mktime($endday." 00:00:00"), false).")";
 			}
 		$output .= "\n";
-		$output .= $temp->fullname.",".$temp->hitstxt.",%\n";
+		$output .= $temp->fullname.$GLOBALS['exportchr'].$temp->hitstxt.$GLOBALS['exportchr']."%\n";
 		while($temp->getnext())
 			{
-			$output .= $temp->modulename.",".$temp->nbhits.",".$temp->nbhitspc."\n";
+			$output .= $temp->modulename.$GLOBALS['exportchr'].$temp->nbhits.$GLOBALS['exportchr'].$temp->nbhitspc."\n";
 			}
 		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
 		header("Content-Type: text/plain"."\n");
@@ -705,7 +736,47 @@ function showStatFmDownloads($id, $date)
 
 		}
 	$temp = new showStatFmDownloadsCls($id, $date);
-	$babBodyPopup->babecho(bab_printTemplate($temp, "statfile.html", "summarydetail"));
+	if( isset($GLOBALS['export']) && $GLOBALS['export'] == 1 )
+		{
+		$output = bab_translate("File").": ".$babBodyPopup->title;
+		$output .= "\n";
+		$output .= bab_translate("Day").": ".$temp->daydate;
+		$output .= "\n";
+		$output .= bab_translate("Hour").$GLOBALS['exportchr'].$temp->hitstxt."\n";
+		while($temp->getnexthour())
+			{
+			$output .= $temp->hour.$GLOBALS['exportchr'].$temp->hits."\n";
+			}
+
+		$output .= "\n";
+		$output .= bab_translate("Month").": ".$temp->monthdate;
+		$output .= "\n";
+		$output .= bab_translate("Day").$GLOBALS['exportchr'].$temp->hitstxt."\n";
+		while($temp->getnextday())
+			{
+			$output .= $temp->day.$GLOBALS['exportchr'].$temp->hits."\n";
+			}
+
+		$output .= "\n";
+		$output .= bab_translate("Year").": ".$temp->yeardate;
+		$output .= "\n";
+		$output .= bab_translate("Month").$GLOBALS['exportchr'].$temp->hitstxt."\n";
+		while($temp->getnextmonth())
+			{
+			$output .= $temp->monthname.$GLOBALS['exportchr'].$temp->hits."\n";
+			}
+
+		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
+		header("Content-Type: text/plain"."\n");
+		header("Content-Length: ". strlen($output)."\n");
+		header("Content-transfert-encoding: binary"."\n");
+		print $output;
+		exit;
+		}
+	else
+		{
+		$babBodyPopup->babecho(bab_printTemplate($temp, "statfile.html", "summarydetail"));
+		}
 }
 
 

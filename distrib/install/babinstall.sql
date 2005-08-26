@@ -2587,3 +2587,12 @@ CREATE TABLE `bab_vac_planning` (
   `id_user` int(10) unsigned NOT NULL default '0',
   KEY `id_user` (`id_user`)
 );
+
+CREATE TABLE bab_stats_preferences (
+  id_user int(11) unsigned NOT NULL default '0',
+  time_interval smallint(2) unsigned NOT NULL default '0',
+  begin_date varchar(10) NOT NULL default '',
+  end_date varchar(10) NOT NULL default '',
+  separator tinyint(2) NOT NULL default '0',
+  UNIQUE KEY id_user (id_user)
+);

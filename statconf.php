@@ -71,6 +71,64 @@ function statPages($url, $page)
 }
 
 
+function statPreferences()
+{
+	global $babBody;
+	
+	class statPreferencesCls
+		{
+		var $updatetxt;
+		var $separator;
+		var $other;
+		var $comma;
+		var $tab;
+
+		function statPreferencesCls()
+			{
+			global $babDB;
+			$res = $babDB->db_query("select separator from ".BAB_STATS_PREFERENCES_TBL." where id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+			if( $res && $babDB->db_num_rows($res) > 0 )
+				{
+				$arr = $babDB->db_fetch_array($res);
+				$arr['separator'] = $arr['separator'];
+				}
+			else
+				{
+				$babDB->db_query("insert into ".BAB_STATS_PREFERENCES_TBL." (id_user, time_interval, begin_date, end_date, separator) values ('".$GLOBALS['BAB_SESS_USERID']."', '0', '', '', '".ord(",")."')");
+				$arr['separator'] = ",";
+				}
+
+			$this->selected_1 = '';
+			$this->selected_2 = '';
+			$this->selected_3 = '';
+			$this->separvalue = '';
+
+			switch($arr['separator'] )
+				{
+				case 44:
+					$this->selected_1 = 'selected';
+					break;
+				case 9:
+					$this->selected_2 = 'selected';
+					break;
+				default:
+					$this->selected_0 = 'selected';
+					$this->separvalue = chr($arr['separator']);
+					break;
+				}
+
+			$this->updatetxt = bab_translate("Update");
+			$this->separator = bab_translate("Field separator");
+			$this->other = bab_translate("Other");
+			$this->comma = bab_translate("Comma");
+			$this->tab = bab_translate("Tab");
+			}
+		}
+
+	$temp = new statPreferencesCls();
+	$babBody->babecho(	bab_printTemplate($temp,"statconf.html", "preferences"));
+}
+
 function addPage($url, $page )
 {
 	global $babDB;
@@ -105,6 +163,31 @@ function deletePages($pages )
 		}
 }
 
+function updateStatPreferences($wsepar, $separ)
+{
+	global $babDB;
+
+	switch($wsepar)
+		{
+		case "1":
+			$separ = ord(",");
+			break;
+		case "2":
+			$separ = 9;
+			break;
+		default:
+			if( empty($separ))
+				$separ = ord(",");
+			else
+				$separ = ord($separ);
+			break;
+		}
+
+	$babDB->db_query("update ".BAB_STATS_PREFERENCES_TBL." set separator='".$separ."' where id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+
+}
+
+
 /* main */
 if( !bab_isAccessValid(BAB_STATSMAN_GROUPS_TBL, 1))
 	{
@@ -128,14 +211,30 @@ if( isset($action))
 			$desc = '';
 		}
 	}
+	elseif( $action == 'apref' )
+	{
+		updateStatPreferences($wsepar, $separ);
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=stat");
+		exit;
+	}
 }
 
 switch($idx)
 	{
+	case "pref":
+		$babBody->title = bab_translate("Preferences");
+		$babBody->addItemMenu("stat", bab_translate("Statistics"), $GLOBALS['babUrlScript']."?tg=stat");
+		$babBody->addItemMenu("pages", bab_translate("Pages"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pages");
+		$babBody->addItemMenu("pref", bab_translate("Preferences"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pref");
+		$babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
+		statPreferences();
+		break;
+
 	case "pages":
 		$babBody->title = bab_translate("Pages");
 		$babBody->addItemMenu("stat", bab_translate("Statistics"), $GLOBALS['babUrlScript']."?tg=stat");
 		$babBody->addItemMenu("pages", bab_translate("Pages"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pages");
+		$babBody->addItemMenu("pref", bab_translate("Preferences"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pref");
 		$babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
 		if( !isset($url)) { $url = ""; }
 		if( !isset($desc)) { $desc = ""; }
@@ -146,6 +245,7 @@ switch($idx)
 		$babBody->title = bab_translate("Update");
 		$babBody->addItemMenu("stat", bab_translate("Statistics"), $GLOBALS['babUrlScript']."?tg=stat");
 		$babBody->addItemMenu("pages", bab_translate("Pages"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pages");
+		$babBody->addItemMenu("pref", bab_translate("Preferences"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pref");
 		$babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
 		include_once $babInstallPath."utilit/statproc.php";
 		break;
@@ -154,6 +254,7 @@ switch($idx)
 	case "conf":
 		$babBody->addItemMenu("stat", bab_translate("Statistics"), $GLOBALS['babUrlScript']."?tg=stat");
 		$babBody->addItemMenu("pages", bab_translate("Pages"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pages");
+		$babBody->addItemMenu("pref", bab_translate("Preferences"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pref");
 		$babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
 		break;
 	}

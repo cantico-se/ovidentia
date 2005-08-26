@@ -83,3 +83,37 @@
 </table>
 <br>
 <!--#end updatestat -->
+
+<!--#begin preferences -->
+<form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="statconf">
+<input type="hidden" name="idx" value="stat">
+<input type="hidden" name="action" value="apref">
+<table  width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+	<table class="BabLoginMenuBackground"  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+	<tr> 
+	<td align="right">{ separator }</td>
+	<td> 
+	<select name="wsepar">
+	<option value="0" { selected_0 }>{ other }</option>
+	<option value="1" { selected_1 }>{ comma }</option>
+	<option value="2" { selected_2 }>{ tab }</option>
+	</select>&nbsp;&nbsp;
+	<input type="text" name="separ" size="1" maxlength="1" value="{ separvalue }">
+	</td>
+	</tr>
+	<tr>
+	<td>&nbsp;</td>
+	<td valign="middle"> 
+	<input type="submit" name="expfile" value="{ updatetxt }">
+	<br>
+	</td>
+	</tr>
+	</table>
+</td>
+</tr>
+</table>
+</form>
+<!--#end preferences -->

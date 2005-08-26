@@ -134,11 +134,12 @@ function summaryOvmlFiles($col, $order, $pos, $startday, $endday)
 			{
 			$output .= " ( - ".bab_strftime(bab_mktime($endday." 00:00:00"), false).")";
 			}
+		$output .= " - ".bab_translate("Total: ").$temp->totalhits;
 		$output .= "\n";
-		$output .= $temp->fullname.",".$temp->hitstxt.",%\n";
+		$output .= $temp->fullname.$GLOBALS['exportchr'].$temp->hitstxt.$GLOBALS['exportchr']."%\n";
 		while($temp->getnext())
 			{
-			$output .= $temp->modulename.",".$temp->nbhits.",".$temp->nbhitspc."\n";
+			$output .= $temp->modulename.$GLOBALS['exportchr'].$temp->nbhits.$GLOBALS['exportchr'].$temp->nbhitspc."\n";
 			}
 		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
 		header("Content-Type: text/plain"."\n");

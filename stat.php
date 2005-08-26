@@ -24,6 +24,62 @@
 include_once "base.php";
 //include_once $babInstallPath."utilit/uiutil.php";
 
+define("STAT_IT_TOTAL",		0);
+define("STAT_IT_TODAY",		1);
+define("STAT_IT_YESTERDAY",	2);
+define("STAT_IT_WEEK",		3);
+define("STAT_IT_LASTWEEK",	4);
+define("STAT_IT_MONTH",		5);
+define("STAT_IT_LASTMONTH",	6);
+define("STAT_IT_YEAR",		7);
+define("STAT_IT_LASTYEAR",	8);
+define("STAT_IT_OTHER",		9);
+
+
+
+function updateStatPreferences()
+{
+	global $babDB;
+
+	$res = $babDB->db_query("select * from ".BAB_STATS_PREFERENCES_TBL." where id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+	if( $res && $babDB->db_num_rows($res) > 0 )
+		{
+		$arr = $babDB->db_fetch_array($res);
+		$pref['itwhat'] = $arr['time_interval'];
+		$pref['sd'] = $arr['time_interval'] == STAT_IT_OTHER ? $arr['begin_date']: '';
+		$pref['ed'] = $arr['time_interval'] == STAT_IT_OTHER ? $arr['end_date']: '';
+		$pref['exportchr'] = chr($arr['separator']);
+		}
+	else
+		{
+		$babDB->db_query("insert into ".BAB_STATS_PREFERENCES_TBL." (id_user, time_interval, begin_date, end_date, separator) values ('".$GLOBALS['BAB_SESS_USERID']."', '".STAT_IT_TOTAL."', '', '', '".ord(",")."')");
+		$pref['itwhat'] = STAT_IT_TOTAL;
+		$pref['sd'] = '';
+		$pref['ed'] = '';
+		$pref['exportchr'] = ",";
+		}
+
+	if( !isset($GLOBALS['itwhat'])) 
+		{
+		$GLOBALS['itwhat'] = $pref['itwhat'];
+		$GLOBALS['sd'] = $pref['sd'];
+		$GLOBALS['ed'] = $pref['ed'];
+		$GLOBALS['exportchr'] = $pref['exportchr'];
+		}
+	else
+		{
+		if( $GLOBALS['itwhat'] != STAT_IT_OTHER )
+			{
+			$GLOBALS['sd'] = "";
+			$GLOBALS['ed'] = "";
+			}
+
+		$GLOBALS['exportchr'] = $pref['exportchr'];
+		$babDB->db_query("update ".BAB_STATS_PREFERENCES_TBL." set time_interval='".$GLOBALS['itwhat']."', begin_date='".$GLOBALS['sd']."', end_date='".$GLOBALS['ed']."' where id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+		}
+}
+
+
 function displayStatisticPanel($idx)
 {
 	global $babBody;
@@ -142,7 +198,6 @@ function displayTimeInterval($iwhat, $sd, $ed, $idx)
 				{
 				case 'users':
 				case 'fm':
-				case 'fmdown':
 				case 'sections':
 				case 'delegat':
 					$this->showform = false;
@@ -156,30 +211,30 @@ function displayTimeInterval($iwhat, $sd, $ed, $idx)
 			$this->totxt = bab_translate("to");
 			$this->dateformattxt =bab_translate("dd/mm/yyyy");
 			$this->timeintervaltxt = bab_translate("Time interval");
-			$this->itemarray[0] = bab_translate("Total");
-			$this->itemarray[1] = bab_translate("Today");
-			$this->itemarray[2] = bab_translate("Yesterday");
-			$this->itemarray[3] = bab_translate("Week");
-			$this->itemarray[4] = bab_translate("Last week");
-			$this->itemarray[5] = bab_translate("Month");
-			$this->itemarray[6] = bab_translate("Last month");
-			$this->itemarray[7] = bab_translate("Year");
-			$this->itemarray[8] = bab_translate("Last year");
-			$this->itemarray[9] = bab_translate("Other");
+			$this->itemarray[STAT_IT_TOTAL] = bab_translate("Total");
+			$this->itemarray[STAT_IT_TODAY] = bab_translate("Today");
+			$this->itemarray[STAT_IT_YESTERDAY] = bab_translate("Yesterday");
+			$this->itemarray[STAT_IT_WEEK] = bab_translate("Week");
+			$this->itemarray[STAT_IT_LASTWEEK] = bab_translate("Last week");
+			$this->itemarray[STAT_IT_MONTH] = bab_translate("Month");
+			$this->itemarray[STAT_IT_LASTMONTH] = bab_translate("Last month");
+			$this->itemarray[STAT_IT_YEAR] = bab_translate("Year");
+			$this->itemarray[STAT_IT_LASTYEAR] = bab_translate("Last year");
+			$this->itemarray[STAT_IT_OTHER] = bab_translate("Other");
 			$this->count = count($this->itemarray);
 			$this->begin_url = $GLOBALS['babUrlScript']."?tg=month&callback=beginJs&ymin=1&ymax=6&month=".date("m")."&year=".date("Y");
 			$this->end_url = $GLOBALS['babUrlScript']."?tg=month&callback=endJs&ymin=1&ymax=6&month=".date("m")."&year=".date("Y");
 			switch($this->current )
 				{
-				case 1:
+				case STAT_IT_TODAY:
 					$this->sd = $this->ed = date("Y-m-d");
 					$this->sd_disp = $this->ed_disp = date("d-m-Y");
 					break;
-				case 2:
+				case STAT_IT_YESTERDAY:
 					$this->sd = $this->ed = date("Y-m-d", time()-(24*3600));
 					$this->sd_disp = $this->ed_disp = date("d-m-Y", time()-(24*3600));
 					break;
-				case 3:
+				case STAT_IT_WEEK:
 					$stime = time()-(date("w")*24*3600);
 					$etime = $stime + (6*24*3600);
 					$this->sd = date("Y-m-d", $stime);
@@ -187,7 +242,7 @@ function displayTimeInterval($iwhat, $sd, $ed, $idx)
 					$this->ed = date("Y-m-d", $etime);
 					$this->ed_disp = date("d-m-Y", $etime);
 					break;
-				case 4:
+				case STAT_IT_LASTWEEK:
 					$stime = time()-(date("w")*24*3600) - (7*24*3600);
 					$etime = $stime + (6*24*3600);
 					$this->sd = date("Y-m-d", $stime);
@@ -195,35 +250,35 @@ function displayTimeInterval($iwhat, $sd, $ed, $idx)
 					$this->ed = date("Y-m-d", $etime);
 					$this->ed_disp = date("d-m-Y", $etime);
 					break;
-				case 5:
+				case STAT_IT_MONTH:
 					$stime = time();
 					$this->sd = sprintf("%s-01", date("Y-m", $stime));
 					$this->sd_disp = sprintf("01-%s", date("m-Y", $stime));
 					$this->ed = date("Y-m-t", $stime);
 					$this->ed_disp = date("t-m-Y", $stime);
 					break;
-				case 6:
+				case STAT_IT_LASTMONTH:
 					$stime = time() - (date("j", time())*24*3600);
 					$this->sd = sprintf("%s-01", date("Y-m", $stime));
 					$this->sd_disp = sprintf("01-%s", date("m-Y", $stime));
 					$this->ed = date("Y-m-t", $stime);
 					$this->ed_disp = date("t-m-Y", $stime);
 					break;
-				case 7:
+				case STAT_IT_YEAR:
 					$year = date("Y", time());
 					$this->sd = sprintf("%s-01-01", $year);
 					$this->sd_disp = sprintf("01-01-%s", $year);
 					$this->ed = sprintf("%s-12-31", $year);
 					$this->ed_disp = sprintf("31-12-%s", $year);
 					break;
-				case 8:
+				case STAT_IT_LASTYEAR:
 					$year = date("Y", time()) - 1;
 					$this->sd = sprintf("%s-01-01", $year);
 					$this->sd_disp = sprintf("01-01-%s", $year);
 					$this->ed = sprintf("%s-12-31", $year);
 					$this->ed_disp = sprintf("31-12-%s", $year);
 					break;
-				case 9:
+				case STAT_IT_OTHER:
 					if( empty($sd) || empty($ed))
 					{
 						$this->sd = $this->ed = date("Y-m-d");
@@ -288,9 +343,7 @@ if( !bab_isAccessValid(BAB_STATSMAN_GROUPS_TBL, 1))
 
 if( !isset($idx)) { $idx = 'users';}
 displayStatisticPanel($idx);
-if( !isset($itwhat)) { $itwhat = '0';} // month
-if( !isset($sd)) { $sd = '';}
-if( !isset($ed)) { $ed = '';}
+updateStatPreferences();
 displayTimeInterval($itwhat, $sd, $ed, $idx);
 
 if( isset($reqvars))
@@ -510,7 +563,7 @@ switch($idx)
 		if( !isset($col)) { $col = 'hits';}
 		if( !isset($order)) { $order = 'asc';}
 		if( !isset($pos)) { $pos = 0;}
-		summaryFmDownloads($col, $order, $pos);
+		summaryFmDownloads($col, $order, $pos, $sd, $ed);
 		break;
 	case "sfmdown":
 		include_once $babInstallPath."statfile.php";
@@ -546,6 +599,7 @@ switch($idx)
 
 $babBody->addItemMenu("stat", bab_translate("Statistics"), $GLOBALS['babUrlScript']."?tg=stat&idx=stat");
 $babBody->addItemMenu("pages", bab_translate("Pages"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pages");
+$babBody->addItemMenu("pref", bab_translate("Preferences"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pref");
 $babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
 $babBody->setCurrentItemMenu("stat");
 ?>

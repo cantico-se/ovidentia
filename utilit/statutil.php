@@ -84,11 +84,14 @@ class summaryDetailBaseCls
 		global $babMonths;
 
 		$this->hitstxt = bab_translate("Hits");
+		$this->exporttxt = bab_translate("Export");
 		$time = mktime( 0,0,0, $month, $day, $year);
 		$this->daydate = bab_longDate( $time , false);
 		$this->monthdate = $babMonths[$month]." ".$year;
 		$this->yeardate = $year;
 		
+		$this->exporturl = $GLOBALS['babUrlScript']."?tg=stat&idx=".$idx."&item=".$item."&date=".$year.",".$month.",".$day."&export=1";
+
 		$time = mktime( 0,0,0, (int)($month)+1, 0, $year);
 		$this->nbdays = date("j", $time);
 

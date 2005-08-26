@@ -5071,6 +5071,26 @@ if (strtolower($arr['Extra']) != 'auto_increment')
 	$db->db_query("ALTER TABLE `".BAB_SITES_EDITOR_TBL."` CHANGE `id` `id` INT( 10 ) UNSIGNED NOT NULL AUTO_INCREMENT");
 	}
 
+$arr = $db->db_fetch_array($db->db_query("SHOW TABLES LIKE '".BAB_STATS_PREFERENCES_TBL."'"));
+if ( $arr[0] != BAB_STATS_PREFERENCES_TBL )
+	{
+	$req = "CREATE TABLE `".BAB_STATS_PREFERENCES_TBL."` (
+		  id_user int(11) unsigned NOT NULL default '0',
+		  time_interval smallint(2) unsigned NOT NULL default '0',
+		  begin_date varchar(10) NOT NULL default '',
+		  end_date varchar(10) NOT NULL default '',
+		  separator tinyint(2) NOT NULL default '0',
+		  UNIQUE KEY id_user (id_user)
+		)";
+
+	$res = $db->db_query($req);
+	if( !$res)
+		{
+		$ret = "Creation of <b>".BAB_STATS_PREFERENCES_TBL."</b> table failed !<br>";
+		return $ret;
+		}
+	}
+
 
 return $ret;
 }

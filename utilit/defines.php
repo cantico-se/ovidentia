@@ -174,6 +174,7 @@ define("BAB_STATS_MODULES_TBL", "bab_stats_modules");
 define("BAB_STATS_OVML_TBL", "bab_stats_ovml");
 define("BAB_STATS_PAGES_TBL", "bab_stats_pages");
 define("BAB_STATS_POSTS_TBL", "bab_stats_posts");
+define("BAB_STATS_PREFERENCES_TBL", "bab_stats_preferences");
 define("BAB_STATS_SEARCH_TBL", "bab_stats_search");
 define("BAB_STATS_THREADS_TBL", "bab_stats_threads");
 define("BAB_STATS_XLINKS_TBL", "bab_stats_xlinks");
