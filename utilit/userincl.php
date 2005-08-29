@@ -113,7 +113,7 @@ function bab_isUserArticleApprover($topics)
 	{
 	global $BAB_SESS_USERID;
 	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
-	$db = $GLOBALS['babDB'];
+	$db = &$GLOBALS['babDB'];
 	$query = "select idsaart from ".BAB_TOPICS_TBL." where id='".$topics."'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -131,7 +131,7 @@ function bab_isUserCommentApprover($topics)
 	{
 	global $BAB_SESS_USERID;
 	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
-	$db = $GLOBALS['babDB'];
+	$db = &$GLOBALS['babDB'];
 	$query = "select idsacom from ".BAB_TOPICS_TBL." where id='".$topics."'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -328,7 +328,7 @@ function bab_isUserLogged($iduser = "")
 	{
 		if( $iduser == 0)
 			return false;
-		$db = $GLOBALS['babDB'];
+		$db = &$GLOBALS['babDB'];
 		$res=$db->db_query("select * from ".BAB_USERS_LOG_TBL." where id_user='".$iduser."'");
 		if( $res && $db->db_num_rows($res) > 0)
 			return true;		
@@ -343,7 +343,7 @@ function bab_getDbUserName($id)
 	if( isset($arrnames[$id]) )
 		return $arrnames[$id];
 
-	$db = $GLOBALS['babDB'];
+	$db = &$GLOBALS['babDB'];
 	$query = "select sn, givenname, mn from ".BAB_DBDIR_ENTRIES_TBL." where id='$id'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -361,7 +361,7 @@ function bab_getDbUserName($id)
 function bab_getUserDirFields($id = "")
 	{
 	if ($id == "") $id = $GLOBALS['BAB_SESS_USERID'];
-	$db = $GLOBALS['babDB'];
+	$db = &$GLOBALS['babDB'];
 	$query = "select * from ".BAB_DBDIR_ENTRIES_TBL." where id_user='".$id."'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -450,7 +450,7 @@ function bab_contactsAccess()
 function bab_vacationsAccess()
 	{
 	global $babBody;
-	$db = $GLOBALS['babDB'];
+	$db = &$GLOBALS['babDB'];
 
 	$array = array();
 	$res = $db->db_query("select id from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$GLOBALS['BAB_SESS_USERID']."'");
@@ -481,7 +481,7 @@ function bab_vacationsAccess()
 
 function bab_articleAccessByRestriction($restriction, $iduser ='')
 	{
-	$db = $GLOBALS['babDB'];
+	$db = &$GLOBALS['babDB'];
 
 	if( empty($restriction))
 		return true;
@@ -511,7 +511,7 @@ function bab_articleAccessByRestriction($restriction, $iduser ='')
 
 function bab_articleAccessById($id, $iduser ='')
 	{
-	$db = $GLOBALS['babDB'];
+	$db = &$GLOBALS['babDB'];
 
 	list($restriction) = $db->db_fetch_row($db->db_query("select restriction from ".BAB_ARTICLES_TBL." where id='".$id."'"));
 	if( empty($restriction))
@@ -592,7 +592,7 @@ function bab_fileManagerAccessLevel()
 
 function bab_getGroupEmails($id)
 {
-	$db = $GLOBALS['babDB'];
+	$db = &$GLOBALS['babDB'];
 	$query = "select distinct email from ".BAB_USERS_TBL." usr , ".BAB_USERS_GROUPS_TBL." grp where grp.id_group in ($id) and grp.id_object=usr.id";
 	$res = $db->db_query($query);
 	$emails = "";
@@ -682,6 +682,7 @@ function bab_getSuperior($iduser)
 	return array();
 }
 
+
 function bab_addUserToGroup($iduser, $idgroup, $oc = true)
 {
 	global $babDB, $babBody;
@@ -736,6 +737,89 @@ function bab_removeUserFromGroup($iduser, $idgroup)
 	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 }
 
+function bab_addUser( $firstname, $lastname, $middlename, $email, $nickname, $password1, $password2, $isconfirmed, &$error)
+	{
+	global $BAB_HASH_VAR, $babBody, $babLanguage;
+
+	if( empty($firstname) )
+		{
+		$error = bab_translate( "Firstname is required");
+		return false;
+		}
+
+	if( empty($firstname) && empty($lastname))
+		{
+		$error = bab_translate( "Lastname is required");
+		return false;
+		}
+
+
+	if( empty($nickname) )
+		{
+		$error = bab_translate( "Nickname is required");
+		return false;
+		}
+
+	if( empty($password1) || empty($password2))
+		{
+		$error = bab_translate( "Passwords not match !!");
+		return false;
+		}
+
+	if( $password1 != $password2)
+		{
+		$error = bab_translate("Passwords not match !!");
+		return false;
+		}
+
+	$db = &$GLOBALS['babDB'];
+	$query = "select id from ".BAB_USERS_TBL." where nickname='".$db->db_escape_string($nickname)."'";	
+	$res = $db->db_query($query);
+	if( $db->db_num_rows($res) > 0)
+		{
+		$error = bab_translate("This nickname already exists !!");
+		return false;
+		}
+	
+
+	$replace = array( " " => "", "-" => "");
+
+	$hashname = md5(strtolower(strtr($firstname.$middlename.$lastname, $replace)));
+	$query = "select id from ".BAB_USERS_TBL." where hashname='".$hashname."'";	
+	$res = $db->db_query($query);
+	if( $db->db_num_rows($res) > 0)
+		{
+		$error = bab_translate("Firstname and Lastname already exists !!");
+		return false;
+		}
+
+	$password1=strtolower($password1);
+	$hash=md5($nickname.$BAB_HASH_VAR);
+
+	$db = &$GLOBALS['babDB'];
+
+	$sql="insert into ".BAB_USERS_TBL." (nickname, firstname, lastname, hashname, password,email,date,confirm_hash,is_confirmed,changepwd,lang, langfilter, datelog, lastlog) ".
+		"values ('";
+	$sql .= addslashes($nickname)."','".addslashes($firstname)."','".addslashes($lastname);
+	$sql .= "','".$hashname."','". md5($password1) ."','$email', now(),'$hash','".$isconfirmed."','1','$babLanguage'";
+	$sql .= ",'".$GLOBALS['babLangFilter']->getFilterAsInt()."', now(), now())";
+	$result=$db->db_query($sql);
+	if ($result)
+		{
+		$id = $db->db_insert_id();
+		$db->db_query("insert into ".BAB_CALENDAR_TBL." (owner, type) values ('$id', '1')");
+		$db->db_query("insert into ".BAB_DBDIR_ENTRIES_TBL." (givenname, mn, sn, email, id_directory, id_user) values ('".addslashes($firstname)."', '".addslashes($middlename)."', '".addslashes($lastname)."', '".$email."', '0', '".$id."')");
+
+		if( isset($babBody->babsite['idgroup']) && $babBody->babsite['idgroup'] != 0)
+			{
+			bab_addUserToGroup($id, $babBody->babsite['idgroup']);
+			}
+		bab_callAddonsFunction('onUserCreate', $id);
+		return $id;
+		}
+	else
+		return false;
+	}
 
 function bab_replace_var(&$txt,$var,$new)
 	{

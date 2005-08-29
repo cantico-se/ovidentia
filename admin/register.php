@@ -78,7 +78,6 @@ function notifyUserRegistration($link, $name, $email)
 		{
 		$retry++;
 		}
-
 	return $ret;
 	}
 
@@ -152,7 +151,7 @@ function random_password($length)
 
 function registerUser( $firstname, $lastname, $middlename, $email, $nickname, $password1, $password2, $badmin)
 	{
-	global $BAB_HASH_VAR, $babBody, $babUrl, $babAdminEmail, $babSiteName, $babLanguage;
+	global $babBody, $BAB_HASH_VAR, $babUrl, $babAdminEmail, $babSiteName;
 
 	if( empty($firstname) )
 		{
@@ -186,32 +185,9 @@ function registerUser( $firstname, $lastname, $middlename, $email, $nickname, $p
 	if( $password1 != $password2)
 		{
 		$babBody->msgerror = bab_translate("Passwords not match !!");
-		return;
-		}
-
-	$db = $GLOBALS['babDB'];
-	$query = "select * from ".BAB_USERS_TBL." where nickname='".$db->db_escape_string($nickname)."'";	
-	$res = $db->db_query($query);
-	if( $db->db_num_rows($res) > 0)
-		{
-		$babBody->msgerror = bab_translate("This nickname already exists !!");
-		return false;
-		}
-	
-
-	$replace = array( " " => "", "-" => "");
-
-	$hashname = md5(strtolower(strtr($firstname.$middlename.$lastname, $replace)));
-	$query = "select * from ".BAB_USERS_TBL." where hashname='".$hashname."'";	
-	$res = $db->db_query($query);
-	if( $db->db_num_rows($res) > 0)
-		{
-		$babBody->msgerror = bab_translate("Firstname and Lastname already exists !!");
 		return false;
 		}
 
-	$password1=strtolower($password1);
-	$hash=md5($nickname.$BAB_HASH_VAR);
 	if( $badmin )
 		$isconfirmed = 1;
 	else
@@ -230,55 +206,41 @@ function registerUser( $firstname, $lastname, $middlename, $email, $nickname, $p
 			}
 		}
 
-	$db = $GLOBALS['babDB'];
+	$id = bab_addUser($firstname, $lastname, $middlename, $email, $nickname, $password1, $password2, $isconfirmed, $babBody->msgerror);
 
-	$sql="insert into ".BAB_USERS_TBL." (nickname, firstname, lastname, hashname, password,email,date,confirm_hash,is_confirmed,changepwd,lang, langfilter, datelog, lastlog) ".
-		"values ('";
-	$sql .= addslashes($nickname)."','".addslashes($firstname)."','".addslashes($lastname);
-	$sql .= "','".$hashname."','". md5($password1) ."','$email', now(),'$hash','".$isconfirmed."','1','$babLanguage'";
-	$sql .= ",'".$GLOBALS['babLangFilter']->getFilterAsInt()."', now(), now())";
-	$result=$db->db_query($sql);
-	if ($result)
+	if( $id === false )
 		{
-		$id = $db->db_insert_id();
-		$db->db_query("insert into ".BAB_CALENDAR_TBL." (owner, type) values ('$id', '1')");
-		$db->db_query("insert into ".BAB_DBDIR_ENTRIES_TBL." (givenname, mn, sn, email, id_directory, id_user) values ('".addslashes($firstname)."', '".addslashes($middlename)."', '".addslashes($lastname)."', '".$email."', '0', '".$id."')");
-
-		if( !$badmin )
-			{
-			$babBody->msgerror = bab_translate("Thank You For Registering at our site") ."<br />";
-			$fullname = bab_composeUserName($firstname , $lastname);
-			if( $babBody->babsite['email_confirm'] == 2)
-				{
-				$warning = "( ". bab_translate("Account user is already confirmed")." )";
-				}
-			elseif( $babBody->babsite['email_confirm'] == 1 )
-				{
-				$warning = "( ". bab_translate("To let user log on your site, you must confirm his registration")." )";
-				}
-			else
-				{
-				$babBody->msgerror .= bab_translate("You will receive an email which let you confirm your registration.");
-				$link = $GLOBALS['babUrlScript']."?tg=login&cmd=confirm&hash=$hash&name=". urlencode($nickname);
-				$warning = "";
-				if (!notifyUserRegistration($link, $fullname, $email))
-					{
-					$babBody->msgerror = bab_translate("ERROR: Email message can't be sent !!");
-					$warning = "( ". bab_translate("The user has not received his confirmation email")." )";
-					}				
-				}
-			notifyAdminRegistration($fullname, $email, $warning);
-			}
-
-		if( isset($babBody->babsite['idgroup']) && $babBody->babsite['idgroup'] != 0)
-			{
-			bab_addUserToGroup($id, $babBody->babsite['idgroup']);
-			}
-		bab_callAddonsFunction('onUserCreate', $id);
-		return $id;
-		}
-	else
 		return false;
+		}
+
+	if( !$badmin )
+		{
+		$babBody->msgerror = bab_translate("Thank You For Registering at our site") ."<br />";
+		$fullname = bab_composeUserName($firstname , $lastname);
+		if( $babBody->babsite['email_confirm'] == 2)
+			{
+			$warning = "( ". bab_translate("Account user is already confirmed")." )";
+			}
+		elseif( $babBody->babsite['email_confirm'] == 1 )
+			{
+			$warning = "( ". bab_translate("To let user log on your site, you must confirm his registration")." )";
+			}
+		else
+			{
+			$hash=md5($nickname.$BAB_HASH_VAR);
+			$babBody->msgerror .= bab_translate("You will receive an email which let you confirm your registration.");
+			$link = $GLOBALS['babUrlScript']."?tg=login&cmd=confirm&hash=$hash&name=". urlencode($nickname);
+			$warning = "";
+			if (!notifyUserRegistration($link, $fullname, $email))
+				{
+				$babBody->msgerror = bab_translate("ERROR: Email message can't be sent !!");
+				$warning = "( ". bab_translate("The user has not received his confirmation email")." )";
+				}
+			}
+		notifyAdminRegistration($fullname, $email, $warning);
+		}
+
+	return $id;
 	}
 
 function notifyUserPassword($passw, $email)
