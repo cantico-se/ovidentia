@@ -252,7 +252,6 @@ function maclGroups()
 
 	$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 
-
 	if (isset($_POST['group']) && count($_POST['group']) > 0) {
 		foreach($_POST['group'] as $table => $groups)
 			{
@@ -270,22 +269,24 @@ function maclGroups()
 
 			foreach ($groups as $id => $value)
 				{
-				$db->db_query("INSERT INTO ".$table."  (id_object, id_group) VALUES ('".$id_object."', '".$id."')");
+				$db->db_query("INSERT INTO ".$table." (id_object, id_group) VALUES ('".$id_object."', '".$id."')");
 				}
 			}
 		}
-	else
+
+	foreach($_POST['tablelist'] as $table)
 		{
-		foreach($_POST['tablelist'] as $table)
+		if (!isset($_POST['group'][$table]))
 			$db->db_query("DELETE FROM ".$table." WHERE id_object='".$id_object."' AND id_group < '".BAB_ACL_GROUP_TREE."'");
 		}
+
 	
 	if (isset($_POST['tree']) && count($_POST['tree']) > 0) {
 		foreach($_POST['tree'] as $table => $groups)
 			{
 			array_walk($groups, create_function('&$v,$k','$v += BAB_ACL_GROUP_TREE;'));
 			
-			$db->db_query("DELETE FROM ".$table." WHERE id_object='".$id_object."' AND id_group NOT IN('".implode("','",$groups)."') AND id_group > '".BAB_ACL_GROUP_TREE."'");
+			$db->db_query("DELETE FROM ".$table." WHERE id_object='".$id_object."' AND id_group NOT IN('".implode("','",$groups)."') AND id_group >= '".BAB_ACL_GROUP_TREE."'");
 
 			$groups = array_flip($groups);
 
@@ -303,10 +304,11 @@ function maclGroups()
 				}
 			}
 		}
-	else
+
+	foreach($_POST['tablelist'] as $table)
 		{
-		foreach($_POST['tablelist'] as $table)
-			$db->db_query("DELETE FROM ".$table." WHERE id_object='".$id_object."' AND id_group > '".BAB_ACL_GROUP_TREE."'");
+		if (!isset($_POST['tree'][$table]))
+			$db->db_query("DELETE FROM ".$table." WHERE id_object='".$id_object."' AND id_group >= '".BAB_ACL_GROUP_TREE."'");
 		}
 	}
 	
