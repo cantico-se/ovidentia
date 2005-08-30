@@ -5079,7 +5079,7 @@ if ( $arr[0] != BAB_STATS_PREFERENCES_TBL )
 		  time_interval smallint(2) unsigned NOT NULL default '0',
 		  begin_date varchar(10) NOT NULL default '',
 		  end_date varchar(10) NOT NULL default '',
-		  separator tinyint(2) NOT NULL default '0',
+		  separatorchar tinyint(2) NOT NULL default '0',
 		  UNIQUE KEY id_user (id_user)
 		)";
 

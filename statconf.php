@@ -86,15 +86,15 @@ function statPreferences()
 		function statPreferencesCls()
 			{
 			global $babDB;
-			$res = $babDB->db_query("select separator from ".BAB_STATS_PREFERENCES_TBL." where id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+			$res = $babDB->db_query("select separatorchar from ".BAB_STATS_PREFERENCES_TBL." where id_user='".$GLOBALS['BAB_SESS_USERID']."'");
 			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
 				$arr = $babDB->db_fetch_array($res);
-				$arr['separator'] = $arr['separator'];
+				$arr['separator'] = $arr['separatorchar'];
 				}
 			else
 				{
-				$babDB->db_query("insert into ".BAB_STATS_PREFERENCES_TBL." (id_user, time_interval, begin_date, end_date, separator) values ('".$GLOBALS['BAB_SESS_USERID']."', '0', '', '', '".ord(",")."')");
+				$babDB->db_query("insert into ".BAB_STATS_PREFERENCES_TBL." (id_user, time_interval, begin_date, end_date, separatorchar) values ('".$GLOBALS['BAB_SESS_USERID']."', '0', '', '', '".ord(",")."')");
 				$arr['separator'] = ",";
 				}
 
@@ -183,7 +183,7 @@ function updateStatPreferences($wsepar, $separ)
 			break;
 		}
 
-	$babDB->db_query("update ".BAB_STATS_PREFERENCES_TBL." set separator='".$separ."' where id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+	$babDB->db_query("update ".BAB_STATS_PREFERENCES_TBL." set separatorchar='".$separ."' where id_user='".$GLOBALS['BAB_SESS_USERID']."'");
 
 }
 

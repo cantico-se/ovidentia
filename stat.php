@@ -52,7 +52,7 @@ function updateStatPreferences()
 		}
 	else
 		{
-		$babDB->db_query("insert into ".BAB_STATS_PREFERENCES_TBL." (id_user, time_interval, begin_date, end_date, separator) values ('".$GLOBALS['BAB_SESS_USERID']."', '".STAT_IT_TOTAL."', '', '', '".ord(",")."')");
+		$babDB->db_query("insert into ".BAB_STATS_PREFERENCES_TBL." (id_user, time_interval, begin_date, end_date, separatorchar) values ('".$GLOBALS['BAB_SESS_USERID']."', '".STAT_IT_TOTAL."', '', '', '".ord(",")."')");
 		$pref['itwhat'] = STAT_IT_TOTAL;
 		$pref['sd'] = '';
 		$pref['ed'] = '';
