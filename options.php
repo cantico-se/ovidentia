@@ -698,9 +698,10 @@ function changeProfiles()
 		}
 
 	$temp = new changeProfilsCls();
+	$html = bab_printTemplate($temp,"options.html", "profileslist");
 	if( $temp->profileaccess )
 		{
-		$babBody->babecho(bab_printTemplate($temp,"options.html", "profileslist"));
+		$babBody->babecho($html);
 		}
 }
 
