@@ -1126,7 +1126,7 @@ function showSetArticleProperties($idart)
 						$this->restrictiontxt = bab_translate("Access restriction");
 						$this->norestricttxt = bab_translate("No restriction");
 						$this->yesrestricttxt = bab_translate("Groups");
-						$this->resgrp = $babDB->db_query("select * from ".BAB_TOPICSVIEW_GROUPS_TBL." where id_object='".$this->drafttopic."' and id_group > '2'");
+						$this->resgrp = $babDB->db_query("select r.* from ".BAB_TOPICSVIEW_GROUPS_TBL." r,".BAB_GROUPS_TBL." g where r.id_object='".$this->drafttopic."' AND r.id_group = g.id AND g.lf>='3'");
 						if( $this->resgrp )
 							{
 							$this->countgrp = $babDB->db_num_rows($this->resgrp);
