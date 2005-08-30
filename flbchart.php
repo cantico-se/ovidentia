@@ -66,7 +66,7 @@ function addOrgChartEntity($ocid, $oeid, $nameval, $descriptionval)
 				include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
 
 				$tree = new bab_grptree();
-				$this->allgroups = $tree->getGroups(BAB_REGISTERED_GROUP);
+				$this->allgroups = $tree->getGroups(BAB_REGISTERED_GROUP, '%s &nbsp; &nbsp; ');
 				}
 			}
 
