@@ -286,7 +286,7 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 				}
 			if(empty($category))
 				{
-				$this->category = $this->arr['category'];
+				$this->category = htmlentities($this->arr['category'], ENT_QUOTES);
 				}
 			else
 				{
