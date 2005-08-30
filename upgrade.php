@@ -5071,6 +5071,18 @@ if (strtolower($arr['Extra']) != 'auto_increment')
 	$db->db_query("ALTER TABLE `".BAB_SITES_EDITOR_TBL."` CHANGE `id` `id` INT( 10 ) UNSIGNED NOT NULL AUTO_INCREMENT");
 	}
 
+
+return $ret;
+}
+
+
+
+function upgrade564to565()
+{
+	
+$ret = "";
+$db = & $GLOBALS['babDB'];
+
 $arr = $db->db_fetch_array($db->db_query("SHOW TABLES LIKE '".BAB_STATS_PREFERENCES_TBL."'"));
 if ( $arr[0] != BAB_STATS_PREFERENCES_TBL )
 	{
@@ -5093,6 +5105,7 @@ if ( $arr[0] != BAB_STATS_PREFERENCES_TBL )
 
 
 return $ret;
+
 }
 
 ?>
