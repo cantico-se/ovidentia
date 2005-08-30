@@ -257,6 +257,8 @@ function newFiles($nbdays)
 
 			$req .= " group by f.id";
 		
+//echo $req . '<br />';
+
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			if( $nbdays > 0)

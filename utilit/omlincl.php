@@ -2479,6 +2479,7 @@ class bab_RecentFiles extends bab_handler
 			$this->ctx->curctx->push('FilePopupUrl', $GLOBALS['babUrlScript']."?tg=fileman&idx=viewfile&idf=".$arr['id']."&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path'])."&file=".urlencode($arr['name']));
 			$this->ctx->curctx->push('FileUrlGet', $GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path'])."&file=".urlencode($arr['name']));
 			$this->ctx->curctx->push('FileAuthor', $arr['author']);
+			$this->ctx->curctx->push('FileModifiedBy', $arr['modifiedby']);
 			$this->ctx->curctx->push('FileDate', bab_mktime($arr['modified']));
 			$fullpath = bab_getUploadFullPath($arr['bgroup'], $arr['id_owner']);
 			if (file_exists($fullpath.$arr['path']."/".$arr['name']) )

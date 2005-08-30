@@ -19,7 +19,7 @@
 			<tr class="BabSiteAdminTitleFontBackground">
 				<td><OFTranslate text="Date">&nbsp;</td>
 				<td><OFTranslate text="File">&nbsp;</td>
-				<td><OFTranslate text="Author">&nbsp;</td>
+				<td><OFTranslate text="Modified by">&nbsp;</td>
 			</tr>
 			<OCRecentFiles from_lastlog="<OVnbdays>">
 				<OCIfEqual expr1="<OVCIndex>" expr2="0">
@@ -34,7 +34,7 @@
 			<tr class="<OCIfEqual expr1="<OVmodulo>" expr2="0">BabSiteAdminFontBackground</OCIfEqual><OCIfNotEqual expr1="<OVmodulo>" expr2="0">BabForumBackground1</OCIfNotEqual>">
 				<td>&nbsp;</td>
 				<td nowrap valign="middle"><a class="BabSummaryLinkColor" href="javascript: Start('<OVFilePopupUrl>', 'OviFile', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');" title="<OVFileDescription>"><OVFileName>&nbsp;</a></td>
-				<td width="130"><OVFileAuthor author="%F %L"></td>
+				<td width="130"><OVFileModifiedBy author="%F %L"></td>
 			</tr>
 			</OCRecentFiles>
 		</table>
