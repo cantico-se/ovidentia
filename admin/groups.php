@@ -186,6 +186,8 @@ function groupList()
 			$this->delegat = isset($tree->delegat[$this->arr['id']]);
 			$this->tpl_tree = bab_grp_node_html($tree, $tree->firstnode, 'groups.html', 'grp_childs');
 
+			$this->indelegat = $GLOBALS['babBody']->currentAdmGroup > 0;
+
 			if (isset($_REQUEST['expand_to']))
 				{
 				$this->id_expand_to = &$_REQUEST['expand_to'];

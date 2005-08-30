@@ -257,7 +257,11 @@ else
 		<!--#else delegat -->
 		<img src="{ babSkinPath }images/Puces/folder_group.gif" alt="{ t_group }" />
 		<!--#endif delegat -->
+		<!--#if indelegat -->
+		{ arr[name] }
+		<!--#else indelegat -->
 		<a href="{ babUrlScript }?tg=groups&amp;idx=Create&amp;grpid={ arr[id] }" title="{ arr[description] }" onclick="return load_edit_form(this);">{ arr[name] }</a>
+		<!--#endif indelegat -->
 			<input type="hidden" id="bab_ovgroup_{ arr[id] }_manager" value="{ arr[manager] }" />
 			<input type="hidden" id="bab_ovgroup_{ arr[id] }_managerval" value="{ arr[managerval] }" />
 		</div>
@@ -297,14 +301,14 @@ function load_edit_form(a)
 	el['manager'].value		 = manager;
 	el['managerval'].value	 = managerval;
 
-
+	
 	if (groupid > 3)
 		{
 		el['parent'].style.visibility = 'visible';
 		el['parent'].value = parent;
 		el['deleteg'].style.visibility = 'visible';
 		}
-	else if(groupid == 3)
+	else if(3 == groupid)
 		{
 		el['parent'].style.visibility = 'visible';
 		el['parent'].value = parent;
