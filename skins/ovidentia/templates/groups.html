@@ -29,6 +29,12 @@ else
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
 	<table class="BabLoginMenuBackground"  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+	<!--#if arr[id] -->
+	<!--#else arr[id] -->
+	<tr>
+		<td colspan="2"><h5 id="groupcreate_formtitle">{ t_create_group }</h5></td>
+	</tr>
+	<!--#endif arr[id] -->
 	<tr> 
 	<td align="right">{ t_name }:</td>
 	<td> 
@@ -310,7 +316,7 @@ function load_edit_form(a)
 		el['deleteg'].style.visibility = 'hidden';
 		}
 
-	
+	document.getElementById('groupcreate_formtitle').innerHTML = '{ t_edit_group } : '+name;
 	document.location.href='#bab_groups_tree_end';
 	return false;
 }
@@ -331,6 +337,7 @@ function load_clear()
 	el['parent'].value		 = 1;
 	el['parent'].style.visibility = 'visible';
 	el['deleteg'].style.visibility = 'visible';
+	document.getElementById('groupcreate_formtitle').innerHTML = '{ t_create_group }';
 
 	document.location.href='#bab_groups_tree_end';
 	return false;

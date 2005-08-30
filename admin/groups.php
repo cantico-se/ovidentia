@@ -65,9 +65,11 @@ function groupCreateMod()
 			$this->t_parent = bab_translate("Parent");
 			$this->t_delete = bab_translate("Delete");
 			$this->t_ovidentia_users = bab_translate("Ovidentia users");
+			$this->t_create_group = bab_translate("Create group");
+			$this->t_edit_group = bab_translate("Edit group");
 			$this->db = &$GLOBALS['babDB'];
 			$this->bdggroup = false;
-			$this->bdel =false;
+			$this->bdel = false;
 			$this->maingroup = false;
 
 			
@@ -174,6 +176,8 @@ function groupList()
 			$this->t_collapse_all = bab_translate("Collapse all");
 			$this->t_newgroup = bab_translate("New group");
 			$this->t_group = bab_translate("Main groups folder");
+			$this->t_create_group = bab_translate("Create group");
+			$this->t_edit_group = bab_translate("Edit group");
 			$tree = & new bab_grptree();
 			$this->arr = $tree->getNodeInfo($tree->firstnode);
 			$this->arr['name'] = bab_translate($this->arr['name']);
