@@ -57,8 +57,15 @@ class macl
 			$this->df_groups[$arr['id']] = 1;
 			}
 
-		$this->resset = $this->db->db_query("SELECT * FROM ".BAB_GROUPS_TBL." WHERE nb_groups>='0'");
-		$this->countsets = $this->db->db_num_rows($this->resset);
+		if ($babBody->currentAdmGroup == 0)
+			{
+			$this->resset = $this->db->db_query("SELECT * FROM ".BAB_GROUPS_TBL." WHERE nb_groups>='0'");
+			$this->countsets = $this->db->db_num_rows($this->resset);
+			}
+		else
+			{
+			$this->countsets = 0;
+			}
 		}
 		
 	function addtable($table,$name = '')
