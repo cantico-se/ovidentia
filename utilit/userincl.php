@@ -707,7 +707,10 @@ function bab_addUserToGroup($iduser, $idgroup, $oc = true)
 	if( !$total )
 		{
 		$res = $babDB->db_query("insert into ".BAB_USERS_GROUPS_TBL." (id_group, id_object) VALUES ('" .$idgroup. "', '" . $iduser. "')");
-		$babBody->usergroups[] = $idgroup;
+		if( isset($GLOBALS['BAB_SESS_LOGGED']) && $GLOBALS['BAB_SESS_LOGGED'] && $GLOBALS['BAB_SESS_USERID'] == $iduser )
+			{
+			$babBody->usergroups[] = $idgroup;
+			}
 		}
 
 	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
