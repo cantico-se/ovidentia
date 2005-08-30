@@ -1314,20 +1314,22 @@ function babBody()
 
 function getGroupPathName($id_group, $id_parent = BAB_REGISTERED_GROUP)
 {
-	if (isset($this->groupPathName[$id_group]))
-		return $this->groupPathName[$id_group];
+	if (isset($this->groupPathName[$id_parent][$id_group]))
+		return $this->groupPathName[$id_parent][$id_group];
 	
 	include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
 
+	$this->groupPathName[$id_parent] = array();
+	
 	$tree = new bab_grptree();
 	$groups = $tree->getGroups($id_parent);
 	$arr = array();
 	foreach ($groups as $row)
 		{
-		$this->groupPathName[$row['id']] = $row['name'];
+		$this->groupPathName[$id_parent][$row['id']] = $row['name'];
 		}
 
-	return isset($this->groupPathName[$id_group]) ? $this->groupPathName[$id_group] : '';
+	return isset($this->groupPathName[$id_parent][$id_group]) ? $this->groupPathName[$id_parent][$id_group] : '';
 }
 
 function resetContent()

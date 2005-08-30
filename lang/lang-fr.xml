@@ -843,7 +843,7 @@
 <string id="WARNING: This operation will delete contacts and their references">ATTENTION : cette opération supprimera les contacts ainsi que leurs références</string>
 <string id="WARNING: This operation will delete directory and all references">ATTENTION : cette opération supprime l'annuaire et toutes ses références</string>
 <string id="WARNING: This operation will delete event permanently">ATTENTION : cette opération va détruire définitivement l'événement</string>
-<string id="WARNING: This operation will delete members and their references">ATTENTION : cette opération va supprimer les utilisateurs ainsi que leurs références</string>
+<string id="WARNING: This operation will delete members and their references">ATTENTION : cette opération va enlever les utilisateurs du groupe</string>
 <string id="WARNING: This operation will delete question and its response">ATTENTION : cette opération va détruire la question et la réponse associée</string>
 <string id="WARNING: This operation will delete schema and all references">ATTENTION : cette opération supprime toutes les références à ce schéma d'approbation</string>
 <string id="WARNING: This operation will delete the FAQ with all questions and responses">ATTENTION : cette action supprime la FAQ avec les questions et les réponses</string>

@@ -80,7 +80,7 @@ function delgatList($res)
 				$this->urltxt = $arr['name'];
 				$this->url = $GLOBALS['babUrlScript']."?tg=delegat&idx=mod&id=".$arr['id'];
 				$this->urlmem = $GLOBALS['babUrlScript']."?tg=delegat&idx=mem&id=".$arr['id'];
-				$this->grpmval = bab_getGroupName($arr['id_group']);
+				$this->grpmval = $GLOBALS['babBody']->getGroupPathName($arr['id_group'], NULL);
 				$this->c++;
 				$i++;
 				return true;
