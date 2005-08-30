@@ -502,7 +502,7 @@ function summaryDbContact($id, $idu, $update=true)
 
 				if( isset($this->arr[$this->fieldv]) )
 					{
-					$this->fieldv = stripslashes($this->arr[$this->fieldv]);
+					$this->fieldv = nl2br(stripslashes($this->arr[$this->fieldv]));
 					}
 				else
 					{

@@ -498,7 +498,7 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 			static $i = 0;
 			if( $i < $this->countcol)
 				{
-				$this->coltxt = stripslashes(bab_translate($this->arrf[$i]));
+				$this->coltxt = nl2br(stripslashes(bab_translate($this->arrf[$i])));
 				$this->mailcol = $this->arrf[$i] == $this->email && $this->email != '' ? true : false;
 				$i++;
 				return true;
