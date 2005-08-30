@@ -34,7 +34,7 @@ class bab_grptree extends bab_dbtree
 	{
 	global $babBody;
 	$this->table = BAB_GROUPS_TBL;
-	$this->firstnode = 0;
+	$this->firstnode = BAB_ALLUSERS_GROUP;
 	$this->firstnode_parent = NULL;
 	$this->where = 'nb_set >= 0';
 
@@ -82,12 +82,15 @@ class bab_grptree extends bab_dbtree
 		$groups = $this->getChilds($this->firstnode, 1);
 		if (!$groups)
 			return array();
+
+		array_unshift ($groups, $this->getNodeInfo($id_parent));
 		}
 
 
 	if ($id_parent === $this->firstnode_parent)
+		{
 		array_unshift ($groups, $this->getNodeInfo($id_parent));
-
+		}
 
 	foreach ($groups as $arr)
 		{

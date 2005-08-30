@@ -74,10 +74,10 @@ function groupCreateMod()
 
 			
 			$tree = new bab_grptree();
-			$root = $tree->getRootInfo();
-			$this->groups = $tree->getGroups($root['id'], '%s &nbsp; &nbsp; &nbsp; ');
-			unset($this->groups[BAB_UNREGISTERED_GROUP]);
+			$this->groups = $tree->getGroups($tree->firstnode_info['id_parent'], '%s &nbsp; &nbsp; &nbsp; ');
 
+			if (isset($this->groups[BAB_UNREGISTERED_GROUP]))
+				unset($this->groups[BAB_UNREGISTERED_GROUP]);
 
 			if (isset($_REQUEST['grpid']))
 				{
@@ -113,17 +113,7 @@ function groupCreateMod()
 					);
 
 				}
-
-
-			if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0)
-				{
-				$this->res = $this->db->db_query("select * from ".BAB_DG_GROUPS_TBL."");
-				$this->count = $this->db->db_num_rows($this->res);
-				if( $this->count > 0 )
-					$this->bdggroup = true;
-				}
 			
-
 			}
 
 		function getnextgroup()
@@ -139,23 +129,6 @@ function groupCreateMod()
 				return false;
 				}
 			}
-
-		function getnext()
-			{
-			static $i = 0;	
-			if( $i < $this->count)
-				{
-				$arr = $this->db->db_fetch_array($this->res);
-				$this->grpdgname = $arr['name'];
-				$this->grpdgid = $arr['id'];
-				$this->selected = $this->grpdgid == $this->arr['id_dggroup'];
-				$i++;
-				return true;
-				}
-			return false;
-			}
-
-
 		}
 
 	$temp = new CreateMod();
