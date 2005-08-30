@@ -160,7 +160,7 @@ class bab_grptree extends bab_dbtree
 		}
 	}
 
-	function moveAlpha($id, $id_parent, $childname)
+	function moveAlpha($id, $id_parent, $childname, $function='move')
 	{
 	if ($id_parent == $id)
 		return false;
@@ -171,15 +171,20 @@ class bab_grptree extends bab_dbtree
 		{
 		if ('new' == $key && isset($id_previous))
 			{
-			return $this->move($id, $id_parent, $id_previous);
+			return $this->$function($id, $id_parent, $id_previous);
 			}
 		elseif ('new' == $key)
 			{
-			return $this->move($id, $id_parent, $firstchild, false);
+			return $this->$function($id, $id_parent, $firstchild, false);
 			}
 
 		$id_previous = $key;
 		}
+	}
+
+	function moveTreeAlpha($id, $id_parent, $childname)
+	{
+	$this->moveAlpha($id, $id_parent, $childname, 'moveTree');
 	}
 }
 

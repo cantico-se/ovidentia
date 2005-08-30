@@ -373,3 +373,51 @@ function load_clear()
 		<!--#endin getnextgroup -->
 	</ul>
 <!--#end grp_childs -->
+
+
+<!--#begin moveGroup -->
+
+
+<form name="gcreatemod" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="groups" />
+<input type="hidden" name="idx" value="List" />
+<input type="hidden" name="grpid" value="{ arr[grpid] }" />
+<input type="hidden" name="name" value="{ arr[name] }" />
+<input type="hidden" name="description" value="{ arr[description] }" />
+<input type="hidden" name="manager" value="{ arr[manager] }" />
+<input type="hidden" name="parent" value="{ arr[parent] }" />
+
+<input type="hidden" name="add" value="add">
+<table  width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+	<table class="BabLoginMenuBackground"  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+	<tr> 
+		<td align="right" width="50%">{ t_name } :</td>
+		<td> 
+		{ arr[name] }
+		</td>
+	</tr>
+	<tr> 
+		<td align="center" colspan="2">
+		<select name="moveoption">
+			<option value="1">{ t_move_group }</option>
+			<option value="2">{ t_move_group_childs }</option>
+		</select>
+		
+		</td>
+	</tr>
+
+	<tr> 
+		<td align="center" colspan="2">
+		<br />
+		<input type="submit" value="{ t_record }" />
+		</td>
+	</tr>
+	
+	</table>
+</td>
+</tr>
+</table>
+</form>
+<!--#end moveGroup -->

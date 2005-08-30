@@ -295,50 +295,50 @@ function selectAll(list)
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabLoginMenuBackground" align="center" valign="center"> <br>
-<select name="listleft[]"  size=12 multiple>
-<option value="">{ listleftsectxt }</option>
-<!--#in getnextsecleft --> 
-<option value="{ secid }">{ listleftsecval }</option>
-<!--#endin getnextsecleft --> 
-</select>
-</td>
-<td class="BabLoginMenuBackground" align="center"><a href="Javascript:move(true, document.secorderf.elements[3])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" width="22" height="18" border=0 alt="{ moveup }"></a> 
-<br>
-<br>
-<a href="Javascript:move(false, document.secorderf.elements[3])"> <img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a> 
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="center" valign="middle"><a href="Javascript:moveOptions(document.secorderf.elements[3],document.secorderf.elements[4])"><img src="{ babSkinPath }images/Puces/PuceGoHandDown.gif" width="20" height="24" border=0 alt="Down"></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="Javascript:moveOptions(document.secorderf.elements[4],document.secorderf.elements[3])" ><img src="{ babSkinPath }images/Puces/PuceGoHandTop.gif" width="20" height="24" border=0 alt="Up"></a></td>
-<td class="BabLoginMenuBackground">&nbsp;</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="center"> 
-<select name="listright[]"  size=12 multiple>
-<option value="">{ listrightsectxt }</option>
-<!--#in getnextsecright --> 
-<option value="{ secid }">{ listrightsecval }</option>
-<!--#endin getnextsecright --> 
-</select>
-</td>
-<td class="BabLoginMenuBackground" align="center" valign="middle"><a href="Javascript:move(true, document.secorderf.elements[4])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" width="22" height="18" border=0 alt="{ moveup }"></a> 
-<br>
-<br>
-<a href="Javascript:move(false, document.secorderf.elements[4])"><img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a> 
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="center" valign="middle"> 
-<input type="submit" name="Submit" value="{ update }" onClick="Javascript:selectAll(document.secorderf.elements[4]); selectAll(document.secorderf.elements[3]); document.secorderf.submit()">
-<br>
-<br>
-</td>
-<td class="BabLoginMenuBackground">&nbsp; </td>
-</tr>
-</table>
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5">
+	<tr> 
+	<td align="center" valign="center"> <br />
+	<select name="listleft[]"  size="12" multiple="multiple">
+	<option value="">{ listleftsectxt }</option>
+	<!--#in getnextsecleft --> 
+	<option value="{ secid }">{ listleftsecval }</option>
+	<!--#endin getnextsecleft --> 
+	</select>
+	</td>
+	<td align="center"><a href="Javascript:move(true, document.secorderf.elements[3])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" width="22" height="18" border=0 alt="{ moveup }"></a> 
+	<br>
+	<br>
+	<a href="Javascript:move(false, document.secorderf.elements[3])"> <img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a> 
+	</td>
+	</tr>
+	<tr> 
+	<td align="center" valign="middle"><a href="Javascript:moveOptions(document.secorderf.elements[3],document.secorderf.elements[4])"><img src="{ babSkinPath }images/Puces/PuceGoHandDown.gif" width="20" height="24" border=0 alt="Down"></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="Javascript:moveOptions(document.secorderf.elements[4],document.secorderf.elements[3])" ><img src="{ babSkinPath }images/Puces/PuceGoHandTop.gif" width="20" height="24" border=0 alt="Up"></a></td>
+	<td>&nbsp;</td>
+	</tr>
+	<tr> 
+	<td align="center"> 
+	<select name="listright[]"  size=12 multiple>
+	<option value="">{ listrightsectxt }</option>
+	<!--#in getnextsecright --> 
+	<option value="{ secid }">{ listrightsecval }</option>
+	<!--#endin getnextsecright --> 
+	</select>
+	</td>
+	<td align="center" valign="middle"><a href="Javascript:move(true, document.secorderf.elements[4])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" width="22" height="18" border=0 alt="{ moveup }"></a> 
+	<br>
+	<br>
+	<a href="Javascript:move(false, document.secorderf.elements[4])"><img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a> 
+	</td>
+	</tr>
+	<tr> 
+	<td align="center" valign="middle"> 
+	<input type="submit" name="Submit" value="{ update }" onClick="Javascript:selectAll(document.secorderf.elements[4]); selectAll(document.secorderf.elements[3]); document.secorderf.submit()">
+	<br>
+	<br>
+	</td>
+	<td>&nbsp; </td>
+	</tr>
+	</table>
 </td>
 </tr>
 </table>

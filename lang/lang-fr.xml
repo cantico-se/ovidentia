@@ -1829,7 +1829,7 @@
 <string id="User can modifiy his date format">L'utilisateur peut modifier ces formats de date</string>
 <string id="User can modifiy his unavailability">L'utilisateur peut modifier son état d'indisponibilité</string>
 <string id="Menu">Menu</string>
-
+<string id="Move group">Déplacer un groupe</string>
 <string id="Site configuration">Configuration du site</string>
 <string id="Mail configuration">Paramètres de la messagerie</string>
 <string id="User options and login configuration">Options de l'utilisateur</string>
@@ -1840,5 +1840,6 @@
 <string id="Authentification configuration">Configuration de l'authentification</string>
 <string id="Inscription configuration">Configuration de l'inscription</string>
 <string id="WYSIWYG editor configuration">Paramètres de l'éditeur WYSIWYG</string>
-
+<string id="Move the group only">Déplacer le groupe seulement</string>
+<string id="Move the group and his children">Déplacer le groupe et ces enfants</string>
 </fr>

@@ -214,7 +214,7 @@ function sectionsOrder()
 			$this->update = bab_translate("Update");
 			$this->moveup = bab_translate("Move Up");
 			$this->movedown = bab_translate("Move Down");
-			$this->db = $GLOBALS['babDB'];
+			$this->db = &$GLOBALS['babDB'];
 
 			$this->resleft = $this->db->db_query("select * from ".BAB_SECTIONS_ORDER_TBL." order by ordering asc");
 			while ( $arr = $this->db->db_fetch_array($this->resleft))
@@ -311,6 +311,15 @@ function sectionsOrder()
 			$this->countright = count($this->arright);
 			}
 
+
+		function getDelegationName($id)
+			{
+			$res = $this->db->db_query("SELECT name FROM ".BAB_DG_GROUPS_TBL." WHERE id='".$id."'");
+			list($name) = $this->db->db_fetch_array($res);
+
+			return $name;
+			}
+
 		function getnextsecleft()
 			{
 			static $i = 0;
@@ -319,7 +328,7 @@ function sectionsOrder()
 				$rr = explode('-',$this->arrleft[$i]);
 				if( count($rr) > 1 )
 					{
-					$this->listleftsecval = "[[".bab_getGroupName($rr[0])."(". bab_translate("Left").")]]";
+					$this->listleftsecval = "[[".$this->getDelegationName($rr[0])."(". bab_translate("Left").")]]";
 					$this->secid = $this->arrleft[$i];
 					}
 				else
@@ -363,7 +372,7 @@ function sectionsOrder()
 				$rr = explode('-',$this->arright[$j]);
 				if( count($rr) > 1)
 					{
-					$this->listrightsecval = "[[".bab_getGroupName($rr[0])."(". bab_translate("Right").")]]";
+					$this->listrightsecval = "[[".$this->getDelegationName($rr[0])."(". bab_translate("Right").")]]";
 					$this->secid = $this->arright[$j];
 					}
 				else
@@ -773,7 +782,11 @@ if( isset($create))
 if( isset($update))
 	{
 	if( $update == "order" )
+		{
+		if ( !isset($listleft))  { $listleft= array(); }
+		if ( !isset($listright)) { $listright= array(); }
 		saveSectionsOrder($listleft, $listright);
+		}
 	else if( $update == "disable" )
 		{
 		if( !isset($sections)) { $sections= array();}

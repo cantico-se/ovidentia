@@ -210,6 +210,32 @@ function groupList()
 	}
 
 
+function moveGroup()
+	{
+	global $babBody;
+
+	class temp
+		{
+		function temp()
+			{
+			$this->arr = $_POST;
+			if( bab_isMagicQuotesGpcOn())
+				{
+				array_walk($this->arr, create_function('&$v,$k','$v = stripslashes($v);'));
+				}
+
+			$this->t_name = bab_translate("Name");
+			$this->t_record = bab_translate("Record");
+			$this->t_move_group = bab_translate("Move the group only");
+			$this->t_move_group_childs = bab_translate("Move the group and his children");
+			}
+		}
+
+	$temp = new temp();
+	$babBody->babecho(bab_printTemplate($temp, "groups.html", "moveGroup"));
+	}
+
+
 function groupDelete($id)
 	{
 	global $babBody;
@@ -379,19 +405,24 @@ function addModGroup()
 		if ($ret)
 			Header("Location: ". $GLOBALS['babUrlScript']."?tg=groups&idx=List&expand_to=".$ret);
 		else
-			return $ret;
+			return 'Create';
 		}
 
 	if( empty($_POST['name']))
 		{
 		$babBody->msgerror = bab_translate("ERROR: You must provide a name !!");
-		return false;
+		return 'Create';
 		}
 
 	if( !bab_isMagicQuotesGpcOn())
 		{
 		$description = $db->db_escape_string($_POST['description']);
 		$name = $db->db_escape_string($_POST['name']);
+		}
+	else
+		{
+		$description = $_POST['description'];
+		$name = $_POST['name'];
 		}
 
 	$req = "select * from ".BAB_GROUPS_TBL." where name='".$name."'";
@@ -403,15 +434,35 @@ function addModGroup()
 	if( $db->db_num_rows($res) > 0)
 		{
 		$babBody->msgerror = bab_translate("This group already exists");
-		return false;
+		return 'Create';
 		}
 
 
+	// move group ?
+
+	if (!isset($_POST['moveoption']))
+		{
+		$res = $db->db_query("select id_parent, (lr-lf) groups from ".BAB_GROUPS_TBL." where id='".$_POST['grpid']."'");
+		$arr = $db->db_fetch_assoc($res);
+
+		if ($arr['id_parent'] != $id_parent && $arr['groups'] > 1)
+			{
+			return 'move';
+			}
+		else $moveoption = 1;
+
+		}
+	else
+		{
+		$moveoption = $_POST['moveoption'];
+		}
+	
+
 	$idgrp = &$_POST['grpid'];
-	bab_updateGroupInfo($idgrp, $name, $description, $_POST['manager'], $grpdg , $id_parent);
+	bab_updateGroupInfo($idgrp, $name, $description, $_POST['manager'], $grpdg , $id_parent, $moveoption);
 
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=groups&idx=List&expand_to=".$idgrp);
-	return true;
+	return $_POST['idx'];
 	}
 
 function saveGroupsOptions($mailgrpids, $notgrpids, $congrpids, $pdsgrpids, $dirgrpids)
@@ -488,11 +539,11 @@ if( isset($_POST['add']) && ($babBody->isSuperAdmin || $babBody->currentDGGroup[
 	if (isset($_POST['deleteg']))
 		{
 		$item = $_POST['grpid'];
-		$idx = "Delete";
+		$idx = 'Delete';
 		}
 	else
 		{
-		addModGroup();
+		$idx = addModGroup();
 		}
 	}
 
@@ -553,6 +604,10 @@ switch($idx)
 			groupDelete($item);
 		$babBody->title = bab_translate("Delete group");
 		$babBody->addItemMenu("Delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=group&idx=Delete&item=".$item);
+		break;
+	case "move":
+		moveGroup();
+		$babBody->title = bab_translate("Move group");
 		break;
 	case "List":
 	default:
