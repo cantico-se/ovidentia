@@ -48,7 +48,7 @@ function updateStatPreferences()
 		$pref['itwhat'] = $arr['time_interval'];
 		$pref['sd'] = $arr['time_interval'] == STAT_IT_OTHER ? $arr['begin_date']: '';
 		$pref['ed'] = $arr['time_interval'] == STAT_IT_OTHER ? $arr['end_date']: '';
-		$pref['exportchr'] = chr($arr['separator']);
+		$pref['exportchr'] = chr($arr['separatorchar']);
 		}
 	else
 		{
