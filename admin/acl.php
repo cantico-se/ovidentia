@@ -194,6 +194,7 @@ class macl
 		$babBody->addStyleSheet('groups.css');
 		$html = bab_printTemplate($babBody,"uiutil.html", "styleSheet");
 		$html .= bab_printTemplate($this, "acl.html", "grp_maintree");
+		return $html;
 		}
 	
 		
