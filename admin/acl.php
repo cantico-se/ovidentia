@@ -266,6 +266,7 @@ function maclGroups()
 	$db = &$GLOBALS['babDB'];
 	$id_object = &$_POST['item'];
 
+	unset($_SESSION['bab_groupAccess']['acltables']);
 	$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 
 	if (isset($_POST['group']) && count($_POST['group']) > 0) {
