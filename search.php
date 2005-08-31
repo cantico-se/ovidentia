@@ -1164,10 +1164,10 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 							// push all data of a directory into bab_dbdir_temptable
 							$this->db->db_query($req);
 							// and add optional fields
-							$arr = $this->addDirectoryOptFields($row['id'],$row['id_group']);
-							if ($arr)
+							$count = $this->addDirectoryOptFields($row['id'],$row['id_group']);
+							if ($count)
 								{
-								$arrfields = array_pad($arrfields, count($arrfields)+count($arr), "''");
+								$arrfields = array_pad($arrfields, count($arrfields)+$count, "''");
 								}
 							}
 						}
@@ -1411,7 +1411,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 						}
 					}
 
-				return $dbdirxfields;
+				return $count;
 				}
 			return false;
 			}
