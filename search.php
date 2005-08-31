@@ -1151,8 +1151,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 								}
 							else
 								{
-								$this->tmptable_inserted_id('bab_dbdir_temptable');
-
+								
 								$req = "insert into bab_dbdir_temptable select ".implode(',', $arrfields).",'".$this->db->db_escape_string($dirname)."' name from ".BAB_DBDIR_ENTRIES_TBL." det where id_directory='".($row['id_group'] != 0? 0: $row['id'])."'";
 								}
 
@@ -1165,7 +1164,11 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 							// push all data of a directory into bab_dbdir_temptable
 							$this->db->db_query($req);
 							// and add optional fields
-							$this->addDirectoryOptFields($row['id'],$row['id_group']);
+							$arr = $this->addDirectoryOptFields($row['id'],$row['id_group']);
+							if ($arr)
+								{
+								$arrfields = array_pad($arrfields, count($arrfields)+count($arr), "''");
+								}
 							}
 						}
 
@@ -1377,8 +1380,16 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				{
 				// add optionnal fields in temporary table
 				
+				$count = 0;
+
 				for( $m=0; $m < count($dbdirxfields); $m++)
 					{
+					if (isset($this->added_dbdir_temptable[$dbdirxfields[$m]]))
+						continue;
+
+					$count++;
+
+					$this->added_dbdir_temptable[$dbdirxfields[$m]] = 1;
 					$this->db->db_query("alter table bab_dbdir_temptable add ".$dbdirxfields[$m]." VARCHAR( 255 ) NOT NULL");
 					$this->db->db_query("alter table dirresults add ".$dbdirxfields[$m]." VARCHAR( 255 ) NOT NULL");
 					}
@@ -1399,7 +1410,10 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 						$this->db->db_query("update bab_dbdir_temptable set ".implode(',', $tmp)." where id='".$arr['id']."'");
 						}
 					}
+
+				return $dbdirxfields;
 				}
+			return false;
 			}
 
 		function getnextart()
