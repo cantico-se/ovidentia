@@ -5025,6 +5025,8 @@ if ($arr[0] != 'id_group')
 
 	$db->db_query("INSERT INTO `".BAB_GROUPS_TBL."` (id, name, id_parent, lf, lr, nb_set) VALUES ('0', 'Ovidentia users',NULL,'1','".($n+3)."', '0')");
 
+	$db->db_query("UPDATE `".BAB_GROUPS_TBL."` SET `name`='Registered users' WHERE `id` ='1'");
+	$db->db_query("UPDATE `".BAB_GROUPS_TBL."` SET `name`='Anonymous users' WHERE `id` ='2'");
 
 	$db->db_query("ALTER TABLE `".BAB_USERS_LOG_TBL."` CHANGE `id_dggroup` `id_dg` INT( 11 ) UNSIGNED DEFAULT '0' NOT NULL");
 	$db->db_query("ALTER TABLE `".BAB_USERS_LOG_TBL."` ADD `grp_change` tinyint(1) unsigned default NULL");

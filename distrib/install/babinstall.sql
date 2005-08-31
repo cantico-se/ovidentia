@@ -215,7 +215,7 @@ CREATE TABLE `bab_groups` (
 );
 
 INSERT INTO bab_groups (id, name, description, mail, ustorage, notes, contacts, directory, pcalendar, id_parent, lf, lr, nb_set) VALUES ( '0', 'Ovidentia users', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '1', '8', '0');
-INSERT INTO bab_groups (id, name, description, mail, ustorage, notes, contacts, directory, pcalendar, id_parent, lf, lr, nb_set) VALUES ( '1', 'Registered', 'All registered users', 'N', 'N', 'Y', 'Y', 'Y', 'Y', '0', '2', '5', '0');
+INSERT INTO bab_groups (id, name, description, mail, ustorage, notes, contacts, directory, pcalendar, id_parent, lf, lr, nb_set) VALUES ( '1', 'Registered users', 'All registered users', 'N', 'N', 'Y', 'Y', 'Y', 'Y', '0', '2', '5', '0');
 INSERT INTO bab_groups (id, name, description, mail, ustorage, notes, contacts, directory, pcalendar, id_parent, lf, lr, nb_set) VALUES ( '2', 'Anonymous users', 'all not registered users', NULL, NULL, NULL, NULL, NULL, NULL, '0', '6', '7', '0');
 INSERT INTO bab_groups (id, name, description, mail, ustorage, notes, contacts, directory, pcalendar, id_parent, lf, lr, nb_set) VALUES ( '3', 'Administrators', 'Manage the site', 'N', 'N', 'Y', 'Y', 'N', 'Y', '1', '3', '4', '0');
 
