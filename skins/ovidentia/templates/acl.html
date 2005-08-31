@@ -11,16 +11,26 @@ function table_name(objname)
 
 function check_childs(checkbox)
 {
-	var tree = document.getElementById(checkbox.parentNode.parentNode.id).getElementsByTagName('input');
+	obj = checkbox.parentNode;
+	while ('' == obj.id)
+		{
+		obj = obj.parentNode;
+		}
+	
+	var tree = obj.getElementsByTagName('input');
 	for (var j = 0; j < tree.length ; j++)
 		{
 		if ((checkbox.name != tree[j].name || checkbox.value != tree[j].value) && table_name(checkbox) == table_name(tree[j]))
+			{
 			tree[j].disabled = checkbox.checked;
+			tree[j].checked = checkbox.checked;
+			}
 		}
 }
 
 function macl_switch_view_on(table)
 {
+
 	var menu = document.getElementById('bab_groups_acl').getElementsByTagName('li');
 	for(var i = 0; i < menu.length; i++ )
 		{
@@ -43,7 +53,7 @@ function macl_switch_view_on(table)
 			checkbox[i].style.display = '';
 			}
 
-		if ('tree' == checkbox[i].name.substr(0,4))
+		if ('tree' == checkbox[i].name.substr(0,4) || ('group' == checkbox[i].name.substr(0,5) && checkbox[i].value < 3))
 			{
 			checkbox[i].onclick = function() {
 					check_childs(this);
@@ -54,7 +64,7 @@ function macl_switch_view_on(table)
 				}
 			}
 		}
-
+	
 }
 
 

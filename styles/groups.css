@@ -1,5 +1,5 @@
 #bab_groups_tree {
-	
+	text-align:left;
 	margin:0 .5em;
 	padding:2px;
 	margin-bottom:2em;
@@ -67,6 +67,13 @@
 #bab_groups_tree #bab_ovgroup_3,
 #bab_groups_tree #bab_ovgroup_3 a { /* Administrators */
 	color:#c00;
+}
+
+
+#bab_groups_tree #bab_ovgroup_3 ul li,
+#bab_groups_tree #bab_ovgroup_3 ul a {
+	text-decoration:none;
+	color:#000;
 }
 
 #bab_groups_tree li .bullet { 

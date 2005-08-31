@@ -129,7 +129,7 @@ bab_ul_tree.prototype.expandChecked = function() {
 	var input = this.treeId.getElementsByTagName('input');
 	for (var i =0; i < input.length ; i++ )
 	{
-		if ('checkbox' == input[i].type && input[i].checked) {
+		if ('checkbox' == input[i].type && input[i].checked && !input[i].disabled) {
 		li = input[i];
 		while (li.parentNode && li.parentNode.nodeName != 'LI') {
 			li = li.parentNode;
