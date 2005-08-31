@@ -4972,8 +4972,8 @@ if ($arr[0] != 'id_group')
 				$id = $db->db_insert_id();
 				}
 
-			$res = $db->db_query("SELECT id_object FROM ".BAB_DG_USERS_GROUPS_TBL." WHERE id_group='".$id."'");
-			while ($row = $db->db_fetch_array($res))
+			$res2 = $db->db_query("SELECT id_object FROM ".BAB_DG_USERS_GROUPS_TBL." WHERE id_group='".$id."'");
+			while ($row = $db->db_fetch_array($res2))
 				{
 				$db->db_query("INSERT INTO ".BAB_DG_ADMIN_TBL." (id_user, id_dg) VALUES ('".$row['id_object']."','".$id."')");
 				}
