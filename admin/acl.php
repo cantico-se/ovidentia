@@ -186,11 +186,19 @@ class macl
 
 		return false;
 		}
+
+
+	function getHtml()
+		{
+		global $babBody;
+		$babBody->addStyleSheet('groups.css');
+		$html = bab_printTemplate($babBody,"uiutil.html", "styleSheet");
+		$html .= bab_printTemplate($this, "acl.html", "grp_maintree");
+		}
 	
 		
 	function babecho()
 		{
-		
 		global $babBody;
 		$babBody->addStyleSheet('groups.css');
 		$babBody->babecho(	bab_printTemplate($this, "acl.html", "grp_maintree"));
