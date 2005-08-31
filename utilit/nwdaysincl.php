@@ -58,16 +58,78 @@ function bab_getNonWorkingDayTypes($with_date = false)
 }
 
 
+function bab_setNonWorkingDays($year)
+{
+	$return = array();
+	$db = & $GLOBALS['babDB'];
+	$t_type = bab_getNonWorkingDayTypes();
+	$DAY = 86400;
+	$id_site = & $GLOBALS['babBody']->babsite['id'];
+
+	$res = $db->db_query("SELECT nw_day,nw_type,nw_text FROM ".BAB_SITES_NONWORKING_CONFIG_TBL." WHERE id_site='".$id_site."'");
+
+	if ($db->db_num_rows($res) == 0)
+		return array();
+
+	while( list($day,$type,$text) = $db->db_fetch_array($res) )
+		{
+		$r_date = false;
+
+		switch ($type)
+			{
+			case 101:
+				list($d,$m,$y) = explode('-',$day);
+				if ($y == $year)
+					{
+					$r_date = sprintf("%04s-%02s-%02s", $y, $m, $d);
+					$nw_type = empty($text) ? 'Non-working day' : $text;
+					}
+				break;
+
+			case 102:
+				list($d,$m) = explode('-',$day);
+				$r_date = sprintf("%04s-%02s-%02s", $year, $m, $d);
+				$nw_type = empty($text) ? 'Non-working day' : $text;
+				break;
+
+			case 1:
+				$r_date = date("Y-m-d", easter_date($year) + $DAY*1);
+				$nw_type = 'Easter';
+				break;
+
+			case 2:
+				$r_date = date("Y-m-d", easter_date($year) + $DAY*39);
+				$nw_type = 'Ascension';
+				break;
+
+			case 3:
+				$r_date = date("Y-m-d", easter_date($year) + $DAY*50);
+				$nw_type = 'Pentecost';
+				break;
+			}
+
+		if ($r_date)
+			{
+			$return[$r_date] = bab_translate($nw_type);
+
+			$db->db_query("INSERT INTO ".BAB_SITES_NONWORKING_DAYS_TBL." (id_site,nw_day,nw_type) VALUES ('".$id_site."', '".$r_date."', '".$db->db_escape_string($nw_type)."')");
+			}
+		}
+	return $return;
+}
+
+
 function bab_getNonWorkingDays($year)
 {
 	$db = & $GLOBALS['babDB'];
-	$return = array();
+	
 	$id_site = & $GLOBALS['babBody']->babsite['id'];
 	
 	$res = $db->db_query("SELECT nw_day,nw_type FROM ".BAB_SITES_NONWORKING_DAYS_TBL." WHERE id_site='".$id_site."' AND YEAR(nw_day) = '".$year."'");
 
 	if ($db->db_num_rows($res) > 0)
 		{
+		$return = array();
 		while( list($day,$type) = $db->db_fetch_array($res) )
 			{
 			$return[$day] = bab_translate($type);
@@ -75,61 +137,52 @@ function bab_getNonWorkingDays($year)
 		}
 	else
 		{
-		$t_type = bab_getNonWorkingDayTypes();
-		$DAY = 86400;
-
-		$res = $db->db_query("SELECT nw_day,nw_type,nw_text FROM ".BAB_SITES_NONWORKING_CONFIG_TBL." WHERE id_site='".$id_site."'");
-
-		if ($db->db_num_rows($res) == 0)
-			return array();
-
-		while( list($day,$type,$text) = $db->db_fetch_array($res) )
-			{
-			$r_date = false;
-
-			switch ($type)
-				{
-				case 101:
-					list($d,$m,$y) = explode('-',$day);
-					if ($y == $year)
-						{
-						$r_date = sprintf("%04s-%02s-%02s", $y, $m, $d);
-						$nw_type = empty($text) ? 'Non-working day' : $text;
-						}
-					break;
-
-				case 102:
-					list($d,$m) = explode('-',$day);
-					$r_date = sprintf("%04s-%02s-%02s", $year, $m, $d);
-					$nw_type = empty($text) ? 'Non-working day' : $text;
-					break;
-
-				case 1:
-					$r_date = date("Y-m-d", easter_date($year) + $DAY*1);
-					$nw_type = 'Easter';
-					break;
-
-				case 2:
-					$r_date = date("Y-m-d", easter_date($year) + $DAY*39);
-					$nw_type = 'Ascension';
-					break;
-
-				case 3:
-					$r_date = date("Y-m-d", easter_date($year) + $DAY*50);
-					$nw_type = 'Pentecost';
-					break;
-				}
-
-			if ($r_date)
-				{
-				$return[$r_date] = bab_translate($nw_type);
-
-				$db->db_query("INSERT INTO ".BAB_SITES_NONWORKING_DAYS_TBL." (id_site,nw_day,nw_type) VALUES ('".$id_site."', '".$r_date."', '".$db->db_escape_string($nw_type)."')");
-				}
-			}
+		$return = bab_setNonWorkingDays($year);
 		}
 
 	return $return;
+}
+
+
+function bab_getNonWorkingDaysBetween($from, $to)
+{
+	include_once $GLOBALS['babInstallPath']."utilit/nwdaysincl.php";
+
+	if (is_int($from))
+		{
+		$y_from   = date('Y',$from);
+		$y_to     = date('Y',$to);
+		$date_col = 'UNIX_TIMESTAMP(nw_day) nw_day';
+		$from     = date('Y-m-d',$from);
+		$to       = date('Y-m-d',$to);
+		}
+	else
+		{
+		list($y_from) = explode('-',$from);
+		list($y_to)   = explode('-',$to);
+		$date_col     = 'nw_day';
+		}
+
+	$db = & $GLOBALS['babDB'];
+	$id_site = & $GLOBALS['babBody']->babsite['id'];
+	$result = array();
+
+	for($year = $y_from; $year< $y_to; $year++)
+		{
+		$res = $db->db_query("SELECT * FROM ".BAB_SITES_NONWORKING_DAYS_TBL." WHERE id_site='".$id_site."' AND YEAR(nw_day) = '".$year."'");
+		if ($db->db_num_rows($res) == 0)
+			{
+			bab_setNonWorkingDays($year);
+			}
+		}
+
+	$res = $db->db_query("SELECT ".$date_col.", nw_type FROM ".BAB_SITES_NONWORKING_DAYS_TBL." WHERE id_site='".$id_site."' AND nw_day BETWEEN '".$from."' AND '".$to."' ORDER BY nw_day");
+	while ($arr = $db->db_fetch_assoc($res))
+		{
+		$result[$arr['nw_day']] = bab_translate($arr['nw_type']);
+		}
+
+	return $result;
 }
 
 
