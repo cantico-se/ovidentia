@@ -268,7 +268,7 @@ function summaryFmDownloads($col, $order, $pos, $startday, $endday)
 			$this->foldertxt = bab_translate("Folder");
 			$this->pathtxt = bab_translate("Path");
 
-			$req = "select ft.id, ft.name, fft.folder, ft.path, ft.hits , sum( sff.st_hits ) FROM ".BAB_STATS_FMFILES_TBL." sff left join ".BAB_FILES_TBL." ft on sff.st_fmfile_id=ft.id left join ".BAB_FM_FOLDERS_TBL." fft on fft.id=ft.id_owner where ft.bgroup='Y'";
+			$req = "select ft.id, ft.name, fft.folder, ft.path, sum( sff.st_hits ) hits FROM ".BAB_STATS_FMFILES_TBL." sff left join ".BAB_FILES_TBL." ft on sff.st_fmfile_id=ft.id left join ".BAB_FM_FOLDERS_TBL." fft on fft.id=ft.id_owner where ft.bgroup='Y'";
 
 			if( !empty($startday) && !empty($endday))
 				{
