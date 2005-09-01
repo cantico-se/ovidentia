@@ -1888,34 +1888,6 @@ function bab_isMemberOfTree($id_group, $id_user = '')
 }
 
 
-
-function bab_getUserIdObjects($table)
-{
-global $babBody;
-if( !isset($_SESSION['bab_groupAccess']['acltables'][$table]))
-	{
-	$_SESSION['bab_groupAccess']['acltables'][$table] = array();
-	
-	$db = &$GLOBALS['babDB'];
-	$res = &$db->db_query("select id_object, id_group from ".$table." WHERE id_group IN('".implode("','",$babBody->usergroups)."') OR id_group>='".BAB_ACL_GROUP_TREE."'");
-	
-	while( $row = $db->db_fetch_assoc($res))
-		{
-		if ($row['id_group'] >= BAB_ACL_GROUP_TREE )
-			{
-			$row['id_group'] -= BAB_ACL_GROUP_TREE;
-			if (bab_isMemberOfTree($row['id_group']))
-				$_SESSION['bab_groupAccess']['acltables'][$table][$row['id_object']] = 1;
-			}
-		else
-			$_SESSION['bab_groupAccess']['acltables'][$table][$row['id_object']] = 1;
-		}
-	}
-
-	return $_SESSION['bab_groupAccess']['acltables'][$table];
-}
-
-
 function bab_updateUserSettings()
 {
 	global $babDB, $babBody,$BAB_SESS_USERID;
