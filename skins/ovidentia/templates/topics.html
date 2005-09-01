@@ -2,20 +2,20 @@
 <!--#begin categorycreate -->
 </script>
 <form name="catcr" method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="{ tgval }">
-<input type="hidden" name="idx" value="list">
-<input type="hidden" name="item" value="{ item }">
-<input type="hidden" name="cat" value="{ cat }">
-<input type="hidden" name="add" value="add">
+<input type="hidden" name="tg" value="{ tgval }" />
+<input type="hidden" name="idx" value="list" />
+<input type="hidden" name="item" value="{ item }" />
+<input type="hidden" name="cat" value="{ cat }" />
+<input type="hidden" name="add" value="add" />
   <table class="BabLoginCadreBackground" width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
     <tr> 
       <td> <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
           <tr> 
-            <td> <table class="BabLoginMenuBackground" width="100%" >
+            <td> <table  width="100%" >
                 <tr> 
-                  <td class="BabLoginMenuBackground"> { title }: &nbsp; <input type="text" name="category" size="30" maxlength="60" value="{ category }"> 
+                  <td> { title }: &nbsp; <input type="text" name="category" size="30" maxlength="60" value="{ category }" /> 
                   </td>
-                  <td align="right" class="BabLoginMenuBackground">{ topcat }:&nbsp; <select name="ncat">
+                  <td align="right">{ topcat }:&nbsp; <select name="ncat">
                       <!--#in getnextcat -->
                       <option value="{ topid }" { topselected }>{ toptitle }</option>
                       <!--#endin getnextcat -->
@@ -24,23 +24,23 @@
               </table></td>
           </tr>
            <tr> 
-            <td> <table class="BabLoginMenuBackground" width="100%" >
+            <td> <table width="100%" >
                 <tr> 
-                  <td align="left" class="BabLoginMenuBackground">{ 
+                  <td align="left">{ 
                     langLabel }:&nbsp;<select name="lang">
                       <!--#in getnextlang -->
                       <option value="{ langValue }" { langselected }>{ langValue 
                       }</option>
                       <!--#endin getnextlang -->
                     </select></td>
-                  <td align="right" class="BabLoginMenuBackground">{ disptmpltxt }:&nbsp; 
+                  <td align="right">{ disptmpltxt }:&nbsp; 
 					<select name="disptid">
                       <option value="">{ none }</option>
                       <!--#in getnextdisptmpl -->
                       <option value="{ disptmplid }" { disptmplselected }>{ disptmplval }</option>
                       <!--#endin getnextdisptmpl -->
                     </select> </td>
-                  <td align="right" class="BabLoginMenuBackground">{ arttmpltxt }:&nbsp; 
+                  <td align="right">{ arttmpltxt }:&nbsp; 
 					<select name="atid">
                       <option value="">{ none }</option>
                       <!--#in getnextarttmpl -->
@@ -51,7 +51,7 @@
               </table></td>
           </tr>
          <tr> 
-            <td align="center" class="BabLoginMenuBackground">{ desctitle }</td>
+            <td align="center">{ desctitle }</td>
           </tr>
          
           <tr> 
@@ -61,9 +61,9 @@
           </tr>
 
           <tr> 
-            <td align="center"> <table class="BabLoginMenuBackground" width="100%" >
+            <td align="center"> <table width="100%" >
                 <tr> 
-                  <td nowrap align="right" class="BabLoginMenuBackground">{ 
+                  <td nowrap align="right">{ 
                     modart }:</td>
                   <td> <select name="saart">
                       <option value="0">{ none }</option>
@@ -73,7 +73,7 @@
                     </select> </td>
                 </tr>
                 <tr> 
-                  <td align="right" class="BabLoginMenuBackground">{ 
+                  <td align="right">{ 
                     modcom }:</td>
                   <td nowrap> <select name="sacom">
                       <option value="0">{ none }</option>
@@ -83,7 +83,7 @@
                     </select> </td>
                 </tr>
                 <tr> 
-                  <td align="right" class="BabLoginMenuBackground">{ 
+                  <td align="right">{ 
                     modupd }:</td>
                   <td nowrap> <select name="saupd">
                       <option value="0">{ none }</option>
@@ -93,7 +93,7 @@
                     </select> </td>
                 </tr>
                 <tr> 
-                  <td align="right" class="BabLoginMenuBackground">{ 
+                  <td align="right">{ 
                     notiftxt }:</td>
                   <td nowrap> <select name="bnotif">
                       <option value="Y" { notifysel }>{ yes }</option>
@@ -101,7 +101,7 @@
                     </select> </td>
                 </tr>
                 <tr> 
-                  <td align="right" class="BabLoginMenuBackground">{ 
+                  <td align="right">{ 
                     restricttxt }:</td>
                   <td nowrap> <select name="restrict">
                       <option value="Y" { restrictysel }>{ yes }</option>
@@ -109,7 +109,7 @@
                     </select> </td>
                 </tr>
                 <tr> 
-                  <td align="right" class="BabLoginMenuBackground">{ 
+                  <td align="right">{ 
                     hpagestxt }:</td>
                   <td nowrap> <select name="bhpages">
                       <option value="Y" { hpagesysel }>{ yes }</option>
@@ -117,7 +117,7 @@
                     </select> </td>
                 </tr>
                 <tr> 
-                  <td align="right" class="BabLoginMenuBackground">{ 
+                  <td align="right">{ 
                     pubdatestxt }:</td>
                   <td nowrap> <select name="bpubdates">
                       <option value="Y" { pubdatesysel }>{ yes }</option>
@@ -125,7 +125,7 @@
                     </select> </td>
                 </tr>
                 <tr> 
-                  <td align="right" class="BabLoginMenuBackground">{ 
+                  <td align="right">{ 
                     attachmenttxt }:</td>
                   <td nowrap> <select name="battachment">
                       <option value="Y" { attachmentysel }>{ yes }</option>
@@ -133,7 +133,7 @@
                     </select> </td>
                 </tr>
                 <tr> 
-                  <td align="right" class="BabLoginMenuBackground">{ 
+                  <td align="right">{ 
                     artupdatetxt }:</td>
                   <td nowrap> <select name="bartupdate">
                       <option value="0" { artupdatensel }>{ no }</option>
@@ -142,7 +142,7 @@
                     </select> </td>
                 </tr>
                 <tr> 
-                  <td align="right" class="BabLoginMenuBackground">{ 
+                  <td align="right">{ 
                     manmodtxt }:</td>
                   <td nowrap> <select name="bmanmod">
                       <option value="0" { manmodnsel }>{ no }</option>
@@ -151,9 +151,9 @@
                     </select> </td>
                 </tr>
                 <tr> 
-                  <td align="right" class="BabLoginMenuBackground">{ 
+                  <td align="right">{ 
                     artmaxtxt }:</td>
-                  <td nowrap><input type="text" name="maxarts" size="4" maxlength="2" value="{ maxarticlesval }"></td>
+                  <td nowrap><input type="text" name="maxarts" size="4" maxlength="2" value="{ maxarticlesval }" /></td>
                 </tr>
               </table></td>
           </tr>
