@@ -1273,7 +1273,7 @@ function babBody()
 	if (!isset($GLOBALS['HTTP_X_FORWARDED_FOR'])) $GLOBALS['HTTP_X_FORWARDED_FOR'] = '0.0.0.0';
 
 
-	if ( isset($GLOBALS['BAB_SESS_USERID']) && ($GLOBALS['tg'] != 'version' || $GLOBALS['idx'] != 'upgrade'))
+	if ( session_id() && ($GLOBALS['tg'] != 'version' || $GLOBALS['idx'] != 'upgrade'))
 		{
 		$res = $babDB->db_query("select remote_addr, grp_change from ".BAB_USERS_LOG_TBL." where sessid='".session_id()."'");
 		if( $res && $babDB->db_num_rows($res) > 0 )
