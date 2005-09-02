@@ -219,6 +219,7 @@ class bab_synchronizeSql
 				$l = (strlen(strrchr($m[2][$k],')'))*-1);
 				$fields = substr($m[2][$k],0,$l);
 
+
 				$field = array();
 				$keys = array();
 
@@ -274,6 +275,7 @@ class bab_synchronizeSql
 
 	function checkTables()
 		{
+		
 		foreach($this->create as $table => $arr)
 			{
 			if (isset($this->tables[$table]))
@@ -341,6 +343,24 @@ class bab_synchronizeSql
 		}
 	}
 
+
+function bab_export_tables($tables, $file = false)
+	{
+	include_once $GLOBALS['babInstallPath']."utilit/sqlincl.php";
+
+	$bab_sqlExport = & new bab_sqlExport($tables);
+	$dump = $bab_sqlExport->exportString();
+
+	if (!$file) return $dump;
 	
+	if (is_writable($file)) {
+		$handle = fopen($file, 'w+');
+		fwrite($handle, $dump);
+		fclose($handle);
+		return true;
+		}
+
+	return false;
+	}
 
 ?>
