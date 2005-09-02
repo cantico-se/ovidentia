@@ -170,6 +170,7 @@ function bab_getPublicCalendars()
 	$rescals = array();
 
 	$res = $babDB->db_query("select cpt.*, ct.id as idcal from ".BAB_CAL_PUBLIC_TBL." cpt left join ".BAB_CALENDAR_TBL." ct on ct.owner=cpt.id where ct.actif='Y' and ct.type='".BAB_CAL_PUB_TYPE."' and id_dgowner='".$babBody->currentAdmGroup."' ORDER BY cpt.name");
+	while( $arr = $babDB->db_fetch_array($res))
 		{
 		$tmp = array();
 		$tmp['id'] = $arr['idcal'];
