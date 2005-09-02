@@ -341,6 +341,27 @@ class bab_synchronizeSql
 
 		return false;
 		}
+
+	
+	function isWorkedTable($table)
+		{
+		return isset($this->return[$table]);
+		}
+
+	function isCreatedTable($table)
+		{
+		return 1 == $this->return[$table];
+		}
+
+	function isModifiedTable($table)
+		{
+		return 2 == $this->return[$table];
+		}
+
+	function isUnmodifiedTable($table)
+		{
+		return 0 == $this->return[$table];
+		}
 	}
 
 
