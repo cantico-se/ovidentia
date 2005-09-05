@@ -94,6 +94,7 @@ define("BAB_DBDIR_FIELDSEXTRA_TBL", "bab_dbdir_fieldsextra");
 define("BAB_DBDIR_FIELDSVALUES_TBL", "bab_dbdir_fieldsvalues");
 define("BAB_DBDIR_ENTRIES_TBL", "bab_dbdir_entries");
 define("BAB_DBDIR_ENTRIES_EXTRA_TBL", "bab_dbdir_entries_extra");
+define("BAB_DBDIR_OPTIONS_TBL", "bab_dbdir_options");
 define("BAB_DG_GROUPS_TBL", "bab_dg_groups");
 define("BAB_DG_USERS_GROUPS_TBL", "bab_dg_users_groups");
 define("BAB_DG_ADMIN_TBL", "bab_dg_admin");

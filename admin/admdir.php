@@ -129,6 +129,62 @@ function listAds()
 	$babBody->babecho(	bab_printTemplate($temp, "admdir.html", "adlist"));
 }
 
+
+
+function search_options()
+{
+	global $babBody;
+
+	class temp
+		{
+		var $search_view_fields = array();
+
+		function temp()
+			{
+			global $babBody;
+			$this->listftxt = "---- ".bab_translate("Fields")." ----";
+			$this->moveup = bab_translate("Move Up");
+			$this->movedown = bab_translate("Move Down");
+			$this->update = bab_translate("Update");
+
+			$this->db = & $GLOBALS['babDB'];
+			list($tmp) = $this->db->db_fetch_array($this->db->db_query("SELECT search_view_fields FROM ".BAB_DBDIR_OPTIONS_TBL.""));
+			
+			if (empty($tmp))
+				$tmp = '2,4';
+			
+			$this->resdb = $this->db->db_query("SELECT id,description FROM ".BAB_DBDIR_FIELDS_TBL."");
+			$this->resdf = $this->db->db_query("SELECT id,description FROM ".BAB_DBDIR_FIELDS_TBL." WHERE id IN(".$tmp.")");
+			}
+
+		function getnext()
+			{
+			if ($this->arr = $this->db->db_fetch_array($this->resdb))
+				{
+				return true;
+				}
+			else
+				return false;
+			}
+
+		function getnextdf()
+			{
+			if ($this->arr = $this->db->db_fetch_array($this->resdf))
+				{
+				return true;
+				}
+			else
+				return false;
+			}
+		}
+
+	$temp = new temp();
+	$babBody->babecho(	bab_printTemplate($temp, "admdir.html", "dbscripts"));
+	$babBody->babecho(	bab_printTemplate($temp, "admdir.html", "search"));
+}
+
+
+
 function addAdLdap($name, $description, $host, $basedn, $userdn)
 	{
 	global $babBody;
@@ -1238,6 +1294,30 @@ function addDbField($id, $fieldn, $fieldv, &$message)
 	return true;
 }
 
+
+function record_search_options()
+{
+	global $babBody;
+	$db = &$GLOBALS['babDB'];
+
+	if (!isset($_POST['listfd']))
+	{
+		$babBody->msgerror = bab_translate("You must define one collumn at least");
+		return false;
+	}
+
+	$listfd = implode(',',$_POST['listfd']);
+
+	list($n) = $db->db_fetch_array($db->db_query("SELECT COUNT(*) FROM ".BAB_DBDIR_OPTIONS_TBL));
+	if ($n > 0)
+		$db->db_query("UPDATE ".BAB_DBDIR_OPTIONS_TBL." SET search_view_fields='".$listfd."'");
+	else
+		$db->db_query("INSERT INTO ".BAB_DBDIR_OPTIONS_TBL." (search_view_fields) VALUES ('".$listfd."')");
+
+	return true;
+}
+
+
 /* main */
 if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['directories'] != 'Y')
 {
@@ -1373,6 +1453,13 @@ if( isset($update) )
 		{
 		if(!dbUpdateListOrder($id, $listfields))
 			$idx = "list";
+		}
+	elseif( 'search' == $_POST['update'] )
+		{
+		if (!record_search_options())
+			{
+			$idx = 'search';
+			}
 		}
 	}
 
@@ -1516,11 +1603,19 @@ switch($idx)
 		$babBody->addItemMenu("db", bab_translate("New"), $GLOBALS['babUrlScript']."?tg=admdir&idx=db");
 		break;
 
+	case 'search':
+		$babBody->title = bab_translate("Fields to display for a search in all directories");
+		search_options();
+		$babBody->addItemMenu("list", bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=admdir&idx=list");
+		$babBody->addItemMenu("search", bab_translate("Search options"), $GLOBALS['babUrlScript']."?tg=admdir&idx=search");
+		break;
+
 	case "list":
 	default:
 		$babBody->title = bab_translate("Directories");
 		listAds();
 		$babBody->addItemMenu("list", bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=admdir&idx=list");
+		$babBody->addItemMenu("search", bab_translate("Search options"), $GLOBALS['babUrlScript']."?tg=admdir&idx=search");
 		break;
 	}
 

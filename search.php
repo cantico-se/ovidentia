@@ -1191,8 +1191,14 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					$req .= " group by id order by sn asc,givenname asc";
 					$this->db->db_query($req);
 
-					$this->dirfields['name'] = array($dir_fields['name'][2],$dir_fields['name'][4]);
-					$this->dirfields['description'] = array($dir_fields['description'][2],$dir_fields['description'][4]);
+					list($search_view_fields) = $this->db->db_fetch_array($this->db->db_query("SELECT search_view_fields FROM ".BAB_DBDIR_OPTIONS_TBL.""));
+
+					$rescol = $this->db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL." where id IN(".$search_view_fields.")");
+					while( $row3 = $this->db->db_fetch_array($rescol))
+						{
+						$this->dirfields['name'][] = $row3['name'];
+						$this->dirfields['description'][] = $row3['description'];
+						}
 					}
 				$this->countdirfields = count($this->dirfields['name']);
 
