@@ -4939,8 +4939,14 @@ if ($arr[0] != 'id_group')
 	$res = $db->db_query("SELECT id, id_dggroup, name FROM ".BAB_GROUPS_TBL."");
 	while ($arr = $db->db_fetch_array($res))
 		{
-		if ($arr['id'] > 2)
+		if ($arr['id'] > 2 && 0 == $arr['id_dgowner'])
 			$level3[$arr['id']] = $arr['name'];
+
+		if ($arr['id_dgowner'] > 0)
+			{
+			$level4[$arr['id_dgowner']][$arr['id']] = $arr['name'];
+			}
+
 
 		if ($arr['id_dggroup'] > 0)
 			{
@@ -5018,6 +5024,15 @@ if ($arr[0] != 'id_group')
 		{
 		$db->db_query("UPDATE `".BAB_GROUPS_TBL."` SET id_parent='".BAB_REGISTERED_GROUP."', lf='".$n."', lr='".($n+1)."', nb_set='0' WHERE id='".$id_group."'");
 		$n = 2 + $n;
+
+		if (isset($level4[$id_group]))
+			{
+			foreach($level4[$id_group] as $id_group2 => $name)
+				{
+				$db->db_query("UPDATE `".BAB_GROUPS_TBL."` SET id_parent='".$id_group."', lf='".$n."', lr='".($n+1)."', nb_set='0' WHERE id='".$id_group2."'");
+				$n = 2 + $n;
+				}
+			}
 		}
 
 	$db->db_query("UPDATE `".BAB_GROUPS_TBL."` SET id_parent='".BAB_ALLUSERS_GROUP."', lf='2', lr='".$n."', nb_set='0' WHERE id='".BAB_REGISTERED_GROUP."'");
