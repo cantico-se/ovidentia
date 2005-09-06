@@ -203,7 +203,7 @@ function updateFlowInstance($idschi, $iduser, $bool)
 
 			if( in_array(0, $roles ))
 			{
-				$rr = bab_getSuperior($scinfo['iduser']);
+				$rr = bab_getSuperior($scinfo['iduser'], $scinfo['id_oc']);
 				if( count($rr['iduser']) > 0  && in_array($rr['iduser'][0], $idusers) )
 					{
 					$idroles[] = 0;
@@ -221,11 +221,14 @@ function updateFlowInstance($idschi, $iduser, $bool)
 			if( count($idnroles) > 0 )
 			{
 				$arr = bab_getOrgChartRoleUsers($idnroles);
-				for( $i = 0; $i < count($arr['iduser']); $i++ )
+				if( isset($arr['iduser']))
 				{
-					if( in_array($arr['iduser'][$i], $idusers) )
+					for( $i = 0; $i < count($arr['iduser']); $i++ )
 					{
-						$idroles[] = $arr['idrole'][$i];
+						if( in_array($arr['iduser'][$i], $idusers) )
+						{
+							$idroles[] = $arr['idrole'][$i];
+						}
 					}
 				}
 			}
@@ -410,7 +413,7 @@ function getWaitingApproversFlowInstance($idschi, $notify=false)
 								$arroles[] = $result[$i];
 								}
 							}
-						$rr1 = bab_getSuperior($arr['iduser']);
+						$rr1 = bab_getSuperior($arr['iduser'], $arr['id_oc']);
 						}
 					else
 						{
@@ -422,7 +425,7 @@ function getWaitingApproversFlowInstance($idschi, $notify=false)
 						$rr =  bab_getOrgChartRoleUsers($arroles);
 						$ret[] = $rr['iduser'][0];
 						}
-					if( isset($rr1) && count($rr1['iduser']) > 0 )
+					if( isset($rr1['iduser']) && count($rr1['iduser']) > 0 )
 						{
 						$ret[] = $rr1['iduser'][0];
 						}
@@ -513,7 +516,7 @@ function getWaitingApprobations($iduser, $update=false)
 	}
 
 	$db = $GLOBALS['babDB'];
-	$res = $db->db_query("select frit.*, fit.idsch, fat.satype, fit.iduser as fit_iduser from ".BAB_FAR_INSTANCES_TBL." frit left join ".BAB_FA_INSTANCES_TBL." fit on frit.idschi=fit.id left join ".BAB_FLOW_APPROVERS_TBL." fat on fit.idsch=fat.id where frit.result='' and frit.notified='Y'");
+	$res = $db->db_query("select frit.*, fit.idsch, fat.satype, fat.id_oc, fit.iduser as fit_iduser from ".BAB_FAR_INSTANCES_TBL." frit left join ".BAB_FA_INSTANCES_TBL." fit on frit.idschi=fit.id left join ".BAB_FLOW_APPROVERS_TBL." fat on fit.idsch=fat.id where frit.result='' and frit.notified='Y'");
 	$result['idsch'] = array();
 	$result['idschi'] = array();
 	while( $row = $db->db_fetch_array($res))
@@ -532,7 +535,7 @@ function getWaitingApprobations($iduser, $update=false)
 				{
 					if( $row['fit_iduser'] != 0 )
 						{
-						$rr = bab_getSuperior($row['fit_iduser']);
+						$rr = bab_getSuperior($row['fit_iduser'], $row['id_oc']);
 						if( isset($rr['iduser']) && count($rr['iduser']) > 0  && $rr['iduser'][0] == $iduser )
 							{
 							if( count($result['idschi']) == 0 || !in_array($row['idschi'], $result['idschi']))
@@ -546,15 +549,18 @@ function getWaitingApprobations($iduser, $update=false)
 				else
 				{
 					$rusers = bab_getOrgChartRoleUsers($row['iduser']);
-					for( $i = 0; $i < count($rusers['iduser']); $i++ )
+					if( isset($rusers['iduser']))
 					{
-						if( $rusers['iduser'][$i] == $iduser )
+						for( $i = 0; $i < count($rusers['iduser']); $i++ )
 						{
-							if( count($result['idschi']) == 0 || !in_array($row['idschi'], $result['idschi']))
-								{
-								$result['idsch'][] = $row['idsch'];
-								$result['idschi'][] = $row['idschi'];
-								}
+							if( $rusers['iduser'][$i] == $iduser )
+							{
+								if( count($result['idschi']) == 0 || !in_array($row['idschi'], $result['idschi']))
+									{
+									$result['idsch'][] = $row['idsch'];
+									$result['idschi'][] = $row['idschi'];
+									}
+							}
 						}
 					}
 				}

@@ -1006,7 +1006,7 @@ CREATE TABLE bab_ini (
 
 INSERT INTO bab_ini VALUES ('ver_major', '5');
 INSERT INTO bab_ini VALUES ('ver_minor', '6');
-INSERT INTO bab_ini VALUES ('ver_build', '5');
+INSERT INTO bab_ini VALUES ('ver_build', '6');
 INSERT INTO bab_ini VALUES ('ver_prod', 'E');
 
 #
@@ -1034,6 +1034,7 @@ CREATE TABLE bab_flow_approvers (
   refcount int(11) unsigned NOT NULL default '0',
   id_dgowner int(11) unsigned NOT NULL default '0',
   satype tinyint(3) unsigned NOT NULL default '0',
+  id_oc int(11) unsigned NOT NULL default '0',
   PRIMARY KEY  (id),
   KEY id_dgowner (id_dgowner),
   KEY satype (satype)

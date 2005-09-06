@@ -5125,9 +5125,6 @@ return $ret;
 
 }
 
-
-
-
 function upgrade565to566()
 {
 	
@@ -5148,6 +5145,21 @@ if ( $arr[0] != BAB_DBDIR_OPTIONS_TBL )
 		return $ret;
 		}
 	}
+
+$arr = $db->db_fetch_array($db->db_query("DESCRIBE ".BAB_FLOW_APPROVERS_TBL." id_oc"));
+if ($arr[0] != 'id_oc')
+	{
+	$res = $db->db_query("ALTER TABLE `".BAB_FLOW_APPROVERS_TBL."` ADD `id_oc` INT( 10 ) UNSIGNED  NOT NULL default '0'");
+	if( !$res)
+		{
+		$ret = "Alteration of <b>".BAB_FLOW_APPROVERS_TBL."</b> table failed !<br>";
+		return $ret;
+		}
+	}
+
+list($iddir) = $db->db_fetch_row($db->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group='1'"));
+list($ocid) = $db->db_fetch_row($db->db_query("select id from ".BAB_ORG_CHARTS_TBL." where id_directory='".$iddir."' and isprimary='Y'"));
+$db->db_query("update ".BAB_FLOW_APPROVERS_TBL." set id_oc='".$ocid."' where satype='1'");
 
 
 return $ret;

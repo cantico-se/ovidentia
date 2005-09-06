@@ -1845,6 +1845,8 @@
 <string id="Anonymous users">Utilisateurs anonymes</string>
 <string id="Edit group">Modifier le groupe</string>
 <string id="Create group">Créer le groupe</string>
+<string id="Choice of the organizational chart">Choix de l'organigramme</string>
+<string id="Select the organizational chart on which the workflow will be based">Sélectionnez l'organigramme sur lequel sera basé le schéma d'approbation</string>
 <string id="Fields to display for a search in all directories">Champs à afficher pour la recherche dans tout les annuaires</string>
 <string id="Search options">Options de la recherche</string>
 <string id="You must define one collumn at least">Vous devez définir une colonne au moins</string>

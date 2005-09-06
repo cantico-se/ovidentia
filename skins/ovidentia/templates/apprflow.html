@@ -63,6 +63,7 @@ function closepop()
 <input type="hidden" name="cols" value="{ cols }">
 <input type="hidden" name="idsch" value="{ idsch }">
 <input type="hidden" name="type" value="{ type }">
+<input type="hidden" name="ocid" value="{ ocid }">
 <input type="hidden" name="add" value="{ what }">
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
@@ -98,7 +99,7 @@ function closepop()
 <td class="BabLoginMenuBackground" align="left" nowrap valign="middle"><input class="BabLoginMenuBackground" type="checkbox" name="order" { ordchecked } value="Y">&nbsp;{ order }</td>
 <td  class="BabLoginMenuBackground" align="center" nowrap valign="middle"><input type="submit" name="addb" value="{ add }"></td>
 <td  class="BabLoginMenuBackground" align="center" nowrap valign="middle"><!--#if bdel --><input type="submit" name="delb" value="{ del }"><!--#else bdel -->&nbsp;<!--#endif bdel --></td>
-<td  colspan="2" class="BabLoginMenuBackground" align="left" nowrap valign="middle"><a class="BabAlphabetLink" href="javascript: openPopup('{ userslisturl }');">{ userslisttxt }</a></td></tr>
+<td  colspan="2" class="BabLoginMenuBackground" align="left" nowrap valign="middle"><a class="BabAlphabetLink" href="javascript: openPopup('{ userslisturl }');">{ userslisttxt }</a>&nbsp;<!--#if ocname -->( { ocname } )<!--#endif ocname --></td></tr>
 </table>
 </td>
 </tr>
@@ -115,6 +116,7 @@ function closepop()
 		<td>{ schnametxt }</td>
 		<td>{ schdesctxt }</td>
 		<td>{ schtypetxt }</td>
+		<td>{ orgnametxt }</td>
 		<!--#if debugfa -->
 		<td>&nbsp;</td>
 		<!--#endif debugfa -->
@@ -124,6 +126,7 @@ function closepop()
 		<td><a class="BabSiteAdminListLink" href="{ url }">{ urltxt }</a></td>
 		<td>{ schdescval }&nbsp;</td>
 		<td>{ schtypeval }</td>
+		<td>{ orgnameval }</td>
 		<!--#if debugfa -->
 		<td><a class="BabSiteAdminListLink" href="{ testurl }">{ testurltxt }</a></td>
 		<!--#endif debugfa -->
@@ -180,3 +183,38 @@ function closepop()
 </form>
 <!--#end schematest -->
 
+
+<!--#begin orgchartslist -->
+<form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="apprflow">
+<input type="hidden" name="idx" value="newb">
+<input type="hidden" name="type" value="{ satype }">
+<table width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center" class="BabLoginMenuBackground">
+<tr> 
+<td align="center">{ messagetxt } </td>
+</tr>
+<tr>
+<td align="center" nowrap valign="middle">
+<select name="ocid">
+<!--#in getnextorg -->
+<option value="{ orgid }">{ orgname }</option>
+<!--#endin getnextorg -->
+</select>
+</td>
+</tr>
+<tr> 
+<td align="center"> 
+<input type="submit" name="submit" value="{ donetxt } >>" />
+<br>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<br>
+</form>
+<!--#end orgchartslist -->

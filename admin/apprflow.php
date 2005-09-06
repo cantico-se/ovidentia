@@ -114,7 +114,7 @@ function testSchema($idsch, $idschi, $resf)
 	$babBody->babecho(bab_printTemplate($temp,"apprflow.html", "schematest"));
 }
 
-function schemaCreate($formula, $idsch, $schname, $schdesc, $order, $bdel, $type=0)
+function schemaCreate($formula, $idsch, $schname, $schdesc, $order, $bdel, $ocid, $type=0)
 {
 	global $babBody;
 	class temp
@@ -122,7 +122,7 @@ function schemaCreate($formula, $idsch, $schname, $schdesc, $order, $bdel, $type
 		var $all;
 		var $atleastone;
 
-		function temp($formula, $idsch, $schname, $schdesc, $order, $bdel, $type)
+		function temp($formula, $idsch, $schname, $schdesc, $order, $bdel, $ocid, $type)
 			{
 			global $babDB;
 
@@ -137,13 +137,14 @@ function schemaCreate($formula, $idsch, $schname, $schdesc, $order, $bdel, $type
 			$this->schnameval = $schname == ""? "": $schname;
 			$this->idsch = $idsch == ""? "": $idsch;
 			$this->type = $type;
+			$this->ocid = $ocid;
+			$this->ocname = '';
 
 			switch($type)
 				{
 				case 1:
 					$this->userslisttxt = bab_translate("Roles list");
-					list($iddir) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group='1'"));
-					list($this->ocid) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_ORG_CHARTS_TBL." where id_directory='".$iddir."' and isprimary='Y'"));
+					list($this->ocname) = $babDB->db_fetch_row($babDB->db_query("select name from ".BAB_ORG_CHARTS_TBL." where id='".$this->ocid."'"));
 					$this->userslisturl = $GLOBALS['babUrlScript']."?tg=admoc&idx=browr&ocid=".$this->ocid."&cb=";
 					break;
 				case 2:
@@ -267,7 +268,7 @@ function schemaCreate($formula, $idsch, $schname, $schdesc, $order, $bdel, $type
 			}
 		}
 
-	$temp = new temp($formula, $idsch, $schname, $schdesc, $order, $bdel, $type);
+	$temp = new temp($formula, $idsch, $schname, $schdesc, $order, $bdel, $ocid, $type);
 	$babBody->babecho(	bab_printTemplate($temp,"apprflow.html", "schemacreate"));
 
 }
@@ -282,9 +283,9 @@ function modifySchema($idsch)
 	{
 		$arr = $db->db_fetch_array($res);
 		if( $arr['refcount'] == 0 )
-			schemaCreate($arr['formula'], $idsch, $arr['name'], $arr['description'], $arr['forder'], true, $arr['satype']);
+			schemaCreate($arr['formula'], $idsch, $arr['name'], $arr['description'], $arr['forder'], true, $arr['id_oc'], $arr['satype']);
 		else
-			schemaCreate($arr['formula'], $idsch, $arr['name'], $arr['description'], $arr['forder'], false, $arr['satype']);
+			schemaCreate($arr['formula'], $idsch, $arr['name'], $arr['description'], $arr['forder'], false, $arr['id_oc'], $arr['satype']);
 	}
 	else
 	{
@@ -314,8 +315,9 @@ function listSchemas()
 			$this->roles = bab_translate("Roles");
 			$this->nominative = bab_translate("Nominative");
 			$this->groups = bab_translate("Groups");
+			$this->orgnametxt = bab_translate("Charts");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babBody->currentAdmGroup."' order by name asc";
+			$req = "select fa.*, oc.name as orgname from ".BAB_FLOW_APPROVERS_TBL." fa left join ".BAB_ORG_CHARTS_TBL." oc on oc.id=fa.id_oc where fa.id_dgowner='".$babBody->currentAdmGroup."' order by fa.name asc";
 			$this->res = $this->db->db_query($req);
 
 			$this->count = $this->db->db_num_rows($this->res);
@@ -355,6 +357,15 @@ function listSchemas()
 					$this->testurl = $GLOBALS['babUrlScript']."?tg=apprflow&idx=test&idsch=".$arr['id'];
 					}
 				$this->schdescval = $arr['description'];
+				if( $arr['orgname'] )
+					{
+					$this->orgnameval = $arr['orgname'];
+					}
+				else
+					{
+					$this->orgnameval = '';
+					}
+
 				$i++;
 				return true;
 				}
@@ -365,6 +376,51 @@ function listSchemas()
 
 	$temp = new temp();
 	$babBody->babecho(bab_printTemplate($temp, "apprflow.html", "schemaslist"));
+}
+
+
+function listOrgCharts()
+{
+	global $babBody;
+	class listOrgChartsCls
+		{
+		var $satype;
+		var $messagetxt;
+		var $donetxt;
+		var $res;
+		var $count;
+		var $orgname;
+		var $orgid;
+
+		function listOrgChartsCls()
+			{
+			global $babBody, $babDB;
+			$this->satype = 1;
+			$this->messagetxt = bab_translate("Select the organizational chart on which the workflow will be based");
+			$this->donetxt = bab_translate("Next");
+			$this->res = $babDB->db_query("select b.id, b.name from ".BAB_ORG_CHARTS_TBL." b left join ".BAB_DB_DIRECTORIES_TBL." dd on b.id_directory=dd.id where dd.id_group!=0 order by b.name asc");
+			$this->count = $babDB->db_num_rows($this->res);
+			}
+
+		function getnextorg()
+			{
+			global $babDB;
+			static $i = 0;
+			if( $i < $this->count)
+				{
+				$arr = $babDB->db_fetch_array($this->res);
+				$this->orgname = $arr['name'];
+				$this->orgid = $arr['id'];
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+		}
+
+	$temp = new listOrgChartsCls();
+	$babBody->babecho(bab_printTemplate($temp, "apprflow.html", "orgchartslist"));
 }
 
 function schemaDelete($id)
@@ -400,7 +456,7 @@ function schemaDelete($id)
 	}
 
 
-function saveSchema($rows, $cols, $order, $schname, $schdesc, $idsch, $type)
+function saveSchema($rows, $cols, $order, $schname, $schdesc, $idsch, $ocid, $type)
 {
 	global $babBody;
 
@@ -463,7 +519,7 @@ function saveSchema($rows, $cols, $order, $schname, $schdesc, $idsch, $type)
 	$db = $GLOBALS['babDB'];
 	if( !isset($idsch) || $idsch == "")
 		{
-		$req = "select * from ".BAB_FLOW_APPROVERS_TBL." where name='".$schname."'";	
+		$req = "select id from ".BAB_FLOW_APPROVERS_TBL." where name='".$schname."'";	
 		$res = $db->db_query($req);
 		if( $res && $db->db_num_rows($res) > 0)
 			{
@@ -472,7 +528,7 @@ function saveSchema($rows, $cols, $order, $schname, $schdesc, $idsch, $type)
 			}
 		else
 			{
-			$req = "insert into ".BAB_FLOW_APPROVERS_TBL." (name, description, formula, forder, id_dgowner, satype) VALUES ('" .$schname. "', '" . $schdesc. "', '" .  $ret. "', '" .  $order. "', '" .  $babBody->currentAdmGroup. "', '" .  $type. "')";
+			$req = "insert into ".BAB_FLOW_APPROVERS_TBL." (name, description, formula, forder, id_dgowner, satype, id_oc) VALUES ('" .$schname. "', '" . $schdesc. "', '" .  $ret. "', '" .  $order. "', '" .  $babBody->currentAdmGroup. "', '" .  $type. "', '" .  $ocid. "')";
 			$db->db_query($req);
 			}
 		}
@@ -535,7 +591,7 @@ if( isset($add))
 	if( isset($addb))
 		{
 		if( !isset($order)) { $order = 'N';} 
-		$formula = saveSchema($rows, $cols, $order, $schname, $schdesc, $idsch, $type);
+		$formula = saveSchema($rows, $cols, $order, $schname, $schdesc, $idsch, $ocid, $type);
 		if( $formula != "")
 			switch($add)
 			{
@@ -579,8 +635,19 @@ switch($idx)
 		$babBody->addItemMenu("newb", bab_translate("Staff schema"), $GLOBALS['babUrlScript']."?tg=apprflow&idx=newb&type=1");
 		$babBody->addItemMenu("newc", bab_translate("Group schema"), $GLOBALS['babUrlScript']."?tg=apprflow&idx=newc&type=2");
 		break;
-	case "newa":
 	case "newb":
+		if( !isset($ocid) || empty($ocid))
+		{
+		$babBody->title = bab_translate("Choice of the organizational chart");
+		listOrgCharts();
+		$babBody->addItemMenu("list", bab_translate("Schemas"),$GLOBALS['babUrlScript']."?tg=apprflow&idx=list");
+		$babBody->addItemMenu("newa", bab_translate("Nominative schema"), $GLOBALS['babUrlScript']."?tg=apprflow&idx=newa&type=0");
+		$babBody->addItemMenu("newb", bab_translate("Staff schema"), $GLOBALS['babUrlScript']."?tg=apprflow&idx=newb&type=1");
+		$babBody->addItemMenu("newc", bab_translate("Group schema"), $GLOBALS['babUrlScript']."?tg=apprflow&idx=newc&type=2");
+		break;
+		}
+		/* no break; */
+	case "newa":
 	case "newc":
 		$babBody->title = bab_translate("Create a new approbation schema");
 		if (!isset($formula)) $formula = '';
@@ -588,7 +655,8 @@ switch($idx)
 		if (!isset($schname)) $schname = '';
 		if (!isset($schdesc)) $schdesc = '';
 		if (!isset($order)) $order = '';
-		schemaCreate($formula, $idsch, $schname, $schdesc, $order, false, $type);
+		if (!isset($ocid)) $ocid = '';
+		schemaCreate($formula, $idsch, $schname, $schdesc, $order, false, $ocid, $type);
 		$babBody->addItemMenu("list", bab_translate("Schemas"),$GLOBALS['babUrlScript']."?tg=apprflow&idx=list");
 		$babBody->addItemMenu("newa", bab_translate("Nominative schema"), $GLOBALS['babUrlScript']."?tg=apprflow&idx=newa&type=0");
 		$babBody->addItemMenu("newb", bab_translate("Staff schema"), $GLOBALS['babUrlScript']."?tg=apprflow&idx=newb&type=1");
@@ -598,6 +666,7 @@ switch($idx)
 		if( defined("BAB_DEBUG_FA"))
 		{
 			$babBody->title = bab_translate("Test an approbation schema");
+			if (!isset($idschi)) $idschi = '';
 			testSchema($idsch, $idschi, $res);
 			$babBody->addItemMenu("list", bab_translate("Schemas"),$GLOBALS['babUrlScript']."?tg=apprflow&idx=list");
 			$babBody->addItemMenu("newa", bab_translate("Nominative schema"), $GLOBALS['babUrlScript']."?tg=apprflow&idx=newa&type=0");
