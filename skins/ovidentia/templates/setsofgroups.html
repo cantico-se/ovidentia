@@ -13,6 +13,7 @@ function load_edit_form(a)
 	el['sid'].value			 = parseInt(a.href.substring(a.href.indexOf('sid=')+4));
 	el['name'].value		 = a.innerHTML;
 	el['deleteg'].style.visibility = 'visible';
+	document.getElementById('setofgroupcreate_formtitle').innerHTML = '{ t_edit_set }';
 
 	return false;
 }
@@ -28,6 +29,7 @@ function load_clear()
 	el['sid'].value			 = '';
 	el['name'].value		 = '';
 	el['deleteg'].style.visibility = 'hidden';
+	document.getElementById('setofgroupcreate_formtitle').innerHTML = '{ t_create_set }';
 	
 	// document.location.href='#bab_list_end';
 	return false;
@@ -46,7 +48,7 @@ function load_clear()
 		<!--#in getnext --> 
 		<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
 			<td><a href="{ babUrlScript }?tg=setsofgroups&amp;idx=sedit&amp;sid={ arr[id] }" onclick="return load_edit_form(this);">{ arr[name] }</a></td>
-			<td><a href="{ babUrlScript }?tg=setsofgroups&amp;idx=glist&amp;sid={ arr[id] }">{ arr[nb_groups] } { t_groups }</a></td>
+			<td><a href="{ babUrlScript }?tg=setsofgroups&amp;idx=glist&amp;sid={ arr[id] }">{ arr[nb_groups] } { t_group }</a></td>
 			<td align="center"><a href="{ babUrlScript }?tg=setsofgroups&amp;idx=add&amp;sid={ arr[id] }"><img src="{ babSkinPath }images/Puces/insertInto.gif" alt="{ t_modify }" border="0" /></a></td>
 			</tr>
 			<!--#endin getnext -->
@@ -73,15 +75,18 @@ function load_clear()
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
 	<table class="BabLoginMenuBackground"  width="100%" border="0" cellspacing="0" cellpadding="8" align="center">
-	<tr> 
-	<td align="right" valign="top">{ t_name }:</td>
-	<td> 
-	<input type="text" name="name" size="30" maxlength="128" value="{ arr[name] }" /> &nbsp; 
-	<input type="submit" name="submit" value="{ t_record }">
+	<tr>
+		<td id="setofgroupcreate_formtitle">{ t_create_set }</td>
+	</tr>
 	
-	&nbsp;&nbsp;<input type="submit" name="deleteg" <!--#if bdel --> <!--#else bdel --> style="visibility:hidden"<!--#endif bdel --> value="{ t_delete }">
+	<tr> 
+		<td align="center">{ t_name } : 
+		<input type="text" name="name" size="30" maxlength="128" value="{ arr[name] }" /> &nbsp; 
+		<input type="submit" name="submit" value="{ t_record }" />
+		
+		&nbsp;&nbsp;<input type="submit" name="deleteg" <!--#if bdel --> <!--#else bdel --> style="visibility:hidden"<!--#endif bdel --> value="{ t_delete }" onclick="return confirm('{ t_delconf }')" />
 
-	</td>
+		</td>
 	</tr>
 	</table>
 </td>

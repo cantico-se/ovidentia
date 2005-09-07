@@ -382,11 +382,9 @@ function bab_deleteDbDirectory($id)
 	$babDB->db_query("delete from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'");
 }
 
-function bab_deleteGroup($id)
-{
-	if( $id <= 3)
-		return;
 
+function bab_deleteGroupAclTables($id)
+{
 	$db = &$GLOBALS['babDB'];
 	$db->db_query("delete from ".BAB_TOPICSVIEW_GROUPS_TBL." where id_group='".$id."'");	
 	$db->db_query("delete from ".BAB_TOPICSCOM_GROUPS_TBL." where id_group='".$id."'");	
@@ -416,6 +414,16 @@ function bab_deleteGroup($id)
 	$db->db_query("delete from ".BAB_FORUMSPOST_GROUPS_TBL." where id_group='".$id."'");
 	$db->db_query("delete from ".BAB_FORUMSREPLY_GROUPS_TBL." where id_group='".$id."'");
 	$db->db_query("delete from ".BAB_FORUMSMAN_GROUPS_TBL." where id_group='".$id."'");
+}
+
+
+function bab_deleteGroup($id)
+{
+	if( $id <= BAB_ADMINISTRATOR_GROUP)
+		return;
+
+	$db = &$GLOBALS['babDB'];
+	bab_deleteGroupAclTables($id);
 
 	// delete user from BAB_MAIL_DOMAINS_TBL
 	$db->db_query("delete from ".BAB_MAIL_DOMAINS_TBL." where owner='".$id."' and bgroup='Y'");	
@@ -427,6 +435,11 @@ function bab_deleteGroup($id)
 		bab_deleteDbDirectory($arr['id']);
 		}
 
+	$res = $db->db_query("SELECT id_set FROM ".BAB_GROUPS_SET_ASSOC_TBL." where id_group='".$id."'");
+	while ($arr = $db->db_fetch_assoc($res))
+		{
+		$db->db_query("update ".BAB_GROUPS_TBL." set nb_groups=nb_groups-'1' where id='".$arr['id_set']."'");
+		}
 	$db->db_query("delete from ".BAB_GROUPS_SET_ASSOC_TBL." where id_group='".$id."'");
 
 	$db->db_query("update ".BAB_OC_ENTITIES_TBL." set id_group='0' where id_group='".$id."'");
@@ -441,6 +454,29 @@ function bab_deleteGroup($id)
 
 	bab_callAddonsFunction('onGroupDelete', $id);
 }
+
+
+function bab_deleteSetOfGroup($id)
+	{
+	if( $id <= BAB_ADMINISTRATOR_GROUP)
+		return;
+
+	$db = &$GLOBALS['babDB'];
+
+	$res = $db->db_query("SELECT * FROM ".BAB_GROUPS_SET_ASSOC_TBL." WHERE id_set='".$id."'");
+	while ($arr = $db->db_fetch_array($res))
+		{
+		$db->db_query("UPDATE ".BAB_GROUPS_TBL." SET nb_set=nb_set-'1' WHERE id='".$arr['id_group']."'");
+		}
+
+	$db->db_query("DELETE FROM ".BAB_GROUPS_SET_ASSOC_TBL." WHERE id_set='".$id."'");
+	$db->db_query("DELETE FROM ".BAB_GROUPS_TBL." WHERE id='".$id."' AND nb_groups>='0'");
+
+	$id += BAB_ACL_GROUP_TREE;
+
+	bab_deleteGroupAclTables($id);
+	bab_callAddonsFunction('onGroupDelete', $id);
+	}
 
 function bab_deleteUser($id)
 	{

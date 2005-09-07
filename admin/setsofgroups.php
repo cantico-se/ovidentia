@@ -48,6 +48,8 @@ function slist()
 			$this->t_new = bab_translate("New");
 			$this->t_modify = bab_translate("Modify");
 			$this->t_add_group = bab_translate("Add");
+			$this->t_create_set = bab_translate("Create a set of groups");
+			$this->t_edit_set = bab_translate("Modify the set of groups");
 			
 			$this->res = $this->db->db_query("SELECT * FROM ".BAB_GROUPS_TBL." WHERE nb_groups>='0'");
 
@@ -57,6 +59,7 @@ function slist()
 			{
 			if( $this->arr = $this->db->db_fetch_array($this->res))
 				{
+				$this->t_group = 1 < $this->arr['nb_groups'] ? bab_translate("groups") : bab_translate("group");
 				$this->altbg = !$this->altbg;
 				return true;
 				}
@@ -80,7 +83,6 @@ function glist()
 
 		function temp()
 			{
-			global $babBody;
 			$this->db = &$GLOBALS['babDB'];
 			$this->t_name = bab_translate("Name");
 			$this->t_del = bab_translate("Delete");
@@ -96,8 +98,10 @@ function glist()
 
 		function getnext()
 			{
+			global $babBody;
 			if( $this->arr = $this->db->db_fetch_array($this->res))
 				{
+				$this->arr['name'] = $babBody->getGroupPathName($this->arr['id']);
 				$this->altbg = !$this->altbg;
 				return true;
 				}
@@ -126,6 +130,8 @@ function sedit()
 			$this->t_name = bab_translate("Name");
 			$this->t_record = bab_translate("Record");
 			$this->t_delete = bab_translate("Delete");
+			$this->t_delconf = bab_translate("Do you really want to delete the set of groups ?");
+			$this->t_create_set = bab_translate("Create a set of groups");
 
 			if (isset($_REQUEST['sid']))
 				{
@@ -206,15 +212,8 @@ function sedit_record()
 
 function sedit_delete()
 {
-	$db = &$GLOBALS['babDB'];
-	$res = $db->db_query("SELECT * FROM ".BAB_GROUPS_SET_ASSOC_TBL." WHERE id_set='".$_POST['sid']."'");
-	while ($arr = $db->db_fetch_array($res))
-	{
-	$db->db_query("UPDATE ".BAB_GROUPS_TBL." SET nb_set=nb_set-'1' WHERE id='".$arr['id_group']."'");
-	}
-
-	$db->db_query("DELETE FROM ".BAB_GROUPS_SET_ASSOC_TBL." WHERE id_set='".$_POST['sid']."'");
-	$db->db_query("DELETE FROM ".BAB_GROUPS_TBL." WHERE id='".$_POST['sid']."' AND nb_groups>='0'");
+	include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
+	bab_deleteSetOfGroup($_POST['sid']);
 }
 
 function record_setOfGroups($arr)
@@ -228,7 +227,6 @@ function record_setOfGroups($arr)
 			{
 			$db->db_query("INSERT INTO ".BAB_GROUPS_SET_ASSOC_TBL." (id_group, id_set) VALUES ('".$idgroup."','".$_POST['sid']."')");
 			$db->db_query("UPDATE ".BAB_GROUPS_TBL." SET nb_set=nb_set+'1' WHERE id='".$idgroup."'");
-
 			}
 		unset($current[$idgroup]);
 		}

@@ -92,6 +92,8 @@ class bab_grptree extends bab_dbtree
 		array_unshift ($groups, $this->getNodeInfo($id_parent));
 		}
 
+	
+
 	foreach ($groups as $arr)
 		{
 		if ($arr['id'] < 4)
