@@ -74,7 +74,14 @@ function groupCreateMod()
 
 			
 			$tree = new bab_grptree();
-			$this->groups = $tree->getGroups($tree->firstnode_info['id_parent'], '%s &nbsp; &nbsp; &nbsp; ');
+			
+			if ($babBody->currentAdmGroup > 0)
+				$id_parent = $tree->firstnode_info['id_parent'];
+			else
+				$id_parent = $tree->firstnode_info['id'];
+			
+			
+			$this->groups = $tree->getGroups($id_parent, '%s &nbsp; &nbsp; &nbsp; ');
 
 			if (isset($this->groups[BAB_UNREGISTERED_GROUP]))
 				unset($this->groups[BAB_UNREGISTERED_GROUP]);
