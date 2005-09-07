@@ -86,7 +86,20 @@ function groupCreateMod()
 			if (isset($this->groups[BAB_UNREGISTERED_GROUP]))
 				unset($this->groups[BAB_UNREGISTERED_GROUP]);
 
-			if (isset($_REQUEST['grpid']))
+			
+			if (isset($_POST['grpid']))
+				{
+				$this->arr = array(
+						'id' => $_POST['grpid'],
+						'name' => $_POST['name'],
+						'description' => $_POST['description'],
+						'manager' => $_POST['manager'],
+						'managerval' => bab_getUserName($_POST['manager']),
+						'id_parent' => $_POST['parent']
+					);
+
+				}
+			elseif(isset($_REQUEST['grpid']))
 				{
 				unset($this->groups[$_REQUEST['grpid']]);
 
@@ -114,9 +127,7 @@ function groupCreateMod()
 						'description' => '',
 						'manager' => 0,
 						'managerval' => '',
-						'id_parent' => BAB_REGISTERED_GROUP,
-						'id_dggroup' => 0,
-						'dg_group_name' => ' '
+						'id_parent' => BAB_REGISTERED_GROUP
 					);
 
 				}
@@ -411,7 +422,7 @@ function addModGroup()
 		$name = $_POST['name'];
 		}
 
-	$req = "select * from ".BAB_GROUPS_TBL." where name='".$name."'";
+	$req = "select * from ".BAB_GROUPS_TBL." where name='".$name."' AND id_parent='".$id_parent."'";
 	if (is_numeric($_POST['grpid']) )
 		{
 		$req .= " AND id != '".$_POST['grpid']."'";

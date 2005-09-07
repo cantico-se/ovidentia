@@ -165,7 +165,7 @@ function bab_addGroup($name, $description, $managerid, $grpdg, $parent = 1)
 		$name = addslashes($name);
 		}
 
-	$req = "select * from ".BAB_GROUPS_TBL." where name='$name'";	
+	$req = "select * from ".BAB_GROUPS_TBL." where name='$name' AND id_parent='".$parent."'";	
 	$res = $db->db_query($req);
 	if( $db->db_num_rows($res) > 0)
 		{
