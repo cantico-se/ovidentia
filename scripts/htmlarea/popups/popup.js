@@ -76,7 +76,7 @@ function __dlg_init(bottom) {
 };
 
 function __dlg_translate(i18n) {
-	var types = ["input", "select", "legend", "span", "option", "td", "button", "div"];
+	var types = ["label", "input", "select", "legend", "span", "option", "td", "button", "div"];
 	for (var type = 0; type < types.length; ++type) {
 		var spans = document.getElementsByTagName(types[type]);
 		for (var i = spans.length; --i >= 0;) {
