@@ -407,7 +407,7 @@ function bab_notesAccess()
 
 	for( $i = 0; $i < count($babBody->usergroups); $i++)
 		{
-		if( $babBody->ovgroups[$babBody->usergroups[$i]]['notes'] == 'Y')
+		if( isset($babBody->ovgroups[$babBody->usergroups[$i]]['notes']) && $babBody->ovgroups[$babBody->usergroups[$i]]['notes'] == 'Y')
 			{
 			return true;
 			}
@@ -439,7 +439,7 @@ function bab_contactsAccess()
 
 	for( $i = 0; $i < count($babBody->usergroups); $i++)
 		{
-		if( $babBody->ovgroups[$babBody->usergroups[$i]]['contacts'] == 'Y')
+		if( isset($babBody->ovgroups[$babBody->usergroups[$i]]['contacts']) && $babBody->ovgroups[$babBody->usergroups[$i]]['contacts'] == 'Y')
 			{
 			return true;
 			}
