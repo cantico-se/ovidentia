@@ -348,4 +348,26 @@ function aclDelete($table, $id_object)
 	$db->db_query("DELETE FROM ".$table." WHERE id_object='".$id_object."'");
 	$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 	}
+
+
+function aclSetGroups_all($table, $id_object)
+	{
+	$db = &$GLOBALS['babDB'];
+	$db->db_query("INSERT INTO ".$table."  (id_object, id_group) VALUES ('".$id_object."', '".BAB_ALLUSERS_GROUP."')");
+	$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
+	}
+
+function aclSetGroups_registered($table, $id_object)
+	{
+	$db = &$GLOBALS['babDB'];
+	$db->db_query("INSERT INTO ".$table."  (id_object, id_group) VALUES ('".$id_object."', '".BAB_REGISTERED_GROUP."')");
+	$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
+	}
+
+function aclSetGroups_unregistered($table, $id_object)
+	{
+	$db = &$GLOBALS['babDB'];
+	$db->db_query("INSERT INTO ".$table."  (id_object, id_group) VALUES ('".$id_object."', '".BAB_UNREGISTERED_GROUP."')");
+	$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
+	}
 ?>
