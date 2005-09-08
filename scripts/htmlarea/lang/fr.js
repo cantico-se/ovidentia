@@ -98,7 +98,22 @@ HTMLArea.I18N = {
 		"Title (tooltip):"                                  : "Titre (infobulle):",
 		"Top frame (_top)"                                  : "Cadre du haut (_top)",
 		"URL:"                                              : "Adresse Web:",
-		"You must enter the URL where this link points to"  : "Vous devez entrer l'adresse Web du lien"
+		"You must enter the URL where this link points to"  : "Vous devez entrer l'adresse Web du lien",
+		"Insert Table"										: "Insérer une table",
+		"Rows:"												: "Lignes:",
+		"Cols:"												: "Colonnes:",
+		"Width:"											: "Largeur:",
+		"Fixed width columns"								: "Largeur des colonnes fixe",
+		"Percent"											: "Pourcent",
+		"Layout"											: "Structure",
+		"Spacing"											: "Marges des cellules",
+		"Alignment:"										: "Alignement:",
+		"Border thickness:"									: "Bordure:",
+		"Cell spacing:"										: "Marge externe:",
+		"Cell padding:"										: "Marge interne:",
+		"Not set"											: "Indéfini",
+		"Left"												: "Gauche",
+		"Right"												: "Droite"
 		
 	}
 };
