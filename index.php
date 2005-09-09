@@ -981,16 +981,14 @@ switch($tg)
 			{
 			if (!is_numeric($arr[1]))
 				{
-				function bab_getAddonId($name)
+				foreach($GLOBALS['babBody']->babaddons as $k => $v)
 					{
-					foreach($GLOBALS['babBody']->babaddons as $k => $v)
+					if ($v['title'] == $arr[1])
 						{
-						if ($v['title'] == $name)
-							return $k;
+						$arr[1] = $k;
+						break;
 						}
-					return false;
 					}
-				$arr[1] = bab_getAddonId($arr[1]);
 				}
 			if(bab_isAccessValid(BAB_ADDONS_GROUPS_TBL, $arr[1]))
 				{
