@@ -583,12 +583,18 @@ function displayDb($id)
 			{
 			global $babDB;
 			$this->id = $id;
+			$this->infotxt = bab_translate("Specify which fields will be displayed when browsing directory");
 			$this->listftxt = "---- ".bab_translate("Fields")." ----";
 			$this->listdftxt = "---- ".bab_translate("Fields to display")." ----";
+			$this->ovmllisttxt = bab_translate("OVML file to be used for list");
+			$this->ovmldetailtxt = bab_translate("OVML file to be used for detail");
+			$this->browsetxt = bab_translate("Browse");
+			$this->browseurl = $GLOBALS['babUrlScript']."?tg=editorovml";
+
 			$this->moveup = bab_translate("Move Up");
 			$this->movedown = bab_translate("Move Down");
 			$this->update = bab_translate("Update");
-			$arr = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
+			$arr = $babDB->db_fetch_array($babDB->db_query("select id_group, ovml_detail, ovml_list from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
 			if( $arr['id_group'] != 0 )
 				{
 				$iddir = 0;
@@ -597,6 +603,9 @@ function displayDb($id)
 				{
 				$iddir = $id;
 				}
+			$this->ovmllistval = $arr['ovml_list'];
+			$this->ovmldetailval = $arr['ovml_detail'];
+
 			$this->resf = $babDB->db_query("select id, id_field from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$iddir."' and ordering='0' AND id_field<>5");
 			$this->countf = $babDB->db_num_rows($this->resf);
 			$this->resfd = $babDB->db_query("select id, id_field from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$iddir."' and ordering!='0' AND id_field<>5 order by ordering asc");
@@ -1119,6 +1128,19 @@ function dbUpdateDiplay($id, $listfd)
 		}
 }
 
+function dbUpdateOvmlFile($id, $ovmllist, $ovmldetail)
+{
+	global $babDB;
+	if( !bab_isMagicQuotesGpcOn())
+		{
+		$ovmllist = addslashes($ovmllist);
+		$ovmldetail = addslashes($ovmldetail);
+		}
+
+	$babDB->db_query("update ".BAB_DB_DIRECTORIES_TBL." set ovml_list='".$ovmllist."', ovml_detail='".$ovmldetail."' where id='".$id."'");
+
+}
+
 function dbUpdateListOrder($id, $listfd)
 {
 	global $babDB;
@@ -1447,6 +1469,11 @@ if( isset($update) )
 	if( $update == "displaydb" )
 		{
 		if(!dbUpdateDiplay($id, $listfd))
+			$idx = "list";
+		}
+	elseif( $update == "ovmldb" )
+		{
+		if(!dbUpdateOvmlFile($id, $ovmllist, $ovmldetail))
 			$idx = "list";
 		}
 	elseif( $update == "dblistord" )

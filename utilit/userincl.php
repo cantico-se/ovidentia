@@ -986,7 +986,7 @@ function bab_replace_ref( &$txt, $remove = '')
 								if ( bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $arr['id_directory']) || $arr['id_directory'] == 0 )
 									{
 									$title_object = empty($title_object) ? bab_composeUserName($arr['sn'],$arr['givenname']) : $title_object;
-									$title_object = bab_replace_make_link($GLOBALS['babUrlScript']."?tg=directory&idx=ddb&id=".$arr['id_directory']."&idu=".$arr['id'],$title_object,true);
+									$title_object = bab_replace_make_link($GLOBALS['babUrlScript']."?tg=directory&idx=ddbovml&directoryid=".$arr['id_directory']."&userid=".$arr['id'],$title_object,true);
 									}
 								}
 							bab_replace_var($txt,$var,$title_object);

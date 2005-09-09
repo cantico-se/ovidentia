@@ -5162,6 +5162,28 @@ list($ocid) = $db->db_fetch_row($db->db_query("select id from ".BAB_ORG_CHARTS_T
 $db->db_query("update ".BAB_FLOW_APPROVERS_TBL." set id_oc='".$ocid."' where satype='1'");
 
 
+$arr = $db->db_fetch_array($db->db_query("DESCRIBE ".BAB_DB_DIRECTORIES_TBL." ovml_list"));
+if ($arr[0] != 'ovml_list')
+	{
+	$res = $db->db_query("ALTER TABLE `".BAB_DB_DIRECTORIES_TBL."` ADD ovml_list tinytext NOT NULL");
+	if( !$res)
+		{
+		$ret = "Alteration of <b>".BAB_DB_DIRECTORIES_TBL."</b> table failed !<br>";
+		return $ret;
+		}
+	}
+
+$arr = $db->db_fetch_array($db->db_query("DESCRIBE ".BAB_DB_DIRECTORIES_TBL." ovml_detail"));
+if ($arr[0] != 'ovml_list')
+	{
+	$res = $db->db_query("ALTER TABLE `".BAB_DB_DIRECTORIES_TBL."` ADD ovml_detail tinytext NOT NULL");
+	if( !$res)
+		{
+		$ret = "Alteration of <b>".BAB_DB_DIRECTORIES_TBL."</b> table failed !<br>";
+		return $ret;
+		}
+	}
+
 return $ret;
 }
 ?>

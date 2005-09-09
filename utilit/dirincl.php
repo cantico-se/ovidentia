@@ -553,4 +553,23 @@ function summaryDbContact($id, $idu, $update=true)
 	echo bab_printTemplate($temp, "directory.html", "summarydbcontact");
 }
 
+function summaryDbContactWithOvml($args)
+{
+	global $babDB;
+
+
+	if(bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $args['directoryid']))
+		{
+		$arr = $babDB->db_fetch_array($babDB->db_query("select ovml_detail from ".BAB_DB_DIRECTORIES_TBL." where id='".$args['directoryid']."'"));
+
+		if( !empty($arr['ovml_detail']))
+			{
+			echo bab_printOvmlTemplate( $arr['ovml_detail'], $args );
+			}
+		else
+			{
+			summaryDbContact($args['directoryid'], $args['userid']);
+			}
+		}
+}
 ?>

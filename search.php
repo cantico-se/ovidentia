@@ -2223,7 +2223,7 @@ function viewDirectoryUser($id, $what)
 
 	if( $access )
 	{
-	echo summaryDbContact($idd, $id, false);
+		summaryDbContactWithOvml(array('directoryid'=>$idd, 'userid'=>$id));
 	}
 	else
 	{

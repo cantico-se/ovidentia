@@ -61,6 +61,7 @@ function listUserAds()
 			$this->desctxt = bab_translate("Description");
 			$this->databasetitle = bab_translate("Databases Directories list");
 			$this->ldaptitle = bab_translate("Ldap Directories list");
+			$this->adminurlname = bab_translate("Management");
 			$this->db = $GLOBALS['babDB'];
 			$this->badd = false;
 			$res = $this->db->db_query("select id from ".BAB_LDAP_DIRECTORIES_TBL."");
@@ -120,8 +121,8 @@ function listUserAds()
 				$this->altbg = !$this->altbg;
 				$arr = $this->db->db_fetch_array($this->db->db_query("select name, description, id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$this->dbid[$i]."'"));
 				$this->description = $arr['description'];
-				$this->url = $GLOBALS['babUrlScript']."?tg=directory&idx=sdb&id=".$this->dbid[$i];
-				//$this->emptyurl = $GLOBALS['babUrlScript']."?tg=directory&idx=empdb&id=".$this->dbid[$i];
+				$this->adminurl = $GLOBALS['babUrlScript']."?tg=directory&idx=sdb&id=".$this->dbid[$i];
+				$this->url = $GLOBALS['babUrlScript']."?tg=directory&idx=sdbovml&directoryid=".$this->dbid[$i];
 				$this->urlname = $arr['name'];
 				$this->badd = bab_isAccessValid(BAB_DBDIRADD_GROUPS_TBL, $this->dbid[$i]);
 				if( $this->badd && $arr['id_group'] != 0 )
@@ -533,8 +534,37 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 
 	$temp = new temp($id, $pos, $xf, $badd);
 	$babBody->babecho( bab_printTemplate($temp, "directory.html", "adbrowse"));
-
 	return $temp->bgroup;
+
+}
+
+function browseDbDirectoryWithOvml($badd)
+{
+	global $babBody, $babDB;
+
+	parse_str($GLOBALS['QUERY_STRING'], $args);
+
+	if(bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $args['directoryid']))
+		{
+		$arr = $babDB->db_fetch_array($babDB->db_query("select id_group, ovml_list from ".BAB_DB_DIRECTORIES_TBL." where id='".$args['directoryid']."'"));
+
+		if( !empty($arr['ovml_list']))
+			{
+			$GLOBALS['babWebStat']->addDatabaseDirectory($args['directoryid']);
+			$args['DirectoryUrl'] = $GLOBALS['babUrlScript']."?tg=directory&idx=sdbovml";
+			if( !isset($args['order'])) { $args['order'] = 'asc'; }
+			if( !isset($args['orderby'])) { $args['orderby'] = ''; }
+			if( !isset($args['like'])) { $args['like'] = 'A'; }
+			$babBody->babecho(bab_printOvmlTemplate( $arr['ovml_list'], $args ));
+			}
+		else
+			{
+			return browseDbDirectory($args['directoryid'], "A", "", $badd);
+			}
+		return $arr['id_group'];
+		}
+	else
+		return '';
 }
 
 function summaryLdapContact($id, $cn)
@@ -1987,6 +2017,7 @@ function exportDbDirectory($id, $wsepar, $separ)
 }
 
 /* main */
+if( isset($directoryid)) { $id = $directoryid; }
 if(isset($id) && bab_isAccessValid(BAB_DBDIRADD_GROUPS_TBL, $id))
 	$badd = true;
 else
@@ -1994,9 +2025,6 @@ else
 
 if( !isset($idx ))
 	$idx = "list";
-
-if( !isset($pos ))
-	$pos = "A";
 
 if( isset($pfile) && !empty($pfile))
 	{
@@ -2078,6 +2106,13 @@ switch($idx)
 		exit;
 		break;
 
+	case "ddbovml":
+		$babBody->title = "";
+		parse_str($GLOBALS['QUERY_STRING'], $args);
+		summaryDbContactWithOvml($args);
+		exit;
+		break;
+
 	case "ddb":
 		$babBody->title = "";
 		summaryDbContact($id, $idu);
@@ -2100,14 +2135,25 @@ switch($idx)
 	case "usdb":
 		if( !isset($xf ))
 			$xf = '';
+		if( !isset($pos ))
+			$pos = "A";
 		UBrowseDbDirectory($id, $pos, $xf, $cb);
 		exit;
+		break;
+
+	case "sdbovml":
+		$babBody->title = bab_translate("Database Directory").": ".getDirectoryName($directoryid,BAB_DB_DIRECTORIES_TBL);
+		$bgroup = browseDbDirectoryWithOvml($badd);
+		$babBody->addItemMenu("list", bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=directory&idx=list");
+		$babBody->addItemMenu("sdbovml", bab_translate("Browse"), $GLOBALS['babUrlScript']."?tg=directory&idx=ovml");
 		break;
 
 	case "sdb":
 		$babBody->title = bab_translate("Database Directory").": ".getDirectoryName($id,BAB_DB_DIRECTORIES_TBL);
 		if( !isset($xf ))
 			$xf = '';
+		if( !isset($pos ))
+			$pos = "A";
 		$bgroup = browseDbDirectory($id, $pos, $xf, $badd);
 		$babBody->addItemMenu("list", bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=directory&idx=list");
 		$babBody->addItemMenu("sdb", bab_translate("Browse"), $GLOBALS['babUrlScript']."?tg=directory&idx=sdb&id=".$id."&pos=".$pos);
@@ -2121,6 +2167,8 @@ switch($idx)
 		break;
 
 	case "dbimp":
+		if( !isset($pos ))
+			$pos = "A";
 		$babBody->title = bab_translate("Import file to").": ".getDirectoryName($id,BAB_DB_DIRECTORIES_TBL);
 		$babBody->addItemMenu("list", bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=directory&idx=list");
 		$babBody->addItemMenu("sdb", bab_translate("Browse"), $GLOBALS['babUrlScript']."?tg=directory&idx=sdb&id=".$id."&pos=".$pos);
@@ -2133,6 +2181,8 @@ switch($idx)
 		break;
 
 	case "dbexp":
+		if( !isset($pos ))
+			$pos = "A";
 		$babBody->title = bab_translate("Export file from").": ".getDirectoryName($id,BAB_DB_DIRECTORIES_TBL);
 		$babBody->addItemMenu("list", bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=directory&idx=list");
 		$babBody->addItemMenu("sdb", bab_translate("Browse"), $GLOBALS['babUrlScript']."?tg=directory&idx=sdb&id=".$id."&pos=".$pos);
@@ -2145,6 +2195,8 @@ switch($idx)
 		break;
 
 	case "dbmap":
+		if( !isset($pos ))
+			$pos = "A";
 		$babBody->title = bab_translate("Import file to").": ".getDirectoryName($id,BAB_DB_DIRECTORIES_TBL);
 		$babBody->addItemMenu("list", bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=directory&idx=list");
 		$babBody->addItemMenu("sdb", bab_translate("Browse"), $GLOBALS['babUrlScript']."?tg=directory&idx=sdb&id=".$id."&pos=".$pos);
@@ -2162,6 +2214,8 @@ switch($idx)
 		break;
 
 	case "sldap":
+		if( !isset($pos ))
+			$pos = "A";
 		$babBody->title = bab_translate("Ldap Directory").": ".getDirectoryName($id,BAB_LDAP_DIRECTORIES_TBL);
 		browseLdapDirectory($id, $pos);
 		$babBody->addItemMenu("list", bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=directory&idx=list");

@@ -4116,6 +4116,14 @@ function handle_tag( $handler, $txt, $txt2 )
 	{
 	$out = '';
 	$handler = "bab_".$handler;
+	if( !class_exists($handler))
+		{
+		if( !strncmp($handler, "bab_DbDir", strlen("bab_DbDir")))
+			{
+			include_once $GLOBALS['babInstallPath']."utilit/ovmldir.php";
+			}
+		}
+
 	if( class_exists($handler))
 		{
 		$ctx = new bab_context($handler);

@@ -1149,6 +1149,8 @@ CREATE TABLE bab_db_directories (
   id_group int(11) unsigned NOT NULL default '0',
   id_dgowner int(11) unsigned NOT NULL default '0',
   user_update enum('N','Y') NOT NULL default 'N',
+  ovml_list tinytext NOT NULL,
+  ovml_detail tinytext NOT NULL,
   PRIMARY KEY  (id),
   KEY id_dgowner (id_dgowner)
 );

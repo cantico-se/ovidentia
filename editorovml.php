@@ -78,7 +78,7 @@ function browse($url,$cb)
 				{
 				$this->backlink = true;
 				$upperpath = substr($url,0,strrpos($url,"/"));
-				$this->backlink = $GLOBALS['babUrlScript']."?tg=editorovml&url=".$upperpath;
+				$this->backlink = $GLOBALS['babUrlScript']."?tg=editorovml&url=".$upperpath."&cb=".$cb;
 				}
 			$this->path = is_dir($GLOBALS['babOvmlPath'].'editor') ? 'editor/' : '';
 			$this->url = $url;
@@ -104,7 +104,7 @@ function browse($url,$cb)
 				if (count($subfiles)>0)
 					{
 					$this->displink = true;
-					$this->upurl = $GLOBALS['babUrlScript']."?tg=editorovml&url=".$this->tablo_dir[$i];
+					$this->upurl = $GLOBALS['babUrlScript']."?tg=editorovml&cb=".$this->cb."&url=".$this->tablo_dir[$i];
 					}
 				else
 					$this->displink = false;
