@@ -97,11 +97,11 @@ class macl
 					BAB_UNREGISTERED_GROUP => 1
 					);
 			}
-
+/*
 		if ($disabled) {
 			trigger_error('You can\'t filter on disabled, this function has been deprecated');
 			}
-
+*/
 		if ($everybody) {
 			unset($this->tables[$tblindex]['groups'][BAB_ALLUSERS_GROUP]);
 			}
