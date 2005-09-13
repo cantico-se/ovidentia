@@ -223,7 +223,8 @@ class bab_grp_node
 
 		$this->arr['description'] = htmlentities($this->arr['description']);
 		$this->arr['managerval'] = htmlentities(bab_getUserName($this->arr['manager']));
-		$this->delegat = isset($this->tree->delegat[$this->arr['id']]);
+		$this->delegat = $GLOBALS['babBody']->currentAdmGroup == 0 && isset($this->tree->delegat[$this->arr['id']]);
+		$this->set = $GLOBALS['babBody']->currentAdmGroup == 0 && $this->arr['nb_set'] > 0;
 		$this->option = isset($this->options[$this->arr['id']]) ? $this->options[$this->arr['id']] : false;
 		$this->subtree = bab_grp_node_html($this->tree, $this->arr['id'], $this->file, $this->template, $this->options);
 		return true;

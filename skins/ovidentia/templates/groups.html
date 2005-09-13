@@ -358,17 +358,17 @@ function load_clear()
 		<li id="bab_ovgroup_{ arr[id] }">
 			<div>
 			<!--#if delegat -->
-				<!--#if arr[nb_set] -->
+				<!--#if set -->
 				<img src="{ babSkinPath }images/Puces/folder_group_set_d.gif" alt="{ t_group_set_d }" />
-				<!--#else arr[nb_set] -->
+				<!--#else set -->
 				<img src="{ babSkinPath }images/Puces/folder_group_d.gif" alt="{ t_group_d }" />
-				<!--#endif arr[nb_set] -->
+				<!--#endif set -->
 			<!--#else delegat -->
-				<!--#if arr[nb_set] -->
+				<!--#if set -->
 				<img src="{ babSkinPath }images/Puces/folder_group_set.gif" alt="{ t_group_set }" />
-				<!--#else arr[nb_set] -->
+				<!--#else set -->
 				<img src="{ babSkinPath }images/Puces/folder_group.gif" alt="{ t_group }" />
-				<!--#endif arr[nb_set] -->
+				<!--#endif set -->
 			<!--#endif delegat -->
 			<a href="{ babUrlScript }?tg=groups&amp;idx=Create&amp;grpid={ arr[id] }" title="{ arr[description] }" onclick="return load_edit_form(this);">{ arr[name] }</a>
 			<input type="hidden" id="bab_ovgroup_{ arr[id] }_manager" value="{ arr[manager] }" />
