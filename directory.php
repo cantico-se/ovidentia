@@ -710,12 +710,15 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 
 			$this->modify = false;
 			$this->phrequired = false;
+			$this->delph = false;
 			if( $res && $this->db->db_num_rows($res) > 0)
 				{
 				$arr = $this->db->db_fetch_array($res);
 				if( $this->badd || ($this->bupd && $arr['modifiable'] == "Y"))
 					{
 					$this->modify = true;
+					if ($this->bupd && $arr['modifiable'] == "Y")
+						$this->delph = true;
 					}
 
 				if ($arr['required'] == 'Y')

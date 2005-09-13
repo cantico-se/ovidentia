@@ -607,8 +607,10 @@ window.focus();
 		<td align="center" colspan="2">
 		<br>
 		<!--#if showph -->
-		<img name="photo" src="{ urlimg }" border="0" alt="{ name }"><br>
-		<b>{ delete }&nbsp;:</b>&nbsp;&nbsp;<input type="checkbox" name="photod" value="delete">
+		<img name="photo" src="{ urlimg }" border="0" alt="{ name }" /><br />
+		<!--#if delph -->
+		<b>{ delete }&nbsp;:</b>&nbsp;&nbsp;<input type="checkbox" name="photod" value="delete" />
+		<!--#endif delph -->
 		<script type="text/javascript">
 		<!--
 		function redimimg()
