@@ -910,6 +910,15 @@ function addDbContact($id, $fields)
 			$this->urlimg = $GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$id."&idu=";
 			$this->name = bab_translate("Add new contact");
 
+			$res = $this->db->db_query("select modifiable, required from ".BAB_DBDIR_FIELDSEXTRA_TBL." join ".BAB_DBDIR_FIELDS_TBL." f where id_directory='".($this->idgroup != 0? 0: $this->id)."' and id_field=f.id and f.name='jpegphoto' AND disabled ='N'");
+
+			if( $res && $this->db->db_num_rows($res) > 0)
+				{
+				$this->modify = true;
+				}
+			else
+				$this->modify = false;
+
 			list($this->idgroup) = $this->db->db_fetch_array($this->db->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
 			if( $this->idgroup >= 1 )
 				{
@@ -946,6 +955,7 @@ function addDbContact($id, $fields)
 			static $i = 0;
 			if( $i < $this->count)
 				{
+				$this->modify = true;
 				$arr = $this->db->db_fetch_array($this->res);
 				if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
 					{
