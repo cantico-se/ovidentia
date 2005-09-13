@@ -1124,12 +1124,17 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					{
 					// all directories
 
+					$optfields = array();
+
 					$req = "select id,id_group, name from ".BAB_DB_DIRECTORIES_TBL."";
 					$res = $this->db->db_query($req);
 					while ($row = $this->db->db_fetch_array($res))
 						{
 						if(bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $row['id']))
 							{
+
+							$optfieldstr = count($optfields) > 0 ? ','.implode(',', $optfields) : '';
+
 							$dirname = $row['name'];
 							if( $row['id_group'] >= 1 )
 								{
@@ -1140,19 +1145,18 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 								if ($row['id_group'] == 1)
 									{
-									$req = "insert into bab_dbdir_temptable select ".implode(',', $arrfields).", '".$this->db->db_escape_string($dirname)."' name from ".BAB_DBDIR_ENTRIES_TBL." det where 1=1";
+									$req = "insert into bab_dbdir_temptable select ".implode(',', $arrfields).", '".$this->db->db_escape_string($dirname)."' name ".$optfieldstr." from ".BAB_DBDIR_ENTRIES_TBL." det where 1=1";
 									}
 								else
 									{
-									$req = "insert into bab_dbdir_temptable select ".implode(',', $arrfields).", '".$this->db->db_escape_string($dirname)."' name from ".BAB_DBDIR_ENTRIES_TBL." det, ".BAB_USERS_GROUPS_TBL." grp where grp.id_object=det.id_user AND grp.id_group='".$row['id_group']."'";
+									$req = "insert into bab_dbdir_temptable select ".implode(',', $arrfields).", '".$this->db->db_escape_string($dirname)."' name ".$optfieldstr." from ".BAB_DBDIR_ENTRIES_TBL." det, ".BAB_USERS_GROUPS_TBL." grp where grp.id_object=det.id_user AND grp.id_group='".$row['id_group']."'";
 									}
 
 								$req .= " AND det.id_directory='0'";
 								}
 							else
 								{
-								
-								$req = "insert into bab_dbdir_temptable select ".implode(',', $arrfields).",'".$this->db->db_escape_string($dirname)."' name from ".BAB_DBDIR_ENTRIES_TBL." det where id_directory='".($row['id_group'] != 0? 0: $row['id'])."'";
+								$req = "insert into bab_dbdir_temptable select ".implode(',', $arrfields).",'".$this->db->db_escape_string($dirname)."' name ".$optfieldstr." from ".BAB_DBDIR_ENTRIES_TBL." det where id_directory='".($row['id_group'] != 0? 0: $row['id'])."'";
 								}
 
 							
@@ -1161,13 +1165,15 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 								{
 								$req .= " AND det.id NOT IN('".implode("','",$this->tmp_inserted_id)."')";
 								}
+						
+
 							// push all data of a directory into bab_dbdir_temptable
 							$this->db->db_query($req);
 							// and add optional fields
 							$count = $this->addDirectoryOptFields($row['id'],$row['id_group']);
 							if ($count)
 								{
-								$arrfields = array_pad($arrfields, count($arrfields)+$count, "''");
+								$optfields = array_pad($optfields, count($optfields)+$count, "''");
 								}
 							}
 						}
@@ -1192,6 +1198,9 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					$this->db->db_query($req);
 
 					list($search_view_fields) = $this->db->db_fetch_array($this->db->db_query("SELECT search_view_fields FROM ".BAB_DBDIR_OPTIONS_TBL.""));
+
+					if (empty($search_view_fields))
+						$search_view_fields = '2,4';
 
 					$rescol = $this->db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL." where id IN(".$search_view_fields.")");
 					while( $row3 = $this->db->db_fetch_array($rescol))
@@ -1372,6 +1381,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 		function addDirectoryOptFields($id_directory, $id_group)
 			{
+			
 			$dbdirxfields = array();
 
 			$res = $this->db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($id_group != 0? 0: $id_directory)."' and id_field >".BAB_DBDIR_MAX_COMMON_FIELDS);
@@ -1382,6 +1392,8 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$dbdirxfields[] = "babdirf".$row2['id'];
 				}
 
+			
+
 			if( count($dbdirxfields) > 0 )
 				{
 				// add optionnal fields in temporary table
@@ -1390,6 +1402,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 				for( $m=0; $m < count($dbdirxfields); $m++)
 					{
+					
 					if (isset($this->added_dbdir_temptable[$dbdirxfields[$m]]))
 						continue;
 
@@ -1403,6 +1416,16 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				list($dirname) = $this->db->db_fetch_array($this->db->db_query("SELECT name FROM ".BAB_DB_DIRECTORIES_TBL." WHERE id='".$id_directory."'"));
 
 				$res = $this->db->db_query("select id from bab_dbdir_temptable WHERE name='".$this->db->db_escape_string($dirname)."'");
+
+				if ($dirname == 'test db')
+					{
+					$restest = $this->db->db_query("SELECT * FROM bab_dbdir_temptable");
+					while ($arrtest = $this->db->db_fetch_assoc($restest))
+						{ 
+						// print_r($arrtest);
+						}
+					}
+
 				while( $arr = $this->db->db_fetch_array($res))
 					{
 					$tmp = array();
