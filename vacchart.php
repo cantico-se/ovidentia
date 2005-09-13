@@ -35,21 +35,7 @@ global $babBody;
 
 		function temp($entities)
 			{
-			function _array_sort($array, $key)
-				{
-				   foreach($array as $k => $val) {
-					   $sort_values[$k] = $val[$key];
-				   }
-
-				   natcasesort($sort_values);
-				   reset($sort_values);
-
-				    foreach($sort_values as $k => $val) {
-						 $sorted_arr[] = $array[$k];
-				   }
-
-				   return $sorted_arr;
-				}
+			
 
 			$this->entities = array();
 			while (list(,$arr) = each($entities))
@@ -65,7 +51,7 @@ global $babBody;
 				}
 			
 			if (count($this->entities) > 0)
-				$this->entities = & _array_sort($this->entities, 'name');
+				$this->entities = & $this->_array_sort($this->entities, 'name');
 
 			$this->t_name = bab_translate('Name');
 			$this->t_description = bab_translate('Description');
@@ -73,6 +59,23 @@ global $babBody;
 			$this->t_calendar = bab_translate('Planning');
 			$this->t_requests = bab_translate('Requests');
 			$this->t_planning = bab_translate('Planning acces');
+			}
+
+		
+		function _array_sort($array, $key)
+			{
+			   foreach($array as $k => $val) {
+				   $sort_values[$k] = $val[$key];
+			   }
+
+			   natcasesort($sort_values);
+			   reset($sort_values);
+
+				foreach($sort_values as $k => $val) {
+					 $sorted_arr[] = $array[$k];
+			   }
+
+			   return $sorted_arr;
 			}
 
 		function getnext()

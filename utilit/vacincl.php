@@ -817,7 +817,9 @@ function listVacationRequests($id_user)
 				{
 				$idx = isset($_REQUEST['idx']) ? $_REQUEST['idx'] : '';
 				$ide = isset($_REQUEST['ide']) ? $_REQUEST['ide'] : '';
-				$tmpurl = $GLOBALS['babUrlScript']."?tg=".$_REQUEST['tg']."&idx=".$idx."&ide=".$ide."&pos=";
+				$id_user = isset($_REQUEST['id_user']) ? $_REQUEST['id_user'] : '';
+				$tmpurl = $GLOBALS['babUrlScript']."?tg=".$_REQUEST['tg']."&idx=".$idx."&ide=".$ide."&id_user=".$id_user."&pos=";
+
 				if( $this->pos > 0)
 					{
 					$this->topurl = $tmpurl."0";
