@@ -633,7 +633,7 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 			{
 			global $babBody;
 			$this->helpfields = bab_translate("Those fields must be filled");
-			$this->file = bab_translate("File");
+			$this->file = bab_translate("Photo");
 			$this->update = bab_translate("Update");
 			$this->id = $id;
 			
@@ -888,7 +888,7 @@ function addDbContact($id, $fields)
 			{
 			global $babBody;
 			$this->helpfields = bab_translate("Those fields must be filled");
-			$this->file = bab_translate("File");
+			$this->file = bab_translate("Photo");
 			$this->update = bab_translate("Update");
 			$this->id = $id;
 			$this->idu = "";
