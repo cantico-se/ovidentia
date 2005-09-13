@@ -71,9 +71,9 @@ function listAds()
 			$this->urladdldap = $GLOBALS['babUrlScript']."?tg=admdir&idx=ldap";
 			$this->urladddb = $GLOBALS['babUrlScript']."?tg=admdir&idx=db";
 			$this->db = $GLOBALS['babDB'];
-			$this->resldap = $this->db->db_query("select * from ".BAB_LDAP_DIRECTORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."'");
+			$this->resldap = $this->db->db_query("select * from ".BAB_LDAP_DIRECTORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."' ORDER BY name");
 			$this->countldap = $this->db->db_num_rows($this->resldap);
-			$this->resdb = $this->db->db_query("select * from ".BAB_DB_DIRECTORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."'");
+			$this->resdb = $this->db->db_query("select * from ".BAB_DB_DIRECTORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."' ORDER BY name");
 			$this->countdb = $this->db->db_num_rows($this->resdb);
 			}
 

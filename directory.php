@@ -64,7 +64,7 @@ function listUserAds()
 			$this->adminurlname = bab_translate("Management");
 			$this->db = $GLOBALS['babDB'];
 			$this->badd = false;
-			$res = $this->db->db_query("select id from ".BAB_LDAP_DIRECTORIES_TBL."");
+			$res = $this->db->db_query("select id from ".BAB_LDAP_DIRECTORIES_TBL." ORDER BY name");
 			while( $row = $this->db->db_fetch_array($res))
 				{
 				if(bab_isAccessValid(BAB_LDAPDIRVIEW_GROUPS_TBL, $row['id']))
@@ -73,7 +73,7 @@ function listUserAds()
 					}
 				}
 			$this->countldap = count($this->ldapid);
-			$res = $this->db->db_query("select id, id_group from ".BAB_DB_DIRECTORIES_TBL."");
+			$res = $this->db->db_query("select id, id_group from ".BAB_DB_DIRECTORIES_TBL." ORDER BY name");
 			while( $row = $this->db->db_fetch_array($res))
 				{
 				if(bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $row['id']))
