@@ -106,6 +106,12 @@ function bab_longDate($time, $hour=true)
 	if( $time < 0)
 		return "";
 
+	if( !isset($GLOBALS['babLongDateFormat']))
+		{
+		$GLOBALS['babLongDateFormat'] = bab_getDateFormat("ddd dd MMMM yyyy");
+		$GLOBALS['babTimeFormat'] = bab_getTimeFormat("HH:mm");
+		}
+
 	if( !$hour )
 		{
 		return bab_formatDate($GLOBALS['babLongDateFormat'], $time );
@@ -121,6 +127,11 @@ function bab_shortDate($time, $hour=true)
 	{
 	if( $time < 0)
 		return "";
+
+	if( !isset($GLOBALS['babLongDateFormat']))
+		{
+		$GLOBALS['babLongDateFormat'] = bab_getDateFormat("dd/mm/yyyy");
+		}
 
 	if( !$hour )
 		{
@@ -641,7 +652,10 @@ function bab_getGroups()
 function bab_composeUserName( $F, $L)
 	{
 	global $babBody;
-	return trim(sprintf("%s %s", ${$babBody->nameorder[0]}, ${$babBody->nameorder[1]}));
+	if( isset($babBody->nameorder))
+		return trim(sprintf("%s %s", ${$babBody->nameorder[0]}, ${$babBody->nameorder[1]}));
+	else
+		return trim(sprintf("%s %s", $F, $L));
 	}
 
 /* for current user */

@@ -43,7 +43,15 @@ function createEvent($idcals,$id_owner, $title, $description, $location, $startd
 	foreach($idcals as $id_cal)
 		{
 		$add = false;
-		$arr = $babBody->icalendars->getCalendarInfo($id_cal);
+		if( isset($babBody->icalendars))
+			{
+			$arr = $babBody->icalendars->getCalendarInfo($id_cal);
+			}
+		else
+			{
+			$icalendars =& new bab_icalendars($id_owner);
+			$arr = $icalendars->getCalendarInfo($id_cal);
+			}
 		switch($arr['type'])
 			{
 			case BAB_CAL_USER_TYPE:
@@ -349,7 +357,16 @@ function bab_createEvent($idcals, $args, &$msgerror)
 		$arrpub = array();
 		for( $i = 0; $i < count($arrnotify); $i++ )
 			{
-			$arr = $babBody->icalendars->getCalendarInfo($arrnotify[$i]);
+			if( isset($babBody->icalendars))
+				{
+				$arr = $babBody->icalendars->getCalendarInfo($arrnotify[$i]);
+				}
+			else
+				{
+				$icalendars =& new bab_icalendars($args['owner']);
+				$arr = $icalendars->getCalendarInfo($arrnotify[$i]);
+				}
+
 			switch($arr['type'])
 				{
 				case BAB_CAL_USER_TYPE:
@@ -1128,5 +1145,25 @@ function notifyEventApprovers($id_event, $users, $calinfo)
 
 	$mail->send();
 	}
+
+
+function bab_deleteEvent($idevent)
+{
+	global $babDB;
+	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
+
+	$babDB->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id='".$idevent."'");
+	$res2 = $babDB->db_query("select idfai from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event='".$idevent."'");
+	while( $rr = $babDB->db_fetch_array($res2) )
+		{
+		if( $rr['idfai'] != 0 )
+			{
+			deleteFlowInstance($rr['idfai']);
+			}
+		}
+	$babDB->db_query("delete from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event='".$idevent."'");
+	$babDB->db_query("delete from ".BAB_CAL_EVENTS_NOTES_TBL." where id_event='".$idevent."'");
+	$babDB->db_query("delete from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_event='".$idevent."'");
+}
 
 ?>

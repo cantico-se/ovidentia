@@ -211,4 +211,25 @@ function bab_newEvent($idcals, $args, &$msgerror)
 	include_once $GLOBALS['babInstallPath'].'utilit/evtincl.php';
 	return bab_createEvent($idcals,$args, $msgerror);
 }
+
+function bab_deleteEventById( $evtid )
+{
+	include_once $GLOBALS['babInstallPath'].'utilit/evtincl.php';
+	return bab_deleteEvent($evtid);
+}
+
+function bab_emptyCalendar( $idcal )
+{
+	global $babDB;
+	include_once $GLOBALS['babInstallPath']."utilit/evtincl.php";
+
+	$res = $babDB->db_query("select id_event from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_cal='".$idcal."'");
+
+	while( $rr = $babDB->db_fetch_array($res) )
+		{
+		bab_deleteEvent($rr['id_event']);
+		}
+
+}
+
 ?>

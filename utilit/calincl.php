@@ -249,8 +249,9 @@ class bab_icalendars
 	var $busercal = false; // personnal calendar
 	var $bpubcal = false; // public calendar
 	var $brescal = false; // resource calendar
+	var $iduser = ''; // resource calendar
 
-	function bab_icalendars()
+	function bab_icalendars($iduser = '')
 	{
 		global $babBody, $babDB;
 
@@ -265,52 +266,65 @@ class bab_icalendars
 		$this->dispdays = "1,2,3,4,5";
 		$this->workdays = $babBody->babsite['workdays'];
 		$this->user_calendarids = '';
-
-		if( !empty($GLOBALS['BAB_SESS_USERID']))
-		{
-		foreach($babBody->usergroups as $idg)
+		if( empty($iduser) && isset($GLOBALS['BAB_SESS_USERID']))
 			{
-			if( isset($babBody->ovgroups[$idg]['pcalendar']) && $babBody->ovgroups[$idg]['pcalendar'] == 'Y')
-				{
-				$pcalendar = true;
-				}
+			$this->iduser = $GLOBALS['BAB_SESS_USERID'];
+			}
+		else
+			{
+			$this->iduser = $iduser;
 			}
 
-		if( $pcalendar )
+
+		if( !empty($this->iduser))
 			{
-			$res = $babDB->db_query("select id from ".BAB_CALENDAR_TBL." where owner='".$GLOBALS['BAB_SESS_USERID']."' and actif='Y' and type='1'");
+			if( !empty($GLOBALS['BAB_SESS_USERID']) )
+				{
+				foreach($babBody->usergroups as $idg)
+					{
+					if( isset($babBody->ovgroups[$idg]['pcalendar']) && $babBody->ovgroups[$idg]['pcalendar'] == 'Y')
+						{
+						$pcalendar = true;
+						}
+					}
+				}
+
+
+			if( $pcalendar )
+				{
+				$res = $babDB->db_query("select id from ".BAB_CALENDAR_TBL." where owner='".$this->iduser."' and actif='Y' and type='1'");
+				if( $res && $babDB->db_num_rows($res) >  0)
+					{
+					$arr = $babDB->db_fetch_array($res);
+					$this->id_percal = $arr['id'];
+					}		
+				}
+
+			$res = $babDB->db_query("select * from ".BAB_CAL_USER_OPTIONS_TBL." where id_user='".$this->iduser."'");
 			if( $res && $babDB->db_num_rows($res) >  0)
 				{
 				$arr = $babDB->db_fetch_array($res);
-				$this->id_percal = $arr['id'];
-				}		
-			}
+				$this->startday = $arr['startday'];
+				$this->allday = $arr['allday'];
+				$this->usebgcolor = $arr['usebgcolor'];
+				$this->elapstime = $arr['elapstime'];
+				$this->defaultview = $arr['defaultview'];
+				$this->starttime = $arr['start_time'];
+				$this->endtime = $arr['end_time'];
+				if( $this->endtime == '00:00:00' || $this->endtime == '23:00:00')
+					{
+					$this->endtime = '23:59:59';
+					}
 
-		$res = $babDB->db_query("select * from ".BAB_CAL_USER_OPTIONS_TBL." where id_user='".$GLOBALS['BAB_SESS_USERID']."'");
-		if( $res && $babDB->db_num_rows($res) >  0)
-			{
-			$arr = $babDB->db_fetch_array($res);
-			$this->startday = $arr['startday'];
-			$this->allday = $arr['allday'];
-			$this->usebgcolor = $arr['usebgcolor'];
-			$this->elapstime = $arr['elapstime'];
-			$this->defaultview = $arr['defaultview'];
-			$this->starttime = $arr['start_time'];
-			$this->endtime = $arr['end_time'];
-			if( $this->endtime == '00:00:00' || $this->endtime == '23:00:00')
-				{
-				$this->endtime = '23:59:59';
+				if (!empty($arr['dispdays']))
+					$this->dispdays = $arr['dispdays'];
+
+				if (!empty($arr['workdays'])) 
+					$this->workdays = $arr['workdays'];
+				
+				$this->user_calendarids = $arr['user_calendarids'];
 				}
-
-			if (!empty($arr['dispdays']))
-				$this->dispdays = $arr['dispdays'];
-
-			if (!empty($arr['workdays'])) 
-				$this->workdays = $arr['workdays'];
-			
-			$this->user_calendarids = $arr['user_calendarids'];
 			}
-		}
 		if( empty($this->user_calendarids) && $this->id_percal != 0)
 			{
 			$this->user_calendarids = $this->id_percal;
@@ -325,9 +339,19 @@ class bab_icalendars
 		$res = $babDB->db_query("select cpt.*, ct.id as idcal, ct.owner from ".BAB_CAL_PUBLIC_TBL." cpt left join ".BAB_CALENDAR_TBL." ct on ct.owner=cpt.id where ct.type='".BAB_CAL_PUB_TYPE."' and ct.actif='Y'");
 		while( $arr = $babDB->db_fetch_array($res))
 			{
-			$bgroup = bab_isAccessValid(BAB_CAL_PUB_GRP_GROUPS_TBL, $arr['idcal']);
-			$bview = bab_isAccessValid(BAB_CAL_PUB_VIEW_GROUPS_TBL, $arr['idcal']);
-			$bman = bab_isAccessValid(BAB_CAL_PUB_MAN_GROUPS_TBL, $arr['idcal']);
+
+			if( isset($GLOBALS['BAB_SESS_USERID']))
+				{
+				$bgroup = bab_isAccessValid(BAB_CAL_PUB_GRP_GROUPS_TBL, $arr['idcal']);
+				$bview = bab_isAccessValid(BAB_CAL_PUB_VIEW_GROUPS_TBL, $arr['idcal']);
+				$bman = bab_isAccessValid(BAB_CAL_PUB_MAN_GROUPS_TBL, $arr['idcal']);
+				}
+			else
+				{
+				$bgroup = bab_isAccessValid(BAB_CAL_PUB_GRP_GROUPS_TBL, $arr['idcal'], $this->iduser);
+				$bview = bab_isAccessValid(BAB_CAL_PUB_VIEW_GROUPS_TBL, $arr['idcal'], $this->iduser);
+				$bman = bab_isAccessValid(BAB_CAL_PUB_MAN_GROUPS_TBL, $arr['idcal'], $this->iduser);
+				}
 
 			if ($bgroup || $bview || $bman)
 				{
@@ -359,10 +383,20 @@ class bab_icalendars
 		while( $arr = $babDB->db_fetch_array($res))
 		{
 
-			$bgroup = bab_isAccessValid(BAB_CAL_RES_GRP_GROUPS_TBL, $arr['idcal']);
-			$bview = bab_isAccessValid(BAB_CAL_RES_VIEW_GROUPS_TBL, $arr['idcal']);
-			$bman = bab_isAccessValid(BAB_CAL_RES_MAN_GROUPS_TBL, $arr['idcal']);
-			$badd = bab_isAccessValid(BAB_CAL_RES_ADD_GROUPS_TBL, $arr['idcal']);
+			if( isset($GLOBALS['BAB_SESS_USERID']))
+				{
+				$bgroup = bab_isAccessValid(BAB_CAL_RES_GRP_GROUPS_TBL, $arr['idcal']);
+				$bview = bab_isAccessValid(BAB_CAL_RES_VIEW_GROUPS_TBL, $arr['idcal']);
+				$bman = bab_isAccessValid(BAB_CAL_RES_MAN_GROUPS_TBL, $arr['idcal']);
+				$badd = bab_isAccessValid(BAB_CAL_RES_ADD_GROUPS_TBL, $arr['idcal']);
+				}
+			else
+				{
+				$bgroup = bab_isAccessValid(BAB_CAL_RES_GRP_GROUPS_TBL, $arr['idcal'], $this->iduser);
+				$bview = bab_isAccessValid(BAB_CAL_RES_VIEW_GROUPS_TBL, $arr['idcal'], $this->iduser);
+				$bman = bab_isAccessValid(BAB_CAL_RES_MAN_GROUPS_TBL, $arr['idcal'], $this->iduser);
+				$badd = bab_isAccessValid(BAB_CAL_RES_ADD_GROUPS_TBL, $arr['idcal'], $this->iduser);
+				}
 
 			if ($bgroup || $bview || $bman)
 				{
@@ -391,7 +425,7 @@ class bab_icalendars
 		global $babDB;
 		$this->busercal = true;
 
-		$res = $babDB->db_query("select cut.*, ct.owner from ".BAB_CALACCESS_USERS_TBL." cut left join ".BAB_CALENDAR_TBL." ct on ct.id=cut.id_cal where id_user='".$GLOBALS['BAB_SESS_USERID']."' and ct.actif='Y'");
+		$res = $babDB->db_query("select cut.*, ct.owner from ".BAB_CALACCESS_USERS_TBL." cut left join ".BAB_CALENDAR_TBL." ct on ct.id=cut.id_cal where id_user='".$this->iduser."' and ct.actif='Y'");
 
 		while( $arr = $babDB->db_fetch_array($res))
 		{
@@ -469,7 +503,7 @@ class bab_icalendars
 	{
 		if( $idcal == $this->id_percal )
 		{
-			return $GLOBALS['BAB_SESS_USER'];
+			return $this->iduser;
 		}
 		else
 		{
@@ -566,7 +600,7 @@ class bab_icalendars
 	{
 		if( $idcal == $this->id_percal )
 		{
-			return $GLOBALS['BAB_SESS_USERID'];
+			return $this->iduser;
 		}
 		else
 		{
@@ -614,7 +648,7 @@ class bab_icalendars
 	{
 		if( $idcal == $this->id_percal )
 		{
-			return array('name' => $GLOBALS['BAB_SESS_USER'], 'description' => '', 'type' => BAB_CAL_USER_TYPE, 'idowner' => $GLOBALS['BAB_SESS_USERID'], 'access' => BAB_CAL_ACCESS_FULL);
+			return array('name' => $this->iduser, 'description' => '', 'type' => BAB_CAL_USER_TYPE, 'idowner' => $this->iduser, 'access' => BAB_CAL_ACCESS_FULL);
 		}
 		else
 		{
