@@ -137,6 +137,8 @@ function requestVacation($begin,$end, $halfdaybegin, $halfdayend, $id)
 				$beginY = date('Y',$begin);
 				$endY = date('Y',$end);
 
+				
+
 				if ($beginY != $endY)
 					{
 					$nonWorkingDays = array_merge(bab_getNonWorkingDays($beginY), bab_getNonWorkingDays($endY));
@@ -148,7 +150,8 @@ function requestVacation($begin,$end, $halfdaybegin, $halfdayend, $id)
 
 				$workdays = array_flip(explode(',',$babBody->icalendars->workdays));
 
-				for ($i = $begin; $i <= $end ; $i += 86400)
+				
+				for ($i = $begin; $i <= $end ; $i = mktime(0, 0, 0, date("m",$i) , date("d",$i) + 1, date("Y",$i)) )
 					{
 					if (!isset($workdays[date('w',$i )]) || isset($nonWorkingDays[date('Y-m-d',$i )]))
 						$calcul--;
