@@ -1872,7 +1872,7 @@ function bab_isMemberOfTree($id_group, $id_user = '')
 			return true;
 
 		$db = &$GLOBALS['babDB'];
-		$res = $db->db_query("SELECT COUNT(g.*) FROM ".BAB_GROUPS_TBL." g, ".BAB_USERS_GROUPS_TBL." u WHERE u.id_group=g.id AND u.id_object='".$id_user."' AND g.lf >= '".$babBody->ovgroups[$id_group]['lf']."' AND g.lr <= '".$babBody->ovgroups[$id_group]['lr']."'");
+		$res = $db->db_query("SELECT COUNT(g.id) FROM ".BAB_GROUPS_TBL." g, ".BAB_USERS_GROUPS_TBL." u WHERE u.id_group=g.id AND u.id_object='".$id_user."' AND g.lf >= '".$babBody->ovgroups[$id_group]['lf']."' AND g.lr <= '".$babBody->ovgroups[$id_group]['lr']."'");
 		list($n) = $db->db_fetch_array($res);
 		return $n > 0 ? true : false;
 		}
