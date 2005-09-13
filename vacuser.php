@@ -596,7 +596,7 @@ function addNewVacation($id_user, $id_request, $begin,$end, $halfdaybegin, $half
 		$idfai = makeFlowInstance($row['id_sa'], "vac-".$id);
 		$babDB->db_query("update ".BAB_VAC_ENTRIES_TBL." set idfai='".$idfai."',status='' where id='".$id."'");
 		$nfusers = getWaitingApproversFlowInstance($idfai, true);
-		notifyVacationApprovers($id, $nfusers);
+		notifyVacationApprovers($id, $nfusers, !empty($id_request));
 		}
 	else
 		{

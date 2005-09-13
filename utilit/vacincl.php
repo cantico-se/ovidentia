@@ -48,7 +48,6 @@ class vac_notifyVacationApprovers
 	function vac_notifyVacationApprovers($row)
 		{
 		global $babDayType, $babDB;
-		$this->message = bab_translate("Vacation request is waiting to be validated");
 		$this->fromuser = bab_translate("User");
 		$this->from = bab_translate("from");
 		$this->until = bab_translate("until");
@@ -62,11 +61,9 @@ class vac_notifyVacationApprovers
 		}
 	}
 
-function notifyVacationApprovers($id, $users)
+function notifyVacationApprovers($id, $users, $modify = false)
 	{
 	global $babBody, $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail;
-
-
 
 	$row = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where id='".$id."'"));
 
@@ -81,6 +78,11 @@ function notifyVacationApprovers($id, $users)
 	$mail->mailSubject(bab_translate("Vacation request is waiting to be validated"));
 
 	$tempa = new vac_notifyVacationApprovers($row);
+	if ($modify)
+		$tempa->message = bab_translate("The request has been modified");
+	else
+		$tempa->message = bab_translate("Vacation request is waiting to be validated");
+
 	$message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "newvacation"));
 	$mail->mailBody($message, "html");
 

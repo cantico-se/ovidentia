@@ -1856,4 +1856,5 @@
 <string id="Specify which fields will be displayed when browsing directory">Indiquez les champs à afficher lors de la consultation de l'annuaire</string>
 <string id="OVML file to be used for list">Fichier OVML à utiliser lors de l'affichage de la liste</string>
 <string id="OVML file to be used for detail">Fichier OVML à utiliser lors de l'affichage d'une fiche</string>
+<string id="The request has been modified">La demande à été modifiée</string>
 </fr>
