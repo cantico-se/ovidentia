@@ -465,17 +465,7 @@ function getFile( $idf, $vmajor, $vminor, $inl )
 	{
 	global $babBody, $babDB, $babFileActions, $arrfile, $arrfold, $lockauthor;
 
-	$mime = "application/octet-stream";
-	if ($ext = strrchr($arrfile['name'],"."))
-		{
-		$ext = substr($ext,1);
-		$res = $babDB->db_query("select * from ".BAB_MIME_TYPES_TBL." where ext='".$ext."'");
-		if( $res && $babDB->db_num_rows($res) > 0)
-			{
-			$arr = $babDB->db_fetch_array($res);
-			$mime = $arr['mimetype'];
-			}
-		}
+	$mime = bab_getFileMimeType($arrfile['name']);
 
 	$fullpath = bab_getUploadFullPath($arrfile['bgroup'], $arrfile['id_owner']);
 	if( !empty($arrfile['path']))

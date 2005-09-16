@@ -179,18 +179,7 @@ function bab_getResizedImage($imgf, $w, $h)
 			}
 		else
 			{
-			$mime = "application/octet-stream";
-			if ($ext = strrchr($imgf,"."))
-				{
-				$ext = substr($ext,1);
-				$db = $GLOBALS['babDB'];
-				$res = $db->db_query("select * from ".BAB_MIME_TYPES_TBL." where ext='".$ext."'");
-				if( $res && $db->db_num_rows($res) > 0)
-					{
-					$arr = $db->db_fetch_array($res);
-					$mime = $arr['mimetype'];
-					}
-				}
+			$mime = bab_getFileMimeType($imgf);
 			$fsize = filesize($imgf);
 			header("Content-Type: $mime"."\n");
 			header("Content-Length: ". $fsize."\n");

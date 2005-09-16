@@ -1534,18 +1534,8 @@ function getDocumentArticleDraft( $idart, $idf )
 	$fullpath .= $arr['id_draft'].",".$file;
 	$fsize = filesize($fullpath);
 
-	$mime = "application/octet-stream";
-	if ($ext = strrchr($file,"."))
-		{
-		$ext = substr($ext,1);
-		$db = $GLOBALS['babDB'];
-		$res = $db->db_query("select * from ".BAB_MIME_TYPES_TBL." where ext='".$ext."'");
-		if( $res && $db->db_num_rows($res) > 0)
-			{
-			$rr = $db->db_fetch_array($res);
-			$mime = $rr['mimetype'];
-			}
-		}
+	$mime = bab_getFileMimeType($file);
+
 	if( strtolower(bab_browserAgent()) == "msie")
 		header('Cache-Control: public');
 	$inl = "";
