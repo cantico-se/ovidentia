@@ -5186,4 +5186,36 @@ if ($arr[0] != 'ovml_list')
 
 return $ret;
 }
+
+
+
+
+function upgrade566to567()
+{
+	
+$ret = "";
+$db = & $GLOBALS['babDB'];
+
+$arr = $db->db_fetch_array($db->db_query("SHOW TABLES LIKE '".BAB_SITES_SWISH_TBL."'"));
+if ( $arr[0] != BAB_SITES_SWISH_TBL )
+	{
+	$res = $db->db_query("
+		CREATE TABLE `".BAB_SITES_SWISH_TBL."` (
+		`id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
+		`id_site` INT UNSIGNED NOT NULL ,
+		`swishcmd` VARCHAR( 255 ) NOT NULL ,
+		`pdftotext` VARCHAR( 255 ) NOT NULL ,
+		`xls2csv` VARCHAR( 255 ) NOT NULL ,
+		`catdoc` VARCHAR( 255 ) NOT NULL ,
+		`unzip` VARCHAR( 255 ) NOT NULL ,
+		PRIMARY KEY ( `id` ) ,
+		INDEX ( `id_site` )
+		)
+		");
+	}
+
+return $ret;
+}
+
+
 ?>

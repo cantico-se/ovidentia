@@ -102,4 +102,48 @@ if (trim($req2) != "")
 	return $like;
 }
 
+
+
+function bab_indexFiles($arr_files, $object = false)
+{
+	global $babSearchEngine;
+
+	if (!$object && isset($GLOBALS['babAddonFolder']))
+		$object = $GLOBALS['babAddonFolder'];
+
+	if (!isset($babSearchEngine) || !$object)
+		return false;
+
+	switch($babSearchEngine)
+		{
+		case 'swish':
+			include_once $GLOBALS['babInstallPath'].'utilit/searchincl.swish.php';
+			break;
+		}
+
+	$obj = new bab_indexFilesCls($arr_files, $object);
+	return $obj->indexFiles();
+}
+
+function bab_searchIndexedFiles($query1, $query2, $option, $object = false)
+{
+	global $babSearchEngine;
+
+	if (!$object && isset($GLOBALS['babAddonFolder']))
+		$object = $GLOBALS['babAddonFolder'];
+
+	if (!isset($babSearchEngine) || !$object)
+		return false;
+
+	switch($babSearchEngine)
+		{
+		case 'swish':
+			include_once $GLOBALS['babInstallPath'].'utilit/searchincl.swish.php';
+			break;
+		}
+
+	$obj = new bab_searchFilesCls($query1, $query2, $option, $object);
+	return $obj->searchFiles();
+}
+
 ?>

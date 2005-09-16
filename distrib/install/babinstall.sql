@@ -2599,3 +2599,16 @@ CREATE TABLE bab_stats_preferences (
   separatorchar tinyint(2) NOT NULL default '0',
   UNIQUE KEY id_user (id_user)
 );
+
+
+CREATE TABLE `bab_sites_swish` (
+`id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
+`id_site` INT UNSIGNED NOT NULL ,
+`swishcmd` VARCHAR( 255 ) NOT NULL ,
+`pdftotext` VARCHAR( 255 ) NOT NULL ,
+`xls2csv` VARCHAR( 255 ) NOT NULL ,
+`catdoc` VARCHAR( 255 ) NOT NULL ,
+`unzip` VARCHAR( 255 ) NOT NULL ,
+PRIMARY KEY ( `id` ) ,
+INDEX ( `id_site` )
+);

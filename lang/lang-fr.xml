@@ -1857,4 +1857,13 @@
 <string id="OVML file to be used for list">Fichier OVML à utiliser lors de l'affichage de la liste</string>
 <string id="OVML file to be used for detail">Fichier OVML à utiliser lors de l'affichage d'une fiche</string>
 <string id="The request has been modified">La demande à été modifiée</string>
+
+<string id="Swish-e command (swish-e.exe)">Commande swish-e (swish-e.exe)</string>
+<string id="Command to transform pdf documents into text (pdftotext.exe)">Commande pour transformer les documents pdf en texte (pdftotext.exe)</string>
+<string id="Command to transform exel documents into csv (xls2csv.exe)">Commande pour transformer les documents exel en csv (xls2csv.exe)</string>
+<string id="Command to transform word documents into text (catdoc.exe)">Commandepour transformer les documents word en texte (catdoc.exe)</string>
+<string id="Command to transform open office documents into xml (unzip.exe)">Commande pour transformer les documents open office en xml (unzip.exe)</string>
+<string id="Search engine">Moteur de recherche</string>
+<string id="Search2">Recherche</string>
+<string id="Search engine configuration">Configuration du moteur de recherche</string>
 </fr>

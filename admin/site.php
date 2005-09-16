@@ -72,6 +72,11 @@ class site_configuration_cls
 			10=> bab_translate('WYSIWYG editor configuration')
 		);
 
+	if (isset($GLOBALS['babSearchEngine']))
+		{
+		$this->menu[11] = bab_translate('Search engine configuration');
+		}
+
 	if (false !== $id_site)
 		{
 		$res = $this->db->db_query("SELECT *, DECODE(smtppassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as smtppass FROM ".BAB_SITES_TBL." WHERE id='".$id_site."'");
@@ -1755,6 +1760,17 @@ switch ($_POST['action'])
 		record_editor_configuration($_POST['item']);
 		break;
 
+	case 'menu11':
+		switch($babSearchEngine)
+			{
+			case 'swish':
+				include $babInstallPath."admin/sitesearch.swish.php";
+				break;
+			}
+
+		record_site_menu11($_POST['item']);
+		break;
+
 	case 'updisc':
 		siteUpdateDisclaimer($_POST['item'], $_POST['content']);
 		$popupmessage = bab_translate("Update done");
@@ -1870,6 +1886,22 @@ switch($idx)
 		editor_configuration($_REQUEST['item']);
 		$babBody->addItemMenu("menusite", bab_translate("Menu"),$GLOBALS['babUrlScript']."?tg=site&item=".$_REQUEST['item']);
 		$babBody->addItemMenu("menu10", bab_translate("Editor"),$GLOBALS['babUrlScript']."?tg=site&idx=editor&item=".$_REQUEST['item']);
+		break;
+
+	case "menu11":
+		$babBody->title = bab_translate("Search engine");
+		$babBody->addItemMenu("menusite", bab_translate("Menu"),$GLOBALS['babUrlScript']."?tg=site&item=".$_REQUEST['item']);
+		$babBody->addItemMenu("menu11", bab_translate("Search2"),$GLOBALS['babUrlScript']."?tg=site&idx=editor&item=".$_REQUEST['item']);
+
+		switch($babSearchEngine)
+			{
+			case 'swish':
+				include $babInstallPath."admin/sitesearch.swish.php";
+				break;
+			}
+
+		site_menu11($_REQUEST['item']);
+
 		break;
 
 	default:
