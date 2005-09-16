@@ -464,10 +464,17 @@ function bab_getUserSetting($id, $what)
 		}
 	}
 
-function bab_getGroupName($id)
+function bab_getGroupName($id, $fpn=true)
 	{
 	global $babBody;
-	return $babBody->getGroupPathName($id);
+	if($fpn)
+		{
+		return $babBody->getGroupPathName($id);
+		}
+	else
+		{
+		return $babBody->ovgroups[$id]['name'];
+		}
 	}
 
 function bab_getPrimaryGroupId($userid)
