@@ -346,12 +346,12 @@ return true;
 				<option value="{ t_dayid }" { selected }>{ t_dayid }</option>
 				<!--#endin getnextday -->
 				</select>&nbsp;
-				<select name="monthendfx" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
+				<select name="monthendfx" onChange="updateDates(this.form.dayendfx, this.form.monthendfx, this.form.yearendfx);">
 				<!--#in getnextmonth -->
 				<option value="{ monthid }" { selected }>{ t_monthname }</option>
 				<!--#endin getnextmonth -->
 				</select>&nbsp;
-				<select name="yearendfx" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
+				<select name="yearendfx" onChange="updateDates(this.form.dayendfx, this.form.monthendfx, this.form.yearendfx);">
 				<!--#in getnextyear -->
 				<option value="{ yearid }" { selected }>{ t_yearidval }</option>
 				<!--#endin getnextyear -->
@@ -616,6 +616,28 @@ function babReset()
 	f.id_creditor.value ='';
 	f.id_creditorDisplay.value ='';
 }
+
+function updateDates(elemDay, elemMonth, elemYear)
+{
+	ds = elemDay.selectedIndex;
+	timeA = new Date(elemYear.options[elemYear.selectedIndex].text, elemMonth.options[elemMonth.selectedIndex].value,1);
+	timeDifference = timeA - 86400000;
+	timeB = new Date(timeDifference);
+	var daysInMonth = timeB.getDate();
+	for (var i = 0; i < elemDay.length; i++)
+	{
+	elemDay.options[0] = null;
+	}
+	for (var i = 0; i < daysInMonth; i++)
+	{
+	elemDay.options[i] = new Option(i+1);
+	}
+	if( ds < daysInMonth )
+	elemDay.options[ds].selected = true;
+	else
+	elemDay.options[daysInMonth-1].selected = true;
+}
+
 //-->
 </script>
 <!--#end rightsedit -->
