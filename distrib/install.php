@@ -320,8 +320,16 @@ if (!empty($error))
 	$succes[] = $trans->str('Aborted');
 
 
-$subpath = substr_count($_SERVER['REQUEST_URI'],'?') ? substr($_SERVER['REQUEST_URI'],0,strpos($_SERVER['REQUEST_URI'],'?')) : $_SERVER['REQUEST_URI'];
-$babUrl = 'http://'.$_SERVER['HTTP_HOST'].substr($_SERVER['REQUEST_URI'],0,strlen($subpath)-strlen(strrchr($subpath,'/'))).'/'; 
+if( isset())
+{
+	$subpath = substr_count($_SERVER['REQUEST_URI'],'?') ? substr($_SERVER['REQUEST_URI'],0,strpos($_SERVER['REQUEST_URI'],'?')) : $_SERVER['REQUEST_URI'];
+	$subpath = substr($_SERVER['REQUEST_URI'],0,strlen($subpath)-strlen(strrchr($subpath,'/')));
+}
+else
+{
+	$subpath = '';
+}
+$babUrl = 'http://'.$_SERVER['HTTP_HOST'].$subpath.'/'; 
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
