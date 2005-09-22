@@ -211,8 +211,16 @@ function displayRegistration($nickname, $fields, $cagree)
 				}
 			else
 				{
-				$this->infotxt1 = '';
-				$this->infotxt2 = bab_translate("Your acount will be activated only after validation");
+				if($babBody->babsite['email_confirm'] == 2)
+					{
+					$this->infotxt1 = '';
+					$this->infotxt2 = '';
+					}
+				else
+					{
+					$this->infotxt1 = '';
+					$this->infotxt2 = bab_translate("Your account will be activated only after validation");
+					}
 				}
 
 			if( $babBody->babsite['display_disclaimer'] == "Y" )
