@@ -1112,7 +1112,7 @@ function bab_replace_ref( &$txt, $remove = '')
 								}
 							}
 
-							bab_replace_var($txt,$var,preg_replace("/\\\$OVML\(.*\)/","",bab_printOvmlTemplate($param[0], $args)));
+							bab_replace_var($txt,$var,preg_replace("/\\\$OVML\(.*\)/","",trim(bab_printOvmlTemplate($param[0], $args))));
 							break;
 						}
 					}
