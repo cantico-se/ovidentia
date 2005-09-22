@@ -415,6 +415,7 @@ class bab_DbDirectoryMemberFields extends bab_handler
 
 		if( $this->idx < $this->count)
 		{
+			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('DirectoryFieldName', $this->handler->IdEntries[$this->idx]['name']);
 			$this->ctx->curctx->push('DirectoryFieldId', $this->handler->IdEntries[$this->idx]['xname']);
 			$this->ctx->curctx->push('DirectoryMemberUrl', $GLOBALS['babUrlScript']."?tg=directory&idx=ddbovml&directoryid=".$this->handler->directoryid."&userid=".$this->handler->memberfields['id']);
@@ -558,7 +559,7 @@ class bab_DbDirectoryEntryFields extends bab_handler
 			{
 			$this->count = 0;
 			}
-
+		$this->ctx->curctx->push('CCount', $this->count);
 	}
 
 	function getnext()
@@ -567,6 +568,7 @@ class bab_DbDirectoryEntryFields extends bab_handler
 
 		if( $this->idx < $this->count)
 		{
+			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('DirectoryFieldName', $this->handler->IdEntries[$this->idx]['name']);
 			$this->ctx->curctx->push('DirectoryFieldId', $this->handler->IdEntries[$this->idx]['xname']);
 			if( isset($this->handler->arrentries[$this->handler->IdEntries[$this->idx]['xname']]))
