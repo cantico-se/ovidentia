@@ -746,7 +746,7 @@ if( !isset($_SESSION['bab_groupAccess']['acltables'][$table]))
 	$_SESSION['bab_groupAccess']['acltables'][$table] = array();
 	
 	$db = &$GLOBALS['babDB'];
-	$res = &$db->db_query("select id_object, id_group from ".$table." WHERE id_group IN('".implode("','",$babBody->usergroups)."') OR id_group>='".BAB_ACL_GROUP_TREE."'");
+	$res = $db->db_query("select id_object, id_group from ".$table." WHERE id_group IN('".implode("','",$babBody->usergroups)."') OR id_group>='".BAB_ACL_GROUP_TREE."'");
 	
 	while( $row = $db->db_fetch_assoc($res))
 		{

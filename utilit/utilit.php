@@ -496,7 +496,7 @@ function printout()
 	if( !file_exists( 'skins/'.$GLOBALS['babSkin'].'/templates/'. $this->file ) )
 		{
 		if (!$this->close)
-			$this->content = & bab_printTemplate($this,'insections.html', $this->htmlid );
+			$this->content = bab_printTemplate($this,'insections.html', $this->htmlid );
 		return bab_printTemplate($this,'sectiontemplate.html', 'default');
 		}
 	$str = bab_printTemplate($this,$this->file, $this->template);
@@ -1753,7 +1753,7 @@ function printout()
 	if( !file_exists( 'skins/'.$GLOBALS['babSkin'].'/templates/montha.html' ) )
 		{
 		if (!$this->close)
-			$this->content = & bab_printTemplate($this,'insections.html', 'montha');
+			$this->content = bab_printTemplate($this,'insections.html', 'montha');
 		$this->title = $this->curmonth.' '.$this->curyear;
 		return bab_printTemplate($this,'sectiontemplate.html', 'default');
 		}
