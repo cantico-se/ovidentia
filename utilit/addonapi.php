@@ -767,6 +767,8 @@ if( !isset($_SESSION['bab_groupAccess']['acltables'][$table]))
 
 function bab_getGroupsAccess($table, $idobject)
 {
+	global $babBody;
+
 	$db = &$GLOBALS['babDB'];
 
 	$ret = array();
