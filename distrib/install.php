@@ -320,7 +320,7 @@ if (!empty($error))
 	$succes[] = $trans->str('Aborted');
 
 
-if( isset())
+if( isset($_SERVER['REQUEST_URI']))
 {
 	$subpath = substr_count($_SERVER['REQUEST_URI'],'?') ? substr($_SERVER['REQUEST_URI'],0,strpos($_SERVER['REQUEST_URI'],'?')) : $_SERVER['REQUEST_URI'];
 	$subpath = substr($_SERVER['REQUEST_URI'],0,strlen($subpath)-strlen(strrchr($subpath,'/')));
