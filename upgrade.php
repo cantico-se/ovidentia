@@ -5212,6 +5212,28 @@ if ( $arr[0] != BAB_SITES_SWISH_TBL )
 		INDEX ( `id_site` )
 		)
 		");
+
+	if( !$res)
+		{
+		$ret = "Creation of <b>".BAB_SITES_SWISH_TBL."</b> table failed !<br>";
+		return $ret;
+		}
+	}
+
+
+$arr = $db->db_fetch_array($db->db_query("SHOW TABLES LIKE '".BAB_DBDIR_OPTIONS_TBL."'"));
+if ( $arr[0] != BAB_DBDIR_OPTIONS_TBL )
+	{
+	$req = "CREATE TABLE `".BAB_DBDIR_OPTIONS_TBL."` (
+			`search_view_fields` VARCHAR( 255 ) DEFAULT '2,4' NOT NULL
+			);";
+
+	$res = $db->db_query($req);
+	if( !$res)
+		{
+		$ret = "Creation of <b>".BAB_DBDIR_OPTIONS_TBL."</b> table failed !<br>";
+		return $ret;
+		}
 	}
 
 return $ret;
