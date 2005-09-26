@@ -715,6 +715,7 @@ function bab_isAccessValidByUser($table, $idobject, $iduser)
 		$row = $db->db_fetch_assoc($res);
 		if ($row['id_group'] >= BAB_ACL_GROUP_TREE)
 			{
+			$row['id_group'] -= BAB_ACL_GROUP_TREE;
 			return bab_isMemberOfTree($row['id_group'], $iduser);
 			}
 		return true;
