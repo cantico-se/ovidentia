@@ -1332,6 +1332,15 @@ CREATE TABLE bab_dbdirview_groups (
 );
 
 
+# 
+# Structure de la table `bab_dbdir_options`
+#
+
+CREATE TABLE `bab_dbdir_options` (
+  `search_view_fields` varchar(255) NOT NULL default '2,4'
+)
+
+
 #
 # Structure de la table `bab_ldap_directories`
 #
