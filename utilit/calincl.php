@@ -648,7 +648,7 @@ class bab_icalendars
 	{
 		if( $idcal == $this->id_percal )
 		{
-			return array('name' => $this->iduser, 'description' => '', 'type' => BAB_CAL_USER_TYPE, 'idowner' => $this->iduser, 'access' => BAB_CAL_ACCESS_FULL);
+			return array('name' => bab_getUserName($this->iduser), 'description' => '', 'type' => BAB_CAL_USER_TYPE, 'idowner' => $this->iduser, 'access' => BAB_CAL_ACCESS_FULL);
 		}
 		else
 		{
