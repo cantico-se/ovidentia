@@ -376,6 +376,10 @@ class bab_DbDirectoryMembers extends bab_handler
 				$this->ctx->curctx->push($this->IdEntries[$k]['xname']."Name", $this->IdEntries[$k]['name']);
 				$this->ctx->curctx->push($this->IdEntries[$k]['xname']."Value", $this->memberfields[$this->IdEntries[$k]['xname']]);
 				}
+			if( $this->memberfields['id_user'] != 0 )
+				{
+				$this->ctx->curctx->push('DirectoryMemberUserId', $this->memberfields['id_user']);
+				}
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -462,7 +466,8 @@ class bab_DbDirectoryEntry extends bab_handler
 		if( $this->directoryid !== false && !empty($this->directoryid) && bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $this->directoryid) )
 			{
 			$this->userid = $ctx->get_value('userid');
-			if( $this->userid !== false && !empty($this->userid) )
+			$this->memberid = $ctx->get_value('memberid');
+			if( ($this->userid !== false && !empty($this->userid)) ||  ($this->memberid !== false && !empty($this->memberid)) )
 				{
 				list($idgroup) = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$this->directoryid."'"));
 
@@ -486,15 +491,29 @@ class bab_DbDirectoryEntry extends bab_handler
 
 				$this->arrentries = array();
 
-				$res = $babDB->db_query("select *, LENGTH(photo_data) as plen from ".BAB_DBDIR_ENTRIES_TBL." det where det.id_directory='".($idgroup != 0? 0: $this->directoryid)."' and id='".$this->userid."'");
+				if( $this->memberid !== false && !empty($this->memberid) )
+					{
+					$wh = "id='".$this->memberid."'";
+					}
+				else
+					{
+					$wh = "id_user='".$this->userid."'";
+					}
+				$res = $babDB->db_query("select *, LENGTH(photo_data) as plen from ".BAB_DBDIR_ENTRIES_TBL." det where det.id_directory='".($idgroup != 0? 0: $this->directoryid)."' and ".$wh);
 
 				$this->arrentries = $babDB->db_fetch_array($res);
 
-				$res = $babDB->db_query("select * from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_entry='".$this->userid."'");
+				$res = $babDB->db_query("select * from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_entry='".$this->arrentries['id']."'");
 				while( $arr = $babDB->db_fetch_array($res))
 					{
 					$this->arrentries['babdirf'.$arr['id_fieldx']] = $arr['field_value'];
 					}
+
+				if( $this->arrentries['id_user'] != 0 )
+					{
+					$this->ctx->curctx->push('DirectoryEntryUserId', $this->arrentries['id_user']);
+					}
+				$this->ctx->curctx->push('DirectoryEntryMemberId', $this->memberfields['id']);
 
 				$this->count = 1;
 				}
@@ -518,7 +537,7 @@ class bab_DbDirectoryEntry extends bab_handler
 					{
 					if( $this->IdEntries[$k]['xname'] == 'jpegphoto' && $this->arrentries['plen'] != 0 )
 						{
-						$this->ctx->curctx->push($this->IdEntries[$k]['xname'].'Value', $GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$this->directoryid."&idu=".$this->userid);
+						$this->ctx->curctx->push($this->IdEntries[$k]['xname'].'Value', $GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$this->directoryid."&idu=".$this->arrentries['id']);
 						}
 					else
 						{
@@ -575,7 +594,7 @@ class bab_DbDirectoryEntryFields extends bab_handler
 				{
 				if( $this->handler->IdEntries[$this->idx]['xname'] == 'jpegphoto' && $this->handler->arrentries['plen'] != 0 )
 					{
-					$this->ctx->curctx->push('DirectoryFieldValue', $GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$this->handler->directoryid."&idu=".$this->handler->userid);
+					$this->ctx->curctx->push('DirectoryFieldValue', $GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$this->handler->directoryid."&idu=".$this->handler->arrentries['id']);
 					}
 				else
 					{
@@ -597,6 +616,75 @@ class bab_DbDirectoryEntryFields extends bab_handler
 		}
 	}
 
+}
+
+
+class bab_DbDirectoryAcl extends bab_handler
+{
+	var $IdEntries = array();
+	var $ctx;
+	var $index;
+	var $idx = 0;
+	var $count = 0;
+
+	function bab_DbDirectoryAcl( &$ctx)
+	{
+		global $babBody, $babDB;
+		$this->bab_handler($ctx);
+		$directoryid = $ctx->get_value('directoryid');
+
+		if( $directoryid !== false && $directoryid !== '' )
+		{
+			$type = $ctx->get_value('type');
+			if( $type !== false && $type !== '' )
+			{
+				switch(strtolower($type))
+				{
+					case 'add':
+						$table = BAB_DBDIRADD_GROUPS_TBL;
+						break;
+					case 'modify':
+						$table = BAB_DBDIRUPDATE_GROUPS_TBL;
+						break;
+					case 'view':
+					default:
+						$table = BAB_DBDIRVIEW_GROUPS_TBL;
+						break;
+				}
+			
+			}
+			else
+			{
+				$table = BAB_DBDIRVIEW_GROUPS_TBL;
+			}
+
+			include_once $GLOBALS['babInstallPath']."utilit/addonapi.php";
+			$groups = bab_getGroupsAccess($table, $directoryid);
+			$this->IdEntries = bab_getGroupsMembers($groups);	
+			$this->count = count($this->IdEntries);
+		}
+		$this->ctx->curctx->push('CCount', $this->count);
+	}
+
+	function getnext()
+	{
+		global $babDB;
+		if( $this->idx < $this->count)
+		{
+			$this->ctx->curctx->push('CIndex', $this->idx);
+			$this->ctx->curctx->push('UserId', $this->IdEntries[$this->idx]['id']);
+			$this->ctx->curctx->push('UserFullName', $this->IdEntries[$this->idx]['name']);
+			$this->ctx->curctx->push('UserEmail', $this->IdEntries[$this->idx]['email']);
+			$this->idx++;
+			$this->index = $this->idx;
+			return true;
+		}
+		else
+		{
+			$this->idx = 0;
+			return false;
+		}
+	}
 }
 
 ?>
