@@ -117,6 +117,8 @@ function bab_updateGroupInfo($id, $name, $description, $managerid, $grpdg , $id_
 
 	$db = &$GLOBALS['babDB'];
 
+	$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
+
 	$db->db_query("UPDATE ".BAB_GROUPS_TBL." 
 			SET 
 				name='".$name."', 
