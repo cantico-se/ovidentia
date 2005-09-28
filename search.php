@@ -102,7 +102,7 @@ class bab_addonsSearch
 					if (is_string($text))
 						{
 						$text = htmlentities($text);
-						if (function_exists($func_results) && !isset($link))
+						if (function_exists($func_results))
 							{
 							$this->func_results[$id] = $func_results;
 							$this->tabSearchAddons[$id] = $text;
@@ -131,11 +131,11 @@ class bab_addonsSearch
 
 	function getmenuarray()
 		{
-
-		foreach ($this->tabSearchAddons as $key => $value)
-			$out['as-'.$key] = $value;
 		foreach ($this->tabLinkAddons as $key => $value)
 			$out['al-'.$key] = $value;
+		foreach ($this->tabSearchAddons as $key => $value)
+			if (!isset($out['al-'.$key])) $out['as-'.$key] = $value;
+		
 		return isset($out) ? $out : array();
 		}
 
@@ -164,6 +164,10 @@ class bab_addonsSearch
 
 	function callSearchFunction($id)
 		{
+		static $i = 0;
+		if ($i >= $this->nb_result)
+			return false;
+		$i++;
 		$this->defineAddonGlobals($id);
 		$func = $this->func_results[$id];
 		return $func($this->q1, $this->q2, $this->option, $this->pos[$id], $this->nb_result);
