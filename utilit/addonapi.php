@@ -932,4 +932,17 @@ function bab_getFileMimeType($file)
 	return $mime;
 }
 
+
+function bab_getUserDirFields($id = false)
+	{
+	if (false == $id) $id = &$GLOBALS['BAB_SESS_USERID'];
+	$db = &$GLOBALS['babDB'];
+	$query = "select * from ".BAB_DBDIR_ENTRIES_TBL." where id_user='".$id."'";
+	$res = $db->db_query($query);
+	if( $res && $db->db_num_rows($res) > 0)
+		return $db->db_fetch_assoc($res);
+	else
+		return array();
+	}
+
 ?>
