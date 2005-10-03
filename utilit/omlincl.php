@@ -4104,7 +4104,8 @@ function get_handler($name)
 	{
 	for( $i = count($this->handlers)-1; $i >= 0; $i--)
 		{
-		if( get_class($this->handlers[$i]) == strtolower($name) )
+		$handler = get_class($this->handlers[$i]);
+		if(  $handler && (strtolower($handler) == strtolower($name)) )
 			{
 			return $this->handlers[$i];
 			}
