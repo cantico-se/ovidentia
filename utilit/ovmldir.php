@@ -513,7 +513,7 @@ class bab_DbDirectoryEntry extends bab_handler
 					{
 					$this->ctx->curctx->push('DirectoryEntryUserId', $this->arrentries['id_user']);
 					}
-				$this->ctx->curctx->push('DirectoryEntryMemberId', $this->memberfields['id']);
+				$this->ctx->curctx->push('DirectoryEntryMemberId', $this->arrentries['id']);
 
 				$this->count = 1;
 				}
