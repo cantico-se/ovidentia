@@ -47,7 +47,7 @@
 	<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
 		<td><a class="BabSiteAdminListLink" href="{ url }">{ urlname }</a> </td>
 		<td>{ description }&nbsp;</td>
-		<td><a class="BabSiteAdminListLink" href="{ adminurl }">{ adminurlname }</a> </td>
+		<td><!--#if baddmod --><a class="BabSiteAdminListLink" href="{ adminurl }">{ adminurlname }</a><!--#endif baddmod -->&nbsp; </td>
 	</tr>
 	<!--#endin getnextdb -->
 	</table>

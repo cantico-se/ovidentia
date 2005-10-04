@@ -125,6 +125,7 @@ function listUserAds()
 				$this->url = $GLOBALS['babUrlScript']."?tg=directory&idx=sdbovml&directoryid=".$this->dbid[$i];
 				$this->urlname = $arr['name'];
 				$this->badd = bab_isAccessValid(BAB_DBDIRADD_GROUPS_TBL, $this->dbid[$i]);
+				$this->baddmod = $this->badd || bab_isAccessValid(BAB_DBDIRUPDATE_GROUPS_TBL, $this->dbid[$i]);
 				if( $this->badd && $arr['id_group'] != 0 )
 					$this->badd = false;
 				$i++;
