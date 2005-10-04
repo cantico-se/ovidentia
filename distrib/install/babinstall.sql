@@ -1338,7 +1338,7 @@ CREATE TABLE bab_dbdirview_groups (
 
 CREATE TABLE `bab_dbdir_options` (
   `search_view_fields` varchar(255) NOT NULL default '2,4'
-)
+);
 
 
 #
