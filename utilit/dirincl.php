@@ -123,7 +123,7 @@ function UBrowseDbDirectory($id, $pos, $xf, $cb)
 					$this->select[] = "`".$filedname."`";
 					}
 
-				$this->colurl = $GLOBALS['babUrlScript']."?tg=directory&idx=sdb&id=".$this->id."&pos=".$this->ord.$this->pos."&xf=".$filedname;
+				$this->colurl = $GLOBALS['babUrlScript']."?tg=directory&idx=usdb&id=".$this->id."&pos=".$this->ord.$this->pos."&xf=".$filedname."&cb=".$this->cb;
 				$i++;
 				return true;
 				}
