@@ -77,7 +77,7 @@ function record_site_menu11($id_site)
 {
 	
 	if( !bab_isMagicQuotesGpcOn())
-		array_walk($_POST, create_function('&$v,$k','$v = $db->db_escape_string($v);'));
+		array_walk($_POST, create_function('&$v,$k','$v = $GLOBALS[\'babDB\']->db_escape_string($v);'));
 	
 	$db = &$GLOBALS['babDB'];
 	$res = $db->db_query("SELECT id FROM ".BAB_SITES_SWISH_TBL." WHERE id_site='".$id_site."'");
