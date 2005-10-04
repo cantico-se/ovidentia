@@ -144,7 +144,10 @@ function listUsers($pos, $grp)
 				$this->allselected = 0;
 			$this->allurl = $GLOBALS['babUrlScript']."?tg=users&idx=List&pos=&grp=".$this->grp;
 			$this->groupurl = $GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$this->grp;
-			if( $babBody->currentAdmGroup == 0 && $this->grp == 3 )
+			
+			$this->set_directory = $babBody->currentAdmGroup == 0;
+			
+			if( $babBody->currentAdmGroup == 0 && $this->grp == BAB_ADMINISTRATOR_GROUP )
 				$this->bmodname = true;
 			else
 				$this->bmodname = false;
