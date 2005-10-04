@@ -566,11 +566,13 @@ window.focus();
 <!--
 
 var begindate = false;
+var firstclick = false;
 
-function setPeriod(obj)
+function setPeriod(obj, init)
 	{
-	if (begindate == false)
+	if ((null == init && firstclick == false) || begindate == false)
 		{
+		firstclick = true;
 		var setbegin = true;
 		begindate = obj.id;
 		}
@@ -892,7 +894,7 @@ dateEnd( dayend, monthend, yearend);
 
 begindate = '{ yearbegin }-{ monthbegin }-{ daybegin }';
 if (td = document.getElementById('{ yearend }-{ monthend }-{ dayend }'))
-	setPeriod(td);
+	setPeriod(td, true);
 
 initialize();
 -->
