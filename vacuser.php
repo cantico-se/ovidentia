@@ -191,6 +191,12 @@ function requestVacation($begin,$end, $halfdaybegin, $halfdayend, $id)
 					{
 					$this->recorded[$arr['id_type']] = $arr['quantity'];
 					}
+
+				list($this->remarks) = $this->db->db_fetch_array($this->db->db_query("SELECT comment FROM ".BAB_VAC_ENTRIES_TBL." WHERE id='".$this->id."'"));
+				}
+			else
+				{
+				$this->remarks = isset($_POST['remarks']) ? stripslashes($_POST['remarks']) : '';
 				}
 
 			$this->datebegin = bab_longdate($begin,false);
@@ -214,7 +220,7 @@ function requestVacation($begin,$end, $halfdaybegin, $halfdayend, $id)
 				$this->dateend .= ' '.bab_translate("Afternoon");
 				}
 
-			$this->remarks = isset($_POST['remarks']) ? stripslashes($_POST['remarks']) : '';
+			
 			$this->calurl = $GLOBALS['babUrlScript']."?tg=vacuser&idx=cal&idu=".$this->id_user."&popup=1";
 
 			
