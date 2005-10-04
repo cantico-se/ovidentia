@@ -5174,7 +5174,7 @@ if ($arr[0] != 'ovml_list')
 	}
 
 $arr = $db->db_fetch_array($db->db_query("DESCRIBE ".BAB_DB_DIRECTORIES_TBL." ovml_detail"));
-if ($arr[0] != 'ovml_list')
+if ($arr[0] != 'ovml_detail')
 	{
 	$res = $db->db_query("ALTER TABLE `".BAB_DB_DIRECTORIES_TBL."` ADD ovml_detail tinytext NOT NULL");
 	if( !$res)
