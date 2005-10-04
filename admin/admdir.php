@@ -105,7 +105,10 @@ function listAds()
 					{
 					list($this->bshow) = $this->db->db_fetch_row($this->db->db_query("select directory from ".BAB_GROUPS_TBL." where id='".$arr['id_group']."'"));
 					if ($this->bshow == 'Y') $this->altbg = $this->altbg ? false : true;
-					$this->group = bab_getGroupName($arr['id_group']);
+					if ($arr['id_group'] == BAB_REGISTERED_GROUP)
+						$this->group = bab_getGroupName($arr['id_group'], false);
+					else
+						$this->group = bab_getGroupName($arr['id_group']);
 					}
 				else
 					{

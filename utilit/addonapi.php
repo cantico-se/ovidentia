@@ -473,7 +473,10 @@ function bab_getGroupName($id, $fpn=true)
 		}
 	else
 		{
-		return $babBody->ovgroups[$id]['name'];
+		if ($id <= BAB_ADMINISTRATOR_GROUP)
+			return bab_translate($babBody->ovgroups[$id]['name']);
+		else
+			return $babBody->ovgroups[$id]['name'];
 		}
 	}
 

@@ -202,7 +202,7 @@ function searchKeyword($item , $option = "OR")
 			$this->db = $GLOBALS['babDB'];
 			global  $babBody,$babSearchItems;
 			$this->item = $item;
-			$this->fields = $GLOBALS['HTTP_POST_VARS'];
+			$this->fields = isset($_POST) ? $_POST : array();
 			$this->search = bab_translate("Search");
 			$this->all = bab_translate("All");
 			$this->in = bab_translate("in");
