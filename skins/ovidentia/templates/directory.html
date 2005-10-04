@@ -461,7 +461,7 @@ function redimimg()
 <a class="BabAlphabetLink" href="{ modifyurl }">{ modifytxt }</a>
 <!--#endif modify -->
 &nbsp;<!--#if del -->
-<a class="BabAlphabetLink" href="{ delurl }">{ deltxt }</a>
+<a class="BabAlphabetLink" href="{ delurl }" onclick="return confirm('{ t_delconf }')">{ deltxt }</a>
 <!--#endif del -->
 &nbsp; <a class="BabAlphabetLink" href="javascript:window.print()">{ t_print }</a>
 </td>

@@ -385,6 +385,7 @@ function summaryDbContact($id, $idu, $update=true)
 				die( bab_translate('Access denied') );
 				}
 			$this->t_print = bab_translate("Print");
+			$this->t_delconf = bab_translate("Do you really want to delete the contact ?");
 
 			$this->db = &$GLOBALS['babDB'];
 			list($idgroup, $allowuu) = $this->db->db_fetch_array($this->db->db_query("select id_group, user_update from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
