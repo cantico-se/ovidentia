@@ -65,7 +65,7 @@ function listTopicCategory($cat)
 			$this->waitingtxt = bab_translate("Waiting");
 			$this->submittxt = bab_translate("Submit");
 			$this->db = $GLOBALS['babDB'];
-			$this->idcat = $cat;
+			$this->idcat = $cat; /* don't change variable name */
 
 			$arrtopcat = array();
 			$arrtop = array();
@@ -162,9 +162,13 @@ function listTopicCategory($cat)
 					{
 					$this->childurl = $GLOBALS['babUrlScript']."?tg=topusr&cat=".$this->arrid[$i][0];
 					$this->istopcat = true;
+					$this->idtopiccategory = $this->arrid[$i][0]; /* don't change variable name */
+					$this->idtopic = ''; /* don't change variable name */
 					}
 				else
 					{
+					$this->idtopiccategory = '';
+					$this->idtopic = $this->arrid[$i][0];
 					$this->istopcat = false;
 					if( $this->arrid[$i]['confirmed'] == 0 )
 						$this->submiturl = $GLOBALS['babUrlScript']."?tg=articles&idx=Submit&topics=".$this->arrid[$i][0];

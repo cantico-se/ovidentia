@@ -1,4 +1,5 @@
 <!--#begin default -->
+		<!-- idcat id of the category parent. 0 if no parent -->
 <!--#if parentscount -->
 <div id="BabCategTitleNavigation">
 <p>
@@ -16,6 +17,8 @@
       <!--#if count -->
       <ul class="BabCategTitleNavigation">
         <!--#in getnext -->
+		<!-- idtopiccategory: id of the category if this item is a topics category. blank otherwise -->
+		<!-- idtopic: id of the topic if this item is an articles topic. blank otherwise -->
         <li><a href="{ childurl }">{ childname }</a>
 			
 		</li>
