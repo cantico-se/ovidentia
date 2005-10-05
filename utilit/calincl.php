@@ -503,7 +503,7 @@ class bab_icalendars
 	{
 		if( $idcal == $this->id_percal )
 		{
-			return $this->iduser;
+			return bab_getUserName($this->iduser);
 		}
 		else
 		{
