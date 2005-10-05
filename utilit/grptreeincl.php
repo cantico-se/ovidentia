@@ -120,7 +120,7 @@ class bab_grptree extends bab_dbtree
 
 	function setAlphaChild($id_parent, $childname)
 	{
-	$groups = & $this->getChilds($id_parent);
+	$groups = $this->getChilds($id_parent);
 	$grp = array();
 	if (is_array($groups))
 		{
