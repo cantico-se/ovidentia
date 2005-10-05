@@ -205,6 +205,11 @@ class babMail
 		$this->mail->AddAttachment($fname, $realname);
 	}
 
+	function mailClearAttachments()
+	{
+		$this->mail->ClearAttachments();
+	}
+
 	function send()
 	{
 		return $this->mail->Send();
