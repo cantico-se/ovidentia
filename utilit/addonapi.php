@@ -473,10 +473,7 @@ function bab_getGroupName($id, $fpn=true)
 		}
 	else
 		{
-		if ($id <= BAB_ADMINISTRATOR_GROUP)
-			return bab_translate($babBody->ovgroups[$id]['name']);
-		else
-			return $babBody->ovgroups[$id]['name'];
+		return $babBody->ovgroups[$id]['name'];
 		}
 	}
 
@@ -768,6 +765,22 @@ if( !isset($_SESSION['bab_groupAccess']['acltables'][$table]))
 	return $_SESSION['bab_groupAccess']['acltables'][$table];
 }
 
+//Il manque la partie pour les ensemble de groupes
+function bab_getUsersAccess($table)
+{
+	global $babBody;
+
+	$db = &$GLOBALS['babDB'];
+
+	$ids = array();
+
+	$res = $db->db_query("select id_group from ".$table);
+	while($row = $db->db_fetch_array($res))
+		{
+		$ids[] = $row['id_group'] - BAB_ACL_GROUP_TREE;
+		}
+	return bab_getGroupsMembers($ids);
+}
 
 function bab_getGroupsAccess($table, $idobject)
 {
