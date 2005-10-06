@@ -79,7 +79,9 @@ function groupCreateMod()
 				{
 				$id_parent = $tree->firstnode_info['id'];
 				if ($id_parent > BAB_ALLUSERS_GROUP)
+					{
 					$id_parent = $tree->firstnode_info['id_parent'];
+					}
 				}
 			else
 				$id_parent = $tree->firstnode_info['id'];

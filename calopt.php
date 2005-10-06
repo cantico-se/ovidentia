@@ -670,6 +670,9 @@ switch($idx)
 		$babBody->title = bab_translate("Calendar Options");
 		if( $babBody->icalendars->id_percal != 0 )
 		{
+			if (!isset($idcal))
+				$idcal = $babBody->icalendars->id_percal;
+			
 			accessCalendar($idcal, $urla);
 			$babBody->addItemMenu("options", bab_translate("Calendar Options"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options&urla=".urlencode($urla));
 			$babBody->addItemMenu("access", bab_translate("Calendar access"), $GLOBALS['babUrlScript']."?tg=options&idx=access&idcal=".$idcal);
