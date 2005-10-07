@@ -507,7 +507,6 @@ function saveGroupsOptions($mailgrpids, $notgrpids, $congrpids, $pdsgrpids, $dir
 		$db->db_query("update ".BAB_GROUPS_TBL." set ustorage='Y' where id='".$pdsgrpids[$i]."'"); 
 	}
 
-	$grpdirectories = array();
 
 	for( $i=0; $i < count($dirgrpids); $i++)
 	{
@@ -517,20 +516,9 @@ function saveGroupsOptions($mailgrpids, $notgrpids, $congrpids, $pdsgrpids, $dir
 		if( !$res || $db->db_num_rows($res) == 0 )
 		{
 			$db->db_query("insert into ".BAB_DB_DIRECTORIES_TBL." (name, description, id_group, id_dgowner) values ('".$db->db_escape_string(bab_getGroupName($dirgrpids[$i], false))."','','".$dirgrpids[$i]."', '".$babBody->currentAdmGroup."')");
-
-			$id = $db->db_insert_id($res);
 		}
-		else
-		{
-		list($id) = $db->db_fetch_array($res);
-		}
-
-		$grpdirectories[] = $id;
+		
 	}
-
-
-	$db->db_query("DELETE FROM ".BAB_DB_DIRECTORIES_TBL." where id NOT IN('".implode("','",$grpdirectories)."') AND id_dgowner='".$babBody->currentAdmGroup."' AND id_group>'0'");	
-
 	
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=groups&idx=options");
 	exit;

@@ -76,12 +76,13 @@ class bab_grptree extends bab_dbtree
 
 	$groups = $this->getChilds($id_parent, 1);
 
+
 	if (!$groups)
 		{
 		$id_parent = $this->firstnode;
 		$groups = $this->getChilds($this->firstnode, 1);
 		if (!$groups)
-			return array();
+			$groups = array();
 
 		array_unshift ($groups, $this->getNodeInfo($id_parent));
 		}
