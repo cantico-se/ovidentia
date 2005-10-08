@@ -261,6 +261,7 @@ class bab_DbDirectoryMembers extends bab_handler
 				if( count($nfields) > 0 || count($xfields) > 0)
 					{
 					$nfields[] = "id";
+					$nfields[] = "id_user";
 					$orderby = $ctx->get_value('orderby');
 
 					if( $orderby === false || empty($orderby) )
