@@ -1605,7 +1605,11 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 
 	list($idgroup, $allowuu) = $db->db_fetch_array($db->db_query("select id_group, user_update from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
 
-	list($iduser) = $db->db_fetch_array($db->db_query("select id_user from ".BAB_DBDIR_ENTRIES_TBL." where id='".$idu."'"));
+
+	$usertbl = $db->db_fetch_assoc($db->db_query("select id_user,givenname,mn,sn from ".BAB_DBDIR_ENTRIES_TBL." where id='".$idu."'"));
+
+	$iduser = &$usertbl['id_user'];
+
 
 	if(bab_isAccessValid(BAB_DBDIRUPDATE_GROUPS_TBL, $id) || ($idgroup != '0' && $allowuu == "Y" && $iduser == $GLOBALS['BAB_SESS_USERID']))
 		{
@@ -1614,7 +1618,7 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 		while( $arr = $db->db_fetch_array($res))
 			{
 
-			$rr = $db->db_fetch_array($db->db_query("select required from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup !=0 ? 0: $id)."' and id_field='".$arr['id']."'"));
+			$rr = $db->db_fetch_array($db->db_query("select required, modifiable from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup !=0 ? 0: $id)."' and id_field='".$arr['id']."'"));
 
 			if ($arr['name'] == 'jpegphoto' && $rr['required'] == "Y" && (empty($file) || $file == "none"))
 				{
@@ -1638,13 +1642,14 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 
 				$req .= $arr['name']."='".addslashes($fields[$arr['name']])."',";
 				}
+
+			if (($arr['name'] == 'sn' && empty($fields['sn']) && $rr['modifiable'] == 'Y') || ($arr['name'] == 'givenname' && empty($fields['sn']) && $rr['modifiable'] == 'Y'))
+				{
+				$babBody->msgerror = bab_translate( "You must complete firstname and lastname fields !!");
+				return false;
+				}
 			}
 
-		if( empty($fields['sn']) || empty($fields['givenname']))
-			{
-			$babBody->msgerror = bab_translate( "You must complete firstname and lastname fields !!");
-			return false;
-			}
 
 		if ( !empty($fields['email']) && !bab_isEmailValid($fields['email']))
 			{
@@ -1657,6 +1662,17 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 
 			$replace = array( " " => "", "-" => "");
 
+
+			if (!isset($fields['givenname']))
+				$fields['givenname'] = $usertbl['givenname'];
+				
+			if (!isset($fields['mn']))
+				$fields['mn'] = $usertbl['mn'];
+
+			if (!isset($fields['sn']))
+				$fields['sn'] = $usertbl['sn'];
+			
+			
 			$hashname = md5(strtolower(strtr($fields['givenname'].$fields['mn'].$fields['sn'], $replace)));
 			$query = "select * from ".BAB_USERS_TBL." where hashname='".$hashname."' and id!='".$iduser."'";	
 			$res = $db->db_query($query);
