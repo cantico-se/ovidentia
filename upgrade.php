@@ -4936,7 +4936,7 @@ if ($arr[0] != 'id_group')
 
 	$level3 = array();
 
-	$res = $db->db_query("SELECT id, id_dggroup, name FROM ".BAB_GROUPS_TBL."");
+	$res = $db->db_query("SELECT id, id_dggroup, name, id_dgowner FROM ".BAB_GROUPS_TBL."");
 	while ($arr = $db->db_fetch_array($res))
 		{
 		if ($arr['id'] > 2 && 0 == $arr['id_dgowner'])
