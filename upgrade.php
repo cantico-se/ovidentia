@@ -4984,7 +4984,7 @@ if ($arr[0] != 'id_group')
 				$db->db_query("INSERT INTO ".BAB_DG_ADMIN_TBL." (id_user, id_dg) VALUES ('".$row['id_object']."','".$id."')");
 				}
 
-			$db->db_query("DROP table ".BAB_DG_USERS_GROUPS_TBL."");
+			// $db->db_query("DROP table ".BAB_DG_USERS_GROUPS_TBL."");
 
 			foreach($objDelegat as $table)
 				{
