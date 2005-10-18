@@ -5240,4 +5240,24 @@ return $ret;
 }
 
 
+function upgrade570to571()
+{
+	
+$ret = "";
+$db = & $GLOBALS['babDB'];
+
+$arr = $db->db_fetch_array($db->db_query("DESCRIBE ".BAB_FM_FOLDERS_TBL." bhide"));
+if ($arr[0] != 'bhide')
+	{
+	$res = $db->db_query("ALTER TABLE `".BAB_FM_FOLDERS_TBL."` ADD bhide ENUM('N','Y') DEFAULT 'N' NOT NULL");
+	if( !$res)
+		{
+		$ret = "Alteration of <b>".BAB_FM_FOLDERS_TBL."</b> table failed !<br>";
+		return $ret;
+		}
+	}
+
+return $ret;
+}
+
 ?>

@@ -1006,7 +1006,7 @@ CREATE TABLE bab_ini (
 
 INSERT INTO bab_ini VALUES ('ver_major', '5');
 INSERT INTO bab_ini VALUES ('ver_minor', '7');
-INSERT INTO bab_ini VALUES ('ver_build', '0');
+INSERT INTO bab_ini VALUES ('ver_build', '1');
 INSERT INTO bab_ini VALUES ('ver_prod', 'E');
 
 #
@@ -1080,6 +1080,7 @@ CREATE TABLE bab_fm_folders (
   active enum('Y','N') NOT NULL default 'Y',
   version enum('N','Y') NOT NULL default 'N',
   id_dgowner int(11) unsigned NOT NULL default '0',
+  bhide enum('N','Y') NOT NULL default 'N',
   PRIMARY KEY  (id),
   KEY folder (folder),
   KEY id_dgowner (id_dgowner)
