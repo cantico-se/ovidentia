@@ -4,12 +4,12 @@
 <input type="hidden" name="tg" value="admfms">
 <input type="hidden" name="idx" value="list">
 <input type="hidden" name="add" value="addfolder">
-<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<table  width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
 <table class="BabLoginMenuBackground"  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
-<td width="30%" align="right">{  name }:</td>
+<td align="right">{  name }:</td>
 <td> 
 <input type="text" name="fname" size="30" maxlength="100" value="">
 </td>
@@ -53,6 +53,15 @@
 </td>
 </tr>
 <tr> 
+<td align="right">{ display }:</td>
+<td> 
+<select name="bhide">
+<option value="Y">{ yes }</option>
+<option value="N" selected>{ no }</option>
+</select>
+</td>
+</tr>
+<tr> 
 <td>&nbsp;</td>
 <td>
 <input type="submit" name="Submit" value="{ add }">
@@ -82,6 +91,7 @@
 <td align="center">{ notify }</td>
 <td align="center">{ active }</td>
 <td align="center">{ version }</td>
+<td align="center">{ display }</td>
 </tr>
 <!--#in getnext -->
 <!--#if altbg --><tr valign="middle" class="BabSiteAdminFontBackground"><!--#else altbg --><tr valign="middle" class="BabForumBackground1"><!--#endif altbg -->
@@ -90,6 +100,7 @@
 <td width="0%" align="center"><input type="checkbox" name="notifies[]" { fnotify } value="{ fid }"></td>
 <td width="0%" align="center"><input type="checkbox" name="actives[]" { factive } value="{ fid }"></td>
 <td width="0%" align="center"><input type="checkbox" name="versions[]" { fversion } value="{ fid }"></td>
+<td width="0%" align="center"><input type="checkbox" name="bhides[]" { fbhide } value="{ fid }"></td>
 </tr>        
 <!--#endin getnext -->
 <tr class="BabSiteAdminTitleFontBackground"> 
@@ -98,6 +109,7 @@
 <td width="1%" align="center"><a href="javascript:onCheckAll('notifies', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('notifies', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
 <td class="BabSiteAdminTitleFontBackground" width="1%" align="center"><a href="javascript:onCheckAll('actives', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('actives', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
 <td class="BabSiteAdminTitleFontBackground" width="1%" align="center"><a href="javascript:onCheckAll('versions', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('versions', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
+<td class="BabSiteAdminTitleFontBackground" width="1%" align="center"><a href="javascript:onCheckAll('bhides', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('bhides', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
 </tr>
 </table>
 </td>
@@ -135,12 +147,12 @@ function submitCtr()
 <input type="hidden" name="idx" value="list" />
 <input type="hidden" name="fid" value="{ fid }" />
 <input type="hidden" name="mod" value="modfolder" />
-<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<table  width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
 <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
-<td width="30%" align="right">{  name }:</td>
+<td align="right">{  name }:</td>
 <td> 
 <input type="text" name="fname" size="30" maxlength="100" value="{ folderval }" />
 </td>
@@ -180,6 +192,15 @@ function submitCtr()
 <select name="version">
 <option value="Y" { yversel }>{ yes }</option>
 <option value="N" { nversel }>{ no }</option>
+</select>
+</td>
+</tr>
+<tr> 
+<td align="right">{ display }:</td>
+<td> 
+<select name="bhide">
+<option value="Y" { yhidesel }>{ yes }</option>
+<option value="N" { nhidesel }>{ no }</option>
 </select>
 </td>
 </tr>

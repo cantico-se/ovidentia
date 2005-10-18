@@ -556,7 +556,7 @@ function bab_fileManagerAccessLevel()
 			}
 		}
 	
-	$res = $babDB->db_query("select id, idsa, folder from ".BAB_FM_FOLDERS_TBL." where active='Y' ORDER BY folder");
+	$res = $babDB->db_query("select id, idsa, folder, bhide from ".BAB_FM_FOLDERS_TBL." where active='Y' ORDER BY folder");
 	while($row = $babDB->db_fetch_array($res))
 		{
 		$uplo = bab_isAccessValid(BAB_FMUPLOAD_GROUPS_TBL, $row['id']);
@@ -566,16 +566,28 @@ function bab_fileManagerAccessLevel()
 
 		if( $down || $uplo || $upda || $man )
 			{
-			$babBody->aclfm['id'][] = $row['id'];
-			$babBody->aclfm['folder'][] = $row['folder'];
-			$babBody->aclfm['down'][] = $down;
-			$babBody->aclfm['uplo'][] = $uplo;
-			$babBody->aclfm['upda'][] = $upda;
-			$babBody->aclfm['idsa'][] = $row['idsa'];
-			if( $man )
-				$babBody->aclfm['ma'][] = 1;
+			if( ($row['bhide'] == 'Y') && ($uplo == false) && ($upda == false) && ($man == false) )
+				{
+				$badd = false;
+				}
 			else
-				$babBody->aclfm['ma'][] = 0;
+				{
+				$badd = true;
+				}
+
+			if( $badd )
+				{
+				$babBody->aclfm['id'][] = $row['id'];
+				$babBody->aclfm['folder'][] = $row['folder'];
+				$babBody->aclfm['down'][] = $down;
+				$babBody->aclfm['uplo'][] = $uplo;
+				$babBody->aclfm['upda'][] = $upda;
+				$babBody->aclfm['idsa'][] = $row['idsa'];
+				if( $man )
+					$babBody->aclfm['ma'][] = 1;
+				else
+					$babBody->aclfm['ma'][] = 0;
+				}
 			}
 		}
 	}
