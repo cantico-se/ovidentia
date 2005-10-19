@@ -611,7 +611,7 @@ function bab_getUserId( $name )
 function bab_getUserGroups($id = "")
 	{
 	global $babBody;
-	$arr = array();
+	$arr = array('id' => array(), 'name' => array());
 	if( empty($id))
 		{
 		for( $i = 0; $i < count($babBody->usergroups); $i++ )
