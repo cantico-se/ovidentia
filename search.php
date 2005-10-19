@@ -864,19 +864,16 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			// ------------------------------------------------------------------------ PERSONAL NOTES
 			if( (empty($item) || $item == "d") && !empty($BAB_SESS_USERID))
 				{
-				$plus = "";
+
 				$plus = finder($this->like,"content",$option,$this->like2);
-				if ($plus != "") $plus .= " and";
+				if ($plus != "") $plus = "($plus) and";
 				$req = "select count(*) from ".BAB_NOTES_TBL." where ".$plus." id_user='".$BAB_SESS_USERID."'";
 				$res = $this->db->db_query($req);
 				list($nbrows) = $this->db->db_fetch_row($res);
 				$navpos = $this->navpos;
 				if ($navitem != "d") $navpos = 0;
 				$this->navbar_d = navbar($babLimit,$nbrows,"d",$navpos);
-				
-				$plus = "";
-				$plus = finder($this->like,"content",$option,$this->like2);
-				if ($plus != "") $plus .= " and";
+
 				$req = "select id, content, UNIX_TIMESTAMP(date) date from ".BAB_NOTES_TBL." where ".$plus." id_user='".$BAB_SESS_USERID."' limit ".$navpos.", ".$babLimit;
 				$this->resnot = $this->db->db_query($req);
 				$this->countnot = $this->db->db_num_rows($this->resnot);
