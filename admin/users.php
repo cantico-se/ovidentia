@@ -408,7 +408,8 @@ if( $idx == "chg")
 
 if( isset($Updateg) && ($babBody->isSuperAdmin || $babBody->currentAdmGroup != 0 ))
 {
-	updateGroup($grp, $users, $userst);
+	$users = isset($_POST['users']) ? $_POST['users'] : array();
+	updateGroup($_POST['grp'], $users, $_POST['userst']);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp);
 	exit;
 }
