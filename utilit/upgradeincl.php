@@ -29,7 +29,7 @@ function bab_cpaddons($from,$to)
          if ($handle = opendir($wh)) {
              while (false !== ($file = readdir($handle))) {
 				if ($file != "." && $file != ".." ) {
-						if(!$files) $files="$file";
+						if(!isset($files)) $files="$file";
 						else $files="$file\n$files";
 				   }
               }
