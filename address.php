@@ -37,7 +37,6 @@ function listAddress($pos)
 		var $status;
 				
 		var $fullnameval;
-		var $emailval;
 
 		var $arr = array();
 		var $db;
@@ -64,7 +63,6 @@ function listAddress($pos)
 		var $checkall;
 		var $uncheckall;
 
-		var $closeurl;
 		var $closeurl;
 
 		function temp($pos)
