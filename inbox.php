@@ -190,6 +190,11 @@ function listMails($accid, $criteria, $reverse, $start)
 			$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$BAB_SESS_USERID."'";
 			$this->resacc = $this->db->db_query($req);
 			$this->countacc = $this->db->db_num_rows($this->resacc);
+
+			if ($this->countacc == 0)
+				{
+				$GLOBALS['babBody']->msgerror = bab_translate("No mail account");
+				}
 			}
 
 		function getnextpart()
@@ -754,7 +759,7 @@ function getAttachment($accid, $msg, $part, $mime, $enc, $file)
 			if($mbox)
 				{
             	$structure = imap_fetchstructure($mbox, $msg, FT_UID);
-				$text = imap_fetchbody($mbox, $msg, $part);
+				$text = imap_fetchbody($mbox, $msg, $part, FT_UID);
 				imap_close($mbox);
 				/*
             	if (eregi("([0-9\.]*)\.([0-9\.]*)", $part, $m))

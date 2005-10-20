@@ -211,7 +211,18 @@ else
 	}
 
 if( isset($modify) && $modify == "moddom")
+	{
+	if (!isset($oldname))
+		$oldname = '';
+
+	if (!isset($outmailserver))
+		$outmailserver = '';
+
+		if (!isset($outportserver))
+		$outportserver = '';
+
 	modifyDomain($bgrp, $userid, $oldname, $dname, $description, $accessmethod, $inmailserver, $inportserver, $outmailserver, $outportserver, $item);
+	}
 
 if( isset($action) && $action == "Yes")
 	{

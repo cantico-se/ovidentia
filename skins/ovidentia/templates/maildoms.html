@@ -167,32 +167,32 @@ if (obj.value == 'pop3')
 -->
 </script>
 <form method="post" name="domainmail" action="{ babPhpSelf }">
-  <input type="hidden" name="idx" value="modify">
-<input type="hidden" name="item" value="{ arr[id] }">
-<input type="hidden" name="babname" value="{ arr[name] }">
-<input type="hidden" name="userid" value="{ userid }">
-<input type="hidden" name="bgrp" value="{ bgrp }">
-<input type="hidden" name="modify" value="moddom">
-<input type="hidden" name="tg" value="maildom">
+<input type="hidden" name="idx" value="modify" />
+<input type="hidden" name="item" value="{ arr[id] }" />
+<input type="hidden" name="babname" value="{ arr[name] }" />
+<input type="hidden" name="userid" value="{ userid }" />
+<input type="hidden" name="bgrp" value="{ bgrp }" />
+<input type="hidden" name="modify" value="moddom" />
+<input type="hidden" name="tg" value="maildom" />
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ name }:</td>
-<td class="BabLoginMenuBackground" width="70%" valign="middle"> 
-<input type="text" name="dname" size="30" maxlength="255" value="{ arr[name] }">
+<td align="right">{ name }:</td>
+<td> 
+<input type="text" name="dname" size="30" maxlength="255" value="{ arr[name] }" />
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ description }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="description" size="30" maxlength="255" value="{ arr[description] }">
+<td align="right">{ description }:</td>
+<td> 
+<input type="text" name="description" size="30" maxlength="255" value="{ arr[description] }" />
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ accessmethod }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
+<td align="right">{ accessmethod }:</td>
+<td> 
 <select name="accessmethod" size="1" onchange="changeport(this);">
   <option value="pop3" { popselected }>POP3</option>
   <option value="imap" { imapselected }>IMAP</option>
@@ -200,35 +200,35 @@ if (obj.value == 'pop3')
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ inmailserver }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="inmailserver" size="30" maxlength="255" value="{ arr[inserver] }">
+<td align="right">{ inmailserver }:</td>
+<td> 
+<input type="text" name="inmailserver" size="30" maxlength="255" value="{ arr[inserver] }" />
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ inportserver }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="inportserver" size="5" maxlength="5" value="{ arr[inport] }">
+<td align="right">{ inportserver }:</td>
+<td> 
+<input type="text" name="inportserver" size="5" maxlength="5" value="{ arr[inport] }" />
 </td>
 </tr>
 <!--#if dummy -->
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ outmailserver }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="outmailserver" size="30" maxlength="255" value="{ arr[outserver] }">
+<td align="right">{ outmailserver }:</td>
+<td> 
+<input type="text" name="outmailserver" size="30" maxlength="255" value="{ arr[outserver] }" />
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ outportserver }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="outportserver" size="5" maxlength="5" value="{ arr[outport] }">
+<td align="right">{ outportserver }:</td>
+<td> 
+<input type="text" name="outportserver" size="5" maxlength="5" value="{ arr[outport] }" />
 </td>
 </tr>
 <!--#endif dummy -->
 <tr> 
-<td class="BabLoginMenuBackground">&nbsp;</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="submit" name="submit" value="{ modify }">
+<td>&nbsp;</td>
+<td> 
+<input type="submit" name="submit" value="{ modify }" />
 <br>
 </td>
 </tr>

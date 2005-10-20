@@ -377,7 +377,18 @@ if( $bgrp == "y")
 }
 
 if( isset($adddom) && $adddom == "add")
+	{
+	if (!isset($groups))
+		$groups = array();
+	
+	if (!isset($outmailserver))
+		$outmailserver='';
+
+	if (!isset($outportserver))
+		$outportserver='';
+
 	addDomain($bgrp, $userid, $groups, $dname, $description, $accessmethod, $inmailserver, $inportserver, $outmailserver, $outportserver);
+	}
 
 switch($idx)
 	{

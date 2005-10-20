@@ -360,6 +360,7 @@ function createMail($accid, $to, $cc, $bcc, $subject, $message, $files, $files_n
 		$ncc = count($adarr['cc']);
 		$nbcc = count($adarr['bcc']);
 
+
 		$countto = 0;
 		$countcc = 0;
 		$countbcc = 0;
@@ -466,12 +467,13 @@ function mailReply($accid, $criteria, $reverse, $idreply, $all, $fw)
                 $headinfo = imap_header($mbox, $idreply);
                 $arr = $headinfo->from;
                 $toval = "";
+				$fromorg = '';
                 for($i=0; $i < count($arr); $i++)
                     {
                     $mhc = imap_mime_header_decode($arr[$i]->personal);
                     $fromorg .= $mhc[0]->text . " [" . $arr[$i]->mailbox . "@" . $arr[$i]->host . "] ";
                     if( $fw != 1)
-                        $toval .= $arr[$i]->mailbox . "@" . $arr[$i]->host." ";
+                        $toval .= $arr[$i]->mailbox . "@" . $arr[$i]->host.", ";
                     }
                 $toorg = "";
                 if( $fw != 1)
@@ -479,14 +481,17 @@ function mailReply($accid, $criteria, $reverse, $idreply, $all, $fw)
                     $arr = $headinfo->to;
                     for($i=0; $i < count($arr); $i++)
                         {
-                        $mhc = imap_mime_header_decode($arr[$i]->personal);
-                        $toorg .= $mhc[0]->text." ";
+                        if (isset($arr[$i]->personal))
+							{
+							$mhc =  imap_mime_header_decode($arr[$i]->personal);
+							$toorg .= $mhc[0]->text." ";
+							}
 
                         if( $all == 1)
-                            $toval .= $arr[$i]->mailbox . "@" . $arr[$i]->host." ";
+                            $toval .= $arr[$i]->mailbox . "@" . $arr[$i]->host.", ";
                         }
 
-                    $arr = $headinfo->cc;
+                    $arr = isset($headinfo->cc) ? $headinfo->cc : array();
                     $ccorg = "";
                     $ccval = "";
                     for($i=0; $i < count($arr); $i++)
@@ -495,7 +500,7 @@ function mailReply($accid, $criteria, $reverse, $idreply, $all, $fw)
                         $ccorg .= $mhc[0]->text . " ";
 
                         if( $all == 1)
-                            $ccval .= $arr[$i]->mailbox . "@" . $arr[$i]->host." ";
+                            $ccval .= $arr[$i]->mailbox . "@" . $arr[$i]->host.", ";
                         }
                     $re = "RE:";
                     }
@@ -508,7 +513,7 @@ function mailReply($accid, $criteria, $reverse, $idreply, $all, $fw)
                 else
                     $subjectval = $re." ".$mhc[0]->text;
 
-                $msgbody .= bab_getMimePart($mbox, $idreply, "TEXT/HTML");
+                $msgbody = bab_getMimePart($mbox, $idreply, "TEXT/HTML");
                 if(!$msgbody)
                     {
 					$format = "plain";
@@ -537,7 +542,7 @@ function mailReply($accid, $criteria, $reverse, $idreply, $all, $fw)
 	if (!isset($subjectval)) $subjectval = '';
 	if (!isset($format)) $format = '';
 	if (!isset($messageval)) $messageval = '';
-    composeMail($accid, $criteria, $reverse, trim($toval), trim($ccval), "", $subjectval, array(), $format, $messageval, 0, "");
+    composeMail($accid, $criteria, $reverse, trim($toval,', '), trim($ccval,', '), "", $subjectval, array(), $format, $messageval, 0, "");
 	}
 
 function mailUnload()
@@ -607,6 +612,9 @@ switch($idx)
 		$babBody->title = bab_translate("Email");
 		$babBody->addItemMenu("list", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=inbox&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse);
 		$babBody->addItemMenu("compose", bab_translate("Compose"), $GLOBALS['babUrlScript']."?tg=inbox&idx=compose&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse);
+		if (!isset($all)) $all = '';
+		if (!isset($fw)) $fw = '';
+		
 		mailReply($accid, $criteria, $reverse, $idreply, $all, $fw);
 		break;
 
