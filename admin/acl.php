@@ -322,11 +322,12 @@ function maclGroups()
 			}
 		}
 
-	foreach($_POST['tablelist'] as $table)
-		{
-		if (!isset($_POST['tree'][$table]))
-			$db->db_query("DELETE FROM ".$table." WHERE id_object='".$id_object."' AND id_group >= '".BAB_ACL_GROUP_TREE."'");
-		}
+	if (isset($_POST['tablelist']))
+		foreach($_POST['tablelist'] as $table)
+			{
+			if (!isset($_POST['tree'][$table]))
+				$db->db_query("DELETE FROM ".$table." WHERE id_object='".$id_object."' AND id_group >= '".BAB_ACL_GROUP_TREE."'");
+			}
 	}
 	
 function aclGroups($target, $index, $table, $id, $return)
