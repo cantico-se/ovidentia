@@ -63,6 +63,7 @@ function listMails($accid, $criteria, $reverse, $start)
 		var $bunseen;
 		var $access;
 		var $nbparts = 0;
+		var $altbg = true;
 
 		function temp($accid, $criteria, $reverse, $start)
 			{
@@ -226,6 +227,7 @@ function listMails($accid, $criteria, $reverse, $start)
 			static $i = 0;
 			if( $i < $this->mailcount)
 				{
+				$this->altbg = !$this->altbg;
 				$this->msgid = $this->msguid[$this->start-1 + $i];
 				$headinfo = imap_header($this->mbox, imap_msgno($this->mbox, $this->msgid));
 				if( empty($headinfo->from[0]->personal))
@@ -240,7 +242,7 @@ function listMails($accid, $criteria, $reverse, $start)
 				$this->msgsubjecturlname = htmlentities($arr[0]->text);
 				$this->msgsubjecturl = $this->msgfromurl;
 
-				$this->msgdate = bab_strftime($headinfo->udate);
+				$this->msgdate = bab_shortDate($headinfo->udate);
 
 				$fh = imap_fetchheader($this->mbox, $this->msgid, FT_UID);
 

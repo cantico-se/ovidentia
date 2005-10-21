@@ -13,21 +13,23 @@
 	<table border="0" width="100%" cellpadding="2" cellspacing="0">
 		<tr class="BabSiteAdminTitleFontBackground"> 
 			<td colspan="3">
-				<a href="javascript:onCheckAll('item', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a>
-				<a href="javascript:onCheckAll('item', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a>
+				<a href="javascript:onCheckAll('item', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }"  border="0"></a>
+				<a href="javascript:onCheckAll('item', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" border="0"></a>
 			</td>
-			<td><a class="BabTitleSmall" href="{ fromurl }">{ fromname }</a></td>
+			<td><a href="{ fromurl }">{ fromname }</a></td>
 			<td width="10">&nbsp;</td>
-			<td><a class="BabTitleSmall" href="{ subjecturl }">{ subjectname }</a></td>
+			<td><a href="{ subjecturl }">{ subjectname }</a></td>
 			<td width="10">&nbsp;</td>
-			<td><a class="BabTitleSmall" href="{ dateurl }">{ datename }</a></td>
+			<td><a href="{ dateurl }">{ datename }</a></td>
 		</tr>
 		<!--#in getnext -->
-		<tr class="BabSiteAdminFontBackground"> 
-			<td width="1"><input type="checkbox" name="item[]" value="{ msgid }"></td>
-			<td>&nbsp;
+		<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+			<td width="1%"><input type="checkbox" name="item[]" value="{ msgid }"></td>
+			<td>
 				<!--#if attachment "== 1" -->
-				<img src="{ babSkinPath }images/Puces/PuceTrombonne.gif"> 
+				<img src="{ babSkinPath }images/Puces/PuceTrombonne.gif">
+				<!--#else attachment -->
+				&nbsp;
 				<!--#endif attachment -->
 			</td>
 			<td>&nbsp;
@@ -42,7 +44,7 @@
 			<td class="BabCalendarBodyFont">{ msgdate }</td>
 		<!--#endin getnext -->
 		</tr>
-		<tr class="BabSiteAdminFontBackground"> 
+		<tr class="BabSiteAdminTitleFontBackground"> 
 			<td width="20" align="center"><a href="javascript:submitForm('delete','listform')"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deletealt }" border="0"></a></td>
 			<td colspan="7" height="5"> &nbsp; 
 				<!--#in getnextpart -->
