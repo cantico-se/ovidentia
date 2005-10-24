@@ -114,9 +114,9 @@ window.focus();
 <!--
 window.focus();
 
-function func(dirid,txt)
+function func(uid,txt,iddir)
 	{
-	window.opener.EditorOnInsertDir(dirid,txt);
+	window.opener.EditorOnInsertDir(uid,txt,iddir);
 	window.close();
 	}
 
@@ -181,7 +181,7 @@ function func(dirid,txt)
         </tr>
         <!--#in getnext -->
         <tr> 
-          <td class="BabSiteAdminFontBackground" valign="middle" width="1%" ><a href="javascript: func({ js_id },'{ js_name }');"><img src="{ babSkinPath }images/Puces/contact.png" border="0"></a></td>
+          <td class="BabSiteAdminFontBackground" valign="middle" width="1%" ><a href="javascript: func({ js_id },'{ js_name }', {  js_iddir });"><img src="{ babSkinPath }images/Puces/contact.png" border="0"></a></td>
           <!--#in getnextcolval -->
           <td class="BabSiteAdminFontBackground" align="left" valign="middle">{ coltxt }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
           <!--#endin getnextcolval -->

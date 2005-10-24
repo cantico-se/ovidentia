@@ -379,9 +379,9 @@ function EditorOnInsertCont(id,txt)
 global_editor.insertHTML('$CONTACTID('+id+','+txt+')');
 }
 
-function EditorOnInsertDir(id,txt)
+function EditorOnInsertDir(id,txt,iddir)
 {
-global_editor.insertHTML('$DIRECTORYID('+id+','+txt+')');
+editorInsertText('$DIRECTORYID('+id+','+txt+','+iddir+')');
 }
 
 function EditorOnInsertFolder(id,path,txt)

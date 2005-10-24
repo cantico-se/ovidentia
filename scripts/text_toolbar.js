@@ -116,9 +116,9 @@ function EditorOnInsertCont(id,txt)
 editorInsertText('$CONTACTID('+id+','+txt+')');
 }
 
-function EditorOnInsertDir(id,txt)
+function EditorOnInsertDir(id,txt,iddir)
 {
-editorInsertText('$DIRECTORYID('+id+','+txt+')');
+editorInsertText('$DIRECTORYID('+id+','+txt+','+iddir+')');
 }
 
 function EditorOnInsertFolder(id,path,txt)
