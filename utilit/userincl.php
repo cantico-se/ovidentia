@@ -566,27 +566,24 @@ function bab_fileManagerAccessLevel()
 
 		if( $down || $uplo || $upda || $man )
 			{
+			$babBody->aclfm['id'][] = $row['id'];
+			$babBody->aclfm['folder'][] = $row['folder'];
+			$babBody->aclfm['down'][] = $down;
+			$babBody->aclfm['uplo'][] = $uplo;
+			$babBody->aclfm['upda'][] = $upda;
+			$babBody->aclfm['idsa'][] = $row['idsa'];
+			if( $man )
+				$babBody->aclfm['ma'][] = 1;
+			else
+				$babBody->aclfm['ma'][] = 0;
+
 			if( ($row['bhide'] == 'Y') && ($uplo == false) && ($upda == false) && ($man == false) )
 				{
-				$badd = false;
+				$babBody->aclfm['hide'][] = true;
 				}
 			else
 				{
-				$badd = true;
-				}
-
-			if( $badd )
-				{
-				$babBody->aclfm['id'][] = $row['id'];
-				$babBody->aclfm['folder'][] = $row['folder'];
-				$babBody->aclfm['down'][] = $down;
-				$babBody->aclfm['uplo'][] = $uplo;
-				$babBody->aclfm['upda'][] = $upda;
-				$babBody->aclfm['idsa'][] = $row['idsa'];
-				if( $man )
-					$babBody->aclfm['ma'][] = 1;
-				else
-					$babBody->aclfm['ma'][] = 0;
+				$babBody->aclfm['hide'][] = false;
 				}
 			}
 		}
@@ -979,16 +976,25 @@ function bab_replace_ref( &$txt, $remove = '')
 							break;
 							
 						case 'DIRECTORYID':
-							$id_object = $param[0];
+							$id_object = trim($param[0]);
 							$title_object = isset($param[1]) ? $param[1] : '';
 							$res = $db->db_query("select id,sn,givenname,id_directory from ".BAB_DBDIR_ENTRIES_TBL." where id= '".$id_object."'");
 							if( $res && $db->db_num_rows($res) > 0)
 								{
 								$arr = $db->db_fetch_array($res);
-								if ( bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $arr['id_directory']) || $arr['id_directory'] == 0 )
+								if( $arr['id_directory'] == 0  )
+									{
+									$iddir = isset($param[2]) ? trim($param[2]): '' ;
+									}
+								else
+									{
+									$iddir = $arr['id_directory'];
+									}
+
+								if ( $iddir && bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $iddir))
 									{
 									$title_object = empty($title_object) ? bab_composeUserName($arr['sn'],$arr['givenname']) : $title_object;
-									$title_object = bab_replace_make_link($GLOBALS['babUrlScript']."?tg=directory&idx=ddbovml&directoryid=".$arr['id_directory']."&userid=".$arr['id'],$title_object,true);
+									$title_object = bab_replace_make_link($GLOBALS['babUrlScript']."?tg=directory&idx=ddbovml&directoryid=".$iddir."&userid=".$arr['id'],$title_object,true);
 									}
 								}
 							bab_replace_var($txt,$var,$title_object);
