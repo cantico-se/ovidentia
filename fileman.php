@@ -104,6 +104,7 @@ class listFiles
 			$this->arrgrp['id'][] = $babBody->aclfm['id'][$i];
 			$this->arrgrp['ma'][] = $babBody->aclfm['ma'][$i];
 			$this->arrgrp['folder'][] = $babBody->aclfm['folder'][$i];
+			$this->arrgrp['hide'][] = $babBody->aclfm['hide'][$i];
 			if( $babBody->aclfm['id'][$i] == $id )
 				{
 				$this->bdownload = $babBody->aclfm['down'][$i];
@@ -672,11 +673,17 @@ function listFiles($id, $gr, $path, $bmanager)
 				return false;
 			}
 
-		function getnextgrpdir()
+		function getnextgrpdir(&$skip)
 			{
 			static $m = 0;
 			if( $m < $this->countgrp)
 				{
+				if( $this->arrgrp['hide'][$m] )
+					{
+					$skip = true;
+					$m++;
+					return true;
+					}
 				$this->name = $this->arrgrp['folder'][$m];
 				$this->url = $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$this->arrgrp['id'][$m]."&gr=Y&path=";
 				$this->ma = $this->arrgrp['ma'][$m];
@@ -1281,6 +1288,10 @@ function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $de
 		if( !empty($newfolder))
 			{
 			$pathxnew = bab_getUploadFullPath($arr['bgroup'], $newfolder);
+			if(!is_dir($pathxnew))
+				{
+				bab_mkdir($pathxnew, $GLOBALS['babMkdirMode']);
+				}
 
 			if( rename( $pathx.$osfname, $pathxnew.$osfname))
 				{
@@ -2184,6 +2195,7 @@ function autoFile($id_dir,$path)
 $upload = false;
 $bmanager = false;
 $access = false;
+$fmhide = false;
 bab_fileManagerAccessLevel();
 if((!isset($babBody->aclfm['id']) || count($babBody->aclfm['id']) == 0) && !$babBody->ustorage )
 {
@@ -2263,6 +2275,7 @@ if( $gr == "Y")
 
 			if( $babBody->aclfm['uplo'][$i] )
 				$upload = true;
+			$fmhide = $babBody->aclfm['hide'][$i];
 			break;
 			}
 		}
@@ -2418,10 +2431,13 @@ switch($idx)
 			$babBody->addItemMenu("add", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=fileman&idx=add&id=".$id."&gr=".$gr."&path=".$upath);
 		if( $bmanager)
 			$babBody->addItemMenu("trash", bab_translate("Trash"), $GLOBALS['babUrlScript']."?tg=fileman&idx=trash&id=".$id."&gr=".$gr."&path=".$upath);
-		listFiles($id, $gr, $path, $bmanager);
-		if( !empty($id) && $gr == "Y")
+		if( !$fmhide )
 			{
-			$GLOBALS['babWebStat']->addFolder($id);
+			listFiles($id, $gr, $path, $bmanager);
+			if( !empty($id) && $gr == "Y")
+				{
+				$GLOBALS['babWebStat']->addFolder($id);
+				}
 			}
 		break;
 	}
