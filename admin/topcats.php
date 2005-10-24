@@ -433,7 +433,10 @@ if( !isset($idp))
 	$idp = 0;
 
 if( isset($add))
+	{
 	addTopCat($name, $description, $benabled, $template, $disptmpl, $topcatid);
+	$idp = $topcatid;
+	}
 
 if( isset($update))
 	{
