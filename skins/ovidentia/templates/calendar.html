@@ -551,7 +551,9 @@ function showhidebefore(id)
 
 <div class="bab_cal_buttons">
 <a class="print" href="javascript:window.print()">{ t_print }</a>
+<!--#if last_id -->
 <a class="events" href="javascript:showhidebefore('event{ last_id }')">{ t_show_hide }</a>
+<!--#endif last_id -->
 </div>
 <!--#end eventlist -->
 
