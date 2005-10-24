@@ -1140,6 +1140,7 @@ function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywor
 		{
 		if( notifyApprovers($idf, $id) && $bnotify)
 			fileNotifyMembers($osfname, $path, $id, bab_translate("A new file has been uploaded"));
+		$babBody->msgerror = bab_translate("Done! Your file is waiting for approval");
 		}
 
 	return true;
