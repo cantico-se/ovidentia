@@ -72,6 +72,10 @@ function updateSchemaInstance($idschi)
 			{
 			$db->db_query("insert into ".BAB_FAR_INSTANCES_TBL." (idschi, iduser) VALUES ('".$idschi."', '".$tabusers[$j]."')");
 			}
+
+		// force notifications otherwise approbations will not be seen
+		getWaitingApproversFlowInstance($idschi, true);
+
 	}
 
 }
