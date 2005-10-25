@@ -300,12 +300,15 @@ class bab_Addon extends bab_handler
 		}
 		else
 		{
+			if( isset($this->AddonFolder))
+			{
 			$GLOBALS['babAddonFolder'] = $this->AddonFolder;
 			$GLOBALS['babAddonTarget'] = $this->AddonTarget;
 			$GLOBALS['babAddonUrl'] = $this->AddonUrl;
 			$GLOBALS['babAddonPhpPath'] = $this->AddonPhpPath;
 			$GLOBALS['babAddonHtmlPath'] = $this->AddonHtmlPath;
 			$GLOBALS['babAddonUpload'] = $this->AddonUpload;
+			}
 			$this->idx=0;
 			return false;
 		}
