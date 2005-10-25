@@ -474,10 +474,10 @@ function redimimg()
 <!--#if orgcount -->
 <script type="text/javascript">
 <!--
-function openWinOrg(idx, oeid, idu)
+function openWinOrg(val)
 {
 var dummy;
-Start('{ vieworgurl }'+idx+'&oeid='+oeid+'&iduser='+idu, 'OrgChartWin', 'width='+(screen.width-6)+',height='+(screen.height-60)+',status=no,resizable=yes,scrollbars=yes,top=1,left=1');
+Start('{ vieworgurl }'+val, 'OrgChartWin', 'width='+(screen.width-6)+',height='+(screen.height-60)+',status=no,resizable=yes,scrollbars=yes,top=1,left=1');
 this.close();
 }
 
@@ -489,11 +489,11 @@ this.close();
 <td class="BabLoginMenuBackground"> 
 <table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
-<td><a class="BabSiteAdminListLink" href="javascript:openWinOrg(document.ocstart.ocid.options[document.ocstart.ocid.selectedIndex].value, { oeid }, { idu } ) ;" nowrap>{ vieworg }</a></td>
+<td><a class="BabSiteAdminListLink" href="javascript:openWinOrg(document.ocstart.ocid.options[document.ocstart.ocid.selectedIndex].value ) ;" nowrap>{ vieworg }</a></td>
 <td align="center">
 <select name="ocid">
 <!--#in getnextorg -->
-<option value="{ orgid }">{ orgn }</option>
+<option value="{ orgid }&oeid={ oeid }&iduser={ idu }">{ orgn }</option>
 <!--#endin getnextorg -->
 </select>
 </td>
