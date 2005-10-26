@@ -376,10 +376,16 @@ function bab_createEvent($idcals, $args, &$msgerror)
 						}
 					break;
 				case BAB_CAL_PUB_TYPE:
-					$arrpub[] = $arrnotify[$i];
+					if( $arr['idsa'] == 0 )
+						{
+						$arrpub[] = $arrnotify[$i];
+						}
 					break;
 				case BAB_CAL_RES_TYPE:
-					$arrres[] = $arrnotify[$i];
+					if( $arr['idsa'] == 0 )
+						{
+						$arrres[] = $arrnotify[$i];
+						}
 					break;
 				}
 			}
@@ -473,6 +479,9 @@ function confirmEvent($evtid, $idcal, $bconfirm, $comment, $bupdrec)
 								deleteFlowInstance($row['idfai']);
 								$babDB->db_query("update ".BAB_CAL_EVENTS_OWNERS_TBL." set status='".$bconfirm."', idfai='0' where id_event='".$row['id_event']."'  and id_cal='".$row['id_cal']."'");
 								notifyEventApprobation($evtid, $bconfirm, $comment, $arr['name']);
+						
+								$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_CAL_EVENTS_TBL." where id='".$row['id_event']."'"));
+								notifyResourceEvent($rr['title'], $rr['description'], bab_longDate(bab_mktime($rr['start_date'])), bab_longDate(bab_mktime($rr['end_date'])), array($idcal));
 								break;
 							default:
 								$nfusers = getWaitingApproversFlowInstance($row['idfai'], true);
