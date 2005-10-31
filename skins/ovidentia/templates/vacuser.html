@@ -723,7 +723,7 @@ function dateEnd(day, month, year)
 {
 	var f = document.forms['vacform'];
 	f.elements['monthend'].options[month-1].selected = true;
-	f.elements['yearend'].options[year-{ yearend }].selected = true;
+	f.elements['yearend'].options[year-{ yearbegin }].selected = true;
 	updateDates(f.elements['dayend'], f.elements['monthend'], f.elements['yearend']);
 	f.elements['dayend'].options[day-1].selected = true;
 
