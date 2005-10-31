@@ -254,5 +254,51 @@ function bab_grp_node_html(&$tree, $id_group, $file, $template, $options = array
 }
 
 
+function bab_grpGetNbChildsByParent($id_parent)
+{
+	$nb = 0;
+	$tmp = $GLOBALS['babBody']->ovgroups;
+	foreach($tmp as $grp)
+		{
+		if (isset($grp['id_parent']) && $grp['id_parent'] == $id_parent)
+			{
+			$nb += bab_grpGetNbChildsByParent($grp['id']);
+			$nb++;
+			}
+		}
+	return $nb;
+}
+
+
+function bab_grpTreeCreate($id_parent, $lf)
+{
+	if (is_null($id_parent))
+		$parent = 'IS NULL';
+	else
+		$parent = " = '".$id_parent."'";
+	
+	$db = &$GLOBALS['babDB'];
+	$res = $db->db_query("SELECT id, lf, lr, name FROM ".BAB_GROUPS_TBL." WHERE id_parent ".$parent." AND nb_set>='0' ORDER BY name");
+	while ($arr = $db->db_fetch_assoc($res))
+		{
+		$nb_child = bab_grpGetNbChildsByParent($arr['id']);
+
+		if ($arr['lf'] != $lf) {
+			$db->db_query("UPDATE ".BAB_GROUPS_TBL." SET lf='".$lf."' WHERE id='".$arr['id']."'");
+			echo 'lf : '.$arr['name'].'<br />';
+			}
+		
+		$lr = $lf + 1 + ($nb_child*2);
+		//echo $lf.','.$lr.' - '.$arr['lf'].','.$arr['lr'].' - '.$arr['name'].'<br />';
+		bab_grpTreeCreate($arr['id'], ($lf+1));
+
+		if ($arr['lr'] != $lr) {
+			$db->db_query("UPDATE ".BAB_GROUPS_TBL." SET lr='".$lr."' WHERE id='".$arr['id']."'");
+			echo 'lr : '.$arr['name'].'<br />';
+			}
+
+		$lf = $lr+1;
+		}
+}
 
 ?>

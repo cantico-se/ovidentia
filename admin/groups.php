@@ -605,6 +605,12 @@ switch($idx)
 		moveGroup();
 		$babBody->title = bab_translate("Move group");
 		break;
+
+	case 'treecreate':
+		if ($babBody->isSuperAdmin)	
+			bab_grpTreeCreate(NULL, 1);
+		die();
+
 	case "List":
 	default:
 		groupList();
