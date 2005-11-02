@@ -485,7 +485,15 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 				$this->arrf = $this->db->db_fetch_array($this->res);
 				$this->urlmail = $GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".$this->accid."&to=".$this->arrf['email'];
 				$this->email = $this->arrf['email'];
-				$this->url = $GLOBALS['babUrlScript']."?tg=directory&idx=ddbovml&directoryid=".$this->id."&userid=".$this->arrf['id']."&pos=".$this->ord.$this->pos."&xf=".$this->xf;
+				
+				if ($_GET['idx'] == 'sdbovml')
+					{
+					$this->url = $GLOBALS['babUrlScript']."?tg=directory&idx=ddbovml&directoryid=".$this->id."&userid=".$this->arrf['id']."&pos=".$this->ord.$this->pos."&xf=".$this->xf;
+					}
+				else
+					{
+					$this->url = $GLOBALS['babUrlScript']."?tg=directory&idx=ddb&id=".$this->id."&idu=".$this->arrf['id'];
+					}
 				$i++;
 				return true;
 				}
