@@ -464,19 +464,6 @@ function bab_getUserSetting($id, $what)
 		}
 	}
 
-function bab_getGroupName($id, $fpn=true)
-	{
-	global $babBody;
-	if($fpn)
-		{
-		return $babBody->getGroupPathName($id);
-		}
-	else
-		{
-		return $babBody->ovgroups[$id]['name'];
-		}
-	}
-
 function bab_getPrimaryGroupId($userid)
 	{
 	$db = $GLOBALS['babDB'];
@@ -592,6 +579,21 @@ function bab_getUserIdByEmail($email)
 		}
 	}
 
+function bab_getUserIdByNickname($nickname)
+	{
+	$db = $GLOBALS['babDB'];
+	$res = $db->db_query("select id from ".BAB_USERS_TBL." where nickname='$nickname'");
+	if( $res && $db->db_num_rows($res) > 0)
+		{
+		$arr = $db->db_fetch_array($res);
+		return $arr['id'];
+		}
+	else
+		{
+		return 0;
+		}
+	}
+
 function bab_getUserId( $name )
 	{
 	$replace = array( " " => "", "-" => "");
@@ -640,21 +642,6 @@ function bab_getUserGroups($id = "")
 	return $arr;
 	}
 
-function bab_getGroups()
-	{
-	include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
-
-	$tree = new bab_grptree();
-	$groups = $tree->getGroups(BAB_REGISTERED_GROUP);
-	$arr = array();
-	foreach ($groups as $row)
-		{
-		$arr['id'][] = $row['id'];
-		$arr['name'][] = $row['name'];
-		}
-
-	return $arr;
-	}
 
 function bab_composeUserName( $F, $L)
 	{
@@ -960,5 +947,70 @@ function bab_getUserDirFields($id = false)
 	else
 		return array();
 	}
+
+/* API Groups */
+function bab_getGroupName($id, $fpn=true)
+	{
+	global $babBody;
+	if($fpn)
+		{
+		return $babBody->getGroupPathName($id);
+		}
+	else
+		{
+		return $babBody->ovgroups[$id]['name'];
+		}
+	}
+
+function bab_getGroups()
+	{
+	include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
+
+	$tree = new bab_grptree();
+	$groups = $tree->getGroups(BAB_REGISTERED_GROUP);
+	$arr = array();
+	foreach ($groups as $row)
+		{
+		$arr['id'][] = $row['id'];
+		$arr['name'][] = $row['name'];
+		}
+
+	return $arr;
+	}
+
+function bab_createGroup( $name, $description, $managerid, $parent = 1)
+{
+	include_once $GLOBALS['babInstallPath']."utilit/grpincl.php";
+	return bab_addGroup($name, $description, $managerid, 0, $parent);
+}
+
+function bab_updateGroup( $id, $name, $description, $managerid)
+{
+	include_once $GLOBALS['babInstallPath']."utilit/grpincl.php";
+	return bab_updateGroupInfo($id, $name, $description, $managerid);
+}
+
+function bab_removeGroup($id)
+{
+	include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
+	bab_deleteGroup($id);
+}
+
+
+/* API Users */
+function bab_registerUser( $firstname, $lastname, $middlename, $email, $nickname, $password1, $password2, &$error)
+{
+	return bab_addUser( $firstname, $lastname, $middlename, $email, $nickname, $password1, $password2, 1, $error);
+}
+
+function bab_attachUserToGroup($iduser, $idgroup)
+{
+	bab_addUserToGroup($iduser, $idgroup);
+}
+
+function bab_detachUserFromGroup($iduser, $idgroup)
+{
+	bab_removeUserFromGroup($iduser, $idgroup);
+}
 
 ?>

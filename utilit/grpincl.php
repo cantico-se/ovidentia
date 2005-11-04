@@ -108,12 +108,8 @@ function getGroupsMembers($id_grp)
 	}
 
 
-function bab_updateGroupInfo($id, $name, $description, $managerid, $grpdg , $id_parent, $moveoption)
+function bab_updateGroupInfo($id, $name, $description, $managerid, $grpdg = 0)
 	{
-	include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
-
-	$tree = & new bab_grptree();
-	$node = $tree->getNodeInfo($id);
 
 	$db = &$GLOBALS['babDB'];
 
@@ -127,6 +123,21 @@ function bab_updateGroupInfo($id, $name, $description, $managerid, $grpdg , $id_
 			WHERE
 				id='".$id."'
 			");
+
+	return true;
+	}
+
+/* moveoption 1 only item , 2 item with all childs */
+function bab_moveGroup($id, $id_parent, $moveoption)
+	{
+	include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
+
+	$tree = & new bab_grptree();
+	$node = $tree->getNodeInfo($id);
+
+	$db = &$GLOBALS['babDB'];
+
+	$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 
 	switch($id)
 		{
@@ -147,7 +158,6 @@ function bab_updateGroupInfo($id, $name, $description, $managerid, $grpdg , $id_
 			$tree->moveAlpha($id, $id_parent, $name);
 		}
 	}
-
 
 function bab_addGroup($name, $description, $managerid, $grpdg, $parent = 1)
 	{
