@@ -554,7 +554,7 @@ function babAdminSection($close)
 	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['calendars'] == 'Y')
 		$this->array_urls[bab_translate("Calendar")] = $GLOBALS['babUrlScript']."?tg=admcals";
 	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['mails'] == 'Y')
-		$this->array_urls[bab_translate("Mail")] = $GLOBALS['babUrlScript']."?tg=maildoms&userid=0&bgrp=y";
+		$this->array_urls[bab_translate("Mail")] = $GLOBALS['babUrlScript']."?tg=maildoms&amp;userid=0&amp;bgrp=y";
 	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['filemanager'] == 'Y')
 		$this->array_urls[bab_translate("File manager")] = $GLOBALS['babUrlScript']."?tg=admfms";
 	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['approbations'] == 'Y')
@@ -756,7 +756,7 @@ function babUserSection($close)
 			$babBody->icalendars->initializeCalendars();
 			}
 		$idcals = $babBody->icalendars->user_calendarids;
-		$this->array_urls[bab_translate("Calendar")] = $GLOBALS['babUrlScript']."?tg=".$view."&calid=".$idcals;
+		$this->array_urls[bab_translate("Calendar")] = $GLOBALS['babUrlScript']."?tg=".$view."&amp;calid=".$idcals;
 		}
 
 	if( $bemail )
@@ -881,22 +881,22 @@ function getnextnew()
 			case 0:
 				$this->newcount = $babBody->newarticles;
 				$this->newtext = bab_translate("Articles");
-				$this->newurl = $GLOBALS['babUrlScript']."?tg=oml&file=newarticles.html&nbdays=0";
+				$this->newurl = $GLOBALS['babUrlScript']."?tg=oml&amp;file=newarticles.html&amp;nbdays=0";
 				break;
 			case 1:
 				$this->newcount = $babBody->newcomments;
 				$this->newtext = bab_translate("Comments");
-				$this->newurl = $GLOBALS['babUrlScript']."?tg=oml&file=newcomments.html&nbdays=0";
+				$this->newurl = $GLOBALS['babUrlScript']."?tg=oml&amp;file=newcomments.html&amp;nbdays=0";
 				break;
 			case 2:
 				$this->newcount = $babBody->newposts;
 				$this->newtext = bab_translate("Replies");
-				$this->newurl = $GLOBALS['babUrlScript']."?tg=oml&file=newposts.html&nbdays=0";
+				$this->newurl = $GLOBALS['babUrlScript']."?tg=oml&amp;file=newposts.html&amp;nbdays=0";
 				break;
 			case 3:
 				$this->newcount = $babBody->newfiles;
 				$this->newtext = bab_translate("Files");
-				$this->newurl = $GLOBALS['babUrlScript']."?tg=oml&file=newfiles.html&nbdays=0";
+				$this->newurl = $GLOBALS['babUrlScript']."?tg=oml&amp;file=newfiles.html&amp;nbdays=0";
 				break;
 			}
 		$i++;
@@ -949,7 +949,7 @@ function topcatGetNext()
 	if( $i < $this->count)
 		{
 		$this->text = $this->arrid[$i][1];
-		$this->url = $GLOBALS['babUrlScript']."?tg=topusr&cat=".$this->arrid[$i][0];
+		$this->url = $GLOBALS['babUrlScript']."?tg=topusr&amp;cat=".$this->arrid[$i][0];
 		$i++;
 		return true;
 		}
@@ -1069,14 +1069,14 @@ function topicsGetNext()
 					}
 				}
 			$this->text = $arr['category'];
-			$this->url = $GLOBALS['babUrlScript']."?tg=articles&topics=".$arr['id_tt'];
+			$this->url = $GLOBALS['babUrlScript']."?tg=articles&amp;topics=".$arr['id_tt'];
 			}
 		else if( $arr['type'] == 1 )
 			{
 			$this->newa = "";
 			$this->newc = "";
 			$this->text = $arr['title'];
-			$this->url = $GLOBALS['babUrlScript']."?tg=topusr&cat=".$arr['id_tct'];
+			$this->url = $GLOBALS['babUrlScript']."?tg=topusr&amp;cat=".$arr['id_tct'];
 			}
 		$i++;
 		return true;
@@ -1139,7 +1139,7 @@ function forumsGetNext()
 		{
 		$this->arr = $this->arrid[$i];
 		$this->text = $this->arr['name'];
-		$this->url = $GLOBALS['babUrlScript']."?tg=threads&forum=".$this->arr['id'];
+		$this->url = $GLOBALS['babUrlScript']."?tg=threads&amp;forum=".$this->arr['id'];
 		$this->waiting = "";
 		if( bab_isAccessValid(BAB_FORUMSMAN_GROUPS_TBL, $this->arr['id']))
 			{
@@ -1575,11 +1575,11 @@ function loadSections()
 						}
 					if( $sec->close )
 						{
-							$sec->boxurl = $GLOBALS['babUrlScript']."?tg=options&idx=ob&s=".$sectionid."&w=".$type;
+							$sec->boxurl = $GLOBALS['babUrlScript']."?tg=options&amp;idx=ob&amp;s=".$sectionid."&amp;w=".$type;
 						}
 					else
 						{
-							$sec->boxurl = $GLOBALS['babUrlScript']."?tg=options&idx=cb&s=".$sectionid."&w=".$type;
+							$sec->boxurl = $GLOBALS['babUrlScript']."?tg=options&amp;idx=cb&amp;s=".$sectionid."&amp;w=".$type;
 						}
 					$babBody->addSection($sec);
 				}
@@ -1829,7 +1829,7 @@ function printout()
 								if( !empty($idcals))
 									{
 										$this->event = 1;
-										$this->dayurl = $GLOBALS['babUrlScript']."?tg=calday&calid=".$idcals."&date=".$this->currentYear.",".$this->currentMonth.",".$total;
+										$this->dayurl = $GLOBALS['babUrlScript']."?tg=calday&amp;calid=".$idcals."&amp;date=".$this->currentYear.",".$this->currentMonth.",".$total;
 										$this->day = $total;
 									}
 							}

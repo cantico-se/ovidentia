@@ -1,5 +1,5 @@
 <!--#begin search -->
-<script language="javascript">
+<script type="text/javascript">
 <!--
 <!--#if item "== a" --><!-- ARTICLES -->
 function validateNum(field) 
@@ -184,50 +184,49 @@ function cleanAfter() {
 -->
 </script>
 
-<form name="searchForm" method="post" action="{ babPhpSelf }" onSubmit="return (prepareSQL())">
-<input type="hidden" name="tg" value="search">
-<input type="hidden" name="pat" value="{ pat }">
-<input type="hidden" name="idx" value="find">
-<input type="hidden" name="navpos" value="0">
-<input type="hidden" name="navitem" value="">
-<input type="hidden" name="field" value="{ field }">
-<input type="hidden" name="order" value="{ order }">
-<input type="hidden" name="advenced" value="{ fields[advenced] }">
+<form name="searchForm" method="post" action="{ babPhpSelf }" onsubmit="return (prepareSQL())">
+<input type="hidden" name="tg" value="search" />
+<input type="hidden" name="pat" value="{ pat }" />
+<input type="hidden" name="idx" value="find" />
+<input type="hidden" name="navpos" value="0" />
+<input type="hidden" name="navitem" value="" />
+<input type="hidden" name="field" value="{ field }" />
+<input type="hidden" name="order" value="{ order }" />
+<input type="hidden" name="advenced" value="{ fields[advenced] }" />
 <table width="60%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
 <td class="BabLoginCadreBackground" align="center">
 <table class="BabLoginMenuBackground"  width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
-<td align="center" valign="middle"> 
+<td align="center"> 
 <table  width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
 	<td align="right">
-	&nbsp;&nbsp;{ search }:&nbsp;</td><td><input type="text" name="what" size="35" value="{ fields[what] }">&nbsp;
+	&nbsp;&nbsp;{ search }:&nbsp;</td><td><input type="text" name="what" size="35" value="{ fields[what] }" />&nbsp;
 	</td>
-	<td align="left" nowrap valign="middle">&nbsp;
+	<td align="left">&nbsp;
 	</td>
 	
 
 </tr>
-<tr height="30">
-	<td align="right" width="5%" nowrap valign="middle">&nbsp;&nbsp;
-	<a href="javascript:advswitch()" class="BabAlphabetLink">{ switch }&nbsp;:</a>&nbsp;</td><td valign="middle" nowrap>
+<tr>
+	<td align="right" height="35"><a href="javascript:advswitch()" class="BabAlphabetLink">{ switch }&nbsp;:</a>&nbsp;</td><td>
 	<select name="option" <!--#if fields[advenced] "== 1" --> <!--#else fields[advenced] --> style="display:none"<!--#endif fields[advenced] -->>
 			  <option value="OR" { or_selected }>{ option_or }</option>
 			  <option value="AND" { and_selected }>{ option_and }</option>
 			  <option value="NOT" { not_selected }>{ option_not }</option>
 	</select>
-	<input type="text" name="what2" size="20" value="{ fields[what2] }" <!--#if fields[advenced] "== 1" --> <!--#else fields[advenced] --> style="display:none"<!--#endif fields[advenced] -->>
+	<input type="text" name="what2" size="20" value="{ fields[what2] }" <!--#if fields[advenced] "== 1" --> <!--#else fields[advenced] --> style="display:none"<!--#endif fields[advenced] --> />
 	</td>
-	<td align="center" width="1" nowrap valign="middle">
+	<td align="center" width="1">
 	&nbsp;
 	</td>
 	
 </tr>
 <tr>
 	<td align="right">{ in }&nbsp;:</td>
-	<td align="left" nowrap valign="middle">
-	<select name="item" onChange="resetOrder()">
+	<td align="left">
+	<select name="item" onchange="resetOrder()">
 	  <option value="" >{ all }</option>
 	  <!--#in getnextitem -->
 		<option { selected } value="{ itemvalue }">{ itemname }</option>
@@ -237,7 +236,7 @@ function cleanAfter() {
 	</td>
 </tr>
 </table>
-<br>
+<br />
 <!--#if item "== a" --><!-- ARTICLES -->
 <table  width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
@@ -264,19 +263,19 @@ function cleanAfter() {
 	<td><input name="a_author" value="{ fields[a_author] }"></td>
 	</tr>
 	<tr>
-		<td align="right" nowrap>
+		<td align="right">
 		<a  class="BabAlphabetLink" href="javascript: Start('{ afterlink }','CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ after }</a>
 		</td>
-		<td align="left" nowrap><input type="text" size=10 maxlength=10 name="after_display" value="{ fields[after_memo] }" disabled>&nbsp;<a href="javascript:cleanAfter();"><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" align="absmiddle"></a>
+		<td align="left"><input type="text" size=10 maxlength=10 name="after_display" value="{ fields[after_memo] }" disabled="disabled">&nbsp;<a href="javascript:cleanAfter();"><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" align="absmiddle"></a>
 		<input type="hidden" name="after" value="{ fields[after] }">
 		<input type="hidden" name="after_memo" value="{ fields[after_memo] }">
 		</td>
 	</tr>
 	<tr>
-		<td align="right" nowrap>
+		<td align="right">
 		<a  class="BabAlphabetLink" href="javascript: Start('{ beforelink }','CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ before }</a>
 		</td>
-		<td align="left" nowrap><input type="text" size=10 maxlength=10 name="before_display" value="{ fields[before_memo] }" disabled>&nbsp;<a href="javascript:cleanBefore()"><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" align="absmiddle"></a>
+		<td align="left"><input type="text" size=10 maxlength=10 name="before_display" value="{ fields[before_memo] }" disabled>&nbsp;<a href="javascript:cleanBefore()"><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" align="absmiddle"></a>
 		<input type="hidden" name="before" value="{ fields[before] }">
 		<input type="hidden" name="before_memo" value="{ fields[before_memo] }">
 		</td>
@@ -345,7 +344,7 @@ setselects(document.forms.searchForm.g_directory);
 		<td align="right">
 		<a  class="BabAlphabetLink" href="javascript: Start('{ afterlink }','CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ after }</a>
 		</td>
-		<td align="left"><input type="text" size=10 maxlength=10 name="after_display" value="{ fields[after_memo] }" disabled>&nbsp;<a href="#" onclick="after_display.value='';after_memo.value='';after.value='';"><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" align="absmiddle"></a>
+		<td align="left"><input type="text" size=10 maxlength=10 name="after_display" value="{ fields[after_memo] }" disabled>&nbsp;<a href="#" onclick="after_display.value='';after_memo.value='';after.value='';" /><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" align="absmiddle"></a>
 		<input type="hidden" name="after" value="{ fields[after] }">
 		<input type="hidden" name="after_memo" value="{ fields[after_memo] }">
 		</td>
@@ -370,14 +369,14 @@ setselects(document.forms.searchForm.g_directory);
 		<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
 		<tr>
 		<td align="left">
-		<input type="button" name="res" value="{ reset }" onclick="cleanFields()">
+		<input type="button" name="res" value="{ reset }" onclick="cleanFields()" />
 		</td>
 		<td align="right">
-		<input type="submit" name="go" value="{ search }">
+		<input type="submit" name="go" value="{ search }" />
 		</td>
 		</tr>
 		</table>
-	</td><tr>
+	</td></tr>
 </table>
 </td>
 </tr>
@@ -399,7 +398,7 @@ setselects(document.forms.searchForm.g_directory);
 	<!--#endin getnext -->
 <!--#if next -->
 &nbsp;&nbsp;<a href="{ urlnext }" class="BabFaqLink">{ next }</a>
-<!--#endif next --><br><br>
+<!--#endif next --><br /><br />
 { results } { from } { navpos } { to } { navposend } ({ nbrows } { results } / { countpages } { pages })
 </div>
 <!--#end navbar -->
@@ -647,7 +646,7 @@ setselects(document.forms.searchForm.g_directory);
 
 <table border="0" width="100%" cellpadding="5" cellspacing="0">
 	<tr>
-		<td class="BabSiteAdminTitleFontBackground" align="center" nowrap>{ arr[title] }</td>
+		<td class="BabSiteAdminTitleFontBackground" align="center">{ arr[title] }</td>
 	</tr>
 	<tr>
 		<td class="BabTopicsBackground">{ head }</td>
@@ -719,21 +718,21 @@ setselects(document.forms.searchForm.g_directory);
 		<td class="BabBodyTitleBackground" align="center" >{ title }</td>
 		</tr>
 	</table>
-	<br>
+	<br />
 
 		<table  width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
 		<tr> 
-		<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+		<td class="BabLoginCadreBackground" align="center"> 
 			<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 			<tr> 
-			<td class="BabSiteAdminTitleFontBackground" colspan="2" nowrap>{ arr[date] }</td>
+			<td class="BabSiteAdminTitleFontBackground" colspan="2">{ arr[date] }</td>
 			</tr>
 			<tr> 
-			<td class="BabSiteAdminTitleFontBackground" width="20%" nowrap>{ by }:</td>
+			<td class="BabSiteAdminTitleFontBackground" width="20%">{ by }:</td>
 			<td class="BabSiteAdminTitleFontBackground" width="80%">{ arr[name] } </td>
 			</tr>
 			<tr> 
-			<td class="BabSiteAdminTitleFontBackground" nowrap>{ subject }:</td>
+			<td class="BabSiteAdminTitleFontBackground">{ subject }:</td>
 			<td class="BabSiteAdminTitleFontBackground">{ arr[subject] } </td>
 			</tr>
 			<tr> 
@@ -743,7 +742,7 @@ setselects(document.forms.searchForm.g_directory);
 		</td>
 		</tr>
 		</table>
-	<br>
+	<br />
 	</td>
 </tr>
 </table>
@@ -751,7 +750,7 @@ setselects(document.forms.searchForm.g_directory);
 
 <!--#begin viewfor -->
 
-<br>
+<br />
 <table width="90%" border="0" cellspacing="0" cellpadding="0" align="center">
 <tr>
 <td class="BabMailBackground"> 
@@ -760,23 +759,23 @@ setselects(document.forms.searchForm.g_directory);
 <td class="BabFaqTitleFontBg" align="center" >{ title }</td>
 </tr>
 </table>
-<br>
+<br />
 <table class="" border="0" width="90%" cellpadding="2" cellspacing="0" align="center">
 <tr> 
 <td class="BabForumTopicsNavTitle" width="100%" colspan="2">{ postsubject }</td>
 </tr>
 <tr> 
-<td class="BabForumBackground" colspan="2"><br>
+<td class="BabForumBackground" colspan="2"><br />
             { postmessage }
-			<br>
+			<br />
 </td>
 </tr>
 <tr> 
-<td class="BabForumTopicsNavDate" nowrap width="60%">{ postdate }</td>
-<td class="BabForumTopicsNavAuthor" nowrap width="40%" align="right">{ postauthor }</td>
+<td class="BabForumTopicsNavDate" width="60%">{ postdate }</td>
+<td class="BabForumTopicsNavAuthor" width="40%" align="right">{ postauthor }</td>
 </tr>
 </table>
-<br>
+<br />
 </td>
 </tr>
 </table>
@@ -792,17 +791,17 @@ setselects(document.forms.searchForm.g_directory);
 <td class="BabFaqTitleFontBg" align="center" >{ title }</td>
 </tr>
 </table>
-<br>
+<br />
 <table border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
 <tr> 
     
-<td class="BabFaqQuestion" nowrap valign="middle">{ arr[question] }</td>
+<td class="BabFaqQuestion">{ arr[question] }</td>
   </tr>
 <tr colspan="2"> 
 <td class="BabSiteAdminFontBackground" valign="top">{ arr[response] }</td>
 </tr>
 </table>
-<br>
+<br />
 </td>
 </tr>
 </table>
@@ -818,15 +817,15 @@ setselects(document.forms.searchForm.g_directory);
 <td class="BabBodyTitleBackground" align="center"> { title } </td>
 </tr>
 </table>
-<br>
+<br />
 <table border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
 <tr>
-<td class="BabSiteAdminFontBackground" width="30%" >{ pathtxt }</td>
-<td class="BabSiteAdminFontBackground" nowrap valign="middle">{ path }</td>
+<td class="BabSiteAdminFontBackground" width="30%">{ pathtxt }</td>
+<td class="BabSiteAdminFontBackground">{ path }</td>
 </tr>
 <tr>
-<td class="BabSiteAdminFontBackground" width="30%" >{ description }</td>
-<td class="BabSiteAdminFontBackground" nowrap valign="middle">{ arr[description] }</td>
+<td class="BabSiteAdminFontBackground" width="30%">{ description }</td>
+<td class="BabSiteAdminFontBackground">{ arr[description] }</td>
 </tr>
 <tr>
 <td class="BabSiteAdminFontBackground">{ keywords }</td>
@@ -859,8 +858,8 @@ setselects(document.forms.searchForm.g_directory);
 <td class="BabSiteAdminFontBackground" valign="top">{ postedby }</td>
 </tr>
 </table>
-<a class="BabFaqLink" href="{ geturl }"><br>
-{ download }</a> <br>
+<a class="BabFaqLink" href="{ geturl }"><br />
+{ download }</a> <br />
 </td>
 </tr>
 </table>
@@ -943,16 +942,16 @@ setselects(document.forms.searchForm.g_directory);
 </script>
 </HEAD>
 <BODY>
-<br>
+<br />
 <table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
 <tr>
 <td class="BabErrorMessage" align="center" >{ name }</td>
 </tr></table></center>
-<br>
+<br />
 <!--#if showph -->
 <center><img src="{ urlimg }" border="0" alt="{ name }"></center>
 <!--#endif showph -->
-<br>
+<br />
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
 <td class="BabLoginMenuBackground"> 
@@ -968,13 +967,13 @@ setselects(document.forms.searchForm.g_directory);
 </td>
 </tr>
 </table>
-<br>
+<br />
 <table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
 <tr>
 <td class="BabSiteAdminTitleFontBackground" align="center">&nbsp;
 </td>
 </tr></table></center>
-<br>
+<br />
 </BODY>
 </HTML>
 <!--#end viewdircontact -->

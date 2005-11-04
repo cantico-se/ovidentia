@@ -281,7 +281,7 @@ function printBody()
 			if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED == true )
 				{
 				$this->login = bab_translate("Logout");
-				$this->logurl = $GLOBALS['babUrlScript']."?tg=login&cmd=signoff";
+				$this->logurl = $GLOBALS['babUrlScript']."?tg=login&amp;cmd=signoff";
 				}
 			else
 				{
@@ -289,13 +289,13 @@ function printBody()
 				if (!isset($GLOBALS['BAB_SESS_FIRSTNAME'])) $GLOBALS['BAB_SESS_FIRSTNAME'] = "";
 				if (!isset($GLOBALS['BAB_SESS_LASTNAME'])) $GLOBALS['BAB_SESS_LASTNAME'] = "";
 				$this->login = bab_translate("Login");
-				$this->logurl = $GLOBALS['babUrlScript']."?tg=login&cmd=signon";
+				$this->logurl = $GLOBALS['babUrlScript']."?tg=login&amp;cmd=signon";
 				}
 
 			$this->search = bab_translate("Search");
 			if( !empty($babSearchUrl))
 				{
-				$this->searchurl = $GLOBALS['babUrlScript']."?tg=search&pat=".$babSearchUrl;
+				$this->searchurl = $GLOBALS['babUrlScript']."?tg=search&amp;pat=".$babSearchUrl;
 				$this->bsearch = 1;
 				}
 			else
