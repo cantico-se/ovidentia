@@ -319,7 +319,7 @@ class bab_DbDirectoryMembers extends bab_handler
 								$res2 = $babDB->db_query("select * from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$tmparr."' and id_entry='".$rr['id']."'");
 								while( $rf = $babDB->db_fetch_array($res2))
 									{
-									$sqlfv[] = "`".$xfields[$k]."`='".$rf['field_value']."'";
+									$sqlfv[] = "`".$xfields[$k]."`='".$babDB->db_escape_string($rf['field_value'])."'";
 									}
 								if( count($sqlfv) > 0 )
 									{
