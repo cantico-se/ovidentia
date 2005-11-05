@@ -363,7 +363,7 @@ function printBody()
 						{
 						$this->menuattribute = "";
 						}
-					$this->menuurl = $this->menuvals[$i]["url"];
+					$this->menuurl = htmlentities($this->menuvals[$i]["url"]);
 					}
 				$i++;
 				return true;

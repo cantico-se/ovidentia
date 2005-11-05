@@ -588,7 +588,7 @@ function babAdminSection($close)
 					reset ($arr);
 					while (list ($txt, $url) = each ($arr))
 						{
-						$this->addon_urls[$txt] = $url;
+						$this->addon_urls[$txt] = htmlentities($url);
 						}
 					}
 				}
@@ -829,7 +829,7 @@ function babUserSection($close)
 				reset ($arr);
 				while (list ($txt, $url) = each ($arr))
 					{
-					$this->addon_urls[$txt] = $url;
+					$this->addon_urls[$txt] = htmlentities($url);
 					}
 				}
 			}

@@ -638,18 +638,18 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			if( !bab_isMagicQuotesGpcOn())
 				{
 				$this->like2 = addslashes($what);
-				$this->like = addslashes($this->fields['what2']);
+				$this->like = isset($this->fields['what2']) ? addslashes($this->fields['what2']) : '';
 				}
 			else
 				{
 				$this->like2 = $what;
-				$this->like = $this->fields['what2'];
+				$this->like = isset($this->fields['what2']) ? $this->fields['what2'] : '';
 				}
 
 			$this->option = &$option;
 
 			
-			$this->what = urlencode(addslashes($what." ".$this->fields['what2']));
+			$this->what = urlencode(addslashes($what." ".stripslashes($this->like)));
 			$this->countart = 0;
 			$this->countfor = 0;
 			$this->countnot = 0;

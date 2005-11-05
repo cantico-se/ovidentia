@@ -63,7 +63,7 @@ function pushHtmlData($id,$str, $attrib = false)
 	if (is_array($attrib))
 		{
 		foreach ($attrib as $key => $value)
-			$strattrib .= $key.'="'.$value.'" ';
+			$strattrib .= $key.'="'.htmlentities($value).'" ';
 		}
 	$this->elements[$id][1][] = array(0 => $str, 1 => $strattrib);
 	}
