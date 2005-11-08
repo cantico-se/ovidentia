@@ -57,6 +57,8 @@ class swishCls
 	function execCmd($cmd)
 	{
 	$handle = popen($cmd, 'r');
+	if (false === $handle)
+		return false;
 	$buffer = '';
 	while(!feof($handle)) {
 	   $buffer .= fgets($handle, 1024);
