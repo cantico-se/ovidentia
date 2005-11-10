@@ -159,7 +159,7 @@ function saveOrgChart($name, $description, $dirid)
 		return false;
 		}
 
-	$query = "insert into ".BAB_ORG_CHARTS_TBL." (name, description, id_directory) values ('" .$name. "', '" . $description. "', '" . $dirid. "')";
+	$query = "insert into ".BAB_ORG_CHARTS_TBL." (name, description, id_directory, id_dgowner) values ('" .$name. "', '" . $description. "', '" . $dirid. "', '" . $babBody->currentAdmGroup. "')";
 	$db->db_query($query);
 	$id = $db->db_insert_id();
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admoc&idx=ocview&item=".$id);
