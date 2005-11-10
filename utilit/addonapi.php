@@ -973,6 +973,7 @@ function bab_getGroups()
 		{
 		$arr['id'][] = $row['id'];
 		$arr['name'][] = $row['name'];
+		$arr['description'][] = $row['description']; 
 		}
 
 	return $arr;
