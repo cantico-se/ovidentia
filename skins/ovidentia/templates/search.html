@@ -558,9 +558,15 @@ setselects(document.forms.searchForm.g_directory);
 <h5 class="BabBodyTitleBackground" >{ dirtitle }</h5>
 <table border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
 <thead>
-	<tr class="BabCalendarDaySection">
+	<tr class="BabSiteAdminTitleFontBackground">
 	<!--#in getnextdirfield -->
-	<td><a class="BabTitleSmall" href="javascript:orderSearch('g','{ ordercmd }')">{ t_name }</a></td>
+	<td>
+		<!--#if alloworder -->
+		<a href="javascript:orderSearch('g','{ ordercmd }')">{ t_name }</a>
+		<!--#else alloworder -->
+		{ t_name }
+		<!--#endif alloworder -->
+	</td>
 	<!--#endin getnextdirfield -->
 	</tr>
 </thead>

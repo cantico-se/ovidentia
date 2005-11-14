@@ -1573,6 +1573,9 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 						$this->popup = false;
 						break;
 					}
+
+				$this->alloworder = 0 !== strpos($this->name,'babdirf');
+
 				$i++;
 				return true;
 				}
