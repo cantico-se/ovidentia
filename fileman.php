@@ -766,6 +766,7 @@ function listFiles($id, $gr, $path, $bmanager)
 						if( $idfvai != 0 && $this->buaf )
 							{
 							$this->bfvwait = true;
+							$this->bupdate = true;
 							}
 						$this->ovfurl = $GLOBALS['babUrlScript']."?tg=filever&idx=unlock&id=".$this->id."&gr=".$this->gr."&path=".$upath."&idf=".$arr['id'];
 						if( $this->bfvwait )
