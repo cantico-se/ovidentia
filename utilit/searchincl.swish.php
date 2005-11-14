@@ -121,12 +121,12 @@ class bab_searchFilesCls extends swishCls
 	function bab_searchFilesCls($query1, $query2, $option, $object)
 		{
 		parent::swishCls($object);
-		$query1 = preg_replace_callback("/(OR|NOT|AND|or|not|and)/", create_function('$v','return \'"\'.$v[1].\'"\';'), $query1);
+		$query1 = preg_replace_callback("/\s(OR|NOT|AND|or|not|and)\s/", create_function('$v','return \' "\'.$v[1].\'" \';'), $query1);
 		
 		$this->query = $query1;
 		if (!empty($query2))
 			{
-			$query2 = preg_replace_callback("/(OR|NOT|AND|or|not|and)/", create_function('$v','return \'"\'.$v[1].\'"\';'), $query2);
+			$query2 = preg_replace_callback("/\s(OR|NOT|AND|or|not|and)\s/", create_function('$v','return \' "\'.$v[1].\'" \';'), $query2);
 			$this->query .= ' '.$option.' ('.$query2.')';
 			}
 		}
