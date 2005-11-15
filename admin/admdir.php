@@ -164,6 +164,7 @@ function search_options()
 			{
 			if ($this->arr = $this->db->db_fetch_array($this->resdb))
 				{
+				$this->arr['description'] = translateDirectoryField($this->arr['description']);
 				return true;
 				}
 			else
@@ -174,6 +175,7 @@ function search_options()
 			{
 			if ($this->arr = $this->db->db_fetch_array($this->resdf))
 				{
+				$this->arr['description'] = translateDirectoryField($this->arr['description']);
 				return true;
 				}
 			else
