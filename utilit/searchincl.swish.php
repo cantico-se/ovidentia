@@ -106,6 +106,7 @@ class bab_indexFilesCls extends swishCls
 		{
 			if (!is_file($this->swishCmd))
 				{
+				trigger_error('File not found : '.$this->swishCmd);
 				return false;
 				}
 			
