@@ -912,6 +912,8 @@ function dlfile($forum,$post,$name)
 		{
 		if ($name == $file['name'])
 			{
+			if( strtolower(bab_browserAgent()) == "msie")
+				header('Cache-Control: public');
 			header('Content-Type:application/octet-stream');
 			header('Content-Disposition: attachment; filename="'.$file['name'].'"');
 			header('Content-Length:'.filesize($file['path']));
