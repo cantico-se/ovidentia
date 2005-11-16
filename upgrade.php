@@ -5260,4 +5260,27 @@ if ($arr[0] != 'bhide')
 return $ret;
 }
 
+
+
+
+function upgrade571to572()
+{
+	
+$ret = "";
+$db = & $GLOBALS['babDB'];
+
+$arr = $db->db_fetch_array($db->db_query("DESCRIBE ".BAB_DBDIR_ENTRIES_EXTRA_TBL." field_value"));
+if ('text' != strtolower($arr['Type']))
+	{
+	$res = $db->db_query("ALTER TABLE `".BAB_DBDIR_ENTRIES_EXTRA_TBL."` CHANGE `field_value` `field_value` TEXT NOT NULL ");
+	if( !$res)
+		{
+		$ret = "Alteration of <b>".BAB_DBDIR_ENTRIES_EXTRA_TBL."</b> table failed !<br>";
+		return $ret;
+		}
+	}
+
+return $ret;
+}
+
 ?>
