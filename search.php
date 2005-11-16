@@ -1068,6 +1068,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 				$crit_fields = $this->searchInAllCols(BAB_DBDIR_ENTRIES_TBL);
 
+
 				
 				$arrview = bab_getUserIdObjects(BAB_DBDIRVIEW_GROUPS_TBL);
 				
@@ -1118,7 +1119,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 				$additional = finder($this->like,'t.field_value',$this->option,$this->like2);
 				if (!empty($additional))
-					$additional = '('.$additional.')';
+					$additional = ' AND ('.$additional.')';
 
 				// Si un annuaire spécifique est choisit
 
@@ -1147,7 +1148,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				LEFT JOIN 
 						".BAB_DBDIR_ENTRIES_EXTRA_TBL." t 
 						ON t.id_entry = e.id
-						AND ".$additional." 
+						".$additional." 
 
 				LEFT JOIN ".BAB_USERS_GROUPS_TBL." u ON u.id_object = e.id_user AND u.id_group IN ('".implode("','",$arr_grp)."') 
 					
