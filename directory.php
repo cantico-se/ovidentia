@@ -1962,8 +1962,9 @@ function exportDbDirectory($id, $wsepar, $separ)
 		$output .= bab_translate("Nickname").$separ;
 		}
 
-	$arridfx = array();
 	$arrnamef = array();
+	$leftjoin = array();
+	$select = array();
 	$res = $db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup != 0? 0: $id)."' order by list_ordering asc");
 	while( $arr = $db->db_fetch_array($res))
 		{
@@ -1972,12 +1973,16 @@ function exportDbDirectory($id, $wsepar, $separ)
 			$rr = $db->db_fetch_array($db->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
 			$fieldn = translateDirectoryField($rr['description']);
 			$arrnamef[] = $rr['name'];
+			$select[] = 'e.'.$rr['name'];
 			}
 		else
 			{
 			$rr = $db->db_fetch_array($db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
 			$fieldn = translateDirectoryField($rr['name']);
-			$arridfx[] = $arr['id'];
+			$arrnamef[] = "babdirf".$arr['id'];
+
+			$leftjoin[] = 'LEFT JOIN '.BAB_DBDIR_ENTRIES_EXTRA_TBL.' lj'.$arr['id']." ON lj".$arr['id'].".id_fieldx='".$arr['id']."' AND e.id=lj".$arr['id'].".id_entry";
+			$select[] = "lj".$arr['id'].'.field_value '."babdirf".$arr['id']."";
 			}
 		$output .= translateDirectoryField($fieldn).$separ;
 		}
@@ -1986,11 +1991,22 @@ function exportDbDirectory($id, $wsepar, $separ)
 	$output .= "\n";
 
 	if( $idgroup > 1 )
-	{
-	$res2 = $db->db_query("select det.* from ".BAB_DBDIR_ENTRIES_TBL." det left join ".BAB_USERS_GROUPS_TBL." ugt on det.id_user=ugt.id_object where ugt.id_group='".$idgroup."' and det.id_directory='0'");
-	}
+		{
+		$req = " ".BAB_DBDIR_ENTRIES_TBL." e,
+				".BAB_USERS_GROUPS_TBL." u ".implode(' ',$leftjoin)." 
+					WHERE u.id_group='".$idgroup."' 
+					AND u.id_object=e.id_user 
+					AND e.id_directory='0'";
+		}
 	else
-		$res2 = $db->db_query("select * from ".BAB_DBDIR_ENTRIES_TBL." where id_directory ='".($idgroup != 0? 0: $id)."'");
+		{
+		$req = " ".BAB_DBDIR_ENTRIES_TBL." e ".implode(' ',$leftjoin)." WHERE e.id_directory='".(1 == $idgroup ? 0 : $id )."'";
+		}
+
+	$select[] = 'e.id_user';
+
+	$req = "select ".implode(',', $select)." from ".$req;
+	$res2 = $db->db_query($req);
 
 	while( $row = $db->db_fetch_array($res2))
 		{
@@ -2003,20 +2019,6 @@ function exportDbDirectory($id, $wsepar, $separ)
 		for( $k=0; $k < count($arrnamef); $k++ )
 			{
 			$output .= stripslashes($row[$arrnamef[$k]]).$separ;
-			}
-
-		for( $k=0; $k < count($arridfx); $k++ )
-			{
-			$res3 = $db->db_query("select * from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_entry ='".$row['id']."' and id_fieldx='".$arridfx[$k]."'");
-			if( $res3 && $db->db_num_rows($res3))
-				{
-				$rr = $db->db_fetch_array($res3);
-				$output .= stripslashes($rr['field_value']).$separ;
-				}
-			else
-				{
-				$output .= $separ;
-				}
 			}
 
 		$output = substr($output, 0, -1);
