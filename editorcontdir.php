@@ -168,6 +168,7 @@ function directory($id, $pos, $xf, $badd)
 			static $i = 0;
 			static $tmp = array();
 			static $sqlf = array();
+			static $leftjoin = array();
 			if( $i < $this->countcol)
 				{
 				$arr = $this->db->db_fetch_array($this->rescol);
@@ -177,7 +178,7 @@ function directory($id, $pos, $xf, $badd)
 					$this->coltxt = translateDirectoryField($rr['description']);
 					$filedname = $rr['name'];
 					$tmp[] = $filedname;
-					$this->select[] = $filedname;
+					$this->select[] = 'e.'.$filedname;
 					}
 				else
 					{
@@ -185,7 +186,8 @@ function directory($id, $pos, $xf, $badd)
 					$this->coltxt = translateDirectoryField($rr['name']);
 					$filedname = "babdirf".$arr['id'];
 					$sqlf[] = $filedname;
-					$this->select[] = "`".$filedname."`";
+					$leftjoin[] = 'LEFT JOIN '.BAB_DBDIR_ENTRIES_EXTRA_TBL.' lj'.$arr['id']." ON lj".$arr['id'].".id_fieldx='".$arr['id']."' AND e.id=lj".$arr['id'].".id_entry";
+					$this->select[] = "lj".$arr['id'].'.field_value '."babdirf".$arr['id']."";
 					}
 				$this->colurl = $GLOBALS['babUrlScript']."?tg=editorcontdir&idx=directory&id=".$this->id."&pos=".$this->ord.$this->pos."&xf=".$filedname;
 				$i++;
@@ -201,62 +203,34 @@ function directory($id, $pos, $xf, $badd)
 						$this->xf = $tmp[0];
 						}
 
-					if( !in_array('email', $tmp))
-						{
-						$tmp[] = 'email';
-						}
-					$req = "create temporary table bab_dbdir_temptable select ".implode(',', $tmp)." from ".BAB_DBDIR_ENTRIES_TBL." where 0";
-					$this->db->db_query($req);
-					$req = "alter table bab_dbdir_temptable add unique (id)";
-					$this->db->db_query($req);
-					for( $m=0; $m < count($tmp); $m++)
-						{
-						$tmp[$m] = BAB_DBDIR_ENTRIES_TBL.".".$tmp[$m];
-						}
-
 					if( $this->idgroup > 1 )
 						{
-						$req = "insert into bab_dbdir_temptable select ".implode($tmp, ",")." from ".BAB_DBDIR_ENTRIES_TBL." join ".BAB_USERS_GROUPS_TBL." where ".BAB_USERS_GROUPS_TBL.".id_group='".$this->idgroup."' and ".BAB_USERS_GROUPS_TBL.".id_object=".BAB_DBDIR_ENTRIES_TBL.".id_user and ".BAB_DBDIR_ENTRIES_TBL.".id_directory='".($this->idgroup != 0? 0: $this->id)."'";
+						$req = " ".BAB_DBDIR_ENTRIES_TBL." e,
+								".BAB_USERS_GROUPS_TBL." u ".implode(' ',$leftjoin)." 
+									WHERE u.id_group='".$this->idgroup."' 
+									AND u.id_object=e.id_user 
+									AND e.id_directory='0'";
 						}
 					else
 						{
-						$req = "insert into bab_dbdir_temptable select ".implode($tmp, ",")." from ".BAB_DBDIR_ENTRIES_TBL." where ".BAB_DBDIR_ENTRIES_TBL.".id_directory='".($this->idgroup != 0? 0: $this->id)."'";
+						$req = " ".BAB_DBDIR_ENTRIES_TBL." e ".implode(' ',$leftjoin)." WHERE e.id_directory='".(1 == $this->idgroup ? 0 : $this->id )."'";
 						}
 
-					$this->db->db_query($req);
-					for( $j=0; $j < count($sqlf); $j++)
-						{
-						$this->db->db_query("alter table bab_dbdir_temptable add `".$sqlf[$j]."` VARCHAR( 255 ) NOT NULL");
-						}
-
-					if( count($sqlf) > 0 )
-						{
-						$res = $this->db->db_query("select id from bab_dbdir_temptable");
-						while( $rr = $this->db->db_fetch_array($res))
-							{
-							for( $k = 0; $k < count($sqlf); $k++ )
-								{
-								$tmparr = substr($sqlf[$k], strlen("babdirf"));
-								$sqlfv = array();
-								$res2 = $this->db->db_query("select * from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$tmparr."' and id_entry='".$rr['id']."'");
-								while( $rf = $this->db->db_fetch_array($res2))
-									{
-									$sqlfv[] = "`".$sqlf[$k]."`='".$rf['field_value']."'";
-									}
-								if( count($sqlfv) > 0 )
-									{
-									$req = "update bab_dbdir_temptable set ".implode(',', $sqlfv)." where id='".$rr['id']."'";
-									$this->db->db_query($req);
-									}
-								}
-							}
-						}
-
-					$this->select[] = 'id';
+					$this->select[] = 'e.id';
 					if( !in_array('email', $this->select))
-						$this->select[] = 'email';
+						$this->select[] = 'e.email';
 
-					$req = "select ".implode(',', $this->select)." from bab_dbdir_temptable where `".$this->xf."` like '".$this->pos."%' order by `".$this->xf."` ";
+					if (!empty($this->pos) && false === strpos($this->xf, 'babdirf'))
+						$like = " AND `".$this->xf."` LIKE '".$this->pos."%'";
+					elseif (0 === strpos($this->xf, 'babdirf'))
+						{
+						$idfield = substr($this->xf,7);
+						$like = " AND lj".$idfield.".field_value LIKE '".$this->pos."%'";
+						}
+					else
+						$like = '';
+
+					$req = "select ".implode(',', $this->select)." from ".$req." ".$like." order by `".$this->xf."` ";
 					if( $this->ord == "-" )
 						{
 						$req .= "asc";
@@ -264,7 +238,7 @@ function directory($id, $pos, $xf, $badd)
 					else
 						{
 						$req .= "desc";
-						}
+						}					
 
 					$this->res = $this->db->db_query($req);				
 					$this->count = $this->db->db_num_rows($this->res);

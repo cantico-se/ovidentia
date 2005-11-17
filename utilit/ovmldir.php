@@ -233,6 +233,8 @@ class bab_DbDirectoryMembers extends bab_handler
 
 				$nfields = array();
 				$xfields = array();
+				$leftjoin = array();
+				$select = array();
 
 				while( $arr = $babDB->db_fetch_array($res))
 					{
@@ -243,6 +245,7 @@ class bab_DbDirectoryMembers extends bab_handler
 							{
 							$nfields[] = $rr['name'];
 							$this->IdEntries[] = array('name' => translateDirectoryField($rr['description']) , 'xname' => $rr['name']);
+							$select[] = 'e.'.$rr['name'];
 							}
 						}
 					else
@@ -252,6 +255,9 @@ class bab_DbDirectoryMembers extends bab_handler
 							{
 							$xfields[] = "babdirf".$arr['id'];
 							$this->IdEntries[] = array('name' => translateDirectoryField($rr['name']) , 'xname' => "babdirf".$arr['id']);
+
+							$leftjoin[] = 'LEFT JOIN '.BAB_DBDIR_ENTRIES_EXTRA_TBL.' lj'.$arr['id']." ON lj".$arr['id'].".id_fieldx='".$arr['id']."' AND e.id=lj".$arr['id'].".id_entry";
+							$select[] = "lj".$arr['id'].'.field_value '."babdirf".$arr['id']."";
 							}
 						}
 					}
@@ -261,7 +267,12 @@ class bab_DbDirectoryMembers extends bab_handler
 				if( count($nfields) > 0 || count($xfields) > 0)
 					{
 					$nfields[] = "id";
+					$select[] = 'e.id';
 					$nfields[] = "id_user";
+					$select[] = 'e.id_user';
+					if( !in_array('email', $select))
+						$select[] = 'e.email';
+
 					$orderby = $ctx->get_value('orderby');
 
 					if( $orderby === false || empty($orderby) )
@@ -282,54 +293,36 @@ class bab_DbDirectoryMembers extends bab_handler
 						{
 						$like = '';
 						}
-
-					$babDB->db_query("create temporary table bab_dbdir_temptable select ".implode(',', $nfields)." from ".BAB_DBDIR_ENTRIES_TBL." where 0");
-					$babDB->db_query("alter table bab_dbdir_temptable add unique (id)");
-
-					for( $m=0; $m < count($nfields); $m++)
+					else
 						{
-						$nfields[$m] = "det.".$nfields[$m];
+						if ( false === strpos($orderby, 'babdirf'))
+							$like = " AND `".$orderby."` LIKE '".$like."%'";
+						elseif (0 === strpos($orderby, 'babdirf'))
+							{
+							$idfield = substr($orderby,7);
+							$like = " AND lj".$idfield.".field_value LIKE '".$like."%'";
+							}
+						else
+							$like = '';
+			
 						}
+
 
 					if( $idgroup > 1 )
 						{
-						$req = "insert into bab_dbdir_temptable select ".implode($nfields, ",")." from ".BAB_DBDIR_ENTRIES_TBL." det join ".BAB_USERS_GROUPS_TBL." ugt where ugt.id_group='".$idgroup."' and ugt.id_object=det.id_user and det.id_directory='".($idgroup != 0? 0: $this->directoryid)."'";
+						$req = " ".BAB_DBDIR_ENTRIES_TBL." e,
+								".BAB_USERS_GROUPS_TBL." u ".implode(' ',$leftjoin)." 
+									WHERE u.id_group='".$idgroup."' 
+									AND u.id_object=e.id_user 
+									AND e.id_directory='0'";
 						}
 					else
 						{
-						$req = "insert into bab_dbdir_temptable select ".implode($nfields, ",")." from ".BAB_DBDIR_ENTRIES_TBL." det where det.id_directory='".($idgroup != 0? 0: $this->directoryid)."'";
+						$req = " ".BAB_DBDIR_ENTRIES_TBL." e ".implode(' ',$leftjoin)." WHERE e.id_directory='".(1 == $idgroup ? 0 : $this->id )."'";
 						}
 
-					$babDB->db_query($req);
 
-					for( $i=0; $i < count($xfields); $i++)
-						{
-						$babDB->db_query("alter table bab_dbdir_temptable add `".$xfields[$i]."` VARCHAR( 255 ) NOT NULL");
-						}
-
-					if( count($xfields) > 0 )
-						{
-						$res = $babDB->db_query("select id from bab_dbdir_temptable");
-						while( $rr = $babDB->db_fetch_array($res))
-							{
-							for( $k = 0; $k < count($xfields); $k++ )
-								{
-								$tmparr = substr($xfields[$k], strlen("babdirf"));
-								$sqlfv = array();
-								$res2 = $babDB->db_query("select * from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$tmparr."' and id_entry='".$rr['id']."'");
-								while( $rf = $babDB->db_fetch_array($res2))
-									{
-									$sqlfv[] = "`".$xfields[$k]."`='".$babDB->db_escape_string($rf['field_value'])."'";
-									}
-								if( count($sqlfv) > 0 )
-									{
-									$babDB->db_query("update bab_dbdir_temptable set ".implode(',', $sqlfv)." where id='".$rr['id']."'");
-									}
-								}
-							}
-						}
-
-					$req = "select * from bab_dbdir_temptable where `".$orderby."` like '".$like."%' order by `".$orderby."` ".$order;
+					$req = "select ".implode(',', $select)." from ".$req." ".$like." order by `".$orderby."` ".$order;
 
 					$this->res = $babDB->db_query($req);				
 					$this->count = $babDB->db_num_rows($this->res);
