@@ -12,27 +12,27 @@
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-	<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-	<tr class="BabLoginMenuBackground"> 
-		<td width="30%" align="right" nowrap valign="middle">{ name }</td>
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+	<tr> 
+		<td width="30%">{ name }</td>
 		<td width="70%"><input type="file" name="uploadf" size="40" maxlength="255" value=""></td>
 	</tr>
-	<tr class="BabLoginMenuBackground"> 
-		<td align="right" nowrap valign="middle">{ description }</td>
+	<tr> 
+		<td align="right">{ description }</td>
 		<td><input type="text" name="description" size="45" maxlength="255" value="{ descval }"></td>
 	</tr>
-	<tr class="BabLoginMenuBackground"> 
-		<td align="right" nowrap valign="middle">{ keywords }</td>
+	<tr> 
+		<td align="right">{ keywords }</td>
 		<td><input type="text" name="keywords" size="45" maxlength="255" value="{ keysval }"></td>
 	</tr>
 	<!--#in getnextfield -->
-	<tr class="BabLoginMenuBackground"> 
-		<td align="right" nowrap valign="middle">{ fieldname }</td>
+	<tr> 
+		<td align="right">{ fieldname }</td>
 		<td><input type="text" name="{ field }" size="45" maxlength="255" value="{ fieldval }"></td>
 	</tr>
 	<!--#endin getnextfield -->
-	<tr class="BabLoginMenuBackground"> 
-		<td  align="right" nowrap>{ attribute }</td>
+	<tr> 
+		<td  align="right">{ attribute }</td>
 		<td> 
 		<select name="readonly">
 			<option value="N" selected>{ no }</option>
@@ -40,7 +40,7 @@
 		</select>
 		</td>
 	</tr>
-	<tr class="BabLoginMenuBackground">
+	<tr>
 		<td>&nbsp;</td>
 		<td><input type="submit" name="Submit" value="{ add }"></td>
 	</tr>
@@ -65,101 +65,96 @@
 </tr>
 </table>
 
-<table  width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
+<table  width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
-          <td class="BabLoginCadreBackground" align="center"> <table  width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
-              <tr> 
-                <td colspan="2" align="center" valign="middle" class="BabSiteAdminTitleFontBackground"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0">{ 
-                  nametxt }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"></td>
-                <td align="center" valign="middle" class="BabSiteAdminTitleFontBackground"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"></td>
-                <td align="center" valign="middle" class="BabSiteAdminTitleFontBackground"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0">{ 
-                  sizetxt }</td>
-                <td align="center" valign="middle" class="BabSiteAdminTitleFontBackground">{ 
-                  modifiedtxt }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"></td>
-                <td align="center" valign="middle" class="BabSiteAdminTitleFontBackground">{ 
-                  postedtxt }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"></td>
-                <td width="1%" align="center" valign="middle" class="BabSiteAdminTitleFontBackground"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"></td>
+          <td class="BabLoginCadreBackground" align="center"> 
+		  <table  width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
+              <tr class="BabSiteAdminTitleFontBackground"> 
+                <td colspan="2" align="center">{ nametxt }</td>
+                <td>&nbsp;</td>
+                <td>{ sizetxt }</td>
+                <td align="center">{ modifiedtxt }</td>
+                <td align="center">{ postedtxt }</td>
+                <td width="1%">&nbsp;</td>
                  <!--#if bmanager -->
-                <td width="1%" align="center" valign="middle" class="BabSiteAdminTitleFontBackground"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ 
-                  hitstxt }</td>
+                <td width="1%">{ hitstxt }</td>
                 <!--#endif bmanager -->
               </tr>
               <!--#in getnextgrpdir -->
-              <tr> 
-                <td class="BabSiteAdminFontBackground" width="1%" valign="middle" align="center"> 
+              <tr class="BabSiteAdminFontBackground"> 
+                <td width="1%" align="center"> 
                   <!--#if ma -->
 				  { manfolderimg }
 				   <!--#else ma -->
 				  { grpfolderimg }
 				   <!--#endif ma -->
 				  </td>
-                <td align="left" valign="middle" class="BabSiteAdminFontBackground"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a href="{ url }">{ name }</a></td>
-                <td class="BabSiteAdminFontBackground" colspan="6" valign="middle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
+                <td align="left"><a href="{ url }">{ name }</a></td>
+                <td colspan="6">&nbsp;</td>
               </tr>
               <!--#endin getnextgrpdir -->
 			  <!--#in getnextdir -->
-              <tr> 
-                <td class="BabSiteAdminFontBackground" width="1%" valign="middle" align="center"> 
+              <tr class="BabSiteAdminFontBackground"> 
+                <td width="1%" align="center"> 
                   <!--#if name "== . ." -->
                   { upfolderimg }
                   <!--#else name -->
                   { usrfolderimg }
                   <!--#endif name -->
                 </td>
-                <td align="left" valign="middle" class="BabSiteAdminFontBackground" nowrap><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a href="{ url }">{ name }</a></td>
-                <td class="BabSiteAdminFontBackground" colspan="6" valign="middle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
-                          </tr>
+                <td><a href="{ url }">{ name }</a></td>
+                <td colspan="6">&nbsp;</td>
+               </tr>
               <!--#endin getnextdir -->
               <!--#in getnextfile -->
-              <tr valign="middle"> 
-                <td width="1%" align="center" class="BabSiteAdminFontBackground"> 
-                  { fileimage } </td>
-                <td align="left" class="BabSiteAdminFontBackground" nowrap><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"> <a href="javascript: Start('{ viewurl }', 'OviFile', 'width=650,height=600,status=no,resizable=yes,top=100,left=100,scrollbars=yes');">{ 
-                  name }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"> 
+              <tr class="BabSiteAdminFontBackground"> 
+                <td width="1%" align="center">{ fileimage }</td>
+                <td><a href="javascript: Start('{ viewurl }', 'OviFile', 'width=650,height=600,status=no,resizable=yes,top=100,left=100,scrollbars=yes');">{ 
+                  name }</a>
                   <!--#if bmanager -->
                   <!--#if bconfirmed "== 1" -->
                   <a href="javascript: Start('{ viewurl }', 'OviFile', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');"><img src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" border="0" align="middle"></a> 
                   <!--#endif bconfirmed -->
                   <!--#endif bmanager -->
                 </td>
-                <td align="left" nowrap class="BabSiteAdminFontBackground"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">
+                <td>
                   <!--#if readonly -->
-                  <img src="{ babSkinPath }images/Puces/readonly.gif" alt="{ altreadonly }" border="0" align="middle">
+                  <img src="{ babSkinPath }images/Puces/readonly.gif" alt="{ altreadonly }" border="0" align="middle" />
 				  <!--#else readonly -->
                   <!--#if bversion -->
 				<!--#if bdownload -->
 					<a href="javascript: Start('{ ovfversurl }', 'OVFileH', 'width=650,height=370,status=no,resizable=yes,top=100,left=100,scrollbars=yes');">{ lastversion }</a>
 				<!--#endif bdownload -->
 				<!--#if bupdate -->
-				  <a href="javascript: Start('{ ovfhisturl }', 'OVFileH', 'width=700,height=450,status=no,resizable=yes,top=100,left=100,scrollbars=yes');">
+				  <a href="javascript: Start('{ ovfhisturl }', 'OVFileH', 'width=700,height=450,status=no,resizable=yes,top=100,left=100,scrollbars=yes');" title="{ altfilelog }">
 				  <img src="{ babSkinPath }images/Puces/FileLog.gif" alt="{ altfilelog }" border="0" align="middle">
 				  </a>
                   <!--#if block -->
                   <!--#if blockauth -->
-				  <a href="javascript: Start('{ ovfurl }', 'OVFile', 'width=650,height=310,status=no,resizable=yes,top=100,left=100,scrollbars=yes');">
-				  <img src="{ babSkinPath }images/Puces/FileLock.gif" alt="{ altfileunlock }" border="0" align="middle">
+				  <a href="javascript: Start('{ ovfurl }', 'OVFile', 'width=650,height=310,status=no,resizable=yes,top=100,left=100,scrollbars=yes');" title="{ altfileunlock }">
+				  <img src="{ babSkinPath }images/Puces/FileLock.gif" alt="{ altfileunlock }" border="0" align="middle" />
 				  </a>
                   <!--#else blockauth -->
                   <!--#if bmanager -->
-				  <a href="javascript: Start('{ ovfurl }', 'OVFile', 'width=650,height=310,status=no,resizable=yes,top=100,left=100,scrollbars=yes');">
-				  <img src="{ babSkinPath }images/Puces/FileLock.gif" alt="{ altfileunlock }" border="0" align="middle">
+				  <a href="javascript: Start('{ ovfurl }', 'OVFile', 'width=650,height=310,status=no,resizable=yes,top=100,left=100,scrollbars=yes');" title="{ altfileunlock }">
+				  <img src="{ babSkinPath }images/Puces/FileLock.gif" alt="{ altfileunlock }" border="0" align="middle" />
                   <!--#else bmanager -->
-				  <img src="{ babSkinPath }images/Puces/FileLock.gif" alt="{ altfilelock }" border="0" align="middle">
+				  <img src="{ babSkinPath }images/Puces/FileLock.gif" alt="{ altfilelock }" border="0" align="middle" />
                   <!--#endif bmanager -->
                   <!--#endif blockauth -->
                   <!--#else block -->
-				  <a href="javascript: Start('{ ovfurl }', 'OVFile', 'width=650,height=310,status=no,resizable=yes,top=100,left=100,scrollbars=yes');">
-				  <img src="{ babSkinPath }images/Puces/FileUnlock.gif" alt="{ altfilelock }" border="0" align="middle">
+				  <a href="javascript: Start('{ ovfurl }', 'OVFile', 'width=650,height=310,status=no,resizable=yes,top=100,left=100,scrollbars=yes');" title="{ altfilelock }">
+				  <img src="{ babSkinPath }images/Puces/FileUnlock.gif" alt="{ altfilelock }" border="0" align="middle" />
 				  </a>
                   <!--#endif block -->				  	
                   <!--#if bfvwait -->
-				  <a href="javascript: Start('{ ovfcommiturl }', 'OVFileC', 'width=650,height=350,status=no,resizable=yes,top=100,left=100,scrollbars=yes');">
-				  <img src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" alt="{ altfilewrite }" border="0" align="middle">
+				  <a href="javascript: Start('{ ovfcommiturl }', 'OVFileC', 'width=650,height=350,status=no,resizable=yes,top=100,left=100,scrollbars=yes');" title="{ altfilewrite }">
+				  <img src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" alt="{ altfilewrite }" border="0" align="middle" />
 				  </a>
                   <!--#else bfvwait -->
                   <!--#if blockauth -->
-				  <a href="javascript: Start('{ ovfcommiturl }', 'OVFileC', 'width=650,height=350,status=no,resizable=yes,top=100,left=100,scrollbars=yes');">
-				  <img src="{ babSkinPath }images/Puces/FileWrite.gif" alt="{ altfilewrite }" border="0" align="middle">
+				  <a href="javascript: Start('{ ovfcommiturl }', 'OVFileC', 'width=650,height=350,status=no,resizable=yes,top=100,left=100,scrollbars=yes');" title="{ altfilewrite }">
+				  <img src="{ babSkinPath }images/Puces/FileWrite.gif" alt="{ altfilewrite }" border="0" align="middle" />
 				  </a>
                   <!--#endif blockauth -->
                   <!--#endif bfvwait -->
@@ -167,14 +162,13 @@
 				  <!--#endif bversion -->
                   <!--#endif readonly -->
                 </td>
-                <td align="center" nowrap class="BabSiteAdminFontBackground"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ 
-                  sizef } <img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
-                <td align="center" nowrap class="BabSiteAdminFontBackground">{ 
-                  modified }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
-                <td align="center" nowrap class="BabSiteAdminFontBackground">{ 
-                  postedby }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
-                <td align="left" nowrap class="BabSiteAdminFontBackground"><!--#if bdownload --><a 
-class="BabSiteAdminListLink" href="{ urlget }"><img src="{ babSkinPath }images/Puces/download.gif" alt="{ download }" border="0" align="middle"></a><!--#endif bdownload --><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><!--#if bmanager --><a class="BabSiteAdminListLink" href="{ cuturl }"><img src="{ babSkinPath }images/Puces/cut.gif" alt="{ cuttxt }" border="0" align="middle"></a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a class="BabSiteAdminListLink" href="{ delurl }"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deltxt }" border="0" align="middle"></a><!--#endif bmanager --></td><!--#if bmanager --><td align="center" class="BabSiteAdminFontBackground">{ hits }</td><!--#endif bmanager -->
+                <td>{ sizef }</td>
+                <td align="center">{ modified }</td>
+                <td align="center">{ postedby }</td>
+                <td align="left" nowrap="nowrap">
+				<!--#if bdownload --><a href="{ urlget }" title="{ download }"><img src="{ babSkinPath }images/Puces/download.gif" alt="{ download }" border="0" align="middle" /></a>&nbsp;<!--#endif bdownload -->
+				<!--#if bmanager --><a href="{ cuturl }" title="{ cuttxt }"><img src="{ babSkinPath }images/Puces/cut.gif" alt="{ cuttxt }" border="0" align="middle" /></a>&nbsp;<a href="{ delurl }" title="{ deltxt }"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deltxt }" border="0" align="middle" /></a><!--#endif bmanager -->
+				</td><!--#if bmanager --><td align="center">{ hits }</td><!--#endif bmanager -->
               </tr>
               <!--#endin getnextfile -->
               
@@ -375,38 +369,38 @@ window.focus();
 <td class="BabMailBackground" align="center">
 <table border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
 <tr>
-<td class="BabSiteAdminFontBackground" width="30%" >{ description }</td>
-<td class="BabSiteAdminFontBackground" valign="middle">{ descval }</td>
+<td width="30%" >{ description }</td>
+<td>{ descval }</td>
 </tr>
 <tr>
-<td class="BabSiteAdminFontBackground">{ t_keywords }</td>
-<td class="BabSiteAdminFontBackground" valign="top">{ keysval }</td>
+<td>{ t_keywords }</td>
+<td>{ keysval }</td>
 </tr>
 <!--#in getnextfield -->
 <tr>
-<td class="BabSiteAdminFontBackground">{ field }</td>
-<td class="BabSiteAdminFontBackground" valign="top">{ fieldval }</td>
+<td>{ field }</td>
+<td>{ fieldval }</td>
 </tr>
 <!--#endin getnextfield -->
 <tr>
-<td class="BabSiteAdminFontBackground">{ fsizetxt }</td>
-<td class="BabSiteAdminFontBackground" valign="top">{ fsize }</td>
+<td>{ fsizetxt }</td>
+<td>{ fsize }</td>
 </tr>
 <tr>
-<td class="BabSiteAdminFontBackground">{ fmodifiedtxt }</td>
-<td class="BabSiteAdminFontBackground" valign="top">{ fmodified }</td>
+<td>{ fmodifiedtxt }</td>
+<td>{ fmodified }</td>
 </tr>
 <tr>
-<td class="BabSiteAdminFontBackground">{ fmodifiedbytxt }</td>
-<td class="BabSiteAdminFontBackground" valign="top">{ fmodifiedby }</td>
+<td>{ fmodifiedbytxt }</td>
+<td>{ fmodifiedby }</td>
 </tr>
 <tr>
-<td class="BabSiteAdminFontBackground">{ fcreatedtxt }</td>
-<td class="BabSiteAdminFontBackground" valign="top">{ fcreated }</td>
+<td>{ fcreatedtxt }</td>
+<td>{ fcreated }</td>
 </tr>
 <tr>
-<td class="BabSiteAdminFontBackground">{ fpostedbytxt }</td>
-<td class="BabSiteAdminFontBackground" valign="top">{ fpostedby }</td>
+<td>{ fpostedbytxt }</td>
+<td>{ fpostedby }</td>
 </tr>
 </table>
 <!--#if bdownload --><a class="BabFaqLink" href="{ geturl }"><br>
@@ -416,57 +410,57 @@ window.focus();
 </table>
 <br>
 <form method="post" name="fupdate" action="{ babPhpSelf }" enctype="multipart/form-data">
-<input type="hidden" name="MAX_FILE_SIZE" value="{ babMaxFileSize }">
-<input type="hidden" name="tg" value="fileman">
-<input type="hidden" name="idx" value="list">
-<input type="hidden" name="updf" value="upd">
-<input type="hidden" name="id" value="{ id }">
-<input type="hidden" name="gr" value="{ gr }">
-<input type="hidden" name="path" value="{ path }">
-<input type="hidden" name="file" value="{ file }">
-<input type="hidden" name="idf" value="{ idf }">
-<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<input type="hidden" name="MAX_FILE_SIZE" value="{ babMaxFileSize }" />
+<input type="hidden" name="tg" value="fileman" />
+<input type="hidden" name="idx" value="list" />
+<input type="hidden" name="updf" value="upd" />
+<input type="hidden" name="id" value="{ id }" />
+<input type="hidden" name="gr" value="{ gr }" />
+<input type="hidden" name="path" value="{ path }" />
+<input type="hidden" name="file" value="{ file }" />
+<input type="hidden" name="idf" value="{ idf }" />
+<table  width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <!--#if bupdate -->
 <tr> 
-<td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ file }</td>
-<td class="BabLoginMenuBackground" width="70%" valign="middle">
-<input type="file" name="uploadf" size="30" maxlength="255" value="">
+<td  width="30%" align="right">{ file }</td>
+<td>
+<input type="file" name="uploadf" size="30" maxlength="255" value="" />
 </td>
 </tr>
 <!--#endif bupdate -->
 <!--#if bmanager -->
 <tr> 
-<td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ name }</td>
-<td class="BabLoginMenuBackground" width="70%" valign="middle">
-<input type="text" name="fname" size="30" maxlength="255" value="{ nameval }">
+<td align="right">{ name }</td>
+<td>
+<input type="text" name="fname" size="30" maxlength="255" value="{ nameval }" />
 </td>
 </tr>
 <tr>
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ description }</td>
-<td class="BabLoginMenuBackground" valign="middle">
-<input type="text" name="description" size="60" maxlength="255" value="{ descvalhtml }">
+<td align="right">{ description }</td>
+<td>
+<input type="text" name="description" size="60" maxlength="255" value="{ descvalhtml }" />
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" valign="middle">{ keywords }</td>
-<td class="BabLoginMenuBackground" valign="middle">
-<input type="text" name="keywords" size="60" maxlength="255" value="{ keysvalhtml }">
+<td align="right">{ keywords }</td>
+<td>
+<input type="text" name="keywords" size="60" maxlength="255" value="{ keysvalhtml }" />
 </td>
 </tr>
 <!--#in getnextfield -->
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ field }</td>
-<td class="BabLoginMenuBackground" valign="middle">
-<input type="text" name="{ fieldid }" size="60" maxlength="255" value="{ fieldvalhtml }">
+<td align="right">{ field }</td>
+<td>
+<input type="text" name="{ fieldid }" size="60" maxlength="255" value="{ fieldvalhtml }" />
 </td>
 </tr>
 <!--#endin getnextfield -->
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ attribute }</td>
-<td class="BabLoginMenuBackground" valign="middle">
+<td align="right">{ attribute }</td>
+<td>
 <select name="readonly">
   <option value="N" { noselected }>{ no }</option>
   <option value="Y" { yesselected }>{ yes }</option>
@@ -475,8 +469,8 @@ window.focus();
 </tr>
 <!--#if countfm "> 0" -->
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ movetofolder }</td>
-<td class="BabLoginMenuBackground" valign="middle">
+<td align="right">{ movetofolder }</td>
+<td>
 <select name="newfolder">
 <option value=""></option>
 <!--#in getnextfm -->
@@ -488,8 +482,8 @@ window.focus();
 <!--#endif countfm -->
 <!--#if bviewnf -->
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ notify }</td>
-<td class="BabLoginMenuBackground" valign="middle">
+<td align="right">{ notify }</td>
+<td>
 <select name="bnotify">
   <option value="N" { nonfselected }>{ no }</option>
   <option value="Y" { yesnfselected }>{ yes }</option>
@@ -500,8 +494,8 @@ window.focus();
 <!--#endif bmanager -->
 <!--#if bconfirm -->
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ confirm }</td>
-<td class="BabLoginMenuBackground" valign="middle">
+<td align="right">{ confirm }</td>
+<td>
 <select name="confirm">
   <option value="N" { confirmno }>{ no }</option>
   <option value="Y" { confirmyes }>{ yes }</option>
@@ -511,9 +505,9 @@ window.focus();
 <!--#endif bconfirm -->
 <!--#if bsubmit -->
 <tr>
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">&nbsp;</td>
-<td class="BabLoginMenuBackground" valign="middle">
-<input type="submit" name="submit" value="{ update }">
+<td align="right">&nbsp;</td>
+<td>
+<input type="submit" name="submit" value="{ update }" />
 </td>
 </tr>
 <!--#endif bsubmit -->
