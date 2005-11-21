@@ -1982,10 +1982,20 @@ class bab_RecentArticles extends bab_handler
 		$this->nbdays = $ctx->get_value('from_lastlog');
 		$this->last = $ctx->get_value('last');
 		$this->topicid = $ctx->get_value('topicid');
-		if( $this->topicid === false || $this->topicid === '' )
-			$this->topicid = array_keys($babBody->topview);
+		$this->topcatid = $ctx->get_value('categoryid');
+		
+		if ( $this->topcatid === false || $this->topcatid === '' )
+			{
+			if( $this->topicid === false || $this->topicid === '' )
+				$this->topicid = array_keys($babBody->topview);
+			else
+				$this->topicid = array_intersect(array_keys($babBody->topview), explode(',', $this->topicid));
+			}
 		else
-			$this->topicid = array_intersect(array_keys($babBody->topview), explode(',', $this->topicid));
+			{
+			$this->topicid = array();
+			$this->gettopics($this->topcatid);
+			}
 
 		if( count($this->topicid) > 0 )
 			{
@@ -2044,6 +2054,24 @@ class bab_RecentArticles extends bab_handler
 			$this->count = 0;
 			}
 		$this->ctx->curctx->push('CCount', $this->count);
+		}
+
+
+	function gettopics($idparent)
+		{
+		foreach($GLOBALS['babBody']->topcats as $id => $arr) {
+				if ($idparent == $arr['parent']) {
+					$this->gettopics($id);
+				}
+			}
+
+		$babDB = &$GLOBALS['babDB'];
+
+		$res = $babDB->db_query("select id from ".BAB_TOPICS_TBL." where id_cat='".$idparent."' AND id IN('".implode("','",$GLOBALS['babBody']->topview)."')");
+		while( $row = $babDB->db_fetch_array($res))
+			{
+			$this->topicid[] = $row['id'];
+			}
 		}
 
 	function getnext()
