@@ -282,6 +282,7 @@ function FaqPrintContents($idcat)
 			$this->idcat = $idcat;
 			$this->faqname = $faqinfo['category'];
 			$this->contentsname = bab_translate("CONTENTS");
+			$this->t_print = bab_translate("Print Friendly");
 			$this->return = bab_translate("Go to Top");
 			$this->babTree  = new bab_arraytree(BAB_FAQ_TREES_TBL, $idcat, "");
 			$this->arr = array();
@@ -419,11 +420,22 @@ function FaqPrintContents($idcat)
 				return false;
 				}
 			}
-
-
 		}
 	$temp = new temp($idcat);
-	echo bab_printTemplate($temp,"faqprint.html", "contents");
+	if (empty($_GET['popup']))
+		{
+		$babBody->babecho(bab_printTemplate($temp,"faqprint.html", "contents"));
+		}
+	else
+		{
+		include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
+		$GLOBALS['babBodyPopup'] = new babBodyPopup();
+		$GLOBALS['babBodyPopup']->title = & $GLOBALS['babBody']->title;
+		$GLOBALS['babBodyPopup']->msgerror = & $GLOBALS['babBody']->msgerror;
+		$GLOBALS['babBodyPopup']->babecho( bab_printTemplate($temp,"faqprint.html", "contents") );
+		printBabBodyPopup();
+		die();
+		}
 	return true;
 	}
 
@@ -1118,8 +1130,7 @@ switch($idx)
 			FaqTableOfContents($item);
 			$babBody->addItemMenu("Categories", bab_translate("Categories"),$GLOBALS['babUrlScript']."?tg=faq&idx=Categories");
 			$babBody->addItemMenu("questions", bab_translate("Contents"),$GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item);
-			$babBody->addItemMenu("Print Friendly", bab_translate("Print Friendly"),$GLOBALS['babUrlScript']."?tg=faq&idx=Print&item=".$item);
-			$babBody->addItemMenuAttributes("Print Friendly", "target=_blank");
+			$babBody->addItemMenu("Print Friendly", bab_translate("Visualisation"),$GLOBALS['babUrlScript']."?tg=faq&idx=Print&item=".$item);
 			if( isUserManager())
 				{
 				$babBody->addItemMenu("addq", bab_translate("Add Question"), $GLOBALS['babUrlScript']."?tg=faq&idx=addq&item=".$item);
@@ -1136,8 +1147,8 @@ switch($idx)
 			listSubCategoryQuestions($item, $idscat);
 			$babBody->addItemMenu("Categories", bab_translate("Categories"),$GLOBALS['babUrlScript']."?tg=faq&idx=Categories");
 			$babBody->addItemMenu("questions", bab_translate("Contents"),$GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item."&idscat=".$idscat);
-			$babBody->addItemMenu("Print Friendly", bab_translate("Print Friendly"),$GLOBALS['babUrlScript']."?tg=faq&idx=Print&item=".$item."&idscat=".$idscat);
-			$babBody->addItemMenuAttributes("Print Friendly", "target=_blank");
+			$babBody->addItemMenu("Print Friendly", bab_translate("Visualisation"),$GLOBALS['babUrlScript']."?tg=faq&idx=Print&item=".$item."&idscat=".$idscat);
+
 			$babBody->addItemMenu("listq", bab_translate("Questions"),$GLOBALS['babUrlScript']."?tg=faq&idx=listq&item=".$item."&idscat=".$idscat);
 			if( isUserManager())
 				{
@@ -1158,7 +1169,7 @@ switch($idx)
 			viewQuestion($item, $idscat, $idq);
 			$babBody->addItemMenu("Categories", bab_translate("Categories"),$GLOBALS['babUrlScript']."?tg=faq&idx=Categories");
 			$babBody->addItemMenu("questions", bab_translate("Contents"),$GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item."&idscat=".$idscat);
-			$babBody->addItemMenu("Print Friendly", bab_translate("Print Friendly"),$GLOBALS['babUrlScript']."?tg=faq&idx=Print&item=".$item."&idscat=".$idscat);
+			$babBody->addItemMenu("Print Friendly", bab_translate("Visualisation"),$GLOBALS['babUrlScript']."?tg=faq&idx=Print&item=".$item."&idscat=".$idscat);
 			$babBody->addItemMenuAttributes("Print Friendly", "target=_blank");
 			if( isUserManager())
 				$babBody->addItemMenu("ModifyQ", bab_translate("Edit"),$GLOBALS['babUrlScript']."?tg=faq&idx=ModifyQ&item=".$item."&idscat=".$idscat."&idq=".$idq);
@@ -1221,16 +1232,23 @@ switch($idx)
 	case "Print":
 		if( bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $item))
 		{
-			if( empty($idscat))
-				{
+			//if( empty($idscat))
+			//	{
 				FaqPrintContents($item);
-				}
-			else
-				{
-				faqPrint($item, $idscat);
-				}
+			//	}
+			//else
+			//	{
+			//	faqPrint($item, $idscat);
+			//	exit;
+			//	}
+
+			$babBody->addItemMenu("Categories", bab_translate("Categories"),$GLOBALS['babUrlScript']."?tg=faq&idx=Categories");
+			$babBody->addItemMenu("questions", bab_translate("Contents"),$GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item."&idscat=".$idscat);
+			$babBody->addItemMenu("Print", bab_translate("Visualisation"),$GLOBALS['babUrlScript']."?tg=faq&idx=Print&item=".$item."&idscat=".$idscat);
+
+			if( isUserManager())
+				$babBody->addItemMenu("ModifyQ", bab_translate("Edit"),$GLOBALS['babUrlScript']."?tg=faq&idx=ModifyQ&item=".$item."&idscat=".$idscat."&idq=".$idq);
 		}
-		exit();
 		break;
 
 	default:
