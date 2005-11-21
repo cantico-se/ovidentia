@@ -948,6 +948,12 @@ function updatePassword($oldpwd, $newpwd1, $newpwd2)
 		return false;
 		}
 
+	if( strlen($newpwd1) < 6)
+		{
+		$babBody->msgerror =  bab_translate("Password must be at least 6 characters !!");
+		return false;
+		}
+
 	return userChangePassword( $oldpwd, $newpwd1);
 	}
 

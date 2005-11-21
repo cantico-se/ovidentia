@@ -298,7 +298,7 @@ function updatePassword($item, $newpwd1, $newpwd2, $newnick)
 		return false;
 		}
 	
-	if ( !empty($newpwd1) && strlen($newpwd1) < 6 )
+	if ( strlen($newpwd1) < 6 )
 		{
 		$babBody->msgerror = bab_translate("Password must be at least 6 characters !!");
 		return false;
