@@ -526,7 +526,7 @@ function browseDbDirectoryWithOvml($badd)
 {
 	global $babBody, $babDB;
 
-	parse_str($GLOBALS['QUERY_STRING'], $args);
+	$args = &$_GET;
 
 	if(bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $args['directoryid']))
 		{
@@ -2125,8 +2125,7 @@ switch($idx)
 
 	case "ddbovml":
 		$babBody->title = "";
-		parse_str($GLOBALS['QUERY_STRING'], $args);
-		summaryDbContactWithOvml($args);
+		summaryDbContactWithOvml($_GET);
 		exit;
 		break;
 
