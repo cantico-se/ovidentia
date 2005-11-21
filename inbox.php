@@ -230,12 +230,20 @@ function listMails($accid, $criteria, $reverse, $start)
 				$this->altbg = !$this->altbg;
 				$this->msgid = $this->msguid[$this->start-1 + $i];
 				$headinfo = imap_header($this->mbox, imap_msgno($this->mbox, $this->msgid));
+				
 				if( empty($headinfo->from[0]->personal))
 					$this->msgfromurlname = $headinfo->from[0]->mailbox ."@". $headinfo->from[0]->host;
 				else
 					$this->msgfromurlname = $headinfo->from[0]->personal;
+
 				$arr = imap_mime_header_decode($this->msgfromurlname);
-				$this->msgfromurlname = htmlentities($arr[0]->text);
+				$this->msgfromurlname = '';
+				
+				foreach($arr as $obj)
+					$this->msgfromurlname .= $obj->text;
+
+				$this->msgfromurlname = htmlentities($this->msgfromurlname);
+
 				$this->msgfromurl = $GLOBALS['babUrlScript']."?tg=inbox&idx=view&accid=".$this->accid."&msg=".$this->msgid."&criteria=".$this->criteria."&reverse=".$this->reverse;
 				//$this->msgfromurl = $GLOBALS['babUrlScript']."?tg=inbox&idx=view&accid=".$this->accid."&msg=".$this->msgid."&criteria=".$this->criteria."&reverse=".$this->reverse;
 				$arr = imap_mime_header_decode($headinfo->subject);
