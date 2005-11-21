@@ -470,8 +470,13 @@ function mailReply($accid, $criteria, $reverse, $idreply, $all, $fw)
 				$fromorg = '';
                 for($i=0; $i < count($arr); $i++)
                     {
-                    $mhc = imap_mime_header_decode($arr[$i]->personal);
-                    $fromorg .= $mhc[0]->text . " [" . $arr[$i]->mailbox . "@" . $arr[$i]->host . "] ";
+					if( isset($arr[$i]->personal))
+						{
+	                    $mhc = imap_mime_header_decode($arr[$i]->personal);
+	                    $fromorg .= $mhc[0]->text;
+						}
+                    $fromorg .= " [" . $arr[$i]->mailbox . "@" . $arr[$i]->host . "] ";
+
                     if( $fw != 1)
                         $toval .= $arr[$i]->mailbox . "@" . $arr[$i]->host.", ";
                     }
@@ -486,6 +491,7 @@ function mailReply($accid, $criteria, $reverse, $idreply, $all, $fw)
 							$mhc =  imap_mime_header_decode($arr[$i]->personal);
 							$toorg .= $mhc[0]->text." ";
 							}
+						$toorg .= "[".$arr[$i]->mailbox . "@" . $arr[$i]->host."] ";
 
                         if( $all == 1)
                             $toval .= $arr[$i]->mailbox . "@" . $arr[$i]->host.", ";
@@ -496,8 +502,12 @@ function mailReply($accid, $criteria, $reverse, $idreply, $all, $fw)
                     $ccval = "";
                     for($i=0; $i < count($arr); $i++)
                         {
-                        $mhc = imap_mime_header_decode($arr[$i]->personal);
-                        $ccorg .= $mhc[0]->text . " ";
+						if( isset($arr[$i]->personal))
+							{
+							$mhc = imap_mime_header_decode($arr[$i]->personal);
+							$ccorg .= $mhc[0]->text . " ";
+							}
+						$ccorg .= "[".$arr[$i]->mailbox . "@" . $arr[$i]->host."] ";
 
                         if( $all == 1)
                             $ccval .= $arr[$i]->mailbox . "@" . $arr[$i]->host.", ";
