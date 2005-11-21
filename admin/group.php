@@ -343,7 +343,7 @@ function confirmDeleteGroup($id)
 
 
 /* main */
-if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['groups'] != 'Y')
+if( !$babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;
@@ -403,7 +403,8 @@ switch($idx)
 	case "Members":
 		groupMembers($item);
 		$babBody->title = bab_translate("Group's members").' : '.bab_getGroupName($item);
-		$babBody->addItemMenu("List", bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=groups&idx=List");
+		if( $babBody->currentAdmGroup == 0 || $babBody->currentDGGroup['groups'] == 'Y' )
+			$babBody->addItemMenu("List", bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=groups&idx=List");
 		if( $babBody->currentAdmGroup > 0 && $babBody->currentDGGroup['id_group'] != $item )
 			{
 			$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=group&idx=Modify&item=".$item);
@@ -415,7 +416,8 @@ switch($idx)
 		if( $item > 3 )
 			groupAdmDelete($item);
 		$babBody->title = bab_translate("Delete group");
-		$babBody->addItemMenu("List", bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=groups&idx=List");
+		if( $babBody->currentAdmGroup == 0 || $babBody->currentDGGroup['groups'] == 'Y' )
+			$babBody->addItemMenu("List", bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=groups&idx=List");
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=group&idx=Modify&item=".$item);
 		$babBody->addItemMenu("Members", bab_translate("Members"), $GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$item);
 		$babBody->addItemMenu("deldg", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=group&idx=deldg&item=".$item);
@@ -424,7 +426,8 @@ switch($idx)
 	default:
 		groupModify($item);
 		$babBody->title = bab_getGroupName($item) . " ". bab_translate("group");
-		$babBody->addItemMenu("List", bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=groups&idx=List");
+		if( $babBody->currentAdmGroup == 0 || $babBody->currentDGGroup['groups'] == 'Y' )
+			$babBody->addItemMenu("List", bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=groups&idx=List");
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=group&idx=Modify&item=".$item);
 		$babBody->addItemMenu("Members", bab_translate("Members"), $GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$item);
 		break;
