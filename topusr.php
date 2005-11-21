@@ -157,7 +157,7 @@ function listTopicCategory($cat)
 				$this->submiturl = "";
 				$this->childurl = "";
 				$this->childname = $this->arrid[$i]['title'];
-				$this->childdescription = $this->arrid[$i]['description'];
+				$this->childdescription = trim($this->arrid[$i]['description']);
 				if( $this->arrid[$i][1] == 1 )
 					{
 					$this->childurl = $GLOBALS['babUrlScript']."?tg=topusr&cat=".$this->arrid[$i][0];
