@@ -85,44 +85,17 @@ function listMails($accid, $criteria, $reverse, $start)
 			$this->deletealt = bab_translate("Delete");
 			$this->compose = bab_translate("Compose");
 
-			if( $reverse )
-				{
-				$reverse = 0;
-				switch ($criteria)
-					{
-					case SORTFROM:
-						$this->fromname .= " v";
-						break;
-					case SORTARRIVAL:
-						$this->datename .= " v";
-						break;
-					case SORTSUBJECT:
-						$this->subjectname .= " v";
-						break;
-					}
-				}
-			else
-				{
-				$reverse = 1;
-				switch ($criteria)
-					{
-					case SORTFROM:
-						$this->fromname .= " ^";
-						break;
-					case SORTARRIVAL:
-						$this->datename .= " ^";
-						break;
-					case SORTSUBJECT:
-						$this->subjectname .= " ^";
-						break;
-					}
-				}
+			$this->reverse = $reverse;
+			$reverse = !$reverse ? 1 : 0;
+
+			$this->criteria = $criteria;
+
 			$this->fromurl = $GLOBALS['babUrlScript']."?tg=inbox&idx=list&accid=".$this->accid."&criteria=".SORTFROM."&reverse=".$reverse;
 			$this->subjecturl = $GLOBALS['babUrlScript']."?tg=inbox&idx=list&accid=".$this->accid."&criteria=".SORTSUBJECT."&reverse=".$reverse;
 			$this->dateurl = $GLOBALS['babUrlScript']."?tg=inbox&idx=list&accid=".$this->accid."&criteria=".SORTARRIVAL."&reverse=".$reverse;
 
 			$this->mailcount = 0;
-			$this->db = $GLOBALS['babDB'];
+			$this->db = &$GLOBALS['babDB'];
 			if( empty($accid))
 				{
 				$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$BAB_SESS_USERID."' and prefered='Y'";
