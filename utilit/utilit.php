@@ -349,6 +349,32 @@ function bab_callAddonsFunction($func)
 		}
 }
 
+
+function bab_callAddonsFunctionArray($func, $args)
+{
+	$babBody = & $GLOBALS['babBody'];
+
+	foreach($babBody->babaddons as $key => $row)
+		{ 
+		$addonpath = $GLOBALS['babAddonsPath'].$row['title'];
+		if( is_file($addonpath."/init.php" ))
+			{
+			$GLOBALS['babAddonFolder'] = $row['title'];
+			$GLOBALS['babAddonTarget'] = "addon/".$row['id'];
+			$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$row['id']."/";
+			$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$row['title']."/";
+			$GLOBALS['babAddonHtmlPath'] = "addons/".$row['title']."/";
+			$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath']."/addons/".$row['title']."/";
+			require_once( $addonpath."/init.php" );
+			$call = $row['title']."_".$func;
+			if( function_exists($call) )
+				{
+				$call($args);
+				}
+			}
+		}
+}
+
 function bab_getAddonsMenus($row, $what)
 {
 	global $babDB;
@@ -2202,7 +2228,7 @@ function bab_updateSiteSettings()
 {
 	global $babDB, $babBody;
 
-	$req="select *, DECODE(smtppassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as smtppass from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
+	$req="select *, DECODE(smtppassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as smtppass, DECODE(ldap_adminpassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as ldap_adminpassword from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
 	$res=$babDB->db_query($req);
 	if ($babDB->db_num_rows($res) == 0)
 		{

@@ -140,13 +140,11 @@ function deleteUser($id)
 	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
 
-function changePassword($item, $pos, $grp)
+function changeNickname($item, $pos, $grp)
 	{
 	global $babBody,$BAB_SESS_USERID;
-	class tempb
+	class changeNicknameCls
 		{
-		var $newpwd;
-		var $renewpwd;
 		var $newnickname;
 		var $nicknameval;
 		var $update;
@@ -154,23 +152,68 @@ function changePassword($item, $pos, $grp)
 		var $pos;
 		var $grp;
 
-		function tempb($item, $pos, $grp)
+		function changeNicknameCls($item, $pos, $grp)
 			{
 			global $babDB;
 			$this->item = $item;
 			$this->pos = $pos;
 			$this->grp = $grp;
 			$this->newnickname = bab_translate("Nickname");
-			$this->newpwd = bab_translate("New Password");
-			$this->renewpwd = bab_translate("Retype New Password");
 			$this->update = bab_translate("Update");
 			list($this->nicknameval) = $babDB->db_fetch_row($babDB->db_query("select nickname from ".BAB_USERS_TBL." where id='".$item."'"));
 			}
 		}
 
-	$tempb = new tempb($item, $pos, $grp);
-	$babBody->babecho(	bab_printTemplate($tempb,"users.html", "changepassword"));
+	$tempb = new changeNicknameCls($item, $pos, $grp);
+	$babBody->babecho(	bab_printTemplate($tempb,"users.html", "changenickname"));
+	}
 
+function changePassword($item, $pos, $grp)
+	{
+	global $babBody,$BAB_SESS_USERID;
+	class changePasswordCls
+		{
+		var $newpwd;
+		var $renewpwd;
+		var $update;
+		var $item;
+		var $pos;
+		var $grp;
+
+		function changePasswordCls($item, $pos, $grp)
+			{
+			global $babBody, $babDB;
+			switch( $babBody->babsite['authentification'] )
+				{
+				case BAB_AUTHENTIFICATION_AD:
+					$this->bshowform = false;
+					break;
+				case BAB_AUTHENTIFICATION_LDAP:
+					if( empty($babBody->babsite['ldap_encryptiontype']) )
+						{
+						$this->bshowform = false;
+						}
+					else
+						{
+						$this->bshowform = true;
+						}
+					break;
+				default:
+					$this->bshowform = true;
+					break;
+				}
+
+			$this->item = $item;
+			$this->pos = $pos;
+			$this->grp = $grp;
+			$this->newpwd = bab_translate("New Password");
+			$this->renewpwd = bab_translate("Retype New Password");
+			$this->update = bab_translate("Update");
+			}
+		}
+
+	$tempb = new changePasswordCls($item, $pos, $grp);
+	$babBody->babecho(	bab_printTemplate($tempb,"users.html", "changepassword"));
 	}
 
 function notifyUserconfirmation($name, $email)
@@ -288,21 +331,9 @@ function confirmDeleteUser($id)
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=users&idx=List");
 	}
 
-function updatePassword($item, $newpwd1, $newpwd2, $newnick)
+function updateNickname($item, $newnick)
 	{
 	global $babBody, $BAB_HASH_VAR;
-
-	if( (!empty($newpwd1) || !empty($newpwd2)) && $newpwd1 != $newpwd2)
-		{
-		$babBody->msgerror = bab_translate("Passwords not match !!");
-		return false;
-		}
-	
-	if ( strlen($newpwd1) < 6 )
-		{
-		$babBody->msgerror = bab_translate("Password must be at least 6 characters !!");
-		return false;
-		}
 
 	if ( !empty($newnick) && strpos($newnick, ' ') !== false )
 		{
@@ -327,15 +358,106 @@ function updatePassword($item, $newpwd1, $newpwd2, $newnick)
 		$res = $db->db_query($req);
 		}
 
-	if( (!empty($newpwd1) && !empty($newpwd2)) && $newpwd1 == $newpwd2)
-		{
-		$req="update ".BAB_USERS_TBL." set password='". md5(strtolower($newpwd1)). "' where id='". $item . "'";
-		$res = $db->db_query($req);
-		}
-
 	return true;
 	}
 
+function updatePassword($item, $newpwd1, $newpwd2)
+	{
+	global $babBody, $babDB, $BAB_HASH_VAR;
+
+	$newpwd1 = trim($newpwd1);
+	$newpwd2 = trim($newpwd2);
+
+	if ( empty($newpwd1) && empty($newpwd2) )
+		{
+		$babBody->msgerror = bab_translate("Password must be at least 6 characters !!");
+		return false;
+		}
+
+	if( (!empty($newpwd1) || !empty($newpwd2)) && $newpwd1 != $newpwd2)
+		{
+		$babBody->msgerror = bab_translate("Passwords not match !!");
+		return false;
+		}
+	
+	if ( strlen($newpwd1) < 6 )
+		{
+		$babBody->msgerror = bab_translate("Password must be at least 6 characters !!");
+		return false;
+		}
+
+	list($nickname) = $babDB->db_fetch_row($babDB->db_query("select nickname from ".BAB_USERS_TBL." where id='".$item."'"));
+
+	switch($babBody->babsite['authentification'])
+		{
+		case BAB_AUTHENTIFICATION_AD: // Active Directory
+			$babBody->msgerror = bab_translate("Nothing Changed !!");
+			return false;
+			break;
+		case BAB_AUTHENTIFICATION_LDAP: // Active Directory
+			if( !empty($babBody->babsite['ldap_encryptiontype']))
+				{
+				include_once $GLOBALS['babInstallPath']."utilit/ldap.php";
+				$ldap = new babLDAP($babBody->babsite['ldap_host'], "", false);
+				$ret = $ldap->connect();
+				if( $ret === false )
+					{
+					$babBody->msgerror = bab_translate("LDAP connection failed");
+					return false;
+					}
+
+				$ret = $ldap->bind($babBody->babsite['ldap_admindn'], $babBody->babsite['ldap_adminpassword']);
+				if( !$ret )
+					{
+					$ldap->close();
+					$babBody->msgerror = bab_translate("LDAP bind failed");
+					return  false;
+					}
+	
+				if( isset($babBody->babsite['ldap_filter']) && !empty($babBody->babsite['ldap_filter']))
+					{
+					$filter = str_replace('%UID', $babBody->babsite['ldap_attribute'], $babBody->babsite['ldap_filter']);
+					$filter = str_replace('%NICKNAME', $nickname, $filter);
+					}
+				else
+					{
+					$filter = "(|(".$babBody->babsite['ldap_attribute']."=".$nickname."))";
+					}
+
+				$attributes = array("dn", $babBody->babsite['ldap_attribute'], "cn");
+				$entries = $ldap->search($babBody->babsite['ldap_searchdn'], $filter, $attributes);
+
+				if( $entries === false )
+					{
+					$ldap->close();
+					$babBody->msgerror = bab_translate("LDAP search failed");
+					return false;
+					}
+
+				$ldappw = ldap_encrypt($newpwd1, $babBody->babsite['ldap_encryptiontype']);
+				$ret = $ldap->modify($entries[0]['dn'], array('userPassword'=>$ldappw));
+				$ldap->close();
+				if( !$ret)
+					{
+					$babBody->msgerror = bab_translate("Nothing Changed");
+					return false;
+					}
+				}
+			break;
+		default:
+			break;
+		}
+
+	$babDB->db_query("update ".BAB_USERS_TBL." set password='". md5(strtolower($newpwd1)). "' where id='". $item . "'");
+	$error = '';
+	bab_callAddonsFunctionArray('onUserChangePassword', array('id'=>$item, 'nickname'=>$nickname, 'password'=>$newpwd1, 'error'=>&$error));
+	if( !empty($error))
+		{
+		$babBody->msgerror = $error;
+		return false;
+		}
+	return true;
+	}
 /* main */
 if( !$babBody->isSuperAdmin )
 {
@@ -359,7 +481,18 @@ if( isset($modify))
 
 if( isset($update) && $update == "password")
 	{
-	if(!updatePassword($item, $newpwd1, $newpwd2, $newnick))
+	if(!updatePassword($item, $newpwd1, $newpwd2))
+		$idx = "Modify";
+	else
+		{
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp);
+		return;
+		}
+	}
+
+if( isset($update) && $update == "nickname")
+	{
+	if(!updateNickname($item, $newnick))
 		$idx = "Modify";
 	else
 		{
@@ -423,6 +556,7 @@ switch($idx)
 		if( !isset($pos)) {$pos='';}
 		if( !isset($grp)) {$grp='';}
 		modifyUser($item, $pos, $grp);
+		changeNickname($item, $pos, $grp);
 		changePassword($item, $pos, $grp);
 		$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp);
 		$babBody->addItemMenu("Modify", bab_translate("Modify"),$GLOBALS['babUrlScript']."?tg=user&idx=Modify&item=".$item."&pos=".$pos."&grp=".$grp);

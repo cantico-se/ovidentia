@@ -967,31 +967,37 @@ function sortList(sortType, list)
 function hideShowCnx() 
 	{
 	var sf = document.forms.formsiteauth;
-	var obj1 = document.getElementById('ldpapchkcnxid');
-	var obj2 = document.getElementById('ldpaptxtcnxid');
+	var obj0 = document.getElementById('ldapconfig');
+	var obj1 = document.getElementById('ldpapauthpassid');
+	var obj2 = document.getElementById('ldapadmindnid');
 	var obj3 = document.getElementById('ldpapdomainnameid');
 	var obj4 = document.getElementById('tdfieldid0');
+	var obj5 = document.getElementById('ldapadminpwd1id');
+	var obj6 = document.getElementById('ldapadminpwd2id');
 
 	if( sf.authtype[sf.authtype.selectedIndex].value == 0 )
 	{
-	if (obj1.style.display == '') obj1.style.display = 'none';
-	if (obj2.style.display == '') obj2.style.display = 'none';
-	if (obj3.style.display == '') obj3.style.display = 'none';
-	if (obj4.style.display == 'none') obj4.style.display = '';
+	if (obj0.style.display == '') obj0.style.display = 'none';
 	}
 	else if( sf.authtype[sf.authtype.selectedIndex].value == 1 )
 	{
+	if (obj0.style.display == 'none') obj0.style.display = '';
 	if (obj1.style.display == 'none') obj1.style.display = '';
 	if (obj2.style.display == 'none') obj2.style.display = '';
 	if (obj3.style.display == '') obj3.style.display = 'none';
 	if (obj4.style.display == 'none') obj4.style.display = '';
+	if (obj5.style.display == 'none') obj5.style.display = '';
+	if (obj6.style.display == 'none') obj6.style.display = '';
 	}
 	else
 	{
-	if (obj1.style.display == 'none') obj1.style.display = '';
-	if (obj2.style.display == 'none') obj2.style.display = '';
+	if (obj0.style.display == 'none') obj0.style.display = '';
+	if (obj1.style.display == '') obj1.style.display = 'none';
+	if (obj2.style.display == '') obj2.style.display = 'none';
 	if (obj3.style.display == 'none') obj3.style.display = '';
 	if (obj4.style.display == '') obj4.style.display = 'none';
+	if (obj5.style.display == '') obj5.style.display = 'none';
+	if (obj6.style.display == '') obj6.style.display = 'none';
 	}
 	}
 //-->
@@ -1015,8 +1021,14 @@ function hideShowCnx()
 		<!--#endin getnextauth -->
 		</select>
 		&nbsp;&nbsp;
-		<input type="checkbox" id="ldpapchkcnxid" name="ldpapchkcnx" value="Y" { ldpachkcnxchecked } />&nbsp;<span id="ldpaptxtcnxid" nowrap>{ ldpachkcnxtxt }</span>
 		</td>
+	</tr>
+	
+	<tr  id="ldapconfig"> 
+		<td align="right" colspan="2">
+		<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+	<tr> 
+		<td align="center" colspan="2"><input type="checkbox" name="ldpapchkcnx" value="Y" { ldpachkcnxchecked } />&nbsp;<span nowrap>{ ldpachkcnxtxt }</span></td>
 	</tr>
 	<tr> 
 		<td align="right">&nbsp;</td>
@@ -1041,6 +1053,12 @@ function hideShowCnx()
 		</td>
 	</tr>
 	<tr> 
+		<td align="right">{ filtertxt }</td>
+		<td>
+		<input type="text" name="ldapfilter" size="50" value="{ ldapfiltersite }" />
+		</td>
+	</tr>
+	<tr id="ldpapauthpassid"> 
 		<td align="right">{ authpasstypetxt }</td>
 		<td>
 <select name="crypttype">
@@ -1049,6 +1067,24 @@ function hideShowCnx()
 <option value="{ passtypeval }" { passtypeselected }>{ passtypename }</option>
 <!--#endin getnextpasstype -->
 </select>
+		</td>
+	</tr>
+	<tr id="ldapadmindnid"> 
+		<td align="right">{ admindntxt }</td>
+		<td>
+		<input type="text" name="admindn" size="50" value="{ ldapadmindn }" />
+		</td>
+	</tr>
+	<tr id="ldapadminpwd1id"> 
+		<td align="right">{ adminpwd1txt }</td>
+		<td>
+		<input type="password" name="adminpwd1" size="50" value="{ ldapadminpwd1 }" />
+		</td>
+	</tr>
+	<tr id="ldapadminpwd2id"> 
+		<td align="right">{ adminpwd2txt }</td>
+		<td>
+		<input type="password" name="adminpwd2" size="50" value="{ ldapadminpwd2 }" />
 		</td>
 	</tr>
 	<!--#in getnextfield -->
@@ -1064,11 +1100,16 @@ function hideShowCnx()
 		</td>
 	</tr>
 	<!--#endin getnextfield -->
+
+		</table>
+		</td>
+	</tr>
 	<tr> 
 		<td align="center" colspan="2"><br />
 		<input type="Submit" name="Submit" value="{ modify }" />
 		</td>
 	</tr>
+	
 	</table>
 </td>
 </tr>

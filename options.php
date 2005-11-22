@@ -24,39 +24,6 @@
 include_once "base.php";
 include_once $babInstallPath."admin/register.php";
 
-function encrypt($str, $encryption)
-{
-	switch($encryption)
-	{
-		case 'plain':
-			return $str;
-			break;
-		case 'sha':
-			return "{SHA}".base64_encode(mHash(MHASH_SHA1, $str));
-			break;
-		case 'crypt':
-			return "{CRYPT}".crypt($str,substr($str,0,2));
-			break;
-		case 'md5-hex':
-			return md5($str);
-			break;
-		case 'md5-base64':
-			return "{MD5}".base64_encode(mHash(MHASH_MD5, $str));
-			break;
-		case 'ssha':
-			$salt = mhash_keygen_s2k(MHASH_SHA1,$str,substr(pack("h*",md5(mt_rand() )),0,8),4);
-			return "{SSHA}" .base64_encode(mHash(MHASH_SHA1, $str.$salt).$salt);
-			break;
-		case 'smd5':
-			$salt = mhash_keygen_s2k(MHASH_MD5,$str,substr(pack("h*",md5(mt_rand()) ),0,8),4);
-			return "{SMD5}".base64_encode(mHash(MHASH_MD5, $str.$salt).$salt); 
-			break;
-		default:
-			return false; 
-			break;
-	}
-}
-
 function changePassword()
 	{
 	global $babBody,$BAB_SESS_USERID;
@@ -187,7 +154,22 @@ function changeNickname($nickname)
 			$res=$babDB->db_query("select changepwd from ".BAB_USERS_TBL." where id='".$GLOBALS['BAB_SESS_USERID']."'");
 			$arr = $babDB->db_fetch_array($res);
 			$this->changenickname = $babBody->babsite['change_nickname'] == 'Y' ? true : false;
-			$this->changepassword = $babBody->babsite['change_password'] == 'Y'? ($arr['changepwd'] == 1 ? bab_translate("Update Password") : false): false;
+			if( $babBody->babsite['change_password'] == 'Y' && $arr['changepwd'] == 1 )
+				{
+				if( $babBody->babsite['authentification'] != BAB_AUTHENTIFICATION_OVIDENTIA && empty($babBody->babsite['ldap_encryptiontype']))
+					{
+					$this->changepassword = false;
+					}
+				else
+					{
+					$this->changepassword = bab_translate("Update Password");
+					}
+				}
+			else
+				{
+				$this->changepassword = false;
+				}
+			//$this->changepassword = $babBody->babsite['change_password'] == 'Y'? ($arr['changepwd'] == 1 ? bab_translate("Update Password") : false): false;
 			$this->urlchangepassword = $GLOBALS['babUrlScript']."?tg=options&idx=changePassword";
 			$this->nicknameval = $nickname != ""? $nickname: "";
 			$this->nickname = bab_translate("Nickname");
@@ -809,9 +791,8 @@ function userChangePassword($oldpwd, $newpwd)
 	global $babBody, $BAB_SESS_USERID, $BAB_SESS_HASHID;
 
 	$new_password1=strtolower($newpwd);
-	$sql="select * from ".BAB_USERS_TBL." where id='". $BAB_SESS_USERID ."'";
 	$db = $GLOBALS['babDB'];
-	$result=$db->db_query($sql);
+	$result=$db->db_query("select password from ".BAB_USERS_TBL." where id='". $BAB_SESS_USERID ."'");
 	if ($db->db_num_rows($result) < 1)
 		{
 		$babBody->msgerror = bab_translate("User not found or bad password");
@@ -819,64 +800,39 @@ function userChangePassword($oldpwd, $newpwd)
 		}
 	else
 		{
-		$arr = $db->db_fetch_array($result);
-		$oldpwd2 = md5(strtolower($oldpwd));
-		if( $oldpwd2 == $arr['password'])
+		switch($babBody->babsite['authentification'])
 			{
-
-			if( isset($babBody->babsite['authentification']) && $babBody->babsite['authentification'] != 0 && !empty($babBody->babsite['ldap_encryptiontype']) )
-				{
-				include_once $GLOBALS['babInstallPath']."utilit/ldap.php";
-				$ldap = new babLDAP($babBody->babsite['ldap_host'], "", false);
-				$ret = $ldap->connect();
-				if( $ret === false )
+			case BAB_AUTHENTIFICATION_AD:
+				if( !empty($babBody->babsite['ldap_encryptiontype']))
 					{
-					$babBody->msgerror = bab_translate("LDAP connection failed. Please contact your administrator");
-					return false;
-					}
-
-				$attributes = array("dn", $babBody->babsite['ldap_attribute'], "cn");
-				switch($babBody->babsite['authentification'])
-					{
-					case '2': // Active Directory
-						$ret = $ldap->bind($GLOBALS['BAB_SESS_NICKNAME']."@".$babBody->babsite['ldap_domainname'], $oldpwd);
-						if( !$ret )
+					include_once $GLOBALS['babInstallPath']."utilit/ldap.php";
+					$ldap = new babLDAP($babBody->babsite['ldap_host'], "", false);
+					$ret = $ldap->connect();
+					if( $ret === false )
+						{
+						$babBody->msgerror = bab_translate("LDAP connection failed. Please contact your administrator");
+						return false;
+						}
+					$ret = $ldap->bind($GLOBALS['BAB_SESS_NICKNAME']."@".$babBody->babsite['ldap_domainname'], $oldpwd);
+					if( !$ret )
+						{
+						$ldap->close();
+						$babBody->msgerror = bab_translate("LDAP bind failed. Please contact your administrator");
+						return false;
+						}
+					else
+						{
+						if( isset($babBody->babsite['ldap_filter']) && !empty($babBody->babsite['ldap_filter']))
 							{
-							$ldap->close();
-							$babBody->msgerror = bab_translate("LDAP bind failed. Please contact your administrator");
-							return false;
+							$filter = str_replace('%NICKNAME', $GLOBALS['BAB_SESS_NICKNAME'], $babBody->babsite['ldap_filter']);
 							}
 						else
 							{
-							$entries = $ldap->search($babBody->babsite['ldap_searchdn'], "(|(samaccountname=".$GLOBALS['BAB_SESS_NICKNAME']."))", $attributes);
-							if( $entries === false )
-								{
-								$ldap->close();
-								$babBody->msgerror = bab_translate("LDAP authentification failed. Please verify your nickname and your password");
-								return false;
-								}
-
-							// create the unicode password 
-							$len = strlen($newpwd); 
-							$newPass = '"'; 
-							for ($i = 0; $i < $len; $i++) 
-							{ 
-								$newPass .= "{$newpwd{$i}}\000"; 
-							} 
-							$newPass .= '"'; 
-
-							$ret = $ldap->modify($entries[0]['dn'], array('unicodePwd'=>$newPass));
-							$ldap->close();
-							if( !$ret)
-								{
-								$babBody->msgerror = bab_translate("Nothing Changed");
-								return false;
-								}
+							$filter = "(|(samaccountname=".$GLOBALS['BAB_SESS_NICKNAME']."))";
 							}
-						break;
-					default:
-						$entries = $ldap->search($babBody->babsite['ldap_searchdn'], "(|(".$babBody->babsite['ldap_attribute']."=".$GLOBALS['BAB_SESS_NICKNAME']."))", $attributes);
 
+						$attributes = array("dn", $babBody->babsite['ldap_attribute'], "cn");
+						$entries = $ldap->search($babBody->babsite['ldap_searchdn'], $filter, $attributes);
 						if( $entries === false )
 							{
 							$ldap->close();
@@ -884,50 +840,105 @@ function userChangePassword($oldpwd, $newpwd)
 							return false;
 							}
 
-						$ret = $ldap->bind($entries[0]['dn'], $oldpwd);
-						if( !$ret )
-							{
-							$ldap->close();
-							$babBody->msgerror = bab_translate("LDAP bind failed. Please contact your administrator");
-							return  false;
-							}
+						// create the unicode password 
+						$len = strlen($newpwd); 
+						$newPass = '"'; 
+						for ($i = 0; $i < $len; $i++) 
+						{ 
+							$newPass .= "{$newpwd{$i}}\000"; 
+						} 
+						$newPass .= '"'; 
 
-						$ldappw = encrypt($newpwd, $babBody->babsite['ldap_encryptiontype']);
-						$ret = $ldap->modify($entries[0]['dn'], array('userPassword'=>$ldappw));
+						$ret = $ldap->modify($entries[0]['dn'], array('unicodePwd'=>$newPass));
 						$ldap->close();
 						if( !$ret)
 							{
 							$babBody->msgerror = bab_translate("Nothing Changed");
 							return false;
 							}
-
-						break;
+						}
 					}
-				}
+				break;
+			case BAB_AUTHENTIFICATION_LDAP:
+				if( !empty($babBody->babsite['ldap_encryptiontype']))
+					{
+					include_once $GLOBALS['babInstallPath']."utilit/ldap.php";
+					$ldap = new babLDAP($babBody->babsite['ldap_host'], "", false);
+					$ret = $ldap->connect();
+					if( $ret === false )
+						{
+						$babBody->msgerror = bab_translate("LDAP connection failed. Please contact your administrator");
+						return false;
+						}
+					if( isset($babBody->babsite['ldap_filter']) && !empty($babBody->babsite['ldap_filter']))
+						{
+						$filter = str_replace('%UID', $babBody->babsite['ldap_attribute'], $babBody->babsite['ldap_filter']);
+						$filter = str_replace('%NICKNAME', $GLOBALS['BAB_SESS_NICKNAME'], $filter);
+						}
+					else
+						{
+						$filter = "(|(".$babBody->babsite['ldap_attribute']."=".$GLOBALS['BAB_SESS_NICKNAME']."))";
+						}
 
-			$sql="update ".BAB_USERS_TBL." set password='". md5(strtolower($newpwd)). "' ".
-				"where id='". $BAB_SESS_USERID . "'";
-			$result=$db->db_query($sql);
-			if ($db->db_affected_rows() < 1)
-				{
-				$babBody->msgerror = bab_translate("Nothing Changed");
-				return false;
-				}
-			else
-				{
-				$babBody->msgerror = bab_translate("Password Changed");
-				return true;
-				}
+					$attributes = array("dn", $babBody->babsite['ldap_attribute'], "cn");
+					$entries = $ldap->search($babBody->babsite['ldap_searchdn'], $filter, $attributes);
+
+					if( $entries === false )
+						{
+						$ldap->close();
+						$babBody->msgerror = bab_translate("LDAP authentification failed. Please verify your nickname and your password");
+						return false;
+						}
+
+					$ret = $ldap->bind($entries[0]['dn'], $oldpwd);
+					if( !$ret )
+						{
+						$ldap->close();
+						$babBody->msgerror = bab_translate("LDAP bind failed. Please contact your administrator");
+						return  false;
+						}
+
+					$ldappw = ldap_encrypt($newpwd, $babBody->babsite['ldap_encryptiontype']);
+					$ret = $ldap->modify($entries[0]['dn'], array('userPassword'=>$ldappw));
+					$ldap->close();
+					if( !$ret)
+						{
+						$babBody->msgerror = bab_translate("Nothing Changed");
+						return false;
+						}
+					}
+				break;
+			default:
+				$arr = $db->db_fetch_array($result);
+				$oldpwd2 = md5(strtolower($oldpwd));
+				if( $oldpwd2 != $arr['password'])
+					{
+					$babBody->msgerror = bab_translate("ERROR: Old password incorrect !!");
+					return false;
+					}
+				break;
+			}
+
+		$result=$db->db_query("update ".BAB_USERS_TBL." set password='". md5(strtolower($newpwd)). "' where id='". $BAB_SESS_USERID . "'");
+		if ($db->db_affected_rows() < 1)
+			{
+			$babBody->msgerror = bab_translate("Nothing Changed");
+			return false;
 			}
 		else
 			{
-			$babBody->msgerror = bab_translate("ERROR: Old password incorrect !!");
-			return false;
+			$babBody->msgerror = bab_translate("Password Changed");
+			$error = '';
+			bab_callAddonsFunctionArray('onUserChangePassword', array('id'=>$BAB_SESS_USERID, 'nickname'=>$GLOBALS['BAB_SESS_NICKNAME'], 'password'=>$newpwd, 'error'=>&$error));
+			if( !empty($error))
+				{
+				$babBody->msgerror = $error;
+				return false;
+				}
+			return true;
 			}
 		}
 	}
-
-
 
 
 function updatePassword($oldpwd, $newpwd1, $newpwd2)
@@ -1276,7 +1287,8 @@ if( isset($update))
 			$msgerror = updatePassword($oldpwd, $newpwd1, $newpwd2);
         	if ($msgerror)
 			{
-				changePasswordUnload(bab_translate("Your password has been modified"));
+				//changePasswordUnload(bab_translate("Your password has been modified"));
+				exit;
 			}
 			else
 			{

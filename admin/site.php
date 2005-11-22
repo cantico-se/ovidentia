@@ -619,7 +619,7 @@ function siteAuthentification($id)
 			global $bab_ldapAttributes;
 			$this->db = $GLOBALS['babDB'];
 			$this->id = $id;
-			$req = "select *, DECODE(smtppassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as smtppass from ".BAB_SITES_TBL." where id='$id'";
+			$req = "select *, DECODE(smtppassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as smtppass, DECODE(ldap_adminpassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as ldapadminpwd from ".BAB_SITES_TBL." where id='$id'";
 			$this->res = $this->db->db_query($req);
 			if( $this->db->db_num_rows($this->res) > 0 )
 				{
@@ -632,15 +632,23 @@ function siteAuthentification($id)
 				$this->ldapsearchdnsite = $arr['ldap_searchdn'];
 				$this->ldapattributesite = $arr['ldap_attribute'];
 				$this->ldapencryptiontype = $arr['ldap_encryptiontype'];
+				$this->ldapfiltersite = $arr['ldap_filter'];
+				$this->ldapadmindn = $arr['ldap_admindn'];
+				$this->ldapadminpwd1 = $arr['ldapadminpwd'];
+				$this->ldapadminpwd2 = $arr['ldapadminpwd'];
 
 				$this->authentificationtxt = bab_translate("Authentification");
-				$this->arrayauth = array(0 => "OVIDENTIA", 1 => "LDAP", 2 => "ACTIVE DIRECTORY");
+				$this->arrayauth = array(BAB_AUTHENTIFICATION_OVIDENTIA => "OVIDENTIA", BAB_AUTHENTIFICATION_LDAP => "LDAP", BAB_AUTHENTIFICATION_AD => "ACTIVE DIRECTORY");
 
 				$this->fieldrequiredtxt = bab_translate("Those fields are required");
 				$this->domainnametxt = bab_translate("Domain name");
 				$this->hosttxt = bab_translate("Host");
 				$this->searchbasetxt = bab_translate("Search base");
 				$this->attributetxt = bab_translate("Attribute");
+				$this->filtertxt = bab_translate("Filter");
+				$this->admindntxt = bab_translate("Admin DN");
+				$this->adminpwd1txt = bab_translate("Admin password");
+				$this->adminpwd2txt = bab_translate("Re-type admin password");
 				$this->ldpachkcnxtxt = bab_translate("Allow administrators to connect if LDAP authentification fails");
 
 				$this->arrayauthpasstype = array(
@@ -1535,72 +1543,115 @@ function siteUpdate_menu6($item)
 
 function siteUpdate_authentification($id, $authtype, $host, $hostname, $ldpapchkcnx, $searchdn)
 	{
-	global $babBody, $bab_ldapAttributes, $nickname, $i_nickname, $crypttype;
-
-	if (!function_exists('ldap_connect'))
-		{
-		$babBody->msgerror = bab_translate("You must have LDAP enabled on the server");
-		return false;
-		}
-
-	if (!function_exists('utf8_decode'))
-		{
-		$babBody->msgerror = bab_translate("You must have XML enabled on the server");
-		return false;
-		}
-
-	if( empty($host))
-		{
-		$babBody->msgerror = bab_translate("ERROR: You must provide a host address !!");
-		return false;
-		}
-
-	if( $authtype == 1 )
-		{
-		if( (!isset($nickname) || empty($nickname)) && (!isset($i_nickname) || empty($i_nickname)))
-			{
-			$babBody->msgerror = bab_translate("You must provide a nickname");
-			return false;
-			}
-		}
-
-	$ldapattr = empty($nickname) ? $i_nickname: $nickname;
+	global $babBody, $bab_ldapAttributes, $nickname, $i_nickname, $crypttype, $ldapfilter,$admindn, $adminpwd1, $adminpwd2;
 
 	$db = $GLOBALS['babDB'];
-
-	$req = "update ".BAB_SITES_TBL." set authentification='".$authtype."'";
-	$req .= ", ldap_host='".$host."', ldap_domainname='".$hostname."', ldap_allowadmincnx='".$ldpapchkcnx."', ldap_searchdn='".$searchdn."', ldap_attribute='".$ldapattr."', ldap_encryptiontype='".$crypttype."'";
-	$req .= " where id='".$id."'";
-	$db->db_query($req);
-
-	$res = $db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='0'");
-	while( $arr = $db->db_fetch_array($res))
+	if( $authtype != BAB_AUTHENTIFICATION_OVIDENTIA )
 		{
-		$val = '';
-		if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
+		if (!function_exists('ldap_connect'))
 			{
-			$rr = $db->db_fetch_array($db->db_query("select name, description from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
-			$fieldname = $rr['name'];
-			}
-		else
-			{
-			$rr = $db->db_fetch_array($db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
-			$fieldname = "babdirf".$arr['id_field'];
+			$babBody->msgerror = bab_translate("You must have LDAP enabled on the server");
+			return false;
 			}
 
-		if( isset($GLOBALS[$fieldname]) && !empty($GLOBALS[$fieldname]))
+		if (!function_exists('utf8_decode'))
 			{
-			$val = $GLOBALS[$fieldname];
+			$babBody->msgerror = bab_translate("You must have XML enabled on the server");
+			return false;
 			}
-		else
+
+		if( empty($host))
 			{
-			$var = "i_".$fieldname;
-			if( isset($GLOBALS[$var]) && !empty($GLOBALS[$var]))
+			$babBody->msgerror = bab_translate("ERROR: You must provide a host address !!");
+			return false;
+			}
+
+		if( $authtype == BAB_AUTHENTIFICATION_LDAP )
+			{
+			if( (!isset($nickname) || empty($nickname)) && (!isset($i_nickname) || empty($i_nickname)))
 				{
-				$val = $GLOBALS[$var];
+				$babBody->msgerror = bab_translate("You must provide a nickname");
+				return false;
+				}
+
+			if( !empty($adminpwd1) || !empty($adminpwd2))
+				{
+				$adminpwd1 = trim($adminpwd1);
+				$adminpwd2 = trim($adminpwd2);
+				if( $adminpwd1 != $adminpwd2 )
+					{
+					$babBody->msgerror = bab_translate("Passwords not match !!");
+					return false;
+					}
 				}
 			}
-		$db->db_query("update ".BAB_LDAP_SITES_FIELDS_TBL." set x_name='".$val."' where id_field='".$arr['id_field']."' and id_site='".$id."'");
+
+		$ldapattr = empty($nickname) ? $i_nickname: $nickname;
+
+		if( $authtype == BAB_AUTHENTIFICATION_AD )
+			{
+			$crypttype = '';
+			$admindn = '';
+			$adminpwd1 = '';
+			$adminpwd2 = '';
+			}
+
+		$ldapfilter = trim($ldapfilter);
+		if( empty($ldapfilter))
+			{
+			switch($authtype)
+				{
+				case BAB_AUTHENTIFICATION_AD:
+					$ldapfilter = '(|(samaccountname=%NICKNAME))';
+					break;
+				default:
+					$ldapfilter = '(|(%UID=%NICKNAME))';
+					break;
+				}
+			}
+
+		$req = "update ".BAB_SITES_TBL." set authentification='".$authtype."'";
+		$req .= ", ldap_host='".$host."', ldap_domainname='".$hostname."', ldap_allowadmincnx='".$ldpapchkcnx."', ldap_searchdn='".$searchdn."', ldap_attribute='".$ldapattr."', ldap_encryptiontype='".$crypttype."', ldap_filter='".$ldapfilter."', ldap_admindn='".$admindn."'";
+		if( !empty($adminpwd1))
+			{
+			$req .= ", ldap_adminpassword=ENCODE(\"".$adminpwd1."\",\"".$GLOBALS['BAB_HASH_VAR']."\")";
+			}
+		$req .= " where id='".$id."'";
+		$db->db_query($req);
+
+		$res = $db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='0'");
+		while( $arr = $db->db_fetch_array($res))
+			{
+			$val = '';
+			if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
+				{
+				$rr = $db->db_fetch_array($db->db_query("select name, description from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
+				$fieldname = $rr['name'];
+				}
+			else
+				{
+				$rr = $db->db_fetch_array($db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+				$fieldname = "babdirf".$arr['id_field'];
+				}
+
+			if( isset($GLOBALS[$fieldname]) && !empty($GLOBALS[$fieldname]))
+				{
+				$val = $GLOBALS[$fieldname];
+				}
+			else
+				{
+				$var = "i_".$fieldname;
+				if( isset($GLOBALS[$var]) && !empty($GLOBALS[$var]))
+					{
+					$val = $GLOBALS[$var];
+					}
+				}
+			$db->db_query("update ".BAB_LDAP_SITES_FIELDS_TBL." set x_name='".$val."' where id_field='".$arr['id_field']."' and id_site='".$id."'");
+			}
+		}
+	else
+		{
+		$db->db_query("update ".BAB_SITES_TBL." set authentification='".$authtype."' where id='".$id."'");
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
 	}

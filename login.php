@@ -28,7 +28,7 @@ function bab_utf8_decode($str)
 {
 	global $babBody;
 
-	if( $babBody->babsite['authentification'] == '2' ) // AD
+	if( $babBody->babsite['authentification'] == BAB_AUTHENTIFICATION_AD ) // Active Directory
 		{
 		return $str;
 		}
@@ -36,6 +36,31 @@ function bab_utf8_decode($str)
 		{
 		return utf8_decode($str);
 		}
+}
+
+
+function isEmailPassword()
+{
+	global $babBody;
+	if( $GLOBALS['babEmailPassword'] )
+	{
+	switch($babBody->babsite['authentification'])
+		{
+		case BAB_AUTHENTIFICATION_AD:
+			return false;
+			break;
+		case BAB_AUTHENTIFICATION_LDAP:
+			if( !empty($babBody->babsite['ldap_encryptiontype']))
+				{
+				return true;
+				}
+			break;
+		default:
+			return true;
+			break;
+		}
+	}
+	return false;
 }
 
 function displayLogin($url)
@@ -507,7 +532,7 @@ function sendPassword ($nickname)
 
 	if (!empty($nickname))
 		{
-		$req="select * from ".BAB_USERS_TBL." where nickname='$nickname'";
+		$req="select id, email from ".BAB_USERS_TBL." where nickname='$nickname'";
 		$db = $GLOBALS['babDB'];
 		$res = $db->db_query($req);
 		if (!$res || $db->db_num_rows($res) < 1)
@@ -520,6 +545,67 @@ function sendPassword ($nickname)
 			$arr = $db->db_fetch_array($res);
 			$new_pass=strtolower(random_password(8));
 
+			switch($babBody->babsite['authentification'])
+				{
+				case BAB_AUTHENTIFICATION_AD: // Active Directory
+					$babBody->msgerror = bab_translate("Cannot reset password !!");
+					return false;
+					break;
+				case BAB_AUTHENTIFICATION_LDAP: // Active Directory
+					if( !empty($babBody->babsite['ldap_encryptiontype']))
+						{
+						include_once $GLOBALS['babInstallPath']."utilit/ldap.php";
+						$ldap = new babLDAP($babBody->babsite['ldap_host'], "", false);
+						$ret = $ldap->connect();
+						if( $ret === false )
+							{
+							$babBody->msgerror = bab_translate("LDAP connection failed");
+							return false;
+							}
+
+						$ret = $ldap->bind($babBody->babsite['ldap_admindn'], $babBody->babsite['ldap_adminpassword']);
+						if( !$ret )
+							{
+							$ldap->close();
+							$babBody->msgerror = bab_translate("LDAP bind failed");
+							return  false;
+							}
+				
+						if( isset($babBody->babsite['ldap_filter']) && !empty($babBody->babsite['ldap_filter']))
+							{
+							$filter = str_replace('%UID', $babBody->babsite['ldap_attribute'], $babBody->babsite['ldap_filter']);
+							$filter = str_replace('%NICKNAME', $nickname, $filter);
+							}
+						else
+							{
+							$filter = "(|(".$babBody->babsite['ldap_attribute']."=".$nickname."))";
+							}
+
+						$attributes = array("dn", $babBody->babsite['ldap_attribute'], "cn");
+						$entries = $ldap->search($babBody->babsite['ldap_searchdn'], $filter, $attributes);
+
+						if( $entries === false )
+							{
+							$ldap->close();
+							$babBody->msgerror = bab_translate("LDAP search failed");
+							return false;
+							}
+
+						$ldappw = ldap_encrypt($new_pass, $babBody->babsite['ldap_encryptiontype']);
+						$ret = $ldap->modify($entries[0]['dn'], array('userPassword'=>$ldappw));
+						$ldap->close();
+						if( !$ret)
+							{
+							$babBody->msgerror = bab_translate("Nothing Changed");
+							return false;
+							}
+						}
+					break;
+				default:
+					break;
+				}
+
+
 			//update the database to include the new password
 			$req="update ".BAB_USERS_TBL." set password='". md5($new_pass) ."' where nickname='$nickname'";
 			$res=$db->db_query($req);
@@ -527,6 +613,14 @@ function sendPassword ($nickname)
 			//send a simple email with the new password
 			notifyUserPassword($new_pass, $arr['email']);
 			$babBody->msgerror = bab_translate("Your new password has been emailed to you.") ." &lt;".$arr['email']."&gt;";
+			bab_callAddonsFunction('onUserChangePassword', $arr['id'], $nickname, $new_pass);
+			$error = '';
+			bab_callAddonsFunctionArray('onUserChangePassword', array('id'=>$arr['id'], 'nickname'=>$nickname, 'password'=>$new_pass, 'error'=>&$error));
+			if( !empty($error))
+				{
+				$babBody->msgerror = $error;
+				return false;
+				}
 			return true;
 			}
 		}
@@ -553,7 +647,7 @@ function userLogin($nickname,$password)
 		$babBody->msgerror = bab_translate("Maximum connexion attempts has been reached");
 		return false;
 		}
-	if( isset($babBody->babsite['authentification']) && $babBody->babsite['authentification'] != 0 )
+	if( isset($babBody->babsite['authentification']) && $babBody->babsite['authentification'] != BAB_AUTHENTIFICATION_OVIDENTIA )
 		{
 		// ldap authentification
 		include_once $GLOBALS['babInstallPath']."utilit/ldap.php";
@@ -616,7 +710,7 @@ function userLogin($nickname,$password)
 				}
 			switch($babBody->babsite['authentification'])
 				{
-				case '2': // Active Directory
+				case BAB_AUTHENTIFICATION_AD: // Active Directory
 					$ret = $ldap->bind($nickname."@".$babBody->babsite['ldap_domainname'], $password);
 					if( !$ret )
 						{
@@ -625,11 +719,28 @@ function userLogin($nickname,$password)
 						}
 					else
 						{
-						$entries = $ldap->search($babBody->babsite['ldap_searchdn'], "(|(samaccountname=".$nickname."))", $attributes);
+						if( isset($babBody->babsite['ldap_filter']) && !empty($babBody->babsite['ldap_filter']))
+							{
+							$filter = str_replace('%NICKNAME', $nickname, $babBody->babsite['ldap_filter']);
+							}
+						else
+							{
+							$filter = "(|(samaccountname=".$nickname."))";
+							}
+						$entries = $ldap->search($babBody->babsite['ldap_searchdn'], $filter, $attributes);
 						}
 					break;
 				default:
-					$entries = $ldap->search($babBody->babsite['ldap_searchdn'], "(|(".$babBody->babsite['ldap_attribute']."=".$nickname."))", $attributes);
+						if( isset($babBody->babsite['ldap_filter']) && !empty($babBody->babsite['ldap_filter']))
+							{
+							$filter = str_replace('%UID', $babBody->babsite['ldap_attribute'], $babBody->babsite['ldap_filter']);
+							$filter = str_replace('%NICKNAME', $nickname, $filter);
+							}
+						else
+							{
+							$filter = "(|(".$babBody->babsite['ldap_attribute']."=".$nickname."))";
+							}
+					$entries = $ldap->search($babBody->babsite['ldap_searchdn'], $filter, $attributes);
 
 					if( $entries !== false )
 						{
@@ -764,7 +875,7 @@ function userLogin($nickname,$password)
 			}
 		}
 
-	if( $babBody->babsite['authentification'] == '0' || (!$logok && $babBody->babsite['ldap_allowadmincnx'] == 'Y') )
+	if( $babBody->babsite['authentification'] == BAB_AUTHENTIFICATION_OVIDENTIA || (!$logok && $babBody->babsite['ldap_allowadmincnx'] == 'Y') )
 		{
 		$password=strtolower($password);
 		$nickname = bab_isMagicQuotesGpcOn() ? $nickname : $db->db_escape_string($nickname);
@@ -1120,7 +1231,7 @@ else if( isset($sendpassword) && $sendpassword == "send")
 	sendPassword($nickname);
 	}
 
-if ($cmd == "emailpwd" && !$GLOBALS['babEmailPassword'])
+if ($cmd == "emailpwd" && !isEmailPassword())
 	{
 	$babBody->msgerror = bab_translate("Acces denied");
 	$cmd = "signon";
@@ -1167,7 +1278,7 @@ switch($cmd)
 		$babBody->addItemMenu("signon", bab_translate("Login"), $GLOBALS['babUrlScript']."?tg=login&cmd=signon");
 		if( $babBody->babsite['registration'] == 'Y')
 			$babBody->addItemMenu("register", bab_translate("Register"), $GLOBALS['babUrlScript']."?tg=login&cmd=register");
-		if ($GLOBALS['babEmailPassword'] ) 
+		if (isEmailPassword() ) 
 			$babBody->addItemMenu("emailpwd", bab_translate("Lost Password"), $GLOBALS['babUrlScript']."?tg=login&cmd=emailpwd");
 		emailPassword();
 		break;
@@ -1182,7 +1293,7 @@ switch($cmd)
 		$babBody->addItemMenu("signon", bab_translate("Login"), $GLOBALS['babUrlScript']."?tg=login&cmd=signon");
 		if( $babBody->babsite['registration'] == 'Y')
 			$babBody->addItemMenu("register", bab_translate("Register"), $GLOBALS['babUrlScript']."?tg=login&cmd=register");
-		if ($GLOBALS['babEmailPassword'] ) 
+		if (isEmailPassword() ) 
 			$babBody->addItemMenu("emailpwd", bab_translate("Lost Password"), $GLOBALS['babUrlScript']."?tg=login&cmd=emailpwd");
 		if (!isset($referer)) $referer = !empty($GLOBALS['HTTP_REFERER']) ? urlencode($GLOBALS['HTTP_REFERER']) : '';
 			displayLogin($referer);

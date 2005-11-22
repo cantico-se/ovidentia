@@ -1871,4 +1871,10 @@
 <string id="Hidden">Caché</string>
 <string id="No mail account">Il n'y a pas de compte de messagerie</string>
 <string id="Done! Your file is waiting for approval">Fait! Votre fichier est en attente d'approbation</string>
+<string id="Filter">Filtre</string>
+<string id="Cannot reset password !!">Impossible d'initialiser le mot de passe !!</string>
+<string id="LDAP connection failed">Echec de la connection LDAP</string>
+<string id="LDAP bind failed">Echec du bind LDAP</string>
+<string id="LDAP search failed">Echec de la recherche LDAP</string>
+<string id="Filter">Filtre</string>
 </fr>

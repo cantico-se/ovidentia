@@ -23,6 +23,40 @@
 ************************************************************************/
 include_once "base.php";
 
+function ldap_encrypt($str, $encryption)
+{
+	switch($encryption)
+	{
+		case 'plain':
+			return $str;
+			break;
+		case 'sha':
+			return "{SHA}".base64_encode(mHash(MHASH_SHA1, $str));
+			break;
+		case 'crypt':
+			return "{CRYPT}".crypt($str,substr($str,0,2));
+			break;
+		case 'md5-hex':
+			return md5($str);
+			break;
+		case 'md5-base64':
+			return "{MD5}".base64_encode(mHash(MHASH_MD5, $str));
+			break;
+		case 'ssha':
+			$salt = mhash_keygen_s2k(MHASH_SHA1,$str,substr(pack("h*",md5(mt_rand() )),0,8),4);
+			return "{SSHA}" .base64_encode(mHash(MHASH_SHA1, $str.$salt).$salt);
+			break;
+		case 'smd5':
+			$salt = mhash_keygen_s2k(MHASH_MD5,$str,substr(pack("h*",md5(mt_rand()) ),0,8),4);
+			return "{SMD5}".base64_encode(mHash(MHASH_MD5, $str.$salt).$salt); 
+			break;
+		default:
+			return false; 
+			break;
+	}
+}
+
+
 class babLDAP
 {
 	var	$ldap_die_on_fail;
