@@ -289,7 +289,7 @@ function iframe($editor,$path="")
 			$this->name = basename($filename);
 			$imgsize = getimagesize($filename);
 			$this->imgalt = $imgsize[0]." X ".$imgsize[1];
-			$this->imgurl = $GLOBALS['babUrl'].$filename;
+			$this->imgurl = $GLOBALS['babUrl'].dirname($filename).'/'.urlencode(basename($filename));
 			if( $imgsize[0] > 50 || $imgsize[1] > 50)
 				{
 				if( !$this->gdi || ($imgsize[2] == 1 && !(imagetypes() & IMG_GIF)) || ($imgsize[2] == 2 && !(imagetypes() & IMG_JPG)) || ($imgsize[2] == 3 && !(imagetypes() & IMG_PNG)) )
