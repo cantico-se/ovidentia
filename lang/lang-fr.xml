@@ -1877,4 +1877,5 @@
 <string id="LDAP bind failed">Echec du bind LDAP</string>
 <string id="LDAP search failed">Echec de la recherche LDAP</string>
 <string id="Filter">Filtre</string>
+<string id="All users">Tout le personnel</string>
 </fr>

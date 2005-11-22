@@ -291,7 +291,8 @@ return true;
 				<td> 
 					<select name="collid" onchange="onCollection()">
 						<option value=""></option>
-						<option value="-1">{ t_allcol }</option>
+						<option value="-2">{ t_allcol }</option>
+						<option value="-1">{ t_allpers }</option>
 					</select>
 				</td>
 			</tr>
@@ -515,12 +516,12 @@ function mmvac(index)
 	var f = document.forms['rightsedit'];
 	f.cbalance.selectedIndex = tabvacb[index];
 
-	for (i = f.collid.length; i >= 2; i--) {
+	for (i = f.collid.length; i >= 3; i--) {
 		f.collid.options[i] = null; 
 	}
 	for (var i = 0; i < tabvacn[index].length; i++)
 	{
-	f.collid.options[i+2] = new Option(tabvacn[index][i],tabvaci[index][i]);
+	f.collid.options[i+3] = new Option(tabvacn[index][i],tabvaci[index][i]);
 	}
 	if( index == tpsel )
 	{

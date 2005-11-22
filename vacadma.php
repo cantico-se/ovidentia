@@ -533,6 +533,7 @@ function addModifyVacationRigths($id = false)
 			$this->t_delete = bab_translate("Delete");
 			$this->t_orand = bab_translate("Or users having ");
 			$this->t_allcol = bab_translate("All collections");
+			$this->t_allpers = bab_translate("All users");
 			$this->t_days = bab_translate("Day(s)");
 			$this->t_description = bab_translate("Description");
 			$this->t_period = bab_translate("Period"). " (".bab_translate("dd-mm-yyyy").")";
@@ -1354,10 +1355,16 @@ function updateVacationRight()
 			}
 		else 
 			{
-			if( $post['collid'] != -1 )
-				list($total) = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_VAC_PERSONNEL_TBL." where id_coll='".$post['collid']."'"));
-			else
+			if ( $post['collid'] == -2 ) {
+				list($total) = $babDB->db_fetch_array($babDB->db_query("SELECT count(p.id) as total from ".BAB_VAC_PERSONNEL_TBL." p, ".BAB_VAC_COLLECTIONS_TBL." c, ".BAB_VAC_COLL_TYPES_TBL." t WHERE t.id_type='".$post['id_type']."' and c.id = t.id_coll AND p.id_coll=c.id"));
+				}
+			elseif( $post['collid'] == -1 ) {
 				list($total) = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_VAC_PERSONNEL_TBL));
+				}
+			else
+				{
+				list($total) = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_VAC_PERSONNEL_TBL." where id_coll='".$post['collid']."'"));
+				}
 			}
 
     
@@ -1373,8 +1380,14 @@ function updateVacationRight()
 			}
 		else if( $post['collid'] != "" )
 			{
-			if( $post['collid'] != -1)
+			if ( $post['collid'] != -2)
+				{
+				$res = $babDB->db_fetch_array($babDB->db_query("SELECT p.* from ".BAB_VAC_PERSONNEL_TBL." p, ".BAB_VAC_COLLECTIONS_TBL." c, ".BAB_VAC_COLL_TYPES_TBL." t WHERE t.id_type='".$post['id_type']."' and c.id = t.id_coll AND p.id_coll=c.id"));
+				}
+			elseif( $post['collid'] != -1)
+				{
 				$res = $babDB->db_query("select * from ".BAB_VAC_PERSONNEL_TBL." where id_coll='".$post['collid']."'");
+				}
 			else
 				$res = $babDB->db_query("select * from ".BAB_VAC_PERSONNEL_TBL."");
 
