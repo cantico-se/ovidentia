@@ -197,6 +197,13 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 		$req .= " AND r.active='Y' ";
 		}
 
+
+	$access_on_period = true;
+
+	if (!$begin) {
+		$access_on_period = false;
+		}
+
 	$req .= " AND ur.id_user='".$id_user."' AND ur.id_right=r.id 	AND r.id_type=t.id 	GROUP BY r.id ORDER BY r.description";
 	$res = $db->db_query($req);
 	
@@ -219,10 +226,17 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 			$db->db_query("update ".BAB_VAC_RIGHTS_TBL." set active='N' where id='".$arr['id']."'");
 			}
 
-		if (!$begin)
-			$begin = bab_mktime($arr['date_begin']);
-		if (!$end)
-			$end = bab_mktime($arr['date_end']);
+		
+		
+		if (!$begin || -1 == $begin)
+			{
+			$begin = bab_mktime($arr['date_begin_valid']);
+			}
+
+		if (!$end || -1 == $end)
+			{
+			$end = bab_mktime($arr['date_end_valid']);
+			}
 		
 		$req = "select sum(el.quantity) total from ".BAB_VAC_ENTRIES_ELEM_TBL." el, ".BAB_VAC_ENTRIES_TBL." e where e.id_user='".$id_user."' and e.status='Y' and el.id_type='".$arr['id']."' and el.id_entry=e.id";
 		$row = $db->db_fetch_array($db->db_query($req));
@@ -245,21 +259,20 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 
 		if ( !empty($arr['id_right']) )
 			{
-			// rules
-			
+			// rules 
+
 			$period_start = bab_mktime($arr['period_start']);
 			$period_end = bab_mktime($arr['period_end']);
 			
 			$nbdays = round(($end - $begin) / 86400);
 
+
 			if ($begin == -1 || $end == -1 || $period_start == -1 || $period_end == -1)
 				continue;
 
-			if ($begin < bab_mktime($arr['date_begin']) || $end > bab_mktime($arr['date_end']))
-				continue;
+			
 
-			$access = false;
-
+			$access = !$access_on_period;
 
 			if ($arr['right_inperiod'] == 0)
 				$access = true;
@@ -284,6 +297,7 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 			if ( $access )
 				{
 				
+
 				switch ($arr['trigger_inperiod'])
 					{
 					case 0:
@@ -320,11 +334,10 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 				if (empty($nbdays))
 					$nbdays = 0;
 
-				$access = false;
+				$access = !$access_on_period;
 				if ( $arr['trigger_nbdays_min'] <= $nbdays && $nbdays <= $arr['trigger_nbdays_max'] )
 					$access = true;
 				}
-			
 			}
 
 		
