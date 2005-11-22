@@ -5280,6 +5280,57 @@ if ('text' != strtolower($arr['Type']))
 		}
 	}
 
+$arr = $db->db_fetch_array($db->db_query("DESCRIBE ".BAB_SITES_TBL." ldap_filter"));
+if ($arr[0] != 'ldap_filter')
+	{
+	$res = $db->db_query("ALTER TABLE ".BAB_SITES_TBL." ADD ldap_filter TEXT NOT NULL");
+	if( !$res)
+		{
+		$ret = "Alteration of <b>".BAB_DBDIR_ENTRIES_EXTRA_TBL."</b> table failed !<br>";
+		return $ret;
+		}
+
+	$res = $db->db_query("select id, authentification from ".BAB_SITES_TBL."");
+	while( $arr = $db->db_fetch_array($res))
+		{
+		switch( $arr['authentification'] )
+			{
+			case 1: // LDAP
+				$filter = "(|(%UID=%NICKNAME))";
+				break;
+			case 2: // Active Directory
+				$filter = "(|(samaccountname=%NICKNAME))";
+				break;
+			default: // Ovidentia
+				$filter = "";
+				break;
+			}
+		$db->db_query("update ".BAB_SITES_TBL." set ldap_filter='".$filter."' where id='".$arr['id']."'");
+		}
+	}
+
+$arr = $db->db_fetch_array($db->db_query("DESCRIBE ".BAB_SITES_TBL." ldap_admindn"));
+if ($arr[0] != 'ldap_admindn')
+	{
+	$res = $db->db_query("ALTER TABLE ".BAB_SITES_TBL." ADD ldap_admindn TEXT NOT NULL");
+	if( !$res)
+		{
+		$ret = "Alteration of <b>".BAB_DBDIR_ENTRIES_EXTRA_TBL."</b> table failed !<br>";
+		return $ret;
+		}
+	}
+
+$arr = $db->db_fetch_array($db->db_query("DESCRIBE ".BAB_SITES_TBL." ldap_adminpassword"));
+if ($arr[0] != 'ldap_adminpassword')
+	{
+	$res = $db->db_query("ALTER TABLE ".BAB_SITES_TBL." ADD ldap_adminpassword tinyblob NOT NULL");
+	if( !$res)
+		{
+		$ret = "Alteration of <b>".BAB_DBDIR_ENTRIES_EXTRA_TBL."</b> table failed !<br>";
+		return $ret;
+		}
+	}
+
 return $ret;
 }
 

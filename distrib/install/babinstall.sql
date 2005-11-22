@@ -835,8 +835,11 @@ CREATE TABLE `bab_sites` (
   `ldap_basedn` text NOT NULL,
   `ldap_userdn` text NOT NULL,
   `ldap_password` tinyblob NOT NULL,
+  `ldap_admindn` text NOT NULL,
+  `ldap_adminpassword` tinyblob NOT NULL,
   `ldap_searchdn` text NOT NULL,
   `ldap_attribute` text NOT NULL,
+  `ldap_filter` text NOT NULL,
   `ldap_passwordtype` enum('text','md5','unix','sha') NOT NULL default 'text',
   `ldap_allowadmincnx` enum('Y','N') NOT NULL default 'Y',
   `ldap_encryptiontype` varchar(255) NOT NULL default '',
@@ -1006,7 +1009,7 @@ CREATE TABLE bab_ini (
 
 INSERT INTO bab_ini VALUES ('ver_major', '5');
 INSERT INTO bab_ini VALUES ('ver_minor', '7');
-INSERT INTO bab_ini VALUES ('ver_build', '1');
+INSERT INTO bab_ini VALUES ('ver_build', '2');
 INSERT INTO bab_ini VALUES ('ver_prod', 'E');
 
 #
