@@ -776,6 +776,10 @@ function getAttachment($accid, $msg, $part, $mime, $enc, $file)
 					$text =  imap_base64 ($text);
 				else if ($enc == 4)
 					$text = imap_qprint ($text);
+
+				if( strtolower(bab_browserAgent()) == "msie")
+					header('Cache-Control: public');
+
 				header("Content-Type: " . $mime);
 				header("Content-Disposition: attachment; filename=\"".$file."\"");
 				echo $text;
