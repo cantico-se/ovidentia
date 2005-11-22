@@ -2162,6 +2162,13 @@ switch($idx)
 		$bgroup = browseDbDirectoryWithOvml($badd);
 		$babBody->addItemMenu("list", bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=directory&idx=list");
 		$babBody->addItemMenu("sdbovml", bab_translate("Browse"), $GLOBALS['babUrlScript']."?tg=directory&idx=ovml");
+		if($badd)
+			{
+			$babBody->addItemMenu("dbimp", bab_translate("Import"), $GLOBALS['babUrlScript']."?tg=directory&idx=dbimp&id=".$id);
+			$babBody->addItemMenu("dbexp", bab_translate("Export"), $GLOBALS['babUrlScript']."?tg=directory&idx=dbexp&id=".$id);
+			if (!$bgroup)
+				$babBody->addItemMenu("empdb", bab_translate("Empty"), $GLOBALS['babUrlScript']."?tg=directory&idx=empdb&id=".$id);
+			}
 		break;
 
 	case "sdb":

@@ -483,6 +483,8 @@ function viewVacationCalendar($users, $period = false )
 						}
 					}
 
+				
+
 				$colors = array();
 				$req = "select e.quantity, t.color, e.id_type from ".BAB_VAC_ENTRIES_ELEM_TBL." e,".BAB_VAC_RIGHTS_TBL." r, ".BAB_VAC_TYPES_TBL." t  where e.id_entry='".$row['id']."' AND r.id=e.id_type AND t.id=r.id_type";
 
@@ -494,6 +496,25 @@ function viewVacationCalendar($users, $period = false )
 
 					$sup = 0;
 					}
+
+
+				list($sum) = $this->db->db_fetch_array($this->db->db_query("SELECT SUM(quantity) FROM ".BAB_VAC_ENTRIES_ELEM_TBL." WHERE id_entry='".$row['id']."'"));
+
+
+				if (count($colors) > $sum)
+					{
+					$remove = count($colors) - $sum;
+					$curcol = '';
+					for($i = count($colors)-1 ; $remove > 0 ; $i--)
+						{
+						if ($curcol != $colors[$i]) {
+							$curcol = $colors[$i];
+							unset($colors[$i]);
+							$remove--;
+							}
+						}
+					}
+
 
 				if (!$this->period || !isset($_REQUEST['id']) || $_REQUEST['id'] != $row['id'])
 					{
@@ -510,7 +531,6 @@ function viewVacationCalendar($users, $period = false )
 										);
 					}
 
-				
 				}
 
 
