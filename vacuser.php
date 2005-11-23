@@ -791,8 +791,6 @@ function test_period2($id_entry,$id_user,$begin,$end,$halfdaybegin,$halfdayend)
 			return true;
 
 
-		echo $disp_date_end.' '.$halfdaybegin;
-
 		$babBody->msgerror = bab_translate("ERROR: a request is allready defined on this period");
 		return false;
 		}
