@@ -220,7 +220,9 @@ function record_setOfGroups($arr)
 {
 	$db = &$GLOBALS['babDB'];
 	$current = getGroupsFromSet($_POST['sid']);
-
+	
+	$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
+	
 	foreach ($arr as $idgroup)
 		{
 		if (!isset($current[$idgroup]))
@@ -245,6 +247,8 @@ function delete_glist()
 	$db = &$GLOBALS['babDB'];
 	if (isset($_POST['groups']) && count($_POST['groups']) > 0)
 		{
+		$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
+
 		$db->db_query("DELETE FROM ".BAB_GROUPS_SET_ASSOC_TBL." WHERE id_set='".$_POST['sid']."' AND id_group IN('".implode("','",$_POST['groups'])."')");
 
 		$db->db_query("UPDATE ".BAB_GROUPS_TBL." SET nb_set=nb_set-'1' WHERE id IN('".implode("','",$_POST['groups'])."')");
