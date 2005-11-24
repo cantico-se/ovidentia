@@ -273,7 +273,7 @@ function testVars()
 		return false;
 		}
 		
-	$succes[] = $trans->str('Configuration test succesful');
+	$succes[] = $trans->str('Configuration test successful');
 	return true;
 	}
 
@@ -444,7 +444,7 @@ a:hover {
 		{
 		
 		?>
-		<p><? echo $trans->str('Congratulation, ovidentia is now configured, now you can log in with the default acount') ?></p>
+		<p><? echo $trans->str('Congratulation, ovidentia is now configured, now you can log in with the default account') ?></p>
 		<ul>
 			<li><? echo $trans->str('Login') ?> : <strong>admin@admin.bab</strong></li>
 			<li><? echo $trans->str('Password') ?> : <strong>012345678</strong></li>
