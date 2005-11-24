@@ -29,12 +29,16 @@ class bab_sqlExport
 		{
 		ini_set('max_execution_time','2400');
 		
+		$this->tables = $tables;
 		$this->opt_structure = $structure;
 		$this->opt_drop_table = $drop_table;
 		$this->opt_data = $data;
-		
-		//
-		
+		}
+
+	function sqlExport($output = false)
+		{
+		$this->output = $output;
+
 		$this->search       = array("\x00", "\x0a", "\x0d", "\x1a"); //\x08\\x09, not required
         $this->replace      = array('\0', '\n', '\r', '\Z');
 		$this->autoComma = 0;
@@ -65,8 +69,8 @@ class bab_sqlExport
 		$this->commentPush(bab_translate('Php version')." : ".phpversion(),true);
 		$this->commentPush(bab_translate('Date')." : ".bab_longDate(time()),true);
 
-		if ($tables) {
-			foreach($tables as $tablename)
+		if ($this->tables) {
+			foreach($this->tables as $tablename)
 				{
 				$this->handleTable($tablename);
 				}
@@ -81,14 +85,14 @@ class bab_sqlExport
 		
 	function commentPush($str,$nobr = false)
 		{
-		if (!$nobr) $this->dump .= "\n";
-		$this->dump .= "# ".$str."\n";
-		if (!$nobr) $this->dump .= "\n";
+		if (!$nobr) $this->str_output("\n");
+		$this->str_output("# ".$str."\n");
+		if (!$nobr) $this->str_output("\n");
 		}
 		
 	function brPush()
 		{
-		$this->dump .= "\n";
+		$this->str_output("\n");
 		}
 		
 	function autoCommaStart()
@@ -116,7 +120,7 @@ class bab_sqlExport
 		if ($this->autoComma)
 			$this->commaGroup[] = $str;
 		else
-			$this->dump .= $str."\n";
+			$this->str_output($str."\n");
 		}
 		
 	function handleTable(&$name)
@@ -295,16 +299,31 @@ class bab_sqlExport
 
 		$this->dumpPush( 'INSERT INTO '.$table.' ('.implode(',',$this->table_collumn).') VALUES ('.implode(',',$value).');');
 		}
+
+	function str_output($str)
+		{
+		if (false === $this->output)
+			echo $str;
+		else
+			{
+			$func = $this->output;
+			$this->dump .= $str;
+			}
+		}
 		
 	function exportFile()
 		{
 		header("content-type:text/plain");
 		header("Content-Disposition: attachment; filename=".$GLOBALS['babSiteName'].".sql");
-		die($this->dump);
+
+
+		$this->sqlExport();
+		die();
 		}
 		
 	function exportString()
 		{
+		$this->sqlExport(true);
 		return $this->dump;
 		}
 		
