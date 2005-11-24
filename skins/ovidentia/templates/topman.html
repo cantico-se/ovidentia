@@ -51,86 +51,133 @@
 <br>
 <br><br><br><br>
 <!--#begin articleslist -->
-<form method="post" action="{ babPhpSelf }" name="listform">
-<input type="hidden" name="tg" value="topman">
-<input type="hidden" name="idx" value="deletea">
-<input type="hidden" name="item" value="{ item }">
-<input type="hidden" name="upart" value="articles">
-<table border="0" width="95%" cellpadding="1" cellspacing="0" align="center" class="BabLoginCadreBackground">
+<script type="text/javascript">
+function submitCtrl() {
+	//}
+	var f = document.forms['listform'];
+	if (f.action.value == 'Deletea')
+		{
+		var nbart = 0;
+		var art = document.getElementById('bab_groups_tree').getElementsByTagName('ul')[0].getElementsByTagName('ul')[0].childNodes;
+		for (var i =0; i < art.length ; i++ ) {
+			if (art[i].nodeName == 'LI' && art[i].getElementsByTagName('div')[0].getElementsByTagName('input')[0].checked) {
+				nbart++;
+				}
+			}
+		if (nbart > 0 && !confirm('{ js_confirm_delete }')) {
+			return false;
+			}
+		}
+	return true;
+}
+</script>
+<form method="post" action="{ babPhpSelf }" name="listform" onsubmit="return submitCtrl()">
+<input type="hidden" name="tg" value="topman" />
+<input type="hidden" name="idx" value="Articles" />
+<input type="hidden" name="item" value="{ item }" />
+<input type="hidden" name="upart" value="articles" />
+
+
+<script type="text/javascript" src="{ babInstallPath }scripts/ul_tree.js"></script>
+<div id="bab_groups_tree" class="BabLoginCadreBackground">
+	<p class="BabSiteAdminTitleFontBackground">
+	<a href="javascript:tree.expand();" class="expand">{ t_expand_all }</a> 
+	<a href="javascript:tree.collapse();" class="collapse">{ t_collapse_all }</a>
+	</p>
+	<div class="tree">
+	<ul class="first">
+	<li>
+		<div>
+			<input type="checkbox" onclick="tree_check_childs(this)" /> <strong>{ t_articles }</strong>
+		</div>
+		<ul>
+		<!--#in getnext -->
+		<li id="bab_art{ articleid }">
+			<div class="line">
+				
+				<input type="checkbox" name="articles[]" value="{ articleid }" />
+				
+				<!--#if bupdate -->
+				<em>{ status }</em> : 
+				<!--#else bupdate -->
+				<a title="{ propertiestxt }" href="{ propurl }" onclick="bab_popup(this.href);return false;"><img src="{ babSkinPath }images/Puces/edit.gif" alt="{ propertiestxt }" /></a>
+				<!--#endif bupdate -->
+				
+				<a href="{ urltitle }" title="{ t_view_article }" onclick="bab_popup(this.href,5,1);return false;">{ title }</a>
+
+				&nbsp;
+
+				<!--#if homepage_public -->
+				&nbsp; <img src="{ babSkinPath }images/Puces/PuceUnregistered.png" alt="{ art0alt }" title="{ art0alt }" />
+				<!--#endif homepage_public -->
+				<!--#if homepage_private -->
+				&nbsp; <img src="{ babSkinPath }images/Puces/PuceRegistered.png" alt="{ art1alt }" title="{ art1alt }" />
+				<!--#endif homepage_private -->
+				<!--#if archive -->
+				&nbsp; <img src="{ babSkinPath }images/Puces/PuceArchive.png" alt="{ archivealt } : { datearchiving }" title="{ archivealt } : { datearchiving }" />
+				<!--#endif archive -->
+			</div>
+			
+			<!--#if countcom -->
+			<ul>
+			<!--#in getnextcom -->
+				<li>
+					<div>
+						<input type="checkbox" name="comments[]" value="{ com[id] }" />
+						<img src="{ babSkinPath }images/Puces/note.gif" alt="{ t_comment }" />
+						{ com[subject] } { t_by } { com[name] }
+					</div>
+				</li>
+			<!--#endin getnextcom -->
+			</ul>
+			<!--#endif countcom -->
+
+			</li>
+		<!--#endin getnext -->
+		</ul>
+		</li>
+	</ul>
+	<br />
+	</div>
+</div>
+
+<script type="text/javascript">
+var tree = new bab_ul_tree('bab_groups_tree');
+tree.processList();
+tree.expandToItem('bab_art{ articleid }');
+</script>
+
+
+
+<table border="0" width="55%" cellpadding="2" cellspacing="0" align="center" class="BabLoginCadreBackground">
 <tr>
 <td> 
-	<table border="0" width="100%" cellpadding="1" cellspacing="0">
-	<tr class="BabSiteAdminTitleFontBackground"> 
-		<td width="1%" align="center"><a href="javascript:onCheckAll('hart0', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('hart0', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
-		<td width="1%" align="center"><a href="javascript:onCheckAll('hart1', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('hart1', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
-		<td width="1%" align="center">&nbsp;</td>
-		<td>{ titlename }</td>
-		<td>{ datepublicationtxt }</td>
-		<td>{ datearchivingtxt }</td>
-		<td>&nbsp;</td>
-		<td width="1%" align="center"><a href="javascript:onCheckAll('aart', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('aart', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
-		<td width="1%" align="center"><a href="javascript:onCheckAll('art', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('art', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
-	</tr>
-	<!--#in getnext -->
-	<tr class="BabSiteAdminFontBackground"> 
-		<td align="center" width="1%">
-			<input width="2%" type="checkbox" name="hart0[]" value="{ articleid }" { checked0 } />
+	<table class="BabLoginMenuBackground" border="0" width="100%" cellpadding="6" cellspacing="0">
+	<tr>
+		<td align="center">
+			<p>{ t_with_selected } : </p>
+			
+			<select name="action">
+				<option value=""></option>
+				<option value="Deletea">{ t_delete }</option>
+				<option value="homepage0">{ t_homepage_public }</option>
+				<option value="homepage1">{ t_homepage_private }</option>
+				<option value="homepage">{ t_homepage_no }</option>
+				<option value="archive">{ t_archive }</option>
+			</select>
+
+			<input type="submit" value="{ t_update }" />
 		</td>
-		<td align="center" width="1%">
-			<input width="2%" type="checkbox" name="hart1[]" value="{ articleid }" { checked1 } />
-		</td>
-		<td>
-			<a title="{ propertiestxt }" href="javascript: Start('{ propurl }', 'OvidentiaTopArt', 'width=750,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes')"><img valign="absmiddle" src="{ babSkinPath }images/Puces/edit.gif" alt="{ propertiestxt }" border="0" /></a></td>
-		<td>
-			<a href="javascript: Start('{ urltitle }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ title }</a></td>
-		<td>&nbsp;{ datepublication }</td>
-		<td>&nbsp;{ datearchiving }</td>
-		<td>&nbsp;<!--#if bupdate -->&nbsp;&nbsp;{ status }<!--#endif bupdate --></td>
-		<td align="center" width="1%">
-			<input width="2%" type="checkbox" name="aart[]" value="{ articleid }" />
-		</td>
-		<td align="center" width="1%">
-			<input width="2%" type="checkbox" name="art[]" value="{ articleid }" />
-		</td>
-	</tr>
-	<!--#endin getnext -->
-	<tr class="BabSiteAdminTitleFontBackground"> 
-		<td width="1%" align="center"><a href="javascript:submitForm('homepage0', 'listform')"><img src="{ babSkinPath }images/Puces/PuceUnregistered.png"  width="12" height="13" alt="{ art0alt }" border="0" align="absmiddle"></a></td>
-		<td width="1%" align="center"><a href="javascript:submitForm('homepage1', 'listform')"><img src="{ babSkinPath }images/Puces/PuceRegistered.png"  width="12" height="13" alt="{ art1alt }" border="0" align="absmiddle"></a></td>
-		<td colspan="5"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
-		<td width="1%" align="center"><a href="javascript:submitForm('archive', 'listform')"><img src="{ babSkinPath }images/Puces/PuceArchive.png" width="12" height="13" alt="{ archivealt }" border="0" align="absmiddle"></a></td>
-		<td width="1%" align="center"><a href="javascript:submitForm('deletea', 'listform')"><img src="{ babSkinPath }images/Puces/del.gif" width="12" height="13" alt="{ deletealt }" border="0" align="absmiddle"></a></td>
 	</tr>
 	</table>
 </td>
 </tr>
 </table>
+
+
+
 </form>
-<br>
-<table border="0" width="95%" cellpadding="1" cellspacing="0" align="center" class="BabLoginCadreBackground">
-<tr>
-<td> 
-	<table class="BabLoginMenuBackground" border="0" width="100%" cellpadding="4" cellspacing="0">
-	<tr>
-		<td><img src="{ babSkinPath }images/Puces/PuceUnregistered.png" alt="" border="0" align="absmiddle"></td>
-		<td>{ art0help }</td>
-	</tr>
-	<tr>
-		<td><img src="{ babSkinPath }images/Puces/PuceRegistered.png" alt="" border="0" align="absmiddle"></td>
-		<td>{ art1help }</td>
-	</tr>
-	<tr>
-		<td><img src="{ babSkinPath }images/Puces/PuceArchive.png" alt="" border="0" align="absmiddle"></td>
-		<td>{ archivehelp }</td>
-	</tr>
-	<tr>
-		<td><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" align="absmiddle"></td>
-		<td>{ deletehelp }</td>
-	</tr>
-	</table>
-</td>
-</tr>
-</table>
+
 <!--#end articleslist -->
 
 <!--#begin articleview -->

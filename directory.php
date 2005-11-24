@@ -1722,7 +1722,7 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 			if( substr($key, 0, strlen("babdirf")) == 'babdirf' )
 				{
 				$tmp = substr($key, strlen("babdirf"));
-				if( bab_isMagicQuotesGpcOn())
+				if( !bab_isMagicQuotesGpcOn())
 					{
 					$value = addslashes($value);
 					}

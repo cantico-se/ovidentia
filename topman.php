@@ -176,17 +176,30 @@ function listArticles($id)
 			$this->uncheckall = bab_translate("Uncheck all");
 			$this->checkall = bab_translate("Check all");
 			$this->deletealt = bab_translate("Delete articles");
-			$this->art0alt = bab_translate("Make available to unregistered users home page");
-			$this->art1alt = bab_translate("Make available to registered users home page");
-			$this->archivealt = bab_translate("Archive selected articles");
+			$this->archivealt = bab_translate("Archived article");
 			$this->deletehelp = bab_translate("Click on this image to delete selected articles");
-			$this->art0help = bab_translate("Click on this image to make selected articles available to unregistered users home page");
-			$this->art1help = bab_translate("Click on this image to make selected articles available to registered users home page");
+			$this->art0alt = bab_translate("Available to unregistered users home page");
+			$this->art1alt = bab_translate("Available to registered users home page");
 			$this->archivehelp = bab_translate("Click on this image to archive selected articles");
 			$this->homepages = bab_translate("Customize home pages ( Registered and unregistered users )");
 			$this->datepublicationtxt = bab_translate("Publication date");
 			$this->datearchivingtxt = bab_translate("Archiving date");
 			$this->propertiestxt = bab_translate("Properties");
+			$this->t_expand_all = bab_translate("Expand all");
+			$this->t_collapse_all = bab_translate("Collapse all");
+			$this->t_view_article = bab_translate("Preview article");
+			$this->t_comment = bab_translate("Comment");
+			$this->t_by = bab_translate("by");
+			$this->t_with_selected = bab_translate("Update selected elements");
+			$this->t_delete = bab_translate("Delete");
+			$this->t_homepage_public = bab_translate("Make available to unregistered users home page");
+			$this->t_homepage_private = bab_translate("Make available to registered users home page");
+			$this->t_homepage_no = bab_translate("Make unavailable to home pages");
+			$this->t_archive = bab_translate("Archive selected articles");
+			$this->t_update = bab_translate("Update");
+			$this->t_articles = bab_translate("Articles");
+			$this->js_confirm_delete = bab_translate("Are you sure you want to delete those articles");
+			$this->js_confirm_delete = str_replace("'","\'",$this->js_confirm_delete);
 			$this->badmin = bab_isUserAdministrator();
 
 			$this->item = $id;
@@ -194,7 +207,18 @@ function listArticles($id)
 
 			$this->db = $GLOBALS['babDB'];
 			$this->homepagesurl = $GLOBALS['babUrlScript']."?tg=site&idx=modify&item=".$this->siteid;
-			$req = "select at.*, adt.id_article from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_DRAFTS_TBL." adt on at.id=adt.id_article where at.id_topic='".$id."' and at.archive='N' order by at.ordering asc, at.date_modification desc";
+			
+			$req = "select at.*, adt.id_article , public.id public, private.id private 
+					FROM ".BAB_ARTICLES_TBL." at 
+					LEFT JOIN ".BAB_ART_DRAFTS_TBL." adt 
+						ON at.id=adt.id_article 
+					LEFT JOIN ".BAB_HOMEPAGES_TBL." public 
+						ON public.id_site='".$this->siteid."' AND public.id_article=at.id AND public.id_group='2' 
+					LEFT JOIN ".BAB_HOMEPAGES_TBL." private 
+						ON private.id_site='".$this->siteid."' AND private.id_article=at.id AND private.id_group='1' 
+					WHERE at.id_topic='".$id."' and at.archive='N' 
+					ORDER by at.ordering asc, at.date_modification desc
+						";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			}
@@ -205,26 +229,9 @@ function listArticles($id)
 			if( $i < $this->count)
 				{
 				$arr = $this->db->db_fetch_array($this->res);
-				$req = "select * from ".BAB_HOMEPAGES_TBL." where id_article='".$arr['id']."' and id_group='2' and id_site='".$this->siteid."'";
-				$res = $this->db->db_query($req);
-				if( $res && $this->db->db_num_rows($res) > 0)
-					{
-					$this->checked0 = "checked";
-					}
-				else
-					{
-					$this->checked0 = "";
-					}
-				$req = "select * from ".BAB_HOMEPAGES_TBL." where id_article='".$arr['id']."' and id_group='1' and id_site='".$this->siteid."'";
-				$res = $this->db->db_query($req);
-				if( $res && $this->db->db_num_rows($res) > 0)
-					{
-					$this->checked1 = "checked";
-					}
-				else
-					{
-					$this->checked1 = "";
-					}
+				$this->homepage_public  = isset($arr['public']);
+				$this->homepage_private = isset($arr['private']);
+				$this->archive = $arr['archive'] == 'Y';
 				$this->title = $arr['title'];
 				$this->articleid = $arr['id'];
 				$this->urltitle = $GLOBALS['babUrlScript']."?tg=topman&idx=viewa&item=".$arr['id_topic']."&art=".$arr['id'];
@@ -256,6 +263,10 @@ function listArticles($id)
 					{
 					$this->datearchiving = '';
 					}
+
+				$this->rescom = $this->db->db_query("SELECT * FROM ".BAB_COMMENTS_TBL." WHERE id_article='".$this->articleid."' ORDER BY date DESC");
+				$this->countcom = $this->db->db_num_rows($this->rescom);
+
 				$i++;
 				return true;
 				}
@@ -263,11 +274,25 @@ function listArticles($id)
 				return false;
 
 			}
+
+
+		function getnextcom()
+			{
+			if ($this->com = $this->db->db_fetch_assoc($this->rescom))
+				{
+				
+				return true;
+				}
+			else {
+				return false;
+				}
+			}
 		
 		}
 
 	$temp = new temp($id);
-	$babBody->babecho(	bab_printTemplate($temp,"topman.html", "articleslist"));
+	$babBody->addStyleSheet('groups.css');
+	$babBody->babecho(bab_printTemplate($temp,"topman.html", "articleslist"));
 	}
 
 function listOldArticles($id)
@@ -1065,17 +1090,13 @@ function siteHomePage1($id)
 
 function addToHomePages($item, $homepage, $art)
 {
-	global $babBody, $idx;
-
-	$idx = "Articles";
-	$count = count($art);
-
-	$db = $GLOBALS['babDB'];
+	global $babBody;
+	$db = &$GLOBALS['babDB'];
 	$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='".$item."' order by date desc";
 	$res = $db->db_query($req);
 	while( $arr = $db->db_fetch_array($res))
 		{
-		if( $count > 0 && in_array($arr['id'], $art))
+		if( count($art) > 0 && in_array($arr['id'], $art))
 			{
 				$req = "select * from ".BAB_HOMEPAGES_TBL." where id_article='".$arr['id']."' and id_group='".$homepage."' and id_site='".$babBody->babsite['id']."'";
 				$res2 = $db->db_query($req);
@@ -1087,13 +1108,16 @@ function addToHomePages($item, $homepage, $art)
 
 				}
 			}
-		else
-			{
-				$req = "delete from ".BAB_HOMEPAGES_TBL." where id_article='".$arr['id']."' and id_group='".$homepage."' and id_site='".$babBody->babsite['id']."'";
-				$db->db_query($req);
-			}
-
 		}
+}
+
+function removeFromHomePages($homepage, $art)
+{
+	global $babBody;
+	$db = &$GLOBALS['babDB'];
+
+	$req = "delete from ".BAB_HOMEPAGES_TBL." where id_article IN ('".implode("','",$art)."') and id_group='".$homepage."' and id_site='".$babBody->babsite['id']."'";
+	$db->db_query($req);
 }
 
 function archiveArticles($item, $aart)
@@ -1261,26 +1285,42 @@ else
 
 if( isset($upart) && $upart == "articles" && $manager)
 	{
-	switch($idx)
-		{
-		case "homepage0":
-			addToHomePages($item, 2, $hart0);
-			break;
-		case "homepage1":
-			addToHomePages($item, 1, $hart1);
-			break;
-		case "unarch":
-			unarchiveArticles($item, $aart);
-			break;
-		}
-	}
-elseif( isset($action) && $action == "Yes" && $manager)
-	{
-	if( $idx == "Deletea")
-		{
-		include_once $babInstallPath."utilit/delincl.php";
-		bab_confirmDeleteArticles($items);
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=".$item);
+	if (isset($_POST['action']))
+		switch($_POST['action'])
+			{
+			case "homepage0":
+				if (isset($_POST['articles']))
+					addToHomePages($_POST['item'], 2, $_POST['articles']);
+				break;
+
+			case "homepage1":
+				if (isset($_POST['articles']))
+					addToHomePages($_POST['item'], 1, $_POST['articles']);
+				break;
+
+			case "homepage":
+				if (isset($_POST['articles'])) {
+					removeFromHomePages(2, $_POST['articles']);
+					removeFromHomePages(1, $_POST['articles']);
+					}
+				break;
+
+			case "archive":
+				if (isset($_POST['articles']))
+					archiveArticles($_POST['item'], $_POST['articles']);
+				break;
+
+			case "Deletea":
+				include_once $babInstallPath."utilit/delincl.php";
+				if (isset($_POST['comments']) && count($_POST['comments']) > 0)
+					foreach($_POST['comments'] as $idc) bab_deleteComment($idc);
+				if (isset($_POST['articles']))
+					bab_confirmDeleteArticles(implode(',',$_POST['articles']));
+				break;
+			}
+
+	if ($_POST['idx'] == 'unarch') {
+		unarchiveArticles($_POST['item'], $_POST['aart']);
 		}
 	}
 elseif( isset($delf) && $delf == "file" && $manager)
@@ -1417,17 +1457,7 @@ switch($idx)
 		}
 		break;
 
-	case "archive":
-		if( $manager )
-		{
-		archiveArticles($item, $aart);
-		}
-		else
-		{
-			$babBody->msgerror = bab_translate("Access denied");
-			break;
-		}
-		/* no break; */
+
 	case "Articles":
 		$arrinit = topman_init($item);
 		if( $manager )

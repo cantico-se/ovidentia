@@ -138,3 +138,17 @@ bab_ul_tree.prototype.expandChecked = function() {
 		}
 	}
 }
+
+
+function tree_check_childs(checkbox)
+{
+	li = checkbox.parentNode;
+	while (li.nodeName != 'LI') {
+		li = li.parentNode;
+		}
+	
+	var tree = li.getElementsByTagName('input');
+	for (var j = 0; j < tree.length ; j++) {
+		tree[j].checked = checkbox.checked;
+		}
+}

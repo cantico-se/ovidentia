@@ -447,6 +447,8 @@
 <string id="Mail function">Fonction messagerie</string>
 <string id="Mail options">Options de la messagerie</string>
 <string id="Mail">Messagerie</string>
+<string id="Available to registered users home page">Disponible pour la page d'accueil privée</string>
+<string id="Available to unregistered users home page">Disponible pour la page d'accueil publique</string>
 <string id="Make available to registered users home page">Proposer pour la page d'accueil privée</string>
 <string id="Make available to unregistered users home page">Proposer pour la page d'accueil publique</string>
 <string id="Managed topics">Thèmes d'articles managés</string>
@@ -1878,4 +1880,6 @@
 <string id="LDAP search failed">Echec de la recherche LDAP</string>
 <string id="Filter">Filtre</string>
 <string id="All users">Tout le personnel</string>
+<string id="Update selected elements">Mettre à jour les éléments sélectionnés</string>
+<string id="Make unavailable to home pages">Rendre indisponible pour les pages d'accueil</string>
 </fr>
