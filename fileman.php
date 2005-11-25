@@ -26,7 +26,7 @@ include_once $babInstallPath."utilit/fileincl.php";
 
 function notifyApprovers($id, $fid)
 	{
-	global $babDB;
+	global $babBody, $babDB;
 	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 
 	$arr = $babDB->db_fetch_array($babDB->db_query("select idsa from ".BAB_FM_FOLDERS_TBL." where id='".$fid."'"));
@@ -40,6 +40,7 @@ function notifyApprovers($id, $fid)
 	$babDB->db_query("update ".BAB_FILES_TBL." set idfai='".$idfai."' where id='".$id."'");
 	$nfusers = getWaitingApproversFlowInstance($idfai, true);
 	notifyFileApprovers($id, $nfusers, bab_translate("A new file is waiting for you"));
+	$babBody->msgerror = bab_translate("Done! Your file is waiting for approval");
 	return false;
 	}
 
@@ -1141,7 +1142,6 @@ function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywor
 		{
 		if( notifyApprovers($idf, $id) && $bnotify)
 			fileNotifyMembers($osfname, $path, $id, bab_translate("A new file has been uploaded"));
-		$babBody->msgerror = bab_translate("Done! Your file is waiting for approval");
 		}
 
 	return true;
