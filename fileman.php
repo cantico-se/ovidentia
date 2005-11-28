@@ -2197,7 +2197,6 @@ function autoFile($id_dir,$path)
 $upload = false;
 $bmanager = false;
 $access = false;
-$fmhide = false;
 bab_fileManagerAccessLevel();
 if((!isset($babBody->aclfm['id']) || count($babBody->aclfm['id']) == 0) && !$babBody->ustorage )
 {
@@ -2277,7 +2276,6 @@ if( $gr == "Y")
 
 			if( $babBody->aclfm['uplo'][$i] )
 				$upload = true;
-			$fmhide = $babBody->aclfm['hide'][$i];
 			break;
 			}
 		}
@@ -2433,13 +2431,10 @@ switch($idx)
 			$babBody->addItemMenu("add", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=fileman&idx=add&id=".$id."&gr=".$gr."&path=".$upath);
 		if( $bmanager)
 			$babBody->addItemMenu("trash", bab_translate("Trash"), $GLOBALS['babUrlScript']."?tg=fileman&idx=trash&id=".$id."&gr=".$gr."&path=".$upath);
-		if( !$fmhide )
+		listFiles($id, $gr, $path, $bmanager);
+		if( !empty($id) && $gr == "Y")
 			{
-			listFiles($id, $gr, $path, $bmanager);
-			if( !empty($id) && $gr == "Y")
-				{
-				$GLOBALS['babWebStat']->addFolder($id);
-				}
+			$GLOBALS['babWebStat']->addFolder($id);
 			}
 		break;
 	}
