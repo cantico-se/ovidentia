@@ -742,7 +742,7 @@ function userLogin($nickname,$password)
 							}
 					$entries = $ldap->search($babBody->babsite['ldap_searchdn'], $filter, $attributes);
 
-					if( $entries !== false )
+					if( $entries !== false && $entries['count'] > 0 && isset($entries[0]['dn']) )
 						{
 						$ret = $ldap->bind($entries[0]['dn'], $password);
 						if( !$ret )
@@ -750,6 +750,10 @@ function userLogin($nickname,$password)
 							$babBody->msgerror = bab_translate("LDAP bind failed. Please contact your administrator");
 							$logok = false;
 							}
+						}
+					else
+						{
+						$logok = false;
 						}
 					break;
 				}

@@ -883,7 +883,7 @@ function userChangePassword($oldpwd, $newpwd)
 					$attributes = array("dn", $babBody->babsite['ldap_attribute'], "cn");
 					$entries = $ldap->search($babBody->babsite['ldap_searchdn'], $filter, $attributes);
 
-					if( $entries === false )
+					if( $entries === false || $entries['count'] == 0 || !isset($entries[0]['dn']) || empty($entries[0]['dn']))
 						{
 						$ldap->close();
 						$babBody->msgerror = bab_translate("LDAP authentification failed. Please verify your nickname and your password");
@@ -1287,7 +1287,7 @@ if( isset($update))
 			$msgerror = updatePassword($oldpwd, $newpwd1, $newpwd2);
         	if ($msgerror)
 			{
-				//changePasswordUnload(bab_translate("Your password has been modified"));
+				changePasswordUnload(bab_translate("Your password has been modified"));
 				exit;
 			}
 			else
