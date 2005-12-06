@@ -925,6 +925,8 @@ switch($idx)
 	case "period":
 		$babBody->addItemMenu("period", bab_translate("Request"), $GLOBALS['babUrlScript']."?tg=vacuser&idx=period");
 		$babBody->addItemMenu("lvreq", bab_translate("Requests"), $GLOBALS['babUrlScript']."?tg=vacuser&idx=lvreq");
+		if( isset($acclevel['manager']) && $acclevel['manager'] == true)
+			$babBody->addItemMenu("list", bab_translate("Management"), $GLOBALS['babUrlScript']."?tg=vacadm");
 
 		$babBody->title = bab_translate("Request vacation");
 
