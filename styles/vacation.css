@@ -96,6 +96,11 @@
 	background-image:url('../skins/ovidentia/images/vac-morn-after.gif');
 	}
 
+#vacationcalendar .bicolor {
+	background-image:url('../skins/ovidentia/images/vac-morn-after.gif');
+	background-color:#ccc;
+	}
+
 #vacationcalendar .noday {
 	background-color:#000;
 	

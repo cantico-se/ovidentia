@@ -464,7 +464,6 @@ function viewVacationCalendar($users, $period = false )
 
 			$res = $this->db->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where id_user IN(".implode(',',$this->idusers).") and status!='N' and (date_end >= '".$dateb."' OR date_begin <='".$datee."')");
 
-			
 
 			while( $row = $this->db->db_fetch_array($res))
 				{
@@ -486,13 +485,26 @@ function viewVacationCalendar($users, $period = false )
 				
 
 				$colors = array();
-				$req = "select e.quantity, t.color, e.id_type from ".BAB_VAC_ENTRIES_ELEM_TBL." e,".BAB_VAC_RIGHTS_TBL." r, ".BAB_VAC_TYPES_TBL." t  where e.id_entry='".$row['id']."' AND r.id=e.id_type AND t.id=r.id_type";
+				$types = array();
+
+				$req = "select e.quantity, t.name type, t.color, e.id_type from ".BAB_VAC_ENTRIES_ELEM_TBL." e,".BAB_VAC_RIGHTS_TBL." r, ".BAB_VAC_TYPES_TBL." t  where e.id_entry='".$row['id']."' AND r.id=e.id_type AND t.id=r.id_type";
 
 				$res2 = $this->db->db_query($req);
+
+				$count = $this->db->db_num_rows($res2);
+				$j = 0;
+				
 				while ($arr = $this->db->db_fetch_array($res2))
 					{
-					for ($i = 0 ; $i < ($arr['quantity']+$sup) ; $i++)
+					$j++;
+					for ($i = 0 ; $i < ($arr['quantity']+$sup) ; $i++) {
 						$colors[] = $arr['color'];
+						$types[] = $arr['type'];
+						}
+
+					if (( (int) $arr['quantity'] !=  (float) $arr['quantity']) && $j < $count) {
+						$colors[count($colors)-1] = 'bicolor';
+						}
 
 					$sup = 0;
 					}
@@ -500,6 +512,7 @@ function viewVacationCalendar($users, $period = false )
 
 				list($sum) = $this->db->db_fetch_array($this->db->db_query("SELECT SUM(quantity) FROM ".BAB_VAC_ENTRIES_ELEM_TBL." WHERE id_entry='".$row['id']."'"));
 
+				
 
 				if (count($colors) > $sum)
 					{
@@ -510,15 +523,17 @@ function viewVacationCalendar($users, $period = false )
 						if ($curcol != $colors[$i]) {
 							$curcol = $colors[$i];
 							unset($colors[$i]);
+							unset($types[$i]);
 							$remove--;
 							}
 						}
 					}
 
+				
+
 
 				if (!$this->period || !isset($_REQUEST['id']) || $_REQUEST['id'] != $row['id'])
 					{
-
 					$this->entries[] = array(
 										'id'=> $row['id'],
 										'id_user' => $row['id_user'],
@@ -527,12 +542,11 @@ function viewVacationCalendar($users, $period = false )
 										'hdb' => $row['day_begin'],
 										'hde' => $row['day_end'],
 										'st' => $row['status'],
-										'color' => $colors
+										'color' => $colors,
+										'types' => $types
 										);
 					}
-
 				}
-
 
 			$res = $this->db->db_query("SELECT id_user,workdays FROM ".BAB_CAL_USER_OPTIONS_TBL." WHERE id_user IN(".implode(',',$this->idusers).")");
 			while($arr = $this->db->db_fetch_array($res))
@@ -626,7 +640,16 @@ function viewVacationCalendar($users, $period = false )
 
 				for( $k=0; $k < count($this->entries); $k++)
 					{
-					if( $startmonth <= $this->entries[$k]['db'] && $endmonth >= $this->entries[$k]['db'] || $startmonth <= $this->entries[$k]['de'] && $endmonth >= $this->entries[$k]['de'] || $this->entries[$k]['db'] <= $startmonth &&  $this->entries[$k]['de'] >= $endmonth )
+					if( 
+						(	$startmonth <= $this->entries[$k]['db'] 
+						&&	$endmonth	>= $this->entries[$k]['db']) 
+						|| 
+						(	$startmonth <= $this->entries[$k]['de'] 
+						&&	$endmonth	>= $this->entries[$k]['de']) 
+						|| 
+						(	$this->entries[$k]['db'] <= $startmonth 
+						&&  $this->entries[$k]['de'] >= $endmonth )
+					)
 						{
 						$this->month_entries[] = $k;
 						
@@ -707,7 +730,16 @@ function viewVacationCalendar($users, $period = false )
 							if (!$this->nonworking && !$this->weekend)
 								{
 								$this->color = current($this->entries[$k]['color']);
-								unset($this->entries[$k]['color'][key($this->entries[$k]['color'])]);
+								$colorkey = key($this->entries[$k]['color']);
+								if ('bicolor' == $this->color) {
+									$classname[] = $this->color;
+									$this->color = '';
+									$this->titledate = bab_translate('Two differents types on the day');
+									$this->titledate .= ', '.$this->entries[$k]['types'][$colorkey].' ';
+									$this->titledate .= bab_translate('and');
+									$this->titledate .= ' '.$this->entries[$k]['types'][$colorkey+1];
+									}
+								unset($this->entries[$k]['color'][$colorkey]);
 								}
 							}
 						}
