@@ -1363,6 +1363,7 @@ function changeucol($id_user,$newcol)
 
 	class tempa
 		{
+		var $altbg = true;
 		
 		function tempa($id_user,$newcol)
 			{
@@ -1377,14 +1378,30 @@ function changeucol($id_user,$newcol)
 			$this->db = & $GLOBALS['babDB'];
 			$this->tg = $_REQUEST['tg'];
 
+
+			// Les droits de l'ancien régime sont les même que ceux afficher sur la première page d'une demande de congé pour l'utilisateur.
+
 			$old_rights = bab_getRightsOnPeriod(false, false, $id_user);
 
 			$this->id_user = $id_user;
 			$this->id_coll = $newcol;
 
-			$req = "SELECT c.name new, IFNULL(c2.name,'') old FROM ".BAB_VAC_PERSONNEL_TBL." p, ".BAB_VAC_COLLECTIONS_TBL." c LEFT JOIN ".BAB_VAC_COLLECTIONS_TBL." c2 ON  p.id_user='".$id_user."' AND c2.id = p.id_coll WHERE c.id='".$newcol."'";
+			$req = "
+					SELECT 
+						c.name new, 
+						IFNULL(c2.name,'') old 
+					FROM 
+						".BAB_VAC_PERSONNEL_TBL." p, 
+						".BAB_VAC_COLLECTIONS_TBL." c 
+					LEFT JOIN 
+						".BAB_VAC_COLLECTIONS_TBL." c2 
+						ON c2.id = p.id_coll 
+					WHERE 
+						p.id_user='".$id_user."' AND c.id='".$newcol."'
+					";
 
 			$arr = $this->db->db_fetch_array($this->db->db_query($req));
+
 
 			$this->oldcol = $arr['old'];
 			$this->newcol = $arr['new'];
@@ -1439,6 +1456,7 @@ function changeucol($id_user,$newcol)
 			{
 			if (list($this->id,$this->right) = each($this->rights))
 				{
+				$this->altbg = !$this->altbg;
 				$default = (isset($this->right['quantity_new']) && $this->right['quantitydays'] > $this->right['quantity_new']) || !is_numeric($this->right['quantitydays']) ? $this->right['quantity_new'] : $this->right['quantitydays'];
 				$this->newrightvalue = isset($_POST['right_'.$this->id]) ? $_POST['right_'.$this->id] : $default;
 				if (!isset($this->right['quantity_new']))

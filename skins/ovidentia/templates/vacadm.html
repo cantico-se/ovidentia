@@ -602,7 +602,7 @@ function computeRights(obj,max)
 			</td>
 		</tr>
 		<!--#in getnext -->
-		<tr class="BabLoginMenuBackground" >
+		<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
 			<td>{ right[description] }</td>
 			<td>{ right[quantity_old] }</td>
 			<td>{ right[quantitydays] }</td>
@@ -616,7 +616,7 @@ function computeRights(obj,max)
 
 		</tr>
 		<!--#endin getnext -->
-		<tr class="BabLoginMenuBackground"> 
+		<tr class="BabSiteAdminTitleFontBackground"> 
 			<td colspan="5" align="center"> 
 				<br />
 				<input type="submit" name="submit" value="{ t_record }" />

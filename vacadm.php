@@ -1111,9 +1111,10 @@ if( isset($_POST['add']) )
 
 
 		case 'changeuser':
+			$idsa = isset($_POST['idsa']) ? $_POST['idsa'] : 0;
 			if (!empty($_POST['idp']))
 				{
-				if(updateVacationPersonnel($_POST['idp'], $_POST['idsa']))
+				if(updateVacationPersonnel($_POST['idp'], $idsa))
 					{
 					$idx ='changeucol';
 					}
@@ -1124,7 +1125,7 @@ if( isset($_POST['add']) )
 				}
 			else
 				{
-				if(!saveVacationPersonnel($_POST['userid'], $_POST['idcol'], $_POST['idsa']))
+				if(!saveVacationPersonnel($_POST['userid'], $_POST['idcol'], $idsa))
 					{
 					$idx ='addp';
 					}
@@ -1133,8 +1134,8 @@ if( isset($_POST['add']) )
 
 		case 'changegroup':
 			$idcol = isset($_POST['idcol']) ? $_POST['idcol'] : '';
-
-			if (!updateVacationPersonnelGroup($_POST['groupid'], $_POST['addmodify'],  $idcol, $_POST['idsa']))
+			$idsa = isset($_POST['idsa']) ? $_POST['idsa'] : 0;
+			if (!updateVacationPersonnelGroup($_POST['groupid'], $_POST['addmodify'],  $idcol, $idsa))
 				{
 				$idx ='addg';
 				}
