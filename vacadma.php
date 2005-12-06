@@ -562,6 +562,10 @@ function addModifyVacationRigths($id = false)
 			$this->invaliddate = bab_translate("ERROR: End date must be older");
 			$this->invalidentry2 = bab_translate("Days must be multiple of 0.5");
 			$this->invalidentry3 = bab_translate("The number of days exceed the total allowed");
+
+			$this->t_validoverlap = bab_translate("Request is valid when");
+			$this->t_inperiod_strict = bab_translate("in retention period");
+			$this->t_inperiod_or_overlap = bab_translate("in or overlap retention period");
 		
 
 			$this->yes = bab_translate("Yes");
@@ -575,7 +579,7 @@ function addModifyVacationRigths($id = false)
 
 			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=vacadma&idx=browt";
 			$this->db = & $GLOBALS['babDB'];
-			$el_to_init = array('idvr', 'id_creditor', 'date_begin', 'date_end', 'quantity', 'id_type', 'description', 'active', 'cbalance','period_start', 'period_end', 'trigger_nbdays_min', 'trigger_nbdays_max', 'trigger_inperiod', 'right_inperiod', 'righttype', 'trigger_type', 'date_begin_valid', 'date_end_valid');
+			$el_to_init = array('idvr', 'id_creditor', 'date_begin', 'date_end', 'quantity', 'id_type', 'description', 'active', 'cbalance','period_start', 'period_end', 'trigger_nbdays_min', 'trigger_nbdays_max', 'trigger_inperiod', 'right_inperiod', 'righttype', 'trigger_type', 'date_begin_valid', 'date_end_valid', 'validoverlap');
 
 			$dates_to_init = array('date_begin', 'date_end', 'period_start','period_end', 'date_begin_valid', 'date_end_valid');
 			
@@ -1338,7 +1342,28 @@ function updateVacationRight()
 				}
 			}
 
-		$babDB->db_query("UPDATE ".BAB_VAC_RIGHTS_TBL." set description='".$post['description']."', id_creditor='".$GLOBALS['BAB_SESS_USERID']."', quantity='".$post['quantity']."', date_entry=curdate(), date_begin='".$post['date_begin']."', date_end='".$post['date_end']."', active='".$post['active']."', cbalance='".$post['cbalance']."', date_begin_valid='".$post['date_begin_valid']."', date_end_valid='".$post['date_end_valid']."', date_begin_fixed='".$post['date_begin_fixed']."', date_end_fixed='".$post['date_end_fixed']."', day_begin_fixed='".$post['halfdaybeginfx']."', day_end_fixed='".$post['halfdayendfx']."' where id='".$post['idvr']."'");
+		$babDB->db_query("
+		
+			UPDATE ".BAB_VAC_RIGHTS_TBL." 
+				set 
+				description='".$post['description']."', 
+				id_creditor='".$GLOBALS['BAB_SESS_USERID']."', 
+				quantity='".$post['quantity']."', 
+				date_entry=curdate(), 
+				date_begin='".$post['date_begin']."', 
+				date_end='".$post['date_end']."', 
+				active='".$post['active']."', 
+				cbalance='".$post['cbalance']."', 
+				date_begin_valid='".$post['date_begin_valid']."', 
+				date_end_valid='".$post['date_end_valid']."', 
+				validoverlap='".$post['validoverlap']."',
+				date_begin_fixed='".$post['date_begin_fixed']."', 
+				date_end_fixed='".$post['date_end_fixed']."', 
+				day_begin_fixed='".$post['halfdaybeginfx']."', 
+				day_end_fixed='".$post['halfdayendfx']."' 
+			WHERE id='".$post['idvr']."'
+			
+			");
 
 		$id = $post['idvr'];
 		}
@@ -1368,7 +1393,47 @@ function updateVacationRight()
 			}
 
     
-		$babDB->db_query("insert into ".BAB_VAC_RIGHTS_TBL." (description, id_creditor, id_type, quantity, date_entry, date_begin, date_end, active, cbalance, date_begin_valid, date_end_valid, date_begin_fixed, date_end_fixed, day_begin_fixed, day_end_fixed) values ('".$post['description']."', '".$GLOBALS['BAB_SESS_USERID']."', '".$post['id_type']."', '".$post['quantity']."', curdate(), '".$post['date_begin']."', '".$post['date_end']."', '".$post['active']."', '".$post['cbalance']."', '".$post['date_begin_valid']."', '".$post['date_end_valid']."', '".$post['date_begin_fixed']."', '".$post['date_end_fixed']."', '".$post['halfdaybeginfx']."', '".$post['halfdayendfx']."')");
+		$babDB->db_query("
+			
+			INSERT into ".BAB_VAC_RIGHTS_TBL." 
+				(
+				description, 
+				id_creditor, 
+				id_type, 
+				quantity, 
+				date_entry, 
+				date_begin, 
+				date_end, 
+				active, 
+				cbalance, 
+				date_begin_valid, 
+				date_end_valid,
+				validoverlap,
+				date_begin_fixed, 
+				date_end_fixed, 
+				day_begin_fixed, 
+				day_end_fixed
+				) 
+			values 
+				(
+				'".$post['description']."', 
+				'".$GLOBALS['BAB_SESS_USERID']."', 
+				'".$post['id_type']."', 
+				'".$post['quantity']."', 
+				curdate(), 
+				'".$post['date_begin']."', 
+				'".$post['date_end']."', 
+				'".$post['active']."', 
+				'".$post['cbalance']."', 
+				'".$post['date_begin_valid']."', 
+				'".$post['date_end_valid']."', 
+				'".$post['validoverlap']."', 
+				'".$post['date_begin_fixed']."', 
+				'".$post['date_end_fixed']."', 
+				'".$post['halfdaybeginfx']."', 
+				'".$post['halfdayendfx']."'
+				)
+			");
 
 		$id = $babDB->db_insert_id();
 

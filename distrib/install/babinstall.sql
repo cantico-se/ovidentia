@@ -1483,6 +1483,7 @@ CREATE TABLE bab_vac_rights (
   cbalance enum('Y','N') NOT NULL default 'Y',
   date_begin_valid date NOT NULL default '0000-00-00',
   date_end_valid date NOT NULL default '0000-00-00',
+  validoverlap tinyint(1) unsigned NOT NULL default '0',
   date_begin_fixed date NOT NULL default '0000-00-00',
   date_end_fixed date NOT NULL default '0000-00-00',
   day_begin_fixed tinyint(3) unsigned NOT NULL default '0',

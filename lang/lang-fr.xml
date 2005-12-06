@@ -1883,4 +1883,7 @@
 <string id="Update selected elements">Mettre à jour les éléments sélectionnés</string>
 <string id="Make unavailable to home pages">Rendre indisponible pour les pages d'accueil</string>
 <string id="Two differents types on the day">Deux types de congés différents sur ce jour</string>
+<string id="Request is valid when">La demande est valide quand</string>
+<string id="in retention period">elle est dans la période de validité</string>
+<string id="in or overlap retention period">elle chevauche ou est dans la période de validité</string>
 </fr>

@@ -377,6 +377,19 @@ return true;
 				</td>
 			</tr>
 			<tr> 
+				<td colspan="2" align="center">{ t_validoverlap }: <br />
+					<select name="validoverlap">
+						<!--#if arr[validoverlap] -->
+						<option value="0">{ t_inperiod_strict }</option>
+						<option value="1" selected="selected">{ t_inperiod_or_overlap }</option>
+						<!--#else arr[validoverlap] -->
+						<option value="0" selected="selected">{ t_inperiod_strict }</option>
+						<option value="1">{ t_inperiod_or_overlap }</option>
+						<!--#endif arr[validoverlap] -->
+					</select>
+				</td>
+			</tr>
+			<tr> 
 				<td align="right">{ t_active }:</td>
 				<td> 
 					<select name="active">
