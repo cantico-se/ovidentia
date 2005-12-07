@@ -535,8 +535,8 @@ function addModifyVacationRigths($id = false)
 			$this->t_allcol = bab_translate("All collections");
 			$this->t_allpers = bab_translate("All users");
 			$this->t_days = bab_translate("Day(s)");
-			$this->t_description = bab_translate("Description");
-			$this->t_period = bab_translate("Period"). " (".bab_translate("dd-mm-yyyy").")";
+			$this->t_description = bab_translate("Name of the right");
+			$this->t_period = bab_translate("Right period"). " (".bab_translate("dd-mm-yyyy").")";
 			$this->t_date_begin = $this->t_period_start = bab_translate("Begin");
 			$this->t_date_end = $this->t_period_end = bab_translate("End");
 			$this->t_active = bab_translate("Opened right");
@@ -547,9 +547,10 @@ function addModifyVacationRigths($id = false)
 			$this->t_period_rule = bab_translate("Rule period"). " (".bab_translate("dd-mm-yyyy").")";
 			$this->t_trigger_inperiod = bab_translate("Allow rule");
 			$this->t_always = bab_translate("Always");
-			$this->t_all_period = bab_translate("On all period");
-			$this->t_inperiod = bab_translate("In period");
-			$this->t_outperiod = bab_translate("Out of period");
+			$this->t_all_period = bab_translate("On all right period");
+			$this->t_inperiod = bab_translate("In rule period");
+			$this->t_outperiod = bab_translate("Out of rule period");
+			$this->t_outperiod2 = bab_translate("Out of rule period and in right period");
 			$this->t_right_inperiod = bab_translate("Apply right");
 			$this->t_record = bab_translate("Record");
 			$this->t_trigger_type = bab_translate("Allow rule with type");
@@ -562,10 +563,12 @@ function addModifyVacationRigths($id = false)
 			$this->invaliddate = bab_translate("ERROR: End date must be older");
 			$this->invalidentry2 = bab_translate("Days must be multiple of 0.5");
 			$this->invalidentry3 = bab_translate("The number of days exceed the total allowed");
-
-			$this->t_validoverlap = bab_translate("Request is valid when");
-			$this->t_inperiod_strict = bab_translate("in retention period");
-			$this->t_inperiod_or_overlap = bab_translate("in or overlap retention period");
+			$this->t_rules = bab_translate("Rules");
+			$this->t_trigger = bab_translate("Rule trigger");
+			$this->t_zoneapplication = bab_translate("Zone of application of the rule");
+			$this->t_validoverlap = bab_translate("Request is valid when the request period is");
+			$this->t_inperiod_strict = bab_translate("in zone of application");
+			$this->t_inperiod_or_overlap = bab_translate("in or overlap zone of application");
 		
 
 			$this->yes = bab_translate("Yes");
@@ -602,6 +605,7 @@ function addModifyVacationRigths($id = false)
 						t2.trigger_inperiod,
 						t2.trigger_type,
 						t2.right_inperiod, 
+						t2.validoverlap,
 						t3.name type 
 					FROM 
 						".BAB_VAC_RIGHTS_TBL." t1
@@ -1356,7 +1360,6 @@ function updateVacationRight()
 				cbalance='".$post['cbalance']."', 
 				date_begin_valid='".$post['date_begin_valid']."', 
 				date_end_valid='".$post['date_end_valid']."', 
-				validoverlap='".$post['validoverlap']."',
 				date_begin_fixed='".$post['date_begin_fixed']."', 
 				date_end_fixed='".$post['date_end_fixed']."', 
 				day_begin_fixed='".$post['halfdaybeginfx']."', 
@@ -1408,7 +1411,6 @@ function updateVacationRight()
 				cbalance, 
 				date_begin_valid, 
 				date_end_valid,
-				validoverlap,
 				date_begin_fixed, 
 				date_end_fixed, 
 				day_begin_fixed, 
@@ -1427,7 +1429,6 @@ function updateVacationRight()
 				'".$post['cbalance']."', 
 				'".$post['date_begin_valid']."', 
 				'".$post['date_end_valid']."', 
-				'".$post['validoverlap']."', 
 				'".$post['date_begin_fixed']."', 
 				'".$post['date_end_fixed']."', 
 				'".$post['halfdaybeginfx']."', 
@@ -1489,7 +1490,8 @@ function updateVacationRight()
 						UPDATE ".BAB_VAC_RIGHTS_RULES_TBL." 
 						SET 
 							period_start='".$post['period_start']."', 
-							period_end='".$post['period_end']."', 
+							period_end='".$post['period_end']."',
+							validoverlap='".$post['validoverlap']."',
 							trigger_nbdays_min='".$post['trigger_nbdays_min']."',  trigger_nbdays_max='".$post['trigger_nbdays_max']."', 
 							trigger_inperiod='".$post['trigger_inperiod']."', 
 							trigger_type='".$post['trigger_type']."', 
@@ -1505,6 +1507,7 @@ function updateVacationRight()
 						( id_right, 
 							period_start, 
 							period_end, 
+							validoverlap, 
 							trigger_nbdays_min, 
 							trigger_nbdays_max, 
 							trigger_inperiod, 
@@ -1514,6 +1517,7 @@ function updateVacationRight()
 							( '".$id."',
 							'".$post['period_start']."', 
 							'".$post['period_end']."', 
+							'".$post['validoverlap']."', 
 							'".$post['trigger_nbdays_min']."', 
 							'".$post['trigger_nbdays_max']."', 
 							'".$post['trigger_inperiod']."', 

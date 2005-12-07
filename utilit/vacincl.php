@@ -211,13 +211,11 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 		{
 		$access = true;
 
-		if( $arr['date_begin_valid'] != '0000-00-00' && (bab_mktime($arr['date_begin_valid']." 00:00:00") > mktime()))
-			{
+		if( $arr['date_begin_valid'] != '0000-00-00' && (bab_mktime($arr['date_begin_valid']." 00:00:00") > mktime())){
 			$access= false;
 			}
 
-		if( $arr['date_end_valid'] != '0000-00-00' && (bab_mktime($arr['date_end_valid']." 23:59:59") < mktime()))
-			{
+		if( $arr['date_end_valid'] != '0000-00-00' && (bab_mktime($arr['date_end_valid']." 23:59:59") < mktime())){
 			$access= false;
 			}
 
@@ -274,29 +272,52 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 
 			$access = !$access_on_period;
 
-			if ($arr['right_inperiod'] == 0)
-				$access = true;
 
-			if ( $arr['right_inperiod'] == 1 && 
-				!empty($arr['period_start']) && 
-				!empty($arr['period_end']) && 
-				($period_start <= $begin && $period_end >= $end) )
-					{
+			$period_acess = $arr['right_inperiod']+($arr['validoverlap']*10);
+			switch ($period_acess)
+				{
+				case 0: // Toujours
+				case 10:
 					$access = true;
-					}
+					break;
+				
+				case 1: // Dans la période de la règle
+					if (!empty($arr['period_start']) && 
+						!empty($arr['period_end']) && 
+						($period_start <= $begin && $period_end >= $end) ) {
+							$access = true;
+							}
+					break;
+				
+				case 2: // En dehors de la période de la règle
+					if (!empty($arr['period_start']) && 
+						!empty($arr['period_end']) && 
+						($period_end <= $begin || $period_start >= $end) ) {
+							$access = true;
+							}
+					break;
+					
+				case 11: // Dans la période de la règle mais peut dépasser à l'exterieur
+					if (!empty($arr['period_start']) && 
+						!empty($arr['period_end']) && 
+						($period_start < $end && $period_end > $begin) ) {
+							$access = true;
+							}
+					break;
 
-			
-			if ($arr['right_inperiod'] == 2 && 
-				!empty($arr['period_start']) && 
-				!empty($arr['period_end']) && 
-				($period_end <= $begin || $period_start >= $end) )
-					{
-					$access = true;
-					}
+				case 12: // En dehors de la période de la règle mais peut dépasser à l'intérieur
+					if (!empty($arr['period_start']) && 
+						!empty($arr['period_end']) && 
+						($period_start > $begin || $period_end < $end) ) {
+							$access = true;
+							}
+					break;
+				}
+
+
 			
 			if ( $access )
 				{
-				
 
 				switch ($arr['trigger_inperiod'])
 					{
@@ -308,9 +329,6 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 						break;
 					case 2:
 						$req = " AND ((e.date_begin < '".$arr['period_start']."' AND e.date_end <= '".$arr['period_start']."') OR (e.date_begin >= '".$arr['period_end']."' AND e.date_end > '".$arr['period_end']."'))";
-						break;
-					default:
-						$req = '';
 						break;
 					}
 

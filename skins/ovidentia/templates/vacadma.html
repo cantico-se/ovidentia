@@ -376,19 +376,7 @@ return true;
 					<input type="text" name="date_end_valid" size="10" maxlength="10" value="{ arr[date_end_valid] }" />
 				</td>
 			</tr>
-			<tr> 
-				<td colspan="2" align="center">{ t_validoverlap }: <br />
-					<select name="validoverlap">
-						<!--#if arr[validoverlap] -->
-						<option value="0">{ t_inperiod_strict }</option>
-						<option value="1" selected="selected">{ t_inperiod_or_overlap }</option>
-						<!--#else arr[validoverlap] -->
-						<option value="0" selected="selected">{ t_inperiod_strict }</option>
-						<option value="1">{ t_inperiod_or_overlap }</option>
-						<!--#endif arr[validoverlap] -->
-					</select>
-				</td>
-			</tr>
+			
 			<tr> 
 				<td align="right">{ t_active }:</td>
 				<td> 
@@ -419,58 +407,99 @@ return true;
 			</tr>
 			</tbody>
 			<tbody id="vac_right_rules">
+				
+				<tr> 
+					<td colspan="2" align="center">
+					<br />
+					<h5>{ t_rules }</h5>
+					</td>
+				</tr>
+				
+				
 				<tr> 
 					<td align="right">{ t_period_rule }:</td>
 					<td> 
 						<a href="javascript:calwin('period_start')">{ t_period_start }</a>
-						<input type="text" name="period_start" size="10" maxlength="10" value="{ arr[period_start] }" />
+							<input type="text" name="period_start" size="10" maxlength="10" value="{ arr[period_start] }" />
 
-						&nbsp;<a href="javascript:calwin('period_end')">{ t_period_end }</a>
-						<input type="text" name="period_end" size="10" maxlength="10" value="{ arr[period_end] }" />
+							&nbsp;<a href="javascript:calwin('period_end')">{ t_period_end }</a>
+							<input type="text" name="period_end" size="10" maxlength="10" value="{ arr[period_end] }" />
 					</td>
 				</tr>
 
 				<tr> 
-					<td align="right">{ t_trigger_nbdays_min }:</td>
-					<td> 
-						<input type="text" name="trigger_nbdays_min" size="10" maxlength="10" value="{ arr[trigger_nbdays_min] }" onBlur="validateNum(this)" />&nbsp;&nbsp;{ t_days }
+					<td colspan="2" align="left">
+					
+						<fieldset>
+						<legend>{ t_zoneapplication }</legend>
+
+
+						
+						<dl>
+						
+						<dt><br />{ t_right_inperiod }:</dt>
+							<dd><p>
+							<select name="right_inperiod">
+								<option value="0">{ t_always }</option>
+								<option value="1">{ t_inperiod }</option>
+								<option value="2">{ t_outperiod }</option>
+							</select>
+							</p></dd>
+						
+						
+						<dt>{ t_validoverlap }: </dt>
+							<dd><p>
+							<select name="validoverlap">
+								<!--#if arr[validoverlap] -->
+								<option value="0">{ t_inperiod_strict }</option>
+								<option value="1" selected="selected">{ t_inperiod_or_overlap }</option>
+								<!--#else arr[validoverlap] -->
+								<option value="0" selected="selected">{ t_inperiod_strict }</option>
+								<option value="1">{ t_inperiod_or_overlap }</option>
+								<!--#endif arr[validoverlap] -->
+							</select>
+							</p></dd>
+						</dl>
+						
+						</fieldset>
+
 					</td>
 				</tr>
+
+
 				<tr> 
-					<td align="right">{ t_trigger_nbdays_max }:</td>
-					<td> 
-						<input type="text" name="trigger_nbdays_max" size="10" maxlength="10" value="{ arr[trigger_nbdays_max] }" onBlur="validateNum(this)" />&nbsp;&nbsp;{ t_days }
-					</td>
-				</tr>
-				<tr> 
-					<td align="right">{ t_trigger_type }:</td>
-					<td > 
-						<select name="trigger_type">
-							<option value="0">{ t_all }</option>
-							<!--#in getnexttype -->
-							<option value="{ typeid }">{ typename }</option>
-							<!--#endin getnexttype -->
-						</select>
-					</td>
-				</tr>
-				<tr> 
-					<td align="right">{ t_trigger_inperiod }:</td>
-					<td > 
-						<select name="trigger_inperiod">
-							<option value="0">{ t_all_period }</option>
-							<option value="1">{ t_inperiod }</option>
-							<option value="2">{ t_outperiod }</option>
-						</select>
-					</td>
-				</tr>
-				<tr> 
-					<td align="right">{ t_right_inperiod }:</td>
-					<td > 
-						<select name="right_inperiod">
-							<option value="0">{ t_always }</option>
-							<option value="1">{ t_inperiod }</option>
-							<option value="2">{ t_outperiod }</option>
-						</select>
+					<td colspan="2" align="left">
+						<br />
+						<fieldset>
+						<legend>{ t_trigger }</legend>
+						
+						<p><br />{ t_trigger_nbdays_min }&nbsp;:&nbsp;<input type="text" name="trigger_nbdays_min" size="5" maxlength="10" value="{ arr[trigger_nbdays_min] }" onBlur="validateNum(this)" />&nbsp;&nbsp;{ t_days }</p>
+						<p>{ t_trigger_nbdays_max }&nbsp;:&nbsp;<input type="text" name="trigger_nbdays_max" size="5" maxlength="10" value="{ arr[trigger_nbdays_max] }" onBlur="validateNum(this)" />&nbsp;&nbsp;{ t_days }</p>
+						
+						<dl>
+						
+						<dt>{ t_trigger_type }:</dt>
+							<dd><p>
+							<select name="trigger_type">
+								<option value="0">{ t_all }</option>
+								<!--#in getnexttype -->
+								<option value="{ typeid }">{ typename }</option>
+								<!--#endin getnexttype -->
+							</select>
+							</p></dd>
+						
+						
+						<dt>{ t_trigger_inperiod }:</dt>
+							<dd><p>
+							<select name="trigger_inperiod">
+								<option value="0">{ t_all_period }</option>
+								<option value="1">{ t_inperiod }</option>
+								<option value="2">{ t_outperiod2 }</option>
+							</select>
+							</p></dd>
+						</dl>
+						
+						</fieldset>
 
 						<script type="text/javascript">
 						<!--
@@ -483,8 +512,7 @@ return true;
 				</tr>
 			</tbody>
 			<tr> 
-				<td>&nbsp;</td>
-				<td> 
+				<td colspan="2" align="center"> 
 					<input type="submit" name="submit" value="{ t_record }" />&nbsp;&nbsp;
 					
 					<!--#if arr[idvr] -->

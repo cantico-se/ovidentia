@@ -455,8 +455,8 @@ function period($id_user, $id = 0)
 				{
 				next($this->rights);
 				$this->right['quantitydays'] = $this->right['quantitydays'] - $this->right['waiting'];
-				$this->total += $this->right['quantitydays'];
-				$this->total_waiting += $this->right['waiting'];
+				$this->total += $this->right['quantitydays'] > 0 ? $this->right['quantitydays'] : 0 ;
+				$this->total_waiting += $this->right['waiting'] > 0 ? $this->right['waiting'] : 0 ;
 				return true;
 				}
 			else

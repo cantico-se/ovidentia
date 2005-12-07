@@ -1616,8 +1616,10 @@
 <string id="Allow rule">Autoriser la condition de la règle</string>
 <string id="Apply right">Appliquer la règle</string>
 <string id="Rule period">Période de la règle</string>
-<string id="Out of period">En dehors de la période de la règle</string>
-<string id="In period">Dans la période de la règle</string>
+<string id="Out of rule period">En dehors de la période de la règle</string>
+<string id="Out of rule period and in right period">En dehors de la période de la règle et dans la période du droit</string>
+<string id="In right period">Dans la période du droit</string>
+<string id="In rule period">Dans la période de la règle</string>
 <string id="On all period">Sur toute la période</string>
 <string id="Always">Toujours</string>
 <string id="Values">Valeurs</string>
@@ -1744,7 +1746,7 @@
 <string id="Manage">Gérer</string>
 <string id="Folder manager">Gestionnaire de répertoire</string>
 <string id="Category to use in calendar">Catégorie à utiliser dans l'agenda</string>
-<string id="Retention period">Période de validité</string>
+<string id="Retention period">Période de disponibilité</string>
 <string id="Right type">Type de droit</string>
 <string id="Fixed dates">A dates fixes</string>
 <string id="Vacation has been updated">La période de congé a été mise à jour</string>
@@ -1883,7 +1885,13 @@
 <string id="Update selected elements">Mettre à jour les éléments sélectionnés</string>
 <string id="Make unavailable to home pages">Rendre indisponible pour les pages d'accueil</string>
 <string id="Two differents types on the day">Deux types de congés différents sur ce jour</string>
-<string id="Request is valid when">La demande est valide quand</string>
-<string id="in retention period">elle est dans la période de validité</string>
-<string id="in or overlap retention period">elle chevauche ou est dans la période de validité</string>
+<string id="Zone of application of the rule">Zone d'application de la règle</string>
+<string id="Request is valid when the request period is">La demande est valide quand la période de la demande</string>
+<string id="in zone of application">est dans la zone d'application</string>
+<string id="in or overlap zone of application">chevauche ou est dans la zone d'application</string>
+<string id="Rule trigger">Condition de la règle</string>
+<string id="Rules">Règles</string>
+<string id="Name of the right">Nom du droit</string>
+<string id="On all right period">Sur toute la période du droit</string>
+<string id="Right period">Période du droit</string>
 </fr>

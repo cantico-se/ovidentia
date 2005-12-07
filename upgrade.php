@@ -5342,12 +5342,12 @@ function upgrade571to572()
 $ret = "";
 $db = & $GLOBALS['babDB'];
 
-$arr = $db->db_fetch_array($db->db_query("DESCRIBE ".BAB_VAC_RIGHTS_TBL." validoverlap"));
+$arr = $db->db_fetch_array($db->db_query("DESCRIBE ".BAB_VAC_RIGHTS_RULES_TBL." validoverlap"));
 if ('validoverlap' != $arr[0])
 	{
-	$res = $db->db_query("ALTER TABLE `".BAB_VAC_RIGHTS_TBL."` ADD `validoverlap` TINYINT( 1 ) UNSIGNED NOT NULL AFTER `date_end_valid`");
+	$res = $db->db_query("ALTER TABLE `".BAB_VAC_RIGHTS_RULES_TBL."` ADD `validoverlap` TINYINT( 1 ) UNSIGNED NOT NULL AFTER `period_end`");
 	if (!$res) {
-		$ret = "Alteration of <b>".BAB_VAC_RIGHTS_TBL."</b> table failed !<br>";
+		$ret = "Alteration of <b>".BAB_VAC_RIGHTS_RULES_TBL."</b> table failed !<br>";
 		return $ret;
 		}
 	}
