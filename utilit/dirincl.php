@@ -548,4 +548,111 @@ function summaryDbContactWithOvml($args)
 			}
 		}
 }
+
+
+
+
+
+
+
+function getUserDirSheet($id_user) {
+	$babDB = &$GLOBALS['babDB'];
+
+	if (is_array($id_user))
+		$id_user = implode("','",$id_user);
+
+	$res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='0' order by list_ordering asc");
+
+	$entries = array();
+	$leftjoin = array();
+	$leftjoin_col = array();
+	
+	while( $arr = $babDB->db_fetch_assoc($res))
+		{
+		if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
+			{
+			$rr = $babDB->db_fetch_array($babDB->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
+			$entries[$rr['name']] = array('name' => translateDirectoryField($rr['description']) , 'value' => '' );
+			}
+		else
+			{
+			$rr = $babDB->db_fetch_array($babDB->db_query("select name from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+			$entries["babdirf".$arr['id']] = array('name' => translateDirectoryField($rr['name']) , 'value' => '' );
+
+			$leftjoin[] = ' LEFT JOIN '.BAB_DBDIR_ENTRIES_EXTRA_TBL.' lj'.$arr['id']." ON lj".$arr['id'].".id_fieldx='".$arr['id']."' AND e.id=lj".$arr['id'].".id_entry";
+
+			$leftjoin_col[] ='lj'.$arr['id'].'.field_value babdirf'.$arr['id'];
+			}
+		}
+
+	
+	$str_leftjoin = '';
+	$str_leftjoin_col = '';
+	
+	if (count($leftjoin_col) > 0) {
+		$str_leftjoin = implode(',',$leftjoin);
+		$str_leftjoin_col = ', '.implode(', ',$leftjoin_col);
+		}
+
+	$res = $babDB->db_query("
+	
+				SELECT  
+					e.id,	
+					cn,
+					sn,
+					mn,
+					givenname,
+					email,
+					btel,
+					mobile,
+					htel,
+					bfax,
+					title,
+					departmentnumber,
+					organisationname,
+					bstreetaddress,
+					bcity,
+					bpostalcode,
+					bstate,
+					bcountry,
+					hstreetaddress,
+					hcity,
+					hpostalcode,
+					hstate,
+					hcountry,
+					user1,
+					user2,
+					user3,
+					LENGTH(photo_data) photo_data, 
+					id_user 
+					".$str_leftjoin_col."
+				FROM 
+					".BAB_DBDIR_ENTRIES_TBL." e 
+					".$str_leftjoin." 
+				WHERE 
+					id_user IN('".$id_user."')
+
+	");
+
+
+	$return = array();
+
+
+	while( $arr = $babDB->db_fetch_assoc($res))
+		{
+		$return[$arr['id_user']] = $entries;
+
+		foreach($return[$arr['id_user']] as $name => $field) {
+			
+			 if (isset($arr[$name])) {
+				$return[$arr['id_user']][$name]['value'] = $arr[$name];
+				}
+			 elseif ('jpegphoto' == $name && $arr['photo_data'] > 0) {
+				$return[$arr['id_user']][$name]['value'] = $GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=0&idu=".$arr['id'];
+				}
+			}
+		}
+	return $return;
+}
+
 ?>
