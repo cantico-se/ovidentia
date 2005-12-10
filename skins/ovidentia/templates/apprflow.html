@@ -19,8 +19,10 @@ function v_all()
 for (i = 0; i < document.forms.sccreate.elements.length; i++)
 	{
 	objCtrl = document.forms.sccreate.elements[i];
-	if (objCtrl.name.substring(0,2) == 'fn')
+	if (objCtrl.name.substring(0,2) == 'fn') {
 		objCtrl.disabled = false;
+		objCtrl.className = 'cell';
+		}
 	}
 }
 
@@ -29,6 +31,7 @@ function savef(t)
 ctrlf = t;
 v_all();
 t.disabled = true;
+t.className = 'selectedcell';
 }
 
 var op = null;
@@ -57,50 +60,47 @@ function closepop()
 </script>
 
 <form name="sccreate" method="post" action="{ babPhpSelf }" onsubmit="v_all();closepop()">
-<input type="hidden" name="tg" value="apprflow">
-<input type="hidden" name="idx" value="list">
-<input type="hidden" name="rows" value="{ rows }">
-<input type="hidden" name="cols" value="{ cols }">
-<input type="hidden" name="idsch" value="{ idsch }">
-<input type="hidden" name="type" value="{ type }">
-<input type="hidden" name="ocid" value="{ ocid }">
-<input type="hidden" name="add" value="{ what }">
-<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<input type="hidden" name="tg" value="apprflow" />
+<input type="hidden" name="idx" value="list" />
+<input type="hidden" name="rows" value="{ rows }" />
+<input type="hidden" name="cols" value="{ cols }" />
+<input type="hidden" name="idsch" value="{ idsch }" />
+<input type="hidden" name="type" value="{ type }" />
+<input type="hidden" name="ocid" value="{ ocid }" />
+<input type="hidden" name="add" value="{ what }" />
+<table id="apprfloweditor" width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td colspan="3" class="BabLoginMenuBackground" align="left" nowrap valign="middle">{ schnametxt }:&nbsp;
-<input type="text" name="schname" size="30" value="{ schnameval }"></td>
-<td colspan="3" class="BabLoginMenuBackground" align="left" nowrap valign="middle">{ schdesctxt }:&nbsp;
-<input type="text" name="schdesc" size="40" value="{ schdescval }"></td>
-</tr>
-<!--#in getnextrow --> 
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ frow }</td>
-<!--#in getnextcol --> 
-<td class="BabLoginMenuBackground" valign="middle" nowrap>
-<input type="text" name="fn{ findex }" size="15" value="{ fieldval }" onfocus="savef(this)">
-<a href="javascript:emptycell({ findex });"><img border="0" src="{ babSkinPath }images/Puces/del.gif"></a>
-<input type="hidden" name="fh{ findex }" value="{ fieldid }">
-</td>
-<!--#endin getnextcol --> 
-<td class="BabLoginMenuBackground" valign="middle"> 
-<select name="fs{ frow }">
-<option value="N"></option>
-<option value="Y" { allselected }>{ all }</option>
-</select>
-</td>
-</tr>
-<!--#endin getnextrow --> 
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">&nbsp;</td>
-<td class="BabLoginMenuBackground" align="left" nowrap valign="middle"><input class="BabLoginMenuBackground" type="checkbox" name="order" { ordchecked } value="Y">&nbsp;{ order }</td>
-<td  class="BabLoginMenuBackground" align="center" nowrap valign="middle"><input type="submit" name="addb" value="{ add }"></td>
-<td  class="BabLoginMenuBackground" align="center" nowrap valign="middle"><!--#if bdel --><input type="submit" name="delb" value="{ del }"><!--#else bdel -->&nbsp;<!--#endif bdel --></td>
-<td  colspan="2" class="BabLoginMenuBackground" align="left" nowrap valign="middle"><a class="BabAlphabetLink" href="javascript: openPopup('{ userslisturl }');">{ userslisttxt }</a>&nbsp;<!--#if ocname -->( { ocname } )<!--#endif ocname --></td></tr>
-</table>
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="6">
+	<tr> 
+		<td colspan="3">{ schnametxt }:&nbsp;<input type="text" name="schname" size="30" value="{ schnameval }" /></td>
+		<td colspan="3">{ schdesctxt }:&nbsp;<input type="text" name="schdesc" size="40" value="{ schdescval }" /></td>
+	</tr>
+	<!--#in getnextrow --> 
+	<tr> 
+		<td align="right">{ frow }</td>
+		<!--#in getnextcol --> 
+		<td nowrap="nowrap">
+			<input type="text" name="fn{ findex }" size="15" value="{ fieldval }" class="cell" onfocus="savef(this)" />
+			<a href="javascript:emptycell({ findex });" title="{ t_empty_cell }"><img border="0" src="{ babSkinPath }images/Puces/del.gif" alt="" /></a>
+			<input type="hidden" name="fh{ findex }" value="{ fieldid } /">
+		</td>
+		<!--#endin getnextcol --> 
+		<td> 
+			<select name="fs{ frow }">
+				<option value="N"></option>
+				<option value="Y" { allselected }>{ all }</option>
+			</select>
+		</td>
+	</tr>
+	<!--#endin getnextrow --> 
+	<tr> 
+		<td>&nbsp;</td>
+		<td><input type="checkbox" name="order" { ordchecked } value="Y" />&nbsp;{ order }</td>
+		<td colspan="2" align="center"><input type="submit" name="addb" value="{ add }" /> &nbsp; <!--#if bdel --><input type="submit" name="delb" value="{ del }" /><!--#else bdel -->&nbsp;<!--#endif bdel --></td>
+		<td colspan="2"><a href="javascript: openPopup('{ userslisturl }');">{ userslisttxt }</a>&nbsp;<!--#if ocname -->( { ocname } )<!--#endif ocname --></td>
+	</tr>
+	</table>
 </td>
 </tr>
 </table>

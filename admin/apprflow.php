@@ -131,6 +131,7 @@ function schemaCreate($formula, $idsch, $schname, $schdesc, $order, $bdel, $ocid
 			$this->order = bab_translate("Follow order");
 			$this->schnametxt = bab_translate("Name");
 			$this->schdesctxt = bab_translate("Description");
+			$this->t_empty_cell = bab_translate("Delete");
 			$this->fieldval = "";
 			$this->fieldid = "";
 			$this->schdescval = $schdesc == ""? "": $schdesc;
@@ -269,6 +270,7 @@ function schemaCreate($formula, $idsch, $schname, $schdesc, $order, $bdel, $ocid
 		}
 
 	$temp = new temp($formula, $idsch, $schname, $schdesc, $order, $bdel, $ocid, $type);
+	$babBody->addStyleSheet('apprflow.css');
 	$babBody->babecho(	bab_printTemplate($temp,"apprflow.html", "schemacreate"));
 
 }

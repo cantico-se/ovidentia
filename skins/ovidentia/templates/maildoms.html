@@ -13,30 +13,30 @@ if (obj.value == 'pop3')
 -->
 </script>
 <form method="post" name="domainmail" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="maildoms">
-<input type="hidden" name="idx" value="list">
-<input type="hidden" name="userid" value="{ userid }">
-<input type="hidden" name="bgrp" value="{ bgrp }">
-<input type="hidden" name="adddom" value="add">
+<input type="hidden" name="tg" value="maildoms" />
+<input type="hidden" name="idx" value="list" />
+<input type="hidden" name="userid" value="{ userid }" />
+<input type="hidden" name="bgrp" value="{ bgrp }" />
+<input type="hidden" name="adddom" value="add" />
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ name }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="dname" size="30" maxlength="255">
+<td align="right">{ name }:</td>
+<td> 
+<input type="text" name="dname" size="30" maxlength="255" />
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ description }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="description" size="30" maxlength="255">
+<td align="right">{ description }:</td>
+<td> 
+<input type="text" name="description" size="30" maxlength="255" />
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ accessmethod }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
+<td align="right">{ accessmethod }:</td>
+<td> 
 <select name="accessmethod" size="1" onchange="changeport(this);">
   <option value="pop3" selected>POP3</option>
   <option value="imap">IMAP</option>
@@ -44,36 +44,34 @@ if (obj.value == 'pop3')
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ inmailserver }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="inmailserver" size="30" maxlength="255">
+<td align="right">{ inmailserver }:</td>
+<td> 
+<input type="text" name="inmailserver" size="30" maxlength="255" />
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ inportserver }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="inportserver" size="5" maxlength="5" value="110">
+<td align="right">{ inportserver }:</td>
+<td> 
+<input type="text" name="inportserver" size="5" maxlength="5" value="110" />
 </td>
 </tr>
 <!--#if dummy -->
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ outmailserver }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="outmailserver" size="30" maxlength="255">
+<td align="right">{ outmailserver }:</td>
+<td> 
+<input type="text" name="outmailserver" size="30" maxlength="255" />
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ outportserver }:</td>
-<td class="BabLoginMenuBackground" valign="middle">
-<input type="text" name="outportserver" size="5" maxlength="5" value="25">
-</td>
+<td align="right">{ outportserver }:</td>
+<td><input type="text" name="outportserver" size="5" maxlength="5" value="25" /></td>
 </tr>
 <!--#endif dummy -->
 <!--#if count "!= 0" -->
 <tr>
-<td class="BabLoginMenuBackground" align="right" nowrap>{ groupsname }:</td>
-<td class="BabLoginMenuBackground">
-<select multiple name="groups[]" size="10">
+<td align="right">{ groupsname }:</td>
+<td>
+<select multiple="multiple" name="groups[]" size="10">
 <!--#in getnextgroup -->
 <option value="{ arrgroups[id] }" { arrgroups[select] }>{ arrgroups[name] }</option>
 <!--#endin getnextgroup -->
@@ -82,9 +80,9 @@ if (obj.value == 'pop3')
 </tr>
 <!--#endif count -->
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">&nbsp;</td>
-<td class="BabLoginMenuBackground" valign="middle">
-<input type="submit" name="submit" value="{ add }">
+<td align="right">&nbsp;</td>
+<td>
+<input type="submit" name="submit" value="{ add }" />
 </td>
 </tr>
 </table>
@@ -101,48 +99,45 @@ if (obj.value == 'pop3')
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
 <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" width="40%" valign="middle"><b>{ name 
-}</b></td>
-<td class="BabSiteAdminTitleFontBackground" width="30%" valign="middle"><b>{ description 
-}</b></td>
-<td class="BabSiteAdminTitleFontBackground" width="30%" valign="middle"><b>{ group 
-}</b></td>
+<tr class="BabSiteAdminTitleFontBackground"> 
+<td>{ name }</td>
+<td>{ description }</td>
+<td>{ group }</td>
 </tr>
 <!--#in getnextadm -->
-<tr> 
-<td class="BabSiteAdminFontBackground" valign="middle">
+<tr class="BabSiteAdminFontBackground"> 
+<td>
 <!--#if burl "== 1" -->
-<a class="BabSiteAdminListLink" href="{ url }">{ urlname }</a> 
+<a href="{ url }">{ urlname }</a> 
 <!--#else burl -->
 { urlname } 
 <!--#endif burl -->
 </td>
-<td class="BabSiteAdminFontBackground" valign="middle">{ arr[description] }</td>
-<td class="BabSiteAdminFontBackground" valign="middle">{ groupname }</td>
+<td>{ arr[description] }</td>
+<td>{ groupname }</td>
 </tr><!--#endin getnextadm -->
 <!--#in getnextgrp -->
 <tr> 
-<td class="BabSiteAdminFontBackground" valign="middle">
+<td>
 <!--#if burl "== 1" -->
-<a class="BabSiteAdminListLink" href="{ url }">{ urlname }</a> 
+<a href="{ url }">{ urlname }</a> 
 <!--#else burl -->
 { urlname } 
 <!--#endif burl -->
 </td>
-<td class="BabSiteAdminFontBackground" valign="middle">{ arr[description] }</td>
-<td class="BabSiteAdminFontBackground" valign="middle">{ groupname }</td>
+<td>{ arr[description] }</td>
+<td>{ groupname }</td>
 </tr> <!--#endin getnextgrp -->
 <!--#in getnextusr --><tr> 
-<td class="BabSiteAdminFontBackground" valign="middle">
+<td valign="middle">
 <!--#if burl "== 1" -->
-<a class="BabSiteAdminListLink" href="{ url }">{ urlname }</a> 
+<a href="{ url }">{ urlname }</a> 
 <!--#else burl -->
 { urlname } 
 <!--#endif burl -->
 </td>
-<td class="BabSiteAdminFontBackground" valign="middle">{ arr[description] }</td>
-<td class="BabSiteAdminFontBackground" valign="middle">{ groupname }</td>
+<td>{ arr[description] }</td>
+<td>{ groupname }</td>
 </tr>
 <!--#endin getnextusr -->
 </table>
