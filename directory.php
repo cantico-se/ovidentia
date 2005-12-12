@@ -73,21 +73,8 @@ function listUserAds()
 					}
 				}
 			$this->countldap = count($this->ldapid);
-			$res = $this->db->db_query("select id, id_group from ".BAB_DB_DIRECTORIES_TBL." ORDER BY name");
-			while( $row = $this->db->db_fetch_array($res))
-				{
-				if(bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $row['id']))
-					{
-					if( $row['id_group'] > 0 )
-						{
-						list($bdir) = $this->db->db_fetch_array($this->db->db_query("select directory from ".BAB_GROUPS_TBL." where id='".$row['id_group']."'"));
-						if( $bdir == 'Y' )
-							array_push($this->dbid, $row['id']);		
-						}
-					else
-						array_push($this->dbid, $row['id']);
-					}
-				}
+
+			$this->dbid = array_keys(bab_getUserDirectories());
 			$this->countdb = count($this->dbid);
 
 			if ($this->countldap == 0 && $this->countdb == 0)
