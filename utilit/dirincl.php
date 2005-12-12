@@ -551,17 +551,53 @@ function summaryDbContactWithOvml($args)
 
 
 
-
-
-
-
-function getUserDirSheet($id_user) {
+function getDirEntry($id, $type) {
 	$babDB = &$GLOBALS['babDB'];
 
-	if (is_array($id_user))
-		$id_user = implode("','",$id_user);
+	
 
-	$res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='0' order by list_ordering asc");
+	$accessible_directories = getUserDirectories();
+
+
+	switch ($type) {
+		case BAB_DIR_ENTRY_ID_USER:
+			$id_directory = 0;	
+			$colname = 'id_user';
+			if (is_array($id))
+				$id = implode("','",$id);
+			break;
+
+		case BAB_DIR_ENTRY_ID:
+			$colname = 'id';
+			if (is_array($id))
+				$id = implode("','",$id);
+			break;
+
+		case BAB_DIR_ENTRY_ID_DIRECTORY:
+			$colname = 'id_directory';
+			if (!isset($accessible_directories[$id]))
+				return array();
+			$id_directory = $accessible_directories[$id]['entry_id_directory'];
+			break;
+
+		case BAB_DIR_ENTRY_ID_GROUP:
+			$colname = 'id_directory';
+			$access = false;
+			
+			foreach ($accessible_directories as $id_dir => $arr) {
+				if ($arr['id_group'] == $id) {
+					$access = true;
+					}
+				}
+			if (!$access)
+				return array();
+			$id_directory = 0;
+			break;
+
+		}
+
+
+	$res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$id_directory."' AND disabled='N' order by list_ordering asc");
 
 	$entries = array();
 	$leftjoin = array();
@@ -586,11 +622,18 @@ function getUserDirSheet($id_user) {
 		}
 
 	
+
+	if (BAB_DIR_ENTRY_ID_DIRECTORY === $type || BAB_DIR_ENTRY_ID_GROUP == $type ) {
+		
+		return $entries;
+		}
+
+	
 	$str_leftjoin = '';
 	$str_leftjoin_col = '';
 	
 	if (count($leftjoin_col) > 0) {
-		$str_leftjoin = implode(',',$leftjoin);
+		$str_leftjoin = implode(' ',$leftjoin);
 		$str_leftjoin_col = ', '.implode(', ',$leftjoin_col);
 		}
 
@@ -630,7 +673,7 @@ function getUserDirSheet($id_user) {
 					".BAB_DBDIR_ENTRIES_TBL." e 
 					".$str_leftjoin." 
 				WHERE 
-					id_user IN('".$id_user."')
+					".$colname." IN('".$id."')
 
 	");
 
@@ -645,7 +688,7 @@ function getUserDirSheet($id_user) {
 		foreach($return[$arr['id_user']] as $name => $field) {
 			
 			 if (isset($arr[$name])) {
-				$return[$arr['id_user']][$name]['value'] = $arr[$name];
+				$return[$arr['id_user']][$name]['value'] = stripslashes($arr[$name]);
 				}
 			 elseif ('jpegphoto' == $name && $arr['photo_data'] > 0) {
 				$return[$arr['id_user']][$name]['value'] = $GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=0&idu=".$arr['id'];
@@ -654,5 +697,31 @@ function getUserDirSheet($id_user) {
 		}
 	return $return;
 }
+
+
+function getUserDirectories() {
+	$db = &$GLOBALS['babDB'];
+
+	$return = array();
+	
+	$res = $db->db_query("SELECT d.id, d.name, d.description, d.id_group FROM ".BAB_DB_DIRECTORIES_TBL." d 
+	LEFT JOIN ".BAB_GROUPS_TBL." g ON g.id=d.id_group AND g.directory='Y' WHERE (d.id_group='0' OR g.id>'0') ORDER BY name");
+	while( $row = $db->db_fetch_array($res))
+		{
+		if(bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $row['id']))
+			{
+			$return[$row['id']] = array(
+					'id'					=> $row['id'],
+					'name'					=> $row['name'],
+					'description'			=> $row['description'],
+					'entry_id_directory'	=> $row['id_group'] > 0 ? 0 : $row['id'],
+					'id_group'				=> $row['id_group']
+				);
+			}
+		}
+	return $return;
+	}
+
+
 
 ?>

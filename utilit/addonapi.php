@@ -935,6 +935,7 @@ function bab_getFileMimeType($file)
 	return $mime;
 }
 
+/* API Directories */
 
 function bab_getUserDirFields($id = false)
 	{
@@ -949,10 +950,29 @@ function bab_getUserDirFields($id = false)
 		return array();
 	}
 
-function bab_getUserDirSheet($id = false) {
-	if (false == $id) $id = &$GLOBALS['BAB_SESS_USERID'];
+
+/*
+
+BAB_DIR_ENTRY_ID_USER		: 
+BAB_DIR_ENTRY_ID			: $id est un id de fiche d'annuaire
+BAB_DIR_ENTRY_ID_DIRECTORY	: liste des champs de l'annuaire
+BAB_DIR_ENTRY_ID_GROUP		: liste des champs de l'annuaire de groupe
+*/
+
+function bab_getDirEntry($id = false, $type = BAB_DIR_ENTRY_ID_USER) {
+
+	if (BAB_DIR_ENTRY_ID_USER === $type && false === $id) {
+		$id = &$GLOBALS['BAB_SESS_USERID'];
+		}
+
 	include_once $GLOBALS['babInstallPath']."utilit/dirincl.php";
-	return getUserDirSheet($id);
+	return getDirEntry($id, $type);
+	}
+
+function bab_getUserDirectories() {
+	
+	include_once $GLOBALS['babInstallPath']."utilit/dirincl.php";
+	return getUserDirectories();
 	}
 
 /* API Groups */

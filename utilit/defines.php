@@ -36,6 +36,11 @@ define("BAB_AUTHENTIFICATION_LDAP",			1);
 define("BAB_AUTHENTIFICATION_AD",			2); /* Active directory */
 
 
+define("BAB_DIR_ENTRY_ID_USER",				1);
+define("BAB_DIR_ENTRY_ID",					2);
+define("BAB_DIR_ENTRY_ID_DIRECTORY",		3);
+define("BAB_DIR_ENTRY_ID_GROUP",			4);
+
 /* calendars */
 define("BAB_CAL_USER_TYPE", 1);
 define("BAB_CAL_PUB_TYPE", 2);
