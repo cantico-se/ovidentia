@@ -502,7 +502,7 @@ function listWaitingEvents()
 			$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
 			if( count($arrschi) > 0 )
 				{
-				$res = $babDB->db_query("select cet.*, ceot.id_cal from ".BAB_CAL_EVENTS_TBL." cet left join ".BAB_CAL_EVENTS_OWNERS_TBL." ceot on cet.id=ceot.id_event where ceot.idfai in (".implode(',', $arrschi).") order by cet.start_date asc");
+				$res = $babDB->db_query("SELECT cet.*, ceot.id_cal from ".BAB_CAL_EVENTS_TBL." cet , ".BAB_CAL_EVENTS_OWNERS_TBL." ceot where cet.id=ceot.id_event and ceot.idfai in (".implode(',', $arrschi).") order by cet.start_date asc");
 				while( $arr = $babDB->db_fetch_array($res) )
 					{
 					$tmp = array();
