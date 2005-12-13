@@ -69,7 +69,7 @@ function listCategories()
 					{
 					$this->arr = $this->db->db_fetch_array($res);
 					$this->arr['description'] = $this->arr['description'];
-					$this->urlcategory = $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$this->arr['id'];
+					$this->urlcategory = $GLOBALS['babUrlScript']."?tg=faq&idx=Print&item=".$this->arr['id'];
 					$this->namecategory = $this->arr['category'];
 					}
 				$i++;
