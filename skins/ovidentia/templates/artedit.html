@@ -267,7 +267,7 @@ document.forms[fmname].updstep01.value = cmd;
 <td class="BabLoginCadreBackground">
 <table class="BabSiteAdminFontBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
 <tr> 
-<td colspan="4" align="right"><input type="submit" name="bcancel" value="{ canceltxt }" onclick="javascript:stepSubmitForm('cancel','step01form');">&nbsp;&nbsp;<input type="submit" name="bnext" value="{ nexttxt }" onclick="javascript:stepSubmitForm('next','step01form');"></td>
+<td colspan="4" align="right"><input type="submit" name="bcancel" value="{ canceltxt }" onclick="stepSubmitForm('cancel','step01form');">&nbsp;&nbsp;<input type="submit" name="bnext" value="{ nexttxt }" onclick="stepSubmitForm('next','step01form');"></td>
 </tr>
 </table>
 </td>
@@ -345,7 +345,7 @@ document.forms[fmname].updstep02.value = cmd;
 <td class="BabLoginCadreBackground">
 <table class="BabSiteAdminFontBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
 <tr> 
-<td colspan="4" align="right"><input type="submit" name="bprev" value="{ previoustxt }" onclick="javascript:return stepSubmitForm('prev','step02form');">&nbsp;&nbsp;<input type="submit" name="bcancel" value="{ canceltxt }" onclick="javascript:stepSubmitForm('cancel','step02form');"><!--#if count -->&nbsp;&nbsp;<input type="submit" name="bnext" value="{ nexttxt }" onclick="javascript:stepSubmitForm('next','step02form');"><!--#endif count --></td>
+<td colspan="4" align="right"><input type="submit" name="bprev" value="{ previoustxt }" onclick="return stepSubmitForm('prev','step02form');">&nbsp;&nbsp;<input type="submit" name="bcancel" value="{ canceltxt }" onclick="stepSubmitForm('cancel','step02form');"><!--#if count -->&nbsp;&nbsp;<input type="submit" name="bnext" value="{ nexttxt }" onclick="stepSubmitForm('next','step02form');"><!--#endif count --></td>
 </tr>
 </table>
 </td>
@@ -417,7 +417,7 @@ document.forms[fmname].updstep0.value = cmd;
 <td class="BabLoginCadreBackground">
 <table class="BabSiteAdminFontBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
 <tr> 
-<td colspan="4" align="right"><input type="submit" name="bcancel" value="{ canceltxt }" onclick="javascript:stepSubmitForm('cancel','step0form');">&nbsp;&nbsp;<input type="submit" name="bnext" value="{ nexttxt }" onclick="javascript:stepSubmitForm('next','step0form');"></td>
+<td colspan="4" align="right"><input type="submit" name="bcancel" value="{ canceltxt }" onclick="stepSubmitForm('cancel','step0form');">&nbsp;&nbsp;<input type="submit" name="bnext" value="{ nexttxt }" onclick="stepSubmitForm('next','step0form');"></td>
 </tr>
 </table>
 </td>
@@ -504,7 +504,7 @@ return true;
 <option value="2" { noapprobsel }>{ noapprobtxt }</option>
 </select>
 <!--#endif bupprobchoice -->&nbsp;&nbsp;
-<!--#if bprev --><input type="submit" name="bprev" value="{ previoustxt }" onclick="javascript:return stepSubmitForm('prev','createart');">&nbsp;&nbsp;<!--#endif bprev --><input type="submit" name="bcancel" value="{ canceltxt }" onclick="javascript:stepSubmitForm('cancel','createart');"><!--#if BAB_SESS_LOGGED -->&nbsp;&nbsp;<input type="submit" name="bsave" value="{ savetxt }" onclick="javascript:stepSubmitForm('save','createart');"><!--#endif BAB_SESS_LOGGED --><!--#if bsubmit -->&nbsp;&nbsp;<input type="submit" name="bsubmit" value="{ submittxt }" onclick="javascript:return stepSubmitForm('submit','createart');"><!--#endif bsubmit -->&nbsp;&nbsp;<input type="submit" name="bnext" value="{ nexttxt }" onclick="javascript:stepSubmitForm('next','createart');"></td>
+<!--#if bprev --><input type="submit" name="bprev" value="{ previoustxt }" onclick="return stepSubmitForm('prev','createart');">&nbsp;&nbsp;<!--#endif bprev --><input type="submit" name="bcancel" value="{ canceltxt }" onclick="stepSubmitForm('cancel','createart');"><!--#if BAB_SESS_LOGGED -->&nbsp;&nbsp;<input type="submit" name="bsave" value="{ savetxt }" onclick="stepSubmitForm('save','createart');"><!--#endif BAB_SESS_LOGGED --><!--#if bsubmit -->&nbsp;&nbsp;<input type="submit" name="bsubmit" value="{ submittxt }" onclick="javascript:return stepSubmitForm('submit','createart');"><!--#endif bsubmit -->&nbsp;&nbsp;<input type="submit" name="bnext" value="{ nexttxt }" onclick="javascript:stepSubmitForm('next','createart');"></td>
 </tr>
 </table>
 </td>
@@ -580,7 +580,7 @@ document.forms[fmname].updstep2.value = cmd;
 <option value="2" { noapprobsel }>{ noapprobtxt }</option>
 </select>
 <!--#endif bupprobchoice -->&nbsp;&nbsp;
-<input type="submit" name="bprev" value="{ previoustxt }" onclick="javascript:stepSubmitForm('prev','previewart');">&nbsp;&nbsp;<input type="submit" name="bcancel" value="{ canceltxt }" onclick="javascript:stepSubmitForm('cancel','previewart');"><!--#if BAB_SESS_LOGGED -->&nbsp;&nbsp;<input type="submit" name="bsave" value="{ savetxt }" onclick="javascript:stepSubmitForm('save','previewart');"><!--#endif BAB_SESS_LOGGED --><!--#if bsubmit -->&nbsp;&nbsp;<input type="submit" name="bsubmit" value="{ submittxt }" onclick="javascript:stepSubmitForm('submit','previewart');"><!--#endif bsubmit -->&nbsp;&nbsp;<input type="submit" name="bnext" value="{ nexttxt }" onclick="javascript:stepSubmitForm('next','previewart');"></td>
+<input type="submit" name="bprev" value="{ previoustxt }" onclick="stepSubmitForm('prev','previewart');">&nbsp;&nbsp;<input type="submit" name="bcancel" value="{ canceltxt }" onclick="stepSubmitForm('cancel','previewart');"><!--#if BAB_SESS_LOGGED -->&nbsp;&nbsp;<input type="submit" name="bsave" value="{ savetxt }" onclick="stepSubmitForm('save','previewart');"><!--#endif BAB_SESS_LOGGED --><!--#if bsubmit -->&nbsp;&nbsp;<input type="submit" name="bsubmit" value="{ submittxt }" onclick="stepSubmitForm('submit','previewart');"><!--#endif bsubmit -->&nbsp;&nbsp;<input type="submit" name="bnext" value="{ nexttxt }" onclick="stepSubmitForm('next','previewart');"></td>
 </tr>
 </table>
 </td>
@@ -1033,7 +1033,7 @@ return true;
 	</tr>
 	<tr> 
 	<td align="right" valign="middle">{ desctxt }:</td>
-	<td align="left" valign="middle"><input type="text" name="docdesc" maxlength="255" value=""> &nbsp; <input type="submit" name="badd" value="{ addtxt }" onclick="javascript:stepSubmitForm('fadd','propform');">
+	<td align="left" valign="middle"><input type="text" name="docdesc" maxlength="255" value=""> &nbsp; <input type="submit" name="badd" value="{ addtxt }" onclick="stepSubmitForm('fadd','propform');">
 	</td>
 	<td align="right" valign="middle">&nbsp;
 	</td>
@@ -1144,7 +1144,7 @@ return true;
 <option value="2" { noapprobsel }>{ noapprobtxt }</option>
 </select>&nbsp;&nbsp;
 <!--#endif bupprobchoice -->
-<input type="submit" name="bprev" value="{ previoustxt }" onclick="javascript:return stepSubmitForm('prev','propform');">&nbsp;&nbsp;<input type="submit" name="bcancel" value="{ canceltxt }" onclick="javascript:return stepSubmitForm('cancel','propform');"><!--#if BAB_SESS_LOGGED -->&nbsp;&nbsp;<input type="submit" name="bsave" value="{ savetxt }" onclick="javascript:return stepSubmitForm('save','propform');"><!--#endif BAB_SESS_LOGGED --><!--#if bsubmit -->&nbsp;&nbsp;<input type="submit" name="bsubmit" value="{ submittxt }" onclick="javascript:return stepSubmitForm('submit','propform');"><!--#endif bsubmit --></td>
+<input type="submit" name="bprev" value="{ previoustxt }" onclick="return stepSubmitForm('prev','propform');">&nbsp;&nbsp;<input type="submit" name="bcancel" value="{ canceltxt }" onclick="return stepSubmitForm('cancel','propform');"><!--#if BAB_SESS_LOGGED -->&nbsp;&nbsp;<input type="submit" name="bsave" value="{ savetxt }" onclick="return stepSubmitForm('save','propform');"><!--#endif BAB_SESS_LOGGED --><!--#if bsubmit -->&nbsp;&nbsp;<input type="submit" name="bsubmit" value="{ submittxt }" onclick="javascript:return stepSubmitForm('submit','propform');"><!--#endif bsubmit --></td>
 </tr>
 </table>
 </td>
