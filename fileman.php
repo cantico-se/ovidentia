@@ -40,7 +40,7 @@ function notifyApprovers($id, $fid)
 	$babDB->db_query("update ".BAB_FILES_TBL." set idfai='".$idfai."' where id='".$id."'");
 	$nfusers = getWaitingApproversFlowInstance($idfai, true);
 	notifyFileApprovers($id, $nfusers, bab_translate("A new file is waiting for you"));
-	$babBody->msgerror = bab_translate("Done! Your file is waiting for approval");
+	$babBody->msgerror = bab_translate("Your file is waiting for approval");
 	return false;
 	}
 
