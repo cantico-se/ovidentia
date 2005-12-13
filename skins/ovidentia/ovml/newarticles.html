@@ -19,7 +19,7 @@
 		<tr class="BabSiteAdminTitleFontBackground">
 			<td><OFTranslate text="Date">&nbsp;</td>
 			<td><OFTranslate text="Article">&nbsp;</td>
-			<td><OFTranslate text="Author">&nbsp;</td>
+			<td><OFTranslate text="Modified by">&nbsp;</td>
 		</tr>
 		<OCRecentArticles from_lastlog="<OVnbdays>">
 		<OCIfEqual expr1="<OVCIndex>" expr2="0">
@@ -30,19 +30,18 @@
 		<OFAOModulus expr1="<OVCIndex>" expr2="2" saveas="modulo">
 		<tr class="<OCIfEqual expr1="<OVmodulo>" expr2="0">BabSiteAdminFontBackground</OCIfEqual><OCIfNotEqual expr1="<OVmodulo>" expr2="0">BabForumBackground1</OCIfNotEqual>">
 			<td width="120"><OVArticleDate date="%S %T"></td>
-			<td align="left"><span style="font-Size:9">
+			<td align="left" colspan="2"><span style="font-Size:9">
 				<OCArticleTopic topicid="<OVArticleTopicId>"><OCParentsArticleCategory categoryid="<OVTopicCategoryId>">
 				<OVCategoryName strlen="50,..."> /</OCParentsArticleCategory><OCArticleCategory categoryid="<OVTopicCategoryId>">
 				<OVCategoryName strlen="50,..."> /</OCArticleCategory><OCArticleTopic topicid="<OVArticleTopicId>">
 				<OVTopicName strlen="50,..."> /</OCArticleTopic></OCArticleTopic></span>
 			</td>
-		<td>&nbsp;</td>
 		</tr>
 		<tr class="<OCIfEqual expr1="<OVmodulo>" expr2="0">BabSiteAdminFontBackground</OCIfEqual><OCIfNotEqual expr1="<OVmodulo>" expr2="0">BabForumBackground1</OCIfNotEqual>">
 			<td>&nbsp;</td>
 			<td align="left">
 				<a class="BabSummaryLinkColor" href="javascript: Start('<OVArticlePopupUrl>', 'OviArt', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');"><OVArticleTitle striptags="1" strlen="100,..."></a></td>
-			<td width="130"><OVArticleAuthor author="%F %L"></td>
+			<td width="130"><OVArticleModifiedBy author="%F %L"></td>
 		</tr>
 		</OCRecentArticles>
 		</table>
