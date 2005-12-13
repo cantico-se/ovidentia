@@ -1331,7 +1331,7 @@ function siteUpdate_menu1()
 		{
 		// create
 
-		$query = "select * from ".BAB_SITES_TBL." where name='$name'";	
+		$query = "select * from ".BAB_SITES_TBL." where name='$namev'";	
 		$res = $db->db_query($query);
 		if( $db->db_num_rows($res) > 0)
 			{
@@ -1342,7 +1342,7 @@ function siteUpdate_menu1()
 		return siteSave($namev, $description,$babslogan, $lang, $siteemail, $skin, $style, $langfilter, $adminname, $name_order, $statlog);
 		}
 	
-	$query = "select * from ".BAB_SITES_TBL." where name='$name' AND id<>'".$_POST['item']."'";	
+	$query = "select * from ".BAB_SITES_TBL." where name='$namev' AND id<>'".$_POST['item']."'";	
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) > 0)
 		{
