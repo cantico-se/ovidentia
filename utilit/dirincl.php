@@ -695,7 +695,7 @@ function getDirEntry($id, $type) {
 				}
 			}
 		}
-	return $return;
+	return 1 === count($return) ? $return[$arr['id_user']] : $return;
 }
 
 
