@@ -37,14 +37,38 @@ class bab_DbDirectories extends bab_handler
 		global $babDB;
 		$this->bab_handler($ctx);
 		$directoryid = $ctx->get_value('directoryid');
+		$directorytype = strtolower($ctx->get_value('type'));
+
 		if( $directoryid === false || $directoryid === '' )
 			{
-			$res = $babDB->db_query("select id, name, description from ".BAB_DB_DIRECTORIES_TBL." order by name asc");
+			if( $directorytype === false || !in_array($directorytype, array('database', 'group')) )
+				{
+				$res = $babDB->db_query("select id, name, description from ".BAB_DB_DIRECTORIES_TBL." order by name asc");
+				}
+			elseif ('database' == $directorytype)
+				{
+				$res = $babDB->db_query("select id, name, description from ".BAB_DB_DIRECTORIES_TBL." WHERE id_group='0' order by name asc");
+				}
+			elseif ('group' == $directorytype)
+				{
+				$res = $babDB->db_query("select id, name, description from ".BAB_DB_DIRECTORIES_TBL." WHERE id_group>'0' order by name asc");
+				}
 			}
 		else
 			{
 			$directoryid = explode(',', $directoryid);
-			$res = $babDB->db_query("select id, name, description from ".BAB_DB_DIRECTORIES_TBL." where id IN (".implode(',', $directoryid).") order by name asc");
+			if( $directorytype === false || !in_array($directorytype, array('database', 'group')) )
+				{
+				$res = $babDB->db_query("select id, name, description from ".BAB_DB_DIRECTORIES_TBL." where id IN (".implode(',', $directoryid).") order by name asc");
+				}
+			elseif ('database' == $directorytype)
+				{
+				$res = $babDB->db_query("select id, name, description from ".BAB_DB_DIRECTORIES_TBL." where id IN (".implode(',', $directoryid).") AND id_group='0' order by name asc");
+				}
+			elseif ('group' == $directorytype)
+				{
+				$res = $babDB->db_query("select id, name, description from ".BAB_DB_DIRECTORIES_TBL." where id IN (".implode(',', $directoryid).") AND id_group>'0' order by name asc");
+				}
 			}
 
 		while( $row = $babDB->db_fetch_array($res))
@@ -318,7 +342,7 @@ class bab_DbDirectoryMembers extends bab_handler
 						}
 					else
 						{
-						$req = " ".BAB_DBDIR_ENTRIES_TBL." e ".implode(' ',$leftjoin)." WHERE e.id_directory='".(1 == $idgroup ? 0 : $this->id )."'";
+						$req = " ".BAB_DBDIR_ENTRIES_TBL." e ".implode(' ',$leftjoin)." WHERE e.id_directory='".(1 == $idgroup ? 0 : $this->directoryid )."'";
 						}
 
 
