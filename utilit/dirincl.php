@@ -684,6 +684,7 @@ function getDirEntry($id, $type) {
 	while( $arr = $babDB->db_fetch_assoc($res))
 		{
 		$return[$arr['id_user']] = $entries;
+		$id_user = $arr['id_user'];
 
 		foreach($return[$arr['id_user']] as $name => $field) {
 			
@@ -695,7 +696,8 @@ function getDirEntry($id, $type) {
 				}
 			}
 		}
-	return 1 === count($return) ? $return[$arr['id_user']] : $return;
+
+	return 1 === count($return) ? $return[$id_user] : $return;
 }
 
 
