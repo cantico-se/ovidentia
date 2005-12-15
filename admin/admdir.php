@@ -1486,7 +1486,7 @@ if( isset($update) )
 		if(!dbUpdateListOrder($id, $listfields))
 			$idx = "list";
 		}
-	elseif( 'search' == $_POST['update'] )
+	elseif( 'search' == $_POST['update'] && $babBody->isSuperAdmin)
 		{
 		if (!record_search_options())
 			{
@@ -1636,10 +1636,17 @@ switch($idx)
 		break;
 
 	case 'search':
+		if( $babBody->isSuperAdmin )
+		{
 		$babBody->title = bab_translate("Fields to display for a search in all directories");
 		search_options();
 		$babBody->addItemMenu("list", bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=admdir&idx=list");
 		$babBody->addItemMenu("search", bab_translate("Search options"), $GLOBALS['babUrlScript']."?tg=admdir&idx=search");
+		}
+		else
+		{
+			$babBody->msgerror = bab_translate("Access denied");
+		}
 		break;
 
 	case "list":
@@ -1647,7 +1654,10 @@ switch($idx)
 		$babBody->title = bab_translate("Directories");
 		listAds();
 		$babBody->addItemMenu("list", bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=admdir&idx=list");
+		if( $babBody->isSuperAdmin )
+		{
 		$babBody->addItemMenu("search", bab_translate("Search options"), $GLOBALS['babUrlScript']."?tg=admdir&idx=search");
+		}
 		break;
 	}
 
