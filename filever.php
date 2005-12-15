@@ -245,7 +245,7 @@ function showHistoricFile($idf, $pos)
 			$this->actiontxt = bab_translate("Action");
 			$this->versiontxt = bab_translate("Version");
 
-			if($arrfold['manager'] == $GLOBALS['BAB_SESS_USERID'])
+			if(bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $arrfold['id']))
 				{
 				$this->bmanager = true;
 				$this->cleantxt = bab_translate("Clean log");
@@ -383,7 +383,7 @@ function showVersionHistoricFile($idf, $pos)
 			$this->versiontxt = bab_translate("Version");
 			$this->deletealt = bab_translate("Delete");
 
-			if($arrfold['manager'] == $GLOBALS['BAB_SESS_USERID'])
+			if(bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $arrfold['id']))
 				$this->bmanager = true;
 			else
 				$this->bmanager = false;
@@ -544,7 +544,7 @@ function unlockFile($idf, $comment )
 
 	if( $arrfile['edit'] != 0 && $GLOBALS['BAB_SESS_USERID'] != '' )
 		{
-		if( $lockauthor == $GLOBALS['BAB_SESS_USERID'] || $arrfold['manager'] == $GLOBALS['BAB_SESS_USERID'] )
+		if( $lockauthor == $GLOBALS['BAB_SESS_USERID'] || bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $arrfold['id']) )
 			{
 			$babDB->db_query("insert into ".BAB_FM_FILESLOG_TBL." ( id_file, date, author, action, comment, version) values ('".$idf."', now(), '".$GLOBALS['BAB_SESS_USERID']."', '".BAB_FACTION_UNEDIT."', '".$comment."', '".$arrfile['ver_major'].".".$arrfile['ver_minor']."')");
 			
@@ -772,7 +772,7 @@ if( isset($idf) )
 
 			if( $arrfold['version'] ==  'Y' )
 			{
-				if($arrfold['manager'] == $BAB_SESS_USERID || bab_isAccessValid(BAB_FMUPDATE_GROUPS_TBL, $arrfile['id_owner']))
+				if(bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $arrfold['id']) || bab_isAccessValid(BAB_FMUPDATE_GROUPS_TBL, $arrfile['id_owner']))
 				{
 					$bupdate = true;
 					if( $arrfile['edit'] != 0 )
@@ -799,11 +799,11 @@ if( isset($idf) )
 					{
 					confirmFile($idf, $bconfirm ); 
 					}
-				else if( $arrfold['manager'] == $BAB_SESS_USERID && $afile == 'delv' )
+				else if( bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $arrfold['id']) && $afile == 'delv' )
 					{
 					deleteFileVersions($idf, $versions ); 
 					}
-				else if( $arrfold['manager'] == $BAB_SESS_USERID && $afile == 'cleanlog' )
+				else if( bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $arrfold['id']) && $afile == 'cleanlog' )
 					{
 					cleanFileLog($idf, $date ); 
 					}
