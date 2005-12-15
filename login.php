@@ -681,7 +681,7 @@ function userLogin($nickname,$password)
 
 				if( !empty($arr['x_name']) )
 					{
-					$updattributes[$arr['x_name']] = $fieldname;
+					$updattributes[$arr['x_name']] = strtolower($fieldname);
 					}
 				}
 			
