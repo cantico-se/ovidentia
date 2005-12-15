@@ -719,9 +719,12 @@ HTMLArea.prototype.generate = function () {
 			// call previous submit methods if they were there.
 			if (typeof a != "undefined") {
 				for (var i = a.length; --i >= 0;) {
-					a[i]();
+					// Modified by Laurent (cf. htmlarea bugzilla #911519, #1173972, #1025008) (ovidentia bug 641 OVI#337)
+					var result = a[i]();
 				}
 			}
+			// Modified by Laurent
+			return result;
 		};
 		if (typeof f.onreset == "function") {
 			var funcref = f.onreset;
@@ -737,9 +740,12 @@ HTMLArea.prototype.generate = function () {
 			// call previous reset methods if they were there.
 			if (typeof a != "undefined") {
 				for (var i = a.length; --i >= 0;) {
-					a[i]();
+					// Modified by Laurent
+					var result = a[i]();
 				}
 			}
+			// Modified by Laurent
+			return result;
 		};
 	}
 
