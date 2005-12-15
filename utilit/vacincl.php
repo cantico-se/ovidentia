@@ -328,7 +328,8 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 						$req = " AND e.date_begin >= '".$arr['period_start']."' AND e.date_end <= '".$arr['period_end']."'";
 						break;
 					case 2:
-						$req = " AND ((e.date_begin < '".$arr['period_start']."' AND e.date_end <= '".$arr['period_start']."') OR (e.date_begin >= '".$arr['period_end']."' AND e.date_end > '".$arr['period_end']."'))";
+						$req = " AND e.date_begin >= '".$arr['date_begin']."' AND e.date_end <= '".$arr['date_end']."'";
+						$req .= " AND ((e.date_begin < '".$arr['period_start']."' AND e.date_end <= '".$arr['period_start']."') OR (e.date_begin >= '".$arr['period_end']."' AND e.date_end > '".$arr['period_end']."'))";
 						break;
 					}
 
