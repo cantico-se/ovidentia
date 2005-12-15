@@ -3380,6 +3380,14 @@ class bab_Calendars extends bab_handler
 				}
 			}
 
+
+		$calendarid = $ctx->get_value('calendarid');
+		if( $calendarid !== false && $calendarid !== '' )
+			{
+			$calendarid = explode(',',$calendarid);
+			$this->IdEntries = array_intersect($this->IdEntries, $calendarid );
+			}
+
 		$this->count = count($this->IdEntries);
 		$this->ctx->curctx->push('CCount', $this->count);
 	}
@@ -3389,15 +3397,17 @@ class bab_Calendars extends bab_handler
 		global $babBody,$babDB;
 		if( $this->idx < $this->count)
 		{
+			$calendarid = current($this->IdEntries);
 			$this->ctx->curctx->push('CIndex', $this->idx);
-			$this->ctx->curctx->push('CalendarId', $this->IdEntries[$this->idx]);
-			$iarr = $babBody->icalendars->getCalendarInfo($this->IdEntries[$this->idx]);
+			$this->ctx->curctx->push('CalendarId', $calendarid);
+			$iarr = $babBody->icalendars->getCalendarInfo($calendarid);
 			$this->ctx->curctx->push('CalendarName', $iarr['name']);
 			$this->ctx->curctx->push('CalendarOwnerId', $iarr['idowner']);
 			$this->ctx->curctx->push('CalendarType', $iarr['type']);
-			$this->ctx->curctx->push('CalendarUrl', $GLOBALS['babUrlScript']."?tg=calmonth&calid".$this->IdEntries[$this->idx]);
+			$this->ctx->curctx->push('CalendarUrl', $GLOBALS['babUrlScript']."?tg=calmonth&calid=".$this->IdEntries[$this->idx]);
 			$this->idx++;
 			$this->index = $this->idx;
+			next($this->IdEntries);
 			return true;
 		}
 		else
