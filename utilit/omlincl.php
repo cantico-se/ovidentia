@@ -2150,13 +2150,16 @@ class bab_RecentComments extends bab_handler
 			$arrid = explode(',', $this->articleid);
 
 		$req = '';
-		if( count($arrid) > 0 )
+		if( count($babBody->topview) > 0 )
 			{
-			$req = "select * from ".BAB_COMMENTS_TBL." where id_article IN (".implode(',', $arrid).") and confirmed='Y'";
-			}
-		else if( count($babBody->topview) > 0 )
-			{
-			$req = "select * from ".BAB_COMMENTS_TBL." where confirmed='Y' and id_topic IN (".implode(',', array_keys($babBody->topview)).")";
+			if( count($arrid) > 0 )
+				{
+				$req = "select * from ".BAB_COMMENTS_TBL." where id_article IN (".implode(',', $arrid).") and confirmed='Y' and id_topic IN (".implode(',', array_keys($babBody->topview)).")";
+				}
+			else
+				{
+				$req = "select * from ".BAB_COMMENTS_TBL." where confirmed='Y' and id_topic IN (".implode(',', array_keys($babBody->topview)).")";
+				}
 			}
 		
 		if( $req != '' )
