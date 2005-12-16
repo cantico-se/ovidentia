@@ -998,7 +998,7 @@ function viewArticleLog($topics, $article, $pos)
 					case 'accepted': $this->action = bab_translate("Accepted"); break;
 					default: $this->action = ""; break;
 					}
-				$this->comment = $arr['art_log'];
+				$this->comment = str_replace("\n", "<br>", $arr['art_log']);
 				$i++;
 				return true;
 				}
