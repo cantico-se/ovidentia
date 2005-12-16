@@ -226,10 +226,11 @@ function notifyFileApprovers($id, $users, $msg)
 	}
 
 
-function fileNotifyMembers($file, $path, $idgrp, $msg)
+function fileNotifyMembers($file, $path, $idgrp, $msg, $bnew = true)
 	{
 	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
     include_once $babInstallPath."utilit/mailincl.php";
+	include_once $babInstallPath."admin/acl.php";
 
 	if(!class_exists("fileNotifyMembersCls"))
 		{
@@ -246,7 +247,6 @@ function fileNotifyMembers($file, $path, $idgrp, $msg)
 			var $dateval;
 			var $group;
 			var $groupname;
-
 
 			function fileNotifyMembersCls($file, $path, $idgrp, $msg)
 				{
@@ -282,57 +282,34 @@ function fileNotifyMembers($file, $path, $idgrp, $msg)
 	$mail->mailBody($message, "html");
 	$mail->mailAltBody($messagetxt);
 
-	$db = $GLOBALS['babDB'];
-	$res = $db->db_query("select id_group from ".BAB_FMDOWNLOAD_GROUPS_TBL." where  id_object='".$idgrp."'");
-	if( $res && $db->db_num_rows($res) > 0 )
+	$users = aclGetAccessUsers(BAB_FMDOWNLOAD_GROUPS_TBL, $idgrp);
+
+	$arrusers = array();
+	$count = 0;
+	foreach($users as $id => $arr)
 		{
-		$arrusers = array();
-		while( $row = $db->db_fetch_array($res))
+		if( count($arrusers) == 0 || !isset($arrusers[$id]))
 			{
-
-			switch($row['id_group'])
-				{
-				case 0:
-				case 1:
-					$res2 = $db->db_query("select id, email, firstname, lastname from ".BAB_USERS_TBL." where is_confirmed='1' and disabled='0'");
-					break;
-				case 2:
-					return;
-				default:
-					$res2 = $db->db_query("select ".BAB_USERS_TBL.".id, ".BAB_USERS_TBL.".email, ".BAB_USERS_TBL.".firstname, ".BAB_USERS_TBL.".lastname from ".BAB_USERS_TBL." join ".BAB_USERS_GROUPS_TBL." where is_confirmed='1' and disabled='0' and ".BAB_USERS_GROUPS_TBL.".id_group='".$row['id_group']."' and ".BAB_USERS_GROUPS_TBL.".id_object=".BAB_USERS_TBL.".id");
-					break;
-				}
-
-			if( $res2 && $db->db_num_rows($res2) > 0 )
-				{
-				$count = 0;
-				while(($arr = $db->db_fetch_array($res2)))
-					{
-					if( count($arrusers) == 0 || !in_array($arr['id'], $arrusers))
-						{
-						$arrusers[] = $arr['id'];
-						$mail->mailBcc($arr['email'], bab_composeUserName($arr['firstname'],$arr['lastname']));
-						$count++;
-						}
-
-					if( $count == 25 )
-						{
-						$mail->send();
-						$mail->clearBcc();
-						$mail->clearTo();
-						$count = 0;
-						}
-					}
-
-				if( $count > 0 )
-					{
-					$mail->send();
-					$mail->clearBcc();
-					$mail->clearTo();
-					$count = 0;
-					}
-				}
+			$arrusers[$id] = $id;
+			$mail->mailBcc($arr['email'], $arr['name']);
+			$count++;
 			}
+
+		if( $count == 25 )
+			{
+			$mail->send();
+			$mail->clearBcc();
+			$mail->clearTo();
+			$count = 0;
+			}
+		}
+
+	if( $count > 0 )
+		{
+		$mail->send();
+		$mail->clearBcc();
+		$mail->clearTo();
+		$count = 0;
 		}
 	}
 

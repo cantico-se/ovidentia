@@ -372,4 +372,54 @@ function aclSetGroups_unregistered($table, $id_object)
 	$db->db_query("INSERT INTO ".$table."  (id_object, id_group) VALUES ('".$id_object."', '".BAB_UNREGISTERED_GROUP."')");
 	$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 	}
+
+
+function aclGetAccessUsers($table, $id_object) {
+	$db = &$GLOBALS['babDB'];
+	global $babBody;
+	
+	$tree = & new bab_grptree();
+	$groups = array();
+	
+	$res = $db->db_query("SELECT id_group FROM ".$table." WHERE id_object='".$id_object."'");
+	while ($arr = $db->db_fetch_assoc($res)) {
+		if ($arr['id_group'] >= BAB_ACL_GROUP_TREE )
+			{
+			$arr['id_group'] -= BAB_ACL_GROUP_TREE;
+			$groups[$arr['id_group']] = $arr['id_group'];
+			$tmp = $tree->getChilds($arr['id_group']);
+			foreach($tmp as $child) {
+				$groups[$child['id']] = $child['id'];
+				}
+			}
+		else
+			{
+			$groups[$arr['id_group']] = $arr['id_group'];
+			}
+		}
+
+	if (isset($groups[BAB_REGISTERED_GROUP]) || isset($groups[BAB_ALLUSERS_GROUP])) {
+		$query = "SELECT id, firstname, lastname ,email 
+					FROM ".BAB_USERS_TBL." 
+						WHERE disabled='0' AND is_confirmed='1'";
+		}
+	else
+		{
+		$query = "SELECT u.id,u.firstname, u.lastname,u.email 
+					FROM ".BAB_USERS_TBL." u, ".BAB_USERS_GROUPS_TBL." g
+						WHERE g.id_object=u.id AND g.id_group IN('".implode("','",$groups)."') 
+						AND u.disabled='0' AND u.is_confirmed='1'";
+		}
+	
+	$user = array();
+	$res = $db->db_query($query);
+	while ($arr = $db->db_fetch_assoc($res)) {
+		$user[$arr['id']] = array(
+					'name' => bab_composeUserName($arr['firstname'],$arr['lastname']),
+					'email' => isset($arr['email']) ? $arr['email'] : false
+				);
+		}
+
+	return $user;
+	}
 ?>

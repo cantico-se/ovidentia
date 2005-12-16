@@ -388,66 +388,46 @@ function notifyArticleGroupMembers($topicname, $topics, $title, $author, $what, 
 		$arrres = explode($sep, $restriction);			
 	}
 
-	$db = $GLOBALS['babDB'];
-	$res = $db->db_query("select id_group from ".BAB_TOPICSVIEW_GROUPS_TBL." where  id_object='".$topics."'");
+
+	include_once $babInstallPath."admin/acl.php";
+	$users = aclGetAccessUsers(BAB_TOPICSVIEW_GROUPS_TBL, $topics);
+
 	$arrusers = array();
-	if( $res && $db->db_num_rows($res) > 0 )
+	$count = 0;
+	foreach($users as $id => $arr)
 		{
-		while( $row = $db->db_fetch_array($res))
+		if( count($arrusers) == 0 || !in_array($id, $arrusers))
 			{
-			switch($row['id_group'])
+			$arrusers[] = $id;
+			if( !empty($restriction))
+				$add = bab_articleAccessByRestriction($restriction, $id);
+			else
+				$add = true;
+			if( $add )
 				{
-				case 0:
-				case 1:
-					$res2 = $db->db_query("select id, email, firstname, lastname from ".BAB_USERS_TBL." where is_confirmed='1' and disabled='0'");
-					break;
-				case 2:
-					return;
-				default:
-					$res2 = $db->db_query("select ".BAB_USERS_TBL.".id, ".BAB_USERS_TBL.".email, ".BAB_USERS_TBL.".firstname, ".BAB_USERS_TBL.".lastname from ".BAB_USERS_TBL." join ".BAB_USERS_GROUPS_TBL." where is_confirmed='1' and disabled='0' and ".BAB_USERS_GROUPS_TBL.".id_group='".$row['id_group']."' and ".BAB_USERS_GROUPS_TBL.".id_object=".BAB_USERS_TBL.".id");
-					break;
+				$mail->mailBcc($arr['email'], $arr['name']);
+				$count++;
 				}
-
-			if( $res2 && $db->db_num_rows($res2) > 0 )
-				{
-				$count = 0;
-				while(($arr = $db->db_fetch_array($res2)))
-					{
-					if( count($arrusers) == 0 || !in_array($arr['id'], $arrusers))
-						{
-						$arrusers[] = $arr['id'];
-						if( !empty($restriction))
-							$add = bab_articleAccessByRestriction($restriction, $arr['id']);
-						else
-							$add = true;
-						if( $add )
-							{
-							$mail->mailBcc($arr['email'], bab_composeUserName($arr['firstname'],$arr['lastname']));
-							$count++;
-							}
-						}
-
-					if( $count > 25 )
-						{
-						$mail->send();
-						$mail->clearBcc();
-						$mail->clearTo();
-						$count = 0;
-						}
-
-					}
-
-				if( $count > 0 )
-					{
-					$mail->send();
-					$mail->clearBcc();
-					$mail->clearTo();
-					$count = 0;
-					}
-				}	
 			}
-		}	
-	}
+
+		if( $count > 25 )
+			{
+			$mail->send();
+			$mail->clearBcc();
+			$mail->clearTo();
+			$count = 0;
+			}
+
+		}
+
+	if( $count > 0 )
+		{
+		$mail->send();
+		$mail->clearBcc();
+		$mail->clearTo();
+		$count = 0;
+		}
+	}		
 
 
 function notifyCommentApprovers($idcom, $nfusers)

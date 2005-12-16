@@ -84,7 +84,7 @@ function addCategory($cat, $ncat, $category, $description, $saart, $sacom, $saup
 			$this->modcom = bab_translate("Approbation schema for comments");
 			$this->modart = bab_translate("Approbation schema for articles");
 			$this->modupd = bab_translate("Approbation schema for articles modification");
-			$this->notiftxt = bab_translate("Notify group members by mail");
+			$this->notiftxt = bab_translate("Allow author to notify group members by mail");
 			$this->arttmpltxt = bab_translate("Article's model");
 			$this->disptmpltxt = bab_translate("Display template");
 			$this->restricttxt = bab_translate("Articles's authors can restrict access to articles");
