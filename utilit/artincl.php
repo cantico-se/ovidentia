@@ -833,7 +833,7 @@ function bab_previewArticleDraft($idart, $echo=0)
 			if( $i < $this->countn)
 				{
 				$arr = $babDB->db_fetch_array($this->resn);
-				$this->note = $arr['content'];
+				$this->note = str_replace("\n", "<br>", $arr['content']);
 				$this->author = bab_getUserName($arr['id_author']);
 				$this->date = bab_strftime(bab_mktime($arr['date_note']));
 				$this->altbg = !$this->altbg;
