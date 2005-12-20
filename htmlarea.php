@@ -63,9 +63,14 @@ function editor_js($mode)
 
 			if (is_file($filename))
 				{
-				$arr = file( $filename );
-				$arr = array_map('trim',$arr);
-				$fcontents = implode(' ',$arr );
+				$buffer = '';
+				$fp = fopen($filename, "rb");
+				while (!feof($fp)) {
+					$buffer .= fread($fp, 8192);
+				}
+			    fclose($fp);
+
+				$fcontents = preg_replace("/\r?\n|\r/", '', $buffer);
 				$this->css_styles = $fcontents;
 
 				$this->css_styles .= "body { padding:.5em; background-color:#fff; color:#000; }";
