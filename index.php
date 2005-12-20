@@ -128,7 +128,7 @@ $babWebStat =& new bab_WebStatEvent();
 include $babInstallPath."utilit/utilit.php";
 unset($BAB_SESS_LOGGED);
 
-if( $tg != "version" || $idx != "upgrade")
+if( $tg != "version" || !isset($idx) || $idx != "upgrade")
 	{
 	bab_updateSiteSettings();
 	if ( isset($babNTauth) && !isset($_REQUEST['babNTauth']) && $babNTauth ) include $babInstallPath."utilit/ntident.php";
