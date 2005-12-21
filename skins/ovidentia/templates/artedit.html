@@ -267,7 +267,7 @@ document.forms[fmname].updstep01.value = cmd;
 <td class="BabLoginCadreBackground">
 <table class="BabSiteAdminFontBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
 <tr> 
-<td colspan="4" align="right"><input type="submit" name="bcancel" value="{ canceltxt }" onclick="stepSubmitForm('cancel','step01form');">&nbsp;&nbsp;<input type="submit" name="bnext" value="{ nexttxt }" onclick="stepSubmitForm('next','step01form');"></td>
+<td colspan="4" align="right"><input type="submit" name="bcancel" value="{ canceltxt }" onclick="javascript:stepSubmitForm('cancel','step01form');">&nbsp;&nbsp;<input type="submit" name="bnext" value="{ nexttxt }" onclick="javascript:stepSubmitForm('next','step01form');"></td>
 </tr>
 </table>
 </td>
@@ -345,7 +345,7 @@ document.forms[fmname].updstep02.value = cmd;
 <td class="BabLoginCadreBackground">
 <table class="BabSiteAdminFontBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
 <tr> 
-<td colspan="4" align="right"><input type="submit" name="bprev" value="{ previoustxt }" onclick="return stepSubmitForm('prev','step02form');">&nbsp;&nbsp;<input type="submit" name="bcancel" value="{ canceltxt }" onclick="stepSubmitForm('cancel','step02form');"><!--#if count -->&nbsp;&nbsp;<input type="submit" name="bnext" value="{ nexttxt }" onclick="stepSubmitForm('next','step02form');"><!--#endif count --></td>
+<td colspan="4" align="right"><input type="submit" name="bprev" value="{ previoustxt }" onclick="javascript:return stepSubmitForm('prev','step02form');">&nbsp;&nbsp;<input type="submit" name="bcancel" value="{ canceltxt }" onclick="javascript:stepSubmitForm('cancel','step02form');"><!--#if count -->&nbsp;&nbsp;<input type="submit" name="bnext" value="{ nexttxt }" onclick="javascript:stepSubmitForm('next','step02form');"><!--#endif count --></td>
 </tr>
 </table>
 </td>
@@ -357,6 +357,113 @@ document.forms[fmname].updstep02.value = cmd;
 </table>
 </form>
 <!--#end modarticlechoicestep -->
+
+
+
+<!--#begin topictree -->
+<script type="text/javascript" src="{ babScriptPath }ul_tree.js"></script>
+<script type="text/javascript">
+
+var timeoutId;
+
+function selectTopic(topicId)
+{
+	document.getElementById('topicid').value = topicId;
+	document.getElementById('step0form').submit();
+}
+
+function searchTree(textInput)
+{
+	if (textInput.value.length >= 2)
+		nbMatches = tree.searchItem(textInput.value);
+	else
+		nbMatches = tree.searchItem('');
+	if (nbMatches == 0 && textInput.value.length >= 2)
+	{
+		textInput.style.backgroundColor = 'red';
+		textInput.style.color = 'white';
+	}
+	else if (nbMatches == 1)
+	{
+		textInput.style.backgroundColor = 'lightgreen';
+		textInput.style.color = '';
+	}
+	else
+	{
+		textInput.style.backgroundColor = '';
+		textInput.style.color = '';
+	}
+}
+
+</script>
+<form id="step0form" name="step0form" method="post" action="{ babPhpSelf }">
+ <input type="hidden" name="tg" value="artedit">
+ <input type="hidden" name="idx" value="{ next_idx }">
+ <input type="hidden" name="idart" value="{ idart }">
+ <!--#if bcontent -->
+ <input type="hidden" name="title" value="{ title }">
+ <input type="hidden" name="headtext" value="{ headtext }">
+ <input type="hidden" name="bodytext" value="{ bodytext }">
+ <input type="hidden" name="lang" value="{ lang }">
+ <!--#endif bcontent -->
+ <input type="hidden" name="rfurl" value="{ rfurl }">
+ <input type="hidden" name="updstep0" value="">
+ <input id="topicid" type="hidden" name="topicid" value="">
+</form>
+
+<div id="bab_groups_tree" class="BabLoginCadreBackground">
+  <p class="BabSiteAdminTitleFontBackground">
+	<a href="javascript:tree.expand();" class="expand">{ t_expand_all }</a>
+	<a href="javascript:tree.collapse();" class="collapse">{ t_collapse_all }</a>
+<img style="vertical-align: middle; margin-right: 4px" src="ovidentia/skins/ovidentia/images/Puces/search.gif"><input id="theme_search" type="text" onkeyup="window.clearTimeout(timeoutId); timeoutId = window.setTimeout('searchTree(document.getElementById(\'theme_search\'));', 200);">
+  </p>
+
+
+	<div class="tree">
+	<!--#if t_no_topic -->
+	<p style="padding-left: 20px"><a href="javascript:selectTopic('');">{ t_no_topic }</a></p>
+	<!--#endif t_no_topic -->
+	<!--#in getNextNode -->
+	  <!--#if levelVariation "== 1" -->
+	  <ul>
+	  <!--#endif levelVariation -->
+	  <!--#if levelVariation "<= -1" -->
+	  </li>
+	  </ul>
+	  <!--#endif levelVariation -->
+	  <!--#if levelVariation "== 0" -->
+	  </li>
+	  <!--#endif levelVariation -->
+	  <!--#if levelVariation ">= -1" -->
+	    <li id="{ node_id }">
+	      <div title="{ data[description] }">
+		    <!--#if data[type] "== category" -->
+	        <img src="ovidentia/skins/ovidentia/images/Puces/category.gif" />
+			<b id="content{ node_id }">{ data[title] }</b>
+			<!--#endif data[type] -->
+		    <!--#if data[type] "== topic" -->
+	        <img src="ovidentia/skins/ovidentia/images/Puces/topic.gif" />
+			<a id="content{ node_id }" href="javascript:selectTopic({ data[topic_id] });">{ data[title] }</a>
+			<!--#endif data[type] -->
+	      </div>
+	  <!--#endif levelVariation -->
+	<!--#endin getNextNode -->
+	</div>
+</div>
+
+<script type="text/javascript">
+<!--
+var tree = new bab_ul_tree('bab_groups_tree');
+tree.processList();
+if (!tree.highlightItem('{ selectedNodeId }'))
+	tree.expand();
+-->
+</script>
+<!--#end topictree -->
+
+
+
+
 
 <!--#begin topicchoicestep -->
 <script type="text/javascript">
@@ -417,7 +524,7 @@ document.forms[fmname].updstep0.value = cmd;
 <td class="BabLoginCadreBackground">
 <table class="BabSiteAdminFontBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
 <tr> 
-<td colspan="4" align="right"><input type="submit" name="bcancel" value="{ canceltxt }" onclick="stepSubmitForm('cancel','step0form');">&nbsp;&nbsp;<input type="submit" name="bnext" value="{ nexttxt }" onclick="stepSubmitForm('next','step0form');"></td>
+<td colspan="4" align="right"><input type="submit" name="bcancel" value="{ canceltxt }" onclick="javascript:stepSubmitForm('cancel','step0form');">&nbsp;&nbsp;<input type="submit" name="bnext" value="{ nexttxt }" onclick="javascript:stepSubmitForm('next','step0form');"></td>
 </tr>
 </table>
 </td>
@@ -462,7 +569,7 @@ return true;
 
 //-->
 </script>
-<form name="createart" method="post" action="{ babPhpSelf }" onSubmit="return confirmForm('createart');">
+<form name="createart" method="post" action="{ babPhpSelf }" onsubmit="return confirmForm('createart');">
 <input type="hidden" name="tg" value="artedit">
 <input type="hidden" name="idx" value="s2">
 <input type="hidden" name="idart" value="{ idart }">
@@ -504,7 +611,19 @@ return true;
 <option value="2" { noapprobsel }>{ noapprobtxt }</option>
 </select>
 <!--#endif bupprobchoice -->&nbsp;&nbsp;
-<!--#if bprev --><input type="submit" name="bprev" value="{ previoustxt }" onclick="return stepSubmitForm('prev','createart');">&nbsp;&nbsp;<!--#endif bprev --><input type="submit" name="bcancel" value="{ canceltxt }" onclick="stepSubmitForm('cancel','createart');"><!--#if BAB_SESS_LOGGED -->&nbsp;&nbsp;<input type="submit" name="bsave" value="{ savetxt }" onclick="stepSubmitForm('save','createart');"><!--#endif BAB_SESS_LOGGED --><!--#if bsubmit -->&nbsp;&nbsp;<input type="submit" name="bsubmit" value="{ submittxt }" onclick="javascript:return stepSubmitForm('submit','createart');"><!--#endif bsubmit -->&nbsp;&nbsp;<input type="submit" name="bnext" value="{ nexttxt }" onclick="javascript:stepSubmitForm('next','createart');"></td>
+<!--#if bprev -->
+<input type="submit" name="bprev" value="{ previoustxt }" onclick="return stepSubmitForm('prev','createart');">&nbsp;&nbsp;
+<!--#endif bprev -->
+<input type="submit" name="bcancel" value="{ canceltxt }" onclick="stepSubmitForm('cancel','createart');">
+<!--#if BAB_SESS_LOGGED -->
+&nbsp;&nbsp;
+<input type="submit" name="bsave" value="{ savetxt }" onclick="stepSubmitForm('save','createart');">
+<!--#endif BAB_SESS_LOGGED -->
+<!--#if bsubmit -->
+&nbsp;&nbsp;
+<input type="submit" name="bsubmit" value="{ submittxt }" onclick="return stepSubmitForm('submit','createart');">
+<!--#endif bsubmit -->&nbsp;&nbsp;
+<input type="submit" name="bnext" value="{ nexttxt }" onclick="stepSubmitForm('next','createart');"></td>
 </tr>
 </table>
 </td>
@@ -580,7 +699,7 @@ document.forms[fmname].updstep2.value = cmd;
 <option value="2" { noapprobsel }>{ noapprobtxt }</option>
 </select>
 <!--#endif bupprobchoice -->&nbsp;&nbsp;
-<input type="submit" name="bprev" value="{ previoustxt }" onclick="stepSubmitForm('prev','previewart');">&nbsp;&nbsp;<input type="submit" name="bcancel" value="{ canceltxt }" onclick="stepSubmitForm('cancel','previewart');"><!--#if BAB_SESS_LOGGED -->&nbsp;&nbsp;<input type="submit" name="bsave" value="{ savetxt }" onclick="stepSubmitForm('save','previewart');"><!--#endif BAB_SESS_LOGGED --><!--#if bsubmit -->&nbsp;&nbsp;<input type="submit" name="bsubmit" value="{ submittxt }" onclick="stepSubmitForm('submit','previewart');"><!--#endif bsubmit -->&nbsp;&nbsp;<input type="submit" name="bnext" value="{ nexttxt }" onclick="stepSubmitForm('next','previewart');"></td>
+<input type="submit" name="bprev" value="{ previoustxt }" onclick="javascript:stepSubmitForm('prev','previewart');">&nbsp;&nbsp;<input type="submit" name="bcancel" value="{ canceltxt }" onclick="javascript:stepSubmitForm('cancel','previewart');"><!--#if BAB_SESS_LOGGED -->&nbsp;&nbsp;<input type="submit" name="bsave" value="{ savetxt }" onclick="javascript:stepSubmitForm('save','previewart');"><!--#endif BAB_SESS_LOGGED --><!--#if bsubmit -->&nbsp;&nbsp;<input type="submit" name="bsubmit" value="{ submittxt }" onclick="javascript:stepSubmitForm('submit','previewart');"><!--#endif bsubmit -->&nbsp;&nbsp;<input type="submit" name="bnext" value="{ nexttxt }" onclick="javascript:stepSubmitForm('next','previewart');"></td>
 </tr>
 </table>
 </td>
@@ -1033,7 +1152,7 @@ return true;
 	</tr>
 	<tr> 
 	<td align="right" valign="middle">{ desctxt }:</td>
-	<td align="left" valign="middle"><input type="text" name="docdesc" maxlength="255" value=""> &nbsp; <input type="submit" name="badd" value="{ addtxt }" onclick="stepSubmitForm('fadd','propform');">
+	<td align="left" valign="middle"><input type="text" name="docdesc" maxlength="255" value=""> &nbsp; <input type="submit" name="badd" value="{ addtxt }" onclick="javascript:stepSubmitForm('fadd','propform');">
 	</td>
 	<td align="right" valign="middle">&nbsp;
 	</td>
@@ -1144,7 +1263,7 @@ return true;
 <option value="2" { noapprobsel }>{ noapprobtxt }</option>
 </select>&nbsp;&nbsp;
 <!--#endif bupprobchoice -->
-<input type="submit" name="bprev" value="{ previoustxt }" onclick="return stepSubmitForm('prev','propform');">&nbsp;&nbsp;<input type="submit" name="bcancel" value="{ canceltxt }" onclick="return stepSubmitForm('cancel','propform');"><!--#if BAB_SESS_LOGGED -->&nbsp;&nbsp;<input type="submit" name="bsave" value="{ savetxt }" onclick="return stepSubmitForm('save','propform');"><!--#endif BAB_SESS_LOGGED --><!--#if bsubmit -->&nbsp;&nbsp;<input type="submit" name="bsubmit" value="{ submittxt }" onclick="javascript:return stepSubmitForm('submit','propform');"><!--#endif bsubmit --></td>
+<input type="submit" name="bprev" value="{ previoustxt }" onclick="javascript:return stepSubmitForm('prev','propform');">&nbsp;&nbsp;<input type="submit" name="bcancel" value="{ canceltxt }" onclick="javascript:return stepSubmitForm('cancel','propform');"><!--#if BAB_SESS_LOGGED -->&nbsp;&nbsp;<input type="submit" name="bsave" value="{ savetxt }" onclick="javascript:return stepSubmitForm('save','propform');"><!--#endif BAB_SESS_LOGGED --><!--#if bsubmit -->&nbsp;&nbsp;<input type="submit" name="bsubmit" value="{ submittxt }" onclick="javascript:return stepSubmitForm('submit','propform');"><!--#endif bsubmit --></td>
 </tr>
 </table>
 </td>
@@ -1159,3 +1278,21 @@ return true;
 <!--#end propertiesarticlestep -->
 
 
+<!--#begin previewarticle -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ babSiteName }</TITLE>
+{ babMeta }
+{ babCss }
+<script type="text/javascript">
+<!--
+window.focus();
+//-->
+</script>
+</HEAD>
+<BODY class="BabTopicsAdminArticleViewFontBackground">
+{ content }
+</BODY>
+</HTML>
+<!--#end previewarticle -->

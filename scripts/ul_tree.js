@@ -22,7 +22,7 @@ bab_ul_tree.prototype.processList = function(ul) {
 		
 	if (!ul.childNodes || ul.childNodes.length==0) { return; }
 	// Iterate LIs
-	for (var itemi=0;itemi<ul.childNodes.length;itemi++) {
+	for (var itemi=0; itemi < ul.childNodes.length; itemi++) {
 		var item = ul.childNodes[itemi];
 		if ("LI" == item.nodeName) {
 			var subLists = false;
@@ -139,6 +139,72 @@ bab_ul_tree.prototype.expandChecked = function() {
 	}
 }
 
+
+bab_ul_tree.prototype.initSearch = function() {
+	if (this.initDone)
+		return;
+	var listItems = this.treeId.getElementsByTagName('li');
+	for (var i = 0; i < listItems.length ; i++)
+	{
+		var span = document.getElementById('content' + listItems[i].id);
+		var text = span.firstChild.nodeValue;
+		text = cleanStringDiacritics(text);
+		listItems[i].setAttribute('content', text);
+	}
+	this.initDone = true;
+}
+
+bab_ul_tree.prototype.highlightItem = function(itemId) {
+	var item = document.getElementById(itemId);
+	if (!item)
+		return false;
+	var div = item.getElementsByTagName('div')[0];
+	div.style.backgroundColor = '#EEEEEE';
+	this.expandCollapseList(this.treeId, this.nodeOpenClass, itemId);
+	return true;
+}
+
+bab_ul_tree.prototype.searchItem = function(targetString) {
+	this.initSearch();
+	if (targetString == '')
+	{
+		this.expand();
+		var regExp = null;
+	}
+	else
+	{
+		this.collapse();
+		targetString = cleanStringDiacritics(targetString);
+		var regExp = new RegExp(targetString, 'i');
+	}
+	var nbMatches = 0;
+	var listItems = this.treeId.getElementsByTagName('li');
+	for (var i = 0; i < listItems.length ; i++)
+	{
+		var content = listItems[i].getAttribute('content');
+		var div = listItems[i].getElementsByTagName('div')[0];
+		if (regExp && content && content.match(regExp))
+		{
+			div.style.backgroundColor = '#EEEEEE';
+			this.expandCollapseList(this.treeId, this.nodeOpenClass, listItems[i].id);
+			nbMatches++;
+		}
+		else 
+			div.style.backgroundColor = '';
+	}
+	return nbMatches;
+}
+
+function cleanStringDiacritics(text)
+{
+	text = text.replace(/[áàâä]/g, "a");
+	text = text.replace(/[éèêë]/g, "e");
+	text = text.replace(/[íìîï]/g, "i");
+	text = text.replace(/[óòôö]/g, "o");
+	text = text.replace(/[úùûü]/g, "u");
+	text = text.replace(/[ç]/g, "c");
+	return text;
+}
 
 function tree_check_childs(checkbox)
 {

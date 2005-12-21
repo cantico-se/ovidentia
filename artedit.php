@@ -370,6 +370,337 @@ function propertiesArticle($idart)
 }
 
 
+
+
+class bab_Tree
+{
+	var $roots;
+	var $nodes;
+
+	function bab_Tree()
+	{
+		$this->roots = array();
+		$this->nodes = array();
+	}
+
+	function addNode($parentId, $nodeId, $data)
+	{
+		$newNode = new bab_TreeNode($this, $nodeId, $data);
+		$this->nodes[$nodeId] =& $newNode;
+		$parent =& $this->nodes[$parentId];
+		if (!is_null($parent))
+		{
+			$parent->addLastChild($newNode);
+			$this->_updateTree($newNode);
+			return true;
+		}
+		if (!array_key_exists($parentId, $this->roots))
+			$this->roots[$parentId] = array();
+		$this->roots[$parentId][] =& $newNode;
+		$this->_updateTree($newNode);
+		return false;
+	}
+
+	function removeNode($nodeId)
+	{
+		$node =& $this->nodes[$nodeId];
+		$parent =& $this->nodes[$node->parentId];
+		$nextSiblingId = $node->nextSiblingId;
+		$previousSiblingId = $node->previousSiblingId;
+		if ($parent->firstChildId === $nodeId)
+			$parent->firstChildId = $nextSiblingId;
+		if ($parent->lastChildId === $nodeId)
+			$parent->lastChildId = $previousSiblingId;
+
+		if (!is_null($nextSiblingId))
+			$this->nodes[$nextSiblingId]->previousSiblingId = $previousSiblingId;
+		if (!is_null($previousSiblingId))
+			$this->nodes[$previousSiblingId]->nextSiblingId = $nextSiblingId;
+		unset($this->nodes[$nodeId]);
+	}
+
+	function removeBranch($nodeId)
+	{
+		$node =& $this->nodes[$nodeId];
+		do 
+		{
+			$id = $nodeId;
+			$nodeId = $this->nodes[$nodeId]->parentId;
+			$this->removeNode($id);
+		}
+		while (!$this->nodes[$nodeId]->hasChildren());
+	}
+
+	function _updateTree(&$node)
+	{
+		if (array_key_exists($node->id, $this->roots))
+		{
+			for ($j = 0; $j < count($this->roots[$node->id]); $j++)
+			{
+				$node->addLastChild($this->roots[$node->id][$j]);
+			}
+			unset($this->roots[$node->id]);
+		}
+	}
+
+	function getRootNodeId()
+	{
+		$keys = array_keys($this->roots);
+		return $this->roots[$keys[0]][0]->id;
+	}
+}
+
+
+class bab_TreeNode
+{
+	var $tree;
+	var $id;
+	var $data;
+	var $parentId;
+	var $firstChildId;
+	var $lastChildId;
+	var $nextSiblingId;
+	var $previousSiblingId;
+
+	function bab_TreeNode(&$tree, $id, &$data)
+	{
+		$this->tree =& $tree;
+		$this->id = $id;
+		$this->data =& $data;
+		$this->parentId = null;
+		$this->firstChildId = null;
+		$this->lastChildId = null;
+		$this->nextSiblingId = null;
+		$this->previousSiblingId = null;
+	}
+
+
+	function addFirstChild(&$node)
+	{
+		$node->nextSiblingId = $this->firstChildId;
+		if (is_null($this->firstChildId))
+			$this->lastChildId = $node->id;
+		else
+			$this->tree->nodes[$this->firstChildId]->previousSiblingId = $node->id;
+		$this->firstChildId = $node->id;
+		$node->parentId = $this->id;
+	}
+
+	function addLastChild(&$node)
+	{
+		$node->previousSiblingId = $this->lastChildId;
+		if (is_null($this->lastChildId))
+			$this->firstChildId = $node->id;
+		else
+			$this->tree->nodes[$this->lastChildId]->nextSiblingId = $node->id;
+		$this->lastChildId = $node->id;
+		$node->parentId = $this->id;
+	}
+
+	function hasChildren()
+	{
+		return (!is_null($this->firstChildId));
+	}
+}
+
+
+class bab_TreeIterator
+{
+	var $_tree;
+	var $_node;
+	var $_nodeStack;
+	var $_levelStack;
+	var $_level;
+
+	function bab_TreeIterator(&$tree)
+	{
+		$this->tree =& $tree;
+		$this->nodeId = $tree->getRootNodeId();
+		$this->nodeStack = array();
+		$this->levelStack = array();
+		$this->level = 0;
+	}
+
+	function getLevel()
+	{
+		return $this->level;
+	}
+
+	function getNextId()
+	{
+		$nodeId = $this->nodeId;
+		
+		if (!is_null($this->nodeId))
+		{
+			if ($this->tree->nodes[$this->nodeId]->hasChildren())
+			{
+				$siblingId = $this->tree->nodes[$this->nodeId]->nextSiblingId;
+				if (!is_null($siblingId))
+				{
+					array_push($this->nodeStack, $siblingId);
+					array_push($this->levelStack, $this->level);
+				}
+				$this->nodeId = $this->tree->nodes[$this->nodeId]->firstChildId;
+				$this->level++;
+			}
+			else
+			{
+				$this->nodeId = $this->tree->nodes[$this->nodeId]->nextSiblingId;
+				if (is_null($this->nodeId) && count($this->nodeStack) > 0)
+				{
+					$this->nodeId = array_pop($this->nodeStack);
+					$this->level = array_pop($this->levelStack);
+				}
+			}
+		}
+		return $nodeId;
+	}
+}
+
+
+
+define(BAB_TOPIC_SUBMIT, 1);
+define(BAB_TOPIC_MODIFY, 2);
+
+function showTopicTree($actionType, $selectedTopicId)
+{
+	global $babBodyPopup;
+
+	class Template
+	{
+		var $tree;
+		var $node;
+		var $data;
+		var $level;
+		var $previousLevel;
+		var $node_id;
+		var $node_has_children;
+		var $t_expand_all;
+		var $t_collapse_all;
+		var $t_no_topic;
+		var $next_idx;
+		var $selectedNodeId;
+
+		function Template(&$tree, $nextIdx, $actionType, $selectedTopicId)
+		{
+			$this->tree =& $tree;
+			$this->treeIterator =& new bab_TreeIterator($tree);
+			$this->treeIterator->getNextId(); // We don't want to display the root node.
+			$this->level = $this->treeIterator->getLevel();
+			$this->previousLevel = $this->level - 1;
+			$this->next_idx = $nextIdx;
+			$this->t_expand_all = bab_translate('Expand all');
+			$this->t_collapse_all = bab_translate('Collapse all');
+			if ($actionType == BAB_TOPIC_SUBMIT)
+				$this->t_no_topic = bab_translate('No topic');
+			else
+				$this->t_no_topic = bab_translate('');
+			$this->selectedNodeId = 'topic' . $selectedTopicId;
+		}
+
+		function getNextNode()
+		{
+			$this->levelVariation = $this->level - $this->previousLevel;
+			if ($this->levelVariation < -1)
+			{
+				$this->previousLevel--;
+				return true;
+			}
+
+			$this->previousLevel = $this->level;
+
+			$this->node_id = $this->treeIterator->getNextId();
+			$this->level = $this->treeIterator->getLevel();
+			if (!is_null($this->node_id))
+			{
+				$this->data =& $this->tree->nodes[$this->node_id]->data;
+				return true;
+			}
+			return false;
+		}
+
+	}
+
+	global $babBody;
+	global $babDB;
+
+	switch ($actionType)
+	{
+		case BAB_TOPIC_SUBMIT:
+			$sql = 'SELECT * FROM ' . BAB_TOPICS_TBL
+				. ' WHERE id IN (' . implode(',', array_keys($babBody->topsub)) . ')'
+				. ' ORDER BY id_cat';
+			$nextIdx = 's1';
+			break;
+
+		case BAB_TOPIC_MODIFY:
+			if (count($babBody->topsub) > 0  || count($babBody->topman) > 0 || count($babBody->topmod) > 0)
+			{
+				if (count($babBody->topsub) > 0)
+					$tmp[] = '(id IN (' . implode(',', array_keys($babBody->topsub)) . ") and allow_update != '0')";
+				if( count($babBody->topman) > 0 )
+					$tmp[] = '(id IN (' . implode(',', array_keys($babBody->topman)) . ") and allow_manupdate != '0')";
+				if( count($babBody->topmod) > 0 )
+					$tmp[] = '(id IN (' . implode(',', array_keys($babBody->topmod)) . '))';
+				$sql = 'SELECT * FROM ' . BAB_TOPICS_TBL
+						. ' WHERE ' . implode(' OR ', $tmp)
+					    . ' ORDER BY id_cat';
+			}
+			$nextIdx = 's01';
+			break;
+
+		default:
+			break;
+	}
+
+	$tree =& new bab_Tree();
+
+	$tree->addNode(null, 'category0', array('type' => 'category',
+										  'title' => '',
+										  'description' => '',
+										  'topic_id' => ''));
+	// Add the topics to the tree.
+
+	$res = $babDB->db_query($sql);
+	while ($arr = $babDB->db_fetch_array($res))
+		$tree->addNode('category' . $arr['id_cat'],
+					   'topic' . $arr['id'],
+					   array('type' => 'topic',
+							 'title' => $arr['category'],
+							 'description' => $arr['description'],
+							 'topic_id' => $arr['id']));
+		
+	// Add the categories to the tree.
+	
+	foreach ($babBody->topcats as $key => $category)
+		$tree->addNode('category' . $category['parent'],
+					   'category' . $key,
+					   array('type' => 'category',
+							 'title' => $category['title'],
+	 						 'description' => $category['description'],
+							 'topic_id' => ''));
+
+	// Remove branches without a topic.
+
+
+	$treeIterator =& new bab_TreeIterator($tree);
+	$deadBranches = array();
+	while ($nodeId = $treeIterator->getNextId())
+	{
+		if (!$tree->nodes[$nodeId]->hasChildren() && $tree->nodes[$nodeId]->data['type'] === 'category')
+			$deadBranches[] = $nodeId;
+	}
+	foreach ($deadBranches as $deadBranch)
+		$tree->removeBranch($deadBranch);
+
+	$template = new Template($tree, $nextIdx, $actionType, $selectedTopicId);
+
+	$babBodyPopup->addStyleSheet('groups.css');
+	$babBodyPopup->babecho(bab_printTemplate($template, 'artedit.html', 'topictree'));
+}
+
+
+/*
 function showChoiceTopic()
 {
 	global $babBodyPopup;
@@ -457,11 +788,13 @@ function showChoiceTopic()
 			}
 
 		}
+	print "start " . microtime() . "<br>";
 	$temp = new temp();
 	$babBodyPopup->babecho(bab_printTemplate($temp, "artedit.html", "topicchoicestep"));
 }
+*/
 
-
+/*
 function showChoiceTopicModify()
 {
 	global $babBodyPopup;
@@ -560,6 +893,96 @@ function showChoiceTopicModify()
 		}
 	$temp = new temp();
 	$babBodyPopup->babecho(bab_printTemplate($temp, "artedit.html", "modtopicchoicestep"));
+}
+*/
+
+function showArticleList($topicId)
+{
+	global $babBodyPopup;
+
+	class Template
+	{
+		function Template($topicid)
+		{
+			global $babDB, $babBody;
+
+			$sql = "SELECT * FROM " . BAB_TOPICS_TBL . " WHERE id='" . $topicid . "'";
+			$res = $babDB->db_query($sql);
+			if ($res && $babDB->db_num_rows($res) > 0)
+			{
+				$arr = $babDB->db_fetch_array($res);
+				if (($babBody->topmod && isset($babBody->topmod[$topicid]))
+					|| ($arr['allow_manupdate'] != '0' && $babBody->topman && isset($babBody->topman[$topicid])) )
+				{
+					$req = "SELECT at.id, at.title, adt.id_author, adt.id as id_draft ".
+						   " FROM " . BAB_ARTICLES_TBL . " at ".
+								" LEFT JOIN " . BAB_ART_DRAFTS_TBL . " adt ON at.id=adt.id_article " . 
+						   " WHERE at.id_topic='" . $topicid . "' AND at.archive='N' " .
+						   " ORDER BY at.ordering ASC";
+				}
+				elseif ($arr['allow_update'] && $babBody->topsub && isset($babBody->topsub[$topicid]))
+				{
+					$req = "SELECT at.id, at.title, adt.id_author, adt.id as id_draft ".
+						   " FROM " . BAB_ARTICLES_TBL . " at ".
+								" LEFT JOIN " . BAB_ART_DRAFTS_TBL . " adt ON at.id=adt.id_article " . 
+						   " WHERE at.id_topic='" . $topicid . "' " . 
+								" AND at.archive='N' " .
+								" AND at.id_author='" . $GLOBALS['BAB_SESS_USERID'] . "'" .
+						   " ORDER BY at.ordering ASC";
+				}
+				else
+					$req = '';
+
+				if ($req != '')
+				{
+					$this->res = $babDB->db_query($req);
+					$this->count = $babDB->db_num_rows($this->res);
+					$this->rfurl = $rfurl;
+					$this->topicid = $topicid;
+					$babBodyPopup->title = bab_translate("Choose the article");
+					$this->steptitle = viewCategoriesHierarchy_txt($topicid);
+					$this->nexttxt = bab_translate("Next");
+					$this->canceltxt = bab_translate("Cancel");
+					$this->previoustxt = bab_translate("Previous");
+				}
+			}		
+		}
+
+		function getNextArticle()
+		{
+			global $babDB;
+			if ($this->res && $arr = $babDB->db_fetch_array($this->res))
+			{
+				$this->articleid = $arr['id'];
+				$this->articletitle = $arr['title'];
+				if (!isset($arr['id_author']) || empty($arr['id_author']))
+				{
+					$this->modifybytxt = '';
+					$this->modifauthor = '';
+					$this->bmodify = true;
+				}
+				else
+				{
+					$this->modifybytxt = bab_translate('In modification by');
+					$this->modifauthor = bab_getUserName($arr['id_author']);
+					$this->bmodify = false;
+					if ($arr['id_author'] == $GLOBALS['BAB_SESS_USERID'])
+					{
+						$this->editdrafttxt = bab_translate('Edit');
+						$this->editdrafturl = $GLOBALS['babUrlScript']."?tg=artedit&idx=s1&idart=".$arr['id_draft']."&rfurl=".urlencode($this->rfurl);
+						$this->bauthor = true;
+					}
+					else
+						$this->bauthor = false;
+				}
+				return true;
+			}
+			return false;
+		}
+	}
+
+	$template = new Template($topicId);
+	$babBodyPopup->babecho(bab_printTemplate($template, 'artedit.html', 'articlelist'));
 }
 
 
@@ -1712,18 +2135,19 @@ function previewArticleDraft($idart)
 	$res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_TBL." where id='".$idart."' and id_author='".$BAB_SESS_USERID."'");
 	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
-		// $arr = $babDB->db_fetch_array($res);
-		
+		$arr = $babDB->db_fetch_array($res);
+		class temp
+			{
+			var $content;
 
-		include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
-		$GLOBALS['babBodyPopup'] = new babBodyPopup();
-		$GLOBALS['babBodyPopup']->title = & $babBody->title;
-		$GLOBALS['babBodyPopup']->msgerror = & $babBody->msgerror;
+			function temp($idart)
+				{
+				$this->content = bab_previewArticleDraft($idart, 0);
+				}
+			}
 
-
-
-		$GLOBALS['babBodyPopup']->babecho(bab_previewArticleDraft($idart, 0));
-		printBabBodyPopup();
+		$temp = new temp($idart);
+		echo bab_printTemplate($temp, "artedit.html", "previewarticle");
 		}
 	else
 		{
@@ -2336,32 +2760,42 @@ if($idx == 'movet')
 }
 }
 
+
+
 switch($idx)
 	{
 	case "denied":
 		$babBody->msgerror = bab_translate("Access denied");
 		break;
-	case "s00":
+
+	case "s00": // Selection of a topic for the modification of an article.
+		$selectedTopicId = $_POST['topicid'];
 		$babBodyPopup = new babBodyPopup();
 		$babBodyPopup->title = bab_translate("Choose the topic");
-		showChoiceTopicModify();
+		showTopicTree(BAB_TOPIC_MODIFY, $selectedTopicId);
 		printBabBodyPopup();
 		exit;
 		break;
+
 	case "s01":
 		$babBodyPopup = new babBodyPopup();
 		$babBodyPopup->title = bab_translate("Choose the article");
 		showChoiceArticleModify($topicid);
+//		showArticleList($topicid);
 		printBabBodyPopup();
 		exit;
 		break;
-	case "s0":
+
+	case "s0": // Selection of a topic for the publication of an article.
+		$selectedTopicId = $_POST['topicid'];
 		$babBodyPopup = new babBodyPopup();
 		$babBodyPopup->title = bab_translate("Choose the topic");
-		showChoiceTopic();
+		showTopicTree(BAB_TOPIC_SUBMIT, $selectedTopicId);
+//		showChoiceTopic();
 		printBabBodyPopup();
 		exit;
 		break;
+
 	case "s1":
 		if( !isset($message)) { $message = '';}
 		$babBodyPopup = new babBodyPopup();
@@ -2371,6 +2805,7 @@ switch($idx)
 		printBabBodyPopup();
 		exit;
 		break;
+
 	case "s2":
 		if( !isset($message)) { $message = '';}
 		$babBodyPopup = new babBodyPopup();
