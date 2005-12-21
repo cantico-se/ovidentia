@@ -424,6 +424,8 @@ function listWaitingVacations()
 		var $checkall;
 		var $uncheckall;
 
+		var $altbg = true;
+
 
 		var $entryid;
 
@@ -453,6 +455,7 @@ function listWaitingVacations()
 			static $i = 0;
 			if( $i < $this->wvacationscount)
 				{
+				$this->altbg = !$this->altbg;
 				$arr = $this->db->db_fetch_array($this->res);
 				$this->url = $GLOBALS['babUrlScript']."?tg=approb&idx=confvac&idvac=".$arr['id'];
 				list($this->total) = $this->db->db_fetch_row($this->db->db_query("select sum(quantity) from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry ='".$arr['id']."'"));
@@ -966,18 +969,13 @@ function previewWaitingArticle($idart)
 		$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
 		if( count($arrschi) > 0 && in_array($arr['idfai'],$arrschi))
 			{
-			class temp
-				{
-				var $content;
+			include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
+			$GLOBALS['babBodyPopup'] = new babBodyPopup();
+			$GLOBALS['babBodyPopup']->title = & $babBody->title;
+			$GLOBALS['babBodyPopup']->msgerror = & $babBody->msgerror;
 
-				function temp($idart)
-					{
-					$this->content = bab_previewArticleDraft($idart, 0);
-					}
-				}
-
-			$temp = new temp($idart);
-			echo bab_printTemplate($temp, "approb.html", "previewarticle");
+			$GLOBALS['babBodyPopup']->babecho(bab_previewArticleDraft($idart, 0));
+			printBabBodyPopup();
 			}
 		}
 	else

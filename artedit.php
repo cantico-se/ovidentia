@@ -1712,19 +1712,18 @@ function previewArticleDraft($idart)
 	$res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_TBL." where id='".$idart."' and id_author='".$BAB_SESS_USERID."'");
 	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
-		$arr = $babDB->db_fetch_array($res);
-		class temp
-			{
-			var $content;
+		// $arr = $babDB->db_fetch_array($res);
+		
 
-			function temp($idart)
-				{
-				$this->content = bab_previewArticleDraft($idart, 0);
-				}
-			}
+		include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
+		$GLOBALS['babBodyPopup'] = new babBodyPopup();
+		$GLOBALS['babBodyPopup']->title = & $babBody->title;
+		$GLOBALS['babBodyPopup']->msgerror = & $babBody->msgerror;
 
-		$temp = new temp($idart);
-		echo bab_printTemplate($temp, "artedit.html", "previewarticle");
+
+
+		$GLOBALS['babBodyPopup']->babecho(bab_previewArticleDraft($idart, 0));
+		printBabBodyPopup();
 		}
 	else
 		{
