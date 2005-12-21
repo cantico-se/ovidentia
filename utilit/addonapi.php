@@ -263,7 +263,7 @@ function bab_editor_record(&$str)
 					if (!empty($att_name) && isset($allowed_attributes[$att_name]) && $att_name == 'href' && $arr['verify_href'] == 1)
 						{
 						$worked_attributes[$att_elem] = 1;
-						$clean_href = ereg_replace("[\"']([^(http|ftp)].*)[\"']", '"#"', $att_elem);
+						$clean_href = ereg_replace("[\"']([^(http|ftp|#|".preg_quote(basename($_SERVER['SCRIPT_NAME'])).")].*)[\"']", '"#"', $att_elem);
 						$replace_tag = str_replace($att_elem, $clean_href, $tag);
 
 						$str = preg_replace("/".preg_quote($tag,"/")."/", $replace_tag, $str);
