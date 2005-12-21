@@ -575,7 +575,7 @@ class bab_stats_forums extends bab_stats_base
 		$arru = array_unique($arrt);
 		if( count($arru) > 0 )
 			{
-			$res = $babDB->db_query("select distinct forum from ".BAB_THREADS_TBL." where id in (".implode(',', $arru).")");
+			$res = $babDB->db_query("select distinct forum from ".BAB_THREADS_TBL." where id in ('".implode("','", $arru)."')");
 			while( $row = $babDB->db_fetch_array($res))
 				{
 				$this->addForum($datas['date'], $datas['hour'], $row['forum']);
