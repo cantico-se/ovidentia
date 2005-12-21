@@ -3405,6 +3405,7 @@ class bab_Calendars extends bab_handler
 			$this->ctx->curctx->push('CalendarId', $calendarid);
 			$iarr = $babBody->icalendars->getCalendarInfo($calendarid);
 			$this->ctx->curctx->push('CalendarName', $iarr['name']);
+			$this->ctx->curctx->push('CalendarDescription', $iarr['description']);
 			$this->ctx->curctx->push('CalendarOwnerId', $iarr['idowner']);
 			$this->ctx->curctx->push('CalendarType', $iarr['type']);
 			$this->ctx->curctx->push('CalendarUrl', $GLOBALS['babUrlScript']."?tg=calmonth&calid=".$this->IdEntries[$this->idx]);
