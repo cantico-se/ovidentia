@@ -1926,7 +1926,7 @@ function deleteDbContact($id, $idu)
 function exportDbDirectory($id, $wsepar, $separ)
 {
 
-	$db = $GLOBALS['babDB'];
+	$db = &$GLOBALS['babDB'];
 	switch($wsepar)
 		{
 		case "1":
@@ -1946,7 +1946,7 @@ function exportDbDirectory($id, $wsepar, $separ)
 	$output = "";
 	if( $idgroup > 0 )
 		{
-		$output .= bab_translate("Nickname").$separ;
+		$output .= '"'.str_replace('"','""',bab_translate("Nickname")).'"'.$separ;
 		}
 
 	$arrnamef = array();
@@ -1971,7 +1971,7 @@ function exportDbDirectory($id, $wsepar, $separ)
 			$leftjoin[] = 'LEFT JOIN '.BAB_DBDIR_ENTRIES_EXTRA_TBL.' lj'.$arr['id']." ON lj".$arr['id'].".id_fieldx='".$arr['id']."' AND e.id=lj".$arr['id'].".id_entry";
 			$select[] = "lj".$arr['id'].'.field_value '."babdirf".$arr['id']."";
 			}
-		$output .= translateDirectoryField($fieldn).$separ;
+		$output .= '"'.str_replace('"','""',translateDirectoryField($fieldn)).'"'.$separ;
 		}
 
 	$output = substr($output, 0, -1);
@@ -2000,12 +2000,12 @@ function exportDbDirectory($id, $wsepar, $separ)
 		if( $idgroup > 0 )
 			{
 			list($nickname) = $db->db_fetch_array($db->db_query("select nickname from ".BAB_USERS_TBL." where id='".$row['id_user']."'"));
-			$output .= $nickname.$separ;
+			$output .= '"'.str_replace('"','""',$nickname).'"'.$separ;
 			}
 
 		for( $k=0; $k < count($arrnamef); $k++ )
 			{
-			$output .= stripslashes($row[$arrnamef[$k]]).$separ;
+			$output .= '"'.str_replace(array("\r","\n",'"'),array('',' ','""'),stripslashes($row[$arrnamef[$k]])).'"'.$separ;
 			}
 
 		$output = substr($output, 0, -1);
