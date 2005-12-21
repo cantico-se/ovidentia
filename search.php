@@ -164,10 +164,13 @@ class bab_addonsSearch
 
 	function callSearchFunction($id)
 		{
-		static $i = 0;
-		if ($i >= $this->nb_result)
+		if (!isset($this->i[$id]))
+			$this->i[$id] = 0;
+
+		if ($this->i[$id] >= $this->nb_result)
 			return false;
-		$i++;
+		$this->i[$id]++;
+
 		$this->defineAddonGlobals($id);
 		$func = $this->func_results[$id];
 		return $func($this->q1, $this->q2, $this->option, $this->pos[$id], $this->nb_result);
