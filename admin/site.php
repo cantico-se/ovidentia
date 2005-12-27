@@ -1102,8 +1102,15 @@ function editDisclaimerPrivacy($id, $content)
 			}
 		}
 
+	include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
+	$GLOBALS['babBodyPopup'] = new babBodyPopup();
+	$GLOBALS['babBodyPopup']->title = & $GLOBALS['babBody']->title;
+	$GLOBALS['babBodyPopup']->msgerror = & $GLOBALS['babBody']->msgerror;
+
 	$temp = new temp($id, $content);
-	echo bab_printTemplate($temp,"sites.html", "disclaimeredit");
+	$GLOBALS['babBodyPopup']->babecho(bab_printTemplate($temp,"sites.html", "disclaimeredit"));
+	printBabBodyPopup();
+	die();
 	}
 
 
