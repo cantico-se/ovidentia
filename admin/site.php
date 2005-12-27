@@ -1319,6 +1319,7 @@ function siteUpdate_menu1()
 		$description = addslashes($description);
 		$namev = addslashes($name);
 		$adminname = addslashes($adminname);
+		$babslogan = addslashes($babslogan);
 		}
 	else
 		{
