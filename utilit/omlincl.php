@@ -2079,7 +2079,8 @@ class bab_RecentArticles extends bab_handler
 
 		$babDB = &$GLOBALS['babDB'];
 
-		$res = $babDB->db_query("select id from ".BAB_TOPICS_TBL." where id_cat='".$idparent."' AND id IN('".implode("','",$GLOBALS['babBody']->topview)."')");
+
+		$res = $babDB->db_query("select id from ".BAB_TOPICS_TBL." where id_cat='".$idparent."' AND id IN('".implode("','",array_keys($GLOBALS['babBody']->topview))."')");
 		while( $row = $babDB->db_fetch_array($res))
 			{
 			$this->topicid[] = $row['id'];
