@@ -1308,7 +1308,7 @@ function babBody()
 			$arr = $babDB->db_fetch_array($res);
 			if ($arr['remote_addr'] != $GLOBALS['REMOTE_ADDR'])
 				{
-				die(bab_translate("Access denied, invalid session"));
+				die(bab_translate("Access denied, your session id has been created by another ip address than yours"));
 				}
 
 			if (1 == $arr['grp_change'] && isset($_SESSION['bab_groupAccess']))
