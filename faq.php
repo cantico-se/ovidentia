@@ -1232,22 +1232,13 @@ switch($idx)
 	case "Print":
 		if( bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $item))
 		{
-			//if( empty($idscat))
-			//	{
-				FaqPrintContents($item);
-			//	}
-			//else
-			//	{
-			//	faqPrint($item, $idscat);
-			//	exit;
-			//	}
+
+			FaqPrintContents($item);
 
 			$babBody->addItemMenu("Categories", bab_translate("Categories"),$GLOBALS['babUrlScript']."?tg=faq&idx=Categories");
 			$babBody->addItemMenu("questions", bab_translate("Contents"),$GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item."&idscat=".$idscat);
 			$babBody->addItemMenu("Print", bab_translate("Visualisation"),$GLOBALS['babUrlScript']."?tg=faq&idx=Print&item=".$item."&idscat=".$idscat);
 
-			if( isUserManager())
-				$babBody->addItemMenu("ModifyQ", bab_translate("Edit"),$GLOBALS['babUrlScript']."?tg=faq&idx=ModifyQ&item=".$item."&idscat=".$idscat."&idq=".$idq);
 		}
 		break;
 
