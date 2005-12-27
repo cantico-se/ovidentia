@@ -72,7 +72,11 @@ function db_connect($host, $login, $password, $dbname)
 				}
 			else
 				{
-				$this->db_print_error( "Cannot connect to database : " . $dbName);
+				if (is_file('install.php')) {
+					die('Welcome to Ovidentia.<br />To install this distribution, launch the <a href="install.php">install.php</a>.');
+					} else {
+					$this->db_print_error( "Cannot connect to database : " . $dbName);
+					}
 				}
 			break;
 		}
