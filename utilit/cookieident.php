@@ -27,7 +27,7 @@ function cookieUserLogin($nickname,$password)
 	{
 	global $babBody;
 	$password=strtolower($password);
-	$db = $GLOBALS['babDB'];
+	$db = &$GLOBALS['babDB'];
 	$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET cnx_try=cnx_try+1 WHERE sessid='".session_id()."'");
 	list($cnx_try) = $db->db_fetch_array($db->db_query("SELECT cnx_try FROM ".BAB_USERS_LOG_TBL." WHERE sessid='".session_id()."'"));
 	if( $cnx_try > 5)
