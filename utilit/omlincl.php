@@ -3045,7 +3045,7 @@ class bab_FaqSubCategories extends bab_handler
 			if(bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $faqid))
 				{
 				$this->faqinfo = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FAQCAT_TBL." where id='".$faqid."'"));
-				$this->res = $babDB->db_query("select * from ".BAB_FAQ_SUBCAT_TBL." where idcat='".$faqid."'");
+				$this->res = $babDB->db_query("select * from ".BAB_FAQ_SUBCAT_TBL." where id_cat='".$faqid."'");
 				$this->count = $babDB->db_num_rows($this->res);
 				}
 
@@ -3068,9 +3068,9 @@ class bab_FaqSubCategories extends bab_handler
 			{
 			$this->ctx->curctx->push('FaqSubCatName', $arr['name']);
 			}
-			$this->ctx->curctx->push('FaqId', $arr['idcat']);
+			$this->ctx->curctx->push('FaqId', $arr['id_cat']);
 			$this->ctx->curctx->push('FaqSubCatId', $arr['id']);
-			$this->ctx->curctx->push('FaqSubCatUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$arr['idcat']."&idscat=".$arr['id']);
+			$this->ctx->curctx->push('FaqSubCatUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$arr['id_cat']."&idscat=".$arr['id']);
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -3099,7 +3099,7 @@ class bab_FaqSubCategory extends bab_handler
 		$faqsubcatid = $ctx->get_value('faqsubcatid');
 		if( $faqsubcatid !== false && $faqsubcatid !== '' )
 		{
-			$res = $babDB->db_query("select * from ".BAB_FAQ_SUBCAT_TBL." where idcat IN (".$faqsubcatid.")");
+			$res = $babDB->db_query("select * from ".BAB_FAQ_SUBCAT_TBL." where id_cat IN (".$faqsubcatid.")");
 			while( $row = $babDB->db_fetch_array($res))
 				{
 				if(bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $row['id_cat']))
@@ -3127,16 +3127,16 @@ class bab_FaqSubCategory extends bab_handler
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			if( empty($arr['name']) )
 			{
-			$faqinfo = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FAQCAT_TBL." where id='".$arr['idcat']."'"));
+			$faqinfo = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FAQCAT_TBL." where id='".$arr['id_cat']."'"));
 			$this->ctx->curctx->push('FaqSubCatName', $faqinfo['category']);
 			}
 			else
 			{
 			$this->ctx->curctx->push('FaqSubCatName', $arr['name']);
 			}
-			$this->ctx->curctx->push('FaqId', $arr['idcat']);
+			$this->ctx->curctx->push('FaqId', $arr['id_cat']);
 			$this->ctx->curctx->push('FaqSubCatId', $arr['id']);
-			$this->ctx->curctx->push('FaqSubCatUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$arr['idcat']."&idscat=".$arr['id']);
+			$this->ctx->curctx->push('FaqSubCatUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$arr['id_cat']."&idscat=".$arr['id']);
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
