@@ -32,7 +32,7 @@ function sendReminders()
 		return;
 	}
 
-	$res = $babDB->db_query("select ce.*, cer.* from ".BAB_CAL_EVENTS_REMINDERS_TBL." cer left join ".BAB_CAL_EVENTS_TBL." ce on ce.id=cer.id_event where cer.id_user='".$GLOBALS['BAB_SESS_USERID']."' and bemail='Y' and (unix_timestamp(ce.start_date)-((cer.day*24*60*60)+(cer.hour*60*60)+(cer.minute*60))) < unix_timestamp() and processed='N'");
+	$res = $babDB->db_query("select ce.*, cer.* from ".BAB_CAL_EVENTS_REMINDERS_TBL." cer left join ".BAB_CAL_EVENTS_TBL." ce on ce.id=cer.id_event where bemail='Y' and (unix_timestamp(ce.start_date)-((cer.day*24*60*60)+(cer.hour*60*60)+(cer.minute*60))) < unix_timestamp() and processed='N'");
 
 	if( $res && $babDB->db_num_rows($res) > 0 )
 	{
