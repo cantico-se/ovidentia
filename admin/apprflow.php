@@ -547,7 +547,11 @@ function saveSchema($rows, $cols, $order, $schname, $schdesc, $idsch, $ocid, $ty
 				{
 				$res = $db->db_query("select * from ".BAB_FA_INSTANCES_TBL." where idsch='".$idsch."'");
 				while( $arr = $db->db_fetch_array($res))
+					{
 					updateSchemaInstance($arr['id']);
+					// force notifications otherwise approbations will not be seen
+					getWaitingApproversFlowInstance($arr['id'], true);
+					}
 				}
 			}
 		}
