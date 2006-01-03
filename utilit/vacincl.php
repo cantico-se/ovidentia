@@ -437,6 +437,7 @@ function viewVacationCalendar($users, $period = false )
 			$id = isset($_REQUEST['id']) ? $_REQUEST['id'] : 0;
 
 			$urltmp = $GLOBALS['babUrlScript']."?tg=".$_REQUEST['tg']."&idx=".$_REQUEST['idx']."&id=".$id;
+
 			if (!empty($_REQUEST['popup']))
 				{
 				$urltmp .= '&popup=1';
@@ -1673,6 +1674,26 @@ function bab_isPlanningAccessValid()
 	global $babDB;
 	$res = $babDB->db_query("SELECT id_user FROM ".BAB_VAC_PLANNING_TBL." WHERE id_user='".$GLOBALS['BAB_SESS_USERID']."'");
 	return  $babDB->db_num_rows($res) > 0;
+}
+
+
+function bab_getVacationOption($field) {
+	$db = &$GLOBALS['babDB'];
+
+	static $arr = null;
+
+	if (null == $arr) {
+		$res = $db->db_query("SELECT * FROM ".BAB_VAC_OPTIONS_TBL);
+		if (0 < $db->db_num_rows($res)) {
+			$arr = $db->db_fetch_assoc($res);
+		} else {
+			$arr = array(
+				'chart_superiors_create_request' => 0	
+			);
+		}
+	}
+
+	return $arr[$field];
 }
 
 ?>

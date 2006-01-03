@@ -57,6 +57,41 @@ function bab_isRequestEditable($id)
 	}
 
 
+
+
+function bab_vacRequestCreate($id_user) {
+	global $babBody;
+	$db = & $GLOBALS['babDB'];
+
+	$res = $db->db_query("SELECT COUNT(*) FROM ".BAB_VAC_PERSONNEL_TBL." WHERE id_user='".$id_user."'");
+	list($n) = $db->db_fetch_array($res);
+	
+	if ($n == 0) {
+		$babBody->msgerror = bab_translate("Access denied");
+		return false;
+		}
+
+	if ($id_user == $GLOBALS['BAB_SESS_USERID']) {
+		return true;
+		}
+	else
+		{
+		$acclevel = bab_vacationsAccess();
+		if( isset($acclevel['manager']) && $acclevel['manager'] == true)
+			{
+			return true;
+			}
+		
+		if (bab_getVacationOption('chart_superiors_create_request')  && bab_IsUserUnderSuperior($id_user)) {
+			return true;
+			}
+		}
+
+	$babBody->msgerror = bab_translate("Access denied");
+	return false;
+	}
+
+
 function requestVacation($begin,$end, $halfdaybegin, $halfdayend, $id)
 	{
 	global $babBody;
@@ -945,9 +980,20 @@ switch($idx)
 			}
 		else
 			{
-			if( !isset($id_user)) { $id_user = $GLOBALS['BAB_SESS_USERID']; }
-			viewVacationCalendar(array($id_user), true);
-			period($id_user);
+			if (isset($_GET['idu']) && is_numeric($_GET['idu'])) {
+				$id_user = $_GET['idu'];
+				}
+			else
+				$id_user = !isset($_REQUEST['id_user']) ? $GLOBALS['BAB_SESS_USERID'] : $_REQUEST['id_user'];
+
+			if (bab_vacRequestCreate($id_user)) {
+				viewVacationCalendar(array($id_user), true);
+				period($id_user);
+				}
+			else
+				{
+				$babBody->msgerror = bab_translate("Access denied");
+				}
 			}
 		if ($entities_access > 0)
 			$babBody->addItemMenu("entities", bab_translate("Delegate management"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entities");

@@ -82,6 +82,38 @@ function listVacationManagers()
 }
 
 
+
+function vacationOptions()
+{
+	global $babBody;
+
+	class temp
+		{
+		
+
+		function temp()
+			{
+			$this->db = &$GLOBALS['babDB'];
+
+			$this->t_yes = bab_translate("Yes");
+			$this->t_no = bab_translate("No");
+			$this->t_chart_superiors_create_request = bab_translate("Allow managers to create vacation requests for users in chart");
+
+			$req = "SELECT * FROM ".BAB_VAC_OPTIONS_TBL."";
+			$this->arr = $this->db->db_fetch_assoc($this->db->db_query($req));
+
+			$this->t_record = bab_translate("Record");
+			}
+		}
+
+	$temp = new temp();
+	$babBody->babecho(	bab_printTemplate($temp, "admvacs.html", "options"));
+}
+
+
+
+
+
 function addVacationManager($managerid)
 {
 	global $babBody, $babDB;
@@ -105,6 +137,20 @@ function delVacationManagers($managers)
 	}
 }
 
+
+function record_options() {
+	$db = &$GLOBALS['babDB'];
+
+	list($n) = $db->db_fetch_array($db->db_query("SELECT COUNT(*) FROM ".BAB_VAC_OPTIONS_TBL.""));
+	if ($n > 0) {
+
+		$db->db_query("UPDATE ".BAB_VAC_OPTIONS_TBL." SET chart_superiors_create_request='".$_POST['chart_superiors_create_request']."'");
+	} else {
+		$db->db_query("INSERT INTO ".BAB_VAC_OPTIONS_TBL." ( chart_superiors_create_request) VALUES ('".$_POST['chart_superiors_create_request']."')");
+	}
+}
+
+
 /* main */
 if( !$babBody->isSuperAdmin )
 	{
@@ -126,14 +172,30 @@ else if( isset($del) && $del == 'delm' )
 	delVacationManagers($managers);
 	}
 
+if (isset($_POST['action'])) {
+	switch($_POST['action']) {
+		case 'options':
+			record_options();
+			break;
+		}
+	}
+
+$babBody->addItemMenu("list", bab_translate("Managers"), $GLOBALS['babUrlScript']."?tg=admvacs&idx=list");
+$babBody->addItemMenu('options', bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=admvacs&idx=options");
+
 
 switch($idx)
 	{
+	case 'options':
+		$babBody->title = bab_translate("List of vacations managers");
+		vacationOptions();
+		break;
+	
+	
 	default:
 	case "list":
 		$babBody->title = bab_translate("List of vacations managers");
 		listVacationManagers();
-		$babBody->addItemMenu("list", bab_translate("Managers"), $GLOBALS['babUrlScript']."?tg=admvacs&idx=list");
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);

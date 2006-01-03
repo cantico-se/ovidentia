@@ -5360,7 +5360,15 @@ return $ret;
 function upgrade573to574()
 {	
 $ret = "";
+$db = & $GLOBALS['babDB'];
 
+$arr = $db->db_fetch_array($db->db_query("SHOW TABLES LIKE '".BAB_VAC_OPTIONS_TBL."'"));
+if ( $arr[0] != BAB_VAC_OPTIONS_TBL )
+	{
+	$db->db_query("CREATE TABLE `".BAB_VAC_OPTIONS_TBL."` (
+	`chart_superiors_create_request` TINYINT( 1 ) UNSIGNED NOT NULL
+	)");
+	}
 
 return $ret;
 }

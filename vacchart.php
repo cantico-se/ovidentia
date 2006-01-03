@@ -145,6 +145,9 @@ function entity_members($ide, $template)
 			$this->t_view_calendar = bab_translate('View calendars');
 			$this->t_collection = bab_translate('Collection');
 			$this->t_schema = bab_translate('Approbation schema');
+			$this->t_request = bab_translate('Request');
+
+			$this->requests = bab_getVacationOption('chart_superiors_create_request');
 			
 			$this->users = array();
 			$this->b_rights = $this->superior_id != $GLOBALS['BAB_SESS_USERID'];
