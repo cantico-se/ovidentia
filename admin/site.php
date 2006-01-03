@@ -1301,7 +1301,7 @@ function siteSave($name, $description,$babslogan, $lang, $siteemail, $skin, $sty
 function siteUpdate_menu1()
 {
 	$db = &$GLOBALS['babDB'];
-	global $babBody;
+	global $babBody, $babLangFilter;
 
 	$name			= &$_POST['name'];
 	$description	= &$_POST['description'];
@@ -1311,9 +1311,10 @@ function siteUpdate_menu1()
 	$siteemail		= &$_POST['siteemail'];
 	$adminname		= &$_POST['adminname'];
 	$skin			= &$_POST['skin'];
-	$langfilter		= &$_POST['langfilter'];
+	$langfilter		= &$babLangFilter->convertFilterToInt($_POST['langfilter']);
 	$name_order		= &$_POST['name_order'];
 	$statlog		= &$_POST['statlog'];
+
 
 	if( empty($name))
 		{
