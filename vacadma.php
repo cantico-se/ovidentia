@@ -557,6 +557,7 @@ function addModifyVacationRigths($id = false)
 			$this->t_all = bab_translate("All");
 			$this->t_periodvalid = bab_translate("Retention period"). " (".bab_translate("dd-mm-yyyy").")";
 			$this->t_right_type = bab_translate("Right type");
+			$this->t_no_distribution = bab_translate("Distribution on request");
 
 			$this->t_datebegintxt = bab_translate("Begin date");
 			$this->t_dateendtxt = bab_translate("End date");
@@ -1363,7 +1364,8 @@ function updateVacationRight()
 				date_begin_fixed='".$post['date_begin_fixed']."', 
 				date_end_fixed='".$post['date_end_fixed']."', 
 				day_begin_fixed='".$post['halfdaybeginfx']."', 
-				day_end_fixed='".$post['halfdayendfx']."' 
+				day_end_fixed='".$post['halfdayendfx']."', 
+				no_distribution='".$post['no_distribution']."'
 			WHERE id='".$post['idvr']."'
 			
 			");
@@ -1414,7 +1416,8 @@ function updateVacationRight()
 				date_begin_fixed, 
 				date_end_fixed, 
 				day_begin_fixed, 
-				day_end_fixed
+				day_end_fixed,
+				no_distribution
 				) 
 			values 
 				(
@@ -1432,7 +1435,8 @@ function updateVacationRight()
 				'".$post['date_begin_fixed']."', 
 				'".$post['date_end_fixed']."', 
 				'".$post['halfdaybeginfx']."', 
-				'".$post['halfdayendfx']."'
+				'".$post['halfdayendfx']."', 
+				'".$post['no_distribution']."'
 				)
 			");
 

@@ -405,6 +405,20 @@ return true;
 					</select>
 				</td>
 			</tr>
+			<tr> 
+				<td align="right">{ t_no_distribution }:</td>
+				<td > 
+					<select name="no_distribution">
+					<!--#if arr[no_distribution] -->
+					<option value="1" selected="selected">{ no }</option>
+					<option value="0">{ yes }</option>
+					<!--#else arr[no_distribution] -->
+					<option value="1">{ no }</option>
+					<option value="0" selected="selected">{ yes }</option>
+					<!--#endif arr[no_distribution] -->
+					</select>
+				</td>
+			</tr>
 			</tbody>
 			<tbody id="vac_right_rules">
 				

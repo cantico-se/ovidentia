@@ -5370,6 +5370,13 @@ if ( $arr[0] != BAB_VAC_OPTIONS_TBL )
 	)");
 	}
 
+$arr = $db->db_fetch_array($db->db_query("DESCRIBE ".BAB_VAC_RIGHTS_TBL." no_distribution"));
+if ('no_distribution' != $arr[0])
+	{
+
+	$db->db_query("ALTER TABLE `".BAB_VAC_RIGHTS_TBL."` ADD `no_distribution` TINYINT( 1 ) UNSIGNED NOT NULL");
+	}
+
 return $ret;
 }
 

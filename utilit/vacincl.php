@@ -363,15 +363,16 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 		
 		if ( $access )
 			$return[] = array(
-						'id' =>			$arr['id'],
-						'date_begin' => $arr['date_begin'],
-						'date_end' =>   $arr['date_end'],
-						'quantity' =>   $arr['quantity'],
-						'description' =>$arr['description'],
-						'cbalance' =>   $arr['cbalance'],
-						'quantitydays'=>$quantitydays,
-						'used' =>		$qdp,
-						'waiting' =>	$waiting
+						'id'				=> $arr['id'],
+						'date_begin'		=> $arr['date_begin'],
+						'date_end'			=> $arr['date_end'],
+						'quantity'			=> $arr['quantity'],
+						'description'		=> $arr['description'],
+						'cbalance'			=> $arr['cbalance'],
+						'quantitydays'		=> $quantitydays,
+						'used'				=> $qdp,
+						'waiting'			=> $waiting,
+						'no_distribution'	=> $arr['no_distribution']
 						);
 		}
 	return $return;

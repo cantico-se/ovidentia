@@ -1487,6 +1487,7 @@ CREATE TABLE bab_vac_rights (
   date_end_fixed date NOT NULL default '0000-00-00',
   day_begin_fixed tinyint(3) unsigned NOT NULL default '0',
   day_end_fixed tinyint(3) unsigned NOT NULL default '0',
+  no_distribution tinyint(1) unsigned NOT NULL default '0',
   PRIMARY KEY  (id),
   KEY id_type (id_type),
   KEY date_entry (date_entry)

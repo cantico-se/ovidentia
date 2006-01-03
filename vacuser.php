@@ -284,7 +284,7 @@ function requestVacation($begin,$end, $halfdaybegin, $halfdayend, $id)
 					else
 						$this->nbdays = 0;
 					}
-				elseif ( $this->period_nbdays2 > 0 && $this->right['quantitydays'] > 0)
+				elseif (0 == $this->right['no_distribution'] && $this->period_nbdays2 > 0 && $this->right['quantitydays'] > 0)
 					{
 					if ($this->period_nbdays2 >= $this->right['quantitydays'])
 						{
