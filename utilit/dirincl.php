@@ -671,9 +671,10 @@ function getDirEntry($id, $type) {
 					".$str_leftjoin_col."
 				FROM 
 					".BAB_DBDIR_ENTRIES_TBL." e 
+					LEFT JOIN ".BAB_USERS_TBL." dis ON dis.id = e.id_user AND dis.disabled='1' 
 					".$str_leftjoin." 
 				WHERE 
-					".$colname." IN('".$id."')
+					".$colname." IN('".$id."') AND dis.id IS NULL
 
 	");
 

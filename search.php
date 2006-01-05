@@ -1156,11 +1156,13 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 						".$additional." 
 
 				LEFT JOIN ".BAB_USERS_GROUPS_TBL." u ON u.id_object = e.id_user AND u.id_group IN ('".implode("','",$arr_grp)."') 
+				LEFT JOIN ".BAB_USERS_TBL." dis ON dis.id = e.id_user AND dis.disabled='1' 
 					
 				WHERE (
 				".$crit_fields." 
 				t.id IS NOT NULL
 				)
+				AND dis.id IS NULL 
 				AND ".$crit_fields_add_str." 
 					(
 					e.id_directory IN ( '0', '".implode("','",$arr_dir)."' ) 
@@ -1337,7 +1339,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					{
 					if ($like != "(")
 							$like .= " or ";
-						$like .= finder($this->like,$colname,$this->option,$this->like2);
+						$like .= finder($this->like,'e.'.$colname,$this->option,$this->like2);
 					}
 				}
 			$like .= ") ";

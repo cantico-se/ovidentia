@@ -335,14 +335,27 @@ class bab_DbDirectoryMembers extends bab_handler
 					if( $idgroup > 1 )
 						{
 						$req = " ".BAB_DBDIR_ENTRIES_TBL." e,
-								".BAB_USERS_GROUPS_TBL." u ".implode(' ',$leftjoin)." 
+								".BAB_USERS_GROUPS_TBL." u,
+								".BAB_USERS_TBL." u2 
+									".implode(' ',$leftjoin)." 
 									WHERE u.id_group='".$idgroup."' 
+									AND u2.id=e.id_user 
+									AND u2.disabled='0' 
 									AND u.id_object=e.id_user 
 									AND e.id_directory='0'";
 						}
+					elseif (1 == $idgroup) {
+						$req = " ".BAB_DBDIR_ENTRIES_TBL." e,
+						".BAB_USERS_TBL." u 
+						".implode(' ',$leftjoin)." 
+						WHERE 
+							u.id=e.id_user 
+							AND u.disabled='0' 
+							AND e.id_directory='0'";
+						}
 					else
 						{
-						$req = " ".BAB_DBDIR_ENTRIES_TBL." e ".implode(' ',$leftjoin)." WHERE e.id_directory='".(1 == $idgroup ? 0 : $this->directoryid )."'";
+						$req = " ".BAB_DBDIR_ENTRIES_TBL." e ".implode(' ',$leftjoin)." WHERE e.id_directory='".$this->directoryid ."'";
 						}
 
 
