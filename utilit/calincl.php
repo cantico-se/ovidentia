@@ -263,7 +263,7 @@ class bab_icalendars
 		$this->defaultview = BAB_CAL_VIEW_MONTH;
 		$this->starttime = "00:00:00";
 		$this->endtime = "23:59:59";
-		$this->dispdays = "1,2,3,4,5";
+		$this->dispdays = $babBody->babsite['workdays'];
 		$this->workdays = $babBody->babsite['workdays'];
 		$this->user_calendarids = '';
 		if( empty($iduser) && isset($GLOBALS['BAB_SESS_USERID']))
