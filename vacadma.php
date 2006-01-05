@@ -556,7 +556,7 @@ function addModifyVacationRigths($id = false)
 			$this->t_trigger_type = bab_translate("Allow rule with type");
 			$this->t_all = bab_translate("All");
 			$this->t_periodvalid = bab_translate("Retention period"). " (".bab_translate("dd-mm-yyyy").")";
-			$this->t_right_type = bab_translate("Right type");
+			$this->t_right_type = bab_translate("Nature of the right");
 			$this->t_no_distribution = bab_translate("Distribution on request");
 
 			$this->t_datebegintxt = bab_translate("Begin date");
