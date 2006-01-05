@@ -2240,57 +2240,51 @@ class bab_RecentPosts extends bab_handler
 		$this->nbdays = $ctx->get_value('from_lastlog');
 		$this->last = $ctx->get_value('last');
 		$this->forumid = $ctx->get_value('forumid');
+		$access = array_keys(bab_getUserIdObjects(BAB_FORUMSVIEW_GROUPS_TBL));
+
 		if( $this->forumid === false || $this->forumid === '' )
-			$arr = array();
+			{
+			$arr = $access;
+			}
 		else
+			{
 			$arr = explode(',', $this->forumid);
+			$arr = array_intersect($arr, $access);
+			}
 
 		if( count($arr) > 0 )
 			{
-			$req = "SELECT p.id, p.id_thread, f.id id_forum FROM ".BAB_POSTS_TBL." p LEFT JOIN ".BAB_THREADS_TBL." t on p.id_thread = t.id LEFT JOIN ".BAB_FORUMS_TBL." f on f.id = t.forum WHERE f.active='Y' and t.forum IN (".implode(',', $arr).") and p.confirmed='Y'";	
+			$req = "SELECT p.*, f.id id_forum FROM ".BAB_POSTS_TBL." p LEFT JOIN ".BAB_THREADS_TBL." t on p.id_thread = t.id LEFT JOIN ".BAB_FORUMS_TBL." f on f.id = t.forum WHERE f.active='Y' and t.forum IN (".implode(',', $arr).") and p.confirmed='Y'";	
+
+			if( $this->nbdays !== false)
+				$req .= " and p.date >= DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
+
+
+			$order = $ctx->get_value('order');
+			if( $order === false || $order === '' )
+				$order = "desc";
+
+			switch(strtoupper($order))
+			{
+				case "ASC": $order = "p.date ASC"; break;
+				case "RAND": $order = "rand()"; break;
+				case "DESC":
+				default: $order = "p.date DESC"; break;
+			}
+
+			$req .= " order by ".$order;
+			
+			if( $this->last !== false)
+				$req .= " limit 0, ".$this->last;
+
+			$this->res = $babDB->db_query($req);
+			$this->count = $babDB->db_num_rows($this->res);
 			}
 		else
 			{
-			$req = "SELECT p.id, p.id_thread, f.id id_forum FROM ".BAB_POSTS_TBL." p LEFT JOIN ".BAB_THREADS_TBL." t on p.id_thread = t.id LEFT JOIN ".BAB_FORUMS_TBL." f on f.id = t.forum WHERE f.active='Y' and p.confirmed='Y'";			
+			$this->count = 0;
 			}
 
-		if( $this->nbdays !== false)
-			$req .= " and p.date >= DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
-
-
-		$order = $ctx->get_value('order');
-		if( $order === false || $order === '' )
-			$order = "desc";
-
-		switch(strtoupper($order))
-		{
-			case "ASC": $order = "p.date ASC"; break;
-			case "RAND": $order = "rand()"; break;
-			case "DESC":
-			default: $order = "p.date DESC"; break;
-		}
-
-		$req .= " order by ".$order;
-		
-		if( $this->last !== false)
-			$req .= " limit 0, ".$this->last;
-
-		$res = $babDB->db_query($req);
-
-		while( $row = $babDB->db_fetch_array($res))
-			{
-			if(bab_isAccessValid(BAB_FORUMSVIEW_GROUPS_TBL, $row['id_forum']))
-				{
-				array_push($this->arrid, $row['id']);
-				array_push($this->arrfid, $row['id_forum']);
-				}
-			}
-		$this->count = count($this->arrid);
-		if( $this->count > 0 )
-			{
-			$this->res = $babDB->db_query("select * from ".BAB_POSTS_TBL." p where id IN (".implode(',', $this->arrid).") order by ".$order);
-			$this->count = $babDB->db_num_rows($this->res);
-			}
 		$this->ctx->curctx->push('CCount', $this->count);
 		}
 
@@ -2306,11 +2300,11 @@ class bab_RecentPosts extends bab_handler
 			$this->ctx->curctx->push('PostText', $arr['message']);
 			$this->ctx->curctx->push('PostId', $arr['id']);
 			$this->ctx->curctx->push('PostThreadId', $arr['id_thread']);
-			$this->ctx->curctx->push('PostForumId', $this->arrfid[$this->idx]);
+			$this->ctx->curctx->push('PostForumId', $arr['id_forum']);
 			$this->ctx->curctx->push('PostAuthor', $arr['author']);
 			$this->ctx->curctx->push('PostDate', bab_mktime($arr['date']));
-			$this->ctx->curctx->push('PostUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$this->arrfid[$this->idx]."&thread=".$arr['id_thread']."&post=".$arr['id'].'&views=1');
-			$this->ctx->curctx->push('PostPopupUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=viewp&forum=".$this->arrfid[$this->idx]."&thread=".$arr['id_thread']."&post=".$arr['id'].'&views=1');
+			$this->ctx->curctx->push('PostUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$arr['id_forum']."&thread=".$arr['id_thread']."&post=".$arr['id'].'&views=1');
+			$this->ctx->curctx->push('PostPopupUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=viewp&forum=".$arr['id_forum']."&thread=".$arr['id_thread']."&post=".$arr['id'].'&views=1');
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
