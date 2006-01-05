@@ -249,8 +249,21 @@ switch($idx)
 		break;
 	case "create":
 	default:
-		//$msgerror = bab_translate("Create contact");
-		contactCreate($id, $firstname, $lastname, $email, $compagny, $hometel, $mobiletel, $businesstel, $businessfax, $jobtitle, $baddress, $haddress, $bliste);
+		
+		$id				= isset($_REQUEST['id'])			? $_REQUEST['id'] : '';
+		$firstname		= isset($_REQUEST['firstname'])		? $_REQUEST['firstname'] : '';
+		$lastname		= isset($_REQUEST['lastname'])		? $_REQUEST['lastname'] : '';
+		$email			= isset($_REQUEST['email'])			? $_REQUEST['email'] : '';
+		$compagny		= isset($_REQUEST['compagny'])		? $_REQUEST['compagny'] : '';
+		$hometel		= isset($_REQUEST['hometel'])		? $_REQUEST['hometel'] : '';
+		$mobiletel		= isset($_REQUEST['mobiletel'])		? $_REQUEST['mobiletel'] : '';
+		$businesstel	= isset($_REQUEST['businesstel'])	? $_REQUEST['businesstel'] : '';
+		$businessfax	= isset($_REQUEST['businessfax'])	? $_REQUEST['businessfax'] : '';
+		$jobtitle		= isset($_REQUEST['jobtitle'])		? $_REQUEST['jobtitle'] : '';
+		$baddress		= isset($_REQUEST['baddress'])		? $_REQUEST['baddress'] : '';
+		$haddress		= isset($_REQUEST['haddress'])		? $_REQUEST['haddress'] : '';
+		
+		contactCreate($id, $firstname, $lastname, $email, $compagny, $hometel, $mobiletel, $businesstel, $businessfax, $jobtitle, $baddress, $haddress, $_REQUEST['bliste']);
 		break;
 	}
 ?>

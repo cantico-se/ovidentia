@@ -3,56 +3,56 @@
 <input type="hidden" name="tg" value="contacts">
 <input type="hidden" name="idx" value="delete">
 <input type="hidden" name="pos" value="{ pos }">
-<table border="0" width="95%" cellpadding="1" cellspacing="0" align="center">
+<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
 <tr> 
-<td> 
-<table class="BabMailBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
-<tr> 
+<td class="BabLoginCadreBackground"> 
+<table border="0" width="100%" cellpadding="2" cellspacing="0">
+<tr class="BabSiteAdminTitleFontBackground"> 
 <td colspan="5" valign="middle" class="BabLetterlists"> 
 <!--#if allselected "== 1" -->
-{ allname }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="5" border="0"> 
+{ allname } &nbsp;
 <!--#else allselected -->
-<a class="BabAlphabetLink" href="{ allurl }">{ allname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="5" border="0"> 
+<a href="{ allurl }">{ allname }</a> &nbsp; 
 <!--#endif allselected -->
 <!--#in getnextselect -->
 <!--#if selected "== 1" -->
-{ selectname }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="5" border="0">
+{ selectname } 
 <!--#else selected -->
-<a class="BabAlphabetLink" href="{ selecturl }">{ selectname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="5" border="0"> 
+<a href="{ selecturl }">{ selectname }</a> 
 <!--#endif selected -->
 <!--#endin getnextselect -->
 </td>
-<td width="1" align="right" valign="middle" nowrap class="BabLetterlists"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="5" border="0"><a class="BabAlphabetLink" href="javascript: Start('{ addurl }', 'OviAdContact', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ addcontact }</a></td></tr>
-<tr> 
-              
-<td width="1%" valign="middle" class="BabSiteAdminSmall"><a href="javascript:onCheckAll('item', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('item', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
-<td class="BabSiteAdminSmall" valign="middle" nowrap><a class="BabNameEmailLink" href="{ urlfullname }">{ fullname }</a></td>
-<td class="BabSiteAdminSmall" valign="middle" >{ email }</td>
-<td class="BabSiteAdminSmall" valign="middle" >{ compagny }</td>
-<td class="BabSiteAdminSmall" valign="middle" >{ btel }</td>
-<td class="BabSiteAdminSmall" valign="middle" >{ mtel }</td>
+<td align="right" class="BabLetterlists"><a href="javascript: Start('{ addurl }', 'OviAdContact', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ addcontact }</a></td>
+</tr>
+
+<tr class="BabSiteAdminTitleFontBackground">         
+	<td width="1%"><a href="javascript:onCheckAll('item', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" border="0" /></a><a href="javascript:onCheckAll('item', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" border="0" /></a></td>
+	<td><a href="{ urlfullname }">{ fullname }</a></td>
+	<td>{ email }</td>
+	<td>{ compagny }</td>
+	<td>{ btel }</td>
+	<td>{ mtel }</td>
 </tr>
 <!--#in getnext -->
 <!--#if altbg --><tr valign="middle" class="BabSiteAdminFontBackground"><!--#else altbg --><tr valign="middle" class="BabForumBackground1"><!--#endif altbg -->
 <td width="1%"> 
 <input type="checkbox" name="item[]" value="{ arr[id] }">
 </td>
-<td width="20%" nowrap><a class="BabNameEmailLink" href="javascript: Start('{ url }', 'OviVContact', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ 
+<td><a href="javascript: Start('{ url }', 'OviVContact', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ 
 urlname }</a></td>
 <!--#if accid "!= 0" -->
-<td width="20%" nowrap><a class="BabNameEmailLink" href="javascript: Start('{ urlmail }', 'OviMail', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ arr[email] }</a></td>
+<td><a href="javascript: Start('{ urlmail }', 'OviMail', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ arr[email] }</a></td>
 <!--#else accid -->
-<td width="20%" nowrap><a href="mailto:{ arr[email] }" target=_top class="BabNameEmailLink">{ 
-arr[email] }</a></td>
+<td><a href="mailto:{ arr[email] }">{ arr[email] }</a></td>
 <!--#endif accid -->
-<td width="20%"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="5" border="0">{ arr[compagny] }</td>
-<td width="20%"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="5" border="0">{ arr[businesstel] }</td>
-<td width="20%"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="5" border="0">{ arr[mobiletel] }</td>
+<td>{ arr[compagny] }</td>
+<td>{ arr[businesstel] }</td>
+<td>{ arr[mobiletel] }</td>
 </tr> 
 <!--#endin getnext -->
-<tr> 
-<td class="BabSiteAdminSmall" width="1%" align="center"><a href="javascript:submitForm('delete','listform')"><img src="{ babSkinPath }images/Puces/PuceDelete.png" alt="{ deletealt }" width="20" height="20" border="0"></a></td>
-<td class="BabSiteAdminSmall" colspan="5"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="5" border="0"></td>
+<tr class="BabSiteAdminTitleFontBackground"> 
+<td><a href="javascript:submitForm('delete','listform')"><img src="{ babSkinPath }images/Puces/PuceDelete.png" alt="{ deletealt }" border="0" /></a></td>
+<td colspan="5">&nbsp;</td>
 </tr></table>
 </td>
 </tr>

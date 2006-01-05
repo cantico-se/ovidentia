@@ -603,6 +603,12 @@ if( !isset( $message ))
 if( !isset( $sigid ))
 	$sigid = "";
 
+if( !isset( $criteria ))
+	$criteria = "";
+
+if( !isset( $reverse ))
+	$reverse = "";
+
 if( isset($compose) && $compose == "message")
 	{
 	if(!createMail($accid, $to, $cc, $bcc, $subject, $message, $files, $files_name, $files_type,$criteria, $reverse, $format, $sigid))
