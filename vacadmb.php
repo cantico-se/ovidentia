@@ -1233,13 +1233,16 @@ function doDeleteVacationRequests($date, $userid)
 	$ar = explode("-", $date);
 	$dateb = sprintf("%04d-%02d-%02d", $ar[2], $ar[1], $ar[0]);
 
-	$req = "select id from ".BAB_VAC_ENTRIES_TBL." where date_end <='".$dateb."'";
+	$req = "select id, idfai from ".BAB_VAC_ENTRIES_TBL." where date_end <='".$dateb."'";
 	if( $userid != "" )
 		$req .= " and id_user='".$userid."'";
 
 	$res = 	$babDB->db_query($req);
 	while( $arr = $babDB->db_fetch_array($res))
 	{
+		if ($arr['idfai'] > 0) {
+			deleteFlowInstance($arr['idfai']);
+			}
 		doDeleteVacationRequest($arr['id']);
 	}
 }

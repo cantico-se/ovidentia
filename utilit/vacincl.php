@@ -1003,6 +1003,11 @@ function listVacationRequests($id_user)
 			}
 		}
 
+	if (empty($id_user)) {
+		$babBody->msgerror = bab_translate("ERROR: No members");
+		return;
+	}
+
 	$temp = new temp($id_user);
 	$babBody->babecho(	bab_printTemplate($temp, "vacuser.html", "vrequestslist"));
 	return $temp->count;

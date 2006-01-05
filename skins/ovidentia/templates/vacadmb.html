@@ -133,8 +133,7 @@ document.forms['vacfreqs'].dateb.value ='';
 
 
 <!--#begin editvacrequest -->
-<BR>
-<SCRIPT language="JavaScript">
+<script type="text/javaScript">
 <!--
 
 function validateNum(field) {
@@ -259,7 +258,7 @@ if( parseFloat(fr.total.value) > diff )
 return true;
 }
 //-->
-</SCRIPT>
+</script>
 <form name="vacform" method="post" action="{ babPhpSelf }" onSubmit="return validateForm(this);">
 <input type="hidden" name="tg" value="vacadmb">
 <input type="hidden" name="idx" value="lreq">
@@ -271,7 +270,7 @@ return true;
 <td> 
 <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
-<td align="right" valign="middle"><a class="BabSiteAdminListLink" href="javascript: Start('{ datebegin }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ datebegintxt }</a>: </td>
+<td align="right"><a href="javascript: Start('{ datebegin }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ datebegintxt }</a>: </td>
 <td valign="middle"> 
 <select name="daybegin">
   <!--#in getnextday -->
@@ -302,7 +301,7 @@ return true;
 </td>
 </tr>
 <tr> 
-<td width="45%" align="right" valign="middle"><a class="BabSiteAdminListLink" href="javascript: Start('{ dateend }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');"">{ dateendtxt }</a>: </td>
+<td width="45%" align="right" valign="middle"><a href="javascript: Start('{ dateend }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');"">{ dateendtxt }</a>: </td>
 <td valign="middle"> 
 <select name="dayend">
   <!--#in getnextday -->
@@ -333,32 +332,32 @@ return true;
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" valign="middle">{ nbdaystxt }: </td>
-<td class="BabLoginMenuBackground" colspan="4" valign="middle">
+<td align="right">{ nbdaystxt }: </td>
+<td colspan="4">
 <table width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
-<tr><td class="BabLoginMenuBackground" >&nbsp;</td><td class="BabLoginMenuBackground" >&nbsp;</td><td class="BabLoginMenuBackground" >{ balancetxt }</td></tr>
+<tr><td>&nbsp;</td><td>&nbsp;</td><td>{ balancetxt }</td></tr>
 <!--#in getnexttype -->
-<tr><td class="BabLoginMenuBackground" ><input type="text" name="{ nbdaysname }" size="5" maxlength="5" value="{ nbdays }" onBlur="validateDayField(this)"></td><td class="BabLoginMenuBackground" >{ typename }</td><td class="BabLoginMenuBackground" >{ quantitydays }</td></tr>
+<tr><td><input type="text" name="{ nbdaysname }" size="5" maxlength="5" value="{ nbdays }" onBlur="validateDayField(this)" /></td><td>{ typename }</td><td>{ quantitydays }</td></tr>
 <!--#endin getnexttype -->
 </table>
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" valign="middle">{ totaltxt }: </td>
-<td class="BabLoginMenuBackground" colspan="4" valign="middle">
-<input type="text" name="total" size="5" maxlength="5" value="{ totalval }">
+<td align="right">{ totaltxt }: </td>
+<td colspan="4">
+<input type="text" name="total" size="5" maxlength="5" value="{ totalval }" />
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" valign="middle">{ remark }: </td>
-<td class="BabLoginMenuBackground" colspan="4" valign="middle">
+<td align="right">{ remark }: </td>
+<td colspan="4">
 <textarea cols="40" rows="10" name="remarks">{ remarks }</textarea>
 </td>
 </tr>
 <tr> 
 <td>&nbsp;</td>
 <td colspan="4" valign="middle"> 
-<input type="submit" name="Submit" value="{ addvac }">&nbsp;&nbsp;<input type="submit" name="bdelete" value="{ deletetxt }">
+<input type="submit" name="Submit" value="{ addvac }" />&nbsp;&nbsp;<input type="submit" name="bdelete" value="{ deletetxt }" />
 <br>
 </td>
 </tr>
