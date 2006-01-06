@@ -1230,6 +1230,7 @@ return true;
 	</select>
 	</td>
 	</tr>
+	<!--#if countgrp "> 0" -->
 	<tr> 
 	<td align="right">{ groupstxt }:</td>
 	<td> 
@@ -1238,6 +1239,13 @@ return true;
 	<!--#endin getnextgroup -->
 	</td>
 	</tr>
+	<!--#else countgrp -->
+	<tr> 
+		<td align="center" colspan="2">
+			{ t_grp_error }
+		</td>
+	</tr>
+	<!--#endif countgrp -->
 	<tr> 
 	<td colspan="2"> 
 	&nbsp;</td>

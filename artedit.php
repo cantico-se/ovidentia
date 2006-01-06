@@ -559,8 +559,8 @@ class bab_TreeIterator
 
 
 
-define(BAB_TOPIC_SUBMIT, 1);
-define(BAB_TOPIC_MODIFY, 2);
+define('BAB_TOPIC_SUBMIT', 1);
+define('BAB_TOPIC_MODIFY', 2);
 
 function showTopicTree($actionType, $selectedTopicId)
 {
@@ -1549,6 +1549,7 @@ function showSetArticleProperties($idart)
 						$this->restrictiontxt = bab_translate("Access restriction");
 						$this->norestricttxt = bab_translate("No restriction");
 						$this->yesrestricttxt = bab_translate("Groups");
+						$this->t_grp_error = bab_translate("The read access on the topic must be defined with a list of groups to use the group restriction");
 						$this->resgrp = $babDB->db_query("select r.* from ".BAB_TOPICSVIEW_GROUPS_TBL." r,".BAB_GROUPS_TBL." g where r.id_object='".$this->drafttopic."' AND r.id_group = g.id AND g.lf>='3'");
 						if( $this->resgrp )
 							{
