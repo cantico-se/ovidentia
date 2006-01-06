@@ -518,8 +518,8 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 					}
 				else
 					{
-					$firstn = $arr[0];
-					$lastn = $arr[1];
+					$firstn = isset($arr[0]) ? $arr[0] : '';
+					$lastn = isset($arr[1]) ? $arr[1] : '';
 					}
 				$this->addurl = $GLOBALS['babUrlScript']."?tg=contact&idx=create&firstname=".$firstn."&lastname=".$lastn."&email=".$this->arrfrom[$i][1]."&bliste=0";
 				$this->addname = $this->arrfrom[$i][0]. " &lt;" . $this->arrfrom[$i][1] . "&gt;";
@@ -572,7 +572,7 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 				if($structure->type != 1)
 					{
 					$disp = isset($structure->disposition) ? strtoupper($structure->disposition) : '';
-					if ( $disp == "ATTACHMENT")
+					if ( $disp == "ATTACHMENT" || ($disp == "INLINE" && !isset($structure->id)) )
 						{
 						if ($structure->ifdparameters)
 							{
@@ -640,7 +640,7 @@ function get_cid_part($mbox, $msg_number, $cid, $structure = false, $part_number
 
 	if($structure) 
 		{ 
-		if ($cid == $structure->id)
+		if (isset($structure->id) && $cid == $structure->id)
 			{
 
 			if(!$part_number)
@@ -662,6 +662,7 @@ function get_cid_part($mbox, $msg_number, $cid, $structure = false, $part_number
 			}
 		if($structure->type == 1) /* multipart */ 
 			{ 
+			$prefix = '';
 			while(list($index, $sub_structure) = each($structure->parts)) 
 				{ 
 				if($part_number) 
@@ -682,7 +683,7 @@ function get_cid_part($mbox, $msg_number, $cid, $structure = false, $part_number
 
 function showPart($accid, $msg, $cid)
 	{
-		global $BAB_HASH_VAR;
+		global $BAB_SESS_USERID, $BAB_HASH_VAR;
 	$db = $GLOBALS['babDB'];
 	$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$BAB_SESS_USERID."' and id='".$accid."'";
 	$res = $db->db_query($req);
@@ -865,7 +866,7 @@ switch($idx)
 		break;
 
 	case "getpart":
-		showPart($msg, $cid);
+		showPart($accid,$msg, $cid);
 		break;
 
 	case "delete":
