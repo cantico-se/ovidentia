@@ -842,6 +842,11 @@ function bab_replace_var(&$txt,$var,$new)
 	
 function bab_replace_make_link($url,$text,$popup = 0,$url_popup = false)
 	{
+	if (isset($GLOBALS['bab_replace_ext_url'])) {
+		$url = $GLOBALS['babUrlScript']."?tg=login&cmd=detect&referer=".urlencode($url);
+		$popup = 0;
+		}
+
 	$url = ($popup == 1 || $popup == true) && $url_popup != false ? $url_popup : $url;
 	if ($popup == 1 || $popup === true)
 		{
@@ -856,6 +861,14 @@ function bab_replace_make_link($url,$text,$popup = 0,$url_popup = false)
 function bab_replace( $txt, $remove = '')
 	{
 	bab_replace_ref( $txt, $remove);
+	return $txt;
+	}
+
+function bab_replace_ext($txt, $remove = '')
+	{
+	$GLOBALS['bab_replace_ext_url'] = true;
+	bab_replace_ref( $txt, $remove);
+	unset($GLOBALS['bab_replace_ext_url']);
 	return $txt;
 	}
 

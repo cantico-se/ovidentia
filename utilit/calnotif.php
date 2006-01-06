@@ -74,9 +74,12 @@ function sendReminders()
 		while( $arr = $babDB->db_fetch_array($res))
 		{
 			$mail->clearTo();
-			$mail->mailTo(bab_getUserEmail($arr['id_user']), bab_getUserName($arr['id_user']));
+			$email = bab_getUserEmail($arr['id_user']);
+			$name = bab_getUserName($arr['id_user']);
+			$mail->mailTo($email, $name);
+			echo $name.' : '.$email.'<br />';
 
-			$tempc = new clsCalEventReminder($arr['title'], bab_replace($arr['description']), bab_longDate(bab_mktime($arr['start_date'])), bab_longDate(bab_mktime($arr['end_date'])));
+			$tempc = new clsCalEventReminder($arr['title'], bab_replace_ext($arr['description']), bab_longDate(bab_mktime($arr['start_date'])), bab_longDate(bab_mktime($arr['end_date'])));
 			$message = $mail->mailTemplate(bab_printTemplate($tempc,"mailinfo.html", "eventreminder"));
 			$mail->mailSubject(bab_translate("Event reminder"));
 			$mail->mailBody($message, "html");
@@ -88,7 +91,6 @@ function sendReminders()
 			$babDB->db_query("update ".BAB_CAL_EVENTS_REMINDERS_TBL." set processed='Y' where id_event='".$arr['id_event']."' and id_user='".$arr['id_user']."'");
 		}
 	}
-
 }
 
 
