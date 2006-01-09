@@ -30,6 +30,7 @@ class bab_dbtree
 	var $table;
 	var $where;
 	var $rootid;
+	var $subtree;
 
 	function bab_dbtree($table, $id, $userinfo = "")
 	{
@@ -38,17 +39,22 @@ class bab_dbtree
 		$this->userinfo = $userinfo;
 		$this->firstnode = 1;
 		$this->firstnode_parent = 0;
+		$this->subtree = '';
 
 		$this->where = "id_user='".$id."'";
 		if( !empty($userinfo))
 			$this->where .= " and info_user='".$userinfo."'";
 	}
 
-	function getWhereClause($table='')
+	function getWhereClause($table='', $subtree = true)
 	{
 		if( empty($table))
 		{
-			return $this->where;
+			if ($subtree) {
+				return $this->where.$this->subtree;
+			} else {
+				return $this->where;
+				}
 		}
 		else
 		{
@@ -59,13 +65,21 @@ class bab_dbtree
 				if( !empty($this->userinfo))
 					$where .= " and ".$table.".info_user='".$this->userinfo."'";
 				}
+
 			return $where;
 		}
 	}
+
+	function setSubTree($lf, $lr)
+	{
+		$this->subtree = " AND lf>='".$lf."' AND lr<='".$lr."'";
+	}
+
+
 	function getNodeInfo($id)
 	{
 		global $babDB;
-		$where = $this->getWhereClause();
+		$where = $this->getWhereClause('', false);
 		if (!empty($where))
 			{
 			$where .= " and";
@@ -104,9 +118,10 @@ class bab_dbtree
 
 		$offset *= 2; 
 
-		$where = $this->getWhereClause();
-		if (!empty($where))
-			{
+		//$where = $this->getWhereClause();
+		$where = $this->getWhereClause('', false);
+
+		if (!empty($where)) {
 			$where = ' and '.$where;
 			}
 
@@ -594,17 +609,33 @@ class bab_dbtree
 				$offset = $parentinfo['lf'];
 				}
 		}
+
 		$offset = $offset - $nodeinfo['lf'];
         $offset++;
 
 		$lf = $nodeinfo['lf'];
 		$lr = $nodeinfo['lr'];
-		$babDB->db_query("UPDATE ".$this->table." set lr = lr+$offset, lf=lf+$offset where lf > '".($lf-1)."' and lr < '".($lr+1)."' and ".$this->getWhereClause());
+
+		$where = $this->getWhereClause('', false);
+		//$where = $this->getWhereClause();
+
+		$query = "UPDATE ".$this->table." set lr = lr+$offset, lf=lf+$offset where lf > '".($lf-1)."' and lr < '".($lr+1)."' and ".$where;
+		//echo $query."\n";
+		$babDB->db_query($query);
 
 		$offset = $lr - $lf + 1;
-		$babDB->db_query("UPDATE ".$this->table." set lr = lr-$offset, lf=lf-$offset where lf > '".$lf."' and ".$this->getWhereClause());
-		$babDB->db_query("UPDATE ".$this->table." set lr = lr-$offset where lf < '".$lf."' and lr > '".$lr."' and ".$this->getWhereClause());
-		$babDB->db_query("UPDATE ".$this->table." set id_parent ='".$parentId."' where ".$this->getWhereClause()." and id='".$id."'");
+
+		$query = "UPDATE ".$this->table." set lr = lr-$offset, lf=lf-$offset where lf > '".$lf."' and ".$where;
+		//echo $query."\n";
+		$babDB->db_query($query);
+
+		$query = "UPDATE ".$this->table." set lr = lr-$offset where lf < '".$lf."' and lr > '".$lr."' and ".$where;
+		//echo $query."\n";
+		$babDB->db_query($query);
+
+		$query = "UPDATE ".$this->table." set id_parent ='".$parentId."' where ".$where." and id='".$id."'";
+		//echo $query."\n";
+		$babDB->db_query($query);
 		return true;
 	}
 

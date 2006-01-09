@@ -463,7 +463,7 @@ function addModGroup()
 
 	$idgrp = &$_POST['grpid'];
 	bab_updateGroupInfo($idgrp, $name, $description, $_POST['manager'], $grpdg );
-	bab_moveGroup($idgrp, $id_parent, $moveoption);
+	bab_moveGroup($idgrp, $id_parent, $moveoption, stripslashes($name));
 
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=groups&idx=List&expand_to=".$idgrp);
 	return $_POST['idx'];

@@ -128,7 +128,7 @@ function bab_updateGroupInfo($id, $name, $description, $managerid, $grpdg = 0)
 	}
 
 /* moveoption 1 only item , 2 item with all childs */
-function bab_moveGroup($id, $id_parent, $moveoption)
+function bab_moveGroup($id, $id_parent, $moveoption, $groupname)
 	{
 	include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
 
@@ -153,10 +153,11 @@ function bab_moveGroup($id, $id_parent, $moveoption)
 	if ($node['id_parent'] != $id_parent)
 		{
 		if ($moveoption == 2)
-			$tree->moveTreeAlpha($id, $id_parent, $name);
+			return $tree->moveTreeAlpha($id, $id_parent, $groupname);
 		else
-			$tree->moveAlpha($id, $id_parent, $name);
+			return $tree->moveAlpha($id, $id_parent, $groupname);
 		}
+	return false;
 	}
 
 function bab_addGroup($name, $description, $managerid, $grpdg, $parent = 1)

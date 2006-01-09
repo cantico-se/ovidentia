@@ -36,13 +36,13 @@ class bab_grptree extends bab_dbtree
 	$this->table = BAB_GROUPS_TBL;
 	$this->firstnode = BAB_ALLUSERS_GROUP;
 	$this->firstnode_parent = NULL;
-	$this->where = 'nb_set >= 0';
+	$this->where = 'nb_set >= \'0\'';
 
 	if ($babBody->currentAdmGroup > 0)
 		{
 		$this->firstnode_info = $this->getNodeInfo($babBody->currentDGGroup['id_group']);
 
-		$this->setDelegation($babBody->currentDGGroup['lf'], $babBody->currentDGGroup['lr']);
+		$this->setSubTree($babBody->currentDGGroup['lf'], $babBody->currentDGGroup['lr']);
 		$this->firstnode = $babBody->currentDGGroup['id_group'];
 
 		$this->firstnode_parent = $this->firstnode_info['id_parent'];
@@ -62,11 +62,6 @@ class bab_grptree extends bab_dbtree
 		{
 		$this->delegat[$arr['id_group']] = 1;
 		}
-	}
-
-	function setDelegation($lf, $lr)
-	{
-	$this->where .= " AND lf>='".$lf."' AND lr<='".$lr."'";
 	}
 
 	function getGroups($id_parent, $format = '%2$s &gt; ')
@@ -173,6 +168,7 @@ class bab_grptree extends bab_dbtree
 
 	list($grp, $firstchild) = $this->setAlphaChild($id_parent, $childname);
 
+
 	foreach($grp as $key => $value)
 		{
 		if ('new' == $key && isset($id_previous))
@@ -190,7 +186,7 @@ class bab_grptree extends bab_dbtree
 
 	function moveTreeAlpha($id, $id_parent, $childname)
 	{
-	$this->moveAlpha($id, $id_parent, $childname, 'moveTree');
+	return $this->moveAlpha($id, $id_parent, $childname, 'moveTree');
 	}
 }
 
@@ -272,21 +268,35 @@ function bab_grpGetNbChildsByParent($id_parent)
 
 function bab_grpTreeCreate($id_parent, $lf)
 {
+	$db = &$GLOBALS['babDB'];
+	
+	$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
+	
 	if (is_null($id_parent))
 		$parent = 'IS NULL';
 	else
 		$parent = " = '".$id_parent."'";
 	
-	$db = &$GLOBALS['babDB'];
+	
 	$res = $db->db_query("SELECT id, lf, lr, name FROM ".BAB_GROUPS_TBL." WHERE id_parent ".$parent." AND nb_set>='0' ORDER BY name");
 	while ($arr = $db->db_fetch_assoc($res))
 		{
 		$nb_child = bab_grpGetNbChildsByParent($arr['id']);
 
+		$tmp = 0;
+		
 		if ($arr['lf'] != $lf) {
 			$db->db_query("UPDATE ".BAB_GROUPS_TBL." SET lf='".$lf."' WHERE id='".$arr['id']."'");
-			echo 'lf : '.$arr['name'].'<br />';
+			$tmp = $arr['lf'] - $lf;
+			if ($tmp > 0) 
+				$tmp = ' -'.$tmp;
+			else 
+				$tmp = ' +'.(-1*$tmp);
+
+			echo 'lf'.$tmp.' : '.$arr['name'].'<br />';
 			}
+
+		$tmp = 0;
 		
 		$lr = $lf + 1 + ($nb_child*2);
 		//echo $lf.','.$lr.' - '.$arr['lf'].','.$arr['lr'].' - '.$arr['name'].'<br />';
@@ -294,7 +304,14 @@ function bab_grpTreeCreate($id_parent, $lf)
 
 		if ($arr['lr'] != $lr) {
 			$db->db_query("UPDATE ".BAB_GROUPS_TBL." SET lr='".$lr."' WHERE id='".$arr['id']."'");
-			echo 'lr : '.$arr['name'].'<br />';
+
+			$tmp = $arr['lr'] - $lr;
+			if ($tmp > 0) 
+				$tmp = ' -'.$tmp;
+			else 
+				$tmp = ' +'.(-1*$tmp);
+
+			echo 'lr'.$tmp.' : '.$arr['name'].'<br />';
 			}
 
 		$lf = $lr+1;
