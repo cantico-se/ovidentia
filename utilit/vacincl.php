@@ -74,14 +74,7 @@ function notifyVacationApprovers($id, $users, $modify = false)
 	for( $i=0; $i < count($users); $i++)
 		$mail->mailTo(bab_getUserEmail($users[$i]), bab_getUserName($users[$i]));
 
-	if( !empty($BAB_SESS_USER))
-		{
-		$mail->mailFrom($BAB_SESS_EMAIL, $BAB_SESS_USER);
-		}
-	else
-		{
-		$mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
-		}
+	$mail->mailFrom(bab_getUserEmail($row['id_user']), bab_getUserName($row['id_user']));
 
 	$mail->mailSubject(bab_translate("Vacation request is waiting to be validated"));
 
