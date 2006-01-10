@@ -66,7 +66,11 @@ function db_connect($host, $login, $password, $dbname)
 				$res = mysql_select_db($dbname, $dblink);
 				if( $res == false )
 					{
+					if (is_file('install.php')) {
+					die('Welcome to Ovidentia.<br />To install this distribution, launch the <a href="install.php">install.php</a>.');
+					} else {
 					$this->db_print_error("Cannot select database : " . $dbname);
+					}
 					return $res;
 					}
 				}
