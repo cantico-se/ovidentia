@@ -127,9 +127,9 @@ function notifyModerator($forum, $threadTitle, $author, $forumname, $url = '')
             $this->author = $author;
 			$this->url = !empty($url) ? $GLOBALS['babUrlScript']."?tg=login&cmd=detect&referer=".urlencode($url) : false;
 
-			$this->babtpl['thread'] = $this->threadname;
-			$this->babtpl['author'] = $this->author;
-			$this->babtpl['forum'] = $forumname;
+			$this->babtpl_thread = $this->threadname;
+			$this->babtpl_author = $this->author;
+			$this->babtpl_forum = $forumname;
 			}
 		}
 	
