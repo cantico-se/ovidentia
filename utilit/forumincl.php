@@ -126,6 +126,10 @@ function notifyModerator($forum, $threadTitle, $author, $forumname, $url = '')
             $this->dateval = bab_strftime(mktime());
             $this->author = $author;
 			$this->url = !empty($url) ? $GLOBALS['babUrlScript']."?tg=login&cmd=detect&referer=".urlencode($url) : false;
+
+			$this->babtpl['thread'] = $this->threadname;
+			$this->babtpl['author'] = $this->author;
+			$this->babtpl['forum'] = $forumname;
 			}
 		}
 	
@@ -134,7 +138,6 @@ function notifyModerator($forum, $threadTitle, $author, $forumname, $url = '')
 		return;
 
     $mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
-    $mail->mailSubject(bab_translate("New post"));
 
 	$tempa = new tempa($threadTitle, $author, $forumname, $url);
 	$message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "newpost"));
@@ -142,6 +145,12 @@ function notifyModerator($forum, $threadTitle, $author, $forumname, $url = '')
 
 	$mail->mailBody($message, "html");
 	$mail->mailAltBody($messagetxt);
+
+	$subject = bab_printTemplate($tempa,"mailinfo.html", "newpost_subject");
+	if( empty($subject) )
+		$mail->mailSubject(bab_translate("New post"));
+	else
+		$mail->mailSubject($subject);
 
 	$db = &$GLOBALS['babDB'];
 	$res = $db->db_query("select id_group from ".BAB_FORUMSMAN_GROUPS_TBL." where id_object='".$forum."'");
@@ -226,7 +235,6 @@ function notifyThreadAuthor($threadTitle, $email, $author)
             $this->sitename = $babSiteName;
             $this->date = bab_translate("Date");
             $this->dateval = bab_strftime(mktime());
-
             $this->author = $author;
 			}
 		}

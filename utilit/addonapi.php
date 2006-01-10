@@ -868,17 +868,79 @@ function bab_getAvailableLanguages()
 function bab_printTemplate( &$class, $file, $section="")
 	{
 	global $babInstallPath, $babSkinPath;
+	$tplfound = false;
+	
+	$tpl = new babTemplate();
+
 	$filepath = "skins/".$GLOBALS['babSkin']."/templates/". $file;
-	if( !file_exists( $filepath ) )
+	if( file_exists( $filepath ) )
 		{
-		$filepath = $babSkinPath."templates/". $file;
-		if( !file_exists( $filepath ) )
+		if( empty($section))
 			{
-			$filepath = $babInstallPath."skins/ovidentia/templates/". $file;
+			return $tpl->printTemplate($class,$filepath, '');
+			}
+
+		$arr = $tpl->getTemplates($filepath);
+		for( $i=0; $i < count($arr); $i++)
+			{
+			if( $arr[$i] == $section )
+				{
+				$tplfound = true;
+				break;
+				}
 			}
 		}
-	$tpl = new babTemplate();
-	return $tpl->printTemplate($class,$filepath, $section);
+	
+	if( !$tplfound )
+		{
+		$filepath = $babSkinPath."templates/". $file;
+		if( file_exists( $filepath ) )
+			{
+			if( empty($section))
+				{
+				return $tpl->printTemplate($class,$filepath, '');
+				}
+
+			$arr = $tpl->getTemplates($filepath);
+			for( $i=0; $i < count($arr); $i++)
+				{
+				if( $arr[$i] == $section )
+					{
+					$tplfound = true;
+					break;
+					}
+				}
+			}
+
+		}
+
+	if( !$tplfound )
+		{
+		$filepath = $babInstallPath."skins/ovidentia/templates/". $file;
+		if( file_exists( $filepath ) )
+			{
+			if( empty($section))
+				{
+				return $tpl->printTemplate($class,$filepath, '');
+				}
+
+			$arr = $tpl->getTemplates($filepath);
+			for( $i=0; $i < count($arr); $i++)
+				{
+				if( $arr[$i] == $section )
+					{
+					$tplfound = true;
+					break;
+					}
+				}
+			}
+
+		}
+
+	if( $tplfound )
+		return $tpl->printTemplate($class,$filepath, $section);
+	else
+		return '';
 	}
 
 function bab_getActiveSessions()
