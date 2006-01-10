@@ -37,7 +37,7 @@ function site_menu11($id_site)
 			$this->t_record = bab_translate("Record");
 			$this->t_swishcmd = bab_translate("Swish-e command (swish-e.exe)");
 			$this->t_pdftotext = bab_translate("Command to transform pdf documents into text (pdftotext.exe)");
-			$this->t_xls2csv = bab_translate("Command to transform exel documents into csv (xls2csv.exe)");
+			$this->t_xls2csv = bab_translate("Command to transform excel documents into csv (xls2csv.exe)");
 			$this->t_catdoc = bab_translate("Command to transform word documents into text (catdoc.exe)");
 			$this->t_unzip = bab_translate("Command to transform open office documents into xml (unzip.exe)");
 			
