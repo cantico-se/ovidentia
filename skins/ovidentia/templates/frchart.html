@@ -462,18 +462,28 @@ for( var i = 1 ; i <= 5 ; i++ )
 document.images[idx].src = '{ babSkinPath }images/Puces/chart_'+idx+'_on.gif';
 }
 
+var chart_showhideleft = 1;
+
 function showhideleft()
 {
 var obj = top.document.all ? top.document.all.leftpane : top.document.getElementById('leftpane');
-if (obj.cols != '0, *')
+if (1 == chart_showhideleft)
 	{
 	document.images['left'].src = '{ babSkinPath }images/Puces/chart_left_on.gif';
 	obj.cols = '0, *';
+	chart_showhideleft = 2;
 	}
-else
+else if (2 == chart_showhideleft || 4 == chart_showhideleft)
 	{
 	document.images['left'].src = '{ babSkinPath }images/Puces/chart_left.gif';
 	obj.cols = '240, *';
+	chart_showhideleft = 2 == chart_showhideleft ? 3 : 1;
+	}
+else if (3 == chart_showhideleft)
+	{
+	document.images['left'].src = '{ babSkinPath }images/Puces/chart_left.gif';
+	obj.cols = '500, *';
+	chart_showhideleft = 4;
 	}
 }
 
