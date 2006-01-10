@@ -6,6 +6,8 @@ function changestyle(ent,oldstyle,newstyle)
 
 	var ctrlPrefix = 'ENT';
 	var obj = document.getElementById(ent);
+	if (!obj)
+		return;
 	var objtag = obj.tagName;
 	var tas = document.getElementsByTagName(objtag);
 
