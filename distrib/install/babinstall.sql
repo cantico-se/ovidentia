@@ -1009,7 +1009,7 @@ CREATE TABLE bab_ini (
 
 INSERT INTO bab_ini VALUES ('ver_major', '5');
 INSERT INTO bab_ini VALUES ('ver_minor', '7');
-INSERT INTO bab_ini VALUES ('ver_build', '4');
+INSERT INTO bab_ini VALUES ('ver_build', '5');
 INSERT INTO bab_ini VALUES ('ver_prod', 'E');
 
 #
@@ -2632,4 +2632,17 @@ CREATE TABLE `bab_sites_swish` (
 `unzip` VARCHAR( 255 ) NOT NULL ,
 PRIMARY KEY ( `id` ) ,
 INDEX ( `id_site` )
+);
+
+#
+# Structure de la table bab_forumsnotify_groups
+#
+
+CREATE TABLE bab_forumsnotify_groups (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group)
 );

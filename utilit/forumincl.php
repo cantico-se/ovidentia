@@ -96,7 +96,7 @@ function bab_getForumThreadTitle($id)
 		}
 	}
 
-function notifyModerator($forum, $threadTitle, $author, $forumname, $url = '')
+function notifyForumGroups($forum, $threadTitle, $author, $forumname, $tables, $url = '')
 	{
 	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
  
@@ -152,57 +152,37 @@ function notifyModerator($forum, $threadTitle, $author, $forumname, $url = '')
 	else
 		$mail->mailSubject($subject);
 
-	$db = &$GLOBALS['babDB'];
-	$res = $db->db_query("select id_group from ".BAB_FORUMSMAN_GROUPS_TBL." where id_object='".$forum."'");
-	$arrusers = array();
-	if( $res && $db->db_num_rows($res) > 0 )
+	for( $mk=0; $mk < count($tables); $mk++ )
 		{
-		while( $row = $db->db_fetch_array($res))
+		include_once $babInstallPath."admin/acl.php";
+		$users = aclGetAccessUsers($tables[$mk], $forum);
+		$arrusers = array();
+		$count = 0;
+		foreach($users as $id => $arr)
 			{
-			switch($row['id_group'])
+			if( count($arrusers) == 0 || !in_array($id, $arrusers))
 				{
-				case 0:
-				case 1:
-					$res2 = $db->db_query("select id, email, firstname, lastname from ".BAB_USERS_TBL." where is_confirmed='1' and disabled='0'");
-					break;
-				case 2:
-					return;
-				default:
-					$res2 = $db->db_query("select u.id, u.email, u.firstname, u.lastname from ".BAB_USERS_TBL." u, ".BAB_USERS_GROUPS_TBL." g where u.is_confirmed='1' and u.disabled='0' and g.id_group='".$row['id_group']."' and g.id_object=u.id");
-					break;
+				$arrusers[] = $id;
+				$mail->mailBcc($arr['email'], $arr['name']);
+				$count++;
 				}
 
-			if( $res2 && $db->db_num_rows($res2) > 0 )
+			if( $count > 25 )
 				{
+				$mail->send();
+				$mail->clearBcc();
+				$mail->clearTo();
 				$count = 0;
-				
-				while(($arr = $db->db_fetch_array($res2)))
-					{
-					if( !in_array($arr['id'], $arrusers))
-						{
-						$arrusers[] = $arr['id'];
-						$mail->mailBcc($arr['email']);
-						$count++;
-						}
+				}
 
-					if( $count > 25 )
-						{
-						$mail->send();
-						$mail->clearBcc();
-						$mail->clearTo();
-						$count = 0;
-						}
-					}
+			}
 
-				if( $count > 0 )
-					{
-					$mail->send();
-					echo $mail->ErrorInfo();
-					$mail->clearBcc();
-					$mail->clearTo();
-					$count = 0;
-					}
-				}	
+		if( $count > 0 )
+			{
+			$mail->send();
+			$mail->clearBcc();
+			$mail->clearTo();
+			$count = 0;
 			}
 		}
 	}

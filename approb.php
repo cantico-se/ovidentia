@@ -1112,20 +1112,19 @@ function updateConfirmationWaitingPost($thread, $post)
 	$babDB->db_query("update ".BAB_THREADS_TBL." set lastpost='".$post."' where id='".$thread."'");
 	$babDB->db_query("update ".BAB_POSTS_TBL." set confirmed='Y' where id='".$post."'");
 
-	$res = $babDB->db_query("select tt.starter, tt.notify, pt.subject from ".BAB_THREADS_TBL." tt left join ".BAB_POSTS_TBL." pt on tt.post=pt.id where tt.id='".$thread."'");
+	$res = $babDB->db_query("select tt.forum, tt.starter, tt.notify, pt.subject from ".BAB_THREADS_TBL." tt left join ".BAB_POSTS_TBL." pt on tt.post=pt.id where tt.id='".$thread."'");
 	$arrf = $babDB->db_fetch_array($res);
+	$arrpost = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_POSTS_TBL." where id='".$post."'"));
+	include_once $GLOBALS['babInstallPath']."utilit/forumincl.php";
 	if( $arrf['notify'] == "Y" && $arrf['starter'] != 0)
 		{
-		include_once $GLOBALS['babInstallPath']."utilit/forumincl.php";
 		$res = $babDB->db_query("select email from ".BAB_USERS_TBL." where id='".$arrf['starter']."'");
 		$arr = $babDB->db_fetch_array($res);
 		$email = $arr['email'];
-
-		$res = $babDB->db_query("select author from ".BAB_POSTS_TBL." where id='".$post."'");
-		$arr = $babDB->db_fetch_array($res);
-		$name = $arr['author'];	
-		notifyThreadAuthor($arrf['subject'], $email, $name);
+		notifyThreadAuthor($arrf['subject'], $email, $arrpost['author']);
 		}
+	$url = $GLOBALS['babUrlScript'] ."?tg=posts&idx=List&forum=".$arrf['forum']."&thread=".$thread."&flat=1";
+	notifyForumGroups($arrf['forum'], $arrpost['subject'], $arrpost['author'], bab_getForumName($arrf['forum']), array(BAB_FORUMSNOTIFY_GROUPS_TBL), $url);
 	}
 
 function confirmVacationRequest($veid, $remarks, $action)

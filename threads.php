@@ -362,10 +362,21 @@ function saveThread($forum, $name, $subject, $message, $notifyme)
 	$req = "update ".BAB_THREADS_TBL." set lastpost='$idpost', post='$idpost' where id = '$idthread'";
 	$res = $db->db_query($req);
 
+	$tables = array();
+	if( $confirmed == "Y"  )
+		{
+		$tables[] = BAB_FORUMSNOTIFY_GROUPS_TBL;
+		}
+
 	if( $arr['notification'] == "Y" )
 		{
+		$tables[] = BAB_FORUMSMAN_GROUPS_TBL;
+		}
+
+	if( count($tables) > 0 )
+		{
 		$url = $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$forum."&thread=".$idthread."&flat=1";
-	    notifyModerator($forum, stripslashes($subject), stripslashes($name), $arr['name'], $url);
+		notifyForumGroups($forum, stripslashes($subject), stripslashes($name), $arr['name'], $tables, $url);
 		}
 
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=threads&forum=".$forum);

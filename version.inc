@@ -24,6 +24,6 @@
 $bab_ver_prod = "E";
 $bab_ver_major = "5";
 $bab_ver_minor = "7";
-$bab_ver_build = "4";
+$bab_ver_build = "5";
 $bab_ver_info = "";
 ?>

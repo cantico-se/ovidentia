@@ -132,6 +132,7 @@ define("BAB_FORUMSPOST_GROUPS_TBL", "bab_forumspost_groups");
 define("BAB_FORUMSREPLY_GROUPS_TBL", "bab_forumsreply_groups");
 define("BAB_FORUMSVIEW_GROUPS_TBL", "bab_forumsview_groups");
 define("BAB_FORUMSFILES_GROUPS_TBL", "bab_forumsfiles_groups");
+define("BAB_FORUMSNOTIFY_GROUPS_TBL", "bab_forumsnotify_groups");
 define("BAB_GROUPS_TBL", "bab_groups");
 define("BAB_GROUPS_SET_ASSOC_TBL", "bab_groups_set_assoc");
 define("BAB_HOMEPAGES_TBL", "bab_homepages");

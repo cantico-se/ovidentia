@@ -181,6 +181,8 @@ switch($idx)
 		$macl->addtable( BAB_FORUMSFILES_GROUPS_TBL,bab_translate("Who can join dependent files?"));
 		$macl->addtable( BAB_FORUMSMAN_GROUPS_TBL,bab_translate("Who can manage this forum?"));
 		$macl->filter(0,0,1,1,1);
+		$macl->addtable( BAB_FORUMSNOTIFY_GROUPS_TBL,bab_translate("Who is notified when a new post is registered?"));
+		$macl->filter(0,0,1,0,1);
         $macl->babecho();
 		$babBody->addItemMenu("List", bab_translate("Forums"), $GLOBALS['babUrlScript']."?tg=forums&idx=List");
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=forum&idx=Modify&item=".$item);

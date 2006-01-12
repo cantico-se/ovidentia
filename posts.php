@@ -769,10 +769,21 @@ function saveReply($forum, $thread, $post, $name, $subject, $message)
 		}
 
 	$arr = $db->db_fetch_array($db->db_query("select * from ".BAB_FORUMS_TBL." where id='".$forum."'"));
+	$tables = array();
+	if( $confirmed == "Y"  )
+		{
+		$tables[] = BAB_FORUMSNOTIFY_GROUPS_TBL;
+		}
+
 	if( $arr['notification'] == "Y" )
 		{
+		$tables[] = BAB_FORUMSMAN_GROUPS_TBL;
+		}
+
+	if( count($tables) > 0 )
+		{
 		$url = $GLOBALS['babUrlScript'] ."?tg=posts&idx=List&forum=".$forum."&thread=".$thread."&flat=1";
-	    notifyModerator($forum, $subject, $name, $arr['name'],$url);
+		notifyForumGroups($forum, $subject, $name, $arr['name'],$tables, $url);
 		}
 	if (!isset($flat)) $flat = '';
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$forum."&thread=".$thread."&post=".$post."&flat=".$flat);
@@ -791,6 +802,9 @@ function confirm($forum, $thread, $post)
 	$req = "select * from ".BAB_THREADS_TBL." where id='".$thread."'";
 	$res = $db->db_query($req);
 	$arr = $db->db_fetch_array($res);
+
+	$arrpost = $db->db_fetch_array($db->db_query("select * from ".BAB_POSTS_TBL." where id='".$post."'"));
+
 	if( $arr['notify'] == "Y" && $arr['starter'] != 0)
 		{
 		$req = "select email from ".BAB_USERS_TBL." where id='".$arr['starter']."'";
@@ -798,13 +812,10 @@ function confirm($forum, $thread, $post)
 		$arr = $db->db_fetch_array($res);
 		$email = $arr['email'];
 
-		$req = "select author from ".BAB_POSTS_TBL." where id='".$post."'";
-		$res = $db->db_query($req);
-		$arr = $db->db_fetch_array($res);
-		$name = $arr['author'];
-		
-		notifyThreadAuthor(bab_getForumThreadTitle($thread), $email, $name);
+		notifyThreadAuthor(bab_getForumThreadTitle($thread), $email, $arrpost['author']);
 		}
+	$url = $GLOBALS['babUrlScript'] ."?tg=posts&idx=List&forum=".$forum."&thread=".$thread."&flat=1";
+	notifyForumGroups($forum, $arrpost['subject'], $arrpost['author'], bab_getForumName($forum), array(BAB_FORUMSNOTIFY_GROUPS_TBL), $url);
 	}
 
 function updateReply($forum, $thread, $subject, $message, $post)
