@@ -615,6 +615,10 @@ function showTopicTree($actionType, $selectedTopicId)
 			if (!is_null($this->node_id))
 			{
 				$this->data =& $this->tree->nodes[$this->node_id]->data;
+				$this->data['title'] = htmlEntities($this->data['title']);
+				$this->data['description'] = htmlEntities(strip_tags($this->data['description']));
+				$this->data['description'] = preg_replace("/\r?\n|\r/", '', $this->data['description']);
+				$this->data['description'] = substr($this->data['description'], 0, 400);
 				return true;
 			}
 			return false;
@@ -2771,10 +2775,11 @@ switch($idx)
 		break;
 
 	case "s00": // Selection of a topic for the modification of an article.
-		$selectedTopicId = $_POST['topicid'];
+		if (!isset($topicid))
+			$topicid = '';
 		$babBodyPopup = new babBodyPopup();
 		$babBodyPopup->title = bab_translate("Choose the topic");
-		showTopicTree(BAB_TOPIC_MODIFY, $selectedTopicId);
+		showTopicTree(BAB_TOPIC_MODIFY, $topicid);
 		printBabBodyPopup();
 		exit;
 		break;
@@ -2789,10 +2794,11 @@ switch($idx)
 		break;
 
 	case "s0": // Selection of a topic for the publication of an article.
-		$selectedTopicId = $_POST['topicid'];
+		if (!isset($topicid))
+			$topicid = '';
 		$babBodyPopup = new babBodyPopup();
 		$babBodyPopup->title = bab_translate("Choose the topic");
-		showTopicTree(BAB_TOPIC_SUBMIT, $selectedTopicId);
+		showTopicTree(BAB_TOPIC_SUBMIT, $topicid);
 //		showChoiceTopic();
 		printBabBodyPopup();
 		exit;
