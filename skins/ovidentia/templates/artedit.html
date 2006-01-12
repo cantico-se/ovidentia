@@ -415,7 +415,7 @@ function searchTree(textInput)
   <p class="BabSiteAdminTitleFontBackground">
 	<a href="javascript:tree.expand();" class="expand">{ t_expand_all }</a>
 	<a href="javascript:tree.collapse();" class="collapse">{ t_collapse_all }</a>
-<img style="vertical-align: middle; margin-right: 4px" src="ovidentia/skins/ovidentia/images/Puces/search.gif"><input id="theme_search" type="text" onkeyup="window.clearTimeout(timeoutId); timeoutId = window.setTimeout('searchTree(document.getElementById(\'theme_search\'));', 200);">
+<img style="vertical-align: middle; margin-right: 4px" src="{ babSkinPath }images/Puces/search.gif"><input id="theme_search" type="text" onkeyup="window.clearTimeout(timeoutId); timeoutId = window.setTimeout('searchTree(document.getElementById(\'theme_search\'));', 200);">
   </p>
 
 
@@ -438,11 +438,11 @@ function searchTree(textInput)
 	    <li id="{ node_id }">
 	      <div title="{ data[description] }">
 		    <!--#if data[type] "== category" -->
-	        <img src="ovidentia/skins/ovidentia/images/Puces/category.gif" />
+	        <img src="{ babSkinPath }images/Puces/category.gif" />
 			<b id="content{ node_id }">{ data[title] }</b>
 			<!--#endif data[type] -->
 		    <!--#if data[type] "== topic" -->
-	        <img src="ovidentia/skins/ovidentia/images/Puces/topic.gif" />
+	        <img src="{ babSkinPath }images/Puces/topic.gif" />
 			<a id="content{ node_id }" href="javascript:selectTopic({ data[topic_id] });">{ data[title] }</a>
 			<!--#endif data[type] -->
 	      </div>
@@ -664,7 +664,7 @@ function stepSubmitForm(cmd, fmname)
 if( typeof document.forms[fmname] != "object" ) return;
 document.forms[fmname].updstep2.value = cmd;
 }
-//-->
+//-->12/01/2006
 </script>
 <form name="previewart" method="post" action="{ babPhpSelf }" onSubmit="return confirmForm('previewart');">
 <input type="hidden" name="tg" value="artedit">
