@@ -394,7 +394,8 @@ class bab_Tree
 			$this->_updateTree($newNode);
 			return true;
 		}
-		if (!array_key_exists($parentId, $this->roots))
+//		if (!array_key_exists($parentId, $this->roots))
+		if (!in_array($parentId, array_keys($this->roots)))
 			$this->roots[$parentId] = array();
 		$this->roots[$parentId][] =& $newNode;
 		$this->_updateTree($newNode);
