@@ -197,12 +197,19 @@ bab_ul_tree.prototype.searchItem = function(targetString) {
 
 function cleanStringDiacritics(text)
 {
-	text = text.replace(/[באגה]/g, "a");
-	text = text.replace(/[יטךכ]/g, "e");
-	text = text.replace(/[םלמן]/g, "i");
-	text = text.replace(/[ףעפצ]/g, "o");
-	text = text.replace(/[תשûü]/g, "u");
-	text = text.replace(/[ח]/g, "c");
+	try
+	{
+		text = text.replace(/[באגה]/g, "a");
+		text = text.replace(/[יטךכ]/g, "e");
+		text = text.replace(/[םלמן]/g, "i");
+		text = text.replace(/[ףעפצ]/g, "o");
+		text = text.replace(/[תשûü]/g, "u");
+		text = text.replace(/[ח]/g, "c");
+	}
+	catch ()
+	{
+		text = '';
+	}
 	return text;
 }
 
