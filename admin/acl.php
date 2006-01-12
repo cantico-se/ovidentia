@@ -388,8 +388,11 @@ function aclGetAccessUsers($table, $id_object) {
 			$arr['id_group'] -= BAB_ACL_GROUP_TREE;
 			$groups[$arr['id_group']] = $arr['id_group'];
 			$tmp = $tree->getChilds($arr['id_group']);
-			foreach($tmp as $child) {
-				$groups[$child['id']] = $child['id'];
+			if( $tmp && is_array($tmp ))
+				{
+				foreach($tmp as $child) {
+					$groups[$child['id']] = $child['id'];
+					}
 				}
 			}
 		else
