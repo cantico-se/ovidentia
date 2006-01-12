@@ -206,7 +206,7 @@ function cleanStringDiacritics(text)
 		text = text.replace(/[תשûü]/g, "u");
 		text = text.replace(/[ח]/g, "c");
 	}
-	catch ()
+	catch (e)
 	{
 		text = '';
 	}
