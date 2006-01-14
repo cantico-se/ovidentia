@@ -66,6 +66,7 @@ function bab_cpaddons($from,$to)
 	if (substr($to,-1) != "/") $to.="/";
 	$loc = array("addons",
 				"lang/addons",
+				"styles/addons",
 				"skins/ovidentia/templates/addons",
 				"skins/ovidentia/ovml/addons",
 				"skins/ovidentia/images/addons");

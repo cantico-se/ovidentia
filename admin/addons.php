@@ -25,16 +25,23 @@ include_once "base.php";
 include $babInstallPath."admin/acl.php";
 
 $GLOBALS['addons_files_location'] = 
-array('loc_in' => array("addons",
+array('loc_in' => array(
+				"addons",
 				"lang/addons",
+				"styles/addons",
 				"skins/ovidentia/templates/addons",
 				"skins/ovidentia/ovml/addons",
-				"skins/ovidentia/images/addons"),			
-	'loc_out' => array("programs",
+				"skins/ovidentia/images/addons"
+				),			
+	'loc_out' => array(
+				"programs",
 				"langfiles",
+				"styles",
 				"skins/ovidentia/templates",
 				"skins/ovidentia/ovml",
-				"skins/ovidentia/images"));
+				"skins/ovidentia/images"
+				)
+			);
 
 function compare_versions($ver1,$ver2) // return true if ver2 >ver1
 {
