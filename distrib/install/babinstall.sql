@@ -136,6 +136,7 @@ CREATE TABLE bab_forums (
    active enum('Y','N') DEFAULT 'Y' NOT NULL,
    ordering smallint(6) unsigned NOT NULL default '0',
    id_dgowner int(11) unsigned NOT NULL default '0',
+   nb_recipients smallint(2) unsigned NOT NULL default '0',
    PRIMARY KEY  (id),
    KEY id_dgowner (id_dgowner)
 );
