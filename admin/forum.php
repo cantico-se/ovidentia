@@ -60,6 +60,7 @@ function modifyForum($id)
 			$this->no = bab_translate("No");
 			$this->notification = bab_translate("Notify moderator");
 			$this->delete = bab_translate("Delete");
+			$this->nbrecipients = bab_translate("Number of recipients per sending");
 
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_FORUMS_TBL." where id='$id'";
@@ -104,7 +105,7 @@ function deleteForum($id)
 	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
 
-function updateForum($id, $name, $description, $moderation, $notification, $nbmsgdisplay, $active)
+function updateForum($id, $name, $description, $moderation, $notification, $nbmsgdisplay, $active, $nbrecipients)
 	{
 	global $babBody;
 	if( empty($name))
@@ -121,7 +122,17 @@ function updateForum($id, $name, $description, $moderation, $notification, $nbms
 		$description = addslashes($description);
 		}
 
-	$query = "update ".BAB_FORUMS_TBL." set name='$name', description='$description', moderation='$moderation', notification='$notification', display='$nbmsgdisplay', active='$active' where id = '$id'";
+	if (!is_numeric($nbmsgdisplay) || empty($nbmsgdisplay))
+		{
+		$nbmsgdisplay = 20;
+		}
+
+	if (!is_numeric($nbrecipients) || empty($nbrecipients))
+		{
+		$nbrecipients = 30;
+		}
+
+	$query = "update ".BAB_FORUMS_TBL." set name='$name', description='$description', moderation='$moderation', notification='$notification', display='$nbmsgdisplay', active='$active', nb_recipients='$nbrecipients' where id = '$id'";
 	$db->db_query($query);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=forums&idx=List");
 	}
@@ -149,7 +160,7 @@ if( isset($update) && $update == "updateforum")
 	{
 	if( isset($submit))
 		{
-		updateForum($item, $fname, $description, $moderation, $notification, $nbmsgdisplay, $active);
+		updateForum($item, $fname, $description, $moderation, $notification, $nbmsgdisplay, $active, $nbrecipients);
 		}
 	elseif( isset($bdelete))
 		{

@@ -5408,4 +5408,24 @@ if ( $arr[0] != BAB_SITES_SWISH_TBL )
 return $ret;
 }
 
+function upgrade575to576()
+{	
+$ret = "";
+$db = & $GLOBALS['babDB'];
+
+$arr = $db->db_fetch_array($db->db_query("DESCRIBE ".BAB_FORUMS_TBL." nb_recipients"));
+if ('nb_recipients' != $arr[0])
+	{
+
+	$res = $db->db_query("ALTER TABLE ".BAB_FORUMS_TBL." ADD nb_recipients smallint(2) UNSIGNED NOT NULL");
+	if( !$res)
+		{
+		$ret = "Alteration of <b>".BAB_FORUMS_TBL."</b> table failed !<br>";
+		return $ret;
+		}
+	}
+
+return $ret;
+}
+
 ?>

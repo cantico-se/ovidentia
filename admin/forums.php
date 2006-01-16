@@ -49,6 +49,7 @@ function addForum($nameval, $descriptionval, $nbmsgdisplayval)
 			$this->nbmsgdisplay = bab_translate("Threads Per Page");
 			$this->moderation = bab_translate("Moderation");
 			$this->notification = bab_translate("Notify moderator");
+			$this->nbrecipients = bab_translate("Number of recipients per sending");
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
 			$this->add = bab_translate("Add");
@@ -194,7 +195,7 @@ function orderForum()
 	return $temp->count;
 	}
 
-function saveForum($name, $description, $moderation, $notification, $nbmsgdisplay, $active)
+function saveForum($name, $description, $moderation, $notification, $nbmsgdisplay, $active, $nbrecipients)
 	{
 	global $babBody;
 	if( empty($name))
@@ -230,8 +231,18 @@ function saveForum($name, $description, $moderation, $notification, $nbmsgdispla
 	else
 		$max = 0;
 
-	$query = "insert into ".BAB_FORUMS_TBL." (name, description, display, moderation, notification, active, ordering, id_dgowner)";
-	$query .= " values ('" .$name. "', '" . $description. "', '" . $nbmsgdisplay. "', '".$moderation. "', '" .$notification. "', '" . $active. "', '" . $max. "', '" . $babBody->currentAdmGroup. "')";
+	if (!is_numeric($nbmsgdisplay) || empty($nbmsgdisplay))
+		{
+		$nbmsgdisplay = 20;
+		}
+
+	if (!is_numeric($nbrecipients) || empty($nbrecipients))
+		{
+		$nbrecipients = 30;
+		}
+
+	$query = "insert into ".BAB_FORUMS_TBL." (name, description, display, moderation, notification, active, ordering, id_dgowner, nb_recipients)";
+	$query .= " values ('" .$name. "', '" . $description. "', '" . $nbmsgdisplay. "', '".$moderation. "', '" .$notification. "', '" . $active. "', '" . $max. "', '" . $babBody->currentAdmGroup. "', '" . $nbrecipients. "')";
 	$db->db_query($query);
 	$id = $db->db_insert_id();
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=forum&idx=rights&item=".$id);
@@ -303,7 +314,7 @@ if(!isset($idx))
 
 if( isset($addforum) && $addforum == "addforum" )
 	{
-	if( !saveForum($fname, $description, $moderation, $notification, $nbmsgdisplay, $active))
+	if( !saveForum($fname, $description, $moderation, $notification, $nbmsgdisplay, $active, $nbrecipients))
 		$idx = "addforum";
 	}
 

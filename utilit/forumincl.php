@@ -98,7 +98,7 @@ function bab_getForumThreadTitle($id)
 
 function notifyForumGroups($forum, $threadTitle, $author, $forumname, $tables, $url = '')
 	{
-	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
+	global $babBody, $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
  
 	class tempa
 		{
@@ -152,22 +152,31 @@ function notifyForumGroups($forum, $threadTitle, $author, $forumname, $tables, $
 	else
 		$mail->mailSubject($subject);
 
+	list($nbrecipients) = $babDB->db_fetch_row($babDB->db_query("select nb_recipients from ".BAB_FORUMS_TBL." where id='".$forum."'"));
 	for( $mk=0; $mk < count($tables); $mk++ )
 		{
 		include_once $babInstallPath."admin/acl.php";
 		$users = aclGetAccessUsers($tables[$mk], $forum);
 		$arrusers = array();
 		$count = 0;
+
 		foreach($users as $id => $arr)
 			{
 			if( count($arrusers) == 0 || !in_array($id, $arrusers))
 				{
 				$arrusers[] = $id;
-				$mail->mailBcc($arr['email'], $arr['name']);
+				if( $nbrecipients == 1 )
+					{
+					$mail->mailTo($arr['email'], $arr['name']);
+					}
+				else
+					{
+					$mail->mailBcc($arr['email'], $arr['name']);
+					}
 				$count++;
 				}
 
-			if( $count > 25 )
+			if( $count >= $nbrecipients )
 				{
 				$mail->send();
 				$mail->clearBcc();
