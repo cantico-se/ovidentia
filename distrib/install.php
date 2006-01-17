@@ -430,55 +430,55 @@ a:hover {
 
 <body>
 	<h1>Ovidentia</h1>
-	<h2><? echo $trans->str('Configuration') ?></h2>
-	<? foreach($succes as $msg)
+	<h2><?php echo $trans->str('Configuration') ?></h2>
+	<?php foreach($succes as $msg)
 		{
 		echo '<h4> - '.$msg."</h4>\n";
 		} ?>
-	<? if (!empty($error)) echo '<h3>'.$error.'</h3>' ?>
+	<?php if (!empty($error)) echo '<h3>'.$error.'</h3>' ?>
 	
 	
 	<div id="form">
-	<?
+	<?php
 	if (isset($all_is_ok) && $all_is_ok === true)
 		{
 		
 		?>
-		<p><? echo $trans->str('Congratulation, ovidentia is now configured, now you can log in with the default account') ?></p>
+		<p><?php echo $trans->str('Congratulation, ovidentia is now configured, now you can log in with the default account') ?></p>
 		<ul>
-			<li><? echo $trans->str('Login') ?> : <strong>admin@admin.bab</strong></li>
-			<li><? echo $trans->str('Password') ?> : <strong>012345678</strong></li>
+			<li><?php echo $trans->str('Login') ?> : <strong>admin@admin.bab</strong></li>
+			<li><?php echo $trans->str('Password') ?> : <strong>012345678</strong></li>
 		</ul>
-		<p><a href="index.php?tg=login"><? echo $trans->str('Go to login page') ?></a></p>
-		<?
+		<p><a href="index.php?tg=login"><?php echo $trans->str('Go to login page') ?></a></p>
+		<?php
 		}
 	else
 		{
 		?>
-		<p><? echo $trans->str('Welcome to ovidentia setup') ?></p>
+		<p><?php echo $trans->str('Welcome to ovidentia setup') ?></p>
 		<form method="post" action="<? echo basename($_SERVER['PHP_SELF']) ?>">
 			<dl>
 				<fieldset>
-					<legend><? echo $trans->str('database') ?></legend>
-					<dt><label for="babDBHost"><? echo $trans->str('Database host') ?> :</label><input type="text" id="babDBHost" name="babDBHost" value="localhost" /></dt>
-					<dt><label for="babDBName"><? echo $trans->str('Database name') ?> :</label><input type="text" id="babDBName" name="babDBName" value="ovidentia" /></dt>
-					<dt><label for="babDBName"><? echo $trans->str('Drop database') ?> :</label><input type="checkbox" id="clearDb" name="clearDb" /></dt>
-						<dd><? echo $trans->str('If the database exist, it will be dropped and data will be lost') ?></dd>
-					<dt><label for="babDBLogin"><? echo $trans->str('Login') ?> :</label><input type="text" id="babDBLogin" name="babDBLogin" value="root" /></dt>
-					<dt><label for="babDBPasswd"><? echo $trans->str('Password') ?> :</label><input type="password" id="babDBPasswd" name="babDBPasswd" /></dt>
+					<legend><?php echo $trans->str('database') ?></legend>
+					<dt><label for="babDBHost"><?php echo $trans->str('Database host') ?> :</label><input type="text" id="babDBHost" name="babDBHost" value="localhost" /></dt>
+					<dt><label for="babDBName"><?php echo $trans->str('Database name') ?> :</label><input type="text" id="babDBName" name="babDBName" value="ovidentia" /></dt>
+					<dt><label for="babDBName"><?php echo $trans->str('Drop database') ?> :</label><input type="checkbox" id="clearDb" name="clearDb" /></dt>
+						<dd><?php echo $trans->str('If the database exists, it will be dropped and data will be lost') ?></dd>
+					<dt><label for="babDBLogin"><?php echo $trans->str('Login') ?> :</label><input type="text" id="babDBLogin" name="babDBLogin" value="root" /></dt>
+					<dt><label for="babDBPasswd"><?php echo $trans->str('Password') ?> :</label><input type="password" id="babDBPasswd" name="babDBPasswd" /></dt>
 				</fieldset>
 				
 				<fieldset>
 					<legend>Ovidentia</legend>
-					<dt><label for="babInstallPath"><? echo $trans->str('Relative path to ovidentia core') ?> :</label><input type="text" id="babInstallPath" name="babInstallPath" value="ovidentia/" /></dt>
-					<dt><label for="babUrl"><? echo $trans->str('Base url') ?> :</label><input type="text" id="babUrl" name="babUrl" value="<? echo $babUrl ?>" /></dt>
-					<dt><label for="babUploadPath"><? echo $trans->str('Upload directory') ?> :</label><input type="text" id="babUploadPath" name="babUploadPath" value="/home/upload" /></dt>
-						<dd><? echo $trans->str('Full path to upload the files (example : c:\\path-to\\upload-directory\\ for Windows, /home/upload for linux)') ?></dd>
+					<dt><label for="babInstallPath"><?php echo $trans->str('Relative path to ovidentia core') ?> :</label><input type="text" id="babInstallPath" name="babInstallPath" value="ovidentia/" /></dt>
+					<dt><label for="babUrl"><?php echo $trans->str('Base url') ?> :</label><input type="text" id="babUrl" name="babUrl" value="<?php echo $babUrl ?>" /></dt>
+					<dt><label for="babUploadPath"><?php echo $trans->str('Upload directory') ?> :</label><input type="text" id="babUploadPath" name="babUploadPath" value="/home/upload" /></dt>
+						<dd><?php echo $trans->str('Full path to upload the files (example : c:\\path-to\\upload-directory\\ for Windows, /home/upload for linux)') ?></dd>
 				</fieldset>
 			</dl>
-			<input type="submit" value="<? echo $trans->str('Submit') ?>" />
+			<input type="submit" value="<?php echo $trans->str('Submit') ?>" />
 		</form>
-		<?
+		<?php
 		}
 		?>
 	</div>
