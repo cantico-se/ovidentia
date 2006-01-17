@@ -1058,11 +1058,11 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 						if (0 === strpos($dirselect, 'babdirf'))
 							{
 							// champ supplémentaire
-							$crit_fields_add[] = "t.id_fieldx = '".substr($dirselect,7)."' AND t.field_value LIKE '%".$dirfield."%'";
+							$crit_fields_add[] = "t.id_fieldx = '".substr($dirselect,7)."' AND t.field_value LIKE '%".addslashes(stripslashes($dirfield))."%'";
 							}
 						else
 							{
-							$crit_fields_reg[] = finder($dirfield, 'e.'.$dirselect);
+							$crit_fields_reg[] = "e.".$dirselect." LIKE '%".addslashes(stripslashes($dirfield))."%'";//finder($dirfield, 'e.'.$dirselect);
 							}
 						}
 					}
@@ -1095,21 +1095,14 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					$arr_dir[] = $arr['id'];
 					}
 
-				
 				$crit_fields_reg_str = implode(' AND ', $crit_fields_reg);
+				
 				if (!empty($crit_fields_reg_str))
 					{
-					$crit_fields_reg_str = ' AND '.$crit_fields_reg_str;
-					}
-
-				$crit_fields .= $crit_fields_reg_str;
 				if (!empty($crit_fields))
-					{
-					if (!empty($crit_fields_reg_str))
-						{
-						$crit_fields = '('.$crit_fields.')';
-						}
-					$crit_fields .= ' OR ';
+						$crit_fields .= ' AND '.$crit_fields_reg_str;
+					else
+						$crit_fields = $crit_fields_reg_str;
 					}
 
 
@@ -1119,12 +1112,20 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					$crit_fields_add_str = '('.$crit_fields_add_str.') AND ';
 					}
 
-
 				// recherche dans les champs supplémentaires avec la recherche principale + recherche avancée
-
 				$additional = finder($this->like,'t.field_value',$this->option,$this->like2);
 				if (!empty($additional))
-					$additional = ' AND ('.$additional.')';
+					{
+					if( !empty($crit_fields))
+						$crit_fields .= ' OR '.$additional;
+					else
+						$crit_fields = $additional;
+					}
+
+				if (!empty($crit_fields))
+					{
+					$crit_fields = '('.$crit_fields.') AND ';
+					}
 
 				// Si un annuaire spécifique est choisit
 
@@ -1153,7 +1154,6 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				LEFT JOIN 
 						".BAB_DBDIR_ENTRIES_EXTRA_TBL." t 
 						ON t.id_entry = e.id
-						".$additional." 
 
 				LEFT JOIN ".BAB_USERS_GROUPS_TBL." u ON u.id_object = e.id_user AND u.id_group IN ('".implode("','",$arr_grp)."') 
 				LEFT JOIN ".BAB_USERS_TBL." dis ON dis.id = e.id_user AND dis.disabled='1' 
@@ -1162,7 +1162,6 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				".$crit_fields." 
 				t.id IS NOT NULL
 				)
-				AND dis.id IS NULL 
 				AND ".$crit_fields_add_str." 
 					(
 					e.id_directory IN ( '0', '".implode("','",$arr_dir)."' ) 
@@ -1172,7 +1171,6 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 
 				$this->countdirfields = count($this->dirfields['name']);
-
 
 				$res = $this->db->db_query($req);
 				$nbrows = $this->db->db_num_rows($res);
