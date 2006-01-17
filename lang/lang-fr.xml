@@ -1428,7 +1428,7 @@
 <string id="You must be logged as administrator">Vous devez être connecté en tant qu'administrateur</string>
 <string id="Zlib php module missing">Le module php Zlib n'est pas installé</string>
 <string id="New core name">Nom du nouveau noyau</string>
-<string id="Name of the archive without extention">Nom de l'archive sans l'extension</string>
+<string id="Name of the archive without extension">Nom de l'archive sans l'extension</string>
 <string id="Copy addons">Copier les modules</string>
 <string id="Directory allready exists">Le répertoire existe déjà</string>
 <string id="Zipfile reading error">Erreur de lecture du fichier zip</string>

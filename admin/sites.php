@@ -172,7 +172,7 @@ function zipupgrade()
 			$this->t_file = bab_translate("File");
 			$this->t_new_core_name = bab_translate("New core name");
 			$this->t_submit = bab_translate("Submit");
-			$this->t_file_name = bab_translate("Name of the archive without extention");
+			$this->t_file_name = bab_translate("Name of the archive without extension");
 			$this->t_upgrade = bab_translate("Upgrade");
 			$this->t_copy_addons = bab_translate("Copy addons");
 			
