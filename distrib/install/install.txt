@@ -3,36 +3,34 @@ This documentation is provided to aid in basic installation. Please consult the 
 
 If you have any comment or remarks please send an email to community@ovidentia.org
 
-OVIDENTIA 6.x
+OVIDENTIA 7.x
 ==============
 
 Base Requirements
 -----------------
-In order to setup Ovidentia the folowing prerequisits are necessary.
+In order to setup Ovidentia the following prerequisites are necessary.
 - A Linux Box (http://www.linux.org), Mac OS X (http://developer.apple.com) or Microsoft Windows NT/2000/XP (http://www.microsoft.com)
 - Apache Web Server (http://www.apache.org) under Windows/Linux/OS X or
   Internet Information Server under Microsoft Windows (http://www.microsoft.com)
 - PHP 4.0.3 (http://www.php.net)
 - MySQL 3.23 database server (http://www.mysql.com)
 
-The above doesn't mean that it doesn't work with other configurations, OS's, DB's etc,
-but we only provide INSTALL instructions for the above configuration.
-Set-up of these required packages is beyond the scope of this document
-and if you are unsure you should check with each of the appropriate web
-sites for further details.
+The above doesn't mean that it doesn't work with other configurations, OS's, DB's etc, but we only provide INSTALL instructions for the above configuration.
+Set-up of these required packages is beyond the scope of this document and if you are unsure you should check with each of the appropriate web sites for further details.
 
 Installing the Package
 ----------------------
-Uncompress the package into the directory you want to use on your web
-server, if you're unsure where that is, ask you system administrator.
+Uncompress the package into the directory you want to use on your web server, if you're unsure where that is, ask your system administrator.
 1) Create a database called, for example, ovidentia:
 
-    mysqladmin create ovidentia  
+    mysqladmin: create database ovidentia  
     
-    It is recommended that you create a MySQL user that only has priveledges to to access this database and does not have "grant priveledges" rights. 
-    For example, create the MySQL user "ovuser" with a secure password. This user should have no general MySQL rights. Only grant this user database level permissions to the ovidentia database. Do not grant this user "grant priveledges" database permissions. 
+It is recommended that you create a MySQL user that only has privileges to access this database and does not have "grant privileges" rights. 
+For example, create the MySQL user "ovuser" with a secure password. This user should have no general MySQL rights. Only grant this user database level permission to the ovidentia database. Do not grant this user "grant privileges" database permissions. 
 
 **** At this point, you may point your browser to http://yourdomain.com/install.php and skip steps 2 and 3 or continue manually ****
+
+Remark: if you continue with a manual installation you probably should delete or rename file install.php due to the fact that the presence of this file will hide database connection problems for your configuration. As long as file install.php is present the database connection error messages will be replaced with a message asking you to launch the install.php script.
 
 2) Now fill the databases with the tables in babinstall.sql file located in "install" folder:
     
@@ -54,9 +52,8 @@ server, if you're unsure where that is, ask you system administrator.
 	Password: 012345678
    
    You are logged as the administrator.
-   ***Change administrator password by clicking the 'Options' menu in the 'User's
-   section'.
-   ***Choose 'sites' from the 'Administration section' and be sure to set your upload path. This is the server location where user uploaded files will be stored. It is recommended that this location not be within your webroot. For example: /home/upload 
+   ***Change administrator password by clicking the 'Options' menu in the 'User's    section'.
+   ***Choose 'sites' from the 'Administration section' and be sure to set your upload path. This is the server location where user uploaded files will be stored. It is recommended that this location not be within your web root. For example: /home/upload 
    
 5)  Be sure apache has group and ownership rights recursively from the site root.
     
@@ -68,11 +65,11 @@ server, if you're unsure where that is, ask you system administrator.
    
 You may now manage your site by using the menu options located in the 'Administration section'
    
-See the documentation for more information about administring Ovidentia. 
-You can browse documentation development here : 
-	-Installation Guide : http://ovidentia.koblix.org/documentation/ig-en.html 
-	-Developper Guide : http://ovidentia.koblix.org/documentation/dg-en.html 
-	-User Guide : http://ovidentia.koblix.org/documentation/ug-en.html
+See the documentation for more information about administering Ovidentia. 
+You can browse documentation development here: 
+	-Installation Guide: http://ovidentia.koblix.org/documentation/ig-en.html 
+	-Developer Guide: http://ovidentia.koblix.org/documentation/dg-en.html 
+	-User Guide: http://ovidentia.koblix.org/documentation/ug-en.html
 
 Again, if you have any comment or remarks please send an email to community@ovidentia.org
-[[documentation last updated by e-angel, 08-Aug-05]]
+[[Documentation last updated by e-angel, 08-Aug-05]]
