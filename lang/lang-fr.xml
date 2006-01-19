@@ -707,7 +707,7 @@
 <string id="Submiter">Auteur</string>
 <string id="Submitted">Soumis</string>
 <string id="Summary of information about">Résumé des informations de</string>
-<string id="Summary">Résumé</string>
+<string id="Summary">Nouveautés</string>
 <string id="Sunday">Dimanche</string>
 <string id="Tab">Tabulation</string>
 <string id="Thank You For Registering at our site">Merci pour votre inscription sur notre site</string>
@@ -1327,8 +1327,8 @@
 <string id="Proposed to registered users home page">Proposé à la page d'accueil privée</string>
 <string id="Choose the topic">Choisissez un thème d'articles</string>
 <string id="list of topics">Liste des thèmes d'articles</string>
-<string id="Save and close">Enregistrer et fermer</string>
-<string id="Finish">Terminer</string>
+<string id="Save and close">Enregistrer un brouillon</string>
+<string id="Finish">Soumettre</string>
 <string id="Are you sure you want to submit this article?">Êtes-vous sûr de vouloir soumettre cet article ?</string>
 <string id="Are you sure you want to remove this draft?">Êtes-vous sûr de vouloir supprimer ce brouillon ?</string>
 <string id="No topic">Pas de thème d'article</string>
