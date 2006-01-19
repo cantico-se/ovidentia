@@ -346,7 +346,11 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 				if (empty($nbdays))
 					$nbdays = 0;
 
-				$access = !$access_on_period;
+				//if ($nbdays > 0)
+				//	echo $arr['description']." - nb de jours pris : ".$nbdays." min : ".$arr['trigger_nbdays_min']." max : ".$arr['trigger_nbdays_max']."\n";
+
+
+				$access = false;
 				if ( $arr['trigger_nbdays_min'] <= $nbdays && $nbdays <= $arr['trigger_nbdays_max'] )
 					$access = true;
 				}
@@ -528,7 +532,7 @@ function viewVacationCalendar($users, $period = false )
 
 				
 
-				if (count($colors) > $sum)
+				if (count($colors) > $sum && $sum > 1)
 					{
 					$remove = count($colors) - $sum;
 					$curcol = '';
