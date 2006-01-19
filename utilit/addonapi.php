@@ -839,11 +839,7 @@ function bab_mkdir($path, $mode='')
 
 function bab_isMagicQuotesGpcOn()
 	{
-	$mqg = ini_get("magic_quotes_gpc");
-	if( $mqg == 0 || strtolower($mqg) == "off" || !get_cfg_var("magic_quotes_gpc"))
-		return false;
-	else
-		return true;
+	return (bool)get_magic_quotes_gpc();
 	}
 
 function bab_getAvailableLanguages()
