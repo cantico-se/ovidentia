@@ -1015,27 +1015,27 @@ function bab_getUserDirFields($id = false)
 
 /*
 
-BAB_DIR_ENTRY_ID_USER		: 
+BAB_DIR_ENTRY_ID_USER		: $id est un id utilisateur
 BAB_DIR_ENTRY_ID			: $id est un id de fiche d'annuaire
 BAB_DIR_ENTRY_ID_DIRECTORY	: liste des champs de l'annuaire
 BAB_DIR_ENTRY_ID_GROUP		: liste des champs de l'annuaire de groupe
 */
 
 function bab_getDirEntry($id = false, $type = BAB_DIR_ENTRY_ID_USER) {
-
-	if (BAB_DIR_ENTRY_ID_USER === $type && false === $id) {
-		$id = &$GLOBALS['BAB_SESS_USERID'];
-		}
-
 	include_once $GLOBALS['babInstallPath']."utilit/dirincl.php";
 	return getDirEntry($id, $type);
 	}
 
 function bab_getUserDirectories() {
-	
 	include_once $GLOBALS['babInstallPath']."utilit/dirincl.php";
 	return getUserDirectories();
 	}
+
+function bab_getUserDirEntryLink($id = false, $type = BAB_DIR_ENTRY_ID_USER, $id_directory = 0) {
+	include_once $GLOBALS['babInstallPath']."utilit/dirincl.php";
+	return getUserDirEntryLink($id, $type, $id_directory);
+	}
+
 
 /* API Groups */
 function bab_getGroupName($id, $fpn=true)

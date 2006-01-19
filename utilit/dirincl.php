@@ -538,6 +538,10 @@ function summaryDbContactWithOvml($args)
 		{
 		$arr = $babDB->db_fetch_array($babDB->db_query("select ovml_detail from ".BAB_DB_DIRECTORIES_TBL." where id='".$args['directoryid']."'"));
 
+		if (isset($args['id_user'])) {
+			list($args['userid']) = $babDB->db_fetch_array($babDB->db_query("SELECT id FROM ".BAB_DBDIR_ENTRIES_TBL." WHERE id_user='".$args['id_user']."'"));
+			}
+
 		if( !empty($arr['ovml_detail']))
 			{
 			echo bab_printOvmlTemplate( $arr['ovml_detail'], $args );
@@ -554,7 +558,9 @@ function summaryDbContactWithOvml($args)
 function getDirEntry($id, $type) {
 	$babDB = &$GLOBALS['babDB'];
 
-	
+	if (BAB_DIR_ENTRY_ID_USER === $type && false === $id) {
+		$id = &$GLOBALS['BAB_SESS_USERID'];
+		}
 
 	$accessible_directories = getUserDirectories();
 
@@ -703,28 +709,54 @@ function getDirEntry($id, $type) {
 
 
 function getUserDirectories() {
-	$db = &$GLOBALS['babDB'];
-
-	$return = array();
 	
-	$res = $db->db_query("SELECT d.id, d.name, d.description, d.id_group FROM ".BAB_DB_DIRECTORIES_TBL." d 
-	LEFT JOIN ".BAB_GROUPS_TBL." g ON g.id=d.id_group AND g.directory='Y' WHERE (d.id_group='0' OR g.id>'0') ORDER BY name");
-	while( $row = $db->db_fetch_array($res))
-		{
-		if(bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $row['id']))
+	static $return = array();
+
+	if (0 == count($return)) {
+		$db = &$GLOBALS['babDB'];
+		$res = $db->db_query("SELECT d.id, d.name, d.description, d.id_group FROM ".BAB_DB_DIRECTORIES_TBL." d 
+		LEFT JOIN ".BAB_GROUPS_TBL." g ON g.id=d.id_group AND g.directory='Y' WHERE (d.id_group='0' OR g.id>'0') ORDER BY name");
+		while( $row = $db->db_fetch_array($res))
 			{
-			$return[$row['id']] = array(
-					'id'					=> $row['id'],
-					'name'					=> $row['name'],
-					'description'			=> $row['description'],
-					'entry_id_directory'	=> $row['id_group'] > 0 ? 0 : $row['id'],
-					'id_group'				=> $row['id_group']
-				);
+			if(bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $row['id']))
+				{
+				$return[$row['id']] = array(
+						'id'					=> $row['id'],
+						'name'					=> $row['name'],
+						'description'			=> $row['description'],
+						'entry_id_directory'	=> $row['id_group'] > 0 ? 0 : $row['id'],
+						'id_group'				=> $row['id_group']
+					);
+				}
 			}
 		}
+
 	return $return;
 	}
 
+
+
+function getUserDirEntryLink($id, $type, $id_directory) {
+
+	if (BAB_DIR_ENTRY_ID_USER === $type && false === $id) {
+		$id = &$GLOBALS['BAB_SESS_USERID'];
+		}
+
+	$accessible_directories = getUserDirectories();
+
+
+	switch ($type) {
+		case BAB_DIR_ENTRY_ID_USER:
+			$id_directory = 0;	
+			return $GLOBALS['babUrlScript']."?tg=directory&idx=ddbovml&directoryid=".$id_directory."&id_user=".$id;
+
+
+		case BAB_DIR_ENTRY_ID:
+			if (!isset($accessible_directories[$id_directory]))
+				return false;
+			return $GLOBALS['babUrlScript']."?tg=directory&idx=ddbovml&directoryid=".$id_directory."&userid=".$id;
+	}
+}
 
 
 ?>
