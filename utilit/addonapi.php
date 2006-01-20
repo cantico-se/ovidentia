@@ -1027,7 +1027,7 @@ function bab_getUserDirectories() {
 	return getUserDirectories();
 	}
 
-function bab_getUserDirEntryLink($id = false, $type = BAB_DIR_ENTRY_ID_USER, $id_directory = 0) {
+function bab_getUserDirEntryLink($id = false, $type = BAB_DIR_ENTRY_ID_USER, $id_directory = false) {
 	include_once $GLOBALS['babInstallPath']."utilit/dirincl.php";
 	return getUserDirEntryLink($id, $type, $id_directory);
 	}

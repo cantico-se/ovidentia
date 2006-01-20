@@ -745,15 +745,24 @@ function getUserDirEntryLink($id, $type, $id_directory) {
 	$accessible_directories = getUserDirectories();
 
 
+	if (false === $id_directory) {
+		foreach($accessible_directories as $iddir => $arr) {
+			if (BAB_REGISTERED_GROUP == $arr['id_group']) {
+					$id_directory = $iddir;
+					break;
+				}
+			}
+		}
+
+	if (!isset($accessible_directories[$id_directory]))
+		return false;
+
+
 	switch ($type) {
 		case BAB_DIR_ENTRY_ID_USER:
-			$id_directory = 0;	
 			return $GLOBALS['babUrlScript']."?tg=directory&idx=ddbovml&directoryid=".$id_directory."&id_user=".$id;
 
-
 		case BAB_DIR_ENTRY_ID:
-			if (!isset($accessible_directories[$id_directory]))
-				return false;
 			return $GLOBALS['babUrlScript']."?tg=directory&idx=ddbovml&directoryid=".$id_directory."&userid=".$id;
 	}
 }
