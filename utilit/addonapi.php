@@ -1017,9 +1017,9 @@ BAB_DIR_ENTRY_ID_DIRECTORY	: liste des champs de l'annuaire
 BAB_DIR_ENTRY_ID_GROUP		: liste des champs de l'annuaire de groupe
 */
 
-function bab_getDirEntry($id = false, $type = BAB_DIR_ENTRY_ID_USER) {
+function bab_getDirEntry($id = false, $type = BAB_DIR_ENTRY_ID_USER, $id_directory = NULL ) {
 	include_once $GLOBALS['babInstallPath']."utilit/dirincl.php";
-	return getDirEntry($id, $type);
+	return getDirEntry($id, $type, $id_directory);
 	}
 
 function bab_getUserDirectories() {

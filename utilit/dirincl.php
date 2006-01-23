@@ -555,11 +555,15 @@ function summaryDbContactWithOvml($args)
 
 
 
-function getDirEntry($id, $type) {
+function getDirEntry($id, $type, $id_directory) {
 	$babDB = &$GLOBALS['babDB'];
 
 	if (BAB_DIR_ENTRY_ID_USER === $type && false === $id) {
 		$id = &$GLOBALS['BAB_SESS_USERID'];
+		}
+
+	if (NULL !== $id_directory) {
+		$test_on_directory = '';
 		}
 
 	$accessible_directories = getUserDirectories();
@@ -568,36 +572,53 @@ function getDirEntry($id, $type) {
 	switch ($type) {
 		case BAB_DIR_ENTRY_ID_USER:
 			$id_directory = 0;	
-			$colname = 'id_user';
+			$colname = 'e.id_user';
 			if (is_array($id))
 				$id = implode("','",$id);
+
+			$access = false;
+			
+			foreach ($accessible_directories as $id_dir => $arr) {
+				if ($arr['id_group'] == BAB_REGISTERED_GROUP) {
+					$access = true;
+					$id_directory = $id_dir;
+					}
+				}
+			if (!$access)
+				return array();
+
 			break;
 
 		case BAB_DIR_ENTRY_ID:
-			$colname = 'id';
+			$colname = 'e.id';
 			if (is_array($id))
 				$id = implode("','",$id);
+
+			if (NULL == $id_directory) {
+				list($id_directory) = $babDB->db_fetch_array($babDB->db_query("SELECT id_directory FROM ".BAB_DBDIR_ENTRIES_TBL." WHERE id IN('".$id."')"));
+				}
 			break;
 
 		case BAB_DIR_ENTRY_ID_DIRECTORY:
-			$colname = 'id_directory';
+			$colname = 'e.id_directory';
 			if (!isset($accessible_directories[$id]))
 				return array();
 			$id_directory = $accessible_directories[$id]['entry_id_directory'];
 			break;
 
 		case BAB_DIR_ENTRY_ID_GROUP:
-			$colname = 'id_directory';
+			$colname = 'e.id_directory';
 			$access = false;
 			
 			foreach ($accessible_directories as $id_dir => $arr) {
 				if ($arr['id_group'] == $id) {
 					$access = true;
+					$id_directory = $id_dir;
 					}
 				}
 			if (!$access)
 				return array();
-			$id_directory = 0;
+			
 			break;
 
 		}
@@ -643,10 +664,16 @@ function getDirEntry($id, $type) {
 		$str_leftjoin_col = ', '.implode(', ',$leftjoin_col);
 		}
 
+	if (isset($test_on_directory)) {
+		$test_on_directory = "AND id_directory='".$id_directory."'";
+		} else {
+		$test_on_directory = '';
+		}
+
 	$res = $babDB->db_query("
 	
 				SELECT  
-					e.id,	
+					e.id,
 					e.cn,
 					e.sn,
 					e.mn,
@@ -680,7 +707,7 @@ function getDirEntry($id, $type) {
 					LEFT JOIN ".BAB_USERS_TBL." dis ON dis.id = e.id_user AND dis.disabled='1' 
 					".$str_leftjoin." 
 				WHERE 
-					".$colname." IN('".$id."') AND dis.id IS NULL
+					".$colname." IN('".$id."') ".$test_on_directory." AND dis.id IS NULL
 
 	");
 
