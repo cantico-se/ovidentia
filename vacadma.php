@@ -1452,7 +1452,7 @@ function updateVacationRight()
 			{
 			if ( $post['collid'] == -2)
 				{
-				$res = $babDB->db_fetch_array($babDB->db_query("SELECT p.* from ".BAB_VAC_PERSONNEL_TBL." p, ".BAB_VAC_COLLECTIONS_TBL." c, ".BAB_VAC_COLL_TYPES_TBL." t WHERE t.id_type='".$post['id_type']."' and c.id = t.id_coll AND p.id_coll=c.id"));
+				$res = $babDB->db_query("SELECT p.* from ".BAB_VAC_PERSONNEL_TBL." p, ".BAB_VAC_COLLECTIONS_TBL." c, ".BAB_VAC_COLL_TYPES_TBL." t WHERE t.id_type='".$post['id_type']."' and c.id = t.id_coll AND p.id_coll=c.id");
 				}
 			elseif( $post['collid'] != -1)
 				{
