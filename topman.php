@@ -1174,6 +1174,14 @@ function saveArticleProperties()
 			$date_pub = sprintf("%04d-%02d-%02d %s:00", $ymin + $yearpub - 1, $monthpub, $daypub, $timepub);
 			$arrreq[] = "date_publication='".$date_pub."'";
 			}
+		else
+			{
+			$arrreq[] = "date_publication='0000-00-00 00:00'";
+			}
+		else
+			{
+			$arrreq[] = "date_archiving='0000-00-00 00:00'";
+			}
 
 		if( isset($cdatee)) 
 			{
