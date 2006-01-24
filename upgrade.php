@@ -5428,4 +5428,14 @@ if ('nb_recipients' != $arr[0])
 return $ret;
 }
 
+
+function upgrade576to577()
+{	
+$ret = "";
+$db = & $GLOBALS['babDB'];
+
+
+return $ret;
+}
+
 ?>
