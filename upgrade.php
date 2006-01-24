@@ -5386,7 +5386,7 @@ $ret = "";
 $db = & $GLOBALS['babDB'];
 
 $arr = $db->db_fetch_array($db->db_query("SHOW TABLES LIKE '".BAB_FORUMSNOTIFY_GROUPS_TBL."'"));
-if ( $arr[0] != BAB_SITES_SWISH_TBL )
+if ( $arr[0] != BAB_FORUMSNOTIFY_GROUPS_TBL )
 	{
 	$req = "CREATE TABLE ".BAB_FORUMSNOTIFY_GROUPS_TBL." (";
 	$req .= "id int(11) unsigned NOT NULL auto_increment,";
