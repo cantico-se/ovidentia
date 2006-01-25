@@ -1178,15 +1178,15 @@ function saveArticleProperties()
 			{
 			$arrreq[] = "date_publication='0000-00-00 00:00'";
 			}
-		else
-			{
-			$arrreq[] = "date_archiving='0000-00-00 00:00'";
-			}
 
 		if( isset($cdatee)) 
 			{
 			$date_end = sprintf("%04d-%02d-%02d %s:00", $ymin + $yearend - 1, $monthend, $dayend, $timeend);
 			$arrreq[] = "date_archiving='".$date_end."'";
+			}
+		else
+			{
+			$arrreq[] = "date_archiving='0000-00-00 00:00'";
 			}
 
 		if( isset($restriction))
