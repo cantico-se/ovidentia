@@ -1058,11 +1058,11 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 						if (0 === strpos($dirselect, 'babdirf'))
 							{
 							// champ supplémentaire
-							$crit_fields_add[] = "t.id_fieldx = '".substr($dirselect,7)."' AND t.field_value LIKE '%".addslashes(stripslashes($dirfield))."%'";
+							$crit_fields_add[] = "t.id_fieldx = '".substr($dirselect,7)."' AND t.field_value LIKE '%".$dirfield."%'";
 							}
 						else
 							{
-							$crit_fields_reg[] = "e.".$dirselect." LIKE '%".addslashes(stripslashes($dirfield))."%'";//finder($dirfield, 'e.'.$dirselect);
+							$crit_fields_reg[] = "e.".$dirselect." LIKE '%".$dirfield."%'";//finder($dirfield, 'e.'.$dirselect);
 							}
 						}
 					}
@@ -1147,7 +1147,6 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 						}
 					} else $option_dir = '';
 
-
 				$req = "SELECT 
 					e.id 
 				FROM `".BAB_DBDIR_ENTRIES_TBL."` e
@@ -1158,17 +1157,14 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				LEFT JOIN ".BAB_USERS_GROUPS_TBL." u ON u.id_object = e.id_user AND u.id_group IN ('".implode("','",$arr_grp)."') 
 				LEFT JOIN ".BAB_USERS_TBL." dis ON dis.id = e.id_user AND dis.disabled='1' 
 					
-				WHERE (
+				WHERE 
 				".$crit_fields." 
-				t.id IS NOT NULL
-				)
-				AND ".$crit_fields_add_str." 
+				".$crit_fields_add_str." 
 					(
 					e.id_directory IN ( '0', '".implode("','",$arr_dir)."' ) 
 					OR u.id IS NOT NULL 
 					) ".$option_dir." 
 				GROUP BY e.id ";
-
 
 				$this->countdirfields = count($this->dirfields['name']);
 
@@ -1185,7 +1181,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$req .= " ".$order_tmp." LIMIT ".$navpos.", ".$babLimit;
 				$this->resdir = $this->db->db_query($req);
 				$this->countdir = $this->db->db_num_rows($this->resdir);
-				//echo $req;
+
 				if( !$this->counttot && $this->countdir > 0 )
 					$this->counttot = true;
 				
