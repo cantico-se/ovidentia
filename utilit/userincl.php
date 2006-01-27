@@ -564,6 +564,7 @@ function bab_fileManagerAccessLevel()
 		$upda = bab_isAccessValid(BAB_FMUPDATE_GROUPS_TBL, $row['id']);
 		$man = bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $row['id']);
 
+		$babBody->aclfm['bshowfm'] = false;
 		if( $down || $uplo || $upda || $man )
 			{
 			$babBody->aclfm['id'][] = $row['id'];
@@ -584,6 +585,7 @@ function bab_fileManagerAccessLevel()
 			else
 				{
 				$babBody->aclfm['hide'][] = false;
+				$babBody->aclfm['bshowfm'] = true;
 				}
 			}
 		}

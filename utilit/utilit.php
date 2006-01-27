@@ -794,7 +794,7 @@ function babUserSection($close)
 		$this->array_urls[bab_translate("Contacts")] = $GLOBALS['babUrlScript']."?tg=contacts";
 		}
 	bab_fileManagerAccessLevel();
-	if( $babBody->ustorage || count($babBody->aclfm) > 0 )
+	if( $babBody->ustorage || (count($babBody->aclfm) > 0 && $babBody->aclfm['bshowfm']))
 		{
 		$this->array_urls[bab_translate("File manager")] = $GLOBALS['babUrlScript']."?tg=fileman";
 		}
