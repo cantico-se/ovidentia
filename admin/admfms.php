@@ -57,7 +57,7 @@ function addFolder()
 			$this->add = bab_translate("Add");
 			$this->active = bab_translate("Active");
 			$this->none = bab_translate("None");
-			$this->display = bab_translate("Don't display in file manager?");
+			$this->display = bab_translate("Visible in file manager?");
 			$this->sares = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babBody->currentAdmGroup."' order by name asc");
 			if( !$this->sares )
 				$this->sacount = 0;

@@ -68,7 +68,7 @@ function modifyFolder($fid)
 			$this->add = bab_translate("Update");
 			$this->del = bab_translate("Delete");
 			$this->active = bab_translate("Active");
-			$this->display = bab_translate("Don't display in file manager?");
+			$this->display = bab_translate("Visible in file manager?");
 			$this->fid = $fid;
 			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FM_FOLDERS_TBL." where id ='".$fid."'"));
 			$this->folderval = $arr['folder'];
