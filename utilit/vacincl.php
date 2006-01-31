@@ -218,15 +218,17 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 			}
 
 		
+		$beginp = $begin;
+		$endp = $end;
 		
-		if (!$begin || -1 == $begin)
+		if (!$beginp || -1 == $beginp)
 			{
-			$begin = bab_mktime($arr['date_begin_valid']);
+			$beginp = bab_mktime($arr['date_begin_valid']);
 			}
 
-		if (!$end || -1 == $end)
+		if (!$endp || -1 == $endp)
 			{
-			$end = bab_mktime($arr['date_end_valid']);
+			$endp = bab_mktime($arr['date_end_valid']);
 			}
 		
 		$req = "select sum(el.quantity) total from ".BAB_VAC_ENTRIES_ELEM_TBL." el, ".BAB_VAC_ENTRIES_TBL." e where e.id_user='".$id_user."' and e.status='Y' and el.id_type='".$arr['id']."' and el.id_entry=e.id";
@@ -255,10 +257,10 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 			$period_start = bab_mktime($arr['period_start']);
 			$period_end = bab_mktime($arr['period_end']);
 			
-			$nbdays = round(($end - $begin) / 86400);
+			$nbdays = round(($endp - $beginp) / 86400);
 
 
-			if ($begin == -1 || $end == -1 || $period_start == -1 || $period_end == -1)
+			if ($beginp == -1 || $endp == -1 || $period_start == -1 || $period_end == -1)
 				continue;
 
 			
@@ -277,7 +279,7 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 				case 1: // Dans la période de la règle
 					if (!empty($arr['period_start']) && 
 						!empty($arr['period_end']) && 
-						($period_start <= $begin && $period_end >= $end) ) {
+						($period_start <= $beginp && $period_end >= $endp) ) {
 							$access = true;
 							}
 					break;
@@ -285,7 +287,7 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 				case 2: // En dehors de la période de la règle
 					if (!empty($arr['period_start']) && 
 						!empty($arr['period_end']) && 
-						($period_end <= $begin || $period_start >= $end) ) {
+						($period_end <= $beginp || $period_start >= $endp) ) {
 							$access = true;
 							}
 					break;
@@ -293,7 +295,7 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 				case 11: // Dans la période de la règle mais peut dépasser à l'exterieur
 					if (!empty($arr['period_start']) && 
 						!empty($arr['period_end']) && 
-						($period_start < $end && $period_end > $begin) ) {
+						($period_start < $endp && $period_end > $beginp) ) {
 							$access = true;
 							}
 					break;
@@ -301,7 +303,7 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 				case 12: // En dehors de la période de la règle mais peut dépasser à l'intérieur
 					if (!empty($arr['period_start']) && 
 						!empty($arr['period_end']) && 
-						($period_start > $begin || $period_end < $end) ) {
+						($period_start > $beginp || $period_end < $endp) ) {
 							$access = true;
 							}
 					break;
@@ -314,13 +316,13 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 
 				switch ($arr['trigger_inperiod'])
 					{
-					case 0:
+					case 0: //Sur toute la période du droit
 						$req = " AND e.date_begin >= '".$arr['date_begin']."' AND e.date_end <= '".$arr['date_end']."'";
 						break;
-					case 1:
+					case 1: //Dans la période de la règle
 						$req = " AND e.date_begin >= '".$arr['period_start']."' AND e.date_end <= '".$arr['period_end']."'";
 						break;
-					case 2:
+					case 2: //En dehors de la période de la règle et dans la période du droit
 						$req = " AND e.date_begin >= '".$arr['date_begin']."' AND e.date_end <= '".$arr['date_end']."'";
 						$req .= " AND ((e.date_begin < '".$arr['period_start']."' AND e.date_end <= '".$arr['period_start']."') OR (e.date_begin >= '".$arr['period_end']."' AND e.date_end > '".$arr['period_end']."'))";
 						break;
