@@ -801,22 +801,22 @@ function bab_getGroupsAccess($table, $idobject)
 
 function bab_calendarPopup($callback, $month='', $year='', $low='', $high='')
 {
-	$url = $GLOBALS['babUrlScript']."?tg=month&callback=".$callback;
+	$url = $GLOBALS['babUrlScript']."?tg=month&amp;callback=".$callback;
 	if( !empty($month))
 	{
-		$url .= "&month=".$month;
+		$url .= "&amp;month=".$month;
 	}
 	if( !empty($year))
 	{
-		$url .= "&year=".$year;
+		$url .= "&amp;year=".$year;
 	}
 	if( !empty($low))
 	{
-		$url .= "&ymin=".$low;
+		$url .= "&amp;ymin=".$low;
 	}
 	if( !empty($high))
 	{
-		$url .= "&ymax=".$high;
+		$url .= "&amp;ymax=".$high;
 	}
 	return "javascript:Start('".$url."','OVCalendarPopup','width=250,height=250,status=no,resizable=no,top=200,left=200')";
 }
