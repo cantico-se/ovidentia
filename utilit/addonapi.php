@@ -842,6 +842,27 @@ function bab_isMagicQuotesGpcOn()
 	return (bool)get_magic_quotes_gpc();
 	}
 
+
+/** 
+ * Remove escapes if magic quotes is on, do not call in a file always included!
+ */ 
+function bab_cleanGpc() {
+	function bab_slashes(&$val) {
+		if (get_magic_quotes_gpc()) {
+			if (is_array($val)) {
+				array_walk($val,'bab_trt_slashes');
+				}
+			else
+				$val = stripslashes($val);
+		}
+	}
+
+	bab_trt_slashes($_GET);
+	bab_trt_slashes($_POST);
+	bab_trt_slashes($_COOKIES);
+	bab_trt_slashes($_REQUEST);
+	}
+
 function bab_getAvailableLanguages()
 	{
 	$langs = array();
