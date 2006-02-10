@@ -1857,14 +1857,14 @@ class bab_File extends bab_handler
 			$this->ctx->curctx->push('FileKeywords', $this->arr['keywords']);
 			$this->ctx->curctx->push('FileId', $this->arr['id']);
 			$this->ctx->curctx->push('FileFolderId', $this->arr['id_owner']);
-			$this->ctx->curctx->push('FileDate', bab_mktime($arr['modified']));
+			$this->ctx->curctx->push('FileDate', bab_mktime($this->arr['modified']));
 			$this->ctx->curctx->push('FileAuthor', $this->arr['author']);
 			$this->ctx->curctx->push('FileUrl', $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$this->arr['id_owner']."&gr=".$this->arr['bgroup']."&path=".urlencode($this->arr['path']));
 			$this->ctx->curctx->push('FilePopupUrl', $GLOBALS['babUrlScript']."?tg=fileman&idx=viewfile&idf=".$this->arr['id']."&id=".$this->arr['id_owner']."&gr=".$this->arr['bgroup']."&path=".urlencode($this->arr['path'])."&file=".urlencode($this->arr['name']));
 			$this->ctx->curctx->push('FileUrlGet', $GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$this->arr['id_owner']."&gr=".$this->arr['bgroup']."&path=".urlencode($this->arr['path'])."&file=".urlencode($this->arr['name']));
-			$fullpath = bab_getUploadFullPath($arr['bgroup'], $arr['id_owner']);
-			if (file_exists($fullpath.$arr['path']."/".$arr['name']) )
-				$this->ctx->curctx->push('FileSize',bab_formatSizeFile(filesize($fullpath.$arr['path']."/".$arr['name'])) );
+			$fullpath = bab_getUploadFullPath($arr['bgroup'], $this->arr['id_owner']);
+			if (file_exists($fullpath.$this->arr['path']."/".$this->arr['name']) )
+				$this->ctx->curctx->push('FileSize',bab_formatSizeFile(filesize($fullpath.$this->arr['path']."/".$this->arr['name'])) );
 			else
 				$this->ctx->curctx->push('FileSize', '???');
 			$this->idx++;
