@@ -294,6 +294,8 @@ class bab_DbDirectoryMembers extends bab_handler
 					$select[] = 'e.id';
 					$nfields[] = "id_user";
 					$select[] = 'e.id_user';
+					$select[] = 'e.date_modification';
+					$select[] = 'e.id_modifiedby';
 					if( !in_array('email', $select))
 						$select[] = 'e.email';
 
@@ -392,6 +394,11 @@ class bab_DbDirectoryMembers extends bab_handler
 			$this->memberfields = $babDB->db_fetch_array($this->res);
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('DirectoryMemberId', $this->memberfields['id']);
+			if( $this->memberfields['date_modification'] == '0000-00-00 00:00:00')
+				$this->ctx->curctx->push('DirectoryMemberUpdateDate', '');
+			else
+				$this->ctx->curctx->push('DirectoryMemberUpdateDate', bab_mktime($this->memberfields['date_modification']));
+			$this->ctx->curctx->push('DirectoryMemberUpdateAuthor', $this->memberfields['id_modifiedby']);
 			$this->ctx->curctx->push('DirectoryMemberUrl', $GLOBALS['babUrlScript']."?tg=directory&idx=ddbovml&directoryid=".$this->directoryid."&userid=".$this->memberfields['id']);
 			if( isset($this->memberfields['email']) && $this->accountid )
 				{
@@ -545,6 +552,11 @@ class bab_DbDirectoryEntry extends bab_handler
 					$this->ctx->curctx->push('DirectoryEntryUserId', $this->arrentries['id_user']);
 					}
 				$this->ctx->curctx->push('DirectoryEntryMemberId', $this->arrentries['id']);
+				if( $this->arrentries['date_modification'] == '0000-00-00 00:00:00')
+					$this->ctx->curctx->push('DirectoryMemberUpdateDate', '');
+				else
+					$this->ctx->curctx->push('DirectoryMemberUpdateDate', bab_mktime($this->arrentries['date_modification']));
+				$this->ctx->curctx->push('DirectoryMemberUpdateAuthor', $this->arrentries['id_modifiedby']);
 
 				$this->count = 1;
 				}
@@ -676,6 +688,24 @@ class bab_DbDirectoryAcl extends bab_handler
 						break;
 					case 'modify':
 						$table = BAB_DBDIRUPDATE_GROUPS_TBL;
+						break;
+					case 'delete':
+						$table = BAB_DBDIRDEL_GROUPS_TBL;
+						break;
+					case 'export':
+						$table = BAB_DBDIREXPORT_GROUPS_TBL;
+						break;
+					case 'import':
+						$table = BAB_DBDIRIMPORT_GROUPS_TBL;
+						break;
+					case 'empty':
+						$table = BAB_DBDIREMPTY_GROUPS_TBL;
+						break;
+					case 'bind':
+						$table = BAB_DBDIRBIND_GROUPS_TBL;
+						break;
+					case 'unbind':
+						$table = BAB_DBDIRUNBIND_GROUPS_TBL;
 						break;
 					case 'view':
 					default:

@@ -363,7 +363,7 @@ function summaryDbContact($id, $idu, $update=true)
 			$this->t_delconf = bab_translate("Do you really want to delete the contact ?");
 
 			$this->db = &$GLOBALS['babDB'];
-			list($idgroup, $allowuu) = $this->db->db_fetch_array($this->db->db_query("select id_group, user_update from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
+			list($idgroup, $allowuu, $bshowui) = $this->db->db_fetch_array($this->db->db_query("select id_group, user_update, show_update_info from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
 
 			$this->res = $this->db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup != 0? 0: $id)."' AND disabled='N' order by list_ordering asc");
 			if( $this->res && $this->db->db_num_rows($this->res) > 0)
@@ -395,7 +395,8 @@ function summaryDbContact($id, $idu, $update=true)
 				
 				$this->urlimg = $GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$id."&idu=".$idu;
 
-				$this->del = bab_isAccessValid(BAB_DBDIRADD_GROUPS_TBL, $id);
+				$this->unassign = bab_isAccessValid(BAB_DBDIRUNBIND_GROUPS_TBL, $id);
+				$this->del = bab_isAccessValid(BAB_DBDIRDEL_GROUPS_TBL, $id);
 				if( $idgroup == 0 )
 					{
 					$allowuu = "N";
@@ -418,6 +419,27 @@ function summaryDbContact($id, $idu, $update=true)
 					{
 					$this->deltxt = bab_translate("Delete");
 					$this->delurl = $GLOBALS['babUrlScript']."?tg=directory&idx=deldbc&id=".$id."&idu=".$idu;
+					}
+
+				if( $this->unassign && $idgroup && $idgroup != BAB_REGISTERED_GROUP)
+					{ 
+					$this->unassigntxt = bab_translate("Unassign");
+					$this->unassignurl = $GLOBALS['babUrlScript']."?tg=directory&idx=unassign&id=".$id."&idu=".$idu;
+					$this->t_unassignconf = bab_translate("Do you really want to unassign this contact from the directory?");
+					}
+				else
+					{
+					$this->unassign = false;
+					}
+
+				$this->bshowupadetinfo = false;
+				if( $bshowui == 'Y' && $this->arr['id_modifiedby'])
+					{
+					$this->bshowupadetinfo = true;
+					$this->modifiedontxt = bab_translate("Update on");
+					$this->bytxt = bab_translate("By");
+					$this->updatedate = bab_shortDate(bab_mktime($this->arr['date_modification']), true);
+					$this->updateauthor = bab_getUserName($this->arr['id_modifiedby']);
 					}
 
 				$this->idu = $idu;

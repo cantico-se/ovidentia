@@ -215,6 +215,15 @@
 <input type="text" name="description" size="45" value="{ vdescription }">
 </td>
 </tr>
+<tr> 
+<td align="right" nowrap valign="middle">{ displayinfoupdate }?</td>
+<td valign="middle">
+<select name="displayiu">
+<option value="N" selected="selected">{ no }</option>
+<option value="Y">{ yes }</option>
+</select>
+</td>
+</tr>
 </table>
 </td>
 </tr>
@@ -282,6 +291,15 @@
 <td align="right">{ description }</td>
 <td valign="middle">
 <input type="text" name="description" size="45" value="{ vdescription }">
+</td>
+</tr>
+<tr> 
+<td align="right">{ displayinfoupdate }?</td>
+<td valign="middle">
+<select name="displayiu">
+<option value="N" { noduselected }>{ no }</option>
+<option value="Y" { yesduselected }>{ yes }</option>
+</select>
 </td>
 </tr>
 <!--#if ballowuserupdate -->

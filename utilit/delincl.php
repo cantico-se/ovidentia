@@ -253,6 +253,7 @@ function bab_deleteForum($id)
 	aclDelete(BAB_FORUMSPOST_GROUPS_TBL, $id);
 	aclDelete(BAB_FORUMSREPLY_GROUPS_TBL, $id);
 	aclDelete(BAB_FORUMSMAN_GROUPS_TBL, $id);
+	aclDelete(BAB_FORUMSNOTIFY_GROUPS_TBL, $id);
 
 	$req = "delete from ".BAB_FORUMS_TBL." where id='$id'";
 	$res = $db->db_query($req);
@@ -345,10 +346,10 @@ function bab_deleteFolder($fid)
 
 	$babDB->db_query("delete from ".BAB_FM_FIELDS_TBL." where id_folder='".$fid."'");
 
-	aclDelete(BAB_FMUPLOAD_GROUPS_TBL, $id);
-	aclDelete(BAB_FMUPDATE_GROUPS_TBL, $id);
-	aclDelete(BAB_FMDOWNLOAD_GROUPS_TBL, $id);
-	aclDelete(BAB_FMMANAGERS_GROUPS_TBL, $id);
+	aclDelete(BAB_FMUPLOAD_GROUPS_TBL, $fid);
+	aclDelete(BAB_FMUPDATE_GROUPS_TBL, $fid);
+	aclDelete(BAB_FMDOWNLOAD_GROUPS_TBL, $fid);
+	aclDelete(BAB_FMMANAGERS_GROUPS_TBL, $fid);
 
 	// delete folder
 	$babDB->db_query("delete from ".BAB_FM_FOLDERS_TBL." where id='".$fid."'");
@@ -372,6 +373,7 @@ function bab_deleteDbDirectory($id)
 		$babDB->db_query("delete from ".BAB_DBDIR_FIELDSVALUES_TBL." where id_fieldextra='".$arr['id']."'");
 	}
 	$babDB->db_query("delete from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$id."'");
+	$babDB->db_query("delete from ".BAB_DBDIR_FIELDSEXPORT_TBL." where id_directory='".$id."'");
 	$babDB->db_query("delete from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id_directory='".$id."'");
 	$res = $babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".$id."'");
 	while( $arr = $babDB->db_fetch_array($res))
@@ -380,6 +382,16 @@ function bab_deleteDbDirectory($id)
 	}
 	$babDB->db_query("delete from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".$id."'");
 	$babDB->db_query("delete from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'");
+
+	aclDelete(BAB_DBDIRVIEW_GROUPS_TBL, $id);
+	aclDelete(BAB_DBDIRADD_GROUPS_TBL, $id);
+	aclDelete(BAB_DBDIRUPDATE_GROUPS_TBL, $id);
+	aclDelete(BAB_DBDIRDEL_GROUPS_TBL, $id);
+	aclDelete(BAB_DBDIREXPORT_GROUPS_TBL, $id);
+	aclDelete(BAB_DBDIRIMPORT_GROUPS_TBL, $id);
+	aclDelete(BAB_DBDIRBIND_GROUPS_TBL, $id);
+	aclDelete(BAB_DBDIRUNBIND_GROUPS_TBL, $id);
+	aclDelete(BAB_DBDIREMPTY_GROUPS_TBL, $id);
 }
 
 
@@ -414,6 +426,18 @@ function bab_deleteGroupAclTables($id)
 	$db->db_query("delete from ".BAB_FORUMSPOST_GROUPS_TBL." where id_group='".$id."'");
 	$db->db_query("delete from ".BAB_FORUMSREPLY_GROUPS_TBL." where id_group='".$id."'");
 	$db->db_query("delete from ".BAB_FORUMSMAN_GROUPS_TBL." where id_group='".$id."'");
+	$db->db_query("delete from ".BAB_FORUMSNOTIFY_GROUPS_TBL." where id_group='".$id."'");
+
+	$db->db_query("delete from ".BAB_DBDIRVIEW_GROUPS_TBL." where id_group='".$id."'");
+	$db->db_query("delete from ".BAB_DBDIRADD_GROUPS_TBL." where id_group='".$id."'");
+	$db->db_query("delete from ".BAB_DBDIRUPDATE_GROUPS_TBL." where id_group='".$id."'");
+	$db->db_query("delete from ".BAB_DBDIRDEL_GROUPS_TBL." where id_group='".$id."'");
+	$db->db_query("delete from ".BAB_DBDIREXPORT_GROUPS_TBL." where id_group='".$id."'");
+	$db->db_query("delete from ".BAB_DBDIRIMPORT_GROUPS_TBL." where id_group='".$id."'");
+	$db->db_query("delete from ".BAB_DBDIRBIND_GROUPS_TBL." where id_group='".$id."'");
+	$db->db_query("delete from ".BAB_DBDIRUNBIND_GROUPS_TBL." where id_group='".$id."'");
+	$db->db_query("delete from ".BAB_DBDIREMPTY_GROUPS_TBL." where id_group='".$id."'");
+
 }
 
 

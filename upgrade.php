@@ -5438,4 +5438,213 @@ $db = & $GLOBALS['babDB'];
 return $ret;
 }
 
+
+function upgrade577to578()
+{	
+$ret = "";
+$db = & $GLOBALS['babDB'];
+
+$arr = $db->db_fetch_array($db->db_query("DESCRIBE ".BAB_DBDIR_ENTRIES_TBL." date_modification"));
+if ('date_modification' != $arr[0])
+	{
+
+	$res = $db->db_query("ALTER TABLE ".BAB_DBDIR_ENTRIES_TBL." ADD date_modification DATETIME NOT NULL");
+	if( !$res)
+		{
+		$ret = "Alteration of <b>".BAB_DBDIR_ENTRIES_TBL."</b> table failed !<br>";
+		return $ret;
+		}
+
+	$res = $db->db_query("ALTER TABLE ".BAB_DBDIR_ENTRIES_TBL." ADD id_modifiedby INT( 11 ) UNSIGNED DEFAULT '0' NOT NULL");
+	if( !$res)
+		{
+		$ret = "Alteration of <b>".BAB_DBDIR_ENTRIES_TBL."</b> table failed !<br>";
+		return $ret;
+		}
+	}
+
+$arr = $db->db_fetch_array($db->db_query("SHOW TABLES LIKE '".BAB_DBDIRDEL_GROUPS_TBL."'"));
+if ( $arr[0] != BAB_DBDIRDEL_GROUPS_TBL )
+	{
+	$req = "CREATE TABLE ".BAB_DBDIRDEL_GROUPS_TBL." (";
+	$req .= "id int(11) unsigned NOT NULL auto_increment,";
+	$req .= "id_object int(11) unsigned NOT NULL default '0',";
+	$req .= "id_group int(11) unsigned NOT NULL default '0',";
+	$req .= "PRIMARY KEY  (id),";
+	$req .= "KEY id_object (id_object),";
+	$req .= "KEY id_group (id_group)";
+	$req .= ");";
+
+	$res = $db->db_query($req);
+	if( !$res)
+		{
+		$ret = "Creation of <b>".BAB_DBDIRDEL_GROUPS_TBL."</b> table failed !<br>";
+		return $ret;
+		}
+
+	$db->db_query("insert into ".BAB_DBDIRDEL_GROUPS_TBL." select * from ".BAB_DBDIRADD_GROUPS_TBL."");
+	}
+
+$arr = $db->db_fetch_array($db->db_query("SHOW TABLES LIKE '".BAB_DBDIREXPORT_GROUPS_TBL."'"));
+if ( $arr[0] != BAB_DBDIREXPORT_GROUPS_TBL )
+	{
+	$req = "CREATE TABLE ".BAB_DBDIREXPORT_GROUPS_TBL." (";
+	$req .= "id int(11) unsigned NOT NULL auto_increment,";
+	$req .= "id_object int(11) unsigned NOT NULL default '0',";
+	$req .= "id_group int(11) unsigned NOT NULL default '0',";
+	$req .= "PRIMARY KEY  (id),";
+	$req .= "KEY id_object (id_object),";
+	$req .= "KEY id_group (id_group)";
+	$req .= ");";
+
+	$res = $db->db_query($req);
+	if( !$res)
+		{
+		$ret = "Creation of <b>".BAB_DBDIREXPORT_GROUPS_TBL."</b> table failed !<br>";
+		return $ret;
+		}
+	
+	$db->db_query("insert into ".BAB_DBDIREXPORT_GROUPS_TBL." select * from ".BAB_DBDIRADD_GROUPS_TBL."");
+	}
+
+$arr = $db->db_fetch_array($db->db_query("SHOW TABLES LIKE '".BAB_DBDIRIMPORT_GROUPS_TBL."'"));
+if ( $arr[0] != BAB_DBDIRIMPORT_GROUPS_TBL )
+	{
+	$req = "CREATE TABLE ".BAB_DBDIRIMPORT_GROUPS_TBL." (";
+	$req .= "id int(11) unsigned NOT NULL auto_increment,";
+	$req .= "id_object int(11) unsigned NOT NULL default '0',";
+	$req .= "id_group int(11) unsigned NOT NULL default '0',";
+	$req .= "PRIMARY KEY  (id),";
+	$req .= "KEY id_object (id_object),";
+	$req .= "KEY id_group (id_group)";
+	$req .= ");";
+
+	$res = $db->db_query($req);
+	if( !$res)
+		{
+		$ret = "Creation of <b>".BAB_DBDIRIMPORT_GROUPS_TBL."</b> table failed !<br>";
+		return $ret;
+		}
+	$db->db_query("insert into ".BAB_DBDIRIMPORT_GROUPS_TBL." select * from ".BAB_DBDIRADD_GROUPS_TBL."");
+	}
+
+$arr = $db->db_fetch_array($db->db_query("SHOW TABLES LIKE '".BAB_DBDIRBIND_GROUPS_TBL."'"));
+if ( $arr[0] != BAB_DBDIRBIND_GROUPS_TBL )
+	{
+	$req = "CREATE TABLE ".BAB_DBDIRBIND_GROUPS_TBL." (";
+	$req .= "id int(11) unsigned NOT NULL auto_increment,";
+	$req .= "id_object int(11) unsigned NOT NULL default '0',";
+	$req .= "id_group int(11) unsigned NOT NULL default '0',";
+	$req .= "PRIMARY KEY  (id),";
+	$req .= "KEY id_object (id_object),";
+	$req .= "KEY id_group (id_group)";
+	$req .= ");";
+
+	$res = $db->db_query($req);
+	if( !$res)
+		{
+		$ret = "Creation of <b>".BAB_DBDIRBIND_GROUPS_TBL."</b> table failed !<br>";
+		return $ret;
+		}
+	}
+
+$arr = $db->db_fetch_array($db->db_query("SHOW TABLES LIKE '".BAB_DBDIRUNBIND_GROUPS_TBL."'"));
+if ( $arr[0] != BAB_DBDIRUNBIND_GROUPS_TBL )
+	{
+	$req = "CREATE TABLE ".BAB_DBDIRUNBIND_GROUPS_TBL." (";
+	$req .= "id int(11) unsigned NOT NULL auto_increment,";
+	$req .= "id_object int(11) unsigned NOT NULL default '0',";
+	$req .= "id_group int(11) unsigned NOT NULL default '0',";
+	$req .= "PRIMARY KEY  (id),";
+	$req .= "KEY id_object (id_object),";
+	$req .= "KEY id_group (id_group)";
+	$req .= ");";
+
+	$res = $db->db_query($req);
+	if( !$res)
+		{
+		$ret = "Creation of <b>".BAB_DBDIRUNBIND_GROUPS_TBL."</b> table failed !<br>";
+		return $ret;
+		}
+	}
+
+$arr = $db->db_fetch_array($db->db_query("SHOW TABLES LIKE '".BAB_DBDIREMPTY_GROUPS_TBL."'"));
+if ( $arr[0] != BAB_DBDIREMPTY_GROUPS_TBL )
+	{
+	$req = "CREATE TABLE ".BAB_DBDIREMPTY_GROUPS_TBL." (";
+	$req .= "id int(11) unsigned NOT NULL auto_increment,";
+	$req .= "id_object int(11) unsigned NOT NULL default '0',";
+	$req .= "id_group int(11) unsigned NOT NULL default '0',";
+	$req .= "PRIMARY KEY  (id),";
+	$req .= "KEY id_object (id_object),";
+	$req .= "KEY id_group (id_group)";
+	$req .= ");";
+
+	$res = $db->db_query($req);
+	if( !$res)
+		{
+		$ret = "Creation of <b>".BAB_DBDIREMPTY_GROUPS_TBL."</b> table failed !<br>";
+		return $ret;
+		}
+	$db->db_query("insert into ".BAB_DBDIREMPTY_GROUPS_TBL." select * from ".BAB_DBDIRADD_GROUPS_TBL."");
+	}
+
+$arr = $db->db_fetch_array($db->db_query("DESCRIBE ".BAB_DB_DIRECTORIES_TBL." show_update_info"));
+if ($arr[0] != 'show_update_info')
+	{
+	$res = $db->db_query("ALTER TABLE `".BAB_DB_DIRECTORIES_TBL."` ADD show_update_info ENUM('N','Y') DEFAULT 'N' NOT NULL");
+	if( !$res)
+		{
+		$ret = "Alteration of <b>".BAB_DB_DIRECTORIES_TBL."</b> table failed !<br>";
+		return $ret;
+		}
+	}
+
+$arr = $db->db_fetch_array($db->db_query("SHOW TABLES LIKE '".BAB_DBDIR_FIELDSEXPORT_TBL."'"));
+if ( $arr[0] != BAB_DBDIR_FIELDSEXPORT_TBL )
+	{
+	$req = "CREATE TABLE ".BAB_DBDIR_FIELDSEXPORT_TBL." (";
+	$req .= "id int(11) unsigned NOT NULL auto_increment,";
+	$req .= "id_user int(11) unsigned NOT NULL default '0',";
+	$req .= "id_directory int(11) unsigned NOT NULL default '0',";
+	$req .= "id_field int(11) unsigned NOT NULL default '0',";
+	$req .= "ordering int(11) unsigned NOT NULL default '0',";
+	$req .= "PRIMARY KEY  (id),";
+	$req .= "KEY id_user (id_user),";
+	$req .= "KEY id_directory (id_directory)";
+	$req .= ");";
+
+	$res = $db->db_query($req);
+	if( !$res)
+		{
+		$ret = "Creation of <b>".BAB_DBDIR_FIELDSEXPORT_TBL."</b> table failed !<br>";
+		return $ret;
+		}
+	}
+
+$arr = $db->db_fetch_array($db->db_query("DESCRIBE ".BAB_TOPICS_TBL." auto_approbation"));
+if ($arr[0] != 'auto_approbation')
+	{
+	$res = $db->db_query("ALTER TABLE ".BAB_TOPICS_TBL." ADD auto_approbation ENUM('N','Y') DEFAULT 'N' NOT NULL");
+	if( !$res)
+		{
+		$ret = "Alteration of <b>".BAB_TOPICS_TBL."</b> table failed !<br>";
+		return $ret;
+		}
+	}
+
+$arr = $db->db_fetch_array($db->db_query("DESCRIBE ".BAB_FM_FOLDERS_TBL." auto_approbation"));
+if ($arr[0] != 'auto_approbation')
+	{
+	$res = $db->db_query("ALTER TABLE ".BAB_FM_FOLDERS_TBL." ADD auto_approbation ENUM('N','Y') DEFAULT 'N' NOT NULL");
+	if( !$res)
+		{
+		$ret = "Alteration of <b>".BAB_FM_FOLDERS_TBL."</b> table failed !<br>";
+		return $ret;
+		}
+	}
+
+return $ret;
+}
+
 ?>

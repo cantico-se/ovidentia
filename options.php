@@ -1049,7 +1049,7 @@ function updateUserInfo($password, $firstname, $middlename, $lastname, $nickname
 		$req = "update ".BAB_USERS_TBL." set firstname='".$firstname."', lastname='".$lastname."', nickname='".$nickname."', email='".$email."', confirm_hash='".$hash."', hashname='".$hashname."' where id='".$BAB_SESS_USERID."'";
 		$res = $db->db_query($req);
 
-		$req = "update ".BAB_DBDIR_ENTRIES_TBL." set givenname='".$firstname."', mn='".$middlename."', sn='".$lastname."', email='".$email."' where id_directory='0' and id_user='".$BAB_SESS_USERID."'";
+		$req = "update ".BAB_DBDIR_ENTRIES_TBL." set givenname='".$firstname."', mn='".$middlename."', sn='".$lastname."', email='".$email."', date_modification=now(), id_modifiedby='".$GLOBALS['BAB_SESS_USERID']."' where id_directory='0' and id_user='".$BAB_SESS_USERID."'";
 		$res = $db->db_query($req);
 
 		$BAB_SESS_NICKNAME = $nickname;

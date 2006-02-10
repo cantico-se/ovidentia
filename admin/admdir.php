@@ -26,6 +26,14 @@ include_once $babInstallPath."utilit/uiutil.php";
 include_once $babInstallPath."utilit/dirincl.php";
 include_once $babInstallPath."admin/acl.php";
 
+function isDirectoryGroup($id)
+{
+	global $babDB;
+	list($id_group) = $babDB->db_fetch_row($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
+	return $id_group;
+}
+
+
 function listAds()
 {
 	global $babBody;
@@ -332,6 +340,9 @@ function addAdDb($adname, $description)
 			$this->required = bab_translate("Required");
 			$this->multilignes = bab_translate("Multilignes");
 			$this->add = bab_translate("Add");
+			$this->yes = bab_translate("Yes");
+			$this->no = bab_translate("No");
+			$this->displayinfoupdate = bab_translate("Display the date and the author of update");
 			$this->db = $GLOBALS['babDB'];
 			$this->res = $this->db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL);
 			if( $this->res && $this->db->db_num_rows($this->res) > 0)
@@ -408,6 +419,7 @@ function modifyDb($id)
 			$this->addftxt = bab_translate("Add new field");
 			$this->disabledtxt = bab_translate("Disabled");
 			$this->allowuserupdate = bab_translate("Allow user update personal information");
+			$this->displayinfoupdate = bab_translate("Display the date and the author of update");
 			$this->bdel = true;
 			$this->bfields = true;
 			$this->ballowuserupdate = false;
@@ -437,6 +449,17 @@ function modifyDb($id)
 				{
 				$iddir = $id;
 				}
+			if( $arr['show_update_info'] == 'Y')
+				{
+				$this->noduselected = "";
+				$this->yesduselected = "selected";
+				}
+			else
+				{
+				$this->noduselected = "selected";
+				$this->yesduselected = "";
+				}
+
 			$this->res = $this->db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$iddir."' and id_field < '".BAB_DBDIR_MAX_COMMON_FIELDS."' order by id_field asc");
 			if( $this->res && $this->db->db_num_rows($this->res) > 0)
 				{
@@ -921,7 +944,7 @@ function addLdapDirectory($name, $description, $host, $basedn, $userdn, $passwor
 	return true;
 	}
 
-function addDbDirectory($name, $description, $fields, $rw, $rq, $ml, $dz)
+function addDbDirectory($name, $description, $displayiu, $fields, $rw, $rq, $ml, $dz)
 	{
 	global $babBody;
 
@@ -946,7 +969,7 @@ function addDbDirectory($name, $description, $fields, $rw, $rq, $ml, $dz)
 		}
 	else
 		{
-		$req = "insert into ".BAB_DB_DIRECTORIES_TBL." (name, description, id_dgowner) VALUES ('" .$name. "', '" . $description. "', '" .$babBody->currentAdmGroup. "')";
+		$req = "insert into ".BAB_DB_DIRECTORIES_TBL." (name, description, show_update_info, id_dgowner) VALUES ('" .$name. "', '" . $description. "', '" .$displayiu. "', '" .$babBody->currentAdmGroup. "')";
 		$db->db_query($req);
 		$id = $db->db_insert_id();
 		$res = $db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL);
@@ -1043,7 +1066,7 @@ function modifyAdLdap($id, $name, $description, $host, $basedn, $userdn, $passwo
 	return true;
 	}
 
-function modifyAdDb($id, $name, $description, $rw, $rq, $ml, $dz, $allowuu)
+function modifyAdDb($id, $name, $description, $displayiu, $rw, $rq, $ml, $dz, $allowuu)
 	{
 	global $babBody;
 
@@ -1078,7 +1101,7 @@ function modifyAdDb($id, $name, $description, $rw, $rq, $ml, $dz, $allowuu)
 			$iddir = $id;
 			$allowuu = "N";
 			}
-		$req = "update ".BAB_DB_DIRECTORIES_TBL." set name='".$name."', description='".$description."', user_update='".$allowuu."' where id='".$id."'";
+		$req = "update ".BAB_DB_DIRECTORIES_TBL." set name='".$name."', description='".$description."', show_update_info='".$displayiu."', user_update='".$allowuu."' where id='".$id."'";
 		$db->db_query($req);
 		$res = $db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$iddir."'");
 		while( $arr = $db->db_fetch_array($res))
@@ -1370,7 +1393,7 @@ if( isset($add))
 			if (!isset($rw)) { $rw = array(); }
 			if (!isset($dz)) { $dz = array(); }
 			if (!isset($req)) { $req = array(); }
-			if( !addDbDirectory($adname, $description, $fields, $rw, $req, $ml, $dz))
+			if( !addDbDirectory($adname, $description, $displayiu, $fields, $rw, $req, $ml, $dz))
 				{
 				$idx = "new";
 				}
@@ -1397,7 +1420,7 @@ if( isset($modify))
 				if (!isset($dz)) { $dz = array(); }
 				if (!isset($req)) { $req = array(); }
 				if (!isset($allowuu)) { $allowuu= ''; }
-				if( !modifyAdDb($id, $adname, $description, $rw, $req, $ml, $dz, $allowuu))
+				if( !modifyAdDb($id, $adname, $description, $displayiu, $rw, $req, $ml, $dz, $allowuu))
 				{
 				$idx = "mdb";
 				}
@@ -1537,6 +1560,16 @@ switch($idx)
         $macl->addtable( BAB_DBDIRVIEW_GROUPS_TBL, bab_translate("View"));
 		$macl->addtable( BAB_DBDIRUPDATE_GROUPS_TBL, bab_translate("Modify"));
 		$macl->addtable( BAB_DBDIRADD_GROUPS_TBL, bab_translate("Add"));
+		
+		$macl->addtable( BAB_DBDIRDEL_GROUPS_TBL, bab_translate("Delete"));
+		$macl->addtable( BAB_DBDIREMPTY_GROUPS_TBL, bab_translate("Empty"));
+		$macl->addtable( BAB_DBDIRIMPORT_GROUPS_TBL, bab_translate("Import"));
+		$macl->addtable( BAB_DBDIREXPORT_GROUPS_TBL, bab_translate("Export"));
+		if( isDirectoryGroup($id))
+			{
+			$macl->addtable( BAB_DBDIRBIND_GROUPS_TBL, bab_translate("Assign a user to a directory"));
+			$macl->addtable( BAB_DBDIRUNBIND_GROUPS_TBL, bab_translate("Unassign a user from a directory"));
+			}
         $macl->babecho();
 
 		$babBody->addItemMenu("list", bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=admdir&idx=list");
