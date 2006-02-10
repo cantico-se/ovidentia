@@ -76,7 +76,7 @@ function updateSchemaInstance($idschi)
 
 }
 
-function makeFlowInstance($idsch, $extra)
+function makeFlowInstance($idsch, $extra, $user = 0)
 {
 	$db = $GLOBALS['babDB'];
 	$res = $db->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id='".$idsch."'");
@@ -86,19 +86,38 @@ function makeFlowInstance($idsch, $extra)
 		$arr = $db->db_fetch_array($res);
 		if( !empty($GLOBALS['BAB_SESS_USERID']))
 			{
-			$iduser = $GLOBALS['BAB_SESS_USERID'];
+			$idcurrentuser = $GLOBALS['BAB_SESS_USERID'];
 			}
 		else
 			{
-			$iduser = 0;
+			$idcurrentuser = 0;
 			}
-		$db->db_query("insert into ".BAB_FA_INSTANCES_TBL." (idsch, extra, iduser) VALUES ('".$idsch."', '".$extra."', '".$iduser."')");
+		$db->db_query("insert into ".BAB_FA_INSTANCES_TBL." (idsch, extra, iduser) VALUES ('".$idsch."', '".$extra."', '".$idcurrentuser."')");
 		$id = $db->db_insert_id();
 		$db->db_query("update ".BAB_FLOW_APPROVERS_TBL." set refcount='".($arr['refcount'] + 1)."' where id='".$idsch."'");
 		updateSchemaInstance($id);
+		if( $user )
+			{
+			$nfusers = getWaitingApproversFlowInstance($id, false);
+			while (count($nfusers) > 0 && in_array($user, $nfusers))
+				{
+				$res = updateFlowInstance($id, $user, true);
+				// $res can't have -1 as value. See last parameter of updateFlowInstance function
+				switch($res)
+					{
+					case 1: // AF accepted
+						deleteFlowInstance($id);				
+						return true;
+							
+					default: // AF continue
+						$nfusers = getWaitingApproversFlowInstance($id, false);
+						break;
+					}
+				}
+			}
 		return $id;
 		}
-	return "";
+	return 0;
 }
 
 function evalFlowInstance($idschi)
@@ -268,7 +287,7 @@ function updateFlowInstance($idschi, $iduser, $bool)
 			$result = "1";
 		else
 			$result ="0";
-		$db->db_query("update ".BAB_FAR_INSTANCES_TBL." set result='".$result."' where id='".$row['id']."'");
+		$db->db_query("update ".BAB_FAR_INSTANCES_TBL." set result='".$result."', notified='Y' where id='".$row['id']."'");
 		
 		if( $result == 0 )
 			{
@@ -355,6 +374,7 @@ function getWaitingIdsFlowInstance($scinfo, $idschi, $notify=false)
 			$op = "|";
 
 		$rr = explode($op, $tab[$i]);
+
 		for( $k = 0; $k < count($rr); $k++)
 			{
 			$res = $db->db_query("select * from ".BAB_FAR_INSTANCES_TBL." where idschi='".$idschi."' and iduser='".$rr[$k]."'");

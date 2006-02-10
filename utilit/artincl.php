@@ -932,7 +932,7 @@ function bab_submitArticleDraft($idart)
 			{
 			$babDB->db_query("insert into ".BAB_ART_LOG_TBL." (id_article, id_author, date_log, action_log) values ('".$arr['id_article']."', '".$arr['id_author']."', now(), 'commit')");	
 			
-			$res = $babDB->db_query("select at.id_topic, at.id_author, tt.allow_update, tt.allow_manupdate, tt.idsa_update as saupdate from ".BAB_ARTICLES_TBL." at left join ".BAB_TOPICS_TBL." tt on at.id_topic=tt.id where at.id='".$arr['id_article']."'");
+			$res = $babDB->db_query("select at.id_topic, at.id_author, tt.allow_update, tt.allow_manupdate, tt.idsa_update as saupdate, tt.auto_approbation from ".BAB_ARTICLES_TBL." at left join ".BAB_TOPICS_TBL." tt on at.id_topic=tt.id where at.id='".$arr['id_article']."'");
 			$rr = $babDB->db_fetch_array($res);
 			if( $rr['saupdate'] != 0 && ( $rr['allow_update'] == '2' && $rr['id_author'] == $GLOBALS['BAB_SESS_USERID']) || ( $rr['allow_manupdate'] == '2' && bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $rr['id_topic'])))
 				{
@@ -944,11 +944,24 @@ function bab_submitArticleDraft($idart)
 			}
 		else
 			{
-			$res = $babDB->db_query("select tt.idsaart as saupdate from ".BAB_TOPICS_TBL." tt where tt.id='".$arr['id_topic']."'");
+			$res = $babDB->db_query("select tt.idsaart as saupdate, tt.auto_approbation from ".BAB_TOPICS_TBL." tt where tt.id='".$arr['id_topic']."'");
 			$rr = $babDB->db_fetch_array($res);
 			}
 
-		if( $rr['saupdate'] ==  0 )
+		if( $rr['saupdate'] !=  0 )
+			{
+			include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
+			if( $rr['auto_approbation'] == 'Y' )
+				{
+				$idfai = makeFlowInstance($rr['saupdate'], "draft-".$idart, $GLOBALS['BAB_SESS_USERID']); // Auto approbation
+				}
+			else
+				{
+				$idfai = makeFlowInstance($rr['saupdate'], "draft-".$idart);
+				}
+			}
+
+		if( $rr['saupdate'] ==  0 || $idfai === true)
 			{
 			if( $arr['id_article'] != 0 )
 				{
@@ -964,8 +977,6 @@ function bab_submitArticleDraft($idart)
 			}
 		else
 			{
-			include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
-			$idfai = makeFlowInstance($rr['saupdate'], "draft-".$idart);
 			if( !empty($idfai))
 				{
 				$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set result='".BAB_ART_STATUS_WAIT."' , idfai='".$idfai."', date_submission=now() where id='".$idart."'");

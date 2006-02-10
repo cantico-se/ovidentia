@@ -35,6 +35,15 @@
 </td>
 </tr>
 <tr> 
+<td align="right">{ autoapprobationtxt }:</td>
+<td> 
+<select name="bautoapp">
+<option value="Y">{ yes }</option>
+<option value="N" selected>{ no }</option>
+</select>
+</td>
+</tr>
+<tr> 
 <td align="right">{ notification }:</td>
 <td> 
 <select name="notification">
@@ -174,6 +183,15 @@ function submitCtr()
 <!--#in getnextschapp -->
 <option value="{ said }" { sasel }>{ saname }</option>
  <!--#endin getnextschapp -->
+</select>
+</td>
+</tr>
+<tr> 
+<td align="right">{ autoapprobationtxt }:</td>
+<td> 
+<select name="bautoapp">
+<option value="Y" { autoappysel }>{ yes }</option>
+<option value="N" { autoappnsel }>{ no }</option>
 </select>
 </td>
 </tr>

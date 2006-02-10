@@ -58,6 +58,7 @@ function addFolder()
 			$this->active = bab_translate("Active");
 			$this->none = bab_translate("None");
 			$this->display = bab_translate("Visible in file manager?");
+			$this->autoapprobationtxt = bab_translate("Automatically approve author if he belongs to approbation schema");
 			$this->sares = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babBody->currentAdmGroup."' order by name asc");
 			if( !$this->sares )
 				$this->sacount = 0;
@@ -184,7 +185,7 @@ function listFolders()
 	return $temp->count;
 	}
 
-function saveFolder($fname, $active, $said, $notification, $version, $bhide)
+function saveFolder($fname, $active, $said, $notification, $version, $bhide, $bautoapp)
 {
 	global $babBody, $babDB;
 	if( empty($fname))
@@ -208,7 +209,7 @@ function saveFolder($fname, $active, $said, $notification, $version, $bhide)
 		{
 		if( empty($said))
 			$said = 0;
-		$babDB->db_query("insert into ".BAB_FM_FOLDERS_TBL." (folder, idsa, filenotify, active, version, id_dgowner, bhide) VALUES ('" .$fname. "', '". $said. "', '" . $notification. "', '" . $active. "', '" . $version. "', '" . $babBody->currentAdmGroup. "', '" . $bhide. "')");
+		$babDB->db_query("insert into ".BAB_FM_FOLDERS_TBL." (folder, idsa, filenotify, active, version, id_dgowner, bhide, auto_approbation) VALUES ('" .$fname. "', '". $said. "', '" . $notification. "', '" . $active. "', '" . $version. "', '" . $babBody->currentAdmGroup. "', '" . $bhide. "', '" . $bautoapp. "')");
 		return true;
 		}
 }
@@ -255,7 +256,7 @@ if( !isset($idx))
 	$idx = "list";
 
 if( isset($add) && $add == "addfolder")
-	if (!saveFolder($fname, $active, $said, $notification, $version, $bhide))
+	if (!saveFolder($fname, $active, $said, $notification, $version, $bhide, $bautoapp))
 		$idx = "addf";
 
 if( isset($update) && $update == "folders")

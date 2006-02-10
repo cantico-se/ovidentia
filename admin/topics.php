@@ -25,7 +25,7 @@ include_once "base.php";
 include_once $babInstallPath."admin/acl.php";
 include_once $babInstallPath."utilit/topincl.php";
 
-function addCategory($cat, $ncat, $category, $description, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts)
+function addCategory($cat, $ncat, $category, $description, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp)
 	{
 	global $babBody;
 	class temp
@@ -74,7 +74,7 @@ function addCategory($cat, $ncat, $category, $description, $saart, $sacom, $saup
 		var $manmodnsel;
 
 
-		function temp($cat, $ncat, $category, $description, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts)
+		function temp($cat, $ncat, $category, $description, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp)
 			{
 			global $babBody;
 			$this->topcat = bab_translate("Topic category");
@@ -100,6 +100,7 @@ function addCategory($cat, $ncat, $category, $description, $saart, $sacom, $saup
 			$this->no = bab_translate("No");
 			$this->add = bab_translate("Add");
 			$this->none = bab_translate("None");
+			$this->autoapprobationtxt = bab_translate("Automatically approve author if he belongs to approbation schema");
 			$this->tgval = "topics";
 			$this->langLabel = bab_translate("Language");
 			$this->langFiles = $GLOBALS['babLangFilter']->getLangFiles();
@@ -171,6 +172,22 @@ function addCategory($cat, $ncat, $category, $description, $saart, $sacom, $saup
 			else
 				{
 				$this->disptid = $disptid;
+				}
+
+			if(empty($bautoapp))
+				{
+				$bautoapp = "N";
+				}
+
+			if( $bautoapp == "N")
+				{
+				$this->autoappnsel = "selected";
+				$this->autoappysel = "";
+				}
+			else
+				{
+				$this->autoappnsel = "";
+				$this->autoappysel = "selected";
 				}
 
 			if(empty($bnotif))
@@ -476,7 +493,7 @@ function addCategory($cat, $ncat, $category, $description, $saart, $sacom, $saup
 			}
 		}
 
-	$temp = new temp($cat, $ncat, $category, $description, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts);
+	$temp = new temp($cat, $ncat, $category, $description, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp);
 	$babBody->babecho(	bab_printTemplate($temp,"topics.html", "categorycreate"));
 	}
 
@@ -549,7 +566,7 @@ function listCategories($cat)
 	return $temp->count;
 	}
 
-function saveCategory($category, $description, $cat, $sacom, $saart, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts)
+function saveCategory($category, $description, $cat, $sacom, $saart, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp)
 	{
 	global $babBody;
 	if( empty($category))
@@ -583,7 +600,7 @@ function saveCategory($category, $description, $cat, $sacom, $saart, $saupd, $bn
 		$maxarts = 10;
 		}
 
-	$query = "insert into ".BAB_TOPICS_TBL." ( category, description, id_cat, idsaart, idsacom, idsa_update, notify, lang, article_tmpl, display_tmpl, restrict_access, allow_hpages, allow_pubdates, allow_attachments, allow_update, allow_manupdate, max_articles) values ('".$category. "', '" . $description. "', '" . $cat. "', '" . $saart. "', '" . $sacom. "', '" . $saupd. "', '" . $bnotif. "', '" .$lang. "', '" .$atid. "', '" .$disptid. "', '" .$restrict. "', '" .$bhpages. "', '" .$bpubdates. "', '" .$battachment. "', '" .$bartupdate. "', '" .$bmanmod. "', '".$maxarts."')";
+	$query = "insert into ".BAB_TOPICS_TBL." ( category, description, id_cat, idsaart, idsacom, idsa_update, notify, lang, article_tmpl, display_tmpl, restrict_access, allow_hpages, allow_pubdates, allow_attachments, allow_update, allow_manupdate, max_articles, auto_approbation) values ('".$category. "', '" . $description. "', '" . $cat. "', '" . $saart. "', '" . $sacom. "', '" . $saupd. "', '" . $bnotif. "', '" .$lang. "', '" .$atid. "', '" .$disptid. "', '" .$restrict. "', '" .$bhpages. "', '" .$bpubdates. "', '" .$battachment. "', '" .$bartupdate. "', '" .$bmanmod. "', '".$maxarts. "', '".$bautoapp."')";
 	$db->db_query($query);
 	$id = $db->db_insert_id();
 
@@ -613,7 +630,7 @@ if(!isset($idx))
 
 if( isset($add) )
 	{
-	if(!saveCategory($category, $topdesc, $ncat, $sacom, $saart, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts))
+	if(!saveCategory($category, $topdesc, $ncat, $sacom, $saart, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp))
 		$idx = "addtopic";
 	else
 		{
@@ -644,9 +661,10 @@ switch($idx)
 		if( !isset($bpubdates)) { $bpubdates='N';}
 		if( !isset($battachment)) { $battachment='N';}
 		if( !isset($bartupdate)) { $bartupdate='N';}
+		if( !isset($bautoapp)) { $bautoapp='N';}
 		if( !isset($bmanmod)) { $bmanmod='N';}
 		if( !isset($maxarts)) { $maxarts='10';}
-		addCategory($cat, $ncat, $category, $topdesc, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts);
+		addCategory($cat, $ncat, $category, $topdesc, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp);
 		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List&idp=".$idp);
 		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 		$babBody->addItemMenu("addtopic", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topics&idx=addtopic&cat=".$cat);

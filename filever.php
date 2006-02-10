@@ -640,19 +640,21 @@ function commitFile($idf, $comment, $vermajor, $filename, $size, $tmp )
 		$comment = addslashes($comment);
 		}
 
+
 	if( $arrfold['idsa'] != 0 )
 		{
-		$babDB->db_query("insert into ".BAB_FM_FILESLOG_TBL." ( id_file, date, author, action, comment, version) values ('".$idf."', now(), '".$GLOBALS['BAB_SESS_USERID']."', '".BAB_FACTION_COMMIT."', '".bab_translate("Waiting to be validate")."', '".$vmajor.".".$vminor."')");
-
-		$babDB->db_query("update ".BAB_FM_FILESVER_TBL." set ver_major='".$vmajor."', ver_minor='".$vminor."', comment='".$comment."', idfai='0' where id='".$arrfile['edit']."'");
-
 		include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
-		$idfai = makeFlowInstance($arrfold['idsa'], "filv-".$arrfile['edit']);
-		$babDB->db_query("update ".BAB_FM_FILESVER_TBL." set idfai='".$idfai."' where id='".$arrfile['edit']."'");
-		$nfusers = getWaitingApproversFlowInstance($idfai, true);
-		notifyFileApprovers($arrfile['id'], $nfusers, bab_translate("A new version file is waiting for you"));
+		if( $arrfold['auto_approbation'] == 'Y' )
+			{
+			$idfai = makeFlowInstance($arrfold['idsa'], "filv-".$arrfile['edit'], $GLOBALS['BAB_SESS_USERID']);
+			}
+		else
+			{
+			$idfai = makeFlowInstance($arrfold['idsa'], "filv-".$arrfile['edit']);
+			}
 		}
-	else 
+
+	if( $arrfold['idsa'] == 0 || $idfai === true)
 		{
 		$babDB->db_query("insert into ".BAB_FM_FILESLOG_TBL." ( id_file, date, author, action, comment, version) values ('".$idf."', now(), '".$GLOBALS['BAB_SESS_USERID']."', '".BAB_FACTION_COMMIT."', '".$comment."', '".$vmajor.".".$vminor."')");
 
@@ -665,6 +667,16 @@ function commitFile($idf, $comment, $vermajor, $filename, $size, $tmp )
 		if( $arrfold['filenotify'] == 'Y' )
 			fileNotifyMembers($filename, $arrfile['path'], $arrfile['id_owner'], bab_translate("A new version file has been uploaded"));
 		}
+	elseif(!empty($idfai))
+		{
+		$babDB->db_query("insert into ".BAB_FM_FILESLOG_TBL." ( id_file, date, author, action, comment, version) values ('".$idf."', now(), '".$GLOBALS['BAB_SESS_USERID']."', '".BAB_FACTION_COMMIT."', '".bab_translate("Waiting to be validate")."', '".$vmajor.".".$vminor."')");
+
+		$babDB->db_query("update ".BAB_FM_FILESVER_TBL." set ver_major='".$vmajor."', ver_minor='".$vminor."', comment='".$comment."', idfai='0' where id='".$arrfile['edit']."'");
+
+		$babDB->db_query("update ".BAB_FM_FILESVER_TBL." set idfai='".$idfai."' where id='".$arrfile['edit']."'");
+		$nfusers = getWaitingApproversFlowInstance($idfai, true);
+		notifyFileApprovers($arrfile['id'], $nfusers, bab_translate("A new version file is waiting for you"));
+		}
 }
 
 function confirmFile($idf, $bconfirm )
@@ -674,34 +686,37 @@ function confirmFile($idf, $bconfirm )
 	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 
 	$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FM_FILESVER_TBL." where id='".$arrfile['edit']."'"));
-	
-	$pathx = bab_getUploadFullPath($arrfile['bgroup'], $arrfile['id_owner']);
-	if( substr($arrfile['path'], -1) == "/")
-		$pathx .= substr($arrfile['path'], 0 , -1);
-	else if( !empty($arrfile['path']))
-		$pathx .= $arrfile['path']."/";
-
-	$res = updateFlowInstance($arr['idfai'], $GLOBALS['BAB_SESS_USERID'], $bconfirm == "Y"? true: false);
-	switch($res)
+	$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
+	if( count($arrschi) > 0  && in_array($arr['idfai'], $arrschi) )
 		{
-		case 0:
-			unlink($pathx.BAB_FVERSION_FOLDER."/".$arr['ver_major'].",".$arr['ver_minor'].",".$arrfile['name']);
-			$babDB->db_query("update ".BAB_FILES_TBL." set edit='0' where id='".$idf."'");
-			$babDB->db_query("delete from ".BAB_FM_FILESVER_TBL." where id='".$arrfile['edit']."'");
-			$babDB->db_query("insert into ".BAB_FM_FILESLOG_TBL." ( id_file, date, author, action, comment, version) values ('".$idf."', now(), '".$GLOBALS['BAB_SESS_USERID']."', '".BAB_FACTION_COMMIT."', '".bab_translate("Refused by ").$GLOBALS['BAB_SESS_USER']."', '".$arr['ver_major'].".".$arr['ver_minor']."')");
-			deleteFlowInstance($arr['idfai']);
-			notifyFileAuthor(bab_translate("Your new file version has been refused"),$arr['ver_major'].".".$arr['ver_minor'], $arr['author'], $arrfile['name']);
-			// notify user
-			break;
-		case 1:
-			deleteFlowInstance($arr['idfai']);
-			acceptFileVersion($arrfile, $arr, $arrfold['filenotify']);
-			break;
-		default:
-			$nfusers = getWaitingApproversFlowInstance($arr['idfai'], true);
-			if( count($nfusers) > 0 )
-				notifyFileApprovers($arr['id'], $nfusers, bab_translate("A new version file is waiting for you"));
-			break;
+		$pathx = bab_getUploadFullPath($arrfile['bgroup'], $arrfile['id_owner']);
+		if( substr($arrfile['path'], -1) == "/")
+			$pathx .= substr($arrfile['path'], 0 , -1);
+		else if( !empty($arrfile['path']))
+			$pathx .= $arrfile['path']."/";
+
+		$res = updateFlowInstance($arr['idfai'], $GLOBALS['BAB_SESS_USERID'], $bconfirm == "Y"? true: false);
+		switch($res)
+			{
+			case 0:
+				unlink($pathx.BAB_FVERSION_FOLDER."/".$arr['ver_major'].",".$arr['ver_minor'].",".$arrfile['name']);
+				$babDB->db_query("update ".BAB_FILES_TBL." set edit='0' where id='".$idf."'");
+				$babDB->db_query("delete from ".BAB_FM_FILESVER_TBL." where id='".$arrfile['edit']."'");
+				$babDB->db_query("insert into ".BAB_FM_FILESLOG_TBL." ( id_file, date, author, action, comment, version) values ('".$idf."', now(), '".$GLOBALS['BAB_SESS_USERID']."', '".BAB_FACTION_COMMIT."', '".bab_translate("Refused by ").$GLOBALS['BAB_SESS_USER']."', '".$arr['ver_major'].".".$arr['ver_minor']."')");
+				deleteFlowInstance($arr['idfai']);
+				notifyFileAuthor(bab_translate("Your new file version has been refused"),$arr['ver_major'].".".$arr['ver_minor'], $arr['author'], $arrfile['name']);
+				// notify user
+				break;
+			case 1:
+				deleteFlowInstance($arr['idfai']);
+				acceptFileVersion($arrfile, $arr, $arrfold['filenotify']);
+				break;
+			default:
+				$nfusers = getWaitingApproversFlowInstance($arr['idfai'], true);
+				if( count($nfusers) > 0 )
+					notifyFileApprovers($arr['id'], $nfusers, bab_translate("A new version file is waiting for you"));
+				break;
+			}
 		}
 }
 
@@ -785,9 +800,9 @@ if( isset($idf) )
 		}
 
 
-		if( $bupdate == true )
+		if( isset($afile))
 		{
-			if( isset($afile))
+			if( $bupdate == true )
 			{
 				if($afile == 'lock')
 					lockFile($idf, $comment); 
@@ -795,10 +810,6 @@ if( isset($idf) )
 					unlockFile($idf, $comment); 
 				else if( $afile == 'commit' )
 					commitFile($idf, $comment, $vermajor, $uploadf_name, $uploadf_size, $uploadf ); 
-				else if( $afile == 'confirm' )
-					{
-					confirmFile($idf, $bconfirm ); 
-					}
 				else if( bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $arrfold['id']) && $afile == 'delv' )
 					{
 					deleteFileVersions($idf, $versions ); 
@@ -808,6 +819,11 @@ if( isset($idf) )
 					cleanFileLog($idf, $date ); 
 					}
 			}
+
+			if( $afile == 'confirm' )
+				{
+				confirmFile($idf, $bconfirm ); 
+				}
 
 		}
 

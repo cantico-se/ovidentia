@@ -69,6 +69,7 @@ function modifyFolder($fid)
 			$this->del = bab_translate("Delete");
 			$this->active = bab_translate("Active");
 			$this->display = bab_translate("Visible in file manager?");
+			$this->autoapprobationtxt = bab_translate("Automatically approve author if he belongs to approbation schema");
 			$this->fid = $fid;
 			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FM_FOLDERS_TBL." where id ='".$fid."'"));
 			$this->folderval = $arr['folder'];
@@ -116,6 +117,17 @@ function modifyFolder($fid)
 				{
 				$this->nhidesel = "selected";
 				$this->yhidesel = "";
+				}
+
+			if( $arr['auto_approbation'] == "Y" )
+				{
+				$this->autoappysel = "selected";
+				$this->autoappnsel = "";
+				}
+			else
+				{
+				$this->autoappnsel = "selected";
+				$this->autoappysel = "";
 				}
 
 			$this->safm = $arr['idsa'];
@@ -362,7 +374,7 @@ function deleteFieldsFolder($fid, $fields)
 	}
 
 
-function updateFolder($fid, $fname, $active, $said, $notification, $version, $bhide)
+function updateFolder($fid, $fname, $active, $said, $notification, $version, $bhide, $bautoapp)
 {
 	global $babBody, $babDB;
 	if( empty($fname))
@@ -397,44 +409,71 @@ function updateFolder($fid, $fname, $active, $said, $notification, $version, $bh
 					{
 					deleteFlowInstance($row['idfai']);
 					}
-				if( $said == 0 )
+
+
+				if( $said != 0 )
+					{
+					if( $bautoapp == 'Y' )
+						{
+						$idfai = makeFlowInstance($said, "fil-".$row['id'], $GLOBALS['BAB_SESS_USERID']);
+						}
+					else
+						{
+						$idfai = makeFlowInstance($said, "fil-".$row['id']);
+						}
+					}
+
+				if( $said == 0 || $idfai === true)
 					{
 					$babDB->db_query("update ".BAB_FILES_TBL." set idfai='0', confirmed = 'Y' where id='".$row['id']."'");
 					}
-				else
+				elseif(!empty($idfai))
 					{
-					$idfai = makeFlowInstance($said, "fil-".$row['id']);
 					$babDB->db_query("update ".BAB_FILES_TBL." set idfai='".$idfai."' where id='".$row['id']."'");
 					$nfusers = getWaitingApproversFlowInstance($idfai, true);
 					if( count($nfusers) > 0 )
 						notifyFileApprovers($row['id'], $nfusers, bab_translate("A new file is waiting for you"));
 					}
 
+
 				$res2 = $babDB->db_query("select * from ".BAB_FM_FILESVER_TBL." where id_file='".$row['id']."' and confirmed='N'");
 				while( $rrr = $babDB->db_fetch_array($res2))
 					{
 					if( $rrr['idfai'] != 0 )
 						deleteFlowInstance($rrr['idfai']);
-					if( $said == 0 )
+
+
+					if( $said != 0 )
+						{
+						if( $bautoapp == 'Y' )
+							{
+							$idfai = makeFlowInstance($said, "filv-".$rrr['id'], $GLOBALS['BAB_SESS_USERID']);
+							}
+						else
+							{
+							$idfai = makeFlowInstance($said, "filv-".$rrr['id']);
+							}
+						}
+
+					if( $said == 0 || $idfai === true)
 						{
 						acceptFileVersion($row, $rrr, $bnotify);
 						}
-					else
+					elseif(!empty($idfai))
 						{
-						$idfai = makeFlowInstance($said, "filv-".$rrr['id']);
 						$babDB->db_query("update ".BAB_FM_FILESVER_TBL." set idfai='".$idfai."' where id='".$rrr['id']."'");
 						$nfusers = getWaitingApproversFlowInstance($idfai, true);
 						if( count($nfusers) > 0 )
 							notifyFileApprovers($row['id'], $nfusers, bab_translate("A new version file is waiting for you"));
 						}
-					}
 
+					}
 
 				}
 			}
 
 		
-		$babDB->db_query("update ".BAB_FM_FOLDERS_TBL." set folder='".$fname."', idsa='".$said."', filenotify='".$notification."', active='".$active."', version='".$version."', bhide='".$bhide."' where id ='".$fid."'");
+		$babDB->db_query("update ".BAB_FM_FOLDERS_TBL." set folder='".$fname."', idsa='".$said."', filenotify='".$notification."', active='".$active."', version='".$version."', bhide='".$bhide."', auto_approbation='".$bautoapp."' where id ='".$fid."'");
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
 		exit;
 		}
@@ -512,7 +551,7 @@ if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['filemanager'] != 'Y')
 if( isset($mod) && $mod == "modfolder")
 {
 	if( isset($bupdate))
-		updateFolder($fid, $fname, $active, $said, $notification, $version, $bhide);
+		updateFolder($fid, $fname, $active, $said, $notification, $version, $bhide, $bautoapp);
 	else if(isset($bdel))
 		$idx = "delf";
 }

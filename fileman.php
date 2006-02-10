@@ -27,20 +27,38 @@ include_once $babInstallPath."utilit/fileincl.php";
 function notifyApprovers($id, $fid)
 	{
 	global $babBody, $babDB;
-	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 
-	$arr = $babDB->db_fetch_array($babDB->db_query("select idsa from ".BAB_FM_FOLDERS_TBL." where id='".$fid."'"));
-	if( $arr['idsa'] == 0 )
+	$arr = $babDB->db_fetch_array($babDB->db_query("select idsa, auto_approbation from ".BAB_FM_FOLDERS_TBL." where id='".$fid."'"));
+
+	if( $arr['idsa'] !=  0 )
+		{
+		include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
+		if( $arr['auto_approbation'] == 'Y' )
+			{
+			$idfai = makeFlowInstance($arr['idsa'], "fil-".$id, $GLOBALS['BAB_SESS_USERID']);
+			}
+		else
+			{
+			$idfai = makeFlowInstance($arr['idsa'], "fil-".$id);
+			}
+		}
+
+	if( $arr['idsa'] ==  0 || $idfai === true)
 		{
 		$babDB->db_query("update ".BAB_FILES_TBL." set confirmed='Y' where id='".$id."'");
 		return true;
 		}
-
-	$idfai = makeFlowInstance($arr['idsa'], "fil-".$id);
-	$babDB->db_query("update ".BAB_FILES_TBL." set idfai='".$idfai."' where id='".$id."'");
-	$nfusers = getWaitingApproversFlowInstance($idfai, true);
-	notifyFileApprovers($id, $nfusers, bab_translate("A new file is waiting for you"));
-	$babBody->msgerror = bab_translate("Your file is waiting for approval");
+	elseif(!empty($idfai))
+		{
+		$babDB->db_query("update ".BAB_FILES_TBL." set idfai='".$idfai."' where id='".$id."'");
+		$nfusers = getWaitingApproversFlowInstance($idfai, true);
+		if( count($nfusers))
+			{
+			notifyFileApprovers($id, $nfusers, bab_translate("A new file is waiting for you"));
+			}
+		$babBody->msgerror = bab_translate("Your file is waiting for approval");
+		}
+	
 	return false;
 	}
 

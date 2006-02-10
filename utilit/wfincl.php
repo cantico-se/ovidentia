@@ -24,9 +24,9 @@
 include_once "base.php";
 include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 
-function bab_WFMakeInstance($idsch, $extra)
+function bab_WFMakeInstance($idsch, $extra, $user=0)
 {
-	return makeFlowInstance($idsch, $extra);
+	return makeFlowInstance($idsch, $extra, $user);
 }
 
 function bab_WFDeleteInstance($idschi)

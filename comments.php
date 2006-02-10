@@ -187,17 +187,30 @@ function saveComment($topics, $article, $name, $subject, $message, $com, &$msger
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		if( $arr['idsacom'] == 0 )
+
+		if( $arr['idsacom'] != 0 )
 			{
-			$db->db_query("update ".BAB_COMMENTS_TBL." set confirmed='Y' where id='".$id."'");
-			return true;
+			include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
+			if( $arr['auto_approbation'] == 'Y' )
+				{
+				$idfai = makeFlowInstance($arr['idsacom'], "com-".$id, $GLOBALS['BAB_SESS_USERID']);
+				}
+			else
+				{
+				$idfai = makeFlowInstance($arr['idsacom'], "com-".$id);
+				}
 			}
 
-		include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
-		$idfai = makeFlowInstance($arr['idsacom'], "com-".$id);
-		$db->db_query("update ".BAB_COMMENTS_TBL." set idfai='".$idfai."' where id='".$id."'");
-		$nfusers = getWaitingApproversFlowInstance($idfai, true);
-		notifyCommentApprovers($id, $nfusers);
+		if( $arr['idsacom'] == 0 || $idfai === true)
+			{
+			$db->db_query("update ".BAB_COMMENTS_TBL." set confirmed='Y' where id='".$id."'");
+			}
+		elseif(!empty($idfai))
+			{
+			$db->db_query("update ".BAB_COMMENTS_TBL." set idfai='".$idfai."' where id='".$id."'");
+			$nfusers = getWaitingApproversFlowInstance($idfai, true);
+			notifyCommentApprovers($id, $nfusers);
+			}
 		}
 	return true;
 	}
