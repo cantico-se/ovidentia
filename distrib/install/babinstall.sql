@@ -421,6 +421,7 @@ CREATE TABLE bab_topics (
   allow_update enum('0','1','2') NOT NULL default '0',
   max_articles tinyint(3) unsigned NOT NULL default '0',
   allow_manupdate enum('0','1','2') NOT NULL default '0',
+  auto_approbation enum('N','Y') NOT NULL default 'N',
   PRIMARY KEY  (id),
   KEY id_cat (id_cat)
 );
@@ -1085,6 +1086,7 @@ CREATE TABLE bab_fm_folders (
   version enum('N','Y') NOT NULL default 'N',
   id_dgowner int(11) unsigned NOT NULL default '0',
   bhide enum('N','Y') NOT NULL default 'N',
+  auto_approbation enum('N','Y') NOT NULL default 'N',
   PRIMARY KEY  (id),
   KEY folder (folder),
   KEY id_dgowner (id_dgowner)
@@ -1154,6 +1156,7 @@ CREATE TABLE bab_db_directories (
   id_group int(11) unsigned NOT NULL default '0',
   id_dgowner int(11) unsigned NOT NULL default '0',
   user_update enum('N','Y') NOT NULL default 'N',
+  show_update_info enum('N','Y') NOT NULL default 'N',
   ovml_list tinytext NOT NULL,
   ovml_detail tinytext NOT NULL,
   PRIMARY KEY  (id),
@@ -1168,6 +1171,8 @@ INSERT INTO bab_db_directories (id, name, description, id_group, id_dgowner) val
 
 CREATE TABLE bab_dbdir_entries (
   id int(11) unsigned NOT NULL auto_increment,
+  date_modification datetime NOT NULL default '0000-00-00 00:00:00',
+  id_modifiedby int(11) unsigned NOT NULL default '0',
   cn varchar(255) NOT NULL default '',
   sn varchar(255) NOT NULL default '',
   mn varchar(255) NOT NULL default '',
@@ -2646,4 +2651,96 @@ CREATE TABLE bab_forumsnotify_groups (
   PRIMARY KEY  (id),
   KEY id_object (id_object),
   KEY id_group (id_group)
+);
+
+
+#
+# Structure de la table bab_dbdirdel_groups
+#
+
+CREATE TABLE bab_dbdirdel_groups (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group)
+);
+
+
+#
+# Structure de la table bab_dbdirexport_groups
+#
+
+CREATE TABLE bab_dbdirexport_groups (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group)
+);
+
+#
+# Structure de la table bab_dbdirimport_groups
+#
+
+CREATE TABLE bab_dbdirimport_groups (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group)
+);
+
+#
+# Structure de la table bab_dbdirbind_groups
+#
+
+CREATE TABLE bab_dbdirbind_groups (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group)
+);
+
+#
+# Structure de la table bab_dbdirunbind_groups
+#
+
+CREATE TABLE bab_dbdirunbind_groups (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group)
+);
+
+#
+# Structure de la table bab_dbdirempty_groups
+#
+
+CREATE TABLE bab_dbdirempty_groups (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group)
+);
+
+
+CREATE TABLE bab_dbdir_fieldsexport (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_user int(11) unsigned NOT NULL default '0',
+  id_directory int(11) unsigned NOT NULL default '0',
+  id_field int(11) unsigned NOT NULL default '0',
+  ordering int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_user (id_user),
+  KEY id_directory (id_directory)
 );
