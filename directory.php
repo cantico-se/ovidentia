@@ -308,7 +308,14 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 				$this->allselected = 1;
 			else
 				$this->allselected = 0;
-			$this->allurl = $GLOBALS['babUrlScript']."?tg=directory&idx=sdb&id=".$id."&pos=".($this->ord == "-"? "":$this->ord)."&xf=".$this->xf;
+			if ($_GET['idx'] == 'sdbovml')
+				{
+				$this->allurl = $GLOBALS['babUrlScript']."?tg=directory&idx=sdbovml&directoryid=".$id."&pos=".($this->ord == "-"? "":$this->ord)."&xf=".$this->xf;
+				}
+			else
+				{
+				$this->allurl = $GLOBALS['babUrlScript']."?tg=directory&idx=sdb&id=".$id."&pos=".($this->ord == "-"? "":$this->ord)."&xf=".$this->xf;
+				}
 			$this->addurl = $GLOBALS['babUrlScript']."?tg=directory&idx=adbc&id=".$id;
 			$this->count = 0;
 			$this->db = &$GLOBALS['babDB'];
@@ -382,7 +389,14 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 					$this->select[] = "lj".$arr['id'].'.field_value '.$filedname."";
 					}
 
-				$this->colurl = $GLOBALS['babUrlScript']."?tg=directory&idx=sdb&id=".$this->id."&pos=".$this->ord.$this->pos."&xf=".$filedname;
+				if ($_GET['idx'] == 'sdbovml')
+					{
+					$this->colurl = $GLOBALS['babUrlScript']."?tg=directory&idx=sdbovml&directoryid=".$this->id."&pos=".$this->ord.$this->pos."&xf=".$filedname;
+					}
+				else
+					{
+					$this->colurl = $GLOBALS['babUrlScript']."?tg=directory&idx=sdb&id=".$this->id."&pos=".$this->ord.$this->pos."&xf=".$filedname;
+					}
 				$i++;
 				return true;
 				}
@@ -428,7 +442,7 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 						$this->select[] = 'e.email';
 
 					if (!empty($this->pos) && false === strpos($this->xf, 'babdirf'))
-						$like = " AND `".$this->xf."` LIKE '".$this->pos."%'";
+						$like = " AND e.`".$this->xf."` LIKE '".$this->pos."%'";
 					elseif (0 === strpos($this->xf, 'babdirf'))
 						{
 						$idfield = substr($this->xf,7);
@@ -510,7 +524,14 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 			if( $k < 26)
 				{
 				$this->selectname = substr($t, $k, 1);
-				$this->selecturl = $GLOBALS['babUrlScript']."?tg=directory&idx=sdb&id=".$this->id."&pos=".($this->ord == "-"? "":$this->ord).$this->selectname."&xf=".$this->xf;
+				if ($_GET['idx'] == 'sdbovml')
+					{
+					$this->selecturl = $GLOBALS['babUrlScript']."?tg=directory&idx=sdbovml&directoryid=".$this->id."&pos=".($this->ord == "-"? "":$this->ord).$this->selectname."&xf=".$this->xf;
+					}
+				else
+					{
+					$this->selecturl = $GLOBALS['babUrlScript']."?tg=directory&idx=sdb&id=".$this->id."&pos=".($this->ord == "-"? "":$this->ord).$this->selectname."&xf=".$this->xf;
+					}
 				if( $this->pos == $this->selectname)
 					$this->selected = 1;
 				else
@@ -551,7 +572,9 @@ function browseDbDirectoryWithOvml($badd)
 			}
 		else
 			{
-			return browseDbDirectory($args['directoryid'], "A", "", $badd);
+			if( !isset($GLOBALS['pos'])) { $GLOBALS['pos'] = 'A'; }
+			if( !isset($GLOBALS['xf'])) { $GLOBALS['xf'] = ''; }
+			return browseDbDirectory($args['directoryid'], $GLOBALS['pos'], $GLOBALS['xf'], $badd);
 			}
 		return $arr['id_group'];
 		}
