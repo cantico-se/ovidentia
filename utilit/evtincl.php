@@ -241,7 +241,7 @@ function bab_createEvent($idcals, $args, &$msgerror)
 						{
 						$arrf = createEvent($idcals, $args['owner'], $args['title'], $args['description'], $args['location'], $time, $time + $duration, $args['category'], $args['color'], $args['private'], $args['lock'], $args['free'], $hash, $args['alert']);
 						$arrnotify = array_unique(array_merge($arrnotify, $arrf));
-						$day += 7;
+						$day += 7*$args['nweeks'];
 						$time = mktime( $args['startdate']['hours'],$args['startdate']['minutes'],0,$args['startdate']['month'], $day, $args['startdate']['year'] );
 						}
 					while( $time < $repeatdate );
@@ -267,7 +267,7 @@ function bab_createEvent($idcals, $args, &$msgerror)
 						do
 							{
 							$arrf = createEvent($idcals, $args['owner'], $args['title'], $args['description'], $args['location'], $time, $time + $duration, $args['category'], $args['color'], $args['private'], $args['lock'], $args['free'], $hash, $args['alert']);
-							$day += 7;					
+							$day += 7*$args['nweeks'];					
 							$arrnotify = array_unique(array_merge($arrnotify, $arrf));
 							$time = mktime( $args['startdate']['hours'],$args['startdate']['minutes'],0,$args['startdate']['month'], $day, $args['startdate']['year'] );
 							}
@@ -292,7 +292,7 @@ function bab_createEvent($idcals, $args, &$msgerror)
 				do
 					{
 					$arrf = createEvent($idcals, $args['owner'], $args['title'], $args['description'], $args['location'], $time, $time + $duration, $args['category'], $args['color'], $args['private'], $args['lock'], $args['free'], $hash, $args['alert']);
-					$time = mktime( $args['startdate']['hours'],$args['startdate']['minutes'],0,date("m", $time)+1, date("j", $time), date("Y", $time) );
+					$time = mktime( $args['startdate']['hours'],$args['startdate']['minutes'],0,date("m", $time)+$args['nmonths'], date("j", $time), date("Y", $time) );
 					$arrnotify = array_unique(array_merge($arrnotify, $arrf));
 					}
 				while( $time < $repeatdate );
@@ -311,7 +311,7 @@ function bab_createEvent($idcals, $args, &$msgerror)
 				do
 					{
 					$arrf = createEvent($idcals, $args['owner'], $args['title'], $args['description'], $args['location'], $time, $time + $duration, $args['category'], $args['color'], $args['private'], $args['lock'], $args['free'], $hash, $args['alert']);
-					$time = mktime( $args['startdate']['hours'],$args['startdate']['minutes'],0,date("m", $time), date("j", $time), date("Y", $time)+1 );
+					$time = mktime( $args['startdate']['hours'],$args['startdate']['minutes'],0,date("m", $time), date("j", $time), date("Y", $time)+$args['nyears'] );
 					$arrnotify = array_unique(array_merge($arrnotify, $arrf));
 					}
 				while( $time < $repeatdate );
