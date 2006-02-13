@@ -1793,8 +1793,8 @@
 <string id="Preferences">Préférences</string>
 <string id="Field separator">Champ séparateur</string>
 <string id="Ovidentia users">Utilisateurs d'Ovidentia</string>
-<string id="All registered users">Tout les utilisateurs enregistrés</string>
-<string id="all not registered users">Tout les utilisateurs non enregistrés</string>
+<string id="All registered users">Tous les utilisateurs enregistrés</string>
+<string id="all not registered users">Tous les utilisateurs non enregistrés</string>
 <string id="Expand all">Tout déployer</string>
 <string id="Collapse all">Tout réduire</string>
 <string id="Expand to checked boxes">Déployer vers les cases cochées</string>
@@ -1802,7 +1802,7 @@
 <string id="Access rights">Droits d'accès</string>
 <string id="This module need ovidentia version">Ce module nécéssite ovidentia en version</string>
 <string id="the current version is">La version courrante est</string>
-<string id="Delete all objects created in the delegation">Supprimer tout les objets créés dans la délégation</string>
+<string id="Delete all objects created in the delegation">Supprimer tous les objets créés dans la délégation</string>
 <string id="Attach objects to all site">Attacher les objets à tout le site</string>
 <string id="The user is in the list">L'utilisateur est dans la liste</string>
 <string id="Parent">Parent</string>
@@ -1851,7 +1851,7 @@
 <string id="Create group">Créer le groupe</string>
 <string id="Choice of the organizational chart">Choix de l'organigramme</string>
 <string id="Select the organizational chart on which the workflow will be based">Sélectionnez l'organigramme sur lequel sera basé le schéma d'approbation</string>
-<string id="Fields to display for a search in all directories">Champs à afficher pour la recherche dans tout les annuaires</string>
+<string id="Fields to display for a search in all directories">Champs à afficher pour la recherche dans tous les annuaires</string>
 <string id="Search options">Options de la recherche</string>
 <string id="You must define one collumn at least">Vous devez définir une colonne au moins</string>
 <string id="Create a set of groups">Créer un ensemble de groupes</string>
