@@ -558,6 +558,7 @@ function bab_deleteUser($id)
 	$db->db_query("delete from ".BAB_OC_ROLES_USERS_TBL." where id_user='".$iddu."'");
 	$res = $db->db_query("delete from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_entry='".$iddu."'");	
 	$res = $db->db_query("delete from ".BAB_DBDIR_ENTRIES_TBL." where id='".$iddu."'");	
+	$db->db_query("delete from ".BAB_DBDIR_FIELDSEXPORT_TBL." where id_user='".$id."'");
 
 	// delete user from VACATION
 	$db->db_query("delete from ".BAB_VAC_MANAGERS_TBL." where id_user='".$id."'");
