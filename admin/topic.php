@@ -240,7 +240,7 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 			$this->modart = bab_translate("Approbation schema for articles");
 			$this->modupd = bab_translate("Approbation schema for articles modification");
 			$this->notiftxt = bab_translate("Allow author to notify group members by mail");
-			$this->hpagestxt = bab_translate("Allow author to purpose articles for homes pages");
+			$this->hpagestxt = bab_translate("Allow author to propose articles for homes pages");
 			$this->pubdatestxt = bab_translate("Allow author to specify dates of publication");
 			$this->attachmenttxt = bab_translate("Allow author to attach files to articles");
 			$this->artupdatetxt = bab_translate("Allow author to modify their articles");

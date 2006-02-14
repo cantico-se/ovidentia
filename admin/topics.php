@@ -88,7 +88,7 @@ function addCategory($cat, $ncat, $category, $description, $saart, $sacom, $saup
 			$this->arttmpltxt = bab_translate("Article's model");
 			$this->disptmpltxt = bab_translate("Display template");
 			$this->restricttxt = bab_translate("Articles's authors can restrict access to articles");
-			$this->hpagestxt = bab_translate("Allow author to purpose articles for homes pages");
+			$this->hpagestxt = bab_translate("Allow author to propose articles for homes pages");
 			$this->pubdatestxt = bab_translate("Allow author to specify dates of publication");
 			$this->attachmenttxt = bab_translate("Allow author to attach files to articles");
 			$this->artupdatetxt = bab_translate("Allow author to modify their articles");
