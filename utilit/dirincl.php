@@ -576,7 +576,6 @@ function summaryDbContactWithOvml($args)
 }
 
 
-
 function getDirEntry($id, $type, $id_directory) {
 	$babDB = &$GLOBALS['babDB'];
 
@@ -593,11 +592,16 @@ function getDirEntry($id, $type, $id_directory) {
 
 	switch ($type) {
 		case BAB_DIR_ENTRY_ID_USER:
-			$id_directory = 0;	
+			$id_fieldextra_directory = 0;
 			$colname = 'e.id_user';
 			if (is_array($id))
 				$id = implode("','",$id);
 
+			if ($id == $GLOBALS['BAB_SESS_USERID']) {
+				break; // user can always view his dir entry
+			}
+
+			// for others users, acces rights are checked
 			$access = false;
 			
 			foreach ($accessible_directories as $id_dir => $arr) {
@@ -619,6 +623,7 @@ function getDirEntry($id, $type, $id_directory) {
 			if (NULL == $id_directory) {
 				list($id_directory) = $babDB->db_fetch_array($babDB->db_query("SELECT id_directory FROM ".BAB_DBDIR_ENTRIES_TBL." WHERE id IN('".$id."')"));
 				}
+			$id_fieldextra_directory = $id_directory;
 			break;
 
 		case BAB_DIR_ENTRY_ID_DIRECTORY:
@@ -626,9 +631,11 @@ function getDirEntry($id, $type, $id_directory) {
 			if (!isset($accessible_directories[$id]))
 				return array();
 			$id_directory = $accessible_directories[$id]['entry_id_directory'];
+			$id_fieldextra_directory = $id_directory;
 			break;
 
 		case BAB_DIR_ENTRY_ID_GROUP:
+			$id_fieldextra_directory = 0;	
 			$colname = 'e.id_directory';
 			$access = false;
 			
@@ -646,7 +653,7 @@ function getDirEntry($id, $type, $id_directory) {
 		}
 
 
-	$res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$id_directory."' AND disabled='N' order by list_ordering asc");
+	$res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$id_fieldextra_directory."' AND disabled='N' order by list_ordering asc");
 
 	$entries = array();
 	$leftjoin = array();
