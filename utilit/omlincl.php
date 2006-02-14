@@ -4324,36 +4324,41 @@ function format_output($val, $matches)
 
 function vars_replace($txt)
 	{
-	if(preg_match_all("/<".BAB_TAG_FUNCTION."([^\s>]*)\s*(\w+\s*=\s*[\"].*?\")*\s*>/", $txt, $m))
+	if( empty($txt))
 		{
-		for( $i = 0; $i< count($m[1]); $i++)
-			{
-			$handler = "bab_".$m[1][$i];
-			$val = $this->$handler($this->vars_replace(trim($m[2][$i])));
-			$txt = preg_replace("/".preg_quote($m[0][$i], "/")."/", preg_replace("/\\$[0-9]/", "\\\\$0", $val), $txt);
-			}
+		return $txt;
 		}
 
-	if(preg_match_all("/<".BAB_TAG_VARIABLE."([^\s>]*)\s*(\w+\s*=\s*[\"].*?\")*\s*>/", $txt, $m))
+	if(preg_match_all("/<(".BAB_TAG_FUNCTION."|".BAB_TAG_VARIABLE.")([^\s>]*)\s*(\w+\s*=\s*[\"].*?\")*\s*>/", $txt, $m))
 		{
 		for( $i = 0; $i< count($m[1]); $i++)
 			{
-			$val = $this->get_value($m[1][$i]);
-			$args = $this->vars_replace(trim($m[2][$i]));
-			if( $val !== false )
+			switch( $m[1][$i] )
 				{
-				if( $args != "" )
-					{
-					if(preg_match_all("/(\w+)\s*=\s*([\"'])(.*?)\\2/", $args, $mm))
+				case BAB_TAG_FUNCTION:
+					$handler = "bab_".$m[2][$i];
+					$val = $this->$handler($this->vars_replace(trim($m[3][$i])));
+					$txt = preg_replace("/".preg_quote($m[0][$i], "/")."/", preg_replace("/\\$[0-9]/", "\\\\$0", $val), $txt);
+					break;
+				case BAB_TAG_VARIABLE:
+					$val = $this->get_value($m[2][$i]);
+					$args = $this->vars_replace(trim($m[3][$i]));
+					if( $val !== false )
 						{
-						$val = $this->format_output($val, $mm);
+						if( $args != "" )
+							{
+							if(preg_match_all("/(\w+)\s*=\s*([\"'])(.*?)\\2/", $args, $mm))
+								{
+								$val = $this->format_output($val, $mm);
+								}
+							}
+						$txt = preg_replace("/".preg_quote($m[0][$i], "/")."/", preg_replace("/\\$[0-9]/", "\\\\$0", $val), $txt);
 						}
-					}
-				$txt = preg_replace("/".preg_quote($m[0][$i], "/")."/", preg_replace("/\\$[0-9]/", "\\\\$0", $val), $txt);
+					break;
 				}
 			}
 		}
-	
+
 	return $txt;
 	}
 
@@ -4542,6 +4547,7 @@ function bab_IfNotIsSet($args)
 /* Arithmetic operators */
 function bab_AOAddition($args)
 	{
+	//print_r($args);
 	return $this->bab_ArithmeticOperator($args, '+');
 	}
 
