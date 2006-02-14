@@ -260,7 +260,7 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 			$nbdays = round(($endp - $beginp) / 86400);
 
 
-			if ($beginp == -1 || $endp == -1 || $period_start == -1 || $period_end == -1)
+			if ($period_start == -1 || $period_end == -1)
 				continue;
 
 			
@@ -277,6 +277,8 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 					break;
 				
 				case 1: // Dans la période de la règle
+					if ($beginp == -1 || $endp == -1)
+						continue;
 					if (!empty($arr['period_start']) && 
 						!empty($arr['period_end']) && 
 						($period_start <= $beginp && $period_end >= $endp) ) {
@@ -285,6 +287,8 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 					break;
 				
 				case 2: // En dehors de la période de la règle
+					if ($beginp == -1 || $endp == -1)
+						continue;
 					if (!empty($arr['period_start']) && 
 						!empty($arr['period_end']) && 
 						($period_end <= $beginp || $period_start >= $endp) ) {
@@ -293,6 +297,8 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 					break;
 					
 				case 11: // Dans la période de la règle mais peut dépasser à l'exterieur
+					if ($beginp == -1 || $endp == -1)
+						continue;
 					if (!empty($arr['period_start']) && 
 						!empty($arr['period_end']) && 
 						($period_start < $endp && $period_end > $beginp) ) {
@@ -301,6 +307,8 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 					break;
 
 				case 12: // En dehors de la période de la règle mais peut dépasser à l'intérieur
+					if ($beginp == -1 || $endp == -1)
+						continue;
 					if (!empty($arr['period_start']) && 
 						!empty($arr['period_end']) && 
 						($period_start > $beginp || $period_end < $endp) ) {
