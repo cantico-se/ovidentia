@@ -1300,7 +1300,7 @@
 <string id="Who can reply?">Qui peut répondre ?</string>
 <string id="Who can manage this forum?">Qui peut gérer ce forum ?</string>
 <string id="Approbation schema for articles modification">Schéma d'approbation pour la modification</string>
-<string id="Allow author to purpose articles for homes pages">Permettre aux auteurs de proposer leur article pour les pages d'accueil </string>
+<string id="Allow author to propose articles for homes pages">Permettre aux auteurs de proposer leur article pour les pages d'accueil </string>
 <string id="Allow author to specify dates of publication">Permettre aux auteurs de spécifier des dates de publication</string>
 <string id="Allow author to attach files to articles">Permettre aux auteurs de joindre des fichiers avec leurs articles</string>
 <string id="Allow author to modify their articles">Permettre aux auteurs de modifier leurs articles</string>
@@ -1828,9 +1828,9 @@
 <string id="lastname">nom</string>
 <string id="firstname">prénom</string>
 <string id="Planning accès">Accès au planning</string>
-<string id="User can modifiy his language">L'utilisateur peut modifier ces paramètres de langue</string>
+<string id="User can modifiy his language">L'utilisateur peut modifier ses paramètres de langue</string>
 <string id="User can modifiy his skin">L'utilisateur peut modifier son skin</string>
-<string id="User can modifiy his date format">L'utilisateur peut modifier ces formats de date</string>
+<string id="User can modifiy his date format">L'utilisateur peut modifier ses formats de date</string>
 <string id="User can modifiy his unavailability">L'utilisateur peut modifier son état d'indisponibilité</string>
 <string id="Menu">Menu</string>
 <string id="Move group">Déplacer un groupe</string>
