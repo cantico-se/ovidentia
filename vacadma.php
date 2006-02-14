@@ -995,45 +995,37 @@ function listVacationRightPersonnel($pos, $idvr)
 				$this->used = 0;
 				$this->selected = "";
 				$this->nuserid = "";
-				$res2 = $this->db->db_query("select id from ".BAB_VAC_COLL_TYPES_TBL." where id_type='".$this->idtype."' and id_coll ='".$this->arr['id_coll']."'");
+				$this->bview = true;
+				$this->altbg = !$this->altbg;
+
+				$res2 = $this->db->db_query("select id, quantity from ".BAB_VAC_USERS_RIGHTS_TBL." where id_user='".$this->arr['id']."' and id_right ='".$this->idvr."'");
 				if( $res2 && $this->db->db_num_rows($res2) > 0 )
 					{
-					$this->bview = true;
-					}
+					$arr = $this->db->db_fetch_array($res2);
+					$this->selected = "checked";
+					$this->nuserid = $this->arr['id'];
 
-				if( $this->bview )
+					$res3 = $this->db->db_query("select SUM(e2.quantity) used from ".BAB_VAC_ENTRIES_ELEM_TBL." e2, ".BAB_VAC_ENTRIES_TBL." e1 WHERE  e2.id_type='".$this->idvr."' AND e2.id_entry = e1.id AND e1.id_user='".$this->arr['id']."' AND e1.status='Y'");
+
+					$arr3 = $this->db->db_fetch_array($res3);
+					if (isset($arr3['used']))
+						$this->used = $arr3['used'];
+					}
+				
+				$this->url = $GLOBALS['babUrlScript']."?tg=vacadma&idx=modp&idp=".$this->arr['id']."&pos=".$this->ord.$this->pos."&idvr=".$this->idvr;
+				if( $this->ord == "-" )
+					$this->urlname = bab_composeUserName($this->arr['lastname'],$this->arr['firstname']);
+				else
+					$this->urlname = bab_composeUserName($this->arr['firstname'],$this->arr['lastname']);
+
+				if( isset($arr['quantity']) && $arr['quantity'] != '' )
+					$this->quantity = $arr['quantity'];
+				else
 				{
-					$this->altbg = !$this->altbg;
-
-					$res2 = $this->db->db_query("select id, quantity from ".BAB_VAC_USERS_RIGHTS_TBL." where id_user='".$this->arr['id']."' and id_right ='".$this->idvr."'");
-					if( $res2 && $this->db->db_num_rows($res2) > 0 )
-						{
-						$arr = $this->db->db_fetch_array($res2);
-						$this->selected = "checked";
-						$this->nuserid = $this->arr['id'];
-
-						$res3 = $this->db->db_query("select SUM(e2.quantity) used from ".BAB_VAC_ENTRIES_ELEM_TBL." e2, ".BAB_VAC_ENTRIES_TBL." e1 WHERE  e2.id_type='".$this->idvr."' AND e2.id_entry = e1.id AND e1.id_user='".$this->arr['id']."' AND e1.status='Y'");
-
-						$arr3 = $this->db->db_fetch_array($res3);
-						if (isset($arr3['used']))
-							$this->used = $arr3['used'];
-						}
-					
-					$this->url = $GLOBALS['babUrlScript']."?tg=vacadma&idx=modp&idp=".$this->arr['id']."&pos=".$this->ord.$this->pos."&idvr=".$this->idvr;
-					if( $this->ord == "-" )
-						$this->urlname = bab_composeUserName($this->arr['lastname'],$this->arr['firstname']);
-					else
-						$this->urlname = bab_composeUserName($this->arr['firstname'],$this->arr['lastname']);
-	
-					if( isset($arr['quantity']) && $arr['quantity'] != '' )
-						$this->quantity = $arr['quantity'];
-					else
-					{
-						list($this->quantity) = $this->db->db_fetch_row($this->db->db_query("select quantity from ".BAB_VAC_RIGHTS_TBL." where id='".$this->idvr."'"));
-					}
-		
-					$this->userid = $this->arr['id'];
+					list($this->quantity) = $this->db->db_fetch_row($this->db->db_query("select quantity from ".BAB_VAC_RIGHTS_TBL." where id='".$this->idvr."'"));
 				}
+	
+				$this->userid = $this->arr['id'];
 				
 				
 
