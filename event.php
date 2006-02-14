@@ -1331,7 +1331,14 @@ function eventAvariabilityCheck(&$avariability_message)
 			{
 			if ($event['bfree'] !='Y' && (!isset($_POST['evtid']) || $_POST['evtid'] != $event['id_event']))
 				{
-				$GLOBALS['avariability'][] = $cal->cal_name.' '.bab_translate("on the event").' : '.$event['title'].' ('.bab_shortDate(bab_mktime($event['start_date']),false).')';
+				global $babBody;
+				$title = bab_translate("Private");
+				if( ('Y' == $event['bprivate'] && $event['id_cal'] == $babBody->icalendars->id_percal) || 'Y' != $event['bprivate'])
+				{
+					$title = $event['title'];
+				}
+
+				$GLOBALS['avariability'][] = $cal->cal_name.' '.bab_translate("on the event").' : '. $title .' ('.bab_shortDate(bab_mktime($event['start_date']),false).')';
 				$message2 = bab_translate("The event is in conflict with a calendar");
 				}
 			}
