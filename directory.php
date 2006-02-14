@@ -2337,7 +2337,7 @@ function confirmAddDbContact($id, $fields, $file, $tmp_file, $password1, $passwo
 		
 		if( $notifyuser == "Y" )
 			{
-			if( bab_isMagicQuotesGpcOn())
+			if( !bab_isMagicQuotesGpcOn())
 				{
 				$firstname = addslashes($fields['givenname']);
 				$lastname = addslashes($fields['sn']);
@@ -2406,7 +2406,7 @@ function confirmAddDbContact($id, $fields, $file, $tmp_file, $password1, $passwo
 		if( substr($key, 0, strlen("babdirf")) == 'babdirf' )
 			{
 			$tmp = substr($key, strlen("babdirf"));
-			if( bab_isMagicQuotesGpcOn())
+			if( !bab_isMagicQuotesGpcOn())
 				{
 				$value = addslashes($value);
 				}
