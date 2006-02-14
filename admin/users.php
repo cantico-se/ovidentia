@@ -387,7 +387,7 @@ if( isset($adduser) && $babBody->isSuperAdmin )
 		$idx = "List";
 		if( $notifyuser == "Y" )
 			{
-			if( bab_isMagicQuotesGpcOn())
+			if( !bab_isMagicQuotesGpcOn())
 				{
 				$firstname = addslashes($firstname);
 				$lastname = addslashes($lastname);
