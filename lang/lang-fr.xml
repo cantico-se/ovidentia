@@ -1900,7 +1900,7 @@
 <string id="Who is notified when a new post is registered?">Qui est notifié lors de la publication d'une contribution</string>
 <string id="Number of recipients per sending">Nombre de destinataires par envoi</string>
 <string id="is member of the following directories">est membre des annuaires suivants</string>
-<string id="Assign a user to a directory">Affecter un utilisateur à un annuaire</string>
+<string id="Assign a user to a directory">Attacher un utilisateur à un annuaire</string>
 <string id="Unassign a user from a directory">Détacher un utilisateur d'un annuaire</string>
 <string id="Visible in file manager?">Afficher dans le gestionnaire de fichiers?</string>
 <string id="Update on">Mise à jour le</string>
@@ -1908,10 +1908,13 @@
 <string id="Fields to export">Champs à exporter</string>
 <string id="Your contact has been unassigned">Votre contact a été détaché de l'annuaire</string>
 <string id="Unassign">Détacher</string>
+<string id="Assign">Attacher</string>
 <string id="Your contacts has been assigned">Vos contacts ont été attachés à l'annuaire</string>
 <string id="Your contact has been assigned">Votre contact ont été attaché à l'annuaire</string>
 <string id="WARNING: User with this nickname already exist">ATTENTION: Un utilisateur avec le même identifiant existe déjà</string>
 <string id="WARNING: User with this fullname already exist">ATTENTION: Un utilisateur avec les mêmes nom et prénom existe déjà</string>
-<string id="Automatically approve author if he belongs to approbation schema">Approuver automatiquement l'auteur s'il fait partie du schéma d'approbation</string>
+<string id="Automatically approve author if he belongs to approbation schema">Approuver automatiquement le contributeur s'il fait partie de la première étape du schéma d'approbation</string>
 <string id="Display the date and the author of update">Afficher la date et l'auteur de la mise à jour dans la fiche annuaire</string>
+<string id="Would you like to assign this user to the current directory">Voulez-vous attacher cet utilisateur à l'annuaire courant</string>
+<string id="Your contacts has been assigned">Vos contacts ont été attachés à l'annuaire</string>
 </fr>
