@@ -2235,10 +2235,18 @@ function confirmAddDbContact($id, $fields, $file, $tmp_file, $password1, $passwo
 
 	if( $idgroup > 0 )
 		{
-
 		if( bab_isAccessValid(BAB_DBDIRBIND_GROUPS_TBL, $id) && $idgroup != BAB_REGISTERED_GROUP)
 			{
 			$bassign = true;
+			$arrgrpids = array();
+			$res = $db->db_query("select id, id_group from ".BAB_DB_DIRECTORIES_TBL." where id != '".$id."' and id_group != 0");
+			while( $arr = $db->db_fetch_array($res))
+				{
+				if( bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $arr['id']) )
+					{
+					$arrgrpids[] = $arr['id_group'];
+					}
+				}
 			}
 
 		if( empty($nickname))
@@ -2249,14 +2257,26 @@ function confirmAddDbContact($id, $fields, $file, $tmp_file, $password1, $passwo
 
 		if( $bassign )
 			{
-			$res = $db->db_query("select id from ".BAB_USERS_TBL." where nickname='".$db->db_escape_string($nickname)."'");
+			$res = $db->db_query("select ut.id from ".BAB_USERS_TBL." ut where ut.nickname='".$db->db_escape_string($nickname)."'");
 			if( $db->db_num_rows($res) > 0)
 				{
 				$arr = $db->db_fetch_array($res);
-				$GLOBALS['idauser'] = $arr['id'];
-				$GLOBALS['idatype'] = 'nickname';
-				//**************
-				return 2;
+				$groups = bab_getUserGroups($arr['id']);
+				$groupsids = &$groups['id'];
+				$groupsids[] = BAB_REGISTERED_GROUP;
+				if( !in_array($idgroup, $groupsids) )
+					{
+					if( count($arrgrpids) )
+						{
+						$tmparr = array_intersect($groupsids, $arrgrpids);
+						if( count($tmparr))
+							{
+							$GLOBALS['idauser'] = $arr['id'];
+							$GLOBALS['idatype'] = 'nickname';
+							return 2;
+							}
+						}
+					}
 				}
 			}
 
@@ -2272,10 +2292,22 @@ function confirmAddDbContact($id, $fields, $file, $tmp_file, $password1, $passwo
 			if( $db->db_num_rows($res) > 0)
 				{
 				$arr = $db->db_fetch_array($res);
-				$GLOBALS['idauser'] = $arr['id_user'];
-				$GLOBALS['idatype'] = 'fullname';
-				//**************
-				return 2;
+				$groups = bab_getUserGroups($arr['id_user']);
+				$groupsids = &$groups['id'];
+				$groupsids[] = BAB_REGISTERED_GROUP;
+				if( !in_array($idgroup, $groupsids) )
+					{
+					if( count($arrgrpids) )
+						{
+						$tmparr = array_intersect($groupsids, $arrgrpids);
+						if( count($tmparr))
+							{
+							$GLOBALS['idauser'] = $arr['id_user'];
+							$GLOBALS['idatype'] = 'fullname';
+							return 2;
+							}
+						}
+					}
 				}
 			}
 
