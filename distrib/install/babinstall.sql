@@ -1171,8 +1171,6 @@ INSERT INTO bab_db_directories (id, name, description, id_group, id_dgowner) val
 
 CREATE TABLE bab_dbdir_entries (
   id int(11) unsigned NOT NULL auto_increment,
-  date_modification datetime NOT NULL default '0000-00-00 00:00:00',
-  id_modifiedby int(11) unsigned NOT NULL default '0',
   cn varchar(255) NOT NULL default '',
   sn varchar(255) NOT NULL default '',
   mn varchar(255) NOT NULL default '',
@@ -1203,6 +1201,8 @@ CREATE TABLE bab_dbdir_entries (
   photo_type varchar(20) NOT NULL default '',
   id_directory int(11) unsigned NOT NULL default '0',
   id_user int(11) unsigned NOT NULL default '0',
+  date_modification datetime NOT NULL default '0000-00-00 00:00:00',
+  id_modifiedby int(11) unsigned NOT NULL default '0',
   PRIMARY KEY  (id),
   KEY sn (sn),
   KEY mn (mn),
