@@ -1913,4 +1913,5 @@
 <string id="WARNING: User with this nickname already exist">ATTENTION: Un utilisateur avec le même identifiant existe déjà</string>
 <string id="WARNING: User with this fullname already exist">ATTENTION: Un utilisateur avec les mêmes nom et prénom existe déjà</string>
 <string id="Automatically approve author if he belongs to approbation schema">Approuver automatiquement l'auteur s'il fait partie du schéma d'approbation</string>
+<string id="Display the date and the author of update">Afficher la date et l'auteur de la mise à jour dans la fiche annuaire</string>
 </fr>
