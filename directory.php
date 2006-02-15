@@ -1942,8 +1942,8 @@ function processImportDbFile( $pfile, $id, $separ )
 						$req = "insert into ".BAB_DBDIR_ENTRIES_TBL." (".$req."id_directory,date_modification,id_modifiedby) values (";
 						for( $i = 0; $i < count($arrv); $i++)
 							$req .= "'". addslashes($arrv[$i])."',";
-						$req .= "'".($idgroup !=0 ? 0: $id)."')";
-						$req .= "now(), '".$GLOBALS['BAB_SESS_USERID']."',";
+						$req .= "'".($idgroup !=0 ? 0: $id)."',";
+						$req .= "now(), '".$GLOBALS['BAB_SESS_USERID']."')";
 						$db->db_query($req);
 						$idu = $db->db_insert_id();
 						if( $idgroup > 0 )
