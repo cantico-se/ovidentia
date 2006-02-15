@@ -431,9 +431,14 @@ function modifyDb($id)
 				{
 				$iddir = 0;
 				$this->bdel = false;
-				$this->ballowuserupdate = true;
 				if( $arr['id_group'] != 1 )
+					{
 					$this->bfields = false;
+					}
+				else
+					{
+					$this->ballowuserupdate = true;
+					}
 				if( $arr['user_update'] == 'Y')
 					{
 					$this->noselected = "";
@@ -1101,29 +1106,41 @@ function modifyAdDb($id, $name, $description, $displayiu, $rw, $rq, $ml, $dz, $a
 			$iddir = $id;
 			$allowuu = "N";
 			}
-		$req = "update ".BAB_DB_DIRECTORIES_TBL." set name='".$name."', description='".$description."', show_update_info='".$displayiu."', user_update='".$allowuu."' where id='".$id."'";
-		$db->db_query($req);
-		$res = $db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$iddir."'");
-		while( $arr = $db->db_fetch_array($res))
+
+		$req = "update ".BAB_DB_DIRECTORIES_TBL." set name='".$name."', description='".$description."', show_update_info='".$displayiu."'";
+
+		if( $arr['id_group'] == 1)
 			{
-			if( count($rw) > 0 && in_array($arr['id_field'], $rw))
-				$modifiable = "Y";
-			else
-				$modifiable = "N";
-			if( count($rq) > 0 && in_array($arr['id_field'], $rq))
-				$required = "Y";
-			else
-				$required = "N";
-			if( count($ml) > 0 && in_array($arr['id_field'], $ml))
-				$multilignes = "Y";
-			else
-				$multilignes = "N";
-			if( count($dz) > 0 && in_array($arr['id_field'], $dz))
-				$disabled = "Y";
-			else
-				$disabled = "N";
-			$req = "update ".BAB_DBDIR_FIELDSEXTRA_TBL." set modifiable='".$modifiable."', required='".$required."', multilignes='".$multilignes."', disabled='".$disabled."' where id='".$arr['id']."'";
-			$db->db_query($req);
+			$req .= ", user_update='".$allowuu."'";
+			}
+			
+		$req .= " where id='".$id."'";
+		$db->db_query($req);
+
+		if( $arr['id_group'] == 0 || $arr['id_group'] == BAB_REGISTERED_GROUP)
+			{
+			$res = $db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$iddir."'");
+			while( $arr = $db->db_fetch_array($res))
+				{
+				if( count($rw) > 0 && in_array($arr['id_field'], $rw))
+					$modifiable = "Y";
+				else
+					$modifiable = "N";
+				if( count($rq) > 0 && in_array($arr['id_field'], $rq))
+					$required = "Y";
+				else
+					$required = "N";
+				if( count($ml) > 0 && in_array($arr['id_field'], $ml))
+					$multilignes = "Y";
+				else
+					$multilignes = "N";
+				if( count($dz) > 0 && in_array($arr['id_field'], $dz))
+					$disabled = "Y";
+				else
+					$disabled = "N";
+				$req = "update ".BAB_DBDIR_FIELDSEXTRA_TBL." set modifiable='".$modifiable."', required='".$required."', multilignes='".$multilignes."', disabled='".$disabled."' where id='".$arr['id']."'";
+				$db->db_query($req);
+				}
 			}
 		}
 	return true;

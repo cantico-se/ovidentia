@@ -5622,6 +5622,29 @@ if ( $arr[0] != BAB_DBDIR_FIELDSEXPORT_TBL )
 		}
 	}
 
+
+$arr = $db->db_fetch_array($db->db_query("SHOW TABLES LIKE '".BAB_DBDIR_CONFIGEXPORT_TBL."'"));
+if ( $arr[0] != BAB_DBDIR_CONFIGEXPORT_TBL )
+	{
+	$req = "CREATE TABLE ".BAB_DBDIR_CONFIGEXPORT_TBL." (";
+	$req .= "id int(11) unsigned NOT NULL auto_increment,";
+	$req .= "id_user int(11) unsigned NOT NULL default '0',";
+	$req .= "id_directory int(11) unsigned NOT NULL default '0',";
+	$req .= "separatorchar tinyint(2) NOT NULL default '0',";
+	$req .= "PRIMARY KEY  (id),";
+	$req .= "KEY id_user (id_user),";
+	$req .= "KEY id_directory (id_directory)";
+	$req .= ");";
+
+	$res = $db->db_query($req);
+	if( !$res)
+		{
+		$ret = "Creation of <b>".BAB_DBDIR_CONFIGEXPORT_TBL."</b> table failed !<br>";
+		return $ret;
+		}
+	}
+
+
 $arr = $db->db_fetch_array($db->db_query("DESCRIBE ".BAB_TOPICS_TBL." auto_approbation"));
 if ($arr[0] != 'auto_approbation')
 	{

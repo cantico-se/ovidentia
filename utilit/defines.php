@@ -107,6 +107,7 @@ define("BAB_DBDIR_FIELDS_TBL", "bab_dbdir_fields");
 define("BAB_DBDIR_FIELDS_DIRECTORY_TBL", "bab_dbdir_fields_directory");
 define("BAB_DBDIR_FIELDSEXTRA_TBL", "bab_dbdir_fieldsextra");
 define("BAB_DBDIR_FIELDSVALUES_TBL", "bab_dbdir_fieldsvalues");
+define("BAB_DBDIR_CONFIGEXPORT_TBL", "bab_dbdir_configexport");
 define("BAB_DBDIR_FIELDSEXPORT_TBL", "bab_dbdir_fieldsexport");
 define("BAB_DBDIR_ENTRIES_TBL", "bab_dbdir_entries");
 define("BAB_DBDIR_ENTRIES_EXTRA_TBL", "bab_dbdir_entries_extra");

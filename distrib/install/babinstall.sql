@@ -2744,3 +2744,13 @@ CREATE TABLE bab_dbdir_fieldsexport (
   KEY id_user (id_user),
   KEY id_directory (id_directory)
 );
+
+CREATE TABLE bab_dbdir_configexport (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_user int(11) unsigned NOT NULL default '0',
+  id_directory int(11) unsigned NOT NULL default '0',
+  separatorchar tinyint(2) NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_user (id_user),
+  KEY id_directory (id_directory)
+);

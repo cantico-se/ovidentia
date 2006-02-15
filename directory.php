@@ -1160,6 +1160,36 @@ function exportDbFile($id)
 				$iddir = $id;
 				}
 
+
+			$this->selected_1 = '';
+			$this->selected_2 = '';
+			$this->selected_3 = '';
+			$this->separvalue = '';
+			
+			$res = $babDB->db_query("select separatorchar from ".BAB_DBDIR_CONFIGEXPORT_TBL." where id_directory='".$id."' and id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+			if( $res && $babDB->db_num_rows($res) > 0 )
+				{
+				$arr = $babDB->db_fetch_array($res);
+				}
+			else
+				{
+				$arr['separatorchar'] = 44;
+				}
+
+			switch($arr['separatorchar'] )
+				{
+				case 44:
+					$this->selected_1 = 'selected';
+					break;
+				case 9:
+					$this->selected_2 = 'selected';
+					break;
+				default:
+					$this->selected_0 = 'selected';
+					$this->separvalue = chr($arr['separatorchar']);
+					break;
+				}
+			
 			$this->resfd = $babDB->db_query("select id, id_field from ".BAB_DBDIR_FIELDSEXPORT_TBL." where id_directory='".$id."' and id_user='".$GLOBALS['BAB_SESS_USERID']."' AND id_field<>5 order by ordering asc");
 			$this->countfd = $babDB->db_num_rows($this->resfd);
 			$arrexp = array(5);
@@ -2529,6 +2559,9 @@ function exportDbDirectory($id, $wsepar, $separ, $listfd)
 			{
 			$db->db_query("insert into ".BAB_DBDIR_FIELDSEXPORT_TBL." (id_user, id_directory, id_field, ordering) values ('".$GLOBALS['BAB_SESS_USERID']."','".$id."','".$listfd[$i]."','".($i + 1)."')");
 			}
+
+		$db->db_query("delete from ".BAB_DBDIR_CONFIGEXPORT_TBL." where id_directory='".$id."' and id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+		$db->db_query("insert into ".BAB_DBDIR_CONFIGEXPORT_TBL." (id_user, id_directory, separatorchar) values ('".$GLOBALS['BAB_SESS_USERID']."','".$id."','".Ord($separ)."')");	
 		}
 
 

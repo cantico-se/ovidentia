@@ -393,11 +393,11 @@ function selectAll(list)
 	<td align="right">{ separator }</td>
 	<td  colspan="3"> 
 	<select name="wsepar">
-	<option value="0">{ other }</option>
-	<option value="1" selected >{ comma }</option>
-	<option value="2">{ tab }</option>
+	<option value="0" { selected_0 }>{ other }</option>
+	<option value="1" { selected_1 }>{ comma }</option>
+	<option value="2" { selected_2 }>{ tab }</option>
 	</select>&nbsp;&nbsp;
-	<input type="text" name="separ" size="1" maxlength="1" value="">
+	<input type="text" name="separ" size="1" maxlength="1" value="{ separvalue }">
 	</td>
 	</tr>
 
