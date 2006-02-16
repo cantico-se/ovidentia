@@ -1633,33 +1633,49 @@ function assignList($id, $pos)
 				else
 					$this->allselected = 0;
 				$this->allurl = $GLOBALS['babUrlScript']."?tg=directory&idx=assign&pos=&id=".$this->id;
+
+				list($idgroup) = $this->db->db_fetch_array($this->db->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
+				$res = $this->db->db_query("select id_object from ".BAB_USERS_GROUPS_TBL." where id_group='$idgroup'");
+				$this->groupmemebers = array();
+				while($arr = $this->db->db_fetch_array($res))
+					{
+					$this->groupmemebers[$arr['id_object']] = true;
+					}
+
 				}
 			else
 				{
 				$this->count = 0;
-				$GLOBALS['babBody']->msgerror = bab_translate("Access denied");
+				$this->allselected = 1;
 				}
 //*/
 			}
 
-		function getnext()
+		function getnext(&$skip)
 			{
 			static $i = 0;
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->selected = "";
+				if( !isset($this->groupmemebers[$this->arr['id']]))
+					{
+					$this->selected = "";
 
-				$this->altbg = !$this->altbg;
+					$this->altbg = !$this->altbg;
 
-				
-				$this->url = $GLOBALS['babUrlScript']."?tg=directory&idx=assign&id=".$this->id."&pos=".$this->ord.$this->pos;
-				if( $this->ord == "-" )
-					$this->urlname = bab_composeUserName($this->arr['lastname'],$this->arr['firstname']);
+					
+					$this->url = $GLOBALS['babUrlScript']."?tg=directory&idx=assign&id=".$this->id."&pos=".$this->ord.$this->pos;
+					if( $this->ord == "-" )
+						$this->urlname = bab_composeUserName($this->arr['lastname'],$this->arr['firstname']);
+					else
+						$this->urlname = bab_composeUserName($this->arr['firstname'],$this->arr['lastname']);
+
+					$this->userid = $this->arr['id'];
+					}
 				else
-					$this->urlname = bab_composeUserName($this->arr['firstname'],$this->arr['lastname']);
-
-				$this->userid = $this->arr['id'];
+					{
+					$skip = true;
+					}
 				$i++;
 				return true;
 				}
@@ -1675,11 +1691,20 @@ function assignList($id, $pos)
 			if( $k < 26)
 				{
 				$this->selectname = $t[$k];
-				$this->selecturl = $GLOBALS['babUrlScript']."?tg=directory&idx=assign&pos=".$this->ord.$this->selectname."&id=".$this->id;
-				if( $this->pos == $this->selectname)
-					$this->selected = 1;
+				if( $this->count )
+					{
+					$this->selecturl = $GLOBALS['babUrlScript']."?tg=directory&idx=assign&pos=".$this->ord.$this->selectname."&id=".$this->id;
+					if( $this->pos == $this->selectname)
+						$this->selected = 1;
+					else
+						$this->selected = 0;
+					}
 				else
-					$this->selected = 0;
+					{
+					$this->fullname = '';
+					$this->selected = 1;
+					$this->selecturl = '#';
+					}
 				$k++;
 				return true;
 				}

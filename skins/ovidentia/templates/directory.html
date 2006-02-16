@@ -953,7 +953,6 @@ close }</a> </td>
 
 
 <!--#begin assignlist -->
-<!--#if bview -->
 <form method="post" action="{ babPhpSelf }" name="listform">
 <input type="hidden" name="tg" value="directory">
 <input type="hidden" name="idx" value="list">
@@ -1005,11 +1004,12 @@ close }</a> </td>
 </table>
 <br />
 <div align="center">
+<!--#if bview -->
 	<input type="submit" value="{ modify }" /> &nbsp;
+<!--#endif bview -->
 	<input type="button" onclick="window.close()" value="{ t_close }" />
 </div>
 </form>
-<!--#endif bview -->
 
 <!--#end assignlist -->
 
