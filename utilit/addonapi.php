@@ -1120,4 +1120,51 @@ function bab_detachUserFromGroup($iduser, $idgroup)
 	bab_removeUserFromGroup($iduser, $idgroup);
 }
 
+function bab_uppdateUserById($id, $info, &$error)
+{
+	global $babDB;
+	$res = $babDB->db_query('select nickname from '.BAB_USERS_TBL.' where id=\''.$id.'\'');
+	if( $res && $babDB->db_num_rows($res) > 0 )
+	{
+		if( is_array($info) && count($info) && isset($info['disabled']))
+		{
+			if( $info['disabled'] )
+			{
+				$babDB->db_query('update '.BAB_USERS_TBL.' set disabled=1 where id=\''.$id.'\'');
+			}
+			else
+			{
+				$babDB->db_query('update '.BAB_USERS_TBL.' set disabled=0 where id=\''.$id.'\'');
+			}
+			return true;
+		}
+		else
+		{
+			$error = bab_translate("Nothing Changed");
+			return false;
+		}
+	}
+	else
+	{
+		$error = bab_translate("Unknown user");
+		return false;
+	}
+}
+
+function bab_uppdateUserByNickname($nickname, $info, &$error)
+{
+	global $babDB;
+	$res = $babDB->db_query('select id from '.BAB_USERS_TBL.' where nickname=\''.$babDB->db_escape_string($nickname).'\'');
+	if( $res && $babDB->db_num_rows($res) > 0 )
+	{
+		$arr = $babDB->db_fetch_array($res);
+		return bab_uppdateUserById($arr['id'], $info, $error);
+	}
+	else
+	{
+		$error = bab_translate("Unknown user");
+		return false;
+	}
+}
+
 ?>
