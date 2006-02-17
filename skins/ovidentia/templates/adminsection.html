@@ -1,69 +1,30 @@
 <!--#begin template -->
-<table width="150" cellpadding="0" cellspacing="0" border="0">
-<tr> 
-<td class="BabSectionBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
-<tr>
-<td align="center" valign="middle">
-<table class="BabTitleSectionBackground" width="100%" border="0" cellspacing="0" cellpadding="0">
-<tr><!--#if BAB_SESS_LOGGED --><!--#if bbox "== 1" --><!--#if close "== 0" -->
-<td class="BabTitleSectionFont" width="20" align="center" valign="middle"><a href="{ boxurl }"><img src="{ babSkinPath }images/Puces/PuceSectionClose.png" border="0"></a></td>
-<!--#else close --><td class="BabTitleSectionFont" width="20" align="center" valign="middle"><a href="{ boxurl }"><img src="{ babSkinPath }images/Puces/PuceSectionOpen.png" border="0"></a></td>
-<!--#endif close --><!--#endif bbox --><!--#else BAB_SESS_LOGGED --><td class="BabTitleSectionFont" align="left" width="20" valign="middle" >{ babsectionpuce }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="4" height="1" border="0"></td>
-<!--#endif BAB_SESS_LOGGED --><td class="BabTitleSectionFont" align="left" valign="middle" width="121">{ title }</td>
-</tr>
-</table>
-</td>
-</tr>
-        <!--#if close "== 0" --> 
-<tr> 
-          <td>
-            <table width="100%" cellpadding="0" cellspacing="0">
-              <tr> 
-                <td class="BabHeaderBodySection" align="center">
-				<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="5" border="0"><br>
-                  { head }</td>
-              </tr>
-              <tr> 
-                <td > <img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="5" border="0"><br>
-                  <table width="100%" cellpadding="0" cellspacing="0">
-                    <!--#in addUrl -->
-                    <tr> 
-                      <td width="10"></td>
-                      <td class="BabBodySection" valign="middle">{ babsectionbullet }</td>
-                      <td width="5"></td>
-                      <td class="BabBodySection" width="126"><a class="BabSectionsLinkColor" 
-
-href="{ val }">{ key }</a></td>
-                    </tr>
-                    <!--#endin addUrl -->
-                    <!--#in addAddonUrl -->
-                    <tr> 
-                      <td width="10"></td>
-                      <td class="BabBodySection" valign="middle">{ babsectionbullet }</td>
-                      <td width="5"></td>
-                      <td class="BabBodySection" width="126"><a class="BabSectionsLinkColor" href="{ val }">{ 
-                        key }</a></td>
-                    </tr>
-                    <!--#endin addAddonUrl -->
-                  </table>
-                </td>
-              </tr>
-              <tr> 
-                <td class="BabFooterBodySection" align="center" valign="middle">
-                <img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="5" border="0"><br>
-                  { foot }</td>
-              </tr>
-            </table>
-          </td>
-</tr><!--#endif close -->      
-</table>
-</td>
-</tr>
-</table>
-<TABLE>
-<TR>
-	<TD class="BabSectionSpacing"> <img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="0" border="0"></TD>
-</TR>
-</TABLE>
+<div class="bab_section bab_{ htmlid }" id="bab_{ htmlid }">
+	<div class="bab_title">
+		<!--#if BAB_SESS_LOGGED -->
+		<!--#if close -->
+		<a class="open" href="{ boxurl }" title="{ t_open }"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="{ t_open }" /></a>
+		<!--#else close -->
+		<a class="close" href="{ boxurl }" title="{ t_close }"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="{ t_close }" /></a>
+		<!--#endif close -->
+		<!--#else BAB_SESS_LOGGED -->
+		<span class="nolink"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" /></span>
+		<!--#endif BAB_SESS_LOGGED -->
+		<h4>{ title }</h4>
+	</div> 
+	<!--#if close "== 0" -->
+	<div class="bab_content">
+	<h5>{ head }</h5>
+		<ul>
+		<!--#in addUrl -->
+			<li><a href="{ val }">{ key }</a></li>
+		<!--#endin addUrl -->
+		<!--#in addAddonUrl -->
+			<li class="addon"><a href="{ val }">{ key }</a></li>
+		<!--#endin addAddonUrl -->
+		</ul>
+	<h5>{ foot }</h5>
+	</div>
+	<!--#endif close -->
+</div>
 <!--#end template -->
