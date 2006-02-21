@@ -994,7 +994,8 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				}
 				$this->nbresult += $nbrows;
 			// --------------------------------------------- DIRECTORIES
-			if( empty($item) || $item == "g")
+			$arrview = bab_getUserIdObjects(BAB_DBDIRVIEW_GROUPS_TBL);
+			if( count($arrview) && (empty($item) || $item == "g"))
 				{
 				$id_directory = isset($this->fields['g_directory']) ? $this->fields['g_directory'] : '';
 				
@@ -1072,10 +1073,6 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				// critères toutes colonnes
 
 				$crit_fields = $this->searchInAllCols(BAB_DBDIR_ENTRIES_TBL);
-
-
-				
-				$arrview = bab_getUserIdObjects(BAB_DBDIRVIEW_GROUPS_TBL);
 				
 				// Liste des groupe des annuaires
 
