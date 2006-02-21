@@ -95,6 +95,16 @@ function upComingEvents($idcal)
 				{
 				$this->countgrpevent = 0;
 				}
+
+			if( $this->countevent && $this->countgrpevent )
+				{
+				$this->bshow = true;
+				}
+			else
+				{
+				$this->bshow = false;
+				}
+
 			}
 
 		function getevent()
@@ -307,10 +317,9 @@ switch($idx)
 	case "view":
 		$babBody->title = bab_translate("Summary");
 		showOthers();
-		$idcal = bab_getCalendarId($BAB_SESS_USERID, 1);
-		if( $idcal != 0 || $babBody->calaccess || bab_calendarAccess() != 0 )
+		if( $babBody->icalendars->calendarAccess() && $babBody->icalendars->id_percal)
 		{
-			upComingEvents($idcal);
+			upComingEvents($babBody->icalendars->id_percal);
 		}
 		$bemail = bab_mailAccessLevel();
 		if( ($bemail == 1 || $bemail == 2) && function_exists('imap_open'))
