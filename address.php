@@ -107,7 +107,8 @@ function listAddress($pos)
 			else
 				$this->allselected = 0;
 			$this->allurl = $GLOBALS['babUrlScript']."?tg=address&idx=list&pos=";
-			$req = "select distinct p3.id, p3.".$this->namesearch.", p3.".$this->namesearch2.", p3.email from ".BAB_USERS_TBL." as p3, ".BAB_USERS_GROUPS_TBL." as p1,  ".BAB_USERS_GROUPS_TBL." as p2 where p1.id_object='".$BAB_SESS_USERID."' and p1.id_group = p2.id_group and p3.id=p2.id_object and ".$this->namesearch." like '".$pos."%' order by ".$this->namesearch.", ".$this->namesearch2." asc";
+			$req = "select distinct p3.id, p4.mn, p3.".$this->namesearch.", p3.".$this->namesearch2.", p3.email from ".BAB_USERS_TBL." as p3, ".BAB_DBDIR_ENTRIES_TBL." as p4, ".BAB_USERS_GROUPS_TBL." as p1,  ".BAB_USERS_GROUPS_TBL." as p2 where p1.id_object='".$BAB_SESS_USERID."' and p3.id=p4.id_user and p1.id_group = p2.id_group and p3.id=p2.id_object and ".$this->namesearch." like '".$pos."%' order by ".$this->namesearch.", ".$this->namesearch2." asc";
+
 			$this->resgrpm = $this->db->db_query($req);
 			$this->countgrpm = $this->db->db_num_rows($this->resgrpm);
 
@@ -144,7 +145,7 @@ function listAddress($pos)
 				$arr = $this->db->db_fetch_array($this->resgrpm);
 				$this->nameval = bab_composeUserName($arr['firstname'],$arr['lastname']);
 				$this->emailval = $arr['email'];
-				$this->checkval = $arr['firstname'].' '.$arr['lastname']."(g)";
+				$this->checkval = $arr['firstname'].' '.$arr['mn'].' '.$arr['lastname']."(g)";
 				$j++;
 				return true;
 				}
