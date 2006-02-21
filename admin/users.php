@@ -106,7 +106,7 @@ function listUsers($pos, $grp)
 				$this->users_logged[$id_user] = $id_user;
 				}
 
-			$req = "select DISTINCT u.* from ".BAB_USERS_TBL." u";
+			$req = "SELECT u.* from ".BAB_USERS_TBL." u";
 
 			if( isset($pos) &&  strlen($pos) > 0 && $pos[0] == "-" )
 				{
