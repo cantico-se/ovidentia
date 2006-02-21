@@ -1800,8 +1800,8 @@
 <string id="Expand to checked boxes">Déployer vers les cases cochées</string>
 <string id="Sets of groups">Ensembles de groupes</string>
 <string id="Access rights">Droits d'accès</string>
-<string id="This module need ovidentia version">Ce module nécéssite ovidentia en version</string>
-<string id="the current version is">La version courrante est</string>
+<string id="This module need ovidentia version">Ce module nécessite ovidentia en version</string>
+<string id="the current version is">La version courante est</string>
 <string id="Delete all objects created in the delegation">Supprimer tous les objets créés dans la délégation</string>
 <string id="Attach objects to all site">Attacher les objets à tout le site</string>
 <string id="The user is in the list">L'utilisateur est dans la liste</string>
