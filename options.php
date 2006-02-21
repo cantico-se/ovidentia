@@ -1405,7 +1405,6 @@ switch($idx)
 	case "global":
 	default:
 		$babBody->title = bab_translate("Options");
-		$idcal = bab_getCalendarId($BAB_SESS_USERID, 1);
 		if( !isset($nickname)) { $nickname = ""; }
 		changeNickname($nickname);
 		if ('Y' == $babBody->babsite['change_skin'])
@@ -1416,7 +1415,7 @@ switch($idx)
 			changeRegionalSettings();
 		changeProfiles();
 		$babBody->addItemMenu("global", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=options&idx=global");
-		if( $idcal != 0 || $babBody->calaccess || bab_calendarAccess() != 0 )
+		if( $babBody->icalendars->calendarAccess())
 			{
 			$babBody->addItemMenu("calendar", bab_translate("Calendar Options"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options");
 			}
