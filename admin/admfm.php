@@ -110,13 +110,13 @@ function modifyFolder($fid)
 
 			if( $arr['bhide'] == "Y" )
 				{
-				$this->yhidesel = "selected";
-				$this->nhidesel = "";
+				$this->yhidesel = "";
+				$this->nhidesel = "selected";
 				}
 			else
 				{
-				$this->nhidesel = "selected";
-				$this->yhidesel = "";
+				$this->nhidesel = "";
+				$this->yhidesel = "selected";
 				}
 
 			if( $arr['auto_approbation'] == "Y" )
