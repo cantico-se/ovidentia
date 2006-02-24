@@ -670,7 +670,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 // ---------------------------------------- SEARCH ARTICLES AND ARTICLES COMMENTS ---------
 			if( empty($item) || $item == "a")
 				{
-				$req = "create temporary table artresults SELECT a.id, a.id_topic, a.archive, a.title, a.head, a.body, a.restriction, T.category topic, concat( U.lastname, ' ', U.firstname ) author,U.email, UNIX_TIMESTAMP(a.date) date from ".BAB_ARTICLES_TBL." a, ".BAB_TOPICS_TBL." T LEFT JOIN ".BAB_USERS_TBL." U ON a.id_author = U.id WHERE a.id_topic = T.id and 0";
+				$req = "create temporary table artresults SELECT a.id, a.id_topic, a.archive, a.title, a.head, a.body, a.restriction, T.category topic, concat( U.lastname, ' ', U.firstname ) author,U.email, UNIX_TIMESTAMP(a.date) date from ".BAB_TOPICS_TBL." T, ".BAB_ARTICLES_TBL." a LEFT JOIN ".BAB_USERS_TBL." U ON a.id_author = U.id WHERE a.id_topic = T.id and 0";
 				$this->db->db_query($req);
 				$req = "alter table artresults add unique (id)";
 				$this->db->db_query($req);
@@ -713,7 +713,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					if ($this->like || $this->like2)
 						$reqsup = "and (".finder($this->like,"title",$option,$this->like2)." or ".finder($this->like,"head",$option,$this->like2)." or ".finder($this->like,"body",$option,$this->like2).")";
 					
-					$req = "INSERT INTO artresults SELECT a.id, a.id_topic, a.archive, a.title title,a.head, LEFT(a.body,100) body, a.restriction, T.category topic, concat( U.lastname, ' ', U.firstname ) author, U.email, UNIX_TIMESTAMP(a.date) date  from ".BAB_ARTICLES_TBL." a, ".BAB_TOPICS_TBL." T LEFT JOIN ".BAB_USERS_TBL." U ON a.id_author = U.id WHERE a.id_topic = T.id ".$reqsup." ".$inart." ".$crit_art." order by $order ";
+					$req = "INSERT INTO artresults SELECT a.id, a.id_topic, a.archive, a.title title,a.head, LEFT(a.body,100) body, a.restriction, T.category topic, concat( U.lastname, ' ', U.firstname ) author, U.email, UNIX_TIMESTAMP(a.date) date  from ".BAB_TOPICS_TBL." T, ".BAB_ARTICLES_TBL." a LEFT JOIN ".BAB_USERS_TBL." U ON a.id_author = U.id WHERE a.id_topic = T.id ".$reqsup." ".$inart." ".$crit_art." order by $order ";
 
 					$this->db->db_query($req);
 
@@ -926,14 +926,14 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
                 if ($idfile != "") 
 					{
-					$req = "insert into filresults select F.id, F.name title, F.id_owner, description, UNIX_TIMESTAMP(created) datec, UNIX_TIMESTAMP(modified) datem, path, bgroup, concat( U.lastname, ' ', U.firstname ) author, folder from ".BAB_FILES_TBL." F, ".BAB_FM_FOLDERS_TBL." R LEFT JOIN ".BAB_USERS_TBL." U ON F.author=U.id WHERE  (F.id_owner=R.id OR F.bgroup='N') and ".$plus." F.id_owner in (".substr($idfile,0,-1).") ". $grpfiles ." and state='' and confirmed='Y' GROUP BY F.id order by ".$order;
+					$req = "insert into filresults select F.id, F.name title, F.id_owner, description, UNIX_TIMESTAMP(created) datec, UNIX_TIMESTAMP(modified) datem, path, bgroup, concat( U.lastname, ' ', U.firstname ) author, folder from ".BAB_FM_FOLDERS_TBL." R, ".BAB_FILES_TBL." F LEFT JOIN ".BAB_USERS_TBL." U ON F.author=U.id WHERE  (F.id_owner=R.id OR F.bgroup='N') and ".$plus." F.id_owner in (".substr($idfile,0,-1).") ". $grpfiles ." and state='' and confirmed='Y' GROUP BY F.id order by ".$order;
                     $this->db->db_query($req);
 					
 					if ($temp6 != "")
 						{
 						$this->tmptable_inserted_id('filresults');
 
-						$req = "insert into filresults select F.id, F.name title, F.id_owner, description, UNIX_TIMESTAMP(created) datec, UNIX_TIMESTAMP(modified) datem, path, bgroup, concat( U.lastname, ' ', U.firstname ) author, folder from ".BAB_FILES_TBL." F, ".BAB_FM_FOLDERS_TBL." R, ".BAB_FM_FIELDSVAL_TBL." M LEFT JOIN  ".BAB_USERS_TBL." U ON F.author=U.id where ".$temp6." and M.id_file=F.id AND (F.id_owner=R.id OR F.bgroup='N') and F.id_owner in (".substr($idfile,0,-1).") ". $grpfiles ." and state='' and confirmed='Y' AND F.id NOT IN('".implode("','",$this->tmp_inserted_id)."') GROUP BY F.id order by ".$order;
+						$req = "insert into filresults select F.id, F.name title, F.id_owner, description, UNIX_TIMESTAMP(created) datec, UNIX_TIMESTAMP(modified) datem, path, bgroup, concat( U.lastname, ' ', U.firstname ) author, folder from ".BAB_FM_FIELDSVAL_TBL." M, ".BAB_FM_FOLDERS_TBL." R, ".BAB_FILES_TBL." F LEFT JOIN  ".BAB_USERS_TBL." U ON F.author=U.id where ".$temp6." and M.id_file=F.id AND (F.id_owner=R.id OR F.bgroup='N') and F.id_owner in (".substr($idfile,0,-1).") ". $grpfiles ." and state='' and confirmed='Y' AND F.id NOT IN('".implode("','",$this->tmp_inserted_id)."') GROUP BY F.id order by ".$order;
 						$this->db->db_query($req);
 						}
                     }
