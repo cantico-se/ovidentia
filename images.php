@@ -289,7 +289,7 @@ function iframe($editor,$path="")
 			$this->name = basename($filename);
 			$imgsize = getimagesize($filename);
 			$this->imgalt = $imgsize[0]." X ".$imgsize[1];
-			$this->imgurl = $GLOBALS['babUrl'].dirname($filename).'/'.urlencode(basename($filename));
+			$this->imgurl = $GLOBALS['babUrl'].dirname($filename).'/'.rawurlencode(basename($filename));
 			if( $imgsize[0] > 50 || $imgsize[1] > 50)
 				{
 				if( !$this->gdi || ($imgsize[2] == 1 && !(imagetypes() & IMG_GIF)) || ($imgsize[2] == 2 && !(imagetypes() & IMG_JPG)) || ($imgsize[2] == 3 && !(imagetypes() & IMG_PNG)) )
@@ -431,7 +431,7 @@ function saveImage($file, $size, $tmpfile, $share,$path="")
 				$GLOBALS['msgerror'] = bab_translate("A file with the same name already exists");
 				return $nf;
 				}
-			if( move_uploaded_file($tmpfile, BAB_IUD_COMMON.$path.$file))
+			if( move_uploaded_file($tmpfile, BAB_IUD_COMMON.$path.trim(accentRemover($file))))
 				$nf = BAB_IUD_COMMON.$path.$file;
 			}
 		else if( !empty($GLOBALS['BAB_SESS_USERID']))
