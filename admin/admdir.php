@@ -1572,6 +1572,7 @@ switch($idx)
 
 	case "db_rights":
 		$babBody->title = getDirectoryName($id, BAB_DB_DIRECTORIES_TBL);
+		$idgroup =  isDirectoryGroup($id);
 
 		$macl = new macl("admdir", "list", $id, "aclview");
         $macl->addtable( BAB_DBDIRVIEW_GROUPS_TBL, bab_translate("View"));
@@ -1579,10 +1580,14 @@ switch($idx)
 		$macl->addtable( BAB_DBDIRADD_GROUPS_TBL, bab_translate("Add"));
 		
 		$macl->addtable( BAB_DBDIRDEL_GROUPS_TBL, bab_translate("Delete"));
-		$macl->addtable( BAB_DBDIREMPTY_GROUPS_TBL, bab_translate("Empty"));
+		if( !$idgroup )
+			{
+			$macl->addtable( BAB_DBDIREMPTY_GROUPS_TBL, bab_translate("Empty"));
+			}
+
 		$macl->addtable( BAB_DBDIRIMPORT_GROUPS_TBL, bab_translate("Import"));
 		$macl->addtable( BAB_DBDIREXPORT_GROUPS_TBL, bab_translate("Export"));
-		if( isDirectoryGroup($id))
+		if( $idgroup )
 			{
 			$macl->addtable( BAB_DBDIRBIND_GROUPS_TBL, bab_translate("Assign a user to a directory"));
 			$macl->addtable( BAB_DBDIRUNBIND_GROUPS_TBL, bab_translate("Unassign a user from a directory"));
