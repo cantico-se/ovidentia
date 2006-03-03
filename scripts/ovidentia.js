@@ -48,7 +48,7 @@ function bab_selectFirstInputField(filterclass)
 	for (var i =0 ; i < el.length ; i++)
 		{
 		
-		if ((el[i].type == 'text' || el[i].type == 'password') && el[i].value == '' )
+		if ((el[i].type == 'text' || el[i].type == 'password') && el[i].value == '' && !el[i].disabled )
 			{
 			if (filter && typeof el[i].className != 'undefined' && el[i].className != '')
 				{
