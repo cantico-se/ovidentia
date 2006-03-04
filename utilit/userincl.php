@@ -636,6 +636,8 @@ function bab_getSuperior($iduser, $idoc = '')
 {
 	global $babBody, $babDB;
 
+	static $supparr = array();
+
 	if( empty($idoc))
 	{
 		if( !empty($babBody->idprimaryoc))
@@ -658,6 +660,12 @@ function bab_getSuperior($iduser, $idoc = '')
 		}
 	}
 
+
+	if (isset($supparr[$idoc.'.'.$iduser])) {
+		return $supparr[$idoc.'.'.$iduser];
+	}
+
+
 	/* find user primary role */
 	$res = $babDB->db_query("SELECT ocet.id_node, ocet.id as id_entity, ocrut.id_role, ocrt.type  FROM ".BAB_DBDIR_ENTRIES_TBL." det LEFT JOIN ".BAB_OC_ROLES_USERS_TBL." ocrut ON det.id = ocrut.id_user LEFT  JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrt.id = ocrut.id_role LEFT JOIN ".BAB_OC_ENTITIES_TBL." ocet ON ocet.id = ocrt.id_entity WHERE ocrt.id_oc='".$idoc."' and det.id_user IN ( ".$iduser."  )  AND det.id_directory = '0' and ocrut.isprimary='Y'");
 	while( $arr = $babDB->db_fetch_array($res) )
@@ -674,7 +682,7 @@ function bab_getSuperior($iduser, $idoc = '')
 			}
 			if( count($arroles) > 0 )
 				{
-				return bab_getOrgChartRoleUsers($arroles);
+				return $supparr[$idoc.'.'.$iduser] = bab_getOrgChartRoleUsers($arroles);
 				}
 		}
 
@@ -688,7 +696,7 @@ function bab_getSuperior($iduser, $idoc = '')
 			}
 			if( count($arroles) > 0 )
 				{
-				return bab_getOrgChartRoleUsers($arroles);
+				return $supparr[$idoc.'.'.$iduser] = bab_getOrgChartRoleUsers($arroles);
 				}
 			}		
 	}
