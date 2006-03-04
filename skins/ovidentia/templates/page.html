@@ -8,29 +8,6 @@
 <script type="text/javascript">
 <!--
 { script }
-<!--#if babSessLimited -->
-var SessTimeoutCounter = 0;
-
-function SessTimeoutCtrl()
-	{
-	//{}
-	var babSessTimeout = { babSessTimeout };
-	window.status = '{ babSessTimeoutMsg } '+(babSessTimeout - SessTimeoutCounter)/60+' { babSessTimeoutUnit }';
-	if (babSessTimeout - SessTimeoutCounter == 180)
-		alert('{ babSessTimeoutMsg } 3 { babSessTimeoutUnit }');
-	else if (babSessTimeout - SessTimeoutCounter == 0)
-		{
-		//{}
-		alert('{ babSessTimeoutMsgLast }');
-		window.status = '';
-		}
-	SessTimeoutCounter += 60;
-	if (babSessTimeout - (SessTimeoutCounter - 60) > 0)
-		setTimeout('SessTimeoutCtrl()',60000);
-	}
-
-setTimeout('SessTimeoutCtrl()',60000);
-<!--#endif babSessLimited -->
 //-->
 </script>
 </HEAD>
