@@ -36,17 +36,17 @@ class cal_monthCls  extends cal_wmdbaseCls
 		
 		$this->w = 0;
 
-		$dispdays = explode(',', $babBody->icalendars->dispdays);
+		$dispdays = explode(',', $babBody->get_icalendars()->dispdays);
 		$time = mktime(0,0,0,$this->month,1,$this->year);
 		$this->monthname = $babMonths[date("n", $time)]."  ".$this->year;
 		$this->totaldays = date("t", $time);
-		$b = date("w", $time) - $babBody->icalendars->startday;
+		$b = date("w", $time) - $babBody->get_icalendars()->startday;
 		if( $b < 0)
 			$b += 7;
 
 		for( $i = 0; $i < 7; $i++ )
 			{
-			$a = $i + $babBody->icalendars->startday;
+			$a = $i + $babBody->get_icalendars()->startday;
 			if( $a > 6)
 				$a -=  7;
 			if( in_array($a, $dispdays ))
@@ -170,7 +170,7 @@ class cal_monthCls  extends cal_wmdbaseCls
 			$arr = $this->evtarr[$i];
 			$this->idcal = $arr['id_cal'];
 			$this->status = $arr['status'];
-			$iarr = $babBody->icalendars->getCalendarInfo($arr['id_cal']);
+			$iarr = $babBody->get_icalendars()->getCalendarInfo($arr['id_cal']);
 			$this->updateAccess($arr, $iarr);
 			if( $arr['id_cat'] == 0 )
 				{
@@ -181,7 +181,7 @@ class cal_monthCls  extends cal_wmdbaseCls
 				$this->category = $this->mcals->getCategoryName($arr['id_cat']);
 				}
 
-			$this->bgcolor = $babBody->icalendars->usebgcolor == 'Y' ? ( empty($arr['color']) ? ($arr['id_cat'] != 0 ? $this->mcals->getCategoryColor($arr['id_cat']):''): $arr['color']) : 'ffff';
+			$this->bgcolor = $babBody->get_icalendars()->usebgcolor == 'Y' ? ( empty($arr['color']) ? ($arr['id_cat'] != 0 ? $this->mcals->getCategoryColor($arr['id_cat']):''): $arr['color']) : 'ffff';
 			$this->idevent = $arr['id'];
 			$time = bab_mktime($arr['start_date']);
 			$this->starttime = bab_time($time);
@@ -255,8 +255,8 @@ class cal_monthCls  extends cal_wmdbaseCls
 		if( $this->mcals->getNextFreeEvent($this->cdate." 00:00:00", $this->cdate." 23:59:00", $arr))
 			{
 			$this->free = $arr[2] == 0;
-			$workdate0 = $this->cdate.' '.$babBody->icalendars->starttime;
-			$workdate1 = $this->cdate.' '.$babBody->icalendars->endtime;
+			$workdate0 = $this->cdate.' '.$babBody->get_icalendars()->starttime;
+			$workdate1 = $this->cdate.' '.$babBody->get_icalendars()->endtime;
 			if( $this->free )
 				{
 				if( $arr[1] <= $workdate0 || $arr[0] >= $workdate1 )
@@ -339,7 +339,7 @@ function searchAvailability($calid, $date, $date0, $date1, $gap, $bopt)
 
 /* main */
 
-$calid = isset($_GET['calid']) ? $_GET['calid'] : $babBody->icalendars->user_calendarids;
+$calid = isset($_GET['calid']) ? $_GET['calid'] : $babBody->get_icalendars()->user_calendarids;
 
 if(!isset($idx))
 	{

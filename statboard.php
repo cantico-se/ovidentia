@@ -321,6 +321,8 @@ function summarySections($col, $order)
 			$req = "select tct.*, dg.name as dgname  from ".BAB_TOPICS_CATEGORIES_TBL." tct left join ".BAB_DG_GROUPS_TBL." dg on tct.id_dgowner=dg.id where tct.optional='Y'";
 			$rescat = $this->db->db_query($req);
 
+			$topcats = $babBody->get_topcats();
+			
 			while( $arr = $this->db->db_fetch_array($rescat) )
 				{
 				$upercent = 0;
@@ -329,7 +331,8 @@ function summarySections($col, $order)
 					{
 					$arrtopcat[$cat] = array();;
 					}
-				while( $babBody->topcats[$cat]['parent'] != 0 )
+				
+				while( $topcats[$cat]['parent'] != 0 )
 					{
 					for( $i = 0; $i < count($arrtopcat[$arr['id']]); $i++ )
 						{
@@ -338,7 +341,7 @@ function summarySections($col, $order)
 							$arrtopcat[$arr['id']][] = $arrtopcat[$arr['id']][$i];
 							}
 						}
-					$cat = $babBody->topcats[$cat]['parent'];
+					$cat = $topcats[$cat]['parent'];
 					}
 
 				if( $arr['enabled'] == "Y")

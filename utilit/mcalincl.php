@@ -298,15 +298,15 @@ class bab_icalendar
 		{
 		global $babBody, $babDB;
 
-		$babBody->icalendars->initializeCalendars();
+		$babBody->get_icalendars()->initializeCalendars();
 
-		$this->cal_type = $babBody->icalendars->getCalendarType($calid);
+		$this->cal_type = $babBody->get_icalendars()->getCalendarType($calid);
 
 		if( $this->cal_type !== false )
 			{
-			$this->cal_name = $babBody->icalendars->getCalendarName($calid);
+			$this->cal_name = $babBody->get_icalendars()->getCalendarName($calid);
 			$this->idcalendar = $calid;
-			if( $calid == $babBody->icalendars->id_percal ) /* user's calendar */
+			if( $calid == $babBody->get_icalendars()->id_percal ) /* user's calendar */
 				{
 				$this->access = BAB_CAL_ACCESS_FULL;
 				}
@@ -315,10 +315,10 @@ class bab_icalendar
 				switch($this->cal_type)
 					{
 					case BAB_CAL_USER_TYPE:
-						$this->access = $babBody->icalendars->usercal[$calid]['access'];
+						$this->access = $babBody->get_icalendars()->usercal[$calid]['access'];
 						break;
 					case BAB_CAL_PUB_TYPE:
-						if( $babBody->icalendars->pubcal[$calid]['manager'] )
+						if( $babBody->get_icalendars()->pubcal[$calid]['manager'] )
 							{
 							$this->access = BAB_CAL_ACCESS_FULL;							
 							}
@@ -328,7 +328,7 @@ class bab_icalendar
 							}
 						break;
 					case BAB_CAL_RES_TYPE:
-						if( $babBody->icalendars->rescal[$calid]['manager'] )
+						if( $babBody->get_icalendars()->rescal[$calid]['manager'] )
 							{
 							$this->access = BAB_CAL_ACCESS_FULL;							
 							}
@@ -688,7 +688,7 @@ class cal_wmdbaseCls
 			{
 			for($i = 0; $i < $nbcoals; $i++)
 				{
-				$iarr = $babBody->icalendars->getCalendarInfo($evtarr['idcal_owners'][$i]);
+				$iarr = $babBody->get_icalendars()->getCalendarInfo($evtarr['idcal_owners'][$i]);
 				if( $iarr['type'] != BAB_CAL_USER_TYPE )
 					{
 					$this->updateAccessCalendar($evtarr, $iarr, $result);
@@ -727,7 +727,7 @@ class cal_wmdbaseCls
 		global $babBody;
 		foreach ($this->idcals as $cal)
 			{
-			$calinfo = $babBody->icalendars->getCalendarInfo($cal);
+			$calinfo = $babBody->get_icalendars()->getCalendarInfo($cal);
 			switch( $calinfo['type'] )
 				{
 				case BAB_CAL_USER_TYPE:
@@ -814,7 +814,7 @@ class calendarchoice
 		{
 		$this->formname = $formname;
 		$this->db = $GLOBALS['babDB'];
-		$icalendars = &$GLOBALS['babBody']->icalendars;
+		$icalendars = &$GLOBALS['babBody']->get_icalendars();
 		$icalendars->initializeCalendars();
 		if (isset($_POST['selected_calendars']))
 			{
@@ -945,17 +945,17 @@ $selected = isset($_POST['selected_calendars']) ? $_POST['selected_calendars'] :
 
 if ($GLOBALS['BAB_SESS_LOGGED'] && !empty($_POST['database_record']))
 	{
-	$babBody->icalendars->user_calendarids = implode(',',$selected);
+	$babBody->get_icalendars()->user_calendarids = implode(',',$selected);
 	
 	$db = &$GLOBALS['babDB'];
 	list($n) = $db->db_fetch_array($db->db_query("SELECT COUNT(*) FROM ".BAB_CAL_USER_OPTIONS_TBL." WHERE id_user='".$GLOBALS['BAB_SESS_USERID']."'"));
 	if ($n > 0)
 		{
-		$db->db_query("UPDATE ".BAB_CAL_USER_OPTIONS_TBL." SET  user_calendarids='".$babBody->icalendars->user_calendarids."' WHERE id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+		$db->db_query("UPDATE ".BAB_CAL_USER_OPTIONS_TBL." SET  user_calendarids='".$babBody->get_icalendars()->user_calendarids."' WHERE id_user='".$GLOBALS['BAB_SESS_USERID']."'");
 		}
 	else
 		{
-		$db->db_query("insert into ".BAB_CAL_USER_OPTIONS_TBL." ( id_user, startday, allday, start_time, end_time, usebgcolor, elapstime, defaultview, workdays, week_numbers, user_calendarids) values ('".$GLOBALS['BAB_SESS_USERID']."', '1', 'N', '08:00:00', '18:00:00', 'Y', '30', '0', '1,2,3,4,5', 'N', '".$babBody->icalendars->user_calendarids."')");
+		$db->db_query("insert into ".BAB_CAL_USER_OPTIONS_TBL." ( id_user, startday, allday, start_time, end_time, usebgcolor, elapstime, defaultview, workdays, week_numbers, user_calendarids) values ('".$GLOBALS['BAB_SESS_USERID']."', '1', 'N', '08:00:00', '18:00:00', 'Y', '30', '0', '1,2,3,4,5', 'N', '".$babBody->get_icalendars()->user_calendarids."')");
 		}
 	}
 

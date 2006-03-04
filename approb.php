@@ -28,6 +28,7 @@ include_once $babInstallPath."utilit/topincl.php";
 include_once $babInstallPath."utilit/artincl.php";
 include_once $babInstallPath."utilit/vacincl.php";
 include_once $babInstallPath."utilit/evtincl.php";
+include_once $babInstallPath."utilit/calincl.php";
 
 function notifyVacationAuthor($id, $subject)
 	{

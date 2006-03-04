@@ -1415,7 +1415,7 @@ switch($idx)
 			changeRegionalSettings();
 		changeProfiles();
 		$babBody->addItemMenu("global", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=options&idx=global");
-		if( $babBody->icalendars->calendarAccess())
+		if( $babBody->get_icalendars()->calendarAccess())
 			{
 			$babBody->addItemMenu("calendar", bab_translate("Calendar Options"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options");
 			}

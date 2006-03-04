@@ -260,10 +260,6 @@ function printBody()
 			$this->babBanner = "";
 
 			$this->style = $babStyle;
-			$this->babNewArticles = $babBody->newarticles;
-			$this->babNewComments = $babBody->newcomments;
-			$this->babNewPosts = $babBody->newposts;
-			$this->babNewFiles = $babBody->newfiles;
 
 			$this->babLogoLT = bab_printTemplate($this, "config.html", "babLogoLT");
 			$this->babLogoRT = bab_printTemplate($this, "config.html", "babLogoRT");
@@ -271,11 +267,6 @@ function printBody()
 			$this->babLogoRB = bab_printTemplate($this, "config.html", "babLogoRB");
 			$this->babBanner = bab_printTemplate($this, "config.html", "babBanner");
 			$this->script = $babBody->script;
-			$this->babSessTimeout = ini_get('session.gc_maxlifetime');
-			$this->babSessTimeoutMsg = bab_translate("Session expire in");
-			$this->babSessTimeoutUnit = strtolower(bab_translate("Minutes"));
-			$this->babSessTimeoutMsgLast = bab_translate("Session expired");
-			$this->babSessLimited = !$BAB_SESS_LOGGED || (isset($_COOKIE['c_password']) && trim($_COOKIE['c_password'])!='') ? false : true;
 			$this->home = bab_translate("Home");
 			$this->homeurl = $GLOBALS['babUrlScript'];
 			if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED == true )

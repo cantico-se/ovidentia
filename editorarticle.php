@@ -128,7 +128,8 @@ function browse($topics,$cat,$cb)
 			if( $i < $this->countcat)
 				{
 				$arr = $this->db->db_fetch_array($this->rescat);
-				if (isset($babBody->topcatview[$arr['id']]))
+				$topcatview = $babBody->get_topcatview();
+				if (isset($topcatview[$arr['id']]))
 					{
 					$this->displaycat = true;
 					$this->title = bab_getTopicCategoryTitle($arr['id']);

@@ -111,7 +111,7 @@ class bab_event
 		$this->ymin = 2;
 		$this->ymax = 5;
 
-		$this->icalendar = &$GLOBALS['babBody']->icalendars;
+		$this->icalendar = &$GLOBALS['babBody']->get_icalendars();
 		$this->icalendar->initializeCalendars();
 
 		$this->rescat = $this->db->db_query("SELECT * FROM ".BAB_CAL_CATEGORIES_TBL." ORDER BY name");
@@ -166,12 +166,12 @@ function newEvent()
 			$this->yearbegin = !isset($GLOBALS['date0'])? $this->curyear: date("Y", (int)$GLOBALS['date0']);
 			$this->monthbegin = !isset($GLOBALS['date0'])? $this->curmonth: date("m", (int)$GLOBALS['date0']);
 			$this->daybegin = !isset($GLOBALS['date0'])? $this->curday: date("d", (int)$GLOBALS['date0']);
-			$this->timebegin = !isset($GLOBALS['date0'])? substr($babBody->icalendars->starttime, 0, 5): date("H:i", (int)$GLOBALS['date0']);
+			$this->timebegin = !isset($GLOBALS['date0'])? substr($babBody->get_icalendars()->starttime, 0, 5): date("H:i", (int)$GLOBALS['date0']);
 
 			$this->yearend = !isset($GLOBALS['date1'])? $this->curyear: date("Y", (int)$GLOBALS['date1']);
 			$this->monthend = !isset($GLOBALS['date1'])? $this->curmonth: date("m", (int)$GLOBALS['date1']);
 			$this->dayend = !isset($GLOBALS['date1'])? $this->curday: date("d", (int)$GLOBALS['date1']);
-			$this->timeend = !isset($GLOBALS['date1'])? substr($babBody->icalendars->endtime, 0, 5): date("H:i", (int)$GLOBALS['date1']);
+			$this->timeend = !isset($GLOBALS['date1'])? substr($babBody->get_icalendars()->endtime, 0, 5): date("H:i", (int)$GLOBALS['date1']);
 
 			$this->repeat_yearend = !isset($GLOBALS['repeat_yearend'])? $this->curyear: $GLOBALS['repeat_yearend'];
 			$this->repeat_monthend = !isset($GLOBALS['repeat_monthend'])? $this->curmonth: $GLOBALS['repeat_monthend'];
@@ -560,7 +560,7 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 			$this->ccids = $cci;
 			$this->curview = $view;
 			$this->curdate = $date;
-			$iarr = $babBody->icalendars->getCalendarInfo($this->calid);
+			$iarr = $babBody->get_icalendars()->getCalendarInfo($this->calid);
 			switch( $iarr['type'] )
 				{
 				case BAB_CAL_USER_TYPE:
@@ -659,7 +659,7 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 			
 
 			$this->editor = bab_editor($this->evtarr['description'], 'evtdesc', 'vacform',150);
-			$this->elapstime = $babBody->icalendars->elapstime;
+			$this->elapstime = $babBody->get_icalendars()->elapstime;
 			$this->ampm = $babBody->ampm;
 			$this->colorvalue = isset($_POST['color']) ? $_POST['color'] : $this->evtarr['color'] ;
 			$this->avariability = isset($GLOBALS['avariability']) && is_array($GLOBALS['avariability'])  ? 1 : 0;
@@ -941,7 +941,7 @@ function addEvent(&$message)
 	$args['startdate']['year'] = $_POST['yearbegin'];
 	$args['startdate']['month'] = $_POST['monthbegin'];
 	$args['startdate']['day'] = $_POST['daybegin'];
-	$timebegin = isset($_POST['timebegin']) ? $_POST['timebegin'] : $babBody->icalendars->starttime;
+	$timebegin = isset($_POST['timebegin']) ? $_POST['timebegin'] : $babBody->get_icalendars()->starttime;
 	$tb = explode(':',$timebegin);
 	$args['startdate']['hours'] = $tb[0];
 	$args['startdate']['minutes'] = $tb[1];
@@ -949,7 +949,7 @@ function addEvent(&$message)
 	$args['enddate']['year'] = $_POST['yearend'];
 	$args['enddate']['month'] = $_POST['monthend'];
 	$args['enddate']['day'] = $_POST['dayend'];
-	$timeend = isset($_POST['timeend']) ? $_POST['timeend'] : $babBody->icalendars->endtime;
+	$timeend = isset($_POST['timeend']) ? $_POST['timeend'] : $babBody->get_icalendars()->endtime;
 	$tb = explode(':',$timeend);
 	$args['enddate']['hours'] = $tb[0];
 	$args['enddate']['minutes'] = $tb[1];
@@ -984,7 +984,7 @@ function addEvent(&$message)
 
 	$id_owner = $GLOBALS['BAB_SESS_USERID'];
 
-	if (isset($_POST['event_owner']) && isset($babBody->icalendars->usercal[$_POST['event_owner']]) )
+	if (isset($_POST['event_owner']) && isset($babBody->get_icalendars()->usercal[$_POST['event_owner']]) )
 		{
 		$db = &$GLOBALS['babDB'];
 		$arr = $db->db_fetch_array($db->db_query("SELECT owner FROM ".BAB_CALENDAR_TBL." WHERE id='".$_POST['event_owner']."'"));
@@ -1333,7 +1333,7 @@ function eventAvariabilityCheck(&$avariability_message)
 				{
 				global $babBody;
 				$title = bab_translate("Private");
-				if( ('Y' == $event['bprivate'] && $event['id_cal'] == $babBody->icalendars->id_percal) || 'Y' != $event['bprivate'])
+				if( ('Y' == $event['bprivate'] && $event['id_cal'] == $babBody->get_icalendars()->id_percal) || 'Y' != $event['bprivate'])
 				{
 					$title = $event['title'];
 				}

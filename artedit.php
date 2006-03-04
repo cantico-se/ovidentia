@@ -677,7 +677,7 @@ function showTopicTree($actionType, $selectedTopicId)
 		
 	// Add the categories to the tree.
 	
-	foreach ($babBody->topcats as $key => $category)
+	foreach ($babBody->get_topcats() as $key => $category)
 		$tree->addNode('category' . $category['parent'],
 					   'category' . $key,
 					   array('type' => 'category',

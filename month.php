@@ -46,7 +46,7 @@ function bab_calendar($month, $year, $callback, $ymin, $ymax)
 	$this->current_year = date('Y');
 
 
-	$this->startday = isset($GLOBALS['babBody']->icalendars->startday) ? $GLOBALS['babBody']->icalendars->startday : 1;
+	$this->startday = isset($GLOBALS['babBody']->get_icalendars()->startday) ? $GLOBALS['babBody']->get_icalendars()->startday : 1;
 	}
 
 

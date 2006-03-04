@@ -527,7 +527,7 @@ function bab_getCalendarId($iduser, $type)
 function bab_calendarAccess()
 	{
 	global $babBody;
-	return $babBody->icalendars->calendarAccess();
+	return $babBody->get_icalendars()->calendarAccess();
 	}
 
 

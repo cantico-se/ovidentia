@@ -64,13 +64,14 @@ class categoriesHierarchy
 
 		$this->topics = $topics;
 		$this->cat = $cat;
-		if( isset($babBody->topcats[$cat]) )
+		$topcats = $babBody->get_topcats();
+		if( isset($topcats[$cat]) )
 			{
-			$this->arrparents[] = array($cat, $babBody->topcats[$cat]['title']);
-			while( $babBody->topcats[$cat]['parent'] != 0 )
+			$this->arrparents[] = array($cat, $topcats[$cat]['title']);
+			while( $topcats[$cat]['parent'] != 0 )
 			{
-				$this->arrparents[] = array($babBody->topcats[$cat]['parent'],$babBody->topcats[$babBody->topcats[$cat]['parent']]['title']);
-				$cat = $babBody->topcats[$cat]['parent'];
+				$this->arrparents[] = array($topcats[$cat]['parent'],$topcats[$topcats[$cat]['parent']]['title']);
+				$cat = $topcats[$cat]['parent'];
 			}
 			}
 		$this->arrparents[] = array(0, bab_translate("Top"));

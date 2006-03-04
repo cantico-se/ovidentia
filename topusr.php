@@ -71,6 +71,7 @@ function listTopicCategory($cat)
 			$arrtop = array();
 			$req = "select * from ".BAB_TOPCAT_ORDER_TBL." where id_parent='".$cat."' order by ordering asc";
 			$res = $this->db->db_query($req);
+			$topcatview = $babBody->get_topcatview();
 			while( $row = $this->db->db_fetch_array($res))
 				{
 				if($row['type'] == '2' && isset($babBody->topview[$row['id_topcat']]))
@@ -78,7 +79,7 @@ function listTopicCategory($cat)
 					array_push($this->arrid, array($row['id_topcat'], 2));
 					array_push($arrtop, $row['id_topcat']);
 					}
-				else if( $row['type'] == '1' && isset($babBody->topcatview[$row['id_topcat']]))
+				else if( $row['type'] == '1' && isset($topcatview[$row['id_topcat']]))
 					{
 					array_push($this->arrid, array($row['id_topcat'], 1));
 					array_push($arrtopcat, $row['id_topcat']);
@@ -89,10 +90,11 @@ function listTopicCategory($cat)
 			if( $cat != 0 )
 				{
 				$this->arrparents[] = $cat;
-				while( $babBody->topcats[$cat]['parent'] != 0 )
+				$topcats = $babBody->get_topcats();
+				while( $topcats[$cat]['parent'] != 0 )
 					{
-					$this->arrparents[] = $babBody->topcats[$cat]['parent'];
-					$cat = $babBody->topcats[$cat]['parent'];
+					$this->arrparents[] = $topcats[$cat]['parent'];
+					$cat = $topcats[$cat]['parent'];
 					}
 				}
 			$this->arrparents[] = 0;
@@ -191,10 +193,13 @@ function listTopicCategory($cat)
 			static $i = 0;
 			if( $i < $this->parentscount)
 				{
-				if( $this->arrparents[$i] == 0 )
+				if( $this->arrparents[$i] == 0 ) {
 					$this->parentname = bab_translate("Top");
-				else
-					$this->parentname = $babBody->topcats[$this->arrparents[$i]]['title'];
+				}
+				else {
+					$topcats = $babBody->get_topcats();
+					$this->parentname = $topcats[$this->arrparents[$i]]['title'];
+				}
 				$this->parenturl = $GLOBALS['babUrlScript']."?tg=topusr&cat=".$this->arrparents[$i];
 				if( $i == $this->parentscount - 1 )
 					$this->burl = false;

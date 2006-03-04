@@ -286,7 +286,7 @@ function updateResourceCalendar($idcal, $calname, $caldesc, $calidsa)
 			{
 			$idfai = makeFlowInstance($calidsa, "cal-".$idcal."-".$arr['id_event']);
 			$nfusers = getWaitingApproversFlowInstance($idfai, true);
-			$calinfo = $babBody->icalendars->getCalendarInfo($idcal);
+			$calinfo = $babBody->get_icalendars()->getCalendarInfo($idcal);
 			notifyEventApprovers($arr['id_event'], $nfusers, $calinfo);
 			}
 		$babDB->db_query("update ".BAB_CAL_EVENTS_OWNERS_TBL." set idfai='".$idfai."' where id_cal='".$idcal."'and id_event='".$arr['id_event']."'");
@@ -334,7 +334,7 @@ function updatePublicCalendar($idcal, $calname, $caldesc, $calidsa)
 			{
 			$idfai = makeFlowInstance($calidsa, "cal-".$idcal."-".$arr['id_event']);
 			$nfusers = getWaitingApproversFlowInstance($idfai, true);
-			$calinfo = $babBody->icalendars->getCalendarInfo($idcal);
+			$calinfo = $babBody->get_icalendars()->getCalendarInfo($idcal);
 			notifyEventApprovers($arr['id_event'], $nfusers, $calinfo);
 			}
 		$babDB->db_query("update ".BAB_CAL_EVENTS_OWNERS_TBL." set idfai='".$idfai."' where id_cal='".$idcal."'and id_event='".$arr['id_event']."'");
