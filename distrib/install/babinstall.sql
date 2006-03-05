@@ -577,6 +577,7 @@ CREATE TABLE `bab_users_log` (
   `forwarded_for` varchar(255) NOT NULL default '',
   `id_dg` int(11) unsigned NOT NULL default '0',
   `grp_change` tinyint(1) unsigned default NULL,
+  `schi_change` tinyint(1) unsigned default NULL,
   `cnx_try` int(2) unsigned NOT NULL default '0',
   `cpw` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`id`),
@@ -1011,7 +1012,7 @@ CREATE TABLE bab_ini (
 
 INSERT INTO bab_ini VALUES ('ver_major', '5');
 INSERT INTO bab_ini VALUES ('ver_minor', '7');
-INSERT INTO bab_ini VALUES ('ver_build', '8');
+INSERT INTO bab_ini VALUES ('ver_build', '9');
 INSERT INTO bab_ini VALUES ('ver_prod', 'E');
 
 #

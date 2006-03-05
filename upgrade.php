@@ -5670,4 +5670,30 @@ if ($arr[0] != 'auto_approbation')
 return $ret;
 }
 
+
+
+
+
+function upgrade578to579()
+{	
+$ret = "";
+$db = & $GLOBALS['babDB'];
+
+$arr = $db->db_fetch_array($db->db_query("DESCRIBE ".BAB_USERS_LOG_TBL." schi_change"));
+if ($arr[0] != 'schi_change')
+	{
+	$res = $db->db_query("ALTER TABLE `".BAB_USERS_LOG_TBL."` ADD `schi_change` TINYINT( 1 ) UNSIGNED");
+	if( !$res)
+		{
+		$ret = "Alteration of <b>".BAB_USERS_LOG_TBL."</b> table failed !<br>";
+		return $ret;
+		}
+	}
+
+return $ret;
+}
+
+
+
+
 ?>

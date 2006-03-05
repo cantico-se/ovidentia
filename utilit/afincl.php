@@ -72,6 +72,7 @@ function updateSchemaInstance($idschi)
 			{
 			$db->db_query("insert into ".BAB_FAR_INSTANCES_TBL." (idschi, iduser) VALUES ('".$idschi."', '".$tabusers[$j]."')");
 			}
+		$db->db_query("UPDATE FROM ".BAB_USERS_LOG_TBL." SET schi_change='1'");
 	}
 
 }
@@ -191,6 +192,7 @@ function deleteFlowInstance($idschi)
 
 	$db->db_query("delete from ".BAB_FAR_INSTANCES_TBL." where idschi='".$idschi."'");
 	$db->db_query("delete from ".BAB_FA_INSTANCES_TBL." where id='".$idschi."'");
+	$db->db_query("UPDATE FROM ".BAB_USERS_LOG_TBL." SET schi_change='1'");
 }
 
 function updateFlowInstance($idschi, $iduser, $bool)
@@ -322,6 +324,7 @@ function updateFlowInstance($idschi, $iduser, $bool)
 			}
 		}
 	}
+	$db->db_query("UPDATE FROM ".BAB_USERS_LOG_TBL." SET schi_change='1'");
 	return evalFlowInstance($idschi);
 }
 
@@ -401,6 +404,7 @@ function getWaitingIdsFlowInstance($scinfo, $idschi, $notify=false)
 
 	if( $notify)
 	{
+		$db->db_query("UPDATE FROM ".BAB_USERS_LOG_TBL." SET schi_change='1'");
 		return $notifytab;
 	}
 	else
@@ -529,13 +533,12 @@ function getWaitingApprobations($iduser, $update=false)
 {
 	global $babBody;
 
-	static $wauser = array();
-	if( isset($wauser[$iduser]) && !$update )
+	if( isset($_SESSION['bab_waitingApprobations'][$iduser]) && !$update )
 	{
-		return $wauser[$iduser];
+		return $_SESSION['bab_waitingApprobations'][$iduser];
 	}
 
-	$db = $GLOBALS['babDB'];
+	$db = &$GLOBALS['babDB'];
 	$res = $db->db_query("select frit.*, fit.idsch, fat.satype, fat.id_oc, fit.iduser as fit_iduser from ".BAB_FAR_INSTANCES_TBL." frit left join ".BAB_FA_INSTANCES_TBL." fit on frit.idschi=fit.id left join ".BAB_FLOW_APPROVERS_TBL." fat on fit.idsch=fat.id where frit.result='' and frit.notified='Y'");
 	$result['idsch'] = array();
 	$result['idschi'] = array();
@@ -648,7 +651,7 @@ function getWaitingApprobations($iduser, $update=false)
 		}
 	}
 /**/
-	$wauser[$iduser] = $result;
+	$_SESSION['bab_waitingApprobations'][$iduser] = $result;
 	return $result;
 
 }

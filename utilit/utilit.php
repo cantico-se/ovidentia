@@ -486,7 +486,7 @@ function babBody()
 	
 	if ( session_id() && ($GLOBALS['tg'] != 'version' || $idx != 'upgrade'))
 		{
-		$res = $babDB->db_query("select remote_addr, grp_change from ".BAB_USERS_LOG_TBL." where sessid='".session_id()."'");
+		$res = $babDB->db_query("select remote_addr, grp_change, schi_change from ".BAB_USERS_LOG_TBL." where sessid='".session_id()."'");
 		if( $res && $babDB->db_num_rows($res) > 0 )
 			{
 			$arr = $babDB->db_fetch_array($res);
@@ -498,6 +498,11 @@ function babBody()
 			if (1 == $arr['grp_change'] && isset($_SESSION['bab_groupAccess']))
 				{
 				unset($_SESSION['bab_groupAccess']);
+				}
+
+			if (1 == $arr['schi_change'] && isset($_SESSION['bab_waitingApprobations']))
+				{
+				unset($_SESSION['bab_waitingApprobations']);
 				}
 			}
 		}
@@ -1275,7 +1280,7 @@ function bab_updateUserSettings()
 			}
 
 
-		$babDB->db_query("update ".BAB_USERS_LOG_TBL." set dateact=now(), remote_addr='".$GLOBALS['REMOTE_ADDR']."', forwarded_for='".$GLOBALS['HTTP_X_FORWARDED_FOR']."', id_dg='".$babBody->currentDGGroup['id']."', grp_change=NULL  where id = '".$arr['id']."'");
+		$babDB->db_query("update ".BAB_USERS_LOG_TBL." set dateact=now(), remote_addr='".$GLOBALS['REMOTE_ADDR']."', forwarded_for='".$GLOBALS['HTTP_X_FORWARDED_FOR']."', id_dg='".$babBody->currentDGGroup['id']."', grp_change=NULL, schi_change=NULL  where id = '".$arr['id']."'");
 		}
 	else
 		{
@@ -1293,7 +1298,7 @@ function bab_updateUserSettings()
 			$userid = 0;
 			}
 
-		$babDB->db_query("insert into ".BAB_USERS_LOG_TBL." (id_user, sessid, dateact, remote_addr, forwarded_for, id_dg, grp_change) values ('".$userid."', '".session_id()."', now(), '".$GLOBALS['REMOTE_ADDR']."', '".$GLOBALS['HTTP_X_FORWARDED_FOR']."', '".$babBody->currentDGGroup['id']."', NULL)");
+		$babDB->db_query("insert into ".BAB_USERS_LOG_TBL." (id_user, sessid, dateact, remote_addr, forwarded_for, id_dg, grp_change, schi_change) values ('".$userid."', '".session_id()."', now(), '".$GLOBALS['REMOTE_ADDR']."', '".$GLOBALS['HTTP_X_FORWARDED_FOR']."', '".$babBody->currentDGGroup['id']."', NULL, NULL)");
 		}
 
 	$res = $babDB->db_query("select id, UNIX_TIMESTAMP(dateact) as time from ".BAB_USERS_LOG_TBL);
