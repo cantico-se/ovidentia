@@ -72,7 +72,7 @@ function updateSchemaInstance($idschi)
 			{
 			$db->db_query("insert into ".BAB_FAR_INSTANCES_TBL." (idschi, iduser) VALUES ('".$idschi."', '".$tabusers[$j]."')");
 			}
-		$db->db_query("UPDATE FROM ".BAB_USERS_LOG_TBL." SET schi_change='1'");
+		$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET schi_change='1'");
 	}
 
 }
@@ -192,7 +192,7 @@ function deleteFlowInstance($idschi)
 
 	$db->db_query("delete from ".BAB_FAR_INSTANCES_TBL." where idschi='".$idschi."'");
 	$db->db_query("delete from ".BAB_FA_INSTANCES_TBL." where id='".$idschi."'");
-	$db->db_query("UPDATE FROM ".BAB_USERS_LOG_TBL." SET schi_change='1'");
+	$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET schi_change='1'");
 }
 
 function updateFlowInstance($idschi, $iduser, $bool)
@@ -324,7 +324,7 @@ function updateFlowInstance($idschi, $iduser, $bool)
 			}
 		}
 	}
-	$db->db_query("UPDATE FROM ".BAB_USERS_LOG_TBL." SET schi_change='1'");
+	$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET schi_change='1'");
 	return evalFlowInstance($idschi);
 }
 
@@ -404,7 +404,7 @@ function getWaitingIdsFlowInstance($scinfo, $idschi, $notify=false)
 
 	if( $notify)
 	{
-		$db->db_query("UPDATE FROM ".BAB_USERS_LOG_TBL." SET schi_change='1'");
+		$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET schi_change='1'");
 		return $notifytab;
 	}
 	else
