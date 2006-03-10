@@ -791,6 +791,7 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 					$this->fvalue = isset($this->arr[$this->fieldv])? stripslashes($this->arr[$this->fieldv]): '';
 					}
 
+				$this->foriginalvalue = $this->fvalue;
 				$this->fvalue = htmlentities($this->fvalue);
 
 				$this->resfxv = $this->db->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." where id_fieldextra='".$arr['id']."'");
@@ -841,7 +842,7 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 				{
 				$arr = $this->db->db_fetch_array($this->resfxv);
 				$this->fxvvalue = $arr['field_value'];
-				if( $this->fvalue == $this->fxvvalue )
+				if( $this->foriginalvalue == $this->fxvvalue )
 					{
 					$this->selected = 'selected';
 					}
