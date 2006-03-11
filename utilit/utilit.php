@@ -1117,9 +1117,14 @@ function bab_updateUserSettings()
 		if (bab_isAccessValid(BAB_ADDONS_GROUPS_TBL, $arr['id']))
 			{
 			$arr_ini = @parse_ini_file( $GLOBALS['babAddonsPath'].$arr['title']."/addonini.php");
-			if( !empty($arr_ini['version']) && $arr_ini['version'] == $arr['version'])
+			if( !empty($arr_ini['version']))
 				{
-				$arr['access'] = true;
+				if ($arr_ini['version'] == $arr['version']) {
+					$arr['access'] = true;
+					}
+				else {
+					$babDB->db_query("UPDATE ".BAB_ADDONS_TBL." SET installed='N' WHERE id='".$arr['id']."'");
+					}
 				}
 			}
 		$babBody->babaddons[$arr['id']] = $arr;

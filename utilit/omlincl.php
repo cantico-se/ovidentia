@@ -4085,17 +4085,14 @@ function babOvTemplate($args = array())
 	$this->gctx->push("babSiteSlogan", $GLOBALS['babSlogan']);
 	if( $GLOBALS['BAB_SESS_USERID'] != "" )
 		{
-		$this->gctx->push("babUserName", $GLOBALS['BAB_SESS_USERID']);
+		$this->gctx->push("babUserName", $GLOBALS['BAB_SESS_USER']);
 		}
 	else
 		{
 		$this->gctx->push("babUserName", 0);
 		}
 	$this->gctx->push("babCurrentDate", mktime());
-	$this->gctx->push("babNewArticlesCount", $babBody->get_newarticles());
-	$this->gctx->push("babNewCommentsCount", $babBody->get_newcomments());
-	$this->gctx->push("babNewPostsCount", $babBody->get_newposts());
-	$this->gctx->push("babNewFilesCount", $babBody->get_newfiles());
+
 	foreach($args as $variable => $contents)
 		{
 		$this->gctx->push($variable, stripslashes($contents));
