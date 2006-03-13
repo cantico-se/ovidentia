@@ -735,6 +735,7 @@ function bab_addUserToGroup($iduser, $idgroup, $oc = true)
 		}
 
 	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
+	bab_callAddonsFunction('onUserAssignedToGroup', $iduser, $idgroup);
 }
 
 function bab_removeUserFromGroup($iduser, $idgroup)
@@ -759,6 +760,7 @@ function bab_removeUserFromGroup($iduser, $idgroup)
 		}
 
 	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
+	bab_callAddonsFunction('onUserUnassignedFromGroup', $iduser, $idgroup);
 }
 
 function bab_addUser( $firstname, $lastname, $middlename, $email, $nickname, $password1, $password2, $isconfirmed, &$error)
