@@ -614,7 +614,6 @@ function sendPassword ($nickname)
 			//send a simple email with the new password
 			notifyUserPassword($new_pass, $arr['email']);
 			$babBody->msgerror = bab_translate("Your new password has been emailed to you.") ." &lt;".$arr['email']."&gt;";
-			bab_callAddonsFunction('onUserChangePassword', $arr['id'], $nickname, $new_pass);
 			$error = '';
 			bab_callAddonsFunctionArray('onUserChangePassword', array('id'=>$arr['id'], 'nickname'=>$nickname, 'password'=>$new_pass, 'error'=>&$error));
 			if( !empty($error))
