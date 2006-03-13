@@ -1123,18 +1123,137 @@ function bab_detachUserFromGroup($iduser, $idgroup)
 function bab_uppdateUserById($id, $info, &$error)
 {
 	global $babDB;
-	$res = $babDB->db_query('select nickname from '.BAB_USERS_TBL.' where id=\''.$id.'\'');
+	$res = $babDB->db_query('select u.*, det.mn, det.id as id_entry from '.BAB_USERS_TBL.' u left join '.BAB_DBDIR_ENTRIES_TBL.' det on det.id_user=u.id where u.id=\''.$id.'\'');
+	$arruq = array();
+	$arrdq = array();
+
 	if( $res && $babDB->db_num_rows($res) > 0 )
 	{
-		if( is_array($info) && count($info) && isset($info['disabled']))
+		$arruinfo = $babDB->db_fetch_array($res);
+
+		if( is_array($info) && count($info) /*&& isset($info['disabled'])*/)
 		{
-			if( $info['disabled'] )
+
+			if( isset($info['password']) && empty($password) )
 			{
-				$babDB->db_query('update '.BAB_USERS_TBL.' set disabled=1 where id=\''.$id.'\'');
+				$error = bab_translate("Empty password");
+				return false;
 			}
 			else
 			{
-				$babDB->db_query('update '.BAB_USERS_TBL.' set disabled=0 where id=\''.$id.'\'');
+				$arruq[] = 'password=\''.md5(strtolower($password1)).'\'';
+			}
+			
+			if( isset($info['disabled']))
+			{
+				if($info['disabled'])
+				{
+					$arruq[] =  'disabled=1';
+				}
+				else
+				{
+					$arruq[] =  'disabled=0';
+				}
+			}
+
+			if( isset($info['email']))
+			{
+				$arruq[] =  'email=\''.addslashes($info['email']).'\'';
+			}
+
+			if( isset($info['sn']) || isset($info['givenname']) || isset($info['mn']))
+			{
+				if( isset($info['sn']) && empty($info['sn']))
+				{
+					$error = bab_translate( "Lastname is required");
+					return false;
+				}
+				else
+				{
+					$lastname = $arruinfo['lastname'];
+				}
+
+				if( isset($info['givenname']) && empty($info['givenname']))
+				{
+					$error = bab_translate( "Firstname is required");
+					return false;
+				}
+				else
+				{
+					$firstname = $arruinfo['firstname'];
+				}
+
+				if( isset($info['mn']))
+				{
+					$mn = $info['mn'];
+				}
+				else
+				{
+					$mn = $arruinfo['mn'];
+				}
+
+				$replace = array( " " => "", "-" => "");
+				$hashname = md5(strtolower(strtr($firstname.$mn.$lastname, $replace)));
+				$arruq[] =  'firstname=\''.addslashes($firstname).'\'';
+				$arruq[] =  'lastname=\''.addslashes($lastname).'\'';
+				$arruq[] =  'hashname=\''.$hashname.'\'';
+
+				$arrdq[] =  'givenname=\''.addslashes($firstname).'\'';
+				$arrdq[] =  'sn=\''.addslashes($lastname).'\'';
+				$arrdq[] =  'mn=\''.addslashes($mn).'\'';
+
+			}
+
+			if( count($arruq))
+			{
+				$babDB->db_query('update '.BAB_USERS_TBL.' set '.implode(',', $arruq).' where id=\''.$id.'\'');
+			}
+
+			$res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='0'");
+			while( $arr = $babDB->db_fetch_array($res))
+				{
+				if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
+					{
+					$rr = $babDB->db_fetch_array($babDB->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
+					$fieldname = $rr['name'];
+						switch( $fieldname )
+						{
+							case 'sn':
+							case 'givenname':
+							case 'mn':
+								break;
+							default:
+								if( isset($info[$fieldname]))
+								{
+								$arrdq[] =  $fieldname.'=\''.addslashes($info[$fieldname]).'\'';
+								}
+								break;
+						}
+
+					}
+				else
+					{
+					$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+					$fieldname = "babdirf".$arr['id'];
+					if( isset($info[$fieldname]))
+						{
+						$res2 = $babDB->db_query("select * from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$arr['id']."' and id_entry='".$arruinfo['id_entry']."'");
+						if( $res2 && $babDB->db_num_rows($res2) > 0 )
+							{
+							$arr2 = $babDB->db_fetch_array($res2);
+							$babDB->db_query("update ".BAB_DBDIR_ENTRIES_EXTRA_TBL." set field_value='".addslashes($info[$fieldname])."' where id='".$arr2['id']."'");
+							}
+						else
+							{
+							$babDB->db_query("insert into ".BAB_DBDIR_ENTRIES_EXTRA_TBL." (id_fieldx, id_entry, field_value) values('".$arr['id']."','".$arruinfo['id_entry']."','".addslashes($info[$fieldname])."')");
+							}
+						}
+					}
+				}
+
+			if( count($arrdq))
+			{
+				$babDB->db_query('update '.BAB_DBDIR_ENTRIES_TBL.' set '.implode(',', $arrdq).' where id=\''.$arruinfo['id_entry'].'\'');
 			}
 			return true;
 		}
