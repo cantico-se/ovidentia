@@ -37,7 +37,15 @@
 function callback(d,m,y)
 	{
 	//}
+	<!--#if callback "== bab_dialog" -->
+	var val = new Array();
+	val['day'] = d;
+	val['month'] = m;
+	val['year'] = y;
+	opener.bab_dialog._return(val);
+	<!--#else callback -->
 	self.opener.{ callback }(d,m,y);
+	<!--#endif callback -->
 	window.close();
 	}
 

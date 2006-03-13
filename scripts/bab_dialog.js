@@ -1,0 +1,134 @@
+
+function bab_dialog(url, parameters, action, init) {
+	if (typeof init == "undefined") {
+		init = window;	// pass this window object by default
+	}
+
+	var useparam = {
+		'toolbar'		: 'no',
+		'menubar'		: 'no',
+		'personalbar'	: 'no',
+		'width'			: 200,
+		'height'		: 200,
+		'scrollbars'	: 'no',
+		'resizable'		: 'yes',
+		'modal'			: 'yes',
+		'dependable'	: 'yes'
+	}
+
+	
+
+	for(var p in parameters) {
+		useparam[p] = parameters[p];
+	}
+
+	if (!document.all) {
+		useparam['left'] = window.screenX + (window.outerWidth - useparam['width']) / 2;
+		useparam['top'] = window.screenY + (window.outerHeight - useparam['height']) / 2;
+	} else {
+		useparam['left'] = (screen.availWidth - useparam['width']) / 2;
+		useparam['top'] = (screen.availHeight - useparam['height']) / 2;
+	}
+
+	var tmp = new Array();
+	for (var p in useparam) {
+		tmp.push(p+'='+useparam[p]+'');
+	}
+
+	useparam = tmp.join(',');
+
+	bab_dialog._openModal(url, useparam, action, init);
+
+};
+
+bab_dialog._parentEvent = function(ev) {
+	setTimeout( function() { if (bab_dialog._modal && !bab_dialog._modal.closed) { bab_dialog._modal.focus() } }, 50);
+	if (bab_dialog._modal && !bab_dialog._modal.closed) {
+		bab_dialog._stopEvent(ev);
+	}
+};
+
+bab_dialog._stopEvent = function(ev) {
+	if (document.all) {
+		ev.cancelBubble = true;
+		ev.returnValue = false;
+	} else {
+		ev.preventDefault();
+		ev.stopPropagation();
+	}
+};
+
+// should be a function, the return handler of the currently opened dialog.
+bab_dialog._return = null;
+
+// constant, the currently opened dialog
+bab_dialog._modal = null;
+
+// the dialog will read it's args from this variable
+bab_dialog._arguments = null;
+
+
+
+bab_dialog._addEvent = function(el, evname, func) {
+	if (document.all) {
+		el.attachEvent("on" + evname, func);
+	} else {
+		el.addEventListener(evname, func, true);
+	}
+};
+
+
+bab_dialog._removeEvent = function(el, evname, func) {
+	if (document.all) {
+		el.detachEvent("on" + evname, func);
+	} else {
+		el.removeEventListener(evname, func, true);
+	}
+};
+
+
+bab_dialog._openModal = function(url, parameters, action, init) {
+	var dlg = window.open(url, "bab_dialog", parameters );
+	bab_dialog._modal = dlg;
+	bab_dialog._arguments = init;
+
+	// capture some window's events
+	function capwin(w) {
+		bab_dialog._addEvent(w, "click",		bab_dialog._parentEvent);
+		bab_dialog._addEvent(w, "mousedown",	bab_dialog._parentEvent);
+		bab_dialog._addEvent(w, "focus",		bab_dialog._parentEvent);
+	};
+	// release the captured events
+	function relwin(w) {
+		bab_dialog._removeEvent(w, "click",		bab_dialog._parentEvent);
+		bab_dialog._removeEvent(w, "mousedown", bab_dialog._parentEvent);
+		bab_dialog._removeEvent(w, "focus",		bab_dialog._parentEvent);
+	};
+	capwin(window);
+	// capture other frames
+	for (var i = 0; i < window.frames.length; capwin(window.frames[i++]));
+	// make up a function to be called when the Dialog ends.
+	bab_dialog._return = function(val) {
+		if (val && action) {
+			action(val);
+		}
+		relwin(window);
+		// capture other frames
+		for (var i = 0; i < window.frames.length; relwin(window.frames[i++]));
+		bab_dialog._modal = null;
+	};
+};
+
+
+
+// specific functions
+
+bab_dialog.calendar = function(action) {
+
+	var useparam = {
+		'width'		: 200,
+		'height'	: 200
+	}
+
+	bab_dialog('?tg=month&callback=bab_dialog', useparam , action );
+}
