@@ -3962,6 +3962,213 @@ class bab_CalendarResourceEvents extends bab_handler
 }
 
 
+
+class bab_CalendarEvents extends bab_handler
+{
+	var $res;
+	var $IdEntries = array();
+	var $index;
+	var $count;
+
+	function bab_CalendarEvents( &$ctx)
+	{
+		global $babBody, $babDB;
+		$this->bab_handler($ctx);
+		$babBody->get_icalendars()->initializeCalendars();
+		$calendarid = $ctx->get_value('calendarid');
+		$ar = array();
+		if( $calendarid === false || $calendarid === '' )
+			{
+			if( $babBody->get_icalendars()->id_percal )
+				{
+				$ar[] = $babBody->get_icalendars()->id_percal;
+				}
+
+			foreach( $babBody->get_icalendars()->usercal as $key => $val )
+				{
+				$ar[] = $key;
+				}
+			foreach( $babBody->get_icalendars()->rescal as $key => $val )
+				{
+				$ar[] = $key;
+				}
+			foreach( $babBody->get_icalendars()->pubcal as $key => $val )
+				{
+				$ar[] = $key;
+				}
+			}
+		else
+			{
+			$filter = $ctx->get_value('filter');
+
+			if (strtoupper($filter) == "NO") 
+				{
+				$filter = false;
+				}
+			else
+				{
+				$filter = true;
+				}
+
+			$rr = explode(',', $calendarid);
+			if( $filter )
+				{
+				if( $babBody->get_icalendars()->id_percal && in_array($babBody->get_icalendars()->id_percal, $rr))
+					{
+					$ar[] = $babBody->get_icalendars()->id_percal;
+					}
+
+				foreach( $babBody->get_icalendars()->usercal as $key => $val )
+					{
+					if( in_array($key, $rr))
+						{
+						$ar[] = $key;
+						}
+					}
+				foreach( $babBody->get_icalendars()->pubcal as $key => $val )
+					{
+					if( in_array($key, $rr))
+						{
+						$ar[] = $key;
+						}
+					}				
+				foreach( $babBody->get_icalendars()->rescal as $key => $val )
+					{
+					if( in_array($key, $rr))
+						{
+						$ar[] = $key;
+						}
+					}
+				}
+			elseif( !empty($calendarid))
+				{
+				$res = $babDB->db_query("select id from ".BAB_CALENDAR_TBL." where id IN (".$calendarid.") and  actif='Y'");
+				while( $arr = $babDB->db_fetch_array($res) )
+					{
+					$ar[] = $arr['id'];
+					}
+				}
+			}
+		if( count($ar) > 0 )
+			{
+			$calid = implode(',', $ar);
+			}
+		else
+			{
+			$calid = '';
+			}
+
+		$date = $ctx->get_value('date');
+		if( $date === false || $date === '' )
+			{
+			$date = 'CURDATE()';
+			}
+		else
+			{
+			$date = "'".$date."'";
+			}
+		$limit = $ctx->get_value('limit');
+		$lf = $lr = 0;
+
+		if( $limit !== false && $limit !== '' )
+			{
+			$limit = explode(',', $limit);
+			if( count($limit) > 1 )
+				{
+				$lf = empty($limit[0])?0:$limit[0];
+				$lr = empty($limit[1])?0:$limit[1];
+				}
+			elseif ( count($limit) == 1 )
+				{
+				$lf = empty($limit[0])?0:$limit[0];
+				}
+			}
+
+		if( !empty($calid))
+		{
+		$categoryid = $ctx->get_value('categoryid');
+		if( $categoryid === false || $categoryid === '' )
+			{
+			$categoryid = '';
+			}
+
+		$req = "select cet.*, ceot.id_cal, rct.name, rct.bgcolor from ".BAB_CAL_EVENTS_OWNERS_TBL." ceot left join ".BAB_CAL_EVENTS_TBL." cet on ceot.id_event=cet.id left join ".BAB_CAL_CATEGORIES_TBL." rct on rct.id=cet.id_cat where ceot.status='".BAB_CAL_STATUS_ACCEPTED."' and ceot.id_cal IN (".$calid.") and ((start_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ) or (end_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ))";
+		if( !empty($categoryid))
+			{
+			$req .= " and cet.id_cat IN (".$categoryid.")";
+			}
+		$req .= " order by start_date asc";
+		$this->res = $babDB->db_query($req);
+
+		while( $arr = $babDB->db_fetch_array($this->res))
+			{
+			if( isset($this->IdEntries[$arr['id']]))
+				{
+				$this->IdEntries[$arr['id']]['id_cal'] .= ','.$arr['id_cal'];
+				}
+			else
+				{
+				$this->IdEntries[$arr['id']] = $arr;
+				}
+			}
+		$this->count = count($this->IdEntries);
+		}
+		else
+		{
+		$this->count = 0;
+		}
+		$this->ctx->curctx->push('CCount', $this->count);
+	}
+
+	
+	function getnext()
+	{
+		global $babBody,$babDB;
+		if( $this->idx < $this->count)
+		{
+			list($idevent, $arr) = each($this->IdEntries);
+			$this->ctx->curctx->push('CIndex', $this->idx);
+			$this->ctx->curctx->push('EventTitle', $arr['title']);
+			bab_replace_ref($arr['description'],'OVML');
+			$this->ctx->curctx->push('EventDescription', $arr['description']);
+			$this->ctx->curctx->push('EventLocation', $arr['location']);
+			$this->ctx->curctx->push('EventBeginDate', bab_mktime($arr['start_date']));
+			$this->ctx->curctx->push('EventEndDate', bab_mktime($arr['end_date']));
+			$this->ctx->curctx->push('EventCategoryId', $arr['id_cat']);
+			if( !empty($arr['color']))
+				{
+				$this->ctx->curctx->push('EventCategoryColor', $arr['color']);
+				}
+			else
+				{
+				$this->ctx->curctx->push('EventCategoryColor', $arr['bgcolor']);
+				}
+			$date = explode(' ', $arr['start_date']);
+			$date = explode('-', $date[0]);
+			$this->ctx->curctx->push('EventUrl', $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$arr['id']."&idcal=".$arr['id_cal']);
+			$this->ctx->curctx->push('EventCalendarUrl', $GLOBALS['babUrlScript']."?tg=calmonth&calid=".$arr['id_cal']."&date=".$date[0].",".$date[1].",".$date[2]);
+			$this->ctx->curctx->push('EventCategoriesPopupUrl', $GLOBALS['babUrlScript']."?tg=calendar&idx=viewc&calid=".$arr['id_cal']);
+			if( isset($arr['name']))
+				{
+				$this->ctx->curctx->push('EventCategoryName', $arr['name']);
+				}
+			else
+				{
+				$this->ctx->curctx->push('EventCategoryName', '');
+				}
+			$this->idx++;
+			$this->index = $this->idx;
+			return true;
+		}
+		else
+		{
+			$this->idx=0;
+			return false;
+		}
+	}
+}
+
+
 class bab_IfUserMemberOfGroups extends bab_handler
 {
 	var $res;
