@@ -113,7 +113,7 @@ function notifyForumGroups($forum, $threadTitle, $author, $forumname, $tables, $
         var $dateval;
 
 
-		function tempa($threadTitle, $author, $forumname, $url)
+		function tempa($forum, $threadTitle, $author, $forumname, $url)
 			{
             global $BAB_SESS_USER, $BAB_SESS_EMAIL, $babSiteName;
             $this->message = bab_translate("A new post has been registered on forum") .": ".$forumname;
@@ -125,7 +125,22 @@ function notifyForumGroups($forum, $threadTitle, $author, $forumname, $tables, $
             $this->date = bab_translate("Date");
             $this->dateval = bab_strftime(mktime());
             $this->author = $author;
-			$this->url = !empty($url) ? $GLOBALS['babUrlScript']."?tg=login&cmd=detect&referer=".urlencode($url) : false;
+			if( !empty($url) )
+				{
+				$groups = bab_getGroupsAccess(BAB_FORUMSVIEW_GROUPS_TBL, $forum);
+				if( count($groups) > 0 && in_array(BAB_ALLUSERS_GROUP, $groups))
+					{
+					$this->url = $url;
+					}
+				else
+					{
+					$this->url = $GLOBALS['babUrlScript']."?tg=login&cmd=detect&referer=".urlencode($url);
+					}
+				}
+			else
+				{
+				$this->url = false;
+				}
 
 			$this->babtpl_thread = $this->threadname;
 			$this->babtpl_author = $this->author;
@@ -139,7 +154,7 @@ function notifyForumGroups($forum, $threadTitle, $author, $forumname, $tables, $
 
     $mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
 
-	$tempa = new tempa($threadTitle, $author, $forumname, $url);
+	$tempa = new tempa($forum, $threadTitle, $author, $forumname, $url);
 	$message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "newpost"));
 	$messagetxt = bab_printTemplate($tempa,"mailinfo.html", "newposttxt");
 
