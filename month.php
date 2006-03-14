@@ -29,6 +29,7 @@ class bab_calendar
 
 function bab_calendar($month, $year, $callback, $ymin, $ymax)
 	{
+	global $babBody;
 	$this->year = $year;
 	$this->month = $month;
 	$this->callback = $callback;
@@ -46,7 +47,7 @@ function bab_calendar($month, $year, $callback, $ymin, $ymax)
 	$this->current_year = date('Y');
 
 
-	$this->startday = isset($GLOBALS['babBody']->get_icalendars()->startday) ? $GLOBALS['babBody']->get_icalendars()->startday : 1;
+	$this->startday = isset($babBody->icalendars->startday) ? $babBody->icalendars->startday : 1;
 	}
 
 

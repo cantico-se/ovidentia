@@ -34,9 +34,9 @@ class cal_dayCls extends cal_wmdbaseCls
 		$this->cal_wmdbaseCls("calday", $idx, $calids, $date);
 
 		$this->w = 0;
-		$this->elapstime = $babBody->get_icalendars()->elapstime;
-		list($this->startwtime, , ) = sscanf($babBody->get_icalendars()->starttime, "%d:%d:%d");
-		list($this->endwtime, , ) = sscanf($babBody->get_icalendars()->endtime, "%d:%d:%d");
+		$this->elapstime = $babBody->icalendars->elapstime;
+		list($this->startwtime, , ) = sscanf($babBody->icalendars->starttime, "%d:%d:%d");
+		list($this->endwtime, , ) = sscanf($babBody->icalendars->endtime, "%d:%d:%d");
 		$this->maxidx = ($this->endwtime - $this->startwtime ) * (60/$this->elapstime) +1;
 
 		$time1 = mktime( 0,0,0, $this->month, $this->day, $this->year);
@@ -142,7 +142,7 @@ class cal_dayCls extends cal_wmdbaseCls
 					$arr = & $this->harray[$this->cindex-1][$this->icols][$i];
 					if( $arr['end_date'] > $this->startdt && $arr['start_date'] < $this->enddt )
 						{
-						$iarr = $babBody->get_icalendars()->getCalendarInfo($arr['id_cal']);
+						$iarr = $babBody->icalendars->getCalendarInfo($arr['id_cal']);
 						$this->updateAccess($arr, $iarr);
 						if( !isset($this->bfirstevents[$this->cindex-1][$arr['id']]) )
 							{
@@ -165,7 +165,7 @@ class cal_dayCls extends cal_wmdbaseCls
 							$this->category = $this->mcals->getCategoryName($arr['id_cat']);
 							}
 		
-						$this->bgcolor = $babBody->get_icalendars()->usebgcolor == 'Y' ? (empty($arr['color']) ? ($arr['id_cat'] != 0? $this->mcals->getCategoryColor($arr['id_cat']):''): $arr['color']) : 'fff';
+						$this->bgcolor = $babBody->icalendars->usebgcolor == 'Y' ? (empty($arr['color']) ? ($arr['id_cat'] != 0? $this->mcals->getCategoryColor($arr['id_cat']):''): $arr['color']) : 'fff';
 						$this->idevent = $arr['id'];
 						$time = bab_mktime($arr['start_date']);
 						$this->starttime = bab_time($time);
@@ -251,8 +251,8 @@ class cal_dayCls extends cal_wmdbaseCls
 				$this->bfirstevents[$arr[0]] = 1;
 				}
 			$this->free = $arr[2] == 0;
-			$workdate0 = $this->cdate.' '.$babBody->get_icalendars()->starttime;
-			$workdate1 = $this->cdate.' '.$babBody->get_icalendars()->endtime;
+			$workdate0 = $this->cdate.' '.$babBody->icalendars->starttime;
+			$workdate1 = $this->cdate.' '.$babBody->icalendars->endtime;
 			if( $this->free )
 				{
 				if( $arr[1] <= $workdate0 || $arr[0] >= $workdate1 )

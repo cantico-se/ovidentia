@@ -88,19 +88,19 @@ function bab_isCalendarAccessValid($calid)
 	global $babBody;
 	$db = $GLOBALS['babDB'];
 	$ret = array();
-	$babBody->get_icalendars()->initializeCalendars();
+	$babBody->icalendars->initializeCalendars();
 
 	$calid = explode(',', $calid);
 
-	if( $babBody->get_icalendars()->id_percal != 0 && in_array($babBody->get_icalendars()->id_percal, $calid))
+	if( $babBody->icalendars->id_percal != 0 && in_array($babBody->icalendars->id_percal, $calid))
 		{
-		$ret[] = $babBody->get_icalendars()->id_percal;
+		$ret[] = $babBody->icalendars->id_percal;
 		}
 
-	if( count($babBody->get_icalendars()->usercal) > 0 )
+	if( count($babBody->icalendars->usercal) > 0 )
 		{
-		reset($babBody->get_icalendars()->usercal);
-		while( $row=each($babBody->get_icalendars()->usercal) ) 
+		reset($babBody->icalendars->usercal);
+		while( $row=each($babBody->icalendars->usercal) ) 
 			{
 			if( in_array($row[0], $calid))
 				{
@@ -109,10 +109,10 @@ function bab_isCalendarAccessValid($calid)
 			}
 		}
 
-	if( count($babBody->get_icalendars()->pubcal) > 0 )
+	if( count($babBody->icalendars->pubcal) > 0 )
 		{
-		reset($babBody->get_icalendars()->pubcal);
-		while( $row=each($babBody->get_icalendars()->pubcal) ) 
+		reset($babBody->icalendars->pubcal);
+		while( $row=each($babBody->icalendars->pubcal) ) 
 			{
 			if( in_array($row[0], $calid))
 				{
@@ -121,10 +121,10 @@ function bab_isCalendarAccessValid($calid)
 			}
 		}
 		
-	if( count($babBody->get_icalendars()->rescal) > 0 )
+	if( count($babBody->icalendars->rescal) > 0 )
 		{
-		reset($babBody->get_icalendars()->rescal);
-		while( $row=each($babBody->get_icalendars()->rescal) ) 
+		reset($babBody->icalendars->rescal);
+		while( $row=each($babBody->icalendars->rescal) ) 
 			{
 			if( in_array($row[0], $calid))
 				{
@@ -148,19 +148,19 @@ function bab_isCalendarAccessValid($calid)
 function getAvailableUsersCalendars($bwrite = false)
 {
 	global $babBody, $BAB_SESS_USERID,$BAB_SESS_USER;
-	$babBody->get_icalendars()->initializeCalendars();
+	$babBody->icalendars->initializeCalendars();
 
 	$tab = array();
 
-	if( $babBody->get_icalendars()->id_percal != 0 )
+	if( $babBody->icalendars->id_percal != 0 )
 		{
-		$tab[] = array('idcal' => $babBody->get_icalendars()->id_percal, 'name' => $GLOBALS['BAB_SESS_USER']);
+		$tab[] = array('idcal' => $babBody->icalendars->id_percal, 'name' => $GLOBALS['BAB_SESS_USER']);
 		}
 
-	if( count($babBody->get_icalendars()->usercal) > 0 )
+	if( count($babBody->icalendars->usercal) > 0 )
 		{
-		reset($babBody->get_icalendars()->usercal);
-		while( $row=each($babBody->get_icalendars()->usercal) ) 
+		reset($babBody->icalendars->usercal);
+		while( $row=each($babBody->icalendars->usercal) ) 
 			{
 			if( $bwrite )
 				{
@@ -183,14 +183,14 @@ function getAvailableUsersCalendars($bwrite = false)
 function getAvailableGroupsCalendars($bwrite = false)
 {
 	global $babBody;
-	$babBody->get_icalendars()->initializeCalendars();
+	$babBody->icalendars->initializeCalendars();
 	$tab = array();
 
-	if( count($babBody->get_icalendars()->pubcal) > 0 )
+	if( count($babBody->icalendars->pubcal) > 0 )
 		{
 		
-		reset($babBody->get_icalendars()->pubcal);
-		while( $row=each($babBody->get_icalendars()->pubcal) ) 
+		reset($babBody->icalendars->pubcal);
+		while( $row=each($babBody->icalendars->pubcal) ) 
 			{
 			if( $bwrite )
 				{
@@ -213,13 +213,13 @@ function getAvailableGroupsCalendars($bwrite = false)
 function getAvailableResourcesCalendars($bwrite = false)
 {
 	global $babBody, $BAB_SESS_USERID,$BAB_SESS_USER;
-	$babBody->get_icalendars()->initializeCalendars();
+	$babBody->icalendars->initializeCalendars();
 	$tab = array();
 
-	if( count($babBody->get_icalendars()->rescal) > 0 )
+	if( count($babBody->icalendars->rescal) > 0 )
 		{
-		reset($babBody->get_icalendars()->rescal);
-		while( $row=each($babBody->get_icalendars()->rescal) ) 
+		reset($babBody->icalendars->rescal);
+		while( $row=each($babBody->icalendars->rescal) ) 
 			{
 			if( $bwrite )
 				{

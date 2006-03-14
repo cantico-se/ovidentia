@@ -68,8 +68,8 @@ function upComingEvents($idcal)
 			$mktime = $mktime + 518400;
 			$this->daymax = sprintf("%04d-%02d-%02d 23:59:59", date("Y", $mktime), Date("n", $mktime), Date("j", $mktime));
 
-			$babBody->get_icalendars()->initializeCalendars();
-			if (!empty($babBody->get_icalendars()->id_percal))
+			$babBody->icalendars->initializeCalendars();
+			if (!empty($babBody->icalendars->id_percal))
 				{
 				$this->resevent = $this->db->db_query("select ce.* from ".BAB_CAL_EVENTS_TBL." ce left join ".BAB_CAL_EVENTS_OWNERS_TBL." ceo on ce.id=ceo.id_event where ceo.id_cal='".$idcal."' and ce.start_date < '".$this->daymax."' and ce.end_date > '".$this->daymin."'order by ce.start_date");
 				$this->countevent = $this->db->db_num_rows($this->resevent);
@@ -80,8 +80,8 @@ function upComingEvents($idcal)
 				}
 
 			$idpubcals = array();
-			reset($babBody->get_icalendars()->pubcal);
-			while( $row=each($babBody->get_icalendars()->pubcal) ) 
+			reset($babBody->icalendars->pubcal);
+			while( $row=each($babBody->icalendars->pubcal) ) 
 				{
 				$idpubcals[] = $row[1]['idowner'];
 				}
@@ -317,9 +317,9 @@ switch($idx)
 	case "view":
 		$babBody->title = bab_translate("Summary");
 		showOthers();
-		if( $babBody->get_icalendars()->calendarAccess() && $babBody->get_icalendars()->id_percal)
+		if( $babBody->icalendars->calendarAccess() && $babBody->icalendars->id_percal)
 		{
-			upComingEvents($babBody->get_icalendars()->id_percal);
+			upComingEvents($babBody->icalendars->id_percal);
 		}
 		$bemail = bab_mailAccessLevel();
 		if( ($bemail == 1 || $bemail == 2) && function_exists('imap_open'))

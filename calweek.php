@@ -35,23 +35,23 @@ class cal_weekCls extends cal_wmdbaseCls
 
 		$this->w = 0;
 
-		$dispdays = explode(',', $babBody->get_icalendars()->dispdays);
+		$dispdays = explode(',', $babBody->icalendars->dispdays);
 		$time = mktime(0,0,0,$this->month,$this->day,$this->year);
 		$this->monthname = $babMonths[date("n", $time)]."  ".$this->year;
 		$this->totaldays = date("t", $time);
 
-		$this->elapstime = $babBody->get_icalendars()->elapstime;
-		list($this->startwtime, , ) = sscanf($babBody->get_icalendars()->starttime, "%d:%d:%d");
-		list($this->endwtime, , ) = sscanf($babBody->get_icalendars()->endtime, "%d:%d:%d");
+		$this->elapstime = $babBody->icalendars->elapstime;
+		list($this->startwtime, , ) = sscanf($babBody->icalendars->starttime, "%d:%d:%d");
+		list($this->endwtime, , ) = sscanf($babBody->icalendars->endtime, "%d:%d:%d");
 		$this->maxidx = ($this->endwtime - $this->startwtime ) * (60/$this->elapstime) +1;
 
-		$b = date("w", $time) - $babBody->get_icalendars()->startday;
+		$b = date("w", $time) - $babBody->icalendars->startday;
 		if( $b < 0)
 			$b += 7;
 
 		for( $i = 0; $i < 7; $i++ )
 			{
-			$a = $i + $babBody->get_icalendars()->startday;
+			$a = $i + $babBody->icalendars->startday;
 			if( $a > 6)
 				$a -=  7;
 			if( in_array($a, $dispdays ))
@@ -252,7 +252,7 @@ class cal_weekCls extends cal_wmdbaseCls
 				while( $i < count($this->harray[$this->cindex-1][$this->icols]))
 					{
 					$arr = & $this->harray[$this->cindex-1][$this->icols][$i];
-					$iarr = $babBody->get_icalendars()->getCalendarInfo($arr['id_cal']);
+					$iarr = $babBody->icalendars->getCalendarInfo($arr['id_cal']);
 					$this->updateAccess($arr, $iarr);
 					if( $arr['end_date'] > $this->startdt && $arr['start_date'] < $this->enddt )
 						{
@@ -269,7 +269,7 @@ class cal_weekCls extends cal_wmdbaseCls
 						$this->idcal = $arr['id_cal'];
 						$this->status = $arr['status'];
 
-						$this->bgcolor = $babBody->get_icalendars()->usebgcolor == 'Y' ? (empty($arr['color']) ? ($arr['id_cat'] != 0? $this->mcals->getCategoryColor($arr['id_cat']):''): $arr['color']) : 'fff';
+						$this->bgcolor = $babBody->icalendars->usebgcolor == 'Y' ? (empty($arr['color']) ? ($arr['id_cat'] != 0? $this->mcals->getCategoryColor($arr['id_cat']):''): $arr['color']) : 'fff';
 
 						$this->idevent = $arr['id'];
 						$time = bab_mktime($arr['start_date']);
@@ -356,8 +356,8 @@ class cal_weekCls extends cal_wmdbaseCls
 				$this->bfirstevents[$arr[0].$this->cdate] = 1;
 				}
 			$this->free = $arr[2] == 0;
-			$workdate0 = $this->cdate.' '.$babBody->get_icalendars()->starttime;
-			$workdate1 = $this->cdate.' '.$babBody->get_icalendars()->endtime;
+			$workdate0 = $this->cdate.' '.$babBody->icalendars->starttime;
+			$workdate1 = $this->cdate.' '.$babBody->icalendars->endtime;
 			if( $this->free )
 				{
 				if( $arr[1] <= $workdate0 || $arr[0] >= $workdate1 )

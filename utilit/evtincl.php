@@ -43,7 +43,7 @@ function createEvent($idcals,$id_owner, $title, $description, $location, $startd
 	foreach($idcals as $id_cal)
 		{
 		$add = false;
-		$arr = $babBody->get_icalendars()->getCalendarInfo($id_cal);
+		$arr = $babBody->icalendars->getCalendarInfo($id_cal);
 
 		switch($arr['type'])
 			{
@@ -350,7 +350,7 @@ function bab_createEvent($idcals, $args, &$msgerror)
 		$arrpub = array();
 		for( $i = 0; $i < count($arrnotify); $i++ )
 			{
-			$arr = $babBody->get_icalendars()->getCalendarInfo($arrnotify[$i]);
+			$arr = $babBody->icalendars->getCalendarInfo($arrnotify[$i]);
 
 			switch($arr['type'])
 				{
@@ -397,7 +397,7 @@ function bab_createEvent($idcals, $args, &$msgerror)
 function confirmEvent($evtid, $idcal, $bconfirm, $comment, $bupdrec)
 {
 	global $babDB, $babBody;
-	$arr = $babBody->get_icalendars()->getCalendarInfo($idcal);
+	$arr = $babBody->icalendars->getCalendarInfo($idcal);
 	
 	$arrevtids = array();
 	if( $bupdrec == 1)
@@ -446,7 +446,7 @@ function confirmEvent($evtid, $idcal, $bconfirm, $comment, $bupdrec)
 			$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
 			if( count($arrschi) > 0 )
 				{
-				$calinfo = $babBody->get_icalendars()->getCalendarInfo($idcal);
+				$calinfo = $babBody->icalendars->getCalendarInfo($idcal);
 				$res = $babDB->db_query("select * from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event IN (".implode(',', $arrevtids).") and id_cal='".$idcal."' and idfai != '0'");
 				while( $row = $babDB->db_fetch_array($res))
 					{
@@ -1030,7 +1030,7 @@ function notifyEventUpdate($evtid, $bdelete)
 
 		if( $res2 )
 			{
-			$calinfo = $babBody->get_icalendars()->getCalendarInfo($arr['id_cal']);
+			$calinfo = $babBody->icalendars->getCalendarInfo($arr['id_cal']);
 			$tempc->calendar = $calinfo['name'];
 			$message = $mail->mailTemplate(bab_printTemplate($tempc,"mailinfo.html", "newevent"));
 			$mail->mailBody($message, "html");

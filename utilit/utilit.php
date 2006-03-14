@@ -1137,7 +1137,7 @@ function bab_updateUserSettings()
 	$babBody->topmod = bab_getUserIdObjects(BAB_TOPICSMOD_GROUPS_TBL);
 	$babBody->topview = bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL);
 
-	
+	$babBody->icalendars = $babBody->get_icalendars();
 
 	$babBody->ocids = bab_orgchartAccess();
 

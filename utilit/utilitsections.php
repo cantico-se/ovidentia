@@ -420,20 +420,20 @@ function babUserSection($close)
 		$this->array_urls[bab_translate("Vacation")] = $GLOBALS['babUrlScript']."?tg=vacuser";
 		}
 
-	if( $babBody->get_icalendars()->calendarAccess())
+	if( $babBody->icalendars->calendarAccess())
 		{
 		$babBody->calaccess = true;
-		switch($babBody->get_icalendars()->defaultview)
+		switch($babBody->icalendars->defaultview)
 			{
 			case BAB_CAL_VIEW_DAY: $view='calday';	break;
 			case BAB_CAL_VIEW_WEEK: $view='calweek'; break;
 			default: $view='calmonth'; break;
 			}
-		if( empty($babBody->get_icalendars()->user_calendarids))
+		if( empty($babBody->icalendars->user_calendarids))
 			{
-			$babBody->get_icalendars()->initializeCalendars();
+			$babBody->icalendars->initializeCalendars();
 			}
-		$idcals = $babBody->get_icalendars()->user_calendarids;
+		$idcals = $babBody->icalendars->user_calendarids;
 		$this->array_urls[bab_translate("Calendar")] = $GLOBALS['babUrlScript']."?tg=".$view."&amp;calid=".$idcals;
 		}
 
@@ -884,13 +884,13 @@ function babMonthA($month = "", $year = "")
 		$this->currentYear = $year;
 		}
 
-	$this->babCalendarStartDay = $babBody->get_icalendars()->startday;
+	$this->babCalendarStartDay = $babBody->icalendars->startday;
 	$this->curDay = 0;
 	}
 
 function printout()
 	{
-	global $babDB, $babMonths, $BAB_SESS_USERID;
+	global $babBody, $babDB, $babMonths, $BAB_SESS_USERID;
 	$this->curmonth = $babMonths[date("n", mktime(0,0,0,$this->currentMonth,1,$this->currentYear))];
 	$this->curyear = $this->currentYear;
 	$this->days = date("t", mktime(0,0,0,$this->currentMonth,1,$this->currentYear));
@@ -900,7 +900,7 @@ function printout()
 	$todaymonth = date("n");
 	$todayyear = date("Y");
 	
-	$icalendars = & $GLOBALS['babBody']->get_icalendars();
+	$icalendars = $babBody->icalendars;
 	$icalendars->initializeCalendars();
 	
 	$this->idcals = array();

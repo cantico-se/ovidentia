@@ -3311,28 +3311,28 @@ class bab_Calendars extends bab_handler
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
 		$type = $ctx->get_value('type');
-		$babBody->get_icalendars()->initializeCalendars();
+		$babBody->icalendars->initializeCalendars();
 		if( $type === false || $type === '' )
 			{
-			if( $babBody->get_icalendars()->id_percal )
+			if( $babBody->icalendars->id_percal )
 				{
-				$this->IdEntries[] = $babBody->get_icalendars()->id_percal;
+				$this->IdEntries[] = $babBody->icalendars->id_percal;
 				}
 
-			reset($babBody->get_icalendars()->usercal);
-			while( $row=each($babBody->get_icalendars()->usercal) ) 
+			reset($babBody->icalendars->usercal);
+			while( $row=each($babBody->icalendars->usercal) ) 
 				{ 
 				$this->IdEntries[] = $row[0];
 				}
 			
-			reset($babBody->get_icalendars()->pubcal);
-			while( $row=each($babBody->get_icalendars()->pubcal) ) 
+			reset($babBody->icalendars->pubcal);
+			while( $row=each($babBody->icalendars->pubcal) ) 
 				{ 
 				$this->IdEntries[] = $row[0];
 				}
 
-			reset($babBody->get_icalendars()->rescal);
-			while( $row=each($babBody->get_icalendars()->rescal) ) 
+			reset($babBody->icalendars->rescal);
+			while( $row=each($babBody->icalendars->rescal) ) 
 				{ 
 				$this->IdEntries[] = $row[0];
 				}
@@ -3350,29 +3350,29 @@ class bab_Calendars extends bab_handler
 			switch($type)
 				{
 				case BAB_CAL_USER_TYPE:
-					if( $babBody->get_icalendars()->id_percal )
+					if( $babBody->icalendars->id_percal )
 						{
-						$this->IdEntries[] = $babBody->get_icalendars()->id_percal;
+						$this->IdEntries[] = $babBody->icalendars->id_percal;
 						}
 
-					reset($babBody->get_icalendars()->usercal);
-					while( $row=each($babBody->get_icalendars()->usercal) ) 
+					reset($babBody->icalendars->usercal);
+					while( $row=each($babBody->icalendars->usercal) ) 
 						{ 
 						$this->IdEntries[] = $row[0];
 						}
 					break;
 				
 				case BAB_CAL_PUB_TYPE:
-					reset($babBody->get_icalendars()->pubcal);
-					while( $row=each($babBody->get_icalendars()->pubcal) ) 
+					reset($babBody->icalendars->pubcal);
+					while( $row=each($babBody->icalendars->pubcal) ) 
 						{ 
 						$this->IdEntries[] = $row[0];
 						}
 					break;
 
 				case BAB_CAL_RES_TYPE:
-					reset($babBody->get_icalendars()->rescal);
-					while( $row=each($babBody->get_icalendars()->rescal) ) 
+					reset($babBody->icalendars->rescal);
+					while( $row=each($babBody->icalendars->rescal) ) 
 						{ 
 						$this->IdEntries[] = $row[0];
 						}
@@ -3400,7 +3400,7 @@ class bab_Calendars extends bab_handler
 			$calendarid = current($this->IdEntries);
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('CalendarId', $calendarid);
-			$iarr = $babBody->get_icalendars()->getCalendarInfo($calendarid);
+			$iarr = $babBody->icalendars->getCalendarInfo($calendarid);
 			$this->ctx->curctx->push('CalendarName', $iarr['name']);
 			$this->ctx->curctx->push('CalendarDescription', $iarr['description']);
 			$this->ctx->curctx->push('CalendarOwnerId', $iarr['idowner']);
@@ -3474,12 +3474,12 @@ class bab_CalendarUserEvents extends bab_handler
 		$this->bab_handler($ctx);
 		$userid = $ctx->get_value('userid');
 		$calid = '';
-		$babBody->get_icalendars()->initializeCalendars();
+		$babBody->icalendars->initializeCalendars();
 		if( $userid === false || $userid === '' )
 			{
-			if( $babBody->get_icalendars()->id_percal )
+			if( $babBody->icalendars->id_percal )
 				{
-				$calid = $babBody->get_icalendars()->id_percal;
+				$calid = $babBody->icalendars->id_percal;
 				}
 			}
 		else
@@ -3499,13 +3499,13 @@ class bab_CalendarUserEvents extends bab_handler
 			$rr = explode(',', $userid);
 			if( $filter )
 				{
-				if( $babBody->get_icalendars()->id_percal && in_array($GLOBALS['BAB_SESS_USERID'], $rr))
+				if( $babBody->icalendars->id_percal && in_array($GLOBALS['BAB_SESS_USERID'], $rr))
 					{
-					$ar[] = $babBody->get_icalendars()->id_percal;
+					$ar[] = $babBody->icalendars->id_percal;
 					}
 
-				reset($babBody->get_icalendars()->usercal);
-				while( $row=each($babBody->get_icalendars()->usercal) ) 
+				reset($babBody->icalendars->usercal);
+				while( $row=each($babBody->icalendars->usercal) ) 
 					{
 					if( in_array($row[1]['idowner'], $rr) )
 						{
@@ -3642,13 +3642,13 @@ class bab_CalendarGroupEvents extends bab_handler
 	{
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
-		$babBody->get_icalendars()->initializeCalendars();
+		$babBody->icalendars->initializeCalendars();
 		$groupid = $ctx->get_value('groupid');
 		$ar = array();
 		if( $groupid === false || $groupid === '' )
 			{
-			reset($babBody->get_icalendars()->pubcal);
-			while( $row=each($babBody->get_icalendars()->pubcal) ) 
+			reset($babBody->icalendars->pubcal);
+			while( $row=each($babBody->icalendars->pubcal) ) 
 				{
 				$ar[] = $row[0];
 				}
@@ -3669,8 +3669,8 @@ class bab_CalendarGroupEvents extends bab_handler
 			$rr = explode(',', $groupid);
 			if( $filter )
 				{
-				reset($babBody->get_icalendars()->pubcal);
-				while( $row=each($babBody->get_icalendars()->pubcal) ) 
+				reset($babBody->icalendars->pubcal);
+				while( $row=each($babBody->icalendars->pubcal) ) 
 					{
 					if( in_array($row[1]['idowner'], $rr) )
 						{
@@ -3807,13 +3807,13 @@ class bab_CalendarResourceEvents extends bab_handler
 	{
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
-		$babBody->get_icalendars()->initializeCalendars();
+		$babBody->icalendars->initializeCalendars();
 		$resourceid = $ctx->get_value('resourceid');
 		$ar = array();
 		if( $resourceid === false || $resourceid === '' )
 			{
-			reset($babBody->get_icalendars()->rescal);
-			while( $row=each($babBody->get_icalendars()->rescal) ) 
+			reset($babBody->icalendars->rescal);
+			while( $row=each($babBody->icalendars->rescal) ) 
 				{
 				$ar[] = $row[0];
 				}
@@ -3835,8 +3835,8 @@ class bab_CalendarResourceEvents extends bab_handler
 			$rr = explode(',', $resourceid);
 			if( $filter )
 				{
-				reset($babBody->get_icalendars()->rescal);
-				while( $row=each($babBody->get_icalendars()->rescal) ) 
+				reset($babBody->icalendars->rescal);
+				while( $row=each($babBody->icalendars->rescal) ) 
 					{
 					if( in_array($row[1]['idowner'], $rr) )
 						{
@@ -3974,25 +3974,25 @@ class bab_CalendarEvents extends bab_handler
 	{
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
-		$babBody->get_icalendars()->initializeCalendars();
+		$babBody->icalendars->initializeCalendars();
 		$calendarid = $ctx->get_value('calendarid');
 		$ar = array();
 		if( $calendarid === false || $calendarid === '' )
 			{
-			if( $babBody->get_icalendars()->id_percal )
+			if( $babBody->icalendars->id_percal )
 				{
-				$ar[] = $babBody->get_icalendars()->id_percal;
+				$ar[] = $babBody->icalendars->id_percal;
 				}
 
-			foreach( $babBody->get_icalendars()->usercal as $key => $val )
+			foreach( $babBody->icalendars->usercal as $key => $val )
 				{
 				$ar[] = $key;
 				}
-			foreach( $babBody->get_icalendars()->rescal as $key => $val )
+			foreach( $babBody->icalendars->rescal as $key => $val )
 				{
 				$ar[] = $key;
 				}
-			foreach( $babBody->get_icalendars()->pubcal as $key => $val )
+			foreach( $babBody->icalendars->pubcal as $key => $val )
 				{
 				$ar[] = $key;
 				}
@@ -4013,26 +4013,26 @@ class bab_CalendarEvents extends bab_handler
 			$rr = explode(',', $calendarid);
 			if( $filter )
 				{
-				if( $babBody->get_icalendars()->id_percal && in_array($babBody->get_icalendars()->id_percal, $rr))
+				if( $babBody->icalendars->id_percal && in_array($babBody->icalendars->id_percal, $rr))
 					{
-					$ar[] = $babBody->get_icalendars()->id_percal;
+					$ar[] = $babBody->icalendars->id_percal;
 					}
 
-				foreach( $babBody->get_icalendars()->usercal as $key => $val )
+				foreach( $babBody->icalendars->usercal as $key => $val )
 					{
 					if( in_array($key, $rr))
 						{
 						$ar[] = $key;
 						}
 					}
-				foreach( $babBody->get_icalendars()->pubcal as $key => $val )
+				foreach( $babBody->icalendars->pubcal as $key => $val )
 					{
 					if( in_array($key, $rr))
 						{
 						$ar[] = $key;
 						}
 					}				
-				foreach( $babBody->get_icalendars()->rescal as $key => $val )
+				foreach( $babBody->icalendars->rescal as $key => $val )
 					{
 					if( in_array($key, $rr))
 						{

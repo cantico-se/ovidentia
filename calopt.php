@@ -315,7 +315,7 @@ function calendarOptions($calid, $urla)
 		{
 		function temp($calid, $urla)
 			{
-			global $BAB_SESS_USERID;
+			global $babBody, $BAB_SESS_USERID;
 			$this->calid = $calid;
 			$this->urla = $urla;
 			$this->calweekdisptxt = bab_translate("Days to display");
@@ -370,7 +370,7 @@ function calendarOptions($calid, $urla)
 
 			if( empty($this->arr['workdays']))
 				{
-				$this->arr['workdays'] = $GLOBALS['babBody']->get_icalendars()->workdays;
+				$this->arr['workdays'] = $babBody->icalendars->workdays;
 				}
 
 			$this->workdays = explode(',', $this->arr['workdays']);
@@ -668,10 +668,10 @@ switch($idx)
 
 	case "access":
 		$babBody->title = bab_translate("Calendar Options");
-		if( $babBody->get_icalendars()->id_percal != 0 )
+		if( $babBody->icalendars->id_percal != 0 )
 		{
 			if (!isset($idcal))
-				$idcal = $babBody->get_icalendars()->id_percal;
+				$idcal = $babBody->icalendars->id_percal;
 			
 			accessCalendar($idcal, $urla);
 			$babBody->addItemMenu("options", bab_translate("Calendar Options"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options&urla=".urlencode($urla));
@@ -687,7 +687,7 @@ switch($idx)
 	default:
 	case "options":
 		$babBody->title = bab_translate("Calendar and Vacations Options");
-		$idcal = $babBody->get_icalendars()->id_percal;
+		$idcal = $babBody->icalendars->id_percal;
 
 		calendarOptions($idcal, $urla);
 
@@ -699,7 +699,7 @@ switch($idx)
 			$babBody->addItemMenu("access", bab_translate("Calendar access"), $GLOBALS['babUrlScript']."?tg=calopt&idx=access&idcal=".$idcal."&urla=".urlencode($urla));	
 			}
 
-		if( isset($urla) && !empty($urla) && $babBody->get_icalendars()->calendarAccess() )
+		if( isset($urla) && !empty($urla) && $babBody->icalendars->calendarAccess() )
 			{
 			$babBody->addItemMenu("cal", bab_translate("Calendar"), urldecode($urla));
 			}

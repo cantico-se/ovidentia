@@ -58,7 +58,7 @@ function displayAttendees($evtid, $idcal)
 					{
 					if( bab_isCalendarAccessValid($arr['id_cal']))
 						{
-						$icalinfo = $babBody->get_icalendars()->getCalendarInfo($arr['id_cal']);
+						$icalinfo = $babBody->icalendars->getCalendarInfo($arr['id_cal']);
 						$this->arrinfo[] = array('name' => $icalinfo['name'],'idcal' => $arr['id_cal'], 'idowner' => $icalinfo['idowner'],'status' => $arr['status']);
 						if( $idcal == $arr['id_cal'] )
 							{
@@ -206,7 +206,7 @@ function displayEventDetail($evtid, $idcal)
 					{
 					$this->access = true;
 					$arr = $babDB->db_fetch_array($res);
-					$iarr = $babBody->get_icalendars()->getCalendarInfo($idcal);
+					$iarr = $babBody->icalendars->getCalendarInfo($idcal);
 					$this->begindatetxt = bab_translate("Begin date");
 					$this->enddatetxt = bab_translate("End date");
 					$this->titletxt = bab_translate("Title");
