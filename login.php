@@ -1189,6 +1189,28 @@ function addNewUser( $nickname, $password1, $password2)
 	return true;
 	}
 
+function loginRedirect($url)
+{
+
+	if( isset($GLOBALS['babLoginRedirect']) && $GLOBALS['babLoginRedirect'] == false )
+	{
+		class loginRedirectCls 
+			{
+			function loginRedirectCls($url)
+				{
+				$this->url = $url;
+				}
+			}
+
+		$lrc = new loginRedirectCls($url);
+		echo bab_printTemplate($lrc, "login.html", "javaredirect");
+		exit;
+	}
+	else
+	{
+		Header("Location: ". $url);
+	}
+}
 /* main */
 // ajout cookie
 if (!isset($lifetime))
@@ -1209,9 +1231,9 @@ if( isset($login) && $login == "login")
 		{
 		$url = urldecode($referer);
 		if (substr_count($url,$GLOBALS['babUrlScript']) == 1 && substr_count($url,'tg=login&cmd=') == 0)
-			Header("Location: ". $url);
+			loginRedirect($url);
 		else
-			Header("Location: ". $GLOBALS['babUrlScript']);
+			loginRedirect($GLOBALS['babUrlScript']);
 		}
 	}
 else if( isset($adduser) && $adduser == "register" && $babBody->babsite['registration'] == 'Y')
