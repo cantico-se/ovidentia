@@ -906,6 +906,10 @@ function bab_isMagicQuotesGpcOn()
  * Remove escapes if magic quotes is on, do not call in a file always included!
  */ 
 function bab_cleanGpc() {
+	static $firstcall = 1;
+	if (1 !== $firstcall) 
+		return;
+	$firstcall = 0;
 	function bab_slashes(&$val) {
 		if (get_magic_quotes_gpc()) {
 			if (is_array($val)) {
