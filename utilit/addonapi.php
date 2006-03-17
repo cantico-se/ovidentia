@@ -25,7 +25,7 @@ include_once "base.php";
 
 
 /**
- * Returns a string containing the time formatted according the user's preferences
+ * Returns a string containing the time formatted according to the user's preferences
  * 
  * @access  public 
  * @return  string	formatted time
@@ -61,7 +61,7 @@ function bab_mktime($time)
 	}
 
 /**
- * Returns a string containing the time formatted according the format
+ * Returns a string containing the time formatted according to the format
  * 
  * Formatting options:
  * <pre>
@@ -143,7 +143,7 @@ function bab_formatDate($format, $time)
 }
 
 /**
- * Returns a string containing the time formatted according the user's preferences
+ * Returns a string containing the time formatted according to the user's preferences
  * 
  * @access  public 
  * @return  string	formatted time
@@ -174,7 +174,7 @@ function bab_longDate($time, $hour=true)
 
 
 /**
- * Returns a string containing the time formatted according the user's preferences
+ * Returns a string containing the time formatted according to the user's preferences
  * 
  * @access  public 
  * @return  string	formatted time
