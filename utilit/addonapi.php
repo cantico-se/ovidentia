@@ -916,10 +916,10 @@ function bab_cleanGpc() {
 		}
 	}
 
-	bab_trt_slashes($_GET);
-	bab_trt_slashes($_POST);
-	bab_trt_slashes($_COOKIES);
-	bab_trt_slashes($_REQUEST);
+	bab_slashes($_GET);
+	bab_slashes($_POST);
+	bab_slashes($_COOKIES);
+	bab_slashes($_REQUEST);
 	}
 
 function bab_getAvailableLanguages()
