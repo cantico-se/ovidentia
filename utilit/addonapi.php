@@ -23,6 +23,14 @@
 ************************************************************************/
 include_once "base.php";
 
+
+/**
+ * Returns a string containing the time formatted according the user's preferences
+ * 
+ * @access  public 
+ * @return  string	formatted time
+ * @param   int	$time	unix timestamp
+ */
 function bab_time($time)
 	{
 	if( $time < 0)
@@ -30,6 +38,13 @@ function bab_time($time)
 	return date($GLOBALS['babTimeFormat'], $time);
 	}
 
+/**
+ * Returns a unix timestamp corresponding to the string $time formatted as a MYSQL DATETIME
+ * 
+ * @access  public 
+ * @return  int	unix timestamp
+ * @param   string	(eg. '2006-03-10 17:37:02')
+ */
 function bab_mktime($time)
 	{
 	$arr = explode(" ", $time);
@@ -45,6 +60,32 @@ function bab_mktime($time)
 		}
 	}
 
+/**
+ * Returns a string containing the time formatted according the format
+ * 
+ * Formatting options:
+ * <pre>
+ * %d   A short textual representation of a day, three letters
+ * %D   day
+ * %j   Day of the month with leading zeros
+ * %m   A short textual representation of a month, three letters
+ * %M   Month
+ * %n   Numeric representation of a month, with leading zeros
+ * %Y   A full numeric representation of a year, 4 digits
+ * %y   A two digit representation of a year
+ * %H   24-hour format of an hour with leading zeros
+ * %i   Minutes with leading zeros
+ * %S   user short date
+ * %L   user long date
+ * %T   user time format
+ * <pre>
+ * 
+ * 
+ * @access  public 
+ * @return  string	formatted time
+ * @param   string	$format	desired format
+ * @param   int	$time	unix timestamp
+ */
 function bab_formatDate($format, $time)
 {
 	global $babDays, $babMonths, $babShortMonths;
@@ -101,6 +142,15 @@ function bab_formatDate($format, $time)
 	return $txt;
 }
 
+/**
+ * Returns a string containing the time formatted according the user's preferences
+ * 
+ * @access  public 
+ * @return  string	formatted time
+ * @param   int	$time	unix timestamp
+ * @param   boolean $hour	(true == 'Ven 17 Mars 2006',
+ *							false == 'Ven 17 Mars 2006 10:11')
+ */
 function bab_longDate($time, $hour=true)
 	{
 	if( $time < 0)
@@ -123,6 +173,15 @@ function bab_longDate($time, $hour=true)
 	}
 
 
+/**
+ * Returns a string containing the time formatted according the user's preferences
+ * 
+ * @access  public 
+ * @return  string	formatted time
+ * @param   int	$time	unix timestamp
+ * @param   boolean $hour	(true == '17/03/2006',
+ *							false == '17/03/2006 10:11'
+ */
 function bab_shortDate($time, $hour=true)
 	{
 	if( $time < 0)
