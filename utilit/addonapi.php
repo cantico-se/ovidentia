@@ -909,7 +909,7 @@ function bab_cleanGpc() {
 	function bab_slashes(&$val) {
 		if (get_magic_quotes_gpc()) {
 			if (is_array($val)) {
-				array_walk($val,'bab_trt_slashes');
+				array_walk($val,'bab_slashes');
 				}
 			else
 				$val = stripslashes($val);
