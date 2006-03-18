@@ -179,3 +179,87 @@
 	border-width:0;
 	padding:.5em 0;
 }
+
+#bab_groups_tree.displaytable1 input.tablecol2,
+#bab_groups_tree.displaytable1 input.tablecol3,
+#bab_groups_tree.displaytable1 input.tablecol4,
+#bab_groups_tree.displaytable1 input.tablecol5,
+#bab_groups_tree.displaytable1 input.tablecol6,
+#bab_groups_tree.displaytable1 input.tablecol7,
+#bab_groups_tree.displaytable1 input.tablecol8,
+#bab_groups_tree.displaytable1 input.tablecol9,
+
+#bab_groups_tree.displaytable2 input.tablecol1,
+#bab_groups_tree.displaytable2 input.tablecol3,
+#bab_groups_tree.displaytable2 input.tablecol4,
+#bab_groups_tree.displaytable2 input.tablecol5,
+#bab_groups_tree.displaytable2 input.tablecol6,
+#bab_groups_tree.displaytable2 input.tablecol7,
+#bab_groups_tree.displaytable2 input.tablecol8,
+#bab_groups_tree.displaytable2 input.tablecol9,
+
+#bab_groups_tree.displaytable3 input.tablecol1,
+#bab_groups_tree.displaytable3 input.tablecol2,
+#bab_groups_tree.displaytable3 input.tablecol4,
+#bab_groups_tree.displaytable3 input.tablecol5,
+#bab_groups_tree.displaytable3 input.tablecol6,
+#bab_groups_tree.displaytable3 input.tablecol7,
+#bab_groups_tree.displaytable3 input.tablecol8,
+#bab_groups_tree.displaytable3 input.tablecol9,
+
+#bab_groups_tree.displaytable4 input.tablecol1,
+#bab_groups_tree.displaytable4 input.tablecol2,
+#bab_groups_tree.displaytable4 input.tablecol3,
+#bab_groups_tree.displaytable4 input.tablecol5,
+#bab_groups_tree.displaytable4 input.tablecol6,
+#bab_groups_tree.displaytable4 input.tablecol7,
+#bab_groups_tree.displaytable4 input.tablecol8,
+#bab_groups_tree.displaytable4 input.tablecol9,
+
+#bab_groups_tree.displaytable5 input.tablecol1,
+#bab_groups_tree.displaytable5 input.tablecol2,
+#bab_groups_tree.displaytable5 input.tablecol3,
+#bab_groups_tree.displaytable5 input.tablecol4,
+#bab_groups_tree.displaytable5 input.tablecol6,
+#bab_groups_tree.displaytable5 input.tablecol7,
+#bab_groups_tree.displaytable5 input.tablecol8,
+#bab_groups_tree.displaytable5 input.tablecol9,
+
+#bab_groups_tree.displaytable6 input.tablecol1,
+#bab_groups_tree.displaytable6 input.tablecol2,
+#bab_groups_tree.displaytable6 input.tablecol3,
+#bab_groups_tree.displaytable6 input.tablecol4,
+#bab_groups_tree.displaytable6 input.tablecol5,
+#bab_groups_tree.displaytable6 input.tablecol7,
+#bab_groups_tree.displaytable6 input.tablecol8,
+#bab_groups_tree.displaytable6 input.tablecol9,
+
+#bab_groups_tree.displaytable7 input.tablecol1,
+#bab_groups_tree.displaytable7 input.tablecol2,
+#bab_groups_tree.displaytable7 input.tablecol3,
+#bab_groups_tree.displaytable7 input.tablecol4,
+#bab_groups_tree.displaytable7 input.tablecol5,
+#bab_groups_tree.displaytable7 input.tablecol6,
+#bab_groups_tree.displaytable7 input.tablecol8,
+#bab_groups_tree.displaytable7 input.tablecol9, 
+
+#bab_groups_tree.displaytable8 input.tablecol1,
+#bab_groups_tree.displaytable8 input.tablecol2,
+#bab_groups_tree.displaytable8 input.tablecol3,
+#bab_groups_tree.displaytable8 input.tablecol4,
+#bab_groups_tree.displaytable8 input.tablecol5,
+#bab_groups_tree.displaytable8 input.tablecol6,
+#bab_groups_tree.displaytable8 input.tablecol7,
+#bab_groups_tree.displaytable8 input.tablecol9, 
+
+#bab_groups_tree.displaytable9 input.tablecol1,
+#bab_groups_tree.displaytable9 input.tablecol2,
+#bab_groups_tree.displaytable9 input.tablecol3,
+#bab_groups_tree.displaytable9 input.tablecol4,
+#bab_groups_tree.displaytable9 input.tablecol5,
+#bab_groups_tree.displaytable9 input.tablecol6,
+#bab_groups_tree.displaytable9 input.tablecol7,
+#bab_groups_tree.displaytable9 input.tablecol8 {
+	display:none;
+}
+

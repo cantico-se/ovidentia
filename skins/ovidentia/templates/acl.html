@@ -28,31 +28,19 @@ function check_childs(checkbox)
 		}
 }
 
-function macl_switch_view_on(table)
-{
-
-	var menu = document.getElementById('bab_groups_acl').getElementsByTagName('li');
-	for(var i = 0; i < menu.length; i++ )
-		{
-		menu[i].className = '';
-		}
-	
-	if (null == table) {
-		table = menu[0].id.substr(16);
-		}
-
-	document.getElementById('macl_link_table_'+table).className = 'BabMenuActiveBackground';
+function macl_set_checkbox_events() {
 
 	var checkbox = document.getElementById('bab_groups_tree').getElementsByTagName('input');
 	for(var i = 0; i < checkbox.length; i++ )
 		{
+		/*
 		if (table_name(checkbox[i]) != table) {
 			checkbox[i].style.display = 'none';
 			}
 		else {
 			checkbox[i].style.display = '';
 			}
-
+		*/
 		if ('tree' == checkbox[i].name.substr(0,4) || ('group' == checkbox[i].name.substr(0,5) && checkbox[i].value < 3))
 			{
 			checkbox[i].onclick = function() {
@@ -64,7 +52,25 @@ function macl_switch_view_on(table)
 				}
 			}
 		}
+}
+
+function macl_switch_view_on(table, tablenum)
+{
+
+	var menu = document.getElementById('bab_groups_acl').getElementsByTagName('li');
+	for(var i = 0; i < menu.length; i++ )
+		{
+		menu[i].className = '';
+		}
 	
+	if (null == table) {
+		table = menu[0].id.substr(16);
+		tablenum = 1;
+		}
+
+	document.getElementById('macl_link_table_'+table).className = 'BabMenuActiveBackground';
+	
+	document.getElementById('bab_groups_tree').className = 'BabLoginCadreBackground displaytable'+tablenum;
 }
 
 
@@ -88,7 +94,7 @@ function hideNonMultipleTable()
 <div id="bab_groups_acl" class="BabLoginCadreBackground">
 <ul class="BabLoginMenuBackground">
 	<!--#in getnexttable -->
-	<li id="macl_link_table_{ table }" onclick="macl_switch_view_on('{ table }')">
+	<li id="macl_link_table_{ table }" onclick="macl_switch_view_on('{ table }',{ tablenum })">
 		{ title }
 		<input type="hidden" name="tablelist[]" value="{ table }" />
 	</li>
@@ -106,24 +112,24 @@ function hideNonMultipleTable()
 	<a href="javascript:tree.expandChecked();" class="expandchecked">{ t_expand_checked }</a>
 	</p>
 	<div class="tree">
-	<ul class="first">
-	<!--#in firstnode -->
-	<li id="bab_ovgroup_{ arr[id] }">
-		<div class="line">
-		
-		<img src="{ babSkinPath }images/Puces/folder_group.gif" alt="{ t_group }" />
-		{ arr[name] }
+		<ul class="first">
+		<!--#in firstnode -->
+			<li id="bab_ovgroup_{ arr[id] }">
+				<div class="line">
+				
+				<img src="{ babSkinPath }images/Puces/folder_group.gif" alt="{ t_group }" />
+				{ arr[name] }
 
-			<div class="right">
-				<!--#in getnexttable -->
-				<input type="checkbox" name="group[{ table }][]" value="{ id_group }" <!--#if checked --> checked="checked" <!--#endif checked --> <!--#if disabled --> disabled="disabled" <!--#endif disabled --> />
-				<!--#endin getnexttable -->
-			</div>
-		</div>
-		{ tpl_tree }
-		</li>
-	<!--#endin firstnode -->
-	</ul>
+					<div class="right">
+						<!--#in getnexttable -->
+						<input type="checkbox" class="tablecol{ tablenum }" name="group[{ table }][]" value="{ id_group }" <!--#if checked --> checked="checked" <!--#endif checked --> <!--#if disabled --> disabled="disabled" <!--#endif disabled --> />
+						<!--#endin getnexttable -->
+					</div>
+				</div>
+				{ tpl_tree }
+			</li>
+		<!--#endin firstnode -->
+		</ul>
 	<br />
 	</div>
 	<!--#if countsets -->
@@ -136,7 +142,7 @@ function hideNonMultipleTable()
 			{ arr[name] }
 				<div class="right">
 				<!--#in getnexttable -->
-				<input type="checkbox" name="group[{ table }][]" value="{ id_group }" <!--#if checked --> checked="checked" <!--#endif checked --> <!--#if disabled --> disabled="disabled" <!--#endif disabled --> />
+				<input type="checkbox" class="tablecol{ tablenum }" name="group[{ table }][]" value="{ id_group }" <!--#if checked --> checked="checked" <!--#endif checked --> <!--#if disabled --> disabled="disabled" <!--#endif disabled --> />
 				<!--#endin getnexttable -->
 				</div>
 			</div>
@@ -157,6 +163,7 @@ function hideNonMultipleTable()
 var tree = new bab_ul_tree('bab_groups_tree');
 tree.processList();
 tree.expandChecked();
+macl_set_checkbox_events();
 macl_switch_view_on();
 hideNonMultipleTable();
 </script>
@@ -169,14 +176,14 @@ hideNonMultipleTable();
 			<div>
 			<img src="{ babSkinPath }images/Puces/folder_group.gif" alt="{ t_group }" />
 			<!--#in getnexttable -->
-			<!--#if id_group "> 2" --><input type="checkbox" name="tree[{ table }][]" value="{ arr[id] }" <!--#if treechecked --> checked="checked" <!--#endif treechecked --> /><!--#endif id_group -->
+			<!--#if id_group "> 2" --><input type="checkbox" class="tablecol{ tablenum }" name="tree[{ table }][]" value="{ arr[id] }" <!--#if treechecked --> checked="checked" <!--#endif treechecked --> /><!--#endif id_group -->
 			<!--#endin getnexttable -->
 			
 			{ arr[name] }
 
 			<div class="right">
 				<!--#in getnexttable -->
-				<input type="checkbox" name="group[{ table }][]" value="{ id_group }" <!--#if checked --> checked="checked" <!--#endif checked --> <!--#if disabled --> disabled="disabled" <!--#endif disabled --> />
+				<input type="checkbox" class="tablecol{ tablenum }" name="group[{ table }][]" value="{ id_group }" <!--#if checked --> checked="checked" <!--#endif checked --> <!--#if disabled --> disabled="disabled" <!--#endif disabled --> />
 				<!--#endin getnexttable -->
 			</div>
 

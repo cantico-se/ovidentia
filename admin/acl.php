@@ -128,6 +128,7 @@ class macl
 		static $i = 0;
 		if( $i < count($this->tables))
 			{
+			$this->tablenum = $i +1;
 			$this->table = $this->tables[$i]['table'];
 			$this->title = $this->tables[$i]['title'];
 			$this->disabled = true;
