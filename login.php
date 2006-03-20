@@ -1268,10 +1268,6 @@ if ($cmd == "detect" && $GLOBALS['BAB_SESS_LOGGED'])
 
 switch($cmd)
 	{
-	case "confirm":
-		confirmUser( $hash, $name );
-		break;
-
 	case "signoff":
 		signOff();
 		break;
@@ -1309,6 +1305,9 @@ switch($cmd)
 		emailPassword();
 		break;
 
+	case "confirm":
+		confirmUser( $hash, $name );
+		/* no break; */
 	case "signon":
 	default:
 		if (!empty($_SERVER['HTTP_HOST']) && !isset($_GET['redirected']) && substr_count($GLOBALS['babUrl'],$_SERVER['HTTP_HOST']) == 0 && !$GLOBALS['BAB_SESS_LOGGED'])
