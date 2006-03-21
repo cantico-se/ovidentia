@@ -10,7 +10,7 @@ function bab_dialog(url, parameters, action, init) {
 		'personalbar'	: 'no',
 		'width'			: 200,
 		'height'		: 200,
-		'scrollbars'	: 'no',
+		'scrollbars'	: 'yes',
 		'resizable'		: 'yes',
 		'modal'			: 'yes',
 		'dependable'	: 'yes'
@@ -123,12 +123,31 @@ bab_dialog._openModal = function(url, parameters, action, init) {
 
 // specific functions
 
-bab_dialog.calendar = function(action) {
+/**
+ * A calendar dialog
+ * @param action function, an associative array with keys "day", "month", "year" will be given to "action" as a single parameter
+ */
+bab_dialog.selectdate = function(action) {
 
 	var useparam = {
 		'width'		: 200,
-		'height'	: 200
+		'height'	: 200,
+		'scrollbars': 'no',
 	}
 
 	bab_dialog('?tg=month&callback=bab_dialog', useparam , action );
+}
+
+/**
+ * A user list dialog
+ * @param action function, an associative array with keys "id_user" and "name" will be given to "action" as a single parameter
+ */
+bab_dialog.selectuser = function(action) {
+
+	var useparam = {
+		'width'		: 700,
+		'height'	: 500
+	}
+
+	bab_dialog('?tg=lusers&idx=brow&cb=bab_dialog', useparam , action );
 }

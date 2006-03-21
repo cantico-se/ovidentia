@@ -42,7 +42,7 @@ function browseUsers($pos, $cb)
 		var $res;
 
 		var $pos;
-
+		var $altbg = true;
 		var $userid;
 
 		var $nickname;
@@ -116,6 +116,7 @@ function browseUsers($pos, $cb)
 					$this->urlname = bab_composeUserName($this->arr['firstname'],$this->arr['lastname']);
 				$this->userid = $this->arr['id'];
 				$this->nicknameval = $this->arr['nickname'];
+				$this->altbg = !$this->altbg;
 				$i++;
 				return true;
 				}
@@ -157,8 +158,16 @@ function browseUsers($pos, $cb)
 			}
 		}
 
+	include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
+	$GLOBALS['babBodyPopup'] = new babBodyPopup();
+	$GLOBALS['babBodyPopup']->title = & $GLOBALS['babBody']->title;
+	$GLOBALS['babBodyPopup']->msgerror = & $GLOBALS['babBody']->msgerror;
+
 	$temp = new temp($pos, $cb);
-	echo bab_printTemplate($temp, "lusers.html", "browseusers");
+
+	$GLOBALS['babBodyPopup']->babecho(bab_printTemplate($temp, "lusers.html", "browseusers"));
+	printBabBodyPopup();
+	die();
 	}
 
 switch($idx)

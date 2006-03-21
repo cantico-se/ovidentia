@@ -1,57 +1,52 @@
 <!--#begin browseusers -->
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE>{ babSiteName }</TITLE>
-{ babMeta }
-{ babCss }
 <script type="text/javascript">
-<!--
-window.focus();
-//-->
+function setcallbackuser(userid, username ) {
+	//}
+	<!--#if cb "== bab_dialog" -->
+		var val = new Array();
+		val['id_user'] = userid;
+		val['name'] = username;
+		opener.bab_dialog._return(val);
+		window.close();
+	<!--#else cb -->
+		self.opener.{ cb }(userid, username);
+	<!--#endif cb -->
+	}
 </script>
-</HEAD>
-<BODY class="BabBackground">
-<br>
 <table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
-<td class="BabMailBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td colspan="5" nowrap class="BabLetterlists">
-<!--#if allselected "== 1" -->
-{ allname }&nbsp;&nbsp;
-<!--#else allselected -->
-<a class="BabAlphabetLink" href="{ allurl }">{ allname }</a>&nbsp;&nbsp;
-<!--#endif allselected -->
-<!--#in getnextselect -->
-<!--#if selected "== 1" -->
-{ selectname }&nbsp;&nbsp;
-<!--#else selected -->
-<a class="BabAlphabetLink" href="{ selecturl }">{ selectname }</a>&nbsp;&nbsp;
-<!--#endif selected -->
-<!--#endin getnextselect -->
-</td>
-</tr>
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" width="1%" align="right" nowrap 
-valign="middle">&nbsp;</td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle"><a class="BabSiteAdminListLink" href="{ fullnameurl }"><b>{ fullname }</b></a></td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle"><b>{ nickname }</b></td>
-</tr>
-<!--#in getnext -->
-<tr> 
-<td width="1%" align="right" nowrap valign="middle"> 
-&nbsp; </td>
-<td class="BabSiteAdminFontBackground" valign="middle"><a class="BabNameEmailLink" href="#" onclick="self.opener.{ cb }({ userid }, '{ firstlast }')">{ urlname }</a> </td>
-<td class="BabSiteAdminFontBackground" valign="middle">{ nicknameval }</td>
-</tr>
-<!--#endin getnext -->
-</table>
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+	<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+	<tr> 
+	<td colspan="5" nowrap class="BabLetterlists">
+	<!--#if allselected "== 1" -->
+	{ allname }&nbsp;&nbsp;
+	<!--#else allselected -->
+	<a href="{ allurl }">{ allname }</a>&nbsp;&nbsp;
+	<!--#endif allselected -->
+	<!--#in getnextselect -->
+	<!--#if selected "== 1" -->
+	{ selectname }&nbsp;&nbsp;
+	<!--#else selected -->
+	<a href="{ selecturl }">{ selectname }</a>&nbsp;&nbsp;
+	<!--#endif selected -->
+	<!--#endin getnextselect -->
+	</td>
+	</tr>
+	<tr class="BabSiteAdminTitleFontBackground"> 
+
+		<td><a class="BabSiteAdminListLink" href="{ fullnameurl }">{ fullname }</a></td>
+		<td>{ nickname }</td>
+	</tr>
+	<!--#in getnext -->
+	<!--#if altbg --><tr class="BabSiteAdminFontBackground">
+	<!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+		<td><a href="#" onclick="setcallbackuser({ userid }, '{ firstlast }'); return false;">{ urlname }</a> </td>
+		<td>{ nicknameval }</td>
+	</tr>
+	<!--#endin getnext -->
+	</table>
 </td>
 </tr>
 </table>
-<br>
-</BODY>
-</HTML>
 <!--#end browseusers -->
