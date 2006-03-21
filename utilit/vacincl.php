@@ -167,9 +167,9 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 				FROM 
 					".BAB_VAC_TYPES_TBL." t, 
 					".BAB_VAC_COLL_TYPES_TBL." c, 
-					".BAB_VAC_RIGHTS_TBL." r, 
 					".BAB_VAC_USERS_RIGHTS_TBL." ur, 
-					".BAB_VAC_PERSONNEL_TBL." p 
+					".BAB_VAC_PERSONNEL_TBL." p, 
+					".BAB_VAC_RIGHTS_TBL." r 
 				LEFT JOIN 
 					".BAB_VAC_RIGHTS_RULES_TBL." rules 
 					ON rules.id_right = r.id 
