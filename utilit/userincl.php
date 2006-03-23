@@ -557,6 +557,7 @@ function bab_fileManagerAccessLevel()
 		}
 	
 	$res = $babDB->db_query("select id, idsa, folder, bhide from ".BAB_FM_FOLDERS_TBL." where active='Y' ORDER BY folder");
+	$babBody->aclfm['bshowfm'] = false;
 	while($row = $babDB->db_fetch_array($res))
 		{
 		$uplo = bab_isAccessValid(BAB_FMUPLOAD_GROUPS_TBL, $row['id']);
@@ -564,7 +565,6 @@ function bab_fileManagerAccessLevel()
 		$upda = bab_isAccessValid(BAB_FMUPDATE_GROUPS_TBL, $row['id']);
 		$man = bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $row['id']);
 
-		$babBody->aclfm['bshowfm'] = false;
 		if( $down || $uplo || $upda || $man )
 			{
 			$babBody->aclfm['id'][] = $row['id'];
