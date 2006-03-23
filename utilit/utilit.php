@@ -319,6 +319,13 @@ function bab_callAddonsFunction($func)
 {
 	$babBody = & $GLOBALS['babBody'];
 
+	$oldBabAddonFolder = isset($GLOBALS['babAddonFolder'])? $GLOBALS['babAddonFolder']: '';
+	$oldBabAddonTarget = isset($GLOBALS['babAddonTarget'])? $GLOBALS['babAddonTarget']: '';
+	$oldBabAddonUrl =  isset($GLOBALS['babAddonUrl'])? $GLOBALS['babAddonUrl']: '';
+	$oldBabAddonPhpPath =  isset($GLOBALS['babAddonPhpPath'])? $GLOBALS['babAddonPhpPath']: '';
+	$oldBabAddonHtmlPath =  isset($GLOBALS['babAddonHtmlPath'])? $GLOBALS['babAddonHtmlPath']: '';
+	$oldBabAddonUpload =  isset($GLOBALS['babAddonUpload'])? $GLOBALS['babAddonUpload']: '';
+
 	foreach($babBody->babaddons as $key => $row)
 		{ 
 		if($row['access'])
@@ -347,12 +354,26 @@ function bab_callAddonsFunction($func)
 				}
 			}
 		}
+
+	$GLOBALS['babAddonFolder'] = $oldBabAddonFolder;
+	$GLOBALS['babAddonTarget'] = $oldBabAddonTarget;
+	$GLOBALS['babAddonUrl'] = $oldBabAddonUrl;
+	$GLOBALS['babAddonPhpPath'] = $oldBabAddonPhpPath;
+	$GLOBALS['babAddonHtmlPath'] = $oldBabAddonHtmlPath;
+	$GLOBALS['babAddonUpload'] = $oldBabAddonUpload;
 }
 
 
 function bab_callAddonsFunctionArray($func, $args)
 {
 	$babBody = & $GLOBALS['babBody'];
+
+	$oldBabAddonFolder = isset($GLOBALS['babAddonFolder'])? $GLOBALS['babAddonFolder']: '';
+	$oldBabAddonTarget = isset($GLOBALS['babAddonTarget'])? $GLOBALS['babAddonTarget']: '';
+	$oldBabAddonUrl =  isset($GLOBALS['babAddonUrl'])? $GLOBALS['babAddonUrl']: '';
+	$oldBabAddonPhpPath =  isset($GLOBALS['babAddonPhpPath'])? $GLOBALS['babAddonPhpPath']: '';
+	$oldBabAddonHtmlPath =  isset($GLOBALS['babAddonHtmlPath'])? $GLOBALS['babAddonHtmlPath']: '';
+	$oldBabAddonUpload =  isset($GLOBALS['babAddonUpload'])? $GLOBALS['babAddonUpload']: '';
 
 	foreach($babBody->babaddons as $key => $row)
 		{ 
@@ -373,6 +394,13 @@ function bab_callAddonsFunctionArray($func, $args)
 				}
 			}
 		}
+
+	$GLOBALS['babAddonFolder'] = $oldBabAddonFolder;
+	$GLOBALS['babAddonTarget'] = $oldBabAddonTarget;
+	$GLOBALS['babAddonUrl'] = $oldBabAddonUrl;
+	$GLOBALS['babAddonPhpPath'] = $oldBabAddonPhpPath;
+	$GLOBALS['babAddonHtmlPath'] = $oldBabAddonHtmlPath;
+	$GLOBALS['babAddonUpload'] = $oldBabAddonUpload;
 }
 
 
