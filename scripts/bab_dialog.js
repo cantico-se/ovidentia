@@ -132,7 +132,7 @@ bab_dialog.selectdate = function(action) {
 	var useparam = {
 		'width'		: 200,
 		'height'	: 200,
-		'scrollbars': 'no',
+		'scrollbars': 'no'
 	}
 
 	bab_dialog('?tg=month&callback=bab_dialog', useparam , action );
