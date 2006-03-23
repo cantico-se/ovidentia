@@ -4235,6 +4235,7 @@ class bab_context
 {
 	var $name;
 	var $variables = array();
+	var $content;
 
 	function bab_context($name)
 	{
@@ -4251,6 +4252,13 @@ class bab_context
 		return array_pop($this->variables);
 	}
 
+	function setContent($txt) {
+		$this->content = $txt;
+	}
+
+	function getcontent() {
+		return $this->content;
+	}
 
 	function get($var)
 	{
@@ -4390,6 +4398,7 @@ function handle_tag( $handler, $txt, $txt2 )
 	if( class_exists($handler))
 		{
 		$ctx = new bab_context($handler);
+		$ctx->setContent($txt);
 		$this->push_ctx($ctx);
 		if(preg_match_all("/(\w+)\s*=\s*([\"'])(.*?)\\2/", $txt2, $mm))
 			{
@@ -4856,6 +4865,12 @@ function bab_Header($args)
 		header($value);
 		}
 	}
+
+
+function bab_Recurse($args) {
+	$handler = substr($this->curctx->getname(), 4);
+	return $this->handle_tag($handler, $this->curctx->getcontent(), $this->vars_replace($args));	
+}
 
 
 function bab_Addon($args)
