@@ -4457,6 +4457,9 @@ function format_output($val, $matches)
 						$trans = array_flip($trans);
 						$val = strtr($val, $trans);
 						break;
+					case '3':
+						$val = htmlspecialchars($val);
+						break;
 					}
 				break;
 			case 'stripslashes':
