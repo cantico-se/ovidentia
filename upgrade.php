@@ -5694,6 +5694,13 @@ return $ret;
 }
 
 
+function upgrade579to580()
+{	
+$ret = "";
+$db = & $GLOBALS['babDB'];
+
+return $ret;
+}
 
 
 ?>

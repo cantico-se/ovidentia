@@ -1011,8 +1011,8 @@ CREATE TABLE bab_ini (
 );
 
 INSERT INTO bab_ini VALUES ('ver_major', '5');
-INSERT INTO bab_ini VALUES ('ver_minor', '7');
-INSERT INTO bab_ini VALUES ('ver_build', '9');
+INSERT INTO bab_ini VALUES ('ver_minor', '8');
+INSERT INTO bab_ini VALUES ('ver_build', '0');
 INSERT INTO bab_ini VALUES ('ver_prod', 'E');
 
 #
