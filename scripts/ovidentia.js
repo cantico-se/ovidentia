@@ -155,8 +155,8 @@ function bab_tooltipPosition(e)
 	var ns6=document.getElementById && !document.all;
 
 	var ietypebody = (document.compatMode && document.compatMode!="BackCompat")? document.documentElement : document.body
-	var curX=(ns6)? e.pageX : event.x + ietypebody.scrollLeft;
-	var curY=(ns6)? e.pageY : event.y + ietypebody.scrollTop;
+	var curX=(ns6)? e.pageX : event.clientX + ietypebody.scrollLeft;
+	var curY=(ns6)? e.pageY : event.clientY + ietypebody.scrollTop;
 	var rightedge=ie&&!window.opera ? ietypebody.clientWidth-event.clientX-offsetxpoint : window.innerWidth-e.clientX-offsetxpoint-20
 	var bottomedge=ie&&!window.opera ? ietypebody.clientHeight-event.clientY-offsetypoint : window.innerHeight-e.clientY-offsetypoint-20
 	var leftedge=(offsetxpoint<0)? offsetxpoint*(-1) : -1000;
