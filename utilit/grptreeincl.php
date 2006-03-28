@@ -33,7 +33,10 @@ class bab_grptree extends bab_dbtree
 	function bab_grptree()
 	{
 	global $babBody;
-	$this->table = BAB_GROUPS_TBL;
+
+	$this->bab_dbtree(BAB_GROUPS_TBL, null);
+
+
 	$this->firstnode = BAB_ALLUSERS_GROUP;
 	$this->firstnode_parent = NULL;
 	$this->where = 'nb_set >= \'0\'';
