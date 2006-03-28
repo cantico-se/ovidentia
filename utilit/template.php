@@ -188,7 +188,9 @@ function processTemplate(&$class, $str)
 						$tmp = explode('=', $param[$i]);
 						if( is_array($tmp) && count($tmp) == 2 )
 							{
-							$args[trim($tmp[0])] = trim($tmp[1], '"');
+							$var = trim($tmp[1], '"');
+							$var = isset($class->$var)? $class->$var: $var;
+							$args[trim($tmp[0])] = $var;
 							}
 					}
 				}
