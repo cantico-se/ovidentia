@@ -233,6 +233,9 @@ function listArticles($topics)
 					$this->delurl = $GLOBALS['babUrlScript']."?tg=articles&idx=Delete&topics=".$this->topics."&article=".$this->arr['id'];
 					}
 
+				/* template variables */
+				$this->babtpl_authorid = $this->arr['id_author'];
+
 				$this->articledate = bab_strftime(bab_mktime($this->arr['date_modification']));
 				$this->author = bab_translate("by") . " ". $this->articleauthor. " - ". $this->articledate;
 				$this->content = bab_replace($this->arr['head']);
