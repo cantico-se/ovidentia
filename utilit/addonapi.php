@@ -1349,4 +1349,24 @@ function bab_uppdateUserByNickname($nickname, $info, &$error)
 	}
 }
 
+
+function bab_debug($str)
+{
+	if (isset($_COOKIE['bab_debug'])) {
+		if (isset($GLOBALS['bab_debug_messages'])) {
+			$GLOBALS['bab_debug_messages'][] = $str;
+		} else {
+			$GLOBALS['bab_debug_messages'] = array($str);
+		}
+	}
+}
+
+function bab_getDebug() {
+	if (bab_isUserAdministrator() && isset($GLOBALS['bab_debug_messages'])) {
+		include_once $GLOBALS['babInstallPath']."utilit/devtools.php";
+		return bab_f_getDebug();
+	}
+	return false;
+}
+
 ?>

@@ -1,0 +1,16 @@
+#BAB_DEBUG pre {
+	text-align:left;
+	background:white;
+	color:black;
+	border-bottom:black 1px solid;
+	padding:.5em;
+	font-size:12px;
+	font-weight:bold;
+	}
+
+#BAB_DEBUG_link {
+	color:red;
+	background:white;
+	padding:.5em;
+	text-decoration:none;
+	}

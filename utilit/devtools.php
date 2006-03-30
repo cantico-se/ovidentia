@@ -384,4 +384,45 @@ function bab_export_tables($tables, $file = false)
 	return false;
 	}
 
+
+function bab_f_getDebug() {
+
+	global $babBody;
+
+	class bab_f_getDebugCls {
+		function bab_f_getDebugCls() {
+			$this->messages = $GLOBALS['bab_debug_messages'];
+			$this->t_messages = bab_translate('Messages');
+			$this->nb_message = count($this->messages);
+		}
+
+		function color_query(&$str) {
+
+			if (preg_match("/UPDATE|INSERT|SELECT/",$str)) {
+
+				$str = preg_replace("/(\(|\)|=|\<|\>)/","<span style=\"color:blue\">\\1</span>",$str);
+				$str = preg_replace("/(form_tbl_\d{4})/","<span style=\"color:green\">\\1</span>",$str);
+				$str = preg_replace("/(UPDATE|SET|INSERT|INTO|VALUES|SELECT|ORDER BY|GROUP BY|ASC|DESC|LEFT JOIN|ON|WHERE|FROM|AND|OR|MIN|IN|LIKE|CONCAT|SUM|MAX|UNIX_TIMESTAMP|MONTH|DAY|YEAR)/","<span style=\"color:red\">\\1</span>",$str);
+				$str = preg_replace("/('(\w|%|\s)+')/","<span style=\"color:orange\">\\1</span>",$str);
+				$str = preg_replace("/(CASE|WHEN|THEN|END)/","<span style=\"color:blue\">\\1</span>",$str);
+			}
+		}
+
+
+		function getNextMessage() {
+			if (list(, $this->text) = each($this->messages)) {
+				$this->text = htmlspecialchars($this->text);
+				$this->color_query($this->text);
+				return true;
+			}
+			return false;
+		}
+	}
+
+	$babBody->addStyleSheet('debug.css');
+
+	$temp = new bab_f_getDebugCls();
+	return bab_printTemplate($temp, 'devtools.html', 'debug');
+}
+
 ?>

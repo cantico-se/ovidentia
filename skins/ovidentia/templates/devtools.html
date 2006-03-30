@@ -1,0 +1,26 @@
+<!--#begin debug -->
+<a id="BAB_DEBUG_link" href="#" onclick="show_hide_debug();return false;">{ nb_message } { t_messages }</a>
+
+<div id="BAB_DEBUG">
+	<!--#in getNextMessage -->
+	<pre>{ text }</pre>
+	<!--#endin getNextMessage -->
+</div>
+
+<script type="text/javascript">
+function show_hide_debug()
+	{
+	var obj = document.getElementById('BAB_DEBUG');
+
+	if (obj.style.display != 'none')
+		{
+		obj.style.display = 'none';
+		}
+	else
+		{
+		obj.style.display = '';
+		}
+	}
+document.getElementById('BAB_DEBUG').style.display = 'none';
+</script>
+<!--#end debug -->

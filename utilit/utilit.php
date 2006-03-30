@@ -1219,8 +1219,17 @@ function bab_updateUserSettings()
 
 
 
-			if( $babBody->ovgroups[BAB_ADMINISTRATOR_GROUP]['member'] == 'Y')
+			if( $babBody->ovgroups[BAB_ADMINISTRATOR_GROUP]['member'] == 'Y') {
 				$babBody->isSuperAdmin = true;
+				
+				if (isset($_GET['debug']))
+					{
+					if (1 == $_GET['debug'])
+						setcookie('bab_debug','1',time()+31536000); // 1 year
+					if (0 == $_GET['debug'])
+						setcookie('bab_debug','',time()-31536000); // remove
+					}
+				}
 
 			$res = $babDB->db_query("SELECT dg.id FROM ".BAB_DG_ADMIN_TBL." da,".BAB_DG_GROUPS_TBL." dg where da.id_user='".$BAB_SESS_USERID."' AND da.id_dg=dg.id AND dg.id_group >= '0'");
 			while( $arr = $babDB->db_fetch_array($res) )
