@@ -1353,6 +1353,9 @@ function bab_uppdateUserByNickname($nickname, $info, &$error)
 function bab_debug($str)
 {
 	if (isset($_COOKIE['bab_debug'])) {
+		if (!is_string($str)) {
+			$str = print_r($str, true);
+		}
 		if (isset($GLOBALS['bab_debug_messages'])) {
 			$GLOBALS['bab_debug_messages'][] = $str;
 		} else {
