@@ -536,8 +536,10 @@ switch($idx)
 		$mgroups = new mgroups('user','Groups',BAB_REGISTERED_GROUP);
 		$mgroups->setField('action', 'updategroups');
 		$mgroups->setField('item', $_REQUEST['item']);
-		$mgroups->setField('pos', $_REQUEST['pos']);
-		$mgroups->setField('grp', $_REQUEST['grp']);
+		$pos = isset($_REQUEST['pos']) ? $_REQUEST['pos'] : 0;
+		$grp = isset($_REQUEST['grp']) ? $_REQUEST['grp'] : 0;
+		$mgroups->setField('pos', $pos);
+		$mgroups->setField('grp', $grp);
 		$mgroups->setGroupOption(BAB_REGISTERED_GROUP,'disabled',true);
 		$arr = bab_getUserGroups($_REQUEST['item']);
 		if (isset($arr['id']))
