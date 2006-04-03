@@ -972,6 +972,7 @@ INSERT INTO bab_mime_types VALUES ('xls', 'application/vnd.ms-excel');
 INSERT INTO bab_mime_types VALUES ('xml', 'text/xml');
 INSERT INTO bab_mime_types VALUES ('zip', 'application/zip');
 INSERT INTO bab_mime_types VALUES ('pdf', 'application/pdf');
+INSERT INTO bab_mime_types VALUES ('sxw', 'application/vnd.sun.xml.writer');
 
 # --------------------------------------------------------
 #
@@ -1012,7 +1013,7 @@ CREATE TABLE bab_ini (
 
 INSERT INTO bab_ini VALUES ('ver_major', '5');
 INSERT INTO bab_ini VALUES ('ver_minor', '8');
-INSERT INTO bab_ini VALUES ('ver_build', '0');
+INSERT INTO bab_ini VALUES ('ver_build', '1');
 INSERT INTO bab_ini VALUES ('ver_prod', 'E');
 
 #
