@@ -5702,5 +5702,19 @@ $db = & $GLOBALS['babDB'];
 return $ret;
 }
 
+function upgrade580to581()
+{	
+$ret = "";
+$db = & $GLOBALS['babDB'];
+
+$res = $db->db_query("select * from ".BAB_MIME_TYPES_TBL." where ext='sxw'");
+if( !$res || $db->db_num_rows($res) == 0 )
+	{
+	$db->db_query("INSERT INTO ".BAB_MIME_TYPES_TBL." VALUES ('sxw', 'application/vnd.sun.xml.writer')");
+	}
+
+return $ret;
+}
+
 
 ?>
