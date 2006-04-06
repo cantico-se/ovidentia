@@ -209,9 +209,10 @@ class bab_sqlExport
 		if ($comment == 'FULLTEXT') {
 			$kname = 'FULLTEXT|' . $kname;
 			}
-		if (!isset($index[$kname])) {
+		if (!isset($this->key_index[$kname])) {
 			$this->key_index[$kname] = array();
 			}
+
 		if ($sub_part > 1) {
 			$this->key_index[$kname][] = $row['Column_name'] . '(' . $sub_part . ')';
 			} 
