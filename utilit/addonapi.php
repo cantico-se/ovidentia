@@ -1349,7 +1349,10 @@ function bab_uppdateUserByNickname($nickname, $info, &$error)
 	}
 }
 
-
+/**
+ * push some content into the debug console
+ * @param string|array|object
+ */
 function bab_debug($str)
 {
 	if (isset($_COOKIE['bab_debug'])) {
@@ -1364,12 +1367,36 @@ function bab_debug($str)
 	}
 }
 
+/**
+ * return the html for the debug console, usefull for popups
+ * @return html
+ */
 function bab_getDebug() {
 	if (bab_isUserAdministrator() && isset($GLOBALS['bab_debug_messages'])) {
 		include_once $GLOBALS['babInstallPath']."utilit/devtools.php";
 		return bab_f_getDebug();
 	}
 	return false;
+}
+
+/**
+ * transform some plain text into html
+ * available options :
+ * <ul>
+ * <li>BAB_HTML_ALL			: a combination of all the options</li>
+ * <li>BAB_HTML_ENTITIES	: special characters will be replaced with html entities</li>
+ * <li>PE_HTML_AUTO			: the paragraphs tags will be added only if the text contein some text line-breaks</li>
+ * <li>PE_HTML_P			: double line breaks will be replaced by html paragraphs, if there is no double line breaks, all the text will be in one paragraph</li>
+ * <li>PE_HTML_BR			: Line-breaks will be replaced by html line breaks</li>
+ * <li>PE_HTML_LINKS		: url and email adress will be replaced by links</li>
+ * </ul>
+ * @param string $str
+ * @param int [$opt] the default value for the option is BAB_HTML_ENTITIES
+ * @return string html
+ */
+function bab_toHtml($str, $option = BAB_HTML_ENTITIES) {
+	include_once $GLOBALS['babInstallPath'].'utilit/tohtmlincl.php';
+	return bab_f_toHtml($str, $option);
 }
 
 ?>

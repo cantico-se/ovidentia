@@ -41,6 +41,15 @@ define("BAB_DIR_ENTRY_ID",					2);
 define("BAB_DIR_ENTRY_ID_DIRECTORY",		3);
 define("BAB_DIR_ENTRY_ID_GROUP",			4);
 
+/* function bab_toHtml() */
+
+define('BAB_HTML_ENTITIES'		,1);
+define('BAB_HTML_P'				,BAB_HTML_ENTITIES << 1);
+define('BAB_HTML_BR'			,BAB_HTML_ENTITIES << 2);
+define('BAB_HTML_LINKS'			,BAB_HTML_ENTITIES << 3);
+define('BAB_HTML_AUTO'			,BAB_HTML_ENTITIES << 4);
+define('BAB_HTML_ALL'			,BAB_HTML_ENTITIES | BAB_HTML_P | BAB_HTML_BR | BAB_HTML_LINKS);
+
 /* calendars */
 define("BAB_CAL_USER_TYPE", 1);
 define("BAB_CAL_PUB_TYPE", 2);
