@@ -20,7 +20,7 @@ function deladdon(id)
 		<tr class="BabSiteAdminTitleFontBackground"> 
 			<td>{ name } </td>
 			<td>{ desctxt }</td>
-			<td align="center"><a href="{ upgradeallurl }">{ upgradetxt }</a></td>
+			<td align="center">{ upgradetxt }</td>
 			<td align="center">{ versiontxt }</td>
 			<td colspan="4">&nbsp;</td>
 			<td width="1%">{ disabled }</td>
@@ -102,9 +102,9 @@ function deladdon(id)
 <!--#begin upload -->
 <form method="post" action="{ babPhpSelf }" enctype="multipart/form-data">
 <input type="hidden" name="tg" value="addons" />
-<input type="hidden" name="idx" value="list" />
+<input type="hidden" name="idx" value="requirements" />
 <input type="hidden" name="MAX_FILE_SIZE" value="{ babMaxFileSize }" />
-<input type="hidden" name="action" value="import" />
+
 	<table width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 	<tr> 
 		<td class="BabLoginCadreBackground" align="center"> 
@@ -122,6 +122,64 @@ function deladdon(id)
 	</table>
 </form>
 <!--#end upload -->
+
+
+<!--#begin requirements -->
+<form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="addons" />
+<input type="hidden" name="idx" value="list" />
+<input type="hidden" name="tmpfile" value="{ tmpfile }" />
+<input type="hidden" name="action" value="{ action }" />
+<!--#if item -->
+<input type="hidden" name="item" value="{ item }" />
+<!--#endif item -->
+	<table width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+		<td class="BabLoginCadreBackground" align="center"> 
+		<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5">
+			
+			<tr> 
+				<td colspan="4">
+					<ul>
+						<li>{ t_addon } : { name }</li>
+						<li>{ t_description } : { adescription }</li>
+						<li>{ t_version } : { version }</li>
+					</ul>
+				</td>
+			</tr>
+			
+			<tr> 
+				<td colspan="4">{ t_requirements } :<br /><br /></td>
+			</tr>
+			<tr class="BabSiteAdminTitleFontBackground"> 
+				<td>&nbsp;</td>
+				<td>{ t_required }</td>
+				<td>{ t_current }</td>
+				<td>&nbsp;</td>
+			</tr>
+			<!--#in getnextreq -->
+			<tr class="BabSiteAdminFontBackground"> 
+				<td>&nbsp;{ description }</td>
+				<td>{ required }</td>
+				<td>{ current }</td>
+				<td>{ result }</td>
+			</tr>
+			<!--#endin getnextreq -->
+			<tr> 
+				<td colspan="4" align="center">
+				<br /><br />
+				<!--#if allok -->
+					<input type="submit" value="{ t_install }" />
+				<!--#endif allok -->
+				</td>
+			</tr>
+		</table>
+		</td>
+	</tr>
+	</table>
+</form>
+<!--#end requirements -->
+
 
 <!--#begin history -->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">

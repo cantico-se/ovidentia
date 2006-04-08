@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-include $babInstallPath."admin/acl.php";
+include_once $babInstallPath."admin/acl.php";
 
 $GLOBALS['addons_files_location'] = 
 array('loc_in' => array(
@@ -43,40 +43,7 @@ array('loc_in' => array(
 				)
 			);
 
-function compare_versions($ver1,$ver2) // return true if ver2 >ver1
-{
-$tmp1 = explode(" ",$ver1);
-$tab1 = explode(".",$tmp1[0]);
-$tmp2 = explode(" ",$ver2);
-$tab2 = explode(".",$tmp2[0]);
-if ( count($tab1) >= count($tab2) )
-	{
-	foreach( $tab1 as $key => $value )
-		{
-		if (isset($tab2[$key]) && is_numeric($tab2[$key]) && is_numeric($value) ) 
-			{
-			if ($tab2[$key] > $value)
-				return true;
-			if ($tab2[$key] < $value)
-				return false;
-			}
-		}
-	}
-else
-	{
-	foreach( $tab2 as $key => $value )
-		{
-		if (isset($tab1[$key]) && is_numeric($tab1[$key]) && is_numeric($value) ) 
-			{
-			if ($tab1[$key] > $value)
-				return true;
-			if ($tab1[$key] < $value)
-				return false;
-			}
-		}
-	}
-return false;
-}
+
 
 function getAddonName($id)
 	{
@@ -215,7 +182,7 @@ function addonsList($upgradeall)
 				if( !empty($arr_ini['version']))
 					{
 					$this->addversion = $this->arr['version'];
-					if ( compare_versions($this->arr['version'],$arr_ini['version']) || $this->arr['version'] == "" )
+					if ( empty($this->arr['version']) || 0 !== version_compare($this->arr['version'],$arr_ini['version']))
 						{
 						$func_name = $this->arr['title']."_upgrade";
 						if (is_file($GLOBALS['babAddonsPath'].$this->arr['title']."/init.php"))
@@ -228,28 +195,27 @@ function addonsList($upgradeall)
 							$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath']."/addons/".$this->arr['title']."/";
 
 							require_once( $GLOBALS['babAddonsPath'].$this->arr['title']."/init.php" );
-							}
-						if ( $this->upgradeall )
-							{
-							if ((function_exists($func_name) && $func_name($this->arr['version'],$arr_ini['version'])) || !function_exists($func_name))
+
+							if (!function_exists($func_name))
 								{
 								$req = "update ".BAB_ADDONS_TBL." set version='".$arr_ini['version']."', installed='Y' where id='".$this->arr['id']."'";
 								$this->db->db_query($req);
 								$this->addversion = $arr_ini['version'];
+								$this->arr['installed'] = 'Y';
 								}
 							else
-								$this->upgradeurl = $GLOBALS['babUrlScript']."?tg=addons&idx=upgrade&item=".$this->arr['id'];
+								{
+								if ($this->arr['installed'] == 'Y') {
+									$this->db->db_query("UPDATE ".BAB_ADDONS_TBL." set installed='N' WHERE id='".$this->arr['id']."'");
+									$this->arr['installed'] = 'N';
+									}
+								}
 							}
-						elseif (!function_exists($func_name))
-							{
-							$req = "update ".BAB_ADDONS_TBL." set version='".$arr_ini['version']."', installed='Y' where id='".$this->arr['id']."'";
-							$this->db->db_query($req);
-							$this->addversion = $arr_ini['version'];
-							}
-						else
-							$this->upgradeurl = $GLOBALS['babUrlScript']."?tg=addons&idx=upgrade&item=".$this->arr['id'];
 						}
-					
+
+					if ($this->arr['installed'] == 'N') {
+							$this->upgradeurl = $GLOBALS['babUrlScript']."?tg=addons&amp;idx=upgrade&amp;item=".$this->arr['id'];
+						}
 					}
 				if( !empty($arr_ini['description']))
 					$this->description = $arr_ini['description'];
@@ -297,41 +263,21 @@ function upgrade($id)
 
 	if (is_dir($GLOBALS['babAddonsPath'].$row['title']) && is_file($GLOBALS['babAddonsPath'].$row['title']."/init.php") && is_file($GLOBALS['babAddonsPath'].$row['title']."/addonini.php"))
 		{
-		$arr_ini = @parse_ini_file( $GLOBALS['babAddonsPath'].$row['title']."/addonini.php");
+		include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
+		$ini = new bab_inifile();
+		$ini->inifile($GLOBALS['babAddonsPath'].$row['title']."/addonini.php");
 
-		$res = $db->db_query("select foption,fvalue from ".BAB_INI_TBL." where foption IN ('ver_major','ver_minor','ver_build')");
-		$coreversion = array();
-		while ($arr = $db->db_fetch_assoc($res))
-			{
-			switch ($arr['foption'])
-				{
-				case 'ver_major':
-					$coreversion[0] = $arr['fvalue'];
-					break;
-				case 'ver_minor':
-					$coreversion[1] = $arr['fvalue'];
-					break;
-				case 'ver_build':
-					$coreversion[2] = $arr['fvalue'];
-					break;
-				}
-			}
+		if (!$ini->isValid()) {
+			header("Location: ". $GLOBALS['babUrlScript']."?tg=addons&idx=requirements&item=".$id);
+			exit;
+		}
 
-		if (count($coreversion) == 3)
-			{
-			
-			$str = $coreversion[0].'.'.$coreversion[1].'.'.$coreversion[2];
-			if (!empty($arr_ini['ov_version']) && compare_versions($str, $arr_ini['ov_version']))
-				{
-				$GLOBALS['babBody']->msgerror = bab_translate("This module need ovidentia version").' '.$arr_ini['ov_version'].', '.bab_translate("the current version is").' '.$str;
-				return false;
-				}
-			}
+		$ini_version = $ini->getVersion();
 
-		if( !empty($arr_ini['version']))
+		if( !empty($ini_version))
 			{
 			$func_name = $row['title']."_upgrade";
-			if ( compare_versions($row['version'],$arr_ini['version']) || $row['version'] == "" )
+			if ( version_compare($row['version'],$ini_version, '<') )
 				{
 				$GLOBALS['babAddonFolder'] = $row['title'];
 				$GLOBALS['babAddonTarget'] = "addon/".$row['id'];
@@ -340,15 +286,20 @@ function upgrade($id)
 				$GLOBALS['babAddonHtmlPath'] = "addons/".$row['title']."/";
 				$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath']."/addons/".$row['title']."/";
 				require_once( $GLOBALS['babAddonsPath'].$row['title']."/init.php" );
-				if ((function_exists($func_name) && $func_name($row['version'],$arr_ini['version'])) || !function_exists($func_name))
+				if ((function_exists($func_name) && $func_name($row['version'],$ini_version)) || !function_exists($func_name))
 					{
-					$req = "update ".BAB_ADDONS_TBL." set version='".$arr_ini['version']."',installed='Y' where id='".$_GET['item']."'";
-					$db->db_query($req);
+					$db->db_query("UPDATE ".BAB_ADDONS_TBL." set version='".$ini_version."',installed='Y' where id='".$id."'");
 					return true;
 					}
 				}
+			else 
+				{
+				$db->db_query("UPDATE ".BAB_ADDONS_TBL." set version='".$ini_version."',installed='Y' where id='".$id."'");
+				return true;
+				}
 			}
 		}
+	
 	return false;
 	}
 
@@ -426,7 +377,7 @@ function export($id)
 	$loc_in = $GLOBALS['addons_files_location']['loc_in'];
 	$loc_out = $GLOBALS['addons_files_location']['loc_out'];
 			
-	include $GLOBALS['babInstallPath']."utilit/zip.lib.php";
+	include_once $GLOBALS['babInstallPath']."utilit/zip.lib.php";
 	$zip = new Zip;
 	$res = array();
 	foreach ($loc_in as $k => $path)
@@ -531,31 +482,149 @@ function upload()
 	$babBody->babecho(	bab_printTemplate($temp, "addons.html", "upload"));
 }
 
-function import()
-	{
-	if( !empty($_FILES['uploadf']['name']))
-		{
-		if( $_FILES['uploadf']['size'] > $GLOBALS['babMaxFileSize'])
-			{
+
+function upload_tmpfile() {
+	if( !empty($_FILES['uploadf']['name'])) {
+		if( $_FILES['uploadf']['size'] > $GLOBALS['babMaxFileSize']) {
 			$babBody->msgerror = bab_translate("The file was greater than the maximum allowed") ." :". $GLOBALS['babMaxFileSize'];
 			return false;
-			}
+		}
 		include_once $GLOBALS['babInstallPath']."utilit/fileincl.php";
 		$totalsize = getDirSize('addons');
-		if( $_FILES['uploadf']['size'] + $totalsize > $GLOBALS['babMaxTotalSize'])
-			{
+		if( $_FILES['uploadf']['size'] + $totalsize > $GLOBALS['babMaxTotalSize']) {
 			$babBody->msgerror = bab_translate("There is not enough free space");
 			return false;
-			}
-		if( !get_cfg_var('safe_mode'))
-			set_time_limit(0);
+		}
 
-		if (!is_dir($GLOBALS['babUploadPath'].'/tmp/'))
-		bab_mkdir($GLOBALS['babUploadPath'].'/tmp/',$GLOBALS['babMkdirMode']);
+		if( !get_cfg_var('safe_mode')) {
+			set_time_limit(0);
+		}
+
+		if (!is_dir($GLOBALS['babUploadPath'].'/tmp/')) {
+			bab_mkdir($GLOBALS['babUploadPath'].'/tmp/',$GLOBALS['babMkdirMode']);
+		}
 
 		$ul = $GLOBALS['babUploadPath'].'/tmp/'.$_FILES['uploadf']['name'];
-		move_uploaded_file($_FILES['uploadf']['tmp_name'],$ul);
+		if (move_uploaded_file($_FILES['uploadf']['tmp_name'],$ul))
+			return $ul;
+	}
+
+	return false;
+}
+
+
+function test_requirements()
+{
+	include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
+	global $babBody;
+	class temp {
+		function temp()
+			{
+
+			
+			$ini = new bab_inifile();
+			if (isset($_FILES['uploadf'])) {
+				$ul = upload_tmpfile();
+
+				if (false === $ul) {
+					$GLOBALS['babBody']->msgerror = bab_translate("Upload error");
+				}
+
+				$name = $filename = substr( $ul,(strrpos( $ul,'/')+1));
+				$this->tmpfile = bab_toHtml($filename);
+				$this->action = 'import';
+				$ini->getfromzip($ul, 'programs/addonini.php');
+
+			} elseif (isset($_GET['item'])) {
+
+				$name = getAddonName($_GET['item']);
+				if (!is_file($GLOBALS['babAddonsPath'].$name."/addonini.php"))
+					return;
+				$ini->inifile($GLOBALS['babAddonsPath'].$name."/addonini.php");
+				$this->tmpfile = '';
+				$this->action = 'upgrade';
+			}
+
+			$this->name = bab_toHtml($name);
+			$this->adescription = bab_toHtml($ini->getDescription());
+			$this->version = bab_toHtml($ini->getVersion());
+			
+			$this->requirements = $ini->getRequirements();
+
+			$this->t_requirements = bab_translate("Requirements");
+			$this->t_install = bab_translate("Install");
+			$this->t_required = bab_translate("Required value");
+			$this->t_current = bab_translate("Current value");
+			$this->t_addon = bab_translate("Addon");
+			$this->t_description = bab_translate("Description");
+			$this->t_version = bab_translate("Version");
+
+			$this->allok = $ini->isValid();
+		}
+
+		function getnextreq() {
+			if (list(,$arr) = each($this->requirements)) {
+				$this->description = bab_toHtml($arr['description']);
+				$this->required = bab_toHtml($arr['required']);
+				$this->current = bab_toHtml($arr['current']);
+				$this->result = $arr['result'] ? bab_translate("Ok") : bab_translate("Error");
+				return true;
+			}
+			return false;
+		}
+	}
+
+	$temp = new temp();
+	$babBody->babecho(	bab_printTemplate($temp, "addons.html", "requirements"));
+}
+
+/**
+ * Unzip temporary file
+ */
+function import()
+	{
+	if( !get_cfg_var('safe_mode')) {
+		set_time_limit(0);
+	}
+
+	if( !empty($_POST['tmpfile']))
+		{
+
+		$ul = $GLOBALS['babUploadPath'].'/tmp/'.$_POST['tmpfile'];
+
+		if (!is_file($ul))
+			return false;
+
 		
+
+		include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
+		$ini = new bab_inifile();
+		$ini->getfromzip($ul, 'programs/addonini.php');
+		
+		if (false === $ini->isValid()) {
+			return false;
+		}
+
+
+		$addon_name = $ini->getName();
+
+		if (false === $addon_name) {
+
+			$fn = substr($_POST['tmpfile'],0,strrpos($_POST['tmpfile'],'.'));
+			$arr = explode('-',$fn);
+			$i = 0;
+			while(isset($arr[$i]) && !is_numeric($arr[$i]))
+				{
+				if (isset($addon_name) && false != $addon_name)
+					$addon_name .= '-'.$arr[$i];
+				else $addon_name = $arr[$i];
+				$i++;
+				}
+		}
+
+		$db = $GLOBALS['babDB'];
+		$db->db_query("UPDATE ".BAB_ADDONS_TBL." SET installed='N' WHERE title='".$addon_name."'");
+
 		include_once $GLOBALS['babInstallPath']."utilit/zip.lib.php";
 		$zip = new Zip;
 		$zipcontents = $zip->get_List($ul);
@@ -590,18 +659,11 @@ function import()
 				}
 			}
 
-		$fn = substr($_FILES['uploadf']['name'],0,strrpos($_FILES['uploadf']['name'],'.'));
-		$arr = explode('-',$fn);
-		$i = 0;
-		while(isset($arr[$i]) && !is_numeric($arr[$i]))
-			{
-			if (isset($addon_name))
-				$addon_name .= '-'.$arr[$i];
-			else $addon_name = $arr[$i];
-			$i++;
-			}
+		
 			
-		if (empty($addon_name) || count($path_file) == 0) return false;
+		if (empty($addon_name) || count($path_file) == 0) 
+			return false;
+
 
 		function create_directory($path)
 			{
@@ -690,8 +752,17 @@ if( isset($acladd))
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=addons&idx=list&errormsg=".urlencode($babBody->msgerror));
 	}
 
-if (isset($action) && $action == 'import')
-	import();
+if (isset($_POST['action'])) {
+	switch($_POST['action']) {
+		case 'import':
+			import();
+			break;
+
+		case 'upgrade':
+			upgrade($_POST['item']);
+			break;
+	}
+}
 
 switch($idx)
 	{
@@ -704,11 +775,17 @@ switch($idx)
 
 	case "upload":
 		$babBody->addItemMenu("list", bab_translate("Add-ons"), $GLOBALS['babUrlScript']."?tg=addons&idx=list");
+		$babBody->addItemMenu("upload", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=addons&idx=upload");
 		$babBody->title = bab_translate("Upload");
 		upload();
 		break;
 
-	
+	case 'requirements':
+		$babBody->addItemMenu("list", bab_translate("Add-ons"), $GLOBALS['babUrlScript']."?tg=addons&idx=list");
+		$babBody->addItemMenu("requirements", bab_translate("Install"), $GLOBALS['babUrlScript']."?tg=addons&idx=requirements");
+		$babBody->title = bab_translate("Install an addon");
+		test_requirements();
+		break;
 
 	case "history":
 		history($_GET['item']);
@@ -717,7 +794,7 @@ switch($idx)
 	case "upgrade":
 		upgrade($_GET['item']);
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=addons&idx=list&errormsg=".urlencode($babBody->msgerror));
-		exit;
+		break;
 		
 	case "del":
 		del($item);
@@ -733,9 +810,9 @@ switch($idx)
 		addonsList($upgradeall);
 		$babBody->title = bab_translate("Add-ons list");
 		$babBody->addItemMenu("list", bab_translate("Add-ons"), $GLOBALS['babUrlScript']."?tg=addons&idx=list");
+		$babBody->addItemMenu("upload", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=addons&idx=upload");
 		break;
 	}
-$babBody->addItemMenu("upload", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=addons&idx=upload");
 $babBody->setCurrentItemMenu($idx);
 
 ?>

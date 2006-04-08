@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-include $babInstallPath."version.inc";
+include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
 
 function upgrade()
 {
@@ -49,7 +49,23 @@ else
 	}
 
 $ver_from = $dbver[0].$dbver[1].$dbver[2];
-$ver_to = $GLOBALS['bab_ver_major'].$GLOBALS['bab_ver_minor'].$GLOBALS['bab_ver_build'];
+
+$ini = new bab_inifile();
+$ini->inifile($GLOBALS['babInstallPath'].'version.inc');
+
+if (!$ini->isValid()) {
+	$requirements = $ini->getRequirements();
+	foreach($requirements as $req) {
+		if (false === $req['result']) {
+			return bab_translate("This version can't be installed because of the missing requirement").' '.$req['description'].' '.$req['required'];
+		}
+	}
+}
+
+list($bab_ver_major, $bab_ver_minor, $bab_ver_build) = explode('.',$ini->getVersion());
+$ver_to = $bab_ver_major.$bab_ver_minor.$bab_ver_build;
+
+
 if( $ver_from == $ver_to )
 	{
 	include_once $GLOBALS['babInstallPath']."upgrade.php";
@@ -87,18 +103,23 @@ for( $i = $i_from; $i < $i_to; $i++)
 		return $ret;
 		}
 	}
-$db->db_query("update ".BAB_INI_TBL." set fvalue='".$GLOBALS['bab_ver_major']."' where foption='ver_major'");
-$db->db_query("update ".BAB_INI_TBL." set fvalue='".$GLOBALS['bab_ver_minor']."' where foption='ver_minor'");
-$db->db_query("update ".BAB_INI_TBL." set fvalue='".$GLOBALS['bab_ver_build']."' where foption='ver_build'");
-putVersion($GLOBALS['bab_ver_major'].".".$GLOBALS['bab_ver_minor']);
+
+$db->db_query("update ".BAB_INI_TBL." set fvalue='".$bab_ver_major."' where foption='ver_major'");
+$db->db_query("update ".BAB_INI_TBL." set fvalue='".$bab_ver_minor."' where foption='ver_minor'");
+$db->db_query("update ".BAB_INI_TBL." set fvalue='".$bab_ver_build."' where foption='ver_build'");
+
+putVersion($bab_ver_major.".".$bab_ver_minor);
 $ret .= bab_translate("You site has been updated")."<br>";
-$ret .= "From ". $dbver[0].".".$dbver[1].".".$dbver[2] ." to ". $GLOBALS['bab_ver_major'].".".$GLOBALS['bab_ver_minor'].".".$GLOBALS['bab_ver_build'];
+$ret .= "From ". $dbver[0].'.'.$dbver[1].'.'.$dbver[2] ." to ". $bab_ver_major.'.'.$bab_ver_minor.'.'.$bab_ver_build;
 return $ret;
 }
 
 function getVersion()
 {
-	$str = "Sources Version ". $GLOBALS['bab_ver_major'].".".$GLOBALS['bab_ver_minor'].".".$GLOBALS['bab_ver_build']."<br>";
+	$ini = new bab_inifile();
+	$ini->inifile($GLOBALS['babInstallPath'].'version.inc');
+
+	$str = "Sources Version ". $ini->getVersion()."<br>";
 	$db = $GLOBALS['babDB'];
 
 	$res = $db->db_query("show tables like '".BAB_INI_TBL."'");

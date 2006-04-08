@@ -117,7 +117,7 @@ function viewVersion()
 
 		function temp()
 			{
-			include_once $GLOBALS['babInstallPath']."version.inc";
+			include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
 			$this->srcversiontxt = bab_translate("Ovidentia version");
 			$this->phpversiontxt = bab_translate("Php version");
 			$this->phpversion = phpversion();
@@ -147,11 +147,15 @@ function viewVersion()
 						break;
 					}
 				}
-			$this->srcversion = $bab_ver_prod."-".$bab_ver_major.".".$bab_ver_minor.".".$bab_ver_build;
-			if( $this->srcversion != $bab_ov_dbver_prod."-".$bab_ov_dbver_major.".".$bab_ov_dbver_minor.".".$bab_ov_dbver_build )
-				$this->srcversion .= $bab_ver_info. " [ ".$bab_ov_dbver_prod."-".$bab_ov_dbver_major.".".$bab_ov_dbver_minor.".".$bab_ov_dbver_build." ]";
-			else
-				$this->srcversion .= $bab_ver_info;
+
+			$ini = new bab_inifile();
+			$ini->inifile($GLOBALS['babInstallPath'].'version.inc');
+
+			$this->srcversion = "E-".$ini->getVersion();
+			if( $this->srcversion != $bab_ov_dbver_prod."-".$bab_ov_dbver_major.".".$bab_ov_dbver_minor.".".$bab_ov_dbver_build ) {
+				$this->srcversion .= " [ ".$bab_ov_dbver_prod."-".$bab_ov_dbver_major.".".$bab_ov_dbver_minor.".".$bab_ov_dbver_build." ]";
+				}
+	
 			}
 		}
 

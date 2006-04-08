@@ -1917,4 +1917,12 @@
 <string id="Display the date and the author of update">Afficher la date et l'auteur de la mise à jour dans la fiche annuaire</string>
 <string id="Would you like to assign this user to the current directory">Voulez-vous attacher cet utilisateur à l'annuaire courant</string>
 <string id="Your contacts has been assigned">Vos contacts ont été attachés à l'annuaire</string>
+<string id="Install">Installer</string>
+<string id="Requirements">Configuration requise</string>
+<string id="Required value">Valeur requise</string>
+<string id="Current value">Valeur actuelle</string>
+<string id="Install an addon">Installer un module</string>
+<string id="Not installed or disabled">Pas installé ou désactivé</string>
+<string id="Ovidentia addon">Module d'Ovidentia</string>
+<string id="This version can't be installed because of the missing requirement">Cette version ne peut pas être installé car cet élément est manquant dans la configuration actuelle</string>
 </fr>
