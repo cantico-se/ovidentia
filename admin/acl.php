@@ -447,7 +447,7 @@ function aclGetAccessUsers($table, $id_object) {
 	
 	$res = $db->db_query('SELECT id_group FROM '.$srcTable.' WHERE id_object=\''.$srcIdObject.'\'');
 	while ($arr = $db->db_fetch_assoc($res)) {
-		$db->db_query('INSERT INTO ' . $trgTable . ' (`id` , `id_object` , `id_group`) VALUES \'\', \'' . $trgIdObject . '\', \'' . $arr['id_group'] . '\'');
+		$db->db_query('INSERT INTO ' . $trgTable . ' (`id` , `id_object` , `id_group`) VALUES (\'\', \'' . $trgIdObject . '\', \'' . $arr['id_group'] . '\')');
 	}	
 }
 ?>
