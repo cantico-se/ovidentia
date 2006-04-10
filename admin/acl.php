@@ -427,7 +427,18 @@ function aclGetAccessUsers($table, $id_object) {
 	return $user;
 	}
 	
-function aclDuplicateRights($srcTable, $srcIdObject, $trgTable, $trgIdObject) {
+	
+/**
+ * Duplicate rights from a source table with a certain id_object to a 
+ * target table with an another id_object
+ * 
+ * @access  public 
+ * @param   string	$srcTable		right table to duplicate
+ * @param   int		$srcIdObject	id of object from which the corresponding rights will duplicated  
+ * @param   string	$trgTable		duplicated rights table
+ * @param   int		$trgIdObject	new affected rights id_object 
+ * 
+ */function aclDuplicateRights($srcTable, $srcIdObject, $trgTable, $trgIdObject) {
 	$db = &$GLOBALS['babDB'];
 	global $babBody;
 	
