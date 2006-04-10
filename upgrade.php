@@ -5713,6 +5713,17 @@ if( !$res || $db->db_num_rows($res) == 0 )
 	$db->db_query("INSERT INTO ".BAB_MIME_TYPES_TBL." VALUES ('sxw', 'application/vnd.sun.xml.writer')");
 	}
 
+$arr = $db->db_fetch_array($db->db_query("DESCRIBE ".BAB_USERS_TBL." db_authentification"));
+if ($arr[0] != 'db_authentification')
+	{
+	$res = $db->db_query("ALTER TABLE `".BAB_USERS_TBL."` ADD db_authentification  ENUM('N','Y') DEFAULT 'N' NOT NULL ");
+	if( !$res)
+		{
+		$ret = "Alteration of <b>".BAB_USERS_TBL."</b> table failed !<br>";
+		return $ret;
+		}
+	}
+
 return $ret;
 }
 

@@ -1917,6 +1917,8 @@
 <string id="Display the date and the author of update">Afficher la date et l'auteur de la mise à jour dans la fiche annuaire</string>
 <string id="Would you like to assign this user to the current directory">Voulez-vous attacher cet utilisateur à l'annuaire courant</string>
 <string id="Your contacts has been assigned">Vos contacts ont été attachés à l'annuaire</string>
+<string id="For is this user which method of authentification necessary must be used">Quelle est la méthode d'authentification à utiliser pour cet utilisateur</string>
+<string id="As defined in site configuration">Celle définie au niveau site</string>
 <string id="Install">Installer</string>
 <string id="Requirements">Configuration requise</string>
 <string id="Required value">Valeur requise</string>

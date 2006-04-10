@@ -127,13 +127,13 @@
 <input type="hidden" name="modify" value="modify">
 <input type="hidden" name="pos" value="{ pos }">
 <input type="hidden" name="grp" value="{ grp }">
-<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<table  width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
 <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="6" align="center" class="BabLoginMenuBackground">
 <tr valign="middle"> 
 <td align="right">{ changepassword } </td>
-<td width="20%"> 
+<td> 
 <select name="changepwd"><option value="0"  
                   
 <!--#if arr[changepwd] "== 0" -->
@@ -185,6 +185,19 @@
 </select>
 </td>
 </tr>
+
+<!--#if bshowauthtype -->
+<tr> 
+<td align="right">{ authentificationtxt } ?</td>
+<td> 
+<select name="authtype">
+<option value="Y" { yselected }>{ ovidentiaauthtxt }</option>
+<option value="N" { nselected }>{ siteauthtxt }</option>
+</select>
+</td>
+</tr>
+<!--#endif bshowauthtype -->
+
 <!--#if showprimary -->
 <tr> 
 <td align="right">{ primarygroup } </td>

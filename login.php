@@ -638,6 +638,7 @@ function userLogin($nickname,$password)
 	$db = $GLOBALS['babDB'];
 	$iduser = 0;
 	$logok = true;
+	$authtype = isset($babBody->babsite['authentification'])? $babBody->babsite['authentification']: BAB_AUTHENTIFICATION_OVIDENTIA;
 
 	$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 	$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET cnx_try=cnx_try+1 WHERE sessid='".session_id()."'");
@@ -647,7 +648,21 @@ function userLogin($nickname,$password)
 		$babBody->msgerror = bab_translate("Maximum connexion attempts has been reached");
 		return false;
 		}
-	if( isset($babBody->babsite['authentification']) && $babBody->babsite['authentification'] != BAB_AUTHENTIFICATION_OVIDENTIA )
+
+	$password=strtolower($password);
+	$nickname = bab_isMagicQuotesGpcOn() ? $nickname : $db->db_escape_string($nickname);
+	$res = $db->db_query("select * from ".BAB_USERS_TBL." where nickname='".$nickname."' and password='". md5($password) ."'");
+	if( $res && $db->db_num_rows($res) > 0 )
+		{
+		$arruser = $db->db_fetch_array($res);
+		if( $arruser['db_authentification'] == 'Y')
+			{
+			$authtype = BAB_AUTHENTIFICATION_OVIDENTIA;
+			}
+		}
+
+
+	if( $authtype != BAB_AUTHENTIFICATION_OVIDENTIA )
 		{
 		// ldap authentification
 		include_once $GLOBALS['babInstallPath']."utilit/ldap.php";
@@ -708,7 +723,7 @@ function userLogin($nickname,$password)
 				{
 				$attributes[] = "givenname";
 				}
-			switch($babBody->babsite['authentification'])
+			switch($authtype)
 				{
 				case BAB_AUTHENTIFICATION_AD: // Active Directory
 					$ret = $ldap->bind($nickname."@".$babBody->babsite['ldap_domainname'], $password);
@@ -879,15 +894,10 @@ function userLogin($nickname,$password)
 			}
 		}
 
-	if( $babBody->babsite['authentification'] == BAB_AUTHENTIFICATION_OVIDENTIA || (!$logok && $babBody->babsite['ldap_allowadmincnx'] == 'Y') )
+	if( $authtype == BAB_AUTHENTIFICATION_OVIDENTIA || (!$logok && $babBody->babsite['ldap_allowadmincnx'] == 'Y') )
 		{
-		$password=strtolower($password);
-		$nickname = bab_isMagicQuotesGpcOn() ? $nickname : $db->db_escape_string($nickname);
-		$req="select * from ".BAB_USERS_TBL." where nickname='".$nickname."' and password='". md5($password) ."'";
-		$res = $db->db_query($req);
-		if( $res && $db->db_num_rows($res) > 0 )
+		if( isset($arruser) )
 			{
-			$arruser = $db->db_fetch_array($res);
 			$iduser = $arruser['id'];
 			if( !$logok && $babBody->babsite['ldap_allowadmincnx'] == 'Y' )
 				{

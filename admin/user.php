@@ -57,6 +57,7 @@ function modifyUser($id, $pos, $grp)
 
 		function temp($id, $pos, $grp)
 			{
+			global $babBody;
 			$this->showprimary = false;
 			$this->changepassword = bab_translate("Can user change password ?");
 			$this->isconfirmed = bab_translate("Account confirmed ?");
@@ -74,6 +75,26 @@ function modifyUser($id, $pos, $grp)
 			$this->id = $id;
 			$this->pos = $pos;
 			$this->grp = $grp;
+
+
+			$this->bshowauthtype = false;
+			if( $babBody->babsite['authentification'] != BAB_AUTHENTIFICATION_OVIDENTIA )
+				{
+				$this->bshowauthtype = true;
+				$this->authentificationtxt = bab_translate("For is this user which method of authentification necessary must be used");
+				$this->ovidentiaauthtxt = bab_translate("Ovidentia");
+				$this->siteauthtxt = bab_translate("As defined in site configuration");
+				if( $this->arr['db_authentification'] == 'Y')
+					{
+					$this->yselected = 'selected';
+					$this->nselected = '';
+					}
+				else
+					{
+					$this->yselected = '';
+					$this->nselected = 'selected';
+					}
+				}
 
 			$req = "select * from ".BAB_USERS_GROUPS_TBL." where id_object='$id'";
 			$this->res = $this->db->db_query($req);
@@ -97,6 +118,8 @@ function modifyUser($id, $pos, $grp)
 				}
 			return false;
 			}
+
+		
 		}
 
 	$temp = new temp($id, $pos, $grp);
@@ -294,7 +317,7 @@ function updateGroups()
 
 
 
-function updateUser($id, $changepwd, $is_confirmed, $disabled, $group)
+function updateUser($id, $changepwd, $is_confirmed, $disabled, $authtype, $group)
 	{
 	global $babBody;
 
@@ -304,7 +327,14 @@ function updateUser($id, $changepwd, $is_confirmed, $disabled, $group)
 		{
 		$r = $db->db_fetch_array($res);
 		}
-	$res = $db->db_query("update ".BAB_USERS_TBL." set changepwd='$changepwd', is_confirmed='$is_confirmed', disabled='$disabled' where id='$id'");
+
+	$req = "update ".BAB_USERS_TBL." set changepwd='$changepwd', is_confirmed='$is_confirmed', disabled='$disabled'";
+	if( !empty($authtype))
+		{
+		$req .= ", db_authentification='$authtype'";
+		}
+	$req .= " where id='$id'";
+	$res = $db->db_query($req);
 
 	$db = $GLOBALS['babDB'];
 	$db->db_query("update ".BAB_USERS_GROUPS_TBL." set isprimary='N' where id_object='$id'");
@@ -473,7 +503,8 @@ if( isset($modify))
 	if(isset($bupdate))
 		{
 		$group = isset($group) ? $group : '';
-		updateUser($item, $changepwd, $is_confirmed, $disabled, $group);
+		$authtype = isset($authtype) ? $authtype : '';
+		updateUser($item, $changepwd, $is_confirmed, $disabled, $authtype, $group);
 		}
 	else if(isset($bdelete))
 		$idx = "Delete";
