@@ -426,4 +426,17 @@ function aclGetAccessUsers($table, $id_object) {
 
 	return $user;
 	}
+	
+function aclDuplicateRights($srcTable, $srcIdObject, $trgTable, $trgIdObject) {
+	$db = &$GLOBALS['babDB'];
+	global $babBody;
+	
+	$tree = & new bab_grptree();
+	$groups = array();
+	
+	$res = $db->db_query('SELECT id_group FROM '.$srcTable.' WHERE id_object=\''.$srcIdObject.'\'');
+	while ($arr = $db->db_fetch_assoc($res)) {
+		$db->db_query('INSERT INTO ' . $trgTable . ' (`id` , `id_object` , `id_group`) VALUES \'\', \'' . $trgIdObject . '\', \'' . $arr['id_group'] . '\'');
+	}	
+}
 ?>
