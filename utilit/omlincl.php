@@ -4194,7 +4194,35 @@ class bab_IfUserMemberOfGroups extends bab_handler
 			$groupid = $ctx->get_value('groupid');
 			if( $groupid !== false && $groupid !== '' )
 				{
-				list($total) = $babDB->db_fetch_row($babDB->db_query("select count(id) as total from ".BAB_USERS_GROUPS_TBL." where id_object='".$GLOBALS['BAB_SESS_USERID']."' and id_group IN (".$groupid.")"));
+				$groupid = explode(',', $groupid);
+				}
+			else
+				{
+				$groupid = array();
+				}
+
+			$childs = $ctx->get_value('childs');
+			if ( $childs !== false && strtoupper($childs) == "YES")
+				{
+				include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
+				$rr = $groupid;
+				$tree = & new bab_grptree();
+				for( $k=0; $k < count($rr); $k++ )
+					{
+					$groups = $tree->getChilds($rr[$k]);
+					foreach ($groups as $arr)
+						{
+						if(!in_array($arr['id'], $rr))
+							{
+							$groupid[] = $arr['id'];
+							}
+						}
+					}
+				}
+
+			if( count($groupid))
+				{
+				list($total) = $babDB->db_fetch_row($babDB->db_query("select count(id) as total from ".BAB_USERS_GROUPS_TBL." where id_object='".$GLOBALS['BAB_SESS_USERID']."' and id_group IN (".implode(',', $groupid).")"));
 				if( $all == false)
 					{
 					if( $total )
@@ -4204,8 +4232,7 @@ class bab_IfUserMemberOfGroups extends bab_handler
 					}
 				else
 					{
-					$rr = explode(',', $groupid);
-					if( $total >= count($rr))
+					if( $total >= count($groupid))
 						{
 						$this->count = 1;
 						}
@@ -4392,6 +4419,10 @@ function handle_tag( $handler, $txt, $txt2 )
 		if( !strncmp($handler, "bab_DbDir", strlen("bab_DbDir")))
 			{
 			include_once $GLOBALS['babInstallPath']."utilit/ovmldir.php";
+			}
+		elseif( !strncmp($handler, "bab_Delegation", strlen("bab_Delegation")))
+			{
+			include_once $GLOBALS['babInstallPath']."utilit/ovmldeleg.php";
 			}
 		}
 

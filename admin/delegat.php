@@ -23,19 +23,8 @@
 ************************************************************************/
 include_once "base.php";		
 include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
+include_once $GLOBALS['babInstallPath']."utilit/delegincl.php";
 
-$babDG = array(	array("groups", bab_translate("Groups")),
-				array("sections", bab_translate("Sections")),
-				array("articles", bab_translate("Topics categories")),
-				array("faqs", bab_translate("Faq")),
-				array("forums", bab_translate("Forums")),
-				array("calendars", bab_translate("Calendar")),
-				array("mails", bab_translate("Mail")),
-				array("directories", bab_translate("Directories")),
-				array("approbations", bab_translate("Approbations")),
-				array("filemanager", bab_translate("File manager")),
-				array("orgchart", bab_translate("Charts"))
-				);
 
 
 function delgatList($res)
