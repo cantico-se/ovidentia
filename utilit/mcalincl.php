@@ -782,7 +782,7 @@ class cal_wmdbaseCls
 		{
 		global $babBody;
 
-		$html = & bab_printTemplate($this,$file,$template);
+		$html = bab_printTemplate($this,$file,$template);
 
 		if ($this->print)
 			{
