@@ -205,16 +205,10 @@ class bab_DelegationItems extends bab_handler
 		global $babDB, $babDG;
 		$this->bab_handler($ctx);
 		$delegationid = $ctx->get_value('delegationid');
-		$userid = $ctx->get_value('userid');
 
-		if( $userid === false || $userid === '' )
+		if( $delegationid !== false && $delegationid !== '' )
 			{
-			$userid = $GLOBALS['BAB_SESS_USERID'];
-			}
-
-		if( $userid != '' && $delegationid !== false && $delegationid !== '' )
-			{
-			$res = $babDB->db_query("select dgt.* from ".BAB_DG_ADMIN_TBL." dat left join ".BAB_DG_GROUPS_TBL." dgt on dat.id_dg=dgt.id where dgt.id='".$delegationid."' and dat.id_user='".$userid."' order by dgt.name asc");
+			$res = $babDB->db_query("select dgt.* from ".BAB_DG_GROUPS_TBL." dgt where dgt.id='".$delegationid."'");
 			$this->arr = $babDB->db_fetch_array($res);
 
 			$this->count = count($babDG);
