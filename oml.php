@@ -23,12 +23,13 @@
 ************************************************************************/
 include_once "base.php";
 
+$args = array_merge($_GET, $_POST);
 
 if( isset($_GET['echo']) && $_GET['echo'] == 1)
 	{
-	echo bab_printOvmlTemplate($file, $_GET);
+	echo bab_printOvmlTemplate($file, $args);
 	exit;
 	}
 else
-	$babBody->babecho( bab_printOvmlTemplate($file, $_GET));
+	$babBody->babecho( bab_printOvmlTemplate($file, $args));
 ?>
