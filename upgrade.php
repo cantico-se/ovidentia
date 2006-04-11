@@ -5724,6 +5724,18 @@ if ($arr[0] != 'db_authentification')
 		}
 	}
 
+
+$arr = $db->db_fetch_array($db->db_query("DESCRIBE ".BAB_DG_GROUPS_TBL." users"));
+if ($arr[0] != 'users')
+	{
+	$res = $db->db_query("ALTER TABLE `".BAB_DG_GROUPS_TBL."` ADD users ENUM( 'N', 'Y' ) DEFAULT 'N'NOT NULL AFTER `description` ");
+	if( !$res)
+		{
+		$ret = "Alteration of <b>".BAB_DG_GROUPS_TBL."</b> table failed !<br>";
+		return $ret;
+		}
+	}
+
 return $ret;
 }
 

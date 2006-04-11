@@ -89,10 +89,12 @@ else
 
 
 <!--#begin memberslist -->
+<!--#if bshowform -->
 <form method="post" action="{ babPhpSelf }" name="listform">
 <input type="hidden" name="tg" value="group">
 <input type="hidden" name="idx" value="Deletem">
 <input type="hidden" name="item" value="{ grpid }">
+<!--#endif bshowform -->
 <table border="0" width="80%" cellpadding="2" cellspacing="0" align="center" class="BabLoginCadreBackground">
 <tr> 
 <td> 
@@ -103,7 +105,7 @@ else
 		<td width="30%">{ t_lastname }</td>
 		<td>{ t_firstname }</td>
 		<td width="2%">
-			{ t_delete }
+			<!--#if bshowform -->{ t_delete }<!--#endif bshowform -->
 		</td>
 	</tr>
 	<!--#in getnext -->
@@ -120,7 +122,7 @@ else
 			{ arr[firstname] }
 		</td>
 		<td align="center">
-			<input type="checkbox" name="users[]" value="{ arr[id] }"> 
+			<!--#if bshowform --><input type="checkbox" name="users[]" value="{ arr[id] }"><!--#endif bshowform --> 
 		</td>
 	</tr>
 	<!--#endin getnext -->
@@ -128,15 +130,17 @@ else
 		
 		<td colspan="2">&nbsp;</td>
 		<td width="2%" align="center">
+		<!--#if bshowform -->
 			<a href="javascript:onCheckAll('users', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" border="0" /></a><a href="javascript:onCheckAll('users', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" border="0" /></a>
+		<!--#endif bshowform -->
 		</td>
 	</tr>
 	</table>
 </td></tr></table>
-<br />
+<br /><!--#if bshowform -->
 <div align="center">
 	<input type="submit" value="{ t_upgrade }" />
-</div>
+</div><!--#endif bshowform -->
 </form>
 
 <!--#end memberslist -->

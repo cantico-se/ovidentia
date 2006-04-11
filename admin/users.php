@@ -106,7 +106,7 @@ function listUsers($pos, $grp)
 				$this->users_logged[$id_user] = $id_user;
 				}
 
-			$req = "SELECT u.* from ".BAB_USERS_TBL." u";
+			$req = "SELECT distinct u.* from ".BAB_USERS_TBL." u";
 
 			if( isset($pos) &&  strlen($pos) > 0 && $pos[0] == "-" )
 				{
@@ -135,6 +135,7 @@ function listUsers($pos, $grp)
 				$this->fullname = bab_composeUserName(bab_translate("Firstname"),bab_translate("Lastname"));
 				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=users&idx=chg&pos=".$this->ord.$this->pos."&grp=".$this->grp;
 				}
+
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 
@@ -147,12 +148,21 @@ function listUsers($pos, $grp)
 			
 			$this->set_directory = $babBody->currentAdmGroup == 0;
 			
-			if( $babBody->currentAdmGroup == 0 && $this->grp == BAB_ADMINISTRATOR_GROUP )
+			if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['users'] == 'Y' )
 				$this->bmodname = true;
 			else
 				$this->bmodname = false;
 
 			$this->userst = '';
+
+			if( $babBody->currentAdmGroup != 0 && $grp == $babBody->currentDGGroup['id_group'] )
+				{
+				$this->bshowform = false;
+				}
+			else
+				{
+				$this->bshowform = true;
+				}
 			
 
 			}
@@ -369,12 +379,18 @@ if( !isset($grp) || empty($grp))
 if( !isset($idx))
 	$idx = "List";
 
-if( isset($adduser) && $babBody->isSuperAdmin )
+if( isset($adduser) && ($babBody->isSuperAdmin || $babBody->currentDGGroup['users'] == 'Y'))
 {
-	if( !registerUser( stripslashes($firstname), stripslashes($lastname), stripslashes($middlename), $email, $nickname, $password1, $password2, true))
+	$iduser = registerUser( stripslashes($firstname), stripslashes($lastname), stripslashes($middlename), $email, $nickname, $password1, $password2, true);
+	if( !$iduser)
 		$idx = "Create";
 	else
 		{
+		if( $babBody->currentAdmGroup != 0 && $babBody->currentDGGroup['users'] == 'Y')
+			{
+			bab_addUserToGroup($iduser, $babBody->currentDGGroup['id_group']);
+			}
+
 		switch ($babBody->nameorder[0]){
 			case "L":
 				$pos = substr($lastname,0,1);
@@ -414,7 +430,7 @@ if( isset($Updateg) && ($babBody->isSuperAdmin || $babBody->currentAdmGroup != 0
 	exit;
 }
 
-if( $idx == "Create" && !$babBody->isSuperAdmin )
+if( $idx == "Create" && !$babBody->isSuperAdmin && $babBody->currentDGGroup['users'] != 'Y')
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;
@@ -458,9 +474,12 @@ switch($idx)
 			$cnt = listUsers($pos, $grp);
 			if ($grp != 3 && $grp != $babBody->currentAdmGroup) $babBody->addItemMenu("cancel", bab_translate("Group's members"),$GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$grp);
 			$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List");
-			if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0)
+			if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['users'] == 'Y')
 				{
 				$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=users&idx=Create&pos=".$pos."&grp=".$grp);
+				}
+			if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
+				{
 				$babBody->addItemMenu("utilit", bab_translate("Utilities"), $GLOBALS['babUrlScript']."?tg=users&idx=utilit");
 				}
 			}

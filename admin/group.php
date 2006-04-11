@@ -25,129 +25,6 @@ include_once "base.php";
 include_once $babInstallPath."utilit/grpincl.php";
 include_once $babInstallPath."utilit/fileincl.php";
 
-function groupModify($id)
-	{
-	global $babBody;
-	if( !isset($id))
-		{
-		$babBody->msgerror = bab_translate("ERROR: You must choose a valid group !!");
-		return;
-		}
-	class temp
-		{
-		var $name;
-		var $description;
-		var $managertext;
-		var $managerval;
-		var $useemail;
-		var $no;
-		var $yes;
-		var $noselected;
-		var $yesselected;
-		var $add;
-		var $delete;
-		var $bdel;
-
-		var $usersbrowurl;
-		var $grpid;
-
-		var $grpdgtxt;
-		var $grpdgid;
-		var $grpdgname;
-		var $count;
-		var $res;
-		var $selected;
-		var $arr;
-		var $bdggroup;
-
-		function temp($id)
-			{
-			global $babBody, $babDB;
-			$this->name = bab_translate("Name");
-			$this->description = bab_translate("Description");
-			$this->managertext = bab_translate("Manager");
-			$this->useemail = bab_translate("Use email");
-			$this->no = bab_translate("No");
-			$this->yes = bab_translate("Yes");
-			$this->add = bab_translate("Modify Group");
-			$this->delete = bab_translate("Delete");
-			$this->grpdgtxt = bab_translate("Delegation");
-			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&cb=";
-			$req = "select * from ".BAB_GROUPS_TBL." where id='".$id."'";
-			$res = $babDB->db_query($req);
-			$this->arr = $babDB->db_fetch_array($res);
-			$this->grpid = $id;
-			$this->grpname = $this->arr['name'];
-			$this->grpdesc = $this->arr['description'];
-			$this->identity = $this->arr['id_ocentity'];
-			if( $this->arr['mail'] == "Y")
-				{
-				$this->noselected = "";
-				$this->yesselected = "selected";
-				}
-			else
-				{
-				$this->noselected = "selected";
-				$this->yesselected = "";
-				}
-			$req = "select * from ".BAB_USERS_TBL." where id='".$this->arr['manager']."'";
-			$res = $babDB->db_query($req);
-			if( $babDB->db_num_rows($res) > 0)
-				{
-				$arr = $babDB->db_fetch_array($res);
-				$this->managerval = bab_composeUserName($arr['firstname'], $arr['lastname']);
-				$this->managerid = $arr['id'];
-				}
-			else
-				{
-				$this->managerid = "";
-				$this->managerval = "";
-				}
-			if( $id > 3 )
-				{
-				$this->bdel = true;
-				}
-			else
-				{
-				$this->bdel = false;
-				}
-			$this->tgval = "group";
-			$this->selected = "";
-			$this->bdggroup = false;
-			if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0)
-				{
-				$this->res = $babDB->db_query("select * from ".BAB_DG_GROUPS_TBL."");
-				$this->count = $babDB->db_num_rows($this->res);
-				if( $this->count > 0 )
-					{
-					$this->bdggroup = true;
-					}
-				}
-			}
-
-		function getnext()
-			{
-			global $babDB;
-			static $i = 0;	
-			if( $i < $this->count)
-				{
-				$rr = $babDB->db_fetch_array($this->res);
-				$this->grpdgname = $rr['name'];
-				$this->grpdgid = $rr['id'];
-				if( $this->arr['id_dggroup'] == $this->grpdgid )
-					$this->selected = "selected";
-				else
-					$this->selected = "";
-				$i++;
-				return true;
-				}
-			return false;
-			}
-		}
-
-	$temp = new temp($id);
-	$babBody->babecho(	bab_printTemplate($temp,"groups.html", "groupscreate"));
-	}
 
 function groupMembers($id)
 	{
@@ -198,6 +75,15 @@ function groupMembers($id)
 			else
 				{
 				$this->bmodname = false;
+				}
+
+			if( $babBody->currentAdmGroup != 0 && $id == $babBody->currentDGGroup['id_group'] )
+				{
+				$this->bshowform = false;
+				}
+			else
+				{
+				$this->bshowform = true;
 				}
 
 			}
@@ -279,45 +165,6 @@ function deleteMembers($users, $item)
 	$babBody->babecho(	bab_printTemplate($tempa,"warning.html", "warningyesno"));
 	}
 
-function modifyGroup($name, $description, $managerid, $grpid, $grpdg)
-	{
-	global $babBody;
-	if( empty($name))
-		{
-		$babBody->msgerror = bab_translate("ERROR: You must provide a name !!");
-		return false;
-		}
-
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$description = addslashes($description);
-		$name = addslashes($name);
-		}
-
-	$db = $GLOBALS['babDB'];
-	$arr = $db->db_fetch_array($db->db_query("select * from ".BAB_GROUPS_TBL." where id='".$grpid."'"));
-	$res = $db->db_query("select * from ".BAB_GROUPS_TBL." where id!='".$grpid."' and name='".$name."'");
-	if( $db->db_num_rows($res) > 0)
-		{
-		$babBody->msgerror = bab_translate("Group with the same name already exists!");
-		return false;
-		}
-	else
-		{
-		if( empty($managerid))
-			$managerid = 0;
-
-		if( empty($grpdg))
-			$grpdg = 0;
-
-		$query = "update ".BAB_GROUPS_TBL." set name='".$name."', description='".$description."', manager='".$managerid."', id_dggroup='".$grpdg."' where id='".$grpid."'";
-		$db->db_query($query);
-		}
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=groups&idx=List");
-	return true;
-	}
-
-
 function confirmDeleteMembers($item, $names)
 {
 	if( !empty($names))
@@ -350,25 +197,7 @@ if( !$babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
 }
 
 if( !isset($idx))
-	$idx = "Modify";
-
-if( isset($add))
-	{
-	if( isset($submit))
-		{
-		if( !isset($grpdg)) { $grpdg = 0; }
-		if(!modifyGroup($name, $description, $managerid, $grpid, $grpdg))
-			{
-			$idx = "Modify";
-			$item = $grpid;
-		}
-		else
-			{
-			Header("Location: ". $GLOBALS['babUrlScript']."?tg=groups&idx=List");
-			exit;
-			}
-		}
-	}
+	$idx = "Members";
 
 if( isset($action) && $action == "Yes")
 	{
@@ -389,6 +218,15 @@ if( isset($action) && $action == "Yes")
 
 switch($idx)
 	{
+	case "deldg":
+		if( $item > 3 )
+			groupAdmDelete($item);
+		$babBody->title = bab_translate("Delete group");
+		if( $babBody->currentAdmGroup == 0 || $babBody->currentDGGroup['groups'] == 'Y' )
+			$babBody->addItemMenu("List", bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=groups&idx=List");
+		$babBody->addItemMenu("Members", bab_translate("Members"), $GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$item);
+		$babBody->addItemMenu("deldg", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=group&idx=deldg&item=".$item);
+		break;
 	case "Deletem":
 		if( isset($users) && count($users) > 0)
 			{
@@ -401,38 +239,18 @@ switch($idx)
 			}
 		/* no break */
 	case "Members":
+	default:
 		groupMembers($item);
 		$babBody->title = bab_translate("Group's members").' : '.bab_getGroupName($item);
 		if( $babBody->currentAdmGroup == 0 || $babBody->currentDGGroup['groups'] == 'Y' )
 			$babBody->addItemMenu("List", bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=groups&idx=List");
-		if( $babBody->currentAdmGroup > 0 && $babBody->currentDGGroup['id_group'] != $item )
-			{
-			$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=group&idx=Modify&item=".$item);
-			}
 		$babBody->addItemMenu("Members", bab_translate("Members"), $GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$item);
-		$babBody->addItemMenu("Add", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=users&idx=List&grp=".$item);
-		break;
-	case "deldg":
-		if( $item > 3 )
-			groupAdmDelete($item);
-		$babBody->title = bab_translate("Delete group");
-		if( $babBody->currentAdmGroup == 0 || $babBody->currentDGGroup['groups'] == 'Y' )
-			$babBody->addItemMenu("List", bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=groups&idx=List");
-		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=group&idx=Modify&item=".$item);
-		$babBody->addItemMenu("Members", bab_translate("Members"), $GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$item);
-		$babBody->addItemMenu("deldg", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=group&idx=deldg&item=".$item);
-		break;
-	case "Modify":
-	default:
-		groupModify($item);
-		$babBody->title = bab_getGroupName($item) . " ". bab_translate("group");
-		if( $babBody->currentAdmGroup == 0 || $babBody->currentDGGroup['groups'] == 'Y' )
-			$babBody->addItemMenu("List", bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=groups&idx=List");
-		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=group&idx=Modify&item=".$item);
-		$babBody->addItemMenu("Members", bab_translate("Members"), $GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$item);
+		if( $babBody->currentAdmGroup == 0 || $item != $babBody->currentDGGroup['id_group'] )
+		{
+			$babBody->addItemMenu("Add", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=users&idx=List&grp=".$item);
+		}
 		break;
 	}
 
 $babBody->setCurrentItemMenu($idx);
-
 ?>

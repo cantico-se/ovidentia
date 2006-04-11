@@ -489,7 +489,7 @@ function updatePassword($item, $newpwd1, $newpwd2)
 	return true;
 	}
 /* main */
-if( !$babBody->isSuperAdmin )
+if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['users'] != 'Y' )
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;
@@ -575,6 +575,8 @@ switch($idx)
 		$arr = bab_getUserGroups($_REQUEST['item']);
 		if (isset($arr['id']))
 			$mgroups->setGroupsOptions($arr['id'],'checked',true);
+		if ( $babBody->currentAdmGroup != 0 )
+			$mgroups->setGroupOption($babBody->currentDGGroup['id_group'],'disabled',true);
 		$mgroups->babecho();
 
 		$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp);

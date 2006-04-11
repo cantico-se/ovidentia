@@ -1607,6 +1607,7 @@ CREATE TABLE `bab_dg_groups` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `name` char(255) NOT NULL default '',
   `description` char(255) NOT NULL default '',
+  `users` enum('N','Y') NOT NULL default 'N',
   `groups` enum('N','Y') NOT NULL default 'N',
   `sections` enum('N','Y') NOT NULL default 'N',
   `articles` enum('N','Y') NOT NULL default 'N',

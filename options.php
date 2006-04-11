@@ -1207,7 +1207,7 @@ function updateUnavailability($iduser, $fromdate, $todate, $id_substitute)
 	{
 	global $babBody, $babDB;
 
-	if( $iduser != $GLOBALS['BAB_SESS_USERID'] && !bab_isUserAdministrator())
+	if( $iduser != $GLOBALS['BAB_SESS_USERID'] && !bab_isUserAdministrator() && $babBody->currentDGGroup['users'] != 'Y')
 		{
 		return;
 		}
@@ -1373,7 +1373,7 @@ switch($idx)
 		if( !isset($todate)) { $todate ='';}
 		if( !isset($id_substitute)) { $id_substitute ='';}
 		$babBody->addItemMenu("global", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=options&idx=global");
-		if( ('Y' == $babBody->babsite['change_unavailability'] && $iduser == $GLOBALS['BAB_SESS_USERID']) || bab_isUserAdministrator())
+		if( ('Y' == $babBody->babsite['change_unavailability'] && $iduser == $GLOBALS['BAB_SESS_USERID']) || bab_isUserAdministrator() || $babBody->currentDGGroup['users'] == 'Y')
 			{
 			showUnavailability($iduser, $fromdate, $todate, $id_substitute);
 			$babBody->addItemMenu("unav", bab_translate("Unavailability"), $GLOBALS['babUrlScript']."?tg=options&idx=unav&iduser=".$iduser);
@@ -1424,7 +1424,7 @@ switch($idx)
 			$babBody->addItemMenu("options", bab_translate("Mail"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=listacc");
 			}
 		$babBody->addItemMenu("list", bab_translate("Sections"), $GLOBALS['babUrlScript']."?tg=sectopt&idx=list");
-		if ('Y' == $babBody->babsite['change_unavailability'])
+		if( ('Y' == $babBody->babsite['change_unavailability'] && $iduser == $GLOBALS['BAB_SESS_USERID']) || bab_isUserAdministrator() || $babBody->currentDGGroup['users'] == 'Y')
 			$babBody->addItemMenu("unav", bab_translate("Unavailability"), $GLOBALS['babUrlScript']."?tg=options&idx=unav&iduser=".(isset($iduser)?$iduser:$BAB_SESS_USERID ));
 		break;
 	}
