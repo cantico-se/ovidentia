@@ -1385,10 +1385,10 @@ function bab_getDebug() {
  * <ul>
  * <li>BAB_HTML_ALL			: a combination of all the options</li>
  * <li>BAB_HTML_ENTITIES	: special characters will be replaced with html entities</li>
- * <li>PE_HTML_AUTO			: the paragraphs tags will be added only if the text contein some text line-breaks</li>
- * <li>PE_HTML_P			: double line breaks will be replaced by html paragraphs, if there is no double line breaks, all the text will be in one paragraph</li>
- * <li>PE_HTML_BR			: Line-breaks will be replaced by html line breaks</li>
- * <li>PE_HTML_LINKS		: url and email adress will be replaced by links</li>
+ * <li>BAB_HTML_AUTO		: the paragraphs tags will be added only if the text contein some text line-breaks</li>
+ * <li>BAB_HTML_P			: double line breaks will be replaced by html paragraphs, if there is no double line breaks, all the text will be in one paragraph</li>
+ * <li>BAB_HTML_BR			: Line-breaks will be replaced by html line breaks</li>
+ * <li>BAB_HTML_LINKS		: url and email adress will be replaced by links</li>
  * </ul>
  * @param string $str
  * @param int [$opt] the default value for the option is BAB_HTML_ENTITIES
