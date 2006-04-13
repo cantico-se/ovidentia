@@ -65,6 +65,8 @@ class swishCls
 	}
 	pclose($handle);
 
+	bab_debug($buffer);
+
 	return $buffer;
 	}
 }
