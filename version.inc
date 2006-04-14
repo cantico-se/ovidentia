@@ -26,6 +26,13 @@ name="ovidentia"
 description="Ovidentia"
 db_prefix="bab_"
 version="5.8.1"
+
+; ov_version test is available since 5.8.1
+
 ov_version="0.0.0"
+
+; php_version test is available since 5.8.1
+
 php_version="4.1.2"
+
 ; DO NOT REMOVE THIS LINE ?>
