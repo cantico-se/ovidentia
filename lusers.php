@@ -111,9 +111,9 @@ function browseUsers($pos, $cb)
 				$this->firstlast = str_replace("'", "\'", $this->firstlast);
 				$this->firstlast = str_replace('"', "'+String.fromCharCode(34)+'",$this->firstlast);
 				if( $this->ord == "-" )
-					$this->urlname = bab_composeUserName($this->arr['lastname'],$this->arr['firstname']);
+					$this->urlname = $this->arr['lastname'].' '.$this->arr['firstname'];
 				else
-					$this->urlname = bab_composeUserName($this->arr['firstname'],$this->arr['lastname']);
+					$this->urlname = $this->arr['firstname'].' '.$this->arr['lastname'];
 				$this->userid = $this->arr['id'];
 				$this->nicknameval = $this->arr['nickname'];
 				$this->altbg = !$this->altbg;
