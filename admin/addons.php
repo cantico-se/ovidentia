@@ -305,6 +305,11 @@ function upgrade($id)
 
 function export($id)
 	{
+
+
+	if( !get_cfg_var('safe_mode')) {
+			set_time_limit(0);
+		}
 		
 
 	function rd($d)
