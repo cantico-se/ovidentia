@@ -537,6 +537,7 @@ CREATE TABLE bab_users (
    date_longformat varchar(255) NOT NULL default '',
    date_shortformat varchar(255) NOT NULL default '',
    time_format varchar(255) NOT NULL default '',
+   db_authentification enum('N','Y') DEFAULT 'N' NOT NULL,
    PRIMARY KEY (id),
    KEY nickname (nickname),
    KEY firstname (firstname),
