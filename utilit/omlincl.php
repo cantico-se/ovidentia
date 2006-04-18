@@ -449,6 +449,14 @@ class bab_ArticleCategories extends bab_handler
 		else
 			$parentid = array_intersect(array_keys($babBody->get_topcatview()), explode(',', $parentid));
 
+		$delegationid = (int) $ctx->get_value('delegationid');
+		$sDelegation = ' ';
+		if(0 != $delegationid)
+		{
+			$sDelegation = ' AND id_dgowner = \'' . $delegationid . '\' ';
+		}
+
+		
 		if( count($parentid) > 0 )
 		{
 		$res = $babDB->db_query("select id from ".BAB_TOPICS_CATEGORIES_TBL." where id_parent IN (".implode(',', $parentid).")");
@@ -467,7 +475,7 @@ class bab_ArticleCategories extends bab_handler
 		$this->count = count($this->IdEntries);
 		if( $this->count > 0)
 			{
-			$req = "select tc.* from ".BAB_TOPICS_CATEGORIES_TBL." tc left join ".BAB_TOPCAT_ORDER_TBL." tot on tc.id=tot.id_topcat where tc.id IN (".implode(',', $this->IdEntries).") and tot.type='1' order by tot.ordering asc";
+			$req = "select tc.* from ".BAB_TOPICS_CATEGORIES_TBL." tc left join ".BAB_TOPCAT_ORDER_TBL." tot on tc.id=tot.id_topcat where tc.id IN (".implode(',', $this->IdEntries).") and tot.type='1'" . $sDelegation .  " order by tot.ordering asc";
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
 			}
@@ -1996,6 +2004,7 @@ class bab_RecentArticles extends bab_handler
 		$this->last = $ctx->get_value('last');
 		$this->topicid = $ctx->get_value('topicid');
 		$this->topcatid = $ctx->get_value('categoryid');
+		$delegationid = (int) $ctx->get_value('delegationid');
 		
 		if ( $this->topcatid === false || $this->topcatid === '' )
 			{
@@ -2018,15 +2027,39 @@ class bab_RecentArticles extends bab_handler
 
 			switch(strtoupper($archive))
 			{
-				case 'NO': $archive = " and archive='N' "; break;
-				case 'YES': $archive = " and archive='Y' "; break;
+				case 'NO': $archive = " AND art.archive='N' "; break;
+				case 'YES': $archive = " AND art.archive='Y' "; break;
 				default: $archive = ""; break;
 
 			}
 
-			$req = "select id, restriction from ".BAB_ARTICLES_TBL." where id_topic IN (".implode(',', $this->topicid).") and (date_publication='0000-00-00 00:00:00' or date_publication <= now())";
+			$req = 
+				'SELECT ' . 
+					'art.id, ' .
+					'art.restriction ' .
+				'FROM ' . 
+					BAB_ARTICLES_TBL . ' art ';
+					
+			$sDelegation = ' ';	
+			if(0 != $delegationid)	
+			{
+				$req .= 
+					'LEFT JOIN ' .
+						BAB_TOPICS_TBL . ' tp ON tp.id = art.id_topic ' .
+					'LEFT JOIN ' .
+						BAB_TOPICS_CATEGORIES_TBL . ' tpCat ON tpCat.id = tp.id_cat ';
+						
+				$sDelegation = ' AND tpCat.id_dgowner = \'' . $delegationid . '\' ';
+			}
+					
+			$req .= 
+				'WHERE ' .
+					'art.id_topic IN (' . implode(',', $this->topicid). ') AND ' .
+					'(art.date_publication = \'0000-00-00 00:00:00\' OR art.date_publication <= now()) ' .
+					$sDelegation;
+
 			if( $this->nbdays !== false)
-				$req .= " and date >= DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
+				$req .= " AND art.date >= DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
 
 			$req .= $archive;
 
@@ -2036,16 +2069,16 @@ class bab_RecentArticles extends bab_handler
 
 			switch(strtoupper($order))
 			{
-				case "ASC": $order = "date_modification ASC"; break;
-				case "RAND": $order = "rand()"; break;
-				case "DESC":
-				default: $order = "date_modification DESC"; break;
+				case 'ASC': $order = 'date_modification ASC'; break;
+				case 'RAND': $order = 'rand()'; break;
+				case 'DESC':
+				default: $order = 'date_modification DESC'; break;
 			}
 
-			$req .= " order by ".$order;
+			$req .= ' ORDER BY ' . $order;
 
 			if( $this->last !== false)
-				$req .= " limit 0, ".$this->last;
+				$req .= ' LIMIT 0, ' . $this->last;
 
 			$this->resarticles = $babDB->db_query($req);
 			while( $arr = $babDB->db_fetch_array($this->resarticles))
@@ -2147,24 +2180,48 @@ class bab_RecentComments extends bab_handler
 		$this->nbdays = $ctx->get_value('from_lastlog');
 		$this->last = $ctx->get_value('last');
 		$this->articleid = $ctx->get_value('articleid');
+		$delegationid = (int) $ctx->get_value('delegationid');
+
 		if( $this->articleid === false || $this->articleid === '' )
 			$arrid = array();
 		else
 			$arrid = explode(',', $this->articleid);
 
 		$req = '';
+		$topview = ' ';
 		if( count($babBody->topview) > 0 )
 			{
+				
+				$req = 
+					'SELECT ' .
+						'* ' .
+					'FROM ' .
+						BAB_COMMENTS_TBL . ' ';
+				
 			if( count($arrid) > 0 )
 				{
-				$req = "select * from ".BAB_COMMENTS_TBL." where id_article IN (".implode(',', $arrid).") and confirmed='Y' and id_topic IN (".implode(',', array_keys($babBody->topview)).")";
+				$topview = "where id_article IN (".implode(',', $arrid).") and confirmed='Y' and id_topic IN (".implode(',', array_keys($babBody->topview)).")";
 				}
 			else
 				{
-				$req = "select * from ".BAB_COMMENTS_TBL." where confirmed='Y' and id_topic IN (".implode(',', array_keys($babBody->topview)).")";
+				$topview = "where confirmed='Y' and id_topic IN (".implode(',', array_keys($babBody->topview)).")";
 				}
 			}
 		
+		$sDelegation = ' ';	
+		if(0 != $delegationid)	
+		{
+			$req .= 
+				'LEFT JOIN ' .
+					BAB_TOPICS_TBL . ' tp ON tp.id = id_topic ' .
+				'LEFT JOIN ' .
+					BAB_TOPICS_CATEGORIES_TBL . ' tpCat ON tpCat.id = tp.id_cat ';
+					
+			$sDelegation = ' AND tpCat.id_dgowner = \'' . $delegationid . '\' ';
+		}
+			
+		$req .= $topview . $sDelegation;
+			
 		if( $req != '' )
 			{
 			if( $this->nbdays !== false)
@@ -2570,7 +2627,31 @@ class bab_WaitingArticles extends bab_handler
 		if( $userid != '')
 			{
 			$this->topicid = $ctx->get_value('topicid');
-			$req = "select adt.id, adt.id_topic from ".BAB_ART_DRAFTS_TBL." adt where adt.result='".BAB_ART_STATUS_WAIT."'";
+			$delegationid = (int) $ctx->get_value('delegationid');
+
+			$req = 
+				'select ' .
+					'adt.id, ' .
+					'adt.id_topic ' .
+				'FROM ' .
+					BAB_ART_DRAFTS_TBL . ' adt ';
+			
+			$sDelegation = ' ';	
+			if(0 != $delegationid)	
+			{
+				$req .= 
+					'LEFT JOIN ' .
+						BAB_TOPICS_TBL . ' tp ON tp.id = id_topic ' .
+					'LEFT JOIN ' .
+						BAB_TOPICS_CATEGORIES_TBL . ' tpCat ON tpCat.id = tp.id_cat ';
+						
+				$sDelegation = ' AND tpCat.id_dgowner = \'' . $delegationid . '\' ';
+			}
+			
+					
+			$req .= "where adt.result='".BAB_ART_STATUS_WAIT."'" . $sDelegation;
+
+			
 			if( $this->topicid !== false && $this->topicid !== '' )
 				$req .= " and adt.id_topic IN (".$this->topicid.")";
 
@@ -2660,7 +2741,25 @@ class bab_WaitingComments extends bab_handler
 		if( $userid != '')
 			{
 			$this->articleid = $ctx->get_value('articleid');
-			$req = "select c.id, c.id_topic from ".BAB_COMMENTS_TBL." c where c.confirmed='N'";
+			$delegationid = (int) $ctx->get_value('delegationid');
+
+			$req = "select c.id, c.id_topic from ".BAB_COMMENTS_TBL." c ";
+			
+			$sDelegation = ' ';	
+			if(0 != $delegationid)	
+			{
+				$req .= 
+					'LEFT JOIN ' .
+						BAB_TOPICS_TBL . ' tp ON tp.id = id_topic ' .
+					'LEFT JOIN ' .
+						BAB_TOPICS_CATEGORIES_TBL . ' tpCat ON tpCat.id = tp.id_cat ';
+						
+				$sDelegation = ' AND tpCat.id_dgowner = \'' . $delegationid . '\' ';
+			}
+					
+			$req .= "where c.confirmed='N'" . $sDelegation;
+
+			
 			if( $this->articleid !== false && $this->articleid !== '' )
 				$req .= " and c.id_article IN (".$this->articleid.")";
 
