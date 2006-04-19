@@ -38,20 +38,27 @@ class bab_DbDirectories extends bab_handler
 		$this->bab_handler($ctx);
 		$directoryid = $ctx->get_value('directoryid');
 		$directorytype = strtolower($ctx->get_value('type'));
+		$delegationid = (int) $ctx->get_value('delegationid');
+
+		$sDelegation = ' ';	
+		if(0 != $delegationid)	
+		{
+			$sDelegation = ' AND id_dgowner = \'' . $delegationid . '\' ';
+		}
 
 		if( $directoryid === false || $directoryid === '' )
 			{
 			if( $directorytype === false || !in_array($directorytype, array('database', 'group')) )
 				{
-				$res = $babDB->db_query("select id, name, description from ".BAB_DB_DIRECTORIES_TBL." order by name asc");
+				$res = $babDB->db_query("select id, name, description from ".BAB_DB_DIRECTORIES_TBL. ((0 != $delegationid) ? ' where id_dgowner = \'' . $delegationid . '\' ' : ' ') .  " order by name asc");
 				}
 			elseif ('database' == $directorytype)
 				{
-				$res = $babDB->db_query("select id, name, description from ".BAB_DB_DIRECTORIES_TBL." WHERE id_group='0' order by name asc");
+				$res = $babDB->db_query("select id, name, description from ".BAB_DB_DIRECTORIES_TBL." WHERE id_group='0'" . $sDelegation . "order by name asc");
 				}
 			elseif ('group' == $directorytype)
 				{
-				$res = $babDB->db_query("select id, name, description from ".BAB_DB_DIRECTORIES_TBL." WHERE id_group>'0' order by name asc");
+				$res = $babDB->db_query("select id, name, description from ".BAB_DB_DIRECTORIES_TBL." WHERE id_group>'0'" . $sDelegation . "order by name asc");
 				}
 			}
 		else
@@ -59,15 +66,15 @@ class bab_DbDirectories extends bab_handler
 			$directoryid = explode(',', $directoryid);
 			if( $directorytype === false || !in_array($directorytype, array('database', 'group')) )
 				{
-				$res = $babDB->db_query("select id, name, description from ".BAB_DB_DIRECTORIES_TBL." where id IN (".implode(',', $directoryid).") order by name asc");
+				$res = $babDB->db_query("select id, name, description from ".BAB_DB_DIRECTORIES_TBL." where id IN (".implode(',', $directoryid).")" . $sDelegation . "order by name asc");
 				}
 			elseif ('database' == $directorytype)
 				{
-				$res = $babDB->db_query("select id, name, description from ".BAB_DB_DIRECTORIES_TBL." where id IN (".implode(',', $directoryid).") AND id_group='0' order by name asc");
+				$res = $babDB->db_query("select id, name, description from ".BAB_DB_DIRECTORIES_TBL." where id IN (".implode(',', $directoryid).")" . $sDelegation . "AND id_group='0' order by name asc");
 				}
 			elseif ('group' == $directorytype)
 				{
-				$res = $babDB->db_query("select id, name, description from ".BAB_DB_DIRECTORIES_TBL." where id IN (".implode(',', $directoryid).") AND id_group>'0' order by name asc");
+				$res = $babDB->db_query("select id, name, description from ".BAB_DB_DIRECTORIES_TBL." where id IN (".implode(',', $directoryid).")" . $sDelegation . "AND id_group>'0' order by name asc");
 				}
 			}
 

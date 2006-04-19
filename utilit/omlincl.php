@@ -674,7 +674,22 @@ class bab_ArticleTopics extends bab_handler
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
 		$catid = $ctx->get_value('categoryid');
+		$delegationid = (int) $ctx->get_value('delegationid');
 
+		$sDelegation = ' ';
+		$sLeftJoin = ' ';
+		if(0 != $delegationid)
+		{
+			$sLeftJoin = 
+				'LEFT JOIN ' .
+					BAB_TOPICS_TBL . ' tc ON tc.id = id_topcat ' .
+				'LEFT JOIN ' .
+					BAB_TOPICS_CATEGORIES_TBL . ' tpc ON tpc.id = tc.id_cat ';
+			
+			$sDelegation = ' AND tpc.id_dgowner = \'' . $delegationid . '\' ';
+		}
+		
+		
 		if( $catid === false || $catid === '' )
 			$catid = array_keys($babBody->get_topcatview());
 		else
@@ -682,7 +697,7 @@ class bab_ArticleTopics extends bab_handler
 
 		if( count($catid) > 0 )
 		{
-		$req = "select * from ".BAB_TOPCAT_ORDER_TBL." where type='2' and id_parent IN (".implode(',', $catid).") order by ordering asc";
+		$req = "select * from ".BAB_TOPCAT_ORDER_TBL. " tco " . $sLeftJoin . " where tco.type='2' and tco.id_parent IN (".implode(',', $catid).")" . $sDelegation . " order by tco.ordering asc";
 
 		$res = $babDB->db_query($req);
 		while( $row = $babDB->db_fetch_array($res))
@@ -841,6 +856,21 @@ class bab_Articles extends bab_handler
 		global $babDB, $babBody;
 		$this->bab_handler($ctx);
 		$topicid = $ctx->get_value('topicid');
+		$delegationid = (int) $ctx->get_value('delegationid');
+
+		$sDelegation = ' ';
+		$sLeftJoin = ' ';
+		if(0 != $delegationid)
+		{
+			$sLeftJoin = 
+				'LEFT JOIN ' .
+					BAB_TOPICS_TBL . ' t ON t.id = id_topic ' .
+				'LEFT JOIN ' .
+					BAB_TOPICS_CATEGORIES_TBL . ' tpc ON tpc.id = t.id_cat ';
+			
+			$sDelegation = ' AND tpc.id_dgowner = \'' . $delegationid . '\' ';
+		}
+
 		if( $topicid === false || $topicid === '' )
 			$topicid = array_keys($babBody->topview);
 		else
@@ -860,7 +890,7 @@ class bab_Articles extends bab_handler
 
 			}
 
-			$req = "select at.id, at.restriction from ".BAB_ARTICLES_TBL." at where at.id_topic IN (".implode(',', $topicid).") and (at.date_publication='0000-00-00 00:00:00' or at.date_publication <= now())".$archive;
+			$req = "select at.id, at.restriction from " . BAB_ARTICLES_TBL . " at " . $sLeftJoin . "where at.id_topic IN (".implode(',', $topicid).") and (at.date_publication='0000-00-00 00:00:00' or at.date_publication <= now())" . $archive . $sDelegation;
 
 			$order = $ctx->get_value('order');
 			if( $order === false || $order === '' )
@@ -1164,12 +1194,20 @@ class bab_Forums extends bab_handler
 		global $babDB;
 		$this->bab_handler($ctx);
 		$forumid = $ctx->get_value('forumid');
+		$delegationid = (int) $ctx->get_value('delegationid');
+
+		$sDelegation = ' ';	
+		if(0 != $delegationid)	
+		{
+			$sDelegation = ' AND id_dgowner = \'' . $delegationid . '\' ';
+		}
+		
 		if( $forumid === false || $forumid === '' )
-			$res = $babDB->db_query("select id from ".BAB_FORUMS_TBL." where active='Y' order by ordering asc");
+			$res = $babDB->db_query("select id from ".BAB_FORUMS_TBL." where active='Y'" . $sDelegation . "order by ordering asc");
 		else
 			{
 			$forumid = explode(',', $forumid);
-			$res = $babDB->db_query("select id from ".BAB_FORUMS_TBL." where active='Y' and id IN (".implode(',', $forumid).") order by ordering asc");
+			$res = $babDB->db_query("select id from ".BAB_FORUMS_TBL." where active='Y'" . $sDelegation . "and id IN (".implode(',', $forumid).") order by ordering asc");
 			}
 		while( $row = $babDB->db_fetch_array($res))
 			{
@@ -1541,12 +1579,20 @@ class bab_Folders extends bab_handler
 		global $babDB;
 		$this->bab_handler($ctx);
 		$folderid = $ctx->get_value('folderid');
+		$delegationid = (int) $ctx->get_value('delegationid');
+
+		$sDelegation = ' ';	
+		if(0 != $delegationid)	
+		{
+			$sDelegation = ' AND id_dgowner = \'' . $delegationid . '\' ';
+		}
+
 		if( $folderid === false || $folderid === '' )
-			$res = $babDB->db_query("select id from ".BAB_FM_FOLDERS_TBL." where active='Y' order by folder asc");
+			$res = $babDB->db_query("select id from ".BAB_FM_FOLDERS_TBL." where active='Y' " . $sDelegation . " order by folder asc");
 		else
 			{
 			$folderid = explode(',', $folderid);
-			$res = $babDB->db_query("select id from ".BAB_FM_FOLDERS_TBL." where active='Y' and id IN (".implode(',', $folderid).") order by folder asc");
+			$res = $babDB->db_query("select id from ".BAB_FM_FOLDERS_TBL." where active='Y' " . $sDelegation . " and id IN (".implode(',', $folderid).") order by folder asc");
 			}
 
 		while( $row = $babDB->db_fetch_array($res))
@@ -1687,6 +1733,7 @@ class bab_SubFolders extends bab_handler
 		$this->bab_handler($ctx);
 		$folderid = $ctx->get_value('folderid');
 		$this->count = 0;
+		
 		if($folderid !== false && $folderid !== '' && bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $folderid))
 		{
 		$res = $babDB->db_query("select * from ".BAB_FM_FOLDERS_TBL." where id='".$folderid."'");
@@ -2300,6 +2347,7 @@ class bab_RecentPosts extends bab_handler
 		$this->last = $ctx->get_value('last');
 		$this->forumid = $ctx->get_value('forumid');
 		$access = array_keys(bab_getUserIdObjects(BAB_FORUMSVIEW_GROUPS_TBL));
+		$delegationid = (int) $ctx->get_value('delegationid');
 
 		if( $this->forumid === false || $this->forumid === '' )
 			{
@@ -2313,7 +2361,14 @@ class bab_RecentPosts extends bab_handler
 
 		if( count($arr) > 0 )
 			{
-			$req = "SELECT p.*, f.id id_forum FROM ".BAB_POSTS_TBL." p LEFT JOIN ".BAB_THREADS_TBL." t on p.id_thread = t.id LEFT JOIN ".BAB_FORUMS_TBL." f on f.id = t.forum WHERE f.active='Y' and t.forum IN (".implode(',', $arr).") and p.confirmed='Y'";	
+			$sDelegation = ' ';	
+			if(0 != $delegationid)	
+			{
+				$sDelegation = ' AND f.id_dgowner = \'' . $delegationid . '\' ';
+			}
+
+		
+			$req = "SELECT p.*, f.id id_forum FROM ".BAB_POSTS_TBL." p LEFT JOIN ".BAB_THREADS_TBL." t on p.id_thread = t.id LEFT JOIN ".BAB_FORUMS_TBL." f on f.id = t.forum WHERE f.active='Y'" . $sDelegation . "and t.forum IN (".implode(',', $arr).") and p.confirmed='Y'";	
 
 			if( $this->nbdays !== false)
 				$req .= " and p.date >= DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
@@ -2395,6 +2450,14 @@ class bab_RecentThreads extends bab_handler
 		$this->nbdays = $ctx->get_value('from_lastlog');
 		$this->last = $ctx->get_value('last');
 		$this->forumid = $ctx->get_value('forumid');
+		$delegationid = (int) $ctx->get_value('delegationid');
+
+		$sDelegation = ' ';	
+		if(0 != $delegationid)	
+		{
+			$sDelegation = ' AND id_dgowner = \'' . $delegationid . '\' ';
+		}
+
 		if( $this->forumid === false || $this->forumid === '' )
 			$arr = array();
 		else
@@ -2402,11 +2465,11 @@ class bab_RecentThreads extends bab_handler
 
 		if( count($arr) > 0 )
 			{
-			$req = "SELECT p.id, p.id_thread, f.id id_forum FROM ".BAB_POSTS_TBL." p LEFT JOIN ".BAB_THREADS_TBL." t on p.id_thread = t.id LEFT JOIN ".BAB_FORUMS_TBL." f on f.id = t.forum WHERE f.active='Y' and t.forum IN (".implode(',', $arr).") and p.confirmed='Y' and p.id_parent='0'";			
+			$req = "SELECT p.id, p.id_thread, f.id id_forum FROM ".BAB_POSTS_TBL." p LEFT JOIN ".BAB_THREADS_TBL." t on p.id_thread = t.id LEFT JOIN ".BAB_FORUMS_TBL." f on f.id = t.forum WHERE f.active='Y'" . $sDelegation . "and t.forum IN (".implode(',', $arr).") and p.confirmed='Y' and p.id_parent='0'";			
 			}
 		else
 			{
-			$req = "SELECT p.id, p.id_thread, f.id id_forum FROM ".BAB_POSTS_TBL." p LEFT JOIN ".BAB_THREADS_TBL." t on p.id_thread = t.id LEFT JOIN ".BAB_FORUMS_TBL." f on f.id = t.forum WHERE f.active='Y' and p.confirmed='Y' and p.id_parent='0'";			
+			$req = "SELECT p.id, p.id_thread, f.id id_forum FROM ".BAB_POSTS_TBL." p LEFT JOIN ".BAB_THREADS_TBL." t on p.id_thread = t.id LEFT JOIN ".BAB_FORUMS_TBL." f on f.id = t.forum WHERE f.active='Y'" . $sDelegation . "and p.confirmed='Y' and p.id_parent='0'";			
 			}
 
 		if( $this->nbdays !== false)
@@ -2498,6 +2561,14 @@ class bab_RecentFiles extends bab_handler
 		$this->nbdays = $ctx->get_value('from_lastlog');
 		$this->last = $ctx->get_value('last');
 		$this->folderid = $ctx->get_value('folderid');
+		$delegationid = (int) $ctx->get_value('delegationid');
+
+		$sDelegation = ' ';	
+		if(0 != $delegationid)	
+		{
+			$sDelegation = ' AND id_dgowner = \'' . $delegationid . '\' ';
+		}
+
 		if( $this->folderid === false || $this->folderid === '' )
 			$arr = array();
 		else
@@ -2505,11 +2576,11 @@ class bab_RecentFiles extends bab_handler
 		
 		if( count($arr) == 0 )
 			{
-			$req = "select * from ".BAB_FM_FOLDERS_TBL." where active='Y'";
+			$req = "select * from ".BAB_FM_FOLDERS_TBL." where active='Y'" . $sDelegation;
 			}
 		else
 			{
-			$req = "select * from ".BAB_FM_FOLDERS_TBL." where active='Y' and id IN (".implode(',', $arr).")";
+			$req = "select * from ".BAB_FM_FOLDERS_TBL." where active='Y' and id IN (".implode(',', $arr).")" . $sDelegation;
 			}
 
 		$arrid = array();
@@ -2827,6 +2898,16 @@ class bab_WaitingFiles extends bab_handler
 		{
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
+		$delegationid = (int) $ctx->get_value('delegationid');
+
+		$sDelegation = ' ';	
+		$sLeftJoin = ' ';
+		if(0 != $delegationid)	
+		{
+			$sLeftJoin = 'LEFT JOIN ' .
+				BAB_FM_FOLDERS_TBL . ' fld ON fld.id = id_owner ';
+			$sDelegation = ' AND fld.id_dgowner = \'' . $delegationid . '\' ';
+		}
 
 		$userid = $ctx->get_value('userid');
 		if( $userid === false || $userid === '' )
@@ -2835,7 +2916,7 @@ class bab_WaitingFiles extends bab_handler
 		if( $userid != '')
 			{
 			$this->folderid = $ctx->get_value('folderid');
-			$req = "select f.id, f.idfai from ".BAB_FILES_TBL." f where f.bgroup='Y' and f.confirmed='N'";
+			$req = "select f.id, f.idfai from ".BAB_FILES_TBL . " f " . $sLeftJoin . "where f.bgroup='Y' and f.confirmed='N'" . $sDelegation;
 			if( $this->folderid !== false && $this->folderid !== '' )
 				$req .= " and f.id_owner IN (".$this->folderid.")";
 
@@ -2922,6 +3003,14 @@ class bab_WaitingPosts extends bab_handler
 			$req .= " and id IN (".$this->forumid.")";
 			}
 
+		$delegationid = (int) $ctx->get_value('delegationid');
+		$sDelegation = ' ';	
+		if(0 != $delegationid)	
+		{
+			$req .= ' AND id_dgowner = \'' . $delegationid . '\' ';
+			
+		}
+
 		$res = $babDB->db_query($req);
 		$arrf = array();
 		while($arr = $babDB->db_fetch_array($res))
@@ -2991,9 +3080,20 @@ class bab_Faqs extends bab_handler
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
 		$faqid = $ctx->get_value('faqid');
+		$delegationid = (int) $ctx->get_value('delegationid');
+
 		$req = "select id from ".BAB_FAQCAT_TBL;
-		if( $faqid !== false && $faqid !== '' )
+		
+		$isFaqId = ( $faqid !== false && $faqid !== '' );
+		if( $isFaqId )
 			$req .= " where id IN (".$faqid.")";
+
+		$sDelegation = ' ';	
+		if(0 != $delegationid)	
+		{
+			$sDelegation = 'id_dgowner = \'' . $delegationid . '\' ';
+			$req .= ($isFaqId) ? (' AND ' . $sDelegation) : (' WHERE ' . $sDelegation);
+		}
 
 		$res = $babDB->db_query($req);
 		while( $row = $babDB->db_fetch_array($res))
@@ -3410,6 +3510,8 @@ class bab_Calendars extends bab_handler
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
 		$type = $ctx->get_value('type');
+		$delegationid = (int) $ctx->get_value('delegationid');
+
 		$babBody->icalendars->initializeCalendars();
 		if( $type === false || $type === '' )
 			{
@@ -3427,12 +3529,17 @@ class bab_Calendars extends bab_handler
 			reset($babBody->icalendars->pubcal);
 			while( $row=each($babBody->icalendars->pubcal) ) 
 				{ 
+				if(0 != $delegationid && $delegationid != $row['value']['id_dgowner'])
+					continue;
 				$this->IdEntries[] = $row[0];
 				}
 
 			reset($babBody->icalendars->rescal);
 			while( $row=each($babBody->icalendars->rescal) ) 
 				{ 
+				if(0 != $delegationid && $delegationid != $row['value']['id_dgowner'])
+					continue;
+					
 				$this->IdEntries[] = $row[0];
 				}
 			}
@@ -3465,6 +3572,8 @@ class bab_Calendars extends bab_handler
 					reset($babBody->icalendars->pubcal);
 					while( $row=each($babBody->icalendars->pubcal) ) 
 						{ 
+						if(0 != $delegationid && $delegationid != $row['value']['id_dgowner'])
+							continue;
 						$this->IdEntries[] = $row[0];
 						}
 					break;
@@ -3473,6 +3582,8 @@ class bab_Calendars extends bab_handler
 					reset($babBody->icalendars->rescal);
 					while( $row=each($babBody->icalendars->rescal) ) 
 						{ 
+						if(0 != $delegationid && $delegationid != $row['value']['id_dgowner'])
+							continue;
 						$this->IdEntries[] = $row[0];
 						}
 					break;
@@ -3742,6 +3853,7 @@ class bab_CalendarGroupEvents extends bab_handler
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
 		$babBody->icalendars->initializeCalendars();
+		$delegationid = (int) $ctx->get_value('delegationid');
 		$groupid = $ctx->get_value('groupid');
 		$ar = array();
 		if( $groupid === false || $groupid === '' )
@@ -3749,6 +3861,8 @@ class bab_CalendarGroupEvents extends bab_handler
 			reset($babBody->icalendars->pubcal);
 			while( $row=each($babBody->icalendars->pubcal) ) 
 				{
+				if(0 != $delegationid && $delegationid != $row['value']['id_dgowner'])
+					continue;
 				$ar[] = $row[0];
 				}
 			}
@@ -3773,6 +3887,8 @@ class bab_CalendarGroupEvents extends bab_handler
 					{
 					if( in_array($row[1]['idowner'], $rr) )
 						{
+						if(0 != $delegationid && $delegationid != $row['value']['id_dgowner'])
+							continue;
 						$ar[] = $row[0];
 						}
 					}
@@ -3908,12 +4024,15 @@ class bab_CalendarResourceEvents extends bab_handler
 		$this->bab_handler($ctx);
 		$babBody->icalendars->initializeCalendars();
 		$resourceid = $ctx->get_value('resourceid');
+		$delegationid = (int) $ctx->get_value('delegationid');
 		$ar = array();
 		if( $resourceid === false || $resourceid === '' )
 			{
 			reset($babBody->icalendars->rescal);
 			while( $row=each($babBody->icalendars->rescal) ) 
 				{
+				if(0 != $delegationid && $delegationid != $row['value']['id_dgowner'])
+					continue;
 				$ar[] = $row[0];
 				}
 			}
@@ -4075,6 +4194,7 @@ class bab_CalendarEvents extends bab_handler
 		$this->bab_handler($ctx);
 		$babBody->icalendars->initializeCalendars();
 		$calendarid = $ctx->get_value('calendarid');
+		$delegationid = (int) $ctx->get_value('delegationid');
 		$ar = array();
 		if( $calendarid === false || $calendarid === '' )
 			{
@@ -4089,10 +4209,14 @@ class bab_CalendarEvents extends bab_handler
 				}
 			foreach( $babBody->icalendars->rescal as $key => $val )
 				{
+				if(0 != $delegationid && $delegationid != $val['id_dgowner'])
+					continue;
 				$ar[] = $key;
 				}
 			foreach( $babBody->icalendars->pubcal as $key => $val )
 				{
+				if(0 != $delegationid && $delegationid != $val['id_dgowner'])
+					continue;
 				$ar[] = $key;
 				}
 			}
@@ -4128,6 +4252,8 @@ class bab_CalendarEvents extends bab_handler
 					{
 					if( in_array($key, $rr))
 						{
+						if(0 != $delegationid && $delegationid != $val['id_dgowner'])
+							continue;
 						$ar[] = $key;
 						}
 					}				
@@ -4135,6 +4261,8 @@ class bab_CalendarEvents extends bab_handler
 					{
 					if( in_array($key, $rr))
 						{
+						if(0 != $delegationid && $delegationid != $val['id_dgowner'])
+							continue;
 						$ar[] = $key;
 						}
 					}
