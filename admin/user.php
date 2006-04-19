@@ -96,6 +96,17 @@ function modifyUser($id, $pos, $grp)
 					}
 				}
 
+
+			if ( $babBody->currentAdmGroup != 0 )
+				{
+				$this->bdelete = false;
+				}
+			else
+				{
+				$this->bdelete = true;
+				}
+
+
 			$req = "select * from ".BAB_USERS_GROUPS_TBL." where id_object='$id'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
@@ -356,8 +367,13 @@ function updateUser($id, $changepwd, $is_confirmed, $disabled, $authtype, $group
 
 function confirmDeleteUser($id)
 	{
-	include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
-	bab_deleteUser($id);
+	global $babBody;
+	
+	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
+		{
+		include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
+		bab_deleteUser($id);
+		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=users&idx=List");
 	}
 

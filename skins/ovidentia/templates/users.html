@@ -217,7 +217,11 @@
 <!--#endif showprimary -->
 <tr align="center"> 
 <td colspan="2"> 
-<input type="submit" name="bupdate" value="{ modify }"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><input type="submit" name="bdelete" value="{ delete }">
+<input type="submit" name="bupdate" value="{ modify }"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">
+
+<!--#if bdelete -->
+<input type="submit" name="bdelete" value="{ delete }">
+<!--#endif bdelete -->
 
             </td>
 </tr>
