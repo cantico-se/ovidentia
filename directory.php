@@ -2554,6 +2554,8 @@ function deleteDbContact($id, $idu)
 		bab_deleteUser($iddu);
 		return;
 		}
+	$db->db_query("delete from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_entry='".$idu."'");
+	$db->db_query("delete from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".$id."' and id='".$idu."'");
 	}
 
 function unassignDbContact($id, $idu)
