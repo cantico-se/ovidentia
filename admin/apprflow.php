@@ -400,7 +400,7 @@ function listOrgCharts()
 			$this->satype = 1;
 			$this->messagetxt = bab_translate("Select the organizational chart on which the workflow will be based");
 			$this->donetxt = bab_translate("Next");
-			$this->res = $babDB->db_query("select b.id, b.name from ".BAB_ORG_CHARTS_TBL." b left join ".BAB_DB_DIRECTORIES_TBL." dd on b.id_directory=dd.id where dd.id_group!=0 order by b.name asc");
+			$this->res = $babDB->db_query("select b.id, b.name from ".BAB_ORG_CHARTS_TBL." b left join ".BAB_DB_DIRECTORIES_TBL." dd on b.id_directory=dd.id where dd.id_group!=0 and b.id_dgowner='".$babBody->currentAdmGroup."' order by b.name asc");
 			$this->count = $babDB->db_num_rows($this->res);
 			}
 
