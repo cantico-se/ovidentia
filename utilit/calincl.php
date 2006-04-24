@@ -257,15 +257,15 @@ class bab_icalendars
 		global $babBody, $babDB;
 
 		$pcalendar = false;
-		$this->startday = 1;
 		$this->allday = 'Y';
 		$this->usebgcolor = 'Y';
 		$this->elapstime = 60;
 		$this->defaultview = BAB_CAL_VIEW_MONTH;
 		$this->starttime = "00:00:00";
 		$this->endtime = "23:59:59";
-		$this->dispdays = $babBody->babsite['workdays'];
+		$this->dispdays = $babBody->babsite['dispdays'];
 		$this->workdays = $babBody->babsite['workdays'];
+		$this->startday = $babBody->babsite['startday'];
 		$this->user_calendarids = '';
 		if( empty($iduser) && isset($GLOBALS['BAB_SESS_USERID']))
 			{

@@ -732,9 +732,23 @@ function changetype(obj)
 			<td valign="top">
 			<dl>
 				<dt><h5>{ t_workdays }</h5><dt>
-				<!--#in getnextshortday -->
+				<!--#in getnextworkday -->
 				<dd ><input  type="checkbox" name="workdays[]" id="{ dayid }" value="{ dayid }"  { checked } /><label for="{ dayid }">{ shortday }</label></dd>
-				<!--#endin getnextshortday -->
+				<!--#endin getnextworkday -->
+			</dl>
+			<dl>
+				<dt><h5>{ t_dispdays }</h5><dt>
+				<!--#in getnextdispday -->
+				<dd ><input  type="checkbox" name="dispdays[]" id="{ dayid }" value="{ dayid }"  { checked } /><label for="{ dayid }">{ shortday }</label></dd>
+				<!--#endin getnextdispday -->
+			</dl>
+			<dl>
+				<dt><h5>{ t_startdaytxt }</h5><dt>
+				<select name="startday" style="width:100%">
+				<!--#in getnextstartday -->
+				<option value="{ dayid }"  { checked } />{ shortday }</option>
+				<!--#endin getnextstartday -->
+				</select>
 			</dl>
 			</td>
 

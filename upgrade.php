@@ -5736,6 +5736,28 @@ if ($arr[0] != 'users')
 		}
 	}
 
+$arr = $db->db_fetch_array($db->db_query("DESCRIBE ".BAB_SITES_TBL." dispdays"));
+if ($arr[0] != 'dispdays')
+	{
+	$res = $db->db_query("ALTER TABLE `".BAB_SITES_TBL."` ADD `dispdays` VARCHAR( 20 ) DEFAULT '1,2,3,4,5' NOT NULL AFTER `workdays` ");
+	if( !$res)
+		{
+		$ret = "Alteration of <b>".BAB_SITES_TBL."</b> table failed !<br>";
+		return $ret;
+		}
+	}
+
+$arr = $db->db_fetch_array($db->db_query("DESCRIBE ".BAB_SITES_TBL." startday"));
+if ( $arr[0] != 'startday' )
+	{
+	$res = $db->db_query("ALTER TABLE ".BAB_SITES_TBL." ADD startday tinyint(4) unsigned NOT NULL default '0' AFTER `dispdays` ");
+	if( !$res)
+		{
+		$ret = "Alteration of <b>".BAB_SITES_TBL."</b> table failed !<br>";
+		return $ret;
+		}
+	}
+
 return $ret;
 }
 

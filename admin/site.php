@@ -512,7 +512,9 @@ function site_menu6($id)
 		function temp($id)
 			{
 			$this->t_workdays = bab_translate("Working days");
+			$this->t_dispdays = bab_translate("Days to display");
 			$this->t_nonworking = bab_translate("Non-working days");
+			$this->t_startdaytxt = bab_translate("First day of week");
 			$this->t_add = bab_translate("Add");
 			$this->t_ok = bab_translate("Ok");
 			$this->t_delete = bab_translate("Delete");
@@ -525,11 +527,13 @@ function site_menu6($id)
 			$this->site_configuration_cls($id);
 
 			$this->workdays = array_flip(explode(',',$GLOBALS['babBody']->babsite['workdays']));
+			$this->dispdays = array_flip(explode(',',$GLOBALS['babBody']->babsite['dispdays']));
+			$this->startday = $GLOBALS['babBody']->babsite['startday'];
 			$this->resnw = $this->db->db_query("SELECT * FROM ".BAB_SITES_NONWORKING_CONFIG_TBL." WHERE id_site='".$id."'");
 
 			}
 
-				function getnextshortday()
+		function getnextworkday()
 			{
 			global $babDays;
 			static $i = 0;
@@ -555,6 +559,57 @@ function site_menu6($id)
 				}
 			}
 
+		function getnextdispday()
+			{
+			global $babDays;
+			static $i = 0;
+			if ($i < 7)
+				{
+				if( isset($this->dispdays[$i] ))
+					{
+					$this->checked = "checked";
+					}
+				else
+					{
+					$this->checked = "";
+					}
+				$this->dayid = $i;
+				$this->shortday = $babDays[$i];
+				$i++;
+				return true;
+				}
+			else
+				{
+				$i = 0;
+				return false;
+				}
+			}
+
+		function getnextstartday()
+			{
+			global $babDays;
+			static $i = 0;
+			if ($i < 7)
+				{
+				if( $this->startday == $i )
+					{
+					$this->checked = "selected";
+					}
+				else
+					{
+					$this->checked = "";
+					}
+				$this->dayid = $i;
+				$this->shortday = $babDays[$i];
+				$i++;
+				return true;
+				}
+			else
+				{
+				$i = 0;
+				return false;
+				}
+			}
 
 		function getnextnonworking_type()
 			{
@@ -1514,10 +1569,18 @@ function siteUpdate_menu6($item)
 	{
 	$db = & $GLOBALS['babDB'];
 
+	$reqarr = array("startday='".$_POST['startday']."'");
 	if (isset($_POST['workdays']) && count($_POST['workdays']))
 		{
-		$db->db_query("update ".BAB_SITES_TBL." set workdays='".implode(',',$_POST['workdays'])."' where id='".$item."'");
+		$reqarr[] = "workdays='".implode(',',$_POST['workdays'])."'";
 		}
+
+	if (isset($_POST['dispdays']) && count($_POST['dispdays']))
+		{
+		$reqarr[] = "dispdays='".implode(',',$_POST['dispdays'])."'";
+		}
+
+	$db->db_query("update ".BAB_SITES_TBL." set ".implode(',',$reqarr)." where id='".$item."'");
 
 	if (isset($_POST['nonworking']) && count($_POST['nonworking']))
 		{
