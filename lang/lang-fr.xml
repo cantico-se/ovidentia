@@ -854,7 +854,7 @@
 <string id="WARNING: This operation will delete the category with all references">ATTENTION : cette opération supprimera la catégorie et tous les éléments qui y font référence</string>
 <string id="WARNING: This operation will delete the comment with all its replys">ATTENTION : cette opération supprimera le commentaire et toutes les réponses associées</string>
 <string id="WARNING: This operation will delete the domain with all references">ATTENTION : cette opération supprimera le domaine ainsi que ses références</string>
-<string id="WARNING: This operation will delete the folder with all files">ATTENTION : cete opération supprime le répertoire et tous les fichiers</string>
+<string id="WARNING: This operation will delete the folder with all files">ATTENTION : cette opération supprime le répertoire et tous les fichiers</string>
 <string id="WARNING: This operation will delete the forum and all posts">ATTENTION : cette opération supprimera le forum avec tous ses sujets de discussion</string>
 <string id="WARNING: This operation will delete the group with all references">ATTENTION : cette opération supprimera le groupe et tous les éléments qui y font référence</string>
 <string id="WARNING: This operation will delete the resource with all references">ATTENTION : cette opération va supprimer la ressource et toutes ses références</string>
