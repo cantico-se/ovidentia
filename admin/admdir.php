@@ -1580,7 +1580,7 @@ switch($idx)
 		$macl->addtable( BAB_DBDIRADD_GROUPS_TBL, bab_translate("Add"));
 		
 		$macl->addtable( BAB_DBDIRDEL_GROUPS_TBL, bab_translate("Delete"));
-		if( !$idgroup )
+		if( $idgroup == 0 || $idgroup > BAB_ADMINISTRATOR_GROUP )
 			{
 			$macl->addtable( BAB_DBDIREMPTY_GROUPS_TBL, bab_translate("Empty"));
 			}

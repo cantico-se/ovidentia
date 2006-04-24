@@ -320,10 +320,10 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 			$this->count = 0;
 			$this->db = &$GLOBALS['babDB'];
 			$arr = $this->db->db_fetch_array($this->db->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
+			$this->idgroup = $arr['id_group'];
 			if(bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $id))
 				{
 				$GLOBALS['babWebStat']->addDatabaseDirectory($id);
-				$this->idgroup = $arr['id_group'];
 				$this->rescol = $this->db->db_query("select id, id_field from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($this->idgroup != 0? 0: $this->id)."' and ordering!='0' order by ordering asc");
 				$this->countcol = $this->db->db_num_rows($this->rescol);
 				}
@@ -547,7 +547,7 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 
 	$temp = new temp($id, $pos, $xf, $badd);
 	$babBody->babecho( bab_printTemplate($temp, "directory.html", "adbrowse"));
-	return $temp->bgroup;
+	return $temp->idgroup;
 
 }
 
@@ -2520,14 +2520,27 @@ function confirmEmptyDb($id)
 	{
 	global $babDB;
 	list($idgroup) = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
-	if( $idgroup != 0 ) /* Ovidentia directory */
+	if( $idgroup != 0 && $idgroup <= BAB_ADMINISTRATOR_GROUP ) /* Ovidentia directory and administrators group */
 		return;
-	$res = $babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".$id."'");
-	while( $arr = $babDB->db_fetch_array($res))
-	{
-		$babDB->db_query("delete from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_entry='".$arr['id']."'");
-	}
-	$babDB->db_query("delete from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".$id."'");
+
+	if( $idgroup == 0 )
+		{
+		$res = $babDB->db_query("select id, id_user from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".$id."'");
+		while( $arr = $babDB->db_fetch_array($res))
+		{
+			$babDB->db_query("delete from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_entry='".$arr['id']."'");
+		}
+		$babDB->db_query("delete from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".$id."'");
+		}
+	elseif( $idgroup > BAB_ADMINISTRATOR_GROUP )
+		{
+			include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
+			$res = $babDB->db_query("select id_object from ".BAB_USERS_GROUPS_TBL." where id_group='".$idgroup."'");
+			while( $arr = $babDB->db_fetch_array($res))
+			{
+				bab_deleteUser($arr['id_object']);
+			}
+		}
 	}
 
 function deleteDbContact($id, $idu)
@@ -2889,7 +2902,7 @@ switch($idx)
 
 	case 'sdbovml':
 		$babBody->title = bab_translate("Database Directory").": ".getDirectoryName($directoryid,BAB_DB_DIRECTORIES_TBL);
-		$bgroup = browseDbDirectoryWithOvml(bab_isAccessValid(BAB_DBDIRADD_GROUPS_TBL, $id));
+		$idgroup = browseDbDirectoryWithOvml(bab_isAccessValid(BAB_DBDIRADD_GROUPS_TBL, $id));
 		$babBody->addItemMenu('list', bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=directory&idx=list");
 		$babBody->addItemMenu('sdbovml', bab_translate("Browse"), $GLOBALS['babUrlScript']."?tg=directory&idx=ovml");
 		if(bab_isAccessValid(BAB_DBDIRIMPORT_GROUPS_TBL, $id))
@@ -2902,7 +2915,7 @@ switch($idx)
 			$babBody->addItemMenu('dbexp', bab_translate("Export"), $GLOBALS['babUrlScript']."?tg=directory&idx=dbexp&id=".$id);
 			}
 
-		if (!$bgroup && bab_isAccessValid(BAB_DBDIREMPTY_GROUPS_TBL, $id))
+		if (bab_isAccessValid(BAB_DBDIREMPTY_GROUPS_TBL, $id) && ($idgroup == 0 || $idgroup > BAB_ADMINISTRATOR_GROUP))
 			{
 			$babBody->addItemMenu('empdb', bab_translate("Empty"), $GLOBALS['babUrlScript']."?tg=directory&idx=empdb&id=".$id);
 			}
@@ -2914,7 +2927,7 @@ switch($idx)
 			$xf = '';
 		if( !isset($pos ))
 			$pos = 'A';
-		$bgroup = browseDbDirectory($id, $pos, $xf, bab_isAccessValid(BAB_DBDIRADD_GROUPS_TBL, $id));
+		$idgroup = browseDbDirectory($id, $pos, $xf, bab_isAccessValid(BAB_DBDIRADD_GROUPS_TBL, $id));
 		$babBody->addItemMenu('list', bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=directory&idx=list");
 		$babBody->addItemMenu('sdb', bab_translate("Browse"), $GLOBALS['babUrlScript']."?tg=directory&idx=sdb&id=".$id."&pos=".$pos);
 		if(bab_isAccessValid(BAB_DBDIRIMPORT_GROUPS_TBL, $id))
@@ -2927,7 +2940,7 @@ switch($idx)
 			$babBody->addItemMenu('dbexp', bab_translate("Export"), $GLOBALS['babUrlScript']."?tg=directory&idx=dbexp&id=".$id);
 			}
 
-		if (!$bgroup && bab_isAccessValid(BAB_DBDIREMPTY_GROUPS_TBL, $id))
+		if (bab_isAccessValid(BAB_DBDIREMPTY_GROUPS_TBL, $id) && ($idgroup == 0 || $idgroup > BAB_ADMINISTRATOR_GROUP))
 			{
 			$babBody->addItemMenu('empdb', bab_translate("Empty"), $GLOBALS['babUrlScript']."?tg=directory&idx=empdb&id=".$id);
 			}
