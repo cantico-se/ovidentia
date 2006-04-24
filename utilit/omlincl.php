@@ -727,7 +727,7 @@ class bab_ArticleTopics extends bab_handler
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('TopicTotal', $this->count);
 			$this->ctx->curctx->push('TopicName', $arr['category']);
-			$this->ctx->curctx->push('TopicDescription', $arr['description']);
+			$this->ctx->curctx->push('TopicDescription', bab_replace($arr['description']));
 			$this->ctx->curctx->push('TopicId', $arr['id']);
 			$this->ctx->curctx->push('TopicLanguage', $arr['lang']);
 			$this->ctx->curctx->push('ArticlesListUrl', $GLOBALS['babUrlScript']."?tg=articles&topics=".$arr['id']);
@@ -781,7 +781,7 @@ class bab_ArticleTopic extends bab_handler
 			$arr = $babDB->db_fetch_array($this->res);
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('TopicName', $arr['category']);
-			$this->ctx->curctx->push('TopicDescription', $arr['description']);
+			$this->ctx->curctx->push('TopicDescription', bab_replace($arr['description']));
 			$this->ctx->curctx->push('TopicId', $arr['id']);
 			$this->ctx->curctx->push('TopicLanguage', $arr['lang']);
 			$this->ctx->curctx->push('ArticlesListUrl', $GLOBALS['babUrlScript']."?tg=articles&topics=".$arr['id']);

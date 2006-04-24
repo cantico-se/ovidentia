@@ -112,7 +112,7 @@ function listTopicCategory($cat)
 						if( $this->arrid[$i][1] == 2 && $this->arrid[$i][0]== $arr['id'])
 							{
 							$this->arrid[$i]['title'] = $arr['category'];
-							$this->arrid[$i]['description'] = $arr['description'];
+							$this->arrid[$i]['description'] = bab_replace($arr['description']);
 							$this->arrid[$i]['confirmed'] = 0;
 							}
 						}

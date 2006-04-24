@@ -544,7 +544,7 @@ function listCategories($cat)
 				$arr = $this->db->db_fetch_array($this->res);
 					
 				$this->arr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_TOPICS_TBL." where id='".$arr['id_topcat']."'"));
-				$this->description = $this->arr['description'];
+				$this->description = bab_replace($this->arr['description']);
 				$this->urlrights = $GLOBALS['babUrlScript']."?tg=topic&idx=rights&item=".$this->arr['id']."&cat=".$this->idcat;
 				$this->arr['description'] = $this->arr['description'];;
 				$this->urlcategory = $GLOBALS['babUrlScript']."?tg=topic&idx=Modify&item=".$this->arr['id']."&cat=".$this->idcat;
