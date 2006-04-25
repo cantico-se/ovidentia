@@ -4437,11 +4437,14 @@ class bab_IfUserMemberOfGroups extends bab_handler
 				for( $k=0; $k < count($rr); $k++ )
 					{
 					$groups = $tree->getChilds($rr[$k]);
-					foreach ($groups as $arr)
+					if( is_array($groups) && count($groups) > 0 )
 						{
-						if(!in_array($arr['id'], $rr))
+						foreach ($groups as $arr)
 							{
-							$groupid[] = $arr['id'];
+							if(!in_array($arr['id'], $rr))
+								{
+								$groupid[] = $arr['id'];
+								}
 							}
 						}
 					}
