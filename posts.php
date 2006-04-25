@@ -782,7 +782,7 @@ function saveReply($forum, $thread, $post, $name, $subject, $message)
 
 	if( count($tables) > 0 )
 		{
-		$url = $GLOBALS['babUrlScript'] ."?tg=posts&idx=List&forum=".$forum."&thread=".$thread."&flat=1";
+		$url = $GLOBALS['babUrlScript'] ."?tg=posts&idx=List&forum=".$forum."&thread=".$thread."&flat=1&views=1";
 		notifyForumGroups($forum, $subject, $name, $arr['name'],$tables, $url);
 		}
 	if (!isset($flat)) $flat = '';
@@ -814,7 +814,7 @@ function confirm($forum, $thread, $post)
 
 		notifyThreadAuthor(bab_getForumThreadTitle($thread), $email, $arrpost['author']);
 		}
-	$url = $GLOBALS['babUrlScript'] ."?tg=posts&idx=List&forum=".$forum."&thread=".$thread."&flat=1";
+	$url = $GLOBALS['babUrlScript'] ."?tg=posts&idx=List&forum=".$forum."&thread=".$thread."&flat=1&views=1";
 	notifyForumGroups($forum, $arrpost['subject'], $arrpost['author'], bab_getForumName($forum), array(BAB_FORUMSNOTIFY_GROUPS_TBL), $url);
 	}
 

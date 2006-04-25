@@ -1124,7 +1124,7 @@ function updateConfirmationWaitingPost($thread, $post)
 		$email = $arr['email'];
 		notifyThreadAuthor($arrf['subject'], $email, $arrpost['author']);
 		}
-	$url = $GLOBALS['babUrlScript'] ."?tg=posts&idx=List&forum=".$arrf['forum']."&thread=".$thread."&flat=1";
+	$url = $GLOBALS['babUrlScript'] ."?tg=posts&idx=List&forum=".$arrf['forum']."&thread=".$thread."&flat=1&views=1";
 	notifyForumGroups($arrf['forum'], $arrpost['subject'], $arrpost['author'], bab_getForumName($arrf['forum']), array(BAB_FORUMSNOTIFY_GROUPS_TBL), $url);
 	}
 

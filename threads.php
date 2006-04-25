@@ -375,7 +375,7 @@ function saveThread($forum, $name, $subject, $message, $notifyme)
 
 	if( count($tables) > 0 )
 		{
-		$url = $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$forum."&thread=".$idthread."&flat=1";
+		$url = $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$forum."&thread=".$idthread."&flat=1&views=1";
 		notifyForumGroups($forum, stripslashes($subject), stripslashes($name), $arr['name'], $tables, $url);
 		}
 
