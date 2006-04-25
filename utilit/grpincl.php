@@ -157,7 +157,8 @@ function bab_moveGroup($id, $id_parent, $moveoption, $groupname)
 		else
 			return $tree->moveAlpha($id, $id_parent, $groupname);
 		}
-	return false;
+
+	return $tree->moveTreeAlpha($id, $id_parent, $groupname);
 	}
 
 function bab_addGroup($name, $description, $managerid, $grpdg, $parent = 1)

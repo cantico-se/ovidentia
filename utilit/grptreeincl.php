@@ -183,7 +183,10 @@ class bab_grptree extends bab_dbtree
 			return $this->$function($id, $id_parent, $firstchild, false);
 			}
 
-		$id_previous = $key;
+		if( $key != 'new' && $key != $id )
+			{
+			$id_previous = $key;
+			}
 		}
 	}
 
