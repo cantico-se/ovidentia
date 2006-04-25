@@ -360,6 +360,7 @@ class bab_icalendars
 				$this->pubcal[$arr['idcal']]['description'] = $arr['description'];
 				$this->pubcal[$arr['idcal']]['type'] = BAB_CAL_PUB_TYPE;
 				$this->pubcal[$arr['idcal']]['idowner'] = $arr['owner'];
+				$this->pubcal[$arr['idcal']]['id_dgowner'] = $arr['id_dgowner'];
 				$this->pubcal[$arr['idcal']]['idsa'] = $arr['idsa'];
 				
 				$this->pubcal[$arr['idcal']]['group'] = $bgroup;
@@ -405,6 +406,7 @@ class bab_icalendars
 				$this->rescal[$arr['idcal']]['description'] = $arr['description'];
 				$this->rescal[$arr['idcal']]['type'] = BAB_CAL_RES_TYPE;
 				$this->rescal[$arr['idcal']]['idowner'] = $arr['owner'];
+				$this->rescal[$arr['idcal']]['id_dgowner'] = $arr['id_dgowner'];
 				$this->rescal[$arr['idcal']]['idsa'] = $arr['idsa'];
 
 				$this->rescal[$arr['idcal']]['group'] = $bgroup;
