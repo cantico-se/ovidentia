@@ -297,11 +297,13 @@ function babLoadLanguage($lang, $folder, &$arr)
 				}
 			}
 
-		$file = @fopen($filename_c, 'w');
-		if( $file )
-			{
-			fwrite($file, serialize($arr));
-			fclose($file);
+		if (is_file($filename_c)) {	
+			$file = @fopen($filename_c, 'w');
+			if( $file )
+				{
+				fwrite($file, serialize($arr));
+				fclose($file);
+				}
 			}
 		}
 	else

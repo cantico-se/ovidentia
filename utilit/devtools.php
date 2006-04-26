@@ -411,7 +411,7 @@ function bab_f_getDebug() {
 
 		function getNextMessage() {
 			if (list(, $this->text) = each($this->messages)) {
-				$this->text = htmlspecialchars($this->text);
+				//$this->text = htmlspecialchars($this->text);
 				$this->color_query($this->text);
 				return true;
 			}
