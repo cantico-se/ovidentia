@@ -277,7 +277,7 @@ function upgrade($id)
 		if( !empty($ini_version))
 			{
 			$func_name = $row['title']."_upgrade";
-			if ( version_compare($row['version'],$ini_version, '<') )
+			if ( '' == $row['version'] || version_compare($row['version'],$ini_version, '<') )
 				{
 				$GLOBALS['babAddonFolder'] = $row['title'];
 				$GLOBALS['babAddonTarget'] = "addon/".$row['id'];
