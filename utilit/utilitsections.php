@@ -241,6 +241,8 @@ function babAdminSection($close)
 		$this->array_urls[bab_translate("Directories")] = $GLOBALS['babUrlScript']."?tg=admdir";
 	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || (isset($babBody->currentDGGroup['orgchart']) && $babBody->currentDGGroup['orgchart'] == 'Y'))
 		$this->array_urls[bab_translate("Charts")] = $GLOBALS['babUrlScript']."?tg=admocs";
+	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) )
+		$this->array_urls[bab_translate("Task Manager")] = $GLOBALS['babUrlScript'].'?tg=admTskMgr';
 	
 	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
 		$this->array_urls[bab_translate("Add-ons")] = $GLOBALS['babUrlScript']."?tg=addons";

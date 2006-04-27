@@ -1,0 +1,301 @@
+<!--#begin displayMenu -->
+<table width="85%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+		<td class="BabLoginCadreBackground">
+			<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center" class="BabLoginMenuBackground">
+
+				<!--#in getNextAnchor -->
+				<tr>
+					<td align="center">
+						<a class="BabWarningLinkColor" href="{ m_anchorItem[href] }" title="{ m_anchorItem[title] }">{ m_anchorItem[title] }</a>
+					</td>
+				</tr>
+				<!--#endin getNextAnchor -->
+
+				<tr> 
+					<td colspan="2">
+						<br />
+					</td>
+				</tr>
+
+			</table>
+		</td>
+	</tr>
+</table>
+<!--#end displayMenu -->
+
+
+<!--#begin workingHours -->
+<script type="text/javascript">
+<!--
+function isIE()
+{
+	var userAgent = navigator.userAgent.toLowerCase();
+	if((userAgent.indexOf("msie") != -1) && (userAgent.indexOf("opera") == -1))
+	{
+		return true;
+	}
+	return false;
+}
+
+function addRow(iNumDay, sDay)
+{
+	var oTBody = document.getElementById(sDay);
+	
+	if(null != oTBody)
+	{
+		var oTd1 = document.createElement('td').appendChild(document.createTextNode('\u00A0'));
+		
+		var oText = myCreateElement('input', 'text', 'startHour_' + iNumDay + '_[]', '', '');
+		var oTd2 = document.createElement('td');
+		oTd2.appendChild(oText);
+		
+		oText = myCreateElement('input', 'text', 'endHour_' + iNumDay + '_[]', '', '');
+		var oTd3 = document.createElement('td');
+		oTd3.appendChild(oText);
+
+		var oTd4 = document.createElement('td').appendChild(document.createTextNode('\u00A0'));
+		
+		var oTr = document.createElement('tr');
+		
+		oTr.appendChild(oTd1);
+		oTr.appendChild(oTd2);
+		oTr.appendChild(oTd3);
+		oTr.appendChild(oTd4);
+		oTBody.appendChild(oTr);
+	}
+}
+
+function myCreateElement(sTag, sType, sName, sClass, sValue)
+{
+	var oElement = null;
+	if(isIE())
+	{
+		var sElement = "<" + sTag + "class='" + sClass + "' type='" + sType + "' name='" + sName + "' value='" + sValue + "' >";
+		oElement = document.createElement(sElement);
+	}
+	else
+	{
+		oElement = document.createElement(sTag);
+		if(null != oElement)
+		{
+			oElement.type = sType;
+			oElement.className = sClass;
+			oElement.name = sName;
+			oElement.value = sValue;
+		}
+	}
+	return oElement;
+}
+
+//-->
+</script>
+
+
+<!--#in getNextDay -->
+<table width="95%" border="0" cellspacing="0" cellpadding="1" align="center">
+	<tr> 
+		<td align="center" valign="middle" class="BabLoginCadreBackground"> 
+			<table width="100%" border="1" cellspacing="0" cellpadding="1" align="center">
+
+				<thead>
+					<tr class="BabSiteAdminTitleFontBackground">
+						<td width="10%">{ m_datas[day] }</td>
+						<td width="30%">{ m_captions[beginHour] }</td>
+						<td width="30%">{ m_captions[endHour] }</td>
+						<td width="10%"><a class="BabWarningLinkColor" href="javascript:addRow({ m_datas[numDay] }, '{ m_datas[day] }')" title="{ m_captions[add] }">{ m_captions[add] }</a></td>
+					</tr>
+				</thead>
+				
+				<tbody id="{ m_datas[day] }" class="BabSiteAdminFontBackground">
+				</tbody>
+			</table>
+		</td>
+	</tr>
+</table>
+<br />
+<!--#endin getNextDay -->
+<!--#end workingHours -->
+
+
+<!--#begin projectSpaceList -->
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+		<td align="center" valign="middle" class="BabLoginCadreBackground"> 
+			<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+				<tr class="BabSiteAdminTitleFontBackground"> 
+					<td width="20%">{ m_captions[name] }</td>
+					<td width="75%">{ m_captions[description] }</td>
+					<td width="5%" align="center">&nbsp;</td>
+				</tr>
+				<!--#in nextProjectSpace -->
+				
+			<!--#if m_is_altbg -->
+				<tr class="BabSiteAdminFontBackground"> 
+			<!--#else m_is_altbg -->
+				<tr class="BabForumBackground1">
+			<!--#endif m_is_altbg -->
+	
+				<!--#if m_datas[isLink] -->
+					<td><a href="{ m_datas[url] }&iIdProjectSpace={ m_datas[id] }">{ m_datas[name] }</a></td>
+				<!--#else m_datas[isLink] -->
+					<td>{ m_datas[name] }</td>
+				<!--#endif m_datas[isLink] -->
+
+					<td>{ m_datas[description] }</td>
+					<td>
+						<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+							<!--#in getNextAnchor -->
+							<td class="{ m_datas[className] }">
+								<a href="{ m_anchorItem[href] }" title="{ m_anchorItem[title] }">
+									{ m_anchorItem[title] }
+								</a>
+							</td>
+							<!--#endin getNextAnchor -->
+						</table>
+					</td>
+				</tr>
+				<!--#endin nextProjectSpace -->
+			</table>
+		</td>
+	</tr>
+</table>
+<!--#end projectSpaceList -->
+
+
+<!--#begin projectSpaceForm -->
+<script type="text/javascript">
+<!--
+function on_btn_clicked(idx, action)
+{
+	var form = document.forms.projectSpaceForm;
+
+	form.idx.value = idx;
+	form.action.value = action;
+}
+
+function submit_form()
+{
+	return true;
+}
+//-->
+</script>
+
+<form name="projectSpaceForm" method="post" action="{ babPhpSelf }" onsubmit="return(submit_form())">
+	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
+	<input type="hidden" name="idx" value="" />
+	<input type="hidden" name="action" value="" />
+	<input type="hidden" name="iIdProjectSpace" value="{ m_datas[iIdProjectSpace] }" />
+	<input type="hidden" name="iIdDelegation" value="{ m_datas[iIdDelegation] }" />
+
+	<table width="85%" border="0" cellspacing="0" cellpadding="2" align="center">
+		<tr> 
+			<td class="BabLoginCadreBackground">
+				<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center" class="BabLoginMenuBackground">
+					<tr> 
+						<td>
+							{ m_captions[sName] }
+						</td>
+						<td>
+							<input type="text" name="sName" size="25" maxlength="255" value="{ m_datas[sName] }" />
+						</td>
+					</tr>
+
+					<tr> 
+						<td>
+							{ m_captions[sDescription] }
+						</td>
+						<td>
+							<textarea name="sDescription" cols="50" rows="10">{ m_datas[sDescription] }</textarea>
+						</td>
+					</tr>
+
+					<tr> 
+						<td colspan="2">
+							<br />
+						</td>
+					</tr>
+
+					<tr>
+						<td colspan="2" align="center">
+						
+						<!--#if m_datas[iIdProjectSpace] "== 0" -->
+							<input type="submit" value="{ m_captions[add] }" onclick="on_btn_clicked('{ m_datas[add_idx] }', '{ m_datas[add_action] }')" />
+						<!--#else m_datas[iIdProjectSpace] -->
+							<input type="submit" value="{ m_captions[modify] }" onclick="on_btn_clicked('{ m_datas[modify_idx] }', '{ m_datas[modify_action] }')" />
+							<input type="submit" value="{ m_captions[delete] }" onclick="on_btn_clicked('{ m_datas[delete_idx] }', '{ m_datas[delete_action] }')" />
+						<!--#endif m_datas[iIdProjectSpace] -->
+
+						</td>
+					</tr>
+
+					<tr> 
+						<td colspan="2">
+							<br />
+						</td>
+					</tr>
+
+				</table>
+			</td>
+		</tr>
+	</table>
+</form>
+<!--#end projectSpaceForm -->
+
+
+<!--#begin warningyesno -->
+<script type="text/javascript">
+<!--
+function on_delete()
+{
+	document.warningyesno.submit();
+}
+
+function on_cancel()
+{
+	var form = document.forms.warningyesno;
+	form.action.value = '';
+	form.submit();
+}
+//-->
+</script>
+<form name ="warningyesno" method="post" action="{ babPhpSelf }">
+	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
+	<input type="hidden" name="idx" value="{ m_datas[idx] }" />
+	<input type="hidden" name="action" value="{ m_datas[action] }" />
+	<input type="hidden" name="{ m_datas[objectName] }" value="{ m_datas[iIdObject] }" />
+	
+	<table border="0" width="50%" cellpadding="3" cellspacing="0" align="center">
+		<tr>
+			<td class="BabWarningTitleBackground" align="center">
+				{ m_captions[warning] }
+			</td>
+		</tr>
+		<tr>
+			<td class="BabWarningBodyBackground">
+				<br />
+			</td>
+		</tr>
+		<tr>
+			<td class="BabWarningBodyBackground" align="center">
+				{ m_captions[message] }
+			</td>
+		</tr>
+		<tr>
+			<td class="BabWarningBodyBackground">
+				<br />
+			</td>
+		</tr>
+		<tr>
+			<td class="BabWarningObjectBackground" align="center">
+				{ m_captions[title] }<br />
+			</td>
+		</tr>
+		<tr>
+			<td class="BabWarningBodyBackground" align="center">
+				<a class="BabWarningLinkColor" href="#" onclick="on_delete()">{ m_captions[yes] }</a> | <a class="BabWarningLinkColor" href="#" onclick="on_cancel()">{ m_captions[no] }</a>
+			</td>
+		</tr>
+	</table>
+</form>
+<!--#end warningyesno -->
