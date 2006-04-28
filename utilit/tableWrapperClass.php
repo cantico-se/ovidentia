@@ -48,6 +48,11 @@
 			return $this->m_TableName;
 		}
 
+		function & getDbObject()
+		{
+			return $this->m_db;
+		}
+		
 		//Zero based
 		function buildSelect(& $attribut, $offset = BAB_ALL_ATTRIBUTS, $length = BAB_ALL_ATTRIBUTS)
 		{
@@ -170,7 +175,7 @@
 			return $this->m_db->db_query($requete);
 		}
 
-		function update(& $attributsList/*, $bDateInAttributsList = false*/)
+		function update(& $attributsList)
 		{
 			//skip the first element
 			reset($attributsList);

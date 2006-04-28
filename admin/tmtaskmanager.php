@@ -24,11 +24,87 @@
 include "base.php";
 require_once($babInstallPath . 'utilit/tmdefines.php');
 require_once($babInstallPath . 'utilit/baseFormProcessingClass.php');
+require_once($babInstallPath . 'utilit/tableWrapperClass.php');
 
 bab_cleanGpc();
 
+/*
+require_once($babInstallPath . 'upgrade.php');
+upgradeXXXtoYYY();
+*/
+
 
 //---- Begin tools functions ----
+class BAB_TM_Context
+{
+	var $m_oTblWr;
+	var $m_aDefaultPC; /* default project configuration */
+
+	var $m_iIdProjectSpace;
+	var $m_iIdDelegation;
+
+
+	function BAB_TM_Context()
+	{
+		global $babBody;
+
+		$this->m_oTblWr = new BAB_TableWrapper('');
+		$this->m_iIdProjectSpace = (int) tskmgr_getVariable('iIdProjectSpace', 0);
+		$this->m_iIdDelegation = $babBody->currentAdmGroup;
+		$this->loadDefaultProjectsConfiguration();
+	}
+	
+	/* Private */
+	function loadDefaultProjectsConfiguration()
+	{
+		if(0 != $this->m_iIdProjectSpace)
+		{
+			$attributs = array(
+				'idProjectSpace' => $this->m_iIdProjectSpace,
+				'id' => -1,
+				'tskUpdateByMgr' => -1,
+				'endTaskReminder' => -1,
+				'tasksNumerotation' => -1,
+				'emailNotice' => -1,
+				'faqUrl' => '');
+				
+			$this->m_oTblWr->setTableName(BAB_TSKMGR_DEFAULT_PROJECTS_CONFIGURATION_TBL);
+			
+			$this->m_aDefaultPC = $this->m_oTblWr->load($attributs, 0, count($attributs), 0, 1);
+			if(false != $this->m_aDefaultPC)
+			{
+				return true;
+			}
+		}
+		$this->m_aDefaultPC = null;
+		return false;
+	}
+	
+	
+	function getIdProjectSpace()
+	{
+		return $this->m_iIdProjectSpace;
+	}
+	
+	function getIdDelegation()
+	{
+		return $this->m_iIdDelegation;
+	}
+	
+	function &getDefaultProjectsConfiguration()
+	{
+		return $this->m_aDefaultPC;
+	}
+	
+	function &getTableWrapper()
+	{
+		return $this->m_oTblWr;
+	}
+}
+
+$GLOBALS['BAB_TM_Context'] = new BAB_TM_Context();
+
+
 
 function add_item_menu($items)
 {
@@ -200,7 +276,12 @@ function displayProjectsSpacesList()
 	
 	$list->set_anchor($GLOBALS['babUrlScript'] . '?tg=admTskMgr&iIdProjectSpace={ m_datas[id] }&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_RIGHTS_FORM,
 		$GLOBALS['babSkinPath'] . 'images/Puces/manager.gif',
-		bab_translate("Droits")
+		bab_translate("Rights")
+		);
+	
+	$list->set_anchor($GLOBALS['babUrlScript'] . '?tg=admTskMgr&iIdProjectSpace={ m_datas[id] }&idx=' . BAB_TM_IDX_DISPLAY_DEFAULT_PROJECTS_CONFIGURATION_FORM,
+		$GLOBALS['babSkinPath'] . 'images/Puces/manager.gif',
+		bab_translate("Configuration")
 		);
 
 		$babBody->babecho(bab_printTemplate($list, 'tmAdmin.html', 'projectSpaceList'));
@@ -211,9 +292,8 @@ function displayProjectsSpacesForm()
 {
 	global $babBody;
 	
-	$iIdProjectSpace = (int) tskmgr_getVariable('iIdProjectSpace', 0);
-
-	$iIdDelegation = $babBody->currentAdmGroup;
+	$iIdProjectSpace = $GLOBALS['BAB_TM_Context']->getIdProjectSpace();
+	$iIdDelegation = $GLOBALS['BAB_TM_Context']->getIdDelegation();
 		
 	class BAB_ProjectSpace extends BAB_BaseFormProcessing
 	{
@@ -256,7 +336,9 @@ function displayProjectsSpacesForm()
 					'name' => '',
 					'description' => '');
 					
-				$tblWr = new BAB_TableWrapper(BAB_TSKMGR_PROJECTS_SPACES_TBL);	
+				$tblWr =& $GLOBALS['BAB_TM_Context']->getTableWrapper();
+				$tblWr->setTableName(BAB_TSKMGR_PROJECTS_SPACES_TBL);
+				
 				if(false != ($attributs = $tblWr->load($attributs, 2, 2, 0, 2)))
 				{
 					$this->set_data('sName', htmlentities($attributs['name'], ENT_QUOTES) );
@@ -295,15 +377,15 @@ function displayDeleteProjectsSpacesForm()
 {
 	global $babBody;
 
-	$iIdProjectSpace = (int) tskmgr_getVariable('iIdProjectSpace', 0);
-	$iIdDelegation = (int) tskmgr_getVariable('iIdDelegation', 0);
+	$iIdProjectSpace = $GLOBALS['BAB_TM_Context']->getIdProjectSpace();
+	$iIdDelegation = $GLOBALS['BAB_TM_Context']->getIdDelegation();
 
 	if(0 != $iIdProjectSpace)
 	{
 		$bf = & new BAB_BaseFormProcessing();
 		
-		require_once($GLOBALS['babInstallPath'] . 'utilit/tableWrapperClass.php');
-		$tblWr = new BAB_TableWrapper(BAB_TSKMGR_PROJECTS_SPACES_TBL);	
+		$tblWr =& $GLOBALS['BAB_TM_Context']->getTableWrapper();
+		$tblWr->setTableName(BAB_TSKMGR_PROJECTS_SPACES_TBL);
 
 		$attributs = array(
 			'id' => $iIdProjectSpace, 
@@ -336,9 +418,8 @@ function displayProjectsSpacesRightsForm()
 {
 	global $babBody;
 
-	$iIdProjectSpace = (int) tskmgr_getVariable('iIdProjectSpace', 0);
-
-	$iIdDelegation = $babBody->currentAdmGroup;
+	$iIdProjectSpace = $GLOBALS['BAB_TM_Context']->getIdProjectSpace();
+	$iIdDelegation = $GLOBALS['BAB_TM_Context']->getIdDelegation();
 
 	$itemMenu = array(
 		array(
@@ -373,19 +454,131 @@ function displayProjectsSpacesRightsForm()
 	$macl->babecho();
 }
 
-// POST
-function add_modify_project_space()
+
+function displayDefaultProjectsConfigurationForm()
 {
-	$iIdProjectSpace = (int) tskmgr_getVariable('iIdProjectSpace', 0);
-	$iIdDelegation = (int) tskmgr_getVariable('iIdDelegation', 0);
+	global $babBody;
+
+	$iIdProjectSpace = $GLOBALS['BAB_TM_Context']->getIdProjectSpace();
+	$iIdDelegation = $GLOBALS['BAB_TM_Context']->getIdDelegation();
+
+	class BAB_DefaultProjectsConfiguration extends BAB_BaseFormProcessing
+	{
+		function BAB_DefaultProjectsConfiguration($iIdProjectSpace, $iIdDelegation)
+		{
+			parent::BAB_BaseFormProcessing();
+			
+			$this->set_caption('taskUpdate', bab_translate("Task updated by task responsible"));
+			$this->set_caption('notice', bab_translate("Reminder before project expiration"));
+			$this->set_caption('taskNumerotation', bab_translate("Task numerotation"));
+			$this->set_caption('emailNotice', bab_translate("Email notification"));
+			$this->set_caption('faq', bab_translate("Task manager FAQ"));
+			$this->set_caption('days', bab_translate("Day(s)"));
+		
+			$this->set_caption('yes', bab_translate("Yes"));
+			$this->set_caption('no', bab_translate("No"));
+			$this->set_caption('save', bab_translate("Save"));
+
+			$this->set_data('aTaskNumerotation', array(
+				BAB_TM_MANUAL => bab_translate("Manual"), BAB_TM_SEQUENTIAL => bab_translate("Sequential (automatique)"),
+				BAB_TM_YEAR_SEQUENTIAL => bab_translate("Year + Sequential (automatique)"),
+				BAB_TM_YEAR_MONTH_SEQUENTIAL => bab_translate("Year + Month + Sequential (automatique)")));
+				
+			$this->set_data('yes', BAB_TM_YES);
+			$this->set_data('no', BAB_TM_NO);
+			$this->set_data('tg', 'admTskMgr');
+			$this->set_data('save_idx', BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST);
+			$this->set_data('save_action', BAB_TM_ACTION_SAVE_DEFAULT_PROJECTS_CONFIGURATION);
+			
+			$this->set_data('tmCode', '');
+			$this->set_data('tmValue', '');
+			$this->set_data('tnSelected', '');
+			
+			$this->set_data('iIdProjectSpace', $iIdProjectSpace);
+			$this->set_data('isTaskUpdatedByMgr', true);
+			$this->set_data('endTaskReminder', 5);
+			$this->set_data('taskNumerotation', BAB_TM_SEQUENTIAL);
+			$this->set_data('isEmailNotice', true);
+			$this->set_data('faqUrl', '');
+			$this->set_data('iIdConfiguration', -1);
+			
+			$aDPC = $GLOBALS['BAB_TM_Context']->getDefaultProjectsConfiguration();
+			
+//			trigger_error('Merci Paul tu sera canonisé', E_USER_WARNING);
+			
+			if(null != $aDPC)
+			{
+				$this->set_data('isTaskUpdatedByMgr', (BAB_TM_YES == $aDPC['tskUpdateByMgr']));
+				$this->set_data('endTaskReminder', $aDPC['endTaskReminder']);
+				$this->set_data('taskNumerotation', $aDPC['tasksNumerotation']);
+				$this->set_data('isEmailNotice', (BAB_TM_YES == $aDPC['emailNotice']));
+				$this->set_data('faqUrl', $aDPC['faqUrl']);
+				$this->set_data('iIdConfiguration', $aDPC['id']);
+			}
+		}
+		
+		function getNextTaskNumerotation()
+		{
+			$this->get_data('taskNumerotation', $taskNumerotation);
+			$this->set_data('tnSelected', '');
+			
+			$datas = each($this->m_datas['aTaskNumerotation']);
+			if(false != $datas)
+			{
+				$this->set_data('tmCode', $datas['key']);
+				$this->set_data('tmValue', $datas['value']);
+				
+				if($taskNumerotation == $datas['key'])
+				{
+					$this->set_data('tnSelected', 'selected="selected"');
+				}
+				
+				return true;
+			}
+			else
+			{
+				reset($this->m_datas['aTaskNumerotation']);
+				return false;
+			}
+		}
+	}
+
+	
+	
+	$itemMenu = array(
+		array(
+			'idx' => BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST,
+			'mnuStr' => bab_translate("Projects spaces"),
+			'url' => $GLOBALS['babUrlScript'] . '?tg=admTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST),
+		array(
+			'idx' => BAB_TM_IDX_DISPLAY_DEFAULT_PROJECTS_CONFIGURATION_FORM,
+			'mnuStr' => bab_translate("Default projects configuration"),
+			'url' => $GLOBALS['babUrlScript'] . '?tg=admTskMgr&idx=' . BAB_TM_IDX_DISPLAY_DEFAULT_PROJECTS_CONFIGURATION_FORM)
+		);
+		
+	add_item_menu($itemMenu);
+	$babBody->title = bab_translate("Default projects configuration");
+
+	$pjc = & new BAB_DefaultProjectsConfiguration($iIdProjectSpace, $iIdDelegation);
+	
+	
+	$babBody->babecho(bab_printTemplate($pjc, 'tmAdmin.html', 'configuration'));
+}
+
+
+// POST
+function addModifyProjectSpace()
+{
+	$iIdProjectSpace = $GLOBALS['BAB_TM_Context']->getIdProjectSpace();
+	$iIdDelegation = $GLOBALS['BAB_TM_Context']->getIdDelegation();
 
 	$sName = mysql_escape_string(tskmgr_getVariable('sName', ''));
 	$sDescription = mysql_escape_string(tskmgr_getVariable('sDescription', ''));
 	
 	if(strlen(trim($sName)) > 0)
 	{
-		require_once($GLOBALS['babInstallPath'] . 'utilit/tableWrapperClass.php');
-		$tblWr = new BAB_TableWrapper(BAB_TSKMGR_PROJECTS_SPACES_TBL);	
+		$tblWr =& $GLOBALS['BAB_TM_Context']->getTableWrapper();
+		$tblWr->setTableName(BAB_TSKMGR_PROJECTS_SPACES_TBL);
 
 		if($iIdProjectSpace == 0)
 		{
@@ -404,7 +597,22 @@ function add_modify_project_space()
 					);
 
 				$skipFirst = true;
-				$tblWr->save($attributs, $skipFirst);
+				if(false != $tblWr->save($attributs, $skipFirst))
+				{
+					$tblWr->setTableName(BAB_TSKMGR_DEFAULT_PROJECTS_CONFIGURATION_TBL);
+					$skipFirst = false;
+	
+					$db =& $tblWr->getDbObject();
+					
+					$attributs = array(
+						'idProjectSpace' => $db->db_insert_id(),
+						'tskUpdateByMgr' => BAB_TM_YES,
+						'endTaskReminder' => 5,
+						'tasksNumerotation' => BAB_TM_SEQUENTIAL,
+						'emailNotice' => BAB_TM_YES,
+						'faqUrl' => '');
+					$tblWr->save($attributs, $skipFirst);
+				}
 			}
 			else
 			{
@@ -433,17 +641,17 @@ function add_modify_project_space()
 }
 
 
-function delete_project_space()
+function deleteProjectSpace()
 {
 	global $babBody;
 
-	$iIdProjectSpace = (int) tskmgr_getVariable('iIdProjectSpace', 0);
-	$iIdDelegation = (int) tskmgr_getVariable('iIdDelegation', 0);
+	$iIdProjectSpace = $GLOBALS['BAB_TM_Context']->getIdProjectSpace();
+	$iIdDelegation = $GLOBALS['BAB_TM_Context']->getIdDelegation();
 
 	if(0 != $iIdProjectSpace)
 	{
-		require_once($GLOBALS['babInstallPath'] . 'utilit/tableWrapperClass.php');
-		$tblWr = new BAB_TableWrapper(BAB_TSKMGR_PROJECTS_SPACES_TBL);	
+		$tblWr =& $GLOBALS['BAB_TM_Context']->getTableWrapper();
+		$tblWr->setTableName(BAB_TSKMGR_PROJECTS_SPACES_TBL);
 
 		$attributs = array(
 			'id' => $iIdProjectSpace, 
@@ -455,6 +663,23 @@ function delete_project_space()
 			if(0 == $attributs['refCount'])
 			{
 				$tblWr->delete($attributs, 0, 1);
+				
+				
+				$aDPC = $GLOBALS['BAB_TM_Context']->getDefaultProjectsConfiguration();
+				$tblWr->setTableName(BAB_TSKMGR_DEFAULT_PROJECTS_CONFIGURATION_TBL);
+
+				$attributs = array(
+					'idProjectSpace' => $iIdProjectSpace);
+				$tblWr->delete($attributs, 0, 1);
+
+				require_once($GLOBALS['babInstallPath'] . 'admin/acl.php');
+				
+				aclDelete(BAB_TSKMGR_PROJECT_CREATOR_GROUPS_TBL, $iIdProjectSpace);
+				aclDelete(BAB_TSKMGR_PERSONNAL_TASK_CREATOR_GROUPS_TBL, $iIdProjectSpace);
+				aclDelete(BAB_TSKMGR_DEFAULT_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProjectSpace);
+				aclDelete(BAB_TSKMGR_DEFAULT_PROJECTS_SUPERVISORS_GROUPS_TBL, $iIdProjectSpace);
+				aclDelete(BAB_TSKMGR_DEFAULT_PROJECTS_VISUALIZERS_GROUPS_TBL, $iIdProjectSpace);
+				aclDelete(BAB_TSKMGR_DEFAULT_PROJECTS_RESPONSIBLE_GROUPS_TBL, $iIdProjectSpace);
 			}
 			else
 			{
@@ -469,6 +694,35 @@ function delete_project_space()
 }
 
 
+function saveDefaultProjectConfiguration()
+{
+	$iIdProjectSpace = $GLOBALS['BAB_TM_Context']->getIdProjectSpace();
+	
+	$iTaskUpdateByMgr = (int) tskmgr_getVariable('iTaskUpdateByMgr', BAB_TM_YES);
+	$iIdConfiguration = (int) tskmgr_getVariable('iIdConfiguration', 0);
+	$iEndTaskReminder = (int) tskmgr_getVariable('iEndTaskReminder', 5);
+	$iTaskNumerotation = (int) tskmgr_getVariable('iTaskNumerotation', BAB_TM_SEQUENTIAL);
+	$iEmailNotice = (int) tskmgr_getVariable('iEmailNotice', BAB_TM_YES);
+	$sFaqUrl = mysql_escape_string(tskmgr_getVariable('sFaqUrl', ''));
+
+	if(0 < $iIdConfiguration && 0 != $iIdProjectSpace)
+	{
+		$tblWr =& $GLOBALS['BAB_TM_Context']->getTableWrapper();
+		$tblWr->setTableName(BAB_TSKMGR_DEFAULT_PROJECTS_CONFIGURATION_TBL);
+		
+		$attributs = array(
+			'id' => $iIdConfiguration,
+			'idProjectSpace' => $iIdProjectSpace,
+			'tskUpdateByMgr' => $iTaskUpdateByMgr,
+			'endTaskReminder' => $iEndTaskReminder,
+			'tasksNumerotation' => $iTaskNumerotation,
+			'emailNotice' => $iEmailNotice,
+			'faqUrl' => $sFaqUrl);
+	
+		$tblWr->update($attributs);
+	}
+}
+
 
 /* main */
 $action = isset($_POST['action']) ? $_POST['action'] : 
@@ -481,17 +735,20 @@ switch($action)
 {
 	case BAB_TM_ACTION_ADD_PROJECT_SPACE:
 	case BAB_TM_ACTION_MODIFY_PROJECT_SPACE:
-		add_modify_project_space();
+		addModifyProjectSpace();
 		break;
 		
 	case BAB_TM_ACTION_DELETE_PROJECT_SPACE:
-		delete_project_space();
+		deleteProjectSpace();
 		break;
 
 	case BAB_TM_ACTION_SET_RIGHT:
 		require_once($GLOBALS['babInstallPath'] . 'admin/acl.php');
-		
 		maclGroups();
+		break;
+		
+	case BAB_TM_ACTION_SAVE_DEFAULT_PROJECTS_CONFIGURATION:
+		saveDefaultProjectConfiguration();
 		break;
 }
 
@@ -524,6 +781,10 @@ switch($idx)
 		
 	case BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_RIGHTS_FORM:
 		displayProjectsSpacesRightsForm();
+		break;
+
+	case BAB_TM_IDX_DISPLAY_DEFAULT_PROJECTS_CONFIGURATION_FORM:
+		displayDefaultProjectsConfigurationForm();
 		break;
 
 }
