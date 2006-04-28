@@ -52,7 +52,7 @@ class bab_Delegations extends bab_handler
 			else
 				{
 				$delegationid = explode(',', $delegationid);
-				$this->res = $babDB->db_query("SELECT dgt.* FROM ".BAB_DG_GROUPS_TBL." dgt LEFT JOIN ".BAB_USERS_GROUPS_TBL." ugt ON ugt.id_group = dgt.id_group WHERE ugt.id_object='".$userid."' where id IN (".implode(',', $delegationid).") order by dgt.name asc");
+				$this->res = $babDB->db_query("SELECT dgt.* FROM ".BAB_DG_GROUPS_TBL." dgt LEFT JOIN ".BAB_USERS_GROUPS_TBL." ugt ON ugt.id_group = dgt.id_group WHERE ugt.id_object='".$userid."' AND dgt.id IN (".implode(',', $delegationid).") order by dgt.name asc");
 				}
 			$this->count = $babDB->db_num_rows($this->res);
 			}
@@ -97,7 +97,7 @@ class bab_Delegation extends bab_Delegations
 		$delegationid = $ctx->get_value('delegationid');
 		if( $delegationid !== false && !empty($delegationid) )
 			{
-			$this->bab_bab_Delegations($ctx);
+			$this->bab_Delegations($ctx);
 			}
 		else
 			{
