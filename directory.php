@@ -2260,6 +2260,10 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 		if( $bupdate )
 			{
 			$db->db_query("update ".BAB_DBDIR_ENTRIES_TBL." set date_modification=now(), id_modifiedby='".$GLOBALS['BAB_SESS_USERID']."' where id='".$idu."'");
+			if( $iduser )
+				{
+				bab_callAddonsFunction('onUserUpdateInformations', $iduser);
+				}
 			}
 		}
 
