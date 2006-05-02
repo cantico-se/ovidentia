@@ -6012,9 +6012,11 @@ function upgradeXXXtoYYY()
 		$res = $db->db_query("
 			CREATE TABLE `" . BAB_TSKMGR_SPECIFIC_FIELDS_RADIO_VALUE_CLASS_TBL . "` (
 				`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+				`idFldBase` INTEGER UNSIGNED NOT NULL default '0',
 				`idFldRadio` INTEGER UNSIGNED NOT NULL default '0',
 				`value` VARCHAR(255) NOT NULL default '',
-				`isDefaultValue` TINYINT UNSIGNED NOT NULL default '0',
+				`isDefaultOption` TINYINT UNSIGNED NOT NULL default '0',
+				`position` TINYINT UNSIGNED NOT NULL default '0',
 				PRIMARY KEY(`id`),
 				INDEX `idFldRadio`(`idFldRadio`)) TYPE=MyISAM
 		");

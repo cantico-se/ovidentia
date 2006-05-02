@@ -35,7 +35,8 @@ define('BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_FORM', 'displayProjectsSpacesForm');
 define('BAB_TM_IDX_DISPLAY_DELETE_PROJECTS_SPACES_FORM', 'displayDeleteProjectsSpacesForm');
 define('BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_RIGHTS_FORM', 'displayProjectsSpacesRightsForm');
 define('BAB_TM_IDX_DISPLAY_DEFAULT_PROJECTS_CONFIGURATION_FORM', 'displayDefaultProjectsConfigurationForm');
-
+define('BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_LIST', 'displaySpecificFieldList');
+define('BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_FORM', 'displaySpecificFieldForm');
 
 //
 define('BAB_TM_YES', 1);

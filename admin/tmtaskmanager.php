@@ -26,13 +26,6 @@ require_once($babInstallPath . 'utilit/tmdefines.php');
 require_once($babInstallPath . 'utilit/baseFormProcessingClass.php');
 require_once($babInstallPath . 'utilit/tableWrapperClass.php');
 
-bab_cleanGpc();
-
-/*
-require_once($babInstallPath . 'upgrade.php');
-upgradeXXXtoYYY();
-*/
-
 
 //---- Begin tools functions ----
 class BAB_TM_Context
@@ -102,9 +95,6 @@ class BAB_TM_Context
 	}
 }
 
-$GLOBALS['BAB_TM_Context'] = new BAB_TM_Context();
-
-
 
 function add_item_menu($items)
 {
@@ -120,15 +110,6 @@ function add_item_menu($items)
 		}
 	}
 }
-
-function tskmgr_getVariable($sName, $defaultValue)
-{
-	return isset($_POST[$sName]) ? $_POST[$sName] : 
-		(isset($_GET[$sName]) ? $_GET[$sName] :  
-		(isset($_REQUEST[$sName]) ? $_REQUEST[$sName] : $defaultValue)
-		);
-}
-
 //---- End tools functions ----
 
 
@@ -146,6 +127,7 @@ function displayAdminMenu()
 
 	$bfp->set_anchor($GLOBALS['babUrlScript'] . '?tg=admTskMgr&idx=' . BAB_TM_IDX_DISPLAY_WORKING_HOURS_FORM , '', 'Working hours');
 	$bfp->set_anchor($GLOBALS['babUrlScript'] . '?tg=admTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST , '', 'Projects space');
+	$bfp->set_anchor($GLOBALS['babUrlScript'] . '?tg=admTskMgr&idx=' . BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_LIST , '', 'Spêcific fields');
 
 	$babBody->babecho(bab_printTemplate($bfp, 'tmAdmin.html', 'displayMenu'));
 }
@@ -512,7 +494,7 @@ function displayDefaultProjectsConfigurationForm()
 				$this->set_data('endTaskReminder', $aDPC['endTaskReminder']);
 				$this->set_data('taskNumerotation', $aDPC['tasksNumerotation']);
 				$this->set_data('isEmailNotice', (BAB_TM_YES == $aDPC['emailNotice']));
-				$this->set_data('faqUrl', $aDPC['faqUrl']);
+				$this->set_data('faqUrl', htmlentities($aDPC['faqUrl']));
 				$this->set_data('iIdConfiguration', $aDPC['id']);
 			}
 		}
@@ -542,8 +524,6 @@ function displayDefaultProjectsConfigurationForm()
 			}
 		}
 	}
-
-	
 	
 	$itemMenu = array(
 		array(
@@ -563,6 +543,127 @@ function displayDefaultProjectsConfigurationForm()
 	
 	
 	$babBody->babecho(bab_printTemplate($pjc, 'tmAdmin.html', 'configuration'));
+}
+
+function displaySpecificFieldList()
+{
+	global $babBody;
+
+	$iIdProjectSpace = $GLOBALS['BAB_TM_Context']->getIdProjectSpace();
+	$iIdDelegation = $GLOBALS['BAB_TM_Context']->getIdDelegation();
+
+	
+	class BAB_List extends BAB_BaseFormProcessing
+	{
+		var $m_db;
+		var $m_result;
+
+		var $m_is_altbg;
+
+		function BAB_List(& $query)
+		{
+			parent::BAB_BaseFormProcessing();
+
+			$this->m_db	= & $GLOBALS['babDB'];
+			$this->m_is_altbg = true;
+
+			$this->set_caption('name', bab_translate("Name"));
+			$this->set_caption('type', bab_translate("Field type"));
+			$this->set_caption('uncheckAll', bab_translate("Uncheck all"));
+			$this->set_caption('checkAll', bab_translate("Check all"));
+			$this->set_caption('deleteField', bab_translate("Click here to delete"));
+			$this->set_caption('update', bab_translate("Update"));
+			//$this->m_result = $this->m_db->db_query($query);
+		}
+
+		function nextField()
+		{
+			$data = $this->m_db->db_fetch_array($this->m_result);
+
+			if(false != $data)
+			{
+				$this->m_is_altbg = !$this->m_is_altbg;
+				return true;
+			}
+			return false;
+		}
+	}	
+	
+	$itemMenu = array(
+		array(
+			'idx' => BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_LIST,
+			'mnuStr' => bab_translate("Specific field list"),
+			'url' => $GLOBALS['babUrlScript'] . '?tg=admTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST),
+		array(
+			'idx' => BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_FORM,
+			'mnuStr' => bab_translate("Add specific field"),
+			'url' => $GLOBALS['babUrlScript'] . '?tg=admTskMgr&idx=' . BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_FORM)
+		);
+		
+	add_item_menu($itemMenu);
+	$babBody->title = bab_translate("Specific field list");
+
+	$query = '';
+	$list = & new BAB_List($query);
+	
+	$babBody->babecho(bab_printTemplate($list, 'tmAdmin.html', 'fieldList'));
+}
+
+
+function displaySpecificFieldForm()
+{
+	global $babBody;
+
+	$iIdProjectSpace = $GLOBALS['BAB_TM_Context']->getIdProjectSpace();
+	$iIdDelegation = $GLOBALS['BAB_TM_Context']->getIdDelegation();
+	
+	require_once($babInstallPath . 'utilit/tableWrapperClass.php');
+	
+	$iFieldType = (int) tskmgr_getVariable('iFieldType', BAB_TM_TEXT_FIELD);
+	
+	if($iFieldType == BAB_TM_TEXT_FIELD)
+	{
+		$sTemplateName = 'fieldText';
+		$oField = & new BAB_TM_FieldText();
+	}
+	else if($iFieldType == BAB_TM_TEXT_AREA_FIELD)
+	{
+		$template_name = 'fieldArea';
+		$oField = & new BAB_TM_FieldArea();
+	}
+	else if($iFieldType == BAB_TM_RADIO_FIELD)
+	{
+		$template_name = 'fieldRadio';
+		$oField = & new BAB_TM_FieldRadio();
+	}
+	else
+	{
+		die("Die with honor !!!");
+	}
+	
+	if($addf->bCreation)
+	{
+		$babBody->title = bab_translate("Add a new field");
+	}
+	else
+	{
+		$babBody->title = bab_translate("Modify the field");
+	}
+
+	$itemMenu = array(
+		array(
+			'idx' => BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_LIST,
+			'mnuStr' => bab_translate("Specific field list"),
+			'url' => $GLOBALS['babUrlScript'] . '?tg=admTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST),
+		array(
+			'idx' => BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_FORM,
+			'mnuStr' => $babBody->title,
+			'url' => $GLOBALS['babUrlScript'] . '?tg=admTskMgr&idx=' . BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_FORM)
+		);
+		
+	add_item_menu($itemMenu);
+	
+	$babBody->babecho(bab_printTemplate($oField, 'tmAdmin.html', $sTemplateName));
 }
 
 
@@ -724,6 +825,18 @@ function saveDefaultProjectConfiguration()
 }
 
 
+
+bab_cleanGpc();
+$GLOBALS['BAB_TM_Context'] = new BAB_TM_Context();
+
+
+/*
+require_once($babInstallPath . 'upgrade.php');
+upgradeXXXtoYYY();
+*/
+
+
+
 /* main */
 $action = isset($_POST['action']) ? $_POST['action'] : 
 	(isset($_GET['action']) ? $_GET['action'] :  
@@ -785,6 +898,14 @@ switch($idx)
 
 	case BAB_TM_IDX_DISPLAY_DEFAULT_PROJECTS_CONFIGURATION_FORM:
 		displayDefaultProjectsConfigurationForm();
+		break;
+		
+	case BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_LIST:
+		displaySpecificFieldList();
+		break;
+		
+	case BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_FORM:
+		displaySpecificFieldForm();
 		break;
 
 }

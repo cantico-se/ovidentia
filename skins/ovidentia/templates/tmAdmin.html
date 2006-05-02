@@ -403,3 +403,163 @@ function submit_form()
 	</table>
 </form>
 <!--#end configuration -->
+
+<!--#begin fieldList -->
+<script type="text/javascript">
+<!--
+function on_btn_clicked(idx, action)
+{
+	var form = document.forms.spfList;
+
+	form.idx.value = idx;
+	form.action.value = action;
+}
+
+function submit_form()
+{
+	return true;
+}//-->
+</script>
+<form name ="spfList" method="post" action="{ babPhpSelf }" onsubmit="return(submit_form())">
+	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
+	<input type="hidden" name="idx" value="" />
+	<input type="hidden" name="action" value="" />
+
+	<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+		<tr> 
+			<td class="BabLoginCadreBackground"> 
+				<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+					<tr class="BabSiteAdminTitleFontBackground"> 
+						<td>{ m_captions[name] }</td>
+						<td>{ m_captions[type] }</td>
+						<td width="1%">&nbsp;</td>
+					</tr>
+					<!--#in nextField -->
+					<!--#if m_is_altbg -->
+						<tr class="BabSiteAdminFontBackground"> 
+					<!--#else m_is_altbg -->
+						<tr class="BabForumBackground1">
+					<!--#endif m_is_altbg -->
+						<td align="center">
+						<!--#if m_datas[refCount] "!= 0" -->
+							<input type="checkbox" name="aDeletableField[]" value="{ m_datas[iIdField] }" Style="background-color:transparent;border=0" />
+						<!--#else m_datas[refCount] -->
+							&nbsp;
+						<!--#endif m_datas[refCount] -->
+						</td>
+						<td><a class="BabSiteAdminListLink" href="{ m_datas[sFieldLink] }" >{ m_datas[sFieldName] }</a></td>
+						<td>{ m_datas[sFieldType] }</td>
+					</tr>
+					<!--#endin nextField -->
+					<tr class="BabSiteAdminTitleFontBackground">
+						<td colspan="2" align="right">&nbsp;</td>
+						<td>
+							<a href="javascript:onCheckAll('aDeletableField', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ m_captions[checkAll] }" width="10" height="10" border="0" /></a><a href="javascript:onCheckAll('aDeletableField', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ m_captions[unCheckAll] }" width="10" height="10" border="0"></a>&nbsp;<a href="javascript:suppfield()"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ m_captions[unCheckAll] }" border="0" /></a>
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+	<br />
+	<div align="center">
+		<input type="submit" value="{ m_captions[update] }" />
+	</div>
+</form>
+<!--#end fieldList -->
+
+
+<!--#begin fieldText -->
+<script type="text/javascript">
+<!--
+function selChg(index)
+{
+	document.fieldText.idx.value = { m_datas[displaySpecificFieldFormIdx] };
+	document.fieldText.action.value = '';
+	document.fieldText.submit();
+}
+
+function on_btn_clicked(idx, action)
+{
+	var form = document.forms.fieldText;
+
+	form.idx.value = idx;
+	form.action.value = action;
+}
+
+function submit_form()
+{
+	return true;
+}
+//-->
+</script>
+<form name="fieldText" method="post" action="{ babPhpSelf }" onsubmit="return(submit_form())">
+	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
+	<input type="hidden" name="idx" value="" />
+	<input type="hidden" name="field_id" value="{ field_id }" />
+	<input type="hidden" name="action" value="addfield" />
+	<input type="hidden" name="suppsel[]" value="{ field_id }" />
+
+	<table class="BabLoginCadreBackground" width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
+		<tr> 
+			<td> 
+				<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+					<tr> 
+						<!--#if iIdField "== 0" -->
+						<td align="right">
+							{ m_captions[type] }:
+						</td>
+						<td colspan="2"> 
+							<select size="1" type="string" name="iFieldType" onchange="selChg();">
+								<option value="{ m_datas[iTextType] }" { m_captions[sTextSelected] }>{ m_captions[text] }</option>
+								<option value="{ m_datas[iAreaType] }" { m_captions[sAreaSelected] }>{ m_captions[area] }</option>
+								<option value="{ m_datas[iChoiceType] }" { m_captions[sChoiceSelected] }>{ m_captions[choice] }</option>
+							</select>
+						</td>
+						<!--#else iIdField -->
+						<td colspan="2" align="center"> 
+							{ m_captions[fieldType] }:{ m_datas[sFieldType] }
+						</td>
+						<!--#endif iIdField -->
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+
+	<br />
+	<table width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
+		<tr> 
+			<td class="BabLoginCadreBackground"> 
+				<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+					<tr>
+						<td align="right">
+							{ m_captions[fieldName] }<font color="red">*</font>:<br/>
+						</td>
+						<td>
+							<input type="text" name="sFieldName" size="40" maxlength ="255" value="{ m_datas[sFieldName] }" />&nbsp;
+						</td>
+					</tr>
+					<tr>
+						<td align="right">
+							{ m_captions[fieldName] }:
+						</td>
+						<td>
+							<input type="text" name="{ sFieldName }" size="40" maxlength ="255" value="{ fdefault_value }" />&nbsp;
+							<img src="{ babSkinPath }images/addons/catalog/{ codelang }.gif" width="15" height="10" border="0" />
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+	
+	<br />
+	<div align="center">
+		<input type="submit" name="addfield" value="{ t_addfieldval }" onclick="on_btn_clicked('field', 'addfield')" />
+	<!--#if is_deletable "!= 0" -->
+		<input type="submit" name="supfield" value="{ t_delfieldval }" onclick="on_btn_clicked('suppf', '')" />
+	<!--#endif is_deletable -->
+	</div>
+</form>
+<!--#end fieldText -->
