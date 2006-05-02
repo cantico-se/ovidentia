@@ -545,7 +545,7 @@ CREATE TABLE bab_users (
    KEY hashname (hashname)
 );
 
-INSERT INTO bab_users VALUES ( '1', 'admin@admin.bab', 'Administrator', '', '200ceb26807d6bf99fd6f4f0d1ca54d4', 'admin@admin.bab', '2001-04-03 00:00:00', '22975d8a5ed1b91445f6c55ac121505b', '1', '', '0da8f2a37b9e7926e08196a6bd1baa29', '1', '0', '', '', '', '', '', '', '', '', '','N');
+INSERT INTO bab_users VALUES ( '1', 'admin@admin.bab', 'Administrator', '', '200ceb26807d6bf99fd6f4f0d1ca54d4', 'admin@admin.bab', '2001-04-03 00:00:00', '22975d8a5ed1b91445f6c55ac121505b', '1', '', '0da8f2a37b9e7926e08196a6bd1baa29', '1', '0', '', '', '', '0000-00-00 00:00:00', '0000-00-00 00:00:00', '0', '', '', '','N');
 
 # --------------------------------------------------------
 #
@@ -816,7 +816,7 @@ CREATE TABLE `bab_sites` (
   `imgsize` int(11) unsigned NOT NULL default '0',
   `idgroup` int(11) unsigned NOT NULL default '0',
   `smtpuser` varchar(255) NOT NULL default '',
-  `smtppassword` tinyblob NOT NULL,
+  `smtppassword` tinyblob NOT NULL default '',
   `langfilter` int(11) default '0',
   `total_diskspace` int(11) unsigned NOT NULL default '0',
   `user_diskspace` int(11) unsigned NOT NULL default '0',
@@ -834,16 +834,16 @@ CREATE TABLE `bab_sites` (
   `name_order` enum('F L','L F') NOT NULL default 'F L',
   `email_password` enum('Y','N') NOT NULL default 'Y',
   `authentification` smallint(5) unsigned NOT NULL default '0',
-  `ldap_host` tinytext NOT NULL,
+  `ldap_host` tinytext NOT NULL default '',
   `ldap_domainname` varchar(255) NOT NULL default '',
-  `ldap_basedn` text NOT NULL,
-  `ldap_userdn` text NOT NULL,
-  `ldap_password` tinyblob NOT NULL,
-  `ldap_admindn` text NOT NULL,
-  `ldap_adminpassword` tinyblob NOT NULL,
-  `ldap_searchdn` text NOT NULL,
-  `ldap_attribute` text NOT NULL,
-  `ldap_filter` text NOT NULL,
+  `ldap_basedn` text NOT NULL default '',
+  `ldap_userdn` text NOT NULL default '',
+  `ldap_password` tinyblob NOT NULL default '',
+  `ldap_admindn` text NOT NULL default '',
+  `ldap_adminpassword` tinyblob NOT NULL default '',
+  `ldap_searchdn` text NOT NULL default '',
+  `ldap_attribute` text NOT NULL default '',
+  `ldap_filter` text NOT NULL default '',
   `ldap_passwordtype` enum('text','md5','unix','sha') NOT NULL default 'text',
   `ldap_allowadmincnx` enum('Y','N') NOT NULL default 'Y',
   `ldap_encryptiontype` varchar(255) NOT NULL default '',
@@ -1162,8 +1162,8 @@ CREATE TABLE bab_db_directories (
   id_dgowner int(11) unsigned NOT NULL default '0',
   user_update enum('N','Y') NOT NULL default 'N',
   show_update_info enum('N','Y') NOT NULL default 'N',
-  ovml_list tinytext NOT NULL,
-  ovml_detail tinytext NOT NULL,
+  ovml_list tinytext NOT NULL default '',
+  ovml_detail tinytext NOT NULL default '',
   PRIMARY KEY  (id),
   KEY id_dgowner (id_dgowner)
 );
@@ -1189,7 +1189,7 @@ CREATE TABLE bab_dbdir_entries (
   title varchar(255) NOT NULL default '',
   departmentnumber varchar(255) NOT NULL default '',
   organisationname varchar(255) NOT NULL default '',
-  bstreetaddress text NOT NULL,
+  bstreetaddress text NOT NULL default '',
   bcity varchar(255) NOT NULL default '',
   bpostalcode varchar(10) NOT NULL default '',
   bstate varchar(255) NOT NULL default '',
@@ -1199,10 +1199,10 @@ CREATE TABLE bab_dbdir_entries (
   hpostalcode varchar(10) NOT NULL default '',
   hstate varchar(255) NOT NULL default '',
   hcountry varchar(255) NOT NULL default '',
-  user1 text NOT NULL,
-  user2 text NOT NULL,
-  user3 text NOT NULL,
-  photo_data longblob NOT NULL,
+  user1 text NOT NULL default '',
+  user2 text NOT NULL default '',
+  user3 text NOT NULL default '',
+  photo_data longblob NOT NULL default '',
   photo_type varchar(20) NOT NULL default '',
   id_directory int(11) unsigned NOT NULL default '0',
   id_user int(11) unsigned NOT NULL default '0',
