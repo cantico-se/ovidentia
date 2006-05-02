@@ -1143,14 +1143,6 @@ function updateProfiles()
 			return false;
 			}
 
-		for( $i = 0; $i < count($grpvar ); $i++ )
-			{
-			if( count($groups) == 0 || !in_array($grpvar[$i], $groups))
-				{
-				$groups[] = $grpvar[$i];
-				}
-			}
-
 		$resgrp = $babDB->db_query("select pgt.id_group from ".BAB_PROFILES_GROUPSSET_TBL." pgt where pgt.id_object ='".$arr['id']."'");
 		while( $row = $babDB->db_fetch_array($resgrp))
 			{
