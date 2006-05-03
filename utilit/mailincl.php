@@ -115,6 +115,7 @@ class babMail
 		$this->mail->PluginDir = $GLOBALS['babInstallPath']."utilit/";
 		$this->mail->From = $GLOBALS['babAdminEmail'];
 		$this->mail->FromName = $GLOBALS['babAdminName'];
+		$this->mail->Sender = $GLOBALS['babAdminEmail'];
 		$this->mail->SetLanguage('en', $GLOBALS['babInstallPath']."utilit/");
 	}
 
@@ -164,6 +165,11 @@ class babMail
 		$this->mail->clearReplyTos();
 	}
 	
+	function mailSender($email)
+	{
+		$this->mail->Sender = $email;
+	}
+
 	function clearAllRecipients()
 	{
 		$this->mail->clearAllRecipients();
