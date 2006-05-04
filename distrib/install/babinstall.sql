@@ -144,6 +144,23 @@ CREATE TABLE bab_forums (
 
 # --------------------------------------------------------
 #
+# Structure de la table 'bab_forumsfiles'
+#
+
+
+CREATE TABLE `bab_forumsfiles` (
+`id` INT UNSIGNED NOT NULL ,
+`id_post` INT UNSIGNED NOT NULL ,
+`name` VARCHAR( 255 ) NOT NULL ,
+`description` TINYTEXT NOT NULL ,
+`index_status` TINYINT UNSIGNED NOT NULL ,
+PRIMARY KEY ( `id` ) ,
+INDEX ( `id_post` )
+);
+
+
+# --------------------------------------------------------
+#
 # Structure de la table 'bab_forumspost_groups'
 #
 
@@ -2760,3 +2777,16 @@ CREATE TABLE bab_dbdir_configexport (
   KEY id_user (id_user),
   KEY id_directory (id_directory)
 );
+
+
+CREATE TABLE `bab_index_files` (
+`id` INT UNSIGNED NOT NULL ,
+`name` VARCHAR( 255 ) NOT NULL ,
+`object` VARCHAR( 255 ) NOT NULL ,
+`id_addon` INT UNSIGNED NOT NULL ,
+`index_onload` TINYINT( 1 ) UNSIGNED NOT NULL ,
+`index_disabled` TINYINT( 1 ) UNSIGNED NOT NULL ,
+PRIMARY KEY ( `id` )
+);
+
+

@@ -51,6 +51,8 @@ class swishCls
 		$this->catdoc = $arr['catdoc'];
 		$this->unzip = $arr['unzip'];
 		}
+
+	$this->object = $object;
 	}
 
 
@@ -116,6 +118,16 @@ class bab_indexFilesCls extends swishCls
 			unlink($this->tmpCfgFile);
 			return $str;
 		}
+
+		function addFilesToIndex() {
+			if (!is_file($this->swishCmd))
+				{
+				trigger_error('File not found : '.$this->swishCmd);
+				return false;
+				}
+
+			// TODO : créer un nouveau fichier index temporaire et merger avec le fichier index existant
+		}
 	}
 
 
@@ -154,6 +166,32 @@ class bab_searchFilesCls extends swishCls
 		return $files;
 		}
 	}
+
+
+
+class bab_indexFileCls extends swishCls {
+	
+	function bab_indexFileCls($object) {
+		
+		parent::swishCls($object);
+	}
+
+	/**
+	 * @see bab_setIndexObject()
+	 */
+	function createObject($name, $onload, $id_addon) {
+
+		return true;
+	}
+
+	/**
+	 * @see bab_removeIndexObject()
+	 */
+	function removeObject() {
+		return unlink($this->objectIndex);
+	}
+
+}
 
 
 ?>

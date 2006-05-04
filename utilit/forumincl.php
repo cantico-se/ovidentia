@@ -264,6 +264,7 @@ function notifyThreadAuthor($threadTitle, $email, $author)
 
 function bab_uploadPostFiles($postid)
 	{
+	$db = $GLOBALS['babDB'];
 	$baseurl = $GLOBALS['babUploadPath'].'/forums/';
 	if (!is_dir($baseurl))
 		{
@@ -285,6 +286,8 @@ function bab_uploadPostFiles($postid)
 			$file['name'] = strtr($file['name'], $GLOBALS['babFileNameTranslation']);
 			}
 		move_uploaded_file($file['tmp_name'],$baseurl.$postid.','.$file['name']);
+		
+		$db->db_query()
 		}
 
 	return true;

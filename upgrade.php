@@ -5762,4 +5762,66 @@ return $ret;
 }
 
 
+
+function upgrade581to582()
+{	
+$ret = "";
+$db = & $GLOBALS['babDB'];
+
+if (!bab_isTable(BAB_FORUMSFILES_TBL)) {
+	
+	$db->db_query("
+		CREATE TABLE `".BAB_FORUMSFILES_TBL."` (
+		`id` INT UNSIGNED NOT NULL ,
+		`id_post` INT UNSIGNED NOT NULL ,
+		`name` VARCHAR( 255 ) NOT NULL ,
+		`description` TINYTEXT NOT NULL ,
+		`index_status` TINYINT UNSIGNED NOT NULL ,
+		PRIMARY KEY ( `id` ) ,
+		INDEX ( `id_post` )
+		)
+	");
+
+	// create existing files
+
+	include_once $GLOBALS['babInstallPath']."utilit/forumincl.php";
+
+	$res = $db->db_query("SELECT p.id, t.forum FROM ".BAB_POSTS_TBL." p, ".BAB_THREADS_TBL." t WHERE t.id = p.id_thread");
+	while ($arr = $db->db_fetch_assoc($res)) {
+		$files = bab_getPostFiles( $arr['forum'], $arr['id'] );
+
+		foreach($files as $file) {
+			$name = $file['name'];
+			$db->db_query("INSERT INTO ".BAB_FORUMSFILES_TBL." 
+				(id_post, name) 
+			VALUES 
+				('".$arr['id']."','".$name."')
+			");
+		}
+	}
+
+
+if (!bab_isTable(BAB_FORUMSFILES_TBL)) {
+
+		$db->db_query("
+			CREATE TABLE `bab_index_files` (
+			`id` INT UNSIGNED NOT NULL ,
+			`name` VARCHAR( 255 ) NOT NULL ,
+			`object` VARCHAR( 255 ) NOT NULL ,
+			`id_addon` INT UNSIGNED NOT NULL ,
+			`index_onload` TINYINT( 1 ) UNSIGNED NOT NULL ,
+			`index_disabled` TINYINT( 1 ) UNSIGNED NOT NULL ,
+			PRIMARY KEY ( `id` )
+			);
+		");
+
+	}
+
+	
+}
+
+return $ret;
+}
+
+
 ?>

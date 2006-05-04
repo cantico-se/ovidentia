@@ -131,4 +131,21 @@ function bab_writeConfig($replace)
 	return true;
 	}
 
+
+
+function bab_isTable($table) {
+	$db = & $GLOBALS['babDB'];
+
+	$arr = $db->db_fetch_array($db->db_query("SHOW TABLES LIKE '".$table."'"));
+	return ($arr[0] == $table);
+}
+
+
+function bab_isTableField($table, $field) {
+	$db = & $GLOBALS['babDB'];
+
+	$arr = $db->db_fetch_array($db->db_query("DESCRIBE ".$table." ".$field));
+	return ($arr[0] == $field);
+}
+
 ?>

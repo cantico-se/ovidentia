@@ -23,6 +23,7 @@
 ************************************************************************/
 include_once "base.php";
 include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/upgradeincl.php';
 
 function upgrade()
 {
@@ -220,7 +221,7 @@ switch($idx)
 		if (!isset($to)) $to = $GLOBALS['babInstallPath'];
 		if (isset($from))
 			{
-			include_once $GLOBALS['babInstallPath'].'utilit/upgradeincl.php';
+			
 			bab_cpaddons($from,$to);
 			}
 		break;

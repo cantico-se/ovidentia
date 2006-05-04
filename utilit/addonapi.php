@@ -1399,4 +1399,5 @@ function bab_toHtml($str, $option = BAB_HTML_ENTITIES) {
 	return bab_f_toHtml($str, $option);
 }
 
+
 ?>

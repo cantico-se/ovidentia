@@ -103,7 +103,12 @@ if (trim($req2) != "")
 }
 
 
-
+/**
+ * Index files, create new index, drop existing index
+ * @param array $arr_files
+ * @param string [$object] optional only for modules
+ * @return boolean|string
+ */
 function bab_indexFiles($arr_files, $object = false)
 {
 	global $babSearchEngine;
@@ -125,6 +130,15 @@ function bab_indexFiles($arr_files, $object = false)
 	return $obj->indexFiles();
 }
 
+
+/**
+ * Search in indexed files
+ * @param string $query1
+ * @param string $query2
+ * @param 'AND'|'OR'|'NOT' $option
+ * @param string $object
+ * @return array
+ */
 function bab_searchIndexedFiles($query1, $query2, $option, $object = false)
 {
 	global $babSearchEngine;
@@ -145,5 +159,121 @@ function bab_searchIndexedFiles($query1, $query2, $option, $object = false)
 	$obj = new bab_searchFilesCls($query1, $query2, $option, $object);
 	return $obj->searchFiles();
 }
+
+
+
+/**
+ * Add a new index object
+ * if the $name is allready used for the same addon, the function return false without any error message
+ * if indexing is disabled, the function return false without any error message
+ * @param string $name
+ * @param boolean $onload
+ * @param string $object this parameter is not required for addons
+ * @param boolean $addon this parameter is not required for addons
+ * @return int|false
+ */
+function bab_setIndexObject($name, $onload, $object = null, $addon = true) {
+
+	global $babSearchEngine;
+	$db = $GLOBALS['babDB'];
+	
+	if (null === $object && isset($GLOBALS['babAddonFolder']))
+		$object = $GLOBALS['babAddonFolder'];
+
+	if (true === $addon) {
+		$req = "SELECT id FROM ".BAB_ADDONS." WHERE title='".$db->db_escape_string($GLOBALS['babAddonFolder'])."'";
+		list($id_addon) = $db->db_fetch_array($db->db_query($req));
+	} else {
+		$id_addon = 0;
+	}
+
+	if (!isset($babSearchEngine) || !$object)
+		return false;
+
+	$res = $db->db_query("
+		
+		SELECT 
+			COUNT(*) 
+		FROM 
+			".BAB_INDEX_FILES_TBL." 
+		WHERE 
+			id_addon='".$id_addon."' 
+			AND name='".$db->db_escape_string($name)."' 
+	");
+	
+
+	list($n) = $db->db_fetch_array($res);
+	if ($n > 0)
+		return false;
+
+	$onload = $onload ? 1 : 0;
+
+	switch($babSearchEngine)
+		{
+		case 'swish':
+			include_once $GLOBALS['babInstallPath'].'utilit/searchincl.swish.php';
+			break;
+		}
+
+	$obj = new bab_indexFileCls($object);
+	if ($obj->createObject($name, $onload, $id_addon)) {
+
+		$db->db_query("
+			
+				INSERT INTO 
+					".BAB_INDEX_FILES_TBL." 
+					(
+						name,
+						object,
+						id_addon,
+						index_onload
+					) 
+				VALUES 
+					(
+						'".$db->db_escape_string($name)."',
+						'".$db->db_escape_string($object)."',
+						'".$id_addon."',
+						'".$onload."'
+					)
+			");
+
+		return $db->db_insert_id();
+	}
+
+	return false;
+}
+
+
+
+/**
+* Remove index object
+* @param string $object
+* @return boolean
+*/
+bab_removeIndexObject($object = null) {
+
+	global $babSearchEngine;
+	$db = &$GLOBALS['babDB'];
+
+	if (null === $object && isset($GLOBALS['babAddonFolder']))
+		$object = $GLOBALS['babAddonFolder'];
+
+	
+	switch($babSearchEngine)
+		{
+		case 'swish':
+			include_once $GLOBALS['babInstallPath'].'utilit/searchincl.swish.php';
+			break;
+		}
+
+	$obj = new bab_indexFileCls($object);
+	if ($obj->removeObject()) {
+		$db->db_query("DELETE FROM ".BAB_INDEX_FILES_TBL." WHERE id='".$id_index."'");
+		return true;
+	}
+
+	return false;
+}
+
 
 ?>

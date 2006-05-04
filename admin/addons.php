@@ -264,6 +264,19 @@ function upgrade($id)
 	if (is_dir($GLOBALS['babAddonsPath'].$row['title']) && is_file($GLOBALS['babAddonsPath'].$row['title']."/init.php") && is_file($GLOBALS['babAddonsPath'].$row['title']."/addonini.php"))
 		{
 		include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
+		include_once $GLOBALS['babInstallPath'].'utilit/upgradeincl.php';
+
+		/*
+
+		upgradeincl.php is included for
+
+			bab_isTable($table)
+			bab_isTableField($table, $field)
+
+		usable in addons since 5.8.2
+
+		*/
+
 		$ini = new bab_inifile();
 		$ini->inifile($GLOBALS['babAddonsPath'].$row['title']."/addonini.php");
 
