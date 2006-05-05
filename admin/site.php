@@ -366,6 +366,7 @@ function site_menu3($id)
 			$this->change_skin_title = bab_translate("User can modifiy his skin");
 			$this->change_date_title = bab_translate("User can modifiy his date format");
 			$this->change_unavailability_title = bab_translate("User can modifiy his unavailability");
+			$this->browse_users_title = bab_translate("User can browse all registered users");
 
 			$this->site_configuration_cls($id);
 			}
@@ -1513,7 +1514,8 @@ function siteUpdate_menu3()
 			change_unavailability='".$_POST['change_unavailability']."',
 			user_workdays='".$_POST['user_workdays']."', 
 			remember_login='".$_POST['remember_login']."', 
-			email_password='".$_POST['email_password']."' 
+			email_password='".$_POST['email_password']."',
+			browse_users='".$_POST['browse_users']."' 
 		WHERE id='".$_POST['item']."'";
 
 	$db->db_query($req);

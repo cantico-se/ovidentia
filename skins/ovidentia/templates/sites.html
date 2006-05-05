@@ -433,6 +433,20 @@ function validateNum(field)
 				</select>
 			</td>
 		</tr>
+		<tr>
+			<td>{ browse_users_title }</td>
+            <td> 
+				<select name="browse_users">
+				<!--#if arr[browse_users] "== Y" -->
+				<option value="Y" selected="selected">{ yes }</option>
+				<option value="N">{ no }</option>
+				<!--#else arr[browse_users] -->
+				<option value="Y">{ yes }</option>
+				<option value="N" selected="selected">{ no }</option>
+				<!--#endif arr[browse_users] -->
+				</select>
+			</td>
+		</tr>
 		 <tr> 
             <td colspan="2" align="center">
             <br />

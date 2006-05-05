@@ -49,12 +49,14 @@ function browseUsers($pos, $cb)
 
 		function temp($pos, $cb)
 			{
+			global $babBody;
+
 			$this->allname = bab_translate("All");
 			$this->nickname = bab_translate("Nickname");
 			$this->db = $GLOBALS['babDB'];
 			$this->cb = $cb;
 
-			if( !bab_isUserAdministrator())
+			if( !bab_isUserAdministrator() && $babBody->babsite['browse_users'] == 'N')
 				{
 				$req = "select ".BAB_GROUPS_TBL.".id from ".BAB_GROUPS_TBL." join ".BAB_USERS_GROUPS_TBL." where id_object='".$GLOBALS['BAB_SESS_USERID']."' and ".BAB_GROUPS_TBL.".id=".BAB_USERS_GROUPS_TBL.".id_group";
 				$resgroups = $this->db->db_query($req);

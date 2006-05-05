@@ -1927,4 +1927,5 @@
 <string id="Not installed or disabled">Pas installé ou désactivé</string>
 <string id="Ovidentia addon">Module d'Ovidentia</string>
 <string id="This version can't be installed because of the missing requirement">Cette version ne peut pas être installé car cet élément est manquant dans la configuration actuelle</string>
+<string id="User can browse all registered users">L'utilisateur voit la liste de tous les utilisateurs enregistrés ( sinon uniquement ceux de ses groupes )</string>
 </fr>

@@ -5820,6 +5820,18 @@ if (!bab_isTable(BAB_FORUMSFILES_TBL)) {
 	
 }
 
+
+$arr = $db->db_fetch_array($db->db_query("DESCRIBE ".BAB_SITES_TBL." browse_users"));
+if ( $arr[0] != 'browse_users' )
+	{
+	$res = $db->db_query("ALTER TABLE ".BAB_SITES_TBL." ADD browse_users ENUM( 'N', 'Y' ) DEFAULT 'N' NOT NULL AFTER `email_password` ");
+	if( !$res)
+		{
+		$ret = "Alteration of <b>".BAB_SITES_TBL."</b> table failed !<br>";
+		return $ret;
+		}
+	}
+
 return $ret;
 }
 
