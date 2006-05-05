@@ -30,16 +30,8 @@ function bab_highlightWord( $w, $text)
 	$arr = explode(" ",trim(urldecode($w)));
 	foreach($arr as $mot)
 		{
-		$mot_he = htmlentities($mot);
-		
-		if ($mot != $mot_he)
-			{
-			$text = preg_replace("/(\s*>[^<]*|\s+)(".$mot_he.")(\s+|[^>]*<\s*)/si", "\\1<span class=\"Babhighlight\">\\2</span>\\3", $text);
-			}
-		else
-			{
-			$text = preg_replace("/(\s*>[^<]*|\s+)(".$mot.")(\s+|[^>]*<\s*)/si", "\\1<span class=\"Babhighlight\">\\2</span>\\3", $text);
-			}
+		$text = preg_replace("/(\s*>[^<]*|\s+)(".htmlentities($mot).")(\s+|[^>]*<\s*)/si", "\\1<span class=\"Babhighlight\">\\2</span>\\3", $text);
+		$text = preg_replace("/(\s*>[^<]*|\s+)(".$mot.")(\s+|[^>]*<\s*)/si", "\\1<span class=\"Babhighlight\">\\2</span>\\3", $text);
 		}
 	return trim($text);
 }
