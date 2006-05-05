@@ -250,7 +250,7 @@ function bab_setIndexObject($name, $onload, $object = null, $addon = true) {
 * @param string $object
 * @return boolean
 */
-bab_removeIndexObject($object = null) {
+function bab_removeIndexObject($object = null) {
 
 	global $babSearchEngine;
 	$db = &$GLOBALS['babDB'];

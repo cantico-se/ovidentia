@@ -287,7 +287,7 @@ function bab_uploadPostFiles($postid)
 			}
 		move_uploaded_file($file['tmp_name'],$baseurl.$postid.','.$file['name']);
 		
-		$db->db_query()
+		//$db->db_query()
 		}
 
 	return true;
