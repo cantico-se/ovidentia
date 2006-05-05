@@ -262,8 +262,7 @@ function notifyThreadAuthor($threadTitle, $email, $author)
 	}
 
 
-function bab_uploadPostFiles($postid)
-	{
+function bab_uploadPostFiles($postid) {
 	$db = $GLOBALS['babDB'];
 	$baseurl = $GLOBALS['babUploadPath'].'/forums/';
 	if (!is_dir($baseurl))
@@ -275,8 +274,7 @@ function bab_uploadPostFiles($postid)
 			}
 		}
 
-	foreach ($_FILES as $file)
-		{
+	foreach ($_FILES as $file) {
 		if( bab_isMagicQuotesGpcOn())
 			{
 			$file['name'] = stripslashes($file['name']);
@@ -285,13 +283,42 @@ function bab_uploadPostFiles($postid)
 			{
 			$file['name'] = strtr($file['name'], $GLOBALS['babFileNameTranslation']);
 			}
-		move_uploaded_file($file['tmp_name'],$baseurl.$postid.','.$file['name']);
+
+		$dest = $baseurl.$postid.','.$file['name'];
 		
-		//$db->db_query()
+		if (move_uploaded_file($file['tmp_name'], $dest)) {
+		
+			/*
+			
+			$res = $db->db_query("SELECT id, index_status FROM ".BAB_FORUMSFILES_TBL." WHERE id_post='".$postid."' AND name='".$db->db_escape_string($file['name'])."'");
+
+			$index_status = bab_indexOnLoadFile($dest, 'forumfiles');
+			
+			if ($res && $arr = $db->db_fetch_assoc($res)) {
+				// old file overwrited
+				
+				if ($index_status == $arr['id']) {
+					$db->db_query("UPDATE ".BAB_FORUMSFILES_TBL." SET index_status='".$index_status."' WHERE id='".$arr['id']."'");
+				}
+				
+			} else {
+				// new file
+
+				$db->db_query("INSERT INTO ".BAB_FORUMSFILES_TBL." 
+						(id_post, name, index_status) 
+					VALUES 
+						('".$postid."', '".$db->db_escape_string($file['name'])."', '".$index_status."')
+				");
+			}
+
+			*/
+
 		}
 
-	return true;
 	}
+
+	return true;
+}
 
 function bab_getPostFiles($forum,$postid)
 	{

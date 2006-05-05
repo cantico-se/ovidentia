@@ -26,6 +26,9 @@ include_once "base.php";
 
 class swishCls
 {
+	
+	var $objectIndex;
+
 	function swishCls($object)
 	{
 	$this->uploadDir = $GLOBALS['babBody']->babsite['uploadpath'];
@@ -39,7 +42,10 @@ class swishCls
 	$this->uploadDir = str_replace('\\' ,'/', $this->uploadDir);
 
 	$this->tmpCfgFile = $this->uploadDir.'/tmp/swish.config';
-	$this->objectIndex = $this->uploadDir.'/SearchIndex/'.$object.'.index';
+	$this->mainIndex = $this->uploadDir.'/SearchIndex/'.$object.'.index';
+	$this->mergeIndex = $this->uploadDir.'/SearchIndex/'.$object.'.merge.index';
+	$this->tempIndex = $this->uploadDir.'/SearchIndex/'.$object.'.temp.index';
+
 
 	$db = &$GLOBALS['babDB'];
 	$res = $db->db_query("SELECT * FROM ".BAB_SITES_SWISH_TBL." WHERE id_site='".$GLOBALS['babBody']->babsite['id']."'");
@@ -79,8 +85,6 @@ class bab_indexFilesCls extends swishCls
 		{
 		parent::swishCls($object);
 		$this->arr_files = $arr_files;
-		$this->setTempConfigFile();
-		
 		}
 
 		function getnextfile()
@@ -88,45 +92,51 @@ class bab_indexFilesCls extends swishCls
 		if (list(,$this->file) = each($this->arr_files))
 			{
 			$this->file = '"'.str_replace('\\' ,'/', $this->file);
-			$this->file .= "\"
-";
+			$this->file .= "\"\n";
 			return true;
 			}
 		else
 			return false;
 		}
 
-		function setTempConfigFile()
+		function setTempConfigFile($indexFile)
 		{
+		
+		if (!is_file($this->swishCmd)) {
+			trigger_error('File not found : '.$this->swishCmd);
+			return false;
+			}
+		
+		$this->objectIndex = $indexFile ? $this->mergeIndex : $this->mainIndex;
+
 		$str = bab_printTemplate($this, 'swish.config');
 
 		if ($handle = fopen($this->tmpCfgFile, 'w+')) {
-				fwrite($handle, $str);
-				fclose($handle);
-		   }
+			fwrite($handle, $str);
+			fclose($handle);
+			}
 		}
+
 
 		function indexFiles()
 		{
-			if (!is_file($this->swishCmd))
-				{
-				trigger_error('File not found : '.$this->swishCmd);
-				return false;
-				}
 			
+			$this->setTempConfigFile($this->mainIndex);			
 			$str = $this->execCmd($this->swishCmd.' -c '.escapeshellarg($this->tmpCfgFile));
 			unlink($this->tmpCfgFile);
 			return $str;
 		}
 
 		function addFilesToIndex() {
-			if (!is_file($this->swishCmd))
-				{
-				trigger_error('File not found : '.$this->swishCmd);
-				return false;
-				}
-
-			// TODO : créer un nouveau fichier index temporaire et merger avec le fichier index existant
+			
+			$this->setTempConfigFile($this->mergeIndex);
+			$this->execCmd($this->swishCmd.' -c '.escapeshellarg($this->tmpCfgFile));
+			
+			$this->execCmd($this->swishCmd.' -M '.escapeshellarg($this->mainIndex).' '.escapeshellarg($this->mergeIndex).' '.escapeshellarg($this->tempIndex));
+			unlink($this->mainIndex);
+			unlink($this->mergeIndex);
+			unlink($this->tmpCfgFile);
+			rename($this->tempIndex, $this->mainIndex);
 		}
 	}
 
@@ -180,7 +190,7 @@ class bab_indexFileCls extends swishCls {
 	 * @see bab_setIndexObject()
 	 */
 	function createObject($name, $onload, $id_addon) {
-
+		
 		return true;
 	}
 

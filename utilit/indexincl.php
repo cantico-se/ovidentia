@@ -138,7 +138,7 @@ function bab_indexOnLoadFile($file, $object = null) {
 	$status = $obj->get_onLoadStatus();
 
 	if (BAB_INDEX_STATUS_INDEXED === $status) {
-		if (false !== bab_indexFiles(array($file), $object)) {
+		if (false !== $obj->addFileToIndex($file)) {
 			return BAB_INDEX_STATUS_INDEXED;
 		} else {
 			return BAB_INDEX_STATUS_NOINDEX;

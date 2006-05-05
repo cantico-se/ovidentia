@@ -189,7 +189,6 @@ function bab_setIndexObject($name, $onload, $object = null, $addon = true) {
 		FROM 
 			".BAB_INDEX_FILES_TBL." 
 		WHERE 
-			id_addon='".$id_addon."' 
 			AND name='".$db->db_escape_string($name)."' 
 	");
 	
