@@ -1033,7 +1033,7 @@ CREATE TABLE bab_ini (
 
 INSERT INTO bab_ini VALUES ('ver_major', '5');
 INSERT INTO bab_ini VALUES ('ver_minor', '8');
-INSERT INTO bab_ini VALUES ('ver_build', '1');
+INSERT INTO bab_ini VALUES ('ver_build', '2');
 INSERT INTO bab_ini VALUES ('ver_prod', 'E');
 
 #
