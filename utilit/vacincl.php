@@ -495,23 +495,6 @@ function viewVacationCalendar($users, $period = false )
 
 			while( $row = $this->db->db_fetch_array($res))
 				{
-				$sup = 0;
-
-				if ($row['date_begin'] != $row['date_end'])
-					{
-					if ($row['day_begin'] > 1)
-						{
-						$sup += 0.5;
-						}
-
-					if ($row['day_end'] > 1)
-						{
-						$sup += 0.5;
-						}
-					}
-
-				
-
 				$colors = array();
 				$types = array();
 
@@ -524,6 +507,17 @@ function viewVacationCalendar($users, $period = false )
 				
 				while ($arr = $this->db->db_fetch_array($res2))
 					{
+					$sup = 0;
+					if( $j==0 && $row['day_begin'] > 1)
+						{
+						$sup = 0.5;
+						}
+
+					if( $j==$count-1 && $row['day_end'] > 1)
+						{
+						$sup = 0.5;
+						}
+
 					$j++;
 					for ($i = 0 ; $i < ($arr['quantity']+$sup) ; $i++) {
 						$colors[] = $arr['color'];
@@ -533,16 +527,12 @@ function viewVacationCalendar($users, $period = false )
 					if (( (int) $arr['quantity'] !=  (float) $arr['quantity']) && $j < $count) {
 						$colors[count($colors)-1] = 'bicolor';
 						}
-
 					$sup = 0;
 					}
 
-
 				list($sum) = $this->db->db_fetch_array($this->db->db_query("SELECT SUM(quantity) FROM ".BAB_VAC_ENTRIES_ELEM_TBL." WHERE id_entry='".$row['id']."'"));
 
-				
-
-				if (count($colors) > $sum && $sum > 1)
+				if (count($colors) > ceil($sum) && $sum > 1)
 					{
 					$remove = count($colors) - $sum;
 					$curcol = '';
@@ -557,7 +547,6 @@ function viewVacationCalendar($users, $period = false )
 						}
 					}
 
-				
 
 
 				if (!$this->period || !isset($_REQUEST['id']) || $_REQUEST['id'] != $row['id'])
