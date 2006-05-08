@@ -333,7 +333,7 @@ class bab_synchronizeSql
 		$option_table = $this->tables[$table][$field]['Type'].$null.$default.$extra;
 
 		
-		if ($option_file !== $option_table)
+		if (strtolower($option_file) !== strtolower($option_table))
 			{
 			$this->db->db_query("ALTER TABLE `".$table."` CHANGE `".$field."` `".$field."` ".$option_file);
 			return true;
