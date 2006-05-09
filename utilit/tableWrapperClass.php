@@ -133,7 +133,7 @@
 			return ' WHERE ' . substr($whereClause, strlen(' AND '));
 		}
 
-		function load($attribut, $selectOffset = BAB_ALL_ATTRIBUTS, $selectLength = BAB_ALL_ATTRIBUTS,
+		function load(& $attribut, $selectOffset = BAB_ALL_ATTRIBUTS, $selectLength = BAB_ALL_ATTRIBUTS,
 			$whereClauseOffset = BAB_ALL_ATTRIBUTS, $whereClauseLength = BAB_ALL_ATTRIBUTS)
 		{
 			$attributNameList	= $this->buildSelect($attribut, $selectOffset, $selectLength);
@@ -141,7 +141,7 @@
 
 			$request = 'SELECT ' . $attributNameList . ' FROM ' . $this->m_TableName . $whereClause; 
 
-			//echo $request . '<br />';
+			//bab_debug($request);
 			
 			$result = $this->m_db->db_query($request);
 			return $this->m_db->db_fetch_assoc($result); 
@@ -170,7 +170,7 @@
 			$requete = 'INSERT INTO ' . $this->m_TableName . '(  '. substr($insert, strlen(', ')) . ') ' . 
 				'VALUES ( ' . substr($values, strlen(', ')) . ')';
 
-			//echo $requete . '<br />';
+			//bab_debug($requete);
 
 			return $this->m_db->db_query($requete);
 		}
@@ -191,7 +191,7 @@
 			$requete = 'UPDATE ' . $this->m_TableName . ' SET ' . substr($requete, strlen(', ')) . ' WHERE id = \'' 
 				. $attributsList['id'] . '\'';
 
-			//echo $requete . '<br />';
+			//bab_debug($requete);
 
 			return $this->m_db->db_query($requete);
 		}

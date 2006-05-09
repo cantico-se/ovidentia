@@ -15,8 +15,8 @@ define('BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL', 'bab_tskmgr_specific_fields_
 define('BAB_TSKMGR_SPECIFIC_FIELDS_TEXT_CLASS_TBL', 'bab_tskmgr_specific_fields_text_class');
 define('BAB_TSKMGR_SPECIFIC_FIELDS_AREA_CLASS_TBL', 'bab_tskmgr_specific_fields_text_class');
 define('BAB_TSKMGR_SPECIFIC_FIELDS_RADIO_CLASS_TBL', 'bab_tskmgr_specific_fields_radio_class');
-define('BAB_TSKMGR_SPECIFIC_FIELDS_RADIO_VALUE_CLASS_TBL', 'bab_tskmgr_specific_fields_radio_value_class');
 define('BAB_TSKMGR_SPECIFIC_FIELDS_INSTANCE_LIST_TBL', 'bab_tskmgr_specific_fields_instance_list');
+define('BAB_TSKMGR_CATEGORIES_TBL', 'bab_tskmgr_categories');
 
 
 // actions
@@ -26,6 +26,16 @@ define('BAB_TM_ACTION_ADD_PROJECT_SPACE', 'addProjectSpace');
 define('BAB_TM_ACTION_MODIFY_PROJECT_SPACE', 'modifyProjectSpace');
 define('BAB_TM_ACTION_DELETE_PROJECT_SPACE', 'deleteProjectSpace');
 define('BAB_TM_ACTION_SAVE_DEFAULT_PROJECTS_CONFIGURATION', 'saveDefaultProjectConfiguration');
+
+define('BAB_TM_ACTION_ADD_OPTION', 'addOption');
+define('BAB_TM_ACTION_DEL_OPTION', 'delOption');
+define('BAB_TM_ACTION_ADD_SPECIFIC_FIELD', 'addSpecificField');
+define('BAB_TM_ACTION_MODIFY_SPECIFIC_FIELD', 'modifySpecificField');
+define('BAB_TM_ACTION_DELETE_SPECIFIC_FIELD', 'deleteSpecificField');
+
+define('BAB_TM_ACTION_ADD_CATEGORY', 'addCategory');
+define('BAB_TM_ACTION_MODIFY_CATEGORY', 'modifyCategory');
+define('BAB_TM_ACTION_DELETE_CATEGORY', 'deleteCategory');
 
 // idx
 define('BAB_TM_IDX_DISPLAY_ADMIN_MENU', 'displayAdminMenu');
@@ -37,6 +47,11 @@ define('BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_RIGHTS_FORM', 'displayProjectsSpacesR
 define('BAB_TM_IDX_DISPLAY_DEFAULT_PROJECTS_CONFIGURATION_FORM', 'displayDefaultProjectsConfigurationForm');
 define('BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_LIST', 'displaySpecificFieldList');
 define('BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_FORM', 'displaySpecificFieldForm');
+define('BAB_TM_IDX_DISPLAY_DELETE_SPECIFIC_FIELD_FORM', 'displayDeleteSpecificFieldForm');
+define('BAB_TM_IDX_DISPLAY_CATEGORIES_LIST', 'displayCategoriesList');
+define('BAB_TM_IDX_DISPLAY_CATEGORY_FORM', 'displayCategoryForm');
+define('BAB_TM_IDX_DISPLAY_DELETE_CATEGORY_FORM', 'displayDeleteCategoryForm');
+
 
 //
 define('BAB_TM_YES', 1);
@@ -48,10 +63,4 @@ define('BAB_TM_MANUAL', 0);
 define('BAB_TM_SEQUENTIAL', 1);
 define('BAB_TM_YEAR_SEQUENTIAL', 2);
 define('BAB_TM_YEAR_MONTH_SEQUENTIAL', 3);
-
-//Specific field class
-define ('BAB_TM_TEXT_FIELD', 0);
-define ('BAB_TM_TEXT_AREA_FIELD', 1);
-define ('BAB_TM_RADIO_FIELD', 2);
-
 ?>

@@ -5959,11 +5959,9 @@ function upgradeXXXtoYYY()
 	{
 		$res = $db->db_query("
 			CREATE TABLE `" . BAB_TSKMGR_SPECIFIC_FIELDS_TEXT_CLASS_TBL . "` (
-				`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-				`idFldBase` INTEGER UNSIGNED NOT NULL default '0',
+				`id` INTEGER UNSIGNED NOT NULL,
 				`defaultValue` VARCHAR(255) NOT NULL default '',
-				PRIMARY KEY(`id`, `idFldBase`),
-				INDEX `idFldBase`(`idFldBase`)) TYPE=MyISAM
+				PRIMARY KEY(`id`)) TYPE=MyISAM
 		");
 		
 		if(false == $res)
@@ -5977,11 +5975,9 @@ function upgradeXXXtoYYY()
 	{
 		$res = $db->db_query("
 			CREATE TABLE `" . BAB_TSKMGR_SPECIFIC_FIELDS_AREA_CLASS_TBL . "` (
-				`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-				`idFldBase` INTEGER UNSIGNED NOT NULL default '0',
+				`id` INTEGER UNSIGNED NOT NULL,
 				`defaultValue` TEXT NOT NULL default '',
-				PRIMARY KEY(`id`, `idFldBase`),
-				INDEX `idFldBase`(`idFldBase`)) TYPE=MyISAM
+				PRIMARY KEY(`id`)) TYPE=MyISAM
 		");
 		
 		if(false == $res)
@@ -5989,7 +5985,7 @@ function upgradeXXXtoYYY()
 			return $res;
 		}
 	}
-	
+
 	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_SPECIFIC_FIELDS_RADIO_CLASS_TBL . '\''));
 	if($arr[0] != BAB_TSKMGR_SPECIFIC_FIELDS_RADIO_CLASS_TBL)
 	{
@@ -5997,28 +5993,10 @@ function upgradeXXXtoYYY()
 			CREATE TABLE `" . BAB_TSKMGR_SPECIFIC_FIELDS_RADIO_CLASS_TBL . "` (
 				`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 				`idFldBase` INTEGER UNSIGNED NOT NULL default '0',
-				PRIMARY KEY(`id`, `idFldBase`)) TYPE=MyISAM
-		");
-		
-		if(false == $res)
-		{
-			return $res;
-		}
-	}
-	
-	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_SPECIFIC_FIELDS_RADIO_VALUE_CLASS_TBL . '\''));
-	if($arr[0] != BAB_TSKMGR_SPECIFIC_FIELDS_RADIO_VALUE_CLASS_TBL)
-	{
-		$res = $db->db_query("
-			CREATE TABLE `" . BAB_TSKMGR_SPECIFIC_FIELDS_RADIO_VALUE_CLASS_TBL . "` (
-				`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-				`idFldBase` INTEGER UNSIGNED NOT NULL default '0',
-				`idFldRadio` INTEGER UNSIGNED NOT NULL default '0',
 				`value` VARCHAR(255) NOT NULL default '',
 				`isDefaultOption` TINYINT UNSIGNED NOT NULL default '0',
 				`position` TINYINT UNSIGNED NOT NULL default '0',
-				PRIMARY KEY(`id`),
-				INDEX `idFldRadio`(`idFldRadio`)) TYPE=MyISAM
+				PRIMARY KEY(`id`)) TYPE=MyISAM
 		");
 		
 		if(false == $res)
@@ -6044,20 +6022,34 @@ function upgradeXXXtoYYY()
 			return $res;
 		}
 	}
-
-/*
-//BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL	
-			CREATE TABLE `" . BAB_TSKMGR_DEFAULT_PROJECTS_CONFIGURATION_TBL . "` (
+	
+	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_CATEGORIES_TBL . '\''));
+	if($arr[0] != BAB_TSKMGR_CATEGORIES_TBL)
+	{
+		$res = $db->db_query("
+			CREATE TABLE `" . BAB_TSKMGR_CATEGORIES_TBL . "` (
 				`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 				`idProjectSpace` INTEGER UNSIGNED NOT NULL default '0',
-				`tskUpdateByMgr` TINYINT UNSIGNED NOT NULL default '1',
-				`endTaskReminder` TINYINT UNSIGNED NOT NULL default '5',
-				`tasksNumerotation` TINYINT UNSIGNED NOT NULL default '1',
-				`emailNotice` TINYINT UNSIGNED NOT NULL default '1',
-				`faqUrl` MEDIUMTEXT NOT NULL default '',
-				PRIMARY KEY(`id`, `idProjectSpace`),
-				INDEX `idProjectSpace`(`idProjectSpace`)) TYPE=MyISAM
-*/
+				`idProject` INTEGER UNSIGNED NOT NULL default '0',
+				`name` VARCHAR(255) NOT NULL default '',
+				`description` TEXT NOT NULL default '',
+				`color` VARCHAR(20) NOT NULL default '',
+				`refCount` INTEGER UNSIGNED NOT NULL default '0',
+				`created` DATETIME NOT NULL default '0000-00-00 00:00:00',
+				`idUserCreated` INTEGER UNSIGNED NOT NULL default '0',
+				`modified` DATETIME NOT NULL default '0000-00-00 00:00:00',
+				`idUserModified` INTEGER UNSIGNED NOT NULL default '0',
+				PRIMARY KEY(`id`),
+				INDEX `idProjectSpace`(`idProjectSpace`),
+				INDEX `idProject`(`idProject`),
+				INDEX `name`(`name`),
+				INDEX `refCount`(`refCount`)) TYPE=MyISAM
+		");
+		
+		if(false == $res)
+		{
+			return $res;
+		}
+	}
 }
-
 ?>
