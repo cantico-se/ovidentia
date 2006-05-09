@@ -5812,7 +5812,7 @@ if (!bab_isTable(BAB_INDEX_FILES_TBL)) {
 			`index_onload` TINYINT( 1 ) UNSIGNED NOT NULL ,
 			`index_disabled` TINYINT( 1 ) UNSIGNED NOT NULL ,
 			PRIMARY KEY ( `id` )
-			);
+			)
 		");
 
 	}
