@@ -30,14 +30,18 @@ define("BAB_INDEX_STATUS_INDEXED", 2);
 define("BAB_INDEX_STATUS_TOINDEX", 3);
 
 
-class bab_indexObject() {
+class bab_indexObject {
 
 	var $enabled;
+	var $engineName;
 
 	function bab_indexObject($object = null) {
 
-		if (isset($GLOBALS['babSearchEngine'])) {
+		$arr = bab_searchEngineInfos();
+
+		if ($arr) {
 			$this->enabled = true;
+			$this->engineName = $arr['name'];
 
 			if (null === $object && isset($GLOBALS['babAddonFolder'])) {
 				$object = $GLOBALS['babAddonFolder'];
@@ -119,7 +123,7 @@ class bab_indexObject() {
 			return BAB_INDEX_STATUS_NOINDEX;
 		}
 
-		switch($GLOBALS['babSearchEngine']) {
+		switch($this->engineName) {
 			case 'swish':
 				include_once $GLOBALS['babInstallPath'].'utilit/searchincl.swish.php';
 				break;
@@ -131,7 +135,14 @@ class bab_indexObject() {
 }
 
 
-
+/**
+ * Call this function when a file is loaded, 
+ * the file will be indexed if necessary
+ * 
+ * @param string $file full path to the file, usually in upload directory
+ * @param string $object if not given, the current addon name will be used
+ * @return int
+ */
 function bab_indexOnLoadFile($file, $object = null) {
 	
 	$obj = new bab_indexObject($object);
@@ -147,5 +158,8 @@ function bab_indexOnLoadFile($file, $object = null) {
 
 	return $status;
 }
+
+
+
 
 ?>

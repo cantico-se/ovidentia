@@ -148,14 +148,14 @@ CREATE TABLE bab_forums (
 #
 
 
-CREATE TABLE `bab_forumsfiles` (
-`id` INT UNSIGNED NOT NULL ,
-`id_post` INT UNSIGNED NOT NULL ,
-`name` VARCHAR( 255 ) NOT NULL ,
-`description` TINYTEXT NOT NULL ,
-`index_status` TINYINT UNSIGNED NOT NULL ,
-PRIMARY KEY ( `id` ) ,
-INDEX ( `id_post` )
+CREATE TABLE bab_forumsfiles (
+  id int(10) unsigned NOT NULL auto_increment,
+  id_post int(10) unsigned NOT NULL default '0',
+  name varchar(255) NOT NULL default '',
+  description tinytext NOT NULL,
+  index_status tinyint(3) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_post (id_post)
 );
 
 
@@ -2781,7 +2781,7 @@ CREATE TABLE bab_dbdir_configexport (
 
 
 CREATE TABLE `bab_index_files` (
-`id` INT UNSIGNED NOT NULL ,
+`id` INT UNSIGNED NOT NULL auto_increment,
 `name` VARCHAR( 255 ) NOT NULL ,
 `object` VARCHAR( 255 ) NOT NULL ,
 `id_addon` INT UNSIGNED NOT NULL ,

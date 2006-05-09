@@ -505,6 +505,12 @@ switch($tg)
 		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && ($babBody->isSuperAdmin || $babBody->currentAdmGroup != 0))
 			$incl = "admin/admfm";
 		break;
+	case "index":
+		$babLevelOne = bab_translate("Administration");
+		$babLevelTwo = bab_translate("Search indexes");
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0))
+			$incl = "admin/indexfiles";
+		break;
 	case "topman":
 		$babLevelOne = bab_translate("User's section");
 		$babLevelTwo = bab_translate("Managed topics");

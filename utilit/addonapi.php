@@ -1400,4 +1400,21 @@ function bab_toHtml($str, $option = BAB_HTML_ENTITIES) {
 }
 
 
+/**
+ * Return informations about search engine for files content
+ * if the function return false, search engine is disabled
+ * @return false|array
+ */
+function bab_searchEngineInfos() {
+	if (isset($GLOBALS['babSearchEngine'])) {
+		return array(
+			'name' => $GLOBALS['babSearchEngine'],
+			'description' => '',
+			'types' => array(), // TODO : get types from searchincl.swish.php
+			'indexes' => array()
+		);
+	}
+	return false;
+}
+
 ?>

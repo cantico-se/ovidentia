@@ -103,15 +103,15 @@ if (trim($req2) != "")
  */
 function bab_indexFiles($arr_files, $object = false)
 {
-	global $babSearchEngine;
+	$engine = bab_searchEngineInfos();
 
 	if (!$object && isset($GLOBALS['babAddonFolder']))
 		$object = $GLOBALS['babAddonFolder'];
 
-	if (!isset($babSearchEngine) || !$object)
+	if (false === $engine || !$object)
 		return false;
 
-	switch($babSearchEngine)
+	switch($engine['name'])
 		{
 		case 'swish':
 			include_once $GLOBALS['babInstallPath'].'utilit/searchincl.swish.php';
@@ -133,15 +133,15 @@ function bab_indexFiles($arr_files, $object = false)
  */
 function bab_searchIndexedFiles($query1, $query2, $option, $object = false)
 {
-	global $babSearchEngine;
+	$engine = bab_searchEngineInfos();
 
 	if (!$object && isset($GLOBALS['babAddonFolder']))
 		$object = $GLOBALS['babAddonFolder'];
 
-	if (!isset($babSearchEngine) || !$object)
+	if (false === $engine || !$object)
 		return false;
 
-	switch($babSearchEngine)
+	switch($engine['name'])
 		{
 		case 'swish':
 			include_once $GLOBALS['babInstallPath'].'utilit/searchincl.swish.php';
@@ -166,7 +166,7 @@ function bab_searchIndexedFiles($query1, $query2, $option, $object = false)
  */
 function bab_setIndexObject($name, $onload, $object = null, $addon = true) {
 
-	global $babSearchEngine;
+	$engine = bab_searchEngineInfos();
 	$db = $GLOBALS['babDB'];
 	
 	if (null === $object && isset($GLOBALS['babAddonFolder']))
@@ -179,7 +179,7 @@ function bab_setIndexObject($name, $onload, $object = null, $addon = true) {
 		$id_addon = 0;
 	}
 
-	if (!isset($babSearchEngine) || !$object)
+	if (false === $engine || !$object)
 		return false;
 
 	$res = $db->db_query("
@@ -199,7 +199,7 @@ function bab_setIndexObject($name, $onload, $object = null, $addon = true) {
 
 	$onload = $onload ? 1 : 0;
 
-	switch($babSearchEngine)
+	switch($engine['name'])
 		{
 		case 'swish':
 			include_once $GLOBALS['babInstallPath'].'utilit/searchincl.swish.php';
@@ -243,14 +243,17 @@ function bab_setIndexObject($name, $onload, $object = null, $addon = true) {
 */
 function bab_removeIndexObject($object = null) {
 
-	global $babSearchEngine;
+	$engine = bab_searchEngineInfos();
 	$db = &$GLOBALS['babDB'];
 
 	if (null === $object && isset($GLOBALS['babAddonFolder']))
 		$object = $GLOBALS['babAddonFolder'];
 
+	if (false === $engine || null === $object) {
+		return false;
+	}
 	
-	switch($babSearchEngine)
+	switch($engine['name'])
 		{
 		case 'swish':
 			include_once $GLOBALS['babInstallPath'].'utilit/searchincl.swish.php';

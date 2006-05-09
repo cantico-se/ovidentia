@@ -5772,7 +5772,7 @@ if (!bab_isTable(BAB_FORUMSFILES_TBL)) {
 	
 	$db->db_query("
 		CREATE TABLE `".BAB_FORUMSFILES_TBL."` (
-		`id` INT UNSIGNED NOT NULL ,
+		`id` INT UNSIGNED NOT NULL auto_increment,
 		`id_post` INT UNSIGNED NOT NULL ,
 		`name` VARCHAR( 255 ) NOT NULL ,
 		`description` TINYTEXT NOT NULL ,
@@ -5801,11 +5801,11 @@ if (!bab_isTable(BAB_FORUMSFILES_TBL)) {
 	}
 
 
-if (!bab_isTable(BAB_FORUMSFILES_TBL)) {
+if (!bab_isTable(BAB_INDEX_FILES_TBL)) {
 
 		$db->db_query("
-			CREATE TABLE `bab_index_files` (
-			`id` INT UNSIGNED NOT NULL ,
+			CREATE TABLE `".BAB_INDEX_FILES_TBL."` (
+			`id` INT UNSIGNED NOT NULL auto_increment,
 			`name` VARCHAR( 255 ) NOT NULL ,
 			`object` VARCHAR( 255 ) NOT NULL ,
 			`id_addon` INT UNSIGNED NOT NULL ,

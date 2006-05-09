@@ -246,6 +246,12 @@ function babAdminSection($close)
 		$this->array_urls[bab_translate("Add-ons")] = $GLOBALS['babUrlScript']."?tg=addons";
 	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
 		$this->array_urls[bab_translate("Statistics")] = $GLOBALS['babUrlScript']."?tg=admstats";
+
+	$engine = bab_searchEngineInfos();
+
+	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 && false !== $engine && $engine['indexes'] )
+		$this->array_urls[bab_translate("Search indexes")] = $GLOBALS['babUrlScript']."?tg=index";
+
 	$this->head = bab_translate("Currently you administer ");
 	if( $babBody->currentAdmGroup == 0 )
 		$this->head .= bab_translate("all site");

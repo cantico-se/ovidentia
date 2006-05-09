@@ -117,7 +117,7 @@ class bab_indexFilesCls extends swishCls
 			}
 		}
 
-
+		
 		function indexFiles()
 		{
 			
@@ -130,7 +130,7 @@ class bab_indexFilesCls extends swishCls
 		function addFilesToIndex() {
 			
 			$this->setTempConfigFile($this->mergeIndex);
-			$this->execCmd($this->swishCmd.' -c '.escapeshellarg($this->tmpCfgFile));
+			$result = $this->execCmd($this->swishCmd.' -c '.escapeshellarg($this->tmpCfgFile));
 			
 			$this->execCmd($this->swishCmd.' -M '.escapeshellarg($this->mainIndex).' '.escapeshellarg($this->mergeIndex).' '.escapeshellarg($this->tempIndex));
 			unlink($this->mainIndex);

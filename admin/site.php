@@ -72,7 +72,7 @@ class site_configuration_cls
 			10=> bab_translate('WYSIWYG editor configuration')
 		);
 
-	if (isset($GLOBALS['babSearchEngine']))
+	if (bab_searchEngineInfos())
 		{
 		$this->menu[11] = bab_translate('Search engine configuration');
 		}
@@ -1241,6 +1241,24 @@ global $babBody;
 }
 
 
+function call_site_menu11($item) {
+
+	$arr = bab_searchEngineInfos();
+
+	if (false === $arr) {
+		return false;
+	}
+
+	switch($arr['name'])
+		{
+		case 'swish':
+			include_once $GLOBALS['babInstallPath']."admin/sitesearch.swish.php";
+			break;
+		}
+
+	site_menu11($item);
+}
+
 
 /* ************************** RECORD ************************** */
 
@@ -1801,6 +1819,26 @@ function siteUpdateDisclaimer($item, $content)
 	return true;
 	}
 
+
+
+function call_record_site_menu11($item) {
+
+	$arr = bab_searchEngineInfos();
+	if (false === $arr)
+		return false;
+
+	switch($arr['name'])
+		{
+		case 'swish':
+			include $GLOBALS['babInstallPath']."admin/sitesearch.swish.php";
+			break;
+		}
+
+	record_site_menu11($item);
+}
+
+
+
 /* main */
 if( !isset($BAB_SESS_LOGGED) || empty($BAB_SESS_LOGGED) ||  !$babBody->isSuperAdmin)
 {
@@ -1886,14 +1924,7 @@ switch ($_POST['action'])
 		break;
 
 	case 'menu11':
-		switch($babSearchEngine)
-			{
-			case 'swish':
-				include $babInstallPath."admin/sitesearch.swish.php";
-				break;
-			}
-
-		record_site_menu11($_POST['item']);
+		call_record_site_menu11($_POST['item']);
 		break;
 
 	case 'updisc':
@@ -2018,14 +2049,7 @@ switch($idx)
 		$babBody->addItemMenu("menusite", bab_translate("Menu"),$GLOBALS['babUrlScript']."?tg=site&item=".$_REQUEST['item']);
 		$babBody->addItemMenu("menu11", bab_translate("Search2"),$GLOBALS['babUrlScript']."?tg=site&idx=editor&item=".$_REQUEST['item']);
 
-		switch($babSearchEngine)
-			{
-			case 'swish':
-				include $babInstallPath."admin/sitesearch.swish.php";
-				break;
-			}
-
-		site_menu11($_REQUEST['item']);
+		call_site_menu11($_REQUEST['item']);
 
 		break;
 

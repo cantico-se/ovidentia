@@ -274,6 +274,8 @@ function bab_uploadPostFiles($postid) {
 			}
 		}
 
+	include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
+
 	foreach ($_FILES as $file) {
 		if( bab_isMagicQuotesGpcOn())
 			{
@@ -288,7 +290,7 @@ function bab_uploadPostFiles($postid) {
 		
 		if (move_uploaded_file($file['tmp_name'], $dest)) {
 		
-			/*
+
 			
 			$res = $db->db_query("SELECT id, index_status FROM ".BAB_FORUMSFILES_TBL." WHERE id_post='".$postid."' AND name='".$db->db_escape_string($file['name'])."'");
 
@@ -310,8 +312,6 @@ function bab_uploadPostFiles($postid) {
 						('".$postid."', '".$db->db_escape_string($file['name'])."', '".$index_status."')
 				");
 			}
-
-			*/
 
 		}
 
