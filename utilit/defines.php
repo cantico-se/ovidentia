@@ -240,4 +240,5 @@ define("BAB_VAC_ENTRIES_TBL", "bab_vac_entries");
 define("BAB_VAC_ENTRIES_ELEM_TBL", "bab_vac_entries_elem");
 define("BAB_VAC_PLANNING_TBL", "bab_vac_planning");
 define("BAB_VAC_OPTIONS_TBL", "bab_vac_options");
+define("BAB_REGISTRY_TBL", "bab_registry");
 ?>

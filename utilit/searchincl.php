@@ -108,6 +108,10 @@ function bab_indexFiles($arr_files, $object = false)
 	if (!$object && isset($GLOBALS['babAddonFolder']))
 		$object = $GLOBALS['babAddonFolder'];
 
+	// if the index object does not exist, create it :
+	bab_setIndexObject($object, $object, false);
+	
+
 	if (false === $engine || !$object)
 		return false;
 
@@ -117,6 +121,8 @@ function bab_indexFiles($arr_files, $object = false)
 			include_once $GLOBALS['babInstallPath'].'utilit/searchincl.swish.php';
 			break;
 		}
+
+	
 
 	$obj = new bab_indexFilesCls($arr_files, $object);
 	return $obj->indexFiles();
@@ -128,7 +134,7 @@ function bab_indexFiles($arr_files, $object = false)
  * @param string $query1
  * @param string $query2
  * @param 'AND'|'OR'|'NOT' $option
- * @param string $object
+ * @param string $object (if not specified, the name of the addon will be used)
  * @return array
  */
 function bab_searchIndexedFiles($query1, $query2, $option, $object = false)
@@ -164,22 +170,12 @@ function bab_searchIndexedFiles($query1, $query2, $option, $object = false)
  * @param boolean $addon this parameter is not required for addons
  * @return int|false
  */
-function bab_setIndexObject($name, $onload, $object = null, $addon = true) {
+function bab_setIndexObject($object, $name, $onload, $disabled = false) {
 
 	$engine = bab_searchEngineInfos();
 	$db = $GLOBALS['babDB'];
-	
-	if (null === $object && isset($GLOBALS['babAddonFolder']))
-		$object = $GLOBALS['babAddonFolder'];
 
-	if (true === $addon) {
-		$req = "SELECT id FROM ".BAB_ADDONS." WHERE title='".$db->db_escape_string($GLOBALS['babAddonFolder'])."'";
-		list($id_addon) = $db->db_fetch_array($db->db_query($req));
-	} else {
-		$id_addon = 0;
-	}
-
-	if (false === $engine || !$object)
+	if (false === $engine)
 		return false;
 
 	$res = $db->db_query("
@@ -189,7 +185,8 @@ function bab_setIndexObject($name, $onload, $object = null, $addon = true) {
 		FROM 
 			".BAB_INDEX_FILES_TBL." 
 		WHERE 
-			AND name='".$db->db_escape_string($name)."' 
+			 name='".$db->db_escape_string($name)."' 
+			OR object ='".$db->db_escape_string($object)."'
 	");
 	
 
@@ -198,6 +195,7 @@ function bab_setIndexObject($name, $onload, $object = null, $addon = true) {
 		return false;
 
 	$onload = $onload ? 1 : 0;
+	$disabled = $disabled ? 1 : 0;
 
 	switch($engine['name'])
 		{
@@ -241,15 +239,12 @@ function bab_setIndexObject($name, $onload, $object = null, $addon = true) {
 * @param string $object
 * @return boolean
 */
-function bab_removeIndexObject($object = null) {
+function bab_removeIndexObject($object) {
 
 	$engine = bab_searchEngineInfos();
 	$db = &$GLOBALS['babDB'];
 
-	if (null === $object && isset($GLOBALS['babAddonFolder']))
-		$object = $GLOBALS['babAddonFolder'];
-
-	if (false === $engine || null === $object) {
+	if (false === $engine) {
 		return false;
 	}
 	

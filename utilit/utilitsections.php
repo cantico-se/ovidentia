@@ -250,7 +250,7 @@ function babAdminSection($close)
 	$engine = bab_searchEngineInfos();
 
 	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 && false !== $engine && $engine['indexes'] )
-		$this->array_urls[bab_translate("Search indexes")] = $GLOBALS['babUrlScript']."?tg=index";
+		$this->array_urls[bab_translate("Search indexes")] = $GLOBALS['babUrlScript']."?tg=admindex";
 
 	$this->head = bab_translate("Currently you administer ");
 	if( $babBody->currentAdmGroup == 0 )

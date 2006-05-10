@@ -5800,25 +5800,48 @@ if (!bab_isTable(BAB_FORUMSFILES_TBL)) {
 		}
 	}
 
+}
+
 
 if (!bab_isTable(BAB_INDEX_FILES_TBL)) {
 
-		$db->db_query("
-			CREATE TABLE `".BAB_INDEX_FILES_TBL."` (
-			`id` INT UNSIGNED NOT NULL auto_increment,
-			`name` VARCHAR( 255 ) NOT NULL ,
-			`object` VARCHAR( 255 ) NOT NULL ,
-			`id_addon` INT UNSIGNED NOT NULL ,
-			`index_onload` TINYINT( 1 ) UNSIGNED NOT NULL ,
-			`index_disabled` TINYINT( 1 ) UNSIGNED NOT NULL ,
-			PRIMARY KEY ( `id` )
-			)
-		");
+	$db->db_query("
+		CREATE TABLE `".BAB_INDEX_FILES_TBL."` (
+		  `id` int(10) unsigned NOT NULL auto_increment,
+		  `name` varchar(255) NOT NULL default '',
+		  `object` varchar(255) NOT NULL default '',
+		  `index_onload` tinyint(1) unsigned NOT NULL default '0',
+		  `index_disabled` tinyint(1) unsigned NOT NULL default '0',
+		  PRIMARY KEY  (`id`),
+		  UNIQUE KEY `name` (`name`),
+		  UNIQUE KEY `object` (`object`),
+		  KEY `object_2` (`object`)
+		) 
+	");
 
-	}
+}
+
+
+
+if (!bab_isTable(BAB_REGISTRY_TBL)) {
+
+	$db->db_query("
+		CREATE TABLE `".BAB_REGISTRY_TBL."` (
+		  `dirkey` varchar(255) NOT NULL default '',
+		  `value` text NOT NULL,
+		  `value_type` varchar(32) NOT NULL default '',
+		  `create_id_user` int(10) unsigned NOT NULL default '0',
+		  `update_id_user` int(10) unsigned NOT NULL default '0',
+		  `createdate` datetime NOT NULL default '0000-00-00 00:00:00',
+		  `lastupdate` datetime NOT NULL default '0000-00-00 00:00:00',
+		  PRIMARY KEY  (`dirkey`)
+		)
+	");
+
+}
 
 	
-}
+
 
 
 $arr = $db->db_fetch_array($db->db_query("DESCRIBE ".BAB_SITES_TBL." browse_users"));

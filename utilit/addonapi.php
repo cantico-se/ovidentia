@@ -1406,15 +1406,42 @@ function bab_toHtml($str, $option = BAB_HTML_ENTITIES) {
  * @return false|array
  */
 function bab_searchEngineInfos() {
+	include_once $GLOBALS['babInstallPath'].'utilit/indexincl.php';
+	
 	if (isset($GLOBALS['babSearchEngine'])) {
+
+		$obj = bab_searchEngineInfosObj($GLOBALS['babSearchEngine']);
+
 		return array(
-			'name' => $GLOBALS['babSearchEngine'],
-			'description' => '',
-			'types' => array(), // TODO : get types from searchincl.swish.php
-			'indexes' => array()
+			'name'			=> $GLOBALS['babSearchEngine'],
+			'description'	=> $obj->getDescription(),
+		//	'types'			=> $obj->getAvailableMimeTypes(),
+			'indexes'		=> bab_searchEngineIndexes()
 		);
 	}
 	return false;
+}
+
+
+/**
+ * Get the instance for the registry class
+ * 
+ * $instance->changeDirectory($dir)
+ * $instance->setKeyValue($key, $value)
+ * $instance->removeKey($key)
+ * $instance->getValue($key)
+ * $instance->getValueEx($key)
+ *
+ * @see bab_registry
+ */
+function bab_getRegistryInstance() {
+	static $_inst = null;
+	if (null === $_inst) {
+		include_once $GLOBALS['babInstallPath'].'utilit/registry.php';
+		$_inst = new bab_registry();
+	}
+
+	return $_inst;
 }
 
 ?>

@@ -1,0 +1,57 @@
+<!--#begin list -->
+<br />
+<br />
+<form method="post" action="{ babPhpSelf }" name="listform">
+<input type="hidden" name="tg" value="admindex" />
+<input type="hidden" name="action" value="index" />
+
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+	<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+		<table width="100%" border="0" cellspacing="0" cellpadding="3" align="center">
+		<tr class="BabSiteAdminTitleFontBackground"> 
+			<td>{ t_title }</td>
+			<td align="center">{ t_all }</td>
+			<td align="center">{ t_waiting }</td>
+			<td align="center">{ t_onload }</td>
+			<td width="1%">{ t_disabled }</td>
+		</tr>
+		<!--#in getnext --> 
+		<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+			<td>{ title }</td>
+			<td align="center">
+				
+			</td>
+			<td align="center">
+				
+			</td>
+			<td align="center"> 
+				<input type="checkbox" name="onload[]" value="{ id_index }" <!--#if onload --> checked="checked"<!--#endif onload --> />
+			</td>
+			<td align="center"> 
+				<input type="checkbox" name="disabled[]" value="{ id_index }" <!--#if disabled --> checked="checked"<!--#endif disabled --> />
+			</td>
+		</tr>
+		<!--#endin getnext -->
+			<tr class="BabSiteAdminTitleFontBackground"> 
+			<td colspan="3">&nbsp;</td>
+
+			<td align="center"><a href="javascript:onCheckAll('onload', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ t_checkall }" border="0"></a><a href="javascript:onCheckAll('onload', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ t_uncheckall }"  border="0"></a></td>
+
+			<td align="center"><a href="javascript:onCheckAll('disabled', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ t_checkall }" border="0"></a><a href="javascript:onCheckAll('disabled', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ t_uncheckall }"  border="0"></a></td>
+		</tr>
+
+		<tr class="BabSiteAdminTitleFontBackground"> 
+			<td colspan="5">
+				<label for="bab_allowed_ip">{ t_allowed_ip }</label> : <input type="text" id="bab_allowed_ip" name="allowed_ip" value="{ allowed_ip }" /> &nbsp; &nbsp; 
+				<input type="submit" name="submit" value="{ t_update }" />
+			</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+</table>
+
+<br />
+</form>
+<!--#end list -->

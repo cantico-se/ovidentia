@@ -188,6 +188,7 @@ class bab_indexFileCls extends swishCls {
 
 	/**
 	 * @see bab_setIndexObject()
+	 * @return boolean
 	 */
 	function createObject($name, $onload, $id_addon) {
 		
@@ -196,11 +197,33 @@ class bab_indexFileCls extends swishCls {
 
 	/**
 	 * @see bab_removeIndexObject()
+	 * @return boolean
 	 */
 	function removeObject() {
 		return unlink($this->objectIndex);
 	}
 
+}
+
+
+
+class searchEngineInfosObjCls {
+
+	function getDescription() {
+		return 'Swish-e';
+	}
+
+	function getAvailableMimeTypes() {
+		return array(
+				'text/plain',
+				'application/pdf',
+				'application/vnd.sun.xml.writer',
+				'text/xml',
+				'text/html',
+				'application/vnd.ms-excel',
+				'application/msword'
+			);
+	}
 }
 
 
