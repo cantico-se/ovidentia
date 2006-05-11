@@ -64,6 +64,8 @@ class swishCls
 
 	function execCmd($cmd)
 	{
+	bab_debug($cmd);
+
 	$handle = popen($cmd, 'r');
 	if (false === $handle)
 		return false;
@@ -107,7 +109,7 @@ class bab_indexFilesCls extends swishCls
 			return false;
 			}
 		
-		$this->objectIndex = $indexFile ? $this->mergeIndex : $this->mainIndex;
+		$this->objectIndex = $indexFile;
 
 		$str = bab_printTemplate($this, 'swish.config');
 
@@ -127,16 +129,43 @@ class bab_indexFilesCls extends swishCls
 			return $str;
 		}
 
+	
+		/**
+		 * Add file into index
+		 * @return boolean
+		 */
 		function addFilesToIndex() {
+
+			if (!is_file($this->mainIndex)) {
+				return $this->indexFiles();
+			}
 			
 			$this->setTempConfigFile($this->mergeIndex);
-			$result = $this->execCmd($this->swishCmd.' -c '.escapeshellarg($this->tmpCfgFile));
+			$this->execCmd($this->swishCmd.' -c '.escapeshellarg($this->tmpCfgFile));
+
+			
+			if (is_file($this->tempIndex)) {
+				unlink($this->tempIndex);
+				unlink($this->tempIndex.'.prop');
+			}
 			
 			$this->execCmd($this->swishCmd.' -M '.escapeshellarg($this->mainIndex).' '.escapeshellarg($this->mergeIndex).' '.escapeshellarg($this->tempIndex));
-			unlink($this->mainIndex);
-			unlink($this->mergeIndex);
+
+			
 			unlink($this->tmpCfgFile);
-			rename($this->tempIndex, $this->mainIndex);
+
+			unlink($this->mergeIndex);
+			unlink($this->mergeIndex.'.prop');
+			
+			if (is_file($this->tempIndex)) {
+				unlink($this->mainIndex);
+				unlink($this->mainIndex.'.prop');
+
+				rename($this->tempIndex, $this->mainIndex);
+				rename($this->tempIndex.'.prop', $this->mainIndex.'.prop');
+
+				return true;
+			}
 		}
 	}
 

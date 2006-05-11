@@ -43,15 +43,14 @@ class bab_indexObject {
 
 		$arr = bab_searchEngineInfos();
 
-		if ($arr) {
-			$this->enabled = true;
-			$this->engineName = $arr['name'];
+		$this->disabled = $arr['indexes'][$object]['index_disabled'];
+		$this->onload = $arr['indexes'][$object]['index_onload'];
+		$this->engineName = $arr['name'];
 
-			$this->object = $object;
-			return true;
-		} 
-		$this->enabled = false;
-		return false;
+		$this->object = $object;
+
+
+
 	}
 
 
@@ -63,22 +62,10 @@ class bab_indexObject {
 	 */
 	function get_onLoadStatus() {
 
-		if (false === $this->enabled) {
+		if ($this->disabled) {
 			return BAB_INDEX_STATUS_NOINDEX;
 		}
-
-		$db = $GLOBALS['babDB'];
-		list($index_onload) = $db->db_fetch_array($db->db_query("
-		
-			SELECT index_onload 
-				FROM ".BAB_INDEX_FILES_TBL." 
-			WHERE 
-				object='".$this->object."' 
-				AND index_disabled='0' 
-				AND index_onload='1'
-		"));
-
-		if ($index_onload) {
+		if ($this->onload) {
 			return BAB_INDEX_STATUS_INDEXED;
 		} else {
 			return BAB_INDEX_STATUS_TOINDEX;
@@ -114,12 +101,12 @@ class bab_indexObject {
 	}
 
 	/**
-	 * Add file into current index for the object
+	 * Add files into current index for the object
 	 */
-	function addFileToIndex($file) {
+	function addFileToIndex($files) {
 
-		if (false === $this->enabled) {
-			return BAB_INDEX_STATUS_NOINDEX;
+		if ($this->disabled) {
+			return false;
 		}
 
 		switch($this->engineName) {
@@ -128,7 +115,7 @@ class bab_indexObject {
 				break;
 		}
 
-		$obj = new bab_indexFilesCls( array($file), $object);
+		$obj = new bab_indexFilesCls( $files, $this->object);
 		return $obj->addFilesToIndex();
 	}
 }
@@ -142,13 +129,13 @@ class bab_indexObject {
  * @param string $object if not given, the current addon name will be used
  * @return int
  */
-function bab_indexOnLoadFile($file, $object) {
+function bab_indexOnLoadFiles($files, $object) {
 	
 	$obj = new bab_indexObject($object);
 	$status = $obj->get_onLoadStatus();
 
 	if (BAB_INDEX_STATUS_INDEXED === $status) {
-		if (false !== $obj->addFileToIndex($file)) {
+		if (false !== $obj->addFileToIndex($files)) {
 			return BAB_INDEX_STATUS_INDEXED;
 		} else {
 			return BAB_INDEX_STATUS_NOINDEX;
@@ -193,6 +180,24 @@ function bab_searchEngineInfosObj($engine) {
 		}
 
 	return new searchEngineInfosObjCls();
+}
+
+/**
+ * Internationalized string
+ * @return string
+ */
+function bab_getIndexStatusLabel($status) {
+
+	switch ($status) {
+		case BAB_INDEX_STATUS_NOINDEX:
+			return bab_translate("No indexation");
+
+		case BAB_INDEX_STATUS_INDEXED:
+			return bab_translate("Indexed");
+
+		case BAB_INDEX_STATUS_TOINDEX:
+			return bab_translate("Wait indexation");
+	}
 }
 
 ?>

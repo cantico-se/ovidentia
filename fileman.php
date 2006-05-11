@@ -1084,6 +1084,9 @@ function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywor
 		$babBody->msgerror = bab_translate("The file could not be uploaded");
 		return false;
 		}
+
+	include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
+	$index_status = bab_indexOnLoadFiles(array($pathx.$osfname), 'bab_files');
 	
 	if( empty($BAB_SESS_USERID))
 		$idcreator = 0;
@@ -1116,14 +1119,14 @@ function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywor
 
 	if( $bexist)
 		{
-		$req = "update ".BAB_FILES_TBL." set description='".$description."', keywords='".$keywords."', readonly='".$readonly."', confirmed='".$confirmed."', modified=now(), hits='0', modifiedby='".$idcreator."', state='' where id='".$arr['id']."'";
+		$req = "update ".BAB_FILES_TBL." set description='".$description."', keywords='".$keywords."', readonly='".$readonly."', confirmed='".$confirmed."', modified=now(), hits='0', modifiedby='".$idcreator."', state='', index_status='".$index_status."' where id='".$arr['id']."'";
 		$db->db_query($req);
 		$idf = $arr['id'];
 		}
 	else
 		{
-		$req = "insert into ".BAB_FILES_TBL." (name, description, keywords, path, id_owner, bgroup, link, readonly, state, created, author, modified, modifiedby, confirmed) values ";
-		$req .= "('" .$name. "', '" . $description. "', '" . $keywords. "', '" .addslashes($path). "', '" . $id. "', '" . $gr. "', '0', '" . $readonly. "', '', now(), '" . $idcreator. "', now(), '" . $idcreator. "', '". $confirmed."')";
+		$req = "insert into ".BAB_FILES_TBL." (name, description, keywords, path, id_owner, bgroup, link, readonly, state, created, author, modified, modifiedby, confirmed, index_status) values ";
+		$req .= "('" .$name. "', '" . $description. "', '" . $keywords. "', '" .addslashes($path). "', '" . $id. "', '" . $gr. "', '0', '" . $readonly. "', '', now(), '" . $idcreator. "', now(), '" . $idcreator. "', '". $confirmed."', '".$index_status."')";
 		$db->db_query($req);
 		$idf = $db->db_insert_id(); 
 		}
@@ -2223,52 +2226,38 @@ if((!isset($babBody->aclfm['id']) || count($babBody->aclfm['id']) == 0) && !$bab
 	return;
 }
 
-if(!isset($idx))
-	{
-	$idx = "list";
-	}
 
-if(!isset($path))
+$idx = isset($_REQUEST['idx']) ? $_REQUEST['idx'] : "list";
+
+if(!isset($_REQUEST['path']))
 	{
 	$path = "";
 	}
 else
 	{
-	if( strstr($path, ".."))
+	if( strstr($_REQUEST['path'], ".."))
 		{
 		$babBody->msgerror = bab_translate("Access denied");
 		return;
 		}
 
 	if( bab_isMagicQuotesGpcOn())
-		$path = stripslashes($path);
+		$path = stripslashes($_REQUEST['path']);
 
-	$path = urldecode($path);
+	$path = urldecode($_REQUEST['path']);
 	}
 
 
 if( !empty($BAB_SESS_USERID) && $babBody->ustorage)
 	{
-	if(!isset($id))
-		{
-		$id = $BAB_SESS_USERID;
-		}
-	if(!isset($gr))
-		{
-		$gr = "N";
-		}
+	$id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $BAB_SESS_USERID;
 	}
 else
 	{
-	if(!isset($id))
-		{
-		$id = 0;
-		}
-	if(!isset($gr))
-		{
-		$gr = "N";
-		}
+	$id = isset($_REQUEST['id']) ? $_REQUEST['id'] : 0;
 	}
+
+$gr = isset($_REQUEST['gr']) ? $_REQUEST['gr'] :  "N";
 
 
 if( $gr == "N" && !empty($BAB_SESS_USERID) && $BAB_SESS_USERID == $id )
@@ -2304,14 +2293,25 @@ if( $gr == "Y")
 		}
 	}
 
-if( isset($addf))
-	{
-	if( $addf == "add" )
+if( isset($_POST['addf'])) {
+	if( $_POST['addf'] == "add" )
 		{
-		if( !saveFile($id, $gr, $path, $uploadf_name, $uploadf_size,$uploadf , $description, $keywords, $readonly))
+		if( !saveFile(
+				$id, 
+				$gr, 
+				$path, 
+				$_FILES['uploadf']['name'], 
+				$_FILES['uploadf']['size'],
+				$_FILES['uploadf']['tmp_name'] , 
+				$_POST['description'], 
+				$_POST['keywords'], 
+				$_POST['readonly'])
+			) {
+
 			$idx = "add";
 		}
 	}
+}
 
 if( isset($updf) && $updf == "upd")
 	{

@@ -275,6 +275,8 @@ function bab_uploadPostFiles($postid) {
 		}
 
 	include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
+	$postfiles = array();
+
 
 	foreach ($_FILES as $file) {
 		if( bab_isMagicQuotesGpcOn())
@@ -288,58 +290,101 @@ function bab_uploadPostFiles($postid) {
 
 		$dest = $baseurl.$postid.','.$file['name'];
 		
+
 		if (move_uploaded_file($file['tmp_name'], $dest)) {
-		
-
-			
-			$res = $db->db_query("SELECT id, index_status FROM ".BAB_FORUMSFILES_TBL." WHERE id_post='".$postid."' AND name='".$db->db_escape_string($file['name'])."'");
-
-			$index_status = bab_indexOnLoadFile($dest, 'forumfiles');
-			
-			if ($res && $arr = $db->db_fetch_assoc($res)) {
-				// old file overwrited
-				
-				if ($index_status == $arr['id']) {
-					$db->db_query("UPDATE ".BAB_FORUMSFILES_TBL." SET index_status='".$index_status."' WHERE id='".$arr['id']."'");
-				}
-				
-			} else {
-				// new file
-
-				$db->db_query("INSERT INTO ".BAB_FORUMSFILES_TBL." 
-						(id_post, name, index_status) 
-					VALUES 
-						('".$postid."', '".$db->db_escape_string($file['name'])."', '".$index_status."')
-				");
-			}
-
+			$postfiles[$file['name']] = $dest;	
 		}
 
 	}
 
+	bab_debug($postfiles);
+	$index_status = bab_indexOnLoadFiles($postfiles, 'bab_forumsfiles');
+
+
+	foreach($postfiles as $name => $dest) {
+	
+
+		$res = $db->db_query("SELECT id, index_status FROM ".BAB_FORUMSFILES_TBL." WHERE id_post='".$postid."' AND name='".$db->db_escape_string($name)."'");
+
+
+		if ($res && $arr = $db->db_fetch_assoc($res)) {
+			// old file overwrited
+			
+			if ($index_status != $arr['index_status']) {
+				$db->db_query("UPDATE ".BAB_FORUMSFILES_TBL." SET index_status='".$index_status."' WHERE id='".$arr['id']."'");
+			}
+			
+		} else {
+			// new file
+			$db->db_query("INSERT INTO ".BAB_FORUMSFILES_TBL." 
+					(id_post, name, index_status) 
+				VALUES 
+					('".$postid."', '".$db->db_escape_string($name)."', '".$index_status."')
+			");
+		}
+	}	
+
+
+
 	return true;
 }
 
+/**
+ * Get files associated with a forum post
+ * clean files if not in databases
+ * clean database if file not exists
+ * @param integer $forum
+ * @param integer $postid
+ * @return array
+ */
 function bab_getPostFiles($forum,$postid)
 	{
+	include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
+	$filedirectory = array();
 	$out = array();
 	$baseurl = $GLOBALS['babUploadPath'].'/forums/';
-	if (is_dir($baseurl) && $h = opendir($baseurl))
-		{
-		while (false !== ($file = readdir($h))) 
-			{
-			if (substr($file,0,strpos($file,',')) == $postid)
-				{
+	$db  =&$GLOBALS['babDB'];
+
+
+	if (is_dir($baseurl) && $h = opendir($baseurl)) {
+		while (false !== ($file = readdir($h))) {
+			if (substr($file,0,strpos($file,',')) == $postid) {
 				$name = substr(strstr($file,','),1);
-				$out[] = array(
-						'url' => $GLOBALS['babUrlScript']."?tg=posts&idx=dlfile&forum=".$forum."&post=".$postid."&file=".urlencode($name),
-						'path' => $baseurl.$file,
-						'name' => $name,
-						'size' => round(filesize($baseurl.$file)/1024).' '.bab_translate('Kb')
-						);
-				}
+				$filedirectory[$name] = $baseurl.$file;
 			}
 		}
+	}
+
+
+	$res = $db->db_query("SELECT * FROM ".BAB_FORUMSFILES_TBL." WHERE id_post='".$postid."'");
+	while ($arr = $db->db_fetch_assoc($res)) {
+
+		if (isset($filedirectory[$arr['name']])) {
+			$path = $filedirectory[$arr['name']];
+
+			$out[] = array(
+						'url' => $GLOBALS['babUrlScript']."?tg=posts&idx=dlfile&forum=".$forum."&post=".$postid."&file=".urlencode($arr['name']),
+						'path' =>  $path,
+						'name' => $arr['name'],
+						'size' => round(filesize($path)/1024).' '.bab_translate('Kb'),
+						'index_status' => $arr['index_status'],
+						'index_label' => bab_getIndexStatusLabel($arr['index_status'])
+						);
+
+			unset($filedirectory[$arr['name']]);
+
+		} else {
+			$db->db_query("DELETE FROM ".BAB_FORUMSFILES_TBL." WHERE id='".$arr['id']."'");
+		}
+	}
+
+
+	if (0 < count($filedirectory)) {
+		foreach($filedirectory as $path) {
+			unlink($path);
+		}
+	}
+	
 	return $out;
 	}
 

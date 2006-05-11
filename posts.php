@@ -144,6 +144,7 @@ function listPosts($forum, $thread, $post)
 					}
 
 				$this->files = bab_getPostFiles($this->forum, $this->postid);
+				$this->ismanager = bab_isAccessValid(BAB_FORUMSMAN_GROUPS_TBL, $forum );
 				}
 
 
@@ -426,6 +427,7 @@ function listPostsFlat($forum, $thread, $open)
 				$arr = $this->db->db_fetch_array($this->res);
 				$GLOBALS['babWebStat']->addForumPost($arr['id']);
 				$this->files = bab_getPostFiles($this->forum,$arr['id']);
+				$this->ismanager = bab_isAccessValid(BAB_FORUMSMAN_GROUPS_TBL, $this->forum);
 				$this->what = $arr['confirmed'];
 				$this->postdate = bab_strftime(bab_mktime($arr['date']));
 				$this->postauthor = $arr['author'];
@@ -569,6 +571,8 @@ function newReply($forum, $thread, $post)
 				$this->noteforum = bab_translate("Note: Posts are moderate and consequently your post will not be visible immediately");
 			else
 				$this->noteforum = "";
+
+			$this->ismanager = bab_isAccessValid(BAB_FORUMSMAN_GROUPS_TBL, $forum );
 
 			$this->files = bab_getPostFiles($this->forum,$post);
 			$this->allow_post_files = bab_isAccessValid(BAB_FORUMSFILES_GROUPS_TBL,$forum);
@@ -786,8 +790,8 @@ function saveReply($forum, $thread, $post, $name, $subject, $message)
 		notifyForumGroups($forum, $subject, $name, $arr['name'],$tables, $url);
 		}
 	if (!isset($flat)) $flat = '';
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$forum."&thread=".$thread."&post=".$post."&flat=".$flat);
-	exit;
+	//Header("Location: ". $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$forum."&thread=".$thread."&post=".$post."&flat=".$flat);
+	//exit;
 	}
 
 function confirm($forum, $thread, $post)

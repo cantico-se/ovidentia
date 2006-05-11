@@ -22,13 +22,13 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-
+include_once $GLOBALS['babInstallPath'].'utilit/indexincl.php';
 
 /**
  * Launch index jobs as automated task (cronjob)
  * @param string $idx
  */
-function bab_indexJobs($idx) {
+function bab_indexJobs($idx, $object) {
 
 	$reg = bab_getRegistryInstance();
 
@@ -40,8 +40,24 @@ function bab_indexJobs($idx) {
 
 	if ($allowed_ip == $_SERVER['REMOTE_ADDR']) {
 
+		switch($object) {
+			
+			case 'bab_files':
 
-		
+				break;
+
+			case 'bab_art_files':
+
+				break;
+
+			case 'bab_forumsfiles':
+
+				break;
+
+			default:	// Addon
+				bab_callAddonsFunction('onIndexObject', $object, $idx);
+				break;
+		}
 		
 	} else {
 		$GLOBALS['babBody']->msgerror = sprintf(bab_translate("Access denied, your current IP address (%s) is not allowed"),$_SERVER['REMOTE_ADDR']);
@@ -51,7 +67,7 @@ function bab_indexJobs($idx) {
 
 if (isset($_GET['idx'])) {
 	bab_cleanGpc();
-	bab_indexJobs($_GET['idx']);
+	bab_indexJobs($_GET['idx'], $_GET['obj']);
 }
 
 ?>

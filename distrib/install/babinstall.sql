@@ -943,8 +943,10 @@ CREATE TABLE bab_files (
   ver_major smallint(5) unsigned NOT NULL default '1',
   ver_minor smallint(5) unsigned NOT NULL default '0',
   ver_comment tinytext NOT NULL,
+  index_status tinyint(1) unsigned NOT NULL default '0',
   PRIMARY KEY  (id),
   KEY id_owner (id_owner),
+  KEY index_status (index_status),
   KEY name (name)
 );
 

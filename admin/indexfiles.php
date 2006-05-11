@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-
+include_once $GLOBALS['babInstallPath'].'utilit/indexincl.php';
 
 
 
@@ -48,6 +48,9 @@ function listIndexFiles()
 			$this->t_allowed_ip = bab_translate("Allowed IP address");
 
 			$this->db = &$GLOBALS['babDB'];
+
+			$this->all = BAB_INDEX_ALL;
+			$this->waiting = BAB_INDEX_WAITING;
 
 			$reg = bab_getRegistryInstance();
 			$reg->changeDirectory('/bab/indexfiles/');
@@ -90,6 +93,7 @@ function listIndexFiles()
 				$this->title		= bab_toHtml($arr['name']);
 				$this->onload		= 1 == $arr['index_onload'];
 				$this->disabled		= 1 == $arr['index_disabled'];
+				$this->object		= bab_toHtml(urlencode($arr['object']));
 
 				return true;
 			}
