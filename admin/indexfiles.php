@@ -45,7 +45,7 @@ function listIndexFiles()
 			$this->t_onload		= bab_translate("Index on load");
 			$this->t_disabled	= bab_translate("Disabled");
 			$this->t_update		= bab_translate("Update");
-			$this->t_allowed_ip = bab_translate("Allowed IP adress");
+			$this->t_allowed_ip = bab_translate("Allowed IP address");
 
 			$this->db = &$GLOBALS['babDB'];
 

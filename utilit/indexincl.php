@@ -167,11 +167,12 @@ function bab_searchEngineIndexes() {
 	$db = &$GLOBALS['babDB'];
 	$return = array();
 
-	$res = $db->db_query("SELECT * FROM ".BAB_INDEX_FILES_TBL." WHERE index_disabled='0'");
+	$res = $db->db_query("SELECT * FROM ".BAB_INDEX_FILES_TBL."");
 	while ($arr = $db->db_fetch_assoc($res)) {
 		$return[$arr['object']] = array(
 				'name' => $arr['name'],
-				'index_onload' => 1 == $arr['index_onload'] 
+				'index_onload' => 1 == $arr['index_onload'], 
+				'index_disabled' => 1 == $arr['index_disabled']
 			);
 	}
 

@@ -44,7 +44,7 @@ function bab_indexJobs($idx) {
 		
 		
 	} else {
-		$GLOBALS['babBody']->msgerror = bab_translate("Access denied");
+		$GLOBALS['babBody']->msgerror = sprintf(bab_translate("Access denied, your current IP address (%s) is not allowed"),$_SERVER['REMOTE_ADDR']);
 	}
 }
 

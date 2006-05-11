@@ -20,10 +20,10 @@
 		<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
 			<td>{ title }</td>
 			<td align="center">
-				
+				<a href="{ babUrlScript }?tg=usrindex&amp;idx=all"><img src="{ babSkinPath }images/Puces/check-orange.gif" alt="{ t_waiting }"  border="0" /></a>
 			</td>
 			<td align="center">
-				
+				<a href="{ babUrlScript }?tg=usrindex&amp;idx=waiting"><img src="{ babSkinPath }images/Puces/check-green.gif" alt="{ t_onload }"  border="0" /></a>
 			</td>
 			<td align="center"> 
 				<input type="checkbox" name="onload[]" value="{ id_index }" <!--#if onload --> checked="checked"<!--#endif onload --> />
@@ -34,23 +34,26 @@
 		</tr>
 		<!--#endin getnext -->
 			<tr class="BabSiteAdminTitleFontBackground"> 
-			<td colspan="3">&nbsp;</td>
-
-			<td align="center"><a href="javascript:onCheckAll('onload', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ t_checkall }" border="0"></a><a href="javascript:onCheckAll('onload', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ t_uncheckall }"  border="0"></a></td>
-
-			<td align="center"><a href="javascript:onCheckAll('disabled', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ t_checkall }" border="0"></a><a href="javascript:onCheckAll('disabled', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ t_uncheckall }"  border="0"></a></td>
-		</tr>
-
-		<tr class="BabSiteAdminTitleFontBackground"> 
-			<td colspan="5">
-				<label for="bab_allowed_ip">{ t_allowed_ip }</label> : <input type="text" id="bab_allowed_ip" name="allowed_ip" value="{ allowed_ip }" /> &nbsp; &nbsp; 
-				<input type="submit" name="submit" value="{ t_update }" />
+			<td colspan="3">
+			
+			<label for="bab_allowed_ip">{ t_allowed_ip }</label> : <input type="text" id="bab_allowed_ip" name="allowed_ip" value="{ allowed_ip }" size="15" />
 			</td>
+
+			<td align="center"><a href="javascript:onCheckAll('onload', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ t_checkall }" border="0"></a><a href="javascript:onCheckAll('onload', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ t_uncheckall }"  border="0" /></a></td>
+
+			<td align="center"><a href="javascript:onCheckAll('disabled', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ t_checkall }" border="0"></a><a href="javascript:onCheckAll('disabled', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ t_uncheckall }"  border="0" /></a></td>
 		</tr>
+
 		</table>
 	</td>
 </tr>
 </table>
+
+<br />
+
+<div align="center">
+	<input type="submit" name="submit" value="{ t_update }" />
+</div>
 
 <br />
 </form>
