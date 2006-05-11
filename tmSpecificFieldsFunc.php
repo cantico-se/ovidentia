@@ -38,7 +38,6 @@ function displaySpecificFieldList()
 	if(0 != $iIdProjectSpace)
 	{
 		$iIdProject = $oTmCtx->getIdProject();
-		$iIdField = (int) tskmgr_getVariable('iIdField', 0);
 		
 		class BAB_List extends BAB_BaseFormProcessing
 		{
@@ -122,8 +121,7 @@ function displaySpecificFieldList()
 				'idx' => BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_FORM,
 				'mnuStr' => bab_translate("Add specific field"),
 				'url' => $GLOBALS['babUrlScript'] . '?tg=admTskMgr&iIdProjectSpace=' . $iIdProjectSpace . 
-					'&iIdProject=' . $iIdProject .'&iIdField=' . $iIdField . '&idx=' . 
-					BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_FORM)
+					'&iIdProject=' . $iIdProject .'&idx=' . BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_FORM)
 			);
 		add_item_menu($itemMenu);
 		$babBody->title = bab_translate("Specific field list");
@@ -228,9 +226,9 @@ function displayDeleteSpecificFieldForm()
 {
 	global $babBody;
 
-	$aDeletableField = tskmgr_getVariable('aDeletableField', array());
+	$aDeletableObjects = tskmgr_getVariable('aDeletableObjects', array());
 
-	$sDeletableField = '\'' . implode('\',\'', array_unique($aDeletableField)) . '\'';
+	$sDeletableField = '\'' . implode('\',\'', array_unique($aDeletableObjects)) . '\'';
 
 //	bab_debug('sDeletableField ==> ' . $sDeletableField);
 	
@@ -275,7 +273,16 @@ function displayDeleteSpecificFieldForm()
 			$bf->set_data('iIdObject', implode(',', array_unique($items)));
 			$bf->set_data('tg', 'admTskMgr');
 	
-			$bf->set_caption('warning', bab_translate("This action will delete the specific field and all references"));
+			if(count($items) > 0)
+			{
+				$bf->set_caption('warning', bab_translate("This action will delete those specific fields and all references"));
+			}
+			else
+			{
+				$bf->set_caption('warning', bab_translate("This action will delete the specific field and all references"));
+			}
+
+				
 			$bf->set_caption('message', bab_translate("Continue ?"));
 			$bf->set_caption('title', $title);
 			$bf->set_caption('yes', bab_translate("Yes"));
@@ -469,7 +476,9 @@ function processSpecificFieldBaseClass($iIdProjectSpace, $iIdProject, $iFieldTyp
 	{
 		$iIdField = (int) tskmgr_getVariable('iIdField', 0);
 		
-		$isValid = isSpecificFieldNameValid($iIdField, $sFieldName, $iIdProjectSpace, $iIdProject);
+		require_once($GLOBALS['babInstallPath'] . 'utilit/tmToolsIncl.php');
+		
+		$isValid = isNameUsedInProjectAndProjectSpace(BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL, $iIdProjectSpace, $iIdProject, $iIdField, $sFieldName);
 		$sFieldName = mysql_escape_string($sFieldName);
 		
 		if($isValid)
@@ -511,76 +520,16 @@ function processSpecificFieldBaseClass($iIdProjectSpace, $iIdProject, $iFieldTyp
 	{
 		$GLOBALS['babBody']->msgerror = bab_translate("The field name must not be blank");
 		$_POST['idx'] = BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_FORM;
+		unset($_POST['iIdField']);
 		return false;
 	}
 }
 
 
-function isSpecificFieldNameValid($iIdField, $sFieldName, $iIdProjectSpace, $iIdProject)
-{
-	$sFieldName = mysql_escape_string(str_replace('\\', '\\\\', $sFieldName));
-	
-	$bIsDefined = isSpecificFieldDefined($iIdField, $sFieldName, $iIdProjectSpace);
-	
-	if(0 != $iIdProject && false == $bIsDefined)
-	{
-		$sIdField = '';
-		if(0 != $iIdField)
-		{
-			$sIdField = ' AND id <> \'' . $iIdField . '\'';
-		}
-	
-		$query = 
-			'SELECT ' . 
-				'id, ' .
-				'name ' .
-			'FROM ' . 
-				BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' ' .
-			'WHERE ' . 
-				'idProjectSpace = \'' . $iIdProjectSpace . '\' AND ' .
-				'name LIKE \'' . $sFieldName . '\' AND ' .
-				'idProject = \'' . $iIdProject . '\'' .
-				$sIdField;
-			
-		//bab_debug($query);
-		
-		$db	= & $GLOBALS['babDB'];
-		
-		$result = $db->db_query($query);
-		$bIsDefined = (false != $result && 0 == $db->db_num_rows($result));
-	}
-	return $bIsDefined;
-}
-
-function isSpecificFieldDefined($iIdField, $sFieldName, $iIdProjectSpace)
-{
-	$sIdField = '';
-	if(0 != $iIdField)
-	{
-		$sIdField = ' AND id <> \'' . $iIdField . '\'';
-	}
-
-	$query = 
-		'SELECT ' . 
-			'id, ' .
-			'name ' .
-		'FROM ' . 
-			BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' ' .
-		'WHERE ' . 
-			'idProjectSpace = \'' . $iIdProjectSpace . '\' AND ' .
-			'name LIKE \'' . $sFieldName . '\'' .
-			$sIdField;
-		
-	//bab_debug($query);
-	
-	$db	= & $GLOBALS['babDB'];
-	
-	$result = $db->db_query($query);
-	return (false != $result && 0 == $db->db_num_rows($result));
-}
-
 function deleteSpecificField()
 {
+	bab_debug('deleteSpecificField ==> il manque les babIsAccessValid');
+	
 	$sDeletableField = trim(tskmgr_getVariable('sDeletableField', ''));
 	
 	$aIdFldToDelete = explode(',', $sDeletableField);

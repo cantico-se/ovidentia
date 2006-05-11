@@ -6051,5 +6051,193 @@ function upgradeXXXtoYYY()
 			return $res;
 		}
 	}
+	
+	
+	
+	
+	
+	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL . '\''));
+	if($arr[0] != BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL)
+	{
+		$res = $db->db_query("
+			CREATE TABLE `" . BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL . "` (
+				`id` int( 11 ) unsigned NOT NULL AUTO_INCREMENT ,
+				`id_object` int( 11 ) unsigned NOT NULL default '0',
+				`id_group` int( 11 ) unsigned NOT NULL default '0',
+				PRIMARY KEY ( `id` ) ,
+				KEY `id_object` ( `id_object` ) ,
+				KEY `id_group` ( `id_group` )) TYPE=MyISAM
+		");
+		
+		if(false == $res)
+		{
+			return $res;
+		}
+	}
+	
+	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_PROJECTS_SUPERVISORS_GROUPS_TBL . '\''));
+	if($arr[0] != BAB_TSKMGR_PROJECTS_SUPERVISORS_GROUPS_TBL)
+	{
+		$res = $db->db_query("
+			CREATE TABLE `" . BAB_TSKMGR_PROJECTS_SUPERVISORS_GROUPS_TBL . "` (
+				`id` int( 11 ) unsigned NOT NULL AUTO_INCREMENT ,
+				`id_object` int( 11 ) unsigned NOT NULL default '0',
+				`id_group` int( 11 ) unsigned NOT NULL default '0',
+				PRIMARY KEY ( `id` ) ,
+				KEY `id_object` ( `id_object` ) ,
+				KEY `id_group` ( `id_group` )) TYPE=MyISAM
+		");
+		
+		if(false == $res)
+		{
+			return $res;
+		}
+	}
+	
+	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_PROJECTS_VISUALIZERS_GROUPS_TBL . '\''));
+	if($arr[0] != BAB_TSKMGR_PROJECTS_VISUALIZERS_GROUPS_TBL)
+	{
+		$res = $db->db_query("
+			CREATE TABLE `" . BAB_TSKMGR_PROJECTS_VISUALIZERS_GROUPS_TBL . "` (
+				`id` int( 11 ) unsigned NOT NULL AUTO_INCREMENT ,
+				`id_object` int( 11 ) unsigned NOT NULL default '0',
+				`id_group` int( 11 ) unsigned NOT NULL default '0',
+				PRIMARY KEY ( `id` ) ,
+				KEY `id_object` ( `id_object` ) ,
+				KEY `id_group` ( `id_group` )) TYPE=MyISAM
+		");
+		
+		if(false == $res)
+		{
+			return $res;
+		}
+	}
+	
+	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_PROJECTS_RESPONSIBLE_GROUPS_TBL . '\''));
+	if($arr[0] != BAB_TSKMGR_PROJECTS_RESPONSIBLE_GROUPS_TBL)
+	{
+		$res = $db->db_query("
+			CREATE TABLE `" . BAB_TSKMGR_PROJECTS_RESPONSIBLE_GROUPS_TBL . "` (
+				`id` int( 11 ) unsigned NOT NULL AUTO_INCREMENT ,
+				`id_object` int( 11 ) unsigned NOT NULL default '0',
+				`id_group` int( 11 ) unsigned NOT NULL default '0',
+				PRIMARY KEY ( `id` ) ,
+				KEY `id_object` ( `id_object` ) ,
+				KEY `id_group` ( `id_group` )) TYPE=MyISAM
+		");
+		
+		if(false == $res)
+		{
+			return $res;
+		}
+	}
+	
+	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_PROJECTS_CONFIGURATION_TBL . '\''));
+	if($arr[0] != BAB_TSKMGR_PROJECTS_CONFIGURATION_TBL)
+	{
+		$res = $db->db_query("
+			CREATE TABLE `" . BAB_TSKMGR_PROJECTS_CONFIGURATION_TBL . "` (
+				`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+				`idProject` INTEGER UNSIGNED NOT NULL default '0',
+				`tskUpdateByMgr` TINYINT UNSIGNED NOT NULL default '1',
+				`endTaskReminder` TINYINT UNSIGNED NOT NULL default '5',
+				`tasksNumerotation` TINYINT UNSIGNED NOT NULL default '1',
+				`emailNotice` TINYINT UNSIGNED NOT NULL default '1',
+				`faqUrl` MEDIUMTEXT NOT NULL default '',
+				PRIMARY KEY(`id`, `idProject`),
+				INDEX `idProject`(`idProject`)) TYPE=MyISAM
+		");
+		
+		if(false == $res)
+		{
+			return $res;
+		}
+	}
+	
+	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_PROJECTS_TBL . '\''));
+	if($arr[0] != BAB_TSKMGR_PROJECTS_TBL)
+	{
+		$res = $db->db_query("
+			CREATE TABLE `" . BAB_TSKMGR_PROJECTS_TBL . "` (
+				`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+				`idProjectSpace` INTEGER UNSIGNED NOT NULL default '0',
+				`name` VARCHAR(255) NOT NULL default '',
+				`description` TEXT NOT NULL default '',
+				`created` DATETIME NOT NULL default '0000-00-00 00:00:00',
+				`idUserCreated` INTEGER UNSIGNED NOT NULL default '0',
+				`modified` DATETIME NOT NULL default '0000-00-00 00:00:00',
+				`idUserModified` INTEGER UNSIGNED NOT NULL default '0',
+				`isLocked` TINYINT UNSIGNED NOT NULL default '0',
+				`state` TINYINT UNSIGNED NOT NULL default '0',
+				PRIMARY KEY(`id`),
+				INDEX `idProjectSpace`(`idProjectSpace`),
+				INDEX `isLocked`(`isLocked`),
+				INDEX `state`(`state`)
+				) TYPE=MyISAM
+		");
+		
+		if(false == $res)
+		{
+			return $res;
+		}
+	}
+	
+	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_PROJECTS_COMMENTS_TBL . '\''));
+	if($arr[0] != BAB_TSKMGR_PROJECTS_COMMENTS_TBL)
+	{
+		$res = $db->db_query("
+			CREATE TABLE `" . BAB_TSKMGR_PROJECTS_COMMENTS_TBL . "` (
+				`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+				`idProject` INTEGER UNSIGNED NOT NULL default '0',
+				`commentary` TEXT NOT NULL default '',
+				`created` DATETIME NOT NULL default '0000-00-00 00:00:00',
+				`idUserCreated` INTEGER UNSIGNED NOT NULL default '0',
+				`modified` DATETIME NOT NULL default '0000-00-00 00:00:00',
+				`idUserModified` INTEGER UNSIGNED NOT NULL default '0',
+				PRIMARY KEY(`id`),
+				INDEX `idProject`(`idProject`)
+				) TYPE=MyISAM
+		");
+		
+		if(false == $res)
+		{
+			return $res;
+		}
+	}
+	
+	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_PROJECTS_REVISIONS_TBL . '\''));
+	if($arr[0] != BAB_TSKMGR_PROJECTS_REVISIONS_TBL)
+	{
+		$res = $db->db_query("
+			CREATE TABLE `" . BAB_TSKMGR_PROJECTS_REVISIONS_TBL . "` (
+				`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+				`idProject` INTEGER UNSIGNED NOT NULL default '0',
+				`idProjectComment` INTEGER UNSIGNED NOT NULL default '0',
+				`majorVersion` INTEGER UNSIGNED NOT NULL default '0',
+				`minorVersion` INTEGER UNSIGNED NOT NULL default '0',
+				PRIMARY KEY(`id`),
+				INDEX `idProject`(`idProject`),
+				INDEX `idProjectComment`(`idProjectComment`),
+				INDEX `majorVersion`(`majorVersion`),
+				INDEX `minorVersion`(`minorVersion`)
+				) TYPE=MyISAM
+		");
+		
+		if(false == $res)
+		{
+			return $res;
+		}
+	}
+	
+	$arr = $db->db_fetch_array($db->db_query('DESCRIBE `' . BAB_DG_GROUPS_TBL .'` taskmanager'));
+	if ( $arr[0] != 'taskmanager' )
+	{
+		$res = $db->db_query('ALTER TABLE `' . BAB_DG_GROUPS_TBL .'` ADD `taskmanager`  enum(\'N\',\'Y\') NOT NULL default \'N\' AFTER `orgchart` ');
+		
+		if(false == $res)
+		{
+			return $res;
+		}
+	}
 }
 ?>

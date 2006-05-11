@@ -969,6 +969,9 @@ switch($tg)
 	case 'admTskMgr':
 		$incl = 'admin/tmtaskmanager';
 		break;
+	case 'usrTskMgr':
+		$incl = 'tmtaskmanager';
+		break;
 	default:
 		$babLevelOne = "";
 		$babLevelTwo = "";

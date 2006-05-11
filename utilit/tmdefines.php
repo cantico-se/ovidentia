@@ -1,24 +1,4 @@
 <?php
-// Tables
-define('BAB_TSKMGR_WEEK_DAYS_TBL', 'bab_tskmgr_week_days');
-define('BAB_TSKMGR_WORKING_HOURS_TBL', 'bab_tskmgr_week_days');
-
-define('BAB_TSKMGR_PROJECTS_SPACES_TBL', 'bab_tskmgr_projects_spaces');
-define('BAB_TSKMGR_PROJECT_CREATOR_GROUPS_TBL', 'bab_tskmgr_project_creator_groups');
-define('BAB_TSKMGR_PERSONNAL_TASK_CREATOR_GROUPS_TBL', 'bab_tskmgr_personnal_task_creator_groups');
-define('BAB_TSKMGR_DEFAULT_PROJECTS_MANAGERS_GROUPS_TBL', 'bab_tskmgr_default_projects_managers_groups');
-define('BAB_TSKMGR_DEFAULT_PROJECTS_SUPERVISORS_GROUPS_TBL', 'bab_tskmgr_default_projects_supervisors_groups');
-define('BAB_TSKMGR_DEFAULT_PROJECTS_VISUALIZERS_GROUPS_TBL', 'bab_tskmgr_default_projects_visualizers_groups');
-define('BAB_TSKMGR_DEFAULT_PROJECTS_RESPONSIBLE_GROUPS_TBL', 'bab_tskmgr_default_projects_responsible_groups');
-define('BAB_TSKMGR_DEFAULT_PROJECTS_CONFIGURATION_TBL', 'bab_tskmgr_default_projects_configuration');
-define('BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL', 'bab_tskmgr_specific_fields_base_class');
-define('BAB_TSKMGR_SPECIFIC_FIELDS_TEXT_CLASS_TBL', 'bab_tskmgr_specific_fields_text_class');
-define('BAB_TSKMGR_SPECIFIC_FIELDS_AREA_CLASS_TBL', 'bab_tskmgr_specific_fields_text_class');
-define('BAB_TSKMGR_SPECIFIC_FIELDS_RADIO_CLASS_TBL', 'bab_tskmgr_specific_fields_radio_class');
-define('BAB_TSKMGR_SPECIFIC_FIELDS_INSTANCE_LIST_TBL', 'bab_tskmgr_specific_fields_instance_list');
-define('BAB_TSKMGR_CATEGORIES_TBL', 'bab_tskmgr_categories');
-
-
 // actions
 define('BAB_TM_ACTION_SET_RIGHT', 'setRight');
 
@@ -52,6 +32,7 @@ define('BAB_TM_IDX_DISPLAY_CATEGORIES_LIST', 'displayCategoriesList');
 define('BAB_TM_IDX_DISPLAY_CATEGORY_FORM', 'displayCategoryForm');
 define('BAB_TM_IDX_DISPLAY_DELETE_CATEGORY_FORM', 'displayDeleteCategoryForm');
 
+define('BAB_TM_IDX_DISPLAY_PROJECT_SPACE_MENU', 'displayProjectSpaceMenu');
 
 //
 define('BAB_TM_YES', 1);

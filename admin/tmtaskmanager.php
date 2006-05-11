@@ -325,10 +325,10 @@ function displayDeleteProjectsSpacesForm()
 		{
 			$bf->set_data('idx', BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST);
 			$bf->set_data('action', BAB_TM_ACTION_DELETE_PROJECT_SPACE);
-			$bf->set_data('objectName', 'iIdProjectSpace');
+			//$bf->set_data('objectName', 'iIdProjectSpace');
+			//$bf->set_data('iIdObject', $iIdProjectSpace);
 			$bf->set_data('iIdProjectSpace', $iIdProjectSpace);
 			$bf->set_data('iIdProject', $iIdProject);
-			$bf->set_data('iIdObject', $iIdProjectSpace);
 			$bf->set_data('tg', 'admTskMgr');
 
 			$bf->set_caption('warning', bab_translate("This action will delete the project space and all references"));
@@ -454,7 +454,7 @@ function displayDefaultProjectsConfigurationForm()
 				$this->set_data('iIdConfiguration', -1);
 				
 				$oTmCtx =& getTskMgrContext();
-				$aDPC = $oTmCtx->getDefaultProjectsConfiguration();
+				$aDPC = $oTmCtx->getConfiguration();
 				
 				if(null != $aDPC)
 				{
@@ -689,10 +689,17 @@ function saveDefaultProjectConfiguration()
 bab_cleanGpc();
 
 
-/*
+//*
 require_once($babInstallPath . 'upgrade.php');
 upgradeXXXtoYYY();
 //*/
+
+global $babBody;
+if(!($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) && $babBody->currentDGGroup['taskManager'] !== 'Y')
+{
+	$babBody->msgerror = bab_translate("Access denied");
+	return;
+}
 
 
 
@@ -744,6 +751,10 @@ switch($action)
 	case BAB_TM_ACTION_ADD_CATEGORY:
 	case BAB_TM_ACTION_MODIFY_CATEGORY:
 		addModifyCategory();
+		break;
+		
+	case BAB_TM_ACTION_DELETE_CATEGORY:
+		deleteCategory();
 		break;
 }
 

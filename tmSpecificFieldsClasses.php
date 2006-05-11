@@ -170,10 +170,9 @@ class BAB_TM_FieldText extends BAB_TM_FieldBase
 			if(false != $datas)
 			{
 				//bab_debug($datas);
-				
-				$this->set_data('sFieldName', $datas['name']);
+				$this->set_data('sFieldName', htmlentities($datas['name'], ENT_QUOTES));
+				$this->set_data('sFieldValue', htmlentities($datas['defaultValue'], ENT_QUOTES));
 				$this->set_data('iRefCount', $datas['refCount']);
-				$this->set_data('sFieldValue', $datas['defaultValue']);
 			}
 		}
 	}
@@ -226,9 +225,9 @@ class BAB_TM_FieldArea extends BAB_TM_FieldBase
 			$datas = $db->db_fetch_assoc($result);
 			if(false != $datas)
 			{
-				$this->set_data('sFieldName', $datas['name']);
+				$this->set_data('sFieldName', htmlentities($datas['name'], ENT_QUOTES));
+				$this->set_data('sFieldValue', htmlentities($datas['defaultValue'], ENT_QUOTES));
 				$this->set_data('iRefCount', $datas['refCount']);
-				$this->set_data('sFieldValue', $datas['defaultValue']);
 			}
 		}
 	}
@@ -346,7 +345,7 @@ class BAB_TM_FieldRadio extends BAB_TM_FieldBase
 			$datas = $db->db_fetch_assoc($result);
 			if(false != $datas)
 			{
-				$this->set_data('sFieldName', $datas['sFieldName']);
+				$this->set_data('sFieldName', htmlentities($datas['sFieldName'], ENT_QUOTES));
 				$this->set_data('iRefCount', $datas['iRefCount']);
 				$this->set_data('iDefaultOption', $datas['iDefaultOption']);
 			}
@@ -372,7 +371,7 @@ class BAB_TM_FieldRadio extends BAB_TM_FieldBase
 				$sOption = 'option_' . $datas['iPosition'];				
 				$this->set_data('sOptionText', $sOption);
 				$this->set_data('sOptionNbr', $datas['iPosition']);
-				$this->set_data('sOptionValue', $datas['defaultValue']);
+				$this->set_data('sOptionValue', htmlentities($datas['defaultValue'], ENT_QUOTES));
 				$this->set_data('sOptionChecked', ($iDefaultOption == $datas['iPosition']) ? 'checked="checked"' : '');
 				return true;
 			}
@@ -390,7 +389,7 @@ class BAB_TM_FieldRadio extends BAB_TM_FieldBase
 					
 					//bab_debug('$aOptions[' . $aOptions[$datas['key']] . ']=' . $aOptions[$datas['key']] );
 					
-					$this->set_data('sOptionValue', $aOptions[$datas['key']]);
+					$this->set_data('sOptionValue', htmlentities($aOptions[$datas['key']], ENT_QUOTES));
 					$this->set_data('sOptionChecked', ($iDefaultOption == $datas['key']) ? 'checked="checked"' : '');
 					return true;
 				}

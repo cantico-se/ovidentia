@@ -28,12 +28,11 @@
 class BAB_TM_Context
 {
 	var $m_oTblWr;
-	var $m_aDefaultPC; /* default project configuration */
+	var $m_aConfiguration;
 
 	var $m_iIdProjectSpace;
 	var $m_iIdProject;
 	var $m_iIdDelegation;
-
 
 	function BAB_TM_Context()
 	{
@@ -43,32 +42,43 @@ class BAB_TM_Context
 		$this->m_iIdProjectSpace = (int) tskmgr_getVariable('iIdProjectSpace', 0);
 		$this->m_iIdProject = (int) tskmgr_getVariable('iIdProject', 0);
 		$this->m_iIdDelegation = $babBody->currentAdmGroup;
-		$this->loadDefaultProjectsConfiguration();
+		$this->m_aConfiguration = null;
 	}
 	
 	/* Private */
-	function loadDefaultProjectsConfiguration()
+	function loadConfiguration()
 	{
 		if(0 != $this->m_iIdProjectSpace)
 		{
 			$attributs = array(
 				'idProjectSpace' => $this->m_iIdProjectSpace,
+				'idProject' => $this->m_iIdProject,
 				'id' => -1,
 				'tskUpdateByMgr' => -1,
 				'endTaskReminder' => -1,
 				'tasksNumerotation' => -1,
 				'emailNotice' => -1,
 				'faqUrl' => '');
+
+			$sTblName = BAB_TSKMGR_PROJECTS_CONFIGURATION_TBL;
+			$whereClauseLength = 2;
 				
-			$this->m_oTblWr->setTableName(BAB_TSKMGR_DEFAULT_PROJECTS_CONFIGURATION_TBL);
+			if(0 == $this->m_iIdProject)
+			{
+				$sTblName = BAB_TSKMGR_DEFAULT_PROJECTS_CONFIGURATION_TBL;
+				$whereClauseLength = 1;
+				unset($attributs['idProject']);
+			}
+				
+			$this->m_oTblWr->setTableName($sTblName);
 			
-			$this->m_aDefaultPC = $this->m_oTblWr->load($attributs, 0, count($attributs), 0, 1);
-			if(false != $this->m_aDefaultPC)
+			$this->m_aConfiguration = $this->m_oTblWr->load($attributs, 0, count($attributs), 0, $whereClauseLength);
+			if(false != $this->m_aConfiguration)
 			{
 				return true;
 			}
 		}
-		$this->m_aDefaultPC = null;
+		$this->m_aConfiguration = null;
 		return false;
 	}
 	
@@ -88,9 +98,13 @@ class BAB_TM_Context
 		return $this->m_iIdDelegation;
 	}
 	
-	function &getDefaultProjectsConfiguration()
+	function &getConfiguration()
 	{
-		return $this->m_aDefaultPC;
+		if(is_null($this->m_aConfiguration))
+		{
+			$this->loadConfiguration();
+		}
+		return $this->m_aConfiguration;
 	}
 	
 	function &getTableWrapper()

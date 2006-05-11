@@ -241,7 +241,7 @@ function babAdminSection($close)
 		$this->array_urls[bab_translate("Directories")] = $GLOBALS['babUrlScript']."?tg=admdir";
 	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || (isset($babBody->currentDGGroup['orgchart']) && $babBody->currentDGGroup['orgchart'] == 'Y'))
 		$this->array_urls[bab_translate("Charts")] = $GLOBALS['babUrlScript']."?tg=admocs";
-	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) )
+	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['taskmanager'] == 'Y')
 		$this->array_urls[bab_translate("Task Manager")] = $GLOBALS['babUrlScript'].'?tg=admTskMgr';
 	
 	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
@@ -498,6 +498,12 @@ function babUserSection($close)
 		$this->array_urls[bab_translate("Statistics")] = $GLOBALS['babUrlScript']."?tg=stat";
 		}
 
+	if( count(bab_getUserIdObjects(BAB_TSKMGR_DEFAULT_PROJECTS_VISUALIZERS_GROUPS_TBL)) > 0 || 
+		count(bab_getUserIdObjects(BAB_TSKMGR_PROJECTS_VISUALIZERS_GROUPS_TBL) > 0 )			)
+		{
+		$this->array_urls[bab_translate("Task Manager")] = $GLOBALS['babUrlScript'].'?tg=usrTskMgr';
+		}
+		
 	foreach( $babBody->babaddons as $row ) 
 		{
 		if($row['access'])

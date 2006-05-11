@@ -322,7 +322,7 @@ function submit_form()
 						<td>{ m_datas[sFieldType] }</td>
 						<td align="center">
 						<!--#if m_datas[refCount] "== 0" -->
-							<input type="checkbox" name="aDeletableField[]" value="{ m_datas[iIdField] }" Style="background-color:transparent;border=0" />
+							<input type="checkbox" name="aDeletableObjects[]" value="{ m_datas[iIdField] }" Style="background-color:transparent;border=0" />
 						<!--#else m_datas[refCount] -->
 							&nbsp;
 						<!--#endif m_datas[refCount] -->
@@ -332,7 +332,7 @@ function submit_form()
 					<tr class="BabSiteAdminTitleFontBackground">
 						<td colspan="2" align="right">&nbsp;</td>
 						<td>
-							<a href="javascript:check_all('aDeletableField', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ m_captions[checkAll] }" width="10" height="10" border="0" /></a><a href="javascript:check_all('aDeletableField', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ m_captions[uncheckAll] }" width="10" height="10" border="0"></a>&nbsp;<a href="javascript:suppfield()"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ m_captions[uncheckAll] }" border="0" /></a>
+							<a href="javascript:check_all('aDeletableObjects', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ m_captions[checkAll] }" width="10" height="10" border="0" /></a><a href="javascript:check_all('aDeletableObjects', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ m_captions[uncheckAll] }" width="10" height="10" border="0"></a>&nbsp;<a href="javascript:suppfield()"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ m_captions[uncheckAll] }" border="0" /></a>
 						</td>
 					</tr>
 				</table>
@@ -374,7 +374,7 @@ function submit_form()
 	<input type="hidden" name="action" value="" />
 	<input type="hidden" name="iIdProjectSpace" value="{ m_datas[iIdProjectSpace] }" />
 	<input type="hidden" name="iIdField" value="{ m_datas[iIdField] }" />
-	<input type="hidden" name="aDeletableField[]" value="{ m_datas[iIdField] }" />
+	<input type="hidden" name="aDeletableObjects[]" value="{ m_datas[iIdField] }" />
 
 	{ m_datas[selectFieldType] }
 	<br />
@@ -441,7 +441,7 @@ function submit_form()
 	<input type="hidden" name="action" value="" />
 	<input type="hidden" name="iIdProjectSpace" value="{ m_datas[iIdProjectSpace] }" />
 	<input type="hidden" name="iIdField" value="{ m_datas[iIdField] }" />
-	<input type="hidden" name="aDeletableField[]" value="{ m_datas[iIdField] }" />
+	<input type="hidden" name="aDeletableObjects[]" value="{ m_datas[iIdField] }" />
 
 	{ m_datas[selectFieldType] }
 	<br />
@@ -540,7 +540,7 @@ function submit_form()
 	<input type="hidden" name="iIdProjectSpace" value="{ m_datas[iIdProjectSpace] }" />
 	<input type="hidden" name="iIdProject" value="{ m_datas[iIdProject] }" />
 	<input type="hidden" name="iIdField" value="{ m_datas[iIdField] }" />
-	<input type="hidden" name="aDeletableField[]" value="{ m_datas[iIdField] }" />
+	<input type="hidden" name="aDeletableObjects[]" value="{ m_datas[iIdField] }" />
 	<input type="hidden" name="iOptionCount" value="{ m_datas[iOptionCount] }" />
 
 	{ m_datas[selectFieldType] }

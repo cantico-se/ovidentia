@@ -118,8 +118,7 @@ function displayCategoriesList()
 				'idx' => BAB_TM_IDX_DISPLAY_CATEGORY_FORM,
 				'mnuStr' => bab_translate("Add a category"),
 				'url' => $GLOBALS['babUrlScript'] . '?tg=admTskMgr&iIdProjectSpace=' . $iIdProjectSpace . 
-					'&iIdProject=' . $iIdProject .'&iIdCategory=' . $iIdCategory . '&idx=' . 
-					BAB_TM_IDX_DISPLAY_CATEGORY_FORM)
+					'&iIdProject=' . $iIdProject . '&idx=' . BAB_TM_IDX_DISPLAY_CATEGORY_FORM)
 			);
 		add_item_menu($itemMenu);
 		$babBody->title = bab_translate("Categories list");
@@ -177,10 +176,10 @@ function displayCategoryForm()
 			$this->set_data('iRefCount', 0);
 			$this->set_data('addIdx', BAB_TM_IDX_DISPLAY_CATEGORIES_LIST);
 			$this->set_data('modifyIdx', BAB_TM_IDX_DISPLAY_CATEGORIES_LIST);
-			$this->set_data('deleteIdx', BAB_TM_IDX_DISPLAY_DELETE_CATEGORY_FORM);
+			$this->set_data('delIdx', BAB_TM_IDX_DISPLAY_DELETE_CATEGORY_FORM);
 			$this->set_data('addAction', BAB_TM_ACTION_ADD_CATEGORY);
 			$this->set_data('modifyAction', BAB_TM_ACTION_MODIFY_CATEGORY);
-			$this->set_data('deleteAction', '');
+			$this->set_data('delAction', '');
 			
 
 			$this->set_data('tg', 'admTskMgr');
@@ -248,7 +247,75 @@ function displayCategoryForm()
 	
 }
 
+function displayDeleteCategoryForm()
+{
+	global $babBody;
 
+	$aDeletableObjects = tskmgr_getVariable('aDeletableObjects', array());
+
+	$sDeletableObjects = '\'' . implode('\',\'', array_unique($aDeletableObjects)) . '\'';
+
+	//bab_debug('sDeletableObjects ==> ' . $sDeletableObjects);
+
+	if('\'\'' != $sDeletableObjects)
+	{	
+		$bf = & new BAB_BaseFormProcessing();
+		
+		$query = 
+			'SELECT ' .
+				'id iIdCategory, ' .
+				'name sCategoryName ' .
+			'FROM ' .
+				BAB_TSKMGR_CATEGORIES_TBL . ' ' .
+			'WHERE ' .
+				'id IN (' . $sDeletableObjects . ') AND ' .
+				'refCount = \'0\' ' .
+			'GROUP BY name ASC';
+		
+			//bab_debug($query);
+				
+			$db = & $GLOBALS['babDB'];
+			$res = $db->db_query($query);
+			$numrows = $db->db_num_rows($res);
+
+			$title = '';
+			$items = array();
+			$idx = 0;
+			while($idx < $numrows && false != ($data = $db->db_fetch_array($res)))
+			{
+				$title .= "<br>"."-". $data['sCategoryName'];
+				$items[] = $data['iIdCategory'];
+				$idx++;
+			}
+					
+			$bf->set_data('idx', BAB_TM_IDX_DISPLAY_CATEGORIES_LIST);
+			$bf->set_data('action', BAB_TM_ACTION_DELETE_CATEGORY);
+
+			$oTmCtx =& getTskMgrContext();
+			$bf->set_data('iIdProjectSpace', $oTmCtx->getIdProjectSpace());
+			$bf->set_data('iIdProject', $oTmCtx->getIdProject());
+			$bf->set_data('objectName', 'sDeletableObjects');
+			$bf->set_data('iIdObject', implode(',', array_unique($items)));
+			$bf->set_data('tg', 'admTskMgr');
+	
+			if(count($items) > 0)
+			{
+				$bf->set_caption('warning', bab_translate("This action will delete those categories and all references"));
+			}
+			else
+			{
+				$bf->set_caption('warning', bab_translate("This action will delete the category and all references"));
+			}
+			
+			$bf->set_caption('message', bab_translate("Continue ?"));
+			$bf->set_caption('title', $title);
+			$bf->set_caption('yes', bab_translate("Yes"));
+			$bf->set_caption('no', bab_translate("No"));
+	
+			$babBody->title = bab_translate("Delete category");
+			$babBody->babecho(bab_printTemplate($bf, 'tmCommon.html', 'warningyesno'));
+	}
+}
 
 //POST
 
@@ -264,11 +331,12 @@ function addModifyCategory()
 	{
 		$iIdCategory = (int) tskmgr_getVariable('iIdCategory', 0);
 		
-		$isValid = isCategoryNameValid($iIdCategory, $sCategoryName, $iIdProjectSpace, $iIdProject);
+		require_once($GLOBALS['babInstallPath'] . 'utilit/tmToolsIncl.php');
+		
+		$isValid = isNameUsedInProjectAndProjectSpace(BAB_TSKMGR_CATEGORIES_TBL, $iIdProjectSpace, $iIdProject, $iIdCategory, $sCategoryName);
 		$sCategoryName = mysql_escape_string($sCategoryName);
 
-		$sCategoryDescription = trim(tskmgr_getVariable('sCategoryDescription', ''));
-		$sCategoryDescription = mysql_escape_string($sCategoryDescription);
+		$sCategoryDescription = mysql_escape_string(trim(tskmgr_getVariable('sCategoryDescription', '')));
 		
 		if($isValid)
 		{
@@ -311,71 +379,36 @@ function addModifyCategory()
 	{
 		$GLOBALS['babBody']->msgerror = bab_translate("The field name must not be blank");
 		$_POST['idx'] = BAB_TM_IDX_DISPLAY_CATEGORY_FORM;
+		unset($_POST['iIdCategory']);
 		return false;
 	}	
 }
 
-
-function isCategoryNameValid($iIdCategory, $sCategoryName, $iIdProjectSpace, $iIdProject)
+function deleteCategory()
 {
-	$sCategoryName = mysql_escape_string(str_replace('\\', '\\\\', $sCategoryName));
+	bab_debug('deleteCategory ==> il manque les babIsAccessValid');
 	
-	$bIsDefined = isCategoryDefined($iIdCategory, $sCategoryName, $iIdProjectSpace);
+	$sDeletableObjects = trim(tskmgr_getVariable('sDeletableObjects', ''));
 	
-	if(0 != $iIdProject && false == $bIsDefined)
+	$aIdCategoryToDelete = explode(',', $sDeletableObjects);
+	
+	if(is_array($aIdCategoryToDelete) && count($aIdCategoryToDelete) > 0)
 	{
-		$sIdCategory = '';
-		if(0 != $iIdCategory)
+		$oTmCtx =& getTskMgrContext();
+		$tblWr =& $oTmCtx->getTableWrapper();
+		$tblWr->setTableName(BAB_TSKMGR_CATEGORIES_TBL);
+
+		foreach($aIdCategoryToDelete as $key => $id)
 		{
-			$sIdCategory = ' AND id <> \'' . $iIdCategory . '\'';
-		}
-	
-		$query = 
-			'SELECT ' . 
-				'id, ' .
-				'name ' .
-			'FROM ' . 
-				BAB_TSKMGR_CATEGORIES_TBL . ' ' .
-			'WHERE ' . 
-				'idProjectSpace = \'' . $iIdProjectSpace . '\' AND ' .
-				'name LIKE \'' . $sCategoryName . '\' AND ' .
-				'idProject = \'' . $iIdProject . '\'' .
-				$sIdCategory;
+			$aAttribut = array('id' => $id, 'idProjectSpace' => -1, 'idProject' => -1, 'refCount' => -1);
 			
-		//bab_debug($query);
-		
-		$db	= & $GLOBALS['babDB'];
-		
-		$result = $db->db_query($query);
-		$bIsDefined = (false != $result && 0 == $db->db_num_rows($result));
-	}
-	return $bIsDefined;
-}
-
-function isCategoryDefined($iIdCategory, $sCategoryName, $iIdProjectSpace)
-{
-	$sIdCategory = '';
-	if(0 != $iIdCategory)
-	{
-		$sIdCategory = ' AND id <> \'' . $iIdCategory . '\'';
-	}
-
-	$query = 
-		'SELECT ' . 
-			'id, ' .
-			'name ' .
-		'FROM ' . 
-			BAB_TSKMGR_CATEGORIES_TBL . ' ' .
-		'WHERE ' . 
-			'idProjectSpace = \'' . $iIdProjectSpace . '\' AND ' .
-			'name LIKE \'' . $sCategoryName . '\'' .
-			$sIdCategory;
-		
-	//bab_debug($query);
-	
-	$db	= & $GLOBALS['babDB'];
-	
-	$result = $db->db_query($query);
-	return (false != $result && 0 == $db->db_num_rows($result));
+			$aAttribut = $tblWr->load($aAttribut, 0, count($aAttribut), 0, 1);
+			
+			if(false !== $aAttribut && 0 == $aAttribut['refCount'])
+			{
+				$tblWr->delete($aAttribut, 0, 1);
+			}
+		}
+	}	
 }
 ?>
