@@ -25,17 +25,13 @@ include "base.php";
 require_once($babInstallPath . 'utilit/tmdefines.php');
 require_once($babInstallPath . 'utilit/tmToolsIncl.php');
 
-	require_once($babInstallPath . 'utilit/baseFormProcessingClass.php');
-	require_once($babInstallPath . 'utilit/tableWrapperClass.php');
+require_once($babInstallPath . 'utilit/baseFormProcessingClass.php');
+require_once($babInstallPath . 'tmContext.php');
+
 
 
 function displayProjectsSpacesList()
 {
-	$aIdProjectSpaces = null;
-	getVisualisedIdProjectSpaces($aIdProjectSpaces);
-	
-	bab_debug($aIdProjectSpaces);
-	
 	global $babBody;
 
 	class BAB_List extends BAB_BaseFormProcessing
@@ -59,6 +55,7 @@ function displayProjectsSpacesList()
 			$this->set_data('name', '');
 			$this->set_data('description', '');
 
+			//bab_debug($query);
 			$this->m_result = $this->m_db->db_query($query);
 		}
 
@@ -78,6 +75,8 @@ function displayProjectsSpacesList()
 		}
 	}
 
+	$context =& getTskMgrContext();
+	
 	$babBody->title = bab_translate("Projects spaces list");
 	
 	$query = 
@@ -88,17 +87,28 @@ function displayProjectsSpacesList()
 		'FROM ' .
 			BAB_TSKMGR_PROJECTS_SPACES_TBL . ' ' .
 		'WHERE ' . 
-			'id IN(\'' . implode('\',\'', array_keys($aIdProjectSpaces)) . '\')';
+			'id IN(\'' . implode('\',\'', array_keys($context->getVisualisedIdProjectSpace())) . '\')';
 	
 	$list = new BAB_List($query);
+	
+//	bab_debug($context->getManagedIdProject());
+//	bab_debug($context->getResponsibleIdProject());
+//	bab_debug($context->getSupervisedIdProject());
+	bab_debug($context->getManagedTaskId());
+//	bab_debug($context->getPersonnalOwnedIdTask());
 	
 	$babBody->babecho(bab_printTemplate($list, 'tmUser.html', 'projectSpaceList'));	
 }
 
 
+
+bab_cleanGpc();
+
+
+
 /* main */
-if( count(bab_getUserIdObjects(BAB_TSKMGR_DEFAULT_PROJECTS_VISUALIZERS_GROUPS_TBL)) < 0 && 
-	count(bab_getUserIdObjects(BAB_TSKMGR_PROJECTS_VISUALIZERS_GROUPS_TBL) < 0 )			)
+$context =& getTskMgrContext();
+if(false == $context->isUserProjectVisualizer())
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;

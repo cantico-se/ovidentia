@@ -5886,11 +5886,11 @@ function upgradeXXXtoYYY()
 		}
 	}
 	
-	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_DEFAULT_PROJECTS_RESPONSIBLE_GROUPS_TBL . '\''));
-	if($arr[0] != BAB_TSKMGR_DEFAULT_PROJECTS_RESPONSIBLE_GROUPS_TBL)
+	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_DEFAULT_TASK_RESPONSIBLE_GROUPS_TBL . '\''));
+	if($arr[0] != BAB_TSKMGR_DEFAULT_TASK_RESPONSIBLE_GROUPS_TBL)
 	{
 		$res = $db->db_query("
-			CREATE TABLE `" . BAB_TSKMGR_DEFAULT_PROJECTS_RESPONSIBLE_GROUPS_TBL . "` (
+			CREATE TABLE `" . BAB_TSKMGR_DEFAULT_TASK_RESPONSIBLE_GROUPS_TBL . "` (
 				`id` int( 11 ) unsigned NOT NULL AUTO_INCREMENT ,
 				`id_object` int( 11 ) unsigned NOT NULL default '0',
 				`id_group` int( 11 ) unsigned NOT NULL default '0',
@@ -6113,11 +6113,11 @@ function upgradeXXXtoYYY()
 		}
 	}
 	
-	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_PROJECTS_RESPONSIBLE_GROUPS_TBL . '\''));
-	if($arr[0] != BAB_TSKMGR_PROJECTS_RESPONSIBLE_GROUPS_TBL)
+	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_TASK_RESPONSIBLE_GROUPS_TBL . '\''));
+	if($arr[0] != BAB_TSKMGR_TASK_RESPONSIBLE_GROUPS_TBL)
 	{
 		$res = $db->db_query("
-			CREATE TABLE `" . BAB_TSKMGR_PROJECTS_RESPONSIBLE_GROUPS_TBL . "` (
+			CREATE TABLE `" . BAB_TSKMGR_TASK_RESPONSIBLE_GROUPS_TBL . "` (
 				`id` int( 11 ) unsigned NOT NULL AUTO_INCREMENT ,
 				`id_object` int( 11 ) unsigned NOT NULL default '0',
 				`id_group` int( 11 ) unsigned NOT NULL default '0',
@@ -6220,6 +6220,72 @@ function upgradeXXXtoYYY()
 				INDEX `idProjectComment`(`idProjectComment`),
 				INDEX `majorVersion`(`majorVersion`),
 				INDEX `minorVersion`(`minorVersion`)
+				) TYPE=MyISAM
+		");
+		
+		if(false == $res)
+		{
+			return $res;
+		}
+	}
+	
+	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_TASKS_TBL . '\''));
+	if($arr[0] != BAB_TSKMGR_TASKS_TBL)
+	{
+		$res = $db->db_query("
+			CREATE TABLE`" . BAB_TSKMGR_TASKS_TBL . "` (
+				`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+				`idProject` INTEGER UNSIGNED NOT NULL default '0',
+				`tasksNumber` INTEGER UNSIGNED NOT NULL default '0',
+				`description` TEXT NOT NULL default '',
+				`idCategory` INTEGER UNSIGNED NOT NULL default '0',
+				`idResponsible` INTEGER UNSIGNED NOT NULL default '0',
+				`created` DATETIME NOT NULL default '0000-00-00 00:00:00',
+				`modified` DATETIME NOT NULL default '0000-00-00 00:00:00',
+				`idUserCreated` INTEGER UNSIGNED NOT NULL default '0',
+				`idUserModified` INTEGER UNSIGNED NOT NULL default '0',
+				`class` TINYINT UNSIGNED NOT NULL default '0',
+				`approvable` TINYINT UNSIGNED NOT NULL default '0',
+				`state` TINYINT UNSIGNED NOT NULL default '0',
+				`idPredecessor` INTEGER UNSIGNED NOT NULL default '0',
+				`linkType` TINYINT UNSIGNED NOT NULL default '0',
+				`idCalEvent` INTEGER UNSIGNED NOT NULL default '0',
+				`hashCalEvent` VARCHAR(34) NOT NULL default '0',
+				`duration` TINYINT UNSIGNED NOT NULL default '0',
+				`majorVersion` INTEGER UNSIGNED NOT NULL default '0',
+				`minorVersion` INTEGER UNSIGNED NOT NULL default '0',
+				`color` VARCHAR(8) NOT NULL default '',
+				`position` INTEGER UNSIGNED NOT NULL default '0',
+				`completion` INTEGER UNSIGNED NOT NULL default '0',
+				PRIMARY KEY(`id`, `idProject`),
+				INDEX `idProject`(`idProject`),
+				INDEX `majorVersion`(`majorVersion`),
+				INDEX `minorVersion`(`minorVersion`)
+				) TYPE=MyISAM
+		");
+		
+		if(false == $res)
+		{
+			return $res;
+		}
+	}
+	
+	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_TASKS_COMMENTS_TBL . '\''));
+	if($arr[0] != BAB_TSKMGR_TASKS_COMMENTS_TBL)
+	{
+		$res = $db->db_query("
+			CREATE TABLE `" . BAB_TSKMGR_TASKS_COMMENTS_TBL . "` (
+				`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+				`idTask` INTEGER UNSIGNED NOT NULL default '0',
+				`idProject` INTEGER UNSIGNED NOT NULL default '0',
+				`commentary` TEXT NOT NULL default '',
+				`created` DATETIME NOT NULL default '0000-00-00 00:00:00',
+				`idUserCreated` INTEGER UNSIGNED NOT NULL default '0',
+				`modified` DATETIME NOT NULL default '0000-00-00 00:00:00',
+				`idUserModified` INTEGER UNSIGNED NOT NULL default '0',
+				PRIMARY KEY(`id`),
+				INDEX `idProject`(`idProject`),
+				INDEX `idTask`(`idTask`)
 				) TYPE=MyISAM
 		");
 		

@@ -388,9 +388,9 @@ function displayProjectsSpacesRightsForm()
 		$macl->filter($enableGroup, $enableGroup, $disableGroup, $enableGroup, $disableGroup);
 		$macl->addtable(BAB_TSKMGR_DEFAULT_PROJECTS_SUPERVISORS_GROUPS_TBL, bab_translate("Default project supervisor"));
 		$macl->filter($enableGroup, $enableGroup, $disableGroup, $enableGroup, $disableGroup);
-		$macl->addtable(BAB_TSKMGR_DEFAULT_PROJECTS_VISUALIZERS_GROUPS_TBL, bab_translate("Default project supervizor"));
+		$macl->addtable(BAB_TSKMGR_DEFAULT_PROJECTS_VISUALIZERS_GROUPS_TBL, bab_translate("Default project visualizer"));
 		$macl->filter($enableGroup, $enableGroup, $disableGroup, $enableGroup, $disableGroup);
-		$macl->addtable(BAB_TSKMGR_DEFAULT_PROJECTS_RESPONSIBLE_GROUPS_TBL, bab_translate("Default project responsible"));
+		$macl->addtable(BAB_TSKMGR_DEFAULT_TASK_RESPONSIBLE_GROUPS_TBL, bab_translate("Default task responsible"));
 		$macl->filter($enableGroup, $enableGroup, $disableGroup, $enableGroup, $disableGroup);
 	
 		$macl->babecho();
@@ -527,6 +527,7 @@ function addModifyProjectSpace()
 	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
 	$iIdDelegation = $oTmCtx->getIdDelegation();
 
+	//bab_debug('addModifyProjectSpace : iIdDelegation ==> ' . $iIdDelegation);
 	$sName = mysql_escape_string(tskmgr_getVariable('sName', ''));
 	$sDescription = mysql_escape_string(tskmgr_getVariable('sDescription', ''));
 	
@@ -551,7 +552,7 @@ function addModifyProjectSpace()
 					'idUserCreated' => $GLOBALS['BAB_SESS_USERID']
 					);
 
-				$skipFirst = true;
+				$skipFirst = false;
 				if(false != $tblWr->save($attributs, $skipFirst))
 				{
 					$tblWr->setTableName(BAB_TSKMGR_DEFAULT_PROJECTS_CONFIGURATION_TBL);
@@ -636,7 +637,7 @@ function deleteProjectSpace()
 				aclDelete(BAB_TSKMGR_DEFAULT_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProjectSpace);
 				aclDelete(BAB_TSKMGR_DEFAULT_PROJECTS_SUPERVISORS_GROUPS_TBL, $iIdProjectSpace);
 				aclDelete(BAB_TSKMGR_DEFAULT_PROJECTS_VISUALIZERS_GROUPS_TBL, $iIdProjectSpace);
-				aclDelete(BAB_TSKMGR_DEFAULT_PROJECTS_RESPONSIBLE_GROUPS_TBL, $iIdProjectSpace);
+				aclDelete(BAB_TSKMGR_DEFAULT_TASK_RESPONSIBLE_GROUPS_TBL, $iIdProjectSpace);
 			}
 			else
 			{
@@ -689,13 +690,13 @@ function saveDefaultProjectConfiguration()
 bab_cleanGpc();
 
 
-//*
+/*
 require_once($babInstallPath . 'upgrade.php');
 upgradeXXXtoYYY();
 //*/
 
 global $babBody;
-if(!($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) && $babBody->currentDGGroup['taskManager'] !== 'Y')
+if(!($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) && $babBody->currentDGGroup['taskmanager'] !== 'Y')
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;
