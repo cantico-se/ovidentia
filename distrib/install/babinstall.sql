@@ -1602,6 +1602,7 @@ CREATE TABLE bab_fm_filesver (
   comment tinytext NOT NULL,
   idfai int(11) unsigned NOT NULL default '0',
   confirmed enum('N','Y') NOT NULL default 'N',
+  index_status tinyint(1) unsigned NOT NULL default '0',
   PRIMARY KEY  (id),
   KEY id_file (id_file)
 ); 

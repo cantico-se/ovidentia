@@ -421,6 +421,10 @@ function bab_f_getDebug() {
 
 	$babBody->addStyleSheet('debug.css');
 
+	if (isset($GLOBALS['babBodyPopup'])) {
+		$GLOBALS['babBodyPopup']->addStyleSheet('debug.css');
+	}
+
 	$temp = new bab_f_getDebugCls();
 	return bab_printTemplate($temp, 'devtools.html', 'debug');
 }

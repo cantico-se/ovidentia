@@ -5847,6 +5847,12 @@ if (!bab_isTableField(BAB_FILES_TBL, 'index_status')) {
 	$db->db_query("ALTER TABLE `".BAB_FILES_TBL."` ADD INDEX ( `index_status` )");
 
 }
+
+
+if (!bab_isTableField(BAB_FM_FILESVER_TBL, 'index_status')) {
+
+	$db->db_query("ALTER TABLE `".BAB_FM_FILESVER_TBL."` ADD `index_status` TINYINT( 1 ) UNSIGNED NOT NULL");
+}
 	
 
 

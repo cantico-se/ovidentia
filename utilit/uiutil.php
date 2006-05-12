@@ -132,7 +132,8 @@ function printBabBodyPopup()
 			$this->menuvals = array_values($babBodyPopup->menu->items);
 			$this->menuitems = count($this->menukeys);
 
-			$this->content = $babBodyPopup->printout();
+			$this->content = bab_getDebug();
+			$this->content .= $babBodyPopup->printout();
 			$this->title = &$babBodyPopup->title;
 			$this->msgerror = &$babBodyPopup->msgerror;
 			$this->styleSheet = &$babBodyPopup->styleSheet;

@@ -132,23 +132,7 @@ close }</a> </td>
 <!--#end fileunload -->
 
 <!--#begin filehistoric -->
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE>{ babSiteName }</TITLE>
-{ babMeta }
-{ babCss }
-<script type="text/javascript" src="{ babOvidentiaJs }">
-<!--
-//-->
-</script>
-<script type="text/javascript">
-<!--
-window.focus();
-//-->
-</script>
-</HEAD>
-<BODY class="BabBackground">
+
 <br>
 <table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
 <tr>
@@ -160,34 +144,40 @@ window.focus();
 <tr> 
 <td class="BabLoginCadreBackground"> 
 <table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" align="left" nowrap valign="middle">&nbsp;</td>
-<td class="BabSiteAdminTitleFontBackground" nowrap valign="middle">{ versiontxt }</td>
-<td class="BabSiteAdminTitleFontBackground" nowrap valign="middle">{ datetxt }</td>
-<td class="BabSiteAdminTitleFontBackground" nowrap valign="middle">{ hourtxt }</td>
-<td class="BabSiteAdminTitleFontBackground" align="left" nowrap valign="middle">{ authortxt }</td>
-<td class="BabSiteAdminTitleFontBackground" align="left" valign="middle">{ commenttxt }</td>
+<tr class="BabSiteAdminTitleFontBackground"> 
+	<td>&nbsp;</td>
+	<td>{ versiontxt }</td>
+	<td>{ datetxt }</td>
+	<td>{ hourtxt }</td>
+	<td>{ authortxt }</td>
+	<td>{ commenttxt }</td>
+	<!--#if index -->
+	<td>{ t_index }</td>
+	<!--#endif index -->
 </tr> 
 <!--#in getnextlog -->
-<tr> 
-<td class="BabSiteAdminFontBackground" valign="middle">
-<!--#if action "== 1" -->
-<img src="{ babSkinPath }images/Puces/FileLock.gif" alt="" border="0" align="middle">
-<!--#endif action -->
-<!--#if action "== 2" -->
-<img src="{ babSkinPath }images/Puces/FileUnlock.gif" alt="" border="0" align="middle">
-<!--#endif action -->
-</td>
-<td class="BabSiteAdminFontBackground" nowrap valign="middle">{ version }</td>
-<td class="BabSiteAdminFontBackground" nowrap valign="middle">{ date }</td>
-<td class="BabSiteAdminFontBackground" nowrap valign="middle">{ hour }</td>
-<td class="BabSiteAdminFontBackground" valign="middle">{ author }</td>
-<td class="BabSiteAdminFontBackground" valign="middle">{ comment }</td>
+<tr class="BabSiteAdminFontBackground"> 
+	<td>
+	<!--#if action "== 1" -->
+	<img src="{ babSkinPath }images/Puces/FileLock.gif" alt="" border="0" align="middle">
+	<!--#endif action -->
+	<!--#if action "== 2" -->
+	<img src="{ babSkinPath }images/Puces/FileUnlock.gif" alt="" border="0" align="middle">
+	<!--#endif action -->
+	</td>
+	<td>{ version }</td>
+	<td>{ date }</td>
+	<td>{ hour }</td>
+	<td>{ author }</td>
+	<td>{ comment }</td>
+	<!--#if index -->
+	<td>{ index_status }</td>
+	<!--#endif index -->
 </tr>
 <!--#endin getnextlog -->
 <tr > 
-<td colspan="6" class="BabSiteAdminTitleFontBackground" nowrap valign="middle">
-<table class="BabLoginMenuBackground" border="0" width="100%" cellpadding="0" cellspacing="0" align="center">
+<td colspan="<!--#if index -->7<!--#else index -->6<!--#endif index -->" class="BabSiteAdminTitleFontBackground" nowrap valign="middle">
+<table border="0" width="100%" cellpadding="0" cellspacing="0" align="center">
 	<tr> 
 	<td width="1%"><a href="{ topurl }">{ topname }</a> &nbsp; </td>
 	<td width="1%"><a href="{ prevurl }">{ prevname }</a> &nbsp; </td>
@@ -204,27 +194,27 @@ window.focus();
 </table>
 <br>
 <!--#if bmanager -->
-<table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
-<tr>
-<td class="BabSiteAdminFontBackground" align="center" >{ cleanmsg }:</td>
-</tr></table>
-<br>
+
+
+<p align="center" >{ cleanmsg }:</p>
+
+
+
 <form method="post" action="{ babPhpSelf }" name="listform">
 <input type="hidden" name="tg" value="filever">
 <input type="hidden" name="idx" value="hist">
 <input type="hidden" name="afile" value="cleanlog">
 <input type="hidden" name="idf" value="{ idf }">
-<table   border="0" cellspacing="0" cellpadding="2" align="center">
+<table class="BabLoginMenuBackground"  border="0" cellspacing="0" cellpadding="5" align="center">
 <tr>
-<td class="BabLoginMenuBackground" align="right">{ datetxt2 }</td>
-<td class="BabLoginMenuBackground" ><input type="text" name="date" size="10" maxlength="10" value=""></td>
-<td nowrap class="BabLoginMenuBackground"><input type="submit" name="cleanl" value="{ cleantxt }"></td>
+<td  align="right">{ datetxt2 }</td>
+<td><input type="text" name="date" size="10" maxlength="10" value=""></td>
+<td><input type="submit" name="cleanl" value="{ cleantxt }"></td>
 </tr>
 </table>
 </form>
 <!--#endif bmanager -->
-</BODY>
-</HTML>
+
 <!--#end filehistoric -->
 
 <!--#begin commitfile -->

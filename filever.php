@@ -194,6 +194,7 @@ function showConfirmFile($idf)
 
 function showHistoricFile($idf, $pos)
 {
+	
 	global $babBody;
 
 	class temp
@@ -244,6 +245,7 @@ function showHistoricFile($idf, $pos)
 			$this->authortxt = bab_translate("Author");
 			$this->actiontxt = bab_translate("Action");
 			$this->versiontxt = bab_translate("Version");
+			$this->t_index = bab_translate("Indexation");
 
 			if(bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $arrfold['id']))
 				{
@@ -290,7 +292,7 @@ function showHistoricFile($idf, $pos)
 					}
 				}
 
-			$req = "select * from ".BAB_FM_FILESLOG_TBL." where id_file='".$idf."' order by date desc";
+			$req = "select l.*,v.index_status from ".BAB_FM_FILESLOG_TBL." l LEFT JOIN ".BAB_FM_FILESVER_TBL." v ON v.id_file='".$idf."' AND CONCAT(v.ver_major,'.',v.ver_minor) = l.version WHERE l.id_file='".$idf."' order by l.date desc";
 			if( $total > BAB_FM_MAXLOGS)
 				{
 				$req .= " limit ".$pos.",".BAB_FM_MAXLOGS;
@@ -298,6 +300,13 @@ function showHistoricFile($idf, $pos)
 			$this->filename = $arrfile['name'];
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
+
+
+			if ($engine = bab_searchEngineInfos()) {
+				$this->index = true;
+				} else {
+				$this->index = false;
+				}
 			}
 
 		function getnextlog()
@@ -314,6 +323,7 @@ function showHistoricFile($idf, $pos)
 				$this->comment = $arr['comment'];
 				$this->action = $arr['action'];
 				$this->version = $arr['version'];
+				$this->index_status = bab_getIndexStatusLabel($arr['index_status']);
 				$i++;
 				return true;
 				}
@@ -323,8 +333,20 @@ function showHistoricFile($idf, $pos)
 
 		}
 
+	
+
+
+
+	include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
+	$GLOBALS['babBodyPopup'] = new babBodyPopup();
+	$GLOBALS['babBodyPopup']->title = & $babBody->title;
+	$GLOBALS['babBodyPopup']->msgerror = & $babBody->msgerror;
+
 	$temp = new temp($idf, $pos);
-	echo bab_printTemplate($temp, "filever.html", "filehistoric");
+
+	$GLOBALS['babBodyPopup']->babecho(bab_printTemplate($temp, "filever.html", "filehistoric"));
+	printBabBodyPopup();
+	die();
 }
 
 

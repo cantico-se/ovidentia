@@ -1849,19 +1849,23 @@ function viewFile( $idf)
 				$this->t_keywords = bab_translate("Keywords");
 				$this->keywords = bab_translate("Keywords (separated by spaces)");
 				$this->notify = bab_translate("Notify members group");
+				$this->t_yes = bab_translate("Yes");
+				$this->t_no = bab_translate("No");
+				$this->t_change_all = bab_translate("Change status for all versions");
 
 				$this->id = $arr['id_owner'];
 				$this->gr = $arr['bgroup'];
 				$this->path = $arr['path'];
 				$this->file = $arr['name'];
-				$this->title = $arr['name'].( ($bversion == 'Y') ? " (".$arr['ver_major'].".".$arr['ver_minor'].")" : "" );
+				$GLOBALS['babBody']->title = $arr['name'].( ($bversion == 'Y') ? " (".$arr['ver_major'].".".$arr['ver_minor'].")" : "" );
 				$this->descval = $arr['description'];
 				$this->keysval = $arr['keywords'];
 				$this->descvalhtml = htmlentities($arr['description']);
 				$this->keysvalhtml = htmlentities($arr['keywords']);
 
 				$this->fsizetxt = bab_translate("Size");
-				$fstat = stat(bab_getUploadFullPath($arr['bgroup'], $arr['id_owner']).$arr['path']."/".$arr['name']);
+				$fullpath = bab_getUploadFullPath($arr['bgroup'], $arr['id_owner']).$arr['path']."/".$arr['name'];
+				$fstat = stat($fullpath);
 				$this->fsize = bab_formatSizeFile($fstat[7])." ".bab_translate("Kb")." ( ".bab_formatSizeFile($fstat[7], false) ." ".bab_translate("Bytes") ." )";
 				
 				$this->fmodifiedtxt = bab_translate("Modified");
@@ -1910,10 +1914,20 @@ function viewFile( $idf)
 				$this->no = bab_translate("No");
 				$this->bviewnf = false;
 
+
 				$db = $GLOBALS['babDB'];
+				$rr = $db->db_fetch_array($db->db_query("select filenotify, version from ".BAB_FM_FOLDERS_TBL." where id='".$arr['id_owner']."'"));
+
+				if ('Y' == $rr['version']) {
+					$this->versions = true;
+				} else {
+					$this->versions = false;
+				}
+
+				
 				if( $arr['bgroup'] == "Y" && $this->bupdate)
 					{
-					$rr = $db->db_fetch_array($db->db_query("select filenotify from ".BAB_FM_FOLDERS_TBL." where id='".$arr['id_owner']."'"));
+					
 					if( $rr['filenotify'] == "N" )
 						{
 						$this->nonfselected = "selected";
@@ -1924,6 +1938,9 @@ function viewFile( $idf)
 						$this->yesnfselected = "selected";
 						$this->nonfselected = "";
 						}
+
+					
+
 					$this->bviewnf = true;
 
 					$this->arrfolders = array();
@@ -1948,10 +1965,56 @@ function viewFile( $idf)
 					}
 				else
 					$this->countff = 0;
+
+				// indexation
+
+				if ($engine = bab_searchEngineInfos()) {
+						
+						$this->index = true;
+						$this->index_status = $arr['index_status'];
+						$this->t_index_status = bab_translate("Index status");
+
+						$this->index_onload = $engine['indexes']['bab_files']['index_onload'];
+
+						if (isset($_POST['index_status'])) {
+							// modify status
+
+							$db->db_query(
+									"UPDATE ".BAB_FILES_TBL." SET index_status='".$db->db_escape_string($_POST['index_status'])."' WHERE id='".$_POST['idf']."'"
+								);
+
+							$files_to_index = array($fullpath);
+
+							if (isset($_POST['change_all']) && 1 == $_POST['change_all']) {
+								// modifiy index status for older versions
+								$res = $db->db_query("SELECT id, ver_major, ver_minor FROM ".BAB_FM_FILESVER_TBL." WHERE id_file='".$db->db_escape_string($_POST['idf'])."'");
+								while ($arrfv = $db->db_fetch_assoc($res)) {
+									
+									$db->db_query(
+										"UPDATE ".BAB_FM_FILESVER_TBL." SET index_status='".$db->db_escape_string($_POST['index_status'])."' WHERE id='".$arrfv['id']."'"
+									);
+
+									if ($this->index_onload && BAB_INDEX_STATUS_INDEXED == $_POST['index_status']) {
+										
+										$files_to_index[] = bab_getUploadFullPath($arr['bgroup'], $arr['id_owner']).$arr['path']."/OVF/".$arrfv['ver_major'].','.$arrfv['ver_minor'].','.$arr['name'];
+									}
+								}
+							}
+
+							
+
+							if ($this->index_onload && BAB_INDEX_STATUS_INDEXED == $_POST['index_status']) {
+								$this->index_status = bab_indexOnLoadFiles($files_to_index , 'bab_files');
+							} else {
+								$this->index_status = $_POST['index_status'];
+							}
+						}
+					}
+
 				}
 			else
 				{
-				$this->title = bab_translate("Access denied");
+				$GLOBALS['babBody']->title = bab_translate("Access denied");
 				}
 			}
 
@@ -1999,8 +2062,24 @@ function viewFile( $idf)
 				}
 			}
 
+
+		function getnextistatus() {
+			static $arr = array(BAB_INDEX_STATUS_NOINDEX, BAB_INDEX_STATUS_INDEXED, BAB_INDEX_STATUS_TOINDEX);
+			if (list(,$this->value) = each($arr)) {
+				$this->disabled=false;
+				$this->option = bab_toHtml(bab_getIndexStatusLabel($this->value));
+				$this->selected = $this->index_status == $this->value;
+				if (BAB_INDEX_STATUS_INDEXED == $this->value && !$this->index_onload) {
+					$this->disabled=true;
+				}
+				return true;
+			}
+			return false;
 		}
-	echo $babBody->msgerror;
+
+		}
+
+
 	$access = false;
 	$bmanager = false;
 	$bconfirm = false;
@@ -2069,8 +2148,17 @@ function viewFile( $idf)
 			}
 		}
 
+
+	include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
+	$GLOBALS['babBodyPopup'] = new babBodyPopup();
+	$GLOBALS['babBodyPopup']->title = & $babBody->title;
+	$GLOBALS['babBodyPopup']->msgerror = & $babBody->msgerror;
+
 	$temp = new temp($idf, $arr, $bmanager, $access, $bconfirm, $bupdate, $bdownload,$bversion);
-	echo bab_printTemplate($temp,"fileman.html", "viewfile");
+
+	$GLOBALS['babBodyPopup']->babecho(bab_printTemplate($temp,"fileman.html", "viewfile"));
+	printBabBodyPopup();
+	die();
 	}
 
 function fileUnload($id, $gr, $path)
