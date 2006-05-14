@@ -25,6 +25,7 @@ include "base.php";
 require_once($babInstallPath . 'utilit/tmdefines.php');
 require_once($babInstallPath . 'tmSpecificFieldsFunc.php');
 require_once($babInstallPath . 'tmCategoriesFunc.php');
+require_once($babInstallPath . 'tmWorkingHoursFunc.php');
 
 
 //---- Begin tools functions ----
@@ -64,57 +65,6 @@ function displayAdminMenu()
 }
 
 
-function displayWorkingHoursForm()
-{
-	class BAB_DisplayWorkingHours extends BAB_BaseFormProcessing
-	{
-		var $m_aWeekDays;
-		
-		function BAB_DisplayWorkingHours()
-		{
-			parent::BAB_BaseFormProcessing();
-			
-			$this->m_aWeekDays = array(
-				0 => bab_translate("Sunday"), 1 => bab_translate("Monday"), 2 => bab_translate("Tuesday"),
-				3 => bab_translate("Wednesday"), 4 => bab_translate("Thursday"), 5 => bab_translate("Friday"), 
-				6 => bab_translate("Saturday"));
-				
-			$this->set_data('day', '');
-			$this->set_caption('beginHour', bab_translate("start hour"));
-			$this->set_caption('endHour',  bab_translate("end hour"));
-			$this->set_caption('add',  bab_translate("Ajouter"));
-		}
-		
-		function getNextDay()
-		{
-			$day = each($this->m_aWeekDays);
-			if(false != $day)
-			{
-				$this->set_data('day', $day['value']);
-				$this->set_data('numDay', $day['key']);
-				return true;
-			}
-			return false;
-		}
-	}
-	
-	global $babBody;
-	
-	$itemMenu = array(
-		array(
-			'idx' => BAB_TM_IDX_DISPLAY_WORKING_HOURS_FORM,
-			'mnuStr' => bab_translate("Working hours"),
-			'url' => $GLOBALS['babUrlScript'] . '?tg=admTskMgr&idx=' . BAB_TM_IDX_DISPLAY_WORKING_HOURS_FORM)
-		);
-	add_item_menu($itemMenu);
-	$babBody->title = bab_translate("Working hours");
-	
-	$dwh = new BAB_DisplayWorkingHours();
-	
-	$dwh->get_caption('beginHour', $beginHour);
-	
-	$babBody->babecho(bab_printTemplate($dwh, 'tmCommon.html', 'workingHours'));
-}
 
 
 function displayProjectsSpacesList()
@@ -690,7 +640,7 @@ function saveDefaultProjectConfiguration()
 bab_cleanGpc();
 
 
-/*
+//*
 require_once($babInstallPath . 'upgrade.php');
 upgradeXXXtoYYY();
 //*/
@@ -756,6 +706,10 @@ switch($action)
 		
 	case BAB_TM_ACTION_DELETE_CATEGORY:
 		deleteCategory();
+		break;
+		
+	case BAB_TM_ACTION_UPDATE_WORKING_HOURS:
+		updateWorkingHours();
 		break;
 }
 

@@ -17,6 +17,8 @@ define('BAB_TM_ACTION_ADD_CATEGORY', 'addCategory');
 define('BAB_TM_ACTION_MODIFY_CATEGORY', 'modifyCategory');
 define('BAB_TM_ACTION_DELETE_CATEGORY', 'deleteCategory');
 
+define('BAB_TM_ACTION_UPDATE_WORKING_HOURS', 'updateWorkingHours');
+
 // idx
 define('BAB_TM_IDX_DISPLAY_ADMIN_MENU', 'displayAdminMenu');
 define('BAB_TM_IDX_DISPLAY_WORKING_HOURS_FORM', 'displayWorkingHoursForm');
