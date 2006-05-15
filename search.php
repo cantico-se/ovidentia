@@ -349,6 +349,7 @@ function searchKeyword($item , $option = "OR")
 
 			$menuarray = $this->addons->getmenuarray();
 			$this->searchItems = array_merge($this->searchItems,$menuarray);
+			asort($this->searchItems);
 			}
 
 		function getnextitem()
