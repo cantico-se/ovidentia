@@ -219,7 +219,7 @@ class bab_indexFileCls extends swishCls {
 	 * @see bab_setIndexObject()
 	 * @return boolean
 	 */
-	function createObject($name, $onload, $id_addon) {
+	function createObject($name, $onload) {
 		
 		return true;
 	}

@@ -205,7 +205,7 @@ function bab_setIndexObject($object, $name, $onload, $disabled = false) {
 		}
 
 	$obj = new bab_indexFileCls($object);
-	if ($obj->createObject($name, $onload, $id_addon)) {
+	if ($obj->createObject($name, $onload)) {
 
 		$db->db_query("
 			
@@ -214,15 +214,15 @@ function bab_setIndexObject($object, $name, $onload, $disabled = false) {
 					(
 						name,
 						object,
-						id_addon,
-						index_onload
+						index_onload,
+						index_disabled
 					) 
 				VALUES 
 					(
 						'".$db->db_escape_string($name)."',
 						'".$db->db_escape_string($object)."',
-						'".$id_addon."',
-						'".$onload."'
+						'".$onload."',
+						'".$disabled."'
 					)
 			");
 
