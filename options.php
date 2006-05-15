@@ -1415,9 +1415,10 @@ switch($idx)
 			{
 			$babBody->addItemMenu("options", bab_translate("Mail"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=listacc");
 			}
+		$iduser = isset($iduser)? $iduser: $BAB_SESS_USERID;
 		$babBody->addItemMenu("list", bab_translate("Sections"), $GLOBALS['babUrlScript']."?tg=sectopt&idx=list");
 		if( ('Y' == $babBody->babsite['change_unavailability'] && $iduser == $GLOBALS['BAB_SESS_USERID']) || bab_isUserAdministrator() || $babBody->currentDGGroup['users'] == 'Y')
-			$babBody->addItemMenu("unav", bab_translate("Unavailability"), $GLOBALS['babUrlScript']."?tg=options&idx=unav&iduser=".(isset($iduser)?$iduser:$BAB_SESS_USERID ));
+			$babBody->addItemMenu("unav", bab_translate("Unavailability"), $GLOBALS['babUrlScript']."?tg=options&idx=unav&iduser=".$iduser);
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);
