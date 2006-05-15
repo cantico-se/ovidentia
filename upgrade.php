@@ -5819,6 +5819,12 @@ if (!bab_isTable(BAB_INDEX_FILES_TBL)) {
 		) 
 	");
 
+	include_once $GLOBALS['babInstallPath']."utilit/searchincl.php";
+	
+	bab_setIndexObject( 'bab_files', 'File manager', false);
+	bab_setIndexObject( 'bab_art_files', 'Articles files', true);
+	bab_setIndexObject( 'bab_forumsfiles', 'Forum post files', false);
+
 }
 
 
