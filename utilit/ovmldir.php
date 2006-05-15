@@ -419,7 +419,14 @@ class bab_DbDirectoryMembers extends bab_handler
 			for( $k = 0; $k < count($this->IdEntries); $k++ )
 				{
 				$this->ctx->curctx->push($this->IdEntries[$k]['xname']."Name", $this->IdEntries[$k]['name']);
-				$this->ctx->curctx->push($this->IdEntries[$k]['xname']."Value", $this->memberfields[$this->IdEntries[$k]['xname']]);
+				if( $this->IdEntries[$k]['xname'] == 'jpegphoto')
+					{
+					$this->ctx->curctx->push($this->IdEntries[$k]['xname'].'Value', $GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$this->directoryid."&idu=".$this->memberfields['id']);
+					}
+				else
+					{
+					$this->ctx->curctx->push($this->IdEntries[$k]['xname'].'Value', $this->memberfields[$this->IdEntries[$k]['xname']]);
+					}
 				}
 			if( $this->memberfields['id_user'] != 0 )
 				{
