@@ -1,4 +1,4 @@
-<!--#begin projectSpaceList -->
+<!--#begin displayProjectList -->
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 	<tr> 
 		<td align="center" valign="middle" class="BabLoginCadreBackground"> 
@@ -8,7 +8,7 @@
 					<td width="40%">{ m_captions[description] }</td>
 					<td width="40%" align="center">&nbsp;</td>
 				</tr>
-				<!--#in nextProjectSpace -->
+				<!--#in nextItem -->
 				
 			<!--#if m_is_altbg -->
 				<tr class="BabSiteAdminFontBackground"> 
@@ -17,7 +17,7 @@
 			<!--#endif m_is_altbg -->
 	
 				<!--#if m_datas[isLink] -->
-					<td><a href="{ m_datas[url] }&iIdProjectSpace={ m_datas[id] }">{ m_datas[name] }</a></td>
+					<td><a href="{ m_datas[url] }{ m_datas[id] }">{ m_datas[name] }</a></td>
 				<!--#else m_datas[isLink] -->
 					<td>{ m_datas[name] }</td>
 				<!--#endif m_datas[isLink] -->
@@ -25,19 +25,104 @@
 					<td>{ m_datas[description] }</td>
 					<td>
 						<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
-							<!--#in getNextAnchor -->
-							<td class="{ m_datas[className] }">
-								<a href="{ m_anchorItem[href] }" title="{ m_anchorItem[title] }">
-									{ m_anchorItem[title] }
-								</a>
-							</td>
-							<!--#endin getNextAnchor -->
+						<!--#if m_datas[bIsRightUrl] -->
+							<tr>
+								<td>
+									<a href="{ m_datas[rightsUrl] }" title="{ m_captions[rights] }">
+										{ m_captions[rights] }
+									</a>
+								</td>
+							</tr>
+						<!--#endif m_datas[bIsRightUrl] -->
+							<tbody><tr><td></td></tr></tbody>
 						</table>
 					</td>
 				</tr>
-				<!--#endin nextProjectSpace -->
+				<!--#endin nextItem -->
 			</table>
 		</td>
 	</tr>
 </table>
-<!--#end projectSpaceList -->
+<!--#end displayProjectList -->
+
+
+<!--#begin projectForm -->
+<script type="text/javascript">
+<!--
+function on_btn_clicked(idx, action)
+{
+	var form = document.forms.projectForm;
+
+	form.idx.value = idx;
+	form.action.value = action;
+}
+
+function submit_form()
+{
+	return true;
+}
+//-->
+</script>
+
+<form name="projectForm" method="post" action="{ babPhpSelf }" onsubmit="return(submit_form())">
+	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
+	<input type="hidden" name="idx" value="" />
+	<input type="hidden" name="action" value="" />
+	<input type="hidden" name="iIdProjectSpace" value="{ m_datas[iIdProjectSpace] }" />
+	<input type="hidden" name="iIdProject" value="{ m_datas[iIdProject] }" />
+
+	<table width="85%" border="0" cellspacing="0" cellpadding="2" align="center">
+		<tr> 
+			<td class="BabLoginCadreBackground">
+				<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center" class="BabLoginMenuBackground">
+					<tr> 
+						<td>
+							{ m_captions[sName] }
+						</td>
+						<td>
+							<input type="text" name="sName" size="25" maxlength="255" value="{ m_datas[sName] }" />
+						</td>
+					</tr>
+
+					<tr> 
+						<td>
+							{ m_captions[sDescription] }
+						</td>
+						<td>
+							<textarea name="sDescription" cols="50" rows="10">{ m_datas[sDescription] }</textarea>
+						</td>
+					</tr>
+
+					<tr> 
+						<td colspan="2">
+							<br />
+						</td>
+					</tr>
+
+					<tr>
+						<td colspan="2" align="center">
+						
+						<!--#if m_datas[iIdProject] "== 0" -->
+							<input type="submit" value="{ m_captions[add] }" onclick="on_btn_clicked('{ m_datas[add_idx] }', '{ m_datas[add_action] }')" />
+						<!--#else m_datas[iIdProject] -->
+							<input type="submit" value="{ m_captions[modify] }" onclick="on_btn_clicked('{ m_datas[modify_idx] }', '{ m_datas[modify_action] }')" />
+							<!--#if m_datas[bIsDeletable] -->
+								<input type="submit" value="{ m_captions[delete] }" onclick="on_btn_clicked('{ m_datas[delete_idx] }', '{ m_datas[delete_action] }')" />
+							<!--#endif m_datas[bIsDeletable] -->
+						<!--#endif m_datas[iIdProject] -->
+
+						</td>
+					</tr>
+
+					<tr> 
+						<td colspan="2">
+							<br />
+						</td>
+					</tr>
+
+				</table>
+			</td>
+		</tr>
+	</table>
+</form>
+<!--#end projectForm -->

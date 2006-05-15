@@ -23,30 +23,14 @@
 ************************************************************************/
 include "base.php";
 require_once($babInstallPath . 'utilit/tmdefines.php');
+require_once($babInstallPath . 'utilit/tmList.php');
 require_once($babInstallPath . 'tmSpecificFieldsFunc.php');
 require_once($babInstallPath . 'tmCategoriesFunc.php');
-require_once($babInstallPath . 'tmWorkingHoursFunc.php');
+//require_once($babInstallPath . 'tmWorkingHoursFunc.php');
 
 
-//---- Begin tools functions ----
-function add_item_menu($items)
-{
-	global $babBody;
 
-	$babBody->addItemMenu(BAB_TM_IDX_DISPLAY_ADMIN_MENU, bab_translate("Task"), $GLOBALS['babUrlScript'] . '?tg=admTskMgr');
-	
-	if(count($items) > 0)
-	{
-		foreach($items as $key => $value)
-		{
-			$babBody->addItemMenu($value['idx'], $value['mnuStr'], $value['url']);
-		}
-	}
-}
-//---- End tools functions ----
-
-
-function displayAdminMenu()
+function displayMenu()
 {
 	global $babBody;
 	
@@ -61,7 +45,7 @@ function displayAdminMenu()
 	$bfp->set_anchor($GLOBALS['babUrlScript'] . '?tg=admTskMgr&idx=' . BAB_TM_IDX_DISPLAY_WORKING_HOURS_FORM , '', 'Working hours');
 	$bfp->set_anchor($GLOBALS['babUrlScript'] . '?tg=admTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST , '', 'Projects space');
 
-	$babBody->babecho(bab_printTemplate($bfp, 'tmAdmin.html', 'displayMenu'));
+	$babBody->babecho(bab_printTemplate($bfp, 'tmCommon.html', 'displayMenu'));
 }
 
 
@@ -70,46 +54,6 @@ function displayAdminMenu()
 function displayProjectsSpacesList()
 {
 	global $babBody;
-
-	class BAB_List extends BAB_BaseFormProcessing
-	{
-		var $m_db;
-		var $m_result;
-
-		var $m_is_altbg;
-
-		function BAB_List(& $query)
-		{
-			parent::BAB_BaseFormProcessing();
-
-			$this->m_db	= & $GLOBALS['babDB'];
-			$this->m_is_altbg = true;
-
-			$this->set_caption('name', bab_translate("Name"));
-			$this->set_caption('description', bab_translate("Description"));
-			$this->set_data('url', $GLOBALS['babUrlScript'] . '?tg=admTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_FORM);
-			$this->set_data('isLink', true);
-			$this->set_data('name', '');
-			$this->set_data('description', '');
-
-			$this->m_result = $this->m_db->db_query($query);
-		}
-
-		function nextProjectSpace()
-		{
-			$data = $this->m_db->db_fetch_array($this->m_result);
-
-			if(false != $data)
-			{
-				$this->m_is_altbg = !$this->m_is_altbg;
-				$this->set_data('id', $data['id']);
-				$this->set_data('name', htmlentities($data['name'], ENT_QUOTES));
-				$this->set_data('description', htmlentities($data['description'], ENT_QUOTES));
-				return true;
-			}
-			return false;
-		}
-	}
 
 	$itemMenu = array(
 		array(
@@ -135,7 +79,11 @@ function displayProjectsSpacesList()
 		'WHERE ' . 
 			'idDelegation =\'' . $babBody->currentAdmGroup . '\'';
 	
-	$list = new BAB_List($query);
+			
+	$list = new BAB_TM_List($query);
+	
+	$list->set_data('url', $GLOBALS['babUrlScript'] . '?tg=admTskMgr&idx=' . 
+		BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_FORM . '&iIdProjectSpace=');
 	
 	$list->set_anchor($GLOBALS['babUrlScript'] . '?tg=admTskMgr&iIdProjectSpace={ m_datas[id] }&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_RIGHTS_FORM,
 		$GLOBALS['babSkinPath'] . 'images/Puces/manager.gif',
@@ -157,7 +105,7 @@ function displayProjectsSpacesList()
 		bab_translate("Categories list")
 		);
 		
-		$babBody->babecho(bab_printTemplate($list, 'tmAdmin.html', 'projectSpaceList'));
+		$babBody->babecho(bab_printTemplate($list, 'tmCommon.html', 'displayList'));
 }
 
 
@@ -195,7 +143,6 @@ function displayProjectsSpacesForm()
 			
 			$this->set_data('tg', 'admTskMgr');
 			
-			
 			if(!isset($_POST['iIdProjectSpace']) && !isset($_GET['iIdProjectSpace']))
 			{
 				$this->set_data('is_creation', true);
@@ -203,7 +150,6 @@ function displayProjectsSpacesForm()
 			else if( (isset($_GET['iIdProjectSpace']) || isset($_POST['iIdProjectSpace'])) && 0 != $iIdProjectSpace)
 			{
 				$this->set_data('is_edition', true);
-				require_once($GLOBALS['babInstallPath'] . 'utilit/tableWrapperClass.php');
 		
 				$attributs = array(
 					'id' => $iIdProjectSpace, 
@@ -211,7 +157,8 @@ function displayProjectsSpacesForm()
 					'name' => '',
 					'description' => '');
 					
-				$tblWr =& $GLOBALS['BAB_TM_Context']->getTableWrapper();
+				$oTmCtx =& getTskMgrContext();
+				$tblWr =& $oTmCtx->getTableWrapper();
 				$tblWr->setTableName(BAB_TSKMGR_PROJECTS_SPACES_TBL);
 				
 				if(false != ($attributs = $tblWr->load($attributs, 2, 2, 0, 2)))
@@ -255,7 +202,7 @@ function displayDeleteProjectsSpacesForm()
 	$oTmCtx =& getTskMgrContext();
 	
 	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
-	$iIdProject = $oTmCtx->getIdProjectSpace();
+	$iIdProject = $oTmCtx->getIdProject();
 	$iIdDelegation = $oTmCtx->getIdDelegation();
 
 	if(0 != $iIdProjectSpace)
@@ -714,14 +661,14 @@ switch($action)
 }
 
 
-$idx = isset($_POST['idx']) ? $_POST['idx'] : (isset($_GET['idx']) ? $_GET['idx'] : BAB_TM_IDX_DISPLAY_ADMIN_MENU);
+$idx = isset($_POST['idx']) ? $_POST['idx'] : (isset($_GET['idx']) ? $_GET['idx'] : BAB_TM_IDX_DISPLAY_MENU);
 
 //bab_debug('idx ==> ' . $idx);
 
 switch($idx)
 {
-	case BAB_TM_IDX_DISPLAY_ADMIN_MENU:
-		displayAdminMenu();
+	case BAB_TM_IDX_DISPLAY_MENU:
+		displayMenu();
 		break;
 
 	case BAB_TM_IDX_DISPLAY_WORKING_HOURS_FORM:

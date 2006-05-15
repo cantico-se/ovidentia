@@ -48,6 +48,11 @@ class BAB_TM_Context
 
 	var $m_bIsPersonnalTaskOwner;
 	var $m_aPersonnalOwnedIdTask;
+
+/*
+	var $m_bIsProjectCreator;
+	var $m_aProjectSpacesIdWhoUserIsCreator;
+//*/
 	
 	function BAB_TM_Context()
 	{
@@ -76,6 +81,10 @@ class BAB_TM_Context
 
 		$this->m_bIsPersonnalTaskOwner = null;
 		$this->m_aPersonnalOwnedIdTask = array();
+/*		
+		$this->m_bIsProjectCreator = null;
+		$this->m_aProjectSpacesIdWhoUserIsCreator = array();
+//*/
 	}
 	
 	
@@ -149,6 +158,17 @@ class BAB_TM_Context
 		return $this->m_bIsPersonnalTaskOwner;
 	}
 
+/*
+	function isUserCanCreateProject($iIdProjectSpace)
+	{
+		if(is_null($this->m_bIsProjectCreator))
+		{
+			$this->queryProjectSpaceWhoUserCanCreate();
+		}
+		return $this->m_bIsProjectCreator;
+	}
+//*/
+	
 	function &getTableWrapper()
 	{
 		return $this->m_oTblWr;
@@ -198,7 +218,17 @@ class BAB_TM_Context
 		}
 		return $this->m_aPersonnalOwnedIdTask;
 	}
-	
+
+/*
+	function getProjectSpacesIdWhoUserCanCreate()
+	{
+		if(is_null($this->m_bIsPersonnalTaskOwner))
+		{
+			$this->queryProjectSpaceWhoUserCanCreate();
+		}
+		return $this->m_aProjectSpacesIdWhoUserIsCreator;
+	}
+//*/
 	
 	// Private
 	function loadConfiguration()
@@ -252,7 +282,7 @@ class BAB_TM_Context
 				'FROM ' . 
 					BAB_TSKMGR_PROJECTS_TBL . ' ' .
 				'WHERE ' . 
-					'id = IN(\'' . implode('\',\'', array_keys($this->m_aVisualizedIdProject)) . '\')';
+					'id IN(\'' . implode('\',\'', array_keys($this->m_aVisualizedIdProject)) . '\')';
 				
 			$db	= & $GLOBALS['babDB'];
 			
@@ -360,6 +390,23 @@ class BAB_TM_Context
 			$this->m_bIsPersonnalTaskOwner = false;
 		}
 	}
+
+/*
+	function queryProjectSpaceWhoUserCanCreate()
+	{
+		require_once($GLOBALS['babInstallPath'] . 'admin/acl.php');
+		
+		$this->m_aProjectSpacesIdWhoUserIsCreator = bab_getUserIdObjects(BAB_TSKMGR_PROJECT_CREATOR_GROUPS_TBL);
+		if(count($this->m_aProjectSpacesIdWhoUserIsCreator) > 0)
+		{
+			$this->m_bIsProjectCreator = true;
+		}
+		else 
+		{
+			$this->m_bIsProjectCreator = false;
+		}
+	}
+//*/	
 }
 
 function& getTskMgrContext()

@@ -17,10 +17,14 @@ define('BAB_TM_ACTION_ADD_CATEGORY', 'addCategory');
 define('BAB_TM_ACTION_MODIFY_CATEGORY', 'modifyCategory');
 define('BAB_TM_ACTION_DELETE_CATEGORY', 'deleteCategory');
 
+define('BAB_TM_ACTION_ADD_PROJECT', 'addProject');
+define('BAB_TM_ACTION_MODIFY_PROJECT', 'modifyProject');
+define('BAB_TM_ACTION_DELETE_PROJECT', 'deleteProject');
+
 define('BAB_TM_ACTION_UPDATE_WORKING_HOURS', 'updateWorkingHours');
 
 // idx
-define('BAB_TM_IDX_DISPLAY_ADMIN_MENU', 'displayAdminMenu');
+define('BAB_TM_IDX_DISPLAY_MENU', 'displayMenu');
 define('BAB_TM_IDX_DISPLAY_WORKING_HOURS_FORM', 'displayWorkingHoursForm');
 define('BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST', 'displayProjectsSpacesList');
 define('BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_FORM', 'displayProjectsSpacesForm');
@@ -33,13 +37,22 @@ define('BAB_TM_IDX_DISPLAY_DELETE_SPECIFIC_FIELD_FORM', 'displayDeleteSpecificFi
 define('BAB_TM_IDX_DISPLAY_CATEGORIES_LIST', 'displayCategoriesList');
 define('BAB_TM_IDX_DISPLAY_CATEGORY_FORM', 'displayCategoryForm');
 define('BAB_TM_IDX_DISPLAY_DELETE_CATEGORY_FORM', 'displayDeleteCategoryForm');
-
 define('BAB_TM_IDX_DISPLAY_PROJECT_SPACE_MENU', 'displayProjectSpaceMenu');
+
+define('BAB_TM_IDX_DISPLAY_PROJECTS_LIST', 'displayProjectsList');
+define('BAB_TM_IDX_DISPLAY_PROJECT_FORM', 'displayProjectsForm');
+define('BAB_TM_IDX_DISPLAY_DELETE_PROJECT_FORM', 'displayDeleteProjectForm');
+define('BAB_TM_IDX_DISPLAY_PROJECT_RIGHTS_FORM', 'displayProjectRightsForm');
 
 //
 define('BAB_TM_YES', 1);
 define('BAB_TM_NO', 0);
 
+define('BAB_TM_LOCKED', 1);
+define('BAB_TM_UNLOCKED', 0);
+
+define('BAB_TM_ENABLE', 1);
+define('BAB_TM_DISABLE', 0);
 
 //Task numerotation
 define('BAB_TM_MANUAL', 0);

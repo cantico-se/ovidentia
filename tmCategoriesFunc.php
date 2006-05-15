@@ -24,7 +24,8 @@
 	include "base.php";
 	require_once($babInstallPath . 'tmContext.php');
 	require_once($babInstallPath . 'tmCategoryClasses.php');
-	
+	require_once($babInstallPath . 'utilit/tmToolsIncl.php');
+
 function displayCategoriesList()
 {
 	global $babBody;
@@ -330,8 +331,6 @@ function addModifyCategory()
 	if(0 < strlen($sCategoryName))
 	{
 		$iIdCategory = (int) tskmgr_getVariable('iIdCategory', 0);
-		
-		require_once($GLOBALS['babInstallPath'] . 'utilit/tmToolsIncl.php');
 		
 		$isValid = isNameUsedInProjectAndProjectSpace(BAB_TSKMGR_CATEGORIES_TBL, $iIdProjectSpace, $iIdProject, $iIdCategory, $sCategoryName);
 		$sCategoryName = mysql_escape_string($sCategoryName);

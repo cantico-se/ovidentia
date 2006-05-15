@@ -202,6 +202,8 @@
 
 			$request = 'DELETE FROM ' . $this->m_TableName . $whereClause; 
 			
+			//bab_debug($request);
+			
 			return $this->m_db->db_query($request);
 		}
 	}

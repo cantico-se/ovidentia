@@ -60,7 +60,6 @@ function isNameUsedInProjectAndProjectSpace($sTblName, $iIdProjectSpace, $iIdPro
 	return $bIsDefined;
 }
 
-
 function isNameUsedInProjectSpace($sTblName, $iIdProjectSpace, $iIdObject, $sName)
 {
 	$sIdObject = '';
@@ -103,7 +102,7 @@ function getVisualisedIdProjectSpaces(&$aIdProjectSpaces)
 			'FROM ' . 
 				BAB_TSKMGR_PROJECTS_TBL . ' ' .
 			'WHERE ' . 
-				'id = IN(\'' . implode('\',\'', array_keys($aIdProjects)) . '\')';
+				'id IN(\'' . implode('\',\'', array_keys($aIdProjects)) . '\')';
 			
 		$db	= & $GLOBALS['babDB'];
 		
@@ -117,6 +116,21 @@ function getVisualisedIdProjectSpaces(&$aIdProjectSpaces)
 				$iIdx++;
 				$aIdProjectSpaces[$datas['idProjectSpace']] = 1;
 			}
+		}
+	}
+}
+
+function add_item_menu($items)
+{
+	global $babBody;
+
+	$babBody->addItemMenu(BAB_TM_IDX_DISPLAY_MENU, bab_translate("Task"), $GLOBALS['babUrlScript'] . '?tg=' . tskmgr_getVariable('tg', ''));
+	
+	if(count($items) > 0)
+	{
+		foreach($items as $key => $value)
+		{
+			$babBody->addItemMenu($value['idx'], $value['mnuStr'], $value['url']);
 		}
 	}
 }

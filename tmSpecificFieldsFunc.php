@@ -24,6 +24,8 @@
 	include "base.php";
 	require_once($babInstallPath . 'tmContext.php');
 	require_once($babInstallPath . 'tmSpecificFieldsClasses.php');
+	require_once($babInstallPath . 'utilit/tmToolsIncl.php');
+		
 	
 	
 	
@@ -479,8 +481,6 @@ function processSpecificFieldBaseClass($iIdProjectSpace, $iIdProject, $iFieldTyp
 	if(0 < strlen($sFieldName))
 	{
 		$iIdField = (int) tskmgr_getVariable('iIdField', 0);
-		
-		require_once($GLOBALS['babInstallPath'] . 'utilit/tmToolsIncl.php');
 		
 		$isValid = isNameUsedInProjectAndProjectSpace(BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL, $iIdProjectSpace, $iIdProject, $iIdField, $sFieldName);
 		$sFieldName = mysql_escape_string($sFieldName);

@@ -1,3 +1,77 @@
+<!--#begin displayMenu -->
+<table width="85%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+		<td class="BabLoginCadreBackground">
+			<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center" class="BabLoginMenuBackground">
+
+				<!--#in getNextAnchor -->
+				<tr>
+					<td align="center">
+						<a class="BabWarningLinkColor" href="{ m_anchorItem[href] }" title="{ m_anchorItem[title] }">{ m_anchorItem[title] }</a>
+					</td>
+				</tr>
+				<!--#endin getNextAnchor -->
+
+				<tr> 
+					<td colspan="2">
+						<br />
+					</td>
+				</tr>
+
+			</table>
+		</td>
+	</tr>
+</table>
+<!--#end displayMenu -->
+
+
+<!--#begin displayList -->
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+		<td align="center" valign="middle" class="BabLoginCadreBackground"> 
+			<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+				<tr class="BabSiteAdminTitleFontBackground"> 
+					<td width="20%">{ m_captions[name] }</td>
+					<td width="40%">{ m_captions[description] }</td>
+					<td width="40%" align="center">&nbsp;</td>
+				</tr>
+				<!--#in nextItem -->
+				
+			<!--#if m_is_altbg -->
+				<tr class="BabSiteAdminFontBackground"> 
+			<!--#else m_is_altbg -->
+				<tr class="BabForumBackground1">
+			<!--#endif m_is_altbg -->
+	
+				<!--#if m_datas[isLink] -->
+					<td><a href="{ m_datas[url] }{ m_datas[id] }">{ m_datas[name] }</a></td>
+				<!--#else m_datas[isLink] -->
+					<td>{ m_datas[name] }</td>
+				<!--#endif m_datas[isLink] -->
+
+					<td>{ m_datas[description] }</td>
+					<td>
+						<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+							<!--#in getNextAnchor -->
+							<tr>
+								<td class="{ m_datas[className] }">
+									<a href="{ m_anchorItem[href] }" title="{ m_anchorItem[title] }">
+										{ m_anchorItem[title] }
+									</a>
+								</td>
+							</tr>
+							<!--#endin getNextAnchor -->
+							<tbody><tr><td>&nbsp;</td></tr></tbody>
+						</table>
+					</td>
+				</tr>
+				<!--#endin nextItem -->
+			</table>
+		</td>
+	</tr>
+</table>
+<!--#end displayList -->
+
 <!--#begin workingHours -->
 <script type="text/javascript">
 <!--
