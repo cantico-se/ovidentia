@@ -225,7 +225,7 @@ switch($idx)
 
 		$babBody->addItemMenu("Categories", bab_translate("Faqs"), $GLOBALS['babUrlScript']."?tg=admfaqs&idx=Categories");
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admfaq&idx=Modify&item=".$item);
-		$babBody->addItemMenu("Groups", bab_translate("Access"), $GLOBALS['babUrlScript']."?tg=admfaq&idx=Groups&item=".$item);
+		$babBody->addItemMenu("Groups", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=admfaq&idx=Groups&item=".$item);
 		break;
 
 	case "Delete":
@@ -233,7 +233,7 @@ switch($idx)
 		deleteCategory($item);
 		$babBody->addItemMenu("Categories", bab_translate("Faqs"), $GLOBALS['babUrlScript']."?tg=admfaqs&idx=Categories");
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admfaq&idx=Modify&item=".$item);
-		$babBody->addItemMenu("Groups", bab_translate("Access"), $GLOBALS['babUrlScript']."?tg=admfaq&idx=Groups&item=".$item);
+		$babBody->addItemMenu("Groups", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=admfaq&idx=Groups&item=".$item);
 		$babBody->addItemMenu("Delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=admfaq&idx=Delete&item=".$item);
 		break;
 
@@ -243,7 +243,7 @@ switch($idx)
 		modifyCategory($item);
 		$babBody->addItemMenu("Categories", bab_translate("Faqs"), $GLOBALS['babUrlScript']."?tg=admfaqs&idx=Categories");
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admfaq&idx=Modify&item=".$item);
-		$babBody->addItemMenu("Groups", bab_translate("Access"), $GLOBALS['babUrlScript']."?tg=admfaq&idx=Groups&item=".$item);
+		$babBody->addItemMenu("Groups", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=admfaq&idx=Groups&item=".$item);
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);
