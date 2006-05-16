@@ -903,7 +903,19 @@ function post_string2($key)
 if( !bab_isMagicQuotesGpcOn())
 	return $_POST[$key];
 else
-	return stripslashes($_POST[$key]);
+	{
+	if( is_array($_POST[$key]))
+		{
+		$tmp = array();
+		foreach( $_POST[$key] as $k => $v )
+			{
+			$tmp[$k] = stripslashes($v);
+			}
+		return $tmp;
+		}
+	else
+		return stripslashes($_POST[$key]);
+	}
 }
 
 function addEvent(&$message)
