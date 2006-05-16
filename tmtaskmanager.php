@@ -23,120 +23,12 @@
 ************************************************************************/
 include "base.php";
 require_once($babInstallPath . 'utilit/tmdefines.php');
+require_once($babInstallPath . 'utilit/tmIncl.php');
 require_once($babInstallPath . 'utilit/tmToolsIncl.php');
 require_once($babInstallPath . 'utilit/tmList.php');
 
 require_once($babInstallPath . 'utilit/baseFormProcessingClass.php');
 require_once($babInstallPath . 'tmContext.php');
-
-
-//-- BEGIN TOOLS FUNC
-function tmIsProjectDeletable($iIdProject)
-{
-	bab_debug('isProjectDeletable this function must be implemented');
-	return true;
-}
-
-function tmDuplicateConfiguration($srcTable, $srcIdObject, $trgTable, $trgIdObject)
-{
-	$oTmCtx =& getTskMgrContext();
-	$tblWr =& $oTmCtx->getTableWrapper();
-	
-	$tblWr->setTableName($srcTable);
-				
-	$aAttributs = array(
-		'idProjectSpace' => $srcIdObject,
-		'tskUpdateByMgr' => '',
-		'endTaskReminder' => '',
-		'tasksNumerotation' => '',
-		'emailNotice' => '',
-		'faqUrl' => ''
-	);
-
-	$aAttributs = $tblWr->load($aAttributs, 1, 5, 0, 1);
-	if(false != $aAttributs)
-	{
-		$aAttributs['faqUrl'] = mysql_escape_string($aAttributs['faqUrl']);
-		$aAttributs['idProject'] = $trgIdObject;
-		$skipFirst = false;
-		$tblWr->setTableName($trgTable);
-		return $tblWr->save($aAttributs, $skipFirst);
-		
-	}
-	return false;
-}
-
-function tmDeleteProject($iIdProject)
-{
-	tmDeleteAllTask($iIdProject);
-	
-	aclDelete(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject);
-	aclDelete(BAB_TSKMGR_PROJECTS_SUPERVISORS_GROUPS_TBL, $iIdProject);
-	aclDelete(BAB_TSKMGR_PROJECTS_VISUALIZERS_GROUPS_TBL, $iIdProject);
-
-	$oTmCtx =& getTskMgrContext();
-	$tblWr =& $oTmCtx->getTableWrapper();
-	
-	$aAttribut = array('idProject' => $iIdProject);
-	$tblWr->setTableName(BAB_TSKMGR_PROJECTS_CONFIGURATION_TBL);
-	$tblWr->delete($aAttribut);
-	
-	$tblWr->setTableName(BAB_TSKMGR_PROJECTS_REVISIONS_TBL);
-	$tblWr->delete($aAttribut);
-
-	$tblWr->setTableName(BAB_TSKMGR_PROJECTS_COMMENTS_TBL);
-	$tblWr->delete($aAttribut);
-
-	$aAttribut = array('id' => $iIdProject);
-	$tblWr->setTableName(BAB_TSKMGR_PROJECTS_TBL);
-	$tblWr->delete($aAttribut);
-}
-
-function tmDeleteAllTask($iIdProject)
-{
-	$db = &$GLOBALS['babDB'];
-	
-	$query = 
-		'SELECT ' .
-			'id ' .
-		'FROM ' .
-			BAB_TSKMGR_TASKS_TBL . ' ' .
-		'WHERE ' .
-			'idProject = \'' . $iIdProject . '\'';
-			
-	
-	$result = $db->db_query($query);
-	$iNumRows = $db->db_num_rows($result);
-	$iIndex = 0;
-	
-	while($iIndex < $iNumRows && false != ($data = $db->$db->db_fetch_assoc($result)))
-	{
-		aclDelete(BAB_TSKMGR_TASK_RESPONSIBLE_GROUPS_TBL, $data['id']);
-	}
-
-	$query = 'DELETE FROM ' . BAB_TSKMGR_TASKS_COMMENTS_TBL . ' WHERE idProject = \'' . $iIdProject . '\'';
-	$db->db_query($query);
-
-	$query = 'DELETE FROM ' . BAB_TSKMGR_TASKS_TBL . ' WHERE idProject = \'' . $iIdProject . '\'';
-	$db->db_query($query);
-}
-
-function tmSelectProjectList($iIdProjectSpace)
-{
-	$db = &$GLOBALS['babDB'];
-
-	$query = 
-		'SELECT ' .
-			'* ' .
-		'FROM ' .
-			BAB_TSKMGR_PROJECTS_TBL . ' ' .
-		'WHERE ' . 
-			'idProjectSpace = \'' . $iIdProjectSpace . '\'';
-			
-	//bab_debug($query);
-	return $db->db_query($query);
-}
-//-- END TOOLS FUNC
 
 
 function displayMenu()
@@ -160,7 +52,7 @@ function displayMenu()
 
 function displayProjectsSpacesList()
 {
-	global $babBody;
+	global $babBody, $babDB;
 
 	$babBody->title = bab_translate("Projects spaces list");
 
@@ -183,7 +75,9 @@ function displayProjectsSpacesList()
 		'WHERE ' . 
 			'id IN(\'' . implode('\',\'', array_keys($oTmCtx->getVisualisedIdProjectSpace())) . '\')';
 
-	$list = new BAB_TM_List($query);
+	$result = $babDB->db_query($query);
+			
+	$list = new BAB_TM_ListBase($result);
 	
 	$list->set_data('url', $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . 
 		BAB_TM_IDX_DISPLAY_PROJECTS_LIST . '&iIdProjectSpace=');
@@ -212,7 +106,6 @@ function displayProjectsList()
 			'&iIdProjectSpace=' . $iIdProjectSpace)
 	);
 
-	
 	if(bab_isAccessValid(BAB_TSKMGR_PROJECT_CREATOR_GROUPS_TBL, $iIdProjectSpace))
 	{
 		$itemMenu[] = array(
@@ -224,60 +117,51 @@ function displayProjectsList()
 	
 	add_item_menu($itemMenu);
 
-	class BAB_TM_ProjectList extends BAB_BaseFormProcessing
+	class BAB_TM_ProjectList extends BAB_TM_ListBase
 	{
-		var $m_db;
-		var $m_result;
-		var $m_is_altbg;
-	
-		function BAB_TM_ProjectList($iIdProjectSpace)
+		function BAB_TM_ProjectList()
 		{
-			parent::BAB_BaseFormProcessing();
+			parent::BAB_TM_ListBase();
+		}
 	
-			$this->m_db	= & $GLOBALS['babDB'];
-			$this->m_is_altbg = true;
-	
-			$this->set_caption('name', bab_translate("Name"));
-			$this->set_caption('description', bab_translate("Description"));
+		function init()
+		{
 			$this->set_caption('rights', bab_translate("Rights"));
-			$this->set_data('isLink', true);
-			$this->set_data('name', '');
-			$this->set_data('description', '');
+
+			$oTmCtx =& getTskMgrContext();
+			$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
+
 			$this->set_data('iIdProjectSpace', $iIdProjectSpace);
-			
 			$this->set_data('bIsProjectCreator', 
 				bab_isAccessValid(BAB_TSKMGR_PROJECT_CREATOR_GROUPS_TBL, $iIdProjectSpace));
 				
 			$this->set_data('rightsUrl', '#');
-
-			$this->m_result = tmSelectProjectList($iIdProjectSpace);
+			$this->set_data('configurationUrl', '#');
+			$this->m_result = bab_selectProjectList($iIdProjectSpace);
 		}
-	
+		
 		function nextItem()
 		{
-			$data = $this->m_db->db_fetch_array($this->m_result);
-	
-			if(false != $data)
+			if(false != parent::nextItem())
 			{
-				$this->m_is_altbg = !$this->m_is_altbg;
-				$this->set_data('id', $data['id']);
-				$this->set_data('name', htmlentities($data['name'], ENT_QUOTES));
-				$this->set_data('description', htmlentities($data['description'], ENT_QUOTES));
-			
 				$this->get_data('iIdProjectSpace', $iIdProjectSpace);
 				$this->get_data('bIsProjectCreator', $bIsProjectCreator);
-				$this->set_data('bIsRightUrl', ($bIsProjectCreator || bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $data['id'])));
+				$bIsManager = bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $this->m_rowDatas['id']);
+				$this->set_data('bIsRightUrl', ($bIsProjectCreator || $bIsManager));
 				
 				$this->set_data('rightsUrl', $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . 
-					BAB_TM_IDX_DISPLAY_PROJECT_RIGHTS_FORM . '&iIdProjectSpace=' . $iIdProjectSpace . '&iIdProject=' . $data['id']
+					BAB_TM_IDX_DISPLAY_PROJECT_RIGHTS_FORM . '&iIdProjectSpace=' . $iIdProjectSpace . '&iIdProject=' . $this->m_rowDatas['id']
 					);
+					
+				$this->set_data('configurationUrl', '#');
+
 				return true;
 			}
 			return false;
 		}
 	}
 	
-	$list = new BAB_TM_ProjectList($iIdProjectSpace);
+	$list = new BAB_TM_ProjectList();
 	
 	$list->set_data('url', $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . 
 		BAB_TM_IDX_DISPLAY_PROJECT_FORM . '&iIdProjectSpace=' . $iIdProjectSpace . '&iIdProject=');
@@ -335,25 +219,17 @@ function displayProjectForm()
 				else if( (isset($_GET['iIdProject']) || isset($_POST['iIdProject'])) && 0 != $iIdProject)
 				{
 					$this->set_data('is_edition', true);
-					require_once($GLOBALS['babInstallPath'] . 'utilit/tableWrapperClass.php');
-			
-					$attributs = array(
-						'id' => $iIdProject, 
-						'idProjectSpace' => $iIdProjectSpace, 
-						'name' => '',
-						'description' => '');
-						
-					$oTmCtx =& getTskMgrContext();
-					$tblWr =& $oTmCtx->getTableWrapper();
-					$tblWr->setTableName(BAB_TSKMGR_PROJECTS_TBL);
 					
-					if(false != ($attributs = $tblWr->load($attributs, 2, 2, 0, 2)))
+					$aProject = null;
+					$bSuccess = bab_getProject($iIdProject, $aProject);
+					
+					if(false != $bSuccess)
 					{
-						$this->set_data('sName', htmlentities($attributs['name'], ENT_QUOTES) );
-						$this->set_data('sDescription', htmlentities($attributs['description'], ENT_QUOTES));
+						$this->set_data('sName', htmlentities($aProject['name'], ENT_QUOTES) );
+						$this->set_data('sDescription', htmlentities($aProject['description'], ENT_QUOTES));
 					}
 					
-					$this->set_data('bIsDeletable', tmIsProjectDeletable($iIdProject));
+					$this->set_data('bIsDeletable', bab_isProjectDeletable($iIdProject));
 				}
 				else
 				{
@@ -405,7 +281,7 @@ function displayDeleteProjectForm()
 
 	if(bab_isAccessValid(BAB_TSKMGR_PROJECT_CREATOR_GROUPS_TBL, $iIdProjectSpace))
 	{
-		if(tmIsProjectDeletable($iIdProject))
+		if(bab_isProjectDeletable($iIdProject))
 		{
 			$bf = & new BAB_BaseFormProcessing();
 			
@@ -487,8 +363,11 @@ function displayProjectRightsForm()
 	
 		require_once($GLOBALS['babInstallPath'] . 'admin/acl.php');
 	
+		
 		$macl = new macl('usrTskMgr', BAB_TM_IDX_DISPLAY_PROJECTS_LIST, $iIdProject, BAB_TM_ACTION_SET_RIGHT);
-	
+		$macl->set_hidden_field('iIdProjectSpace', $iIdProjectSpace);
+		$macl->set_hidden_field('iIdProject', $iIdProject);
+		
 		//if($bIsCreator)
 		{
 			$macl->addtable(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, bab_translate("Project manager"));
@@ -573,9 +452,14 @@ function addModifyProject()
 						aclDuplicateRights(
 							BAB_TSKMGR_DEFAULT_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProjectSpace, 
 							BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject);
-						tmDuplicateConfiguration(
-							BAB_TSKMGR_DEFAULT_PROJECTS_CONFIGURATION_TBL, $iIdProjectSpace, 
-							BAB_TSKMGR_PROJECTS_CONFIGURATION_TBL, $iIdProject);
+							
+						$aConfiguration = null;
+						$bSuccess = bab_getDefaultProjectSpaceConfiguration($iIdProjectSpace, $aConfiguration);	
+						if($bSuccess)
+						{
+							unset($aConfiguration['id']);
+							bab_createProjectConfiguration($aConfiguration);
+						}
 					}
 				}
 				else
@@ -620,12 +504,11 @@ function deleteProject()
 	
 	if(bab_isAccessValid(BAB_TSKMGR_PROJECT_CREATOR_GROUPS_TBL, $iIdProjectSpace))
 	{
-		if(tmIsProjectDeletable($iIdProject))
+		if(bab_isProjectDeletable($iIdProject))
 		{
 			require_once($GLOBALS['babInstallPath'] . 'admin/acl.php');
 
-			tmDeleteAllTask($iIdProject);
-			tmDeleteProject($iIdProject);
+			bab_deleteProject($iIdProject);
 		}
 	}
 	else
@@ -635,6 +518,13 @@ function deleteProject()
 }
 
 
+function setRight()
+{
+	require_once($GLOBALS['babInstallPath'] . 'admin/acl.php');
+	maclGroups();
+}
+
+	
 bab_cleanGpc();
 
 
@@ -668,23 +558,8 @@ switch($action)
 		break;
 		
 	case BAB_TM_ACTION_SET_RIGHT:
-	{
-		require_once($GLOBALS['babInstallPath'] . 'admin/acl.php');
-		maclGroups();
-		
-		$oTmCtx =& getTskMgrContext();
-		$tblWr =& $oTmCtx->getTableWrapper();
-		
-		$aAttribut = array('idProject' => $oTmCtx->getIdProject(), 'idProjectSpace' => -1);
-		$tblWr->setTableName(BAB_TSKMGR_PROJECTS_TBL);
-		$aAttributs = $tblWr->load($aAttributs, 0, 2, 0, 1);
-		if(false != $aAttributs)
-		{
-			$_POST['idProjectSpace'] = $aAttributs['idProjectSpace'];
-		}
-		
-		break;		
-	}
+		setRight();
+		break;
 }
 
 

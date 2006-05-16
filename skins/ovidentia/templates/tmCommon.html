@@ -32,8 +32,8 @@
 			<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
 				<tr class="BabSiteAdminTitleFontBackground"> 
 					<td width="20%">{ m_captions[name] }</td>
-					<td width="40%">{ m_captions[description] }</td>
-					<td width="40%" align="center">&nbsp;</td>
+					<td width="30%">{ m_captions[description] }</td>
+					<td width="50%" align="center">&nbsp;</td>
 				</tr>
 				<!--#in nextItem -->
 				
@@ -51,7 +51,7 @@
 
 					<td>{ m_datas[description] }</td>
 					<td>
-						<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+						<table border="0" cellspacing="0" cellpadding="2" align="center">
 							<!--#in getNextAnchor -->
 							<tr>
 								<td class="{ m_datas[className] }">
@@ -61,7 +61,7 @@
 								</td>
 							</tr>
 							<!--#endin getNextAnchor -->
-							<tbody><tr><td>&nbsp;</td></tr></tbody>
+							<tbody><tr><td></td></tr></tbody>
 						</table>
 					</td>
 				</tr>
@@ -375,7 +375,7 @@ function submit_form()
 							{ m_captions[notice] }
 						</td>
 						<td>
-							<input type="text" size="3" maxlength="3" name="iEndTaskReminder" value="{ m_datas[endTaskReminder] }" />&nbsp;{ m_captions[days] }
+							<input type="text" size="9" maxlength="9" name="iEndTaskReminder" value="{ m_datas[endTaskReminder] }" />&nbsp;{ m_captions[days] }
 						</td>
 					</tr>
 					<tr> 

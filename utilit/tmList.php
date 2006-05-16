@@ -26,14 +26,15 @@ require_once($babInstallPath . 'utilit/tmdefines.php');
 require_once($babInstallPath . 'utilit/baseFormProcessingClass.php');
 
 		
-class BAB_TM_List extends BAB_BaseFormProcessing
+class BAB_TM_ListBase extends BAB_BaseFormProcessing
 {
 	var $m_db;
 	var $m_result;
+	var $m_rowDatas;
 
 	var $m_is_altbg;
 
-	function BAB_TM_List(& $query)
+	function BAB_TM_ListBase($result = false)
 	{
 		parent::BAB_BaseFormProcessing();
 
@@ -45,22 +46,31 @@ class BAB_TM_List extends BAB_BaseFormProcessing
 		$this->set_data('isLink', true);
 		$this->set_data('name', '');
 		$this->set_data('description', '');
-
-		//bab_debug($query);
-		$this->m_result = $this->m_db->db_query($query);
+		$this->m_rowDatas = false;
+		$this->m_result = $result;
+		
+		$this->init();
 	}
 
+	function init()
+	{
+		
+	}
+	
 	function nextItem()
 	{
-		$data = $this->m_db->db_fetch_array($this->m_result);
-
-		if(false != $data)
+		if(false != $this->m_result)
 		{
-			$this->m_is_altbg = !$this->m_is_altbg;
-			$this->set_data('id', $data['id']);
-			$this->set_data('name', htmlentities($data['name'], ENT_QUOTES));
-			$this->set_data('description', htmlentities($data['description'], ENT_QUOTES));
-			return true;
+			$this->m_rowDatas = $this->m_db->db_fetch_array($this->m_result);
+	
+			if(false != $this->m_rowDatas)
+			{
+				$this->m_is_altbg = !$this->m_is_altbg;
+				$this->set_data('id', $this->m_rowDatas['id']);
+				$this->set_data('name', htmlentities($this->m_rowDatas['name'], ENT_QUOTES));
+				$this->set_data('description', htmlentities($this->m_rowDatas['description'], ENT_QUOTES));
+				return true;
+			}
 		}
 		return false;
 	}

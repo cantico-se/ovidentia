@@ -23,10 +23,11 @@
 ************************************************************************/
 include "base.php";
 require_once($babInstallPath . 'utilit/tmdefines.php');
+require_once($babInstallPath . 'utilit/tmIncl.php');
 require_once($babInstallPath . 'utilit/tmList.php');
 require_once($babInstallPath . 'tmSpecificFieldsFunc.php');
 require_once($babInstallPath . 'tmCategoriesFunc.php');
-//require_once($babInstallPath . 'tmWorkingHoursFunc.php');
+require_once($babInstallPath . 'tmWorkingHoursFunc.php');
 
 
 
@@ -69,18 +70,7 @@ function displayProjectsSpacesList()
 	add_item_menu($itemMenu);
 	$babBody->title = bab_translate("Projects spaces");
 	
-	$query = 
-		'SELECT ' .
-			'id, ' . 
-			'name, ' . 
-			'description ' .
-		'FROM ' .
-			BAB_TSKMGR_PROJECTS_SPACES_TBL . ' ' .
-		'WHERE ' . 
-			'idDelegation =\'' . $babBody->currentAdmGroup . '\'';
-	
-			
-	$list = new BAB_TM_List($query);
+	$list = new BAB_TM_ListBase(bab_selectProjectSpaceList());
 	
 	$list->set_data('url', $GLOBALS['babUrlScript'] . '?tg=admTskMgr&idx=' . 
 		BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_FORM . '&iIdProjectSpace=');
@@ -105,7 +95,7 @@ function displayProjectsSpacesList()
 		bab_translate("Categories list")
 		);
 		
-		$babBody->babecho(bab_printTemplate($list, 'tmCommon.html', 'displayList'));
+	$babBody->babecho(bab_printTemplate($list, 'tmCommon.html', 'displayList'));
 }
 
 
@@ -140,6 +130,7 @@ function displayProjectsSpacesForm()
 			$this->set_data('add_action', BAB_TM_ACTION_ADD_PROJECT_SPACE);
 			$this->set_data('modify_action', BAB_TM_ACTION_MODIFY_PROJECT_SPACE);
 			$this->set_data('delete_action', '');
+			$this->set_data('isDeletable', bab_isProjectSpaceDeletable($iIdProjectSpace));
 			
 			$this->set_data('tg', 'admTskMgr');
 			
@@ -150,21 +141,11 @@ function displayProjectsSpacesForm()
 			else if( (isset($_GET['iIdProjectSpace']) || isset($_POST['iIdProjectSpace'])) && 0 != $iIdProjectSpace)
 			{
 				$this->set_data('is_edition', true);
-		
-				$attributs = array(
-					'id' => $iIdProjectSpace, 
-					'idDelegation' => $iIdDelegation,
-					'name' => '',
-					'description' => '');
-					
-				$oTmCtx =& getTskMgrContext();
-				$tblWr =& $oTmCtx->getTableWrapper();
-				$tblWr->setTableName(BAB_TSKMGR_PROJECTS_SPACES_TBL);
-				
-				if(false != ($attributs = $tblWr->load($attributs, 2, 2, 0, 2)))
+				$aProjectSpace = null;
+				if(bab_getProjectSpace($iIdProjectSpace, $aProjectSpace))
 				{
-					$this->set_data('sName', htmlentities($attributs['name'], ENT_QUOTES) );
-					$this->set_data('sDescription', htmlentities($attributs['description'], ENT_QUOTES));
+					$this->set_data('sName', htmlentities($aProjectSpace['name'], ENT_QUOTES) );
+					$this->set_data('sDescription', htmlentities($aProjectSpace['description'], ENT_QUOTES));
 				}
 			}
 			else
@@ -208,35 +189,43 @@ function displayDeleteProjectsSpacesForm()
 	if(0 != $iIdProjectSpace)
 	{
 		$bf = & new BAB_BaseFormProcessing();
-		
-		$tblWr =& $oTmCtx->getTableWrapper();
-		$tblWr->setTableName(BAB_TSKMGR_PROJECTS_SPACES_TBL);
+		$bf->set_data('iIdProjectSpace', $iIdProjectSpace);
+		$bf->set_data('iIdProject', $iIdProject);
+		$bf->set_data('tg', 'admTskMgr');
+		$bf->set_data('idx', BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST);
+		$bf->set_caption('yes', bab_translate("Yes"));
+		$bf->set_caption('no', bab_translate("No"));
 
-		$attributs = array(
-			'id' => $iIdProjectSpace, 
-			'idDelegation' => $iIdDelegation, 
-			'name' => '',
-			'description' => '');
-				
-		if(false !== ($attributs = $tblWr->load($attributs, 2, 2, 0, 2)))
+		$bf->set_data('action', '');
+		$bf->set_caption('title', '');
+		$bf->set_caption('warning', '');
+		$bf->set_caption('message', '');
+
+		$aProjectSpace = null;
+		$bSuccess = bab_getProjectSpace($iIdProjectSpace, $aProjectSpace);
+		if($bSuccess)
 		{
-			$bf->set_data('idx', BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST);
-			$bf->set_data('action', BAB_TM_ACTION_DELETE_PROJECT_SPACE);
-			//$bf->set_data('objectName', 'iIdProjectSpace');
-			//$bf->set_data('iIdObject', $iIdProjectSpace);
-			$bf->set_data('iIdProjectSpace', $iIdProjectSpace);
-			$bf->set_data('iIdProject', $iIdProject);
-			$bf->set_data('tg', 'admTskMgr');
+			$bf->set_caption('title', bab_translate("Project space = ") . htmlentities($aProjectSpace['name'], ENT_QUOTES));
 
-			$bf->set_caption('warning', bab_translate("This action will delete the project space and all references"));
-			$bf->set_caption('message', bab_translate("Continue ?"));
-			$bf->set_caption('title', bab_translate("Project space= ") . htmlentities($attributs['name'], ENT_QUOTES));
-			$bf->set_caption('yes', bab_translate("Yes"));
-			$bf->set_caption('no', bab_translate("No"));
-
-			$babBody->title = bab_translate("Delete project space");
-			$babBody->babecho(bab_printTemplate($bf, 'tmCommon.html', 'warningyesno'));
+			$bSuccess = bab_isProjectSpaceDeletable($iIdProjectSpace);
+			if($bSuccess)	
+			{
+				$bf->set_data('action', BAB_TM_ACTION_DELETE_PROJECT_SPACE);
+				$bf->set_caption('warning', bab_translate("This action will delete the project space and all references"));
+				$bf->set_caption('message', bab_translate("Continue ?"));
+			}
+			else
+			{
+				$bf->set_caption('warning', bab_translate("You cannot delete this project space before is not empty"));
+			}
 		}
+		else 
+		{
+			$bf->set_caption('warning', bab_translate("Cannot retreive project space information"));
+		}
+		
+		$babBody->title = bab_translate("Delete project space");
+		$babBody->babecho(bab_printTemplate($bf, 'tmCommon.html', 'warningyesno'));
 	}
 	else 
 	{
@@ -306,13 +295,12 @@ function displayDefaultProjectsConfigurationForm()
 	$oTmCtx =& getTskMgrContext();
 	
 	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
-	$iIdDelegation = $oTmCtx->getIdDelegation();
 
 	if(0 != $iIdProjectSpace)
 	{
-		class BAB_DefaultProjectsConfiguration extends BAB_BaseFormProcessing
+		class BAB_TM_Configuration extends BAB_BaseFormProcessing
 		{
-			function BAB_DefaultProjectsConfiguration($iIdProjectSpace, $iIdDelegation)
+			function BAB_TM_Configuration($iIdProjectSpace)
 			{
 				parent::BAB_BaseFormProcessing();
 				
@@ -404,7 +392,7 @@ function displayDefaultProjectsConfigurationForm()
 		add_item_menu($itemMenu);
 		$babBody->title = bab_translate("Default projects configuration");
 	
-		$pjc = & new BAB_DefaultProjectsConfiguration($iIdProjectSpace, $iIdDelegation);
+		$pjc = & new BAB_TM_Configuration($iIdProjectSpace);
 		
 		
 		$babBody->babecho(bab_printTemplate($pjc, 'tmCommon.html', 'configuration'));
@@ -420,70 +408,33 @@ function displayDefaultProjectsConfigurationForm()
 function addModifyProjectSpace()
 {
 	$oTmCtx =& getTskMgrContext();
-	
 	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
 	$iIdDelegation = $oTmCtx->getIdDelegation();
 
-	//bab_debug('addModifyProjectSpace : iIdDelegation ==> ' . $iIdDelegation);
+	
 	$sName = mysql_escape_string(tskmgr_getVariable('sName', ''));
 	$sDescription = mysql_escape_string(tskmgr_getVariable('sDescription', ''));
 	
 	if(strlen(trim($sName)) > 0)
 	{
-		$tblWr =& $oTmCtx->getTableWrapper();
-		$tblWr->setTableName(BAB_TSKMGR_PROJECTS_SPACES_TBL);
-
-		if($iIdProjectSpace == 0)
+		$id = bab_isProjectSpaceExist($iIdDelegation, $sName);
+		
+		if(false == $id)
 		{
-			$attributs = array(
-				'id' => $iIdProjectSpace, 
-				'name' => $sName);
-				
-			if(false === $tblWr->load($attributs, 1, 1, 1, 1))
+			$iIdProjectSpace = bab_createProjectSpace($iIdDelegation, $sName, $sDescription);
+			if(false != $iIdProjectSpace)
 			{
-				$attributs = array(
-					'idDelegation' => $iIdDelegation,
-					'name' => $sName,
-					'description' => $sDescription,
-					'created' => date("Y-m-d H:i:s"),
-					'idUserCreated' => $GLOBALS['BAB_SESS_USERID']
-					);
-
-				$skipFirst = false;
-				if(false != $tblWr->save($attributs, $skipFirst))
-				{
-					$tblWr->setTableName(BAB_TSKMGR_DEFAULT_PROJECTS_CONFIGURATION_TBL);
-					$skipFirst = false;
-	
-					$db =& $tblWr->getDbObject();
-					
-					$attributs = array(
-						'idProjectSpace' => $db->db_insert_id(),
-						'tskUpdateByMgr' => BAB_TM_YES,
-						'endTaskReminder' => 5,
-						'tasksNumerotation' => BAB_TM_SEQUENTIAL,
-						'emailNotice' => BAB_TM_YES,
-						'faqUrl' => '');
-					$tblWr->save($attributs, $skipFirst);
-				}
-			}
-			else
-			{
-				$GLOBALS['babBody']->msgerror = bab_translate("A project space with the name '") . $sName . bab_translate("' already exist");
+				bab_createDefaultProjectSpaceConfiguration($iIdProjectSpace);
 			}
 		}
-		else 
+		else if($id == $iIdProjectSpace)
 		{
-			$attributs = array(
-				'id' => $iIdProjectSpace,
-				'idDelegation' => $iIdDelegation,
-				'name' => $sName,
-				'description' => $sDescription,
-				'modified' => date("Y-m-d H:i:s"),
-				'idUserModified' => $GLOBALS['BAB_SESS_USERID']
-				);
-				
-			$tblWr->update($attributs);
+			bab_updateProjectSpace($iIdProjectSpace, $sName, $sDescription);
+		}
+		else
+		{
+			$GLOBALS['babBody']->msgerror = bab_translate("A project space with the name '") . $sName . bab_translate("' already exist");
+			$_POST['idx'] = BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_FORM;
 		}
 	}
 	else
@@ -505,45 +456,13 @@ function deleteProjectSpace()
 
 	if(0 != $iIdProjectSpace)
 	{
-		$tblWr =& $oTmCtx->getTableWrapper();
-		$tblWr->setTableName(BAB_TSKMGR_PROJECTS_SPACES_TBL);
-
-		$attributs = array(
-			'id' => $iIdProjectSpace, 
-			'refCount' => 0);
-				
-		$attributs = $tblWr->load($attributs, 0, 2, 0, 1);
-		if(false !== $attributs)
+		if(bab_isProjectSpaceDeletable($iIdProjectSpace))
 		{
-			if(0 == $attributs['refCount'])
-			{
-				$tblWr->delete($attributs, 0, 1);
-				
-				
-				$aDPC = $oTmCtx->getDefaultProjectsConfiguration();
-				$tblWr->setTableName(BAB_TSKMGR_DEFAULT_PROJECTS_CONFIGURATION_TBL);
-
-				$attributs = array(
-					'idProjectSpace' => $iIdProjectSpace);
-				$tblWr->delete($attributs, 0, 1);
-
-				require_once($GLOBALS['babInstallPath'] . 'admin/acl.php');
-				
-				aclDelete(BAB_TSKMGR_PROJECT_CREATOR_GROUPS_TBL, $iIdProjectSpace);
-				aclDelete(BAB_TSKMGR_PERSONNAL_TASK_CREATOR_GROUPS_TBL, $iIdProjectSpace);
-				aclDelete(BAB_TSKMGR_DEFAULT_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProjectSpace);
-				aclDelete(BAB_TSKMGR_DEFAULT_PROJECTS_SUPERVISORS_GROUPS_TBL, $iIdProjectSpace);
-				aclDelete(BAB_TSKMGR_DEFAULT_PROJECTS_VISUALIZERS_GROUPS_TBL, $iIdProjectSpace);
-				aclDelete(BAB_TSKMGR_DEFAULT_TASK_RESPONSIBLE_GROUPS_TBL, $iIdProjectSpace);
-			}
-			else
-			{
-				$GLOBALS['babBody']->msgerror = bab_translate("Cannot delete the project because there is some reference on it");
-			}
+			bab_deleteProjectSpace($iIdProjectSpace);
 		}
 		else
 		{
-			$GLOBALS['babBody']->msgerror = bab_translate("Cannot get the project information");
+			$GLOBALS['babBody']->msgerror = bab_translate("Cannot delete the project because there is some reference on it");
 		}
 	}
 	else 
@@ -567,10 +486,7 @@ function saveDefaultProjectConfiguration()
 
 	if(0 < $iIdConfiguration && 0 < $iIdProjectSpace)
 	{
-		$tblWr =& $oTmCtx->getTableWrapper();
-		$tblWr->setTableName(BAB_TSKMGR_DEFAULT_PROJECTS_CONFIGURATION_TBL);
-		
-		$attributs = array(
+		$aConfiguration = array(
 			'id' => $iIdConfiguration,
 			'idProjectSpace' => $iIdProjectSpace,
 			'tskUpdateByMgr' => $iTaskUpdateByMgr,
@@ -578,8 +494,8 @@ function saveDefaultProjectConfiguration()
 			'tasksNumerotation' => $iTaskNumerotation,
 			'emailNotice' => $iEmailNotice,
 			'faqUrl' => $sFaqUrl);
-	
-		$tblWr->update($attributs);
+
+		bab_updateDefaultProjectSpaceConfiguration($aConfiguration);
 	}
 }
 

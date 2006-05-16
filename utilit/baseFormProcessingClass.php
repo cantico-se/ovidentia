@@ -73,6 +73,7 @@
 			$this->m_anchorItem				= array();
 			$this->m_implodedErrorKeys		= '';
 			$this->m_implodedErrorValues	= '';
+			$this->set_data('className', '');
 		}
 
 		function get_data($property_name, &$property_value)

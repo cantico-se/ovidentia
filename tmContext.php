@@ -36,20 +36,24 @@ class BAB_TM_Context
 	var $m_bIsProjectVisualizer;
 	var $m_aVisualizedIdProjectSpace;
 	var $m_aVisualizedIdProject;
-
+//*/
+/*	
 	var $m_bIsProjectManager;
 	var $m_aManagedIdProject;
-
+//*/
+/*	
 	var $m_bIsProjectSupervisor;
 	var $m_aSupervisedIdProject;
-
+//*/
+/*	
 	var $m_bIsManageTask;
 	var $m_aManagedTaskId;
-
+//*/
+/*	
 	var $m_bIsPersonnalTaskOwner;
 	var $m_aPersonnalOwnedIdTask;
-
-/*
+//*/
+/*	
 	var $m_bIsProjectCreator;
 	var $m_aProjectSpacesIdWhoUserIsCreator;
 //*/
@@ -69,19 +73,24 @@ class BAB_TM_Context
 		$this->m_bIsProjectVisualizer = null;
 		$this->m_aVisualizedIdProjectSpace = array();
 		$this->m_aVisualizedIdProject = array();
-
+//*/
+/*	
 		$this->m_bIsProjectManager = null;
 		$this->m_aManagedIdProject = array();
-
+//*/
+/*	
 		$this->m_bIsProjectSupervisor = null;
 		$this->m_aSupervisedIdProject = array();
-
+//*/
+/*	
 		$this->m_bIsManageTask = null;
 		$this->m_aManagedTaskId = array();
-
+//*/
+/*	
 		$this->m_bIsPersonnalTaskOwner = null;
 		$this->m_aPersonnalOwnedIdTask = array();
-/*		
+//*/
+/*	
 		$this->m_bIsProjectCreator = null;
 		$this->m_aProjectSpacesIdWhoUserIsCreator = array();
 //*/
@@ -112,7 +121,7 @@ class BAB_TM_Context
 		}
 		return $this->m_aConfiguration;
 	}
-	
+
 	function isUserProjectVisualizer()
 	{
 		if(is_null($this->m_bIsProjectVisualizer))
@@ -121,7 +130,8 @@ class BAB_TM_Context
 		}
 		return $this->m_bIsProjectVisualizer;
 	}
-
+//*/
+/*	
 	function isUserProjectManager()
 	{
 		if(is_null($this->m_bIsProjectManager))
@@ -130,7 +140,8 @@ class BAB_TM_Context
 		}
 		return $this->m_bIsProjectManager;
 	}
-	
+//*/
+/*	
 	function isUserSuperviseProject()
 	{
 		if(is_null($this->m_bIsProjectSupervisor))
@@ -139,7 +150,8 @@ class BAB_TM_Context
 		}
 		return $this->m_bIsProjectSupervisor;
 	}
-	
+//*/
+/*	
 	function isUserManageTask()
 	{
 		if(is_null($this->m_bIsManageTask))
@@ -148,6 +160,8 @@ class BAB_TM_Context
 		}
 		return $this->m_bIsManageTask;
 	}
+//*/
+/*	
 
 	function isUserOwnPersonnalTask()
 	{
@@ -157,7 +171,7 @@ class BAB_TM_Context
 		}
 		return $this->m_bIsPersonnalTaskOwner;
 	}
-
+//*/
 /*
 	function isUserCanCreateProject($iIdProjectSpace)
 	{
@@ -182,6 +196,8 @@ class BAB_TM_Context
 		}
 		return $this->m_aVisualizedIdProjectSpace;
 	}
+//*/
+/*	
 	
 	function getManagedIdProject()
 	{
@@ -191,6 +207,8 @@ class BAB_TM_Context
 		}
 		return $this->m_aManagedIdProject;
 	}
+//*/
+/*	
 
 	function getManagedTaskId()
 	{
@@ -200,6 +218,8 @@ class BAB_TM_Context
 		}
 		return $this->m_aManagedTaskId;
 	}
+//*/
+/*	
 	
 	function getSupervisedIdProject()
 	{
@@ -209,6 +229,8 @@ class BAB_TM_Context
 		}
 		return $this->m_aSupervisedIdProject;
 	}
+//*/
+/*	
 
 	function getPersonnalOwnedIdTask()
 	{
@@ -218,7 +240,7 @@ class BAB_TM_Context
 		}
 		return $this->m_aPersonnalOwnedIdTask;
 	}
-
+//*/
 /*
 	function getProjectSpacesIdWhoUserCanCreate()
 	{
@@ -233,38 +255,32 @@ class BAB_TM_Context
 	// Private
 	function loadConfiguration()
 	{
+		global $babInstallPath;
+		require_once($babInstallPath . 'utilit/tmIncl.php');
+		
+		$success = false;
 		if(0 != $this->m_iIdProjectSpace)
 		{
-			$attributs = array(
-				'idProjectSpace' => $this->m_iIdProjectSpace,
-				'idProject' => $this->m_iIdProject,
-				'id' => -1,
-				'tskUpdateByMgr' => -1,
-				'endTaskReminder' => -1,
-				'tasksNumerotation' => -1,
-				'emailNotice' => -1,
-				'faqUrl' => '');
-
-			$sTblName = BAB_TSKMGR_PROJECTS_CONFIGURATION_TBL;
-			$whereClauseLength = 2;
-				
 			if(0 == $this->m_iIdProject)
 			{
-				$sTblName = BAB_TSKMGR_DEFAULT_PROJECTS_CONFIGURATION_TBL;
-				$whereClauseLength = 1;
-				unset($attributs['idProject']);
+				$success = bab_getDefaultProjectSpaceConfiguration($this->m_iIdProjectSpace, 
+					$this->m_aConfiguration);
 			}
-				
-			$this->m_oTblWr->setTableName($sTblName);
-			
-			$this->m_aConfiguration = $this->m_oTblWr->load($attributs, 0, count($attributs), 0, $whereClauseLength);
-			if(false != $this->m_aConfiguration)
+			else
 			{
-				return true;
+				$success = bab_getProjectConfiguration($this->m_iIdProjectSpace, $this->m_iIdProject, $this->m_aConfiguration);
 			}
 		}
-		$this->m_aConfiguration = null;
-		return false;
+		
+		if($success)
+		{
+			return true;
+		}
+		else
+		{
+			$this->m_aConfiguration = null;
+			return false;
+		}
 	}
 
 	function queryVisualisedObject()
@@ -308,7 +324,8 @@ class BAB_TM_Context
 			$this->m_bIsProjectVisualizer = false;
 		}
 	}
-
+//*/
+/*	
 	function queryManagedProject()
 	{
 		require_once($GLOBALS['babInstallPath'] . 'admin/acl.php');
@@ -323,7 +340,8 @@ class BAB_TM_Context
 			$this->m_bIsProjectManager = false;
 		}
 	}
-	
+//*/
+/*	
 	function querySupervisedProject()
 	{
 		require_once($GLOBALS['babInstallPath'] . 'admin/acl.php');
@@ -338,7 +356,8 @@ class BAB_TM_Context
 			$this->m_bIsProjectSupervisor = false;
 		}
 	}
-	
+//*/
+/*	
 	function queryManagedTask()
 	{
 		require_once($GLOBALS['babInstallPath'] . 'admin/acl.php');
@@ -353,7 +372,8 @@ class BAB_TM_Context
 			$this->m_bIsManageTask = false;
 		}
 	}
-	
+//*/	
+/*	
 	function queryPersonnalOwnedTask()
 	{
 		require_once($GLOBALS['babInstallPath'] . 'admin/acl.php');
@@ -390,7 +410,7 @@ class BAB_TM_Context
 			$this->m_bIsPersonnalTaskOwner = false;
 		}
 	}
-
+//*/
 /*
 	function queryProjectSpaceWhoUserCanCreate()
 	{

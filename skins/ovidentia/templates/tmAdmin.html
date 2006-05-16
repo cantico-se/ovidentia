@@ -58,7 +58,9 @@ function submit_form()
 							<input type="submit" value="{ m_captions[add] }" onclick="on_btn_clicked('{ m_datas[add_idx] }', '{ m_datas[add_action] }')" />
 						<!--#else m_datas[iIdProjectSpace] -->
 							<input type="submit" value="{ m_captions[modify] }" onclick="on_btn_clicked('{ m_datas[modify_idx] }', '{ m_datas[modify_action] }')" />
-							<input type="submit" value="{ m_captions[delete] }" onclick="on_btn_clicked('{ m_datas[delete_idx] }', '{ m_datas[delete_action] }')" />
+							<!--#if m_datas[isDeletable] -->
+								<input type="submit" value="{ m_captions[delete] }" onclick="on_btn_clicked('{ m_datas[delete_idx] }', '{ m_datas[delete_action] }')" />
+							<!--#endif m_datas[isDeletable] -->
 						<!--#endif m_datas[iIdProjectSpace] -->
 
 						</td>

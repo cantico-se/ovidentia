@@ -29,6 +29,10 @@ class macl
 	{
 	var $tables = array();
 	var $altbg = true;
+	var $aHiddenFields = array();
+	
+	var $sHiddenFieldName = '';
+	var $sHiddenFieldValue = '';
 		
 	function macl($target, $index,$id_object, $return)
 		{
@@ -205,6 +209,41 @@ class macl
 		$babBody->addStyleSheet('groups.css');
 		$babBody->babecho(	bab_printTemplate($this, "acl.html", "grp_maintree"));
 		}
+
+	function get_hidden_field($sName, &$sValue)
+		{
+			if(isset($this->aHiddenFields[$sName]))
+			{
+				$sValue = $this->aHiddenFields[$sName];
+				return true;
+			}
+			return false;
+		}
+
+	function set_hidden_field($sName, $sValue)
+		{
+			$this->aHiddenFields[$sName] = $sValue;
+			return true;
+		}
+		
+	function get_next_hidden_field()
+		{
+			$data = each($this->aHiddenFields);
+			if(false != $data)
+			{
+				$this->sHiddenFieldName = $data['key'];
+				$this->sHiddenFieldValue = $data['value'];
+				return true;
+			}
+			else
+			{
+				$this->sHiddenFieldName = '';
+				$this->sHiddenFieldValue = '';
+				reset($this->aHiddenFields);
+				return false;
+			}
+		}
+	
 	}
 
 
