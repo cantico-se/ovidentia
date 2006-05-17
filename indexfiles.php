@@ -38,36 +38,75 @@ function bab_indexJobs($idx, $object) {
 		$allowed_ip = '127.0.0.1';
 	}
 
+	if (BAB_INDEX_WAITING == $idx) {
+		$status = array(BAB_INDEX_STATUS_TOINDEX);
+	} elseif (BAB_INDEX_ALL == $idx) {
+		$status = array(BAB_INDEX_STATUS_TOINDEX, BAB_INDEX_STATUS_INDEXED);
+	}
+
+	$job = '';
+
 	if ($allowed_ip == $_SERVER['REMOTE_ADDR']) {
 
 		switch($object) {
 			
 			case 'bab_files':
-
+				include_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
+				if ($n = indexAllFmFiles($status)) {
+					$job = sprintf(bab_translate("Indexation of %s files in the file manager"), $n);
+				} else {
+					$job = bab_translate("No files to index in the file manager");
+				}
 				break;
 
 			case 'bab_art_files':
-
+				
 				break;
 
 			case 'bab_forumsfiles':
-
+				
 				break;
 
 			default:	// Addon
-				bab_callAddonsFunction('onIndexObject', $object, $idx);
+				$addon_jobs = array();
+				bab_callAddonsFunction('onIndexObject', $object, $idx, $addon_jobs);
+				$job = implode("\n", $addon_jobs);
 				break;
 		}
 		
 	} else {
-		$GLOBALS['babBody']->msgerror = sprintf(bab_translate("Access denied, your current IP address (%s) is not allowed"),$_SERVER['REMOTE_ADDR']);
+		$GLOBALS['babBodyPopup']->msgerror = sprintf(bab_translate("Access denied, your current IP address (%s) is not allowed"),$_SERVER['REMOTE_ADDR']);
+	}
+
+
+	
+
+
+	$GLOBALS['babBodyPopup']->babecho(bab_toHtml($job."\n"));
+	
+}
+
+
+bab_cleanGpc();
+
+include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
+$GLOBALS['babBodyPopup'] = new babBodyPopup();
+$GLOBALS['babBodyPopup']->title = bab_translate('Indexation');
+
+if (isset($_GET['idx'])) {
+	if (isset($_GET['obj'])) {
+		bab_indexJobs($_GET['idx'], $_GET['obj']);
+	} else {
+		$engine = bab_searchEngineInfos();
+		foreach($engine['indexes'] as $object => $index) {
+			if (!$index['index_disabled']) {
+				bab_indexJobs($_GET['idx'], $object);
+			}
+		}
 	}
 }
 
-
-if (isset($_GET['idx'])) {
-	bab_cleanGpc();
-	bab_indexJobs($_GET['idx'], $_GET['obj']);
-}
+printBabBodyPopup();
+die();
 
 ?>

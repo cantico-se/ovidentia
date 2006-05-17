@@ -151,9 +151,6 @@ close }</a> </td>
 	<td>{ hourtxt }</td>
 	<td>{ authortxt }</td>
 	<td>{ commenttxt }</td>
-	<!--#if index -->
-	<td>{ t_index }</td>
-	<!--#endif index -->
 </tr> 
 <!--#in getnextlog -->
 <tr class="BabSiteAdminFontBackground"> 
@@ -176,7 +173,7 @@ close }</a> </td>
 </tr>
 <!--#endin getnextlog -->
 <tr > 
-<td colspan="<!--#if index -->7<!--#else index -->6<!--#endif index -->" class="BabSiteAdminTitleFontBackground" nowrap valign="middle">
+<td colspan="6" class="BabSiteAdminTitleFontBackground" nowrap valign="middle">
 <table border="0" width="100%" cellpadding="0" cellspacing="0" align="center">
 	<tr> 
 	<td width="1%"><a href="{ topurl }">{ topname }</a> &nbsp; </td>
@@ -411,11 +408,15 @@ window.focus();
 	<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 	<tr class="BabSiteAdminTitleFontBackground"> 
 		<td>&nbsp;</td>
-		<td nowrap>{ versiontxt }</td>
-		<td nowrap>{ datetxt }</td>
-		<td nowrap>{ hourtxt }</td>
-		<td nowrap>{ authortxt }</td>
-		<td>{ commenttxt }&nbsp;</td>
+		<td>{ versiontxt }</td>
+		<td>{ datetxt }</td>
+		<td>{ hourtxt }</td>
+		<td>{ authortxt }</td>
+		<td>{ commenttxt }</td>
+		<!--#if index -->
+		<td>{ t_index }</td>
+		<!--#endif index -->
+
 	</tr> 
 	<!--#in getnextvers -->
 	<tr class="BabSiteAdminFontBackground"> 
@@ -424,21 +425,24 @@ window.focus();
 		<input type="checkbox" name="versions[]" value="{ version }">
 		<!--#endif bmanager -->
 		&nbsp;</td>
-		<td nowrap><a class="BabSiteAdminListLink" href="{ geturl }">{ version }</a></td>
+		<td nowrap><a href="{ geturl }">{ version }</a></td>
 		<td nowrap>{ date }</td>
 		<td nowrap>{ hour }</td>
 		<td>{ author }</td>
 		<td>{ comment }</td>
+		<!--#if index -->
+		<td>{ index_status }</td>
+		<!--#endif index -->
 	</tr>
 	<!--#endin getnextvers -->
-	<tr> 
-		<td class="BabSiteAdminTitleFontBackground" nowrap valign="middle">
+	<tr class="BabSiteAdminTitleFontBackground"> 
+		<td>
 		<!--#if bmanager -->
 		<a href="javascript:submitForm('lvers','listform')"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deletealt }" border="0"></a>
 		<!--#endif bmanager -->&nbsp;
 		</td>
-		<td colspan="5" class="BabSiteAdminTitleFontBackground" nowrap valign="middle">
-			<table class="BabLoginMenuBackground" border="0" width="100%" cellpadding="0" cellspacing="0" align="center">
+		<td colspan="<!--#if index -->6<!--#else index -->5<!--#endif index -->">
+			<table border="0" width="100%" cellpadding="0" cellspacing="0" align="center">
 			<tr> 
 				<td width="1%"><a href="{ topurl }">{ topname }</a> &nbsp; </td>
 				<td width="1%"><a href="{ prevurl }">{ prevname }</a> &nbsp; </td>

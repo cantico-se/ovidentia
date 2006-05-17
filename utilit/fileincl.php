@@ -391,4 +391,101 @@ function notifyFileAuthor($subject, $version, $author, $filename)
 	$mail->send();
 	}
 
+
+/**
+ * Index all files of file manager
+ * @param array $status
+ */
+function indexAllFmFiles($status) {
+	
+	$db = &$GLOBALS['babDB'];
+
+	$res = $db->db_query("
+	
+		SELECT 
+			f.id,
+			f.name,
+			f.path, 
+			f.id_owner, 
+			f.bgroup, 
+			d.id version 
+
+		FROM 
+			".BAB_FILES_TBL." f 
+			LEFT JOIN ".BAB_FM_FOLDERS_TBL." d ON d.id = f.id_owner AND f.bgroup ='Y' AND d.version ='Y'
+		WHERE 
+			f.index_status IN('".implode("','",$status)."')
+		
+	");
+
+	
+	$files = array();
+
+	while ($arr = $db->db_fetch_assoc($res)) {
+
+		$pathx = bab_getUploadFullPath($arr['bgroup'], $arr['id_owner']);
+
+		if (!empty($arr['path'])) {
+			$arr['path'] .= '/';
+		}
+
+		$files[] = $pathx.$arr['path'].$arr['name'];
+
+		if (null != $arr['version']) {
+			$resv = $db->db_query("
+			
+				SELECT 
+					ver_major, 
+					ver_minor 
+				FROM ".BAB_FM_FILESVER_TBL." 
+				WHERE 
+					id_file='".$arr['id']."' 
+					AND index_status IN('".implode("','",$status)."')
+			");
+
+			while ($arrv = $db->db_fetch_assoc($resv)) {
+				if( is_dir($pathx.BAB_FVERSION_FOLDER)) {
+					$files[] = $pathx.BAB_FVERSION_FOLDER."/".$arrv['ver_major'].",".$arrv['ver_minor'].",".$arr['name'];
+				}
+			}
+		}
+	}
+
+
+	if (!$files)
+		return false;
+
+	include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
+	include_once $GLOBALS['babInstallPath']."utilit/searchincl.php";
+
+	
+	if (in_array(BAB_INDEX_STATUS_INDEXED, $status)) {
+		bab_indexFiles($files, 'bab_files');
+	} else {
+		$obj = new bab_indexObject('bab_files');
+		$obj->addFileToIndex($files);
+	}
+
+
+	$db->db_query("
+	
+		UPDATE ".BAB_FILES_TBL." SET index_status='".BAB_INDEX_STATUS_INDEXED."'
+		WHERE 
+			index_status IN('".implode("','",$status)."')
+		
+	");
+
+
+	$db->db_query("
+	
+		UPDATE ".BAB_FM_FILESVER_TBL." SET index_status='".BAB_INDEX_STATUS_INDEXED."'
+		WHERE 
+			index_status IN('".implode("','",$status)."')
+		
+	");
+
+
+	return count($files);
+}
+
 ?>

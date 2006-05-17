@@ -47,6 +47,9 @@ function listIndexFiles()
 			$this->t_update		= bab_translate("Update");
 			$this->t_allowed_ip = bab_translate("Allowed IP address");
 
+			$this->t_all_all	= bab_translate("Index all files from all indexes");
+			$this->t_all_waiting= bab_translate("Index waiting files from all indexes");
+
 			$this->db = &$GLOBALS['babDB'];
 
 			$this->all = BAB_INDEX_ALL;

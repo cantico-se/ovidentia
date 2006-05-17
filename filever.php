@@ -245,7 +245,8 @@ function showHistoricFile($idf, $pos)
 			$this->authortxt = bab_translate("Author");
 			$this->actiontxt = bab_translate("Action");
 			$this->versiontxt = bab_translate("Version");
-			$this->t_index = bab_translate("Indexation");
+			
+			
 
 			if(bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $arrfold['id']))
 				{
@@ -292,7 +293,7 @@ function showHistoricFile($idf, $pos)
 					}
 				}
 
-			$req = "select l.*,v.index_status from ".BAB_FM_FILESLOG_TBL." l LEFT JOIN ".BAB_FM_FILESVER_TBL." v ON v.id_file='".$idf."' AND CONCAT(v.ver_major,'.',v.ver_minor) = l.version WHERE l.id_file='".$idf."' order by l.date desc";
+			$req = "select * FROM ".BAB_FM_FILESLOG_TBL." WHERE id_file='".$idf."' order by date desc";
 			if( $total > BAB_FM_MAXLOGS)
 				{
 				$req .= " limit ".$pos.",".BAB_FM_MAXLOGS;
@@ -302,11 +303,7 @@ function showHistoricFile($idf, $pos)
 			$this->count = $babDB->db_num_rows($this->res);
 
 
-			if ($engine = bab_searchEngineInfos()) {
-				$this->index = true;
-				} else {
-				$this->index = false;
-				}
+			
 			}
 
 		function getnextlog()
@@ -323,7 +320,7 @@ function showHistoricFile($idf, $pos)
 				$this->comment = $arr['comment'];
 				$this->action = $arr['action'];
 				$this->version = $arr['version'];
-				$this->index_status = bab_getIndexStatusLabel($arr['index_status']);
+				
 				$i++;
 				return true;
 				}
@@ -404,6 +401,7 @@ function showVersionHistoricFile($idf, $pos)
 			$this->actiontxt = bab_translate("Action");
 			$this->versiontxt = bab_translate("Version");
 			$this->deletealt = bab_translate("Delete");
+			$this->t_index = bab_translate("Indexation");
 
 			if(bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $arrfold['id']))
 				$this->bmanager = true;
@@ -453,6 +451,12 @@ function showVersionHistoricFile($idf, $pos)
 			$this->filename = $arrfile['name'];
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
+
+			if ($engine = bab_searchEngineInfos()) {
+				$this->index = true;
+				} else {
+				$this->index = false;
+				}
 			}
 
 		function getnextvers()
@@ -469,6 +473,7 @@ function showVersionHistoricFile($idf, $pos)
 				$this->comment = $arr['comment'];
 				$this->version = $arr['ver_major'].".".$arr['ver_minor'];
 				$this->geturl = $GLOBALS['babUrlScript']."?tg=filever&idx=get&idf=".$this->idf."&vmaj=".$arr['ver_major']."&vmin=".$arr['ver_minor'];
+				$this->index_status = bab_getIndexStatusLabel($arr['index_status']);
 				$i++;
 				return true;
 				}
@@ -683,9 +688,16 @@ function commitFile($idf, $comment, $vermajor, $filename, $size, $tmp )
 		copy($pathx.$arrfile['name'], $pathx.BAB_FVERSION_FOLDER."/".$arrfile['ver_major'].",".$arrfile['ver_minor'].",".$arrfile['name']);
 		copy($pathx.BAB_FVERSION_FOLDER."/".$vmajor.",".$vminor.",".$arrfile['name'], $pathx.$arrfile['name']);
 		unlink($pathx.BAB_FVERSION_FOLDER."/".$vmajor.",".$vminor.",".$arrfile['name']);
+
+		// index
+
+		include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
+		$index_status = bab_indexOnLoadFiles(
+			array($pathx.$arrfile['name'],  $pathx.BAB_FVERSION_FOLDER."/".$arrfile['ver_major'].",".$arrfile['ver_minor'].",".$arrfile['name'])
+			, 'bab_files');
 	
-		$babDB->db_query("update ".BAB_FILES_TBL." set edit='0', modified=now(), modifiedby='".$GLOBALS['BAB_SESS_USERID']."', ver_major='".$vmajor."', ver_minor='".$vminor."', ver_comment='".$comment."' where id='".$idf."'");
-		$babDB->db_query("update ".BAB_FM_FILESVER_TBL." set ver_major='".$arrfile['ver_major']."', ver_minor='".$arrfile['ver_minor']."', comment='".addslashes($arrfile['ver_comment'])."', idfai='0', confirmed='Y' where id='".$arrfile['edit']."'");
+		$babDB->db_query("update ".BAB_FILES_TBL." set edit='0', modified=now(), modifiedby='".$GLOBALS['BAB_SESS_USERID']."', ver_major='".$vmajor."', ver_minor='".$vminor."', ver_comment='".$comment."', index_status='".$index_status."' where id='".$idf."'");
+		$babDB->db_query("update ".BAB_FM_FILESVER_TBL." set ver_major='".$arrfile['ver_major']."', ver_minor='".$arrfile['ver_minor']."', comment='".addslashes($arrfile['ver_comment'])."', idfai='0', confirmed='Y', index_status='".$index_status."' where id='".$arrfile['edit']."'");
 		if( $arrfold['filenotify'] == 'Y' )
 			fileNotifyMembers($filename, $arrfile['path'], $arrfile['id_owner'], bab_translate("A new version file has been uploaded"));
 		}
@@ -796,8 +808,12 @@ $arrfile = array();
 $arrfold = array();
 $lockauthor = 0;
 
-if( isset($idf) )
+
+
+if( isset($_REQUEST['idf']) )
 {
+	$idf = $_REQUEST['idf'];
+
 	$res = $babDB->db_query("select * from ".BAB_FILES_TBL." where id='".$idf."'");
 	if( $res && $babDB->db_num_rows($res) > 0 )
 	{
@@ -826,17 +842,17 @@ if( isset($idf) )
 		{
 			if( $bupdate == true )
 			{
-				if($afile == 'lock')
-					lockFile($idf, $comment); 
-				else if( $afile == 'unlock')
-					unlockFile($idf, $comment); 
-				else if( $afile == 'commit' )
-					commitFile($idf, $comment, $vermajor, $uploadf_name, $uploadf_size, $uploadf ); 
-				else if( bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $arrfold['id']) && $afile == 'delv' )
+				if($_POST['afile'] == 'lock')
+					lockFile($idf, $_POST['comment']); 
+				else if( $_POST['afile'] == 'unlock')
+					unlockFile($idf, $_POST['comment']); 
+				else if( $_POST['afile'] == 'commit' )
+					commitFile($idf, $_POST['comment'], $_POST['vermajor'], $_FILES['uploadf']['name'], $_FILES['uploadf']['size'], $_FILES['uploadf']['tmp_name'] ); 
+				else if( bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $arrfold['id']) && $_POST['afile'] == 'delv' )
 					{
 					deleteFileVersions($idf, $versions ); 
 					}
-				else if( bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $arrfold['id']) && $afile == 'cleanlog' )
+				else if( bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $arrfold['id']) && $_POST['afile'] == 'cleanlog' )
 					{
 					cleanFileLog($idf, $date ); 
 					}
