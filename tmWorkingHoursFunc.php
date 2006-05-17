@@ -146,10 +146,12 @@ function updateWorkingHours()
 	$oTmCtx =& getTskMgrContext();
 	$tblWr =& $oTmCtx->getTableWrapper();
 	$tblWr->setTableName(BAB_TSKMGR_TASKS_WORKING_HOURS_TBL);
-	
+
+/*	
 	$iIdUser = ('admTskMgr' != tskmgr_getVariable('tg', 'admTskMgr')) ? $GLOBALS['BAB_SESS_USERID'] : 0;
 	$aAttribut = array('idUser' => $iIdUser);
 	$tblWr->delete($aAttribut, 0, 1);		
+//*/
 
 	foreach($aWeekDays as $weekDay => $value)
 	{
@@ -162,20 +164,130 @@ function updateWorkingHours()
 		$skipFirst = false;
 		
 		//bab_debug($value);
-		
+
+		$iTimeToSec1 = 0;
+		$iTimeToSec2 = 0;
+		$bIsValid = false;
+		$wh = new BAB_WorkingHours();		
+
 		while( false != ($sStartHour = each($aStartHour)) && false != ($sEndHour = each($aEndHour)) )
 		{
-			if(false != $sStartHour && false != $sEndHour)
+			$bIsValid = $wh->isWorkingHourValid($sStartHour['value'], $sEndHour['value'], &$iTimeToSec1, &$iTimeToSec2);
+			if($bIsValid)
 			{
+				bab_debug('sStartHour ==> (' . sprintf('%02s', $sStartHour['value']) . ' [ ' . $iTimeToSec1 . ' ]) sEndHour ==> (' . sprintf('%02s', $sEndHour['value']) . ' [ ' . $iTimeToSec2 . ' ])');
+			}
+			else
+			{
+				bab_debug('INVALID ==> [ sStartHour ==> ' . $sStartHour['value'] . ' sEndHour ==> ' . $sEndHour['value'] . ' ] <==');
+			}
+/*
 				$aAttribut = array('idUser' => $iIdUser, 'weekDay' => $weekDay,
 					'startHour' => $sStartHour['value'], 'endHour' => $sEndHour['value']);
 					
 				$tblWr->save($aAttribut, $skipFirst);
-			}
+//*/
 		}
 	}
 }
 
 
 
+class BAB_WorkingHours
+{
+	var $m_aWeekDays;
+	var $m_aWorkingHours;
+	var $m_aWorkingTimes;
+	
+	function BAB_WorkingHours()
+	{
+		$this->m_aWeekDays = array(
+			0 => bab_translate("Sunday"), 1 => bab_translate("Monday"), 2 => bab_translate("Tuesday"),
+			3 => bab_translate("Wednesday"), 4 => bab_translate("Thursday"), 5 => bab_translate("Friday"), 
+			6 => bab_translate("Saturday"));
+
+		$this->m_aWorkingHours = array(0 => array(), 1 => array(), 2 => array(), 3 => array(),
+			4 => array(), 5 => array(), 6 => array());
+			
+		$this->m_aWorkingTimes = array(0 => array(), 1 => array(), 2 => array(), 3 => array(),
+			4 => array(), 5 => array(), 6 => array());
+	}
+	
+	function buildFromPost()
+	{
+		foreach($this->m_aWeekDays as $iWeekDay => $value)
+		{
+			$sStartHourIdx = 'startHour_' . $iWeekDay . '_';
+			$aStartHour = (isset($_POST[$sStartHourIdx])) ? $_POST[$sStartHourIdx] : array();
+			
+			$sEndHourIdx = 'endHour_' . $iWeekDay . '_';
+			$aEndHour = (isset($_POST[$sEndHourIdx])) ?  $_POST[$sEndHourIdx] : array();
+			
+//			$skipFirst = false;
+			
+			//bab_debug($value);
+			
+			while( false != ($aStartHour = each($aStartHour)) && false != ($aEndHour = each($aEndHour)) )
+			{
+/*				
+				toSecond($aStartHour['value']);
+				toSecond($aEndHour['value']);
+/*
+				$aAttribut = array('idUser' => $iIdUser, 'weekDay' => $weekDay,
+					'startHour' => $sStartHour['value'], 'endHour' => $sEndHour['value']);
+					
+				$tblWr->save($aAttribut, $skipFirst);
+//*/
+			}
+		}		
+	}
+	
+	function insertWorkingHour($iWeekDay, $sTime1, $sTime2)
+	{
+		
+	}
+	
+	function isWorkingHourValid($sTime1, $sTime2, &$iTimeToSec1, &$iTimeToSec2)
+	{
+		if($this->isHourValid($sTime1, $iTimeToSec1) && $this->isHourValid($sTime2, $iTimeToSec2))
+		{
+			if($iTimeToSec1 < $iTimeToSec2)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	function isHourValid($sTime, &$iTimeToSec)
+	{
+		$iTimeToSec = 0;
+		
+		$aHours = array();
+		$iHours = 0;
+		$iSeconds = 0;
+		
+		if(preg_match('/^(\d|[0-1]\d|2[0-3]):([0-5][0-9])$/', $sTime, $aHours))
+		{
+			$iHours = (int) $aHours[1];
+			$iSeconds = (int) $aHours[2];
+		}
+		else
+		{
+			if(!preg_match('/^(\d|[0-1]\d|2[0-3])$/', $sTime, $aHours))
+			{
+				return false;
+			}
+			$iHours = (int) $aHours[1];
+		}
+		
+		if(0 <= $iHours && 23 >= $iHours && 0 <= $iSeconds && 59 >= $iSeconds)
+		{
+			$iTimeToSec = (int)(3600 * $iHours) + $iSeconds;
+			return true;
+		}
+		
+		return false;
+	}
+}
 ?>

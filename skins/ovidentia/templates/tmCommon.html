@@ -182,20 +182,17 @@ function deleteCheckedRows(sCtrlName, sTbodyId)
 	var oTBody = document.getElementById(sTbodyId);
 	if(null != oTBody)
 	{
-		for (i = 0; i < form.elements.length; i++)
+		for (i = 0; i < form.elements.length; )
 		{
 			objCtrl = form.elements[i];
 			if(objCtrl.name.substring(0, sCtrlName.length) == sCtrlName && true == objCtrl.checked)
 			{
-				//alert(objCtrl.name);
-				
-				oTR2Del[oTR2Del.length] = objCtrl.parentNode.parentNode;
+				oTBody.removeChild(objCtrl.parentNode.parentNode);
 			}
-		}
-		
-		for(i = 0; i < oTR2Del.length; i++)
-		{
-			oTBody.removeChild(oTR2Del[i]);
+			else
+			{
+				i++;
+			}
 		}
 	}
 }
