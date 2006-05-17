@@ -1386,6 +1386,8 @@ function showSetArticleProperties($idart)
 	class temp
 		{
 
+		var $altbg = true;
+
 		function temp($idart)
 			{
 			global $babBodyPopup, $babBody, $babDB, $BAB_SESS_USERID, $topicid, $rfurl;
@@ -1408,6 +1410,11 @@ function showSetArticleProperties($idart)
 				$this->titletxt = bab_translate("Title");
 				$this->confirmsubmit = bab_translate("Are you sure you want to submit this article?");
 				$this->confirmcancel = bab_translate("Are you sure you want to remove this draft?");
+
+				$this->t_file = bab_translate("File");
+				$this->t_description = bab_translate("Description");
+				$this->t_index_status = bab_translate("Indexation");
+
 				$this->idart = $idart;
 				if( $arr['id_topic'] != 0 && bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $arr['id_topic']))
 					{
@@ -1714,6 +1721,7 @@ function showSetArticleProperties($idart)
 				{
 				$this->message = '';
 				}
+
 			}
 
 		function getnexttopic()
@@ -1772,6 +1780,7 @@ function showSetArticleProperties($idart)
 			static $i = 0;
 			if( $i < $this->countfiles)
 				{
+				$this->altbg = !$this->altbg;
 				$arr = $babDB->db_fetch_array($this->resfiles);
 				$this->urlfile = $GLOBALS['babUrlScript']."?tg=artedit&idx=getf&idart=".$this->idart."&idf=".$arr['id'];
 				$this->deleteurl = $GLOBALS['babUrlScript']."?tg=artedit&idx=s3&updstep3=delf&idart=".$this->idart."&idf=".$arr['id'];

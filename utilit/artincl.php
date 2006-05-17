@@ -563,14 +563,43 @@ function acceptWaitingArticle($idart)
 			$res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_FILES_TBL." where id_draft='".$idart."'");
 			$pathdest = bab_getUploadArticlesPath();
 			$pathorg = bab_getUploadDraftsPath();
+			$files_to_index = array();
+			$files_to_insert = array();
+
+			include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
+
 			while($rr = $babDB->db_fetch_array($res))
 				{
 				if( copy($pathorg.$idart.",".$rr['name'], $pathdest.$articleid.",".$rr['name']))
 					{
-					$babDB->db_query("insert into ".BAB_ART_FILES_TBL." (id_article, name, description) values ('".$articleid."','".addslashes($rr['name'])."','".addslashes($rr['description'])."')");
+					// index files
+					$files_to_index[] = $pathdest.$articleid.",".$rr['name'];
+
+					// inserts
+					$files_to_insert[] = array(
+							'id_article'	=> $articleid,
+							'name'			=> $rr['name'],
+							'description'	=> $rr['description']
+						);
 					}
 				}
 
+			$index_status = bab_indexOnLoadFiles($files_to_index , 'bab_art_files');
+
+			foreach($files_to_insert as $arr) {
+					$babDB->db_query(
+					
+					"INSERT INTO ".BAB_ART_FILES_TBL." 
+						(id_article, name, description, index_status) 
+					VALUES 
+						(
+						'".$babDB->db_escape_string($arr['id_article'])."', 
+						'".$babDB->db_escape_string($rr['name'])."', 
+						'".$babDB->db_escape_string($rr['description'])."', 
+						'".$babDB->db_escape_string($index_status)."' 
+						)
+					");
+				}
 			}
 
 		if( $arr['id_author'] == 0 || (($artauthor = bab_getUserName($arr['id_author'])) == ''))

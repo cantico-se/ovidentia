@@ -1146,29 +1146,26 @@ return true;
 	</tr>
 	<tr> 
 	<td align="right">{ filetxt }:</td>
-	<td><input type="file" name="docf" maxlength="255" value=""> &nbsp; { maxsizetxt }
+	<td colspan="2"><input type="file" name="docf" maxlength="255" value=""> &nbsp; { maxsizetxt }
 	</td>
-	<td>&nbsp;</td>
 	</tr>
 	<tr> 
-	<td align="right" valign="middle">{ desctxt }:</td>
-	<td align="left" valign="middle"><input type="text" name="docdesc" maxlength="255" value=""> &nbsp; <input type="submit" name="badd" value="{ addtxt }" onclick="javascript:stepSubmitForm('fadd','propform');">
-	</td>
-	<td align="right" valign="middle">&nbsp;
-	</td>
+		<td align="right">{ desctxt }:</td>
+		<td colspan="2"><input type="text" name="docdesc" maxlength="255" value=""> &nbsp; <input type="submit" name="badd" value="{ addtxt }" onclick="javascript:stepSubmitForm('fadd','propform');">
+		</td>
 	</tr>
 	<!--#if countfiles -->
+	<tr class="BabSiteAdminTitleFontBackground">
+		<td>{ t_file }</td>
+		<td colspan="2">{ t_description }</td>
+	</tr>
 	<!--#in getnextfile -->
-	<tr> 
-	<td align="center" valign="middle" colspan="3">
-		<table width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
-		<tr>
-		<td width="1%"><a title="{ deletetxt }" href="{ deleteurl }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/del.gif" alt="{ deletetxt }" border="0"></a></td>
-		<td width="20%" align="left" valign="middle"><a href="{ urlfile }">{ name }</a></td>
-		<td align="left" valign="middle">{ docdesc }</td>
-		</tr>
-		</table>
-	</td>
+	<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->  
+		<td>
+			<a title="{ deletetxt }" href="{ deleteurl }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/del.gif" alt="{ deletetxt }" border="0"></a>&nbsp;&nbsp;<a href="{ urlfile }">{ name }</a>
+		</td>
+		
+		<td colspan="2">{ docdesc }</td>
 	</tr>
 	<!--#endin getnextfile -->
 	<!--#endif countfiles -->
