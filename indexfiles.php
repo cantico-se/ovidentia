@@ -46,25 +46,35 @@ function bab_indexJobs($idx, $object) {
 
 	$job = '';
 
-	if ($allowed_ip == $_SERVER['REMOTE_ADDR']) {
+	if ($allowed_ip === $_SERVER['REMOTE_ADDR']) {
 
 		switch($object) {
 			
 			case 'bab_files':
 				include_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
 				if ($n = indexAllFmFiles($status)) {
-					$job = sprintf(bab_translate("Indexation of %s files in the file manager"), $n);
+					$job = sprintf(bab_translate("Indexation of %d files in the file manager"), $n);
 				} else {
 					$job = bab_translate("No files to index in the file manager");
 				}
 				break;
 
 			case 'bab_art_files':
-				
+				include_once $GLOBALS['babInstallPath'].'utilit/artincl.php';
+				if ($n = indexAllArtFiles($status)) {
+					$job = sprintf(bab_translate("Indexation of %d files in article files repository"), $n);
+				} else {
+					$job = bab_translate("No files to index in the articles");
+				}
 				break;
 
 			case 'bab_forumsfiles':
-				
+				include_once $GLOBALS['babInstallPath'].'utilit/forumincl.php';
+				if ($n = indexAllForumFiles($status)) {
+					$job = sprintf(bab_translate("Indexation of %d files in the forums"), $n);
+				} else {
+					$job = bab_translate("No files to index in the forums");
+				}
 				break;
 
 			default:	// Addon
@@ -82,7 +92,7 @@ function bab_indexJobs($idx, $object) {
 	
 
 
-	$GLOBALS['babBodyPopup']->babecho(bab_toHtml($job."\n"));
+	$GLOBALS['babBodyPopup']->babecho(bab_toHtml($job."\n", BAB_HTML_ALL));
 	
 }
 

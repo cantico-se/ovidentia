@@ -388,4 +388,72 @@ function bab_getPostFiles($forum,$postid)
 	return $out;
 	}
 
+
+
+
+
+
+
+
+/**
+ * Index all forum files
+ * @param array $status
+ */
+function indexAllForumFiles($status) {
+	
+	$db = &$GLOBALS['babDB'];
+
+	$res = $db->db_query("
+	
+		SELECT 
+			id,
+			name,
+			id_post 
+
+		FROM 
+			".BAB_FORUMSFILES_TBL." 
+		WHERE 
+			index_status IN('".implode("','",$status)."')
+		
+	");
+
+	$baseurl = $GLOBALS['babUploadPath'].'/forums/';
+	$files = array();
+
+	while ($arr = $db->db_fetch_assoc($res)) {
+
+		$files[] = $baseurl.$arr['id_post'].",".$arr['name'];
+	}
+
+	if (!$files)
+		return false;
+
+	include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
+	include_once $GLOBALS['babInstallPath']."utilit/searchincl.php";
+
+	
+	if (in_array(BAB_INDEX_STATUS_INDEXED, $status)) {
+		bab_indexFiles($files, 'bab_forumsfiles');
+	} else {
+		$obj = new bab_indexObject('bab_forumsfiles');
+		$obj->addFileToIndex($files);
+	}
+
+
+	$db->db_query("
+	
+		UPDATE ".BAB_FORUMSFILES_TBL." SET index_status='".BAB_INDEX_STATUS_INDEXED."'
+		WHERE 
+			index_status IN('".implode("','",$status)."')
+		
+	");
+
+
+	return count($files);
+}
+
+
+
+
+
 ?>

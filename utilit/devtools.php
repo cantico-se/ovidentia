@@ -415,6 +415,7 @@ function bab_f_getDebug() {
 				$this->color_query($this->text);
 				return true;
 			}
+			reset($this->messages);
 			return false;
 		}
 	}
@@ -426,6 +427,22 @@ function bab_f_getDebug() {
 	}
 
 	$temp = new bab_f_getDebugCls();
+
+
+	if (defined('BAB_DEBUG_SEND_TO')) {
+
+		include_once $GLOBALS['babInstallPath']."utilit/mailincl.php";
+
+		$mail = bab_mail();
+		if( $mail != false ) {
+			$mail->mailFrom($GLOBALS['babAdminEmail'], $GLOBALS['babAdminName']);
+			$mail->mailSubject(bab_translate("Ovidentia debug informations"));
+			$mail->mailBody(bab_printTemplate($temp, 'devtools.html', 'debug_mail'), "html");
+			$mail->mailTo(BAB_DEBUG_SEND_TO);
+			$mail->send();
+		}
+	}
+
 	return bab_printTemplate($temp, 'devtools.html', 'debug');
 }
 

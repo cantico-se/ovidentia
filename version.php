@@ -162,6 +162,8 @@ function putVersion($version)
 
 function echoLang($path)
 {
+	set_time_limit(3600);
+	
 	$arr = array();
 	$handle = opendir($path); 
 	while (false != ($filename = readdir($handle)))

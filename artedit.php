@@ -1011,6 +1011,7 @@ function showChoiceArticleModify($topicid)
 		var $lang;
 		var $bmodify;
 		var $modifauthor;
+		var $altbg = true;
 
 		function temp($topicid)
 			{
@@ -1059,6 +1060,7 @@ function showChoiceArticleModify($topicid)
 			static $i = 0;
 			if( $i < $this->count)
 				{
+				$this->altbg = !$this->altbg;
 				$arr = $babDB->db_fetch_array($this->res);
 				$this->articleid = $arr['id'];
 				$this->articletitle = $arr['title'];
@@ -2906,8 +2908,8 @@ switch($idx)
 	case "sub":
 		if( submitArticleDraft( $idart, $babBody->msgerror, true) )
 			{
-			Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=list");
-			exit;
+			//Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=list");
+			//exit;
 			}
 		$idx = "list";
 		/* break; */

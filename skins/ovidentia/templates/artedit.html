@@ -300,42 +300,41 @@ document.forms[fmname].updstep02.value = cmd;
 <input type="hidden" name="topicid" value="{ topicid }">
 <input type="hidden" name="updstep02" value="">
 <br>
-<table width="95%" cellpadding="0" cellspacing="0" align="center">
-<tr> 
-<td> 
-<span style="background-color:#D1D1D9">&nbsp;{ steptitle }&nbsp;</span>
-</td>
-</tr>
-</table>
-<table style="border:2px #D1D1D9 solid" width="95%" cellpadding="0" cellspacing="0" align="center">
-<tr> 
-<td><br>
+
+
 <table width="97%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
 <td class="BabLoginCadreBackground">
-<table class="BabSiteAdminFontBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
-<!--#in getnextarticle -->
-<tr> 
-<td align="left" valign="top" nowrap class="BabTopicsAdminListTitle"><strong>{ articletitle }</strong></td>
-<td align="left" valign="top" nowrap class="BabTopicsAdminListTitle">
-<!--#if bmodify -->
-&nbsp;
-<!--#else bmodify -->
-<strong>{ modifybytxt }&nbsp;(&nbsp;{ modifauthor }&nbsp;)</strong>
-<!--#endif bmodify -->
-</td>
-<td width="1%" align="right" valign="top" nowrap class="BabTopicsAdminListTitle">&nbsp;
-<!--#if bmodify -->
-<input type="radio" name="articleid" value="{ articleid }" { articlechecked }>
-<!--#else bmodify -->
-<!--#if bauthor -->
-<a class="BabSiteAdminListLink" href="{ editdrafturl }">{ editdrafttxt }</a>
-<!--#endif bauthor -->
-<!--#endif bmodify -->
-</td>
-</tr>
-<!--#endin getnextarticle -->
-</table>
+	<table border="0" width="100%" cellpadding="5" cellspacing="0" align="center">
+	<tr class="BabSiteAdminTitleFontBackground"> 
+		<td colspan="3">
+			{ steptitle }
+		</td>
+	</tr>
+
+	<!--#in getnextarticle -->
+	<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+
+	<td>{ articletitle }</td>
+		<td>
+		<!--#if bmodify -->
+		&nbsp;
+		<!--#else bmodify -->
+		<strong>{ modifybytxt }&nbsp;(&nbsp;{ modifauthor }&nbsp;)</strong>
+		<!--#endif bmodify -->
+		</td>
+		<td width="2%" align="right">
+		<!--#if bmodify -->
+		<input type="radio" name="articleid" value="{ articleid }" { articlechecked } />
+		<!--#else bmodify -->
+		<!--#if bauthor -->
+		<a href="{ editdrafturl }">{ editdrafttxt }</a>
+		<!--#endif bauthor -->
+		<!--#endif bmodify -->
+		</td>
+	</tr>
+	<!--#endin getnextarticle -->
+	</table>
 </td>
 </tr>
 </table>
@@ -343,18 +342,16 @@ document.forms[fmname].updstep02.value = cmd;
 <table width="97%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
 <td class="BabLoginCadreBackground">
-<table class="BabSiteAdminFontBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
-<tr> 
-<td colspan="4" align="right"><input type="submit" name="bprev" value="{ previoustxt }" onclick="javascript:return stepSubmitForm('prev','step02form');">&nbsp;&nbsp;<input type="submit" name="bcancel" value="{ canceltxt }" onclick="javascript:stepSubmitForm('cancel','step02form');"><!--#if count -->&nbsp;&nbsp;<input type="submit" name="bnext" value="{ nexttxt }" onclick="javascript:stepSubmitForm('next','step02form');"><!--#endif count --></td>
-</tr>
-</table>
+	<table class="BabLoginMenuBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+	<tr> 
+	<td colspan="4" align="right">
+	<input type="submit" name="bprev" value="{ previoustxt }" onclick="return stepSubmitForm('prev','step02form');" />&nbsp;&nbsp;<input type="submit" name="bcancel" value="{ canceltxt }" onclick="stepSubmitForm('cancel','step02form');"><!--#if count -->&nbsp;&nbsp;<input type="submit" name="bnext" value="{ nexttxt }" onclick="javascript:stepSubmitForm('next','step02form');"><!--#endif count --></td>
+	</tr>
+	</table>
 </td>
 </tr>
 </table>
-<br>
-</td>
-</tr>
-</table>
+
 </form>
 <!--#end modarticlechoicestep -->
 
@@ -577,31 +574,22 @@ return true;
 <input type="hidden" name="articleid" value="{ idarticle }">
 <input type="hidden" name="rfurl" value="{ rfurl }">
 <input type="hidden" name="updstep1" value="">
-<br>
-<table width="95%" cellpadding="0" cellspacing="0" align="center">
-<tr> 
-<td> 
-<span style="background-color:#D1D1D9">&nbsp;{ steptitle }&nbsp;</span>
-</td>
-</tr>
-</table>
-<table style="border:2px #D1D1D9 solid" width="95%" cellpadding="0" cellspacing="0" align="center">
-<tr> 
-<td>
-<br />
+
+<p>{ steptitle }</p>
+
 { content }
+
 <br />
-<br />
-  <table border="0" width="100%" cellpadding="1" cellspacing="0" align="center">
+  <table border="0" width="95%" cellpadding="1" cellspacing="0" align="center">
   <tr>
 <td class="BabErrorMessage" align="center" >{ warnmessage }</td>
 </tr></table>
 <br />
 
-<table width="97%" border="0" cellspacing="0" cellpadding="2" align="center">
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
 <td class="BabLoginCadreBackground">
-<table class="BabSiteAdminFontBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+<table class="BabLoginMenuBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
 <tr> 
 <td colspan="4" align="right">
 <!--#if bupprobchoice -->
@@ -672,36 +660,29 @@ document.forms[fmname].updstep2.value = cmd;
 <input type="hidden" name="idart" value="{ idart }">
 <input type="hidden" name="rfurl" value="{ rfurl }">
 <input type="hidden" name="updstep2" value="">
-<br>
-<table width="95%" cellpadding="0" cellspacing="0" align="center">
-<tr> 
-<td> 
-<span style="background-color:#D1D1D9">&nbsp;{ steptitle }&nbsp;</span>
-</td>
-</tr>
-</table>
-<table style="border:2px #D1D1D9 solid" width="95%" cellpadding="0" cellspacing="0" align="center">
-<tr> 
-<td>
-<br>
+
+<p>{ steptitle }</p>
+
+
 { content }
-<br>
+
+<br />
 <table width="97%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
 <td class="BabLoginCadreBackground">
-<table class="BabSiteAdminFontBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
-<tr> 
-<td colspan="4" align="right">
-<!--#if bupprobchoice -->
-<select name="approbid">
-<option value="0"></option>
-<option value="1" { yesapprobsel }>{ yesapprobtxt }</option>
-<option value="2" { noapprobsel }>{ noapprobtxt }</option>
-</select>
-<!--#endif bupprobchoice -->&nbsp;&nbsp;
-<input type="submit" name="bprev" value="{ previoustxt }" onclick="javascript:stepSubmitForm('prev','previewart');">&nbsp;&nbsp;<input type="submit" name="bcancel" value="{ canceltxt }" onclick="javascript:stepSubmitForm('cancel','previewart');"><!--#if BAB_SESS_LOGGED -->&nbsp;&nbsp;<input type="submit" name="bsave" value="{ savetxt }" onclick="javascript:stepSubmitForm('save','previewart');"><!--#endif BAB_SESS_LOGGED --><!--#if bsubmit -->&nbsp;&nbsp;<input type="submit" name="bsubmit" value="{ submittxt }" onclick="javascript:stepSubmitForm('submit','previewart');"><!--#endif bsubmit -->&nbsp;&nbsp;<input type="submit" name="bnext" value="{ nexttxt }" onclick="javascript:stepSubmitForm('next','previewart');"></td>
-</tr>
-</table>
+	<table class="BabLoginMenuBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+	<tr> 
+	<td colspan="4" align="right">
+	<!--#if bupprobchoice -->
+	<select name="approbid">
+	<option value="0"></option>
+	<option value="1" { yesapprobsel }>{ yesapprobtxt }</option>
+	<option value="2" { noapprobsel }>{ noapprobtxt }</option>
+	</select>
+	<!--#endif bupprobchoice -->&nbsp;&nbsp;
+	<input type="submit" name="bprev" value="{ previoustxt }" onclick="javascript:stepSubmitForm('prev','previewart');">&nbsp;&nbsp;<input type="submit" name="bcancel" value="{ canceltxt }" onclick="javascript:stepSubmitForm('cancel','previewart');"><!--#if BAB_SESS_LOGGED -->&nbsp;&nbsp;<input type="submit" name="bsave" value="{ savetxt }" onclick="javascript:stepSubmitForm('save','previewart');"><!--#endif BAB_SESS_LOGGED --><!--#if bsubmit -->&nbsp;&nbsp;<input type="submit" name="bsubmit" value="{ submittxt }" onclick="javascript:stepSubmitForm('submit','previewart');"><!--#endif bsubmit -->&nbsp;&nbsp;<input type="submit" name="bnext" value="{ nexttxt }" onclick="javascript:stepSubmitForm('next','previewart');"></td>
+	</tr>
+	</table>
 </td>
 </tr>
 </table>
@@ -941,18 +922,9 @@ return true;
 <input type="hidden" name="idart" value="{ idart }">
 <input type="hidden" name="rfurl" value="{ rfurl }">
 <input type="hidden" name="updstep3" value="">
-<br>
-<table width="95%" cellpadding="0" cellspacing="0" align="center">
-<tr> 
-<td> 
-<span style="background-color:#D1D1D9">&nbsp;{ steptitle }&nbsp;</span>
-</td>
-</tr>
-</table>
-<table style="border:2px #D1D1D9 solid" width="95%" cellpadding="0" cellspacing="0" align="center">
-<tr> 
-<td>
-<br>
+
+<p>{ steptitle }</p>
+
 <table class="BabLoginCadreBackground" width="97%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td> 
@@ -986,122 +958,122 @@ return true;
 <table class="BabLoginCadreBackground" width="97%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td> 
-<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
-<tr> 
-<td align="left" valign="middle" colspan="6"><b>{ datesubtitle }:</b></td>
-</td>
-</tr>
-<tr> 
-<td align="right" valign="middle"><a class="BabSiteAdminListLink" href="javascript: Start('{ datesuburl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ datesubtxt }</a>: </td>
-<td valign="middle"> 
-<input type="checkbox" id="idcds" name="cdates" value="Y" { cdatescheck }></td>
-<td valign="middle"> 
-<select name="daysub">
-  <!--#in getnextday -->
-  <option value="{ dayid }" { selected }>{ dayid }</option>
-  <!--#endin getnextday -->
-</select>
-</td>
-<td valign="middle"> 
-<select name="monthsub" onChange="updateDates(this.form.daysub, this.form.monthsub, this.form.yearsub);">
-  <!--#in getnextmonth -->
-  <option value="{ monthid }" { selected }>{ monthname }</option>
-  <!--#endin getnextmonth -->
-</select>
-</td>
-<td valign="middle"> 
-<select name="yearsub" onChange="updateDates(this.form.daysub, this.form.monthsub, this.form.yearsub);">
-  <!--#in getnextyear -->
-  <option value="{ yearid }"  { selected }>{ yearidval }</option>
-  <!--#endin getnextyear -->
-</select>
-</td>
-<td valign="middle"> 
-<select name="timesub">
-<!--#in getnexttime -->
-<option value="{ timeval }" { selected }>{ time }</option>
-<!--#endin getnexttime -->
-</select >
-</td>
-</tr>
-<!--#if allowpubdates -->
-<tr> 
-<td align="left" valign="middle" colspan="6"><b>{ datepubtitle }:</b></td>
-</td>
-</tr>
-<tr> 
-<td align="right" valign="middle"><a class="BabSiteAdminListLink" href="javascript: Start('{ datebeginurl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ datebegintxt }</a>: </td>
-<td valign="middle"> 
-<input type="checkbox" id="idcdb" name="cdateb" value="Y" { cdatebcheck }></td>
-<td valign="middle"> 
-<select name="daybegin">
-  <!--#in getnextday -->
-  <option value="{ dayid }" { selected }>{ dayid }</option>
-  <!--#endin getnextday -->
-</select>
-</td>
-<td valign="middle"> 
-<select name="monthbegin" onChange="updateDates(this.form.daybegin, this.form.monthbegin, this.form.yearbegin);">
-  <!--#in getnextmonth -->
-  <option value="{ monthid }" { selected }>{ monthname }</option>
-  <!--#endin getnextmonth -->
-</select>
-</td>
-<td valign="middle"> 
-<select name="yearbegin" onChange="updateDates(this.form.daybegin, this.form.monthbegin, this.form.yearbegin);">
-  <!--#in getnextyear -->
-  <option value="{ yearid }"  { selected }>{ yearidval }</option>
-  <!--#endin getnextyear -->
-</select>
-</td>
-<td valign="middle"> 
-<select name="timebegin">
-<!--#in getnexttime -->
-<option value="{ timeval }" { selected }>{ time }</option>
-<!--#endin getnexttime -->
-</select >
-</td>
-</tr>
-<tr> 
-<td align="right" valign="middle"><a class="BabSiteAdminListLink" href="javascript: Start('{ dateendurl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ dateendtxt }</a>: </td>
-<td valign="middle"> 
-<input type="checkbox"  id="idcde" name="cdatee" value="Y" { cdateecheck }></td>
-<td valign="middle"> 
-<select name="dayend">
-  <!--#in getnextday -->
-  <option value="{ dayid }"  { selected }>{ dayid }</option>
-  <!--#endin getnextday -->
-</select >
-</td>
-<td valign="middle"> 
-<select name="monthend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
-  <!--#in getnextmonth -->
-  <option value="{ monthid }"  { selected }>{ monthname }</option>
-  <!--#endin getnextmonth -->
-</select >
-</td>
-<td valign="middle"> 
-<select name="yearend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
-  <!--#in getnextyear -->
-  <option value="{ yearid }" { selected }>{ yearidval }</option>
-  <!--#endin getnextyear -->
-</select >
-</td>
-<td valign="middle"> 
-<select name="timeend">
-<!--#in getnexttime -->
-<option value="{ timeval }" { selected }>{ time }</option>
-<!--#endin getnexttime -->
-</select >
-</td>
-</tr>
-<!--#endif allowpubdates -->
-<tr> 
-<td colspan="6" valign="middle" align="right"> 
-&nbsp;<br>
-</td>
-</tr>
-</table>
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
+	<tr> 
+	<td align="left" valign="middle" colspan="6"><b>{ datesubtitle }:</b></td>
+	</td>
+	</tr>
+	<tr> 
+	<td align="right" valign="middle"><a class="BabSiteAdminListLink" href="javascript: Start('{ datesuburl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ datesubtxt }</a>: </td>
+	<td valign="middle"> 
+	<input type="checkbox" id="idcds" name="cdates" value="Y" { cdatescheck }></td>
+	<td valign="middle"> 
+	<select name="daysub">
+	  <!--#in getnextday -->
+	  <option value="{ dayid }" { selected }>{ dayid }</option>
+	  <!--#endin getnextday -->
+	</select>
+	</td>
+	<td valign="middle"> 
+	<select name="monthsub" onChange="updateDates(this.form.daysub, this.form.monthsub, this.form.yearsub);">
+	  <!--#in getnextmonth -->
+	  <option value="{ monthid }" { selected }>{ monthname }</option>
+	  <!--#endin getnextmonth -->
+	</select>
+	</td>
+	<td valign="middle"> 
+	<select name="yearsub" onChange="updateDates(this.form.daysub, this.form.monthsub, this.form.yearsub);">
+	  <!--#in getnextyear -->
+	  <option value="{ yearid }"  { selected }>{ yearidval }</option>
+	  <!--#endin getnextyear -->
+	</select>
+	</td>
+	<td valign="middle"> 
+	<select name="timesub">
+	<!--#in getnexttime -->
+	<option value="{ timeval }" { selected }>{ time }</option>
+	<!--#endin getnexttime -->
+	</select >
+	</td>
+	</tr>
+	<!--#if allowpubdates -->
+	<tr> 
+	<td align="left" valign="middle" colspan="6"><b>{ datepubtitle }:</b></td>
+	</td>
+	</tr>
+	<tr> 
+	<td align="right" valign="middle"><a class="BabSiteAdminListLink" href="javascript: Start('{ datebeginurl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ datebegintxt }</a>: </td>
+	<td valign="middle"> 
+	<input type="checkbox" id="idcdb" name="cdateb" value="Y" { cdatebcheck }></td>
+	<td valign="middle"> 
+	<select name="daybegin">
+	  <!--#in getnextday -->
+	  <option value="{ dayid }" { selected }>{ dayid }</option>
+	  <!--#endin getnextday -->
+	</select>
+	</td>
+	<td valign="middle"> 
+	<select name="monthbegin" onChange="updateDates(this.form.daybegin, this.form.monthbegin, this.form.yearbegin);">
+	  <!--#in getnextmonth -->
+	  <option value="{ monthid }" { selected }>{ monthname }</option>
+	  <!--#endin getnextmonth -->
+	</select>
+	</td>
+	<td valign="middle"> 
+	<select name="yearbegin" onChange="updateDates(this.form.daybegin, this.form.monthbegin, this.form.yearbegin);">
+	  <!--#in getnextyear -->
+	  <option value="{ yearid }"  { selected }>{ yearidval }</option>
+	  <!--#endin getnextyear -->
+	</select>
+	</td>
+	<td valign="middle"> 
+	<select name="timebegin">
+	<!--#in getnexttime -->
+	<option value="{ timeval }" { selected }>{ time }</option>
+	<!--#endin getnexttime -->
+	</select >
+	</td>
+	</tr>
+	<tr> 
+	<td align="right" valign="middle"><a class="BabSiteAdminListLink" href="javascript: Start('{ dateendurl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ dateendtxt }</a>: </td>
+	<td valign="middle"> 
+	<input type="checkbox"  id="idcde" name="cdatee" value="Y" { cdateecheck }></td>
+	<td valign="middle"> 
+	<select name="dayend">
+	  <!--#in getnextday -->
+	  <option value="{ dayid }"  { selected }>{ dayid }</option>
+	  <!--#endin getnextday -->
+	</select >
+	</td>
+	<td valign="middle"> 
+	<select name="monthend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
+	  <!--#in getnextmonth -->
+	  <option value="{ monthid }"  { selected }>{ monthname }</option>
+	  <!--#endin getnextmonth -->
+	</select >
+	</td>
+	<td valign="middle"> 
+	<select name="yearend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
+	  <!--#in getnextyear -->
+	  <option value="{ yearid }" { selected }>{ yearidval }</option>
+	  <!--#endin getnextyear -->
+	</select >
+	</td>
+	<td valign="middle"> 
+	<select name="timeend">
+	<!--#in getnexttime -->
+	<option value="{ timeval }" { selected }>{ time }</option>
+	<!--#endin getnexttime -->
+	</select >
+	</td>
+	</tr>
+	<!--#endif allowpubdates -->
+	<tr> 
+	<td colspan="6" valign="middle" align="right"> 
+	&nbsp;<br>
+	</td>
+	</tr>
+	</table>
 </td>
 </tr>
 </table>
@@ -1111,25 +1083,25 @@ return true;
 <table class="BabLoginCadreBackground" width="97%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td> 
-<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
-<tr> 
-<td align="left" valign="middle"><b>{ hpagestitle }:</b></td>
-</td>
-</tr>
-<tr> 
-<td valign="middle"> 
-<input type="checkbox" name="hpage0" value="Y" { chpage0check }>&nbsp;&nbsp;{ hpage0txt }</td>
-</tr>
-<tr> 
-<td valign="middle"> 
-<input type="checkbox" name="hpage1" value="Y" { chpage1check }>&nbsp;&nbsp;{ hpage1txt }</td>
-</tr>
-<tr> 
-<td valign="middle" align="right"> 
-&nbsp;<br>
-</td>
-</tr>
-</table>
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
+	<tr> 
+	<td align="left" valign="middle"><b>{ hpagestitle }:</b></td>
+	</td>
+	</tr>
+	<tr> 
+	<td valign="middle"> 
+	<input type="checkbox" name="hpage0" value="Y" { chpage0check }>&nbsp;&nbsp;{ hpage0txt }</td>
+	</tr>
+	<tr> 
+	<td valign="middle"> 
+	<input type="checkbox" name="hpage1" value="Y" { chpage1check }>&nbsp;&nbsp;{ hpage1txt }</td>
+	</tr>
+	<tr> 
+	<td valign="middle" align="right"> 
+	&nbsp;<br>
+	</td>
+	</tr>
+	</table>
 </td>
 </tr>
 </table>
@@ -1258,26 +1230,23 @@ return true;
 <table width="97%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
 <td class="BabLoginCadreBackground">
-<table class="BabSiteAdminFontBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
-<tr> 
-<td colspan="4" align="right">
-<!--#if bupprobchoice -->
-<select name="approbid">
-<option value="0"></option>
-<option value="1" { yesapprobsel }>{ yesapprobtxt }</option>
-<option value="2" { noapprobsel }>{ noapprobtxt }</option>
-</select>&nbsp;&nbsp;
-<!--#endif bupprobchoice -->
-<input type="submit" name="bprev" value="{ previoustxt }" onclick="javascript:return stepSubmitForm('prev','propform');">&nbsp;&nbsp;<input type="submit" name="bcancel" value="{ canceltxt }" onclick="javascript:return stepSubmitForm('cancel','propform');"><!--#if BAB_SESS_LOGGED -->&nbsp;&nbsp;<input type="submit" name="bsave" value="{ savetxt }" onclick="javascript:return stepSubmitForm('save','propform');"><!--#endif BAB_SESS_LOGGED --><!--#if bsubmit -->&nbsp;&nbsp;<input type="submit" name="bsubmit" value="{ submittxt }" onclick="javascript:return stepSubmitForm('submit','propform');"><!--#endif bsubmit --></td>
-</tr>
-</table>
+	<table class="BabLoginMenuBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+	<tr> 
+	<td colspan="4" align="right">
+	<!--#if bupprobchoice -->
+	<select name="approbid">
+	<option value="0"></option>
+	<option value="1" { yesapprobsel }>{ yesapprobtxt }</option>
+	<option value="2" { noapprobsel }>{ noapprobtxt }</option>
+	</select>&nbsp;&nbsp;
+	<!--#endif bupprobchoice -->
+	<input type="submit" name="bprev" value="{ previoustxt }" onclick="javascript:return stepSubmitForm('prev','propform');">&nbsp;&nbsp;<input type="submit" name="bcancel" value="{ canceltxt }" onclick="javascript:return stepSubmitForm('cancel','propform');"><!--#if BAB_SESS_LOGGED -->&nbsp;&nbsp;<input type="submit" name="bsave" value="{ savetxt }" onclick="javascript:return stepSubmitForm('save','propform');"><!--#endif BAB_SESS_LOGGED --><!--#if bsubmit -->&nbsp;&nbsp;<input type="submit" name="bsubmit" value="{ submittxt }" onclick="javascript:return stepSubmitForm('submit','propform');"><!--#endif bsubmit --></td>
+	</tr>
+	</table>
 </td>
 </tr>
 </table>
-<br>
-</td>
-</tr>
-</table>
+
 </form>
 <!--#endif access -->
 <!--#end propertiesarticlestep -->

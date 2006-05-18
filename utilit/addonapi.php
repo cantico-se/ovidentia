@@ -1365,6 +1365,12 @@ function bab_debug($str)
 			$GLOBALS['bab_debug_messages'] = array($str);
 		}
 	}
+
+	if (file_exists('bab_debug.txt') && is_writable('bab_debug.txt')) {
+		$h = fopen('bab_debug.txt', 'a');
+		fwrite($h, date('d/m/Y H:i:s')."\n\n".$str."\n\n\n------------------------\n");
+		fclose($h);
+	}
 }
 
 /**

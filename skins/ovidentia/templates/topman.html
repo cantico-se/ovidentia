@@ -117,22 +117,58 @@ function submitCtrl() {
 				&nbsp; <img src="{ babSkinPath }images/Puces/PuceArchive.png" alt="{ archivealt } : { datearchiving }" title="{ archivealt } : { datearchiving }" />
 				<!--#endif archive -->
 			</div>
-			
-			<!--#if countcom -->
+
+			<!--#if filescomments -->
+
 			<ul>
-			<!--#in getnextcom -->
+				
+				<!--#if countfiles -->
 				<li>
 					<div>
-						<input type="checkbox" name="comments[]" value="{ com[id] }" />
-						<img src="{ babSkinPath }images/Puces/note.gif" alt="{ t_comment }" />
-						{ com[subject] } { t_by } { com[name] }
+						<strong>{ t_files }</strong>
 					</div>
-				</li>
-			<!--#endin getnextcom -->
-			</ul>
-			<!--#endif countcom -->
+				
+					<ul>
+					<!--#in getnextfile -->
+						<li>
+							<div>
+								<img src="{ babSkinPath }images/Puces/entryview.gif" alt="{ t_file }" /> 
+								{ filename }<!--#if index --> - <em>{ index_status }</em><!--#endif index -->
+							</div>
+						</li>
+					<!--#endin getnextfile -->
+					</ul>
 
-			</li>
+				</li>
+				<!--#endif countfiles -->
+
+				
+				
+				
+				
+				<!--#if countcom -->
+				<li>
+					<div>
+						<input type="checkbox" onclick="tree_check_childs(this)" /> <strong>{ t_comments }</strong>
+					</div>
+
+					<ul>
+					<!--#in getnextcom -->
+						<li>
+							<div>
+								<input type="checkbox" name="comments[]" value="{ com[id] }" />
+								<img src="{ babSkinPath }images/Puces/note.gif" alt="{ t_comment }" />
+								{ com[subject] } { t_by } { com[name] }
+							</div>
+						</li>
+					<!--#endin getnextcom -->
+					</ul>
+
+				</li>
+				<!--#endif countcom -->
+			
+			</ul>
+			<!--#endif filescomments -->
 		<!--#endin getnext -->
 		</ul>
 		</li>

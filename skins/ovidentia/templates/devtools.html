@@ -24,3 +24,16 @@ function show_hide_debug()
 document.getElementById('BAB_DEBUG').style.display = 'none';
 </script>
 <!--#end debug -->
+
+
+<!--#begin debug_mail -->
+
+<h1><a href="{ babUrl }">{ babSiteName }</a></h1>
+
+<hr />
+
+<!--#in getNextMessage -->
+	<pre style="margin:1em 0; padding:1em 0; border-bottom:#000 1px solid; white-space: -moz-pre-wrap; white-space: -pre-wrap; white-space: -o-pre-wrap; white-space: pre-wrap; word-wrap: break-word;">{ text }</pre>
+<!--#endin getNextMessage -->
+
+<!--#end debug_mail -->

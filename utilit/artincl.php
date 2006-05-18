@@ -584,18 +584,20 @@ function acceptWaitingArticle($idart)
 					}
 				}
 
+			bab_debug($files_to_index);
+
 			$index_status = bab_indexOnLoadFiles($files_to_index , 'bab_art_files');
 
-			foreach($files_to_insert as $arr) {
+			foreach($files_to_insert as $arrf) {
 					$babDB->db_query(
 					
 					"INSERT INTO ".BAB_ART_FILES_TBL." 
 						(id_article, name, description, index_status) 
 					VALUES 
 						(
-						'".$babDB->db_escape_string($arr['id_article'])."', 
-						'".$babDB->db_escape_string($rr['name'])."', 
-						'".$babDB->db_escape_string($rr['description'])."', 
+						'".$babDB->db_escape_string($arrf['id_article'])."', 
+						'".$babDB->db_escape_string($arrf['name'])."', 
+						'".$babDB->db_escape_string($arrf['description'])."', 
 						'".$babDB->db_escape_string($index_status)."' 
 						)
 					");
@@ -946,6 +948,7 @@ function bab_getDocumentArticle( $idf )
 
 function bab_submitArticleDraft($idart)
 {
+	
 	global $babBody, $babDB, $BAB_SESS_USERID;
 	$res = $babDB->db_query("select id_article, id_topic, id_author, approbation from ".BAB_ART_DRAFTS_TBL." where id='".$idart."'");
 	if( $res && $babDB->db_num_rows($res) > 0 )
@@ -1076,5 +1079,70 @@ function bab_newArticleDraft($idtopic, $idarticle)
 
 	return $id;
 	}
+
+
+
+
+
+
+
+/**
+ * Index all articles files
+ * @param array $status
+ */
+function indexAllArtFiles($status) {
+	
+	$db = &$GLOBALS['babDB'];
+
+	$res = $db->db_query("
+	
+		SELECT 
+			id,
+			name,
+			id_article 
+
+		FROM 
+			".BAB_ART_FILES_TBL." 
+		WHERE 
+			index_status IN('".implode("','",$status)."')
+		
+	");
+
+	
+	$files = array();
+	$fullpath = bab_getUploadArticlesPath();
+
+	while ($arr = $db->db_fetch_assoc($res)) {
+		$files[] = $fullpath.$arr['id_article'].",".$arr['name'];
+	}
+
+	if (!$files)
+		return false;
+
+	include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
+	include_once $GLOBALS['babInstallPath']."utilit/searchincl.php";
+
+	
+	if (in_array(BAB_INDEX_STATUS_INDEXED, $status)) {
+		bab_indexFiles($files, 'bab_art_files');
+	} else {
+		$obj = new bab_indexObject('bab_art_files');
+		$obj->addFileToIndex($files);
+	}
+
+
+	$db->db_query("
+	
+		UPDATE ".BAB_ART_FILES_TBL." SET index_status='".BAB_INDEX_STATUS_INDEXED."'
+		WHERE 
+			index_status IN('".implode("','",$status)."')
+		
+	");
+
+
+	return count($files);
+}
+
+
 
 ?>

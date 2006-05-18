@@ -32,37 +32,37 @@
 <br>
 <!--#if bmodify -->
 <form method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="articles">
-<input type="hidden" name="idx" value="unload">
-<input type="hidden" name="conf" value="mod">
-<input type="hidden" name="article" value="{ article }">
-<input type="hidden" name="topics" value="{ topics }">
-<input type="hidden" name="rfurl" value="{ rfurl }">
+<input type="hidden" name="tg" value="articles" />
+<input type="hidden" name="idx" value="unload" />
+<input type="hidden" name="conf" value="mod" />
+<input type="hidden" name="article" value="{ article }" />
+<input type="hidden" name="topics" value="{ topics }" />
+<input type="hidden" name="rfurl" value="{ rfurl }" />
 <!--#endif bmodify -->
 <br>
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
-<td class="BabLoginMenuBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<td class="BabLoginCadreBackground"> 
+<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr>
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ arttxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ arttitle }</td>
+<td align="right" width="30%"><b>{ arttxt }:</b></td><td>{ arttitle }</td>
 </tr>
 <tr>
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ pathtxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ pathname }</td>
+<td align="right" width="30%"><b>{ pathtxt }:</b></td><td>{ pathname }</td>
 </tr>
 <!--#if bmodify -->
 <tr>
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ commenttxt }:</b></td><td class="BabSiteAdminFontBackground" align="left"><textarea cols="40" rows="10" name="comment"></textarea>
+<td align="right" width="30%"><b>{ commenttxt }:</b></td><td><textarea cols="40" rows="10" name="comment"></textarea>
 </td>
 </tr>
 <tr>
-<td class="BabSiteAdminFontBackground" align="right" width="30%">&nbsp;</td>
-<td class="BabSiteAdminFontBackground" valign="middle">
-<input type="checkbox" name="bupdmod" value="N">&nbsp;{ updatemodtxt }
+<td align="right" width="30%">&nbsp;</td>
+<td>
+<input type="checkbox" name="bupdmod" value="N" />&nbsp;{ updatemodtxt }
 </td>
 </tr>
 <tr>
-<td class="BabSiteAdminFontBackground" align="right" width="30%">&nbsp;</td><td class="BabSiteAdminFontBackground" align="left"><input type="submit" name="bupdate" value="{ updatetxt }">&nbsp;&nbsp;<input type="submit" name="bcancel" value="{ canceltxt }">
+<td align="right" width="30%">&nbsp;</td><td align="left"><input type="submit" name="bupdate" value="{ updatetxt }" />&nbsp;&nbsp;<input type="submit" name="bcancel" value="{ canceltxt }" />
 </td>
 </tr>
 <!--#endif bmodify -->

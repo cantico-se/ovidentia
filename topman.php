@@ -198,9 +198,17 @@ function listArticles($id)
 			$this->t_archive = bab_translate("Archive selected articles");
 			$this->t_update = bab_translate("Update");
 			$this->t_articles = bab_translate("Articles");
+			$this->t_file = bab_translate("File");
+			$this->t_files = bab_translate("Attached files");
+			$this->t_comments = bab_translate("Comments");
 			$this->js_confirm_delete = bab_translate("Are you sure you want to delete those articles");
 			$this->js_confirm_delete = str_replace("'","\'",$this->js_confirm_delete);
 			$this->badmin = bab_isUserAdministrator();
+
+			if (bab_searchEngineInfos()) {
+				$this->index = true;
+				include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
+			}
 
 			$this->item = $id;
 			$this->siteid = $babBody->babsite['id'];
@@ -267,6 +275,11 @@ function listArticles($id)
 				$this->rescom = $this->db->db_query("SELECT * FROM ".BAB_COMMENTS_TBL." WHERE id_article='".$this->articleid."' ORDER BY date DESC");
 				$this->countcom = $this->db->db_num_rows($this->rescom);
 
+				$this->resfiles = $this->db->db_query("SELECT * FROM ".BAB_ART_FILES_TBL." WHERE id_article='".$this->articleid."' ORDER BY name");
+				$this->countfiles = $this->db->db_num_rows($this->resfiles);
+
+				$this->filescomments = $this->countcom >0 || $this->countfiles > 0;
+
 				$i++;
 				return true;
 				}
@@ -280,13 +293,27 @@ function listArticles($id)
 			{
 			if ($this->com = $this->db->db_fetch_assoc($this->rescom))
 				{
-				
+				$this->com['subject'] = bab_toHtml($this->com['subject']);
+				$this->com['name'] = bab_toHtml($this->com['name']);
 				return true;
 				}
 			else {
 				return false;
 				}
 			}
+
+
+		function getnextfile() {
+			if ($arr = $this->db->db_fetch_assoc($this->resfiles)) {
+				$this->filename = bab_toHtml($arr['name']);
+				if ($this->index) {
+					$this->index_status = bab_toHtml(bab_getIndexStatusLabel($arr['index_status']));
+				}
+				return true;
+			} else {
+				return false;
+			}
+		}
 		
 		}
 
