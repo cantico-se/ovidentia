@@ -998,4 +998,16 @@ function showStatTopicCategory($idtopcat, $date)
 }
 
 
+function displayArticleTree($startDay, $endDay)
+{
+	require_once $GLOBALS['babInstallPath'] . 'utilit/tree.php';
+	$treeView = new bab_ArticleTreeView('article');
+	$treeView->setAttributes(BAB_ARTICLE_TREE_VIEW_SHOW_ARTICLES
+							| BAB_ARTICLE_TREE_VIEW_SHOW_EMPTY_TOPICS);
+	$treeView->addStatistics($startDay, $endDay);
+	$treeView->sort();
+	$GLOBALS['babBody']->babecho($treeView->printTemplate());
+}
+
+
 ?>

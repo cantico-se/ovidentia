@@ -93,29 +93,39 @@ function displayStatisticPanel($idx)
 			{
 			global $babBody;
 
-			$this->updatetxt = bab_translate("Last update time");
+			$this->updatetxt = bab_translate('Last update time');
 			$this->updatettime = bab_shortDate(bab_mktime($babBody->babsite['stat_update_time']));
-			$this->exporttxt = bab_translate("Export");
-			$this->urlexport = "idx=".$idx."&export=1";
+			$this->exporttxt = bab_translate('Export');
+			$this->urlexport = 'idx='.$idx.'&export=1';
 			$this->current = $idx;
-			$this->itemarray[] = array( array('idx' => 'users', 'item' => bab_translate("Users"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=users")
-				, array('idx' => 'sections', 'item' => bab_translate("Optional sections"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=sections")
-				, array('idx' => 'delegat', 'item' => bab_translate("Delegation"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=delegat") );
-
-			$this->itemarray[] = array( array('idx' => 'fm', 'item' => bab_translate("File manager"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=fm"), array('idx' => 'fmfold', 'item' => bab_translate("Folders"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=fmfold"), array('idx' => 'fmdown', 'item' => bab_translate("Downloads"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=fmdown"));
-			$this->itemarray[] = array( array('idx' => 'mod', 'item' => bab_translate("Ovidentia functions"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=mod"), array('idx' => 'xlink', 'item' => bab_translate("External links"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=xlink")
-				, array('idx' => 'page', 'item' => bab_translate("Pages"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=page") );
-			$this->itemarray[] = array( array('idx' => 'art', 'item' => bab_translate("Articles"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=art")
-				, array('idx' => 'topart', 'item' => bab_translate("Topics"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=topart")
-				, array('idx' => 'topcat', 'item' => bab_translate("Topics categories"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=topcat") );
-
-			$this->itemarray[] = array( array('idx' => 'for', 'item' => bab_translate("Forums"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=for")
-				, array('idx' => 'forth', 'item' => bab_translate("Threads"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=forth")
-				, array('idx' => 'forpo', 'item' => bab_translate("Posts"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=forpo") );
-			$this->itemarray[] = array( array('idx' => 'search', 'item' => bab_translate("Search keywords"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=search"));
-			$this->itemarray[] = array( array('idx' => 'faq', 'item' => bab_translate("Faqs"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=faq")
-				, array('idx' => 'faqqr', 'item' => bab_translate("Faq questions"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=faqqr") );
-			$this->itemarray[] = array( array('idx' => 'ovml', 'item' => bab_translate("Ovml Files"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=ovml"), array('idx' => 'addon', 'item' => bab_translate("Add-ons"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=addon"));
+			$this->itemarray[] = array(
+				array('idx' => 'users',		'item' => bab_translate('Users'),				'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=users"),
+				array('idx' => 'sections',	'item' => bab_translate('Optional sections'),	'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=sections"),
+				array('idx' => 'delegat',	'item' => bab_translate('Delegation'),			'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=delegat"));
+			$this->itemarray[] = array(
+				array('idx' => 'fm',		'item' => bab_translate('File manager'),		'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=fm", 		'treeviewurl' => $GLOBALS['babUrlScript']."?tg=stat&idx=fmtree"),
+				array('idx' => 'fmfold',	'item' => bab_translate('Folders'),				'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=fmfold"),
+				array('idx' => 'fmdown',	'item' => bab_translate('Downloads'),			'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=fmdown"));
+			$this->itemarray[] = array(
+				array('idx' => 'mod',		'item' => bab_translate('Ovidentia functions'),	'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=mod"),
+				array('idx' => 'xlink',		'item' => bab_translate('External links'),		'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=xlink"),
+				array('idx' => 'page', 		'item' => bab_translate('Pages'),				'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=page"));
+			$this->itemarray[] = array(
+				array('idx' => 'art',		'item' => bab_translate('Articles'),			'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=art", 		'treeviewurl' => $GLOBALS['babUrlScript']."?tg=stat&idx=arttree"),
+				array('idx' => 'topart',	'item' => bab_translate('Topics'),				'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=topart"),
+				array('idx' => 'topcat',	'item' => bab_translate('Topics categories'),	'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=topcat"));
+			$this->itemarray[] = array(
+				array('idx' => 'for',		'item' => bab_translate('Forums'),				'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=for", 		'treeviewurl' => $GLOBALS['babUrlScript']."?tg=stat&idx=fortree"),
+				array('idx' => 'forth',		'item' => bab_translate('Threads'),				'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=forth"),
+				array('idx' => 'forpo',		'item' => bab_translate('Posts'),				'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=forpo"));
+			$this->itemarray[] = array(
+				array('idx' => 'search',	'item' => bab_translate('Search keywords'),		'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=search"));
+			$this->itemarray[] = array(
+				array('idx' => 'faq',		'item' => bab_translate('Faqs'),				'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=faq", 		'treeviewurl' => $GLOBALS['babUrlScript']."?tg=stat&idx=faqtree"),
+				array('idx' => 'faqqr',		'item' => bab_translate('Faq questions'),		'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=faqqr"));
+			$this->itemarray[] = array(
+				array('idx' => 'ovml',		'item' => bab_translate('Ovml Files'),			'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=ovml"),
+				array('idx' => 'addon',		'item' => bab_translate('Add-ons'),				'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=addon"));
 
 			$this->maxcols = 1;
 			$this->count = count($this->itemarray);
@@ -151,16 +161,11 @@ function displayStatisticPanel($idx)
 				{
 				if( isset($this->itemarray[$this->row][$i]))
 					{
-					$this->itemurltxt = $this->itemarray[$this->row][$i]['item'];
-					$this->itemurl = $this->itemarray[$this->row][$i]['url'];
-					if( $this->current == $this->itemarray[$this->row][$i]['idx'] )
-						{
-						$this->disabled = true;
-						}
-					else
-						{
-						$this->disabled = false;
-						}
+					$item =& $this->itemarray[$this->row][$i];
+					$this->itemurltxt = $item['item'];
+					$this->itemurl = $item['url'];
+					$this->itemtreeviewurl = isset($item['treeviewurl']) ? $item['treeviewurl'] : '';
+					$this->disabled = ($this->current == $item['idx']);
 					}
 				else
 					{
@@ -359,6 +364,10 @@ switch($idx)
 		if( !isset($order)) { $order = 'asc';}
 		summaryXlinks($col, $order, $sd, $ed);
 		break;
+	case "arttree":
+		include_once $babInstallPath."statart.php";
+		displayArticleTree($sd, $ed);
+		break;
 	case "art":
 		include_once $babInstallPath."statart.php";
 		if( !isset($col)) { $col = 'hits';}
@@ -417,6 +426,10 @@ switch($idx)
 		printBabBodyPopup();
 		exit;
 		break;
+	case "fortree":
+		include_once $babInstallPath."statfor.php";
+		displayForumTree($sd, $ed);
+		break;
 	case "for":
 		include_once $babInstallPath."statfor.php";
 		if( !isset($col)) { $col = 'hits';}
@@ -458,6 +471,10 @@ switch($idx)
 		showStatPost($item, $date);
 		printBabBodyPopup();
 		exit;
+		break;
+	case "faqtree":
+		include_once $babInstallPath."statfaq.php";
+		displayFaqTree($sd, $ed);
 		break;
 	case "faq":
 		include_once $babInstallPath."statfaq.php";
@@ -534,6 +551,10 @@ switch($idx)
 			}
 		printBabBodyPopup();
 		exit;
+		break;
+	case "fmtree":
+		include_once $babInstallPath."statfile.php";
+		displayFileTree($sd, $ed);
 		break;
 	case "fm":
 		include_once $babInstallPath."utilit/fileincl.php";

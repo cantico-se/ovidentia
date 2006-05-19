@@ -891,4 +891,14 @@ function showStatPost($id, $date)
 		}
 }
 
+
+function displayForumTree($startDay, $endDay)
+{
+	require_once $GLOBALS['babInstallPath'] . 'utilit/tree.php';
+	$treeView = new bab_ForumTreeView('forum');
+	$treeView->addStatistics($startDay, $endDay);
+	$treeView->sort();
+	$GLOBALS['babBody']->babecho($treeView->printTemplate());
+}
+
 ?>

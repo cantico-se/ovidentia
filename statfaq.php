@@ -589,4 +589,14 @@ function showStatFaqQuestion($id, $date)
 		}
 }
 
+
+function displayFaqTree($startDay, $endDay)
+{
+	require_once $GLOBALS['babInstallPath'] . 'utilit/tree.php';
+	$treeView = new bab_FaqTreeView('faq');
+	$treeView->addStatistics($startDay, $endDay);
+	$treeView->sort();
+	$GLOBALS['babBody']->babecho($treeView->printTemplate());
+}
+
 ?>

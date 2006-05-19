@@ -779,5 +779,13 @@ function showStatFmDownloads($id, $date)
 		}
 }
 
+function displayFileTree($startDay, $endDay)
+{
+	require_once $GLOBALS['babInstallPath'] . 'utilit/tree.php';
+	$treeView = new bab_FileTreeView('file', 'N', '0');
+	$treeView->addStatistics($startDay, $endDay);
+	$treeView->sort();
+	$GLOBALS['babBody']->babecho($treeView->printTemplate());
+}
 
 ?>
