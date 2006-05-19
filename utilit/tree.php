@@ -890,8 +890,15 @@ class bab_ArticleTreeView extends bab_TreeView
 	 */
 	function _addTopics()
 	{
-		$sql = 'SELECT id, id_cat, category FROM ' . BAB_TOPICS_TBL;
-		
+		global $babBody;
+
+		$sql = 'SELECT tt.id, tt.id_cat, tt.category FROM ' . BAB_TOPICS_TBL.' tt';
+		//*
+		if( $babBody->currentAdmGroup != 0 )
+			{
+			$sql .= ' left join '.BAB_TOPICS_CATEGORIES_TBL.' tct on tt.id_cat=tct.id where tct.id_dgowner=\''.$babBody->currentAdmGroup.'\'';
+			}
+		//*/
 		$topics = $this->_db->db_query($sql);
 		while ($topic = $this->_db->db_fetch_array($topics)) {
 			$element =& $this->createElement('topic' . $topic['id'],
@@ -912,8 +919,15 @@ class bab_ArticleTreeView extends bab_TreeView
 	 */
 	function _addCategories()
 	{
+		global $babBody;
+
 		$sql = 'SELECT id, title, id_parent FROM ' . BAB_TOPICS_CATEGORIES_TBL;
-		
+		//*
+		if( $babBody->currentAdmGroup != 0 )
+			{
+			$sql .= ' where id_dgowner=\''.$babBody->currentAdmGroup.'\'';
+			}
+		//*/
 		$categories = $this->_db->db_query($sql);
 
 		while ($category = $this->_db->db_fetch_array($categories)) {
@@ -935,9 +949,16 @@ class bab_ArticleTreeView extends bab_TreeView
 	 */
 	function _addArticles()
 	{
-		$sql = 'SELECT id, title, id_topic FROM ' . BAB_ARTICLES_TBL;
+		global $babBody;
 
-		
+		$sql = 'SELECT at.id, at.title, at.id_topic FROM ' . BAB_ARTICLES_TBL.' at';
+		//*
+		if( $babBody->currentAdmGroup != 0 )
+			{
+			$sql .= ' left join '.BAB_TOPICS_TBL.' tt on at.id_topic=tt.id left join '.BAB_TOPICS_CATEGORIES_TBL.' tct on tt.id_cat=tct.id where id_dgowner=\''.$babBody->currentAdmGroup.'\'';
+			}
+		//*/
+
 		$rs = $this->_db->db_query($sql);
 		while ($article = $this->_db->db_fetch_array($rs)) {
 			$element =& $this->createElement('article' . $article['id'],
@@ -1029,8 +1050,16 @@ class bab_FileTreeView extends bab_TreeView
 	 */
 	function _addCollectiveDirectories()
 	{
-		$sql = 'SELECT id, folder FROM ' . BAB_FM_FOLDERS_TBL
-				. ' ORDER BY folder';
+		global $babBody;
+
+		$sql = 'SELECT fft.id, fft.folder FROM ' . BAB_FM_FOLDERS_TBL. ' fft';
+		//*
+		if( $babBody->currentAdmGroup != 0 )
+			{
+			$sql .= ' where fft.id_dgowner=\''.$babBody->currentAdmGroup.'\'';
+			}
+		//*/
+		$sql .= ' ORDER BY folder';
 
 		$folders = $this->_db->db_query($sql);
 		while ($folder = $this->_db->db_fetch_array($folders)) {
@@ -1046,9 +1075,20 @@ class bab_FileTreeView extends bab_TreeView
 	
 	function _addFiles()
 	{
-		$sql = 'SELECT id, path, name, id_owner FROM ' . BAB_FILES_TBL
-				. ' WHERE bgroup=\'Y\''
-				. ' ORDER BY name';
+		global $babBody;
+
+		$sql = 'SELECT ft.id, ft.path, ft.name, ft.id_owner FROM ' . BAB_FILES_TBL.' ft';
+		//*
+		if( $babBody->currentAdmGroup != 0 )
+			{
+			$sql .= ' left join '.BAB_FM_FOLDERS_TBL.' fft on ft.id_owner=fft.id where ft.bgroup=\'Y\' and fft.id_dgowner=\''.$babBody->currentAdmGroup.'\'';
+			}
+		else
+			{
+			$sql .=' WHERE bgroup=\'Y\'';
+			}
+		//*/
+		$sql .= ' ORDER BY name';
 		
 		$files = $this->_db->db_query($sql);
 		while ($file = $this->_db->db_fetch_array($files)) {
@@ -1148,8 +1188,15 @@ class bab_ForumTreeView extends bab_TreeView
 	 */
 	function _addForums()
 	{
-		$sql = 'SELECT id, name FROM ' . BAB_FORUMS_TBL
-			. ' ORDER BY ordering';
+		global $babBody;
+
+		$sql = 'SELECT id, name FROM ' . BAB_FORUMS_TBL;
+		if( $babBody->currentAdmGroup != 0 )
+			{
+			$sql .= ' where id_dgowner=\''.$babBody->currentAdmGroup.'\'';
+			}
+
+		$sql .= ' ORDER BY ordering';
 		
 		$rs = $this->_db->db_query($sql);
 		while ($forum = $this->_db->db_fetch_array($rs)) {
@@ -1169,8 +1216,16 @@ class bab_ForumTreeView extends bab_TreeView
 	 */
 	function _addThreads()
 	{
-		$sql = 'SELECT id, forum FROM ' . BAB_THREADS_TBL
-			. ' ORDER BY ' . BAB_THREADS_TBL . '.date';
+		global $babBody;
+
+		$sql = 'SELECT tt.id, tt.forum FROM ' . BAB_THREADS_TBL. ' tt';
+		if( $babBody->currentAdmGroup != 0 )
+			{
+			$sql .= ' left join '.BAB_FORUMS_TBL.' ft on tt.forum=ft.id where ft.id_dgowner=\''.$babBody->currentAdmGroup.'\'';
+			}
+
+
+		$sql .= ' ORDER BY tt.date';
 		
 		$threads = $this->_db->db_query($sql);
 		while ($thread = $this->_db->db_fetch_array($threads)) {
@@ -1262,7 +1317,14 @@ class bab_FaqTreeView extends bab_TreeView
 	 */
 	function _addCategories()
 	{
+		global $babBody;
+
 		$sql = 'SELECT id, category FROM ' . BAB_FAQCAT_TBL;
+		if( $babBody->currentAdmGroup != 0 )
+			{
+			$sql .= ' where id_dgowner=\''.$babBody->currentAdmGroup.'\'';
+			}
+
 //			. ' ORDER BY id';
 		
 		$categories = $this->_db->db_query($sql);
@@ -1276,9 +1338,9 @@ class bab_FaqTreeView extends bab_TreeView
 			$this->appendElement($element, null);
 		}
 
-		$sql = 'SELECT ' . BAB_FAQ_TREES_TBL . '.id_parent, ' . BAB_FAQ_SUBCAT_TBL . '.* FROM ' . BAB_FAQ_TREES_TBL . ',' . BAB_FAQ_SUBCAT_TBL
-			. ' WHERE ' . BAB_FAQ_TREES_TBL . '.id = ' . BAB_FAQ_SUBCAT_TBL . '.id_node AND ' . BAB_FAQ_TREES_TBL . '.id_parent = 0'
-			. ' ORDER BY ' . BAB_FAQ_TREES_TBL . '.id';
+		$sql = 'SELECT ftt.id_parent, fst.* FROM ' . BAB_FAQ_TREES_TBL . ' ftt ,' . BAB_FAQ_SUBCAT_TBL
+			. ' fst WHERE ftt.id = fst.id_node AND ftt.id_parent = 0'
+			. ' ORDER BY ftt.id';
 		
 		$subCategories = $this->_db->db_query($sql);
 		while ($subCategory = $this->_db->db_fetch_array($subCategories)) {
@@ -1293,11 +1355,23 @@ class bab_FaqTreeView extends bab_TreeView
 	 */
 	function _addSubCategories()
 	{
-		$sql = 'SELECT ' . BAB_FAQ_TREES_TBL . '.id_parent, ' . BAB_FAQ_SUBCAT_TBL . '.*'
-			. ' FROM ' . BAB_FAQ_TREES_TBL . ',' . BAB_FAQ_SUBCAT_TBL
-			. ' WHERE ' . BAB_FAQ_TREES_TBL . '.id = ' . BAB_FAQ_SUBCAT_TBL . '.id_node'
-			. ' 	AND ' . BAB_FAQ_TREES_TBL . '.id_parent <> 0'
-			. ' ORDER BY ' . BAB_FAQ_TREES_TBL . '.id';
+		global $babBody;
+
+		$sql = 'SELECT ftt.id_parent, fst.* FROM ' . BAB_FAQ_TREES_TBL . ' ftt ,' . BAB_FAQ_SUBCAT_TBL.' fst';
+
+		if( $babBody->currentAdmGroup != 0 )
+			{
+			$sql .= ' left join '.BAB_FAQCAT_TBL.' ft on ft.id=fst.id_cat';
+			}
+
+		$sql.= ' where';
+		if( $babBody->currentAdmGroup != 0 )
+			{
+			$sql .= ' id_dgowner=\''.$babBody->currentAdmGroup.'\' and';
+			}
+
+		$sql .= ' ftt.id = fst.id_node AND ftt.id_parent <> 0';
+		$sql.= ' ORDER BY ftt.id';
 		
 		$subCategories = $this->_db->db_query($sql);
 		while ($subCategory = $this->_db->db_fetch_array($subCategories)) {
@@ -1320,7 +1394,13 @@ class bab_FaqTreeView extends bab_TreeView
 	 */
 	function _addQuestions()
 	{
-		$sql = 'SELECT id, question, id_subcat FROM ' . BAB_FAQQR_TBL;
+		global $babBody;
+
+		$sql = 'SELECT fqt.id, fqt.question, fqt.id_subcat FROM ' . BAB_FAQQR_TBL.' fqt';
+		if( $babBody->currentAdmGroup != 0 )
+			{
+			$sql .= ' left join '.BAB_FAQCAT_TBL.' fct on fqt.idcat=fct.id where fct.id_dgowner=\''.$babBody->currentAdmGroup.'\'';
+			}
 		
 		$questions = $this->_db->db_query($sql);
 		while ($question = $this->_db->db_fetch_array($questions)) {

@@ -47,7 +47,14 @@ function summaryFileManager($col, $order)
 			$this->filestxt = bab_translate("Files");
 			$this->versionstxt = bab_translate("Versions");
 			$this->kilooctet = " ".bab_translate("Kb");
-			$res = $babDB->db_query("select fft.*, dg.name as dgname, count(ft.id) as files from ".BAB_FM_FOLDERS_TBL." fft left join ".BAB_DG_GROUPS_TBL." dg on fft.id_dgowner=dg.id left join ".BAB_FILES_TBL." ft on ft.id_owner=fft.id group by fft.id");		
+			$req = "select fft.*, dg.name as dgname, count(ft.id) as files from ".BAB_FM_FOLDERS_TBL." fft left join ".BAB_DG_GROUPS_TBL." dg on fft.id_dgowner=dg.id left join ".BAB_FILES_TBL." ft on ft.id_owner=fft.id";		
+			if( $babBody->currentAdmGroup != 0 )
+				{
+				$req .= " where fft.id_dgowner='".$babBody->currentAdmGroup."'";
+				}
+			$req .= " group by fft.id";
+
+			$res = $babDB->db_query($req);		
 			$order = strtolower($order);
 			$this->sortord = $order == "asc"? "desc": "asc";
 			$this->sortcol = $col;
@@ -223,15 +230,33 @@ function showPersonalFoldersDetail()
 				}
 			arsort($this->arrinfo, SORT_REGULAR);
 			$this->count= count($this->arrinfo);
+
+			$this->users = false;
+			if( $babBody->currentAdmGroup != 0 && $babBody->currentDGGroup['id_group'] != 0 )
+				{
+				$u = bab_getGroupsMembers($babBody->currentDGGroup['id_group']);
+				for( $k=0; $k < count($u); $k++ )
+					{
+					$this->users[$u[$k]['id']] = true;
+					}
+				}
+
 			}
 
-		function getnext()
+		function getnext(&$skip)
 			{
 			static $i = 0;
 			if( $i < $this->count)
 				{
-				$this->altbg = $this->altbg ? false : true;
 				list($key, $val) = each($this->arrinfo);
+				if( $this->users && !isset($this->users[$key]))
+					{
+					$skip = true;
+					$i++;
+					return true;
+					}
+
+				$this->altbg = $this->altbg ? false : true;
 				$this->fullname = bab_getUserName($key);
 				$this->diskspace = bab_formatSizeFile($val).$this->kilooctet;
 				$i++;
@@ -269,6 +294,11 @@ function summaryFmDownloads($col, $order, $pos, $startday, $endday)
 			$this->pathtxt = bab_translate("Path");
 
 			$req = "select ft.id, ft.name, fft.folder, ft.path, sum( sff.st_hits ) hits FROM ".BAB_STATS_FMFILES_TBL." sff left join ".BAB_FILES_TBL." ft on sff.st_fmfile_id=ft.id left join ".BAB_FM_FOLDERS_TBL." fft on fft.id=ft.id_owner where ft.bgroup='Y'";
+
+			if( $babBody->currentAdmGroup != 0 )
+				{
+				$req .= " and fft.id_dgowner='".$babBody->currentAdmGroup."'";
+				}
 
 			if( !empty($startday) && !empty($endday))
 				{
@@ -448,6 +478,10 @@ function summaryFmFolders($col, $order, $pos, $startday, $endday)
 			$this->hitstxt = bab_translate("Hits");
 
 			$req = "SELECT  fft.id, fft.folder, sum( sft.st_hits ) hits FROM  ".BAB_STATS_FMFOLDERS_TBL." sft left join ".BAB_FM_FOLDERS_TBL." fft  on sft.st_folder_id=fft.id  where fft.folder is not null";
+			if( $babBody->currentAdmGroup != 0 )
+				{
+				$req .= " and fft.id_dgowner='".$babBody->currentAdmGroup."'";
+				}
 			if( !empty($startday) && !empty($endday))
 				{
 				$req .= " and sft.st_date between '".$startday."' and '".$endday."'";

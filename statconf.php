@@ -31,7 +31,7 @@ function statPages($url, $page)
 		{
 		function temp($url, $page)
 			{
-			global $babDB;
+			global $babBody, $babDB;
 
 			$this->pagetxt = bab_translate("Page");
 			$this->urltxt = bab_translate("Url");
@@ -39,7 +39,7 @@ function statPages($url, $page)
 			$this->deletetxt = bab_translate("Delete");
 			$this->desctxt = bab_translate("Name");
 			$this->addtxt = bab_translate("Add");
-			$this->res = $babDB->db_query("select * from ".BAB_STATS_IPAGES_TBL." order by id desc");
+			$this->res = $babDB->db_query("select * from ".BAB_STATS_IPAGES_TBL." where id_dgowner='".$babBody->currentAdmGroup."' order by id desc");
 			$this->count = $babDB->db_num_rows($this->res);
 			$this->urlval = $url;
 			$this->descval = $page;
@@ -131,7 +131,7 @@ function statPreferences()
 
 function addPage($url, $page )
 {
-	global $babDB;
+	global $babBody, $babDB;
 
 	if( empty($url))
 		{
@@ -149,7 +149,7 @@ function addPage($url, $page )
 	{
 		$url = substr($url, strlen($GLOBALS['babUrl']));
 	}
-	$babDB->db_query("insert into ".BAB_STATS_IPAGES_TBL." (page_name, page_url) values ('".addslashes($page)."','".addslashes($url)."')");
+	$babDB->db_query("insert into ".BAB_STATS_IPAGES_TBL." (page_name, page_url, id_dgowner) values ('".addslashes($page)."','".addslashes($url)."','".$babBody->currentAdmGroup."')");
 }
 
 function deletePages($pages )
@@ -189,7 +189,7 @@ function updateStatPreferences($wsepar, $separ)
 
 
 /* main */
-if( !bab_isAccessValid(BAB_STATSMAN_GROUPS_TBL, 1))
+if( !bab_isAccessValid(BAB_STATSMAN_GROUPS_TBL, 1) && $babBody->currentAdmGroup == 0)
 	{
 	$babBody->msgerror = bab_translate("Access denied");
 	return;
@@ -226,7 +226,10 @@ switch($idx)
 		$babBody->addItemMenu("stat", bab_translate("Statistics"), $GLOBALS['babUrlScript']."?tg=stat");
 		$babBody->addItemMenu("pages", bab_translate("Pages"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pages");
 		$babBody->addItemMenu("pref", bab_translate("Preferences"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pref");
-		$babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
+		if( $babBody->currentAdmGroup == 0 )
+			{
+			$babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
+			}
 		statPreferences();
 		break;
 
@@ -235,8 +238,10 @@ switch($idx)
 		$babBody->addItemMenu("stat", bab_translate("Statistics"), $GLOBALS['babUrlScript']."?tg=stat");
 		$babBody->addItemMenu("pages", bab_translate("Pages"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pages");
 		$babBody->addItemMenu("pref", bab_translate("Preferences"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pref");
-		$babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
-		if( !isset($url)) { $url = ""; }
+		if( $babBody->currentAdmGroup == 0 )
+			{
+			$babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
+			}		if( !isset($url)) { $url = ""; }
 		if( !isset($desc)) { $desc = ""; }
 		statPages($url, $desc);
 		break;
@@ -246,8 +251,15 @@ switch($idx)
 		$babBody->addItemMenu("stat", bab_translate("Statistics"), $GLOBALS['babUrlScript']."?tg=stat");
 		$babBody->addItemMenu("pages", bab_translate("Pages"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pages");
 		$babBody->addItemMenu("pref", bab_translate("Preferences"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pref");
-		$babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
-		include_once $babInstallPath."utilit/statproc.php";
+		if( $babBody->currentAdmGroup == 0 )
+			{
+			$babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
+			include_once $babInstallPath."utilit/statproc.php";
+			}
+		else
+			{
+			$babBody->msgerror = bab_translate("Access denied");
+			}
 		break;
 
 	default:
@@ -255,7 +267,10 @@ switch($idx)
 		$babBody->addItemMenu("stat", bab_translate("Statistics"), $GLOBALS['babUrlScript']."?tg=stat");
 		$babBody->addItemMenu("pages", bab_translate("Pages"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pages");
 		$babBody->addItemMenu("pref", bab_translate("Preferences"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pref");
-		$babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
+		if( $babBody->currentAdmGroup == 0 )
+			{
+			$babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
+			}		
 		break;
 	}
 

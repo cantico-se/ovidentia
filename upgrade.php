@@ -5880,6 +5880,143 @@ if ( $arr[0] != 'browse_users' )
 		}
 	}
 
+$arr = $db->db_fetch_array($db->db_query("DESCRIBE ".BAB_STATS_IPAGES_TBL." id_dgowner"));
+if ( $arr[0] != 'id_dgowner' )
+	{
+	$res = $db->db_query("ALTER TABLE ".BAB_STATS_IPAGES_TBL." ADD id_dgowner INT( 11 )  UNSIGNED DEFAULT '0' NOT NULL");
+	if( !$res)
+		{
+		$ret = "Alteration of <b>".BAB_STATS_IPAGES_TBL."</b> table failed !<br>";
+		return $ret;
+		}
+	}
+
+
+if (!bab_isTable(BAB_STATS_ARTICLES_NEW_TBL)) {
+
+	$db->db_query("
+			CREATE TABLE `".BAB_STATS_ARTICLES_NEW_TBL."` (
+			  `st_date` date NOT NULL default '0000-00-00',
+			  `st_hour` tinyint(3) unsigned NOT NULL default '0',
+			  `st_nb_articles` int(11) unsigned NOT NULL default '0',
+			  `st_id_dgowner` int(11) unsigned NOT NULL default '0',
+			  KEY `st_date` (`st_date`),
+			  KEY `st_hour` (`st_hour`),
+			  KEY `st_nb_articles` (`st_nb_articles`),
+			  KEY `st_id_dgowner` (`st_id_dgowner`)
+			)
+	");
+
+$res = $db->db_query("select at.date, tct.id_dgowner from ".BAB_ARTICLES_TBL." at left join ".BAB_TOPICS_TBL." tt on at.id_topic=tt.id left join ".BAB_TOPICS_CATEGORIES_TBL." tct on tt.id_cat=tct.id");
+
+while( $arr = $db->db_fetch_array($res))
+	{
+	$rr = explode(" ", $arr['date']);
+	$date = $rr[0];
+	$time = $rr[1];
+	$rr = explode(":", $time);
+	$hour = $rr[0];
+	settype($hour, "integer");
+	if(!isset($results[$date][$hour][$arr['id_dgowner']]))
+		{
+		$results[$date][$hour][$arr['id_dgowner']] = 1;
+		}
+	else
+		{
+		$results[$date][$hour][$arr['id_dgowner']]++;
+		}
+
+	if( $arr['id_dgowner'] != 0 )
+		{
+		if(!isset($results[$date][$hour][0]))
+			{
+			$results[$date][$hour][0] = 1;
+			}
+		else
+			{
+			$results[$date][$hour][0]++;
+			}
+		}
+	}
+
+	reset($results);
+	while( $r1 = each($results) ) 
+	{
+		reset($r1[1]);
+		while( $r2 = each($r1[1]) ) 
+		{
+			reset($r2[1]);
+			while( $r3 = each($r2[1]) ) 
+			{
+			$db->db_query("insert into ".BAB_STATS_ARTICLES_NEW_TBL." (st_date, st_hour, st_nb_articles, st_id_dgowner) values ('".$r1[0]."','".$r2[0]."','".$r3[1]."', '".$r3[0]."')");
+			}
+		}
+	}
+
+}
+
+if (!bab_isTable(BAB_STATS_FMFILES_NEW_TBL)) {
+
+	$db->db_query("
+			CREATE TABLE `".BAB_STATS_FMFILES_NEW_TBL."` (
+			  `st_date` date NOT NULL default '0000-00-00',
+			  `st_hour` tinyint(3) unsigned NOT NULL default '0',
+			  `st_nb_files` int(11) unsigned NOT NULL default '0',
+			  `st_id_dgowner` int(11) unsigned NOT NULL default '0',
+			  KEY `st_date` (`st_date`),
+			  KEY `st_hour` (`st_hour`),
+			  KEY `st_nb_files` (`st_nb_files`),
+			  KEY `st_id_dgowner` (`st_id_dgowner`)
+			)
+	");
+
+$res = $db->db_query("select ft.created, fft.id_dgowner from ".BAB_FILES_TBL." ft left join ".BAB_FM_FOLDERS_TBL." fft on ft.id_owner=fft.id where ft.bgroup='Y'");
+
+while( $arr = $db->db_fetch_array($res))
+	{
+	$rr = explode(" ", $arr['created']);
+	$date = $rr[0];
+	$time = $rr[1];
+	$rr = explode(":", $time);
+	$hour = $rr[0];
+	settype($hour, "integer");
+	if(!isset($results[$date][$hour][$arr['id_dgowner']]))
+		{
+		$results[$date][$hour][$arr['id_dgowner']] = 1;
+		}
+	else
+		{
+		$results[$date][$hour][$arr['id_dgowner']]++;
+		}
+
+	if( $arr['id_dgowner'] != 0 )
+		{
+		if(!isset($results[$date][$hour][0]))
+			{
+			$results[$date][$hour][0] = 1;
+			}
+		else
+			{
+			$results[$date][$hour][0]++;
+			}
+		}
+	}
+
+	reset($results);
+	while( $r1 = each($results) ) 
+	{
+		reset($r1[1]);
+		while( $r2 = each($r1[1]) ) 
+		{
+			reset($r2[1]);
+			while( $r3 = each($r2[1]) ) 
+			{
+			$db->db_query("insert into ".BAB_STATS_FMFILES_NEW_TBL." (st_date, st_hour, st_nb_files, st_id_dgowner) values ('".$r1[0]."','".$r2[0]."','".$r3[1]."', '".$r3[0]."')");
+			}
+		}
+	}
+
+}
 return $ret;
 }
 

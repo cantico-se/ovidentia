@@ -95,37 +95,60 @@ function displayStatisticPanel($idx)
 
 			$this->updatetxt = bab_translate('Last update time');
 			$this->updatettime = bab_shortDate(bab_mktime($babBody->babsite['stat_update_time']));
-			$this->exporttxt = bab_translate('Export');
-			$this->urlexport = 'idx='.$idx.'&export=1';
+			$this->exporttxt = bab_translate("Export");
 			$this->current = $idx;
-			$this->itemarray[] = array(
-				array('idx' => 'users',		'item' => bab_translate('Users'),				'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=users"),
-				array('idx' => 'sections',	'item' => bab_translate('Optional sections'),	'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=sections"),
-				array('idx' => 'delegat',	'item' => bab_translate('Delegation'),			'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=delegat"));
-			$this->itemarray[] = array(
-				array('idx' => 'fm',		'item' => bab_translate('File manager'),		'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=fm", 		'treeviewurl' => $GLOBALS['babUrlScript']."?tg=stat&idx=fmtree"),
-				array('idx' => 'fmfold',	'item' => bab_translate('Folders'),				'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=fmfold"),
-				array('idx' => 'fmdown',	'item' => bab_translate('Downloads'),			'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=fmdown"));
-			$this->itemarray[] = array(
-				array('idx' => 'mod',		'item' => bab_translate('Ovidentia functions'),	'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=mod"),
-				array('idx' => 'xlink',		'item' => bab_translate('External links'),		'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=xlink"),
-				array('idx' => 'page', 		'item' => bab_translate('Pages'),				'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=page"));
-			$this->itemarray[] = array(
-				array('idx' => 'art',		'item' => bab_translate('Articles'),			'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=art", 		'treeviewurl' => $GLOBALS['babUrlScript']."?tg=stat&idx=arttree"),
-				array('idx' => 'topart',	'item' => bab_translate('Topics'),				'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=topart"),
-				array('idx' => 'topcat',	'item' => bab_translate('Topics categories'),	'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=topcat"));
-			$this->itemarray[] = array(
-				array('idx' => 'for',		'item' => bab_translate('Forums'),				'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=for", 		'treeviewurl' => $GLOBALS['babUrlScript']."?tg=stat&idx=fortree"),
-				array('idx' => 'forth',		'item' => bab_translate('Threads'),				'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=forth"),
-				array('idx' => 'forpo',		'item' => bab_translate('Posts'),				'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=forpo"));
-			$this->itemarray[] = array(
-				array('idx' => 'search',	'item' => bab_translate('Search keywords'),		'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=search"));
-			$this->itemarray[] = array(
-				array('idx' => 'faq',		'item' => bab_translate('Faqs'),				'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=faq", 		'treeviewurl' => $GLOBALS['babUrlScript']."?tg=stat&idx=faqtree"),
-				array('idx' => 'faqqr',		'item' => bab_translate('Faq questions'),		'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=faqqr"));
-			$this->itemarray[] = array(
-				array('idx' => 'ovml',		'item' => bab_translate('Ovml Files'),			'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=ovml"),
-				array('idx' => 'addon',		'item' => bab_translate('Add-ons'),				'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=addon"));
+
+			if( $babBody->currentAdmGroup == 0 )
+				{
+				$this->itemarray[] = array( array('idx' => 'users', 'item' => bab_translate("Users"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=users")
+				, array('idx' => 'sections', 'item' => bab_translate("Optional sections"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=sections")
+				, array('idx' => 'delegat', 'item' => bab_translate("Delegation"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=delegat") );
+				if( empty($this->current)) { $this->current = 'users'; }
+				}
+
+			if( $babBody->currentAdmGroup == 0 || $babBody->currentDGGroup['filemanager'] == 'Y' )
+				{
+				$this->itemarray[] = array( array('idx' => 'fm', 'item' => bab_translate("File manager"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=fm",	'treeviewurl' => $GLOBALS['babUrlScript']."?tg=stat&idx=fmtree"), array('idx' => 'fmfold', 'item' => bab_translate("Folders"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=fmfold"), array('idx' => 'fmdown', 'item' => bab_translate("Downloads"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=fmdown"));
+				if( empty($this->current)) { $this->current = 'fm'; }
+				}
+
+
+			if( $babBody->currentAdmGroup == 0 || $babBody->currentDGGroup['articles'] == 'Y' )
+				{
+				$this->itemarray[] = array( array('idx' => 'art', 'item' => bab_translate("Articles"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=art", 		'treeviewurl' => $GLOBALS['babUrlScript']."?tg=stat&idx=arttree")
+				, array('idx' => 'topart', 'item' => bab_translate("Topics"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=topart")
+				, array('idx' => 'topcat', 'item' => bab_translate("Topics categories"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=topcat") );
+				if( empty($this->current)) { $this->current = 'art'; }
+				}
+
+			if( $babBody->currentAdmGroup == 0 || $babBody->currentDGGroup['forums'] == 'Y' )
+				{
+				$this->itemarray[] = array( array('idx' => 'for', 'item' => bab_translate("Forums"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=for", 		'treeviewurl' => $GLOBALS['babUrlScript']."?tg=stat&idx=fortree")
+				, array('idx' => 'forth', 'item' => bab_translate("Threads"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=forth")
+				, array('idx' => 'forpo', 'item' => bab_translate("Posts"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=forpo") );
+				if( empty($this->current)) { $this->current = 'for'; }
+				}
+
+			if( $babBody->currentAdmGroup == 0 || $babBody->currentDGGroup['faqs'] == 'Y' )
+				{
+				$this->itemarray[] = array( array('idx' => 'faq', 'item' => bab_translate("Faqs"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=faq", 'treeviewurl' => $GLOBALS['babUrlScript']."?tg=stat&idx=faqtree")
+					, array('idx' => 'faqqr', 'item' => bab_translate("Faq questions"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=faqqr") );
+				if( empty($this->current)) { $this->current = 'faq'; }
+				}
+
+			$tmparr = array();
+			$tmparr[] = array('idx' => 'page', 'item' => bab_translate("Pages"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=page");
+			if( $babBody->currentAdmGroup == 0 )
+				{
+				$tmparr[] = array('idx' => 'search', 'item' => bab_translate("Search keywords"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=search");
+				}
+			$this->itemarray[] = $tmparr;
+			if( empty($this->current)) { $this->current = 'page'; }
+
+			if( $babBody->currentAdmGroup == 0 )
+				{
+				$this->itemarray[] = array( array('idx' => 'ovml', 'item' => bab_translate("Ovml Files"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=ovml"), array('idx' => 'addon', 'item' => bab_translate("Add-ons"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=addon"));
+				}
 
 			$this->maxcols = 1;
 			$this->count = count($this->itemarray);
@@ -138,6 +161,7 @@ function displayStatisticPanel($idx)
 				}
 			$this->colspanval = $this->maxcols - 1;
 			$this->row = 0;
+			$this->urlexport = "idx=".$this->current."&export=1";
 			}
 
 		function getnextrow()
@@ -184,6 +208,10 @@ function displayStatisticPanel($idx)
 		}
 	$temp = new displayStatisticPanelCls($idx);
 	$babBody->babecho(bab_printTemplate($temp, "stat.html", "statisticpanel"));
+	if( empty($idx))
+	{
+		$GLOBALS['idx'] = $temp->current;
+	}
 }
 
 
@@ -340,13 +368,13 @@ function displayTimeInterval($iwhat, $sd, $ed, $idx)
 }
 
 /* main */
-if( !bab_isAccessValid(BAB_STATSMAN_GROUPS_TBL, 1))
+if( !bab_isAccessValid(BAB_STATSMAN_GROUPS_TBL, 1) && $babBody->currentAdmGroup == 0)
 	{
 	$babBody->msgerror = bab_translate("Access denied");
 	return;
 	}
 
-if( !isset($idx)) { $idx = 'users';}
+if( !isset($idx)) { $idx = '';}
 displayStatisticPanel($idx);
 updateStatPreferences();
 displayTimeInterval($itwhat, $sd, $ed, $idx);
@@ -622,6 +650,9 @@ $babBody->title = bab_translate("Statistics");
 $babBody->addItemMenu("stat", bab_translate("Statistics"), $GLOBALS['babUrlScript']."?tg=stat&idx=stat");
 $babBody->addItemMenu("pages", bab_translate("Pages"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pages");
 $babBody->addItemMenu("pref", bab_translate("Preferences"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pref");
+if( $babBody->currentAdmGroup == 0 )
+{
 $babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
+}
 $babBody->setCurrentItemMenu("stat");
 ?>

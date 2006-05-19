@@ -1133,6 +1133,11 @@ function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywor
 
 	if( $gr == 'Y')
 		{
+		if( $confirmed == "Y" )
+			{
+			$GLOBALS['babWebStat']->addNewFile($babBody->currentAdmGroup);
+			}
+
 		$res = $db->db_query("select id from ".BAB_FM_FIELDS_TBL." where id_folder='".$id."'");
 		while($arr = $db->db_fetch_array($res))
 			{
@@ -1370,9 +1375,9 @@ function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $de
 				}
 			}
 
+		$rr = $db->db_fetch_array($db->db_query("select filenotify, id_dgowner from ".BAB_FM_FOLDERS_TBL." where id='".$arr['id_owner']."'"));
 		if( empty($bnotify))
 			{
-			$rr = $db->db_fetch_array($db->db_query("select filenotify from ".BAB_FM_FOLDERS_TBL." where id='".$arr['id_owner']."'"));
 			$bnotify = $rr['filenotify'];
 			}
 		if( $arr['bgroup'] == "Y" )
@@ -1391,6 +1396,10 @@ function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $de
 					case 1:
 						deleteFlowInstance($arr['idfai']);
 						$db->db_query("update ".BAB_FILES_TBL." set confirmed='Y', idfai='0' where id = '".$arr['id']."'");
+						if( $confirmed == "Y" )
+							{
+							$GLOBALS['babWebStat']->addNewFile($rr['id_dgowner']);
+							}
 						notifyFileAuthor(bab_translate("Your file has been accepted"),"", $arr['author'], $arr['name']);
 						if( $bnotify == "Y")
 							{

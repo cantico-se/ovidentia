@@ -515,7 +515,7 @@ function acceptWaitingArticle($idart)
 {
 	global $babBody, $babDB;
 
-	$res = $babDB->db_query("select adt.*, tt.category as topicname, tt.allow_attachments from ".BAB_ART_DRAFTS_TBL." adt left join ".BAB_TOPICS_TBL." tt on adt.id_topic=tt.id where adt.id='".$idart."'");
+	$res = $babDB->db_query("select adt.*, tt.category as topicname, tt.allow_attachments, tct.id_dgowner from ".BAB_ART_DRAFTS_TBL." adt left join ".BAB_TOPICS_TBL." tt on adt.id_topic=tt.id left join ".BAB_TOPICS_CATEGORIES_TBL." tct on tt.id_cat=tct.id  where adt.id='".$idart."'");
 	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
 		include_once $GLOBALS['babInstallPath']."utilit/imgincl.php";
@@ -550,6 +550,9 @@ function acceptWaitingArticle($idart)
 			$babDB->db_query($req);
 			$articleid = $babDB->db_insert_id();
 			}
+
+		$GLOBALS['babWebStat']->addNewArticle($arr['id_dgowner']);
+
 
 		$head = imagesUpdateLink($arr['head'], $idart."_draft_", $articleid."_art_" );
 		$body = imagesUpdateLink($arr['body'], $idart."_draft_", $articleid."_art_" );
