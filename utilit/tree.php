@@ -899,6 +899,7 @@ class bab_ArticleTreeView extends bab_TreeView
 											 $topic['category'],
 											 '',
 											 '');
+			$element->setIcon('topic');
 			$parentId = ($topic['id_cat'] === '0' ? null :
 												'category' . $topic['id_cat']);
 			$this->appendElement($element, $parentId);
@@ -921,6 +922,7 @@ class bab_ArticleTreeView extends bab_TreeView
 											 $category['title'],
 											 '',
 											 '');
+			$element->setIcon('category');
 			$parentId = ($category['id_parent'] === '0' ? null :
 											'category' . $category['id_parent']);
 			$this->appendElement($element, $parentId);
@@ -943,7 +945,7 @@ class bab_ArticleTreeView extends bab_TreeView
 											 $article['title'],
 											 '',
 											 '');
-			$element->setIcon('type1');
+			$element->setIcon('article');
 			$this->appendElement($element, 'topic' . $article['id_topic']);
 		}
 	}
@@ -1266,7 +1268,7 @@ class bab_FaqTreeView extends bab_TreeView
 		$categories = $this->_db->db_query($sql);
 		while ($category = $this->_db->db_fetch_array($categories)) {
 			$element =& $this->createElement('category' . $category['id'],
-											 'category',
+											 'faqcategory',
 											 bab_translate('Category: ') . $category['category'],
 											 '',
 											 '');
@@ -1300,7 +1302,7 @@ class bab_FaqTreeView extends bab_TreeView
 		$subCategories = $this->_db->db_query($sql);
 		while ($subCategory = $this->_db->db_fetch_array($subCategories)) {
 			$element =& $this->createElement('subcat' . $subCategory['id'],
-											 'subcat',
+											 'faqsubcategory',
 											 $subCategory['name'],
 											 '',
 											 '');

@@ -210,13 +210,34 @@
 	font-size: 105%;
 }
 
+/*
 .bab_tree .level2 {
 	height: 3em;
 	font-weight: bold;
 }
-
+*/
 .bab_tree .directory {
 	height: 3em;
 	font-weight: bold;
 }
 
+.bab_tree .category {
+	height: 3em;
+	color: #999999;
+	font-weight: bold;
+}
+
+.bab_tree .topic {
+	height: 3em;
+	font-weight: bold;
+}
+
+.bab_tree .faqcategory {
+	height: 3em;
+	font-weight: bold;
+}
+
+.bab_tree .faqsubcategory {
+	height: 3em;
+	font-weight: bold;
+}
