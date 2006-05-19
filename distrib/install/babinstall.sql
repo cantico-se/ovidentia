@@ -2806,3 +2806,25 @@ CREATE TABLE `bab_registry` (
   `lastupdate` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`dirkey`)
 );
+
+CREATE TABLE `bab_stats_fmfiles_new` (
+  `st_date` date NOT NULL default '0000-00-00',
+  `st_hour` tinyint(3) unsigned NOT NULL default '0',
+  `st_nb_files` int(11) unsigned NOT NULL default '0',
+  `st_id_dgowner` int(11) unsigned NOT NULL default '0',
+  KEY `st_date` (`st_date`),
+  KEY `st_hour` (`st_hour`),
+  KEY `st_nb_files` (`st_nb_files`),
+  KEY `st_id_dgowner` (`st_id_dgowner`)
+);
+
+CREATE TABLE `bab_stats_articles_new` (
+  `st_date` date NOT NULL default '0000-00-00',
+  `st_hour` tinyint(3) unsigned NOT NULL default '0',
+  `st_nb_articles` int(11) unsigned NOT NULL default '0',
+  `st_id_dgowner` int(11) unsigned NOT NULL default '0',
+  KEY `st_date` (`st_date`),
+  KEY `st_hour` (`st_hour`),
+  KEY `st_nb_articles` (`st_nb_articles`),
+  KEY `st_id_dgowner` (`st_id_dgowner`)
+);
