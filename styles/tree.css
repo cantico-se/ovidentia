@@ -1,0 +1,222 @@
+.bab_tree {
+	text-align:left;
+	margin:0 .5em;
+	padding:2px;
+	margin-bottom:2em;
+}
+
+
+.bab_tree ul {
+	list-style-type:none;
+	margin:0;
+	padding:0;
+	margin-left:2em;
+}
+
+.bab_tree a img {
+	border:0;
+}
+
+.bab_tree .tree {
+	background:#fff;
+	padding:1em 0;
+	margin:0;
+}
+
+.bab_tree ul.first {
+	margin:0;
+}
+
+
+.bab_tree li {
+	margin:0;
+	padding:0;
+	font-size:1em;
+	font-weight:normal;
+	color:#000;
+}
+
+.bab_tree li div.line {
+	padding:.3em 0;
+	border:#fff 1px solid;
+}
+
+.bab_tree li div.highlighted {
+	padding:.3em 0;
+	border:#fff 1px solid;
+	background: #EEEEEE;
+}
+
+.bab_tree li div.hover {
+	border-color: #ccc;
+}
+
+.bab_tree li .right {
+	float:right;
+	margin-top:-1.5em;
+	margin-bottom:-1.5em;
+	margin-right:1em;
+}
+
+.bab_tree li a {
+	text-decoration:none;
+	color:#000;
+}
+
+.bab_tree li a:hover {
+	text-decoration:underline;
+}
+
+
+
+
+.bab_tree li .bullet {
+	padding-left: 15px;
+}
+
+.bab_tree .bab_ul_tree_open .bullet {
+	cursor: pointer; 
+	background: url(../skins/ovidentia/images/Puces/minus.gif) center left no-repeat; 
+}
+
+.bab_tree .bab_ul_tree_closed .bullet {
+	cursor: pointer; 
+	background: url(../skins/ovidentia/images/Puces/plus.gif) center left no-repeat; 
+}
+
+.bab_tree .bab_ul_tree_leaf .bullet { 
+	cursor: default; 
+	background: none;
+	}
+
+.bab_tree .bab_ul_tree_open ul { display: block; }
+.bab_tree .bab_ul_tree_closed ul { display: none; }
+
+.bab_tree p.BabSiteAdminTitleFontBackground { /* buttons bar */
+	padding:.3em .5em;
+	margin:0;
+}
+
+.bab_treeToolbar {
+	padding: 2px 4px;
+	margin:0;
+}
+
+.bab_treeToolbar input {
+	font-family: Verdana;
+	font-size: 100%;
+	font-weight: normal;
+}
+
+
+.bab_searchField {
+	voice-family: "\"}\"";
+	voice-family: inherit;
+	background-image: url('../skins/ovidentia/images/Puces/search.gif');
+	margin: 0px 0px 0px 8px;
+	text-decoration: none;
+	background-position: 1px 50%;
+	background-repeat: no-repeat;
+	padding: 3px 2px 2px 18px;
+	border: 1px solid grey;
+}
+
+.bab_searchFieldFound {
+	voice-family: "\"}\"";
+	voice-family: inherit;
+	background-image: url('../skins/ovidentia/images/Puces/search.gif');
+	margin: 0px 0px 0px 8px;
+	text-decoration: none;
+	background-position: 1px 50%;
+	background-repeat: no-repeat;
+	padding: 3px 2px 2px 18px;
+	border: 1px solid grey;
+	background-color: #CCFFCC;
+}
+
+.bab_searchFieldNotFound {
+	voice-family: "\"}\"";
+	voice-family: inherit;
+	background-image: url('../skins/ovidentia/images/Puces/search.gif');
+	margin: 0px 0px 0px 8px;
+	text-decoration: none;
+	background-position: 1px 50%;
+	background-repeat: no-repeat;
+	padding: 3px 2px 2px 18px;
+	border: 1px solid grey;
+	background-color: #FFCCCC;
+}
+
+.bab_expandAll {
+	voice-family: "\"}\"";
+	voice-family: inherit;
+	background-image: url('../skins/ovidentia/images/Puces/PuceExpand.gif');
+	margin: 5px;
+	text-decoration: none;
+	background-position: 0 50%;
+	background-repeat: no-repeat;
+	padding-left: 15px;
+	cursor: pointer;
+}
+
+.bab_collapseAll {
+	voice-family: "\"}\"";
+	voice-family: inherit;
+	background-image: url('../skins/ovidentia/images/Puces/PuceCollapse.gif');
+	margin: 5px;
+	text-decoration: none;
+	background-position: 0 50%;
+	background-repeat: no-repeat;
+	padding-left: 15px;
+	cursor: pointer;
+}
+
+.bab_tree .new_node {
+	voice-family: "\"}\"";
+	voice-family:inherit;
+	background-image:url('../skins/ovidentia/images/Puces/popupselect.gif');
+	margin:5px;
+	text-decoration:none;
+	background-position:0 50%;
+	background-repeat: no-repeat;
+	padding-left:15px;
+}
+
+.bab_tree .expandchecked {
+	voice-family: "\"}\"";
+	voice-family:inherit;
+	background-image:url('../skins/ovidentia/images/Puces/PuceCheckbox.gif');
+	}
+
+
+.smap_tree_node {
+	voice-family: "\"}\"";
+	voice-family: inherit;
+	padding:.3em 0;
+}
+
+.bab_tree .level1 li {
+	background-color: #EEEEEE;
+}
+
+.bab_tree .level2 li {
+	background-color: #DDDDDD;
+}
+
+.bab_tree .level1 {
+	height: 3em;
+	font-weight: bold;
+	color: #999999;
+	font-size: 105%;
+}
+
+.bab_tree .level2 {
+	height: 3em;
+	font-weight: bold;
+}
+
+.bab_tree .directory {
+	height: 3em;
+	font-weight: bold;
+}
+

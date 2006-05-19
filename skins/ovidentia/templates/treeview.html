@@ -1,0 +1,52 @@
+<!--#begin treeview -->
+<div id="{ t_treeViewId }" class="bab_tree BabLoginCadreBackground" style="padding: 1px">
+
+	<div class="tree" style="position: relative; width: 100%">
+	<!--#in getNextElement -->
+	  <!--#if t_levelVariation "== 1" -->
+	  <ul>
+	  <!--#endif t_levelVariation -->
+	  <!--#if t_levelVariation "<= -1" -->
+	  </li>
+	  </ul>
+	  <!--#endif t_levelVariation -->
+	  <!--#if t_levelVariation "== 0" -->
+	  </li>
+	  <!--#endif t_levelVariation -->
+	  <!--#if t_levelVariation ">= -1" -->
+	    <li id="li{ t_id }">
+	      <div class="smap_tree_node">
+	        <!--#if t_link  -->
+			<a href="{ t_link }"><!--#if t_nodeIcon --><img style="vertical-align: middle" src="{ babSkinPath }images/nodetypes/{ t_nodeIcon }.png" /> <!--#endif t_nodeIcon --><span class="level{ t_previousLevel } { t_type }" id="contentli{ t_id }">{ t_title }</span></a>
+	        <!--#else t_link  -->
+			<!--#if t_nodeIcon --><img style="vertical-align: middle" src="{ babSkinPath }images/nodetypes/{ t_nodeIcon }.png" /> <!--#endif t_nodeIcon --><span class="level{ t_previousLevel } { t_type }" id="contentli{ t_id }">{ t_title }</span>
+	        <!--#endif t_link  -->
+	        <!--#if t_showRightElements -->
+	        <span style="padding-left: 50px; position: absolute; right: 0px; white-space: nowrap">
+	        <span class="level{ t_previousLevel } { t_type }" style="padding-right: 8px">{ t_info }</span>
+	        <!--#in getNextAction -->
+	        <a href="{ action_url }" title="{ action_caption }"><img style="vertical-align: middle; padding-right: 8px" src="{ babSkinPath }images/actions/{ action_name }.png" /></a>
+	        <!--#endin getNextAction -->
+	        </span>
+	        <!--#endif t_showRightElements -->
+	      </div>
+	  <!--#endif t_levelVariation -->
+	<!--#endin getNextElement -->
+	</div>
+</div>
+
+<!--#end treeview -->
+
+<!--#begin treeview_scripts -->
+<style type="text/css">
+	@import url('{ babInstallPath }styles/tree.css');
+</style>
+<script type="text/javascript" src="{ babSkinPath }templates/tree.js"></script>
+<script type="text/javascript">
+<!--
+
+bab_initTrees();
+
+-->
+</script>
+<!--#end treeview_scripts -->
