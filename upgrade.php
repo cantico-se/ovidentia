@@ -6306,11 +6306,11 @@ function upgradeXXXtoYYY()
 		}
 	}
 	
-	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_TASKS_WEEK_DAYS_TBL . '\''));
-	if($arr[0] != BAB_TSKMGR_TASKS_WEEK_DAYS_TBL)
+	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_WEEK_DAYS_TBL . '\''));
+	if($arr[0] != BAB_TSKMGR_WEEK_DAYS_TBL)
 	{
 		$res = $db->db_query("
-			CREATE TABLE `" . BAB_TSKMGR_TASKS_WEEK_DAYS_TBL . "` (
+			CREATE TABLE `" . BAB_TSKMGR_WEEK_DAYS_TBL . "` (
 				`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 				`weekDay` TINYINT UNSIGNED NOT NULL default '0',
 				`position` TINYINT UNSIGNED NOT NULL default '0',
@@ -6325,21 +6325,21 @@ function upgradeXXXtoYYY()
 			return $res;
 		}
 		
-		$db->db_query("insert into " . BAB_TSKMGR_TASKS_WEEK_DAYS_TBL . " (`id`, `weekDay`, `position`) VALUES ('1', '0', '6')");
-		$db->db_query("insert into " . BAB_TSKMGR_TASKS_WEEK_DAYS_TBL . " (`id`, `weekDay`, `position`) VALUES ('2', '1', '0')");
-		$db->db_query("insert into " . BAB_TSKMGR_TASKS_WEEK_DAYS_TBL . " (`id`, `weekDay`, `position`) VALUES ('3', '2', '1')");
-		$db->db_query("insert into " . BAB_TSKMGR_TASKS_WEEK_DAYS_TBL . " (`id`, `weekDay`, `position`) VALUES ('4', '3', '2')");
-		$db->db_query("insert into " . BAB_TSKMGR_TASKS_WEEK_DAYS_TBL . " (`id`, `weekDay`, `position`) VALUES ('5', '4', '3')");
-		$db->db_query("insert into " . BAB_TSKMGR_TASKS_WEEK_DAYS_TBL . " (`id`, `weekDay`, `position`) VALUES ('6', '5', '4')");
-		$db->db_query("insert into " . BAB_TSKMGR_TASKS_WEEK_DAYS_TBL . " (`id`, `weekDay`, `position`) VALUES ('7', '6', '5')");
+		$db->db_query("insert into " . BAB_TSKMGR_WEEK_DAYS_TBL . " (`id`, `weekDay`, `position`) VALUES ('1', '0', '6')");
+		$db->db_query("insert into " . BAB_TSKMGR_WEEK_DAYS_TBL . " (`id`, `weekDay`, `position`) VALUES ('2', '1', '0')");
+		$db->db_query("insert into " . BAB_TSKMGR_WEEK_DAYS_TBL . " (`id`, `weekDay`, `position`) VALUES ('3', '2', '1')");
+		$db->db_query("insert into " . BAB_TSKMGR_WEEK_DAYS_TBL . " (`id`, `weekDay`, `position`) VALUES ('4', '3', '2')");
+		$db->db_query("insert into " . BAB_TSKMGR_WEEK_DAYS_TBL . " (`id`, `weekDay`, `position`) VALUES ('5', '4', '3')");
+		$db->db_query("insert into " . BAB_TSKMGR_WEEK_DAYS_TBL . " (`id`, `weekDay`, `position`) VALUES ('6', '5', '4')");
+		$db->db_query("insert into " . BAB_TSKMGR_WEEK_DAYS_TBL . " (`id`, `weekDay`, `position`) VALUES ('7', '6', '5')");
 	}
 	
 	
-	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_TASKS_WORKING_HOURS_TBL . '\''));
-	if($arr[0] != BAB_TSKMGR_TASKS_WORKING_HOURS_TBL)
+	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_WORKING_HOURS_TBL . '\''));
+	if($arr[0] != BAB_TSKMGR_WORKING_HOURS_TBL)
 	{
 		$res = $db->db_query("
-			CREATE TABLE `" . BAB_TSKMGR_TASKS_WORKING_HOURS_TBL . "` (
+			CREATE TABLE `" . BAB_TSKMGR_WORKING_HOURS_TBL . "` (
 				`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 				`weekDay` INTEGER UNSIGNED NOT NULL default '0',
 				`idUser` INTEGER UNSIGNED NOT NULL default '0',
@@ -6356,20 +6356,9 @@ function upgradeXXXtoYYY()
 			return $res;
 		}
 		
-		$db->db_query("insert into " . BAB_TSKMGR_TASKS_WORKING_HOURS_TBL . " (`id`, `weekDay`, `idUser`, `startHour`, `endHour`) VALUES ('', '1', '0', '09:00:00', '12:00:00')");
-		$db->db_query("insert into " . BAB_TSKMGR_TASKS_WORKING_HOURS_TBL . " (`id`, `weekDay`, `idUser`, `startHour`, `endHour`) VALUES ('', '1', '0', '13:00:00', '18:00:00')");
-
-		$db->db_query("insert into " . BAB_TSKMGR_TASKS_WORKING_HOURS_TBL . " (`id`, `weekDay`, `idUser`, `startHour`, `endHour`) VALUES ('', '2', '0', '09:00:00', '12:00:00')");
-		$db->db_query("insert into " . BAB_TSKMGR_TASKS_WORKING_HOURS_TBL . " (`id`, `weekDay`, `idUser`, `startHour`, `endHour`) VALUES ('', '2', '0', '13:00:00', '18:00:00')");
-
-		$db->db_query("insert into " . BAB_TSKMGR_TASKS_WORKING_HOURS_TBL . " (`id`, `weekDay`, `idUser`, `startHour`, `endHour`) VALUES ('', '3', '0', '09:00:00', '12:00:00')");
-		$db->db_query("insert into " . BAB_TSKMGR_TASKS_WORKING_HOURS_TBL . " (`id`, `weekDay`, `idUser`, `startHour`, `endHour`) VALUES ('', '3', '0', '13:00:00', '18:00:00')");
-
-		$db->db_query("insert into " . BAB_TSKMGR_TASKS_WORKING_HOURS_TBL . " (`id`, `weekDay`, `idUser`, `startHour`, `endHour`) VALUES ('', '4', '0', '09:00:00', '12:00:00')");
-		$db->db_query("insert into " . BAB_TSKMGR_TASKS_WORKING_HOURS_TBL . " (`id`, `weekDay`, `idUser`, `startHour`, `endHour`) VALUES ('', '4', '0', '13:00:00', '18:00:00')");
-
-		$db->db_query("insert into " . BAB_TSKMGR_TASKS_WORKING_HOURS_TBL . " (`id`, `weekDay`, `idUser`, `startHour`, `endHour`) VALUES ('', '5', '0', '09:00:00', '12:00:00')");
-		$db->db_query("insert into " . BAB_TSKMGR_TASKS_WORKING_HOURS_TBL . " (`id`, `weekDay`, `idUser`, `startHour`, `endHour`) VALUES ('', '5', '0', '13:00:00', '18:00:00')");
+		require_once($GLOBALS['babInstallPath'] . 'utilit/tmIncl.php');
+		bab_createDefaultWorkingHours(0);
 	}
 }
 ?>
+

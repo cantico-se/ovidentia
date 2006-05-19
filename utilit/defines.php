@@ -253,7 +253,7 @@ define('BAB_TSKMGR_PROJECTS_VISUALIZERS_GROUPS_TBL', 'bab_tskmgr_projects_visual
 define('BAB_TSKMGR_TASK_RESPONSIBLE_GROUPS_TBL', 'bab_tskmgr_task_responsible_groups');
 
 define('BAB_TSKMGR_WEEK_DAYS_TBL', 'bab_tskmgr_week_days');
-define('BAB_TSKMGR_WORKING_HOURS_TBL', 'bab_tskmgr_week_days');
+define('BAB_TSKMGR_WORKING_HOURS_TBL', 'bab_tskmgr_working_hours');
 define('BAB_TSKMGR_PROJECTS_SPACES_TBL', 'bab_tskmgr_projects_spaces');
 define('BAB_TSKMGR_DEFAULT_PROJECTS_CONFIGURATION_TBL', 'bab_tskmgr_default_projects_configuration');
 define('BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL', 'bab_tskmgr_specific_fields_base_class');
@@ -268,7 +268,4 @@ define('BAB_TSKMGR_PROJECTS_COMMENTS_TBL', 'bab_tskmgr_projects_comments');
 define('BAB_TSKMGR_PROJECTS_REVISIONS_TBL', 'bab_tskmgr_projects_revisions');
 define('BAB_TSKMGR_TASKS_TBL', 'bab_tskmgr_tasks');
 define('BAB_TSKMGR_TASKS_COMMENTS_TBL', 'bab_tskmgr_tasks_comments');
-define('BAB_TSKMGR_TASKS_WEEK_DAYS_TBL', 'bab_tskmgr_tasks_week_days');
-define('BAB_TSKMGR_TASKS_WORKING_HOURS_TBL', 'bab_tskmgr_tasks_working_hours');
-
 ?>

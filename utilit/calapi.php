@@ -232,4 +232,39 @@ function bab_emptyCalendar( $idcal )
 
 }
 
+function bab_calGetWorkingDays($iIdUser, &$sWorkingDays)
+{
+	global $babDB;
+	global $babBody;
+
+	$sWorkingDays = $babBody->babsite['workdays'];
+	
+	if(0 != $iIdUser)
+	{
+		$query = 
+			'SELECT ' .
+				'workdays ' .
+			'FROM ' .
+				BAB_CAL_USER_OPTIONS_TBL . ' ' .
+			'WHERE ' .
+				'id_user = \'' . $iIdUser . '\'';
+			
+		//bab_debug($query);
+			
+		$res = $babDB->db_query($query);
+		if(false != $res)
+		{
+			$iNumRows = $babDB->db_num_rows($res);
+			if(0 != $iNumRows)
+			{
+				$data = $babDB->db_fetch_assoc($res);
+				if(false != $data)
+				{
+					$sWorkingDays = $data['workdays'];
+				}
+			}
+		}
+	}
+}
+
 ?>

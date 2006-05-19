@@ -49,7 +49,6 @@ function displayMenu()
 	$babBody->babecho(bab_printTemplate($bfp, 'tmCommon.html', 'displayMenu'));
 }
 
-
 function displayProjectsSpacesList()
 {
 	global $babBody, $babDB;
@@ -84,7 +83,6 @@ function displayProjectsSpacesList()
 
 	$babBody->babecho(bab_printTemplate($list, 'tmCommon.html', 'displayList'));	
 }
-
 
 function displayProjectsList()
 {
@@ -127,6 +125,7 @@ function displayProjectsList()
 		function init()
 		{
 			$this->set_caption('rights', bab_translate("Rights"));
+			$this->set_caption('configuration', bab_translate("Configuration"));
 
 			$oTmCtx =& getTskMgrContext();
 			$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
@@ -147,13 +146,16 @@ function displayProjectsList()
 				$this->get_data('iIdProjectSpace', $iIdProjectSpace);
 				$this->get_data('bIsProjectCreator', $bIsProjectCreator);
 				$bIsManager = bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $this->m_rowDatas['id']);
+				$this->set_data('bIsManager', $bIsManager);
 				$this->set_data('bIsRightUrl', ($bIsProjectCreator || $bIsManager));
 				
 				$this->set_data('rightsUrl', $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . 
 					BAB_TM_IDX_DISPLAY_PROJECT_RIGHTS_FORM . '&iIdProjectSpace=' . $iIdProjectSpace . '&iIdProject=' . $this->m_rowDatas['id']
 					);
 					
-				$this->set_data('configurationUrl', '#');
+				$this->set_data('configurationUrl', $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' .
+					BAB_TM_IDX_DISPLAY_PROJECTS_CONFIGURATION_FORM . '&iIdProjectSpace=' . $iIdProjectSpace . '&iIdProject=' . $this->m_rowDatas['id']
+					);
 
 				return true;
 			}
@@ -169,7 +171,6 @@ function displayProjectsList()
 		
 	$babBody->babecho(bab_printTemplate($list, 'tmUser.html', 'displayProjectList'));	
 }
-
 
 function displayProjectForm()
 {
@@ -270,7 +271,6 @@ function displayProjectForm()
 	}
 }
 
-
 function displayDeleteProjectForm()
 {
 	global $babBody;
@@ -318,7 +318,6 @@ function displayDeleteProjectForm()
 		$GLOBALS['babBody']->msgerror = bab_translate("You do not have the right to delete a project");
 	}	
 }
-
 
 function displayProjectRightsForm()
 {
@@ -390,6 +389,125 @@ function displayProjectRightsForm()
 	}
 }
 
+function displayProjectsConfigurationForm()
+{
+	global $babBody;
+
+	$oTmCtx =& getTskMgrContext();
+	
+	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
+	$iIdProject = $oTmCtx->getIdProject();
+
+	if(0 != $iIdProjectSpace)
+	{
+		class BAB_TM_Configuration extends BAB_BaseFormProcessing
+		{
+			function BAB_TM_Configuration($iIdProjectSpace, $iIdProject)
+			{
+				parent::BAB_BaseFormProcessing();
+				
+				$this->set_caption('taskUpdate', bab_translate("Task updated by task responsible"));
+				$this->set_caption('notice', bab_translate("Reminder before project expiration"));
+				$this->set_caption('taskNumerotation', bab_translate("Task numerotation"));
+				$this->set_caption('emailNotice', bab_translate("Email notification"));
+				$this->set_caption('faq', bab_translate("Task manager FAQ"));
+				$this->set_caption('days', bab_translate("Day(s)"));
+			
+				$this->set_caption('yes', bab_translate("Yes"));
+				$this->set_caption('no', bab_translate("No"));
+				$this->set_caption('save', bab_translate("Save"));
+	
+				$this->set_data('aTaskNumerotation', array(
+					BAB_TM_MANUAL => bab_translate("Manual"), BAB_TM_SEQUENTIAL => bab_translate("Sequential (automatique)"),
+					BAB_TM_YEAR_SEQUENTIAL => bab_translate("Year + Sequential (automatique)"),
+					BAB_TM_YEAR_MONTH_SEQUENTIAL => bab_translate("Year + Month + Sequential (automatique)")));
+					
+				$this->set_data('yes', BAB_TM_YES);
+				$this->set_data('no', BAB_TM_NO);
+				$this->set_data('tg', 'usrTskMgr');
+				$this->set_data('save_idx', BAB_TM_IDX_DISPLAY_PROJECTS_LIST);
+				$this->set_data('save_action', BAB_TM_ACTION_SAVE_PROJECTS_CONFIGURATION);
+				
+				$this->set_data('tmCode', '');
+				$this->set_data('tmValue', '');
+				$this->set_data('tnSelected', '');
+				
+				$this->set_data('iIdProjectSpace', $iIdProjectSpace);
+				$this->set_data('iIdProject', $iIdProject);
+				$this->set_data('isTaskUpdatedByMgr', true);
+				$this->set_data('endTaskReminder', 5);
+				$this->set_data('taskNumerotation', BAB_TM_SEQUENTIAL);
+				$this->set_data('isEmailNotice', true);
+				$this->set_data('faqUrl', '');
+				$this->set_data('iIdConfiguration', -1);
+				
+				$oTmCtx =& getTskMgrContext();
+				$aDPC = $oTmCtx->getConfiguration();
+				
+				if(null != $aDPC)
+				{
+					$this->set_data('iIdConfiguration', $aDPC['id']);
+					$this->set_data('isTaskUpdatedByMgr', (BAB_TM_YES == $aDPC['tskUpdateByMgr']));
+					$this->set_data('endTaskReminder', $aDPC['endTaskReminder']);
+					$this->set_data('taskNumerotation', $aDPC['tasksNumerotation']);
+					$this->set_data('isEmailNotice', (BAB_TM_YES == $aDPC['emailNotice']));
+					$this->set_data('faqUrl', htmlentities($aDPC['faqUrl']));
+					$this->set_data('iIdConfiguration', $aDPC['id']);
+				}
+			}
+			
+			function getNextTaskNumerotation()
+			{
+				$this->get_data('taskNumerotation', $taskNumerotation);
+				$this->set_data('tnSelected', '');
+				
+				$datas = each($this->m_datas['aTaskNumerotation']);
+				if(false != $datas)
+				{
+					$this->set_data('tmCode', $datas['key']);
+					$this->set_data('tmValue', $datas['value']);
+					
+					if($taskNumerotation == $datas['key'])
+					{
+						$this->set_data('tnSelected', 'selected="selected"');
+					}
+					
+					return true;
+				}
+				else
+				{
+					reset($this->m_datas['aTaskNumerotation']);
+					return false;
+				}
+			}
+		}
+
+		$itemMenu = array(		
+			array(
+				'idx' => BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST,
+				'mnuStr' => bab_translate("Projects spaces"),
+				'url' => $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST),
+			array(
+				'idx' => BAB_TM_IDX_DISPLAY_PROJECTS_CONFIGURATION_FORM,
+				'mnuStr' => bab_translate("Projects configuration"),
+				'url' => $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_CONFIGURATION_FORM . 
+				'&iIdProjectSpace=' . $iIdProjectSpace . '&iIdProject=' . $iIdProject)
+		);
+		add_item_menu($itemMenu);
+
+		$babBody->title = bab_translate("Projects configuration");
+	
+		$pjc = & new BAB_TM_Configuration($iIdProjectSpace, $iIdProject);
+		
+		
+		$babBody->babecho(bab_printTemplate($pjc, 'tmCommon.html', 'configuration'));
+	}
+	else 
+	{
+		$GLOBALS['babBody']->msgerror = bab_translate("Invalid project space");
+	}
+	
+}
 
 //POST
 
@@ -418,56 +536,13 @@ function addModifyProject()
 			
 			if($isValid)
 			{
-				$oTmCtx =& getTskMgrContext();
-				$tblWr =& $oTmCtx->getTableWrapper();
-				$tblWr->setTableName(BAB_TSKMGR_PROJECTS_TBL);
-				
-				$attribut = array(
-					'id' => $iIdProject,
-					'idProjectSpace' => $iIdProjectSpace,
-					'name' => $sName,
-					'description' => $sDescription
-				);
-				
 				if(0 == $iIdProject)
 				{
-					$attribut['created'] = date("Y-m-d H:i:s");
-					$attribut['idUserCreated'] = $GLOBALS['BAB_SESS_USERID'];
-					
-					require_once($GLOBALS['babInstallPath'] . 'admin/acl.php');
-
-					$skipFirst = true;
-					$success = $tblWr->save($attribut, $skipFirst);
-					if($success)
-					{
-						$db =& $tblWr->getDbObject();
-						$iIdProject = $db->db_insert_id();
-						
-						aclDuplicateRights(
-							BAB_TSKMGR_DEFAULT_PROJECTS_VISUALIZERS_GROUPS_TBL, $iIdProjectSpace, 
-							BAB_TSKMGR_PROJECTS_VISUALIZERS_GROUPS_TBL, $iIdProject);					
-						aclDuplicateRights(
-							BAB_TSKMGR_DEFAULT_PROJECTS_SUPERVISORS_GROUPS_TBL, $iIdProjectSpace, 
-							BAB_TSKMGR_PROJECTS_SUPERVISORS_GROUPS_TBL, $iIdProject);					
-						aclDuplicateRights(
-							BAB_TSKMGR_DEFAULT_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProjectSpace, 
-							BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject);
-							
-						$aConfiguration = null;
-						$bSuccess = bab_getDefaultProjectSpaceConfiguration($iIdProjectSpace, $aConfiguration);	
-						if($bSuccess)
-						{
-							unset($aConfiguration['id']);
-							bab_createProjectConfiguration($aConfiguration);
-						}
-					}
+					bab_createProject($iIdProjectSpace, $sName, $sDescription);
 				}
 				else
 				{
-					$attribut['modified'] = date("Y-m-d H:i:s");
-					$attribut['idUserModified'] = $GLOBALS['BAB_SESS_USERID'];
-
-					return $tblWr->update($attribut);
+					bab_updateProject($iIdProject, $sName, $sDescription);
 				}
 			}
 			else
@@ -508,7 +583,10 @@ function deleteProject()
 		{
 			require_once($GLOBALS['babInstallPath'] . 'admin/acl.php');
 
-			bab_deleteProject($iIdProject);
+			if(bab_deleteProject($iIdProject))
+			{
+				bab_updateRefCount(BAB_TSKMGR_PROJECTS_SPACES_TBL, $iIdProjectSpace, '- \'1\'');
+			}
 		}
 	}
 	else
@@ -517,14 +595,42 @@ function deleteProject()
 	}
 }
 
-
 function setRight()
 {
 	require_once($GLOBALS['babInstallPath'] . 'admin/acl.php');
 	maclGroups();
 }
 
+function saveProjectConfiguration()
+{
+	$oTmCtx =& getTskMgrContext();
+	$iIdProject = $oTmCtx->getIdProject();
+	$bIsManager = bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject);
 	
+	$iTaskUpdateByMgr = (int) tskmgr_getVariable('iTaskUpdateByMgr', BAB_TM_YES);
+	$iIdConfiguration = (int) tskmgr_getVariable('iIdConfiguration', 0);
+	$iEndTaskReminder = (int) tskmgr_getVariable('iEndTaskReminder', 5);
+	$iTaskNumerotation = (int) tskmgr_getVariable('iTaskNumerotation', BAB_TM_SEQUENTIAL);
+	$iEmailNotice = (int) tskmgr_getVariable('iEmailNotice', BAB_TM_YES);
+	$sFaqUrl = mysql_escape_string(tskmgr_getVariable('sFaqUrl', ''));
+
+	if(0 < $iIdConfiguration && 0 < $iIdProject && $bIsManager)
+	{
+		$aConfiguration = array(
+			'id' => $iIdConfiguration,
+			'idProject' => $iIdProject,
+			'tskUpdateByMgr' => $iTaskUpdateByMgr,
+			'endTaskReminder' => $iEndTaskReminder,
+			'tasksNumerotation' => $iTaskNumerotation,
+			'emailNotice' => $iEmailNotice,
+			'faqUrl' => $sFaqUrl);
+
+		bab_updateProjectConfiguration($aConfiguration);
+	}
+}	
+
+
+
 bab_cleanGpc();
 
 
@@ -560,6 +666,15 @@ switch($action)
 	case BAB_TM_ACTION_SET_RIGHT:
 		setRight();
 		break;
+		
+	case BAB_TM_ACTION_UPDATE_WORKING_HOURS:
+		require_once($GLOBALS['babInstallPath'] . 'tmWorkingHoursFunc.php');
+		updateWorkingHours();
+		break;
+		
+	case BAB_TM_ACTION_SAVE_PROJECTS_CONFIGURATION:
+		saveProjectConfiguration();
+		break;
 }
 
 
@@ -573,6 +688,11 @@ switch($idx)
 		displayMenu();
 		break;
 		
+	case BAB_TM_IDX_DISPLAY_WORKING_HOURS_FORM:
+		require_once($GLOBALS['babInstallPath'] . 'tmWorkingHoursFunc.php');
+		displayWorkingHoursForm();
+		break;
+
 	case BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST:
 		displayProjectsSpacesList();
 		break;
@@ -591,6 +711,10 @@ switch($idx)
 		
 	case BAB_TM_IDX_DISPLAY_PROJECT_RIGHTS_FORM:
 		displayProjectRightsForm();
+		break;
+		
+	case BAB_TM_IDX_DISPLAY_PROJECTS_CONFIGURATION_FORM:
+		displayProjectsConfigurationForm();
 		break;
 
 }

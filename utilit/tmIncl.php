@@ -381,6 +381,76 @@ function bab_getProject($iIdProject, &$aProject)
 	return false;
 }
 
+function bab_createProject($iIdProjectSpace, $sName, $sDescription)
+{
+	global $babBody, $babDB;
+
+	$query = 
+		'INSERT INTO ' . BAB_TSKMGR_PROJECTS_TBL . ' ' .
+			'(' .
+				'`id`, ' .
+				'`idProjectSpace`, `name`, `description`, `created`, `idUserCreated`' .
+			') ' .
+		'VALUES ' . 
+			'(\'\', \'' . 
+				$iIdProjectSpace . '\', \'' . $sName . '\', \'' . $sDescription . '\', \'' . 
+				date("Y-m-d H:i:s") . '\', \'' . $GLOBALS['BAB_SESS_USERID'] . 
+			'\')'; 
+
+	//bab_debug($query);
+	$res = $babDB->db_query($query);
+	if(false != $res)
+	{
+		$iIdProject = $babDB->db_insert_id();
+		
+		require_once($GLOBALS['babInstallPath'] . 'admin/acl.php');
+
+		aclDuplicateRights(
+			BAB_TSKMGR_DEFAULT_PROJECTS_VISUALIZERS_GROUPS_TBL, $iIdProjectSpace, 
+			BAB_TSKMGR_PROJECTS_VISUALIZERS_GROUPS_TBL, $iIdProject);					
+		aclDuplicateRights(
+			BAB_TSKMGR_DEFAULT_PROJECTS_SUPERVISORS_GROUPS_TBL, $iIdProjectSpace, 
+			BAB_TSKMGR_PROJECTS_SUPERVISORS_GROUPS_TBL, $iIdProject);					
+		aclDuplicateRights(
+			BAB_TSKMGR_DEFAULT_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProjectSpace, 
+			BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject);
+			
+		$aConfiguration = null;
+		$bSuccess = bab_getDefaultProjectSpaceConfiguration($iIdProjectSpace, $aConfiguration);	
+		if($bSuccess)
+		{
+			unset($aConfiguration['id']);
+			unset($aConfiguration['idProjectSpace']);
+			$aConfiguration['idProject'] = $iIdProject;
+			bab_createProjectConfiguration($aConfiguration);
+		}
+		
+		bab_updateRefCount(BAB_TSKMGR_PROJECTS_SPACES_TBL, $iIdProjectSpace, '+ \'1\'');
+		
+		return true;		
+	}
+	return false;
+}
+
+function bab_updateProject($iIdProject, $sName, $sDescription)
+{
+	global $babBody, $babDB;
+
+	$query = 
+		'UPDATE ' . 
+			BAB_TSKMGR_PROJECTS_TBL . ' ' .
+		'SET ' . ' ' .
+				'`name` = \'' . $sName . '\', ' .
+				'`description` = \'' . $sDescription . '\', ' .
+				'`modified` = \'' . date("Y-m-d H:i:s") . '\', ' .
+				'`idUserModified` = \'' . $GLOBALS['BAB_SESS_USERID'] . '\' ' .
+		'WHERE ' . 
+			'`id` = \'' . $iIdProject . '\'';
+
+	//bab_debug($query);
+	return $babDB->db_query($query);
+}
+
 function bab_deleteProject($iIdProject)
 {
 	global $babBody, $babDB;
@@ -411,7 +481,7 @@ function bab_deleteProject($iIdProject)
 	
 	$query = 'DELETE FROM ' . BAB_TSKMGR_PROJECTS_TBL . ' WHERE id = \'' . $iIdProject . '\''; 
 	//bab_debug($query);
-	$babDB->db_query($query);
+	return $babDB->db_query($query);
 }
 
 function bab_createProjectConfiguration($aConfiguration)
@@ -419,14 +489,14 @@ function bab_createProjectConfiguration($aConfiguration)
 	global $babBody, $babDB;
 
 	$query = 
-		'INSERT INTO ' . BAB_TSKMGR_DEFAULT_PROJECTS_CONFIGURATION_TBL . ' ' .
+		'INSERT INTO ' . BAB_TSKMGR_PROJECTS_CONFIGURATION_TBL . ' ' .
 			'(' .
 				'`id`, ' .
-				'`idProjectSpace`, `tskUpdateByMgr`, `endTaskReminder`, `tasksNumerotation`, `emailNotice`, `faqUrl`' .
+				'`idProject`, `tskUpdateByMgr`, `endTaskReminder`, `tasksNumerotation`, `emailNotice`, `faqUrl`' .
 			') ' .
 		'VALUES ' . 
 			'(\'\', \'' . 
-				$aConfiguration['idProjectSpace'] . '\', \'' . $aConfiguration['tskUpdateByMgr'] . '\', \'' . 
+				$aConfiguration['idProject'] . '\', \'' . $aConfiguration['tskUpdateByMgr'] . '\', \'' . 
 				$aConfiguration['endTaskReminder'] . '\', \'' . $aConfiguration['tasksNumerotation'] . '\', \'' . 
 				$aConfiguration['emailNotice'] . '\', \'' . $aConfiguration['faqUrl'] . '\')'; 
 
@@ -434,7 +504,7 @@ function bab_createProjectConfiguration($aConfiguration)
 	return $babDB->db_query($query);
 }
 
-function bab_getProjectConfiguration($iIdProjectSpace, $iIdProject, &$aConfiguration)
+function bab_getProjectConfiguration($iIdProject, &$aConfiguration)
 {
 	global $babBody, $babDB;
 
@@ -452,8 +522,7 @@ function bab_getProjectConfiguration($iIdProjectSpace, $iIdProject, &$aConfigura
 		'FROM ' .
 			BAB_TSKMGR_PROJECTS_CONFIGURATION_TBL . ' ' .
 		'WHERE ' . 
-			'id =\'' . $iIdProject . '\' AND ' .
-			'idProjectSpace =\'' . $iIdProjectSpace . '\'';
+			'idProject =\'' . $iIdProject . '\'';
 	
 	//bab_debug($query);
 	
@@ -478,7 +547,7 @@ function bab_updateProjectConfiguration($aConfiguration)
 
 	$query = 
 		'UPDATE ' . 
-			BAB_TSKMGR_PROJECTS_SPACES_TBL . ' ' .
+			BAB_TSKMGR_PROJECTS_CONFIGURATION_TBL . ' ' .
 		'SET ' . ' ' .
 				'`idProject` = \'' . $aConfiguration['idProject'] . '\', ' .
 				'`tskUpdateByMgr` = \'' . $aConfiguration['tskUpdateByMgr'] . '\', ' .
@@ -580,7 +649,7 @@ function bab_updateRefCount($sTblName, $iId, $sRefCount)
 		'SET ' .
 			'refCount = refCount ' . $sRefCount . ' ' .
 		'WHERE ' .
-			'id = \'' . $id . '\'';
+			'id = \'' . $iId . '\'';
 
 	//bab_debug($query);
 
@@ -625,4 +694,82 @@ function bab_deleteAllSpecificFields($sDbFieldName, $sDbFieldValue)
 	$babDB->db_query($query);
 }
 
+
+function bab_selectWorkingHours($iIdUser, $iWeekDay, &$bHaveWorkingHours)
+{
+	global $babDB;
+
+	$bHaveWorkingHours = false;
+	
+	$query = 
+		'SELECT ' .
+			'wd.weekDay, ' .
+			'wh.idUser, ' .
+			'LEFT(wh.startHour, 5) startHour, ' .
+			'LEFT(wh.endHour, 5) endHour ' .
+		'FROM ' .
+			BAB_TSKMGR_WEEK_DAYS_TBL . ' wd, ' . 
+			BAB_TSKMGR_WORKING_HOURS_TBL . ' wh ' .
+		'WHERE ' .
+			'wd.weekDay = \'' . $iWeekDay . '\' AND ' .
+			'wh.weekDay = wd.weekDay AND ' .
+			'wh.idUser = \'' . $iIdUser . '\' ' .
+		'ORDER BY ' . 
+			'wd.position, ' .
+			'wh.startHour';
+			
+	//bab_debug($query);
+	$result = $babDB->db_query($query);
+	if(false != $result)
+	{
+		$bHaveWorkingHours = (0 != $babDB->db_num_rows($result) ? true : false);
+	}
+	return $result;
+}
+
+function bab_insertWorkingHours($iIdUser, $iWeekDay, $sStartHour, $sEndHour)
+{
+	global $babDB;
+
+	$query = 
+		'INSERT INTO ' . BAB_TSKMGR_WORKING_HOURS_TBL . ' ' .
+			'(' .
+				'`id`, ' .
+				'`weekDay`, `idUser`, `startHour`, `endHour`' .
+			') ' .
+		'VALUES ' . 
+			'(\'\', \'' . 
+				$iWeekDay . '\', \'' . $iIdUser . '\', \'' . $sStartHour . '\', \'' . $sEndHour . '\')'; 
+
+	//bab_debug($query);
+	$res = $babDB->db_query($query);
+	if(false != $res)
+	{
+		return $babDB->db_insert_id();
+	}
+	return false;
+}
+
+function bab_deleteAllWorkingHours($iIdUser)
+{
+	global $babDB;
+	$query = 'DELETE FROM '	. BAB_TSKMGR_WORKING_HOURS_TBL . ' WHERE idUser = \'' . $iIdUser . '\'';
+	$babDB->db_query($query);
+}
+
+function bab_createDefaultWorkingHours($iIdUser)
+{
+	global $babDB, $babInstallPath;
+	require_once($babInstallPath . 'utilit/calapi.php');
+
+	$sWorkingDays = null;
+	bab_calGetWorkingDays($iIdUser, $sWorkingDays);
+	$aWorkingDays = explode(',', $sWorkingDays);
+	
+	foreach($aWorkingDays as $key => $iWeekDay)
+	{
+		bab_insertWorkingHours($iIdUser, $iWeekDay, '09:00', '12:00');
+		bab_insertWorkingHours($iIdUser, $iWeekDay, '13:00', '18:00');
+	}
+}
 ?>

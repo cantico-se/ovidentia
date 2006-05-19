@@ -27,7 +27,6 @@ require_once($babInstallPath . 'utilit/tmIncl.php');
 require_once($babInstallPath . 'utilit/tmList.php');
 require_once($babInstallPath . 'tmSpecificFieldsFunc.php');
 require_once($babInstallPath . 'tmCategoriesFunc.php');
-require_once($babInstallPath . 'tmWorkingHoursFunc.php');
 
 
 
@@ -80,7 +79,7 @@ function displayProjectsSpacesList()
 		bab_translate("Rights")
 		);
 	
-	$list->set_anchor($GLOBALS['babUrlScript'] . '?tg=admTskMgr&iIdProjectSpace={ m_datas[id] }&idx=' . BAB_TM_IDX_DISPLAY_DEFAULT_PROJECTS_CONFIGURATION_FORM,
+	$list->set_anchor($GLOBALS['babUrlScript'] . '?tg=admTskMgr&iIdProjectSpace={ m_datas[id] }&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_CONFIGURATION_FORM,
 		$GLOBALS['babSkinPath'] . 'images/Puces/manager.gif',
 		bab_translate("Configuration")
 		);
@@ -288,19 +287,20 @@ function displayProjectsSpacesRightsForm()
 }
 
 
-function displayDefaultProjectsConfigurationForm()
+function displayProjectsConfigurationForm()
 {
 	global $babBody;
 
 	$oTmCtx =& getTskMgrContext();
 	
 	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
+	$iIdProject = $oTmCtx->getIdProject();
 
 	if(0 != $iIdProjectSpace)
 	{
 		class BAB_TM_Configuration extends BAB_BaseFormProcessing
 		{
-			function BAB_TM_Configuration($iIdProjectSpace)
+			function BAB_TM_Configuration($iIdProjectSpace, $iIdProject)
 			{
 				parent::BAB_BaseFormProcessing();
 				
@@ -324,13 +324,14 @@ function displayDefaultProjectsConfigurationForm()
 				$this->set_data('no', BAB_TM_NO);
 				$this->set_data('tg', 'admTskMgr');
 				$this->set_data('save_idx', BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST);
-				$this->set_data('save_action', BAB_TM_ACTION_SAVE_DEFAULT_PROJECTS_CONFIGURATION);
+				$this->set_data('save_action', BAB_TM_ACTION_SAVE_PROJECTS_CONFIGURATION);
 				
 				$this->set_data('tmCode', '');
 				$this->set_data('tmValue', '');
 				$this->set_data('tnSelected', '');
 				
 				$this->set_data('iIdProjectSpace', $iIdProjectSpace);
+				$this->set_data('iIdProject', $iIdProject);
 				$this->set_data('isTaskUpdatedByMgr', true);
 				$this->set_data('endTaskReminder', 5);
 				$this->set_data('taskNumerotation', BAB_TM_SEQUENTIAL);
@@ -384,15 +385,15 @@ function displayDefaultProjectsConfigurationForm()
 				'mnuStr' => bab_translate("Projects spaces"),
 				'url' => $GLOBALS['babUrlScript'] . '?tg=admTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST),
 			array(
-				'idx' => BAB_TM_IDX_DISPLAY_DEFAULT_PROJECTS_CONFIGURATION_FORM,
+				'idx' => BAB_TM_IDX_DISPLAY_PROJECTS_CONFIGURATION_FORM,
 				'mnuStr' => bab_translate("Default projects configuration"),
-				'url' => $GLOBALS['babUrlScript'] . '?tg=admTskMgr&iIdProjectSpace=' . $iIdProjectSpace . '&idx=' . BAB_TM_IDX_DISPLAY_DEFAULT_PROJECTS_CONFIGURATION_FORM)
+				'url' => $GLOBALS['babUrlScript'] . '?tg=admTskMgr&iIdProjectSpace=' . $iIdProjectSpace . '&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_CONFIGURATION_FORM)
 			);
 			
 		add_item_menu($itemMenu);
 		$babBody->title = bab_translate("Default projects configuration");
 	
-		$pjc = & new BAB_TM_Configuration($iIdProjectSpace);
+		$pjc = & new BAB_TM_Configuration($iIdProjectSpace, $iIdProject);
 		
 		
 		$babBody->babecho(bab_printTemplate($pjc, 'tmCommon.html', 'configuration'));
@@ -472,7 +473,7 @@ function deleteProjectSpace()
 }
 
 
-function saveDefaultProjectConfiguration()
+function saveProjectConfiguration()
 {
 	$oTmCtx =& getTskMgrContext();
 	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
@@ -508,13 +509,14 @@ require_once($babInstallPath . 'upgrade.php');
 upgradeXXXtoYYY();
 //*/
 
+/*
 global $babBody;
 if(!($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) && $babBody->currentDGGroup['taskmanager'] !== 'Y')
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;
 }
-
+//*/
 
 
 /* main */
@@ -541,8 +543,8 @@ switch($action)
 		maclGroups();
 		break;
 		
-	case BAB_TM_ACTION_SAVE_DEFAULT_PROJECTS_CONFIGURATION:
-		saveDefaultProjectConfiguration();
+	case BAB_TM_ACTION_SAVE_PROJECTS_CONFIGURATION:
+		saveProjectConfiguration();
 		break;
 		
 	case BAB_TM_ACTION_ADD_OPTION:
@@ -572,6 +574,7 @@ switch($action)
 		break;
 		
 	case BAB_TM_ACTION_UPDATE_WORKING_HOURS:
+		require_once($GLOBALS['babInstallPath'] . 'tmWorkingHoursFunc.php');
 		updateWorkingHours();
 		break;
 }
@@ -588,6 +591,7 @@ switch($idx)
 		break;
 
 	case BAB_TM_IDX_DISPLAY_WORKING_HOURS_FORM:
+		require_once($GLOBALS['babInstallPath'] . 'tmWorkingHoursFunc.php');
 		displayWorkingHoursForm();
 		break;
 		
@@ -607,8 +611,8 @@ switch($idx)
 		displayProjectsSpacesRightsForm();
 		break;
 
-	case BAB_TM_IDX_DISPLAY_DEFAULT_PROJECTS_CONFIGURATION_FORM:
-		displayDefaultProjectsConfigurationForm();
+	case BAB_TM_IDX_DISPLAY_PROJECTS_CONFIGURATION_FORM:
+		displayProjectsConfigurationForm();
 		break;
 		
 	case BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_LIST:

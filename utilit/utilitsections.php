@@ -498,11 +498,12 @@ function babUserSection($close)
 		$this->array_urls[bab_translate("Statistics")] = $GLOBALS['babUrlScript']."?tg=stat";
 		}
 
-	if( count(bab_getUserIdObjects(BAB_TSKMGR_DEFAULT_PROJECTS_VISUALIZERS_GROUPS_TBL)) > 0 || 
+		
+/*	if( count(bab_getUserIdObjects(BAB_TSKMGR_DEFAULT_PROJECTS_VISUALIZERS_GROUPS_TBL)) > 0 || 
 		count(bab_getUserIdObjects(BAB_TSKMGR_PROJECTS_VISUALIZERS_GROUPS_TBL) > 0 )			)
-		{
+		{//*/
 		$this->array_urls[bab_translate("Task Manager")] = $GLOBALS['babUrlScript'].'?tg=usrTskMgr';
-		}
+/*		}//*/
 		
 	foreach( $babBody->babaddons as $row ) 
 		{

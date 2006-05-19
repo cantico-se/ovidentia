@@ -33,6 +33,8 @@ class BAB_TM_Context
 	var $m_iIdProject;
 	var $m_iIdDelegation;
 	
+	var $m_oWorkingHours;
+	
 	var $m_bIsProjectVisualizer;
 	var $m_aVisualizedIdProjectSpace;
 	var $m_aVisualizedIdProject;
@@ -67,6 +69,7 @@ class BAB_TM_Context
 		$this->m_iIdProject = (int) tskmgr_getVariable('iIdProject', 0);
 		$this->m_iIdDelegation = $babBody->currentAdmGroup;
 		
+		$this->m_oWorkingHours = null;
 		//bab_debug('BAB_TM_Context::m_iIdDelegation ==> ' . $this->m_iIdDelegation);
 		
 		$this->m_aConfiguration = null;
@@ -182,7 +185,18 @@ class BAB_TM_Context
 		return $this->m_bIsProjectCreator;
 	}
 //*/
-	
+
+	function &getWorkingHoursObject()
+	{
+		if(is_null($this->m_oWorkingHours))
+		{
+			global $babInstallPath;
+			require_once($babInstallPath . 'tmWorkingHoursFunc.php');
+			$this->m_oWorkingHours = new BAB_WorkingHours();
+		}
+		return $this->m_oWorkingHours;
+	}
+
 	function &getTableWrapper()
 	{
 		return $this->m_oTblWr;
@@ -268,7 +282,7 @@ class BAB_TM_Context
 			}
 			else
 			{
-				$success = bab_getProjectConfiguration($this->m_iIdProjectSpace, $this->m_iIdProject, $this->m_aConfiguration);
+				$success = bab_getProjectConfiguration($this->m_iIdProject, $this->m_aConfiguration);
 			}
 		}
 		

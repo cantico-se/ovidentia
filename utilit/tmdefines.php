@@ -5,7 +5,7 @@ define('BAB_TM_ACTION_SET_RIGHT', 'setRight');
 define('BAB_TM_ACTION_ADD_PROJECT_SPACE', 'addProjectSpace');
 define('BAB_TM_ACTION_MODIFY_PROJECT_SPACE', 'modifyProjectSpace');
 define('BAB_TM_ACTION_DELETE_PROJECT_SPACE', 'deleteProjectSpace');
-define('BAB_TM_ACTION_SAVE_DEFAULT_PROJECTS_CONFIGURATION', 'saveDefaultProjectConfiguration');
+define('BAB_TM_ACTION_SAVE_PROJECTS_CONFIGURATION', 'saveProjectConfiguration');
 
 define('BAB_TM_ACTION_ADD_OPTION', 'addOption');
 define('BAB_TM_ACTION_DEL_OPTION', 'delOption');
@@ -30,7 +30,7 @@ define('BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST', 'displayProjectsSpacesList');
 define('BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_FORM', 'displayProjectsSpacesForm');
 define('BAB_TM_IDX_DISPLAY_DELETE_PROJECTS_SPACES_FORM', 'displayDeleteProjectsSpacesForm');
 define('BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_RIGHTS_FORM', 'displayProjectsSpacesRightsForm');
-define('BAB_TM_IDX_DISPLAY_DEFAULT_PROJECTS_CONFIGURATION_FORM', 'displayDefaultProjectsConfigurationForm');
+define('BAB_TM_IDX_DISPLAY_PROJECTS_CONFIGURATION_FORM', 'displayProjectsConfigurationForm');
 define('BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_LIST', 'displaySpecificFieldList');
 define('BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_FORM', 'displaySpecificFieldForm');
 define('BAB_TM_IDX_DISPLAY_DELETE_SPECIFIC_FIELD_FORM', 'displayDeleteSpecificFieldForm');
