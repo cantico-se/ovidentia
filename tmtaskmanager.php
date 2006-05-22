@@ -126,6 +126,7 @@ function displayProjectsList()
 		{
 			$this->set_caption('rights', bab_translate("Rights"));
 			$this->set_caption('configuration', bab_translate("Configuration"));
+			$this->set_caption('commentary', bab_translate("Display project commentaries list"));
 
 			$oTmCtx =& getTskMgrContext();
 			$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
@@ -136,6 +137,7 @@ function displayProjectsList()
 				
 			$this->set_data('rightsUrl', '#');
 			$this->set_data('configurationUrl', '#');
+			$this->set_data('commentaryUrl', '#');
 			$this->m_result = bab_selectProjectList($iIdProjectSpace);
 		}
 		
@@ -155,6 +157,10 @@ function displayProjectsList()
 					
 				$this->set_data('configurationUrl', $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' .
 					BAB_TM_IDX_DISPLAY_PROJECTS_CONFIGURATION_FORM . '&iIdProjectSpace=' . $iIdProjectSpace . '&iIdProject=' . $this->m_rowDatas['id']
+					);
+
+				$this->set_data('commentaryUrl', $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' .
+					BAB_TM_IDX_DISPLAY_PROJECT_COMMENTARY_LIST . '&iIdProjectSpace=' . $iIdProjectSpace . '&iIdProject=' . $this->m_rowDatas['id']
 					);
 
 				return true;
@@ -283,19 +289,12 @@ function displayDeleteProjectForm()
 	{
 		if(bab_isProjectDeletable($iIdProject))
 		{
-			$bf = & new BAB_BaseFormProcessing();
-			
-			$tblWr =& $oTmCtx->getTableWrapper();
-			$tblWr->setTableName(BAB_TSKMGR_PROJECTS_TBL);
+			$aProject = null;
+			$bSuccess = bab_getProject($iIdProject, $aProject);
 	
-			$attributs = array(
-				'id' => $iIdProject, 
-				'idProjectSpace' => $iIdProjectSpace, 
-				'name' => '',
-				'description' => '');
-					
-			if(false !== ($attributs = $tblWr->load($attributs, 2, 2, 0, 2)))
+			if(false !== $bSuccess)
 			{
+				$bf = & new BAB_BaseFormProcessing();
 				$bf->set_data('idx', BAB_TM_IDX_DISPLAY_PROJECTS_LIST);
 				$bf->set_data('action', BAB_TM_ACTION_DELETE_PROJECT);
 				$bf->set_data('iIdProjectSpace', $iIdProjectSpace);
@@ -304,7 +303,7 @@ function displayDeleteProjectForm()
 	
 				$bf->set_caption('warning', bab_translate("This action will delete the project and all references"));
 				$bf->set_caption('message', bab_translate("Continue ?"));
-				$bf->set_caption('title', bab_translate("Project = ") . htmlentities($attributs['name'], ENT_QUOTES));
+				$bf->set_caption('title', bab_translate("Project = ") . htmlentities($aProject['name'], ENT_QUOTES));
 				$bf->set_caption('yes', bab_translate("Yes"));
 				$bf->set_caption('no', bab_translate("No"));
 	
@@ -509,6 +508,130 @@ function displayProjectsConfigurationForm()
 	
 }
 
+function displayProjectCommentaryList()
+{
+	global $babBody;
+
+	$oTmCtx =& getTskMgrContext();
+	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
+	$iIdProject = $oTmCtx->getIdProject();
+	
+	if(bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject))
+	{
+		$babBody->title = bab_translate("Commentaries list");
+	
+		$itemMenu = array(		
+			array(
+				'idx' => BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST,
+				'mnuStr' => bab_translate("Projects spaces"),
+				'url' => $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST),
+			array(
+				'idx' => BAB_TM_IDX_DISPLAY_PROJECTS_LIST,
+				'mnuStr' => bab_translate("Projects list"),
+				'url' => $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_LIST . 
+				'&iIdProjectSpace=' . $iIdProjectSpace),
+			array(
+				'idx' => BAB_TM_IDX_DISPLAY_PROJECT_COMMENTARY_LIST,
+				'mnuStr' => bab_translate("Commentaries list"),
+				'url' => $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECT_COMMENTARY_LIST . 
+				'&iIdProject=' . $iIdProject),
+			array(
+				'idx' => BAB_TM_IDX_DISPLAY_COMMENTARY_FORM,
+				'mnuStr' => bab_translate("Add a commentary"),
+				'url' => $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_COMMENTARY_FORM . 
+				'&iIdProjectSpace=' . $iIdProjectSpace . '&iIdProject=' . $iIdProject)
+		);
+		
+		add_item_menu($itemMenu);
+		
+		$result = tmSelectCommentary(BAB_TSKMGR_PROJECTS_COMMENTS_TBL, $iIdProject, 'idProject');	
+		$oList = new BAB_TM_ListBase($result);
+	
+		$oList->set_data('url', $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . 
+			BAB_TM_IDX_DISPLAY_COMMENTARY_FORM . '&iIdProjectSpace=' . $iIdProjectSpace .
+			'&iIdProject=' . $iIdProject . '&iIdCommentary=');
+
+		$babBody->babecho(bab_printTemplate($oList, 'tmUser.html', 'commentariesList'));
+	}
+	else 
+	{
+		$GLOBALS['babBody']->msgerror = bab_translate("You do not have the right to list the commentaries");
+	}
+}
+
+function displayCommentaryForm()
+{
+	global $babBody;
+
+	$oTmCtx =& getTskMgrContext();
+	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
+	$iIdProject = $oTmCtx->getIdProject();
+	
+	if(bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject))
+	{
+		$iIdCommentary = tskmgr_getVariable('iIdCommentary', 0);
+		$tab_caption = ($iIdCommentary == 0) ? bab_translate("Add a commentary") : bab_translate("Edition of a commentary");
+		$babBody->title = $tab_caption;
+	
+		$itemMenu = array(		
+			array(
+				'idx' => BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST,
+				'mnuStr' => bab_translate("Projects spaces"),
+				'url' => $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST),
+			array(
+				'idx' => BAB_TM_IDX_DISPLAY_PROJECTS_LIST,
+				'mnuStr' => bab_translate("Projects list"),
+				'url' => $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_LIST . 
+				'&iIdProjectSpace=' . $iIdProjectSpace),
+			array(
+				'idx' => BAB_TM_IDX_DISPLAY_PROJECT_COMMENTARY_LIST,
+				'mnuStr' => bab_translate("Commentaries list"),
+				'url' => $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECT_COMMENTARY_LIST . 
+				'&iIdProject=' . $iIdProject),
+			array(
+				'idx' => BAB_TM_IDX_DISPLAY_COMMENTARY_FORM,
+				'mnuStr' => $tab_caption,
+				'url' => $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_COMMENTARY_FORM . 
+				'&iIdProject=' . $iIdProject)
+		);
+		
+		add_item_menu($itemMenu);
+		
+		$oBf = & new BAB_BaseFormProcessing();
+		
+		$oBf->set_caption('add', bab_translate("Add"));
+		$oBf->set_caption('modify', bab_translate("Modify"));
+		$oBf->set_caption('delete', bab_translate("Delete"));
+
+		$oBf->set_data('addIdx', BAB_TM_IDX_DISPLAY_PROJECT_COMMENTARY_LIST);
+		$oBf->set_data('addAction', BAB_TM_ACTION_ADD_PROJECT_COMMENTARY);
+		$oBf->set_data('modifyIdx', BAB_TM_IDX_DISPLAY_PROJECT_COMMENTARY_LIST);
+		$oBf->set_data('modifyAction', BAB_TM_ACTION_MODIFY_PROJECT_COMMENTARY);
+		$oBf->set_data('delIdx', BAB_TM_IDX_DISPLAY_DELETE_COMMENTARY);
+		$oBf->set_data('delAction', '');
+		$oBf->set_data('tg', 'usrTskMgr');
+
+		$oBf->set_data('iIdProjectSpace', $iIdProjectSpace);
+		$oBf->set_data('iIdCommentary', $iIdCommentary);
+		$oBf->set_data('iIdProject', $iIdProject);
+		$oBf->set_data('iIdTask', 0);
+
+		$oBf->set_data('commentary', '');
+		
+		$success = tmGetCommentary(BAB_TSKMGR_PROJECTS_COMMENTS_TBL, $iIdCommentary, $sCommentary);
+		if(false != $success)
+		{
+			$oBf->set_data('commentary', htmlentities($sCommentary, ENT_QUOTES));
+		}
+		
+		$babBody->babecho(bab_printTemplate($oBf, 'tmUser.html', 'displayCommentary'));
+	}
+	else 
+	{
+		$GLOBALS['babBody']->msgerror = bab_translate("You do not have the right to list the commentaries");
+	}
+}
+
 //POST
 
 
@@ -629,7 +752,36 @@ function saveProjectConfiguration()
 	}
 }	
 
+function addModifyProjectCommentary()
+{
+	$iIdProject = (int) tskmgr_getVariable('iIdProject', 0);
+	$iIdCommentary = (int) tskmgr_getVariable('iIdCommentary', 0);
 
+	if(bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject))
+	{
+		$sCommentary = trim(tskmgr_getVariable('sCommentary', ''));
+		
+		if(strlen($sCommentary) > 0)
+		{
+			if(0 == $iIdCommentary)
+			{
+				tmCreateProjectCommentary($iIdProject, $sCommentary);
+			}
+			else 
+			{
+				tmUpdateProjectCommentary($iIdCommentary, $sCommentary);
+			}
+		}
+		else 
+		{
+			bab_debug('addModifyProjectCommentary: commentary empty');
+		}
+	}
+	else 
+	{
+		bab_debug('addModifyProjectCommentary: acces denied');
+	}
+}
 
 bab_cleanGpc();
 
@@ -675,6 +827,11 @@ switch($action)
 	case BAB_TM_ACTION_SAVE_PROJECTS_CONFIGURATION:
 		saveProjectConfiguration();
 		break;
+
+	case BAB_TM_ACTION_ADD_PROJECT_COMMENTARY:
+	case BAB_TM_ACTION_MODIFY_PROJECT_COMMENTARY:
+		addModifyProjectCommentary();
+		break;
 }
 
 
@@ -716,7 +873,14 @@ switch($idx)
 	case BAB_TM_IDX_DISPLAY_PROJECTS_CONFIGURATION_FORM:
 		displayProjectsConfigurationForm();
 		break;
-
+		
+	case BAB_TM_IDX_DISPLAY_PROJECT_COMMENTARY_LIST:
+		displayProjectCommentaryList();
+		break;
+		
+	case BAB_TM_IDX_DISPLAY_COMMENTARY_FORM:
+		displayCommentaryForm();
+		break;
 }
 $babBody->setCurrentItemMenu($idx);
 ?>

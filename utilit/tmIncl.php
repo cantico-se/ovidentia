@@ -60,6 +60,7 @@ function bab_getProjectSpaceList(&$aProjectSpaceList)
 		while($iIndex < $iNumRows && false != ($datas = $babDB->db_fetch_assoc($res)))
 		{
 			$aProjectSpaceList[] = array('id' => $datas['id'], 'name' => $datas['name'], 'description' => $datas['description']);
+			$iIndex++;
 		}
 	}
 }
@@ -346,6 +347,7 @@ function bab_getProjectList($iIdProjectSpace, &$aProjectList)
 		while($iIndex < $iNumRows && false != ($datas = $babDB->db_fetch_assoc($res)))
 		{
 			$aProjectList[] = array('id' => $datas['id'], 'name' => $datas['name'], 'description' => $datas['description']);
+			$iIndex++;
 		}
 	}
 }
@@ -371,10 +373,11 @@ function bab_getProject($iIdProject, &$aProject)
 	{
 		$iNumRows = $babDB->db_num_rows($res);	
 		$iIndex = 0;
-		while($iIndex < $iNumRows && false != ($datas = $babDB->db_fetch_assoc($res)))
+		if(/*$iIndex < $iNumRows &&*/ false != ($datas = $babDB->db_fetch_assoc($res)))
 		{
 			$aProject = array('id' => $datas['id'], 'name' => $datas['name'], 'description' => $datas['description'], 
-				'isLocked' => $datas['isLocked'], 'state' => $datas['state']);
+				'isLocked' => $datas['isLocked'], 'state' => $datas['state'], 'idProjectSpace' => $datas['idProjectSpace']);
+			$iIndex++;
 			return true;
 		}
 	}
@@ -599,6 +602,7 @@ function bab_deleteAllTask($iIdProject)
 	{
 		bab_deleteAllTaskSpecificFieldInstance($data['id']);
 		aclDelete(BAB_TSKMGR_TASK_RESPONSIBLE_GROUPS_TBL, $data['id']);
+		$iIndex++;
 	}
 
 	$query = 'DELETE FROM ' . BAB_TSKMGR_TASKS_COMMENTS_TBL . ' WHERE idProject = \'' . $iIdProject . '\'';
@@ -628,6 +632,7 @@ function bab_deleteAllTaskSpecificFieldInstance($iIdTask)
 	while($iIndex < $iNumRows && false != ($data = $babDB->db_fetch_assoc($result)))
 	{
 		bab_updateRefCount(BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL, $data['idSpFldClass'], '- \'1\'');
+		$iIndex++;
 	}
 }
 
@@ -687,6 +692,8 @@ function bab_deleteAllSpecificFields($sDbFieldName, $sDbFieldValue)
 		$query = 'DELETE FROM ' . BAB_TSKMGR_SPECIFIC_FIELDS_RADIO_CLASS_TBL . ' WHERE idFldBase = \'' . $data['id'] . '\''; 
 		//bab_debug($query);
 		$babDB->db_query($query);
+
+		$iIndex++;
 	}
 	
 	$query = 'DELETE FROM ' . BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' WHERE ' . $sDbFieldName . ' =\'' . $sDbFieldValue . '\''; 
@@ -772,4 +779,91 @@ function bab_createDefaultWorkingHours($iIdUser)
 		bab_insertWorkingHours($iIdUser, $iWeekDay, '13:00', '18:00');
 	}
 }
+
+function tmSelectCommentary($sTblName, $iIdObject, $sObjectName, $iLenght = 50)
+{
+	global $babBody, $babDB;
+	
+	$query = 
+		'SELECT ' .
+			'id, ' . 
+			'IF(LENGTH(commentary) > \'' . $iLenght . '\', CONCAT(LEFT(commentary, \'' . $iLenght . '\'), \'...\'), commentary) commentary, ' .
+			'created ' .
+		'FROM ' .
+			$sTblName . ' ' .
+		'WHERE ' . 
+			$sObjectName . ' =\'' . $iIdObject . '\'';
+	
+	//bab_debug($query);
+	return $babDB->db_query($query);
+}
+
+function tmGetCommentary($sTblName, $iIdCommentary, &$sCommentary)
+{
+	global $babBody, $babDB;
+	
+	$sCommentary = '';
+	
+	$query = 
+		'SELECT ' .
+			'id, ' . 
+			'commentary ' .
+		'FROM ' .
+			$sTblName . ' ' .
+		'WHERE ' . 
+			'id =\'' . $iIdCommentary . '\'';
+	
+	//bab_debug($query);
+	$result = $babDB->db_query($query);
+	$iNumRows = $babDB->db_num_rows($result);
+	$iIndex = 0;
+	
+	if(/*$iIndex < $iNumRows &&*/ false != ($datas = $babDB->db_fetch_assoc($result)))
+	{
+		$sCommentary = $datas['commentary'];
+		$iIndex++;
+		return true;
+	}
+	return false;
+}
+
+function tmCreateProjectCommentary($iIdProject, $sCommentary)
+{
+	global $babBody, $babDB;
+	
+	$query = 
+		'INSERT INTO ' . BAB_TSKMGR_PROJECTS_COMMENTS_TBL . ' ' .
+			'(' .
+				'`id`, ' .
+				'`idProject`, `commentary`, `created`, `idUserCreated`' .
+			') ' .
+		'VALUES ' . 
+			'(\'\', \'' . 
+				$iIdProject . '\', \'' . $sCommentary . '\', \'' . 
+				date("Y-m-d H:i:s") . '\', \'' . $GLOBALS['BAB_SESS_USERID'] . 
+			'\')'; 
+
+
+	//bab_debug($query);
+	return $babDB->db_query($query);
+}
+
+function tmUpdateProjectCommentary($iIdCommentary, $sCommentary)
+{
+	global $babBody, $babDB;
+
+	$query = 
+		'UPDATE ' . 
+			BAB_TSKMGR_PROJECTS_COMMENTS_TBL . ' ' .
+		'SET ' . ' ' .
+				'`commentary` = \'' . $sCommentary . '\', ' .
+				'`modified` = \'' . date("Y-m-d H:i:s") . '\', ' .
+				'`idUserModified` = \'' . $GLOBALS['BAB_SESS_USERID'] . '\' ' .
+		'WHERE ' . 
+			'`id` = \'' . $iIdCommentary . '\'';
+
+	//bab_debug($query);
+	return $babDB->db_query($query);
+}
+
 ?>

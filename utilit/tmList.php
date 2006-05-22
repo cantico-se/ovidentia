@@ -43,9 +43,15 @@ class BAB_TM_ListBase extends BAB_BaseFormProcessing
 
 		$this->set_caption('name', bab_translate("Name"));
 		$this->set_caption('description', bab_translate("Description"));
-		$this->set_data('isLink', true);
+		$this->set_caption('commentary', bab_translate("Commentary"));
+		$this->set_caption('date', bab_translate("Date"));
+
 		$this->set_data('name', '');
 		$this->set_data('description', '');
+		$this->set_data('commentary', '');
+		
+		$this->set_data('isLink', true);
+		
 		$this->m_rowDatas = false;
 		$this->m_result = $result;
 		
@@ -56,21 +62,41 @@ class BAB_TM_ListBase extends BAB_BaseFormProcessing
 	{
 		
 	}
-	
-	function nextItem()
+
+	function nextRow()
 	{
 		if(false != $this->m_result)
 		{
 			$this->m_rowDatas = $this->m_db->db_fetch_array($this->m_result);
+		}		
+	}
 	
-			if(false != $this->m_rowDatas)
-			{
-				$this->m_is_altbg = !$this->m_is_altbg;
-				$this->set_data('id', $this->m_rowDatas['id']);
-				$this->set_data('name', htmlentities($this->m_rowDatas['name'], ENT_QUOTES));
-				$this->set_data('description', htmlentities($this->m_rowDatas['description'], ENT_QUOTES));
-				return true;
-			}
+	function nextItem()
+	{
+		$this->nextRow();
+			
+		if(false != $this->m_rowDatas)
+		{
+			$this->m_is_altbg = !$this->m_is_altbg;
+			$this->set_data('id', $this->m_rowDatas['id']);
+			$this->set_data('name', htmlentities($this->m_rowDatas['name'], ENT_QUOTES));
+			$this->set_data('description', htmlentities($this->m_rowDatas['description'], ENT_QUOTES));
+			return true;
+		}
+		return false;
+	}
+
+	function nextCommentary()
+	{
+		$this->nextRow();
+		if(false != $this->m_rowDatas)
+		{
+			//bab_debug($this->m_rowDatas);
+			$this->m_is_altbg = !$this->m_is_altbg;
+			$this->set_data('id', $this->m_rowDatas['id']);
+			$this->set_data('commentary', htmlentities($this->m_rowDatas['commentary'], ENT_QUOTES));
+			$this->set_data('created', bab_longDate($this->m_rowDatas['created']));
+			return true;
 		}
 		return false;
 	}

@@ -12,16 +12,20 @@ define('BAB_TM_ACTION_DEL_OPTION', 'delOption');
 define('BAB_TM_ACTION_ADD_SPECIFIC_FIELD', 'addSpecificField');
 define('BAB_TM_ACTION_MODIFY_SPECIFIC_FIELD', 'modifySpecificField');
 define('BAB_TM_ACTION_DELETE_SPECIFIC_FIELD', 'deleteSpecificField');
-
 define('BAB_TM_ACTION_ADD_CATEGORY', 'addCategory');
 define('BAB_TM_ACTION_MODIFY_CATEGORY', 'modifyCategory');
 define('BAB_TM_ACTION_DELETE_CATEGORY', 'deleteCategory');
-
 define('BAB_TM_ACTION_ADD_PROJECT', 'addProject');
 define('BAB_TM_ACTION_MODIFY_PROJECT', 'modifyProject');
 define('BAB_TM_ACTION_DELETE_PROJECT', 'deleteProject');
-
 define('BAB_TM_ACTION_UPDATE_WORKING_HOURS', 'updateWorkingHours');
+
+define('BAB_TM_ACTION_ADD_PROJECT_COMMENTARY', 'addProjectCommentary');
+define('BAB_TM_ACTION_MODIFY_PROJECT_COMMENTARY', 'modifyProjectCommentary');
+define('BAB_TM_ACTION_DELETE_PROJECT_COMMENTARY', 'deleteProjectCommentary');
+define('BAB_TM_ACTION_ADD_TASK_COMMENTARY', 'addTaskCommentary');
+define('BAB_TM_ACTION_MODIFY_TASK_COMMENTARY', 'modifyTaskCommentary');
+define('BAB_TM_ACTION_DELETE_TASK_COMMENTARY', 'deleteTaskCommentary');
 
 // idx
 define('BAB_TM_IDX_DISPLAY_MENU', 'displayMenu');
@@ -38,11 +42,17 @@ define('BAB_TM_IDX_DISPLAY_CATEGORIES_LIST', 'displayCategoriesList');
 define('BAB_TM_IDX_DISPLAY_CATEGORY_FORM', 'displayCategoryForm');
 define('BAB_TM_IDX_DISPLAY_DELETE_CATEGORY_FORM', 'displayDeleteCategoryForm');
 define('BAB_TM_IDX_DISPLAY_PROJECT_SPACE_MENU', 'displayProjectSpaceMenu');
-
 define('BAB_TM_IDX_DISPLAY_PROJECTS_LIST', 'displayProjectsList');
 define('BAB_TM_IDX_DISPLAY_PROJECT_FORM', 'displayProjectsForm');
 define('BAB_TM_IDX_DISPLAY_DELETE_PROJECT_FORM', 'displayDeleteProjectForm');
 define('BAB_TM_IDX_DISPLAY_PROJECT_RIGHTS_FORM', 'displayProjectRightsForm');
+
+define('BAB_TM_IDX_DISPLAY_PROJECT_COMMENTARY_LIST', 'displayProjectCommentaryList');
+define('BAB_TM_IDX_DISPLAY_COMMENTARY_FORM', 'displayCommentaryForm');
+define('BAB_TM_IDX_DISPLAY_TASK_COMMENTARY_LIST', 'displayTaskCommentaryList');
+define('BAB_TM_IDX_DISPLAY_DELETE_COMMENTARY', 'displayDeleteCommentary');
+
+
 
 //
 define('BAB_TM_YES', 1);
