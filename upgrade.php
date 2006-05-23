@@ -5863,10 +5863,13 @@ if (!bab_isTableField(BAB_FM_FILESVER_TBL, 'index_status')) {
 
 if (!bab_isTableField(BAB_ART_FILES_TBL, 'index_status')) {
 
-	$db->db_query("ALTER TABLE `".BAB_ART_FILES_TBL."` ADD `index_status` INT UNSIGNED NOT NULL");
+	$db->db_query("ALTER TABLE `".BAB_ART_FILES_TBL."` ADD `index_status` TINYINT( 1 ) UNSIGNED NOT NULL");
 	$db->db_query("ALTER TABLE `".BAB_ART_FILES_TBL."` ADD INDEX ( `index_status` )");
 }
 	
+
+
+
 
 
 $arr = $db->db_fetch_array($db->db_query("DESCRIBE ".BAB_SITES_TBL." browse_users"));
@@ -6020,5 +6023,30 @@ while( $arr = $db->db_fetch_array($res))
 return $ret;
 }
 
+
+
+function upgrade582to583()
+{	
+	$ret = "";
+	$db = & $GLOBALS['babDB'];
+
+	if (!bab_isTable(BAB_INDEX_ACCESS_TBL)) {
+
+		$db->db_query("
+		
+			CREATE TABLE ".BAB_INDEX_ACCESS_TBL." (
+			  file_path varchar(255) NOT NULL,
+			  id_object int(10) unsigned NOT NULL,
+			  id_object_access int(10) unsigned NOT NULL,
+			  object varchar(255) NOT NULL,
+			  PRIMARY KEY  (file_path),
+			  KEY object (object),
+			  KEY id_object (id_object)
+			)
+			
+		");
+
+	}
+}
 
 ?>

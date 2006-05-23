@@ -626,6 +626,7 @@ function commitFile($idf, $comment, $vermajor, $filename, $size, $tmp )
 		}
 
 	$pathx = bab_getUploadFullPath($arrfile['bgroup'], $arrfile['id_owner']);
+	$pathy = bab_getUploadFmPath($arrfile['bgroup'], $arrfile['id_owner']);
 
 	$totalsize = getDirSize($pathx);
 	if( $size + $totalsize > $GLOBALS['babMaxGroupSize'] )
@@ -693,11 +694,23 @@ function commitFile($idf, $comment, $vermajor, $filename, $size, $tmp )
 
 		include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
 		$index_status = bab_indexOnLoadFiles(
-			array($pathx.$arrfile['name'],  $pathx.BAB_FVERSION_FOLDER."/".$arrfile['ver_major'].",".$arrfile['ver_minor'].",".$arrfile['name'])
-			, 'bab_files');
-	
+			array($pathx.$arrfile['name'],  $pathx.BAB_FVERSION_FOLDER."/".$arrfile['ver_major'].",".$arrfile['ver_minor'].",".$arrfile['name']),
+			'bab_files'
+		);
+
 		$babDB->db_query("update ".BAB_FILES_TBL." set edit='0', modified=now(), modifiedby='".$GLOBALS['BAB_SESS_USERID']."', ver_major='".$vmajor."', ver_minor='".$vminor."', ver_comment='".$comment."', index_status='".$index_status."' where id='".$idf."'");
+
+		
+
 		$babDB->db_query("update ".BAB_FM_FILESVER_TBL." set ver_major='".$arrfile['ver_major']."', ver_minor='".$arrfile['ver_minor']."', comment='".addslashes($arrfile['ver_comment'])."', idfai='0', confirmed='Y', index_status='".$index_status."' where id='".$arrfile['edit']."'");
+
+		if (BAB_INDEX_STATUS_INDEXED === $index_status) {
+			$obj = new bab_indexObject($object);
+			$obj->setIdObjectFile($pathy.$arrfile['name'], $idf, $arrfile['id_owner']);
+		
+			$obj->setIdObjectFile($pathy.BAB_FVERSION_FOLDER."/".$arrfile['ver_major'].",".$arrfile['ver_minor'].",".$arrfile['name'], $idf, $arrfile['id_owner']);
+		}
+
 		if( $arrfold['filenotify'] == 'Y' )
 			fileNotifyMembers($filename, $arrfile['path'], $arrfile['id_owner'], bab_translate("A new version file has been uploaded"));
 		}

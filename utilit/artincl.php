@@ -1100,37 +1100,52 @@ function indexAllArtFiles($status) {
 	$res = $db->db_query("
 	
 		SELECT 
-			id,
-			name,
-			id_article 
+			f.id,
+			f.name,
+			f.id_article, 
+			a.id_topic 
 
 		FROM 
-			".BAB_ART_FILES_TBL." 
+			".BAB_ART_FILES_TBL." f,
+			".BAB_ARTICLES_TBL." a 
 		WHERE 
-			index_status IN('".implode("','",$status)."')
+			a.id = f.id_article 
+			AND f.index_status IN('".implode("','",$status)."')
 		
 	");
 
 	
 	$files = array();
+	$rights = array();
 	$fullpath = bab_getUploadArticlesPath();
+
+	$articlepath = 'articles/';
+
+	
 
 	while ($arr = $db->db_fetch_assoc($res)) {
 		$files[] = $fullpath.$arr['id_article'].",".$arr['name'];
+		$rights[$articlepath.$arr['id_article'].",".$arr['name']] = array(
+				'id_file'		=> $arr['id'],
+				'id_topic'		=> $arr['id_topic']
+			);
 	}
 
 	if (!$files)
 		return false;
 
 	include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
-	include_once $GLOBALS['babInstallPath']."utilit/searchincl.php";
 
-	
+	$obj = new bab_indexObject('bab_art_files');
+
 	if (in_array(BAB_INDEX_STATUS_INDEXED, $status)) {
-		bab_indexFiles($files, 'bab_art_files');
+		$obj->resetIndex($files);
 	} else {
-		$obj = new bab_indexObject('bab_art_files');
-		$obj->addFileToIndex($files);
+		$obj->addFilesToIndex($files);
+	}
+
+	foreach($rights as $f => $arr) {
+		$obj->setIdObjectFile($f, $arr['id_file'], $arr['id_topic']);
 	}
 
 

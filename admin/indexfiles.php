@@ -76,15 +76,10 @@ function listIndexFiles()
 				$reg->setKeyValue('allowed_ip', $_POST['allowed_ip']);
 			}
 
-			$this->res = $this->db->db_query("SELECT * FROM ".BAB_INDEX_FILES_TBL."");
+			$this->res = $this->db->db_query("SELECT * FROM ".BAB_INDEX_FILES_TBL."");			
 			
-		
-			$this->allowed_ip = $reg->getValue('allowed_ip');
-			if (null == $this->allowed_ip) {
-				$this->allowed_ip = '127.0.0.1';
-				$reg->setKeyValue('allowed_ip', $this->allowed_ip);
-			}
-			
+			$this->allowed_ip = $reg->getValue('allowed_ip', '127.0.0.1');
+
 		}
 
 

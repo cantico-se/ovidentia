@@ -48,9 +48,7 @@ class bab_indexObject {
 		$this->engineName = $arr['name'];
 
 		$this->object = $object;
-
-
-
+		$this->db = &$GLOBALS['babDB'];
 	}
 
 
@@ -58,7 +56,7 @@ class bab_indexObject {
 	 * get status for new uploaded files for a index file
 	 * this function take care of disabled status, on upload status, ...
 	 * @param int $id_indexFile
-	 * @return boolean 
+	 * @return integer 
 	 */
 	function get_onLoadStatus() {
 
@@ -72,38 +70,39 @@ class bab_indexObject {
 		}
 	}
 
-	
+
 	/**
-	 * get index objects for the current addon
-	 * @return array 
+	 * reset index with a new set of files
+	 * @param array $files full path to the file
+	 * @return string|false
 	 */
-	function get_indexObjects() {
+	function resetIndex($files) {
 
-		$db = $GLOBALS['babDB'];
-		$return = array();
-		$res = $db->db_query("
-		
-			SELECT 
-				i.name, i.object  
-			FROM 
-				".BAB_INDEX_FILES_TBL." i,
-				".BAB_ADDONS." a
-			WHERE 
-				i.id_addon=a.id 
-				AND a.title='".$db->db_escape_string($GLOBALS['babAddonFolder'])."'
-		");
+		$this->db->db_query("DELETE FROM ".BAB_INDEX_ACCESS_TBL." WHERE object = '".$this->db->db_escape_string($this->object)."'");
 
-		while ($arr = $db->db_fetch_assoc($res)) {
-			$return[$arr['object']] = $arr['name'];
+		if ($this->disabled) {
+			return false;
 		}
 
-		return $return;
-	}
+		switch($this->engineName) {
+			case 'swish':
+				include_once $GLOBALS['babInstallPath'].'utilit/searchincl.swish.php';
+				break;
+		}
 
+		$obj = new bab_indexFilesCls( $files, $this->object);
+		return $obj->indexFiles();
+	}
+	
+	
 	/**
 	 * Add files into current index for the object
+	 * if the file has been added, return true
+	 * if the index has been created for the file, return string
+	 * @param array $files full path to the file
+	 * @return string|boolean
 	 */
-	function addFileToIndex($files) {
+	function addFilesToIndex($files) {
 
 		if ($this->disabled) {
 			return false;
@@ -118,6 +117,60 @@ class bab_indexObject {
 		$obj = new bab_indexFilesCls( $files, $this->object);
 		return $obj->addFilesToIndex();
 	}
+
+
+	/**
+	 * Set a id_object associated to an indexed file
+	 * this will be used for bab_isAccessValid
+	 * @param string $file
+	 * @param integer $id_object_access
+	 * @see bab_isAccessValid()
+	 */
+	function setIdObjectFile($file, $id_object, $id_object_access) {
+
+		if ($this->disabled) {
+			return false;
+		}
+
+		$this->db->db_query("REPLACE INTO ".BAB_INDEX_ACCESS_TBL." 
+				(file_path, id_object, id_object_access, object) 
+			VALUES 
+				(
+					'".$this->db->db_escape_string($file)."',
+					'".$this->db->db_escape_string($id_object)."',
+					'".$this->db->db_escape_string($id_object_access)."',
+					'".$this->db->db_escape_string($this->object)."' 
+				)
+			");
+
+	}
+
+
+	/**
+	 * Remove files from the index
+	 */
+	function removeFilesFromIndex($files) {
+
+		if ($this->disabled) {
+			return false;
+		}
+
+		switch($this->engineName) {
+			case 'swish':
+				include_once $GLOBALS['babInstallPath'].'utilit/searchincl.swish.php';
+				break;
+		}
+
+		$query = array();
+		foreach($files as $f) {
+			$query[] = $db->db_escape_string($f);
+		}
+
+		$this->db->db_query("DELETE FROM ".BAB_INDEX_ACCESS_TBL." WHERE file_path IN('".implode("','", $query)."')");
+
+		$obj = new bab_indexFilesCls($files, $this->object);
+		return $obj->removeFilesFromIndex();
+	}
 }
 
 
@@ -127,7 +180,8 @@ class bab_indexObject {
  * 
  * @param string $file full path to the file, usually in upload directory
  * @param string $object if not given, the current addon name will be used
- * @return int
+ * @param integer $id_object_access
+ * @return integer
  */
 function bab_indexOnLoadFiles($files, $object) {
 	
@@ -135,7 +189,7 @@ function bab_indexOnLoadFiles($files, $object) {
 	$status = $obj->get_onLoadStatus();
 
 	if (BAB_INDEX_STATUS_INDEXED === $status) {
-		if (false !== $obj->addFileToIndex($files)) {
+		if (false !== $obj->addFilesToIndex($files)) {
 			return BAB_INDEX_STATUS_INDEXED;
 		} else {
 			return BAB_INDEX_STATUS_NOINDEX;

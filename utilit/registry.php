@@ -132,6 +132,7 @@ class bab_registry {
 		return 0;
 	}
 
+
 	/**
 	 * Remove the key/value pair from the registry
 	 * @param string $key
@@ -149,14 +150,23 @@ class bab_registry {
 	
 	/**
 	 * Get a value
+	 * If the second parameter is not NULL and the key is not created, 
+	 * the key will be created with the second parameter as a value
 	 * @param string $key
+	 * @param mixed $default_create
 	 * @return mixed|null
 	 */
-	function getValue($key) {
+	function getValue($key, $default_create = NULL) {
 		
-		if ($arr = $this->getValueEx($key)) {
+		$arr = $this->getValueEx($key);
+		if (NULL !== $arr) {
 			return $arr['value'];
 		}
+
+		if (NULL !== $default_create) {
+			$this->setKeyValue($key, $default_create);
+		}
+
 		return null;
 	}
 
@@ -209,7 +219,23 @@ class bab_registry {
 		}
 
 		return null;
-	}	
+	}
+
+	/**
+	 * Delete the current directory
+	 */
+	function deleteDirectory() {
+
+		$l = strlen($this->dir);
+
+		$res = $this->db->db_query("
+			DELETE 
+			FROM ".BAB_REGISTRY_TBL." 
+			WHERE LEFT(dirkey,'".$l."') = '".$this->db->db_escape_string($this->dir)."'
+		");
+
+		return $this->db->db_affected_rows($res);
+	}
 }
 
 

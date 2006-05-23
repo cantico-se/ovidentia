@@ -756,7 +756,7 @@ function saveReply($forum, $thread, $post, $name, $subject, $message)
 	$idpost = $db->db_insert_id();
 
 	if (bab_isAccessValid(BAB_FORUMSFILES_GROUPS_TBL,$forum))
-		bab_uploadPostFiles($idpost);
+		bab_uploadPostFiles($idpost, $forum);
 	
 	$req = "update ".BAB_THREADS_TBL." set lastpost='$idpost' where id='$thread'";
 	$res = $db->db_query($req);

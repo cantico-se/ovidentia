@@ -1367,6 +1367,9 @@ function bab_debug($str)
 	}
 
 	if (file_exists('bab_debug.txt') && is_writable('bab_debug.txt')) {
+		if (!is_string($str)) {
+			$str = print_r($str, true);
+		}
 		$h = fopen('bab_debug.txt', 'a');
 		fwrite($h, date('d/m/Y H:i:s')."\n\n".$str."\n\n\n------------------------\n");
 		fclose($h);
@@ -1437,6 +1440,7 @@ function bab_searchEngineInfos() {
  * $instance->removeKey($key)
  * $instance->getValue($key)
  * $instance->getValueEx($key)
+ * $instance->deleteDirectory()
  *
  * @see bab_registry
  */

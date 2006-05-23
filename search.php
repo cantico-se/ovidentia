@@ -225,8 +225,8 @@ function searchKeyword($item , $option = "OR")
 
 			$this->before = bab_translate("before date");
 			$this->after = bab_translate("after date");
-			$this->beforelink = $GLOBALS['babUrlScript']."?tg=month&callback=beforeJs&ymin=100&ymax=10&month=".date('m')."&year=".date('Y');;
-			$this->afterlink = $GLOBALS['babUrlScript']."?tg=month&callback=afterJs&ymin=100&ymax=10&month=".date('m')."&year=".date('Y');;
+			$this->beforelink = $GLOBALS['babUrlScript']."?tg=month&callback=beforeJs&ymin=100&ymax=10&month=".date('m')."&year=".date('Y');
+			$this->afterlink = $GLOBALS['babUrlScript']."?tg=month&callback=afterJs&ymin=100&ymax=10&month=".date('m')."&year=".date('Y');
 
 			$this->or_selected = "";
 			$this->and_selected = "";
@@ -714,9 +714,88 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					if ($this->like || $this->like2)
 						$reqsup = "and (".finder($this->like,"title",$option,$this->like2)." or ".finder($this->like,"head",$option,$this->like2)." or ".finder($this->like,"body",$option,$this->like2).")";
 					
-					$req = "INSERT INTO artresults SELECT a.id, a.id_topic, a.archive, a.title title,a.head, LEFT(a.body,100) body, a.restriction, T.category topic, concat( U.lastname, ' ', U.firstname ) author, U.email, UNIX_TIMESTAMP(a.date) date  from ".BAB_TOPICS_TBL." T, ".BAB_ARTICLES_TBL." a LEFT JOIN ".BAB_USERS_TBL." U ON a.id_author = U.id WHERE a.id_topic = T.id ".$reqsup." ".$inart." ".$crit_art." order by $order ";
+					$req = "
+					
+					INSERT INTO artresults 
+					SELECT 
+						a.id, 
+						a.id_topic, 
+						a.archive, 
+						a.title title,
+						a.head, 
+						LEFT(a.body,100) body, 
+						a.restriction, 
+						T.category topic, 
+						concat( U.lastname, ' ', U.firstname ) author, 
+						U.email, UNIX_TIMESTAMP(a.date) date  
+					FROM 
+						".BAB_TOPICS_TBL." T, 
+						".BAB_ARTICLES_TBL." a 
+					LEFT JOIN 
+						".BAB_USERS_TBL." U ON a.id_author = U.id 
+					WHERE 
+						a.id_topic = T.id ".$reqsup." ".$inart." ".$crit_art." 
+
+						";
+
+					bab_debug($req);
 
 					$this->db->db_query($req);
+
+					// indexation
+
+					if ($engine = bab_searchEngineInfos()) {
+						if (!$engine['indexes']['bab_art_files']['index_disabled']) {
+							$found_files = bab_searchIndexedFiles($this->like2, $this->like, $option, 'bab_art_files');
+
+							bab_debug($found_files);
+
+							$file_path = array();
+							foreach($found_files as $arr) {
+								$file_path[] = $this->db->db_escape_string(bab_removeUploadPath($arr['file']));
+							}
+
+							
+
+							$this->tmptable_inserted_id('artresults');
+
+							$req = "
+					
+							INSERT INTO artresults 
+							SELECT 
+								a.id, 
+								a.id_topic, 
+								a.archive, 
+								a.title title,
+								a.head, 
+								LEFT(a.body,100) body, 
+								a.restriction, 
+								T.category topic, 
+								concat( U.lastname, ' ', U.firstname ) author, 
+								U.email, UNIX_TIMESTAMP(a.date) date  
+							FROM 
+								".BAB_TOPICS_TBL." T, 
+								".BAB_ARTICLES_TBL." a
+								LEFT JOIN 
+								".BAB_USERS_TBL." U ON a.id_author = U.id , 
+								".BAB_ART_FILES_TBL." f, 
+								".BAB_INDEX_ACCESS_TBL." i 
+							
+							WHERE 
+								f.id_article = a.id AND 
+								f.id = i.id_object AND 
+								i.id_object_access = T.id AND 
+								i.file_path IN('".implode("', '",$file_path)."') AND 
+								a.id NOT IN('".implode("', '",$this->tmp_inserted_id)."') AND 
+								a.id_topic = T.id ".$inart." ".$crit_art." 
+							GROUP BY a.id ORDER BY $order 
+								";
+
+							bab_debug($req);
+
+							$this->db->db_query($req);
+						}
+					}
 
 					$res = $this->db->db_query("select id, restriction from artresults where restriction!=''");
 					while( $rr = $this->db->db_fetch_array($res))
@@ -748,7 +827,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$this->nbresult += $nbrows;
 
 				if ($navitem != "a") $navpos=0;
-				$req = "select * from artresults limit ".$navpos.", ".$babLimit;
+				$req = "select * from artresults ORDER BY $order limit ".$navpos.", ".$babLimit;
 
 				$this->resart = $this->db->db_query($req);
 				$this->countart = $this->db->db_num_rows($this->resart);
@@ -1736,12 +1815,29 @@ function viewArticle($article,$w)
 				$this->content = highlightWord($w,bab_replace($this->arr['body']));
 				$this->head = highlightWord($w,bab_replace($this->arr['head']));
 
-				$this->resf = $this->db->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$article."'");
+				$this->resf = $this->db->db_query("
+					
+					SELECT f.*, i.file_path FROM  
+						".BAB_ART_FILES_TBL." f
+						LEFT JOIN ".BAB_INDEX_ACCESS_TBL." i ON i.id_object = f.id
+					WHERE id_article='".$article."'
+				");
+
 				$this->countf = $this->db->db_num_rows($this->resf);
 
+				$this->found_in_index = array();
+				
 				if( $this->countf > 0 )
 					{
 					$this->battachments = true;
+						if (bab_searchEngineInfos()) {
+							$found_files = bab_searchIndexedFiles($this->w, false, false, 'bab_art_files');
+							bab_debug($found_files);
+							
+							foreach($found_files as $arr) {
+								$this->found_in_index[bab_removeUploadPath($arr['file'])] = 1;
+							}
+						}
 					}
 				else
 					{
@@ -1767,6 +1863,7 @@ function viewArticle($article,$w)
 				$arr = $this->db->db_fetch_array($this->resf);
 				$this->docurl = $GLOBALS['babUrlScript']."?tg=articles&idx=getf&topics=".$this->arr['id_topic']."&article=".$this->arr['id']."&idf=".$arr['id'];
 				$this->docname = $arr['name'];
+				$this->in_index = isset($this->found_in_index['articles/'.$this->arr['id'].','.$arr['name']]);
 				$i++;
 				return true;
 				}

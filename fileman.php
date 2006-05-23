@@ -1085,8 +1085,7 @@ function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywor
 		return false;
 		}
 
-	include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
-	$index_status = bab_indexOnLoadFiles(array($pathx.$osfname), 'bab_files');
+	
 	
 	if( empty($BAB_SESS_USERID))
 		$idcreator = 0;
@@ -1117,6 +1116,9 @@ function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywor
 		
 		}
 
+	include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
+	$index_status = bab_indexOnLoadFiles(array($pathx.$osfname), 'bab_files');
+
 	if( $bexist)
 		{
 		$req = "update ".BAB_FILES_TBL." set description='".$description."', keywords='".$keywords."', readonly='".$readonly."', confirmed='".$confirmed."', modified=now(), hits='0', modifiedby='".$idcreator."', state='', index_status='".$index_status."' where id='".$arr['id']."'";
@@ -1130,6 +1132,11 @@ function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywor
 		$db->db_query($req);
 		$idf = $db->db_insert_id(); 
 		}
+
+	if (BAB_INDEX_STATUS_INDEXED === $index_status) {
+		$obj = new bab_indexObject($object);
+		$obj->setIdObjectFile($pathx.$osfname, $idf, $id);
+	}
 
 	if( $gr == 'Y')
 		{
@@ -2014,6 +2021,12 @@ function viewFile( $idf)
 
 							if ($this->index_onload && BAB_INDEX_STATUS_INDEXED == $_POST['index_status']) {
 								$this->index_status = bab_indexOnLoadFiles($files_to_index , 'bab_files');
+								if (BAB_INDEX_STATUS_INDEXED === $this->index_status) {
+									foreach($files_to_index as $f) {
+										$obj = new bab_indexObject($object);
+										$obj->setIdObjectFile($f, $idf, $id);
+									}
+								}
 							} else {
 								$this->index_status = $_POST['index_status'];
 							}

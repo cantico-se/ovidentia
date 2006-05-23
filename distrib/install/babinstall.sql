@@ -1927,8 +1927,10 @@ CREATE TABLE bab_art_files (
   id_article int(11) unsigned NOT NULL default '0',
   name varchar(255) NOT NULL default '',
   description varchar(255) NOT NULL default '',
+  index_status int(11) unsigned NOT NULL default '0',
   PRIMARY KEY  (id),
-  KEY id_article (id_article)
+  KEY id_article (id_article),
+  KEY index_status (index_status)
 );
 
 
@@ -2793,6 +2795,17 @@ CREATE TABLE `bab_index_files` (
   UNIQUE KEY `name` (`name`),
   UNIQUE KEY `object` (`object`),
   KEY `object_2` (`object`)
+);
+
+
+CREATE TABLE bab_index_access (
+  file_path varchar(255) NOT NULL,
+  id_object int(10) unsigned NOT NULL,
+  id_object_access int(10) unsigned NOT NULL,
+  object varchar(255) NOT NULL,
+  PRIMARY KEY  (file_path),
+  KEY object (object),
+  KEY id_object (id_object)
 );
 
 

@@ -262,7 +262,7 @@ function notifyThreadAuthor($threadTitle, $email, $author)
 	}
 
 
-function bab_uploadPostFiles($postid) {
+function bab_uploadPostFiles($postid, $id_forum) {
 	$db = $GLOBALS['babDB'];
 	$baseurl = $GLOBALS['babUploadPath'].'/forums/';
 	if (!is_dir($baseurl))
@@ -406,48 +406,59 @@ function indexAllForumFiles($status) {
 	$res = $db->db_query("
 	
 		SELECT 
-			id,
-			name,
-			id_post 
+			f.id,
+			f.name,
+			f.id_post, 
+			t.forum 
 
 		FROM 
-			".BAB_FORUMSFILES_TBL." 
+			".BAB_FORUMSFILES_TBL." f,
+			".BAB_POSTS_TBL." p,
+			".BAB_THREADS_TBL." t 
 		WHERE 
-			index_status IN('".implode("','",$status)."')
+			f.index_status IN('".implode("','",$status)."') 
+			AND p.id = f.id_post 
+			AND t.id = p.id_thread 
 		
 	");
 
 	$baseurl = $GLOBALS['babUploadPath'].'/forums/';
 	$files = array();
+	$rights = array();
 
 	while ($arr = $db->db_fetch_assoc($res)) {
 
 		$files[] = $baseurl.$arr['id_post'].",".$arr['name'];
+		$rights['forums/'.$arr['id_post'].",".$arr['name']] = array(
+				'id' => $arr['id'],
+				'id_forum' => $arr['forum']
+			);
 	}
 
 	if (!$files)
 		return false;
 
 	include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
-	include_once $GLOBALS['babInstallPath']."utilit/searchincl.php";
+
+	$obj = new bab_indexObject('bab_forumsfiles');
 
 	
 	if (in_array(BAB_INDEX_STATUS_INDEXED, $status)) {
-		bab_indexFiles($files, 'bab_forumsfiles');
+		$obj->resetIndex($files);
 	} else {
-		$obj = new bab_indexObject('bab_forumsfiles');
-		$obj->addFileToIndex($files);
+		$obj->addFilesToIndex($files);
 	}
 
+	foreach($rights as $f => $arr) {
+		$obj->setIdObjectFile($f, $arr['id'], $arr['id_forum']);
+	}
 
 	$db->db_query("
 	
 		UPDATE ".BAB_FORUMSFILES_TBL." SET index_status='".BAB_INDEX_STATUS_INDEXED."'
 		WHERE 
 			index_status IN('".implode("','",$status)."')
-		
 	");
-
 
 	return count($files);
 }

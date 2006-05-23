@@ -157,6 +157,7 @@ define("BAB_HOMEPAGES_TBL", "bab_homepages");
 define("BAB_IMAGES_TEMP_TBL", "bab_images_temp");
 define("BAB_INI_TBL", "bab_ini");
 define("BAB_INDEX_FILES_TBL", "bab_index_files");
+define("BAB_INDEX_ACCESS_TBL", "bab_index_access");
 define("BAB_LDAP_DIRECTORIES_TBL", "bab_ldap_directories");
 define("BAB_LDAPDIRVIEW_GROUPS_TBL", "bab_ldapdirview_groups");
 define("BAB_LDAP_SITES_FIELDS_TBL", "bab_ldap_sites_fields");

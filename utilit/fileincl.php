@@ -83,6 +83,14 @@ function bab_getUploadFullPath($gr, $id)
 		return $path."U".$id."/";
 }
 
+function bab_getUploadFmPath($gr, $id)
+{
+	if( $gr == "Y")
+		return "G".$id."/";
+	else
+		return "U".$id."/";
+}
+
 function bab_formatSizeFile($size, $roundoff = true)
 {
 	if( $size <= 0 )
@@ -420,16 +428,22 @@ function indexAllFmFiles($status) {
 
 	
 	$files = array();
+	$rights = array();
 
 	while ($arr = $db->db_fetch_assoc($res)) {
 
 		$pathx = bab_getUploadFullPath($arr['bgroup'], $arr['id_owner']);
+		$pathy =  bab_getUploadFmPath($arr['bgroup'], $arr['id_owner']);
 
 		if (!empty($arr['path'])) {
 			$arr['path'] .= '/';
 		}
 
 		$files[] = $pathx.$arr['path'].$arr['name'];
+		$rights[$pathy.$arr['path'].$arr['name']] = array(
+			'id' => $arr['id'],
+			'id_owner' => $arr['id_owner']
+			);
 
 		if (null != $arr['version']) {
 			$resv = $db->db_query("
@@ -445,7 +459,12 @@ function indexAllFmFiles($status) {
 
 			while ($arrv = $db->db_fetch_assoc($resv)) {
 				if( is_dir($pathx.BAB_FVERSION_FOLDER)) {
-					$files[] = $pathx.BAB_FVERSION_FOLDER."/".$arrv['ver_major'].",".$arrv['ver_minor'].",".$arr['name'];
+					$file = BAB_FVERSION_FOLDER."/".$arrv['ver_major'].",".$arrv['ver_minor'].",".$arr['name'];
+					$files[] = $pathx.$file;
+					$rights[$pathy.$file] = array(
+						'id' => $arr['id'],
+						'id_owner' => $arr['id_owner']
+						);
 				}
 			}
 		}
@@ -456,16 +475,18 @@ function indexAllFmFiles($status) {
 		return false;
 
 	include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
-	include_once $GLOBALS['babInstallPath']."utilit/searchincl.php";
 
+	$obj = new bab_indexObject('bab_files');
 	
 	if (in_array(BAB_INDEX_STATUS_INDEXED, $status)) {
-		bab_indexFiles($files, 'bab_files');
+		$obj->resetIndex($files);
 	} else {
-		$obj = new bab_indexObject('bab_files');
-		$obj->addFileToIndex($files);
+		$obj->addFilesToIndex($files);
 	}
 
+	foreach($rights as $f => $arr) {
+		$obj->setIdObjectFile($f, $arr['id'], $arr['id_owner']);
+	}
 
 	$db->db_query("
 	

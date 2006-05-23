@@ -24,6 +24,7 @@
 include_once "base.php";
 
 
+
 function bab_highlightWord( $w, $text)
 {
 	$text = ' '.$text.' ';
@@ -103,6 +104,7 @@ if (trim($req2) != "")
  */
 function bab_indexFiles($arr_files, $object = false)
 {
+	include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
 	$engine = bab_searchEngineInfos();
 
 	if (!$object && isset($GLOBALS['babAddonFolder']))
@@ -110,22 +112,12 @@ function bab_indexFiles($arr_files, $object = false)
 
 	// if the index object does not exist, create it :
 	bab_setIndexObject($object, $object, false);
-	
 
 	if (false === $engine || !$object)
 		return false;
 
-	switch($engine['name'])
-		{
-		case 'swish':
-			include_once $GLOBALS['babInstallPath'].'utilit/searchincl.swish.php';
-			break;
-		}
-
-	
-
-	$obj = new bab_indexFilesCls($arr_files, $object);
-	return $obj->indexFiles();
+	$obj = new bab_indexObject($object);
+	return $obj->resetIndex($arr_files);
 }
 
 
@@ -264,5 +256,17 @@ function bab_removeIndexObject($object) {
 	return false;
 }
 
+
+
+function bab_removeUploadPath($str) {
+	
+	$last_char = substr($GLOBALS['babUploadPath'],-1);
+	
+	if ('/' == $last_char || '\\' == $last_char) {
+		return substr($str, strlen($GLOBALS['babUploadPath']));
+	} else {
+		return substr($str, 1+strlen($GLOBALS['babUploadPath']));
+	}
+}
 
 ?>

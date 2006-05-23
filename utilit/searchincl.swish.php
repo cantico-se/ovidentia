@@ -26,8 +26,7 @@ include_once "base.php";
 
 class swishCls
 {
-	
-	var $objectIndex;
+
 
 	function swishCls($object)
 	{
@@ -187,17 +186,18 @@ class bab_searchFilesCls extends swishCls
 
 	function searchFiles()
 		{
-		$str = $this->execCmd($this->swishCmd.' -f '.escapeshellarg($this->objectIndex).' -w '.escapeshellarg($this->query));
+		$str = $this->execCmd($this->swishCmd.' -f '.escapeshellarg($this->mainIndex).' -w '.escapeshellarg($this->query));
 
 		$files = array();
 		
-		if (preg_match_all('/\d+\s+(.*?)\s+\"(.*?)\"\s+\d+/', $str, $matches))
+		if (preg_match_all('/(\d+)\s+(.*)\s+\"(.*)\"\s+\d+/', $str, $matches))
 			{
 			for( $j = 0; $j< count($matches[1]); $j++)
 				{
 				$files[] = array(
-								'file' => $matches[1][$j],
-								'title' => $matches[2][$j]
+								'file' => $matches[2][$j],
+								'title' => $matches[3][$j] // , 'mark' => $matches[1][$j]
+								
 								);
 				}
 			}
@@ -229,7 +229,7 @@ class bab_indexFileCls extends swishCls {
 	 * @return boolean
 	 */
 	function removeObject() {
-		return unlink($this->objectIndex);
+		return unlink($this->mainIndex);
 	}
 
 }
