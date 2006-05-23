@@ -82,7 +82,7 @@ function notifyVacationAuthor($id, $subject)
 
 	$mail->mailTo(bab_getUserEmail($row['id_user']), bab_getUserName($row['id_user']));
 
-	$mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
+	$mail->mailFrom($BAB_SESS_EMAIL, $BAB_SESS_USER);
 	$mail->mailSubject($subject);
 
 	$tempa = new tempa($row, $subject);
