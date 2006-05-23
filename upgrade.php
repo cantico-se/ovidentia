@@ -6236,7 +6236,7 @@ function upgradeXXXtoYYY()
 			CREATE TABLE`" . BAB_TSKMGR_TASKS_TBL . "` (
 				`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 				`idProject` INTEGER UNSIGNED NOT NULL default '0',
-				`tasksNumber` INTEGER UNSIGNED NOT NULL default '0',
+				`taskNumber` INTEGER UNSIGNED NOT NULL default '0',
 				`description` TEXT NOT NULL default '',
 				`idCategory` INTEGER UNSIGNED NOT NULL default '0',
 				`idResponsible` INTEGER UNSIGNED NOT NULL default '0',

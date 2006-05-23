@@ -48,11 +48,12 @@ define('BAB_TM_IDX_DISPLAY_DELETE_PROJECT_FORM', 'displayDeleteProjectForm');
 define('BAB_TM_IDX_DISPLAY_PROJECT_RIGHTS_FORM', 'displayProjectRightsForm');
 
 define('BAB_TM_IDX_DISPLAY_PROJECT_COMMENTARY_LIST', 'displayProjectCommentaryList');
+define('BAB_TM_IDX_DISPLAY_DELETE_PROJECT_COMMENTARY', 'displayDeleteProjectCommentary');
 define('BAB_TM_IDX_DISPLAY_COMMENTARY_FORM', 'displayCommentaryForm');
 define('BAB_TM_IDX_DISPLAY_TASK_COMMENTARY_LIST', 'displayTaskCommentaryList');
-define('BAB_TM_IDX_DISPLAY_DELETE_COMMENTARY', 'displayDeleteCommentary');
 
-
+define('BAB_TM_IDX_DISPLAY_TASK_LIST', 'displayTaskList');
+define('BAB_TM_IDX_DISPLAY_TASK_FORM', 'displayTaskForm');
 
 //
 define('BAB_TM_YES', 1);

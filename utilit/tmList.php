@@ -42,6 +42,7 @@ class BAB_TM_ListBase extends BAB_BaseFormProcessing
 		$this->m_is_altbg = true;
 
 		$this->set_caption('name', bab_translate("Name"));
+		$this->set_caption('taskNumber', bab_translate("Task number"));
 		$this->set_caption('description', bab_translate("Description"));
 		$this->set_caption('commentary', bab_translate("Commentary"));
 		$this->set_caption('date', bab_translate("Date"));
@@ -95,7 +96,23 @@ class BAB_TM_ListBase extends BAB_BaseFormProcessing
 			$this->m_is_altbg = !$this->m_is_altbg;
 			$this->set_data('id', $this->m_rowDatas['id']);
 			$this->set_data('commentary', htmlentities($this->m_rowDatas['commentary'], ENT_QUOTES));
-			$this->set_data('created', bab_longDate($this->m_rowDatas['created']));
+			$this->set_data('created', bab_longDate(bab_mktime($this->m_rowDatas['created'])));
+			return true;
+		}
+		return false;
+	}
+
+	function nextTask()
+	{
+		$this->nextRow();
+		if(false != $this->m_rowDatas)
+		{
+			//bab_debug($this->m_rowDatas);
+			$this->m_is_altbg = !$this->m_is_altbg;
+			$this->set_data('id', $this->m_rowDatas['id']);
+			$this->set_data('description', htmlentities($this->m_rowDatas['commentary'], ENT_QUOTES));
+			$this->set_data('taskNumber', $this->m_rowDatas['taskNumber']);
+			$this->set_data('created', bab_longDate(bab_mktime($this->m_rowDatas['created'])));
 			return true;
 		}
 		return false;

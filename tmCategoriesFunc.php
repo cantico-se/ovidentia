@@ -172,6 +172,7 @@ function displayCategoryForm()
 			
 			$this->set_data('sName', tskmgr_getVariable('sCategoryName', ''));
 			$this->set_data('sDescription', tskmgr_getVariable('sCategoryDescription', ''));
+			$this->set_data('sColor', tskmgr_getVariable('sColor', ''));
 			$this->set_data('iIdProjectSpace', $iIdProjectSpace);
 			$this->set_data('iIdProject', $iIdProject);
 			$this->set_data('iRefCount', 0);
@@ -201,16 +202,18 @@ function displayCategoryForm()
 					'idProjectSpace' => $iIdProjectSpace, 
 					'name' => '',
 					'description' => '',
+					'color' => '',
 					'refCount' => -1);
 					
 				$tblWr =& $GLOBALS['BAB_TM_Context']->getTableWrapper();
 				$tblWr->setTableName(BAB_TSKMGR_CATEGORIES_TBL);
 				
-				if(false != ($attributs = $tblWr->load($attributs, 2, 3, 0, 2)))
+				if(false != ($attributs = $tblWr->load($attributs, 2, 4, 0, 2)))
 				{
 					$this->set_data('sName', htmlentities($attributs['name'], ENT_QUOTES) );
 					$this->set_data('sDescription', htmlentities($attributs['description'], ENT_QUOTES));
 					$this->set_data('iRefCount', $attributs['refCount']);
+					$this->set_data('sColor', $attributs['color']);
 				}
 			}
 			else
@@ -327,6 +330,7 @@ function addModifyCategory()
 	$iIdProject = $oTmCtx->getIdProject();
 
 	$sCategoryName = trim(tskmgr_getVariable('sCategoryName', ''));
+	$sColor = tskmgr_getVariable('sColor', '');
 	
 	if(0 < strlen($sCategoryName))
 	{
@@ -349,6 +353,7 @@ function addModifyCategory()
 				'description' => $sCategoryDescription,
 				'idProjectSpace' => $iIdProjectSpace,
 				'idProject' => $iIdProject,
+				'color' => $sColor
 			);
 			
 			if(0 == $iIdCategory)

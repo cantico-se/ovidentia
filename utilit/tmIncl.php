@@ -576,6 +576,98 @@ function bab_isProjectDeletable($iIdProject)
 	return true;
 }
 
+function tmSelectProjectCommentary($iIdProject, $iLenght = 50)
+{
+	global $babBody, $babDB;
+	
+	$query = 
+		'SELECT ' .
+			'id, ' . 
+			'IF(LENGTH(commentary) > \'' . $iLenght . '\', CONCAT(LEFT(commentary, \'' . $iLenght . '\'), \'...\'), commentary) commentary, ' .
+			'created ' .
+		'FROM ' .
+			BAB_TSKMGR_PROJECTS_COMMENTS_TBL . ' ' .
+		'WHERE ' . 
+			'idProject =\'' . $iIdProject . '\'';
+	
+	//bab_debug($query);
+	return $babDB->db_query($query);
+}
+
+function tmGetProjectCommentary($iIdCommentary, &$sCommentary)
+{
+	global $babBody, $babDB;
+	
+	$sCommentary = '';
+	
+	$query = 
+		'SELECT ' .
+			'id, ' . 
+			'commentary ' .
+		'FROM ' .
+			BAB_TSKMGR_PROJECTS_COMMENTS_TBL . ' ' .
+		'WHERE ' . 
+			'id =\'' . $iIdCommentary . '\'';
+	
+	//bab_debug($query);
+	$result = $babDB->db_query($query);
+	$iNumRows = $babDB->db_num_rows($result);
+	$iIndex = 0;
+	
+	if(/*$iIndex < $iNumRows &&*/ false != ($datas = $babDB->db_fetch_assoc($result)))
+	{
+		$sCommentary = $datas['commentary'];
+		$iIndex++;
+		return true;
+	}
+	return false;
+}
+
+function tmCreateProjectCommentary($iIdProject, $sCommentary)
+{
+	global $babBody, $babDB;
+	
+	$query = 
+		'INSERT INTO ' . BAB_TSKMGR_PROJECTS_COMMENTS_TBL . ' ' .
+			'(' .
+				'`id`, ' .
+				'`idProject`, `commentary`, `created`, `idUserCreated`' .
+			') ' .
+		'VALUES ' . 
+			'(\'\', \'' . 
+				$iIdProject . '\', \'' . $sCommentary . '\', \'' . 
+				date("Y-m-d H:i:s") . '\', \'' . $GLOBALS['BAB_SESS_USERID'] . 
+			'\')'; 
+
+
+	//bab_debug($query);
+	return $babDB->db_query($query);
+}
+
+function tmUpdateProjectCommentary($iIdCommentary, $sCommentary)
+{
+	global $babBody, $babDB;
+
+	$query = 
+		'UPDATE ' . 
+			BAB_TSKMGR_PROJECTS_COMMENTS_TBL . ' ' .
+		'SET ' . ' ' .
+				'`commentary` = \'' . $sCommentary . '\', ' .
+				'`modified` = \'' . date("Y-m-d H:i:s") . '\', ' .
+				'`idUserModified` = \'' . $GLOBALS['BAB_SESS_USERID'] . '\' ' .
+		'WHERE ' . 
+			'`id` = \'' . $iIdCommentary . '\'';
+
+	//bab_debug($query);
+	return $babDB->db_query($query);
+}
+
+function tmDeleteProjectCommentary($iIdCommentary)
+{
+	global $babDB;
+	$query = 'DELETE FROM '	. BAB_TSKMGR_PROJECTS_COMMENTS_TBL . ' WHERE id = \'' . $iIdCommentary . '\'';
+	$babDB->db_query($query);
+}
 
 
 
@@ -636,7 +728,23 @@ function bab_deleteAllTaskSpecificFieldInstance($iIdTask)
 	}
 }
 
-
+function tmSelectTasksList($iIdProject, $iLenght = 50)
+{
+	global $babBody, $babDB;
+	
+	$query = 
+		'SELECT ' .
+			'taskNumber, ' . 
+			'IF(LENGTH(description) > \'' . $iLenght . '\', CONCAT(LEFT(description, \'' . $iLenght . '\'), \'...\'), description) description, ' .
+			'created ' .
+		'FROM ' .
+			BAB_TSKMGR_TASKS_TBL . ' ' .
+		'WHERE ' . 
+			'idProject =\'' . $iIdProject . '\'';
+	
+	//bab_debug($query);
+	return $babDB->db_query($query);
+}
 
 
 
@@ -779,91 +887,4 @@ function bab_createDefaultWorkingHours($iIdUser)
 		bab_insertWorkingHours($iIdUser, $iWeekDay, '13:00', '18:00');
 	}
 }
-
-function tmSelectCommentary($sTblName, $iIdObject, $sObjectName, $iLenght = 50)
-{
-	global $babBody, $babDB;
-	
-	$query = 
-		'SELECT ' .
-			'id, ' . 
-			'IF(LENGTH(commentary) > \'' . $iLenght . '\', CONCAT(LEFT(commentary, \'' . $iLenght . '\'), \'...\'), commentary) commentary, ' .
-			'created ' .
-		'FROM ' .
-			$sTblName . ' ' .
-		'WHERE ' . 
-			$sObjectName . ' =\'' . $iIdObject . '\'';
-	
-	//bab_debug($query);
-	return $babDB->db_query($query);
-}
-
-function tmGetCommentary($sTblName, $iIdCommentary, &$sCommentary)
-{
-	global $babBody, $babDB;
-	
-	$sCommentary = '';
-	
-	$query = 
-		'SELECT ' .
-			'id, ' . 
-			'commentary ' .
-		'FROM ' .
-			$sTblName . ' ' .
-		'WHERE ' . 
-			'id =\'' . $iIdCommentary . '\'';
-	
-	//bab_debug($query);
-	$result = $babDB->db_query($query);
-	$iNumRows = $babDB->db_num_rows($result);
-	$iIndex = 0;
-	
-	if(/*$iIndex < $iNumRows &&*/ false != ($datas = $babDB->db_fetch_assoc($result)))
-	{
-		$sCommentary = $datas['commentary'];
-		$iIndex++;
-		return true;
-	}
-	return false;
-}
-
-function tmCreateProjectCommentary($iIdProject, $sCommentary)
-{
-	global $babBody, $babDB;
-	
-	$query = 
-		'INSERT INTO ' . BAB_TSKMGR_PROJECTS_COMMENTS_TBL . ' ' .
-			'(' .
-				'`id`, ' .
-				'`idProject`, `commentary`, `created`, `idUserCreated`' .
-			') ' .
-		'VALUES ' . 
-			'(\'\', \'' . 
-				$iIdProject . '\', \'' . $sCommentary . '\', \'' . 
-				date("Y-m-d H:i:s") . '\', \'' . $GLOBALS['BAB_SESS_USERID'] . 
-			'\')'; 
-
-
-	//bab_debug($query);
-	return $babDB->db_query($query);
-}
-
-function tmUpdateProjectCommentary($iIdCommentary, $sCommentary)
-{
-	global $babBody, $babDB;
-
-	$query = 
-		'UPDATE ' . 
-			BAB_TSKMGR_PROJECTS_COMMENTS_TBL . ' ' .
-		'SET ' . ' ' .
-				'`commentary` = \'' . $sCommentary . '\', ' .
-				'`modified` = \'' . date("Y-m-d H:i:s") . '\', ' .
-				'`idUserModified` = \'' . $GLOBALS['BAB_SESS_USERID'] . '\' ' .
-		'WHERE ' . 
-			'`id` = \'' . $iIdCommentary . '\'';
-
-	//bab_debug($query);
-	return $babDB->db_query($query);
-}
-
 ?>
