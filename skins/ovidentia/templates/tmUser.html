@@ -314,8 +314,9 @@ function onMenuSelected(oSelectedLi)
 {
 	var form = document.forms.taskForm;
 	
+	oSelectedLi.className = 'current';
 	
-	alert(oSelectedLi.id);
+	form
 }
 
 
@@ -370,7 +371,7 @@ function set_active_tab_changed(active_tab)
 		<li id="sMnuPredecessors"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[predecessors] }</a></li>
 		<li id="sMnuResources"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[resources] }</a></li>
 		<li id="sMnuCommentaries"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[commentaries] }</a></li>
-		<li id="sMnuSpfFld"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false";>{ m_captions[spFld] }</a></li>
+		<li id="sMnuSpfFld"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[spFld] }</a></li>
 	</ul>						
 
 	<div id="sGeneral" class="">
