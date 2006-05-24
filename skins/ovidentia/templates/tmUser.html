@@ -42,6 +42,20 @@
 									</a>
 								</td>
 							</tr>
+							<tr>
+								<td>
+									<a href="{ m_datas[commentaryUrl] }" title="{ m_captions[commentary] }">
+										{ m_captions[commentary] }
+									</a>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<a href="{ m_datas[taskUrl] }" title="{ m_captions[task] }">
+										{ m_captions[task] }
+									</a>
+								</td>
+							</tr>
 						<!--#endif m_datas[bIsManager] -->
 							<tbody><tr><td></td></tr></tbody>
 						</table>
@@ -53,6 +67,103 @@
 	</tr>
 </table>
 <!--#end displayProjectList -->
+
+<!--#begin commentariesList -->
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+		<td align="center" valign="middle" class="BabLoginCadreBackground"> 
+			<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+				<tr class="BabSiteAdminTitleFontBackground"> 
+					<td width="50%">{ m_captions[commentary] }</td>
+					<td width="20%">{ m_captions[date] }</td>
+					<td width="30%" align="center">&nbsp;</td>
+				</tr>
+				<!--#in nextCommentary -->
+				
+			<!--#if m_is_altbg -->
+				<tr class="BabSiteAdminFontBackground"> 
+			<!--#else m_is_altbg -->
+				<tr class="BabForumBackground1">
+			<!--#endif m_is_altbg -->
+	
+				<!--#if m_datas[isLink] -->
+					<td><a href="{ m_datas[url] }{ m_datas[id] }">{ m_datas[commentary] }</a></td>
+				<!--#else m_datas[isLink] -->
+					<td>{ m_datas[commentary] }</td>
+				<!--#endif m_datas[isLink] -->
+					<td>{ m_datas[created] }</td>
+					<td>
+						<table border="0" cellspacing="0" cellpadding="2" align="center">
+							<!--#in getNextAnchor -->
+							<tr>
+								<td class="{ m_datas[className] }">
+									<a href="{ m_anchorItem[href] }" title="{ m_anchorItem[title] }">
+										{ m_anchorItem[title] }
+									</a>
+								</td>
+							</tr>
+							<!--#endin getNextAnchor -->
+							<tbody><tr><td></td></tr></tbody>
+						</table>
+					</td>
+				</tr>
+				<!--#endin nextCommentary -->
+			</table>
+		</td>
+	</tr>
+</table>
+<!--#end commentariesList -->
+
+<!--#begin displayCommentary -->
+<script type="text/javascript" language="JavaScript1.5">
+<!--
+function on_btn_clicked(idx, action)
+{
+	var form = document.forms.displayCommentary;
+
+	form.idx.value = idx;
+	form.action.value = action;
+}
+
+function submit_form()
+{
+	return true;
+}//-->
+</script>
+<style type="text/css">
+	@import url('{ babInstallPath }/styles/taskManager.css');
+</style>
+<form name ="displayCommentary" method="post" action="{ babPhpSelf }" onsubmit="return(submit_form())">
+	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
+	<input type="hidden" name="idx" value="" />
+	<input type="hidden" name="action" value="" />
+	<input type="hidden" name="iIdProjectSpace" value="{ m_datas[iIdProjectSpace] }" />
+	<input type="hidden" name="iIdProject" value="{ m_datas[iIdProject] }" />
+	<input type="hidden" name="iIdTask" value="{ m_datas[iIdTask] }" />
+	<input type="hidden" name="iIdCommentary" value="{ m_datas[iIdCommentary] }" />
+
+	<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+		<tr> 
+			<td class="BabLoginCadreBackground"> 
+				<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+					<tr> 
+						<td align="center"><textarea id="commentary" name="sCommentary" cols="20" rows="20">{ m_datas[commentary] }</textarea></td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+<br />
+<div align="center">
+<!--#if m_datas[iIdCommentary] "== 0" -->
+	<input type="submit" value="{ m_captions[add] }" onclick="on_btn_clicked('{ m_datas[addIdx] }', '{ m_datas[addAction] }')" />
+<!--#else m_datas[iIdCommentary] -->
+	<input type="submit" value="{ m_captions[modify] }" onclick="on_btn_clicked('{ m_datas[modifyIdx] }', '{ m_datas[modifyAction] }')" />
+	<input type="submit" value="{ m_captions[delete] }" onclick="on_btn_clicked('{ m_datas[delIdx] }', '{ m_datas[delAction] }')" />
+<!--#endif m_datas[iIdCommentary] -->
+</div>
+</form>
+<!--#end displayCommentary -->
 
 
 <!--#begin projectForm -->
@@ -135,3 +246,147 @@ function submit_form()
 	</table>
 </form>
 <!--#end projectForm -->
+
+<!--#begin taskList -->
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+		<td align="center" valign="middle" class="BabLoginCadreBackground"> 
+			<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+				<tr class="BabSiteAdminTitleFontBackground"> 
+					<td width="10%">{ m_captions[taskNumber] }</td>
+					<td width="50%">{ m_captions[description] }</td>
+					<td width="10%">{ m_captions[date] }</td>
+					<td width="30%" align="center">&nbsp;</td>
+				</tr>
+				<!--#in nextTask -->
+				
+			<!--#if m_is_altbg -->
+				<tr class="BabSiteAdminFontBackground"> 
+			<!--#else m_is_altbg -->
+				<tr class="BabForumBackground1">
+			<!--#endif m_is_altbg -->
+	
+				<!--#if m_datas[isLink] -->
+					<td><a href="{ m_datas[url] }{ m_datas[id] }">{ m_datas[description] }</a></td>
+				<!--#else m_datas[isLink] -->
+					<td>{ m_datas[description] }</td>
+				<!--#endif m_datas[isLink] -->
+					<td>{ m_datas[created] }</td>
+					<td>
+						<table border="0" cellspacing="0" cellpadding="2" align="center">
+							<!--#in getNextAnchor -->
+							<tr>
+								<td class="{ m_datas[className] }">
+									<a href="{ m_anchorItem[href] }" title="{ m_anchorItem[title] }">
+										{ m_anchorItem[title] }
+									</a>
+								</td>
+							</tr>
+							<!--#endin getNextAnchor -->
+							<tbody><tr><td></td></tr></tbody>
+						</table>
+					</td>
+				</tr>
+				<!--#endin nextTask -->
+			</table>
+		</td>
+	</tr>
+</table>
+<!--#end taskList -->
+
+<!--#begin taskForm -->
+<script type="text/javascript">
+<!--
+function on_btn_clicked(idx, action)
+{
+	var form = document.forms.taskForm;
+
+	form.idx.value = idx;
+	form.action.value = action;
+}
+
+function submit_form()
+{
+	return true;
+}
+
+function onMenuSelected(oSelectedLi)
+{
+	var form = document.forms.taskForm;
+	
+	
+	alert(oSelectedLi.id);
+}
+
+
+/*
+function set_active_tab_changed(active_tab)
+{
+	var oLiInquiry = document.getElementById('li_inquiry');
+	var oLiDepositary = document.getElementById('li_depositary');
+	var oLiOtherFile = document.getElementById('li_other_file');
+
+	oLiInquiry.className = '';
+	oLiDepositary.className = '';
+	oLiOtherFile.className = '';
+
+	if({ m_datas[inquiry_tab] } == active_tab)
+	{
+		oLiInquiry.className = 'current';
+	}
+	else if({ m_datas[depositary_tab] } == active_tab)
+	{
+		oLiDepositary.className = 'current';
+	}
+	else if({ m_datas[other_file_tab] } == active_tab)
+	{
+		oLiOtherFile.className = 'current';
+	}
+
+	var form = document.forms.private_space;
+
+	form.active_tab.value = active_tab;
+}
+*/
+
+
+//-->
+</script>
+
+<style type="text/css">
+	@import url('{ babInstallPath }/styles/taskManager.css');
+</style>
+
+<form name="taskForm" method="post" action="{ babPhpSelf }" onsubmit="return(submit_form())">
+	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
+	<input type="hidden" name="idx" value="" />
+	<input type="hidden" name="action" value="" />
+	<input type="hidden" name="iIdProjectSpace" value="{ m_datas[iIdProjectSpace] }" />
+	<input type="hidden" name="iIdProject" value="{ m_datas[iIdProject] }" />
+	<input type="hidden" name="sSelectedLiId" value="" />
+	
+	<ul id="tablist">
+		<li id="sMnuGeneral"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[general] }</a></li>
+		<li id="sMnuPredecessors"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[predecessors] }</a></li>
+		<li id="sMnuResources"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[resources] }</a></li>
+		<li id="sMnuCommentaries"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[commentaries] }</a></li>
+		<li id="sMnuSpfFld"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false";>{ m_captions[spFld] }</a></li>
+	</ul>						
+
+	<div id="sGeneral" class="">
+	</div>
+	
+	<div id="sPredecessor" class="">
+	</div>
+	
+	<div id="sResources" class="">
+	</div>
+	
+	<div id="sCommentaries" class="">
+	</div>
+	
+	<div id="sSpfFld" class="">
+	</div>
+	
+</form>
+<!--#end taskForm -->
