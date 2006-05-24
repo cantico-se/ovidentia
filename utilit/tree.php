@@ -68,14 +68,6 @@ class bab_InNode
 	function getId()
 	{
 	}
-
-	/**
-	 * Returns the guid of the node.
-	 * @return int|string
-	 */
-	function getGuid()
-	{
-	}
 	
 	/**
 	 * Returns the previous sibling of the node.
@@ -158,7 +150,6 @@ class bab_InNode
 
 class bab_Node extends bab_InNode
 {
-	var $_guid;
 	var $_id;
 	var $_data;
 	var $_nextSibling;
@@ -173,7 +164,6 @@ class bab_Node extends bab_InNode
 	 */
 	function bab_Node(&$tree, $id = null)
 	{
-		$this->_guid = md5(uniqid(rand(), true));
 		$this->_id = $id;
 		$this->_data = null;
 		$this->_nextSibling =& bab_InNode::NULL_NODE();
@@ -199,11 +189,6 @@ class bab_Node extends bab_InNode
 		return $this->_id;
 	}
 
-	function getGuid()
-	{
-		return $this->_guid;
-	}
-	
 	function &previousSibling()
 	{
 		return $this->_previousSibling;
@@ -370,8 +355,7 @@ class bab_Node extends bab_InNode
 			for ($current = 0; $current < $end; $current++) {
 				$currentElement =& $nodes[$current]->getData();
 				$nextElement =& $nodes[$current + 1]->getData();
-				if (call_user_func(array($currentElement, 'compare'), $nextElement) > 0) {
-//				if ($comparisonFunction($nodes[$current], $nodes[$current + 1]) > 0) {
+				if ($currentElement->compare($nextElement) > 0) {
 					bab_Node::swapConsecutiveNodes($nodes[$current]);
 					$temp =& $nodes[$current];
 					$nodes[$current] =& $nodes[$current + 1];
@@ -381,29 +365,18 @@ class bab_Node extends bab_InNode
 		}
 	}
 	
-	function sortSubTree(/*$comparisonFunction = 'bab_Node_defaultNodeComparison'*/)
+	function sortSubTree()
 	{
 		if ($this->hasChildNodes()) {
 			$node =& $this->firstChild();
 			while (!is_null($node)) {
-				$node->sortSubTree(/*$comparisonFunction*/);
+				$node->sortSubTree();
 				$node =& $node->_nextSibling;				
 			}
-			$this->sortChildNodes(/*$comparisonFunction*/);
+			$this->sortChildNodes();
 		}
 	}
 }
-
-/*
-function bab_Node_defaultNodeComparison(&$node1, &$node2)
-{
-	if ($node1->getId() > $node2->getId())
-		return 1;
-	if ($node1->getId() < $node2->getId())
-		return -1;
-	return 0;
-}
-*/
 
 
 /**
@@ -414,13 +387,11 @@ function bab_Node_defaultNodeComparison(&$node1, &$node2)
 class bab_RootNode extends bab_Node
 {
 	var $_ids;
-	var $_guids;
 
 	function bab_RootNode()
 	{
 		parent::bab_Node(bab_InNode::NULL_NODE());
 		$this->_ids = array();
-		$this->_guids = array();
 	}
 
 	function &createNode(&$data, $id = null)
@@ -430,7 +401,6 @@ class bab_RootNode extends bab_Node
 		}
 		$newNode =& new bab_Node($this, $id);
 		$newNode->setData($data);
-		$this->_guids[$newNode->getGuid()] =& $newNode;
 		if (!is_null($newNode->getId())) {
 			$this->_ids[$newNode->getId()] =& $newNode;
 		}
@@ -451,14 +421,6 @@ class bab_RootNode extends bab_Node
 		return bab_Node::NULL_NODE();
 	}
 
-	function &getNodeByGuid($guid)
-	{
-		if (array_key_exists($guid, $this->_guids)) {
-			return $this->_guids[$guid];
-		}
-		return bab_Node::NULL_NODE();
-	}
-	
 }
 
 /**
@@ -528,7 +490,9 @@ class bab_NodeIterator
 
 
 /**
- * bab_OrphanRootNode 
+ * bab_OrphanRootNode provides the ability to insert nodes before their parents
+ * are inserted. When the parents are inserted later, their children will
+ * automatically be appended.
  */
 class bab_OrphanRootNode extends bab_RootNode
 {
@@ -559,8 +523,8 @@ class bab_OrphanRootNode extends bab_RootNode
 			$newNode->appendChild($childNode);
 		}
 	}
-	
-	
+
+
 	function &createNode(&$data, $id = null)
 	{
 		$newNode =& parent::createNode($data, $id);
@@ -570,8 +534,7 @@ class bab_OrphanRootNode extends bab_RootNode
 		$this->_update($id);
 		return $newNode;
 	}
-	
-	
+
 	/**
 	 * Tries to append the node $newNode as child of the node having the id $id.
 	 * If the node $id was not already created in the tree, $newNode is stored
@@ -611,7 +574,7 @@ class bab_OrphanRootNode extends bab_RootNode
 }
 
 /**
- * 
+ * An element of a bab_TreeView.
  */
 class bab_TreeViewElement
 {
@@ -620,13 +583,13 @@ class bab_TreeViewElement
 	var $_title;
 	var $_description;
 	var $_link;
-	
+
 	var $_icon;
-	
+
 	var $_actions;
-	
+
 	var $_info;
-	
+
 	function bab_TreeViewElement($id, $type, $title, $description, $link)
 	{
 		$this->_id = $id;
@@ -638,15 +601,16 @@ class bab_TreeViewElement
 		$this->_icon= '';
 		$this->_info = '';
 	}
-	
-	function addAction($name, $caption, $link, $script)
+
+	function addAction($name, $caption, $icon, $link, $script)
 	{
 		$this->_actions[] = array('name' => $name,
 								  'caption' => $caption,
+								  'icon' => $icon,
 								  'link' => $link,
 								  'script' => $script);
 	}
-	
+
 	function setInfo($text)
 	{
 		$this->_info = $text;
@@ -656,14 +620,9 @@ class bab_TreeViewElement
 	{
 		$this->_icon = $name;
 	}
-	
-	
+
 	function compare(&$element)
 	{
-//		if ($this->firstChild() && !$node2->firstChild())
-//			return -1;
-//		if (!$this->firstChild() && $node2->firstChild())
-//			return 1;
 		if ((int)$this->_info > (int)$element->_info)
 			return -1;
 		if ((int)$this->_info < (int)$element->_info)
@@ -678,6 +637,9 @@ class bab_TreeViewElement
 
 }
 
+/**
+ * 
+ */
 class bab_TreeView
 {
 	var $_id;
@@ -715,7 +677,7 @@ class bab_TreeView
 		$this->_id = $id;
 		$this->_rootNode = new bab_OrphanRootNode();
 		$this->_iterator = null;
-		
+
 		$this->t_treeViewId= $this->_id;
 		$this->t_expand = bab_translate('Expand');
 		$this->t_collapse = bab_translate('Collapse');
@@ -723,7 +685,7 @@ class bab_TreeView
 		$this->_templateFile = 'treeview.html';
 		$this->_templateSection = 'treeview';
 		$this->_templateCache = null;
-		
+
 		$this->_upToDate = false;
 	}
 	
@@ -757,8 +719,7 @@ class bab_TreeView
 			$this->t_previousLevel = $this->t_level - 1;
 		}
 		$this->t_levelVariation = $this->t_level - $this->t_previousLevel;
-		if ($this->t_levelVariation < -1)
-		{
+		if ($this->t_levelVariation < -1) {
 			$this->t_previousLevel--;
 			return true;
 		}
@@ -769,12 +730,12 @@ class bab_TreeView
 			$this->t_level = $this->_iterator->level();
 			$element =& $node->getData();
 			$this->t_id = $this->_id . '.' . $element->_id;
-			$this->t_type = $element->_type;
-			$this->t_title = $element->_title;
-			$this->t_description = $element->_description;
-			$this->t_link = $element->_link;
-			$this->t_info = $element->_info;
-			$this->t_nodeIcon= $element->_icon;
+			$this->t_type =& $element->_type;
+			$this->t_title =& $element->_title;
+			$this->t_description =& $element->_description;
+			$this->t_link =& $element->_link;
+			$this->t_info =& $element->_info;
+			$this->t_nodeIcon =& $element->_icon;
 			$this->_currentElement =& $element;
 			reset($this->_currentElement->_actions);
 
@@ -791,6 +752,7 @@ class bab_TreeView
 		if (list(,$action) = each($this->_currentElement->_actions)) {
 			$this->action_name = $action['name'];
 			$this->action_caption = $action['caption'];
+			$this->action_icon = $action['icon'];
 			$this->action_url = $action['link'];
 			$this->action_script = $action['script'];
 			return true;
@@ -906,7 +868,8 @@ class bab_ArticleTreeView extends bab_TreeView
 											 $topic['category'],
 											 '',
 											 '');
-			$element->setIcon('topic');
+//			$element->setIcon('topic');
+			$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/topic.png');
 			$parentId = ($topic['id_cat'] === '0' ? null :
 												'category' . $topic['id_cat']);
 			$this->appendElement($element, $parentId);
@@ -936,7 +899,8 @@ class bab_ArticleTreeView extends bab_TreeView
 											 $category['title'],
 											 '',
 											 '');
-			$element->setIcon('category');
+//			$element->setIcon('category');
+			$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/category.png');
 			$parentId = ($category['id_parent'] === '0' ? null :
 											'category' . $category['id_parent']);
 			$this->appendElement($element, $parentId);
@@ -966,7 +930,8 @@ class bab_ArticleTreeView extends bab_TreeView
 											 $article['title'],
 											 '',
 											 '');
-			$element->setIcon('article');
+//			$element->setIcon('article');
+			$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/article.png');
 			$this->appendElement($element, 'topic' . $article['id_topic']);
 		}
 	}
@@ -1068,7 +1033,8 @@ class bab_FileTreeView extends bab_TreeView
 											 $folder['folder'],
 											 '',
 											 '');
-			$element->setIcon('folder');
+//			$element->setIcon('folder');
+			$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
 			$this->appendElement($element, null);
 		}
 	}
@@ -1104,7 +1070,8 @@ class bab_FileTreeView extends bab_TreeView
 														 '',
 														 '');
 						$this->appendElement($element, $parentId);
-						$element->setIcon('folder');
+//						$element->setIcon('folder');
+						$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
 					}
 					$parentId .= '_' . $subdir;
 				}
@@ -1114,7 +1081,8 @@ class bab_FileTreeView extends bab_TreeView
 											 $file['name'],
 											 '',
 											 '');
-			$element->setIcon('file');
+//			$element->setIcon('file');
+			$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/file.png');
 			$this->appendElement($element, $parentId);
 		}
 	}
@@ -1334,7 +1302,8 @@ class bab_FaqTreeView extends bab_TreeView
 											 bab_translate('Category: ') . $category['category'],
 											 '',
 											 '');
-			$element->setIcon('folder');
+//			$element->setIcon('folder');
+			$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
 			$this->appendElement($element, null);
 		}
 
@@ -1383,7 +1352,8 @@ class bab_FaqTreeView extends bab_TreeView
 			$parentId = isset($this->_categories[$subCategory['id_parent']])
 								? 'category' . $this->_categories[$subCategory['id_parent']]
 								: 'subcat' . $subCategory['id_parent'];
-			$element->setIcon('folder');
+//			$element->setIcon('folder');
+			$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
 			$this->appendElement($element, $parentId);
 		}
 	}
@@ -1412,7 +1382,8 @@ class bab_FaqTreeView extends bab_TreeView
 			$parentId = isset($this->_categories[$question['id_subcat']])
 								? 'category' . $this->_categories[$question['id_subcat']]
 								: 'subcat' . $question['id_subcat'];
-			$element->setIcon('faq');
+//			$element->setIcon('faq');
+			$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/faq.png');
 			$this->appendElement($element, $parentId);
 		}
 	}
@@ -1480,14 +1451,14 @@ function bab_tree_test()
 	$treeView->appendElement($element, '1');
 
 	$element =& $treeView->createElement('1.1', 'type2', 'Le titre 1.1', 'Description', 'lien');
-	$element->addAction('move_down', 'Move down', 'move_down.php', '');
-	$element->addAction('delete', 'Delete', 'delete.php', '');
+	$element->addAction('move_down', 'Move down', '', 'move_down.php', '');
+	$element->addAction('delete', 'Delete', '', 'delete.php', '');
 	$element->setInfo('Info');
 	$treeView->appendElement($element, '1');
 
 	$element =& $treeView->createElement('1.1.1', 'type2', 'Le titre 1.1.1', 'Description', 'lien');
 	$treeView->appendElement($element, '1.1');
-	$element->addAction('add', 'Add', 'add.php', '');
+	$element->addAction('add', 'Add', '', 'add.php', '');
 
 	$element =& $treeView->createElement('1.1.2', 'type2', 'Le titre 1.1.2', 'Description', 'lien');
 	$element->setInfo('Info');
