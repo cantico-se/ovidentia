@@ -1134,7 +1134,7 @@ function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywor
 		}
 
 	if (BAB_INDEX_STATUS_INDEXED === $index_status) {
-		$obj = new bab_indexObject($object);
+		$obj = new bab_indexObject('bab_files');
 		$obj->setIdObjectFile($pathx.$osfname, $idf, $id);
 	}
 

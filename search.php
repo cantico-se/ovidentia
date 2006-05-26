@@ -1432,7 +1432,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$this->archive = 'Y' == $arr['archive'];
 				$this->arttopic = returnCategoriesHierarchy($arr['id_topic']);
 				$this->arttopicid = $arr['id_topic'];
-				$this->articleurlpop = $GLOBALS['babUrlScript']."?tg=search&idx=a&id=".$arr['id']."&w=".$this->what;
+				$this->articleurlpop = $GLOBALS['babUrlScript']."?tg=search&idx=a&id=".$arr['id']."&w=".urlencode($this->what);
 				if (strlen(trim(stripslashes($arr['body']))) > 0)
 					{
 					$this->articleurl = $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id'];
@@ -1802,6 +1802,9 @@ function viewArticle($article,$w)
 			$this->close = bab_translate("Close");
 			$this->attachmentxt = bab_translate("Associated documents");
 			$this->commentstxt = bab_translate("Comments");
+			$this->t_name = bab_translate("Name");
+			$this->t_description = bab_translate("Description");
+			$this->t_index = bab_translate("Result in file");
 			$this->db = &$GLOBALS['babDB'];
 			$req = "select * from ".BAB_ARTICLES_TBL." where id='$article'";
 			$this->res = $this->db->db_query($req);
@@ -1821,6 +1824,7 @@ function viewArticle($article,$w)
 						".BAB_ART_FILES_TBL." f
 						LEFT JOIN ".BAB_INDEX_ACCESS_TBL." i ON i.id_object = f.id
 					WHERE id_article='".$article."'
+					 GROUP BY f.id
 				");
 
 				$this->countf = $this->db->db_num_rows($this->resf);
@@ -1862,8 +1866,10 @@ function viewArticle($article,$w)
 				{
 				$arr = $this->db->db_fetch_array($this->resf);
 				$this->docurl = $GLOBALS['babUrlScript']."?tg=articles&idx=getf&topics=".$this->arr['id_topic']."&article=".$this->arr['id']."&idf=".$arr['id'];
-				$this->docname = $arr['name'];
+				$this->docname = bab_toHtml($arr['name']);
+				$this->docdescription = bab_toHtml($arr['description']);
 				$this->in_index = isset($this->found_in_index['articles/'.$this->arr['id'].','.$arr['name']]);
+				$this->altbg = !$this->altbg;
 				$i++;
 				return true;
 				}

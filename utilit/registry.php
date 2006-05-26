@@ -165,9 +165,10 @@ class bab_registry {
 
 		if (NULL !== $default_create) {
 			$this->setKeyValue($key, $default_create);
+			return $default_create;
 		}
 
-		return null;
+		return NULL;
 	}
 
 

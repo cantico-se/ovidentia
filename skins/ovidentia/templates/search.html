@@ -652,30 +652,51 @@ setselects(document.forms.searchForm.g_directory);
 
 <table border="0" width="100%" cellpadding="5" cellspacing="0">
 	<tr>
-		<td class="BabSiteAdminTitleFontBackground" align="center">{ arr[title] }</td>
+		<td class="BabTopicsTitleBackground">{ arr[title] }</td>
 	</tr>
 	<tr>
 		<td class="BabTopicsBackground">{ head }</td>
 	</tr>
 	<tr>
-		<td class="BabSiteAdminTitleFontBackground">&nbsp;</td>
-	</tr>
-	<tr>
 		<td class="BabTopicsBackground">{ content }</td>
 	</tr>
-	<tr>
-	<!--#if countf -->
-	<tr>
-		<td class="BabSiteAdminTitleFontBackground">{ attachmentxt }</td>
+</table>
+	
+<!--#if countf -->
+<p>{ attachmentxt } :</p>
+<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+	<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+		<table width="100%" border="0" cellspacing="0" cellpadding="3" align="center">
+		<tr class="BabSiteAdminTitleFontBackground"> 
+			<td>{ t_name }</td>
+			<td>{ t_description }</td>
+			<td align="center">{ t_index }</td>
+		</tr>
+		<!--#in getnextdoc -->
+		<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+			<td><a href="{ docurl }">{ docname }</a></td>
+			<td>{ docdescription }</td>
+			<td align="center">
+				<!--#if in_index -->
+				<img src="{ babSkinPath }images/Puces/action_success.gif" />
+				<!--#else in_index -->
+				&nbsp;
+				<!--#endif in_index -->
+			</td>
+		</tr>
+		<!--#endin getnextdoc -->
+		
+	</table>
+	</td>
 	</tr>
-	<!--#in getnextdoc -->
-	<tr>
-		<td><a class="BabForumTopicsNavContribution" href="{ docurl }">{ docname }</a>&nbsp;&nbsp;</td>
-	</tr>
-	<!--#endin getnextdoc -->
-	<!--#endif countf -->
+</table>
+<!--#endif countf -->
 
-	<!--#if countcom -->
+
+<!--#if countcom -->
+
+<table>
 	<tr>
 		<td class="BabSiteAdminTitleFontBackground">{ commentstxt }</td>
 	</tr>
@@ -703,15 +724,13 @@ setselects(document.forms.searchForm.g_directory);
 			</table>
 		</td>
 	</tr>
-	<!--#endif countcom -->
-	<tr>
-		<td colspan="2" align="center">
-		<br />
-		<a href="javascript:this.close()">{ close }</a>
-		<br />
-		</td>
-	</tr>
 </table>
+<!--#endif countcom -->
+
+<p align="center">
+	<a href="javascript:this.close()">{ close }</a>
+</p>
+
 <!--#end viewart -->
 
 <!--#begin viewcom -->
