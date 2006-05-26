@@ -14,12 +14,13 @@
 	  </li>
 	  <!--#endif t_levelVariation -->
 	  <!--#if t_levelVariation ">= -1" -->
-	    <li id="li{ t_id }">
+	    <li id="li{ t_id }" class="bab_ul_tree_leaf">
 	      <div>
+	        <!--#if t_nodeIcon --><img class="bullet" src="{ t_nodeIcon }" /> <!--#else t_nodeIcon --><img class="bullet" src="{ babSkinPath }images/Puces/Space1PxTrans.gif" style="height: 16px" /> <!--#endif t_nodeIcon -->
 	        <!--#if t_link  -->
-			<a href="{ t_link }"><!--#if t_nodeIcon --><img style="vertical-align: middle" src="{ t_nodeIcon }" /> <!--#endif t_nodeIcon --><span class="level{ t_previousLevel } { t_type }" id="contentli{ t_id }">{ t_title }</span></a>
+			<a href="{ t_link }"><span class="level{ t_previousLevel } { t_type }" style="vertical-align: middle">{ t_title }</span></a>
 	        <!--#else t_link  -->
-			<!--#if t_nodeIcon --><img style="vertical-align: middle" src="{ t_nodeIcon }" /> <!--#endif t_nodeIcon --><span class="level{ t_previousLevel } { t_type }" id="contentli{ t_id }">{ t_title }</span>
+			<span class="level{ t_previousLevel } { t_type }" style="vertical-align: middle">{ t_title }</span>
 	        <!--#endif t_link  -->
 	        <!--#if t_showRightElements -->
 	        <span style="padding-left: 50px; position: absolute; right: 10px; white-space: nowrap">

@@ -1538,26 +1538,26 @@ function bab_tree_test()
 
 	// Example of file tree view.
 	//---------------------------
-	$start = microtime(true);
+//	$start = microtime(true);
 	$treeView = new bab_FileTreeView('file', 'N', '0');
-	$end = microtime(true);
-	echo '<div style="background-color: #FFFFFF; border: 1px solid red; padding: 4px; position: relative; z-index: 255"><pre>';
-	print_r('new bab_FileTreeView : ' . ($end - $start));
-	echo "</div></pre>\n";
+//	$end = microtime(true);
+//	echo '<div style="background-color: #FFFFFF; border: 1px solid red; padding: 4px; position: relative; z-index: 255"><pre>';
+//	print_r('new bab_FileTreeView : ' . ($end - $start));
+//	echo "</div></pre>\n";
 
-	$start = microtime(true);
+//	$start = microtime(true);
 	$treeView->addStatistics('2000-01-01 00:00', '2007-01-01 00:00');
-	$end = microtime(true);
-	echo '<div style="background-color: #FFFFFF; border: 1px solid red; padding: 4px; position: relative; z-index: 255"><pre>';
-	print_r('addStatistics : ' . ($end - $start));
-	echo "</div></pre>\n";
+//	$end = microtime(true);
+//	echo '<div style="background-color: #FFFFFF; border: 1px solid red; padding: 4px; position: relative; z-index: 255"><pre>';
+//	print_r('addStatistics : ' . ($end - $start));
+//	echo "</div></pre>\n";
 
-	$start = microtime(true);
+//	$start = microtime(true);
 	$treeView->sort();
-	$end = microtime(true);
-	echo '<div style="background-color: #FFFFFF; border: 1px solid red; padding: 4px; position: relative; z-index: 255"><pre>';
-	print_r('sort : ' . ($end - $start));
-	echo "</div></pre>\n";
+//	$end = microtime(true);
+//	echo '<div style="background-color: #FFFFFF; border: 1px solid red; padding: 4px; position: relative; z-index: 255"><pre>';
+//	print_r('sort : ' . ($end - $start));
+//	echo "</div></pre>\n";
 
 	$babBody->babecho('<h2>Example of file tree (<code>bab_FileTreeView</code>)</h2>');
 	$babBody->babecho($treeView->printTemplate());

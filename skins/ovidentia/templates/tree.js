@@ -32,7 +32,7 @@ function bab_delaySearch()
 	} else {
 		this.className = 'bab_searchField';
 		this.parentNode.tree.expand();
-		this.parentNode.tree.unhighlight();
+		this.parentNode.tree.unhighlightAll();
 	}
 }
 
@@ -66,34 +66,35 @@ function bab_treeCollapse()
 
 function bab_initTrees()
 {
-	divs = document.getElementsByTagName('div');
+	divs = document.getElementsByTagName('DIV');
 	for (i = 0; i < divs.length; i++) {
 		div = divs[i];
 		if (!div.initialized && hasClass(div, 'bab_tree')) {
-			tree = new bab_ul_tree(div);
-			tree.processList();
-			tree.expand();
+			tree = new bab_ul_tree(div.getElementsByTagName('UL')[0]);
+			tree.collapse();
+			tree.processList(tree.rootList);
+//			tree.expand();
 			
-			var toolbar = document.createElement('div');
+			var toolbar = document.createElement('DIV');
 			toolbar.className = 'bab_treeToolbar BabSiteAdminTitleFontBackground';
 			toolbar.tree = tree;
 			div.insertBefore(toolbar, div.firstChild);
 
-			var expand = document.createElement('a');
+			var expand = document.createElement('A');
 			txt = document.createTextNode('Expand');
 			expand.onclick = bab_treeExpand;
 			expand.className = "bab_expandAll";
 			expand.appendChild(txt);
 			toolbar.appendChild(expand);
 			
-			var collapse = document.createElement('a');
+			var collapse = document.createElement('A');
 			txt = document.createTextNode('Collapse');
 			collapse.onclick = bab_treeCollapse;
 			collapse.className = "bab_collapseAll";
 			collapse.appendChild(txt);
 			toolbar.appendChild(collapse);
 			
-			var search = document.createElement('input');
+			var search = document.createElement('INPUT');
 			search.type = 'text';
 			search.className = "bab_searchField";
 			search.onkeyup = bab_delaySearch;
@@ -106,20 +107,14 @@ function bab_initTrees()
 
 
 
-function bab_ul_tree(id)
+function bab_ul_tree(rootList)
 {
-	if (typeof id == 'object')
-		this.treeId = id;
-	else
-		this.treeId = document.getElementById(id);
-	if ('UL' != this.treeId.tagName)
-		this.treeId = this.treeId.getElementsByTagName('ul')[0];
+	this.rootList = rootList;
+	
+	this.NODE_CLOSED = 'bab_ul_tree_closed';
+	this.NODE_OPEN = 'bab_ul_tree_open';
+	this.NODE_LEAF = 'bab_ul_tree_leaf';
 
-	this.highlightedItems = Array();
-
-	this.nodeClosedClass = 'bab_ul_tree_closed';
-	this.nodeOpenClass = 'bab_ul_tree_open';
-	this.nodeBulletClass = 'bab_ul_tree_leaf';
 	this.nodeLinkClass = 'bullet';
 	this.nodeLineClass = 'line';
 	this.nodeLineHoverClass = 'line hover';
@@ -144,254 +139,67 @@ function bab_onNodeClick()
 }
 
 
-bab_ul_tree.prototype.appendElement = function(element, parentId)
+bab_ul_tree.prototype.processList = function(ul)
 {
-	
-}
-
-
-bab_ul_tree.prototype.getOpenItems = function()
-{
-	var ul = this.treeId;
-	var ids = Array();
-	listItems = ul.getElementsByTagName('li');
+	var listItems = ul.getElementsByTagName('LI');
 	for (var i = 0; i < listItems.length; i++) {
-		var item = listItems[i];
-		if (item.className == this.nodeOpenClass) {
-			ids.push(item.id);
+		var listItem = listItems[i];
+		if (listItem.getElementsByTagName('UL').length > 0) {
+			listItem.getElementsByTagName('IMG')[0].onclick = bab_onNodeClick;
 		}
+		var div = listItem.getElementsByTagName('div')[0];
+		div.className = this.nodeLineClass;
+		div.onmouseover = bab_onItemMouseOver;
+		div.onmouseout = bab_onItemMouseOut;
 	}
-	return ids;
 }
 
 
-bab_ul_tree.prototype.processList = function(ul)
+bab_ul_tree.prototype.expandCollapseList = function(ul, className, itemId)
 {
-	if (null == ul)
-		ul = this.treeId;
-
-	listItems = ul.getElementsByTagName('li');
+	var listItems = ul.getElementsByTagName('LI');
 	for (var i = 0; i < listItems.length; i++) {
-		var item = listItems[i];
-		var hasSubItems = (item.getElementsByTagName('ul').length > 0);
-
-		var s = document.createElement('span');
-		var t = '\u00A0'; // &nbsp;
-		s.className = this.nodeLinkClass;
-		if (hasSubItems) {
-			item.className = this.nodeClosedClass;
-			s.onclick = bab_onNodeClick;
-		} else {
-			item.className = this.nodeBulletClass;
-		}
-		s.appendChild(document.createTextNode(t));
-		var img = document.createElement('img');
-		img.src = 'ovidentia/skins/ovidentia/images/Puces/Space1PxTrans.gif';
-		img.width = '16';
-		img.height = '16';
-		s.appendChild(img);
-		item = item.getElementsByTagName('div')[0];
-		item.className = this.nodeLineClass;
-		
-		item.onmouseover = bab_onItemMouseOver;
-		item.onmouseout = bab_onItemMouseOut;
-		item.insertBefore(s, item.firstChild);
-	}
-}
-
-
-/*
-bab_ul_tree.prototype.processList = function(ul)
-{
-	if (null == ul)
-		ul = this.treeId;
-		
-	if (!ul.childNodes || ul.childNodes.length==0)
-		return;
-	// Iterate LIs
-	for (var itemi = 0; itemi < ul.childNodes.length; itemi++) {
-		var item = ul.childNodes[itemi];
-		if ("LI" == item.nodeName) {
-			var subLists = false;
-			for (var sitemi = 0; sitemi < item.childNodes.length; sitemi++) {
-				var sitem = item.childNodes[sitemi];
-				if (sitem.nodeName == "UL") {
-					subLists = true;
-					this.processList(sitem);
-				}
-			}	
-
-			var s = document.createElement("span");
-			var t = '\u00A0'; // &nbsp;
-			s.className = this.nodeLinkClass;
-			if (subLists) {
-				if (item.className == null || item.className == "" )
-					item.className = this.nodeClosedClass;
-				// If it's just text, make the text work as the link also
-				if (item.firstChild.nodeName == "#text") {
-					t += item.firstChild.nodeValue;
-					item.removeChild(item.firstChild);
-				}
-				s.onclick = function () {
-					var ul = this.parentNode.parentNode;
-					ul.className = (ul.className == 'bab_ul_tree_open') ? 'bab_ul_tree_closed' : 'bab_ul_tree_open';
-					return false;
-				}
-			} else {
-				// No sublists, so it's just a bullet node
-				item.className = this.nodeBulletClass;
-				s.onclick = function () { return false; }
-			}
-			s.appendChild(document.createTextNode(t));
-			var img = document.createElement('img');
-			img.src = 'ovidentia/skins/ovidentia/images/Puces/Space1PxTrans.gif';
-			img.width = '16';
-			img.height = '16';
-			s.appendChild(img);
-			item = item.getElementsByTagName('div')[0];
-			item.className = this.nodeLineClass;
-			item.onmouseover = function() {
-				this.className = 'line hover';
-			}
-			item.onmouseout = function() {
-				this.className = 'line';
-			}
-			item.insertBefore(s, item.firstChild);
-		}
-	}
-}
-*/
-
-/*
-bab_ul_tree.prototype.processList = function(ul)
-{
-	if (null == ul)
-		ul = this.treeId;
-
-	if (!ul.childNodes || ul.childNodes.length == 0)
-		return;
-	for (var itemi = 0; itemi < ul.childNodes.length; itemi++) {
-		var item = ul.childNodes[itemi];
-		if ("LI" == item.nodeName) {
-			var subLists = false;
-			for (var sitemi = 0; sitemi < item.childNodes.length; sitemi++) {
-				var sitem = item.childNodes[sitemi];
-				if (sitem.nodeName == "UL") {
-					subLists = true;
-					this.processList(sitem);
-				}
-			}
-			var s = document.createElement("span");
-			s.className = this.nodeLinkClass;
-			if (subLists) {
-				item.className = this.nodeClosedClass;
-				s.onclick = bab_onNodeClick;
-			} else {
-				item.className = this.nodeBulletClass;
-			}
-			s.appendChild(document.createTextNode('\u00A0'));
-			var img = document.createElement('img');
-			img.src = 'ovidentia/skins/ovidentia/images/Puces/Space1PxTrans.gif';
-			img.width = '16';
-			img.height = '16';
-			s.appendChild(img);
-			item = item.getElementsByTagName('div')[0];
-			item.className = this.nodeLineClass;
-			item.onmouseover = bab_onItemMouseOver;
-			item.onmouseout = bab_onItemMouseOut;
-			item.insertBefore(s, item.firstChild);
-		}
-	}
-}
-*/
-
-
-
-bab_ul_tree.prototype.expandCollapseList = function(ul, cName, itemId)
-{
-	if (null == ul)
-		ul = this.treeId;
-	if (!ul.childNodes || ul.childNodes.length == 0)
-		return false;
-	// Iterate LIs
-	for (var itemi = 0; itemi < ul.childNodes.length; itemi++) {
-		var item = ul.childNodes[itemi];
-		if (itemId != null && item.id == itemId)
+		var listItem = listItems[i];
+		if (itemId != null && listItem.id == itemId)
 			return true;
-		if (item.nodeName == "LI") {
-			var uls = item.getElementsByTagName('UL');
-			if (uls.length > 0) {
-				subLists = true;
-				sitem = uls[0];
-				var ret = this.expandCollapseList(sitem, cName, itemId);
-				if (itemId != null && ret) {
-					item.className = cName;
-					return true;
-				}
+		var uls = listItem.getElementsByTagName('UL');
+		if (uls.length > 0) {
+			subLists = true;
+			subUl = uls[0];
+			var ret = this.expandCollapseList(subUl, className, itemId);
+			if (itemId != null && ret) {
+				listItem.className = className;
+				return true;
 			}
-
-			if (subLists && itemId == null)
-				item.className = cName;
 		}
+		if (subLists && itemId == null)
+			listItem.className = className;
 	}
 }
 
-/*
-bab_ul_tree.prototype.expandCollapseList = function(ul, cName, itemId)
+
+bab_ul_tree.prototype.expandCollapseAll = function(ul, className)
 {
-	if (null == ul)
-		ul = this.treeId;
-	if (!ul.childNodes || ul.childNodes.length == 0)
-		return false;
-	// Iterate LIs
-	for (var itemi = 0; itemi < ul.childNodes.length; itemi++) {
-		var item = ul.childNodes[itemi];
-		if (itemId != null && item.id == itemId)
-			return true;
-		if (item.nodeName == "LI") {
-			var subLists = false;
-			for (var sitemi = 0; sitemi < item.childNodes.length; sitemi++) {
-				var sitem = item.childNodes[sitemi];
-				if (sitem.nodeName == "UL") {
-					subLists = true;
-					var ret = this.expandCollapseList(sitem, cName, itemId);
-					if (itemId != null && ret) {
-						item.className = cName;
-						return true;
-					}
-				}
-			}
-
-			if (subLists && itemId == null)
-				item.className = cName;
+	var listItems = ul.getElementsByTagName('LI');
+	for (var i = 0; i < listItems.length; i++) {
+		var listItem = listItems[i];
+		if (listItem.getElementsByTagName('UL').length > 0) {
+			listItem.className = className;
 		}
 	}
 }
-*/
-
 
 
 bab_ul_tree.prototype.collapse = function()
 {
-	this.expandCollapseList(this.treeId,this.nodeClosedClass);
+	this.expandCollapseAll(this.rootList, this.NODE_CLOSED);
 }
+
 
 
 bab_ul_tree.prototype.expand = function()
 {
-	this.expandCollapseList(this.treeId,this.nodeOpenClass);
-}
-
-
-bab_ul_tree.prototype.expandToItem = function(itemId, focus)
-{
-	var ret = this.expandCollapseList(this.treeId,this.nodeOpenClass,itemId);
-	if (ret && null != focus) {
-		var o = document.getElementById(itemId);
-		if (o.scrollIntoView) {
-			o.scrollIntoView(false);
-		}
-	}
+	this.expandCollapseAll(this.rootList, this.NODE_OPEN);
 }
 
 
@@ -399,23 +207,23 @@ bab_ul_tree.prototype.initSearch = function()
 {
 	if (this.initDone)
 		return;
-	var listItems = this.treeId.getElementsByTagName('li');
+	var listItems = this.rootList.getElementsByTagName('LI');
 	for (var i = 0; i < listItems.length ; i++) {
-		var span = document.getElementById('content' + listItems[i].id);
-		if (span && span.firstChild) {
-			var text = span.firstChild.nodeValue;
-			text = cleanStringDiacritics(text);
-			listItems[i].setAttribute('content', text);
-		}
+//		var span = document.getElementById('content' + listItems[i].id);
+		var span = listItems[i].getElementsByTagName('DIV')[0].getElementsByTagName('SPAN')[0];
+		var text = span.firstChild.nodeValue;
+		text = cleanStringDiacritics(text);
+		listItems[i].setAttribute('content', text);
 	}
 	this.initDone = true;
 }
 
 
-bab_ul_tree.prototype.unhighlight = function()
+bab_ul_tree.prototype.unhighlightAll = function()
 {
-	while (this.highlightedItems.length > 0) {
-		var div = this.highlightedItems.pop();
+	var listItems = this.rootList.getElementsByTagName('LI');
+	for (var i = 0; i < listItems.length ; i++) {
+		var div = listItems[i].getElementsByTagName('DIV')[0];
 		div.style.backgroundColor = '';
 	}
 }
@@ -423,31 +231,28 @@ bab_ul_tree.prototype.unhighlight = function()
 
 bab_ul_tree.prototype.searchItem = function(targetString)
 {
-	window.status = 'initSearch';
 	this.initSearch();
 	this.collapse();
 	targetString = cleanStringDiacritics(targetString);
 	window.status = 'Searching...';
 	var nbMatches = 0;
 	var highlightedDivs = Array();
-	var listItems = this.treeId.getElementsByTagName('li');
-	window.status = 0;
+	var listItems = this.rootList.getElementsByTagName('LI');
 	for (var i = 0; i < listItems.length ; i++) {
 		var content = listItems[i].getAttribute('content');
-		var div = listItems[i].getElementsByTagName('div')[0];
+		var div = listItems[i].getElementsByTagName('DIV')[0];
 		if (content && content.indexOf(targetString) > -1) {
-			this.expandCollapseList(this.treeId, this.nodeOpenClass, listItems[i].id);
-			this.highlightedItems.push(div);
+			this.expandCollapseList(this.rootList, this.NODE_OPEN, listItems[i].id);
 			highlightedDivs.push(div);
 			nbMatches++;
 		} else {
 			div.style.backgroundColor = '';
 		}
-//		(i % 20) == 0 && (window.status = i);
 	}
 	while (highlightedDivs.length > 0) {
 		highlightedDivs.pop().style.backgroundColor = '#EEEEEE';
 	}
+	window.status = '';
 	return nbMatches;
 }
 
@@ -465,6 +270,6 @@ function cleanStringDiacritics(text)
 		text = '';
 	}
 */
-	return text;
+	return text.toUpperCase();
 }
 

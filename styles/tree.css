@@ -56,22 +56,26 @@
 
 
 .bab_ul_tree_open .bullet {
-/*	width: 16px;*/
 	cursor: pointer; 
-/*	padding-left: 15px;*/
+	padding-left: 20px;
+	padding-right: 6px;
+	vertical-align: middle;
 	background: url(../skins/ovidentia/images/Puces/minus.gif) center left no-repeat; 
 }
 
 .bab_ul_tree_closed .bullet {
-/*	width: 16px;*/
 	cursor: pointer;
-/*	padding-left: 15px;*/
+	padding-left: 20px;
+	padding-right: 6px;
+	vertical-align: middle;
 	background: url(../skins/ovidentia/images/Puces/plus.gif) center left no-repeat; 
 }
 
 .bab_ul_tree_leaf .bullet { 
-/*	width: 16px;*/
 	cursor: default; 
+	padding-left: 20px;
+	padding-right: 6px;
+	vertical-align: middle;
 	background: none;
 }
 
