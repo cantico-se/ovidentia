@@ -319,7 +319,118 @@ function onMenuSelected(oSelectedLi)
 	form
 }
 
+function date()
+{
+	bab_dialog.selectdate(function(aDate){})
+}
 
+function onClassChanged(oSelect)
+{
+	var TASK = 0;
+	var CHECKPOINT = 1;
+	var TODO = 2;
+	
+	var iType = parseInt(oSelect.options[oSelect.selectedIndex].value);
+	
+	var oTrTaskType = document.getElementById("sTaskType");
+	var oTrDuration = document.getElementById("sDuration");
+	var oTrStartDate = document.getElementById("sStartDate");
+	var oTrEndDate = document.getElementById("sEndDate");
+	
+	switch(iType)
+	{
+		case TASK:
+		{
+			alert('TASK');
+			/*
+			if(null != oTrTaskType) oTrTaskType.style.display = '';
+			if(null != oTrDuration) oTrDuration.style.display = '';
+			if(null != oTrStartDate) oTrStartDate.style.display = '';
+			if(null != oTrEndDate) oTrEndDate.style.display = '';
+			//*/
+			if(null != oTrTaskType)
+			{
+				oTrTaskType.style.display = '';
+				var oSelectTaskType = document.getElementById("iTaskTypeee");
+				
+				if(null != oSelectTaskType)	
+				{
+					onTaskTypeChanged(oSelectTaskType);
+				}
+				else
+				{
+					alert('oSelectTaskType is NULL');
+				}
+			}
+		}
+		break;
+
+		
+		case CHECKPOINT:
+		{
+			alert('CHECKPOINT');
+			if(null != oTrTaskType) oTrTaskType.style.display = 'none';
+			if(null != oTrDuration) oTrDuration.style.display = 'none';
+			if(null != oTrStartDate) oTrStartDate.style.display = 'none';
+			if(null != oTrEndDate) oTrEndDate.style.display = '';
+		}
+		break;
+			
+		case TODO:
+		{
+			alert('TODO');
+			if(null != oTrTaskType) oTrTaskType.style.display = 'none';
+			if(null != oTrDuration) oTrDuration.style.display = 'none';
+			if(null != oTrStartDate) oTrStartDate.style.display = 'none';
+			if(null != oTrEndDate) oTrEndDate.style.display = '';
+		}
+		break;
+	}
+}
+
+function onTaskTypeChanged(oSelect)
+{
+	var DURATION = 0;
+	var DATE = 1;
+	
+	alert(oSelect/*.selectedIndex*/);
+
+	var iDurationType = parseInt(oSelect.options[oSelect.selectedIndex].value);
+
+	alert(iDurationType);
+	
+	var oTrDuration = document.getElementById("sDuration");
+	var oTrStartDate = document.getElementById("sStartDate");
+	var oTrEndDate = document.getElementById("sEndDate");
+
+	switch(iDurationType)
+	{
+		case DURATION:
+		{
+			if(null != oTrDuration)
+			{
+				alert('!= NULL');
+				oTrDuration.style.display = '';
+			}
+			else
+			{
+				alert('NULL');
+			}
+			alert('FFFFFFF');
+			if(null != oTrStartDate) oTrStartDate.style.display = 'none';
+			if(null != oTrEndDate) oTrEndDate.style.display = '';
+		}
+		break;
+		
+		case DATE:
+		{
+			if(null != oTrDuration) oTrDuration.style.display = 'none';
+			if(null != oTrStartDate) oTrStartDate.style.display = '';
+			if(null != oTrEndDate) oTrEndDate.style.display = '';
+		}
+		break;
+	}
+}
 /*
 function set_active_tab_changed(active_tab)
 {
@@ -354,8 +465,11 @@ function set_active_tab_changed(active_tab)
 //-->
 </script>
 
+<script type="text/javascript" src="{ babInstallPath }scripts/bab_dialog.js"></script>
+
+
 <style type="text/css">
-	@import url('{ babInstallPath }/styles/taskManager.css');
+	@import url('{ babInstallPath }styles/taskManager.css');
 </style>
 
 <form name="taskForm" method="post" action="{ babPhpSelf }" onsubmit="return(submit_form())">
@@ -365,28 +479,142 @@ function set_active_tab_changed(active_tab)
 	<input type="hidden" name="iIdProjectSpace" value="{ m_datas[iIdProjectSpace] }" />
 	<input type="hidden" name="iIdProject" value="{ m_datas[iIdProject] }" />
 	<input type="hidden" name="sSelectedLiId" value="" />
-	
-	<ul id="tablist">
+
+	<br />
+	<div>
+		<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+			<tr> 
+				<td>
+					<label for="sTaskNumber">Number</label>
+				</td>
+				<td>
+					<input name="sTaskNumber" type="text" value="" />
+				</td>
+			</tr>
+			<tr> 
+				<td>
+					<label for="iClass">Type</label>
+				</td>
+				<td>
+					<select name="iClass" onchange="onClassChanged(this)">
+						<option value="0">Task</option>
+						<option value="1">Checkpoint</option>
+						<option value="2">ToDo</option>
+					</select>
+				</td>
+			</tr>
+			<tr> 
+				<td>
+					<label for="iIdCategory">Category</label>
+				</td>
+				<td>
+					<select name="iIdCategory">
+						<option selected="selected" value=""></option>
+						<option value="">Personnel</option>
+						<option value="">Professionnelle</option>
+					</select>
+				</td>
+			</tr>
+			
+		</table>
+	</div>
+	<br />
+
+	<ul id="tablist" width="95%" align="center">
 		<li id="sMnuGeneral"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[general] }</a></li>
 		<li id="sMnuPredecessors"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[predecessors] }</a></li>
 		<li id="sMnuResources"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[resources] }</a></li>
 		<li id="sMnuCommentaries"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[commentaries] }</a></li>
 		<li id="sMnuSpfFld"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[spFld] }</a></li>
 	</ul>						
+	<br />
 
 	<div id="sGeneral" class="">
+		<table width="95%" border="1" cellspacing="2" cellpadding="2" align="center">
+			<tr>
+				<td colspan="2"><label for="sDescription">Description</label></td>
+			</tr>
+			<tr>
+				<td colspan="2"><textarea name="sDescription" cols="50" rows="10">This is a desription</textarea></td>
+			</tr>
+			
+			<tr id="sTaskType" class="">
+				<td>
+					<label for="iTaskType">Task type</label>
+				</td>
+				<td>
+					<select name="iTaskTypeee" onchange="onTaskTypeChanged(this)">
+						<option value="0">Duration</option>
+						<option value="1">Date</option>
+					</select>
+				</td>
+			</tr>
+
+			<tr id="sDuration">
+				<td>
+					<label for="sDuration">Duration</label>
+				</td>
+				<td>
+					<input type="text" name="sDuration" maxlength="20" value="" size="10" />
+				</td>
+			</tr>
+
+			<tr id="sStartDate">
+				<td>
+					<label for="sStartDate">Start date</label>
+				</td>
+				<td>
+					<input type="text" name="sStartDate" maxlength="20" value="" size="10" />
+					<a href="javascript:date();">
+						<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/calendar.gif" alt="{ m_anchorItem[title] }" />
+					</a>
+				</td>
+			</tr>
+			
+			<tr id="sEndDate">
+				<td>
+					<label for="sEndDate">End date</label>
+				</td>
+				<td>
+					<input type="text" name="sEndDate" maxlength="20" value="" size="10" />
+					<a href="javascript:date();">
+						<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/calendar.gif" alt="{ m_anchorItem[title] }" />
+					</a>
+				</td>
+			</tr>
+		</table>
 	</div>
 	
 	<div id="sPredecessor" class="">
+		<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+			<tr> 
+				<td>Predecessor</td>
+			</tr>
+		</table>
 	</div>
 	
 	<div id="sResources" class="">
+		<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+			<tr> 
+				<td>Resource</td>
+			</tr>
+		</table>
 	</div>
 	
 	<div id="sCommentaries" class="">
+		<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+			<tr> 
+				<td>Commentaries</td>
+			</tr>
+		</table>
 	</div>
 	
 	<div id="sSpfFld" class="">
+		<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+			<tr> 
+				<td>Specific fields</td>
+			</tr>
+		</table>
 	</div>
 	
 </form>
