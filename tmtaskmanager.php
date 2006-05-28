@@ -26,6 +26,7 @@ require_once($babInstallPath . 'utilit/tmdefines.php');
 require_once($babInstallPath . 'utilit/tmIncl.php');
 require_once($babInstallPath . 'utilit/tmToolsIncl.php');
 require_once($babInstallPath . 'utilit/tmList.php');
+require_once($babInstallPath . 'tmCategoriesFunc.php');
 
 require_once($babInstallPath . 'utilit/baseFormProcessingClass.php');
 require_once($babInstallPath . 'tmContext.php');
@@ -126,6 +127,7 @@ function displayProjectsList()
 		{
 			$this->set_caption('rights', bab_translate("Rights"));
 			$this->set_caption('configuration', bab_translate("Configuration"));
+			$this->set_caption('category', bab_translate("Categories list"));
 			$this->set_caption('commentary', bab_translate("Display project commentaries list"));
 			$this->set_caption('task', bab_translate("Display tasks list"));
 
@@ -138,6 +140,7 @@ function displayProjectsList()
 				
 			$this->set_data('rightsUrl', '#');
 			$this->set_data('configurationUrl', '#');
+			$this->set_data('categoryUrl', '#');
 			$this->set_data('commentaryUrl', '#');
 			$this->set_data('taskUrl', '#');
 			$this->m_result = bab_selectProjectList($iIdProjectSpace);
@@ -161,6 +164,10 @@ function displayProjectsList()
 					BAB_TM_IDX_DISPLAY_PROJECTS_CONFIGURATION_FORM . '&iIdProjectSpace=' . $iIdProjectSpace . '&iIdProject=' . $this->m_rowDatas['id']
 					);
 
+				$this->set_data('categoryUrl', $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . 
+					BAB_TM_IDX_DISPLAY_CATEGORIES_LIST . '&iIdProjectSpace=' . $iIdProjectSpace . '&iIdProject=' . $this->m_rowDatas['id']
+					);
+					
 				$this->set_data('commentaryUrl', $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' .
 					BAB_TM_IDX_DISPLAY_PROJECT_COMMENTARY_LIST . '&iIdProjectSpace=' . $iIdProjectSpace . '&iIdProject=' . $this->m_rowDatas['id']
 					);
@@ -382,6 +389,8 @@ function displayProjectRightsForm()
 			$macl->addtable(BAB_TSKMGR_PROJECTS_SUPERVISORS_GROUPS_TBL, bab_translate("Project supervisor"));
 			$macl->filter($enableGroup, $enableGroup, $disableGroup, $enableGroup, $disableGroup);
 			$macl->addtable(BAB_TSKMGR_PROJECTS_VISUALIZERS_GROUPS_TBL, bab_translate("Project visualizer"));
+			$macl->filter($enableGroup, $enableGroup, $disableGroup, $enableGroup, $disableGroup);
+			$macl->addtable(BAB_TSKMGR_TASK_RESPONSIBLE_GROUPS_TBL, bab_translate("Task responsible"));
 			$macl->filter($enableGroup, $enableGroup, $disableGroup, $enableGroup, $disableGroup);
 		}
 	
@@ -767,17 +776,102 @@ function displayTaskForm()
 				'url' => $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_TASK_FORM . 
 				'&iIdProject=' . $iIdProject)
 		);
-
 		add_item_menu($itemMenu);
+
+		class BAB_TaskForm extends BAB_BaseFormProcessing
+		{
+			var $m_catResult;
+			
+			function BAB_TaskForm($iIdProjectSpace, $iIdProject, $iIdTask)
+			{
+				$this->set_caption('general', bab_translate("General"));
+				$this->set_caption('predecessors', bab_translate("Predecessors"));
+				$this->set_caption('resources', bab_translate("Resources"));
+				$this->set_caption('commentaries', bab_translate("Commentaries"));
+				$this->set_caption('spFld', bab_translate("Specific fields"));
+				
+				$this->set_caption('taskNumber', bab_translate("Number"));
+				$this->set_caption('eventType', bab_translate("Type"));
+				$this->set_caption('eventTask', bab_translate("Task"));
+				$this->set_caption('eventCheckPoint', bab_translate("CheckPoint"));
+				$this->set_caption('eventToDo', bab_translate("ToDo"));
+				$this->set_caption('categories', bab_translate("Categories"));
+				
+				$this->set_data('tg', tskmgr_getVariable('tg', 'usrTskMgr'));
+				$this->set_data('iIdProjectSpace', $iIdProjectSpace);
+				$this->set_data('iIdProject', $iIdProject);
+				$this->set_data('iIdTask', $iIdTask);
+				
+				$this->set_data('eventTask', BAB_TM_TASK);
+				$this->set_data('eventCheckPoint', BAB_TM_CHECKPOINT);
+				$this->set_data('eventToDo', BAB_TM_TODO);
+				
+				$this->set_data('sTaskNumber', tskmgr_getVariable('sTaskNumber', ''));
+				$this->set_data('bIsTaskNumberReadOnly', tskmgr_getVariable('bIsTaskNumberReadOnly', '0'));
+				$this->set_data('sTaskNumberReadOnly', '');
+								
+				$this->set_data('sSelectedCategory', '');
+				
+				$this->m_catResult = tmSelectAvailableCategories($iIdProject);
+				
+				if(!isset($_POST['iIdTask']) && !isset($_GET['iIdTask']))
+				{
+					$this->set_data('is_creation', true);
+					$this->initTaskForm($iIdProject);
+				}
+				else if( (isset($_GET['iIdTask']) || isset($_POST['iIdTask'])) && 0 != $iIdTask)
+				{
+					$this->set_data('is_edition', true);
+				}
+				else
+				{
+					$this->set_data('is_resubmission', true);
+				}
+				
+				
+			}
+			
+			function getNextCategory()
+			{
+				global $babDB;
+				if(false != $this->m_catResult)
+				{
+					$datas = $babDB->db_fetch_assoc($this->m_catResult);
+					if(false != $datas)
+					{
+						$this->set_data('iIdCategory', $datas['id']);
+						$this->set_data('sCategoryName', $datas['name']);
+						return true;
+					}
+				}
+				return false;
+			}
+		
+			function initTaskForm($iIdProject)
+			{
+				tmGetNextTaskNumber($iIdProject, $bIsReadOnly, $sTaskNumber);
+				$this->set_data('sTaskNumber', $sTaskNumber);
+				if(true == $bIsReadOnly)
+				{
+					$this->set_data('bIsTaskNumberReadOnly', '1');
+					$this->set_data('sTaskNumberReadOnly', 'readonly="readonly"');
+				}
+			}
+		}
 		
 		
-		$oBf = & new BAB_BaseFormProcessing();
 		
-		$oBf->set_caption('general', bab_translate("General"));
-		$oBf->set_caption('predecessors', bab_translate("Predecessors"));
-		$oBf->set_caption('resources', bab_translate("Resources"));
-		$oBf->set_caption('commentaries', bab_translate("Commentaries"));
-		$oBf->set_caption('spFld', bab_translate("Specific fields"));
+		
+		
+		tmGetTaskResponsibleList($iIdProject, $aTaskResponsible);
+		
+		
+		//bab_debug($aTaskResponsible);
+		
+		
+		
+		$oTaskForm = & new BAB_TaskForm($iIdProjectSpace, $iIdProject, $iIdTask);
+		
 		
 /*		$oBf->set_caption('add', bab_translate("Add"));
 		$oBf->set_caption('modify', bab_translate("Modify"));
@@ -804,7 +898,7 @@ function displayTaskForm()
 			$oBf->set_data('commentary', htmlentities($sCommentary, ENT_QUOTES));
 		}
 */		
-		$babBody->babecho(bab_printTemplate($oBf, 'tmUser.html', 'taskForm'));
+		$babBody->babecho(bab_printTemplate($oTaskForm, 'tmUser.html', 'taskForm'));
 
 	}
 	else 
@@ -1032,6 +1126,10 @@ switch($action)
 	case BAB_TM_ACTION_DELETE_PROJECT_COMMENTARY:
 		deleteProjectCommentary();
 		break;
+		
+	case BAB_TM_ACTION_DELETE_CATEGORY:
+		deleteCategory();
+		break;
 }
 
 
@@ -1092,6 +1190,18 @@ switch($idx)
 		
 	case BAB_TM_IDX_DISPLAY_TASK_FORM:
 		displayTaskForm();
+		break;
+//*//
+	case BAB_TM_IDX_DISPLAY_CATEGORIES_LIST:
+		displayCategoriesList();
+		break;
+		
+	case BAB_TM_IDX_DISPLAY_CATEGORY_FORM:
+		displayCategoryForm();
+		break;
+		
+	case BAB_TM_IDX_DISPLAY_DELETE_CATEGORY_FORM:
+		displayDeleteCategoryForm();
 		break;
 }
 $babBody->setCurrentItemMenu($idx);

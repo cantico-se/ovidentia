@@ -44,6 +44,13 @@
 							</tr>
 							<tr>
 								<td>
+									<a href="{ m_datas[categoryUrl] }" title="{ m_captions[category] }">
+										{ m_captions[category] }
+									</a>
+								</td>
+							</tr>
+							<tr>
+								<td>
 									<a href="{ m_datas[commentaryUrl] }" title="{ m_captions[commentary] }">
 										{ m_captions[commentary] }
 									</a>
@@ -314,9 +321,102 @@ function onMenuSelected(oSelectedLi)
 {
 	var form = document.forms.taskForm;
 	
-	oSelectedLi.className = 'current';
+	var oLiGeneral = document.getElementById("oLiGeneral");
+	var oLiPredecessors = document.getElementById("oLiPredecessors");
+	var oLiResources = document.getElementById("oLiResources");
+	var oLiCommentaries = document.getElementById("oLiCommentaries");
+	var oLiSpfFld = document.getElementById("oLiSpfFld");
 	
-	form
+	var oDivGeneral = document.getElementById("sGeneral");
+	var oDivSpfFld = document.getElementById("sSpfFld");
+	var oDivCommentaries = document.getElementById("sCommentaries");
+	var oDivResources = document.getElementById("sResources");
+	var oDivPredecessor = document.getElementById("sPredecessor");
+	
+	switch(oSelectedLi.id)
+	{
+		case 'oLiGeneral':
+		{
+			oLiGeneral.firstChild.className = 'current';
+			oLiPredecessors.firstChild.className = '';
+			oLiResources.firstChild.className = '';
+			oLiCommentaries.firstChild.className = '';
+			oLiSpfFld.firstChild.className = '';
+			
+			showHideElement('sGeneral', g_tskMgrShow);
+			showHideElement('sSpfFld', g_tskMgrHide);
+			showHideElement('sCommentaries', g_tskMgrHide);
+			showHideElement('sResources', g_tskMgrHide);
+			showHideElement('sPredecessor', g_tskMgrHide);
+		}
+		break;
+		
+		case 'oLiPredecessors':
+		{
+			oLiGeneral.firstChild.className = '';
+			oLiPredecessors.firstChild.className = 'current';
+			oLiResources.firstChild.className = '';
+			oLiCommentaries.firstChild.className = '';
+			oLiSpfFld.firstChild.className = '';
+			
+			showHideElement('sGeneral', g_tskMgrHide);
+			showHideElement('sSpfFld', g_tskMgrHide);
+			showHideElement('sCommentaries', g_tskMgrHide);
+			showHideElement('sResources', g_tskMgrHide);
+			showHideElement('sPredecessor', g_tskMgrShow);
+		}
+		break;
+		
+		case 'oLiResources':
+		{
+			oLiGeneral.firstChild.className = '';
+			oLiPredecessors.firstChild.className = '';
+			oLiResources.firstChild.className = 'current';
+			oLiCommentaries.firstChild.className = '';
+			oLiSpfFld.firstChild.className = '';
+			
+			showHideElement('sGeneral', g_tskMgrHide);
+			showHideElement('sSpfFld', g_tskMgrHide);
+			showHideElement('sCommentaries', g_tskMgrHide);
+			showHideElement('sResources', g_tskMgrShow);
+			showHideElement('sPredecessor', g_tskMgrHide);
+		}
+		break;
+		
+		case 'oLiCommentaries':
+		{
+			oLiGeneral.firstChild.className = '';
+			oLiPredecessors.firstChild.className = '';
+			oLiResources.firstChild.className = '';
+			oLiCommentaries.firstChild.className = 'current';
+			oLiSpfFld.firstChild.className = '';
+			
+			showHideElement('sGeneral', g_tskMgrHide);
+			showHideElement('sSpfFld', g_tskMgrHide);
+			showHideElement('sCommentaries', g_tskMgrShow);
+			showHideElement('sResources', g_tskMgrHide);
+			showHideElement('sPredecessor', g_tskMgrHide);
+			
+		}
+		break;
+		
+		case 'oLiSpfFld':
+		{
+			oLiGeneral.firstChild.className = '';
+			oLiPredecessors.firstChild.className = '';
+			oLiResources.firstChild.className = '';
+			oLiCommentaries.firstChild.className = '';
+			oLiSpfFld.firstChild.className = 'current';
+			
+			showHideElement('sGeneral', g_tskMgrHide);
+			showHideElement('sSpfFld', g_tskMgrShow);
+			showHideElement('sCommentaries', g_tskMgrHide);
+			showHideElement('sResources', g_tskMgrHide);
+			showHideElement('sPredecessor', g_tskMgrHide);
+			
+		}
+		break;
+	}
 }
 
 function date()
@@ -326,138 +426,144 @@ function date()
 
 function onClassChanged(oSelect)
 {
-	var TASK = 0;
-	var CHECKPOINT = 1;
-	var TODO = 2;
+	//{}
+	var TASK = { m_datas[eventTask] };
+	var CHECKPOINT = { m_datas[eventCheckPoint] };
+	var TODO = { m_datas[eventToDo] };
 	
 	var iType = parseInt(oSelect.options[oSelect.selectedIndex].value);
-	
-	var oTrTaskType = document.getElementById("sTaskType");
-	var oTrDuration = document.getElementById("sDuration");
-	var oTrStartDate = document.getElementById("sStartDate");
-	var oTrEndDate = document.getElementById("sEndDate");
-	
+
 	switch(iType)
 	{
 		case TASK:
 		{
-			alert('TASK');
-			/*
-			if(null != oTrTaskType) oTrTaskType.style.display = '';
-			if(null != oTrDuration) oTrDuration.style.display = '';
-			if(null != oTrStartDate) oTrStartDate.style.display = '';
-			if(null != oTrEndDate) oTrEndDate.style.display = '';
-			//*/
-			if(null != oTrTaskType)
+			var oTrDurationType = document.getElementById("oTrDurationType");
+			if(null != oTrDurationType)
 			{
-				oTrTaskType.style.display = '';
-				var oSelectTaskType = document.getElementById("iTaskTypeee");
+				oTrDurationType.style.display = '';
 				
-				if(null != oSelectTaskType)	
-				{
-					onTaskTypeChanged(oSelectTaskType);
-				}
-				else
-				{
-					alert('oSelectTaskType is NULL');
-				}
+				showHideElement('oTrLinkedTask', g_tskMgrShow);
+
+				var oDurationType = document.getElementById("oDurationType");
+				if(null != oDurationType) onDurationTypeChanged(oDurationType);
+
+				var oLinkedTask = document.getElementById("oLinkedTask");
+				if(null != oLinkedTask) onLinkTaskChanged(oLinkedTask);
+				
+				showHideElement('oLiResources', g_tskMgrShow);
 			}
 		}
 		break;
-
 		
 		case CHECKPOINT:
 		{
-			alert('CHECKPOINT');
-			if(null != oTrTaskType) oTrTaskType.style.display = 'none';
-			if(null != oTrDuration) oTrDuration.style.display = 'none';
-			if(null != oTrStartDate) oTrStartDate.style.display = 'none';
-			if(null != oTrEndDate) oTrEndDate.style.display = '';
+			showHideElement('oTrLinkedTask', g_tskMgrHide);
+			showHideElement('oTrDurationType', g_tskMgrHide);
+			showHideElement('oTrDuration', g_tskMgrHide);
+			showHideElement('oTrStartDate', g_tskMgrHide);
+			showHideElement('oTrEndDate', g_tskMgrShow);
+			showHideElement('oLiPredecessors', g_tskMgrHide);
+			showHideElement('oLiResources', g_tskMgrHide);
 		}
 		break;
 			
 		case TODO:
 		{
-			alert('TODO');
-			if(null != oTrTaskType) oTrTaskType.style.display = 'none';
-			if(null != oTrDuration) oTrDuration.style.display = 'none';
-			if(null != oTrStartDate) oTrStartDate.style.display = 'none';
-			if(null != oTrEndDate) oTrEndDate.style.display = '';
+			showHideElement('oTrLinkedTask', g_tskMgrHide);
+			showHideElement('oTrDurationType', g_tskMgrHide);
+			showHideElement('oTrDuration', g_tskMgrHide);
+			showHideElement('oTrStartDate', g_tskMgrHide);
+			showHideElement('oTrEndDate', g_tskMgrShow);
+			showHideElement('oLiPredecessors', g_tskMgrHide);
+			showHideElement('oLiResources', g_tskMgrHide);
 		}
 		break;
 	}
 }
 
-function onTaskTypeChanged(oSelect)
+function onDurationTypeChanged(oSelect)
 {
 	var DURATION = 0;
 	var DATE = 1;
 	
-	alert(oSelect/*.selectedIndex*/);
-
 	var iDurationType = parseInt(oSelect.options[oSelect.selectedIndex].value);
-
-	alert(iDurationType);
-	
-	var oTrDuration = document.getElementById("sDuration");
-	var oTrStartDate = document.getElementById("sStartDate");
-	var oTrEndDate = document.getElementById("sEndDate");
 
 	switch(iDurationType)
 	{
 		case DURATION:
 		{
-			if(null != oTrDuration)
-			{
-				alert('!= NULL');
-				oTrDuration.style.display = '';
-			}
-			else
-			{
-				alert('NULL');
-			}
-			alert('FFFFFFF');
-			if(null != oTrStartDate) oTrStartDate.style.display = 'none';
-			if(null != oTrEndDate) oTrEndDate.style.display = '';
+			showHideElement('oTrDuration', g_tskMgrShow);
+			showHideElement('oTrEndDate', g_tskMgrHide);
 		}
 		break;
 		
 		case DATE:
 		{
-			if(null != oTrDuration) oTrDuration.style.display = 'none';
-			if(null != oTrStartDate) oTrStartDate.style.display = '';
-			if(null != oTrEndDate) oTrEndDate.style.display = '';
+			showHideElement('oTrDuration', g_tskMgrHide);
+			showHideElement('oTrEndDate', g_tskMgrShow);
 		}
 		break;
 	}
+	
+	processStartDate();
 }
+
+function onLinkTaskChanged(oCheckBox)
+{
+	if(true == oCheckBox.checked)
+	{
+		showHideElement('oLiPredecessors', g_tskMgrShow);
+	}
+	else
+	{
+		showHideElement('oLiPredecessors', g_tskMgrHide);
+	}
+	
+	processStartDate();
+}
+
+var g_tskMgrHide = 0;
+var g_tskMgrShow = 1;
+
+function showHideElement(sIdElement, iShow)
+{
+	var oElement = document.getElementById(sIdElement);
+	if(null != oElement) oElement.style.display = (g_tskMgrHide == iShow) ? 'none' : '';
+}
+
+function processStartDate()
+{
+	var oLinkedTask = document.getElementById("oLinkedTask");
+	var oDurationType = document.getElementById("oDurationType");
+	
+	if(null != oLinkedTask && null != oDurationType)
+	{
+		var DURATION = 0;
+		var DATE = 1;
+		
+		var iDurationType = parseInt(oDurationType.options[oDurationType.selectedIndex].value);
+		
+		if(DATE == iDurationType)
+		{
+			if(true == oLinkedTask.checked)
+			{
+				showHideElement('oTrStartDate', g_tskMgrHide);
+			}
+			else
+			{
+				showHideElement('oTrStartDate', g_tskMgrShow);
+			}
+		}
+		else
+		{
+			showHideElement('oTrStartDate', g_tskMgrHide);
+		}
+	}
+}
+
 /*
 function set_active_tab_changed(active_tab)
 {
-	var oLiInquiry = document.getElementById('li_inquiry');
-	var oLiDepositary = document.getElementById('li_depositary');
-	var oLiOtherFile = document.getElementById('li_other_file');
-
-	oLiInquiry.className = '';
-	oLiDepositary.className = '';
-	oLiOtherFile.className = '';
-
-	if({ m_datas[inquiry_tab] } == active_tab)
-	{
-		oLiInquiry.className = 'current';
-	}
-	else if({ m_datas[depositary_tab] } == active_tab)
-	{
-		oLiDepositary.className = 'current';
-	}
-	else if({ m_datas[other_file_tab] } == active_tab)
-	{
-		oLiOtherFile.className = 'current';
-	}
-
-	var form = document.forms.private_space;
-
-	form.active_tab.value = active_tab;
 }
 */
 
@@ -478,40 +584,42 @@ function set_active_tab_changed(active_tab)
 	<input type="hidden" name="action" value="" />
 	<input type="hidden" name="iIdProjectSpace" value="{ m_datas[iIdProjectSpace] }" />
 	<input type="hidden" name="iIdProject" value="{ m_datas[iIdProject] }" />
-	<input type="hidden" name="sSelectedLiId" value="" />
+	<input type="hidden" name="iIdTask" value="{ m_datas[iIdTask] }" />
+	<input type="hidden" name="bIsTaskNumberReadOnly" value="{ m_datas[bIsTaskNumberReadOnly] }" />
 
 	<br />
 	<div>
 		<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 			<tr> 
 				<td>
-					<label for="sTaskNumber">Number</label>
+					<label for="sTaskNumber">{ m_captions[taskNumber] }</label>
 				</td>
 				<td>
-					<input name="sTaskNumber" type="text" value="" />
+					<input name="sTaskNumber" id="sTaskNumber" { m_datas[sTaskNumberReadOnly] } type="text" value="{ m_datas[sTaskNumber] }" />
 				</td>
 			</tr>
 			<tr> 
 				<td>
-					<label for="iClass">Type</label>
+					<label for="iClass">{ m_captions[eventType] }</label>
 				</td>
 				<td>
-					<select name="iClass" onchange="onClassChanged(this)">
-						<option value="0">Task</option>
-						<option value="1">Checkpoint</option>
-						<option value="2">ToDo</option>
+					<select name="iClass" id="iClass" onchange="onClassChanged(this)">
+						<option value="{ m_datas[eventTask] }">{ m_captions[eventTask] }</option>
+						<option value="{ m_datas[eventCheckPoint] }">{ m_captions[eventCheckPoint] }</option>
+						<option value="{ m_datas[eventToDo] }">{ m_captions[eventToDo] }</option>
 					</select>
 				</td>
 			</tr>
 			<tr> 
 				<td>
-					<label for="iIdCategory">Category</label>
+					<label for="iIdCategory">{ m_captions[categories] }</label>
 				</td>
 				<td>
-					<select name="iIdCategory">
-						<option selected="selected" value=""></option>
-						<option value="">Personnel</option>
-						<option value="">Professionnelle</option>
+					<select name="iIdCategory" id="iIdCategory">
+						<option value=""></option>
+						<!--#in getNextCategory -->
+						<option { m_datas[sSelectedCategory] } value="{ m_datas[iIdCategory] }">{ m_datas[sCategoryName] }</option>
+						<!--#endin getNextCategory -->
 					</select>
 				</td>
 			</tr>
@@ -520,12 +628,12 @@ function set_active_tab_changed(active_tab)
 	</div>
 	<br />
 
-	<ul id="tablist" width="95%" align="center">
-		<li id="sMnuGeneral"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[general] }</a></li>
-		<li id="sMnuPredecessors"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[predecessors] }</a></li>
-		<li id="sMnuResources"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[resources] }</a></li>
-		<li id="sMnuCommentaries"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[commentaries] }</a></li>
-		<li id="sMnuSpfFld"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[spFld] }</a></li>
+	<ul id="tablist">
+		<li id="oLiGeneral"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[general] }</a></li>
+		<li id="oLiPredecessors"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[predecessors] }</a></li>
+		<li id="oLiResources"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[resources] }</a></li>
+		<li id="oLiCommentaries"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[commentaries] }</a></li>
+		<li id="oLiSpfFld"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[spFld] }</a></li>
 	</ul>						
 	<br />
 
@@ -535,48 +643,57 @@ function set_active_tab_changed(active_tab)
 				<td colspan="2"><label for="sDescription">Description</label></td>
 			</tr>
 			<tr>
-				<td colspan="2"><textarea name="sDescription" cols="50" rows="10">This is a desription</textarea></td>
+				<td colspan="2"><textarea name="sDescription" id="sDescription" cols="50" rows="10">This is a desription</textarea></td>
 			</tr>
-			
-			<tr id="sTaskType" class="">
+
+			<tr id="oTrLinkedTask">
 				<td>
-					<label for="iTaskType">Task type</label>
+					<label for="oLinkedTask">Linked task</label>
 				</td>
 				<td>
-					<select name="iTaskTypeee" onchange="onTaskTypeChanged(this)">
+					<input type="checkbox" name="oLinkedTask" id="oLinkedTask" onclick="onLinkTaskChanged(this)" value="" style="background-color:transparent;border=0" />
+				</td>
+			</tr>
+			
+			<tr id="oTrDurationType" class="">
+				<td>
+					<label for="oDurationType">Task type</label>
+				</td>
+				<td>
+					<select id="oDurationType" name="oDurationType" onchange="onDurationTypeChanged(this)">
 						<option value="0">Duration</option>
 						<option value="1">Date</option>
 					</select>
 				</td>
 			</tr>
 
-			<tr id="sDuration">
+			<tr id="oTrDuration">
 				<td>
 					<label for="sDuration">Duration</label>
 				</td>
 				<td>
-					<input type="text" name="sDuration" maxlength="20" value="" size="10" />
+					<input type="text" name="sDuration" id="sDuration" maxlength="20" value="" size="10" />
 				</td>
 			</tr>
 
-			<tr id="sStartDate">
+			<tr id="oTrStartDate">
 				<td>
 					<label for="sStartDate">Start date</label>
 				</td>
 				<td>
-					<input type="text" name="sStartDate" maxlength="20" value="" size="10" />
+					<input type="text" name="sStartDate" id="sStartDate" maxlength="20" value="" size="10" />
 					<a href="javascript:date();">
 						<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/calendar.gif" alt="{ m_anchorItem[title] }" />
 					</a>
 				</td>
 			</tr>
 			
-			<tr id="sEndDate">
+			<tr id="oTrEndDate">
 				<td>
 					<label for="sEndDate">End date</label>
 				</td>
 				<td>
-					<input type="text" name="sEndDate" maxlength="20" value="" size="10" />
+					<input type="text" name="sEndDate" id="sEndDate" maxlength="20" value="" size="10" />
 					<a href="javascript:date();">
 						<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/calendar.gif" alt="{ m_anchorItem[title] }" />
 					</a>
@@ -618,4 +735,13 @@ function set_active_tab_changed(active_tab)
 	</div>
 	
 </form>
+
+<script type="text/javascript">
+<!--
+var oLiGeneral = document.getElementById('oLiGeneral');
+if(null != oLiGeneral) onMenuSelected(oLiGeneral);
+onClassChanged(document.forms.taskForm['oDurationType']);
+//-->
+</script>
+
 <!--#end taskForm -->

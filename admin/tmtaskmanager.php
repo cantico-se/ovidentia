@@ -71,8 +71,8 @@ function displayProjectsSpacesList()
 	
 	$list = new BAB_TM_ListBase(bab_selectProjectSpaceList());
 	
-	$list->set_data('url', $GLOBALS['babUrlScript'] . '?tg=admTskMgr&idx=' . 
-		BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_FORM . '&iIdProjectSpace=');
+	$list->set_data('url', htmlentities($GLOBALS['babUrlScript'] . '?tg=admTskMgr&idx=' . 
+		BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_FORM . '&iIdProjectSpace='));
 	
 	$list->set_anchor($GLOBALS['babUrlScript'] . '?tg=admTskMgr&iIdProjectSpace={ m_datas[id] }&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_RIGHTS_FORM,
 		$GLOBALS['babSkinPath'] . 'images/Puces/manager.gif',

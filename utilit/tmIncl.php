@@ -417,6 +417,9 @@ function bab_createProject($iIdProjectSpace, $sName, $sDescription)
 		aclDuplicateRights(
 			BAB_TSKMGR_DEFAULT_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProjectSpace, 
 			BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject);
+		aclDuplicateRights(
+			BAB_TSKMGR_DEFAULT_TASK_RESPONSIBLE_GROUPS_TBL, $iIdProjectSpace, 
+			BAB_TSKMGR_TASK_RESPONSIBLE_GROUPS_TBL, $iIdProject);
 			
 		$aConfiguration = null;
 		$bSuccess = bab_getDefaultProjectSpaceConfiguration($iIdProjectSpace, $aConfiguration);	
@@ -463,6 +466,7 @@ function bab_deleteProject($iIdProject)
 	aclDelete(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject);
 	aclDelete(BAB_TSKMGR_PROJECTS_SUPERVISORS_GROUPS_TBL, $iIdProject);
 	aclDelete(BAB_TSKMGR_PROJECTS_VISUALIZERS_GROUPS_TBL, $iIdProject);
+	aclDelete(BAB_TSKMGR_TASK_RESPONSIBLE_GROUPS_TBL, $iIdProject);
 
 	$query = 'DELETE FROM ' . BAB_TSKMGR_PROJECTS_CONFIGURATION_TBL . ' WHERE idProject = \'' . $iIdProject . '\''; 
 	//bab_debug($query);
@@ -746,9 +750,85 @@ function tmSelectTasksList($iIdProject, $iLenght = 50)
 	return $babDB->db_query($query);
 }
 
+function tmGetNextTaskNumber($iIdProject, &$bIsReadOnly, &$sTaskNumber)
+{
+	tmGetNextTaskPosition($iIdProject, $iPosition);
+	
+	$aConfiguration = null;
+	$success = bab_getProjectConfiguration($iIdProject, $aConfiguration);
+	if(true == $success)
+	{
+		$bIsReadOnly = (BAB_TM_MANUAL != $aConfiguration['tasksNumerotation']);
+		
+		switch($aConfiguration['tasksNumerotation'])
+		{
+			case BAB_TM_MANUAL:
+				$sTaskNumber = sprintf('%05s', $iPosition);
+				break;
+			case BAB_TM_SEQUENTIAL:
+				$sTaskNumber = sprintf('%05s', $iPosition);
+				break;
+			case BAB_TM_YEAR_SEQUENTIAL:
+				$sTaskNumber = date('y') . sprintf('%05s', $iPosition);
+				break;
+			case BAB_TM_YEAR_MONTH_SEQUENTIAL:
+				$sTaskNumber = date('ym') . sprintf('%05s', $iPosition);
+				break;
+		}
+	}
+}
 
+function tmGetNextTaskPosition($iIdProject, &$iPosition)
+{
+	$db = & $GLOBALS['babDB'];
 
+	$iPosition = 0;
 
+	$query = 
+		'SELECT ' .
+			'IFNULL(MAX(position), 0) position ' .
+		'FROM ' . 
+			BAB_TSKMGR_TASKS_TBL . ' ' .
+		'WHERE ' . 
+			'idProject=\'' . $iIdProject . '\'';
+
+	//bab_debug($query);
+
+	$res = $db->db_query($query);
+
+	if(false != $res && $db->db_num_rows($res) > 0)
+	{
+		$data = $db->db_fetch_array($res);
+
+		if(false != $data)
+		{
+			$iPosition = (int) $data['position'] + 1;
+		}
+	}
+}
+
+function tmGetTaskResponsibleList($iIdProject, &$aTaskResponsible)
+{
+	$aTaskResponsible = array();
+	
+	$aIdObject = bab_getGroupsAccess(BAB_TSKMGR_TASK_RESPONSIBLE_GROUPS_TBL, $iIdProject);
+
+	if(count($aIdObject) > 0)
+	{
+		foreach($aIdObject as $key => $iIdGroup)
+		{
+			$aMembers = bab_getGroupsMembers($iIdGroup);
+			
+			if(is_array($aMembers) && count($aMembers) > 0)
+			{
+				foreach($aMembers as $k => $aMember)
+				{
+					$aTaskResponsible[$aMember['id']] = array('id' => $aMember['id'], 'name' => bab_getUserName($aMember['id']));
+				}
+			}
+		}
+	}
+}
 
 /*
 	$sRefCount == '+ \'1\'' ==> pour ajouter 1
@@ -886,5 +966,22 @@ function bab_createDefaultWorkingHours($iIdUser)
 		bab_insertWorkingHours($iIdUser, $iWeekDay, '09:00', '12:00');
 		bab_insertWorkingHours($iIdUser, $iWeekDay, '13:00', '18:00');
 	}
+}
+
+function tmSelectAvailableCategories($iIdProject)
+{
+	global $babBody, $babDB;
+
+	$query = 
+		'SELECT ' .
+			'id, ' . 
+			'name ' . 
+		'FROM ' .
+			BAB_TSKMGR_CATEGORIES_TBL . ' ' .
+		'WHERE ' . 
+			'idProject IN(\'' . $iIdProject . '\',\'' . 0 . '\')';
+	
+	//bab_debug($query);
+	return $babDB->db_query($query);
 }
 ?>

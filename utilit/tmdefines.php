@@ -70,4 +70,9 @@ define('BAB_TM_MANUAL', 0);
 define('BAB_TM_SEQUENTIAL', 1);
 define('BAB_TM_YEAR_SEQUENTIAL', 2);
 define('BAB_TM_YEAR_MONTH_SEQUENTIAL', 3);
+
+//Event Type
+define('BAB_TM_TASK', 0);
+define('BAB_TM_CHECKPOINT', 1);
+define('BAB_TM_TODO', 2);
 ?>

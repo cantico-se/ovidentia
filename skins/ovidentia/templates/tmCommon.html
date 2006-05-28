@@ -61,7 +61,7 @@
 								</td>
 							</tr>
 							<!--#endin getNextAnchor -->
-							<tbody><tr><td></td></tr></tbody>
+							<tr><td></td></tr>
 						</table>
 					</td>
 				</tr>
@@ -225,10 +225,10 @@ function deleteCheckedRows(sCtrlName, sTbodyId)
 						<tr class="BabSiteAdminTitleFontBackground">
 							<td colspan="2">&nbsp;</td>
 							<td colspan="2" align="right">
-								<a href="javascript:check_all('day{ m_datas[day] }', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ m_captions[checkAll] }" width="10" height="10" border="0" /></a><a href="javascript:check_all('day{ m_datas[day] }', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ m_captions[uncheckAll] }" width="10" height="10" border="0"></a>&nbsp;<a href="javascript:deleteCheckedRows('day{ m_datas[day] }', 'tbody_{ m_datas[day] }')"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ m_captions[uncheckAll] }" border="0" /></a>
+								<a href="javascript:check_all('day{ m_datas[day] }', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ m_captions[checkAll] }" width="10" height="10" border="0" /></a><a href="javascript:check_all('day{ m_datas[day] }', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ m_captions[uncheckAll] }" width="10" height="10" border="0" /></a><a href="javascript:deleteCheckedRows('day{ m_datas[day] }', 'tbody_{ m_datas[day] }')"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ m_captions[uncheckAll] }" border="0" /></a>
 							</td>
 						</tr>
-					<tfoot>
+					</tfoot>
 					
 					<tbody id="tbody_{ m_datas[day] }" class="BabSiteAdminFontBackground">
 				<!--#if m_datas[bHaveWorkingHours] -->
@@ -242,10 +242,12 @@ function deleteCheckedRows(sCtrlName, sTbodyId)
 							<input type="text" name="endHour_{ m_datas[numDay] }_[]" value="{ m_datas[endHour] }" />
 						</td>
 						<td>
-							<input type="checkbox" name="day{ m_datas[day] }[]" value="" Style="background-color:transparent;border=0" />
+							<input type="checkbox" name="day{ m_datas[day] }[]" value="" style="background-color:transparent;border=0" />
 						</td>
-					<tr>
+					</tr>
 					<!--#endin getNextWorkingHour -->
+			<!--#else m_datas[bHaveWorkingHours] -->
+					<tr><td colspan="4"></td></tr>
 			<!--#endif m_datas[bHaveWorkingHours] -->
 					</tbody>
 					
@@ -257,7 +259,7 @@ function deleteCheckedRows(sCtrlName, sTbodyId)
 	<!--#endin getNextDay -->
 	<div align="center">
 		<input type="submit" value="{ m_captions[save] }" onclick="on_btn_clicked('{ m_datas[save_idx] }', '{ m_datas[save_action] }')" />
-	</ div>
+	</div>
 </form>
 <!--#end workingHours -->
 
@@ -494,7 +496,7 @@ function submit_form()
 						<td>{ m_datas[sFieldType] }</td>
 						<td align="center">
 						<!--#if m_datas[refCount] "== 0" -->
-							<input type="checkbox" name="aDeletableObjects[]" value="{ m_datas[iIdField] }" Style="background-color:transparent;border=0" />
+							<input type="checkbox" name="aDeletableObjects[]" value="{ m_datas[iIdField] }" style="background-color:transparent;border=0" />
 						<!--#else m_datas[refCount] -->
 							&nbsp;
 						<!--#endif m_datas[refCount] -->
@@ -504,7 +506,7 @@ function submit_form()
 					<tr class="BabSiteAdminTitleFontBackground">
 						<td colspan="2" align="right">&nbsp;</td>
 						<td>
-							<a href="javascript:check_all('aDeletableObjects', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ m_captions[checkAll] }" width="10" height="10" border="0" /></a><a href="javascript:check_all('aDeletableObjects', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ m_captions[uncheckAll] }" width="10" height="10" border="0"></a>&nbsp;<a href="javascript:suppfield()"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ m_captions[uncheckAll] }" border="0" /></a>
+							<a href="javascript:check_all('aDeletableObjects', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ m_captions[checkAll] }" width="10" height="10" border="0" /></a><a href="javascript:check_all('aDeletableObjects', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ m_captions[uncheckAll] }" width="10" height="10" border="0" /></a>&nbsp;<a href="javascript:suppfield()"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ m_captions[uncheckAll] }" border="0" /></a>
 						</td>
 					</tr>
 				</table>
@@ -741,11 +743,11 @@ function submit_form()
 							&nbsp;
 						</td>
 						<td>
-							<input type="checkbox" name="aDelOptions[]" value="{ m_datas[sOptionNbr] }" Style="background-color:transparent;border=0" />{ m_datas[sOptionText] }:
+							<input type="checkbox" name="aDelOptions[]" value="{ m_datas[sOptionNbr] }" style="background-color:transparent;border=0" />{ m_datas[sOptionText] }:
 								<br /><input type="text" name="aOptions[]" size="30" maxlength="30" value="{ m_datas[sOptionValue] }" />&nbsp;
 						</td>
 						<td>
-							<input type="radio" name="iDefaultOption" value="{ m_datas[sOptionNbr] }" { m_datas[sOptionChecked] } Style="background-color:transparent;border=0" />
+							<input type="radio" name="iDefaultOption" value="{ m_datas[sOptionNbr] }" { m_datas[sOptionChecked] } style="background-color:transparent;border=0" />
 						</td>
 					</tr>
 					<!--#endin nextOption --> 
@@ -885,11 +887,11 @@ function submit_form()
 						<td><a class="BabSiteAdminListLink" href="{ m_datas[sCategoryLink] }" >{ m_datas[sCategoryName] }</a></td>
 						<td>{ m_datas[sCategoryDescription] }</td>
 						<td align="center">
-						<!--#if m_datas[refCount] "== 0" -->
+						<!--#if m_datas[bIsDeletable] -->
 							<input type="checkbox" name="aDeletableObjects[]" value="{ m_datas[iIdCategory] }" Style="background-color:transparent;border=0" />
-						<!--#else m_datas[refCount] -->
+						<!--#else m_datas[bIsDeletable] -->
 							&nbsp;
-						<!--#endif m_datas[refCount] -->
+						<!--#endif m_datas[bIsDeletable] -->
 						</td>
 					</tr>
 					<!--#endin nextField -->
@@ -986,10 +988,12 @@ function evtSetColor(color)
 	<!--#if m_datas[iIdCategory] "== 0" -->
 		<input type="submit" value="{ m_captions[add] }" onclick="on_btn_clicked('{ m_datas[addIdx] }', '{ m_datas[addAction] }')" />
 	<!--#else m_datas[iIdCategory] -->
+		<!--#if m_datas[bIsModifiable] -->
 		<input type="submit" value="{ m_captions[modify] }" onclick="on_btn_clicked('{ m_datas[modifyIdx] }', '{ m_datas[modifyAction] }')" />
-		<!--#if m_datas[iRefCount] "== 0" -->
+		<!--#endif m_datas[bIsModifiable] -->
+		<!--#if m_datas[bIsDeletable] -->
 			<input type="submit" value="{ m_captions[delete] }" onclick="on_btn_clicked('{ m_datas[delIdx] }', '{ m_datas[delAction] }')" />
-		<!--#endif m_datas[iRefCount] -->
+		<!--#endif m_datas[bIsDeletable] -->
 	<!--#endif m_datas[iIdCategory] -->
 	<!--#begin categoryForm -->
 	<script type="text/javascript">

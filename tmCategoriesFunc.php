@@ -70,7 +70,7 @@ function displayCategoriesList()
 				$this->set_data('refCount', 0);
 
 				$this->set_data('sCategoryLink', '#');
-				$this->set_data('tg', 'admTskMgr');
+				$this->set_data('tg', tskmgr_getVariable('tg', ''));
 				$this->set_data('deleteCategoryIdx', BAB_TM_IDX_DISPLAY_DELETE_CATEGORY_FORM);
 				
 				$this->m_oTmCtx =& getTskMgrContext();
@@ -91,11 +91,14 @@ function displayCategoriesList()
 					$this->set_data('iIdCategory', $datas['iIdCategory']);
 					$this->set_data('sCategoryName', $datas['sCategoryName']);
 					$this->set_data('sCategoryDescription', $datas['sCategoryDescription']);
+					$this->set_data('bIsDeletable', ($datas['is_deletable'] == 1));
 
 					$iIdProjectSpace = $this->m_oTmCtx->getIdProjectSpace();
 					$iIdProject = $this->m_oTmCtx->getIdProject();
 					
-					$this->set_data('sCategoryLink', $GLOBALS['babUrlScript'] . '?tg=admTskMgr' .
+					$tg = tskmgr_getVariable('tg', '');
+					
+					$this->set_data('sCategoryLink', $GLOBALS['babUrlScript'] . '?tg=' . $tg .
 						'&iIdProjectSpace=' . $iIdProjectSpace . '&iIdProject=' . $iIdProject .
 						'&iIdCategory=' . $datas['iIdCategory'] . '&idx=' . BAB_TM_IDX_DISPLAY_CATEGORY_FORM);
 					$this->set_data('refCount', $datas['refCount']);
@@ -104,21 +107,22 @@ function displayCategoriesList()
 				return false;
 			}
 		}	
-
+		$tg = tskmgr_getVariable('tg', '');
+					
 		$itemMenu = array(
 			array(
 				'idx' => BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST,
 				'mnuStr' => bab_translate("Projects spaces"),
-				'url' => $GLOBALS['babUrlScript'] . '?tg=admTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST),
+				'url' => $GLOBALS['babUrlScript'] . '?tg=' . $tg . '&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST),
 			array(
 				'idx' => BAB_TM_IDX_DISPLAY_CATEGORIES_LIST,
 				'mnuStr' => bab_translate("Categories list"),
-				'url' => $GLOBALS['babUrlScript'] . '?tg=admTskMgr&iIdProjectSpace=' . $iIdProjectSpace . 
+				'url' => $GLOBALS['babUrlScript'] . '?tg=' . $tg . '&iIdProjectSpace=' . $iIdProjectSpace . 
 					'&iIdProject=' . $iIdProject . '&idx=' . BAB_TM_IDX_DISPLAY_CATEGORIES_LIST),
 			array(
 				'idx' => BAB_TM_IDX_DISPLAY_CATEGORY_FORM,
 				'mnuStr' => bab_translate("Add a category"),
-				'url' => $GLOBALS['babUrlScript'] . '?tg=admTskMgr&iIdProjectSpace=' . $iIdProjectSpace . 
+				'url' => $GLOBALS['babUrlScript'] . '?tg=' . $tg . '&iIdProjectSpace=' . $iIdProjectSpace . 
 					'&iIdProject=' . $iIdProject . '&idx=' . BAB_TM_IDX_DISPLAY_CATEGORY_FORM)
 			);
 		add_item_menu($itemMenu);
@@ -129,7 +133,9 @@ function displayCategoriesList()
 				'cat.id iIdCategory, ' .
 				'cat.name sCategoryName, ' .
 				'cat.description sCategoryDescription, ' .
-				'cat.refCount refCount ' .
+				'cat.refCount refCount,' .
+				'cat.idProject idProject,' .
+				'IF(cat.idProject = \'' . $iIdProject . '\' AND cat.refCount = \'' . 0 . '\', 1, 0) is_deletable ' .
 			'FROM ' .
 				BAB_TSKMGR_CATEGORIES_TBL . ' cat ' .
 			'WHERE ' .
@@ -200,6 +206,7 @@ function displayCategoryForm()
 				$attributs = array(
 					'id' => $iIdCategory, 
 					'idProjectSpace' => $iIdProjectSpace, 
+					'idProject' => -1, 
 					'name' => '',
 					'description' => '',
 					'color' => '',
@@ -208,11 +215,13 @@ function displayCategoryForm()
 				$tblWr =& $GLOBALS['BAB_TM_Context']->getTableWrapper();
 				$tblWr->setTableName(BAB_TSKMGR_CATEGORIES_TBL);
 				
-				if(false != ($attributs = $tblWr->load($attributs, 2, 4, 0, 2)))
+				if(false != ($attributs = $tblWr->load($attributs, 2, 5, 0, 2)))
 				{
 					$this->set_data('sName', htmlentities($attributs['name'], ENT_QUOTES) );
 					$this->set_data('sDescription', htmlentities($attributs['description'], ENT_QUOTES));
 					$this->set_data('iRefCount', $attributs['refCount']);
+					$this->set_data('bIsDeletable', ($attributs['refCount'] == 0 && $attributs['idProject'] == $iIdProject));
+					$this->set_data('bIsModifiable', ($attributs['idProject'] == $iIdProject));
 					$this->set_data('sColor', $attributs['color']);
 				}
 			}
@@ -225,23 +234,25 @@ function displayCategoryForm()
 	
 	$tab_caption = ($iIdCategory == 0) ? bab_translate("Add a category") : bab_translate("Edition of a category");
 	
-		$itemMenu = array(
-			array(
-				'idx' => BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST,
-				'mnuStr' => bab_translate("Projects spaces"),
-				'url' => $GLOBALS['babUrlScript'] . '?tg=admTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST),
-			array(
-				'idx' => BAB_TM_IDX_DISPLAY_CATEGORIES_LIST,
-				'mnuStr' => bab_translate("Categories list"),
-				'url' => $GLOBALS['babUrlScript'] . '?tg=admTskMgr&iIdProjectSpace=' . $iIdProjectSpace . 
-					'&iIdProject=' . $iIdProject . '&idx=' . BAB_TM_IDX_DISPLAY_CATEGORIES_LIST),
-			array(
-				'idx' => BAB_TM_IDX_DISPLAY_CATEGORY_FORM,
-				'mnuStr' => $tab_caption,
-				'url' => $GLOBALS['babUrlScript'] . '?tg=admTskMgr&iIdProjectSpace=' . $iIdProjectSpace . 
-					'&iIdProject=' . $iIdProject .'&iIdCategory=' . $iIdCategory . '&idx=' . 
-					BAB_TM_IDX_DISPLAY_CATEGORY_FORM)
-			);		
+	$tg = tskmgr_getVariable('tg', '');
+	
+	$itemMenu = array(
+		array(
+			'idx' => BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST,
+			'mnuStr' => bab_translate("Projects spaces"),
+			'url' => $GLOBALS['babUrlScript'] . '?tg=' . $tg . '&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST),
+		array(
+			'idx' => BAB_TM_IDX_DISPLAY_CATEGORIES_LIST,
+			'mnuStr' => bab_translate("Categories list"),
+			'url' => $GLOBALS['babUrlScript'] . '?tg=' . $tg . '&iIdProjectSpace=' . $iIdProjectSpace . 
+				'&iIdProject=' . $iIdProject . '&idx=' . BAB_TM_IDX_DISPLAY_CATEGORIES_LIST),
+		array(
+			'idx' => BAB_TM_IDX_DISPLAY_CATEGORY_FORM,
+			'mnuStr' => $tab_caption,
+			'url' => $GLOBALS['babUrlScript'] . '?tg=' . $tg . '&iIdProjectSpace=' . $iIdProjectSpace . 
+				'&iIdProject=' . $iIdProject .'&iIdCategory=' . $iIdCategory . '&idx=' . 
+				BAB_TM_IDX_DISPLAY_CATEGORY_FORM)
+		);		
 			
 	add_item_menu($itemMenu);
 	$babBody->title = $tab_caption;
@@ -260,10 +271,16 @@ function displayDeleteCategoryForm()
 	$sDeletableObjects = '\'' . implode('\',\'', array_unique($aDeletableObjects)) . '\'';
 
 	//bab_debug('sDeletableObjects ==> ' . $sDeletableObjects);
+	$bf = & new BAB_BaseFormProcessing();
+	$bf->set_data('idx', BAB_TM_IDX_DISPLAY_CATEGORIES_LIST);
+	$oTmCtx =& getTskMgrContext();
+	$bf->set_data('iIdProjectSpace', $oTmCtx->getIdProjectSpace());
+	$bf->set_data('iIdProject', $oTmCtx->getIdProject());
+	$bf->set_data('tg', tskmgr_getVariable('tg', ''));
 
 	if('\'\'' != $sDeletableObjects)
 	{	
-		$bf = & new BAB_BaseFormProcessing();
+//		$bf = & new BAB_BaseFormProcessing();
 		
 		$query = 
 			'SELECT ' .
@@ -292,15 +309,9 @@ function displayDeleteCategoryForm()
 				$idx++;
 			}
 					
-			$bf->set_data('idx', BAB_TM_IDX_DISPLAY_CATEGORIES_LIST);
 			$bf->set_data('action', BAB_TM_ACTION_DELETE_CATEGORY);
-
-			$oTmCtx =& getTskMgrContext();
-			$bf->set_data('iIdProjectSpace', $oTmCtx->getIdProjectSpace());
-			$bf->set_data('iIdProject', $oTmCtx->getIdProject());
 			$bf->set_data('objectName', 'sDeletableObjects');
 			$bf->set_data('iIdObject', implode(',', array_unique($items)));
-			$bf->set_data('tg', 'admTskMgr');
 	
 			if(count($items) > 0)
 			{
@@ -317,8 +328,17 @@ function displayDeleteCategoryForm()
 			$bf->set_caption('no', bab_translate("No"));
 	
 			$babBody->title = bab_translate("Delete category");
-			$babBody->babecho(bab_printTemplate($bf, 'tmCommon.html', 'warningyesno'));
 	}
+	else 
+	{
+		$bf->set_caption('warning', bab_translate("There is nothing to delete"));
+		$bf->set_caption('message', bab_translate("Continue"));
+		$bf->set_caption('title', '');
+		$bf->set_caption('yes', bab_translate("Yes"));
+		$bf->set_caption('no', bab_translate("No"));
+		$babBody->title = bab_translate("Delete category");
+	}
+	$babBody->babecho(bab_printTemplate($bf, 'tmCommon.html', 'warningyesno'));
 }
 
 //POST
