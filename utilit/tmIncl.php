@@ -580,7 +580,7 @@ function bab_isProjectDeletable($iIdProject)
 	return true;
 }
 
-function tmSelectProjectCommentary($iIdProject, $iLenght = 50)
+function bab_selectProjectCommentaryList($iIdProject, $iLenght = 50)
 {
 	global $babBody, $babDB;
 	
@@ -598,7 +598,7 @@ function tmSelectProjectCommentary($iIdProject, $iLenght = 50)
 	return $babDB->db_query($query);
 }
 
-function tmGetProjectCommentary($iIdCommentary, &$sCommentary)
+function bab_getProjectCommentary($iIdCommentary, &$sCommentary)
 {
 	global $babBody, $babDB;
 	
@@ -627,7 +627,7 @@ function tmGetProjectCommentary($iIdCommentary, &$sCommentary)
 	return false;
 }
 
-function tmCreateProjectCommentary($iIdProject, $sCommentary)
+function bab_createProjectCommentary($iIdProject, $sCommentary)
 {
 	global $babBody, $babDB;
 	
@@ -648,7 +648,7 @@ function tmCreateProjectCommentary($iIdProject, $sCommentary)
 	return $babDB->db_query($query);
 }
 
-function tmUpdateProjectCommentary($iIdCommentary, $sCommentary)
+function bab_updateProjectCommentary($iIdCommentary, $sCommentary)
 {
 	global $babBody, $babDB;
 
@@ -666,7 +666,7 @@ function tmUpdateProjectCommentary($iIdCommentary, $sCommentary)
 	return $babDB->db_query($query);
 }
 
-function tmDeleteProjectCommentary($iIdCommentary)
+function bab_deleteProjectCommentary($iIdCommentary)
 {
 	global $babDB;
 	$query = 'DELETE FROM '	. BAB_TSKMGR_PROJECTS_COMMENTS_TBL . ' WHERE id = \'' . $iIdCommentary . '\'';
@@ -732,7 +732,7 @@ function bab_deleteAllTaskSpecificFieldInstance($iIdTask)
 	}
 }
 
-function tmSelectTasksList($iIdProject, $iLenght = 50)
+function bab_selectTasksList($iIdProject, $iLenght = 50)
 {
 	global $babBody, $babDB;
 	
@@ -750,35 +750,28 @@ function tmSelectTasksList($iIdProject, $iLenght = 50)
 	return $babDB->db_query($query);
 }
 
-function tmGetNextTaskNumber($iIdProject, &$bIsReadOnly, &$sTaskNumber)
+function bab_getNextTaskNumber($iIdProject, $iTasksNumerotation, &$sTaskNumber)
 {
-	tmGetNextTaskPosition($iIdProject, $iPosition);
+	bab_getNextTaskPosition($iIdProject, $iPosition);
 	
-	$aConfiguration = null;
-	$success = bab_getProjectConfiguration($iIdProject, $aConfiguration);
-	if(true == $success)
+	switch($iTasksNumerotation)
 	{
-		$bIsReadOnly = (BAB_TM_MANUAL != $aConfiguration['tasksNumerotation']);
-		
-		switch($aConfiguration['tasksNumerotation'])
-		{
-			case BAB_TM_MANUAL:
-				$sTaskNumber = sprintf('%05s', $iPosition);
-				break;
-			case BAB_TM_SEQUENTIAL:
-				$sTaskNumber = sprintf('%05s', $iPosition);
-				break;
-			case BAB_TM_YEAR_SEQUENTIAL:
-				$sTaskNumber = date('y') . sprintf('%05s', $iPosition);
-				break;
-			case BAB_TM_YEAR_MONTH_SEQUENTIAL:
-				$sTaskNumber = date('ym') . sprintf('%05s', $iPosition);
-				break;
-		}
+		case BAB_TM_MANUAL:
+			$sTaskNumber = sprintf('%05s', $iPosition);
+			break;
+		case BAB_TM_SEQUENTIAL:
+			$sTaskNumber = sprintf('%05s', $iPosition);
+			break;
+		case BAB_TM_YEAR_SEQUENTIAL:
+			$sTaskNumber = date('y') . sprintf('%05s', $iPosition);
+			break;
+		case BAB_TM_YEAR_MONTH_SEQUENTIAL:
+			$sTaskNumber = date('ym') . sprintf('%05s', $iPosition);
+			break;
 	}
 }
 
-function tmGetNextTaskPosition($iIdProject, &$iPosition)
+function bab_getNextTaskPosition($iIdProject, &$iPosition)
 {
 	$db = & $GLOBALS['babDB'];
 
@@ -807,7 +800,7 @@ function tmGetNextTaskPosition($iIdProject, &$iPosition)
 	}
 }
 
-function tmGetTaskResponsibleList($iIdProject, &$aTaskResponsible)
+function bab_getTaskResponsibleList($iIdProject, &$aTaskResponsible)
 {
 	$aTaskResponsible = array();
 	
@@ -828,6 +821,24 @@ function tmGetTaskResponsibleList($iIdProject, &$aTaskResponsible)
 			}
 		}
 	}
+}
+
+function bab_selectTaskCommentary($iIdTask, $iLenght = 50)
+{
+	global $babBody, $babDB;
+	
+	$query = 
+		'SELECT ' .
+			'id, ' . 
+			'IF(LENGTH(commentary) > \'' . $iLenght . '\', CONCAT(LEFT(commentary, \'' . $iLenght . '\'), \'...\'), commentary) commentary, ' .
+			'created ' .
+		'FROM ' .
+			BAB_TSKMGR_TASKS_COMMENTS_TBL . ' ' .
+		'WHERE ' . 
+			'idTask =\'' . $iIdTask . '\'';
+	
+	//bab_debug($query);
+	return $babDB->db_query($query);
 }
 
 /*
@@ -888,7 +899,6 @@ function bab_deleteAllSpecificFields($sDbFieldName, $sDbFieldValue)
 	//bab_debug($query);
 	$babDB->db_query($query);
 }
-
 
 function bab_selectWorkingHours($iIdUser, $iWeekDay, &$bHaveWorkingHours)
 {
@@ -968,7 +978,7 @@ function bab_createDefaultWorkingHours($iIdUser)
 	}
 }
 
-function tmSelectAvailableCategories($iIdProject)
+function bab_selectAvailableCategories($iIdProject)
 {
 	global $babBody, $babDB;
 
@@ -978,6 +988,30 @@ function tmSelectAvailableCategories($iIdProject)
 			'name ' . 
 		'FROM ' .
 			BAB_TSKMGR_CATEGORIES_TBL . ' ' .
+		'WHERE ' . 
+			'idProject IN(\'' . $iIdProject . '\',\'' . 0 . '\')';
+	
+	//bab_debug($query);
+	return $babDB->db_query($query);
+}
+
+function bab_selectAvailableSpecificFields($iIdProject)
+{
+	global $babBody, $babDB;
+
+	$query = 
+		'SELECT ' .
+			'id, ' . 
+			'name, ' . 
+			'nature iFieldType, ' .
+			'CASE nature ' .
+				'WHEN \'' . BAB_TM_TEXT_FIELD . '\' THEN \'' . bab_translate("Text") . '\' ' .
+				'WHEN \'' . BAB_TM_TEXT_AREA_FIELD . '\' THEN \'' . bab_translate("Text Area") . '\' ' .
+				'WHEN \'' . BAB_TM_RADIO_FIELD . '\' THEN \'' . bab_translate("Choice") . '\' ' .
+				'ELSE \'???\' ' .
+			'END AS sFieldType ' .
+		'FROM ' .
+			BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' ' .
 		'WHERE ' . 
 			'idProject IN(\'' . $iIdProject . '\',\'' . 0 . '\')';
 	

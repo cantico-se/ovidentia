@@ -73,7 +73,7 @@ function displaySpecificFieldList()
 				$this->set_data('refCount', 0);
 
 				$this->set_data('sFieldLink', '#');
-				$this->set_data('tg', 'admTskMgr');
+				$this->set_data('tg', tskmgr_getVariable('tg', ''));
 				$this->set_data('deleteFieldIdx', BAB_TM_IDX_DISPLAY_DELETE_SPECIFIC_FIELD_FORM);
 				
 				$this->m_oTmCtx =& getTskMgrContext();
@@ -94,11 +94,13 @@ function displaySpecificFieldList()
 					$this->set_data('iIdField', $datas['iIdField']);
 					$this->set_data('sFieldName', $datas['sFieldName']);
 					$this->set_data('sFieldType', $datas['sFieldType']);
+					$this->set_data('is_deletable', $datas['is_deletable']);
 
 					$iIdProjectSpace = $this->m_oTmCtx->getIdProjectSpace();
 					$iIdProject = $this->m_oTmCtx->getIdProject();
+					$tg = tskmgr_getVariable('tg', '');
 					
-					$this->set_data('sFieldLink', $GLOBALS['babUrlScript'] . '?tg=admTskMgr' .
+					$this->set_data('sFieldLink', $GLOBALS['babUrlScript'] . '?tg=' . $tg . 
 						'&iIdProjectSpace=' . $iIdProjectSpace . '&iIdProject=' . $iIdProject .
 						'&iIdField=' . $datas['iIdField'] . '&iFieldType=' . $datas['iFieldType'] . 
 						'&idx=' . BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_FORM);
@@ -115,18 +117,29 @@ function displaySpecificFieldList()
 			array(
 				'idx' => BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST,
 				'mnuStr' => bab_translate("Projects spaces"),
-				'url' => $GLOBALS['babUrlScript'] . '?tg=' . $tg . '&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST),
-			array(
+				'url' => $GLOBALS['babUrlScript'] . '?tg=' . $tg . '&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST));
+					
+		if('usrTskMgr' == $tg)
+		{
+			$itemMenu[] = array(
+				'idx' => BAB_TM_IDX_DISPLAY_PROJECTS_LIST,
+				'mnuStr' => bab_translate("Projects list"),
+				'url' => $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_LIST . 
+				'&iIdProjectSpace=' . $iIdProjectSpace);
+
+		}
+		
+		$itemMenu[] = array(
 				'idx' => BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_LIST,
 				'mnuStr' => bab_translate("Specific field list"),
 				'url' => $GLOBALS['babUrlScript'] . '?tg=' . $tg . '&iIdProjectSpace=' . $iIdProjectSpace . 
-					'&iIdProject=' . $iIdProject . '&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST),
-			array(
+					'&iIdProject=' . $iIdProject . '&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST);
+					
+		$itemMenu[] = array(
 				'idx' => BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_FORM,
 				'mnuStr' => bab_translate("Add specific field"),
 				'url' => $GLOBALS['babUrlScript'] . '?tg=' . $tg . '&iIdProjectSpace=' . $iIdProjectSpace . 
-					'&iIdProject=' . $iIdProject .'&idx=' . BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_FORM)
-			);
+					'&iIdProject=' . $iIdProject .'&idx=' . BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_FORM);
 		add_item_menu($itemMenu);
 		$babBody->title = bab_translate("Specific field list");
 	
@@ -141,7 +154,8 @@ function displaySpecificFieldList()
 					'WHEN \'' . BAB_TM_TEXT_AREA_FIELD . '\' THEN \'' . bab_translate("Text Area") . '\' ' .
 					'WHEN \'' . BAB_TM_RADIO_FIELD . '\' THEN \'' . bab_translate("Choice") . '\' ' .
 					'ELSE \'???\' ' .
-				'END AS sFieldType ' .
+				'END AS sFieldType, ' .
+				'IF(fb.idProject = \'' . $iIdProject . '\' AND fb.refCount = \'' . 0 . '\', 1, 0) is_deletable ' .
 			'FROM ' .
 				BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' fb ' .
 			'WHERE ' .
@@ -209,18 +223,29 @@ function displaySpecificFieldForm()
 				'idx' => BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST,
 				'mnuStr' => bab_translate("Projects spaces"),
 				'url' => $GLOBALS['babUrlScript'] . '?tg=' . $tg . '&iIdProjectSpace=' . $iIdProjectSpace . 
-					'&iIdProject=' . $iIdProject . '&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST),
-			array(
-				'idx' => BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_LIST,
-				'mnuStr' => bab_translate("Specific field list"),
-				'url' => $GLOBALS['babUrlScript'] . '?tg=' . $tg . '&iIdProjectSpace=' . $iIdProjectSpace . 
-					'&iIdProject=' . $iIdProject . '&idx=' . BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_LIST),
-			array(
-				'idx' => BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_FORM,
-				'mnuStr' => $babBody->title,
-				'url' => $GLOBALS['babUrlScript'] . '?tg=' . $tg . '&iIdProjectSpace=' . $iIdProjectSpace . 
-					'&iIdProject=' . $iIdProject . '&idx=' . BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_FORM)
-			);
+					'&iIdProject=' . $iIdProject . '&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST));
+					
+		if('usrTskMgr' == $tg)
+		{
+			$itemMenu[] = array(
+				'idx' => BAB_TM_IDX_DISPLAY_PROJECTS_LIST,
+				'mnuStr' => bab_translate("Projects list"),
+				'url' => $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_LIST . 
+				'&iIdProjectSpace=' . $iIdProjectSpace);
+
+		}
+		
+		$itemMenu[] = array(
+			'idx' => BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_LIST,
+			'mnuStr' => bab_translate("Specific field list"),
+			'url' => $GLOBALS['babUrlScript'] . '?tg=' . $tg . '&iIdProjectSpace=' . $iIdProjectSpace . 
+				'&iIdProject=' . $iIdProject . '&idx=' . BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_LIST);
+				
+		$itemMenu[] = array(
+			'idx' => BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_FORM,
+			'mnuStr' => $babBody->title,
+			'url' => $GLOBALS['babUrlScript'] . '?tg=' . $tg . '&iIdProjectSpace=' . $iIdProjectSpace . 
+				'&iIdProject=' . $iIdProject . '&idx=' . BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_FORM);
 			
 		add_item_menu($itemMenu);
 		$babBody->babecho(bab_printTemplate($oField, 'tmCommon.html', $sTemplateName));
@@ -237,6 +262,12 @@ function displayDeleteSpecificFieldForm()
 	$sDeletableField = '\'' . implode('\',\'', array_unique($aDeletableObjects)) . '\'';
 
 //	bab_debug('sDeletableField ==> ' . $sDeletableField);
+	$bf = & new BAB_BaseFormProcessing();
+	$bf->set_data('idx', BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_LIST);
+	$oTmCtx =& getTskMgrContext();
+	$bf->set_data('iIdProjectSpace', $oTmCtx->getIdProjectSpace());
+	$bf->set_data('iIdProject', $oTmCtx->getIdProject());
+	$bf->set_data('tg', tskmgr_getVariable('tg', ''));
 	
 	if('\'\'' != $sDeletableField)
 	{	
@@ -271,13 +302,8 @@ function displayDeleteSpecificFieldForm()
 					
 			$bf->set_data('idx', BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_LIST);
 			$bf->set_data('action', BAB_TM_ACTION_DELETE_SPECIFIC_FIELD);
-
-			$oTmCtx =& getTskMgrContext();
-			$bf->set_data('iIdProjectSpace', $oTmCtx->getIdProjectSpace());
-			$bf->set_data('iIdProject', $oTmCtx->getIdProject());
 			$bf->set_data('objectName', 'sDeletableField');
 			$bf->set_data('iIdObject', implode(',', array_unique($items)));
-			$bf->set_data('tg', tskmgr_getVariable('tg', ''));
 	
 			if(count($items) > 0)
 			{
@@ -295,8 +321,18 @@ function displayDeleteSpecificFieldForm()
 			$bf->set_caption('no', bab_translate("No"));
 	
 			$babBody->title = bab_translate("Delete specific field");
-			$babBody->babecho(bab_printTemplate($bf, 'tmCommon.html', 'warningyesno'));
 	}
+	else 
+	{
+		$bf->set_caption('warning', bab_translate("There is nothing to delete"));
+		$bf->set_caption('message', bab_translate("Continue"));
+		$bf->set_caption('title', '');
+		$bf->set_caption('yes', bab_translate("Yes"));
+		$bf->set_caption('no', bab_translate("No"));
+		$babBody->title = bab_translate("Delete specific field");
+	}
+	
+	$babBody->babecho(bab_printTemplate($bf, 'tmCommon.html', 'warningyesno'));
 }
 
 
@@ -504,6 +540,8 @@ function processSpecificFieldBaseClass($iIdProjectSpace, $iIdProject, $iFieldTyp
 				$attribut['refCount'] = 0;
 				$attribut['created'] = date("Y-m-d H:i:s");
 				$attribut['idUserCreated'] = $GLOBALS['BAB_SESS_USERID'];
+				
+				//bab_debug($attribut);
 				
 				$skipFirst = true;
 				return $tblWr->save($attribut, $skipFirst);

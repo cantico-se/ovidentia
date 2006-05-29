@@ -113,18 +113,29 @@ function displayCategoriesList()
 			array(
 				'idx' => BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST,
 				'mnuStr' => bab_translate("Projects spaces"),
-				'url' => $GLOBALS['babUrlScript'] . '?tg=' . $tg . '&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST),
-			array(
+				'url' => $GLOBALS['babUrlScript'] . '?tg=' . $tg . '&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST));
+				
+		if('usrTskMgr' == $tg)
+		{
+			$itemMenu[] = array(
+				'idx' => BAB_TM_IDX_DISPLAY_PROJECTS_LIST,
+				'mnuStr' => bab_translate("Projects list"),
+				'url' => $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_LIST . 
+				'&iIdProjectSpace=' . $iIdProjectSpace);
+
+		}
+		
+		$itemMenu[] = array(
 				'idx' => BAB_TM_IDX_DISPLAY_CATEGORIES_LIST,
 				'mnuStr' => bab_translate("Categories list"),
 				'url' => $GLOBALS['babUrlScript'] . '?tg=' . $tg . '&iIdProjectSpace=' . $iIdProjectSpace . 
-					'&iIdProject=' . $iIdProject . '&idx=' . BAB_TM_IDX_DISPLAY_CATEGORIES_LIST),
-			array(
+					'&iIdProject=' . $iIdProject . '&idx=' . BAB_TM_IDX_DISPLAY_CATEGORIES_LIST);
+		$itemMenu[] = array(
 				'idx' => BAB_TM_IDX_DISPLAY_CATEGORY_FORM,
 				'mnuStr' => bab_translate("Add a category"),
 				'url' => $GLOBALS['babUrlScript'] . '?tg=' . $tg . '&iIdProjectSpace=' . $iIdProjectSpace . 
-					'&iIdProject=' . $iIdProject . '&idx=' . BAB_TM_IDX_DISPLAY_CATEGORY_FORM)
-			);
+					'&iIdProject=' . $iIdProject . '&idx=' . BAB_TM_IDX_DISPLAY_CATEGORY_FORM);
+					
 		add_item_menu($itemMenu);
 		$babBody->title = bab_translate("Categories list");
 	
@@ -190,7 +201,7 @@ function displayCategoryForm()
 			$this->set_data('delAction', '');
 			
 
-			$this->set_data('tg', 'admTskMgr');
+			$this->set_data('tg', tskmgr_getVariable('tg', ''));
 			$this->set_data('iIdCategory', (int) tskmgr_getVariable('iIdCategory', 0));
 			$this->get_data('iIdCategory', $iIdCategory);
 			
@@ -240,19 +251,30 @@ function displayCategoryForm()
 		array(
 			'idx' => BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST,
 			'mnuStr' => bab_translate("Projects spaces"),
-			'url' => $GLOBALS['babUrlScript'] . '?tg=' . $tg . '&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST),
-		array(
-			'idx' => BAB_TM_IDX_DISPLAY_CATEGORIES_LIST,
-			'mnuStr' => bab_translate("Categories list"),
-			'url' => $GLOBALS['babUrlScript'] . '?tg=' . $tg . '&iIdProjectSpace=' . $iIdProjectSpace . 
-				'&iIdProject=' . $iIdProject . '&idx=' . BAB_TM_IDX_DISPLAY_CATEGORIES_LIST),
-		array(
-			'idx' => BAB_TM_IDX_DISPLAY_CATEGORY_FORM,
-			'mnuStr' => $tab_caption,
-			'url' => $GLOBALS['babUrlScript'] . '?tg=' . $tg . '&iIdProjectSpace=' . $iIdProjectSpace . 
-				'&iIdProject=' . $iIdProject .'&iIdCategory=' . $iIdCategory . '&idx=' . 
-				BAB_TM_IDX_DISPLAY_CATEGORY_FORM)
-		);		
+			'url' => $GLOBALS['babUrlScript'] . '?tg=' . $tg . '&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST));
+			
+	if('usrTskMgr' == $tg)
+	{
+		$itemMenu[] = array(
+			'idx' => BAB_TM_IDX_DISPLAY_PROJECTS_LIST,
+			'mnuStr' => bab_translate("Projects list"),
+			'url' => $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_LIST . 
+			'&iIdProjectSpace=' . $iIdProjectSpace);
+
+	}
+		
+	$itemMenu[] = array(
+		'idx' => BAB_TM_IDX_DISPLAY_CATEGORIES_LIST,
+		'mnuStr' => bab_translate("Categories list"),
+		'url' => $GLOBALS['babUrlScript'] . '?tg=' . $tg . '&iIdProjectSpace=' . $iIdProjectSpace . 
+			'&iIdProject=' . $iIdProject . '&idx=' . BAB_TM_IDX_DISPLAY_CATEGORIES_LIST);
+			
+	$itemMenu[] = array(
+		'idx' => BAB_TM_IDX_DISPLAY_CATEGORY_FORM,
+		'mnuStr' => $tab_caption,
+		'url' => $GLOBALS['babUrlScript'] . '?tg=' . $tg . '&iIdProjectSpace=' . $iIdProjectSpace . 
+			'&iIdProject=' . $iIdProject .'&iIdCategory=' . $iIdCategory . '&idx=' . 
+			BAB_TM_IDX_DISPLAY_CATEGORY_FORM);		
 			
 	add_item_menu($itemMenu);
 	$babBody->title = $tab_caption;
@@ -280,8 +302,6 @@ function displayDeleteCategoryForm()
 
 	if('\'\'' != $sDeletableObjects)
 	{	
-//		$bf = & new BAB_BaseFormProcessing();
-		
 		$query = 
 			'SELECT ' .
 				'id iIdCategory, ' .

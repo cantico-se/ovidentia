@@ -19,13 +19,16 @@ define('BAB_TM_ACTION_ADD_PROJECT', 'addProject');
 define('BAB_TM_ACTION_MODIFY_PROJECT', 'modifyProject');
 define('BAB_TM_ACTION_DELETE_PROJECT', 'deleteProject');
 define('BAB_TM_ACTION_UPDATE_WORKING_HOURS', 'updateWorkingHours');
-
 define('BAB_TM_ACTION_ADD_PROJECT_COMMENTARY', 'addProjectCommentary');
 define('BAB_TM_ACTION_MODIFY_PROJECT_COMMENTARY', 'modifyProjectCommentary');
 define('BAB_TM_ACTION_DELETE_PROJECT_COMMENTARY', 'deleteProjectCommentary');
 define('BAB_TM_ACTION_ADD_TASK_COMMENTARY', 'addTaskCommentary');
 define('BAB_TM_ACTION_MODIFY_TASK_COMMENTARY', 'modifyTaskCommentary');
 define('BAB_TM_ACTION_DELETE_TASK_COMMENTARY', 'deleteTaskCommentary');
+define('BAB_TM_ACTION_ADD_TASK', 'addTask');
+define('BAB_TM_ACTION_MODIFY_TASK', 'modifyTask');
+define('BAB_TM_ACTION_DELETE_TASK', 'deleteTask');
+define('BAB_TM_ACTION_CREATE_SPECIFIC_FIELD_INSTANCE', 'createSpecificFieldInstance');
 
 // idx
 define('BAB_TM_IDX_DISPLAY_MENU', 'displayMenu');
@@ -46,14 +49,15 @@ define('BAB_TM_IDX_DISPLAY_PROJECTS_LIST', 'displayProjectsList');
 define('BAB_TM_IDX_DISPLAY_PROJECT_FORM', 'displayProjectsForm');
 define('BAB_TM_IDX_DISPLAY_DELETE_PROJECT_FORM', 'displayDeleteProjectForm');
 define('BAB_TM_IDX_DISPLAY_PROJECT_RIGHTS_FORM', 'displayProjectRightsForm');
-
 define('BAB_TM_IDX_DISPLAY_PROJECT_COMMENTARY_LIST', 'displayProjectCommentaryList');
 define('BAB_TM_IDX_DISPLAY_DELETE_PROJECT_COMMENTARY', 'displayDeleteProjectCommentary');
 define('BAB_TM_IDX_DISPLAY_COMMENTARY_FORM', 'displayCommentaryForm');
 define('BAB_TM_IDX_DISPLAY_TASK_COMMENTARY_LIST', 'displayTaskCommentaryList');
-
 define('BAB_TM_IDX_DISPLAY_TASK_LIST', 'displayTaskList');
 define('BAB_TM_IDX_DISPLAY_TASK_FORM', 'displayTaskForm');
+define('BAB_TM_IDX_DISPLAY_DELETE_TASK_FORM', 'displayDeleteTaskForm');
+
+define('BAB_TM_NONE', -1);
 
 //
 define('BAB_TM_YES', 1);
@@ -75,4 +79,8 @@ define('BAB_TM_YEAR_MONTH_SEQUENTIAL', 3);
 define('BAB_TM_TASK', 0);
 define('BAB_TM_CHECKPOINT', 1);
 define('BAB_TM_TODO', 2);
+
+//duration type
+define('BAB_TM_DURATION', 0);
+define('BAB_TM_DATE', 1);
 ?>

@@ -495,11 +495,11 @@ function submit_form()
 						<td><a class="BabSiteAdminListLink" href="{ m_datas[sFieldLink] }" >{ m_datas[sFieldName] }</a></td>
 						<td>{ m_datas[sFieldType] }</td>
 						<td align="center">
-						<!--#if m_datas[refCount] "== 0" -->
+						<!--#if m_datas[is_deletable] -->
 							<input type="checkbox" name="aDeletableObjects[]" value="{ m_datas[iIdField] }" style="background-color:transparent;border=0" />
-						<!--#else m_datas[refCount] -->
+						<!--#else m_datas[is_deletable] -->
 							&nbsp;
-						<!--#endif m_datas[refCount] -->
+						<!--#endif m_datas[is_deletable] -->
 						</td>
 					</tr>
 					<!--#endin nextField -->
@@ -547,6 +547,7 @@ function submit_form()
 	<input type="hidden" name="idx" value="" />
 	<input type="hidden" name="action" value="" />
 	<input type="hidden" name="iIdProjectSpace" value="{ m_datas[iIdProjectSpace] }" />
+	<input type="hidden" name="iIdProject" value="{ m_datas[iIdProject] }" />
 	<input type="hidden" name="iIdField" value="{ m_datas[iIdField] }" />
 	<input type="hidden" name="aDeletableObjects[]" value="{ m_datas[iIdField] }" />
 
@@ -613,6 +614,7 @@ function submit_form()
 	<input type="hidden" name="idx" value="" />
 	<input type="hidden" name="action" value="" />
 	<input type="hidden" name="iIdProjectSpace" value="{ m_datas[iIdProjectSpace] }" />
+	<input type="hidden" name="iIdProject" value="{ m_datas[iIdProject] }" />
 	<input type="hidden" name="iIdField" value="{ m_datas[iIdField] }" />
 	<input type="hidden" name="aDeletableObjects[]" value="{ m_datas[iIdField] }" />
 
@@ -811,10 +813,12 @@ function submit_form()
 <!--#if m_datas[iIdField] "== 0" -->
 	<input type="submit" value="{ m_captions[add] }" onclick="on_btn_clicked('{ m_datas[addIdx] }', '{ m_datas[addAction] }')" />
 <!--#else m_datas[iIdField] -->
+	<!--#if m_datas[is_modifiable] -->
 	<input type="submit" value="{ m_captions[modify] }" onclick="on_btn_clicked('{ m_datas[modifyIdx] }', '{ m_datas[modifyAction] }')" />
-	<!--#if m_datas[iRefCount] "== 0" -->
+	<!--#endif m_datas[is_modifiable] -->
+	<!--#if m_datas[is_deletable] "== 1" -->
 		<input type="submit" value="{ m_captions[delete] }" onclick="on_btn_clicked('{ m_datas[delIdx] }', '{ m_datas[delAction] }')" />
-	<!--#endif m_datas[iRefCount] -->
+	<!--#endif m_datas[is_deletable] -->
 <!--#endif m_datas[iIdField] -->
 </div>
 <!--#end fieldButtons -->

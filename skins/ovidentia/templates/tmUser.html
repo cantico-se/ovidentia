@@ -44,6 +44,13 @@
 							</tr>
 							<tr>
 								<td>
+									<a href="{ m_datas[specificFieldUrl] }" title="{ m_captions[spfFld] }">
+										{ m_captions[spfFld] }
+									</a>
+								</td>
+							</tr>
+							<tr>
+								<td>
 									<a href="{ m_datas[categoryUrl] }" title="{ m_captions[category] }">
 										{ m_captions[category] }
 									</a>
@@ -122,6 +129,12 @@
 <!--#end commentariesList -->
 
 <!--#begin displayCommentary -->
+<!--#if m_datas[isPopUp] "== 1" -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+	<head></head>
+	<body>
+<!--#endif m_datas[isPopUp] -->
 <script type="text/javascript" language="JavaScript1.5">
 <!--
 function on_btn_clicked(idx, action)
@@ -170,6 +183,10 @@ function submit_form()
 <!--#endif m_datas[iIdCommentary] -->
 </div>
 </form>
+<!--#if m_datas[isPopUp] "== 1" -->
+	</body>
+</html>
+<!--#endif m_datas[isPopUp] -->
 <!--#end displayCommentary -->
 
 
@@ -321,6 +338,8 @@ function onMenuSelected(oSelectedLi)
 {
 	var form = document.forms.taskForm;
 	
+	form.selectedMenu.value = oSelectedLi.id;
+	
 	var oLiGeneral = document.getElementById("oLiGeneral");
 	var oLiPredecessors = document.getElementById("oLiPredecessors");
 	var oLiResources = document.getElementById("oLiResources");
@@ -419,9 +438,17 @@ function onMenuSelected(oSelectedLi)
 	}
 }
 
-function date()
+function setDateValue(aDate)
 {
-	bab_dialog.selectdate(function(aDate){})
+	var form = document.forms.taskForm;
+	form[form.selectedDateFieldName.value].value = aDate['year'] + '-' + aDate['month'] + '-' + aDate['day'];
+}
+
+function dateCallback(sFieldName)
+{
+	var form = document.forms.taskForm;
+	form.selectedDateFieldName.value = sFieldName;
+	bab_dialog.selectdate(setDateValue);
 }
 
 function onClassChanged(oSelect)
@@ -483,8 +510,9 @@ function onClassChanged(oSelect)
 
 function onDurationTypeChanged(oSelect)
 {
-	var DURATION = 0;
-	var DATE = 1;
+	//{}
+	var DURATION = { m_datas[dtDuration] };
+	var DATE = { m_datas[dtDate] };
 	
 	var iDurationType = parseInt(oSelect.options[oSelect.selectedIndex].value);
 
@@ -538,8 +566,9 @@ function processStartDate()
 	
 	if(null != oLinkedTask && null != oDurationType)
 	{
-		var DURATION = 0;
-		var DATE = 1;
+		//{}
+		var DURATION = { m_datas[dtDuration] };
+		var DATE = { m_datas[dtDate] };
 		
 		var iDurationType = parseInt(oDurationType.options[oDurationType.selectedIndex].value);
 		
@@ -560,14 +589,6 @@ function processStartDate()
 		}
 	}
 }
-
-/*
-function set_active_tab_changed(active_tab)
-{
-}
-*/
-
-
 //-->
 </script>
 
@@ -585,7 +606,9 @@ function set_active_tab_changed(active_tab)
 	<input type="hidden" name="iIdProjectSpace" value="{ m_datas[iIdProjectSpace] }" />
 	<input type="hidden" name="iIdProject" value="{ m_datas[iIdProject] }" />
 	<input type="hidden" name="iIdTask" value="{ m_datas[iIdTask] }" />
-	<input type="hidden" name="bIsTaskNumberReadOnly" value="{ m_datas[bIsTaskNumberReadOnly] }" />
+	<input type="hidden" name="selectedDateFieldName" value="" />
+	<input type="hidden" name="selectedMenu" value="" />
+	
 
 	<br />
 	<div>
@@ -600,13 +623,13 @@ function set_active_tab_changed(active_tab)
 			</tr>
 			<tr> 
 				<td>
-					<label for="iClass">{ m_captions[eventType] }</label>
+					<label for="iClassType">{ m_captions[classType] }</label>
 				</td>
 				<td>
-					<select name="iClass" id="iClass" onchange="onClassChanged(this)">
-						<option value="{ m_datas[eventTask] }">{ m_captions[eventTask] }</option>
-						<option value="{ m_datas[eventCheckPoint] }">{ m_captions[eventCheckPoint] }</option>
-						<option value="{ m_datas[eventToDo] }">{ m_captions[eventToDo] }</option>
+					<select name="iClassType" id="iClassType" onchange="onClassChanged(this)">
+						<!--#in getNextClass -->
+							<option { m_datas[sSelectedClassType] } value="{ m_datas[iClassType] }">{ m_datas[sClassName] }</option>
+						<!--#endin getNextClass -->
 					</select>
 				</td>
 			</tr>
@@ -640,62 +663,63 @@ function set_active_tab_changed(active_tab)
 	<div id="sGeneral" class="">
 		<table width="95%" border="1" cellspacing="2" cellpadding="2" align="center">
 			<tr>
-				<td colspan="2"><label for="sDescription">Description</label></td>
+				<td colspan="2"><label for="sDescription">{ m_captions[description] }</label></td>
 			</tr>
 			<tr>
-				<td colspan="2"><textarea name="sDescription" id="sDescription" cols="50" rows="10">This is a desription</textarea></td>
+				<td colspan="2"><textarea name="sDescription" id="sDescription" cols="50" rows="10">{ m_datas[sDescription] }</textarea></td>
 			</tr>
 
 			<tr id="oTrLinkedTask">
 				<td>
-					<label for="oLinkedTask">Linked task</label>
+					<label for="oLinkedTask">{ m_captions[linkedTask] }</label>
 				</td>
 				<td>
-					<input type="checkbox" name="oLinkedTask" id="oLinkedTask" onclick="onLinkTaskChanged(this)" value="" style="background-color:transparent;border=0" />
+					<input type="checkbox" name="oLinkedTask" id="oLinkedTask" { m_datas[sCkeckedLinkedTask] } onclick="onLinkTaskChanged(this)" value="" style="background-color:transparent;border=0" />
 				</td>
 			</tr>
-			
+
 			<tr id="oTrDurationType" class="">
 				<td>
-					<label for="oDurationType">Task type</label>
+					<label for="oDurationType">{ m_captions[durationType] }</label>
 				</td>
 				<td>
 					<select id="oDurationType" name="oDurationType" onchange="onDurationTypeChanged(this)">
-						<option value="0">Duration</option>
-						<option value="1">Date</option>
+						<!--#in getNextDuration -->
+						<option { m_datas[sSelectedDuration] } value="{ m_datas[iDurationType] }">{ m_datas[sDurationName] }</option>
+						<!--#endin getNextDuration -->
 					</select>
 				</td>
 			</tr>
 
 			<tr id="oTrDuration">
 				<td>
-					<label for="sDuration">Duration</label>
+					<label for="sDuration">{ m_captions[duration] }</label>
 				</td>
 				<td>
-					<input type="text" name="sDuration" id="sDuration" maxlength="20" value="" size="10" />
+					<input type="text" name="sDuration" id="sDuration" maxlength="20" value="{ m_datas[sDuration] }" size="10" />
 				</td>
 			</tr>
 
 			<tr id="oTrStartDate">
 				<td>
-					<label for="sStartDate">Start date</label>
+					<label for="sStartDate">{ m_captions[startDate] }</label>
 				</td>
 				<td>
-					<input type="text" name="sStartDate" id="sStartDate" maxlength="20" value="" size="10" />
-					<a href="javascript:date();">
-						<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/calendar.gif" alt="{ m_anchorItem[title] }" />
+					<input type="text" name="sStartDate" id="sStartDate" maxlength="20" value="{ m_datas[sStartDate] }" size="10" />
+					<a href="javascript:dateCallback('sStartDate');">
+						<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/calendar.gif" alt="{ m_captions[startDate] }" />
 					</a>
 				</td>
 			</tr>
 			
 			<tr id="oTrEndDate">
 				<td>
-					<label for="sEndDate">End date</label>
+					<label for="sEndDate">{ m_captions[endDate] }</label>
 				</td>
 				<td>
-					<input type="text" name="sEndDate" id="sEndDate" maxlength="20" value="" size="10" />
-					<a href="javascript:date();">
-						<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/calendar.gif" alt="{ m_anchorItem[title] }" />
+					<input type="text" name="sEndDate" id="sEndDate" maxlength="20" value="{ m_datas[sEndDate] }" size="10" />
+					<a href="javascript:dateCallback('sEndDate');">
+						<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/calendar.gif" alt="{ m_captions[endDate] }" />
 					</a>
 				</td>
 			</tr>
@@ -712,36 +736,122 @@ function set_active_tab_changed(active_tab)
 	
 	<div id="sResources" class="">
 		<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
-			<tr> 
-				<td>Resource</td>
+			<tr>
+				<td>
+					<label for="iIdTaskResponsible">{ m_captions[taskResponsible] }</label>
+				</td>
+				<td>
+					<select id="iIdTaskResponsible" name="iIdTaskResponsible">
+						<option value="{ m_datas[none] }">{ m_captions[none] }</option>
+						<!--#in getNextTaskResponsible -->
+						<option { m_datas[sSlectedTaskResponsible] } value="{ m_datas[iIdTaskResponsible] }">{ m_datas[sTaskResponsibleName] }</option>
+						<!--#endin getNextTaskResponsible -->
+					</select>
+				</td>
 			</tr>
 		</table>
 	</div>
 	
 	<div id="sCommentaries" class="">
-		<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
-			<tr> 
-				<td>Commentaries</td>
-			</tr>
-		</table>
+		{ m_datas[taskCommentaries] }
 	</div>
 	
 	<div id="sSpfFld" class="">
 		<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
-			<tr> 
-				<td>Specific fields</td>
+			<tr class="BabSiteAdminTitleFontBackground"> 
+				<td>
+					<label for="oSpfField">{ m_captions[spfField] }</label>
+				</td>
+				<td>
+					<select id="oSpfField" name="oSpfField">
+						<!--#in getNextSpecificField -->
+						<option { m_datas[sSelectedSpfField] } value="{ m_datas[iIdSpField] }">{ m_datas[sSpFieldName] }</option>
+						<!--#endin getNextSpecificField -->
+					</select>
+				</td>
+				<td>
+				<!--#if m_datas[isHaveSpFields] -->
+					<input type="submit" value="{ m_captions[addSpf] }" onclick="on_btn_clicked('{ m_datas[addSpfIdx] }', '{ m_datas[addSpfAction] }')" />
+				<!--#else m_datas[isHaveSpFields] -->
+					&nbsp;
+				<!--#endif m_datas[isHaveSpFields] -->
+				</td>
 			</tr>
 		</table>
 	</div>
 	
+	<br />
+	<div align="center">
+		<!--#if m_datas[iIdTask] "== 0" -->
+			<input type="submit" value="{ m_captions[add] }" onclick="on_btn_clicked('{ m_datas[addIdx] }', '{ m_datas[addAction] }')" />
+		<!--#else m_datas[iIdTask] -->
+			<input type="submit" value="{ m_captions[modify] }" onclick="on_btn_clicked('{ m_datas[modifyIdx] }', '{ m_datas[modifyAction] }')" />
+			<!--#if m_datas[bIsDeletable] -->
+				<input type="submit" value="{ m_captions[delete] }" onclick="on_btn_clicked('{ m_datas[deleteIdx] }', '{ m_datas[deleteAction] }')" />
+			<!--#endif m_datas[bIsDeletable] -->
+		<!--#endif m_datas[iIdTask] -->
+	</div>
 </form>
 
 <script type="text/javascript">
 <!--
-var oLiGeneral = document.getElementById('oLiGeneral');
+var oLiGeneral = document.getElementById('{ m_datas[selectedMenu] }');
 if(null != oLiGeneral) onMenuSelected(oLiGeneral);
-onClassChanged(document.forms.taskForm['oDurationType']);
+onClassChanged(document.forms.taskForm['iClassType']);
 //-->
 </script>
-
 <!--#end taskForm -->
+
+<!--#begin taskCommentariesList -->
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+		<td align="center" valign="middle" class="BabLoginCadreBackground"> 
+			<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+				<tr class="BabSiteAdminTitleFontBackground"> 
+					<td width="50%">{ m_captions[commentary] }</td>
+					<td width="20%">{ m_captions[date] }</td>
+				<!--#if m_datas[iIdTask] "!= 0" -->
+					<td width="30%" align="center">
+						<a href="javascript:bab_popup('{ m_datas[addCommentaryUrl] }',2)" title="{ m_captions[addCommentary] }">
+							{ m_captions[addCommentary] }
+						</a>
+					</td> 
+				<!--#else m_datas[iIdTask] -->
+					<td width="30%" align="center">&nbsp;</td>
+				<!--#endif m_datas[iIdTask] -->
+				</tr>
+				<!--#in nextCommentary -->
+				
+			<!--#if m_is_altbg -->
+				<tr class="BabSiteAdminFontBackground"> 
+			<!--#else m_is_altbg -->
+				<tr class="BabForumBackground1">
+			<!--#endif m_is_altbg -->
+	
+				<!--#if m_datas[isLink] -->
+					<td><a href="javascript:bab_popup('{ m_datas[url] }{ m_datas[id] }',2)">{ m_datas[commentary] }</a></td>
+				<!--#else m_datas[isLink] -->
+					<td>{ m_datas[commentary] }</td>
+				<!--#endif m_datas[isLink] -->
+					<td>{ m_datas[created] }</td>
+					<td>
+						<table border="0" cellspacing="0" cellpadding="2" align="center">
+							<!--#in getNextAnchor -->
+							<tr>
+								<td class="{ m_datas[className] }">
+									<a href="{ m_anchorItem[href] }" title="{ m_anchorItem[title] }">
+										{ m_anchorItem[title] }
+									</a>
+								</td>
+							</tr>
+							<!--#endin getNextAnchor -->
+							<tbody><tr><td></td></tr></tbody>
+						</table>
+					</td>
+				</tr>
+				<!--#endin nextCommentary -->
+			</table>
+		</td>
+	</tr>
+</table>
+<!--#end taskCommentariesList -->

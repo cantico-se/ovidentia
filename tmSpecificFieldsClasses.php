@@ -75,7 +75,7 @@ class BAB_TM_FieldBase extends BAB_BaseFormProcessing
 		$this->set_data('iAreaType', BAB_TM_TEXT_AREA_FIELD);
 		$this->set_data('iChoiceType', BAB_TM_RADIO_FIELD);
 		
-		$this->set_data('tg', 'admTskMgr');
+		$this->set_data('tg', tskmgr_getVariable('tg', ''));
 		$this->set_data('displaySpecificFieldFormIdx', BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_FORM);
 		
 		$this->set_data('addIdx', BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_LIST);
@@ -147,13 +147,16 @@ class BAB_TM_FieldText extends BAB_TM_FieldBase
 		$db = &$GLOBALS['babDB'];
 		
 		$this->set_data('sFieldType', bab_translate("Text"));
+		$this->get_data('iIdProject', $iIdProject);
 		$this->get_data('iIdField', $iIdField);
 		
 		$query = 
 			'SELECT ' .
 				'fb.name name, ' .
 				'fb.refCount refCount, ' .
-				'ft.defaultValue defaultValue ' .
+				'fb.idProject idProject, ' .
+				'ft.defaultValue defaultValue, ' .
+				'IF(fb.idProject = \'' . $iIdProject . '\' AND fb.refCount = \'' . 0 . '\', 1, 0) is_deletable ' .
 			'FROM ' . 
 				BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' fb ' .
 			'LEFT JOIN ' .
@@ -173,6 +176,8 @@ class BAB_TM_FieldText extends BAB_TM_FieldBase
 				$this->set_data('sFieldName', htmlentities($datas['name'], ENT_QUOTES));
 				$this->set_data('sFieldValue', htmlentities($datas['defaultValue'], ENT_QUOTES));
 				$this->set_data('iRefCount', $datas['refCount']);
+				$this->set_data('is_deletable', $datas['is_deletable']);
+				$this->set_data('is_modifiable', ($datas['idProject'] == $iIdProject));
 			}
 		}
 	}
@@ -203,13 +208,16 @@ class BAB_TM_FieldArea extends BAB_TM_FieldBase
 		$db = &$GLOBALS['babDB'];
 		
 		$this->set_data('sFieldType', bab_translate("Text Area"));
+		$this->get_data('iIdProject', $iIdProject);
 		$this->get_data('iIdField', $iIdField);
 		
 		$query = 
 			'SELECT ' .
 				'fb.name name, ' .
 				'fb.refCount refCount, ' .
-				'fa.defaultValue defaultValue ' .
+				'fb.idProject idProject, ' .
+				'fa.defaultValue defaultValue, ' .
+				'IF(fb.idProject = \'' . $iIdProject . '\' AND fb.refCount = \'' . 0 . '\', 1, 0) is_deletable ' .
 			'FROM ' . 
 				BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' fb ' .
 			'LEFT JOIN ' .
@@ -228,6 +236,8 @@ class BAB_TM_FieldArea extends BAB_TM_FieldBase
 				$this->set_data('sFieldName', htmlentities($datas['name'], ENT_QUOTES));
 				$this->set_data('sFieldValue', htmlentities($datas['defaultValue'], ENT_QUOTES));
 				$this->set_data('iRefCount', $datas['refCount']);
+				$this->set_data('is_deletable', $datas['is_deletable']);
+				$this->set_data('is_modifiable', ($datas['idProject'] == $iIdProject));
 			}
 		}
 	}
@@ -322,13 +332,16 @@ class BAB_TM_FieldRadio extends BAB_TM_FieldBase
 	
 	function getFieldNameAndDefaultChoice($iIdField)
 	{
+		$this->get_data('iIdProject', $iIdProject);
 		$db = &$GLOBALS['babDB'];
 		
 		$query = 
 			'SELECT ' .
 				'fb.name sFieldName, ' .
 				'fb.refCount iRefCount, ' .
-				'position iDefaultOption ' .
+				'fb.idProject idProject, ' .
+				'position iDefaultOption, ' .
+				'IF(fb.idProject = \'' . $iIdProject . '\' AND fb.refCount = \'' . 0 . '\', 1, 0) is_deletable ' .
 			'FROM ' . 
 				BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' fb ' .
 			'LEFT JOIN ' .
@@ -348,6 +361,8 @@ class BAB_TM_FieldRadio extends BAB_TM_FieldBase
 				$this->set_data('sFieldName', htmlentities($datas['sFieldName'], ENT_QUOTES));
 				$this->set_data('iRefCount', $datas['iRefCount']);
 				$this->set_data('iDefaultOption', $datas['iDefaultOption']);
+				$this->set_data('is_deletable', $datas['is_deletable']);
+				$this->set_data('is_modifiable', ($datas['idProject'] == $iIdProject));
 			}
 		}
 	}

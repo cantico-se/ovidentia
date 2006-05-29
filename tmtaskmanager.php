@@ -26,6 +26,7 @@ require_once($babInstallPath . 'utilit/tmdefines.php');
 require_once($babInstallPath . 'utilit/tmIncl.php');
 require_once($babInstallPath . 'utilit/tmToolsIncl.php');
 require_once($babInstallPath . 'utilit/tmList.php');
+require_once($babInstallPath . 'tmSpecificFieldsFunc.php');
 require_once($babInstallPath . 'tmCategoriesFunc.php');
 
 require_once($babInstallPath . 'utilit/baseFormProcessingClass.php');
@@ -127,6 +128,7 @@ function displayProjectsList()
 		{
 			$this->set_caption('rights', bab_translate("Rights"));
 			$this->set_caption('configuration', bab_translate("Configuration"));
+			$this->set_caption('spfFld', bab_translate("Specific fields"));
 			$this->set_caption('category', bab_translate("Categories list"));
 			$this->set_caption('commentary', bab_translate("Display project commentaries list"));
 			$this->set_caption('task', bab_translate("Display tasks list"));
@@ -140,6 +142,7 @@ function displayProjectsList()
 				
 			$this->set_data('rightsUrl', '#');
 			$this->set_data('configurationUrl', '#');
+			$this->set_data('specificFieldUrl', '#');
 			$this->set_data('categoryUrl', '#');
 			$this->set_data('commentaryUrl', '#');
 			$this->set_data('taskUrl', '#');
@@ -162,6 +165,10 @@ function displayProjectsList()
 					
 				$this->set_data('configurationUrl', $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' .
 					BAB_TM_IDX_DISPLAY_PROJECTS_CONFIGURATION_FORM . '&iIdProjectSpace=' . $iIdProjectSpace . '&iIdProject=' . $this->m_rowDatas['id']
+					);
+
+				$this->set_data('specificFieldUrl', $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' .
+					BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_LIST . '&iIdProjectSpace=' . $iIdProjectSpace . '&iIdProject=' . $this->m_rowDatas['id']
 					);
 
 				$this->set_data('categoryUrl', $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . 
@@ -501,6 +508,11 @@ function displayProjectsConfigurationForm()
 				'mnuStr' => bab_translate("Projects spaces"),
 				'url' => $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST),
 			array(
+				'idx' => BAB_TM_IDX_DISPLAY_PROJECTS_LIST,
+				'mnuStr' => bab_translate("Projects list"),
+				'url' => $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_LIST . 
+				'&iIdProjectSpace=' . $iIdProjectSpace),
+			array(
 				'idx' => BAB_TM_IDX_DISPLAY_PROJECTS_CONFIGURATION_FORM,
 				'mnuStr' => bab_translate("Projects configuration"),
 				'url' => $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_CONFIGURATION_FORM . 
@@ -558,9 +570,10 @@ function displayProjectCommentaryList()
 		
 		add_item_menu($itemMenu);
 		
-		$result = tmSelectProjectCommentary($iIdProject);	
+		$result = bab_selectProjectCommentaryList($iIdProject);	
 		$oList = new BAB_TM_ListBase($result);
 	
+		$oList->set_data('isAddCommentaryUrl', true);
 		$oList->set_data('url', $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . 
 			BAB_TM_IDX_DISPLAY_COMMENTARY_FORM . '&iIdProjectSpace=' . $iIdProjectSpace .
 			'&iIdProject=' . $iIdProject . '&iIdCommentary=');
@@ -584,6 +597,7 @@ function displayCommentaryForm()
 	if(bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject))
 	{
 		$iIdCommentary = tskmgr_getVariable('iIdCommentary', 0);
+		$isPopUp = tskmgr_getVariable('isPopUp', 0);
 		$tab_caption = ($iIdCommentary == 0) ? bab_translate("Add a commentary") : bab_translate("Edition of a commentary");
 		$babBody->title = $tab_caption;
 	
@@ -629,16 +643,24 @@ function displayCommentaryForm()
 		$oBf->set_data('iIdCommentary', $iIdCommentary);
 		$oBf->set_data('iIdProject', $iIdProject);
 		$oBf->set_data('iIdTask', 0);
+		$oBf->set_data('isPopUp', $isPopUp);
 
 		$oBf->set_data('commentary', '');
 		
-		$success = tmGetProjectCommentary($iIdCommentary, $sCommentary);
+		$success = bab_getProjectCommentary($iIdCommentary, $sCommentary);
 		if(false != $success)
 		{
 			$oBf->set_data('commentary', htmlentities($sCommentary, ENT_QUOTES));
 		}
 		
-		$babBody->babecho(bab_printTemplate($oBf, 'tmUser.html', 'displayCommentary'));
+		if(0 == $isPopUp)
+		{
+			$babBody->babecho(bab_printTemplate($oBf, 'tmUser.html', 'displayCommentary'));
+		}
+		else
+		{
+			die(bab_printTemplate($oBf, 'tmUser.html', 'displayCommentary'));	
+		}
 	}
 	else 
 	{
@@ -726,7 +748,7 @@ function displayTaskList()
 		
 		add_item_menu($itemMenu);
 		
-		$result = tmSelectTasksList($iIdProject);	
+		$result = bab_selectTasksList($iIdProject);	
 		$oList = new BAB_TM_ListBase($result);
 	
 		$oList->set_data('url', $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . 
@@ -754,7 +776,7 @@ function displayTaskForm()
 		$iIdTask = tskmgr_getVariable('iIdTask', 0);
 		$tab_caption = ($iIdTask == 0) ? bab_translate("Add a task") : bab_translate("Edition of a task");
 		$babBody->title = $tab_caption;
-	
+
 		$itemMenu = array(		
 			array(
 				'idx' => BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST,
@@ -781,6 +803,12 @@ function displayTaskForm()
 		class BAB_TaskForm extends BAB_BaseFormProcessing
 		{
 			var $m_catResult;
+			var $m_spfResult;
+			
+			var $m_aClasses;
+			var $m_aDurations;
+			
+			var $m_aAvailableTaskResponsible;
 			
 			function BAB_TaskForm($iIdProjectSpace, $iIdProject, $iIdTask)
 			{
@@ -791,33 +819,109 @@ function displayTaskForm()
 				$this->set_caption('spFld', bab_translate("Specific fields"));
 				
 				$this->set_caption('taskNumber', bab_translate("Number"));
-				$this->set_caption('eventType', bab_translate("Type"));
-				$this->set_caption('eventTask', bab_translate("Task"));
-				$this->set_caption('eventCheckPoint', bab_translate("CheckPoint"));
-				$this->set_caption('eventToDo', bab_translate("ToDo"));
+				$this->set_caption('classType', bab_translate("Type"));
 				$this->set_caption('categories', bab_translate("Categories"));
-				
-				$this->set_data('tg', tskmgr_getVariable('tg', 'usrTskMgr'));
-				$this->set_data('iIdProjectSpace', $iIdProjectSpace);
-				$this->set_data('iIdProject', $iIdProject);
-				$this->set_data('iIdTask', $iIdTask);
-				
+				$this->set_caption('description', bab_translate("Description"));
+				$this->set_caption('linkedTask', bab_translate("Linked task"));
+				$this->set_caption('durationType', bab_translate("Duration type"));
+				$this->set_caption('duration', bab_translate("Duration"));
+				$this->set_caption('startDate', bab_translate("Start Date"));
+				$this->set_caption('endDate', bab_translate("End Date"));
+				$this->set_caption('none', bab_translate("None"));
+				$this->set_caption('taskResponsible', bab_translate("Task Responsible"));
+				$this->set_caption('spfField', bab_translate("Specific Fields"));
+
+				$this->set_caption('addSpf', bab_translate("Instanciate"));
+				$this->set_caption('add', bab_translate("Add"));
+				$this->set_caption('modify', bab_translate("Modify"));
+				$this->set_caption('delete', bab_translate("Delete"));
+
 				$this->set_data('eventTask', BAB_TM_TASK);
 				$this->set_data('eventCheckPoint', BAB_TM_CHECKPOINT);
 				$this->set_data('eventToDo', BAB_TM_TODO);
+				$this->set_data('dtDuration', BAB_TM_DURATION);
+				$this->set_data('dtDate', BAB_TM_DATE);
+				$this->set_data('isHaveSpFields', false);
 				
-				$this->set_data('sTaskNumber', tskmgr_getVariable('sTaskNumber', ''));
-				$this->set_data('bIsTaskNumberReadOnly', tskmgr_getVariable('bIsTaskNumberReadOnly', '0'));
-				$this->set_data('sTaskNumberReadOnly', '');
-								
-				$this->set_data('sSelectedCategory', '');
+				$this->set_data('none', BAB_TM_NONE);
 				
-				$this->m_catResult = tmSelectAvailableCategories($iIdProject);
+$this->set_data('addIdx', BAB_TM_IDX_DISPLAY_TASK_FORM);
+				//$this->set_data('addIdx', BAB_TM_IDX_DISPLAY_TASK_LIST);
+				$this->set_data('addAction', BAB_TM_ACTION_ADD_TASK);
+				$this->set_data('modifyIdx', BAB_TM_IDX_DISPLAY_TASK_LIST);
+				$this->set_data('modifyAction', BAB_TM_ACTION_MODIFY_TASK);
+				$this->set_data('delIdx', BAB_TM_IDX_DISPLAY_DELETE_TASK_FORM);
+				$this->set_data('delAction', '');
+				$this->set_data('addSpfIdx', BAB_TM_IDX_DISPLAY_TASK_FORM);
+				$this->set_data('addSpfAction', BAB_TM_ACTION_CREATE_SPECIFIC_FIELD_INSTANCE);
+
+				$this->m_aClasses = array(
+					array('iClassType' => BAB_TM_TASK, 'sClassName' => bab_translate("Task")),
+					array('iClassType' => BAB_TM_CHECKPOINT, 'sClassName' => bab_translate("CheckPoint")),
+					array('iClassType' => BAB_TM_TODO, 'sClassName' => bab_translate("ToDo"))
+				);
+				
+				$this->m_aDurations = array(
+					array('iDurationType' => BAB_TM_DURATION, 'sDurationName' => bab_translate("Duration")),
+					array('iDurationType' => BAB_TM_DATE, 'sDurationName' => bab_translate("Date"))
+				);
+				
+				$oTmCtx =& getTskMgrContext();
+				$aCfg =& $oTmCtx->getConfiguration();
+				$iTasksNumerotation = $aCfg['tasksNumerotation'];
+				//form var
+				{
+					$this->set_data('tg', tskmgr_getVariable('tg', 'usrTskMgr'));
+					$this->set_data('iIdProjectSpace', $iIdProjectSpace);
+					$this->set_data('iIdProject', $iIdProject);
+					$this->set_data('iIdTask', $iIdTask);
+
+					$this->set_data('iSelectedClassType', tskmgr_getVariable('iClassType', BAB_TM_TASK));
+					$this->set_data('sSelectedClassType', '');
+					
+					$this->set_data('sTaskNumber', tskmgr_getVariable('sTaskNumber', ''));
+					$this->set_data('sTaskNumberReadOnly', (BAB_TM_MANUAL != $iTasksNumerotation) ? 'readonly="readonly"' : '');
+					
+					$this->set_data('iIdCategory', tskmgr_getVariable('iIdCategory', -1));
+					$this->set_data('sSelectedCategory', '');
+
+					$this->set_data('sDescription', tskmgr_getVariable('sDescription', ''));
+					
+					$oLinkedTask = tskmgr_getVariable('oLinkedTask', -1);
+					$this->set_data('sCkeckedLinkedTask', (-1 != $oLinkedTask) ? 'checked="checked"' : '');
+
+					$this->set_data('oDurationType', tskmgr_getVariable('oDurationType', BAB_TM_DATE));
+					$this->set_data('sSelectedDuration', '');
+					
+					$this->set_data('sDuration', tskmgr_getVariable('sDuration', ''));
+					
+					$this->set_data('sStartDate', tskmgr_getVariable('sStartDate', ''));
+					$this->set_data('sEndDate', tskmgr_getVariable('sEndDate', ''));
+					
+					$this->set_data('iIdSlectedTaskResponsible', tskmgr_getVariable('iIdTaskResponsible', 0));
+					$this->set_data('sSlectedTaskResponsible', '');
+
+					$this->set_data('oSpfField', tskmgr_getVariable('oSpfField', -1));
+					$this->set_data('sSelectedSpfField', '');
+					
+					$this->set_data('selectedMenu', tskmgr_getVariable('selectedMenu', 'oLiGeneral'));
+				}
+
+				bab_getTaskResponsibleList($iIdProject, $this->m_aAvailableTaskResponsible);
+				
+				$this->m_catResult = bab_selectAvailableCategories($iIdProject);
+				$this->m_spfResult = bab_selectAvailableSpecificFields($iIdProject);
+				
+				global $babDB;
+				if($babDB->db_num_rows($this->m_spfResult))
+				{
+					$this->set_data('isHaveSpFields', true);
+				}
 				
 				if(!isset($_POST['iIdTask']) && !isset($_GET['iIdTask']))
 				{
 					$this->set_data('is_creation', true);
-					$this->initTaskForm($iIdProject);
+					$this->initTaskForm($iIdProject, $iTasksNumerotation);
 				}
 				else if( (isset($_GET['iIdTask']) || isset($_POST['iIdTask'])) && 0 != $iIdTask)
 				{
@@ -828,7 +932,37 @@ function displayTaskForm()
 					$this->set_data('is_resubmission', true);
 				}
 				
+				//$result = bab_selectProjectCommentaryList($iIdProject);	
+				$result = bab_selectTaskCommentary($iIdTask);	
+				$oList = new BAB_TM_ListBase($result);
+			
+				$url = $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . 
+					BAB_TM_IDX_DISPLAY_COMMENTARY_FORM . '&isPopUp=1&iIdProjectSpace=' . $iIdProjectSpace .
+					'&iIdProject=' . $iIdProject;
 				
+				$oList->set_caption('addCommentary', bab_translate("Add a commentary"));
+				$oList->set_data('addCommentaryUrl', $url);
+				$oList->set_data('iIdTask', $iIdTask);
+				
+				$oList->set_data('url', $url . '&iIdCommentary=');
+				$this->set_data('taskCommentaries', bab_printTemplate($oList, 'tmUser.html', 'taskCommentariesList'));
+				
+			}
+
+			function getNextClass()
+			{
+				$class = each($this->m_aClasses);
+				if(false != $class)
+				{
+					$this->get_data('iSelectedClassType', $iClassType);
+					$this->set_data('sSelectedClassType', ((int)$class['value']['iClassType'] == (int)$iClassType) ? 
+						'selected="selected"' : '');
+
+					$this->set_data('iClassType', $class['value']['iClassType']);
+					$this->set_data('sClassName', $class['value']['sClassName']);
+					return true;
+				}
+				return false;
 			}
 			
 			function getNextCategory()
@@ -839,6 +973,10 @@ function displayTaskForm()
 					$datas = $babDB->db_fetch_assoc($this->m_catResult);
 					if(false != $datas)
 					{
+						$this->get_data('iIdCategory', $iIdCategory);
+						$this->set_data('sSelectedCategory', ($iIdCategory == $datas['id']) ? 
+							'selected="selected"' : '');
+						
 						$this->set_data('iIdCategory', $datas['id']);
 						$this->set_data('sCategoryName', $datas['name']);
 						return true;
@@ -846,60 +984,68 @@ function displayTaskForm()
 				}
 				return false;
 			}
-		
-			function initTaskForm($iIdProject)
+			
+			function getNextDuration()
 			{
-				tmGetNextTaskNumber($iIdProject, $bIsReadOnly, $sTaskNumber);
-				$this->set_data('sTaskNumber', $sTaskNumber);
-				if(true == $bIsReadOnly)
+				$duration = each($this->m_aDurations);
+				if(false != $duration)
 				{
-					$this->set_data('bIsTaskNumberReadOnly', '1');
-					$this->set_data('sTaskNumberReadOnly', 'readonly="readonly"');
+					$this->get_data('oDurationType', $oDurationType);
+					$this->set_data('sSelectedDuration', ($duration['value']['iDurationType'] == $oDurationType) ? 
+						'selected="selected"' : '');
+
+					$this->set_data('iDurationType', $duration['value']['iDurationType']);
+					$this->set_data('sDurationName', $duration['value']['sDurationName']);
+					return true;
 				}
+				return false;
+			}
+			
+			function initTaskForm($iIdProject, $iTasksNumerotation)
+			{
+				bab_getNextTaskNumber($iIdProject, $iTasksNumerotation, $sTaskNumber);
+				$this->set_data('sTaskNumber', $sTaskNumber);
+			}
+			
+			function getNextTaskResponsible()
+			{
+				$aResponsible = each($this->m_aAvailableTaskResponsible);
+				if(false != $aResponsible)
+				{
+					$this->get_data('iIdSlectedTaskResponsible', $iIdTaskResponsible);
+					$this->set_data('sSlectedTaskResponsible', ($aResponsible['value']['id'] == $iIdTaskResponsible) ? 
+						'selected="selected"' : '');
+					
+					$this->set_data('iIdTaskResponsible', $aResponsible['value']['id']);
+					$this->set_data('sTaskResponsibleName', $aResponsible['value']['name']);
+					return true;
+				}
+				return false;
+			}
+			
+			function getNextSpecificField()
+			{
+				global $babDB;
+				if(false != $this->m_spfResult)
+				{
+					$datas = $babDB->db_fetch_assoc($this->m_spfResult);
+					if(false != $datas)
+					{
+						$this->get_data('oSpfField', $oSpfField);
+						$this->set_data('sSelectedSpfField', ($datas['id'] == $oSpfField) ? 
+							'selected="selected"' : '');
+
+						$this->set_data('iIdSpField', $datas['id']);
+						$this->set_data('sSpFieldName', $datas['name']);
+						return true;
+					}
+				}
+				return false;
 			}
 		}
 		
-		
-		
-		
-		
-		tmGetTaskResponsibleList($iIdProject, $aTaskResponsible);
-		
-		
-		//bab_debug($aTaskResponsible);
-		
-		
-		
 		$oTaskForm = & new BAB_TaskForm($iIdProjectSpace, $iIdProject, $iIdTask);
-		
-		
-/*		$oBf->set_caption('add', bab_translate("Add"));
-		$oBf->set_caption('modify', bab_translate("Modify"));
-		$oBf->set_caption('delete', bab_translate("Delete"));
-
-		$oBf->set_data('addIdx', BAB_TM_IDX_DISPLAY_PROJECT_COMMENTARY_LIST);
-		$oBf->set_data('addAction', BAB_TM_ACTION_ADD_PROJECT_COMMENTARY);
-		$oBf->set_data('modifyIdx', BAB_TM_IDX_DISPLAY_PROJECT_COMMENTARY_LIST);
-		$oBf->set_data('modifyAction', BAB_TM_ACTION_MODIFY_PROJECT_COMMENTARY);
-		$oBf->set_data('delIdx', BAB_TM_IDX_DISPLAY_DELETE_PROJECT_COMMENTARY);
-		$oBf->set_data('delAction', '');
-		$oBf->set_data('tg', 'usrTskMgr');
-
-		$oBf->set_data('iIdProjectSpace', $iIdProjectSpace);
-		$oBf->set_data('iIdCommentary', $iIdCommentary);
-		$oBf->set_data('iIdProject', $iIdProject);
-		$oBf->set_data('iIdTask', 0);
-
-		$oBf->set_data('commentary', '');
-		
-		$success = tmGetProjectCommentary($iIdCommentary, $sCommentary);
-		if(false != $success)
-		{
-			$oBf->set_data('commentary', htmlentities($sCommentary, ENT_QUOTES));
-		}
-*/		
 		$babBody->babecho(bab_printTemplate($oTaskForm, 'tmUser.html', 'taskForm'));
-
 	}
 	else 
 	{
@@ -907,6 +1053,10 @@ function displayTaskForm()
 	}
 }
 
+function displayDeleteTaskForm()
+{
+	bab_debug('displayDeleteTaskForm()');
+}
 //POST
 
 
@@ -1040,11 +1190,11 @@ function addModifyProjectCommentary()
 		{
 			if(0 == $iIdCommentary)
 			{
-				tmCreateProjectCommentary($iIdProject, $sCommentary);
+				bab_createProjectCommentary($iIdProject, $sCommentary);
 			}
 			else 
 			{
-				tmUpdateProjectCommentary($iIdCommentary, $sCommentary);
+				bab_updateProjectCommentary($iIdCommentary, $sCommentary);
 			}
 		}
 		else 
@@ -1065,12 +1215,27 @@ function deleteProjectCommentary()
 
 	if(bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject))
 	{
-		tmDeleteProjectCommentary($iIdCommentary);
+		bab_deleteProjectCommentary($iIdCommentary);
 	}
 	else 
 	{
 		bab_debug('addModifyProjectCommentary: acces denied');
 	}
+}
+
+function addModifyTask()
+{
+	bab_debug('addModifyTask()');
+}
+
+function deleteTask()
+{
+	bab_debug('deleteTask()');
+}
+
+function createSpecificFieldInstance()
+{
+	bab_debug('createSpecificFieldInstance()');
 }
 
 bab_cleanGpc();
@@ -1127,8 +1292,39 @@ switch($action)
 		deleteProjectCommentary();
 		break;
 		
+	case BAB_TM_ACTION_ADD_OPTION:
+		addOption();
+		break;
+		
+	case BAB_TM_ACTION_DEL_OPTION:
+		delOption();
+		break;
+		
+	case BAB_TM_ACTION_ADD_SPECIFIC_FIELD:
+	case BAB_TM_ACTION_MODIFY_SPECIFIC_FIELD:
+		addModifySpecificField();
+		break;
+		
+	case BAB_TM_ACTION_DELETE_SPECIFIC_FIELD:
+		deleteSpecificField();
+		break;
+		
+	case BAB_TM_ACTION_ADD_CATEGORY:
+	case BAB_TM_ACTION_MODIFY_CATEGORY:
+		addModifyCategory();
+		break;
+
 	case BAB_TM_ACTION_DELETE_CATEGORY:
 		deleteCategory();
+		break;
+		
+	case BAB_TM_ACTION_ADD_TASK:
+	case BAB_TM_ACTION_MODIFY_TASK:
+		addModifyTask();
+		break;
+		
+	case BAB_TM_ACTION_CREATE_SPECIFIC_FIELD_INSTANCE:
+		createSpecificFieldInstance();
 		break;
 }
 
@@ -1191,7 +1387,23 @@ switch($idx)
 	case BAB_TM_IDX_DISPLAY_TASK_FORM:
 		displayTaskForm();
 		break;
+		
+	case BAB_TM_IDX_DISPLAY_DELETE_TASK_FORM:
+		displayDeleteTaskForm();
+		break;
 //*//
+	case BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_LIST:
+		displaySpecificFieldList();
+		break;
+		
+	case BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_FORM:
+		displaySpecificFieldForm();
+		break;
+		
+	case BAB_TM_IDX_DISPLAY_DELETE_SPECIFIC_FIELD_FORM:
+		displayDeleteSpecificFieldForm();
+		break;
+
 	case BAB_TM_IDX_DISPLAY_CATEGORIES_LIST:
 		displayCategoriesList();
 		break;
