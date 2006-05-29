@@ -33,6 +33,8 @@
 .bab_tree li div.line {
 	padding: 0.3em 0;
 	border: #fff 1px solid;
+	position: relative;
+	width: 99%;
 }
 
 .bab_tree li div.highlighted {
@@ -57,24 +59,18 @@
 
 .bab_ul_tree_open .bullet {
 	cursor: pointer; 
-	padding-left: 20px;
-	padding-right: 6px;
 	vertical-align: middle;
 	background: url(../skins/ovidentia/images/Puces/minus.gif) center left no-repeat; 
 }
 
 .bab_ul_tree_closed .bullet {
 	cursor: pointer;
-	padding-left: 20px;
-	padding-right: 6px;
 	vertical-align: middle;
 	background: url(../skins/ovidentia/images/Puces/plus.gif) center left no-repeat; 
 }
 
 .bab_ul_tree_leaf .bullet { 
 	cursor: default; 
-	padding-left: 20px;
-	padding-right: 6px;
 	vertical-align: middle;
 	background: none;
 }
@@ -115,14 +111,14 @@
 .bab_searchFieldSearching {
 	voice-family: "\"}\"";
 	voice-family: inherit;
-	background-image: url('../skins/ovidentia/images/Puces/search.gif');
+	background-image: url('../skins/ovidentia/images/Puces/grey_bg.gif');
 	margin: 0px 0px 0px 8px;
 	text-decoration: none;
-	background-position: 1px 50%;
-	background-repeat: no-repeat;
+	background-position: 0 0;
+	background-repeat: repeat-y;
 	padding: 3px 2px 2px 18px;
 	border: 1px solid grey;
-	background-color: #CCCCFF;
+	background-color: #FFFFFF;
 }
 
 .bab_searchFieldFound {

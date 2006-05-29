@@ -16,41 +16,102 @@ function hasClass(element, className) {
 }
 
 
+function bab_SearchContext(tree, inputField)
+{
+	this.tree = tree;
+	this.inputField = inputField;
+	this.listItems = tree.rootList.getElementsByTagName('LI');
+	this.currentIndex = 0;
+	this.timeoutId = null;
+	this.nbItemsPerLoop = 30;
+	this.nbMatches = 0;
+	this.searching = false;
+	this.targetString = '';
+}
+
+
+function bab_search()
+{
+	var context = window.bab_searchContext;
+	if (!context.searching) {
+		return;	
+	}
+	if (context.currentIndex == 0) {
+		context.tree.collapse();
+		context.tree.initSearch();
+	}
+	context.targetString = cleanStringDiacritics(context.inputField.value);
+	var targetString = context.targetString;
+	
+	window.status = 'Searching [' + targetString + '] ' + context.nbMatches +  ' (' + parseInt((100.0 * context.currentIndex) / context.listItems.length) + '%)';
+	context.inputField.style.backgroundPosition = '' + (100 * context.currentIndex) / context.listItems.length + '% 0'
+	var highlightedDivs = Array(); 
+	var nbItems = context.nbItemsPerLoop;
+	while (nbItems-- > 0 && context.currentIndex < context.listItems.length) {
+		var listItem = context.listItems[context.currentIndex];
+		var content = listItem.getAttribute('content');
+		var div = listItem.getElementsByTagName('DIV')[0];
+		if (content && content.indexOf(targetString) > -1) {
+			context.tree.expandCollapseList(context.tree.rootList, context.tree.NODE_OPEN, listItem.id);
+			highlightedDivs.push(div);
+			context.nbMatches++;
+		} else {
+			div.style.backgroundColor = '';
+		}
+		context.currentIndex++;
+	}
+	while (highlightedDivs.length > 0) {
+		highlightedDivs.pop().style.backgroundColor = '#EEEEEE';
+	}
+
+	if (context.currentIndex < context.listItems.length) {
+		context.timeoutId = window.setTimeout(window.bab_search, 20);
+	} else {
+		if (context.nbMatches > 1) {
+			context.inputField.className = 'bab_searchField';
+		} else if (context.nbMatches == 0) {
+			context.inputField.className = 'bab_searchFieldNotFound';
+		} else {
+			context.inputField.className = 'bab_searchFieldFound';			
+		}
+		window.status = 'Found (' + context.nbMatches + ')';
+		context.inputField.style.backgroundPosition = '1px 50%'
+		window.bab_searchContext.searching = false;
+	}
+}
+
+
+
+
+
 function bab_delaySearch()
 {
-	if (window.bab_treeSearchStack == undefined)
-		window.bab_treeSearchStack = Array();
-	if (this.timeoutId) {
-		window.clearTimeout(this.timeoutId);
-		window.bab_treeSearchStack.pop();
-		this.timeoutId = null;
+	var context = window.bab_searchContext;
+
+	if (context.targetString == cleanStringDiacritics(this.value)) {
+		return;
 	}
 	if (this.value.length >= 3) {
+		if (context.searching == false) {
+			context.searching = true;
+			context.timeoutId = window.setTimeout(bab_search, 200);
+		}
 		this.className = 'bab_searchFieldSearching';
-		this.timeoutId = window.setTimeout(bab_treeSearch, 200, this);
-		window.bab_treeSearchStack.push(this);
+		context.currentIndex = 0;
+		context.nbMatches = 0;
 	} else {
+		if (window.bab_searchContext) {
+			window.clearTimeout(window.bab_searchContext.timeoutId);
+			context.inputField.style.backgroundPosition = '1px 50%'
+			window.bab_searchContext.searching = false;
+		}
 		this.className = 'bab_searchField';
 		this.parentNode.tree.expand();
 		this.parentNode.tree.unhighlightAll();
+		window.status = '';
 	}
 }
 
-
-function bab_treeSearch()
-{
-	element = window.bab_treeSearchStack.pop();
-	text = element.value;
-	tree = element.parentNode.tree;
-	nbMatches = tree.searchItem(text);
-	if (nbMatches == 0) {
-		element.className = 'bab_searchFieldNotFound';
-	} else if (nbMatches == 1) {
-		element.className = 'bab_searchFieldFound';
-	} else {
-		element.className = 'bab_searchField';
-	}
-}
 
 function bab_treeExpand()
 {
@@ -83,22 +144,23 @@ function bab_initTrees()
 			var expand = document.createElement('A');
 			txt = document.createTextNode('Expand');
 			expand.onclick = bab_treeExpand;
-			expand.className = "bab_expandAll";
+			expand.className = 'bab_expandAll';
 			expand.appendChild(txt);
 			toolbar.appendChild(expand);
 			
 			var collapse = document.createElement('A');
 			txt = document.createTextNode('Collapse');
 			collapse.onclick = bab_treeCollapse;
-			collapse.className = "bab_collapseAll";
+			collapse.className = 'bab_collapseAll';
 			collapse.appendChild(txt);
 			toolbar.appendChild(collapse);
 			
 			var search = document.createElement('INPUT');
 			search.type = 'text';
-			search.className = "bab_searchField";
+			search.className = 'bab_searchField';
 			search.onkeyup = bab_delaySearch;
 			toolbar.appendChild(search);
+			window.bab_searchContext = new bab_SearchContext(tree, search);
 
 			div.initialized = true;
 		}
@@ -192,14 +254,22 @@ bab_ul_tree.prototype.expandCollapseAll = function(ul, className)
 
 bab_ul_tree.prototype.collapse = function()
 {
+	if (this.collapsing)
+		return;
+	this.collapsing = true;
 	this.expandCollapseAll(this.rootList, this.NODE_CLOSED);
+	this.collapsing = false;
 }
 
 
 
 bab_ul_tree.prototype.expand = function()
 {
+	if (this.expanding)
+		return;
+	this.expanding = true;
 	this.expandCollapseAll(this.rootList, this.NODE_OPEN);
+	this.expanding = false;
 }
 
 
@@ -221,40 +291,17 @@ bab_ul_tree.prototype.initSearch = function()
 
 bab_ul_tree.prototype.unhighlightAll = function()
 {
+	if (this.unhighlighting)
+		return;
+	this.unhighlighting = true;
 	var listItems = this.rootList.getElementsByTagName('LI');
 	for (var i = 0; i < listItems.length ; i++) {
 		var div = listItems[i].getElementsByTagName('DIV')[0];
 		div.style.backgroundColor = '';
 	}
+	this.unhighlighting = false;
 }
 
-
-bab_ul_tree.prototype.searchItem = function(targetString)
-{
-	this.initSearch();
-	this.collapse();
-	targetString = cleanStringDiacritics(targetString);
-	window.status = 'Searching...';
-	var nbMatches = 0;
-	var highlightedDivs = Array();
-	var listItems = this.rootList.getElementsByTagName('LI');
-	for (var i = 0; i < listItems.length ; i++) {
-		var content = listItems[i].getAttribute('content');
-		var div = listItems[i].getElementsByTagName('DIV')[0];
-		if (content && content.indexOf(targetString) > -1) {
-			this.expandCollapseList(this.rootList, this.NODE_OPEN, listItems[i].id);
-			highlightedDivs.push(div);
-			nbMatches++;
-		} else {
-			div.style.backgroundColor = '';
-		}
-	}
-	while (highlightedDivs.length > 0) {
-		highlightedDivs.pop().style.backgroundColor = '#EEEEEE';
-	}
-	window.status = '';
-	return nbMatches;
-}
 
 function cleanStringDiacritics(text)
 {
