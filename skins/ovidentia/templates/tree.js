@@ -52,7 +52,7 @@ function bab_search()
 		var content = listItem.getAttribute('content');
 		var div = listItem.getElementsByTagName('DIV')[0];
 		if (content && content.indexOf(targetString) > -1) {
-			context.tree.expandCollapseList(context.tree.rootList, context.tree.NODE_OPEN, listItem.id);
+			context.tree.expandCollapseListItem(listItem, context.tree.NODE_OPEN);
 			highlightedDivs.push(div);
 			context.nbMatches++;
 		} else {
@@ -217,6 +217,7 @@ bab_ul_tree.prototype.processList = function(ul)
 }
 
 
+/*
 bab_ul_tree.prototype.expandCollapseList = function(ul, className, itemId)
 {
 	var listItems = ul.getElementsByTagName('LI');
@@ -238,7 +239,28 @@ bab_ul_tree.prototype.expandCollapseList = function(ul, className, itemId)
 			listItem.className = className;
 	}
 }
+*/
 
+
+bab_ul_tree.prototype.expandCollapseListItem = function(listItem, className)
+{
+	listItem = listItem.parentNode.parentNode;
+	while (listItem.tagName == 'LI') {
+		listItem.className = className;
+		listItem = listItem.parentNode.parentNode;
+	}
+}
+
+
+/* TO TRY
+bab_ul_tree.prototype.expandCollapseAll = function(ul, className)
+{
+	var uls = ul.getElementsByTagName('UL');
+	for (var i = 0; i < uls.length; i++) {
+		uls[i].parentNode.className = className;
+	}
+}
+*/
 
 bab_ul_tree.prototype.expandCollapseAll = function(ul, className)
 {
