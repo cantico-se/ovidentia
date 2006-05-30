@@ -351,11 +351,14 @@ class bab_Node extends bab_InNode
 		if ($i === 0)
 			return;
 		$elementClass = get_class($nodes[0]);
-		for ($end = count($nodes) - 1; $end > 0; $end--) {
+		$changed = true;
+		for ($end = count($nodes) - 1; $changed && $end > 0; $end--) {
+			$changed = false;
 			for ($current = 0; $current < $end; $current++) {
 				$currentElement =& $nodes[$current]->getData();
 				$nextElement =& $nodes[$current + 1]->getData();
 				if ($currentElement->compare($nextElement) > 0) {
+					$changed = true;
 					bab_Node::swapConsecutiveNodes($nodes[$current]);
 					$temp =& $nodes[$current];
 					$nodes[$current] =& $nodes[$current + 1];
@@ -780,7 +783,8 @@ class bab_TreeView
 		if (is_null($this->_templateCache)) {
 			if (!$this->_upToDate)
 				$this->_updateTree();
-			$this->_templateCache = bab_printTemplate($this, $this->_templateFile, $this->_templateSection);
+			$this->_templateCache = bab_printTemplate($this, $this->_templateFile, 'treeview_css');
+			$this->_templateCache .= bab_printTemplate($this, $this->_templateFile, $this->_templateSection);
 			$this->_templateCache .= bab_printTemplate($this, $this->_templateFile, 'treeview_scripts');
 		}
 		return $this->_templateCache;
@@ -1538,23 +1542,23 @@ function bab_tree_test()
 
 	// Example of file tree view.
 	//---------------------------
-//	$start = microtime(true);
+//	$start = microtime_float(true);
 	$treeView = new bab_FileTreeView('file', 'N', '0');
-//	$end = microtime(true);
+//	$end = microtime_float(true);
 //	echo '<div style="background-color: #FFFFFF; border: 1px solid red; padding: 4px; position: relative; z-index: 255"><pre>';
 //	print_r('new bab_FileTreeView : ' . ($end - $start));
 //	echo "</div></pre>\n";
 
-//	$start = microtime(true);
+//	$start = microtime_float(true);
 	$treeView->addStatistics('2000-01-01 00:00', '2007-01-01 00:00');
-//	$end = microtime(true);
+//	$end = microtime_float(true);
 //	echo '<div style="background-color: #FFFFFF; border: 1px solid red; padding: 4px; position: relative; z-index: 255"><pre>';
 //	print_r('addStatistics : ' . ($end - $start));
 //	echo "</div></pre>\n";
 
-//	$start = microtime(true);
+//	$start = microtime_float(true);
 	$treeView->sort();
-//	$end = microtime(true);
+//	$end = microtime_float(true);
 //	echo '<div style="background-color: #FFFFFF; border: 1px solid red; padding: 4px; position: relative; z-index: 255"><pre>';
 //	print_r('sort : ' . ($end - $start));
 //	echo "</div></pre>\n";

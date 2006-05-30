@@ -23,7 +23,7 @@ function bab_SearchContext(tree, inputField)
 	this.listItems = tree.rootList.getElementsByTagName('LI');
 	this.currentIndex = 0;
 	this.timeoutId = null;
-	this.nbItemsPerLoop = 30;
+	this.nbItemsPerLoop = 40;
 	this.nbMatches = 0;
 	this.searching = false;
 	this.targetString = '';
@@ -36,36 +36,44 @@ function bab_search()
 	if (!context.searching) {
 		return;	
 	}
-	if (context.currentIndex == 0) {
+	if (context.targetString != cleanStringDiacritics(context.inputField.value)) {
+		context.currentIndex = 0;
+		context.nbMatches = 0;
 		context.tree.collapse();
 		context.tree.initSearch();
+		context.targetString = cleanStringDiacritics(context.inputField.value);
 	}
-	context.targetString = cleanStringDiacritics(context.inputField.value);
 	var targetString = context.targetString;
 	
-	window.status = 'Searching [' + targetString + '] ' + context.nbMatches +  ' (' + parseInt((100.0 * context.currentIndex) / context.listItems.length) + '%)';
-	context.inputField.style.backgroundPosition = '' + (100 * context.currentIndex) / context.listItems.length + '% 0'
-	var highlightedDivs = Array(); 
 	var nbItems = context.nbItemsPerLoop;
-	while (nbItems-- > 0 && context.currentIndex < context.listItems.length) {
-		var listItem = context.listItems[context.currentIndex];
+
+	var currentIndex = context.currentIndex;
+	while (nbItems-- > 0 && currentIndex < context.listItems.length) {
+		var listItem = context.listItems[currentIndex];
 		var content = listItem.getAttribute('content');
 		var div = listItem.getElementsByTagName('DIV')[0];
 		if (content && content.indexOf(targetString) > -1) {
 			context.tree.expandCollapseListItem(listItem, context.tree.NODE_OPEN);
-			highlightedDivs.push(div);
+			div.style.backgroundColor = '#EEEEEE';
 			context.nbMatches++;
 		} else {
 			div.style.backgroundColor = '';
 		}
-		context.currentIndex++;
+		currentIndex++;
 	}
-	while (highlightedDivs.length > 0) {
-		highlightedDivs.pop().style.backgroundColor = '#EEEEEE';
+	
+	if (context.targetString == cleanStringDiacritics(context.inputField.value)) {
+		context.currentIndex = currentIndex;
+	} else {
+		context.timeoutId = window.setTimeout(window.bab_search, 10);
+		return;
 	}
 
-	if (context.currentIndex < context.listItems.length) {
-		context.timeoutId = window.setTimeout(window.bab_search, 20);
+	window.status = '' + context.currentIndex + ' / ' + context.listItems.length
+	context.inputField.style.backgroundPosition = '' + (100 * currentIndex) / context.listItems.length + '% 0'
+
+	if (currentIndex < context.listItems.length) {
+		context.timeoutId = window.setTimeout(window.bab_search, 10);
 	} else {
 		if (context.nbMatches > 1) {
 			context.inputField.className = 'bab_searchField';
@@ -74,55 +82,44 @@ function bab_search()
 		} else {
 			context.inputField.className = 'bab_searchFieldFound';			
 		}
-		window.status = 'Found (' + context.nbMatches + ')';
 		context.inputField.style.backgroundPosition = '1px 50%'
-		window.bab_searchContext.searching = false;
+		context.searching = false;
 	}
 }
-
-
-
 
 
 function bab_delaySearch()
 {
 	var context = window.bab_searchContext;
 
-	if (context.targetString == cleanStringDiacritics(this.value)) {
-		return;
-	}
-	if (this.value.length >= 3) {
+	if (this.value.length >= 2) {
 		if (context.searching == false) {
 			context.searching = true;
-			context.timeoutId = window.setTimeout(bab_search, 200);
+			context.timeoutId = window.setTimeout(bab_search, 300);
 		}
 		this.className = 'bab_searchFieldSearching';
-		context.currentIndex = 0;
-		context.nbMatches = 0;
+		context.targetString = '';
 	} else {
-		if (window.bab_searchContext) {
-			window.clearTimeout(window.bab_searchContext.timeoutId);
-			context.inputField.style.backgroundPosition = '1px 50%'
-			window.bab_searchContext.searching = false;
+		window.clearTimeout(context.timeoutId);
+		context.inputField.style.backgroundPosition = '1px 50%'
+		context.searching = false;
+		if (this.className != 'bab_searchField') {
+			this.className = 'bab_searchField';
+			this.parentNode.tree.expand();
+			this.parentNode.tree.unhighlightAll();
 		}
-		this.className = 'bab_searchField';
-		this.parentNode.tree.expand();
-		this.parentNode.tree.unhighlightAll();
-		window.status = '';
 	}
 }
 
 
 function bab_treeExpand()
 {
-	tree = this.parentNode.tree;
-	tree.expand();
+	this.parentNode.tree.expand();
 }
 
 function bab_treeCollapse()
 {
-	tree = this.parentNode.tree;
-	tree.collapse();
+	this.parentNode.tree.collapse();
 }
 
 function bab_initTrees()
@@ -132,9 +129,8 @@ function bab_initTrees()
 		div = divs[i];
 		if (!div.initialized && hasClass(div, 'bab_tree')) {
 			tree = new bab_ul_tree(div.getElementsByTagName('UL')[0]);
-			tree.collapse();
 			tree.processList(tree.rootList);
-//			tree.expand();
+			tree.initSearch();
 			
 			var toolbar = document.createElement('DIV');
 			toolbar.className = 'bab_treeToolbar BabSiteAdminTitleFontBackground';
@@ -203,72 +199,39 @@ function bab_onNodeClick()
 
 bab_ul_tree.prototype.processList = function(ul)
 {
-	var listItems = ul.getElementsByTagName('LI');
-	for (var i = 0; i < listItems.length; i++) {
-		var listItem = listItems[i];
-		if (listItem.getElementsByTagName('UL').length > 0) {
-			listItem.getElementsByTagName('IMG')[0].onclick = bab_onNodeClick;
-		}
-		var div = listItem.getElementsByTagName('div')[0];
-		div.className = this.nodeLineClass;
-		div.onmouseover = bab_onItemMouseOver;
-		div.onmouseout = bab_onItemMouseOut;
-	}
-}
+	window.console && console.time('processList');
 
-
-/*
-bab_ul_tree.prototype.expandCollapseList = function(ul, className, itemId)
-{
-	var listItems = ul.getElementsByTagName('LI');
-	for (var i = 0; i < listItems.length; i++) {
-		var listItem = listItems[i];
-		if (itemId != null && listItem.id == itemId)
-			return true;
-		var uls = listItem.getElementsByTagName('UL');
-		if (uls.length > 0) {
-			subLists = true;
-			subUl = uls[0];
-			var ret = this.expandCollapseList(subUl, className, itemId);
-			if (itemId != null && ret) {
-				listItem.className = className;
-				return true;
-			}
-		}
-		if (subLists && itemId == null)
-			listItem.className = className;
+	var uls = ul.getElementsByTagName('UL');
+	for (var i = 0; i < uls.length; i++) {
+		var li = uls[i].parentNode;
+		li.className = this.NODE_CLOSED;
+		var div = li.getElementsByTagName('DIV')[0];
+		var img = div.getElementsByTagName('IMG')[0];
+		img.onclick = bab_onNodeClick;
 	}
+
+	window.console && console.timeEnd('processList');
 }
-*/
 
 
 bab_ul_tree.prototype.expandCollapseListItem = function(listItem, className)
 {
 	listItem = listItem.parentNode.parentNode;
 	while (listItem.tagName == 'LI') {
-		listItem.className = className;
+		if (listItem.className != className) {
+			listItem.className = className;
+		}
 		listItem = listItem.parentNode.parentNode;
 	}
 }
 
 
-/* TO TRY
 bab_ul_tree.prototype.expandCollapseAll = function(ul, className)
 {
 	var uls = ul.getElementsByTagName('UL');
 	for (var i = 0; i < uls.length; i++) {
-		uls[i].parentNode.className = className;
-	}
-}
-*/
-
-bab_ul_tree.prototype.expandCollapseAll = function(ul, className)
-{
-	var listItems = ul.getElementsByTagName('LI');
-	for (var i = 0; i < listItems.length; i++) {
-		var listItem = listItems[i];
-		if (listItem.getElementsByTagName('UL').length > 0) {
-			listItem.className = className;
+		if (uls[i].parentNode.className != className) {
+			uls[i].parentNode.className = className;
 		}
 	}
 }
@@ -276,69 +239,63 @@ bab_ul_tree.prototype.expandCollapseAll = function(ul, className)
 
 bab_ul_tree.prototype.collapse = function()
 {
-	if (this.collapsing)
-		return;
-	this.collapsing = true;
 	this.expandCollapseAll(this.rootList, this.NODE_CLOSED);
-	this.collapsing = false;
 }
 
 
 
 bab_ul_tree.prototype.expand = function()
 {
-	if (this.expanding)
-		return;
-	this.expanding = true;
 	this.expandCollapseAll(this.rootList, this.NODE_OPEN);
-	this.expanding = false;
 }
 
 
 bab_ul_tree.prototype.initSearch = function()
 {
+	window.console && console.time('processList');
 	if (this.initDone)
 		return;
 	var listItems = this.rootList.getElementsByTagName('LI');
 	for (var i = 0; i < listItems.length ; i++) {
-//		var span = document.getElementById('content' + listItems[i].id);
-		var span = listItems[i].getElementsByTagName('DIV')[0].getElementsByTagName('SPAN')[0];
+		var div = listItems[i].getElementsByTagName('DIV')[0]
+		var span = div.getElementsByTagName('SPAN')[0];
 		var text = span.firstChild.nodeValue;
 		text = cleanStringDiacritics(text);
 		listItems[i].setAttribute('content', text);
+		
+		div.onmouseover = bab_onItemMouseOver;
+		div.onmouseout = bab_onItemMouseOut;		
 	}
 	this.initDone = true;
+	window.console && console.timeEnd('processList');
 }
 
 
 bab_ul_tree.prototype.unhighlightAll = function()
 {
-	if (this.unhighlighting)
-		return;
-	this.unhighlighting = true;
 	var listItems = this.rootList.getElementsByTagName('LI');
 	for (var i = 0; i < listItems.length ; i++) {
 		var div = listItems[i].getElementsByTagName('DIV')[0];
-		div.style.backgroundColor = '';
+		if (div.style.backgroundColor != '') {
+			div.style.backgroundColor = '';
+		}
 	}
-	this.unhighlighting = false;
 }
 
 
 function cleanStringDiacritics(text)
 {
-/*
 	try {
-		text = text.replace(/àâä/g, "a");
-		text = text.replace(/éèêë/g, "e");
-		text = text.replace(/ìîï/g, "i");
-		text = text.replace(/òôö/g, "o");
-		text = text.replace(/ùûü/g, "u");
+		text = text.replace(/à|â|ä/g, "a");
+		text = text.replace(/é|è|ê|ë/g, "e");
+		text = text.replace(/ì|î|ï/g, "i");
+		text = text.replace(/ò|ô|ö/g, "o");
+		text = text.replace(/ù|û|ü/g, "u");
 		text = text.replace(/ç/g, "c");
 	} catch (e) {
 		text = '';
 	}
-*/
+
 	return text.toUpperCase();
 }
 

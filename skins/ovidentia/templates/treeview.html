@@ -15,7 +15,7 @@
 	  <!--#endif t_levelVariation -->
 	  <!--#if t_levelVariation ">= -1" -->
 	    <li id="li{ t_id }" class="bab_ul_tree_leaf">
-	      <div>
+	      <div class="line">
 	        <img class="bullet" src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="20" height="16" />
 	        <!--#if t_nodeIcon --><img style="vertical-align: middle" src="{ t_nodeIcon }" /> <!--#else t_nodeIcon --><img style="vertical-align: middle" src="{ babSkinPath }images/Puces/Space1PxTrans.gif" style="height: 16px" /> <!--#endif t_nodeIcon -->
 	        <!--#if t_link  -->
@@ -24,8 +24,8 @@
 			<span class="level{ t_previousLevel } { t_type }" style="vertical-align: middle">{ t_title }</span>
 	        <!--#endif t_link  -->
 	        <!--#if t_showRightElements -->
-	        <span style="padding-left: 50px; position: absolute; right: 0px; white-space: nowrap">
-	        <span class="level{ t_previousLevel } { t_type }" style="padding-right: 8px">{ t_info }</span>
+	        <span class="right_elements">
+	        { t_info }
 	        <!--#in getNextAction -->
 	        <a href="{ action_url }" title="{ action_caption }"><img style="vertical-align: middle; padding-right: 8px" src="{ action_icon }" /></a>
 	        <!--#endin getNextAction -->
@@ -39,14 +39,18 @@
 
 <!--#end treeview -->
 
-<!--#begin treeview_scripts -->
+<!--#begin treeview_css -->
 <style type="text/css">
 	@import url('{ babInstallPath }styles/tree.css');
 </style>
+<!--#end treeview_css -->
+
+<!--#begin treeview_scripts -->
 <script type="text/javascript" src="{ babSkinPath }templates/tree.js"></script>
 <script type="text/javascript">
 <!--
 
+var bab_bulletImgSrc = '{ babSkinPath }images/Puces/Space1PxTrans.gif';
 bab_initTrees();
 
 -->
