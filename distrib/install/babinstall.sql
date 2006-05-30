@@ -1384,6 +1384,7 @@ CREATE TABLE bab_ldap_directories (
   id int(11) unsigned NOT NULL auto_increment,
   name varchar(255) NOT NULL default '',
   description varchar(255) NOT NULL default '',
+  server_type tinyint(1) unsigned NOT NULL default '0',
   host tinytext NOT NULL,
   basedn text NOT NULL,
   userdn text NOT NULL,

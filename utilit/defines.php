@@ -31,6 +31,9 @@ define("BAB_ADMINISTRATOR_GROUP",	3);
 
 define("BAB_ACL_GROUP_TREE", 1000000000);
 
+define("BAB_LDAP_SERVER_OL",	0); /* OpenLdap */
+define("BAB_LDAP_SERVER_AD",	1); /* Active Directory */
+
 define("BAB_AUTHENTIFICATION_OVIDENTIA",	0);
 define("BAB_AUTHENTIFICATION_LDAP",			1);
 define("BAB_AUTHENTIFICATION_AD",			2); /* Active directory */

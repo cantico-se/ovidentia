@@ -90,6 +90,16 @@
 </td>
 </tr>
 <tr> 
+<td align="right" nowrap valign="middle">{ servertypetxt }</td>
+<td valign="middle">
+<select name="servertype">
+<!--#in getnextservertype --> 
+<option value="{ stid }" { selected }>{ stval }</option>
+<!--#endin getnextservertype --> 
+</select>
+</td>
+</tr>
+<tr> 
 <td align="right" nowrap valign="middle">{ basedn }</td>
 <td valign="middle">
 <input type="text" name="basedn" size="45" value="{ vbasedn }">
@@ -147,6 +157,16 @@
 <td align="right" nowrap valign="middle">{ description }</td>
 <td valign="middle">
 <input type="text" name="description" size="45" value="{ vdescription }">
+</td>
+</tr>
+<tr> 
+<td align="right" nowrap valign="middle">{ servertypetxt }</td>
+<td valign="middle">
+<select name="servertype">
+<!--#in getnextservertype --> 
+<option value="{ stid }" { selected }>{ stval }</option>
+<!--#endin getnextservertype --> 
+</select>
 </td>
 </tr>
 <tr> 

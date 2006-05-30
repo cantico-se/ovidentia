@@ -26,6 +26,8 @@ include_once $babInstallPath."utilit/uiutil.php";
 include_once $babInstallPath."utilit/dirincl.php";
 include_once $babInstallPath."admin/acl.php";
 
+
+
 function isDirectoryGroup($id)
 {
 	global $babDB;
@@ -198,7 +200,7 @@ function search_options()
 
 
 
-function addAdLdap($name, $description, $host, $basedn, $userdn)
+function addAdLdap($name, $description, $servertype, $host, $basedn, $userdn)
 	{
 	global $babBody;
 	class temp
@@ -222,10 +224,12 @@ function addAdLdap($name, $description, $host, $basedn, $userdn)
 		var $vbasedn;
 		var $vuserdn;
 
-		function temp($name, $description, $host, $basedn, $userdn)
+		function temp($name, $description, $servertype, $host, $basedn, $userdn)
 			{
+			global $babLdapServerTypes;
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
+			$this->servertypetxt = bab_translate("Server type");
 			$this->no = bab_translate("No");
 			$this->yes = bab_translate("Yes");
 			$this->password = bab_translate("Password");
@@ -241,11 +245,36 @@ function addAdLdap($name, $description, $host, $basedn, $userdn)
 			$this->vhost = $host == "" ? "" : $host;
 			$this->vbasedn = $basedn == "" ? "" : $basedn;
 			$this->vuserdn = $userdn == "" ? "" : $userdn;
-
+			$this->vservettype = $servertype;
+			$this->count = count($babLdapServerTypes);
 			}
+
+		function getnextservertype()
+			{
+			global $babLdapServerTypes;
+			static $i = 0;
+			if( $i < $this->count)
+				{
+				$this->stid = $i;
+				$this->stval = $babLdapServerTypes[$i];
+				if( $this->vservettype == $i )
+					{
+					$this->selected = 'selected';
+					}
+				else
+					{
+					$this->selected = '';
+					}
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+
 		}
 
-	$temp = new temp($name, $description, $host, $basedn, $userdn);
+	$temp = new temp($name, $description, $servertype, $host, $basedn, $userdn);
 	$babBody->babecho(	bab_printTemplate($temp,"admdir.html", "ldapadd"));
 	}
 
@@ -273,9 +302,11 @@ function modifyLdap($id)
 
 		function temp($id)
 			{
+			global $babLdapServerTypes;
 			$this->id = $id;
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
+			$this->servertypetxt = bab_translate("Server type");
 			$this->password = bab_translate("Password");
 			$this->repassword = bab_translate("Confirm");
 			$this->host = bab_translate("Host");
@@ -294,8 +325,35 @@ function modifyLdap($id)
 				$this->vhost = $arr['host'];
 				$this->vbasedn = $arr['basedn'];
 				$this->vuserdn = $arr['userdn'];
+				$this->vservettype = $arr['server_type'];
+
 				}
+			$this->count = count($babLdapServerTypes);
 			}
+
+		function getnextservertype()
+			{
+			global $babLdapServerTypes;
+			static $i = 0;
+			if( $i < $this->count)
+				{
+				$this->stid = $i;
+				$this->stval = $babLdapServerTypes[$i];
+				if( $this->vservettype == $i )
+					{
+					$this->selected = 'selected';
+					}
+				else
+					{
+					$this->selected = '';
+					}
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+
 		}
 
 	$temp = new temp($id);
@@ -906,7 +964,7 @@ function showDbAddField($id, $fieldn, $fieldv)
 	$babBodyPopup->babecho(bab_printTemplate($temp, "admdir.html", "dbaddfield"));
 }
 
-function addLdapDirectory($name, $description, $host, $basedn, $userdn, $password1, $password2)
+function addLdapDirectory($name, $description, $servertype, $host, $basedn, $userdn, $password1, $password2)
 	{
 	global $babBody;
 
@@ -943,7 +1001,7 @@ function addLdapDirectory($name, $description, $host, $basedn, $userdn, $passwor
 		}
 	else
 		{
-		$req = "insert into ".BAB_LDAP_DIRECTORIES_TBL." (name, description, host, basedn, userdn, password, id_dgowner) VALUES ('" .$name. "', '" . $description. "', '" . $host. "', '" . $basedn. "', '" . $userdn. "', ENCODE(\"".$password1."\",\"".$GLOBALS['BAB_HASH_VAR']."\"), '".$babBody->currentAdmGroup."')";
+		$req = "insert into ".BAB_LDAP_DIRECTORIES_TBL." (name, description, server_type, host, basedn, userdn, password, id_dgowner) VALUES ('" .$name. "', '" . $description. "', '" . $servertype. "', '" . $host. "', '" . $basedn. "', '" . $userdn. "', ENCODE(\"".$password1."\",\"".$GLOBALS['BAB_HASH_VAR']."\"), '".$babBody->currentAdmGroup."')";
 		$db->db_query($req);
 		}
 	return true;
@@ -1022,7 +1080,7 @@ function addDbDirectory($name, $description, $displayiu, $fields, $rw, $rq, $ml,
 	return true;
 	}
 
-function modifyAdLdap($id, $name, $description, $host, $basedn, $userdn, $password1, $password2)
+function modifyAdLdap($id, $name, $description, $servertype, $host, $basedn, $userdn, $password1, $password2)
 	{
 	global $babBody;
 
@@ -1062,7 +1120,7 @@ function modifyAdLdap($id, $name, $description, $host, $basedn, $userdn, $passwo
 		}
 	else
 		{
-		$req = "update ".BAB_LDAP_DIRECTORIES_TBL." set name='".$name."', description='".$description."', host='".$host."', basedn='".$basedn."', userdn='".$userdn."'";
+		$req = "update ".BAB_LDAP_DIRECTORIES_TBL." set name='".$name."', description='".$description."', server_type='".$servertype."', host='".$host."', basedn='".$basedn."', userdn='".$userdn."'";
 		if( !empty($password1) )
 			$req .= ", password=ENCODE(\"".$password1."\",\"".$GLOBALS['BAB_HASH_VAR']."\")";
 		$req .= " where id='".$id."'";
@@ -1400,7 +1458,7 @@ if( isset($add))
 	switch($add)
 	{
 		case "ldap":
-			if( !addLdapDirectory($adname, $description, $host, $basedn, $userdn, $password1, $password2))
+			if( !addLdapDirectory($adname, $description, $servertype, $host, $basedn, $userdn, $password1, $password2))
 				{
 				$idx = "new";
 				}
@@ -1425,7 +1483,7 @@ if( isset($modify))
 		switch($modify)
 		{
 			case "ldap":
-				if( !modifyAdLdap($id, $adname, $description, $host, $basedn, $userdn, $password1, $password2))
+				if( !modifyAdLdap($id, $adname, $description, $servertype, $host, $basedn, $userdn, $password1, $password2))
 				{
 				$idx = "mldap";
 				}
@@ -1675,10 +1733,11 @@ switch($idx)
 			}
 		if( !isset($adname) ) { $adname ='';}
 		if( !isset($description) ) { $description ='';}
+		if( !isset($servertype) ) { $servertype =0;}
 		if( !isset($host) ) { $host ='';}
 		if( !isset($basedn) ) { $basedn ='';}
 		if( !isset($userdn) ) { $userdn ='';}
-		addAdLdap($adname, $description, $host, $basedn, $userdn);
+		addAdLdap($adname, $description, $servertype, $host, $basedn, $userdn);
 		break;
 
 	case "db":

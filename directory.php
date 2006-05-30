@@ -185,6 +185,7 @@ function browseLdapDirectory($id, $pos)
 				{
 				$arr = $db->db_fetch_array($res);
 				$GLOBALS['babWebStat']->addLdapDirectory($id);
+				$this->ldapservertype = $arr['server_type'];
 				$this->ldap = new babLDAP($arr['host'], "", true);
 				$this->ldap->connect();
 				$this->ldap->bind($arr['userdn'], $arr['adpass']);
@@ -195,7 +196,7 @@ function browseLdapDirectory($id, $pos)
 					$this->order = array();
 					for ($i = 0 ; $i < $this->count ; $i++)
 						{
-						$this->order[$i] = utf8_decode($this->entries[$i]['sn'][0]);
+						$this->order[$i] = ldapDecode($this->entries[$i]['sn'][0], $this->ldapservertype);
 						}
 
 					natcasesort($this->order);
@@ -234,12 +235,12 @@ function browseLdapDirectory($id, $pos)
 				$this->btel = "";
 				$this->htel = "";
 				$this->email = "";
-				$this->sn = utf8_decode($this->entries[$o]['sn'][0]);
-				$this->givenname = utf8_decode($this->entries[$o]['givenname'][0]);
+				$this->sn = ldapDecode($this->entries[$o]['sn'][0], $this->ldapservertype);
+				$this->givenname = ldapDecode($this->entries[$o]['givenname'][0], $this->ldapservertype);
 				$this->url = $GLOBALS['babUrlScript']."?tg=directory&idx=dldap&id=".$this->id."&cn=".urlencode(quoted_printable_decode($this->entries[$o]['cn'][0]))."&pos=".$this->pos;
-				$this->btel = isset($this->entries[$o]['telephonenumber'][0])?utf8_decode($this->entries[$o]['telephonenumber'][0]):"";
-				$this->htel = isset($this->entries[$o]['homephone'][0])?utf8_decode($this->entries[$o]['homephone'][0]):"";
-				$this->email = isset($this->entries[$o]['mail'][0])?utf8_decode($this->entries[$o]['mail'][0]):"";
+				$this->btel = isset($this->entries[$o]['telephonenumber'][0])?ldapDecode($this->entries[$o]['telephonenumber'][0], $this->ldapservertype):"";
+				$this->htel = isset($this->entries[$o]['homephone'][0])?ldapDecode($this->entries[$o]['homephone'][0], $this->ldapservertype):"";
+				$this->email = isset($this->entries[$o]['mail'][0])?ldapDecode($this->entries[$o]['mail'][0], $this->ldapservertype):"";
 				$this->urlmail = $GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".$this->accid."&to=".$this->email;
 				$i++;
 				return true;
@@ -602,12 +603,13 @@ function summaryLdapContact($id, $cn)
 			if( $res && $this->db->db_num_rows($res) > 0)
 				{
 				$arr = $this->db->db_fetch_array($res);
+				$this->ldapservertype = $arr['server_type'];
 				$this->ldap = new babLDAP($arr['host'], "", true);
 				$this->ldap->connect();
 				$this->ldap->bind($arr['userdn'], $arr['adpass']);
-				$this->entries = $this->ldap->search($arr['basedn'],"(|(cn=".$cn."))");
+				$this->entries = $this->ldap->search($arr['basedn'],"(|(cn=".ldapEncode($cn, $this->ldapservertype)."))");
 				$this->ldap->close();
-				$this->name = utf8_decode($this->entries[0]['cn'][0]);
+				$this->name = ldapDecode($this->entries[0]['cn'][0], $this->ldapservertype);
 				$this->urlimg = $GLOBALS['babUrlScript']."?tg=directory&idx=getimgl&id=".$id."&cn=".$cn;
 				}
 			$this->bfieldv = true;
@@ -621,7 +623,7 @@ function summaryLdapContact($id, $cn)
 				{
 				$arr = $this->db->db_fetch_array($this->res);
 				$this->fieldn = translateDirectoryField($arr['description']);
-				$this->fieldv = isset($this->entries[0][$arr['x_name']][0]) ? utf8_decode($this->entries[0][$arr['x_name']][0]) : '';
+				$this->fieldv = isset($this->entries[0][$arr['x_name']][0]) ? ldapDecode($this->entries[0][$arr['x_name']][0], $this->ldapservertype) : '';
 				$i++;
 				return true;
 				}
