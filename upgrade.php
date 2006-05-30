@@ -5961,6 +5961,7 @@ function upgradeXXXtoYYY()
 			CREATE TABLE `" . BAB_TSKMGR_SPECIFIC_FIELDS_TEXT_CLASS_TBL . "` (
 				`id` INTEGER UNSIGNED NOT NULL,
 				`defaultValue` VARCHAR(255) NOT NULL default '',
+				`isDefaultValue` TINYINT UNSIGNED NOT NULL default '1',
 				PRIMARY KEY(`id`)) TYPE=MyISAM
 		");
 		
@@ -5977,6 +5978,7 @@ function upgradeXXXtoYYY()
 			CREATE TABLE `" . BAB_TSKMGR_SPECIFIC_FIELDS_AREA_CLASS_TBL . "` (
 				`id` INTEGER UNSIGNED NOT NULL,
 				`defaultValue` TEXT NOT NULL default '',
+				`isDefaultValue` TINYINT UNSIGNED NOT NULL default '1',
 				PRIMARY KEY(`id`)) TYPE=MyISAM
 		");
 		
@@ -5994,7 +5996,7 @@ function upgradeXXXtoYYY()
 				`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 				`idFldBase` INTEGER UNSIGNED NOT NULL default '0',
 				`value` VARCHAR(255) NOT NULL default '',
-				`isDefaultOption` TINYINT UNSIGNED NOT NULL default '0',
+				`isDefaultValue` TINYINT UNSIGNED NOT NULL default '0',
 				`position` TINYINT UNSIGNED NOT NULL default '0',
 				PRIMARY KEY(`id`)) TYPE=MyISAM
 		");
@@ -6013,6 +6015,8 @@ function upgradeXXXtoYYY()
 				`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 				`idSpFldClass` INTEGER UNSIGNED NOT NULL default '0',
 				`idTask` INTEGER UNSIGNED NOT NULL default '0',
+				`value` TEXT NOT NULL default '',
+				`position` INTEGER UNSIGNED NOT NULL default '0',
 				PRIMARY KEY(`id`, `idSpFldClass`),
 				INDEX `idSpFldClass`(`idSpFldClass`)) TYPE=MyISAM
 		");
@@ -6245,8 +6249,7 @@ function upgradeXXXtoYYY()
 				`idUserCreated` INTEGER UNSIGNED NOT NULL default '0',
 				`idUserModified` INTEGER UNSIGNED NOT NULL default '0',
 				`class` TINYINT UNSIGNED NOT NULL default '0',
-				`approvable` TINYINT UNSIGNED NOT NULL default '0',
-				`state` TINYINT UNSIGNED NOT NULL default '0',
+				`participationStatus` TINYINT UNSIGNED NOT NULL default '0',
 				`idPredecessor` INTEGER UNSIGNED NOT NULL default '0',
 				`linkType` TINYINT UNSIGNED NOT NULL default '0',
 				`idCalEvent` INTEGER UNSIGNED NOT NULL default '0',
@@ -6257,6 +6260,8 @@ function upgradeXXXtoYYY()
 				`color` VARCHAR(8) NOT NULL default '',
 				`position` INTEGER UNSIGNED NOT NULL default '0',
 				`completion` INTEGER UNSIGNED NOT NULL default '0',
+				`startDate` DATETIME NOT NULL default '0000-00-00 00:00:00',
+				`endDate` DATETIME NOT NULL default '0000-00-00 00:00:00',
 				PRIMARY KEY(`id`, `idProject`),
 				INDEX `idProject`(`idProject`),
 				INDEX `majorVersion`(`majorVersion`),
@@ -6295,7 +6300,7 @@ function upgradeXXXtoYYY()
 		}
 	}
 	
-	$arr = $db->db_fetch_array($db->db_query('DESCRIBE `' . BAB_DG_GROUPS_TBL .'` taskmanager'));
+	$arr = $db->db_fetch_array($db->db_query('DESCRIBE `' . BAB_DG_GROUPS_TBL . '` taskmanager'));
 	if ( $arr[0] != 'taskmanager' )
 	{
 		$res = $db->db_query('ALTER TABLE `' . BAB_DG_GROUPS_TBL .'` ADD `taskmanager`  enum(\'N\',\'Y\') NOT NULL default \'N\' AFTER `orgchart` ');

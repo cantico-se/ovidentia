@@ -83,4 +83,10 @@ define('BAB_TM_TODO', 2);
 //duration type
 define('BAB_TM_DURATION', 0);
 define('BAB_TM_DATE', 1);
+
+//participation status
+define('BAB_TM_TENTATIVE', 0);
+define('BAB_TM_ACCEPTED', 1);
+define('BAB_TM_IN_PROGRESS', 2);
+define('BAB_TM_ENDED', 3);
 ?>

@@ -467,7 +467,7 @@ function addModifySpecificFieldRadio($iIdProjectSpace, $iIdProject)
 		{
 			$aAttribut = array(
 				'idFldBase' => $iIdField, 'value' => $value, 'position' => $key, 
-				'isDefaultOption' => ($iDefaultOption == $key) ? BAB_TM_YES : BAB_TM_NO);
+				'isDefaultValue' => ($iDefaultOption == $key) ? BAB_TM_YES : BAB_TM_NO);
 				
 			$tblWr->save($aAttribut, $skipFirst);
 		}

@@ -356,11 +356,11 @@ function onMenuSelected(oSelectedLi)
 	{
 		case 'oLiGeneral':
 		{
-			oLiGeneral.firstChild.className = 'current';
-			oLiPredecessors.firstChild.className = '';
-			oLiResources.firstChild.className = '';
-			oLiCommentaries.firstChild.className = '';
-			oLiSpfFld.firstChild.className = '';
+			if(null != oLiGeneral) oLiGeneral.firstChild.className = 'current';
+			if(null != oLiPredecessors) oLiPredecessors.firstChild.className = '';
+			if(null != oLiResources) oLiResources.firstChild.className = '';
+			if(null != oLiCommentaries) oLiCommentaries.firstChild.className = '';
+			if(null != oLiSpfFld) oLiSpfFld.firstChild.className = '';
 			
 			showHideElement('sGeneral', g_tskMgrShow);
 			showHideElement('sSpfFld', g_tskMgrHide);
@@ -372,12 +372,12 @@ function onMenuSelected(oSelectedLi)
 		
 		case 'oLiPredecessors':
 		{
-			oLiGeneral.firstChild.className = '';
-			oLiPredecessors.firstChild.className = 'current';
-			oLiResources.firstChild.className = '';
-			oLiCommentaries.firstChild.className = '';
-			oLiSpfFld.firstChild.className = '';
-			
+			if(null != oLiGeneral) oLiGeneral.firstChild.className = '';
+			if(null != oLiPredecessors) oLiPredecessors.firstChild.className = 'current';
+			if(null != oLiResources) oLiResources.firstChild.className = '';
+			if(null != oLiCommentaries) oLiCommentaries.firstChild.className = '';
+			if(null != oLiSpfFld) oLiSpfFld.firstChild.className = '';
+
 			showHideElement('sGeneral', g_tskMgrHide);
 			showHideElement('sSpfFld', g_tskMgrHide);
 			showHideElement('sCommentaries', g_tskMgrHide);
@@ -388,11 +388,11 @@ function onMenuSelected(oSelectedLi)
 		
 		case 'oLiResources':
 		{
-			oLiGeneral.firstChild.className = '';
-			oLiPredecessors.firstChild.className = '';
-			oLiResources.firstChild.className = 'current';
-			oLiCommentaries.firstChild.className = '';
-			oLiSpfFld.firstChild.className = '';
+			if(null != oLiGeneral) oLiGeneral.firstChild.className = '';
+			if(null != oLiPredecessors) oLiPredecessors.firstChild.className = '';
+			if(null != oLiResources) oLiResources.firstChild.className = 'current';
+			if(null != oLiCommentaries) oLiCommentaries.firstChild.className = '';
+			if(null != oLiSpfFld) oLiSpfFld.firstChild.className = '';
 			
 			showHideElement('sGeneral', g_tskMgrHide);
 			showHideElement('sSpfFld', g_tskMgrHide);
@@ -404,11 +404,11 @@ function onMenuSelected(oSelectedLi)
 		
 		case 'oLiCommentaries':
 		{
-			oLiGeneral.firstChild.className = '';
-			oLiPredecessors.firstChild.className = '';
-			oLiResources.firstChild.className = '';
-			oLiCommentaries.firstChild.className = 'current';
-			oLiSpfFld.firstChild.className = '';
+			if(null != oLiGeneral) oLiGeneral.firstChild.className = '';
+			if(null != oLiPredecessors) oLiPredecessors.firstChild.className = '';
+			if(null != oLiResources) oLiResources.firstChild.className = '';
+			if(null != oLiCommentaries) oLiCommentaries.firstChild.className = 'current';
+			if(null != oLiSpfFld) oLiSpfFld.firstChild.className = '';
 			
 			showHideElement('sGeneral', g_tskMgrHide);
 			showHideElement('sSpfFld', g_tskMgrHide);
@@ -421,11 +421,11 @@ function onMenuSelected(oSelectedLi)
 		
 		case 'oLiSpfFld':
 		{
-			oLiGeneral.firstChild.className = '';
-			oLiPredecessors.firstChild.className = '';
-			oLiResources.firstChild.className = '';
-			oLiCommentaries.firstChild.className = '';
-			oLiSpfFld.firstChild.className = 'current';
+			if(null != oLiGeneral) oLiGeneral.firstChild.className = '';
+			if(null != oLiPredecessors) oLiPredecessors.firstChild.className = '';
+			if(null != oLiResources) oLiResources.firstChild.className = '';
+			if(null != oLiCommentaries) oLiCommentaries.firstChild.className = '';
+			if(null != oLiSpfFld) oLiSpfFld.firstChild.className = 'current';
 			
 			showHideElement('sGeneral', g_tskMgrHide);
 			showHideElement('sSpfFld', g_tskMgrShow);
@@ -556,7 +556,19 @@ var g_tskMgrShow = 1;
 function showHideElement(sIdElement, iShow)
 {
 	var oElement = document.getElementById(sIdElement);
-	if(null != oElement) oElement.style.display = (g_tskMgrHide == iShow) ? 'none' : '';
+	if(null != oElement) 
+	{
+		oElement.style.display = (g_tskMgrHide == iShow) ? 'none' : '';
+	}
+	else
+	{
+		/*
+		if('oLiPredecessors' == sIdElement)
+		{
+			alert('NULL oLiPredecessors');
+		}
+		*/
+	}
 }
 
 function processStartDate()
@@ -569,7 +581,7 @@ function processStartDate()
 		//{}
 		var DURATION = { m_datas[dtDuration] };
 		var DATE = { m_datas[dtDate] };
-		
+/*		
 		var iDurationType = parseInt(oDurationType.options[oDurationType.selectedIndex].value);
 		
 		if(DATE == iDurationType)
@@ -585,7 +597,23 @@ function processStartDate()
 		}
 		else
 		{
+			if(true == oLinkedTask.checked)
+			{
+				showHideElement('oTrStartDate', g_tskMgrHide);
+			}
+			else
+			{
+				showHideElement('oTrStartDate', g_tskMgrShow);
+			}
+		}
+*/
+		if(true == oLinkedTask.checked)
+		{
 			showHideElement('oTrStartDate', g_tskMgrHide);
+		}
+		else
+		{
+			showHideElement('oTrStartDate', g_tskMgrShow);
 		}
 	}
 }
@@ -606,6 +634,8 @@ function processStartDate()
 	<input type="hidden" name="iIdProjectSpace" value="{ m_datas[iIdProjectSpace] }" />
 	<input type="hidden" name="iIdProject" value="{ m_datas[iIdProject] }" />
 	<input type="hidden" name="iIdTask" value="{ m_datas[iIdTask] }" />
+	<input type="hidden" name="iMajorVersion" value="{ m_datas[iMajorVersion] }" />
+	<input type="hidden" name="iMinorVersion" value="{ m_datas[iMinorVersion] }" />
 	<input type="hidden" name="selectedDateFieldName" value="" />
 	<input type="hidden" name="selectedMenu" value="" />
 	
@@ -653,10 +683,14 @@ function processStartDate()
 
 	<ul id="tablist">
 		<li id="oLiGeneral"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[general] }</a></li>
+	<!--#if m_datas[isHaveLinkableTask] -->
 		<li id="oLiPredecessors"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[predecessors] }</a></li>
+	<!--#endif m_datas[isHaveLinkableTask] -->
 		<li id="oLiResources"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[resources] }</a></li>
+	<!--#if m_datas[iIdTask] "!= 0" -->
 		<li id="oLiCommentaries"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[commentaries] }</a></li>
 		<li id="oLiSpfFld"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[spFld] }</a></li>
+	<!--#endif m_datas[iIdTask] -->
 	</ul>						
 	<br />
 
@@ -669,6 +703,7 @@ function processStartDate()
 				<td colspan="2"><textarea name="sDescription" id="sDescription" cols="50" rows="10">{ m_datas[sDescription] }</textarea></td>
 			</tr>
 
+		<!--#if m_datas[isHaveLinkableTask] -->
 			<tr id="oTrLinkedTask">
 				<td>
 					<label for="oLinkedTask">{ m_captions[linkedTask] }</label>
@@ -677,6 +712,7 @@ function processStartDate()
 					<input type="checkbox" name="oLinkedTask" id="oLinkedTask" { m_datas[sCkeckedLinkedTask] } onclick="onLinkTaskChanged(this)" value="" style="background-color:transparent;border=0" />
 				</td>
 			</tr>
+		<!--#endif m_datas[isHaveLinkableTask] -->
 
 			<tr id="oTrDurationType" class="">
 				<td>
@@ -752,6 +788,7 @@ function processStartDate()
 		</table>
 	</div>
 	
+	<!--#if m_datas[iIdTask] "!= 0" -->
 	<div id="sCommentaries" class="">
 		{ m_datas[taskCommentaries] }
 	</div>
@@ -759,26 +796,27 @@ function processStartDate()
 	<div id="sSpfFld" class="">
 		<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 			<tr class="BabSiteAdminTitleFontBackground"> 
-				<td>
+				<td colspan="3" align="center">
 					<label for="oSpfField">{ m_captions[spfField] }</label>
-				</td>
-				<td>
 					<select id="oSpfField" name="oSpfField">
 						<!--#in getNextSpecificField -->
 						<option { m_datas[sSelectedSpfField] } value="{ m_datas[iIdSpField] }">{ m_datas[sSpFieldName] }</option>
 						<!--#endin getNextSpecificField -->
 					</select>
-				</td>
-				<td>
 				<!--#if m_datas[isHaveSpFields] -->
 					<input type="submit" value="{ m_captions[addSpf] }" onclick="on_btn_clicked('{ m_datas[addSpfIdx] }', '{ m_datas[addSpfAction] }')" />
 				<!--#else m_datas[isHaveSpFields] -->
 					&nbsp;
 				<!--#endif m_datas[isHaveSpFields] -->
-				</td>
+			</tr>
+			<tr>
+				<td>{ m_captions[field] }</td>
+				<td>{ m_captions[type] }</td>
+				<td>{ m_captions[value] }</td>
 			</tr>
 		</table>
 	</div>
+	<!--#endif m_datas[iIdTask] -->
 	
 	<br />
 	<div align="center">

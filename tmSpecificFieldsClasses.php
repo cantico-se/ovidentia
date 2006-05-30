@@ -348,7 +348,7 @@ class BAB_TM_FieldRadio extends BAB_TM_FieldBase
 				BAB_TSKMGR_SPECIFIC_FIELDS_RADIO_CLASS_TBL . ' frd ON frd.idFldBase = fb.id ' .
 			'WHERE ' . 
 				'fb.id = \'' . $iIdField . '\' AND ' .
-				'frd.isDefaultOption = \'' . BAB_TM_YES . '\'';
+				'frd.isDefaultValue = \'' . BAB_TM_YES . '\'';
 
 		//bab_debug($query);
 

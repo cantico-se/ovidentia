@@ -804,6 +804,7 @@ function displayTaskForm()
 		{
 			var $m_catResult;
 			var $m_spfResult;
+			var $m_linkableTaskResult;
 			
 			var $m_aClasses;
 			var $m_aDurations;
@@ -812,59 +813,7 @@ function displayTaskForm()
 			
 			function BAB_TaskForm($iIdProjectSpace, $iIdProject, $iIdTask)
 			{
-				$this->set_caption('general', bab_translate("General"));
-				$this->set_caption('predecessors', bab_translate("Predecessors"));
-				$this->set_caption('resources', bab_translate("Resources"));
-				$this->set_caption('commentaries', bab_translate("Commentaries"));
-				$this->set_caption('spFld', bab_translate("Specific fields"));
-				
-				$this->set_caption('taskNumber', bab_translate("Number"));
-				$this->set_caption('classType', bab_translate("Type"));
-				$this->set_caption('categories', bab_translate("Categories"));
-				$this->set_caption('description', bab_translate("Description"));
-				$this->set_caption('linkedTask', bab_translate("Linked task"));
-				$this->set_caption('durationType', bab_translate("Duration type"));
-				$this->set_caption('duration', bab_translate("Duration"));
-				$this->set_caption('startDate', bab_translate("Start Date"));
-				$this->set_caption('endDate', bab_translate("End Date"));
-				$this->set_caption('none', bab_translate("None"));
-				$this->set_caption('taskResponsible', bab_translate("Task Responsible"));
-				$this->set_caption('spfField', bab_translate("Specific Fields"));
-
-				$this->set_caption('addSpf', bab_translate("Instanciate"));
-				$this->set_caption('add', bab_translate("Add"));
-				$this->set_caption('modify', bab_translate("Modify"));
-				$this->set_caption('delete', bab_translate("Delete"));
-
-				$this->set_data('eventTask', BAB_TM_TASK);
-				$this->set_data('eventCheckPoint', BAB_TM_CHECKPOINT);
-				$this->set_data('eventToDo', BAB_TM_TODO);
-				$this->set_data('dtDuration', BAB_TM_DURATION);
-				$this->set_data('dtDate', BAB_TM_DATE);
-				$this->set_data('isHaveSpFields', false);
-				
-				$this->set_data('none', BAB_TM_NONE);
-				
-$this->set_data('addIdx', BAB_TM_IDX_DISPLAY_TASK_FORM);
-				//$this->set_data('addIdx', BAB_TM_IDX_DISPLAY_TASK_LIST);
-				$this->set_data('addAction', BAB_TM_ACTION_ADD_TASK);
-				$this->set_data('modifyIdx', BAB_TM_IDX_DISPLAY_TASK_LIST);
-				$this->set_data('modifyAction', BAB_TM_ACTION_MODIFY_TASK);
-				$this->set_data('delIdx', BAB_TM_IDX_DISPLAY_DELETE_TASK_FORM);
-				$this->set_data('delAction', '');
-				$this->set_data('addSpfIdx', BAB_TM_IDX_DISPLAY_TASK_FORM);
-				$this->set_data('addSpfAction', BAB_TM_ACTION_CREATE_SPECIFIC_FIELD_INSTANCE);
-
-				$this->m_aClasses = array(
-					array('iClassType' => BAB_TM_TASK, 'sClassName' => bab_translate("Task")),
-					array('iClassType' => BAB_TM_CHECKPOINT, 'sClassName' => bab_translate("CheckPoint")),
-					array('iClassType' => BAB_TM_TODO, 'sClassName' => bab_translate("ToDo"))
-				);
-				
-				$this->m_aDurations = array(
-					array('iDurationType' => BAB_TM_DURATION, 'sDurationName' => bab_translate("Duration")),
-					array('iDurationType' => BAB_TM_DATE, 'sDurationName' => bab_translate("Date"))
-				);
+				$this->init();
 				
 				$oTmCtx =& getTskMgrContext();
 				$aCfg =& $oTmCtx->getConfiguration();
@@ -905,8 +854,17 @@ $this->set_data('addIdx', BAB_TM_IDX_DISPLAY_TASK_FORM);
 					$this->set_data('sSelectedSpfField', '');
 					
 					$this->set_data('selectedMenu', tskmgr_getVariable('selectedMenu', 'oLiGeneral'));
+
+					$this->set_data('iMajorVersion', tskmgr_getVariable('iMajorVersion', 1));
+					$this->set_data('iMinorVersion', tskmgr_getVariable('iMinorVersion', 0));
+
+					$this->set_data('isHaveSpFields', false);
+					$this->set_data('isHaveLinkableTask', false);
 				}
 
+				
+				//bab_debug('iMajorVersion ==> ' . $iMajorVersion . ' iMinorVersion ==> ' . $iMinorVersion);
+				
 				bab_getTaskResponsibleList($iIdProject, $this->m_aAvailableTaskResponsible);
 				
 				$this->m_catResult = bab_selectAvailableCategories($iIdProject);
@@ -918,6 +876,13 @@ $this->set_data('addIdx', BAB_TM_IDX_DISPLAY_TASK_FORM);
 					$this->set_data('isHaveSpFields', true);
 				}
 				
+				$this->m_linkableTaskResult = bab_selectLinkableTask($iIdProject, $iIdTask);
+				if($babDB->db_num_rows($this->m_linkableTaskResult))
+				{
+					$this->set_data('isHaveLinkableTask', true);
+				}
+						
+			
 				if(!isset($_POST['iIdTask']) && !isset($_GET['iIdTask']))
 				{
 					$this->set_data('is_creation', true);
@@ -949,6 +914,66 @@ $this->set_data('addIdx', BAB_TM_IDX_DISPLAY_TASK_FORM);
 				
 			}
 
+			function init()
+			{
+				$this->set_caption('general', bab_translate("General"));
+				$this->set_caption('predecessors', bab_translate("Predecessors"));
+				$this->set_caption('resources', bab_translate("Resources"));
+				$this->set_caption('commentaries', bab_translate("Commentaries"));
+				$this->set_caption('spFld', bab_translate("Specific fields"));
+				
+				$this->set_caption('taskNumber', bab_translate("Number"));
+				$this->set_caption('classType', bab_translate("Type"));
+				$this->set_caption('categories', bab_translate("Categories"));
+				$this->set_caption('description', bab_translate("Description"));
+				$this->set_caption('linkedTask', bab_translate("Linked task"));
+				$this->set_caption('durationType', bab_translate("Duration type"));
+				$this->set_caption('duration', bab_translate("Duration"));
+				$this->set_caption('startDate', bab_translate("Start Date"));
+				$this->set_caption('endDate', bab_translate("End Date"));
+				$this->set_caption('none', bab_translate("None"));
+				$this->set_caption('taskResponsible', bab_translate("Task Responsible"));
+				$this->set_caption('spfField', bab_translate("Specific Fields"));
+				$this->set_caption('field', bab_translate("Field"));
+				$this->set_caption('type', bab_translate("Type"));
+				$this->set_caption('value', bab_translate("Value"));
+
+				$this->set_caption('addSpf', bab_translate("Instanciate"));
+				$this->set_caption('add', bab_translate("Add"));
+				$this->set_caption('modify', bab_translate("Modify"));
+				$this->set_caption('delete', bab_translate("Delete"));
+
+				$this->set_data('eventTask', BAB_TM_TASK);
+				$this->set_data('eventCheckPoint', BAB_TM_CHECKPOINT);
+				$this->set_data('eventToDo', BAB_TM_TODO);
+				$this->set_data('dtDuration', BAB_TM_DURATION);
+				$this->set_data('dtDate', BAB_TM_DATE);
+				$this->set_data('isHaveSpFields', false);
+				
+				$this->set_data('none', BAB_TM_NONE);
+				
+$this->set_data('addIdx', BAB_TM_IDX_DISPLAY_TASK_FORM);
+				//$this->set_data('addIdx', BAB_TM_IDX_DISPLAY_TASK_LIST);
+				$this->set_data('addAction', BAB_TM_ACTION_ADD_TASK);
+				$this->set_data('modifyIdx', BAB_TM_IDX_DISPLAY_TASK_LIST);
+				$this->set_data('modifyAction', BAB_TM_ACTION_MODIFY_TASK);
+				$this->set_data('delIdx', BAB_TM_IDX_DISPLAY_DELETE_TASK_FORM);
+				$this->set_data('delAction', '');
+				$this->set_data('addSpfIdx', BAB_TM_IDX_DISPLAY_TASK_FORM);
+				$this->set_data('addSpfAction', BAB_TM_ACTION_CREATE_SPECIFIC_FIELD_INSTANCE);
+
+				$this->m_aClasses = array(
+					array('iClassType' => BAB_TM_TASK, 'sClassName' => bab_translate("Task")),
+					array('iClassType' => BAB_TM_CHECKPOINT, 'sClassName' => bab_translate("CheckPoint")),
+					array('iClassType' => BAB_TM_TODO, 'sClassName' => bab_translate("ToDo"))
+				);
+				
+				$this->m_aDurations = array(
+					array('iDurationType' => BAB_TM_DURATION, 'sDurationName' => bab_translate("Duration")),
+					array('iDurationType' => BAB_TM_DATE, 'sDurationName' => bab_translate("Date"))
+				);
+			}
+			
 			function getNextClass()
 			{
 				$class = each($this->m_aClasses);
@@ -1005,6 +1030,10 @@ $this->set_data('addIdx', BAB_TM_IDX_DISPLAY_TASK_FORM);
 			{
 				bab_getNextTaskNumber($iIdProject, $iTasksNumerotation, $sTaskNumber);
 				$this->set_data('sTaskNumber', $sTaskNumber);
+				
+				bab_getLastProjectRevision($iIdProject, $iMajorVersion, $iMinorVersion);
+				$this->set_data('iMajorVersion', $iMajorVersion);
+				$this->set_data('iMinorVersion', $iMinorVersion);
 			}
 			
 			function getNextTaskResponsible()
@@ -1086,7 +1115,9 @@ function addModifyProject()
 			{
 				if(0 == $iIdProject)
 				{
-					bab_createProject($iIdProjectSpace, $sName, $sDescription);
+					$iMajorVersion = 1;
+					$iMinorVersion = 0;
+					bab_createProject($iIdProjectSpace, $sName, $sDescription, $iMajorVersion, $iMinorVersion);
 				}
 				else
 				{
@@ -1225,7 +1256,271 @@ function deleteProjectCommentary()
 
 function addModifyTask()
 {
-	bab_debug('addModifyTask()');
+	$iIdProject = (int) tskmgr_getVariable('iIdProject', 0);
+
+	if(bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject))
+	{
+		class BAB_TM_TaskContext
+		{
+			var $m_sTaskNumber;
+			var $m_iClassType;
+			var $m_oLinkedTask;
+			var $m_iIdPredecessor;
+			var $m_oDurationType;
+			var $m_sDuration;
+			var $m_sStartDate;
+			var $m_sEndDate;
+			var $m_iIdTaskResponsible;
+			var $m_iIdCategory;
+			var $m_sDescription;
+			
+			var $m_iIdProjectSpace;
+			var $m_iIdTask;
+			var $m_iIdProject;
+	
+			var $m_iMajorVersion;
+			var $m_iMinorVersion;
+			
+			function BAB_TM_TaskContext()
+			{
+				$this->m_sTaskNumber = trim(tskmgr_getVariable('sTaskNumber', ''));
+				$this->m_iClassType = (int) tskmgr_getVariable('iClassType', 0);
+				$this->m_oLinkedTask = (int) tskmgr_getVariable('oLinkedTask', -1);
+				$this->m_iIdPredecessor = (int) tskmgr_getVariable('iIdPredecessor', -1);
+				$this->m_oDurationType = (int) tskmgr_getVariable('oDurationType', -1);
+				$this->m_sDuration = (int) tskmgr_getVariable('sDuration', 0);
+				$this->m_sStartDate = trim(tskmgr_getVariable('sStartDate', ''));
+				$this->m_sEndDate = trim(tskmgr_getVariable('sEndDate', ''));
+				$this->m_iIdTaskResponsible = (int) tskmgr_getVariable('iIdTaskResponsible', -1);
+				
+				$this->m_iIdProjectSpace = (int) tskmgr_getVariable('iIdProjectSpace', 0);
+				$this->m_iIdProject = (int) tskmgr_getVariable('iIdProject', 0);
+				$this->m_iIdTask = (int) tskmgr_getVariable('iIdTask', 0);
+				
+				$this->m_iIdCategory = (int) tskmgr_getVariable('iIdCategory', 0);
+				$this->m_sDescription = trim(tskmgr_getVariable('sDescription', ''));
+				
+				$this->m_iMajorVersion = (int) tskmgr_getVariable('iMajorVersion', 1);
+				$this->m_iMinorVersion = (int) tskmgr_getVariable('iMinorVersion', 0);
+			}
+			
+			function isTaskNumberValid()
+			{
+				if(strlen($this->m_sTaskNumber) > 0)
+				{
+					$aConfiguration = null;
+					$bSuccess = bab_getProjectConfiguration($this->m_iIdProject, $aConfiguration);
+					if(false != $bSuccess)
+					{
+						if(BAB_TM_MANUAL == $aConfiguration['tasksNumerotation'])
+						{
+								$sName = mysql_escape_string(str_replace('\\', '\\\\', $this->m_sTaskNumber));
+								return bab_isTaskNumberUsed($this->m_iIdProject, $this->m_iIdTask, $sName);
+						}
+						else
+						{
+							if(0 != $this->m_iIdTask)
+							{
+								$aTask = array();
+								if(bab_getTask($this->m_iIdTask, $aTask))
+								{
+									if($aTask['sTaskNumber'] === $this->m_sTaskNumber)
+									{
+										return true;
+									}
+								}
+							}
+							else
+							{
+								$sTaskNumber = '';
+								bab_getNextTaskNumber($this->m_iIdProject, $aConfiguration['tasksNumerotation'], $sTaskNumber);
+								
+								//bab_debug('sTaskNumber ==> ' . $this->m_sTaskNumber . ' sNextTaskNumber ==> ' . $sTaskNumber);
+								
+								if($sTaskNumber === $this->m_sTaskNumber)
+								{
+									return true;
+								}
+							}
+						}
+					}
+					else
+					{
+						bab_debug('Cannot get the configuration');
+					}
+				}
+				else
+				{
+					bab_debug('sTaskNumber is empty');
+				}
+				return false;
+			}
+		
+			function isEventValid()
+			{
+				switch($this->m_iClassType)
+				{
+					case BAB_TM_TASK:
+						return $this->isTaskValid();
+					case BAB_TM_CHECKPOINT:
+						return $this->isCheckPointValid();
+					case BAB_TM_CHECKPOINT:
+						return $this->isToDoValid();
+				}
+				return false;
+			}
+			
+			function isTaskValid()
+			{
+				if($this->isTaskNumberValid())
+				{
+					//Si tâche non liée
+					if(-1 === $this->m_oLinkedTask)
+					{
+						if(BAB_TM_DURATION == $this->m_oDurationType)
+						{
+							return ((int)$this->m_sDuration > 0 && $this->isDateValid($this->m_sStartDate));
+						}
+						else if(BAB_TM_DATE == $this->m_oDurationType)
+						{
+							if($this->isDateValid($this->m_sStartDate) && $this->isDateValid($this->m_sEndDate))
+							{
+								$iStartTimestamp = strtotime($this->m_sStartDate);
+								$iEndTimestamp = strtotime($this->m_sEndDate);
+								//bab_debug('date ==> ' . date('l dS of F Y h:i:s A', $iStartTimestamp));
+								//bab_debug('date ==> ' . date('l dS of F Y h:i:s A',$iEndTimestamp ));
+								if($iEndTimestamp > $iStartTimestamp)
+								{
+									$aTaskResponsible = array();
+									bab_getTaskResponsibleList($this->m_iIdProject, $aTaskResponsible);
+									return(isset($aTaskResponsible[$this->m_iIdTaskResponsible]));
+								}
+							}
+						}
+					}
+					else 
+					{
+						bab_debug(__FUNCTION__ . ' linked task must be implemented');
+					}
+				}
+				return false;
+			}
+			
+			function isCheckPointValid()
+			{
+				if($this->isTaskNumberValid())
+				{
+					return $this->isDateValid($this->m_sEndDate);
+				}
+				return false;
+			}
+			
+			function isToDoValid()
+			{
+				if($this->isTaskNumberValid())
+				{
+					return $this->isDateValid($this->m_sEndDate);
+				}
+				return false;
+			}
+			
+			function isDateValid($sDate)
+			{
+				$iYear = 0;
+				$iMonth = 1;
+				$iDay = 2;
+							
+				if(strlen($sDate) > 0)
+				{
+					$aDate = explode('-', $sDate);
+					if(count($aDate) == 3)
+					{
+						if($this->checkDate((int)$aDate[$iDay], (int)$aDate[$iMonth], (int)$aDate[$iYear]))
+						{
+							if((int)$aDate[$iYear] >= (int) date('Y'))
+							{
+								//bab_debug('year ==> ' . $aDate[$iYear] . ' month ==> ' . $aDate[$iMonth] . ' day ==> ' . $aDate[$iDay]);
+								return true;
+							}
+						}
+					}
+				}
+				return false;
+			}
+			
+			function checkDate($day, $month, $year)
+			{
+			   if ($month < 1 || $month > 12 || $day < 1 || $day > 31)
+			   {
+			       return false;
+			   }
+			   
+			   if (($month == 4 || $month == 6 || $month == 9 || $month == 11) && $day > 30)
+			   {
+			       return false;
+			   }
+	
+			   if ($month == 2 && $day > (($year % 4 == 0 && ($year % 100 != 0 || $year % 400 == 0)) ? 29 : 28))
+			   {
+			       return false;
+			   }
+			   return true;
+			} 
+		
+			function isValid()
+			{
+				switch($this->m_iClassType)
+				{
+					case BAB_TM_TASK:
+						return $this->isTaskValid();
+					case BAB_TM_CHECKPOINT:
+						return $this->isCheckPointValid();
+					case BAB_TM_TODO:
+						return $this->isToDoValid();
+				}
+			}
+		}
+		
+		$oTaskContext =& new BAB_TM_TaskContext();
+		
+		if($oTaskContext->isValid())
+		{
+			if(0 == $oTaskContext->m_iIdTask)
+			{
+				$iPosition = 0;
+				bab_getNextTaskPosition($iIdProject, $iPosition);
+				
+				$aParams = array(
+					'idProject' => $iIdProject, 'taskNumber' => mysql_escape_string($oTaskContext->m_sTaskNumber),
+					'description' => mysql_escape_string($oTaskContext->m_sDescription),
+					'idCategory' => $oTaskContext->m_iIdCategory, 'idResponsible' => $oTaskContext->m_iIdTaskResponsible,
+					'class' => $oTaskContext->m_iClassType, 'participationStatus' => '????????????',
+					'idPredecessor' => $oTaskContext->m_iIdPredecessor, 'linkType' => '?????????????',
+					'idCalEvent' => 0, 'hashCalEvent' => '', 'duration' => $oTaskContext->m_sDuration,
+					'majorVersion' => $oTaskContext->m_iMajorVersion, 'minorVersion' => $oTaskContext->m_iMinorVersion,
+					'color' => '', 'position' => $iPosition, 'completion' => 0, 
+					'startDate' => mysql_escape_string($oTaskContext->m_sStartDate), 
+					'endDate' => mysql_escape_string($oTaskContext->m_sEndDate), 
+					);
+			}
+			else 
+			{
+				
+			}
+			
+			
+
+			bab_debug('sTask ==> ' . $oTaskContext->m_sTaskNumber . ' is valid');		
+		}
+		else 
+		{
+			bab_debug('sTask ==> ' . $oTaskContext->m_sTaskNumber . ' is invalid');		
+		}
+	}
+	else 
+	{
+		bab_debug('addModifyTask: acces denied');
+	}
 }
 
 function deleteTask()
@@ -1236,13 +1531,27 @@ function deleteTask()
 function createSpecificFieldInstance()
 {
 	bab_debug('createSpecificFieldInstance()');
+	
+	$iIdProject = (int) tskmgr_getVariable('iIdProject', 0);
+	$iIdTask = (int) tskmgr_getVariable('iIdTask', 0);
+
+	if(bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject) && 0 < $iIdTask)
+	{
+		//bab_createSpecificFieldInstance($iIdTask, $iIdSpecificField);
+	}
+	else 
+	{
+		bab_debug('createSpecificFieldInstance: acces denied');
+	}
 }
+
 
 bab_cleanGpc();
 
 
 
 /* main */
+
 $context =& getTskMgrContext();
 if(false == $context->isUserProjectVisualizer())
 {
