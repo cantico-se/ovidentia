@@ -1929,12 +1929,12 @@
 <string id="This version can't be installed because of the missing requirement">Cette version ne peut pas être installé car cet élément est manquant dans la configuration actuelle</string>
 <string id="User can browse all registered users">L'utilisateur voit la liste de tous les utilisateurs enregistrés ( sinon uniquement ceux de ses groupes )</string>
 <string id="Addon">Module</string>
-<string id="Index all files">Indexer tout les fichiers</string>
+<string id="Index all files">Indexer tous les fichiers</string>
 <string id="Index waiting files">Index les fichiers en attente</string>
 <string id="Index on load">Indexer au moment du chargement</string>
 <string id="Allowed IP address">Adresse IP autorisée</string>
-<string id="Index all files from all indexes">Indexer tout les fichiers</string>
-<string id="Index waiting files from all indexes">Indexer tout les fichiers en attente</string>
+<string id="Index all files from all indexes">Indexer tous les fichiers</string>
+<string id="Index waiting files from all indexes">Indexer tous les fichiers en attente</string>
 <string id="Search indexes">Indexation</string>
 <string id="Admin DN">Admin DN</string>
 <string id="Admin password">Admin password</string>
