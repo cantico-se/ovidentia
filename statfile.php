@@ -813,13 +813,55 @@ function showStatFmDownloads($id, $date)
 		}
 }
 
+
+function microtime_float()
+{
+   list($usec, $sec) = explode(' ', microtime());
+   return ((float)$usec + (float)$sec);
+}
+
+
 function displayFileTree($startDay, $endDay)
 {
+	$start = $startAll = microtime_float();
 	require_once $GLOBALS['babInstallPath'] . 'utilit/tree.php';
 	$treeView = new bab_FileTreeView('file', 'N', '0');
+	$end = microtime_float();
+	echo '<div style="background-color: #FFFFFF; border: 1px solid red; padding: 4px; position: relative; z-index: 255"><pre>';
+	print_r('new bab_FileTreeView : ' . ($end - $start));
+	echo "</div></pre>\n";
+
+	$start = microtime_float();
 	$treeView->addStatistics($startDay, $endDay);
+	$end = microtime_float();
+	echo '<div style="background-color: #FFFFFF; border: 1px solid red; padding: 4px; position: relative; z-index: 255"><pre>';
+	print_r('addStatistics : ' . ($end - $start));
+	echo "</div></pre>\n";
+
+	$start = microtime_float();
 	$treeView->sort();
-	$GLOBALS['babBody']->babecho($treeView->printTemplate());
+	$end = microtime_float();
+	echo '<div style="background-color: #FFFFFF; border: 1px solid red; padding: 4px; position: relative; z-index: 255"><pre>';
+	print_r('sort : ' . ($end - $start));
+	echo "</div></pre>\n";
+
+	$start = microtime_float();
+	$t = $treeView->printTemplate();
+	$end = microtime_float();
+	echo '<div style="background-color: #FFFFFF; border: 1px solid red; padding: 4px; position: relative; z-index: 255"><pre>';
+	print_r('printTemplate : ' . ($end - $start));
+	echo "</div></pre>\n";
+
+	$start = microtime_float();
+	$GLOBALS['babBody']->babecho($t);
+	$end = $endAll = microtime_float();
+	echo '<div style="background-color: #FFFFFF; border: 1px solid red; padding: 4px; position: relative; z-index: 255"><pre>';
+	print_r('babecho : ' . ($end - $start));
+	echo "</div></pre>\n";
+
+	echo '<div style="background-color: #FFFFFF; border: 1px solid red; padding: 4px; position: relative; z-index: 255"><pre>';
+	print_r('displayFileTree : ' . ($endAll - $startAll));
+	echo "</div></pre>\n";
 }
 
 ?>
