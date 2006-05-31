@@ -280,6 +280,15 @@ function cleanAfter() {
 		<input type="hidden" name="before_memo" value="{ fields[before_memo] }">
 		</td>
 	</tr>
+	<!--#if index -->
+	<tr>
+		<td colspan="2">
+			<p align="center">
+				<label for="bab_search_files_only">{ t_search_files_only }</label> : <input type="checkbox" id="bab_search_files_only" name="search_files_only" value="1" />
+			</p>
+		</td>
+	</tr>
+	<!--#endif index -->
 	</table>
 </td>
 </tr>

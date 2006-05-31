@@ -222,9 +222,12 @@ function searchKeyword($item , $option = "OR")
 			$this->option_and = bab_translate("and");
 			$this->option_not = bab_translate("exclude");
 			$this->switch = bab_translate("Advanced search"); 
-
 			$this->before = bab_translate("before date");
 			$this->after = bab_translate("after date");
+			$this->t_search_files_only = bab_translate("Search attached files only");
+
+			$this->index = bab_searchEngineInfos();
+
 			$this->beforelink = $GLOBALS['babUrlScript']."?tg=month&callback=beforeJs&ymin=100&ymax=10&month=".date('m')."&year=".date('Y');
 			$this->afterlink = $GLOBALS['babUrlScript']."?tg=month&callback=afterJs&ymin=100&ymax=10&month=".date('m')."&year=".date('Y');
 
@@ -712,7 +715,13 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				if (!empty($inart))
 					{
 					if ($this->like || $this->like2)
-						$reqsup = "and (".finder($this->like,"title",$option,$this->like2)." or ".finder($this->like,"head",$option,$this->like2)." or ".finder($this->like,"body",$option,$this->like2).")";
+						$reqsup = "AND (
+					".finder($this->like,"title",$option,$this->like2)." OR 
+					".finder($this->like,"head",$option,$this->like2)." OR 
+					".finder($this->like,"body",$option,$this->like2)." OR 
+					".finder($this->like,"f.name",$option,$this->like2)." OR 
+					".finder($this->like,"f.description",$option,$this->like2)." 
+					)";
 					
 					$req = "
 					
@@ -733,9 +742,12 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 						".BAB_ARTICLES_TBL." a 
 					LEFT JOIN 
 						".BAB_USERS_TBL." U ON a.id_author = U.id 
-					WHERE 
-						a.id_topic = T.id ".$reqsup." ".$inart." ".$crit_art." 
+					LEFT JOIN 
+						".BAB_ART_FILES_TBL." f ON f.id_article = a.id 
 
+					WHERE 
+						a.id_topic = T.id ".$reqsup." ".$inart." ".$crit_art."  
+						GROUP BY a.id 
 						";
 
 					bab_debug($req);
@@ -1866,8 +1878,8 @@ function viewArticle($article,$w)
 				{
 				$arr = $this->db->db_fetch_array($this->resf);
 				$this->docurl = $GLOBALS['babUrlScript']."?tg=articles&idx=getf&topics=".$this->arr['id_topic']."&article=".$this->arr['id']."&idf=".$arr['id'];
-				$this->docname = bab_toHtml($arr['name']);
-				$this->docdescription = bab_toHtml($arr['description']);
+				$this->docname = highlightWord($this->w, bab_toHtml($arr['name']));
+				$this->docdescription = highlightWord($this->w, bab_toHtml($arr['description']));
 				$this->in_index = isset($this->found_in_index['articles/'.$this->arr['id'].','.$arr['name']]);
 				$this->altbg = !$this->altbg;
 				$i++;

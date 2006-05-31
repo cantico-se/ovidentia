@@ -24,21 +24,35 @@
 include_once "base.php";
 
 
-
 function bab_highlightWord( $w, $text)
 {
-	$text = ' '.$text.' ';
-	$arr = explode(" ",trim($w));
+	
+	$arr = explode(' ',trim($w));
+	
 	foreach($arr as $mot)
 		{
-		$text = preg_replace("/(\s*>[^<]*|\s+)(".preg_quote(htmlentities($mot),"/").")(\s+|[^>]*<\s*)/si", "\\1<span class=\"Babhighlight\">\\2</span>\\3", $text);
-		$text = preg_replace("/(\s*>[^<]*|\s+)(".preg_quote($mot,"/").")(\s+|[^>]*<\s*)/si", "\\1<span class=\"Babhighlight\">\\2</span>\\3", $text);
+		//$text = preg_replace("/(\s*>[^<]*|\s+)(".preg_quote(htmlentities($mot),"/").")(\s+|[^>]*<\s*)/si", "\\1<span class=\"Babhighlight\">\\2</span>\\3", $text);
+		
+
+		//$text = preg_replace("/(\s*>[^<]*|\s+)(".preg_quote($mot,"/").")(\s+|[^>]*<\s*)/si", "\\1<span class=\"Babhighlight\">\\2</span>\\3", $text);
+
+
+		
+		$text = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace('#(" . preg_quote($mot,'#') . ")#i', '<span class=\"Babhighlight\">\\\\1</span>', '\\0')", '>' . $text . '<'), 1, -1));
+
+		$he = htmlentities($mot);
+		
+		if ($he != $mot) {
+			$text = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace('#(" . preg_quote($he,'#') . ")#i', '<span class=\"Babhighlight\">\\\\1</span>', '\\0')", '>' . $text . '<'), 1, -1));
+			}
+    
 		}
+
 	return trim($text);
 }
 
 
-function bab_sql_finder_he($tbl,$str,$not="")
+function bab_sql_finder_he($tbl, $str, $not="")
 	{
 	if ($not == "NOT") $op = "AND";
 	else $op =  "OR";
@@ -59,8 +73,17 @@ if( !bab_isMagicQuotesGpcOn())
 	$req1 = $babDB->db_escape_string($req1);
 	}
 
-if (trim($req1) != "") 
-	$like = $tablename." like '%".$req1."%'".bab_sql_finder_he($tablename,$req1);
+if (trim($req1) != "") {
+	$tb = explode(' ',$req1);
+	foreach($tb as $key => $mot)
+		{
+		if ( $like == "" )
+			$like = '('.$tablename." LIKE '%".$mot."%'".bab_sql_finder_he($tablename,$mot);
+		else
+			$like .= " OR (".$tablename." LIKE '%".$mot."%'".bab_sql_finder_he($tablename,$mot).")";
+		}
+	}
+	$like .= ')';
 
 if (trim($req2) != "") 
 	{
@@ -71,7 +94,7 @@ if (trim($req2) != "")
 			foreach($tb as $key => $mot)
 				{
 				if (trim($req1) == "" && $key==0)
-					$like = $tablename." like '%".$mot."%'";
+					$like = $tablename." NOT like '%".$mot."%'";
 				else
 					$like .= " AND ".$tablename." NOT like '%".$mot."%'".bab_sql_finder_he($tablename,$mot," NOT");
 				}
