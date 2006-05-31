@@ -478,6 +478,8 @@ function onClassChanged(oSelect)
 				if(null != oLinkedTask) onLinkTaskChanged(oLinkedTask);
 				
 				showHideElement('oLiResources', g_tskMgrShow);
+				
+				processStartDate();
 			}
 		}
 		break;
@@ -574,47 +576,14 @@ function showHideElement(sIdElement, iShow)
 function processStartDate()
 {
 	var oLinkedTask = document.getElementById("oLinkedTask");
-	var oDurationType = document.getElementById("oDurationType");
 	
-	if(null != oLinkedTask && null != oDurationType)
+	if(null != oLinkedTask && true == oLinkedTask.checked)
 	{
-		//{}
-		var DURATION = { m_datas[dtDuration] };
-		var DATE = { m_datas[dtDate] };
-/*		
-		var iDurationType = parseInt(oDurationType.options[oDurationType.selectedIndex].value);
-		
-		if(DATE == iDurationType)
-		{
-			if(true == oLinkedTask.checked)
-			{
-				showHideElement('oTrStartDate', g_tskMgrHide);
-			}
-			else
-			{
-				showHideElement('oTrStartDate', g_tskMgrShow);
-			}
-		}
-		else
-		{
-			if(true == oLinkedTask.checked)
-			{
-				showHideElement('oTrStartDate', g_tskMgrHide);
-			}
-			else
-			{
-				showHideElement('oTrStartDate', g_tskMgrShow);
-			}
-		}
-*/
-		if(true == oLinkedTask.checked)
-		{
-			showHideElement('oTrStartDate', g_tskMgrHide);
-		}
-		else
-		{
-			showHideElement('oTrStartDate', g_tskMgrShow);
-		}
+		showHideElement('oTrStartDate', g_tskMgrHide);
+	}
+	else
+	{
+		showHideElement('oTrStartDate', g_tskMgrShow);
 	}
 }
 //-->
@@ -658,7 +627,7 @@ function processStartDate()
 				<td>
 					<select name="iClassType" id="iClassType" onchange="onClassChanged(this)">
 						<!--#in getNextClass -->
-							<option { m_datas[sSelectedClassType] } value="{ m_datas[iClassType] }">{ m_datas[sClassName] }</option>
+							<option { m_datas[sSelectedClassType] } value="{ m_datas[iType] }">{ m_datas[sName] }</option>
 						<!--#endin getNextClass -->
 					</select>
 				</td>
@@ -683,9 +652,9 @@ function processStartDate()
 
 	<ul id="tablist">
 		<li id="oLiGeneral"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[general] }</a></li>
-	<!--#if m_datas[isHaveLinkableTask] -->
+	<!--#if m_datas[isLinkable] -->
+	<!--#endif m_datas[isLinkable] -->
 		<li id="oLiPredecessors"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[predecessors] }</a></li>
-	<!--#endif m_datas[isHaveLinkableTask] -->
 		<li id="oLiResources"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[resources] }</a></li>
 	<!--#if m_datas[iIdTask] "!= 0" -->
 		<li id="oLiCommentaries"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[commentaries] }</a></li>
@@ -703,7 +672,17 @@ function processStartDate()
 				<td colspan="2"><textarea name="sDescription" id="sDescription" cols="50" rows="10">{ m_datas[sDescription] }</textarea></td>
 			</tr>
 
-		<!--#if m_datas[isHaveLinkableTask] -->
+			<tr>
+				<td>
+					<label for="sParticipationStatus">{ m_captions[participationStatus] }</label>
+				</td>
+				<td>
+					<input name="sParticipationStatus" id="sParticipationStatus" readonly="readonly" type="text" value="{ m_datas[sParticipationStatus] }" />
+				</td>
+			</tr>
+
+		<!--#if m_datas[isLinkable] -->
+		<!--#endif m_datas[isLinkable] -->
 			<tr id="oTrLinkedTask">
 				<td>
 					<label for="oLinkedTask">{ m_captions[linkedTask] }</label>
@@ -712,7 +691,6 @@ function processStartDate()
 					<input type="checkbox" name="oLinkedTask" id="oLinkedTask" { m_datas[sCkeckedLinkedTask] } onclick="onLinkTaskChanged(this)" value="" style="background-color:transparent;border=0" />
 				</td>
 			</tr>
-		<!--#endif m_datas[isHaveLinkableTask] -->
 
 			<tr id="oTrDurationType" class="">
 				<td>
@@ -720,9 +698,9 @@ function processStartDate()
 				</td>
 				<td>
 					<select id="oDurationType" name="oDurationType" onchange="onDurationTypeChanged(this)">
-						<!--#in getNextDuration -->
+						<!--#in getNextDurationType -->
 						<option { m_datas[sSelectedDuration] } value="{ m_datas[iDurationType] }">{ m_datas[sDurationName] }</option>
-						<!--#endin getNextDuration -->
+						<!--#endin getNextDurationType -->
 					</select>
 				</td>
 			</tr>
@@ -803,11 +781,7 @@ function processStartDate()
 						<option { m_datas[sSelectedSpfField] } value="{ m_datas[iIdSpField] }">{ m_datas[sSpFieldName] }</option>
 						<!--#endin getNextSpecificField -->
 					</select>
-				<!--#if m_datas[isHaveSpFields] -->
 					<input type="submit" value="{ m_captions[addSpf] }" onclick="on_btn_clicked('{ m_datas[addSpfIdx] }', '{ m_datas[addSpfAction] }')" />
-				<!--#else m_datas[isHaveSpFields] -->
-					&nbsp;
-				<!--#endif m_datas[isHaveSpFields] -->
 			</tr>
 			<tr>
 				<td>{ m_captions[field] }</td>

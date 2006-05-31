@@ -89,4 +89,8 @@ define('BAB_TM_TENTATIVE', 0);
 define('BAB_TM_ACCEPTED', 1);
 define('BAB_TM_IN_PROGRESS', 2);
 define('BAB_TM_ENDED', 3);
+
+//Link type
+define('BAB_TM_END_TO_START', 0);
+define('BAB_TM_START_TO_START', 1);
 ?>
