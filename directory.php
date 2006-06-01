@@ -2731,7 +2731,7 @@ if( isset($action) && $action == 'Yes'  && bab_isAccessValid(BAB_DBDIREMPTY_GROU
 
 if( isset($modify))
 	{
-		if( $modify == 'dbc'  && bab_isAccessValid(BAB_DBDIRUPDATE_GROUPS_TBL, $id))
+		if( $modify == 'dbc' )
 			{
 			$idx = 'dbmod';
 			if(!isset($photof_name) ) { $photof_name = '';}
