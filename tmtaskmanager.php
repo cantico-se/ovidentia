@@ -1003,7 +1003,6 @@ function addModifyTask()
 			var $m_iIdTaskResponsible;
 			var $m_iIdCategory;
 			var $m_sDescription;
-			var $m_iPersonnalizationStatus;
 			
 			var $m_iIdProjectSpace;
 			var $m_iIdTask;
@@ -1020,10 +1019,9 @@ function addModifyTask()
 				$this->m_iIdPredecessor = (int) tskmgr_getVariable('iIdPredecessor', -1);
 				$this->m_oDurationType = (int) tskmgr_getVariable('oDurationType', -1);
 				$this->m_sDuration = (int) tskmgr_getVariable('sDuration', 0);
-				$this->m_sStartDate = trim(tskmgr_getVariable('sStartDate', ''));
-				$this->m_sEndDate = trim(tskmgr_getVariable('sEndDate', ''));
+				$this->m_sStartDate = trim(tskmgr_getVariable('sPlannedStartDate', ''));
+				$this->m_sEndDate = trim(tskmgr_getVariable('sPlannedEndDate', ''));
 				$this->m_iIdTaskResponsible = (int) tskmgr_getVariable('iIdTaskResponsible', -1);
-				$this->m_iPersonnalizationStatus = (int) tskmgr_getVariable('iPersonnalizationStatus', -1);
 				
 				$this->m_iIdProjectSpace = (int) tskmgr_getVariable('iIdProjectSpace', 0);
 				$this->m_iIdProject = (int) tskmgr_getVariable('iIdProject', 0);
@@ -1102,15 +1100,9 @@ function addModifyTask()
 				return false;
 			}
 			
-			function isPersonalizationStatusValid()
-			{
-				bab_debug(__FUNCTION__ . ' this function must be completed');
-				return(-1 != $this->m_iPersonnalizationStatus);
-			}
-			
 			function isTaskValid()
 			{
-				if($this->isTaskNumberValid() && $this->isPersonalizationStatusValid())
+				if($this->isTaskNumberValid())
 				{
 					//Si tâche non liée
 					if(-1 === $this->m_oLinkedTask)
@@ -1130,16 +1122,39 @@ function addModifyTask()
 								if($iEndTimestamp > $iStartTimestamp)
 								{
 									$aTaskResponsible = array();
-									bab_getTaskResponsibleList($this->m_iIdProject, $aTaskResponsible);
-									return(isset($aTaskResponsible[$this->m_iIdTaskResponsible]));
+									bab_getAvailableTaskResponsibles($this->m_iIdProject, $aTaskResponsible);
+									if(isset($aTaskResponsible[$this->m_iIdTaskResponsible]))
+									{
+										return true;
+									}
+									else 
+									{
+										bab_debug(__FUNCTION__ . ' iIdTaskResponsible missmatch');
+									}
+								}
+								else 
+								{
+									bab_debug(__FUNCTION__ . ' sEndDate is less than sStartDate');
 								}
 							}
+							else 
+							{
+								bab_debug(__FUNCTION__ . ' invalid Date');
+							}
+						}
+						else
+						{
+							bab_debug(__FUNCTION__ . ' unknown oDurationType');
 						}
 					}
 					else 
 					{
 						bab_debug(__FUNCTION__ . ' linked task must be implemented');
 					}
+				}
+				else 
+				{
+					bab_debug(__FUNCTION__ . ' sTaskNumber is invalid');
 				}
 				return false;
 			}
@@ -1219,12 +1234,15 @@ function addModifyTask()
 			}
 		}
 		
+//		bab_debug($_POST);
+		
 		$oTaskContext =& new BAB_TM_TaskContext();
 		
 		if($oTaskContext->isValid())
 		{
 			if(0 == $oTaskContext->m_iIdTask)
 			{
+/*
 				$iPosition = 0;
 				bab_getNextTaskPosition($iIdProject, $iPosition);
 				
@@ -1240,6 +1258,7 @@ function addModifyTask()
 					'startDate' => mysql_escape_string($oTaskContext->m_sStartDate), 
 					'endDate' => mysql_escape_string($oTaskContext->m_sEndDate) 
 					);
+//*/
 			}
 			else 
 			{

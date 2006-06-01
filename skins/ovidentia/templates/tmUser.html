@@ -625,9 +625,9 @@ function processStartDate()
 					<label for="iClassType">{ m_captions[classType] }</label>
 				</td>
 				<td>
-					<select name="iClassType" id="iClassType" onchange="onClassChanged(this)">
+					<select name="iClassType" id="iClassType" { m_datas[sDisabledClassType] } onchange="onClassChanged(this)">
 						<!--#in getNextClass -->
-							<option { m_datas[sSelectedClassType] } value="{ m_datas[iType] }">{ m_datas[sName] }</option>
+							<option { m_datas[sSelectedClassType] } value="{ m_datas[iClassType] }">{ m_datas[sClassName] }</option>
 						<!--#endin getNextClass -->
 					</select>
 				</td>
@@ -637,7 +637,7 @@ function processStartDate()
 					<label for="iIdCategory">{ m_captions[categories] }</label>
 				</td>
 				<td>
-					<select name="iIdCategory" id="iIdCategory">
+					<select name="iIdCategory" { m_datas[sDisabledCategory] } id="iIdCategory">
 						<option value=""></option>
 						<!--#in getNextCategory -->
 						<option { m_datas[sSelectedCategory] } value="{ m_datas[iIdCategory] }">{ m_datas[sCategoryName] }</option>
@@ -653,8 +653,8 @@ function processStartDate()
 	<ul id="tablist">
 		<li id="oLiGeneral"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[general] }</a></li>
 	<!--#if m_datas[isLinkable] -->
-	<!--#endif m_datas[isLinkable] -->
 		<li id="oLiPredecessors"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[predecessors] }</a></li>
+	<!--#endif m_datas[isLinkable] -->
 		<li id="oLiResources"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[resources] }</a></li>
 	<!--#if m_datas[iIdTask] "!= 0" -->
 		<li id="oLiCommentaries"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[commentaries] }</a></li>
@@ -669,35 +669,26 @@ function processStartDate()
 				<td colspan="2"><label for="sDescription">{ m_captions[description] }</label></td>
 			</tr>
 			<tr>
-				<td colspan="2"><textarea name="sDescription" id="sDescription" cols="50" rows="10">{ m_datas[sDescription] }</textarea></td>
-			</tr>
-
-			<tr>
-				<td>
-					<label for="sParticipationStatus">{ m_captions[participationStatus] }</label>
-				</td>
-				<td>
-					<input name="sParticipationStatus" id="sParticipationStatus" readonly="readonly" type="text" value="{ m_datas[sParticipationStatus] }" />
-				</td>
+				<td colspan="2"><textarea name="sDescription" id="sDescription" { m_datas[sReadonlyDescription] } cols="50" rows="10">{ m_datas[sDescription] }</textarea></td>
 			</tr>
 
 		<!--#if m_datas[isLinkable] -->
-		<!--#endif m_datas[isLinkable] -->
 			<tr id="oTrLinkedTask">
 				<td>
 					<label for="oLinkedTask">{ m_captions[linkedTask] }</label>
 				</td>
 				<td>
-					<input type="checkbox" name="oLinkedTask" id="oLinkedTask" { m_datas[sCkeckedLinkedTask] } onclick="onLinkTaskChanged(this)" value="" style="background-color:transparent;border=0" />
+					<input type="checkbox" name="oLinkedTask" id="oLinkedTask" { m_datas[sDisabledLinkedTask] } { m_datas[sCkeckedLinkedTask] } onclick="onLinkTaskChanged(this)" value="" style="background-color:transparent;border=0" />
 				</td>
 			</tr>
+		<!--#endif m_datas[isLinkable] -->
 
 			<tr id="oTrDurationType" class="">
 				<td>
 					<label for="oDurationType">{ m_captions[durationType] }</label>
 				</td>
 				<td>
-					<select id="oDurationType" name="oDurationType" onchange="onDurationTypeChanged(this)">
+					<select id="oDurationType" name="oDurationType" { m_datas[sDisabledDurationType] } onchange="onDurationTypeChanged(this)">
 						<!--#in getNextDurationType -->
 						<option { m_datas[sSelectedDuration] } value="{ m_datas[iDurationType] }">{ m_datas[sDurationName] }</option>
 						<!--#endin getNextDurationType -->
@@ -710,32 +701,36 @@ function processStartDate()
 					<label for="sDuration">{ m_captions[duration] }</label>
 				</td>
 				<td>
-					<input type="text" name="sDuration" id="sDuration" maxlength="20" value="{ m_datas[sDuration] }" size="10" />
+					<input type="text" name="sDuration" { m_datas[sReadOnlyDuration] } id="sDuration" maxlength="20" value="{ m_datas[sDuration] }" size="10" />
 				</td>
 			</tr>
 
 			<tr id="oTrStartDate">
 				<td>
-					<label for="sStartDate">{ m_captions[startDate] }</label>
+					<label for="sPlannedStartDate">{ m_captions[plannedStartDate] }</label>
 				</td>
 				<td>
-					<input type="text" name="sStartDate" id="sStartDate" maxlength="20" value="{ m_datas[sStartDate] }" size="10" />
-					<a href="javascript:dateCallback('sStartDate');">
-						<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/calendar.gif" alt="{ m_captions[startDate] }" />
+					<input type="text" name="sPlannedStartDate" id="sPlannedStartDate" { m_datas[sReadOnlyDate] } maxlength="20" value="{ m_datas[sPlannedStartDate] }" size="10" />
+				<!--#if m_datas[isReadOnlyDate] -->
+				<a href="javascript:dateCallback('sPlannedStartDate');">
+						<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/calendar.gif" alt="{ m_captions[plannedStartDate] }" />
 					</a>
+				<!--#endif m_datas[isReadOnlyDate] -->
 				</td>
 			</tr>
 			
 			<tr id="oTrEndDate">
 				<td>
-					<label for="sEndDate">{ m_captions[endDate] }</label>
+					<label for="sPlannedEndDate">{ m_captions[plannedEndDate] }</label>
 				</td>
 				<td>
-					<input type="text" name="sEndDate" id="sEndDate" maxlength="20" value="{ m_datas[sEndDate] }" size="10" />
-					<a href="javascript:dateCallback('sEndDate');">
-						<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/calendar.gif" alt="{ m_captions[endDate] }" />
+					<input type="text" name="sPlannedEndDate" id="sPlannedEndDate" { m_datas[sReadOnlyDate] } maxlength="20" value="{ m_datas[sPlannedEndDate] }" size="10" />
+				<!--#if m_datas[isReadOnlyDate] -->
+					<a href="javascript:dateCallback('sPlannedEndDate');">
+						<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/calendar.gif" alt="{ m_captions[plannedEndDate] }" />
 					</a>
-				</td>
+				<!--#endif m_datas[isReadOnlyDate] -->
+			</td>
 			</tr>
 		</table>
 	</div>
@@ -755,7 +750,7 @@ function processStartDate()
 					<label for="iIdTaskResponsible">{ m_captions[taskResponsible] }</label>
 				</td>
 				<td>
-					<select id="iIdTaskResponsible" name="iIdTaskResponsible">
+					<select id="iIdTaskResponsible" { m_datas[sReadOnlyTaskResponsible] } name="iIdTaskResponsible">
 						<option value="{ m_datas[none] }">{ m_captions[none] }</option>
 						<!--#in getNextTaskResponsible -->
 						<option { m_datas[sSlectedTaskResponsible] } value="{ m_datas[iIdTaskResponsible] }">{ m_datas[sTaskResponsibleName] }</option>
@@ -782,6 +777,7 @@ function processStartDate()
 						<!--#endin getNextSpecificField -->
 					</select>
 					<input type="submit" value="{ m_captions[addSpf] }" onclick="on_btn_clicked('{ m_datas[addSpfIdx] }', '{ m_datas[addSpfAction] }')" />
+				</td>
 			</tr>
 			<tr>
 				<td>{ m_captions[field] }</td>

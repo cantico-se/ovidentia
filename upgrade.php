@@ -6243,15 +6243,13 @@ function upgradeXXXtoYYY()
 				`taskNumber` INTEGER UNSIGNED NOT NULL default '0',
 				`description` TEXT NOT NULL default '',
 				`idCategory` INTEGER UNSIGNED NOT NULL default '0',
-				`idResponsible` INTEGER UNSIGNED NOT NULL default '0',
 				`created` DATETIME NOT NULL default '0000-00-00 00:00:00',
 				`modified` DATETIME NOT NULL default '0000-00-00 00:00:00',
 				`idUserCreated` INTEGER UNSIGNED NOT NULL default '0',
 				`idUserModified` INTEGER UNSIGNED NOT NULL default '0',
 				`class` TINYINT UNSIGNED NOT NULL default '0',
 				`participationStatus` TINYINT UNSIGNED NOT NULL default '0',
-				`idPredecessor` INTEGER UNSIGNED NOT NULL default '0',
-				`linkType` TINYINT UNSIGNED NOT NULL default '0',
+				`isLinked` TINYINT UNSIGNED NOT NULL default '0',
 				`idCalEvent` INTEGER UNSIGNED NOT NULL default '0',
 				`hashCalEvent` VARCHAR(34) NOT NULL default '0',
 				`duration` TINYINT UNSIGNED NOT NULL default '0',
@@ -6260,12 +6258,55 @@ function upgradeXXXtoYYY()
 				`color` VARCHAR(8) NOT NULL default '',
 				`position` INTEGER UNSIGNED NOT NULL default '0',
 				`completion` INTEGER UNSIGNED NOT NULL default '0',
+				`plannedStartDate` DATETIME NOT NULL default '0000-00-00 00:00:00',
+				`plannedEndDate` DATETIME NOT NULL default '0000-00-00 00:00:00',
 				`startDate` DATETIME NOT NULL default '0000-00-00 00:00:00',
 				`endDate` DATETIME NOT NULL default '0000-00-00 00:00:00',
 				PRIMARY KEY(`id`, `idProject`),
 				INDEX `idProject`(`idProject`),
 				INDEX `majorVersion`(`majorVersion`),
 				INDEX `minorVersion`(`minorVersion`)
+				) TYPE=MyISAM
+		");
+		
+		if(false == $res)
+		{
+			return $res;
+		}
+	}
+	
+	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_LINKED_TASKS_TBL . '\''));
+	if($arr[0] != BAB_TSKMGR_LINKED_TASKS_TBL)
+	{
+		$res = $db->db_query("
+			CREATE TABLE`" . BAB_TSKMGR_LINKED_TASKS_TBL . "` (
+				`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+				`idTask` INTEGER UNSIGNED NOT NULL default '0',
+				`idPredecessorTask` INTEGER UNSIGNED NOT NULL default '0',
+				`linkType` TINYINT UNSIGNED NOT NULL default '0',
+				PRIMARY KEY(`id`),
+				INDEX `idTask`(`idTask`),
+				INDEX `idPredecessorTask`(`idPredecessorTask`)
+				) TYPE=MyISAM
+		");
+		
+		if(false == $res)
+		{
+			return $res;
+		}
+	}
+	
+	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_TASKS_RESPONSIBLES_TBL . '\''));
+	if($arr[0] != BAB_TSKMGR_TASKS_RESPONSIBLES_TBL)
+	{
+		$res = $db->db_query("
+			CREATE TABLE`" . BAB_TSKMGR_TASKS_RESPONSIBLES_TBL . "` (
+				`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+				`idTask` INTEGER UNSIGNED NOT NULL default '0',
+				`idResponsible` INTEGER UNSIGNED NOT NULL default '0',
+				PRIMARY KEY(`id`),
+				INDEX `idTask`(`idTask`),
+				INDEX `idResponsible`(`idResponsible`)
 				) TYPE=MyISAM
 		");
 		
