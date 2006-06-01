@@ -284,7 +284,7 @@ function cleanAfter() {
 	<tr>
 		<td colspan="2">
 			<p align="center">
-				<label for="bab_search_files_only">{ t_search_files_only }</label> : <input type="checkbox" id="bab_search_files_only" name="search_files_only" value="1" />
+				<label for="bab_search_files_only">{ t_search_files_only }</label> : <input type="checkbox" id="bab_search_files_only" name="search_files_only" value="1" <!--#if search_files_only --> checked="checked" <!--#endif search_files_only --> />
 			</p>
 		</td>
 	</tr>
@@ -372,16 +372,24 @@ setselects(document.forms.searchForm.g_directory);
 </tr>
 </table>
 <!--#endif item -->
+
+<!--#if item "== e" --><!-- FILES -->
+<!--#if index -->
+<p>
+	<label for="bab_index_priority">{ t_index_priority }</label> : <input type="checkbox" id="bab_index_priority"  name="index_priority" value="1" <!--#if index_priority --> checked="checked"<!--#endif index_priority --> />
+</p>
+<!--#endif index -->
+<!--#endif item -->
 </td>
 </tr>
 	<tr><td>
 		<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
 		<tr>
 		<td align="left">
-		<input type="button" name="res" value="{ reset }" onclick="cleanFields()" />
+			<input type="button" name="res" value="{ reset }" onclick="cleanFields()" />
 		</td>
 		<td align="right">
-		<input type="submit" name="go" value="{ search }" />
+			<input type="submit" name="go" value="{ search }" />
 		</td>
 		</tr>
 		</table>
@@ -515,28 +523,33 @@ setselects(document.forms.searchForm.g_directory);
 <!--#endif countnot -->
 <!--#if countfil "!= 0" -->
 <h5 class="BabBodyTitleBackground" >{ filtitle }</h5>
-<table class="BabTopicsBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+<table border="0" width="100%" cellpadding="4" cellspacing="0" align="center">
 <thead>
-	<tr class="BabCalendarDaySection">
-        <td><a class="BabTitleSmall" href="javascript:orderSearch('e','title')">{ filename }</a></td>
-        <td><a class="BabTitleSmall" href="javascript:orderSearch('e','description')">{ description }</a></td>
-        <td><a class="BabTitleSmall" href="javascript:orderSearch('e','folder, path')">{ folder }</a></td>
-        <td><a class="BabTitleSmall" href="javascript:orderSearch('e','author')">{ author }</a></td>
-        <td><a class="BabTitleSmall" href="javascript:orderSearch('e','datem')">{ datem }</a></td>
+	<tr class="BabSiteAdminTitleFontBackground">
+        <td><a href="javascript:orderSearch('e','title')">{ filename }</a></td>
+        <td><a href="javascript:orderSearch('e','description')">{ description }</a></td>
+        <td><a href="javascript:orderSearch('e','author')">{ author }</a></td>
+        <td><a href="javascript:orderSearch('e','datem')">{ datem }</a></td>
 	</tr>
 </thead>
 <tbody>
 <!--#in getnextfil -->
-  <tr class="BabTopicsBackground"  valign="top"> 
-    <td><a class="BabFaqLink" href="javascript: bab_popup('{ fileurl }');">{ file }</a></td>
+ <!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+    <td><a href="javascript: bab_popup('{ fileurl }');" <!--#if version_count --> title="{ version_count }" <!--#endif version_count --> >{ file }</a></td>
     <td>{ filedesc }</td>
-    <td><a class="BabFaqLink" href="{ babUrl }index.php?tg=fileman&idx=list&id={ arttopicid }&gr={ bgroup }&path={ path }">{ arttopic }</a></td>
     <td>{ artauthor }</td>
     <td>{ update }</td>
+  </tr>
+  <!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+	<td colspan="4">
+		<img src="{ babSkinPath }images/Puces/folder.gif" align="absmiddle" />&nbsp; 
+		<em><a href="{ babUrl }index.php?tg=fileman&idx=list&id={ arttopicid }&gr={ bgroup }&path={ path }">{ arttopic }</a></em>
+	</td>
   </tr>
 <!--#endin getnextfil -->
 </tbody>
 </table>
+<br />
 { navbar_e } 
 <!--#endif countfil -->
 <!--#if countcon "!= 0" -->

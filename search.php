@@ -225,8 +225,10 @@ function searchKeyword($item , $option = "OR")
 			$this->before = bab_translate("before date");
 			$this->after = bab_translate("after date");
 			$this->t_search_files_only = bab_translate("Search attached files only");
+			$this->t_index_priority = bab_translate("Give priority to file content for order");
 
 			$this->index = bab_searchEngineInfos();
+			$this->search_files_only = isset($_POST['search_files_only']);
 
 			$this->beforelink = $GLOBALS['babUrlScript']."?tg=month&callback=beforeJs&ymin=100&ymax=10&month=".date('m')."&year=".date('Y');
 			$this->afterlink = $GLOBALS['babUrlScript']."?tg=month&callback=afterJs&ymin=100&ymax=10&month=".date('m')."&year=".date('Y');
@@ -606,6 +608,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 		var $countdir;
 		var $counttot;
 		var $nbresult = 0;
+		var $altbg = true;
 
 		function temp( $item, $what, $order, $option ,$navitem ,$navpos )
 			{
@@ -618,7 +621,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			$this->fortitle = bab_translate("Forums");
 			$this->faqtitle = bab_translate("Faq");
 			$this->nottitle = bab_translate("Notes");
-			$this->filtitle = bab_translate("Files");
+			$this->filtitle = bab_translate("File manager");
 			$this->contitle = bab_translate("Contacts");
 			$this->dirtitle = bab_translate("Directories");
 			$this->agebigtitle = bab_translate("Calendar");
@@ -639,6 +642,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			$this->t_from = bab_translate("date_from");
 			$this->t_to = bab_translate("date_to");
 			$this->t_private = bab_translate("Private");
+
 
 			$this->fields = $_POST;
 
@@ -714,45 +718,48 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 				if (!empty($inart))
 					{
-					if ($this->like || $this->like2)
-						$reqsup = "AND (
-					".finder($this->like,"title",$option,$this->like2)." OR 
-					".finder($this->like,"head",$option,$this->like2)." OR 
-					".finder($this->like,"body",$option,$this->like2)." OR 
-					".finder($this->like,"f.name",$option,$this->like2)." OR 
-					".finder($this->like,"f.description",$option,$this->like2)." 
-					)";
-					
-					$req = "
-					
-					INSERT INTO artresults 
-					SELECT 
-						a.id, 
-						a.id_topic, 
-						a.archive, 
-						a.title title,
-						a.head, 
-						LEFT(a.body,100) body, 
-						a.restriction, 
-						T.category topic, 
-						concat( U.lastname, ' ', U.firstname ) author, 
-						U.email, UNIX_TIMESTAMP(a.date) date  
-					FROM 
-						".BAB_TOPICS_TBL." T, 
-						".BAB_ARTICLES_TBL." a 
-					LEFT JOIN 
-						".BAB_USERS_TBL." U ON a.id_author = U.id 
-					LEFT JOIN 
-						".BAB_ART_FILES_TBL." f ON f.id_article = a.id 
+					if (!isset($_POST['search_files_only'])) {
 
-					WHERE 
-						a.id_topic = T.id ".$reqsup." ".$inart." ".$crit_art."  
-						GROUP BY a.id 
-						";
+						if ($this->like || $this->like2)
+							$reqsup = "AND (
+						".finder($this->like,"title",$option,$this->like2)." OR 
+						".finder($this->like,"head",$option,$this->like2)." OR 
+						".finder($this->like,"body",$option,$this->like2)." OR 
+						".finder($this->like,"f.name",$option,$this->like2)." OR 
+						".finder($this->like,"f.description",$option,$this->like2)." 
+						)";
+						
+						$req = "
+						
+						INSERT INTO artresults 
+						SELECT 
+							a.id, 
+							a.id_topic, 
+							a.archive, 
+							a.title title,
+							a.head, 
+							LEFT(a.body,100) body, 
+							a.restriction, 
+							T.category topic, 
+							concat( U.lastname, ' ', U.firstname ) author, 
+							U.email, UNIX_TIMESTAMP(a.date) date  
+						FROM 
+							".BAB_TOPICS_TBL." T, 
+							".BAB_ARTICLES_TBL." a 
+						LEFT JOIN 
+							".BAB_USERS_TBL." U ON a.id_author = U.id 
+						LEFT JOIN 
+							".BAB_ART_FILES_TBL." f ON f.id_article = a.id 
 
-					bab_debug($req);
+						WHERE 
+							a.id_topic = T.id ".$reqsup." ".$inart." ".$crit_art."  
+							GROUP BY a.id 
+							";
 
-					$this->db->db_query($req);
+						bab_debug($req);
+
+						$this->db->db_query($req);
+					}
 
 					// indexation
 
@@ -980,7 +987,32 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			// ------------------------------------- FILES
 			if( empty($item) || $item == "e")
 				{
-				$req = "create temporary table filresults select id, name title, id_owner,description, 'dd-mm-yyyy' datec, 'dd-mm-yyyy' datem, path, bgroup, name author, path folder from ".BAB_FILES_TBL." where 0";
+
+				define('BAB_TYPE_MATCH_DATABASE'	, 1);
+				define('BAB_TYPE_MATCH_FILE'		, 2);
+				define('BAB_TYPE_MATCH_VERSION'		, 3);
+
+
+				$req = "
+					
+					CREATE TEMPORARY TABLE filresults 
+						SELECT 
+						id, 
+						name title, 
+						id_owner, 
+						description, 
+						'dd-mm-yyyy' datec, 
+						'dd-mm-yyyy' datem, 
+						path, 
+						bgroup, 
+						name author, 
+						path folder, 
+						'".BAB_TYPE_MATCH_DATABASE."' type_match, 
+						'0' version_count 
+					FROM 
+						".BAB_FILES_TBL." 
+					WHERE 0
+				";
 				$this->db->db_query($req);
 				$req = "alter table filresults add unique (id)";
 				$this->db->db_query($req);
@@ -1005,12 +1037,12 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					}
 
 				$plus = "";
-				$temp1 = finder($this->like,"F.name",$option,$this->like2);
-				$temp2 = finder($this->like,"description",$option,$this->like2);
-				$temp3 = finder($this->like,"keywords",$option,$this->like2);
-				$temp4 = finder($this->like,"F.path",$option,$this->like2);
-				$temp5 = finder($this->like,"R.folder",$option,$this->like2);
-				$temp6 = finder($this->like,"M.fvalue",$option,$this->like2);
+				$temp1 = finder($this->like, "F.name",		$option,$this->like2);
+				$temp2 = finder($this->like, "description", $option,$this->like2);
+				$temp3 = finder($this->like, "keywords",	$option,$this->like2);
+				$temp4 = finder($this->like, "F.path",		$option,$this->like2);
+				$temp5 = finder($this->like, "R.folder",	$option,$this->like2);
+				$temp6 = finder($this->like, "M.fvalue",	$option,$this->like2);
 
 				if ($temp1 != "" && $temp2 != "" && $temp3 != "" && $temp4 != "" && $temp5 != "")
 					$plus = "( ".$temp1." or ".$temp2." or ".$temp3." or ".$temp4." or ".$temp5." ) and ";
@@ -1018,16 +1050,185 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
                 if ($idfile != "") 
 					{
-					$req = "insert into filresults select F.id, F.name title, F.id_owner, description, UNIX_TIMESTAMP(created) datec, UNIX_TIMESTAMP(modified) datem, path, bgroup, concat( U.lastname, ' ', U.firstname ) author, folder from ".BAB_FM_FOLDERS_TBL." R, ".BAB_FILES_TBL." F LEFT JOIN ".BAB_USERS_TBL." U ON F.author=U.id WHERE  (F.id_owner=R.id OR F.bgroup='N') and ".$plus." F.id_owner in (".substr($idfile,0,-1).") ". $grpfiles ." and state='' and confirmed='Y' GROUP BY F.id order by ".$order;
+
+					// indexation
+
+					if ($engine = bab_searchEngineInfos()) { 
+						if (!$engine['indexes']['bab_files']['index_disabled']) {
+
+							$found_files = bab_searchIndexedFiles($this->like2, $this->like, $option, 'bab_files');
+
+							$current_version = array();
+							$old_version = array();
+							foreach($found_files as $arr) {
+								$fullpath = bab_removeUploadPath($arr['file']);
+
+								$path = substr(strrchr($fullpath,'/'),1);
+								if (false === strpos($path, '/')) {
+									$path = '';
+								} else {
+									$path = dirname($path);
+								}
+								$name	= basename($fullpath);
+								
+								
+								$current_version[] = '(F.path=\''.$this->db->db_escape_string($path).'\' AND F.name=\''. $this->db->db_escape_string($name)."')";
+
+								if (preg_match( "/OVF\/\d,\d,(.*)/", $fullpath)) {
+									$old_version[] = $this->db->db_escape_string($fullpath);
+								}
+							}
+
+							// match found in last version
+							$req = "INSERT INTO filresults 
+									SELECT 
+										F.id, 
+										F.name title, 
+										F.id_owner, 
+										description, 
+										UNIX_TIMESTAMP(created) datec, 
+										UNIX_TIMESTAMP(modified) datem, 
+										F.path, 
+										bgroup, 
+										concat( U.lastname, ' ', U.firstname ) author, 
+										folder, 
+										'".BAB_TYPE_MATCH_FILE."', 
+										'0'
+									FROM ".BAB_FM_FOLDERS_TBL." R, 
+										".BAB_FILES_TBL." F 
+									LEFT JOIN ".BAB_USERS_TBL." U 
+										ON F.author=U.id 
+									WHERE 
+										(F.id_owner=R.id OR F.bgroup='N') 
+										and (".implode(' OR ',$current_version).")
+										AND F.id_owner in (".substr($idfile,0,-1).") 
+										". $grpfiles ." 
+										and state='' and confirmed='Y' 
+										
+									GROUP BY F.id 
+									ORDER BY ".$order;
+
+
+							bab_debug($req);
+
+							$this->db->db_query($req);
+
+
+							// $this->tmptable_inserted_id('filresults');
+						
+
+							// match found in old version
+							
+							$req = "REPLACE INTO filresults 
+									SELECT 
+										F.id, 
+										F.name title, 
+										F.id_owner, 
+										description, 
+										UNIX_TIMESTAMP(created) datec, 
+										UNIX_TIMESTAMP(modified) datem, 
+										F.path, 
+										bgroup, 
+										concat( U.lastname, ' ', U.firstname ) author, 
+										folder, 
+										'".BAB_TYPE_MATCH_VERSION."', 
+										COUNT(R.id)  
+									FROM ".BAB_FM_FOLDERS_TBL." R, 
+										".BAB_FILES_TBL." F 
+									LEFT JOIN ".BAB_USERS_TBL." U 
+										ON F.author=U.id, 
+										".BAB_FM_FILESVER_TBL." v, 
+										".BAB_INDEX_ACCESS_TBL." a 
+									WHERE 
+										(F.id_owner=R.id OR F.bgroup='N') 
+										AND v.id_file = F.id 
+										AND a.id_object = v.id 
+										AND a.file_path IN('".implode("', '",$old_version)."') 
+										AND F.id_owner in (".substr($idfile,0,-1).") 
+										". $grpfiles ." 
+										and state='' 
+										and F.confirmed='Y' 
+										
+									GROUP BY F.id 
+									ORDER BY ".$order;
+
+							bab_debug($req);
+
+							$this->db->db_query($req);
+
+						}
+					}
+
+					$this->tmptable_inserted_id('filresults');
+
+					$req = "INSERT INTO filresults 
+						SELECT 
+							F.id, 
+							F.name title, 
+							F.id_owner, 
+							description, 
+							UNIX_TIMESTAMP(created) datec, 
+							UNIX_TIMESTAMP(modified) datem, 
+							path, 
+							bgroup, 
+							concat( U.lastname, ' ', U.firstname ) author, 
+							folder, 
+							'".BAB_TYPE_MATCH_DATABASE."',
+							'0'
+						FROM ".BAB_FM_FOLDERS_TBL." R, 
+							".BAB_FILES_TBL." F 
+						LEFT JOIN ".BAB_USERS_TBL." U 
+							ON F.author=U.id 
+						WHERE 
+							(F.id_owner=R.id OR F.bgroup='N') 
+							and ".$plus." F.id_owner in (".substr($idfile,0,-1).") 
+							". $grpfiles ." 
+							AND state='' and confirmed='Y' 
+							AND F.id NOT IN('".implode("','",$this->tmp_inserted_id)."') 
+						GROUP BY 
+							F.id order by ".$order;
+
                     $this->db->db_query($req);
 					
+					// additional fields
 					if ($temp6 != "")
 						{
 						$this->tmptable_inserted_id('filresults');
 
-						$req = "insert into filresults select F.id, F.name title, F.id_owner, description, UNIX_TIMESTAMP(created) datec, UNIX_TIMESTAMP(modified) datem, path, bgroup, concat( U.lastname, ' ', U.firstname ) author, folder from ".BAB_FM_FIELDSVAL_TBL." M, ".BAB_FM_FOLDERS_TBL." R, ".BAB_FILES_TBL." F LEFT JOIN  ".BAB_USERS_TBL." U ON F.author=U.id where ".$temp6." and M.id_file=F.id AND (F.id_owner=R.id OR F.bgroup='N') and F.id_owner in (".substr($idfile,0,-1).") ". $grpfiles ." and state='' and confirmed='Y' AND F.id NOT IN('".implode("','",$this->tmp_inserted_id)."') GROUP BY F.id order by ".$order;
+						$req = "
+						INSERT INTO filresults 
+							SELECT 
+								F.id, 
+								F.name title, 
+								F.id_owner, 
+								description, 
+								UNIX_TIMESTAMP(created) datec, 
+								UNIX_TIMESTAMP(modified) datem, 
+								path, 
+								bgroup, 
+								concat( U.lastname, ' ', U.firstname ) author, 
+								folder,
+								'".BAB_TYPE_MATCH_DATABASE."',
+								'0'
+							FROM ".BAB_FM_FIELDSVAL_TBL." M, 
+							".BAB_FM_FOLDERS_TBL." R, 
+							".BAB_FILES_TBL." F 
+							LEFT JOIN ".BAB_USERS_TBL." U 
+							ON F.author=U.id 
+						WHERE 
+							".$temp6." 
+							AND M.id_file=F.id 
+							AND (F.id_owner=R.id OR F.bgroup='N') 
+							AND F.id_owner in (".substr($idfile,0,-1).") ". $grpfiles ." 
+							AND state='' and confirmed='Y' 
+							AND F.id NOT IN('".implode("','",$this->tmp_inserted_id)."') 
+						GROUP BY 
+							F.id order by ".$order;
+
 						$this->db->db_query($req);
 						}
+
+
                     }
 
 
@@ -1560,6 +1761,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			static $i = 0;
 			if( $i < $this->countfil)
 				{
+				$this->altbg = !$this->altbg;
 				$arr = $this->db->db_fetch_array($this->resfil);
 				$this->file = put_text($arr['title']);
 				$this->update = bab_shortDate($arr['datem'], true);
@@ -1575,6 +1777,13 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$this->bgroup = $arr['bgroup'];
 				$this->filedesc = $arr['description'];
 				$this->fileurl = $GLOBALS['babUrlScript']."?tg=search&idx=e&id=".$arr['id']."&w=".$this->what;
+				$this->type_match = $arr['type_match'];
+				if (0 != $arr['version_count']) {
+					$this->version_count = sprintf(bab_translate('There are matches in %d older versions'),$arr['version_count']);
+				} else {
+					$this->version_count = false;
+				}
+				bab_debug($arr);
 				$i++;
 				return true;
 				}

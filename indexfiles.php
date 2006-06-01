@@ -33,10 +33,7 @@ function bab_indexJobs($idx, $object) {
 	$reg = bab_getRegistryInstance();
 
 	$reg->changeDirectory('/bab/indexfiles/');
-	$allowed_ip = $reg->getValue('allowed_ip');
-	if (null == $allowed_ip) {
-		$allowed_ip = '127.0.0.1';
-	}
+	$allowed_ip = $reg->getValue('allowed_ip','127.0.0.1');
 
 	if (BAB_INDEX_WAITING == $idx) {
 		$status = array(BAB_INDEX_STATUS_TOINDEX);

@@ -449,6 +449,7 @@ function indexAllFmFiles($status) {
 			$resv = $db->db_query("
 			
 				SELECT 
+					id,	
 					ver_major, 
 					ver_minor 
 				FROM ".BAB_FM_FILESVER_TBL." 
@@ -462,7 +463,7 @@ function indexAllFmFiles($status) {
 					$file = BAB_FVERSION_FOLDER."/".$arrv['ver_major'].",".$arrv['ver_minor'].",".$arr['name'];
 					$files[] = $pathx.$file;
 					$rights[$pathy.$file] = array(
-						'id' => $arr['id'],
+						'id' => $arrv['id'],
 						'id_owner' => $arr['id_owner']
 						);
 				}
