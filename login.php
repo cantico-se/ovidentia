@@ -162,7 +162,7 @@ function signOff()
 		setcookie('c_nickname'," ");
 	setcookie('c_password'," ");
 
-	Header("Location: ". $GLOBALS['babPhpSelf']);
+	loginRedirect($GLOBALS['babPhpSelf']);
 	}
 
 function userCreate($firstname, $middlename, $lastname, $nickname, $email)
