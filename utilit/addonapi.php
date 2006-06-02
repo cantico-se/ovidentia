@@ -1197,14 +1197,14 @@ function bab_uppdateUserById($id, $info, &$error)
 		if( is_array($info) && count($info) /*&& isset($info['disabled'])*/)
 		{
 
-			if( isset($info['password']) && empty($password) )
+			if( isset($info['password']) && empty($info['password']) )
 			{
 				$error = bab_translate("Empty password");
 				return false;
 			}
 			else
 			{
-				$arruq[] = 'password=\''.md5(strtolower($password1)).'\'';
+				$arruq[] = 'password=\''.md5(strtolower($info['password'])).'\'';
 			}
 			
 			if( isset($info['disabled']))
