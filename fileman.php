@@ -2107,8 +2107,10 @@ function viewFile( $idf)
 	$bconfirm = false;
 	$bupdate = false;
 	$bdownload = false;
+	$arr = array();
+	$bversion = '';
 	$db = $GLOBALS['babDB'];
-	$req = "select * from ".BAB_FILES_TBL." where id='".$idf."'";
+	$req = "select * from ".BAB_FILES_TBL." where id='".$idf."' and state=''";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0 )
 		{
@@ -2169,6 +2171,7 @@ function viewFile( $idf)
 				}
 			}
 		}
+	
 
 
 	include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
