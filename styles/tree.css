@@ -72,6 +72,13 @@
 	text-decoration: underline;
 }
 
+.line span, .line img {
+	vertical-align: middle;
+}
+
+.right_elements img {
+	padding: 0px 3px;
+}
 
 .bab_ul_tree_open .bullet {
 	cursor: pointer; 
@@ -187,6 +194,10 @@
 	cursor: pointer;
 }
 
+
+.bab_tree .clickable {
+	cursor: pointer;
+}
 
 .bab_tree .level1 li {
 	background-color: #EEEEEE;

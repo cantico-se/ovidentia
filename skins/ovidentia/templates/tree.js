@@ -65,15 +65,15 @@ function bab_search()
 	if (context.targetString == cleanStringDiacritics(context.inputField.value)) {
 		context.currentIndex = currentIndex;
 	} else {
-		context.timeoutId = window.setTimeout(window.bab_search, 10);
+		context.timeoutId = window.setTimeout(window.bab_search, 0);
 		return;
 	}
 
-	window.status = '' + context.currentIndex + ' / ' + context.listItems.length
+	window.status = '[' + context.nbMatches + '] ' + context.currentIndex + ' / ' + context.listItems.length
 	context.inputField.style.backgroundPosition = '' + (100 * currentIndex) / context.listItems.length + '% 0'
 
 	if (currentIndex < context.listItems.length) {
-		context.timeoutId = window.setTimeout(window.bab_search, 10);
+		context.timeoutId = window.setTimeout(window.bab_search, 0);
 	} else {
 		if (context.nbMatches > 1) {
 			context.inputField.className = 'bab_searchField';
@@ -92,22 +92,24 @@ function bab_delaySearch()
 {
 	var context = window.bab_searchContext;
 
-	if (this.value.length >= 2) {
-		if (context.searching == false) {
-			context.searching = true;
-			context.timeoutId = window.setTimeout(bab_search, 300);
+	if (this.value.length >= 1) {
+		if (context.targetString != cleanStringDiacritics(context.inputField.value)) {
+			if (context.searching == false) {
+				context.searching = true;
+				context.timeoutId = window.setTimeout(bab_search, 100);
+			}
+			this.className = 'bab_searchFieldSearching';
+			context.targetString = '';
 		}
-		this.className = 'bab_searchFieldSearching';
-		context.targetString = '';
 	} else {
 		window.clearTimeout(context.timeoutId);
 		context.inputField.style.backgroundPosition = '1px 50%'
-		context.searching = false;
-		if (this.className != 'bab_searchField') {
+		if (context.searching) {
 			this.className = 'bab_searchField';
-			this.parentNode.tree.expand();
+//			this.parentNode.tree.expand();
 			this.parentNode.tree.unhighlightAll();
 		}
+		context.searching = false;
 	}
 }
 
@@ -128,9 +130,12 @@ function bab_initTrees()
 	for (i = 0; i < divs.length; i++) {
 		div = divs[i];
 		if (!div.initialized && hasClass(div, 'bab_tree')) {
-			tree = new bab_ul_tree(div.getElementsByTagName('UL')[0]);
+			var tree = new bab_ul_tree(div.getElementsByTagName('UL')[0]);
+			div.tree = tree;
 			tree.processList(tree.rootList);
-			tree.initSearch();
+			tree.rootDiv = div.parentNode;
+//			tree.initSearch();		
+			window.setTimeout('document.getElementById("' + div.id + '").tree.initSearch();', 2000);
 			
 			var toolbar = document.createElement('DIV');
 			toolbar.className = 'bab_treeToolbar BabSiteAdminTitleFontBackground';
@@ -168,16 +173,14 @@ function bab_initTrees()
 function bab_ul_tree(rootList)
 {
 	this.rootList = rootList;
-	
-	this.NODE_CLOSED = 'bab_ul_tree_closed';
-	this.NODE_OPEN = 'bab_ul_tree_open';
-	this.NODE_LEAF = 'bab_ul_tree_leaf';
-
-	this.nodeLinkClass = 'bullet';
-	this.nodeLineClass = 'line';
-	this.nodeLineHoverClass = 'line hover';
 }
 
+bab_ul_tree.prototype.NODE_CLOSED = 'bab_ul_tree_closed';
+bab_ul_tree.prototype.NODE_OPEN = 'bab_ul_tree_open';
+bab_ul_tree.prototype.NODE_LEAF = 'bab_ul_tree_leaf';
+bab_ul_tree.prototype.nodeLinkClass = 'bullet';
+bab_ul_tree.prototype.nodeLineClass = 'line';
+bab_ul_tree.prototype.nodeLineHoverClass = 'line hover';
 
 function bab_onItemMouseOver()
 {
@@ -196,6 +199,17 @@ function bab_onNodeClick()
 	return false;
 }
 
+function bab_onElementClick()
+{
+	var parent = this.parentNode;
+	while (parent && !hasClass(parent, 'bab_tree')) {
+		parent = parent.parentNode;
+	}
+	if (parent && typeof parent.onElementClick == 'function') {
+		parent.onElementClick(this);
+	}
+
+}
 
 bab_ul_tree.prototype.processList = function(ul)
 {
@@ -252,7 +266,7 @@ bab_ul_tree.prototype.expand = function()
 
 bab_ul_tree.prototype.initSearch = function()
 {
-	window.console && console.time('processList');
+	window.console && console.time('initSearch');
 	if (this.initDone)
 		return;
 	var listItems = this.rootList.getElementsByTagName('LI');
@@ -264,10 +278,14 @@ bab_ul_tree.prototype.initSearch = function()
 		listItems[i].setAttribute('content', text);
 		
 		div.onmouseover = bab_onItemMouseOver;
-		div.onmouseout = bab_onItemMouseOut;		
+		div.onmouseout = bab_onItemMouseOut;
+		
+		if (hasClass(span, 'clickable')) {
+			span.onclick = bab_onElementClick;
+		}
 	}
 	this.initDone = true;
-	window.console && console.timeEnd('processList');
+	window.console && console.timeEnd('initSearch');
 }
 
 

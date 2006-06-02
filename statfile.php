@@ -814,6 +814,8 @@ function showStatFmDownloads($id, $date)
 }
 
 
+
+
 function microtime_float()
 {
    list($usec, $sec) = explode(' ', microtime());
@@ -826,42 +828,54 @@ function displayFileTree($startDay, $endDay)
 	$start = $startAll = microtime_float();
 	require_once $GLOBALS['babInstallPath'] . 'utilit/tree.php';
 	$treeView = new bab_FileTreeView('file', 'N', '0');
+//	$treeView->setAttributes(
+//							BAB_FILE_TREE_VIEW_SHOW_FILES
+//							| BAB_FILE_TREE_VIEW_CLICKABLE_COLLECTIVE_DIRECTORIES
+//							| BAB_FILE_TREE_VIEW_CLICKABLE_FILES
+//							);
+
 	$end = microtime_float();
-	echo '<div style="background-color: #FFFFFF; border: 1px solid red; padding: 4px; position: relative; z-index: 255"><pre>';
+	echo '<!-- ';
 	print_r('new bab_FileTreeView : ' . ($end - $start));
-	echo "</div></pre>\n";
+	echo " -->\n";
 
 	$start = microtime_float();
 	$treeView->addStatistics($startDay, $endDay);
 	$end = microtime_float();
-	echo '<div style="background-color: #FFFFFF; border: 1px solid red; padding: 4px; position: relative; z-index: 255"><pre>';
+	echo '<!-- ';
 	print_r('addStatistics : ' . ($end - $start));
-	echo "</div></pre>\n";
+	echo " -->\n";
 
 	$start = microtime_float();
 	$treeView->sort();
 	$end = microtime_float();
-	echo '<div style="background-color: #FFFFFF; border: 1px solid red; padding: 4px; position: relative; z-index: 255"><pre>';
+	echo '<!-- ';
 	print_r('sort : ' . ($end - $start));
-	echo "</div></pre>\n";
+	echo " -->\n";
 
 	$start = microtime_float();
 	$t = $treeView->printTemplate();
+/*
+	$t = bab_printTemplate($treeView, $treeView->_templateFile, 'treeview_css');
+	$t .= printTreeview($treeView);
+	$t .= bab_printTemplate($treeView, $treeView->_templateFile, 'treeview_scripts');
+/*/
 	$end = microtime_float();
-	echo '<div style="background-color: #FFFFFF; border: 1px solid red; padding: 4px; position: relative; z-index: 255"><pre>';
+	echo '<!-- ';
 	print_r('printTemplate : ' . ($end - $start));
-	echo "</div></pre>\n";
+	echo " -->\n";
 
 	$start = microtime_float();
 	$GLOBALS['babBody']->babecho($t);
 	$end = $endAll = microtime_float();
-	echo '<div style="background-color: #FFFFFF; border: 1px solid red; padding: 4px; position: relative; z-index: 255"><pre>';
+	echo '<!-- ';
 	print_r('babecho : ' . ($end - $start));
-	echo "</div></pre>\n";
+	echo " -->\n";
 
-	echo '<div style="background-color: #FFFFFF; border: 1px solid red; padding: 4px; position: relative; z-index: 255"><pre>';
+	echo '<!-- ';
 	print_r('displayFileTree : ' . ($endAll - $startAll));
-	echo "</div></pre>\n";
+	echo " -->\n";
 }
+
 
 ?>

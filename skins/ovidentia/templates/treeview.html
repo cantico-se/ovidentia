@@ -2,40 +2,47 @@
 <div id="{ t_treeViewId }" class="bab_tree BabLoginCadreBackground" style="padding: 1px">
 
 	<div class="tree" style="position: relative">
-	<!--#in getNextElement -->
-	  <!--#if t_levelVariation "== 1" -->
-	  <ul>
-	  <!--#endif t_levelVariation -->
-	  <!--#if t_levelVariation "<= -1" -->
-	  </li>
-	  </ul>
-	  <!--#endif t_levelVariation -->
-	  <!--#if t_levelVariation "== 0" -->
-	  </li>
-	  <!--#endif t_levelVariation -->
-	  <!--#if t_levelVariation ">= -1" -->
-	    <li id="li{ t_id }" class="bab_ul_tree_leaf">
-	      <div class="line">
-	        <img class="bullet" src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="20" height="16" />
-	        <!--#if t_nodeIcon --><img style="vertical-align: middle" src="{ t_nodeIcon }" /> <!--#else t_nodeIcon --><img style="vertical-align: middle" src="{ babSkinPath }images/Puces/Space1PxTrans.gif" style="height: 16px" /> <!--#endif t_nodeIcon -->
-	        <!--#if t_link  -->
-			<a href="{ t_link }"><span class="level{ t_previousLevel } { t_type }" style="vertical-align: middle">{ t_title }</span></a>
-	        <!--#else t_link  -->
-			<span class="level{ t_previousLevel } { t_type }" style="vertical-align: middle">{ t_title }</span>
-	        <!--#endif t_link  -->
-	        <!--#if t_showRightElements -->
-	        <span class="right_elements">
-	        { t_info }
-	        <!--#in getNextAction -->
-	        <a href="{ action_url }" title="{ action_caption }"><img style="vertical-align: middle; padding-right: 8px" src="{ action_icon }" /></a>
-	        <!--#endin getNextAction -->
-	        </span>
-	        <!--#endif t_showRightElements -->
-	      </div>
-	  <!--#endif t_levelVariation -->
-	<!--#endin getNextElement -->
+<script type="text/javascript">document.getElementById("{ t_treeViewId }").getElementsByTagName('DIV')[0].style.display='none'</script>
+<!--#in getNextElement -->
+<!--#if t_levelVariation "== 1" --><ul><!--#endif t_levelVariation -->
+<!--#if t_levelVariation "<= -1" --></li></ul><!--#endif t_levelVariation -->
+<!--#if t_levelVariation "== 0" --></li><!--#endif t_levelVariation -->
+<!--#if t_levelVariation ">= -1" -->
+<li id="li{ t_id }" class="bab_ul_tree_leaf">
+<div class="line">
+<img class="bullet" src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="20" height="16" />
+<!--#if t_nodeIcon --><img src="{ t_nodeIcon }" /> <!--#else t_nodeIcon --><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" /> <!--#endif t_nodeIcon -->
+<!--#if t_link  -->
+<a href="{ t_link }"><span class="level{ t_previousLevel } { t_type }">{ t_title }</span></a>
+<!--#else t_link  -->
+<span class="level{ t_previousLevel } { t_type }">{ t_title }</span>
+<!--#endif t_link  -->
+<!--#if t_showRightElements -->
+<span class="right_elements">{ t_info }
+<!--#in getNextAction -->
+<a href="{ action_url }" title="{ action_caption }"><img src="{ action_icon }" /></a>
+<!--#endin getNextAction -->
+</span>
+<!--#endif t_showRightElements -->
+</div>
+<!--#endif t_levelVariation -->
+<!--#endin getNextElement -->
 	</div>
 </div>
+<script type="text/javascript">document.getElementById("{ t_treeViewId }").getElementsByTagName('DIV')[0].style.display=''</script>
+
+<script type="text/javascript">
+document.getElementById("{ t_treeViewId }").onElementClick = function(element)
+{
+	try {
+		var returnParameters = new Object();
+		returnParameters.type = element.className.split(' ')[1];
+		returnParameters.id = element.parentNode.parentNode.id.split('{ t_id_separator }')[1];
+		returnParameters.content = element.firstChild.nodeValue;
+		window.opener.bab_dialog._return(returnParameters.content);
+	} catch(e) {};
+}
+</script>
 
 <!--#end treeview -->
 
@@ -50,7 +57,6 @@
 <script type="text/javascript">
 <!--
 
-var bab_bulletImgSrc = '{ babSkinPath }images/Puces/Space1PxTrans.gif';
 bab_initTrees();
 
 -->
