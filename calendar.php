@@ -744,7 +744,10 @@ switch($idx)
 		$babBodyPopup = new babBodyPopup();
 		$babBodyPopup->title = bab_translate("Personal notes");
 		displayEventDetail($evtid, $idcal);
-		displayEventNotes($evtid, $idcal);
+		if (!empty($GLOBALS['BAB_SESS_USERID']))
+		{
+			displayEventNotes($evtid, $idcal);
+		}
 		printBabBodyPopup();
 		exit;
 		break;
@@ -768,7 +771,7 @@ switch($idx)
 			$babBodyPopup->title = bab_translate("Attendees");
 			displayAttendees($evtid, $idcal);
 			}
-		if ($idx == "veventupd")
+		if ($idx == "veventupd" && !empty($GLOBALS['BAB_SESS_USERID']))
 			{
 			displayEventNotes($evtid, $idcal);
 			displayEventAlert($evtid, $idcal);
