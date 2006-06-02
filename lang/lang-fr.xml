@@ -1966,4 +1966,5 @@
 <string id="Search attached files only">Rechercher dans les fichiers attachés seulement</string>
 <string id="There are matches in %d older versions">Des résultats on été trouvés dans %d versions de ce fichier</string>
 <string id="Give priority to file content for order">Donner la priorité au contenu des fichiers pour l'ordre des résultats</string>
+<string id="Older versions">Versions antérieures</string>
 </fr>

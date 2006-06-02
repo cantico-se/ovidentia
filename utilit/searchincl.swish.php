@@ -175,6 +175,10 @@ class bab_searchFilesCls extends swishCls
 		{
 		parent::swishCls($object);
 		$query1 = preg_replace_callback("/\s(OR|NOT|AND|or|not|and)\s/", create_function('$v','return \' "\'.$v[1].\'" \';'), $query1);
+
+		//space = OR in ovidentia
+
+		$query1 = str_replace(' ', ' OR ', $query1);
 		
 		$this->query = $query1;
 		if (!empty($query2))

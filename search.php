@@ -767,7 +767,6 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 						if (!$engine['indexes']['bab_art_files']['index_disabled']) {
 							$found_files = bab_searchIndexedFiles($this->like2, $this->like, $option, 'bab_art_files');
 
-							bab_debug($found_files);
 
 							$file_path = array();
 							foreach($found_files as $arr) {
@@ -899,11 +898,33 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					$plus = "( ".$temp1." or ".$temp2.") and";
 				else $plus = "";
 				if ($idthreads != "") { 
-					$req = "insert into forresults select b.id, b.id_thread, F.name topic, F.id id_topic, b.subject title,b.message, author, UNIX_TIMESTAMP(b.date) date from ".BAB_POSTS_TBL." b, ".BAB_THREADS_TBL." T, ".BAB_FORUMS_TBL." F where b.id_thread=T.id and T.forum=F.id and ".$plus." b.confirmed='Y' and b.id_thread IN (".substr($idthreads,0,-1).") order by ".$order;
+					$req = "
+					
+					INSERT INTO 
+						forresults 
+					SELECT 
+						b.id, 
+						b.id_thread, 
+						F.name topic, 
+						F.id id_topic, 
+						b.subject title,
+						b.message, 
+						author, 
+						UNIX_TIMESTAMP(b.date) date 
+					FROM 
+						".BAB_POSTS_TBL." b, 
+						".BAB_THREADS_TBL." T, 
+						".BAB_FORUMS_TBL." F 
+					WHERE 
+						b.id_thread=T.id 
+						AND T.forum=F.id 
+						AND ".$plus." b.confirmed='Y' 
+						AND b.id_thread IN (".substr($idthreads,0,-1).") order by ".$order;
+
 					$this->db->db_query($req);
 				}
 
-				$req = "select count(*) from forresults";
+				$req = "SELECT count(*) FROM forresults";
 				$res = $this->db->db_query($req);
 				list($nbrows) = $this->db->db_fetch_row($res);
 				$navpos = $this->navpos;
@@ -989,14 +1010,16 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				{
 
 				define('BAB_TYPE_MATCH_DATABASE'	, 1);
-				define('BAB_TYPE_MATCH_FILE'		, 2);
-				define('BAB_TYPE_MATCH_VERSION'		, 3);
+				define('BAB_TYPE_MATCH_VERSION'		, 2);
+				define('BAB_TYPE_MATCH_FILE'		, 3);
+				
 
 
 				$req = "
 					
 					CREATE TEMPORARY TABLE filresults 
-						SELECT 
+					
+					SELECT 
 						id, 
 						name title, 
 						id_owner, 
@@ -1014,7 +1037,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					WHERE 0
 				";
 				$this->db->db_query($req);
-				$req = "alter table filresults add unique (id)";
+				$req = "ALTER TABLE filresults add unique (id)";
 				$this->db->db_query($req);
 				bab_fileManagerAccessLevel();
 				$private = false;
@@ -1063,13 +1086,16 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 							foreach($found_files as $arr) {
 								$fullpath = bab_removeUploadPath($arr['file']);
 
-								$path = substr(strrchr($fullpath,'/'),1);
+								
+								$path = substr(strstr($fullpath,'/'),1);
+
+
 								if (false === strpos($path, '/')) {
 									$path = '';
 								} else {
 									$path = dirname($path);
 								}
-								$name	= basename($fullpath);
+								$name = basename($fullpath);
 								
 								
 								$current_version[] = '(F.path=\''.$this->db->db_escape_string($path).'\' AND F.name=\''. $this->db->db_escape_string($name)."')";
@@ -1079,39 +1105,45 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 								}
 							}
 
-							// match found in last version
-							$req = "INSERT INTO filresults 
-									SELECT 
-										F.id, 
-										F.name title, 
-										F.id_owner, 
-										description, 
-										UNIX_TIMESTAMP(created) datec, 
-										UNIX_TIMESTAMP(modified) datem, 
-										F.path, 
-										bgroup, 
-										concat( U.lastname, ' ', U.firstname ) author, 
-										folder, 
-										'".BAB_TYPE_MATCH_FILE."', 
-										'0'
-									FROM ".BAB_FM_FOLDERS_TBL." R, 
-										".BAB_FILES_TBL." F 
-									LEFT JOIN ".BAB_USERS_TBL." U 
-										ON F.author=U.id 
-									WHERE 
-										(F.id_owner=R.id OR F.bgroup='N') 
-										and (".implode(' OR ',$current_version).")
-										AND F.id_owner in (".substr($idfile,0,-1).") 
-										". $grpfiles ." 
-										and state='' and confirmed='Y' 
-										
-									GROUP BY F.id 
-									ORDER BY ".$order;
+
+							
+							if ($current_version) {
+
+								// match found in last version
+								$req = "INSERT INTO filresults 
+										SELECT 
+											F.id, 
+											F.name title, 
+											F.id_owner, 
+											description, 
+											UNIX_TIMESTAMP(created) datec, 
+											UNIX_TIMESTAMP(modified) datem, 
+											F.path, 
+											bgroup, 
+											concat( U.lastname, ' ', U.firstname ) author, 
+											folder, 
+											'".BAB_TYPE_MATCH_FILE."', 
+											'0'
+										FROM ".BAB_FM_FOLDERS_TBL." R, 
+											".BAB_FILES_TBL." F 
+										LEFT JOIN ".BAB_USERS_TBL." U 
+											ON F.author=U.id 
+										WHERE 
+											(F.id_owner=R.id OR F.bgroup='N') 
+											AND (".implode(' OR ',$current_version).")  
+											AND F.id_owner in (".substr($idfile,0,-1).") 
+											". $grpfiles ." 
+											and state='' and confirmed='Y' 
+											
+										GROUP BY F.id 
+										";
 
 
-							bab_debug($req);
+								bab_debug($req);
 
-							$this->db->db_query($req);
+								$this->db->db_query($req);
+
+								}
 
 
 							// $this->tmptable_inserted_id('filresults');
@@ -1150,7 +1182,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 										and F.confirmed='Y' 
 										
 									GROUP BY F.id 
-									ORDER BY ".$order;
+									";
 
 							bab_debug($req);
 
@@ -1186,7 +1218,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 							AND state='' and confirmed='Y' 
 							AND F.id NOT IN('".implode("','",$this->tmp_inserted_id)."') 
 						GROUP BY 
-							F.id order by ".$order;
+							F.id ";
 
                     $this->db->db_query($req);
 					
@@ -1223,8 +1255,9 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 							AND state='' and confirmed='Y' 
 							AND F.id NOT IN('".implode("','",$this->tmp_inserted_id)."') 
 						GROUP BY 
-							F.id order by ".$order;
+							F.id ";
 
+						
 						$this->db->db_query($req);
 						}
 
@@ -1236,17 +1269,31 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$res = $this->db->db_query($req);
 				list($nbrows) = $this->db->db_fetch_row($res);
 
+
+
 				$navpos = $this->navpos;
 				if ($navitem != "e") $navpos = 0;
 				$this->navbar_e = navbar($babLimit,$nbrows,"e",$navpos);
 
-				$req = "select * from filresults limit ".$navpos.", ".$babLimit;
+				$req = "SELECT * FROM filresults ";
+
+				if (isset($_POST['index_priority'])) {
+					$req .= " ORDER BY type_match DESC,".$order;
+				} else {
+					$req .= " ORDER BY ".$order;
+				}
+
+				$req .= " LIMIT ".$navpos.", ".$babLimit;
+		
+
 				$this->resfil = $this->db->db_query($req);
 				$this->countfil = $this->db->db_num_rows($this->resfil);
 				if( !$this->counttot && $this->countfil > 0 )
 					$this->counttot = true;
 				}
 				$this->nbresult += $nbrows;
+				$nbrows = null;
+
 			
 			// ------------------------------------------------ PERSONAL CONTACTS
 			if( empty($item) || $item == "f")
@@ -1783,7 +1830,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				} else {
 					$this->version_count = false;
 				}
-				bab_debug($arr);
+				
 				$i++;
 				return true;
 				}
@@ -1983,13 +2030,12 @@ class bab_searchVisuPopup
 		include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 
 		$GLOBALS['babBodyPopup'] = new babBodyPopup();
-		$GLOBALS['babBodyPopup']->title = $GLOBALS['babBody']->title;
-		$GLOBALS['babBodyPopup']->msgerror = $GLOBALS['babBody']->msgerror;
-		
 		}
 
 	function printHTML($file,$tpl)
 		{
+		$GLOBALS['babBodyPopup']->title = $GLOBALS['babBody']->title;
+		$GLOBALS['babBodyPopup']->msgerror = $GLOBALS['babBody']->msgerror;
 		$GLOBALS['babBodyPopup']->babecho(bab_printTemplate($this, $file, $tpl));
 		printBabBodyPopup();
 		die();
@@ -2252,6 +2298,7 @@ function viewFile($id, $w)
 		var $size;
 		var $download;
 		var $geturl;
+		var $altbg = true;
 
 		function temp($id, $w)
 			{
@@ -2265,6 +2312,10 @@ function viewFile($id, $w)
 			$this->download = bab_translate("Download");
 			$this->sizetxt = bab_translate("Size");
 			$this->pathtxt = bab_translate("Path");
+			$this->t_name = bab_translate("Older versions");
+			$this->t_versiondate = bab_translate("Date");
+			$this->t_index = bab_translate("Result in file");
+
 			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_FILES_TBL." where id='$id' and state='' and confirmed='Y'";
@@ -2273,7 +2324,7 @@ function viewFile($id, $w)
 			$access = bab_isAccessFileValid($this->arr['bgroup'], $this->arr['id_owner']);
 			if( $access )
 				{
-				$this->title = $this->arr['name'];
+				$GLOBALS['babBody']->title = $this->arr['name'];
 				$this->arr['description'] = highlightWord( $w, $this->arr['description']);
 				$this->arr['keywords'] = highlightWord( $w, $this->arr['keywords']);
 				$this->modified = bab_shortDate(bab_mktime($this->arr['modified']), true);
@@ -2298,6 +2349,35 @@ function viewFile($id, $w)
 					}
 				else
 					$this->countff = 0;
+
+				$this->resversion = $this->db->db_query("
+					SELECT 
+						UNIX_TIMESTAMP(date) versiondate, 
+						CONCAT(f.name,' ',v.ver_major,'.',v.ver_minor) name,
+						a.file_path 
+					FROM 
+						".BAB_FILES_TBL." f,
+						".BAB_FM_FILESVER_TBL." v,
+						".BAB_INDEX_ACCESS_TBL." a 
+					WHERE 
+						f.id = v.id_file 
+						AND v.id_file='".$this->arr['id']."' 
+						AND a.id_object = v.id 
+						AND a.id_object_access = f.id_owner
+
+					ORDER BY v.ver_major DESC,v.ver_minor DESC
+					");
+
+				$this->countversions = $this->db->db_num_rows($this->resversion);
+
+				if (bab_searchEngineInfos()) {
+						$found_files = bab_searchIndexedFiles(trim($w), false, false, 'bab_files');
+						
+						
+						foreach($found_files as $arr) {
+							$this->found_in_index[bab_removeUploadPath($arr['file'])] = 1;
+						}
+					}
 				}
 			else
 				{
@@ -2336,7 +2416,19 @@ function viewFile($id, $w)
 				return false;
 				}
 			}
+
+
+		function getnextversion() {
+			if ($arr = $this->db->db_fetch_assoc($this->resversion)) {
+				$this->altbg = !$this->altbg;
+				$this->name = bab_toHtml($arr['name']);
+				$this->versiondate = bab_toHtml(bab_longDate($arr['versiondate']));
+				$this->in_index = isset($this->found_in_index[$arr['file_path']]);
+				return true;
+			}
+			return false;
 		}
+	}
 
 	$temp = new temp($id, $w);
 	$temp->printHTML("search.html", "viewfil");

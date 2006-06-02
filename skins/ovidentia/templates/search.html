@@ -535,15 +535,15 @@ setselects(document.forms.searchForm.g_directory);
 <tbody>
 <!--#in getnextfil -->
  <!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
-    <td><a href="javascript: bab_popup('{ fileurl }');" <!--#if version_count --> title="{ version_count }" <!--#endif version_count --> >{ file }</a></td>
+    <td><a href="javascript: bab_popup('{ fileurl }');" <!--#if version_count --> title="{ version_count }" <!--#endif version_count --> ><strong>{ file }</strong></a></td>
     <td>{ filedesc }</td>
     <td>{ artauthor }</td>
     <td>{ update }</td>
   </tr>
   <!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
 	<td colspan="4">
-		<img src="{ babSkinPath }images/Puces/folder.gif" align="absmiddle" />&nbsp; 
-		<em><a href="{ babUrl }index.php?tg=fileman&idx=list&id={ arttopicid }&gr={ bgroup }&path={ path }">{ arttopic }</a></em>
+		<a href="{ babUrl }index.php?tg=fileman&idx=list&id={ arttopicid }&gr={ bgroup }&path={ path }"><img src="{ babSkinPath }images/Puces/folder.gif" border="0" align="absmiddle" /></a>&nbsp; 
+		<em>{ arttopic }</em>
 	</td>
   </tr>
 <!--#endin getnextfil -->
@@ -859,57 +859,85 @@ setselects(document.forms.searchForm.g_directory);
 <table width="90%" border="0" cellspacing="0" cellpadding="0" align="center">
 <tr>
 <td class="BabMailBackground" align="center">
-<table border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
-<tr>
-<td class="BabBodyTitleBackground" align="center"> { title } </td>
-</tr>
-</table>
+
 <br />
-<table border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
-<tr>
-<td class="BabSiteAdminFontBackground" width="30%">{ pathtxt }</td>
-<td class="BabSiteAdminFontBackground">{ path }</td>
-</tr>
-<tr>
-<td class="BabSiteAdminFontBackground" width="30%">{ description }</td>
-<td class="BabSiteAdminFontBackground">{ arr[description] }</td>
-</tr>
-<tr>
-<td class="BabSiteAdminFontBackground">{ keywords }</td>
-<td class="BabSiteAdminFontBackground" valign="top">{ arr[keywords] }</td>
-</tr>
-<!--#in getnextfield -->
-<tr>
-<td class="BabSiteAdminFontBackground">{ field }</td>
-<td class="BabSiteAdminFontBackground" valign="top">{ fieldval }</td>
-</tr>
-<!--#endin getnextfield -->
-<tr>
-<td class="BabSiteAdminFontBackground">{ sizetxt }</td>
-<td class="BabSiteAdminFontBackground" valign="top">{ size }</td>
-</tr>
-<tr>
-<td class="BabSiteAdminFontBackground">{ modifiedtxt }</td>
-<td class="BabSiteAdminFontBackground" valign="top">{ modified }</td>
-</tr>
-<tr>
-<td class="BabSiteAdminFontBackground">{ modifiedbytxt }</td>
-<td class="BabSiteAdminFontBackground" valign="top">{ modifiedby }</td>
-</tr>
-<tr>
-<td class="BabSiteAdminFontBackground">{ createdtxt }</td>
-<td class="BabSiteAdminFontBackground" valign="top">{ created }</td>
-</tr>
-<tr>
-<td class="BabSiteAdminFontBackground">{ postedbytxt }</td>
-<td class="BabSiteAdminFontBackground" valign="top">{ postedby }</td>
-</tr>
-</table>
-<a class="BabFaqLink" href="{ geturl }"><br />
+	<table class="BabSiteAdminFontBackground" border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+	<tr>
+		<td width="30%">{ pathtxt }</td>
+		<td>{ path }</td>
+	</tr>
+	<tr>
+		<td width="30%">{ description }</td>
+		<td>{ arr[description] }</td>
+	</tr>
+	<tr>
+		<td>{ keywords }</td>
+		<td>{ arr[keywords] }</td>
+	</tr>
+	<!--#in getnextfield -->
+	<tr>
+		<td>{ field }</td>
+		<td>{ fieldval }</td>
+	</tr>
+	<!--#endin getnextfield -->
+	<tr>
+		<td>{ sizetxt }</td>
+		<td>{ size }</td>
+	</tr>
+	<tr>
+		<td>{ modifiedtxt }</td>
+		<td>{ modified }</td>
+	</tr>
+	<tr>
+		<td>{ modifiedbytxt }</td>
+		<td>{ modifiedby }</td>
+	</tr>
+	<tr>
+		<td>{ createdtxt }</td>
+		<td>{ created }</td>
+	</tr>
+	<tr>
+		<td>{ postedbytxt }</td>
+		<td>{ postedby }</td>
+	</tr>
+	</table>
+	<br />
+<a class="BabFaqLink" href="{ geturl }">
 { download }</a> <br />
 </td>
 </tr>
 </table>
+<br />
+<br />
+
+<!--#if countversions -->
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+	<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+		<table width="100%" border="0" cellspacing="0" cellpadding="3" align="center">
+		<tr class="BabSiteAdminTitleFontBackground"> 
+			<td>{ t_name }</td>
+			<td>{ t_versiondate }</td>
+			<td>{ t_index }</td>
+		</tr>
+		<!--#in getnextversion -->
+		<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+			<td>{ name }</td>
+			<td>{ versiondate }</td>
+			<td>
+				<!--#if in_index -->
+				<img src="{ babSkinPath }images/Puces/action_success.gif" />
+				<!--#else in_index -->
+				&nbsp;
+				<!--#endif in_index -->
+			</td>
+		</tr>
+		<!--#endin getnextversion -->
+	</td>
+</tr>
+</table>
+<!--#endif countversions -->
+
 <!--#end viewfil -->
 
 <!--#begin viewcon -->

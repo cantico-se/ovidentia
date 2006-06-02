@@ -5912,6 +5912,9 @@ if (!bab_isTable(BAB_STATS_ARTICLES_NEW_TBL)) {
 
 $res = $db->db_query("select at.date, tct.id_dgowner from ".BAB_ARTICLES_TBL." at left join ".BAB_TOPICS_TBL." tt on at.id_topic=tt.id left join ".BAB_TOPICS_CATEGORIES_TBL." tct on tt.id_cat=tct.id");
 
+
+$results = array();
+
 while( $arr = $db->db_fetch_array($res))
 	{
 	$rr = explode(" ", $arr['date']);
