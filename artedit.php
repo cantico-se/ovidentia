@@ -642,14 +642,14 @@ function showTopicTree($actionType, $selectedTopicId)
 			if (count($babBody->topsub) > 0  || count($babBody->topman) > 0 || count($babBody->topmod) > 0)
 			{
 				if (count($babBody->topsub) > 0)
-					$tmp[] = '(id IN (' . implode(',', array_keys($babBody->topsub)) . ") and allow_update != '0')";
+					$tmp[] = '(tt.id IN (' . implode(',', array_keys($babBody->topsub)) . ") and tt.allow_update != '0')";
 				if( count($babBody->topman) > 0 )
-					$tmp[] = '(id IN (' . implode(',', array_keys($babBody->topman)) . ") and allow_manupdate != '0')";
+					$tmp[] = '(tt.id IN (' . implode(',', array_keys($babBody->topman)) . ") and tt.allow_manupdate != '0')";
 				if( count($babBody->topmod) > 0 )
-					$tmp[] = '(id IN (' . implode(',', array_keys($babBody->topmod)) . '))';
-				$sql = 'SELECT * FROM ' . BAB_TOPICS_TBL
-						. ' WHERE ' . implode(' OR ', $tmp)
-					    . ' ORDER BY id_cat';
+					$tmp[] = '(tt.id IN (' . implode(',', array_keys($babBody->topmod)) . '))';
+				$sql = 'SELECT distinct tt.* FROM '.BAB_ARTICLES_TBL.' at left join '.BAB_TOPICS_TBL.' tt on tt.id = at.id_topic'
+					. ' WHERE at.archive=\'N\' and ' . implode(' OR ', $tmp)
+					. ' ORDER BY tt.id_cat';
 			}
 			$nextIdx = 's01';
 			break;
@@ -657,7 +657,6 @@ function showTopicTree($actionType, $selectedTopicId)
 		default:
 			break;
 	}
-
 	$tree =& new bab_Tree();
 
 	$tree->addNode(null, 'category0', array('type' => 'category',
