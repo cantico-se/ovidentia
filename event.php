@@ -1100,7 +1100,6 @@ function updateEvent(&$message)
 	$evtinfo = $db->db_fetch_array($db->db_query("select hash, start_date, end_date from ".BAB_CAL_EVENTS_TBL." where id='".$_POST['evtid']."'"));
 
 	$arrupdate = array();
-	$bnotify = false;
 
 	if( !empty($evtinfo['hash']) &&  $evtinfo['hash'][0] == 'R' && isset($_POST['bupdrec']) && $_POST['bupdrec'] == "1" )
 	{
@@ -1124,10 +1123,6 @@ function updateEvent(&$message)
 				}
 
 			$arrupdate[$arr['id']] = array('start'=>$startdate, 'end' => $enddate);
-			if( $evtinfo['start_date'] != $startdate || $evtinfo['end_date'] != $enddate )
-			{
-				$bnotify = true;
-			}
 		}
 
 	}
@@ -1145,10 +1140,6 @@ function updateEvent(&$message)
 
 		$arrupdate[$_POST['evtid']] = array('start'=>$startdate, 'end' => $enddate);
 
-		if( $evtinfo['start_date'] != $startdate || $evtinfo['end_date'] != $enddate )
-		{
-			$bnotify = true;
-		}
 	}
 
 	reset($arrupdate);
@@ -1158,10 +1149,7 @@ function updateEvent(&$message)
 		$db->db_query($req.", start_date='".$val['start']."', end_date='".$val['end']."' where id='".$key."'" );
 	}
 
-	if( $bnotify )
-	{
-		notifyEventUpdate($_POST['evtid'], false);
-	}
+	notifyEventUpdate($_POST['evtid'], false);
 	return true;
 }
 
