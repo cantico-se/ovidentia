@@ -908,7 +908,7 @@ function viewArticleLog($topics, $article, $pos)
 			$this->authortxt = bab_translate("Author");
 			$this->datelocktxt = bab_translate("Date");
 			$this->actiontxt = bab_translate("Action");
-			$this->commenttxt = bab_translate("Comment");
+			$this->commenttxt = bab_translate("Reason of the modification");
 
 			$res = $babDB->db_query("select id, id_author  from ".BAB_ART_DRAFTS_TBL." where id_article='".$article."'");
 			if( $res && $babDB->db_num_rows($res) > 0 )
