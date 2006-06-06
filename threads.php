@@ -268,6 +268,15 @@ function newThread($forum)
 			$this->t_add_field = bab_translate("Add field");
 			$this->t_remove_field = bab_translate("Remove field");
 			$this->forum = $forum;
+
+			if( !isset($_POST['subject']))
+				{
+				$this->subjectval = '';
+				}
+			else
+				{
+				$this->subjectval = htmlentities($_POST['subject']);
+				}
 			if( empty($BAB_SESS_USER))
 				$this->anonyme = 1;
 			else
