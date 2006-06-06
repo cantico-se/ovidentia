@@ -986,70 +986,65 @@ function deleteProjectCommentary()
 
 function addModifyTask()
 {
-	$iIdProject = (int) tskmgr_getVariable('iIdProject', 0);
-
-	if(bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject))
+	global $babInstallPath;
+	require_once($babInstallPath . 'tmTaskClasses.php');
+	
+	$oTmCtx =& getTskMgrContext();
+	$iUserProfil = $oTmCtx->getUserProfil();
+	$bIsOk = false;
+	
+	if(0 == $oTmCtx->m_iIdTask && (BAB_TM_PROJECT_MANAGER == $iUserProfil || BAB_TM_PERSONNAL_TASK_OWNER == $iUserProfil))
 	{
-//		bab_debug($_POST);
-		
-		global $babInstallPath;
-		require_once($babInstallPath . 'tmTaskClasses.php');
-
-		$oTaskContext =& new BAB_TM_TaskContext();
-		
-		if($oTaskContext->isValid())
-		{
-			if(0 == $oTaskContext->m_iIdTask)
-			{
-				$iPosition = 0;
-				bab_getNextTaskPosition($iIdProject, $iPosition);
-				
-				$isLinked = (int) (-1 === $oTaskContext->m_oLinkedTask) ? BAB_TM_NO : BAB_TM_YES;
-				$iProposable = (int) tskmgr_getVariable('oProposable', BAB_TM_NO);
-				
-				if(BAB_TM_YES == $iProposable)
-				{
-					bab_debug('Notification must be implemented');
-					$iNotified = BAB_TM_YES;
-				}
-
-				$iParticipationStatus = (int) (BAB_TM_NO == $iProposable) ? BAB_TM_ACCEPTED : BAB_TM_TENTATIVE;
-
-				$aParams = array(
-					'idProject' => $iIdProject, 'taskNumber' => mysql_escape_string($oTaskContext->m_sTaskNumber),
-					'description' => mysql_escape_string($oTaskContext->m_sDescription),
-					'idCategory' => $oTaskContext->m_iIdCategory, 'idResponsible' => $oTaskContext->m_iIdTaskResponsible,
-					'class' => $oTaskContext->m_iClassType, 'participationStatus' => $iParticipationStatus,
-					'isLinked' => $isLinked, 'idCalEvent' => 0, 'hashCalEvent' => '', 'duration' => $oTaskContext->m_sDuration,
-					'majorVersion' => $oTaskContext->m_iMajorVersion, 'minorVersion' => $oTaskContext->m_iMinorVersion,
-					'color' => '', 'position' => (int) $iPosition, 'completion' => 0, 
-					'plannedStartDate' => mysql_escape_string($oTaskContext->m_sStartDate), 
-					'plannedEndDate' => mysql_escape_string($oTaskContext->m_sEndDate),
-					'isNotified' => $iNotified);
-
-				bab_createTask($aParams);
-			}
-			else 
-			{
-				
-			}
-			bab_debug('sTask ==> ' . $oTaskContext->m_sTaskNumber . ' is valid');		
-		}
-		else 
-		{
-			//Pour être en création
-			if(isset($_POST['iIdTask']) && 0 == $_POST['iIdTask'])
-			{
-				unset($_POST['iIdTask']);
-			}
-			bab_debug('sTask ==> ' . $oTaskContext->m_sTaskNumber . ' is invalid');		
-		}
+		$bIsOk = createTask($iUserProfil);
 	}
-	else 
+	else if(0 != $oTmCtx->m_iIdTask && BAB_TM_UNDEFINED != $iUserProfil)
 	{
-		bab_debug('addModifyTask: acces denied');
+		$bIsOk = true;
+		$aTask =& $oTmCtx->getTask();
+		$iClass = (isset($aTask['iClass']) ? $aTask['iClass'] : BAB_TM_TASK);
+	}
+	else
+	{
+		bab_debug('access denied');		
+	}
+	
+	//Pour être en création
+	if(!$bIsOk && isset($_POST['iIdTask']) && 0 == $_POST['iIdTask'])
+	{
+		unset($_POST['iIdTask']);
 	}
 }
+
+
+function getTaskValidator($iClass)
+{
+	switch($iClass)
+	{
+		case BAB_TM_TASK:
+			return new BAB_TM_ManagerValidator();
+	}
+}
+
+function createTask()
+{
+	$oTmCtx =& getTskMgrContext();
+	$iClass = (int) tskmgr_getVariable('iClassType', BAB_TM_TASK);
+
+	$oTaskValidator = getTaskValidator($iClass);
+	if(!is_null($oTaskValidator))
+	{
+		if($oTaskValidator->createTask())
+		{
+			bab_debug(__FUNCTION__ . ' sTask ==> ' . $oTaskValidator->m_sTaskNumber . ' is valid');
+			return true;
+		}
+		bab_debug(__FUNCTION__ . ' sTask ==> ' . $oTaskValidator->m_sTaskNumber . ' invalid');
+		return false;
+	}
+	bab_debug(__FUNCTION__ . ' invalid class type');		
+	return false;
+}
+
 
 function deleteTask()
 {

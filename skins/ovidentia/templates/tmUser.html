@@ -775,13 +775,32 @@ function processStartDate()
 		</table>
 	</div>
 	
+<!--#if m_datas[isLinkable] -->
 	<div id="sPredecessor" class="">
-		<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+		<table border="0" cellspacing="0" cellpadding="2">
+			<tr class="BabSiteAdminTitleFontBackground">
+				<td>{ m_captions[taskNumber2] }</td>
+				<td>{ m_captions[relation] }</td>
+			</tr>
 			<tr> 
-				<td>Predecessor</td>
+				<td>
+					<select id="oPredecessor" name="oPredecessor">
+						<option value=""></option>
+						<!--#in getNextPrecessor -->
+						<option { m_datas[sSelectedPredecessor] } value="{ m_datas[iIdPredecessor] }">{ m_datas[sPredecessorNumber] }</option>
+						<!--#endin getNextPrecessor -->
+					</select>
+				</td>
+				<td>
+					<select id="oLinkType" name="oLinkType">
+						<option { m_datas[sSelectedLinkTypeStartToStart] } value="{ m_datas[iStartToStart] }">{ m_datas[sStartToStart] }</option>
+						<option { m_datas[sSelectedLinkTypeEndToStart] } value="{ m_datas[iEndToStart] }">{ m_datas[sEndToStart] }</option>
+					</select>
+				</td>
 			</tr>
 		</table>
 	</div>
+<!--#endif m_datas[isLinkable] -->
 	
 	<div id="sResources" class="">
 		<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">

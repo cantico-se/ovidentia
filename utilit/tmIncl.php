@@ -742,6 +742,46 @@ function bab_getLastProjectRevision($iIdProject, &$iMajorVersion, &$iMinorVersio
 
 
 //Task functions
+function bab_createTask($aParams)
+{
+	global $babBody, $babDB;
+
+	$aTask = array();	
+
+	$query = 
+		'INSERT INTO ' . BAB_TSKMGR_TASKS_TBL . ' ' .
+			'(' .
+				'`id`, ' .
+				'`idProject`, `taskNumber`, `description`, `idCategory`, `class`, ' .
+				'`participationStatus`, `isLinked`, `idCalEvent`, `hashCalEvent`, ' .
+				'`duration`, `majorVersion`, `minorVersion`, `color`, `position`, ' .
+				'`completion`, `startDate`, `endDate`, `plannedStartDate`, ' .
+				'`plannedEndDate`, `created`, `idUserCreated`, `isNotified`, `idOwner`' .
+			') ' .
+		'VALUES ' . 
+			'(\'\', \'' . 
+				$aParams['iIdProject'] . '\', \'' . $aParams['sTaskNumber'] . '\', \'' . 
+				$aParams['sDescription'] . '\', \'' . $aParams['iIdCategory'] . '\', \'' . 
+				BAB_TM_TASK . '\', \'' . $aParams['participationStatus'] . '\', \'' . 
+				$aParams['iIsLinked'] . '\', \'' . $aParams['idCalEvent'] . '\', \'' . 
+				$aParams['hashCalEvent'] . '\', \'' . $aParams['iDuration'] . '\', \'' . 
+				$aParams['iMajorVersion'] . '\', \'' . $aParams['iMinorVersion'] . '\', \'' . 
+				$aParams['sColor'] . '\', \'' . $aParams['iPosition'] . '\', \'' . 
+				$aParams['iCompletion'] . '\', \'' . '' . '\', \'' . 
+				'' . '\', \'' . $aParams['sPlannedStartDate'] . '\', \'' . 
+				$aParams['sPlannedEndDate'] . '\', \'' . date("Y-m-d H:i:s") . '\', \'' . 
+				$GLOBALS['BAB_SESS_USERID'] . '\', \'' . $aParams['iIsNotified'] . '\', \'' . 
+				((0 != $aParams['iIdProject']) ? 0 : $GLOBALS['BAB_SESS_USERID']) . '\')'; 
+
+	//bab_debug($query);
+	$res = $babDB->db_query($query);
+	if(false != $res)
+	{
+		return $babDB->db_insert_id();
+	}
+	return false;
+}
+
 function bab_getTask($iIdTask, &$aTask)
 {
 	global $babBody, $babDB;
@@ -872,7 +912,8 @@ function bab_deleteTaskLinks($iIdTask)
 
 function bab_deleteTaskResponsibles($iIdTask)
 {
-	$query = 'DELETE FROM ' . BAB_TSKMGR_TASKS_RESPONSIBLES_TBL . ' WHERE iIdTask = \'' . $iIdTask . '\'';
+	global $babDB;
+	$query = 'DELETE FROM ' . BAB_TSKMGR_TASKS_RESPONSIBLES_TBL . ' WHERE idTask = \'' . $iIdTask . '\'';
 	$babDB->db_query($query);
 }
 
@@ -1025,6 +1066,26 @@ function bab_getTaskResponsibles($iIdTask, &$aTaskResponsible)
 	}
 }
 
+function bab_setTaskResponsibles($iIdTask, $aTaskResponsibles)
+{
+	if(is_array($aTaskResponsibles) && count($aTaskResponsibles) > 0)
+	{
+		global $babDB;
+		foreach($aTaskResponsibles as $key => $iIdResponsible)
+		{
+			$query = 
+				'INSERT INTO ' . BAB_TSKMGR_TASKS_RESPONSIBLES_TBL . ' ' .
+					'(' .
+						'`id`, ' .
+						'`idTask`, `idResponsible`' .
+					') ' .
+				'VALUES ' . 
+					'(\'\', \'' . $iIdTask . '\', \'' . $iIdResponsible . '\')'; 
+			$babDB->db_query($query);
+		}
+	}
+}
+
 function bab_selectTaskCommentary($iIdTask, $iLenght = 50)
 {
 	global $babBody, $babDB;
@@ -1088,56 +1149,49 @@ function bab_selectLinkableTask($iIdProject, $iIdTask)
 		'SELECT ' . 
 			'id, ' .
 			'taskNumber, ' .
-			'IF(now() >= startDate, 1, 0) isStarted ' .
+			'IF(startDate = \'0000-00-00 00:00:00\', 0, ' .
+				'IF(startDate > now(), 0, 1)) isStarted ' .
 		'FROM ' . 
 			BAB_TSKMGR_TASKS_TBL . ' ' .
 		'WHERE ' . 
 			'idProject = \'' . $iIdProject . '\' AND ' .
 			'class =\'' . BAB_TM_TASK . '\' AND ' .
 			'participationStatus <> \'' . BAB_TM_ENDED . '\'' .
-//			'now() < startDate ' .
 			$sIdTask . $sIdOwner;
 
 	//bab_debug($query);
 	
 	$db	= & $GLOBALS['babDB'];
 	return $db->db_query($query);
-//	return (false != $result && 0 == $db->db_num_rows($result));
 }
 
-function bab_createTask($aParams)
+function bab_getLinkedTasks($iIdTask, &$aLinkedTasks)
 {
-	global $babBody, $babDB;
-
-	$aTask = array();	
-
+	$aLinkedTasks = array();
+	
 	$query = 
-		'INSERT INTO ' . BAB_TSKMGR_TASKS_TBL . ' ' .
-			'(' .
-				'`id`, ' .
-				'`idProject`, `taskNumber`, `description`, `idCategory`, `class`, ' .
-				'`participationStatus`, `isLinked`, `idCalEvent`, `hashCalEvent`, ' .
-				'`duration`, `majorVersion`, `minorVersion`, `color`, `position`, ' .
-				'`completion`, `startDate`, `endDate`, `plannedStartDate`, ' .
-				'`plannedEndDate`, `created`, `idUserCreated`, `isNotified`, `idOwner`' .
-			') ' .
-		'VALUES ' . 
-			'(\'\', \'' . 
-				$aParams['idProject'] . '\', \'' . $aParams['taskNumber'] . '\', \'' . 
-				$aParams['description'] . '\', \'' . $aParams['idCategory'] . '\', \'' . 
-				$aParams['class'] . '\', \'' . $aParams['participationStatus'] . '\', \'' . 
-				$aParams['isLinked'] . '\', \'' . $aParams['idCalEvent'] . '\', \'' . 
-				$aParams['hashCalEvent'] . '\', \'' . $aParams['duration'] . '\', \'' . 
-				$aParams['majorVersion'] . '\', \'' . $aParams['minorVersion'] . '\', \'' . 
-				$aParams['color'] . '\', \'' . $aParams['position'] . '\', \'' . 
-				$aParams['completion'] . '\', \'' . '' . '\', \'' . 
-				'' . '\', \'' . $aParams['plannedStartDate'] . '\', \'' . 
-				$aParams['plannedEndDate'] . '\', \'' . date("Y-m-d H:i:s") . '\', \'' . 
-				$GLOBALS['BAB_SESS_USERID'] . '\', \'' . $aParams['isNotified'] . '\', \'' . 
-				((0 != $aParams['idProject']) ? 0 : $GLOBALS['BAB_SESS_USERID']) . '\')'; 
+		'SELECT ' . 
+			'idPredecessorTask, ' .
+			'linkType ' .
+		'FROM ' . 
+			BAB_TSKMGR_LINKED_TASKS_TBL . ' ' .
+		'WHERE ' . 
+			'idTask = \'' . $iIdTask . '\'';
 
 	//bab_debug($query);
-	return $babDB->db_query($query);
+	
+	global $babDB;
+	$db	= & $GLOBALS['babDB'];
+
+	$result = $babDB->db_query($query);
+	$iNumRows = $babDB->db_num_rows($result);
+	$iIndex = 0;
+	
+	while($iIndex < $iNumRows && false != ($datas = $babDB->db_fetch_assoc($result)))
+	{
+		$aLinkedTasks[] = array('iIdPredecessorTask' => $datas['idPredecessorTask'], 'iLinkType' => $datas['ilinkType']);
+		$iIndex++;
+	}
 }
 
 /*
