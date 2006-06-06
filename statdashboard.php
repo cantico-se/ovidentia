@@ -148,6 +148,65 @@ function createEmptyRow($startDate, $endDate, $label)
 
 
 
+function createArticleCategoriesDashboard($start, $end)
+{
+	$dashboard = new bab_Dashboard(bab_translate("Articles Categories Top 20"));
+	$dashboard->setColumnHeaders(createHeaders($start, $end));
+
+	$sql = 'SELECT tct.id AS id, SUM(sat.st_hits) AS hits, tct.title AS title';
+	$sql .= ' FROM ' . BAB_STATS_ARTICLES_TBL . ' sat LEFT JOIN ' . BAB_ARTICLES_TBL . ' at ON sat.st_article_id=at.id LEFT JOIN ' . BAB_TOPICS_TBL . ' tt ON tt.id=at.id_topic LEFT JOIN ' . BAB_TOPICS_CATEGORIES_TBL . ' tct ON tct.id=tt.id_cat';
+	$sql .= ' WHERE at.title IS NOT NULL';
+	if ($GLOBALS['babBody']->currentAdmGroup != 0) {
+		$sql .= ' AND  tct.id_dgowner=\'' . $babBody->currentAdmGroup . '\'';
+	}
+	if ($start || $end) {
+		$sql .= ' AND ';
+		$where = array();
+		$start && $where[] = 'sat.st_date >= \'' . date('Y-m-d', $start) . '\'';
+		$end && $where[] = 'sat.st_date <= \'' . date('Y-m-d', $end) . '\'';
+		$sql .= implode(' AND ', $where);
+	}
+	$sql .= ' GROUP BY tct.id';
+	$sql .= ' ORDER BY hits DESC';
+	$sql .= ' LIMIT 20';
+
+	$nbDays = (int)round(($end - $start) / 86400.0);
+	if ($nbDays <= 31)
+		$sqlDateFormat = '%Y-%m-%d';
+	elseif ($nbDays <= 365)
+		$sqlDateFormat = '%Y-%m';
+	else
+		$sqlDateFormat = '%Y';
+	
+	$categories = $GLOBALS['babDB']->db_query($sql);
+	while ($category = $GLOBALS['babDB']->db_fetch_array($categories)) {
+		$sql = 	'SELECT tct.id AS id, DATE_FORMAT(sat.st_date,\'' . $sqlDateFormat . '\') AS stat_date, SUM(sat.st_hits) AS hits';
+		$sql .= ' FROM ' . BAB_STATS_ARTICLES_TBL . ' sat LEFT JOIN ' . BAB_ARTICLES_TBL . ' at ON sat.st_article_id=at.id LEFT JOIN ' . BAB_TOPICS_TBL . ' tt ON tt.id=at.id_topic LEFT JOIN ' . BAB_TOPICS_CATEGORIES_TBL . ' tct ON tct.id=tt.id_cat';
+		$sql .= ' WHERE tct.id=\'' . $category['id'] . '\'';
+		if ($start || $end) {
+			$sql .= ' AND ';
+			$where = array();
+			$start && $where[] = 'sat.st_date >= \'' . date('Y-m-d', $start) . '\'';
+			$end && $where[] = 'sat.st_date <= \'' . date('Y-m-d', $end) . '\'';
+			$sql .= implode(' AND ', $where);
+		}
+		$sql .= ' GROUP BY stat_date';
+		$sql .= ' ORDER BY stat_date ASC';
+	
+		$stats = $GLOBALS['babDB']->db_query($sql);
+		$row = createEmptyRow($start, $end, $category['title']);
+		while ($stat = $GLOBALS['babDB']->db_fetch_array($stats)) {
+			$row[$stat['stat_date']] = $stat['hits'];
+		}
+			
+		$row['total'] = $category['hits'];
+		$dashboard->addRow($row);
+	}	
+	
+	return $dashboard;
+}
+
+
 function createArticleTopicsDashboard($start, $end)
 {
 	$dashboard = new bab_Dashboard(bab_translate("Articles Topics Top 20"));
@@ -274,6 +333,9 @@ function showDashboard()
 	$GLOBALS['babBodyPopup']->babecho($dashboard->printTemplate());
 
 	$dashboard = createArticleTopicsDashboard(bab_mktime('2005-01-01'), bab_mktime('2005-01-31'));
+	$GLOBALS['babBodyPopup']->babecho($dashboard->printTemplate());
+
+	$dashboard = createArticleCategoriesDashboard(bab_mktime('2005-01-01'), bab_mktime('2005-01-31'));
 	$GLOBALS['babBodyPopup']->babecho($dashboard->printTemplate());
 }
 
