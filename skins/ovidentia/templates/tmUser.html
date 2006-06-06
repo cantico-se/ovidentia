@@ -291,10 +291,11 @@ function submit_form()
 			<!--#endif m_is_altbg -->
 	
 				<!--#if m_datas[isLink] -->
-					<td><a href="{ m_datas[url] }{ m_datas[id] }">{ m_datas[description] }</a></td>
+					<td><a href="{ m_datas[url] }{ m_datas[id] }">{ m_datas[taskNumber] }</a></td>
 				<!--#else m_datas[isLink] -->
-					<td>{ m_datas[description] }</td>
+					<td>{ m_datas[taskNumber] }</td>
 				<!--#endif m_datas[isLink] -->
+					<td>{ m_datas[description] }</td>
 					<td>{ m_datas[created] }</td>
 					<td>
 						<table border="0" cellspacing="0" cellpadding="2" align="center">
@@ -607,9 +608,9 @@ function processStartDate()
 	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
 	<input type="hidden" name="idx" value="" />
 	<input type="hidden" name="action" value="" />
-	<input type="hidden" name="iIdProjectSpace" value="{ m_datas[iIdProjectSpace] }" />
-	<input type="hidden" name="iIdProject" value="{ m_datas[iIdProject] }" />
-	<input type="hidden" name="iIdTask" value="{ m_datas[iIdTask] }" />
+	<input type="hidden" name="iIdProjectSpace" value="{ m_iIdProjectSpace }" />
+	<input type="hidden" name="iIdProject" value="{ m_iIdProject }" />
+	<input type="hidden" name="iIdTask" value="{ m_iIdTask }" />
 	<input type="hidden" name="iMajorVersion" value="{ m_datas[iMajorVersion] }" />
 	<input type="hidden" name="iMinorVersion" value="{ m_datas[iMinorVersion] }" />
 	<input type="hidden" name="selectedDateFieldName" value="" />
@@ -662,11 +663,13 @@ function processStartDate()
 	<!--#if m_datas[isLinkable] -->
 		<li id="oLiPredecessors"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[predecessors] }</a></li>
 	<!--#endif m_datas[isLinkable] -->
+	<!--#if m_iIdProject "!= 0" -->
 		<li id="oLiResources"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[resources] }</a></li>
-	<!--#if m_datas[iIdTask] "!= 0" -->
+	<!--#endif m_iIdProject -->
+	<!--#if m_iIdTask "!= 0" -->
 		<li id="oLiCommentaries"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[commentaries] }</a></li>
 		<li id="oLiSpfFld"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[spFld] }</a></li>
-	<!--#endif m_datas[iIdTask] -->
+	<!--#endif m_iIdTask -->
 	</ul>						
 	<br />
 
@@ -733,7 +736,7 @@ function processStartDate()
 				</td>
 				<td>
 					<input type="text" name="sPlannedStartDate" id="sPlannedStartDate" { m_datas[sReadOnlyDate] } maxlength="20" value="{ m_datas[sPlannedStartDate] }" size="10" />
-				<!--#if m_datas[isReadOnlyDate] -->
+				<!--#if m_datas[isReadOnlyDate] "!= 1" -->
 				<a href="javascript:dateCallback('sPlannedStartDate');">
 						<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/calendar.gif" alt="{ m_captions[plannedStartDate] }" />
 					</a>
@@ -747,7 +750,7 @@ function processStartDate()
 				</td>
 				<td>
 					<input type="text" name="sPlannedEndDate" id="sPlannedEndDate" { m_datas[sReadOnlyDate] } maxlength="20" value="{ m_datas[sPlannedEndDate] }" size="10" />
-				<!--#if m_datas[isReadOnlyDate] -->
+				<!--#if m_datas[isReadOnlyDate] "!= 1" -->
 					<a href="javascript:dateCallback('sPlannedEndDate');">
 						<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/calendar.gif" alt="{ m_captions[plannedEndDate] }" />
 					</a>
@@ -798,7 +801,7 @@ function processStartDate()
 		</table>
 	</div>
 	
-	<!--#if m_datas[iIdTask] "!= 0" -->
+	<!--#if m_iIdTask "!= 0" -->
 	<div id="sCommentaries" class="">
 		{ m_datas[taskCommentaries] }
 	</div>
@@ -823,18 +826,18 @@ function processStartDate()
 			</tr>
 		</table>
 	</div>
-	<!--#endif m_datas[iIdTask] -->
+	<!--#endif m_iIdTask -->
 	
 	<br />
 	<div align="center">
-		<!--#if m_datas[iIdTask] "== 0" -->
+		<!--#if m_iIdTask "== 0" -->
 			<input type="submit" value="{ m_captions[add] }" onclick="on_btn_clicked('{ m_datas[addIdx] }', '{ m_datas[addAction] }')" />
-		<!--#else m_datas[iIdTask] -->
+		<!--#else m_iIdTask -->
 			<input type="submit" value="{ m_captions[modify] }" onclick="on_btn_clicked('{ m_datas[modifyIdx] }', '{ m_datas[modifyAction] }')" />
 			<!--#if m_datas[bIsDeletable] -->
 				<input type="submit" value="{ m_captions[delete] }" onclick="on_btn_clicked('{ m_datas[deleteIdx] }', '{ m_datas[deleteAction] }')" />
 			<!--#endif m_datas[bIsDeletable] -->
-		<!--#endif m_datas[iIdTask] -->
+		<!--#endif m_iIdTask -->
 	</div>
 </form>
 

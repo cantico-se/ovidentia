@@ -761,8 +761,7 @@ function bab_getTask($iIdTask, &$aTask)
 			'idUserModified, ' .
 			'class, ' .
 			'participationStatus, ' .
-			'idPredecessor, ' .
-			'isLinkType, ' .
+			'isLinked, ' .
 			'idCalEvent, ' .
 			'hashCalEvent, ' .
 			'duration, ' .
@@ -770,11 +769,15 @@ function bab_getTask($iIdTask, &$aTask)
 			'minorVersion, ' .
 			'color, ' .
 			'position, ' .
-			'completion ' .
+			'completion, ' .
+			'plannedStartDate, ' .
+			'startDate, ' .
+			'plannedEndDate, ' .
+			'endDate ' .
 		'FROM ' .
 			BAB_TSKMGR_TASKS_TBL . ' ' .
 		'WHERE ' . 
-			'id = \'' . $iIdTask . '\'' .
+			'id = \'' . $iIdTask . '\'';
 			
 	//bab_debug($query);
 
@@ -790,11 +793,14 @@ function bab_getTask($iIdTask, &$aTask)
 			'modified' => $datas['modified'], 'iIdUserCreated' => $datas['idUserCreated'], 
 			'iIdUserModified' => $datas['idUserModified'], 'iClass' => $datas['class'], 
 			'iParticipationStatus' => $datas['participationStatus'],
-			'iIdPredecessor' => $datas['idPredecessor'], 'iIsLinked' => $datas['isLinked'], 
+			'iIsLinked' => $datas['isLinked'], 
 			'iIdCalEvent' => $datas['idCalEvent'], 'sHashCalEvent' => $datas['hashCalEvent'], 
 			'iDuration' => $datas['duration'], 'iMajorVersion' => $datas['majorVersion'], 
 			'iMinorVersion' => $datas['minorVersion'], 'sColor' => $datas['color'], 
-			'iPosition' => $datas['position'], 'iCompletion' => $datas['completion']);
+			'iPosition' => $datas['position'], 'iCompletion' => $datas['completion'],
+			'sPlannedStartDate' => $datas['plannedStartDate'], 'sStartDate' => $datas['startDate'],
+			'sPlannedEndDate' => $datas['plannedEndDate'], 'sEndDate' => $datas['endDate']
+			);
 		return true;
 	}
 	return false;
@@ -900,6 +906,7 @@ function bab_selectTasksList($iIdProject, $iLenght = 50)
 	
 	$query = 
 		'SELECT ' .
+			'id, ' . 
 			'taskNumber, ' . 
 			'IF(LENGTH(description) > \'' . $iLenght . '\', CONCAT(LEFT(description, \'' . $iLenght . '\'), \'...\'), description) description, ' .
 			'created ' .
@@ -937,6 +944,12 @@ function bab_getNextTaskPosition($iIdProject, &$iPosition)
 {
 	$db = & $GLOBALS['babDB'];
 
+	$sIdOwner = '';
+	if(0 == $iIdProject)
+	{
+		$sIdOwner = ' AND idOwner =\'' . $GLOBALS['BAB_SESS_USERID'] . '\'';
+	}
+
 	$iPosition = 0;
 
 	$query = 
@@ -945,7 +958,8 @@ function bab_getNextTaskPosition($iIdProject, &$iPosition)
 		'FROM ' . 
 			BAB_TSKMGR_TASKS_TBL . ' ' .
 		'WHERE ' . 
-			'idProject=\'' . $iIdProject . '\'';
+			'idProject=\'' . $iIdProject . '\'' .
+			$sIdOwner;
 
 	//bab_debug($query);
 
@@ -989,6 +1003,8 @@ function bab_getTaskResponsibles($iIdTask, &$aTaskResponsible)
 {
 	global $babBody, $babDB;
 	
+	$aTaskResponsible = array();
+
 	$query = 
 		'SELECT ' .
 			'idResponsible ' . 
@@ -1005,7 +1021,7 @@ function bab_getTaskResponsibles($iIdTask, &$aTaskResponsible)
 	if($iIndex < $iNumRows && false != ($datas = $babDB->db_fetch_assoc($result)))
 	{
 		$iIndex++;
-		$aTaskResponsible[$datas['id']] = array('id' => $datas['id'], 'name' => bab_getUserName($datas['id']));
+		$aTaskResponsible[$datas['idResponsible']] = array('id' => $datas['idResponsible'], 'name' => bab_getUserName($datas['idResponsible']));
 	}
 }
 
@@ -1056,6 +1072,12 @@ function bab_isTaskNumberUsed($iIdProject, $iIdTask, $sTaskNumber)
 
 function bab_selectLinkableTask($iIdProject, $iIdTask)
 {
+	$sIdOwner = '';
+	if(0 == $iIdProject)
+	{
+		$sIdOwner = ' AND idOwner =\'' . $GLOBALS['BAB_SESS_USERID'] . '\'';
+	}
+
 	$sIdTask = '';
 	if(0 != $iIdTask)
 	{
@@ -1065,19 +1087,20 @@ function bab_selectLinkableTask($iIdProject, $iIdTask)
 	$query = 
 		'SELECT ' . 
 			'id, ' .
-			'taskNumber ' .
+			'taskNumber, ' .
+			'IF(now() >= startDate, 1, 0) isStarted ' .
 		'FROM ' . 
 			BAB_TSKMGR_TASKS_TBL . ' ' .
 		'WHERE ' . 
-			'idProject = \'' . $iIdProject . '\'' .
-			$sIdTask;
+			'idProject = \'' . $iIdProject . '\' AND ' .
+			'class =\'' . BAB_TM_TASK . '\' AND ' .
+			'participationStatus <> \'' . BAB_TM_ENDED . '\'' .
+//			'now() < startDate ' .
+			$sIdTask . $sIdOwner;
 
-	bab_debug(__FUNCTION__ . ' tester le participationStatus, et faut que ce soit une tâche');
-			
 	//bab_debug($query);
 	
 	$db	= & $GLOBALS['babDB'];
-	
 	return $db->db_query($query);
 //	return (false != $result && 0 == $db->db_num_rows($result));
 }
@@ -1096,21 +1119,22 @@ function bab_createTask($aParams)
 				'`participationStatus`, `isLinked`, `idCalEvent`, `hashCalEvent`, ' .
 				'`duration`, `majorVersion`, `minorVersion`, `color`, `position`, ' .
 				'`completion`, `startDate`, `endDate`, `plannedStartDate`, ' .
-				'`plannedEndDate`, `created`, `idUserCreated`' .
+				'`plannedEndDate`, `created`, `idUserCreated`, `isNotified`, `idOwner`' .
 			') ' .
 		'VALUES ' . 
 			'(\'\', \'' . 
 				$aParams['idProject'] . '\', \'' . $aParams['taskNumber'] . '\', \'' . 
 				$aParams['description'] . '\', \'' . $aParams['idCategory'] . '\', \'' . 
 				$aParams['class'] . '\', \'' . $aParams['participationStatus'] . '\', \'' . 
-				$aParams['isLinkType'] . '\', \'' . $aParams['idCalEvent'] . '\', \'' . 
+				$aParams['isLinked'] . '\', \'' . $aParams['idCalEvent'] . '\', \'' . 
 				$aParams['hashCalEvent'] . '\', \'' . $aParams['duration'] . '\', \'' . 
 				$aParams['majorVersion'] . '\', \'' . $aParams['minorVersion'] . '\', \'' . 
 				$aParams['color'] . '\', \'' . $aParams['position'] . '\', \'' . 
-				$aParams['completion'] . '\', \'' . $aParams['startDate'] . '\', \'' . 
-				$aParams['endDate'] . '\', \'' . $aParams['plannedStartDate'] . '\', \'' . 
+				$aParams['completion'] . '\', \'' . '' . '\', \'' . 
+				'' . '\', \'' . $aParams['plannedStartDate'] . '\', \'' . 
 				$aParams['plannedEndDate'] . '\', \'' . date("Y-m-d H:i:s") . '\', \'' . 
-				$GLOBALS['BAB_SESS_USERID'] . '\')'; 
+				$GLOBALS['BAB_SESS_USERID'] . '\', \'' . $aParams['isNotified'] . '\', \'' . 
+				((0 != $aParams['idProject']) ? 0 : $GLOBALS['BAB_SESS_USERID']) . '\')'; 
 
 	//bab_debug($query);
 	return $babDB->db_query($query);

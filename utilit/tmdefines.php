@@ -93,4 +93,10 @@ define('BAB_TM_ENDED', 3);
 //Link type
 define('BAB_TM_END_TO_START', 0);
 define('BAB_TM_START_TO_START', 1);
+
+//Task user profil
+define('BAB_TM_UNDEFINED', -1);
+define('BAB_TM_PROJECT_MANAGER', 0);
+define('BAB_TM_TASK_RESPONSIBLE', 1);
+define('BAB_TM_PERSONNAL_TASK_OWNER', 2);
 ?>

@@ -6262,13 +6262,15 @@ function upgradeXXXtoYYY()
 				`plannedEndDate` DATETIME NOT NULL default '0000-00-00 00:00:00',
 				`startDate` DATETIME NOT NULL default '0000-00-00 00:00:00',
 				`endDate` DATETIME NOT NULL default '0000-00-00 00:00:00',
+				`isNotified` TINYINT UNSIGNED NOT NULL default '0',
+				`idOwner` INTEGER UNSIGNED NOT NULL default '0',
 				PRIMARY KEY(`id`, `idProject`),
 				INDEX `idProject`(`idProject`),
 				INDEX `majorVersion`(`majorVersion`),
 				INDEX `minorVersion`(`minorVersion`)
 				) TYPE=MyISAM
 		");
-		
+
 		if(false == $res)
 		{
 			return $res;

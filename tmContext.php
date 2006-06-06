@@ -31,6 +31,7 @@ class BAB_TM_Context
 
 	var $m_iIdProjectSpace;
 	var $m_iIdProject;
+	var $m_iIdTask;
 	var $m_iIdDelegation;
 	
 	var $m_oWorkingHours;
@@ -67,6 +68,7 @@ class BAB_TM_Context
 		$this->m_oTblWr = new BAB_TableWrapper('');
 		$this->m_iIdProjectSpace = (int) tskmgr_getVariable('iIdProjectSpace', 0);
 		$this->m_iIdProject = (int) tskmgr_getVariable('iIdProject', 0);
+		$this->m_iIdTask = (int) tskmgr_getVariable('iIdTask', 0);
 		$this->m_iIdDelegation = $babBody->currentAdmGroup;
 		
 		$this->m_oWorkingHours = null;
@@ -109,6 +111,12 @@ class BAB_TM_Context
 	function getIdProject()
 	{
 		return $this->m_iIdProject;
+	}
+	
+	
+	function getIdTask()
+	{
+		return $this->m_iIdTask;
 	}
 	
 	function getIdDelegation()

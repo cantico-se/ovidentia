@@ -990,275 +990,44 @@ function addModifyTask()
 
 	if(bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject))
 	{
-		class BAB_TM_TaskContext
-		{
-			var $m_sTaskNumber;
-			var $m_iClassType;
-			var $m_oLinkedTask;
-			var $m_iIdPredecessor;
-			var $m_oDurationType;
-			var $m_sDuration;
-			var $m_sStartDate;
-			var $m_sEndDate;
-			var $m_iIdTaskResponsible;
-			var $m_iIdCategory;
-			var $m_sDescription;
-			
-			var $m_iIdProjectSpace;
-			var $m_iIdTask;
-			var $m_iIdProject;
-	
-			var $m_iMajorVersion;
-			var $m_iMinorVersion;
-			
-			function BAB_TM_TaskContext()
-			{
-				$this->m_sTaskNumber = trim(tskmgr_getVariable('sTaskNumber', ''));
-				$this->m_iClassType = (int) tskmgr_getVariable('iClassType', 0);
-				$this->m_oLinkedTask = (int) tskmgr_getVariable('oLinkedTask', -1);
-				$this->m_iIdPredecessor = (int) tskmgr_getVariable('iIdPredecessor', -1);
-				$this->m_oDurationType = (int) tskmgr_getVariable('oDurationType', -1);
-				$this->m_sDuration = (int) tskmgr_getVariable('sDuration', 0);
-				$this->m_sStartDate = trim(tskmgr_getVariable('sPlannedStartDate', ''));
-				$this->m_sEndDate = trim(tskmgr_getVariable('sPlannedEndDate', ''));
-				$this->m_iIdTaskResponsible = (int) tskmgr_getVariable('iIdTaskResponsible', -1);
-				
-				$this->m_iIdProjectSpace = (int) tskmgr_getVariable('iIdProjectSpace', 0);
-				$this->m_iIdProject = (int) tskmgr_getVariable('iIdProject', 0);
-				$this->m_iIdTask = (int) tskmgr_getVariable('iIdTask', 0);
-				
-				$this->m_iIdCategory = (int) tskmgr_getVariable('iIdCategory', 0);
-				$this->m_sDescription = trim(tskmgr_getVariable('sDescription', ''));
-				
-				$this->m_iMajorVersion = (int) tskmgr_getVariable('iMajorVersion', 1);
-				$this->m_iMinorVersion = (int) tskmgr_getVariable('iMinorVersion', 0);
-			}
-			
-			function isTaskNumberValid()
-			{
-				if(strlen($this->m_sTaskNumber) > 0)
-				{
-					$aConfiguration = null;
-					$bSuccess = bab_getProjectConfiguration($this->m_iIdProject, $aConfiguration);
-					if(false != $bSuccess)
-					{
-						if(BAB_TM_MANUAL == $aConfiguration['tasksNumerotation'])
-						{
-								$sName = mysql_escape_string(str_replace('\\', '\\\\', $this->m_sTaskNumber));
-								return bab_isTaskNumberUsed($this->m_iIdProject, $this->m_iIdTask, $sName);
-						}
-						else
-						{
-							if(0 != $this->m_iIdTask)
-							{
-								$aTask = array();
-								if(bab_getTask($this->m_iIdTask, $aTask))
-								{
-									if($aTask['sTaskNumber'] === $this->m_sTaskNumber)
-									{
-										return true;
-									}
-								}
-							}
-							else
-							{
-								$sTaskNumber = '';
-								bab_getNextTaskNumber($this->m_iIdProject, $aConfiguration['tasksNumerotation'], $sTaskNumber);
-								
-								//bab_debug('sTaskNumber ==> ' . $this->m_sTaskNumber . ' sNextTaskNumber ==> ' . $sTaskNumber);
-								
-								if($sTaskNumber === $this->m_sTaskNumber)
-								{
-									return true;
-								}
-							}
-						}
-					}
-					else
-					{
-						bab_debug('Cannot get the configuration');
-					}
-				}
-				else
-				{
-					bab_debug('sTaskNumber is empty');
-				}
-				return false;
-			}
-		
-			function isEventValid()
-			{
-				switch($this->m_iClassType)
-				{
-					case BAB_TM_TASK:
-						return $this->isTaskValid();
-					case BAB_TM_CHECKPOINT:
-						return $this->isCheckPointValid();
-					case BAB_TM_CHECKPOINT:
-						return $this->isToDoValid();
-				}
-				return false;
-			}
-			
-			function isTaskValid()
-			{
-				if($this->isTaskNumberValid())
-				{
-					//Si tâche non liée
-					if(-1 === $this->m_oLinkedTask)
-					{
-						if(BAB_TM_DURATION == $this->m_oDurationType)
-						{
-							return ((int)$this->m_sDuration > 0 && $this->isDateValid($this->m_sStartDate));
-						}
-						else if(BAB_TM_DATE == $this->m_oDurationType)
-						{
-							if($this->isDateValid($this->m_sStartDate) && $this->isDateValid($this->m_sEndDate))
-							{
-								$iStartTimestamp = strtotime($this->m_sStartDate);
-								$iEndTimestamp = strtotime($this->m_sEndDate);
-								//bab_debug('date ==> ' . date('l dS of F Y h:i:s A', $iStartTimestamp));
-								//bab_debug('date ==> ' . date('l dS of F Y h:i:s A',$iEndTimestamp ));
-								if($iEndTimestamp > $iStartTimestamp)
-								{
-									$aTaskResponsible = array();
-									bab_getAvailableTaskResponsibles($this->m_iIdProject, $aTaskResponsible);
-									if(isset($aTaskResponsible[$this->m_iIdTaskResponsible]))
-									{
-										return true;
-									}
-									else 
-									{
-										bab_debug(__FUNCTION__ . ' iIdTaskResponsible missmatch');
-									}
-								}
-								else 
-								{
-									bab_debug(__FUNCTION__ . ' sEndDate is less than sStartDate');
-								}
-							}
-							else 
-							{
-								bab_debug(__FUNCTION__ . ' invalid Date');
-							}
-						}
-						else
-						{
-							bab_debug(__FUNCTION__ . ' unknown oDurationType');
-						}
-					}
-					else 
-					{
-						bab_debug(__FUNCTION__ . ' linked task must be implemented');
-					}
-				}
-				else 
-				{
-					bab_debug(__FUNCTION__ . ' sTaskNumber is invalid');
-				}
-				return false;
-			}
-			
-			function isCheckPointValid()
-			{
-				if($this->isTaskNumberValid())
-				{
-					return $this->isDateValid($this->m_sEndDate);
-				}
-				return false;
-			}
-			
-			function isToDoValid()
-			{
-				if($this->isTaskNumberValid())
-				{
-					return $this->isDateValid($this->m_sEndDate);
-				}
-				return false;
-			}
-			
-			function isDateValid($sDate)
-			{
-				$iYear = 0;
-				$iMonth = 1;
-				$iDay = 2;
-							
-				if(strlen($sDate) > 0)
-				{
-					$aDate = explode('-', $sDate);
-					if(count($aDate) == 3)
-					{
-						if($this->checkDate((int)$aDate[$iDay], (int)$aDate[$iMonth], (int)$aDate[$iYear]))
-						{
-							if((int)$aDate[$iYear] >= (int) date('Y'))
-							{
-								//bab_debug('year ==> ' . $aDate[$iYear] . ' month ==> ' . $aDate[$iMonth] . ' day ==> ' . $aDate[$iDay]);
-								return true;
-							}
-						}
-					}
-				}
-				return false;
-			}
-			
-			function checkDate($day, $month, $year)
-			{
-			   if ($month < 1 || $month > 12 || $day < 1 || $day > 31)
-			   {
-			       return false;
-			   }
-			   
-			   if (($month == 4 || $month == 6 || $month == 9 || $month == 11) && $day > 30)
-			   {
-			       return false;
-			   }
-	
-			   if ($month == 2 && $day > (($year % 4 == 0 && ($year % 100 != 0 || $year % 400 == 0)) ? 29 : 28))
-			   {
-			       return false;
-			   }
-			   return true;
-			} 
-		
-			function isValid()
-			{
-				switch($this->m_iClassType)
-				{
-					case BAB_TM_TASK:
-						return $this->isTaskValid();
-					case BAB_TM_CHECKPOINT:
-						return $this->isCheckPointValid();
-					case BAB_TM_TODO:
-						return $this->isToDoValid();
-				}
-			}
-		}
-		
 //		bab_debug($_POST);
 		
+		global $babInstallPath;
+		require_once($babInstallPath . 'tmTaskClasses.php');
+
 		$oTaskContext =& new BAB_TM_TaskContext();
 		
 		if($oTaskContext->isValid())
 		{
 			if(0 == $oTaskContext->m_iIdTask)
 			{
-/*
 				$iPosition = 0;
 				bab_getNextTaskPosition($iIdProject, $iPosition);
 				
+				$isLinked = (int) (-1 === $oTaskContext->m_oLinkedTask) ? BAB_TM_NO : BAB_TM_YES;
+				$iProposable = (int) tskmgr_getVariable('oProposable', BAB_TM_NO);
+				
+				if(BAB_TM_YES == $iProposable)
+				{
+					bab_debug('Notification must be implemented');
+					$iNotified = BAB_TM_YES;
+				}
+
+				$iParticipationStatus = (int) (BAB_TM_NO == $iProposable) ? BAB_TM_ACCEPTED : BAB_TM_TENTATIVE;
+
 				$aParams = array(
 					'idProject' => $iIdProject, 'taskNumber' => mysql_escape_string($oTaskContext->m_sTaskNumber),
 					'description' => mysql_escape_string($oTaskContext->m_sDescription),
 					'idCategory' => $oTaskContext->m_iIdCategory, 'idResponsible' => $oTaskContext->m_iIdTaskResponsible,
-					'class' => $oTaskContext->m_iClassType, 'participationStatus' => $oTaskContext->m_iPersonnalizationStatus,
-					'idPredecessor' => $oTaskContext->m_iIdPredecessor, 'linkType' => '?????????????',
-					'idCalEvent' => 0, 'hashCalEvent' => '', 'duration' => $oTaskContext->m_sDuration,
+					'class' => $oTaskContext->m_iClassType, 'participationStatus' => $iParticipationStatus,
+					'isLinked' => $isLinked, 'idCalEvent' => 0, 'hashCalEvent' => '', 'duration' => $oTaskContext->m_sDuration,
 					'majorVersion' => $oTaskContext->m_iMajorVersion, 'minorVersion' => $oTaskContext->m_iMinorVersion,
-					'color' => '', 'position' => $iPosition, 'completion' => 0, 
-					'startDate' => mysql_escape_string($oTaskContext->m_sStartDate), 
-					'endDate' => mysql_escape_string($oTaskContext->m_sEndDate) 
-					);
-//*/
+					'color' => '', 'position' => (int) $iPosition, 'completion' => 0, 
+					'plannedStartDate' => mysql_escape_string($oTaskContext->m_sStartDate), 
+					'plannedEndDate' => mysql_escape_string($oTaskContext->m_sEndDate),
+					'isNotified' => $iNotified);
+
+				bab_createTask($aParams);
 			}
 			else 
 			{

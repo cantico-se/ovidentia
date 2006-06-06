@@ -504,7 +504,7 @@ function saveProjectConfiguration()
 bab_cleanGpc();
 
 
-/*
+//*
 require_once($babInstallPath . 'upgrade.php');
 upgradeXXXtoYYY();
 //*/
