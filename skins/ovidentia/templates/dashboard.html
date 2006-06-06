@@ -1,0 +1,284 @@
+<!--#begin dashboard_css -->
+
+<style type="text/css">
+
+.dashboard_icon {
+	border: 1px solid #DDDDDD;
+	padding: 2px;
+	margin-left: 12px;
+	margin-right: 12px;
+	background-color: #FFFFFF;
+	cursor: pointer;
+	vertical-align: middle;
+}
+
+.dashboard_container {
+	display: table;
+	padding: 0;
+}
+
+.dashboard_header {
+	padding: 4px;
+	font-family: tahoma;
+	font-size: 0.9em;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+.dashboard_filter {
+	padding: 4px;
+	font-family: tahoma;
+	font-size: 0.75em;
+	font-weight: normal;
+	vertical-align: middle;
+}
+
+.dashboard_column_header {
+	cursor: pointer;	
+}
+
+.dashboard_column_header p {
+	margin: 0;
+	padding: 0 0 0 10px;
+	background-image: url('smallminus.gif');
+	background-position: 0 0;
+	background-repeat: no-repeat;
+}
+
+.dashboard_column_header:hover {
+	background-color: #CCCCCC;
+}
+.dashboard_container thead td {
+	border: 1px solid #FFFFFF;
+	background-color: #000000;
+	color: #FFFFFF;
+	font-family: tahoma;
+	font-size: 0.67em;
+	font-weight: bold;
+	padding: 4px;
+}
+
+.dashboard_container tbody td {
+	border: 1px solid #CCCCCC;
+	background-color: #FFFFFF;
+	color: #000000;
+	font-family: tahoma;
+	font-size: 0.67em;
+	padding: 4px;
+
+}
+
+</style>
+
+<!--#end dashboard_css -->
+
+
+<!--#begin dashboard_scripts -->
+
+<script type="text/javascript">
+<!--
+function inArray(arr, val)
+{
+	for (var i in arr)
+		if (arr[i] == val)
+			return true;				
+	return false;
+}
+
+function hasClass(element, className)
+{
+	if (element.className == undefined)
+		return false;
+	classes = element.className.split(' ');
+	return inArray(classes, className);
+}
+
+function showColumn(td, show)
+{
+	var r, c, colStart;
+	var tab = td.parentNode.parentNode.parentNode;
+
+	for (colStart = 0, c = 0; c < td.cIndex; c++)
+		colStart += tab.rows[0].cells[c].colSpan;
+
+	td.style.display = show ? '' : 'none';
+
+	for (r = 1; r < tab.rows.length; ++r)
+		for (c = 0; c < td.colSpan; c += tab.rows[r].cells[colStart + c].colSpan)
+			tab.rows[r].cells[colStart + c].style.display = show ? '' : 'none';
+}
+
+function filterColumns()
+{
+	chkbox = this;
+	show = chkbox.checked;
+	div = chkbox.dashboardContainer;
+
+	for (var c = 0; c < div.dashboardColumnHeaders.length; c++) {
+		td = div.dashboardColumnHeaders[c];
+		if (hasClass(td, chkbox.dashboardFilter)) {
+			showColumn(td, show);
+		}
+	}
+}
+
+
+function hideColumn()
+{
+	div = this.dashboardContainer;
+	div.foldUndoStack.push(this);
+	div.undoButton.style.visibility = '';
+	div.undoAllButton.style.visibility = '';
+	showColumn(this, false);
+}
+
+function undoHideColumn()
+{
+	div = this.dashboardContainer;
+	stack = div.foldUndoStack;
+	if (stack.length <= 0)
+		return;
+	td = div.foldUndoStack.pop();
+	showColumn(td, true);
+	if (stack.length <= 0) {
+		div.undoButton.style.visibility = 'hidden';
+		div.undoAllButton.style.visibility = 'hidden';
+	}
+}
+
+function undoHideAllColumns()
+{
+	div = this.dashboardContainer;
+	stack = div.foldUndoStack;
+	while (stack.length > 0) {
+		td = div.foldUndoStack.pop();
+		showColumn(td, true);
+	}
+	div.undoButton.style.visibility = 'hidden';
+	div.undoAllButton.style.visibility = 'hidden';
+}
+
+function toggleDashboard()
+{
+	table = this.dashboardContainer.targetTable
+	if (table.style.display == 'none') {
+		table.style.display = '';
+		this.dashboardContainer.toggleButton.src = 'minus.gif';
+		this.dashboardContainer.filterSpan.style.visibility = 'visible';
+	} else {
+		table.style.display = 'none';
+		this.dashboardContainer.toggleButton.src = 'plus.gif';
+		this.dashboardContainer.filterSpan.style.visibility = 'hidden';
+	}
+}
+
+function dashboardInit()
+{
+	divs = document.getElementsByTagName('div');
+	for (var i = 0; i < divs.length; i++) {
+		div = divs[i];
+		if (hasClass(div, 'dashboard_container')) {
+			div.foldUndoStack = new Array();
+			tds = div.getElementsByTagName('td');
+			div.dashboardColumnHeaders = new Array();
+			for (var j = 0; j < tds.length; j++) {
+				td = tds[j];
+				if (hasClass(td, 'dashboard_column_header')) {
+					td.dashboardContainer = div;
+					div.dashboardColumnHeaders.push(td);
+					td.cIndex = td.cellIndex; // to circumvent an ie pb.
+					td.onclick = hideColumn;
+				}
+			}
+			headers = div.getElementsByTagName('div');
+			for (var j = 0; j < headers.length; j++) {
+				header = headers[j];
+				if (hasClass(header, 'dashboard_header')) {
+					var hideImg = document.createElement('img');
+					hideImg.src = 'minus.gif';
+					hideImg.className = 'dashboard_icon';
+					hideImg.alt = hideImg.title = 'Cacher';
+					hideImg.onclick = toggleDashboard;
+					hideImg.dashboardContainer = div;
+					div.toggleButton = hideImg;
+					header.insertBefore(hideImg, header.firstChild);
+
+					var undoImg = document.createElement('img');
+					undoImg.src = 'undo.png';
+					undoImg.className = 'dashboard_icon';
+					undoImg.alt = undoImg.title = 'Défaire';
+					undoImg.onclick = undoHideColumn;
+					undoImg.dashboardContainer = div;
+					undoImg.style.visibility = 'hidden';
+					div.undoButton = undoImg;
+					header.appendChild(undoImg);
+
+					var undoAllImg = document.createElement('img');
+					undoAllImg.src = 'undoall.png';
+					undoAllImg.className = 'dashboard_icon';
+					undoAllImg.alt = undoAllImg.title = 'Tout rafficher';
+					undoAllImg.onclick = undoHideAllColumns;
+					undoAllImg.dashboardContainer = div;
+					undoAllImg.style.visibility = 'hidden';
+					div.undoAllButton = undoAllImg;
+					header.appendChild(undoAllImg);
+
+					var filterSpan = document.createElement('span');
+					filterSpan.className = 'dashboard_filter';
+					var days = new Array('L', 'M', 'M', 'J', 'V', 'S', 'D');
+					for (day = 0; day < 7; day++) {
+						var chkbox = document.createElement('input');
+						chkbox.type = 'checkbox';
+						chkbox.dashboardContainer = div;
+						chkbox.dashboardFilter = 'day' + day;
+						chkbox.onclick = filterColumns;
+						chkbox.style.margin = '0px 8px 0px 16px';
+						filterSpan.appendChild(chkbox);
+						chkbox.defaultChecked = chkbox.checked = true;
+						var txt = document.createTextNode(days[day]);
+						filterSpan.appendChild(txt);
+					}
+					div.filterSpan = filterSpan;
+					header.appendChild(filterSpan);
+					
+					div.targetTable = div.getElementsByTagName('table')[0];
+				}
+			}
+		}
+	}
+	if (typeof window.previousonload == 'function')
+		window.previousonload();
+}
+
+window.previousonload = window.onload;
+window.onload = dashboardInit;
+
+</script>
+<!--#end dashboard_scripts -->
+
+
+<!--#begin dashboard -->
+
+<div class="dashboard_container">
+<div class="dashboard_header">{ t_dashboard_name }</div>
+<table id="{ t_table_id" style="border-collapse: collapse; border: 2px solid black">
+<thead>
+<tr>
+<!--#in getNextColumnHeader -->
+<td class="dashboard_column_header { t_column_type }">{ t_column_header }</td>
+<!--#endin getNextColumnHeader -->
+</tr>
+</thead>
+<tbody>
+<!--#in getNextRow -->
+<tr>
+<!--#in getNextColumn -->
+<td>{ t_column_content }</td>
+<!--#endin getNextColumn -->
+</tr>
+<!--#endin getNextRow -->
+</tbody>
+</table>
+</div>
+
+<!--#end dashboard -->

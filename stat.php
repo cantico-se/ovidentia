@@ -642,6 +642,15 @@ switch($idx)
 		printBabBodyPopup();
 		exit;
 		break;
+	case "dashboard":
+		include_once $babInstallPath."utilit/uiutil.php";
+		include_once $babInstallPath."statdashboard.php";
+		$GLOBALS['babBodyPopup'] = new babBodyPopup();
+		showDashboard();
+		printBabBodyPopup();
+		exit;
+		break;
+		
 	default:
 		break;
 	}
