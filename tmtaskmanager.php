@@ -474,6 +474,21 @@ function displayProjectsConfigurationForm()
 					$this->set_data('faqUrl', htmlentities($aDPC['faqUrl']));
 					$this->set_data('iIdConfiguration', $aDPC['id']);
 				}
+
+				$isEmpty = true;
+				global $babDB;
+				$result = bab_selectTasksList($iIdProject);
+				if(false != $result && $babDB->db_num_rows($result) > 0)
+				{
+					$isEmpty = false;
+				}
+				$this->set_data('isProjectEmpty', $isEmpty);
+				
+				if(!$isEmpty)
+				{
+					$this->get_data('aTaskNumerotation', $aTaskNumerotation);
+					$this->set_data('tmValue', $aTaskNumerotation[$aDPC['tasksNumerotation']]);
+				}
 			}
 			
 			function getNextTaskNumerotation()
@@ -933,7 +948,20 @@ function saveProjectConfiguration()
 			'tasksNumerotation' => $iTaskNumerotation,
 			'emailNotice' => $iEmailNotice,
 			'faqUrl' => $sFaqUrl);
-
+			
+		$oTmCtx =& getTskMgrContext();
+		$aDPC = $oTmCtx->getConfiguration();
+				
+		if(!is_null($aDPC))
+		{
+			global $babDB;
+			$result = bab_selectTasksList($iIdProject);
+			if(false != $result && $babDB->db_num_rows($result) > 0)
+			{
+				$aConfiguration['tasksNumerotation'] = $aDPC['tasksNumerotation'];
+			}
+		}
+		
 		bab_updateProjectConfiguration($aConfiguration);
 	}
 }	
@@ -1000,8 +1028,23 @@ function addModifyTask()
 	else if(0 != $oTmCtx->m_iIdTask && BAB_TM_UNDEFINED != $iUserProfil)
 	{
 		$bIsOk = true;
-		$aTask =& $oTmCtx->getTask();
-		$iClass = (isset($aTask['iClass']) ? $aTask['iClass'] : BAB_TM_TASK);
+//		$aTask =& $oTmCtx->getTask();
+//		$iClass = (isset($aTask['iClass']) ? $aTask['iClass'] : BAB_TM_TASK);
+		
+		
+		$iClass = (int) tskmgr_getVariable('iClassType', BAB_TM_TASK);
+	
+		$oTaskValidator = getTaskValidator($iClass);
+		if(!is_null($oTaskValidator))
+		{
+			if($oTaskValidator->isValid())
+			{
+				bab_debug(__FUNCTION__ . ' valid');
+				return;
+			}
+			bab_debug(__FUNCTION__ . ' invalid');
+			return;
+		}		
 	}
 	else
 	{
@@ -1027,7 +1070,7 @@ function getTaskValidator($iClass)
 
 function createTask()
 {
-	$oTmCtx =& getTskMgrContext();
+//	$oTmCtx =& getTskMgrContext();
 	$iClass = (int) tskmgr_getVariable('iClassType', BAB_TM_TASK);
 
 	$oTaskValidator = getTaskValidator($iClass);

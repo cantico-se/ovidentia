@@ -351,6 +351,7 @@ function displayProjectsConfigurationForm()
 					$this->set_data('faqUrl', htmlentities($aDPC['faqUrl']));
 					$this->set_data('iIdConfiguration', $aDPC['id']);
 				}
+				$this->set_data('isProjectEmpty', true);
 			}
 			
 			function getNextTaskNumerotation()

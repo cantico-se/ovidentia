@@ -258,7 +258,7 @@ class BAB_TM_Context
 
 	function &getTask()
 	{
-		if(is_null())
+		if(is_null($this->m_aTask))
 		{
 			bab_getTask($this->m_iIdTask, $this->m_aTask);		
 		}

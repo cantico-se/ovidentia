@@ -767,8 +767,8 @@ function bab_createTask($aParams)
 				$aParams['hashCalEvent'] . '\', \'' . $aParams['iDuration'] . '\', \'' . 
 				$aParams['iMajorVersion'] . '\', \'' . $aParams['iMinorVersion'] . '\', \'' . 
 				$aParams['sColor'] . '\', \'' . $aParams['iPosition'] . '\', \'' . 
-				$aParams['iCompletion'] . '\', \'' . '' . '\', \'' . 
-				'' . '\', \'' . $aParams['sPlannedStartDate'] . '\', \'' . 
+				$aParams['iCompletion'] . '\', \'' . $aParams['sStartDate'] . '\', \'' . 
+				$aParams['sEndDate'] . '\', \'' . $aParams['sPlannedStartDate'] . '\', \'' . 
 				$aParams['sPlannedEndDate'] . '\', \'' . date("Y-m-d H:i:s") . '\', \'' . 
 				$GLOBALS['BAB_SESS_USERID'] . '\', \'' . $aParams['iIsNotified'] . '\', \'' . 
 				((0 != $aParams['iIdProject']) ? 0 : $GLOBALS['BAB_SESS_USERID']) . '\')'; 
@@ -811,9 +811,11 @@ function bab_getTask($iIdTask, &$aTask)
 			'position, ' .
 			'completion, ' .
 			'plannedStartDate, ' .
-			'startDate, ' .
 			'plannedEndDate, ' .
-			'endDate ' .
+			'startDate, ' .
+			'endDate, ' .
+			'isNotified, ' .
+			'idOwner ' .
 		'FROM ' .
 			BAB_TSKMGR_TASKS_TBL . ' ' .
 		'WHERE ' . 
@@ -829,8 +831,8 @@ function bab_getTask($iIdTask, &$aTask)
 	{
 		$aTask = array('id' => $datas['id'], 'iIdProject' =>  $datas['idProject'], 
 			'sTaskNumber' => $datas['taskNumber'], 'sDescription' => $datas['description'], 
-			'iIdCategory' => $datas['idCategory'], 'created' => $datas['created'], 
-			'modified' => $datas['modified'], 'iIdUserCreated' => $datas['idUserCreated'], 
+			'iIdCategory' => $datas['idCategory'], 'sCreated' => $datas['created'], 
+			'sModified' => $datas['modified'], 'iIdUserCreated' => $datas['idUserCreated'], 
 			'iIdUserModified' => $datas['idUserModified'], 'iClass' => $datas['class'], 
 			'iParticipationStatus' => $datas['participationStatus'],
 			'iIsLinked' => $datas['isLinked'], 
@@ -839,8 +841,8 @@ function bab_getTask($iIdTask, &$aTask)
 			'iMinorVersion' => $datas['minorVersion'], 'sColor' => $datas['color'], 
 			'iPosition' => $datas['position'], 'iCompletion' => $datas['completion'],
 			'sPlannedStartDate' => $datas['plannedStartDate'], 'sStartDate' => $datas['startDate'],
-			'sPlannedEndDate' => $datas['plannedEndDate'], 'sEndDate' => $datas['endDate']
-			);
+			'sPlannedEndDate' => $datas['plannedEndDate'], 'sEndDate' => $datas['endDate'],
+			'iIsNotified' => $datas['isNotified'], 'iIdOwner' => $datas['idOwner']);
 		return true;
 	}
 	return false;
@@ -879,6 +881,28 @@ function bab_deleteAllTask($iIdProject)
 	$babDB->db_query($query);
 }
 
+function bab_setTaskLinks($iIdTask, $aPredecessors)
+{
+	if(is_array($aPredecessors) && count($aPredecessors) > 0)
+	{
+		global $babDB;
+		foreach($aPredecessors as $key => $aPredecessor)
+		{
+			$query = 
+				'INSERT INTO ' . BAB_TSKMGR_LINKED_TASKS_TBL . ' ' .
+					'(' .
+						'`id`, ' .
+						'`idTask`, `idPredecessorTask`, `linkType`' .
+					') ' .
+				'VALUES ' . 
+					'(\'\', \'' . $iIdTask . '\', \'' . $aPredecessor['iIdPredecessorTask'] . '\', \'' . $aPredecessor['iLinkType'] . '\')'; 
+			
+			//bab_debug($query);
+			$babDB->db_query($query);
+		}
+	}
+}
+
 function bab_getLinkedTaskCount($iIdTask, &$iCount)
 {
 	global $babDB;
@@ -906,7 +930,8 @@ function bab_getLinkedTaskCount($iIdTask, &$iCount)
 
 function bab_deleteTaskLinks($iIdTask)
 {
-	$query = 'DELETE FROM ' . BAB_TSKMGR_LINKED_TASKS_TBL . ' WHERE iIdTask = \'' . $iIdTask . '\'';
+	global $babDB;
+	$query = 'DELETE FROM ' . BAB_TSKMGR_LINKED_TASKS_TBL . ' WHERE idTask = \'' . $iIdTask . '\'';
 	$babDB->db_query($query);
 }
 
@@ -1189,7 +1214,7 @@ function bab_getLinkedTasks($iIdTask, &$aLinkedTasks)
 	
 	while($iIndex < $iNumRows && false != ($datas = $babDB->db_fetch_assoc($result)))
 	{
-		$aLinkedTasks[] = array('iIdPredecessorTask' => $datas['idPredecessorTask'], 'iLinkType' => $datas['ilinkType']);
+		$aLinkedTasks[] = array('iIdPredecessorTask' => $datas['idPredecessorTask'], 'iLinkType' => $datas['linkType']);
 		$iIndex++;
 	}
 }

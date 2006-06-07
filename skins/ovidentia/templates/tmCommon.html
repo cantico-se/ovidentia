@@ -383,11 +383,15 @@ function submit_form()
 							{ m_captions[taskNumerotation] }
 						</td>
 						<td>
+						<!--#if m_datas[isProjectEmpty] -->
 							<select name="iTaskNumerotation"> 
 							<!--#in getNextTaskNumerotation -->
 								<option value="{ m_datas[tmCode] }" { m_datas[tnSelected] }>{ m_datas[tmValue] }</option>
 							<!--#endin getNextTaskNumerotation -->
 							</select>
+						<!--#else m_datas[isProjectEmpty] -->
+							<input type="text" readonly="readonly" size="60" value="{ m_datas[tmValue] }" />
+						<!--#endif m_datas[isProjectEmpty] -->
 						</td>
 					</tr>
 					<tr> 
