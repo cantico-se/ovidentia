@@ -368,6 +368,7 @@ bab_debug('m_iUserProfil ==> ' . $sUserProfil);
 bab_debug('m_bIsStarted ==> ' . ($this->m_oTask->m_bIsStarted ? 'Yes' : 'No'));
 bab_debug('m_bIsFirstTask ==> ' . ($this->m_oTask->m_bIsFirstTask ? 'Yes' : 'No'));
 bab_debug('m_iLinkedTaskCount ==> ' . $this->m_iLinkedTaskCount);
+bab_debug('m_bIsManagerNoStarted ==> ' . (($this->m_bIsManagerNoStarted) ? 'Yes' : 'No'));
 bab_debug('m_bIsEditableByManager ==> ' . (($this->m_bIsEditableByManager) ? 'Yes' : 'No'));
 //*/
 
@@ -392,10 +393,8 @@ bab_debug('m_bIsEditableByManager ==> ' . (($this->m_bIsEditableByManager) ? 'Ye
 			
 			bab_getTaskResponsibles($this->m_iIdTask, $this->m_aTaskResponsibles);
 
-bab_getLinkedTasks($this->m_iIdTask, $this->m_aLinkedTasks);
-$this->m_iLinkedTaskCount = count($this->m_aLinkedTasks);
-
-//bab_getLinkedTaskCount($this->m_iIdTask, $this->m_iLinkedTaskCount);
+			bab_getLinkedTasks($this->m_iIdTask, $this->m_aLinkedTasks);
+			$this->m_iLinkedTaskCount = count($this->m_aLinkedTasks);
 
 			$this->set_data('isLinkable', false);
 			$this->m_linkableTaskResult = bab_selectLinkableTask($this->m_iIdProject, $this->m_iIdTask);
@@ -427,10 +426,11 @@ $this->m_iLinkedTaskCount = count($this->m_aLinkedTasks);
 
 		function initTaskClass($iClassType)
 		{
-			$this->set_data('iSelectedClassType', $iClassType);
-			$this->set_data('sDisabledClassType', 
-				($this->m_bIsManagerNoStarted && 0 == $this->m_iLinkedTaskCount) ? '' : 'disabled="disabled"');
-			$this->set_data('sSelectedClassType', '');
+			$this->set_data('iSelectedClass', $iClassType);
+			
+			$this->set_data('sDisabledClass', 
+				(($this->m_bIsManagerNoStarted && 0 == $this->m_iLinkedTaskCount) ? '' : 'disabled="disabled"'));
+			$this->set_data('sSelectedClass', '');
 		}
 
 		function initCategory($iIdCategory)
@@ -487,7 +487,7 @@ $this->m_iLinkedTaskCount = count($this->m_aLinkedTasks);
 		{
 			$this->set_data('iSelectedProposable', $iProposable);
 			$this->set_data('sSelectedProposable', '');
-			$this->set_data('isProposable', (BAB_TM_PROJECT_MANAGER == $this->m_iUserProfil && !$this->m_oTask->m_bIsStarted));
+			$this->set_data('isProposable', (BAB_TM_PROJECT_MANAGER == $this->m_iUserProfil /*&& !$this->m_oTask->m_bIsStarted*/));
 		}
 
 		function initCompletion($iCompletion)
@@ -503,10 +503,7 @@ $this->m_iLinkedTaskCount = count($this->m_aLinkedTasks);
 		function initPredecessor($iPredecessor, $iLinkType)
 		{
 			$this->set_data('iSelectedPredecessor', $iPredecessor);
-			//$this->set_data('sSelectedPredecessor', '');
-$this->set_data('sSelectedPredecessor', (0 != $this->m_iLinkedTaskCount) ? '' : 'checked="checked"');
-//$this->get_data('sSelectedPredecessor', $sSelectedPredecessor);
-//bab_debug('sSelectedPredecessor ==> ' . $sSelectedPredecessor);
+			$this->set_data('sSelectedPredecessor', (0 != $this->m_iLinkedTaskCount) ? '' : 'checked="checked"');
 			
 			$this->set_data('iSelectedLinkType', $iLinkType);
 		}
@@ -532,7 +529,7 @@ $this->set_data('sSelectedPredecessor', (0 != $this->m_iLinkedTaskCount) ? '' : 
 				$iIdResponsible = (int) tskmgr_getVariable('iIdTaskResponsible', 0);
 				$iProposable = (int) tskmgr_getVariable('oProposable', BAB_TM_NO);
 				$iCompletion = (int) tskmgr_getVariable('oCompletion', 0);
-				$iPredecessor = (int) tskmgr_getVariable('oPredecessor', -1);
+				$iPredecessor = (int) tskmgr_getVariable('iPredecessor', -1);
 				$iLinkType = (int) tskmgr_getVariable('oLinkType', -1);
 			}
 			else if($bIsEdition)
@@ -576,8 +573,6 @@ $this->set_data('sSelectedPredecessor', (0 != $this->m_iLinkedTaskCount) ? '' : 
 				{
 					if($this->m_iLinkedTaskCount)
 					{
-						//bab_debug($aLinkedTasks);
-						
 						$iPredecessor = (int) $this->m_aLinkedTasks[0]['iIdPredecessorTask'];
 						$iLinkType = (int) $this->m_aLinkedTasks[0]['iLinkType'];
 					}
@@ -674,10 +669,6 @@ $this->set_data('sSelectedPredecessor', (0 != $this->m_iLinkedTaskCount) ? '' : 
 
 		function getNextPredecessor()
 		{
-/*
-$this->get_data('sSelectedPredecessor', $sSelectedPredecessor);
-bab_debug('sSelectedPredecessor ==> ' . $sSelectedPredecessor);
-//*/
 			global $babDB;
 			if(false != $this->m_linkableTaskResult)
 			{
@@ -685,8 +676,7 @@ bab_debug('sSelectedPredecessor ==> ' . $sSelectedPredecessor);
 				if(false != $datas)
 				{
 					$this->get_data('iSelectedPredecessor', $iSelectedPredecessor);
-					$this->set_data('sSelectedPredecessor', ($datas['id'] == $iSelectedPredecessor) ? 'selected="selected"' : '');
-					
+					$this->set_data('sSelectedPredecessor', ($datas['id'] == $iSelectedPredecessor) ? 'checked="checked"' : '');
 					$this->set_data('iIdPredecessor', $datas['id']);
 					$this->set_data('sPredecessorNumber', $datas['taskNumber']);
 					$this->set_data('iIsStarted', $datas['isStarted']);
@@ -705,19 +695,17 @@ bab_debug('sSelectedPredecessor ==> ' . $sSelectedPredecessor);
 				$this->get_data('iIsStarted', $datas['isStarted']);
 				$this->get_data('sSelectedPredecessor', $sSelectedPredecessor);
 
-$this->set_data('iLink', $aRelation['key']);				
-$this->set_data('sLink', $aRelation['value']);				
+				$this->set_data('iLink', $aRelation['key']);				
+				$this->set_data('sLink', $aRelation['value']);				
 				
 				if(BAB_TM_START_TO_START == $aRelation['key'] && '1' == $datas['isStarted'])
 				{
 					reset($this->m_aRelation);
 					return false;
 				}
-
-//bab_debug('iLink ==> ' . $aRelation['key'] . ' iSelectedLinkType ==> ' . $iLinkType);				
 				
 				$this->set_data('sSelectedLinkType', '');
-				if('selected="selected"' == $sSelectedPredecessor && $iLinkType == $aRelation['key'])
+				if('checked="checked"' == $sSelectedPredecessor && $iLinkType == $aRelation['key'])
 				{
 					$this->set_data('sSelectedLinkType', 'selected="selected"');
 				}
@@ -940,14 +928,10 @@ $this->set_data('sLink', $aRelation['value']);
 		function BAB_TM_ManagerValidator()
 		{
 			parent::BAB_TM_TaskValidatorBase();
-			//bab_debug(__CLASS__);
 		}
 		
 		function init()
 		{
-			
-			//bab_debug($_POST);
-			
 			parent::init();
 			$this->m_sDescription = trim(tskmgr_getVariable('sDescription', ''));
 			$this->m_iMajorVersion = (int) tskmgr_getVariable('iMajorVersion', 1);
@@ -1009,6 +993,11 @@ $this->set_data('sLink', $aRelation['value']);
 						$success = bab_getTask($this->m_iIdPredecessor, $aTask);
 						if($success)
 						{
+							if(-1 == $this->m_iLinkType)
+							{
+								bab_debug(__FUNCTION__ . ' invalid LinkType');
+								return false;
+							}
 							$this->m_sStartDate = (BAB_TM_END_TO_START == $this->m_iLinkType) ? $aTask['sPlannedEndDate'] : $aTask['sPlannedStartDate'];						
 						}
 						else 
