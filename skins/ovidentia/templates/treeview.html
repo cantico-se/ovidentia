@@ -35,11 +35,12 @@
 document.getElementById("{ t_treeViewId }").onElementClick = function(element)
 {
 	try {
-		var returnParameters = new Object();
-		returnParameters.type = element.className.split(' ')[1];
-		returnParameters.id = element.parentNode.parentNode.id.split('{ t_id_separator }')[1];
-		returnParameters.content = element.firstChild.nodeValue;
-		window.opener.bab_dialog._return(returnParameters.content);
+		var returnParameters = {
+			'type': element.className.split(' ')[1],
+			'id': element.parentNode.parentNode.id.split('{ t_id_separator }')[1],
+			'content': element.firstChild.nodeValue
+		};
+		window.opener.bab_dialog._return(returnParameters);
 	} catch(e) {};
 }
 </script>
