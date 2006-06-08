@@ -455,9 +455,9 @@ function dateCallback(sFieldName)
 function onClassChanged(oSelect)
 {
 	//{}
-	var TASK = { m_datas[eventTask] };
-	var CHECKPOINT = { m_datas[eventCheckPoint] };
-	var TODO = { m_datas[eventToDo] };
+	var TASK = { m_datas[iClassTask] };
+	var CHECKPOINT = { m_datas[iClassCheckPoint] };
+	var TODO = { m_datas[iClassToDo] };
 	
 	var iType = parseInt(oSelect.options[oSelect.selectedIndex].value);
 
@@ -521,8 +521,8 @@ function onClassChanged(oSelect)
 function onDurationTypeChanged(oSelect)
 {
 	//{}
-	var DURATION = { m_datas[dtDuration] };
-	var DATE = { m_datas[dtDate] };
+	var DURATION = { m_datas[iDateTypeDuration] };
+	var DATE = { m_datas[iDateTypeDate] };
 	
 	var iDurationType = parseInt(oSelect.options[oSelect.selectedIndex].value);
 
@@ -622,7 +622,7 @@ function processStartDate()
 		<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 			<tr> 
 				<td>
-					<label for="sTaskNumber">{ m_captions[taskNumber] }</label>
+					<label for="sTaskNumber">{ m_captions[sTaskNumber] }</label>
 				</td>
 				<td>
 					<input name="sTaskNumber" id="sTaskNumber" { m_datas[sTaskNumberReadOnly] } type="text" value="{ m_datas[sTaskNumber] }" />
@@ -630,19 +630,19 @@ function processStartDate()
 			</tr>
 			<tr> 
 				<td>
-					<label for="iClassType">{ m_captions[classType] }</label>
+					<label for="iClass">{ m_captions[sClass] }</label>
 				</td>
 				<td>
-					<select name="iClassType" id="iClassType" { m_datas[sDisabledClassType] } onchange="onClassChanged(this)">
+					<select name="iClass" id="iClass" { m_datas[sDisabledClass] } onchange="onClassChanged(this)">
 						<!--#in getNextClass -->
-							<option { m_datas[sSelectedClassType] } value="{ m_datas[iClassType] }">{ m_datas[sClassName] }</option>
+							<option { m_datas[sSelectedClass] } value="{ m_datas[iClassType] }">{ m_datas[sClassName] }</option>
 						<!--#endin getNextClass -->
 					</select>
 				</td>
 			</tr>
 			<tr> 
 				<td>
-					<label for="iIdCategory">{ m_captions[categories] }</label>
+					<label for="iIdCategory">{ m_captions[sCategories] }</label>
 				</td>
 				<td>
 					<select name="iIdCategory" { m_datas[sDisabledCategory] } id="iIdCategory">
@@ -653,22 +653,23 @@ function processStartDate()
 					</select>
 				</td>
 			</tr>
-			
 		</table>
 	</div>
 	<br />
 
 	<ul id="tablist">
-		<li id="oLiGeneral"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[general] }</a></li>
+		<li id="oLiGeneral"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[sGeneral] }</a></li>
 	<!--#if m_datas[isLinkable] -->
-		<li id="oLiPredecessors"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[predecessors] }</a></li>
+		<li id="oLiPredecessors"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[sPredecessors] }</a></li>
 	<!--#endif m_datas[isLinkable] -->
 	<!--#if m_iIdProject "!= 0" -->
-		<li id="oLiResources"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[resources] }</a></li>
+	<!--#if m_datas[isResourceAvailable] -->
+		<li id="oLiResources"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[sResources] }</a></li>
+	<!--#endif m_datas[isResourceAvailable] -->
 	<!--#endif m_iIdProject -->
 	<!--#if m_iIdTask "!= 0" -->
-		<li id="oLiCommentaries"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[commentaries] }</a></li>
-		<li id="oLiSpfFld"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[spFld] }</a></li>
+		<li id="oLiCommentaries"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[sCommentaries] }</a></li>
+		<li id="oLiSpfFld"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[sSpFld] }</a></li>
 	<!--#endif m_iIdTask -->
 	</ul>						
 	<br />
@@ -676,7 +677,7 @@ function processStartDate()
 	<div id="sGeneral" class="">
 		<table width="95%" border="1" cellspacing="2" cellpadding="2" align="center">
 			<tr>
-				<td colspan="2"><label for="sDescription">{ m_captions[description] }</label></td>
+				<td colspan="2"><label for="sDescription">{ m_captions[sDescription] }</label></td>
 			</tr>
 			<tr>
 				<td colspan="2"><textarea name="sDescription" id="sDescription" { m_datas[sReadonlyDescription] } cols="50" rows="10">{ m_datas[sDescription] }</textarea></td>
@@ -685,7 +686,7 @@ function processStartDate()
 		<!--#if m_datas[isLinkable] -->
 			<tr id="oTrLinkedTask">
 				<td>
-					<label for="oLinkedTask">{ m_captions[linkedTask] }</label>
+					<label for="oLinkedTask">{ m_captions[sLinkedTask] }</label>
 				</td>
 				<td>
 					<input type="checkbox" name="oLinkedTask" id="oLinkedTask" { m_datas[sDisabledLinkedTask] } { m_datas[sCkeckedLinkedTask] } onclick="onLinkTaskChanged(this)" value="" style="background-color:transparent;border=0" />
@@ -696,7 +697,7 @@ function processStartDate()
 		<!--#if m_datas[isProposable] -->
 			<tr id="oTrProposable" class="">
 				<td>
-					<label for="oProposable">{ m_captions[proposable] }</label>
+					<label for="oProposable">{ m_captions[sProposable] }</label>
 				</td>
 				<td>
 					<select id="oProposable" name="oProposable">
@@ -710,7 +711,7 @@ function processStartDate()
 
 			<tr id="oTrDurationType" class="">
 				<td>
-					<label for="oDurationType">{ m_captions[durationType] }</label>
+					<label for="oDurationType">{ m_captions[sDurationType] }</label>
 				</td>
 				<td>
 					<select id="oDurationType" name="oDurationType" { m_datas[sDisabledDurationType] } onchange="onDurationTypeChanged(this)">
@@ -723,7 +724,7 @@ function processStartDate()
 
 			<tr id="oTrDuration">
 				<td>
-					<label for="sDuration">{ m_captions[duration] }</label>
+					<label for="sDuration">{ m_captions[sDuration] }</label>
 				</td>
 				<td>
 					<input type="text" name="sDuration" { m_datas[sReadOnlyDuration] } id="sDuration" maxlength="20" value="{ m_datas[sDuration] }" size="10" />
@@ -732,13 +733,13 @@ function processStartDate()
 
 			<tr id="oTrStartDate">
 				<td>
-					<label for="sPlannedStartDate">{ m_captions[plannedStartDate] }</label>
+					<label for="sPlannedStartDate">{ m_captions[sPlannedStartDate] }</label>
 				</td>
 				<td>
 					<input type="text" name="sPlannedStartDate" id="sPlannedStartDate" { m_datas[sReadOnlyDate] } maxlength="20" value="{ m_datas[sPlannedStartDate] }" size="10" />
 				<!--#if m_datas[isReadOnlyDate] "!= 1" -->
 				<a href="javascript:dateCallback('sPlannedStartDate');">
-						<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/calendar.gif" alt="{ m_captions[plannedStartDate] }" />
+						<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/calendar.gif" alt="{ m_captions[sPlannedStartDate] }" />
 					</a>
 				<!--#endif m_datas[isReadOnlyDate] -->
 				</td>
@@ -746,13 +747,13 @@ function processStartDate()
 			
 			<tr id="oTrEndDate">
 				<td>
-					<label for="sPlannedEndDate">{ m_captions[plannedEndDate] }</label>
+					<label for="sPlannedEndDate">{ m_captions[sPlannedEndDate] }</label>
 				</td>
 				<td>
 					<input type="text" name="sPlannedEndDate" id="sPlannedEndDate" { m_datas[sReadOnlyDate] } maxlength="20" value="{ m_datas[sPlannedEndDate] }" size="10" />
 				<!--#if m_datas[isReadOnlyDate] "!= 1" -->
 					<a href="javascript:dateCallback('sPlannedEndDate');">
-						<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/calendar.gif" alt="{ m_captions[plannedEndDate] }" />
+						<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/calendar.gif" alt="{ m_captions[sPlannedEndDate] }" />
 					</a>
 				<!--#endif m_datas[isReadOnlyDate] -->
 				</td>
@@ -761,7 +762,7 @@ function processStartDate()
 		<!--#if m_datas[isCompletionEnabled] -->
 			<tr id="oTrCompletion" class="">
 				<td>
-					<label for="oCompletion">{ m_captions[completion] }</label>
+					<label for="oCompletion">{ m_captions[sCompletion] }</label>
 				</td>
 				<td>
 					<select id="oCompletion" name="oCompletion">
@@ -779,25 +780,30 @@ function processStartDate()
 	<div id="sPredecessor" class="">
 		<table border="0" cellspacing="0" cellpadding="2">
 			<tr class="BabSiteAdminTitleFontBackground">
-				<td>{ m_captions[taskNumber2] }</td>
-				<td>{ m_captions[relation] }</td>
+				<td>{ m_captions[sTaskNumber] }</td>
+				<td>{ m_captions[sRelation] }</td>
 			</tr>
 			<tr> 
+				<td colspan="2">
+					<!--#in getNone -->
+					<input class="BabLoginMenuBackground" { m_datas[sSelectedPredecessor] } type="radio" name="iPredecessor" value="{ m_datas[iNone] }" />{ m_captions[sNone] }
+					<!--#endin getNone -->
+				</td>
+			</tr>
+			<!--#in getNextPredecessor -->
+			<tr> 
 				<td>
-					<select id="oPredecessor" name="oPredecessor">
-						<option value=""></option>
-						<!--#in getNextPrecessor -->
-						<option { m_datas[sSelectedPredecessor] } value="{ m_datas[iIdPredecessor] }">{ m_datas[sPredecessorNumber] }</option>
-						<!--#endin getNextPrecessor -->
-					</select>
+					<input class="BabLoginMenuBackground" { m_datas[sSelectedPredecessor] } type="radio" name="iPredecessor" value="{ m_datas[iIdPredecessor] }" />{ m_datas[sPredecessorNumber] }
 				</td>
 				<td>
 					<select id="oLinkType" name="oLinkType">
-						<option { m_datas[sSelectedLinkTypeStartToStart] } value="{ m_datas[iStartToStart] }">{ m_datas[sStartToStart] }</option>
-						<option { m_datas[sSelectedLinkTypeEndToStart] } value="{ m_datas[iEndToStart] }">{ m_datas[sEndToStart] }</option>
+						<!--#in getNextRelation -->
+						<option { m_datas[sSelectedLinkType] } value="{ m_datas[iLink] }">{ m_datas[sLink] }</option>
+						<!--#endin getNextRelation -->
 					</select>
 				</td>
 			</tr>
+			<!--#endin getNextPredecessor -->
 		</table>
 	</div>
 <!--#endif m_datas[isLinkable] -->
@@ -807,11 +813,11 @@ function processStartDate()
 		<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 			<tr>
 				<td>
-					<label for="iIdTaskResponsible">{ m_captions[taskResponsible] }</label>
+					<label for="iIdTaskResponsible">{ m_captions[sTaskResponsible] }</label>
 				</td>
 				<td>
 					<select id="iIdTaskResponsible" { m_datas[sReadOnlyTaskResponsible] } name="iIdTaskResponsible">
-						<option value="{ m_datas[none] }">{ m_captions[none] }</option>
+						<option value="{ m_datas[iNone] }">{ m_captions[sNone] }</option>
 						<!--#in getNextTaskResponsible -->
 						<option { m_datas[sSlectedTaskResponsible] } value="{ m_datas[iIdTaskResponsible] }">{ m_datas[sTaskResponsibleName] }</option>
 						<!--#endin getNextTaskResponsible -->
@@ -824,26 +830,26 @@ function processStartDate()
 	
 	<!--#if m_iIdTask "!= 0" -->
 	<div id="sCommentaries" class="">
-		{ m_datas[taskCommentaries] }
+		{ m_datas[sTaskCommentaries] }
 	</div>
 	
 	<div id="sSpfFld" class="">
 		<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 			<tr class="BabSiteAdminTitleFontBackground"> 
 				<td colspan="3" align="center">
-					<label for="oSpfField">{ m_captions[spfField] }</label>
+					<label for="oSpfField">{ m_captions[sSpFld] }</label>
 					<select id="oSpfField" name="oSpfField">
 						<!--#in getNextSpecificField -->
 						<option { m_datas[sSelectedSpfField] } value="{ m_datas[iIdSpField] }">{ m_datas[sSpFieldName] }</option>
 						<!--#endin getNextSpecificField -->
 					</select>
-					<input type="submit" value="{ m_captions[addSpf] }" onclick="on_btn_clicked('{ m_datas[addSpfIdx] }', '{ m_datas[addSpfAction] }')" />
+					<input type="submit" value="{ m_captions[sAddSpf] }" onclick="on_btn_clicked('{ m_datas[iAddSpfIdx] }', '{ m_datas[iAddSpfAction] }')" />
 				</td>
 			</tr>
 			<tr>
-				<td>{ m_captions[field] }</td>
-				<td>{ m_captions[type] }</td>
-				<td>{ m_captions[value] }</td>
+				<td>{ m_captions[sField] }</td>
+				<td>{ m_captions[sType] }</td>
+				<td>{ m_captions[sValue] }</td>
 			</tr>
 		</table>
 	</div>
@@ -852,11 +858,11 @@ function processStartDate()
 	<br />
 	<div align="center">
 		<!--#if m_iIdTask "== 0" -->
-			<input type="submit" value="{ m_captions[add] }" onclick="on_btn_clicked('{ m_datas[addIdx] }', '{ m_datas[addAction] }')" />
+			<input type="submit" value="{ m_captions[sAdd] }" onclick="on_btn_clicked('{ m_datas[iAddIdx] }', '{ m_datas[iAddAction] }')" />
 		<!--#else m_iIdTask -->
-			<input type="submit" value="{ m_captions[modify] }" onclick="on_btn_clicked('{ m_datas[modifyIdx] }', '{ m_datas[modifyAction] }')" />
+			<input type="submit" value="{ m_captions[sModify] }" onclick="on_btn_clicked('{ m_datas[iModifyIdx] }', '{ m_datas[iModifyAction] }')" />
 			<!--#if m_datas[bIsDeletable] -->
-				<input type="submit" value="{ m_captions[delete] }" onclick="on_btn_clicked('{ m_datas[deleteIdx] }', '{ m_datas[deleteAction] }')" />
+				<input type="submit" value="{ m_captions[sDelete] }" onclick="on_btn_clicked('{ m_datas[iDeleteIdx] }', '{ m_datas[iDeleteAction] }')" />
 			<!--#endif m_datas[bIsDeletable] -->
 		<!--#endif m_iIdTask -->
 	</div>
@@ -866,7 +872,7 @@ function processStartDate()
 <!--
 var oLiGeneral = document.getElementById('{ m_datas[selectedMenu] }');
 if(null != oLiGeneral) onMenuSelected(oLiGeneral);
-onClassChanged(document.forms.taskForm['iClassType']);
+onClassChanged(document.forms.taskForm['iClass']);
 //-->
 </script>
 <!--#end taskForm -->

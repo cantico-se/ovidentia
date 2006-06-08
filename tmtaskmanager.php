@@ -818,7 +818,7 @@ function displayTaskForm()
 		global $babInstallPath;
 		require_once($babInstallPath . 'tmTaskClasses.php');
 		
-		$oTaskForm = & new BAB_TaskFormBase($iIdProjectSpace, $iIdProject, $iIdTask);
+		$oTaskForm = & new BAB_TaskForm();
 		$babBody->babecho(bab_printTemplate($oTaskForm, 'tmUser.html', 'taskForm'));
 	}
 	else 

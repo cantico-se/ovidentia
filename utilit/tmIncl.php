@@ -756,22 +756,24 @@ function bab_createTask($aParams)
 				'`participationStatus`, `isLinked`, `idCalEvent`, `hashCalEvent`, ' .
 				'`duration`, `majorVersion`, `minorVersion`, `color`, `position`, ' .
 				'`completion`, `startDate`, `endDate`, `plannedStartDate`, ' .
-				'`plannedEndDate`, `created`, `idUserCreated`, `isNotified`, `idOwner`' .
+				'`plannedEndDate`, `created`, `idUserCreated`, `isNotified`, `idOwner`, ' .
+				'`idUserModified`, `modified`' .
 			') ' .
 		'VALUES ' . 
 			'(\'\', \'' . 
 				$aParams['iIdProject'] . '\', \'' . $aParams['sTaskNumber'] . '\', \'' . 
 				$aParams['sDescription'] . '\', \'' . $aParams['iIdCategory'] . '\', \'' . 
-				BAB_TM_TASK . '\', \'' . $aParams['participationStatus'] . '\', \'' . 
-				$aParams['iIsLinked'] . '\', \'' . $aParams['idCalEvent'] . '\', \'' . 
-				$aParams['hashCalEvent'] . '\', \'' . $aParams['iDuration'] . '\', \'' . 
+				$aParams['iClass'] . '\', \'' . $aParams['iParticipationStatus'] . '\', \'' . 
+				$aParams['iIsLinked'] . '\', \'' . $aParams['iIdCalEvent'] . '\', \'' . 
+				$aParams['sHashCalEvent'] . '\', \'' . $aParams['iDuration'] . '\', \'' . 
 				$aParams['iMajorVersion'] . '\', \'' . $aParams['iMinorVersion'] . '\', \'' . 
 				$aParams['sColor'] . '\', \'' . $aParams['iPosition'] . '\', \'' . 
 				$aParams['iCompletion'] . '\', \'' . $aParams['sStartDate'] . '\', \'' . 
 				$aParams['sEndDate'] . '\', \'' . $aParams['sPlannedStartDate'] . '\', \'' . 
-				$aParams['sPlannedEndDate'] . '\', \'' . date("Y-m-d H:i:s") . '\', \'' . 
-				$GLOBALS['BAB_SESS_USERID'] . '\', \'' . $aParams['iIsNotified'] . '\', \'' . 
-				((0 != $aParams['iIdProject']) ? 0 : $GLOBALS['BAB_SESS_USERID']) . '\')'; 
+				$aParams['sPlannedEndDate'] . '\', \'' . $aParams['sCreated'] . '\', \'' . 
+				$aParams['iIdUserCreated'] . '\', \'' . $aParams['iIsNotified'] . '\', \'' . 
+				$aParams['iIdOwner'] . '\', \'' . $aParams['iIdUserModified'] . '\', \'' . 
+				$aParams['sModified'] . '\')'; 
 
 	//bab_debug($query);
 	$res = $babDB->db_query($query);
@@ -781,6 +783,7 @@ function bab_createTask($aParams)
 	}
 	return false;
 }
+
 
 function bab_getTask($iIdTask, &$aTask)
 {
