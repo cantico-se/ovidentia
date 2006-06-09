@@ -206,6 +206,10 @@ class babLDAP
 		return ldap_modify($this->idlink, $dn, $entry);
 	}
 
+	function set_option($option, $newval)
+	{
+		return @ldap_set_option($this->idlink, $option, $newval);
+	}
 }
 
 ?>
