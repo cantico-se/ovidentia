@@ -106,6 +106,19 @@ function displayStatisticPanel($idx)
 				if( empty($this->current)) { $this->current = 'users'; }
 				}
 
+			$tmparr = array();
+			if( $babBody->currentAdmGroup == 0 )
+				{
+				$tmparr[] = array('idx' => 'mod', 'item' => bab_translate("Ovidentia functions"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=mod");
+				}
+			$tmparr[] = array('idx' => 'page', 'item' => bab_translate("Pages"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=page");
+			if( $babBody->currentAdmGroup == 0 )
+				{
+				$tmparr[] = array('idx' => 'search', 'item' => bab_translate("Search keywords"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=search");
+				}
+			$this->itemarray[] = $tmparr;
+			if( empty($this->current)) { $this->current = 'page'; }
+
 			if( $babBody->currentAdmGroup == 0 || $babBody->currentDGGroup['filemanager'] == 'Y' )
 				{
 				$this->itemarray[] = array( array('idx' => 'fm', 'item' => bab_translate("File manager"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=fm",	'treeviewurl' => $GLOBALS['babUrlScript']."?tg=stat&idx=fmtree"), array('idx' => 'fmfold', 'item' => bab_translate("Folders"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=fmfold"), array('idx' => 'fmdown', 'item' => bab_translate("Downloads"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=fmdown"));
@@ -136,14 +149,6 @@ function displayStatisticPanel($idx)
 				if( empty($this->current)) { $this->current = 'faq'; }
 				}
 
-			$tmparr = array();
-			$tmparr[] = array('idx' => 'page', 'item' => bab_translate("Pages"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=page");
-			if( $babBody->currentAdmGroup == 0 )
-				{
-				$tmparr[] = array('idx' => 'search', 'item' => bab_translate("Search keywords"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=search");
-				}
-			$this->itemarray[] = $tmparr;
-			if( empty($this->current)) { $this->current = 'page'; }
 
 			if( $babBody->currentAdmGroup == 0 )
 				{
