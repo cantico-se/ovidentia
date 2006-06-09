@@ -388,7 +388,7 @@ function updateFolder($fid, $fname, $active, $said, $notification, $version, $bh
 		$fname = addslashes($fname);
 		}
 
-	$res = $babDB->db_query("select id from ".BAB_FM_FOLDERS_TBL." where folder='".$fname."' and id!='".$fid."'");
+	$res = $babDB->db_query("select id from ".BAB_FM_FOLDERS_TBL." where folder='".$fname."' and id!='".$fid."' and id_dgowner='".$babBody->currentAdmGroup."'");
 	if( $babDB->db_num_rows($res) > 0)
 		{
 		$babBody->msgerror = bab_translate("This folder already exists");

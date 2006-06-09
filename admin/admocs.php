@@ -152,7 +152,7 @@ function saveOrgChart($name, $description, $dirid)
 		}
 
 	$db = $GLOBALS['babDB'];
-	$res = $db->db_query("select * from ".BAB_ORG_CHARTS_TBL." where name='".$name."'");
+	$res = $db->db_query("select id from ".BAB_ORG_CHARTS_TBL." where name='".$name."' and id_dgowner='".$babBody->currentAdmGroup."'");
 	if( $db->db_num_rows($res) > 0)
 		{
 		$babBody->msgerror = bab_translate("ERROR: This organization chart already exists");

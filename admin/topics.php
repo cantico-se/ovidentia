@@ -587,7 +587,7 @@ function saveCategory($category, $description, $cat, $sacom, $saart, $saupd, $bn
 	$category = $db->db_escape_string($category);
 	$description = $db->db_escape_string($description);
 	
-	$query = "select * from ".BAB_TOPICS_TBL." where category='".$category."' and id_cat='".$cat."'";	
+	$query = "select id from ".BAB_TOPICS_TBL." where category='".$category."' and id_cat='".$cat."' and id_dgowner='".$babBody->currentAdmGroup."'";	
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) > 0)
 		{

@@ -354,7 +354,7 @@ function addTopCat($name, $description, $benabled, $template, $disptmpl, $topcat
 
 	$db = $GLOBALS['babDB'];
 
-	$res = $db->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where title='".$name."' and id_parent='".$topcatid."'");
+	$res = $db->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where title='".$name."' and id_parent='".$topcatid."' and id_dgowner='".$babBody->currentAdmGroup."'");
 	if( $db->db_num_rows($res) > 0)
 		{
 		$babBody->msgerror = bab_translate("This topic category already exists");

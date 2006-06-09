@@ -263,7 +263,7 @@ function modifyTopcat($oldname, $name, $description, $benabled, $id, $template, 
 		}
 
 	$db = $GLOBALS['babDB'];
-	$query = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where title='".$name."' and id!='".$id."' and id_parent='".$topcatid."'";
+	$query = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where title='".$name."' and id!='".$id."' and id_parent='".$topcatid."' and id_dgowner='".$babBody->currentAdmGroup."'";
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) > 0)
 		{
