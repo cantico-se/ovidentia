@@ -28,14 +28,13 @@ include_once $GLOBALS['babInstallPath'] . "utilit/uiutil.php";
 
 function createYearHeaders(&$headers, $startDate, $endDate)
 {
-	$startYear = date('Y', $startDate);
-
-	$date = mktime(0, 0, 0, 1, 1, $startYear);
-	while ($startYear <= $endDate) {
+	$year = date('Y', $startDate);
+	$date = mktime(0, 0, 0, 1, 1, $year);
+	while ($date <= $endDate) {
 		$headers[] = array('type' => '',
-						   'name' => $startYear);
-		$startYear++;
-		$date = mktime(0, 0, 0, 1, 1, $startYear);
+						   'name' => $year);
+		$year++;
+		$date = mktime(0, 0, 0, 1, 1, $year);
 	}
 }
 
@@ -89,43 +88,49 @@ function createHeaders($startDate, $endDate)
 
 function createEmptyYearRow(&$row, $startDate, $endDate)
 {
+	$newRow = array();
 	$startYear = date('Y', $startDate);
 	$date = mktime(0, 0, 0, 1, 1, $startYear);
 	while ($date <= $endDate) {
 		$year = date('Y', $date);
-		$row[$year] = 0;
+		$newRow[$year] = isset($row[$year]) ? $row[$year] : 0;
 		$startYear++;
 		$date = mktime(0, 0, 0, 1, 1, $startYear);
 	}
+	return $newRow;
 }
 
 
 function createEmptyMonthRow(&$row, $startDate, $endDate)
 {
+	$newRow = array();
 	$startMonth = date('m', $startDate);
 	$startYear = date('Y', $startDate);
 	$date = mktime(0, 0, 0, $startMonth, 1, $startYear);
 	while ($date <= $endDate) {
 		$month = date('Y-m', $date);
-		$row[$month] = 0;
+		$newRow[$month] = isset($row[$month]) ? $row[$month] : 0;
 		$startMonth++;
 		$date = mktime(0, 0, 0, $startMonth, 1, $startYear);
 	}
+	return $newRow;
 }
 
 
 function createEmptyDayRow(&$row, $startDate, $endDate)
 {
+	$newRow = array();
 	$startDay = date('d', $startDate);
 	$startMonth = date('m', $startDate);
 	$startYear = date('Y', $startDate);
 	$date = mktime(0, 0, 0, $startMonth, $startDay, $startYear);
 	while ($date <= $endDate) {
-		$month = date('Y-m-d', $date);
-		$row[$month] = 0;
+		$day = date('Y-m-d', $date);
+		$newRow[$day] = isset($row[$day]) ? $row[$day] : 0;
 		$startDay++;		
 		$date = mktime(0, 0, 0, $startMonth, $startDay, $startYear);
 	}
+	return $newRow;
 }
 
 
@@ -146,122 +151,151 @@ function createEmptyRow($startDate, $endDate, $label)
 	return $row;
 }
 
+function fillRow($row, $startDate, $endDate)
+{
+	$nbDays = (int)round(($endDate - $startDate) / 86400.0);
+	if ($nbDays <= 31)
+		$newRow = createEmptyDayRow($row, $startDate, $endDate);
+	elseif ($nbDays <= 365)
+		$newRow = createEmptyMonthRow($row, $startDate, $endDate);
+	else
+		$newRow = createEmptyYearRow($row, $startDate, $endDate);
+	return $newRow;
+}
+
+function getSqlDateFormat($start, $end)
+{
+	$nbDays = (int)round(($end - $start) / 86400.0);
+	if ($nbDays <= 31)
+		return '%Y-%m-%d';
+	if ($nbDays <= 365)
+		return '%Y-%m';
+	return '%Y';
+}
+
 
 
 function createArticleCategoriesDashboard($start, $end)
 {
-	$dashboard = new bab_Dashboard(bab_translate("Articles Categories Top 20"));
+	global $babBody, $babDB;
+	$dashboard = new bab_DashboardElement(bab_translate("Article Categories Top 20"));
 	$dashboard->setColumnHeaders(createHeaders($start, $end));
 
 	$sql = 'SELECT tct.id AS id, SUM(sat.st_hits) AS hits, tct.title AS title';
-	$sql .= ' FROM ' . BAB_STATS_ARTICLES_TBL . ' sat LEFT JOIN ' . BAB_ARTICLES_TBL . ' at ON sat.st_article_id=at.id LEFT JOIN ' . BAB_TOPICS_TBL . ' tt ON tt.id=at.id_topic LEFT JOIN ' . BAB_TOPICS_CATEGORIES_TBL . ' tct ON tct.id=tt.id_cat';
+	$sql .= ' FROM ' . BAB_STATS_ARTICLES_TBL . ' AS sat';
+	$sql .= ' LEFT JOIN ' . BAB_ARTICLES_TBL . ' AS at ON sat.st_article_id=at.id';
+	$sql .= ' LEFT JOIN ' . BAB_TOPICS_TBL . ' AS tt ON tt.id=at.id_topic';
+	$sql .= ' LEFT JOIN ' . BAB_TOPICS_CATEGORIES_TBL . ' tct ON tct.id=tt.id_cat';
 	$sql .= ' WHERE at.title IS NOT NULL';
-	if ($GLOBALS['babBody']->currentAdmGroup != 0) {
+	if ($babBody->currentAdmGroup != 0) {
 		$sql .= ' AND  tct.id_dgowner=\'' . $babBody->currentAdmGroup . '\'';
 	}
 	if ($start || $end) {
 		$sql .= ' AND ';
 		$where = array();
 		$start && $where[] = 'sat.st_date >= \'' . date('Y-m-d', $start) . '\'';
-		$end && $where[] = 'sat.st_date <= \'' . date('Y-m-d', $end) . '\'';
+		$end && $where[] = 'sat.st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
 		$sql .= implode(' AND ', $where);
 	}
 	$sql .= ' GROUP BY tct.id';
 	$sql .= ' ORDER BY hits DESC';
 	$sql .= ' LIMIT 20';
 
-	$nbDays = (int)round(($end - $start) / 86400.0);
-	if ($nbDays <= 31)
-		$sqlDateFormat = '%Y-%m-%d';
-	elseif ($nbDays <= 365)
-		$sqlDateFormat = '%Y-%m';
-	else
-		$sqlDateFormat = '%Y';
+	$sqlDateFormat = getSqlDateFormat($start, $end);
 	
-	$categories = $GLOBALS['babDB']->db_query($sql);
-	while ($category = $GLOBALS['babDB']->db_fetch_array($categories)) {
+	$categories = $babDB->db_query($sql);
+	while ($category = $babDB->db_fetch_array($categories)) {
 		$sql = 	'SELECT tct.id AS id, DATE_FORMAT(sat.st_date,\'' . $sqlDateFormat . '\') AS stat_date, SUM(sat.st_hits) AS hits';
-		$sql .= ' FROM ' . BAB_STATS_ARTICLES_TBL . ' sat LEFT JOIN ' . BAB_ARTICLES_TBL . ' at ON sat.st_article_id=at.id LEFT JOIN ' . BAB_TOPICS_TBL . ' tt ON tt.id=at.id_topic LEFT JOIN ' . BAB_TOPICS_CATEGORIES_TBL . ' tct ON tct.id=tt.id_cat';
+		$sql .= ' FROM ' . BAB_STATS_ARTICLES_TBL . ' sat';
+		$sql .= ' LEFT JOIN ' . BAB_ARTICLES_TBL . ' AS at ON sat.st_article_id=at.id';
+		$sql .= ' LEFT JOIN ' . BAB_TOPICS_TBL . ' tt ON tt.id=at.id_topic';
+		$sql .= ' LEFT JOIN ' . BAB_TOPICS_CATEGORIES_TBL . ' tct ON tct.id=tt.id_cat';
 		$sql .= ' WHERE tct.id=\'' . $category['id'] . '\'';
 		if ($start || $end) {
 			$sql .= ' AND ';
 			$where = array();
 			$start && $where[] = 'sat.st_date >= \'' . date('Y-m-d', $start) . '\'';
-			$end && $where[] = 'sat.st_date <= \'' . date('Y-m-d', $end) . '\'';
+			$end && $where[] = 'sat.st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
 			$sql .= implode(' AND ', $where);
 		}
 		$sql .= ' GROUP BY stat_date';
 		$sql .= ' ORDER BY stat_date ASC';
 	
-		$stats = $GLOBALS['babDB']->db_query($sql);
-		$row = createEmptyRow($start, $end, $category['title']);
-		while ($stat = $GLOBALS['babDB']->db_fetch_array($stats)) {
-			$row[$stat['stat_date']] = $stat['hits'];
+		$stats = $babDB->db_query($sql);
+		$r = array();
+		while ($stat = $babDB->db_fetch_array($stats)) {
+			$r[$stat['stat_date']] = $stat['hits'];
 		}
-			
+		$row = array();
+		$row['label'] = $category['title'];
+		$row += fillRow($r, $start, $end);
 		$row['total'] = $category['hits'];
+			
 		$dashboard->addRow($row);
 	}	
-	
+
 	return $dashboard;
 }
 
 
+
 function createArticleTopicsDashboard($start, $end)
 {
-	$dashboard = new bab_Dashboard(bab_translate("Articles Topics Top 20"));
+	global $babBody, $babDB;
+	$dashboard = new bab_DashboardElement(bab_translate("Article Topics Top 20"));
 	$dashboard->setColumnHeaders(createHeaders($start, $end));
 
 	$sql = 'SELECT tt.id AS id, SUM(sat.st_hits) AS hits, tt.category AS title';
-	$sql .= ' FROM ' . BAB_STATS_ARTICLES_TBL . ' AS sat LEFT JOIN ' . BAB_ARTICLES_TBL . ' AS at ON sat.st_article_id=at.id LEFT JOIN ' . BAB_TOPICS_TBL . ' AS tt ON tt.id=at.id_topic';
-	if ($GLOBALS['babBody']->currentAdmGroup != 0) {
+	$sql .= ' FROM ' . BAB_STATS_ARTICLES_TBL . ' AS sat';
+	$sql .= ' LEFT JOIN ' . BAB_ARTICLES_TBL . ' AS at ON sat.st_article_id=at.id';
+	$sql .= ' LEFT JOIN ' . BAB_TOPICS_TBL . ' AS tt ON tt.id=at.id_topic';
+	if ($babBody->currentAdmGroup != 0) {
 		$sql .= ' LEFT JOIN ' . BAB_TOPICS_CATEGORIES_TBL . ' tct ON tct.id=tt.id_cat';
 	}
 	$sql .= ' WHERE at.title IS NOT NULL';
-	if ($GLOBALS['babBody']->currentAdmGroup != 0) {
+	if ($babBody->currentAdmGroup != 0) {
 		$sql .= ' AND  tct.id_dgowner=\'' . $babBody->currentAdmGroup . '\'';
 	}
 	if ($start || $end) {
 		$sql .= ' AND ';
 		$where = array();
 		$start && $where[] = 'sat.st_date >= \'' . date('Y-m-d', $start) . '\'';
-		$end && $where[] = 'sat.st_date <= \'' . date('Y-m-d', $end) . '\'';
+		$end && $where[] = 'sat.st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
 		$sql .= implode(' AND ', $where);
 	}
 	$sql .= ' GROUP BY tt.id';
 	$sql .= ' ORDER BY hits DESC';
 	$sql .= ' LIMIT 20';
 
-	$nbDays = (int)round(($end - $start) / 86400.0);
-	if ($nbDays <= 31)
-		$sqlDateFormat = '%Y-%m-%d';
-	elseif ($nbDays <= 365)
-		$sqlDateFormat = '%Y-%m';
-	else
-		$sqlDateFormat = '%Y';
+	$sqlDateFormat = getSqlDateFormat($start, $end);
 	
-	$topics = $GLOBALS['babDB']->db_query($sql);
-	while ($topic = $GLOBALS['babDB']->db_fetch_array($topics)) {
+	$topics = $babDB->db_query($sql);
+	while ($topic = $babDB->db_fetch_array($topics)) {
 		$sql = 	'SELECT tt.id AS id, DATE_FORMAT(sat.st_date,\'' . $sqlDateFormat . '\') AS stat_date, SUM(sat.st_hits) AS hits';
-		$sql .= ' FROM ' . BAB_STATS_ARTICLES_TBL . ' AS sat LEFT JOIN ' . BAB_ARTICLES_TBL . ' AS at ON sat.st_article_id=at.id LEFT JOIN ' . BAB_TOPICS_TBL . ' AS tt ON tt.id=at.id_topic';
-		$sql .= ' WHERE tt.id=\'' . $topic['id'] . '\'';
+		$sql .= ' FROM ' . BAB_STATS_ARTICLES_TBL . ' AS sat';
+		$sql .= ' LEFT JOIN ' . BAB_ARTICLES_TBL . ' AS at ON sat.st_article_id=at.id';
+		$sql .= ' LEFT JOIN ' . BAB_TOPICS_TBL . ' AS tt ON tt.id=at.id_topic';
+		$sql .= '  WHERE at.title IS NOT NULL AND tt.id=\'' . $topic['id'] . '\'';
 		if ($start || $end) {
 			$sql .= ' AND ';
 			$where = array();
 			$start && $where[] = 'sat.st_date >= \'' . date('Y-m-d', $start) . '\'';
-			$end && $where[] = 'sat.st_date <= \'' . date('Y-m-d', $end) . '\'';
+			$end && $where[] = 'sat.st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
 			$sql .= implode(' AND ', $where);
 		}
 		$sql .= ' GROUP BY stat_date';
 		$sql .= ' ORDER BY stat_date ASC';
 	
-		$stats = $GLOBALS['babDB']->db_query($sql);
-		$row = createEmptyRow($start, $end, $topic['title']);
-		while ($stat = $GLOBALS['babDB']->db_fetch_array($stats)) {
-			$row[$stat['stat_date']] = $stat['hits'];
+		$stats = $babDB->db_query($sql);
+		$r = array();
+		while ($stat = $babDB->db_fetch_array($stats)) {
+			$r[$stat['stat_date']] = $stat['hits'];
 		}
-			
+		$row = array();
+		$row['label'] = $topic['title'];
+		$row += fillRow($r, $start, $end);
 		$row['total'] = $topic['hits'];
+		
 		$dashboard->addRow($row);
 	}	
 	
@@ -271,72 +305,366 @@ function createArticleTopicsDashboard($start, $end)
 
 function createArticlesDashboard($start, $end)
 {
-	$dashboard = new bab_Dashboard(bab_translate("Articles Top 20"));
+	global $babBody, $babDB;
+	$dashboard = new bab_DashboardElement(bab_translate("Articles Top 20"));
 	$dashboard->setColumnHeaders(createHeaders($start, $end));
 
-	$sql = 	'SELECT st_article_id AS id, SUM(st_hits) AS hits, title ';
-	$sql .= ' FROM ' . BAB_STATS_ARTICLES_TBL;
-	$sql .= ' LEFT JOIN ' . BAB_ARTICLES_TBL . ' ON ' .BAB_ARTICLES_TBL . '.id=' . BAB_STATS_ARTICLES_TBL . '.st_article_id';
-	if ($start || $end) {
-		$sql .= ' WHERE ';
-		$where = array();
-		$start && $where[] = 'st_date >= \'' . date('Y-m-d', $start) . '\'';
-		$end && $where[] = 'st_date <= \'' . date('Y-m-d', $end) . '\'';
-		$sql .= implode(' AND ', $where);
+	$sql = 	'SELECT at.id AS id, SUM(sat.st_hits) AS hits ';
+	$sql .= ' FROM ' . BAB_STATS_ARTICLES_TBL . ' AS sat LEFT JOIN ' . BAB_ARTICLES_TBL . ' AS at ON at.id=sat.st_article_id';
+	if ($babBody->currentAdmGroup) {
+		$sql .= ' LEFT JOIN ' . BAB_TOPICS_TBL . ' AS tt ON tt.id=at.id_topic';
+		$sql .= ' LEFT JOIN ' . BAB_TOPICS_CATEGORIES_TBL . ' AS tct ON tct.id=tt.id_cat';
+	}
+	$where = array();
+	$where[] = 'at.title IS NOT NULL';
+	$babBody->currentAdmGroup && $where[] = 'tct.id_dgowner=\'' . $babBody->currentAdmGroup . '\'';
+	$start && $where[] = 'st_date >= \'' . date('Y-m-d', $start) . '\'';
+	$end && $where[] = 'st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
+	if (!empty($where)) {
+		$sql .= ' WHERE ' . implode(' AND ', $where);
 	}
 	$sql .= ' GROUP BY id';
 	$sql .= ' ORDER BY hits DESC';
 	$sql .= ' LIMIT 20';
 
-	$nbDays = (int)round(($end - $start) / 86400.0);
-	if ($nbDays <= 31)
-		$sqlDateFormat = '%Y-%m-%d';
-	elseif ($nbDays <= 365)
-		$sqlDateFormat = '%Y-%m';
-	else
-		$sqlDateFormat = '%Y';
+	$sqlDateFormat = getSqlDateFormat($start, $end);
+
+	$articles = array();
+	$rsArticles = $babDB->db_query($sql);
+	while ($article = $babDB->db_fetch_array($rsArticles)) {
+		$articles[$article['id']] = $article;
+	}
 	
-	$articles = $GLOBALS['babDB']->db_query($sql);
-	while ($article = $GLOBALS['babDB']->db_fetch_array($articles)) {
-		$sql = 	'SELECT st_article_id AS id, DATE_FORMAT(st_date,\'' . $sqlDateFormat . '\') AS stat_date, SUM(st_hits) AS hits FROM ' . BAB_STATS_ARTICLES_TBL;
-		$sql .= ' WHERE st_article_id=\'' . $article['id'] . '\'';
-		if ($start || $end) {
-			$sql .= ' AND ';
-			$where = array();
-			$start && $where[] = 'st_date >= \'' . date('Y-m-d', $start) . '\'';
-			$end && $where[] = 'st_date <= \'' . date('Y-m-d', $end) . '\'';
-			$sql .= implode(' AND ', $where);
+	if (!empty($articles))
+	{
+		$sql = 'SELECT id, title ';
+		$sql .= ' FROM ' . BAB_ARTICLES_TBL;
+		$sql .= ' WHERE id IN(' . implode(',', array_keys($articles)) . ')';
+		$rsArticles = $babDB->db_query($sql);
+		while ($article = $babDB->db_fetch_array($rsArticles)) {
+			$articles[$article['id']]['title'] = $article['title'];
 		}
-		$sql .= ' GROUP BY stat_date';
-		$sql .= ' ORDER BY stat_date ASC';
 	
-		$stats = $GLOBALS['babDB']->db_query($sql);
-		$row = createEmptyRow($start, $end, $article['title']);
-		while ($stat = $GLOBALS['babDB']->db_fetch_array($stats)) {
-			$row[$stat['stat_date']] = $stat['hits'];
+		$sql = 	'SELECT st_article_id AS id, DATE_FORMAT(st_date,\'' . $sqlDateFormat . '\') AS stat_date, SUM(st_hits) AS hits';
+		$sql .= ' FROM ' . BAB_STATS_ARTICLES_TBL;
+		$where = array();
+		$where[] = 'st_article_id IN(' . implode(',', array_keys($articles)) . ')';
+		$start && $where[] = 'st_date >= \'' . date('Y-m-d', $start) . '\'';
+		$end && $where[] = 'st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
+		if (!empty($where)) {
+			$sql .= ' WHERE ' . implode(' AND ', $where);
 		}
-			
-		$row['total'] = $article['hits'];
-		$dashboard->addRow($row);
-	}	
+		$sql .= ' GROUP BY st_article_id, stat_date';
+		$sql .= ' ORDER BY st_article_id, stat_date ASC';
 	
+		$stats = array();
+		$rsStats = $babDB->db_query($sql);
+		while ($stat = $babDB->db_fetch_array($rsStats)) {
+			if (!isset($stats[$stat['id']]))
+				$stats[$stat['id']] = array();
+			$stats[$stat['id']][$stat['stat_date']] = $stat['hits'];
+		}
+	
+		reset($articles);
+		while (list($articleId, $article) = each($articles)) {
+			$row = array();
+			$row['label'] = $article['title'];
+			$row += fillRow($stats[$articleId], $start, $end);
+			$row['total'] = $article['hits'];
+			$dashboard->addRow($row);
+		}
+	}
 	return $dashboard;
 }
 
 
-
-function showDashboard()
+function createDirectoriesDashboard($start, $end)
 {
+	global $babBody, $babDB;
+	$dashboard = new bab_DashboardElement(bab_translate("Collective Directories Top 20"));
+	$dashboard->setColumnHeaders(createHeaders($start, $end));
 
-	$dashboard = createArticlesDashboard(bab_mktime('2005-01-01'), bab_mktime('2005-01-31'));
-	$GLOBALS['babBodyPopup']->babecho($dashboard->printScriptAndCss());
-	$GLOBALS['babBodyPopup']->babecho($dashboard->printTemplate());
+	$sql = 'SELECT fft.id AS id, fft.folder AS title, SUM(sft.st_hits) AS hits';
+	$sql .= ' FROM  ' . BAB_STATS_FMFOLDERS_TBL . ' sft';
+	$sql .= ' LEFT JOIN ' . BAB_FM_FOLDERS_TBL . ' fft ON sft.st_folder_id=fft.id';
+	$where = array();
+	$where[] = 'fft.folder IS NOT NULL';
+	$babBody->currentAdmGroup && $where[] = 'fft.id_dgowner=\'' . $babBody->currentAdmGroup . '\'';
+	$start && $where[] = 'sft.st_date >= \'' . date('Y-m-d', $start) . '\'';
+	$end && $where[] = 'sft.st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
+	if (!empty($where)) {
+		$sql .= ' WHERE ' . implode(' AND ', $where);
+	}
+	$sql .= ' GROUP BY fft.id';
+	$sql .= ' ORDER BY hits DESC';
+	$sql .= ' LIMIT 20';
 
-	$dashboard = createArticleTopicsDashboard(bab_mktime('2005-01-01'), bab_mktime('2005-01-31'));
-	$GLOBALS['babBodyPopup']->babecho($dashboard->printTemplate());
+	$sqlDateFormat = getSqlDateFormat($start, $end);
+	
+	$directories = $babDB->db_query($sql);
+	while ($directory = $babDB->db_fetch_array($directories)) {
+		$sql = 	'SELECT st_folder_id AS id, DATE_FORMAT(st_date,\'' . $sqlDateFormat . '\') AS stat_date, SUM(st_hits) AS hits';
+		$sql .= ' FROM ' . BAB_STATS_FMFOLDERS_TBL;
+		$where = array();
+		$where[] = 'st_folder_id=\'' . $directory['id'] . '\'';
+		$start && $where[] = 'st_date >= \'' . date('Y-m-d', $start) . '\'';
+		$end && $where[] = 'st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
+		if (!empty($where)) {
+			$sql .= ' WHERE ' . implode(' AND ', $where);
+		}
+		$sql .= ' GROUP BY stat_date';
+		$sql .= ' ORDER BY stat_date ASC';
+	
+		$stats = $babDB->db_query($sql);
+		$r = array();
+		while ($stat = $babDB->db_fetch_array($stats)) {
+			$r[$stat['stat_date']] = $stat['hits'];
+		}
+		$row = array();
+		$row['label'] = $directory['title'];
+		$row += fillRow($r, $start, $end);
+		$row['total'] = $directory['hits'];
+			
+		$dashboard->addRow($row);
+	}	
 
-	$dashboard = createArticleCategoriesDashboard(bab_mktime('2005-01-01'), bab_mktime('2005-01-31'));
+	return $dashboard;
+}
+
+
+function createFileDownloadsDashboard($start, $end)
+{
+	global $babBody, $babDB;
+	$dashboard = new bab_DashboardElement(bab_translate("File Downloads Top 20"));
+	$dashboard->setColumnHeaders(createHeaders($start, $end));
+
+	$sql = 'SELECT ft.id AS id, ft.name AS title, fft.folder AS folder, SUM(sff.st_hits) AS hits';
+	$sql .= ' FROM ' . BAB_STATS_FMFILES_TBL . ' sff';
+	$sql .= ' LEFT JOIN ' . BAB_FILES_TBL . ' ft ON sff.st_fmfile_id=ft.id';
+	$sql .= ' LEFT JOIN ' . BAB_FM_FOLDERS_TBL . ' fft ON fft.id=ft.id_owner';
+	$where = array();
+	$where[] = 'ft.bgroup=\'Y\'';
+	$babBody->currentAdmGroup && $where[] = 'fft.id_dgowner=\'' . $babBody->currentAdmGroup . '\'';
+	$start && $where[] = 'sff.st_date >= \'' . date('Y-m-d', $start) . '\'';
+	$end && $where[] = 'sff.st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
+	if (!empty($where)) {
+		$sql .= ' WHERE ' . implode(' AND ', $where);
+	}
+	$sql .= ' GROUP BY ft.id';
+	$sql .= ' ORDER BY hits DESC';
+	$sql .= ' LIMIT 20';
+
+	$sqlDateFormat = getSqlDateFormat($start, $end);
+	
+	$files = $babDB->db_query($sql);
+	while ($file = $babDB->db_fetch_array($files)) {
+		$sql = 	'SELECT st_fmfile_id AS id, DATE_FORMAT(st_date,\'' . $sqlDateFormat . '\') AS stat_date, SUM(st_hits) AS hits';
+		$sql .= ' FROM ' . BAB_STATS_FMFILES_TBL;
+		$where = array();
+		$where[] = 'st_fmfile_id=\'' . $file['id'] . '\'';
+		$start && $where[] = 'st_date >= \'' . date('Y-m-d', $start) . '\'';
+		$end && $where[] = 'st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
+		if (!empty($where)) {
+			$sql .= ' WHERE ' . implode(' AND ', $where);
+		}
+		$sql .= ' GROUP BY stat_date';
+		$sql .= ' ORDER BY stat_date ASC';
+	
+		$stats = $babDB->db_query($sql);
+		$r = array();
+		while ($stat = $babDB->db_fetch_array($stats)) {
+			$r[$stat['stat_date']] = $stat['hits'];
+		}
+		$row = array();
+		$row['label'] = $file['title'];
+		$row += fillRow($r, $start, $end);
+		$row['total'] = $file['hits'];
+			
+		$dashboard->addRow($row);
+	}	
+
+	return $dashboard;
+}
+
+function createFunctionsDashboard($start, $end)
+{
+	global $babDB;
+	$dashboard = new bab_DashboardElement(bab_translate("Activity by Functions"));
+	$dashboard->setColumnHeaders(createHeaders($start, $end));
+
+	$sql = 'SELECT stip.id AS id, stip.module_name AS title, SUM(stp.st_hits) AS hits';
+	$sql .= ' FROM ' . BAB_STATS_MODULES_TBL . ' AS stp';
+	$sql .= ' LEFT JOIN ' . BAB_STATS_IMODULES_TBL . ' AS stip ON stp.st_module_id=stip.id';
+	$where = array();
+	$start && $where[] = 'stp.st_date >= \'' . date('Y-m-d', $start) . '\'';
+	$end && $where[] = 'stp.st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
+	if (!empty($where)) {
+		$sql .= ' WHERE ' . implode(' AND ', $where);
+	}
+	$sql .= ' GROUP BY stip.id';
+	$sql .= ' ORDER BY hits DESC';
+
+	$sqlDateFormat = getSqlDateFormat($start, $end);
+	
+	$modules = $babDB->db_query($sql);
+	while ($module = $babDB->db_fetch_array($modules)) {
+		$sql = 	'SELECT st_module_id AS id, DATE_FORMAT(st_date,\'' . $sqlDateFormat . '\') AS stat_date, SUM(st_hits) AS hits';
+		$sql .= ' FROM ' .BAB_STATS_MODULES_TBL;
+		$where = array();
+		$where[] = 'st_module_id=\'' . $module['id'] . '\'';
+		$start && $where[] = 'st_date >= \'' . date('Y-m-d', $start) . '\'';
+		$end && $where[] = 'st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
+		if (!empty($where)) {
+			$sql .= ' WHERE ' . implode(' AND ', $where);
+		}
+		$sql .= ' GROUP BY stat_date';
+		$sql .= ' ORDER BY stat_date ASC';
+
+		$stats = $babDB->db_query($sql);
+		$r = array();
+		while ($stat = $babDB->db_fetch_array($stats)) {
+			$r[$stat['stat_date']] = $stat['hits'];
+		}
+		$row = array();
+		$row['label'] = $module['title'];
+		$row += fillRow($r, $start, $end);
+		$row['total'] = $module['hits'];
+
+		$dashboard->addRow($row);
+	}	
+
+	return $dashboard;
+}
+
+
+function createGlobalActivityDashboard($start, $end)
+{
+	global $babDB;
+	$dashboard = new bab_DashboardElement(bab_translate("Global Site Activity"));
+	$dashboard->setColumnHeaders(createHeaders($start, $end));
+
+	$sqlDateFormat = getSqlDateFormat($start, $end);
+	
+	$sql = 	'SELECT DATE_FORMAT(st_date,\'' . $sqlDateFormat . '\') AS stat_date, SUM(st_hits) AS hits';
+	$sql .= ' FROM ' . BAB_STATS_MODULES_TBL;
+	$where = array();
+	$start && $where[] = 'st_date >= \'' . date('Y-m-d', $start) . '\'';
+	$end && $where[] = 'st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
+	if (!empty($where)) {
+		$sql .= ' WHERE ' . implode(' AND ', $where);
+	}
+	$sql .= ' GROUP BY stat_date';
+	$sql .= ' ORDER BY stat_date ASC';
+
+	$stats = $babDB->db_query($sql);
+	$total = 0;
+	$r = array();
+	while ($stat = $babDB->db_fetch_array($stats)) {
+		$r[$stat['stat_date']] = $stat['hits'];
+		$total += $stat['hits'];
+	}
+	$row['label'] = bab_translate("Global hits");
+	$row += fillRow($r, $start, $end);
+	$row['total'] = $total;
+	$dashboard->addRow($row);
+
+	$sql = 	'SELECT DATE_FORMAT(date_publication,\'' . $sqlDateFormat . '\') AS stat_date, COUNT(*) AS hits';
+	$sql .= ' FROM ' . BAB_ARTICLES_TBL;
+	$where = array();
+	$start && $where[] = 'date_publication >= \'' . date('Y-m-d', $start) . '\'';
+	$end && $where[] = 'date_publication <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
+	if (!empty($where)) {
+		$sql .= ' WHERE ' . implode(' AND ', $where);
+	}
+	$sql .= ' GROUP BY stat_date';
+	$sql .= ' ORDER BY stat_date ASC';
+
+	$stats = $babDB->db_query($sql);
+	$total = 0;
+	$r = array();
+	while ($stat = $babDB->db_fetch_array($stats)) {
+		$r[$stat['stat_date']] = $stat['hits'];
+		$total += $stat['hits'];
+	}
+	$row = array();
+	$row['label'] = bab_translate("Published articles");
+	$row += fillRow($r, $start, $end);
+	$row['total'] = $total;
+	$dashboard->addRow($row);
+
+	$sql = 	'SELECT DATE_FORMAT(created,\'' . $sqlDateFormat . '\') AS stat_date, COUNT(*) AS hits';
+	$sql .= ' FROM ' . BAB_FILES_TBL;
+	$where = array();
+	$start && $where[] = 'created >= \'' . date('Y-m-d', $start) . '\'';
+	$end && $where[] = 'created <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
+	if (!empty($where)) {
+		$sql .= ' WHERE ' . implode(' AND ', $where);
+	}
+	$sql .= ' GROUP BY stat_date';
+	$sql .= ' ORDER BY stat_date ASC';
+
+	$stats = $babDB->db_query($sql);
+	$total = 0;
+	$r = array();
+	while ($stat = $babDB->db_fetch_array($stats)) {
+		$r[$stat['stat_date']] = $stat['hits'];
+		$total += $stat['hits'];
+	}
+	$row = array();
+	$row['label'] = bab_translate("Downloaded files");
+	$row += fillRow($r, $start, $end);
+	$row['total'] = $total;
+	$dashboard->addRow($row);
+
+	return $dashboard;
+}
+
+function microtime_float()
+{
+   list($usec, $sec) = explode(' ', microtime());
+   return ((float)$usec + (float)$sec);
+}
+
+
+function showDashboard($startDate, $endDate)
+{
+	$start = ($startDate ? bab_mktime($startDate) : bab_mktime('2000-01-01'));
+	$end = ($endDate ? bab_mktime($endDate) : time());
+
+	$dashboard = new bab_Dashboard();
+
+	$nbDays = (int)round(($end - $start) / 86400.0);
+	if ($nbDays <= 31) {
+		$dashboard->addFilter('L', 'day0');
+		$dashboard->addFilter('M', 'day1');
+		$dashboard->addFilter('M', 'day2');
+		$dashboard->addFilter('J', 'day3');
+		$dashboard->addFilter('V', 'day4');
+		$dashboard->addFilter('S', 'day5');
+		$dashboard->addFilter('D', 'day6');
+	}
+
+	////
+	$s = microtime_float();
+	////
+	$dashboard->addElement(createGlobalActivityDashboard($start, $end)); // 0.07
+	$dashboard->addElement(createFunctionsDashboard($start, $end)); // 0.8
+	$dashboard->addElement(createArticlesDashboard($start, $end)); // 2.2
+	$dashboard->addElement(createArticleTopicsDashboard($start, $end)); // 3.6
+	$dashboard->addElement(createArticleCategoriesDashboard($start, $end)); // 4.16
+	$dashboard->addElement(createDirectoriesDashboard($start, $end)); // 0.03
+	$dashboard->addElement(createFileDownloadsDashboard($start, $end)); // 0.16
+	////
+	$e = microtime_float(); echo '<!-- ';print_r('addElement : ' . ($e - $s));echo " -->\n";
+	////
+
+	////
+	$s = microtime_float();
+	////
 	$GLOBALS['babBodyPopup']->babecho($dashboard->printTemplate());
+	////
+	$e = microtime_float();	echo '<!-- ';print_r('babEcho : ' . ($e - $s));echo " -->\n";
+	////
 }
 
 ?>

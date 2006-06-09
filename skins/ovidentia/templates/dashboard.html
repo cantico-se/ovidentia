@@ -15,20 +15,18 @@
 .dashboard_container {
 	display: table;
 	padding: 0;
+	margin: 2px;
 }
 
 .dashboard_header {
 	padding: 4px;
 	font-family: tahoma;
-	font-size: 0.9em;
 	font-weight: bold;
-	cursor: pointer;
 }
 
 .dashboard_filter {
 	padding: 4px;
 	font-family: tahoma;
-	font-size: 0.75em;
 	font-weight: normal;
 	vertical-align: middle;
 }
@@ -40,20 +38,20 @@
 .dashboard_column_header p {
 	margin: 0;
 	padding: 0 0 0 10px;
-	background-image: url('smallminus.gif');
 	background-position: 0 0;
 	background-repeat: no-repeat;
 }
 
-.dashboard_column_header:hover {
+td.dashboard_column_header:hover {
 	background-color: #CCCCCC;
 }
+
+
 .dashboard_container thead td {
 	border: 1px solid #FFFFFF;
 	background-color: #000000;
 	color: #FFFFFF;
 	font-family: tahoma;
-	font-size: 0.67em;
 	font-weight: bold;
 	padding: 4px;
 }
@@ -63,9 +61,8 @@
 	background-color: #FFFFFF;
 	color: #000000;
 	font-family: tahoma;
-	font-size: 0.67em;
 	padding: 4px;
-
+	text-align: right;
 }
 
 </style>
@@ -163,11 +160,11 @@ function toggleDashboard()
 	table = this.dashboardContainer.targetTable
 	if (table.style.display == 'none') {
 		table.style.display = '';
-		this.dashboardContainer.toggleButton.src = 'minus.gif';
+		this.dashboardContainer.toggleButton.src = '{ babSkinPath }images/Dashboard/minus.gif';
 		this.dashboardContainer.filterSpan.style.visibility = 'visible';
 	} else {
 		table.style.display = 'none';
-		this.dashboardContainer.toggleButton.src = 'plus.gif';
+		this.dashboardContainer.toggleButton.src = '{ babSkinPath }images/Dashboard/plus.gif';
 		this.dashboardContainer.filterSpan.style.visibility = 'hidden';
 	}
 }
@@ -195,7 +192,7 @@ function dashboardInit()
 				header = headers[j];
 				if (hasClass(header, 'dashboard_header')) {
 					var hideImg = document.createElement('img');
-					hideImg.src = 'minus.gif';
+					hideImg.src = '{ babSkinPath }images/Dashboard/minus.gif';
 					hideImg.className = 'dashboard_icon';
 					hideImg.alt = hideImg.title = 'Cacher';
 					hideImg.onclick = toggleDashboard;
@@ -204,7 +201,7 @@ function dashboardInit()
 					header.insertBefore(hideImg, header.firstChild);
 
 					var undoImg = document.createElement('img');
-					undoImg.src = 'undo.png';
+					undoImg.src = '{ babSkinPath }images/Dashboard/undo.png';
 					undoImg.className = 'dashboard_icon';
 					undoImg.alt = undoImg.title = 'Défaire';
 					undoImg.onclick = undoHideColumn;
@@ -214,7 +211,7 @@ function dashboardInit()
 					header.appendChild(undoImg);
 
 					var undoAllImg = document.createElement('img');
-					undoAllImg.src = 'undoall.png';
+					undoAllImg.src = '{ babSkinPath }images/Dashboard/undoall.png';
 					undoAllImg.className = 'dashboard_icon';
 					undoAllImg.alt = undoAllImg.title = 'Tout rafficher';
 					undoAllImg.onclick = undoHideAllColumns;
@@ -225,19 +222,21 @@ function dashboardInit()
 
 					var filterSpan = document.createElement('span');
 					filterSpan.className = 'dashboard_filter';
-					var days = new Array('L', 'M', 'M', 'J', 'V', 'S', 'D');
-					for (day = 0; day < 7; day++) {
+					for (filterType in bab_dashboard_filters) {
 						var chkbox = document.createElement('input');
 						chkbox.type = 'checkbox';
 						chkbox.dashboardContainer = div;
-						chkbox.dashboardFilter = 'day' + day;
+						chkbox.dashboardFilter = filterType;
 						chkbox.onclick = filterColumns;
 						chkbox.style.margin = '0px 8px 0px 16px';
 						filterSpan.appendChild(chkbox);
 						chkbox.defaultChecked = chkbox.checked = true;
-						var txt = document.createTextNode(days[day]);
+						var txt = document.createTextNode(bab_dashboard_filters[filterType]);
 						filterSpan.appendChild(txt);
 					}
+
+
+
 					div.filterSpan = filterSpan;
 					header.appendChild(filterSpan);
 					
@@ -250,18 +249,57 @@ function dashboardInit()
 		window.previousonload();
 }
 
+function textsize(param)
+{
+	var body = document.getElementsByTagName('BODY')[0];
+	var cssfs = body.style.fontSize;
+	var fs = parseFloat(cssfs);
+	var newfs = fs + param;
+	window.status = fs;
+	if (isNaN(fs))
+		body.style.fontSize = '1em';
+	else
+		body.style.fontSize = newfs + 'em';
+}
+textsize(0);
+
 window.previousonload = window.onload;
 window.onload = dashboardInit;
-
+-->
 </script>
 <!--#end dashboard_scripts -->
 
 
 <!--#begin dashboard -->
+<script type="text/javascript">
+var bab_dashboard_filters = {
+<!--#in getNextFilter -->
+<!--#if t_not_first_filter -->, <!--#endif t_not_first_filter --> { t_filter_type }: '{ t_filter_label }'
+<!--#endin getNextFilter -->
+}
+</script>
+<div id="bab_dashboard">
+<!--#in getNextElement -->
+<br style="margin: 5px" />
+{ t_dashboard_element }
+<!--#endin getNextElement -->
+</div>
+<br>
+<div class="foot">
+	<span id="toolbar">
+	<a href="javascript:window.print()"><img src="{ babSkinPath }images/Dashboard/print.gif" border="0" /></a>
+	<a href="javascript:textsize(0.1)">A+</a>
+
+	<a href="javascript:textsize(-0.1)">A-</a>
+	</span>
+</div>
+<!--#end dashboard -->
+
+<!--#begin dashboard_element -->
 
 <div class="dashboard_container">
 <div class="dashboard_header">{ t_dashboard_name }</div>
-<table id="{ t_table_id" style="border-collapse: collapse; border: 2px solid black">
+<table <!--#if t_table_id --> id="{ t_table_id }" <!--#endif t_table_id --> style="border-collapse: collapse; border: 2px solid black">
 <thead>
 <tr>
 <!--#in getNextColumnHeader -->
@@ -281,4 +319,4 @@ window.onload = dashboardInit;
 </table>
 </div>
 
-<!--#end dashboard -->
+<!--#end dashboard_element -->

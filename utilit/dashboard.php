@@ -24,6 +24,74 @@
 
 class bab_Dashboard
 {
+	var $_elements;
+	var $_filters;
+
+	var $t_filter_type;
+	var $t_filter_label;
+	var $t_not_first_filter;
+	var $t_dashboard_element;
+
+	function bab_Dashboard()
+	{
+		$this->_elements = array();
+		$this->_filters = array();
+		$this->t_filter_type = '';
+		$this->t_filter_label = '';	
+		$this->t_dashboard_element = null;
+		$this->t_not_first_filter = false;
+	}
+
+	function addElement($element)
+	{
+		$this->_elements[] = $element;
+	}
+	
+	function addFilter($label, $type)
+	{
+		$this->_filters[$type] = $label;
+		reset($this->_filters);
+	}
+
+	/**
+	 * @return string
+	 */
+	function printTemplate()
+	{
+		$html = bab_printTemplate($this, 'dashboard.html', 'dashboard_css');
+		$html .= bab_printTemplate($this, 'dashboard.html', 'dashboard_scripts');
+		$html .= bab_printTemplate($this, 'dashboard.html', 'dashboard');
+		return $html;
+	}
+
+	// Template functions.
+	function getNextElement()
+	{
+		static $i = 0;
+		if ($i < count($this->_elements)) {
+			$this->t_dashboard_element = $this->_elements[$i]->printTemplate();
+			$i++;
+			return true;
+		}
+		$i = 0;
+		return false;
+	}
+
+	function getNextFilter()
+	{
+		static $i = 0;
+		if (list($this->t_filter_type, $this->t_filter_label) = each($this->_filters)) {
+			$this->t_not_first_filter = ($i++ != 0);
+			return true;
+		}
+		$i = 0;
+		reset($this->_filters);
+		return false;
+	}
+}
+
+class bab_DashboardElement
+{
 	var $_columnHeaders;
 	var $_rows;
 	var $_row;
@@ -32,7 +100,7 @@ class bab_Dashboard
 	var $t_column_header;
 	var $t_dashboard_name;
 
-	function bab_Dashboard($name)
+	function bab_DashboardElement($name)
 	{
 		$this->_columnHeaders = array();
 		$this->_rows = array();
@@ -50,6 +118,15 @@ class bab_Dashboard
 		$this->_rows[] = $row;
 	}
 
+	/**
+	 * @return string
+	 */
+	function printTemplate()
+	{
+		$html = bab_printTemplate($this, 'dashboard.html', 'dashboard_element');
+		return $html;
+	}
+	
 
 	// Template functions.
 	function getNextColumnHeader()
@@ -84,29 +161,6 @@ class bab_Dashboard
 		return false;
 		
 	}
-	
-
-	/**
-	 * @return string
-	 */
-	function printScriptAndCss()
-	{
-		$html = bab_printTemplate($this, 'dashboard.html', 'dashboard_css');
-		$html .= bab_printTemplate($this, 'dashboard.html', 'dashboard_scripts');
-		return $html;
-	}
-
-	/**
-	 * @return string
-	 */
-	function printTemplate()
-	{
-//		$html = bab_printTemplate($this, 'dashboard.html', 'dashboard_css');
-//		$html .= bab_printTemplate($this, 'dashboard.html', 'dashboard_scripts');
-		$html = bab_printTemplate($this, 'dashboard.html', 'dashboard');
-		return $html;
-	}
-	
 }
 
 

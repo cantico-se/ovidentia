@@ -155,6 +155,9 @@ function displayStatisticPanel($idx)
 				$this->itemarray[] = array( array('idx' => 'ovml', 'item' => bab_translate("Ovml Files"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=ovml"), array('idx' => 'addon', 'item' => bab_translate("Add-ons"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=addon"), array('idx' => 'xlink', 'item' => bab_translate("External links"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=xlink"));
 				}
 
+			$this->itemarray[] = array( array('idx' => 'dashboard', 'item' => bab_translate("Dashboard"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=dashboard", 'popup' => true));
+			if( empty($this->current)) { $this->current = 'dashboard'; }
+
 			$this->maxcols = 1;
 			$this->count = count($this->itemarray);
 			for( $i = 0; $i < $this->count; $i++ )
@@ -194,6 +197,7 @@ function displayStatisticPanel($idx)
 					$this->itemurltxt = $item['item'];
 					$this->itemurl = $item['url'];
 					$this->itemtreeviewurl = isset($item['treeviewurl']) ? $item['treeviewurl'] : '';
+					$this->popup = isset($item['popup']);
 					$this->disabled = ($this->current == $item['idx']);
 					}
 				else
@@ -219,157 +223,165 @@ function displayStatisticPanel($idx)
 	}
 }
 
+class displayTimeIntervalCls
+	{
+	var $timeintervaltxt;
+	var $itemarray = array();
+	var $current;
+
+	function displayTimeIntervalCls($iwhat, $sd, $ed, $idx)
+		{
+		$this->current = $iwhat;
+		switch($idx)
+			{
+			case 'users':
+			case 'fm':
+			case 'sections':
+			case 'delegat':
+				$this->showform = false;
+				break;
+			default:
+				$this->showform = true;
+				break;
+			}
+		$this->submittxt = bab_translate("Ok");
+		$this->fromtxt = bab_translate("From");
+		$this->totxt = bab_translate("to");
+		$this->dateformattxt =bab_translate("dd/mm/yyyy");
+		$this->timeintervaltxt = bab_translate("Time interval");
+		$this->itemarray[STAT_IT_TOTAL] = bab_translate("Total");
+		$this->itemarray[STAT_IT_TODAY] = bab_translate("Today");
+		$this->itemarray[STAT_IT_YESTERDAY] = bab_translate("Yesterday");
+		$this->itemarray[STAT_IT_WEEK] = bab_translate("Week");
+		$this->itemarray[STAT_IT_LASTWEEK] = bab_translate("Last week");
+		$this->itemarray[STAT_IT_MONTH] = bab_translate("Month");
+		$this->itemarray[STAT_IT_LASTMONTH] = bab_translate("Last month");
+		$this->itemarray[STAT_IT_YEAR] = bab_translate("Year");
+		$this->itemarray[STAT_IT_LASTYEAR] = bab_translate("Last year");
+		$this->itemarray[STAT_IT_OTHER] = bab_translate("Other");
+		$this->count = count($this->itemarray);
+		$this->begin_url = $GLOBALS['babUrlScript']."?tg=month&callback=beginJs&ymin=1&ymax=6&month=".date("m")."&year=".date("Y");
+		$this->end_url = $GLOBALS['babUrlScript']."?tg=month&callback=endJs&ymin=1&ymax=6&month=".date("m")."&year=".date("Y");
+		switch($this->current )
+			{
+			case STAT_IT_TODAY:
+				$this->sd = $this->ed = date("Y-m-d");
+				$this->sd_disp = $this->ed_disp = date("d-m-Y");
+				break;
+			case STAT_IT_YESTERDAY:
+				$this->sd = $this->ed = date("Y-m-d", time()-(24*3600));
+				$this->sd_disp = $this->ed_disp = date("d-m-Y", time()-(24*3600));
+				break;
+			case STAT_IT_WEEK:
+				$stime = time()-(date("w")*24*3600);
+				$etime = $stime + (6*24*3600);
+				$this->sd = date("Y-m-d", $stime);
+				$this->sd_disp = date("d-m-Y", $stime);
+				$this->ed = date("Y-m-d", $etime);
+				$this->ed_disp = date("d-m-Y", $etime);
+				break;
+			case STAT_IT_LASTWEEK:
+				$stime = time()-(date("w")*24*3600) - (7*24*3600);
+				$etime = $stime + (6*24*3600);
+				$this->sd = date("Y-m-d", $stime);
+				$this->sd_disp = date("d-m-Y", $stime);
+				$this->ed = date("Y-m-d", $etime);
+				$this->ed_disp = date("d-m-Y", $etime);
+				break;
+			case STAT_IT_MONTH:
+				$stime = time();
+				$this->sd = sprintf("%s-01", date("Y-m", $stime));
+				$this->sd_disp = sprintf("01-%s", date("m-Y", $stime));
+				$this->ed = date("Y-m-t", $stime);
+				$this->ed_disp = date("t-m-Y", $stime);
+				break;
+			case STAT_IT_LASTMONTH:
+				$stime = time() - (date("j", time())*24*3600);
+				$this->sd = sprintf("%s-01", date("Y-m", $stime));
+				$this->sd_disp = sprintf("01-%s", date("m-Y", $stime));
+				$this->ed = date("Y-m-t", $stime);
+				$this->ed_disp = date("t-m-Y", $stime);
+				break;
+			case STAT_IT_YEAR:
+				$year = date("Y", time());
+				$this->sd = sprintf("%s-01-01", $year);
+				$this->sd_disp = sprintf("01-01-%s", $year);
+				$this->ed = sprintf("%s-12-31", $year);
+				$this->ed_disp = sprintf("31-12-%s", $year);
+				break;
+			case STAT_IT_LASTYEAR:
+				$year = date("Y", time()) - 1;
+				$this->sd = sprintf("%s-01-01", $year);
+				$this->sd_disp = sprintf("01-01-%s", $year);
+				$this->ed = sprintf("%s-12-31", $year);
+				$this->ed_disp = sprintf("31-12-%s", $year);
+				break;
+			case STAT_IT_OTHER:
+				if( empty($sd) || empty($ed))
+				{
+					$this->sd = $this->ed = date("Y-m-d");
+					$this->sd_disp = $this->ed_disp = date("d-m-Y");						
+				}
+				else
+				{
+					$this->sd = $sd;
+					$arr = explode('-', $sd);
+					$this->sd_disp = sprintf("%s-%s-%s", $arr[2], $arr[1], $arr[0]);
+					$this->ed = $ed;
+					$arr = explode('-', $ed);
+					$this->ed_disp = sprintf("%s-%s-%s", $arr[2], $arr[1], $arr[0]);
+				}
+				break;
+			default:
+				$this->sd = '';
+				$this->sd_disp = '';
+				$this->ed = '';
+				$this->ed_disp = '';
+				break;
+			}
+
+		$GLOBALS['sd'] = $this->sd;
+		$GLOBALS['ed'] = $this->ed;
+		}
+
+	function getnextitime()
+		{
+		static $i = 0;
+		if( $i < $this->count)
+			{
+			$this->itval = $i;
+			$this->itvaltxt = $this->itemarray[$i];
+			if( $this->current == $i )
+				{
+				$this->selected = 'selected';
+				}
+			else
+				{
+				$this->selected = '';
+				}
+			$i++;
+			return true;
+			}
+		else
+			{
+			$i = 0;
+			return false;
+			}
+		}
+	}
 
 function displayTimeInterval($iwhat, $sd, $ed, $idx)
 {
 	global $babBody;
-	class displayTimeIntervalCls
-		{
-		var $timeintervaltxt;
-		var $itemarray = array();
-		var $current;
-
-		function displayTimeIntervalCls($iwhat, $sd, $ed, $idx)
-			{
-			$this->current = $iwhat;
-			switch($idx)
-				{
-				case 'users':
-				case 'fm':
-				case 'sections':
-				case 'delegat':
-					$this->showform = false;
-					break;
-				default:
-					$this->showform = true;
-					break;
-				}
-			$this->submittxt = bab_translate("Ok");
-			$this->fromtxt = bab_translate("From");
-			$this->totxt = bab_translate("to");
-			$this->dateformattxt =bab_translate("dd/mm/yyyy");
-			$this->timeintervaltxt = bab_translate("Time interval");
-			$this->itemarray[STAT_IT_TOTAL] = bab_translate("Total");
-			$this->itemarray[STAT_IT_TODAY] = bab_translate("Today");
-			$this->itemarray[STAT_IT_YESTERDAY] = bab_translate("Yesterday");
-			$this->itemarray[STAT_IT_WEEK] = bab_translate("Week");
-			$this->itemarray[STAT_IT_LASTWEEK] = bab_translate("Last week");
-			$this->itemarray[STAT_IT_MONTH] = bab_translate("Month");
-			$this->itemarray[STAT_IT_LASTMONTH] = bab_translate("Last month");
-			$this->itemarray[STAT_IT_YEAR] = bab_translate("Year");
-			$this->itemarray[STAT_IT_LASTYEAR] = bab_translate("Last year");
-			$this->itemarray[STAT_IT_OTHER] = bab_translate("Other");
-			$this->count = count($this->itemarray);
-			$this->begin_url = $GLOBALS['babUrlScript']."?tg=month&callback=beginJs&ymin=1&ymax=6&month=".date("m")."&year=".date("Y");
-			$this->end_url = $GLOBALS['babUrlScript']."?tg=month&callback=endJs&ymin=1&ymax=6&month=".date("m")."&year=".date("Y");
-			switch($this->current )
-				{
-				case STAT_IT_TODAY:
-					$this->sd = $this->ed = date("Y-m-d");
-					$this->sd_disp = $this->ed_disp = date("d-m-Y");
-					break;
-				case STAT_IT_YESTERDAY:
-					$this->sd = $this->ed = date("Y-m-d", time()-(24*3600));
-					$this->sd_disp = $this->ed_disp = date("d-m-Y", time()-(24*3600));
-					break;
-				case STAT_IT_WEEK:
-					$stime = time()-(date("w")*24*3600);
-					$etime = $stime + (6*24*3600);
-					$this->sd = date("Y-m-d", $stime);
-					$this->sd_disp = date("d-m-Y", $stime);
-					$this->ed = date("Y-m-d", $etime);
-					$this->ed_disp = date("d-m-Y", $etime);
-					break;
-				case STAT_IT_LASTWEEK:
-					$stime = time()-(date("w")*24*3600) - (7*24*3600);
-					$etime = $stime + (6*24*3600);
-					$this->sd = date("Y-m-d", $stime);
-					$this->sd_disp = date("d-m-Y", $stime);
-					$this->ed = date("Y-m-d", $etime);
-					$this->ed_disp = date("d-m-Y", $etime);
-					break;
-				case STAT_IT_MONTH:
-					$stime = time();
-					$this->sd = sprintf("%s-01", date("Y-m", $stime));
-					$this->sd_disp = sprintf("01-%s", date("m-Y", $stime));
-					$this->ed = date("Y-m-t", $stime);
-					$this->ed_disp = date("t-m-Y", $stime);
-					break;
-				case STAT_IT_LASTMONTH:
-					$stime = time() - (date("j", time())*24*3600);
-					$this->sd = sprintf("%s-01", date("Y-m", $stime));
-					$this->sd_disp = sprintf("01-%s", date("m-Y", $stime));
-					$this->ed = date("Y-m-t", $stime);
-					$this->ed_disp = date("t-m-Y", $stime);
-					break;
-				case STAT_IT_YEAR:
-					$year = date("Y", time());
-					$this->sd = sprintf("%s-01-01", $year);
-					$this->sd_disp = sprintf("01-01-%s", $year);
-					$this->ed = sprintf("%s-12-31", $year);
-					$this->ed_disp = sprintf("31-12-%s", $year);
-					break;
-				case STAT_IT_LASTYEAR:
-					$year = date("Y", time()) - 1;
-					$this->sd = sprintf("%s-01-01", $year);
-					$this->sd_disp = sprintf("01-01-%s", $year);
-					$this->ed = sprintf("%s-12-31", $year);
-					$this->ed_disp = sprintf("31-12-%s", $year);
-					break;
-				case STAT_IT_OTHER:
-					if( empty($sd) || empty($ed))
-					{
-						$this->sd = $this->ed = date("Y-m-d");
-						$this->sd_disp = $this->ed_disp = date("d-m-Y");						
-					}
-					else
-					{
-						$this->sd = $sd;
-						$arr = explode('-', $sd);
-						$this->sd_disp = sprintf("%s-%s-%s", $arr[2], $arr[1], $arr[0]);
-						$this->ed = $ed;
-						$arr = explode('-', $ed);
-						$this->ed_disp = sprintf("%s-%s-%s", $arr[2], $arr[1], $arr[0]);
-					}
-					break;
-				default:
-					$this->sd = '';
-					$this->sd_disp = '';
-					$this->ed = '';
-					$this->ed_disp = '';
-					break;
-				}
-
-			$GLOBALS['sd'] = $this->sd;
-			$GLOBALS['ed'] = $this->ed;
-			}
-
-		function getnextitime()
-			{
-			static $i = 0;
-			if( $i < $this->count)
-				{
-				$this->itval = $i;
-				$this->itvaltxt = $this->itemarray[$i];
-				if( $this->current == $i )
-					{
-					$this->selected = 'selected';
-					}
-				else
-					{
-					$this->selected = '';
-					}
-				$i++;
-				return true;
-				}
-			else
-				{
-				return false;
-				}
-			}
-		}
 	$temp = new displayTimeIntervalCls($iwhat, $sd, $ed, $idx);
 	$babBody->babecho(bab_printTemplate($temp, "stat.html", "timeinterval"));
+}
+
+function displayTimeIntervalInPopup($iwhat, $sd, $ed, $idx, &$body)
+{
+//	global $babBody;
+	$temp = new displayTimeIntervalCls($iwhat, $sd, $ed, $idx);
+	$body->babecho(bab_printTemplate($temp, "stat.html", "timeinterval"));
 }
 
 /* main */
@@ -651,7 +663,8 @@ switch($idx)
 		include_once $babInstallPath."utilit/uiutil.php";
 		include_once $babInstallPath."statdashboard.php";
 		$GLOBALS['babBodyPopup'] = new babBodyPopup();
-		showDashboard();
+		displayTimeIntervalInPopup($itwhat, $sd, $ed, $idx, $GLOBALS['babBodyPopup']);
+		showDashboard($sd, $ed);
 		printBabBodyPopup();
 		exit;
 		break;

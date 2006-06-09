@@ -1024,11 +1024,11 @@ function displayArticleTree($startDay, $endDay)
 {
 	require_once $GLOBALS['babInstallPath'] . 'utilit/tree.php';
 	$treeView = new bab_ArticleTreeView('article');
-//	$treeView->setAttributes(
-//							BAB_ARTICLE_TREE_VIEW_SHOW_ARTICLES
-//							| BAB_ARTICLE_TREE_VIEW_CLICKABLE_TOPICS
-//							| BAB_ARTICLE_TREE_VIEW_CLICKABLE_ARTICLES
-//							);
+	$treeView->setAttributes(
+							BAB_ARTICLE_TREE_VIEW_SHOW_ARTICLES
+							| BAB_ARTICLE_TREE_VIEW_CLICKABLE_TOPICS
+							| BAB_ARTICLE_TREE_VIEW_CLICKABLE_ARTICLES
+							);
 	$treeView->addStatistics($startDay, $endDay);
 	$treeView->sort();
 	$GLOBALS['babBody']->babecho($treeView->printTemplate());

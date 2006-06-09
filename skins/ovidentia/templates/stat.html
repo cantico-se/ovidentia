@@ -15,7 +15,7 @@
 <!--#if disabled -->
 <b>{ itemurltxt }</b>
 <!--#else disabled -->
-<a class="BabSiteAdminListLink" href="{ itemurl }">{ itemurltxt }</a>
+<a class="BabSiteAdminListLink" href="{ itemurl }" <!--#if popup --> target="_blank" <!--#endif popup --> >{ itemurltxt }</a>
 <!--#endif disabled -->
 <!--#if itemtreeviewurl -->
 <a class="BabSiteAdminListLink" href="{ itemtreeviewurl }"><img style="vertical-align: bottom" border="0" src="{ babSkinPath }images/Puces/tree.gif" /></a>
