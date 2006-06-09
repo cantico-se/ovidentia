@@ -1967,4 +1967,14 @@
 <string id="There are matches in %d older versions">Des résultats on été trouvés dans %d versions de ce fichier</string>
 <string id="Give priority to file content for order">Donner la priorité au contenu des fichiers pour l'ordre des résultats</string>
 <string id="Older versions">Versions antérieures</string>
+<string id="Articles Top %d">Top %d des articles</string>
+<string id="Article Topics Top %d">Top %d des thèmes d'articles</string>
+<string id="Article Categories Top %d">Top %d des catégories d'articles</string>
+<string id="Collective Directories Top %d">Top %d des répertoires collectifs</string>
+<string id="File Downloads Top %d">Top %d des fichiers téléchargés</string>
+<string id="Activity by Functions">Activité par fonction</string>
+<string id="Global Site Activity">Activité globale du site</string>
+<string id="Global hits">Nombre global de hits</string>
+<string id="Published articles">Nombre d'articles publiés</string>
+<string id="Downloaded files">Nombre de fichiers chargés</string>
 </fr>

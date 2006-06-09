@@ -26,6 +26,10 @@ include_once $GLOBALS['babInstallPath'] . "utilit/dashboard.php";
 include_once $GLOBALS['babInstallPath'] . "utilit/uiutil.php";
 
 
+
+define('BAB_DASHBOARD_NB_ITEMS', 20);
+
+
 function createYearHeaders(&$headers, $startDate, $endDate)
 {
 	$year = date('Y', $startDate);
@@ -178,7 +182,8 @@ function getSqlDateFormat($start, $end)
 function createArticleCategoriesDashboard($start, $end)
 {
 	global $babBody, $babDB;
-	$dashboard = new bab_DashboardElement(bab_translate("Article Categories Top 20"));
+	$title = sprintf(bab_translate("Article Categories Top %d"), BAB_DASHBOARD_NB_ITEMS);
+	$dashboard = new bab_DashboardElement($title);
 	$dashboard->setColumnHeaders(createHeaders($start, $end));
 
 	$sql = 'SELECT tct.id AS id, SUM(sat.st_hits) AS hits, tct.title AS title';
@@ -199,7 +204,7 @@ function createArticleCategoriesDashboard($start, $end)
 	}
 	$sql .= ' GROUP BY tct.id';
 	$sql .= ' ORDER BY hits DESC';
-	$sql .= ' LIMIT 20';
+	$sql .= ' LIMIT ' . BAB_DASHBOARD_NB_ITEMS;
 
 	$sqlDateFormat = getSqlDateFormat($start, $end);
 	
@@ -242,7 +247,8 @@ function createArticleCategoriesDashboard($start, $end)
 function createArticleTopicsDashboard($start, $end)
 {
 	global $babBody, $babDB;
-	$dashboard = new bab_DashboardElement(bab_translate("Article Topics Top 20"));
+	$title = sprintf(bab_translate("Article Topics Top %d"), BAB_DASHBOARD_NB_ITEMS);	
+	$dashboard = new bab_DashboardElement($title);
 	$dashboard->setColumnHeaders(createHeaders($start, $end));
 
 	$sql = 'SELECT tt.id AS id, SUM(sat.st_hits) AS hits, tt.category AS title';
@@ -265,7 +271,7 @@ function createArticleTopicsDashboard($start, $end)
 	}
 	$sql .= ' GROUP BY tt.id';
 	$sql .= ' ORDER BY hits DESC';
-	$sql .= ' LIMIT 20';
+	$sql .= ' LIMIT ' . BAB_DASHBOARD_NB_ITEMS;
 
 	$sqlDateFormat = getSqlDateFormat($start, $end);
 	
@@ -306,7 +312,8 @@ function createArticleTopicsDashboard($start, $end)
 function createArticlesDashboard($start, $end)
 {
 	global $babBody, $babDB;
-	$dashboard = new bab_DashboardElement(bab_translate("Articles Top 20"));
+	$title = sprintf(bab_translate("Articles Top %d"), BAB_DASHBOARD_NB_ITEMS);
+	$dashboard = new bab_DashboardElement($title);
 	$dashboard->setColumnHeaders(createHeaders($start, $end));
 
 	$sql = 	'SELECT at.id AS id, SUM(sat.st_hits) AS hits ';
@@ -325,7 +332,7 @@ function createArticlesDashboard($start, $end)
 	}
 	$sql .= ' GROUP BY id';
 	$sql .= ' ORDER BY hits DESC';
-	$sql .= ' LIMIT 20';
+	$sql .= ' LIMIT ' . BAB_DASHBOARD_NB_ITEMS;
 
 	$sqlDateFormat = getSqlDateFormat($start, $end);
 
@@ -381,7 +388,8 @@ function createArticlesDashboard($start, $end)
 function createDirectoriesDashboard($start, $end)
 {
 	global $babBody, $babDB;
-	$dashboard = new bab_DashboardElement(bab_translate("Collective Directories Top 20"));
+	$title = sprintf(bab_translate("Collective Directories Top %d"), BAB_DASHBOARD_NB_ITEMS);
+	$dashboard = new bab_DashboardElement($title);
 	$dashboard->setColumnHeaders(createHeaders($start, $end));
 
 	$sql = 'SELECT fft.id AS id, fft.folder AS title, SUM(sft.st_hits) AS hits';
@@ -397,7 +405,7 @@ function createDirectoriesDashboard($start, $end)
 	}
 	$sql .= ' GROUP BY fft.id';
 	$sql .= ' ORDER BY hits DESC';
-	$sql .= ' LIMIT 20';
+	$sql .= ' LIMIT ' . BAB_DASHBOARD_NB_ITEMS;
 
 	$sqlDateFormat = getSqlDateFormat($start, $end);
 	
@@ -435,7 +443,8 @@ function createDirectoriesDashboard($start, $end)
 function createFileDownloadsDashboard($start, $end)
 {
 	global $babBody, $babDB;
-	$dashboard = new bab_DashboardElement(bab_translate("File Downloads Top 20"));
+	$title = sprintf(bab_translate("File Downloads Top %d"), BAB_DASHBOARD_NB_ITEMS);
+	$dashboard = new bab_DashboardElement($title);
 	$dashboard->setColumnHeaders(createHeaders($start, $end));
 
 	$sql = 'SELECT ft.id AS id, ft.name AS title, fft.folder AS folder, SUM(sff.st_hits) AS hits';
@@ -526,7 +535,7 @@ function createFunctionsDashboard($start, $end)
 			$r[$stat['stat_date']] = $stat['hits'];
 		}
 		$row = array();
-		$row['label'] = $module['title'];
+		$row['label'] = bab_translate($module['title']);
 		$row += fillRow($r, $start, $end);
 		$row['total'] = $module['hits'];
 
