@@ -726,6 +726,13 @@ function userLogin($nickname,$password)
 			switch($authtype)
 				{
 				case BAB_AUTHENTIFICATION_AD: // Active Directory
+					if( isset($GLOBALS['babAdLdapOptions']))
+					{
+						for( $k=0; $k < count($GLOBALS['babAdLdapOptions']); $k++)
+						{						$ldap->set_option($GLOBALS['babAdLdapOptions'][$k][0],$GLOBALS['babAdLdapOptions'][$k][1]);
+						}
+					}
+
 					$ret = $ldap->bind($nickname."@".$babBody->babsite['ldap_domainname'], $password);
 					if( !$ret )
 						{
