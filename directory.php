@@ -1570,7 +1570,7 @@ function assignList($id, $pos)
 			$this->t_close = bab_translate("Close");
 
 			$this->id = $id;
-			$this->refresh = 1;
+			$this->refresh = '';
 
 			$this->db = $GLOBALS['babDB'];
 
