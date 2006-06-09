@@ -44,6 +44,7 @@ class bab_WebStatEvent
 		{
 			case 'calnotif':
 			case 'statproc':
+			case 'usrindex':
 				return;
 			default:
 				break;

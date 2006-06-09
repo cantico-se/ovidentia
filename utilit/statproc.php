@@ -253,6 +253,7 @@ class bab_stats_modules extends bab_stats_base
 			case "statproc":
 			case "statconf":
 			case "stat":
+			case "admindex":
 				$id = 15; /* Administration */
 				break;
 			case "vacuser":
