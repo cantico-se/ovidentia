@@ -1178,14 +1178,14 @@ function showEditArticle()
 					{
 					if( count($babBody->topsub) > 0 && isset($babBody->topsub[$topicid] ))
 						{
-						$res = $babDB->db_query("select tt.article_tmpl from ".BAB_TOPICS_TBL." tt  where id='".$topicid."'");
+						$res = $babDB->db_query("select tt.article_tmpl,tt.lang from ".BAB_TOPICS_TBL." tt  where id='".$topicid."'");
 						if( $res && $babDB->db_num_rows($res) == 1 )
 							{
 							$arr = $babDB->db_fetch_array($res);
 							$this->access = true;
 							if( empty($this->content))
 								{
-								$this->content = bab_editArticle('', '', '', $GLOBALS['babLanguage'], $arr['article_tmpl']);
+								$this->content = bab_editArticle('', '', '', $arr['lang'], $arr['article_tmpl']);
 								}
 							}
 						}
