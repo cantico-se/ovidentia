@@ -28,7 +28,9 @@ define('BAB_TM_ACTION_DELETE_TASK_COMMENTARY', 'deleteTaskCommentary');
 define('BAB_TM_ACTION_ADD_TASK', 'addTask');
 define('BAB_TM_ACTION_MODIFY_TASK', 'modifyTask');
 define('BAB_TM_ACTION_DELETE_TASK', 'deleteTask');
+define('BAB_TM_ACTION_STOP_TASK', 'stopTask');
 define('BAB_TM_ACTION_CREATE_SPECIFIC_FIELD_INSTANCE', 'createSpecificFieldInstance');
+define('BAB_TM_ACTION_MODIFY_NOTICE_EVENT', 'modifyNoticeEvent');
 
 // idx
 define('BAB_TM_IDX_DISPLAY_MENU', 'displayMenu');
@@ -56,6 +58,10 @@ define('BAB_TM_IDX_DISPLAY_TASK_COMMENTARY_LIST', 'displayTaskCommentaryList');
 define('BAB_TM_IDX_DISPLAY_TASK_LIST', 'displayTaskList');
 define('BAB_TM_IDX_DISPLAY_TASK_FORM', 'displayTaskForm');
 define('BAB_TM_IDX_DISPLAY_DELETE_TASK_FORM', 'displayDeleteTaskForm');
+define('BAB_TM_IDX_DISPLAY_STOP_TASK_FORM', 'displayStopTaskForm');
+
+define('BAB_TM_IDX_DISPLAY_NOTICE_EVENT_FORM', 'displayNoticeEventForm');
+
 
 define('BAB_TM_NONE', -1);
 
@@ -96,7 +102,17 @@ define('BAB_TM_START_TO_START', 1);
 
 //Task user profil
 define('BAB_TM_UNDEFINED', -1);
-define('BAB_TM_PROJECT_MANAGER', 0);
-define('BAB_TM_TASK_RESPONSIBLE', 1);
-define('BAB_TM_PERSONNAL_TASK_OWNER', 2);
+define('BAB_TM_SUPERVISOR', 0);
+define('BAB_TM_PROJECT_MANAGER', 1);
+define('BAB_TM_TASK_RESPONSIBLE', 2);
+define('BAB_TM_PERSONNAL_TASK_OWNER', 3);
+
+//Event notice
+define('BAB_TM_EV_PROJECT_CREATED', 0);
+define('BAB_TM_EV_PROJECT_DELETED', 1);
+define('BAB_TM_EV_TASK_CREATED', 2);
+define('BAB_TM_EV_TASK_UPDATED_BY_MGR', 3);
+define('BAB_TM_EV_TASK_UPDATED_BY_RESP', 4);
+define('BAB_TM_EV_TASK_DELETED', 5);
+define('BAB_TM_EV_NOTICE_ALERT', 6);
 ?>

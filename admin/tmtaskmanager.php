@@ -93,6 +93,11 @@ function displayProjectsSpacesList()
 		$GLOBALS['babSkinPath'] . 'images/Puces/manager.gif',
 		bab_translate("Categories list")
 		);
+
+	$list->set_anchor($GLOBALS['babUrlScript'] . '?tg=admTskMgr&iIdProjectSpace={ m_datas[id] }&iIdProject=0&idx=' . BAB_TM_IDX_DISPLAY_NOTICE_EVENT_FORM,
+		$GLOBALS['babSkinPath'] . 'images/Puces/manager.gif',
+		bab_translate("Notices")
+		);
 		
 	$babBody->babecho(bab_printTemplate($list, 'tmCommon.html', 'displayList'));
 }
@@ -427,6 +432,7 @@ function addModifyProjectSpace()
 			if(false != $iIdProjectSpace)
 			{
 				bab_createDefaultProjectSpaceConfiguration($iIdProjectSpace);
+				bab_createDefaultProjectSpaceNoticeEvent($iIdProjectSpace);
 			}
 		}
 		else if($id == $iIdProjectSpace)
@@ -505,7 +511,7 @@ function saveProjectConfiguration()
 bab_cleanGpc();
 
 
-/*
+//*
 require_once($babInstallPath . 'upgrade.php');
 upgradeXXXtoYYY();
 //*/
@@ -578,6 +584,11 @@ switch($action)
 		require_once($GLOBALS['babInstallPath'] . 'tmWorkingHoursFunc.php');
 		updateWorkingHours();
 		break;
+		
+	case BAB_TM_ACTION_MODIFY_NOTICE_EVENT:
+		require_once($GLOBALS['babInstallPath'] . 'tmNoticesFunc.php');
+		modifyNoticeEvent();
+		break;
 }
 
 
@@ -638,6 +649,11 @@ switch($idx)
 		
 	case BAB_TM_IDX_DISPLAY_DELETE_CATEGORY_FORM:
 		displayDeleteCategoryForm();
+		break;
+
+	case BAB_TM_IDX_DISPLAY_NOTICE_EVENT_FORM:
+		require_once($GLOBALS['babInstallPath'] . 'tmNoticesFunc.php');
+		displayNoticeEventForm();
 		break;
 }
 $babBody->setCurrentItemMenu($idx);

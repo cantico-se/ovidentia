@@ -172,6 +172,8 @@ function bab_deleteProjectSpace($iIdProjectSpace)
 	aclDelete(BAB_TSKMGR_DEFAULT_PROJECTS_SUPERVISORS_GROUPS_TBL, $iIdProjectSpace);
 	aclDelete(BAB_TSKMGR_DEFAULT_PROJECTS_VISUALIZERS_GROUPS_TBL, $iIdProjectSpace);
 	aclDelete(BAB_TSKMGR_DEFAULT_TASK_RESPONSIBLE_GROUPS_TBL, $iIdProjectSpace);
+	$iIdProject = 0;
+	bab_deleteAllNoticeEvent($iIdProjectSpace, $iIdProject);
 }
 
 function bab_createProjectSpace($iIdDelegation, $sName, $sDescription)
@@ -436,6 +438,17 @@ function bab_createProject($iIdProjectSpace, $sName, $sDescription, $iMajorVersi
 		
 		bab_updateRefCount(BAB_TSKMGR_PROJECTS_SPACES_TBL, $iIdProjectSpace, '+ \'1\'');
 		
+		$result = bab_selectProjectSpaceNoticeEvent($iIdProjectSpace);
+		if(false != $result)
+		{
+			$iNumRows = $babDB->db_num_rows($result);	
+			$iIndex = 0;
+			while($iIndex < $iNumRows && false != ($datas = $babDB->db_fetch_assoc($result)))
+			{
+				bab_createNoticeEvent($iIdProjectSpace, $iIdProject, $datas['idEvent'], $datas['profil']);
+				$iIndex++;
+			}
+		}
 		return true;		
 	}
 	return false;
@@ -463,7 +476,7 @@ function bab_updateProject($iIdProject, $sName, $sDescription)
 function bab_deleteProject($iIdProject)
 {
 	global $babBody, $babDB;
-
+	
 	bab_deleteAllTask($iIdProject);
 	
 	aclDelete(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject);
@@ -851,6 +864,53 @@ function bab_getTask($iIdTask, &$aTask)
 	return false;
 }
 
+
+function bab_updateTask($iIdTask, $aParams)
+{
+	global $babBody, $babDB;
+	
+	$query = 
+		'UPDATE ' . 
+			BAB_TSKMGR_TASKS_TBL . ' ' .
+		'SET ' . ' ' .
+				'`taskNumber` = \'' . $aParams['sTaskNumber'] . '\', ' .
+				'`description` = \'' . $aParams['sDescription'] . '\', ' .
+				'`idCategory` = \'' . $aParams['iIdCategory'] . '\', ' .
+				'`class` = \'' . $aParams['iClass'] . '\', ' .
+				'`participationStatus` = \'' . $aParams['iParticipationStatus'] . '\', ' .
+				'`isLinked` = \'' . $aParams['iIsLinked'] . '\', ' .
+				'`duration` = \'' . $aParams['iDuration'] . '\', ' .
+				'`majorVersion` = \'' . $aParams['iMajorVersion'] . '\', ' .
+				'`minorVersion` = \'' . $aParams['iMinorVersion'] . '\', ' .
+				'`color` = \'' . $aParams['sColor'] . '\', ' .
+				'`completion` = \'' . $aParams['iCompletion'] . '\', ' .
+				'`startDate` = \'' . $aParams['sStartDate'] . '\', ' .
+				'`endDate` = \'' . $aParams['sEndDate'] . '\', ' .
+				'`plannedStartDate` = \'' . $aParams['sPlannedStartDate'] . '\', ' .
+				'`plannedEndDate` = \'' . $aParams['sPlannedEndDate'] . '\', ' .
+				'`idUserModified` = \'' . $aParams['iIdUserModified'] . '\', ' .
+				'`modified` = \'' . $aParams['sModified'] . '\' ' .
+		'WHERE ' . 
+			'id = \'' . $iIdTask . '\'';
+
+	//bab_debug($query);
+	return $babDB->db_query($query);
+}
+
+function bab_deleteTask($iIdTask)
+{
+	bab_deleteAllTaskSpecificFieldInstance($iIdTask);
+	bab_deleteTaskLinks($iIdTask);
+	bab_deleteTaskResponsibles($iIdTask);
+
+	global $babDB;
+	$query = 'DELETE FROM ' . BAB_TSKMGR_TASKS_COMMENTS_TBL . ' WHERE idTask = \'' . $iIdTask . '\'';
+	$babDB->db_query($query);
+
+	$query = 'DELETE FROM ' . BAB_TSKMGR_TASKS_TBL . ' WHERE id = \'' . $iIdTask . '\'';
+	$babDB->db_query($query);
+}
+
 function bab_deleteAllTask($iIdProject)
 {
 	global $babDB;
@@ -871,9 +931,9 @@ function bab_deleteAllTask($iIdProject)
 	while($iIndex < $iNumRows && false != ($data = $babDB->db_fetch_assoc($result)))
 	{
 		bab_deleteAllTaskSpecificFieldInstance($data['id']);
-		bab_deleteTaskLinks($iIdTask);
-		bab_deleteTaskResponsibles($iIdTask);
-		aclDelete(BAB_TSKMGR_TASK_RESPONSIBLE_GROUPS_TBL, $data['id']);
+		bab_deleteTaskLinks($data['id']);
+		bab_deleteTaskResponsibles($data['id']);
+//		aclDelete(BAB_TSKMGR_TASK_RESPONSIBLE_GROUPS_TBL, $data['id']);
 		$iIndex++;
 	}
 
@@ -1529,4 +1589,83 @@ function bab_createSpecificFieldInstance($iIdTask, $iIdSpecificField)
 	}
 	return false;
 }
+
+
+function bab_createNoticeEvent($iIdProjectSpace, $iIdProject, $iIdEvent, $iProfil)
+{
+	global $babDB;
+	
+	$query = 
+		'INSERT INTO ' . BAB_TSKMGR_NOTICE_TBL . ' ' .
+			'(' .
+				'`id`, ' .
+				'`idProjectSpace`, `idProject`, `profil`, `idEvent`' .
+			') ' .
+		'VALUES ' . 
+			'(\'\', \'' . 
+				$iIdProjectSpace . '\', \'' . $iIdProject . '\', \'' . $iProfil . '\', \'' . $iIdEvent . '\')'; 
+
+	//bab_debug($query);
+	
+	return $babDB->db_query($query);
+}
+
+function bab_isNoticeEventSet($iIdProjectSpace, $iIdProject, $iIdEvent, $iProfil)
+{
+	global $babDB;
+	$query = 
+		'SELECT ' .
+			'profil, '	. 
+			'idEvent '	. 
+		'FROM ' .
+			BAB_TSKMGR_NOTICE_TBL . ' ' .
+		'WHERE ' .
+			'idProjectSpace = \'' . $iIdProjectSpace . '\' AND ' .
+			'idProject = \'' . $iIdProject . '\' AND ' .
+			'idEvent = \'' . $iIdEvent . '\' AND ' .
+			'profil = \'' . $iProfil . '\'';
+	//bab_debug($query);
+	$result = $babDB->db_query($query);
+	return (false != $result && $babDB->db_num_rows($result) == 1);
+}
+
+function bab_selectProjectSpaceNoticeEvent($iIdProjectSpace)
+{
+	global $babDB;
+	$query = 
+		'SELECT ' .
+			'profil, '	. 
+			'idEvent '	. 
+		'FROM ' .
+			BAB_TSKMGR_NOTICE_TBL . ' ' .
+		'WHERE ' .
+			'idProjectSpace = \'' . $iIdProjectSpace . '\'';
+			'idProject = \'' . 0 . '\'';
+	return $babDB->db_query($query);
+}
+
+function bab_deleteAllNoticeEvent($iIdProjectSpace, $iIdProject)
+{
+	global $babDB;
+	$query = 
+		'DELETE FROM '	. 
+			BAB_TSKMGR_NOTICE_TBL . ' ' .
+		'WHERE ' .
+			'idProjectSpace = \'' . $iIdProjectSpace . '\' AND ' .
+			'idProject = \'' . $iIdProject . '\'';
+	return $babDB->db_query($query);
+}
+
+function bab_createDefaultProjectSpaceNoticeEvent($iIdProjectSpace)
+{
+	$iIdProject = 0;
+	bab_createNoticeEvent($iIdProjectSpace, $iIdProject, BAB_TM_EV_PROJECT_CREATED, BAB_TM_SUPERVISOR);
+	bab_createNoticeEvent($iIdProjectSpace, $iIdProject, BAB_TM_EV_PROJECT_DELETED, BAB_TM_SUPERVISOR);
+	bab_createNoticeEvent($iIdProjectSpace, $iIdProject, BAB_TM_EV_TASK_CREATED, BAB_TM_TASK_RESPONSIBLE);
+	bab_createNoticeEvent($iIdProjectSpace, $iIdProject, BAB_TM_EV_TASK_UPDATED_BY_MGR, BAB_TM_TASK_RESPONSIBLE);
+	bab_createNoticeEvent($iIdProjectSpace, $iIdProject, BAB_TM_EV_TASK_UPDATED_BY_RESP, BAB_TM_PROJECT_MANAGER);
+	bab_createNoticeEvent($iIdProjectSpace, $iIdProject, BAB_TM_EV_TASK_DELETED, BAB_TM_TASK_RESPONSIBLE);
+	bab_createNoticeEvent($iIdProjectSpace, $iIdProject, BAB_TM_EV_NOTICE_ALERT, BAB_TM_TASK_RESPONSIBLE);
+}
+
 ?>

@@ -28,7 +28,7 @@
 	{
 		var $m_bIsStarted				= false;
 		var $m_bIsEnded					= false;
-		var	$m_bIsFirstTask				= false;
+		var	$m_bIsFirstTask				= true;
 		
 		var $m_aTask					= null;
 		
@@ -53,6 +53,7 @@
 				bab_debug('m_bIsStarted ==> ' . ($this->m_bIsStarted ? 'Yes' : 'No'));
 				bab_debug('m_bIsEnded ==> ' . ($this->m_bIsEnded ? 'Yes' : 'No'));
 				bab_debug('m_bIsFirstTask ==> ' . ($this->m_bIsFirstTask ? 'Yes' : 'No'));
+				bab_debug('iPosition ==> ' . $this->m_aTask['iPosition']);
 				//*/
 			}
 			return $success;
@@ -142,6 +143,7 @@
 			$this->set_caption('sAdd', bab_translate("Add"));
 			$this->set_caption('sModify', bab_translate("Modify"));
 			$this->set_caption('sDelete', bab_translate("Delete"));
+			$this->set_caption('sStop', bab_translate("Stop"));
 		}
 
 		function initDatas()
@@ -152,7 +154,8 @@
 			$this->set_data('isReadOnlyDate', false);
 			$this->set_data('isCompletionEnabled', false);
 			$this->set_data('isResourceAvailable', false);
-			$this->set_data('bIsDeletable', false);
+$this->set_data('isDeletable', false);
+$this->set_data('isStoppable', false);
 			$this->set_data('iClass', -1);
 			$this->set_data('iClassType', -1);
 			$this->set_data('iIdCategory', 0);
@@ -177,7 +180,9 @@ $this->set_data('iAddIdx', BAB_TM_IDX_DISPLAY_TASK_FORM);
 			$this->set_data('iModifyAction', BAB_TM_ACTION_MODIFY_TASK);
 			$this->set_data('iDeleteIdx', BAB_TM_IDX_DISPLAY_DELETE_TASK_FORM);
 			$this->set_data('iDeleteAction', '');
-
+			$this->set_data('iStopIdx', BAB_TM_IDX_DISPLAY_STOP_TASK_FORM);
+			$this->set_data('iStopAction', '');
+			
 			$this->set_data('selectedMenu', tskmgr_getVariable('selectedMenu', 'oLiGeneral'));
 			$this->set_data('iDateTypeDuration', BAB_TM_DURATION);
 			$this->set_data('iDateTypeDate', BAB_TM_DATE);
@@ -357,6 +362,9 @@ $this->set_data('iAddIdx', BAB_TM_IDX_DISPLAY_TASK_FORM);
 			$this->m_bIsEditableByManager = ($this->m_bIsManager && !$this->m_oTask->m_bIsStarted && 0 == $this->m_iLinkedTaskCount);
 			
 			$this->m_aRelation = array(BAB_TM_NONE => bab_translate("None"), BAB_TM_END_TO_START => bab_translate("End to start"), BAB_TM_START_TO_START => bab_translate("Start to start"));
+
+$this->set_data('isDeletable', ($this->m_bIsEditableByManager));
+$this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER && $this->m_oTask->m_bIsStarted));
 			
 			//manager non démarré
 /*
@@ -504,7 +512,6 @@ bab_debug('m_bIsEditableByManager ==> ' . (($this->m_bIsEditableByManager) ? 'Ye
 		{
 			$this->set_data('iSelectedPredecessor', $iPredecessor);
 			$this->set_data('sSelectedPredecessor', (0 != $this->m_iLinkedTaskCount) ? '' : 'checked="checked"');
-			
 			$this->set_data('iSelectedLinkType', $iLinkType);
 		}
 		//End init form variables
@@ -921,11 +928,9 @@ bab_debug('m_bIsEditableByManager ==> ' . (($this->m_bIsEditableByManager) ? 'Ye
 		}
 	}
 	
-	class BAB_TM_ManagerValidator extends BAB_TM_TaskValidatorBase
+	class BAB_TM_MgrTaskValidatorBase extends BAB_TM_TaskValidatorBase
 	{
-		var $m_bIsNewTaskResponsable = false;
-		
-		function BAB_TM_ManagerValidator()
+		function BAB_TM_MgrTaskValidatorBase()
 		{
 			parent::BAB_TM_TaskValidatorBase();
 		}
@@ -933,44 +938,6 @@ bab_debug('m_bIsEditableByManager ==> ' . (($this->m_bIsEditableByManager) ? 'Ye
 		function init()
 		{
 			parent::init();
-			$this->m_sDescription = trim(tskmgr_getVariable('sDescription', ''));
-			$this->m_iMajorVersion = (int) tskmgr_getVariable('iMajorVersion', 1);
-			$this->m_iMinorVersion = (int) tskmgr_getVariable('iMinorVersion', 0);
-			
-			if(0 != $this->m_iIdTask && $this->m_oTask->m_bIsStarted)
-			{
-				$aTask =& $this->m_oTask->m_aTask;
-				
-				$this->m_iClass = (int) $aTask['iClass'];
-				$this->m_iIsLinked = (int) $aTask['iIsLinked'];
-				$this->m_iLinkType = (int) (count($this->m_aLinkedTasks) > 0) ? $this->m_aLinkedTasks['iLinkType'] : -1;
-				$this->m_iIdPredecessor = (int) (count($this->m_aLinkedTasks) > 0) ? $this->m_aLinkedTasks['iIdPredecessorTask'] : -1;
-				$this->m_iDuration = (int) $aTask['iDuration'];
-				$this->m_sStartDate = $aTask['sStartDate'];
-				$this->m_sEndDate = $aTask['sPlannedEndDate'];
-
-				$this->m_iIdTaskResponsible = -1;
-				if(false != ($aResponsible = each($this->m_aTaskResponsibles)))
-				{
-					reset($this->m_aTaskResponsibles);
-					$this->m_bIsNewTaskResponsable = ($this->m_iIdTaskResponsible != (int) $aResponsible['value']['id']);
-				}
-				$this->m_iIdCategory = (int) $aTask['iIdCategory'];
-				$this->m_iCompletion = (int) tskmgr_getVariable('oCompletion', 0);
-			}
-			else 
-			{
-				$this->m_iClass = (int) tskmgr_getVariable('iClass', 0);
-				$this->m_iIsLinked = (-1 != (int) tskmgr_getVariable('oLinkedTask', -1)) ? BAB_TM_YES : BAB_TM_NO;
-				$this->m_iLinkType = (int) tskmgr_getVariable('oLinkType', -1); 
-				$this->m_iIdPredecessor = (int) tskmgr_getVariable('iPredecessor', -1);
-				$this->m_iDuration = (int) tskmgr_getVariable('sDuration', 0);
-				$this->m_sStartDate = trim(tskmgr_getVariable('sPlannedStartDate', ''));
-				$this->m_sEndDate = trim(tskmgr_getVariable('sPlannedEndDate', ''));
-				$this->m_iIdTaskResponsible = (int) tskmgr_getVariable('iIdTaskResponsible', -1);
-				$this->m_iIdCategory = (int) tskmgr_getVariable('iIdCategory', 0);
-				$this->m_iCompletion = 0;
-			}
 		}
 
 		function isValid()
@@ -1103,7 +1070,62 @@ bab_debug('m_bIsEditableByManager ==> ' . (($this->m_bIsEditableByManager) ? 'Ye
 			}
 			return false;
 		}
+	}
+	
+	class BAB_TM_MgrTaskCreatorValidator extends BAB_TM_MgrTaskValidatorBase
+	{
+		var $m_bIsNewTaskResponsable = false;
 		
+		function BAB_TM_MgrTaskCreatorValidator()
+		{
+			parent::BAB_TM_MgrTaskValidatorBase();
+		}
+		
+		function init()
+		{
+			parent::init();
+			$this->m_sDescription = trim(tskmgr_getVariable('sDescription', ''));
+			$this->m_iMajorVersion = (int) tskmgr_getVariable('iMajorVersion', 1);
+			$this->m_iMinorVersion = (int) tskmgr_getVariable('iMinorVersion', 0);
+
+/*			
+			if(0 != $this->m_iIdTask && $this->m_oTask->m_bIsStarted)
+			{
+				$aTask =& $this->m_oTask->m_aTask;
+				
+				$this->m_iClass = (int) $aTask['iClass'];
+				$this->m_iIsLinked = (int) $aTask['iIsLinked'];
+				$this->m_iLinkType = (int) (count($this->m_aLinkedTasks) > 0) ? $this->m_aLinkedTasks['iLinkType'] : -1;
+				$this->m_iIdPredecessor = (int) (count($this->m_aLinkedTasks) > 0) ? $this->m_aLinkedTasks['iIdPredecessorTask'] : -1;
+				$this->m_iDuration = (int) $aTask['iDuration'];
+				$this->m_sStartDate = $aTask['sStartDate'];
+				$this->m_sEndDate = $aTask['sPlannedEndDate'];
+
+				$this->m_iIdTaskResponsible = -1;
+				if(false != ($aResponsible = each($this->m_aTaskResponsibles)))
+				{
+					reset($this->m_aTaskResponsibles);
+					$this->m_bIsNewTaskResponsable = ($this->m_iIdTaskResponsible != (int) $aResponsible['value']['id']);
+				}
+				$this->m_iIdCategory = (int) $aTask['iIdCategory'];
+				$this->m_iCompletion = (int) tskmgr_getVariable('oCompletion', 0);
+			}
+			else */
+			{
+				//creation
+				$this->m_iClass = (int) tskmgr_getVariable('iClass', 0);
+				$this->m_iIsLinked = (-1 != (int) tskmgr_getVariable('oLinkedTask', -1)) ? BAB_TM_YES : BAB_TM_NO;
+				$this->m_iLinkType = (int) tskmgr_getVariable('oLinkType', -1); 
+				$this->m_iIdPredecessor = (int) tskmgr_getVariable('iPredecessor', -1);
+				$this->m_iDuration = (int) tskmgr_getVariable('sDuration', 0);
+				$this->m_sStartDate = trim(tskmgr_getVariable('sPlannedStartDate', ''));
+				$this->m_sEndDate = trim(tskmgr_getVariable('sPlannedEndDate', ''));
+				$this->m_iIdTaskResponsible = (int) tskmgr_getVariable('iIdTaskResponsible', -1);
+				$this->m_iIdCategory = (int) tskmgr_getVariable('iIdCategory', 0);
+				$this->m_iCompletion = 0;
+			}
+		}
+
 		function createTask()
 		{
 			if($this->isValid())

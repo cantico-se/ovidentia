@@ -270,4 +270,6 @@ define('BAB_TSKMGR_TASKS_TBL', 'bab_tskmgr_tasks');
 define('BAB_TSKMGR_LINKED_TASKS_TBL', 'bab_tskmgr_linked_tasks');
 define('BAB_TSKMGR_TASKS_RESPONSIBLES_TBL', 'bab_tskmgr_tasks_responsibles');
 define('BAB_TSKMGR_TASKS_COMMENTS_TBL', 'bab_tskmgr_tasks_comments');
+
+define('BAB_TSKMGR_NOTICE_TBL', 'bab_tskmgr_notice');
 ?>

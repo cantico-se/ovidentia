@@ -70,6 +70,13 @@
 									</a>
 								</td>
 							</tr>
+							<tr>
+								<td>
+									<a href="{ m_datas[noticeUrl] }" title="{ m_captions[notice] }">
+										{ m_captions[notice] }
+									</a>
+								</td>
+							</tr>
 						<!--#endif m_datas[bIsManager] -->
 							<tbody><tr><td></td></tr></tbody>
 						</table>
@@ -861,9 +868,12 @@ function processStartDate()
 			<input type="submit" value="{ m_captions[sAdd] }" onclick="on_btn_clicked('{ m_datas[iAddIdx] }', '{ m_datas[iAddAction] }')" />
 		<!--#else m_iIdTask -->
 			<input type="submit" value="{ m_captions[sModify] }" onclick="on_btn_clicked('{ m_datas[iModifyIdx] }', '{ m_datas[iModifyAction] }')" />
-			<!--#if m_datas[bIsDeletable] -->
+			<!--#if m_datas[isStoppable] -->
+				<input type="submit" value="{ m_captions[sStop] }" onclick="on_btn_clicked('{ m_datas[iStopIdx] }', '{ m_datas[iStopAction] }')" />
+			<!--#endif m_datas[isStoppable] -->
+			<!--#if m_datas[isDeletable] -->
 				<input type="submit" value="{ m_captions[sDelete] }" onclick="on_btn_clicked('{ m_datas[iDeleteIdx] }', '{ m_datas[iDeleteAction] }')" />
-			<!--#endif m_datas[bIsDeletable] -->
+			<!--#endif m_datas[isDeletable] -->
 		<!--#endif m_iIdTask -->
 	</div>
 </form>

@@ -6382,7 +6382,6 @@ function upgradeXXXtoYYY()
 		$db->db_query("insert into " . BAB_TSKMGR_WEEK_DAYS_TBL . " (`id`, `weekDay`, `position`) VALUES ('7', '6', '5')");
 	}
 	
-	
 	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_WORKING_HOURS_TBL . '\''));
 	if($arr[0] != BAB_TSKMGR_WORKING_HOURS_TBL)
 	{
@@ -6406,6 +6405,30 @@ function upgradeXXXtoYYY()
 		
 		require_once($GLOBALS['babInstallPath'] . 'utilit/tmIncl.php');
 		bab_createDefaultWorkingHours(0);
+	}
+	
+	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_NOTICE_TBL . '\''));
+	if($arr[0] != BAB_TSKMGR_NOTICE_TBL)
+	{
+		$res = $db->db_query("
+			CREATE TABLE `" . BAB_TSKMGR_NOTICE_TBL . "` (
+				`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+				`idProjectSpace` INTEGER UNSIGNED NOT NULL default '0',
+				`idProject` INTEGER UNSIGNED NOT NULL default '0',
+				`profil` INTEGER UNSIGNED NOT NULL default '0',
+				`idEvent` INTEGER UNSIGNED NOT NULL default '0',
+				PRIMARY KEY(`id`),
+				INDEX `idProjectSpace`(`idProjectSpace`),
+				INDEX `idProject`(`idProject`),
+				INDEX `profil`(`profil`),
+				INDEX `idEvent`(`idEvent`)
+				) TYPE=MyISAM
+		");
+		
+		if(false == $res)
+		{
+			return $res;
+		}
 	}
 }
 ?>

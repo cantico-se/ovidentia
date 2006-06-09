@@ -1003,7 +1003,7 @@ function evtSetColor(color)
 			<input type="submit" value="{ m_captions[delete] }" onclick="on_btn_clicked('{ m_datas[delIdx] }', '{ m_datas[delAction] }')" />
 		<!--#endif m_datas[bIsDeletable] -->
 	<!--#endif m_datas[iIdCategory] -->
-	<!--#begin categoryForm -->
+	</div>
 	<script type="text/javascript">
 	<!--
 	evtSetColor('{ m_datas[sColor] }');
@@ -1011,5 +1011,73 @@ function evtSetColor(color)
 	</script>
 </form>
 <!--#end categoryForm -->
+
+
+<!--#begin noticeForm -->
+<script type="text/javascript">
+<!--
+function on_btn_clicked(idx, action)
+{
+	var form = document.forms.noticeForm;
+
+	form.idx.value = idx;
+	form.action.value = action;
+}
+
+
+function submit_form()
+{
+	return true;
+}
+//-->
+</script>
+<form name="noticeForm" method="post" action="{ babPhpSelf }">
+	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
+	<input type="hidden" name="idx" value="" />
+	<input type="hidden" name="action" value="" />
+	<input type="hidden" name="iIdProjectSpace" value="{ m_iIdProjectSpace }" />
+	<input type="hidden" name="iIdProject" value="{ m_iIdProject }" />
+
+	<table width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
+		<tr> 
+			<td class="BabLoginCadreBackground"> 
+				<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+					<tr>
+						<td>
+							&nbsp;
+						</td>
+						<td>
+							{ m_captions[sSupervisor] }
+						</td>
+						<td>
+							{ m_captions[sManager] }
+						</td>
+						<td>
+							{ m_captions[sResponsible] }
+						</td>
+					</tr>
+					
+					<!--#in nextEvent -->
+					<tr>
+						<td>
+							{ m_datas[sEventName] }
+						</td>
+						<!--#in nextProfil -->
+						<td>
+							<input type="checkbox" name="notiveEvent[]" { m_datas[sCheckedNotice] } value="{ m_datas[iIdEvent] }_{ m_datas[iProfil] }" style="background-color:transparent;border=0" />
+						</td>
+						<!--#endin nextProfil -->
+					</tr>
+					<!--#endin nextEvent -->
+				</table>
+			</td>
+		</tr>
+	</table>
+	<br />
+	<div align="center">
+		<input type="submit" value="{ m_captions[modify] }" onclick="on_btn_clicked('{ m_datas[modifyIdx] }', '{ m_datas[modifyAction] }')" />
+	</div>
+</form>
+<!--#end noticeForm -->
 
 
