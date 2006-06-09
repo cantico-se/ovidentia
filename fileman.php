@@ -902,6 +902,15 @@ function addFile($id, $gr, $path, $description, $keywords)
 			$this->attribute = bab_translate("Read only");
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
+			$this->t_warnmaxsize = bab_translate("File size must not exceed");
+			if( $GLOBALS['babMaxFileSize'] < 1000000 )
+				{
+				$this->maxsize =  bab_formatSizeFile($GLOBALS['babMaxFileSize'])." ".bab_translate("Kb");
+				}
+			else
+				{
+				$this->maxsize =  floor($GLOBALS['babMaxFileSize'] / 1000000 )." ".bab_translate("Mb");
+				}
 			$this->id = $id;
 			$this->path = $path;
 			$this->gr = $gr;
@@ -2527,7 +2536,12 @@ switch($idx)
 		break;
 
 	case "add":
-		$babBody->title = bab_translate("Upload file to")." /".$path. " ( ".bab_formatSizeFile($GLOBALS['babMaxFileSize'])." ".bab_translate("Kb") . " ".bab_translate("Max")." )";
+		$babBody->title = bab_translate("Upload file to")." ";
+		if( $gr == 'Y' )
+			{
+			$babBody->title .= bab_getFolderName($id);
+			}
+		$babBody->title .= "/".$path;
 		$upath = urlencode($path);
 		if (!isset($description)) $description='';
 		if (!isset($keywords)) $keywords='';
