@@ -2443,6 +2443,7 @@ CREATE TABLE bab_stats_ipages (
   id int(11) unsigned NOT NULL auto_increment,
   page_url text NOT NULL,
   page_name varchar(255) NOT NULL default '',
+  id_dgowner int(11) unsigned NOT NULL default '0',
   PRIMARY KEY  (id)
 );
 
