@@ -449,7 +449,7 @@ function bab_createProject($iIdProjectSpace, $sName, $sDescription, $iMajorVersi
 				$iIndex++;
 			}
 		}
-		return true;		
+		return $iIdProject;		
 	}
 	return false;
 }
@@ -873,23 +873,23 @@ function bab_updateTask($iIdTask, $aParams)
 		'UPDATE ' . 
 			BAB_TSKMGR_TASKS_TBL . ' ' .
 		'SET ' . ' ' .
-				'`taskNumber` = \'' . $aParams['sTaskNumber'] . '\', ' .
-				'`description` = \'' . $aParams['sDescription'] . '\', ' .
-				'`idCategory` = \'' . $aParams['iIdCategory'] . '\', ' .
-				'`class` = \'' . $aParams['iClass'] . '\', ' .
-				'`participationStatus` = \'' . $aParams['iParticipationStatus'] . '\', ' .
-				'`isLinked` = \'' . $aParams['iIsLinked'] . '\', ' .
-				'`duration` = \'' . $aParams['iDuration'] . '\', ' .
-				'`majorVersion` = \'' . $aParams['iMajorVersion'] . '\', ' .
-				'`minorVersion` = \'' . $aParams['iMinorVersion'] . '\', ' .
-				'`color` = \'' . $aParams['sColor'] . '\', ' .
-				'`completion` = \'' . $aParams['iCompletion'] . '\', ' .
-				'`startDate` = \'' . $aParams['sStartDate'] . '\', ' .
-				'`endDate` = \'' . $aParams['sEndDate'] . '\', ' .
-				'`plannedStartDate` = \'' . $aParams['sPlannedStartDate'] . '\', ' .
-				'`plannedEndDate` = \'' . $aParams['sPlannedEndDate'] . '\', ' .
-				'`idUserModified` = \'' . $aParams['iIdUserModified'] . '\', ' .
-				'`modified` = \'' . $aParams['sModified'] . '\' ' .
+			'`taskNumber` = \'' . $aParams['sTaskNumber'] . '\', ' .
+			'`description` = \'' . $aParams['sDescription'] . '\', ' .
+			'`idCategory` = \'' . $aParams['iIdCategory'] . '\', ' .
+			'`class` = \'' . $aParams['iClass'] . '\', ' .
+			'`participationStatus` = \'' . $aParams['iParticipationStatus'] . '\', ' .
+			'`isLinked` = \'' . $aParams['iIsLinked'] . '\', ' .
+			'`duration` = \'' . $aParams['iDuration'] . '\', ' .
+			'`majorVersion` = \'' . $aParams['iMajorVersion'] . '\', ' .
+			'`minorVersion` = \'' . $aParams['iMinorVersion'] . '\', ' .
+			'`color` = \'' . $aParams['sColor'] . '\', ' .
+			'`completion` = \'' . $aParams['iCompletion'] . '\', ' .
+			'`startDate` = \'' . $aParams['sStartDate'] . '\', ' .
+			'`endDate` = \'' . $aParams['sEndDate'] . '\', ' .
+			'`plannedStartDate` = \'' . $aParams['sPlannedStartDate'] . '\', ' .
+			'`plannedEndDate` = \'' . $aParams['sPlannedEndDate'] . '\', ' .
+			'`idUserModified` = \'' . $aParams['iIdUserModified'] . '\', ' .
+			'`modified` = \'' . $aParams['sModified'] . '\' ' .
 		'WHERE ' . 
 			'id = \'' . $iIdTask . '\'';
 
@@ -1042,7 +1042,8 @@ function bab_selectTasksList($iIdProject, $iLenght = 50)
 		'FROM ' .
 			BAB_TSKMGR_TASKS_TBL . ' ' .
 		'WHERE ' . 
-			'idProject =\'' . $iIdProject . '\'';
+			'idProject =\'' . $iIdProject . '\' ' .
+		'ORDER BY position';
 	
 	//bab_debug($query);
 	return $babDB->db_query($query);
@@ -1150,7 +1151,9 @@ function bab_getTaskResponsibles($iIdTask, &$aTaskResponsible)
 	if($iIndex < $iNumRows && false != ($datas = $babDB->db_fetch_assoc($result)))
 	{
 		$iIndex++;
-		$aTaskResponsible[$datas['idResponsible']] = array('id' => $datas['idResponsible'], 'name' => bab_getUserName($datas['idResponsible']));
+		$aTaskResponsible[$datas['idResponsible']] = array('id' => $datas['idResponsible'], 
+			'name' => bab_getUserName($datas['idResponsible']), 
+			'email' => bab_getUserEmail($datas['idResponsible']));
 	}
 }
 
@@ -1245,7 +1248,8 @@ function bab_selectLinkableTask($iIdProject, $iIdTask)
 			'idProject = \'' . $iIdProject . '\' AND ' .
 			'class =\'' . BAB_TM_TASK . '\' AND ' .
 			'participationStatus <> \'' . BAB_TM_ENDED . '\'' .
-			$sIdTask . $sIdOwner;
+			$sIdTask . $sIdOwner .
+		' ORDER BY position';
 
 	//bab_debug($query);
 	
@@ -1282,36 +1286,6 @@ function bab_getLinkedTasks($iIdTask, &$aLinkedTasks)
 	}
 }
 
-/*
-function bab_getLinkedTaskStartDate($iIdProject, $iIdTaskPredecessor, $linkType, &$sStartDate)
-{
-	$sStartDate = 'undefined';
-	
-	$aTask = null;
-	if(bab_getTask($iIdTaskPredecessor, $aTask))
-	{
-		if(0 == $aTask['idPredecessor'])
-		{
-			if(BAB_TM_END_TO_START == $linkType && BAB_TM_ENDED == $aTask['participationStatus'])
-			{
-				$sStartDate = $aTask['startDate'];
-			}
-			else if(BAB_TM_START_TO_START == $aTask['linkType'])
-			{
-				
-			}
-			else 
-			{
-			}
-			$sStartDate = $aTask['startDate'];
-			return true;
-		}
-		else //if the predecessor is a linked task
-		{
-		}
-	}
-}
-//*/
 
 /*
 	$sRefCount == '+ \'1\'' ==> pour ajouter 1
@@ -1634,13 +1608,16 @@ function bab_selectProjectSpaceNoticeEvent($iIdProjectSpace)
 	global $babDB;
 	$query = 
 		'SELECT ' .
+			'idProjectSpace, '	. 
+			'idProject, '	. 
 			'profil, '	. 
 			'idEvent '	. 
 		'FROM ' .
 			BAB_TSKMGR_NOTICE_TBL . ' ' .
 		'WHERE ' .
-			'idProjectSpace = \'' . $iIdProjectSpace . '\'';
+			'idProjectSpace = \'' . $iIdProjectSpace . '\' AND ' .
 			'idProject = \'' . 0 . '\'';
+	//bab_debug($query);
 	return $babDB->db_query($query);
 }
 

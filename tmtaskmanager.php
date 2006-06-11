@@ -1035,7 +1035,26 @@ function addModifyProject()
 				{
 					$iMajorVersion = 1;
 					$iMinorVersion = 0;
-					bab_createProject($iIdProjectSpace, $sName, $sDescription, $iMajorVersion, $iMinorVersion);
+					$iIdProject = bab_createProject($iIdProjectSpace, $sName, $sDescription, $iMajorVersion, $iMinorVersion);
+					
+					if(false !== $iIdProject)
+					{
+						require_once $GLOBALS['babInstallPath'] . 'tmSendMail.php';
+				
+						$sProjectSpaceName = '???';
+						if(bab_getProjectSpace($iIdProjectSpace, $aProjectSpace))
+						{
+							$sProjectSpaceName = $aProjectSpace['name'];
+						}
+						
+						$iIdEvent = BAB_TM_EV_PROJECT_CREATED;
+						$sSubject =& $g_aEmailMsg[$iIdEvent]['subject'];
+						$sBody =& $g_aEmailMsg[$iIdEvent]['body'];
+						
+						$sBody = sprintf($sBody, $sName, $sProjectSpaceName);
+						$iIdTask = 0;
+						sendNotice($iIdProjectSpace, $iIdProject, $iIdTask, $iIdEvent, $sSubject, $sBody);
+					}
 				}
 				else
 				{
@@ -1078,6 +1097,29 @@ function deleteProject()
 	{
 		if(bab_isProjectDeletable($iIdProject))
 		{
+			{
+				$sProjectName = '???';
+				if(bab_getProject($iIdProject, $aProject))
+				{
+					$sProjectName = $aProject['name'];
+				}
+					
+				$sProjectSpaceName = '???';
+				if(bab_getProjectSpace($iIdProjectSpace, $aProjectSpace))
+				{
+					$sProjectSpaceName = $aProjectSpace['name'];
+				}
+				
+				require_once $GLOBALS['babInstallPath'] . 'tmSendMail.php';
+				$iIdEvent = BAB_TM_EV_PROJECT_DELETED;
+				$sSubject =& $g_aEmailMsg[$iIdEvent]['subject'];
+				$sBody =& $g_aEmailMsg[$iIdEvent]['body'];
+				
+				$sBody = sprintf($sBody, $sProjectName, $sProjectSpaceName);
+				$iIdTask = 0;
+				sendNotice($iIdProjectSpace, $iIdProject, $iIdTask, $iIdEvent, $sSubject, $sBody);
+			}
+
 			require_once($GLOBALS['babInstallPath'] . 'admin/acl.php');
 
 			if(bab_deleteProject($iIdProject))
@@ -1195,34 +1237,35 @@ function addModifyTask()
 	$iUserProfil = $oTmCtx->getUserProfil();
 	$bIsOk = false;
 	
+	$oTaskValidator = null;
+	
+	$iClass = (int) tskmgr_getVariable('iClassType', BAB_TM_TASK);
+	
 	if(0 == $oTmCtx->m_iIdTask && (BAB_TM_PROJECT_MANAGER == $iUserProfil || BAB_TM_PERSONNAL_TASK_OWNER == $iUserProfil))
 	{
-		$bIsOk = createTask($iUserProfil);
+		$oTaskValidator =& new BAB_TM_MgrTaskCreatorValidator();
 	}
 	else if(0 != $oTmCtx->m_iIdTask && BAB_TM_UNDEFINED != $iUserProfil)
 	{
-		$bIsOk = true;
-//		$aTask =& $oTmCtx->getTask();
-//		$iClass = (isset($aTask['iClass']) ? $aTask['iClass'] : BAB_TM_TASK);
-		
-		
-		$iClass = (int) tskmgr_getVariable('iClassType', BAB_TM_TASK);
-	
-		$oTaskValidator = getTaskValidator($iClass);
-		if(!is_null($oTaskValidator))
-		{
-			if($oTaskValidator->isValid())
-			{
-				bab_debug(__FUNCTION__ . ' valid');
-				return;
-			}
-			bab_debug(__FUNCTION__ . ' invalid');
-			return;
-		}		
+		$oTaskValidator =& new BAB_TM_TaskUpdaterValidator();
 	}
 	else
 	{
 		bab_debug('access denied');		
+	}
+	
+	if(!is_null($oTaskValidator))
+	{
+		$bIsOk = $oTaskValidator->save();
+		
+		if($bIsOk)
+		{
+			bab_debug(__FUNCTION__ . ' sTask ==> ' . $oTaskValidator->m_sTaskNumber . ' is valid');
+		}
+		else
+		{
+			bab_debug(__FUNCTION__ . ' sTask ==> ' . $oTaskValidator->m_sTaskNumber . ' invalid');
+		}
 	}
 	
 	//Pour être en création
@@ -1233,48 +1276,42 @@ function addModifyTask()
 }
 
 
-function getTaskValidator($iClass)
-{
-	switch($iClass)
-	{
-		case BAB_TM_TASK:
-			return new BAB_TM_MgrTaskCreatorValidator();
-	}
-}
-
-function createTask()
-{
-//	$oTmCtx =& getTskMgrContext();
-	$iClass = (int) tskmgr_getVariable('iClassType', BAB_TM_TASK);
-
-	$oTaskValidator = getTaskValidator($iClass);
-	if(!is_null($oTaskValidator))
-	{
-		if($oTaskValidator->createTask())
-		{
-			bab_debug(__FUNCTION__ . ' sTask ==> ' . $oTaskValidator->m_sTaskNumber . ' is valid');
-			return true;
-		}
-		bab_debug(__FUNCTION__ . ' sTask ==> ' . $oTaskValidator->m_sTaskNumber . ' invalid');
-		return false;
-	}
-	bab_debug(__FUNCTION__ . ' invalid class type');		
-	return false;
-}
-
-
 function deleteTask()
 {
 	$oTmCtx =& getTskMgrContext();
-//	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
-//	$iIdProject = $oTmCtx->getIdProject();
+	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
+	$iIdProject = $oTmCtx->getIdProject();
 	$iIdTask = $oTmCtx->getIdTask();
 	$iUserProfil = $oTmCtx->getUserProfil();
 
 	$sTaskNumber = '';
 	if(isTaskDeletable($iIdTask, $iUserProfil, $sTaskNumber))
 	{
+		{
+			$sProjectSpaceName = '???';
+			if(bab_getProjectSpace($iIdProjectSpace, $aProjectSpace))
+			{
+				$sProjectSpaceName = $aProjectSpace['name'];
+			}
+			
+			$sProjectName = '???';
+			if(bab_getProject($iIdProject, $aProject))
+			{
+				$sProjectName = $aProject['name'];
+			}
+			
+			require_once $GLOBALS['babInstallPath'] . 'tmSendMail.php';
+			$iIdEvent = BAB_TM_EV_TASK_DELETED;
+			$sSubject =& $g_aEmailMsg[$iIdEvent]['subject'];
+			$sBody =& $g_aEmailMsg[$iIdEvent]['body'];
+			
+			$sBody = sprintf($sBody, $sTaskNumber, $sProjectName, $sProjectSpaceName, 
+				bab_getUserName($GLOBALS['BAB_SESS_USERID']));
+			//bab_debug($sBody);
+			sendNotice($iIdProjectSpace, $iIdProject, $iIdTask, $iIdEvent, $sSubject, $sBody);
+		}
 		bab_deleteTask($iIdTask);
+		bab_debug(__FUNCTION__ . ' bab_isAccessValid');
 		bab_debug(__FUNCTION__ . ' think to the linked task');
 	}
 }
@@ -1282,14 +1319,38 @@ function deleteTask()
 function stopTask()
 {
 	$oTmCtx =& getTskMgrContext();
-//	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
-//	$iIdProject = $oTmCtx->getIdProject();
+	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
+	$iIdProject = $oTmCtx->getIdProject();
 	$iIdTask = $oTmCtx->getIdTask();
 	$iUserProfil = $oTmCtx->getUserProfil();
 
 	$sTaskNumber = '';
 	if(isTaskStoppable($iIdTask, $iUserProfil, &$sTaskNumber))
 	{
+		{
+			$sProjectSpaceName = '???';
+			if(bab_getProjectSpace($iIdProjectSpace, $aProjectSpace))
+			{
+				$sProjectSpaceName = $aProjectSpace['name'];
+			}
+			
+			$sProjectName = '???';
+			if(bab_getProject($iIdProject, $aProject))
+			{
+				$sProjectName = $aProject['name'];
+			}
+			
+			require_once $GLOBALS['babInstallPath'] . 'tmSendMail.php';
+			$iIdEvent = BAB_TM_EV_TASK_UPDATED_BY_MGR;
+			$sSubject =& $g_aEmailMsg[$iIdEvent]['subject'];
+			$sBody =& $g_aEmailMsg[$iIdEvent]['body'];
+			
+			$sBody = sprintf($sBody, $sTaskNumber, $sProjectName, $sProjectSpaceName, 
+				bab_getUserName($GLOBALS['BAB_SESS_USERID']));
+			//bab_debug($sBody);
+			sendNotice($iIdProjectSpace, $iIdProject, $iIdTask, $iIdEvent, $sSubject, $sBody);
+		}
+		bab_debug(__FUNCTION__ . ' bab_isAccessValid');
 		bab_debug(__FUNCTION__ . ' must be implemented');
 		bab_debug(__FUNCTION__ . ' think to the linked task');
 	}

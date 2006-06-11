@@ -803,7 +803,7 @@ function processStartDate()
 					<input class="BabLoginMenuBackground" { m_datas[sSelectedPredecessor] } type="radio" name="iPredecessor" value="{ m_datas[iIdPredecessor] }" />{ m_datas[sPredecessorNumber] }
 				</td>
 				<td>
-					<select id="oLinkType" name="oLinkType">
+					<select id="oLinkType" name="oLinkType[]">
 						<!--#in getNextRelation -->
 						<option { m_datas[sSelectedLinkType] } value="{ m_datas[iLink] }">{ m_datas[sLink] }</option>
 						<!--#endin getNextRelation -->
