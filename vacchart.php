@@ -229,6 +229,8 @@ function entity_cal($ide )
 
 	if (!isset($tmp[$superior['id_user']]) && !empty($superior['id_user']))
 		$tmp[$superior['id_user']] = $superior['id_user'];
+
+	print_r($tmp);
 	
 	viewVacationCalendar(array_keys($tmp));
 
