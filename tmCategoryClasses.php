@@ -21,21 +21,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";		
-
-$GLOBALS['babDG'] = array(	array("users", bab_translate("Users")),
-				array("groups", bab_translate("Groups")),
-				array("sections", bab_translate("Sections")),
-				array("articles", bab_translate("Topics categories")),
-				array("faqs", bab_translate("Faq")),
-				array("forums", bab_translate("Forums")),
-				array("calendars", bab_translate("Calendar")),
-				array("mails", bab_translate("Mail")),
-				array("directories", bab_translate("Directories")),
-				array("approbations", bab_translate("Approbations")),
-				array("filemanager", bab_translate("File manager")),
-				array("orgchart", bab_translate("Charts")),
-				array("taskmanager", bab_translate("Task manager"))
-				);
+	include "base.php";
+	require_once($babInstallPath . 'utilit/baseFormProcessingClass.php');
+	require_once($babInstallPath . 'utilit/tableWrapperClass.php');
 
 ?>

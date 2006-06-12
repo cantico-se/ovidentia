@@ -1036,7 +1036,7 @@ CREATE TABLE bab_ini (
 
 INSERT INTO bab_ini VALUES ('ver_major', '5');
 INSERT INTO bab_ini VALUES ('ver_minor', '8');
-INSERT INTO bab_ini VALUES ('ver_build', '3');
+INSERT INTO bab_ini VALUES ('ver_build', '4');
 INSERT INTO bab_ini VALUES ('ver_prod', 'E');
 
 #
@@ -2848,3 +2848,505 @@ CREATE TABLE `bab_stats_articles_new` (
   KEY `st_nb_articles` (`st_nb_articles`),
   KEY `st_id_dgowner` (`st_id_dgowner`)
 );
+
+
+CREATE TABLE bab_tskmgr_categories (
+  id int(10) unsigned NOT NULL auto_increment,
+  idProjectSpace int(10) unsigned NOT NULL default '0',
+  idProject int(10) unsigned NOT NULL default '0',
+  `name` varchar(255) NOT NULL default '',
+  description text NOT NULL,
+  color varchar(20) NOT NULL default '',
+  refCount int(10) unsigned NOT NULL default '0',
+  created datetime NOT NULL default '0000-00-00 00:00:00',
+  idUserCreated int(10) unsigned NOT NULL default '0',
+  modified datetime NOT NULL default '0000-00-00 00:00:00',
+  idUserModified int(10) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY idProjectSpace (idProjectSpace),
+  KEY idProject (idProject),
+  KEY `name` (`name`),
+  KEY refCount (refCount)
+) ;
+
+
+CREATE TABLE bab_tskmgr_default_projects_configuration (
+  id int(10) unsigned NOT NULL auto_increment,
+  idProjectSpace int(10) unsigned NOT NULL default '0',
+  tskUpdateByMgr tinyint(3) unsigned NOT NULL default '1',
+  endTaskReminder mediumint(8) unsigned NOT NULL default '5',
+  tasksNumerotation tinyint(3) unsigned NOT NULL default '1',
+  emailNotice tinyint(3) unsigned NOT NULL default '1',
+  faqUrl mediumtext NOT NULL,
+  PRIMARY KEY  (id,idProjectSpace),
+  KEY idProjectSpace (idProjectSpace)
+) ;
+
+# --------------------------------------------------------
+
+# 
+# Structure de la table `bab_tskmgr_default_projects_managers_groups`
+# 
+
+CREATE TABLE bab_tskmgr_default_projects_managers_groups (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group)
+) ;
+
+# --------------------------------------------------------
+
+# 
+# Structure de la table `bab_tskmgr_default_projects_supervisors_groups`
+# 
+
+CREATE TABLE bab_tskmgr_default_projects_supervisors_groups (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group)
+) ;
+
+# --------------------------------------------------------
+
+# 
+# Structure de la table `bab_tskmgr_default_projects_visualizers_groups`
+# 
+
+CREATE TABLE bab_tskmgr_default_projects_visualizers_groups (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group)
+) ;
+
+# --------------------------------------------------------
+
+# 
+# Structure de la table `bab_tskmgr_default_task_responsible_groups`
+# 
+
+CREATE TABLE bab_tskmgr_default_task_responsible_groups (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group)
+) ;
+
+# --------------------------------------------------------
+
+# 
+# Structure de la table `bab_tskmgr_linked_tasks`
+# 
+
+CREATE TABLE bab_tskmgr_linked_tasks (
+  id int(10) unsigned NOT NULL auto_increment,
+  idTask int(10) unsigned NOT NULL default '0',
+  idPredecessorTask int(10) unsigned NOT NULL default '0',
+  linkType tinyint(3) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY idTask (idTask),
+  KEY idPredecessorTask (idPredecessorTask)
+) ;
+
+# --------------------------------------------------------
+
+# 
+# Structure de la table `bab_tskmgr_notice`
+# 
+
+CREATE TABLE bab_tskmgr_notice (
+  id int(10) unsigned NOT NULL auto_increment,
+  idProjectSpace int(10) unsigned NOT NULL default '0',
+  idProject int(10) unsigned NOT NULL default '0',
+  profil int(10) unsigned NOT NULL default '0',
+  idEvent int(10) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY idProjectSpace (idProjectSpace),
+  KEY idProject (idProject),
+  KEY profil (profil),
+  KEY idEvent (idEvent)
+) ;
+
+# --------------------------------------------------------
+
+# 
+# Structure de la table `bab_tskmgr_personnal_task_creator_groups`
+# 
+
+CREATE TABLE bab_tskmgr_personnal_task_creator_groups (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group)
+) ;
+
+# --------------------------------------------------------
+
+# 
+# Structure de la table `bab_tskmgr_project_creator_groups`
+# 
+
+CREATE TABLE bab_tskmgr_project_creator_groups (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group)
+) ;
+
+# --------------------------------------------------------
+
+# 
+# Structure de la table `bab_tskmgr_projects`
+# 
+
+CREATE TABLE bab_tskmgr_projects (
+  id int(10) unsigned NOT NULL auto_increment,
+  idProjectSpace int(10) unsigned NOT NULL default '0',
+  `name` varchar(255) NOT NULL default '',
+  description text NOT NULL,
+  created datetime NOT NULL default '0000-00-00 00:00:00',
+  idUserCreated int(10) unsigned NOT NULL default '0',
+  modified datetime NOT NULL default '0000-00-00 00:00:00',
+  idUserModified int(10) unsigned NOT NULL default '0',
+  isLocked tinyint(3) unsigned NOT NULL default '0',
+  state tinyint(3) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY idProjectSpace (idProjectSpace),
+  KEY isLocked (isLocked),
+  KEY state (state)
+) ;
+
+# --------------------------------------------------------
+
+# 
+# Structure de la table `bab_tskmgr_projects_comments`
+# 
+
+CREATE TABLE bab_tskmgr_projects_comments (
+  id int(10) unsigned NOT NULL auto_increment,
+  idProject int(10) unsigned NOT NULL default '0',
+  commentary text NOT NULL,
+  created datetime NOT NULL default '0000-00-00 00:00:00',
+  idUserCreated int(10) unsigned NOT NULL default '0',
+  modified datetime NOT NULL default '0000-00-00 00:00:00',
+  idUserModified int(10) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY idProject (idProject)
+) ;
+
+# --------------------------------------------------------
+
+# 
+# Structure de la table `bab_tskmgr_projects_configuration`
+# 
+
+CREATE TABLE bab_tskmgr_projects_configuration (
+  id int(10) unsigned NOT NULL auto_increment,
+  idProject int(10) unsigned NOT NULL default '0',
+  tskUpdateByMgr tinyint(3) unsigned NOT NULL default '1',
+  endTaskReminder mediumint(8) unsigned NOT NULL default '5',
+  tasksNumerotation tinyint(3) unsigned NOT NULL default '1',
+  emailNotice tinyint(3) unsigned NOT NULL default '1',
+  faqUrl mediumtext NOT NULL,
+  PRIMARY KEY  (id,idProject),
+  KEY idProject (idProject)
+) ;
+
+# --------------------------------------------------------
+
+# 
+# Structure de la table `bab_tskmgr_projects_managers_groups`
+# 
+
+CREATE TABLE bab_tskmgr_projects_managers_groups (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group)
+) ;
+
+# --------------------------------------------------------
+
+# 
+# Structure de la table `bab_tskmgr_projects_revisions`
+# 
+
+CREATE TABLE bab_tskmgr_projects_revisions (
+  id int(10) unsigned NOT NULL auto_increment,
+  idProject int(10) unsigned NOT NULL default '0',
+  idProjectComment int(10) unsigned NOT NULL default '0',
+  majorVersion int(10) unsigned NOT NULL default '0',
+  minorVersion int(10) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY idProject (idProject),
+  KEY idProjectComment (idProjectComment),
+  KEY majorVersion (majorVersion),
+  KEY minorVersion (minorVersion)
+) ;
+
+# --------------------------------------------------------
+
+# 
+# Structure de la table `bab_tskmgr_projects_spaces`
+# 
+
+CREATE TABLE bab_tskmgr_projects_spaces (
+  id int(10) unsigned NOT NULL auto_increment,
+  idDelegation int(10) unsigned NOT NULL default '0',
+  `name` varchar(255) NOT NULL default '',
+  description text NOT NULL,
+  created datetime NOT NULL default '0000-00-00 00:00:00',
+  modified datetime NOT NULL default '0000-00-00 00:00:00',
+  idUserCreated int(10) unsigned NOT NULL default '0',
+  idUserModified int(10) unsigned NOT NULL default '0',
+  refCount int(10) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY idDelegation (idDelegation)
+) ;
+
+# --------------------------------------------------------
+
+# 
+# Structure de la table `bab_tskmgr_projects_supervisors_groups`
+# 
+
+CREATE TABLE bab_tskmgr_projects_supervisors_groups (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group)
+) ;
+
+# --------------------------------------------------------
+
+# 
+# Structure de la table `bab_tskmgr_projects_visualizers_groups`
+# 
+
+CREATE TABLE bab_tskmgr_projects_visualizers_groups (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group)
+) ;
+
+# --------------------------------------------------------
+
+# 
+# Structure de la table `bab_tskmgr_specific_fields_area_class`
+# 
+
+CREATE TABLE bab_tskmgr_specific_fields_area_class (
+  id int(10) unsigned NOT NULL,
+  defaultValue text NOT NULL,
+  isDefaultValue tinyint(3) unsigned NOT NULL default '1',
+  PRIMARY KEY  (id)
+) ;
+
+# --------------------------------------------------------
+
+# 
+# Structure de la table `bab_tskmgr_specific_fields_base_class`
+# 
+
+CREATE TABLE bab_tskmgr_specific_fields_base_class (
+  id int(10) unsigned NOT NULL auto_increment,
+  `name` varchar(255) NOT NULL default '',
+  description text NOT NULL,
+  nature tinyint(3) unsigned NOT NULL default '1',
+  active tinyint(3) unsigned NOT NULL default '1',
+  refCount int(10) unsigned NOT NULL default '0',
+  idProjectSpace int(10) unsigned NOT NULL default '0',
+  idProject int(10) unsigned NOT NULL default '0',
+  created datetime NOT NULL default '0000-00-00 00:00:00',
+  idUserCreated int(10) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY `name` (`name`),
+  KEY idProjectSpace (idProjectSpace),
+  KEY idProject (idProject)
+) ;
+
+# --------------------------------------------------------
+
+# 
+# Structure de la table `bab_tskmgr_specific_fields_instance_list`
+# 
+
+CREATE TABLE bab_tskmgr_specific_fields_instance_list (
+  id int(10) unsigned NOT NULL auto_increment,
+  idSpFldClass int(10) unsigned NOT NULL default '0',
+  idTask int(10) unsigned NOT NULL default '0',
+  `value` text NOT NULL,
+  position int(10) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id,idSpFldClass),
+  KEY idSpFldClass (idSpFldClass)
+) ;
+
+# --------------------------------------------------------
+
+# 
+# Structure de la table `bab_tskmgr_specific_fields_radio_class`
+# 
+
+CREATE TABLE bab_tskmgr_specific_fields_radio_class (
+  id int(10) unsigned NOT NULL auto_increment,
+  idFldBase int(10) unsigned NOT NULL default '0',
+  `value` varchar(255) NOT NULL default '',
+  isDefaultValue tinyint(3) unsigned NOT NULL default '0',
+  position tinyint(3) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id)
+) ;
+
+# --------------------------------------------------------
+
+# 
+# Structure de la table `bab_tskmgr_specific_fields_text_class`
+# 
+
+CREATE TABLE bab_tskmgr_specific_fields_text_class (
+  id int(10) unsigned NOT NULL,
+  defaultValue varchar(255) NOT NULL default '',
+  isDefaultValue tinyint(3) unsigned NOT NULL default '1',
+  PRIMARY KEY  (id)
+) ;
+
+# --------------------------------------------------------
+
+# 
+# Structure de la table `bab_tskmgr_task_responsible_groups`
+# 
+
+CREATE TABLE bab_tskmgr_task_responsible_groups (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group)
+) ;
+
+# --------------------------------------------------------
+
+# 
+# Structure de la table `bab_tskmgr_tasks`
+# 
+
+CREATE TABLE bab_tskmgr_tasks (
+  id int(10) unsigned NOT NULL auto_increment,
+  idProject int(10) unsigned NOT NULL default '0',
+  taskNumber int(10) unsigned NOT NULL default '0',
+  description text NOT NULL,
+  idCategory int(10) unsigned NOT NULL default '0',
+  created datetime NOT NULL default '0000-00-00 00:00:00',
+  modified datetime NOT NULL default '0000-00-00 00:00:00',
+  idUserCreated int(10) unsigned NOT NULL default '0',
+  idUserModified int(10) unsigned NOT NULL default '0',
+  class tinyint(3) unsigned NOT NULL default '0',
+  participationStatus tinyint(3) unsigned NOT NULL default '0',
+  isLinked tinyint(3) unsigned NOT NULL default '0',
+  idCalEvent int(10) unsigned NOT NULL default '0',
+  hashCalEvent varchar(34) NOT NULL default '0',
+  duration tinyint(3) unsigned NOT NULL default '0',
+  majorVersion int(10) unsigned NOT NULL default '0',
+  minorVersion int(10) unsigned NOT NULL default '0',
+  color varchar(8) NOT NULL default '',
+  position int(10) unsigned NOT NULL default '0',
+  completion int(10) unsigned NOT NULL default '0',
+  plannedStartDate datetime NOT NULL default '0000-00-00 00:00:00',
+  plannedEndDate datetime NOT NULL default '0000-00-00 00:00:00',
+  startDate datetime NOT NULL default '0000-00-00 00:00:00',
+  endDate datetime NOT NULL default '0000-00-00 00:00:00',
+  isNotified tinyint(3) unsigned NOT NULL default '0',
+  idOwner int(10) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id,idProject),
+  KEY idProject (idProject),
+  KEY majorVersion (majorVersion),
+  KEY minorVersion (minorVersion)
+) ;
+
+# --------------------------------------------------------
+
+# 
+# Structure de la table `bab_tskmgr_tasks_comments`
+# 
+
+CREATE TABLE bab_tskmgr_tasks_comments (
+  id int(10) unsigned NOT NULL auto_increment,
+  idTask int(10) unsigned NOT NULL default '0',
+  idProject int(10) unsigned NOT NULL default '0',
+  commentary text NOT NULL,
+  created datetime NOT NULL default '0000-00-00 00:00:00',
+  idUserCreated int(10) unsigned NOT NULL default '0',
+  modified datetime NOT NULL default '0000-00-00 00:00:00',
+  idUserModified int(10) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY idProject (idProject),
+  KEY idTask (idTask)
+) ;
+
+# --------------------------------------------------------
+
+# 
+# Structure de la table `bab_tskmgr_tasks_responsibles`
+# 
+
+CREATE TABLE bab_tskmgr_tasks_responsibles (
+  id int(10) unsigned NOT NULL auto_increment,
+  idTask int(10) unsigned NOT NULL default '0',
+  idResponsible int(10) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY idTask (idTask),
+  KEY idResponsible (idResponsible)
+) ;
+
+# --------------------------------------------------------
+
+# 
+# Structure de la table `bab_tskmgr_week_days`
+# 
+
+CREATE TABLE bab_tskmgr_week_days (
+  id int(10) unsigned NOT NULL auto_increment,
+  weekDay tinyint(3) unsigned NOT NULL default '0',
+  position tinyint(3) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY weekDay (weekDay),
+  KEY position (position)
+) ;
+
+# --------------------------------------------------------
+
+# 
+# Structure de la table `bab_tskmgr_working_hours`
+# 
+
+CREATE TABLE bab_tskmgr_working_hours (
+  id int(10) unsigned NOT NULL auto_increment,
+  weekDay int(10) unsigned NOT NULL default '0',
+  idUser int(10) unsigned NOT NULL default '0',
+  startHour time NOT NULL default '00:00:00',
+  endHour time NOT NULL default '00:00:00',
+  PRIMARY KEY  (id),
+  KEY startHour (startHour),
+  KEY endHour (endHour)
+) ;

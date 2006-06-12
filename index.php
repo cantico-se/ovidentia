@@ -976,6 +976,12 @@ switch($tg)
 		$babLevelTwo = bab_translate("");
 		$incl = "entry";
 		break;
+	case 'admTskMgr':
+		$incl = 'admin/tmtaskmanager';
+		break;
+	case 'usrTskMgr':
+		$incl = 'tmtaskmanager';
+		break;
 	default:
 		$babLevelOne = "";
 		$babLevelTwo = "";

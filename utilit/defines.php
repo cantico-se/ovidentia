@@ -247,4 +247,37 @@ define("BAB_VAC_ENTRIES_ELEM_TBL", "bab_vac_entries_elem");
 define("BAB_VAC_PLANNING_TBL", "bab_vac_planning");
 define("BAB_VAC_OPTIONS_TBL", "bab_vac_options");
 define("BAB_REGISTRY_TBL", "bab_registry");
+// Task manager tables
+define('BAB_TSKMGR_PROJECT_CREATOR_GROUPS_TBL', 'bab_tskmgr_project_creator_groups');
+define('BAB_TSKMGR_PERSONNAL_TASK_CREATOR_GROUPS_TBL', 'bab_tskmgr_personnal_task_creator_groups');
+define('BAB_TSKMGR_DEFAULT_PROJECTS_MANAGERS_GROUPS_TBL', 'bab_tskmgr_default_projects_managers_groups');
+define('BAB_TSKMGR_DEFAULT_PROJECTS_SUPERVISORS_GROUPS_TBL', 'bab_tskmgr_default_projects_supervisors_groups');
+define('BAB_TSKMGR_DEFAULT_PROJECTS_VISUALIZERS_GROUPS_TBL', 'bab_tskmgr_default_projects_visualizers_groups');
+define('BAB_TSKMGR_DEFAULT_TASK_RESPONSIBLE_GROUPS_TBL', 'bab_tskmgr_default_task_responsible_groups');
+
+define('BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL', 'bab_tskmgr_projects_managers_groups');
+define('BAB_TSKMGR_PROJECTS_SUPERVISORS_GROUPS_TBL', 'bab_tskmgr_projects_supervisors_groups');
+define('BAB_TSKMGR_PROJECTS_VISUALIZERS_GROUPS_TBL', 'bab_tskmgr_projects_visualizers_groups');
+define('BAB_TSKMGR_TASK_RESPONSIBLE_GROUPS_TBL', 'bab_tskmgr_task_responsible_groups');
+
+define('BAB_TSKMGR_WEEK_DAYS_TBL', 'bab_tskmgr_week_days');
+define('BAB_TSKMGR_WORKING_HOURS_TBL', 'bab_tskmgr_working_hours');
+define('BAB_TSKMGR_PROJECTS_SPACES_TBL', 'bab_tskmgr_projects_spaces');
+define('BAB_TSKMGR_DEFAULT_PROJECTS_CONFIGURATION_TBL', 'bab_tskmgr_default_projects_configuration');
+define('BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL', 'bab_tskmgr_specific_fields_base_class');
+define('BAB_TSKMGR_SPECIFIC_FIELDS_TEXT_CLASS_TBL', 'bab_tskmgr_specific_fields_text_class');
+define('BAB_TSKMGR_SPECIFIC_FIELDS_AREA_CLASS_TBL', 'bab_tskmgr_specific_fields_area_class');
+define('BAB_TSKMGR_SPECIFIC_FIELDS_RADIO_CLASS_TBL', 'bab_tskmgr_specific_fields_radio_class');
+define('BAB_TSKMGR_SPECIFIC_FIELDS_INSTANCE_LIST_TBL', 'bab_tskmgr_specific_fields_instance_list');
+define('BAB_TSKMGR_CATEGORIES_TBL', 'bab_tskmgr_categories');
+define('BAB_TSKMGR_PROJECTS_CONFIGURATION_TBL', 'bab_tskmgr_projects_configuration');
+define('BAB_TSKMGR_PROJECTS_TBL', 'bab_tskmgr_projects');
+define('BAB_TSKMGR_PROJECTS_COMMENTS_TBL', 'bab_tskmgr_projects_comments');
+define('BAB_TSKMGR_PROJECTS_REVISIONS_TBL', 'bab_tskmgr_projects_revisions');
+define('BAB_TSKMGR_TASKS_TBL', 'bab_tskmgr_tasks');
+define('BAB_TSKMGR_LINKED_TASKS_TBL', 'bab_tskmgr_linked_tasks');
+define('BAB_TSKMGR_TASKS_RESPONSIBLES_TBL', 'bab_tskmgr_tasks_responsibles');
+define('BAB_TSKMGR_TASKS_COMMENTS_TBL', 'bab_tskmgr_tasks_comments');
+
+define('BAB_TSKMGR_NOTICE_TBL', 'bab_tskmgr_notice');
 ?>

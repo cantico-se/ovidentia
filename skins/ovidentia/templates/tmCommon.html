@@ -1,0 +1,1089 @@
+<!--#begin displayMenu -->
+<table width="85%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+		<td class="BabLoginCadreBackground">
+			<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center" class="BabLoginMenuBackground">
+
+				<!--#in getNextAnchor -->
+				<tr>
+					<td align="center">
+						<a class="BabWarningLinkColor" href="{ m_anchorItem[href] }" title="{ m_anchorItem[title] }">{ m_anchorItem[title] }</a>
+					</td>
+				</tr>
+				<!--#endin getNextAnchor -->
+
+				<tr> 
+					<td colspan="2">
+						<br />
+					</td>
+				</tr>
+
+			</table>
+		</td>
+	</tr>
+</table>
+<!--#end displayMenu -->
+
+
+<!--#begin displayList -->
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+		<td align="center" valign="middle" class="BabLoginCadreBackground"> 
+			<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+				<tr class="BabSiteAdminTitleFontBackground"> 
+					<td width="20%">{ m_captions[name] }</td>
+					<td width="30%">{ m_captions[description] }</td>
+					<td width="50%" align="center">&nbsp;</td>
+				</tr>
+				<!--#in nextItem -->
+				
+			<!--#if m_is_altbg -->
+				<tr class="BabSiteAdminFontBackground"> 
+			<!--#else m_is_altbg -->
+				<tr class="BabForumBackground1">
+			<!--#endif m_is_altbg -->
+	
+				<!--#if m_datas[isLink] -->
+					<td><a href="{ m_datas[url] }{ m_datas[id] }">{ m_datas[name] }</a></td>
+				<!--#else m_datas[isLink] -->
+					<td>{ m_datas[name] }</td>
+				<!--#endif m_datas[isLink] -->
+
+					<td>{ m_datas[description] }</td>
+					<td>
+						<table border="0" cellspacing="0" cellpadding="2" align="center">
+							<!--#in getNextAnchor -->
+							<tr>
+								<td class="{ m_datas[className] }">
+									<a href="{ m_anchorItem[href] }" title="{ m_anchorItem[title] }">
+										{ m_anchorItem[title] }
+									</a>
+								</td>
+							</tr>
+							<!--#endin getNextAnchor -->
+							<tr><td></td></tr>
+						</table>
+					</td>
+				</tr>
+				<!--#endin nextItem -->
+			</table>
+		</td>
+	</tr>
+</table>
+<!--#end displayList -->
+
+<!--#begin workingHours -->
+<script type="text/javascript">
+<!--
+function isIE()
+{
+	var userAgent = navigator.userAgent.toLowerCase();
+	if((userAgent.indexOf("msie") != -1) && (userAgent.indexOf("opera") == -1))
+	{
+		return true;
+	}
+	return false;
+}
+
+function addRow(iNumDay, sDay)
+{
+	var oTBody = document.getElementById('tbody_' + sDay);
+	
+	if(null != oTBody)
+	{
+		var oTd1 = document.createElement('td').appendChild(document.createTextNode('\u00A0'));
+		
+		var oText = myCreateElement('input', 'text', 'startHour_' + iNumDay + '_[]', '', '');
+		var oTd2 = document.createElement('td');
+		oTd2.appendChild(oText);
+		
+		oText = myCreateElement('input', 'text', 'endHour_' + iNumDay + '_[]', '', '');
+		var oTd3 = document.createElement('td');
+		oTd3.appendChild(oText);
+
+		var oCheckBox = myCreateElement('input', 'checkbox', 'day' + sDay + '[]', '', 'background-color:transparent;border=0');
+		
+		var oTd4 = document.createElement('td');
+		oTd4.appendChild(oCheckBox);
+		
+		var oTr = document.createElement('tr');
+		
+		oTr.appendChild(oTd1);
+		oTr.appendChild(oTd2);
+		oTr.appendChild(oTd3);
+		oTr.appendChild(oTd4);
+		oTBody.appendChild(oTr);
+	}
+}
+
+function myCreateElement(sTag, sType, sName, sClass, sValue)
+{
+	var oElement = null;
+	if(isIE())
+	{
+		var sElement = "<" + sTag + "class='" + sClass + "' type='" + sType + "' name='" + sName + "' value='" + sValue + "' >";
+		oElement = document.createElement(sElement);
+	}
+	else
+	{
+		oElement = document.createElement(sTag);
+		if(null != oElement)
+		{
+			oElement.type = sType;
+			oElement.className = sClass;
+			oElement.name = sName;
+			oElement.value = sValue;
+		}
+	}
+	return oElement;
+}
+
+
+function on_btn_clicked(idx, action)
+{
+	var form = document.forms.workingHours;
+
+	form.idx.value = idx;
+	form.action.value = action;
+}
+
+function submit_form()
+{
+	return true;
+}
+
+function check_all(strCtrlName, checked)
+{
+	var form = document.forms.workingHours;
+
+	var i;
+	var objCtrl;
+
+
+	for (i = 0; i < form.elements.length; i++)
+	{
+		objCtrl = form.elements[i];
+		if(objCtrl.name.substring(0, strCtrlName.length) == strCtrlName)
+		{
+			objCtrl.checked = checked;
+		}
+	}
+}
+
+function deleteCheckedRows(sCtrlName, sTbodyId)
+{
+	var form = document.forms.workingHours;
+
+	var i;
+	var objCtrl;
+
+	var oTR2Del =  new Array();
+	
+	var oTBody = document.getElementById(sTbodyId);
+	if(null != oTBody)
+	{
+		for (i = 0; i < form.elements.length; )
+		{
+			objCtrl = form.elements[i];
+			if(objCtrl.name.substring(0, sCtrlName.length) == sCtrlName && true == objCtrl.checked)
+			{
+				oTBody.removeChild(objCtrl.parentNode.parentNode);
+			}
+			else
+			{
+				i++;
+			}
+		}
+	}
+}
+
+//-->
+</script>
+
+
+<form name ="workingHours" method="post" action="{ babPhpSelf }">
+	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
+	<input type="hidden" name="idx" value="{ m_datas[idx] }" />
+	<input type="hidden" name="action" value="{ m_datas[action] }" />
+	
+	<!--#in getNextDay -->
+	<table width="95%" border="0" cellspacing="0" cellpadding="1" align="center">
+		<tr> 
+			<td align="center" valign="middle" class="BabLoginCadreBackground"> 
+				<table width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
+	
+					<thead>
+						<tr class="BabSiteAdminTitleFontBackground">
+							<td width="20%">{ m_datas[day] }</td>
+							<td width="45%">{ m_captions[beginHour] }</td>
+							<td width="45%">{ m_captions[endHour] }</td>
+							<td width="10%"><a class="BabWarningLinkColor" href="javascript:addRow({ m_datas[numDay] }, '{ m_datas[day] }')" title="{ m_captions[add] }">{ m_captions[add] }</a></td>
+						</tr>
+					</thead>
+					
+					<tfoot>
+						<tr class="BabSiteAdminTitleFontBackground">
+							<td colspan="2">&nbsp;</td>
+							<td colspan="2" align="right">
+								<a href="javascript:check_all('day{ m_datas[day] }', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ m_captions[checkAll] }" width="10" height="10" border="0" /></a><a href="javascript:check_all('day{ m_datas[day] }', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ m_captions[uncheckAll] }" width="10" height="10" border="0" /></a><a href="javascript:deleteCheckedRows('day{ m_datas[day] }', 'tbody_{ m_datas[day] }')"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ m_captions[uncheckAll] }" border="0" /></a>
+							</td>
+						</tr>
+					</tfoot>
+					
+					<tbody id="tbody_{ m_datas[day] }" class="BabSiteAdminFontBackground">
+				<!--#if m_datas[bHaveWorkingHours] -->
+					<!--#in getNextWorkingHour -->
+					<tr>
+						<td>&nbsp;</td>
+						<td>
+							<input type="text" name="startHour_{ m_datas[numDay] }_[]" value="{ m_datas[startHour] }" />
+						</td>
+						<td>
+							<input type="text" name="endHour_{ m_datas[numDay] }_[]" value="{ m_datas[endHour] }" />
+						</td>
+						<td>
+							<input type="checkbox" name="day{ m_datas[day] }[]" value="" style="background-color:transparent;border=0" />
+						</td>
+					</tr>
+					<!--#endin getNextWorkingHour -->
+			<!--#else m_datas[bHaveWorkingHours] -->
+					<tr><td colspan="4"></td></tr>
+			<!--#endif m_datas[bHaveWorkingHours] -->
+					</tbody>
+					
+				</table>
+			</td>
+		</tr>
+	</table>
+	<br />
+	<!--#endin getNextDay -->
+	<div align="center">
+		<input type="submit" value="{ m_captions[save] }" onclick="on_btn_clicked('{ m_datas[save_idx] }', '{ m_datas[save_action] }')" />
+	</div>
+</form>
+<!--#end workingHours -->
+
+
+<!--#begin warningyesno -->
+<script type="text/javascript">
+<!--
+function on_delete()
+{
+	document.warningyesno.submit();
+}
+
+function on_cancel()
+{
+	var form = document.forms.warningyesno;
+	form.action.value = '';
+	form.submit();
+}
+//-->
+</script>
+<form name ="warningyesno" method="post" action="{ babPhpSelf }">
+	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
+	<input type="hidden" name="idx" value="{ m_datas[idx] }" />
+	<input type="hidden" name="action" value="{ m_datas[action] }" />
+	<input type="hidden" name="iIdProjectSpace" value="{ m_datas[iIdProjectSpace] }" />
+	<input type="hidden" name="iIdProject" value="{ m_datas[iIdProject] }" />
+	<input type="hidden" name="{ m_datas[objectName] }" value="{ m_datas[iIdObject] }" />
+	
+	<table border="0" width="50%" cellpadding="3" cellspacing="0" align="center">
+		<tr>
+			<td class="BabWarningTitleBackground" align="center">
+				{ m_captions[warning] }
+			</td>
+		</tr>
+		<tr>
+			<td class="BabWarningBodyBackground">
+				<br />
+			</td>
+		</tr>
+		<tr>
+			<td class="BabWarningBodyBackground" align="center">
+				{ m_captions[message] }
+			</td>
+		</tr>
+		<tr>
+			<td class="BabWarningBodyBackground">
+				<br />
+			</td>
+		</tr>
+		<tr>
+			<td class="BabWarningObjectBackground" align="center">
+				{ m_captions[title] }<br />
+			</td>
+		</tr>
+		<tr>
+			<td class="BabWarningBodyBackground" align="center">
+				<a class="BabWarningLinkColor" href="#" onclick="on_delete()">{ m_captions[yes] }</a> | <a class="BabWarningLinkColor" href="#" onclick="on_cancel()">{ m_captions[no] }</a>
+			</td>
+		</tr>
+	</table>
+</form>
+<!--#end warningyesno -->
+
+
+<!--#begin configuration -->
+<script type="text/javascript">
+<!--
+function on_btn_clicked(idx, action)
+{
+	var form = document.forms.configuration;
+
+	form.idx.value = idx;
+	form.action.value = action;
+}
+
+function submit_form()
+{
+	return true;
+}
+//-->
+</script>
+
+<form name="configuration" method="post" action="{ babPhpSelf }" onsubmit="return(submit_form())">
+	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
+	<input type="hidden" name="idx" value="" />
+	<input type="hidden" name="iIdConfiguration" value="{ m_datas[iIdConfiguration] }" />
+	<input type="hidden" name="iIdProjectSpace" value="{ m_datas[iIdProjectSpace] }" />
+	<input type="hidden" name="iIdProject" value="{ m_datas[iIdProject] }" />
+	<input type="hidden" name="action" value="" />
+
+	<table width="85%" border="0" cellspacing="0" cellpadding="2" align="center">
+		<tr> 
+			<td class="BabLoginCadreBackground">
+				<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center" class="BabLoginMenuBackground">
+					<tr> 
+						<td>
+							{ m_captions[taskUpdate] }
+						</td>
+						<td>
+							<select name="iTaskUpdateByMgr"> 
+							<!--#if m_datas[isTaskUpdatedByMgr] -->
+								<option value="{ m_datas[yes] }" selected="selected">{ m_captions[yes] }</option>
+								<option value="{ m_datas[no] }">{ m_captions[no] }</option>
+							<!--#else m_datas[isTaskUpdatedByMgr] -->
+								<option value="{ m_datas[yes] }">{ m_captions[yes] }</option>
+								<option value="{ m_datas[no] }" selected="selected">{ m_captions[no] }</option>
+							<!--#endif m_datas[isTaskUpdatedByMgr] -->
+							</select>
+						</td>
+					</tr>
+					<tr> 
+						<td>
+							{ m_captions[notice] }
+						</td>
+						<td>
+							<input type="text" size="9" maxlength="9" name="iEndTaskReminder" value="{ m_datas[endTaskReminder] }" />&nbsp;{ m_captions[days] }
+						</td>
+					</tr>
+					<tr> 
+						<td>
+							{ m_captions[taskNumerotation] }
+						</td>
+						<td>
+						<!--#if m_datas[isProjectEmpty] -->
+							<select name="iTaskNumerotation"> 
+							<!--#in getNextTaskNumerotation -->
+								<option value="{ m_datas[tmCode] }" { m_datas[tnSelected] }>{ m_datas[tmValue] }</option>
+							<!--#endin getNextTaskNumerotation -->
+							</select>
+						<!--#else m_datas[isProjectEmpty] -->
+							<input type="text" readonly="readonly" size="60" value="{ m_datas[tmValue] }" />
+						<!--#endif m_datas[isProjectEmpty] -->
+						</td>
+					</tr>
+					<tr> 
+						<td>
+							{ m_captions[emailNotice] }
+						</td>
+						<td>
+							<select name="iEmailNotice"> 
+							<!--#if m_datas[isEmailNotice] -->
+								<option value="{ m_datas[yes] }" selected="selected">{ m_captions[yes] }</option>
+								<option value="{ m_datas[no] }">{ m_captions[no] }</option>
+							<!--#else m_datas[isEmailNotice] -->
+								<option value="{ m_datas[yes] }">{ m_captions[yes] }</option>
+								<option value="{ m_datas[no] }" selected="selected">{ m_captions[no] }</option>
+							<!--#endif m_datas[isEmailNotice] -->
+							</select>
+						</td>
+					</tr>
+					<tr> 
+						<td>
+							{ m_captions[faq] }
+						</td>
+						<td>
+							<textarea name="sFaqUrl" cols="50" rows="10">{ m_datas[faqUrl] }</textarea>
+						</td>
+					</tr>
+
+					<tr>
+						<td colspan="2" align="center">
+							<input type="submit" value="{ m_captions[save] }" onclick="on_btn_clicked('{ m_datas[save_idx] }', '{ m_datas[save_action] }')" />
+						</td>
+					</tr>
+
+				</table>
+			</td>
+		</tr>
+	</table>
+</form>
+<!--#end configuration -->
+
+<!--#begin fieldList -->
+<script type="text/javascript">
+<!--
+function suppfield()
+{
+	//{}
+	document.spfList.idx.value='{ m_datas[deleteFieldIdx] }';
+	document.spfList.action.value='';
+	document.spfList.submit();
+}
+
+function check_all(strCtrlName, checked)
+{
+	var form = document.forms.spfList;
+
+	var i;
+	var objCtrl;
+
+
+	for (i = 0; i < form.elements.length; i++)
+	{
+		objCtrl = form.elements[i];
+		if(objCtrl.name.substring(0, strCtrlName.length) == strCtrlName)
+		{
+			objCtrl.checked = checked;
+		}
+	}
+}
+
+function on_btn_clicked(idx, action)
+{
+	var form = document.forms.spfList;
+
+	form.idx.value = idx;
+	form.action.value = action;
+}
+
+function submit_form()
+{
+	return true;
+}//-->
+</script>
+<form name ="spfList" method="post" action="{ babPhpSelf }" onsubmit="return(submit_form())">
+	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
+	<input type="hidden" name="idx" value="" />
+	<input type="hidden" name="action" value="" />
+	<input type="hidden" name="iIdProjectSpace" value="{ m_datas[iIdProjectSpace] }" />
+	<input type="hidden" name="iIdProject" value="{ m_datas[iIdProject] }" />
+
+	<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+		<tr> 
+			<td class="BabLoginCadreBackground"> 
+				<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+					<tr class="BabSiteAdminTitleFontBackground"> 
+						<td>{ m_captions[name] }</td>
+						<td>{ m_captions[type] }</td>
+						<td width="1%">&nbsp;</td>
+					</tr>
+					<!--#in nextField -->
+					<!--#if m_is_altbg -->
+						<tr class="BabSiteAdminFontBackground"> 
+					<!--#else m_is_altbg -->
+						<tr class="BabForumBackground1">
+					<!--#endif m_is_altbg -->
+						<td><a class="BabSiteAdminListLink" href="{ m_datas[sFieldLink] }" >{ m_datas[sFieldName] }</a></td>
+						<td>{ m_datas[sFieldType] }</td>
+						<td align="center">
+						<!--#if m_datas[is_deletable] -->
+							<input type="checkbox" name="aDeletableObjects[]" value="{ m_datas[iIdField] }" style="background-color:transparent;border=0" />
+						<!--#else m_datas[is_deletable] -->
+							&nbsp;
+						<!--#endif m_datas[is_deletable] -->
+						</td>
+					</tr>
+					<!--#endin nextField -->
+					<tr class="BabSiteAdminTitleFontBackground">
+						<td colspan="2" align="right">&nbsp;</td>
+						<td>
+							<a href="javascript:check_all('aDeletableObjects', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ m_captions[checkAll] }" width="10" height="10" border="0" /></a><a href="javascript:check_all('aDeletableObjects', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ m_captions[uncheckAll] }" width="10" height="10" border="0" /></a>&nbsp;<a href="javascript:suppfield()"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ m_captions[uncheckAll] }" border="0" /></a>
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+</form>
+<!--#end fieldList -->
+
+
+<!--#begin fieldText -->
+<script type="text/javascript">
+<!--
+function selChg(index)
+{
+	//{}
+	document.forms.fieldText.idx.value = '{ m_datas[displaySpecificFieldFormIdx] }';
+	document.forms.fieldText.action.value = '';
+	document.forms.fieldText.submit();
+}
+
+function on_btn_clicked(idx, action)
+{
+	var form = document.forms.fieldText;
+
+	form.idx.value = idx;
+	form.action.value = action;
+}
+
+function submit_form()
+{
+	return true;
+}
+//-->
+</script>
+<form name="fieldText" method="post" action="{ babPhpSelf }" onsubmit="return(submit_form())">
+	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
+	<input type="hidden" name="idx" value="" />
+	<input type="hidden" name="action" value="" />
+	<input type="hidden" name="iIdProjectSpace" value="{ m_datas[iIdProjectSpace] }" />
+	<input type="hidden" name="iIdProject" value="{ m_datas[iIdProject] }" />
+	<input type="hidden" name="iIdField" value="{ m_datas[iIdField] }" />
+	<input type="hidden" name="aDeletableObjects[]" value="{ m_datas[iIdField] }" />
+
+	{ m_datas[selectFieldType] }
+	<br />
+	<table width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
+		<tr> 
+			<td class="BabLoginCadreBackground"> 
+				<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+					<tr>
+						<td>
+							{ m_captions[fieldName] }<font color="red">*</font>:<br/>
+						</td>
+						<td>
+							<input type="text" name="sFieldName" size="40" maxlength ="255" value="{ m_datas[sFieldName] }" />
+						</td>
+					</tr>
+					<tr>
+						<td>
+							{ m_captions[defaultValue] }:
+						</td>
+						<td>
+							<input type="text" name="sFieldValue" size="40" maxlength ="255" value="{ m_datas[sFieldValue] }" />
+						</td>
+					<tr>
+						<td colspan="2">&nbsp;</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+	{ m_datas[fieldButtons] }
+</form>
+<!--#end fieldText -->
+
+
+<!--#begin fieldArea -->
+<script type="text/javascript">
+<!--
+function selChg(index)
+{
+	//{}
+	document.forms.fieldArea.idx.value = '{ m_datas[displaySpecificFieldFormIdx] }';
+	document.forms.fieldArea.action.value='';
+	document.forms.fieldArea.submit();
+}
+
+function on_btn_clicked(idx, action)
+{
+	var form = document.forms.fieldArea;
+
+	form.idx.value = idx;
+	form.action.value = action;
+}
+
+function submit_form()
+{
+	return true;
+}
+//-->
+</script>
+<form name="fieldArea" method="post" action="{ babPhpSelf }">
+	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
+	<input type="hidden" name="idx" value="" />
+	<input type="hidden" name="action" value="" />
+	<input type="hidden" name="iIdProjectSpace" value="{ m_datas[iIdProjectSpace] }" />
+	<input type="hidden" name="iIdProject" value="{ m_datas[iIdProject] }" />
+	<input type="hidden" name="iIdField" value="{ m_datas[iIdField] }" />
+	<input type="hidden" name="aDeletableObjects[]" value="{ m_datas[iIdField] }" />
+
+	{ m_datas[selectFieldType] }
+	<br />
+	<table width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
+		<tr> 
+			<td class="BabLoginCadreBackground"> 
+				<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+					<tr>
+						<td>
+							{ m_captions[fieldName] }<font color="red">*</font>:<br/>
+						</td>
+						<td>
+							<input type="text" name="sFieldName" size="40" maxlength ="255" value="{ m_datas[sFieldName] }" />
+						</td>
+					</tr>
+					<tr>
+						<td>
+							{ m_captions[defaultValue] }:
+						</td>
+						<td>
+							<textarea name="sFieldValue" cols="40" rows="5" >{ m_datas[sFieldValue] }</textarea>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2">&nbsp;</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+	{ m_datas[fieldButtons] }
+</form>
+<!--#end fieldArea -->
+
+
+<!--#begin fieldRadio -->
+<script type="text/javascript">
+<!--
+function selChg(index)
+{
+	//{}
+	document.forms.addfield.idx.value='{ m_datas[displaySpecificFieldFormIdx] }';
+	document.forms.addfield.action.value='';
+	document.forms.addfield.submit();
+}
+
+function addOption()
+{
+	//{}
+	document.forms.addfield.idx.value='{ m_datas[displaySpecificFieldFormIdx] }';
+	document.forms.addfield.action.value='{ m_datas[addOptionAction] }';
+	document.forms.addfield.submit();
+}
+
+function delOption()
+{
+	//{}
+	document.forms.addfield.idx.value='{ m_datas[displaySpecificFieldFormIdx] }';
+	document.forms.addfield.action.value='{ m_datas[delOptionAction] }';
+	document.forms.addfield.submit();
+}
+
+function onAddFieldSubmit()
+{
+	//{}
+	document.forms.addfield.idx.value='{ m_datas[displaySpecificFieldFormIdx] }';
+	document.forms.addfield.action.value='';
+	document.forms.addfield.submit();
+}
+
+function onDeleteFieldSubmit()
+{
+	//{}
+	document.addfield.idx.value='delfield';
+	document.addfield.action.value='';
+	document.addfield.submit();
+}
+
+function on_btn_clicked(idx, action)
+{
+	var form = document.forms.addfield;
+
+	form.idx.value = idx;
+	form.action.value = action;
+}
+
+function submit_form()
+{
+	return true;
+}//-->
+</script>
+<form name="addfield" method="post" action="{ babPhpSelf }">
+	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
+	<input type="hidden" name="idx" value="" />
+	<input type="hidden" name="action" value="" />
+	<input type="hidden" name="iIdProjectSpace" value="{ m_datas[iIdProjectSpace] }" />
+	<input type="hidden" name="iIdProject" value="{ m_datas[iIdProject] }" />
+	<input type="hidden" name="iIdField" value="{ m_datas[iIdField] }" />
+	<input type="hidden" name="aDeletableObjects[]" value="{ m_datas[iIdField] }" />
+	<input type="hidden" name="iOptionCount" value="{ m_datas[iOptionCount] }" />
+
+	{ m_datas[selectFieldType] }
+	<br />
+	<table width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
+		<tr> 
+			<td class="BabLoginCadreBackground"> 
+				<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+					<tr> 
+						<td>
+							{ m_captions[fieldName] }<font color="red">*</font>:<br/>
+						</td>
+						<td>
+							<input type="text" name="sFieldName" size="40" maxlength ="255" value="{ m_datas[sFieldName] }" />
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2">&nbsp;</td>
+					</tr>
+					<tr>
+						<td>{ m_captions[defaultValue] }:</td>
+						<td>{ m_captions[defaultChoice] }:</td>
+					</tr>
+					<!--#in nextOption --> 
+					<tr>
+						<td>
+							&nbsp;
+						</td>
+						<td>
+							<input type="checkbox" name="aDelOptions[]" value="{ m_datas[sOptionNbr] }" style="background-color:transparent;border=0" />{ m_datas[sOptionText] }:
+								<br /><input type="text" name="aOptions[]" size="30" maxlength="30" value="{ m_datas[sOptionValue] }" />&nbsp;
+						</td>
+						<td>
+							<input type="radio" name="iDefaultOption" value="{ m_datas[sOptionNbr] }" { m_datas[sOptionChecked] } style="background-color:transparent;border=0" />
+						</td>
+					</tr>
+					<!--#endin nextOption --> 
+					<tr>
+						<td>&nbsp;</td>
+					</tr>
+					<tr>
+						<td colspan="3" align="center">
+							<input type="submit" value="{ m_captions[oneMoreOption] }" onclick="addOption();" />&nbsp;
+							<input type="submit" value="{ m_captions[deleteOptions] }" onclick="delOption();" />
+						</td>
+					</tr>
+					<tr>
+						<td>&nbsp;</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+	{ m_datas[fieldButtons] }
+</form>
+<!--#end fieldRadio -->
+
+<!--#begin selectFieldType -->
+<table class="BabLoginCadreBackground" width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+		<td> 
+			<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+				<tr> 
+					<!--#if m_datas[iIdField] "== 0" -->
+					<td align="right">
+						{ m_captions[type] }:
+					</td>
+					<td colspan="2"> 
+						<select size="1" type="string" name="iFieldType" onchange="selChg();">
+							<option value="{ m_datas[iTextType] }" { m_datas[sTextSelected] }>{ m_captions[text] }</option>
+							<option value="{ m_datas[iAreaType] }" { m_datas[sAreaSelected] }>{ m_captions[area] }</option>
+							<option value="{ m_datas[iChoiceType] }" { m_datas[sChoiceSelected] }>{ m_captions[choice] }</option>
+						</select>
+					</td>
+					<!--#else m_datas[iIdField] -->
+					<td colspan="2" align="center"> 
+						<input type="hidden" name="iFieldType" value="{ m_datas[iFieldType] }" />
+						{ m_captions[fieldType] }:{ m_datas[sFieldType] }
+					</td>
+					<!--#endif m_datas[iIdField] -->
+				<tr>
+					<td colspan="2">&nbsp;</td>
+				</tr>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+<!--#end selectFieldType -->
+
+
+<!--#begin fieldButtons -->
+<br />
+<div align="center">
+<!--#if m_datas[iIdField] "== 0" -->
+	<input type="submit" value="{ m_captions[add] }" onclick="on_btn_clicked('{ m_datas[addIdx] }', '{ m_datas[addAction] }')" />
+<!--#else m_datas[iIdField] -->
+	<!--#if m_datas[is_modifiable] -->
+	<input type="submit" value="{ m_captions[modify] }" onclick="on_btn_clicked('{ m_datas[modifyIdx] }', '{ m_datas[modifyAction] }')" />
+	<!--#endif m_datas[is_modifiable] -->
+	<!--#if m_datas[is_deletable] "== 1" -->
+		<input type="submit" value="{ m_captions[delete] }" onclick="on_btn_clicked('{ m_datas[delIdx] }', '{ m_datas[delAction] }')" />
+	<!--#endif m_datas[is_deletable] -->
+<!--#endif m_datas[iIdField] -->
+</div>
+<!--#end fieldButtons -->
+
+
+<!--#begin categoriesList -->
+<script type="text/javascript">
+<!--
+function suppfield()
+{
+	//{}
+	document.categoriesList.idx.value='{ m_datas[deleteCategoryIdx] }';
+	document.categoriesList.action.value='';
+	document.categoriesList.submit();
+}
+
+function check_all(strCtrlName, checked)
+{
+	var form = document.forms.categoriesList;
+
+	var i;
+	var objCtrl;
+
+
+	for (i = 0; i < form.elements.length; i++)
+	{
+		objCtrl = form.elements[i];
+		if(objCtrl.name.substring(0, strCtrlName.length) == strCtrlName)
+		{
+			objCtrl.checked = checked;
+		}
+	}
+}
+
+function on_btn_clicked(idx, action)
+{
+	var form = document.forms.categoriesList;
+
+	form.idx.value = idx;
+	form.action.value = action;
+}
+
+function submit_form()
+{
+	return true;
+}//-->
+</script>
+<form name ="categoriesList" method="post" action="{ babPhpSelf }" onsubmit="return(submit_form())">
+	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
+	<input type="hidden" name="idx" value="" />
+	<input type="hidden" name="action" value="" />
+	<input type="hidden" name="iIdProjectSpace" value="{ m_datas[iIdProjectSpace] }" />
+	<input type="hidden" name="iIdProject" value="{ m_datas[iIdProject] }" />
+
+	<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+		<tr> 
+			<td class="BabLoginCadreBackground"> 
+				<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+					<tr class="BabSiteAdminTitleFontBackground"> 
+						<td>{ m_captions[name] }</td>
+						<td>{ m_captions[description] }</td>
+						<td width="1%">&nbsp;</td>
+					</tr>
+					<!--#in nextField -->
+					<!--#if m_is_altbg -->
+						<tr class="BabSiteAdminFontBackground"> 
+					<!--#else m_is_altbg -->
+						<tr class="BabForumBackground1">
+					<!--#endif m_is_altbg -->
+						<td><a class="BabSiteAdminListLink" href="{ m_datas[sCategoryLink] }" >{ m_datas[sCategoryName] }</a></td>
+						<td>{ m_datas[sCategoryDescription] }</td>
+						<td align="center">
+						<!--#if m_datas[bIsDeletable] -->
+							<input type="checkbox" name="aDeletableObjects[]" value="{ m_datas[iIdCategory] }" Style="background-color:transparent;border=0" />
+						<!--#else m_datas[bIsDeletable] -->
+							&nbsp;
+						<!--#endif m_datas[bIsDeletable] -->
+						</td>
+					</tr>
+					<!--#endin nextField -->
+					<tr class="BabSiteAdminTitleFontBackground">
+						<td colspan="2" align="right">&nbsp;</td>
+						<td>
+							<a href="javascript:check_all('aDeletableObjects', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ m_captions[checkAll] }" width="10" height="10" border="0" /></a><a href="javascript:check_all('aDeletableObjects', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ m_captions[uncheckAll] }" width="10" height="10" border="0"></a>&nbsp;<a href="javascript:suppfield()"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ m_captions[uncheckAll] }" border="0" /></a>
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+</form>
+<!--#end categoriesList -->
+
+
+<!--#begin categoryForm -->
+<script type="text/javascript">
+<!--
+function on_btn_clicked(idx, action)
+{
+	var form = document.forms.categoryForm;
+
+	form.idx.value = idx;
+	form.action.value = action;
+}
+
+
+function submit_form()
+{
+	return true;
+}
+
+function evtSetColor(color)
+{
+	var f = document.forms['categoryForm'];
+	f.sColor.value = color;
+	if(color == '')
+	{
+		color = 'fff';
+	}
+	
+	document.getElementById('evtColor').style.backgroundColor = '#'+color;
+}
+
+//-->
+</script>
+<form name="categoryForm" method="post" action="{ babPhpSelf }">
+	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
+	<input type="hidden" name="idx" value="" />
+	<input type="hidden" name="action" value="" />
+	<input type="hidden" name="iIdProjectSpace" value="{ m_datas[iIdProjectSpace] }" />
+	<input type="hidden" name="iIdProject" value="{ m_datas[iIdProject] }" />
+	<input type="hidden" name="iIdCategory" value="{ m_datas[iIdCategory] }" />
+	<input type="hidden" name="aDeletableObjects[]" value="{ m_datas[iIdCategory] }" />
+
+	<table width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
+		<tr> 
+			<td class="BabLoginCadreBackground"> 
+				<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+					<tr>
+						<td>
+							{ m_captions[sName] }<font color="red">*</font>:<br/>
+						</td>
+						<td>
+							<input type="text" name="sCategoryName" size="40" maxlength ="255" value="{ m_datas[sName] }" />
+						</td>
+					</tr>
+					<tr>
+						<td>
+							{ m_captions[sDescription] }:
+						</td>
+						<td>
+							<textarea name="sCategoryDescription" cols="40" rows="5" >{ m_datas[sDescription] }</textarea>
+						</td>
+					</tr>
+					<tr id="color_tr"> 
+						<td><a href="javascript: Start('{ babUrlScript }?tg=selectcolor&idx=popup&callback=evtSetColor', 'ColorWindow', 'width=250,height=200,status=no,resizable=no,top=200,left=200');">Color</a>:</td>
+						<td> 
+							<div id="evtColor" style="width:30px;height:15px;border:#000 1px solid;background-color:#fff;float:left"></div><input type="hidden" name="sColor" value="" />
+							&nbsp;<a href="javascript:evtSetColor('')"><img src="ovidentia/skins/ovidentia/images/Puces/del.gif" alt="" border="0" /></a>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2">&nbsp;</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+	<br />
+	<div align="center">
+	<!--#if m_datas[iIdCategory] "== 0" -->
+		<input type="submit" value="{ m_captions[add] }" onclick="on_btn_clicked('{ m_datas[addIdx] }', '{ m_datas[addAction] }')" />
+	<!--#else m_datas[iIdCategory] -->
+		<!--#if m_datas[bIsModifiable] -->
+		<input type="submit" value="{ m_captions[modify] }" onclick="on_btn_clicked('{ m_datas[modifyIdx] }', '{ m_datas[modifyAction] }')" />
+		<!--#endif m_datas[bIsModifiable] -->
+		<!--#if m_datas[bIsDeletable] -->
+			<input type="submit" value="{ m_captions[delete] }" onclick="on_btn_clicked('{ m_datas[delIdx] }', '{ m_datas[delAction] }')" />
+		<!--#endif m_datas[bIsDeletable] -->
+	<!--#endif m_datas[iIdCategory] -->
+	</div>
+	<script type="text/javascript">
+	<!--
+	evtSetColor('{ m_datas[sColor] }');
+	//-->
+	</script>
+</form>
+<!--#end categoryForm -->
+
+
+<!--#begin noticeForm -->
+<script type="text/javascript">
+<!--
+function on_btn_clicked(idx, action)
+{
+	var form = document.forms.noticeForm;
+
+	form.idx.value = idx;
+	form.action.value = action;
+}
+
+
+function submit_form()
+{
+	return true;
+}
+//-->
+</script>
+<form name="noticeForm" method="post" action="{ babPhpSelf }">
+	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
+	<input type="hidden" name="idx" value="" />
+	<input type="hidden" name="action" value="" />
+	<input type="hidden" name="iIdProjectSpace" value="{ m_iIdProjectSpace }" />
+	<input type="hidden" name="iIdProject" value="{ m_iIdProject }" />
+
+	<table width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
+		<tr> 
+			<td class="BabLoginCadreBackground"> 
+				<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+					<tr>
+						<td>
+							&nbsp;
+						</td>
+						<td>
+							{ m_captions[sSupervisor] }
+						</td>
+						<td>
+							{ m_captions[sManager] }
+						</td>
+						<td>
+							{ m_captions[sResponsible] }
+						</td>
+					</tr>
+					
+					<!--#in nextEvent -->
+					<tr>
+						<td>
+							{ m_datas[sEventName] }
+						</td>
+						<!--#in nextProfil -->
+						<td>
+							<input type="checkbox" name="notiveEvent[]" { m_datas[sCheckedNotice] } value="{ m_datas[iIdEvent] }_{ m_datas[iProfil] }" style="background-color:transparent;border=0" />
+						</td>
+						<!--#endin nextProfil -->
+					</tr>
+					<!--#endin nextEvent -->
+				</table>
+			</td>
+		</tr>
+	</table>
+	<br />
+	<div align="center">
+		<input type="submit" value="{ m_captions[modify] }" onclick="on_btn_clicked('{ m_datas[modifyIdx] }', '{ m_datas[modifyAction] }')" />
+	</div>
+</form>
+<!--#end noticeForm -->
+
+<!--#begin notify_user -->
+<font color="#000000" size="2" face="Arial, Helvetica, sans-serif" align="left"><br>
+	{ m_datas[body] }
+</font>
+<br>
+<!--#end notify_user -->
+

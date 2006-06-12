@@ -1,0 +1,959 @@
+<!--#begin displayProjectList -->
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+		<td align="center" valign="middle" class="BabLoginCadreBackground"> 
+			<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+				<tr class="BabSiteAdminTitleFontBackground"> 
+					<td width="20%">{ m_captions[name] }</td>
+					<td width="40%">{ m_captions[description] }</td>
+					<td width="40%" align="center">&nbsp;</td>
+				</tr>
+				<!--#in nextItem -->
+				
+			<!--#if m_is_altbg -->
+				<tr class="BabSiteAdminFontBackground"> 
+			<!--#else m_is_altbg -->
+				<tr class="BabForumBackground1">
+			<!--#endif m_is_altbg -->
+	
+				<!--#if m_datas[isLink] -->
+					<td><a href="{ m_datas[url] }{ m_datas[id] }">{ m_datas[name] }</a></td>
+				<!--#else m_datas[isLink] -->
+					<td>{ m_datas[name] }</td>
+				<!--#endif m_datas[isLink] -->
+
+					<td>{ m_datas[description] }</td>
+					<td>
+						<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+						<!--#if m_datas[bIsRightUrl] -->
+							<tr>
+								<td>
+									<a href="{ m_datas[rightsUrl] }" title="{ m_captions[rights] }">
+										{ m_captions[rights] }
+									</a>
+								</td>
+							</tr>
+						<!--#endif m_datas[bIsRightUrl] -->
+						<!--#if m_datas[bIsManager] -->
+							<tr>
+								<td>
+									<a href="{ m_datas[configurationUrl] }" title="{ m_captions[configuration] }">
+										{ m_captions[configuration] }
+									</a>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<a href="{ m_datas[specificFieldUrl] }" title="{ m_captions[spfFld] }">
+										{ m_captions[spfFld] }
+									</a>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<a href="{ m_datas[categoryUrl] }" title="{ m_captions[category] }">
+										{ m_captions[category] }
+									</a>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<a href="{ m_datas[commentaryUrl] }" title="{ m_captions[commentary] }">
+										{ m_captions[commentary] }
+									</a>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<a href="{ m_datas[noticeUrl] }" title="{ m_captions[notice] }">
+										{ m_captions[notice] }
+									</a>
+								</td>
+							</tr>
+						<!--#endif m_datas[bIsManager] -->
+							<tr>
+								<td>
+									<a href="{ m_datas[taskUrl] }" title="{ m_captions[task] }">
+										{ m_captions[task] }
+									</a>
+								</td>
+							</tr>
+							<tbody><tr><td></td></tr></tbody>
+						</table>
+					</td>
+				</tr>
+				<!--#endin nextItem -->
+			</table>
+		</td>
+	</tr>
+</table>
+<!--#end displayProjectList -->
+
+<!--#begin commentariesList -->
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+		<td align="center" valign="middle" class="BabLoginCadreBackground"> 
+			<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+				<tr class="BabSiteAdminTitleFontBackground"> 
+					<td width="50%">{ m_captions[commentary] }</td>
+					<td width="20%">{ m_captions[date] }</td>
+					<td width="30%" align="center">&nbsp;</td>
+				</tr>
+				<!--#in nextCommentary -->
+				
+			<!--#if m_is_altbg -->
+				<tr class="BabSiteAdminFontBackground"> 
+			<!--#else m_is_altbg -->
+				<tr class="BabForumBackground1">
+			<!--#endif m_is_altbg -->
+	
+				<!--#if m_datas[isLink] -->
+					<td><a href="{ m_datas[url] }{ m_datas[id] }">{ m_datas[commentary] }</a></td>
+				<!--#else m_datas[isLink] -->
+					<td>{ m_datas[commentary] }</td>
+				<!--#endif m_datas[isLink] -->
+					<td>{ m_datas[created] }</td>
+					<td>
+						<table border="0" cellspacing="0" cellpadding="2" align="center">
+							<!--#in getNextAnchor -->
+							<tr>
+								<td class="{ m_datas[className] }">
+									<a href="{ m_anchorItem[href] }" title="{ m_anchorItem[title] }">
+										{ m_anchorItem[title] }
+									</a>
+								</td>
+							</tr>
+							<!--#endin getNextAnchor -->
+							<tbody><tr><td></td></tr></tbody>
+						</table>
+					</td>
+				</tr>
+				<!--#endin nextCommentary -->
+			</table>
+		</td>
+	</tr>
+</table>
+<!--#end commentariesList -->
+
+<!--#begin displayCommentary -->
+<!--#if m_datas[isPopUp] "== 1" -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+	<head></head>
+	<body>
+<!--#endif m_datas[isPopUp] -->
+<script type="text/javascript" language="JavaScript1.5">
+<!--
+function on_btn_clicked(idx, action)
+{
+	var form = document.forms.displayCommentary;
+
+	form.idx.value = idx;
+	form.action.value = action;
+}
+
+function submit_form()
+{
+	return true;
+}//-->
+</script>
+<style type="text/css">
+	@import url('{ babInstallPath }/styles/taskManager.css');
+</style>
+<form name ="displayCommentary" method="post" action="{ babPhpSelf }" onsubmit="return(submit_form())">
+	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
+	<input type="hidden" name="idx" value="" />
+	<input type="hidden" name="action" value="" />
+	<input type="hidden" name="iIdProjectSpace" value="{ m_datas[iIdProjectSpace] }" />
+	<input type="hidden" name="iIdProject" value="{ m_datas[iIdProject] }" />
+	<input type="hidden" name="iIdTask" value="{ m_datas[iIdTask] }" />
+	<input type="hidden" name="iIdCommentary" value="{ m_datas[iIdCommentary] }" />
+
+	<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+		<tr> 
+			<td class="BabLoginCadreBackground"> 
+				<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+					<tr> 
+						<td align="center"><textarea id="commentary" name="sCommentary" cols="20" rows="20">{ m_datas[commentary] }</textarea></td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+<br />
+<div align="center">
+<!--#if m_datas[iIdCommentary] "== 0" -->
+	<input type="submit" value="{ m_captions[add] }" onclick="on_btn_clicked('{ m_datas[addIdx] }', '{ m_datas[addAction] }')" />
+<!--#else m_datas[iIdCommentary] -->
+	<input type="submit" value="{ m_captions[modify] }" onclick="on_btn_clicked('{ m_datas[modifyIdx] }', '{ m_datas[modifyAction] }')" />
+	<input type="submit" value="{ m_captions[delete] }" onclick="on_btn_clicked('{ m_datas[delIdx] }', '{ m_datas[delAction] }')" />
+<!--#endif m_datas[iIdCommentary] -->
+</div>
+</form>
+<!--#if m_datas[isPopUp] "== 1" -->
+	</body>
+</html>
+<!--#endif m_datas[isPopUp] -->
+<!--#end displayCommentary -->
+
+
+<!--#begin projectForm -->
+<script type="text/javascript">
+<!--
+function on_btn_clicked(idx, action)
+{
+	var form = document.forms.projectForm;
+
+	form.idx.value = idx;
+	form.action.value = action;
+}
+
+function submit_form()
+{
+	return true;
+}
+//-->
+</script>
+
+<form name="projectForm" method="post" action="{ babPhpSelf }" onsubmit="return(submit_form())">
+	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
+	<input type="hidden" name="idx" value="" />
+	<input type="hidden" name="action" value="" />
+	<input type="hidden" name="iIdProjectSpace" value="{ m_datas[iIdProjectSpace] }" />
+	<input type="hidden" name="iIdProject" value="{ m_datas[iIdProject] }" />
+
+	<table width="85%" border="0" cellspacing="0" cellpadding="2" align="center">
+		<tr> 
+			<td class="BabLoginCadreBackground">
+				<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center" class="BabLoginMenuBackground">
+					<tr> 
+						<td>
+							{ m_captions[sName] }
+						</td>
+						<td>
+							<input type="text" name="sName" size="25" maxlength="255" value="{ m_datas[sName] }" />
+						</td>
+					</tr>
+
+					<tr> 
+						<td>
+							{ m_captions[sDescription] }
+						</td>
+						<td>
+							<textarea name="sDescription" cols="50" rows="10">{ m_datas[sDescription] }</textarea>
+						</td>
+					</tr>
+
+					<tr> 
+						<td colspan="2">
+							<br />
+						</td>
+					</tr>
+
+					<tr>
+						<td colspan="2" align="center">
+						
+						<!--#if m_datas[iIdProject] "== 0" -->
+							<input type="submit" value="{ m_captions[add] }" onclick="on_btn_clicked('{ m_datas[add_idx] }', '{ m_datas[add_action] }')" />
+						<!--#else m_datas[iIdProject] -->
+							<input type="submit" value="{ m_captions[modify] }" onclick="on_btn_clicked('{ m_datas[modify_idx] }', '{ m_datas[modify_action] }')" />
+							<!--#if m_datas[bIsDeletable] -->
+								<input type="submit" value="{ m_captions[delete] }" onclick="on_btn_clicked('{ m_datas[delete_idx] }', '{ m_datas[delete_action] }')" />
+							<!--#endif m_datas[bIsDeletable] -->
+						<!--#endif m_datas[iIdProject] -->
+
+						</td>
+					</tr>
+
+					<tr> 
+						<td colspan="2">
+							<br />
+						</td>
+					</tr>
+
+				</table>
+			</td>
+		</tr>
+	</table>
+</form>
+<!--#end projectForm -->
+
+<!--#begin taskList -->
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+		<td align="center" valign="middle" class="BabLoginCadreBackground"> 
+			<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+				<tr class="BabSiteAdminTitleFontBackground"> 
+					<td width="10%">{ m_captions[taskNumber] }</td>
+					<td width="50%">{ m_captions[description] }</td>
+					<td width="10%">{ m_captions[date] }</td>
+					<td width="30%" align="center">&nbsp;</td>
+				</tr>
+				<!--#in nextTask -->
+				
+			<!--#if m_is_altbg -->
+				<tr class="BabSiteAdminFontBackground"> 
+			<!--#else m_is_altbg -->
+				<tr class="BabForumBackground1">
+			<!--#endif m_is_altbg -->
+	
+				<!--#if m_datas[isLink] -->
+					<td><a href="{ m_datas[url] }{ m_datas[id] }">{ m_datas[taskNumber] }</a></td>
+				<!--#else m_datas[isLink] -->
+					<td>{ m_datas[taskNumber] }</td>
+				<!--#endif m_datas[isLink] -->
+					<td>{ m_datas[description] }</td>
+					<td>{ m_datas[created] }</td>
+					<td>
+						<table border="0" cellspacing="0" cellpadding="2" align="center">
+							<!--#in getNextAnchor -->
+							<tr>
+								<td class="{ m_datas[className] }">
+									<a href="{ m_anchorItem[href] }" title="{ m_anchorItem[title] }">
+										{ m_anchorItem[title] }
+									</a>
+								</td>
+							</tr>
+							<!--#endin getNextAnchor -->
+							<tbody><tr><td></td></tr></tbody>
+						</table>
+					</td>
+				</tr>
+				<!--#endin nextTask -->
+			</table>
+		</td>
+	</tr>
+</table>
+<!--#end taskList -->
+
+<!--#begin taskForm -->
+<script type="text/javascript">
+<!--
+function on_btn_clicked(idx, action)
+{
+	var form = document.forms.taskForm;
+
+	form.idx.value = idx;
+	form.action.value = action;
+}
+
+function submit_form()
+{
+	return true;
+}
+
+function onMenuSelected(oSelectedLi)
+{
+	var form = document.forms.taskForm;
+	
+	form.selectedMenu.value = oSelectedLi.id;
+	
+	var oLiGeneral = document.getElementById("oLiGeneral");
+	var oLiPredecessors = document.getElementById("oLiPredecessors");
+	var oLiResources = document.getElementById("oLiResources");
+	var oLiCommentaries = document.getElementById("oLiCommentaries");
+	var oLiSpfFld = document.getElementById("oLiSpfFld");
+	
+	var oDivGeneral = document.getElementById("sGeneral");
+	var oDivSpfFld = document.getElementById("sSpfFld");
+	var oDivCommentaries = document.getElementById("sCommentaries");
+	var oDivResources = document.getElementById("sResources");
+	var oDivPredecessor = document.getElementById("sPredecessor");
+	
+	switch(oSelectedLi.id)
+	{
+		case 'oLiGeneral':
+		{
+			if(null != oLiGeneral) oLiGeneral.firstChild.className = 'current';
+			if(null != oLiPredecessors) oLiPredecessors.firstChild.className = '';
+			if(null != oLiResources) oLiResources.firstChild.className = '';
+			if(null != oLiCommentaries) oLiCommentaries.firstChild.className = '';
+			if(null != oLiSpfFld) oLiSpfFld.firstChild.className = '';
+			
+			showHideElement('sGeneral', g_tskMgrShow);
+			showHideElement('sSpfFld', g_tskMgrHide);
+			showHideElement('sCommentaries', g_tskMgrHide);
+			showHideElement('sResources', g_tskMgrHide);
+			showHideElement('sPredecessor', g_tskMgrHide);
+		}
+		break;
+		
+		case 'oLiPredecessors':
+		{
+			if(null != oLiGeneral) oLiGeneral.firstChild.className = '';
+			if(null != oLiPredecessors) oLiPredecessors.firstChild.className = 'current';
+			if(null != oLiResources) oLiResources.firstChild.className = '';
+			if(null != oLiCommentaries) oLiCommentaries.firstChild.className = '';
+			if(null != oLiSpfFld) oLiSpfFld.firstChild.className = '';
+
+			showHideElement('sGeneral', g_tskMgrHide);
+			showHideElement('sSpfFld', g_tskMgrHide);
+			showHideElement('sCommentaries', g_tskMgrHide);
+			showHideElement('sResources', g_tskMgrHide);
+			showHideElement('sPredecessor', g_tskMgrShow);
+		}
+		break;
+		
+		case 'oLiResources':
+		{
+			if(null != oLiGeneral) oLiGeneral.firstChild.className = '';
+			if(null != oLiPredecessors) oLiPredecessors.firstChild.className = '';
+			if(null != oLiResources) oLiResources.firstChild.className = 'current';
+			if(null != oLiCommentaries) oLiCommentaries.firstChild.className = '';
+			if(null != oLiSpfFld) oLiSpfFld.firstChild.className = '';
+			
+			showHideElement('sGeneral', g_tskMgrHide);
+			showHideElement('sSpfFld', g_tskMgrHide);
+			showHideElement('sCommentaries', g_tskMgrHide);
+			showHideElement('sResources', g_tskMgrShow);
+			showHideElement('sPredecessor', g_tskMgrHide);
+		}
+		break;
+		
+		case 'oLiCommentaries':
+		{
+			if(null != oLiGeneral) oLiGeneral.firstChild.className = '';
+			if(null != oLiPredecessors) oLiPredecessors.firstChild.className = '';
+			if(null != oLiResources) oLiResources.firstChild.className = '';
+			if(null != oLiCommentaries) oLiCommentaries.firstChild.className = 'current';
+			if(null != oLiSpfFld) oLiSpfFld.firstChild.className = '';
+			
+			showHideElement('sGeneral', g_tskMgrHide);
+			showHideElement('sSpfFld', g_tskMgrHide);
+			showHideElement('sCommentaries', g_tskMgrShow);
+			showHideElement('sResources', g_tskMgrHide);
+			showHideElement('sPredecessor', g_tskMgrHide);
+			
+		}
+		break;
+		
+		case 'oLiSpfFld':
+		{
+			if(null != oLiGeneral) oLiGeneral.firstChild.className = '';
+			if(null != oLiPredecessors) oLiPredecessors.firstChild.className = '';
+			if(null != oLiResources) oLiResources.firstChild.className = '';
+			if(null != oLiCommentaries) oLiCommentaries.firstChild.className = '';
+			if(null != oLiSpfFld) oLiSpfFld.firstChild.className = 'current';
+			
+			showHideElement('sGeneral', g_tskMgrHide);
+			showHideElement('sSpfFld', g_tskMgrShow);
+			showHideElement('sCommentaries', g_tskMgrHide);
+			showHideElement('sResources', g_tskMgrHide);
+			showHideElement('sPredecessor', g_tskMgrHide);
+			
+		}
+		break;
+	}
+}
+
+function setDateValue(aDate)
+{
+	var form = document.forms.taskForm;
+	form[form.selectedDateFieldName.value].value = aDate['year'] + '-' + aDate['month'] + '-' + aDate['day'];
+}
+
+function dateCallback(sFieldName)
+{
+	var form = document.forms.taskForm;
+	form.selectedDateFieldName.value = sFieldName;
+	bab_dialog.selectdate(setDateValue);
+}
+
+function onClassChanged(oSelect)
+{
+	//{}
+	var TASK = { m_datas[iClassTask] };
+	var CHECKPOINT = { m_datas[iClassCheckPoint] };
+	var TODO = { m_datas[iClassToDo] };
+	
+	var iType = parseInt(oSelect.options[oSelect.selectedIndex].value);
+
+	switch(iType)
+	{
+		case TASK:
+		{
+			var oTrDurationType = document.getElementById("oTrDurationType");
+			if(null != oTrDurationType)
+			{
+				oTrDurationType.style.display = '';
+				
+				showHideElement('oTrLinkedTask', g_tskMgrShow);
+
+				var oDurationType = document.getElementById("oDurationType");
+				if(null != oDurationType) onDurationTypeChanged(oDurationType);
+
+				var oLinkedTask = document.getElementById("oLinkedTask");
+				if(null != oLinkedTask) onLinkTaskChanged(oLinkedTask);
+				
+				showHideElement('oLiResources', g_tskMgrShow);
+				
+				showHideElement('oTrProposable', g_tskMgrShow);
+				showHideElement('oTrCompletion', g_tskMgrShow);
+				showHideElement('oTrAnswerEnable', g_tskMgrShow);
+
+				processStartDate();
+			}
+		}
+		break;
+		
+		case CHECKPOINT:
+		{
+			showHideElement('oTrLinkedTask', g_tskMgrHide);
+			showHideElement('oTrDurationType', g_tskMgrHide);
+			showHideElement('oTrDuration', g_tskMgrHide);
+			showHideElement('oTrStartDate', g_tskMgrHide);
+			showHideElement('oTrEndDate', g_tskMgrShow);
+			showHideElement('oTrProposable', g_tskMgrHide);
+			showHideElement('oTrCompletion', g_tskMgrHide);
+			showHideElement('oLiPredecessors', g_tskMgrHide);
+			showHideElement('oLiResources', g_tskMgrHide);
+			showHideElement('oTrAnswerEnable', g_tskMgrHide);
+		}
+		break;
+			
+		case TODO:
+		{
+			showHideElement('oTrLinkedTask', g_tskMgrHide);
+			showHideElement('oTrDurationType', g_tskMgrHide);
+			showHideElement('oTrDuration', g_tskMgrHide);
+			showHideElement('oTrStartDate', g_tskMgrHide);
+			showHideElement('oTrEndDate', g_tskMgrShow);
+			showHideElement('oTrProposable', g_tskMgrHide);
+			showHideElement('oTrCompletion', g_tskMgrHide);
+			showHideElement('oLiPredecessors', g_tskMgrHide);
+			showHideElement('oLiResources', g_tskMgrHide);
+			showHideElement('oTrAnswerEnable', g_tskMgrHide);
+		}
+		break;
+	}
+}
+
+function onDurationTypeChanged(oSelect)
+{
+	//{}
+	var DURATION = { m_datas[iDateTypeDuration] };
+	var DATE = { m_datas[iDateTypeDate] };
+	
+	var iDurationType = parseInt(oSelect.options[oSelect.selectedIndex].value);
+
+	switch(iDurationType)
+	{
+		case DURATION:
+		{
+			showHideElement('oTrDuration', g_tskMgrShow);
+			//showHideElement('oTrEndDate', g_tskMgrHide);
+		}
+		break;
+		
+		case DATE:
+		{
+			showHideElement('oTrDuration', g_tskMgrHide);
+			showHideElement('oTrEndDate', g_tskMgrShow);
+		}
+		break;
+	}
+	
+	processStartDate();
+}
+
+function onLinkTaskChanged(oCheckBox)
+{
+	if(true == oCheckBox.checked)
+	{
+		showHideElement('oLiPredecessors', g_tskMgrShow);
+	}
+	else
+	{
+		showHideElement('oLiPredecessors', g_tskMgrHide);
+	}
+	
+	processStartDate();
+}
+
+var g_tskMgrHide = 0;
+var g_tskMgrShow = 1;
+
+function showHideElement(sIdElement, iShow)
+{
+	var oElement = document.getElementById(sIdElement);
+	if(null != oElement) 
+	{
+		oElement.style.display = (g_tskMgrHide == iShow) ? 'none' : '';
+	}
+	else
+	{
+		/*
+		if('oLiPredecessors' == sIdElement)
+		{
+			alert('NULL oLiPredecessors');
+		}
+		*/
+	}
+}
+
+function processStartDate()
+{
+	var oLinkedTask = document.getElementById("oLinkedTask");
+	
+	if(null != oLinkedTask && true == oLinkedTask.checked)
+	{
+		showHideElement('oTrStartDate', g_tskMgrHide);
+	}
+	else
+	{
+		showHideElement('oTrStartDate', g_tskMgrShow);
+	}
+}
+//-->
+</script>
+
+<script type="text/javascript" src="{ babInstallPath }scripts/bab_dialog.js"></script>
+
+
+<style type="text/css">
+	@import url('{ babInstallPath }styles/taskManager.css');
+</style>
+
+<form name="taskForm" method="post" action="{ babPhpSelf }" onsubmit="return(submit_form())">
+	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
+	<input type="hidden" name="idx" value="" />
+	<input type="hidden" name="action" value="" />
+	<input type="hidden" name="iIdProjectSpace" value="{ m_iIdProjectSpace }" />
+	<input type="hidden" name="iIdProject" value="{ m_iIdProject }" />
+	<input type="hidden" name="iIdTask" value="{ m_iIdTask }" />
+	<input type="hidden" name="iMajorVersion" value="{ m_datas[iMajorVersion] }" />
+	<input type="hidden" name="iMinorVersion" value="{ m_datas[iMinorVersion] }" />
+	<input type="hidden" name="selectedDateFieldName" value="" />
+	<input type="hidden" name="selectedMenu" value="" />
+	
+
+	<br />
+	<div>
+		<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+			<tr> 
+				<td>
+					<label for="sTaskNumber">{ m_captions[sTaskNumber] }</label>
+				</td>
+				<td>
+					<input name="sTaskNumber" id="sTaskNumber" { m_datas[sTaskNumberReadOnly] } type="text" value="{ m_datas[sTaskNumber] }" />
+				</td>
+			</tr>
+			<tr> 
+				<td>
+					<label for="iClass">{ m_captions[sClass] }</label>
+				</td>
+				<td>
+					<select name="iClass" id="iClass" { m_datas[sDisabledClass] } onchange="onClassChanged(this)">
+						<!--#in getNextClass -->
+							<option { m_datas[sSelectedClass] } value="{ m_datas[iClassType] }">{ m_datas[sClassName] }</option>
+						<!--#endin getNextClass -->
+					</select>
+				</td>
+			</tr>
+			<tr> 
+				<td>
+					<label for="iIdCategory">{ m_captions[sCategories] }</label>
+				</td>
+				<td>
+					<select name="iIdCategory" { m_datas[sDisabledCategory] } id="iIdCategory">
+						<option value=""></option>
+						<!--#in getNextCategory -->
+						<option { m_datas[sSelectedCategory] } value="{ m_datas[iIdCategory] }">{ m_datas[sCategoryName] }</option>
+						<!--#endin getNextCategory -->
+					</select>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<br />
+
+	<ul id="tablist">
+		<li id="oLiGeneral"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[sGeneral] }</a></li>
+	<!--#if m_datas[isLinkable] -->
+		<li id="oLiPredecessors"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[sPredecessors] }</a></li>
+	<!--#endif m_datas[isLinkable] -->
+	<!--#if m_iIdProject "!= 0" -->
+	<!--#if m_datas[isResourceAvailable] -->
+		<li id="oLiResources"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[sResources] }</a></li>
+	<!--#endif m_datas[isResourceAvailable] -->
+	<!--#endif m_iIdProject -->
+	<!--#if m_iIdTask "!= 0" -->
+		<li id="oLiCommentaries"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[sCommentaries] }</a></li>
+		<li id="oLiSpfFld"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[sSpFld] }</a></li>
+	<!--#endif m_iIdTask -->
+	</ul>						
+	<br />
+
+	<div id="sGeneral" class="">
+		<table width="95%" border="1" cellspacing="2" cellpadding="2" align="center">
+			<tr>
+				<td colspan="2"><label for="sDescription">{ m_captions[sDescription] }</label></td>
+			</tr>
+			<tr>
+				<td colspan="2"><textarea name="sDescription" id="sDescription" { m_datas[sReadonlyDescription] } cols="50" rows="10">{ m_datas[sDescription] }</textarea></td>
+			</tr>
+
+		<!--#if m_datas[isLinkable] -->
+			<tr id="oTrLinkedTask">
+				<td>
+					<label for="oLinkedTask">{ m_captions[sLinkedTask] }</label>
+				</td>
+				<td>
+					<input type="checkbox" name="oLinkedTask" id="oLinkedTask" { m_datas[sDisabledLinkedTask] } { m_datas[sCkeckedLinkedTask] } onclick="onLinkTaskChanged(this)" value="" style="background-color:transparent;border=0" />
+				</td>
+			</tr>
+		<!--#endif m_datas[isLinkable] -->
+
+		<!--#if m_datas[isProposable] -->
+			<tr id="oTrProposable" class="">
+				<td>
+					<label for="oProposable">{ m_captions[sProposable] }</label>
+				</td>
+				<td>
+					<select id="oProposable" name="oProposable">
+						<!--#in getNextProposable -->
+						<option { m_datas[sSelectedProposable] } value="{ m_datas[iProposable] }">{ m_datas[sProposable] }</option>
+						<!--#endin getNextProposable -->
+					</select>
+				</td>
+			</tr>
+		<!--#endif m_datas[isProposable] -->
+
+			<tr id="oTrDurationType" class="">
+				<td>
+					<label for="oDurationType">{ m_captions[sDurationType] }</label>
+				</td>
+				<td>
+					<select id="oDurationType" name="oDurationType" { m_datas[sDisabledDurationType] } onchange="onDurationTypeChanged(this)">
+						<!--#in getNextDurationType -->
+						<option { m_datas[sSelectedDuration] } value="{ m_datas[iDurationType] }">{ m_datas[sDurationName] }</option>
+						<!--#endin getNextDurationType -->
+					</select>
+				</td>
+			</tr>
+
+			<tr id="oTrDuration">
+				<td>
+					<label for="sDuration">{ m_captions[sDuration] }</label>
+				</td>
+				<td>
+					<input type="text" name="sDuration" { m_datas[sReadOnlyDuration] } id="sDuration" maxlength="20" value="{ m_datas[sDuration] }" size="10" />
+				</td>
+			</tr>
+
+			<tr id="oTrStartDate">
+				<td>
+					<label for="sPlannedStartDate">{ m_captions[sPlannedStartDate] }</label>
+				</td>
+				<td>
+					<input type="text" name="sPlannedStartDate" id="sPlannedStartDate" { m_datas[sReadOnlyDate] } maxlength="20" value="{ m_datas[sPlannedStartDate] }" size="10" />
+				<!--#if m_datas[isReadOnlyDate] "!= 1" -->
+				<a href="javascript:dateCallback('sPlannedStartDate');">
+						<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/calendar.gif" alt="{ m_captions[sPlannedStartDate] }" />
+					</a>
+				<!--#endif m_datas[isReadOnlyDate] -->
+				</td>
+			</tr>
+			
+			<tr id="oTrEndDate">
+				<td>
+					<label for="sPlannedEndDate">{ m_captions[sPlannedEndDate] }</label>
+				</td>
+				<td>
+					<input type="text" name="sPlannedEndDate" id="sPlannedEndDate" { m_datas[sReadOnlyDate] } maxlength="20" value="{ m_datas[sPlannedEndDate] }" size="10" />
+				<!--#if m_datas[isReadOnlyDate] "!= 1" -->
+					<a href="javascript:dateCallback('sPlannedEndDate');">
+						<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/calendar.gif" alt="{ m_captions[sPlannedEndDate] }" />
+					</a>
+				<!--#endif m_datas[isReadOnlyDate] -->
+				</td>
+			</tr>
+				
+		<!--#if m_datas[isCompletionEnabled] -->
+			<tr id="oTrCompletion" class="">
+				<td>
+					<label for="oCompletion">{ m_captions[sCompletion] }</label>
+				</td>
+				<td>
+					<select id="oCompletion" name="oCompletion">
+						<!--#in getNextCompletion -->
+						<option { m_datas[sSelectedCompletion] } value="{ m_datas[iCompletion] }">{ m_datas[iCompletion] }</option>
+						<!--#endin getNextCompletion -->
+					</select>
+				</td>
+			</tr>
+		<!--#endif m_datas[isCompletionEnabled] -->
+		<!--#if m_datas[isAnswerEnable] -->
+			<tr id="oTrAnswerEnable" class="">
+				<td>
+					<label for="oAnswerEnable">{ m_captions[sAnwser] }</label>
+				</td>
+				<td>
+					<select id="oAnswerEnable" name="oAnswerEnable">
+						<!--#in getNextAnswer -->
+						<option value="{ m_datas[iProposable] }">{ m_datas[sProposable] }</option>
+						<!--#endin getNextAnswer -->
+					</select>
+				</td>
+			</tr>
+		<!--#endif m_datas[isAnswerEnable] -->
+		</table>
+	</div>
+	
+<!--#if m_datas[isLinkable] -->
+	<div id="sPredecessor" class="">
+		<table border="0" cellspacing="0" cellpadding="2">
+			<tr class="BabSiteAdminTitleFontBackground">
+				<td>{ m_captions[sTaskNumber] }</td>
+				<td>{ m_captions[sRelation] }</td>
+			</tr>
+			<tr> 
+				<td colspan="2">
+					<!--#in getNone -->
+					<input class="BabLoginMenuBackground" { m_datas[sSelectedPredecessor] } type="radio" name="iPredecessor" value="{ m_datas[iNone] }" />{ m_captions[sNone] }
+					<!--#endin getNone -->
+				</td>
+			</tr>
+			<!--#in getNextPredecessor -->
+			<tr> 
+				<td>
+					<input class="BabLoginMenuBackground" { m_datas[sSelectedPredecessor] } type="radio" name="iPredecessor" value="{ m_datas[iIdPredecessor] }" />{ m_datas[sPredecessorNumber] }
+				</td>
+				<td>
+					<select id="oLinkType" name="oLinkType[]">
+						<!--#in getNextRelation -->
+						<option { m_datas[sSelectedLinkType] } value="{ m_datas[iLink] }">{ m_datas[sLink] }</option>
+						<!--#endin getNextRelation -->
+					</select>
+				</td>
+			</tr>
+			<!--#endin getNextPredecessor -->
+		</table>
+	</div>
+<!--#endif m_datas[isLinkable] -->
+	
+<!--#if m_datas[isResourceAvailable] -->
+	<div id="sResources" class="">
+		<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+			<tr>
+				<td>
+					<label for="iIdTaskResponsible">{ m_captions[sTaskResponsible] }</label>
+				</td>
+				<td>
+					<select id="iIdTaskResponsible" { m_datas[sReadOnlyTaskResponsible] } name="iIdTaskResponsible">
+						<option value="{ m_datas[iNone] }">{ m_captions[sNone] }</option>
+						<!--#in getNextTaskResponsible -->
+						<option { m_datas[sSlectedTaskResponsible] } value="{ m_datas[iIdTaskResponsible] }">{ m_datas[sTaskResponsibleName] }</option>
+						<!--#endin getNextTaskResponsible -->
+					</select>
+				</td>
+			</tr>
+		</table>
+	</div>
+<!--#endif m_datas[isResourceAvailable] -->
+	
+	<!--#if m_iIdTask "!= 0" -->
+	<div id="sCommentaries" class="">
+		{ m_datas[sTaskCommentaries] }
+	</div>
+	
+	<div id="sSpfFld" class="">
+		<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+			<tr class="BabSiteAdminTitleFontBackground"> 
+				<td colspan="3" align="center">
+					<label for="oSpfField">{ m_captions[sSpFld] }</label>
+					<select id="oSpfField" name="oSpfField">
+						<!--#in getNextSpecificField -->
+						<option { m_datas[sSelectedSpfField] } value="{ m_datas[iIdSpField] }">{ m_datas[sSpFieldName] }</option>
+						<!--#endin getNextSpecificField -->
+					</select>
+					<input type="submit" value="{ m_captions[sAddSpf] }" onclick="on_btn_clicked('{ m_datas[iAddSpfIdx] }', '{ m_datas[iAddSpfAction] }')" />
+				</td>
+			</tr>
+			<tr>
+				<td>{ m_captions[sField] }</td>
+				<td>{ m_captions[sType] }</td>
+				<td>{ m_captions[sValue] }</td>
+			</tr>
+		</table>
+	</div>
+	<!--#endif m_iIdTask -->
+	
+	<br />
+	<div align="center">
+		<!--#if m_iIdTask "== 0" -->
+			<input type="submit" value="{ m_captions[sAdd] }" onclick="on_btn_clicked('{ m_datas[iAddIdx] }', '{ m_datas[iAddAction] }')" />
+		<!--#else m_iIdTask -->
+			<input type="submit" value="{ m_captions[sModify] }" onclick="on_btn_clicked('{ m_datas[iModifyIdx] }', '{ m_datas[iModifyAction] }')" />
+			<!--#if m_datas[isStoppable] -->
+				<input type="submit" value="{ m_captions[sStop] }" onclick="on_btn_clicked('{ m_datas[iStopIdx] }', '{ m_datas[iStopAction] }')" />
+			<!--#endif m_datas[isStoppable] -->
+			<!--#if m_datas[isDeletable] -->
+				<input type="submit" value="{ m_captions[sDelete] }" onclick="on_btn_clicked('{ m_datas[iDeleteIdx] }', '{ m_datas[iDeleteAction] }')" />
+			<!--#endif m_datas[isDeletable] -->
+		<!--#endif m_iIdTask -->
+	</div>
+</form>
+
+<script type="text/javascript">
+<!--
+var oLiGeneral = document.getElementById('{ m_datas[selectedMenu] }');
+if(null != oLiGeneral) onMenuSelected(oLiGeneral);
+onClassChanged(document.forms.taskForm['iClass']);
+//-->
+</script>
+<!--#end taskForm -->
+
+<!--#begin taskCommentariesList -->
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+		<td align="center" valign="middle" class="BabLoginCadreBackground"> 
+			<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+				<tr class="BabSiteAdminTitleFontBackground"> 
+					<td width="50%">{ m_captions[commentary] }</td>
+					<td width="20%">{ m_captions[date] }</td>
+				<!--#if m_datas[iIdTask] "!= 0" -->
+					<td width="30%" align="center">
+						<a href="javascript:bab_popup('{ m_datas[addCommentaryUrl] }',2)" title="{ m_captions[addCommentary] }">
+							{ m_captions[addCommentary] }
+						</a>
+					</td> 
+				<!--#else m_datas[iIdTask] -->
+					<td width="30%" align="center">&nbsp;</td>
+				<!--#endif m_datas[iIdTask] -->
+				</tr>
+				<!--#in nextCommentary -->
+				
+			<!--#if m_is_altbg -->
+				<tr class="BabSiteAdminFontBackground"> 
+			<!--#else m_is_altbg -->
+				<tr class="BabForumBackground1">
+			<!--#endif m_is_altbg -->
+	
+				<!--#if m_datas[isLink] -->
+					<td><a href="javascript:bab_popup('{ m_datas[url] }{ m_datas[id] }',2)">{ m_datas[commentary] }</a></td>
+				<!--#else m_datas[isLink] -->
+					<td>{ m_datas[commentary] }</td>
+				<!--#endif m_datas[isLink] -->
+					<td>{ m_datas[created] }</td>
+					<td>
+						<table border="0" cellspacing="0" cellpadding="2" align="center">
+							<!--#in getNextAnchor -->
+							<tr>
+								<td class="{ m_datas[className] }">
+									<a href="{ m_anchorItem[href] }" title="{ m_anchorItem[title] }">
+										{ m_anchorItem[title] }
+									</a>
+								</td>
+							</tr>
+							<!--#endin getNextAnchor -->
+							<tbody><tr><td></td></tr></tbody>
+						</table>
+					</td>
+				</tr>
+				<!--#endin nextCommentary -->
+			</table>
+		</td>
+	</tr>
+</table>
+<!--#end taskCommentariesList -->
