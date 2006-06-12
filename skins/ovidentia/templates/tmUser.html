@@ -65,19 +65,19 @@
 							</tr>
 							<tr>
 								<td>
-									<a href="{ m_datas[taskUrl] }" title="{ m_captions[task] }">
-										{ m_captions[task] }
-									</a>
-								</td>
-							</tr>
-							<tr>
-								<td>
 									<a href="{ m_datas[noticeUrl] }" title="{ m_captions[notice] }">
 										{ m_captions[notice] }
 									</a>
 								</td>
 							</tr>
 						<!--#endif m_datas[bIsManager] -->
+							<tr>
+								<td>
+									<a href="{ m_datas[taskUrl] }" title="{ m_captions[task] }">
+										{ m_captions[task] }
+									</a>
+								</td>
+							</tr>
 							<tbody><tr><td></td></tr></tbody>
 						</table>
 					</td>
@@ -489,6 +489,7 @@ function onClassChanged(oSelect)
 				
 				showHideElement('oTrProposable', g_tskMgrShow);
 				showHideElement('oTrCompletion', g_tskMgrShow);
+				showHideElement('oTrAnswerEnable', g_tskMgrShow);
 
 				processStartDate();
 			}
@@ -506,6 +507,7 @@ function onClassChanged(oSelect)
 			showHideElement('oTrCompletion', g_tskMgrHide);
 			showHideElement('oLiPredecessors', g_tskMgrHide);
 			showHideElement('oLiResources', g_tskMgrHide);
+			showHideElement('oTrAnswerEnable', g_tskMgrHide);
 		}
 		break;
 			
@@ -520,6 +522,7 @@ function onClassChanged(oSelect)
 			showHideElement('oTrCompletion', g_tskMgrHide);
 			showHideElement('oLiPredecessors', g_tskMgrHide);
 			showHideElement('oLiResources', g_tskMgrHide);
+			showHideElement('oTrAnswerEnable', g_tskMgrHide);
 		}
 		break;
 	}
@@ -780,6 +783,20 @@ function processStartDate()
 				</td>
 			</tr>
 		<!--#endif m_datas[isCompletionEnabled] -->
+		<!--#if m_datas[isAnswerEnable] -->
+			<tr id="oTrAnswerEnable" class="">
+				<td>
+					<label for="oAnswerEnable">{ m_captions[sAnwser] }</label>
+				</td>
+				<td>
+					<select id="oAnswerEnable" name="oAnswerEnable">
+						<!--#in getNextAnswer -->
+						<option value="{ m_datas[iProposable] }">{ m_datas[sProposable] }</option>
+						<!--#endin getNextAnswer -->
+					</select>
+				</td>
+			</tr>
+		<!--#endif m_datas[isAnswerEnable] -->
 		</table>
 	</div>
 	

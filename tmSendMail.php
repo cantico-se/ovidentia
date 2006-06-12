@@ -25,7 +25,7 @@
 	require_once $GLOBALS['babInstallPath'] . 'utilit/mailincl.php';
 	require_once $GLOBALS['babInstallPath'] . 'admin/acl.php';
 
-	$g_aEmailMsg = array(
+	$GLOBALS['g_aEmailMsg'] = array(
 		BAB_TM_EV_PROJECT_CREATED => 
 			array('subject' => bab_translate("Project creation"),
 				'body' => bab_translate("The project %s have been created in the project space %s")),
@@ -46,9 +46,20 @@
 				'body' => bab_translate("The task %s of the project %s in the project space %s have been deleted by %s")),
 		BAB_TM_EV_NOTICE_ALERT => 
 			array('subject' => bab_translate("Notice alert"), 
-				'body' => bab_translate("The task %s of the project %s in the project space %s is about to exceed the envisaged time"))
+				'body' => bab_translate("The task %s of the project %s in the project space %s is about to exceed the envisaged time")),
+		BAB_TM_EV_NEW_TASK_RESPONSIBLE =>
+			array('subject' => bab_translate("Task responsible"),
+				'body' => bab_translate("You are responsible for task %s of the %s project in %s project space")),
+		BAB_TM_EV_NO_MORE_TASK_RESPONSIBLE =>
+			array('subject' => bab_translate("Task responsible"),
+				'body' => bab_translate("You are not responsible any more for the task %s of the %s project in %s project space")),
+		BAB_TM_EV_TASK_RESPONSIBLE_PROPOSED =>
+			array('subject' => bab_translate("Task responsible"),
+				'body' => bab_translate("You are responsible for task %s of the %s project in %s project space. Please accept/refuse")),
+		BAB_TM_EV_TASK_STARTED => 
+			array('subject' => bab_translate("Task responsible"), 
+				'body' => bab_translate("The task %s of the project %s in the project space %s is started"))
 	);
-	
 	
 	class BAB_TM_SendEmail extends BAB_BaseFormProcessing
 	{

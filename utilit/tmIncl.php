@@ -755,6 +755,170 @@ function bab_getLastProjectRevision($iIdProject, &$iMajorVersion, &$iMinorVersio
 
 
 //Task functions
+function bab_startDependingTask($iIdProjectSpace, $iIdProject, $iIdTask, $iLinkType)
+{
+//	bab_getAllTaskIndexedById($iIdProject, $aTasks);
+//	bab_debug($aTasks);
+//	$aProcessedTaks = array();
+	
+	$aDependingTasks = array();
+//	$iLinkType = BAB_TM_START_TO_START;
+//	$iIdTask = 15;
+	bab_getDependingTasks($iIdTask, $iLinkType, $aDependingTasks);
+	
+//	bab_debug($aDependingTasks);
+	
+	//*
+	require_once $GLOBALS['babInstallPath'] . 'tmSendMail.php';
+	$oSendMail = new BAB_TM_SendEmail();
+	
+	foreach($aDependingTasks as $iId => $aTaskInfo)
+	{
+		if(bab_getTask($iId, $aTask))
+		{
+//bab_debug('iIdTask ==> ' . $iId);
+			$aTask['iParticipationStatus'] = BAB_TM_IN_PROGRESS;
+			$aTask['sStartDate'] = date("Y-m-d");
+			bab_updateTask($iId, $aTask);
+			
+			{
+				$sProjectName = '???';
+				if(bab_getProject($iIdProject, $aProject))
+				{
+					$sProjectName = $aProject['name'];
+				}
+					
+				$sProjectSpaceName = '???';
+				if(bab_getProjectSpace($iIdProjectSpace, $aProjectSpace))
+				{
+					$sProjectSpaceName = $aProjectSpace['name'];
+				}
+				
+				$iIdEvent = BAB_TM_EV_TASK_STARTED;
+				$g_aEmailMsg =& $GLOBALS['g_aEmailMsg'];
+				$sSubject = $g_aEmailMsg[$iIdEvent]['subject'];
+				$sBody = $g_aEmailMsg[$iIdEvent]['body'];
+				
+				$sBody = sprintf($sBody, $aTask['sTaskNumber'], $sProjectName, $sProjectSpaceName);
+				$oSendMail->send_notification(bab_getUserEmail($aTaskInfo['iIdResponsible']), $sSubject, $sBody);
+			}
+		}
+	}
+	
+	if(BAB_TM_END_TO_START == $iLinkType)
+	{
+		reset($aDependingTasks);
+		foreach($aDependingTasks as $iId => $aTaskInfo)
+		{
+			bab_startDependingTask($iIdProjectSpace, $iIdProject, $iId, BAB_TM_START_TO_START);
+		}
+	}
+	//*/
+}
+
+//*
+function bab_getDependingTasks($iIdTask, $iLinkType, &$aDependingTasks)
+{
+	$query = 
+		'SELECT ' . 
+			'lt.idTask, ' .
+			'tr.idResponsible ' .
+		'FROM ' . 
+			BAB_TSKMGR_LINKED_TASKS_TBL . ' lt, ' .
+			BAB_TSKMGR_TASKS_TBL . ' t, ' .
+			BAB_TSKMGR_TASKS_RESPONSIBLES_TBL . ' tr ' .
+		'WHERE ' . 
+			'lt.idPredecessorTask = \'' . $iIdTask . '\' AND ' .
+			'lt.linkType = \'' . $iLinkType . '\' AND ' .
+			't.participationStatus NOT IN(\'' . BAB_TM_IN_PROGRESS . '\', \'' . BAB_TM_ENDED . '\') ' .
+		'GROUP BY lt.idTask';
+		
+	//bab_debug($query);
+	
+	global $babDB;
+	$db	= & $GLOBALS['babDB'];
+
+	$result = $babDB->db_query($query);
+	$iNumRows = $babDB->db_num_rows($result);
+	$iIndex = 0;
+	
+	while($iIndex < $iNumRows && false != ($datas = $babDB->db_fetch_assoc($result)))
+	{
+		bab_getDependingTasks($datas['idTask'], $iLinkType, $aDependingTasks);
+		$aDependingTasks[$datas['idTask']] = array('iIdTask' => $datas['idTask'],
+			'iIdResponsible' => $datas['idResponsible']);
+		$iIndex++;
+	}
+}
+//*/
+
+function bab_getAllTaskIndexedById($iIdProject, &$aTasks)
+{
+	global $babBody, $babDB;
+
+	$aTasks = array();	
+
+	$query = 
+		'SELECT ' .
+			'id, ' . 
+			'idProject, ' .
+			'taskNumber, ' .
+			'description, ' .
+			'idCategory, ' .
+			'created, ' .
+			'modified, ' .
+			'idUserCreated, ' .
+			'idUserModified, ' .
+			'class, ' .
+			'participationStatus, ' .
+			'isLinked, ' .
+			'idCalEvent, ' .
+			'hashCalEvent, ' .
+			'duration, ' .
+			'majorVersion, ' .
+			'minorVersion, ' .
+			'color, ' .
+			'position, ' .
+			'completion, ' .
+			'plannedStartDate, ' .
+			'plannedEndDate, ' .
+			'startDate, ' .
+			'endDate, ' .
+			'isNotified, ' .
+			'idOwner ' .
+		'FROM ' .
+			BAB_TSKMGR_TASKS_TBL . ' ' .
+		'WHERE ' . 
+			'idProject = \'' . $iIdProject . '\'';
+			
+	//bab_debug($query);
+
+	$result = $babDB->db_query($query);
+	$iNumRows = $babDB->db_num_rows($result);
+	$iIndex = 0;
+	
+	while($iIndex < $iNumRows && false != ($datas = $babDB->db_fetch_assoc($result)))
+	{
+		$aTasks[$datas['id']] = array('id' => $datas['id'], 'iIdProject' =>  $datas['idProject'], 
+			'sTaskNumber' => $datas['taskNumber'], 'sDescription' => $datas['description'], 
+			'iIdCategory' => $datas['idCategory'], 'sCreated' => $datas['created'], 
+			'sModified' => $datas['modified'], 'iIdUserCreated' => $datas['idUserCreated'], 
+			'iIdUserModified' => $datas['idUserModified'], 'iClass' => $datas['class'], 
+			'iParticipationStatus' => $datas['participationStatus'],
+			'iIsLinked' => $datas['isLinked'], 
+			'iIdCalEvent' => $datas['idCalEvent'], 'sHashCalEvent' => $datas['hashCalEvent'], 
+			'iDuration' => $datas['duration'], 'iMajorVersion' => $datas['majorVersion'], 
+			'iMinorVersion' => $datas['minorVersion'], 'sColor' => $datas['color'], 
+			'iPosition' => $datas['position'], 'iCompletion' => $datas['completion'],
+			'sPlannedStartDate' => $datas['plannedStartDate'], 'sStartDate' => $datas['startDate'],
+			'sPlannedEndDate' => $datas['plannedEndDate'], 'sEndDate' => $datas['endDate'],
+			'iIsNotified' => $datas['isNotified'], 'iIdOwner' => $datas['idOwner']);
+			
+		$iIndex++;
+	}
+}
+
+
 function bab_createTask($aParams)
 {
 	global $babBody, $babDB;

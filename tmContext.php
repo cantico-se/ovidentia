@@ -236,14 +236,18 @@ class BAB_TM_Context
 				{
 					$iUserProfil = BAB_TM_PROJECT_MANAGER;
 				}
-				else if(isset($this->m_aTaskResponsibles[$GLOBALS['BAB_SESS_USERID']]))
+				else 
 				{
-					$iUserProfil = BAB_TM_TASK_RESPONSIBLE;
+					bab_getTaskResponsibles($this->m_iIdTask, $aTaskResponsible);
+					if(isset($aTaskResponsible[$GLOBALS['BAB_SESS_USERID']]))
+					{
+						$iUserProfil = BAB_TM_TASK_RESPONSIBLE;
+					}
 				}
 			}
 			else 
 			{
-				if(is_null($aTaskResponsibles))
+				//if(is_null($aTaskResponsibles))
 				{
 					bab_getAvailableTaskResponsibles($this->m_iIdProject, $aTaskResponsibles);
 				}
