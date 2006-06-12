@@ -2051,6 +2051,7 @@ class bab_RecentArticles extends bab_handler
 		$this->last = $ctx->get_value('last');
 		$this->topicid = $ctx->get_value('topicid');
 		$this->topcatid = $ctx->get_value('categoryid');
+		$lang = $ctx->get_value('lang');
 		$delegationid = (int) $ctx->get_value('delegationid');
 		
 		if ( $this->topcatid === false || $this->topcatid === '' )
@@ -2108,6 +2109,11 @@ class bab_RecentArticles extends bab_handler
 			if( $this->nbdays !== false)
 				$req .= " AND art.date >= DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
 
+			
+			if ($lang !== false ) {
+				$req .= " AND art.lang='".$lang."'";
+			}
+			
 			$req .= $archive;
 
 			$order = $ctx->get_value('order');
