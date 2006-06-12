@@ -2800,6 +2800,11 @@ CREATE TABLE `bab_index_files` (
 );
 
 
+INSERT INTO `bab_index_files` VALUES (1, 'File manager', 'bab_files', 1, 0);
+INSERT INTO `bab_index_files` VALUES (2, 'Articles files', 'bab_art_files', 1, 0);
+INSERT INTO `bab_index_files` VALUES (3, 'Forum post files', 'bab_forumsfiles', 1, 0);
+
+
 CREATE TABLE bab_index_access (
   file_path varchar(255) NOT NULL,
   id_object int(10) unsigned NOT NULL,
