@@ -178,8 +178,8 @@ $this->set_data('isStoppable', false);
 $this->set_data('iAddSpfIdx', BAB_TM_IDX_DISPLAY_TASK_FORM);
 			$this->set_data('iAddSpfAction', BAB_TM_ACTION_CREATE_SPECIFIC_FIELD_INSTANCE);
 			
-$this->set_data('iAddIdx', BAB_TM_IDX_DISPLAY_TASK_FORM);
-			//$this->set_data('iAddIdx', BAB_TM_IDX_DISPLAY_TASK_LIST);
+//$this->set_data('iAddIdx', BAB_TM_IDX_DISPLAY_TASK_FORM);
+			$this->set_data('iAddIdx', BAB_TM_IDX_DISPLAY_TASK_LIST);
 			$this->set_data('iAddAction', BAB_TM_ACTION_ADD_TASK);
 			$this->set_data('iModifyIdx', BAB_TM_IDX_DISPLAY_TASK_LIST);
 			$this->set_data('iModifyAction', BAB_TM_ACTION_MODIFY_TASK);

@@ -417,7 +417,6 @@ function addModifyProjectSpace()
 	$oTmCtx =& getTskMgrContext();
 	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
 	$iIdDelegation = $oTmCtx->getIdDelegation();
-
 	
 	$sName = mysql_escape_string(tskmgr_getVariable('sName', ''));
 	$sDescription = mysql_escape_string(tskmgr_getVariable('sDescription', ''));
@@ -425,19 +424,21 @@ function addModifyProjectSpace()
 	if(strlen(trim($sName)) > 0)
 	{
 		$id = bab_isProjectSpaceExist($iIdDelegation, $sName);
-		
-		if(false == $id)
+		if(false === $id)
 		{
-			$iIdProjectSpace = bab_createProjectSpace($iIdDelegation, $sName, $sDescription);
-			if(false != $iIdProjectSpace)
+			if(0 === $iIdProjectSpace)
 			{
-				bab_createDefaultProjectSpaceConfiguration($iIdProjectSpace);
-				bab_createDefaultProjectSpaceNoticeEvent($iIdProjectSpace);
+				$iIdProjectSpace = bab_createProjectSpace($iIdDelegation, $sName, $sDescription);
+				if(false != $iIdProjectSpace)
+				{
+					bab_createDefaultProjectSpaceConfiguration($iIdProjectSpace);
+					bab_createDefaultProjectSpaceNoticeEvent($iIdProjectSpace);
+				}
 			}
-		}
-		else if($id == $iIdProjectSpace)
-		{
-			bab_updateProjectSpace($iIdProjectSpace, $sName, $sDescription);
+			else
+			{
+				bab_updateProjectSpace($iIdProjectSpace, $sName, $sDescription);
+			}
 		}
 		else
 		{
@@ -513,10 +514,11 @@ bab_cleanGpc();
 
 /*
 require_once($babInstallPath . 'upgrade.php');
-upgradeXXXtoYYY();
+require_once($babInstallPath . 'utilit\upgradeincl.php');
+upgrade582to583();
 //*/
 
-/*
+//*
 global $babBody;
 if(!($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) && $babBody->currentDGGroup['taskmanager'] !== 'Y')
 {
