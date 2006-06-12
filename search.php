@@ -77,7 +77,7 @@ class bab_addonsSearch
 	function bab_addonsSearch()
 		{
 		$db = &$GLOBALS['babDB'];
-		$res = $db->db_query("select id,title from ".BAB_ADDONS_TBL." where enabled='Y'");
+		$res = $db->db_query("select id,title from ".BAB_ADDONS_TBL." where enabled='Y' AND installed='Y'");
 		while (list($id,$title) = $db->db_fetch_array($res))
 			{
 			
@@ -1335,6 +1335,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$this->nbresult += $nbrows;
 			// --------------------------------------------- DIRECTORIES
 			$arrview = bab_getUserIdObjects(BAB_DBDIRVIEW_GROUPS_TBL);
+			bab_debug($arrview);
 			if( count($arrview) && (empty($item) || $item == "g"))
 				{
 				$id_directory = isset($this->fields['g_directory']) ? $this->fields['g_directory'] : '';
@@ -1423,6 +1424,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					$arr_grp[] = $arr['id'];
 					}
 
+
 				// Liste des annuaires base de donnés
 
 				$arr_dir = array();
@@ -1498,10 +1500,13 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				".$crit_fields." 
 				".$crit_fields_add_str." 
 					(
-					e.id_directory IN ( '0', '".implode("','",$arr_dir)."' ) 
-					OR u.id IS NOT NULL 
+					e.id_directory IN ( '".implode("','",$arr_dir)."' )
+					OR (e.id_directory = '0' AND u.id IS NOT NULL )
 					) ".$option_dir." 
 				GROUP BY e.id ";
+
+
+				bab_debug($arr_grp);
 
 				$this->countdirfields = count($this->dirfields['name']);
 
