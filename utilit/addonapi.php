@@ -603,7 +603,7 @@ function bab_isMemberOfGroup($groupname, $userid="")
 		if( $userid == "")
 			$userid = $BAB_SESS_USERID;
 		$db = &$GLOBALS['babDB'];
-		$req = "select id from ".BAB_GROUPS_TBL." where name='$groupname'";
+		$req = "select id from ".BAB_GROUPS_TBL." where name='".$db->db_escape_string($groupname)."'";
 		$res = $db->db_query($req);
 		if( $res && $db->db_num_rows($res) > 0)
 			{
@@ -625,7 +625,7 @@ function bab_isMemberOfGroup($groupname, $userid="")
 function bab_getUserIdByEmail($email)
 	{
 	$db = $GLOBALS['babDB'];
-	$query = "select id from ".BAB_USERS_TBL." where email='$email'";
+	$query = "select id from ".BAB_USERS_TBL." where email='".$db->db_escape_string($email)."'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -641,7 +641,7 @@ function bab_getUserIdByEmail($email)
 function bab_getUserIdByNickname($nickname)
 	{
 	$db = $GLOBALS['babDB'];
-	$res = $db->db_query("select id from ".BAB_USERS_TBL." where nickname='$nickname'");
+	$res = $db->db_query("select id from ".BAB_USERS_TBL." where nickname='".$db->db_escape_string($nickname)."'");
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
@@ -658,7 +658,7 @@ function bab_getUserId( $name )
 	$replace = array( " " => "", "-" => "");
 	$db = $GLOBALS['babDB'];
 	$hash = md5(strtolower(strtr($name, $replace)));
-	$query = "select id from ".BAB_USERS_TBL." where hashname='".$hash."'";	
+	$query = "select id from ".BAB_USERS_TBL." where hashname='".$db->db_escape_string($hash)."'";	
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) > 0)
 		{
