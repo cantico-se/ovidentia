@@ -23,6 +23,7 @@
 ************************************************************************/
 include_once "base.php";
 include_once $babInstallPath."utilit/fileincl.php";
+include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
 
 function notifyApprovers($id, $fid)
 	{
@@ -1877,6 +1878,7 @@ function viewFile( $idf)
 				$this->t_yes = bab_translate("Yes");
 				$this->t_no = bab_translate("No");
 				$this->t_change_all = bab_translate("Change status for all versions");
+				$this->tabIndexStatus = array(BAB_INDEX_STATUS_NOINDEX, BAB_INDEX_STATUS_INDEXED, BAB_INDEX_STATUS_TOINDEX);
 
 				$this->id = $arr['id_owner'];
 				$this->gr = $arr['bgroup'];
@@ -2095,14 +2097,18 @@ function viewFile( $idf)
 
 
 		function getnextistatus() {
-			static $arr = array(BAB_INDEX_STATUS_NOINDEX, BAB_INDEX_STATUS_INDEXED, BAB_INDEX_STATUS_TOINDEX);
-			if (list(,$this->value) = each($arr)) {
+			static $m=0;
+			if( $m < count($this->tabIndexStatus))
+			{
+				$this->value = $this->tabIndexStatus[$m];
+			//if (list(,$this->value) = each($arr)) {
 				$this->disabled=false;
 				$this->option = bab_toHtml(bab_getIndexStatusLabel($this->value));
 				$this->selected = $this->index_status == $this->value;
 				if (BAB_INDEX_STATUS_INDEXED == $this->value && !$this->index_onload) {
 					$this->disabled=true;
 				}
+				$m++;
 				return true;
 			}
 			return false;
