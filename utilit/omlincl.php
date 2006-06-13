@@ -2259,21 +2259,22 @@ class bab_RecentComments extends bab_handler
 				{
 				$topview = "where confirmed='Y' and id_topic IN (".implode(',', array_keys($babBody->topview)).")";
 				}
+
+			$sDelegation = ' ';	
+			if(0 != $delegationid)	
+			{
+				$req .= 
+					'LEFT JOIN ' .
+						BAB_TOPICS_TBL . ' tp ON tp.id = id_topic ' .
+					'LEFT JOIN ' .
+						BAB_TOPICS_CATEGORIES_TBL . ' tpCat ON tpCat.id = tp.id_cat ';
+						
+				$sDelegation = ' AND tpCat.id_dgowner = \'' . $delegationid . '\' ';
+			}
+				
+			$req .= $topview . $sDelegation;
 			}
 		
-		$sDelegation = ' ';	
-		if(0 != $delegationid)	
-		{
-			$req .= 
-				'LEFT JOIN ' .
-					BAB_TOPICS_TBL . ' tp ON tp.id = id_topic ' .
-				'LEFT JOIN ' .
-					BAB_TOPICS_CATEGORIES_TBL . ' tpCat ON tpCat.id = tp.id_cat ';
-					
-			$sDelegation = ' AND tpCat.id_dgowner = \'' . $delegationid . '\' ';
-		}
-			
-		$req .= $topview . $sDelegation;
 			
 		if( $req != '' )
 			{
