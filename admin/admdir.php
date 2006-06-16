@@ -864,7 +864,7 @@ function showDbFieldValuesModify($id, $idfieldx)
 			{
 			global $babBodyPopup, $babBody, $babDB;
 			$this->addtxt = bab_translate("Add a value");
-			$this->savetxt = bab_translate("Save and close");
+			$this->savetxt = bab_translate("Save");
 			$this->fvdeftxt = bab_translate("Default value");
 			$this->yestxt = bab_translate("Yes");
 			$this->notxt = bab_translate("No");
