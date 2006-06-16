@@ -555,10 +555,10 @@ function summaryFmFolders($col, $order, $pos, $startday, $endday)
 			$this->urlordhits = "idx=fmfold&order=".($col == 'hits'? $this->sortord: $order)."&col=hits&pos=".$pos;
 			if( $this->bnavigation )
 				{
-				$this->prevpageurl = "idx=fmdown&order=".$order."&col=".$col."&pos=".$prev;
-				$this->nextpageurl = "idx=fmdown&order=".$order."&col=".$col."&pos=".$next;
-				$this->toppageurl = "idx=fmdown&order=".$order."&col=".$col."&pos=".$top;
-				$this->bottompageurl = "idx=fmdown&order=".$order."&col=".$col."&pos=".$bottom;
+				$this->prevpageurl = "idx=fmfold&order=".$order."&col=".$col."&pos=".$prev;
+				$this->nextpageurl = "idx=fmfold&order=".$order."&col=".$col."&pos=".$next;
+				$this->toppageurl = "idx=fmfold&order=".$order."&col=".$col."&pos=".$top;
+				$this->bottompageurl = "idx=fmfold&order=".$order."&col=".$col."&pos=".$bottom;
 				}
 			$this->summaryBaseCls();
 			}
