@@ -43,7 +43,7 @@ function showOthers()
 }
 
 
-function upComingEvents($idcal)
+function upComingEvents()
 {
 	global $babBody;
 
@@ -57,10 +57,9 @@ function upComingEvents($idcal)
 		var $alternate;
 		var $calid;
 
-		function temp($idcal)
+		function temp()
 			{
 			global $babBody, $BAB_SESS_USERID;
-			$this->calid = $idcal;
 			$this->db = $GLOBALS['babDB'];
 			$mktime = mktime();
 			$this->newevents = bab_translate("Upcoming Events ( in the seven next days )");
@@ -71,7 +70,7 @@ function upComingEvents($idcal)
 			$babBody->icalendars->initializeCalendars();
 			if (!empty($babBody->icalendars->id_percal))
 				{
-				$this->resevent = $this->db->db_query("select ce.* from ".BAB_CAL_EVENTS_TBL." ce left join ".BAB_CAL_EVENTS_OWNERS_TBL." ceo on ce.id=ceo.id_event where ceo.id_cal='".$idcal."' and ce.start_date < '".$this->daymax."' and ce.end_date > '".$this->daymin."'order by ce.start_date");
+				$this->resevent = $this->db->db_query("select ce.*, ceo.id_cal from ".BAB_CAL_EVENTS_TBL." ce left join ".BAB_CAL_EVENTS_OWNERS_TBL." ceo on ce.id=ceo.id_event where ceo.id_cal='".$babBody->icalendars->id_percal."' and ce.start_date < '".$this->daymax."' and ce.end_date > '".$this->daymin."'order by ce.start_date");
 				$this->countevent = $this->db->db_num_rows($this->resevent);
 				}
 			else
@@ -83,20 +82,20 @@ function upComingEvents($idcal)
 			reset($babBody->icalendars->pubcal);
 			while( $row=each($babBody->icalendars->pubcal) ) 
 				{
-				$idpubcals[] = $row[1]['idowner'];
+				$idpubcals[] = $row[0];
 				}
-			
-			if (!count($idpubcals))
+
+		if (count($idpubcals))
 				{
-				$this->resevent = $this->db->db_query("select ce.* from ".BAB_CAL_EVENTS_TBL." ce left join ".BAB_CAL_EVENTS_OWNERS_TBL." ceo on ce.id=ceo.id_event where ceo.id_cal='".implode(',', $idpubcals)."' and ce.start_date < '".$this->daymax."' and ce.end_date > '".$this->daymin."'order by ce.start_date");
-				$this->countgrpevent = $this->db->db_num_rows($this->resevent);
+				$this->resgrpevent = $this->db->db_query("select ce.*, ceo.id_cal from ".BAB_CAL_EVENTS_TBL." ce left join ".BAB_CAL_EVENTS_OWNERS_TBL." ceo on ce.id=ceo.id_event where ceo.id_cal IN ('".implode('\',\'', $idpubcals)."') and ce.start_date < '".$this->daymax."' and ce.end_date > '".$this->daymin."'order by ce.start_date");
+				$this->countgrpevent = $this->db->db_num_rows($this->resgrpevent);
 				}
 			else
 				{
 				$this->countgrpevent = 0;
 				}
 
-			if( $this->countevent && $this->countgrpevent )
+			if( $this->countevent || $this->countgrpevent )
 				{
 				$this->bshow = true;
 				}
@@ -117,7 +116,7 @@ function upComingEvents($idcal)
 				$this->startdate = bab_shortDate(bab_mktime($arr['start_date']));
 				$this->title = $arr['title'];
 				$rr = explode("-", $arr['start_date']);
-				$this->titleurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&idcal=".$this->calid. "&evtid=".$arr['id'];
+				$this->titleurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&idcal=".$arr['id_cal']. "&evtid=".$arr['id'];
 				if( $k % 2)
 					$this->alternate = 1;
 				else
@@ -142,7 +141,7 @@ function upComingEvents($idcal)
 				$this->startdate = bab_shortDate(bab_mktime($arr['start_date']));
 				$this->title = $arr['title'];
 				$rr = explode("-", $arr['start_date']);
-				$this->titleurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&idcal=".$this->calid. "&evtid=".$arr['id'];
+				$this->titleurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&idcal=".$arr['id_cal']. "&evtid=".$arr['id'];
 				if( $k % 2)
 					$this->alternate = 1;
 				else
@@ -159,7 +158,7 @@ function upComingEvents($idcal)
 
 		}
 
-	$temp = new temp($idcal);
+	$temp = new temp();
 	$babBody->babecho(	bab_printTemplate($temp,"calview.html", "eventslist"));
 }
 
@@ -317,9 +316,9 @@ switch($idx)
 	case "view":
 		$babBody->title = bab_translate("Summary");
 		showOthers();
-		if( $babBody->icalendars->calendarAccess() && $babBody->icalendars->id_percal)
+		if( $babBody->icalendars->calendarAccess())
 		{
-			upComingEvents($babBody->icalendars->id_percal);
+			upComingEvents();
 		}
 		$bemail = bab_mailAccessLevel();
 		if( ($bemail == 1 || $bemail == 2) && function_exists('imap_open'))
