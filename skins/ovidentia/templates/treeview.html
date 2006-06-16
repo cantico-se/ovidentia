@@ -41,6 +41,7 @@ document.getElementById("{ t_treeViewId }").onElementClick = function(element)
 			'content': element.firstChild.nodeValue
 		};
 		window.opener.bab_dialog._return(returnParameters);
+		window.close();
 	} catch(e) {};
 }
 </script>

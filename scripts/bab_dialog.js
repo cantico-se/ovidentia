@@ -139,8 +139,8 @@ bab_dialog.selectdate = function(action) {
 }
 
 /**
- * A user list dialog
- * @param action function, an associative array with keys "id_user" and "name" will be given to "action" as a single parameter
+ * A user list dialog.
+ * @param action function receiving an associative array with keys "id_user" and "name" as parameter.
  */
 bab_dialog.selectuser = function(action) {
 
@@ -153,8 +153,8 @@ bab_dialog.selectuser = function(action) {
 }
 
 /**
- * A user list dialog
- * @param action function, an associative array with keys "id_user" and "name" will be given to "action" as a single parameter
+ * An articles/topics/categories tree dialog.
+ * @param action  function receiving an associative array with keys "id", "type" and "content" as parameter.
  */
 bab_dialog.selectarticle = function(action) {
 
@@ -163,5 +163,47 @@ bab_dialog.selectarticle = function(action) {
 		'height'	: 500
 	}
 
-	bab_dialog('?tg=statconf&idx=bcbrowse&w=top', useparam , action );
+	bab_dialog('?tg=selector&idx=articles&show_topics&clickable_topics', useparam , action );
+}
+
+/**
+ * An faq tree dialog.
+ * @param action  function receiving an associative array with keys "id", "type" and "content" as parameter.
+ */
+bab_dialog.selectfaq = function(action) {
+
+	var useparam = {
+		'width'		: 700,
+		'height'	: 500
+	}
+
+	bab_dialog('?tg=selector&idx=faqs&show_questions&clickable_questions', useparam , action );
+}
+
+/**
+ * An forum tree dialog.
+ * @param action  function receiving an associative array with keys "id", "type" and "content" as parameter.
+ */
+bab_dialog.selectforum = function(action) {
+
+	var useparam = {
+		'width'		: 700,
+		'height'	: 500
+	}
+
+	bab_dialog('?tg=selector&idx=forums&show_threads&clickable_threads', useparam , action );
+}
+
+/**
+ * An file tree dialog.
+ * @param action  function receiving an associative array with keys "id", "type" and "content" as parameter.
+ */
+bab_dialog.selectfile = function(action) {
+
+	var useparam = {
+		'width'		: 700,
+		'height'	: 500
+	}
+
+	bab_dialog('?tg=selector&idx=files&show_sub_directories&clickable_sub_directories', useparam , action );
 }

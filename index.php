@@ -790,6 +790,12 @@ switch($tg)
 		if( $BAB_SESS_LOGGED)
     		$incl = "lusers";
 		break;
+	case "selector":
+		$babLevelOne = "";
+		$babLevelTwo = "";
+		if( $BAB_SESS_LOGGED)
+    		$incl = "selector";
+		break;
 	case "stat":
 		$babLevelOne = bab_translate("Statistics");
 		$incl = "stat";

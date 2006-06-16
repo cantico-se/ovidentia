@@ -166,7 +166,7 @@ function statBrowseBasketItem()
 				case 'art':
 					$babBodyPopup->title = bab_translate("Article choice");
 					$treeView = new bab_ArticleTreeView('article');
-					$treeView->setAttributes(BAB_ARTICLE_TREE_VIEW_SHOW_ARTICLES);
+					$treeView->setAttributes(BAB_ARTICLE_TREE_VIEW_SHOW_ARTICLES | BAB_ARTICLE_TREE_VIEW_CLICKABLE_ARTICLES);
 					break;
 				case 'fold':
 					$babBodyPopup->title = bab_translate("Folder choice");
@@ -186,6 +186,8 @@ function statBrowseBasketItem()
 					break;
 				case 'faq':
 					$babBodyPopup->title = bab_translate("Faq choice");
+					$treeView = new bab_FaqTreeView('faq');
+					$treeView->setAttributes(BAB_FAQ_TREE_VIEW_SHOW_CATEGORIES | BAB_FAQ_TREE_VIEW_CLICKABLE_CATEGORIES);
 					$this->t_name = bab_translate("Faqs");
 					break;
 				case 'faqqr':
@@ -215,6 +217,7 @@ function statAddContentBasket()
 	class statAddContentBasketCls
 		{
 		var $updatetxt;
+		var $t_what;
 
 		function statAddContentBasketCls()
 			{
@@ -229,27 +232,35 @@ function statAddContentBasket()
 			switch($this->what)
 				{
 				case 'top':
+					$this->t_what = 'article';
 					$this->t_name = bab_translate("Articles topics");
 					break;
 				case 'art':
+					$this->t_what = 'article';
 					$this->t_name = bab_translate("Articles");
 					break;
 				case 'fold':
+					$this->t_what = 'file';
 					$this->t_name = bab_translate("Folders");
 					break;
 				case 'file':
+					$this->t_what = 'file';
 					$this->t_name = bab_translate("Files");
 					break;
 				case 'for':
+					$this->t_what = 'forum';
 					$this->t_name = bab_translate("Forums");
 					break;
 				case 'post':
+					$this->t_what = 'forum';
 					$this->t_name = bab_translate("Posts");
 					break;
 				case 'faq':
+					$this->t_what = 'faq';
 					$this->t_name = bab_translate("Faqs");
 					break;
 				case 'faqqr':
+					$this->t_what = 'faq';
 					$this->t_name = bab_translate("Questions");
 					break;
 				}

@@ -319,9 +319,12 @@ page_select_fill();
 <script type="text/javascript">
 <!--
 
+var currentInput = null;
+
 function co_selectItem(tab) {
-	alert(tab['id']+' '+tab['type']+' '+tab['content']);
-	}
+	if (currentInput)
+		currentInput.value = tab['content'];
+}
 
 //-->
 </script>
@@ -336,9 +339,9 @@ function co_selectItem(tab) {
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
 <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle"><a href="javascript: bab_dialog.selectarticle(co_selectItem);">{ t_name }</a>:</td>
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle"><a href="#" onclick="window.currentInput=document.getElementById('ibcname'); bab_dialog.select{ t_what }(co_selectItem);">{ t_name }</a>:</td>
 <td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="ibcname" size="60" value="{ ibcnameval }">
+<input type="text" id="ibcname" name="ibcname" size="60" value="{ ibcnameval }">
 </td>
 </tr>
 <tr> 
