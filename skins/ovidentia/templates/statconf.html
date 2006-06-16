@@ -28,8 +28,8 @@
 </table>
 <center><br><input type="submit" name="submit" value="{ updatetxt }"></center>
 </form>
-<br>
-<br>
+<br />
+<br />
 <form name="gcreate" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="statconf">
 <input type="hidden" name="idx" value="pages">
@@ -117,3 +117,246 @@
 </table>
 </form>
 <!--#end preferences -->
+
+<!--#begin baskets -->
+<!--#if bmpages -->
+<script type="text/javascript">
+<!--
+function page_next()
+	{
+	var f = document.forms.listform;
+	var tmp = f.pos.value + { rows_per_page };
+	if (tmp < { max })
+		{
+		f.pos.value = tmp;
+		f.submit();
+		}
+	}
+
+function page_previous()
+	{
+	var f = document.forms.listform;
+	var tmp = f.pos.value - { rows_per_page };
+	if (tmp >= 0)
+		{
+		f.pos.value = tmp;
+		f.submit();
+		}
+	}
+
+function page_load(p)
+	{
+	var f = document.forms.listform;
+	f.pos.value = p*{ rows_per_page };
+	f.submit();
+	}
+
+function page_select_fill()
+	{
+	var f = document.forms.listform;
+	if (typeof f.page != 'undefined')
+		{
+		var nbpages = Math.floor({ max }/{ rows_per_page }) + 1;
+		var current = Math.round({ pos }/{ rows_per_page });
+		for (var i=0 ; i < nbpages ; i++)
+			{
+			f.page.options[i] = new Option(i+1,i);
+			if (i == current)
+				f.page.options[i].selected=true;
+			}
+		}
+	}
+-->
+</script>
+<!--#endif bmpages -->
+<form name="listform" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="statconf">
+<input type="hidden" name="idx" value="bask">
+<input type="hidden" name="pos" value="{ pos }">
+<table border="0" width="90%" cellpadding="2" cellspacing="0" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+	<table border="0" width="100%" cellpadding="3" cellspacing="0">
+	<tr class="BabSiteAdminTitleFontBackground">
+		<td><b>{ t_baskets }</b></td>
+		<td></td>
+	</tr>
+	<!--#in getnext -->
+	<!--#if altbg -->
+	<tr class="BabForumBackground1">
+	<!--#else altbg -->
+	<tr class="BabSiteAdminFontBackground">
+	<!--#endif altbg -->
+		<td>
+		{ basketname }
+		</td>
+		<td align="right">
+		<a href="{ baskaccessurl }">{ t_rights }</a> / <a href="{ baskediturl }">{ t_edit }</a> / <a href="{ baskdeleteurl }">{ t_delete }</a> / <a href="{ baskcontenturl }">{ t_content }</a>
+		</td>
+	</tr>
+	<!--#endin getnext -->
+		<!--#if bmpages -->
+	<tr class="BabSiteAdminTitleFontBackground">
+		<td>
+		{ t_rows_per_page }&nbsp;<input type="text" name="rows_per_page" value="{ rows_per_page }" size="4" maxlength="4" /> &nbsp;&nbsp;&nbsp;&nbsp;
+		<input type="button" value="<" onclick="page_previous()" />
+		<select name="page" onchange="page_load(this.value)">
+		</select>
+		<input type="button" value=">" onclick="page_next()" />
+		</td>
+		<td></td>
+	</tr>
+		<!--#endif bmpages -->
+	</table>
+</td>
+</tr>
+</table>
+</form>
+<!--#if bmpages -->
+<script type="text/javascript">
+<!--
+page_select_fill();
+-->
+</script>
+<!--#endif bmpages -->
+<br />
+<form name="baskcreate" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="statconf">
+<input type="hidden" name="idx" value="bask">
+<input type="hidden" name="action" value="abask">
+<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ t_basketname }:</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="text" name="baskname" size="60" value="{ basknameval }">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ t_basketdesc }:</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="text" name="baskdesc" size="60" value="{ baskdescval }">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground">&nbsp;</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="submit" name="submit" value="{ addtxt }">
+<br>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</form>
+<!--#end baskets -->
+
+<!--#begin basket_edit -->
+<form name="baskupd" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="statconf">
+<input type="hidden" name="idx" value="bask">
+<input type="hidden" name="action" value="mbask">
+<input type="hidden" name="baskid" value="{ baskid }">
+<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ t_basketname }:</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="text" name="baskname" size="60" value="{ basknameval }">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ t_basketdesc }:</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="text" name="baskdesc" size="60" value="{ baskdescval }">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground">&nbsp;</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="submit" name="submit" value="{ updatetxt }">
+<br>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</form>
+<!--#end basket_edit -->
+
+<!--#begin basket_content -->
+<!--#in getnextfamily -->
+<br />
+<table width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr class="BabSiteAdminTitleFontBackground"> 
+<td>{ t_familyname }<br />(<a href="{ addurl }">{ t_add }</a>)</td><td>&nbsp;</td><td>&nbsp;</td>
+</tr>
+<!--#in getnextitem -->
+<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+<td>{ itemname }&nbsp;&nbsp;</td>
+<td>&nbsp;</td>
+<td align="right">&nbsp;<a class="BabSiteAdminListLink" href="{ deleteurl }">{ t_delete }</a> </td>
+</tr>
+<!--#endin getnextitem -->
+</table>
+</td>
+</tr>
+</table>
+<!--#endin getnextfamily -->
+<!--#end basket_content -->
+
+<!--#begin basket_content_add -->
+<script type="text/javascript" src="{ babInstallPath }scripts/bab_dialog.js"></script>
+<script type="text/javascript">
+<!--
+
+function co_selectItem(tab) {
+	alert(tab['id']+' '+tab['type']+' '+tab['content']);
+	}
+
+//-->
+</script>
+<form name="baskupd" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="statconf">
+<input type="hidden" name="idx" value="bask">
+<input type="hidden" name="action" value="acbask">
+<input type="hidden" name="what" value="{ what }">
+<input type="hidden" name="baskid" value="{ baskid }">
+<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle"><a href="javascript: bab_dialog.selectarticle(co_selectItem);">{ t_name }</a>:</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="text" name="ibcname" size="60" value="{ ibcnameval }">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ t_description }:</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="text" name="ibcdesc" size="60" value="{ ibcdescriptionval }">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground">&nbsp;</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="submit" name="submit" value="{ t_add }">
+<br>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</form>
+<!--#end basket_content_add -->

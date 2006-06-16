@@ -151,3 +151,17 @@ bab_dialog.selectuser = function(action) {
 
 	bab_dialog('?tg=lusers&idx=brow&cb=bab_dialog', useparam , action );
 }
+
+/**
+ * A user list dialog
+ * @param action function, an associative array with keys "id_user" and "name" will be given to "action" as a single parameter
+ */
+bab_dialog.selectarticle = function(action) {
+
+	var useparam = {
+		'width'		: 700,
+		'height'	: 500
+	}
+
+	bab_dialog('?tg=statconf&idx=bcbrowse&w=top', useparam , action );
+}

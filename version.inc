@@ -25,7 +25,7 @@
 name="ovidentia"
 description="Ovidentia"
 db_prefix="bab_"
-version="5.8.4"
+version="5.8.5"
 
 ; ov_version test is available since 5.8.1
 

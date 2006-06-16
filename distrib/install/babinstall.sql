@@ -1036,7 +1036,7 @@ CREATE TABLE bab_ini (
 
 INSERT INTO bab_ini VALUES ('ver_major', '5');
 INSERT INTO bab_ini VALUES ('ver_minor', '8');
-INSERT INTO bab_ini VALUES ('ver_build', '4');
+INSERT INTO bab_ini VALUES ('ver_build', '5');
 INSERT INTO bab_ini VALUES ('ver_prod', 'E');
 
 #
@@ -3350,3 +3350,37 @@ CREATE TABLE bab_tskmgr_working_hours (
   KEY startHour (startHour),
   KEY endHour (endHour)
 ) ;
+
+
+
+CREATE TABLE bab_stats_basket_content (
+  id int(11) unsigned NOT NULL auto_increment,
+  basket_id int(11) unsigned NOT NULL,
+  bc_description varchar(255) NOT NULL,
+  bc_author int(11) unsigned NOT NULL,
+  bc_datetime datetime NOT NULL,
+  bc_type tinyint(2) unsigned NOT NULL,
+  bc_id int(11) unsigned NOT NULL,
+  PRIMARY KEY  (id),
+  KEY basket_id (basket_id,bc_type)
+);
+
+
+CREATE TABLE bab_stats_baskets (
+  id int(11) unsigned NOT NULL auto_increment,
+  basket_name varchar(255) NOT NULL,
+  basket_desc varchar(255) NOT NULL,
+  basket_author int(11) unsigned NOT NULL,
+  basket_datetime datetime NOT NULL,
+  id_dgowner int(11) unsigned NOT NULL,
+  PRIMARY KEY  (id)
+);
+
+CREATE TABLE bab_statsbaskets_groups (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group)
+);

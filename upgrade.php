@@ -6729,4 +6729,66 @@ function upgrade583to584()
 
 }
 
+
+function upgrade584to585()
+{	
+	$ret = "";
+	$db = & $GLOBALS['babDB'];
+
+	if (!bab_isTable(BAB_STATS_BASKETS_TBL)) {
+
+		$db->db_query("
+		
+				CREATE TABLE ".BAB_STATS_BASKETS_TBL." (
+				  id int(11) unsigned NOT NULL auto_increment,
+				  basket_name varchar(255) NOT NULL,
+				  basket_desc varchar(255) NOT NULL,
+				  basket_author int(11) unsigned NOT NULL,
+				  basket_datetime datetime NOT NULL,
+				  id_dgowner int(11) unsigned NOT NULL,
+				  PRIMARY KEY  (id)
+				)
+			
+		");
+
+	}
+
+	if (!bab_isTable(BAB_STATSBASKETS_GROUPS_TBL)) {
+
+		$db->db_query("
+		
+				CREATE TABLE ".BAB_STATSBASKETS_GROUPS_TBL." (
+				  id int(11) unsigned NOT NULL auto_increment,
+				  id_object int(11) unsigned NOT NULL default '0',
+				  id_group int(11) unsigned NOT NULL default '0',
+				  PRIMARY KEY  (id),
+				  KEY id_object (id_object),
+				  KEY id_group (id_group)
+				)
+			
+		");
+
+	}
+
+	if (!bab_isTable(BAB_STATS_BASKET_CONTENT_TBL)) {
+
+		$db->db_query("
+		
+				CREATE TABLE ".BAB_STATS_BASKET_CONTENT_TBL." (
+				  id int(11) unsigned NOT NULL auto_increment,
+				  basket_id int(11) unsigned NOT NULL,
+				  bc_description varchar(255) NOT NULL,
+				  bc_author int(11) unsigned NOT NULL,
+				  bc_datetime datetime NOT NULL,
+				  bc_type tinyint(2) unsigned NOT NULL,
+				  bc_id int(11) unsigned NOT NULL,
+				  PRIMARY KEY  (id),
+				  KEY basket_id (basket_id,bc_type)
+				)
+			
+		");
+
+	}
+}
+
 ?>

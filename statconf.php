@@ -22,6 +22,396 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
+include_once $babInstallPath."admin/acl.php";
+
+define("BAB_STAT_BCT_TOPIC",		1);
+define("BAB_STAT_BCT_ARTICLE",		2);
+define("BAB_STAT_BCT_FOLDER",		3);
+define("BAB_STAT_BCT_FILE",			4);
+define("BAB_STAT_BCT_FORUM",		5);
+define("BAB_STAT_BCT_POST",			6);
+define("BAB_STAT_BCT_FAQ",			7);
+define("BAB_STAT_BCT_QUESTION",		8);
+
+
+function statBaskets($baskname, $baskdesc)
+{
+	global $babBody;
+	
+	class statBasketsCls
+		{
+		var $updatetxt;
+
+		function statBasketsCls($baskname, $baskdesc)
+			{
+			global $babBody, $babDB;
+			$this->t_rows_per_page = bab_translate("Rows/page");
+			$this->t_baskets = bab_translate("Statistics baskets");
+			$this->t_addbasket = bab_translate("Add a new basket");
+			$this->t_basketname = bab_translate("Name");
+			$this->t_basketdesc = bab_translate("Description");
+			$this->t_rights = bab_translate("Rights");
+			$this->t_edit = bab_translate("Edit");
+			$this->t_delete = bab_translate("Delete");
+			$this->t_content = bab_translate("Content");
+
+			$this->addtxt = bab_translate("Add");
+
+			$this->addbaskurl = $GLOBALS['babUrlScript']."?tg=statconf&idx=basknew";
+
+			$this->rows_per_page = isset($_POST['rows_per_page']) ? $_POST['rows_per_page'] : 10;
+			$this->pos = isset($_POST['pos']) ? $_POST['pos'] : 0;
+
+			list($this->max) = $babDB->db_fetch_array($babDB->db_query("SELECT COUNT(*) FROM ".BAB_STATS_BASKETS_TBL." where id_dgowner='".$babBody->currentAdmGroup."'"));
+
+			
+			$this->baskdescval = $baskdesc;
+			$this->basknameval = $baskname;
+			$this->altbg = true;
+
+			if( $this->max > $this->rows_per_page )
+				{
+				$this->res = $babDB->db_query("SELECT t.* FROM ".BAB_STATS_BASKETS_TBL." t where t.id_dgowner='".$babBody->currentAdmGroup."' order by t.basket_name LIMIT ".$this->pos.",".$this->rows_per_page);
+				$this->bmpages =true;
+				}
+			else
+				{
+				$this->res = $babDB->db_query("SELECT t.* FROM ".BAB_STATS_BASKETS_TBL." t where t.id_dgowner='".$babBody->currentAdmGroup."' order by basket_name");
+				$this->bmpages =false;
+				}
+			$this->count = $babDB->db_num_rows($this->res);
+			}
+
+		function getnext()
+			{
+			global $babDB;
+			static $i=0;
+			if( $i < $this->count)
+				{
+				$this->altbg = !$this->altbg;
+				$arr = $babDB->db_fetch_array($this->res);
+
+				$this->basketname = $arr['basket_name'];
+				$this->baskaccessurl = $GLOBALS['babUrlScript']."?tg=statconf&idx=baskrights&baskid=".$arr['id'];
+				$this->baskediturl = $GLOBALS['babUrlScript']."?tg=statconf&idx=baskedit&baskid=".$arr['id'];
+				$this->baskdeleteurl = $GLOBALS['babUrlScript']."?tg=statconf&idx=baskdel&baskid=".$arr['id'];
+				$this->baskcontenturl = $GLOBALS['babUrlScript']."?tg=statconf&idx=baskcontent&baskid=".$arr['id'];
+				$i++;
+				return true;
+				}
+			else
+				{
+				$i=0;
+				return false;
+				}
+			}
+		}
+
+	$temp = new statBasketsCls($baskname, $baskdesc);
+	$babBody->babecho(	bab_printTemplate($temp,"statconf.html", "baskets"));
+}
+
+function statModifyBasket()
+{
+	global $babBody;
+	
+	class statModifyBasketsCls
+		{
+		var $updatetxt;
+
+		function statModifyBasketsCls()
+			{
+			global $babBody, $babDB;
+
+			$this->t_basketname = bab_translate("Name");
+			$this->t_basketdesc = bab_translate("Description");
+
+			$this->updatetxt = bab_translate("Update");
+
+			$this->baskid = $_GET['baskid'];
+			$arr = $babDB->db_fetch_array($babDB->db_query("select basket_name, basket_desc from ".BAB_STATS_BASKETS_TBL." where id='".$this->baskid."'"));
+
+			$this->basknameval = $arr['basket_name'];
+			$this->baskdescval = $arr['basket_desc'];
+			}
+
+		}
+
+	$temp = new statModifyBasketsCls();
+	$babBody->babecho(	bab_printTemplate($temp,"statconf.html", "basket_edit"));
+}
+
+function statBrowseBasketItem()
+{
+	global $babBody;
+	
+	class statBrowseBasketItemCls
+		{
+		var $updatetxt;
+
+		function statBrowseBasketItemCls()
+			{
+			global $babBody, $babDB, $babBodyPopup;
+
+			$this->baskid = $_GET['baskid'];
+			$this->what = $_GET['w'];
+			require_once $GLOBALS['babInstallPath'] . 'utilit/tree.php';
+			switch($this->what)
+				{
+				case 'top':
+					$babBodyPopup->title = bab_translate("Articles topic choice");
+					$treeView = new bab_ArticleTreeView('article');
+					$treeView->setAttributes( BAB_ARTICLE_TREE_VIEW_SHOW_TOPICS | BAB_ARTICLE_TREE_VIEW_CLICKABLE_TOPICS);
+					break;
+				case 'art':
+					$babBodyPopup->title = bab_translate("Article choice");
+					$treeView = new bab_ArticleTreeView('article');
+					$treeView->setAttributes(BAB_ARTICLE_TREE_VIEW_SHOW_ARTICLES);
+					break;
+				case 'fold':
+					$babBodyPopup->title = bab_translate("Folder choice");
+					break;
+				case 'file':
+					$babBodyPopup->title = bab_translate("File choice");
+					$this->t_name = bab_translate("Files");
+					break;
+				case 'for':
+					$babBodyPopup->title = bab_translate("Forum choice");
+					$treeView = new bab_ForumTreeView('forum');
+					//$treeView->setAttributes(BAB_ARTICLE_TREE_VIEW_SHOW_ARTICLES);
+					break;
+				case 'post':
+					$babBodyPopup->title = bab_translate("Post choice");
+					$this->t_name = bab_translate("Posts");
+					break;
+				case 'faq':
+					$babBodyPopup->title = bab_translate("Faq choice");
+					$this->t_name = bab_translate("Faqs");
+					break;
+				case 'faqqr':
+					$babBodyPopup->title = bab_translate("Question choice");
+					$this->t_name = bab_translate("Questions");
+					break;
+				}
+
+			if( isset($treeView))
+				{
+				$treeView->sort();
+				$babBodyPopup->babecho($treeView->printTemplate());
+				}
+			}
+
+		}
+
+	$temp = new statBrowseBasketItemCls();
+	$babBody->babecho(	bab_printTemplate($temp,"statconf.html", "basket_edit"));
+}
+
+
+function statAddContentBasket()
+{
+	global $babBody;
+	
+	class statAddContentBasketCls
+		{
+		var $updatetxt;
+
+		function statAddContentBasketCls()
+			{
+			global $babBody, $babDB;
+
+			$this->t_description = bab_translate("Description");
+
+			$this->t_add = bab_translate("Add");
+
+			$this->baskid = $_GET['baskid'];
+			$this->what = $_GET['w'];
+			switch($this->what)
+				{
+				case 'top':
+					$this->t_name = bab_translate("Articles topics");
+					break;
+				case 'art':
+					$this->t_name = bab_translate("Articles");
+					break;
+				case 'fold':
+					$this->t_name = bab_translate("Folders");
+					break;
+				case 'file':
+					$this->t_name = bab_translate("Files");
+					break;
+				case 'for':
+					$this->t_name = bab_translate("Forums");
+					break;
+				case 'post':
+					$this->t_name = bab_translate("Posts");
+					break;
+				case 'faq':
+					$this->t_name = bab_translate("Faqs");
+					break;
+				case 'faqqr':
+					$this->t_name = bab_translate("Questions");
+					break;
+				}
+
+			$this->addurl = $GLOBALS['babUrlScript']."?tg=statconf&idx=bcbrowse&w=".$this->what."&baskid=".$this->baskid;
+			$this->ibcnameval = '';
+			$this->ibcdescriptionval = '';
+			}
+
+		}
+
+	$temp = new statAddContentBasketCls();
+	$babBody->babecho(	bab_printTemplate($temp,"statconf.html", "basket_content_add"));
+}
+
+function statContentBasket($baskid)
+{
+	global $babBody;
+	
+	class statContentBasketCls
+		{
+		var $updatetxt;
+
+		function statContentBasketCls($baskid)
+			{
+			global $babBody, $babDB;
+
+			$this->t_delete = bab_translate("Delete");
+			$this->t_add = bab_translate("Add");
+
+			$this->baskid = $baskid;
+
+			$this->families = array(
+				BAB_STAT_BCT_TOPIC => array("Articles topics", "top"),
+				BAB_STAT_BCT_ARTICLE => array("Articles", "art"),
+				BAB_STAT_BCT_FOLDER => array("Folders", "fold"),
+				BAB_STAT_BCT_FILE => array("Files", "file"),
+				BAB_STAT_BCT_FORUM=> array("Forums", "for"),
+				BAB_STAT_BCT_POST => array("Posts", "post"),
+				BAB_STAT_BCT_FAQ => array("Faqs", "faq"),
+				BAB_STAT_BCT_QUESTION => array("Questions", "faqqr")
+				);
+
+			$this->countf = count($this->families)+1;
+			}
+
+		function getnextfamily()
+			{
+			global $babDB;
+			static $k=1;
+			if( $k < $this->countf)
+				{
+				$this->t_familyname = $this->families[$k][0];
+				$this->addurl = $GLOBALS['babUrlScript']."?tg=statconf&idx=baskcadd&w=".$this->families[$k][1]."&baskid=".$this->baskid;
+				$this->counti = 0;
+				switch($k)
+					{
+					case BAB_STAT_BCT_TOPIC:
+						$req = "select sbct.*, tt.category as bc_item_name from ".BAB_STATS_BASKET_CONTENT_TBL." sbct left join ".BAB_TOPICS_TBL." tt on tt.id=sbct.bc_id where sbct.bc_type='".$k."'";
+						break;
+					case BAB_STAT_BCT_ARTICLE:
+						$req = "select sbct.*, at.title as bc_item_name from ".BAB_STATS_BASKET_CONTENT_TBL." sbct left join ".BAB_ARTICLES_TBL." at on at.id=sbct.bc_id where sbct.bc_type='".$k."'";
+						break;
+					case BAB_STAT_BCT_FOLDER:
+						$req = "select sbct.*, fft.folder as bc_item_name from ".BAB_STATS_BASKET_CONTENT_TBL." sbct left join ".BAB_FM_FOLDERS_TBL." fft on fft.id=sbct.bc_id where sbct.bc_type='".$k."'";
+						break;
+					case BAB_STAT_BCT_FILE:
+						$req = "select sbct.*, ft.name as bc_item_name from ".BAB_STATS_BASKET_CONTENT_TBL." sbct left join ".BAB_FILES_TBL." ft on ft.id=sbct.bc_id where sbct.bc_type='".$k."'";
+						break;
+					case BAB_STAT_BCT_FORUM:
+						$req = "select sbct.*, ft.name as bc_item_name from ".BAB_STATS_BASKET_CONTENT_TBL." sbct left join ".BAB_FORUMS_TBL." ft on ft.id=sbct.bc_id where sbct.bc_type='".$k."'";
+						break;
+					case BAB_STAT_BCT_POST:
+						$req = "select sbct.*, pt.subject as bc_item_name from ".BAB_STATS_BASKET_CONTENT_TBL." sbct left join ".BAB_POSTS_TBL." pt on pt.id=sbct.bc_id where sbct.bc_type='".$k."'";
+						break;
+					case BAB_STAT_BCT_FAQ:
+						$req = "select sbct.*, ft.category as bc_item_name from ".BAB_STATS_BASKET_CONTENT_TBL." sbct left join ".BAB_FAQCAT_TBL." ft on ft.id=sbct.bc_id where sbct.bc_type='".$k."'";
+						break;
+					case BAB_STAT_BCT_QUESTION:
+						$req = "select sbct.*, ft.question as bc_item_name from ".BAB_STATS_BASKET_CONTENT_TBL." sbct left join ".BAB_FAQQR_TBL." ft on ft.id=sbct.bc_id where sbct.bc_type='".$k."'";
+						break;
+					default:
+						$req = '';
+						break;
+					}
+				$this->counti = 0;
+
+				if( !empty($req))
+					{
+					$req .= " and sbct.basket_id = '".$this->baskid."'";
+					$this->res = $babDB->db_query($req);
+					$this->counti = $babDB->db_num_rows($this->res);
+					}
+				$k++;
+				return true;
+				}
+			else
+				{
+				$k = 0;
+				$this->counti = 0;
+				return false;
+				}
+			}
+
+		function getnextitem()
+			{
+			global $babDB;
+			static $d=0;
+			if( $d < $this->counti)
+				{
+				$arr = $babDB->db_fetch_array($this->res);
+				$this->itemname = $arr['bc_item_name'];
+				$this->deleteurl= $GLOBALS['babUrlScript']."?tg=statconf&idx=baskcontent&action=bcdel&itemid=".$arr['id']."&baskid=".$this->baskid;
+
+				$d++;
+				return true;
+				}
+			else
+				{
+				$d = 0;
+				return false;
+				}
+			}
+
+		}
+
+	$temp = new statContentBasketCls($baskid);
+	$babBody->babecho(	bab_printTemplate($temp,"statconf.html", "basket_content"));
+}
+
+function statDeleteBasket($id)
+	{
+	global $babBody;
+	
+	class statDeleteBasketCls
+		{
+		var $warning;
+		var $message;
+		var $title;
+		var $urlyes;
+		var $urlno;
+		var $yes;
+		var $no;
+		var $topics;
+		var $article;
+
+		function statDeleteBasketCls($id)
+			{
+			global $babDB;
+			$this->message = bab_translate("Are you sure you want to delete this basket");
+			list($this->title) = $babDB->db_fetch_row($babDB->db_query("select basket_name from ".BAB_STATS_BASKETS_TBL." where id='".$id."'"));
+			$this->warning = bab_translate("WARNING: This operation will delete the basket and all associated datas"). "!";
+			$this->urlyes = $GLOBALS['babUrlScript']."?tg=statconf&idx=bask&baskid=".$id."&action=dbask";
+			$this->yes = bab_translate("Yes");
+			$this->urlno = $GLOBALS['babUrlScript']."?tg=statconf&idx=bask";
+			$this->no = bab_translate("No");
+			}
+		}
+
+	$temp = new statDeleteBasketCls($id);
+	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
+	}
 
 function statPages($url, $page)
 {
@@ -188,6 +578,60 @@ function updateStatPreferences($wsepar, $separ)
 }
 
 
+function addStatBasket($baskname, $baskdesc)
+{
+	global $babBody, $babDB;
+
+	if( empty($baskname))
+		{
+		$babBody->msgerror = bab_translate("ERROR: You must provide a name !!");
+		return false;
+		}
+
+	if( !bab_isMagicQuotesGpcOn())
+		{
+		$baskname = addslashes($baskname);
+		$baskdesc = addslashes($baskdesc);
+		}
+
+	$babDB->db_query("insert into ".BAB_STATS_BASKETS_TBL." (basket_name, basket_desc, basket_author, basket_datetime, id_dgowner) values ('".$baskname."','".$baskdesc."','".$GLOBALS['BAB_SESS_USERID']."', now(), '".$babBody->currentAdmGroup."')");
+}
+
+function updateStatBasket($baskid, $baskname, $baskdesc)
+{
+	global $babBody, $babDB;
+
+	if( empty($baskname))
+		{
+		$babBody->msgerror = bab_translate("ERROR: You must provide a name !!");
+		return false;
+		}
+
+	if( !bab_isMagicQuotesGpcOn())
+		{
+		$baskname = addslashes($baskname);
+		$baskdesc = addslashes($baskdesc);
+		}
+
+	$babDB->db_query("update ".BAB_STATS_BASKETS_TBL." set basket_name='".$baskname."', basket_desc='".$baskdesc."' where id='".$baskid."'");
+}
+
+function deleteStatBasket($id )
+{
+	global $babDB;
+
+	$babDB->db_query("delete from ".BAB_STATS_BASKETS_TBL." where id='".$id."'");
+	$babDB->db_query("delete from ".BAB_STATS_BASKET_CONTENT_TBL." where basket_id='".$id."'");
+	$babDB->db_query("delete from ".BAB_STATSBASKETS_GROUPS_TBL." where id_object='".$id."'");
+}
+
+function deleteStatBasketContentItem()
+{
+	global $babDB;
+
+	$babDB->db_query("delete from ".BAB_STATS_BASKET_CONTENT_TBL." where id='".$_GET['itemid']."' and basket_id='".$_GET['baskid']."'");
+}
+
 /* main */
 if( !bab_isAccessValid(BAB_STATSMAN_GROUPS_TBL, 1) && $babBody->currentAdmGroup == 0)
 	{
@@ -199,33 +643,159 @@ if( !isset($idx)) { $idx = "conf"; }
 
 if( isset($action))
 {
-	if( $action == 'dpages' )
+	switch( $action)
 	{
+		case 'dpages':
 		deletePages($pages);
-	}
-	elseif( $action == 'apage' )
-	{
+			break;
+		case 'apage':
 		if(addPage($url, $desc))
 		{
 			$url = '';
 			$desc = '';
 		}
-	}
-	elseif( $action == 'apref' )
-	{
+			break;
+		case 'apref':
 		updateStatPreferences($wsepar, $separ);
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=stat");
 		exit;
+			break;
+		case 'abask':
+			addStatBasket($baskname, $baskdesc);
+			Header("Location: ". $GLOBALS['babUrlScript']."?tg=statconf&idx=bask");
+			exit;
+			break;
+		case 'dbask':
+			deleteStatBasket($baskid);
+			break;
+		case 'mbask':
+			updateStatBasket($baskid, $baskname, $baskdesc);
+			unset($baskname);
+			unset($baskdesc);
+			break;
+		case 'bcdel':
+			deleteStatBasketContentItem();
+			break;
 	}
 }
+elseif( isset($aclview))
+	{
+	maclGroups();
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=statconf&idx=bask");
+	}
+
 
 switch($idx)
 	{
-	case "pref":
+
+	case 'bcbrowse':
+		include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
+		$babBodyPopup =& new babBodyPopup();
+		statBrowseBasketItem();
+		printBabBodyPopup();
+		exit;
+		exit;
+		break;
+
+	case 'baskrights':
+		$babBody->title = bab_translate("List of groups");
+		$macl = new macl("statconf", "bask", $baskid, "aclview");
+		$macl->addtable( BAB_STATSBASKETS_GROUPS_TBL,bab_translate("Who can view this statistic basket?"));
+		$macl->filter(0,0,1,0,1);
+        $macl->babecho();
+		$babBody->addItemMenu("stat", bab_translate("Statistics"), $GLOBALS['babUrlScript']."?tg=stat");
+		$babBody->addItemMenu("pages", bab_translate("Pages"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pages");
+		$babBody->addItemMenu("pref", bab_translate("Preferences"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pref");
+		$babBody->addItemMenu("bask", bab_translate("Baskets"), $GLOBALS['babUrlScript']."?tg=statconf&idx=bask");
+		$babBody->addItemMenu("baskrights", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=statconf&idx=baskrights");
+		if( $babBody->currentAdmGroup == 0 )
+			{
+			$babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
+			}
+		break;
+
+	case 'baskdel':
+		$babBody->title = bab_translate("Delete basket");
+		$babBody->addItemMenu("stat", bab_translate("Statistics"), $GLOBALS['babUrlScript']."?tg=stat");
+		$babBody->addItemMenu("pages", bab_translate("Pages"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pages");
+		$babBody->addItemMenu("pref", bab_translate("Preferences"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pref");
+		$babBody->addItemMenu("bask", bab_translate("Baskets"), $GLOBALS['babUrlScript']."?tg=statconf&idx=bask");
+		$babBody->addItemMenu("baskdel", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=statconf&idx=baskdel");
+		if( $babBody->currentAdmGroup == 0 )
+			{
+			$babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
+			}
+		if( !isset($baskname) ) { $baskname ='';}
+		if( !isset($baskdesc) ) { $baskdesc ='';}
+		statDeleteBasket($baskid);
+		break;
+
+	case 'baskedit':
+		$babBody->title = bab_translate("Modify basket");
+		$babBody->addItemMenu("stat", bab_translate("Statistics"), $GLOBALS['babUrlScript']."?tg=stat");
+		$babBody->addItemMenu("pages", bab_translate("Pages"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pages");
+		$babBody->addItemMenu("pref", bab_translate("Preferences"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pref");
+		$babBody->addItemMenu("bask", bab_translate("Baskets"), $GLOBALS['babUrlScript']."?tg=statconf&idx=bask");
+		$babBody->addItemMenu("baskedit", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=statconf&idx=baskedit");
+		if( $babBody->currentAdmGroup == 0 )
+			{
+			$babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
+			}
+		statModifyBasket();
+		break;
+
+	case 'baskcadd':
+		$babBody->title = bab_translate("Add basket content");
+		$babBody->addItemMenu("stat", bab_translate("Statistics"), $GLOBALS['babUrlScript']."?tg=stat");
+		$babBody->addItemMenu("pages", bab_translate("Pages"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pages");
+		$babBody->addItemMenu("pref", bab_translate("Preferences"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pref");
+		$babBody->addItemMenu("bask", bab_translate("Baskets"), $GLOBALS['babUrlScript']."?tg=statconf&idx=bask");
+		$babBody->addItemMenu("baskcontent", bab_translate("Content"), $GLOBALS['babUrlScript']."?tg=statconf&idx=baskcontent&baskid=".$baskid);
+		$babBody->addItemMenu("baskcadd", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=statconf&idx=baskcadd");
+		if( $babBody->currentAdmGroup == 0 )
+			{
+			$babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
+			}
+		statAddContentBasket();
+		break;
+
+	case 'baskcontent':
+		$babBody->title = bab_translate("Basket content");
+		$babBody->addItemMenu("stat", bab_translate("Statistics"), $GLOBALS['babUrlScript']."?tg=stat");
+		$babBody->addItemMenu("pages", bab_translate("Pages"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pages");
+		$babBody->addItemMenu("pref", bab_translate("Preferences"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pref");
+		$babBody->addItemMenu("bask", bab_translate("Baskets"), $GLOBALS['babUrlScript']."?tg=statconf&idx=bask");
+		$babBody->addItemMenu("baskcontent", bab_translate("Content"), $GLOBALS['babUrlScript']."?tg=statconf&idx=baskcontent");
+		if( $babBody->currentAdmGroup == 0 )
+			{
+			$babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
+			}
+		if( !isset($baskname) ) { $baskname ='';}
+		if( !isset($baskdesc) ) { $baskdesc ='';}
+		statContentBasket($baskid);
+		break;
+
+	case 'bask':
+		$babBody->title = bab_translate("Statistics baskets");
+		$babBody->addItemMenu("stat", bab_translate("Statistics"), $GLOBALS['babUrlScript']."?tg=stat");
+		$babBody->addItemMenu("pages", bab_translate("Pages"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pages");
+		$babBody->addItemMenu("pref", bab_translate("Preferences"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pref");
+		$babBody->addItemMenu("bask", bab_translate("Baskets"), $GLOBALS['babUrlScript']."?tg=statconf&idx=bask");
+		if( $babBody->currentAdmGroup == 0 )
+			{
+			$babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
+			}
+		if( !isset($baskname) ) { $baskname ='';}
+		if( !isset($baskdesc) ) { $baskdesc ='';}
+		statBaskets($baskname, $baskdesc);
+		break;
+
+	case 'pref':
 		$babBody->title = bab_translate("Preferences");
 		$babBody->addItemMenu("stat", bab_translate("Statistics"), $GLOBALS['babUrlScript']."?tg=stat");
 		$babBody->addItemMenu("pages", bab_translate("Pages"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pages");
 		$babBody->addItemMenu("pref", bab_translate("Preferences"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pref");
+		$babBody->addItemMenu("bask", bab_translate("Baskets"), $GLOBALS['babUrlScript']."?tg=statconf&idx=bask");
 		if( $babBody->currentAdmGroup == 0 )
 			{
 			$babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
@@ -233,11 +803,12 @@ switch($idx)
 		statPreferences();
 		break;
 
-	case "pages":
+	case 'pages':
 		$babBody->title = bab_translate("Pages");
 		$babBody->addItemMenu("stat", bab_translate("Statistics"), $GLOBALS['babUrlScript']."?tg=stat");
 		$babBody->addItemMenu("pages", bab_translate("Pages"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pages");
 		$babBody->addItemMenu("pref", bab_translate("Preferences"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pref");
+		$babBody->addItemMenu("bask", bab_translate("Baskets"), $GLOBALS['babUrlScript']."?tg=statconf&idx=bask");
 		if( $babBody->currentAdmGroup == 0 )
 			{
 			$babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
@@ -246,11 +817,12 @@ switch($idx)
 		statPages($url, $desc);
 		break;
 
-	case "maj":
+	case 'maj':
 		$babBody->title = bab_translate("Update");
 		$babBody->addItemMenu("stat", bab_translate("Statistics"), $GLOBALS['babUrlScript']."?tg=stat");
 		$babBody->addItemMenu("pages", bab_translate("Pages"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pages");
 		$babBody->addItemMenu("pref", bab_translate("Preferences"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pref");
+		$babBody->addItemMenu("bask", bab_translate("Baskets"), $GLOBALS['babUrlScript']."?tg=statconf&idx=bask");
 		if( $babBody->currentAdmGroup == 0 )
 			{
 			$babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
@@ -263,10 +835,11 @@ switch($idx)
 		break;
 
 	default:
-	case "conf":
+	case 'conf':
 		$babBody->addItemMenu("stat", bab_translate("Statistics"), $GLOBALS['babUrlScript']."?tg=stat");
 		$babBody->addItemMenu("pages", bab_translate("Pages"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pages");
 		$babBody->addItemMenu("pref", bab_translate("Preferences"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pref");
+		$babBody->addItemMenu("bask", bab_translate("Baskets"), $GLOBALS['babUrlScript']."?tg=statconf&idx=bask");
 		if( $babBody->currentAdmGroup == 0 )
 			{
 			$babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
