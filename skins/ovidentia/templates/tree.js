@@ -96,7 +96,7 @@ function bab_delaySearch()
 		if (context.targetString != cleanStringDiacritics(context.inputField.value)) {
 			if (context.searching == false) {
 				context.searching = true;
-				context.timeoutId = window.setTimeout(bab_search, 100);
+				context.timeoutId = window.setTimeout(bab_search, 1000);
 			}
 			this.className = 'bab_searchFieldSearching';
 			context.targetString = '';
@@ -135,7 +135,7 @@ function bab_initTrees()
 			tree.processList(tree.rootList);
 			tree.rootDiv = div.parentNode;
 //			tree.initSearch();		
-			window.setTimeout('document.getElementById("' + div.id + '").tree.initSearch();', 2000);
+			window.setTimeout('document.getElementById("' + div.id + '").tree.initSearch();', 100);
 			
 			var toolbar = document.createElement('DIV');
 			toolbar.className = 'bab_treeToolbar BabSiteAdminTitleFontBackground';

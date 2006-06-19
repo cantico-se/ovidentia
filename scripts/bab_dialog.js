@@ -154,56 +154,71 @@ bab_dialog.selectuser = function(action) {
 
 /**
  * An articles/topics/categories tree dialog.
- * @param action  function receiving an associative array with keys "id", "type" and "content" as parameter.
+ * Possible values for 'attributes' are:
+ * <ul>
+ * <li>show_categories: show article categories</li>
+ * <li>show_topics: show article topics (implies show_categories)</li>
+ * <li>show_articles: show articles (implies show_topics and show_categories)</li>
+ * <li>clickable_categories: categories can be selected</li>
+ * <li>clickable_topics: topics can be selected</li>
+ * <li>clickable_articles: articles can be selected</li>
+ * </ul>
+ * @param function action	receiving an associative array with keys "id", "type" and "content" as parameter.
+ * @param string attributes	list of '&' separated attributes for the articles/topics/categories tree selector.
  */
-bab_dialog.selectarticle = function(action) {
+bab_dialog.selectarticle = function(action, attributes) {
 
 	var useparam = {
 		'width'		: 700,
 		'height'	: 500
-	}
-
-	bab_dialog('?tg=selector&idx=articles&show_topics&clickable_topics', useparam , action );
+	};
+	url = '?tg=selector&idx=articles';
+	if (attributes != '')
+		url += '&' + attributes;
+	bab_dialog(url, useparam, action);
 }
 
 /**
  * An faq tree dialog.
  * @param action  function receiving an associative array with keys "id", "type" and "content" as parameter.
  */
-bab_dialog.selectfaq = function(action) {
-
+bab_dialog.selectfaq = function(action, attributes) {
 	var useparam = {
 		'width'		: 700,
 		'height'	: 500
-	}
-
-	bab_dialog('?tg=selector&idx=faqs&show_questions&clickable_questions', useparam , action );
+	};
+	url = '?tg=selector&idx=faqs';
+	if (attributes != '')
+		url += '&' + attributes;
+	bab_dialog(url, useparam, action);
 }
 
 /**
  * An forum tree dialog.
  * @param action  function receiving an associative array with keys "id", "type" and "content" as parameter.
  */
-bab_dialog.selectforum = function(action) {
-
+bab_dialog.selectforum = function(action, attributes) {
 	var useparam = {
 		'width'		: 700,
 		'height'	: 500
-	}
-
-	bab_dialog('?tg=selector&idx=forums&show_threads&clickable_threads', useparam , action );
+	};
+	url = '?tg=selector&idx=forums';
+	if (attributes != '')
+		url += '&' + attributes;
+	bab_dialog(url, useparam, action);
 }
 
 /**
  * An file tree dialog.
  * @param action  function receiving an associative array with keys "id", "type" and "content" as parameter.
  */
-bab_dialog.selectfile = function(action) {
-
+bab_dialog.selectfile = function(action, attributes) {
 	var useparam = {
 		'width'		: 700,
 		'height'	: 500
-	}
-
-	bab_dialog('?tg=selector&idx=files&show_sub_directories&clickable_sub_directories', useparam , action );
+	};
+	url = '?tg=selector&idx=files';
+	if (attributes != '')
+		url += '&' + attributes;
+	bab_dialog(url, useparam, action);
 }
