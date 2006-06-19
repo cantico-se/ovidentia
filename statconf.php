@@ -215,12 +215,13 @@ function statAddContentBasket()
 	global $babBody;
 	
 	class statAddContentBasketCls
-		{
+	{
 		var $updatetxt;
 		var $t_what;
+		var $t_dialog_attributes;
 
 		function statAddContentBasketCls()
-			{
+		{
 			global $babBody, $babDB;
 
 			$this->t_description = bab_translate("Description");
@@ -234,43 +235,54 @@ function statAddContentBasket()
 				case 'top':
 					$this->t_what = 'article';
 					$this->t_name = bab_translate("Articles topics");
+					$this->t_dialog_attributes = 'show_topics&clickable_topics';
 					break;
 				case 'art':
 					$this->t_what = 'article';
 					$this->t_name = bab_translate("Articles");
+					$this->t_dialog_attributes = 'show_articles&clickable_articles';
 					break;
 				case 'fold':
 					$this->t_what = 'file';
 					$this->t_name = bab_translate("Folders");
+					$this->t_dialog_attributes = 'show_collective_directories&clickable_collective_directories';
 					break;
 				case 'file':
 					$this->t_what = 'file';
 					$this->t_name = bab_translate("Files");
+					$this->t_dialog_attributes = 'show_files&clickable_files';
 					break;
 				case 'for':
 					$this->t_what = 'forum';
 					$this->t_name = bab_translate("Forums");
+					$this->t_dialog_attributes = 'show_forums&clickable_forums';
 					break;
 				case 'post':
 					$this->t_what = 'forum';
 					$this->t_name = bab_translate("Posts");
+					$this->t_dialog_attributes = 'show_posts&clickable_posts';
 					break;
 				case 'faq':
 					$this->t_what = 'faq';
 					$this->t_name = bab_translate("Faqs");
+					$this->t_dialog_attributes = 'show_categories&clickable_categories&clickable_categories';
 					break;
 				case 'faqqr':
 					$this->t_what = 'faq';
 					$this->t_name = bab_translate("Questions");
+					$this->t_dialog_attributes = 'show_questions&clickable_questions';
+					break;
+				default:
+					$this->t_dialog_attributes = '';
 					break;
 				}
 
 			$this->addurl = $GLOBALS['babUrlScript']."?tg=statconf&idx=bcbrowse&w=".$this->what."&baskid=".$this->baskid;
 			$this->ibcnameval = '';
 			$this->ibcdescriptionval = '';
-			}
-
 		}
+			
+	}
 
 	$temp = new statAddContentBasketCls();
 	$babBody->babecho(	bab_printTemplate($temp,"statconf.html", "basket_content_add"));
