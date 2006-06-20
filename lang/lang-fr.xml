@@ -2137,4 +2137,27 @@
 <string id="Working hours">Jours travaillés</string>
 <string id="Task manager">Gestionnaire de la tâche</string>
 <string id="Commentary">Commentaire</string>
+<string id="Attach another file">Joindre un autre fichier</string>
+<string id="Remove">Supprimer</string>
+<string id="Baskets">Dossiers</string>
+<string id="Rows/page">Lignes/page</string>
+<string id="Statistics baskets">Dossiers statistiques</string>
+<string id="Add a new basket">Ajouter un nouveau dossier</string>
+<string id="Articles topic choice">Choix du thème d'articles</string>
+<string id="Article choice">Choix de l'article</string>
+<string id="Folder choice">Choix du répertoire</string>
+<string id="File choice">Choix du fichier</string>
+<string id="Forum choice">Choix du forum</string>
+<string id="Post choice">Choix de la contribution</string>
+<string id="Faq choice">Choix de la faq</string>
+<string id="Question choice">Choix de la question</string>
+<string id="Are you sure you want to delete this basket">Etes-vous sûr de vouloir supprimer ce dossier</string>
+<string id="WARNING: This operation will delete the basket and all associated datas">ATTENTION: cette opération supprime le dossier et les données associées</string>
+<string id="This item is already used">Cet élément est déjà utilisé</string>
+<string id="Who can view this statistic basket?">Qui peut consulter ce dossier?</string>
+<string id="Delete basket">Supprimer le dossier</string>
+<string id="Modify basket">Modifier le dossier</string>
+<string id="Edit basket content">Editer le contenu du dossier</string>
+<string id="Add basket content">Ajouter du contenu au dossier</string>
+<string id="Basket content">Contenu du dossier</string>
 </fr>
