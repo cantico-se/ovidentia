@@ -630,7 +630,7 @@ document.forms.formsite_bloc3[edit].value = obj.value;
 
 function getDateList()
 	{
-	return document.forms['formsite_bloc4'].elements[11];
+	return document.getElementById('snwid');
 	}
 
 function removesel()
@@ -771,7 +771,7 @@ function changetype(obj)
 				
 
 				<h5>{ t_nonworking }</h5>
-				<select name="nonworking[]" multiple="multiple" size="4" style="width:100%">
+				<select id="snwid" name="nonworking[]" multiple="multiple" size="4" style="width:100%">
 				<!--#in getnextnonworking -->
 					<option value="{ value }">{ text }</option>
 				<!--#endin getnextnonworking -->
