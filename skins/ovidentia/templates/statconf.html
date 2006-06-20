@@ -302,8 +302,8 @@ page_select_fill();
 </tr>
 <!--#in getnextitem -->
 <!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
-<td>{ itemname }&nbsp;&nbsp;</td>
-<td>&nbsp;</td>
+<td><a href="{ urlbciedit }">{ itemname }</a></td>
+<td>{ itemdesc }</td>
 <td align="right">&nbsp;<a class="BabSiteAdminListLink" href="{ deleteurl }">{ t_delete }</a> </td>
 </tr>
 <!--#endin getnextitem -->
@@ -322,8 +322,13 @@ page_select_fill();
 var currentInput = null;
 
 function co_selectItem(tab) {
-	if (currentInput)
-		currentInput.value = tab['content'];
+
+var d = document.getElementById('ibcname'); 
+if (d)
+	d.value = tab['content'];
+d = document.getElementById('ibcid'); 
+if (d)
+	d.value = tab['id'];
 }
 
 //-->
@@ -339,9 +344,10 @@ function co_selectItem(tab) {
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
 <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle"><a href="#" onclick="window.currentInput=document.getElementById('ibcname'); bab_dialog.select{ t_what }(co_selectItem, '{ t_dialog_attributes }');">{ t_name }</a>:</td>
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle"><a href="#" onclick="bab_dialog.select{ t_what }(co_selectItem, '{ t_dialog_attributes }');">{ t_name }</a>:</td>
 <td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" id="ibcname" name="ibcname" size="60" value="{ ibcnameval }">
+<input type="text" id="ibcname" name="ibcname" size="60" value="{ ibcnameval }" disabled>
+<input type="hidden" id="ibcid" name="ibcid" size="60" value="">
 </td>
 </tr>
 <tr> 
@@ -363,3 +369,38 @@ function co_selectItem(tab) {
 </table>
 </form>
 <!--#end basket_content_add -->
+
+<!--#begin basket_content_edit -->
+<form name="baskupd" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="statconf">
+<input type="hidden" name="idx" value="baskcontent">
+<input type="hidden" name="action" value="acubask">
+<input type="hidden" name="baskid" value="{ baskid }">
+<input type="hidden" name="itemid" value="{ itemid }">
+<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ t_name_txt }:</td>
+<td class="BabLoginMenuBackground" valign="middle">{ ibcname }</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ t_desc_txt }:</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="text" name="ibcdesc" size="60" value="{ ibcdescriptionval }">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground">&nbsp;</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="submit" name="submit" value="{ t_update_txt }">
+<br>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</form>
+<!--#end basket_content_edit -->

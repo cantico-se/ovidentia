@@ -141,6 +141,76 @@ function statModifyBasket()
 	$babBody->babecho(	bab_printTemplate($temp,"statconf.html", "basket_edit"));
 }
 
+
+
+function statUpdateContentBasket()
+{
+	global $babBody;
+	
+	class statUpdateContentBasketCls
+		{
+		var $updatetxt;
+
+		function statUpdateContentBasketCls()
+			{
+			global $babBody, $babDB;
+
+			$this->t_desc_txt = bab_translate("Description");
+			$this->t_name_txt = bab_translate("Name");
+
+			$this->t_update_txt = bab_translate("Update");
+
+			$this->baskid = $_GET['baskid'];
+			$arr = $babDB->db_fetch_array($babDB->db_query("select bc_description, bc_type, bc_id from ".BAB_STATS_BASKET_CONTENT_TBL." where id='".$_GET['itemid']."'"));
+			$this->ibcdescriptionval = $arr['bc_description'];
+			switch($arr['bc_type'])
+				{
+				case BAB_STAT_BCT_TOPIC:
+					$req = "select tt.category as bc_item_name from ".BAB_TOPICS_TBL." tt where tt.id='".$arr['bc_id']."'";
+					break;
+				case BAB_STAT_BCT_ARTICLE:
+					$req = "select at.title as bc_item_name from ".BAB_ARTICLES_TBL." at where at.id='".$arr['bc_id']."'";
+					break;
+				case BAB_STAT_BCT_FOLDER:
+					$req = "select fft.folder as bc_item_name from ".BAB_FM_FOLDERS_TBL." fft where fft.id='".$arr['bc_id']."'";
+					break;
+				case BAB_STAT_BCT_FILE:
+					$req = "select ft.name as bc_item_name from ".BAB_FILES_TBL." ft where ft.id='".$arr['bc_id']."'";
+					break;
+				case BAB_STAT_BCT_FORUM:
+					$req = "select ft.name as bc_item_name from ".BAB_FORUMS_TBL." ft where ft.id='".$arr['bc_id']."'";
+					break;
+				case BAB_STAT_BCT_POST:
+					$req = "select pt.subject as bc_item_name from ".BAB_POSTS_TBL." pt where pt.id='".$arr['bc_id']."'";
+					break;
+				case BAB_STAT_BCT_FAQ:
+					$req = "select ft.category as bc_item_name from ".BAB_FAQCAT_TBL." ft where ft.id='".$arr['bc_id']."'";
+					break;
+				case BAB_STAT_BCT_QUESTION:
+					$req = "select ft.question as bc_item_name from ".BAB_FAQQR_TBL." ft where ft.id='".$arr['bc_id']."'";
+					break;
+				default:
+					$req = '';
+					break;
+				}
+
+			if( $req)
+				{
+				$arr = $babDB->db_fetch_array($babDB->db_query($req));
+				$this->ibcname = $arr['bc_item_name'];
+				}
+			else
+				{
+				$this->ibcname = '';
+				}
+			}
+
+		}
+
+	$temp = new statUpdateContentBasketCls();
+	$babBody->babecho(	bab_printTemplate($temp,"statconf.html", "basket_content_edit"));
+}
+
 function statBrowseBasketItem()
 {
 	global $babBody;
@@ -385,7 +455,9 @@ function statContentBasket($baskid)
 				{
 				$arr = $babDB->db_fetch_array($this->res);
 				$this->itemname = $arr['bc_item_name'];
+				$this->itemdesc = $arr['bc_description'];
 				$this->deleteurl= $GLOBALS['babUrlScript']."?tg=statconf&idx=baskcontent&action=bcdel&itemid=".$arr['id']."&baskid=".$this->baskid;
+				$this->urlbciedit= $GLOBALS['babUrlScript']."?tg=statconf&idx=baskcedit&itemid=".$arr['id']."&baskid=".$this->baskid;
 
 				$d++;
 				return true;
@@ -655,6 +727,89 @@ function deleteStatBasketContentItem()
 	$babDB->db_query("delete from ".BAB_STATS_BASKET_CONTENT_TBL." where id='".$_GET['itemid']."' and basket_id='".$_GET['baskid']."'");
 }
 
+function addStatBasketContentItem()
+{
+	global $babDB;
+
+	if( isset($_POST['ibcid']) && !empty($_POST['ibcid']))
+	{
+		$res = $babDB->db_query("select * from ".BAB_STATS_BASKET_CONTENT_TBL." where id='".$_POST['ibcid']."' and basket_id='".$_POST['baskid']."'");
+		if( $res && $babDB->db_num_rows($res))
+		{
+			$babBody->msgerror = bab_translate("This item is already used");
+			return false;
+		}
+
+		switch($_POST['what'])
+			{
+			case 'top':
+				$bctype = BAB_STAT_BCT_TOPIC;
+				break;
+			case 'art':
+				$bctype = BAB_STAT_BCT_ARTICLE;
+				break;
+			case 'fold':
+				$bctype = BAB_STAT_BCT_FOLDER;
+				break;
+			case 'file':
+				$bctype = BAB_STAT_BCT_FILE;
+				break;
+			case 'for':
+				$bctype = BAB_STAT_BCT_FORUM;
+				break;
+			case 'post':
+				$bctype = BAB_STAT_BCT_POST;
+				break;
+			case 'faq':
+				$bctype = BAB_STAT_BCT_FAQ;
+				break;
+			case 'faqqr':
+				$bctype = BAB_STAT_BCT_QUESTION;
+				break;
+			default:
+				$bctype = '';
+				break;
+			}
+
+		if( $bctype )
+		{
+			if (bab_isMagicQuotesGpcOn())
+				{
+				$ibcdesc = stripslashes($_POST['ibcdesc']);
+				}
+			else
+				{
+				$ibcdesc = $_POST['ibcdesc'];
+				}
+
+			$babDB->db_query("insert into ".BAB_STATS_BASKET_CONTENT_TBL." (basket_id, bc_description, bc_author, bc_datetime, bc_type, bc_id ) values ('".$_POST['baskid']."','".$babDB->db_escape_string($ibcdesc)."','".$GLOBALS['BAB_SESS_USERID']."',now(),'".$bctype."','".$_POST['ibcid']."')");
+		}
+	}
+
+	return true;
+}
+
+function updateStatBasketContentItem()
+{
+	global $babDB;
+
+	if( isset($_POST['itemid']) && !empty($_POST['itemid']))
+	{
+		if (bab_isMagicQuotesGpcOn())
+			{
+			$ibcdesc = stripslashes($_POST['ibcdesc']);
+			}
+		else
+			{
+			$ibcdesc = $_POST['ibcdesc'];
+			}
+
+		$babDB->db_query("update ".BAB_STATS_BASKET_CONTENT_TBL." set bc_description='".$babDB->db_escape_string($ibcdesc)."' where id='".$_POST['itemid']."'");
+	}
+
+	return true;
+}
+
 /* main */
 if( !bab_isAccessValid(BAB_STATSMAN_GROUPS_TBL, 1) && $babBody->currentAdmGroup == 0)
 	{
@@ -698,6 +853,16 @@ if( isset($action))
 			break;
 		case 'bcdel':
 			deleteStatBasketContentItem();
+			break;
+		case 'acbask':
+			addStatBasketContentItem();
+			$baskid = $_POST['baskid'];
+			$idx = 'baskcontent';
+			break;
+		case 'acubask':
+			updateStatBasketContentItem();
+			$baskid = $_POST['baskid'];
+			$idx = 'baskcontent';
 			break;
 	}
 }
@@ -765,6 +930,21 @@ switch($idx)
 			$babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
 			}
 		statModifyBasket();
+		break;
+
+	case 'baskcedit':
+		$babBody->title = bab_translate("Edit basket content");
+		$babBody->addItemMenu("stat", bab_translate("Statistics"), $GLOBALS['babUrlScript']."?tg=stat");
+		$babBody->addItemMenu("pages", bab_translate("Pages"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pages");
+		$babBody->addItemMenu("pref", bab_translate("Preferences"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pref");
+		$babBody->addItemMenu("bask", bab_translate("Baskets"), $GLOBALS['babUrlScript']."?tg=statconf&idx=bask");
+		$babBody->addItemMenu("baskcedit", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=statconf&idx=baskcedit&baskid=".$baskid);
+		$babBody->addItemMenu("baskcadd", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=statconf&idx=baskcadd");
+		if( $babBody->currentAdmGroup == 0 )
+			{
+			$babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
+			}
+		statUpdateContentBasket();
 		break;
 
 	case 'baskcadd':
