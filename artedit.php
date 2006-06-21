@@ -694,8 +694,8 @@ function showTopicTree($actionType, $selectedTopicId)
 		if (!$tree->nodes[$nodeId]->hasChildren() && $tree->nodes[$nodeId]->data['type'] === 'category')
 			$deadBranches[] = $nodeId;
 	}
-	foreach ($deadBranches as $deadBranch)
-		$tree->removeBranch($deadBranch);
+//	foreach ($deadBranches as $deadBranch)
+//		$tree->removeBranch($deadBranch);
 
 	$template = new Template($tree, $nextIdx, $actionType, $selectedTopicId);
 
