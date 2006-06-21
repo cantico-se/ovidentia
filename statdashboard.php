@@ -634,9 +634,18 @@ function createGlobalActivityDashboard($start, $end)
 }
 
 
+define("BAB_STAT_BCT_TOPIC",		1);
+define("BAB_STAT_BCT_ARTICLE",		2);
+define("BAB_STAT_BCT_FOLDER",		3);
+define("BAB_STAT_BCT_FILE",			4);
+define("BAB_STAT_BCT_FORUM",		5);
+define("BAB_STAT_BCT_POST",			6);
+define("BAB_STAT_BCT_FAQ",			7);
+define("BAB_STAT_BCT_QUESTION",		8);
+
 function createBasketDashboard($basketId, $start, $end)
 {
-	global $babDB;
+	global $babDB, $babBody;
 
 	$sql = 	'SELECT * FROM ' . BAB_STATS_BASKETS_TBL . ' WHERE id=' . $basketId;
 	$baskets = $babDB->db_query($sql);
@@ -645,37 +654,40 @@ function createBasketDashboard($basketId, $start, $end)
 	$dashboard = new bab_DashboardElement(bab_translate("Statistics basket: ") . $basket['basket_name']);
 	$dashboard->setColumnHeaders(createHeaders($start, $end));
 
+	$sqlDateFormat = getSqlDateFormat($start, $end);
+	
 	$sql = 	'SELECT * FROM ' . BAB_STATS_BASKET_CONTENT_TBL . ' WHERE basket_id=' . $basketId;
 	$basketContents = $babDB->db_query($sql);
 	while ($basketContent = $babDB->db_fetch_array($basketContents)) {
-		// Article topics
-		$sql = 'SELECT tt.id AS id, SUM(sat.st_hits) AS hits, tt.category AS title';
-		$sql .= ' FROM ' . BAB_STATS_ARTICLES_TBL . ' AS sat';
-		$sql .= ' LEFT JOIN ' . BAB_ARTICLES_TBL . ' AS at ON sat.st_article_id=at.id';
-		$sql .= ' LEFT JOIN ' . BAB_TOPICS_TBL . ' AS tt ON tt.id=at.id_topic';
-		if ($babBody->currentAdmGroup != 0) {
-			$sql .= ' LEFT JOIN ' . BAB_TOPICS_CATEGORIES_TBL . ' tct ON tct.id=tt.id_cat';
+		switch ($basketContent['bc_type']) {
+			case BAB_STAT_BCT_TOPIC:		// Article topics
+				$sql = 'SELECT tt.id AS id, SUM(sat.st_hits) AS hits, tt.category AS title';
+				$sql .= ' FROM ' . BAB_STATS_ARTICLES_TBL . ' AS sat';
+				$sql .= ' LEFT JOIN ' . BAB_ARTICLES_TBL . ' AS at ON sat.st_article_id=at.id';
+				$sql .= ' LEFT JOIN ' . BAB_TOPICS_TBL . ' AS tt ON tt.id=at.id_topic';
+				if ($babBody->currentAdmGroup != 0) {
+					$sql .= ' LEFT JOIN ' . BAB_TOPICS_CATEGORIES_TBL . ' tct ON tct.id=tt.id_cat';
+				}
+				$sql .= ' WHERE at.title IS NOT NULL AND tt.id=' . $basketContent['bc_id'];
+				if ($babBody->currentAdmGroup != 0) {
+					$sql .= ' AND  tct.id_dgowner=\'' . $babBody->currentAdmGroup . '\'';
+				}
+				if ($start || $end) {
+					$sql .= ' AND ';
+					$where = array();
+					$start && $where[] = 'sat.st_date >= \'' . date('Y-m-d', $start) . '\'';
+					$end && $where[] = 'sat.st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
+					$sql .= implode(' AND ', $where);
+				}
+				$sql .= ' GROUP BY tt.id';
+				$sql .= ' ORDER BY hits DESC';
+				$sql .= ' LIMIT 1';
+			
+				$topics = $babDB->db_query($sql);
+				$topic = $babDB->db_fetch_array($topics);
+				addArticleTopicsDashboardRow(&$dashboard, $topic, $start, $end, $sqlDateFormat);
+				break;
 		}
-		$sql .= ' WHERE at.title IS NOT NULL AND tt.id=' . $basketContent['bc_id'];
-		if ($babBody->currentAdmGroup != 0) {
-			$sql .= ' AND  tct.id_dgowner=\'' . $babBody->currentAdmGroup . '\'';
-		}
-		if ($start || $end) {
-			$sql .= ' AND ';
-			$where = array();
-			$start && $where[] = 'sat.st_date >= \'' . date('Y-m-d', $start) . '\'';
-			$end && $where[] = 'sat.st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
-			$sql .= implode(' AND ', $where);
-		}
-		$sql .= ' GROUP BY tt.id';
-		$sql .= ' ORDER BY hits DESC';
-		$sql .= ' LIMIT 1';
-	
-		$sqlDateFormat = getSqlDateFormat($start, $end);
-	
-		$topics = $babDB->db_query($sql);
-		$topic = $babDB->db_fetch_array($topics);
-		addArticleTopicsDashboardRow(&$dashboard, $topic, $start, $end, $sqlDateFormat);
 	}
 	
 	return $dashboard;
