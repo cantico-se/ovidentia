@@ -243,6 +243,36 @@ function createArticleCategoriesDashboard($start, $end)
 }
 
 
+function addArticleTopicsDashboardRow(&$dashboard, $topic, $start, $end, $sqlDateFormat)
+{
+	global $babDB;
+	$sql = 	'SELECT tt.id AS id, DATE_FORMAT(sat.st_date,\'' . $sqlDateFormat . '\') AS stat_date, SUM(sat.st_hits) AS hits';
+	$sql .= ' FROM ' . BAB_STATS_ARTICLES_TBL . ' AS sat';
+	$sql .= ' LEFT JOIN ' . BAB_ARTICLES_TBL . ' AS at ON sat.st_article_id=at.id';
+	$sql .= ' LEFT JOIN ' . BAB_TOPICS_TBL . ' AS tt ON tt.id=at.id_topic';
+	$sql .= '  WHERE at.title IS NOT NULL AND tt.id=\'' . $topic['id'] . '\'';
+	if ($start || $end) {
+		$sql .= ' AND ';
+		$where = array();
+		$start && $where[] = 'sat.st_date >= \'' . date('Y-m-d', $start) . '\'';
+		$end && $where[] = 'sat.st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
+		$sql .= implode(' AND ', $where);
+	}
+	$sql .= ' GROUP BY stat_date';
+	$sql .= ' ORDER BY stat_date ASC';
+
+	$stats = $babDB->db_query($sql);
+	$r = array();
+	while ($stat = $babDB->db_fetch_array($stats)) {
+		$r[$stat['stat_date']] = $stat['hits'];
+	}
+	$row = array();
+	$row['label'] = $topic['title'];
+	$row += fillRow($r, $start, $end);
+	$row['total'] = $topic['hits'];
+	
+	$dashboard->addRow($row);	
+}
 
 function createArticleTopicsDashboard($start, $end)
 {
@@ -277,32 +307,7 @@ function createArticleTopicsDashboard($start, $end)
 	
 	$topics = $babDB->db_query($sql);
 	while ($topic = $babDB->db_fetch_array($topics)) {
-		$sql = 	'SELECT tt.id AS id, DATE_FORMAT(sat.st_date,\'' . $sqlDateFormat . '\') AS stat_date, SUM(sat.st_hits) AS hits';
-		$sql .= ' FROM ' . BAB_STATS_ARTICLES_TBL . ' AS sat';
-		$sql .= ' LEFT JOIN ' . BAB_ARTICLES_TBL . ' AS at ON sat.st_article_id=at.id';
-		$sql .= ' LEFT JOIN ' . BAB_TOPICS_TBL . ' AS tt ON tt.id=at.id_topic';
-		$sql .= '  WHERE at.title IS NOT NULL AND tt.id=\'' . $topic['id'] . '\'';
-		if ($start || $end) {
-			$sql .= ' AND ';
-			$where = array();
-			$start && $where[] = 'sat.st_date >= \'' . date('Y-m-d', $start) . '\'';
-			$end && $where[] = 'sat.st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
-			$sql .= implode(' AND ', $where);
-		}
-		$sql .= ' GROUP BY stat_date';
-		$sql .= ' ORDER BY stat_date ASC';
-	
-		$stats = $babDB->db_query($sql);
-		$r = array();
-		while ($stat = $babDB->db_fetch_array($stats)) {
-			$r[$stat['stat_date']] = $stat['hits'];
-		}
-		$row = array();
-		$row['label'] = $topic['title'];
-		$row += fillRow($r, $start, $end);
-		$row['total'] = $topic['hits'];
-		
-		$dashboard->addRow($row);
+		addArticleTopicsDashboardRow($dashboard, $topic, $start, $end, $sqlDateFormat);
 	}	
 	
 	return $dashboard;
@@ -461,7 +466,7 @@ function createFileDownloadsDashboard($start, $end)
 	}
 	$sql .= ' GROUP BY ft.id';
 	$sql .= ' ORDER BY hits DESC';
-	$sql .= ' LIMIT 20';
+	$sql .= ' LIMIT ' . BAB_DASHBOARD_NB_ITEMS;
 
 	$sqlDateFormat = getSqlDateFormat($start, $end);
 	
@@ -628,6 +633,54 @@ function createGlobalActivityDashboard($start, $end)
 	return $dashboard;
 }
 
+
+function createBasketDashboard($basketId, $start, $end)
+{
+	global $babDB;
+
+	$sql = 	'SELECT * FROM ' . BAB_STATS_BASKETS_TBL . ' WHERE id=' . $basketId;
+	$baskets = $babDB->db_query($sql);
+	$basket = $babDB->db_fetch_array($baskets);
+	
+	$dashboard = new bab_DashboardElement(bab_translate("Statistics basket: ") . $basket['basket_name']);
+	$dashboard->setColumnHeaders(createHeaders($start, $end));
+
+	$sql = 	'SELECT * FROM ' . BAB_STATS_BASKET_CONTENT_TBL . ' WHERE basket_id=' . $basketId;
+	$basketContents = $babDB->db_query($sql);
+	while ($basketContent = $babDB->db_fetch_array($basketContents)) {
+		// Article topics
+		$sql = 'SELECT tt.id AS id, SUM(sat.st_hits) AS hits, tt.category AS title';
+		$sql .= ' FROM ' . BAB_STATS_ARTICLES_TBL . ' AS sat';
+		$sql .= ' LEFT JOIN ' . BAB_ARTICLES_TBL . ' AS at ON sat.st_article_id=at.id';
+		$sql .= ' LEFT JOIN ' . BAB_TOPICS_TBL . ' AS tt ON tt.id=at.id_topic';
+		if ($babBody->currentAdmGroup != 0) {
+			$sql .= ' LEFT JOIN ' . BAB_TOPICS_CATEGORIES_TBL . ' tct ON tct.id=tt.id_cat';
+		}
+		$sql .= ' WHERE at.title IS NOT NULL AND tt.id=' . $basketContent['bc_id'];
+		if ($babBody->currentAdmGroup != 0) {
+			$sql .= ' AND  tct.id_dgowner=\'' . $babBody->currentAdmGroup . '\'';
+		}
+		if ($start || $end) {
+			$sql .= ' AND ';
+			$where = array();
+			$start && $where[] = 'sat.st_date >= \'' . date('Y-m-d', $start) . '\'';
+			$end && $where[] = 'sat.st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
+			$sql .= implode(' AND ', $where);
+		}
+		$sql .= ' GROUP BY tt.id';
+		$sql .= ' ORDER BY hits DESC';
+		$sql .= ' LIMIT 1';
+	
+		$sqlDateFormat = getSqlDateFormat($start, $end);
+	
+		$topics = $babDB->db_query($sql);
+		$topic = $babDB->db_fetch_array($topics);
+		addArticleTopicsDashboardRow(&$dashboard, $topic, $start, $end, $sqlDateFormat);
+	}
+	
+	return $dashboard;
+}
+
 function microtime_float()
 {
    list($usec, $sec) = explode(' ', microtime());
@@ -654,7 +707,7 @@ function showDashboard($startDate, $endDate)
 	}
 
 	////
-	$s = microtime_float();
+//	$s = microtime_float();
 	////
 	$dashboard->addElement(createGlobalActivityDashboard($start, $end)); // 0.07
 	$dashboard->addElement(createFunctionsDashboard($start, $end)); // 0.8
@@ -663,16 +716,19 @@ function showDashboard($startDate, $endDate)
 	$dashboard->addElement(createArticleCategoriesDashboard($start, $end)); // 4.16
 	$dashboard->addElement(createDirectoriesDashboard($start, $end)); // 0.03
 	$dashboard->addElement(createFileDownloadsDashboard($start, $end)); // 0.16
+	$dashboard->addElement(createBasketDashboard(1, $start, $end)); // 0.16
 	////
-	$e = microtime_float(); echo '<!-- ';print_r('addElement : ' . ($e - $s));echo " -->\n";
+//	$e = microtime_float(); echo '<!-- ';print_r('addElement : ' . ($e - $s));echo " -->\n";
 	////
 
 	////
-	$s = microtime_float();
+//	$s = microtime_float();
 	////
 	$GLOBALS['babBodyPopup']->babecho($dashboard->printTemplate());
+//	print $dashboard->printTemplateCsv();
+//	die();
 	////
-	$e = microtime_float();	echo '<!-- ';print_r('babEcho : ' . ($e - $s));echo " -->\n";
+//	$e = microtime_float();	echo '<!-- ';print_r('babEcho : ' . ($e - $s));echo " -->\n";
 	////
 }
 
