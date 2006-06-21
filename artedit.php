@@ -422,14 +422,14 @@ class bab_Tree
 
 	function removeBranch($nodeId)
 	{
-		$node =& $this->nodes[$nodeId];
+//		$node =& $this->nodes[$nodeId];
 		do 
 		{
 			$id = $nodeId;
 			$nodeId = $this->nodes[$nodeId]->parentId;
 			$this->removeNode($id);
 		}
-		while (!$this->nodes[$nodeId]->hasChildren());
+		while (isset($this->nodes[$nodeId]) && !$this->nodes[$nodeId]->hasChildren());
 	}
 
 	function _updateTree(&$node)
