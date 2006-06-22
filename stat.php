@@ -91,7 +91,7 @@ function displayStatisticPanel($idx)
 
 		function displayStatisticPanelCls($idx)
 			{
-			global $babBody;
+			global $babBody, $babDB;
 
 			$this->updatetxt = bab_translate('Last update time');
 			$this->updatettime = bab_shortDate(bab_mktime($babBody->babsite['stat_update_time']));
@@ -155,7 +155,26 @@ function displayStatisticPanel($idx)
 				$this->itemarray[] = array( array('idx' => 'ovml', 'item' => bab_translate("Ovml Files"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=ovml"), array('idx' => 'addon', 'item' => bab_translate("Add-ons"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=addon"), array('idx' => 'xlink', 'item' => bab_translate("External links"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=xlink"));
 				}
 
-			$this->itemarray[] = array( array('idx' => 'dashboard', 'item' => bab_translate("Dashboard"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=dashboard", 'popup' => true));
+			$tmparr = array();
+			$tmparr[] = array('idx' => 'dashboard', 'item' => bab_translate("Dashboard"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=dashboard", 'popup' => true);
+			
+			$bbasket = false;
+			$res = $babDB->db_query("select id from ".BAB_STATS_BASKETS_TBL."");
+			while( $arr = $babDB->db_fetch_array($res))
+				{
+				if( bab_isAccessValid(BAB_STATSBASKETS_GROUPS_TBL,$arr['id']))
+					{
+					$bbasket = true;
+					break;
+					}
+				}
+
+			if( $bbasket )
+				{
+				$tmparr[] = array('idx' => 'baskets', 'item' => bab_translate("Baskets"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=baskets", 'popup' => true);
+				}
+
+			$this->itemarray[] = $tmparr;
 			if( empty($this->current)) { $this->current = 'dashboard'; }
 
 			$this->maxcols = 1;
@@ -238,6 +257,7 @@ class displayTimeIntervalCls
 			case 'fm':
 			case 'sections':
 			case 'delegat':
+			case 'baskets':
 				$this->showform = false;
 				break;
 			default:
@@ -658,6 +678,10 @@ switch($idx)
 		showStatAddon($item, $date);
 		printBabBodyPopup();
 		exit;
+		break;
+	case "baskets":
+		include_once $babInstallPath."statbaskets.php";
+		listUserBaskets();
 		break;
 	case "dashboard":
 		include_once $babInstallPath."utilit/uiutil.php";
