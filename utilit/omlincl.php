@@ -4934,6 +4934,68 @@ function bab_WebStat($args)
 		}
 	}
 
+function bab_SetCookie($args)
+	{
+	global $babBody;
+	$name = "";
+	$value = "";
+
+	if($this->match_args($args, $mm))
+		{
+		for( $j = 0; $j< count($mm[1]); $j++)
+			{
+			switch(strtolower(trim($mm[1][$j])))
+				{
+				case 'name':
+					$name = $mm[3][$j];
+					break;
+				case 'value':
+					$value = $mm[3][$j];
+					break;
+				case 'expire': // seconds
+					$expire = time() + $mm[3][$j];
+					break;
+				}
+			}
+			
+		if( !empty($name))
+			{
+			if( !isset($expire))
+				{
+				setcookie($name, $value);
+				}
+			else
+				{
+				setcookie($name, $value, $expire);
+				}
+			}
+		}
+	}
+
+function bab_GetCookie($args)
+	{
+	global $babBody;
+	$name = "";
+
+	if($this->match_args($args, $mm))
+		{
+		for( $j = 0; $j< count($mm[1]); $j++)
+			{
+			switch(strtolower(trim($mm[1][$j])))
+				{
+				case 'name':
+					$name = $mm[3][$j];
+					break;
+				}
+			}					
+
+		if( !empty($name) && isset($_COOKIE[$name]))
+			{
+			$this->gctx->push($name, $_COOKIE[$name]);
+			}
+		}
+	}
+	
 /* save a variable to global space */
 function bab_PutVar($args)
 	{
