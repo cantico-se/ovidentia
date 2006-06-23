@@ -908,12 +908,73 @@ var ret = true;
 return true;
 }
 <!--#endif allowpubdates -->
+<!--#if allowattachments -->
+function add_field()
+	{
+	var f = document.forms['propform'];
+	var d = document.getElementById('post_addfiles');
+	var n = parseInt(f.files_fields.value);
+
+	f.files_fields.value = n  + 1;
+
+	var p = document.createElement("p");
+	d.appendChild(p);
+
+	var t = document.createTextNode("{ filetxt }:");
+	p.appendChild(t);
+	var br = document.createElement("br");
+	p.appendChild(br);
+
+	var input = document.createElement("input");
+	input.type = 'file';
+	input.size = '50';
+	input.name = 'docf'+(n+1);
+	p.appendChild(input);
+
+	br = document.createElement("br");
+	p.appendChild(br);
+	t = document.createTextNode("{ desctxt }:");
+	p.appendChild(t);
+	br = document.createElement("br");
+	p.appendChild(br);
+
+	input = document.createElement("input");
+	input.type = 'text';
+	input.size = '50';
+	input.name = 'docdesc[]';
+	p.appendChild(input);
+	
+	d = document.getElementById('urlremovefile');
+	d.style.display='inline';
+	}
+
+function remove_field()
+	{
+	var f = document.forms['propform'];
+	var d = document.getElementById('post_addfiles');
+	var n = parseInt(f.files_fields.value);
+	var inputs = d.getElementsByTagName('p');
+	if (n > 1)
+		{
+		f.files_fields.value = n - 1;
+		
+		d.removeChild(inputs[(inputs.length-1)]);
+		}
+	if( n == 2 )
+		{
+		d = document.getElementById('urlremovefile');
+		d.style.display='none';
+
+		}
+	}
+<!--#endif allowattachments -->
 //-->
 </script>
 
 <!--#if allowattachments -->
 <form name="propform" method="post" action="{ babPhpSelf }"  enctype="multipart/form-data" onSubmit="return confirmForm('propform');">
 <input type="hidden" name="MAX_FILE_SIZE" value="{ babMaxFileSize }">
+<input type="hidden" name="files_fields" value="1">
 <!--#else allowattachments -->
 <form name="propform" method="post" action="{ babPhpSelf }" onSubmit="return confirmForm('propform');">
 <!--#endif allowattachments -->
@@ -1114,16 +1175,26 @@ return true;
 <td> 
 	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
 	<tr> 
-	<td align="left" valign="middle" colspan="3"><b>{ filetitle }:</b></td>
+	<td align="left" valign="middle" colspan="3"><b>{ filetitle } &nbsp;(&nbsp;{ maxsizetxt }&nbsp;)&nbsp;:</b></td>
 	</tr>
 	<tr> 
-	<td align="right">{ filetxt }:</td>
-	<td colspan="2"><input type="file" name="docf" maxlength="255" value=""> &nbsp; { maxsizetxt }
+	<td align="right">&nbsp;</td>
+	<td colspan="2">{ filetxt }:<br /><input type="file" name="docf0" size="50" maxlength="255" value=""><br />{ desctxt }:<br /><input type="text" name="docdesc[]" size="50" maxlength="255" value="">
 	</td>
 	</tr>
 	<tr> 
-		<td align="right">{ desctxt }:</td>
-		<td colspan="2"><input type="text" name="docdesc" maxlength="255" value=""> &nbsp; <input type="submit" name="badd" value="{ addtxt }" onclick="javascript:stepSubmitForm('fadd','propform');">
+	<td align="right">&nbsp;</td>
+	<td colspan="2">
+	<div id="post_addfiles">
+	</div>
+	<p><a id="urlremovefile" href="javascript:remove_field()" style="display:none">{ t_remove_field }</a>&nbsp;
+<a href="javascript:add_field()">{ t_add_field }</a>
+	</p>
+	</td>
+	</tr>
+	<tr> 
+		<td align="right">&nbsp;</td>
+		<td colspan="2"><input type="submit" name="badd" value="{ addtxt }" onclick="javascript:stepSubmitForm('fadd','propform');">
 		</td>
 	</tr>
 	<!--#if countfiles -->

@@ -1686,6 +1686,8 @@ function showSetArticleProperties($idart)
 						$this->desctxt = bab_translate("Description");
 						$this->filetitle = bab_translate("Associated documents");
 						$this->deletetxt = bab_translate("Delete");
+						$this->t_add_field = bab_translate("Attach another file");
+						$this->t_remove_field = bab_translate("Remove");
 						$this->resfiles = $babDB->db_query("select id, name, description from ".BAB_ART_DRAFTS_FILES_TBL." where id_draft='".$idart."'");
 						$this->maximagessize = $babBody->babsite['imgsize'];
 						if( $babBody->babsite['maxfilesize'] != 0 )
@@ -2222,31 +2224,42 @@ function updateArticleDraft($idart, $title, $headtext, $bodytext, $lang, $approb
 }
 
 
-function addDocumentArticleDraft($idart, $docf_name, $doc_f, $description, &$message)
+function addDocumentArticleDraft($idart, &$message)
 {
 	global $babDB, $BAB_SESS_USERID, $babMaxFileSize;
 	$res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_TBL." where id='".$idart."' and id_author='".$BAB_SESS_USERID."'");
+	$k = 0;
 	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
-		$doc = '';
-		if( !empty($docf_name) && $docf_name != "none")
+		include_once $GLOBALS['babInstallPath']."utilit/fileincl.php";
+
+		$okfiles = 0;
+		$errfiles = array();
+		foreach ($_FILES as $file) 
 			{
-			$size = filesize($doc_f);
-			if( $size > $GLOBALS['babMaxFileSize'])
+			if( empty($file['name']) || $file['name'] == 'none')
 				{
-				$message= bab_translate("The file was greater than the maximum allowed") ." :". $GLOBALS['babMaxFileSize'];
-				return false;
+				$k++;
+				continue;
 				}
-			include_once $GLOBALS['babInstallPath']."utilit/fileincl.php";
+
+			if( $file['size'] > $GLOBALS['babMaxFileSize'])
+				{
+				$errfiles[] = array('error'=> bab_translate("The file was greater than the maximum allowed") ." :". $GLOBALS['babMaxFileSize'], 'file'=>$file['name']);
+				$k++;
+				continue;
+				}
+
 			$totalsize = getDirSize($GLOBALS['babUploadPath']);
 
-			if( $size + $totalsize > $GLOBALS['babMaxTotalSize'])
+			if( $file['size'] + $totalsize > $GLOBALS['babMaxTotalSize'])
 				{
-				$message = bab_translate("There is not enough free space");
-				return false;
+				$errfiles[] = array('error'=> bab_translate("There is not enough free space"), 'file'=>$file['name']);
+				$k++;
+				continue;
 				}
 
-			$filename = trim($docf_name);
+			$filename = trim($file['name']);
 			if( bab_isMagicQuotesGpcOn())
 				{
 				$filename = stripslashes($filename);
@@ -2261,26 +2274,30 @@ function addDocumentArticleDraft($idart, $docf_name, $doc_f, $description, &$mes
 			$path = bab_getUploadDraftsPath();
 			if( $path === false )
 				{
-				$message = bab_translate("Can't create directory");
-				return false;
+				$errfiles[] = array('error'=> bab_translate("Can't create directory"), 'file'=>$file['name']);
+				$k++;
+				continue;
 				}
-
+			
 			if( file_exists($path.$osfname))
 				{
-				$message = bab_translate("A file with the same name already exists");
-				return false;
+				$errfiles[] = array('error'=> bab_translate("A file with the same name already exists"), 'file'=>$file['name']);
+				$k++;
+				continue;
 				}
 
 			if( !get_cfg_var('safe_mode'))
 				{
 				set_time_limit(0);
 				}
-			if( !move_uploaded_file($doc_f, $path.$osfname))
+			if( !move_uploaded_file($file['tmp_name'], $path.$osfname))
 				{
-				$message = bab_translate("The file could not be uploaded");
-				return false;
+				$errfiles[] = array('error'=> bab_translate("The file could not be uploaded"), 'file'=>$file['name']);
+				$k++;
+				continue;
 				}
 
+			$description = $_POST['docdesc'][$k];
 			if( !bab_isMagicQuotesGpcOn())
 				{
 				$filename = addslashes($filename);
@@ -2288,14 +2305,25 @@ function addDocumentArticleDraft($idart, $docf_name, $doc_f, $description, &$mes
 				}
 
 			$babDB->db_query("insert into ".BAB_ART_DRAFTS_FILES_TBL." (id_draft, name, description) values ('" .$idart. "', '".$babDB->db_escape_string($filename)."','".$description."')");
-			return true;
-
+			$okfiles++;
+			$k++;
 			}
-		else
+
+		if( count($errfiles))
+			{
+			for( $k=0; $k < count($errfiles); $k++)
+				{
+				$message .= '<br />'.$errfiles[$k]['file'].'['.$errfiles[$k]['error'].']';
+				}
+			return false;
+			}
+		
+		if( !$okfiles)
 			{
 			$message = bab_translate("Please select a file to upload");
 			return false;
-			}	
+			}
+
 		}
 	return false;
 }
@@ -2679,10 +2707,10 @@ elseif( isset($updstep3))
 	}
 	elseif( $updstep3 == 'fadd')
 	{
-		if( isset($docf_name) && isset($idart) && $idart != 0 )
+		if( isset($idart) && $idart != 0 )
 		{
 		$message = '';
-		if( addDocumentArticleDraft($idart, $docf_name, $docf, $docdesc, $message) )
+		if( addDocumentArticleDraft($idart, $message) )
 			{
 			Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=s3&idart=".$idart);
 			exit;

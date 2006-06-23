@@ -904,6 +904,8 @@ function addFile($id, $gr, $path, $description, $keywords)
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
 			$this->t_warnmaxsize = bab_translate("File size must not exceed");
+			$this->t_add_field = bab_translate("Attach another file");
+			$this->t_remove_field = bab_translate("Remove");
 			if( $GLOBALS['babMaxFileSize'] < 1000000 )
 				{
 				$this->maxsize =  bab_formatSizeFile($GLOBALS['babMaxFileSize'])." ".bab_translate("Kb");
@@ -980,7 +982,7 @@ function addFile($id, $gr, $path, $description, $keywords)
 	}
 
 
-function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywords, $readonly)
+function saveFile($id, $gr, $path, $description, $keywords, $readonly)
 	{
 	global $babBody, $BAB_SESS_USERID;
 	$access = false;
@@ -1014,35 +1016,38 @@ function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywor
 	if( !$access )
 		{
 		$babBody->msgerror = bab_translate("Access denied");
-		return;
+		return false;
 		}
 
-	if( empty($filename) || $filename == "none")
-		{
-		$babBody->msgerror = bab_translate("Please select a file to upload");
-		return false;
-		}
-	else 
-		$filename = trim($filename);
-
-	if( $size > $GLOBALS['babMaxFileSize'])
-		{
-		$babBody->msgerror = bab_translate("The file was greater than the maximum allowed") ." :". $GLOBALS['babMaxFileSize'];
-		return false;
-		}
-	$totalsize = getDirSize($GLOBALS['babUploadPath']);
-	if( $size + $totalsize > $GLOBALS['babMaxTotalSize'])
-		{
-		$babBody->msgerror = bab_translate("There is not enough free space");
-		return false;
-		}
 	$pathx = bab_getUploadFullPath($gr, $id);
+	$okfiles = array();
+	$errfiles = array();
+	foreach ($_FILES as $file) 
+		{
+		$file['name'] = trim($file['name']);
+		if( empty($file['name']) || $file['name'] == 'none')
+			{
+			continue;
+		}
+
+		if( $file['size'] > $GLOBALS['babMaxFileSize'])
+		{
+			$errfiles[] = array('error'=> bab_translate("The file was greater than the maximum allowed") ." :". $GLOBALS['babMaxFileSize'], 'file'=>$file['name']);
+			continue;
+		}
+
+	$totalsize = getDirSize($GLOBALS['babUploadPath']);
+		if( $file['size'] + $totalsize > $GLOBALS['babMaxTotalSize'])
+		{
+			$errfiles[] = array('error'=> bab_translate("There is not enough free space"), 'file'=>$file['name']);
+			continue;
+		}
 
 	$totalsize = getDirSize($pathx);
-	if( $size + $totalsize > ($gr == "Y"? $GLOBALS['babMaxGroupSize']: $GLOBALS['babMaxUserSize']))
+		if( $file['size'] + $totalsize > ($gr == "Y"? $GLOBALS['babMaxGroupSize']: $GLOBALS['babMaxUserSize']))
 		{
-		$babBody->msgerror = bab_translate("There is not enough free space");
-		return false;
+			$errfiles[] = array('error'=> bab_translate("There is not enough free space"), 'file'=>$file['name']);
+			continue;
 		}
 
 	if( substr($path, -1) == "/")
@@ -1050,7 +1055,7 @@ function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywor
 	else if( !empty($path))
 		$pathx .= $path."/";	
 
-	$osfname = $filename;
+		$osfname = $file['name'];
 	if( bab_isMagicQuotesGpcOn())
 		$osfname = stripslashes($osfname);
 
@@ -1082,19 +1087,18 @@ function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywor
 
 		if( $bexist == false)
 			{
-			$babBody->msgerror = bab_translate("A file with the same name already exists");
-			return false;
+				$errfiles[] = array('error'=> bab_translate("A file with the same name already exists"), 'file'=>$file['name']);
+				continue;
 			}
 		}
 
 	if( !get_cfg_var('safe_mode'))
 		set_time_limit(0);
-	if( !move_uploaded_file($tmp, $pathx.$osfname))
+		if( !move_uploaded_file($file['tmp_name'], $pathx.$osfname))
 		{
-		$babBody->msgerror = bab_translate("The file could not be uploaded");
-		return false;
+			$errfiles[] = array('error'=> bab_translate("The file could not be uploaded"), 'file'=>$file['name']);
+			continue;
 		}
-
 	
 	
 	if( empty($BAB_SESS_USERID))
@@ -1143,6 +1147,8 @@ function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywor
 		$idf = $db->db_insert_id(); 
 		}
 
+		$okfiles[] = $idf;
+
 	if (BAB_INDEX_STATUS_INDEXED === $index_status) {
 		$obj = new bab_indexObject('bab_files');
 		$obj->setIdObjectFile($pathx.$osfname, $idf, $id);
@@ -1181,11 +1187,31 @@ function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywor
 			}
 		}
 
-	if( $gr == "Y" && $confirmed == "N" )
-		{
-		if( notifyApprovers($idf, $id) && $bnotify)
-			fileNotifyMembers($osfname, $path, $id, bab_translate("A new file has been uploaded"));
+		if( $gr == "Y" && $confirmed == "N" )
+			{
+			if( notifyApprovers($idf, $id) && $bnotify)
+					{
+				fileNotifyMembers($osfname, $path, $id, bab_translate("A new file has been uploaded"));
+					}
+			}
 		}
+
+	if( count($errfiles))
+		{
+		for( $k=0; $k < count($errfiles); $k++)
+			{
+			$babBody->msgerror .= '<br />'.$errfiles[$k]['file'].'['.$errfiles[$k]['error'].']';
+			}
+		return false;
+		}
+	
+	if( !count($okfiles))
+		{
+		$babBody->msgerror = bab_translate("Please select a file to upload");
+		return false;
+		}
+
+
 
 	return true;
 	}
@@ -2428,9 +2454,6 @@ if( isset($_POST['addf'])) {
 				$id, 
 				$gr, 
 				$path, 
-				$_FILES['uploadf']['name'], 
-				$_FILES['uploadf']['size'],
-				$_FILES['uploadf']['tmp_name'] , 
 				$_POST['description'], 
 				$_POST['keywords'], 
 				$_POST['readonly'])
