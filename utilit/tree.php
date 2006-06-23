@@ -833,12 +833,12 @@ class bab_ArticleTreeView extends bab_TreeView
 		$this->_attributes = BAB_ARTICLE_TREE_VIEW_SHOW_ARTICLES;
 	}
 
-	function setAttributes($attributes) 
+	function setAttributes($attributes)
 	{
 		$this->_attributes = $attributes;
 		$this->_invalidateCache();
 	}
-	
+
 
 	/**
 	 * Add article topics to the tree.
@@ -934,6 +934,12 @@ class bab_ArticleTreeView extends bab_TreeView
 	function addStatistics($start, $end)
 	{
 		$this->_updateTree();
+		// Init stats at 0
+		$iterator = $this->_rootNode->createNodeIterator($this->_rootNode);
+		$iterator->nextNode();
+		while ($node = $iterator->nextNode())
+			(!is_null($node)) && $node->_data->setInfo('0');
+
 		$sql = 'SELECT st_article_id AS id, SUM(st_hits) AS hits FROM ' . BAB_STATS_ARTICLES_TBL;
 		if ($start || $end) {
 			$sql .= ' WHERE ';
@@ -1100,6 +1106,12 @@ class bab_FileTreeView extends bab_TreeView
 	function addStatistics($start, $end)
 	{
 		$this->_updateTree();
+		// Init stats at 0
+		$iterator = $this->_rootNode->createNodeIterator($this->_rootNode);
+		$iterator->nextNode();
+		while ($node = $iterator->nextNode())
+			(!is_null($node)) && $node->_data->setInfo('0');
+
 		$sql = 'SELECT st_fmfile_id AS id, SUM(st_hits) AS hits FROM ' . BAB_STATS_FMFILES_TBL;
 		if ($start || $end) {
 			$sql .= ' WHERE ';
@@ -1198,6 +1210,7 @@ class bab_ForumTreeView extends bab_TreeView
 											 bab_translate('Forum: ') . $forum['name'],
 											 '',
 											 '');
+			$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/forum.png');
 			$this->appendElement($element, null);
 		}
 	}
@@ -1237,9 +1250,11 @@ class bab_ForumTreeView extends bab_TreeView
 				if ($post['id_parent'] === '0') {
 					$parentId = 'forum' . BAB_TREE_VIEW_ID_SEPARATOR . $thread['forum'];
 					$elementType = $threadType;
+					$iconUrl = $GLOBALS['babSkinPath'] . 'images/nodetypes/thread.png';
 				} else {
 					$parentId = 'post' . BAB_TREE_VIEW_ID_SEPARATOR . $post['id_parent'];
 					$elementType = $postType;
+					$iconUrl = $GLOBALS['babSkinPath'] . 'images/nodetypes/post.png';
 				}
 				if (($this->_attributes & BAB_FORUM_TREE_VIEW_SHOW_POSTS) && $post['id_parent'] !== '0'
 				    || $post['id_parent'] === '0') {
@@ -1248,6 +1263,7 @@ class bab_ForumTreeView extends bab_TreeView
 													 $post['subject'],
 													 '',
 													 '');
+					$element->setIcon($iconUrl);
 					$this->appendElement($element, $parentId);
 				}
 			}
@@ -1257,6 +1273,12 @@ class bab_ForumTreeView extends bab_TreeView
 	function addStatistics($start, $end)
 	{
 		$this->_updateTree();
+		// Init stats at 0
+		$iterator = $this->_rootNode->createNodeIterator($this->_rootNode);
+		$iterator->nextNode();
+		while ($node = $iterator->nextNode())
+			(!is_null($node)) && $node->_data->setInfo('0');
+
 		$sql = 'SELECT st_post_id AS id, SUM(st_hits) AS hits FROM ' . BAB_STATS_POSTS_TBL;
 		if ($start || $end) {
 			$sql .= ' WHERE ';
@@ -1443,6 +1465,12 @@ class bab_FaqTreeView extends bab_TreeView
 	function addStatistics($start, $end)
 	{
 		$this->_updateTree();
+		// Init stats at 0
+		$iterator = $this->_rootNode->createNodeIterator($this->_rootNode);
+		$iterator->nextNode();
+		while ($node = $iterator->nextNode())
+			(!is_null($node)) && $node->_data->setInfo('0');		
+		
 		$sql = 'SELECT st_faqqr_id AS id, SUM(st_hits) AS hits FROM ' . BAB_STATS_FAQQRS_TBL;
 		if ($start || $end) {
 			$sql .= ' WHERE ';
