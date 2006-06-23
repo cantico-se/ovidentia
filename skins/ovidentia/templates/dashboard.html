@@ -2,6 +2,22 @@
 
 <style type="text/css">
 
+
+.dashboard .foot span {
+	padding: 10px;
+	border: 1px solid black;
+}
+@media print {
+	.dashboard .foot {
+		display: none;
+	}
+}
+
+.dashboard .foot img {
+	cursor: pointer;	
+	vertical-align: middle;
+}
+
 .dashboard_icon {
 	border: 1px solid #DDDDDD;
 	padding: 2px;
@@ -52,15 +68,26 @@ td.dashboard_column_header:hover {
 	background-color: #000000;
 	color: #FFFFFF;
 	font-family: tahoma;
+	font-size: inherit;
 	font-weight: bold;
 	padding: 4px;
 }
 
+.dashboard_container tbody tr {
+	font-size: inherit;
+}
+.dashboard_container tbody {
+	font-size: inherit;
+}
+.dashboard_container table {
+	font-size: inherit;
+}
 .dashboard_container tbody td {
 	border: 1px solid #CCCCCC;
 	background-color: #FFFFFF;
 	color: #000000;
 	font-family: tahoma;
+	font-size: inherit;
 	padding: 4px;
 	text-align: right;
 }
@@ -245,6 +272,7 @@ function dashboardInit()
 			}
 		}
 	}
+	textsize(1);
 	if (typeof window.previousonload == 'function')
 		window.previousonload();
 }
@@ -254,20 +282,20 @@ function textsize(param)
 	var body = document.getElementsByTagName('BODY')[0];
 	var cssfs = body.style.fontSize;
 	var fs = parseFloat(cssfs);
-	var newfs = fs + param;
-	window.status = fs;
+	var newfs = fs * param;
 	if (isNaN(fs))
-		body.style.fontSize = '1em';
+		body.style.fontSize = '0.7em';
 	else
 		body.style.fontSize = newfs + 'em';
 }
-textsize(0);
 
 window.previousonload = window.onload;
 window.onload = dashboardInit;
 -->
 </script>
 <!--#end dashboard_scripts -->
+
+
 
 
 <!--#begin dashboard -->
@@ -278,25 +306,26 @@ var bab_dashboard_filters = {
 <!--#endin getNextFilter -->
 }
 </script>
-<div id="bab_dashboard">
+<div class="dashboard">
 <!--#in getNextElement -->
 <br style="margin: 5px" />
 { t_dashboard_element }
 <!--#endin getNextElement -->
-</div>
-<br>
-<div class="foot">
-	<span id="toolbar">
-	<a href="javascript:window.print()"><img src="{ babSkinPath }images/Dashboard/print.gif" border="0" /></a>
-	<a href="javascript:textsize(0.1)">A+</a>
 
-	<a href="javascript:textsize(-0.1)">A-</a>
+<br /><br />
+<div class="foot">
+	<span>
+	<img onclick="window.print()" src="{ babSkinPath }images/Dashboard/print.gif" border="0" />&nbsp;
+	<a href="#" onclick="textsize(1.05); return false">A+</a>&nbsp;
+	<a href="#" onclick="textsize(0.95); return false">A-</a>
 	</span>
+</div>
 </div>
 <!--#end dashboard -->
 
-<!--#begin dashboard_element -->
 
+
+<!--#begin dashboard_element -->
 <div class="dashboard_container">
 <div class="dashboard_header">{ t_dashboard_name }</div>
 <table <!--#if t_table_id --> id="{ t_table_id }" <!--#endif t_table_id --> style="border-collapse: collapse; border: 2px solid black">
@@ -318,5 +347,39 @@ var bab_dashboard_filters = {
 </tbody>
 </table>
 </div>
-
 <!--#end dashboard_element -->
+
+
+
+
+
+
+<!--#begin dashboard_csv -->
+<!--#in getNextElementCsv -->
+{ t_dashboard_element }
+<!--#endin getNextElementCsv -->
+<!--#end dashboard_csv -->
+
+
+
+<!--#begin dashboard_element_csv -->
+<table>
+<caption>{ t_dashboard_name }</caption>
+<thead>
+<tr>
+<!--#in getNextColumnHeader -->
+<th bgcolor="#DDDDDD"><b>{ t_column_header }</b></th>
+<!--#endin getNextColumnHeader -->
+</tr>
+</thead>
+<tbody>
+<!--#in getNextRow -->
+<tr>
+<!--#in getNextColumn -->
+<td align="right">{ t_column_content }</td>
+<!--#endin getNextColumn -->
+</tr>
+<!--#endin getNextRow -->
+</tbody>
+</table>
+<!--#end dashboard_element_csv -->

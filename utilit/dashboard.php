@@ -64,6 +64,16 @@ class bab_Dashboard
 		return $html;
 	}
 
+	/**
+	 * @return string
+	 */
+	function printTemplateCsv()
+	{
+		$html = bab_printTemplate($this, 'dashboard.html', 'dashboard_csv');
+		return $html;
+	}
+
+
 	// Template functions.
 	function getNextElement()
 	{
@@ -88,6 +98,19 @@ class bab_Dashboard
 		reset($this->_filters);
 		return false;
 	}
+	
+	function getNextElementCsv()
+	{
+		static $i = 0;
+		if ($i < count($this->_elements)) {
+			$this->t_dashboard_element = $this->_elements[$i]->printTemplateCsv();
+			$i++;
+			return true;
+		}
+		$i = 0;
+		return false;
+	}
+
 }
 
 class bab_DashboardElement
@@ -124,6 +147,15 @@ class bab_DashboardElement
 	function printTemplate()
 	{
 		$html = bab_printTemplate($this, 'dashboard.html', 'dashboard_element');
+		return $html;
+	}
+	
+	/**
+	 * @return string
+	 */
+	function printTemplateCsv()
+	{
+		$html = bab_printTemplate($this, 'dashboard.html', 'dashboard_element_csv');
 		return $html;
 	}
 	

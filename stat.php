@@ -171,7 +171,7 @@ function displayStatisticPanel($idx)
 
 			if( $bbasket )
 				{
-				$tmparr[] = array('idx' => 'baskets', 'item' => bab_translate("Baskets"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=baskets", 'popup' => true);
+				$tmparr[] = array('idx' => 'baskets', 'item' => bab_translate("Baskets"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=baskets");
 				}
 
 			$this->itemarray[] = $tmparr;
@@ -248,7 +248,7 @@ class displayTimeIntervalCls
 	var $itemarray = array();
 	var $current;
 
-	function displayTimeIntervalCls($iwhat, $sd, $ed, $idx)
+	function displayTimeIntervalCls($iwhat, $sd, $ed, $idx, $idbasket = null)
 		{
 		$this->current = $iwhat;
 		switch($idx)
@@ -264,6 +264,7 @@ class displayTimeIntervalCls
 				$this->showform = true;
 				break;
 			}
+		$this->idbasket = $idbasket;
 		$this->submittxt = bab_translate("Ok");
 		$this->fromtxt = bab_translate("From");
 		$this->totxt = bab_translate("to");
@@ -397,10 +398,10 @@ function displayTimeInterval($iwhat, $sd, $ed, $idx)
 	$babBody->babecho(bab_printTemplate($temp, "stat.html", "timeinterval"));
 }
 
-function displayTimeIntervalInPopup($iwhat, $sd, $ed, $idx, &$body)
+function displayTimeIntervalInPopup($iwhat, $sd, $ed, $idx, &$body, $idbasket = null)
 {
 //	global $babBody;
-	$temp = new displayTimeIntervalCls($iwhat, $sd, $ed, $idx);
+	$temp = new displayTimeIntervalCls($iwhat, $sd, $ed, $idx, $idbasket);
 	$body->babecho(bab_printTemplate($temp, "stat.html", "timeinterval"));
 }
 
@@ -689,6 +690,15 @@ switch($idx)
 		$GLOBALS['babBodyPopup'] = new babBodyPopup();
 		displayTimeIntervalInPopup($itwhat, $sd, $ed, $idx, $GLOBALS['babBodyPopup']);
 		showDashboard($sd, $ed);
+		printBabBodyPopup();
+		exit;
+		break;
+	case "basket":
+		include_once $babInstallPath."utilit/uiutil.php";
+		include_once $babInstallPath."statdashboard.php";
+		$GLOBALS['babBodyPopup'] = new babBodyPopup();
+		displayTimeIntervalInPopup($itwhat, $sd, $ed, $idx, $GLOBALS['babBodyPopup'], $idbasket);
+		showBasket($idbasket, $sd, $ed);
 		printBabBodyPopup();
 		exit;
 		break;

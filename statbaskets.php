@@ -57,7 +57,7 @@ function listUserBaskets()
 				{
 				$this->altbg = !$this->altbg;
 				$this->itemname = $this->arrbaskets[$i]['name'];
-				$this->itemurl = ''; //$this->arrbaskets[$i]['id'];
+				$this->itemurl = '?tg=stat&idx=basket&idbasket=' . $this->arrbaskets[$i]['id'];
 				$i++;
 				return true;
 				}

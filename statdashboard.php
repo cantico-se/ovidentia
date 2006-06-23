@@ -178,31 +178,50 @@ function getSqlDateFormat($start, $end)
 }
 
 
+function &getArticleCategoriesDashboardRow($category, $start, $end, $sqlDateFormat)
+{
+	global $babDB;
+	$sql = 	'SELECT category.id AS id, DATE_FORMAT(stat.st_date,\'' . $sqlDateFormat . '\') AS stat_date, SUM(stat.st_hits) AS hits';
+	$sql .= ' FROM ' . BAB_STATS_ARTICLES_TBL . ' AS stat';
+	$sql .= ' LEFT JOIN ' . BAB_ARTICLES_TBL . ' AS article ON stat.st_article_id=article.id';
+	$sql .= ' LEFT JOIN ' . BAB_TOPICS_TBL . ' AS topic ON topic.id=article.id_topic';
+	$sql .= ' LEFT JOIN ' . BAB_TOPICS_CATEGORIES_TBL . ' category ON category.id=topic.id_cat';
+	$sql .= '  WHERE category.id=\'' . $category['id'] . '\'';
+	$start && $sql .= ' AND stat.st_date >= \'' . date('Y-m-d', $start) . '\'';
+	$end &&   $sql .= ' AND stat.st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
+	$sql .= ' GROUP BY stat_date';
+	$sql .= ' ORDER BY stat_date ASC';
+
+	$stats = $babDB->db_query($sql);
+	$r = array();
+	for ($total = 0; $stat = $babDB->db_fetch_array($stats); $total += $stat['hits']) {
+		$r[$stat['stat_date']] = $stat['hits'];
+	}
+	$row = array();
+	$row['label'] = $category['title'];
+	$row += fillRow($r, $start, $end);
+	$row['total'] = $total;
+	return $row;
+}
 
 function createArticleCategoriesDashboard($start, $end)
 {
 	global $babBody, $babDB;
+	$admGroup = $babBody->currentAdmGroup;
 	$title = sprintf(bab_translate("Article Categories Top %d"), BAB_DASHBOARD_NB_ITEMS);
 	$dashboard = new bab_DashboardElement($title);
 	$dashboard->setColumnHeaders(createHeaders($start, $end));
 
-	$sql = 'SELECT tct.id AS id, SUM(sat.st_hits) AS hits, tct.title AS title';
-	$sql .= ' FROM ' . BAB_STATS_ARTICLES_TBL . ' AS sat';
-	$sql .= ' LEFT JOIN ' . BAB_ARTICLES_TBL . ' AS at ON sat.st_article_id=at.id';
-	$sql .= ' LEFT JOIN ' . BAB_TOPICS_TBL . ' AS tt ON tt.id=at.id_topic';
-	$sql .= ' LEFT JOIN ' . BAB_TOPICS_CATEGORIES_TBL . ' tct ON tct.id=tt.id_cat';
-	$sql .= ' WHERE at.title IS NOT NULL';
-	if ($babBody->currentAdmGroup != 0) {
-		$sql .= ' AND  tct.id_dgowner=\'' . $babBody->currentAdmGroup . '\'';
-	}
-	if ($start || $end) {
-		$sql .= ' AND ';
-		$where = array();
-		$start && $where[] = 'sat.st_date >= \'' . date('Y-m-d', $start) . '\'';
-		$end && $where[] = 'sat.st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
-		$sql .= implode(' AND ', $where);
-	}
-	$sql .= ' GROUP BY tct.id';
+	$sql = 'SELECT category.id AS id, SUM(stat.st_hits) AS hits, category.title AS title';
+	$sql .= ' FROM ' . BAB_STATS_ARTICLES_TBL . ' AS stat';
+	$sql .= ' LEFT JOIN ' . BAB_ARTICLES_TBL . ' AS article ON stat.st_article_id=article.id';
+	$sql .= ' LEFT JOIN ' . BAB_TOPICS_TBL . ' AS topic ON topic.id=article.id_topic';
+	$sql .= ' LEFT JOIN ' . BAB_TOPICS_CATEGORIES_TBL . ' category ON category.id=topic.id_cat';
+	$sql .= ' WHERE article.title IS NOT NULL';
+	$admGroup && $sql .= ' AND  category.id_dgowner=\'' . $admGroup . '\'';
+	$start    && $sql .= ' AND stat.st_date >= \'' . date('Y-m-d', $start) . '\'';
+	$end      && $sql .= ' AND stat.st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
+	$sql .= ' GROUP BY category.id';
 	$sql .= ' ORDER BY hits DESC';
 	$sql .= ' LIMIT ' . BAB_DASHBOARD_NB_ITEMS;
 
@@ -210,96 +229,56 @@ function createArticleCategoriesDashboard($start, $end)
 	
 	$categories = $babDB->db_query($sql);
 	while ($category = $babDB->db_fetch_array($categories)) {
-		$sql = 	'SELECT tct.id AS id, DATE_FORMAT(sat.st_date,\'' . $sqlDateFormat . '\') AS stat_date, SUM(sat.st_hits) AS hits';
-		$sql .= ' FROM ' . BAB_STATS_ARTICLES_TBL . ' sat';
-		$sql .= ' LEFT JOIN ' . BAB_ARTICLES_TBL . ' AS at ON sat.st_article_id=at.id';
-		$sql .= ' LEFT JOIN ' . BAB_TOPICS_TBL . ' tt ON tt.id=at.id_topic';
-		$sql .= ' LEFT JOIN ' . BAB_TOPICS_CATEGORIES_TBL . ' tct ON tct.id=tt.id_cat';
-		$sql .= ' WHERE tct.id=\'' . $category['id'] . '\'';
-		if ($start || $end) {
-			$sql .= ' AND ';
-			$where = array();
-			$start && $where[] = 'sat.st_date >= \'' . date('Y-m-d', $start) . '\'';
-			$end && $where[] = 'sat.st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
-			$sql .= implode(' AND ', $where);
-		}
-		$sql .= ' GROUP BY stat_date';
-		$sql .= ' ORDER BY stat_date ASC';
-	
-		$stats = $babDB->db_query($sql);
-		$r = array();
-		while ($stat = $babDB->db_fetch_array($stats)) {
-			$r[$stat['stat_date']] = $stat['hits'];
-		}
-		$row = array();
-		$row['label'] = $category['title'];
-		$row += fillRow($r, $start, $end);
-		$row['total'] = $category['hits'];
-			
-		$dashboard->addRow($row);
+		$dashboard->addRow(getArticleCategoriesDashboardRow($category, $start, $end, $sqlDateFormat));	
 	}	
-
 	return $dashboard;
 }
 
 
-function addArticleTopicsDashboardRow(&$dashboard, $topic, $start, $end, $sqlDateFormat)
+
+function &getArticleTopicsDashboardRow($topic, $start, $end, $sqlDateFormat)
 {
 	global $babDB;
-	$sql = 	'SELECT tt.id AS id, DATE_FORMAT(sat.st_date,\'' . $sqlDateFormat . '\') AS stat_date, SUM(sat.st_hits) AS hits';
-	$sql .= ' FROM ' . BAB_STATS_ARTICLES_TBL . ' AS sat';
-	$sql .= ' LEFT JOIN ' . BAB_ARTICLES_TBL . ' AS at ON sat.st_article_id=at.id';
-	$sql .= ' LEFT JOIN ' . BAB_TOPICS_TBL . ' AS tt ON tt.id=at.id_topic';
-	$sql .= '  WHERE at.title IS NOT NULL AND tt.id=\'' . $topic['id'] . '\'';
-	if ($start || $end) {
-		$sql .= ' AND ';
-		$where = array();
-		$start && $where[] = 'sat.st_date >= \'' . date('Y-m-d', $start) . '\'';
-		$end && $where[] = 'sat.st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
-		$sql .= implode(' AND ', $where);
-	}
+	$sql = 	'SELECT topic.id AS id, DATE_FORMAT(stat.st_date,\'' . $sqlDateFormat . '\') AS stat_date, SUM(stat.st_hits) AS hits';
+	$sql .= ' FROM ' . BAB_STATS_ARTICLES_TBL . ' AS stat';
+	$sql .= ' LEFT JOIN ' . BAB_ARTICLES_TBL . ' AS article ON stat.st_article_id=article.id';
+	$sql .= ' LEFT JOIN ' . BAB_TOPICS_TBL . ' AS topic ON topic.id=article.id_topic';
+	$sql .= '  WHERE article.title IS NOT NULL AND topic.id=\'' . $topic['id'] . '\'';
+	$start && $sql .= ' AND stat.st_date >= \'' . date('Y-m-d', $start) . '\'';
+	$end &&   $sql .= ' AND stat.st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
 	$sql .= ' GROUP BY stat_date';
 	$sql .= ' ORDER BY stat_date ASC';
 
 	$stats = $babDB->db_query($sql);
 	$r = array();
-	while ($stat = $babDB->db_fetch_array($stats)) {
+	for ($total = 0; $stat = $babDB->db_fetch_array($stats); $total += $stat['hits']) {
 		$r[$stat['stat_date']] = $stat['hits'];
 	}
 	$row = array();
 	$row['label'] = $topic['title'];
 	$row += fillRow($r, $start, $end);
-	$row['total'] = $topic['hits'];
-	
-	$dashboard->addRow($row);	
+	$row['total'] = $total;
+	return $row;
 }
 
 function createArticleTopicsDashboard($start, $end)
 {
 	global $babBody, $babDB;
+	$admGroup = $babBody->currentAdmGroup;
 	$title = sprintf(bab_translate("Article Topics Top %d"), BAB_DASHBOARD_NB_ITEMS);	
 	$dashboard = new bab_DashboardElement($title);
 	$dashboard->setColumnHeaders(createHeaders($start, $end));
 
-	$sql = 'SELECT tt.id AS id, SUM(sat.st_hits) AS hits, tt.category AS title';
-	$sql .= ' FROM ' . BAB_STATS_ARTICLES_TBL . ' AS sat';
-	$sql .= ' LEFT JOIN ' . BAB_ARTICLES_TBL . ' AS at ON sat.st_article_id=at.id';
-	$sql .= ' LEFT JOIN ' . BAB_TOPICS_TBL . ' AS tt ON tt.id=at.id_topic';
-	if ($babBody->currentAdmGroup != 0) {
-		$sql .= ' LEFT JOIN ' . BAB_TOPICS_CATEGORIES_TBL . ' tct ON tct.id=tt.id_cat';
-	}
-	$sql .= ' WHERE at.title IS NOT NULL';
-	if ($babBody->currentAdmGroup != 0) {
-		$sql .= ' AND  tct.id_dgowner=\'' . $babBody->currentAdmGroup . '\'';
-	}
-	if ($start || $end) {
-		$sql .= ' AND ';
-		$where = array();
-		$start && $where[] = 'sat.st_date >= \'' . date('Y-m-d', $start) . '\'';
-		$end && $where[] = 'sat.st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
-		$sql .= implode(' AND ', $where);
-	}
-	$sql .= ' GROUP BY tt.id';
+	$sql = 'SELECT topic.id AS id, SUM(stat.st_hits) AS hits, topic.category AS title';
+	$sql .= ' FROM ' . BAB_STATS_ARTICLES_TBL . ' AS stat';
+	$sql .= ' LEFT JOIN ' . BAB_ARTICLES_TBL . ' AS article ON stat.st_article_id=article.id';
+	$sql .= ' LEFT JOIN ' . BAB_TOPICS_TBL . ' AS topic ON topic.id=article.id_topic';
+	$admGroup && $sql .= ' LEFT JOIN ' . BAB_TOPICS_CATEGORIES_TBL . ' category ON category.id=topic.id_cat';
+	$sql .= ' WHERE article.title IS NOT NULL';
+	$admGroup && $sql .= ' AND  category.id_dgowner=\'' . $admGroup . '\'';
+	$start    && $sql .= ' AND stat.st_date >= \'' . date('Y-m-d', $start) . '\'';
+	$end      && $sql .= ' AND stat.st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
+	$sql .= ' GROUP BY topic.id';
 	$sql .= ' ORDER BY hits DESC';
 	$sql .= ' LIMIT ' . BAB_DASHBOARD_NB_ITEMS;
 
@@ -307,10 +286,34 @@ function createArticleTopicsDashboard($start, $end)
 	
 	$topics = $babDB->db_query($sql);
 	while ($topic = $babDB->db_fetch_array($topics)) {
-		addArticleTopicsDashboardRow($dashboard, $topic, $start, $end, $sqlDateFormat);
-	}	
-	
+		$dashboard->addRow(getArticleTopicsDashboardRow($topic, $start, $end, $sqlDateFormat));	
+	}
 	return $dashboard;
+}
+
+
+function &getArticlesDashboardRow($article, $start, $end, $sqlDateFormat)
+{
+	global $babDB;
+	$sql = 	'SELECT article.id AS id, DATE_FORMAT(stat.st_date,\'' . $sqlDateFormat . '\') AS stat_date, SUM(stat.st_hits) AS hits';
+	$sql .= ' FROM ' . BAB_STATS_ARTICLES_TBL . ' AS stat';
+	$sql .= ' LEFT JOIN ' . BAB_ARTICLES_TBL . ' AS article ON stat.st_article_id=article.id';
+	$sql .= '  WHERE article.id=\'' . $article['id'] . '\'';
+	$start && $sql .= ' AND stat.st_date >= \'' . date('Y-m-d', $start) . '\'';
+	$end &&   $sql .= ' AND stat.st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
+	$sql .= ' GROUP BY stat_date';
+	$sql .= ' ORDER BY stat_date ASC';
+
+	$stats = $babDB->db_query($sql);
+	$r = array();
+	for ($total = 0; $stat = $babDB->db_fetch_array($stats); $total += $stat['hits']) {
+		$r[$stat['stat_date']] = $stat['hits'];
+	}
+	$row = array();
+	$row['label'] = $article['title'];
+	$row += fillRow($r, $start, $end);
+	$row['total'] = $total;
+	return $row;
 }
 
 
@@ -390,25 +393,142 @@ function createArticlesDashboard($start, $end)
 }
 
 
+function &getFaqsDashboardRow($faq, $start, $end, $sqlDateFormat)
+{
+	global $babDB;
+	$sql = 	'SELECT st_faq_id AS id, DATE_FORMAT(st_date,\'' . $sqlDateFormat . '\') AS stat_date, SUM(st_hits) AS hits';
+	$sql .= ' FROM ' . BAB_STATS_FAQS_TBL;
+	$sql .= ' WHERE st_faq_id=\'' . $faq['id'] . '\'';
+	$start && $sql .= ' AND st_date >= \'' . date('Y-m-d', $start) . '\'';
+	$end &&   $sql .= ' AND st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
+	$sql .= ' GROUP BY stat_date';
+	$sql .= ' ORDER BY stat_date ASC';
+
+	$stats = $babDB->db_query($sql);
+	$r = array();
+	for ($total = 0; $stat = $babDB->db_fetch_array($stats); $total += $stat['hits']) {
+		$r[$stat['stat_date']] = $stat['hits'];
+	}
+	$row = array();
+	$row['label'] = $faq['title'];
+	$row += fillRow($r, $start, $end);
+	$row['total'] = $total;
+	return $row;		
+}
+
+
+function &getFaqQuestionsDashboardRow($question, $start, $end, $sqlDateFormat)
+{
+	global $babDB;
+	$sql = 	'SELECT st_faqqr_id AS id, DATE_FORMAT(st_date,\'' . $sqlDateFormat . '\') AS stat_date, SUM(st_hits) AS hits';
+	$sql .= ' FROM ' . BAB_STATS_FAQQRS_TBL;
+	$sql .= ' WHERE st_faqqr_id=\'' . $question['id'] . '\'';
+	$start && $sql .= ' AND st_date >= \'' . date('Y-m-d', $start) . '\'';
+	$end &&   $sql .= ' AND st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
+	$sql .= ' GROUP BY stat_date';
+	$sql .= ' ORDER BY stat_date ASC';
+
+	$stats = $babDB->db_query($sql);
+	$r = array();
+	for ($total = 0; $stat = $babDB->db_fetch_array($stats); $total += $stat['hits']) {
+		$r[$stat['stat_date']] = $stat['hits'];
+	}
+	$row = array();
+	$row['label'] = $question['title'];
+	$row += fillRow($r, $start, $end);
+	$row['total'] = $total;
+	return $row;
+}
+
+
+function &getForumsDashboardRow($forum, $start, $end, $sqlDateFormat)
+{
+	global $babDB;
+	$sql = 	'SELECT st_forum_id AS id, DATE_FORMAT(st_date,\'' . $sqlDateFormat . '\') AS stat_date, SUM(st_hits) AS hits';
+	$sql .= ' FROM ' . BAB_STATS_FORUMS_TBL;
+	$sql .= ' WHERE st_forum_id=\'' . $forum['id'] . '\'';
+	$start && $sql .= ' AND st_date >= \'' . date('Y-m-d', $start) . '\'';
+	$end &&	  $sql .= ' AND st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
+	$sql .= ' GROUP BY stat_date';
+	$sql .= ' ORDER BY stat_date ASC';
+
+	$stats = $babDB->db_query($sql);
+	$r = array();
+	for ($total = 0; $stat = $babDB->db_fetch_array($stats); $total += $stat['hits']) {
+		$r[$stat['stat_date']] = $stat['hits'];
+	}
+	$row = array();
+	$row['label'] = $forum['title'];
+	$row += fillRow($r, $start, $end);
+	$row['total'] = $total;
+	return $row;		
+}
+
+
+function &getPostsDashboardRow($post, $start, $end, $sqlDateFormat)
+{
+	global $babDB;
+	$sql = 	'SELECT st_post_id AS id, DATE_FORMAT(st_date,\'' . $sqlDateFormat . '\') AS stat_date, SUM(st_hits) AS hits';
+	$sql .= ' FROM ' . BAB_STATS_POSTS_TBL;
+	$sql .= ' WHERE st_post_id=\'' . $post['id'] . '\'';
+	$start && $sql .= ' AND st_date >= \'' . date('Y-m-d', $start) . '\'';
+	$end &&	  $sql .= ' AND st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
+	$sql .= ' GROUP BY stat_date';
+	$sql .= ' ORDER BY stat_date ASC';
+
+	$stats = $babDB->db_query($sql);
+	$r = array();
+	for ($total = 0; $stat = $babDB->db_fetch_array($stats); $total += $stat['hits']) {
+		$r[$stat['stat_date']] = $stat['hits'];
+	}
+	$row = array();
+	$row['label'] = $post['title'];
+	$row += fillRow($r, $start, $end);
+	$row['total'] = $total;
+	return $row;
+}
+
+
+
+function &getDirectoriesDashboardRow($directory, $start, $end, $sqlDateFormat)
+{
+	global $babDB;
+	$sql = 	'SELECT st_folder_id AS id, DATE_FORMAT(st_date,\'' . $sqlDateFormat . '\') AS stat_date, SUM(st_hits) AS hits';
+	$sql .= ' FROM ' . BAB_STATS_FMFOLDERS_TBL;
+	$sql .= ' WHERE st_folder_id=\'' . $directory['id'] . '\'';
+	$start && $sql .= ' AND st_date >= \'' . date('Y-m-d', $start) . '\'';
+	$end &&	  $sql .= ' AND st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
+	$sql .= ' GROUP BY stat_date';
+	$sql .= ' ORDER BY stat_date ASC';
+
+	$stats = $babDB->db_query($sql);
+	$r = array();
+	for ($total = 0; $stat = $babDB->db_fetch_array($stats); $total += $stat['hits']) {
+		$r[$stat['stat_date']] = $stat['hits'];
+	}
+	$row = array();
+	$row['label'] = $directory['title'];
+	$row += fillRow($r, $start, $end);
+	$row['total'] = $total;
+	return $row;		
+}
+	
 function createDirectoriesDashboard($start, $end)
 {
 	global $babBody, $babDB;
+	$admGroup = $babBody->currentAdmGroup;
 	$title = sprintf(bab_translate("Collective Directories Top %d"), BAB_DASHBOARD_NB_ITEMS);
 	$dashboard = new bab_DashboardElement($title);
 	$dashboard->setColumnHeaders(createHeaders($start, $end));
 
-	$sql = 'SELECT fft.id AS id, fft.folder AS title, SUM(sft.st_hits) AS hits';
-	$sql .= ' FROM  ' . BAB_STATS_FMFOLDERS_TBL . ' sft';
-	$sql .= ' LEFT JOIN ' . BAB_FM_FOLDERS_TBL . ' fft ON sft.st_folder_id=fft.id';
-	$where = array();
-	$where[] = 'fft.folder IS NOT NULL';
-	$babBody->currentAdmGroup && $where[] = 'fft.id_dgowner=\'' . $babBody->currentAdmGroup . '\'';
-	$start && $where[] = 'sft.st_date >= \'' . date('Y-m-d', $start) . '\'';
-	$end && $where[] = 'sft.st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
-	if (!empty($where)) {
-		$sql .= ' WHERE ' . implode(' AND ', $where);
-	}
-	$sql .= ' GROUP BY fft.id';
+	$sql = 'SELECT folder.id AS id, folder.folder AS title, SUM(stat.st_hits) AS hits';
+	$sql .= ' FROM  ' . BAB_STATS_FMFOLDERS_TBL . ' AS stat';
+	$sql .= ' LEFT JOIN ' . BAB_FM_FOLDERS_TBL . ' folder ON stat.st_folder_id=folder.id';
+	$sql .= ' WHERE folder.folder IS NOT NULL';
+	$admGroup && $sql .= ' AND folder.id_dgowner=\'' . $admGroup . '\'';
+	$start &&	 $sql .= ' AND stat.st_date >= \'' . date('Y-m-d', $start) . '\'';
+	$end &&		 $sql .= ' AND stat.st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
+	$sql .= ' GROUP BY folder.id';
 	$sql .= ' ORDER BY hits DESC';
 	$sql .= ' LIMIT ' . BAB_DASHBOARD_NB_ITEMS;
 
@@ -416,38 +536,40 @@ function createDirectoriesDashboard($start, $end)
 	
 	$directories = $babDB->db_query($sql);
 	while ($directory = $babDB->db_fetch_array($directories)) {
-		$sql = 	'SELECT st_folder_id AS id, DATE_FORMAT(st_date,\'' . $sqlDateFormat . '\') AS stat_date, SUM(st_hits) AS hits';
-		$sql .= ' FROM ' . BAB_STATS_FMFOLDERS_TBL;
-		$where = array();
-		$where[] = 'st_folder_id=\'' . $directory['id'] . '\'';
-		$start && $where[] = 'st_date >= \'' . date('Y-m-d', $start) . '\'';
-		$end && $where[] = 'st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
-		if (!empty($where)) {
-			$sql .= ' WHERE ' . implode(' AND ', $where);
-		}
-		$sql .= ' GROUP BY stat_date';
-		$sql .= ' ORDER BY stat_date ASC';
-	
-		$stats = $babDB->db_query($sql);
-		$r = array();
-		while ($stat = $babDB->db_fetch_array($stats)) {
-			$r[$stat['stat_date']] = $stat['hits'];
-		}
-		$row = array();
-		$row['label'] = $directory['title'];
-		$row += fillRow($r, $start, $end);
-		$row['total'] = $directory['hits'];
-			
-		$dashboard->addRow($row);
-	}	
-
+		$dashboard->addRow(getDirectoriesDashboardRow($directory, $start, $end, $sqlDateFormat));
+	}
 	return $dashboard;
 }
 
 
+
+function &getFileDownloadsDashboardRow($file, $start, $end, $sqlDateFormat)
+{
+	global $babDB;
+	$sql = 	'SELECT st_fmfile_id AS id, DATE_FORMAT(st_date,\'' . $sqlDateFormat . '\') AS stat_date, SUM(st_hits) AS hits';
+	$sql .= ' FROM ' . BAB_STATS_FMFILES_TBL;
+	$sql .= ' WHERE st_fmfile_id=\'' . $file['id'] . '\'';
+	$start &&	$sql .= ' AND st_date >= \'' . date('Y-m-d', $start) . '\'';
+	$end &&		$sql .= ' AND st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
+	$sql .= ' GROUP BY stat_date';
+	$sql .= ' ORDER BY stat_date ASC';
+
+	$stats = $babDB->db_query($sql);
+	$r = array();
+	for ($total = 0; $stat = $babDB->db_fetch_array($stats); $total += $stat['hits']) {
+		$r[$stat['stat_date']] = $stat['hits'];
+	}
+	$row = array();
+	$row['label'] = $file['title'];
+	$row += fillRow($r, $start, $end);
+	$row['total'] = $total;
+	return $row;
+}
+
 function createFileDownloadsDashboard($start, $end)
 {
 	global $babBody, $babDB;
+	$admGroup = $babBody->currentAdmGroup;
 	$title = sprintf(bab_translate("File Downloads Top %d"), BAB_DASHBOARD_NB_ITEMS);
 	$dashboard = new bab_DashboardElement($title);
 	$dashboard->setColumnHeaders(createHeaders($start, $end));
@@ -456,14 +578,10 @@ function createFileDownloadsDashboard($start, $end)
 	$sql .= ' FROM ' . BAB_STATS_FMFILES_TBL . ' sff';
 	$sql .= ' LEFT JOIN ' . BAB_FILES_TBL . ' ft ON sff.st_fmfile_id=ft.id';
 	$sql .= ' LEFT JOIN ' . BAB_FM_FOLDERS_TBL . ' fft ON fft.id=ft.id_owner';
-	$where = array();
-	$where[] = 'ft.bgroup=\'Y\'';
-	$babBody->currentAdmGroup && $where[] = 'fft.id_dgowner=\'' . $babBody->currentAdmGroup . '\'';
-	$start && $where[] = 'sff.st_date >= \'' . date('Y-m-d', $start) . '\'';
-	$end && $where[] = 'sff.st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
-	if (!empty($where)) {
-		$sql .= ' WHERE ' . implode(' AND ', $where);
-	}
+	$sql .= ' WHERE ft.bgroup=\'Y\'';
+	$admGroup && $sql .= ' AND fft.id_dgowner=\'' . $admGroup . '\'';
+	$start &&	 $sql .= ' AND sff.st_date >= \'' . date('Y-m-d', $start) . '\'';
+	$end &&		 $sql .= ' AND sff.st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
 	$sql .= ' GROUP BY ft.id';
 	$sql .= ' ORDER BY hits DESC';
 	$sql .= ' LIMIT ' . BAB_DASHBOARD_NB_ITEMS;
@@ -472,33 +590,11 @@ function createFileDownloadsDashboard($start, $end)
 	
 	$files = $babDB->db_query($sql);
 	while ($file = $babDB->db_fetch_array($files)) {
-		$sql = 	'SELECT st_fmfile_id AS id, DATE_FORMAT(st_date,\'' . $sqlDateFormat . '\') AS stat_date, SUM(st_hits) AS hits';
-		$sql .= ' FROM ' . BAB_STATS_FMFILES_TBL;
-		$where = array();
-		$where[] = 'st_fmfile_id=\'' . $file['id'] . '\'';
-		$start && $where[] = 'st_date >= \'' . date('Y-m-d', $start) . '\'';
-		$end && $where[] = 'st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
-		if (!empty($where)) {
-			$sql .= ' WHERE ' . implode(' AND ', $where);
-		}
-		$sql .= ' GROUP BY stat_date';
-		$sql .= ' ORDER BY stat_date ASC';
-	
-		$stats = $babDB->db_query($sql);
-		$r = array();
-		while ($stat = $babDB->db_fetch_array($stats)) {
-			$r[$stat['stat_date']] = $stat['hits'];
-		}
-		$row = array();
-		$row['label'] = $file['title'];
-		$row += fillRow($r, $start, $end);
-		$row['total'] = $file['hits'];
-			
-		$dashboard->addRow($row);
+		$dashboard->addRow(getFileDownloadsDashboardRow($file, $start, $end, $sqlDateFormat));
 	}	
-
 	return $dashboard;
 }
+
 
 function createFunctionsDashboard($start, $end)
 {
@@ -571,11 +667,9 @@ function createGlobalActivityDashboard($start, $end)
 	$sql .= ' ORDER BY stat_date ASC';
 
 	$stats = $babDB->db_query($sql);
-	$total = 0;
 	$r = array();
-	while ($stat = $babDB->db_fetch_array($stats)) {
+	for ($total = 0; $stat = $babDB->db_fetch_array($stats); $total += $stat['hits']) {
 		$r[$stat['stat_date']] = $stat['hits'];
-		$total += $stat['hits'];
 	}
 	$row['label'] = bab_translate("Global hits");
 	$row += fillRow($r, $start, $end);
@@ -634,18 +728,19 @@ function createGlobalActivityDashboard($start, $end)
 }
 
 
-define("BAB_STAT_BCT_TOPIC",		1);
-define("BAB_STAT_BCT_ARTICLE",		2);
-define("BAB_STAT_BCT_FOLDER",		3);
-define("BAB_STAT_BCT_FILE",			4);
-define("BAB_STAT_BCT_FORUM",		5);
-define("BAB_STAT_BCT_POST",			6);
-define("BAB_STAT_BCT_FAQ",			7);
-define("BAB_STAT_BCT_QUESTION",		8);
+define('BAB_STAT_BCT_TOPIC',		1);
+define('BAB_STAT_BCT_ARTICLE',		2);
+define('BAB_STAT_BCT_FOLDER',		3);
+define('BAB_STAT_BCT_FILE',			4);
+define('BAB_STAT_BCT_FORUM',		5);
+define('BAB_STAT_BCT_POST',			6);
+define('BAB_STAT_BCT_FAQ',			7);
+define('BAB_STAT_BCT_QUESTION',		8);
 
 function createBasketDashboard($basketId, $start, $end)
 {
 	global $babDB, $babBody;
+	$admGroup = $babBody->currentAdmGroup;
 
 	$sql = 	'SELECT * FROM ' . BAB_STATS_BASKETS_TBL . ' WHERE id=' . $basketId;
 	$baskets = $babDB->db_query($sql);
@@ -660,38 +755,110 @@ function createBasketDashboard($basketId, $start, $end)
 	$basketContents = $babDB->db_query($sql);
 	while ($basketContent = $babDB->db_fetch_array($basketContents)) {
 		switch ($basketContent['bc_type']) {
-			case BAB_STAT_BCT_TOPIC:		// Article topics
-				$sql = 'SELECT tt.id AS id, SUM(sat.st_hits) AS hits, tt.category AS title';
-				$sql .= ' FROM ' . BAB_STATS_ARTICLES_TBL . ' AS sat';
-				$sql .= ' LEFT JOIN ' . BAB_ARTICLES_TBL . ' AS at ON sat.st_article_id=at.id';
-				$sql .= ' LEFT JOIN ' . BAB_TOPICS_TBL . ' AS tt ON tt.id=at.id_topic';
-				if ($babBody->currentAdmGroup != 0) {
-					$sql .= ' LEFT JOIN ' . BAB_TOPICS_CATEGORIES_TBL . ' tct ON tct.id=tt.id_cat';
-				}
-				$sql .= ' WHERE at.title IS NOT NULL AND tt.id=' . $basketContent['bc_id'];
-				if ($babBody->currentAdmGroup != 0) {
-					$sql .= ' AND  tct.id_dgowner=\'' . $babBody->currentAdmGroup . '\'';
-				}
-				if ($start || $end) {
-					$sql .= ' AND ';
-					$where = array();
-					$start && $where[] = 'sat.st_date >= \'' . date('Y-m-d', $start) . '\'';
-					$end && $where[] = 'sat.st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
-					$sql .= implode(' AND ', $where);
-				}
-				$sql .= ' GROUP BY tt.id';
-				$sql .= ' ORDER BY hits DESC';
-				$sql .= ' LIMIT 1';
-			
+
+			case BAB_STAT_BCT_TOPIC:	// Article topics
+				$sql = 'SELECT topic.id AS id, topic.category AS title';
+				$sql .= ' FROM ' . BAB_ARTICLES_TBL . ' AS article';
+				$sql .= ' LEFT JOIN ' . BAB_TOPICS_TBL . ' AS topic ON topic.id=article.id_topic';
+				$admGroup && $sql .= ' LEFT JOIN ' . BAB_TOPICS_CATEGORIES_TBL . ' category ON category.id=topic.id_cat';
+				$sql .= ' WHERE article.title IS NOT NULL AND topic.id=' . $basketContent['bc_id'];
+				$admGroup && $sql .= ' AND  category.id_dgowner=\'' . $admGroup . '\'';
+				$sql .= ' GROUP BY topic.id';
 				$topics = $babDB->db_query($sql);
 				$topic = $babDB->db_fetch_array($topics);
-				addArticleTopicsDashboardRow(&$dashboard, $topic, $start, $end, $sqlDateFormat);
+				$dashboard->addRow(getArticleTopicsDashboardRow($topic, $start, $end, $sqlDateFormat));
+				break;
+
+			case BAB_STAT_BCT_ARTICLE:	// Articles
+				$sql = 'SELECT article.id AS id, article.title AS title';
+				$sql .= ' FROM ' . BAB_ARTICLES_TBL . ' AS article';
+				$sql .= ' LEFT JOIN ' . BAB_TOPICS_TBL . ' AS topic ON topic.id=article.id_topic';
+				$admGroup && $sql .= ' LEFT JOIN ' . BAB_TOPICS_CATEGORIES_TBL . ' category ON category.id=topic.id_cat';
+				$sql .= ' WHERE article.title IS NOT NULL AND article.id=' . $basketContent['bc_id'];
+				$admGroup && $sql .= ' AND  category.id_dgowner=\'' . $admGroup . '\'';
+				$sql .= ' GROUP BY article.id';
+				$articles = $babDB->db_query($sql);
+				$article = $babDB->db_fetch_array($articles);
+				$dashboard->addRow(getArticleTopicsDashboardRow($article, $start, $end, $sqlDateFormat));
+				break;
+
+			case BAB_STAT_BCT_FOLDER:	// Collective folders
+				$sql = 'SELECT folder.id AS id, folder.folder AS title';
+				$sql .= ' FROM ' . BAB_FM_FOLDERS_TBL . ' AS folder';
+				$sql .= ' WHERE folder.folder IS NOT NULL AND folder.id=' . $basketContent['bc_id'];
+				$admGroup && $sql .= ' AND folder.id_dgowner=\'' . $admGroup . '\'';
+				$sql .= ' GROUP BY folder.id';
+				$folders = $babDB->db_query($sql);
+				$folder = $babDB->db_fetch_array($folders);
+				$dashboard->addRow(getDirectoriesDashboardRow($folder, $start, $end, $sqlDateFormat));
+				break;
+
+			case BAB_STAT_BCT_FILE:		// Files
+				$sql = 'SELECT file.id AS id, file.name AS title';
+				$sql .= ' FROM ' . BAB_FILES_TBL . ' file';
+				$sql .= ' LEFT JOIN ' . BAB_FM_FOLDERS_TBL . ' folder ON folder.id=file.id_owner';
+				$sql .= ' WHERE file.bgroup=\'Y\' AND file.id=' . $basketContent['bc_id'];
+				$admGroup && $sql .= ' AND folder.id_dgowner=\'' . $admGroup . '\'';
+				$sql .= ' GROUP BY file.id';
+				$files = $babDB->db_query($sql);
+				$file = $babDB->db_fetch_array($files);
+				$dashboard->addRow(getFileDownloadsDashboardRow($file, $start, $end, $sqlDateFormat));
+				break;
+
+			case BAB_STAT_BCT_FORUM:	// Forums
+				$sql = 'SELECT forum.id AS id, forum.name AS title';
+				$sql .= ' FROM ' . BAB_FORUMS_TBL . ' AS forum';
+				$sql .= ' WHERE forum.id=' . $basketContent['bc_id'];
+				$admGroup && $sql .= ' AND forum.id_dgowner=\'' . $admGroup . '\'';
+				$sql .= ' GROUP BY forum.id';
+				$forums = $babDB->db_query($sql);
+				$forum = $babDB->db_fetch_array($forums);
+				$dashboard->addRow(getForumsDashboardRow($forum, $start, $end, $sqlDateFormat));
+				break;
+
+			case BAB_STAT_BCT_POST:		// Forum posts
+				$sql = 'SELECT post.id AS id, post.subject AS title';
+				$sql .= ' FROM ' . BAB_POSTS_TBL . ' AS post';
+				$sql .= ' LEFT JOIN ' . BAB_THREADS_TBL . ' AS thread ON thread.id=post.id_thread';
+				$sql .= ' LEFT JOIN ' . BAB_FORUMS_TBL . ' AS forum ON forum.id=thread.forum';
+				$sql .= ' WHERE post.id=' . $basketContent['bc_id'];
+				$admGroup && $sql .= ' AND forum.id_dgowner=\'' . $admGroup . '\'';
+				$sql .= ' GROUP BY post.id';
+				$posts = $babDB->db_query($sql);
+				$post = $babDB->db_fetch_array($posts);
+				$dashboard->addRow(getPostsDashboardRow($post, $start, $end, $sqlDateFormat));
+				break;
+
+			case BAB_STAT_BCT_FAQ:		// Faqs
+				$sql = 'SELECT faq.id AS id, faq.category AS title';
+				$sql .= ' FROM ' . BAB_FAQCAT_TBL . ' AS faq';
+				$sql .= ' WHERE faq.id=' . $basketContent['bc_id'];
+				$admGroup && $sql .= ' AND faq.id_dgowner=\'' . $admGroup . '\'';
+				$sql .= ' GROUP BY faq.id';
+				$faqs = $babDB->db_query($sql);
+				$faq = $babDB->db_fetch_array($faqs);
+				$dashboard->addRow(getFaqsDashboardRow($faq, $start, $end, $sqlDateFormat));
+				break;
+
+			case BAB_STAT_BCT_QUESTION:	// Faq questions
+				$sql = 'SELECT question.id AS id, question.question AS title';
+				$sql .= ' FROM ' . BAB_FAQQR_TBL . ' AS question';
+				$sql .= ' LEFT JOIN ' . BAB_FAQCAT_TBL . ' AS faq ON faq.id=question.idcat';
+				$sql .= ' WHERE question.id=' . $basketContent['bc_id'];
+				$admGroup && $sql .= ' AND faq.id_dgowner=\'' . $admGroup . '\'';
+				$sql .= ' GROUP BY question.id';
+				$questions = $babDB->db_query($sql);
+				$question = $babDB->db_fetch_array($questions);
+				$dashboard->addRow(getFaqQuestionsDashboardRow($question, $start, $end, $sqlDateFormat));
 				break;
 		}
 	}
-	
 	return $dashboard;
 }
+
+
+
+
 
 function microtime_float()
 {
@@ -742,6 +909,29 @@ function showDashboard($startDate, $endDate)
 	////
 //	$e = microtime_float();	echo '<!-- ';print_r('babEcho : ' . ($e - $s));echo " -->\n";
 	////
+}
+
+function showBasket($basketId, $startDate, $endDate)
+{
+	$start = ($startDate ? bab_mktime($startDate) : bab_mktime('2000-01-01'));
+	$end = ($endDate ? bab_mktime($endDate) : time());
+
+	$dashboard = new bab_Dashboard();
+
+	$nbDays = (int)round(($end - $start) / 86400.0);
+	if ($nbDays <= 31) {
+		$dashboard->addFilter('L', 'day0');
+		$dashboard->addFilter('M', 'day1');
+		$dashboard->addFilter('M', 'day2');
+		$dashboard->addFilter('J', 'day3');
+		$dashboard->addFilter('V', 'day4');
+		$dashboard->addFilter('S', 'day5');
+		$dashboard->addFilter('D', 'day6');
+	}
+
+	$dashboard->addElement(createBasketDashboard($basketId, $start, $end));
+
+	$GLOBALS['babBodyPopup']->babecho($dashboard->printTemplate());
 }
 
 ?>
