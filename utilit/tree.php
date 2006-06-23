@@ -1442,7 +1442,7 @@ class bab_FaqTreeView extends bab_TreeView
 			$sql .= ' LEFT JOIN '.BAB_FAQCAT_TBL.' fct ON fqt.idcat=fct.id WHERE fct.id_dgowner=\''.$babBody->currentAdmGroup.'\'';
 		}
 
-		$questionType = 'faqsubcategory';
+		$questionType = 'faqquestion';
 		if ($this->_attributes & BAB_FAQ_TREE_VIEW_CLICKABLE_QUESTIONS) {
 			$questionType .= ' clickable';
 		}
