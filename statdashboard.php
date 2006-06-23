@@ -178,6 +178,8 @@ function getSqlDateFormat($start, $end)
 }
 
 
+// Article categories
+//-------------------
 function &getArticleCategoriesDashboardRow($category, $start, $end, $sqlDateFormat)
 {
 	global $babDB;
@@ -234,8 +236,55 @@ function createArticleCategoriesDashboard($start, $end)
 	return $dashboard;
 }
 
+function &getArticleCategoriesByDelegationDashboardRow($delegation, $start, $end, $sqlDateFormat)
+{
+	global $babDB;
+	$sql = 	'SELECT category.id AS id, DATE_FORMAT(stat.st_date,\'' . $sqlDateFormat . '\') AS stat_date, SUM(stat.st_hits) AS hits';
+	$sql .= ' FROM ' . BAB_STATS_ARTICLES_TBL . ' AS stat';
+	$sql .= ' LEFT JOIN ' . BAB_ARTICLES_TBL . ' AS article ON stat.st_article_id=article.id';
+	$sql .= ' LEFT JOIN ' . BAB_TOPICS_TBL . ' AS topic ON topic.id=article.id_topic';
+	$sql .= ' LEFT JOIN ' . BAB_TOPICS_CATEGORIES_TBL . ' AS category ON category.id=topic.id_cat';
+	$sql .= ' WHERE category.id_dgowner=\'' . $delegation['id'] . '\'';
+	$start && $sql .= ' AND stat.st_date >= \'' . date('Y-m-d', $start) . '\'';
+	$end &&   $sql .= ' AND stat.st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
+	$sql .= ' GROUP BY stat_date';
+	$sql .= ' ORDER BY stat_date ASC';
+
+	$stats = $babDB->db_query($sql);
+	$r = array();
+	for ($total = 0; $stat = $babDB->db_fetch_array($stats); $total += $stat['hits']) {
+		$r[$stat['stat_date']] = $stat['hits'];
+	}
+	$row = array();
+	$row['label'] = $delegation['name'];
+	$row += fillRow($r, $start, $end);
+	$row['total'] = $total;
+	return $row;
+}
+
+function createArticleCategoriesByDelegationDashboard($start, $end)
+{
+	global $babBody, $babDB;
+	$title = sprintf(bab_translate("Article categories"));
+	$dashboard = new bab_DashboardElement($title);
+	$dashboard->setColumnHeaders(createHeaders($start, $end));
+
+	$sql = 'SELECT id, name';
+	$sql .= ' FROM ' . BAB_DG_GROUPS_TBL;
+	
+	$sqlDateFormat = getSqlDateFormat($start, $end);
+	
+	$dashboard->addRow(getArticleCategoriesByDelegationDashboardRow(array('id' => 0, 'name' => 'Site'), $start, $end, $sqlDateFormat));
+	$delegations = $babDB->db_query($sql);
+	while ($delegation = $babDB->db_fetch_array($delegations)) {
+		$dashboard->addRow(getArticleCategoriesByDelegationDashboardRow($delegation, $start, $end, $sqlDateFormat));
+	}	
+	return $dashboard;
+}
 
 
+// Article topics
+//---------------
 function &getArticleTopicsDashboardRow($topic, $start, $end, $sqlDateFormat)
 {
 	global $babDB;
@@ -291,7 +340,55 @@ function createArticleTopicsDashboard($start, $end)
 	return $dashboard;
 }
 
+function &getArticleTopicsByDelegationDashboardRow($delegation, $start, $end, $sqlDateFormat)
+{
+	global $babDB;
+	$sql = 	'SELECT topic.id AS id, DATE_FORMAT(stat.st_date,\'' . $sqlDateFormat . '\') AS stat_date, SUM(stat.st_hits) AS hits';
+	$sql .= ' FROM ' . BAB_STATS_ARTICLES_TBL . ' AS stat';
+	$sql .= ' LEFT JOIN ' . BAB_ARTICLES_TBL . ' AS article ON stat.st_article_id=article.id';
+	$sql .= ' LEFT JOIN ' . BAB_TOPICS_TBL . ' AS topic ON topic.id=article.id_topic';
+	$sql .= ' LEFT JOIN ' . BAB_TOPICS_CATEGORIES_TBL . ' AS category ON category.id=topic.id_cat';
+	$sql .= ' WHERE category.id_dgowner=\'' . $delegation['id'] . '\'';
+	$start && $sql .= ' AND stat.st_date >= \'' . date('Y-m-d', $start) . '\'';
+	$end &&   $sql .= ' AND stat.st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
+	$sql .= ' GROUP BY stat_date';
+	$sql .= ' ORDER BY stat_date ASC';
 
+	$stats = $babDB->db_query($sql);
+	$r = array();
+	for ($total = 0; $stat = $babDB->db_fetch_array($stats); $total += $stat['hits']) {
+		$r[$stat['stat_date']] = $stat['hits'];
+	}
+	$row = array();
+	$row['label'] = $delegation['name'];
+	$row += fillRow($r, $start, $end);
+	$row['total'] = $total;
+	return $row;
+}
+
+function createArticleTopicsByDelegationDashboard($start, $end)
+{
+	global $babBody, $babDB;
+	$title = sprintf(bab_translate("Article topics"));
+	$dashboard = new bab_DashboardElement($title);
+	$dashboard->setColumnHeaders(createHeaders($start, $end));
+
+	$sql = 'SELECT id, name';
+	$sql .= ' FROM ' . BAB_DG_GROUPS_TBL;
+	
+	$sqlDateFormat = getSqlDateFormat($start, $end);
+	
+	$dashboard->addRow(getArticleTopicsByDelegationDashboardRow(array('id' => 0, 'name' => 'Site'), $start, $end, $sqlDateFormat));
+	$delegations = $babDB->db_query($sql);
+	while ($delegation = $babDB->db_fetch_array($delegations)) {
+		$dashboard->addRow(getArticleTopicsByDelegationDashboardRow($delegation, $start, $end, $sqlDateFormat));
+	}	
+	return $dashboard;
+}
+
+
+// Articles
+//---------
 function &getArticlesDashboardRow($article, $start, $end, $sqlDateFormat)
 {
 	global $babDB;
@@ -315,7 +412,6 @@ function &getArticlesDashboardRow($article, $start, $end, $sqlDateFormat)
 	$row['total'] = $total;
 	return $row;
 }
-
 
 function createArticlesDashboard($start, $end)
 {
@@ -392,7 +488,55 @@ function createArticlesDashboard($start, $end)
 	return $dashboard;
 }
 
+function &getArticlesByDelegationDashboardRow($delegation, $start, $end, $sqlDateFormat)
+{
+	global $babDB;
+	$sql = 	'SELECT article.id AS id, DATE_FORMAT(stat.st_date,\'' . $sqlDateFormat . '\') AS stat_date, SUM(stat.st_hits) AS hits';
+	$sql .= ' FROM ' . BAB_STATS_ARTICLES_TBL . ' AS stat';
+	$sql .= ' LEFT JOIN ' . BAB_ARTICLES_TBL . ' AS article ON stat.st_article_id=article.id';
+	$sql .= ' LEFT JOIN ' . BAB_TOPICS_TBL . ' AS topic ON topic.id=article.id_topic';
+	$sql .= ' LEFT JOIN ' . BAB_TOPICS_CATEGORIES_TBL . ' AS category ON category.id=topic.id_cat';
+	$sql .= ' WHERE category.id_dgowner=\'' . $delegation['id'] . '\'';
+	$start && $sql .= ' AND stat.st_date >= \'' . date('Y-m-d', $start) . '\'';
+	$end &&   $sql .= ' AND stat.st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
+	$sql .= ' GROUP BY stat_date';
+	$sql .= ' ORDER BY stat_date ASC';
 
+	$stats = $babDB->db_query($sql);
+	$r = array();
+	for ($total = 0; $stat = $babDB->db_fetch_array($stats); $total += $stat['hits']) {
+		$r[$stat['stat_date']] = $stat['hits'];
+	}
+	$row = array();
+	$row['label'] = $delegation['name'];
+	$row += fillRow($r, $start, $end);
+	$row['total'] = $total;
+	return $row;
+}
+
+function createArticlesByDelegationDashboard($start, $end)
+{
+	global $babBody, $babDB;
+	$title = sprintf(bab_translate("Articles"));
+	$dashboard = new bab_DashboardElement($title);
+	$dashboard->setColumnHeaders(createHeaders($start, $end));
+
+	$sql = 'SELECT id, name';
+	$sql .= ' FROM ' . BAB_DG_GROUPS_TBL;
+	
+	$sqlDateFormat = getSqlDateFormat($start, $end);
+	
+	$dashboard->addRow(getArticlesByDelegationDashboardRow(array('id' => 0, 'name' => 'Site'), $start, $end, $sqlDateFormat));
+	$delegations = $babDB->db_query($sql);
+	while ($delegation = $babDB->db_fetch_array($delegations)) {
+		$dashboard->addRow(getArticlesByDelegationDashboardRow($delegation, $start, $end, $sqlDateFormat));
+	}	
+	return $dashboard;
+}
+
+
+// Faqs
+//-----
 function &getFaqsDashboardRow($faq, $start, $end, $sqlDateFormat)
 {
 	global $babDB;
@@ -416,7 +560,53 @@ function &getFaqsDashboardRow($faq, $start, $end, $sqlDateFormat)
 	return $row;		
 }
 
+function &getFaqsByDelegationDashboardRow($delegation, $start, $end, $sqlDateFormat)
+{
+	global $babDB;
+	$sql = 	'SELECT faq.id AS id, DATE_FORMAT(stat.st_date,\'' . $sqlDateFormat . '\') AS stat_date, SUM(stat.st_hits) AS hits';
+	$sql .= ' FROM ' . BAB_STATS_FAQS_TBL . ' AS stat';
+	$sql .= ' LEFT JOIN ' . BAB_FAQCAT_TBL . ' AS faq ON stat.st_faq_id=faq.id';
+	$sql .= ' WHERE faq.id_dgowner=\'' . $delegation['id'] . '\'';
+	$start && $sql .= ' AND stat.st_date >= \'' . date('Y-m-d', $start) . '\'';
+	$end &&   $sql .= ' AND stat.st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
+	$sql .= ' GROUP BY stat_date';
+	$sql .= ' ORDER BY stat_date ASC';
 
+	$stats = $babDB->db_query($sql);
+	$r = array();
+	for ($total = 0; $stat = $babDB->db_fetch_array($stats); $total += $stat['hits']) {
+		$r[$stat['stat_date']] = $stat['hits'];
+	}
+	$row = array();
+	$row['label'] = $delegation['name'];
+	$row += fillRow($r, $start, $end);
+	$row['total'] = $total;
+	return $row;
+}
+
+function createFaqsByDelegationDashboard($start, $end)
+{
+	global $babBody, $babDB;
+	$title = sprintf(bab_translate("Faqs"));
+	$dashboard = new bab_DashboardElement($title);
+	$dashboard->setColumnHeaders(createHeaders($start, $end));
+
+	$sql = 'SELECT id, name';
+	$sql .= ' FROM ' . BAB_DG_GROUPS_TBL;
+	
+	$sqlDateFormat = getSqlDateFormat($start, $end);
+	
+	$dashboard->addRow(getFaqsByDelegationDashboardRow(array('id' => 0, 'name' => 'Site'), $start, $end, $sqlDateFormat));
+	$delegations = $babDB->db_query($sql);
+	while ($delegation = $babDB->db_fetch_array($delegations)) {
+		$dashboard->addRow(getFaqsByDelegationDashboardRow($delegation, $start, $end, $sqlDateFormat));
+	}	
+	return $dashboard;
+}
+
+
+// Faq questions
+//--------------
 function &getFaqQuestionsDashboardRow($question, $start, $end, $sqlDateFormat)
 {
 	global $babDB;
@@ -440,7 +630,55 @@ function &getFaqQuestionsDashboardRow($question, $start, $end, $sqlDateFormat)
 	return $row;
 }
 
+function &getFaqQuestionsByDelegationDashboardRow($delegation, $start, $end, $sqlDateFormat)
+{
+	global $babDB;
+	$sql = 	'SELECT question.id AS id, DATE_FORMAT(stat.st_date,\'' . $sqlDateFormat . '\') AS stat_date, SUM(stat.st_hits) AS hits';
+	$sql .= ' FROM ' . BAB_STATS_FAQQRS_TBL . ' AS stat';
+	$sql .= ' LEFT JOIN ' . BAB_FAQQR_TBL . ' AS question ON stat.st_faqqr_id=question.id';
+	$sql .= ' LEFT JOIN ' . BAB_FAQCAT_TBL . ' AS faq ON question.idcat=faq.id';
+	$sql .= ' WHERE faq.id_dgowner=\'' . $delegation['id'] . '\'';
+	$start && $sql .= ' AND stat.st_date >= \'' . date('Y-m-d', $start) . '\'';
+	$end &&   $sql .= ' AND stat.st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
+	$sql .= ' GROUP BY stat_date';
+	$sql .= ' ORDER BY stat_date ASC';
 
+	$stats = $babDB->db_query($sql);
+	$r = array();
+	for ($total = 0; $stat = $babDB->db_fetch_array($stats); $total += $stat['hits']) {
+		$r[$stat['stat_date']] = $stat['hits'];
+	}
+	$row = array();
+	$row['label'] = $delegation['name'];
+	$row += fillRow($r, $start, $end);
+	$row['total'] = $total;
+	return $row;
+}
+
+function createFaqQuestionsByDelegationDashboard($start, $end)
+{
+	global $babBody, $babDB;
+	$title = sprintf(bab_translate("Faq questions"));
+	$dashboard = new bab_DashboardElement($title);
+	$dashboard->setColumnHeaders(createHeaders($start, $end));
+
+	$sql = 'SELECT id, name';
+	$sql .= ' FROM ' . BAB_DG_GROUPS_TBL;
+	
+	$sqlDateFormat = getSqlDateFormat($start, $end);
+	
+	$dashboard->addRow(getFaqQuestionsByDelegationDashboardRow(array('id' => 0, 'name' => 'Site'), $start, $end, $sqlDateFormat));
+	$delegations = $babDB->db_query($sql);
+	while ($delegation = $babDB->db_fetch_array($delegations)) {
+		$dashboard->addRow(getFaqQuestionsByDelegationDashboardRow($delegation, $start, $end, $sqlDateFormat));
+	}	
+	return $dashboard;
+}
+
+
+
+// Forums
+//-------
 function &getForumsDashboardRow($forum, $start, $end, $sqlDateFormat)
 {
 	global $babDB;
@@ -464,7 +702,53 @@ function &getForumsDashboardRow($forum, $start, $end, $sqlDateFormat)
 	return $row;		
 }
 
+function &getForumsByDelegationDashboardRow($delegation, $start, $end, $sqlDateFormat)
+{
+	global $babDB;
+	$sql = 	'SELECT forum.id AS id, DATE_FORMAT(stat.st_date,\'' . $sqlDateFormat . '\') AS stat_date, SUM(stat.st_hits) AS hits';
+	$sql .= ' FROM ' . BAB_STATS_FORUMS_TBL . ' AS stat';
+	$sql .= ' LEFT JOIN ' . BAB_FORUMS_TBL . ' AS forum ON stat.st_forum_id=forum.id';
+	$sql .= ' WHERE forum.id_dgowner=\'' . $delegation['id'] . '\'';
+	$start && $sql .= ' AND stat.st_date >= \'' . date('Y-m-d', $start) . '\'';
+	$end &&   $sql .= ' AND stat.st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
+	$sql .= ' GROUP BY stat_date';
+	$sql .= ' ORDER BY stat_date ASC';
 
+	$stats = $babDB->db_query($sql);
+	$r = array();
+	for ($total = 0; $stat = $babDB->db_fetch_array($stats); $total += $stat['hits']) {
+		$r[$stat['stat_date']] = $stat['hits'];
+	}
+	$row = array();
+	$row['label'] = $delegation['name'];
+	$row += fillRow($r, $start, $end);
+	$row['total'] = $total;
+	return $row;
+}
+
+function createForumsByDelegationDashboard($start, $end)
+{
+	global $babBody, $babDB;
+	$title = sprintf(bab_translate("Forums"));
+	$dashboard = new bab_DashboardElement($title);
+	$dashboard->setColumnHeaders(createHeaders($start, $end));
+
+	$sql = 'SELECT id, name';
+	$sql .= ' FROM ' . BAB_DG_GROUPS_TBL;
+	
+	$sqlDateFormat = getSqlDateFormat($start, $end);
+	
+	$dashboard->addRow(getForumsByDelegationDashboardRow(array('id' => 0, 'name' => 'Site'), $start, $end, $sqlDateFormat));
+	$delegations = $babDB->db_query($sql);
+	while ($delegation = $babDB->db_fetch_array($delegations)) {
+		$dashboard->addRow(getForumsByDelegationDashboardRow($delegation, $start, $end, $sqlDateFormat));
+	}	
+	return $dashboard;
+}
+
+
+// Posts
+//------
 function &getPostsDashboardRow($post, $start, $end, $sqlDateFormat)
 {
 	global $babDB;
@@ -488,14 +772,61 @@ function &getPostsDashboardRow($post, $start, $end, $sqlDateFormat)
 	return $row;
 }
 
+function &getPostsByDelegationDashboardRow($delegation, $start, $end, $sqlDateFormat)
+{
+	global $babDB;
+	$sql = 	'SELECT post.id AS id, DATE_FORMAT(stat.st_date,\'' . $sqlDateFormat . '\') AS stat_date, SUM(stat.st_hits) AS hits';
+	$sql .= ' FROM ' . BAB_STATS_POSTS_TBL . ' AS stat';
+	$sql .= ' LEFT JOIN ' . BAB_POSTS_TBL . ' AS post ON stat.st_post_id=post.id';
+	$sql .= ' LEFT JOIN ' . BAB_THREADS_TBL . ' AS thread ON post.id_thread=thread.id';
+	$sql .= ' LEFT JOIN ' . BAB_FORUMS_TBL . ' AS forum ON thread.forum=forum.id';
+	$sql .= ' WHERE forum.id_dgowner=\'' . $delegation['id'] . '\'';
+	$start && $sql .= ' AND stat.st_date >= \'' . date('Y-m-d', $start) . '\'';
+	$end &&   $sql .= ' AND stat.st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
+	$sql .= ' GROUP BY stat_date';
+	$sql .= ' ORDER BY stat_date ASC';
+
+	$stats = $babDB->db_query($sql);
+	$r = array();
+	for ($total = 0; $stat = $babDB->db_fetch_array($stats); $total += $stat['hits']) {
+		$r[$stat['stat_date']] = $stat['hits'];
+	}
+	$row = array();
+	$row['label'] = $delegation['name'];
+	$row += fillRow($r, $start, $end);
+	$row['total'] = $total;
+	return $row;
+}
+
+function createPostsByDelegationDashboard($start, $end)
+{
+	global $babBody, $babDB;
+	$title = sprintf(bab_translate("Posts"));
+	$dashboard = new bab_DashboardElement($title);
+	$dashboard->setColumnHeaders(createHeaders($start, $end));
+
+	$sql = 'SELECT id, name';
+	$sql .= ' FROM ' . BAB_DG_GROUPS_TBL;
+	
+	$sqlDateFormat = getSqlDateFormat($start, $end);
+	
+	$dashboard->addRow(getPostsByDelegationDashboardRow(array('id' => 0, 'name' => 'Site'), $start, $end, $sqlDateFormat));
+	$delegations = $babDB->db_query($sql);
+	while ($delegation = $babDB->db_fetch_array($delegations)) {
+		$dashboard->addRow(getPostsByDelegationDashboardRow($delegation, $start, $end, $sqlDateFormat));
+	}	
+	return $dashboard;
+}
 
 
-function &getDirectoriesDashboardRow($directory, $start, $end, $sqlDateFormat)
+// Collective directories
+//------------------------
+function &getFoldersDashboardRow($folder, $start, $end, $sqlDateFormat)
 {
 	global $babDB;
 	$sql = 	'SELECT st_folder_id AS id, DATE_FORMAT(st_date,\'' . $sqlDateFormat . '\') AS stat_date, SUM(st_hits) AS hits';
 	$sql .= ' FROM ' . BAB_STATS_FMFOLDERS_TBL;
-	$sql .= ' WHERE st_folder_id=\'' . $directory['id'] . '\'';
+	$sql .= ' WHERE st_folder_id=\'' . $folder['id'] . '\'';
 	$start && $sql .= ' AND st_date >= \'' . date('Y-m-d', $start) . '\'';
 	$end &&	  $sql .= ' AND st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
 	$sql .= ' GROUP BY stat_date';
@@ -507,13 +838,13 @@ function &getDirectoriesDashboardRow($directory, $start, $end, $sqlDateFormat)
 		$r[$stat['stat_date']] = $stat['hits'];
 	}
 	$row = array();
-	$row['label'] = $directory['title'];
+	$row['label'] = $folder['title'];
 	$row += fillRow($r, $start, $end);
 	$row['total'] = $total;
 	return $row;		
 }
 	
-function createDirectoriesDashboard($start, $end)
+function createFoldersDashboard($start, $end)
 {
 	global $babBody, $babDB;
 	$admGroup = $babBody->currentAdmGroup;
@@ -534,15 +865,61 @@ function createDirectoriesDashboard($start, $end)
 
 	$sqlDateFormat = getSqlDateFormat($start, $end);
 	
-	$directories = $babDB->db_query($sql);
-	while ($directory = $babDB->db_fetch_array($directories)) {
-		$dashboard->addRow(getDirectoriesDashboardRow($directory, $start, $end, $sqlDateFormat));
+	$folders = $babDB->db_query($sql);
+	while ($folder = $babDB->db_fetch_array($folders)) {
+		$dashboard->addRow(getFoldersDashboardRow($folder, $start, $end, $sqlDateFormat));
 	}
+	return $dashboard;
+}
+
+function &getFoldersByDelegationDashboardRow($delegation, $start, $end, $sqlDateFormat)
+{
+	global $babDB;
+	$sql = 	'SELECT st_folder_id AS id, DATE_FORMAT(st_date,\'' . $sqlDateFormat . '\') AS stat_date, SUM(st_hits) AS hits';
+	$sql .= ' FROM ' . BAB_STATS_FMFOLDERS_TBL . ' AS stat';
+	$sql .= ' LEFT JOIN ' . BAB_FM_FOLDERS_TBL . ' folder ON folder.id=stat.st_folder_id';
+	$sql .= ' WHERE folder.id_dgowner=\'' . $delegation['id'] . '\'';
+	$start && $sql .= ' AND st_date >= \'' . date('Y-m-d', $start) . '\'';
+	$end &&	  $sql .= ' AND st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
+	$sql .= ' GROUP BY stat_date';
+	$sql .= ' ORDER BY stat_date ASC';
+
+	$stats = $babDB->db_query($sql);
+	$r = array();
+	for ($total = 0; $stat = $babDB->db_fetch_array($stats); $total += $stat['hits']) {
+		$r[$stat['stat_date']] = $stat['hits'];
+	}
+	$row = array();
+	$row['label'] = $delegation['name'];
+	$row += fillRow($r, $start, $end);
+	$row['total'] = $total;
+	return $row;		
+}
+	
+function createFoldersByDelegationDashboard($start, $end)
+{
+	global $babBody, $babDB;
+	$title = sprintf(bab_translate("Collective directories"));
+	$dashboard = new bab_DashboardElement($title);
+	$dashboard->setColumnHeaders(createHeaders($start, $end));
+
+	$sql = 'SELECT id, name';
+	$sql .= ' FROM ' . BAB_DG_GROUPS_TBL;
+	
+	$sqlDateFormat = getSqlDateFormat($start, $end);
+	
+	$dashboard->addRow(getFoldersByDelegationDashboardRow(array('id' => 0, 'name' => 'Site'), $start, $end, $sqlDateFormat));
+	$delegations = $babDB->db_query($sql);
+	while ($delegation = $babDB->db_fetch_array($delegations)) {
+		$dashboard->addRow(getFoldersByDelegationDashboardRow($delegation, $start, $end, $sqlDateFormat));
+	}	
 	return $dashboard;
 }
 
 
 
+// File downloads
+//---------------
 function &getFileDownloadsDashboardRow($file, $start, $end, $sqlDateFormat)
 {
 	global $babDB;
@@ -574,15 +951,15 @@ function createFileDownloadsDashboard($start, $end)
 	$dashboard = new bab_DashboardElement($title);
 	$dashboard->setColumnHeaders(createHeaders($start, $end));
 
-	$sql = 'SELECT ft.id AS id, ft.name AS title, fft.folder AS folder, SUM(sff.st_hits) AS hits';
-	$sql .= ' FROM ' . BAB_STATS_FMFILES_TBL . ' sff';
-	$sql .= ' LEFT JOIN ' . BAB_FILES_TBL . ' ft ON sff.st_fmfile_id=ft.id';
-	$sql .= ' LEFT JOIN ' . BAB_FM_FOLDERS_TBL . ' fft ON fft.id=ft.id_owner';
-	$sql .= ' WHERE ft.bgroup=\'Y\'';
-	$admGroup && $sql .= ' AND fft.id_dgowner=\'' . $admGroup . '\'';
-	$start &&	 $sql .= ' AND sff.st_date >= \'' . date('Y-m-d', $start) . '\'';
-	$end &&		 $sql .= ' AND sff.st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
-	$sql .= ' GROUP BY ft.id';
+	$sql = 'SELECT file.id AS id, file.name AS title, folder.folder AS folder, SUM(stat.st_hits) AS hits';
+	$sql .= ' FROM ' . BAB_STATS_FMFILES_TBL . ' AS stat';
+	$sql .= ' LEFT JOIN ' . BAB_FILES_TBL . ' AS file ON stat.st_fmfile_id=file.id';
+	$sql .= ' LEFT JOIN ' . BAB_FM_FOLDERS_TBL . ' AS folder ON folder.id=file.id_owner';
+	$sql .= ' WHERE file.bgroup=\'Y\'';
+	$admGroup && $sql .= ' AND folder.id_dgowner=\'' . $admGroup . '\'';
+	$start &&	 $sql .= ' AND stat.st_date >= \'' . date('Y-m-d', $start) . '\'';
+	$end &&		 $sql .= ' AND stat.st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
+	$sql .= ' GROUP BY file.id';
 	$sql .= ' ORDER BY hits DESC';
 	$sql .= ' LIMIT ' . BAB_DASHBOARD_NB_ITEMS;
 
@@ -595,7 +972,54 @@ function createFileDownloadsDashboard($start, $end)
 	return $dashboard;
 }
 
+function &getFileDownloadsByDelegationDashboardRow($delegation, $start, $end, $sqlDateFormat)
+{
+	global $babDB;
+	$sql = 	'SELECT st_fmfile_id AS id, DATE_FORMAT(st_date,\'' . $sqlDateFormat . '\') AS stat_date, SUM(st_hits) AS hits';
+	$sql .= ' FROM ' . BAB_STATS_FMFILES_TBL . ' AS stat';
+	$sql .= ' LEFT JOIN ' . BAB_FILES_TBL . ' AS file ON stat.st_fmfile_id=file.id';
+	$sql .= ' LEFT JOIN ' . BAB_FM_FOLDERS_TBL . ' AS folder ON folder.id=file.id_owner';
+	$sql .= ' WHERE folder.id_dgowner=\'' . $delegation['id'] . '\'';
+	$start	&& $sql .= ' AND st_date >= \'' . date('Y-m-d', $start) . '\'';
+	$end	&& $sql .= ' AND st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
+	$sql .= ' GROUP BY stat_date';
+	$sql .= ' ORDER BY stat_date ASC';
 
+	$stats = $babDB->db_query($sql);
+	$r = array();
+	for ($total = 0; $stat = $babDB->db_fetch_array($stats); $total += $stat['hits']) {
+		$r[$stat['stat_date']] = $stat['hits'];
+	}
+	$row = array();
+	$row['label'] = $delegation['name'];
+	$row += fillRow($r, $start, $end);
+	$row['total'] = $total;
+	return $row;
+}
+
+function createFileDownloadsByDelegationDashboard($start, $end)
+{
+	global $babBody, $babDB;
+	$title = sprintf(bab_translate("File downloads"));
+	$dashboard = new bab_DashboardElement($title);
+	$dashboard->setColumnHeaders(createHeaders($start, $end));
+
+	$sql = 'SELECT id, name';
+	$sql .= ' FROM ' . BAB_DG_GROUPS_TBL;
+	
+	$sqlDateFormat = getSqlDateFormat($start, $end);
+	
+	$dashboard->addRow(getFileDownloadsByDelegationDashboardRow(array('id' => 0, 'name' => 'Site'), $start, $end, $sqlDateFormat));
+	$delegations = $babDB->db_query($sql);
+	while ($delegation = $babDB->db_fetch_array($delegations)) {
+		$dashboard->addRow(getFileDownloadsByDelegationDashboardRow($delegation, $start, $end, $sqlDateFormat));
+	}	
+	return $dashboard;
+}
+
+
+// Functions
+//----------
 function createFunctionsDashboard($start, $end)
 {
 	global $babDB;
@@ -728,6 +1152,45 @@ function createGlobalActivityDashboard($start, $end)
 }
 
 
+// Created objects
+//----------------
+function createCreatedObjectsByDelegationDashboard($start, $end)
+{
+	global $babBody, $babDB;
+	$title = sprintf(bab_translate("Created objects"));
+	$dashboard = new bab_DashboardElement($title);
+	$dashboard->setColumnHeaders(array(array('type' => '', 'name' => ''),
+									   array('type' => '', 'name' => bab_translate("Groups")),
+									   array('type' => '', 'name' => bab_translate("Sections")),
+									   array('type' => '', 'name' => bab_translate("Topics categories")),
+									   array('type' => '', 'name' => bab_translate("Faqs")),
+									   array('type' => '', 'name' => bab_translate("Forums")),
+									   array('type' => '', 'name' => bab_translate("Directories")),
+									   array('type' => '', 'name' => bab_translate("Folders")),
+									   array('type' => '', 'name' => bab_translate("Charts"))));
+
+	$sql = 'SELECT dg.*, g.lf, g.lr';
+	$sql .= ' FROM ' . BAB_GROUPS_TBL . ' AS g, ' . BAB_DG_GROUPS_TBL . ' AS dg';
+	$sql .= ' WHERE g.id=dg.id_group';
+	$sql .= ' ORDER BY dg.name';
+
+	$res = $babDB->db_query($sql);
+	while ($arr = $babDB->db_fetch_array($res)) {
+		$row = array('delegation' => $arr['name']);
+		list($row['groups']) = $babDB->db_fetch_row($babDB->db_query('SELECT COUNT(id) FROM '.BAB_GROUPS_TBL.' WHERE nb_set>=0 AND lf>\''.$arr['lf'].'\' AND lr<\''.$arr['lr'].'\''));
+		list($row['sections']) = $babDB->db_fetch_row($babDB->db_query('SELECT COUNT(id) FROM '.BAB_SECTIONS_TBL." WHERE id_dgowner = '".$arr['id']."'"));
+		list($row['topcats']) = $babDB->db_fetch_row($babDB->db_query('SELECT COUNT(id) FROM '.BAB_TOPICS_CATEGORIES_TBL." where id_dgowner = '".$arr['id']."'"));
+		list($row['faqs']) = $babDB->db_fetch_row($babDB->db_query('SELECT COUNT(id) FROM '.BAB_FAQCAT_TBL." where id_dgowner = '".$arr['id']."'"));
+		list($row['forums']) = $babDB->db_fetch_row($babDB->db_query('SELECT COUNT(id) FROM '.BAB_FORUMS_TBL." where id_dgowner = '".$arr['id']."'"));
+		list($row['directories']) = $babDB->db_fetch_row($babDB->db_query('SELECT COUNT(id) FROM '.BAB_DB_DIRECTORIES_TBL." where id_dgowner = '".$arr['id']."'"));
+		list($row['folders']) = $babDB->db_fetch_row($babDB->db_query('SELECT COUNT(*) FROM '.BAB_FM_FOLDERS_TBL." where id_dgowner = '".$arr['id']."'"));
+		list($row['orgcharts']) = $babDB->db_fetch_row($babDB->db_query('SELECT COUNT(*) FROM '.BAB_ORG_CHARTS_TBL." where id_dgowner = '".$arr['id']."'"));
+		$dashboard->addRow($row);
+	}
+	return $dashboard;
+}
+
+
 define('BAB_STAT_BCT_TOPIC',		1);
 define('BAB_STAT_BCT_ARTICLE',		2);
 define('BAB_STAT_BCT_FOLDER',		3);
@@ -790,7 +1253,7 @@ function createBasketDashboard($basketId, $start, $end)
 				$sql .= ' GROUP BY folder.id';
 				$folders = $babDB->db_query($sql);
 				$folder = $babDB->db_fetch_array($folders);
-				$dashboard->addRow(getDirectoriesDashboardRow($folder, $start, $end, $sqlDateFormat));
+				$dashboard->addRow(getFoldersDashboardRow($folder, $start, $end, $sqlDateFormat));
 				break;
 
 			case BAB_STAT_BCT_FILE:		// Files
@@ -893,9 +1356,19 @@ function showDashboard($startDate, $endDate)
 	$dashboard->addElement(createArticlesDashboard($start, $end)); // 2.2
 	$dashboard->addElement(createArticleTopicsDashboard($start, $end)); // 3.6
 	$dashboard->addElement(createArticleCategoriesDashboard($start, $end)); // 4.16
-	$dashboard->addElement(createDirectoriesDashboard($start, $end)); // 0.03
+	$dashboard->addElement(createFoldersDashboard($start, $end)); // 0.03
 	$dashboard->addElement(createFileDownloadsDashboard($start, $end)); // 0.16
 	$dashboard->addElement(createBasketDashboard(1, $start, $end)); // 0.16
+	$dashboard->addElement(createFileDownloadsByDelegationDashboard($start, $end));
+	$dashboard->addElement(createFoldersByDelegationDashboard($start, $end));
+	$dashboard->addElement(createArticlesByDelegationDashboard($start, $end));
+	$dashboard->addElement(createArticleTopicsByDelegationDashboard($start, $end));
+	$dashboard->addElement(createArticleCategoriesByDelegationDashboard($start, $end));
+	$dashboard->addElement(createForumsByDelegationDashboard($start, $end));
+	$dashboard->addElement(createPostsByDelegationDashboard($start, $end));
+	$dashboard->addElement(createFaqsByDelegationDashboard($start, $end));
+	$dashboard->addElement(createFaqQuestionsByDelegationDashboard($start, $end));
+	$dashboard->addElement(createCreatedObjectsByDelegationDashboard($start, $end));
 	////
 //	$e = microtime_float(); echo '<!-- ';print_r('addElement : ' . ($e - $s));echo " -->\n";
 	////
@@ -909,6 +1382,38 @@ function showDashboard($startDate, $endDate)
 	////
 //	$e = microtime_float();	echo '<!-- ';print_r('babEcho : ' . ($e - $s));echo " -->\n";
 	////
+}
+
+function showDelegationDashboard($startDate, $endDate)
+{
+	$start = ($startDate ? bab_mktime($startDate) : bab_mktime('2000-01-01'));
+	$end = ($endDate ? bab_mktime($endDate) : time());
+
+	$dashboard = new bab_Dashboard();
+
+	$nbDays = (int)round(($end - $start) / 86400.0);
+	if ($nbDays <= 31) {
+		$dashboard->addFilter('L', 'day0');
+		$dashboard->addFilter('M', 'day1');
+		$dashboard->addFilter('M', 'day2');
+		$dashboard->addFilter('J', 'day3');
+		$dashboard->addFilter('V', 'day4');
+		$dashboard->addFilter('S', 'day5');
+		$dashboard->addFilter('D', 'day6');
+	}
+
+	$dashboard->addElement(createFileDownloadsByDelegationDashboard($start, $end));
+	$dashboard->addElement(createFoldersByDelegationDashboard($start, $end));
+	$dashboard->addElement(createArticlesByDelegationDashboard($start, $end));
+	$dashboard->addElement(createArticleTopicsByDelegationDashboard($start, $end));
+	$dashboard->addElement(createArticleCategoriesByDelegationDashboard($start, $end));
+	$dashboard->addElement(createForumsByDelegationDashboard($start, $end));
+	$dashboard->addElement(createPostsByDelegationDashboard($start, $end));
+	$dashboard->addElement(createFaqsByDelegationDashboard($start, $end));
+	$dashboard->addElement(createFaqQuestionsByDelegationDashboard($start, $end));
+	$dashboard->addElement(createCreatedObjectsByDelegationDashboard($start, $end));
+
+	$GLOBALS['babBodyPopup']->babecho($dashboard->printTemplate());
 }
 
 function showBasket($basketId, $startDate, $endDate)

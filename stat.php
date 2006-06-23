@@ -102,7 +102,7 @@ function displayStatisticPanel($idx)
 				{
 				$this->itemarray[] = array( array('idx' => 'users', 'item' => bab_translate("Users"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=users")
 				, array('idx' => 'sections', 'item' => bab_translate("Optional sections"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=sections")
-				, array('idx' => 'delegat', 'item' => bab_translate("Delegation"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=delegat") );
+				, array('idx' => 'delegat', 'item' => bab_translate("Delegation"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=delegation", 'popup' => true) );
 				if( empty($this->current)) { $this->current = 'users'; }
 				}
 
@@ -690,6 +690,17 @@ switch($idx)
 		$GLOBALS['babBodyPopup'] = new babBodyPopup();
 		displayTimeIntervalInPopup($itwhat, $sd, $ed, $idx, $GLOBALS['babBodyPopup']);
 		showDashboard($sd, $ed);
+		printBabBodyPopup();
+		exit;
+		break;
+	case "delegation":
+//		include_once $babInstallPath."statboard.php";
+//		summaryDelegatList($col, $order);
+		include_once $babInstallPath."utilit/uiutil.php";
+		include_once $babInstallPath."statdashboard.php";
+		$GLOBALS['babBodyPopup'] = new babBodyPopup();
+		displayTimeIntervalInPopup($itwhat, $sd, $ed, $idx, $GLOBALS['babBodyPopup']);
+		showDelegationDashboard($sd, $ed);
 		printBabBodyPopup();
 		exit;
 		break;
