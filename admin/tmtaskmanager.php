@@ -53,53 +53,89 @@ function displayMenu()
 
 function displayProjectsSpacesList()
 {
+	
 	global $babBody;
 
 	$itemMenu = array(
 		array(
 			'idx' => BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST,
 			'mnuStr' => bab_translate("Projects spaces"),
-			'url' => $GLOBALS['babUrlScript'] . '?tg=admTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST),
+			'url' => $GLOBALS['babUrlScript'] . '?tg=admTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST)/*,
 		array(
 			'idx' => BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_FORM,
 			'mnuStr' => bab_translate("Add a project space"),
-			'url' => $GLOBALS['babUrlScript'] . '?tg=admTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_FORM)		
+			'url' => $GLOBALS['babUrlScript'] . '?tg=admTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_FORM)*/	
 		);
 		
 	add_item_menu($itemMenu);
 	$babBody->title = bab_translate("Projects spaces");
-	
-	$list = new BAB_TM_ListBase(bab_selectProjectSpaceList());
-	
-	$list->set_data('url', htmlentities($GLOBALS['babUrlScript'] . '?tg=admTskMgr&idx=' . 
-		BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_FORM . '&iIdProjectSpace='));
-	
-	$list->set_anchor($GLOBALS['babUrlScript'] . '?tg=admTskMgr&iIdProjectSpace={ m_datas[id] }&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_RIGHTS_FORM,
-		$GLOBALS['babSkinPath'] . 'images/Puces/manager.gif',
-		bab_translate("Rights")
-		);
-	
-	$list->set_anchor($GLOBALS['babUrlScript'] . '?tg=admTskMgr&iIdProjectSpace={ m_datas[id] }&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_CONFIGURATION_FORM,
-		$GLOBALS['babSkinPath'] . 'images/Puces/manager.gif',
-		bab_translate("Configuration")
-		);
 
-	$list->set_anchor($GLOBALS['babUrlScript'] . '?tg=admTskMgr&iIdProjectSpace={ m_datas[id] }&iIdProject=0&idx=' . BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_LIST,
-		$GLOBALS['babSkinPath'] . 'images/Puces/manager.gif',
-		bab_translate("Specific fields")
-		);
+	require_once $GLOBALS['babInstallPath'] . 'utilit/tree.php';
 
-	$list->set_anchor($GLOBALS['babUrlScript'] . '?tg=admTskMgr&iIdProjectSpace={ m_datas[id] }&iIdProject=0&idx=' . BAB_TM_IDX_DISPLAY_CATEGORIES_LIST,
-		$GLOBALS['babSkinPath'] . 'images/Puces/manager.gif',
-		bab_translate("Categories list")
-		);
-
-	$list->set_anchor($GLOBALS['babUrlScript'] . '?tg=admTskMgr&iIdProjectSpace={ m_datas[id] }&iIdProject=0&idx=' . BAB_TM_IDX_DISPLAY_NOTICE_EVENT_FORM,
-		$GLOBALS['babSkinPath'] . 'images/Puces/manager.gif',
-		bab_translate("Notices")
-		);
+	class BAB_TM_List extends bab_TreeView
+	{
+		var $m_sUrlBase 		= '';
+		var $m_iIdSpaceElement	= 0;
 		
-	$babBody->babecho(bab_printTemplate($list, 'tmCommon.html', 'displayList'));
+		function BAB_TM_List()
+		{
+			parent::bab_TreeView('myTreeView');
+			
+			$sTg = tskmgr_getVariable('tg', 'admTskMgr');
+			$this->m_sUrlBase = $GLOBALS['babUrlScript'] . '?tg=' . $sTg . '&idx=%s&iIdProjectSpace=%d&iIdProject=%d';
+
+			$oSpaceElement =& $this->createElement($this->m_iIdSpaceElement, 'myNodeType', bab_translate("Space(s)"), 'description', 
+				$this->getUrl(BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST, 0, 0));
+			
+			$oSpaceElement->addAction('add',
+               bab_translate('Add'), $GLOBALS['babSkinPath'] . 'images/Puces/edit_add.png', 
+               $this->getUrl(BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_FORM, 0, 0), '');
+              
+            $this->appendElement($oSpaceElement, null);
+
+            $result = bab_selectProjectSpaceList();
+			if(false != $result)
+			{
+				global $babDB;
+				
+				$iIdProject = 0;
+				$iIndex = 0;
+				$iNumRows = $babDB->db_num_rows($result);
+				
+				while( $iIndex < $iNumRows && false != ($datas = $babDB->db_fetch_array($result)) )
+				{
+					$oElement =& $this->createElement($datas['id'], 'myNodeType', $datas['name'], $datas['description'], 
+						$this->getUrl(BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_FORM, $datas['id'], $iIdProject));
+					
+					$oElement->addAction('Rights',
+		               bab_translate('Rights'), $GLOBALS['babSkinPath'] . 'images/Puces/agent.png', 
+		               $this->getUrl(BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_RIGHTS_FORM, $datas['id'], $iIdProject), '');
+					$oElement->addAction('Configuration',
+		               bab_translate('Configuration'), $GLOBALS['babSkinPath'] . 'images/Puces/package_settings.png', 
+		               $this->getUrl(BAB_TM_IDX_DISPLAY_PROJECTS_CONFIGURATION_FORM, $datas['id'], $iIdProject), '');
+					$oElement->addAction('Specific_fields',
+		               bab_translate('Specific fields'), $GLOBALS['babSkinPath'] . 'images/Puces/list.png', 
+		               $this->getUrl(BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_LIST, $datas['id'], $iIdProject), '');
+					$oElement->addAction('Categories_list',
+		               bab_translate('Categories list'), $GLOBALS['babSkinPath'] . 'images/Puces/kwikdisk.png', 
+		               $this->getUrl(BAB_TM_IDX_DISPLAY_CATEGORIES_LIST, $datas['id'], $iIdProject), '');
+					$oElement->addAction('Notices',
+		               bab_translate('Notices'), $GLOBALS['babSkinPath'] . 'images/Puces/mailreminder.png', 
+		               $this->getUrl(BAB_TM_IDX_DISPLAY_NOTICE_EVENT_FORM, $datas['id'], $iIdProject), '');
+
+               		$this->appendElement($oElement, $this->m_iIdSpaceElement);
+				}
+			}	
+		}
+		
+		function getUrl($sIdx, $iIdProjectSpace, $iIdProject)
+		{
+			return sprintf($this->m_sUrlBase, $sIdx, $iIdProjectSpace, $iIdProject);
+		}
+	}
+	
+	$list = new BAB_TM_List();
+	$GLOBALS['babBody']->babecho($list->printTemplate());
 }
 
 
@@ -128,7 +164,8 @@ function displayProjectsSpacesForm()
 			$this->set_data('sDescription', tskmgr_getVariable('sDescription', ''));
 			$this->set_data('iIdProjectSpace', $iIdProjectSpace);
 			$this->set_data('iIdDelegation', $iIdDelegation);
-			$this->set_data('add_idx', BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST);
+//			$this->set_data('add_idx', BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST);
+			$this->set_data('add_idx', BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_FORM);
 			$this->set_data('modify_idx', BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST);
 			$this->set_data('delete_idx', BAB_TM_IDX_DISPLAY_DELETE_PROJECTS_SPACES_FORM);
 			$this->set_data('add_action', BAB_TM_ACTION_ADD_PROJECT_SPACE);
