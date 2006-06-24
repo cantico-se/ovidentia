@@ -733,12 +733,6 @@ function addStatBasketContentItem()
 
 	if( isset($_POST['ibcid']) && !empty($_POST['ibcid']))
 	{
-		$res = $babDB->db_query("select * from ".BAB_STATS_BASKET_CONTENT_TBL." where id='".$_POST['ibcid']."' and basket_id='".$_POST['baskid']."'");
-		if( $res && $babDB->db_num_rows($res))
-		{
-			$babBody->msgerror = bab_translate("This item is already used");
-			return false;
-		}
 
 		switch($_POST['what'])
 			{
@@ -773,6 +767,13 @@ function addStatBasketContentItem()
 
 		if( $bctype )
 		{
+			$res = $babDB->db_query("select * from ".BAB_STATS_BASKET_CONTENT_TBL." where bc_id='".$_POST['ibcid']."' and basket_id='".$_POST['baskid']."' and bc_type='".$bctype."'");
+			if( $res && $babDB->db_num_rows($res))
+			{
+				$babBody->msgerror = bab_translate("This item is already used");
+				return false;
+			}
+
 			if (bab_isMagicQuotesGpcOn())
 				{
 				$ibcdesc = stripslashes($_POST['ibcdesc']);
