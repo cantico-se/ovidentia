@@ -865,7 +865,7 @@ CREATE TABLE `bab_sites` (
   `ldap_passwordtype` enum('text','md5','unix','sha') NOT NULL default 'text',
   `ldap_allowadmincnx` enum('Y','N') NOT NULL default 'Y',
   `ldap_encryptiontype` varchar(255) NOT NULL default '',
-  `decoding_type` tinyint(1) unsigned NOT NULL default '0',
+  `ldap_decoding_type` tinyint(1) unsigned NOT NULL default '0',
   `date_longformat` varchar(255) NOT NULL default '',
   `date_shortformat` varchar(255) NOT NULL default '',
   `time_format` varchar(255) NOT NULL default '',
