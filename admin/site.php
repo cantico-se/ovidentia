@@ -672,7 +672,7 @@ function siteAuthentification($id)
 
 		function clsSiteAuthentification($id)
 			{
-			global $bab_ldapAttributes;
+			global $bab_ldapAttributes, $babLdapEncodingTypes;
 			$this->db = $GLOBALS['babDB'];
 			$this->id = $id;
 			$req = "select *, DECODE(smtppassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as smtppass, DECODE(ldap_adminpassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as ldapadminpwd from ".BAB_SITES_TBL." where id='$id'";
@@ -692,6 +692,8 @@ function siteAuthentification($id)
 				$this->ldapadmindn = $arr['ldap_admindn'];
 				$this->ldapadminpwd1 = $arr['ldapadminpwd'];
 				$this->ldapadminpwd2 = $arr['ldapadminpwd'];
+				$this->vdecodetype = $arr['ldap_decoding_type']; 
+				$this->decodetypetxt = bab_translate("Decoding type");
 
 				$this->authentificationtxt = bab_translate("Authentification");
 				$this->arrayauth = array(BAB_AUTHENTIFICATION_OVIDENTIA => "OVIDENTIA", BAB_AUTHENTIFICATION_LDAP => "LDAP", BAB_AUTHENTIFICATION_AD => "ACTIVE DIRECTORY");
@@ -741,6 +743,7 @@ function siteAuthentification($id)
 
 				sort($bab_ldapAttributes);
 				$this->countv = count($bab_ldapAttributes);
+				$this->countd = count($babLdapEncodingTypes);
 				}
 			else
 				{
@@ -894,6 +897,29 @@ function siteAuthentification($id)
                 else
 					{
                     $this->passtypeselected = "";
+					}
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+
+		function getnextdecodetype()
+			{
+			global $babLdapEncodingTypes;
+			static $i = 0;
+			if( $i < $this->countd)
+				{
+				$this->stid = $i;
+				$this->stval = $babLdapEncodingTypes[$i];
+				if( $this->vdecodetype == $i )
+					{
+					$this->selected = 'selected';
+					}
+				else
+					{
+					$this->selected = '';
 					}
 				$i++;
 				return true;
@@ -1635,7 +1661,7 @@ function siteUpdate_menu6($item)
 
 function siteUpdate_authentification($id, $authtype, $host, $hostname, $ldpapchkcnx, $searchdn)
 	{
-	global $babBody, $bab_ldapAttributes, $nickname, $i_nickname, $crypttype, $ldapfilter,$admindn, $adminpwd1, $adminpwd2;
+	global $babBody, $bab_ldapAttributes, $nickname, $i_nickname, $crypttype, $ldapfilter,$admindn, $adminpwd1, $adminpwd2, $decodetype;
 
 	$db = $GLOBALS['babDB'];
 	if( $authtype != BAB_AUTHENTIFICATION_OVIDENTIA )
@@ -1703,7 +1729,7 @@ function siteUpdate_authentification($id, $authtype, $host, $hostname, $ldpapchk
 			}
 
 		$req = "update ".BAB_SITES_TBL." set authentification='".$authtype."'";
-		$req .= ", ldap_host='".$host."', ldap_domainname='".$hostname."', ldap_allowadmincnx='".$ldpapchkcnx."', ldap_searchdn='".$searchdn."', ldap_attribute='".$ldapattr."', ldap_encryptiontype='".$crypttype."', ldap_filter='".$ldapfilter."', ldap_admindn='".$admindn."'";
+		$req .= ", ldap_host='".$host."', ldap_domainname='".$hostname."', ldap_allowadmincnx='".$ldpapchkcnx."', ldap_searchdn='".$searchdn."', ldap_attribute='".$ldapattr."', ldap_encryptiontype='".$crypttype."', ldap_decoding_type='".$decodetype."', ldap_filter='".$ldapfilter."', ldap_admindn='".$admindn."'";
 		if( !empty($adminpwd1))
 			{
 			$req .= ", ldap_adminpassword=ENCODE(\"".$adminpwd1."\",\"".$GLOBALS['BAB_HASH_VAR']."\")";

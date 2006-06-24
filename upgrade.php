@@ -6789,6 +6789,19 @@ function upgrade584to585()
 		");
 
 	}
+
+if (!bab_isTableField(BAB_LDAP_DIRECTORIES_TBL, 'decoding_type')) {
+
+	$db->db_query("ALTER TABLE `".BAB_LDAP_DIRECTORIES_TBL."` ADD decoding_type TINYINT( 1 ) UNSIGNED DEFAULT '0' NOT NULL AFTER `description` ");
+	$db->db_query("update ".BAB_LDAP_DIRECTORIES_TBL." set decoding_type='1' where server_type='0'");
+}
+
+if (!bab_isTableField(BAB_SITES_TBL, 'ldap_decoding_type')) {
+
+	$db->db_query("ALTER TABLE `".BAB_SITES_TBL."` ADD ldap_decoding_type TINYINT( 1 ) UNSIGNED DEFAULT '0' NOT NULL");
+	$db->db_query("update ".BAB_SITES_TBL." set ldap_decoding_type='1' where authentification='1'");
+}
+
 }
 
 ?>

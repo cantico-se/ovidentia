@@ -1086,6 +1086,18 @@ function hideShowCnx()
 		<input type="text" name="ldapfilter" size="50" value="{ ldapfiltersite }" />
 		</td>
 	</tr>
+
+	<tr> 
+		<td align="right" nowrap valign="middle">{ decodetypetxt }</td>
+		<td valign="middle">
+		<select name="decodetype">
+		<!--#in getnextdecodetype --> 
+		<option value="{ stid }" { selected }>{ stval }</option>
+		<!--#endin getnextdecodetype --> 
+		</select>
+		</td>
+	</tr>
+
 	<tr id="ldpapauthpassid"> 
 		<td align="right">{ authpasstypetxt }</td>
 		<td>

@@ -26,30 +26,6 @@ include_once "base.php";
 
 $babLdapServerTypes = array(BAB_LDAP_SERVER_OL => "OPENLDAP", BAB_LDAP_SERVER_AD => "ACTIVE DIRECTORY");
 
-function ldapDecode($str, $servertype)
-{
-	if( $servertype == BAB_LDAP_SERVER_AD ) // Active Directory
-		{
-		return $str;
-		}
-	else
-		{
-		return utf8_decode($str);
-		}
-}
-
-function ldapEncode($str, $servertype)
-{
-	if( $servertype == BAB_LDAP_SERVER_AD ) // Active Directory
-		{
-		return $str;
-		}
-	else
-		{
-		return utf8_encode($str);
-		}
-}
-
 function getDirectoryName($id, $table)
 	{
 	$db = $GLOBALS['babDB'];

@@ -27,6 +27,45 @@ include_once $babInstallPath."utilit/template.php";
 include_once $babInstallPath."utilit/userincl.php";
 include_once $babInstallPath."utilit/mailincl.php";
 
+$babLdapEncodingTypes = array(0 => '', BAB_LDAP_UTF8_ISO_8859_1 => "UTF8 -> ISO_8859_1", BAB_LDAP_T61_ISO_8859_1 => "T61 -> ISO_8859_1");
+
+function bab_ldapDecode($str, $type)
+{
+	
+	switch($type)
+	{
+		case BAB_LDAP_UTF8_ISO_8859_1:
+			return utf8_decode($str);
+			break;
+
+		case BAB_LDAP_T61_ISO_8859_1:
+			return ldap_t61_to_8859($str);
+			break;
+
+		default:
+			return $str;
+			break;
+	}
+
+}
+
+function bab_ldapEncode($str, $type)
+{
+	switch($type)
+	{
+		case BAB_LDAP_UTF8_ISO_8859_1:
+			return utf8_encode($str);
+			break;
+
+		case BAB_LDAP_T61_ISO_8859_1:
+			return ldap_8859_to_t61($str);
+			break;
+
+		default:
+			return $str;
+			break;
+	}
+}
 
 
 function bab_encrypt($txt,$key)
