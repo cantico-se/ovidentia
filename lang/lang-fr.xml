@@ -2160,5 +2160,6 @@
 <string id="Edit basket content">Editer le contenu du dossier</string>
 <string id="Add basket content">Ajouter du contenu au dossier</string>
 <string id="Basket content">Contenu du dossier</string>
+<string id="Dashboard from %s to %s">Tableau de bord du %s au %s</string>
 <string id="Decoding type">Type de décodage</string>
 </fr>
