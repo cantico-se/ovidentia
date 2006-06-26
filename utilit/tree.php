@@ -593,6 +593,14 @@ class bab_TreeViewElement
 
 	var $_info;
 
+	/**
+	 * @constructor
+	 * @param string $id
+	 * @param string $type
+	 * @param string $title
+	 * @param string $description
+	 * @param string $link
+	 */
 	function bab_TreeViewElement($id, $type, $title, $description, $link)
 	{
 		$this->_id = $id;
@@ -605,6 +613,14 @@ class bab_TreeViewElement
 		$this->_info = '';
 	}
 
+	/**
+	 * Adds an action icon for the treeview element.
+	 * @param string $name
+	 * @param string $caption
+	 * @param string $icon
+	 * @param string $link
+	 * @param string $script
+	 */
 	function addAction($name, $caption, $icon, $link, $script)
 	{
 		$this->_actions[] = array('name' => $name,
@@ -614,16 +630,25 @@ class bab_TreeViewElement
 								  'script' => $script);
 	}
 
+	/**
+	 * Defines an info text that will appear on the right of the treeview element title.
+	 * @param string $text
+	 */
 	function setInfo($text)
 	{
 		$this->_info = $text;
 	}
 
-	function setIcon($name)
+	/**
+	 * Defines the url of the treeview element icon.
+	 * @param string $url
+	 */
+	function setIcon($url)
 	{
-		$this->_icon = $name;
+		$this->_icon = $url;
 	}
 
+	
 	function compare(&$element)
 	{
 		if ((int)$this->_info > (int)$element->_info)
@@ -647,7 +672,7 @@ define('BAB_TREE_VIEW_ID_SEPARATOR',	'__');
 
 
 /**
- * 
+ * A TreeView widget.
  */
 class bab_TreeView
 {
@@ -701,13 +726,27 @@ class bab_TreeView
 
 		$this->_upToDate = false;
 	}
-	
+
+	/**
+	 * @param string $id			A unique element id in the treeview.
+	 * @param string $type			Will be used as a css class to style the element.
+	 * @param string $title			The title (label) of the node.
+	 * @param string $description	An additional description that will appear as a tooltip.
+	 * @param string $link			A link when clicking the node title.
+	 * @return bab_TreeViewElement
+	 */
 	function &createElement($id, $type, $title, $description, $link)
 	{
 		$element =& new bab_TreeViewElement($id, $type, $title, $description, $link);
 		return $element;
 	}
 
+	/**
+	 * Appends $element as the last child of the element with the id $parentId.
+	 * If $parentId is null, the element will appear as a first level node.
+	 * @param bab_TreeViewElement &$element An element created by the method createElement.
+	 * @param string $parentId The id of the parent element.
+	 */
 	function appendElement(&$element, $parentId)
 	{
 		$node =& $this->_rootNode->createNode($element, $element->_id);

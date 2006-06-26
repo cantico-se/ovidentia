@@ -211,7 +211,7 @@ function createArticleCategoriesDashboard($start, $end)
 	global $babBody, $babDB;
 	$admGroup = $babBody->currentAdmGroup;
 	$title = sprintf(bab_translate("Article Categories Top %d"), BAB_DASHBOARD_NB_ITEMS);
-	$dashboard = new bab_DashboardElement($title);
+	$dashboard = new bab_DashboardElement($title, 'categories');
 	$dashboard->setColumnHeaders(createHeaders($start, $end));
 
 	$sql = 'SELECT category.id AS id, SUM(stat.st_hits) AS hits, category.title AS title';
@@ -266,7 +266,7 @@ function createArticleCategoriesByDelegationDashboard($start, $end)
 {
 	global $babBody, $babDB;
 	$title = sprintf(bab_translate("Article categories"));
-	$dashboard = new bab_DashboardElement($title);
+	$dashboard = new bab_DashboardElement($title, 'categories');
 	$dashboard->setColumnHeaders(createHeaders($start, $end));
 
 	$sql = 'SELECT id, name';
@@ -315,7 +315,7 @@ function createArticleTopicsDashboard($start, $end)
 	global $babBody, $babDB;
 	$admGroup = $babBody->currentAdmGroup;
 	$title = sprintf(bab_translate("Article Topics Top %d"), BAB_DASHBOARD_NB_ITEMS);	
-	$dashboard = new bab_DashboardElement($title);
+	$dashboard = new bab_DashboardElement($title, 'topics');
 	$dashboard->setColumnHeaders(createHeaders($start, $end));
 
 	$sql = 'SELECT topic.id AS id, SUM(stat.st_hits) AS hits, topic.category AS title';
@@ -370,7 +370,7 @@ function createArticleTopicsByDelegationDashboard($start, $end)
 {
 	global $babBody, $babDB;
 	$title = sprintf(bab_translate("Article topics"));
-	$dashboard = new bab_DashboardElement($title);
+	$dashboard = new bab_DashboardElement($title, 'topics');
 	$dashboard->setColumnHeaders(createHeaders($start, $end));
 
 	$sql = 'SELECT id, name';
@@ -417,7 +417,7 @@ function createArticlesDashboard($start, $end)
 {
 	global $babBody, $babDB;
 	$title = sprintf(bab_translate("Articles Top %d"), BAB_DASHBOARD_NB_ITEMS);
-	$dashboard = new bab_DashboardElement($title);
+	$dashboard = new bab_DashboardElement($title, 'articles');
 	$dashboard->setColumnHeaders(createHeaders($start, $end));
 
 	$sql = 	'SELECT at.id AS id, SUM(sat.st_hits) AS hits ';
@@ -518,7 +518,7 @@ function createArticlesByDelegationDashboard($start, $end)
 {
 	global $babBody, $babDB;
 	$title = sprintf(bab_translate("Articles"));
-	$dashboard = new bab_DashboardElement($title);
+	$dashboard = new bab_DashboardElement($title, 'articles');
 	$dashboard->setColumnHeaders(createHeaders($start, $end));
 
 	$sql = 'SELECT id, name';
@@ -588,7 +588,7 @@ function createFaqsByDelegationDashboard($start, $end)
 {
 	global $babBody, $babDB;
 	$title = sprintf(bab_translate("Faqs"));
-	$dashboard = new bab_DashboardElement($title);
+	$dashboard = new bab_DashboardElement($title, 'faqs');
 	$dashboard->setColumnHeaders(createHeaders($start, $end));
 
 	$sql = 'SELECT id, name';
@@ -659,7 +659,7 @@ function createFaqQuestionsByDelegationDashboard($start, $end)
 {
 	global $babBody, $babDB;
 	$title = sprintf(bab_translate("Faq questions"));
-	$dashboard = new bab_DashboardElement($title);
+	$dashboard = new bab_DashboardElement($title, 'questions');
 	$dashboard->setColumnHeaders(createHeaders($start, $end));
 
 	$sql = 'SELECT id, name';
@@ -730,7 +730,7 @@ function createForumsByDelegationDashboard($start, $end)
 {
 	global $babBody, $babDB;
 	$title = sprintf(bab_translate("Forums"));
-	$dashboard = new bab_DashboardElement($title);
+	$dashboard = new bab_DashboardElement($title, 'forums');
 	$dashboard->setColumnHeaders(createHeaders($start, $end));
 
 	$sql = 'SELECT id, name';
@@ -802,7 +802,7 @@ function createPostsByDelegationDashboard($start, $end)
 {
 	global $babBody, $babDB;
 	$title = sprintf(bab_translate("Posts"));
-	$dashboard = new bab_DashboardElement($title);
+	$dashboard = new bab_DashboardElement($title, 'posts');
 	$dashboard->setColumnHeaders(createHeaders($start, $end));
 
 	$sql = 'SELECT id, name';
@@ -849,7 +849,7 @@ function createFoldersDashboard($start, $end)
 	global $babBody, $babDB;
 	$admGroup = $babBody->currentAdmGroup;
 	$title = sprintf(bab_translate("Collective Directories Top %d"), BAB_DASHBOARD_NB_ITEMS);
-	$dashboard = new bab_DashboardElement($title);
+	$dashboard = new bab_DashboardElement($title, 'folders');
 	$dashboard->setColumnHeaders(createHeaders($start, $end));
 
 	$sql = 'SELECT folder.id AS id, folder.folder AS title, SUM(stat.st_hits) AS hits';
@@ -900,7 +900,7 @@ function createFoldersByDelegationDashboard($start, $end)
 {
 	global $babBody, $babDB;
 	$title = sprintf(bab_translate("Collective directories"));
-	$dashboard = new bab_DashboardElement($title);
+	$dashboard = new bab_DashboardElement($title, 'folders');
 	$dashboard->setColumnHeaders(createHeaders($start, $end));
 
 	$sql = 'SELECT id, name';
@@ -948,7 +948,7 @@ function createFileDownloadsDashboard($start, $end)
 	global $babBody, $babDB;
 	$admGroup = $babBody->currentAdmGroup;
 	$title = sprintf(bab_translate("File Downloads Top %d"), BAB_DASHBOARD_NB_ITEMS);
-	$dashboard = new bab_DashboardElement($title);
+	$dashboard = new bab_DashboardElement($title, 'files');
 	$dashboard->setColumnHeaders(createHeaders($start, $end));
 
 	$sql = 'SELECT file.id AS id, file.name AS title, folder.folder AS folder, SUM(stat.st_hits) AS hits';
@@ -1001,7 +1001,7 @@ function createFileDownloadsByDelegationDashboard($start, $end)
 {
 	global $babBody, $babDB;
 	$title = sprintf(bab_translate("File downloads"));
-	$dashboard = new bab_DashboardElement($title);
+	$dashboard = new bab_DashboardElement($title, 'files');
 	$dashboard->setColumnHeaders(createHeaders($start, $end));
 
 	$sql = 'SELECT id, name';
@@ -1023,7 +1023,7 @@ function createFileDownloadsByDelegationDashboard($start, $end)
 function createFunctionsDashboard($start, $end)
 {
 	global $babDB;
-	$dashboard = new bab_DashboardElement(bab_translate("Activity by Functions"));
+	$dashboard = new bab_DashboardElement(bab_translate("Activity by Functions"), 'functions');
 	$dashboard->setColumnHeaders(createHeaders($start, $end));
 
 	$sql = 'SELECT stip.id AS id, stip.module_name AS title, SUM(stp.st_hits) AS hits';
@@ -1074,7 +1074,7 @@ function createFunctionsDashboard($start, $end)
 function createGlobalActivityDashboard($start, $end)
 {
 	global $babDB;
-	$dashboard = new bab_DashboardElement(bab_translate("Global Site Activity"));
+	$dashboard = new bab_DashboardElement(bab_translate("Global Site Activity"), 'activity');
 	$dashboard->setColumnHeaders(createHeaders($start, $end));
 
 	$sqlDateFormat = getSqlDateFormat($start, $end);
@@ -1158,7 +1158,7 @@ function createCreatedObjectsByDelegationDashboard($start, $end)
 {
 	global $babBody, $babDB;
 	$title = sprintf(bab_translate("Created objects"));
-	$dashboard = new bab_DashboardElement($title);
+	$dashboard = new bab_DashboardElement($title, 'activity');
 	$dashboard->setColumnHeaders(array(array('type' => '', 'name' => ''),
 									   array('type' => '', 'name' => bab_translate("Groups")),
 									   array('type' => '', 'name' => bab_translate("Sections")),
@@ -1209,7 +1209,7 @@ function createBasketDashboard($basketId, $start, $end)
 	$baskets = $babDB->db_query($sql);
 	$basket = $babDB->db_fetch_array($baskets);
 	
-	$dashboard = new bab_DashboardElement(bab_translate("Statistics basket: ") . $basket['basket_name']);
+	$dashboard = new bab_DashboardElement(bab_translate("Statistics basket: ") . $basket['basket_name'], 'basket');
 	$dashboard->setColumnHeaders(createHeaders($start, $end));
 
 	$sqlDateFormat = getSqlDateFormat($start, $end);
@@ -1336,6 +1336,7 @@ function showDashboard($startDate, $endDate)
 	$end = ($endDate ? bab_mktime($endDate) : time());
 
 	$dashboard = new bab_Dashboard();
+	$dashboard->setExportUrl($GLOBALS['babUrlScript'] . '?tg=stat&idx=dashboardexport');
 
 	$nbDays = (int)round(($end - $start) / 86400.0);
 	if ($nbDays <= 31) {
@@ -1348,9 +1349,6 @@ function showDashboard($startDate, $endDate)
 		$dashboard->addFilter('D', 'day6');
 	}
 
-	////
-//	$s = microtime_float();
-	////
 	$dashboard->addElement(createGlobalActivityDashboard($start, $end)); // 0.07
 	$dashboard->addElement(createFunctionsDashboard($start, $end)); // 0.8
 	$dashboard->addElement(createArticlesDashboard($start, $end)); // 2.2
@@ -1358,31 +1356,43 @@ function showDashboard($startDate, $endDate)
 	$dashboard->addElement(createArticleCategoriesDashboard($start, $end)); // 4.16
 	$dashboard->addElement(createFoldersDashboard($start, $end)); // 0.03
 	$dashboard->addElement(createFileDownloadsDashboard($start, $end)); // 0.16
-	$dashboard->addElement(createBasketDashboard(1, $start, $end)); // 0.16
-	$dashboard->addElement(createFileDownloadsByDelegationDashboard($start, $end));
-	$dashboard->addElement(createFoldersByDelegationDashboard($start, $end));
-	$dashboard->addElement(createArticlesByDelegationDashboard($start, $end));
-	$dashboard->addElement(createArticleTopicsByDelegationDashboard($start, $end));
-	$dashboard->addElement(createArticleCategoriesByDelegationDashboard($start, $end));
-	$dashboard->addElement(createForumsByDelegationDashboard($start, $end));
-	$dashboard->addElement(createPostsByDelegationDashboard($start, $end));
-	$dashboard->addElement(createFaqsByDelegationDashboard($start, $end));
-	$dashboard->addElement(createFaqQuestionsByDelegationDashboard($start, $end));
-	$dashboard->addElement(createCreatedObjectsByDelegationDashboard($start, $end));
-	////
-//	$e = microtime_float(); echo '<!-- ';print_r('addElement : ' . ($e - $s));echo " -->\n";
-	////
 
-	////
-//	$s = microtime_float();
-	////
 	$GLOBALS['babBodyPopup']->babecho($dashboard->printTemplate());
-//	print $dashboard->printTemplateCsv();
-//	die();
-	////
-//	$e = microtime_float();	echo '<!-- ';print_r('babEcho : ' . ($e - $s));echo " -->\n";
-	////
 }
+
+
+function exportDashboard($startDate, $endDate)
+{
+	$start = ($startDate ? bab_mktime($startDate) : bab_mktime('2000-01-01'));
+	$end = ($endDate ? bab_mktime($endDate) : time());
+
+	$hiddenContainers =& $_REQUEST['container_hide'];
+	
+	$dashboard = new bab_Dashboard();
+	$dashboard->setTitle(sprintf(bab_translate("Dashboard from %s to %s"), bab_shortDate($start, false), bab_shortDate($end, false)));
+	if (!isset($hiddenContainers['activity']))
+		$dashboard->addElement(createGlobalActivityDashboard($start, $end));
+	if (!isset($hiddenContainers['functions']))
+		$dashboard->addElement(createFunctionsDashboard($start, $end));
+	if (!isset($hiddenContainers['articles']))
+		$dashboard->addElement(createArticlesDashboard($start, $end));
+	if (!isset($hiddenContainers['topics']))
+		$dashboard->addElement(createArticleTopicsDashboard($start, $end));
+	if (!isset($hiddenContainers['categories']))
+		$dashboard->addElement(createArticleCategoriesDashboard($start, $end));
+	if (!isset($hiddenContainers['folders']))
+		$dashboard->addElement(createFoldersDashboard($start, $end));
+	if (!isset($hiddenContainers['files']))
+		$dashboard->addElement(createFileDownloadsDashboard($start, $end));
+
+	header('Cache-Control: public');
+	header('Content-type: application/vnd.ms-excel');
+	header('Content-Disposition: attachement; filename="export.xls"');
+
+	print $dashboard->printTemplateCsv();
+	die();	
+}
+
 
 function showDelegationDashboard($startDate, $endDate)
 {

@@ -198,10 +198,13 @@ function toggleDashboard()
 
 function dashboardInit()
 {
+	window.dashboardContainers = new Array();
+
 	divs = document.getElementsByTagName('div');
 	for (var i = 0; i < divs.length; i++) {
 		div = divs[i];
 		if (hasClass(div, 'dashboard_container')) {
+			window.dashboardContainers.push(div);
 			div.foldUndoStack = new Array();
 			tds = div.getElementsByTagName('td');
 			div.dashboardColumnHeaders = new Array();
@@ -289,6 +292,23 @@ function textsize(param)
 		body.style.fontSize = newfs + 'em';
 }
 
+function dashboardExport(url)
+{
+	form = document.forms['export'];
+	for (var i = 0; i < window.dashboardContainers.length; i++) {
+		if (window.dashboardContainers[i].targetTable.style.display == 'none') {
+			input = document.createElement('input');
+			input.name = 'container_hide[' + window.dashboardContainers[i].targetTable.id + ']';
+			input.type = 'hidden';
+			input.value = '';
+			form.appendChild(input);
+		}
+	}
+//	alert(str);
+	form.submit();
+	return false;
+}
+
 window.previousonload = window.onload;
 window.onload = dashboardInit;
 -->
@@ -318,7 +338,12 @@ var bab_dashboard_filters = {
 	<img onclick="window.print()" src="{ babSkinPath }images/Dashboard/print.gif" border="0" />&nbsp;
 	<a href="#" onclick="textsize(1.05); return false">A+</a>&nbsp;
 	<a href="#" onclick="textsize(0.95); return false">A-</a>
+	<!--#if t_export_url -->
+	<a href="{ t_export_url }" onclick="return dashboardExport();">{ t_export }</a>
+	<!--#endif t_export_url -->
 	</span>
+	<form name="export" method="post" action="{ t_export_url }">
+	</form>
 </div>
 </div>
 <!--#end dashboard -->
@@ -328,7 +353,7 @@ var bab_dashboard_filters = {
 <!--#begin dashboard_element -->
 <div class="dashboard_container">
 <div class="dashboard_header">{ t_dashboard_name }</div>
-<table <!--#if t_table_id --> id="{ t_table_id }" <!--#endif t_table_id --> style="border-collapse: collapse; border: 2px solid black">
+<table <!--#if t_dashboard_element_id --> id="{ t_dashboard_element_id }" <!--#endif t_dashboard_element_id --> style="border-collapse: collapse; border: 2px solid black">
 <thead>
 <tr>
 <!--#in getNextColumnHeader -->
@@ -355,31 +380,39 @@ var bab_dashboard_filters = {
 
 
 <!--#begin dashboard_csv -->
+<body style="background-color: #FFFFFF; font-size: 8px;">
+<p style="font-family: Tahoma; font-size: 14px; font-weight: bold">{ t_title }</p>
 <!--#in getNextElementCsv -->
 { t_dashboard_element }
 <!--#endin getNextElementCsv -->
+</body>
 <!--#end dashboard_csv -->
 
 
 
 <!--#begin dashboard_element_csv -->
-<table>
-<caption>{ t_dashboard_name }</caption>
+<span style="font-family: Tahoma; font-size: 12px; font-weight: bold">{ t_dashboard_name }</span>
+<table cellpadding="4" style="border-collapse: separate; border: 2px solid black">
 <thead>
 <tr>
 <!--#in getNextColumnHeader -->
-<th bgcolor="#DDDDDD"><b>{ t_column_header }</b></th>
+<th style="font-family: Tahoma; font-size: 10px; background-color: #000000; color: #FFFFFF"><b>{ t_column_header }</b></th>
 <!--#endin getNextColumnHeader -->
 </tr>
 </thead>
 <tbody>
 <!--#in getNextRow -->
-<tr>
+<tr style="background-color: <!--#if t_odd_row --> #DFDFDF <!--#else t_odd_row --> #FFFFFF <!--#endif t_odd_row -->">
 <!--#in getNextColumn -->
-<td align="right">{ t_column_content }</td>
+<!--#if t_column_number "== 1" -->
+<td style="font-family: Tahoma; font-weight: bold; font-size: 10px; text-align: right">{ t_column_content }</td>
+<!--#else t_column_number -->
+<td style="font-family: Tahoma; font-size: 10px; text-align: right">{ t_column_content }</td>
+<!--#endif t_column_number -->
 <!--#endin getNextColumn -->
 </tr>
 <!--#endin getNextRow -->
 </tbody>
 </table>
+<br><br>
 <!--#end dashboard_element_csv -->

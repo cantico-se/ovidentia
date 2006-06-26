@@ -31,6 +31,9 @@ class bab_Dashboard
 	var $t_filter_label;
 	var $t_not_first_filter;
 	var $t_dashboard_element;
+	var $t_export;
+	var $t_export_url;
+	var $t_title;
 
 	function bab_Dashboard()
 	{
@@ -40,11 +43,24 @@ class bab_Dashboard
 		$this->t_filter_label = '';	
 		$this->t_dashboard_element = null;
 		$this->t_not_first_filter = false;
+		$this->t_export = bab_translate("Export");
+		$this->t_export_url = '';
+	}
+	
+	function setTitle($title)
+	{
+		$this->t_title = $title;
+	}
+
+	function setExportUrl($url)
+	{
+		$this->t_export_url= $url;
 	}
 
 	function addElement($element)
 	{
 		$this->_elements[] = $element;
+		reset($this->_elements);
 	}
 	
 	function addFilter($label, $type)
@@ -77,13 +93,11 @@ class bab_Dashboard
 	// Template functions.
 	function getNextElement()
 	{
-		static $i = 0;
-		if ($i < count($this->_elements)) {
-			$this->t_dashboard_element = $this->_elements[$i]->printTemplate();
-			$i++;
+		if (list(,$element) = each($this->_elements)) {
+			$this->t_dashboard_element = $element->printTemplate();
 			return true;
 		}
-		$i = 0;
+		reset($this->_elements);
 		return false;
 	}
 
@@ -122,13 +136,19 @@ class bab_DashboardElement
 	var $t_column_type;
 	var $t_column_header;
 	var $t_dashboard_name;
+	var $t_dashboard_id;
+	var $t_odd_row;
+	var $t_column_number;
 
-	function bab_DashboardElement($name)
+	function bab_DashboardElement($name, $id)
 	{
 		$this->_columnHeaders = array();
 		$this->_rows = array();
 		$this->_row = null;
 		$this->t_dashboard_name = bab_toHtml($name);
+		$this->t_dashboard_element_id = bab_toHtml($id);
+		$this->t_odd_row = false;
+		$this->t_column_number = 0;
 	}
 
 	function setColumnHeaders($columnHeaders)
@@ -164,10 +184,12 @@ class bab_DashboardElement
 	function getNextColumnHeader()
 	{
 		if (list(, $columnHeader) = each($this->_columnHeaders)) {
+			$this->t_column_number++;
 			$this->t_column_type = bab_toHtml($columnHeader['type']);
 			$this->t_column_header = bab_toHtml($columnHeader['name']);
 			return true;
 		}
+		$this->t_column_number = 0;
 		reset($this->_columnHeaders);
 		return false;
 	}
@@ -175,9 +197,11 @@ class bab_DashboardElement
 	function getNextColumn()
 	{
 		if (list(, $columnValue) = each($this->_row)) {
+			$this->t_column_number++;
 			$this->t_column_content = bab_toHtml($columnValue);
 			return true;
 		}
+		$this->t_column_number = 0;
 		reset($this->_row);
 		return false;
 		
@@ -186,9 +210,12 @@ class bab_DashboardElement
 	function getNextRow()
 	{
 		if (list(, $this->_row) = each($this->_rows)) {
+			$this->t_odd_row = ! $this->t_odd_row;
 			reset($this->_row);
+			$this->t_column_number = 0;
 			return true;
 		}
+		$this->t_odd_row = false;
 		reset($this->_rows);
 		return false;
 		

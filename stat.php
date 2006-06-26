@@ -693,6 +693,15 @@ switch($idx)
 		printBabBodyPopup();
 		exit;
 		break;
+	case "dashboardexport":
+		include_once $babInstallPath."utilit/uiutil.php";
+		include_once $babInstallPath."statdashboard.php";
+//		$GLOBALS['babBodyPopup'] = new babBodyPopup();
+//		displayTimeIntervalInPopup($itwhat, $sd, $ed, $idx, $GLOBALS['babBodyPopup']);
+		exportDashboard($sd, $ed);
+//		printBabBodyPopup();
+		exit;
+		break;
 	case "delegation":
 //		include_once $babInstallPath."statboard.php";
 //		summaryDelegatList($col, $order);
