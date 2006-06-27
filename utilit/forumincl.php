@@ -366,7 +366,7 @@ function bab_getPostFiles($forum,$postid)
 						'url' => $GLOBALS['babUrlScript']."?tg=posts&idx=dlfile&forum=".$forum."&post=".$postid."&file=".urlencode($arr['name']),
 						'path' =>  $path,
 						'name' => $arr['name'],
-						'size' => round(filesize($path)/1024).' '.bab_translate('Kb'),
+						'size' => ceil(filesize($path)/1024).' '.bab_translate('Kb'),
 						'index_status' => $arr['index_status'],
 						'index_label' => bab_getIndexStatusLabel($arr['index_status'])
 						);

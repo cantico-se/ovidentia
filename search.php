@@ -919,10 +919,76 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 						b.id_thread=T.id 
 						AND T.forum=F.id 
 						AND ".$plus." b.confirmed='Y' 
-						AND b.id_thread IN (".substr($idthreads,0,-1).") order by ".$order;
+						AND b.id_thread IN (".substr($idthreads,0,-1).")";
 
 					$this->db->db_query($req);
 				}
+
+
+
+				// indexation
+
+				if ($engine = bab_searchEngineInfos()) {
+					if (!$engine['indexes']['bab_forumsfiles']['index_disabled']) {
+						$found_files = bab_searchIndexedFiles($this->like2, $this->like, $option, 'bab_forumsfiles');
+
+
+						$file_path = array();
+						foreach($found_files as $arr) {
+							$file_path[] = $this->db->db_escape_string(bab_removeUploadPath($arr['file']));
+						}
+
+						$this->tmptable_inserted_id('forresults');
+						
+						
+
+
+						$req = "
+					
+							INSERT INTO 
+								forresults 
+							SELECT 
+								b.id, 
+								b.id_thread, 
+								F.name topic, 
+								F.id id_topic, 
+								b.subject title,
+								b.message, 
+								author, 
+								UNIX_TIMESTAMP(b.date) date 
+							FROM 
+								".BAB_POSTS_TBL." b,  
+								".BAB_THREADS_TBL." T, 
+								".BAB_FORUMS_TBL." F, 
+								".BAB_FORUMSFILES_TBL." fi,
+								".BAB_INDEX_ACCESS_TBL." i 
+							WHERE 
+								b.id_thread=T.id 
+								AND T.forum=F.id 
+								AND fi.id_post = b.id 
+								AND i.id_object_access = F.id 
+								AND i.id_object = fi.id 
+								AND i.file_path IN('".implode("', '",$file_path)."') 
+								AND b.confirmed='Y' 
+								AND b.id_thread IN (".substr($idthreads,0,-1).")";
+
+						if ($this->tmp_inserted_id) {
+							$req .= "AND b.id NOT IN('".implode("', '",$this->tmp_inserted_id)."') ";
+						}
+
+						$req .= " GROUP BY b.id";
+
+						$this->db->db_query($req);
+
+						bab_debug($req);
+
+						}
+					}
+
+
+
+
+
 
 				$req = "SELECT count(*) FROM forresults";
 				$res = $this->db->db_query($req);
@@ -931,7 +997,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				if ($navitem != "b") $navpos = 0;
 				$this->navbar_b = navbar($babLimit,$nbrows,"b",$navpos);
 			
-				$req = "select * from forresults limit ".$navpos.", ".$babLimit;
+				$req = "select * from forresults ORDER BY ".$order." LIMIT ".$navpos.", ".$babLimit;
 				$this->resfor = $this->db->db_query($req);
 				$this->countfor = $this->db->db_num_rows($this->resfor);
 				if( !$this->counttot && $this->countfor > 0 )
@@ -1486,6 +1552,11 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 						}
 					} else $option_dir = '';
 
+
+				if ($arr_dir) {
+					$db_arr_dir = "e.id_directory IN ( '".implode("','",$arr_dir)."' ) OR ";
+				}
+
 				$req = "SELECT 
 					e.id 
 				FROM `".BAB_DBDIR_ENTRIES_TBL."` e
@@ -1494,19 +1565,19 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 						ON t.id_entry = e.id
 
 				LEFT JOIN ".BAB_USERS_GROUPS_TBL." u ON u.id_object = e.id_user AND u.id_group IN ('".implode("','",$arr_grp)."') 
-				LEFT JOIN ".BAB_USERS_TBL." dis ON dis.id = e.id_user AND dis.disabled='1' 
+				LEFT JOIN ".BAB_USERS_TBL." dis ON dis.id = u.id_object AND dis.disabled='0' 
 					
 				WHERE 
 				".$crit_fields." 
 				".$crit_fields_add_str." 
 					(
-					e.id_directory IN ( '".implode("','",$arr_dir)."' )
-					OR (e.id_directory = '0' AND u.id IS NOT NULL )
+						".$db_arr_dir."
+						(e.id_directory = '0' AND dis.id IS NOT NULL )
 					) ".$option_dir." 
 				GROUP BY e.id ";
 
 
-				bab_debug($arr_grp);
+				//print_r($req);
 
 				$this->countdirfields = count($this->dirfields['name']);
 
@@ -2231,18 +2302,41 @@ function viewPost($thread, $post, $w)
 
 		function temp($thread, $post, $w)
 			{
+			$post = (int) $post;
 			$this->bab_searchVisuPopup();
 			$db = $GLOBALS['babDB'];
 			$req = "select forum from ".BAB_THREADS_TBL." where id='".$thread."'";
 			$arr = $db->db_fetch_array($db->db_query($req));
-			$this->title = bab_getForumName($arr['forum']);
+			$this->t_files = bab_translate("Dependent files");
+			$this->t_found_in_index = bab_translate("Result in file");
+			$this->files = bab_getPostFiles($arr['forum'], $post);
+			$GLOBALS['babBody']->title = bab_getForumName($arr['forum']);
 			$req = "select * from ".BAB_POSTS_TBL." where id='".$post."'";
 			$arr = $db->db_fetch_array($db->db_query($req));
 			$this->postdate = bab_strftime(bab_mktime($arr['date']));
 			$this->postauthor = $arr['author'];
 			$this->postsubject = highlightWord( $w, bab_replace($arr['subject']));
 			$this->postmessage = highlightWord( $w, bab_replace($arr['message']));
-			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
+
+			if ($this->files && bab_searchEngineInfos()) {
+				$found_files = bab_searchIndexedFiles($w, false, false, 'bab_forumsfiles');
+				
+				foreach($found_files as $arr) {
+					$this->found_in_index[bab_removeUploadPath($arr['file'])] = 1;
+				}
+			}
+			}
+		
+		function getnextfile()
+			{
+			if ($this->file = current($this->files))
+				{
+				next($this->files);
+				$this->in_index = isset($this->found_in_index['forums/'.basename($this->file['path'])]);
+				return true;
+				}
+			else
+				return false;
 			}
 		}
 	

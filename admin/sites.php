@@ -318,7 +318,7 @@ function unzipcore()
 				{
 				if (bab_writeConfig(array('babInstallPath' => $new_dir.'/')))
 					{
-					header('location:'.$GLOBALS['babUrlScript'].'?tg=version&idx=upgrade');
+					header('location: '.$GLOBALS['babUrlScript'].'?tg=version&idx=upgrade');
 					}
 				}
 			}

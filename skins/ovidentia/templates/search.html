@@ -796,33 +796,52 @@ setselects(document.forms.searchForm.g_directory);
 <!--#end viewcom -->
 
 <!--#begin viewfor -->
+<div
+<h2></h2>
 
-<br />
-<table width="90%" border="0" cellspacing="0" cellpadding="0" align="center">
-<tr>
-<td class="BabMailBackground"> 
-<table border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
-<tr>
-<td class="BabFaqTitleFontBg" align="center" >{ title }</td>
-</tr>
-</table>
-<br />
-<table class="" border="0" width="90%" cellpadding="2" cellspacing="0" align="center">
+<table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
-<td class="BabForumTopicsNavTitle" width="100%" colspan="2">{ postsubject }</td>
-</tr>
-<tr> 
-<td class="BabForumBackground" colspan="2"><br />
-            { postmessage }
+<td class="BabLoginCadreBackground" align="center"> 
+	<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+	<tr class="BabSiteAdminTitleFontBackground"> 
+		<td colspan="2">{ postsubject }</td>
+	</tr>
+	<tr class="BabSiteAdminFontBackground"> 
+		<td colspan="2">
+			{ postmessage }
 			<br />
-</td>
-</tr>
-<tr> 
-<td class="BabForumTopicsNavDate" width="60%">{ postdate }</td>
-<td class="BabForumTopicsNavAuthor" width="40%" align="right">{ postauthor }</td>
-</tr>
-</table>
-<br />
+			<br />
+		</td>
+	</tr>
+
+	<!--#if files -->
+	<tr class="BabSiteAdminFontBackground"> 
+		<td colspan="2">
+			{ t_files } :
+		</td>
+	</tr>
+	<!--#in getnextfile -->
+	<tr class="BabSiteAdminFontBackground"> 
+		<td>
+			<a href="{ file[url] }">{ file[name] }</a> 
+			<span>( { file[size] } )</span>
+		</td>
+		<td>
+			<!--#if in_index -->
+			<img src="{ babSkinPath }images/Puces/action_success.gif" alt="{ t_found_in_index }" title="{ t_found_in_index }" />
+			<!--#else in_index -->
+			&nbsp;
+			<!--#endif in_index -->
+		</td>
+	</tr>
+	<!--#endin getnextfile -->
+	<!--#endif files -->
+
+	<tr class="BabSiteAdminTitleFontBackground"> 
+		<td>{ postdate }</td>
+		<td align="right">{ postauthor }</td>
+	</tr>
+	</table>
 </td>
 </tr>
 </table>
