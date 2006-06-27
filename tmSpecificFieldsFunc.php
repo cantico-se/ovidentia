@@ -118,7 +118,7 @@ function displaySpecificFieldList()
 				'idx' => BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST,
 				'mnuStr' => bab_translate("Projects spaces"),
 				'url' => $GLOBALS['babUrlScript'] . '?tg=' . $tg . '&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST));
-					
+/*					
 		if('usrTskMgr' == $tg)
 		{
 			$itemMenu[] = array(
@@ -128,7 +128,7 @@ function displaySpecificFieldList()
 				'&iIdProjectSpace=' . $iIdProjectSpace);
 
 		}
-		
+//*/		
 		$itemMenu[] = array(
 				'idx' => BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_LIST,
 				'mnuStr' => bab_translate("Specific field list"),
@@ -224,7 +224,7 @@ function displaySpecificFieldForm()
 				'mnuStr' => bab_translate("Projects spaces"),
 				'url' => $GLOBALS['babUrlScript'] . '?tg=' . $tg . '&iIdProjectSpace=' . $iIdProjectSpace . 
 					'&iIdProject=' . $iIdProject . '&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST));
-					
+/*					
 		if('usrTskMgr' == $tg)
 		{
 			$itemMenu[] = array(
@@ -234,7 +234,7 @@ function displaySpecificFieldForm()
 				'&iIdProjectSpace=' . $iIdProjectSpace);
 
 		}
-		
+//*/		
 		$itemMenu[] = array(
 			'idx' => BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_LIST,
 			'mnuStr' => bab_translate("Specific field list"),

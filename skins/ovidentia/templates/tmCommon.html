@@ -200,6 +200,13 @@ function deleteCheckedRows(sCtrlName, sTbodyId)
 //-->
 </script>
 
+<script type="text/javascript" src="{ babInstallPath }scripts/dynamic_fields.js"></script>
+
+</script>
+<style type="text/css">
+	@import url('{ babInstallPath }/styles/dynamic_fields.css');
+</style>
+
 
 <form name ="workingHours" method="post" action="{ babPhpSelf }">
 	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
@@ -236,10 +243,10 @@ function deleteCheckedRows(sCtrlName, sTbodyId)
 					<tr>
 						<td>&nbsp;</td>
 						<td>
-							<input type="text" name="startHour_{ m_datas[numDay] }_[]" value="{ m_datas[startHour] }" />
+							<input class="bab_hours_mins" type="text" name="startHour_{ m_datas[numDay] }_[]" value="{ m_datas[startHour] }" />
 						</td>
 						<td>
-							<input type="text" name="endHour_{ m_datas[numDay] }_[]" value="{ m_datas[endHour] }" />
+							<input class="bab_hours_mins" type="text" name="endHour_{ m_datas[numDay] }_[]" value="{ m_datas[endHour] }" />
 						</td>
 						<td>
 							<input type="checkbox" name="day{ m_datas[day] }[]" value="" style="background-color:transparent;border=0" />
@@ -261,6 +268,11 @@ function deleteCheckedRows(sCtrlName, sTbodyId)
 		<input type="submit" value="{ m_captions[save] }" onclick="on_btn_clicked('{ m_datas[save_idx] }', '{ m_datas[save_action] }')" />
 	</div>
 </form>
+	<script type="text/javascript">
+	<!--
+	bab_updateTimeSelect('{ babSkinPath }images/Puces/PuceAgenda.gif');
+	//-->
+	</script>
 <!--#end workingHours -->
 
 
@@ -415,7 +427,7 @@ function submit_form()
 							{ m_captions[faq] }
 						</td>
 						<td>
-							<textarea name="sFaqUrl" cols="50" rows="10">{ m_datas[faqUrl] }</textarea>
+							<input type="text" size="60" maxlength="9" name="sFaqUrl" value="{ m_datas[faqUrl] }" />
 						</td>
 					</tr>
 

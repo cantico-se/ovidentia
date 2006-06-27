@@ -1,0 +1,139 @@
+<!--#begin pagination -->
+	<div class="bab_buttons">
+	<!--#if bIsPrevUrl -->
+		<a href="{ sPrevPageUrl }">{ sPrevPageText }</a>&nbsp;
+	<!--#else bIsPrevUrl -->
+		{ sPrevPageText }&nbsp;
+	<!--#endif bIsPrevUrl -->
+
+	<!--#in getNextPage -->
+		<!--#if bIsPageUrl -->
+			<a href="{ sPageUrl }">{ sPageText }</a>&nbsp;
+		<!--#else bIsPageUrl -->
+			{ sPageText }&nbsp;
+		<!--#endif bIsPageUrl -->
+	<!--#endin getNextPage -->
+
+	<!--#if bIsNextUrl -->
+		<a href="{ sNextPageUrl }">{ sNextPageText }</a>&nbsp;
+	<!--#else bIsNextUrl -->
+		{ sNextPageText }
+	<!--#endif bIsNextUrl -->
+	</div>
+<!--#end pagination -->
+
+
+<!--#begin multipage -->
+<script type="text/javascript">
+<!--
+function on_btn_clicked(idx, action)
+{
+	var form = document.forms.multipage;
+
+	form.idx.value = idx;
+	form.action.value = action;
+}
+
+function submit_form()
+{
+	return true;
+}
+
+function get_selectCtrl_value(oCtrl)
+{
+	var form = document.forms.multipage;
+	var idx;
+
+	for(idx = 0; idx < oCtrl.options.length; ++idx)
+	{
+		if(oCtrl.options[idx].selected)
+		{
+			return oCtrl.options[idx].value;
+		}
+	}
+}
+
+function on_selectCtrl_changed(oCtrl, sHiddenName)
+{
+	var form = document.forms.multipage;
+	document.forms['multipage'].elements[sHiddenName].value = get_selectCtrl_value(oCtrl);
+	form.iCurrentPage.value = 1;
+	form.submit();
+}
+
+function goto_page(page)
+{
+	var form = document.forms.multipage;
+
+	form.iCurrentPage.value = page;
+	form.submit();
+}
+//-->
+</script>
+
+<form method="get" action="{ babPhpSelf }" name="multipage">
+	<input type="hidden" name="tg" value="{ sTg }" />
+	<input type="hidden" name="idx" value="{ iIdx }" />
+	<input type="hidden" name="action" value="" />
+
+	<input type="hidden" name="iCurrentPage" value="{ iCurrentPage }" />
+	<input type="hidden" name="iNbRowsPerPage" value="{ iNbRowsPerPage }" />
+
+	<table width="99%" border="0" cellspacing="0" cellpadding="2" align="center" class="BabLoginCadreBackground">
+		<tr> 
+			<td> 
+				<table width="100%" border="0" cellspacing="0" cellpadding="2" class="BabLoginMenuBackground">
+
+					<thead>
+						<tr class="BabForumTitle"> 
+							<!--#in getNextColumnHeader -->
+								<td>
+									<!--#if bIsColumnHeaderUrl -->
+										<a href="{ sColumnHeaderUrl }">{ sColumnHeaderText] }</a>
+									<!--#else bIsColumnHeaderUrl -->
+										{ sColumnHeaderText }
+									<!--#endif bIsColumnHeaderUrl -->
+								</td>
+							<!--#endin getNextColumnHeader -->
+						</tr>
+					</thead>
+
+					<tbody>
+						<!--#in getNextRow -->
+					<!--#if bIsAltbg -->
+						<tr class="BabSiteAdminFontBackground"> 
+					<!--#else bIsAltbg -->
+						<tr class="BabForumBackground1">
+					<!--#endif bIsAltbg -->
+						<!--#in getNextColumnData -->
+							<td>{ sColumnData }</td>
+						<!--#endin getNextColumnData -->
+						</tr>
+						<!--#endin getNextRow -->
+					</tbody>
+
+					<tfoot align="center">
+						<tr class="BabSiteAdminTitleFontBackground"> 
+							<td colspan="2">
+								<select onchange="on_selectCtrl_changed(this, 'iNbRowsPerPage')">
+								<!--#in getNextNbRow -->
+									<option value="{ iNbRow }">{ sNbRow }</option>
+								<!--#endin getNextNbRow -->
+								</select>
+								{ sResultPerPage }
+							</td>
+							<td>&nbsp;</td>
+						</tr>
+						<tr> 
+							<td colspan="30" class="BabLetterlists" nowrap>
+								{ sPagination }<br />{ sStatusLine }
+							</td>
+						</tr>
+					</tfoot>
+
+				</table>
+			</td>
+		</tr>
+	</table>
+</form>
+<!--#end multipage -->

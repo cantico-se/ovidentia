@@ -41,12 +41,9 @@
 			$success = bab_getTask($iIdTask, $this->m_aTask);
 			if($success)
 			{
-				//if('0000-00-00 00:00:00' !== $this->m_aTask['sStartDate'])
+				$this->m_bIsStarted = (0 != $this->m_aTask['iCompletion'] && BAB_TM_ENDED != $this->m_aTask['iParticipationStatus']);
 				if('0000-00-00 00:00:00' !== $this->m_aTask['sPlannedStartDate'])
 				{
-					//$this->m_bIsStarted = (strtotime('now') >= strtotime($this->m_aTask['sStartDate']) && 
-					$this->m_bIsStarted = (strtotime('now') >= strtotime($this->m_aTask['sPlannedStartDate']) && 
-						BAB_TM_ENDED != $this->m_aTask['iParticipationStatus']);
 					$this->m_aTask['sStartDate'] = $this->m_aTask['sPlannedStartDate'];
 				}
 				$this->m_bIsEnded = (BAB_TM_ENDED == $this->m_aTask['iParticipationStatus']);

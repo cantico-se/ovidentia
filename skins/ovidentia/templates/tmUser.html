@@ -506,7 +506,6 @@ function onClassChanged(oSelect)
 			showHideElement('oTrProposable', g_tskMgrHide);
 			showHideElement('oTrCompletion', g_tskMgrHide);
 			showHideElement('oLiPredecessors', g_tskMgrHide);
-			showHideElement('oLiResources', g_tskMgrHide);
 			showHideElement('oTrAnswerEnable', g_tskMgrHide);
 		}
 		break;
@@ -521,7 +520,6 @@ function onClassChanged(oSelect)
 			showHideElement('oTrProposable', g_tskMgrHide);
 			showHideElement('oTrCompletion', g_tskMgrHide);
 			showHideElement('oLiPredecessors', g_tskMgrHide);
-			showHideElement('oLiResources', g_tskMgrHide);
 			showHideElement('oTrAnswerEnable', g_tskMgrHide);
 		}
 		break;
@@ -673,9 +671,6 @@ function processStartDate()
 		<li id="oLiPredecessors"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[sPredecessors] }</a></li>
 	<!--#endif m_datas[isLinkable] -->
 	<!--#if m_iIdProject "!= 0" -->
-	<!--#if m_datas[isResourceAvailable] -->
-		<li id="oLiResources"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[sResources] }</a></li>
-	<!--#endif m_datas[isResourceAvailable] -->
 	<!--#endif m_iIdProject -->
 	<!--#if m_iIdTask "!= 0" -->
 		<li id="oLiCommentaries"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[sCommentaries] }</a></li>
@@ -797,6 +792,21 @@ function processStartDate()
 				</td>
 			</tr>
 		<!--#endif m_datas[isAnswerEnable] -->
+		<!--#if m_datas[isResourceAvailable] -->
+			<tr>
+				<td>
+					<label for="iIdTaskResponsible">{ m_captions[sTaskResponsible] }</label>
+				</td>
+				<td>
+					<select id="iIdTaskResponsible" { m_datas[sReadOnlyTaskResponsible] } name="iIdTaskResponsible">
+						<option value="{ m_datas[iNone] }">{ m_captions[sNone] }</option>
+						<!--#in getNextTaskResponsible -->
+						<option { m_datas[sSlectedTaskResponsible] } value="{ m_datas[iIdTaskResponsible] }">{ m_datas[sTaskResponsibleName] }</option>
+						<!--#endin getNextTaskResponsible -->
+					</select>
+				</td>
+			</tr>
+		<!--#endif m_datas[isResourceAvailable] -->
 		</table>
 	</div>
 	
@@ -831,26 +841,6 @@ function processStartDate()
 		</table>
 	</div>
 <!--#endif m_datas[isLinkable] -->
-	
-<!--#if m_datas[isResourceAvailable] -->
-	<div id="sResources" class="">
-		<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
-			<tr>
-				<td>
-					<label for="iIdTaskResponsible">{ m_captions[sTaskResponsible] }</label>
-				</td>
-				<td>
-					<select id="iIdTaskResponsible" { m_datas[sReadOnlyTaskResponsible] } name="iIdTaskResponsible">
-						<option value="{ m_datas[iNone] }">{ m_captions[sNone] }</option>
-						<!--#in getNextTaskResponsible -->
-						<option { m_datas[sSlectedTaskResponsible] } value="{ m_datas[iIdTaskResponsible] }">{ m_datas[sTaskResponsibleName] }</option>
-						<!--#endin getNextTaskResponsible -->
-					</select>
-				</td>
-			</tr>
-		</table>
-	</div>
-<!--#endif m_datas[isResourceAvailable] -->
 	
 	<!--#if m_iIdTask "!= 0" -->
 	<div id="sCommentaries" class="">

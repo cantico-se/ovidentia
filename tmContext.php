@@ -33,11 +33,6 @@ class BAB_TM_Context
 	var $m_iIdProjectSpace;
 	var $m_iIdProject;
 	var $m_iIdTask;
-	/*
-	var $m_aTask;
-	var $m_aTaskResponsibles;
-	var $m_aLinkedTasks;
-	//*/
 	var $m_oWorkingHours;
 	
 	var $m_bIsProjectVisualizer;
@@ -56,16 +51,12 @@ class BAB_TM_Context
 		$this->m_iIdDelegation = $babBody->currentAdmGroup;
 		
 		$this->m_oWorkingHours = null;
-		//bab_debug('BAB_TM_Context::m_iIdDelegation ==> ' . $this->m_iIdDelegation);
 		
 		$this->m_aConfiguration = null;
 		$this->m_bIsProjectVisualizer = null;
 		$this->m_aVisualizedIdProjectSpace = array();
 		$this->m_aVisualizedIdProject = array();
 		
-		//$this->m_aTask = null;
-		//$this->m_aTaskResponsibles = null;
-		//$this->m_aLinkedTasks = null;
 	}
 	
 	
@@ -247,11 +238,7 @@ class BAB_TM_Context
 			}
 			else 
 			{
-				//if(is_null($aTaskResponsibles))
-				{
-					bab_getAvailableTaskResponsibles($this->m_iIdProject, $aTaskResponsibles);
-				}
-				
+				bab_getAvailableTaskResponsibles($this->m_iIdProject, $aTaskResponsibles);
 				if(isset($aTaskResponsibles[$GLOBALS['BAB_SESS_USERID']]))
 				{
 					$iUserProfil = BAB_TM_PERSONNAL_TASK_OWNER;
@@ -260,35 +247,6 @@ class BAB_TM_Context
 		}
 		return $iUserProfil;
 	}
-
-	/*
-	function &getTask()
-	{
-		if(is_null($this->m_aTask))
-		{
-			bab_getTask($this->m_iIdTask, $this->m_aTask);		
-		}
-		return $this->m_aTask;
-	}
-	
-	function &getTaskResponsibles()
-	{
-		if(is_null($this->m_aTaskResponsibles))
-		{
-			bab_getAvailableTaskResponsibles($this->m_iIdProject, $this->m_aTaskResponsibles);
-		}
-		return $this->m_aTaskResponsibles;
-	}
-	
-	function &getLinkedTasks()
-	{
-		if(is_null($this->m_aLinkedTasks))
-		{
-			bab_getLinkedTasks($this->m_iIdTask, $this->m_aLinkedTasks);
-		}
-		return $this->m_aLinkedTasks;
-	}
-	//*/
 }
 
 function& getTskMgrContext()
