@@ -6053,7 +6053,7 @@ function upgrade582to583()
 
 if (!bab_isTableField(BAB_LDAP_DIRECTORIES_TBL, 'server_type')) {
 
-//	$db->db_query("ALTER TABLE `".BAB_LDAP_DIRECTORIES_TBL."` ADD server_type TINYINT( 1 ) UNSIGNED DEFAULT '0' NOT NULL AFTER `description` ");
+	$db->db_query("ALTER TABLE `".BAB_LDAP_DIRECTORIES_TBL."` ADD server_type TINYINT( 1 ) UNSIGNED DEFAULT '0' NOT NULL AFTER `description` ");
 }
 
 }
