@@ -1454,4 +1454,20 @@ function bab_getRegistryInstance() {
 	return $_inst;
 }
 
+/**
+ * Request param
+ * @param string $name
+ * @param mixed	$default
+ * @return string
+ */
+function bab_rp($name, $default) {
+	if (isset($_GET[$name])) {
+		return $_GET[$name];
+	}
+	if (isset($_POST[$name])) {
+		return $_POST[$name];
+	}
+	return $default;
+}
+
 ?>

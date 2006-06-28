@@ -6790,18 +6790,43 @@ function upgrade584to585()
 
 	}
 
-if (!bab_isTableField(BAB_LDAP_DIRECTORIES_TBL, 'decoding_type')) {
+	if (!bab_isTableField(BAB_LDAP_DIRECTORIES_TBL, 'decoding_type')) {
 
-	$db->db_query("ALTER TABLE `".BAB_LDAP_DIRECTORIES_TBL."` ADD decoding_type TINYINT( 1 ) UNSIGNED DEFAULT '0' NOT NULL AFTER `description` ");
-	$db->db_query("update ".BAB_LDAP_DIRECTORIES_TBL." set decoding_type='1' where server_type='0'");
-}
+		$db->db_query("ALTER TABLE `".BAB_LDAP_DIRECTORIES_TBL."` ADD decoding_type TINYINT( 1 ) UNSIGNED DEFAULT '0' NOT NULL AFTER `description` ");
+		$db->db_query("update ".BAB_LDAP_DIRECTORIES_TBL." set decoding_type='1' where server_type='0'");
+	}
 
-if (!bab_isTableField(BAB_SITES_TBL, 'ldap_decoding_type')) {
+	if (!bab_isTableField(BAB_SITES_TBL, 'ldap_decoding_type')) {
 
-	$db->db_query("ALTER TABLE `".BAB_SITES_TBL."` ADD ldap_decoding_type TINYINT( 1 ) UNSIGNED DEFAULT '0' NOT NULL");
-	$db->db_query("update ".BAB_SITES_TBL." set ldap_decoding_type='1' where authentification='1'");
-}
+		$db->db_query("ALTER TABLE `".BAB_SITES_TBL."` ADD ldap_decoding_type TINYINT( 1 ) UNSIGNED DEFAULT '0' NOT NULL");
+		$db->db_query("update ".BAB_SITES_TBL." set ldap_decoding_type='1' where authentification='1'");
+	}
 
+
+
+	if (!bab_isTable(BAB_MAIL_SPOOLER_TBL)) {
+
+		$db->db_query("
+		
+				CREATE TABLE ".BAB_MAIL_SPOOLER_TBL." (
+				  id int(11) unsigned NOT NULL auto_increment,
+				  mail_hash varchar(255) NOT NULL,
+				  mail_subject varchar(255) NOT NULL,
+				  body text NOT NULL,
+				  altbody text NOT NULL,
+				  format varchar(32) NOT NULL,
+				  recipients text NOT NULL,
+				  mail_data text NOT NULL,
+				  sent_status tinyint(1) unsigned NOT NULL,
+				  error_msg varchar(255) NOT NULL,
+				  mail_date datetime NOT NULL,
+				  PRIMARY KEY  (id),
+				  KEY mail_date (mail_date)
+				)
+			
+		");
+
+	}
 }
 
 ?>

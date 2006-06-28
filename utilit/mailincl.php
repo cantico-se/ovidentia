@@ -108,6 +108,13 @@ class babMailTemplate
 class babMail
 {
 	var $mail;
+	var $mailTo = array();
+	var $mailCc = array();
+	var $mailBcc = array();
+	var $attachements = array();
+	var $format;
+	var $sent_status;
+
 
 	function babMail()
 	{
@@ -128,41 +135,49 @@ class babMail
 	function mailTo($email, $name="")
 	{
 		$this->mail->AddAddress($email, $name);
+		$this->mailTo[] = array($email, $name);
 	}
 
 	function clearTo()
 	{
 		$this->mail->ClearAddresses();
+		$this->mailTo = array();
 	}
 
 	function mailCc($email, $name="")
 	{
 		$this->mail->AddCC($email, $name);
+		$this->mailCc[] = array($email, $name);
 	}
 	
 	function clearCc()
 	{
 		$this->mail->ClearCcs();
+		$this->mailCc = array();
 	}
 	
 	function mailBcc($email, $name="")
 	{
 		$this->mail->AddBCC($email, $name);
+		$this->mailBcc[] = array($email, $name);
 	}
 
 	function clearBcc()
 	{
 		$this->mail->ClearBccs();
+		$this->mailBcc = array();
 	}
 
 	function mailReplyTo($email, $name="")
 	{
 		$this->mail->AddReplyTo($email, $name);
+		$this->replyTo[] = array($email, $name);
 	}
 
 	function clearReplyTo()
 	{
 		$this->mail->clearReplyTos();
+		$this->replyTo = array();
 	}
 	
 	function mailSender($email)
@@ -173,6 +188,9 @@ class babMail
 	function clearAllRecipients()
 	{
 		$this->mail->clearAllRecipients();
+		$this->mailTo = array();
+		$this->mailCc = array();
+		$this->mailBcc = array();
 	}
 
 	function mailSubject($subject)
@@ -193,8 +211,8 @@ class babMail
 
 	function mailBody($babBody, $format="plain")
 	{
+		$this->format = $format;
 		$this->mail->Body = $babBody;
-		//$this->mail->AltBody = $babAltBody;
 		if( $format == "plain" )
 			$this->mail->IsHTML(false);
 		else
@@ -209,6 +227,7 @@ class babMail
 	function mailFileAttach( $fname, $realname, $type )
 	{
 		$this->mail->AddAttachment($fname, $realname);
+		$this->attachements[] = array($fname, $realname, $type);
 	}
 
 	function mailClearAttachments()
@@ -218,7 +237,11 @@ class babMail
 
 	function send()
 	{
-		return $this->mail->Send();
+		$this->sent_status = $this->mail->Send();
+		if (!$this->sent_status) {
+			$this->recordMail();
+		}
+		return $this->sent_status; 
 	}
 
 	function mailTemplate($msg)
@@ -230,6 +253,80 @@ class babMail
 	function ErrorInfo()
 	{
 		return empty($this->mail->ErrorInfo) ? false : $this->mail->ErrorInfo;
+	}
+
+	function addMail(&$mail, $list) {
+		foreach($list as $arr) {
+			$mail[] = $arr[0];
+		}
+	}
+
+	/**
+	 * Record a mail in the database
+	 */
+	function recordMail() {
+
+		if ($this->attachements) {
+
+			$dir = $GLOBALS['babUploadPath'].'/mail/';
+			if (!is_dir($dir)) {
+				bab_mkdir($dir);
+			}
+
+			foreach($this->attachements as $k => $arr) {
+				$newname = $dir.uniqid($arr[0].time());
+				copy($arr[0], $newname);
+				$this->attachements[$k][0] = $newname;
+			}
+		}
+
+		$recipients = array();
+		$this->addMail($recipients, $this->mailTo);
+		$this->addMail($recipients, $this->mailCc);
+		$this->addMail($recipients, $this->mailBcc);
+
+		$recipients = implode(', ',$recipients);
+
+		$data = array(
+				'from'		=> array($this->mail->From, $this->mail->FromName),
+				'sender'	=> $this->mail->Sender,
+				'to'		=> $this->mailTo,
+				'cc'		=> $this->mailCc,
+				'bcc'		=> $this->mailBcc,
+				'files'		=> $this->attachements
+			);
+
+		$data = serialize($data);
+
+		$sent_status = $this->sent_status ? 1 : 0;
+
+		$mail_hash = md5($this->mail->Subject.$this->mail->Body.$data);
+
+		$db = $GLOBALS['babDB'];
+
+		$res = $db->db_query("SELECT COUNT(*) FROM ".BAB_MAIL_SPOOLER_TBL." WHERE mail_hash='".$db->db_escape_string($mail_hash)."'");
+		list($n) = $db->db_fetch_array($res);
+
+		if (0 < $n) {
+			return;
+		}
+
+		$db->db_query("INSERT INTO ".BAB_MAIL_SPOOLER_TBL." 
+				( mail_hash, mail_subject, body, altbody, format, recipients, mail_data, sent_status, error_msg, mail_date ) 
+			VALUES 
+				(
+					'".$db->db_escape_string($mail_hash)."',
+					'".$db->db_escape_string($this->mail->Subject)."', 
+					'".$db->db_escape_string($this->mail->Body)."', 
+					'".$db->db_escape_string($this->mail->AltBody)."',
+					'".$db->db_escape_string($this->format)."',
+					'".$db->db_escape_string($recipients)."',
+					'".$db->db_escape_string($data)."', 
+					'".$db->db_escape_string($sent_status)."', 
+					'".$db->db_escape_string($this->mail->ErrorInfo)."', 
+					NOW()
+				)
+			");
 	}
 }
 
