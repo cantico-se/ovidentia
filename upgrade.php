@@ -6829,4 +6829,34 @@ function upgrade584to585()
 	}
 }
 
+function upgrade585to586()
+{	
+	$ret = "";
+	$db = & $GLOBALS['babDB'];
+
+	if (!bab_isTable(BAB_MAIL_SPOOLER_TBL)) {
+
+		$db->db_query("
+		
+				CREATE TABLE ".BAB_MAIL_SPOOLER_TBL." (
+				  id int(11) unsigned NOT NULL auto_increment,
+				  mail_hash varchar(255) NOT NULL,
+				  mail_subject varchar(255) NOT NULL,
+				  body text NOT NULL,
+				  altbody text NOT NULL,
+				  format varchar(32) NOT NULL,
+				  recipients text NOT NULL,
+				  mail_data text NOT NULL,
+				  sent_status tinyint(1) unsigned NOT NULL,
+				  error_msg varchar(255) NOT NULL,
+				  mail_date datetime NOT NULL,
+				  PRIMARY KEY  (id),
+				  KEY mail_date (mail_date)
+				)
+			
+		");
+
+	}
+}
+
 ?>
