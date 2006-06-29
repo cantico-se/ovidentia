@@ -186,7 +186,6 @@ switch($idx)
 		mailspool();
 		$babBody->title = bab_translate("Undelivered mails");
 		$babBody->addItemMenu("list", bab_translate("Mails"), $GLOBALS['babUrlScript']."?tg=mailspool&idx=list");
-		$babBody->addItemMenu("domains", bab_translate("Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&userid=0&bgrp=y");
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);

@@ -331,6 +331,7 @@ function site_menu2($id)
 			$this->smtpuser = bab_translate("SMTP username");
 			$this->smtppass = bab_translate("SMTP password");
 			$this->smtppass2 = bab_translate("Re-type SMTP password");
+			$this->t_mailspool = bab_translate("Undelivered mails");
 			$this->smtp = "smtp";
 			$this->sendmail = "sendmail";
 			$this->mail = "mail";
