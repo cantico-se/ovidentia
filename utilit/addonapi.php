@@ -1439,7 +1439,7 @@ function bab_getRegistryInstance() {
  * @param mixed	$default
  * @return string
  */
-function bab_rp($name, $default) {
+function bab_rp($name, $default = '') {
 	if (isset($_GET[$name])) {
 		return $_GET[$name];
 	}
