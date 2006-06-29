@@ -279,10 +279,7 @@ function bab_uploadPostFiles($postid, $id_forum) {
 
 
 	foreach ($_FILES as $file) {
-		if( bab_isMagicQuotesGpcOn())
-			{
-			$file['name'] = stripslashes($file['name']);
-			}
+
 		if( isset($GLOBALS['babFileNameTranslation']))
 			{
 			$file['name'] = strtr($file['name'], $GLOBALS['babFileNameTranslation']);

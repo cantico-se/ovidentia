@@ -642,8 +642,7 @@ function userLogin($nickname,$password)
 		}
 
 	$password=strtolower($password);
-	$nickname = bab_isMagicQuotesGpcOn() ? $nickname : $db->db_escape_string($nickname);
-	$res = $db->db_query("select * from ".BAB_USERS_TBL." where nickname='".$nickname."' and password='". md5($password) ."'");
+	$res = $db->db_query("select * from ".BAB_USERS_TBL." where nickname='".$db->db_escape_string($nickname)."' and password='". $db->db_escape_string(md5($password)) ."'");
 	if( $res && $db->db_num_rows($res) > 0 )
 		{
 		$arruser = $db->db_fetch_array($res);
@@ -1168,18 +1167,15 @@ function addNewUser( $nickname, $password1, $password2)
 				if( substr($key, 0, strlen("babdirf")) == 'babdirf' )
 					{
 					$tmp = substr($key, strlen("babdirf"));
-					if( bab_isMagicQuotesGpcOn())
-						{
-						$value = addslashes($value);
-						}
-					$rs = $babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$arridfx[$tmp]."' and  id_entry='".$idu."'");
+
+					$rs = $babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$babDB->db_escape_string($arridfx[$tmp])."' and  id_entry='".$babDB->db_escape_string($idu)."'");
 					if( $rs && $babDB->db_num_rows($rs) > 0 )
 						{
-						$babDB->db_query("update ".BAB_DBDIR_ENTRIES_EXTRA_TBL." set field_value='".$value."' where id_fieldx='".$arridfx[$tmp]."' and  id_entry='".$idu."'");
+						$babDB->db_query("update ".BAB_DBDIR_ENTRIES_EXTRA_TBL." set field_value='".$babDB->db_escape_string($value)."' where id_fieldx='".$arridfx[$tmp]."' and  id_entry='".$babDB->db_escape_string($idu)."'");
 						}
 					else
 						{
-						$babDB->db_query("insert into ".BAB_DBDIR_ENTRIES_EXTRA_TBL." (field_value, id_fieldx, id_entry) values ('".$value."', '".$arridfx[$tmp]."', '".$idu."')");
+						$babDB->db_query("insert into ".BAB_DBDIR_ENTRIES_EXTRA_TBL." (field_value, id_fieldx, id_entry) values ('".$babDB->db_escape_string($value)."', '".$babDB->db_escape_string($arridfx[$tmp])."', '".$babDB->db_escape_string($idu)."')");
 						}
 					}
 				}

@@ -403,11 +403,10 @@ if( isset($adduser) && ($babBody->isSuperAdmin || $babBody->currentDGGroup['user
 		$idx = "List";
 		if( $notifyuser == "Y" )
 			{
-			if( !bab_isMagicQuotesGpcOn())
-				{
-				$firstname = addslashes($firstname);
-				$lastname = addslashes($lastname);
-				}
+
+			$firstname = addslashes($firstname);
+			$lastname = addslashes($lastname);
+
 			notifyAdminUserRegistration(bab_composeUserName($firstname , $lastname), $email, $nickname, $sendpwd == "Y"? $password1: "" );
 			}
 		}

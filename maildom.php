@@ -160,13 +160,16 @@ function modifyDomain($bgrp, $userid, $oldname, $name, $description, $accessmeth
 		}
 	else
 		{
-		if( !bab_isMagicQuotesGpcOn())
-			{
-			$description = addslashes($description);
-			$name = addslashes($name);
-			}
+		$query = "UPDATE ".BAB_MAIL_DOMAINS_TBL." SET 
+			name='".$db->db_escape_string($name)."', 
+			description='".$db->db_escape_string($description)."', 
+			access='".$db->db_escape_string($accessmethod)."', 
+			inserver='".$db->db_escape_string($inmailserver)."', 
+			inport='".$db->db_escape_string($inportserver)."', 
+			outserver='".$db->db_escape_string($outmailserver)."', 
+			outport='".$db->db_escape_string($outportserver)."' 
+		where id='".$db->db_escape_string($id)."'";
 
-		$query = "update ".BAB_MAIL_DOMAINS_TBL." set name='$name', description='$description', access='$accessmethod', inserver='$inmailserver', inport='$inportserver', outserver='$outmailserver', outport='$outportserver' where id='$id'";
 		$db->db_query($query);
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".$userid."&bgrp=".$bgrp);

@@ -489,15 +489,10 @@ function addPublicCalendar($calname, $caldesc, $calidsa)
 		return false;
 		}
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$calname = addslashes($calname);
-		$caldesc = addslashes($caldesc);
-		}
 
-	$babDB->db_query("insert into ".BAB_CAL_PUBLIC_TBL." (name, description, id_dgowner, idsa) values ('" .$calname. "', '".$caldesc."', '".$babBody->currentAdmGroup."', '".$calidsa."')");
+	$babDB->db_query("insert into ".BAB_CAL_PUBLIC_TBL." (name, description, id_dgowner, idsa) values ('" .$babDB->db_escape_string($calname). "', '".$babDB->db_escape_string($caldesc)."', '".$babDB->db_escape_string($babBody->currentAdmGroup)."', '".$babDB->db_escape_string($calidsa)."')");
 	$idowner = $babDB->db_insert_id();
-	$babDB->db_query("insert into ".BAB_CALENDAR_TBL." (owner, type) values ('" .$idowner. "', '".BAB_CAL_PUB_TYPE."')");
+	$babDB->db_query("insert into ".BAB_CALENDAR_TBL." (owner, type) values ('" .$babDB->db_escape_string($idowner). "', '".BAB_CAL_PUB_TYPE."')");
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
 	exit;
 }
@@ -512,15 +507,9 @@ function addResourceCalendar($calname, $caldesc, $calidsa)
 		return false;
 		}
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$calname = addslashes($calname);
-		$caldesc = addslashes($caldesc);
-		}
-
-	$babDB->db_query("insert into ".BAB_CAL_RESOURCES_TBL." (name, description, id_dgowner, idsa) values ('" .$calname. "', '".$caldesc."', '".$babBody->currentAdmGroup."', '".$calidsa."')");
+	$babDB->db_query("insert into ".BAB_CAL_RESOURCES_TBL." (name, description, id_dgowner, idsa) values ('" .$babDB->db_escape_string($calname). "', '".$babDB->db_escape_string($caldesc)."', '".$babDB->db_escape_string($babBody->currentAdmGroup)."', '".$babDB->db_escape_string($calidsa)."')");
 	$idowner = $babDB->db_insert_id();
-	$babDB->db_query("insert into ".BAB_CALENDAR_TBL." (owner, type) values ('" .$idowner. "', '".BAB_CAL_RES_TYPE."')");
+	$babDB->db_query("insert into ".BAB_CALENDAR_TBL." (owner, type) values ('" .$babDB->db_escape_string($idowner). "', '".BAB_CAL_RES_TYPE."')");
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
 	exit;
 }
@@ -535,13 +524,7 @@ function addCategoryCalendar($catname, $catdesc, $bgcolor)
 		return false;
 		}
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$catname = addslashes($catname);
-		$catdesc = addslashes($catdesc);
-		$bgcolor = addslashes($bgcolor);
-		}
-	$babDB->db_query("insert into ".BAB_CAL_CATEGORIES_TBL." (name, description, bgcolor) values ('" .$catname. "', '".$catdesc."', '".$bgcolor."')");
+	$babDB->db_query("insert into ".BAB_CAL_CATEGORIES_TBL." (name, description, bgcolor) values ('" .$babDB->db_escape_string($catname). "', '".$babDB->db_escape_string($catdesc)."', '".$babDB->db_escape_string($bgcolor)."')");
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admcals&idx=cats");
 	exit;
 }

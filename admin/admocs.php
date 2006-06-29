@@ -145,21 +145,15 @@ function saveOrgChart($name, $description, $dirid)
 		return false;
 		}
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$name = addslashes($name);
-		$description = addslashes($description);
-		}
-
 	$db = $GLOBALS['babDB'];
-	$res = $db->db_query("select id from ".BAB_ORG_CHARTS_TBL." where name='".$name."' and id_dgowner='".$babBody->currentAdmGroup."'");
+	$res = $db->db_query("select id from ".BAB_ORG_CHARTS_TBL." where name='".$babDB->db_escape_string($name)."' and id_dgowner='".$babDB->db_escape_string($babBody->currentAdmGroup)."'");
 	if( $db->db_num_rows($res) > 0)
 		{
 		$babBody->msgerror = bab_translate("ERROR: This organization chart already exists");
 		return false;
 		}
 
-	$query = "insert into ".BAB_ORG_CHARTS_TBL." (name, description, id_directory, id_dgowner) values ('" .$name. "', '" . $description. "', '" . $dirid. "', '" . $babBody->currentAdmGroup. "')";
+	$query = "insert into ".BAB_ORG_CHARTS_TBL." (name, description, id_directory, id_dgowner) values ('" .$babDB->db_escape_string($name). "', '" . $babDB->db_escape_string($description). "', '" . $babDB->db_escape_string($dirid). "', '" . $babDB->db_escape_string($babBody->currentAdmGroup). "')";
 	$db->db_query($query);
 	$id = $db->db_insert_id();
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admoc&idx=ocview&item=".$id);

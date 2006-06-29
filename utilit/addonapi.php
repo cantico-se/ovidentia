@@ -250,10 +250,7 @@ function bab_editor($content, $editname, $formname, $heightpx=300, $what=3)
 					$this->contentval = htmlentities($content);
 					}
 
-				if( bab_isMagicQuotesGpcOn())
-					{
-					$this->contentval = stripslashes($this->contentval);
-					}
+
 				}	
 			}
 		}
@@ -896,35 +893,17 @@ function bab_mkdir($path, $mode='')
 	return $res;
 }
 
+/**
+ * since ovidentia 5.8.6 quotes are always striped
+ * @deprecated
+ */
 function bab_isMagicQuotesGpcOn()
 	{
-	return (bool)get_magic_quotes_gpc();
+	return false;
 	}
 
 
-/** 
- * Remove escapes if magic quotes is on, do not call in a file always included!
- */ 
-function bab_cleanGpc() {
-	static $firstcall = 1;
-	if (1 !== $firstcall) 
-		return;
-	$firstcall = 0;
-	function bab_slashes(&$val) {
-		if (get_magic_quotes_gpc()) {
-			if (is_array($val)) {
-				array_walk($val,'bab_slashes');
-				}
-			else
-				$val = stripslashes($val);
-		}
-	}
 
-	bab_slashes($_GET);
-	bab_slashes($_POST);
-	bab_slashes($_COOKIES);
-	bab_slashes($_REQUEST);
-	}
 
 function bab_getAvailableLanguages()
 	{

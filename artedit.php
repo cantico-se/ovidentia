@@ -2202,12 +2202,6 @@ function updateArticleDraft($idart, $title, $headtext, $bodytext, $lang, $approb
 		$bodytext = "";
 		}
 
-	if( bab_isMagicQuotesGpcOn())
-		{
-		$headtext = stripslashes($headtext);
-		$bodytext = stripslashes($bodytext);
-		$title = stripslashes($title);
-		}
 
 	$ar = array();
 	$headtext = imagesReplace($headtext, $idart."_draft_", $ar);
@@ -2260,10 +2254,6 @@ function addDocumentArticleDraft($idart, &$message)
 				}
 
 			$filename = trim($file['name']);
-			if( bab_isMagicQuotesGpcOn())
-				{
-				$filename = stripslashes($filename);
-				}
 
 			if( isset($GLOBALS['babFileNameTranslation']))
 				{
@@ -2298,13 +2288,8 @@ function addDocumentArticleDraft($idart, &$message)
 				}
 
 			$description = $_POST['docdesc'][$k];
-			if( !bab_isMagicQuotesGpcOn())
-				{
-				$filename = addslashes($filename);
-				$description = addslashes($description);
-				}
 
-			$babDB->db_query("insert into ".BAB_ART_DRAFTS_FILES_TBL." (id_draft, name, description) values ('" .$idart. "', '".$babDB->db_escape_string($filename)."','".$description."')");
+			$babDB->db_query("insert into ".BAB_ART_DRAFTS_FILES_TBL." (id_draft, name, description) values ('" .$babDB->db_escape_string($idart). "', '".$babDB->db_escape_string($filename)."','".$babDB->db_escape_string($description)."')");
 			$okfiles++;
 			$k++;
 			}

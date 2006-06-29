@@ -345,27 +345,28 @@ function addTopCat($name, $description, $benabled, $template, $disptmpl, $topcat
 		return;
 		}
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$description = addslashes($description);
-		$name = addslashes($name);
-		$template = addslashes($template);
-		}
-
 	$db = $GLOBALS['babDB'];
 
-	$res = $db->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where title='".$name."' and id_parent='".$topcatid."' and id_dgowner='".$babBody->currentAdmGroup."'");
+	$res = $db->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where title='".$db->db_escape_string($name)."' and id_parent='".$db->db_escape_string($topcatid)."' and id_dgowner='".$db->db_escape_string($babBody->currentAdmGroup)."'");
 	if( $db->db_num_rows($res) > 0)
 		{
 		$babBody->msgerror = bab_translate("This topic category already exists");
 		}
 	else
 		{
-		$req = "insert into ".BAB_TOPICS_CATEGORIES_TBL." (title, description, enabled, template, id_dgowner, id_parent, display_tmpl) VALUES ('" .$name. "', '" . $description. "', '" . $benabled. "', '" . $template. "', '" . $babBody->currentAdmGroup. "', '" . $topcatid. "', '" . $disptmpl. "')";
+		$req = "insert into ".BAB_TOPICS_CATEGORIES_TBL." (title, description, enabled, template, id_dgowner, id_parent, display_tmpl) VALUES (
+		'" .$db->db_escape_string($name). "',
+		'" . $db->db_escape_string($description). "',
+		'" . $db->db_escape_string($benabled). "', 
+		'" . $db->db_escape_string($template). "',
+		'" . $db->db_escape_string($babBody->currentAdmGroup). "', 
+		'" . $db->db_escape_string($topcatid). "', 
+		'" . $db->db_escape_string($disptmpl). "'
+		)";
 		$db->db_query($req);
 
 		$id = $db->db_insert_id();
-		$req = "select max(ordering) from ".BAB_SECTIONS_ORDER_TBL." so, ".BAB_TOPICS_CATEGORIES_TBL." tc where so.position='0' and so.type='3' and tc.id=so.id_section and tc.id_dgowner='".$babBody->currentAdmGroup."'";
+		$req = "select max(ordering) from ".BAB_SECTIONS_ORDER_TBL." so, ".BAB_TOPICS_CATEGORIES_TBL." tc where so.position='0' and so.type='3' and tc.id=so.id_section and tc.id_dgowner='".$db->db_escape_string($babBody->currentAdmGroup)."'";
 		$res = $db->db_query($req);
 		$arr = $db->db_fetch_array($res);
 		if( empty($arr[0]))
@@ -376,17 +377,17 @@ function addTopCat($name, $description, $benabled, $template, $disptmpl, $topcat
 			if( empty($arr[0]))
 				$arr[0] = 0;
 			}
-		$db->db_query("update ".BAB_SECTIONS_ORDER_TBL." set ordering=ordering+1 where position='0' and ordering > '".$arr[0]."'");
-		$req = "insert into ".BAB_SECTIONS_ORDER_TBL." (id_section, position, type, ordering) VALUES ('" .$id. "', '0', '3', '" . ($arr[0]+1). "')";
+		$db->db_query("update ".BAB_SECTIONS_ORDER_TBL." set ordering=ordering+1 where position='0' and ordering > '".$db->db_escape_string($arr[0])."'");
+		$req = "insert into ".BAB_SECTIONS_ORDER_TBL." (id_section, position, type, ordering) VALUES ('" .$db->db_escape_string($id). "', '0', '3', '" . $db->db_escape_string(($arr[0]+1)). "')";
 		$db->db_query($req);
 
-		$res = $db->db_query("select max(ordering) from ".BAB_TOPCAT_ORDER_TBL." where id_parent='".$topcatid."'");
+		$res = $db->db_query("select max(ordering) from ".BAB_TOPCAT_ORDER_TBL." where id_parent='".$db->db_escape_string($topcatid)."'");
 		$arr = $db->db_fetch_array($res);
 		if( isset($arr[0]))
 			$ord = $arr[0] + 1;
 		else
 			$ord = 1;
-		$db->db_query("insert into ".BAB_TOPCAT_ORDER_TBL." (id_topcat, type, ordering, id_parent) VALUES ('" .$id. "', '1', '" . $ord. "', '".$topcatid."')");
+		$db->db_query("insert into ".BAB_TOPCAT_ORDER_TBL." (id_topcat, type, ordering, id_parent) VALUES ('" .$db->db_escape_string($id). "', '1', '" . $db->db_escape_string($ord). "', '".$db->db_escape_string($topcatid)."')");
 		}
 	}
 

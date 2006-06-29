@@ -507,13 +507,6 @@ function saveSchema($rows, $cols, $order, $schname, $schdesc, $idsch, $ocid, $ty
 		return $ret;
 		}
 
-
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$schname = addslashes($schname);
-		$schdesc = addslashes($schdesc);
-		}
-
 	if( empty($order))
 		{
 		$order = "N";
@@ -530,22 +523,33 @@ function saveSchema($rows, $cols, $order, $schname, $schdesc, $idsch, $ocid, $ty
 			}
 		else
 			{
-			$req = "insert into ".BAB_FLOW_APPROVERS_TBL." (name, description, formula, forder, id_dgowner, satype, id_oc) VALUES ('" .$schname. "', '" . $schdesc. "', '" .  $ret. "', '" .  $order. "', '" .  $babBody->currentAdmGroup. "', '" .  $type. "', '" .  $ocid. "')";
+			$req = "insert into ".BAB_FLOW_APPROVERS_TBL." (name, description, formula, forder, id_dgowner, satype, id_oc) 
+			VALUES 
+				(
+				'" . $babDB->db_escape_string($schname). "', 
+				'" . $babDB->db_escape_string($schdesc). "', 
+				'" . $babDB->db_escape_string($ret). "', 
+				'" . $babDB->db_escape_string($order). "', 
+				'" . $babDB->db_escape_string($babBody->currentAdmGroup). "', 
+				'" . $babDB->db_escape_string($type). "', 
+				'" . $babDB->db_escape_string($ocid). "'
+			)";
+
 			$db->db_query($req);
 			}
 		}
 	else
 		{
-		$req = "select * from ".BAB_FLOW_APPROVERS_TBL." where id='".$idsch."'";	
+		$req = "select * from ".BAB_FLOW_APPROVERS_TBL." where id='".$babDB->db_escape_string($idsch)."'";	
 		$res = $db->db_query($req);
 		if( $res && $db->db_num_rows($res) > 0)
 			{
 			$arr = $db->db_fetch_array($res);
-			$req = "update ".BAB_FLOW_APPROVERS_TBL." set name='".$schname."', description='".$schdesc."', formula='".$ret."', forder='".$order."' where id='".$idsch."'";
+			$req = "update ".BAB_FLOW_APPROVERS_TBL." set name='".$babDB->db_escape_string($schname)."', description='".$babDB->db_escape_string($schdesc)."', formula='".$babDB->db_escape_string($ret)."', forder='".$babDB->db_escape_string($order)."' where id='".$babDB->db_escape_string($idsch)."'";
 			$db->db_query($req);
 			if( $arr['formula'] != $ret )
 				{
-				$res = $db->db_query("select * from ".BAB_FA_INSTANCES_TBL." where idsch='".$idsch."'");
+				$res = $db->db_query("select * from ".BAB_FA_INSTANCES_TBL." where idsch='".$babDB->db_escape_string($idsch)."'");
 				while( $arr = $db->db_fetch_array($res))
 					{
 					updateSchemaInstance($arr['id']);

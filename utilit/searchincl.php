@@ -67,11 +67,10 @@ function bab_sql_finder($req2,$tablename,$option = "OR",$req1="")
 
 	$like = '';
 
-if( !bab_isMagicQuotesGpcOn())
-	{
+
 	$req2 = $babDB->db_escape_string($req2);
 	$req1 = $babDB->db_escape_string($req1);
-	}
+
 
 if (trim($req1) != "") {
 	$tb = explode(' ',$req1);
@@ -110,7 +109,7 @@ if (trim($req2) != "")
 				else if ($he != "" && $option == "AND")
 					$like .= " AND (".$tablename." like '%".$mot."%'".$he.")";
 				else
-					$like .= " ".$option." ".$tablename." like '%".$mot."%'".$he;
+					$like .= " ".$db->db_escape_string($option)." ".$tablename." like '%".$mot."%'".$he;
 				}
 		break;
 		}

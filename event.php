@@ -890,32 +890,13 @@ function deleteEvent()
 
 function post_string($key)
 {
-global $babDB;
-
-if( !bab_isMagicQuotesGpcOn())
+	global $babDB;
 	return $babDB->db_escape_string($_POST[$key]);
-else
-	return $_POST[$key];
 }
 
 function post_string2($key)
 {
-if( !bab_isMagicQuotesGpcOn())
 	return $_POST[$key];
-else
-	{
-	if( is_array($_POST[$key]))
-		{
-		$tmp = array();
-		foreach( $_POST[$key] as $k => $v )
-			{
-			$tmp[$k] = stripslashes($v);
-			}
-		return $tmp;
-		}
-	else
-		return stripslashes($_POST[$key]);
-	}
 }
 
 function addEvent(&$message)

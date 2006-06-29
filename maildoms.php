@@ -311,15 +311,14 @@ function addDomain($bgrp, $userid, $groups, $name, $description, $accessmethod, 
 		}
 	$db = $GLOBALS['babDB'];
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$description = addslashes($description);
-		$name = addslashes($name);
-		}
 
 	for( $i = 0; $i < $count; $i++)
 		{		
-		$query = "select * from ".BAB_MAIL_DOMAINS_TBL." where name='".$name."' and owner='".$groups[$i]."' and bgroup='".$bgroup."'";	
+		$query = "select * from ".BAB_MAIL_DOMAINS_TBL." where 
+			name='".$db->db_escape_string($name)."' 
+			and owner='".$db->db_escape_string($groups[$i])."' 
+			and bgroup='".$db->db_escape_string($bgroup)."'";
+			
 		$res = $db->db_query($query);
 		if( $res && $db->db_num_rows($res) > 0)
 			{
@@ -330,8 +329,23 @@ function addDomain($bgrp, $userid, $groups, $name, $description, $accessmethod, 
 			$iddgowner = 0;
 			if( $groups[$i] == 1 )
 				$iddgowner = $babBody->currentAdmGroup;
-			$query = "insert into ".BAB_MAIL_DOMAINS_TBL." (name, description, access, inserver, inport, outserver, outport, bgroup, owner, id_dgowner) VALUES ";
-			$query .= "('" .$name. "', '" . $description. "', '" . $accessmethod. "', '" . $inmailserver. "', '" . $inportserver. "', '" . $outmailserver. "', '" . $outportserver. "', '". $bgroup. "', '" . $groups[$i]. "', '" . $iddgowner. "')";
+			$query = "INSERT into ".BAB_MAIL_DOMAINS_TBL." 
+			(name, description, access, inserver, inport, outserver, outport, bgroup, owner, id_dgowner) 
+				VALUES ";
+
+			$query .= "(
+				'" . $db->db_escape_string($name). "', 
+				'" . $db->db_escape_string($description). "', 
+				'" . $db->db_escape_string($accessmethod). "', 
+				'" . $db->db_escape_string($inmailserver). "', 
+				'" . $db->db_escape_string($inportserver). "', 
+				'" . $db->db_escape_string($outmailserver). "', 
+				'" . $db->db_escape_string($outportserver). "', 
+				'" . $db->db_escape_string($bgroup). "', 
+				'" . $db->db_escape_string($groups[$i]). "', 
+				'" . $db->db_escape_string($iddgowner). "'
+				)";
+
 			$db->db_query($query);
 			}
 		}

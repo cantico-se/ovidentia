@@ -702,12 +702,6 @@ function bab_editArticle($title, $head, $body, $lang, $template)
 				$this->lang = $lang;
 				}
 
-			if( bab_isMagicQuotesGpcOn())
-				{
-				$this->titleval = stripslashes($this->titleval);
-				$this->headval = stripslashes($this->headval);
-				$this->bodyval = stripslashes($this->bodyval);
-				}
 
 			$this->head = bab_translate("Head");
 			$this->body = bab_translate("Body");

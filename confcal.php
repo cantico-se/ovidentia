@@ -204,12 +204,9 @@ function modifyCategoryCal($userid, $oldname, $name, $description, $bgcolor, $id
 		$babBody->msgerror = bab_translate("You must provide a name !!");
 		return;
 		}
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$oldname = addslashes($oldname);
-		}
+
 	$db = $GLOBALS['babDB'];
-	$query = "select * from ".BAB_CATEGORIESCAL_TBL." where name='$oldname'";	
+	$query = "select * from ".BAB_CATEGORIESCAL_TBL." where name='".$db->db_escape_string($oldname)."'";	
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) < 1)
 		{
@@ -217,12 +214,16 @@ function modifyCategoryCal($userid, $oldname, $name, $description, $bgcolor, $id
 		}
 	else
 		{
-		if( !bab_isMagicQuotesGpcOn())
-			{
-			$name = addslashes($name);
-			$description = addslashes($description);
-			}
-		$query = "update ".BAB_CATEGORIESCAL_TBL." set name='$name', description='$description', bgcolor='$bgcolor' where id='$id'";
+
+		$query = "UPDATE ".BAB_CATEGORIESCAL_TBL." 
+		set 
+			name='".$db->db_escape_string($name)."', 
+			description='".$db->db_escape_string($description)."', 
+			bgcolor='".$db->db_escape_string($bgcolor)."' 
+		where 
+			id='".$db->db_escape_string($id)."'
+		";
+
 		$db->db_query($query);
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=confcals&idx=listcat&userid=".$userid);
@@ -246,12 +247,15 @@ function modifyResourceCal($userid, $oldname, $name, $description, $id)
 		}
 	else
 		{
-		if( !bab_isMagicQuotesGpcOn())
-			{
-			$name = addslashes($name);
-			$description = addslashes($description);
-			}
-		$query = "update ".BAB_RESOURCESCAL_TBL." set name='$name', description='$description' where id='$id'";
+
+		$query = "UPDATE ".BAB_RESOURCESCAL_TBL." 
+		set 
+			name='".$db->db_escape_string($name)."', 
+			description='".$db->db_escape_string($description)."' 
+		where 
+			id='".$db->db_escape_string($id)."'
+		";
+
 		$db->db_query($query);
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=confcals&idx=listres&userid=".$userid);

@@ -629,10 +629,8 @@ function updateEventNotes($evtid, $note, $bupdrec)
 	global $babDB;
 	if( !empty($GLOBALS['BAB_SESS_USERID']) )
 	{
-		if( !bab_isMagicQuotesGpcOn())
-			{
-			$note = addslashes($note);
-			}
+
+		$note = $babDB->db_escape_string($note);
 
 		$evtidarr = array();
 

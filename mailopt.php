@@ -661,13 +661,24 @@ function addAccount($account_name,$fullname, $email, $login, $password1, $passwo
 		$res = $db->db_query($req);
 		}
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$fullname = addslashes($fullname);
-		}
 
-	$req = "insert into ".BAB_MAIL_ACCOUNTS_TBL." (account_name, name, email, password, login, domain, owner, maxrows, prefered, format) values ";	
-	$req .= "('".$account_name."','".$fullname."', '".$email."', ENCODE(\"".$password1."\",\"".$BAB_HASH_VAR."\"), '".$login."', '".$domain."', '".$BAB_SESS_USERID."', '".$maxrows."', '".$prefacc."', '".$prefformat."')";	
+
+	$req = "insert into ".BAB_MAIL_ACCOUNTS_TBL." 
+	(account_name, name, email, password, login, domain, owner, maxrows, prefered, format) 
+		values ";	
+
+	$req .= "(
+		'".$db->db_escape_string($account_name)."',
+		'".$db->db_escape_string($fullname."', 
+		'".$db->db_escape_string($email."', 
+		ENCODE(\"".$db->db_escape_string($password1)."\",\"".$db->db_escape_string($BAB_HASH_VAR)."\"), 
+		'".$db->db_escape_string($login)."', 
+		'".$db->db_escape_string($domain)."', 
+		'".$db->db_escape_string($BAB_SESS_USERID)."', 
+		'".$db->db_escape_string($maxrows)."', 
+		'".$db->db_escape_string($prefacc)."', 
+		'".$db->db_escape_string($prefformat)."'
+	)";	
 
 	$res = $db->db_query($req);
 
@@ -694,19 +705,40 @@ function modifyAccount($account_name, $fullname, $email, $login, $password1, $pa
 	$db = $GLOBALS['babDB'];
 	if( $prefacc == "Y" )
 		{
-		$req = "update ".BAB_MAIL_ACCOUNTS_TBL." set prefered='N' where owner='".$BAB_SESS_USERID."'";	
+		$req = "update ".BAB_MAIL_ACCOUNTS_TBL." set prefered='N' where owner='".$db->db_escape_string($BAB_SESS_USERID)."'";	
 		$res = $db->db_query($req);
 		}
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$fullname = addslashes($fullname);
-		}
 
-	if( empty($password1) )
-		$req = "update ".BAB_MAIL_ACCOUNTS_TBL." set account_name='$account_name', name='$fullname', email='$email', login='$login', domain='$domain', prefered='$prefacc', maxrows='$maxrows', format='$prefformat' where id='$item' and owner='".$BAB_SESS_USERID."'";
-	else
-		$req = "update ".BAB_MAIL_ACCOUNTS_TBL." set account_name='$account_name', name='$fullname', email='$email', password=ENCODE(\"".$password1."\",\"".$GLOBALS['BAB_HASH_VAR']."\"),  login='$login', domain='$domain', prefered='$prefacc', format='$prefformat', maxrows='$maxrows' where id='$item' and owner='".$BAB_SESS_USERID."'";
+	if( empty($password1) ) {
+		$req = "
+		UPDATE ".BAB_MAIL_ACCOUNTS_TBL." SET 
+			account_name='".$db->db_escape_string($account_name)."', 
+			name='".$db->db_escape_string($fullname)."', 
+			email='".$db->db_escape_string($email)."', 
+			login='".$db->db_escape_string($login)."', 
+			domain='".$db->db_escape_string($domain)."', 
+			prefered='".$db->db_escape_string($prefacc)."', 
+			maxrows='".$db->db_escape_string($maxrows)."', 
+			format='".$db->db_escape_string($prefformat)."' 
+		WHERE 
+			id='".$db->db_escape_string($item)."' 
+			AND owner='".$db->db_escape_string($BAB_SESS_USERID)."'";
+	}
+	else {
+		$req = "UPDATE ".BAB_MAIL_ACCOUNTS_TBL." set 
+		account_name='".$db->db_escape_string($account_name)."', 
+			name='".$db->db_escape_string($fullname)."', 
+			email='".$db->db_escape_string($email)."', 
+			password=ENCODE(\"".$db->db_escape_string($password1)."\",\"".$db->db_escape_string($GLOBALS['BAB_HASH_VAR'])."\"),  
+			login='".$db->db_escape_string($login)."', 
+			domain='".$db->db_escape_string($domain)."', 
+			prefered='".$db->db_escape_string($prefacc)."', 
+			format='".$db->db_escape_string($prefformat)."', 
+			maxrows='".$db->db_escape_string($maxrows)."' 
+			where id='".$db->db_escape_string($item)."' 
+			and owner='".$db->db_escape_string($BAB_SESS_USERID)."'";
+	}
 	$res = $db->db_query($req);
 
 }

@@ -187,29 +187,23 @@ function saveCategory($category, $description, $lang)
 		return;
 		}
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$description = addslashes($description);
-		$category = addslashes($category);
-		}
-
 	$db = $GLOBALS['babDB'];
-	$query = "select * from ".BAB_FAQCAT_TBL." where category='".$category."'";	
+	$query = "select * from ".BAB_FAQCAT_TBL." where category='".$babDB->db_escape_string($category)."'";	
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) > 0)
 		{
 		$babBody->msgerror = bab_translate("ERROR: This FAQ already exists");
 		return;
 		}
-	$query = "insert into ".BAB_FAQCAT_TBL." ( category, description, lang, id_dgowner) values ('" .$category. "', '" . $description. "', '" .$lang. "', '" .$babBody->currentAdmGroup. "')";
+	$query = "insert into ".BAB_FAQCAT_TBL." ( category, description, lang, id_dgowner) values ('" .$babDB->db_escape_string($category). "', '" . $babDB->db_escape_string($description). "', '" .$babDB->db_escape_string($lang). "', '" .$babDB->db_escape_string($babBody->currentAdmGroup). "')";
 	$db->db_query($query);
 	$idcat = $db->db_insert_id();
 
 	$db->db_query("insert into ".BAB_FAQ_TREES_TBL." (lf, lr, id_parent, id_user, info_user) values ('1', '2', '0', '".$idcat."','')");
 	$idnode = $db->db_insert_id();
-	$db->db_query("insert into ".BAB_FAQ_SUBCAT_TBL." (id_cat, name, id_node) values ('".$idcat."','', '".$idnode."')");
+	$db->db_query("insert into ".BAB_FAQ_SUBCAT_TBL." (id_cat, name, id_node) values ('".$babDB->db_escape_string($idcat)."','', '".$babDB->db_escape_string($idnode)."')");
 	$idscat = $db->db_insert_id();
-	$db->db_query("update ".BAB_FAQCAT_TBL." set id_root='".$idscat."' where id='".$idcat."'");
+	$db->db_query("update ".BAB_FAQCAT_TBL." set id_root='".$babDB->db_escape_string($idscat)."' where id='".$babDB->db_escape_string($idcat)."'");
 
 	}  // saveCategory
 

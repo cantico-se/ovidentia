@@ -1422,18 +1422,11 @@ function siteUpdate_menu1()
 		return false;
 		}
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$description = addslashes($description);
-		$namev = addslashes($name);
-		$adminname = addslashes($adminname);
-		$babslogan = addslashes($babslogan);
-		}
-	else
-		{
-		$namev = $name;
-		$name = stripslashes($name);
-		}
+
+	$description = $db->db_escape_string($description);
+	$namev = $db->db_escape_string($name);
+	$adminname = $db->db_escape_string($adminname);
+	$babslogan = $db->db_escape_string($babslogan);
 
 
 	if (empty($_POST['item']))
@@ -1524,20 +1517,15 @@ function siteUpdate_menu2()
 		$_POST['serverport'] = "25";
 		}
 	
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$_POST['smtpserver'] = addslashes($_POST['smtpserver']);
-		$_POST['smtpuser'] = addslashes($_POST['smtpuser']);
-		$_POST['smtppass'] = addslashes($_POST['smtppass']);
-		}
+
 
 	$req = "UPDATE ".BAB_SITES_TBL." SET 
-			mailfunc = '".$_POST['mailfunc']."', 
-			smtpserver = '".$_POST['smtpserver']."', 
-			smtpport = '".$_POST['smtpport']."', 
-			smtpuser = '".$_POST['smtpuser']."', 
-			smtppassword=ENCODE(\"".$_POST['smtppass']."\",\"".$GLOBALS['BAB_HASH_VAR']."\") 
-		where id='".$_POST['item']."'";
+			mailfunc = '".$db->db_escape_string($_POST['mailfunc'])."', 
+			smtpserver = '".$db->db_escape_string($_POST['smtpserver'])."', 
+			smtpport = '".$db->db_escape_string($_POST['smtpport'])."', 
+			smtpuser = '".$db->db_escape_string($_POST['smtpuser'])."', 
+			smtppassword=ENCODE(\"".$db->db_escape_string($_POST['smtppass'])."\",\"".$db->db_escape_string($GLOBALS['BAB_HASH_VAR'])."\") 
+		where id='".$db->db_escape_string($_POST['item'])."'";
 
 	$db->db_query($req);
 
@@ -1570,11 +1558,6 @@ function siteUpdate_menu3()
 
 function siteUpdate_menu4()
 {
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$_POST['uploadpath'] = addslashes($_POST['uploadpath']);
-		}
-
 	if( !is_numeric($_POST['maxfilesize']) || !is_numeric($_POST['folder_diskspace']) || !is_numeric($_POST['user_diskspace']) || !is_numeric($_POST['total_diskspace']))
 		{
 		$babBody->msgerror = bab_translate("ERROR: You must provide all file manager size limits !!");
@@ -1586,7 +1569,14 @@ function siteUpdate_menu4()
 
 	$db = &$GLOBALS['babDB'];
 
-	$req = "UPDATE ".BAB_SITES_TBL." set imgsize='".$_POST['imgsize']."', uploadpath='".$_POST['uploadpath']."', maxfilesize='".$_POST['maxfilesize']."', folder_diskspace='".$_POST['folder_diskspace']."', user_diskspace='".$_POST['user_diskspace']."', total_diskspace='".$_POST['total_diskspace']."'  where id='".$_POST['item']."'";
+	$req = "UPDATE ".BAB_SITES_TBL." set 
+		imgsize='".$db->db_escape_string($_POST['imgsize'])."', 
+		uploadpath='".$db->db_escape_string($_POST['uploadpath'])."', 
+		maxfilesize='".$db->db_escape_string($_POST['maxfilesize'])."', 
+		folder_diskspace='".$db->db_escape_string($_POST['folder_diskspace'])."', 
+		user_diskspace='".$db->db_escape_string($_POST['user_diskspace'])."', 
+		total_diskspace='".$db->db_escape_string($_POST['total_diskspace'])."'  
+	where id='".$db->db_escape_string($_POST['item'])."'";
 	$db->db_query($req);
 
 	return true;
@@ -1596,16 +1586,10 @@ function siteUpdate_menu4()
 function siteUpdate_menu5($item,$datelformat, $datesformat, $timeformat)
 	{
 	global $babBody;
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$datelformat = addslashes($datelformat);
-		$datesformat = addslashes($datesformat);
-		$timeformat = addslashes($timeformat);
-		}
 
 	$db = &$GLOBALS['babDB'];
 
-	$req = "update ".BAB_SITES_TBL." set date_longformat='".$datelformat."', date_shortformat='".$datesformat."', time_format='".$timeformat."' where id='".$item."'";
+	$req = "update ".BAB_SITES_TBL." set date_longformat='".$db->db_escape_string($datelformat)."', date_shortformat='".$db->db_escape_string($datesformat)."', time_format='".$db->db_escape_string($timeformat)."' where id='".$db->db_escape_string($item)."'";
 	$db->db_query($req);
 
 	return true;
@@ -1647,11 +1631,13 @@ function siteUpdate_menu6($item)
 			$arr = explode(',',$nonworking);
 			$type = $arr[0];
 			$nw = isset($arr[1]) ? $arr[1] : '';
-			if( !bab_isMagicQuotesGpcOn())
-				{
-				$text = addslashes($text);
-				}
-			$db->db_query("INSERT INTO ".BAB_SITES_NONWORKING_CONFIG_TBL." (id_site, nw_type, nw_day, nw_text) VALUES ('".$item."', '".$type."', '".$nw."', '".$text."')");
+
+			$db->db_query("INSERT INTO ".BAB_SITES_NONWORKING_CONFIG_TBL." (id_site, nw_type, nw_day, nw_text) 
+			VALUES (
+				'".$db->db_escape_string($item)."', 
+				'".$db->db_escape_string($type)."', 
+				'".$db->db_escape_string($nw)."',
+				'".$db->db_escape_string($text)."')");
 			}
 
 		}
@@ -1831,17 +1817,11 @@ function siteUpdateDisclaimer($item, $content)
 	{
 	global $babDB;
 
-	if( bab_isMagicQuotesGpcOn())
-		{
-		$content = stripslashes($content);
-		}
-
 	bab_editor_record($content);
 
 	$db = &$GLOBALS['babDB'];
-	$content = $db->db_escape_string($content);
 
-	$babDB->db_query("update ".BAB_SITES_DISCLAIMERS_TBL." set disclaimer_text='".$content."' where id_site='".$item."'");
+	$babDB->db_query("update ".BAB_SITES_DISCLAIMERS_TBL." set disclaimer_text='".$db->db_escape_string($content)."' where id_site='".$db->db_escape_string($item)."'");
 	return true;
 	}
 

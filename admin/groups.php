@@ -227,10 +227,6 @@ function moveGroup()
 		function temp()
 			{
 			$this->arr = $_POST;
-			if( bab_isMagicQuotesGpcOn())
-				{
-				array_walk($this->arr, create_function('&$v,$k','$v = stripslashes($v);'));
-				}
 
 			$this->t_name = bab_translate("Name");
 			$this->t_record = bab_translate("Record");
@@ -422,21 +418,15 @@ function addModGroup()
 		return 'Create';
 		}
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$description = $db->db_escape_string($_POST['description']);
-		$name = $db->db_escape_string($_POST['name']);
-		}
-	else
-		{
-		$description = $_POST['description'];
-		$name = $_POST['name'];
-		}
 
-	$req = "select * from ".BAB_GROUPS_TBL." where name='".$name."' AND id_parent='".$id_parent."'";
+	$description = $db->db_escape_string($_POST['description']);
+	$name = $db->db_escape_string($_POST['name']);
+
+
+	$req = "select * from ".BAB_GROUPS_TBL." where name='".$name."' AND id_parent='".$db->db_escape_string($id_parent)."'";
 	if (is_numeric($_POST['grpid']) )
 		{
-		$req .= " AND id != '".$_POST['grpid']."'";
+		$req .= " AND id != '".$db->db_escape_string($_POST['grpid'])."'";
 		}
 	$res = $db->db_query($req);
 	if( $db->db_num_rows($res) > 0)
@@ -450,7 +440,7 @@ function addModGroup()
 
 	if (!isset($_POST['moveoption']))
 		{
-		$res = $db->db_query("select id_parent, (lr-lf) groups from ".BAB_GROUPS_TBL." where id='".$_POST['grpid']."'");
+		$res = $db->db_query("select id_parent, (lr-lf) groups from ".BAB_GROUPS_TBL." where id='".$db->db_escape_string($_POST['grpid'])."'");
 		$arr = $db->db_fetch_assoc($res);
 
 		if ($arr['id_parent'] != $id_parent && $arr['groups'] > 1)

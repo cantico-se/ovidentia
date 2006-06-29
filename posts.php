@@ -738,12 +738,6 @@ function saveReply($forum, $thread, $post, $name, $subject, $message)
 	else
 		$confirmed = "Y";
 
-	if (bab_isMagicQuotesGpcOn())
-		{
-		$subject = stripslashes($subject);
-		$message = stripslashes($message);
-		$name = stripslashes($name);
-		}
 
 	bab_editor_record($message);
 
@@ -833,12 +827,6 @@ function updateReply($forum, $thread, $subject, $message, $post)
 		}
 
 	$db = &$GLOBALS['babDB'];
-
-	if( bab_isMagicQuotesGpcOn())
-		{
-		$subject = stripslashes($subject);
-		$message = stripslashes($message);
-		}
 
 	bab_editor_record($message);
 

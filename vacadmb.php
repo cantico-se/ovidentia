@@ -1010,10 +1010,8 @@ function updateVacationRequest($daybegin, $monthbegin, $yearbegin,$dayend, $mont
 		return false;
 		}
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$remarks = addslashes($remarks);
-		}
+
+	$remarks = $babDB->db_escape_string($remarks);
 
 	$b = sprintf("%04d-%02d-%02d", $startyear + $yearbegin - 1, $monthbegin, $daybegin);
 	$e = sprintf("%04d-%02d-%02d", $startyear + $yearend - 1, $monthend, $dayend);

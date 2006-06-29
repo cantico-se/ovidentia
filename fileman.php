@@ -1055,9 +1055,7 @@ function saveFile($id, $gr, $path, $description, $keywords, $readonly)
 	else if( !empty($path))
 		$pathx .= $path."/";	
 
-		$osfname = $file['name'];
-	if( bab_isMagicQuotesGpcOn())
-		$osfname = stripslashes($osfname);
+	$osfname = $file['name'];
 
 	if( isset($GLOBALS['babFileNameTranslation']))
 		$osfname = strtr($osfname, $GLOBALS['babFileNameTranslation']);
@@ -1065,12 +1063,10 @@ function saveFile($id, $gr, $path, $description, $keywords, $readonly)
 	$db = $GLOBALS['babDB'];
 	$name = $db->db_escape_string($osfname);
 
-	$mqgo = bab_isMagicQuotesGpcOn();
-	if( !$mqgo)
-		{
-		$description = $db->db_escape_string($description);
-		$keywords = $db->db_escape_string($keywords);
-		}
+
+	$description = $db->db_escape_string($description);
+	$keywords = $db->db_escape_string($keywords);
+
 
 	$bexist = false;
 	if( file_exists($pathx.$osfname))
@@ -1167,12 +1163,8 @@ function saveFile($id, $gr, $path, $description, $keywords, $readonly)
 			$fd = 'field'.$arr['id'];
 			if( isset($GLOBALS[$fd]) )
 				{
-				if( !$mqgo)
-					{
-					$fval = addslashes($GLOBALS[$fd]);
-					}
-				else
-					$fval = $GLOBALS[$fd];
+				$fval = $db->db_escape_string($GLOBALS[$fd]);
+
 				$res2 = $db->db_query("select id from ".BAB_FM_FIELDSVAL_TBL." where id_file='".$idf."' and id_field='".$arr['id']."'");
 				if( $res2 && $db->db_num_rows($res2) > 0)
 					{
@@ -1302,8 +1294,7 @@ function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $de
 		$fname = trim($fname);
 		$frename = false;
 		$osfname = $fname;
-		if( bab_isMagicQuotesGpcOn())
-			$osfname = stripslashes($osfname);
+
 		if( !empty($fname) && strcmp($arr['name'], $osfname))
 			{
 			if( isset($GLOBALS['babFileNameTranslation']))
@@ -1323,13 +1314,12 @@ function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $de
 				}
 			}
 
-		$mqgo = bab_isMagicQuotesGpcOn();
-		if( !$mqgo )
-			{
-			$fname = addslashes($fname);
-			$description = addslashes($description);
-			$keywords = addslashes($keywords);
-			}
+
+
+		$fname = addslashes($fname);
+		$description = addslashes($description);
+		$keywords = addslashes($keywords);
+
 
 		if( empty($BAB_SESS_USERID))
 			$idcreator = 0;
@@ -1398,12 +1388,9 @@ function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $de
 				$fd = 'field'.$arrf['id'];
 				if( isset($GLOBALS[$fd]) )
 					{
-					if( !$mqgo)
-						{
-						$fval = addslashes($GLOBALS[$fd]);
-						}
-					else
-						$fval = $GLOBALS[$fd];
+
+					$fval = $db->db_escape_string($GLOBALS[$fd]);
+
 					$res2 = $db->db_query("select id from ".BAB_FM_FIELDSVAL_TBL." where id_file='".$idf."' and id_field='".$arrf['id']."'");
 					if( $res2 && $db->db_num_rows($res2) > 0)
 						{
@@ -1500,10 +1487,6 @@ function createDirectory($dirname, $id, $gr, $path)
 
 	$dirname = trim($dirname);
 
-	if( bab_isMagicQuotesGpcOn())
-		{
-		$dirname = stripslashes($dirname);
-		}
 
 	if( isset($GLOBALS['babFileNameTranslation']))
 		$dirname = strtr($dirname, $GLOBALS['babFileNameTranslation']);
@@ -1558,11 +1541,6 @@ function renameDirectory($dirname, $id, $gr, $path)
 		return false;
 		}
 
-
-	if( bab_isMagicQuotesGpcOn())
-		{
-		$dirname = stripslashes($dirname);
-		}
 	$pathx = bab_getUploadFullPath($gr, $id);
 
 	if( $pos = strrpos($path, "/"))
@@ -1772,11 +1750,9 @@ function delFile( $file, $id, $gr, $path, $bmanager)
 		return false;
 		}
 
-	if (!bab_isMagicQuotesGpcOn())
-		{
-		$path = $babDB->db_escape_string($path);
-		$file = $babDB->db_escape_string($file);
-		}
+
+	$path = $babDB->db_escape_string($path);
+	$file = $babDB->db_escape_string($file);
 	
 	$db = $GLOBALS['babDB'];
 	$req = "update ".BAB_FILES_TBL." set state='D' where id_owner='".$id."' and bgroup='".$gr."' and state='' and path='".addslashes($path)."' and name='".$file."'";
@@ -2395,9 +2371,6 @@ else
 		return;
 		}
 
-	if( bab_isMagicQuotesGpcOn())
-		$path = stripslashes($_REQUEST['path']);
-
 	$path = urldecode($_REQUEST['path']);
 	}
 
@@ -2504,8 +2477,6 @@ if( $idx == "paste")
 	if( pasteFile($file, $id, $gr, $path, $tp, $bmanager))
 		{
 		$path = $tp;
-		if( bab_isMagicQuotesGpcOn())
-			$path = stripslashes($path);
 		}
 	$idx = "list";
 	}

@@ -166,12 +166,7 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
 			$this->messageval = "";
 			if( !empty($pmsg))
 				{
-				if( bab_isMagicQuotesGpcOn())
-					{
-					$this->messageval = stripslashes($pmsg);
-					}
-				else
-					$this->messageval = $pmsg;
+				$this->messageval = $pmsg;
 				if( $pformat == "html")
 					$this->messageval = nl2br($this->messageval);
 				}
@@ -333,11 +328,6 @@ function createMail($accid, $to, $cc, $bcc, $subject, $message, $files, $files_n
 
 		$mail->mailFrom($arr['email'], $arr['name']);
 
-		if( bab_isMagicQuotesGpcOn())
-			{
-			$message = stripslashes($message);
-			$subject = stripslashes($subject);
-			}
 
 		if( $sigid != 0)
 			{

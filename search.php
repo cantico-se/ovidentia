@@ -646,16 +646,10 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 			$this->fields = $_POST;
 
-			if( !bab_isMagicQuotesGpcOn())
-				{
-				$this->like2 = addslashes($what);
-				$this->like = isset($this->fields['what2']) ? addslashes($this->fields['what2']) : '';
-				}
-			else
-				{
-				$this->like2 = $what;
-				$this->like = isset($this->fields['what2']) ? $this->fields['what2'] : '';
-				}
+
+			$this->like2 = addslashes($what);
+			$this->like = isset($this->fields['what2']) ? addslashes($this->fields['what2']) : '';
+		
 
 			$this->option = &$option;
 

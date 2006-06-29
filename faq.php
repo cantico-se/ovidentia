@@ -942,13 +942,8 @@ function saveQuestion($item, $idscat, $question, $response)
 		$babBody->msgerror = bab_translate("ERROR: You must provide question and response !!");
 		return;
 		}
-	if( bab_isMagicQuotesGpcOn())
-		{
-		$question = stripslashes($question);
-		$response = stripslashes($response);
-		}
 
-	
+
 
 	$db = &$GLOBALS['babDB'];
 
@@ -980,10 +975,6 @@ function saveSubCategory($item, $idscat, $subcat)
 		$babBody->msgerror = bab_translate("ERROR: You must provide a name !!");
 		return;
 		}
-	if( bab_isMagicQuotesGpcOn())
-		{
-		$subcat = stripslashes($subcat);
-		}
 
 	$db = $GLOBALS['babDB'];
 
@@ -1009,14 +1000,11 @@ function updateSubCategory($item, $idscat, $ids, $subcat)
 		$babBody->msgerror = bab_translate("ERROR: You must provide a name !!");
 		return;
 		}
-	if( bab_isMagicQuotesGpcOn())
-		{
-		$subcat = stripslashes($subcat);
-		}
+
 
 	$db = $GLOBALS['babDB'];
 
-	$query = "update ".BAB_FAQ_SUBCAT_TBL." set name='".addslashes($subcat)."' where id='".$ids."'";
+	$query = "update ".BAB_FAQ_SUBCAT_TBL." set name='".$db->db_escape_string($subcat)."' where id='".$db->db_escape_string($ids)."'";
 	$db->db_query($query);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item."&idscat=".$idscat);
 	}
@@ -1044,12 +1032,6 @@ function updateQuestion($idq, $newidscat, $question, $response)
 		{
 		$babBody->msgerror = bab_translate("ERROR: You must provide question and response !!");
 		return;
-		}
-
-	if( bab_isMagicQuotesGpcOn())
-		{
-		$question = stripslashes($question);
-		$response = stripslashes($response);
 		}
 
 	$ar = array();

@@ -68,11 +68,6 @@ function updateNotes($id, $content)
 	{
 	$db = &$GLOBALS['babDB'];
 
-	if (bab_isMagicQuotesGpcOn())
-		{
-		$content = stripslashes($content);
-		}
-
 	bab_editor_record($content);
 	$content = $db->db_escape_string($content);
 

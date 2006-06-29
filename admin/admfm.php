@@ -383,12 +383,8 @@ function updateFolder($fid, $fname, $active, $said, $notification, $version, $bh
 		return;
 		}
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$fname = addslashes($fname);
-		}
 
-	$res = $babDB->db_query("select id from ".BAB_FM_FOLDERS_TBL." where folder='".$fname."' and id!='".$fid."' and id_dgowner='".$babBody->currentAdmGroup."'");
+	$res = $babDB->db_query("select id from ".BAB_FM_FOLDERS_TBL." where folder='".$babDB->db_escape_string($fname)."' and id!='".$babDB->db_escape_string($fid)."' and id_dgowner='".$babDB->db_escape_string($babBody->currentAdmGroup)."'");
 	if( $babDB->db_num_rows($res) > 0)
 		{
 		$babBody->msgerror = bab_translate("This folder already exists");
@@ -398,11 +394,11 @@ function updateFolder($fid, $fname, $active, $said, $notification, $version, $bh
 		if( empty($said))
 			$said = 0;
 
-		list($idsafolder, $bnotify) = $babDB->db_fetch_row($babDB->db_query("select idsa, filenotify from ".BAB_FM_FOLDERS_TBL." where id='".$fid."'"));
+		list($idsafolder, $bnotify) = $babDB->db_fetch_row($babDB->db_query("select idsa, filenotify from ".BAB_FM_FOLDERS_TBL." where id='".$babDB->db_escape_string($fid)."'"));
 		if( $idsafolder != $said )
 			{
 			include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
-			$res = $babDB->db_query("select * from ".BAB_FILES_TBL." where id_owner='".$fid."' and bgroup='Y' and confirmed='N'");
+			$res = $babDB->db_query("select * from ".BAB_FILES_TBL." where id_owner='".$babDB->db_escape_string($fid)."' and bgroup='Y' and confirmed='N'");
 			while( $row = $babDB->db_fetch_array($res))
 				{
 				if( $row['idfai'] != 0 )
@@ -425,11 +421,11 @@ function updateFolder($fid, $fname, $active, $said, $notification, $version, $bh
 
 				if( $said == 0 || $idfai === true)
 					{
-					$babDB->db_query("update ".BAB_FILES_TBL." set idfai='0', confirmed = 'Y' where id='".$row['id']."'");
+					$babDB->db_query("update ".BAB_FILES_TBL." set idfai='0', confirmed = 'Y' where id='".$babDB->db_escape_string($row['id'])."'");
 					}
 				elseif(!empty($idfai))
 					{
-					$babDB->db_query("update ".BAB_FILES_TBL." set idfai='".$idfai."' where id='".$row['id']."'");
+					$babDB->db_query("update ".BAB_FILES_TBL." set idfai='".$babDB->db_escape_string($idfai)."' where id='".$babDB->db_escape_string($row['id'])."'");
 					$nfusers = getWaitingApproversFlowInstance($idfai, true);
 					if( count($nfusers) > 0 )
 						notifyFileApprovers($row['id'], $nfusers, bab_translate("A new file is waiting for you"));
@@ -461,7 +457,7 @@ function updateFolder($fid, $fname, $active, $said, $notification, $version, $bh
 						}
 					elseif(!empty($idfai))
 						{
-						$babDB->db_query("update ".BAB_FM_FILESVER_TBL." set idfai='".$idfai."' where id='".$rrr['id']."'");
+						$babDB->db_query("update ".BAB_FM_FILESVER_TBL." set idfai='".$babDB->db_escape_string($idfai)."' where id='".$babDB->db_escape_string($rrr['id'])."'");
 						$nfusers = getWaitingApproversFlowInstance($idfai, true);
 						if( count($nfusers) > 0 )
 							notifyFileApprovers($row['id'], $nfusers, bab_translate("A new version file is waiting for you"));
@@ -473,7 +469,16 @@ function updateFolder($fid, $fname, $active, $said, $notification, $version, $bh
 			}
 
 		
-		$babDB->db_query("update ".BAB_FM_FOLDERS_TBL." set folder='".$fname."', idsa='".$said."', filenotify='".$notification."', active='".$active."', version='".$version."', bhide='".$bhide."', auto_approbation='".$bautoapp."' where id ='".$fid."'");
+		$babDB->db_query("update ".BAB_FM_FOLDERS_TBL." set 
+			folder='".$babDB->db_escape_string($fname)."', 
+			idsa='".$babDB->db_escape_string($said)."', 
+			filenotify='".$babDB->db_escape_string($notification)."', 
+			active='".$babDB->db_escape_string($active)."', 
+			version='".$babDB->db_escape_string($version)."', 
+			bhide='".$babDB->db_escape_string($bhide)."', 
+			auto_approbation='".$babDB->db_escape_string($bautoapp)."' 
+		where 
+			id ='".$babDB->db_escape_string($fid)."'");
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
 		exit;
 		}
@@ -506,13 +511,7 @@ function addField($fid, $ffname, $defval)
 {
 	global $babBody, $babDB;
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$ffname = addslashes($ffname);
-		$defval = addslashes($defval);
-		}
-
-	$res = $babDB->db_query("select id from ".BAB_FM_FIELDS_TBL." where name='".$ffname."' and id_folder='".$fid."'");
+	$res = $babDB->db_query("select id from ".BAB_FM_FIELDS_TBL." where name='".$babDB->db_escape_string($ffname)."' and id_folder='".$babDB->db_escape_string($fid)."'");
 	if( $babDB->db_num_rows($res) > 0)
 		{
 		$babBody->msgerror = bab_translate("This field already exists");
@@ -520,7 +519,7 @@ function addField($fid, $ffname, $defval)
 		}
 	else
 		{
-		$babDB->db_query("insert into ".BAB_FM_FIELDS_TBL." (id_folder, name, defaultval) VALUES ('" .$fid. "', '" . $ffname. "', '" . $defval. "')");
+		$babDB->db_query("insert into ".BAB_FM_FIELDS_TBL." (id_folder, name, defaultval) VALUES ('" .$babDB->db_escape_string($fid). "', '" . $babDB->db_escape_string($ffname). "', '" . $babDB->db_escape_string($defval). "')");
 		}
 
 	return true;
@@ -530,13 +529,11 @@ function modifyField($fid, $ffid, $ffname, $defval)
 {
 	global $babBody, $babDB;
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$ffname = addslashes($ffname);
-		$defval = addslashes($defval);
-		}
-
-	$babDB->db_query("update ".BAB_FM_FIELDS_TBL." set name='" . $ffname. "', defaultval='".$defval."' where id='".$ffid."'");
+	$babDB->db_query("update ".BAB_FM_FIELDS_TBL." set 
+	name='" . $babDB->db_escape_string($ffname). "', 
+	defaultval='".$babDB->db_escape_string($defval)."' 
+	where id='".$babDB->db_escape_string($ffid)."'
+	");
 
 	return true;
 }

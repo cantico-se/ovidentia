@@ -1021,10 +1021,7 @@ function addDbContact($id, $fields)
 
 				if( isset($this->fields[$this->fieldv]) )
 					{
-					if (bab_isMagicQuotesGpcOn())
-						$this->fvalue = stripslashes($this->fields[$this->fieldv]);
-					else
-						$this->fvalue = $this->fields[$this->fieldv];
+					$this->fvalue = $this->fields[$this->fieldv];
 					}
 				else
 					{
@@ -2241,10 +2238,8 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 			if( substr($key, 0, strlen("babdirf")) == 'babdirf' )
 				{
 				$tmp = substr($key, strlen("babdirf"));
-				if( !bab_isMagicQuotesGpcOn())
-					{
-					$value = addslashes($value);
-					}
+
+				$value = $db->db_escape_string($value);
 
 				$bupdate = true;
 				$rs = $db->db_query("select id from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$tmp."' and  id_entry='".$idu."'");
@@ -2439,16 +2434,11 @@ function confirmAddDbContact($id, $fields, $file, $tmp_file, $password1, $passwo
 		
 		if( $notifyuser == "Y" )
 			{
-			if( !bab_isMagicQuotesGpcOn())
-				{
-				$firstname = addslashes($fields['givenname']);
-				$lastname = addslashes($fields['sn']);
-				}
-			else
-				{
-				$firstname = $fields['givenname'];
-				$lastname = $fields['sn'];
-				}
+
+			$firstname = $db->db_escape_string($fields['givenname']);
+			$lastname = $db->db_escape_string($fields['sn']);
+			
+			
 			notifyAdminUserRegistration(bab_composeUserName($firstname , $lastname), $fields['email'], $nickname, $sendpwd == "Y"? $password1: "" );
 			}
 		}
@@ -2508,16 +2498,21 @@ function confirmAddDbContact($id, $fields, $file, $tmp_file, $password1, $passwo
 		if( substr($key, 0, strlen("babdirf")) == 'babdirf' )
 			{
 			$tmp = substr($key, strlen("babdirf"));
-			if( !bab_isMagicQuotesGpcOn())
-				{
-				$value = addslashes($value);
-				}
-			$db->db_query("insert into ".BAB_DBDIR_ENTRIES_EXTRA_TBL." (id_fieldx, id_entry, field_value) values ('".$tmp."','".$iddbu."','".$value."')");
+
+			$db->db_query("INSERT into ".BAB_DBDIR_ENTRIES_EXTRA_TBL." 
+				(id_fieldx, id_entry, field_value) 
+			values 
+				('".$db->db_escape_string($tmp)."','".$db->db_escape_string($iddbu)."','".$db->db_escape_string($value)."')");
 			}
 		}
 
 	
-	$db->db_query("update ".BAB_DBDIR_ENTRIES_TBL." set date_modification=now(), id_modifiedby='".$GLOBALS['BAB_SESS_USERID']."' where id='".$iddbu."'");
+	$db->db_query("update ".BAB_DBDIR_ENTRIES_TBL." set 
+		date_modification=now(), 
+		id_modifiedby='".$db->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' 
+		WHERE id='".$db->db_escape_string($iddbu)."'
+	");
+
 	return 1;
 	}
 

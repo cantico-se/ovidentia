@@ -793,11 +793,6 @@ function updateCategory($id, $category, $description, $cat, $saart, $sacom, $sau
 
 	$db = &$GLOBALS['babDB'];
 
-	if( bab_isMagicQuotesGpcOn())
-		{
-		$category = stripslashes($category);
-		$description = stripslashes($description);
-		}
 
 	bab_editor_record($content);
 	$category = $db->db_escape_string($category);

@@ -204,17 +204,12 @@ function saveForum($name, $description, $moderation, $notification, $nbmsgdispla
 		return false;
 		}
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$name = addslashes($name);
-		$description = addslashes($description);
-		}
 
 	if( empty($managerid))
 		$managerid = 0;
 
 	$db = $GLOBALS['babDB'];
-	$query = "select * from ".BAB_FORUMS_TBL." where name='".$name."'";	
+	$query = "select * from ".BAB_FORUMS_TBL." where name='".$db->db_escape_string($name)."'";	
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) > 0)
 		{
@@ -242,7 +237,19 @@ function saveForum($name, $description, $moderation, $notification, $nbmsgdispla
 		}
 
 	$query = "insert into ".BAB_FORUMS_TBL." (name, description, display, moderation, notification, active, ordering, id_dgowner, nb_recipients)";
-	$query .= " values ('" .$name. "', '" . $description. "', '" . $nbmsgdisplay. "', '".$moderation. "', '" .$notification. "', '" . $active. "', '" . $max. "', '" . $babBody->currentAdmGroup. "', '" . $nbrecipients. "')";
+
+	$query .= " values (
+		'" . $db->db_escape_string($name). "',
+		'" . $db->db_escape_string($description). "', 
+		'" . $db->db_escape_string($nbmsgdisplay). "', 
+		'" . $db->db_escape_string($moderation). "', 
+		'" . $db->db_escape_string($notification). "', 
+		'" . $db->db_escape_string($active). "', 
+		'" . $db->db_escape_string($max). "', 
+		'" . $db->db_escape_string($babBody->currentAdmGroup). "',
+		'" . $db->db_escape_string($nbrecipients). "'
+	)";
+
 	$db->db_query($query);
 	$id = $db->db_insert_id();
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=forum&idx=rights&item=".$id);
@@ -262,23 +269,23 @@ function saveOrderForums($listforums)
 			$rr = explode('-',$listforums[$i]);
 			if( count($rr) > 1 )
 				{
-				$res = $db->db_query("select id from ".BAB_FORUMS_TBL." where id_dgowner='".$rr[0]."' order by ordering asc");
+				$res = $db->db_query("select id from ".BAB_FORUMS_TBL." where id_dgowner='".$db->db_escape_string($rr[0])."' order by ordering asc");
 				while( $arr = $db->db_fetch_array($res))
 					{
-					$db->db_query("update ".BAB_FORUMS_TBL." set ordering='".$pos."' where id='".$arr['id']."'");
+					$db->db_query("update ".BAB_FORUMS_TBL." set ordering='".$db->db_escape_string($pos)."' where id='".$db->db_escape_string($arr['id'])."'");
 					$pos++;
 					}
 				}
 			else
 				{
-				$db->db_query("update ".BAB_FORUMS_TBL." set ordering='".$pos."' where id='".$listforums[$i]."'");
+				$db->db_query("update ".BAB_FORUMS_TBL." set ordering='".$db->db_escape_string($pos)."' where id='".$db->db_escape_string($listforums[$i])."'");
 				$pos++;
 				}
 			}
 		}
 	else
 		{
-		$res = $db->db_query("select min(ordering) from ".BAB_FORUMS_TBL." where id_dgowner='".$babBody->currentAdmGroup."'");
+		$res = $db->db_query("select min(ordering) from ".BAB_FORUMS_TBL." where id_dgowner='".$db->db_escape_string($babBody->currentAdmGroup)."'");
 		$arr = $db->db_fetch_array($res);
 		if( isset($arr[0]))
 			$pos = $arr[0];
@@ -295,7 +302,7 @@ function saveOrderForums($listforums)
 			}
 		for( $i = 0; $i < count($listforums); $i++)
 			{
-			$db->db_query("update ".BAB_FORUMS_TBL." set ordering='".$pos."' where id='".$listforums[$i]."'");
+			$db->db_query("update ".BAB_FORUMS_TBL." set ordering='".$db->db_escape_string($pos)."' where id='".$db->db_escape_string($listforums[$i])."'");
 			$pos++;
 			}
 		}

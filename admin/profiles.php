@@ -365,11 +365,6 @@ function saveProfile($pname, $pdesc, $grpids, $cinscription, $cmultiple, $crequi
 		}
 	else
 		{
-		if( !bab_isMagicQuotesGpcOn())
-			{
-			$pdesc = addslashes($pdesc);
-			$pname = addslashes($pname);
-			}
 		if( $cinscription == 'Y')
 			{
 			$inscription = 'Y';
@@ -394,16 +389,26 @@ function saveProfile($pname, $pdesc, $grpids, $cinscription, $cmultiple, $crequi
 			{
 			$required = 'N';
 			}
-		$babDB->db_query("insert into ".BAB_PROFILES_TBL." (name, description, multiplicity, inscription, required, id_dgowner) VALUES ('" .$pname. "', '" . $pdesc. "', '".$multiplicity."', '" . $inscription."', '" . $required. "', '".$babBody->currentAdmGroup."')");
+		$babDB->db_query("insert into ".BAB_PROFILES_TBL." (name, description, multiplicity, inscription, required, id_dgowner) 
+		VALUES 
+			(
+			'" . $db->db_escape_string($pname). "',
+			'" . $db->db_escape_string($pdesc). "',
+			'" . $db->db_escape_string($multiplicity)."',
+			'" . $db->db_escape_string($inscription)."', 
+			'" . $db->db_escape_string($required). "',
+			'" . $db->db_escape_string($babBody->currentAdmGroup)."'
+			)
+		");
 		$id = $babDB->db_insert_id();
 		for( $i = 0; $i < count($grpids); $i++ )
 			{
-			$babDB->db_query("insert into ".BAB_PROFILES_GROUPSSET_TBL." (id_object, id_group) VALUES ('" .$id. "', '".$grpids[$i]."')");
+			$babDB->db_query("insert into ".BAB_PROFILES_GROUPSSET_TBL." (id_object, id_group) VALUES ('" .$db->db_escape_string($id). "', '".$db->db_escape_string($grpids[$i])."')");
 			}
 
 		if( $inscription == 'Y' )
 			{
-			$babDB->db_query("insert into ".BAB_PROFILES_GROUPS_TBL." (id_object, id_group) values ('". $id. "', '1')");
+			$babDB->db_query("insert into ".BAB_PROFILES_GROUPS_TBL." (id_object, id_group) values ('". $db->db_escape_string($id). "', '1')");
 			}
 		return true;
 		}
@@ -434,11 +439,6 @@ function updateProfile($idprof, $pname, $pdesc, $grpids, $cinscription, $cmultip
 		}
 	else
 		{
-		if( !bab_isMagicQuotesGpcOn())
-			{
-			$pdesc = addslashes($pdesc);
-			$pname = addslashes($pname);
-			}
 		if( $cinscription == 'Y')
 			{
 			$inscription = 'Y';
@@ -463,17 +463,25 @@ function updateProfile($idprof, $pname, $pdesc, $grpids, $cinscription, $cmultip
 			{
 			$required = 'N';
 			}
-		$babDB->db_query("update ".BAB_PROFILES_TBL." set name='" .$pname. "', description='" . $pdesc. "', multiplicity='".$multiplicity."', inscription='" . $inscription."', required='" . $required. "', id_dgowner='".$babBody->currentAdmGroup."' where id='".$idprof."'");
-		$babDB->db_query("delete from ".BAB_PROFILES_GROUPSSET_TBL." where id_object='".$idprof."'");
+		$babDB->db_query("update ".BAB_PROFILES_TBL." set 
+		name='" .$db->db_escape_string($pname). "', 
+		description='" . $db->db_escape_string($pdesc). "', 
+		multiplicity='".$db->db_escape_string($multiplicity)."', 
+		inscription='" . $db->db_escape_string($inscription)."', 
+		required='" . $db->db_escape_string($required). "', 
+		id_dgowner='".$db->db_escape_string($babBody->currentAdmGroup)."' 
+		where id='".$db->db_escape_string($idprof)."'");
+
+		$babDB->db_query("delete from ".BAB_PROFILES_GROUPSSET_TBL." where id_object='".$db->db_escape_string($idprof)."'");
 		for( $i = 0; $i < count($grpids); $i++ )
 			{
-			$babDB->db_query("insert into ".BAB_PROFILES_GROUPSSET_TBL." (id_object, id_group) VALUES ('" .$idprof. "', '".$grpids[$i]."')");
+			$babDB->db_query("insert into ".BAB_PROFILES_GROUPSSET_TBL." (id_object, id_group) VALUES ('" .$db->db_escape_string($idprof). "', '".$db->db_escape_string($grpids[$i])."')");
 			}
 		if( $inscription == 'Y' )
 			{
 			include_once $GLOBALS['babInstallPath']."admin/acl.php";
 			aclDelete(BAB_PROFILES_GROUPS_TBL, $idprof);
-			$babDB->db_query("insert into ".BAB_PROFILES_GROUPS_TBL." (id_object, id_group) values ('". $idprof. "', '1')");
+			$babDB->db_query("insert into ".BAB_PROFILES_GROUPS_TBL." (id_object, id_group) values ('". $db->db_escape_string($idprof). "', '1')");
 			}
 		return true;
 		}

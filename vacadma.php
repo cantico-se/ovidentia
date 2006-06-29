@@ -1245,11 +1245,8 @@ function updateVacationRight()
 			}
 		}
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$post['description'] = $babDB->db_escape_string($post['description']);
-  		}
 
+	$post['description'] = $babDB->db_escape_string($post['description']);
 
 	$handlefx = 0;
 	if (!empty($post['idvr']))

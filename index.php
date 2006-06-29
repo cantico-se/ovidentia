@@ -71,6 +71,33 @@ bab_unset($_SERVER);
 bab_unset($_SESSION);
 bab_unset($_COOKIE);
 
+/** 
+ * Remove escapes if magic quotes is on
+ */ 
+function bab_cleanGpc() {
+	static $firstcall = 1;
+	if (1 !== $firstcall) 
+		return;
+	$firstcall = 0;
+	function bab_slashes(&$val) {
+		if (get_magic_quotes_gpc()) {
+			if (is_array($val)) {
+				array_walk($val,'bab_slashes');
+				}
+			else
+				$val = stripslashes($val);
+		}
+	}
+
+	bab_slashes($_GET);
+	bab_slashes($_POST);
+	bab_slashes($_COOKIES);
+	bab_slashes($_REQUEST);
+	}
+
+bab_cleanGpc();
+
+
 if (!empty($_FILES))
 	{
 	while (list($name, $value) = each($_FILES))

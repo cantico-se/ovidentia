@@ -577,11 +577,6 @@ function saveCategory($category, $description, $cat, $sacom, $saart, $saupd, $bn
 
 	$db = &$GLOBALS['babDB'];
 
-	if( bab_isMagicQuotesGpcOn())
-		{
-		$category = stripslashes($category);
-		$description = stripslashes($description);
-		}
 
 	bab_editor_record($content);
 	$category = $db->db_escape_string($category);

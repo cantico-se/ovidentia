@@ -749,21 +749,14 @@ function admmenu()
 function saveVacationType($tname, $description, $quantity, $tcolor, $cbalance, $maxdays=0, $mindays=0, $default=0)
 	{
 	global $babBody;
-	if( empty($tname))
-		{
+	if( empty($tname)) {
 		$babBody->msgerror = bab_translate("ERROR: You must provide a name")." !";
 		return false;
 		}
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$tname = addslashes($tname);
-		$description = addslashes($description);
-		}
-
 	$db = $GLOBALS['babDB'];
 
-	$req = "select id from ".BAB_VAC_TYPES_TBL." where name='".$tname."'";
+	$req = "select id from ".BAB_VAC_TYPES_TBL." where name='".$db->db_escape_string($tname)."'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0 )
 		{
@@ -772,7 +765,16 @@ function saveVacationType($tname, $description, $quantity, $tcolor, $cbalance, $
 		}
 	
 	$req = "insert into ".BAB_VAC_TYPES_TBL." ( name, description, quantity, maxdays, mindays, defaultdays, color, cbalance)";
-	$req .= " values ('".$tname."', '" .$description. "', '" .$quantity. "', '" .$maxdays. "', '" .$mindays. "', '" .$default. "', '" .$tcolor. "', '" .$cbalance. "')";
+	$req .= " values (
+	'".$db->db_escape_string($tname)."', 
+	'" .$db->db_escape_string($description). "', 
+		'" .$db->db_escape_string($quantity). "',
+		'" .$db->db_escape_string($maxdays). "',
+		'" .$db->db_escape_string($mindays). "',
+		'" .$db->db_escape_string($default). "',
+		'" .$db->db_escape_string($tcolor). "',
+		'" .$db->db_escape_string($cbalance). "'
+	)";
 	$res = $db->db_query($req);
 	return true;
 	}
@@ -786,15 +788,9 @@ function updateVacationType($vtid, $tname, $description, $quantity, $tcolor, $cb
 		return false;
 		}
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$tname = addslashes($tname);
-		$description = addslashes($description);
-		}
-
 	$db = $GLOBALS['babDB'];
 
-	$req = "select id from ".BAB_VAC_TYPES_TBL." where name='".$tname."' and id!='".$vtid."'";
+	$req = "SELECT id from ".BAB_VAC_TYPES_TBL." WHERE name='".$db->db_escape_string($tname)."' AND id!='".$db->db_escape_string($vtid)."'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0 )
 		{
@@ -802,7 +798,18 @@ function updateVacationType($vtid, $tname, $description, $quantity, $tcolor, $cb
 		return false;
 		}
 	
-	$req = "update ".BAB_VAC_TYPES_TBL." set name='".$tname."', description='".$description."', quantity='".$quantity."', maxdays='".$maxdays."', mindays='".$mindays."', defaultdays='".$default."', color='".$tcolor."', cbalance='".$cbalance."' where id='".$vtid."'";
+	$req = "UPDATE ".BAB_VAC_TYPES_TBL." 
+		SET 
+			name='".$db->db_escape_string($tname)."', 
+			description='".$db->db_escape_string($description)."', 
+			quantity='".$db->db_escape_string($quantity)."', 
+			maxdays='".$db->db_escape_string($maxdays)."', 
+			mindays='".$db->db_escape_string($mindays)."', 
+			defaultdays='".$db->db_escape_string($default)."', 
+			color='".$db->db_escape_string($tcolor)."', 
+			cbalance='".$db->db_escape_string($cbalance)."' 
+		WHERE  
+			id='".$db->db_escape_string($vtid)."'";
 	$res = $db->db_query($req);
 	return true;
 	}
@@ -854,15 +861,9 @@ function saveVacationCollection($tname, $description, $vtypeids, $category)
 		return false;
 		}
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$tname = addslashes($tname);
-		$description = addslashes($description);
-		}
-
 	$db = $GLOBALS['babDB'];
 
-	$req = "select id from ".BAB_VAC_COLLECTIONS_TBL." where name='".$tname."'";
+	$req = "select id from ".BAB_VAC_COLLECTIONS_TBL." where name='".$db->db_escape_string($tname)."'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0 )
 		{
@@ -871,12 +872,12 @@ function saveVacationCollection($tname, $description, $vtypeids, $category)
 		}
 	
 	$req = "insert into ".BAB_VAC_COLLECTIONS_TBL." ( name, description, id_cat )";
-	$req .= " values ('".$tname."', '" .$description."', '" .$category. "')";
+	$req .= " values ('".$db->db_escape_string($tname)."', '" .$db->db_escape_string($description)."', '" .$db->db_escape_string($category). "')";
 	$res = $db->db_query($req);
 	$id = $db->db_insert_id();
 	for( $i=0; $i < count($vtypeids); $i++)
 		{
-		$db->db_query("insert into ".BAB_VAC_COLL_TYPES_TBL." (id_coll, id_type) values ('".$id."', '".$vtypeids[$i]."')");
+		$db->db_query("insert into ".BAB_VAC_COLL_TYPES_TBL." (id_coll, id_type) values ('".$db->db_escape_string($id)."', '".$db->db_escape_string($vtypeids[$i])."')");
 		}
 	return true;
 	}
@@ -890,15 +891,9 @@ function updateVacationCollection($vcid, $tname, $description, $vtypeids, $categ
 		return false;
 		}
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$tname = addslashes($tname);
-		$description = addslashes($description);
-		}
-
 	$db = $GLOBALS['babDB'];
 
-	$req = "select id from ".BAB_VAC_COLLECTIONS_TBL." where name='".$tname."' and id!='".$vcid."'";
+	$req = "select id from ".BAB_VAC_COLLECTIONS_TBL." where name='".$db->db_escape_string($tname)."' and id!='".$db->db_escape_string($vcid)."'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0 )
 		{
@@ -906,9 +901,9 @@ function updateVacationCollection($vcid, $tname, $description, $vtypeids, $categ
 		return false;
 		}
 	
-	list($oldcateg) = $db->db_fetch_row($db->db_query("select id_cat from ".BAB_VAC_COLLECTIONS_TBL." where id='".$vcid."'"));
+	list($oldcateg) = $db->db_fetch_row($db->db_query("select id_cat from ".BAB_VAC_COLLECTIONS_TBL." where id='".$db->db_escape_string($vcid)."'"));
 
-	$res = $db->db_query("update ".BAB_VAC_COLLECTIONS_TBL." set name='".$tname."', description='".$description."', id_cat='".$category."' where id='".$vcid."'");
+	$res = $db->db_query("update ".BAB_VAC_COLLECTIONS_TBL." set name='".$db->db_escape_string($tname)."', description='".$db->db_escape_string($description)."', id_cat='".$db->db_escape_string($category)."' where id='".$db->db_escape_string($vcid)."'");
 
 	if( count($vtypeids) > 0 )
 		{

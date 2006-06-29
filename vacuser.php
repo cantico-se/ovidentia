@@ -606,10 +606,8 @@ function addNewVacation($id_user, $id_request, $begin,$end, $halfdaybegin, $half
 		return false;
 		}
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$remarks = addslashes($remarks);
-		}
+
+	$remarks = addslashes($remarks);
 
 	if (empty($id_request))
 		{

@@ -1014,11 +1014,8 @@ function updateConfirmationWaitingArticle($idart, $bconfirm, $comment)
 		if( count($arrschi) > 0 && in_array($arr['idfai'],$arrschi))
 			{
 			$bret = $bconfirm == "Y"? true: false;
-			if( bab_isMagicQuotesGpcOn())
-				{
-				$comment = stripslashes($comment);
-				}
-			$comment = addslashes($comment);
+			
+			$comment = $babDB->db_escape_string($comment);
 			$babDB->db_query("insert into ".BAB_ART_DRAFTS_NOTES_TBL." (id_draft, content, id_author, date_note) values ('".$idart."','".$comment."','".$GLOBALS['BAB_SESS_USERID']."', now())");
 
 			$res = updateFlowInstance($arr['idfai'], $GLOBALS['BAB_SESS_USERID'], $bret);
@@ -1098,10 +1095,6 @@ function updateConfirmationWaitingComment($idcom, $action, $send, $message)
 	if( $send == "1" && $arr['email'] != "")
 		{
 		$msg = nl2br($message);
-		if( bab_isMagicQuotesGpcOn())
-			{
-			$msg = stripslashes($msg);
-			}
         notifyCommentAuthor($subject, $msg, $BAB_SESS_USERID, $arr['email']);
 		}
 	}
@@ -1145,20 +1138,18 @@ function confirmVacationRequest($veid, $remarks, $action)
 		{
 		case 0:
 			deleteFlowInstance($arr['idfai']);
-			if( !bab_isMagicQuotesGpcOn())
-				{
-				$remarks = addslashes($remarks);
-				}
+
+			$remarks = $babDB->db_escape_string($remarks);
+
 			$babDB->db_query("update ".BAB_VAC_ENTRIES_TBL." set status='N', idfai='0', id_approver='".$GLOBALS['BAB_SESS_USERID']."', comment2='".$remarks."' where id = '".$veid."'");
 			$subject = bab_translate("Your vacation request has been refused");
 			notifyVacationAuthor($veid, $subject);
 			break;
 		case 1:
 			deleteFlowInstance($arr['idfai']);
-			if( !bab_isMagicQuotesGpcOn())
-				{
-				$remarks = addslashes($remarks);
-				}
+
+			$remarks = $babDB->db_escape_string($remarks);
+
 			$babDB->db_query("update ".BAB_VAC_ENTRIES_TBL." set status='Y', idfai='0', id_approver='".$GLOBALS['BAB_SESS_USERID']."', comment2='".$remarks."' where id = '".$veid."'");
 			$idcal = bab_getCalendarId($arr['id_user'], 1);
 			if( $idcal != 0 )

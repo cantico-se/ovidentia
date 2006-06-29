@@ -182,12 +182,7 @@ function sedit_record()
 		return false;
 		}
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$_POST['name'] = $db->db_escape_string($_POST['name']);
-		}
-
-	list($n) = $db->db_fetch_array($db->db_query("SELECT COUNT(*) FROM ".BAB_GROUPS_TBL." WHERE name='".$_POST['name']."' AND nb_groups>='0'"));
+	list($n) = $db->db_fetch_array($db->db_query("SELECT COUNT(*) FROM ".BAB_GROUPS_TBL." WHERE name='".$db->db_escape_string($_POST['name'])."' AND nb_groups>='0'"));
 	if ($n > 0)
 		{
 		$babBody->msgerror = bab_translate("This set of groups allready exists");
@@ -199,11 +194,11 @@ function sedit_record()
 		include_once $GLOBALS['babInstallPath']."utilit/grpincl.php";
 		$node_id = getNextAvariableId();
 
-		$db->db_query("INSERT INTO ".BAB_GROUPS_TBL." (id,name,nb_groups) VALUES ('".$node_id."','".$_POST['name']."',0)");
+		$db->db_query("INSERT INTO ".BAB_GROUPS_TBL." (id,name,nb_groups) VALUES ('".$db->db_escape_string($node_id)."','".$db->db_escape_string($_POST['name'])."',0)");
 		}
 	else
 		{
-		$db->db_query("UPDATE ".BAB_GROUPS_TBL." SET name='".$_POST['name']."' WHERE id='".$_POST['sid']."'");
+		$db->db_query("UPDATE ".BAB_GROUPS_TBL." SET name='".$db->db_escape_string($_POST['name'])."' WHERE id='".$db->db_escape_string($_POST['sid'])."'");
 		}
 
 	return true;

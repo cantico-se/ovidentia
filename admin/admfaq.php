@@ -156,14 +156,8 @@ function updateCategory($id, $category, $description, $lang)
 		return false;
 		}
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$category = addslashes($category);
-		$description = addslashes($description);
-		}
-
 	$db = $GLOBALS['babDB'];
-	$query = "update ".BAB_FAQCAT_TBL." set category='".$category."', description='".$description."', lang='".$lang."' where id = '".$id."'";
+	$query = "update ".BAB_FAQCAT_TBL." set category='".$babDB->db_escape_string($category)."', description='".$babDB->db_escape_string($description)."', lang='".$babDB->db_escape_string($lang)."' where id = '".$babDB->db_escape_string($id)."'";
 	$db->db_query($query);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admfaqs&idx=Categories");
 

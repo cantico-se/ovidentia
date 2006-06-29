@@ -1147,11 +1147,8 @@ function confirmModifyArticle($topics, $article, $comment, $bupdmod)
 			{
 				$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set update_datemodif='".$bupdmod."' where id='".$idart."'");		
 
-				if( bab_isMagicQuotesGpcOn())
-					{
-					$comment = stripslashes($comment);
-					}
-				$babDB->db_query("insert into ".BAB_ART_LOG_TBL." (id_article, id_author, date_log, action_log, art_log) values ('".$article."', '".$GLOBALS['BAB_SESS_USERID']."', now(), 'lock', '".addslashes($comment)."')");		
+
+				$babDB->db_query("insert into ".BAB_ART_LOG_TBL." (id_article, id_author, date_log, action_log, art_log) values ('".$babDB->db_escape_string($article)."', '".$GLOBALS['BAB_SESS_USERID']."', now(), 'lock', '".$babDB->db_escape_string($comment)."')");		
 				Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=s1&idart=".$idart."&rfurl=".urlencode($rfurl));
 				exit;
 			}

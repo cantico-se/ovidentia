@@ -347,28 +347,24 @@ function saveThread($forum, $name, $subject, $message, $notifyme)
 	else
 		$confirmed = "Y";
 
-	if( bab_isMagicQuotesGpcOn())
-		{
-		$subject = stripslashes($subject);
-		$message = stripslashes($message);
-		$name = stripslashes($name);
-		}
-
 	bab_editor_record($message);
 
 	$req = "insert into ".BAB_POSTS_TBL." (id_thread, date, subject, message, author, confirmed) values ";
-	$req .= "('" .$idthread. "', now(), '";
+	$req .= "('" .$db->db_escape_string($idthread). "', now(), '";
 	$req .= $db->db_escape_string($subject). "', '" . $db->db_escape_string($message). "', '". $db->db_escape_string($name);
 
 
-	$req .= "', '". $confirmed. "')";
+	$req .= "', '". $db->db_escape_string($confirmed). "')";
 	$res = $db->db_query($req);
 	$idpost = $db->db_insert_id();
 
 	if (bab_isAccessValid(BAB_FORUMSFILES_GROUPS_TBL,$forum))
 		bab_uploadPostFiles($idpost, $forum);
 	
-	$req = "update ".BAB_THREADS_TBL." set lastpost='$idpost', post='$idpost' where id = '$idthread'";
+	$req = "update ".BAB_THREADS_TBL." set 
+		lastpost='".$db->db_escape_string($idpost)."', 
+		post='".$db->db_escape_string($idpost)."' 
+		where id = '".$db->db_escape_string($idthread)."'";
 	$res = $db->db_query($req);
 
 	$tables = array();

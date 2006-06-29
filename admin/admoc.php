@@ -314,14 +314,12 @@ function updateOrgChart($id, $name, $description)
 
 	$db = $GLOBALS['babDB'];
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$name = addslashes($name);
-		$description = addslashes($description);
-		}
-
-	$query = "update ".BAB_ORG_CHARTS_TBL." set name='".$name."', description='".$description."' where id = '$id'";
+	$query = "update ".BAB_ORG_CHARTS_TBL." set 
+		name='".$babDB->db_escape_string($name)."', 
+		description='".$babDB->db_escape_string($description)."' 
+		where id = '$id'";
 	$db->db_query($query);
+
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admocs&idx=list");
 	}
 

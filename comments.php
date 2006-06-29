@@ -157,19 +157,24 @@ function saveComment($topics, $article, $name, $subject, $message, $com, &$msger
 		return false;
 		}
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$subject = addslashes($subject);
-		$message = addslashes($message);
-		}
+	$db = $GLOBALS['babDB'];
+
 
 	if( empty($com))
 		{
 		$com = 0;
 		}
-	$db = $GLOBALS['babDB'];
+	
 	$req = "insert into ".BAB_COMMENTS_TBL." (id_topic, id_article, id_parent, date, subject, message, name, email) values ";
-	$req .= "('" .$topics. "', '" . $article.  "', '" . $com. "', now(), '" . $subject. "', '" . $message. "', '";
+	$req .= "(
+		'" .$db->db_escape_string($topics). "', 
+		'" . $db->db_escape_string($article).  "', 
+		'" . $db->db_escape_string($com). "', 
+		now(), 
+		'" . $db->db_escape_string($subject). "', 
+		'" . $db->db_escape_string($message). "', '
+	";
+
 	if( !isset($name) || empty($name))
 		{
 		$req .= $BAB_SESS_USER. "', '" . $BAB_SESS_EMAIL. "')";

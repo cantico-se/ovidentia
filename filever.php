@@ -543,10 +543,7 @@ function lockFile($idf, $comment )
 {
 	global $babBody, $arrfile, $babDB, $babFileActions;
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$comment = addslashes($comment);
-		}
+	$comment = $babDB->db_escape_string($comment);
 
 	if( $arrfile['edit'] == 0 && $GLOBALS['BAB_SESS_USERID'] != '' )
 		{
@@ -564,10 +561,8 @@ function unlockFile($idf, $comment )
 {
 	global $babBody, $babDB, $babFileActions, $arrfile, $arrfold, $lockauthor;
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$comment = addslashes($comment);
-		}
+
+	$comment = $babDB->db_escape_string($comment);
 
 	if( $arrfile['edit'] != 0 && $GLOBALS['BAB_SESS_USERID'] != '' )
 		{
@@ -663,10 +658,7 @@ function commitFile($idf, $comment, $vermajor, $filename, $size, $tmp )
 		return false;
 		}
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$comment = addslashes($comment);
-		}
+	$comment = $babDB->db_escape_string($comment);
 
 
 	if( $arrfold['idsa'] != 0 )

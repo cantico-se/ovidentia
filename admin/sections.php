@@ -539,15 +539,6 @@ function sectionSave($title, $pos, $desc, $content, $script, $js, $template, $la
 		return;
 		}
 
-	
-	if( bab_isMagicQuotesGpcOn())
-		{
-		$desc = stripslashes($desc);
-		$content = stripslashes($content);
-		$title = stripslashes($title);
-		$template = stripslashes($template);
-		}
-
 	bab_editor_record($content);
 
 	$db = &$GLOBALS['babDB'];

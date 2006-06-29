@@ -185,12 +185,6 @@ function groupDelegatModify($gname, $description, $id = '')
 			unset($this->groups[BAB_UNREGISTERED_GROUP]);
 			$this->count2 = count($this->groups);
 
-
-			if( bab_isMagicQuotesGpcOn())
-				{
-				$gname = stripslashes($gname);
-				$description = stripslashes($description);
-				}
 			
 			if( $gname != '' )
 				$this->grpname = htmlentities($gname);
@@ -295,13 +289,7 @@ function addDelegatGroup($name, $description, $delegitems)
 		return false;
 		}
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$description = addslashes($description);
-		$name = addslashes($name);
-		}
-
-	$res = $babDB->db_query("select * from ".BAB_DG_GROUPS_TBL." where name='".$name."'");
+	$res = $babDB->db_query("select * from ".BAB_DG_GROUPS_TBL." where name='".$babDB->db_escape_string($name)."'");
 	if( $babDB->db_num_rows($res) > 0)
 		{
 		$babBody->msgerror = bab_translate("This delegation group already exists");
@@ -310,17 +298,17 @@ function addDelegatGroup($name, $description, $delegitems)
 	else
 		{
 		$req1 = "(name, description";
-		$req2 = "('" .$name. "', '" . $description. "'";
+		$req2 = "('" .$babDB->db_escape_string($name). "', '" . $babDB->db_escape_string($description). "'";
 		for( $i = 0; $i < count($delegitems); $i++)
 			{
-			$req1 .= ", ". $delegitems[$i];
+			$req1 .= ", ". $babDB->db_escape_string($delegitems[$i]);
 			$req2 .= ", 'Y'";
 			}
 
-		$group = $_POST['group'] == 'NULL' ? 'NULL' : "'".$_POST['group']."'";
+		$group = $_POST['group'] == 'NULL' ? 'NULL' : "'".$babDB->db_escape_string($_POST['group'])."'";
 		
 		$req1 .= ",id_group )";
-		$req2 .= ", ".$group." )";
+		$req2 .= ", ".$babDB->db_escape_string($group)." )";
 		$babDB->db_query("insert into ".BAB_DG_GROUPS_TBL." ".$req1." VALUES ".$req2);
 		$id = $babDB->db_insert_id();
 		}
@@ -340,13 +328,10 @@ function modifyDelegatGroup($name, $description, $delegitems, $id)
 		return false;
 		}
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$description = addslashes($description);
-		$name = addslashes($name);
-		}
 
-	$res = $babDB->db_query("select * from ".BAB_DG_GROUPS_TBL." where id!='".$id."' and name='".$name."'");
+
+	$res = $babDB->db_query("select * from ".BAB_DG_GROUPS_TBL." 
+	where id!='".$babDB->db_escape_string($id)."' and name='".$babDB->db_escape_string($name)."'");
 	if( $babDB->db_num_rows($res) > 0)
 		{
 		$babBody->msgerror = bab_translate("Group of delegation with the same name already exists!");
@@ -354,7 +339,9 @@ function modifyDelegatGroup($name, $description, $delegitems, $id)
 		}
 	else
 		{
-		$req = "update ".BAB_DG_GROUPS_TBL." set name='".$name."', description='".$description."'";
+		$req = "update ".BAB_DG_GROUPS_TBL." set 
+			name='".$babDB->db_escape_string($name)."', 
+			description='".$babDB->db_escape_string($description)."'";
 		$cnt = count($delegitems);
 		for( $i = 0; $i < count($babDG); $i++)
 			{
@@ -364,11 +351,11 @@ function modifyDelegatGroup($name, $description, $delegitems, $id)
 				$req .= ", ". $babDG[$i][0]."='N'";
 			}
 
-		$group = $_POST['group'] == 'NULL' ? 'NULL' : "'".$_POST['group']."'";
+		$group = $_POST['group'] == 'NULL' ? 'NULL' : "'".$babDB->db_escape_string($_POST['group'])."'";
 
 		$req .= ", id_group=".$group;
 
-		$babDB->db_query($req ." where id='".$id."'");
+		$babDB->db_query($req ." where id='".$babDB->db_escape_string($id)."'");
 
 		}
 

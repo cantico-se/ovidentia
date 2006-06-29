@@ -173,13 +173,8 @@ function bab_addGroup($name, $description, $managerid, $grpdg, $parent = 1)
 
 	$db = &$GLOBALS['babDB'];
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$description = addslashes($description);
-		$name = addslashes($name);
-		}
 
-	$req = "select * from ".BAB_GROUPS_TBL." where name='$name' AND id_parent='".$parent."'";	
+	$req = "select * from ".BAB_GROUPS_TBL." where name='".$db->db_escape_string($name)."' AND id_parent='".$db->db_escape_string($parent)."'";	
 	$res = $db->db_query($req);
 	if( $db->db_num_rows($res) > 0)
 		{
@@ -197,9 +192,9 @@ function bab_addGroup($name, $description, $managerid, $grpdg, $parent = 1)
 
 		$db->db_query("UPDATE ".BAB_GROUPS_TBL." 
 			SET 
-				name='".$name."', 
-				description = '".$description."',
-				manager = '".$managerid."',
+				name='".$db->db_escape_string($name)."', 
+				description = '".$db->db_escape_string($description)."',
+				manager = '".$db->db_escape_string($managerid)."',
 				nb_set = '0', 	
 				mail = 'N', 
 				ustorage = 'N', 
@@ -208,7 +203,7 @@ function bab_addGroup($name, $description, $managerid, $grpdg, $parent = 1)
 				directory = 'N', 
 				pcalendar = 'N'
 			WHERE
-				id='".$id."'
+				id='".$db->db_escape_string($id)."'
 			");
 
 		bab_callAddonsFunction('onGroupCreate', $id);

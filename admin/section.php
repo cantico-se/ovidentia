@@ -246,14 +246,6 @@ function sectionUpdate($id, $title, $desc, $content, $script, $template, $lang, 
 	$arr = $db->db_fetch_array($res);
 
 
-	if( bab_isMagicQuotesGpcOn())
-		{
-		$desc = stripslashes($desc);
-		$content = stripslashes($content);
-		$title = stripslashes($title);
-		$template = stripslashes($template);
-		}
-
 	bab_editor_record($content);
 
 	$desc = $db->db_escape_string($desc);

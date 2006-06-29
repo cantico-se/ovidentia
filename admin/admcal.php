@@ -260,13 +260,8 @@ function updateResourceCalendar($idcal, $calname, $caldesc, $calidsa)
 		return false;
 		}
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$calname = addslashes($calname);
-		$caldesc = addslashes($caldesc);
-		}
 
-	list($old_idsa) = $babDB->db_fetch_row($babDB->db_query("select idsa from ".BAB_CAL_RESOURCES_TBL." where id='".$idcal."'"));
+	list($old_idsa) = $babDB->db_fetch_row($babDB->db_query("select idsa from ".BAB_CAL_RESOURCES_TBL." where id='".$babDB->db_escape_string($idcal)."'"));
 	if( $old_idsa != 0 && $old_idsa != $calidsa )
 	{
 	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
@@ -289,11 +284,11 @@ function updateResourceCalendar($idcal, $calname, $caldesc, $calidsa)
 			$calinfo = $babBody->icalendars->getCalendarInfo($idcal);
 			notifyEventApprovers($arr['id_event'], $nfusers, $calinfo);
 			}
-		$babDB->db_query("update ".BAB_CAL_EVENTS_OWNERS_TBL." set idfai='".$idfai."' where id_cal='".$idcal."'and id_event='".$arr['id_event']."'");
+		$babDB->db_query("update ".BAB_CAL_EVENTS_OWNERS_TBL." set idfai='".$babDB->db_escape_string($idfai)."' where id_cal='".$babDB->db_escape_string($idcal)."'and id_event='".$babDB->db_escape_string($arr['id_event'])."'");
 		}		
 	}
 
-	$babDB->db_query("update ".BAB_CAL_RESOURCES_TBL." set name='".$calname."', description='".$caldesc."', idsa='".$calidsa."' where id='".$idcal."'");
+	$babDB->db_query("update ".BAB_CAL_RESOURCES_TBL." set name='".$babDB->db_escape_string($calname)."', description='".$babDB->db_escape_string($caldesc)."', idsa='".$babDB->db_escape_string($calidsa)."' where id='".$babDB->db_escape_string($idcal)."'");
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
 	exit;
 }
@@ -308,17 +303,11 @@ function updatePublicCalendar($idcal, $calname, $caldesc, $calidsa)
 		return false;
 		}
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$calname = addslashes($calname);
-		$caldesc = addslashes($caldesc);
-		}
-
-	list($old_idsa) = $babDB->db_fetch_row($babDB->db_query("select idsa from ".BAB_CAL_PUBLIC_TBL." where id='".$idcal."'"));
+	list($old_idsa) = $babDB->db_fetch_row($babDB->db_query("select idsa from ".BAB_CAL_PUBLIC_TBL." where id='".$babDB->db_escape_string($idcal)."'"));
 	if( $old_idsa != 0 && $old_idsa != $calidsa )
 	{
 	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
-	$res = $babDB->db_query("select * from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_cal='".$idcal."' and status='".BAB_CAL_STATUS_NONE."'");
+	$res = $babDB->db_query("select * from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_cal='".$babDB->db_escape_string($idcal)."' and status='".BAB_CAL_STATUS_NONE."'");
 	while( $arr = $babDB->db_fetch_array($res))
 		{
 		if( $arr['idfai'] != 0 )
@@ -337,11 +326,11 @@ function updatePublicCalendar($idcal, $calname, $caldesc, $calidsa)
 			$calinfo = $babBody->icalendars->getCalendarInfo($idcal);
 			notifyEventApprovers($arr['id_event'], $nfusers, $calinfo);
 			}
-		$babDB->db_query("update ".BAB_CAL_EVENTS_OWNERS_TBL." set idfai='".$idfai."' where id_cal='".$idcal."'and id_event='".$arr['id_event']."'");
+		$babDB->db_query("update ".BAB_CAL_EVENTS_OWNERS_TBL." set idfai='".$babDB->db_escape_string($idfai)."' where id_cal='".$babDB->db_escape_string($idcal)."'and id_event='".$babDB->db_escape_string($arr['id_event'])."'");
 		}		
 	}
 
-	$babDB->db_query("update ".BAB_CAL_PUBLIC_TBL." set name='".$calname."', description='".$caldesc."', idsa='".$calidsa."'  where id='".$idcal."'");
+	$babDB->db_query("update ".BAB_CAL_PUBLIC_TBL." set name='".$babDB->db_escape_string($calname)."', description='".$babDB->db_escape_string($caldesc)."', idsa='".$babDB->db_escape_string($calidsa)."'  where id='".$babDB->db_escape_string($idcal)."'");
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
 	exit;
 }
@@ -356,14 +345,7 @@ function updateCalendarCategory($idcat, $catname, $catdesc, $bgcolor)
 		return false;
 		}
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$catname = addslashes($catname);
-		$catdesc = addslashes($catdesc);
-		$bgcolor = addslashes($bgcolor);
-		}
-
-	$babDB->db_query("update ".BAB_CAL_CATEGORIES_TBL." set name='".$catname."', description='".$catdesc."', bgcolor='".$bgcolor."' where id='".$idcat."'");
+	$babDB->db_query("update ".BAB_CAL_CATEGORIES_TBL." set name='".$babDB->db_escape_string($catname)."', description='".$babDB->db_escape_string($catdesc)."', bgcolor='".$babDB->db_escape_string($bgcolor)."' where id='".$babDB->db_escape_string($idcat)."'");
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admcals&idx=cats");
 	exit;
 }

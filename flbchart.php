@@ -660,15 +660,23 @@ function saveOrgChartEntity($ocid, $name, $description, $oeid, $hsel, $grpid)
 				break;
 			}
 
-		if( !bab_isMagicQuotesGpcOn())
-			{
-			$name = addslashes($name);
-			$description = addslashes($description);
-			}
 
-		$query = "insert into ".BAB_OC_ENTITIES_TBL." (name, description, id_oc, id_node, id_group) values ('" .$name. "', '" . $description. "', '".$ocid."', '".$idnode."', '".$idgroup."')";
+
+		$query = "INSERT into ".BAB_OC_ENTITIES_TBL." 
+			(name, description, id_oc, id_node, id_group) 
+		values 
+			(
+				'" .$babDB->db_escape_string($name). "', 
+				'" .$babDB->db_escape_string($description). "', 
+				'" .$babDB->db_escape_string($ocid)."', 
+				'" .$babDB->db_escape_string($idnode)."', 
+				'" .$babDB->db_escape_string($idgroup)."'
+			)
+		";
+
 		$babDB->db_query($query);
 		$id = $babDB->db_insert_id();
+
 		if( $grpid != 'none' )
 			{
 			$babDB->db_query("update ".BAB_GROUPS_TBL." set id_ocentity='".$id."' where id='".$idgroup."'");
@@ -720,13 +728,12 @@ function updateOrgChartEntity($ocid, $name, $description, $oeid)
 		return false;
 		}
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$name = addslashes($name);
-		$description = addslashes($description);
-		}
+	$babDB->db_query("UPDATE ".BAB_OC_ENTITIES_TBL." set 
+		name='".$babDB->db_escape_string($name)."', 
+		description='".$babDB->db_escape_string($description)."' 
+		WHERE id='".$oeid."'
+	");
 
-	$babDB->db_query("update ".BAB_OC_ENTITIES_TBL." set name='".$name."', description='".$description."' where id='".$oeid."'");
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=flbchart&rf=1&idx=mode&ocid=".$ocid."&oeid=".$oeid);
 	}
 
@@ -931,13 +938,18 @@ function saveOrgChartRole($ocid, $name, $description, $oeid, $cardinality)
 		return false;
 		}
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$name = addslashes($name);
-		$description = addslashes($description);
-		}
 	
-	$req = "insert into ".BAB_OC_ROLES_TBL." (name, description, id_oc, id_entity, type, cardinality) values ('" .$name. "', '" . $description. "', '".$ocid."', '".$oeid."', '0', '".$cardinality."')";
+	$req = "INSERT INTO ".BAB_OC_ROLES_TBL." (name, description, id_oc, id_entity, type, cardinality) 
+	VALUES  
+	(
+		'" .$babDB->db_escape_string($name). "',
+		'" . $babDB->db_escape_string($description). "', 
+		'".$babDB->db_escape_string($ocid)."',
+		'".$babDB->db_escape_string($oeid)."',
+		'0',
+		'".$babDB->db_escape_string($cardinality)."'
+	)";
+
 	$babDB->db_query($req);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=flbchart&idx=listr&ocid=".$ocid."&oeid=".$oeid);
 	return true;
@@ -955,7 +967,7 @@ function updateOrgChartRole($ocid, $name, $description, $oeid, $orid, $cardinali
 
 	if( !empty($cardinality) && $orinfo['cardinality'] != $cardinality )
 		{
-		$arr = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_OC_ROLES_USERS_TBL." where id_role='".$orid."'"));
+		$arr = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_OC_ROLES_USERS_TBL." where id_role='".$babDB->db_escape_string($orid)."'"));
 		if( $arr['total'] > 1 && $cardinality == 'N')
 			{
 			$babLittleBody->msgerror = bab_translate("ERROR: More than one user are associated with this role")." !";
@@ -963,18 +975,16 @@ function updateOrgChartRole($ocid, $name, $description, $oeid, $orid, $cardinali
 			}
 		}
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$name = addslashes($name);
-		$description = addslashes($description);
-		}
 	
-	$req = "update ".BAB_OC_ROLES_TBL." set name='".$name."', description='".$description."'";
+	$req = "UPDATE ".BAB_OC_ROLES_TBL." set 
+	name='".$babDB->db_escape_string($name)."', 
+	description='".$babDB->db_escape_string($description)."'
+	";
 	if( !empty($cardinality))
 		{
-		$req .= ", cardinality='".$cardinality."'";
+		$req .= ", cardinality='".$babDB->db_escape_string($cardinality)."'";
 		}
-	$req .= " where id='".$orid."'";
+	$req .= " where id='".$babDB->db_escape_string($orid)."'";
 	$babDB->db_query($req);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=flbchart&idx=listr&ocid=".$ocid."&oeid=".$oeid."&ltf=1");
 	return true;

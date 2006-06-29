@@ -683,13 +683,16 @@ function addStatBasket($baskname, $baskdesc)
 		return false;
 		}
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$baskname = addslashes($baskname);
-		$baskdesc = addslashes($baskdesc);
-		}
-
-	$babDB->db_query("insert into ".BAB_STATS_BASKETS_TBL." (basket_name, basket_desc, basket_author, basket_datetime, id_dgowner) values ('".$baskname."','".$baskdesc."','".$GLOBALS['BAB_SESS_USERID']."', now(), '".$babBody->currentAdmGroup."')");
+	$babDB->db_query("insert into ".BAB_STATS_BASKETS_TBL." 
+	(basket_name, basket_desc, basket_author, basket_datetime, id_dgowner) 
+	values (
+		'".$babDB->db_escape_string($baskname)."',
+		'".$babDB->db_escape_string($baskdesc)."',
+		'".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."',
+		now(), 
+		'".$babDB->db_escape_string($babBody->currentAdmGroup)."'
+		)
+	");
 }
 
 function updateStatBasket($baskid, $baskname, $baskdesc)
@@ -702,29 +705,28 @@ function updateStatBasket($baskid, $baskname, $baskdesc)
 		return false;
 		}
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$baskname = addslashes($baskname);
-		$baskdesc = addslashes($baskdesc);
-		}
 
-	$babDB->db_query("update ".BAB_STATS_BASKETS_TBL." set basket_name='".$baskname."', basket_desc='".$baskdesc."' where id='".$baskid."'");
+	$babDB->db_query("update ".BAB_STATS_BASKETS_TBL." set 
+		basket_name='".$babDB->db_escape_string($baskname)."',
+		basket_desc='".$babDB->db_escape_string($baskdesc)."' 
+	where 
+		id='".$babDB->db_escape_string($baskid)."'");
 }
 
 function deleteStatBasket($id )
 {
 	global $babDB;
 
-	$babDB->db_query("delete from ".BAB_STATS_BASKETS_TBL." where id='".$id."'");
-	$babDB->db_query("delete from ".BAB_STATS_BASKET_CONTENT_TBL." where basket_id='".$id."'");
-	$babDB->db_query("delete from ".BAB_STATSBASKETS_GROUPS_TBL." where id_object='".$id."'");
+	$babDB->db_query("delete from ".BAB_STATS_BASKETS_TBL." where id='".$babDB->db_escape_string($id)."'");
+	$babDB->db_query("delete from ".BAB_STATS_BASKET_CONTENT_TBL." where basket_id='".$babDB->db_escape_string($id)."'");
+	$babDB->db_query("delete from ".BAB_STATSBASKETS_GROUPS_TBL." where id_object='".$babDB->db_escape_string($id)."'");
 }
 
 function deleteStatBasketContentItem()
 {
 	global $babDB;
 
-	$babDB->db_query("delete from ".BAB_STATS_BASKET_CONTENT_TBL." where id='".$_GET['itemid']."' and basket_id='".$_GET['baskid']."'");
+	$babDB->db_query("delete from ".BAB_STATS_BASKET_CONTENT_TBL." where id='".$babDB->db_escape_string($_GET['itemid'])."' and basket_id='".$babDB->db_escape_string($_GET['baskid'])."'");
 }
 
 function addStatBasketContentItem()
@@ -774,16 +776,17 @@ function addStatBasketContentItem()
 				return false;
 			}
 
-			if (bab_isMagicQuotesGpcOn())
-				{
-				$ibcdesc = stripslashes($_POST['ibcdesc']);
-				}
-			else
-				{
-				$ibcdesc = $_POST['ibcdesc'];
-				}
+			
+			$ibcdesc = $_POST['ibcdesc'];
 
-			$babDB->db_query("insert into ".BAB_STATS_BASKET_CONTENT_TBL." (basket_id, bc_description, bc_author, bc_datetime, bc_type, bc_id ) values ('".$_POST['baskid']."','".$babDB->db_escape_string($ibcdesc)."','".$GLOBALS['BAB_SESS_USERID']."',now(),'".$bctype."','".$_POST['ibcid']."')");
+			$babDB->db_query("insert into ".BAB_STATS_BASKET_CONTENT_TBL." (basket_id, bc_description, bc_author, bc_datetime, bc_type, bc_id ) values (
+			'".$babDB->db_escape_string($_POST['baskid'])."',
+			'".$babDB->db_escape_string($ibcdesc)."',
+			'".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."',
+			now(),
+			'".$babDB->db_escape_string($bctype)."',
+			'".$babDB->db_escape_string($_POST['ibcid'])."'
+			)");
 		}
 	}
 
@@ -796,16 +799,9 @@ function updateStatBasketContentItem()
 
 	if( isset($_POST['itemid']) && !empty($_POST['itemid']))
 	{
-		if (bab_isMagicQuotesGpcOn())
-			{
-			$ibcdesc = stripslashes($_POST['ibcdesc']);
-			}
-		else
-			{
-			$ibcdesc = $_POST['ibcdesc'];
-			}
+		$ibcdesc = $_POST['ibcdesc'];
 
-		$babDB->db_query("update ".BAB_STATS_BASKET_CONTENT_TBL." set bc_description='".$babDB->db_escape_string($ibcdesc)."' where id='".$_POST['itemid']."'");
+		$babDB->db_query("update ".BAB_STATS_BASKET_CONTENT_TBL." set bc_description='".$babDB->db_escape_string($ibcdesc)."' where id='".$babDB->db_escape_string($_POST['itemid'])."'");
 	}
 
 	return true;

@@ -116,12 +116,6 @@ function updateForum($id, $name, $description, $moderation, $notification, $nbms
 
 	$db = $GLOBALS['babDB'];
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$name = addslashes($name);
-		$description = addslashes($description);
-		}
-
 	if (!is_numeric($nbmsgdisplay) || empty($nbmsgdisplay))
 		{
 		$nbmsgdisplay = 20;
@@ -132,7 +126,17 @@ function updateForum($id, $name, $description, $moderation, $notification, $nbms
 		$nbrecipients = 30;
 		}
 
-	$query = "update ".BAB_FORUMS_TBL." set name='$name', description='$description', moderation='$moderation', notification='$notification', display='$nbmsgdisplay', active='$active', nb_recipients='$nbrecipients' where id = '$id'";
+	$query = "UPDATE ".BAB_FORUMS_TBL." set 
+		name='".$babDB->db_escape_string($name)."', 
+		description='".$babDB->db_escape_string($description)."', 
+		moderation='".$babDB->db_escape_string($moderation)."', 
+		notification='".$babDB->db_escape_string($notification)."', 
+		display='".$babDB->db_escape_string($nbmsgdisplay)."', 
+		active='".$babDB->db_escape_string($active)."', 
+		nb_recipients='".$babDB->db_escape_string($nbrecipients)."' 
+	where 
+		id = '".$babDB->db_escape_string($id)."'";
+
 	$db->db_query($query);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=forums&idx=List");
 	}

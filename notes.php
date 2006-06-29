@@ -113,10 +113,6 @@ function saveNotes($content)
 		{
 		return;
 		}
-	if( bab_isMagicQuotesGpcOn())
-		{
-		$content = stripslashes($content);
-		}
 
 	bab_editor_record($content);
 	$content = $db->db_escape_string($content);

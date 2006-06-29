@@ -194,12 +194,7 @@ function saveFolder($fname, $active, $said, $notification, $version, $bhide, $ba
 		return false;
 		}
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$fname = addslashes($fname);
-		}
-
-	$res = $babDB->db_query("select id from ".BAB_FM_FOLDERS_TBL." where folder='".$fname."' and id_dgowner='".$babBody->currentAdmGroup."'");
+	$res = $babDB->db_query("select id from ".BAB_FM_FOLDERS_TBL." where folder='".$babDB->db_escape_string($fname)."' and id_dgowner='".$babDB->db_escape_string($babBody->currentAdmGroup)."'");
 	if( $babDB->db_num_rows($res) > 0)
 		{
 		$babBody->msgerror = bab_translate("This folder already exists");
@@ -209,7 +204,16 @@ function saveFolder($fname, $active, $said, $notification, $version, $bhide, $ba
 		{
 		if( empty($said))
 			$said = 0;
-		$babDB->db_query("insert into ".BAB_FM_FOLDERS_TBL." (folder, idsa, filenotify, active, version, id_dgowner, bhide, auto_approbation) VALUES ('" .$fname. "', '". $said. "', '" . $notification. "', '" . $active. "', '" . $version. "', '" . $babBody->currentAdmGroup. "', '" . $bhide. "', '" . $bautoapp. "')");
+		$babDB->db_query("insert into ".BAB_FM_FOLDERS_TBL." (folder, idsa, filenotify, active, version, id_dgowner, bhide, auto_approbation) VALUES (
+			'" . $babDB->db_escape_string($fname). "',
+			'" . $babDB->db_escape_string($said). "', 
+			'" . $babDB->db_escape_string($notification). "', 
+			'" . $babDB->db_escape_string($active). "', 
+			'" . $babDB->db_escape_string($version). "', 
+			'" . $babDB->db_escape_string($babBody->currentAdmGroup). "', 
+			'" . $babDB->db_escape_string($bhide). "', 
+			'" . $babDB->db_escape_string($bautoapp). "'
+		)");
 		return true;
 		}
 }

@@ -1284,13 +1284,8 @@ function dbUpdateDiplay($id, $listfd)
 function dbUpdateOvmlFile($id, $ovmllist, $ovmldetail)
 {
 	global $babDB;
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$ovmllist = addslashes($ovmllist);
-		$ovmldetail = addslashes($ovmldetail);
-		}
 
-	$babDB->db_query("update ".BAB_DB_DIRECTORIES_TBL." set ovml_list='".$ovmllist."', ovml_detail='".$ovmldetail."' where id='".$id."'");
+	$babDB->db_query("update ".BAB_DB_DIRECTORIES_TBL." set ovml_list='".$babDB->db_escape_string($ovmllist)."', ovml_detail='".$babDB->db_escape_string($ovmldetail)."' where id='".$babDB->db_escape_string($id)."'");
 
 }
 
@@ -1340,25 +1335,18 @@ function updateFieldsExtraValues($id, $fxid, $fields_values, $fvdef,$value, $mvy
 		return;
 	}
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$addslashes = true;
-		}
 
 	if( $rr['id_field'] > BAB_DBDIR_MAX_COMMON_FIELDS )
 	{
 		if( isset($GLOBALS['fieldname']) && !empty($GLOBALS['fieldname']))
 		{
-			if( $addslashes )
-				{
-				$GLOBALS['fieldname'] = addslashes($GLOBALS['fieldname']);
-				}
-			$babDB->db_query("update ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." set name='".$GLOBALS['fieldname']."' where id='".($rr['id_field']-BAB_DBDIR_MAX_COMMON_FIELDS)."'");
+
+			$babDB->db_query("update ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." set name='".$babDB->db_escape_string($GLOBALS['fieldname'])."' where id='".($rr['id_field']-BAB_DBDIR_MAX_COMMON_FIELDS)."'");
 		}
 	}
 
 	$existing = array();
-	$res = $babDB->db_query("SELECT * FROM ".BAB_DBDIR_FIELDSVALUES_TBL." WHERE id_fieldextra = '".$fxid."'");
+	$res = $babDB->db_query("SELECT * FROM ".BAB_DBDIR_FIELDSVALUES_TBL." WHERE id_fieldextra = '".$babDB->db_escape_string($fxid)."'");
 	while ($arr = $babDB->db_fetch_array($res))
 		{
 		$existing[$arr['field_value']] = $arr['id'];
@@ -1377,9 +1365,7 @@ function updateFieldsExtraValues($id, $fxid, $fields_values, $fvdef,$value, $mvy
 		else
 			{
 			$value = trim($value);
-			if (!bab_isMagicQuotesGpcOn())
-				$value = addslashes($value);
-			$babDB->db_query("INSERT INTO ".BAB_DBDIR_FIELDSVALUES_TBL." (id_fieldextra, field_value) VALUES ('".$fxid."','".$value."')");
+			$babDB->db_query("INSERT INTO ".BAB_DBDIR_FIELDSVALUES_TBL." (id_fieldextra, field_value) VALUES ('".$babDB->db_escape_string($fxid)."','".$babDB->db_escape_string($value)."')");
 			return $babDB->db_insert_id();
 			}
 		}
@@ -1400,11 +1386,10 @@ function updateFieldsExtraValues($id, $fxid, $fields_values, $fvdef,$value, $mvy
 		$default_value = fieldvalue($existing,$value);
 		}
 
-	$babDB->db_query("UPDATE ".BAB_DBDIR_FIELDSEXTRA_TBL." SET  multi_values = '".$mvyn."', default_value='".$default_value."' WHERE id='".$fxid."'");
+	$babDB->db_query("UPDATE ".BAB_DBDIR_FIELDSEXTRA_TBL." SET  multi_values = '".$babDB->db_escape_string($mvyn)."', default_value='".$babDB->db_escape_string($default_value)."' WHERE id='".$babDB->db_escape_string($fxid)."'");
 
-	foreach($existing as $id)
-		{
-		$babDB->db_query("DELETE FROM ".BAB_DBDIR_FIELDSVALUES_TBL." WHERE id='".$id."'");
+	foreach($existing as $id) {
+		$babDB->db_query("DELETE FROM ".BAB_DBDIR_FIELDSVALUES_TBL." WHERE id='".$babDB->db_escape_string($id)."'");
 		}
 }
 
@@ -1419,13 +1404,8 @@ function addDbField($id, $fieldn, $fieldv, &$message)
 		return false;
 		}
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$fieldn = addslashes($fieldn);
-		$fieldv = addslashes($fieldv);
-		}
 
-	$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
+	$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
 	if( $arr['id_group'] != 0 )
 		{
 		$iddir = 0;
@@ -1435,7 +1415,7 @@ function addDbField($id, $fieldn, $fieldv, &$message)
 		$iddir = $id;
 		}
 
-	$res = $babDB->db_query("select id from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id_directory='".$iddir."' and name='".$fieldn."'");
+	$res = $babDB->db_query("select id from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id_directory='".$babDB->db_escape_string($iddir)."' and name='".$babDB->db_escape_string($fieldn)."'");
 	if( $babDB->db_num_rows($res) > 0)
 		{
 		$message = bab_translate("ERROR: This field already exists");
@@ -1443,27 +1423,27 @@ function addDbField($id, $fieldn, $fieldv, &$message)
 		}
 	else
 		{
-		$rr = $babDB->db_fetch_array($babDB->db_query("select max(list_ordering) from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$iddir."'"));
-		$babDB->db_query("insert into ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." ( id_directory, name) values ('".$iddir."','".$fieldn."')");
+		$rr = $babDB->db_fetch_array($babDB->db_query("select max(list_ordering) from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$babDB->db_escape_string($iddir)."'"));
+		$babDB->db_query("insert into ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." ( id_directory, name) values ('".$babDB->db_escape_string($iddir)."','".$babDB->db_escape_string($fieldn)."')");
 		$id = $babDB->db_insert_id();
 		if( $iddir == 0 )
 			{
 			$res = $babDB->db_query("select id from ".BAB_SITES_TBL."");
 			while( $row = $babDB->db_fetch_array($res))
 				{
-				$babDB->db_query("insert into ".BAB_SITES_FIELDS_REGISTRATION_TBL." (id_site, id_field, registration, required, multilignes) values ('".$row['id']."', '".(BAB_DBDIR_MAX_COMMON_FIELDS + $id)."','N','N', 'N')");
-				$babDB->db_query("insert into ".BAB_LDAP_SITES_FIELDS_TBL." (id_field, id_site) values ('".(BAB_DBDIR_MAX_COMMON_FIELDS + $id)."', '".$row['id']."')");
+				$babDB->db_query("insert into ".BAB_SITES_FIELDS_REGISTRATION_TBL." (id_site, id_field, registration, required, multilignes) values ('".$babDB->db_escape_string($row['id'])."', '".(BAB_DBDIR_MAX_COMMON_FIELDS + $id)."','N','N', 'N')");
+				$babDB->db_query("insert into ".BAB_LDAP_SITES_FIELDS_TBL." (id_field, id_site) values ('".(BAB_DBDIR_MAX_COMMON_FIELDS + $id)."', '".$babDB->db_escape_string($row['id'])."')");
 				}
 			}
 		
-		$req = "insert into ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES ('" .$iddir. "', '" . (BAB_DBDIR_MAX_COMMON_FIELDS + $id). "', '0', 'N', 'N', 'N', '0', '".($rr[0]+1)."')";
+		$req = "insert into ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES ('" .$babDB->db_escape_string($iddir). "', '" . (BAB_DBDIR_MAX_COMMON_FIELDS + $id). "', '0', 'N', 'N', 'N', '0', '".($rr[0]+1)."')";
 		$babDB->db_query($req);
 		$fxid = $babDB->db_insert_id();
 		if( !empty($fieldv))
 			{
-			$babDB->db_query("insert into ".BAB_DBDIR_FIELDSVALUES_TBL." (id_fieldextra, field_value) VALUES ('" .$fxid."', '".trim($fieldv)."')");		
+			$babDB->db_query("insert into ".BAB_DBDIR_FIELDSVALUES_TBL." (id_fieldextra, field_value) VALUES ('" .$babDB->db_escape_string($fxid)."', '".$babDB->db_escape_string(trim($fieldv))."')");		
 			$fvid = $babDB->db_insert_id();			
-			$babDB->db_query("update ".BAB_DBDIR_FIELDSEXTRA_TBL." set default_value='".$fvid."' where id='".$fxid."'");
+			$babDB->db_query("update ".BAB_DBDIR_FIELDSEXTRA_TBL." set default_value='".$babDB->db_escape_string($fvid)."' where id='".$babDB->db_escape_string($fxid)."'");
 			}
 		}
 	return true;
