@@ -566,12 +566,12 @@ function sendPassword ($nickname)
 				
 						if( isset($babBody->babsite['ldap_filter']) && !empty($babBody->babsite['ldap_filter']))
 							{
-							$filter = str_replace('%UID', $babBody->babsite['ldap_attribute'], $babBody->babsite['ldap_filter']);
+							$filter = str_replace('%UID', ldap_escapefilter($babBody->babsite['ldap_attribute']), $babBody->babsite['ldap_filter']);
 							$filter = str_replace('%NICKNAME', $nickname, $filter);
 							}
 						else
 							{
-							$filter = "(|(".$babBody->babsite['ldap_attribute']."=".$nickname."))";
+							$filter = "(|(".ldap_escapefilter($babBody->babsite['ldap_attribute'])."=".ldap_escapefilter($nickname)."))";
 							}
 
 						$attributes = array("dn", $babBody->babsite['ldap_attribute'], "cn");
@@ -735,11 +735,11 @@ function userLogin($nickname,$password)
 						{
 						if( isset($babBody->babsite['ldap_filter']) && !empty($babBody->babsite['ldap_filter']))
 							{
-							$filter = str_replace('%NICKNAME', $nickname, $babBody->babsite['ldap_filter']);
+							$filter = str_replace('%NICKNAME', ldap_escapefilter($nickname), $babBody->babsite['ldap_filter']);
 							}
 						else
 							{
-							$filter = "(|(samaccountname=".$nickname."))";
+							$filter = "(|(samaccountname=".ldap_escapefilter($nickname)."))";
 							}
 						$entries = $ldap->search($babBody->babsite['ldap_searchdn'], $filter, $attributes);
 						}
@@ -747,12 +747,12 @@ function userLogin($nickname,$password)
 				default:
 						if( isset($babBody->babsite['ldap_filter']) && !empty($babBody->babsite['ldap_filter']))
 							{
-							$filter = str_replace('%UID', $babBody->babsite['ldap_attribute'], $babBody->babsite['ldap_filter']);
-							$filter = str_replace('%NICKNAME', $nickname, $filter);
+							$filter = str_replace('%UID', ldap_escapefilter($babBody->babsite['ldap_attribute']), $babBody->babsite['ldap_filter']);
+							$filter = str_replace('%NICKNAME', ldap_escapefilter($nickname), $filter);
 							}
 						else
 							{
-							$filter = "(|(".$babBody->babsite['ldap_attribute']."=".$nickname."))";
+							$filter = "(|(".ldap_escapefilter($babBody->babsite['ldap_attribute'])."=".ldap_escapefilter($nickname)."))";
 							}
 					$entries = $ldap->search($babBody->babsite['ldap_searchdn'], $filter, $attributes);
 

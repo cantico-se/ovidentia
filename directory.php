@@ -189,7 +189,7 @@ function browseLdapDirectory($id, $pos)
 				$this->ldap = new babLDAP($arr['host'], "", true);
 				$this->ldap->connect();
 				$this->ldap->bind($arr['userdn'], $arr['adpass']);
-				$this->entries = $this->ldap->search($arr['basedn'], "(|(sn=".$pos."*))", array("sn","givenname","cn", "telephonenumber", "mail", "homephone"));
+				$this->entries = $this->ldap->search($arr['basedn'], "(|(sn=".ldap_escapefilter($pos)."*))", array("sn","givenname","cn", "telephonenumber", "mail", "homephone"));
 				if( is_array($this->entries))
 					{
 					$this->count = $this->entries['count'];
@@ -607,7 +607,7 @@ function summaryLdapContact($id, $cn)
 				$this->ldap = new babLDAP($arr['host'], "", true);
 				$this->ldap->connect();
 				$this->ldap->bind($arr['userdn'], $arr['adpass']);
-				$this->entries = $this->ldap->search($arr['basedn'],"(|(cn=".bab_ldapEncode($cn, $this->ldapdecodetype)."))");
+				$this->entries = $this->ldap->search($arr['basedn'],"(|(cn=".bab_ldapEncode(ldap_escapefilter($cn), $this->ldapdecodetype)."))");
 				$this->ldap->close();
 				$this->name = bab_ldapDecode($this->entries[0]['cn'][0], $this->ldapdecodetype);
 				$this->urlimg = $GLOBALS['babUrlScript']."?tg=directory&idx=getimgl&id=".$id."&cn=".$cn;

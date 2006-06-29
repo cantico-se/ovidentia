@@ -824,11 +824,11 @@ function userChangePassword($oldpwd, $newpwd)
 						{
 						if( isset($babBody->babsite['ldap_filter']) && !empty($babBody->babsite['ldap_filter']))
 							{
-							$filter = str_replace('%NICKNAME', $GLOBALS['BAB_SESS_NICKNAME'], $babBody->babsite['ldap_filter']);
+							$filter = str_replace('%NICKNAME', ldap_escapefilter($GLOBALS['BAB_SESS_NICKNAME']), $babBody->babsite['ldap_filter']);
 							}
 						else
 							{
-							$filter = "(|(samaccountname=".$GLOBALS['BAB_SESS_NICKNAME']."))";
+							$filter = "(|(samaccountname=".ldap_escapefilter($GLOBALS['BAB_SESS_NICKNAME'])."))";
 							}
 
 						$attributes = array("dn", $babBody->babsite['ldap_attribute'], "cn");
@@ -872,12 +872,12 @@ function userChangePassword($oldpwd, $newpwd)
 						}
 					if( isset($babBody->babsite['ldap_filter']) && !empty($babBody->babsite['ldap_filter']))
 						{
-						$filter = str_replace('%UID', $babBody->babsite['ldap_attribute'], $babBody->babsite['ldap_filter']);
-						$filter = str_replace('%NICKNAME', $GLOBALS['BAB_SESS_NICKNAME'], $filter);
+						$filter = str_replace('%UID', ldap_escapefilter($babBody->babsite['ldap_attribute']), $babBody->babsite['ldap_filter']);
+						$filter = str_replace('%NICKNAME', ldap_escapefilter($GLOBALS['BAB_SESS_NICKNAME']), $filter);
 						}
 					else
 						{
-						$filter = "(|(".$babBody->babsite['ldap_attribute']."=".$GLOBALS['BAB_SESS_NICKNAME']."))";
+						$filter = "(|(".ldap_escapefilter($babBody->babsite['ldap_attribute'])."=".ldap_escapefilter($GLOBALS['BAB_SESS_NICKNAME'])."))";
 						}
 
 					$attributes = array("dn", $babBody->babsite['ldap_attribute'], "cn");

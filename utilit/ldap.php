@@ -56,6 +56,12 @@ function ldap_encrypt($str, $encryption)
 	}
 }
 
+function ldap_escapefilter($filter)
+{
+$pat = array('/\\\\/', '/\\*/', '/\\(/', '/\\)/');
+$repl = array('\\\\5c', '\\\\2a', '\\\\28', '\\\\29');
+return preg_replace($pat, $repl, $filter);
+}
 
 class babLDAP
 {

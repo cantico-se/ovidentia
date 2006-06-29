@@ -462,12 +462,12 @@ function updatePassword($item, $newpwd1, $newpwd2)
 	
 				if( isset($babBody->babsite['ldap_filter']) && !empty($babBody->babsite['ldap_filter']))
 					{
-					$filter = str_replace('%UID', $babBody->babsite['ldap_attribute'], $babBody->babsite['ldap_filter']);
-					$filter = str_replace('%NICKNAME', $nickname, $filter);
+					$filter = str_replace('%UID', ldap_escapefilter($babBody->babsite['ldap_attribute']), $babBody->babsite['ldap_filter']);
+					$filter = str_replace('%NICKNAME', ldap_escapefilter($nickname), $filter);
 					}
 				else
 					{
-					$filter = "(|(".$babBody->babsite['ldap_attribute']."=".$nickname."))";
+					$filter = "(|(".ldap_escapefilter($babBody->babsite['ldap_attribute'])."=".ldap_escapefilter($nickname)."))";
 					}
 
 				$attributes = array("dn", $babBody->babsite['ldap_attribute'], "cn");
