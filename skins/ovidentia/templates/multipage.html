@@ -26,19 +26,6 @@
 <!--#begin multipage -->
 <script type="text/javascript">
 <!--
-function on_btn_clicked(idx, action)
-{
-	var form = document.forms.multipage;
-
-	form.idx.value = idx;
-	form.action.value = action;
-}
-
-function submit_form()
-{
-	return true;
-}
-
 function get_selectCtrl_value(oCtrl)
 {
 	var form = document.forms.multipage;
@@ -57,27 +44,40 @@ function on_selectCtrl_changed(oCtrl, sHiddenName)
 {
 	var form = document.forms.multipage;
 	document.forms['multipage'].elements[sHiddenName].value = get_selectCtrl_value(oCtrl);
-	form.iCurrentPage.value = 1;
 	form.submit();
 }
 
-function goto_page(page)
+function onNbRowPerPageChanged()
 {
 	var form = document.forms.multipage;
-
-	form.iCurrentPage.value = page;
 	form.submit();
+}
+
+function hideOnNbRowPerPageChangedButton()
+{
+	var form = document.forms.multipage;
+	document.forms['multipage'].elements['_onNbRowPerPageChanged'].style.display = 'none';
+	
 }
 //-->
 </script>
+
+<div border="0" width="99%" style="padding:2px">
+	<select name="iNbRowsPerPage" onchange="onNbRowPerPageChanged()">
+		<option value="{ iNbRow }">{ sNbRow }</option>
+		<option value="{ iNbRow }">{ sNbRow }</option>
+		<option value="{ iNbRow }">{ sNbRow }</option>
+		<option value="{ iNbRow }">{ sNbRow }</option>
+	</select>
+	<a href="{ aToolBarItem[sLink] }" title="{ aToolBarItem[sText] }">
+		<img border="0" src="{ aToolBarItem[sIcon] }" alt="{ aToolBarItem[sText] }" />
+	</a>
+</div>
 
 <form method="get" action="{ babPhpSelf }" name="multipage">
 	<input type="hidden" name="tg" value="{ sTg }" />
 	<input type="hidden" name="idx" value="{ iIdx }" />
 	<input type="hidden" name="action" value="" />
-
-	<input type="hidden" name="iCurrentPage" value="{ iCurrentPage }" />
-	<input type="hidden" name="iNbRowsPerPage" value="{ iNbRowsPerPage }" />
 
 	<table width="99%" border="0" cellspacing="0" cellpadding="2" align="center" class="BabLoginCadreBackground">
 		<tr> 
@@ -85,11 +85,16 @@ function goto_page(page)
 				<table width="100%" border="0" cellspacing="0" cellpadding="2" class="BabLoginMenuBackground">
 
 					<thead>
+						<tr>
+							<td colspan="{ iColumnHeadersCount }" class="BabSiteAdminTitleFontBackground" nowrap>
+								&nbsp;
+							</td>
+						</tr>
 						<tr class="BabForumTitle"> 
 							<!--#in getNextColumnHeader -->
 								<td>
 									<!--#if bIsColumnHeaderUrl -->
-										<a href="{ sColumnHeaderUrl }">{ sColumnHeaderText] }</a>
+										<a href="{ sColumnHeaderUrl }" title="{ sColumnHeaderText }">{ sColumnHeaderText }</a>
 									<!--#else bIsColumnHeaderUrl -->
 										{ sColumnHeaderText }
 									<!--#endif bIsColumnHeaderUrl -->
@@ -114,18 +119,18 @@ function goto_page(page)
 
 					<tfoot align="center">
 						<tr class="BabSiteAdminTitleFontBackground"> 
-							<td colspan="2">
-								<select onchange="on_selectCtrl_changed(this, 'iNbRowsPerPage')">
+							<td colspan="{ iColumnHeadersCount }">
+								<input type="submit" name="_onNbRowPerPageChanged" value="{ sDisplay }" />
+								<select name="iNbRowsPerPage" onchange="onNbRowPerPageChanged()">
 								<!--#in getNextNbRow -->
 									<option value="{ iNbRow }">{ sNbRow }</option>
 								<!--#endin getNextNbRow -->
 								</select>
 								{ sResultPerPage }
 							</td>
-							<td>&nbsp;</td>
 						</tr>
 						<tr> 
-							<td colspan="30" class="BabLetterlists" nowrap>
+							<td colspan="{ iColumnHeadersCount }" class="BabLetterlists" nowrap>
 								{ sPagination }<br />{ sStatusLine }
 							</td>
 						</tr>
@@ -135,5 +140,10 @@ function goto_page(page)
 			</td>
 		</tr>
 	</table>
+	<script type="text/javascript">
+	<!--
+		hideOnNbRowPerPageChangedButton();
+	//-->
+	</script>
 </form>
 <!--#end multipage -->

@@ -47,7 +47,7 @@ define('BAB_TM_IDX_DISPLAY_CATEGORIES_LIST', 'displayCategoriesList');
 define('BAB_TM_IDX_DISPLAY_CATEGORY_FORM', 'displayCategoryForm');
 define('BAB_TM_IDX_DISPLAY_DELETE_CATEGORY_FORM', 'displayDeleteCategoryForm');
 define('BAB_TM_IDX_DISPLAY_PROJECT_SPACE_MENU', 'displayProjectSpaceMenu');
-define('BAB_TM_IDX_DISPLAY_PROJECTS_LIST', 'displayProjectsList');
+//define('BAB_TM_IDX_DISPLAY_PROJECTS_LIST', 'displayProjectsList');
 define('BAB_TM_IDX_DISPLAY_PROJECT_FORM', 'displayProjectsForm');
 define('BAB_TM_IDX_DISPLAY_DELETE_PROJECT_FORM', 'displayDeleteProjectForm');
 define('BAB_TM_IDX_DISPLAY_PROJECT_RIGHTS_FORM', 'displayProjectRightsForm');
@@ -61,6 +61,10 @@ define('BAB_TM_IDX_DISPLAY_DELETE_TASK_FORM', 'displayDeleteTaskForm');
 define('BAB_TM_IDX_DISPLAY_STOP_TASK_FORM', 'displayStopTaskForm');
 
 define('BAB_TM_IDX_DISPLAY_NOTICE_EVENT_FORM', 'displayNoticeEventForm');
+
+define('BAB_TM_IDX_DISPLAY_PERSONNAL_TASK_RIGHT', 'displayPersonnalTaskRight');
+
+
 
 
 define('BAB_TM_NONE', -1);

@@ -1557,6 +1557,7 @@ function bab_insertWorkingHours($iIdUser, $iWeekDay, $sStartHour, $sEndHour)
 				$iWeekDay . '\', \'' . $iIdUser . '\', \'' . $sStartHour . '\', \'' . $sEndHour . '\')'; 
 
 	//bab_debug($query);
+	
 	$res = $babDB->db_query($query);
 	if(false != $res)
 	{
@@ -1570,6 +1571,19 @@ function bab_deleteAllWorkingHours($iIdUser)
 	global $babDB;
 	$query = 'DELETE FROM '	. BAB_TSKMGR_WORKING_HOURS_TBL . ' WHERE idUser = \'' . $iIdUser . '\'';
 	$babDB->db_query($query);
+}
+
+function bab_onWorkingHoursChanged($iIdUser, $aWorkingDays)
+{
+	if(count($aWorkingDays) > 0)
+	{
+		bab_deleteAllWorkingHours($iIdUser);
+		foreach($aWorkingDays as $key => $iWeekDay)
+		{
+			bab_insertWorkingHours($iIdUser, $iWeekDay, '09:00', '12:00');
+			bab_insertWorkingHours($iIdUser, $iWeekDay, '13:00', '18:00');
+		}
+	}
 }
 
 function bab_createDefaultWorkingHours($iIdUser)
@@ -1808,5 +1822,4 @@ function bab_createDefaultProjectSpaceNoticeEvent($iIdProjectSpace)
 	bab_createNoticeEvent($iIdProjectSpace, $iIdProject, BAB_TM_EV_TASK_DELETED, BAB_TM_TASK_RESPONSIBLE);
 	bab_createNoticeEvent($iIdProjectSpace, $iIdProject, BAB_TM_EV_NOTICE_ALERT, BAB_TM_TASK_RESPONSIBLE);
 }
-
 ?>

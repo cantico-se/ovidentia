@@ -39,12 +39,10 @@ function displayMenu()
 
 	$babBody->title = bab_translate("Task Manager");
 	
-	$itemMenu = array();
+	$itemMenu = array();		
 	add_item_menu($itemMenu);
 
 	$bfp->set_anchor($GLOBALS['babUrlScript'] . '?tg=admTskMgr&idx=' . BAB_TM_IDX_DISPLAY_WORKING_HOURS_FORM , '', 'Working hours');
-	$bfp->set_anchor($GLOBALS['babUrlScript'] . '?tg=admTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST , '', 'Projects space');
-
 	$babBody->babecho(bab_printTemplate($bfp, 'tmCommon.html', 'displayMenu'));
 }
 
@@ -53,20 +51,9 @@ function displayMenu()
 
 function displayProjectsSpacesList()
 {
-	
 	global $babBody;
 
-	$itemMenu = array(
-		array(
-			'idx' => BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST,
-			'mnuStr' => bab_translate("Projects spaces"),
-			'url' => $GLOBALS['babUrlScript'] . '?tg=admTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST)/*,
-		array(
-			'idx' => BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_FORM,
-			'mnuStr' => bab_translate("Add a project space"),
-			'url' => $GLOBALS['babUrlScript'] . '?tg=admTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_FORM)*/	
-		);
-		
+	$itemMenu = array();
 	add_item_menu($itemMenu);
 	$babBody->title = bab_translate("Projects spaces");
 
@@ -164,8 +151,7 @@ function displayProjectsSpacesForm()
 			$this->set_data('sDescription', tskmgr_getVariable('sDescription', ''));
 			$this->set_data('iIdProjectSpace', $iIdProjectSpace);
 			$this->set_data('iIdDelegation', $iIdDelegation);
-//			$this->set_data('add_idx', BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST);
-			$this->set_data('add_idx', BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_FORM);
+			$this->set_data('add_idx', BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST);
 			$this->set_data('modify_idx', BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST);
 			$this->set_data('delete_idx', BAB_TM_IDX_DISPLAY_DELETE_PROJECTS_SPACES_FORM);
 			$this->set_data('add_action', BAB_TM_ACTION_ADD_PROJECT_SPACE);
@@ -199,10 +185,6 @@ function displayProjectsSpacesForm()
 	$tab_caption = ($iIdProjectSpace == 0) ? bab_translate("Add a project space") : bab_translate("Edition of a project space");
 	
 	$itemMenu = array(
-		array(
-			'idx' => BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST,
-			'mnuStr' => bab_translate("Projects spaces"),
-			'url' => $GLOBALS['babUrlScript'] . '?tg=admTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST),
 		array(
 			'idx' => BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_FORM,
 			'mnuStr' => $tab_caption,
@@ -288,10 +270,6 @@ function displayProjectsSpacesRightsForm()
 	{
 		$itemMenu = array(
 			array(
-				'idx' => BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST,
-				'mnuStr' => bab_translate("Projects spaces"),
-				'url' => $GLOBALS['babUrlScript'] . '?tg=admTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST),
-			array(
 				'idx' => BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_RIGHTS_FORM,
 				'mnuStr' => bab_translate("Projects space rights"),
 				'url' => $GLOBALS['babUrlScript'] . '?tg=admTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_RIGHTS_FORM)
@@ -307,17 +285,15 @@ function displayProjectsSpacesRightsForm()
 	
 		$macl = new macl('admTskMgr', BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST, $iIdProjectSpace, BAB_TM_ACTION_SET_RIGHT);
 	
-		$macl->addtable(BAB_TSKMGR_PROJECT_CREATOR_GROUPS_TBL, bab_translate("Default project creators"));
+		$macl->addtable(BAB_TSKMGR_PROJECT_CREATOR_GROUPS_TBL, bab_translate("Users authorized to create projects"));
 		$macl->filter($enableGroup, $enableGroup, $disableGroup, $enableGroup, $disableGroup);
-		$macl->addtable(BAB_TSKMGR_PERSONNAL_TASK_CREATOR_GROUPS_TBL, bab_translate("Default personnal task owner"));
+		$macl->addtable(BAB_TSKMGR_DEFAULT_PROJECTS_MANAGERS_GROUPS_TBL, bab_translate("Default project managers"));
 		$macl->filter($enableGroup, $enableGroup, $disableGroup, $enableGroup, $disableGroup);
-		$macl->addtable(BAB_TSKMGR_DEFAULT_PROJECTS_MANAGERS_GROUPS_TBL, bab_translate("Default project manager"));
+		$macl->addtable(BAB_TSKMGR_DEFAULT_PROJECTS_SUPERVISORS_GROUPS_TBL, bab_translate("Default project supervisors"));
 		$macl->filter($enableGroup, $enableGroup, $disableGroup, $enableGroup, $disableGroup);
-		$macl->addtable(BAB_TSKMGR_DEFAULT_PROJECTS_SUPERVISORS_GROUPS_TBL, bab_translate("Default project supervisor"));
+		$macl->addtable(BAB_TSKMGR_DEFAULT_PROJECTS_VISUALIZERS_GROUPS_TBL, bab_translate("Default project visualizers"));
 		$macl->filter($enableGroup, $enableGroup, $disableGroup, $enableGroup, $disableGroup);
-		$macl->addtable(BAB_TSKMGR_DEFAULT_PROJECTS_VISUALIZERS_GROUPS_TBL, bab_translate("Default project visualizer"));
-		$macl->filter($enableGroup, $enableGroup, $disableGroup, $enableGroup, $disableGroup);
-		$macl->addtable(BAB_TSKMGR_DEFAULT_TASK_RESPONSIBLE_GROUPS_TBL, bab_translate("Default task responsible"));
+		$macl->addtable(BAB_TSKMGR_DEFAULT_TASK_RESPONSIBLE_GROUPS_TBL, bab_translate("Default task responsibles"));
 		$macl->filter($enableGroup, $enableGroup, $disableGroup, $enableGroup, $disableGroup);
 	
 		$macl->babecho();
@@ -424,10 +400,6 @@ function displayProjectsConfigurationForm()
 		
 		$itemMenu = array(
 			array(
-				'idx' => BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST,
-				'mnuStr' => bab_translate("Projects spaces"),
-				'url' => $GLOBALS['babUrlScript'] . '?tg=admTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST),
-			array(
 				'idx' => BAB_TM_IDX_DISPLAY_PROJECTS_CONFIGURATION_FORM,
 				'mnuStr' => bab_translate("Default projects configuration"),
 				'url' => $GLOBALS['babUrlScript'] . '?tg=admTskMgr&iIdProjectSpace=' . $iIdProjectSpace . '&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_CONFIGURATION_FORM)
@@ -445,6 +417,26 @@ function displayProjectsConfigurationForm()
 	{
 		$GLOBALS['babBody']->msgerror = bab_translate("Invalid project space");
 	}
+}
+
+function displayPersonnalTaskRight()
+{
+	global $babBody;
+
+	$itemMenu = array();
+	add_item_menu($itemMenu);
+	
+	$enableGroup	= 0;
+	$disableGroup	= 1;
+
+	require_once($GLOBALS['babInstallPath'] . 'admin/acl.php');
+
+	$iIdProjectSpace = 0;
+	$macl = new macl('admTskMgr', BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST, $iIdProjectSpace, BAB_TM_ACTION_SET_RIGHT);
+
+	$macl->addtable(BAB_TSKMGR_PERSONNAL_TASK_CREATOR_GROUPS_TBL, bab_translate("Default personnal task owner"));
+	$macl->filter($enableGroup, $enableGroup, $disableGroup, $enableGroup, $disableGroup);
+	$macl->babecho();
 }
 
 
@@ -472,10 +464,10 @@ function addModifyProjectSpace()
 					bab_createDefaultProjectSpaceNoticeEvent($iIdProjectSpace);
 				}
 			}
-			else
-			{
-				bab_updateProjectSpace($iIdProjectSpace, $sName, $sDescription);
-			}
+		}
+		else if((int) $id === (int) $iIdProjectSpace)
+		{
+			bab_updateProjectSpace($iIdProjectSpace, $sName, $sDescription);
 		}
 		else
 		{
@@ -631,7 +623,7 @@ switch($action)
 }
 
 
-$idx = isset($_POST['idx']) ? $_POST['idx'] : (isset($_GET['idx']) ? $_GET['idx'] : BAB_TM_IDX_DISPLAY_MENU);
+$idx = isset($_POST['idx']) ? $_POST['idx'] : (isset($_GET['idx']) ? $_GET['idx'] : BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST);
 
 //bab_debug('idx ==> ' . $idx);
 
@@ -693,6 +685,10 @@ switch($idx)
 	case BAB_TM_IDX_DISPLAY_NOTICE_EVENT_FORM:
 		require_once($GLOBALS['babInstallPath'] . 'tmNoticesFunc.php');
 		displayNoticeEventForm();
+		break;
+		
+	case BAB_TM_IDX_DISPLAY_PERSONNAL_TASK_RIGHT:
+		displayPersonnalTaskRight();
 		break;
 }
 $babBody->setCurrentItemMenu($idx);

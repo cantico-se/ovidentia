@@ -222,30 +222,38 @@ function displayProjectsSpacesList()
 		}
 	}
 	
-//	$list = new BAB_TM_List();
-//	$GLOBALS['babBody']->babecho($list->printTemplate());
+	//*
+	$list = new BAB_TM_List();
+	$GLOBALS['babBody']->babecho($list->printTemplate());
+	//*/
 
+//*
 	$oMultiPage = new BAB_MultiPageBase();
 	
-	$oMultiPage->oDataSource = new BAB_DataSourceBase();
-	$oMultiPage->iTotalNumOfRows = 50;
-	$oMultiPage->iCurrentPage = 6;
+	$query = 
+		'SELECT ' .
+			'name, ' .
+			'description, ' .
+			'28/56/2022 AS date ' .
+		'FROM ' . 
+			BAB_GROUPS_TBL;
 	
-	//$oMultiPage->iNbRowsPerPage = -1;
+//	$oMultiPage->setColumnDataSource(new BAB_ColumnDataSource());
+	$oMultiPage->setColumnDataSource(new BAB_MySqlDataSource($query, (int) bab_rp('iPage', 1), $oMultiPage->iNbRowsPerPage));
 	
-
-	$oMultiPage->sTg = tskmgr_getVariable('tg', 'admTskMgr');
-	$oMultiPage->iIdx = BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST;
+//	$oMultiPage->iTotalNumOfRows = 50;
 	
+/*	
+$oMultiPage->addToolBarItem('Add', bab_translate('Add'), $GLOBALS['babSkinPath'] . 'images/Puces/edit_add.png', 
+	               $list->getUrl(BAB_TM_IDX_DISPLAY_TASK_FORM, 0, 0));
+//*/
 	$oMultiPage->addColumnHeader(0, 'Name', 'name');
 	$oMultiPage->addColumnHeader(1, 'Description', 'description');
 	$oMultiPage->addColumnHeader(2, 'Date', 'date');
 	
-	$oMultiPage->computeStartEndPos();
-	$oMultiPage->sStatusLine = $oMultiPage->getStatusLine();
-	$oMultiPage->sPagination = $oMultiPage->getPagination();
 	
 	$GLOBALS['babBody']->babecho($oMultiPage->printTemplate());
+//*/
 }
 
 /*
@@ -938,6 +946,16 @@ function displayTaskForm()
 	$oTmCtx =& getTskMgrContext();
 	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
 	$iIdProject = $oTmCtx->getIdProject();
+	
+	
+	if(0 != $iIdProject)
+	{
+		if(false != bab_getProject($iIdProject, $aProject))
+		{
+			$iIdProjectSpace = $oTmCtx->m_iIdProjectSpace = $aProject['idProjectSpace'];
+		}
+	}
+	
 	
 	$bIsTaskResp = bab_isAccessValid(BAB_TSKMGR_TASK_RESPONSIBLE_GROUPS_TBL, $iIdProject);
 	$bIsManager = bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject);
