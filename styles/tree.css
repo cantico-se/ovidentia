@@ -237,3 +237,12 @@
 .bab_tree .thread {
 	font-weight: bold;
 }
+
+#sitemap .level1 {
+	font-size: 115%;
+}
+
+#sitemap .level2 {
+	font-weight: bold;
+}
+

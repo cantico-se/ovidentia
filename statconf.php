@@ -305,42 +305,42 @@ function statAddContentBasket()
 				case 'top':
 					$this->t_what = 'article';
 					$this->t_name = bab_translate("Articles topics");
-					$this->t_dialog_attributes = 'show_topics&clickable_topics';
+					$this->t_dialog_attributes = 'show_topics=1&clickable_topics=1';
 					break;
 				case 'art':
 					$this->t_what = 'article';
 					$this->t_name = bab_translate("Articles");
-					$this->t_dialog_attributes = 'show_articles&clickable_articles';
+					$this->t_dialog_attributes = 'show_articles=1&clickable_articles=1';
 					break;
 				case 'fold':
 					$this->t_what = 'file';
 					$this->t_name = bab_translate("Folders");
-					$this->t_dialog_attributes = 'show_collective_directories&clickable_collective_directories';
+					$this->t_dialog_attributes = 'show_collective_directories=1&clickable_collective_directories=1';
 					break;
 				case 'file':
 					$this->t_what = 'file';
 					$this->t_name = bab_translate("Files");
-					$this->t_dialog_attributes = 'show_files&clickable_files';
+					$this->t_dialog_attributes = 'show_files=1&clickable_files=1';
 					break;
 				case 'for':
 					$this->t_what = 'forum';
 					$this->t_name = bab_translate("Forums");
-					$this->t_dialog_attributes = 'show_forums&clickable_forums';
+					$this->t_dialog_attributes = 'show_forums=1&clickable_forums=1';
 					break;
 				case 'post':
 					$this->t_what = 'forum';
 					$this->t_name = bab_translate("Posts");
-					$this->t_dialog_attributes = 'show_posts&clickable_posts';
+					$this->t_dialog_attributes = 'show_posts=1&clickable_posts=1';
 					break;
 				case 'faq':
 					$this->t_what = 'faq';
 					$this->t_name = bab_translate("Faqs");
-					$this->t_dialog_attributes = 'show_categories&clickable_categories&clickable_categories';
+					$this->t_dialog_attributes = 'show_categories=1&clickable_categories=1&clickable_categories=1';
 					break;
 				case 'faqqr':
 					$this->t_what = 'faq';
 					$this->t_name = bab_translate("Questions");
-					$this->t_dialog_attributes = 'show_questions&clickable_questions';
+					$this->t_dialog_attributes = 'show_questions=1&clickable_questions=1';
 					break;
 				default:
 					$this->t_dialog_attributes = '';

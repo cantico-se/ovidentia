@@ -384,8 +384,8 @@ class bab_Node extends bab_InNode
 
 /**
  * The root node of a tree.
- * bab_RootNode provide the ability to access any node in the tree
- * by its id.
+ * The class bab_RootNode provides the ability to access quickly any node in
+ * the tree by its id (getNodeById).
  */
 class bab_RootNode extends bab_Node
 {
@@ -400,6 +400,7 @@ class bab_RootNode extends bab_Node
 	function &createNode(&$data, $id = null)
 	{
 		if (!is_null($id) && array_key_exists($id, $this->_ids)) {
+			bab_debug(sprintf('Node id "%s" already exists.', $id));
 			return bab_Node::NULL_NODE();
 		}
 		$newNode =& new bab_Node($this, $id);
@@ -513,6 +514,9 @@ class bab_OrphanRootNode extends bab_RootNode
 	}
 	
 
+	/**
+	 * @access private
+	 */
 	function _update($newNodeId)
 	{
 		if (!isset($this->_orphansByParent[$newNodeId])) {
@@ -577,7 +581,7 @@ class bab_OrphanRootNode extends bab_RootNode
 }
 
 /**
- * An element of a bab_TreeView.
+ * An element (node) of a bab_TreeView.
  */
 class bab_TreeViewElement
 {
@@ -590,16 +594,17 @@ class bab_TreeViewElement
 	var $_icon;
 
 	var $_actions;
+	var $_checkBoxes;
 
 	var $_info;
 
 	/**
 	 * @constructor
-	 * @param string $id
-	 * @param string $type
-	 * @param string $title
-	 * @param string $description
-	 * @param string $link
+	 * @param string $id			A unique element id in the treeview.
+	 * @param string $type			Will be used as a css class to style the element.
+	 * @param string $title			The title (label) of the node.
+	 * @param string $description	An additional description that will appear as a tooltip.
+	 * @param string $link			A link when clicking the node title.
 	 */
 	function bab_TreeViewElement($id, $type, $title, $description, $link)
 	{
@@ -609,6 +614,7 @@ class bab_TreeViewElement
 		$this->_description = $description;
 		$this->_link = $link;
 		$this->_actions = array();
+		$this->_checkBoxes = array();
 		$this->_icon= '';
 		$this->_info = '';
 	}
@@ -628,6 +634,15 @@ class bab_TreeViewElement
 								  'icon' => $icon,
 								  'link' => $link,
 								  'script' => $script);
+	}
+
+	/**
+	 * Adds a checkbox to the treeview element.
+	 * @param string $name
+	 */
+	function addCheckBox($name)
+	{
+		$this->_checkBoxes[] = array('name' => $name);
 	}
 
 	/**
@@ -670,9 +685,13 @@ class bab_TreeViewElement
 
 define('BAB_TREE_VIEW_ID_SEPARATOR',	'__');
 
+define('BAB_TREE_VIEW_COLLAPSED',		1);
+define('BAB_TREE_VIEW_EXPANDED',		2);
+
+define('BAB_TREE_VIEW_MULTISELECT',		1024);
 
 /**
- * A TreeView widget.
+ * A TreeView widget used to display hierarchical data.
  */
 class bab_TreeView
 {
@@ -708,6 +727,10 @@ class bab_TreeView
 	var $_templateCache;
 		
 
+	/**
+	 * @constructor
+	 * @param string $id			A unique treeview id in the page.
+	 */
 	function bab_TreeView($id)
 	{
 		$this->_id = $id;
@@ -792,7 +815,8 @@ class bab_TreeView
 			reset($this->_currentElement->_actions);
 
 			$this->t_showRightElements = ($element->_info != '')
-							|| (count($this->_currentElement->_actions) > 0);
+							|| (count($this->_currentElement->_actions) > 0)
+							|| (count($this->_currentElement->_checkBoxes) > 0);
 			return true;
 		}
 		$this->_iterator = null;
@@ -810,6 +834,16 @@ class bab_TreeView
 			return true;
 		}
 		reset($this->_currentElement->_actions);
+		return false;
+	}
+
+	function getNextCheckBox()
+	{
+		if (list(,$checkBox) = each($this->_currentElement->_checkBoxes)) {
+			$this->checkbox_name = $checkBox['name'];
+			return true;
+		}
+		reset($this->_currentElement->_checkBoxes);
 		return false;
 	}
 
@@ -1126,6 +1160,9 @@ class bab_FileTreeView extends bab_TreeView
 														 '');
 						$this->appendElement($element, $parentId);
 						$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
+						if ($this->_attributes & BAB_FILE_TREE_VIEW_CLICKABLE_SUB_DIRECTORIES) {
+							$element->addCheckBox('select');
+						}
 					}
 					$parentId .= '_' . $subdir;
 				}
@@ -1137,6 +1174,9 @@ class bab_FileTreeView extends bab_TreeView
 												 '',
 												 '');
 				$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/file.png');
+				if ($this->_attributes & BAB_FILE_TREE_VIEW_CLICKABLE_FILES) {
+					$element->addCheckBox('select');
+				}
 				$this->appendElement($element, $parentId);
 			}
 		}

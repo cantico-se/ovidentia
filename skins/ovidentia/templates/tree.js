@@ -318,11 +318,11 @@ bab_ul_tree.prototype.saveState = function()
 			nodes.push(lis[i].id);
 		}
 	}
-
-	document.cookie = 'bab_ul_tree.' + this.id + '=' + escape(nodes.join('/')) + '; expires=' + expiryDate.toGMTString() + '; path=' + document.location.href.replace(new RegExp('^[a-z]+://' + document.location.host), '');
+	document.cookie = 'bab_ul_tree.' + this.id + '=' + escape(nodes.join('/'))
+						+ '; expires=' + expiryDate.toGMTString()
+						+ '; path=' + document.location.href.replace(new RegExp('^[a-z]+://' + document.location.host), '');
 }
 
-//alert(document.location.href.replace(new RegExp('^[a-z]+://' + document.location.host), ''));
 
 bab_ul_tree.prototype.loadState = function()
 {
@@ -359,5 +359,4 @@ function cleanStringDiacritics(text)
 
 	return text.toUpperCase();
 }
-
 

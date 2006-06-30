@@ -41,12 +41,11 @@ function selectArticles()
 		$attributes |= BAB_ARTICLE_TREE_VIEW_CLICKABLE_TOPICS;
 	if (isset($_REQUEST['clickable_articles']))
 		$attributes |= BAB_ARTICLE_TREE_VIEW_CLICKABLE_ARTICLES;
-	
-	
+
 	$GLOBALS['babBodyPopup'] = new babBodyPopup();
 	$GLOBALS['babBodyPopup']->title = & $GLOBALS['babBody']->title;
 	$GLOBALS['babBodyPopup']->msgerror = & $GLOBALS['babBody']->msgerror;
-	
+
 	$treeView = new bab_ArticleTreeView('article');
 	$treeView->setAttributes($attributes);
 
@@ -71,8 +70,7 @@ function selectFaqs()
 		$attributes |= BAB_FAQ_TREE_VIEW_CLICKABLE_SUB_CATEGORIES;
 	if (isset($_REQUEST['clickable_questions']))
 		$attributes |= BAB_FAQ_TREE_VIEW_CLICKABLE_QUESTIONS;
-	
-	
+
 	$GLOBALS['babBodyPopup'] = new babBodyPopup();
 	$GLOBALS['babBodyPopup']->title = & $GLOBALS['babBody']->title;
 	$GLOBALS['babBodyPopup']->msgerror = & $GLOBALS['babBody']->msgerror;
@@ -84,7 +82,6 @@ function selectFaqs()
 	printBabBodyPopup();
 	die();
 }
-
 
 function selectForums()
 {
@@ -134,7 +131,8 @@ function selectFiles()
 	if (isset($_REQUEST['clickable_files']))
 		$attributes |= BAB_FILE_TREE_VIEW_CLICKABLE_FILES;
 	
-	
+//	$attributes |= BAB_TREE_VIEW_MULTISELECT;
+
 	$GLOBALS['babBodyPopup'] = new babBodyPopup();
 	$GLOBALS['babBodyPopup']->title = & $GLOBALS['babBody']->title;
 	$GLOBALS['babBodyPopup']->msgerror = & $GLOBALS['babBody']->msgerror;

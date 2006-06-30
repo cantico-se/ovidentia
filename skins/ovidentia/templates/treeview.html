@@ -19,6 +19,9 @@
 <!--#endif t_link  -->
 <!--#if t_showRightElements -->
 <span class="right_elements">{ t_info }
+<!--#in getNextCheckBox -->
+<input type="checkbox" name="{ checkbox_name }" />
+<!--#endin getNextCheckBox -->
 <!--#in getNextAction -->
 <a href="{ action_url }" title="{ action_caption }"><img src="{ action_icon }" /></a>
 <!--#endin getNextAction -->
@@ -28,6 +31,10 @@
 <!--#endif t_levelVariation -->
 <!--#endin getNextElement -->
 	</div>
+
+<!--#if t_ -->
+<div style="text-align: center;"><button type="submit" onclick="this.parentNode.onSubmitTree();">{ t_submit }</button></div>
+<!--#endif t_  -->
 </div>
 <script type="text/javascript">document.getElementById("{ t_treeViewId }").getElementsByTagName('DIV')[0].style.display=''</script>
 
@@ -43,6 +50,29 @@ document.getElementById("{ t_treeViewId }").onElementClick = function(element)
 		window.opener.bab_dialog._return(returnParameters);
 		window.close();
 	} catch(e) {};
+}
+
+document.getElementById("{ t_treeViewId }").onSubmitTree = function()
+{
+	try {
+		var returnParameters = new Array();
+		var inputs = this.getElementsByTagName('INPUT');
+		for (i = 0; i < inputs.length; i++) {
+			input = inputs[i];
+			if (input.type == 'checkbox' && input.checked) {
+//				element = input.parentNode.parentNode.getElements
+				returnParameters.push({
+//					'type': element.className.split(' ')[1],
+					'type': input.parentNode.parentNode.parentNode.id.split('{ t_id_separator }')[0],
+					'id': input.parentNode.parentNode.parentNode.id.split('{ t_id_separator }')[1],
+//					'content': element.firstChild.nodeValue
+				});
+			}
+		}
+		alert(returnParameters);
+		window.opener.bab_dialog._return(returnParameters);
+		window.close();
+	} catch(e) {alert(e)};
 }
 </script>
 
