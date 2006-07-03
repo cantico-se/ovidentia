@@ -61,22 +61,9 @@ function hideOnNbRowPerPageChangedButton()
 }
 //-->
 </script>
-
-<div border="0" width="99%" style="padding:2px">
-	<select name="iNbRowsPerPage" onchange="onNbRowPerPageChanged()">
-		<option value="{ iNbRow }">{ sNbRow }</option>
-		<option value="{ iNbRow }">{ sNbRow }</option>
-		<option value="{ iNbRow }">{ sNbRow }</option>
-		<option value="{ iNbRow }">{ sNbRow }</option>
-	</select>
-	<a href="{ aToolBarItem[sLink] }" title="{ aToolBarItem[sText] }">
-		<img border="0" src="{ aToolBarItem[sIcon] }" alt="{ aToolBarItem[sText] }" />
-	</a>
-</div>
-
 <form method="get" action="{ babPhpSelf }" name="multipage">
 	<input type="hidden" name="tg" value="{ sTg }" />
-	<input type="hidden" name="idx" value="{ iIdx }" />
+	<input type="hidden" name="idx" value="{ sIdx }" />
 	<input type="hidden" name="action" value="" />
 
 	<table width="99%" border="0" cellspacing="0" cellpadding="2" align="center" class="BabLoginCadreBackground">
@@ -123,7 +110,7 @@ function hideOnNbRowPerPageChangedButton()
 								<input type="submit" name="_onNbRowPerPageChanged" value="{ sDisplay }" />
 								<select name="iNbRowsPerPage" onchange="onNbRowPerPageChanged()">
 								<!--#in getNextNbRow -->
-									<option value="{ iNbRow }">{ sNbRow }</option>
+									<option value="{ iNbRow }" { sNbRowPerPageSelected } >{ sNbRow }</option>
 								<!--#endin getNextNbRow -->
 								</select>
 								{ sResultPerPage }
@@ -147,3 +134,6 @@ function hideOnNbRowPerPageChangedButton()
 	</script>
 </form>
 <!--#end multipage -->
+
+<!--#begin filter -->
+<!--#end filter -->

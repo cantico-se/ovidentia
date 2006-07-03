@@ -267,8 +267,12 @@ class BAB_MultiPageBase
 	var $aRow = null;
 	
 	var $aNbRowsPerPages;
+	var $sNbRowPerPageSelected = '';
 	
 	var $sDisplay;
+	
+	var $sTg = '';
+	var $sIdx = '';
 	
 	function BAB_MultiPageBase()
 	{
@@ -299,7 +303,10 @@ class BAB_MultiPageBase
 			$this->iPage = (int) bab_rp('iPage', 1);	
 		}
 		
-		$this->iNbRowsPerPage = (int) bab_rp('iNbRowsPerPage', 4);
+		$this->iNbRowsPerPage = (int) bab_rp('iNbRowsPerPage', 10);
+		
+		$this->sTg = bab_rp('tg', '');
+		$this->sIdx = bab_rp('idx', '');
 	}
 	
 	function getNextColumnHeader()
@@ -357,11 +364,16 @@ class BAB_MultiPageBase
 	
 	function getNextNbRow()
 	{
+		
+		
 		$aDatas = each($this->aNbRowsPerPages);
 		if(false != $aDatas)
 		{
 			$this->iNbRow = $aDatas['value']['value'];
 			$this->sNbRow = $aDatas['value']['text'];
+			
+			$this->sNbRowPerPageSelected = ($this->iNbRowsPerPage == $this->iNbRow) ? 'selected="selected"' : '';
+			
 			return true;
 		}
 		return false;

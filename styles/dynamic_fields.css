@@ -1,0 +1,21 @@
+#ADDON_BAB_clockdetail {
+	position:absolute;
+	background:#DCEBFF;
+	border:#000 1px solid;
+}
+
+#ADDON_BAB_clockdetail a {
+	display:block;
+	padding:.1em .3em;
+	text-decoration:none;
+	color:#000;
+}
+
+#ADDON_BAB_clockdetail a:hover {
+	background:#00306C;
+	color:#fff;
+}
+
+img.clock, img.date {
+	cursor:pointer;
+}

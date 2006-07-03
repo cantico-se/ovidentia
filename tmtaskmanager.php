@@ -222,14 +222,88 @@ function displayProjectsSpacesList()
 		}
 	}
 	
+		
 	//*
 	$list = new BAB_TM_List();
 	$GLOBALS['babBody']->babecho($list->printTemplate());
 	//*/
+	
+	class BAB_TM_AddTaskForm extends BAB_BaseFormProcessing
+	{
+		var $aProjectList =  array();
+		var $iProjectCount = 0;
+		var $bIsOk = false;
+		
+		function BAB_TM_AddTaskForm()
+		{
+			$this->set_data('tg', bab_rp('tg', 'usrTskMgr'));				
+			$this->set_data('idx', BAB_TM_IDX_DISPLAY_TASK_FORM);
+			$this->set_data('isPersTaskAvailable', false);
+			$this->set_data('sPersonnalTask', bab_translate("Personnal task"));
+			$this->set_caption('sAddTask', bab_translate("Add a task"));
+
+			$this->init();
+		}
+		
+		function init()
+		{
+			$oTmCtx =& getTskMgrContext();
+			$res = bab_selectProjectListByDelegation($oTmCtx->getIdDelegation());
+			
+			if(false != $res)
+			{
+				global $babDB;
+				$iNumRows = $babDB->db_num_rows($res);	
+				$iIndex = 0;
+				while($iIndex < $iNumRows && false != ($datas = $babDB->db_fetch_assoc($res)))
+				{
+					if(bab_isAccessValid(BAB_TSKMGR_PROJECTS_VISUALIZERS_GROUPS_TBL, $datas['iIdProject']))
+					{
+						if(bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $datas['iIdProject']))
+						{
+							$this->aProjectList[] = array('iIdProject' => $datas['iIdProject'], 
+								'sProjectName' => $datas['sProjectName']);
+						}
+					}
+					$iIndex++;
+				}
+				$this->iProjectCount = count($this->aProjectList);
+			}
+			
+			$bIsPersonnalTaskAvailable = true;
+			$aPersTaskCreator = bab_getUserIdObjects(BAB_TSKMGR_PERSONNAL_TASK_CREATOR_GROUPS_TBL);
+			if(count($aPersTaskCreator) > 0 && isset($aPersTaskCreator[$oTmCtx->getIdDelegation()]))
+			{
+				$this->set_data('isPersTaskAvailable', true);
+			}
+			
+			$this->bIsOk = ($bIsPersonnalTaskAvailable || 0 != $this->iProjectCount);
+		}
+		
+		function getNextProject()
+		{
+			$datas = each($this->aProjectList);
+			if(false != $datas)
+			{
+				$this->set_data('iIdProject', $datas['value']['iIdProject']);				
+				$this->set_data('sProjectName', $datas['value']['sProjectName']);
+				return true;				
+			}
+			return false;
+		}
+		
+		function printTemplate()
+		{
+			return bab_printTemplate($this, 'tmUser.html', 'addTask');
+		}
+	}
+	
+	$oAddTaskForm = new BAB_TM_AddTaskForm();
+	$GLOBALS['babBody']->babecho($oAddTaskForm->printTemplate());
 
 //*
 	$oMultiPage = new BAB_MultiPageBase();
-	
+	$oMultiPage->sIdx = BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST;
 	$query = 
 		'SELECT ' .
 			'name, ' .

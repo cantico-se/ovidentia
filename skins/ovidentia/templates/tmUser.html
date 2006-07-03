@@ -947,3 +947,25 @@ onClassChanged(document.forms.taskForm['iClass']);
 	</tr>
 </table>
 <!--#end taskCommentariesList -->
+
+<!--#begin addTask -->
+<!--#if bIsOk -->
+<form name="addTask" method="get" action="{ babPhpSelf }">
+	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
+	<input type="hidden" name="idx" value="{ m_datas[idx] }" />
+
+	<div border="0" width="99%" style="padding:2px">
+		<select name="iIdProject">
+		<!--#in getNextProject -->
+			<option value="{ m_datas[iIdProject] }">{ m_datas[sProjectName] }</option>
+		<!--#endin getNextProject -->
+		<!--#if m_datas[isPersTaskAvailable] -->
+			<option value="0">{ m_datas[sPersonnalTask] }</option>
+		<!--#endif m_datas[isPersTaskAvailable] -->
+		</select>
+		<input type="submit" value="{ m_captions[sAddTask] }" />
+	</div>
+</form>
+<!--#endif bIsOk -->
+<!--#end addTask -->
+		

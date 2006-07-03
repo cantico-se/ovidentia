@@ -318,6 +318,27 @@ function bab_isProjectSpaceDeletable($iIdProjectSpace)
 
 
 //Project functions
+function bab_selectProjectListByDelegation($iIdDelegation)
+{
+	global $babDB;
+
+	$query = 
+		'SELECT ' .
+			'ps.id iIdProjectSpace, ' .
+			'ps.name sProjectSpaceName, ' .
+			'p.id iIdProject, ' .
+			'p.name sProjectName ' .
+		'FROM ' .
+			BAB_TSKMGR_PROJECTS_TBL . ' p ' .
+		'LEFT JOIN ' .
+			BAB_TSKMGR_PROJECTS_SPACES_TBL . ' ps ON ps.id = p.idProjectSpace ' .
+		'WHERE ' . 
+			'ps.idDelegation = \'' . $iIdDelegation . '\'';
+			
+	//bab_debug($query);
+	return $babDB->db_query($query);
+}
+
 
 function bab_selectProjectList($iIdProjectSpace)
 {
