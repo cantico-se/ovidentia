@@ -431,8 +431,10 @@ function displayPersonnalTaskRight()
 
 	require_once($GLOBALS['babInstallPath'] . 'admin/acl.php');
 
-	$iIdProjectSpace = 0;
-	$macl = new macl('admTskMgr', BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST, $iIdProjectSpace, BAB_TM_ACTION_SET_RIGHT);
+	$oTmCtx =& getTskMgrContext();
+	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
+	$iIdDelegation = $oTmCtx->getIdDelegation();
+	$macl = new macl('admTskMgr', BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST, $iIdDelegation, BAB_TM_ACTION_SET_RIGHT);
 
 	$macl->addtable(BAB_TSKMGR_PERSONNAL_TASK_CREATOR_GROUPS_TBL, bab_translate("Default personnal task owner"));
 	$macl->filter($enableGroup, $enableGroup, $disableGroup, $enableGroup, $disableGroup);

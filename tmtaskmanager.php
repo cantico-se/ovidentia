@@ -74,6 +74,8 @@ function displayProjectsSpacesList()
 		var $m_dnps		= 'dnps';
 		var $m_dnp 		= 'dnp';
 		
+		var $m_dnt		= 'dnt';
+		
 		function BAB_TM_List()
 		{
 			parent::bab_TreeView('myTreeView');
@@ -164,8 +166,9 @@ function displayProjectsSpacesList()
 					$bIsManager = bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $datas['id']);
 					$isAccessValid = ($bIsCreator || $bIsManager);
 
+					$sProjectUrl = ($bIsManager) ? $this->getUrl(BAB_TM_IDX_DISPLAY_PROJECT_FORM, $iIdProjectSpace, $datas['id']) : null;
 					$oProjectElement =& $this->createElement($this->m_dnp . '_' . $datas['id'], $this->m_dnp, $datas['name'], 
-						$datas['description'], $this->getUrl(BAB_TM_IDX_DISPLAY_PROJECT_FORM, $iIdProjectSpace, $datas['id']));
+						$datas['description'], $sProjectUrl);
                		$this->appendElement($oProjectElement, $this->m_dnps . '_' . $iIdProjectSpace);
                		
                		if($isAccessValid)
@@ -197,11 +200,41 @@ function displayProjectsSpacesList()
 						   $this->getUrl(BAB_TM_IDX_DISPLAY_TASK_FORM, $iIdProjectSpace, $datas['id']), '');
                		}
                		
+               		$this->insertTaskIntoProject($iIdProjectSpace, $datas['id'], $oProjectElement);
+               		
 		            /*   
 					$oProjectElement->addAction('Task_list',
 					   bab_translate('Tasks list'), $GLOBALS['babSkinPath'] . 'images/Puces/windowlist.png', 
 					   $this->getUrl(BAB_TM_IDX_DISPLAY_TASK_LIST, $iIdProjectSpace, $datas['id']), '');
 					//*/
+				}
+			}	
+		}
+		
+		function insertTaskIntoProject($iIdProjectSpace, $iIdProject, &$oProjectElement)
+		{
+			$result = bab_selectTasksList($iIdProject);
+			if(false != $result)
+			{
+				global $babDB;
+				
+				$iIndex = 0;
+				$iNumRows = $babDB->db_num_rows($result);
+				
+				$bIsManager = bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject);
+				
+				while( $iIndex < $iNumRows && false != ($datas = $babDB->db_fetch_array($result)) )
+				{
+					bab_getTaskResponsibles($datas['id'], $aTaskResponsible);
+					$isAccessValid = (isset($aTaskResponsible[$GLOBALS['BAB_SESS_USERID']]) || $bIsManager);
+
+					$sTaskUrl = ($isAccessValid) ? 
+						$this->getUrl(BAB_TM_IDX_DISPLAY_TASK_FORM, $iIdProjectSpace, $iIdProject) . '&iIdTask=' . $datas['id']  : null;
+					
+					$oTaskElement =& $this->createElement($this->m_dnt . '_' . $datas['id'], $this->m_dnt, $datas['taskNumber'], 
+						$datas['description'], $sTaskUrl);
+						
+               		$this->appendElement($oTaskElement, $this->m_dnp . '_' . $iIdProject);
 				}
 			}	
 		}
@@ -270,11 +303,12 @@ function displayProjectsSpacesList()
 				$this->iProjectCount = count($this->aProjectList);
 			}
 			
-			$bIsPersonnalTaskAvailable = true;
+			$bIsPersonnalTaskAvailable = false;
 			$aPersTaskCreator = bab_getUserIdObjects(BAB_TSKMGR_PERSONNAL_TASK_CREATOR_GROUPS_TBL);
 			if(count($aPersTaskCreator) > 0 && isset($aPersTaskCreator[$oTmCtx->getIdDelegation()]))
 			{
 				$this->set_data('isPersTaskAvailable', true);
+				$bIsPersonnalTaskAvailable = true;
 			}
 			
 			$this->bIsOk = ($bIsPersonnalTaskAvailable || 0 != $this->iProjectCount);

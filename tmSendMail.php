@@ -160,7 +160,7 @@
 					{
 						if(!isset($aNotifiedIdUser[$iIdResponsible]))
 						{
-							$aNotifiedIdUser[$iIdResponsible] = $iIdUser;
+							$aNotifiedIdUser[$iIdResponsible] = $iIdResponsible;
 							$oMail->send_notification($aResponsible['email'], $sSubject, $sBody);
 						}
 					}

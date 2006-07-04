@@ -59,6 +59,7 @@
 			return $success;
 		}
 	}
+
 	
 	class BAB_TaskFormBase extends BAB_BaseFormProcessing
 	{
@@ -348,8 +349,6 @@ $this->set_data('iAddSpfIdx', BAB_TM_IDX_DISPLAY_TASK_FORM);
 		var $m_iLinkedTaskCount;
 		
 		var $m_bIsManager;
-		var $m_bIsManagerNoStarted;
-		var $m_bIsEditableByManager;
 
 		var $m_aRelation;
 
@@ -370,30 +369,12 @@ $this->set_data('iAddSpfIdx', BAB_TM_IDX_DISPLAY_TASK_FORM);
 			$this->getTaskInfo();
 
 			$this->m_bIsManager = ($this->m_iUserProfil == BAB_TM_PERSONNAL_TASK_OWNER || $this->m_iUserProfil == BAB_TM_PROJECT_MANAGER);
-			$this->m_bIsManagerNoStarted = ($this->m_bIsManager && !$this->m_oTask->m_bIsStarted);
-
-			$this->m_bIsEditableByManager = ($this->m_bIsManager && !$this->m_oTask->m_bIsStarted && 0 == $this->m_iLinkedTaskCount);
 			
 			$this->m_aRelation = array(BAB_TM_NONE => bab_translate("None"), BAB_TM_END_TO_START => bab_translate("End to start"), BAB_TM_START_TO_START => bab_translate("Start to start"));
 
-$this->set_data('isDeletable', ($this->m_bIsEditableByManager));
+$this->set_data('isDeletable', ($this->m_bIsManager));
 $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER && $this->m_oTask->m_bIsStarted));
 			
-			//manager non démarré
-/*
-$sUserProfil = (BAB_TM_PROJECT_MANAGER == $this->m_iUserProfil) ? 'BAB_TM_PROJECT_MANAGER' : 
-	((BAB_TM_PERSONNAL_TASK_OWNER == $this->m_iUserProfil) ? 'BAB_TM_PERSONNAL_TASK_OWNER' :  
-	(BAB_TM_TASK_RESPONSIBLE == $this->m_iUserProfil) ? 'BAB_TM_TASK_RESPONSIBLE' : '???');
-
-
-bab_debug('m_iUserProfil ==> ' . $sUserProfil);
-bab_debug('m_bIsStarted ==> ' . ($this->m_oTask->m_bIsStarted ? 'Yes' : 'No'));
-bab_debug('m_bIsFirstTask ==> ' . ($this->m_oTask->m_bIsFirstTask ? 'Yes' : 'No'));
-bab_debug('m_iLinkedTaskCount ==> ' . $this->m_iLinkedTaskCount);
-bab_debug('m_bIsManagerNoStarted ==> ' . (($this->m_bIsManagerNoStarted) ? 'Yes' : 'No'));
-bab_debug('m_bIsEditableByManager ==> ' . (($this->m_bIsEditableByManager) ? 'Yes' : 'No'));
-//*/
-
 			//A faire ds les classes spécialisées
 			/*
 			bab_getLastProjectRevision($this->m_iIdProject, $iMajorVersion, $iMinorVersion);
@@ -447,7 +428,7 @@ bab_debug('m_bIsEditableByManager ==> ' . (($this->m_bIsEditableByManager) ? 'Ye
 		function initTaskNumber($sTaskNumber)
 		{
 			$this->set_data('sTaskNumber', tskmgr_getVariable('sTaskNumber', $sTaskNumber));
-			$isTaskNumberEditable = ($this->m_bIsManagerNoStarted && BAB_TM_MANUAL == $this->m_aCfg['tasksNumerotation']);
+			$isTaskNumberEditable = ($this->m_bIsManager && BAB_TM_MANUAL == $this->m_aCfg['tasksNumerotation']);
 			$this->set_data('sTaskNumberReadOnly', ($isTaskNumberEditable) ? '' : 'readonly="readonly"');
 		}
 
@@ -456,7 +437,7 @@ bab_debug('m_bIsEditableByManager ==> ' . (($this->m_bIsEditableByManager) ? 'Ye
 			$this->set_data('iSelectedClass', $iClassType);
 			
 			$this->set_data('sDisabledClass', 
-				(($this->m_bIsManagerNoStarted && 0 == $this->m_iLinkedTaskCount) ? '' : 'disabled="disabled"'));
+				(($this->m_bIsManager && 0 == $this->m_iLinkedTaskCount) ? '' : 'disabled="disabled"'));
 			$this->set_data('sSelectedClass', '');
 		}
 
@@ -475,7 +456,7 @@ bab_debug('m_bIsEditableByManager ==> ' . (($this->m_bIsEditableByManager) ? 'Ye
 		function initLink($iIsLinked)
 		{
 			$this->set_data('sCkeckedLinkedTask', ((BAB_TM_YES == $iIsLinked) ? 'checked="checked"' : ''));
-			$bIsLinkable = ($this->m_bIsManagerNoStarted && !$this->m_oTask->m_bIsFirstTask);
+			$bIsLinkable = ($this->m_bIsManager && !$this->m_oTask->m_bIsFirstTask);
 			$this->set_data('isLinkable', $bIsLinkable);
 			$this->set_data('sDisabledLinkedTask', $bIsLinkable ? '' : 'disabled="disabled"');
 		}
@@ -483,22 +464,22 @@ bab_debug('m_bIsEditableByManager ==> ' . (($this->m_bIsEditableByManager) ? 'Ye
 		function initDurationType($iDurationType)
 		{
 			$this->set_data('oDurationType', $iDurationType);
-			$this->set_data('sDisabledDurationType', $this->m_bIsManagerNoStarted ? '' : 'disabled="disabled"');
+			$this->set_data('sDisabledDurationType', $this->m_bIsManager ? '' : 'disabled="disabled"');
 			$this->set_data('sSelectedDuration', '');
 		}
 
 		function initDuration($iDuration)
 		{
 			$this->set_data('sDuration', $iDuration);
-			$this->set_data('sReadOnlyDuration', $this->m_bIsManagerNoStarted ? '' : 'readonly="readonly"');
+			$this->set_data('sReadOnlyDuration', $this->m_bIsManager ? '' : 'readonly="readonly"');
 		}
 		
 		function initDates($sStartDate, $sEndDate)
 		{
 			$this->set_data('sPlannedStartDate', $sStartDate);
 			$this->set_data('sPlannedEndDate', $sEndDate);
-			$this->set_data('sReadOnlyDate', $this->m_bIsManagerNoStarted ? '' : 'readonly="readonly"');
-			$this->set_data('isReadOnlyDate', !$this->m_bIsManagerNoStarted);
+			$this->set_data('sReadOnlyDate', $this->m_bIsManager ? '' : 'readonly="readonly"');
+			$this->set_data('isReadOnlyDate', !$this->m_bIsManager);
 		}
 
 		function initResponsible($iIdResponsible)
@@ -514,7 +495,7 @@ bab_debug('m_bIsEditableByManager ==> ' . (($this->m_bIsEditableByManager) ? 'Ye
 		{
 			$this->set_data('iSelectedProposable', $iProposable);
 			$this->set_data('sSelectedProposable', '');
-			$this->set_data('isProposable', (BAB_TM_PROJECT_MANAGER == $this->m_iUserProfil /*&& !$this->m_oTask->m_bIsStarted*/));
+			$this->set_data('isProposable', (BAB_TM_PROJECT_MANAGER == $this->m_iUserProfil));
 		}
 
 		function initCompletion($iCompletion)
@@ -529,11 +510,8 @@ bab_debug('m_bIsEditableByManager ==> ' . (($this->m_bIsEditableByManager) ? 'Ye
 				$bIsParticipationStatusOk = 
 					(BAB_TM_ACCEPTED == $iParticipationStatus || $iParticipationStatus == BAB_TM_IN_PROGRESS);
 			}
-			
 			$this->set_data('isCompletionEnabled', 
-				($this->m_oTask->m_bIsStarted && !$this->m_oTask->m_bIsEnded && 
-					($this->m_bIsManager || BAB_TM_YES == $this->m_aCfg['tskUpdateByMgr'] && 
-					BAB_TM_TASK_RESPONSIBLE == $this->m_iUserProfil 
+				(($this->m_bIsManager || BAB_TM_YES == $this->m_aCfg['tskUpdateByMgr'] && BAB_TM_TASK_RESPONSIBLE == $this->m_iUserProfil 
 					) && $bIsParticipationStatusOk));
 		}
 		
@@ -577,8 +555,8 @@ bab_debug('m_bIsEditableByManager ==> ' . (($this->m_bIsEditableByManager) ? 'Ye
 				$iCompletion = (int) tskmgr_getVariable('oCompletion', 0);
 				$iPredecessor = (int) tskmgr_getVariable('iPredecessor', -1);
 				
-				$iIsLinked = -1;//(-1 != (int) tskmgr_getVariable('oLinkedTask', -1)) ? BAB_TM_YES : BAB_TM_NO;
-				$iLinkType = -1;//(int) tskmgr_getVariable('oLinkType', -1);
+				$iIsLinked = -1;
+				$iLinkType = -1;
 				if(-1 != $iPredecessor && bab_getTask($iPredecessor, $aTask))
 				{
 					//zero based
@@ -878,11 +856,8 @@ bab_debug('m_bIsEditableByManager ==> ' . (($this->m_bIsEditableByManager) ? 'Ye
 			$this->m_iIdOwner				= $GLOBALS['BAB_SESS_USERID'];
 			$this->m_iAnswer				= (int) tskmgr_getVariable('oAnswerEnable', -1);
 			
-//			bab_debug($_POST);
-//			bab_debug('iCompletion ==> ' . $this->m_iCompletion);
-			
-			$this->m_iIsLinked				= -1;//(-1 != (int) tskmgr_getVariable('oLinkType', -1)) ? BAB_TM_YES : BAB_TM_NO;
-			$this->m_iLinkType 				= -1;//(int) tskmgr_getVariable('oLinkType', -1); 
+			$this->m_iIsLinked				= -1;
+			$this->m_iLinkType 				= -1;
 			$this->m_iIdPredecessor 		= (int) tskmgr_getVariable('iPredecessor', -1);
 			if(-1 != $this->m_iIdPredecessor && bab_getTask($this->m_iIdPredecessor, $aTask))
 			{
@@ -891,10 +866,6 @@ bab_debug('m_bIsEditableByManager ==> ' . (($this->m_bIsEditableByManager) ? 'Ye
 				{
 					$this->m_iLinkType = $_POST['oLinkType'][$iPosition];
 					$this->m_iIsLinked = (-1 != $this->m_iLinkType) ? BAB_TM_YES : BAB_TM_NO;
-					/*
-					bab_debug('iIsLinked ==> ' . ((BAB_TM_YES === $this->m_iIsLinked) ? 'Yes' : 'No') . 
-						' iLinkType ==> ' . $this->m_iLinkType);
-					//*/
 				}
 			}
 			
@@ -940,7 +911,6 @@ bab_debug('m_bIsEditableByManager ==> ' . (($this->m_bIsEditableByManager) ? 'Ye
 						{
 							$sTaskNumber = '';
 							bab_getNextTaskNumber($this->m_iIdProject, $this->m_aProjectCfg['tasksNumerotation'], $sTaskNumber);
-							//bab_debug('sTaskNumber ==> ' . $this->m_sTaskNumber . ' sNextTaskNumber ==> ' . $sTaskNumber);
 							return($sTaskNumber === $this->m_sTaskNumber);
 						}
 					}
@@ -977,7 +947,6 @@ bab_debug('m_bIsEditableByManager ==> ' . (($this->m_bIsEditableByManager) ? 'Ye
 					{
 						if((int)$aDate[$iYear] >= (int) date('Y'))
 						{
-							//bab_debug('year ==> ' . $aDate[$iYear] . ' month ==> ' . $aDate[$iMonth] . ' day ==> ' . $aDate[$iDay]);
 							return true;
 						}
 					}
@@ -1183,7 +1152,6 @@ bab_debug('m_bIsEditableByManager ==> ' . (($this->m_bIsEditableByManager) ? 'Ye
 		
 		function isTaskValidByDuration()
 		{
-			//if((int)$this->m_iDuration > 0 && $this->isDateValid($this->m_sStartDate))
 			if($this->isDateValid($this->m_sStartDate))
 			{
 				if($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER && !$this->isResponsibleValid())
@@ -1221,7 +1189,7 @@ bab_debug('m_bIsEditableByManager ==> ' . (($this->m_bIsEditableByManager) ? 'Ye
 		{
 			if($this->isDateValid($this->m_sStartDate) && $this->isDateValid($this->m_sEndDate))
 			{
-				if(strtotime('now') < strtotime($this->m_sStartDate))
+				if(date('Y-m-d', strtotime('now')) <= date('Y-m-d', strtotime($this->m_sStartDate)))
 				{
 					if(strtotime($this->m_sEndDate) > strtotime($this->m_sStartDate))
 					{
@@ -1257,7 +1225,7 @@ bab_debug('m_bIsEditableByManager ==> ' . (($this->m_bIsEditableByManager) ? 'Ye
 			{
 				if($this->isDateValid($this->m_sEndDate))
 				{
-					if(strtotime('now') < strtotime($this->m_sEndDate))
+					if(date('Y-m-d', strtotime('now')) <= date('Y-m-d', strtotime($this->m_sStartDate)))
 					{
 						return true;
 					}
@@ -1272,7 +1240,7 @@ bab_debug('m_bIsEditableByManager ==> ' . (($this->m_bIsEditableByManager) ? 'Ye
 			{
 				if($this->isDateValid($this->m_sEndDate))
 				{
-					if(strtotime('now') < strtotime($this->m_sEndDate))
+					if(date('Y-m-d', strtotime('now')) <= date('Y-m-d', strtotime($this->m_sStartDate)))
 					{
 						return true;
 					}
@@ -1370,11 +1338,6 @@ bab_debug('m_bIsEditableByManager ==> ' . (($this->m_bIsEditableByManager) ? 'Ye
 				$aTask['iIsNotified']			= BAB_TM_YES;//$iIsNotified;
 				$aTask['iIdOwner']				= 0 == $this->m_iIdProject ? $this->m_iIdOwner : 0;
 				
-				/*
-				bab_debug('iIdPredecessor ==> ' . $this->m_iIdPredecessor . ' iLinkType ==> ' . $this->m_iLinkType);
-				bab_debug('iIsLinked ==> ' . ((BAB_TM_YES === $this->m_iIsLinked) ? 'Yes' : 'No') . 
-					' iLinkType ==> ' . $this->m_iLinkType);
-				//*/
 //*				
 				$iIdTask = bab_createTask($aTask);
 				if(false !== $iIdTask)

@@ -626,7 +626,7 @@ function processStartDate()
 	
 
 	<br />
-	<div>
+	<div class="BabLoginMenuBackground">
 		<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 			<tr> 
 				<td>
@@ -662,226 +662,223 @@ function processStartDate()
 				</td>
 			</tr>
 		</table>
-	</div>
-	<br />
-
-	<ul id="tablist">
-		<li id="oLiGeneral"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[sGeneral] }</a></li>
-	<!--#if m_datas[isLinkable] -->
-		<li id="oLiPredecessors"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[sPredecessors] }</a></li>
-	<!--#endif m_datas[isLinkable] -->
-	<!--#if m_iIdProject "!= 0" -->
-	<!--#endif m_iIdProject -->
-	<!--#if m_iIdTask "!= 0" -->
-		<li id="oLiCommentaries"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[sCommentaries] }</a></li>
-		<li id="oLiSpfFld"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[sSpFld] }</a></li>
-	<!--#endif m_iIdTask -->
-	</ul>						
-	<br />
-
-	<div id="sGeneral" class="">
-		<table width="95%" border="0" cellspacing="2" cellpadding="2" align="center">
-			<tr>
-				<td colspan="2"><label for="sDescription">{ m_captions[sDescription] }</label></td>
-			</tr>
-			<tr>
-				<td colspan="2"><textarea name="sDescription" id="sDescription" { m_datas[sReadonlyDescription] } cols="50" rows="10">{ m_datas[sDescription] }</textarea></td>
-			</tr>
-
+		<ul id="tablist">
+			<li id="oLiGeneral"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[sGeneral] }</a></li>
 		<!--#if m_datas[isLinkable] -->
-			<tr id="oTrLinkedTask">
-				<td>
-					<label for="oLinkedTask">{ m_captions[sLinkedTask] }</label>
-				</td>
-				<td>
-					<input type="checkbox" name="oLinkedTask" id="oLinkedTask" { m_datas[sDisabledLinkedTask] } { m_datas[sCkeckedLinkedTask] } onclick="onLinkTaskChanged(this)" value="" style="background-color:transparent;border=0" />
-				</td>
-			</tr>
+			<li id="oLiPredecessors"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[sPredecessors] }</a></li>
 		<!--#endif m_datas[isLinkable] -->
-
-		<!--#if m_datas[isProposable] -->
-			<tr id="oTrProposable" class="">
-				<td>
-					<label for="oProposable">{ m_captions[sProposable] }</label>
-				</td>
-				<td>
-					<select id="oProposable" name="oProposable">
-						<!--#in getNextProposable -->
-						<option { m_datas[sSelectedProposable] } value="{ m_datas[iProposable] }">{ m_datas[sProposable] }</option>
-						<!--#endin getNextProposable -->
-					</select>
-				</td>
-			</tr>
-		<!--#endif m_datas[isProposable] -->
-
-			<tr id="oTrDurationType" class="">
-				<td>
-					<label for="oDurationType">{ m_captions[sDurationType] }</label>
-				</td>
-				<td>
-					<select id="oDurationType" name="oDurationType" { m_datas[sDisabledDurationType] } onchange="onDurationTypeChanged(this)">
-						<!--#in getNextDurationType -->
-						<option { m_datas[sSelectedDuration] } value="{ m_datas[iDurationType] }">{ m_datas[sDurationName] }</option>
-						<!--#endin getNextDurationType -->
-					</select>
-				</td>
-			</tr>
-
-			<tr id="oTrDuration">
-				<td>
-					<label for="sDuration">{ m_captions[sDuration] }</label>
-				</td>
-				<td>
-					<input type="text" name="sDuration" { m_datas[sReadOnlyDuration] } id="sDuration" maxlength="20" value="{ m_datas[sDuration] }" size="10" />
-				</td>
-			</tr>
-
-			<tr id="oTrStartDate">
-				<td>
-					<label for="sPlannedStartDate">{ m_captions[sPlannedStartDate] }</label>
-				</td>
-				<td>
-					<input type="text" name="sPlannedStartDate" id="sPlannedStartDate" { m_datas[sReadOnlyDate] } maxlength="20" value="{ m_datas[sPlannedStartDate] }" size="10" />
-				<!--#if m_datas[isReadOnlyDate] "!= 1" -->
-				<a href="javascript:dateCallback('sPlannedStartDate');">
-						<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/calendar.gif" alt="{ m_captions[sPlannedStartDate] }" />
-					</a>
-				<!--#endif m_datas[isReadOnlyDate] -->
-				</td>
-			</tr>
-			
-			<tr id="oTrEndDate">
-				<td>
-					<label for="sPlannedEndDate">{ m_captions[sPlannedEndDate] }</label>
-				</td>
-				<td>
-					<input type="text" name="sPlannedEndDate" id="sPlannedEndDate" { m_datas[sReadOnlyDate] } maxlength="20" value="{ m_datas[sPlannedEndDate] }" size="10" />
-				<!--#if m_datas[isReadOnlyDate] "!= 1" -->
-					<a href="javascript:dateCallback('sPlannedEndDate');">
-						<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/calendar.gif" alt="{ m_captions[sPlannedEndDate] }" />
-					</a>
-				<!--#endif m_datas[isReadOnlyDate] -->
-				</td>
-			</tr>
-				
-		<!--#if m_datas[isCompletionEnabled] -->
-			<tr id="oTrCompletion" class="">
-				<td>
-					<label for="oCompletion">{ m_captions[sCompletion] }</label>
-				</td>
-				<td>
-					<select id="oCompletion" name="oCompletion">
-						<!--#in getNextCompletion -->
-						<option { m_datas[sSelectedCompletion] } value="{ m_datas[iCompletion] }">{ m_datas[iCompletion] }</option>
-						<!--#endin getNextCompletion -->
-					</select>
-				</td>
-			</tr>
-		<!--#endif m_datas[isCompletionEnabled] -->
-		<!--#if m_datas[isAnswerEnable] -->
-			<tr id="oTrAnswerEnable" class="">
-				<td>
-					<label for="oAnswerEnable">{ m_captions[sAnwser] }</label>
-				</td>
-				<td>
-					<select id="oAnswerEnable" name="oAnswerEnable">
-						<!--#in getNextAnswer -->
-						<option value="{ m_datas[iProposable] }">{ m_datas[sProposable] }</option>
-						<!--#endin getNextAnswer -->
-					</select>
-				</td>
-			</tr>
-		<!--#endif m_datas[isAnswerEnable] -->
-		<!--#if m_datas[isResourceAvailable] -->
-			<tr>
-				<td>
-					<label for="iIdTaskResponsible">{ m_captions[sTaskResponsible] }</label>
-				</td>
-				<td>
-					<select id="iIdTaskResponsible" { m_datas[sReadOnlyTaskResponsible] } name="iIdTaskResponsible">
-						<option value="{ m_datas[iNone] }">{ m_captions[sNone] }</option>
-						<!--#in getNextTaskResponsible -->
-						<option { m_datas[sSlectedTaskResponsible] } value="{ m_datas[iIdTaskResponsible] }">{ m_datas[sTaskResponsibleName] }</option>
-						<!--#endin getNextTaskResponsible -->
-					</select>
-				</td>
-			</tr>
-		<!--#endif m_datas[isResourceAvailable] -->
-		</table>
-	</div>
-	
-<!--#if m_datas[isLinkable] -->
-	<div id="sPredecessor" class="">
-		<table border="0" cellspacing="0" cellpadding="2">
-			<tr class="BabSiteAdminTitleFontBackground">
-				<td>{ m_captions[sTaskNumber] }</td>
-				<td>{ m_captions[sRelation] }</td>
-			</tr>
-			<tr> 
-				<td colspan="2">
-					<!--#in getNone -->
-					<input class="BabLoginMenuBackground" { m_datas[sSelectedPredecessor] } type="radio" name="iPredecessor" value="{ m_datas[iNone] }" />{ m_captions[sNone] }
-					<!--#endin getNone -->
-				</td>
-			</tr>
-			<!--#in getNextPredecessor -->
-			<tr> 
-				<td>
-					<input class="BabLoginMenuBackground" { m_datas[sSelectedPredecessor] } type="radio" name="iPredecessor" value="{ m_datas[iIdPredecessor] }" />{ m_datas[sPredecessorNumber] }
-				</td>
-				<td>
-					<select id="oLinkType" name="oLinkType[]">
-						<!--#in getNextRelation -->
-						<option { m_datas[sSelectedLinkType] } value="{ m_datas[iLink] }">{ m_datas[sLink] }</option>
-						<!--#endin getNextRelation -->
-					</select>
-				</td>
-			</tr>
-			<!--#endin getNextPredecessor -->
-		</table>
-	</div>
-<!--#endif m_datas[isLinkable] -->
-	
-	<!--#if m_iIdTask "!= 0" -->
-	<div id="sCommentaries" class="">
-		{ m_datas[sTaskCommentaries] }
-	</div>
-	
-	<div id="sSpfFld" class="">
-		<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
-			<tr class="BabSiteAdminTitleFontBackground"> 
-				<td colspan="3" align="center">
-					<label for="oSpfField">{ m_captions[sSpFld] }</label>
-					<select id="oSpfField" name="oSpfField">
-						<!--#in getNextSpecificField -->
-						<option { m_datas[sSelectedSpfField] } value="{ m_datas[iIdSpField] }">{ m_datas[sSpFieldName] }</option>
-						<!--#endin getNextSpecificField -->
-					</select>
-					<input type="submit" value="{ m_captions[sAddSpf] }" onclick="on_btn_clicked('{ m_datas[iAddSpfIdx] }', '{ m_datas[iAddSpfAction] }')" />
-				</td>
-			</tr>
-			<tr>
-				<td>{ m_captions[sField] }</td>
-				<td>{ m_captions[sType] }</td>
-				<td>{ m_captions[sValue] }</td>
-			</tr>
-		</table>
-	</div>
-	<!--#endif m_iIdTask -->
-	
-	<br />
-	<div align="center">
-		<!--#if m_iIdTask "== 0" -->
-			<input type="submit" value="{ m_captions[sAdd] }" onclick="on_btn_clicked('{ m_datas[iAddIdx] }', '{ m_datas[iAddAction] }')" />
-		<!--#else m_iIdTask -->
-			<input type="submit" value="{ m_captions[sModify] }" onclick="on_btn_clicked('{ m_datas[iModifyIdx] }', '{ m_datas[iModifyAction] }')" />
-			<!--#if m_datas[isStoppable] -->
-				<input type="submit" value="{ m_captions[sStop] }" onclick="on_btn_clicked('{ m_datas[iStopIdx] }', '{ m_datas[iStopAction] }')" />
-			<!--#endif m_datas[isStoppable] -->
-			<!--#if m_datas[isDeletable] -->
-				<input type="submit" value="{ m_captions[sDelete] }" onclick="on_btn_clicked('{ m_datas[iDeleteIdx] }', '{ m_datas[iDeleteAction] }')" />
-			<!--#endif m_datas[isDeletable] -->
+		<!--#if m_iIdProject "!= 0" -->
+		<!--#endif m_iIdProject -->
+		<!--#if m_iIdTask "!= 0" -->
+			<li id="oLiCommentaries"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[sCommentaries] }</a></li>
+			<li id="oLiSpfFld"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[sSpFld] }</a></li>
 		<!--#endif m_iIdTask -->
+		</ul>						
+		<div id="sGeneral">
+			<table width="95%" border="0" cellspacing="2" cellpadding="2" align="center">
+				<tr>
+					<td colspan="2"><label for="sDescription">{ m_captions[sDescription] }</label></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<textarea name="sDescription" id="sDescription" { m_datas[sReadonlyDescription] } cols="50" rows="10" style="width:100%">{ m_datas[sDescription] }</textarea>
+					</td>
+				</tr>
+			<!--#if m_datas[isLinkable] -->
+				<tr id="oTrLinkedTask">
+					<td>
+						<label for="oLinkedTask">{ m_captions[sLinkedTask] }</label>
+					</td>
+					<td>
+						<input type="checkbox" name="oLinkedTask" id="oLinkedTask" { m_datas[sDisabledLinkedTask] } { m_datas[sCkeckedLinkedTask] } onclick="onLinkTaskChanged(this)" value="" style="background-color:transparent;border=0" />
+					</td>
+				</tr>
+			<!--#endif m_datas[isLinkable] -->
+	
+			<!--#if m_datas[isProposable] -->
+				<tr id="oTrProposable" class="">
+					<td>
+						<label for="oProposable">{ m_captions[sProposable] }</label>
+					</td>
+					<td>
+						<select id="oProposable" name="oProposable">
+							<!--#in getNextProposable -->
+							<option { m_datas[sSelectedProposable] } value="{ m_datas[iProposable] }">{ m_datas[sProposable] }</option>
+							<!--#endin getNextProposable -->
+						</select>
+					</td>
+				</tr>
+			<!--#endif m_datas[isProposable] -->
+	
+				<tr id="oTrDurationType" class="">
+					<td>
+						<label for="oDurationType">{ m_captions[sDurationType] }</label>
+					</td>
+					<td>
+						<select id="oDurationType" name="oDurationType" { m_datas[sDisabledDurationType] } onchange="onDurationTypeChanged(this)">
+							<!--#in getNextDurationType -->
+							<option { m_datas[sSelectedDuration] } value="{ m_datas[iDurationType] }">{ m_datas[sDurationName] }</option>
+							<!--#endin getNextDurationType -->
+						</select>
+					</td>
+				</tr>
+	
+				<tr id="oTrDuration">
+					<td>
+						<label for="sDuration">{ m_captions[sDuration] }</label>
+					</td>
+					<td>
+						<input type="text" name="sDuration" { m_datas[sReadOnlyDuration] } id="sDuration" maxlength="20" value="{ m_datas[sDuration] }" size="10" />
+					</td>
+				</tr>
+	
+				<tr id="oTrStartDate">
+					<td>
+						<label for="sPlannedStartDate">{ m_captions[sPlannedStartDate] }</label>
+					</td>
+					<td>
+						<input type="text" name="sPlannedStartDate" id="sPlannedStartDate" { m_datas[sReadOnlyDate] } maxlength="20" value="{ m_datas[sPlannedStartDate] }" size="10" />
+					<!--#if m_datas[isReadOnlyDate] "!= 1" -->
+					<a href="javascript:dateCallback('sPlannedStartDate');">
+							<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/calendar.gif" alt="{ m_captions[sPlannedStartDate] }" />
+						</a>
+					<!--#endif m_datas[isReadOnlyDate] -->
+					</td>
+				</tr>
+				
+				<tr id="oTrEndDate">
+					<td>
+						<label for="sPlannedEndDate">{ m_captions[sPlannedEndDate] }</label>
+					</td>
+					<td>
+						<input type="text" name="sPlannedEndDate" id="sPlannedEndDate" { m_datas[sReadOnlyDate] } maxlength="20" value="{ m_datas[sPlannedEndDate] }" size="10" />
+					<!--#if m_datas[isReadOnlyDate] "!= 1" -->
+						<a href="javascript:dateCallback('sPlannedEndDate');">
+							<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/calendar.gif" alt="{ m_captions[sPlannedEndDate] }" />
+						</a>
+					<!--#endif m_datas[isReadOnlyDate] -->
+					</td>
+				</tr>
+					
+			<!--#if m_datas[isCompletionEnabled] -->
+				<tr id="oTrCompletion" class="">
+					<td>
+						<label for="oCompletion">{ m_captions[sCompletion] }</label>
+					</td>
+					<td>
+						<select id="oCompletion" name="oCompletion">
+							<!--#in getNextCompletion -->
+							<option { m_datas[sSelectedCompletion] } value="{ m_datas[iCompletion] }">{ m_datas[iCompletion] }</option>
+							<!--#endin getNextCompletion -->
+						</select>
+					</td>
+				</tr>
+			<!--#endif m_datas[isCompletionEnabled] -->
+			<!--#if m_datas[isAnswerEnable] -->
+				<tr id="oTrAnswerEnable" class="">
+					<td>
+						<label for="oAnswerEnable">{ m_captions[sAnwser] }</label>
+					</td>
+					<td>
+						<select id="oAnswerEnable" name="oAnswerEnable">
+							<!--#in getNextAnswer -->
+							<option value="{ m_datas[iProposable] }">{ m_datas[sProposable] }</option>
+							<!--#endin getNextAnswer -->
+						</select>
+					</td>
+				</tr>
+			<!--#endif m_datas[isAnswerEnable] -->
+			<!--#if m_datas[isResourceAvailable] -->
+				<tr>
+					<td>
+						<label for="iIdTaskResponsible">{ m_captions[sTaskResponsible] }</label>
+					</td>
+					<td>
+						<select id="iIdTaskResponsible" { m_datas[sReadOnlyTaskResponsible] } name="iIdTaskResponsible">
+							<option value="{ m_datas[iNone] }">{ m_captions[sNone] }</option>
+							<!--#in getNextTaskResponsible -->
+							<option { m_datas[sSlectedTaskResponsible] } value="{ m_datas[iIdTaskResponsible] }">{ m_datas[sTaskResponsibleName] }</option>
+							<!--#endin getNextTaskResponsible -->
+						</select>
+					</td>
+				</tr>
+			<!--#endif m_datas[isResourceAvailable] -->
+			</table>
+		</div>
+		
+	<!--#if m_datas[isLinkable] -->
+		<div id="sPredecessor" class="">
+			<table border="0" cellspacing="0" cellpadding="2">
+				<tr class="BabSiteAdminTitleFontBackground">
+					<td>{ m_captions[sTaskNumber] }</td>
+					<td>{ m_captions[sRelation] }</td>
+				</tr>
+				<tr> 
+					<td colspan="2">
+						<!--#in getNone -->
+						<input class="BabLoginMenuBackground" { m_datas[sSelectedPredecessor] } type="radio" name="iPredecessor" value="{ m_datas[iNone] }" />{ m_captions[sNone] }
+						<!--#endin getNone -->
+					</td>
+				</tr>
+				<!--#in getNextPredecessor -->
+				<tr> 
+					<td>
+						<input class="BabLoginMenuBackground" { m_datas[sSelectedPredecessor] } type="radio" name="iPredecessor" value="{ m_datas[iIdPredecessor] }" />{ m_datas[sPredecessorNumber] }
+					</td>
+					<td>
+						<select id="oLinkType" name="oLinkType[]">
+							<!--#in getNextRelation -->
+							<option { m_datas[sSelectedLinkType] } value="{ m_datas[iLink] }">{ m_datas[sLink] }</option>
+							<!--#endin getNextRelation -->
+						</select>
+					</td>
+				</tr>
+				<!--#endin getNextPredecessor -->
+			</table>
+		</div>
+	<!--#endif m_datas[isLinkable] -->
+		
+		<!--#if m_iIdTask "!= 0" -->
+		<div id="sCommentaries" class="">
+			{ m_datas[sTaskCommentaries] }
+		</div>
+		
+		<div id="sSpfFld" class="">
+			<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+				<tr class="BabSiteAdminTitleFontBackground"> 
+					<td colspan="3" align="center">
+						<label for="oSpfField">{ m_captions[sSpFld] }</label>
+						<select id="oSpfField" name="oSpfField">
+							<!--#in getNextSpecificField -->
+							<option { m_datas[sSelectedSpfField] } value="{ m_datas[iIdSpField] }">{ m_datas[sSpFieldName] }</option>
+							<!--#endin getNextSpecificField -->
+						</select>
+						<input type="submit" value="{ m_captions[sAddSpf] }" onclick="on_btn_clicked('{ m_datas[iAddSpfIdx] }', '{ m_datas[iAddSpfAction] }')" />
+					</td>
+				</tr>
+				<tr>
+					<td>{ m_captions[sField] }</td>
+					<td>{ m_captions[sType] }</td>
+					<td>{ m_captions[sValue] }</td>
+				</tr>
+			</table>
+		</div>
+		<!--#endif m_iIdTask -->
+		
+		<br />
+		<div align="center">
+			<!--#if m_iIdTask "== 0" -->
+				<input type="submit" value="{ m_captions[sAdd] }" onclick="on_btn_clicked('{ m_datas[iAddIdx] }', '{ m_datas[iAddAction] }')" />
+			<!--#else m_iIdTask -->
+				<input type="submit" value="{ m_captions[sModify] }" onclick="on_btn_clicked('{ m_datas[iModifyIdx] }', '{ m_datas[iModifyAction] }')" />
+				<!--#if m_datas[isStoppable] -->
+					<input type="submit" value="{ m_captions[sStop] }" onclick="on_btn_clicked('{ m_datas[iStopIdx] }', '{ m_datas[iStopAction] }')" />
+				<!--#endif m_datas[isStoppable] -->
+				<!--#if m_datas[isDeletable] -->
+					<input type="submit" value="{ m_captions[sDelete] }" onclick="on_btn_clicked('{ m_datas[iDeleteIdx] }', '{ m_datas[iDeleteAction] }')" />
+				<!--#endif m_datas[isDeletable] -->
+			<!--#endif m_iIdTask -->
+		</div>
 	</div>
 </form>
 
@@ -953,7 +950,6 @@ onClassChanged(document.forms.taskForm['iClass']);
 <form name="addTask" method="get" action="{ babPhpSelf }">
 	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
 	<input type="hidden" name="idx" value="{ m_datas[idx] }" />
-
 	<div border="0" width="99%" style="padding:2px">
 		<select name="iIdProject">
 		<!--#in getNextProject -->
