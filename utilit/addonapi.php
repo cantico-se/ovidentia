@@ -1181,7 +1181,8 @@ function bab_uppdateUserById($id, $info, &$error)
 				$error = bab_translate("Empty password");
 				return false;
 			}
-			else
+
+			if( isset($info['password']) )
 			{
 				$arruq[] = 'password=\''.md5(strtolower($info['password'])).'\'';
 			}
