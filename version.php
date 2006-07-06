@@ -25,95 +25,6 @@ include_once "base.php";
 include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
 include_once $GLOBALS['babInstallPath'].'utilit/upgradeincl.php';
 
-function upgrade()
-{
-$bab_versions = array("310", "320", "330", "331", "332", "333", "340", "341", "342", "343", "400", "401", "402", "403", "404", "405", "406", "407", "408","409","410","500","501","502","503","510","520","530","531","540","541","542","543", "544", "545", "546", "550", "551","552","553","554","555","556","557","558","559","560","561","562","563","564","565","566","570","571","572","573","574","575",
-"576","577","578","579","580","581","582","583","584","585","586");
-
-$ret = "";
-$db = &$GLOBALS['babDB'];
-
-$res = $db->db_query("show tables like '".BAB_INI_TBL."'");
-if( !$res || $db->db_num_rows($res) < 1)
-	{
-	$dbver = explode(".", $GLOBALS['babVersion']);
-	$dbver[2] = "0";
-	}
-else
-	{
-	$rr = $db->db_fetch_array($db->db_query("select fvalue from ".BAB_INI_TBL." where foption='ver_major'"));
-	$dbver[] = $rr['fvalue'];
-	$rr = $db->db_fetch_array($db->db_query("select fvalue from ".BAB_INI_TBL." where foption='ver_minor'"));
-	$dbver[] = $rr['fvalue'];
-	$rr = $db->db_fetch_array($db->db_query("select fvalue from ".BAB_INI_TBL." where foption='ver_build'"));
-	$dbver[] = $rr['fvalue'];
-	}
-
-$ver_from = $dbver[0].$dbver[1].$dbver[2];
-
-$ini = new bab_inifile();
-$ini->inifile($GLOBALS['babInstallPath'].'version.inc');
-
-if (!$ini->isValid()) {
-	$requirements = $ini->getRequirements();
-	foreach($requirements as $req) {
-		if (false === $req['result']) {
-			return bab_translate("This version can't be installed because of the missing requirement").' '.$req['description'].' '.$req['required'];
-		}
-	}
-}
-
-list($bab_ver_major, $bab_ver_minor, $bab_ver_build) = explode('.',$ini->getVersion());
-$ver_to = $bab_ver_major.$bab_ver_minor.$bab_ver_build;
-
-
-if( $ver_from == $ver_to )
-	{
-	include_once $GLOBALS['babInstallPath']."upgrade.php";
-	$func = "upgrade".$ver_from."betas";
-	$beta = "";
-	if( function_exists($func))
-		{
-		$ret = $func($beta);
-		if( !empty($ret))
-			return $ret;
-		}
-
-	if( !empty($beta))
-		return bab_translate("You site has been updated") .": ".$dbver[0].".".$dbver[1].".".$dbver[2].$beta;
-	else
-		return bab_translate("You site is already up to date");
-	}
-
-$i_from = bab_array_search($ver_from, $bab_versions);
-$i_to = bab_array_search($ver_to, $bab_versions);
-
-include_once $GLOBALS['babInstallPath']."upgrade.php";
-for( $i = $i_from; $i < $i_to; $i++)
-	{
-	$func = "upgrade".$bab_versions[$i]."to".$bab_versions[$i+1];
-	if( function_exists($func))
-		{
-		$ret = $func();
-		if( !empty($ret))
-			return $ret;
-		}
-	else
-		{
-		$ret .= "Call to undefined function: ".$func."()<br>";
-		return $ret;
-		}
-	}
-
-$db->db_query("update ".BAB_INI_TBL." set fvalue='".$bab_ver_major."' where foption='ver_major'");
-$db->db_query("update ".BAB_INI_TBL." set fvalue='".$bab_ver_minor."' where foption='ver_minor'");
-$db->db_query("update ".BAB_INI_TBL." set fvalue='".$bab_ver_build."' where foption='ver_build'");
-
-putVersion($bab_ver_major.".".$bab_ver_minor);
-$ret .= bab_translate("You site has been updated")."<br>";
-$ret .= "From ". $dbver[0].'.'.$dbver[1].'.'.$dbver[2] ." to ". $bab_ver_major.'.'.$bab_ver_minor.'.'.$bab_ver_build;
-return $ret;
-}
 
 function getVersion()
 {
@@ -142,23 +53,7 @@ function getVersion()
 	return $str;
 }
 
-function putVersion($version)
-{
-	$filename = "config.php";
 
-	$file = @fopen($filename, "r");
-	$txt = fread($file, filesize($filename));
-	fclose($file);
-	$reg = "babVersion[[:space:]]*=[[:space:]]*\"([^\"]*)\"";
-	$res = ereg($reg, $txt, $match);
-
-	$reg = "babVersion[[:space:]]*=[[:space:]]*\"".$match[1]."\"";
-	$out = ereg_replace($reg, "babVersion = \"".$version."\"", $txt);
-	$file = fopen($filename, "w");
-	fputs($file, $out);
-	fclose($file);
-	return $match[1];
-}
 
 function echoLang($path)
 {
@@ -205,26 +100,23 @@ function echoLang($path)
 
 
 /* main */
-if( !isset($idx))
-	$idx = "version";
-
+$idx = bab_rp('idx','version');
 
 
 $str = "";
 switch($idx)
 	{
 	case "upgrade":
-		$str = upgrade();
+		bab_upgrade($GLOBALS['babInstallPath'], $str);
 		break;
 
 	case "addons":
 		if( !bab_isUserAdministrator())
 			die(bab_translate("You must be logged as administrator"));
-		if (!isset($to)) $to = $GLOBALS['babInstallPath'];
-		if (isset($from))
+
+		if (isset($_GET['from']))
 			{
-			
-			bab_cpaddons($from,$to);
+			bab_cpaddons($_GET['from'], bab_rp('to',$GLOBALS['babInstallPath']), $str);
 			}
 		break;
 
@@ -298,10 +190,10 @@ switch($idx)
 <META NAME="Description" CONTENT="">
 </HEAD>
 <BODY BGCOLOR="#FFFFFF">
-<center><H1>Ovidentia</H1>
+<center><h1>Ovidentia</h1>
 <?php
 echo $babSiteName . "<br>";
-echo $str;
+echo bab_toHtml($str, BAB_HTML_ALL);
 ?>
 <br>
 <P class="copyright">&copy; 2001, <a href="http://www.cantico.fr/">CANTICO</a> All rights reserved.</P></center>

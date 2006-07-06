@@ -101,7 +101,7 @@ function sitesList()
 
 
 
-function viewVersion()
+function viewVersion($message)
 	{
 	global $babBody;
 	class temp
@@ -152,20 +152,29 @@ function viewVersion()
 			$ini->inifile($GLOBALS['babInstallPath'].'version.inc');
 
 			$this->srcversion = "E-".$ini->getVersion();
-			if( $this->srcversion != $bab_ov_dbver_prod."-".$bab_ov_dbver_major.".".$bab_ov_dbver_minor.".".$bab_ov_dbver_build ) {
-				$this->srcversion .= " [ ".$bab_ov_dbver_prod."-".$bab_ov_dbver_major.".".$bab_ov_dbver_minor.".".$bab_ov_dbver_build." ]";
-				}
+			$this->dbversion = $bab_ov_dbver_prod."-".$bab_ov_dbver_major.".".$bab_ov_dbver_minor.".".$bab_ov_dbver_build;
 	
+			}
+
+		function set_message() {
+				if( $this->srcversion != $this->dbversion ) {
+					$GLOBALS['babBody']->msgerror = bab_translate("The database is not up-to-date");
+
+					$this->message = sprintf(bab_translate("The database has not been updated since version %s"),$this->dbversion);
+					$this->upgrade = bab_translate("Update database");
+				}
 			}
 		}
 
 	$temp = new temp();
+	$temp->message = bab_toHtml($message, BAB_HTML_ALL);
+	$temp->set_message();
 	$babBody->babecho(	bab_printTemplate($temp,"sites.html", "versions"));
 	}
 
 
 	
-function zipupgrade()
+function zipupgrade($message)
 	{
 	global $babBody;
 	class temp
@@ -179,6 +188,7 @@ function zipupgrade()
 			$this->t_file_name = bab_translate("Name of the archive without extension");
 			$this->t_upgrade = bab_translate("Upgrade");
 			$this->t_copy_addons = bab_translate("Copy addons");
+			$this->t_wait = bab_translate("Loading, please wait...");
 			
 			if (isset($_POST)) $this->val = $_POST;
 			
@@ -189,8 +199,28 @@ function zipupgrade()
 		}
 
 	$temp = new temp();
-	$babBody->babecho(	bab_printTemplate($temp, "sites.html", "zipupgrade"));
+	$temp->message = bab_toHtml($message, BAB_HTML_ALL);
+	$babBody->babecho(bab_printTemplate($temp, "sites.html", "zipupgrade"));
 	}
+
+
+function zipupgrade_message($message)
+	{
+	global $babBody;
+	class zipupgrade_message_temp
+		{
+		function zipupgrade_message_temp()
+			{
+			$this->t_next = bab_translate('Next');
+			}
+		}
+
+	$temp = new zipupgrade_message_temp();
+	$temp->message = bab_toHtml($message, BAB_HTML_ALL);
+	$babBody->babecho(bab_printTemplate($temp, "sites.html", "zipupgrade_message"));
+	}
+
+
 	
 function database()
 	{
@@ -244,6 +274,7 @@ function unzipcore()
 	
 	$core = 'ovidentia/';
 	$files_to_extract = array();
+	$directory_to_create = array();
 	ini_set('max_execution_time',1200);
 
 	$tmpdir = $GLOBALS['babUploadPath'].'/tmp/';
@@ -277,11 +308,16 @@ function unzipcore()
 				return false;
 				}
 
+			
+			
+
 			if (!bab_mkdir($new_dir,$GLOBALS['babMkdirMode']))
 				{
 				$babBody->msgerror = bab_translate("Can't create directory: ").$new_dir;
 				return false;
 				}
+
+			$ini_file = false;
 
 			foreach ($zipcontents as $key => $value)
 				{
@@ -292,33 +328,88 @@ function unzipcore()
 					if ($value['size'] == 0) // directory
 						{
 						if (!is_dir($where))
-							bab_mkdir($where,$GLOBALS['babMkdirMode']);
+							$directory_to_create[] = $where;
 						}
 					else // file
 						{
 						$files_to_extract[$value['index']] = dirname($where);
 						}
+
+					if ('ovidentia/version.inc' == $value['filename']) {
+							$ini_file = $value['index'];
+						}
 					}
 				}
+
+			if (false === $ini_file) {
+				$babBody->msgerror = bab_translate("This file is not a well formated Ovidentia package");
+				return false;
+			}
+
 			
-			foreach ($files_to_extract as $key => $value)
-				{
-				$zip->Extract($tmpdir.$ul,$value,$key,false);
+			include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
+			
+			$ini = new bab_inifile();
+			$ini->getfromzip($tmpdir.$ul, 'ovidentia/version.inc');
+
+			$zipversion = $ini->getVersion();
+			if (empty($zipversion)) {
+				$babBody->msgerror = bab_translate("This file is not a well formated Ovidentia package");
+				return false;
+			}
+
+			$current_version_ini = new bab_inifile();
+			$current_version_ini->inifile($GLOBALS['babInstallPath'].'version.inc');
+			$current_version = $current_version_ini->getVersion();
+
+
+			if ( 1 !== version_compare($zipversion, $current_version)) {
+				$babBody->msgerror = bab_translate("The installed version is newer than the package");
+				return false;
+			}
+
+			if (!$ini->isValid()) {
+				$requirements = $ini->getRequirements();
+				foreach($requirements as $req) {
+					if (false === $req['result']) {
+						$babBody->msgerror = bab_translate("This version can't be installed because of the missing requirement").' '.$req['description'].' '.$req['required'];
+						return false;
+					}
 				}
+			}
+
+			foreach($directory_to_create as $where) {
+				if (!bab_mkdir($where)) {
+					$babBody->msgerror = bab_translate("Can't create directory: ").$where;
+					return false;
+				}
+			}
+			
+			foreach ($files_to_extract as $key => $value) {
+				$zip->Extract($tmpdir.$ul, $value, $key, false);
+			}
 			
 			unlink($tmpdir.$ul);
 			
 			include_once $GLOBALS['babInstallPath'].'utilit/upgradeincl.php';
-			if (isset($_POST['copy_addons']))
-				{
-				bab_cpaddons($GLOBALS['babInstallPath'],$new_dir);
+			if (isset($_POST['copy_addons'])) {
+				if (!bab_cpaddons($GLOBALS['babInstallPath'], $new_dir, $babBody->msgerror)) {
+					return false;
 				}
+			}
 				
 			if (isset($_POST['upgrade']))
 				{
-				if (bab_writeConfig(array('babInstallPath' => $new_dir.'/')))
-					{
-					header('location: '.$GLOBALS['babUrlScript'].'?tg=version&idx=upgrade');
+				$new_dir .= '/';
+
+				if (!bab_writeConfig(array('babInstallPath' => $new_dir))) {
+						return false;
+					}
+
+
+				if (!bab_upgrade($new_dir, $GLOBALS['message'])) {
+						$babBody->msgerror = bab_translate('ERROR');
+						return false;
 					}
 				}
 			}
@@ -333,6 +424,7 @@ function unzipcore()
 		$babBody->msgerror = bab_translate("Upload error");
 		return false;
 		}
+
 	return true;
 	}
 	
@@ -347,15 +439,20 @@ if( !isset($BAB_SESS_LOGGED) || empty($BAB_SESS_LOGGED) ||  !$babBody->isSuperAd
 	return;
 }
 
+$idx = bab_rp('idx','list');
+
+
 if( isset($create))
 	{
 	if(!siteSave($name, $description, $lang, $siteemail, $skin, $style, $register, $statlog, $mailfunc, $server, $serverport, $imgsize, $smtpuser, $smtppass, $smtppass2, $babLangFilter->convertFilterToInt($langfilter),$total_diskspace, $user_diskspace, $folder_diskspace, $maxfilesize, $uploadpath, $babslogan, $remember_login, $email_password, $change_password, $change_nickname, $name_order, $adminname, $user_workdays))
 		$idx = "create";
 	}
 	
-if (isset($_FILES['zipfile']))
-	if (unzipcore())
-		$idx = "list";
+if (isset($_FILES['zipfile'])) {
+	if (unzipcore()) {
+		$idx = "zipupgrade_message";
+	}
+}
 		
 if (isset($_POST['action']))
 	switch($_POST['action'])
@@ -376,8 +473,10 @@ if (isset($_POST['action']))
 			break;
 		}
 
-if( !isset($idx))
-	$idx = "list";
+
+if (!isset($message)) {
+	$message = '';
+}
 
 
 switch($idx)
@@ -389,23 +488,33 @@ switch($idx)
 
 	case "version":
 		$babBody->title = bab_translate("Ovidentia info");
-		viewVersion();
+
+		viewVersion($message);
 		$babBody->addItemMenu("list", bab_translate("Sites"),$GLOBALS['babUrlScript']."?tg=sites&idx=list");
 		$babBody->addItemMenu("version", bab_translate("Versions"),$GLOBALS['babUrlScript']."?tg=sites&idx=version");
+		$babBody->addItemMenu("zipupgrade", bab_translate("Upgrade"),$GLOBALS['babUrlScript']."?tg=sites&idx=zipupgrade");
+		$babBody->addItemMenu("database", bab_translate("Database"),$GLOBALS['babUrlScript']."?tg=sites&idx=database");
 		break;
 		
 	case 'zipupgrade':
 		$babBody->addItemMenu("list", bab_translate("Sites"),$GLOBALS['babUrlScript']."?tg=sites&idx=list");
+		$babBody->addItemMenu("version", bab_translate("Versions"),$GLOBALS['babUrlScript']."?tg=sites&idx=version");
 		$babBody->addItemMenu("zipupgrade", bab_translate("Upgrade"),$GLOBALS['babUrlScript']."?tg=sites&idx=zipupgrade");
 		$babBody->addItemMenu("database", bab_translate("Database"),$GLOBALS['babUrlScript']."?tg=sites&idx=database");
 		$babBody->title = bab_translate("Upgrade");
-		if (!function_exists('gzopen'))
+		if (!function_exists('gzopen')) {
 			$babBody->msgerror = bab_translate("Zlib php module missing");
-		zipupgrade();
+		}
+		zipupgrade($message);
+		break;
+
+	case 'zipupgrade_message':
+		zipupgrade_message($message);
 		break;
 		
 	case 'database':
 		$babBody->addItemMenu("list", bab_translate("Sites"),$GLOBALS['babUrlScript']."?tg=sites&idx=list");
+		$babBody->addItemMenu("version", bab_translate("Versions"),$GLOBALS['babUrlScript']."?tg=sites&idx=version");
 		$babBody->addItemMenu("zipupgrade", bab_translate("Upgrade"),$GLOBALS['babUrlScript']."?tg=sites&idx=zipupgrade");
 		$babBody->addItemMenu("database", bab_translate("Database"),$GLOBALS['babUrlScript']."?tg=sites&idx=database");
 		$babBody->title = bab_translate("Database management");

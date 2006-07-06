@@ -1340,6 +1340,7 @@ function bab_debug($str)
 			ob_start();
 			print_r($str);
 			$str = ob_get_contents();
+			ob_end_clean();
 		}
 		if (isset($GLOBALS['bab_debug_messages'])) {
 			$GLOBALS['bab_debug_messages'][] = $str;

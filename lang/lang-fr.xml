@@ -2164,4 +2164,12 @@
 <string id="Decoding type">Type de décodage</string>
 <string id="Mail server error">Erreur du serveur de messagerie</string>
 <string id="Undelivered mails">mails non distribués</string>
+<string id="The database is not up-to-date">La base de données n'est pas à jour</string>
+<string id="The database has not been updated since version %s">La base de données n'a pas été mise à jour depuis la version %s</string>
+<string id="Update database">Mettre à jour la base de données</string>
+<string id="Error : can't create directory : %s">Erreur : impossible de créer le répertoire %s</string>
+<string id="Error : can't copy the file %s to the directory %s">Erreur : impossible de copier le fichier %s vers le répertoire %s</string>
+<string id="This file is not a well formated Ovidentia package">Ce fichier n'est pas une archive de mise à jour correcte pour Ovidentia</string>
+<string id="The installed version is newer than the package">La version installée est plus récente que l'archive</string>
+<string id="Loading, please wait...">Chargement en cours, patientez...</string>
 </fr>

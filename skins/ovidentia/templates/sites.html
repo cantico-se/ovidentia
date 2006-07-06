@@ -833,17 +833,39 @@ changetype(document.forms['formsite_bloc4'].nonworking_day_type);
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
 	<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center" class="BabLoginMenuBackground">
+	
+	<!--#if message -->
 	<tr> 
-		<td align="right" nowrap>{ srcversiontxt }&nbsp;:</td>
-		<td nowrap>{ srcversion }</td>
+		<td colspan="2" align="center" class="BabSiteAdminTitleFontBackground">
+			{ message }
+			
+		</td>
+	</tr>
+	<!--#endif message -->
+
+	<!--#if upgrade -->
+	<tr> 
+		<td colspan="2" align="center">
+			<br />
+			<br />
+			<a href="?tg=version&idx=upgrade">{ upgrade }</a>
+			<br />
+			<br />
+		</td>
+	</tr>
+	<!--#endif upgrade -->
+
+	<tr> 
+		<td align="right">{ srcversiontxt }&nbsp;:</td>
+		<td>{ srcversion }</td>
 	</tr>
 	<tr> 
-		<td align="right" nowrap>{ phpversiontxt }&nbsp;:</td>
-		<td nowrap>{ phpversion }</td>
+		<td align="right">{ phpversiontxt }&nbsp;:</td>
+		<td>{ phpversion }</td>
 	</tr>
 	<tr> 
-		<td align="right" nowrap>{ baseversiontxt }&nbsp;:</td>
-		<td nowrap>{ baseversion }</td>
+		<td align="right">{ baseversiontxt }&nbsp;:</td>
+		<td>{ baseversion }</td>
 	</tr>
 	<tr> 
 		<td align="center" nowrap colspan="2"><a href="javascript:bab_popup('{ urlphpinfo }');">{ phpinfo }</a></td>
@@ -1299,7 +1321,10 @@ hideShowCnx();
 <!--#begin zipupgrade -->
 <script type="text/javascript">
 <!--
-
+ function wait_upload(obj, label) {
+	obj.value = label;
+	obj.disabled = true;
+ }
 //-->
 </script>
 
@@ -1350,7 +1375,7 @@ hideShowCnx();
 	</tr>
 
 	<tr>
-		<td colspan="2" align="center"><br /><input type="submit" value="{ t_submit }" /></td>
+		<td colspan="2" align="center"><br /><input type="submit" value="{ t_submit }" onclick="wait_upload(this,'{ t_wait }')" /></td>
 	</tr>
 	</table>
 </td>
@@ -1358,6 +1383,29 @@ hideShowCnx();
 </table>
 </form>
 <!--#end zipupgrade -->
+
+<!--#begin zipupgrade_message -->
+<table class="BabLoginCadreBackground"  width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td> 
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5">
+
+	<tr>
+		<td colspan="2" align="center">
+
+			{ message }
+
+			<p align="center"><a href="{ babUrlScript }?tg=sites&idx=version">{ t_next }</a></p>
+		
+		</td>
+	</tr>
+	</table>
+</td>
+</tr>
+</table>
+
+<!--#end zipupgrade_message -->
+
 
 
 <!--#begin database -->
