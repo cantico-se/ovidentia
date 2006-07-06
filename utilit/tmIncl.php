@@ -967,8 +967,8 @@ function bab_createTask($aParams)
 				$aParams['iMajorVersion'] . '\', \'' . $aParams['iMinorVersion'] . '\', \'' . 
 				$aParams['sColor'] . '\', \'' . $aParams['iPosition'] . '\', \'' . 
 				$aParams['iCompletion'] . '\', \'' . $aParams['sStartDate'] . '\', \'' . 
-				$aParams['sEndDate'] . '\', \'' . $aParams['sPlannedStartDate'] . '\', \'' . 
-				$aParams['sPlannedEndDate'] . '\', \'' . $aParams['sCreated'] . '\', \'' . 
+				$aParams['sEndDate'] . '\', \'' . /*$aParams['sPlannedStartDate']*/'' . '\', \'' . 
+				/*$aParams['sPlannedEndDate']*/'' . '\', \'' . $aParams['sCreated'] . '\', \'' . 
 				$aParams['iIdUserCreated'] . '\', \'' . $aParams['iIsNotified'] . '\', \'' . 
 				$aParams['iIdOwner'] . '\', \'' . $aParams['iIdUserModified'] . '\', \'' . 
 				$aParams['sModified'] . '\')'; 
@@ -1234,6 +1234,26 @@ function bab_selectTasksList($iIdProject, $iLenght = 50)
 	return $babDB->db_query($query);
 }
 
+function bab_selectPersonnalTasksList($iLenght = 50)
+{
+	global $babBody, $babDB;
+	
+	$query = 
+		'SELECT ' .
+			'id, ' . 
+			'taskNumber, ' . 
+			'IF(LENGTH(description) > \'' . $iLenght . '\', CONCAT(LEFT(description, \'' . $iLenght . '\'), \'...\'), description) description, ' .
+			'created ' .
+		'FROM ' .
+			BAB_TSKMGR_TASKS_TBL . ' ' .
+		'WHERE ' . 
+			'idOwner =\'' . $GLOBALS['BAB_SESS_USERID'] . '\' ' .
+		'ORDER BY position';
+	
+	//bab_debug($query);
+	return $babDB->db_query($query);
+}
+
 function bab_getNextTaskNumber($iIdProject, $iTasksNumerotation, &$sTaskNumber)
 {
 	bab_getNextTaskPosition($iIdProject, $iPosition);
@@ -1469,6 +1489,103 @@ function bab_getLinkedTasks($iIdTask, &$aLinkedTasks)
 		$aLinkedTasks[] = array('iIdPredecessorTask' => $datas['idPredecessorTask'], 'iLinkType' => $datas['linkType']);
 		$iIndex++;
 	}
+}
+
+function bab_getOwnedTaskQuery()
+{
+	$query = 
+		'SELECT ' . 
+			'ps.id iIdProjectSpace, ' .
+			'ps.name sProjectSpaceName, ' .
+			'p.id iIdProject, ' .
+			'p.name sProjectName, ' .
+			't.id iIdTask, ' .
+			't.taskNumber sTaskNumber, ' .
+			't.startDate startDate, ' .
+			't.endDate endDate ' .
+		'FROM ' . 
+			BAB_TSKMGR_TASKS_RESPONSIBLES_TBL . ' tr, ' .
+			BAB_TSKMGR_TASKS_TBL . ' t, ' .
+			BAB_TSKMGR_PROJECTS_TBL . ' p, ' .
+			BAB_TSKMGR_PROJECTS_SPACES_TBL . ' ps ' .
+		'WHERE ' . 
+			'tr.idResponsible = \'' . $GLOBALS['BAB_SESS_USERID'] . '\' AND ' .
+			't.id = tr.idTask AND ' .
+			'p.id = t.idProject AND ' .
+			'ps.id = p.idProjectSpace';
+
+	//bab_debug($query);
+	return $query;
+}
+
+function bab_getPersonnalTaskConfiguration($iIdUser, &$aCfg)
+{
+	global $babBody, $babDB;
+
+	$aCfg = array();	
+
+	$query = 
+		'SELECT ' .
+			'id, ' . 
+			'idUser, ' .
+			'endTaskReminder, ' .
+			'tasksNumerotation, ' .
+			'emailNotice ' .
+		'FROM ' .
+			BAB_TSKMGR_PERSONNAL_TASKS_CONFIGURATION_TBL . ' ' .
+		'WHERE ' . 
+			'idUser = \'' . $iIdUser . '\'';
+			
+	//bab_debug($query);
+
+	$result = $babDB->db_query($query);
+	$iNumRows = $babDB->db_num_rows($result);
+	$iIndex = 0;
+	
+	if($iIndex < $iNumRows && false != ($datas = $babDB->db_fetch_assoc($result)))
+	{
+		$aCfg = array('id' => $datas['id'], 'iIdUser' =>  $datas['idUser'], 
+			'endTaskReminder' => $datas['endTaskReminder'], 
+			'tasksNumerotation' => $datas['tasksNumerotation'],
+			'emailNotice' => $datas['emailNotice']);
+		return true;
+	}
+	return false;
+}
+
+function bab_createPersonnalTaskConfiguration($iIdUser, &$aCfg)
+{
+	$query = 
+		'INSERT INTO ' . BAB_TSKMGR_PERSONNAL_TASKS_CONFIGURATION_TBL . ' ' .
+			'(' .
+				'`id`, ' .
+				'`idUser`, `endTaskReminder`, `tasksNumerotation`, `emailNotice` ' .
+			') ' .
+		'VALUES ' . 
+			'(\'\', \'' . $iIdUser . '\', \'' . $aCfg['endTaskReminder'] . '\', \'' . $aCfg['tasksNumerotation'] . '\', \'' . $aCfg['emailNotice'] . '\')'; 
+	
+	//bab_debug($query);
+
+	global $babDB;
+	return $babDB->db_query($query);
+}
+
+function bab_updatePersonnalTaskConfiguration($iIdUser, &$aCfg)
+{
+	$query = 
+		'UPDATE ' . 
+			BAB_TSKMGR_PERSONNAL_TASKS_CONFIGURATION_TBL . ' ' .
+		'SET ' .
+			'endTaskReminder = \'' . $aCfg['endTaskReminder'] . '\', ' .
+			'tasksNumerotation = \'' . $aCfg['tasksNumerotation'] . '\', ' .
+			'emailNotice = \'' . $aCfg['emailNotice'] . '\' ' .
+		'WHERE ' .
+			'idUser = \'' . $iIdUser . '\'';
+
+	//bab_debug($query);
+
+	global $babDB;
+	return $babDB->db_query($query);
 }
 
 

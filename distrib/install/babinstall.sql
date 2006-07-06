@@ -3256,7 +3256,7 @@ CREATE TABLE bab_tskmgr_task_responsible_groups (
 CREATE TABLE bab_tskmgr_tasks (
   id int(10) unsigned NOT NULL auto_increment,
   idProject int(10) unsigned NOT NULL default '0',
-  taskNumber int(10) unsigned NOT NULL default '0',
+  taskNumber VARCHAR(9) NOT NULL DEFAULT '0',
   description text NOT NULL,
   idCategory int(10) unsigned NOT NULL default '0',
   created datetime NOT NULL default '0000-00-00 00:00:00',
@@ -3285,6 +3285,22 @@ CREATE TABLE bab_tskmgr_tasks (
   KEY majorVersion (majorVersion),
   KEY minorVersion (minorVersion)
 ) ;
+
+# --------------------------------------------------------
+
+# 
+# Structure de la table `bab_tskmgr_tasks_comments`
+# 
+
+CREATE TABLE bab_tskmgr_personnal_tasks_configuration (
+	id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	idUser INTEGER UNSIGNED NOT NULL default '0',
+	endTaskReminder MEDIUMINT UNSIGNED NOT NULL default '5',
+	tasksNumerotation TINYINT UNSIGNED NOT NULL default '1',
+	emailNotice TINYINT UNSIGNED NOT NULL default '1',
+	PRIMARY KEY(`id`),
+	INDEX `idUser`(`idUser`)
+);
 
 # --------------------------------------------------------
 

@@ -120,7 +120,7 @@ function getVisualisedIdProjectSpaces(&$aIdProjectSpaces)
 	}
 }
 
-function add_item_menu($items)
+function add_item_menu($items = array())
 {
 	global $babBody;
 
@@ -129,6 +129,12 @@ function add_item_menu($items)
 	$babBody->addItemMenu(BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST, bab_translate("Projects spaces"), 
 		$GLOBALS['babUrlScript'] . '?tg=' . $sTg . '&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST);
 		
+	if('usrTskMgr' == $sTg)
+	{
+		$babBody->addItemMenu(BAB_TM_IDX_DISPLAY_TASK_LIST, bab_translate("Tasks list"), 
+			$GLOBALS['babUrlScript'] . '?tg=' . $sTg . '&idx=' . BAB_TM_IDX_DISPLAY_TASK_LIST);
+	}
+
 	if(count($items) > 0)
 	{
 		foreach($items as $key => $value)
@@ -139,6 +145,7 @@ function add_item_menu($items)
 
 	$babBody->addItemMenu(BAB_TM_IDX_DISPLAY_MENU, bab_translate("Option(s)"), 
 		$GLOBALS['babUrlScript'] . '?tg=' . $sTg . '&idx=' . BAB_TM_IDX_DISPLAY_MENU);
+		
 	if('admTskMgr' == $sTg)
 	{
 		$babBody->addItemMenu(BAB_TM_IDX_DISPLAY_PERSONNAL_TASK_RIGHT, bab_translate("Personnal task"), 
@@ -193,6 +200,8 @@ class BAB_MySqlDataSource extends BAB_DataSourceBase
 	function BAB_MySqlDataSource($query, $iPage, $iNbRowsPerPage)
 	{
 		parent::BAB_DataSourceBase();
+		
+		//bab_debug($query);
 		
 		global $babDB;
 		$this->m_result = $babDB->db_query($query);
@@ -273,6 +282,9 @@ class BAB_MultiPageBase
 	
 	var $sTg = '';
 	var $sIdx = '';
+	
+	var $aActions = array();
+	var $aActionItems = array();
 	
 	function BAB_MultiPageBase()
 	{
@@ -393,6 +405,31 @@ class BAB_MultiPageBase
 		}
 	}
 	
+	function addAction($sId, $sText, $sIcon, $sLink, $aDataSourceFields)
+	{
+		$this->aActions[] = array('sId' => $sId, 'sText' => $sText, 'sIcon' => $sIcon, 'sLink' => $sLink, 'aDataSourceFields' => $aDataSourceFields);
+	}
+
+	function getNextAction()
+	{
+		$datas = each($this->aActions);
+		if(false != $datas)
+		{
+			$this->aActionItems = $datas['value'];
+			$aDataSourceFields = $this->aActionItems['aDataSourceFields'];
+			
+			foreach($aDataSourceFields as $key => $value)
+			{
+				if(isset($this->aRow[$value['sDataSourceFieldName']]))
+				{
+					$this->aActionItems['sLink'] .= '&' . $value['sUrlParamName'] . '=' . $this->aRow[$value['sDataSourceFieldName']];
+				}
+			}
+			return true;				
+		}
+		reset($this->aActions);
+		return false;
+	}
 	
 	/* calcul l'offset de début et de fin */
 	function computeStartEndPos()

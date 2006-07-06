@@ -42,7 +42,7 @@ function displayMenu()
 	$itemMenu = array();		
 	add_item_menu($itemMenu);
 
-	$bfp->set_anchor($GLOBALS['babUrlScript'] . '?tg=admTskMgr&idx=' . BAB_TM_IDX_DISPLAY_WORKING_HOURS_FORM , '', 'Working hours');
+	$bfp->set_anchor($GLOBALS['babUrlScript'] . '?tg=admTskMgr&idx=' . BAB_TM_IDX_DISPLAY_WORKING_HOURS_FORM , '', bab_translate("Working hours"));
 	$babBody->babecho(bab_printTemplate($bfp, 'tmCommon.html', 'displayMenu'));
 }
 
@@ -540,7 +540,7 @@ function saveProjectConfiguration()
 }
 
 
-bab_cleanGpc();
+//bab_cleanGpc();
 
 
 /*

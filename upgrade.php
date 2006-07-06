@@ -6536,7 +6536,7 @@ function upgrade583to584()
 			CREATE TABLE`" . BAB_TSKMGR_TASKS_TBL . "` (
 				`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 				`idProject` INTEGER UNSIGNED NOT NULL default '0',
-				`taskNumber` INTEGER UNSIGNED NOT NULL default '0',
+				`taskNumber` VARCHAR(9) NOT NULL DEFAULT '0',
 				`description` TEXT NOT NULL default '',
 				`idCategory` INTEGER UNSIGNED NOT NULL default '0',
 				`created` DATETIME NOT NULL default '0000-00-00 00:00:00',
@@ -6845,8 +6845,28 @@ function upgrade585to586()
 
 	}
 
+	if(!bab_isTable(BAB_TSKMGR_PERSONNAL_TASKS_CONFIGURATION_TBL))
+	{
+		$res = $db->db_query("
+			CREATE TABLE `" . BAB_TSKMGR_PERSONNAL_TASKS_CONFIGURATION_TBL . "` (
+				`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+				`idUser` INTEGER UNSIGNED NOT NULL default '0',
+				`endTaskReminder` MEDIUMINT UNSIGNED NOT NULL default '5',
+				`tasksNumerotation` TINYINT UNSIGNED NOT NULL default '1',
+				`emailNotice` TINYINT UNSIGNED NOT NULL default '1',
+				PRIMARY KEY(`id`),
+				INDEX `idUser`(`idUser`)) TYPE=MyISAM
+		");
+		
+		if(false == $res)
+		{
+			return $res;
+		}
+	}
+	
+	$db->db_query("ALTER TABLE `" . BAB_TSKMGR_TASKS_TBL . "` CHANGE `taskNumber` `taskNumber` VARCHAR( 9 ) NOT NULL DEFAULT '0'");
+	
 	return $ret;
-
 }
 
 

@@ -72,21 +72,27 @@ function hideOnNbRowPerPageChangedButton()
 				<table width="100%" border="0" cellspacing="0" cellpadding="2" class="BabLoginMenuBackground">
 
 					<thead>
-						<tr>
-							<td colspan="{ iColumnHeadersCount }" class="BabSiteAdminTitleFontBackground" nowrap>
+						<tr class="BabSiteAdminTitleFontBackground">
+							<td colspan="{ iColumnHeadersCount }" nowrap>
+								&nbsp;
+							</td>
+							<td>
 								&nbsp;
 							</td>
 						</tr>
 						<tr class="BabForumTitle"> 
-							<!--#in getNextColumnHeader -->
-								<td>
-									<!--#if bIsColumnHeaderUrl -->
-										<a href="{ sColumnHeaderUrl }" title="{ sColumnHeaderText }">{ sColumnHeaderText }</a>
-									<!--#else bIsColumnHeaderUrl -->
-										{ sColumnHeaderText }
-									<!--#endif bIsColumnHeaderUrl -->
-								</td>
-							<!--#endin getNextColumnHeader -->
+						<!--#in getNextColumnHeader -->
+							<td>
+								<!--#if bIsColumnHeaderUrl -->
+									<a href="{ sColumnHeaderUrl }" title="{ sColumnHeaderText }">{ sColumnHeaderText }</a>
+								<!--#else bIsColumnHeaderUrl -->
+									{ sColumnHeaderText }
+								<!--#endif bIsColumnHeaderUrl -->
+							</td>
+						<!--#endin getNextColumnHeader -->
+							<td>
+								&nbsp;
+							</td>
 						</tr>
 					</thead>
 
@@ -100,6 +106,13 @@ function hideOnNbRowPerPageChangedButton()
 						<!--#in getNextColumnData -->
 							<td>{ sColumnData }</td>
 						<!--#endin getNextColumnData -->
+							<td>
+							<!--#in getNextAction -->
+							<a href="{ aActionItems[sLink] }" title="{ aActionItems[sText] }" >
+								<img src="{ aActionItems[sIcon] }" alt="{ aActionItems[sText] }" border="0" />
+							</a>
+							<!--#endin getNextAction -->
+							</td>
 						</tr>
 						<!--#endin getNextRow -->
 					</tbody>
@@ -115,10 +128,16 @@ function hideOnNbRowPerPageChangedButton()
 								</select>
 								{ sResultPerPage }
 							</td>
+							<td>
+								&nbsp;
+							</td>
 						</tr>
-						<tr> 
-							<td colspan="{ iColumnHeadersCount }" class="BabLetterlists" nowrap>
+						<tr class="BabLetterlists"> 
+							<td colspan="{ iColumnHeadersCount }" nowrap>
 								{ sPagination }<br />{ sStatusLine }
+							</td>
+							<td>
+								&nbsp;
 							</td>
 						</tr>
 					</tfoot>

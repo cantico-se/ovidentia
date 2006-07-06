@@ -238,8 +238,8 @@ class BAB_TM_Context
 			}
 			else 
 			{
-				bab_getAvailableTaskResponsibles($this->m_iIdProject, $aTaskResponsibles);
-				if(isset($aTaskResponsibles[$GLOBALS['BAB_SESS_USERID']]))
+				$aTask = array();
+				if(bab_getTask($this->m_iIdTask, $aTask) && $GLOBALS['BAB_SESS_USERID'] == $aTask['iIdOwner'])
 				{
 					$iUserProfil = BAB_TM_PERSONNAL_TASK_OWNER;
 				}
