@@ -3279,11 +3279,26 @@ CREATE TABLE bab_tskmgr_tasks (
   startDate datetime NOT NULL default '0000-00-00 00:00:00',
   endDate datetime NOT NULL default '0000-00-00 00:00:00',
   isNotified tinyint(3) unsigned NOT NULL default '0',
-  idOwner int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (id,idProject),
   KEY idProject (idProject),
   KEY majorVersion (majorVersion),
   KEY minorVersion (minorVersion)
+) ;
+
+# --------------------------------------------------------
+
+# 
+# Structure de la table `bab_tskmgr_tasks_info`
+# 
+
+CREATE TABLE bab_tskmgr_tasks_info (
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`idTask` INTEGER UNSIGNED NOT NULL default '0',
+	`idOwner` INTEGER UNSIGNED NOT NULL default '0',
+	`isPersonnal` TINYINT UNSIGNED NOT NULL default '0',
+	PRIMARY KEY(`id`),
+	INDEX `idTask`(`idTask`),
+	INDEX `idOwner`(`idOwner`)
 ) ;
 
 # --------------------------------------------------------

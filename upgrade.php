@@ -6559,7 +6559,6 @@ function upgrade583to584()
 				`startDate` DATETIME NOT NULL default '0000-00-00 00:00:00',
 				`endDate` DATETIME NOT NULL default '0000-00-00 00:00:00',
 				`isNotified` TINYINT UNSIGNED NOT NULL default '0',
-				`idOwner` INTEGER UNSIGNED NOT NULL default '0',
 				PRIMARY KEY(`id`, `idProject`),
 				INDEX `idProject`(`idProject`),
 				INDEX `majorVersion`(`majorVersion`),
@@ -6863,9 +6862,34 @@ function upgrade585to586()
 			return $res;
 		}
 	}
+
+	if(!bab_isTable(BAB_TSKMGR_TASKS_INFO_TBL))
+	{
+		$res = $db->db_query("
+			CREATE TABLE `" . BAB_TSKMGR_TASKS_INFO_TBL . "` (
+				`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+				`idTask` INTEGER UNSIGNED NOT NULL default '0',
+				`idOwner` INTEGER UNSIGNED NOT NULL default '0',
+				`isPersonnal` TINYINT UNSIGNED NOT NULL default '0',
+				PRIMARY KEY(`id`),
+				INDEX `idTask`(`idTask`),
+				INDEX `idOwner`(`idOwner`)) TYPE=MyISAM
+		");
+		
+		if(false == $res)
+		{
+			return $res;
+		}
+	}
 	
 	$db->db_query("ALTER TABLE `" . BAB_TSKMGR_TASKS_TBL . "` CHANGE `taskNumber` `taskNumber` VARCHAR( 9 ) NOT NULL DEFAULT '0'");
 	
+	$arr = $db->db_fetch_array($db->db_query("DESCRIBE `" . BAB_TSKMGR_TASKS_TBL . "`idOwner"));
+	if( $arr[0] == 'idOwner' )
+	{
+		$db->db_query("ALTER TABLE `" . BAB_TSKMGR_TASKS_TBL . "` DROP `idOwner`");
+	}
+
 	return $ret;
 }
 

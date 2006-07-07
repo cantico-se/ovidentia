@@ -905,8 +905,7 @@ function bab_getAllTaskIndexedById($iIdProject, &$aTasks)
 			'plannedEndDate, ' .
 			'startDate, ' .
 			'endDate, ' .
-			'isNotified, ' .
-			'idOwner ' .
+			'isNotified ' .
 		'FROM ' .
 			BAB_TSKMGR_TASKS_TBL . ' ' .
 		'WHERE ' . 
@@ -933,7 +932,7 @@ function bab_getAllTaskIndexedById($iIdProject, &$aTasks)
 			'iPosition' => $datas['position'], 'iCompletion' => $datas['completion'],
 			'sPlannedStartDate' => $datas['plannedStartDate'], 'sStartDate' => $datas['startDate'],
 			'sPlannedEndDate' => $datas['plannedEndDate'], 'sEndDate' => $datas['endDate'],
-			'iIsNotified' => $datas['isNotified'], 'iIdOwner' => $datas['idOwner']);
+			'iIsNotified' => $datas['isNotified']);
 			
 		$iIndex++;
 	}
@@ -954,7 +953,7 @@ function bab_createTask($aParams)
 				'`participationStatus`, `isLinked`, `idCalEvent`, `hashCalEvent`, ' .
 				'`duration`, `majorVersion`, `minorVersion`, `color`, `position`, ' .
 				'`completion`, `startDate`, `endDate`, `plannedStartDate`, ' .
-				'`plannedEndDate`, `created`, `idUserCreated`, `isNotified`, `idOwner`, ' .
+				'`plannedEndDate`, `created`, `idUserCreated`, `isNotified`, ' .
 				'`idUserModified`, `modified`' .
 			') ' .
 		'VALUES ' . 
@@ -970,8 +969,7 @@ function bab_createTask($aParams)
 				$aParams['sEndDate'] . '\', \'' . /*$aParams['sPlannedStartDate']*/'' . '\', \'' . 
 				/*$aParams['sPlannedEndDate']*/'' . '\', \'' . $aParams['sCreated'] . '\', \'' . 
 				$aParams['iIdUserCreated'] . '\', \'' . $aParams['iIsNotified'] . '\', \'' . 
-				$aParams['iIdOwner'] . '\', \'' . $aParams['iIdUserModified'] . '\', \'' . 
-				$aParams['sModified'] . '\')'; 
+				$aParams['iIdUserModified'] . '\', \'' . $aParams['sModified'] . '\')'; 
 
 	//bab_debug($query);
 	$res = $babDB->db_query($query);
@@ -991,36 +989,38 @@ function bab_getTask($iIdTask, &$aTask)
 
 	$query = 
 		'SELECT ' .
-			'id, ' . 
-			'idProject, ' .
-			'taskNumber, ' .
-			'description, ' .
-			'idCategory, ' .
-			'created, ' .
-			'modified, ' .
-			'idUserCreated, ' .
-			'idUserModified, ' .
-			'class, ' .
-			'participationStatus, ' .
-			'isLinked, ' .
-			'idCalEvent, ' .
-			'hashCalEvent, ' .
-			'duration, ' .
-			'majorVersion, ' .
-			'minorVersion, ' .
-			'color, ' .
-			'position, ' .
-			'completion, ' .
-			'plannedStartDate, ' .
-			'plannedEndDate, ' .
-			'startDate, ' .
-			'endDate, ' .
-			'isNotified, ' .
-			'idOwner ' .
+			't.id, ' . 
+			't.idProject, ' .
+			't.taskNumber, ' .
+			't.description, ' .
+			't.idCategory, ' .
+			't.created, ' .
+			't.modified, ' .
+			't.idUserCreated, ' .
+			't.idUserModified, ' .
+			't.class, ' .
+			't.participationStatus, ' .
+			't.isLinked, ' .
+			't.idCalEvent, ' .
+			't.hashCalEvent, ' .
+			't.duration, ' .
+			't.majorVersion, ' .
+			't.minorVersion, ' .
+			't.color, ' .
+			't.position, ' .
+			't.completion, ' .
+			't.plannedStartDate, ' .
+			't.plannedEndDate, ' .
+			't.startDate, ' .
+			't.endDate, ' .
+			't.isNotified, ' .
+			'ti.idOwner ' .
 		'FROM ' .
-			BAB_TSKMGR_TASKS_TBL . ' ' .
+			BAB_TSKMGR_TASKS_TBL . ' t ' .
+		'LEFT JOIN ' .
+			BAB_TSKMGR_TASKS_INFO_TBL . ' ti ON ti.idTask = t.id ' .
 		'WHERE ' . 
-			'id = \'' . $iIdTask . '\'';
+			't.id = \'' . $iIdTask . '\'';
 			
 	//bab_debug($query);
 
@@ -1089,10 +1089,13 @@ function bab_deleteTask($iIdTask)
 	bab_deleteTaskResponsibles($iIdTask);
 
 	global $babDB;
-	$query = 'DELETE FROM ' . BAB_TSKMGR_TASKS_COMMENTS_TBL . ' WHERE idTask = \'' . $iIdTask . '\'';
+	$query = 'DELETE FROM ' . BAB_TSKMGR_TASKS_INFO_TBL . ' WHERE idTask = \'' . $iIdTask . '\'';
 	$babDB->db_query($query);
 
 	$query = 'DELETE FROM ' . BAB_TSKMGR_TASKS_TBL . ' WHERE id = \'' . $iIdTask . '\'';
+	$babDB->db_query($query);
+
+	$query = 'DELETE FROM ' . BAB_TSKMGR_TASKS_COMMENTS_TBL . ' WHERE idTask = \'' . $iIdTask . '\'';
 	$babDB->db_query($query);
 }
 
@@ -1119,6 +1122,10 @@ function bab_deleteAllTask($iIdProject)
 		bab_deleteTaskLinks($data['id']);
 		bab_deleteTaskResponsibles($data['id']);
 //		aclDelete(BAB_TSKMGR_TASK_RESPONSIBLE_GROUPS_TBL, $data['id']);
+
+		$query = 'DELETE FROM ' . BAB_TSKMGR_TASKS_INFO_TBL . ' WHERE idTask = \'' . $data['id'] . '\'';
+		$babDB->db_query($query);
+		
 		$iIndex++;
 	}
 
@@ -1220,15 +1227,16 @@ function bab_selectTasksList($iIdProject, $iLenght = 50)
 	
 	$query = 
 		'SELECT ' .
-			'id, ' . 
-			'taskNumber, ' . 
-			'IF(LENGTH(description) > \'' . $iLenght . '\', CONCAT(LEFT(description, \'' . $iLenght . '\'), \'...\'), description) description, ' .
-			'created ' .
+			't.id, ' . 
+			't.taskNumber, ' . 
+			'IF(LENGTH(t.description) > \'' . $iLenght . '\', CONCAT(LEFT(t.description, \'' . $iLenght . '\'), \'...\'), t.description) description, ' .
+			't.created ' .
 		'FROM ' .
-			BAB_TSKMGR_TASKS_TBL . ' ' .
+//			BAB_TSKMGR_TASKS_INFO_TBL . ' ti, ' . 
+			BAB_TSKMGR_TASKS_TBL . ' t ' .
 		'WHERE ' . 
-			'idProject =\'' . $iIdProject . '\' ' .
-		'ORDER BY position';
+			't.idProject =\'' . $iIdProject . '\' ' .
+		'ORDER BY t.position';
 	
 	//bab_debug($query);
 	return $babDB->db_query($query);
@@ -1240,15 +1248,18 @@ function bab_selectPersonnalTasksList($iLenght = 50)
 	
 	$query = 
 		'SELECT ' .
-			'id, ' . 
-			'taskNumber, ' . 
-			'IF(LENGTH(description) > \'' . $iLenght . '\', CONCAT(LEFT(description, \'' . $iLenght . '\'), \'...\'), description) description, ' .
-			'created ' .
+			't.id, ' . 
+			't.taskNumber, ' . 
+			'IF(LENGTH(t.description) > \'' . $iLenght . '\', CONCAT(LEFT(t.description, \'' . $iLenght . '\'), \'...\'), t.description) description, ' .
+			't.created ' .
 		'FROM ' .
-			BAB_TSKMGR_TASKS_TBL . ' ' .
+			BAB_TSKMGR_TASKS_INFO_TBL . ' ti, ' . 
+			BAB_TSKMGR_TASKS_TBL . ' t ' .
 		'WHERE ' . 
-			'idOwner =\'' . $GLOBALS['BAB_SESS_USERID'] . '\' ' .
-		'ORDER BY position';
+			'ti.idOwner =\'' . $GLOBALS['BAB_SESS_USERID'] . '\' AND ' .
+			'ti.isPersonnal =\'' . BAB_TM_YES . '\' AND ' .
+			't.id = ti.idTask ' .
+		'ORDER BY t.position';
 	
 	//bab_debug($query);
 	return $babDB->db_query($query);
@@ -1279,34 +1290,81 @@ function bab_getNextTaskPosition($iIdProject, &$iPosition)
 {
 	$db = & $GLOBALS['babDB'];
 
-	$sIdOwner = '';
+	//Personnal task
 	if(0 == $iIdProject)
 	{
-		$sIdOwner = ' AND idOwner =\'' . $GLOBALS['BAB_SESS_USERID'] . '\'';
-	}
-
-	$iPosition = 0;
-
-	$query = 
-		'SELECT ' .
-			'IFNULL(MAX(position), 0) position ' .
-		'FROM ' . 
-			BAB_TSKMGR_TASKS_TBL . ' ' .
-		'WHERE ' . 
-			'idProject=\'' . $iIdProject . '\'' .
-			$sIdOwner;
-
-	//bab_debug($query);
-
-	$res = $db->db_query($query);
-
-	if(false != $res && $db->db_num_rows($res) > 0)
-	{
-		$data = $db->db_fetch_array($res);
-
-		if(false != $data)
+		$query = 
+			'SELECT ' .
+				'IFNULL(MAX(ti.idTask), 0) idTask ' .
+			'FROM ' . 
+				BAB_TSKMGR_TASKS_INFO_TBL . ' ti ' .
+			'WHERE ' . 
+				'ti.idOwner =\'' . $GLOBALS['BAB_SESS_USERID'] . '\' AND ' .
+				'ti.isPersonnal =\'' . BAB_TM_YES . '\'';
+				
+		//bab_debug($query);
+		
+		$res = $db->db_query($query);
+		if(false != $res && $db->db_num_rows($res) > 0)
 		{
-			$iPosition = (int) $data['position'] + 1;
+			$data = $db->db_fetch_array($res);
+			if(0 == $data['idTask'])
+			{
+				$iPosition = 1;
+				return;
+			}
+			
+			$query = 
+				'SELECT ' .
+					'position ' .
+				'FROM ' . 
+					BAB_TSKMGR_TASKS_TBL . ' ' .
+				'WHERE ' . 
+					'id=\'' . $data['idTask'] . '\'';
+		
+			//bab_debug($query);
+		
+			$res = $db->db_query($query);
+		
+			if(false != $res && $db->db_num_rows($res) > 0)
+			{
+				$data = $db->db_fetch_array($res);
+		
+				if(false != $data)
+				{
+					$iPosition = (int) $data['position'] + 1;
+				}
+			}
+		}
+		else 
+		{
+			$iPosition = 1;
+		}
+	}
+	else
+	{
+		$iPosition = 0;
+	
+		$query = 
+			'SELECT ' .
+				'IFNULL(MAX(position), 0) position ' .
+			'FROM ' . 
+				BAB_TSKMGR_TASKS_TBL . ' ' .
+			'WHERE ' . 
+				'idProject=\'' . $iIdProject . '\'';
+	
+		//bab_debug($query);
+	
+		$res = $db->db_query($query);
+	
+		if(false != $res && $db->db_num_rows($res) > 0)
+		{
+			$data = $db->db_fetch_array($res);
+	
+			if(false != $data)
+			{
+				$iPosition = (int) $data['position'] + 1;
+			}
 		}
 	}
 }
@@ -1429,11 +1487,7 @@ function bab_isTaskNumberUsed($iIdProject, $iIdTask, $sTaskNumber)
 
 function bab_selectLinkableTask($iIdProject, $iIdTask)
 {
-	$sIdOwner = '';
-	if(0 == $iIdProject)
-	{
-		$sIdOwner = ' AND idOwner =\'' . $GLOBALS['BAB_SESS_USERID'] . '\'';
-	}
+	global $babDB;
 
 	$sIdTask = '';
 	if(0 != $iIdTask)
@@ -1441,6 +1495,31 @@ function bab_selectLinkableTask($iIdProject, $iIdTask)
 		$sIdTask = ' AND id <> \'' . $iIdTask . '\'';
 	}
 
+	$sIdOwner = '';
+	if(0 == $iIdProject)
+	{
+		$query = 
+			'SELECT ' . 
+				'idTask ' .
+			'FROM ' . 
+				BAB_TSKMGR_TASKS_INFO_TBL . ' ' .
+			'WHERE ' . 
+				'idOwner =\'' . $GLOBALS['BAB_SESS_USERID'] . '\'';
+				
+		//bab_debug($query);
+		$result = $babDB->db_query($query);
+		$iNumRows = $babDB->db_num_rows($result);
+		$iIndex = 0;
+		
+		$aTask = array();
+		while($iIndex < $iNumRows && false != ($datas = $babDB->db_fetch_assoc($result)))
+		{
+			$iIndex++;
+			$aTask[] = $datas['idTask'];
+		}
+		$sIdTask = 'AND id IN (\'' . implode('\',\'', $aTask) . '\')';
+	}
+	
 	$query = 
 		'SELECT ' . 
 			'id, ' .
@@ -1452,14 +1531,13 @@ function bab_selectLinkableTask($iIdProject, $iIdTask)
 		'WHERE ' . 
 			'idProject = \'' . $iIdProject . '\' AND ' .
 			'class =\'' . BAB_TM_TASK . '\' AND ' .
-			'participationStatus <> \'' . BAB_TM_ENDED . '\'' .
-			$sIdTask . $sIdOwner .
-		' ORDER BY position';
+			'participationStatus <> \'' . BAB_TM_ENDED . '\'' . ' ' . 
+			$sIdTask . ' ' .
+		'ORDER BY position';
 
 	//bab_debug($query);
 	
-	$db	= & $GLOBALS['babDB'];
-	return $db->db_query($query);
+	return $babDB->db_query($query);
 }
 
 function bab_getLinkedTasks($iIdTask, &$aLinkedTasks)
@@ -1478,7 +1556,6 @@ function bab_getLinkedTasks($iIdTask, &$aLinkedTasks)
 	//bab_debug($query);
 	
 	global $babDB;
-	$db	= & $GLOBALS['babDB'];
 
 	$result = $babDB->db_query($query);
 	$iNumRows = $babDB->db_num_rows($result);
@@ -1495,28 +1572,46 @@ function bab_getOwnedTaskQuery()
 {
 	$query = 
 		'SELECT ' . 
-			'ps.id iIdProjectSpace, ' .
-			'ps.name sProjectSpaceName, ' .
-			'p.id iIdProject, ' .
-			'p.name sProjectName, ' .
+			'IFNULL(ps.id, 0) iIdProjectSpace, ' .
+			'IFNULL(ps.name, \'\') sProjectSpaceName, ' .
+			'IFNULL(p.id, 0) iIdProject, ' .
+			'IFNULL(p.name, \'\') sProjectName, ' .
 			't.id iIdTask, ' .
 			't.taskNumber sTaskNumber, ' .
 			't.startDate startDate, ' .
 			't.endDate endDate ' .
 		'FROM ' . 
-			BAB_TSKMGR_TASKS_RESPONSIBLES_TBL . ' tr, ' .
-			BAB_TSKMGR_TASKS_TBL . ' t, ' .
-			BAB_TSKMGR_PROJECTS_TBL . ' p, ' .
-			BAB_TSKMGR_PROJECTS_SPACES_TBL . ' ps ' .
+			BAB_TSKMGR_TASKS_INFO_TBL . ' ti, ' .
+			BAB_TSKMGR_TASKS_TBL . ' t ' .
+		'LEFT JOIN ' . 
+			BAB_TSKMGR_PROJECTS_TBL . ' p ON p.id = t.idProject ' .
+		'LEFT JOIN ' . 
+			BAB_TSKMGR_PROJECTS_SPACES_TBL . ' ps ON ps.id = p.idProjectSpace ' .
 		'WHERE ' . 
-			'tr.idResponsible = \'' . $GLOBALS['BAB_SESS_USERID'] . '\' AND ' .
-			't.id = tr.idTask AND ' .
-			'p.id = t.idProject AND ' .
-			'ps.id = p.idProjectSpace';
+			'ti.idOwner = \'' . $GLOBALS['BAB_SESS_USERID'] . '\' AND ' .
+			't.id = ti.idTask';
 
 	//bab_debug($query);
 	return $query;
 }
+
+function bab_createTaskInfo($iIdTask, $iIdOwner, $iIsPersonnal)
+{
+	$query = 
+		'INSERT INTO ' . BAB_TSKMGR_TASKS_INFO_TBL . ' ' .
+			'(' .
+				'`id`, ' .
+				'`idTask`, `idOwner`, `isPersonnal` ' .
+			') ' .
+		'VALUES ' . 
+			'(\'\', \'' . $iIdTask . '\', \'' . $iIdOwner . '\', \'' . $iIsPersonnal . '\')'; 
+	
+	//bab_debug($query);
+
+	global $babDB;
+	return $babDB->db_query($query);
+}
+
 
 function bab_getPersonnalTaskConfiguration($iIdUser, &$aCfg)
 {

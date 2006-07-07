@@ -26,19 +26,55 @@
 
 	class BAB_TM_Task
 	{
-		var $m_bIsStarted				= false;
-		var $m_bIsEnded					= false;
-		var	$m_bIsFirstTask				= false;
+		var $m_bIsStarted		= false;
+		var $m_bIsEnded			= false;
+		var	$m_bIsFirstTask		= false;
 		
-		var $m_aTask					= null;
+		var $m_iNextPosition	= 0;
+		
+		var $m_isPersonnal		= false;
+
+		var $m_iIdProjectSpace	= -1;
+		var $m_iIdProject		= -1;
+		var $m_iIdTask			= -1;
+		
+		var $m_aTask			= null;
+		var $m_aCfg				= null;
+		
 		
 		function BAB_TM_Task()
 		{
+			$oTmCtx =& getTskMgrContext();
+			
+			$this->m_iIdProjectSpace =& $oTmCtx->getIdProjectSpace();
+			$this->m_iIdProject =& $oTmCtx->getIdProject();
+			$this->m_iIdTask =& $oTmCtx->getIdTask();
+			
+			$this->m_isPersonnal = (0 === $this->m_iIdProjectSpace && 0 === $this->m_iIdProject);
+			
+			if($this->m_isPersonnal)
+			{
+				$bSuccess = bab_getPersonnalTaskConfiguration($GLOBALS['BAB_SESS_USERID'], $this->m_aCfg);
+				if(!$bSuccess)
+				{
+					$this->m_aCfg = array('endTaskReminder' => 5, 'tasksNumerotation' => BAB_TM_SEQUENTIAL, 'iEmailNotice' => BAB_TM_YES);
+				}
+			}
+			
+			if(0 != $this->m_iIdTask)
+			{
+				$this->loadFromDataBase();
+			}
+			else if(0 == $this->m_iIdTask) 
+			{
+				bab_getNextTaskPosition($this->m_iIdProject, $this->m_iNextPosition);
+				$this->m_bIsFirstTask = ($this->m_iNextPosition == 1);
+			}
 		}
 		
-		function loadFromDataBase($iIdTask)
+		function loadFromDataBase()
 		{
-			$success = bab_getTask($iIdTask, $this->m_aTask);
+			$success = bab_getTask($this->m_iIdTask, $this->m_aTask);
 			if($success)
 			{
 				$this->m_bIsStarted = (0 != $this->m_aTask['iCompletion'] && BAB_TM_ENDED != $this->m_aTask['iParticipationStatus']);
@@ -53,6 +89,11 @@
 				//*/
 			}
 			return $success;
+		}
+		
+		function &getConfiguration()
+		{
+			return $this->m_aCfg;
 		}
 	}
 
@@ -90,9 +131,9 @@
 			$this->m_aCompletion = array(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100);
 
 			$oTmCtx =& getTskMgrContext();
-			$this->m_iIdProjectSpace = $oTmCtx->getIdProjectSpace();
-			$this->m_iIdProject = $oTmCtx->getIdProject();
-			$this->m_iIdTask = $oTmCtx->getIdTask();
+			$this->m_iIdProjectSpace =& $oTmCtx->getIdProjectSpace();
+			$this->m_iIdProject =& $oTmCtx->getIdProject();
+			$this->m_iIdTask =& $oTmCtx->getIdTask();
 			$this->m_iUserProfil = $oTmCtx->getUserProfil();
 
 			$this->initCaptions();
@@ -352,25 +393,6 @@ $this->set_data('iAddSpfIdx', BAB_TM_IDX_DISPLAY_TASK_FORM);
 		{
 			parent::BAB_TaskFormBase();
 			
-			$oTmCtx =& getTskMgrContext();
-			
-			//if this is a personnal task
-			if(0 == $this->m_iIdProjectSpace && 0 == $this->m_iIdProject)
-			{
-				$bSuccess = bab_getPersonnalTaskConfiguration($GLOBALS['BAB_SESS_USERID'], $this->m_aCfg);
-				if(!$bSuccess)
-				{
-					$this->m_aCfg = array('endTaskReminder' => 5, 'tasksNumerotation' => BAB_TM_SEQUENTIAL, 'iEmailNotice' => BAB_TM_YES);
-				}
-			}
-			else
-			{
-				$this->m_aCfg =& $oTmCtx->getConfiguration();
-			}
-			
-
-			$this->m_oTask =& new BAB_TM_Task();
-			
 			$this->m_catResult = false;
 			$this->m_spfResult = false;
 			$this->m_linkableTaskResult = false;
@@ -399,14 +421,16 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 
 		function getTaskInfo()
 		{
-			if(0 != $this->m_iIdTask)
+			$this->m_oTask =& new BAB_TM_Task();
+			
+			if($this->m_oTask->m_isPersonnal)
 			{
-				$this->m_oTask->loadFromDataBase($this->m_iIdTask);
+				$this->m_aCfg =& $this->m_oTask->getConfiguration();
 			}
-			else 
+			else
 			{
-				bab_getNextTaskPosition($this->m_iIdProject, $iPosition);
-				$this->m_oTask->m_bIsFirstTask = ($iPosition == 1);
+				$oTmCtx =& getTskMgrContext();
+				$this->m_aCfg =& $oTmCtx->getConfiguration();
 			}
 			
 			bab_getTaskResponsibles($this->m_iIdTask, $this->m_aTaskResponsibles);
@@ -809,14 +833,13 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 		var $m_sStartDate				= null;
 		var $m_sEndDate					= null;
 		var $m_iIsNotified				= null;
-		var $m_iIdOwner					= null;
 
 		var $m_iLinkType 				= null; 
 		var $m_iIdPredecessor 			= null;
 		var $m_iIdTaskResponsible 		= null;
 		var $m_iAnswer					= null;
 		
-		var $m_aProjectCfg				= null;
+		var $m_aCfg						= null;
 		
 		var $m_oTask					= null;
 		
@@ -843,22 +866,10 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 
 			$this->m_iUserProfil = $oTmCtx->getUserProfil();
 
-			bab_debug('iIdProjectSpace ==> ' . $this->m_iIdProjectSpace . ' iIdProject ==> ' . $this->m_iIdProject . ' iIdTask ==> ' . $this->m_iIdTask);
+			$this->m_oTask =& new BAB_TM_Task();
 			
-			//if this is a personnal task
-			if(0 == $this->m_iIdProjectSpace && 0 == $this->m_iIdProject)
-			{
-				$bSuccess = bab_getPersonnalTaskConfiguration($GLOBALS['BAB_SESS_USERID'], $this->m_aProjectCfg);
-				if(!$bSuccess)
-				{
-					$this->m_aProjectCfg = array('endTaskReminder' => 5, 'tasksNumerotation' => BAB_TM_SEQUENTIAL, 'iEmailNotice' => BAB_TM_YES);
-				}
-			}
-			else
-			{
-				$this->m_aProjectCfg =& $oTmCtx->getConfiguration();
-			}
-
+			//bab_debug('iIdProjectSpace ==> ' . $this->m_iIdProjectSpace . ' iIdProject ==> ' . $this->m_iIdProject . ' iIdTask ==> ' . $this->m_iIdTask);
+			
 			$this->m_sTaskNumber			= trim(tskmgr_getVariable('sTaskNumber', ''));
 			$this->m_sDescription			= trim(tskmgr_getVariable('sDescription', ''));
 			$this->m_iIdCategory			= (int) tskmgr_getVariable('iIdCategory', 0);
@@ -874,14 +885,13 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 			$this->m_iMajorVersion			= (int) tskmgr_getVariable('iMajorVersion', 1);
 			$this->m_iMinorVersion			= (int) tskmgr_getVariable('iMinorVersion', 0);
 			$this->m_sColor					= '';
-			$this->m_iPosition				= 0;
+			$this->m_iPosition				= (0 != $this->m_iIdTask) ? $this->m_oTask->m_aTask['iPosition'] : $this->m_oTask->m_iNextPosition;
 			$this->m_iCompletion			= (int) tskmgr_getVariable('oCompletion', 0);
 			$this->m_sPlannedStartDate		= '';
 			$this->m_sPlannedEndDate		= '';
 			$this->m_sStartDate				= trim(tskmgr_getVariable('sPlannedStartDate', ''));
 			$this->m_sEndDate				= trim(tskmgr_getVariable('sPlannedEndDate', ''));
 			$this->m_iIsNotified			= BAB_TM_NO;
-			$this->m_iIdOwner				= $GLOBALS['BAB_SESS_USERID'];
 			$this->m_iAnswer				= (int) tskmgr_getVariable('oAnswerEnable', -1);
 			
 			$this->m_iIsLinked				= -1;
@@ -903,11 +913,20 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 			bab_getLinkedTasks($this->m_iIdTask, $this->m_aLinkedTasks);
 			bab_getTaskResponsibles($this->m_iIdTask, $this->m_aTaskResponsibles);
 			
-			$this->m_oTask =& new BAB_TM_Task();
+			
+			if($this->m_oTask->m_isPersonnal)
+			{
+				$this->m_aCfg =& $this->m_oTask->getConfiguration();
+			}
+			else
+			{
+				$this->m_aCfg =& $oTmCtx->getConfiguration();
+			}
 
+			/*
 			if(0 != $this->m_iIdTask)
 			{
-				$this->m_oTask->loadFromDataBase($this->m_iIdTask);
+				$this->m_oTask->loadFromDataBase();
 			}
 			else 
 			{
@@ -915,15 +934,16 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 				$this->m_oTask->m_bIsFirstTask = ($this->m_iPosition == 1);
 				$this->m_sTaskNumber = trim(tskmgr_getVariable('sTaskNumber', ''));
 			}
+			//*/
 		}
 		
 		function isTaskNumberValid()
 		{
 			if(strlen($this->m_sTaskNumber) > 0)
 			{
-				if(!is_null($this->m_aProjectCfg))
+				if(!is_null($this->m_aCfg))
 				{
-					if(BAB_TM_MANUAL == $this->m_aProjectCfg['tasksNumerotation'])
+					if(BAB_TM_MANUAL == $this->m_aCfg['tasksNumerotation'])
 					{
 						$sName = mysql_escape_string(str_replace('\\', '\\\\', $this->m_sTaskNumber));
 						return bab_isTaskNumberUsed($this->m_iIdProject, $this->m_iIdTask, $sName);
@@ -937,7 +957,7 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 						else
 						{
 							$sTaskNumber = '';
-							bab_getNextTaskNumber($this->m_iIdProject, $this->m_aProjectCfg['tasksNumerotation'], $sTaskNumber);
+							bab_getNextTaskNumber($this->m_iIdProject, $this->m_aCfg['tasksNumerotation'], $sTaskNumber);
 							return($sTaskNumber === $this->m_sTaskNumber);
 						}
 					}
@@ -1360,8 +1380,8 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 				$aTask['sStartDate']			= $sStartDate;
 				$aTask['sEndDate'] 				= ($this->m_iDuration > 0 && 0 == strlen($sEndDate)) ? date('Y-m-d', bab_mktime($sStartDate) + ($this->m_iDuration * 24 * 3600)) : $sEndDate;
 				$aTask['iIsNotified']			= BAB_TM_YES;
-				$aTask['iIdOwner']				= 0 == $this->m_iIdProject ? $this->m_iIdOwner : 0;
-				
+
+				//bab_debug($aTask);
 //*				
 				$iIdTask = bab_createTask($aTask);
 				if(false !== $iIdTask)
@@ -1374,6 +1394,10 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 						
 						bab_setTaskResponsibles($iIdTask, $aTaskResponsibles);
 					}
+					
+					$iIdOwner = (BAB_TM_PROJECT_MANAGER == $this->m_iUserProfil) ? $this->m_iIdTaskResponsible : $GLOBALS['BAB_SESS_USERID'];
+					$iIsPersonnal = $this->m_oTask->m_isPersonnal ? BAB_TM_YES : BAB_TM_NO;
+					bab_createTaskInfo($iIdTask, $iIdOwner, $iIsPersonnal);
 					
 					if(BAB_TM_YES === $this->m_iIsLinked && (BAB_TM_PROJECT_MANAGER == $this->m_iUserProfil || BAB_TM_TASK_RESPONSIBLE == $this->m_iUserProfil))
 					{
@@ -1439,13 +1463,16 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 				$aTask['sStartDate']			= $sEndDate;
 				$aTask['sEndDate']				= $sEndDate;
 				$aTask['iIsNotified']			= BAB_TM_NO;
-				$aTask['iIdOwner']				= (0 == $this->m_iIdProject) ? $this->m_iIdOwner : 0;
 //*				
 				$iIdTask = bab_createTask($aTask);
 				if(false !== $iIdTask)
 				{
 					$this->m_iIdTask = $iIdTask;
 					
+					$iIdOwner = $GLOBALS['BAB_SESS_USERID'];
+					$iIsPersonnal = $this->m_oTask->m_isPersonnal ? BAB_TM_YES : BAB_TM_NO;
+					bab_createTaskInfo($iIdTask, $iIdOwner, $iIsPersonnal);
+
 					require_once $GLOBALS['babInstallPath'] . 'tmSendMail.php';
 					$this->noticeCreateSuccess();
 				}
@@ -1486,12 +1513,15 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 				$aTask['sStartDate']			= $sEndDate;
 				$aTask['sEndDate']				= $sEndDate;
 				$aTask['iIsNotified']			= BAB_TM_NO;
-				$aTask['iIdOwner']				= 0 == $this->m_iIdProject ? $this->m_iIdOwner : 0;
 //*				
 				$iIdTask = bab_createTask($aTask);
 				if(false !== $iIdTask)
 				{
 					$this->m_iIdTask = $iIdTask;
+					
+					$iIdOwner = $GLOBALS['BAB_SESS_USERID'];
+					$iIsPersonnal = $this->m_oTask->m_isPersonnal ? BAB_TM_YES : BAB_TM_NO;
+					bab_createTaskInfo($iIdTask, $iIdOwner, $iIsPersonnal);
 					
 					require_once $GLOBALS['babInstallPath'] . 'tmSendMail.php';
 					$this->noticeCreateSuccess();
@@ -1644,7 +1674,6 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 				$aTask['sStartDate']			= $sStartDate;
 				$aTask['sEndDate']				= $this->m_iDuration > 0 ? $sEndDate : '';
 				$aTask['iIsNotified']			= BAB_TM_YES;//$iIsNotified;
-//				$aTask['iIdOwner']				= 0 == $this->m_iIdProject ? $this->m_iIdOwner : 0;		
 
 				if(-1 != $this->m_iAnswer)
 				{

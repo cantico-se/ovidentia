@@ -490,7 +490,8 @@ function onClassChanged(oSelect)
 				showHideElement('oTrProposable', g_tskMgrShow);
 				showHideElement('oTrCompletion', g_tskMgrShow);
 				showHideElement('oTrAnswerEnable', g_tskMgrShow);
-
+				showHideElement('oTrTaskResponsible', g_tskMgrShow);
+				
 				processStartDate();
 			}
 		}
@@ -507,6 +508,7 @@ function onClassChanged(oSelect)
 			showHideElement('oTrCompletion', g_tskMgrHide);
 			showHideElement('oLiPredecessors', g_tskMgrHide);
 			showHideElement('oTrAnswerEnable', g_tskMgrHide);
+			showHideElement('oTrTaskResponsible', g_tskMgrHide);
 		}
 		break;
 			
@@ -521,6 +523,7 @@ function onClassChanged(oSelect)
 			showHideElement('oTrCompletion', g_tskMgrHide);
 			showHideElement('oLiPredecessors', g_tskMgrHide);
 			showHideElement('oTrAnswerEnable', g_tskMgrHide);
+			showHideElement('oTrTaskResponsible', g_tskMgrHide);
 		}
 		break;
 	}
@@ -789,7 +792,7 @@ function processStartDate()
 				</tr>
 			<!--#endif m_datas[isAnswerEnable] -->
 			<!--#if m_datas[isResourceAvailable] -->
-				<tr>
+				<tr id="oTrTaskResponsible">
 					<td>
 						<label for="iIdTaskResponsible">{ m_captions[sTaskResponsible] }</label>
 					</td>
