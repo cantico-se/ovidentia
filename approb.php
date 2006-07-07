@@ -1027,6 +1027,7 @@ function updateConfirmationWaitingArticle($idart, $bconfirm, $comment)
 						{
 						$babDB->db_query("insert into ".BAB_ART_LOG_TBL." (id_article, id_author, date_log, action_log, art_log) values ('".$arr['id_article']."', '".$arr['id_author']."', now(), 'refused', '".$comment."')");		
 						}
+					deleteFlowInstance($arr['idfai']);				
 					notifyArticleDraftAuthor($idart, 0);
 					break;
 				case 1:
@@ -1075,6 +1076,7 @@ function updateConfirmationWaitingComment($idcom, $action, $send, $message)
 		case 0:
 			include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
 			$subject = "Your comment has been refused";
+			deleteFlowInstance($arr['idfai']);
 			bab_deleteComments($idcom);
 			break;
 		case 1:
