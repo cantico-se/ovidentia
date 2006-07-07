@@ -441,6 +441,7 @@ function aclGetAccessUsers($table, $id_object) {
 			}
 		}
 
+	$query = '';
 	if (isset($groups[BAB_REGISTERED_GROUP]) || isset($groups[BAB_ALLUSERS_GROUP])) {
 		$query = "SELECT id, firstname, lastname ,email 
 					FROM ".BAB_USERS_TBL." 
@@ -455,6 +456,8 @@ function aclGetAccessUsers($table, $id_object) {
 		}
 	
 	$user = array();
+	if( !empty($query))
+	{
 	$res = $db->db_query($query);
 	while ($arr = $db->db_fetch_assoc($res)) {
 		$user[$arr['id']] = array(
@@ -462,6 +465,7 @@ function aclGetAccessUsers($table, $id_object) {
 					'email' => isset($arr['email']) ? $arr['email'] : false
 				);
 		}
+	}
 
 	return $user;
 	}
