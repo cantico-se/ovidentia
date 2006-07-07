@@ -4416,7 +4416,14 @@ class bab_IfUserMemberOfGroups extends bab_handler
 		$this->bab_handler($ctx);
 		$this->count = 0;
 		
-		if( $GLOBALS['BAB_SESS_USERID'] != "" )
+		$userid = $ctx->get_value('userid');
+		if( $userid === false  )
+		{
+			$userid = $GLOBALS['BAB_SESS_USERID'];
+		}
+
+
+		if( $userid != "" )
 			{
 			$all = $ctx->get_value('all');
 
@@ -4459,7 +4466,7 @@ class bab_IfUserMemberOfGroups extends bab_handler
 
 			if( count($groupid))
 				{
-				list($total) = $babDB->db_fetch_row($babDB->db_query("select count(id) as total from ".BAB_USERS_GROUPS_TBL." where id_object='".$GLOBALS['BAB_SESS_USERID']."' and id_group IN (".implode(',', $groupid).")"));
+				list($total) = $babDB->db_fetch_row($babDB->db_query("select count(id) as total from ".BAB_USERS_GROUPS_TBL." where id_object='".$userid."' and id_group IN (".implode(',', $groupid).")"));
 				if( $all == false)
 					{
 					if( $total )
