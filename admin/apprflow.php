@@ -526,13 +526,13 @@ function saveSchema($rows, $cols, $order, $schname, $schdesc, $idsch, $ocid, $ty
 			$req = "insert into ".BAB_FLOW_APPROVERS_TBL." (name, description, formula, forder, id_dgowner, satype, id_oc) 
 			VALUES 
 				(
-				'" . $babDB->db_escape_string($schname). "', 
-				'" . $babDB->db_escape_string($schdesc). "', 
-				'" . $babDB->db_escape_string($ret). "', 
-				'" . $babDB->db_escape_string($order). "', 
-				'" . $babDB->db_escape_string($babBody->currentAdmGroup). "', 
-				'" . $babDB->db_escape_string($type). "', 
-				'" . $babDB->db_escape_string($ocid). "'
+				'" . $db->db_escape_string($schname). "', 
+				'" . $db->db_escape_string($schdesc). "', 
+				'" . $db->db_escape_string($ret). "', 
+				'" . $db->db_escape_string($order). "', 
+				'" . $db->db_escape_string($babBody->currentAdmGroup). "', 
+				'" . $db->db_escape_string($type). "', 
+				'" . $db->db_escape_string($ocid). "'
 			)";
 
 			$db->db_query($req);
@@ -545,11 +545,11 @@ function saveSchema($rows, $cols, $order, $schname, $schdesc, $idsch, $ocid, $ty
 		if( $res && $db->db_num_rows($res) > 0)
 			{
 			$arr = $db->db_fetch_array($res);
-			$req = "update ".BAB_FLOW_APPROVERS_TBL." set name='".$babDB->db_escape_string($schname)."', description='".$babDB->db_escape_string($schdesc)."', formula='".$babDB->db_escape_string($ret)."', forder='".$babDB->db_escape_string($order)."' where id='".$babDB->db_escape_string($idsch)."'";
+			$req = "update ".BAB_FLOW_APPROVERS_TBL." set name='".$db->db_escape_string($schname)."', description='".$db->db_escape_string($schdesc)."', formula='".$db->db_escape_string($ret)."', forder='".$db->db_escape_string($order)."' where id='".$db->db_escape_string($idsch)."'";
 			$db->db_query($req);
 			if( $arr['formula'] != $ret )
 				{
-				$res = $db->db_query("select * from ".BAB_FA_INSTANCES_TBL." where idsch='".$babDB->db_escape_string($idsch)."'");
+				$res = $db->db_query("select * from ".BAB_FA_INSTANCES_TBL." where idsch='".$db->db_escape_string($idsch)."'");
 				while( $arr = $db->db_fetch_array($res))
 					{
 					updateSchemaInstance($arr['id']);
