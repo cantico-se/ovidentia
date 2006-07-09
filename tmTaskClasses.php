@@ -1568,7 +1568,7 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 			if(!$this->m_oTask->m_bIsStarted)
 			{
 				$this->m_iClass				= (0 == $this->m_aLinkedTasks) ? $this->m_iClass : $aTask['iClass'];
-				$this->m_iCompletion		= $aTask['iCompletion'];
+//				$this->m_iCompletion		= $aTask['iCompletion'];
 				$this->m_sStartDate 		= trim(tskmgr_getVariable('sPlannedStartDate', ''));
 				$this->m_sEndDate 			= trim(tskmgr_getVariable('sPlannedEndDate', ''));
 			}
@@ -1592,7 +1592,7 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 			if(!$this->m_oTask->m_bIsStarted)
 			{
 				$this->m_iClass				= (0 == $this->m_aLinkedTasks) ? $this->m_iClass : $aTask['iClass'];
-				$this->m_iCompletion		= $aTask['iCompletion'];
+//				$this->m_iCompletion		= $aTask['iCompletion'];
 				$this->m_sStartDate 		= trim(tskmgr_getVariable('sPlannedStartDate', ''));
 				$this->m_sEndDate 			= trim(tskmgr_getVariable('sPlannedEndDate', ''));
 			}
@@ -1669,11 +1669,9 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 //				$aTask['sColor']				= $this->m_sColor;
 //				$aTask['iPosition']				= $this->m_iPosition;
 				$aTask['iCompletion']			= $this->m_iCompletion;
-				$aTask['sPlannedStartDate']		= $sStartDate;
-				$aTask['sPlannedEndDate']		= $sEndDate;
 				$aTask['sStartDate']			= $sStartDate;
-				$aTask['sEndDate']				= $this->m_iDuration > 0 ? $sEndDate : '';
-				$aTask['iIsNotified']			= BAB_TM_YES;//$iIsNotified;
+				$aTask['sEndDate'] 				= ($this->m_iDuration > 0 && 0 == strlen($sEndDate)) ? date('Y-m-d', bab_mktime($sStartDate) + ($this->m_iDuration * 24 * 3600)) : $sEndDate;
+				$aTask['iIsNotified']			= BAB_TM_YES;
 
 				if(-1 != $this->m_iAnswer)
 				{
