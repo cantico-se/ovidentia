@@ -254,6 +254,7 @@ class bab_stats_modules extends bab_stats_base
 			case "statconf":
 			case "stat":
 			case "admindex":
+			case 'mailspool':
 				$id = 15; /* Administration */
 				break;
 			case "vacuser":
@@ -291,6 +292,10 @@ class bab_stats_modules extends bab_stats_base
 				break;
 			case "oml":
 				$id = 23; /* OvML  */
+				break;
+			case 'admTskMgr':
+			case 'usrTskMgr':
+				$id = 24; /* Task manager  */
 				break;
 
 			case "aclug":
