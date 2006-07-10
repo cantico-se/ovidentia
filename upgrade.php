@@ -6891,7 +6891,7 @@ function upgrade585to586()
 	}
 
 
-	$res = $db->db_query("select * from ".BAB_STATS_IMODULES_TBL." id='24'");
+	$res = $db->db_query("select * from ".BAB_STATS_IMODULES_TBL." where id='24'");
 	if( !$res || $db->db_num_rows($res) == 0 )
 	{
 	$db->db_query("INSERT INTO ".BAB_STATS_IMODULES_TBL." VALUES (24, 'Task manager')");
