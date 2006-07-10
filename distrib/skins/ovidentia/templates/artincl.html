@@ -1,0 +1,177 @@
+<!--#begin editarticle -->
+<!--#if loadscripts -->
+<script type="text/javascript">
+      _editor_url = "{ babUrl }{ babScriptPath }htmlarea/";
+      _editor_lang = "{ babLanguage }";
+
+	  textarea_id = new Array("headtext", "bodytext");
+</script>
+<!--#endif loadscripts -->
+<script type="text/javascript" src="{ babUrl }{ babScriptPath }text_toolbar.js"></script>
+
+
+<table width="95%" class="BabLoginCadreBackground" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td align="center" valign="middle"> 
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+	<tr> 
+	<td align="center">{ title } </td>
+	</tr>
+	<tr> 
+	<td align="center" valign="middle"> 
+	<input type="text" name="title" size="60" value="{ titleval }">
+	</td>
+	</tr>
+	<tr> 
+	<td align="center">{ head } </td>
+	</tr>
+	<tr> 
+	<td align="center" valign="middle"> 
+		<div align="left">
+			{ text_toolbar_head }
+			<textarea id="headtext" name="headtext" style="width:100%" rows="20">{ headval }</textarea>
+		</div>
+	</td>
+	</tr>
+	<tr> 
+	<td align="center">{ body }</td>
+	</tr>
+	<tr> 
+	<td align="center" valign="middle"> 
+		<div align="left">
+			{ text_toolbar_body }
+			<textarea id="bodytext" name="bodytext" style="width:100%" rows="20">{ bodyval }</textarea>
+		</div>
+
+	<!--#if loadscripts -->
+	<script type="text/javascript" src="{ babInstallPath }scripts/bab_dialog.js"></script>
+	<script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/htmlarea.js"></script>
+	<script type="text/javascript" src="{ babUrlScript }?tg=htmlarea&idx=js&mode={ mode }"></script>
+	<!--#endif loadscripts -->
+
+	</td>
+	</tr>
+	<tr>
+		<td align="center" valign="middle">
+			{ langLabel }&nbsp;:&nbsp;
+			<select name="lang">
+				<!--#in getnextlang -->
+				 <option value="{ langValue }" { langSelected }>{ langValue }</option>
+				<!--#endin getnextlang -->
+			</select>
+		</td>
+	</tr>
+	</table>
+</td>
+</tr>
+</table>
+<!--#end editarticle -->
+
+<!--#begin previewarticledraft -->
+<table border="0" width="99%" cellpadding="3" cellspacing="0" align="center">
+<tr class="BabTopicsTitleBackground"> 
+<td>{ titleval }</td>
+<td align="right">
+<!--#if countf -->
+<a href="#1"><img valign="absmiddle" src="{ babSkinPath }images/Puces/PuceTrombonne.gif" border="0"></a>
+<!--#else countf -->
+&nbsp;
+<!--#endif countf -->
+<!--#if countn -->
+<a href="#2"><img valign="absmiddle" src="{ babSkinPath }images/Puces/text.gif" border="0"></a>
+<!--#else countn -->
+&nbsp;
+<!--#endif countn -->
+</td>
+</tr>
+<tr> 
+<td class="BabTopicsBackground" colspan="2">{ headval }</td>
+</tr>
+<tr> 
+<td class="BabTopicsBackground" colspan="2">{ bodyval }</td>
+</tr>
+<tr>
+<td class="BabTopicsButtonBackground" colspan="2" align="right" valign="middle"> 
+</td>
+</tr>
+</table>
+<br>
+<!--#if countf -->
+<table   border="0" width="99%" cellpadding="3" cellspacing="0" align="center">
+<tr> 
+<td colspan="2" class="BabTopicsTitleBackground"><a name="1"></a><img valign="absmiddle" src="{ babSkinPath }images/Puces/PuceTrombonne.gif" border="0">
+&nbsp;{ filesval }</td>
+</tr>
+<!--#in getnextfile -->
+<tr> 
+<td class="BabTopicsBackground" colspan="2"><a class="BabForumTopicsNavContribution" href="{ urlfile }">{ filename }</a></td>
+</tr>
+<!--#endin getnextfile -->
+<tr>
+<td class="BabTopicsButtonBackground" colspan="2" align="right" valign="middle"> 
+</td>
+</tr>
+</table>
+<br>
+<!--#endif countf -->
+<!--#if countn -->
+<table   border="0" width="99%" cellpadding="3" cellspacing="0" align="center">
+<tr> 
+<td colspan="2" class="BabTopicsTitleBackground"><a name="2"></a><img valign="absmiddle" src="{ babSkinPath }images/Puces/text.gif" border="0">&nbsp;{ notesval }</td>
+</tr>
+<!--#in getnextnote -->
+<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+<td width="120">{ date }</td>
+<td align="left">{ author }</td>
+</tr>
+<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+<td>&nbsp;</td>
+<td align="left">{ note }</td>
+</tr>
+<!--#endin getnextnote -->
+<tr>
+<td class="BabTopicsButtonBackground" colspan="2" align="right" valign="middle"> 
+</td>
+</tr>
+</table>
+<br>
+<!--#endif countn -->
+<!--#end previewarticledraft -->
+
+<!--#begin previewcomment -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ babSiteName }</TITLE>
+{ babMeta }
+{ babCss }
+<script type="text/javascript">
+<!--
+window.focus();
+//-->
+</script>
+</HEAD>
+<BODY class="BabTopicsAdminArticleViewFontBackground">
+<br>
+<table width="92%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginMenuBackground"> 
+<table class="BabMailBackground" border="0" width="100%" cellpadding="5" cellspacing="0" align="center">
+<tr> 
+<td class="BabTopicsTitleBackground" align="center" nowrap><b>{ title }</b></td>
+</tr>
+<tr>
+<td class="BabTopicsBackground">{ content }</td>
+</tr>
+<tr> 
+<td colspan="2" align="center"> <br>
+<a href="javascript:this.close()" class="BabSiteAdminListLink">{ close }</a> <br>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</BODY>
+</HTML>
+<!--#end previewcomment -->
