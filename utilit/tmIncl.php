@@ -613,8 +613,8 @@ function bab_deleteProjectSpecificFields($iIdProject)
 
 function bab_isProjectDeletable($iIdProject)
 {
-	bab_debug('isProjectDeletable this function must be implemented');
-	return true;
+	$iTaskCount = bab_getTaskCount($iIdProject);
+	return (0 == $iTaskCount);
 }
 
 function bab_selectProjectCommentaryList($iIdProject, $iLenght = 50)
@@ -775,21 +775,13 @@ function bab_getLastProjectRevision($iIdProject, &$iMajorVersion, &$iMinorVersio
 }
 
 
-//Task functions
+//Task functions	
+/*
 function bab_startDependingTask($iIdProjectSpace, $iIdProject, $iIdTask, $iLinkType)
 {
-//	bab_getAllTaskIndexedById($iIdProject, $aTasks);
-//	bab_debug($aTasks);
-//	$aProcessedTaks = array();
-	
 	$aDependingTasks = array();
-//	$iLinkType = BAB_TM_START_TO_START;
-//	$iIdTask = 15;
 	bab_getDependingTasks($iIdTask, $iLinkType, $aDependingTasks);
 	
-//	bab_debug($aDependingTasks);
-	
-	//*
 	require_once $GLOBALS['babInstallPath'] . 'tmSendMail.php';
 	$oSendMail = new BAB_TM_SendEmail();
 	
@@ -797,7 +789,6 @@ function bab_startDependingTask($iIdProjectSpace, $iIdProject, $iIdTask, $iLinkT
 	{
 		if(bab_getTask($iId, $aTask))
 		{
-//bab_debug('iIdTask ==> ' . $iId);
 			$aTask['iParticipationStatus'] = BAB_TM_IN_PROGRESS;
 			$aTask['sStartDate'] = date("Y-m-d");
 			bab_updateTask($iId, $aTask);
@@ -834,10 +825,32 @@ function bab_startDependingTask($iIdProjectSpace, $iIdProject, $iIdTask, $iLinkT
 			bab_startDependingTask($iIdProjectSpace, $iIdProject, $iId, BAB_TM_START_TO_START);
 		}
 	}
-	//*/
+}
+//*/
+
+function bab_getTaskCount($iIdProject)
+{
+	$query = 
+		'SELECT ' . 
+			'COUNT(id) iTaskCount ' .
+		'FROM ' . 
+			BAB_TSKMGR_TASKS_TBL . ' t ' .
+		'WHERE ' . 
+			't.idProject = \'' . $iIdProject . '\' ';
+		
+	//bab_debug($query);
+	
+	global $babDB;
+	$db	= & $GLOBALS['babDB'];
+
+	$result = $babDB->db_query($query);
+	if(false != $result)
+	{
+		return $babDB->db_num_rows($result);
+	}
+	return 0;
 }
 
-//*
 function bab_getDependingTasks($iIdTask, $iLinkType, &$aDependingTasks)
 {
 	$query = 
@@ -871,7 +884,7 @@ function bab_getDependingTasks($iIdTask, $iLinkType, &$aDependingTasks)
 		$iIndex++;
 	}
 }
-//*/
+
 
 function bab_getAllTaskIndexedById($iIdProject, &$aTasks)
 {
@@ -1524,8 +1537,9 @@ function bab_selectLinkableTask($iIdProject, $iIdTask)
 		'SELECT ' . 
 			'id, ' .
 			'taskNumber, ' .
-			'IF(startDate = \'0000-00-00 00:00:00\', 0, ' .
-				'IF(startDate > now(), 0, 1)) isStarted ' .
+//			'IF(startDate = \'0000-00-00 00:00:00\', 0, ' .
+//				'IF(startDate > now(), 0, 1)) isStarted ' .
+			'0 AS isStarted ' .
 		'FROM ' . 
 			BAB_TSKMGR_TASKS_TBL . ' ' .
 		'WHERE ' . 
@@ -1589,7 +1603,9 @@ function bab_getOwnedTaskQuery()
 			BAB_TSKMGR_PROJECTS_SPACES_TBL . ' ps ON ps.id = p.idProjectSpace ' .
 		'WHERE ' . 
 			'ti.idOwner = \'' . $GLOBALS['BAB_SESS_USERID'] . '\' AND ' .
-			't.id = ti.idTask';
+			't.id = ti.idTask ' .
+		'GROUP BY ' .
+			'sProjectSpaceName ASC, sProjectName ASC, sTaskNumber ASC';
 
 	//bab_debug($query);
 	return $query;

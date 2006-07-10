@@ -871,53 +871,6 @@ function displayDeleteProjectCommentary()
 
 function displayTaskList()
 {
-/*
-	global $babBody;
-
-	$oTmCtx =& getTskMgrContext();
-	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
-	$iIdProject = $oTmCtx->getIdProject();
-	
-	$bIsTaskResp = bab_isAccessValid(BAB_TSKMGR_TASK_RESPONSIBLE_GROUPS_TBL, $iIdProject);
-	$bIsManager = bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject);
-	
-	if($bIsTaskResp || $bIsManager)
-	{
-		$babBody->title = bab_translate("Task list");
-	
-		$itemMenu = array(		
-			array(
-				'idx' => BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST,
-				'mnuStr' => bab_translate("Projects spaces"),
-				'url' => $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST),
-			array(
-				'idx' => BAB_TM_IDX_DISPLAY_TASK_LIST,
-				'mnuStr' => bab_translate("Tasks list"),
-				'url' => $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_TASK_LIST . 
-				'&iIdProjectSpace=' . $iIdProjectSpace . '&iIdProject=' . $iIdProject),
-			array(
-				'idx' => BAB_TM_IDX_DISPLAY_TASK_FORM,
-				'mnuStr' => bab_translate("Add a task"),
-				'url' => $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_TASK_FORM . 
-				'&iIdProjectSpace=' . $iIdProjectSpace . '&iIdProject=' . $iIdProject)
-		);
-		
-		add_item_menu($itemMenu);
-		
-		$result = bab_selectTasksList($iIdProject);	
-		$oList = new BAB_TM_ListBase($result);
-	
-		$oList->set_data('url', $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . 
-			BAB_TM_IDX_DISPLAY_TASK_FORM . '&iIdProjectSpace=' . $iIdProjectSpace .
-			'&iIdProject=' . $iIdProject . '&iIdTask=');
-
-		$babBody->babecho(bab_printTemplate($oList, 'tmUser.html', 'taskList'));
-	}
-	else 
-	{
-		$GLOBALS['babBody']->msgerror = bab_translate("You do not have the right to list the tasks");
-	}
-//*/
 	global $babBody;
 	$oTmCtx =& getTskMgrContext();
 	$babBody->title = bab_translate("Task list");
@@ -998,7 +951,6 @@ function displayTaskList()
 	$oAddTaskForm = new BAB_TM_AddTaskForm();
 	$GLOBALS['babBody']->babecho($oAddTaskForm->printTemplate());
 
-//*
 	$oMultiPage = new BAB_MultiPageBase();
 	$oMultiPage->sIdx = BAB_TM_IDX_DISPLAY_TASK_LIST;
 
@@ -1024,7 +976,6 @@ function displayTaskList()
 		$sLink, $aDataSourceFields);
 	
 	$GLOBALS['babBody']->babecho($oMultiPage->printTemplate());
-//*/
 }
 
 function displayTaskForm()
@@ -1085,8 +1036,8 @@ function isTaskDeletable($iIdTask, $iUserProfil, &$sTaskNumber)
 	if(BAB_TM_PROJECT_MANAGER == $iUserProfil || BAB_TM_PERSONNAL_TASK_OWNER == $iUserProfil)
 	{
 		if(0 != $iIdTask)
+/*	
 		{
-			
 			global $babInstallPath;
 			require_once($babInstallPath . 'tmTaskClasses.php');
 	
@@ -1114,6 +1065,8 @@ function isTaskDeletable($iIdTask, $iUserProfil, &$sTaskNumber)
 		{
 			$GLOBALS['babBody']->msgerror = bab_translate("Invalid task");
 		}
+//*/
+		return true;
 	}		
 	else 
 	{
