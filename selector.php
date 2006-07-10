@@ -46,7 +46,7 @@ function selectArticles()
 	$GLOBALS['babBodyPopup']->title = & $GLOBALS['babBody']->title;
 	$GLOBALS['babBodyPopup']->msgerror = & $GLOBALS['babBody']->msgerror;
 
-	$treeView = new bab_ArticleTreeView('article');
+	$treeView = new bab_ArticleTreeView('bab_tv_article');
 	$treeView->setAttributes($attributes);
 
 	$GLOBALS['babBodyPopup']->babecho($treeView->printTemplate());
@@ -75,7 +75,7 @@ function selectFaqs()
 	$GLOBALS['babBodyPopup']->title = & $GLOBALS['babBody']->title;
 	$GLOBALS['babBodyPopup']->msgerror = & $GLOBALS['babBody']->msgerror;
 	
-	$treeView = new bab_FaqTreeView('faq');
+	$treeView = new bab_FaqTreeView('bab_tv_faq');
 	$treeView->setAttributes($attributes);
 
 	$GLOBALS['babBodyPopup']->babecho($treeView->printTemplate());
@@ -105,7 +105,7 @@ function selectForums()
 	$GLOBALS['babBodyPopup']->title = & $GLOBALS['babBody']->title;
 	$GLOBALS['babBodyPopup']->msgerror = & $GLOBALS['babBody']->msgerror;
 	
-	$treeView = new bab_ForumTreeView('faq');
+	$treeView = new bab_ForumTreeView('bab_tv_forum');
 	$treeView->setAttributes($attributes);
 
 	$GLOBALS['babBodyPopup']->babecho($treeView->printTemplate());
@@ -119,7 +119,9 @@ function selectFiles()
 	$attributes = 0;
 	if (isset($_REQUEST['show_collective_directories']))
 		$attributes |= BAB_FILE_TREE_VIEW_SHOW_COLLECTIVE_DIRECTORIES;
-	if (isset($_REQUEST['show_sub_directories']))
+	if (isset($_REQUEST['show_personal_directories']))
+		$attributes |= BAB_FILE_TREE_VIEW_SHOW_PERSONAL_DIRECTORIES;
+		if (isset($_REQUEST['show_sub_directories']))
 		$attributes |= BAB_FILE_TREE_VIEW_SHOW_SUB_DIRECTORIES;
 	if (isset($_REQUEST['show_files']))
 		$attributes |= BAB_FILE_TREE_VIEW_SHOW_FILES;
@@ -131,13 +133,14 @@ function selectFiles()
 	if (isset($_REQUEST['clickable_files']))
 		$attributes |= BAB_FILE_TREE_VIEW_CLICKABLE_FILES;
 	
-//	$attributes |= BAB_TREE_VIEW_MULTISELECT;
+	if (isset($_REQUEST['multi']))
+		$attributes |= BAB_TREE_VIEW_MULTISELECT;
 
 	$GLOBALS['babBodyPopup'] = new babBodyPopup();
 	$GLOBALS['babBodyPopup']->title = & $GLOBALS['babBody']->title;
 	$GLOBALS['babBodyPopup']->msgerror = & $GLOBALS['babBody']->msgerror;
 	
-	$treeView = new bab_FileTreeView('faq', 'N', '0');
+	$treeView = new bab_FileTreeView('bab_tv_file', $GLOBALS['babBody']->isSuperAdmin);
 	$treeView->setAttributes($attributes);
 
 	$GLOBALS['babBodyPopup']->babecho($treeView->printTemplate());
