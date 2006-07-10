@@ -104,7 +104,8 @@ var global_editor = null;
 	  action    : function(editor, id) {
 					//}
 					global_editor = editor;
-					window.open('{ babUrlScript }?tg=fileman&idx=brow&callback=EditorOnCreateFile&editor=1','bab_file','toolbar=no,menubar=no,personalbar=no,width=400,height=470,scrollbars=yes,resizable=yes');
+					bab_dialog.selectfile(EditorOnInsertFiles, 'show_personal_directories=1&show_files=1&clickable_files=1&clickable_collective_directories=1&clickable_sub_directories=1&multi=1');
+//					window.open('{ babUrlScript }?tg=fileman&idx=brow&callback=EditorOnCreateFile&editor=1','bab_file','toolbar=no,menubar=no,personalbar=no,width=400,height=470,scrollbars=yes,resizable=yes');
 				  }
 	});
 
@@ -388,3 +389,25 @@ function EditorOnInsertFolder(id,path,txt)
 {
 global_editor.insertHTML('$FOLDER('+id+','+path+','+txt+')');
 }
+
+function EditorOnInsertFiles(files)
+{
+	var editor = global_editor;
+	var html = getSelection();
+	if (html != '') {
+		txt = html;
+	}
+	var insertedItems = new Array();
+	for (var i = 0; i < files.length; i++) {
+		var file = files[i];
+		if (file.type != 'directory') {
+			insertedItems.push('$FILE(' + file.id + ',' + file.content + ')');
+		} else {
+			var path = file.id.split(':');
+			var id = path[0];
+			insertedItems.push('$FOLDER(' + id + ',' + path.slice(1).join('/') + ',' + file.content + ')');
+		}
+	}
+	editor.insertHTML(insertedItems.join(','));
+}
+
