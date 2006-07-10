@@ -6890,6 +6890,13 @@ function upgrade585to586()
 		$db->db_query("ALTER TABLE `" . BAB_TSKMGR_TASKS_TBL . "` DROP `idOwner`");
 	}
 
+
+	$res = $db->db_query("select * frm ".BAB_STATS_IMODULES_TBL." id='24'");
+	if( !$res || $db->db_num_rows($res) == 0 )
+	{
+	$db->db_query("INSERT INTO ".BAB_STATS_IMODULES_TBL." VALUES (24, 'Task manager')");
+	}
+
 	return $ret;
 }
 
