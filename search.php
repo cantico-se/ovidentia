@@ -258,9 +258,21 @@ function searchKeyword($item , $option = "OR")
 					if (! isset($this->fields[$value])) $this->fields[$value] = "";
 				}
 
-			$req = "select id,category from ".BAB_TOPICS_TBL." order by category";
-			$this->restopics = $this->db->db_query($req);
-			$this->counttopics = $this->db->db_num_rows($this->restopics);
+			$restc = $this->db->db_query("select tt.id,tt.category, tt.id_cat, tc.title from ".BAB_TOPICS_TBL." tt left join ".BAB_TOPICS_CATEGORIES_TBL." tc on tt.id_cat=tc.id order by tt.category, tc.title ");
+			while( $row = $this->db->db_fetch_array($restc))
+				{
+				if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $row['id']))
+					{
+					$this->arrtopics[$row['id_cat']][] = array('id'=>$row['id'], 'category'=>$row['category']);
+					if( !isset($this->arrtopicscategories[$row['id_cat']]))
+						{
+						$this->arrtopicscategories[$row['id_cat']] = $row['title'];
+						}
+					}
+				}
+
+			$this->counttopicscategories = count($this->arrtopicscategories);
+
 
 			$req = "select D.id, D.name, D.id_group id_group from ".BAB_DB_DIRECTORIES_TBL." D,".BAB_GROUPS_TBL." G where D.id_group = '0' OR (D.id_group = G.id AND G.directory='Y') order by D.name";
 			$this->resdirs = $this->db->db_query($req);
@@ -369,17 +381,35 @@ function searchKeyword($item , $option = "OR")
 			static $i = 0;
 			if( $i < $this->counttopics)
 				{
-				$arr = $this->db->db_fetch_array($this->restopics);
-				$this->topicid = $arr['id'];
-				$this->topictitle = put_text($arr['category'],30);
-				$this->selected = bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $arr['id']);
+				$this->topicid = $this->arrtopics[$this->id_cat][$i]['id'];
+				$this->topictitle = put_text($this->arrtopics[$this->id_cat][$i]['category'],30);
+				$this->selected = true;
 				$i++;
 				return true;
 				}
 			else
+				{
+				$i=0;
 				return false;
+				}
 			}
 		
+		function getnexttopiccategory() 
+			{
+			static $i = 0;
+			if (list($this->id_cat, $title) = each($this->arrtopicscategories))
+				{
+				$this->topiccategorytitle = put_text($title,30);
+				$this->counttopics = count($this->arrtopics[$this->id_cat]);
+				$i++;
+				return true;
+				}
+			else
+				{
+				return false;
+				}
+			}
+
 		function getnextdir() 
 			{
 			static $l = 0;
@@ -710,6 +740,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$inart = (is_array($babBody->topview) && count($babBody->topview) > 0 ) ? "and id_topic in (".implode(",",array_keys($babBody->topview)).")" : "and id_topic ='0'";
 				$incom = (is_array($babBody->topview) && count($babBody->topview) > 0 ) ? "and C.id_topic in (".implode(",",array_keys($babBody->topview)).")" : "and C.id_topic ='0'";
 
+				$reqsup = '';
 				if (!empty($inart))
 					{
 					if (!isset($_POST['search_files_only'])) {

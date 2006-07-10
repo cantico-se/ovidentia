@@ -247,6 +247,8 @@ function cleanAfter() {
 	<td>
 		<select name="a_topic">
 			<option value="">{ all }</option>
+		  <!--#in getnexttopiccategory -->
+			<optgroup class="usr" label="{ topiccategorytitle }">
 		  <!--#in getnexttopic -->
 			<!--#if selected -->
 				<!--#if fields[a_topic] "== topicid" -->
@@ -256,6 +258,7 @@ function cleanAfter() {
 				<!--#endif fields[a_topic] -->
 			<!--#endif selected -->
 		  <!--#endin getnexttopic -->
+		  <!--#endin getnexttopiccategory -->
 		</select>
 	</td></tr>
 	<tr>
