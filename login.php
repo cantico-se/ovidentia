@@ -24,13 +24,6 @@
 include_once "base.php";
 include_once $babInstallPath."admin/register.php";
 
-function auth_decode($str)
-{
-	global $babBody;
-	return bab_ldapDecode($str, $babBody->babsite['ldap_decoding_type']);
-}
-
-
 function isEmailPassword()
 {
 	global $babBody;

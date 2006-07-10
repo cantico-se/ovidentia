@@ -24,6 +24,13 @@
 include_once "base.php";
 include_once $GLOBALS['babInstallPath']."utilit/mailincl.php";
 
+function auth_decode($str)
+{
+	global $babBody;
+	return bab_ldapDecode($str, $babBody->babsite['ldap_decoding_type']);
+}
+
+
 function notifyUserRegistration($link, $name, $email)
 	{
 	global $babBody, $babAdminEmail, $babInstallPath;
