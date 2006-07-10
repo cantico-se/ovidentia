@@ -559,7 +559,7 @@ function babBody()
 		if( $res && $babDB->db_num_rows($res) > 0 )
 			{
 			$arr = $babDB->db_fetch_array($res);
-			if ($arr['remote_addr'] != $GLOBALS['REMOTE_ADDR'])
+			if ((!isset($GLOBALS['babCheckIpAddress']) || $GLOBALS['babCheckIpAddress'] == true) && $arr['remote_addr'] != $GLOBALS['REMOTE_ADDR'])
 				{
 				die(bab_translate("Access denied, your session id has been created by another ip address than yours"));
 				}
@@ -919,6 +919,18 @@ function setCurrentItemMenu($title, $enabled=false)
 function addStyleSheet($file)
 {
 	$this->styleSheet[] = $file;
+}
+
+function addJavascriptFile($file)
+{
+	global $babOvidentiaJs;
+	static $jfiles = array();
+
+	if( !in_array($file, $jfiles))
+	{
+		$jfiles[] = $file;
+		$babOvidentiaJs .= '"></script><script type="text/javascript" src="'.$file; 
+	}
 }
 
 function getnextstylesheet()
