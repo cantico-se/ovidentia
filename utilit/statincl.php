@@ -77,7 +77,7 @@ class bab_WebStatEvent
 			}
 
 		$this->referer = isset($_SERVER["HTTP_REFERER"])? $_SERVER["HTTP_REFERER"]: '';
-		$this->client = $_SERVER["HTTP_USER_AGENT"];
+		$this->client = isset($_SERVER["HTTP_USER_AGENT"])? $_SERVER["HTTP_USER_AGENT"]: '';
 
 		// Fix for IIS, which doesn't set REQUEST_URI 
 		if ( !isset($_SERVER['REQUEST_URI']) || empty( $_SERVER['REQUEST_URI'] ) )
