@@ -376,8 +376,6 @@ class BAB_MultiPageBase
 	
 	function getNextNbRow()
 	{
-		
-		
 		$aDatas = each($this->aNbRowsPerPages);
 		if(false != $aDatas)
 		{
@@ -618,4 +616,88 @@ bab_debug('8 heures de train');
 		}
 	}
 }
+
+class BAB_TM_Gantt
+{
+	var $m_iDaySize = '24px';
+	var $m_iNbDaysToDisplay = 28;
+	var $m_iDisplayedDays = 0;
+	
+//	var $m_iNbMonthToDisplay = 0;
+//	var $m_iDisplayedMonth = 0;
+	
+	var $m_aStartDate = array();
+	var $m_aEndDate = array();
+	
+	function BAB_TM_Gantt($sStartDate, $iStartWeekDay = 3)
+	{
+		$this->setDates($sStartDate, $iStartWeekDay);
+	}
+	
+	function setDates($sStartDate, $iStartWeekDay)
+	{
+		$this->m_aStartDate = getdate(strtotime($sStartDate));
+		
+		//Pour démarrer à un jour spécifique de la semaine
+		if($iStartWeekDay != $this->m_aStartDate['wday'])
+		{
+			$iGap = 0;
+			if($this->m_aStartDate['wday'] < $iStartWeekDay)
+			{
+				$iGap = $iStartWeekDay - $this->m_aStartDate['wday'];
+				$this->m_aStartDate = getdate($this->m_aStartDate[0] + ($iGap * 24 * 3600));
+//				bab_debug($this->m_aStartDate);
+			}
+			else
+			{
+				$iGap = $this->m_aStartDate['wday'] - $iStartWeekDay;
+				$this->m_aStartDate = getdate($this->m_aStartDate[0] - ($iGap * 24 * 3600));
+//				bab_debug($this->m_aStartDate);
+			}
+		}
+		
+		$this->m_aEndDate = getdate($this->m_aStartDate[0] + ($this->m_iNbDaysToDisplay * 24 * 3600));
+		
+//		$this->m_iNbMonthToDisplay = $this->m_aEndDate[]
+		
+//		bab_debug($this->m_aEndDate);
+	}
+	
+	
+	
+	function getNbDaysInMonth($iMonth, $iYear)
+	{
+		static $aNbDaysInMonth_leap = array ('1' => 31, '2' => 29, '3' => 31, '4' => 30, '5' => 31, 
+			'6' => 30, '7' => 31, '8' => 31, '9' => 30, '10' => 31, '11' => 30, '12' => 31);
+		static $aNbDaysInMonth_nonLeap = array ('1' => 31, '2' => 28, '3' => 31, '4' => 30, '5' => 31, 
+			'6' => 30, '7' => 31, '8' => 31, '9' => 30, '10' => 31, '11' => 30, '12' => 31);
+
+		if($iMonth >= 1 && $iMonth <= 12)
+		{
+			$aNbDaysInMonth =& isLeapYear($iYears) ? 
+				$aNbDaysInMonth_leap : $aNbDaysInMonth_nonLeap;
+				
+			return $aNbDaysInMonth[$iMonth];
+		}
+		return 0;
+	}
+	
+	function isLeapYear($iYears)
+	{
+		return ( ($iYears % 4) == 0 && ($iYears % 100) != 0 || ($iYears % 400) == 0 );
+	}
+}
+
+
+if (!function_exists('is_a'))
+{
+   function is_a($object, $class)
+   {
+       if (!is_object($object))
+           return false;
+       if (strtolower(get_class($object)) === strtolower($class))
+           return true;
+       return is_subclass_of($object, $class);
+   }
+} 
 ?>
