@@ -60,6 +60,28 @@ class bab_handler
 		return $res;
 	}
 
+	function printoutws()
+	{
+		$this->ctx->push_handler($this);
+		$res = array();
+		$skip = false;
+		while($this->getnext($skip))
+		{
+			$tmparr = array();
+			if( !$skip)
+				{
+				foreach($this->ctx->get_variables($this->ctx->get_currentContextname()) as $key => $val )
+					{
+					$tmparr[] = array('name'=> $key, 'value'=> $val);
+					}
+				}
+			$res[] = $tmparr;
+			$skip = false;
+		}
+		$this->ctx->pop_handler();
+		return $res;
+	}
+
 	function getnext()
 	{
 		return false;
@@ -4501,6 +4523,303 @@ class bab_IfUserMemberOfGroups extends bab_handler
 	}
 }
 
+class bab_OvmlArray extends bab_handler
+{
+	var $IdEntries = array();
+	var $index;
+	var $count;
+	var $data;
+
+	function bab_OvmlArray( &$ctx)
+	{
+		$this->count = 0;
+		$this->bab_handler($ctx);
+		$this->name = $ctx->get_value('name');
+		$value = $ctx->get_value('value');
+		if( preg_match_all("/(.*?)\[([^\]]+)\]/", $value, $m2) > 0)
+		{
+			$this->IdEntries = $ctx->get_value($m2[1][0]);
+			for( $t=0; $t < count($m2[2]); $t++)
+				{
+				if( isset($this->IdEntries[$m2[2][$t]]) )
+					{
+					$this->IdEntries = $this->IdEntries[$m2[2][$t]];
+					}
+				else
+					break;
+				}
+		}
+		else
+		{
+			$this->IdEntries = $ctx->get_value($value);
+		}
+		if( is_array($this->IdEntries))
+			{
+			$this->ctx->curctx->push($this->name, $this->IdEntries);
+			$this->count = count($this->IdEntries);
+			}
+		else
+			{
+			$this->count = 0;
+			}
+		$this->ctx->curctx->push('CCount', $this->count);
+
+	}
+
+	function getnext()
+	{
+		if( $this->idx < $this->count )
+		{
+			list( $key, $val) = each ($this->IdEntries );
+			$this->ctx->curctx->push($this->name.'Key', $key);
+			$this->ctx->curctx->push($this->name.'Value', $val);
+			$this->idx++;
+			$this->index = $this->idx;
+			return true;
+		}
+		else
+		{
+			$this->idx=0;
+			return false;
+		}
+	}
+}
+
+
+class bab_OvmlArrayFields extends bab_handler
+{
+	var $IdEntries = array();
+	var $index;
+	var $count;
+	var $data;
+
+	function bab_OvmlArrayFields( &$ctx)
+	{
+		$this->count = 0;
+		$this->bab_handler($ctx);
+		$this->name = $ctx->get_value('name');
+		$value = $ctx->get_value('value');
+		if( preg_match_all("/(.*?)\[([^\]]+)\]/", $value, $m2) > 0)
+		{
+			$this->IdEntries = $ctx->get_value($m2[1][0]);
+			for( $t=0; $t < count($m2[2]); $t++)
+				{
+				if( isset($this->IdEntries[$m2[2][$t]]) )
+					{
+					$this->IdEntries = $this->IdEntries[$m2[2][$t]];
+					}
+				else
+					break;
+				}
+		}
+		else
+		{
+			$this->IdEntries = $ctx->get_value($value);
+
+		}
+
+		if( is_array($this->IdEntries))
+			{
+			$this->ctx->curctx->push($this->name, $this->IdEntries);
+			$this->count = 1; //count($this->IdEntries);
+			}
+		else
+			{
+			$this->count = 0;
+			}
+
+		$this->ctx->curctx->push('CCount', $this->count);
+
+	}
+
+	function getnext()
+	{
+		if( $this->idx < $this->count )
+		{
+			foreach( $this->IdEntries as $key => $val)
+				{
+				$this->ctx->curctx->push($key, $val);
+				}
+			$this->idx++;
+			$this->index = $this->idx;
+			return true;
+		}
+		else
+		{
+			$this->idx=0;
+			return false;
+		}
+	}
+}
+
+
+class bab_OvmlSoap extends bab_handler
+{
+	var $IdEntries = array();
+	var $index;
+	var $count;
+	var $data;
+
+	function bab_OvmlSoap( &$ctx)
+	{
+		$this->count = 1;
+		$this->bab_handler($ctx);
+		$vars = $ctx->get_variables($ctx->get_currentContextname());
+		if( isset($vars['apiserver']) && isset($vars['container']))
+			{
+			$apiserver = $vars['apiserver']; unset($vars['apiserver']);
+			$args = array();
+			$args['container'] = $vars['container']; unset($vars['container']);
+			if( isset($vars['debug']))
+				{
+				$debug = $vars['debug']; 
+				unset($vars['debug']);
+				}
+			else
+				{
+				$debug = false;
+				}
+
+			$args['args'] = array();
+			foreach($vars as $key => $val )
+				{
+				$args['args'][] = array( 'name'=>$key, 'value' => $val);
+				}
+			include_once $GLOBALS['babInstallPath']."utilit/nusoap/nusoap.php";
+			$soapclient = new soapclient($apiserver);
+			$this->IdEntries = $soapclient->call('babSoapOvml', $args, '');
+			$err = $soapclient->getError();
+			if( $debug )
+				{
+				$this->ctx->curctx->push('babSoapDebug', $soapclient->getDebug());
+				}
+			bab_debug($soapclient->getDebug());
+			if( $err )
+				{
+				$this->ctx->curctx->push('babSoapError', $err);
+				$this->ctx->curctx->push('babSoapResponse', $soapclient->response);
+				$this->ctx->curctx->push('babSoapRequest', $soapclient->request);
+				if( $soapclient->fault )
+					{
+					foreach( $this->IdEntries as $key=>$val )
+						{
+						$this->ctx->curctx->push($key, $val);
+						}
+					}
+				}
+
+			$this->count = count($this->IdEntries);
+			}
+	}
+
+	function getnext()
+	{
+		if( $this->idx < $this->count)
+		{
+			$this->ctx->curctx->push('CIndex', $this->idx);
+			for( $i=0; $i < count($this->IdEntries[$this->idx]); $i++ )
+				{
+				$this->ctx->curctx->push($this->IdEntries[$this->idx][$i]['name'], $this->IdEntries[$this->idx][$i]['value']);
+				}
+			$this->idx++;
+			$this->index = $this->idx;
+			return true;
+		}
+		else
+		{
+			$this->idx=0;
+			return false;
+		}
+	}
+}
+
+class bab_Soap extends bab_handler
+{
+	var $IdEntries = array();
+	var $index;
+	var $count;
+	var $data;
+
+	function bab_Soap( &$ctx)
+	{
+		$this->count = 1;
+		$this->bab_handler($ctx);
+		$vars = $ctx->get_variables($ctx->get_currentContextname());
+		if( isset($vars['apiserver']) && isset($vars['apicall']))
+			{
+			$apiserver = $vars['apiserver']; unset($vars['apiserver']);
+			$apicall = $vars['apicall']; unset($vars['apicall']);
+			if( isset($vars['debug']))
+				{
+				$debug = $vars['debug']; 
+				unset($vars['debug']);
+				}
+			else
+				{
+				$debug = false;
+				}
+			if( isset($vars['apinamespace']))
+				{
+				$apinamespace = $vars['apinamespace']; 
+				unset($vars['apinamespace']);
+				}
+			else
+				{
+				$apinamespace = '';
+				}
+
+			$args = array();
+			foreach($vars as $key => $val )
+				{
+				$args[$key] = $val;
+				}
+			include_once $GLOBALS['babInstallPath']."utilit/nusoap/nusoap.php";
+			$soapclient = new soapclient($apiserver);
+			$this->IdEntries = $soapclient->call($apicall, $args, $apinamespace);
+			$err = $soapclient->getError();
+			if( $debug )
+				{
+				$this->ctx->curctx->push('babSoapDebug', $soapclient->getDebug());
+				}
+			bab_debug($soapclient->getDebug());
+
+			if( $err )
+				{
+				$this->ctx->curctx->push('babSoapError', $err);
+				$this->ctx->curctx->push('babSoapResponse', $soapclient->response);
+				$this->ctx->curctx->push('babSoapRequest', $soapclient->request);
+				if( $soapclient->fault )
+					{
+					foreach( $this->IdEntries as $key=>$val )
+						{
+						$this->ctx->curctx->push($key, $val);
+						}
+					}
+				}
+			else
+				{
+				$this->ctx->curctx->push('SoapResult', $this->IdEntries);
+				//print_r($this->IdEntries);
+				}
+			//$this->count = count($this->IdEntries);
+			}
+	}
+
+	function getnext()
+	{
+		if( $this->idx < $this->count)
+		{
+			$this->idx++;
+			return true;
+		}
+		else
+		{
+			$this->idx=0;
+			return false;
+		}
+	}
+}
+
 
 class bab_context
 {
@@ -4628,6 +4947,11 @@ function get_variables($contextname)
 	return array();
 	}
 
+function get_currentContextname()
+	{
+	return $this->curctx->name;
+	}
+
 function push_handler(&$handler)
 	{
 	$this->handlers[] = &$handler;
@@ -4654,7 +4978,55 @@ function get_handler($name)
 	return false;
 	}
 
-function handle_tag( $handler, $txt, $txt2 )
+function cast($str)
+	{
+	if( !empty($str) && $str{0} == '(' )
+		{
+		if(preg_match('/\(\s*(.*?)\s*\)(.*)/',$str, $m))
+			{
+			switch($m[1])
+				{
+				case 'bool':
+				case 'boolean':
+					return (bool)$m[2];
+					break;
+				case 'integer':
+				case 'int':
+					return (int)$m[2];
+					break;
+				case 'float':
+				case 'double':
+				case 'real':
+					return (float)$m[2];
+					break;
+				case 'string':
+					return (string)$m[2];
+					break;
+				case 'var':
+				case 'variable':
+					return $this->get_value($m[2]);
+					break;
+				}
+			}
+		}
+	return $str;
+	}
+
+function getArgs($str)
+	{
+	$args = array();
+	
+	if(preg_match_all("/(\w+)\s*=\s*([\"'])(.*?)\\2/", $this->vars_replace($str), $mm))
+		{
+		for( $j = 0; $j< count($mm[1]); $j++)
+			{
+			$args[$mm[1][$j]] = $this->cast($mm[3][$j]);
+			}
+		}
+	return $args;
+	}
+
+function handle_tag( $handler, $txt, $args, $fprint = 'printout' )
 	{
 	$out = '';
 	$handler = "bab_".$handler;
@@ -4670,20 +5042,19 @@ function handle_tag( $handler, $txt, $txt2 )
 			}
 		}
 
+
 	if( class_exists($handler))
 		{
 		$ctx = new bab_context($handler);
 		$ctx->setContent($txt);
 		$this->push_ctx($ctx);
-		if(preg_match_all("/(\w+)\s*=\s*([\"'])(.*?)\\2/", $txt2, $mm))
-			{
-			for( $j = 0; $j< count($mm[1]); $j++)
+
+		foreach( $args as $key => $val )
 				{
-				$this->curctx->push($mm[1][$j], $mm[3][$j]);
-				}
+			$this->curctx->push($key, $val);
 			}
 		$cls = new $handler($this);
-		$out = $cls->printout($txt);
+		$out = $cls->$fprint($txt);
 		$this->pop_ctx();
 		return $out;
 		}
@@ -4834,7 +5205,27 @@ function vars_replace($txt)
 					$txt = preg_replace("/".preg_quote($m[0][$i], "/")."/", preg_replace("/\\$[0-9]/", "\\\\$0", $val), $txt);
 					break;
 				case BAB_TAG_VARIABLE:
+					if( preg_match_all("/(.*?)\[([^\]]+)\]/", $m[2][$i], $m2) > 0)
+					{
+						$val = $this->get_value($m2[1][0]);
+						for( $t=0; $t < count($m2[2]); $t++)
+							{
+							if( isset($val[$m2[2][$t]]) )
+								{
+								$val = $val[$m2[2][$t]];
+								}
+							else
+								{
+								$val = '';
+								break;
+								}
+							}
+					}
+					else
+					{
 					$val = $this->get_value($m[2][$i]);
+					}
+
 					$args = $this->vars_replace(trim($m[3][$i]));
 					if( $val !== false )
 						{
@@ -4863,7 +5254,7 @@ function handle_text($txt)
 		for( $i = 0; $i< count($m[3]); $i++)
 			{
 			$out .= $this->handle_text($m[1][$i]);
-			$out .= $this->handle_tag($m[2][$i], $m[5][$i], $this->vars_replace($m[3][$i]));
+			$out .= $this->handle_tag($m[2][$i], $m[5][$i], $this->getArgs($m[3][$i]));
 			$out .= $this->handle_text($m[6][$i]);
 			}
 		return $out;
@@ -4940,6 +5331,7 @@ function bab_WebStat($args)
 			}
 		}
 	}
+
 
 function bab_SetCookie($args)
 	{
@@ -5029,7 +5421,9 @@ function bab_PutVar($args)
 						case 'babSlogan': $GLOBALS['babSlogan'] = $value; break;
 						case 'babTitle': $babBody->title = $value; break;
 						case 'babError': $babBody->msgerror = $value; break;
-						default: break;
+						default: 
+							$value = $this->cast($value);
+							break;
 					}
 					
 					break;
@@ -5094,10 +5488,92 @@ function bab_IfNotIsSet($args)
 
 		if( $this->gctx->get($name) === false )
 			{
-			$this->gctx->push($name, $value);
+			$this->gctx->push($name, $this->cast($value));
 			}
 		}
 	}
+
+
+/* save a array to global space */
+function bab_PutArray($args)
+	{
+	$name = "";
+	$arr = array();
+	if($this->match_args($args, $mm))
+		{
+		for( $j = 0; $j< count($mm[1]); $j++)
+			{
+			switch(strtolower(trim($mm[1][$j])))
+				{
+				case 'name':
+					$name = trim($mm[3][$j]);
+					break;
+				default:
+					$arr[trim($mm[1][$j])] = $this->cast(trim($mm[3][$j]));
+					break;
+			}
+		}
+	}
+
+	$this->gctx->push($name, $arr);
+	}
+
+
+/**
+ * Experimental ( can be changed in futur )
+ * Returns an HTTP Request javascript call 
+ * 
+ * @access  public 
+ * @return  string	javascript call to bab_ajaxRequest() 
+ * @param   url	http request
+ * @param   output	elem:property like mydiv:innerHTML where to put ajax response
+ * @param   action	GET|POST default GET
+ * @param   indicator	HTML element to show when request is pending
+*/
+
+function bab_Ajax($args)
+{
+	global $babBody;
+
+	$params = array();
+	$url = '';
+	$output = '';
+	$action = 'GET';
+	$indicator = '';
+
+
+
+	if($this->match_args($args, $mm))
+		{
+		$babBody->addJavascriptFile($GLOBALS['babScriptPath']."prototype/prototype.js");
+		$babBody->addJavascriptFile($GLOBALS['babScriptPath']."babajax.js");
+
+		for( $j = 0; $j< count($mm[1]); $j++)
+			{
+			$p = trim($mm[1][$j]);
+			switch(strtolower($p))
+				{
+				case 'url':
+					$url = $mm[3][$j];
+					break;
+				case 'output':
+					$output = $mm[3][$j];
+					break;
+				case 'action':
+					$action = $mm[3][$j];
+					break;
+				case 'indicator':
+					$indicator = $mm[3][$j];
+					break;
+				default:
+					$params[] = $p.'='.$mm[3][$j];
+					break;
+				}
+			}					
+		return "bab_ajaxRequest('".$url."','".$action."','".$output."','".$indicator."','".implode('&',$params)."')";
+		}
+	return '';
+}
 
 /* Arithmetic operators */
 function bab_AOAddition($args)
@@ -5141,10 +5617,10 @@ function bab_ArithmeticOperator($args, $ope)
 			switch(strtolower(trim($mm[1][$j])))
 				{
 				case 'expr1':
-					$expr1 = $mm[3][$j];
+					$expr1 = $this->cast($mm[3][$j]);
 					break;
 				case 'expr2':
-					$expr2 = $mm[3][$j];
+					$expr2 = $this->cast($mm[3][$j]);
 					break;
 				case 'saveas':
 					$saveas = true;
@@ -5209,7 +5685,7 @@ function bab_Header($args)
 
 function bab_Recurse($args) {
 	$handler = substr($this->curctx->getname(), 4);
-	return $this->handle_tag($handler, $this->curctx->getcontent(), $this->vars_replace($args));	
+	return $this->handle_tag($handler, $this->curctx->getcontent(), $this->getArgs($args));	
 }
 
 

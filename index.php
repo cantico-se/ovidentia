@@ -28,7 +28,13 @@ function bab_unset(&$arr)
 	unset($GLOBALS['babTmp']);
 }
 
-if(!session_id())
+if( isset($_REQUEST['WSSESSIONID']))
+{
+		session_name(sprintf("OV%u", crc32($babUrl)));
+		session_id($_GET['WSSESSIONID']);
+		session_start();
+}
+elseif(!session_id())
 	{
 		session_name(sprintf("OV%u", crc32($babUrl)));
 		session_start();
@@ -80,19 +86,21 @@ function bab_cleanGpc() {
 		return;
 	$firstcall = 0;
 	function bab_slashes(&$val) {
-		if (get_magic_quotes_gpc()) {
 			if (is_array($val)) {
 				array_walk($val,'bab_slashes');
 				}
 			else
+				{
 				$val = stripslashes($val);
-		}
+				}
 	}
 
-	bab_slashes($_GET);
-	bab_slashes($_POST);
-	bab_slashes($_COOKIES);
-	bab_slashes($_REQUEST);
+	if (get_magic_quotes_gpc())	{
+		bab_slashes($_GET);
+		bab_slashes($_POST);
+		bab_slashes($_COOKIES);
+		bab_slashes($_REQUEST);
+	}
 	}
 
 bab_cleanGpc();
@@ -1006,6 +1014,10 @@ switch($tg)
 		break;
 	case "oml":
 		$incl = "oml";
+		break;
+	case "omlsoap":
+		include $babInstallPath."omlsoap.php";
+		exit;
 		break;
 	case "accden":
 		$babBody->msgerror = bab_translate("Access denied");
