@@ -408,6 +408,8 @@ function EditorOnInsertFiles(files)
 			insertedItems.push('$FOLDER(' + id + ',' + path.slice(1).join('/') + ',' + file.content + ')');
 		}
 	}
-	editor.insertHTML(insertedItems.join(','));
+	if (insertedItems.length > 0) {
+		editor.insertHTML(insertedItems.join(','));
+	}
 }
 
