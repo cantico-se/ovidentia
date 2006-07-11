@@ -1592,6 +1592,7 @@ function bab_getOwnedTaskQuery()
 			'IFNULL(p.name, \'\') sProjectName, ' .
 			't.id iIdTask, ' .
 			't.taskNumber sTaskNumber, ' .
+			't.class iClass, ' .
 			't.startDate startDate, ' .
 			't.endDate endDate ' .
 		'FROM ' . 
@@ -1611,7 +1612,40 @@ function bab_getOwnedTaskQuery()
 	return $query;
 }
 
-//function bab_selectTask
+function bab_selectOwnedTaskQueryByDate($sStartDate, $sEndDate)
+{
+	$query = 
+		'SELECT ' . 
+			'IFNULL(ps.id, 0) iIdProjectSpace, ' .
+			'IFNULL(ps.name, \'\') sProjectSpaceName, ' .
+			'IFNULL(p.id, 0) iIdProject, ' .
+			'IFNULL(p.name, \'\') sProjectName, ' .
+			't.id iIdTask, ' .
+			't.taskNumber sTaskNumber, ' .
+			't.class iClass, ' .
+			't.startDate startDate, ' .
+			't.endDate endDate ' .
+		'FROM ' . 
+			BAB_TSKMGR_TASKS_INFO_TBL . ' ti, ' .
+			BAB_TSKMGR_TASKS_TBL . ' t ' .
+		'LEFT JOIN ' . 
+			BAB_TSKMGR_PROJECTS_TBL . ' p ON p.id = t.idProject ' .
+		'LEFT JOIN ' . 
+			BAB_TSKMGR_PROJECTS_SPACES_TBL . ' ps ON ps.id = p.idProjectSpace ' .
+		'WHERE ' . 
+			'ti.idOwner = \'' . $GLOBALS['BAB_SESS_USERID'] . '\' AND ' .
+			't.id = ti.idTask AND ' .
+			't.id = ti.idTask AND ' .
+			't.startDate >= \'' . $sStartDate . '\' AND ' .
+			't.startDate <= \'' . $sEndDate . '\' ' .
+		'GROUP BY ' .
+			'sProjectSpaceName ASC, sProjectName ASC, sTaskNumber ASC';
+
+//	bab_debug($query);
+//	echo $query . '<br />';
+	global $babDB;
+	return $babDB->db_query($query);
+}
 
 function bab_createTaskInfo($iIdTask, $iIdOwner, $iIsPersonnal)
 {

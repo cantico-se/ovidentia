@@ -1052,45 +1052,38 @@ function submit_form()
 	<body>
 	
 	<!--#in getNextMonth -->
-	<!--#if m_bIsAltBg -->
-		<div style="position:absolute; background-color:#{ m_sBgColor1 }; width:{ m_iMonthSize }px; top:{ m_monthPosY }px; left:{ m_monthPosX }px; height:{ m_iDayHeight }px; font-family:arial, sans-serif; font-size: 10px">
-			<div style="overflow:hidden; height:{ m_iDayHeight }px" title="{ m_sMonth }">{ m_sMonth }</div>
+		<div style="position:absolute; background-color:#{ m_sMonthColor }; width:{ m_iMonthWidth }px; top:{ m_iMonthPosY }px; left:{ m_iMonthPosX }px; height:{ m_iHeight }px; font-family:arial, sans-serif; font-size: 10px">
+			<div style="overflow:hidden; height:{ m_iHeight }px" title="{ m_sMonth }">{ m_sMonth }</div>
 		</div>
-	<!--#else m_bIsAltBg -->
-		<div style="position:absolute; background-color:#{ m_sBgColor2 }; width:{ m_iMonthSize }px; top:{ m_monthPosY }px; left:{ m_monthPosX }px; height:{ m_iDayHeight }px; font-family:arial, sans-serif; font-size: 10px">
-			<div style="overflow:hidden; height:{ m_iDayHeight }px" title="{ m_sMonth }">{ m_sMonth }</div>
-		</div>
-	<!--#endif m_bIsAltBg -->
 	<!--#endin getNextMonth -->
 
 	<!--#in getNextWeekNumber -->
-	<!--#if m_bIsAltBg -->
-		<div style="position:absolute; background-color:#{ m_sBgColor1 }; width:{ m_iWeekSize }px; top:{ m_iWeekPosY }px; left:{ m_iWeekPosX }px; height:{ m_iDayHeight }px; font-family:arial, sans-serif; font-size: 10px">
-			<div align="center" style="overflow:hidden; height:{ m_iDayHeight }px" title="{ m_sWeek }">{ m_sWeek }</div>
+		<div style="position:absolute; background-color:#{ m_sWeekColor }; width:{ m_iWeekWidth }px; top:{ m_iWeekPosY }px; left:{ m_iWeekPosX }px; height:{ m_iHeight }px; font-family:arial, sans-serif; font-size: 10px">
+			<div align="center" style="overflow:hidden; height:{ m_iHeight }px" title="{ m_sWeek }">{ m_sWeek }</div>
 		</div>
-	<!--#else m_bIsAltBg -->
-		<div style="position:absolute; background-color:#{ m_sBgColor2 }; width:{ m_iWeekSize }px; top:{ m_iWeekPosY }px; left:{ m_iWeekPosX }px; height:{ m_iDayHeight }px; font-family:arial, sans-serif; font-size: 10px">
-			<div align="center" style="overflow:hidden; height:{ m_iDayHeight }px" title="{ m_sWeek }">{ m_sWeek }</div>
-		</div>
-	<!--#endif m_bIsAltBg -->
 	<!--#endin getNextWeekNumber -->
 	
-	
 	<!--#in getNexDay -->
-	<!--#if m_bIsAltBg -->
-		<div style="position:absolute; background-color:#{ m_sBgColor1 }; top:{ m_iDayPosY }px; left:{ m_iDayPosX }px; height:{ m_iDayHeight }px; width:{ m_iDayWidth }px; font-family:arial, sans-serif; font-size: 10px">
+		<div style="position:absolute; background-color:#{ m_sDayColor }; top:{ m_iDayPosY }px; left:{ m_iDayPosX }px; height:{ m_iHeight }px; width:{ m_iWidth }px; font-family:arial, sans serif; font-size: 10px">
 		{ m_sDay }
 		</div>
-	<!--#else m_bIsAltBg -->
-		<div style="position:absolute; background-color:#{ m_sBgColor2 }; top:{ m_iDayPosY }px; left:{ m_iDayPosX }px; height:{ m_iDayHeight }px; width:{ m_iDayWidth }px; font-family:arial, sans serif; font-size: 10px">
-		{ m_sDay }
-		</div>
-	<!--#endif m_bIsAltBg -->
 	<!--#endin getNexDay -->
-
 	
+<!--#in getNone -->						
+		<div style="position:absolute; background-color:#{ m_sTaskColor }; top:{ m_iTaskPosY }px; left:{ m_iTaskPosX }px; height:{ m_iHeight }px; width:{ m_iTaskWidth }px; font-family:arial, sans serif; font-size: 10px">
+		{ m_sTask }
+		</div>
+<!--#endin getNone -->
 	
+	<!--#in getNextTask -->
+		<div style="position:absolute; background-color:#{ m_sTaskColor }; top:{ m_iTaskPosY }px; left:{ m_iTaskPosX }px; height:{ m_iHeight }px; width:{ m_iTaskWidth }px; font-family:arial, sans serif; font-size: 10px">
+		{ m_sTask }
+		</div>
+		<div style="position:absolute; background-color:#{ m_sTaskColor }; top:{ m_iTaskPosY }px; left:{ _iPosX }px; height:{ m_iHeight }px; width:{ _iWidth }px; font-family:arial, sans serif; font-size: 10px">
+		</div>
+	<!--#endin getNextTask -->
 	
 	</body>
 </html>
 <!--#end gantt -->
+	
