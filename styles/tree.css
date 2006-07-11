@@ -213,7 +213,14 @@
 /*	font-size: 105%; */
 }
 
-.bab_tree .directory {
+.bab_tree .foldercategory {
+	font-weight: bold;
+	color: grey;
+	padding-bottom: 2px;
+	border-bottom: 1px solid grey;
+}
+
+.bab_tree .folder {
 	font-weight: bold;
 }
 
