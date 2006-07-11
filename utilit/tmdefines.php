@@ -65,6 +65,7 @@ define('BAB_TM_IDX_DISPLAY_STOP_TASK_FORM', 'displayStopTaskForm');
 define('BAB_TM_IDX_DISPLAY_NOTICE_EVENT_FORM', 'displayNoticeEventForm');
 
 define('BAB_TM_IDX_DISPLAY_PERSONNAL_TASK_RIGHT', 'displayPersonnalTaskRight');
+define('BAB_TM_IDX_DISPLAY_GANTT_CHART', 'displayGanttChart');
 
 
 

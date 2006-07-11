@@ -1296,6 +1296,15 @@ function displayPersonnalTaskConfigurationForm()
 	}
 }
 
+function displayGanttChart()
+{
+	$sStartDate = '2006-6-14';
+	$oGantt = new BAB_TM_Gantt($sStartDate);
+	
+	die(bab_printTemplate($oGantt, 'tmUser.html', "gantt"));
+}
+
+
 //POST
 
 
@@ -1590,7 +1599,7 @@ function deleteTask()
 	if((BAB_TM_PROJECT_MANAGER == $iUserProfil || BAB_TM_PERSONNAL_TASK_OWNER == $iUserProfil) && 
 		isTaskDeletable($iIdTask, $iUserProfil, $sTaskNumber))
 	{
-		bab_startDependingTask($iIdProjectSpace, $iIdProject, $iIdTask, BAB_TM_END_TO_START);
+//		bab_startDependingTask($iIdProjectSpace, $iIdProject, $iIdTask, BAB_TM_END_TO_START);
 		
 		{
 			$sProjectSpaceName = '???';
@@ -1929,6 +1938,10 @@ switch($idx)
 		
 	case BAB_TM_IDX_DISPLAY_PERSONNAL_TASK_CONFIGURATION_FORM:
 		displayPersonnalTaskConfigurationForm();
+		break;
+		
+	case BAB_TM_IDX_DISPLAY_GANTT_CHART:
+		displayGanttChart();
 		break;
 }
 $babBody->setCurrentItemMenu($idx);

@@ -1044,3 +1044,53 @@ function submit_form()
 	</table>
 </form>
 <!--#end PersonnalTaskConfiguration -->
+
+<!--#begin gantt -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+	<head></head>
+	<body>
+	
+	<!--#in getNextMonth -->
+	<!--#if m_bIsAltBg -->
+		<div style="position:absolute; background-color:#{ m_sBgColor1 }; width:{ m_iMonthSize }px; top:{ m_monthPosY }px; left:{ m_monthPosX }px; height:{ m_iDayHeight }px; font-family:arial, sans-serif; font-size: 10px">
+			<div style="overflow:hidden; height:{ m_iDayHeight }px" title="{ m_sMonth }">{ m_sMonth }</div>
+		</div>
+	<!--#else m_bIsAltBg -->
+		<div style="position:absolute; background-color:#{ m_sBgColor2 }; width:{ m_iMonthSize }px; top:{ m_monthPosY }px; left:{ m_monthPosX }px; height:{ m_iDayHeight }px; font-family:arial, sans-serif; font-size: 10px">
+			<div style="overflow:hidden; height:{ m_iDayHeight }px" title="{ m_sMonth }">{ m_sMonth }</div>
+		</div>
+	<!--#endif m_bIsAltBg -->
+	<!--#endin getNextMonth -->
+
+	<!--#in getNextWeekNumber -->
+	<!--#if m_bIsAltBg -->
+		<div style="position:absolute; background-color:#{ m_sBgColor1 }; width:{ m_iWeekSize }px; top:{ m_iWeekPosY }px; left:{ m_iWeekPosX }px; height:{ m_iDayHeight }px; font-family:arial, sans-serif; font-size: 10px">
+			<div align="center" style="overflow:hidden; height:{ m_iDayHeight }px" title="{ m_sWeek }">{ m_sWeek }</div>
+		</div>
+	<!--#else m_bIsAltBg -->
+		<div style="position:absolute; background-color:#{ m_sBgColor2 }; width:{ m_iWeekSize }px; top:{ m_iWeekPosY }px; left:{ m_iWeekPosX }px; height:{ m_iDayHeight }px; font-family:arial, sans-serif; font-size: 10px">
+			<div align="center" style="overflow:hidden; height:{ m_iDayHeight }px" title="{ m_sWeek }">{ m_sWeek }</div>
+		</div>
+	<!--#endif m_bIsAltBg -->
+	<!--#endin getNextWeekNumber -->
+	
+	
+	<!--#in getNexDay -->
+	<!--#if m_bIsAltBg -->
+		<div style="position:absolute; background-color:#{ m_sBgColor1 }; top:{ m_iDayPosY }px; left:{ m_iDayPosX }px; height:{ m_iDayHeight }px; width:{ m_iDayWidth }px; font-family:arial, sans-serif; font-size: 10px">
+		{ m_sDay }
+		</div>
+	<!--#else m_bIsAltBg -->
+		<div style="position:absolute; background-color:#{ m_sBgColor2 }; top:{ m_iDayPosY }px; left:{ m_iDayPosX }px; height:{ m_iDayHeight }px; width:{ m_iDayWidth }px; font-family:arial, sans serif; font-size: 10px">
+		{ m_sDay }
+		</div>
+	<!--#endif m_bIsAltBg -->
+	<!--#endin getNexDay -->
+
+	
+	
+	
+	</body>
+</html>
+<!--#end gantt -->

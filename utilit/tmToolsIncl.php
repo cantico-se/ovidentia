@@ -619,15 +619,41 @@ bab_debug('8 heures de train');
 
 class BAB_TM_Gantt
 {
-	var $m_iDaySize = '24px';
-	var $m_iNbDaysToDisplay = 28;
+	var $m_iDayWidth = '16';
+	var $m_iDayHeight = '19';
+	var $m_iDayPosX = 0;
+	var $m_iDayPosY = 0;
+	var $m_sDay = '';
+
+	
+	var $m_iWeekPosX = 0;
+	var $m_iWeekPosY = 0;
+	var $m_iWeekSize = 0;
+	var $m_sWeek = '';
+	var $m_iWeekNumber = 0;
+	var $m_iStartWeekNumber = 0;
+	var $m_iEndWeekNumber = 0;
+	
+	var $m_iTotalDaysToDisplay = 49;
 	var $m_iDisplayedDays = 0;
 	
-//	var $m_iNbMonthToDisplay = 0;
-//	var $m_iDisplayedMonth = 0;
-	
+	var $m_iCurrMonth = -1;
+	var $m_monthPosX = 0;
+	var $m_monthPosY = 0;
+
 	var $m_aStartDate = array();
 	var $m_aEndDate = array();
+	
+	var $m_iStartWeekDay = -1;
+	var $m_iMonthDay = -1;
+	var $m_iCurrDay = -1;
+	
+	
+	var $m_bIsAltBg = false;
+	var $m_sBgColor1 = 'FCC';
+	var $m_sBgColor2 = 'CCF';
+	
+	var $m_sMonth = '';
 	
 	function BAB_TM_Gantt($sStartDate, $iStartWeekDay = 3)
 	{
@@ -636,6 +662,7 @@ class BAB_TM_Gantt
 	
 	function setDates($sStartDate, $iStartWeekDay)
 	{
+		$this->m_iStartWeekDay = $iStartWeekDay;
 		$this->m_aStartDate = getdate(strtotime($sStartDate));
 		
 		//Pour démarrer à un jour spécifique de la semaine
@@ -646,21 +673,20 @@ class BAB_TM_Gantt
 			{
 				$iGap = $iStartWeekDay - $this->m_aStartDate['wday'];
 				$this->m_aStartDate = getdate($this->m_aStartDate[0] + ($iGap * 24 * 3600));
-//				bab_debug($this->m_aStartDate);
 			}
 			else
 			{
 				$iGap = $this->m_aStartDate['wday'] - $iStartWeekDay;
 				$this->m_aStartDate = getdate($this->m_aStartDate[0] - ($iGap * 24 * 3600));
-//				bab_debug($this->m_aStartDate);
 			}
 		}
+		$this->m_aEndDate	= getdate($this->m_aStartDate[0] + ($this->m_iTotalDaysToDisplay * 24 * 3600));
+		$this->m_iCurrMonth	= $this->m_aStartDate['mon'];
+		$this->m_iMonthDay	= $this->m_aStartDate['mday'] - 1; //The month day is 1 based
+		$this->m_iCurrDay	= $this->m_aStartDate['wday'];
 		
-		$this->m_aEndDate = getdate($this->m_aStartDate[0] + ($this->m_iNbDaysToDisplay * 24 * 3600));
-		
-//		$this->m_iNbMonthToDisplay = $this->m_aEndDate[]
-		
-//		bab_debug($this->m_aEndDate);
+		$this->m_iWeekNumber = $this->m_iStartWeekNumber = date('W', $this->m_aStartDate[0]);
+		$this->m_iEndWeekNumber = date('W', $this->m_aEndDate[0]);
 	}
 	
 	
@@ -674,8 +700,7 @@ class BAB_TM_Gantt
 
 		if($iMonth >= 1 && $iMonth <= 12)
 		{
-			$aNbDaysInMonth =& isLeapYear($iYears) ? 
-				$aNbDaysInMonth_leap : $aNbDaysInMonth_nonLeap;
+			$aNbDaysInMonth = ($this->isLeapYear($iYear)) ? $aNbDaysInMonth_leap : $aNbDaysInMonth_nonLeap;
 				
 			return $aNbDaysInMonth[$iMonth];
 		}
@@ -685,6 +710,133 @@ class BAB_TM_Gantt
 	function isLeapYear($iYears)
 	{
 		return ( ($iYears % 4) == 0 && ($iYears % 100) != 0 || ($iYears % 400) == 0 );
+	}
+	
+	
+	//
+	function getNextMonth()
+	{
+		if($this->m_iTotalDaysToDisplay > 0)
+//		if($this->m_iCurrMonth <= $this->m_aEndDate['mon'])
+		{
+			$this->m_sMonth = $this->getMonth($this->m_iCurrMonth);
+		
+			$this->m_monthPosY = 0;
+			$this->m_monthPosX = $this->m_iDisplayedDays * $this->m_iDayWidth;
+
+			$iNbDaysInMonth = $this->getNbDaysInMonth($this->m_iCurrMonth, $this->m_aStartDate['year']);
+			$iNbDaysInMonth = $iNbDaysInMonth - $this->m_iMonthDay;
+			
+			if($iNbDaysInMonth < $this->m_iTotalDaysToDisplay)
+			{
+				$this->m_iTotalDaysToDisplay -= $iNbDaysInMonth;
+			}
+			else if($iNbDaysInMonth >= $this->m_iTotalDaysToDisplay)
+			{
+				$iNbDaysInMonth = $this->m_iTotalDaysToDisplay;
+				$this->m_iTotalDaysToDisplay = 0;
+			}
+			
+			$this->m_iDisplayedDays += $iNbDaysInMonth;
+			$this->m_iMonthSize = $iNbDaysInMonth * $this->m_iDayWidth;
+			
+			$this->m_iMonthDay = 0;
+			$this->m_iCurrMonth++;
+			
+			$this->m_bIsAltBg = !$this->m_bIsAltBg;
+			return true;
+		}
+		
+		$this->m_iTotalDaysToDisplay = $this->m_iDisplayedDays;
+		return false;
+	}
+	
+	function getMonth($iMonth)
+	{
+		static $aMonths = null;
+
+		if(is_null($aMonths))
+		{
+			$aMonths = array ('1' => bab_translate("January"), '2' => bab_translate("February"), 
+				'3' => bab_translate("March"), '4' => bab_translate("April"), '5' => bab_translate("May"), 
+				'6' => bab_translate("June"), '7' => bab_translate("July"), '8' => bab_translate("August"),
+				'9' => bab_translate("September"), '10' => bab_translate("October"), '11' => bab_translate("November"), 
+				'12' => bab_translate("December"));
+		}
+			
+		if($iMonth >= 1 && $iMonth <= 12)
+		{
+			return $aMonths[$iMonth];
+		}
+		return '';
+	}
+
+	function getDay($iDay)
+	{
+		static $aDays = array ('0' => 'D', '1' => 'L', '2' => 'M', '3' => 'M', '4' => 'J', 
+				'5' => 'V', '6' => 'S');
+			
+		if($iDay >= 0 && $iDay <= 6)
+		{
+			return $aDays[$iDay];
+		}
+		return $iDay;
+	}
+	
+	function getNexDay()
+	{
+		static $iDisplayedDays = 0;
+		
+		if($iDisplayedDays < $this->m_iTotalDaysToDisplay)
+		{
+			$this->m_sDay		= $this->getDay($this->m_iCurrDay);
+			$this->m_iDayPosY	= $this->m_iDayHeight * 2;
+			$this->m_iDayPosX	= $iDisplayedDays * $this->m_iDayWidth;
+			$this->m_iCurrDay	= ($this->m_iCurrDay + 1) % 7;
+			$this->m_bIsAltBg	= !$this->m_bIsAltBg;
+			$iDisplayedDays++;
+			return true;
+		}
+		return false;
+	}
+	
+	function getNextWeekNumber()
+	{
+		static $iProcessedDays = 0;
+		if($this->m_iTotalDaysToDisplay > 0)
+		{
+			$iNbDays = 7;
+		
+			if($this->m_iWeekNumber == $this->m_iStartWeekNumber && 1 != $this->m_iStartWeekDay)
+			{
+				//7 == NB days in a week
+				//+1 the weekday is zero based
+				$iNbDays = 7 - $this->m_iStartWeekDay +1;
+			}
+			
+			if($iNbDays < $this->m_iTotalDaysToDisplay)
+			{
+				$this->m_iTotalDaysToDisplay -= $iNbDays;
+			}
+			else if($iNbDays >= $this->m_iTotalDaysToDisplay)
+			{
+				$iNbDays = $this->m_iTotalDaysToDisplay;
+				$this->m_iTotalDaysToDisplay = 0;
+			}
+
+			$this->m_iWeekPosY = $this->m_iDayHeight;
+			$this->m_iWeekPosX = $iProcessedDays * $this->m_iDayWidth;
+			$this->m_iWeekSize = $iNbDays * $this->m_iDayWidth; 
+			$this->m_sWeek = sprintf('%s %02s', bab_translate("Week"), $this->m_iWeekNumber);
+			//$this->m_sWeek = sprintf('%02s', $this->m_iWeekNumber);
+			$iProcessedDays += $iNbDays;
+			
+			$this->m_iWeekNumber++;
+			$this->m_bIsAltBg	= !$this->m_bIsAltBg;
+			return true;
+		}
+		$this->m_iTotalDaysToDisplay = $iProcessedDays;
+		return false;
 	}
 }
 

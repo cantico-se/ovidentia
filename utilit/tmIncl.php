@@ -1611,6 +1611,8 @@ function bab_getOwnedTaskQuery()
 	return $query;
 }
 
+//function bab_selectTask
+
 function bab_createTaskInfo($iIdTask, $iIdOwner, $iIsPersonnal)
 {
 	$query = 
