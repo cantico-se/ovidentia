@@ -286,6 +286,8 @@ class BAB_MultiPageBase
 	var $aActions = array();
 	var $aActionItems = array();
 	
+	var $m_iDummy = 0;
+	
 	function BAB_MultiPageBase()
 	{
 		$this->sPrevPageText = bab_translate("Prev");
@@ -621,18 +623,32 @@ class BAB_TM_Gantt
 {
 	var $m_iWidth = '16';
 	var $m_iHeight = '19';
+	var $m_iBorderLeft = 0;
+	var $m_iBorderRight = 0;
+	var $m_iBorderTop = 0;
+	var $m_iBorderBottom = 0;
 
+	var $m_iUpperLeftPosX = 0;
+	var $m_iUpperLeftPosY = 0;
+	var $m_iUpperHeight = 0;
+	var $m_iUpperWidth = 0;
+	var $m_sUpperLeftColor = 'BD6363';
+	
 	var $m_iMonthPosX = 0;
 	var $m_iMonthPosY = 0;
 	var $m_iMonthWidth = 0;
-	var $m_sMonthColor = '';
+	var $m_iMonthHeigth = 0;
+	var $m_sBgMonthColor = 'BD6363';
+	var $m_sMonthColor = 'FFF';
 	var $m_sMonth = '';
 	var $m_iCurrMonth = -1;
 	
 	var $m_iWeekPosX = 0;
 	var $m_iWeekPosY = 0;
+	var $m_iWeekHeigth = 0;
 	var $m_iWeekWidth = 0;
-	var $m_sWeekColor = '';
+	var $m_sBgWeekColor = 'BD6363';
+	var $m_sWeekColor = 'FFF';
 	var $m_sWeek = '';
 	var $m_iWeekNumber = 0;
 	var $m_iStartWeekNumber = 0;
@@ -640,7 +656,10 @@ class BAB_TM_Gantt
 	
 	var $m_iDayPosX = 0;
 	var $m_iDayPosY = 0;
-	var $m_sDayColor = '';
+	var $m_iDayHeigth = 0;
+	var $m_iDayWidth = 0;
+	var $m_sBgDayColor = 'BD6363';
+	var $m_sDayColor = 'FFF';
 	var $m_sDay = '';
 	var $m_iStartWeekDay = -1;
 	var $m_iMonthDay = -1;
@@ -648,9 +667,18 @@ class BAB_TM_Gantt
 	var $m_iTotalDaysToDisplay = 49;
 	var $m_iDisplayedDays = 0;
 
+	var $m_iTaskWidth = 200;
+
+	var $m_iTaskTitlePosX = 0;
+	var $m_iTaskTitlePosY = 0;
+	var $m_iTaskTitleHeigth = 0;
+	var $m_iTaskTitleWidth = 0;
+	var $m_sTaskTitleBgColor = '787878';
+	var $m_sTaskTitleColor = 'FFF';
+	var $m_sTaskTitle = '';
+	
 	var $m_iTaskPosX = 0;
 	var $m_iTaskPosY = 0;
-	var $m_iTaskWidth = 200;
 	var $m_sTaskColor = 'FCC';
 	var $m_sTask = '';
 	
@@ -661,6 +689,21 @@ class BAB_TM_Gantt
 	var $m_sBgColor2 = 'CCF';
 	
 	var $m_result = false;
+	var $m_iNbResult = 0;
+	
+	var $m_iTimeStamp;
+	
+	var $m_iColumnPosX = 0;
+	var $m_iColumnPosY = 0;
+	var $m_iColumnHeigth = 0;
+	var $m_iColumnWidth = 0;
+	var $m_sColumnBgColor = 'FFF';
+	
+	var $m_iRowPosX = 0;
+	var $m_iRowPosY = 0;
+	var $m_iRowHeigth = 0;
+	var $m_iRowWidth = 0;
+	var $m_sRowBgColor = '000';
 	
 	function BAB_TM_Gantt($sStartDate, $iStartWeekDay = 3)
 	{
@@ -669,8 +712,16 @@ class BAB_TM_Gantt
 		
 		$this->setDates($sStartDate, $iStartWeekDay);
 		
+		$this->m_sDate = strtotime($sStartDate);
+
 		$this->m_result = bab_selectOwnedTaskQueryByDate(date("Y-m-d H:i:s", $this->m_aStartDate[0]), 
 			date("Y-m-d H:i:s", $this->m_aEndDate[0]));
+		
+		if(false != $this->m_result)	
+		{
+			global $babDB;
+			$this->m_iNbResult = $babDB->db_num_rows($this->m_result);
+		}
 	}
 	
 	function setDates($sStartDate, $iStartWeekDay)
@@ -685,15 +736,34 @@ class BAB_TM_Gantt
 			if($this->m_aStartDate['wday'] < $iStartWeekDay)
 			{
 				$iGap = $iStartWeekDay - $this->m_aStartDate['wday'];
-				$this->m_aStartDate = getdate($this->m_aStartDate[0] + ($iGap * 24 * 3600));
+				
+				$this->m_iTimeStamp = mktime( $this->m_aStartDate['hours'], $this->m_aStartDate['minutes'], $this->m_aStartDate['seconds'],
+						$this->m_aStartDate['mon'], ($this->m_aStartDate['mday'] + $iGap), $this->m_aStartDate['year']);
+				
+				$this->m_aStartDate = getdate($this->m_iTimeStamp);
+				
 			}
 			else
 			{
 				$iGap = $this->m_aStartDate['wday'] - $iStartWeekDay;
-				$this->m_aStartDate = getdate($this->m_aStartDate[0] - ($iGap * 24 * 3600));
+				
+				$this->m_iTimeStamp = mktime($this->m_aStartDate['hours'], $this->m_aStartDate['minutes'], $this->m_aStartDate['seconds'],
+						$this->m_aStartDate['mon'], ($this->m_aStartDate['mday'] - $iGap), $this->m_aStartDate['year']);
+						
+				$this->m_aStartDate = getdate($this->m_iTimeStamp);
 			}
 		}
-		$this->m_aEndDate	= getdate($this->m_aStartDate[0] + ($this->m_iTotalDaysToDisplay * 24 * 3600));
+		else
+		{
+			$this->m_iTimeStamp = mktime($this->m_aStartDate['hours'], $this->m_aStartDate['minutes'], $this->m_aStartDate['seconds'],
+					$this->m_aStartDate['mon'], $this->m_aStartDate['mday'], $this->m_aStartDate['year']);
+		}
+
+		$iTimeStamp = mktime((int) $this->m_aStartDate['hours'], (int) $this->m_aStartDate['minutes'], (int) $this->m_aStartDate['seconds'],
+				$this->m_aStartDate['mon'], ($this->m_aStartDate['mday'] + $this->m_iTotalDaysToDisplay), 
+				(int) $this->m_aStartDate['year']);
+
+		$this->m_aEndDate	= getdate($iTimeStamp);
 		$this->m_iCurrMonth	= $this->m_aStartDate['mon'];
 		$this->m_iMonthDay	= $this->m_aStartDate['mday'] - 1; //The month day is 1 based
 		$this->m_iCurrDay	= $this->m_aStartDate['wday'];
@@ -734,6 +804,13 @@ class BAB_TM_Gantt
 		{
 			$this->m_sMonth = $this->getMonth($this->m_iCurrMonth);
 		
+			$this->m_iBorderLeft	= 0;
+			$this->m_iBorderRight	= 1;
+			$this->m_iBorderTop		= 1;
+			$this->m_iBorderBottom	= 1;
+
+			$this->m_iMonthHeigth	= $this->m_iHeight - ($this->m_iBorderTop + $this->m_iBorderBottom);
+
 			$this->m_iMonthPosY = 0;
 			$this->m_iMonthPosX = ($this->m_iDisplayedDays * $this->m_iWidth) + $this->m_iTaskWidth;
 
@@ -751,13 +828,16 @@ class BAB_TM_Gantt
 			}
 			
 			$this->m_iDisplayedDays += $iNbDaysInMonth;
-			$this->m_iMonthWidth = $iNbDaysInMonth * $this->m_iWidth;
+			$this->m_iMonthWidth = $iNbDaysInMonth * $this->m_iWidth - ($this->m_iBorderLeft + $this->m_iBorderRight);
 			
 			$this->m_iMonthDay = 0;
 			$this->m_iCurrMonth++;
 			
-			$this->m_bIsAltBg = !$this->m_bIsAltBg;
-			$this->m_sMonthColor = ($this->m_bIsAltBg) ? $this->m_sBgColor1 : $this->m_sBgColor2;
+			if(12 < $this->m_iCurrMonth)
+			{
+				$this->m_iCurrMonth = 1;
+			}
+			
 			return true;
 		}
 		
@@ -803,12 +883,32 @@ class BAB_TM_Gantt
 		
 		if($iDisplayedDays < $this->m_iTotalDaysToDisplay)
 		{
+			$this->m_iBorderLeft	= 0;
+			$this->m_iBorderRight	= 1;
+			$this->m_iBorderTop		= 0;
+			$this->m_iBorderBottom	= 1;
+
+			$this->m_iDayHeigth	= $this->m_iHeight - ($this->m_iBorderTop + $this->m_iBorderBottom);
+			$this->m_iDayWidth = $this->m_iWidth - ($this->m_iBorderLeft + $this->m_iBorderRight);
+
+			$aDate = getdate($this->m_iTimeStamp);
+			
 			$this->m_sDay		= $this->getDay($this->m_iCurrDay);
+			$this->m_sMday		= $aDate['mday'];
 			$this->m_iDayPosY	= $this->m_iHeight * 2;
 			$this->m_iDayPosX	= ($iDisplayedDays * $this->m_iWidth) + $this->m_iTaskWidth;
 			$this->m_iCurrDay	= ($this->m_iCurrDay + 1) % 7;
-			$this->m_bIsAltBg	= !$this->m_bIsAltBg;
-			$this->m_sDayColor = ($this->m_bIsAltBg) ? $this->m_sBgColor1 : $this->m_sBgColor2;
+
+			
+			
+			$this->m_iColumnPosY = $this->m_iHeight * 3;
+			$this->m_iColumnPosX = ($iDisplayedDays * $this->m_iWidth) + $this->m_iTaskWidth;
+			$this->m_iColumnHeigth = (($this->m_iNbResult + 1) * $this->m_iHeight) - ($this->m_iBorderTop + $this->m_iBorderBottom);
+			$this->m_iColumnWidth =  $this->m_iWidth - ($this->m_iBorderLeft + $this->m_iBorderRight);
+//			var $m_sColumnBgColor = 'FFF';
+			
+			$this->m_iTimeStamp = mktime($aDate['hours'], $aDate['minutes'], $aDate['seconds'], $aDate['mon'], ($aDate['mday'] + 1), $aDate['year']);
+
 			$iDisplayedDays++;
 			return true;
 		}
@@ -839,16 +939,24 @@ class BAB_TM_Gantt
 				$this->m_iTotalDaysToDisplay = 0;
 			}
 
+			$this->m_iBorderLeft	= 0;
+			$this->m_iBorderRight	= 1;
+			$this->m_iBorderTop		= 0;
+			$this->m_iBorderBottom	= 1;
+			$this->m_iWeekHeigth	= $this->m_iHeight  - ($this->m_iBorderTop + $this->m_iBorderBottom);
+
 			$this->m_iWeekPosY = $this->m_iHeight;
 			$this->m_iWeekPosX = ($iProcessedDays * $this->m_iWidth) + $this->m_iTaskWidth;
-			$this->m_iWeekWidth = $iNbDays * $this->m_iWidth; 
+			$this->m_iWeekWidth = $iNbDays * $this->m_iWidth - ($this->m_iBorderLeft + $this->m_iBorderRight);
 			$this->m_sWeek = sprintf('%s %02s', bab_translate("Week"), $this->m_iWeekNumber);
-			//$this->m_sWeek = sprintf('%02s', $this->m_iWeekNumber);
 			$iProcessedDays += $iNbDays;
 			
 			$this->m_iWeekNumber++;
-			$this->m_bIsAltBg	= !$this->m_bIsAltBg;
-			$this->m_sWeekColor = ($this->m_bIsAltBg) ? $this->m_sBgColor1 : $this->m_sBgColor2;
+
+			if(52 < $this->m_iWeekNumber)
+			{
+				$this->m_iWeekNumber = 1;
+			}
 			return true;
 		}
 		$this->m_iTotalDaysToDisplay = $iProcessedDays;
@@ -866,22 +974,85 @@ class BAB_TM_Gantt
 			$this->m_iTaskWidth = 200;
 			$this->m_sTaskColor = 'FCC';
 			$this->m_sTask = $datas['sTaskNumber'];
-			$this->m_bIsAltBg	= !$this->m_bIsAltBg;
-			$this->m_sTaskColor = (!$this->m_bIsAltBg) ? $this->m_sBgColor1 : $this->m_sBgColor2;
+			
+$this->m_bIsAltBg	= !$this->m_bIsAltBg;
+$this->m_sTaskColor = (!$this->m_bIsAltBg) ? $this->m_sBgColor1 : $this->m_sBgColor2;
 			
 			$aStartDate = getdate(strtotime($datas['startDate']));
 			$aEndDate = getdate(strtotime($datas['endDate']));
 			$this->_iPosX =  (($aStartDate['yday'] - $this->m_aStartDate['yday']) * $this->m_iWidth) + $this->m_iTaskWidth;
+			
+$iDayFromBegining = $aStartDate['yday'] - $this->m_aStartDate['yday'];
+$iDuration = ($aEndDate['yday'] - $aStartDate['yday'] + 1); //yday is zero based
+$iRemainDay = $this->m_iTotalDaysToDisplay - $iDayFromBegining;
+			
 			$this->_iWidth = (($aEndDate['yday'] - $aStartDate['yday'] + 1) * $this->m_iWidth); //yday is zero based
+			if($iDuration > $iRemainDay)
+			{
+				$this->_iWidth = $iRemainDay * $this->m_iWidth;
+			}
+			
+			//echo 'R ==> ' . $iRemainDay . ' D ==> ' . $iDuration . '<br />';
+			
+			/*
+			if($this->_iWidth > $iRemainWidth)
+			{
+				$this->_iWidth = $iRemainWidth;
+			}
+			//*/
+			
+			$this->m_iRowPosX = $this->m_iTaskWidth;
+			$this->m_iRowPosY = ($this->m_iTaskPosY) - $this->m_iBorderBottom;
+			$this->m_iRowHeigth = 1;
+			$this->m_iRowWidth = $this->m_iTotalDaysToDisplay * $this->m_iWidth;
+			$this->m_sRowBgColor = '000';
+			
 			return true;
 		}
 		
 		return false;
 	}
 		
-	function getNone()
+	function dummyGetNext()
+	{
+		return ($this->m_iDummy++ == 0);
+	}
+	
+	function getNextUpperLeft()
 	{
 		static $i = 0;
+		
+		$this->m_iBorderLeft	= 1;
+		$this->m_iBorderRight	= 1;
+		$this->m_iBorderTop		= 1;
+		$this->m_iBorderBottom	= 1;
+		$this->m_iUpperHeight	= (3 * $this->m_iHeight)  - ($this->m_iBorderTop + $this->m_iBorderBottom);
+		$this->m_iUpperWidth	= $this->m_iTaskWidth - ($this->m_iBorderLeft + $this->m_iBorderRight);
+		return ($i++ == 0);
+	}
+	
+	function getNextTaskTitle()
+	{
+		static $i = 0;
+		
+		$this->m_iTaskTitlePosX = 0;
+		$this->m_iTaskTitlePosY = 3 * $this->m_iHeight;
+		
+		$this->m_iBorderLeft	= 1;
+		$this->m_iBorderRight	= 1;
+		$this->m_iBorderTop		= 0;
+		$this->m_iBorderBottom	= 1;
+
+		$this->m_iTaskTitleHeigth = $this->m_iHeight  - ($this->m_iBorderTop + $this->m_iBorderBottom);
+		$this->m_iTaskTitleWidth = $this->m_iTaskWidth - ($this->m_iBorderLeft + $this->m_iBorderRight);
+		$this->m_sTaskTitle = bab_translate("Tasks");
+		
+		$this->m_iRowPosX = $this->m_iTaskWidth;
+		$this->m_iRowPosY = (4 * $this->m_iHeight) - $this->m_iBorderBottom;
+		$this->m_iRowHeigth = 1;
+		$this->m_iRowWidth = $this->m_iTotalDaysToDisplay * $this->m_iWidth;
+		$this->m_sRowBgColor = '000';
+		
 		return ($i++ == 0);
 	}
 }

@@ -1045,44 +1045,61 @@ function submit_form()
 </form>
 <!--#end PersonnalTaskConfiguration -->
 
+m_iRowPosX ==> 200 iRowPosY ==> 76 iRowWidth ==> 784<br />m_iRowPosX ==> 200 iRowPosY ==> 76 iRowWidth ==> 784<br />
+<div style="position:absolute; background-color:#{ m_sRowBgColor }; top:{ m_iRowPosY }px; left:{ m_iRowPosX }px; height:{ m_iRowHeigth }px; width:{ m_iRowWidth }px">
+.........
+</div>
+
+
 <!--#begin gantt -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 	<head></head>
 	<body>
 	
+	<!--#in getNextUpperLeft -->
+		<div style="position:absolute; background-color:#{ m_sUpperLeftColor }; top:{ m_iUpperLeftPosY }px; left:{ m_iUpperLeftPosX }px; height:{ m_iUpperHeight }px; width:{ m_iUpperWidth }px; font-family:arial, sans serif; font-size: 10px; border-style:solid; border-color:black; border-width:{ m_iBorderTop }px { m_iBorderRight }px { m_iBorderBottom }px { m_iBorderLeft }px;">
+		</div>
+	<!--#endin getNextUpperLeft -->
+	
 	<!--#in getNextMonth -->
-		<div style="position:absolute; background-color:#{ m_sMonthColor }; width:{ m_iMonthWidth }px; top:{ m_iMonthPosY }px; left:{ m_iMonthPosX }px; height:{ m_iHeight }px; font-family:arial, sans-serif; font-size: 10px">
-			<div style="overflow:hidden; height:{ m_iHeight }px" title="{ m_sMonth }">{ m_sMonth }</div>
+		<div style="position:absolute; background-color:#{ m_sBgMonthColor }; top:{ m_iMonthPosY }px; left:{ m_iMonthPosX }px; height:{ m_iMonthHeigth }px; width:{ m_iMonthWidth }px; font-family:arial, sans-serif; font-size: 10px; font-size: 10px; border-style:solid; border-color:black; border-width:{ m_iBorderTop }px { m_iBorderRight }px { m_iBorderBottom }px { m_iBorderLeft }px; color:#{ m_sMonthColor };">
+			<div style="overflow:hidden; height:{ m_iMonthHeigth }px" title="{ m_sMonth }">{ m_sMonth }</div>
 		</div>
 	<!--#endin getNextMonth -->
 
 	<!--#in getNextWeekNumber -->
-		<div style="position:absolute; background-color:#{ m_sWeekColor }; width:{ m_iWeekWidth }px; top:{ m_iWeekPosY }px; left:{ m_iWeekPosX }px; height:{ m_iHeight }px; font-family:arial, sans-serif; font-size: 10px">
-			<div align="center" style="overflow:hidden; height:{ m_iHeight }px" title="{ m_sWeek }">{ m_sWeek }</div>
+		<div style="position:absolute; background-color:#{ m_sBgWeekColor }; width:{ m_iWeekWidth }px; top:{ m_iWeekPosY }px; left:{ m_iWeekPosX }px; height:{ m_iWeekHeigth }px; font-family:arial, sans-serif; font-size: 10px; border-style:solid; border-color:black; border-width:{ m_iBorderTop }px { m_iBorderRight }px { m_iBorderBottom }px { m_iBorderLeft }px; color:#{ m_sWeekColor }">
+			<div align="center" style="overflow:hidden; height:{ m_iWeekHeigth }px" title="{ m_sWeek }">{ m_sWeek }</div>
 		</div>
 	<!--#endin getNextWeekNumber -->
 	
 	<!--#in getNexDay -->
-		<div style="position:absolute; background-color:#{ m_sDayColor }; top:{ m_iDayPosY }px; left:{ m_iDayPosX }px; height:{ m_iHeight }px; width:{ m_iWidth }px; font-family:arial, sans serif; font-size: 10px">
-		{ m_sDay }
+		<div style="position:absolute; background-color:#{ m_sBgDayColor }; top:{ m_iDayPosY }px; left:{ m_iDayPosX }px; height:{ m_iDayHeigth }px; width:{ m_iDayWidth }px; font-family:arial, sans serif; font-size: 10px; border-style:solid; border-color:black; border-width:{ m_iBorderTop }px { m_iBorderRight }px { m_iBorderBottom }px { m_iBorderLeft }px; color:#{ m_sDayColor }">
+			<div align="center" style="overflow:hidden; height:{ m_iDayHeigth }px" title="{ m_sDay }">{ m_sMday }</div>
+		</div>
+		
+		<div style="position:absolute; background-color:#{ m_sColumnBgColor }; top:{ m_iColumnPosY }px; left:{ m_iColumnPosX }px; height:{ m_iColumnHeigth }px; width:{ m_iColumnWidth }px; font-family:arial, sans serif; font-size: 10px; border-style:solid; border-color:black; border-width:{ m_iBorderTop }px { m_iBorderRight }px { m_iBorderBottom }px { m_iBorderLeft }px;">
 		</div>
 	<!--#endin getNexDay -->
 	
-<!--#in getNone -->						
-		<div style="position:absolute; background-color:#{ m_sTaskColor }; top:{ m_iTaskPosY }px; left:{ m_iTaskPosX }px; height:{ m_iHeight }px; width:{ m_iTaskWidth }px; font-family:arial, sans serif; font-size: 10px">
-		{ m_sTask }
+	<!--#in getNextTaskTitle -->						
+		<div style="position:absolute; background-color:#{ m_sTaskTitleBgColor }; top:{ m_iTaskTitlePosY }px; left:{ m_iTaskTitlePosX }px; height:{ m_iTaskTitleHeigth }px; width:{ m_iTaskTitleWidth }px; font-family:arial, sans serif; font-size: 10px; border-style:solid; border-color:black; border-width:{ m_iBorderTop }px { m_iBorderRight }px { m_iBorderBottom }px { m_iBorderLeft }px; color:#{ m_sTaskTitleColor }">
+		{ m_sTaskTitle }
 		</div>
-<!--#endin getNone -->
+		<div style="position:absolute; background-color:#{ m_sRowBgColor }; top:{ m_iRowPosY }px; left:{ m_iRowPosX }px; height:{ m_iRowHeigth }px; width:{ m_iRowWidth }px">
+		</div>
+	<!--#endin getNextTaskTitle -->
 	
 	<!--#in getNextTask -->
 		<div style="position:absolute; background-color:#{ m_sTaskColor }; top:{ m_iTaskPosY }px; left:{ m_iTaskPosX }px; height:{ m_iHeight }px; width:{ m_iTaskWidth }px; font-family:arial, sans serif; font-size: 10px">
 		{ m_sTask }
 		</div>
-		<div style="position:absolute; background-color:#{ m_sTaskColor }; top:{ m_iTaskPosY }px; left:{ _iPosX }px; height:{ m_iHeight }px; width:{ _iWidth }px; font-family:arial, sans serif; font-size: 10px">
+<div style="position:absolute; background-color:#{ m_sTaskColor }; top:{ m_iTaskPosY }px; left:{ _iPosX }px; height:{ m_iHeight }px; width:{ _iWidth }px; font-family:arial, sans serif; font-size: 10px">
+</div>
+		<div style="position:absolute; background-color:#{ m_sRowBgColor }; top:{ m_iRowPosY }px; left:{ m_iRowPosX }px; height:{ m_iRowHeigth }px; width:{ m_iRowWidth }px">
 		</div>
-	<!--#endin getNextTask -->
-	
+	<!--#endin getNextTask -->	
 	</body>
 </html>
 <!--#end gantt -->
