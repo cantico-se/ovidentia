@@ -1,7 +1,5 @@
 <?php
 
-
-
 class bab_NodeList
 {
 	var $_firstNode;
@@ -555,7 +553,7 @@ class bab_NodeIterator
 /**
  * bab_OrphanRootNode provides the ability to insert nodes before their parents
  * are inserted. When the parents are inserted later, their children will
- * automatically be appended.
+ * automatically be appended to their list of child nodes.
  */
 class bab_OrphanRootNode extends bab_RootNode
 {
@@ -1236,8 +1234,8 @@ class bab_FileTreeView extends bab_TreeView
 			}
 		}
 	}
-	
-	
+
+
 	/**
 	 * Add files and subdirectories.
 	 * @access private
@@ -1248,13 +1246,15 @@ class bab_FileTreeView extends bab_TreeView
 
 		$sql = 'SELECT file.id, file.path, file.name, file.id_owner, file.bgroup FROM ' . BAB_FILES_TBL.' file';
 		if ($babBody->currentAdmGroup != 0) {
-			$sql .= ' LEFT JOIN '.BAB_FM_FOLDERS_TBL.' folder ON file.id_owner=folder.id WHERE file.bgroup=\'Y\' AND folder.id_dgowner=\''.$babBody->currentAdmGroup.'\'';
+			$sql .= ' LEFT JOIN '.BAB_FM_FOLDERS_TBL.' folder ON file.id_owner=folder.id';
+			$sql .= ' WHERE file.bgroup=\'Y\' AND folder.id_dgowner=\''.$babBody->currentAdmGroup.'\'';
 		} elseif ($this->_attributes & BAB_FILE_TREE_VIEW_SHOW_PERSONAL_DIRECTORIES) {
 			$sql .= ' WHERE file.bgroup=\'Y\' OR (file.bgroup=\'N\' AND file.id_owner=\'' . $GLOBALS['BAB_SESS_USERID'] . '\')';
 		} else {
 			$sql .= ' WHERE file.bgroup=\'Y\'';
 		}
-		$sql .= ' ORDER BY name';
+		$sql .= ' AND file.state<>\'D\'';
+		$sql .= ' ORDER BY file.name';
 				
 		$directoryType = 'folder';
 		if ($this->_attributes & BAB_FILE_TREE_VIEW_CLICKABLE_SUB_DIRECTORIES) {
