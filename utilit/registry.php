@@ -43,7 +43,7 @@ class bab_registry {
 			$this->dir .= $dir;
 		}
 
-		if ('/' === substr($dir,-1,0)) {
+		if ('/' !== substr($dir,-1)) {
 			$this->dir .= '/';
 		}
 	}
