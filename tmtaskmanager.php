@@ -416,8 +416,8 @@ function displayProjectForm()
 				$this->set_data('sDescription', tskmgr_getVariable('sDescription', ''));
 				$this->set_data('iIdProjectSpace', $iIdProjectSpace);
 				$this->set_data('iIdProject', $iIdProject);
-				$this->set_data('bIsDeletable', false);
-				
+				$this->set_data('bIsDeletable', bab_isProjectDeletable($iIdProject));
+
 				$this->set_data('add_idx', BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST);
 				$this->set_data('modify_idx', BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST);
 				$this->set_data('delete_idx', BAB_TM_IDX_DISPLAY_DELETE_PROJECT_FORM);
@@ -1298,10 +1298,14 @@ function displayPersonnalTaskConfigurationForm()
 
 function displayGanttChart()
 {
-	$sStartDate = '2006-6-14';
+	$sStartDate = bab_rp('date', date("Y-m-d"));
 	$oGantt = new BAB_TM_Gantt($sStartDate);
 	
 	die(bab_printTemplate($oGantt, 'tmUser.html', "gantt"));
+/*
+	global $babBody;
+	$babBody->babecho(bab_printTemplate($oGantt, 'tmUser.html', "gantt2"));
+//*/
 }
 
 
@@ -1840,6 +1844,7 @@ switch($action)
 
 
 $idx = isset($_POST['idx']) ? $_POST['idx'] : (isset($_GET['idx']) ? $_GET['idx'] : BAB_TM_IDX_DISPLAY_TASK_LIST);
+//$idx = isset($_POST['idx']) ? $_POST['idx'] : (isset($_GET['idx']) ? $_GET['idx'] : BAB_TM_IDX_DISPLAY_GANTT_CHART);
 
 //bab_debug('idx ==> ' . $idx);
 

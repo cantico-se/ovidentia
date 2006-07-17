@@ -112,6 +112,8 @@
 
 		function BAB_TaskFormBase()
 		{
+			parent::BAB_BaseFormProcessing();
+			
 			$this->m_aClasses = array(
 				array('iClassType' => BAB_TM_TASK, 'sClassName' => bab_translate("Task")),
 				array('iClassType' => BAB_TM_CHECKPOINT, 'sClassName' => bab_translate("CheckPoint")),
@@ -194,6 +196,7 @@
 			$this->set_data('isCompletionEnabled', false);
 			$this->set_data('isResourceAvailable', false);
 			$this->set_data('isAnswerEnable', false);
+			
 $this->set_data('isDeletable', false);
 $this->set_data('isStoppable', false);
 			$this->set_data('iClass', -1);
