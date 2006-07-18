@@ -844,9 +844,11 @@ function bab_getTaskCount($iIdProject)
 	$db	= & $GLOBALS['babDB'];
 
 	$result = $babDB->db_query($query);
-	if(false != $result)
+	$iNumRows = $babDB->db_num_rows($result);
+	if(false != $result && $iNumRows > 0)
 	{
-		return $babDB->db_num_rows($result);
+		$datas = $babDB->db_fetch_assoc($result);
+		return $datas['iTaskCount'];
 	}
 	return 0;
 }
@@ -1635,9 +1637,8 @@ function bab_selectOwnedTaskQueryByDate($sStartDate, $sEndDate)
 		'WHERE ' . 
 			'ti.idOwner = \'' . $GLOBALS['BAB_SESS_USERID'] . '\' AND ' .
 			't.id = ti.idTask AND ' .
-			't.id = ti.idTask AND ' .
-			't.startDate >= \'' . $sStartDate . '\' AND ' .
-			't.startDate <= \'' . $sEndDate . '\' ' .
+			't.endDate > \'' . $sStartDate . '\' AND ' .
+			't.startDate < \'' . $sEndDate . '\' ' .
 		'GROUP BY ' .
 			'sProjectSpaceName ASC, sProjectName ASC, sTaskNumber ASC';
 

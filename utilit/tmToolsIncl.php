@@ -705,8 +705,20 @@ class BAB_TM_Gantt
 	var $m_iRowWidth = 0;
 	var $m_sRowBgColor = '000';
 	
-	function BAB_TM_Gantt($sStartDate, $iStartWeekDay = 3)
+	var $m_sPrevMonth = "";
+	var $m_sPrevWeek = "";
+	var $m_sNextWeek = "";
+	var $m_sNextMonth = "";
+	var $m_sPrevMonthUrl = "";
+	var $m_sPrevWeekUrl = "";
+	var $m_sNextWeekUrl = "";
+	var $m_sNextMonthUrl = "";
+
+	function BAB_TM_Gantt($sStartDate, $iStartWeekDay = 1)
 	{
+		global $babInstallPath;
+		require_once($babInstallPath . 'utilit/dateTime.php');
+		
 		$this->m_iTaskPosY = 3 * $this->m_iHeight;
 		$this->m_sTask = bab_translate("Tasks");
 		
@@ -722,6 +734,34 @@ class BAB_TM_Gantt
 			global $babDB;
 			$this->m_iNbResult = $babDB->db_num_rows($this->m_result);
 		}
+		
+		$this->m_sPrevMonth = bab_translate("Previous month");
+		$this->m_sPrevWeek = bab_translate("Previous week");
+		$this->m_sNextWeek = bab_translate("Next week");
+		$this->m_sNextMonth = bab_translate("Next month");
+		$sUrlBase = $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_GANTT_CHART . '&date=';
+		
+//echo 'StartDate ==> ' . $sStartDate . '<br />';
+
+		$oDate = BAB_DateTime::fromTimeStamp($this->m_aStartDate[0]);
+		$oDate->add(-1, BAB_DATETIME_MONTH);
+		$this->m_sPrevMonthUrl = $sUrlBase . date("Y-m-d", $oDate->_aDate[0]);
+//echo 'sPrevMonth ==> ' . date("Y-m-d", $oDate->_aDate[0]) . '<br />';
+
+		$oDate = BAB_DateTime::fromTimeStamp($this->m_aStartDate[0]);
+		$oDate->add(-7, BAB_DATETIME_DAY);
+		$this->m_sPrevWeekUrl = $sUrlBase . date("Y-m-d", $oDate->_aDate[0]);
+//echo 'sPrevWeek ==> ' . date("Y-m-d", $oDate->_aDate[0]) . '<br />';
+		
+		$oDate = BAB_DateTime::fromTimeStamp($this->m_aStartDate[0]);
+		$oDate->add(7, BAB_DATETIME_DAY);
+		$this->m_sNextWeekUrl = $sUrlBase . date("Y-m-d", $oDate->_aDate[0]);
+//echo 'sNextWeek ==> ' . date("Y-m-d", $oDate->_aDate[0]) . '<br />';
+
+		$oDate = BAB_DateTime::fromTimeStamp($this->m_aStartDate[0]);
+		$oDate->add(1, BAB_DATETIME_MONTH);
+		$this->m_sNextMonthUrl = $sUrlBase . date("Y-m-d", $oDate->_aDate[0]);
+//echo 'sNextMonth ==> ' . date("Y-m-d", $oDate->_aDate[0]) . '<br />';
 	}
 	
 	function setDates($sStartDate, $iStartWeekDay)
@@ -898,8 +938,6 @@ class BAB_TM_Gantt
 			$this->m_iDayPosY	= $this->m_iHeight * 2;
 			$this->m_iDayPosX	= ($iDisplayedDays * $this->m_iWidth) + $this->m_iTaskWidth;
 			$this->m_iCurrDay	= ($this->m_iCurrDay + 1) % 7;
-
-			
 			
 			$this->m_iColumnPosY = $this->m_iHeight * 3;
 			$this->m_iColumnPosX = ($iDisplayedDays * $this->m_iWidth) + $this->m_iTaskWidth;
@@ -969,38 +1007,62 @@ class BAB_TM_Gantt
 		
 		if(false != $this->m_result && false != ($datas = $babDB->db_fetch_assoc($this->m_result)))
 		{
+			$this->m_iBorderLeft	= 1;
+			$this->m_iBorderRight	= 1;
+			$this->m_iBorderTop		= 0;
+			$this->m_iBorderBottom	= 1;
+
 			$this->m_iTaskPosX = 0;
 			$this->m_iTaskPosY = $this->m_iTaskPosY + $this->m_iHeight;
-			$this->m_iTaskWidth = 200;
-			$this->m_sTaskColor = 'FCC';
+			$this->m_iTaskWidth = 200 - 1;
+			$this->m_sTaskColor = 'EFEFEF';
 			$this->m_sTask = $datas['sTaskNumber'];
 			
-$this->m_bIsAltBg	= !$this->m_bIsAltBg;
-$this->m_sTaskColor = (!$this->m_bIsAltBg) ? $this->m_sBgColor1 : $this->m_sBgColor2;
+			$oTaskStartDate = BAB_DateTime::fromIsoDateTime($datas['startDate']);
+			$oTaskEndDate = BAB_DateTime::fromIsoDateTime($datas['endDate']);
 			
-			$aStartDate = getdate(strtotime($datas['startDate']));
-			$aEndDate = getdate(strtotime($datas['endDate']));
-			$this->_iPosX =  (($aStartDate['yday'] - $this->m_aStartDate['yday']) * $this->m_iWidth) + $this->m_iTaskWidth;
-			
-$iDayFromBegining = $aStartDate['yday'] - $this->m_aStartDate['yday'];
-$iDuration = ($aEndDate['yday'] - $aStartDate['yday'] + 1); //yday is zero based
-$iRemainDay = $this->m_iTotalDaysToDisplay - $iDayFromBegining;
-			
-			$this->_iWidth = (($aEndDate['yday'] - $aStartDate['yday'] + 1) * $this->m_iWidth); //yday is zero based
-			if($iDuration > $iRemainDay)
+			$oDisplayedStartDate = BAB_DateTime::fromTimeStamp($this->m_aStartDate[0]);
+			$oDisplayedEndDate = BAB_DateTime::fromTimeStamp($this->m_aEndDate[0]);
+
+$this->_iPosX = $this->m_iTaskWidth;
+
+			$iDaysFromBegining = BAB_DateTime::dateDiff($oTaskStartDate->_iDay, $oTaskStartDate->_iMonth, 
+				$oTaskStartDate->_iYear, $oDisplayedStartDate->_iDay, $oDisplayedStartDate->_iMonth, 
+				$oDisplayedStartDate->_iYear);
+
+			//+1 to include the start day			
+			$iTaskDuration = BAB_DateTime::dateDiff($oTaskEndDate->_iDay, $oTaskEndDate->_iMonth, $oTaskEndDate->_iYear, 
+				$oTaskStartDate->_iDay, $oTaskStartDate->_iMonth, $oTaskStartDate->_iYear) + 1;
+
+			if($iTaskDuration > $this->m_iTotalDaysToDisplay)
 			{
-				$this->_iWidth = $iRemainDay * $this->m_iWidth;
+				$iTaskDuration = $this->m_iTotalDaysToDisplay - $iDaysFromBegining;
 			}
-			
-			//echo 'R ==> ' . $iRemainDay . ' D ==> ' . $iDuration . '<br />';
-			
-			/*
-			if($this->_iWidth > $iRemainWidth)
+			else if(($iDaysFromBegining + $iTaskDuration) > $this->m_iTotalDaysToDisplay)
 			{
-				$this->_iWidth = $iRemainWidth;
+				$iTaskDuration -= ($iDaysFromBegining + $iTaskDuration) - $this->m_iTotalDaysToDisplay;
 			}
-			//*/
-			
+				
+			$iCmp = BAB_DateTime::compare($oTaskStartDate, $oDisplayedStartDate);
+			if(1 == $iCmp)
+			{
+$this->_iPosX +=  $iDaysFromBegining * $this->m_iWidth;
+			}
+			else if(-1 == $iCmp)
+			{
+				$iTaskDuration -= $iDaysFromBegining;
+			}
+
+$this->_iPosX += 1;
+
+
+//echo 'iTaskDuration ==> ' . $iTaskDuration . ' iTotal ==> ' . ($iDaysFromBegining + $iTaskDuration) . '<br />';
+
+echo $datas['sTaskNumber'] . ' StartDate ==> ' . $datas['startDate'] . ' EtartDate ==> ' . $datas['endDate'] . ' iDaysFromBegining ==> ' . $iDaysFromBegining . '<br />';
+
+$this->_iWidth = ($iTaskDuration * $this->m_iWidth) - 1;				
+		
+
 			$this->m_iRowPosX = $this->m_iTaskWidth;
 			$this->m_iRowPosY = ($this->m_iTaskPosY) - $this->m_iBorderBottom;
 			$this->m_iRowHeigth = 1;
