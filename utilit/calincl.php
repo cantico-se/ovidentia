@@ -738,4 +738,16 @@ function bab_deleteCalendar($idcal)
 	$babDB->db_query("delete from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_cal='".$idcal."'");	
 	$babDB->db_query("delete from ".BAB_CALENDAR_TBL." where id='".$idcal."'");	
 }
+
+
+function bab_getCalendarTitle($calid) {
+
+	if ((string) $calid === (string) ((int) $calid)) {
+		return $GLOBALS['babBody']->icalendars->getCalendarName($calid);
+	}
+
+
+	return bab_translate('Calendar');
+}
+
 ?>

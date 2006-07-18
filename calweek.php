@@ -510,9 +510,9 @@ switch($idx)
 			}
 		else
 			{
-			$babBody->title = bab_translate("Calendar");
+			$babBody->title = bab_getCalendarTitle($calid);
 			cal_week($calid, $date);
-			$babBody->addItemMenu("view", $babBody->title, $GLOBALS['babUrlScript']."?tg=calweek&calid=".$calid."&date=".$date);
+			$babBody->addItemMenu("view", bab_translate('Calendar'), $GLOBALS['babUrlScript']."?tg=calweek&calid=".$calid."&date=".$date);
 			$babBody->addItemMenu("free", bab_translate("Availability"), $GLOBALS['babUrlScript']."?tg=calweek&idx=free&calid=".$calid."&date=".$date);
 			if ($GLOBALS['BAB_SESS_LOGGED'])
 				$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options&urla=".urlencode($GLOBALS['babUrlScript']."?tg=calweek&calid=".$calid."&date=".$date));
