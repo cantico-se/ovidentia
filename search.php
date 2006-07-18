@@ -953,7 +953,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 				// indexation
 
-				if ($engine = bab_searchEngineInfos()) {
+				if ($idthreads != "" && $engine = bab_searchEngineInfos()) {
 					if (!$engine['indexes']['bab_forumsfiles']['index_disabled']) {
 						$found_files = bab_searchIndexedFiles($this->like2, $this->like, $option, 'bab_forumsfiles');
 
