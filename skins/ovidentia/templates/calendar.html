@@ -484,6 +484,9 @@ function dateEnd(day, month, year)
 	<!--#else evt[private] -->
 	<li id="event{ idevent }" style="color:#{ evt[color] }">
 		<h3>{ evt[title] }</h3>
+		<!--#if evt[location] -->
+		<h4>{ t_location } : { evt[location] }</h4>
+		<!--#endif evt[location] -->
 		<h4>{ evt[start_date] } <span>-</span> { evt[end_date] }</h4>
 		<!--#if evt[categoryname] -->
 		<h5 title="{ evt[categorydescription] }">{ t_category } : { evt[categoryname] }</h5>
@@ -497,6 +500,9 @@ function dateEnd(day, month, year)
 		<!--#if evt[properties] -->
 		<p>{ evt[t_option] } : { evt[properties] }</p>
 		<!--#endif evt[properties] -->
+		<!--#if evt[notes] -->
+		<div>{ t_notetxt } : { evt[notes] }</div>
+		<!--#endif evt[notes] -->
 	<!--#endif evt[private] -->
 		<ul>
 		<!--#in getnextcalendar -->

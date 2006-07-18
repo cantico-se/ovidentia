@@ -534,6 +534,8 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 			$this->t_from = bab_translate('Par');
 			$this->t_category = bab_translate('Category');
 			$this->t_show_hide = bab_translate('Show / hide finished events');
+			$this->t_location = bab_translate('Location');
+			$this->t_notetxt = bab_translate("Personal notes");
 
 			$last_ts = 0;
 
@@ -569,16 +571,30 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 						$last_ts = $ts;
 						$this->last_id = $arr['id_event'];
 						}
-					$evt['start_date'] = bab_longDate(bab_mktime($arr['start_date']));
-					$evt['end_date'] = bab_longDate($ts);
-					$evt['categoryname'] = !empty($this->mcals->categories[$arr['id_cat']]) ? $this->mcals->categories[$arr['id_cat']]['name'] : '';
-					$evt['categorydescription'] = !empty($this->mcals->categories[$arr['id_cat']]) ? $this->mcals->categories[$arr['id_cat']]['description'] : '';
-					$evt['color'] = !empty($this->mcals->categories[$arr['id_cat']]) ? $this->mcals->categories[$arr['id_cat']]['bgcolor'] : $arr['color'];
-					$evt['creator'] = $arr['id_creator'] != $GLOBALS['BAB_SESS_USERID'] ? bab_getUserName($arr['id_creator']) : '';
+					$evt['start_date'] = bab_toHtml(bab_longDate(bab_mktime($arr['start_date'])));
+					$evt['end_date'] = bab_toHtml(bab_longDate($ts));
+					$evt['categoryname'] = !empty($this->mcals->categories[$arr['id_cat']]) ? bab_toHtml($this->mcals->categories[$arr['id_cat']]['name']) : '';
+					$evt['categorydescription'] = !empty($this->mcals->categories[$arr['id_cat']]) ? bab_toHtml($this->mcals->categories[$arr['id_cat']]['description']) : '';
+					$evt['color'] = !empty($this->mcals->categories[$arr['id_cat']]) ? bab_toHtml($this->mcals->categories[$arr['id_cat']]['bgcolor']) : $arr['color'];
+					$evt['creator'] = $arr['id_creator'] != $GLOBALS['BAB_SESS_USERID'] ? bab_toHtml(bab_getUserName($arr['id_creator'])) : '';
 					$evt['private'] = $arr['id_creator'] != $GLOBALS['BAB_SESS_USERID'] && (isset($arr['bprivate']) && $arr['bprivate'] == 'Y');
 					$evt['nbowners'] = $arr['nbowners']+1;
 					$evt['t_option'] = ''; 
-					$evt['properties'] = getPropertiesString($arr, $evt['t_option']);
+					$evt['properties'] = bab_toHtml(getPropertiesString($arr, $evt['t_option']));
+
+
+					$evt['location']=bab_toHtml($arr['location']);
+					global $babDB;
+					$res_note = $babDB->db_query("select note from ".BAB_CAL_EVENTS_NOTES_TBL." where id_user='".$GLOBALS['BAB_SESS_USERID']."' and id_event='".$arr['id_event']."'");
+					if( $res_note && $babDB->db_num_rows($res_note) > 0 )
+						{
+						$arr_notes = $babDB->db_fetch_array($res_note);
+						$evt['notes'] = bab_toHtml($arr_notes['note'], BAB_HTML_ALL);
+						}
+					else
+						{
+						$evt['notes'] = '';
+						}
 
 					$sortvalue[$arr['id_event']] = $arr['start_date'];
 					}
