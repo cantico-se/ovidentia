@@ -354,11 +354,17 @@ class babDatabase extends bab_database
 	function db_escape_string($str)
 		{
 		return parent::db_escape_string($str);
+		//return parent::db_real_escape_string($str, $this->db_connect());
 		}
 
-	function db_real_escape_string($str)
+	function quote($param) 
 		{
-		return parent::db_real_escape_string($str, $this->db_connect());
+			if (is_array($param)) {
+				array_walk($param, create_function('&$v,$k', '$v = bab_database::db_escape_string($v);'));
+				return "'".implode("','",$param)."'";
+			} else {
+				return "'".parent::db_escape_string($param)."'";
+			}
 		}
 
 	function db_free_result($result)

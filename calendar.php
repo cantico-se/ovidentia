@@ -49,8 +49,10 @@ function displayAttendees($evtid, $idcal)
 				$this->fullnametxt = bab_translate("Attendee");
 				$this->statusdef = array(BAB_CAL_STATUS_ACCEPTED => bab_translate("Accepted"), BAB_CAL_STATUS_NONE => "", BAB_CAL_STATUS_DECLINED => bab_translate("Declined"));
 				$this->statustxt = bab_translate("Response");
-				list($this->idcreator, $this->hash) = $babDB->db_fetch_row($babDB->db_query("select id_creator, hash from ".BAB_CAL_EVENTS_TBL." where id='".$evtid."'"));
-				$res = $babDB->db_query("select ceo.* from ".BAB_CAL_EVENTS_OWNERS_TBL." ceo where ceo.id_event='".$evtid."'");
+				list($this->idcreator, $this->hash) = $babDB->db_fetch_row($babDB->db_query("
+				select id_creator, hash from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($evtid)."'
+				"));
+				$res = $babDB->db_query("select ceo.* from ".BAB_CAL_EVENTS_OWNERS_TBL." ceo where ceo.id_event='".$babDB->db_escape_string($evtid)."'");
 				$this->arrinfo = array();
 				$this->statusarray = array();
 				$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
@@ -201,7 +203,7 @@ function displayEventDetail($evtid, $idcal)
 			$this->access = false;
 			if( bab_isCalendarAccessValid($idcal))
 				{
-				$res = $babDB->db_query("select * from ".BAB_CAL_EVENTS_TBL." where id='".$evtid."'");
+				$res = $babDB->db_query("select * from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($evtid)."'");
 				if( $res && $babDB->db_num_rows($res) == 1)
 					{
 					$this->access = true;
@@ -233,7 +235,7 @@ function displayEventDetail($evtid, $idcal)
 						}
 					if( $arr['id_cat'] != 0 )
 						{
-						list($this->category) = $babDB->db_fetch_row($babDB->db_query("select name from ".BAB_CAL_CATEGORIES_TBL." where id='".$arr['id_cat']."'"));
+						list($this->category) = $babDB->db_fetch_row($babDB->db_query("select name from ".BAB_CAL_CATEGORIES_TBL." where id='".$babDB->db_escape_string($arr['id_cat'])."'"));
 						}
 					else
 						{
@@ -272,7 +274,7 @@ function displayEventNotes($evtid, $idcal)
 				$this->access = true;
 				$this->notetxt = bab_translate("Personal notes");
 				$this->updatetxt = bab_translate("Update");
-				$res = $babDB->db_query("select note from ".BAB_CAL_EVENTS_NOTES_TBL." where id_user='".$GLOBALS['BAB_SESS_USERID']."' and id_event='".$evtid."'");
+				$res = $babDB->db_query("select note from ".BAB_CAL_EVENTS_NOTES_TBL." where id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and id_event='".$babDB->db_escape_string($evtid)."'");
 				if( $res && $babDB->db_num_rows($res) > 0 )
 					{
 					$arr = $babDB->db_fetch_array($res);
@@ -282,7 +284,7 @@ function displayEventNotes($evtid, $idcal)
 					{
 					$this->noteval = '';
 					}
-				list($hash) = $babDB->db_fetch_row($babDB->db_query("select hash from ".BAB_CAL_EVENTS_TBL." where id='".$evtid."'"));
+				list($hash) = $babDB->db_fetch_row($babDB->db_query("select hash from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($evtid)."'"));
 				if( !empty($hash) && $hash[0] == 'R')
 					{
 					$this->all = bab_translate("All");
@@ -317,7 +319,7 @@ function displayEventAlert($evtid, $idcal)
 				$this->access = true;
 				$this->alerttxt = bab_translate("Reminder");
 				$this->updatetxt = bab_translate("Update");
-				$res = $babDB->db_query("select * from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_user='".$GLOBALS['BAB_SESS_USERID']."' and id_event='".$evtid."'");
+				$res = $babDB->db_query("select * from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_user='".$GLOBALS['BAB_SESS_USERID']."' and id_event='".$babDB->db_escape_string($evtid)."'");
 				if( $res && $babDB->db_num_rows($res) > 0 )
 					{
 					$this->arralert = $babDB->db_fetch_array($res);
@@ -329,7 +331,7 @@ function displayEventAlert($evtid, $idcal)
 					$this->rcheckedval = '';
 					}
 
-				list($hash) = $babDB->db_fetch_row($babDB->db_query("select hash from ".BAB_CAL_EVENTS_TBL." where id='".$evtid."'"));
+				list($hash) = $babDB->db_fetch_row($babDB->db_query("select hash from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($evtid)."'"));
 				if( !empty($hash) && $hash[0] == 'R')
 					{
 					$this->all = bab_translate("All");
@@ -585,7 +587,7 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 
 					$evt['location']=bab_toHtml($arr['location']);
 					global $babDB;
-					$res_note = $babDB->db_query("select note from ".BAB_CAL_EVENTS_NOTES_TBL." where id_user='".$GLOBALS['BAB_SESS_USERID']."' and id_event='".$arr['id_event']."'");
+					$res_note = $babDB->db_query("select note from ".BAB_CAL_EVENTS_NOTES_TBL." where id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and id_event='".$babDB->db_escape_string($arr['id_event'])."'");
 					if( $res_note && $babDB->db_num_rows($res_note) > 0 )
 						{
 						$arr_notes = $babDB->db_fetch_array($res_note);
@@ -646,16 +648,14 @@ function updateEventNotes($evtid, $note, $bupdrec)
 	if( !empty($GLOBALS['BAB_SESS_USERID']) )
 	{
 
-		$note = $babDB->db_escape_string($note);
-
 		$evtidarr = array();
 
 		if( $bupdrec == 1 )
 		{
-			list($hash) = $babDB->db_fetch_row($babDB->db_query("select hash from ".BAB_CAL_EVENTS_TBL." where id='".$evtid."'"));
+			list($hash) = $babDB->db_fetch_row($babDB->db_query("select hash from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($evtid)."'"));
 			if( !empty($hash) &&  $hash[0] == 'R')
 				{
-				$res = $babDB->db_query("select id from ".BAB_CAL_EVENTS_TBL." where hash='".$hash."'");
+				$res = $babDB->db_query("select id from ".BAB_CAL_EVENTS_TBL." where hash='".$babDB->db_escape_string($hash)."'");
 				while( $arr = $babDB->db_fetch_array($res))
 					{
 					$evtidarr[] = $arr['id'];
@@ -670,7 +670,7 @@ function updateEventNotes($evtid, $note, $bupdrec)
 
 		$updevtarr = array();
 
-		$res = $babDB->db_query("select id_event from ".BAB_CAL_EVENTS_NOTES_TBL." where id_event in (".implode(',', $evtidarr).") and id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+		$res = $babDB->db_query("select id_event from ".BAB_CAL_EVENTS_NOTES_TBL." where id_event in(".$babDB->quote($evtidarr).") and id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
 		while( $arr = $babDB->db_fetch_array($res))
 		{
 			$updevtarr[$arr['id_event']] = 1;
@@ -681,11 +681,11 @@ function updateEventNotes($evtid, $note, $bupdrec)
 
 		if( isset($updevtarr[$evtidarr[$i]] ) )
 			{
-			$babDB->db_query("update ".BAB_CAL_EVENTS_NOTES_TBL." set note='".$note."'  where id_event='".$evtidarr[$i]."' and id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+			$babDB->db_query("update ".BAB_CAL_EVENTS_NOTES_TBL." set note='".$babDB->db_escape_string($note)."'  where id_event='".$babDB->db_escape_string($evtidarr[$i])."' and id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
 			}
 		else
 			{
-			$babDB->db_query("insert into ".BAB_CAL_EVENTS_NOTES_TBL." ( id_event, id_user, note ) values ('".$evtidarr[$i]."', '".$GLOBALS['BAB_SESS_USERID']."', '".$note."')");
+			$babDB->db_query("insert into ".BAB_CAL_EVENTS_NOTES_TBL." ( id_event, id_user, note ) values ('".$babDB->db_escape_string($evtidarr[$i])."', '".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', '".$babDB->db_escape_string($note)."')");
 			}
 		}
 	}
@@ -698,19 +698,19 @@ function updateEventAlert($evtid, $creminder, $day, $hour, $minute, $remail, $bu
 	{
 		if( $creminder == 'Y')
 		{
-			$res= $babDB->db_query("select id_event from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_event='".$evtid."' and id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+			$res= $babDB->db_query("select id_event from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_event='".$babDB->db_escape_string($evtid)."' and id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
 			if( $res && $babDB->db_num_rows($res) > 0 )
 			{
-				$babDB->db_query("update ".BAB_CAL_EVENTS_REMINDERS_TBL." set day='".$day."', hour='".$hour."', minute='".$minute."', bemail='".$remail."', processed='N' where id_event='".$evtid."' and id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+				$babDB->db_query("update ".BAB_CAL_EVENTS_REMINDERS_TBL." set day='".$babDB->db_escape_string($day)."', hour='".$babDB->db_escape_string($hour)."', minute='".$babDB->db_escape_string($minute)."', bemail='".$babDB->db_escape_string($remail)."', processed='N' where id_event='".$babDB->db_escape_string($evtid)."' and id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
 			}
 			else
 			{
-				$babDB->db_query("insert into ".BAB_CAL_EVENTS_REMINDERS_TBL." (id_event, id_user, day, hour, minute, bemail) values ('".$evtid."', '".$GLOBALS['BAB_SESS_USERID']."', '".$day."', '".$hour."', '".$minute."', '".$remail."')");
+				$babDB->db_query("insert into ".BAB_CAL_EVENTS_REMINDERS_TBL." (id_event, id_user, day, hour, minute, bemail) values ('".$babDB->db_escape_string($evtid)."', '".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', '".$babDB->db_escape_string($day)."', '".$babDB->db_escape_string($hour)."', '".$babDB->db_escape_string($minute)."', '".$babDB->db_escape_string($remail)."')");
 			}
 		}
 		else
 		{
-			$babDB->db_query("delete from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_event='".$evtid."' and id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+			$babDB->db_query("delete from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_event='".$babDB->db_escape_string($evtid)."' and id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
 		}
 	}
 }

@@ -113,7 +113,7 @@ class cal_dayCls extends cal_wmdbaseCls
 		if( $this->cindex < count($this->idcals))
 			{
 			$calname = $this->mcals->getCalendarName($this->idcals[$this->cindex]);
-			$this->fullname = htmlentities($calname);
+			$this->fullname = bab_toHtml($calname);
 			$this->fullnameten = $this->calstr($calname,BAB_CAL_NAME_LENGTH);
 			$this->cols = count($this->harray[$this->cindex]);
 			$this->cindex++;
@@ -192,10 +192,10 @@ class cal_dayCls extends cal_wmdbaseCls
 							}
 						else
 							{
-							$this->title = $arr['title'];
+							$this->title = bab_toHtml($arr['title']);
 							$this->titleten = $this->calstr($arr['title']);
-							$this->description = bab_replace($arr['description']);
-							$this->location = htmlentities($arr['location']);
+							$this->description = bab_toHtml(bab_replace($arr['description']));
+							$this->location = bab_toHtml($arr['location']);
 							}
 
 						$this->nbowners = $arr['nbowners'];

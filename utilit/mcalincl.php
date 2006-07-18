@@ -758,9 +758,9 @@ class cal_wmdbaseCls
 	function calstr($str,$n = BAB_CAL_EVENT_LENGTH)
 		{
 		if (strlen($str) > $n && (!$this->print || $GLOBALS['tg'] == 'calweek'))
-			return htmlentities(substr($str, 0, $n))."...";
+			return bab_toHtml(substr($str, 0, $n))."...";
 		else
-			return htmlentities($str);
+			return bab_toHtml($str);
 		}
 
 	function getPropertiesString(&$arr)
