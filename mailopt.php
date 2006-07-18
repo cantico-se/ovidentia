@@ -669,8 +669,8 @@ function addAccount($account_name,$fullname, $email, $login, $password1, $passwo
 
 	$req .= "(
 		'".$db->db_escape_string($account_name)."',
-		'".$db->db_escape_string($fullname."', 
-		'".$db->db_escape_string($email."', 
+		'".$db->db_escape_string($fullname)."', 
+		'".$db->db_escape_string($email)."', 
 		ENCODE(\"".$db->db_escape_string($password1)."\",\"".$db->db_escape_string($BAB_HASH_VAR)."\"), 
 		'".$db->db_escape_string($login)."', 
 		'".$db->db_escape_string($domain)."', 
