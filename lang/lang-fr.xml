@@ -2172,4 +2172,17 @@
 <string id="This file is not a well formated Ovidentia package">Ce fichier n'est pas une archive de mise à jour correcte pour Ovidentia</string>
 <string id="The installed version is newer than the package">La version installée est plus récente que l'archive</string>
 <string id="Loading, please wait...">Chargement en cours, patientez...</string>
+<string id="Current core">Noyau actuel</string>
+<string id="Not used">Non utilisé</string>
+<string id="List of version directories">Liste des répertoires de version</string>
+<string id="MySQL version">Version de la base de donnés MySQL</string>
+<string id="Images directory for articles">Répertoire images pour les articles</string>
+<string id="Available">Disponible</string>
+<string id="Unavailable">Indisponible</string>
+<string id="Writable directory for upgrades">Répertoire accessible en écriture pour les mises à jour</string>
+<string id="Imap php module">Module imap de php</string>
+<string id="Xml php module">Module xml de php</string>
+<string id="Calendar php module">Module calendar de php</string>
+<string id="Ldap php module">Module ldap de php</string>
+<string id="Recommended">Recommandé</string>
 </fr>

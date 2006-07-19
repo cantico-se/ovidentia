@@ -153,6 +153,7 @@ function deladdon(id)
 			</tr>
 			<tr class="BabSiteAdminTitleFontBackground"> 
 				<td>&nbsp;</td>
+				<td>{ t_recommended }</td>
 				<td>{ t_required }</td>
 				<td>{ t_current }</td>
 				<td>&nbsp;</td>
@@ -160,9 +161,15 @@ function deladdon(id)
 			<!--#in getnextreq -->
 			<tr class="BabSiteAdminFontBackground"> 
 				<td>&nbsp;{ description }</td>
+				<td>{ recommended }</td>
 				<td>{ required }</td>
 				<td>{ current }</td>
-				<td>{ result }</td>
+				<!--#if result -->
+				<td><img src="{ babSkinPath }images/Puces/action_success.gif" alt="{ t_ok }" /></td>
+				<!--#else result -->
+				<td><img src="{ babSkinPath }images/Puces/action_fail.gif" alt="{ t_error }" /></td>
+				<!--#endif result -->
+				<!--#endif result -->
 			</tr>
 			<!--#endin getnextreq -->
 			<tr> 

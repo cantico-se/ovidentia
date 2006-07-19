@@ -179,6 +179,8 @@ function zipupgrade($message)
 	global $babBody;
 	class temp
 		{
+		var $db;
+		var $altbg = false;
 
 		function temp()
 			{
@@ -189,12 +191,43 @@ function zipupgrade($message)
 			$this->t_upgrade = bab_translate("Upgrade");
 			$this->t_copy_addons = bab_translate("Copy addons");
 			$this->t_wait = bab_translate("Loading, please wait...");
-			
-			if (isset($_POST)) $this->val = $_POST;
+			$this->t_name = bab_translate("Name");
+			$this->t_current_core = bab_translate("Current core");
+			$this->t_not_used = bab_translate("Not used");
+			$this->t_version_directories = bab_translate("List of version directories");
+
+			if (!empty($_POST)) {
+				$this->val = $_POST;
+			} else {
+				$this->val = array(
+					'upgrade' => true,
+					'copy_addons' => true
+					);
+			}
 			
 			$el_to_init = array('dir_name');
-			foreach($el_to_init as $value)
+			foreach($el_to_init as $value) {
 				$this->val[$value] = isset($this->val[$value]) ? $this->val[$value] : '';
+			}
+
+			include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
+			$this->basedir = dirname($_SERVER['SCRIPT_FILENAME']).'/';
+			$this->dh = opendir($this->basedir);
+			}
+
+
+			function getnextdir(&$skip) {
+				if (($file = readdir($this->dh)) !== false) {
+					if (is_dir($this->basedir.$file) && file_exists($this->basedir.$file.'/version.inc')) {
+						$this->altbg = !$this->altbg;
+						$this->name = $file;
+						$this->current_core = $file.'/' === $GLOBALS['babInstallPath'];
+					} else {
+						$skip = true;
+					}
+					return true;
+				}
+				return false;
 			}
 		}
 

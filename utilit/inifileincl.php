@@ -72,6 +72,88 @@ class bab_inifile_requirements {
 			'result'		=> version_compare($value, PHP_VERSION, '<=')
 		);
 	}
+
+	function require_mysql_version($value) {
+
+		$db = &$GLOBALS['babDB'];
+		$arr = $db->db_fetch_assoc($db->db_query("show variables like 'version'"));
+		
+		$mysql = 'Undefined';
+		
+		if (preg_match('/([0-9\.]+)/', $arr['Value'], $matches)) {
+			$mysql = $matches[1];
+		}
+
+		return array(
+			'description'	=> bab_translate("MySQL version"),
+			'current'		=> $mysql,
+			'result'		=> version_compare($value, $mysql, '<=')
+		);
+	}
+
+	function require_images_directory($value) {
+
+		$images = dirname($_SERVER['SCRIPT_FILENAME']).'/images/';
+		$status = is_dir($images) && is_writable($images.'articles/') && is_writable($images.'common/') && is_writable($images.'tmp/');
+		
+		return array(
+			'description'	=> bab_translate("Images directory for articles"),
+			'current'		=> $status ? bab_translate("Available") : bab_translate("Unavailable"),
+			'result'		=> $status
+		);
+	}
+
+	function require_versions_directory($value) {
+
+		$core = dirname($_SERVER['SCRIPT_FILENAME']).'/';
+		$status = is_writable($core);
+
+		return array(
+			'description'	=> bab_translate("Writable directory for upgrades"),
+			'current'		=> $status ? bab_translate("Available") : bab_translate("Unavailable"),
+			'result'		=> $status
+		);
+	}
+
+	function require_mod_imap($value) {
+		
+		$status = extension_loaded('imap');
+		return array(
+			'description'	=> bab_translate("Imap php module"),
+			'current'		=> $status ? bab_translate("Available") : bab_translate("Unavailable"),
+			'result'		=> $status
+		);
+	}
+
+	function require_mod_xml($value) {
+		
+		$status = extension_loaded('xml');
+		return array(
+			'description'	=> bab_translate("Xml php module"),
+			'current'		=> $status ? bab_translate("Available") : bab_translate("Unavailable"),
+			'result'		=> $status
+		);
+	}
+
+	function require_mod_calendar($value) {
+		
+		$status = extension_loaded('calendar');
+		return array(
+			'description'	=> bab_translate("Calendar php module"),
+			'current'		=> $status ? bab_translate("Available") : bab_translate("Unavailable"),
+			'result'		=> $status
+		);
+	}
+
+	function require_mod_ldap($value) {
+		
+		$status = extension_loaded('ldap');
+		return array(
+			'description'	=> bab_translate("Ldap php module"),
+			'current'		=> $status ? bab_translate("Available") : bab_translate("Unavailable"),
+			'result'		=> $status
+		);
+	}
 }
 
 
@@ -102,12 +184,19 @@ class bab_inifile {
 	}
 
 	function inifile($file) {
-		 $arr = parse_ini_file($file, true);
-		 $this->inifile = $arr['general'];
-		 if (isset($arr['addons'])) {
-			$this->addons = $arr['addons'];
+		 if ($arr = parse_ini_file($file, true)) {
+			 $this->inifile = $arr['general'];
+			 $this->addons = array();
+			 if (isset($arr['addons'])) {
+				$this->addons = $arr['addons'];
+			 }
+			 $this->recommendations = array();
+			 if (isset($arr['recommendations'])) {
+				$this->recommendations = $arr['recommendations'];
+			 }
+			 return true;
 		 } else {
-			$this->addons = array();
+			return false;
 		 }
 	}
 
@@ -144,10 +233,24 @@ class bab_inifile {
 			$keyword = 'require_'.$keyword;
 			if (method_exists ( $requirementsObj, $keyword )) {
 				 $arr = $requirementsObj->$keyword($value);
-				 $arr['required'] = $value;
+				 $arr['required'] = bab_translate($value);
+				 $arr['recommended'] = false;
 				 $return[] = $arr;
 			}
 		}
+
+		
+
+		foreach($this->recommendations as $keyword => $value) {
+			$keyword = 'require_'.$keyword;
+			if (method_exists ( $requirementsObj, $keyword )) {
+				 $arr = $requirementsObj->$keyword($value);
+				 $arr['required'] = false;
+				 $arr['recommended'] = bab_translate($value);
+				 $return[] = $arr;
+			}
+		}
+
 
 		if ($this->addons) {
 
@@ -163,6 +266,7 @@ class bab_inifile {
 					$return[] = array(
 						'description'	=> bab_translate('Ovidentia addon').' : '.$name,
 						'required'		=> $required,
+						'recommended'	=> false,
 						'current'		=> $installed[$name],
 						'result'		=> version_compare($required, $installed[$name], '<=')
 					);
@@ -170,6 +274,7 @@ class bab_inifile {
 					$return[] = array(
 						'description'	=> bab_translate('Ovidentia addon').' : '.$name,
 						'required'		=> $required,
+						'recommended'	=> false,
 						'current'		=> bab_translate('Not installed or disabled'),
 						'result'		=> false
 					);
@@ -203,7 +308,7 @@ class bab_inifile {
 		
 		$requirements = $this->getRequirements();
 		foreach($requirements as $arr) {
-			if (false === $arr['result']) {
+			if (false === $arr['result'] && false !== $arr['required']) {
 				return false;
 			}
 		}

@@ -27,12 +27,21 @@ description="Ovidentia"
 db_prefix="bab_"
 version="5.8.6"
 
-; ov_version test is available since 5.8.1
+; available since 5.8.1
 
 ov_version="0.0.0"
-
-; php_version test is available since 5.8.1
-
 php_version="4.1.2"
+
+; available since 5.8.7
+
+mysql_version="3.23"
+images_directory="Available" 
+
+[recommendations]
+mod_xml="Available"
+mod_calendar="Available"
+mod_ldap="Available"
+versions_directory="Available"
+mod_imap="Available"
 
 ; DO NOT REMOVE THIS LINE ?>
