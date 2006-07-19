@@ -44,7 +44,7 @@ function accessCalendar($calid, $urla)
 			$this->upduserstxt = bab_translate("Update access");
 			$this->usertxt = bab_translate("Add user");
 			$this->addtxt = bab_translate("Add");
-			$req = "select cut.id_user, cut.bwrite, ut.firstname, ut.lastname from ".BAB_CALACCESS_USERS_TBL." cut left join ".BAB_USERS_TBL." ut on ut.id=cut.id_user where cut.id_cal='".$calid."'";
+			$req = "select cut.id_user, cut.bwrite, ut.firstname, ut.lastname from ".BAB_CALACCESS_USERS_TBL." cut left join ".BAB_USERS_TBL." ut on ut.id=cut.id_user where cut.id_cal='".$this->db->db_escape_string($calid)."'";
 
 			$res = $this->db->db_query($req);
 
@@ -109,11 +109,11 @@ function addAccessUsers( $nuserid, $calid, $urla)
 	$db = $GLOBALS['babDB'];
 	if( !empty($nuserid) && $nuserid != $GLOBALS['BAB_SESS_USERID'])
 		{
-		$req = "select * from ".BAB_CALACCESS_USERS_TBL." where id_cal='".$calid."' and id_user='".$nuserid."'";
+		$req = "select * from ".BAB_CALACCESS_USERS_TBL." where id_cal='".$db->db_escape_string($calid)."' and id_user='".$db->db_escape_string($nuserid)."'";
 		$res = $db->db_query($req);
 		if( !$res || $db->db_num_rows($res) == 0)
 			{
-			$req = "insert into ".BAB_CALACCESS_USERS_TBL." (id_cal, id_user, bwrite) values ('".$calid."', '".$nuserid."', '0')";
+			$req = "insert into ".BAB_CALACCESS_USERS_TBL." (id_cal, id_user, bwrite) values ('".$db->db_escape_string($calid)."', '".$db->db_escape_string($nuserid)."', '0')";
 			$res = $db->db_query($req);
 			}
 		}
@@ -125,19 +125,19 @@ function updateAccessUsers( $users, $calid, $urla)
 {
 
 	$db = $GLOBALS['babDB'];
-	$res = $db->db_query("select * from ".BAB_CALACCESS_USERS_TBL." where id_cal='".$calid."'");
+	$res = $db->db_query("select * from ".BAB_CALACCESS_USERS_TBL." where id_cal='".$db->db_escape_string($calid)."'");
 	while( $arr = $db->db_fetch_array($res))
 	{
 		if( count($users) > 0 && in_array($arr['id_user'], $users))
 		{
-			$db->db_query("delete from ".BAB_CALACCESS_USERS_TBL." where id_cal='".$calid."' and id_user='".$arr['id_user']."'");
+			$db->db_query("delete from ".BAB_CALACCESS_USERS_TBL." where id_cal='".$db->db_escape_string($calid)."' and id_user='".$db->db_escape_string($arr['id_user'])."'");
 		}
 		else
 		{
 			$opt = 'acc_'.$arr['id_user'];
 			if( isset($GLOBALS[$opt]) )
 			{
-				$db->db_query("update ".BAB_CALACCESS_USERS_TBL." set bwrite='".$GLOBALS[$opt]."' where id_cal='".$calid."' and id_user='".$arr['id_user']."'");
+				$db->db_query("update ".BAB_CALACCESS_USERS_TBL." set bwrite='".$db->db_escape_string($GLOBALS[$opt])."' where id_cal='".$db->db_escape_string($calid)."' and id_user='".$db->db_escape_string($arr['id_user'])."'");
 			}
 		}
 
@@ -174,7 +174,7 @@ function calendarOptions($calid, $urla)
 			$this->defaultview = bab_translate("Calendar default view");
 			$this->calweekwork = 'Y' == $GLOBALS['babBody']->babsite['user_workdays'];
 			$db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_CAL_USER_OPTIONS_TBL." where id_user='".$BAB_SESS_USERID."'";
+			$req = "select * from ".BAB_CAL_USER_OPTIONS_TBL." where id_user='".$db->db_escape_string($BAB_SESS_USERID)."'";
 			$res = $db->db_query($req);
 			$this->arr = $db->db_fetch_array($res);
 			$this->arrdv = array(bab_translate("Month"), bab_translate("Week"),bab_translate("Day"));
@@ -433,16 +433,56 @@ function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor,
 		$endtime = $tmp;
 		}
 
-	$req = "select * from ".BAB_CAL_USER_OPTIONS_TBL." where id_user='".$BAB_SESS_USERID."'";
+	$req = "select * from ".BAB_CAL_USER_OPTIONS_TBL." where id_user='".$db->db_escape_string($BAB_SESS_USERID)."'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
-		$req = "update ".BAB_CAL_USER_OPTIONS_TBL." set startday='".$startday."', allday='".$allday."', start_time='".$starttime."', end_time='".$endtime."', usebgcolor='".$usebgcolor."', elapstime='".$elapstime."', defaultview='".$defaultview."', dispdays='".$dispdays."', workdays='".$workdays."', week_numbers='Y' where id_user='".$BAB_SESS_USERID."'";
+		$req = "UPDATE ".BAB_CAL_USER_OPTIONS_TBL." SET
+			startday	=".$db->quote($startday).", 
+			allday		=".$db->quote($allday).", 
+			start_time	=".$db->quote($starttime).", 
+			end_time	=".$db->quote($endtime).", 
+			usebgcolor	=".$db->quote($usebgcolor).", 
+			elapstime	=".$db->quote($elapstime).", 
+			defaultview	=".$db->quote($defaultview).", 
+			dispdays	=".$db->quote($dispdays).", 
+			workdays	=".$db->quote($workdays).", 
+			week_numbers='Y' 
+		WHERE 
+			id_user=".$db->quote($BAB_SESS_USERID)."
+			";
 		}
 	else
 		{
-		$req = "insert into ".BAB_CAL_USER_OPTIONS_TBL." ( id_user, startday, allday, start_time, end_time, usebgcolor, elapstime, defaultview, dispdays, workdays, week_numbers) values ";
-		$req .= "('".$BAB_SESS_USERID."', '".$startday."', '".$allday."', '".$starttime."', '".$endtime."', '".$usebgcolor."', '".$elapstime."', '".$defaultview."', '".$dispdays."', '".$workdays."', 'Y')";
+		$req = "insert into ".BAB_CAL_USER_OPTIONS_TBL." 
+			( 
+				id_user, 
+				startday, 
+				allday, 
+				start_time, 
+				end_time, 
+				usebgcolor, 
+				elapstime, 
+				defaultview, 
+				dispdays, 
+				workdays, 
+				week_numbers
+			) 
+		VALUES ";
+
+		$req .= "(
+			".$db->quote($BAB_SESS_USERID).", 
+			".$db->quote($startday).",
+			".$db->quote($allday).",
+			".$db->quote($starttime).",
+			".$db->quote($endtime).",
+			".$db->quote($usebgcolor).",
+			".$db->quote($elapstime).",
+			".$db->quote($defaultview).",
+			".$db->quote($dispdays).",
+			".$db->quote($workdays).",
+			'Y'
+		";
 		}
 	$res = $db->db_query($req);
 	}

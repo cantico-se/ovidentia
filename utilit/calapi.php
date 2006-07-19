@@ -43,7 +43,7 @@ function bab_getPersonalCalendar($iduser)
 {
 	global $babDB;
 
-	$res = $babDB->db_query("select id from ".BAB_CALENDAR_TBL." where owner='".$iduser."' and type='".BAB_CAL_USER_TYPE."'");
+	$res = $babDB->db_query("select id from ".BAB_CALENDAR_TBL." where owner='".$babDB->db_escape_string($iduser)."' and type='".BAB_CAL_USER_TYPE."'");
 	if( $res && $babDB->db_num_rows($res) == 1 )
 	{
 		$arr = $babDB->db_fetch_array($res);
@@ -74,28 +74,28 @@ function bab_calGetEvents(&$params)
 		return $events;
 		}
 
-	$req = "select ce.*, cc.name as cat_name, cc.description as cat_desc, cc.bgcolor as cat_color, ceo.status as status, ceo.id_cal as id_calendar from ".BAB_CAL_EVENTS_TBL." ce left join ".BAB_CAL_EVENTS_OWNERS_TBL." ceo on ceo.id_event=ce.id left join ".BAB_CAL_CATEGORIES_TBL." cc on cc.id=ce.id_cat where ceo.id_cal='".$cals."' and ceo.status != '".BAB_CAL_STATUS_DECLINED."' and ce.start_date < '".$params['enddate']."' and  ce.end_date > '".$params['begindate']."'";
+	$req = "select ce.*, cc.name as cat_name, cc.description as cat_desc, cc.bgcolor as cat_color, ceo.status as status, ceo.id_cal as id_calendar from ".BAB_CAL_EVENTS_TBL." ce left join ".BAB_CAL_EVENTS_OWNERS_TBL." ceo on ceo.id_event=ce.id left join ".BAB_CAL_CATEGORIES_TBL." cc on cc.id=ce.id_cat where ceo.id_cal='".$babDB->db_escape_string($cals)."' and ceo.status != '".BAB_CAL_STATUS_DECLINED."' and ce.start_date < '".$babDB->db_escape_string($params['enddate'])."' and  ce.end_date > '".$babDB->db_escape_string($params['begindate'])."'";
 
 	if( isset($params['id_category']))
 		{
 		if( is_array($params['id_category']) && count($params['id_category']) > 0 )
 			{
-			$req.= " and ce.id_cat in (".implode(',', $params['id_category']).")";
+			$req.= " and ce.id_cat in (".$babDB->quote($params['id_category']).")";
 			}
 		else
 			{
-			$req.= " and ce.id_cat='".$params['id_category']."'";
+			$req.= " and ce.id_cat='".$babDB->db_escape_string($params['id_category'])."'";
 			}
 		}
 
-	$req .= " order by ce.start_date ".$params['order'];
+	$req .= " order by ce.start_date ".$babDB->db_escape_string($params['order']);
 
 	$res = $babDB->db_query($req);
 	while( $arr = $babDB->db_fetch_array($res))
 	{
 		if( !empty($arr['hash']) && $arr['hash'][0] == 'V' )
 			{
-			list($quantity) = $babDB->db_fetch_row($babDB->db_query("select sum(quantity) from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry ='".substr($arr['hash'], 2)."'"));
+			list($quantity) = $babDB->db_fetch_row($babDB->db_query("select sum(quantity) from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry ='".$babDB->db_escape_string(substr($arr['hash'], 2))."'"));
 			}
 		else
 			{
@@ -135,7 +135,7 @@ function bab_getResourceCalendars()
 	global $babBody, $babDB;
 	$rescals = array();
 
-	$res = $babDB->db_query("select cpt.*, ct.id as idcal from ".BAB_CAL_RESOURCES_TBL." cpt left join ".BAB_CALENDAR_TBL." ct on ct.owner=cpt.id where ct.actif='Y' and  ct.type='".BAB_CAL_RES_TYPE."' and id_dgowner='".$babBody->currentAdmGroup."' ORDER BY cpt.name");
+	$res = $babDB->db_query("select cpt.*, ct.id as idcal from ".BAB_CAL_RESOURCES_TBL." cpt left join ".BAB_CALENDAR_TBL." ct on ct.owner=cpt.id where ct.actif='Y' and  ct.type='".BAB_CAL_RES_TYPE."' and id_dgowner='".$babDB->db_escape_string($babBody->currentAdmGroup)."' ORDER BY cpt.name");
 	while( $arr = $babDB->db_fetch_array($res))
 		{
 		$tmp = array();
@@ -169,7 +169,7 @@ function bab_getPublicCalendars()
 	global $babBody, $babDB;
 	$rescals = array();
 
-	$res = $babDB->db_query("select cpt.*, ct.id as idcal from ".BAB_CAL_PUBLIC_TBL." cpt left join ".BAB_CALENDAR_TBL." ct on ct.owner=cpt.id where ct.actif='Y' and ct.type='".BAB_CAL_PUB_TYPE."' and id_dgowner='".$babBody->currentAdmGroup."' ORDER BY cpt.name");
+	$res = $babDB->db_query("select cpt.*, ct.id as idcal from ".BAB_CAL_PUBLIC_TBL." cpt left join ".BAB_CALENDAR_TBL." ct on ct.owner=cpt.id where ct.actif='Y' and ct.type='".BAB_CAL_PUB_TYPE."' and id_dgowner='".$babDB->db_escape_string($babBody->currentAdmGroup)."' ORDER BY cpt.name");
 	while( $arr = $babDB->db_fetch_array($res))
 		{
 		$tmp = array();
@@ -223,7 +223,7 @@ function bab_emptyCalendar( $idcal )
 	global $babDB;
 	include_once $GLOBALS['babInstallPath']."utilit/evtincl.php";
 
-	$res = $babDB->db_query("select id_event from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_cal='".$idcal."'");
+	$res = $babDB->db_query("select id_event from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_cal='".$babDB->db_escape_string($idcal)."'");
 
 	while( $rr = $babDB->db_fetch_array($res) )
 		{
@@ -247,7 +247,7 @@ function bab_calGetWorkingDays($iIdUser, &$sWorkingDays)
 			'FROM ' .
 				BAB_CAL_USER_OPTIONS_TBL . ' ' .
 			'WHERE ' .
-				'id_user = \'' . $iIdUser . '\'';
+				'id_user = \'' . $babDB->db_escape_string($iIdUser) . '\'';
 			
 		//bab_debug($query);
 			

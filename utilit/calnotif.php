@@ -88,7 +88,7 @@ function sendReminders()
 			$mail->mailAltBody($message);
 
 			$mail->send();
-			$babDB->db_query("update ".BAB_CAL_EVENTS_REMINDERS_TBL." set processed='Y' where id_event='".$arr['id_event']."' and id_user='".$arr['id_user']."'");
+			$babDB->db_query("update ".BAB_CAL_EVENTS_REMINDERS_TBL." set processed='Y' where id_event='".$babDB->db_escape_string($arr['id_event'])."' and id_user='".$babDB->db_escape_string($arr['id_user'])."'");
 		}
 	}
 }
@@ -105,7 +105,7 @@ function updatePopupNotifier()
 		function popupNotifierCls()
 			{
 			global $babDB;
-			$this->resevent = $babDB->db_query("select ce.*, cer.* from ".BAB_CAL_EVENTS_REMINDERS_TBL." cer left join ".BAB_CAL_EVENTS_TBL." ce on ce.id=cer.id_event where cer.id_user='".$GLOBALS['BAB_SESS_USERID']."' and (unix_timestamp(ce.start_date)-((cer.day*24*60*60)+(cer.hour*60*60)+(cer.minute*60))) < unix_timestamp() and processed='N'");
+			$this->resevent = $babDB->db_query("select ce.*, cer.* from ".BAB_CAL_EVENTS_REMINDERS_TBL." cer left join ".BAB_CAL_EVENTS_TBL." ce on ce.id=cer.id_event where cer.id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and (unix_timestamp(ce.start_date)-((cer.day*24*60*60)+(cer.hour*60*60)+(cer.minute*60))) < unix_timestamp() and processed='N'");
 			$this->countevents = $babDB->db_num_rows($this->resevent);
 			$this->altbg = true;
 			$this->datetxt = bab_translate("Date");
@@ -146,7 +146,7 @@ function updatePopupNotifier()
 function dismissEvent($evtid)
 {
 	global $babDB;
-	$babDB->db_query("update ".BAB_CAL_EVENTS_REMINDERS_TBL." set processed='Y' where id_event='".$evtid."' and id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+	$babDB->db_query("update ".BAB_CAL_EVENTS_REMINDERS_TBL." set processed='Y' where id_event='".$babDB->db_escape_string($evtid)."' and id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
 }
 
 if( $idx == 'dismiss')

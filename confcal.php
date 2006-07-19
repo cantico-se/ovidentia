@@ -26,7 +26,7 @@ include_once "base.php";
 function bab_getCategoryCalName($id)
 	{
 	$db = $GLOBALS['babDB'];
-	$query = "select name from ".BAB_CATEGORIESCAL_TBL." where id='$id'";
+	$query = "select name from ".BAB_CATEGORIESCAL_TBL." where id=".$db->quote($id);
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -42,7 +42,7 @@ function bab_getCategoryCalName($id)
 function bab_getResourceCalName($id)
 	{
 	$db = $GLOBALS['babDB'];
-	$query = "select name from ".BAB_RESOURCESCAL_TBL." where id='$id'";
+	$query = "select name from ".BAB_RESOURCESCAL_TBL." where id=".$db->quote($id);
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -84,7 +84,7 @@ function categoryCalModify($userid, $id)
 			$this->modify = bab_translate("Modify Category");
 			$this->delete = bab_translate("Delete");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_CATEGORIESCAL_TBL." where id='$id'";
+			$req = "select * from ".BAB_CATEGORIESCAL_TBL." where id=".$this->db->quote($id);
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
 			$this->userid = $userid;
@@ -121,7 +121,7 @@ function resourceCalModify($userid, $id)
 			$this->modify = bab_translate("Modify Resource");
 			$this->delete = bab_translate("Delete");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_RESOURCESCAL_TBL." where id='$id'";
+			$req = "select * from ".BAB_RESOURCESCAL_TBL." where id=".$this->db->quote($id);
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
 			$this->userid = $userid;
@@ -239,7 +239,7 @@ function modifyResourceCal($userid, $oldname, $name, $description, $id)
 		}
 
 	$db = $GLOBALS['babDB'];
-	$query = "select * from ".BAB_RESOURCESCAL_TBL." where name='$oldname'";	
+	$query = "select * from ".BAB_RESOURCESCAL_TBL." where name=".$db->quote($oldname);	
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) < 1)
 		{
@@ -265,12 +265,12 @@ function confirmDeletecategoriescal($userid, $id)
 	{
 	$db = $GLOBALS['babDB'];
 
-	$req = "select* from ".BAB_CATEGORIESCAL_TBL." where id='$id'";
+	$req = "select* from ".BAB_CATEGORIESCAL_TBL." where id=".$db->quote($id);
 	$res = $db->db_query($req);
 	$arr = $db->db_fetch_array($res);
 
 	// delete category
-	$req = "delete from ".BAB_CATEGORIESCAL_TBL." where id='$id'";
+	$req = "delete from ".BAB_CATEGORIESCAL_TBL." where id=".$db->quote($id);
 	$res = $db->db_query($req);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=confcals&idx=listcat&userid=".$userid);
 	}
@@ -279,12 +279,12 @@ function confirmDeleteresourcescal($userid, $id)
 	{
 	$db = $GLOBALS['babDB'];
 
-	$req = "select* from ".BAB_RESOURCESCAL_TBL." where id='$id'";
+	$req = "select* from ".BAB_RESOURCESCAL_TBL." where id=".$db->quote($id);
 	$res = $db->db_query($req);
 	$arr = $db->db_fetch_array($res);
 
 	// delete category
-	$req = "delete from ".BAB_RESOURCESCAL_TBL." where id='$id'";
+	$req = "delete from ".BAB_RESOURCESCAL_TBL." where id=".$db->quote($id);
 	$res = $db->db_query($req);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=confcals&idx=listres&userid=".$userid);
 	}
@@ -300,12 +300,11 @@ if( $userid == 0 )
 		{
 		return;
 		}
-	//array_push($grpid, 1);
 	}
 else
 	{
 	$db = $GLOBALS['babDB'];
-	$req = "select * from ".BAB_GROUPS_TBL." where manager='".$userid."'";
+	$req = "select * from ".BAB_GROUPS_TBL." where manager=".$db->quote($userid);
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
 		{

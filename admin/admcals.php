@@ -192,7 +192,7 @@ function calendarsPublic()
 			$this->checkall = bab_translate("Check all");
 			$this->update = bab_translate("Update");
 
-			$this->res = $babDB->db_query("select cpt.*, ct.actif, ct.id as idcal from ".BAB_CAL_PUBLIC_TBL." cpt left join ".BAB_CALENDAR_TBL." ct on ct.owner=cpt.id where ct.type='".BAB_CAL_PUB_TYPE."' and id_dgowner='".$babBody->currentAdmGroup."' ORDER BY cpt.name");
+			$this->res = $babDB->db_query("select cpt.*, ct.actif, ct.id as idcal from ".BAB_CAL_PUBLIC_TBL." cpt left join ".BAB_CALENDAR_TBL." ct on ct.owner=cpt.id where ct.type='".BAB_CAL_PUB_TYPE."' and id_dgowner='".$babDB->db_escape_string($babBody->currentAdmGroup)."' ORDER BY cpt.name");
 			$this->count = $babDB->db_num_rows($this->res);
 			}
 
@@ -255,7 +255,7 @@ function calendarsResource()
 			$this->checkall = bab_translate("Check all");
 			$this->update = bab_translate("Update");
 
-			$this->res = $babDB->db_query("select cpt.*, ct.actif, ct.id as idcal from ".BAB_CAL_RESOURCES_TBL." cpt left join ".BAB_CALENDAR_TBL." ct on ct.owner=cpt.id where ct.type='".BAB_CAL_RES_TYPE."' and id_dgowner='".$babBody->currentAdmGroup."' ORDER BY cpt.name");
+			$this->res = $babDB->db_query("select cpt.*, ct.actif, ct.id as idcal from ".BAB_CAL_RESOURCES_TBL." cpt left join ".BAB_CALENDAR_TBL." ct on ct.owner=cpt.id where ct.type='".BAB_CAL_RES_TYPE."' and id_dgowner='".$babDB->db_escape_string($babBody->currentAdmGroup)."' ORDER BY cpt.name");
 			$this->count = $babDB->db_num_rows($this->res);
 			}
 
@@ -318,7 +318,7 @@ function calendarsAddPublic($name, $desc, $idsa)
 			$this->add = "addp";
 			$this->idcal = '';
 			$this->tgval = 'admcals';
-			$this->sares = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babBody->currentAdmGroup."' order by name asc");
+			$this->sares = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babDB->db_escape_string($babBody->currentAdmGroup)."' order by name asc");
 			if( !$this->sares )
 				$this->sacount = 0;
 			else
@@ -377,7 +377,7 @@ function calendarsAddResource($name, $desc, $idsa)
 			$this->add = "addr";
 			$this->idcal = '';
 			$this->tgval = 'admcals';
-			$this->sares = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babBody->currentAdmGroup."' order by name asc");
+			$this->sares = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babDB->db_escape_string($babBody->currentAdmGroup)."' order by name asc");
 			if( !$this->sares )
 				$this->sacount = 0;
 			else
@@ -507,12 +507,6 @@ function addResourceCalendar($calname, $caldesc, $calidsa)
 		return false;
 		}
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$calname = addslashes($calname);
-		$caldesc = addslashes($caldesc);
-		}
-
 	$babDB->db_query("insert into ".BAB_CAL_RESOURCES_TBL." (name, description, id_dgowner, idsa) values ('" .$babDB->db_escape_string($calname). "', '".$babDB->db_escape_string($caldesc)."', '".$babDB->db_escape_string($babBody->currentAdmGroup)."', '".$babDB->db_escape_string($calidsa)."')");
 	$idowner = $babDB->db_insert_id();
 	$babDB->db_query("insert into ".BAB_CALENDAR_TBL." (owner, type) values ('" .$babDB->db_escape_string($idowner). "', '".BAB_CAL_RES_TYPE."')");
@@ -547,7 +541,7 @@ function updatePublicCalendars($calids)
 		else
 			$enabled = "Y";
 
-		$babDB->db_query("update ".BAB_CALENDAR_TBL." set actif='".$enabled."' where id='".$row['id']."'");
+		$babDB->db_query("update ".BAB_CALENDAR_TBL." set actif='".$babDB->db_escape_string($enabled)."' where id='".$babDB->db_escape_string($row['id'])."'");
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
 }
@@ -564,7 +558,7 @@ function updateResourceCalendars($calids)
 		else
 			$enabled = "Y";
 
-		$babDB->db_query("update ".BAB_CALENDAR_TBL." set actif='".$enabled."' where id='".$row['id']."'");
+		$babDB->db_query("update ".BAB_CALENDAR_TBL." set actif='".$babDB->db_escape_string($enabled)."' where id='".$babDB->db_escape_string($row['id'])."'");
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
 }
@@ -585,7 +579,7 @@ function updatePersonalCalendars($calperids)
 
 	for( $i = 0; $i < count($calperids); $i++)
 	{
-		$db->db_query("update ".BAB_GROUPS_TBL." set pcalendar='Y' where id='".$calperids[$i]."'"); 
+		$db->db_query("update ".BAB_GROUPS_TBL." set pcalendar='Y' where id='".$db->db_escape_string($calperids[$i])."'"); 
 	}
 
 	$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
@@ -600,9 +594,9 @@ function deleteCalendarCategory($idcat)
 {
 	global $babDB, $babBody;
 	
-	$babDB->db_query("delete from ".BAB_CAL_CATEGORIES_TBL." where id='".$idcat."'");
-	$babDB->db_query("update ".BAB_CAL_EVENTS_TBL." set id_cat='0' where id_cat='".$idcat."'");
-	$babDB->db_query("update ".BAB_VAC_COLLECTIONS_TBL." set id_cat='0' where id_cat='".$idcat."'");
+	$babDB->db_query("delete from ".BAB_CAL_CATEGORIES_TBL." WHERE id=".$babDB->quote($idcat));
+	$babDB->db_query("update ".BAB_CAL_EVENTS_TBL." set id_cat='0' WHERE id_cat=".$babDB->quote($idcat));
+	$babDB->db_query("update ".BAB_VAC_COLLECTIONS_TBL." set id_cat='0' WHERE id_cat=".$babDB->quote($idcat));
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admcals&idx=cats");
 }
 

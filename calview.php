@@ -70,7 +70,17 @@ function upComingEvents()
 			$babBody->icalendars->initializeCalendars();
 			if (!empty($babBody->icalendars->id_percal))
 				{
-				$this->resevent = $this->db->db_query("select ce.*, ceo.id_cal from ".BAB_CAL_EVENTS_TBL." ce left join ".BAB_CAL_EVENTS_OWNERS_TBL." ceo on ce.id=ceo.id_event where ceo.id_cal='".$babBody->icalendars->id_percal."' and ce.start_date < '".$this->daymax."' and ce.end_date > '".$this->daymin."'order by ce.start_date");
+				$this->resevent = $this->db->db_query(
+					"select 
+						ce.*, 
+						ceo.id_cal 
+					from ".BAB_CAL_EVENTS_TBL." ce 
+					left join ".BAB_CAL_EVENTS_OWNERS_TBL." ceo on ce.id=ceo.id_event 
+					where ceo.id_cal='".$this->db->db_escape_string($babBody->icalendars->id_percal)."' 
+						and ce.start_date < '".$this->db->db_escape_string($this->daymax)."' 
+						and ce.end_date > '".$this->db->db_escape_string($this->daymin)."'
+					order by ce.start_date
+				");
 				$this->countevent = $this->db->db_num_rows($this->resevent);
 				}
 			else
@@ -87,7 +97,16 @@ function upComingEvents()
 
 		if (count($idpubcals))
 				{
-				$this->resgrpevent = $this->db->db_query("select ce.*, ceo.id_cal from ".BAB_CAL_EVENTS_TBL." ce left join ".BAB_CAL_EVENTS_OWNERS_TBL." ceo on ce.id=ceo.id_event where ceo.id_cal IN ('".implode('\',\'', $idpubcals)."') and ce.start_date < '".$this->daymax."' and ce.end_date > '".$this->daymin."'order by ce.start_date");
+				$this->resgrpevent = $this->db->db_query("
+				
+				select ce.*, ceo.id_cal from ".BAB_CAL_EVENTS_TBL." ce 
+					left join ".BAB_CAL_EVENTS_OWNERS_TBL." ceo on ce.id=ceo.id_event 
+					where ceo.id_cal IN (".$this->db->quote($idpubcals).") 
+						AND ce.start_date < '".$this->db->db_escape_string($this->daymax)."' 
+						AND ce.end_date > '".$this->db->db_escape_string($this->daymin)."'
+					ORDER BY ce.start_date 
+					");
+
 				$this->countgrpevent = $this->db->db_num_rows($this->resgrpevent);
 				}
 			else
@@ -181,7 +200,7 @@ function newEmails()
 			{
 			global $BAB_SESS_USERID, $BAB_HASH_VAR;
 			$this->db = $GLOBALS['babDB'];
-			$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$BAB_SESS_USERID."'";
+			$req = "select *, DECODE(password, \"".$this->db->db_escape_string($BAB_HASH_VAR)."\") as accpass from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$this->db->db_escape_string($BAB_SESS_USERID)."'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			$this->newmails = bab_translate("Waiting mails");
@@ -193,7 +212,7 @@ function newEmails()
 			if( $i < $this->count )
 				{
 				$arr = $this->db->db_fetch_array($this->res);
-				$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where id='".$arr['domain']."'";
+				$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where id='".$this->db->db_escape_string($arr['domain'])."'";
 				$res2 = $this->db->db_query($req);
 				$this->domain = "";
 				$this->nbemails = "";
@@ -254,19 +273,29 @@ function newFiles($nbdays)
 			global $babBody, $BAB_SESS_USERID, $BAB_HASH_VAR;
 			$this->nbdays = $nbdays;
 			$this->db = $GLOBALS['babDB'];
-			$req = "select f.* from ".BAB_FILES_TBL." f, ".BAB_FMDOWNLOAD_GROUPS_TBL." fmg,  ".BAB_USERS_GROUPS_TBL." ug where f.bgroup='Y' and f.state='' and f.confirmed='Y' and fmg.id_object = f.id_owner and ( fmg.id_group='2'";
+			$req = "select f.* 
+			from ".BAB_FILES_TBL." f, 
+				".BAB_FMDOWNLOAD_GROUPS_TBL." fmg,  
+				".BAB_USERS_GROUPS_TBL." ug 
+			where 
+				f.bgroup='Y' 
+				and f.state='' 
+				and f.confirmed='Y' 
+				and fmg.id_object = f.id_owner 
+				and ( fmg.id_group='2'
+			";
+
 			if( $BAB_SESS_USERID != "" )
-			$req .= " or fmg.id_group='1' or (fmg.id_group=ug.id_group and ug.id_object='".$BAB_SESS_USERID."')";
+			$req .= " or fmg.id_group='1' or (fmg.id_group=ug.id_group and ug.id_object='".$this->db->db_escape_string($BAB_SESS_USERID)."')";
 			$req .= ")";
 			
 			if( $this->nbdays > 0)
-				$req .= " and f.modified >= DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
+				$req .= " and f.modified >= DATE_ADD(\"".$this->db->db_escape_string($babBody->lastlog)."\", INTERVAL -".$this->db->db_escape_string($this->nbdays)." DAY)";
 			else
-				$req .= " and f.modified >= '".$babBody->lastlog."'";
+				$req .= " and f.modified >= '".$this->db->db_escape_string($babBody->lastlog)."'";
 
 			$req .= " group by f.id";
 		
-//echo $req . '<br />';
 
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);

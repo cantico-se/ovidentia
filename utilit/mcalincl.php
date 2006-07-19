@@ -343,13 +343,13 @@ class bab_icalendar
 			$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
 
 			$this->events = array();
-			$res = $babDB->db_query("select ceo.*, ce.* from ".BAB_CAL_EVENTS_OWNERS_TBL." ceo left join ".BAB_CAL_EVENTS_TBL." ce on ceo.id_event=ce.id where ceo.id_cal='".$calid."' and ceo.status != '".BAB_CAL_STATUS_DECLINED."' and ce.start_date <= '".$enddate."' and  ce.end_date >= '".$startdate."' order by ce.start_date asc");
+			$res = $babDB->db_query("select ceo.*, ce.* from ".BAB_CAL_EVENTS_OWNERS_TBL." ceo left join ".BAB_CAL_EVENTS_TBL." ce on ceo.id_event=ce.id where ceo.id_cal='".$babDB->db_escape_string($calid)."' and ceo.status != '".BAB_CAL_STATUS_DECLINED."' and ce.start_date <= '".$babDB->db_escape_string($enddate)."' and  ce.end_date >= '".$babDB->db_escape_string($startdate)."' order by ce.start_date asc");
 			$idevtarr = array();
 			while( $arr = $babDB->db_fetch_array($res))
 				{
 				$arr['alert'] = false;
 				$arr['idcal_owners'] = array(); /* id calendars that ownes this event */
-				$resco = $babDB->db_query("select ceo.id_cal from ".BAB_CAL_EVENTS_OWNERS_TBL." ceo where ceo.id_event='".$arr['id']."' and ceo.id_cal != '".$calid."'");
+				$resco = $babDB->db_query("select ceo.id_cal from ".BAB_CAL_EVENTS_OWNERS_TBL." ceo where ceo.id_event='".$babDB->db_escape_string($arr['id'])."' and ceo.id_cal != '".$babDB->db_escape_string($calid)."'");
 				while( $arr2 = $babDB->db_fetch_array($resco))
 					{
 					$arr['idcal_owners'][] = $arr2['id_cal'];
@@ -379,13 +379,13 @@ class bab_icalendar
 			if( !empty($GLOBALS['BAB_SESS_USERID']) && count($idevtarr) > 0 )
 				{
 				$eventsnotes = array();
-				$res = $babDB->db_query("select * from ".BAB_CAL_EVENTS_NOTES_TBL." where id_event in (".implode(',', $idevtarr).") and id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+				$res = $babDB->db_query("select * from ".BAB_CAL_EVENTS_NOTES_TBL." where id_event in (".$babDB->quote($idevtarr).") and id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
 				while( $arr = $babDB->db_fetch_array($res))
 					{
 					$eventsnotes[$arr['id_event']] = $arr['note'];
 					}
 				$eventsalerts = array();
-				$res = $babDB->db_query("select id_event from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_event in (".implode(',', $idevtarr).") and id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+				$res = $babDB->db_query("select id_event from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_event in (".$babDB->quote( $idevtarr).") and id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
 				while( $arr = $babDB->db_fetch_array($res))
 					{
 					$eventsalerts[$arr['id_event']] = 1;
@@ -949,14 +949,14 @@ if ($GLOBALS['BAB_SESS_LOGGED'] && !empty($_POST['database_record']))
 	$babBody->icalendars->user_calendarids = implode(',',$selected);
 	
 	$db = &$GLOBALS['babDB'];
-	list($n) = $db->db_fetch_array($db->db_query("SELECT COUNT(*) FROM ".BAB_CAL_USER_OPTIONS_TBL." WHERE id_user='".$GLOBALS['BAB_SESS_USERID']."'"));
+	list($n) = $db->db_fetch_array($db->db_query("SELECT COUNT(*) FROM ".BAB_CAL_USER_OPTIONS_TBL." WHERE id_user='".$db->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'"));
 	if ($n > 0)
 		{
-		$db->db_query("UPDATE ".BAB_CAL_USER_OPTIONS_TBL." SET  user_calendarids='".$babBody->icalendars->user_calendarids."' WHERE id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+		$db->db_query("UPDATE ".BAB_CAL_USER_OPTIONS_TBL." SET  user_calendarids='".$db->db_escape_string($babBody->icalendars->user_calendarids)."' WHERE id_user='".$db->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
 		}
 	else
 		{
-		$db->db_query("insert into ".BAB_CAL_USER_OPTIONS_TBL." ( id_user, startday, allday, start_time, end_time, usebgcolor, elapstime, defaultview, workdays, week_numbers, user_calendarids) values ('".$GLOBALS['BAB_SESS_USERID']."', '1', 'N', '08:00:00', '18:00:00', 'Y', '30', '0', '1,2,3,4,5', 'N', '".$babBody->icalendars->user_calendarids."')");
+		$db->db_query("insert into ".BAB_CAL_USER_OPTIONS_TBL." ( id_user, startday, allday, start_time, end_time, usebgcolor, elapstime, defaultview, workdays, week_numbers, user_calendarids) values ('".$db->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', '1', 'N', '08:00:00', '18:00:00', 'Y', '30', '0', '1,2,3,4,5', 'N', '".$db->db_escape_string($babBody->icalendars->user_calendarids)."')");
 		}
 	}
 
@@ -998,7 +998,7 @@ function cal_getFreeEvents($idcals, $date0, $date1, $gap, $bopt)
 
 	$calopt = array();
 
-	$res = $babDB->db_query("SELECT c.id,o.workdays, o.start_time, o.end_time FROM ".BAB_CAL_USER_OPTIONS_TBL." o, ".BAB_CALENDAR_TBL." c WHERE c.id IN(".implode(',',$idcals).") AND o.id_user = c.owner AND c.type='1'");
+	$res = $babDB->db_query("SELECT c.id,o.workdays, o.start_time, o.end_time FROM ".BAB_CAL_USER_OPTIONS_TBL." o, ".BAB_CALENDAR_TBL." c WHERE c.id IN(".$babDB->quote($idcals).") AND o.id_user = c.owner AND c.type='1'");
 
 	while ($arr = $babDB->db_fetch_array($res))
 		{

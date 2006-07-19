@@ -52,7 +52,7 @@ function modifyCalendarCategory($idcat, $catname, $catdesc, $bgcolor)
 			$this->idcat = $idcat;
 			$this->add = 'updcat';
 			$this->tgval = 'admcal';
-			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_CAL_CATEGORIES_TBL." where id='".$idcat."'"));
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_CAL_CATEGORIES_TBL." where id=".$babDB->quote($idcat)));
 			if( !empty($catname))
 				{
 				$this->name = $catname;
@@ -102,7 +102,7 @@ function modifyCalendarResource($idcal, $name, $desc, $idsa)
 			$this->addtxt = bab_translate("Modify");
 			$this->approbationtxt = bab_translate("Approbation schema");
 			$this->nonetxt = bab_translate("None");
-			$arr = $babDB->db_fetch_array($babDB->db_query("select cpt.* from ".BAB_CAL_RESOURCES_TBL." cpt left join ".BAB_CALENDAR_TBL." ct on ct.owner=cpt.id where ct.id='".$idcal."'"));
+			$arr = $babDB->db_fetch_array($babDB->db_query("select cpt.* from ".BAB_CAL_RESOURCES_TBL." cpt left join ".BAB_CALENDAR_TBL." ct on ct.owner=cpt.id where ct.id=".$babDB->quote($idcal)));
 			if( !empty($name))
 				{
 				$this->calname = $name;
@@ -130,7 +130,7 @@ function modifyCalendarResource($idcal, $name, $desc, $idsa)
 			$this->add = "modr";
 			$this->idcal = $arr['id'];
 			$this->tgval = 'admcal';
-			$this->sares = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babBody->currentAdmGroup."' order by name asc");
+			$this->sares = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner=".$babDB->quote($babBody->currentAdmGroup)." order by name asc");
 			if( !$this->sares )
 				$this->sacount = 0;
 			else
@@ -183,7 +183,7 @@ function modifyCalendarPublic($idcal, $name, $desc, $idsa)
 			$this->addtxt = bab_translate("Modify");
 			$this->approbationtxt = bab_translate("Approbation schema");
 			$this->nonetxt = bab_translate("None");
-			$arr = $babDB->db_fetch_array($babDB->db_query("select cpt.* from ".BAB_CAL_PUBLIC_TBL." cpt left join ".BAB_CALENDAR_TBL." ct on ct.owner=cpt.id where ct.id='".$idcal."'"));
+			$arr = $babDB->db_fetch_array($babDB->db_query("select cpt.* from ".BAB_CAL_PUBLIC_TBL." cpt left join ".BAB_CALENDAR_TBL." ct on ct.owner=cpt.id where ct.id=".$babDB->quote($idcal)));
 			if( !empty($name))
 				{
 				$this->calname = $name;
@@ -211,7 +211,7 @@ function modifyCalendarPublic($idcal, $name, $desc, $idsa)
 			$this->add = "modp";
 			$this->idcal = $arr['id'];
 			$this->tgval = 'admcal';
-			$this->sares = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babBody->currentAdmGroup."' order by name asc");
+			$this->sares = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babDB->db_escape_string($babBody->currentAdmGroup)."' order by name asc");
 			if( !$this->sares )
 				$this->sacount = 0;
 			else
@@ -265,7 +265,7 @@ function updateResourceCalendar($idcal, $calname, $caldesc, $calidsa)
 	if( $old_idsa != 0 && $old_idsa != $calidsa )
 	{
 	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
-	$res = $babDB->db_query("select * from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_cal='".$idcal."' and status='".BAB_CAL_STATUS_NONE."'");
+	$res = $babDB->db_query("select * from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_cal='".$babDB->db_escape_string($idcal)."' and status='".BAB_CAL_STATUS_NONE."'");
 	while( $arr = $babDB->db_fetch_array($res))
 		{
 		if( $arr['idfai'] != 0 )

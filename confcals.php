@@ -57,7 +57,7 @@ function categoryCreate($userid, $grpid)
 			static $i = 0;
 			if( $i < $this->count)
 				{
-				$req = "select * from ".BAB_GROUPS_TBL." where id='".$this->idgrp[$i]."'";
+				$req = "select * from ".BAB_GROUPS_TBL." where id=".$this->db->quote($this->idgrp[$i]);
 				$res = $this->db->db_query($req);
 				$this->arrgroups = $this->db->db_fetch_array($res);
 				if( $i == 0 )
@@ -110,7 +110,7 @@ function resourceCreate($userid, $grpid)
 			static $i = 0;
 			if( $i < $this->count)
 				{
-				$req = "select * from ".BAB_GROUPS_TBL." where id='".$this->idgrp[$i]."'";
+				$req = "select * from ".BAB_GROUPS_TBL." where id=".$this->db->quote($this->idgrp[$i]);
 				$res = $this->db->db_query($req);
 				$this->arrgroups = $this->db->db_fetch_array($res);
 
@@ -265,7 +265,7 @@ function resourcesList($grpid, $userid)
 				$this->groupname = bab_getGroupName($this->arr['id_group']);
 				$this->url = $GLOBALS['babUrlScript']."?tg=confcal&idx=modifyres&item=".$this->arr['id']."&userid=".$this->userid;
 				$this->urlname = $this->arr['name'];
-				$arr = $this->db->db_fetch_array($this->db->db_query("select id, actif from ".BAB_CALENDAR_TBL." where owner='".$this->arr['id']."' and type='3'"));
+				$arr = $this->db->db_fetch_array($this->db->db_query("select id, actif from ".BAB_CALENDAR_TBL." where owner='".$this->db->db_escape_string($this->arr['id'])."' and type='3'"));
 				$this->resid = $this->arr['id'];
 				if( $arr['actif'] == 'N' )
 					$this->calrescheck = "checked";
@@ -306,7 +306,7 @@ function addCalCategory($groups, $name, $description, $bgcolor)
 
 	for( $i = 0; $i < $count; $i++)
 		{		
-		$query = "select * from ".BAB_CATEGORIESCAL_TBL." where name='$name' and id_group='".$groups[$i]."'";	
+		$query = "select * from ".BAB_CATEGORIESCAL_TBL." where name='".$db->db_escape_string($name)."' and id_group='".$db->db_escape_string($groups[$i])."'";	
 		$res = $db->db_query($query);
 		if( $res && $db->db_num_rows($res) > 0)
 			{
@@ -314,7 +314,7 @@ function addCalCategory($groups, $name, $description, $bgcolor)
 			}
 		else
 			{
-			$query = "insert into ".BAB_CATEGORIESCAL_TBL." (name, id_group, description, bgcolor) VALUES ('" .$name. "', '" . $groups[$i]. "', '" . $description. "', '" . $bgcolor. "')";
+			$query = "insert into ".BAB_CATEGORIESCAL_TBL." (name, id_group, description, bgcolor) VALUES ('" .$db->db_escape_string($name). "', '" . $db->db_escape_string($groups[$i]). "', '" . $db->db_escape_string($description). "', '" . $db->db_escape_string($bgcolor). "')";
 			$db->db_query($query);
 			}
 		}
@@ -339,7 +339,7 @@ function addCalResource($groups, $name, $description)
 
 	for( $i = 0; $i < $count; $i++)
 		{		
-		$query = "select * from ".BAB_RESOURCESCAL_TBL." where name='$name' and id_group='".$groups[$i]."'";	
+		$query = "select * from ".BAB_RESOURCESCAL_TBL." where name='".$db->db_escape_string($name)."' and id_group='".$db->db_escape_string($groups[$i])."'";	
 		$res = $db->db_query($query);
 		if( $db->db_num_rows($res) > 0)
 			{
@@ -347,11 +347,11 @@ function addCalResource($groups, $name, $description)
 			}
 		else
 			{
-			$query = "insert into ".BAB_RESOURCESCAL_TBL." (name, description, id_group) VALUES ('" .$name. "', '" . $description. "', '" . $groups[$i]. "')";
+			$query = "insert into ".BAB_RESOURCESCAL_TBL." (name, description, id_group) VALUES ('" .$db->db_escape_string($name). "', '" . $db->db_escape_string($description). "', '" . $db->db_escape_string($groups[$i]). "')";
 			$db->db_query($query);
 			$id = $db->db_insert_id();
 
-			$query = "insert into ".BAB_CALENDAR_TBL." (owner, actif, type) VALUES ('" .$id. "', 'Y', '3')";
+			$query = "insert into ".BAB_CALENDAR_TBL." (owner, actif, type) VALUES ('" .$db->db_escape_string($id). "', 'Y', '3')";
 			$db->db_query($query);
 			
 			}
@@ -370,9 +370,9 @@ function disableCalResource($resids, $userid, $grpid)
 			if( $grpid[$k] == $arr['id_group'])
 				{
 				if( count($resids) > 0 && in_array($arr['id'], $resids))
-					$babDB->db_query("update ".BAB_CALENDAR_TBL." set actif='N' where owner='".$arr['id']."' and type='3'");
+					$babDB->db_query("update ".BAB_CALENDAR_TBL." set actif='N' where owner='".$babDB->db_escape_string($arr['id'])."' and type='3'");
 				else
-					$babDB->db_query("update ".BAB_CALENDAR_TBL." set actif='Y' where owner='".$arr['id']."' and type='3'");
+					$babDB->db_query("update ".BAB_CALENDAR_TBL." set actif='Y' where owner='".$babDB->db_escape_string($arr['id'])."' and type='3'");
 				break;
 				}
 		}
@@ -396,7 +396,7 @@ if( $userid == 0 )
 else
 	{
 	$db = $GLOBALS['babDB'];
-	$req = "select * from ".BAB_GROUPS_TBL." where manager='".$userid."'";
+	$req = "select * from ".BAB_GROUPS_TBL." where manager='".$db->db_escape_string($userid)."'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
 		{

@@ -26,7 +26,7 @@ include_once "base.php";
 function bab_getCalendarType($idcal)
 {
 	$db = $GLOBALS['babDB'];
-	$query = "select type from ".BAB_CALENDAR_TBL." where id='$idcal'";
+	$query = "select type from ".BAB_CALENDAR_TBL." where id=".$db->quote($idcal);
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -42,7 +42,7 @@ function bab_getCalendarType($idcal)
 function bab_getCalendarOwner($idcal)
 {
 	$db = $GLOBALS['babDB'];
-	$query = "select owner from ".BAB_CALENDAR_TBL." where id='$idcal'";
+	$query = "select owner from ".BAB_CALENDAR_TBL." where id=".$db->quote($idcal);
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -60,7 +60,7 @@ function bab_getCalendarOwnerName($idcal, $type='')
 	$ret = "";
 	$db = $GLOBALS['babDB'];
 
-	$res = $db->db_query("select type, owner from ".BAB_CALENDAR_TBL." where id='$idcal'");
+	$res = $db->db_query("select type, owner from ".BAB_CALENDAR_TBL." where id=".$db->quote($idcal));
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
@@ -70,12 +70,12 @@ function bab_getCalendarOwnerName($idcal, $type='')
 			}
 		else if( $arr['type'] == BAB_CAL_PUB_TYPE)
 			{
-			$arr = $db->db_fetch_array($db->db_query("select name from ".BAB_CAL_PUBLIC_TBL." where id='".$arr['owner']."'"));
+			$arr = $db->db_fetch_array($db->db_query("select name from ".BAB_CAL_PUBLIC_TBL." where id=".$db->quote($arr['owner'])));
 			return $arr['name'];
 			}
 		else if( $arr['type'] == BAB_CAL_RES_TYPE)
 			{
-			$arr = $db->db_fetch_array($db->db_query("select name from ".BAB_CAL_RESOURCES_TBL." where id='".$arr['owner']."'"));
+			$arr = $db->db_fetch_array($db->db_query("select name from ".BAB_CAL_RESOURCES_TBL." where id=".$db->quote($arr['owner'])));
 			return $arr['name'];
 			}
 		}
@@ -293,7 +293,7 @@ class bab_icalendars
 
 			if( $pcalendar )
 				{
-				$res = $babDB->db_query("select id from ".BAB_CALENDAR_TBL." where owner='".$this->iduser."' and actif='Y' and type='1'");
+				$res = $babDB->db_query("select id from ".BAB_CALENDAR_TBL." where owner='".$babDB->db_escape_string($this->iduser)."' and actif='Y' and type='1'");
 				if( $res && $babDB->db_num_rows($res) >  0)
 					{
 					$arr = $babDB->db_fetch_array($res);
@@ -301,7 +301,7 @@ class bab_icalendars
 					}		
 				}
 
-			$res = $babDB->db_query("select * from ".BAB_CAL_USER_OPTIONS_TBL." where id_user='".$this->iduser."'");
+			$res = $babDB->db_query("select * from ".BAB_CAL_USER_OPTIONS_TBL." where id_user='".$babDB->db_escape_string($this->iduser)."'");
 			if( $res && $babDB->db_num_rows($res) >  0)
 				{
 				$arr = $babDB->db_fetch_array($res);
@@ -428,7 +428,7 @@ class bab_icalendars
 		global $babDB;
 		$this->busercal = true;
 
-		$res = $babDB->db_query("select cut.*, ct.owner from ".BAB_CALACCESS_USERS_TBL." cut left join ".BAB_CALENDAR_TBL." ct on ct.id=cut.id_cal where id_user='".$this->iduser."' and ct.actif='Y'");
+		$res = $babDB->db_query("select cut.*, ct.owner from ".BAB_CALACCESS_USERS_TBL." cut left join ".BAB_CALENDAR_TBL." ct on ct.id=cut.id_cal where id_user='".$babDB->db_escape_string($this->iduser)."' and ct.actif='Y'");
 
 		while( $arr = $babDB->db_fetch_array($res))
 		{
@@ -703,40 +703,40 @@ function bab_deleteCalendar($idcal)
 {
 	global $babDB;
 
-	list($type, $owner) = $babDB->db_fetch_row($babDB->db_query("select type, owner from ".BAB_CALENDAR_TBL." where id='".$idcal."'"));
+	list($type, $owner) = $babDB->db_fetch_row($babDB->db_query("select type, owner from ".BAB_CALENDAR_TBL." where id='".$babDB->db_escape_string($idcal)."'"));
 
 	include_once $GLOBALS['babInstallPath']."admin/acl.php";
 
 	switch( $type )
 		{
 		case BAB_CAL_PUB_TYPE:
-			$babDB->db_query("delete from ".BAB_CAL_PUBLIC_TBL." where id='".$owner."'");
+			$babDB->db_query("delete from ".BAB_CAL_PUBLIC_TBL." where id='".$babDB->db_escape_string($owner)."'");
 			aclDelete(BAB_CAL_PUB_MAN_GROUPS_TBL, $owner);
 			aclDelete(BAB_CAL_PUB_GRP_GROUPS_TBL, $owner);
 			aclDelete(BAB_CAL_PUB_VIEW_GROUPS_TBL, $owner);
 			break;
 		case BAB_CAL_RES_TYPE:
-			$babDB->db_query("delete from ".BAB_CAL_RESOURCES_TBL." where id='".$owner."'");
+			$babDB->db_query("delete from ".BAB_CAL_RESOURCES_TBL." where id='".$babDB->db_escape_string($owner)."'");
 			aclDelete(BAB_CAL_RES_MAN_GROUPS_TBL, $owner);
 			aclDelete(BAB_CAL_RES_GRP_GROUPS_TBL, $owner);
 			aclDelete(BAB_CAL_RES_VIEW_GROUPS_TBL, $owner);
 			break;
 		case BAB_CAL_USER_TYPE:
-			$babDB->db_query("delete from ".BAB_CALACCESS_USERS_TBL." where id_cal='".$idcal."'");	
-			$babDB->db_query("delete from ".BAB_CALACCESS_USERS_TBL." where id_user='".$owner."'");	
-			$babDB->db_query("delete from ".BAB_CAL_USER_OPTIONS_TBL." where id_user='".$owner."'");	
+			$babDB->db_query("delete from ".BAB_CALACCESS_USERS_TBL." where id_cal='".$babDB->db_escape_string($idcal)."'");	
+			$babDB->db_query("delete from ".BAB_CALACCESS_USERS_TBL." where id_user='".$babDB->db_escape_string($owner)."'");	
+			$babDB->db_query("delete from ".BAB_CAL_USER_OPTIONS_TBL." where id_user='".$babDB->db_escape_string($owner)."'");	
 			break;
 		}
 
-	$res = $babDB->db_query("select id_event from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_cal='".$idcal."'");
+	$res = $babDB->db_query("select id_event from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_cal='".$babDB->db_escape_string($idcal)."'");
 	while( $arr = $babDB->db_fetch_array($res))
 		{
-		$babDB->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id='".$arr['id_event']."'");	
-		$babDB->db_query("delete from ".BAB_CAL_EVENTS_NOTES_TBL." where id_event='".$arr['id_event']."'");	
-		$babDB->db_query("delete from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_event='".$arr['id_event']."'");	
+		$babDB->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($arr['id_event'])."'");	
+		$babDB->db_query("delete from ".BAB_CAL_EVENTS_NOTES_TBL." where id_event='".$babDB->db_escape_string($arr['id_event'])."'");	
+		$babDB->db_query("delete from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_event='".$babDB->db_escape_string($arr['id_event'])."'");	
 		}
-	$babDB->db_query("delete from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_cal='".$idcal."'");	
-	$babDB->db_query("delete from ".BAB_CALENDAR_TBL." where id='".$idcal."'");	
+	$babDB->db_query("delete from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_cal='".$babDB->db_escape_string($idcal)."'");	
+	$babDB->db_query("delete from ".BAB_CALENDAR_TBL." where id='".$babDB->db_escape_string($idcal)."'");	
 }
 
 
