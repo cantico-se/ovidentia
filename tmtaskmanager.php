@@ -954,7 +954,7 @@ function displayTaskList()
 	$oMultiPage = new BAB_MultiPageBase();
 	$oMultiPage->sIdx = BAB_TM_IDX_DISPLAY_TASK_LIST;
 
-	$oMultiPage->setColumnDataSource(new BAB_MySqlDataSource(bab_getOwnedTaskQuery(), (int) bab_rp('iPage', 1), $oMultiPage->iNbRowsPerPage));
+	$oMultiPage->setColumnDataSource(new BAB_TaskDS(bab_getOwnedTaskQuery(), (int) bab_rp('iPage', 1), $oMultiPage->iNbRowsPerPage));
 	
 	$oMultiPage->addColumnHeader(0, bab_translate("Space"), 'sProjectSpaceName');
 	$oMultiPage->addColumnHeader(1, bab_translate("Project"), 'sProjectName');

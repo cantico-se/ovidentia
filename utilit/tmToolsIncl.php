@@ -177,21 +177,6 @@ class BAB_DataSourceBase
 	}
 }
 
-class BAB_ColumnDataSource extends BAB_DataSourceBase
-{
-	function BAB_ColumnDataSource()
-	{
-		parent::BAB_DataSourceBase();
-		
-		$this->aDatas = array(
-			array('name' => 'Noureddine', 'description' => 'Big chief', 'date' => '24/06/06'),
-			array('name' => 'Paul', 'description' => 'Developer 1', 'date' => '24/06/06'),
-			array('name' => 'Laurent', 'description' => 'Developer 2', 'date' => '24/06/06'),
-			array('name' => 'Samuel', 'description' => 'Developer 3', 'date' => '24/06/06')
-		);
-	}
-}
-
 class BAB_MySqlDataSource extends BAB_DataSourceBase
 {
 	var $m_result = false;
@@ -232,6 +217,26 @@ class BAB_MySqlDataSource extends BAB_DataSourceBase
 		return false;
 	}
 }
+
+class BAB_TaskDS extends BAB_MySqlDataSource
+{
+	function BAB_TaskDS($query, $iPage, $iNbRowsPerPage)
+	{
+		parent::BAB_MySqlDataSource($query, $iPage, $iNbRowsPerPage);
+	}
+	
+	function getNextItem()
+	{
+		$datas = parent::getNextItem();
+		if(false != $datas)
+		{
+			$datas['startDate'] = bab_shortDate(bab_mktime($datas['startDate']), false);
+			$datas['endDate'] = bab_shortDate(bab_mktime($datas['endDate']), false);
+		}
+		return $datas;
+	}
+}
+
 
 class BAB_MultiPageBase
 {
@@ -1017,6 +1022,8 @@ class BAB_TM_Gantt
 			$this->m_iTaskWidth = 200 - 1;
 			$this->m_sTaskColor = 'EFEFEF';
 			$this->m_sTask = $datas['sTaskNumber'];
+
+$this->_iPosX = $this->m_iTaskWidth;
 			
 			$oTaskStartDate = BAB_DateTime::fromIsoDateTime($datas['startDate']);
 			$oTaskEndDate = BAB_DateTime::fromIsoDateTime($datas['endDate']);
@@ -1024,44 +1031,36 @@ class BAB_TM_Gantt
 			$oDisplayedStartDate = BAB_DateTime::fromTimeStamp($this->m_aStartDate[0]);
 			$oDisplayedEndDate = BAB_DateTime::fromTimeStamp($this->m_aEndDate[0]);
 
-$this->_iPosX = $this->m_iTaskWidth;
-
+			//0 the dates are equal
+			//-1 d1 is before d2
+			//1 d1 is after d2
+			
+			$iIsEqual	= 0;
+			$iIsBefore	= -1;
+			$iIsAfter	= 1;
+			
+			if($iIsBefore == BAB_DateTime::compare($oTaskStartDate, $oDisplayedStartDate))
+			{
+				$oTaskStartDate = $oDisplayedStartDate;
+			}
+			
+			$bIsAfter = false;
+			if($iIsAfter == BAB_DateTime::compare($oTaskEndDate, $oDisplayedEndDate))
+			{
+				$oTaskEndDate = $oDisplayedEndDate;
+				$bIsAfter = true;
+			}
+			
 			$iDaysFromBegining = BAB_DateTime::dateDiff($oTaskStartDate->_iDay, $oTaskStartDate->_iMonth, 
 				$oTaskStartDate->_iYear, $oDisplayedStartDate->_iDay, $oDisplayedStartDate->_iMonth, 
 				$oDisplayedStartDate->_iYear);
-
+			
 			//+1 to include the start day			
 			$iTaskDuration = BAB_DateTime::dateDiff($oTaskEndDate->_iDay, $oTaskEndDate->_iMonth, $oTaskEndDate->_iYear, 
-				$oTaskStartDate->_iDay, $oTaskStartDate->_iMonth, $oTaskStartDate->_iYear) + 1;
-
-			if($iTaskDuration > $this->m_iTotalDaysToDisplay)
-			{
-				$iTaskDuration = $this->m_iTotalDaysToDisplay - $iDaysFromBegining;
-			}
-			else if(($iDaysFromBegining + $iTaskDuration) > $this->m_iTotalDaysToDisplay)
-			{
-				$iTaskDuration -= ($iDaysFromBegining + $iTaskDuration) - $this->m_iTotalDaysToDisplay;
-			}
+				$oTaskStartDate->_iDay, $oTaskStartDate->_iMonth, $oTaskStartDate->_iYear) + (($bIsAfter) ? 0 : 1);
 				
-			$iCmp = BAB_DateTime::compare($oTaskStartDate, $oDisplayedStartDate);
-			if(1 == $iCmp)
-			{
-$this->_iPosX +=  $iDaysFromBegining * $this->m_iWidth;
-			}
-			else if(-1 == $iCmp)
-			{
-				$iTaskDuration -= $iDaysFromBegining;
-			}
-
-$this->_iPosX += 1;
-
-
-//echo 'iTaskDuration ==> ' . $iTaskDuration . ' iTotal ==> ' . ($iDaysFromBegining + $iTaskDuration) . '<br />';
-
-echo $datas['sTaskNumber'] . ' StartDate ==> ' . $datas['startDate'] . ' EtartDate ==> ' . $datas['endDate'] . ' iDaysFromBegining ==> ' . $iDaysFromBegining . '<br />';
-
-$this->_iWidth = ($iTaskDuration * $this->m_iWidth) - 1;				
-		
+			$this->_iPosX +=  ($iDaysFromBegining * $this->m_iWidth) + 1;
+			$this->_iWidth = ($iTaskDuration * $this->m_iWidth) - 1;				
 
 			$this->m_iRowPosX = $this->m_iTaskWidth;
 			$this->m_iRowPosY = ($this->m_iTaskPosY) - $this->m_iBorderBottom;
