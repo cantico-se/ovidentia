@@ -200,7 +200,8 @@ function displayProjectsSpacesList()
 			               $this->getUrl(BAB_TM_IDX_DISPLAY_PROJECT_COMMENTARY_LIST, $iIdProjectSpace, $datas['id']), '');
 						$oProjectElement->addAction('Task_list',
 						   bab_translate('Add a Task'), $GLOBALS['babSkinPath'] . 'images/Puces/edit_add.png', 
-						   $this->getUrl(BAB_TM_IDX_DISPLAY_TASK_FORM, $iIdProjectSpace, $datas['id']), '');
+						   $this->getUrl(BAB_TM_IDX_DISPLAY_TASK_FORM, $iIdProjectSpace, $datas['id']) 
+						    . '&sFromIdx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST, '');
                		}
                		
                		$this->insertTaskIntoProject($iIdProjectSpace, $datas['id']);
@@ -232,7 +233,8 @@ function displayProjectsSpacesList()
 					$isAccessValid = (isset($aTaskResponsible[$GLOBALS['BAB_SESS_USERID']]) || $bIsManager);
 
 					$sTaskUrl = ($isAccessValid) ? 
-						$this->getUrl(BAB_TM_IDX_DISPLAY_TASK_FORM, $iIdProjectSpace, $iIdProject) . '&iIdTask=' . $datas['id']  : null;
+						$this->getUrl(BAB_TM_IDX_DISPLAY_TASK_FORM, $iIdProjectSpace, $iIdProject) . 
+						'&iIdTask=' . $datas['id'] . '&sFromIdx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST : null;
 					
 					$oTaskElement =& $this->createElement($this->m_dnt . '_' . $datas['id'], $this->m_dnt, $datas['taskNumber'], 
 						$datas['description'], $sTaskUrl);
@@ -270,7 +272,8 @@ function displayProjectsSpacesList()
 				
 				while( $iIndex < $iNumRows && false != ($datas = $babDB->db_fetch_array($result)) )
 				{
-					$sTaskUrl = $this->getUrl(BAB_TM_IDX_DISPLAY_TASK_FORM, 0, 0) . '&iIdTask=' . $datas['id'];
+					$sTaskUrl = $this->getUrl(BAB_TM_IDX_DISPLAY_TASK_FORM, 0, 0) . '&iIdTask=' . $datas['id'] .
+					 	'&sFromIdx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST;
 					
 					$oTaskElement =& $this->createElement($this->m_dnt . '_' . $datas['id'], $this->m_dnt, $datas['taskNumber'], 
 						$datas['description'], $sTaskUrl);
@@ -958,12 +961,14 @@ function displayTaskList()
 	
 	$oMultiPage->addColumnHeader(0, bab_translate("Space"), 'sProjectSpaceName');
 	$oMultiPage->addColumnHeader(1, bab_translate("Project"), 'sProjectName');
-	$oMultiPage->addColumnHeader(2, bab_translate("Task"), 'sTaskNumber');
-	$oMultiPage->addColumnHeader(2, bab_translate("Start date"), 'startDate');
-	$oMultiPage->addColumnHeader(2, bab_translate("End date"), 'endDate');
+//	$oMultiPage->addColumnHeader(2, bab_translate("Task"), 'sTaskNumber');
+	$oMultiPage->addColumnHeader(2, bab_translate("Short description"), 'sShortDescription');
+	$oMultiPage->addColumnHeader(3, bab_translate("Start date"), 'startDate');
+	$oMultiPage->addColumnHeader(4, bab_translate("End date"), 'endDate');
 	
 	$sTg = tskmgr_getVariable('tg', 'admTskMgr');
-	$sLink = $GLOBALS['babUrlScript'] . '?tg=' . $sTg . '&idx=' . BAB_TM_IDX_DISPLAY_TASK_FORM;
+	$sLink = $GLOBALS['babUrlScript'] . '?tg=' . $sTg . '&idx=' . BAB_TM_IDX_DISPLAY_TASK_FORM .
+	'&sFromIdx=' . BAB_TM_IDX_DISPLAY_TASK_LIST;
 
 	$aDataSourceFields = array(
 		array('sDataSourceFieldName' => 'iIdProjectSpace', 'sUrlParamName' => 'iIdProjectSpace'),	
@@ -1080,13 +1085,11 @@ function displayDeleteTaskForm()
 	global $babBody;
 	$babBody->title = bab_translate("Delete task");
 	
-
 	$oTmCtx =& getTskMgrContext();
 	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
 	$iIdProject = $oTmCtx->getIdProject();
 	$iIdTask = $oTmCtx->getIdTask();
 	$iUserProfil = $oTmCtx->getUserProfil();
-
 
 	$bf = & new BAB_BaseFormProcessing();
 	$bf->set_data('iIdProjectSpace', $iIdProjectSpace);
@@ -1098,21 +1101,31 @@ function displayDeleteTaskForm()
 	$bf->set_caption('yes', bab_translate("Yes"));
 	$bf->set_caption('no', bab_translate("No"));
 	
-	$bf->set_data('idx', BAB_TM_IDX_DISPLAY_TASK_LIST);
+			
+	$sFromIdx = bab_rp('sFromIdx', BAB_TM_IDX_DISPLAY_TASK_LIST);
+	if(!isFromIdxValid($sFromIdx))
+	{
+		$sFromIdx = BAB_TM_IDX_DISPLAY_TASK_LIST;
+	}
+	$bf->set_data('idx', $sFromIdx);
 	
+	global $babInstallPath;
+	require_once($babInstallPath . 'tmTaskClasses.php');
 	
-	if(isTaskDeletable($iIdTask, $iUserProfil, $sTaskNumber))
+	$oTask = new BAB_TM_Task();
+	
+	if($oTask->loadFromDataBase($iIdTask))
 	{
 		$bf->set_data('action', BAB_TM_ACTION_DELETE_TASK);
 
 		$bf->set_caption('warning', bab_translate("This action will delete the task and all references"));
 		$bf->set_caption('message', bab_translate("Continue ?"));
-		$bf->set_caption('title', bab_translate("Task number = ") . htmlentities($sTaskNumber, ENT_QUOTES));
+		$bf->set_caption('title', bab_translate("Task number = ") . htmlentities($oTask->m_aTask['sTaskNumber'], ENT_QUOTES));
 	}
 	else 
 	{
 		$bf->set_data('action', '');
-		$bf->set_caption('warning', bab_translate("This task is not deletable"));
+		$bf->set_caption('warning', bab_translate("Cannot get the task information"));
 		$bf->set_caption('message', '');
 		$bf->set_caption('title', '');
 	}
@@ -1599,12 +1612,27 @@ function deleteTask()
 	$iIdTask = $oTmCtx->getIdTask();
 	$iUserProfil = $oTmCtx->getUserProfil();
 
-	$sTaskNumber = '';
-	if((BAB_TM_PROJECT_MANAGER == $iUserProfil || BAB_TM_PERSONNAL_TASK_OWNER == $iUserProfil) && 
-		isTaskDeletable($iIdTask, $iUserProfil, $sTaskNumber))
+	if((BAB_TM_PROJECT_MANAGER == $iUserProfil || BAB_TM_PERSONNAL_TASK_OWNER == $iUserProfil))
 	{
-//		bab_startDependingTask($iIdProjectSpace, $iIdProject, $iIdTask, BAB_TM_END_TO_START);
+		$aTaskToDel = array();
+		bab_getTask($iIdTask, $aTaskToDel);
 		
+		{
+			$aDependingTasks = array();
+			bab_getDependingTasks($iIdTask, $aDependingTasks);
+			if(count($aDependingTasks) > 0)
+			{
+				foreach($aDependingTasks as $iIdT)
+				{
+					bab_getTask($iIdT, $aTask);
+					$aTask['isLinked'] = BAB_TM_NO;
+					bab_updateTask($iIdTask, $aTask);
+					bab_deleteTaskLinks($iIdT);
+				}
+			}
+		}
+
+		$sTaskNumber =& $aTaskToDel['sTaskNumber'];
 		{
 			$sProjectSpaceName = '???';
 			if(bab_getProjectSpace($iIdProjectSpace, $aProjectSpace))

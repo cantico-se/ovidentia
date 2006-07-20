@@ -625,6 +625,7 @@ function processStartDate()
 	<input type="hidden" name="iMinorVersion" value="{ m_datas[iMinorVersion] }" />
 	<input type="hidden" name="selectedDateFieldName" value="" />
 	<input type="hidden" name="selectedMenu" value="" />
+	<input type="hidden" name="sFromIdx" value="{ m_datas[sFromIdx] }" />
 	
 
 	<br />
@@ -678,6 +679,14 @@ function processStartDate()
 		</ul>						
 		<div id="sGeneral">
 			<table width="95%" border="0" cellspacing="2" cellpadding="2" align="center">
+				<tr>
+					<td colspan="2"><label for="sShortDescription">{ m_captions[sShortDescription] }</label></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<input type="text" name="sShortDescription" id="sShortDescription" { m_datas[sReadonlyShortDescription] } maxlength="255" value="{ m_datas[sShortDescription] }" style="width:100%" />
+					</td>
+				</tr>
 				<tr>
 					<td colspan="2"><label for="sDescription">{ m_captions[sDescription] }</label></td>
 				</tr>

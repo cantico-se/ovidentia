@@ -6900,6 +6900,13 @@ function upgrade585to586()
 	return $ret;
 }
 
-
+function upgrade586to587()
+{
+	$arr = $db->db_fetch_array($db->db_query("DESCRIBE `" . BAB_TSKMGR_TASKS_TBL . "`shortDescription`"));
+	if( $arr[0] != 'shortDescription' )
+	{
+		$db->db_query("ALTER TABLE `" . BAB_TSKMGR_TASKS_TBL . "` ADD `shortDescription` VARCHAR( 255 ) NOT NULL AFTER `description`");
+	}
+}
 
 ?>

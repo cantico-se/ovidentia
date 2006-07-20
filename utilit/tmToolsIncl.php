@@ -153,6 +153,13 @@ function add_item_menu($items = array())
 	}
 }
 
+function isFromIdxValid($sFromIdx)
+{
+	static $aFroms = array(BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST => 0, BAB_TM_IDX_DISPLAY_TASK_LIST => 0);
+	return isset($aFroms[$sFromIdx]);
+}
+
+
 class BAB_DataSourceBase
 {
 	var $aDatas = array();

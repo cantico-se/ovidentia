@@ -166,6 +166,7 @@
 			$this->set_caption('sCommentaries', bab_translate("Commentaries"));
 			$this->set_caption('sSpFld', bab_translate("Specific fields"));
 			$this->set_caption('sDescription', bab_translate("Description"));
+			$this->set_caption('sShortDescription', bab_translate("Short description"));
 			$this->set_caption('sLinkedTask', bab_translate("Linked task"));
 			$this->set_caption('sProposable', bab_translate("Proposed"));
 			$this->set_caption('sDurationType', bab_translate("Duration type"));
@@ -213,13 +214,19 @@ $this->set_data('isStoppable', false);
 			$this->set_data('iIdSpField', -1);
 			$this->set_data('iMajorVersion', tskmgr_getVariable('iMajorVersion', 1));
 			$this->set_data('iMinorVersion', tskmgr_getVariable('iMinorVersion', 0));
-$this->set_data('iAddSpfIdx', BAB_TM_IDX_DISPLAY_TASK_FORM);
-			$this->set_data('iAddSpfAction', BAB_TM_ACTION_CREATE_SPECIFIC_FIELD_INSTANCE);
 			
-//$this->set_data('iAddIdx', BAB_TM_IDX_DISPLAY_TASK_FORM);
-			$this->set_data('iAddIdx', BAB_TM_IDX_DISPLAY_TASK_LIST);
+			$sFromIdx = bab_rp('sFromIdx', BAB_TM_IDX_DISPLAY_TASK_LIST);
+			if(!isFromIdxValid($sFromIdx))
+			{
+				$sFromIdx = BAB_TM_IDX_DISPLAY_TASK_LIST;
+			}
+			$this->set_data('sFromIdx', $sFromIdx);
+
+			$this->set_data('iAddSpfIdx', BAB_TM_IDX_DISPLAY_TASK_FORM);
+			$this->set_data('iAddSpfAction', BAB_TM_ACTION_CREATE_SPECIFIC_FIELD_INSTANCE);
+			$this->set_data('iAddIdx', $sFromIdx);
 			$this->set_data('iAddAction', BAB_TM_ACTION_ADD_TASK);
-			$this->set_data('iModifyIdx', BAB_TM_IDX_DISPLAY_TASK_LIST);
+			$this->set_data('iModifyIdx', $sFromIdx);
 			$this->set_data('iModifyAction', BAB_TM_ACTION_MODIFY_TASK);
 			$this->set_data('iDeleteIdx', BAB_TM_IDX_DISPLAY_DELETE_TASK_FORM);
 			$this->set_data('iDeleteAction', '');
@@ -241,6 +248,7 @@ $this->set_data('iAddSpfIdx', BAB_TM_IDX_DISPLAY_TASK_FORM);
 			$this->set_data('sDisabledCategory', '');
 			$this->set_data('sSelectedCategory', '');
 			$this->set_data('sReadonlyDescription', '');
+			$this->set_data('sReadonlyShortDescription', '');
 			$this->set_data('sDisabledLinkedTask', '');
 			$this->set_data('sCkeckedLinkedTask', '');
 			$this->set_data('sSelectedProposable', '');
@@ -257,6 +265,7 @@ $this->set_data('iAddSpfIdx', BAB_TM_IDX_DISPLAY_TASK_FORM);
 			$this->set_data('sClassName', '');
 			$this->set_data('sCategoryName', '');
 			$this->set_data('sDescription', '');
+			$this->set_data('sShortDescription', '');
 			$this->set_data('sProposable', '');
 			$this->set_data('sDurationName', '');
 			$this->set_data('sDuration', '');
@@ -490,6 +499,12 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 			$this->set_data('sReadonlyDescription', $this->m_bIsManager ? '' : 'disabled="disabled"');
 		}
 
+		function initShortDescription($sShortDescription)
+		{
+			$this->set_data('sShortDescription', $sShortDescription);
+			$this->set_data('sReadonlyShortDescription', $this->m_bIsManager ? '' : 'disabled="disabled"');
+		}
+
 		function initLink($iIsLinked)
 		{
 			$this->set_data('sCkeckedLinkedTask', ((BAB_TM_YES == $iIsLinked) ? 'checked="checked"' : ''));
@@ -583,6 +598,7 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 				$iClassType = (int) tskmgr_getVariable('iClass', BAB_TM_TASK);
 				$iIdCategory = (int) tskmgr_getVariable('iIdCategory', 0);
 				$sDescription = tskmgr_getVariable('sDescription', '');
+				$sShortDescription = tskmgr_getVariable('sShortDescription', '');
 				$iDurationType = (int) tskmgr_getVariable('oDurationType', BAB_TM_DATE);
 				$iDuration = (int) tskmgr_getVariable('sDuration', '');
 				$sStartDate = tskmgr_getVariable('sPlannedStartDate', '');
@@ -612,6 +628,7 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 				$iClassType = $aTask['iClass'];
 				$iIdCategory = $aTask['iIdCategory'];
 				$sDescription = $aTask['sDescription'];
+				$sShortDescription = $aTask['sShortDescription'];
 				$iIsLinked =  $aTask['iIsLinked'];
 				$iDurationType = (int) (0 != $aTask['iDuration']) ? BAB_TM_DURATION : BAB_TM_DATE;
 				$iDuration = (int) $aTask['iDuration'];
@@ -660,6 +677,7 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 			$this->initTaskClass($iClassType);
 			$this->initCategory($iIdCategory);
 			$this->initDescription($sDescription);
+			$this->initShortDescription($sShortDescription);
 			$this->initLink($iIsLinked);
 			$this->initDurationType($iDurationType);
 			$this->initDuration($iDuration);
@@ -815,6 +833,7 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 
 		var $m_sTaskNumber				= null;
 		var $m_sDescription				= null;
+		var $m_sShortDescription		= null;
 		var $m_iIdCategory				= null;
 		var $m_sCreated					= null;
 		var $m_sModified				= null;
@@ -875,6 +894,7 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 			
 			$this->m_sTaskNumber			= trim(tskmgr_getVariable('sTaskNumber', ''));
 			$this->m_sDescription			= trim(tskmgr_getVariable('sDescription', ''));
+			$this->m_sShortDescription		= trim(tskmgr_getVariable('sShortDescription', ''));
 			$this->m_iIdCategory			= (int) tskmgr_getVariable('iIdCategory', 0);
 			$this->m_sCreated				= date("Y-m-d H:i:s");
 			$this->m_sModified				= date("Y-m-d H:i:s");
@@ -1364,6 +1384,7 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 				$aTask['iIdProject']			= $this->m_iIdProject;
 				$aTask['sTaskNumber']			= mysql_escape_string($this->m_sTaskNumber);
 				$aTask['sDescription']			= mysql_escape_string($this->m_sDescription);
+				$aTask['sShortDescription']		= mysql_escape_string(substr($this->m_sShortDescription, 0, 255));
 				$aTask['iIdCategory']			= $this->m_iIdCategory;
 				$aTask['sCreated']				= $this->m_sCreated;
 				$aTask['iIdUserCreated']		= $this->m_iIdUserCreated;
@@ -1447,6 +1468,7 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 				$aTask['iIdProject']			= $this->m_iIdProject;
 				$aTask['sTaskNumber']			= mysql_escape_string($this->m_sTaskNumber);
 				$aTask['sDescription']			= mysql_escape_string($this->m_sDescription);
+				$aTask['sShortDescription']		= mysql_escape_string(substr($this->m_sShortDescription, 0, 255));
 				$aTask['iIdCategory']			= $this->m_iIdCategory;
 				$aTask['sCreated']				= $this->m_sCreated;
 				$aTask['iIdUserCreated']		= $this->m_iIdUserCreated;
@@ -1497,6 +1519,7 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 				$aTask['iIdProject']			= $this->m_iIdProject;
 				$aTask['sTaskNumber']			= mysql_escape_string($this->m_sTaskNumber);
 				$aTask['sDescription']			= mysql_escape_string($this->m_sDescription);
+				$aTask['sShortDescription']		= mysql_escape_string(substr($this->m_sShortDescription, 0, 255));
 				$aTask['iIdCategory']			= $this->m_iIdCategory;
 				$aTask['sCreated']				= $this->m_sCreated;
 				$aTask['iIdUserCreated']		= $this->m_iIdUserCreated;
@@ -1656,6 +1679,7 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 //				$aTask['iIdProject']			= $this->m_iIdProject;
 				$aTask['sTaskNumber']			= mysql_escape_string($this->m_sTaskNumber);
 				$aTask['sDescription']			= mysql_escape_string($this->m_sDescription);
+				$aTask['sShortDescription']		= mysql_escape_string(substr($this->m_sShortDescription, 0, 255));
 				$aTask['iIdCategory']			= $this->m_iIdCategory;
 //				$aTask['sCreated']				= $this->m_sCreated;
 //				$aTask['iIdUserCreated']		= $this->m_iIdUserCreated;

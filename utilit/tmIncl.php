@@ -853,6 +853,7 @@ function bab_getTaskCount($iIdProject)
 	return 0;
 }
 
+/*
 function bab_getDependingTasks($iIdTask, $iLinkType, &$aDependingTasks)
 {
 	$query = 
@@ -886,6 +887,39 @@ function bab_getDependingTasks($iIdTask, $iLinkType, &$aDependingTasks)
 		$iIndex++;
 	}
 }
+//*/
+
+function bab_getDependingTasks($iIdTask, &$aDependingTasks, $iLinkType = -1)
+{
+	$query = 
+		'SELECT ' . 
+			'lt.idTask, ' .
+			'tr.idResponsible ' .
+		'FROM ' . 
+			BAB_TSKMGR_LINKED_TASKS_TBL . ' lt, ' .
+			BAB_TSKMGR_TASKS_TBL . ' t, ' .
+			BAB_TSKMGR_TASKS_RESPONSIBLES_TBL . ' tr ' .
+		'WHERE ' . 
+			'lt.idPredecessorTask = \'' . $iIdTask . '\'' .
+			(($iLinkType = -1) ? ' AND lt.linkType = \'' . $iLinkType . '\' ' : ' ') .
+		'GROUP BY lt.idTask';
+		
+	//bab_debug($query);
+
+	global $babDB;
+	$db	= & $GLOBALS['babDB'];
+
+	$result = $babDB->db_query($query);
+	$iNumRows = $babDB->db_num_rows($result);
+	$iIndex = 0;
+	
+	while($iIndex < $iNumRows && false != ($datas = $babDB->db_fetch_assoc($result)))
+	{
+		$aDependingTasks[$datas['idTask']] = array('iIdTask' => $datas['idTask'],
+			'iIdResponsible' => $datas['idResponsible']);
+		$iIndex++;
+	}
+}
 
 
 function bab_getAllTaskIndexedById($iIdProject, &$aTasks)
@@ -900,6 +934,7 @@ function bab_getAllTaskIndexedById($iIdProject, &$aTasks)
 			'idProject, ' .
 			'taskNumber, ' .
 			'description, ' .
+			'shortDescription, ' .
 			'idCategory, ' .
 			'created, ' .
 			'modified, ' .
@@ -947,7 +982,8 @@ function bab_getAllTaskIndexedById($iIdProject, &$aTasks)
 			'iPosition' => $datas['position'], 'iCompletion' => $datas['completion'],
 			'sPlannedStartDate' => $datas['plannedStartDate'], 'sStartDate' => $datas['startDate'],
 			'sPlannedEndDate' => $datas['plannedEndDate'], 'sEndDate' => $datas['endDate'],
-			'iIsNotified' => $datas['isNotified']);
+			'iIsNotified' => $datas['isNotified'],
+			'sShortDescription' => $datas['shortDescription']);
 			
 		$iIndex++;
 	}
@@ -969,7 +1005,7 @@ function bab_createTask($aParams)
 				'`duration`, `majorVersion`, `minorVersion`, `color`, `position`, ' .
 				'`completion`, `startDate`, `endDate`, `plannedStartDate`, ' .
 				'`plannedEndDate`, `created`, `idUserCreated`, `isNotified`, ' .
-				'`idUserModified`, `modified`' .
+				'`idUserModified`, `modified`, `shortDescription`' .
 			') ' .
 		'VALUES ' . 
 			'(\'\', \'' . 
@@ -984,7 +1020,8 @@ function bab_createTask($aParams)
 				$aParams['sEndDate'] . '\', \'' . /*$aParams['sPlannedStartDate']*/'' . '\', \'' . 
 				/*$aParams['sPlannedEndDate']*/'' . '\', \'' . $aParams['sCreated'] . '\', \'' . 
 				$aParams['iIdUserCreated'] . '\', \'' . $aParams['iIsNotified'] . '\', \'' . 
-				$aParams['iIdUserModified'] . '\', \'' . $aParams['sModified'] . '\')'; 
+				$aParams['iIdUserModified'] . '\', \'' . $aParams['sModified'] . '\', \'' .
+				$aParams['sShortDescription'] . '\')'; 
 
 	//bab_debug($query);
 	$res = $babDB->db_query($query);
@@ -1008,6 +1045,7 @@ function bab_getTask($iIdTask, &$aTask)
 			't.idProject, ' .
 			't.taskNumber, ' .
 			't.description, ' .
+			't.shortDescription, ' .
 			't.idCategory, ' .
 			't.created, ' .
 			't.modified, ' .
@@ -1058,7 +1096,8 @@ function bab_getTask($iIdTask, &$aTask)
 			'iPosition' => $datas['position'], 'iCompletion' => $datas['completion'],
 			'sPlannedStartDate' => $datas['plannedStartDate'], 'sStartDate' => $datas['startDate'],
 			'sPlannedEndDate' => $datas['plannedEndDate'], 'sEndDate' => $datas['endDate'],
-			'iIsNotified' => $datas['isNotified'], 'iIdOwner' => $datas['idOwner']);
+			'iIsNotified' => $datas['isNotified'], 'iIdOwner' => $datas['idOwner'],
+			'sShortDescription' => $datas['shortDescription']);
 		return true;
 	}
 	return false;
@@ -1089,10 +1128,11 @@ function bab_updateTask($iIdTask, $aParams)
 			'`plannedStartDate` = \'' . $aParams['sPlannedStartDate'] . '\', ' .
 			'`plannedEndDate` = \'' . $aParams['sPlannedEndDate'] . '\', ' .
 			'`idUserModified` = \'' . $aParams['iIdUserModified'] . '\', ' .
-			'`modified` = \'' . $aParams['sModified'] . '\' ' .
+			'`modified` = \'' . $aParams['sModified'] . '\', ' .
+			'`shortDescription` = \'' . $aParams['sShortDescription'] . '\' ' .
 		'WHERE ' . 
 			'id = \'' . $iIdTask . '\'';
-
+			
 	//bab_debug($query);
 	return $babDB->db_query($query);
 }
@@ -1593,6 +1633,7 @@ function bab_getOwnedTaskQuery()
 			'IFNULL(p.id, 0) iIdProject, ' .
 			'IFNULL(p.name, \'\') sProjectName, ' .
 			't.id iIdTask, ' .
+			't.shortDescription sShortDescription, ' .
 			't.taskNumber sTaskNumber, ' .
 			't.class iClass, ' .
 			't.startDate startDate, ' .
