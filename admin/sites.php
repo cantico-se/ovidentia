@@ -153,18 +153,45 @@ function viewVersion($message)
 
 			$this->srcversion = "E-".$ini->getVersion();
 			$this->dbversion = $bab_ov_dbver_prod."-".$bab_ov_dbver_major.".".$bab_ov_dbver_minor.".".$bab_ov_dbver_build;
+
+
+			$this->requirements = $ini->getRequirements();
+
+			$this->t_requirements = bab_translate("Requirements");
+			$this->t_recommended = bab_translate("Recommended");
+			$this->t_install = bab_translate("Install");
+			$this->t_required = bab_translate("Required value");
+			$this->t_current = bab_translate("Current value");
+			$this->t_addon = bab_translate("Addon");
+			$this->t_description = bab_translate("Description");
+			$this->t_version = bab_translate("Version");
+			$this->t_ok = bab_translate("Ok");
+			$this->t_error = bab_translate("Error");
 	
 			}
 
 		function set_message() {
-				if( $this->srcversion != $this->dbversion ) {
-					$GLOBALS['babBody']->msgerror = bab_translate("The database is not up-to-date");
+			if( $this->srcversion != $this->dbversion ) {
+				$GLOBALS['babBody']->msgerror = bab_translate("The database is not up-to-date");
 
-					$this->message = sprintf(bab_translate("The database has not been updated since version %s"),$this->dbversion);
-					$this->upgrade = bab_translate("Update database");
-				}
+				$this->message = sprintf(bab_translate("The database has not been updated since version %s"),$this->dbversion);
+				$this->upgrade = bab_translate("Update database");
 			}
 		}
+
+
+		function getnextreq() {
+			if (list(,$arr) = each($this->requirements)) {
+				$this->description = bab_toHtml($arr['description']);
+				$this->recommended = bab_toHtml($arr['recommended']);
+				$this->required = bab_toHtml($arr['required']);
+				$this->current = bab_toHtml($arr['current']);
+				$this->result = $arr['result']; 
+				return true;
+			}
+			return false;
+		}
+	}
 
 	$temp = new temp();
 	$temp->message = bab_toHtml($message, BAB_HTML_ALL);

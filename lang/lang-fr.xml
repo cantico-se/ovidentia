@@ -2180,9 +2180,6 @@
 <string id="Available">Disponible</string>
 <string id="Unavailable">Indisponible</string>
 <string id="Writable directory for upgrades">Répertoire accessible en écriture pour les mises à jour</string>
-<string id="Imap php module">Module imap de php</string>
-<string id="Xml php module">Module xml de php</string>
-<string id="Calendar php module">Module calendar de php</string>
-<string id="Ldap php module">Module ldap de php</string>
+<string id="%s php module">Module %s de php</string>
 <string id="Recommended">Recommandé</string>
 </fr>

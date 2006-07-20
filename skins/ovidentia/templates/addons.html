@@ -133,13 +133,13 @@ function deladdon(id)
 <!--#if item -->
 <input type="hidden" name="item" value="{ item }" />
 <!--#endif item -->
-	<table width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<table width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
 	<tr> 
 		<td class="BabLoginCadreBackground" align="center"> 
 		<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5">
 			
 			<tr> 
-				<td colspan="4">
+				<td colspan="5">
 					<ul>
 						<li>{ t_addon } : { name }</li>
 						<li>{ t_description } : { adescription }</li>
@@ -149,7 +149,7 @@ function deladdon(id)
 			</tr>
 			
 			<tr> 
-				<td colspan="4">{ t_requirements } :<br /><br /></td>
+				<td colspan="5">{ t_requirements } :<br /><br /></td>
 			</tr>
 			<tr class="BabSiteAdminTitleFontBackground"> 
 				<td>&nbsp;</td>
@@ -173,7 +173,7 @@ function deladdon(id)
 			</tr>
 			<!--#endin getnextreq -->
 			<tr> 
-				<td colspan="4" align="center">
+				<td colspan="5" align="center">
 				<br /><br />
 				<!--#if allok -->
 					<input type="submit" value="{ t_install }" />
@@ -189,20 +189,7 @@ function deladdon(id)
 
 
 <!--#begin history -->
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<html>
-<head>
-<TITLE>{ babSiteName }</TITLE>
-{ babMeta }
-{ babCss }
-<script type="text/javascript">
-<!--
-	window.focus();
-//-->
-</script>
-</head>
-<body>
-<br />
+
 <table width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
 	<tr> 
 		<td class="BabLoginCadreBackground"> 
@@ -229,6 +216,4 @@ function deladdon(id)
 		</td>
 	</tr>
 	</table>
-</body>
-</html>
 <!--#end history -->

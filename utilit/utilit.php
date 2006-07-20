@@ -627,6 +627,18 @@ function babecho($txt)
 	$this->content .= $txt;
 }
 
+
+function babpopup($txt) {
+	include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
+	$GLOBALS['babBodyPopup'] = new babBodyPopup();
+	$GLOBALS['babBodyPopup']->title = & $GLOBALS['babBody']->title;
+	$GLOBALS['babBodyPopup']->msgerror = & $GLOBALS['babBody']->msgerror;
+	$GLOBALS['babBodyPopup']->babecho($txt);
+	printBabBodyPopup();
+	die();
+}
+
+
 function loadSections()
 {
 	

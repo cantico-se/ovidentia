@@ -744,7 +744,7 @@ function history($item)
 		}
 
 	$temp = new temp($item);
-	die(bab_printTemplate($temp, "addons.html", "history"));
+	$babBody->babpopup(bab_printTemplate($temp, "addons.html", "history"));
 	}
 
 /* main */

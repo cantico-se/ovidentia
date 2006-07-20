@@ -29,19 +29,27 @@ version="5.8.6"
 
 ; available since 5.8.1
 
-ov_version="0.0.0"
+; ov_version="0.0.0"
 php_version="4.1.2"
 
 ; available since 5.8.7
 
+mod_mysql="Available"
 mysql_version="3.23"
 images_directory="Available" 
+mod_zlib="Available"
 
 [recommendations]
+lang_directory="Available" 
 mod_xml="Available"
 mod_calendar="Available"
 mod_ldap="Available"
 versions_directory="Available"
 mod_imap="Available"
+mod_gd2="Available"
+mod_mcrypt="Available"
+; mod_pdf="Available"
+; mod_ftp="Available"
+; mod_curl="Available"
 
 ; DO NOT REMOVE THIS LINE ?>

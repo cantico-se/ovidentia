@@ -115,11 +115,23 @@ class bab_inifile_requirements {
 		);
 	}
 
+	function require_lang_directory($value) {
+
+		$core = dirname($_SERVER['SCRIPT_FILENAME']).'/lang/';
+		$status = is_writable($core);
+
+		return array(
+			'description'	=> bab_translate("Writable lang directory"),
+			'current'		=> $status ? bab_translate("Available") : bab_translate("Unavailable"),
+			'result'		=> $status
+		);
+	}
+
 	function require_mod_imap($value) {
 		
 		$status = extension_loaded('imap');
 		return array(
-			'description'	=> bab_translate("Imap php module"),
+			'description'	=> sprintf(bab_translate("%s php module"),'imap'),
 			'current'		=> $status ? bab_translate("Available") : bab_translate("Unavailable"),
 			'result'		=> $status
 		);
@@ -129,7 +141,7 @@ class bab_inifile_requirements {
 		
 		$status = extension_loaded('xml');
 		return array(
-			'description'	=> bab_translate("Xml php module"),
+			'description'	=> sprintf(bab_translate("%s php module"),'xml'),
 			'current'		=> $status ? bab_translate("Available") : bab_translate("Unavailable"),
 			'result'		=> $status
 		);
@@ -139,7 +151,7 @@ class bab_inifile_requirements {
 		
 		$status = extension_loaded('calendar');
 		return array(
-			'description'	=> bab_translate("Calendar php module"),
+			'description'	=> sprintf(bab_translate("%s php module"),'calendar'),
 			'current'		=> $status ? bab_translate("Available") : bab_translate("Unavailable"),
 			'result'		=> $status
 		);
@@ -149,7 +161,88 @@ class bab_inifile_requirements {
 		
 		$status = extension_loaded('ldap');
 		return array(
-			'description'	=> bab_translate("Ldap php module"),
+			'description'	=> sprintf(bab_translate("%s php module"),'ldap'),
+			'current'		=> $status ? bab_translate("Available") : bab_translate("Unavailable"),
+			'result'		=> $status
+		);
+	}
+
+	function require_mod_curl($value) {
+		
+		$status = extension_loaded('curl');
+		return array(
+			'description'	=> sprintf(bab_translate("%s php module"),'curl'),
+			'current'		=> $status ? bab_translate("Available") : bab_translate("Unavailable"),
+			'result'		=> $status
+		);
+	}
+
+
+	function require_mod_pdf($value) {
+		
+		$status = extension_loaded('pdf');
+		return array(
+			'description'	=> sprintf(bab_translate("%s php module"),'pdf'),
+			'current'		=> $status ? bab_translate("Available") : bab_translate("Unavailable"),
+			'result'		=> $status
+		);
+	}
+
+
+	function require_mod_mysql($value) {
+		
+		$status = extension_loaded('mysql');
+		return array(
+			'description'	=> sprintf(bab_translate("%s php module"),'mysql'),
+			'current'		=> $status ? bab_translate("Available") : bab_translate("Unavailable"),
+			'result'		=> $status
+		);
+	}
+
+
+	function require_mod_ftp($value) {
+		
+		$status = extension_loaded('ftp');
+		return array(
+			'description'	=> sprintf(bab_translate("%s php module"),'ftp'),
+			'current'		=> $status ? bab_translate("Available") : bab_translate("Unavailable"),
+			'result'		=> $status
+		);
+	}
+
+	function require_mod_zlib($value) {
+		
+		$status = extension_loaded('zlib');
+		return array(
+			'description'	=> sprintf(bab_translate("%s php module"),'zlib'),
+			'current'		=> $status ? bab_translate("Available") : bab_translate("Unavailable"),
+			'result'		=> $status
+		);
+	}
+
+	function require_mod_mcrypt($value) {
+		
+		$status = extension_loaded('mcrypt');
+		return array(
+			'description'	=> sprintf(bab_translate("%s php module"),'mcrypt'),
+			'current'		=> $status ? bab_translate("Available") : bab_translate("Unavailable"),
+			'result'		=> $status
+		);
+	}
+
+
+	function require_mod_gd2($value) {
+		
+		$status = false;
+		
+		if (extension_loaded('gd') && function_exists('gd_info')) {
+		   $ver_info = gd_info();
+		   preg_match('/\d/', $ver_info['GD Version'], $match);
+		   $status = 2 == $match[0];
+	   }
+
+		return array(
+			'description'	=> sprintf(bab_translate("%s php module"),'gd (version 2)'),
 			'current'		=> $status ? bab_translate("Available") : bab_translate("Unavailable"),
 			'result'		=> $status
 		);
@@ -281,8 +374,20 @@ class bab_inifile {
 				}
 			}
 		}
+	
+		$order = array();
+		foreach($return as $key => $value) {
+			$order[$key] = $value['description'];
+		}
 
-		return $return;
+		natcasesort($order);
+
+		$return_ordered = array();
+		foreach($order as $key => $value) {
+			$return_ordered[] = $return[$key];
+		}
+
+		return $return_ordered;
 	}
 
 	/**
