@@ -3259,6 +3259,7 @@ CREATE TABLE bab_tskmgr_tasks (
   idProject int(10) unsigned NOT NULL default '0',
   taskNumber VARCHAR(9) NOT NULL DEFAULT '0',
   description text NOT NULL,
+  shortDescription VARCHAR( 255 ) NOT NULL,
   idCategory int(10) unsigned NOT NULL default '0',
   created datetime NOT NULL default '0000-00-00 00:00:00',
   modified datetime NOT NULL default '0000-00-00 00:00:00',
