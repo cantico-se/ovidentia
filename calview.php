@@ -131,11 +131,11 @@ function upComingEvents()
 			if( $k < $this->countevent)
 				{
 				$arr = $this->db->db_fetch_array($this->resevent);
-				$this->enddate = bab_shortDate(bab_mktime($arr['end_date']));
-				$this->startdate = bab_shortDate(bab_mktime($arr['start_date']));
-				$this->title = $arr['title'];
-				$rr = explode("-", $arr['start_date']);
-				$this->titleurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&idcal=".$arr['id_cal']. "&evtid=".$arr['id'];
+				bab_debug($arr);
+				$this->enddate = bab_toHtml(bab_shortDate(bab_mktime($arr['end_date'])));
+				$this->startdate = bab_toHtml(bab_shortDate(bab_mktime($arr['start_date'])));
+				$this->title = bab_toHtml($arr['title']);
+				$this->titleurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&idcal=".$arr['id_cal']. "&evtid=".$arr['id']);
 				if( $k % 2)
 					$this->alternate = 1;
 				else
@@ -156,11 +156,10 @@ function upComingEvents()
 			if( $k < $this->countgrpevent)
 				{
 				$arr = $this->db->db_fetch_array($this->resgrpevent);
-				$this->enddate = bab_shortDate(bab_mktime($arr['end_date']));
-				$this->startdate = bab_shortDate(bab_mktime($arr['start_date']));
-				$this->title = $arr['title'];
-				$rr = explode("-", $arr['start_date']);
-				$this->titleurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&idcal=".$arr['id_cal']. "&evtid=".$arr['id'];
+				$this->enddate = bab_toHtml(bab_shortDate(bab_mktime($arr['end_date'])));
+				$this->startdate = bab_toHtml(bab_shortDate(bab_mktime($arr['start_date'])));
+				$this->title = bab_toHtml($arr['title']);
+				$this->titleurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&idcal=".$arr['id_cal']. "&evtid=".$arr['id']);
 				if( $k % 2)
 					$this->alternate = 1;
 				else

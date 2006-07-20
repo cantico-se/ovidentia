@@ -35,9 +35,9 @@ function createEvent($idcals,$id_owner, $title, $description, $location, $startd
 	( title, description, location, start_date, end_date, id_cat, id_creator, color, bprivate, block, bfree, hash) 
 	
 	values (
-		".$babDB->quote($db_title).", 
-		".$babDB->quote($db_description).", 
-		".$babDB->quote($db_location).", 
+		".$babDB->quote($title).", 
+		".$babDB->quote($description).", 
+		".$babDB->quote($location).", 
 		".$babDB->quote(date('Y-m-d H:i:s',$startdate)).", 
 		".$babDB->quote(date('Y-m-d H:i:s',$enddate)).", 
 		".$babDB->quote($category).", 
@@ -137,24 +137,22 @@ function createEvent($idcals,$id_owner, $title, $description, $location, $startd
 	return $arrcals;
 }
 
-/*
-	$args['startdate'] : array('month', 'day', 'year', 'hours', 'minutes')
-	$args['enddate'] : array('month', 'day', 'year', 'hours', 'minutes')
-	$args['owner'] : id of the owner
-	$args['rrule'] : // BAB_CAL_RECUR_DAILY, ...
-	$args['until'] : array('month', 'day', 'year')
-	$args['rdays'] : repeat days array(0,1,2,3,4,5,6)
-	$args['ndays'] : nb days 
-	$args['nweeks'] : nb weeks 
-	$args['nmonths'] : nb weeks 
-	$args['category'] : id of the category
-	$args['private'] : if the event is private
-	$args['lock'] : to lock the event
-	$args['free'] : free event
-	$args['alert'] : array('day', 'hour', 'minute', 'email'=>'Y')
-*/
-
-
+/**
+ *	$args['startdate'] : array('month', 'day', 'year', 'hours', 'minutes')
+ *	$args['enddate'] : array('month', 'day', 'year', 'hours', 'minutes')
+ *	$args['owner'] : id of the owner
+ *	$args['rrule'] : // BAB_CAL_RECUR_DAILY, ...
+ *	$args['until'] : array('month', 'day', 'year')
+ *	$args['rdays'] : repeat days array(0,1,2,3,4,5,6)
+ *	$args['ndays'] : nb days 
+ *	$args['nweeks'] : nb weeks 
+ *	$args['nmonths'] : nb weeks 
+ *	$args['category'] : id of the category
+ *	$args['private'] : if the event is private
+ *	$args['lock'] : to lock the event
+ *	$args['free'] : free event
+ *	$args['alert'] : array('day', 'hour', 'minute', 'email'=>'Y')
+ */
 function bab_createEvent($idcals, $args, &$msgerror)
 	{
 	global $babBody;

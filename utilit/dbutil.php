@@ -249,17 +249,6 @@ function db_escape_string($str)
 		}
 	}
 
-function db_real_escape_string($str, $id)
-    {
-	switch($this->db_type )
-		{
-		case "mysql":
-		default:
-			return mysql_real_escape_string($str, $id);
-			break;
-		}
-	}
-
 function db_free_result($result)
     {
 	switch($this->db_type )
@@ -360,7 +349,7 @@ class babDatabase extends bab_database
 	function quote($param) 
 		{
 			if (is_array($param)) {
-				array_walk($param, create_function('&$v,$k', '$v = bab_database::db_escape_string($v);'));
+				array_walk($param, create_function('&$v,$k', '$v = $GLOBALS[\'babDB\']->db_escape_string($v);'));
 				return "'".implode("','",$param)."'";
 			} else {
 				return "'".parent::db_escape_string($param)."'";

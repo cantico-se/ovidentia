@@ -890,8 +890,7 @@ function deleteEvent()
 
 function post_string($key)
 {
-	global $babDB;
-	return $babDB->db_escape_string($_POST[$key]);
+	return $_POST[$key];
 }
 
 function post_string2($key)

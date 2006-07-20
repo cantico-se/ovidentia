@@ -63,7 +63,7 @@ function addVacationType($vtid, $what, $tname, $description, $quantity, $tcolor,
 
 			if( $what == "modvt" && empty($tname))
 				{
-				$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_VAC_TYPES_TBL." where id='".$vtid."'"));
+				$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_VAC_TYPES_TBL." where id=".$babDB->quote($vtid)));
 				$this->tnameval = $arr['name'];
 				$this->descriptionval = $arr['description'];
 				$this->quantityval = $arr['quantity'];
@@ -271,11 +271,11 @@ function addVacationCollection($vcid, $what, $tname, $description, $vtypeids, $c
 
 			if( $what == "modvc" && empty($tname))
 				{
-				$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_VAC_COLLECTIONS_TBL." where id='".$vcid."'"));
+				$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_VAC_COLLECTIONS_TBL." where id=".$babDB->quote($vcid)));
 				$this->tnameval = $arr['name'];
 				$this->descriptionval = $arr['description'];
 				$this->categoryval = $arr['id_cat'];
-				$res = $babDB->db_query("select * from ".BAB_VAC_COLL_TYPES_TBL." where id_coll='".$vcid."'");
+				$res = $babDB->db_query("select * from ".BAB_VAC_COLL_TYPES_TBL." where id_coll=".$babDB->quote($vcid));
 				while( $arr = $babDB->db_fetch_array($res))
 					$this->vtids[] = $arr['id_type'];
 				}
@@ -412,11 +412,11 @@ function listVacationPersonnel($pos, $idcol, $idsa)
 				{
 				$this->pos =strlen($pos)>1? $pos[1]: '';
 				$this->ord = $pos[0];
-				$req = "select ".BAB_USERS_TBL.".*, ".BAB_VAC_PERSONNEL_TBL.".id_sa, ".BAB_VAC_PERSONNEL_TBL.".id_coll from ".BAB_USERS_TBL." join ".BAB_VAC_PERSONNEL_TBL." where ".BAB_USERS_TBL.".id=".BAB_VAC_PERSONNEL_TBL.".id_user and ".BAB_USERS_TBL.".lastname like '".$this->pos."%' ";
+				$req = "select ".BAB_USERS_TBL.".*, ".BAB_VAC_PERSONNEL_TBL.".id_sa, ".BAB_VAC_PERSONNEL_TBL.".id_coll from ".BAB_USERS_TBL." join ".BAB_VAC_PERSONNEL_TBL." where ".BAB_USERS_TBL.".id=".BAB_VAC_PERSONNEL_TBL.".id_user and ".BAB_USERS_TBL.".lastname like '".$this->db->db_escape_string($this->pos)."%' ";
 				if( !empty($idcol))
-					$req .= "and ".BAB_VAC_PERSONNEL_TBL.".id_coll='".$idcol."'";
+					$req .= "and ".BAB_VAC_PERSONNEL_TBL.".id_coll='".$this->db->db_escape_string($idcol)."'";
 				if( !empty($idsa))
-					$req .= "and ".BAB_VAC_PERSONNEL_TBL.".id_sa='".$idsa."'";
+					$req .= "and ".BAB_VAC_PERSONNEL_TBL.".id_sa='".$this->db->db_escape_string($idsa)."'";
 				$req .= "order by ".BAB_USERS_TBL.".lastname, ".BAB_USERS_TBL.".firstname asc";
 				$this->fullname = bab_translate("Lastname"). " " . bab_translate("Firstname");
 				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper&chg=&pos=".$this->ord.$this->pos."&idcol=".$this->idcol."&idsa=".$this->idsa;
@@ -425,11 +425,11 @@ function listVacationPersonnel($pos, $idcol, $idsa)
 				{
 				$this->pos = $pos;
 				$this->ord = "";
-				$req = "select ".BAB_USERS_TBL.".*, ".BAB_VAC_PERSONNEL_TBL.".id_sa, ".BAB_VAC_PERSONNEL_TBL.".id_coll from ".BAB_USERS_TBL." join ".BAB_VAC_PERSONNEL_TBL." where ".BAB_USERS_TBL.".id=".BAB_VAC_PERSONNEL_TBL.".id_user and ".BAB_USERS_TBL.".firstname like '".$this->pos."%' ";
+				$req = "select ".BAB_USERS_TBL.".*, ".BAB_VAC_PERSONNEL_TBL.".id_sa, ".BAB_VAC_PERSONNEL_TBL.".id_coll from ".BAB_USERS_TBL." join ".BAB_VAC_PERSONNEL_TBL." where ".BAB_USERS_TBL.".id=".BAB_VAC_PERSONNEL_TBL.".id_user and ".BAB_USERS_TBL.".firstname like '".$this->db->db_escape_string($this->pos)."%' ";
 				if( !empty($idcol))
-					$req .= "and ".BAB_VAC_PERSONNEL_TBL.".id_coll='".$idcol."'";
+					$req .= "and ".BAB_VAC_PERSONNEL_TBL.".id_coll='".$this->db->db_escape_string($idcol)."'";
 				if( !empty($idsa))
-					$req .= "and ".BAB_VAC_PERSONNEL_TBL.".id_sa='".$idsa."'";
+					$req .= "and ".BAB_VAC_PERSONNEL_TBL.".id_sa='".$this->db->db_escape_string($idsa)."'";
 				$req .= "order by ".BAB_USERS_TBL.".firstname, ".BAB_USERS_TBL.".lastname asc";
 				$this->fullname = bab_translate("Firstname"). " " . bab_translate("Lastname");
 				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper&chg=&pos=".$this->ord.$this->pos."&idcol=".$this->idcol."&idsa=".$this->idsa;
@@ -469,9 +469,9 @@ function listVacationPersonnel($pos, $idcol, $idsa)
 				$this->lrbuurl = $GLOBALS['babUrlScript']."?tg=vacadm&idx=lrbu&idu=".$this->userid;
 				$this->calurl = $GLOBALS['babUrlScript']."?tg=vacuser&idx=cal&idu=".$this->userid;
 				$this->vunewurl = $GLOBALS['babUrlScript']."?tg=vacuser&idx=period&rfrom=1&id_user=".$this->userid;
-				$arr = $this->db->db_fetch_array($this->db->db_query("select name from ".BAB_VAC_COLLECTIONS_TBL." where id='".$this->arr['id_coll']."'"));
+				$arr = $this->db->db_fetch_array($this->db->db_query("select name from ".BAB_VAC_COLLECTIONS_TBL." where id='".$this->db->db_escape_string($this->arr['id_coll'])."'"));
 				$this->collname = $arr['name'];
-				$arr = $this->db->db_fetch_array($this->db->db_query("select name from ".BAB_FLOW_APPROVERS_TBL." where id='".$this->arr['id_sa']."'"));
+				$arr = $this->db->db_fetch_array($this->db->db_query("select name from ".BAB_FLOW_APPROVERS_TBL." where id='".$this->db->db_escape_string($this->arr['id_sa'])."'"));
 				$this->saname = $arr['name'];
 				$i++;
 				return true;
@@ -503,9 +503,9 @@ function listVacationPersonnel($pos, $idcol, $idsa)
 						$req = "select ".BAB_USERS_TBL.".id from ".BAB_USERS_TBL." join ".BAB_VAC_PERSONNEL_TBL." where ".BAB_USERS_TBL.".id=".BAB_VAC_PERSONNEL_TBL.".id_user and ".BAB_USERS_TBL.".firstname like '".$this->selectname."%'";
 						}
 					if( !empty($this->idcol))
-						$req .= "and ".BAB_VAC_PERSONNEL_TBL.".id_coll='".$this->idcol."'";
+						$req .= "and ".BAB_VAC_PERSONNEL_TBL.".id_coll='".$this->db->db_escape_string($this->idcol)."'";
 					if( !empty($this->idsa))
-						$req .= "and ".BAB_VAC_PERSONNEL_TBL.".id_sa='".$this->idsa."'";
+						$req .= "and ".BAB_VAC_PERSONNEL_TBL.".id_sa='".$this->db->db_escape_string($this->idsa)."'";
 					$res = $this->db->db_query($req);
 					if( $this->db->db_num_rows($res) > 0 )
 						$this->selected = 0;
@@ -686,7 +686,7 @@ function deleteVacationPersonnel($pos, $idcol, $idsa, $userids)
 			$db = $GLOBALS['babDB'];
 			for($i = 0; $i < count($userids); $i++)
 				{
-				$req = "select * from ".BAB_USERS_TBL." where id='".$userids[$i]."'";
+				$req = "select * from ".BAB_USERS_TBL." where id='".$this->db->db_escape_string($userids[$i])."'";
 				$res = $db->db_query($req);
 				if( $db->db_num_rows($res) > 0)
 					{
@@ -819,19 +819,19 @@ function deleteVacationType($vtid)
 	global $babBody, $babDB;
 	$bdel = true;
 
-	list($total) = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_VAC_COLL_TYPES_TBL." where id_type='".$vtid."'"));
+	list($total) = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_VAC_COLL_TYPES_TBL." where id_type='".$this->db->db_escape_string($vtid)."'"));
 	if( $total > 0 )
 		{
 		$bdel = false;	
 		}
 	else 
 		{
-		list($total) = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_type='".$vtid."'"));
+		list($total) = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_type='".$this->db->db_escape_string($vtid)."'"));
 		if( $total > 0 )
 			$bdel = false;
 		else
 			{
-			list($total) = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_VAC_RIGHTS_TBL." where id_type='".$vtid."'"));
+			list($total) = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_VAC_RIGHTS_TBL." where id_type='".$this->db->db_escape_string($vtid)."'"));
 			if( $total > 0 )
 				$bdel = false;
 			}
@@ -839,8 +839,8 @@ function deleteVacationType($vtid)
 
 	if( $bdel )
 		{
-		$babDB->db_query("delete from ".BAB_VAC_TYPES_TBL." where id='".$vtid."'");
-		$babDB->db_query("delete from ".BAB_VAC_COLL_TYPES_TBL." where id_type='".$vtid."'");
+		$babDB->db_query("delete from ".BAB_VAC_TYPES_TBL." where id='".$this->db->db_escape_string($vtid)."'");
+		$babDB->db_query("delete from ".BAB_VAC_COLL_TYPES_TBL." where id_type='".$this->db->db_escape_string($vtid)."'");
 		}
 	else
 		$babBody->msgerror = bab_translate("This vacation type is used and can't be deleted") ." !";
@@ -908,12 +908,12 @@ function updateVacationCollection($vcid, $tname, $description, $vtypeids, $categ
 	if( count($vtypeids) > 0 )
 		{
 		$vtexist = array();
-		$res = $db->db_query("select * from ".BAB_VAC_COLL_TYPES_TBL." where id_coll='".$vcid."'");
+		$res = $db->db_query("select * from ".BAB_VAC_COLL_TYPES_TBL." where id_coll='".$this->db->db_escape_string($vcid)."'");
 		while( $arr = $db->db_fetch_array($res))
 			{
 			if( !in_array($arr['id_type'], $vtypeids ))
 				{
-				$db->db_query("delete from ".BAB_VAC_COLL_TYPES_TBL." where id='".$arr['id']."'");
+				$db->db_query("delete from ".BAB_VAC_COLL_TYPES_TBL." where id='".$this->db->db_escape_string($arr['id'])."'");
 				}
 			else
 				$vtexist[] = $arr['id_type'];
@@ -923,21 +923,21 @@ function updateVacationCollection($vcid, $tname, $description, $vtypeids, $categ
 		for( $i=0; $i < count($vtypeids); $i++)
 			{
 			if( $nbexist == 0 || ($nbexist > 0 && !in_array($vtypeids[$i], $vtexist)))
-				$db->db_query("insert into ".BAB_VAC_COLL_TYPES_TBL." (id_coll, id_type) values ('".$vcid."', '".$vtypeids[$i]."')");
+				$db->db_query("insert into ".BAB_VAC_COLL_TYPES_TBL." (id_coll, id_type) values ('".$this->db->db_escape_string($vcid)."', '".$this->db->db_escape_string($vtypeids[$i])."')");
 			}
 	
 		}
 	else
 		{
-		$db->db_query("delete from ".BAB_VAC_COLL_TYPES_TBL." where id_coll='".$vcid."'");
+		$db->db_query("delete from ".BAB_VAC_COLL_TYPES_TBL." where id_coll='".$this->db->db_escape_string($vcid)."'");
 		}
 
 	if( $oldcateg != $category)
 		{
-		$res = $db->db_query("select vet.id from ".BAB_VAC_ENTRIES_TBL." vet left join ".BAB_VAC_PERSONNEL_TBL." vpt on vpt.id_user=vet.id_user where vpt.id_coll='".$vcid."'");
+		$res = $db->db_query("select vet.id from ".BAB_VAC_ENTRIES_TBL." vet left join ".BAB_VAC_PERSONNEL_TBL." vpt on vpt.id_user=vet.id_user where vpt.id_coll='".$this->db->db_escape_string($vcid)."'");
 		while( $arr = $db->db_fetch_array($res))
 			{
-			$db->db_query("update ".BAB_CAL_EVENTS_TBL." set id_cat='".$category."' where hash='V_".$arr['id']."'");
+			$db->db_query("update ".BAB_CAL_EVENTS_TBL." set id_cat='".$this->db->db_escape_string($category)."' where hash='V_".$this->db->db_escape_string($arr['id'])."'");
 			}
 		}
 
@@ -978,11 +978,11 @@ function updateVacationPersonnelGroup($groupid, $addmodify,  $idcol, $idsa)
 		if( $groupid == 1 )
 			$res = $babDB->db_query("select id as id_user from ".BAB_USERS_TBL." where is_confirmed='1'");
 		else
-			$res = $babDB->db_query("select id_object as id_user from ".BAB_USERS_GROUPS_TBL." where id_group='".$groupid."'");
+			$res = $babDB->db_query("select id_object as id_user from ".BAB_USERS_GROUPS_TBL." where id_group='".$this->db->db_escape_string($groupid)."'");
 
 		while( $arr = $babDB->db_fetch_array($res))
 			{
-			$res2 = $babDB->db_query("select p.id, p.id_sa, e.id we from ".BAB_VAC_PERSONNEL_TBL." p LEFT JOIN ".BAB_VAC_ENTRIES_TBL." e ON e.id_user=p.id_user AND status='' WHERE p.id_user='".$arr['id_user']."' GROUP BY p.id");
+			$res2 = $babDB->db_query("select p.id, p.id_sa, e.id we from ".BAB_VAC_PERSONNEL_TBL." p LEFT JOIN ".BAB_VAC_ENTRIES_TBL." e ON e.id_user=p.id_user AND status='' WHERE p.id_user='".$this->db->db_escape_string($arr['id_user'])."' GROUP BY p.id");
 			if( $res2 && $babDB->db_num_rows($res2) > 0 )
 				{
 				$row = $babDB->db_fetch_array($res2);
@@ -990,7 +990,7 @@ function updateVacationPersonnelGroup($groupid, $addmodify,  $idcol, $idsa)
 					{
 					if (!empty($row['we']))
 						updateVacationUser($arr['id_user'], $idsa);
-					$babDB->db_query("update ".BAB_VAC_PERSONNEL_TBL." set id_sa='".$idsa."' where id_user='".$arr['id_user']."'");
+					$babDB->db_query("update ".BAB_VAC_PERSONNEL_TBL." set id_sa='".$this->db->db_escape_string($idsa)."' where id_user='".$this->db->db_escape_string($arr['id_user'])."'");
 					}
 				}
 			else
@@ -1009,7 +1009,7 @@ function deleteVacationCollection($vcid)
 	global $babDB;
 	$bdel = true;
 
-	list($total) = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_VAC_PERSONNEL_TBL." where id_coll='".$vcid."'"));
+	list($total) = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_VAC_PERSONNEL_TBL." where id_coll='".$this->db->db_escape_string($vcid)."'"));
 	if( $total > 0 )
 		{
 		$bdel = false;	
@@ -1017,8 +1017,8 @@ function deleteVacationCollection($vcid)
 
 	if( $bdel )
 		{
-		$babDB->db_query("delete from ".BAB_VAC_COLLECTIONS_TBL." where id='".$vcid."'");
-		$babDB->db_query("delete from ".BAB_VAC_COLL_TYPES_TBL." where id_coll='".$vcid."'");
+		$babDB->db_query("delete from ".BAB_VAC_COLLECTIONS_TBL." where id='".$this->db->db_escape_string($vcid)."'");
+		$babDB->db_query("delete from ".BAB_VAC_COLL_TYPES_TBL." where id_coll='".$this->db->db_escape_string($vcid)."'");
 		}
 	else
 		$babBody->msgerror = bab_translate("This vacation collection is used and can't be deleted") ." !";
@@ -1031,22 +1031,22 @@ function confirmDeletePersonnel($items)
 	$cnt = count($arr);
 	for($i = 0; $i < $cnt; $i++)
 		{
-		$res = $babDB->db_query("select id from ".BAB_VAC_ENTRIES_TBL." where id_user='".$arr[$i]."'");
+		$res = $babDB->db_query("select id from ".BAB_VAC_ENTRIES_TBL." where id_user='".$this->db->db_escape_string($arr[$i])."'");
 		while( $row = $babDB->db_fetch_array($res))
 			{
-			$babDB->db_query("delete from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry='".$row['id']."'");
+			$babDB->db_query("delete from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry='".$this->db->db_escape_string($row['id'])."'");
 			}
-		$babDB->db_query("delete from ".BAB_VAC_ENTRIES_TBL." where id_user='".$arr[$i]."'");
+		$babDB->db_query("delete from ".BAB_VAC_ENTRIES_TBL." where id_user='".$this->db->db_escape_string($arr[$i])."'");
 
-		$res = $babDB->db_query("select id_right from ".BAB_VAC_USERS_RIGHTS_TBL." where id_user='".$arr[$i]."'");
+		$res = $babDB->db_query("select id_right from ".BAB_VAC_USERS_RIGHTS_TBL." where id_user='".$this->db->db_escape_string($arr[$i])."'");
 		while( $row = $babDB->db_fetch_array($res))
 			{
-			$babDB->db_query("delete from ".BAB_VAC_USERS_RIGHTS_TBL." where id_user='".$arr[$i]."' and id_right='".$row['id_right']."'");
-			list($total) = $babDB->db_fetch_array($babDB->db_query("select count(id) from ".BAB_VAC_USERS_RIGHTS_TBL." where id_right='".$row['id_right']."'"));
+			$babDB->db_query("delete from ".BAB_VAC_USERS_RIGHTS_TBL." where id_user='".$this->db->db_escape_string($arr[$i])."' and id_right='".$this->db->db_escape_string($row['id_right'])."'");
+			list($total) = $babDB->db_fetch_array($babDB->db_query("select count(id) from ".BAB_VAC_USERS_RIGHTS_TBL." where id_right='".$this->db->db_escape_string($row['id_right'])."'"));
 			if( $total == 0 )
-				$babDB->db_query("delete from ".BAB_VAC_ENTRIES_TBL." where id='".$row['id_right']."'");
+				$babDB->db_query("delete from ".BAB_VAC_ENTRIES_TBL." where id='".$this->db->db_escape_string($row['id_right'])."'");
 			}
-		$babDB->db_query("delete from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$arr[$i]."'");
+		$babDB->db_query("delete from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$this->db->db_escape_string($arr[$i])."'");
 		}
 	}
 

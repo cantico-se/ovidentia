@@ -170,10 +170,10 @@ unset($BAB_SESS_LOGGED);
 if( $tg != "version" || !isset($idx) || $idx != "upgrade")
 	{
 	bab_updateSiteSettings();
-	if ( isset($babNTauth) && !isset($_REQUEST['babNTauth']) && $babNTauth ) include $babInstallPath."utilit/ntident.php";
 	if ($GLOBALS['babCookieIdent'] === true) include $babInstallPath."utilit/cookieident.php";
 	bab_isUserLogged();
 	bab_updateUserSettings();
+	if ( isset($babNTauth) && !isset($_REQUEST['babNTauth']) && $babNTauth ) include $babInstallPath."utilit/ntident.php";
 	$babLangFilter->translateTexts();
 	}
 else
