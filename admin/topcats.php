@@ -199,7 +199,18 @@ function topcatsList($idp)
 			$this->topics = bab_translate("Number of topics");
 			$this->topcats = bab_translate("Number of topics categories");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."' and id_parent='".$idp."'";
+			$req = "select c.* 
+				FROM 
+					".BAB_TOPICS_CATEGORIES_TBL." c, 
+					".BAB_TOPCAT_ORDER_TBL." o 
+				WHERE 
+					id_dgowner=".$this->db->quote($babBody->currentAdmGroup)." 
+					AND c.id=o.id_topcat 
+					AND c.id_parent=".$this->db->quote($idp)." 
+					AND type='1' 
+				ORDER BY o.ordering
+				";
+			
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			$this->idp = $idp;
