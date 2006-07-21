@@ -46,8 +46,6 @@ function NTuserLogin($nickname)
 			}
 		if ($arr['is_confirmed'] == '1')
 			{
-			$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
-
 			if( isset($_SESSION))
 				{
 				$_SESSION['BAB_SESS_NTREGISTER'] = true;
