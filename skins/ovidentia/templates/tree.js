@@ -48,7 +48,8 @@ function bab_search()
 	var nbItems = context.nbItemsPerLoop;
 
 	var currentIndex = context.currentIndex;
-	while (nbItems-- > 0 && currentIndex < context.listItems.length) {
+	var totalListItems = context.listItems.length;
+	while (nbItems-- > 0 && currentIndex < totalListItems) {
 		var listItem = context.listItems[currentIndex];
 		var content = listItem.getAttribute('content');
 		var div = listItem.getElementsByTagName('DIV')[0];
@@ -72,7 +73,7 @@ function bab_search()
 	window.status = '[' + context.nbMatches + '] ' + context.currentIndex + ' / ' + context.listItems.length
 	context.inputField.style.backgroundPosition = '' + (100 * currentIndex) / context.listItems.length + '% 0'
 
-	if (currentIndex < context.listItems.length) {
+	if (currentIndex < totalListItems) {
 		context.timeoutId = window.setTimeout(window.bab_search, 0);
 	} else {
 		if (context.nbMatches > 1) {
@@ -107,7 +108,6 @@ function bab_delaySearch()
 		context.inputField.style.backgroundPosition = '1px 50%'
 		if (context.searching) {
 			this.className = 'bab_searchField';
-//			this.parentNode.tree.expand();
 			this.parentNode.tree.unhighlightAll();
 		}
 		context.searching = false;
@@ -128,7 +128,8 @@ function bab_treeCollapse()
 function bab_initTrees()
 {
 	divs = document.getElementsByTagName('DIV');
-	for (i = 0; i < divs.length; i++) {
+	var nbDivs = divs.length
+	for (i = 0; i < nbDivs; i++) {
 		div = divs[i];
 		if (!div.initialized && hasClass(div, 'bab_tree')) {
 			var tree = new bab_Tree(div);
@@ -192,12 +193,12 @@ bab_Tree.prototype.nodeLineHoverClass = 'line hover';
 
 function bab_onItemMouseOver()
 {
-	this.className = 'line hover';
+	this.className = bab_Tree.prototype.nodeLineHoverClass;
 }
 
 function bab_onItemMouseOut()
 {
-	this.className = 'line';
+	this.className = bab_Tree.prototype.nodeLineClass;
 }
 
 function bab_onNodeClick()
@@ -229,7 +230,8 @@ bab_Tree.prototype.processList = function()
 	window.console && console.time('processList');
 
 	var uls = this.rootList.getElementsByTagName('UL');
-	for (var i = 0; i < uls.length; i++) {
+	var nbUls = uls.length;
+	for (var i = 0; i < nbUls; i++) {
 		var li = uls[i].parentNode;
 		li.className = this.NODE_CLOSED;
 		var div = li.getElementsByTagName('DIV')[0];
@@ -257,7 +259,8 @@ bab_Tree.prototype.expandCollapseListItem = function(listItem, className)
 bab_Tree.prototype.expandCollapseAll = function(ul, className)
 {
 	var uls = ul.getElementsByTagName('UL');
-	for (var i = 0; i < uls.length; i++) {
+	var nbUls = uls.length;
+	for (var i = 0; i < nbUls; i++) {
 		if (uls[i].parentNode.className != className) {
 			uls[i].parentNode.className = className;
 		}
@@ -285,7 +288,8 @@ bab_Tree.prototype.initSearch = function()
 	if (this.initDone)
 		return;
 	var listItems = this.rootList.getElementsByTagName('LI');
-	for (var i = 0; i < listItems.length ; i++) {
+	var nbListItems = listItems.length
+	for (var i = 0; i < nbListItems; i++) {
 		var div = listItems[i].getElementsByTagName('DIV')[0]
 		var span = div.getElementsByTagName('SPAN')[0];
 		var text = span.firstChild.nodeValue;
@@ -307,7 +311,8 @@ bab_Tree.prototype.initSearch = function()
 bab_Tree.prototype.unhighlightAll = function()
 {
 	var listItems = this.rootList.getElementsByTagName('LI');
-	for (var i = 0; i < listItems.length ; i++) {
+	var nbListItems = listItems.length
+	for (var i = 0; i < nbListItems; i++) {
 		var div = listItems[i].getElementsByTagName('DIV')[0];
 		if (div.style.backgroundColor != '') {
 			div.style.backgroundColor = '';
@@ -317,29 +322,34 @@ bab_Tree.prototype.unhighlightAll = function()
 
 bab_Tree.prototype.saveState = function()
 {
-	expiryDate = new Date;
+	var expiryDate = new Date;
 	expiryDate.setMonth(expiryDate.getMonth() + 6);
-	var lis = this.rootList.getElementsByTagName('LI');
-	nodes = new Array();
-	for (var i = 0; i < lis.length; i++) {
-		if (lis[i].className == this.NODE_OPEN) {
-			nodes.push(lis[i].id);
+//	var cookiePath = document.location.href.replace(new RegExp('^[a-z]+://' + document.location.host), '');
+	var cookiePath = '/';
+	var listItems = this.rootList.getElementsByTagName('LI');
+	var nbListItems = listItems.length
+	var nodes = new Array();
+	for (var i = 0; i < nbListItems; i++) {
+		var listItem = listItems[i];
+		if (listItem.className == this.NODE_OPEN) {
+			nodes.push(listItem.id);
 		}
 	}
+	
 	document.cookie = 'bab_Tree.' + this.id + '=' + escape(nodes.join('/'))
 						+ '; expires=' + expiryDate.toGMTString()
-						+ '; path=' + document.location.href.replace(new RegExp('^[a-z]+://' + document.location.host), '');
+						+ '; path=' + cookiePath;
 }
 
 
 bab_Tree.prototype.loadState = function()
 {
-	pairs = document.cookie.split('; ');
+	var pairs = document.cookie.split('; ');
 	for (var i = 0; i < pairs.length; i++) {
-		keyValue = pairs[i].split('=');
+		var keyValue = pairs[i].split('=');
 		if (keyValue[0] == 'bab_Tree.' + this.id) {
 			if (keyValue[1] != '') {
-				nodes = unescape(keyValue[1]).split('/');
+				var nodes = unescape(keyValue[1]).split('/');
 				for (var j = 0; j < nodes.length; j++) {
 					try {
 					document.getElementById(nodes[j]).className = this.NODE_OPEN;
