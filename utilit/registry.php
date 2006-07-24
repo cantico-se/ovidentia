@@ -224,6 +224,7 @@ class bab_registry {
 
 	/**
 	 * Delete the current directory
+	 * @return int affected rows
 	 */
 	function deleteDirectory() {
 
@@ -236,6 +237,60 @@ class bab_registry {
 		");
 
 		return $this->db->db_affected_rows($res);
+	}
+
+
+	/**
+	 * get next subfolder
+	 * @return string|false
+	 */
+	function fetchChildDir() {
+		static $r = array();
+		if (!isset($r[$this->dir])) {
+			$l = strlen($this->dir);
+			$r[$this->dir] = $this->db->db_query("
+			
+			SELECT DISTINCT 
+				LEFT(RIGHT(dirkey,LENGTH(dirkey)-'$l'), LOCATE('/',RIGHT(dirkey,LENGTH(dirkey)-'$l')) ) dirkey  
+			FROM ".BAB_REGISTRY_TBL." 
+				WHERE dirkey REGEXP ".$this->db->quote('^'.$this->dir.'[^/]+/.+$')." 
+
+				");
+		}
+
+		if ($arr = $this->db->db_fetch_assoc($r[$this->dir])) {
+			return $arr['dirkey'];
+		}
+
+		$this->db->db_data_seek($r[$this->dir], 0);
+		return false;
+	}
+
+
+	/**
+	 * get next child key from current directory
+	 * @return string|false
+	 */
+	function fetchChildKey() {
+		static $r = array();
+		if (!isset($r[$this->dir])) {
+			$l = strlen($this->dir);
+			$r[$this->dir] = $this->db->db_query("
+			
+			SELECT 
+				RIGHT(dirkey,LENGTH(dirkey)-'$l') dirkey  
+			FROM ".BAB_REGISTRY_TBL." 
+				WHERE dirkey REGEXP ".$this->db->quote('^'.$this->dir.'[^/]+$')." 
+
+				");
+		}
+
+		if ($arr = $this->db->db_fetch_assoc($r[$this->dir])) {
+			return $arr['dirkey'];
+		}
+
+		$this->db->db_data_seek($r[$this->dir], 0);
+		return false;
 	}
 }
 
