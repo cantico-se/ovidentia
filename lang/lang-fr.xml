@@ -1797,6 +1797,8 @@
 <string id="all not registered users">Tous les utilisateurs non enregistrés</string>
 <string id="Expand all">Tout déployer</string>
 <string id="Collapse all">Tout réduire</string>
+<string id="Expand">Déployer</string>
+<string id="Collapse">Réduire</string>
 <string id="Expand to checked boxes">Déployer vers les cases cochées</string>
 <string id="Sets of groups">Ensembles de groupes</string>
 <string id="Access rights">Droits d'accès</string>
