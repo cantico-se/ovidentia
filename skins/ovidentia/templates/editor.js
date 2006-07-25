@@ -104,7 +104,7 @@ var global_editor = null;
 	  action    : function(editor, id) {
 					//}
 					global_editor = editor;
-					bab_dialog.selectfile(EditorOnInsertFiles, 'show_personal_directories=1&show_files=1&clickable_files=1&clickable_collective_directories=1&clickable_sub_directories=1&multi=1');
+					bab_dialog.selectfile(EditorOnInsertFiles, 'show_personal_directories=1&show_files=1&selectable_files=1&selectable_collective_directories=1&selectable_sub_directories=1&multi=1');
 //					window.open('{ babUrlScript }?tg=fileman&idx=brow&callback=EditorOnCreateFile&editor=1','bab_file','toolbar=no,menubar=no,personalbar=no,width=400,height=470,scrollbars=yes,resizable=yes');
 				  }
 	});
