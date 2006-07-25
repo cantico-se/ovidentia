@@ -39,6 +39,14 @@
 <script type="text/javascript">document.getElementById("{ t_treeViewId }").getElementsByTagName('DIV')[0].style.display=''</script>
 
 <script type="text/javascript">
+if (!window.bab_Translations) {
+	window.bab_Translations = new Array();
+}
+window.bab_Translations['Expand'] = '{ t_expand }';
+window.bab_Translations['Collapse'] = '{ t_collapse }';
+
+alert(window.bab_Translations.length);
+
 document.getElementById("{ t_treeViewId }").onElementClick = function(element)
 {
 	try {

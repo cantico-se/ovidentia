@@ -125,6 +125,18 @@ function bab_treeCollapse()
 	this.parentNode.tree.collapse();
 }
 
+
+function bab_translate(text)
+{
+	if (!window.bab_Translations) {
+		return text;
+	}
+	if (window.bab_Translations[text]) {
+		return window.bab_Translations[text];
+	}
+	return text;
+}
+
 function bab_initTrees()
 {
 	divs = document.getElementsByTagName('DIV');
@@ -143,14 +155,14 @@ function bab_initTrees()
 			div.insertBefore(toolbar, div.firstChild);
 
 			var expand = document.createElement('A');
-			txt = document.createTextNode('Expand');
+			txt = document.createTextNode(bab_translate('Expand'));
 			expand.onclick = bab_treeExpand;
 			expand.className = 'bab_expandAll';
 			expand.appendChild(txt);
 			toolbar.appendChild(expand);
 			
 			var collapse = document.createElement('A');
-			txt = document.createTextNode('Collapse');
+			txt = document.createTextNode(bab_translate('Collapse'));
 			collapse.onclick = bab_treeCollapse;
 			collapse.className = 'bab_collapseAll';
 			collapse.appendChild(txt);
