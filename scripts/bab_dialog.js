@@ -16,9 +16,8 @@ function bab_dialog(url, parameters, action, init) {
 		'dependable'	: 'yes'
 	}
 
-	
 
-	for(var p in parameters) {
+	for (var p in parameters) {
 		useparam[p] = parameters[p];
 	}
 
@@ -159,9 +158,9 @@ bab_dialog.selectuser = function(action) {
  * <li>show_categories: show article categories</li>
  * <li>show_topics: show article topics (implies show_categories)</li>
  * <li>show_articles: show articles (implies show_topics and show_categories)</li>
- * <li>clickable_categories: categories can be selected</li>
- * <li>clickable_topics: topics can be selected</li>
- * <li>clickable_articles: articles can be selected</li>
+ * <li>selectable_categories: categories can be selected</li>
+ * <li>selectable_topics: topics can be selected</li>
+ * <li>selectable_articles: articles can be selected</li>
  * </ul>
  * @param function action	receiving an associative array with keys "id", "type" and "content" as parameter.
  * @param string attributes	list of '&' separated attributes for the articles/topics/categories tree selector.
@@ -179,8 +178,18 @@ bab_dialog.selectarticle = function(action, attributes) {
 }
 
 /**
- * An faq tree dialog.
+ * A faq tree dialog.
+ * Possible values for 'attributes' are:
+ * <ul>
+ * <li>show_categories: show faq categories</li>
+ * <li>show_sub_categories: show faq sub-categories (implies show_categories)</li>
+ * <li>show_questions: show faq questions-answers (implies show_sub_categories and show_categories)</li>
+ * <li>selectable_categories: categories can be selected</li>
+ * <li>selectable_sub_categories: sub-categories can be selected</li>
+ * <li>selectable_questions: questions-answers can be selected</li>
+ * </ul>
  * @param action  function receiving an associative array with keys "id", "type" and "content" as parameter.
+ * @param string attributes	list of '&' separated attributes for the faq/sub-categories/questions-answers tree selector.
  */
 bab_dialog.selectfaq = function(action, attributes) {
 	var useparam = {
@@ -194,8 +203,18 @@ bab_dialog.selectfaq = function(action, attributes) {
 }
 
 /**
- * An forum tree dialog.
+ * A forum tree dialog.
+ * Possible values for 'attributes' are:
+ * <ul>
+ * <li>show_forums: show forums</li>
+ * <li>show_threads: show threads (implies show_posts)</li>
+ * <li>show_posts: show posts (implies show_threads and show_posts)</li>
+ * <li>selectable_forums: forums can be selected</li>
+ * <li>selectable_threads: threads can be selected</li>
+ * <li>selectable_posts: posts can be selected</li>
+ * </ul>
  * @param action  function receiving an associative array with keys "id", "type" and "content" as parameter.
+ * @param string attributes	list of '&' separated attributes for the forums/threads/posts tree selector.
  */
 bab_dialog.selectforum = function(action, attributes) {
 	var useparam = {
@@ -209,8 +228,19 @@ bab_dialog.selectforum = function(action, attributes) {
 }
 
 /**
- * An file tree dialog.
+ * A file tree dialog.
+ * Possible values for 'attributes' are:
+ * <ul>
+ * <li>show_collective_directories: show collective directories</li>
+ * <li>show_personal_directories: show personal directories</li>
+ * <li>show_sub_directories: show sub-directories</li>
+ * <li>show_files: show files (implies show_sub_directories)</li>
+ * <li>selectable_collective_directories: collective directories can be selected</li>
+ * <li>selectable_sub_directories: sub-directories can be selected</li>
+ * <li>selectable_files: files can be selected</li>
+ * </ul>
  * @param action  function receiving an associative array with keys "id", "type" and "content" as parameter.
+ * @param string attributes	list of '&' separated attributes for the folders/files tree selector.
  */
 bab_dialog.selectfile = function(action, attributes) {
 	var useparam = {
