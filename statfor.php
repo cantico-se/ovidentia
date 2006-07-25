@@ -915,12 +915,6 @@ function displayForumTree($startDay, $endDay)
 {
 	require_once $GLOBALS['babInstallPath'] . 'utilit/tree.php';
 	$treeView = new bab_ForumTreeView('forum');
-//	$treeView->setAttributes(
-//							 BAB_FORUM_TREE_VIEW_SHOW_POSTS
-//							 | BAB_FORUM_TREE_VIEW_CLICKABLE_FORUMS
-//							 | BAB_FORUM_TREE_VIEW_CLICKABLE_THREADS
-//							 | BAB_FORUM_TREE_VIEW_CLICKABLE_POSTS
-//							 );
 	$treeView->addStatistics($startDay, $endDay);
 	$treeView->sort();
 	$GLOBALS['babBody']->babecho($treeView->printTemplate());

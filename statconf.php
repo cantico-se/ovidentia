@@ -231,12 +231,12 @@ function statBrowseBasketItem()
 				case 'top':
 					$babBodyPopup->title = bab_translate("Articles topic choice");
 					$treeView = new bab_ArticleTreeView('article');
-					$treeView->setAttributes( BAB_ARTICLE_TREE_VIEW_SHOW_TOPICS | BAB_ARTICLE_TREE_VIEW_CLICKABLE_TOPICS);
+					$treeView->setAttributes( BAB_ARTICLE_TREE_VIEW_SHOW_TOPICS | BAB_ARTICLE_TREE_VIEW_SELECTABLE_TOPICS);
 					break;
 				case 'art':
 					$babBodyPopup->title = bab_translate("Article choice");
 					$treeView = new bab_ArticleTreeView('article');
-					$treeView->setAttributes(BAB_ARTICLE_TREE_VIEW_SHOW_ARTICLES | BAB_ARTICLE_TREE_VIEW_CLICKABLE_ARTICLES);
+					$treeView->setAttributes(BAB_ARTICLE_TREE_VIEW_SHOW_ARTICLES | BAB_ARTICLE_TREE_VIEW_SELECTABLE_ARTICLES);
 					break;
 				case 'fold':
 					$babBodyPopup->title = bab_translate("Folder choice");
@@ -257,7 +257,7 @@ function statBrowseBasketItem()
 				case 'faq':
 					$babBodyPopup->title = bab_translate("Faq choice");
 					$treeView = new bab_FaqTreeView('faq');
-					$treeView->setAttributes(BAB_FAQ_TREE_VIEW_SHOW_CATEGORIES | BAB_FAQ_TREE_VIEW_CLICKABLE_CATEGORIES);
+					$treeView->setAttributes(BAB_FAQ_TREE_VIEW_SHOW_CATEGORIES | BAB_FAQ_TREE_VIEW_SELECTABLE_CATEGORIES);
 					$this->t_name = bab_translate("Faqs");
 					break;
 				case 'faqqr':
@@ -305,42 +305,42 @@ function statAddContentBasket()
 				case 'top':
 					$this->t_what = 'article';
 					$this->t_name = bab_translate("Articles topics");
-					$this->t_dialog_attributes = 'show_topics=1&clickable_topics=1';
+					$this->t_dialog_attributes = 'show_topics=1&selectable_topics=1';
 					break;
 				case 'art':
 					$this->t_what = 'article';
 					$this->t_name = bab_translate("Articles");
-					$this->t_dialog_attributes = 'show_articles=1&clickable_articles=1';
+					$this->t_dialog_attributes = 'show_articles=1&selectable_articles=1';
 					break;
 				case 'fold':
 					$this->t_what = 'file';
 					$this->t_name = bab_translate("Folders");
-					$this->t_dialog_attributes = 'show_collective_directories=1&clickable_collective_directories=1';
+					$this->t_dialog_attributes = 'show_collective_directories=1&selectable_collective_directories=1';
 					break;
 				case 'file':
 					$this->t_what = 'file';
 					$this->t_name = bab_translate("Files");
-					$this->t_dialog_attributes = 'show_files=1&clickable_files=1';
+					$this->t_dialog_attributes = 'show_files=1&selectable_files=1';
 					break;
 				case 'for':
 					$this->t_what = 'forum';
 					$this->t_name = bab_translate("Forums");
-					$this->t_dialog_attributes = 'show_forums=1&clickable_forums=1';
+					$this->t_dialog_attributes = 'show_forums=1&selectable_forums=1';
 					break;
 				case 'post':
 					$this->t_what = 'forum';
 					$this->t_name = bab_translate("Posts");
-					$this->t_dialog_attributes = 'show_posts=1&clickable_posts=1';
+					$this->t_dialog_attributes = 'show_posts=1&selectable_posts=1';
 					break;
 				case 'faq':
 					$this->t_what = 'faq';
 					$this->t_name = bab_translate("Faqs");
-					$this->t_dialog_attributes = 'show_categories=1&clickable_categories=1&clickable_categories=1';
+					$this->t_dialog_attributes = 'show_categories=1&selectable_categories=1';
 					break;
 				case 'faqqr':
 					$this->t_what = 'faq';
 					$this->t_name = bab_translate("Questions");
-					$this->t_dialog_attributes = 'show_questions=1&clickable_questions=1';
+					$this->t_dialog_attributes = 'show_questions=1&selectable_questions=1';
 					break;
 				default:
 					$this->t_dialog_attributes = '';

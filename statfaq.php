@@ -602,10 +602,6 @@ function displayFaqTree($startDay, $endDay)
 {
 	require_once $GLOBALS['babInstallPath'] . 'utilit/tree.php';
 	$treeView = new bab_FaqTreeView('faq');
-//	$treeView->setAttributes(
-//							BAB_FAQ_TREE_VIEW_SHOW_QUESTIONS
-//							| BAB_FAQ_TREE_VIEW_CLICKABLE_SUB_CATEGORIES
-//							);
 	$treeView->addStatistics($startDay, $endDay);
 	$treeView->sort();
 	$GLOBALS['babBody']->babecho($treeView->printTemplate());

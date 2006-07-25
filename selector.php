@@ -35,12 +35,12 @@ function selectArticles()
 		$attributes |= BAB_ARTICLE_TREE_VIEW_SHOW_TOPICS;
 	if (isset($_REQUEST['show_articles']))
 		$attributes |= BAB_ARTICLE_TREE_VIEW_SHOW_ARTICLES;
-	if (isset($_REQUEST['clickable_categories']))
-		$attributes |= BAB_ARTICLE_TREE_VIEW_CLICKABLE_CATEGORIES;
-	if (isset($_REQUEST['clickable_topics']))
-		$attributes |= BAB_ARTICLE_TREE_VIEW_CLICKABLE_TOPICS;
-	if (isset($_REQUEST['clickable_articles']))
-		$attributes |= BAB_ARTICLE_TREE_VIEW_CLICKABLE_ARTICLES;
+	if (isset($_REQUEST['selectable_categories']))
+		$attributes |= BAB_ARTICLE_TREE_VIEW_SELECTABLE_CATEGORIES;
+	if (isset($_REQUEST['selectable_topics']))
+		$attributes |= BAB_ARTICLE_TREE_VIEW_SELECTABLE_TOPICS;
+	if (isset($_REQUEST['selectable_articles']))
+		$attributes |= BAB_ARTICLE_TREE_VIEW_SELECTABLE_ARTICLES;
 
 	$GLOBALS['babBodyPopup'] = new babBodyPopup();
 	$GLOBALS['babBodyPopup']->title = & $GLOBALS['babBody']->title;
@@ -64,12 +64,12 @@ function selectFaqs()
 	if (isset($_REQUEST['show_questions']))
 		$attributes |= BAB_FAQ_TREE_VIEW_SHOW_QUESTIONS;
 
-	if (isset($_REQUEST['clickable_categories']))
-		$attributes |= BAB_FAQ_TREE_VIEW_CLICKABLE_CATEGORIES;
-	if (isset($_REQUEST['clickable_sub_categories']))
-		$attributes |= BAB_FAQ_TREE_VIEW_CLICKABLE_SUB_CATEGORIES;
-	if (isset($_REQUEST['clickable_questions']))
-		$attributes |= BAB_FAQ_TREE_VIEW_CLICKABLE_QUESTIONS;
+	if (isset($_REQUEST['selectable_categories']))
+		$attributes |= BAB_FAQ_TREE_VIEW_SELECTABLE_CATEGORIES;
+	if (isset($_REQUEST['selectable_sub_categories']))
+		$attributes |= BAB_FAQ_TREE_VIEW_SELECTABLE_SUB_CATEGORIES;
+	if (isset($_REQUEST['selectable_questions']))
+		$attributes |= BAB_FAQ_TREE_VIEW_SELECTABLE_QUESTIONS;
 
 	$GLOBALS['babBodyPopup'] = new babBodyPopup();
 	$GLOBALS['babBodyPopup']->title = & $GLOBALS['babBody']->title;
@@ -93,12 +93,12 @@ function selectForums()
 	if (isset($_REQUEST['show_posts']))
 		$attributes |= BAB_FORUM_TREE_VIEW_SHOW_POSTS;
 
-	if (isset($_REQUEST['clickable_forums']))
-		$attributes |= BAB_FORUM_TREE_VIEW_CLICKABLE_FORUMS;
-	if (isset($_REQUEST['clickable_threads']))
-		$attributes |= BAB_FORUM_TREE_VIEW_CLICKABLE_THREADS;
-	if (isset($_REQUEST['clickable_posts']))
-		$attributes |= BAB_FORUM_TREE_VIEW_CLICKABLE_POSTS;
+	if (isset($_REQUEST['selectable_forums']))
+		$attributes |= BAB_FORUM_TREE_VIEW_SELECTABLE_FORUMS;
+	if (isset($_REQUEST['selectable_threads']))
+		$attributes |= BAB_FORUM_TREE_VIEW_SELECTABLE_THREADS;
+	if (isset($_REQUEST['selectable_posts']))
+		$attributes |= BAB_FORUM_TREE_VIEW_SELECTABLE_POSTS;
 	
 	
 	$GLOBALS['babBodyPopup'] = new babBodyPopup();
@@ -126,12 +126,12 @@ function selectFiles()
 	if (isset($_REQUEST['show_files']))
 		$attributes |= BAB_FILE_TREE_VIEW_SHOW_FILES;
 
-	if (isset($_REQUEST['clickable_collective_directories']))
-		$attributes |= BAB_FILE_TREE_VIEW_CLICKABLE_COLLECTIVE_DIRECTORIES;
-	if (isset($_REQUEST['clickable_sub_directories']))
-		$attributes |= BAB_FILE_TREE_VIEW_CLICKABLE_SUB_DIRECTORIES;
-	if (isset($_REQUEST['clickable_files']))
-		$attributes |= BAB_FILE_TREE_VIEW_CLICKABLE_FILES;
+	if (isset($_REQUEST['selectable_collective_directories']))
+		$attributes |= BAB_FILE_TREE_VIEW_SELECTABLE_COLLECTIVE_DIRECTORIES;
+	if (isset($_REQUEST['selectable_sub_directories']))
+		$attributes |= BAB_FILE_TREE_VIEW_SELECTABLE_SUB_DIRECTORIES;
+	if (isset($_REQUEST['selectable_files']))
+		$attributes |= BAB_FILE_TREE_VIEW_SELECTABLE_FILES;
 	
 	if (isset($_REQUEST['multi']))
 		$attributes |= BAB_TREE_VIEW_MULTISELECT;

@@ -1026,8 +1026,8 @@ function displayArticleTree($startDay, $endDay)
 	$treeView = new bab_ArticleTreeView('article');
 	$treeView->setAttributes(
 							BAB_ARTICLE_TREE_VIEW_SHOW_ARTICLES
-							| BAB_ARTICLE_TREE_VIEW_CLICKABLE_TOPICS
-							| BAB_ARTICLE_TREE_VIEW_CLICKABLE_ARTICLES
+							| BAB_ARTICLE_TREE_VIEW_SELECTABLE_TOPICS
+							| BAB_ARTICLE_TREE_VIEW_SELECTABLE_ARTICLES
 							);
 	$treeView->addStatistics($startDay, $endDay);
 	$treeView->sort();
