@@ -55,6 +55,7 @@ function displayCategoriesList()
 	
 				$this->set_caption('name', bab_translate("Name"));
 				$this->set_caption('description', bab_translate("Description"));
+				$this->set_caption('color', bab_translate("Color"));
 				$this->set_caption('uncheckAll', bab_translate("Uncheck all"));
 				$this->set_caption('checkAll', bab_translate("Check all"));
 				$this->set_caption('deleteField', bab_translate("Click here to delete"));
@@ -90,6 +91,7 @@ function displayCategoriesList()
 					
 					$this->set_data('iIdCategory', $datas['iIdCategory']);
 					$this->set_data('sCategoryName', $datas['sCategoryName']);
+					$this->set_data('sColor', $datas['sColor']);
 					$this->set_data('sCategoryDescription', $datas['sCategoryDescription']);
 					$this->set_data('bIsDeletable', ($datas['is_deletable'] == 1));
 
@@ -114,17 +116,7 @@ function displayCategoriesList()
 				'idx' => BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST,
 				'mnuStr' => bab_translate("Projects spaces"),
 				'url' => $GLOBALS['babUrlScript'] . '?tg=' . $tg . '&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST));
-/*				
-		if('usrTskMgr' == $tg)
-		{
-			$itemMenu[] = array(
-				'idx' => BAB_TM_IDX_DISPLAY_PROJECTS_LIST,
-				'mnuStr' => bab_translate("Projects list"),
-				'url' => $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_LIST . 
-				'&iIdProjectSpace=' . $iIdProjectSpace);
 
-		}
-//*/		
 		$itemMenu[] = array(
 				'idx' => BAB_TM_IDX_DISPLAY_CATEGORIES_LIST,
 				'mnuStr' => bab_translate("Categories list"),
@@ -146,6 +138,7 @@ function displayCategoriesList()
 				'cat.description sCategoryDescription, ' .
 				'cat.refCount refCount,' .
 				'cat.idProject idProject,' .
+				'cat.color sColor,' .
 				'IF(cat.idProject = \'' . $iIdProject . '\' AND cat.refCount = \'' . 0 . '\', 1, 0) is_deletable ' .
 			'FROM ' .
 				BAB_TSKMGR_CATEGORIES_TBL . ' cat ' .
@@ -252,17 +245,7 @@ function displayCategoryForm()
 			'idx' => BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST,
 			'mnuStr' => bab_translate("Projects spaces"),
 			'url' => $GLOBALS['babUrlScript'] . '?tg=' . $tg . '&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST));
-/*			
-	if('usrTskMgr' == $tg)
-	{
-		$itemMenu[] = array(
-			'idx' => BAB_TM_IDX_DISPLAY_PROJECTS_LIST,
-			'mnuStr' => bab_translate("Projects list"),
-			'url' => $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_LIST . 
-			'&iIdProjectSpace=' . $iIdProjectSpace);
 
-	}
-//*/		
 	$itemMenu[] = array(
 		'idx' => BAB_TM_IDX_DISPLAY_CATEGORIES_LIST,
 		'mnuStr' => bab_translate("Categories list"),

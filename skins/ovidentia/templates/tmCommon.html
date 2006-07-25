@@ -880,7 +880,18 @@ function on_btn_clicked(idx, action)
 function submit_form()
 {
 	return true;
-}//-->
+}
+
+
+function evtSetColor(iIdCategory, sColor)
+{
+	var evtColor = 'evtColor' + iIdCategory;
+	
+	alert(evtColor + ' ' + sColor);
+	
+	document.getElementById(evtColor).style.backgroundColor = '#'+sColor;
+}
+//-->
 </script>
 <form name ="categoriesList" method="post" action="{ babPhpSelf }" onsubmit="return(submit_form())">
 	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
@@ -896,6 +907,7 @@ function submit_form()
 					<tr class="BabSiteAdminTitleFontBackground"> 
 						<td>{ m_captions[name] }</td>
 						<td>{ m_captions[description] }</td>
+						<td>{ m_captions[color] }</td>
 						<td width="1%">&nbsp;</td>
 					</tr>
 					<!--#in nextField -->
@@ -906,6 +918,9 @@ function submit_form()
 					<!--#endif m_is_altbg -->
 						<td><a class="BabSiteAdminListLink" href="{ m_datas[sCategoryLink] }" >{ m_datas[sCategoryName] }</a></td>
 						<td>{ m_datas[sCategoryDescription] }</td>
+						<td> 
+							<div id="evtColor{ m_datas[iIdCategory] }" style="width:30px;height:15px;border:#000 1px solid;background-color:#{ m_datas[sColor] };float:left"></div><input type="hidden" name="sColor" value="" />
+						</td>
 						<td align="center">
 						<!--#if m_datas[bIsDeletable] -->
 							<input type="checkbox" name="aDeletableObjects[]" value="{ m_datas[iIdCategory] }" Style="background-color:transparent;border=0" />
@@ -916,7 +931,7 @@ function submit_form()
 					</tr>
 					<!--#endin nextField -->
 					<tr class="BabSiteAdminTitleFontBackground">
-						<td colspan="2" align="right">&nbsp;</td>
+						<td colspan="3" align="right">&nbsp;</td>
 						<td>
 							<a href="javascript:check_all('aDeletableObjects', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ m_captions[checkAll] }" width="10" height="10" border="0" /></a><a href="javascript:check_all('aDeletableObjects', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ m_captions[uncheckAll] }" width="10" height="10" border="0"></a>&nbsp;<a href="javascript:suppfield()"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ m_captions[uncheckAll] }" border="0" /></a>
 						</td>

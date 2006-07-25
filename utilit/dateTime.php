@@ -25,18 +25,20 @@
 define('BAB_DATETIME_YEAR', 0);
 define('BAB_DATETIME_MONTH', 1);
 define('BAB_DATETIME_DAY', 3);
+define('BAB_DATETIME_HOUR', 4);
+define('BAB_DATETIME_MINUTE', 5);
+define('BAB_DATETIME_SECOND', 6);
 
 
 class BAB_DateTime
 {
-	var $_iYear;
-	var $_iMonth;
-	var $_iDay;
-	var $_iHours;
-	var $_iMinutes;
-	var $_iSeconds;
-	
-	var $_aDate;
+	var $_iYear		= 0;
+	var $_iMonth 	= 0;
+	var $_iDay		= 0;
+	var $_iHours	= 0;
+	var $_iMinutes	= 0;
+	var $_iSeconds	= 0;
+	var $_aDate		= null;
 	
 	
 	function BAB_DateTime($iYear, $iMonth, $iDay, $iHours = 0, $iMinutes = 0, $iSeconds = 0)
@@ -109,7 +111,16 @@ class BAB_DateTime
 	{
 		return $this->_aDate['wday'];
 	}
-       
+    
+	function getTimeStamp()  
+	{
+		if(!is_null($this->_aDate) && isset($this->_aDate[0]))
+		{
+			return $this->_aDate[0];
+		}
+		return 0;
+	}
+	 
     /**
      * Returns week of the year, first Sunday is first day of first week
      *
@@ -151,6 +162,15 @@ class BAB_DateTime
 				break;
 			case BAB_DATETIME_DAY:
 				$this->init($this->_iYear, $this->_iMonth, ($this->_iDay + $iNbUnits), $this->_iHours, $this->_iMinutes, $this->_iSeconds);
+				break;
+			case BAB_DATETIME_HOUR:
+				$this->init($this->_iYear, $this->_iMonth, $this->_iDay, ($iNbUnits + $this->_iHours), $this->_iMinutes, $this->_iSeconds);
+				break;
+			case BAB_DATETIME_MINUTE:
+				$this->init($this->_iYear, $this->_iMonth, $this->_iDay, $this->_iHours, ($iNbUnits + $this->_iMinutes), $this->_iSeconds);
+				break;
+			case BAB_DATETIME_SECOND:
+				$this->init($this->_iYear, $this->_iMonth, $this->_iDay, $this->_iHours, $this->_iMinutes, ($iNbUnits + $this->_iSeconds));
 				break;
 		}
 	}

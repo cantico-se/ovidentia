@@ -201,7 +201,7 @@ function displayProjectsSpacesList()
 						$oProjectElement->addAction('Task_list',
 						   bab_translate('Add a Task'), $GLOBALS['babSkinPath'] . 'images/Puces/edit_add.png', 
 						   $this->getUrl(BAB_TM_IDX_DISPLAY_TASK_FORM, $iIdProjectSpace, $datas['id']) 
-						    . '&sFromIdx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST, '');
+						   . '&sFromIdx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST, '');
                		}
                		
                		$this->insertTaskIntoProject($iIdProjectSpace, $datas['id']);
@@ -253,7 +253,7 @@ function displayProjectsSpacesList()
 				
 				$oPersTaskElement->addAction('Add',
 	               bab_translate('Add'), $GLOBALS['babSkinPath'] . 'images/Puces/edit_add.png', 
-	               $this->getUrl(BAB_TM_IDX_DISPLAY_TASK_FORM, 0, 0), '');
+	               $this->getUrl(BAB_TM_IDX_DISPLAY_TASK_FORM, 0, 0) . '&sFromIdx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST, '');
 
 			    $this->appendElement($oPersTaskElement, null);
 			    $this->insertPersonnalTask();
@@ -959,12 +959,12 @@ function displayTaskList()
 
 	$oMultiPage->setColumnDataSource(new BAB_TaskDS(bab_getOwnedTaskQuery(), (int) bab_rp('iPage', 1), $oMultiPage->iNbRowsPerPage));
 	
-	$oMultiPage->addColumnHeader(0, bab_translate("Space"), 'sProjectSpaceName');
-	$oMultiPage->addColumnHeader(1, bab_translate("Project"), 'sProjectName');
+//	$oMultiPage->addColumnHeader(0, bab_translate("Space"), 'sProjectSpaceName');
+//	$oMultiPage->addColumnHeader(1, bab_translate("Project"), 'sProjectName');
 //	$oMultiPage->addColumnHeader(2, bab_translate("Task"), 'sTaskNumber');
-	$oMultiPage->addColumnHeader(2, bab_translate("Short description"), 'sShortDescription');
-	$oMultiPage->addColumnHeader(3, bab_translate("Start date"), 'startDate');
-	$oMultiPage->addColumnHeader(4, bab_translate("End date"), 'endDate');
+	$oMultiPage->addColumnHeader(3, bab_translate("Short description"), 'sShortDescription');
+	$oMultiPage->addColumnHeader(4, bab_translate("Start date"), 'startDate');
+	$oMultiPage->addColumnHeader(5, bab_translate("End date"), 'endDate');
 	
 	$sTg = tskmgr_getVariable('tg', 'admTskMgr');
 	$sLink = $GLOBALS['babUrlScript'] . '?tg=' . $sTg . '&idx=' . BAB_TM_IDX_DISPLAY_TASK_FORM .

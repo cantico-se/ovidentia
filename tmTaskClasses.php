@@ -23,6 +23,7 @@
 ************************************************************************/
 	include "base.php";
 	require_once($babInstallPath . 'utilit/baseFormProcessingClass.php');
+	require_once $babInstallPath . 'utilit/dateTime.php';
 
 	class BAB_TM_Task
 	{
@@ -626,51 +627,67 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 				$aTask =& $this->m_oTask->m_aTask;
 				$sTaskNumber = $aTask['sTaskNumber'];
 				$iClassType = $aTask['iClass'];
-				$iIdCategory = $aTask['iIdCategory'];
-				$sDescription = $aTask['sDescription'];
-				$sShortDescription = $aTask['sShortDescription'];
-				$iIsLinked =  $aTask['iIsLinked'];
-				$iDurationType = (int) (0 != $aTask['iDuration']) ? BAB_TM_DURATION : BAB_TM_DATE;
-				$iDuration = (int) $aTask['iDuration'];
-
-/*				
-				$sStartDate = ($this->m_oTask->m_bIsStarted) ? $aTask['sStartDate'] : $aTask['sPlannedStartDate'];
-				$sEndDate =  ($this->m_oTask->m_bIsEnded) ? $aTask['sEndDate'] : $aTask['sPlannedEndDate'];
-//*/
-				$sStartDate = $aTask['sStartDate'];
-				$sEndDate =  $aTask['sEndDate'];
 				
-				if(ereg("(^[0-9]{4}-[0-9]{2}-[0-9]{2}).*$", $sStartDate, $aExplodedDate))
+				$iIdCategory = (int) bab_rp('iIdCategory', $aTask['iIdCategory']);
+				$sDescription = bab_rp('sDescription', $aTask['sDescription']);
+				$sShortDescription = bab_rp('sShortDescription', $aTask['sShortDescription']);
+				$iDurationType = (int) bab_rp('oDurationType', ((int) $aTask['iDuration'] != 0) ? BAB_TM_DURATION : BAB_TM_DATE);
+				$iDuration = (int) bab_rp('sDuration', $aTask['iDuration']);
+
+				$sStartDate = bab_rp('sPlannedStartDate', $aTask['sStartDate']);
+				$sEndDate =  bab_rp('sPlannedEndDate', $aTask['sEndDate']);
+				
+				if(preg_match("/(^[0-9]{4}-[0-9]{2}-[0-9]{2}).*$/", $sStartDate, $aExplodedDate))
 				{
 					$sStartDate = $aExplodedDate[1];	
 				}
 
-				if(ereg("(^[0-9]{4}-[0-9]{2}-[0-9]{2}).*$", $sEndDate, $aExplodedDate))
+				if(preg_match("/(^[0-9]{4}-[0-9]{2}-[0-9]{2}).*$/", $sEndDate, $aExplodedDate))
 				{
 					$sEndDate = $aExplodedDate[1];	
 				}
 				
 				$iIdResponsible = -1;
-				if(is_array($this->m_aTaskResponsibles))
+				if(isset($_POST['iIdTaskResponsible']))
 				{
-					$aTaskResponsible = each($this->m_aTaskResponsibles);
-					$iIdResponsible = (false != $aTaskResponsible) ? $aTaskResponsible['value']['id'] : 0;
-					reset($this->m_aTaskResponsibles);
+					$iIdResponsible = (int) tskmgr_getVariable('iIdTaskResponsible', -1);
+				}
+				else 
+				{
+					if(is_array($this->m_aTaskResponsibles))
+					{
+						$aTaskResponsible = each($this->m_aTaskResponsibles);
+						$iIdResponsible = (false != $aTaskResponsible) ? $aTaskResponsible['value']['id'] : 0;
+						reset($this->m_aTaskResponsibles);
+					}
 				}
 
 				$iProposable = (int) (BAB_TM_TENTATIVE == $aTask['iParticipationStatus']) ? BAB_TM_YES : BAB_TM_NO;
-				$iCompletion = (int) $aTask['iCompletion'];
-				
-				$iPredecessor = -1;
+				$iCompletion = (int) bab_rp('oCompletion', $aTask['iCompletion']);
+
+				$iPosition = $aTask['iPosition'] -1;
+				$iIsLinked = BAB_TM_NO;
 				$iLinkType = -1;
-				if(BAB_TM_YES == $iIsLinked)
+				$iPredecessor = -1;
+				if(isset($_POST['oLinkType']) && isset($_POST['oLinkType'][$iPosition]) )
 				{
-					if($this->m_iLinkedTaskCount)
+					$iPredecessor = (int) bab_rp('iPredecessor', -1);
+					$iLinkType = $_POST['oLinkType'][$iPosition];
+					$iIsLinked = BAB_TM_YES;
+				}
+				else 
+				{
+					$iIsLinked = $aTask['iIsLinked'];
+					if(BAB_TM_YES == $iIsLinked)
 					{
-						$iPredecessor = (int) $this->m_aLinkedTasks[0]['iIdPredecessorTask'];
-						$iLinkType = (int) $this->m_aLinkedTasks[0]['iLinkType'];
+						if($this->m_iLinkedTaskCount)
+						{
+							$iPredecessor = (int) $this->m_aLinkedTasks[0]['iIdPredecessorTask'];
+							$iLinkType = (int) $this->m_aLinkedTasks[0]['iLinkType'];
+						}
 					}
 				}
+				
 			}
 
 			$this->initTaskNumber($sTaskNumber);
@@ -890,8 +907,6 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 
 			$this->m_oTask =& new BAB_TM_Task();
 			
-			//bab_debug('iIdProjectSpace ==> ' . $this->m_iIdProjectSpace . ' iIdProject ==> ' . $this->m_iIdProject . ' iIdTask ==> ' . $this->m_iIdTask);
-			
 			$this->m_sTaskNumber			= trim(tskmgr_getVariable('sTaskNumber', ''));
 			$this->m_sDescription			= trim(tskmgr_getVariable('sDescription', ''));
 			$this->m_sShortDescription		= trim(tskmgr_getVariable('sShortDescription', ''));
@@ -904,7 +919,10 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 			$this->m_iParticipationStatus	= 0;
 			$this->m_iIdCalEvent			= 0;
 			$this->m_sHashCalEvent			= '';
-			$this->m_iDuration				= (int) tskmgr_getVariable('sDuration', 0);
+			
+			$iDurationType 					= (int) tskmgr_getVariable('oDurationType', BAB_TM_DATE);
+			
+			$this->m_iDuration				= (BAB_TM_DATE != $iDurationType) ? (int) tskmgr_getVariable('sDuration', 0) : 0;
 			$this->m_iMajorVersion			= (int) tskmgr_getVariable('iMajorVersion', 1);
 			$this->m_iMinorVersion			= (int) tskmgr_getVariable('iMinorVersion', 0);
 			$this->m_sColor					= '';
@@ -912,8 +930,27 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 			$this->m_iCompletion			= (int) tskmgr_getVariable('oCompletion', 0);
 			$this->m_sPlannedStartDate		= '';
 			$this->m_sPlannedEndDate		= '';
-			$this->m_sStartDate				= trim(tskmgr_getVariable('sPlannedStartDate', ''));
-			$this->m_sEndDate				= trim(tskmgr_getVariable('sPlannedEndDate', ''));
+			
+			
+			//Pas tester si il y a des predecesseurs
+			
+			
+			
+			
+			$this->m_sStartDate				= trim(tskmgr_getVariable('sPlannedStartDate', '')) . ' 00:00:00';
+			$this->m_sEndDate				= trim(tskmgr_getVariable('sPlannedEndDate', '')) . ' 23:59:59';
+			
+			//Si c'est par durée et qu'il n'y a pas de date butoir de fin
+			if($this->m_iDuration > 0 && 0 == strlen(trim(tskmgr_getVariable('sPlannedEndDate', ''))))
+			{
+				$oEndDate = BAB_DateTime::fromIsoDateTime($this->m_sStartDate);
+				$oEndDate->add(($this->m_iDuration - 1));
+				$oEndDate->init($oEndDate->_iYear, $oEndDate->_iMonth, $oEndDate->_iDay, 23, 59, 59);
+				$this->m_sEndDate = date('Y-m-d H:i:s', $oEndDate->getTimeStamp());
+			}
+			
+			//bab_debug(__FUNCTION__ . ' sStart ==> ' . $this->m_sStartDate . ' sEnd ==> ' . $this->m_sEndDate);
+			
 			$this->m_iIsNotified			= BAB_TM_NO;
 			$this->m_iAnswer				= (int) tskmgr_getVariable('oAnswerEnable', -1);
 			
@@ -945,19 +982,6 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 			{
 				$this->m_aCfg =& $oTmCtx->getConfiguration();
 			}
-
-			/*
-			if(0 != $this->m_iIdTask)
-			{
-				$this->m_oTask->loadFromDataBase();
-			}
-			else 
-			{
-				bab_getNextTaskPosition($this->m_iIdProject, $this->m_iPosition);
-				$this->m_oTask->m_bIsFirstTask = ($this->m_iPosition == 1);
-				$this->m_sTaskNumber = trim(tskmgr_getVariable('sTaskNumber', ''));
-			}
-			//*/
 		}
 		
 		function isTaskNumberValid()
@@ -1004,45 +1028,9 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 		
 		function isDateValid($sDate)
 		{
-			$iYear = 0;
-			$iMonth = 1;
-			$iDay = 2;
-						
-			if(strlen($sDate) > 0)
-			{
-				$aDate = explode('-', $sDate);
-				if(count($aDate) == 3)
-				{
-					if($this->checkDate((int)$aDate[$iDay], (int)$aDate[$iMonth], (int)$aDate[$iYear]))
-					{
-						if((int)$aDate[$iYear] >= (int) date('Y'))
-						{
-							return true;
-						}
-					}
-				}
-			}
-			return false;
+			$oDate = BAB_DateTime::fromIsoDateTime($sDate);
+			return BAB_DateTime::isValidDate($oDate->_iDay, $oDate->_iMonth, $oDate->_iYear);
 		}
-		
-		function checkDate($day, $month, $year)
-		{
-		   if ($month < 1 || $month > 12 || $day < 1 || $day > 31)
-		   {
-			   return false;
-		   }
-		   
-		   if (($month == 4 || $month == 6 || $month == 9 || $month == 11) && $day > 30)
-		   {
-			   return false;
-		   }
-
-		   if ($month == 2 && $day > (($year % 4 == 0 && ($year % 100 != 0 || $year % 400 == 0)) ? 29 : 28))
-		   {
-			   return false;
-		   }
-		   return true;
-		} 
 
 		function getProjectSpaceName()
 		{
@@ -1168,7 +1156,7 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 				return false;
 			}
 			
-			if(false == $this->m_oTask->m_bIsStarted)
+//			if(false == $this->m_oTask->m_bIsStarted)
 			{
 				if($this->isTaskNumberValid())
 				{
@@ -1186,7 +1174,16 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 								$GLOBALS['babBody']->msgerror = bab_translate("Invalid LinkType");
 								return false;
 							}
-							$this->m_sStartDate = (BAB_TM_END_TO_START == $this->m_iLinkType) ? $aTask['sEndDate'] : $aTask['sStartDate'];						
+							
+							$sStartDate = (BAB_TM_END_TO_START == $this->m_iLinkType) ? $aTask['sEndDate'] : $aTask['sStartDate'];
+							if(!preg_match("/(^[0-9]{4}-[0-9]{2}-[0-9]{2}).*$/", $sStartDate, $aExplodedDate))
+							{
+								bab_debug(__FUNCTION__ . ' cannot get the start date');
+								$GLOBALS['babBody']->msgerror = bab_translate("Cannot get the start date");
+								return false;
+							}
+							
+							$this->m_sStartDate = $aExplodedDate[1] . ' 00:00:00';						
 						}
 						else 
 						{
@@ -1218,48 +1215,44 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 					$GLOBALS['babBody']->msgerror = bab_translate("The task number is invalid");
 				}
 			}
-			else
+/*			else
 			{
+				bab_debug('Babe !!!');
 				return($this->isResponsibleValid());
-			}
+			} //*/
 			return false;
 		}
 		
 		function isTaskValidByDuration()
 		{
-			if($this->isDateValid($this->m_sStartDate))
+			if($this->isTaskValidByDate())
 			{
-				if($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER && !$this->isResponsibleValid())
+				//si date butoir de fin
+				if(0 != strlen(trim(tskmgr_getVariable('sPlannedEndDate', ''))))
 				{
-					bab_debug(__FUNCTION__ . ': Invalid iIdTaskResponsible');
-					$GLOBALS['babBody']->msgerror = bab_translate("The choosen task responsible is invalid");
-				}
-				else if(strlen($this->m_sEndDate) > 0)
-				{
-					if(!$this->isDateValid($this->m_sEndDate))
+					$oLimitEndDate = BAB_DateTime::fromIsoDateTime($this->m_sEndDate);
+					$oEndDate = BAB_DateTime::fromIsoDateTime($this->m_sStartDate);
+					$oEndDate->add(($this->m_iDuration -1));
+					$oEndDate->init($oEndDate->_iYear, $oEndDate->_iMonth, $oEndDate->_iDay, 23, 59, 59);
+
+					/*
+					bab_debug(__FUNCTION__ . 
+						' sEndDate ==> ' . date('Y-m-d H:i:s', $oEndDate->getTimeStamp()) . 
+						' sLimitEndDate ==> ' .date('Y-m-d H:i:s', $oLimitEndDate->getTimeStamp()));
+					//*/
+						
+					$iIsEqual	= 0;
+					$iIsBefore	= -1;
+					$iIsAfter	= 1;
+					
+					if($iIsAfter == BAB_DateTime::compare($oEndDate, $oLimitEndDate))
 					{
-						bab_debug(__FUNCTION__ . ' sEndDate(BAB_TM_DURATION) is invalid');
-						$GLOBALS['babBody']->msgerror = bab_translate("The end date is invalid");
-					}
-					else if(strtotime($this->m_sEndDate) >= (strtotime($this->m_sStartDate) + ((int)$this->m_iDuration * 24 * 3600)))
-					{
-						return true;
-					}
-					else
-					{
-						bab_debug(__FUNCTION__ . ' sEndDate is lower than sStartDate');
-						$GLOBALS['babBody']->msgerror = bab_translate("The end date is lower than the start date");
+						$GLOBALS['babBody']->msgerror = bab_translate("The end date is greater than the limit date");
+						bab_debug(__FUNCTION__ . " The end date is greater than the limit date");
+						return false;
 					}
 				}
-				else
-				{
-					return true;
-				}
-			}
-			else
-			{
-				bab_debug(__FUNCTION__ . ' invalid duration');
-				$GLOBALS['babBody']->msgerror = bab_translate("The duration is invalid");
+				return true;
 			}
 			return false;
 		}
@@ -1268,7 +1261,15 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 		{
 			if($this->isDateValid($this->m_sStartDate) && $this->isDateValid($this->m_sEndDate))
 			{
-				if(strtotime($this->m_sEndDate) > strtotime($this->m_sStartDate))
+				$iIsEqual	= 0;
+				$iIsBefore	= -1;
+				$iIsAfter	= 1;
+				
+				//bab_debug('sStart ==> ' . $this->m_sStartDate . ' sEnd ==> ' . $this->m_sEndDate);
+				$oStart = BAB_DateTime::fromIsoDateTime($this->m_sStartDate);
+				$oEnd = BAB_DateTime::fromIsoDateTime($this->m_sEndDate);
+				
+				if($iIsBefore == BAB_DateTime::compare($oStart, $oEnd))
 				{
 					if($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER && !$this->isResponsibleValid())
 					{
@@ -1361,9 +1362,6 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 		function init()
 		{
 			parent::init();
-			
-			$this->m_sStartDate = trim(tskmgr_getVariable('sPlannedStartDate', ''));
-			$this->m_sEndDate = trim(tskmgr_getVariable('sPlannedEndDate', ''));
 		}
 
 		function saveTask()
@@ -1402,7 +1400,7 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 				$aTask['iPosition']				= $this->m_iPosition;
 				$aTask['iCompletion']			= 0;
 				$aTask['sStartDate']			= $sStartDate;
-				$aTask['sEndDate'] 				= ($this->m_iDuration > 0 && 0 == strlen($sEndDate)) ? date('Y-m-d', bab_mktime($sStartDate) + ($this->m_iDuration * 24 * 3600)) : $sEndDate;
+				$aTask['sEndDate'] = $sEndDate;
 				$aTask['iIsNotified']			= BAB_TM_YES;
 
 				//bab_debug($aTask);
@@ -1595,8 +1593,6 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 			{
 				$this->m_iClass				= (0 == $this->m_aLinkedTasks) ? $this->m_iClass : $aTask['iClass'];
 //				$this->m_iCompletion		= $aTask['iCompletion'];
-				$this->m_sStartDate 		= trim(tskmgr_getVariable('sPlannedStartDate', ''));
-				$this->m_sEndDate 			= trim(tskmgr_getVariable('sPlannedEndDate', ''));
 			}
 			else
 			{
@@ -1614,18 +1610,17 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 		function personnalTaskOwnerInit()
 		{
 			$aTask =& $this->m_oTask->m_aTask;
-			
+/*			
 			if(!$this->m_oTask->m_bIsStarted)
 			{
 				$this->m_iClass				= (0 == $this->m_aLinkedTasks) ? $this->m_iClass : $aTask['iClass'];
 //				$this->m_iCompletion		= $aTask['iCompletion'];
-				$this->m_sStartDate 		= trim(tskmgr_getVariable('sPlannedStartDate', ''));
-				$this->m_sEndDate 			= trim(tskmgr_getVariable('sPlannedEndDate', ''));
 			}
 			else
 			{
 				$this->defaultInitValueForStartedTask();
 			}
+//*/
 		}
 
 		function taskResponsibleInit()
@@ -1647,7 +1642,7 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 			
 			$this->m_iClass				= $aTask['iClass'];
 			$this->m_iIsLinked			= $aTask['iIsLinked'];
-			$this->m_iDuration			= $aTask['iDuration'];
+//			$this->m_iDuration			= $aTask['iDuration'];
 			$this->m_sPlannedStartDate	= $aTask['sPlannedStartDate'];
 			$this->m_sPlannedEndDate	= $aTask['sPlannedEndDate'];
 			$this->m_sStartDate			= $aTask['sStartDate'];
@@ -1697,7 +1692,7 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 //				$aTask['iPosition']				= $this->m_iPosition;
 				$aTask['iCompletion']			= $this->m_iCompletion;
 				$aTask['sStartDate']			= $sStartDate;
-				$aTask['sEndDate'] 				= ($this->m_iDuration > 0 && 0 == strlen($sEndDate)) ? date('Y-m-d', bab_mktime($sStartDate) + ($this->m_iDuration * 24 * 3600)) : $sEndDate;
+				$aTask['sEndDate'] 				= $sEndDate;
 				$aTask['iIsNotified']			= BAB_TM_YES;
 
 				if(-1 != $this->m_iAnswer)
@@ -1733,7 +1728,6 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 					}
 					
 					//bab_debug('iUserProfil ==> ' . $this->m_iUserProfil);	
-				
 					if(BAB_TM_PROJECT_MANAGER == $this->m_iUserProfil)
 					{
 						$this->noticeTaskUpdatedBy(BAB_TM_EV_TASK_UPDATED_BY_MGR);

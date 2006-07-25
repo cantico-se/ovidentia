@@ -967,7 +967,7 @@ onClassChanged(document.forms.taskForm['iClass']);
 			<option value="{ m_datas[iIdProject] }">{ m_datas[sProjectName] }</option>
 		<!--#endin getNextProject -->
 		<!--#if m_datas[isPersTaskAvailable] -->
-			<option value="0">{ m_datas[sPersonnalTask] }</option>
+			<option value="0" selected="selected">{ m_datas[sPersonnalTask] }</option>
 		<!--#endif m_datas[isPersTaskAvailable] -->
 		</select>
 		<input type="submit" value="{ m_captions[sAddTask] }" />
