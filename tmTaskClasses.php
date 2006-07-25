@@ -686,6 +686,9 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 							$iLinkType = (int) $this->m_aLinkedTasks[0]['iLinkType'];
 						}
 					}
+					else 
+					{
+					}
 				}
 				
 			}
@@ -928,18 +931,60 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 			$this->m_sColor					= '';
 			$this->m_iPosition				= (0 != $this->m_iIdTask) ? $this->m_oTask->m_aTask['iPosition'] : $this->m_oTask->m_iNextPosition;
 			$this->m_iCompletion			= (int) tskmgr_getVariable('oCompletion', 0);
+			
+			$this->m_iIsNotified			= BAB_TM_NO;
+			$this->m_iAnswer				= (int) tskmgr_getVariable('oAnswerEnable', -1);
+			
+			$this->m_iIsLinked				= -1;
+			$this->m_iLinkType 				= -1;
+			$this->m_iIdPredecessor 		= (int) tskmgr_getVariable('iPredecessor', -1);
+			$aTask = null;
+			if(-1 != $this->m_iIdPredecessor && bab_getTask($this->m_iIdPredecessor, $aTask))
+			{
+				$iPosition = $aTask['iPosition'] -1;
+				if( isset($_POST['oLinkType']) && isset($_POST['oLinkType'][$iPosition]) )
+				{
+					$this->m_iLinkType = (int) $_POST['oLinkType'][$iPosition];
+					$this->m_iIsLinked = (-1 != $this->m_iLinkType) ? BAB_TM_YES : BAB_TM_NO;
+				}
+			}
+			
 			$this->m_sPlannedStartDate		= '';
 			$this->m_sPlannedEndDate		= '';
-			
-			
-			//Pas tester si il y a des predecesseurs
-			
-			
-			
-			
-			$this->m_sStartDate				= trim(tskmgr_getVariable('sPlannedStartDate', '')) . ' 00:00:00';
-			$this->m_sEndDate				= trim(tskmgr_getVariable('sPlannedEndDate', '')) . ' 23:59:59';
-			
+			$this->m_sStartDate				= trim(tskmgr_getVariable('sPlannedStartDate', ''));
+			$this->m_sStartDate				.= (0 != strlen($this->m_sStartDate)) ? ' 00:00:00' : '';
+			$this->m_sEndDate 				= trim(tskmgr_getVariable('sPlannedEndDate', ''));
+			$this->m_sEndDate 				.= (0 != strlen($this->m_sEndDate)) ? ' 23:59:59' : '';
+		
+				
+//Si il y a un predecesseur
+if(!is_null($aTask))
+{
+	if(BAB_TM_START_TO_START == $this->m_iLinkType)
+	{
+		$this->m_sStartDate = $aTask['sStartDate'];
+	}
+	else if(BAB_TM_END_TO_START == $this->m_iLinkType)
+	{
+		if(0 != $aTask['iDuration'])
+		{
+			$oStartDate = BAB_DateTime::fromIsoDateTime($aTask['sStartDate']);
+			$oStartDate->add($aTask['iDuration']);
+			$this->m_sStartDate = date('Y-m-d H:i:s', $oStartDate->getTimeStamp());
+		}
+		else 
+		{
+			$oStartDate = BAB_DateTime::fromIsoDateTime($aTask['sEndDate']);
+			$oStartDate->init($oStartDate->_iYear, $oStartDate->_iMonth, $oStartDate->_iDay, 0, 0, 0);
+			$this->m_sStartDate = date('Y-m-d H:i:s', $oStartDate->getTimeStamp());
+		}
+	}
+	else 
+	{
+		bab_debug(__FUNCTION__ . ': LinkType error');
+	}
+}
+
 			//Si c'est par durée et qu'il n'y a pas de date butoir de fin
 			if($this->m_iDuration > 0 && 0 == strlen(trim(tskmgr_getVariable('sPlannedEndDate', ''))))
 			{
@@ -949,23 +994,7 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 				$this->m_sEndDate = date('Y-m-d H:i:s', $oEndDate->getTimeStamp());
 			}
 			
-			//bab_debug(__FUNCTION__ . ' sStart ==> ' . $this->m_sStartDate . ' sEnd ==> ' . $this->m_sEndDate);
-			
-			$this->m_iIsNotified			= BAB_TM_NO;
-			$this->m_iAnswer				= (int) tskmgr_getVariable('oAnswerEnable', -1);
-			
-			$this->m_iIsLinked				= -1;
-			$this->m_iLinkType 				= -1;
-			$this->m_iIdPredecessor 		= (int) tskmgr_getVariable('iPredecessor', -1);
-			if(-1 != $this->m_iIdPredecessor && bab_getTask($this->m_iIdPredecessor, $aTask))
-			{
-				$iPosition = $aTask['iPosition'] -1;
-				if( isset($_POST['oLinkType']) && isset($_POST['oLinkType'][$iPosition]) )
-				{
-					$this->m_iLinkType = $_POST['oLinkType'][$iPosition];
-					$this->m_iIsLinked = (-1 != $this->m_iLinkType) ? BAB_TM_YES : BAB_TM_NO;
-				}
-			}
+			bab_debug(__FUNCTION__ . ' sStart ==> ' . $this->m_sStartDate . ' sEnd ==> ' . $this->m_sEndDate);
 			
 			$this->m_iIdTaskResponsible = (int) tskmgr_getVariable('iIdTaskResponsible', -1);
 
@@ -1028,8 +1057,12 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 		
 		function isDateValid($sDate)
 		{
-			$oDate = BAB_DateTime::fromIsoDateTime($sDate);
-			return BAB_DateTime::isValidDate($oDate->_iDay, $oDate->_iMonth, $oDate->_iYear);
+			if(0 != trim(strlen($sDate)))
+			{
+				$oDate = BAB_DateTime::fromIsoDateTime($sDate);
+				return BAB_DateTime::isValidDate($oDate->_iDay, $oDate->_iMonth, $oDate->_iYear);
+			}
+			return false;
 		}
 
 		function getProjectSpaceName()
@@ -1400,7 +1433,7 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 				$aTask['iPosition']				= $this->m_iPosition;
 				$aTask['iCompletion']			= 0;
 				$aTask['sStartDate']			= $sStartDate;
-				$aTask['sEndDate'] = $sEndDate;
+				$aTask['sEndDate'] 				= $sEndDate;
 				$aTask['iIsNotified']			= BAB_TM_YES;
 
 				//bab_debug($aTask);
@@ -1420,8 +1453,8 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 					$iIdOwner = (BAB_TM_PROJECT_MANAGER == $this->m_iUserProfil) ? $this->m_iIdTaskResponsible : $GLOBALS['BAB_SESS_USERID'];
 					$iIsPersonnal = $this->m_oTask->m_isPersonnal ? BAB_TM_YES : BAB_TM_NO;
 					bab_createTaskInfo($iIdTask, $iIdOwner, $iIsPersonnal);
-					
-					if(BAB_TM_YES === $this->m_iIsLinked && (BAB_TM_PROJECT_MANAGER == $this->m_iUserProfil || BAB_TM_TASK_RESPONSIBLE == $this->m_iUserProfil))
+
+					if(BAB_TM_YES == $this->m_iIsLinked && (BAB_TM_PROJECT_MANAGER == $this->m_iUserProfil || BAB_TM_PERSONNAL_TASK_OWNER == $this->m_iUserProfil))
 					{
 						bab_deleteTaskLinks($iIdTask);
 						$aPredecessors = array(
