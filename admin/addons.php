@@ -736,7 +736,7 @@ function history($item)
 			if (!empty($title))
 				{
 				$this->history = implode('',file($GLOBALS['babAddonsPath'].$title.'/history.txt'));
-				$this->history = nl2br($this->history);
+				$this->history = bab_toHtml($this->history, BAB_HTML_ALL);
 				}
 			else
 				$this->history = '';
