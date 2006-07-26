@@ -91,6 +91,46 @@ class bab_inifile_requirements {
 		);
 	}
 
+	function return_bytes($val) {
+	   $val = trim($val);
+	   $last = strtolower($val{strlen($val)-1});
+	   switch($last) {
+			// The 'G' modifier is available since PHP 5.1.0
+			case 'g':
+				$val *= 1024;
+			case 'm':
+				$val *= 1024;
+			case 'k':
+				$val *= 1024;
+		}
+		return $val;
+	}
+
+	function require_upload_max_file_size($value) {
+
+		$upload_max_filesize = $this->return_bytes(ini_get('upload_max_filesize'));
+		$post_max_size = $this->return_bytes(ini_get('post_max_size'));
+
+		$current = $post_max_size > $upload_max_filesize ? $upload_max_filesize : $post_max_size;
+		$current_display = sprintf("%dM",$current/1024/1024);
+		$result = $current >= $this->return_bytes($value);
+
+		if (isset($GLOBALS['babBody']->babsite['maxfilesize'])) {
+			$ov_upload = $GLOBALS['babBody']->babsite['maxfilesize']*1024*1024;
+
+			if ($current < $ov_upload) {
+				$current_display = sprintf(bab_translate("You must configure ovidentia with a limit smaller or equal to the server limit : %s"),$current_display);
+				$result = false;
+			}
+		}
+
+		return array(
+			'description'	=> bab_translate("Maximum upload file size"),
+			'current'		=> $current_display,
+			'result'		=> $result
+		);
+	}
+
 	function require_images_directory($value) {
 
 		$images = dirname($_SERVER['SCRIPT_FILENAME']).'/images/';

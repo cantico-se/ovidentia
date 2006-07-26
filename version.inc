@@ -51,5 +51,6 @@ mod_mcrypt="Available"
 ; mod_pdf="Available"
 ; mod_ftp="Available"
 ; mod_curl="Available"
+upload_max_file_size=30M
 
 ; DO NOT REMOVE THIS LINE ?>
