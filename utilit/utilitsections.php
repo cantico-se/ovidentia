@@ -505,11 +505,18 @@ function babUserSection($close)
 		}
 
 		
-/*	if( count(bab_getUserIdObjects(BAB_TSKMGR_DEFAULT_PROJECTS_VISUALIZERS_GROUPS_TBL)) > 0 || 
-		count(bab_getUserIdObjects(BAB_TSKMGR_PROJECTS_VISUALIZERS_GROUPS_TBL) > 0 )			)
-		{//*/
+	global $babInstallPath;
+	require_once($babInstallPath . 'tmContext.php');
+
+	$context =& getTskMgrContext();
+	
+	$bIsAccessValid = ($context->isUserProjectVisualizer() || $context->isUserCanCreateProject() || $context->isUserProjectManager() 
+		|| $context->isUserSuperviseProject() || $context->isUserManageTask() || $context->isUserPersonnalTaskOwner());
+			
+	if($bIsAccessValid)
+		{
 		$this->array_urls[bab_translate("Task Manager")] = $GLOBALS['babUrlScript'].'?tg=usrTskMgr';
-/*		}//*/
+		}
 		
 	foreach( $babBody->babaddons as $row ) 
 		{

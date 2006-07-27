@@ -955,8 +955,8 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 			$this->m_sStartDate				.= (0 != strlen($this->m_sStartDate)) ? ' 00:00:00' : '';
 			$this->m_sEndDate 				= trim(tskmgr_getVariable('sPlannedEndDate', ''));
 			$this->m_sEndDate 				.= (0 != strlen($this->m_sEndDate)) ? ' 23:59:59' : '';
-		
-				
+
+
 //Si il y a un predecesseur
 if(!is_null($aTask))
 {
@@ -985,6 +985,7 @@ if(!is_null($aTask))
 	}
 }
 
+
 			//Si c'est par durée et qu'il n'y a pas de date butoir de fin
 			if($this->m_iDuration > 0 && 0 == strlen(trim(tskmgr_getVariable('sPlannedEndDate', ''))))
 			{
@@ -994,7 +995,7 @@ if(!is_null($aTask))
 				$this->m_sEndDate = date('Y-m-d H:i:s', $oEndDate->getTimeStamp());
 			}
 			
-			bab_debug(__FUNCTION__ . ' sStart ==> ' . $this->m_sStartDate . ' sEnd ==> ' . $this->m_sEndDate);
+//			bab_debug(__FUNCTION__ . ' sStart ==> ' . $this->m_sStartDate . ' sEnd ==> ' . $this->m_sEndDate);
 			
 			$this->m_iIdTaskResponsible = (int) tskmgr_getVariable('iIdTaskResponsible', -1);
 
@@ -1491,9 +1492,6 @@ if(!is_null($aTask))
 		{
 			if($this->isCheckPointValid())
 			{
-				$sStartDate = mysql_escape_string($this->m_sStartDate);
-				$sEndDate = mysql_escape_string($this->m_sEndDate);
-				
 				$aTask =& $this->m_oTask->m_aTask;
 				
 				$aTask['iIdProject']			= $this->m_iIdProject;
@@ -1516,8 +1514,14 @@ if(!is_null($aTask))
 				$aTask['sColor']				= $this->m_sColor;
 				$aTask['iPosition']				= $this->m_iPosition;
 				$aTask['iCompletion']			= 0;
-				$aTask['sStartDate']			= $sEndDate;
-				$aTask['sEndDate']				= $sEndDate;
+				
+				$sEndDate = mysql_escape_string(trim($this->m_sEndDate));
+				$oEndDate = BAB_DateTime::fromIsoDateTime($sEndDate);
+				$oEndDate->init($oEndDate->_iYear, $oEndDate->_iMonth, $oEndDate->_iDay, 0, 0, 0);
+				$sStartDate = date('Y-m-d H:i:s', $oEndDate->getTimeStamp());
+				
+				$aTask['sStartDate']			= $sStartDate;
+				$aTask['sEndDate'] 				= $sEndDate;
 				$aTask['iIsNotified']			= BAB_TM_NO;
 //*				
 				$iIdTask = bab_createTask($aTask);
@@ -1542,9 +1546,6 @@ if(!is_null($aTask))
 		{
 			if($this->isToDoValid())
 			{
-				$sStartDate = mysql_escape_string($this->m_sStartDate);
-				$sEndDate = mysql_escape_string($this->m_sEndDate);
-				
 				$aTask =& $this->m_oTask->m_aTask;
 				
 				$aTask['iIdProject']			= $this->m_iIdProject;
@@ -1567,8 +1568,14 @@ if(!is_null($aTask))
 				$aTask['sColor']				= $this->m_sColor;
 				$aTask['iPosition']				= $this->m_iPosition;
 				$aTask['iCompletion']			= 0;
-				$aTask['sStartDate']			= $sEndDate;
-				$aTask['sEndDate']				= $sEndDate;
+				
+				$sEndDate = mysql_escape_string(trim($this->m_sEndDate));
+				$oEndDate = BAB_DateTime::fromIsoDateTime($sEndDate);
+				$oEndDate->init($oEndDate->_iYear, $oEndDate->_iMonth, $oEndDate->_iDay, 0, 0, 0);
+				$sStartDate = date('Y-m-d H:i:s', $oEndDate->getTimeStamp());
+				
+				$aTask['sStartDate']			= $sStartDate;
+				$aTask['sEndDate'] 				= $sEndDate;
 				$aTask['iIsNotified']			= BAB_TM_NO;
 //*				
 				$iIdTask = bab_createTask($aTask);

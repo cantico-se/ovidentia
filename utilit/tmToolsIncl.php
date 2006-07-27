@@ -634,7 +634,7 @@ bab_debug('8 heures de train');
 class BAB_TM_Gantt
 {
 	var $m_iWidth = '16';
-	var $m_iHeight = '19';
+	var $m_iHeight = '25';
 	var $m_iBorderLeft = 0;
 	var $m_iBorderRight = 0;
 	var $m_iBorderTop = 0;

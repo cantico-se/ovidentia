@@ -1547,7 +1547,14 @@ function bab_selectLinkableTask($iIdProject, $iIdTask)
 	$sIdTask = '';
 	if(0 != $iIdTask)
 	{
-		$sIdTask = ' AND id <> \'' . $iIdTask . '\'';
+		if(0 == $iIdProject)
+		{
+			$sIdTask = ' AND idTask <> \'' . $iIdTask . '\'';
+		}
+		else
+		{
+			$sIdTask = ' AND id <> \'' . $iIdTask . '\'';
+		}
 	}
 
 	$sIdOwner = '';
@@ -1559,7 +1566,8 @@ function bab_selectLinkableTask($iIdProject, $iIdTask)
 			'FROM ' . 
 				BAB_TSKMGR_TASKS_INFO_TBL . ' ' .
 			'WHERE ' . 
-				'idOwner =\'' . $GLOBALS['BAB_SESS_USERID'] . '\'';
+				'idOwner =\'' . $GLOBALS['BAB_SESS_USERID'] . '\'' .
+				$sIdTask;
 				
 		//bab_debug($query);
 		$result = $babDB->db_query($query);

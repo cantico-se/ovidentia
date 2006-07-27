@@ -166,7 +166,16 @@ function displayProjectsSpacesList()
 				
 				while( $iIndex < $iNumRows && false != ($datas = $babDB->db_fetch_array($result)) )
 				{
-					$bIsManager = bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $datas['id']);
+					$bIsManager = false;
+					if(!bab_isAccessValid(BAB_TSKMGR_DEFAULT_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProjectSpace))
+					{
+ 						$bIsManager = bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $datas['id']);
+					}
+					else 
+					{
+						$bIsManager = true;
+					}
+					
 					$isAccessValid = ($bIsCreator || $bIsManager);
 
 					$sProjectUrl = ($bIsManager) ? $this->getUrl(BAB_TM_IDX_DISPLAY_PROJECT_FORM, $iIdProjectSpace, $datas['id']) : null;
@@ -530,7 +539,16 @@ function displayProjectRightsForm()
 	$iIdProject = $oTmCtx->getIdProject();
 	
 	$bIsCreator = bab_isAccessValid(BAB_TSKMGR_PROJECT_CREATOR_GROUPS_TBL, $iIdProjectSpace);
-	$bIsManager = bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject);
+//	$bIsManager = bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject);
+	$bIsManager = false;
+	if(!bab_isAccessValid(BAB_TSKMGR_DEFAULT_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProjectSpace))
+	{
+			$bIsManager = bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject);
+	}
+	else 
+	{
+		$bIsManager = true;
+	}
 	
 	$isAccessValid = ($bIsCreator || $bIsManager);
 	
@@ -1769,10 +1787,34 @@ upgrade585to586();
 
 /*
 $context =& getTskMgrContext();
-if(false == $context->isUserProjectVisualizer())
+if(true == $context->isUserProjectVisualizer())
 {
-	$babBody->msgerror = bab_translate("Access denied");
-	return;
+	$babBody->msgerror = bab_translate("UserProjectVisualizer");
+}
+
+if(true == $context->isUserCanCreateProject())
+{
+	$babBody->msgerror = bab_translate("UserCanCreateProject");
+}
+
+if(true == $context->isUserProjectManager())
+{
+	$babBody->msgerror = bab_translate("UserProjectManager");
+}
+
+if(true == $context->isUserSuperviseProject())
+{
+	$babBody->msgerror = bab_translate("UserSuperviseProject");
+}
+
+if(true == $context->isUserManageTask())
+{
+	$babBody->msgerror = bab_translate("UserManageTask");
+}
+
+if(true == $context->isUserPersonnalTaskOwner())
+{
+	$babBody->msgerror = bab_translate("UserPersonnalTaskOwner");
 }
 //*/
 

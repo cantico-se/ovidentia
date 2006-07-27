@@ -68,8 +68,6 @@ class BAB_DateTime
 	
 	function fromIsoDateTime($sIsoDateTime)
 	{
-//		return BAB_DateTime::fromIsoDateTime(strtotime($sIsoDateTime));
-
 		$aDate = getdate(strtotime($sIsoDateTime));
 		
 		return new BAB_DateTime($aDate['year'], $aDate['mon'], $aDate['mday'], 

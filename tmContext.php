@@ -39,7 +39,21 @@ class BAB_TM_Context
 	var $m_aVisualizedIdProjectSpace;
 	var $m_aVisualizedIdProject;
 	
+	var $m_bIsProjectCreator;
+	var $m_aProjectSpacesIdWhoUserIsCreator;
 	
+	var $m_bIsProjectManager;
+	var $m_aManagedIdProject;
+	
+	var $m_bIsProjectSupervisor;
+	var $m_aSupervisedIdProject;
+
+	var $m_bIsManageTask;
+	var $m_aManagedTaskId;
+
+	var $m_bIsPersonnalTaskOwner;
+	var $m_aPersonnalOwnedIdTask;
+
 	function BAB_TM_Context()
 	{
 		global $babBody;
@@ -57,6 +71,20 @@ class BAB_TM_Context
 		$this->m_aVisualizedIdProjectSpace = array();
 		$this->m_aVisualizedIdProject = array();
 		
+		$this->m_bIsProjectCreator = null;
+		$this->m_aProjectSpacesIdWhoUserIsCreator = array();
+		
+		$this->m_bIsProjectManager = null;
+		$this->m_aManagedIdProject = array();
+		
+		$this->m_bIsProjectSupervisor = null;
+		$this->m_aSupervisedIdProject = array();
+		
+		$this->m_bIsManageTask = null;
+		$this->m_aManagedTaskId = array();
+		
+		$this->m_bIsPersonnalTaskOwner = null;
+		$this->m_aPersonnalOwnedIdTask = array();
 	}
 	
 	
@@ -97,6 +125,51 @@ class BAB_TM_Context
 			$this->queryVisualisedObject();
 		}
 		return $this->m_bIsProjectVisualizer;
+	}
+
+	function isUserCanCreateProject()
+	{
+		if(is_null($this->m_bIsProjectCreator))
+		{
+			$this->queryProjectSpaceWhoUserCanCreate();
+		}
+		return $this->m_bIsProjectCreator;
+	}
+
+	function isUserProjectManager()
+	{
+		if(is_null($this->m_bIsProjectManager))
+		{
+			$this->queryManagedProject();
+		}
+		return $this->m_bIsProjectManager;
+	}
+
+	function isUserSuperviseProject()
+	{
+		if(is_null($this->m_bIsProjectSupervisor))
+		{
+			$this->querySupervisedProject();
+		}
+		return $this->m_bIsProjectSupervisor;
+	}
+
+	function isUserManageTask()
+	{
+		if(is_null($this->m_bIsManageTask))
+		{
+			$this->queryManagedTask();
+		}
+		return $this->m_bIsManageTask;
+	}
+
+	function isUserPersonnalTaskOwner()
+	{
+		if(is_null($this->m_bIsPersonnalTaskOwner))
+		{
+			$this->queryPersonnalOwnedTask();
+		}
+		return $this->m_bIsPersonnalTaskOwner;
 	}
 
 	function &getWorkingHoursObject()
@@ -194,6 +267,106 @@ class BAB_TM_Context
 		else 
 		{
 			$this->m_bIsProjectVisualizer = false;
+		}
+	}
+
+	function queryProjectSpaceWhoUserCanCreate()
+	{
+		require_once($GLOBALS['babInstallPath'] . 'admin/acl.php');
+		
+		$this->m_aProjectSpacesIdWhoUserIsCreator = bab_getUserIdObjects(BAB_TSKMGR_PROJECT_CREATOR_GROUPS_TBL);
+		if(count($this->m_aProjectSpacesIdWhoUserIsCreator) > 0)
+		{
+			$this->m_bIsProjectCreator = true;
+		}
+		else 
+		{
+			$this->m_bIsProjectCreator = false;
+		}
+	}
+
+	function queryManagedProject()
+	{
+		require_once($GLOBALS['babInstallPath'] . 'admin/acl.php');
+		
+		$this->m_aManagedIdProject = bab_getUserIdObjects(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL);
+		
+		if(count($this->m_aManagedIdProject) > 0)
+		{
+			$this->m_bIsProjectManager = true;
+		}
+		else 
+		{
+			$this->m_bIsProjectManager = false;
+		}
+	}
+
+	function querySupervisedProject()
+	{
+		require_once($GLOBALS['babInstallPath'] . 'admin/acl.php');
+		
+		$this->m_aSupervisedIdProject = bab_getUserIdObjects(BAB_TSKMGR_PROJECTS_SUPERVISORS_GROUPS_TBL);
+		if(count($this->m_aSupervisedIdProject) > 0)
+		{
+			$this->m_bIsProjectSupervisor = true;
+		}
+		else 
+		{
+			$this->m_bIsProjectSupervisor = false;
+		}
+	}
+
+	function queryManagedTask()
+	{
+		require_once($GLOBALS['babInstallPath'] . 'admin/acl.php');
+		
+		$this->m_aManagedTaskId = bab_getUserIdObjects(BAB_TSKMGR_TASK_RESPONSIBLE_GROUPS_TBL);
+		if(count($this->m_aManagedTaskId) > 0)
+		{
+			$this->m_bIsManageTask = true;
+		}
+		else 
+		{
+			$this->m_bIsManageTask = false;
+		}
+	}
+	
+	function queryPersonnalOwnedTask()
+	{
+		require_once($GLOBALS['babInstallPath'] . 'admin/acl.php');
+		/*		
+		$query = 
+			'SELECT ' . 
+				'id ' .
+			'FROM ' . 
+				BAB_TSKMGR_TASKS_TBL . ' ' .
+			'WHERE ' . 
+				'idProject = \'0\' AND ' .
+				'idResponsible = \'' . $GLOBALS['BAB_SESS_USERID'] . '\'';
+			
+		$db	= & $GLOBALS['babDB'];
+		
+		$result = $db->db_query($query);
+		if(false != $result)
+		{
+			$iRows = $db->db_num_rows($result);
+			$iIdx = 0;
+			while($iIdx < $iRows && false != ($datas = $db->db_fetch_array($result)))
+			{
+				$iIdx++;
+				$this->m_aPersonnalOwnedIdTask[$datas['id']] = 1;
+			}
+		}
+		//*/
+		
+		$this->m_aPersonnalOwnedIdTask = bab_getUserIdObjects(BAB_TSKMGR_PERSONNAL_TASK_CREATOR_GROUPS_TBL);
+		if(count($this->m_aPersonnalOwnedIdTask) > 0)
+		{
+			$this->m_bIsPersonnalTaskOwner = true;
+		}
+		else 
+		{
+			$this->m_bIsPersonnalTaskOwner = false;
 		}
 	}
 
