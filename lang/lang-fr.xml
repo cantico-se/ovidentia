@@ -1164,7 +1164,7 @@
 <string id="Automatic connection">Connexion automatique</string>
 <string id="Site slogan">Slogan du site</string>
 <string id="Upload path">Répertoire de stockage des fichiers à télécharger</string>
-<string id="File manager max file size">Taille maximum d'un fichier du gestionnaire de fichiers</string>
+<string id="Upload max file size">Taille maximum d'un fichier téléchargé vers le serveur</string>
 <string id="File manager max group directory size">Espace maximum occupé par un répertoire partagé</string>
 <string id="File manager max user directory size">Espace maximum occupé par un répertoire utilisateur</string>
 <string id="File manager max total size">Espace maximum occupé par le gestionnaire de fichiers</string>
@@ -2184,4 +2184,11 @@
 <string id="Writable directory for upgrades">Répertoire accessible en écriture pour les mises à jour</string>
 <string id="%s php module">Module %s de php</string>
 <string id="Recommended">Recommandé</string>
+<string id="Writable lang directory">répertoire "lang" accessible en écriture</string>
+<string id="Maximum upload file size">Taille maximale d'un fichier téléchargé vers le server</string>
+<string id="You must configure ovidentia with a limit smaller or equal to the server limit : %s">Vous devez configurer ovidentia avec une limite de taille de chargement inférieur ou égale à la limite du serveur : %s</string>
+<string id="files status">état des fichiers</string>
+<string id="Change the status for all the files">Modifier l'état d'indexation de tout les fichiers</string>
+<string id="Articles files">Fichiers liés aux articles</string>
+<string id="Forum post files">Fichiers liés aux contributions de forum</string>
 </fr>

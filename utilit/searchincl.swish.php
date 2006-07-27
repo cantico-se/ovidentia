@@ -40,11 +40,12 @@ class swishCls
 
 	$this->uploadDir = str_replace('\\' ,'/', $this->uploadDir);
 
-	$this->tmpCfgFile = $this->uploadDir.'/tmp/swish.config';
+	$this->tmpCfgFile = $this->uploadDir.'/tmp/'.$object.'swish.config';
 	$this->mainIndex = $this->uploadDir.'/SearchIndex/'.$object.'.index';
 	$this->mergeIndex = $this->uploadDir.'/SearchIndex/'.$object.'.merge.index';
 	$this->tempIndex = $this->uploadDir.'/SearchIndex/'.$object.'.temp.index';
-
+	$this->indexLog = $this->uploadDir.'/SearchIndex/'.$object.'.log';
+	$this->batchFile = $this->uploadDir.'/SearchIndex/index.bat';
 
 	$db = &$GLOBALS['babDB'];
 	$res = $db->db_query("SELECT * FROM ".BAB_SITES_SWISH_TBL." WHERE id_site='".$GLOBALS['babBody']->babsite['id']."'");
@@ -77,6 +78,46 @@ class swishCls
 	bab_debug($buffer);
 
 	return $buffer;
+	}
+
+}
+
+class bab_batchFile {
+
+	var $msgerror = false;
+	var $fh;
+
+	function bab_batchFile($file) {
+
+		if (is_file($file) && !is_writable($file)) {
+			$this->msgerror = sprintf(bab_translate("The file %s is not writable"),$file);
+			return false;
+		}
+
+		$mode = file_exists($file) ? 'a' : 'w+';
+
+		if (!$this->fh = fopen($file, $mode)) {
+			$this->msgerror = sprintf(bab_translate("Cannot open or create the file %s"),$file);
+			return false;
+		}
+	}
+
+	function addCmd($cmd) {
+		if (fwrite($this->fh, $cmd."\n") === FALSE) {
+			$this->msgerror = bab_translate("Error : cannot write to file");
+			return false;
+		}
+		return true;
+	}
+
+	function close() {
+		if ($this->fh) {
+			fclose($this->fh);
+		}
+	}
+
+	function getError() {
+		return $this->msgerror;
 	}
 }
 
@@ -115,17 +156,95 @@ class bab_indexFilesCls extends swishCls
 		if ($handle = fopen($this->tmpCfgFile, 'w+')) {
 			fwrite($handle, $str);
 			fclose($handle);
+			return true;
 			}
+		
+		trigger_error('Unexpected error : cannot write to upload directory');
+		return false;
 		}
 
 		
+		function checkTimeout() {
+			$reg = bab_getRegistryInstance();
+			$reg->changeDirectory('/bab/indexfiles/lock/');
+			$object = $reg->getValue($this->object);
+			if (NULL !== $object) {
+				if (!file_exists($this->indexLog)) {
+					// locked but not launched yet
+					return false;
+				} else {
+					
+					$content = implode("", @file($this->indexLog));
+					if (false === strpos($content,'OVIDENTIA EOF')) {
+						// file created but script not finished
+						return false;
+					} else {
+						// callback
+						if (!empty($object['require_once'])) {
+							require_once($object['require_once']);
+							if (call_user_func($object['function'], $object['function_parameter'])) {
+								// free object
+								$reg->removeKey($this->object);
+								unlink($this->tmpCfgFile);
+								unlink($this->indexLog);
+								unlink($this->batchFile);
+							}
+						}
+					}
+				}
+			}
+			return true;
+		}
+
+
+		/**
+		 * Buid environement for indexation by command line
+		 * Once the indexation is done, required file is included and the callback function is called
+		 * Use the callback to set the flags coorectly in the database for the files
+		 * The function_parameter is the only parameter given to the callback function
+		 * this value will be serialized if necessary, so non serializable objects are forbidden
+		 * @param string $require_once file to include
+		 * @param string|array $function callback
+		 * @param mixed $function_parameter
+		 * @return string
+		 */
+		function prepareIndex($require_once, $function, $function_parameter) {
+			if ($this->checkTimeout() && $this->setTempConfigFile($this->mainIndex)) {
+				// lock config file with timeout
+				$reg = bab_getRegistryInstance();
+				$reg->changeDirectory('/bab/indexfiles/lock/');
+				$reg->setKeyValue($this->object, array(
+							'require_once' => $require_once,
+							'function' => $function,
+							'function_parameter' => $function_parameter
+						)
+					);
+
+
+				$bat = new bab_batchFile($this->batchFile);
+				$bat->addCmd($this->swishCmd.' -c '.escapeshellarg($this->tmpCfgFile).' >> '.$this->indexLog);
+				$bat->close();
+
+				return bab_translate("The command line has been added to the batch file");
+			}
+
+			return bab_translate("There is a pending prepared indexation, you can't launch another one at the same time");
+		}
+
+		/**
+		 * Index files
+		 * @return string
+		 */
 		function indexFiles()
 		{
-			
-			$this->setTempConfigFile($this->mainIndex);			
-			$str = $this->execCmd($this->swishCmd.' -c '.escapeshellarg($this->tmpCfgFile));
-			unlink($this->tmpCfgFile);
-			return $str;
+			if ($this->checkTimeout()) {
+				$this->setTempConfigFile($this->mainIndex);			
+				$str = $this->execCmd($this->swishCmd.' -c '.escapeshellarg($this->tmpCfgFile));
+				unlink($this->tmpCfgFile);
+				return $str;
+			} else {
+				return bab_translate("There is a pending prepared indexation, you can't launch another one at the same time");
+			}
 		}
 
 	

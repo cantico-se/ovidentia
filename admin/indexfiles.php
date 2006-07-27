@@ -88,7 +88,7 @@ function listIndexFiles()
 			if ($arr = $this->db->db_fetch_assoc($this->res)) {
 				$this->altbg		= !$this->altbg;
 				$this->id_index		= $arr['id'];
-				$this->title		= bab_toHtml($arr['name']);
+				$this->title		= bab_toHtml(bab_translate($arr['name']));
 				$this->onload		= 1 == $arr['index_onload'];
 				$this->disabled		= 1 == $arr['index_disabled'];
 				$this->object		= bab_toHtml(urlencode($arr['object']));
@@ -105,6 +105,80 @@ function listIndexFiles()
 }
 
 
+function status() {
+
+	global $babBody;
+
+	class temp {
+
+		var $db;
+		function temp() {
+
+			$this->t_record = bab_translate("Record");
+
+			$this->db = $GLOBALS['babDB'];
+			$this->res = $this->db->db_query("SELECT * FROM ".BAB_INDEX_FILES_TBL." WHERE  object  IN('bab_files','bab_art_files','bab_forumsfiles')");
+			$this->indexstatus = array(
+					BAB_INDEX_STATUS_NOINDEX => bab_getIndexStatusLabel(BAB_INDEX_STATUS_NOINDEX),
+					BAB_INDEX_STATUS_INDEXED => bab_getIndexStatusLabel(BAB_INDEX_STATUS_INDEXED),
+					BAB_INDEX_STATUS_TOINDEX => bab_getIndexStatusLabel(BAB_INDEX_STATUS_TOINDEX)
+				);
+		}
+
+		function getnextindex() {
+			
+			if ($arr = $this->db->db_fetch_assoc($this->res)) {
+				$this->object		= bab_toHtml($arr['object']);
+				$this->title		= bab_toHtml(bab_translate($arr['name']));
+				
+				return true;
+			}
+			return false;
+		}
+
+		function getnextstatus() {
+			if (list($key, $val) = each($this->indexstatus)) {
+				$this->value = bab_toHtml($key);
+				$this->option = bab_toHtml($val);
+				return true;
+			}
+			reset($this->indexstatus);
+			return false;
+		}
+	}	
+
+	$temp = new temp();
+	$babBody->babecho(	bab_printTemplate($temp, "indexfiles.html", "status"));
+
+}
+
+
+function record_status() {
+	$db = $GLOBALS['babDB'];
+	foreach($_POST['status'] as $object => $status) {
+		if ('' !== $status) {
+			switch($object) {
+				case 'bab_files':
+					$db->db_query("UPDATE ".BAB_FILES_TBL." SET index_status='".$db->db_escape_string($status)."'");
+					$db->db_query("UPDATE ".BAB_FM_FILESVER_TBL." SET index_status='".$db->db_escape_string($status)."'");
+					break;
+
+				case 'bab_art_files':
+					$db->db_query("UPDATE ".BAB_ART_FILES_TBL." SET index_status='".$db->db_escape_string($status)."'");
+					break;
+
+				case 'bab_forumsfiles':
+					$db->db_query("UPDATE ".BAB_FORUMSFILES_TBL." SET index_status='".$db->db_escape_string($status)."'");
+					break;
+			}
+		}
+	}
+
+	return true;
+}
+
+
+// main
 
 
 if( !isset($BAB_SESS_LOGGED) || empty($BAB_SESS_LOGGED) ||  !$babBody->isSuperAdmin)
@@ -113,12 +187,39 @@ if( !isset($BAB_SESS_LOGGED) || empty($BAB_SESS_LOGGED) ||  !$babBody->isSuperAd
 	return;
 }
 
-bab_cleanGpc();
 
-$babBody->title = bab_translate("Search indexes");
+$idx = bab_rp('idx','files');
 
-listIndexFiles();
 
+if (isset($_POST['action'])) {
+	switch($_POST['action']) {
+		case 'status':
+			if (!record_status()) {
+				$idx = 'status';
+			}
+			break;
+	}
+}
+
+
+
+$babBody->addItemMenu("files", bab_translate("Indexation"), $GLOBALS['babUrlScript']."?tg=admindex&idx=files");
+$babBody->addItemMenu("status", bab_translate("files status"), $GLOBALS['babUrlScript']."?tg=admindex&idx=status");
+
+
+switch($idx) {
+	case 'files':
+		$babBody->title = bab_translate("Search indexes");
+		listIndexFiles();
+		break;
+
+	case 'status':
+		$babBody->title = bab_translate("Change the status for all the files");
+		status();
+		break;
+}
+
+$babBody->setCurrentItemMenu($idx);
 
 
 ?>

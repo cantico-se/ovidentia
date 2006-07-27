@@ -472,8 +472,9 @@ function indexAllFmFiles($status) {
 	}
 
 
-	if (!$files)
-		return false;
+	if (!$files) {
+		return bab_translate("No files to index in the file manager");
+	}
 
 	include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
 
@@ -507,7 +508,7 @@ function indexAllFmFiles($status) {
 	");
 
 
-	return count($files);
+	return sprintf(bab_translate("Indexation of %d files in the file manager"), count($files));
 }
 
 ?>

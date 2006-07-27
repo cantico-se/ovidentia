@@ -432,8 +432,9 @@ function indexAllForumFiles($status) {
 			);
 	}
 
-	if (!$files)
-		return false;
+	if (!$files) {
+		return bab_translate("No files to index in the forums");
+	}
 
 	include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
 
@@ -457,7 +458,7 @@ function indexAllForumFiles($status) {
 			index_status IN('".implode("','",$status)."')
 	");
 
-	return count($files);
+	return sprintf(bab_translate("Indexation of %d files in the forums"), count($files));
 }
 
 

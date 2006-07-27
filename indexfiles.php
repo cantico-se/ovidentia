@@ -33,7 +33,9 @@ function bab_indexJobs($idx, $object) {
 	$reg = bab_getRegistryInstance();
 
 	$reg->changeDirectory('/bab/indexfiles/');
-	$allowed_ip = $reg->getValue('allowed_ip','127.0.0.1');
+	$allowed_ip	= $reg->getValue('allowed_ip','127.0.0.1');
+	
+
 
 	if (BAB_INDEX_WAITING == $idx) {
 		$status = array(BAB_INDEX_STATUS_TOINDEX);
@@ -49,29 +51,17 @@ function bab_indexJobs($idx, $object) {
 			
 			case 'bab_files':
 				include_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
-				if ($n = indexAllFmFiles($status)) {
-					$job = sprintf(bab_translate("Indexation of %d files in the file manager"), $n);
-				} else {
-					$job = bab_translate("No files to index in the file manager");
-				}
+				$job = indexAllFmFiles($status);
 				break;
 
 			case 'bab_art_files':
 				include_once $GLOBALS['babInstallPath'].'utilit/artincl.php';
-				if ($n = indexAllArtFiles($status)) {
-					$job = sprintf(bab_translate("Indexation of %d files in article files repository"), $n);
-				} else {
-					$job = bab_translate("No files to index in the articles");
-				}
+				$job = indexAllArtFiles($status);
 				break;
 
 			case 'bab_forumsfiles':
 				include_once $GLOBALS['babInstallPath'].'utilit/forumincl.php';
-				if ($n = indexAllForumFiles($status)) {
-					$job = sprintf(bab_translate("Indexation of %d files in the forums"), $n);
-				} else {
-					$job = bab_translate("No files to index in the forums");
-				}
+				$job = indexAllForumFiles($status);
 				break;
 
 			default:	// Addon
@@ -84,10 +74,6 @@ function bab_indexJobs($idx, $object) {
 	} else {
 		$GLOBALS['babBodyPopup']->msgerror = sprintf(bab_translate("Access denied, your current IP address (%s) is not allowed"),$_SERVER['REMOTE_ADDR']);
 	}
-
-
-	
-
 
 	$GLOBALS['babBodyPopup']->babecho(bab_toHtml($job."\n", BAB_HTML_ALL));
 	

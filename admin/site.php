@@ -391,7 +391,8 @@ function site_menu4($id)
 			{
 			$this->imgsize_title = bab_translate("Max image size ( Kb )");
 			$this->uploadpath_title = bab_translate("Upload path");
-			$this->maxfilesize_title = bab_translate("File manager max file size");
+			$this->maxfilesize_title = bab_translate("Upload max file size");
+			$this->t_filemanager = bab_translate("File manager");
 			$this->folder_diskspace_title = bab_translate("File manager max group directory size");
 			$this->user_diskspace_title = bab_translate("File manager max user directory size");
 			$this->total_diskspace_title = bab_translate("File manager max total size");

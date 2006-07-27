@@ -1125,8 +1125,10 @@ function indexAllArtFiles($status) {
 			);
 	}
 
-	if (!$files)
-		return false;
+	if (!$files) {
+		return bab_translate("No files to index in the articles");
+	}
+
 
 	include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
 
@@ -1152,7 +1154,7 @@ function indexAllArtFiles($status) {
 	");
 
 
-	return count($files);
+	return sprintf(bab_translate("Indexation of %d files in article files repository"), count($files));
 }
 
 
