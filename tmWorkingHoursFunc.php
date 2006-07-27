@@ -49,15 +49,15 @@ function displayWorkingHoursForm()
 
 			$this->set_data('save_idx',  BAB_TM_IDX_DISPLAY_MENU);
 			$this->set_data('save_action',  BAB_TM_ACTION_UPDATE_WORKING_HOURS);
-			$this->set_data('iIdUser', ('admTskMgr' != tskmgr_getVariable('tg', 'admTskMgr')) ? 
+			$this->set_data('iIdUser', ('admTskMgr' != bab_rp('tg', 'admTskMgr')) ? 
 				$GLOBALS['BAB_SESS_USERID'] : 0);
 			$this->set_data('bHaveWorkingHours',  false);
 			
-			$this->set_data('tg',  tskmgr_getVariable('tg', 'admTskMgr'));
+			$this->set_data('tg',  bab_rp('tg', 'admTskMgr'));
 			$this->set_data('idx',  '');
 			$this->set_data('action',  '');
 			
-			$action = tskmgr_getVariable('action', '');
+			$action = bab_rp('action', '');
 
 			$oTmCtx =& getTskMgrContext();
 			$this->m_oWh =& $oTmCtx->getWorkingHoursObject();
@@ -104,7 +104,7 @@ function displayWorkingHoursForm()
 		array(
 			'idx' => BAB_TM_IDX_DISPLAY_WORKING_HOURS_FORM,
 			'mnuStr' => bab_translate("Working hours"),
-			'url' => $GLOBALS['babUrlScript'] . '?tg=' . tskmgr_getVariable('tg', '') . 
+			'url' => $GLOBALS['babUrlScript'] . '?tg=' . bab_rp('tg', '') . 
 			'&idx=' . BAB_TM_IDX_DISPLAY_WORKING_HOURS_FORM)
 		);
 		
@@ -181,7 +181,7 @@ class BAB_WorkingHours
 			global $babInstallPath;
 			require_once($babInstallPath . 'utilit/calapi.php');
 
-			$this->m_iIdUser = (tskmgr_getVariable('tg', 'admTskMgr') == 'admTskMgr' ? 0 : $GLOBALS['BAB_SESS_USERID']);
+			$this->m_iIdUser = (bab_rp('tg', 'admTskMgr') == 'admTskMgr' ? 0 : $GLOBALS['BAB_SESS_USERID']);
 			$sWorkingDays = null;
 			bab_calGetWorkingDays($this->m_iIdUser, $sWorkingDays);
 			$this->m_aWorkingDays = array_flip(explode(',', $sWorkingDays));

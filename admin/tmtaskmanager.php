@@ -68,7 +68,7 @@ function displayProjectsSpacesList()
 		{
 			parent::bab_TreeView('myTreeView');
 			
-			$sTg = tskmgr_getVariable('tg', 'admTskMgr');
+			$sTg = bab_rp('tg', 'admTskMgr');
 			$this->m_sUrlBase = $GLOBALS['babUrlScript'] . '?tg=' . $sTg . '&idx=%s&iIdProjectSpace=%d&iIdProject=%d';
 
 			$oSpaceElement =& $this->createElement($this->m_iIdSpaceElement, 'myNodeType', bab_translate("Space(s)"), 'description', 
@@ -147,8 +147,8 @@ function displayProjectsSpacesForm()
 			$this->set_caption('delete', bab_translate("Delete"));
 			$this->set_caption('modify', bab_translate("Modify"));
 			
-			$this->set_data('sName', tskmgr_getVariable('sName', ''));
-			$this->set_data('sDescription', tskmgr_getVariable('sDescription', ''));
+			$this->set_data('sName', bab_rp('sName', ''));
+			$this->set_data('sDescription', bab_rp('sDescription', ''));
 			$this->set_data('iIdProjectSpace', $iIdProjectSpace);
 			$this->set_data('iIdDelegation', $iIdDelegation);
 			$this->set_data('add_idx', BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST);
@@ -449,8 +449,8 @@ function addModifyProjectSpace()
 	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
 	$iIdDelegation = $oTmCtx->getIdDelegation();
 	
-	$sName = mysql_escape_string(tskmgr_getVariable('sName', ''));
-	$sDescription = mysql_escape_string(tskmgr_getVariable('sDescription', ''));
+	$sName = mysql_escape_string(bab_rp('sName', ''));
+	$sDescription = mysql_escape_string(bab_rp('sDescription', ''));
 	
 	if(strlen(trim($sName)) > 0)
 	{
@@ -517,12 +517,12 @@ function saveProjectConfiguration()
 	$oTmCtx =& getTskMgrContext();
 	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
 	
-	$iTaskUpdateByMgr = (int) tskmgr_getVariable('iTaskUpdateByMgr', BAB_TM_YES);
-	$iIdConfiguration = (int) tskmgr_getVariable('iIdConfiguration', 0);
-	$iEndTaskReminder = (int) tskmgr_getVariable('iEndTaskReminder', 5);
-	$iTaskNumerotation = (int) tskmgr_getVariable('iTaskNumerotation', BAB_TM_SEQUENTIAL);
-	$iEmailNotice = (int) tskmgr_getVariable('iEmailNotice', BAB_TM_YES);
-	$sFaqUrl = mysql_escape_string(tskmgr_getVariable('sFaqUrl', ''));
+	$iTaskUpdateByMgr = (int) bab_rp('iTaskUpdateByMgr', BAB_TM_YES);
+	$iIdConfiguration = (int) bab_rp('iIdConfiguration', 0);
+	$iEndTaskReminder = (int) bab_rp('iEndTaskReminder', 5);
+	$iTaskNumerotation = (int) bab_rp('iTaskNumerotation', BAB_TM_SEQUENTIAL);
+	$iEmailNotice = (int) bab_rp('iEmailNotice', BAB_TM_YES);
+	$sFaqUrl = mysql_escape_string(bab_rp('sFaqUrl', ''));
 
 	if(0 < $iIdConfiguration && 0 < $iIdProjectSpace)
 	{

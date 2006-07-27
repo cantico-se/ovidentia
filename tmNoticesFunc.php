@@ -63,7 +63,7 @@ function displayNoticeEventForm()
 			$this->set_data('modifyIdx', BAB_TM_IDX_DISPLAY_NOTICE_EVENT_FORM);
 			$this->set_data('modifyAction', BAB_TM_ACTION_MODIFY_NOTICE_EVENT);
 
-			$this->set_data('tg', tskmgr_getVariable('tg', ''));
+			$this->set_data('tg', bab_rp('tg', ''));
 			
 			$oTmCtx =& getTskMgrContext();
 			$this->m_iIdProjectSpace = $oTmCtx->getIdProjectSpace();
@@ -115,7 +115,7 @@ function displayNoticeEventForm()
 	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
 	$iIdProject = $oTmCtx->getIdProject();
 	
-	$tg = tskmgr_getVariable('tg', '');
+	$tg = bab_rp('tg', '');
 	
 	$itemMenu = array(
 		array(

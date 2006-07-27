@@ -75,7 +75,7 @@ class BAB_TM_FieldBase extends BAB_BaseFormProcessing
 		$this->set_data('iAreaType', BAB_TM_TEXT_AREA_FIELD);
 		$this->set_data('iChoiceType', BAB_TM_RADIO_FIELD);
 		
-		$this->set_data('tg', tskmgr_getVariable('tg', ''));
+		$this->set_data('tg', bab_rp('tg', ''));
 		$this->set_data('displaySpecificFieldFormIdx', BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_FORM);
 		
 		$this->set_data('addIdx', BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_LIST);
@@ -90,8 +90,8 @@ class BAB_TM_FieldBase extends BAB_BaseFormProcessing
 		$iIdProject = $oTmCtx->getIdProject();
 		$this->set_data('iIdProjectSpace', $iIdProjectSpace);
 		$this->set_data('iIdProject', $iIdProject);
-		$this->set_data('iFieldType', (int) tskmgr_getVariable('iFieldType', BAB_TM_TEXT_FIELD));
-		$this->set_data('iIdField', (int) tskmgr_getVariable('iIdField', 0));
+		$this->set_data('iFieldType', (int) bab_rp('iFieldType', BAB_TM_TEXT_FIELD));
+		$this->set_data('iIdField', (int) bab_rp('iIdField', 0));
 
 		if(!isset($_POST['iIdField']) && !isset($_GET['iIdField']))
 		{
@@ -129,8 +129,8 @@ class BAB_TM_FieldBase extends BAB_BaseFormProcessing
 	
 	function getResubmittedDatas()
 	{
-		$this->set_data('sFieldName', tskmgr_getVariable('sFieldName', ''));
-		$this->set_data('sFieldValue', tskmgr_getVariable('sFieldValue', ''));
+		$this->set_data('sFieldName', bab_rp('sFieldName', ''));
+		$this->set_data('sFieldValue', bab_rp('sFieldValue', ''));
 	}
 }
 
@@ -263,10 +263,10 @@ class BAB_TM_FieldRadio extends BAB_TM_FieldBase
 	{
 		parent::BAB_TM_FieldBase();
 
-		$this->set_data('aOptions', tskmgr_getVariable('aOptions', array('')));
+		$this->set_data('aOptions', bab_rp('aOptions', array('')));
 		
 		$this->get_data('aOptions', $aOptions);
-		$this->set_data('iOptionCount', (int) tskmgr_getVariable('iOptionCount', count($aOptions)));
+		$this->set_data('iOptionCount', (int) bab_rp('iOptionCount', count($aOptions)));
 		
 		$this->set_data('addOptionAction', BAB_TM_ACTION_ADD_OPTION);
 		$this->set_data('delOptionAction', BAB_TM_ACTION_DEL_OPTION);

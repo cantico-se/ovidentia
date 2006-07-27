@@ -83,7 +83,7 @@ function displayProjectsSpacesList()
 		{
 			parent::bab_TreeView('myTreeView');
 			
-			$sTg = tskmgr_getVariable('tg', 'admTskMgr');
+			$sTg = bab_rp('tg', 'admTskMgr');
 			$this->m_sUrlBase = $GLOBALS['babUrlScript'] . '?tg=' . $sTg . '&idx=%s&iIdProjectSpace=%d&iIdProject=%d';
 			
 			$this->createProjectSpaceSubTree();
@@ -424,8 +424,8 @@ function displayProjectForm()
 				$this->set_caption('delete', bab_translate("Delete"));
 				$this->set_caption('modify', bab_translate("Modify"));
 				
-				$this->set_data('sName', tskmgr_getVariable('sName', ''));
-				$this->set_data('sDescription', tskmgr_getVariable('sDescription', ''));
+				$this->set_data('sName', bab_rp('sName', ''));
+				$this->set_data('sDescription', bab_rp('sDescription', ''));
 				$this->set_data('iIdProjectSpace', $iIdProjectSpace);
 				$this->set_data('iIdProject', $iIdProject);
 				$this->set_data('bIsDeletable', bab_isProjectDeletable($iIdProject));
@@ -783,8 +783,8 @@ function displayCommentaryForm()
 	
 	if(bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject))
 	{
-		$iIdCommentary = tskmgr_getVariable('iIdCommentary', 0);
-		$isPopUp = tskmgr_getVariable('isPopUp', 0);
+		$iIdCommentary = bab_rp('iIdCommentary', 0);
+		$isPopUp = bab_rp('isPopUp', 0);
 		$tab_caption = ($iIdCommentary == 0) ? bab_translate("Add a commentary") : bab_translate("Edition of a commentary");
 		$babBody->title = $tab_caption;
 	
@@ -856,7 +856,7 @@ function displayDeleteProjectCommentary()
 
 	if(bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject))
 	{
-		$iIdCommentary = tskmgr_getVariable('iIdCommentary', 0);
+		$iIdCommentary = bab_rp('iIdCommentary', 0);
 		if(0 != $iIdCommentary)
 		{
 			$aProject = null;
@@ -984,7 +984,7 @@ function displayTaskList()
 	$oMultiPage->addColumnHeader(4, bab_translate("Start date"), 'startDate');
 	$oMultiPage->addColumnHeader(5, bab_translate("End date"), 'endDate');
 	
-	$sTg = tskmgr_getVariable('tg', 'admTskMgr');
+	$sTg = bab_rp('tg', 'admTskMgr');
 	$sLink = $GLOBALS['babUrlScript'] . '?tg=' . $sTg . '&idx=' . BAB_TM_IDX_DISPLAY_TASK_FORM .
 	'&sFromIdx=' . BAB_TM_IDX_DISPLAY_TASK_LIST;
 
@@ -1029,7 +1029,7 @@ function displayTaskForm()
 	
 	if($bIsTaskResp || $bIsManager || BAB_TM_PERSONNAL_TASK_OWNER === $oTmCtx->getUserProfil())
 	{
-		$iIdTask = tskmgr_getVariable('iIdTask', 0);
+		$iIdTask = bab_rp('iIdTask', 0);
 		$tab_caption = ($iIdTask == 0) ? bab_translate("Add a task") : bab_translate("Edition of a task");
 		$babBody->title = $tab_caption;
 
@@ -1353,14 +1353,14 @@ function addModifyProject()
 	
 	if(bab_isAccessValid(BAB_TSKMGR_PROJECT_CREATOR_GROUPS_TBL, $iIdProjectSpace))
 	{
-		$sName = trim(tskmgr_getVariable('sName', ''));
+		$sName = trim(bab_rp('sName', ''));
 
 		if(0 < strlen($sName))
 		{
 			$isValid = isNameUsedInProjectSpace(BAB_TSKMGR_PROJECTS_TBL, $iIdProjectSpace, $iIdProject, $sName);
 			$sName = mysql_escape_string($sName);
 			
-			$sDescription = mysql_escape_string(trim(tskmgr_getVariable('sDescription', '')));
+			$sDescription = mysql_escape_string(trim(bab_rp('sDescription', '')));
 			
 			if($isValid)
 			{
@@ -1480,12 +1480,12 @@ function saveProjectConfiguration()
 	$iIdProject = $oTmCtx->getIdProject();
 	$bIsManager = bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject);
 	
-	$iTaskUpdateByMgr = (int) tskmgr_getVariable('iTaskUpdateByMgr', BAB_TM_YES);
-	$iIdConfiguration = (int) tskmgr_getVariable('iIdConfiguration', 0);
-	$iEndTaskReminder = (int) tskmgr_getVariable('iEndTaskReminder', 5);
-	$iTaskNumerotation = (int) tskmgr_getVariable('iTaskNumerotation', BAB_TM_SEQUENTIAL);
-	$iEmailNotice = (int) tskmgr_getVariable('iEmailNotice', BAB_TM_YES);
-	$sFaqUrl = mysql_escape_string(tskmgr_getVariable('sFaqUrl', ''));
+	$iTaskUpdateByMgr = (int) bab_rp('iTaskUpdateByMgr', BAB_TM_YES);
+	$iIdConfiguration = (int) bab_rp('iIdConfiguration', 0);
+	$iEndTaskReminder = (int) bab_rp('iEndTaskReminder', 5);
+	$iTaskNumerotation = (int) bab_rp('iTaskNumerotation', BAB_TM_SEQUENTIAL);
+	$iEmailNotice = (int) bab_rp('iEmailNotice', BAB_TM_YES);
+	$sFaqUrl = mysql_escape_string(bab_rp('sFaqUrl', ''));
 
 	if(0 < $iIdConfiguration && 0 < $iIdProject && $bIsManager)
 	{
@@ -1517,12 +1517,12 @@ function saveProjectConfiguration()
 
 function addModifyProjectCommentary()
 {
-	$iIdProject = (int) tskmgr_getVariable('iIdProject', 0);
-	$iIdCommentary = (int) tskmgr_getVariable('iIdCommentary', 0);
+	$iIdProject = (int) bab_rp('iIdProject', 0);
+	$iIdCommentary = (int) bab_rp('iIdCommentary', 0);
 
 	if(bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject))
 	{
-		$sCommentary = mysql_escape_string(trim(tskmgr_getVariable('sCommentary', '')));
+		$sCommentary = mysql_escape_string(trim(bab_rp('sCommentary', '')));
 		
 		if(strlen($sCommentary) > 0)
 		{
@@ -1548,8 +1548,8 @@ function addModifyProjectCommentary()
 
 function deleteProjectCommentary()
 {
-	$iIdProject = (int) tskmgr_getVariable('iIdProject', 0);
-	$iIdCommentary = (int) tskmgr_getVariable('iIdCommentary', 0);
+	$iIdProject = (int) bab_rp('iIdProject', 0);
+	$iIdCommentary = (int) bab_rp('iIdCommentary', 0);
 
 	if(bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject))
 	{
@@ -1572,7 +1572,7 @@ function addModifyTask()
 	
 	$oTaskValidator = null;
 	
-	$iClass = (int) tskmgr_getVariable('iClassType', BAB_TM_TASK);
+	$iClass = (int) bab_rp('iClassType', BAB_TM_TASK);
 	
 	if(0 == $oTmCtx->m_iIdTask && (BAB_TM_PROJECT_MANAGER == $iUserProfil || BAB_TM_PERSONNAL_TASK_OWNER == $iUserProfil))
 	{
@@ -1604,7 +1604,7 @@ function addModifyTask()
 		}
 //*/
 /*
-		$iIdProject = (int) tskmgr_getVariable('iIdProject', 0);
+		$iIdProject = (int) bab_rp('iIdProject', 0);
 		bab_test($iIdProject);
 //*/
 	}
@@ -1734,8 +1734,8 @@ function createSpecificFieldInstance()
 {
 	bab_debug('createSpecificFieldInstance()');
 	
-	$iIdProject = (int) tskmgr_getVariable('iIdProject', 0);
-	$iIdTask = (int) tskmgr_getVariable('iIdTask', 0);
+	$iIdProject = (int) bab_rp('iIdProject', 0);
+	$iIdTask = (int) bab_rp('iIdTask', 0);
 
 	if(bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject) && 0 < $iIdTask)
 	{

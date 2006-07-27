@@ -124,7 +124,7 @@ function add_item_menu($items = array())
 {
 	global $babBody;
 
-	$sTg = tskmgr_getVariable('tg', '');
+	$sTg = bab_rp('tg', '');
 	
 	$babBody->addItemMenu(BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST, bab_translate("Projects spaces"), 
 		$GLOBALS['babUrlScript'] . '?tg=' . $sTg . '&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST);

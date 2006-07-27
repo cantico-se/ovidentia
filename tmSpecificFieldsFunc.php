@@ -73,7 +73,7 @@ function displaySpecificFieldList()
 				$this->set_data('refCount', 0);
 
 				$this->set_data('sFieldLink', '#');
-				$this->set_data('tg', tskmgr_getVariable('tg', ''));
+				$this->set_data('tg', bab_rp('tg', ''));
 				$this->set_data('deleteFieldIdx', BAB_TM_IDX_DISPLAY_DELETE_SPECIFIC_FIELD_FORM);
 				
 				$this->m_oTmCtx =& getTskMgrContext();
@@ -98,7 +98,7 @@ function displaySpecificFieldList()
 
 					$iIdProjectSpace = $this->m_oTmCtx->getIdProjectSpace();
 					$iIdProject = $this->m_oTmCtx->getIdProject();
-					$tg = tskmgr_getVariable('tg', '');
+					$tg = bab_rp('tg', '');
 					
 					$this->set_data('sFieldLink', $GLOBALS['babUrlScript'] . '?tg=' . $tg . 
 						'&iIdProjectSpace=' . $iIdProjectSpace . '&iIdProject=' . $iIdProject .
@@ -111,7 +111,7 @@ function displaySpecificFieldList()
 			}
 		}	
 
-		$tg = tskmgr_getVariable('tg', '');
+		$tg = bab_rp('tg', '');
 		
 		$itemMenu = array(
 			array(
@@ -184,7 +184,7 @@ function displaySpecificFieldForm()
 	$iIdProject = $oTmCtx->getIdProject();
 
 	{
-		$iFieldType = (int) tskmgr_getVariable('iFieldType', BAB_TM_TEXT_FIELD);
+		$iFieldType = (int) bab_rp('iFieldType', BAB_TM_TEXT_FIELD);
 		
 		if($iFieldType == BAB_TM_TEXT_FIELD)
 		{
@@ -216,7 +216,7 @@ function displaySpecificFieldForm()
 			$babBody->title = bab_translate("Modify the field");
 		}
 	
-		$tg = tskmgr_getVariable('tg', '');
+		$tg = bab_rp('tg', '');
 		
 		$itemMenu = array(
 			array(
@@ -257,7 +257,7 @@ function displayDeleteSpecificFieldForm()
 {
 	global $babBody;
 
-	$aDeletableObjects = tskmgr_getVariable('aDeletableObjects', array());
+	$aDeletableObjects = bab_rp('aDeletableObjects', array());
 
 	$sDeletableField = '\'' . implode('\',\'', array_unique($aDeletableObjects)) . '\'';
 
@@ -267,7 +267,7 @@ function displayDeleteSpecificFieldForm()
 	$oTmCtx =& getTskMgrContext();
 	$bf->set_data('iIdProjectSpace', $oTmCtx->getIdProjectSpace());
 	$bf->set_data('iIdProject', $oTmCtx->getIdProject());
-	$bf->set_data('tg', tskmgr_getVariable('tg', ''));
+	$bf->set_data('tg', bab_rp('tg', ''));
 	
 	if('\'\'' != $sDeletableField)
 	{	
@@ -370,10 +370,10 @@ function delOption()
 
 	if(0 != $iIdProjectSpace)
 	{
-		$iOptionCount = (int) tskmgr_getVariable('iOptionCount', 0);
-		$iDefaultOption = (int) tskmgr_getVariable('iDefaultOption', 0);
-		$aDelOptions = tskmgr_getVariable('aDelOptions', array());
-		$aOptions = tskmgr_getVariable('aOptions', array());
+		$iOptionCount = (int) bab_rp('iOptionCount', 0);
+		$iDefaultOption = (int) bab_rp('iDefaultOption', 0);
+		$aDelOptions = bab_rp('aDelOptions', array());
+		$aOptions = bab_rp('aOptions', array());
 		
 		$iNbrOptToDel = count($aDelOptions);
 	
@@ -411,7 +411,7 @@ function addModifySpecificField()
 	if(0 != $iIdProjectSpace)
 	{
 		$iIdProject = $oTmCtx->getIdProject();
-		$iFieldType = (int) tskmgr_getVariable('iFieldType', -1);
+		$iFieldType = (int) bab_rp('iFieldType', -1);
 
 		//bab_debug('iFieldType ==> ' . $iFieldType);
 		
@@ -442,8 +442,8 @@ function addModifySpecificFieldRadio($iIdProjectSpace, $iIdProject)
 	$bBaseFldProcessed = processSpecificFieldBaseClass($iIdProjectSpace, $iIdProject, BAB_TM_RADIO_FIELD);
 	if($bBaseFldProcessed)
 	{
-		$iIdField = (int) tskmgr_getVariable('iIdField', 0);
-		$iDefaultOption = (int) tskmgr_getVariable('iDefaultOption', 0);
+		$iIdField = (int) bab_rp('iIdField', 0);
+		$iDefaultOption = (int) bab_rp('iDefaultOption', 0);
 		
 		$oTmCtx =& getTskMgrContext();
 		$tblWr =& $oTmCtx->getTableWrapper();
@@ -460,7 +460,7 @@ function addModifySpecificFieldRadio($iIdProjectSpace, $iIdProject)
 			$iIdField = $db->db_insert_id();
 		}
 		
-		$aOptions = tskmgr_getVariable('aOptions', array());
+		$aOptions = bab_rp('aOptions', array());
 		
 		$skipFirst = false;
 		foreach($aOptions as $key => $value)
@@ -482,8 +482,8 @@ function addModifySpecificFieldTextOrArea($iIdProjectSpace, $iIdProject, $iField
 
 	if($bBaseFldProcessed)
 	{
-		$iIdField = (int) tskmgr_getVariable('iIdField', 0);
-		$sFieldValue = mysql_escape_string(trim(tskmgr_getVariable('sFieldValue', '')));
+		$iIdField = (int) bab_rp('iIdField', 0);
+		$sFieldValue = mysql_escape_string(trim(bab_rp('sFieldValue', '')));
 		if(0 == $iIdField)
 		{
 			$db =& $tblWr->getDbObject();
@@ -512,11 +512,11 @@ function addModifySpecificFieldTextOrArea($iIdProjectSpace, $iIdProject, $iField
 
 function processSpecificFieldBaseClass($iIdProjectSpace, $iIdProject, $iFieldType)
 {
-	$sFieldName = trim(tskmgr_getVariable('sFieldName', ''));
+	$sFieldName = trim(bab_rp('sFieldName', ''));
 	
 	if(0 < strlen($sFieldName))
 	{
-		$iIdField = (int) tskmgr_getVariable('iIdField', 0);
+		$iIdField = (int) bab_rp('iIdField', 0);
 		
 		$isValid = isNameUsedInProjectAndProjectSpace(BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL, $iIdProjectSpace, $iIdProject, $iIdField, $sFieldName);
 		$sFieldName = mysql_escape_string($sFieldName);
@@ -572,7 +572,7 @@ function deleteSpecificField()
 {
 	bab_debug('deleteSpecificField ==> il manque les babIsAccessValid');
 	
-	$sDeletableField = trim(tskmgr_getVariable('sDeletableField', ''));
+	$sDeletableField = trim(bab_rp('sDeletableField', ''));
 	
 	$aIdFldToDelete = explode(',', $sDeletableField);
 	

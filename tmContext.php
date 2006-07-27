@@ -59,9 +59,9 @@ class BAB_TM_Context
 		global $babBody;
 
 		$this->m_oTblWr = new BAB_TableWrapper('');
-		$this->m_iIdProjectSpace = (int) tskmgr_getVariable('iIdProjectSpace', 0);
-		$this->m_iIdProject = (int) tskmgr_getVariable('iIdProject', 0);
-		$this->m_iIdTask = (int) tskmgr_getVariable('iIdTask', 0);
+		$this->m_iIdProjectSpace = (int) bab_rp('iIdProjectSpace', 0);
+		$this->m_iIdProject = (int) bab_rp('iIdProject', 0);
+		$this->m_iIdTask = (int) bab_rp('iIdTask', 0);
 		$this->m_iIdDelegation = $babBody->currentAdmGroup;
 		
 		$this->m_oWorkingHours = null;

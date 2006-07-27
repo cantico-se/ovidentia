@@ -36,7 +36,7 @@ function displayCategoriesList()
 	if(0 != $iIdProjectSpace)
 	{
 		$iIdProject = $oTmCtx->getIdProject();
-		$iIdCategory = (int) tskmgr_getVariable('iIdCategory', 0);
+		$iIdCategory = (int) bab_rp('iIdCategory', 0);
 		
 		class BAB_List extends BAB_BaseFormProcessing
 		{
@@ -71,7 +71,7 @@ function displayCategoriesList()
 				$this->set_data('refCount', 0);
 
 				$this->set_data('sCategoryLink', '#');
-				$this->set_data('tg', tskmgr_getVariable('tg', ''));
+				$this->set_data('tg', bab_rp('tg', ''));
 				$this->set_data('deleteCategoryIdx', BAB_TM_IDX_DISPLAY_DELETE_CATEGORY_FORM);
 				
 				$this->m_oTmCtx =& getTskMgrContext();
@@ -98,7 +98,7 @@ function displayCategoriesList()
 					$iIdProjectSpace = $this->m_oTmCtx->getIdProjectSpace();
 					$iIdProject = $this->m_oTmCtx->getIdProject();
 					
-					$tg = tskmgr_getVariable('tg', '');
+					$tg = bab_rp('tg', '');
 					
 					$this->set_data('sCategoryLink', $GLOBALS['babUrlScript'] . '?tg=' . $tg .
 						'&iIdProjectSpace=' . $iIdProjectSpace . '&iIdProject=' . $iIdProject .
@@ -109,7 +109,7 @@ function displayCategoriesList()
 				return false;
 			}
 		}	
-		$tg = tskmgr_getVariable('tg', '');
+		$tg = bab_rp('tg', '');
 					
 		$itemMenu = array(
 			array(
@@ -166,7 +166,7 @@ function displayCategoryForm()
 	
 	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
 	$iIdProject = $oTmCtx->getIdProject();
-	$iIdCategory = (int) tskmgr_getVariable('iIdCategory', 0);
+	$iIdCategory = (int) bab_rp('iIdCategory', 0);
 		
 	class BAB_Category extends BAB_BaseFormProcessing
 	{
@@ -180,9 +180,9 @@ function displayCategoryForm()
 			$this->set_caption('delete', bab_translate("Delete"));
 			$this->set_caption('modify', bab_translate("Modify"));
 			
-			$this->set_data('sName', tskmgr_getVariable('sCategoryName', ''));
-			$this->set_data('sDescription', tskmgr_getVariable('sCategoryDescription', ''));
-			$this->set_data('sColor', tskmgr_getVariable('sColor', ''));
+			$this->set_data('sName', bab_rp('sCategoryName', ''));
+			$this->set_data('sDescription', bab_rp('sCategoryDescription', ''));
+			$this->set_data('sColor', bab_rp('sColor', ''));
 			$this->set_data('iIdProjectSpace', $iIdProjectSpace);
 			$this->set_data('iIdProject', $iIdProject);
 			$this->set_data('iRefCount', 0);
@@ -194,8 +194,8 @@ function displayCategoryForm()
 			$this->set_data('delAction', '');
 			
 
-			$this->set_data('tg', tskmgr_getVariable('tg', ''));
-			$this->set_data('iIdCategory', (int) tskmgr_getVariable('iIdCategory', 0));
+			$this->set_data('tg', bab_rp('tg', ''));
+			$this->set_data('iIdCategory', (int) bab_rp('iIdCategory', 0));
 			$this->get_data('iIdCategory', $iIdCategory);
 			
 			
@@ -238,7 +238,7 @@ function displayCategoryForm()
 	
 	$tab_caption = ($iIdCategory == 0) ? bab_translate("Add a category") : bab_translate("Edition of a category");
 	
-	$tg = tskmgr_getVariable('tg', '');
+	$tg = bab_rp('tg', '');
 	
 	$itemMenu = array(
 		array(
@@ -271,7 +271,7 @@ function displayDeleteCategoryForm()
 {
 	global $babBody;
 
-	$aDeletableObjects = tskmgr_getVariable('aDeletableObjects', array());
+	$aDeletableObjects = bab_rp('aDeletableObjects', array());
 
 	$sDeletableObjects = '\'' . implode('\',\'', array_unique($aDeletableObjects)) . '\'';
 
@@ -281,7 +281,7 @@ function displayDeleteCategoryForm()
 	$oTmCtx =& getTskMgrContext();
 	$bf->set_data('iIdProjectSpace', $oTmCtx->getIdProjectSpace());
 	$bf->set_data('iIdProject', $oTmCtx->getIdProject());
-	$bf->set_data('tg', tskmgr_getVariable('tg', ''));
+	$bf->set_data('tg', bab_rp('tg', ''));
 
 	if('\'\'' != $sDeletableObjects)
 	{	
@@ -352,17 +352,17 @@ function addModifyCategory()
 	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
 	$iIdProject = $oTmCtx->getIdProject();
 
-	$sCategoryName = trim(tskmgr_getVariable('sCategoryName', ''));
-	$sColor = tskmgr_getVariable('sColor', '');
+	$sCategoryName = trim(bab_rp('sCategoryName', ''));
+	$sColor = bab_rp('sColor', '');
 	
 	if(0 < strlen($sCategoryName))
 	{
-		$iIdCategory = (int) tskmgr_getVariable('iIdCategory', 0);
+		$iIdCategory = (int) bab_rp('iIdCategory', 0);
 		
 		$isValid = isNameUsedInProjectAndProjectSpace(BAB_TSKMGR_CATEGORIES_TBL, $iIdProjectSpace, $iIdProject, $iIdCategory, $sCategoryName);
 		$sCategoryName = mysql_escape_string($sCategoryName);
 
-		$sCategoryDescription = mysql_escape_string(trim(tskmgr_getVariable('sCategoryDescription', '')));
+		$sCategoryDescription = mysql_escape_string(trim(bab_rp('sCategoryDescription', '')));
 		
 		if($isValid)
 		{
@@ -415,7 +415,7 @@ function deleteCategory()
 {
 	bab_debug('deleteCategory ==> il manque les babIsAccessValid');
 	
-	$sDeletableObjects = trim(tskmgr_getVariable('sDeletableObjects', ''));
+	$sDeletableObjects = trim(bab_rp('sDeletableObjects', ''));
 	
 	$aIdCategoryToDelete = explode(',', $sDeletableObjects);
 	
