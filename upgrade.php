@@ -6857,9 +6857,9 @@ function upgrade585to586()
 				INDEX `idUser`(`idUser`)) TYPE=MyISAM
 		");
 		
-		if(false == $res)
-		{
-			return $res;
+		if( !$res){
+			$ret = "Creation of <b>".BAB_TSKMGR_PERSONNAL_TASKS_CONFIGURATION_TBL."</b> table failed !<br>";
+			return $ret;
 		}
 	}
 
@@ -6876,17 +6876,16 @@ function upgrade585to586()
 				INDEX `idOwner`(`idOwner`)) TYPE=MyISAM
 		");
 		
-		if(false == $res)
-		{
-			return $res;
+		if( !$res){
+			$ret = "Creation of <b>".BAB_TSKMGR_TASKS_INFO_TBL."</b> table failed !<br>";
+			return $ret;
 		}
 	}
 	
 	$db->db_query("ALTER TABLE `" . BAB_TSKMGR_TASKS_TBL . "` CHANGE `taskNumber` `taskNumber` VARCHAR( 9 ) NOT NULL DEFAULT '0'");
 	
-	$arr = $db->db_fetch_array($db->db_query("DESCRIBE `" . BAB_TSKMGR_TASKS_TBL . "`idOwner"));
-	if( $arr[0] == 'idOwner' )
-	{
+
+	if (bab_isTableField(BAB_TSKMGR_TASKS_TBL, 'idOwner')) {
 		$db->db_query("ALTER TABLE `" . BAB_TSKMGR_TASKS_TBL . "` DROP `idOwner`");
 	}
 
@@ -6902,11 +6901,19 @@ function upgrade585to586()
 
 function upgrade586to587()
 {
-	$arr = $db->db_fetch_array($db->db_query("DESCRIBE `" . BAB_TSKMGR_TASKS_TBL . "`shortDescription`"));
-	if( $arr[0] != 'shortDescription' )
-	{
-		$db->db_query("ALTER TABLE `" . BAB_TSKMGR_TASKS_TBL . "` ADD `shortDescription` VARCHAR( 255 ) NOT NULL AFTER `description`");
+	$ret = "";
+	$db = & $GLOBALS['babDB'];
+
+	if (!bab_isTableField(BAB_TSKMGR_TASKS_TBL, 'shortDescription')) {
+		$res = $db->db_query("ALTER TABLE `" . BAB_TSKMGR_TASKS_TBL . "` ADD `shortDescription` VARCHAR( 255 ) NOT NULL AFTER `description`");
+
+		if( !$res){
+			$ret = "Creation of <b>".BAB_TSKMGR_TASKS_TBL.".shortDescription</b> field failed !<br>";
+			return $ret;
+		}
 	}
+
+	return $ret;
 }
 
 ?>
