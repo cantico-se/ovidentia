@@ -492,7 +492,12 @@ function indexAllFmFiles($status, $prepare) {
 		$obj->addFilesToIndex($files);
 	}
 
-	return indexAllFmFiles_end($status);
+	foreach($rights as $f => $arr) {
+		$obj->setIdObjectFile($f, $arr['id'], $arr['id_owner']);
+	}
+
+	indexAllFmFiles_end($status);
+	return sprintf(bab_translate("Indexation of %d files in the file manager"), count($files));
 }
 
 
@@ -500,11 +505,10 @@ function indexAllFmFiles($status, $prepare) {
 
 function indexAllFmFiles_end($status) {
 
+	$db = &$GLOBALS['babDB'];
 	$obj = new bab_indexObject('bab_files');
 
-	foreach($rights as $f => $arr) {
-		$obj->setIdObjectFile($f, $arr['id'], $arr['id_owner']);
-	}
+	
 
 	$n = 0;
 
@@ -518,7 +522,7 @@ function indexAllFmFiles_end($status) {
 	$n += $db->db_affected_rows($res);
 
 
-	$db->db_query("
+	$res = $db->db_query("
 	
 		UPDATE ".BAB_FM_FILESVER_TBL." SET index_status='".BAB_INDEX_STATUS_INDEXED."'
 		WHERE 
