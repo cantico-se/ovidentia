@@ -403,8 +403,9 @@ function notifyFileAuthor($subject, $version, $author, $filename)
 /**
  * Index all files of file manager
  * @param array $status
+ * @param boolean $prepare
  */
-function indexAllFmFiles($status) {
+function indexAllFmFiles($status, $prepare) {
 	
 	$db = &$GLOBALS['babDB'];
 
@@ -481,22 +482,40 @@ function indexAllFmFiles($status) {
 	$obj = new bab_indexObject('bab_files');
 	
 	if (in_array(BAB_INDEX_STATUS_INDEXED, $status)) {
-		$obj->resetIndex($files);
+		if ($prepare) {
+			$obj->prepareIndex($files);
+			return sprintf(bab_translate("Indexation of %d files in the file manager in batch mode"), $n);
+		} else {
+			$obj->resetIndex($files);
+		}
 	} else {
 		$obj->addFilesToIndex($files);
 	}
+
+	return indexAllFmFiles_end($status);
+}
+
+
+
+
+function indexAllFmFiles_end($status) {
+
+	$obj = new bab_indexObject('bab_files');
 
 	foreach($rights as $f => $arr) {
 		$obj->setIdObjectFile($f, $arr['id'], $arr['id_owner']);
 	}
 
-	$db->db_query("
+	$n = 0;
+
+	$res = $db->db_query("
 	
 		UPDATE ".BAB_FILES_TBL." SET index_status='".BAB_INDEX_STATUS_INDEXED."'
 		WHERE 
 			index_status IN('".implode("','",$status)."')
-		
 	");
+
+	$n += $db->db_affected_rows($res);
 
 
 	$db->db_query("
@@ -504,11 +523,11 @@ function indexAllFmFiles($status) {
 		UPDATE ".BAB_FM_FILESVER_TBL." SET index_status='".BAB_INDEX_STATUS_INDEXED."'
 		WHERE 
 			index_status IN('".implode("','",$status)."')
-		
 	");
 
+	$n += $db->db_affected_rows($res);
 
-	return sprintf(bab_translate("Indexation of %d files in the file manager"), count($files));
+	return sprintf(bab_translate("Indexation of %d files in the file manager"), $n);
 }
 
 ?>

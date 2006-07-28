@@ -93,7 +93,40 @@ class bab_indexObject {
 		$obj = new bab_indexFilesCls( $files, $this->object);
 		return $obj->indexFiles();
 	}
-	
+
+
+
+	/**
+	 * Buid environement for indexation by command line
+	 * Once the indexation is done, required file is included and the callback function is called
+	 * Use the callback to set the flags coorectly in the database for the files
+	 * The function_parameter is the only parameter given to the callback function
+	 * this value will be serialized if necessary, so non serializable objects are forbidden
+	 * @param array $files full path to the file
+	 * @param string $require_once file to include
+	 * @param string|array $function callback
+	 * @param mixed $function_parameter
+	 * @return string
+	 */
+
+	/*
+	function prepareIndex($files, $require_once, $function, $function_parameter) {
+
+		if ($this->disabled) {
+			return false;
+		}
+
+		switch($this->engineName) {
+			case 'swish':
+				include_once $GLOBALS['babInstallPath'].'utilit/searchincl.swish.php';
+				break;
+		}
+
+		$obj = new bab_indexFilesCls( $files, $this->object);
+		return $obj->indexFiles();
+	}
+	*/
+
 	
 	/**
 	 * Add files into current index for the object
@@ -117,6 +150,7 @@ class bab_indexObject {
 		$obj = new bab_indexFilesCls( $files, $this->object);
 		return $obj->addFilesToIndex();
 	}
+
 
 
 	/**

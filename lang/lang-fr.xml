@@ -2191,4 +2191,5 @@
 <string id="Change the status for all the files">Modifier l'état d'indexation de tout les fichiers</string>
 <string id="Articles files">Fichiers liés aux articles</string>
 <string id="Forum post files">Fichiers liés aux contributions de forum</string>
+<string id="Indexation of %d files in the file manager in batch mode">Indexation de %d fichiers dans le gestionnaire de fichiers en mode script</string>
 </fr>

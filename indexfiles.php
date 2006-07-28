@@ -47,11 +47,13 @@ function bab_indexJobs($idx, $object) {
 
 	if ($allowed_ip === $_SERVER['REMOTE_ADDR']) {
 
+		$prepare = isset($_GET['prepare']);
+
 		switch($object) {
 			
 			case 'bab_files':
 				include_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
-				$job = indexAllFmFiles($status);
+				$job = indexAllFmFiles($status, $prepare);
 				break;
 
 			case 'bab_art_files':
