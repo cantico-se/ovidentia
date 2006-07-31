@@ -85,6 +85,12 @@ class BAB_DateTime
 			$this->_iSeconds, $this->_iMonth, $this->_iDay, $this->_iYear));
 	}
 	
+	function getIsoDate()
+	{
+		return date("Y-m-d", mktime($this->_iHours, $this->_iMinutes, 
+			$this->_iSeconds, $this->_iMonth, $this->_iDay, $this->_iYear));
+	}
+	
 	function getYear()
 	{
 		return $this->_iYear;

@@ -26,16 +26,7 @@
 	define('BAB_RAW_2_HTML_DATA', 0x0);
 	define('BAB_RAW_2_HTML_CAPTION', 0x1);
 
-/*	
-	function bab_rp($sName, $defaultValue)
-	{
-		return isset($_POST[$sName]) ? $_POST[$sName] : 
-			(isset($_GET[$sName]) ? $_GET[$sName] :  
-			(isset($_REQUEST[$sName]) ? $_REQUEST[$sName] : $defaultValue)
-			);
-	}
-//*/
-	
+
 	class BAB_RawToHtml
 	{
 		function BAB_RawToHtml()

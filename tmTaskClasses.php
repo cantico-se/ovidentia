@@ -957,35 +957,40 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 			$this->m_sEndDate 				.= (0 != strlen($this->m_sEndDate)) ? ' 23:59:59' : '';
 
 
-//Si il y a un predecesseur
-if(!is_null($aTask))
-{
-	if(BAB_TM_START_TO_START == $this->m_iLinkType)
-	{
-		$this->m_sStartDate = $aTask['sStartDate'];
-	}
-	else if(BAB_TM_END_TO_START == $this->m_iLinkType)
-	{
-		if(0 != $aTask['iDuration'])
-		{
-			$oStartDate = BAB_DateTime::fromIsoDateTime($aTask['sStartDate']);
-			$oStartDate->add($aTask['iDuration']);
-			$this->m_sStartDate = date('Y-m-d H:i:s', $oStartDate->getTimeStamp());
-		}
-		else 
-		{
-			$oStartDate = BAB_DateTime::fromIsoDateTime($aTask['sEndDate']);
-			$oStartDate->init($oStartDate->_iYear, $oStartDate->_iMonth, $oStartDate->_iDay, 0, 0, 0);
-			$this->m_sStartDate = date('Y-m-d H:i:s', $oStartDate->getTimeStamp());
-		}
-	}
-	else 
-	{
-		bab_debug(__FUNCTION__ . ': LinkType error');
-	}
-}
+			//Si il y a un predecesseur
+			if(!is_null($aTask))
+			{
+				if(BAB_TM_START_TO_START == $this->m_iLinkType)
+				{
+					$this->m_sStartDate = $aTask['sStartDate'];
+				}
+				else if(BAB_TM_END_TO_START == $this->m_iLinkType)
+				{
+					if(0 != $aTask['iDuration'])
+					{
+						$oStartDate = BAB_DateTime::fromIsoDateTime($aTask['sStartDate']);
+						$oStartDate->add($aTask['iDuration']);
+						$this->m_sStartDate = date('Y-m-d H:i:s', $oStartDate->getTimeStamp());
+					}
+					else 
+					{
+						$oStartDate = BAB_DateTime::fromIsoDateTime($aTask['sEndDate']);
+						$oStartDate->init($oStartDate->_iYear, $oStartDate->_iMonth, $oStartDate->_iDay, 0, 0, 0);
+						$this->m_sStartDate = date('Y-m-d H:i:s', $oStartDate->getTimeStamp());
+					}
+				}
+				else 
+				{
+					bab_debug(__FUNCTION__ . ': LinkType error');
+				}
+			}
 
+			if(BAB_TM_DURATION === $iDurationType && 0 == strlen(trim(bab_rp('sPlannedEndDate', ''))))
+			{
+				$this->computeEndDate();
+			}
 
+/*			
 			//Si c'est par durée et qu'il n'y a pas de date butoir de fin
 			if($this->m_iDuration > 0 && 0 == strlen(trim(bab_rp('sPlannedEndDate', ''))))
 			{
@@ -994,8 +999,9 @@ if(!is_null($aTask))
 				$oEndDate->init($oEndDate->_iYear, $oEndDate->_iMonth, $oEndDate->_iDay, 23, 59, 59);
 				$this->m_sEndDate = date('Y-m-d H:i:s', $oEndDate->getTimeStamp());
 			}
+//*/
 			
-//			bab_debug(__FUNCTION__ . ' sStart ==> ' . $this->m_sStartDate . ' sEnd ==> ' . $this->m_sEndDate);
+			//bab_debug(__FUNCTION__ . ' sStart ==> ' . $this->m_sStartDate . ' sEnd ==> ' . $this->m_sEndDate);
 			
 			$this->m_iIdTaskResponsible = (int) bab_rp('iIdTaskResponsible', -1);
 
@@ -1014,6 +1020,40 @@ if(!is_null($aTask))
 			}
 		}
 		
+		function computeEndDate()
+		{
+			include_once $GLOBALS['babInstallPath'] . 'utilit/nwdaysincl.php';
+			include_once $GLOBALS['babInstallPath'] . 'utilit/calapi.php';
+			
+			$sWorkingDays = '';
+			bab_calGetWorkingDays($GLOBALS['BAB_SESS_USERID'], $sWorkingDays);
+			$aWorkingDays = array_flip(explode(',', $sWorkingDays));
+			
+			$iDuration = $this->m_iDuration;
+			$oStartDate = BAB_DateTime::fromIsoDateTime($this->m_sStartDate);
+			$oEndDate = BAB_DateTime::fromIsoDateTime($this->m_sStartDate);
+			
+			$iWorkingDaysCount = count($aWorkingDays);
+			
+			do
+			{
+				$aNWD = bab_getNonWorkingDaysBetween($oEndDate->getTimeStamp(), $oEndDate->getTimeStamp());
+				if(isset($aWorkingDays[$oEndDate->getDayOfWeek()]) && 0 == count($aNWD))
+				{
+					$iDuration--;	
+				}
+				$oEndDate->add(1);
+			}
+			while(0 != $iDuration && $iWorkingDaysCount > 0);
+			
+			$sStartDate = $oStartDate->getIsoDateTime();
+			
+			$oEndDate->add(-1);
+			$oEndDate->init($oEndDate->_iYear, $oEndDate->_iMonth, $oEndDate->_iDay, 23, 59, 59);
+			$this->m_sEndDate = $oEndDate->getIsoDateTime();
+			//bab_debug(__FUNCTION__ . ' sStart ==> ' . $this->m_sStartDate . ' sEnd ==> ' . $this->m_sEndDate);
+		}
+
 		function isTaskNumberValid()
 		{
 			if(strlen($this->m_sTaskNumber) > 0)
