@@ -167,7 +167,7 @@ function bab_getNonWorkingDaysBetween($from, $to)
 	$id_site = & $GLOBALS['babBody']->babsite['id'];
 	$result = array();
 
-	for($year = $y_from; $year< $y_to; $year++)
+	for($year = $y_from; $year<= $y_to; $year++)
 		{
 		$res = $db->db_query("SELECT * FROM ".BAB_SITES_NONWORKING_DAYS_TBL." WHERE id_site='".$id_site."' AND YEAR(nw_day) = '".$year."'");
 		if ($db->db_num_rows($res) == 0)
