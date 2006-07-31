@@ -24,10 +24,10 @@
 
 define('BAB_DATETIME_YEAR', 0);
 define('BAB_DATETIME_MONTH', 1);
-define('BAB_DATETIME_DAY', 3);
-define('BAB_DATETIME_HOUR', 4);
-define('BAB_DATETIME_MINUTE', 5);
-define('BAB_DATETIME_SECOND', 6);
+define('BAB_DATETIME_DAY', 2);
+define('BAB_DATETIME_HOUR', 3);
+define('BAB_DATETIME_MINUTE', 4);
+define('BAB_DATETIME_SECOND', 5);
 
 
 class BAB_DateTime
