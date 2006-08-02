@@ -171,7 +171,7 @@ class bab_Template
 						'/\{\s+(\w+)\s+\}/',
 						'/\{\s+(\w+)\[(\w+)\]\s+\}/');
 		$replace = array('<?php if ((isset(' . $templateObjectName . '->$1) ? ' . $templateObjectName . '->$1 : (isset($GLOBALS["$1"]) ? $GLOBALS["$1"] : "")) $2$4$3$4): ?>',
-						 '<?php if ((isset(' . $templateObjectName . '->$1["$2"]) ? ' . $templateObjectName . '->$1["$2"] : "")) $3$5$4$5): ?>',
+						 '<?php if ((isset(' . $templateObjectName . '->$1["$2"]) ? ' . $templateObjectName . '->$1["$2"] : "") $3$5$4$5): ?>',
 						 '<?php elseif ((isset(' . $templateObjectName . '->$1) ? ' . $templateObjectName . '->$1 : (isset($GLOBALS["$1"]) ? $GLOBALS["$1"] : "")) $2$4$3$4): ?>',
 						 '<?php else: ?>',
 						 '<?php endif; ?>',
