@@ -161,6 +161,7 @@ class bab_Template
 	function _parseTemplate($templateString, $templateObjectName)
 	{
 		$search = array('/<!--#if\s+(\w+)(?:\s+"(?:(== |\!= |<= |>= |< |> )\s*([^"]+))("))?\s+-->/',
+						'/<!--#if\s+(\w+)\[(\w+)\](?:\s+"(?:(== |\!= |<= |>= |< |> )\s*([^"]+))("))?\s+-->/',
 						'/<!--#elseif\s+(\w+)(?:\s+"(?:(== |\!= |<= |>= |< |> )\s*([^"]+))("))?\s+-->/',
 						'/<!--#else\s+(?:(?:\w+)\s+)?-->/',
 						'/<!--#endif\s+(?:(?:\w+)\s+)?-->/',
@@ -170,6 +171,7 @@ class bab_Template
 						'/\{\s+(\w+)\s+\}/',
 						'/\{\s+(\w+)\[(\w+)\]\s+\}/');
 		$replace = array('<?php if ((isset(' . $templateObjectName . '->$1) ? ' . $templateObjectName . '->$1 : (isset($GLOBALS["$1"]) ? $GLOBALS["$1"] : "")) $2$4$3$4): ?>',
+						 '<?php if ((isset(' . $templateObjectName . '->$1["$2"]) ? ' . $templateObjectName . '->$1["$2"] : "")) $3$5$4$5): ?>',
 						 '<?php elseif ((isset(' . $templateObjectName . '->$1) ? ' . $templateObjectName . '->$1 : (isset($GLOBALS["$1"]) ? $GLOBALS["$1"] : "")) $2$4$3$4): ?>',
 						 '<?php else: ?>',
 						 '<?php endif; ?>',
