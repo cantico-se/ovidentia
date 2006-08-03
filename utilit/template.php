@@ -35,6 +35,7 @@ function &bab_TemplateCache_getStore()
 	return $cacheStore;
 }
 
+
 /**
  * This class is used to cache the parsed templates in memory.
  */
@@ -75,6 +76,26 @@ class bab_TemplateCache
 	}
 }
 
+
+
+function bab_templateHighlightSyntax($templateString, $highlightLineNumber = -1)
+{
+	$lines = preg_split('/\n|\r\n|\r/', $templateString);
+	
+	$highlightedTemplateString = '<ol>';
+	$lineNumber = 1;
+	foreach ($lines as $line) {
+		if ($lineNumber == $highlightLineNumber) {
+			$highlightedTemplateString .= '<li style="background-color: pink">' . htmlEntities($line) . '</li>';
+		} else {
+			$highlightedTemplateString .= '<li style="background-color: lightgrey">' . htmlEntities($line) . '</li>';
+		}
+		$lineNumber++;
+	}
+	$highlightedTemplateString .= '</ol>';
+	
+	return $highlightedTemplateString;
+}
 
 /**
  * This class implements the template engine of Ovidentia. It compiles the templates to
@@ -132,8 +153,16 @@ class bab_Template
 		}
 		ob_start();
 		if (eval('?>' . $parsedTemplate) === false) {
-			bab_debug(htmlEntities($parsedTemplate));
-			bab_debug(ob_get_contents());
+			$errorMessage = ob_get_contents();
+			bab_debug($errorMessage);
+			if (preg_match('/line ([0-9]+)$/', strip_tags($errorMessage), $matches)) {
+				$lineNumber = $matches[1];
+			} else {
+				$lineNumber = -1;
+			}
+			var_dump($matches);
+			bab_debug(bab_templateHighlightSyntax($templateString, $lineNumber));
+			bab_debug(bab_templateHighlightSyntax($parsedTemplate, $lineNumber));
 			$processedTemplate = '';
 		} else {
 			$processedTemplate = ob_get_contents();
