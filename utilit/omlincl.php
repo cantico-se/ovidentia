@@ -4685,8 +4685,11 @@ class bab_OvmlSoap extends bab_handler
 				{
 				$args['args'][] = array( 'name'=>$key, 'value' => $val);
 				}
+
+			
 			include_once $GLOBALS['babInstallPath']."utilit/nusoap/nusoap.php";
-			$soapclient = new soapclient($apiserver);
+
+			$soapclient = new soapclient_b($apiserver);
 			$this->IdEntries = $soapclient->call('babSoapOvml', $args, '');
 			$err = $soapclient->getError();
 			if( $debug )
@@ -4773,8 +4776,9 @@ class bab_Soap extends bab_handler
 				{
 				$args[$key] = $val;
 				}
+
 			include_once $GLOBALS['babInstallPath']."utilit/nusoap/nusoap.php";
-			$soapclient = new soapclient($apiserver);
+			$soapclient = new soapclient_b($apiserver);
 			$this->IdEntries = $soapclient->call($apicall, $args, $apinamespace);
 			$err = $soapclient->getError();
 			if( $debug )
