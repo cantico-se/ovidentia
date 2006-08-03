@@ -131,10 +131,16 @@ class bab_Template
 			bab_TemplateCache::set($filename, $section, $parsedTemplate);
 		}
 		ob_start();
-		eval('?>' . $parsedTemplate);
-		$processedTemplate = ob_get_contents();
+		if (eval('?>' . $parsedTemplate) === false) {
+			bab_debug(htmlEntities($parsedTemplate));
+			bab_debug(ob_get_contents());
+			$processedTemplate = '';
+		} else {
+			$processedTemplate = ob_get_contents();
+		}
 		ob_end_clean();
 		return $processedTemplate;
+	//	return htmlEntities($templateString) . '<br>' . htmlEntities($parsedTemplate) .  '[' . $processedTemplate . ']';
 	}
 
 	/**
@@ -162,9 +168,8 @@ class bab_Template
 	{
 		$search = array('/<!--#if\s+(\w+)(?:\s+"(?:(== |\!= |<= |>= |< |> )\s*([^"]+))("))?\s+-->/',
 						'/<!--#if\s+(\w+)\[(\w+)\](?:\s+"(?:(== |\!= |<= |>= |< |> )\s*([^"]+))("))?\s+-->/',
-						'/<!--#elseif\s+(\w+)(?:\s+"(?:(== |\!= |<= |>= |< |> )\s*([^"]+))("))?\s+-->/',
-						'/<!--#else\s+(?:(?:\w+)\s+)?-->/',
-						'/<!--#endif\s+(?:(?:\w+)\s+)?-->/',
+						'/<!--#else\s+(?:(?:[A-Za-z0-9_\[\]]+)\s+)?-->/',
+						'/<!--#endif\s+(?:(?:[A-Za-z0-9_\[\]]+)\s+)?-->/',
 						'/<!--#in\s+(\w+)\s+-->/',
 						'/<!--#endin\s+(?:(?:\w+)\s+)?-->/',
 						'/\{\s+\$OVML\(([^)]+)\)\s+\}/',
@@ -172,7 +177,6 @@ class bab_Template
 						'/\{\s+(\w+)\[(\w+)\]\s+\}/');
 		$replace = array('<?php if ((isset(' . $templateObjectName . '->$1) ? ' . $templateObjectName . '->$1 : (isset($GLOBALS["$1"]) ? $GLOBALS["$1"] : "")) $2$4$3$4): ?>',
 						 '<?php if ((isset(' . $templateObjectName . '->$1["$2"]) ? ' . $templateObjectName . '->$1["$2"] : "") $3$5$4$5): ?>',
-						 '<?php elseif ((isset(' . $templateObjectName . '->$1) ? ' . $templateObjectName . '->$1 : (isset($GLOBALS["$1"]) ? $GLOBALS["$1"] : "")) $2$4$3$4): ?>',
 						 '<?php else: ?>',
 						 '<?php endif; ?>',
 						 '<?php while (' . $templateObjectName . '->$1($skip = false)): if ($skip) continue; ?>',
