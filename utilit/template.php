@@ -78,17 +78,38 @@ class bab_TemplateCache
 
 
 
+function bab_phpHighlightSyntax($templateString, $highlightLineNumber = -1)
+{
+	$lines = preg_split('/\n|\r\n|\r/', $templateString);
+	
+	$highlightedTemplateString = '<ol style="font-weight: normal">';
+	$lineNumber = 1;
+	foreach ($lines as $line) {
+		$line = highlight_string($line, true);
+		if ($lineNumber == $highlightLineNumber) {
+			$highlightedTemplateString .= '<li style="font-weight: bold; padding: 2px; border-bottom: 1px solid white; background-color: #FFBBBB">' . $line . '</li>';
+		} else {
+			$highlightedTemplateString .= '<li style="padding: 2px; border-bottom: 1px solid white; background-color: #F7F7F7">' . $line . '</li>';
+		}
+		$lineNumber++;
+	}
+	$highlightedTemplateString .= '</ol>';
+	
+	return $highlightedTemplateString;
+}
+
 function bab_templateHighlightSyntax($templateString, $highlightLineNumber = -1)
 {
 	$lines = preg_split('/\n|\r\n|\r/', $templateString);
 	
-	$highlightedTemplateString = '<ol>';
+	$highlightedTemplateString = '<ol style="font-weight: normal">';
 	$lineNumber = 1;
 	foreach ($lines as $line) {
+		$line = preg_replace('/(&lt;!--#(?:if|else|endif|in|endin)\s+(?:(?:[A-Za-z0-9_\[\]]+)\s+)?--&gt;)/', '<span style="color: #4466DD; font-weight: bold">$1</span>', htmlEntities($line));
 		if ($lineNumber == $highlightLineNumber) {
-			$highlightedTemplateString .= '<li style="background-color: pink">' . htmlEntities($line) . '</li>';
+			$highlightedTemplateString .= '<li style="font-weight: bold; padding: 2px; border-bottom: 1px solid white; background-color: #FFBBBB">' . $line . '</li>';
 		} else {
-			$highlightedTemplateString .= '<li style="background-color: lightgrey">' . htmlEntities($line) . '</li>';
+			$highlightedTemplateString .= '<li style="padding: 2px; border-bottom: 1px solid white; background-color: #F7F7F7">' . $line . '</li>';
 		}
 		$lineNumber++;
 	}
@@ -128,7 +149,37 @@ class bab_Template
 		}
 		return $templateString;
 	}
+
 	
+	/**
+	 * Format a template so that it can be displayed for debugging purpose.
+	 * Returns a string containing the formatted template.
+	 * @param	string	$templateString			The Ovidentia template.
+	 * @param	int		$highlightLineNumber	The line number to highlight or -1 if no line to hightlight.
+	 * @return	string							The formatted template.
+	 * @access public
+	 * @static
+	 */
+	function highlightSyntax($templateString, $highlightLineNumber = -1)
+	{
+		$lines = preg_split('/\n|\r\n|\r/', $templateString);
+		
+		$highlightedTemplateString = '<ol style="font-weight: normal">';
+		$lineNumber = 1;
+		foreach ($lines as $line) {
+			$line = preg_replace('/(&lt;!--#(?:if|else|endif|in|endin)\s+(?:(?:[A-Za-z0-9_\[\]]+)\s+)?--&gt;)/', '<span style="color: #4466DD; font-weight: bold">$1</span>', htmlEntities($line));
+			if ($lineNumber == $highlightLineNumber) {
+				$highlightedTemplateString .= '<li style="font-weight: bold; padding: 2px; border-bottom: 1px solid white; background-color: #FFBBBB">' . $line . '</li>';
+			} else {
+				$highlightedTemplateString .= '<li style="padding: 2px; border-bottom: 1px solid white; background-color: #F7F7F7">' . $line . '</li>';
+			}
+			$lineNumber++;
+		}
+		$highlightedTemplateString .= '</ol>';
+		
+		return $highlightedTemplateString;
+	}
+
 	/**
 	 * Returns a string containing the processed template.
 	 * @param	object	$template	The template object.
@@ -161,15 +212,14 @@ class bab_Template
 				$lineNumber = -1;
 			}
 			var_dump($matches);
-			bab_debug(bab_templateHighlightSyntax($templateString, $lineNumber));
-			bab_debug(bab_templateHighlightSyntax($parsedTemplate, $lineNumber));
+			bab_debug('Template :<br \>' . bab_Template::highlightSyntax($templateString, $lineNumber));
+			bab_debug('Parsed template :<br \>' . bab_Template::highlightSyntax($parsedTemplate, $lineNumber));
 			$processedTemplate = '';
 		} else {
 			$processedTemplate = ob_get_contents();
 		}
 		ob_end_clean();
 		return $processedTemplate;
-	//	return htmlEntities($templateString) . '<br>' . htmlEntities($parsedTemplate) .  '[' . $processedTemplate . ']';
 	}
 
 	/**
@@ -195,8 +245,8 @@ class bab_Template
 	 */
 	function _parseTemplate($templateString, $templateObjectName)
 	{
-		$search = array('/<!--#if\s+(\w+)(?:\s+"(?:(== |\!= |<= |>= |< |> )\s*([^"]+))("))?\s+-->/',
-						'/<!--#if\s+(\w+)\[(\w+)\](?:\s+"(?:(== |\!= |<= |>= |< |> )\s*([^"]+))("))?\s+-->/',
+		$search = array('/<!--#if\s+(\w+)(?:\s+"(?:(\s*== \s*|\s*\!= \s*|\s*<= \s*|\s*>= \s*|\s*< \s*|\s*> \s*)\s*([^"]+))("))?\s+-->/',
+						'/<!--#if\s+(\w+)\[(\w+)\](?:\s+"(?:(\s*== \s*|\s*\!= \s*|\s*<= \s*|\s*>= \s*|\s*< \s*|\s*> \s*)\s*([^"]+))("))?\s+-->/',
 						'/<!--#else\s+(?:(?:[A-Za-z0-9_\[\]]+)\s+)?-->/',
 						'/<!--#endif\s+(?:(?:[A-Za-z0-9_\[\]]+)\s+)?-->/',
 						'/<!--#in\s+(\w+)\s+-->/',
