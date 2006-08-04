@@ -245,7 +245,7 @@ class bab_Template
 	 */
 	function _parseTemplate($templateString, $templateObjectName)
 	{
-		$search = array('/<!--#if\s+(\w+)(?:\s+"(?:\$*(== |\!= |<= |>= |< |> )\s*([^"]+))("))?\s+-->/',
+		$search = array('/<!--#if\s+(\w+)(?:\s+"(?:\s*(== |\!= |<= |>= |< |> )\s*([^"]+))("))?\s+-->/',
 						'/<!--#if\s+(\w+)\[(\w+)\](?:\s+"(?:\s*(== |\!= |<= |>= |< |> )\s*([^"]+))("))?\s+-->/',
 						'/<!--#else\s+(?:(?:[A-Za-z0-9_\[\]]+)\s+)?-->/',
 						'/<!--#endif\s+(?:(?:[A-Za-z0-9_\[\]]+)\s+)?-->/',
