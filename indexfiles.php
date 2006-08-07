@@ -58,12 +58,12 @@ function bab_indexJobs($idx, $object) {
 
 			case 'bab_art_files':
 				include_once $GLOBALS['babInstallPath'].'utilit/artincl.php';
-				$job = indexAllArtFiles($status);
+				$job = indexAllArtFiles($status, $prepare);
 				break;
 
 			case 'bab_forumsfiles':
 				include_once $GLOBALS['babInstallPath'].'utilit/forumincl.php';
-				$job = indexAllForumFiles($status);
+				$job = indexAllForumFiles($status, $prepare);
 				break;
 
 			default:	// Addon
@@ -82,6 +82,23 @@ function bab_indexJobs($idx, $object) {
 }
 
 
+
+function indexEOF() {
+
+	include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
+		
+
+	$engine = bab_searchEngineInfos();
+	foreach($engine['indexes'] as $object => $index) {
+		if (!$index['index_disabled']) {
+			$obj = new bab_indexObject($object);
+			$obj->applyIndex();
+		}
+	}
+}
+
+
+
 bab_cleanGpc();
 
 include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
@@ -98,6 +115,19 @@ if (isset($_GET['idx'])) {
 				bab_indexJobs($_GET['idx'], $object);
 			}
 		}
+	}
+}
+
+
+
+if (isset($_GET['cmd'])) {
+
+	// execute une commande appellée par le fichier bat
+
+	switch($_GET['cmd']) {
+		case 'EOF': // tester les traitements a effectuer en fin d'indexation
+				indexEOF();
+			break;
 	}
 }
 

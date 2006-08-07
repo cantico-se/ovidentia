@@ -396,7 +396,7 @@ function bab_getPostFiles($forum,$postid)
  * Index all forum files
  * @param array $status
  */
-function indexAllForumFiles($status) {
+function indexAllForumFiles($status, $prepare) {
 	
 	$db = &$GLOBALS['babDB'];
 
@@ -440,17 +440,29 @@ function indexAllForumFiles($status) {
 
 	$obj = new bab_indexObject('bab_forumsfiles');
 
-	
-	if (in_array(BAB_INDEX_STATUS_INDEXED, $status)) {
-		$obj->resetIndex($files);
-	} else {
-		$obj->addFilesToIndex($files);
-	}
-
 	foreach($rights as $f => $arr) {
 		$obj->setIdObjectFile($f, $arr['id'], $arr['id_forum']);
 	}
 
+
+	
+	if (in_array(BAB_INDEX_STATUS_INDEXED, $status)) {
+		if ($prepare) {
+			return $obj->prepareIndex($files, $GLOBALS['babInstallPath'].'utilit/forumincl.php', 'indexAllForumFiles_end', $status );
+		} else {
+			$obj->resetIndex($files);
+		}
+	} else {
+		$obj->addFilesToIndex($files);
+	}
+	
+	return indexAllForumFiles_end($status);
+}
+
+
+function indexAllForumFiles_end($status) {
+
+	$db = &$GLOBALS['babDB'];
 	$db->db_query("
 	
 		UPDATE ".BAB_FORUMSFILES_TBL." SET index_status='".BAB_INDEX_STATUS_INDEXED."'
@@ -458,11 +470,10 @@ function indexAllForumFiles($status) {
 			index_status IN('".implode("','",$status)."')
 	");
 
-	return sprintf(bab_translate("Indexation of %d files in the forums"), count($files));
+	$n = $db->db_affected_rows($res);
+
+	return sprintf(bab_translate("Indexation of %d files in the forums"), $n);
 }
-
-
-
 
 
 ?>

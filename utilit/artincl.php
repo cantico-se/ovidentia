@@ -1087,7 +1087,7 @@ function bab_newArticleDraft($idtopic, $idarticle)
  * Index all articles files
  * @param array $status
  */
-function indexAllArtFiles($status) {
+function indexAllArtFiles($status, $prepare) {
 	
 	$db = &$GLOBALS['babDB'];
 
@@ -1131,20 +1131,30 @@ function indexAllArtFiles($status) {
 
 
 	include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
-
 	$obj = new bab_indexObject('bab_art_files');
-
-	if (in_array(BAB_INDEX_STATUS_INDEXED, $status)) {
-		$obj->resetIndex($files);
-	} else {
-		$obj->addFilesToIndex($files);
-	}
 
 	foreach($rights as $f => $arr) {
 		$obj->setIdObjectFile($f, $arr['id_file'], $arr['id_topic']);
 	}
 
+	if (in_array(BAB_INDEX_STATUS_INDEXED, $status)) {
+		if ($prepare) {
+			return $obj->prepareIndex($files, $GLOBALS['babInstallPath'].'utilit/artincl.php', 'indexAllArtFiles_end', $status );
+		} else {
+			$obj->resetIndex($files);
+		}
+	} else {
+		$obj->addFilesToIndex($files);
+	}
 
+	return indexAllArtFiles_end($status);
+}
+
+
+
+function indexAllArtFiles_end($status) {
+	
+	$db = &$GLOBALS['babDB'];
 	$db->db_query("
 	
 		UPDATE ".BAB_ART_FILES_TBL." SET index_status='".BAB_INDEX_STATUS_INDEXED."'
@@ -1153,10 +1163,11 @@ function indexAllArtFiles($status) {
 		
 	");
 
+	$n = $db->db_affected_rows($res);
 
-	return sprintf(bab_translate("Indexation of %d files in article files repository"), count($files));
+	return sprintf(bab_translate("Indexation of %d files in article files repository"), $n);
+
 }
-
 
 
 ?>

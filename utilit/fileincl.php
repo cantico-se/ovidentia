@@ -480,11 +480,14 @@ function indexAllFmFiles($status, $prepare) {
 	include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
 
 	$obj = new bab_indexObject('bab_files');
+
+	foreach($rights as $f => $arr) {
+		$obj->setIdObjectFile($f, $arr['id'], $arr['id_owner']);
+	}
 	
 	if (in_array(BAB_INDEX_STATUS_INDEXED, $status)) {
 		if ($prepare) {
-			$obj->prepareIndex($files);
-			return sprintf(bab_translate("Indexation of %d files in the file manager in batch mode"), $n);
+			return $obj->prepareIndex($files, $GLOBALS['babInstallPath'].'utilit/fileincl.php', 'indexAllFmFiles_end', $status );
 		} else {
 			$obj->resetIndex($files);
 		}
@@ -492,12 +495,7 @@ function indexAllFmFiles($status, $prepare) {
 		$obj->addFilesToIndex($files);
 	}
 
-	foreach($rights as $f => $arr) {
-		$obj->setIdObjectFile($f, $arr['id'], $arr['id_owner']);
-	}
-
-	indexAllFmFiles_end($status);
-	return sprintf(bab_translate("Indexation of %d files in the file manager"), count($files));
+	return indexAllFmFiles_end($status);
 }
 
 
@@ -508,12 +506,9 @@ function indexAllFmFiles_end($status) {
 	$db = &$GLOBALS['babDB'];
 	$obj = new bab_indexObject('bab_files');
 
-	
-
 	$n = 0;
 
 	$res = $db->db_query("
-	
 		UPDATE ".BAB_FILES_TBL." SET index_status='".BAB_INDEX_STATUS_INDEXED."'
 		WHERE 
 			index_status IN('".implode("','",$status)."')
@@ -523,7 +518,6 @@ function indexAllFmFiles_end($status) {
 
 
 	$res = $db->db_query("
-	
 		UPDATE ".BAB_FM_FILESVER_TBL." SET index_status='".BAB_INDEX_STATUS_INDEXED."'
 		WHERE 
 			index_status IN('".implode("','",$status)."')

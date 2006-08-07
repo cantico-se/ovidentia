@@ -44,8 +44,10 @@ class swishCls
 	$this->mainIndex = $this->uploadDir.'/SearchIndex/'.$object.'.index';
 	$this->mergeIndex = $this->uploadDir.'/SearchIndex/'.$object.'.merge.index';
 	$this->tempIndex = $this->uploadDir.'/SearchIndex/'.$object.'.temp.index';
-	$this->indexLog = $this->uploadDir.'/SearchIndex/'.$object.'.log';
+	$this->indexLog = $this->uploadDir.'/SearchIndex/'.$object.'index.log';
+	$this->errorLog = $this->uploadDir.'/SearchIndex/error.log';
 	$this->batchFile = $this->uploadDir.'/SearchIndex/index.bat';
+
 
 	$db = &$GLOBALS['babDB'];
 	$res = $db->db_query("SELECT * FROM ".BAB_SITES_SWISH_TBL." WHERE id_site='".$GLOBALS['babBody']->babsite['id']."'");
@@ -188,6 +190,7 @@ class bab_indexFilesCls extends swishCls
 								unlink($this->tmpCfgFile);
 								unlink($this->indexLog);
 								unlink($this->batchFile);
+								@unlink($this->errorLog);
 							}
 						}
 					}
@@ -220,16 +223,40 @@ class bab_indexFilesCls extends swishCls
 						)
 					);
 
+				
+
+				static $addEOF = NULL;
+
+				if (NULL === $addEOF) {
+					register_shutdown_function(array($this,'addEOF'));
+				}
+
 
 				$bat = new bab_batchFile($this->batchFile);
-				$bat->addCmd($this->swishCmd.' -c '.escapeshellarg($this->tmpCfgFile).' >> '.$this->indexLog);
+				$bat->addCmd($this->swishCmd.' -c '.escapeshellarg($this->tmpCfgFile).' >> '.escapeshellarg($this->indexLog) .' 2>  '.escapeshellarg($this->errorLog));
+				$bat->addCmd('echo "OVIDENTIA EOF" >> '.escapeshellarg($this->indexLog));
 				$bat->close();
+
+
+				
 
 				return bab_translate("The command line has been added to the batch file");
 			}
 
 			return bab_translate("There is a pending prepared indexation, you can't launch another one at the same time");
 		}
+
+
+		/**
+		 * Register shutdown function
+		 * wget http://users.ugent.be/~bpuype/wget/
+		 */
+		function addEOF() {
+			$bat = new bab_batchFile($this->batchFile);
+			$bat->addCmd('wget --spider '.escapeshellarg($GLOBALS['babUrlScript'].'?tg=usrindex&cmd=EOF'));
+			$bat->close();
+		}
+
 
 		/**
 		 * Index files

@@ -108,8 +108,6 @@ class bab_indexObject {
 	 * @param mixed $function_parameter
 	 * @return string
 	 */
-
-	/*
 	function prepareIndex($files, $require_once, $function, $function_parameter) {
 
 		if ($this->disabled) {
@@ -123,9 +121,29 @@ class bab_indexObject {
 		}
 
 		$obj = new bab_indexFilesCls( $files, $this->object);
-		return $obj->indexFiles();
+		return $obj->prepareIndex($require_once, $function, $function_parameter);
 	}
-	*/
+
+
+	/**
+	 * Apply prepared index
+	 * Does the pendings jobs initiated by the preparation step
+	 * @see self::prepareIndex
+	 */
+	function applyIndex() {
+		if ($this->disabled) {
+			return false;
+		}
+
+		switch($this->engineName) {
+			case 'swish':
+				include_once $GLOBALS['babInstallPath'].'utilit/searchincl.swish.php';
+				break;
+		}
+
+		$obj = new bab_indexFilesCls( $files, $this->object);
+		return $obj->checkTimeout();
+	}
 
 	
 	/**
