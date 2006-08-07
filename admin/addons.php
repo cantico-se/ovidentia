@@ -325,25 +325,22 @@ function export($id)
 		}
 		
 
-	function rd($d)
-		{
+	function rd($d) {
 		$res = array();
 		$d = substr($d,-1) != '/' ? $d.'/' : $d;
-		if (is_dir($d))
-			{
+		if (is_dir($d)) {
 			$handle=opendir($d);
-			while ($file = readdir($handle)) 
-				{
-				if ($file != "." && $file != "..") 
-					{
-					if (is_dir($d.$file)) $res = array_merge($res, rd($d.$file));
-					elseif (is_file($d.$file)) $res[] = $d.$file;
-					}
+			while ($file = readdir($handle)) {
+				if ($file != "." && $file != "..") {
+					if (is_dir($d.$file) && 'CVS' != $file && '.CVS' != $file ) {
+						$res = array_merge($res, rd($d.$file));
+					} elseif (is_file($d.$file)) $res[] = $d.$file;
 				}
-			closedir($handle);
 			}
-		return $res;
+			closedir($handle);
 		}
+		return $res;
+	}
 		
 	class addon_txt
 		{

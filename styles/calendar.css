@@ -214,7 +214,26 @@ a img {
 #bab_calweek td.day, #bab_calday td.day {
 	padding:0;
 	border-left:#000 1px solid;
+	
 	}
+
+/*
+#bab_calweek .innertable tbody td,
+#bab_calday .innertable tbody td {
+	border-bottom:#ccc 1px dashed;
+	}
+
+#bab_calweek tbody th div, #bab_calday tbody th div {
+	border-bottom:#fff 1px dashed;
+	}
+
+#bab_calweek tbody th > div, #bab_calday tbody th > div {
+	border-bottom:none;
+	}
+
+*/
+
+
 	
 .bab_calendar .innertable {
 	border-collapse:collapse;
@@ -252,6 +271,8 @@ a img {
 #bab_calweek tbody th, #bab_calday tbody th {
 	padding-top:10px;
 	}
+
+
 
 .bab_cal_buttons {
 	text-align:center;

@@ -1359,14 +1359,16 @@ hideShowCnx();
 <!--#begin zipupgrade -->
 <script type="text/javascript">
 <!--
- function wait_upload(obj, label) {
-	obj.value = label;
+ function wait_upload() {
+	obj = document.forms['formsiteauth'].submitbtn;
+ //}
+	obj.value = '{ t_wait }';
 	obj.disabled = true;
  }
 //-->
 </script>
 
-<form name="formsiteauth" method="post" action="{ babPhpSelf }" enctype="multipart/form-data">
+<form name="formsiteauth" method="post" action="{ babPhpSelf }" enctype="multipart/form-data" onsubmit="wait_upload()">
 <input type="hidden" name="tg" value="sites" />
 <input type="hidden" name="idx" value="zipupgrade" />
 <input type="hidden" name="MAX_FILE_SIZE" value="{ babMaxFileSize }" />
@@ -1413,7 +1415,7 @@ hideShowCnx();
 	</tr>
 
 	<tr>
-		<td colspan="2" align="center"><br /><input type="submit" value="{ t_submit }" onclick="wait_upload(this,'{ t_wait }')" /></td>
+		<td colspan="2" align="center"><br /><input type="submit" name="submitbtn" value="{ t_submit }" /></td>
 	</tr>
 	</table>
 </td>
