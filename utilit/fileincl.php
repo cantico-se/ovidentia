@@ -472,60 +472,71 @@ function indexAllFmFiles($status, $prepare) {
 		}
 	}
 
-
-	if (!$files) {
-		return bab_translate("No files to index in the file manager");
-	}
-
 	include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
 
+
+	if (!$files) {
+		$r = new bab_indexReturn;
+		$r->addError(bab_translate("No files to index in the file manager"));
+		$r->result = false;
+		return $r;
+	}
+
+
+
+	
 	$obj = new bab_indexObject('bab_files');
 
-	foreach($rights as $f => $arr) {
-		$obj->setIdObjectFile($f, $arr['id'], $arr['id_owner']);
-	}
+	
+
+	$param = array(
+			'status' => $status,
+			'rights' => $rights
+		);
 	
 	if (in_array(BAB_INDEX_STATUS_INDEXED, $status)) {
 		if ($prepare) {
-			return $obj->prepareIndex($files, $GLOBALS['babInstallPath'].'utilit/fileincl.php', 'indexAllFmFiles_end', $status );
+			return $obj->prepareIndex($files, $GLOBALS['babInstallPath'].'utilit/fileincl.php', 'indexAllFmFiles_end', $param );
 		} else {
-			$obj->resetIndex($files);
+			$r = $obj->resetIndex($files);
 		}
 	} else {
-		$obj->addFilesToIndex($files);
+		$r = $obj->addFilesToIndex($files);
 	}
 
-	return indexAllFmFiles_end($status);
+	if (true === $r->result) {
+		indexAllFmFiles_end($param);
+	}
+
+	return $r;
 }
 
 
 
 
-function indexAllFmFiles_end($status) {
+function indexAllFmFiles_end($param) {
 
 	$db = &$GLOBALS['babDB'];
 	$obj = new bab_indexObject('bab_files');
 
-	$n = 0;
-
 	$res = $db->db_query("
 		UPDATE ".BAB_FILES_TBL." SET index_status='".BAB_INDEX_STATUS_INDEXED."'
 		WHERE 
-			index_status IN('".implode("','",$status)."')
+			index_status IN('".implode("','",$param['status'])."')
 	");
-
-	$n += $db->db_affected_rows($res);
 
 
 	$res = $db->db_query("
 		UPDATE ".BAB_FM_FILESVER_TBL." SET index_status='".BAB_INDEX_STATUS_INDEXED."'
 		WHERE 
-			index_status IN('".implode("','",$status)."')
+			index_status IN('".implode("','",$param['status'])."')
 	");
 
-	$n += $db->db_affected_rows($res);
+	foreach($param['rights'] as $f => $arr) {
+		$obj->setIdObjectFile($f, $arr['id'], $arr['id_owner']);
+	}
 
-	return sprintf(bab_translate("Indexation of %d files in the file manager"), $n);
+	return true;
 }
 
 ?>

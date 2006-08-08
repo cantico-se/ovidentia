@@ -1086,6 +1086,7 @@ function bab_newArticleDraft($idtopic, $idarticle)
 /**
  * Index all articles files
  * @param array $status
+ * @return object bab_indexReturn
  */
 function indexAllArtFiles($status, $prepare) {
 	
@@ -1126,47 +1127,60 @@ function indexAllArtFiles($status, $prepare) {
 	}
 
 	if (!$files) {
-		return bab_translate("No files to index in the articles");
+		$r = new bab_indexReturn;
+		$r->addError(bab_translate("No files to index in the articles"));
+		$r->result = false;
+		return $r;
 	}
 
 
 	include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
 	$obj = new bab_indexObject('bab_art_files');
 
-	foreach($rights as $f => $arr) {
-		$obj->setIdObjectFile($f, $arr['id_file'], $arr['id_topic']);
-	}
+
+	$param = array(
+			'status' => $status,
+			'rights' => $rights
+		);
 
 	if (in_array(BAB_INDEX_STATUS_INDEXED, $status)) {
 		if ($prepare) {
-			return $obj->prepareIndex($files, $GLOBALS['babInstallPath'].'utilit/artincl.php', 'indexAllArtFiles_end', $status );
+			return $obj->prepareIndex($files, $GLOBALS['babInstallPath'].'utilit/artincl.php', 'indexAllArtFiles_end', $param );
 		} else {
-			$obj->resetIndex($files);
+			$r = $obj->resetIndex($files);
 		}
 	} else {
-		$obj->addFilesToIndex($files);
+		$r = $obj->addFilesToIndex($files);
 	}
 
-	return indexAllArtFiles_end($status);
+	if (true === $r->result) {
+		indexAllArtFiles_end($param);
+	}
+
+	return $r;
 }
 
 
 
-function indexAllArtFiles_end($status) {
+function indexAllArtFiles_end($param) {
 	
 	$db = &$GLOBALS['babDB'];
 	$db->db_query("
 	
 		UPDATE ".BAB_ART_FILES_TBL." SET index_status='".BAB_INDEX_STATUS_INDEXED."'
 		WHERE 
-			index_status IN('".implode("','",$status)."')
+			index_status IN('".implode("','",$param['status'])."')
 		
 	");
 
-	$n = $db->db_affected_rows($res);
+	include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
+	$obj = new bab_indexObject('bab_art_files');
 
-	return sprintf(bab_translate("Indexation of %d files in article files repository"), $n);
+	foreach($param['rights'] as $f => $arr) {
+		$obj->setIdObjectFile($f, $arr['id_file'], $arr['id_topic']);
+	}
 
+	return true;
 }
 
 

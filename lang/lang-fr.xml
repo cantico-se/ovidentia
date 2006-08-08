@@ -2192,4 +2192,16 @@
 <string id="Articles files">Fichiers liés aux articles</string>
 <string id="Forum post files">Fichiers liés aux contributions de forum</string>
 <string id="Indexation of %d files in the file manager in batch mode">Indexation de %d fichiers dans le gestionnaire de fichiers en mode script</string>
+<string id="There is a pending prepared indexation, you can't launch another one at the same time">Il y a déja une indexation préparée, vous ne pouvez pas en lancer une autre au même moment</string>
+<string id="There is a lock on the index file %s, indexation is in a waiting state">Il y a un verrou sur le fichier %s, l'indexation est en attente de traitement</string>
+<string id="File not found : %s">Fichier introuvable : %s</string>
+<string id="This indexation is disabled : %s">Cette indexation est désactivée : %s</string>
+<string id="%s : All the files has been indexed (%u files)">%s : Tout les fichiers ont été indexés (%u fichiers)</string>
+<string id="The script %s has been created, please execute it to index the shudeled tasks">Le fichier de script %s à été créer, executez le pour indexer les taches en attente</string>
+<string id="%s : All collection of files has been added into the index (%u files)">%s : Un ensemble de fichiers à été ajouté à l'index (%u fichiers)</string>
+<string id="No access rights to system command execution">Accès refusé pour l'execution de commandes sur le serveur</string>
+<string id="%s : the indexation has been shudeled (%u files)">%s : l'indexation à été mise en attente de traitement (%u fichiers)</string>
+<string id="There is a lock on the index file %s, indexing in progress">Il y a un verrou sur le fichier d'index %s, l'indexation est en cours</string>
+<string id="Indexation of %s has been added as a pending task">L'indexation de %s à été ajoutée comme une tâche en attente</string>
+
 </fr>

@@ -33,6 +33,70 @@ define("BAB_INDEX_WAITING"			, 1);
 define("BAB_INDEX_ALL"				, 2);
 
 
+define("BAB_INDEX_FREE"				, 1);
+define("BAB_INDEX_PENDING"			, 2);
+define("BAB_INDEX_RUNNING"			, 3);
+
+
+class bab_indexReturn {
+
+	var $result = NULL;			// public
+	var $msgerror = array();	// private
+	var $debuginfos = array();	// private
+	var $infos = array();		// private
+
+	function addError($msg) {
+		$this->msgerror[] = $msg;
+	}
+
+	function getNextError() {
+		if (list(,$e) = each($this->msgerror)) {
+			return $e;
+		}
+		return false;
+	}
+
+	function addDebug($debuginfos) {
+		bab_debug($debuginfos);
+		$this->debuginfos[] = $debuginfos;
+	}
+
+	function getNextDebug() {
+		if (list(,$e) = each($this->debuginfos)) {
+			return $e;
+		}
+		return false;
+	}
+
+
+	function addInfo($info) {
+		$this->infos[] = $info;
+	}
+
+	function getNextInfo() {
+		if (list(,$e) = each($this->infos)) {
+			return $e;
+		}
+		return false;
+	}
+
+	function merge($r) {
+		$this->result = false === $this->result ? false : $r->result;
+		while ($msg = $r->getNextDebug()) {
+			$this->addDebug($msg);
+		}
+
+		while ($msg = $r->getNextError()) {
+			$this->addError($msg);
+		}
+
+		while ($msg = $r->getNextInfo()) {
+			$this->addInfo($msg);
+		}
+	}
+}
+
+
 
 class bab_indexObject {
 
@@ -46,6 +110,7 @@ class bab_indexObject {
 		$this->disabled = $arr['indexes'][$object]['index_disabled'];
 		$this->onload = $arr['indexes'][$object]['index_onload'];
 		$this->engineName = $arr['name'];
+		$this->label = bab_translate($arr['indexes'][$object]['name']);
 
 		$this->object = $object;
 		$this->db = &$GLOBALS['babDB'];
@@ -74,14 +139,17 @@ class bab_indexObject {
 	/**
 	 * reset index with a new set of files
 	 * @param array $files full path to the file
-	 * @return string|false
+	 * @return object bab_indexReturn
 	 */
 	function resetIndex($files) {
 
 		$this->db->db_query("DELETE FROM ".BAB_INDEX_ACCESS_TBL." WHERE object = '".$this->db->db_escape_string($this->object)."'");
 
 		if ($this->disabled) {
-			return false;
+			$r = new bab_indexReturn;
+			$r->addError(sprintf(bab_translate("This indexation is disabled : %s"),$this->label));
+			$r->result = false;
+			return $r;
 		}
 
 		switch($this->engineName) {
@@ -91,7 +159,9 @@ class bab_indexObject {
 		}
 
 		$obj = new bab_indexFilesCls( $files, $this->object);
-		return $obj->indexFiles();
+		$r = $obj->indexFiles();
+		$r->addInfo(sprintf(bab_translate("%s : All the files has been indexed (%u files)"),$this->label, count($files)));
+		return $r;
 	}
 
 
@@ -106,12 +176,15 @@ class bab_indexObject {
 	 * @param string $require_once file to include
 	 * @param string|array $function callback
 	 * @param mixed $function_parameter
-	 * @return string
+	 * @return object bab_indexReturn
 	 */
 	function prepareIndex($files, $require_once, $function, $function_parameter) {
 
 		if ($this->disabled) {
-			return false;
+			$r = new bab_indexReturn;
+			$r->addError(sprintf(bab_translate("This indexation is disabled : %s"),$this->label));
+			$r->result = false;
+			return $r;
 		}
 
 		switch($this->engineName) {
@@ -121,7 +194,11 @@ class bab_indexObject {
 		}
 
 		$obj = new bab_indexFilesCls( $files, $this->object);
-		return $obj->prepareIndex($require_once, $function, $function_parameter);
+		$r = $obj->prepareIndex($require_once, $function, $function_parameter);
+		if (true === $r->result) {
+			$r->addInfo(sprintf(bab_translate("%s : the indexation has been shudeled (%u files)"),$this->label, count($files)));
+		}
+		return $r;
 	}
 
 
@@ -129,10 +206,14 @@ class bab_indexObject {
 	 * Apply prepared index
 	 * Does the pendings jobs initiated by the preparation step
 	 * @see self::prepareIndex
+	 * @return object bab_indexReturn
 	 */
 	function applyIndex() {
 		if ($this->disabled) {
-			return false;
+			$r = new bab_indexReturn;
+			$r->addError(sprintf(bab_translate("This indexation is disabled : %s"),$this->label));
+			$r->result = false;
+			return $r;
 		}
 
 		switch($this->engineName) {
@@ -141,8 +222,9 @@ class bab_indexObject {
 				break;
 		}
 
-		$obj = new bab_indexFilesCls( $files, $this->object);
-		return $obj->checkTimeout();
+		$obj = new bab_indexFilesCls( array(), $this->object);
+		$r = $obj->checkTimeout();
+		return $r;
 	}
 
 	
@@ -151,7 +233,7 @@ class bab_indexObject {
 	 * if the file has been added, return true
 	 * if the index has been created for the file, return string
 	 * @param array $files full path to the file
-	 * @return string|boolean
+	 * @return object bab_indexReturn
 	 */
 	function addFilesToIndex($files) {
 
@@ -166,7 +248,9 @@ class bab_indexObject {
 		}
 
 		$obj = new bab_indexFilesCls( $files, $this->object);
-		return $obj->addFilesToIndex();
+		$r->addInfo(sprintf(bab_translate("%s : All collection of files has been added into the index (%u files)"),$this->label, count($files)));
+		$r = $obj->addFilesToIndex();
+		return $r;
 	}
 
 
@@ -263,8 +347,8 @@ function bab_searchEngineIndexes() {
 	$res = $db->db_query("SELECT * FROM ".BAB_INDEX_FILES_TBL."");
 	while ($arr = $db->db_fetch_assoc($res)) {
 		$return[$arr['object']] = array(
-				'name' => $arr['name'],
-				'index_onload' => 1 == $arr['index_onload'], 
+				'name' =>			$arr['name'],
+				'index_onload' =>	1 == $arr['index_onload'], 
 				'index_disabled' => 1 == $arr['index_disabled']
 			);
 	}

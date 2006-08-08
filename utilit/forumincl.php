@@ -395,6 +395,7 @@ function bab_getPostFiles($forum,$postid)
 /**
  * Index all forum files
  * @param array $status
+ * @return object bab_indexReturn
  */
 function indexAllForumFiles($status, $prepare) {
 	
@@ -433,46 +434,56 @@ function indexAllForumFiles($status, $prepare) {
 	}
 
 	if (!$files) {
-		return bab_translate("No files to index in the forums");
+		$r = new bab_indexReturn;
+		$r->addError(bab_translate("No files to index in the forums"));
+		$r->result = false;
+		return $r;
 	}
 
 	include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
 
 	$obj = new bab_indexObject('bab_forumsfiles');
 
-	foreach($rights as $f => $arr) {
-		$obj->setIdObjectFile($f, $arr['id'], $arr['id_forum']);
-	}
-
-
+	$param = array(
+			'status' => $status,
+			'rights' => $rights
+		);
 	
 	if (in_array(BAB_INDEX_STATUS_INDEXED, $status)) {
 		if ($prepare) {
-			return $obj->prepareIndex($files, $GLOBALS['babInstallPath'].'utilit/forumincl.php', 'indexAllForumFiles_end', $status );
+			return $obj->prepareIndex($files, $GLOBALS['babInstallPath'].'utilit/forumincl.php', 'indexAllForumFiles_end', $param );
 		} else {
-			$obj->resetIndex($files);
+			$r = $obj->resetIndex($files);
 		}
 	} else {
-		$obj->addFilesToIndex($files);
+		$r = $obj->addFilesToIndex($files);
 	}
-	
-	return indexAllForumFiles_end($status);
+
+	if (true === $r->result) {
+		indexAllForumFiles_end($param);
+	}
+
+	return $r;
 }
 
 
-function indexAllForumFiles_end($status) {
+function indexAllForumFiles_end($param) {
 
 	$db = &$GLOBALS['babDB'];
 	$db->db_query("
 	
 		UPDATE ".BAB_FORUMSFILES_TBL." SET index_status='".BAB_INDEX_STATUS_INDEXED."'
 		WHERE 
-			index_status IN('".implode("','",$status)."')
+			index_status IN('".implode("','",$param['status'])."')
 	");
 
-	$n = $db->db_affected_rows($res);
+	$obj = new bab_indexObject('bab_forumsfiles');
 
-	return sprintf(bab_translate("Indexation of %d files in the forums"), $n);
+	foreach($param['rights'] as $f => $arr) {
+		$obj->setIdObjectFile($f, $arr['id'], $arr['id_forum']);
+	}
+
+	return true;
 }
 
 

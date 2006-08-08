@@ -53,24 +53,33 @@ function bab_indexJobs($idx, $object) {
 			
 			case 'bab_files':
 				include_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
-				$job = indexAllFmFiles($status, $prepare);
+				$r = indexAllFmFiles($status, $prepare);
 				break;
 
 			case 'bab_art_files':
 				include_once $GLOBALS['babInstallPath'].'utilit/artincl.php';
-				$job = indexAllArtFiles($status, $prepare);
+				$r = indexAllArtFiles($status, $prepare);
 				break;
 
 			case 'bab_forumsfiles':
 				include_once $GLOBALS['babInstallPath'].'utilit/forumincl.php';
-				$job = indexAllForumFiles($status, $prepare);
+				$r = indexAllForumFiles($status, $prepare);
 				break;
 
 			default:	// Addon
 				$addon_jobs = array();
 				bab_callAddonsFunction('onIndexObject', $object, $idx, $addon_jobs);
-				$job = implode("\n", $addon_jobs);
+				//$job = implode("\n", $addon_jobs);
 				break;
+		}
+
+
+		while ($msg = $r->getNextInfo()) {
+			$job .= $msg."\n";
+		}
+
+		while ($msg = $r->getNextError()) {
+			$GLOBALS['babBodyPopup']->msgerror .= bab_toHtml($msg." \n", BAB_HTML_ALL);
 		}
 		
 	} else {

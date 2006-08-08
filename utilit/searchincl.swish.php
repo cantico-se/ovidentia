@@ -26,7 +26,7 @@ include_once "base.php";
 
 class swishCls
 {
-
+	var $msgerror = false;
 
 	function swishCls($object)
 	{
@@ -64,49 +64,78 @@ class swishCls
 	}
 
 
+	/**
+	 * Execute system command
+	 * @param string $cmd
+	 * @return object bab_indexReturn
+	 */
 	function execCmd($cmd)
 	{
-	bab_debug($cmd);
+	$r = new bab_indexReturn;
+	$r->addDebug($cmd);
 
 	$handle = popen($cmd, 'r');
-	if (false === $handle)
-		return false;
+	if (false === $handle) {
+		$r->result = false;
+		$r->addError(bab_translate("No access rights to system command execution"));
+		return $r;
+	}
 	$buffer = '';
 	while(!feof($handle)) {
 	   $buffer .= fgets($handle, 1024);
 	}
 	pclose($handle);
 
-	bab_debug($buffer);
+	$r->addDebug($buffer);
 
-	return $buffer;
+	return $r;
 	}
-
 }
 
+
+/**
+ * @return object bab_indexReturn
+ */
 class bab_batchFile {
 
+	var $file;
 	var $msgerror = false;
 	var $fh;
 
 	function bab_batchFile($file) {
+		$this->file = $file;
+	}
 
+	function init() {
+		$file = $this->file;
+		$r = new bab_indexReturn;
+		
 		if (is_file($file) && !is_writable($file)) {
-			$this->msgerror = sprintf(bab_translate("The file %s is not writable"),$file);
-			return false;
+			$r->addError(sprintf(bab_translate("The file %s is not writable"),$file));
+			$r->result = false;
+			return $r;
 		}
 
-		$mode = file_exists($file) ? 'a' : 'w+';
+		if (file_exists($file)) {
+			$mode = 'a';
+		} else {
+			$mode = 'w+';
+			$r->addInfo(sprintf(bab_translate('The script %s has been created, please execute it to index the shudeled tasks'), $file));
+		}
 
 		if (!$this->fh = fopen($file, $mode)) {
-			$this->msgerror = sprintf(bab_translate("Cannot open or create the file %s"),$file);
-			return false;
+			$r->addError(sprintf(bab_translate("Cannot open or create the file %s"),$file));
+			$r->result = false;
+		} else {
+			$r->result = true;
 		}
+
+		return $r;
 	}
 
 	function addCmd($cmd) {
 		if (fwrite($this->fh, $cmd."\n") === FALSE) {
-			$this->msgerror = bab_translate("Error : cannot write to file");
+			trigger_error(bab_translate("Error : cannot write to file"));
 			return false;
 		}
 		return true;
@@ -116,10 +145,6 @@ class bab_batchFile {
 		if ($this->fh) {
 			fclose($this->fh);
 		}
-	}
-
-	function getError() {
-		return $this->msgerror;
 	}
 }
 
@@ -143,43 +168,59 @@ class bab_indexFilesCls extends swishCls
 			return false;
 		}
 
-		function setTempConfigFile($indexFile)
-		{
-		
-		if (!is_file($this->swishCmd)) {
-			trigger_error('File not found : '.$this->swishCmd);
-			return false;
-			}
-		
-		$this->objectIndex = $indexFile;
+		/**
+		 * @return object bab_indexReturn
+		 */
+		function setTempConfigFile($indexFile) {
 
-		$str = bab_printTemplate($this, 'swish.config');
-
-		if ($handle = fopen($this->tmpCfgFile, 'w+')) {
-			fwrite($handle, $str);
-			fclose($handle);
-			return true;
-			}
+			$r = new bab_indexReturn;
 		
-		trigger_error('Unexpected error : cannot write to upload directory');
-		return false;
+			if (!is_file($this->swishCmd)) {
+				$r->result = false;
+				$r->addError(sprintf(bab_translate('File not found : %s'),$this->swishCmd));
+				return $r;
+				}
+			
+			$this->objectIndex = $indexFile;
+
+			$str = bab_printTemplate($this, 'swish.config');
+
+			
+
+			if ($handle = fopen($this->tmpCfgFile, 'w+')) {
+				fwrite($handle, $str);
+				fclose($handle);
+				$r->result = true;
+				//$r->addDebug($str);
+				return $r;
+				}
+			
+			$r->result = false;
+			$r->addError(bab_translate('Unexpected error : cannot write to upload directory'));
+			return $r;
 		}
 
-		
+		/**
+		 * @return object bab_indexReturn
+		 */
 		function checkTimeout() {
+			$r = new bab_indexReturn;
 			$reg = bab_getRegistryInstance();
 			$reg->changeDirectory('/bab/indexfiles/lock/');
 			$object = $reg->getValue($this->object);
 			if (NULL !== $object) {
 				if (!file_exists($this->indexLog)) {
 					// locked but not launched yet
-					return false;
+					$r->result = BAB_INDEX_PENDING;
+					$r->addError(sprintf(bab_translate("There is a lock on the index file %s, indexation is in a waiting state"),$this->object));
 				} else {
 					
 					$content = implode("", @file($this->indexLog));
 					if (false === strpos($content,'OVIDENTIA EOF')) {
 						// file created but script not finished
-						return false;
+						$r->result = BAB_INDEX_RUNNING;
+						$r->addDebug($content);
+						$r->addError(sprintf(bab_translate("There is a lock on the index file %s, indexing in progress"),$this->object));
 					} else {
 						// callback
 						if (!empty($object['require_once'])) {
@@ -191,12 +232,24 @@ class bab_indexFilesCls extends swishCls
 								unlink($this->indexLog);
 								unlink($this->batchFile);
 								@unlink($this->errorLog);
+
+								$r->result = BAB_INDEX_FREE;
+								$r->addDebug(sprintf(bab_translate("The lock has been removed from %s"),$this->object));
+							} else {
+								
+								$r->result = false;
+								$r->addError("Error with callback function in ".$this->object);
+								$r->addDebug($object['function']);
 							}
 						}
 					}
 				}
+			} else {
+				$r->result = BAB_INDEX_FREE;
+				// $r->addDebug(sprintf(bab_translate("There is no lock on %s"),$this->object));
 			}
-			return true;
+
+			return $r;
 		}
 
 
@@ -209,41 +262,54 @@ class bab_indexFilesCls extends swishCls
 		 * @param string $require_once file to include
 		 * @param string|array $function callback
 		 * @param mixed $function_parameter
-		 * @return string
+		 * @return object bab_indexReturn
 		 */
 		function prepareIndex($require_once, $function, $function_parameter) {
-			if ($this->checkTimeout() && $this->setTempConfigFile($this->mainIndex)) {
-				// lock config file with timeout
-				$reg = bab_getRegistryInstance();
-				$reg->changeDirectory('/bab/indexfiles/lock/');
-				$reg->setKeyValue($this->object, array(
-							'require_once' => $require_once,
-							'function' => $function,
-							'function_parameter' => $function_parameter
-						)
-					);
 
-				
+			$r = $this->checkTimeout();
+			
+			$r->result = BAB_INDEX_FREE === $r->result;
 
-				static $addEOF = NULL;
+			$r->merge($this->setTempConfigFile($this->mainIndex));
 
-				if (NULL === $addEOF) {
-					register_shutdown_function(array($this,'addEOF'));
-				}
-
-
-				$bat = new bab_batchFile($this->batchFile);
-				$bat->addCmd($this->swishCmd.' -c '.escapeshellarg($this->tmpCfgFile).' >> '.escapeshellarg($this->indexLog) .' 2>  '.escapeshellarg($this->errorLog));
-				$bat->addCmd('echo "OVIDENTIA EOF" >> '.escapeshellarg($this->indexLog));
-				$bat->close();
-
-
-				
-
-				return bab_translate("The command line has been added to the batch file");
+			if (false === $r->result) {
+				return $r;
 			}
 
-			return bab_translate("There is a pending prepared indexation, you can't launch another one at the same time");
+			
+
+			$reg = bab_getRegistryInstance();
+			$reg->changeDirectory('/bab/indexfiles/lock/');
+			$reg->setKeyValue($this->object, array(
+						'require_once'			=> $require_once,
+						'function'				=> $function,
+						'function_parameter'	=> $function_parameter
+					)
+				);
+
+			static $addEOF = NULL;
+
+			if (NULL === $addEOF) {
+				register_shutdown_function(array($this,'addEOF'));
+				$addEOF = 0;
+			}
+
+
+			$bat = new bab_batchFile($this->batchFile);
+			$r->merge($bat->init());
+
+			if (false === $r->result) {
+				return $r;
+			}
+
+			$bat->addCmd($this->swishCmd.' -c '.escapeshellarg($this->tmpCfgFile).' >> '.escapeshellarg($this->indexLog) .' 2>  '.escapeshellarg($this->errorLog));
+			$bat->addCmd('echo "OVIDENTIA EOF" >> '.escapeshellarg($this->indexLog));
+			$bat->close();
+
+			$r->addDebug(sprintf(bab_translate('Indexation of %s has been added as a pending task'), $this->object));
+			$r->result = true;
+
+			return $r;
 		}
 
 
@@ -253,6 +319,7 @@ class bab_indexFilesCls extends swishCls
 		 */
 		function addEOF() {
 			$bat = new bab_batchFile($this->batchFile);
+			$bat->init();
 			$bat->addCmd('wget --spider '.escapeshellarg($GLOBALS['babUrlScript'].'?tg=usrindex&cmd=EOF'));
 			$bat->close();
 		}
@@ -260,33 +327,40 @@ class bab_indexFilesCls extends swishCls
 
 		/**
 		 * Index files
-		 * @return string
+		 * @return object bab_indexReturn
 		 */
 		function indexFiles()
 		{
-			if ($this->checkTimeout()) {
+			$r = $this->checkTimeout();
+			
+			if (BAB_INDEX_FREE === $r->result) {
 				$this->setTempConfigFile($this->mainIndex);			
-				$str = $this->execCmd($this->swishCmd.' -c '.escapeshellarg($this->tmpCfgFile));
+				$r->merge($this->execCmd($this->swishCmd.' -c '.escapeshellarg($this->tmpCfgFile)));
 				unlink($this->tmpCfgFile);
-				return $str;
+				$r->result = true;
 			} else {
-				return bab_translate("There is a pending prepared indexation, you can't launch another one at the same time");
+				$r->result = false;
+				$r->addError(bab_translate("There is a pending prepared indexation, you can't launch another one at the same time"));
 			}
+
+			return $r;
 		}
 
 	
 		/**
 		 * Add file into index
-		 * @return boolean
+		 * @return object bab_indexReturn
 		 */
 		function addFilesToIndex() {
 
 			if (!is_file($this->mainIndex)) {
 				return $this->indexFiles();
 			}
+
+			$r = new bab_indexReturn;
 			
 			$this->setTempConfigFile($this->mergeIndex);
-			$this->execCmd($this->swishCmd.' -c '.escapeshellarg($this->tmpCfgFile));
+			$r->merge($this->execCmd($this->swishCmd.' -c '.escapeshellarg($this->tmpCfgFile)));
 
 			
 			if (is_file($this->tempIndex)) {
@@ -294,7 +368,7 @@ class bab_indexFilesCls extends swishCls
 				unlink($this->tempIndex.'.prop');
 			}
 			
-			$this->execCmd($this->swishCmd.' -M '.escapeshellarg($this->mainIndex).' '.escapeshellarg($this->mergeIndex).' '.escapeshellarg($this->tempIndex));
+			$r->merge($this->execCmd($this->swishCmd.' -M '.escapeshellarg($this->mainIndex).' '.escapeshellarg($this->mergeIndex).' '.escapeshellarg($this->tempIndex)));
 
 			
 			unlink($this->tmpCfgFile);
@@ -309,8 +383,13 @@ class bab_indexFilesCls extends swishCls
 				rename($this->tempIndex, $this->mainIndex);
 				rename($this->tempIndex.'.prop', $this->mainIndex.'.prop');
 
-				return true;
+				$r->result = true;
+			} else {
+				$r->addError(bab_translate("There is an error on the swish indexing process, no file to merge"));
+				$r->result = false;
 			}
+
+			return $r;
 		}
 	}
 
@@ -336,7 +415,8 @@ class bab_searchFilesCls extends swishCls
 
 	function searchFiles()
 		{
-		$str = $this->execCmd($this->swishCmd.' -f '.escapeshellarg($this->mainIndex).' -w '.escapeshellarg($this->query));
+		$r = $this->execCmd($this->swishCmd.' -f '.escapeshellarg($this->mainIndex).' -w '.escapeshellarg($this->query));
+		$str = $r->debuginfos[1];
 
 		$files = array();
 		
