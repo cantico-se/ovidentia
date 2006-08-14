@@ -1073,8 +1073,9 @@ switch($tg)
 					if( is_dir( $GLOBALS['babInstallPath'].$incl))
 						{
 						$module = "";
-						for($i = 2; $i < sizeof($arr); $i++)
-							$module .= "/".$arr[$i];
+						for($i = 2; $i < sizeof($arr); $i++) {
+							$module .= "/".preg_replace("/[^A-Za-z0-9_\-]/", "", $arr[$i]);
+						}
 						$GLOBALS['babAddonFolder'] = $row['title'];
 						$GLOBALS['babAddonTarget'] = "addon/".$arr[1];
 						$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$arr[1]."/";
