@@ -509,8 +509,8 @@ function userLogin($nickname,$password)
 		return false;
 		}
 
-	$password=strtolower($password);
-	$res = $db->db_query("select * from ".BAB_USERS_TBL." where nickname='".$db->db_escape_string($nickname)."' and password='". $db->db_escape_string(md5($password)) ."'");
+	//$password=strtolower($password);
+	$res = $db->db_query("select * from ".BAB_USERS_TBL." where nickname='".$db->db_escape_string($nickname)."' and password='". $db->db_escape_string(md5(strtolower($password))) ."'");
 	if( $res && $db->db_num_rows($res) > 0 )
 		{
 		$arruser = $db->db_fetch_array($res);
@@ -677,7 +677,7 @@ function userLogin($nickname,$password)
 
 		if( $logok )
 			{
-			$req = "update ".BAB_USERS_TBL." set password='".md5($password)."'";
+			$req = "update ".BAB_USERS_TBL." set password='".md5(strtolower($password))."'";
 			reset($updattributes);
 			while(list($key, $val) = each($updattributes))
 				{
