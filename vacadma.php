@@ -210,12 +210,12 @@ function browsePersonnelByType($pos, $cb, $idtype)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->bview = false;
-				$res = $this->db->db_query("select id_coll from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$babDB->db_escape_string($this->arr['id'])."'");
+				$res = $this->db->db_query("select id_coll from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$this->db->db_escape_string($this->arr['id'])."'");
 				if( $this->idtype != "" )
 					{
 					while( $arr = $this->db->db_fetch_array($res))
 						{
-						$res2 = $this->db->db_query("select id from ".BAB_VAC_COLL_TYPES_TBL." where id_type='".$babDB->db_escape_string($this->idtype)."' and id_coll ='".$arr['id_coll']."'");
+						$res2 = $this->db->db_query("select id from ".BAB_VAC_COLL_TYPES_TBL." where id_type='".$this->db->db_escape_string($this->idtype)."' and id_coll ='".$arr['id_coll']."'");
 						if( $res2 && $this->db->db_num_rows($res2) > 0 )
 							{
 							$this->bview = true;
@@ -396,14 +396,14 @@ function listVacationRigths($idtype, $idcreditor, $dateb, $datee, $active, $pos)
 				$req .= " where ";
 
 				if( $idtype != "")
-					$aaareq[] = "id_type='".$babDB->db_escape_string($idtype)."'";
+					$aaareq[] = "id_type='".$this->db->db_escape_string($idtype)."'";
 
 				if( $active != "")
-					$aaareq[] = "active='".$babDB->db_escape_string($active)."'";
+					$aaareq[] = "active='".$this->db->db_escape_string($active)."'";
 
 				if( $idcreditor != "")
 					{
-					$aaareq[] = "id_creditor='".$babDB->db_escape_string($idcreditor)."'";
+					$aaareq[] = "id_creditor='".$this->db->db_escape_string($idcreditor)."'";
 					}
 
 				if( $dateb != "" )
@@ -420,15 +420,15 @@ function listVacationRigths($idtype, $idcreditor, $dateb, $datee, $active, $pos)
 
 				if( $dateb != "" && $datee != "")
 					{
-					$aaareq[] = "( date_entry between '".$babDB->db_escape_string($dateb)."' and '".$babDB->db_escape_string($datee)."')";
+					$aaareq[] = "( date_entry between '".$this->db->db_escape_string($dateb)."' and '".$babDB->db_escape_string($datee)."')";
 					}
 				else if( $dateb == "" && $datee != "" )
 					{
-					$aaareq[] = "date_entry <= '".$babDB->db_escape_string($datee)."'";
+					$aaareq[] = "date_entry <= '".$this->db->db_escape_string($datee)."'";
 					}
 				else if ($dateb != "" )
 					{
-					$aaareq[] = "date_entry >= '".$babDB->db_escape_string($dateb)."'";
+					$aaareq[] = "date_entry >= '".$this->db->db_escape_string($dateb)."'";
 					}
 				}
 
@@ -501,7 +501,7 @@ function listVacationRigths($idtype, $idcreditor, $dateb, $datee, $active, $pos)
 			if( $i < $this->count)
 				{
 				$arr = $this->db->db_fetch_array($this->res);
-				$rr = $this->db->db_fetch_array($this->db->db_query("select name from ".BAB_VAC_TYPES_TBL." where id='".$babDB->db_escape_string($arr['id_type'])."'"));
+				$rr = $this->db->db_fetch_array($this->db->db_query("select name from ".BAB_VAC_TYPES_TBL." where id='".$this->db->db_escape_string($arr['id_type'])."'"));
 				$this->vrurl = $GLOBALS['babUrlScript']."?tg=vacadma&idx=modvr&idvr=".$arr['id'];
 				$this->vrviewurl = $GLOBALS['babUrlScript']."?tg=vacadma&idx=viewvr&idvr=".$arr['id'];
 				$this->typename = $rr['name'];
@@ -677,7 +677,7 @@ function addModifyVacationRigths($id = false)
 					LEFT JOIN 
 						".BAB_VAC_TYPES_TBL." t3 
 					ON t3.id = t1.id_type 
-					WHERE t1.id='".$babDB->db_escape_string($id)."'"));
+					WHERE t1.id='".$this->db->db_escape_string($id)."'"));
 
 				$this->collid = "";
 
@@ -851,7 +851,7 @@ function addModifyVacationRigths($id = false)
 					{
 					$this->tcbalance = 1;
 					}
-				$this->colres = $this->db->db_query("select ".BAB_VAC_COLLECTIONS_TBL.".* from ".BAB_VAC_COLLECTIONS_TBL." join ".BAB_VAC_COLL_TYPES_TBL." where ".BAB_VAC_COLL_TYPES_TBL.".id_type='".$babDB->db_escape_string($this->typeid)."' and ".BAB_VAC_COLLECTIONS_TBL.".id=".BAB_VAC_COLL_TYPES_TBL.".id_coll");
+				$this->colres = $this->db->db_query("select ".BAB_VAC_COLLECTIONS_TBL.".* from ".BAB_VAC_COLLECTIONS_TBL." join ".BAB_VAC_COLL_TYPES_TBL." where ".BAB_VAC_COLL_TYPES_TBL.".id_type='".$this->db->db_escape_string($this->typeid)."' and ".BAB_VAC_COLLECTIONS_TBL.".id=".BAB_VAC_COLL_TYPES_TBL.".id_coll");
 				$this->countcol = $this->db->db_num_rows($this->colres);
 
 				if( $this->arr['id_type'] == $this->typeid )
@@ -1017,13 +1017,13 @@ function listVacationRightPersonnel($pos, $idvr)
 
 			$this->db = $GLOBALS['babDB'];
 			$this->idvr = $idvr;
-			list($this->idtype) = $this->db->db_fetch_row($this->db->db_query("select id_type from ".BAB_VAC_RIGHTS_TBL." where id='".$babDB->db_escape_string($idvr)."'")); 
+			list($this->idtype) = $this->db->db_fetch_row($this->db->db_query("select id_type from ".BAB_VAC_RIGHTS_TBL." where id='".$this->db->db_escape_string($idvr)."'")); 
 
 			if( isset($pos[0]) && $pos[0] == "-" )
 				{
 				$this->pos = $pos[1];
 				$this->ord = $pos[0];
-				$req = "select ".BAB_USERS_TBL.".*, ".BAB_VAC_PERSONNEL_TBL.".id_coll from ".BAB_USERS_TBL." join ".BAB_VAC_PERSONNEL_TBL." where ".BAB_USERS_TBL.".id = ".BAB_VAC_PERSONNEL_TBL.".id_user and lastname like '".$babDB->db_escape_string($this->pos)."%' order by lastname, firstname asc";
+				$req = "select ".BAB_USERS_TBL.".*, ".BAB_VAC_PERSONNEL_TBL.".id_coll from ".BAB_USERS_TBL." join ".BAB_VAC_PERSONNEL_TBL." where ".BAB_USERS_TBL.".id = ".BAB_VAC_PERSONNEL_TBL.".id_user and lastname like '".$this->db->db_escape_string($this->pos)."%' order by lastname, firstname asc";
 				$this->fullname = bab_translate("Lastname"). " " . bab_translate("Firstname");
 
 				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=vacadma&idx=lvrp&chg=&pos=".$this->ord.$this->pos."&idvr=".$this->idvr;
@@ -1032,7 +1032,7 @@ function listVacationRightPersonnel($pos, $idvr)
 				{
 				$this->pos = $pos;
 				$this->ord = "";
-				$req = "select ".BAB_USERS_TBL.".*, ".BAB_VAC_PERSONNEL_TBL.".id_coll from ".BAB_USERS_TBL." join ".BAB_VAC_PERSONNEL_TBL." where ".BAB_USERS_TBL.".id = ".BAB_VAC_PERSONNEL_TBL.".id_user and firstname like '".$babDB->db_escape_string($this->pos)."%' order by firstname, firstname asc";
+				$req = "select ".BAB_USERS_TBL.".*, ".BAB_VAC_PERSONNEL_TBL.".id_coll from ".BAB_USERS_TBL." join ".BAB_VAC_PERSONNEL_TBL." where ".BAB_USERS_TBL.".id = ".BAB_VAC_PERSONNEL_TBL.".id_user and firstname like '".$this->db->db_escape_string($this->pos)."%' order by firstname, firstname asc";
 				$this->fullname = bab_translate("Firstname"). " " . bab_translate("Lastname");
 				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=vacadma&idx=lvrp&chg=&pos=".$this->ord.$this->pos."&idvr=".$this->idvr;
 				}
@@ -1059,14 +1059,14 @@ function listVacationRightPersonnel($pos, $idvr)
 				$this->bview = true;
 				$this->altbg = !$this->altbg;
 
-				$res2 = $this->db->db_query("select id, quantity from ".BAB_VAC_USERS_RIGHTS_TBL." where id_user='".$babDB->db_escape_string($this->arr['id'])."' AND id_right ='".$babDB->db_escape_string($this->idvr)."'");
+				$res2 = $this->db->db_query("select id, quantity from ".BAB_VAC_USERS_RIGHTS_TBL." where id_user='".$this->db->db_escape_string($this->arr['id'])."' AND id_right ='".$this->db->db_escape_string($this->idvr)."'");
 				if( $res2 && $this->db->db_num_rows($res2) > 0 )
 					{
 					$arr = $this->db->db_fetch_array($res2);
 					$this->selected = "checked";
 					$this->nuserid = $this->arr['id'];
 
-					$res3 = $this->db->db_query("select SUM(e2.quantity) used from ".BAB_VAC_ENTRIES_ELEM_TBL." e2, ".BAB_VAC_ENTRIES_TBL." e1 WHERE  e2.id_type='".$babDB->db_escape_string($this->idvr)."' AND e2.id_entry = e1.id AND e1.id_user='".$babDB->db_escape_string($this->arr['id'])."' AND e1.status='Y'");
+					$res3 = $this->db->db_query("select SUM(e2.quantity) used from ".BAB_VAC_ENTRIES_ELEM_TBL." e2, ".BAB_VAC_ENTRIES_TBL." e1 WHERE  e2.id_type='".$this->db->db_escape_string($this->idvr)."' AND e2.id_entry = e1.id AND e1.id_user='".$this->db->db_escape_string($this->arr['id'])."' AND e1.status='Y'");
 
 					$arr3 = $this->db->db_fetch_array($res3);
 					if (isset($arr3['used']))
@@ -1083,7 +1083,7 @@ function listVacationRightPersonnel($pos, $idvr)
 					$this->quantity = $arr['quantity'];
 				else
 				{
-					list($this->quantity) = $this->db->db_fetch_row($this->db->db_query("select quantity from ".BAB_VAC_RIGHTS_TBL." where id='".$babDB->db_escape_string($this->idvr)."'"));
+					list($this->quantity) = $this->db->db_fetch_row($this->db->db_query("select quantity from ".BAB_VAC_RIGHTS_TBL." where id='".$this->db->db_escape_string($this->idvr)."'"));
 				}
 	
 				$this->userid = $this->arr['id'];
@@ -1113,11 +1113,11 @@ function listVacationRightPersonnel($pos, $idvr)
 					{
 					if( $this->ord == "-" )
 						{
-						$req = "select ".BAB_USERS_TBL.".id from ".BAB_USERS_TBL." join ".BAB_VAC_PERSONNEL_TBL." where ".BAB_USERS_TBL.".id=".BAB_VAC_PERSONNEL_TBL.".id_user and ".BAB_USERS_TBL.".lastname like '".$babDB->db_escape_string($this->selectname)."%' ";
+						$req = "select ".BAB_USERS_TBL.".id from ".BAB_USERS_TBL." join ".BAB_VAC_PERSONNEL_TBL." where ".BAB_USERS_TBL.".id=".BAB_VAC_PERSONNEL_TBL.".id_user and ".BAB_USERS_TBL.".lastname like '".$this->db->db_escape_string($this->selectname)."%' ";
 						}
 					else
 						{
-						$req = "select ".BAB_USERS_TBL.".id from ".BAB_USERS_TBL." join ".BAB_VAC_PERSONNEL_TBL." where ".BAB_USERS_TBL.".id=".BAB_VAC_PERSONNEL_TBL.".id_user and ".BAB_USERS_TBL.".firstname like '".$babDB->db_escape_string($this->selectname)."%' ";
+						$req = "select ".BAB_USERS_TBL.".id from ".BAB_USERS_TBL." join ".BAB_VAC_PERSONNEL_TBL." where ".BAB_USERS_TBL.".id=".BAB_VAC_PERSONNEL_TBL.".id_user and ".BAB_USERS_TBL.".firstname like '".$this->db->db_escape_string($this->selectname)."%' ";
 						}
 					$res = $this->db->db_query($req);
 					if( $this->db->db_num_rows($res) > 0 )
@@ -1179,7 +1179,7 @@ function viewVacationRightPersonnel($idvr)
 			$this->validperiodtxt = bab_translate("Retention period");
 			$this->db = $GLOBALS['babDB'];
 
-			$row = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_VAC_RIGHTS_TBL." where id='".$babDB->db_escape_string($idvr)."'"));
+			$row = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_VAC_RIGHTS_TBL." where id='".$this->db->db_escape_string($idvr)."'"));
 			$this->datebegin = bab_strftime(bab_mktime($row['date_begin']." 00:00:00"), false);
 			$this->dateend = bab_strftime(bab_mktime($row['date_end']." 00:00:00"), false);
 			$this->dateentry = bab_strftime(bab_mktime($row['date_entry']." 00:00:00"), false);
@@ -1197,7 +1197,7 @@ function viewVacationRightPersonnel($idvr)
 			$this->creditor = bab_getUserName($row['id_creditor']);
 			$this->quantity = $row['quantity'];
 			$this->status = $row['active'] == "Y"? bab_translate("Right opened"): bab_translate("Right closed");
-			list($this->type) = $this->db->db_fetch_row($this->db->db_query("select name from ".BAB_VAC_TYPES_TBL." where id='".$babDB->db_escape_string($row['id_type'])."'"));
+			list($this->type) = $this->db->db_fetch_row($this->db->db_query("select name from ".BAB_VAC_TYPES_TBL." where id='".$this->db->db_escape_string($row['id_type'])."'"));
 			}
 
 		}
