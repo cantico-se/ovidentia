@@ -185,7 +185,6 @@ function listArticles($topics)
 				$this->arr = $this->db->db_fetch_array($this->res);
 				if( $this->arr['restriction'] != '' && !bab_articleAccessByRestriction($this->arr['restriction']))
 					{
-					$GLOBALS['babBody']->msgerror = bab_translate("Access denied");
 					$skip = true;
 					$i++;
 					return true;
@@ -600,6 +599,7 @@ function readMore($topics, $article)
 				{
 				if( $this->arr['restriction'] != '' && !bab_articleAccessByRestriction($this->arr['restriction']))
 					{
+					$GLOBALS['babBody']->msgerror = bab_translate("Access denied");
 					$skip = true;
 					$i++;
 					return true;
