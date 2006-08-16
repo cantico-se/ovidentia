@@ -4904,7 +4904,7 @@ function babOvTemplate($args = array())
 
 	foreach($args as $variable => $contents)
 		{
-		$this->gctx->push($variable, stripslashes($contents));
+		$this->gctx->push($variable, $contents);
 		}
 	$this->push_ctx($this->gctx);
 	}
