@@ -6922,4 +6922,12 @@ function upgrade586to587()
 	return $ret;
 }
 
+function upgrade587to588()
+{
+	$ret = "";
+	$db = & $GLOBALS['babDB'];
+
+	return $ret;
+}
+
 ?>
