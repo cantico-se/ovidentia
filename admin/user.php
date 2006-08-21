@@ -265,7 +265,7 @@ function notifyUserconfirmation($name, $email)
 		function tempa($name, $msg)
 			{
             global $babSiteName;
-            $this->linkurl = $GLOBALS['babUrl'];
+            $this->linkurl = $GLOBALS['babUrl'].'?tg=login';
             $this->username = $name;
 			$this->sitename = $babSiteName;
 			$this->message = $msg;
@@ -283,7 +283,7 @@ function notifyUserconfirmation($name, $email)
 
 	$message = bab_translate("Thank You For Registering at our site");
 	$message .= "<br>". bab_translate("Your registration has been confirmed.");
-	$message .= "<br>". bab_translate("To connect on our site").", ". bab_translate("simply follow this").": ";
+	$message .= "<br>". bab_translate("To connect on our site").", ". bab_translate("go to this url").": ";
 	$tempa = new tempa($name, $message);
 	$message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "userconfirmation"));
     $mail->mailBody($message, "html");
