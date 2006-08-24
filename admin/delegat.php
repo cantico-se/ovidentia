@@ -308,7 +308,7 @@ function addDelegatGroup($name, $description, $delegitems)
 		$group = $_POST['group'] == 'NULL' ? 'NULL' : "'".$babDB->db_escape_string($_POST['group'])."'";
 		
 		$req1 .= ",id_group )";
-		$req2 .= ", ".$babDB->db_escape_string($group)." )";
+		$req2 .= ", ".$group." )";
 		$babDB->db_query("insert into ".BAB_DG_GROUPS_TBL." ".$req1." VALUES ".$req2);
 		$id = $babDB->db_insert_id();
 		}
