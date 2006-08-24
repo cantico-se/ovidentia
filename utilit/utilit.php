@@ -631,6 +631,7 @@ function babecho($txt)
 function babpopup($txt) {
 	include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 	$GLOBALS['babBodyPopup'] = new babBodyPopup();
+	$GLOBALS['babBodyPopup']->styleSheet = & $GLOBALS['babBody']->styleSheet;
 	$GLOBALS['babBodyPopup']->title = & $GLOBALS['babBody']->title;
 	$GLOBALS['babBodyPopup']->msgerror = & $GLOBALS['babBody']->msgerror;
 	$GLOBALS['babBodyPopup']->babecho($txt);
