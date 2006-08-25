@@ -38,11 +38,13 @@ class bab_Delegations extends bab_handler
 		$delegationid = $ctx->get_value('delegationid');
 		$userid = $ctx->get_value('userid');
 		$filter = $ctx->get_value('filter');
-
-		$filter = true;
 		if( strtoupper($filter) == "NO" )
 			{
 			$filter = false;
+			}
+		else
+			{
+			$filter = true;
 			}
 
 		if( $userid === false || $userid === '' )
@@ -81,6 +83,7 @@ class bab_Delegations extends bab_handler
 			}
 		else
 			{
+
 			$this->count = 0;
 			}
 
