@@ -37,22 +37,45 @@ class bab_Delegations extends bab_handler
 		$this->bab_handler($ctx);
 		$delegationid = $ctx->get_value('delegationid');
 		$userid = $ctx->get_value('userid');
+		$filter = $ctx->get_value('filter');
+
+		$filter = true;
+		if( strtoupper($filter) == "NO" )
+			{
+			$filter = false;
+			}
 
 		if( $userid === false || $userid === '' )
 			{
 			$userid = $GLOBALS['BAB_SESS_USERID'];
 			}
 
-		if( $userid != '')
+		if( $filter == false || $userid != '')
 			{
+
 			if( $delegationid === false || $delegationid === '' )
 				{
-				$this->res = $babDB->db_query("SELECT dgt.* FROM ".BAB_DG_GROUPS_TBL." dgt LEFT JOIN ".BAB_USERS_GROUPS_TBL." ugt ON ugt.id_group = dgt.id_group WHERE ugt.id_object='".$userid."' order by dgt.name asc");
+				if( $filter == false )
+					{
+					$this->res = $babDB->db_query("SELECT dgt.* FROM ".BAB_DG_GROUPS_TBL." dgt order by dgt.name asc");
+					}
+				else
+					{
+					$this->res = $babDB->db_query("SELECT dgt.* FROM ".BAB_DG_GROUPS_TBL." dgt LEFT JOIN ".BAB_USERS_GROUPS_TBL." ugt ON ugt.id_group = dgt.id_group WHERE ugt.id_object='".$userid."' order by dgt.name asc");
+					}
 				}
 			else
 				{
-				$delegationid = explode(',', $delegationid);
-				$this->res = $babDB->db_query("SELECT dgt.* FROM ".BAB_DG_GROUPS_TBL." dgt LEFT JOIN ".BAB_USERS_GROUPS_TBL." ugt ON ugt.id_group = dgt.id_group WHERE ugt.id_object='".$userid."' AND dgt.id IN (".implode(',', $delegationid).") order by dgt.name asc");
+				if( $filter == false )
+					{
+					$delegationid = explode(',', $delegationid);
+					$this->res = $babDB->db_query("SELECT dgt.* FROM ".BAB_DG_GROUPS_TBL." dgt WHERE dgt.id IN (".implode(',', $delegationid).") order by dgt.name asc");
+					}
+				else
+					{
+					$delegationid = explode(',', $delegationid);
+					$this->res = $babDB->db_query("SELECT dgt.* FROM ".BAB_DG_GROUPS_TBL." dgt LEFT JOIN ".BAB_USERS_GROUPS_TBL." ugt ON ugt.id_group = dgt.id_group WHERE ugt.id_object='".$userid."' AND dgt.id IN (".implode(',', $delegationid).") order by dgt.name asc");
+					}
 				}
 			$this->count = $babDB->db_num_rows($this->res);
 			}
