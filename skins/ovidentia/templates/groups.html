@@ -337,12 +337,19 @@ function load_clear()
 
 	var el = document.forms['gcreatemod'].elements;
 
+	if( el['grpid'].value != '' )
+	{
+	el['parent'].value = el['grpid'].value;
+	}
+	else
+	{
+	el['parent'].value		 = 1;
+	}
 	el['grpid'].value		 = '';
 	el['name'].value		 = '';
 	el['description'].value	 = '';
 	el['manager'].value		 = 0;
 	el['managerval'].value	 = '';
-	el['parent'].value		 = 1;
 	el['parent'].style.visibility = 'visible';
 	el['deleteg'].style.visibility = 'visible';
 	document.getElementById('groupcreate_formtitle').innerHTML = '{ t_create_group }';
