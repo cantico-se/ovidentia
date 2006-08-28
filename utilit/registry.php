@@ -147,6 +147,15 @@ class bab_registry {
 		return 0 < $this->db->db_affected_rows($res);
 	}
 
+
+	/**
+	 * Get current path
+	 * @return string
+	 */
+	function getDirectory() {
+		return $this->dir;
+	}
+
 	
 	/**
 	 * Get a value
@@ -262,7 +271,9 @@ class bab_registry {
 			return $arr['dirkey'];
 		}
 
-		$this->db->db_data_seek($r[$this->dir], 0);
+		if (0 < $this->db->db_num_rows($r[$this->dir])) {
+			$this->db->db_data_seek($r[$this->dir], 0);
+		}
 		return false;
 	}
 
@@ -289,7 +300,9 @@ class bab_registry {
 			return $arr['dirkey'];
 		}
 
-		$this->db->db_data_seek($r[$this->dir], 0);
+		if (0 < $this->db->db_num_rows($r[$this->dir])) {
+			$this->db->db_data_seek($r[$this->dir], 0);
+		}
 		return false;
 	}
 }

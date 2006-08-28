@@ -248,8 +248,9 @@ class bab_indexObject {
 		}
 
 		$obj = new bab_indexFilesCls( $files, $this->object);
-		$r->addInfo(sprintf(bab_translate("%s : All collection of files has been added into the index (%u files)"),$this->label, count($files)));
+		
 		$r = $obj->addFilesToIndex();
+		$r->addInfo(sprintf(bab_translate("%s : All collection of files has been added into the index (%u files)"),$this->label, count($files)));
 		return $r;
 	}
 
