@@ -1011,6 +1011,7 @@ function showChoiceArticleModify($topicid)
 		var $bmodify;
 		var $modifauthor;
 		var $altbg = true;
+		var $nbartmodify = 0;
 
 		function temp($topicid)
 			{
@@ -1076,6 +1077,7 @@ function showChoiceArticleModify($topicid)
 					$this->modifybytxt = '';
 					$this->modifauthor = '';
 					$this->bmodify = true;
+					$this->nbartmodify++;
 					}
 				else
 					{
