@@ -138,15 +138,15 @@ class bab_WebStatEvent
 		$idg = $id_dgowner != 0? array(0, $id_dgowner): array(0);
 		for($k=0; $k <count($idg); $k++ )
 		{
-			$res = $babDB->db_query("select st_nb_articles from ".BAB_STATS_FMFILES_NEW_TBL." where st_date='".$date."' and st_hour='".$hour."' and st_id_dgowner='".$idg[$k]."'");
+			$res = $babDB->db_query("select st_nb_files from ".BAB_STATS_FMFILES_NEW_TBL." where st_date='".$date."' and st_hour='".$hour."' and st_id_dgowner='".$idg[$k]."'");
 			if( $res && $babDB->db_num_rows($res) > 0 )
 			{
 				$arr = $babDB->db_fetch_array($res);
-				$babDB->db_query("update ".BAB_STATS_FMFILES_NEW_TBL." set st_nb_articles='".($arr['st_nb_articles']+1)."' where st_date='".$date."' and st_hour='".$hour."' and st_id_dgowner='".$idg[$k]."'");
+				$babDB->db_query("update ".BAB_STATS_FMFILES_NEW_TBL." set st_nb_files='".($arr['st_nb_files']+1)."' where st_date='".$date."' and st_hour='".$hour."' and st_id_dgowner='".$idg[$k]."'");
 			}
 			else
 			{
-				$babDB->db_query("insert into ".BAB_STATS_FMFILES_NEW_TBL." (st_date, st_hour, st_id_dgowner, st_nb_articles ) values ('".$date."', '".$hour."', '".$idg[$k]."', '1')");
+				$babDB->db_query("insert into ".BAB_STATS_FMFILES_NEW_TBL." (st_date, st_hour, st_id_dgowner, st_nb_files ) values ('".$date."', '".$hour."', '".$idg[$k]."', '1')");
 			}
 		}
 	}
