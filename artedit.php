@@ -1694,7 +1694,7 @@ function showSetArticleProperties($idart)
 						$this->maximagessize = $babBody->babsite['imgsize'];
 						if( $babBody->babsite['maxfilesize'] != 0 )
 							{
-							$this->maxsizetxt = bab_translate("File size must not exceed")." ".$babBody->babsite['maxfilesize']. " ". bab_translate("Mb");
+							$this->maxsizetxt = '('.bab_translate("File size must not exceed")." ".$babBody->babsite['maxfilesize']. " ". bab_translate("Mb").')';
 							}
 						else
 							{
