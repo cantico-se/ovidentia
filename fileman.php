@@ -47,6 +47,7 @@ function notifyApprovers($id, $fid)
 	if( $arr['idsa'] ==  0 || $idfai === true)
 		{
 		$babDB->db_query("update ".BAB_FILES_TBL." set confirmed='Y' where id='".$id."'");
+		$GLOBALS['babWebStat']->addNewFile($babBody->currentAdmGroup);
 		return true;
 		}
 	elseif(!empty($idfai))
@@ -1022,6 +1023,12 @@ function saveFile($id, $gr, $path, $description, $keywords, $readonly)
 	$pathx = bab_getUploadFullPath($gr, $id);
 	$okfiles = array();
 	$errfiles = array();
+
+	if( substr($path, -1) == "/")
+		$pathx .= substr($path, 0 , -1);
+	else if( !empty($path))
+		$pathx .= $path."/";	
+
 	foreach ($_FILES as $file) 
 		{
 		$file['name'] = trim($file['name']);
@@ -1049,11 +1056,6 @@ function saveFile($id, $gr, $path, $description, $keywords, $readonly)
 			$errfiles[] = array('error'=> bab_translate("There is not enough free space"), 'file'=>$file['name']);
 			continue;
 		}
-
-	if( substr($path, -1) == "/")
-		$pathx .= substr($path, 0 , -1);
-	else if( !empty($path))
-		$pathx .= $path."/";	
 
 	$osfname = $file['name'];
 
@@ -1426,10 +1428,7 @@ function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $de
 					case 1:
 						deleteFlowInstance($arr['idfai']);
 						$db->db_query("update ".BAB_FILES_TBL." set confirmed='Y', idfai='0' where id = '".$arr['id']."'");
-						if( $confirmed == "Y" )
-							{
-							$GLOBALS['babWebStat']->addNewFile($rr['id_dgowner']);
-							}
+						$GLOBALS['babWebStat']->addNewFile($rr['id_dgowner']);
 						notifyFileAuthor(bab_translate("Your file has been accepted"),"", $arr['author'], $arr['name']);
 						if( $bnotify == "Y")
 							{
