@@ -174,6 +174,9 @@ function listArticles($topics)
 				{
 				$this->bsubmit = false;
 				}
+
+			/* template variables */
+			$this->babtpl_topicid = $this->topics;
 			}
 
 		function getnext(&$skip)
@@ -511,6 +514,9 @@ function readMore($topics, $article)
 		function temp($topics, $article)
 			{
 			global $arrtop;
+			/* template variables */
+			$this->babtpl_topicid = $topics;
+
 			$this->categoriesHierarchy($topics, -1, $GLOBALS['babUrlScript']."?tg=topusr");
 			$this->printtxt = bab_translate("Print Friendly");
 			$this->db = $GLOBALS['babDB'];
