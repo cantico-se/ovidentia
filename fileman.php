@@ -2036,8 +2036,8 @@ function viewFile( $idf)
 								$this->index_status = bab_indexOnLoadFiles($files_to_index , 'bab_files');
 								if (BAB_INDEX_STATUS_INDEXED === $this->index_status) {
 									foreach($files_to_index as $f) {
-										$obj = new bab_indexObject($object);
-										$obj->setIdObjectFile($f, $idf, $id);
+										$obj = new bab_indexObject('bab_files');
+										$obj->setIdObjectFile($f, $idf, $arr['id_owner']);
 									}
 								}
 							} else {
