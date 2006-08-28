@@ -289,6 +289,12 @@ function addDelegatGroup($name, $description, $delegitems)
 		return false;
 		}
 
+	if( !isset($_POST['group']) || $_POST['group'] == 'NULL')
+		{
+		$babBody->msgerror = bab_translate("ERROR: You must indicate the delegated group !!");
+		return false;
+		}
+
 	$res = $babDB->db_query("select * from ".BAB_DG_GROUPS_TBL." where name='".$babDB->db_escape_string($name)."'");
 	if( $babDB->db_num_rows($res) > 0)
 		{
