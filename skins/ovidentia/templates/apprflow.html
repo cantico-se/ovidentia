@@ -9,6 +9,8 @@ if(ctrlf != null)
 	ctrlf.value=fn;
 	var nm = ctrlf.name.substring((ctrlf.name.indexOf('fn')) + 2);
 	eval('document.forms.sccreate.fh'+nm+'.value = id');
+	var td = document.getElementById('tdstatus');
+	td.innerHTML =  fn;
 	ctrlf = null;
 	}
 this.focus();
@@ -32,6 +34,8 @@ ctrlf = t;
 v_all();
 t.disabled = true;
 t.className = 'selectedcell';
+var td = document.getElementById('tdstatus');
+td.innerHTML =  t.value;
 }
 
 var op = null;
@@ -43,7 +47,7 @@ else
 	op.focus();
 }
 
-function emptycell(findex)
+function emptycell(findex, row)
 {
 var f = document.forms.sccreate;
 eval('f.fn'+findex+'.value=\'\';');
@@ -94,6 +98,10 @@ function closepop()
 		</td>
 	</tr>
 	<!--#endin getnextrow --> 
+	<tr > 
+		<td align="right">&nbsp;</td>
+		<td colspan="6" id="tdstatus" class="BabLoginMenuBackground"></td>
+	</tr>
 	<tr> 
 		<td>&nbsp;</td>
 		<td><input type="checkbox" name="order" { ordchecked } value="Y" />&nbsp;{ order }</td>
