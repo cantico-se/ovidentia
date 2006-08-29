@@ -1180,6 +1180,8 @@ function remove_field()
 	<tr> 
 	<td align="right">&nbsp;</td>
 	<td colspan="2">{ filetxt }:<br /><input type="file" name="docf0" size="50" maxlength="255" value=""><br />{ desctxt }:<br /><input type="text" name="docdesc[]" size="50" maxlength="255" value="">
+	<p><a href="javascript:add_field()">{ t_add_field }</a>
+	</p>
 	</td>
 	</tr>
 	<tr> 
@@ -1187,8 +1189,7 @@ function remove_field()
 	<td colspan="2">
 	<div id="post_addfiles">
 	</div>
-	<p><a id="urlremovefile" href="javascript:remove_field()" style="display:none">{ t_remove_field }</a>&nbsp;
-<a href="javascript:add_field()">{ t_add_field }</a>
+	<p><a id="urlremovefile" href="javascript:remove_field()" style="display:none">{ t_remove_field }</a>
 	</p>
 	</td>
 	</tr>
