@@ -63,7 +63,7 @@ function listDrafts()
 			$this->proptxt = bab_translate("Properties");
 			$this->deletetxt = bab_translate("Delete");
 			$this->previewtxt = bab_translate("Preview");
-			$this->addtxt = bab_translate("Publish");
+			$this->addtxt = bab_translate("Create a new article");
 			$this->modtxt = bab_translate("Modify an existing article");
 			$this->attachmenttxt = bab_translate("Attachments");
 			$this->submittxt = bab_translate("Submit");

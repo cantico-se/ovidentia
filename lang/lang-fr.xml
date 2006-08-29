@@ -2203,5 +2203,7 @@
 <string id="%s : the indexation has been shudeled (%u files)">%s : l'indexation à été mise en attente de traitement (%u fichiers)</string>
 <string id="There is a lock on the index file %s, indexing in progress">Il y a un verrou sur le fichier d'index %s, l'indexation est en cours</string>
 <string id="Indexation of %s has been added as a pending task">L'indexation de %s à été ajoutée comme une tâche en attente</string>
-
+<string id="Who can add update events if he is the author">Qui peut mettre à jour des événements s'il est l'auteur</string>
+<string id="ERROR: You must indicate the delegated group !!">ERREUR: Vous devez indiquer le groupe délégué !!</string>
+<string id="Create a new article">Créer un nouvel article</string>
 </fr>
