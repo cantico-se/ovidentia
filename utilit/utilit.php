@@ -1041,7 +1041,7 @@ function get_newarticles() {
 	if( count($this->topview) > 0 )
 		{
 		global $babDB;
-		$res = $babDB->db_query("select id_topic, restriction from ".BAB_ARTICLES_TBL." where date >= '".$this->lastlog."'");
+		$res = $babDB->db_query("select id_topic, restriction from ".BAB_ARTICLES_TBL." where (date_publication = '0000-00-00 00:00:00' OR date_publication <= now()) AND date >= '".$this->lastlog."'");
 		while( $row = $babDB->db_fetch_array($res))
 			{
 			if( isset($this->topview[$row['id_topic']]) && ( $row['restriction'] == '' || bab_articleAccessByRestriction($row['restriction']) ))
