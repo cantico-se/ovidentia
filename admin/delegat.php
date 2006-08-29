@@ -159,6 +159,7 @@ function groupDelegatModify($gname, $description, $id = '')
 			$this->description = bab_translate("Description");
 			$this->add = bab_translate("Record");
 			$this->delete = bab_translate("Delete");
+			$this->t_color = bab_translate("Color");
 			$this->alert_msg = bab_translate("It is necessary to remove all associations with the users groups");
 			$this->grp_members = bab_translate("Managed group");
 			$this->functions = bab_translate("Deputy functions");
@@ -173,12 +174,16 @@ function groupDelegatModify($gname, $description, $id = '')
 				{
 				$this->idGrp = &$this->arr['id_group'];
 				$this->bdel = true;
+				$this->colorvalue = isset($_POST['color']) ? $_POST['color'] : $this->arr['color'] ;
 				}
 			else
 				{
 				$this->idGrp = false;
 				$this->bdel = false;
+				$this->colorvalue = isset($_POST['color']) ? $_POST['color'] : '' ;
 				}
+
+
 
 			$tree = new bab_grptree();
 			$this->groups = $tree->getGroups(NULL, '%s &nbsp; &nbsp; &nbsp; ');
@@ -279,7 +284,7 @@ function deleteDelegatGroup($id)
 	}
 
 
-function addDelegatGroup($name, $description, $delegitems)
+function addDelegatGroup($name, $description, $color, $delegitems)
 	{
 	global $babBody, $babDB;
 
@@ -303,8 +308,8 @@ function addDelegatGroup($name, $description, $delegitems)
 		}
 	else
 		{
-		$req1 = "(name, description";
-		$req2 = "('" .$babDB->db_escape_string($name). "', '" . $babDB->db_escape_string($description). "'";
+		$req1 = "(name, description, color";
+		$req2 = "('" .$babDB->db_escape_string($name). "', '" . $babDB->db_escape_string($description). "', '" . $babDB->db_escape_string($color). "'";
 		for( $i = 0; $i < count($delegitems); $i++)
 			{
 			$req1 .= ", ". $babDB->db_escape_string($delegitems[$i]);
@@ -324,7 +329,7 @@ function addDelegatGroup($name, $description, $delegitems)
 	exit;
 	}
 
-function modifyDelegatGroup($name, $description, $delegitems, $id)
+function modifyDelegatGroup($name, $description, $color, $delegitems, $id)
 	{
 	global $babBody, $babDB, $babDG;
 
@@ -347,7 +352,8 @@ function modifyDelegatGroup($name, $description, $delegitems, $id)
 		{
 		$req = "update ".BAB_DG_GROUPS_TBL." set 
 			name='".$babDB->db_escape_string($name)."', 
-			description='".$babDB->db_escape_string($description)."'";
+			description='".$babDB->db_escape_string($description)."', 
+			color='".$babDB->db_escape_string($color)."'";
 		$cnt = count($delegitems);
 		for( $i = 0; $i < count($babDG); $i++)
 			{
@@ -498,14 +504,14 @@ if( isset($add))
 			{
 			if (!empty($_POST['id']))
 				{
-				if(!modifyDelegatGroup($_POST['gname'], $_POST['description'], $_POST['delegitems'], $_POST['id']))
+				if(!modifyDelegatGroup($_POST['gname'], $_POST['description'], $_POST['color'], $_POST['delegitems'], $_POST['id']))
 					$idx = "mod";
 				else
 					$idx = 'list';
 				}
 			else
 				{
-				if( !addDelegatGroup($gname, $description, $delegitems) )
+				if( !addDelegatGroup($_POST['gname'], $_POST['description'], $_POST['color'], $_POST['delegitems']) )
 					$idx = 'new';
 				else
 					$idx = 'list';

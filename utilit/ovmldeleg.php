@@ -100,6 +100,7 @@ class bab_Delegations extends bab_handler
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('DelegationName', $arr['name']);
 			$this->ctx->curctx->push('DelegationDescription', $arr['description']);
+			$this->ctx->curctx->push('DelegationColor', $arr['color']);
 			$this->ctx->curctx->push('DelegationId', $arr['id']);
 			$this->ctx->curctx->push('DelegationGroupId', $arr['id_group']);
 			$this->ctx->curctx->push('DelegationGroupName', bab_getGroupName($arr['id_group']));
@@ -184,6 +185,7 @@ class bab_DelegationsManaged extends bab_handler
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('DelegationName', $arr['name']);
 			$this->ctx->curctx->push('DelegationDescription', $arr['description']);
+			$this->ctx->curctx->push('DelegationColor', $arr['color']);
 			$this->ctx->curctx->push('DelegationId', $arr['id']);
 			$this->ctx->curctx->push('DelegationGroupId', $arr['id_group']);
 			$this->ctx->curctx->push('DelegationGroupName', bab_getGroupName($arr['id_group']));
