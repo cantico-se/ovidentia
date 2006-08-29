@@ -357,7 +357,7 @@ function saveProfile($pname, $pdesc, $grpids, $cinscription, $cmultiple, $crequi
 		return false;
 		}
 
-	$res = $babDB->db_query("select name from ".BAB_PROFILES_TBL." where name='".$pname."'");
+	$res = $babDB->db_query("select name from ".BAB_PROFILES_TBL." where name='".$babDB->db_escape_string($pname)."'");
 	if( $babDB->db_num_rows($res) > 0)
 		{
 		$babBody->msgerror = bab_translate("This profile already exists");
@@ -431,7 +431,7 @@ function updateProfile($idprof, $pname, $pdesc, $grpids, $cinscription, $cmultip
 		return false;
 		}
 
-	$res = $babDB->db_query("select name from ".BAB_PROFILES_TBL." where name='".$pname."' and id !='".$idprof."'");
+	$res = $babDB->db_query("select name from ".BAB_PROFILES_TBL." where name='".$babDB->db_escape_string($pname)."' and id !='".$idprof."'");
 	if( $babDB->db_num_rows($res) > 0)
 		{
 		$babBody->msgerror = bab_translate("This profile already exists");
