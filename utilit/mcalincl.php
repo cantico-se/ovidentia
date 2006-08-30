@@ -653,8 +653,14 @@ class cal_wmdbaseCls
 					}
 				break;
 			case BAB_CAL_PUB_TYPE:
-			case BAB_CAL_RES_TYPE:
 				if( $calinfo['manager']  )
+					{
+					$modify = 1;
+					}
+				$viewtitle = 1;
+				break;
+			case BAB_CAL_RES_TYPE:
+				if( $calinfo['manager'] || ( $evtarr['id_creator'] ==  $GLOBALS['BAB_SESS_USERID'] && $calinfo['upd']) )
 					{
 					$modify = 1;
 					}

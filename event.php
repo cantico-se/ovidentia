@@ -561,6 +561,9 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 			$this->ccids = $cci;
 			$this->curview = $view;
 			$this->curdate = $date;
+			$res = $this->db->db_query("select * from ".BAB_CAL_EVENTS_TBL." where id='".$this->db->db_escape_string($evtid)."'");
+			$this->evtarr = $this->db->db_fetch_array($res);
+			
 			$iarr = $babBody->icalendars->getCalendarInfo($this->calid);
 			switch( $iarr['type'] )
 				{
@@ -571,19 +574,19 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 						}
 					break;
 				case BAB_CAL_PUB_TYPE:
-				case BAB_CAL_RES_TYPE:
 					if( $iarr['manager'] )
+						{
+						$this->bmodif = true;
+						}
+					break;
+				case BAB_CAL_RES_TYPE:
+					if( $iarr['manager'] || ($this->evtarr['id_creator'] ==  $GLOBALS['BAB_SESS_USERID'] && $iarr['upd']))
 						{
 						$this->bmodif = true;
 						}
 					break;
 				}
 			$babBodyPopup->title = bab_translate("Calendar"). ":  ". bab_getCalendarOwnerName($this->calid, $iarr['type']);
-			
-			
-				$res = $this->db->db_query("select * from ".BAB_CAL_EVENTS_TBL." where id='".$this->db->db_escape_string($evtid)."'");
-				$this->evtarr = $this->db->db_fetch_array($res);
-			
 
 			if( !empty($this->evtarr['hash']) && $this->evtarr['hash'][0] == 'R')
 				{

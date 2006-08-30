@@ -391,6 +391,7 @@ class bab_icalendars
 				$bview = bab_isAccessValid(BAB_CAL_RES_VIEW_GROUPS_TBL, $arr['idcal']);
 				$bman = bab_isAccessValid(BAB_CAL_RES_MAN_GROUPS_TBL, $arr['idcal']);
 				$badd = bab_isAccessValid(BAB_CAL_RES_ADD_GROUPS_TBL, $arr['idcal']);
+				$bupd = bab_isAccessValid(BAB_CAL_RES_UPD_GROUPS_TBL, $arr['idcal']);
 				}
 			else
 				{
@@ -398,6 +399,7 @@ class bab_icalendars
 				$bview = bab_isAccessValid(BAB_CAL_RES_VIEW_GROUPS_TBL, $arr['idcal'], $this->iduser);
 				$bman = bab_isAccessValid(BAB_CAL_RES_MAN_GROUPS_TBL, $arr['idcal'], $this->iduser);
 				$badd = bab_isAccessValid(BAB_CAL_RES_ADD_GROUPS_TBL, $arr['idcal'], $this->iduser);
+				$bupd = bab_isAccessValid(BAB_CAL_RES_UPD_GROUPS_TBL, $arr['idcal'], $this->iduser);
 				}
 
 			if ($bgroup || $bview || $bman)
@@ -413,6 +415,7 @@ class bab_icalendars
 				$this->rescal[$arr['idcal']]['view'] = $bview;
 				$this->rescal[$arr['idcal']]['manager'] = $bman;
 				$this->rescal[$arr['idcal']]['add'] = $badd;
+				$this->rescal[$arr['idcal']]['upd'] = $bupd;
 				}
 
 		}

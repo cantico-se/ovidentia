@@ -703,25 +703,6 @@ CREATE TABLE bab_calaccess_users (
     KEY id_user (id_user)
 );
 
-# --------------------------------------------------------
-#
-# Structure de la table 'bab_caloptions'
-#
-
-CREATE TABLE bab_caloptions (
-	id INT (11) UNSIGNED not null AUTO_INCREMENT, 
-	id_user INT (11) UNSIGNED not null, 
-	startday TINYINT DEFAULT '0' not null, 
-	allday ENUM ('Y','N') not null, 
-	ampm ENUM ('Y','N') not null, 
-	usebgcolor ENUM ('Y','N') not null, 
-    elapstime tinyint(2) unsigned NOT NULL DEFAULT '30' ,
-    defaultview tinyint(3) NOT NULL default '0',
-    defaultviewweek tinyint(3) NOT NULL default '0',
-	PRIMARY KEY (id),
-    KEY id_user (id_user)
-);
-
 
 # --------------------------------------------------------
 #
@@ -1634,6 +1615,7 @@ CREATE TABLE `bab_dg_groups` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `name` char(255) NOT NULL default '',
   `description` char(255) NOT NULL default '',
+  `color` varchar(8) NOT NULL default '',
   `users` enum('N','Y') NOT NULL default 'N',
   `groups` enum('N','Y') NOT NULL default 'N',
   `sections` enum('N','Y') NOT NULL default 'N',
@@ -3435,4 +3417,13 @@ CREATE TABLE bab_mail_spooler (
   mail_date datetime NOT NULL,
   PRIMARY KEY  (id),
   KEY mail_date (mail_date)
-); 
+);
+
+CREATE TABLE bab_cal_res_upd_groups (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group)
+);

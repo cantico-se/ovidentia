@@ -408,6 +408,8 @@ switch($idx)
         $macl->addtable( BAB_CAL_RES_VIEW_GROUPS_TBL,bab_translate("Who can view this calendar"));
 		$macl->addtable( BAB_CAL_RES_ADD_GROUPS_TBL,bab_translate("Who can add events to this calendar"));
 		$macl->filter(0,0,1,0,1);
+		$macl->addtable( BAB_CAL_RES_UPD_GROUPS_TBL,bab_translate("Who can add update events if he is the author"));
+		$macl->filter(0,0,1,0,1);
 		$macl->addtable( BAB_CAL_RES_MAN_GROUPS_TBL,bab_translate("Who can manage this calendar"));
 		$macl->filter(0,0,1,1,1);
 		$macl->addtable( BAB_CAL_RES_GRP_GROUPS_TBL,bab_translate("Users groups that will be notified"));
