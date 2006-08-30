@@ -6927,6 +6927,28 @@ function upgrade587to588()
 	$ret = "";
 	$db = & $GLOBALS['babDB'];
 
+	if (!bab_isTable(BAB_CAL_RES_UPD_GROUPS_TBL)) {
+
+		$db->db_query("
+		
+				CREATE TABLE ".BAB_CAL_RES_UPD_GROUPS_TBL." (
+				  id int(11) unsigned NOT NULL auto_increment,
+				  id_object int(11) unsigned NOT NULL default '0',
+				  id_group int(11) unsigned NOT NULL default '0',
+				  PRIMARY KEY  (id),
+				  KEY id_object (id_object),
+				  KEY id_group (id_group)
+				)
+			
+		");
+
+	}
+
+	if (!bab_isTableField(BAB_DG_GROUPS_TBL, 'ldap_decoding_type')) {
+
+		$db->db_query("ALTER TABLE ".BAB_DG_GROUPS_TBL." ADD `color` VARCHAR( 8 ) DEFAULT '' NOT NULL AFTER `description`");
+	}
+
 	return $ret;
 }
 
