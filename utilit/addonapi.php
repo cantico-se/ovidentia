@@ -929,7 +929,14 @@ function bab_printTemplate( &$class, $file, $section="")
 	global $babInstallPath, $babSkinPath;
 	$tplfound = false;
 	
-	$tpl = new bab_Template();
+	if( !isset($GLOBALS['babUseNewTemplateParser']) || $GLOBALS['babUseNewTemplateParser'] == false)
+		{
+		$tpl = new babTemplate(); /* old template parser */
+		}
+	else
+		{
+		$tpl = new bab_Template();
+		}
 
 	$filepath = "skins/".$GLOBALS['babSkin']."/templates/". $file;
 	if( file_exists( $filepath ) )
