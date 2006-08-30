@@ -31,8 +31,8 @@ function getVersion()
 	$ini = new bab_inifile();
 	$ini->inifile($GLOBALS['babInstallPath'].'version.inc');
 
-	$str = "Sources Version ". $ini->getVersion()."<br>";
-	$db = $GLOBALS['babDB'];
+	$str = "Sources Version ". $ini->getVersion()."\n";
+	$db = &$GLOBALS['babDB'];
 
 	$res = $db->db_query("show tables like '".BAB_INI_TBL."'");
 	if( !$res || $db->db_num_rows($res) < 1)
@@ -49,7 +49,7 @@ function getVersion()
 		$rr = $db->db_fetch_array($db->db_query("select fvalue from ".BAB_INI_TBL." where foption='ver_build'"));
 		$dbver[] = $rr['fvalue'];
 		}
-	$str .= "Database Version ". $dbver[0].".".$dbver[1].".".$dbver[2] ."<br>";
+	$str .= "Database Version ". $dbver[0].".".$dbver[1].".".$dbver[2] ."\n";
 	return $str;
 }
 
