@@ -3,7 +3,7 @@ This documentation is provided to aid in basic installation. Please consult the 
 
 If you have any comment or remarks please send an email to community@ovidentia.org
 
-OVIDENTIA 7.x
+OVIDENTIA 5.x
 ==============
 
 Base Requirements
