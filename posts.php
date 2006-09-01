@@ -915,12 +915,18 @@ function dlfile($forum,$post,$name)
 		{
 		if ($name == $file['name'])
 			{
+			$mime = bab_getFileMimeType($name);
 			if( strtolower(bab_browserAgent()) == "msie")
 				header('Cache-Control: public');
-			header('Content-Type:application/octet-stream');
-			header('Content-Disposition: attachment; filename="'.$file['name'].'"');
-			header('Content-Length:'.filesize($file['path']));
-			header('Content-transfert-encoding: binary');
+			$inl = bab_getFileContentDisposition() == 1? 1: '';
+			if( $inl == "1" )
+				header("Content-Disposition: inline; filename=\"".$file['name']."\""."\n");
+			else
+				header("Content-Disposition: attachment; filename=\"".$file['name']."\""."\n");
+			header("Content-Type: $mime"."\n");
+			header("Content-Length: ". filesize($file['path'])."\n");
+			header("Content-transfert-encoding: binary"."\n");
+
 			$handle = fopen($file['path'], "r");
 			while (!feof($handle)) {
 			   $buffer = fread($handle, 4096);

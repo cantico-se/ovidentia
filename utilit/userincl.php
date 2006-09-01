@@ -1074,7 +1074,15 @@ function bab_replace_ref( &$txt, $remove = '')
 								if (bab_isAccessFileValid($arr['bgroup'], $arr['id_owner']))
 									{
 									$title_object = empty($title_object) ? $arr['name'] : $title_object;
-									$inl = empty($GLOBALS['files_as_attachment']) ? '&inl=1' : '';
+									if( bab_getFileContentDisposition() == '')
+										{
+										$inl = empty($GLOBALS['files_as_attachment']) ? '&inl=1' : '';
+										}
+									else
+										{
+										$inl ='';
+										}
+
 									$title_object = bab_replace_make_link($GLOBALS['babUrlScript']."?tg=fileman&idx=get".$inl."&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path'])."&file=".urlencode($arr['name']),$title_object,2);
 									}
 								}

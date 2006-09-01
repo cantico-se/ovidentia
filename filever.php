@@ -944,7 +944,7 @@ switch($idx)
 	case "get":
 		if( $bupdate || $bdownload)
 			{
-			if(!isset($inl)) { $inl ='';}
+			if(!isset($inl)) { $inl = bab_getFileContentDisposition() == 1? 1: ''; }
 			getFile($idf, $vmaj, $vmin, $inl);
 			exit;
 			}

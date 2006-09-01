@@ -2514,7 +2514,7 @@ switch($idx)
 		break;
 
 	case "get":
-		if(!isset($inl)) { $inl ='';}
+		if(!isset($inl)) { $inl = bab_getFileContentDisposition() == 1? 1: '';}
 		getFile($file, $id, $gr, $path, $inl);
 		exit;
 		break;

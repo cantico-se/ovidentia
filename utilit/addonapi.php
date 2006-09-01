@@ -1460,4 +1460,24 @@ function bab_rp($name, $default = '') {
 	return $default;
 }
 
+/**
+ * Return the current file content disposition ( attchement, inline, undefined )
+ * @return mixed ('': undefined, 1: inline, 2: attachment )
+ */
+function bab_getFileContentDisposition() {
+	if (!isset($GLOBALS['babFileContentDisposition']))
+		return '';
+	else
+	{
+		switch($GLOBALS['babFileContentDisposition'])
+		{
+			case 1: return 1;
+			case 2: return 2;
+			default: return '';
+		}
+	}
+
+}
+
+
 ?>

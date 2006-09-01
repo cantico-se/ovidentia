@@ -927,8 +927,8 @@ function bab_getDocumentArticle( $idf )
 
 	if( strtolower(bab_browserAgent()) == "msie")
 		header('Cache-Control: public');
-	$inl = "";
-	if( $inl == "1" )
+	$inl = bab_getFileContentDisposition() == 1? 1: '';
+	if( $inl == '1' )
 		header("Content-Disposition: inline; filename=\"$file\""."\n");
 	else
 		header("Content-Disposition: attachment; filename=\"$file\""."\n");
