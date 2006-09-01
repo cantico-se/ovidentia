@@ -1628,6 +1628,7 @@ CREATE TABLE `bab_dg_groups` (
   `approbations` enum('N','Y') NOT NULL default 'N',
   `filemanager` enum('N','Y') NOT NULL default 'N',
   `orgchart` enum('N','Y') NOT NULL default 'N',
+  `taskmanager` enum('N','Y') NOT NULL default 'N',
   `id_group` int(10) unsigned default NULL,
   PRIMARY KEY  (`id`),
   KEY `id_group` (`id_group`)
