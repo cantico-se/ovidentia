@@ -6944,7 +6944,7 @@ function upgrade587to588()
 
 	}
 
-	if (!bab_isTableField(BAB_DG_GROUPS_TBL, 'ldap_decoding_type')) {
+	if (!bab_isTableField(BAB_DG_GROUPS_TBL, 'color')) {
 
 		$db->db_query("ALTER TABLE ".BAB_DG_GROUPS_TBL." ADD `color` VARCHAR( 8 ) DEFAULT '' NOT NULL AFTER `description`");
 	}
