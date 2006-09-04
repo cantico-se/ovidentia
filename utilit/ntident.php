@@ -128,29 +128,23 @@ if (isset($NTidUser) && $GLOBALS['BAB_SESS_NTREGISTER'] && isset($_COOKIE['ntide
 
 
 if( $GLOBALS['BAB_SESS_NTREGISTER'] && isset($_COOKIE['ntident']) && $_COOKIE['ntident'] == "connexion")
-	{
-	$babBody->script .= 
-		'//-->
-	</script>
-	<script type="text/javascript">
-	<!--
-	var WshShell = 0;
-	var strLoggedUser
-	function loggedUser()
-	{
-		try {
-    		WshShell = new ActiveXObject("WScript.Network");
-    		query = \'\' + this.location;
-    		if ( query.indexOf(\'?\') != -1 && query.indexOf(\'NTidUser\') == -1)
-    			{window.location.href = query+"&NTidUser="+escape(WshShell.Username);}
-    		else if (query.indexOf(\'NTidUser\') == -1)
-    			{window.location.href = "'.$babPhpSelf.'?NTidUser="+escape(WshShell.Username);}
-			}
-		catch(e)
-			{}
-	}
-	loggedUser();';
-	}
+    {
+    $babBody->script .= 
+        '//-->
+    </script>
+    <script type="text/javascript"> 
+    <!--
+    try {
+           var WshShell = new ActiveXObject("WScript.Network");
+           var query = \'\' + this.location;
+           if ( query.indexOf(\'?\') != -1 && query.indexOf (\'NTidUser\') == -1) {
+            window.location.href = query+"&NTidUser="+escape(WshShell.Username);
+        } else if (query.indexOf(\'NTidUser\') == -1) {
+            window.location.href = "'.$babPhpSelf.'?NTidUser="+escape( WshShell.Username);
+        }
+    } catch(e) { window.status = e.message; }
+    ';
+    }
 
 if( $GLOBALS['BAB_SESS_NTREGISTER2'] && $GLOBALS['BAB_SESS_USERID'] )
 	$babCnxLink = 0;
