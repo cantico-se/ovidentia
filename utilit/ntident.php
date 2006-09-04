@@ -50,6 +50,8 @@ function NTuserLogin($nickname)
 				{
 				$_SESSION['BAB_SESS_NTREGISTER'] = true;
 				$_SESSION['BAB_SESS_NICKNAME'] = $arr['nickname'];
+				$_SESSION['BAB_SESS_FIRSTNAME'] = $arr['firstname'];
+				$_SESSION['BAB_SESS_LASTNAME'] = $arr['lastname'];
 				$_SESSION['BAB_SESS_USER'] = bab_composeUserName($arr['firstname'], $arr['lastname']);
 				$_SESSION['BAB_SESS_EMAIL'] = $arr['email'];
 				$_SESSION['BAB_SESS_USERID'] = $arr['id'];
@@ -57,6 +59,8 @@ function NTuserLogin($nickname)
 				
 				$GLOBALS['BAB_SESS_NTREGISTER'] = true;
 				$GLOBALS['BAB_SESS_NICKNAME'] = $_SESSION['BAB_SESS_NICKNAME'];
+				$GLOBALS['BAB_SESS_FIRSTNAME'] = $_SESSION['BAB_SESS_FIRSTNAME'];
+				$GLOBALS['BAB_SESS_LASTNAME'] = $_SESSION['BAB_SESS_LASTNAME'];
 				$GLOBALS['BAB_SESS_USER'] = $_SESSION['BAB_SESS_USER'];
 				$GLOBALS['BAB_SESS_EMAIL'] = $_SESSION['BAB_SESS_EMAIL'];
 				$GLOBALS['BAB_SESS_USERID'] = $_SESSION['BAB_SESS_USERID'];
@@ -65,6 +69,8 @@ function NTuserLogin($nickname)
 			else
 				{
 				$GLOBALS['BAB_SESS_NICKNAME'] = $arr['nickname'];
+				$GLOBALS['BAB_SESS_FIRSTNAME'] = $arr['firstname'];
+				$GLOBALS['BAB_SESS_LASTNAME'] = $arr['lastname'];
 				$GLOBALS['BAB_SESS_USER'] = bab_composeUserName($arr['firstname'], $arr['lastname']);
 				$GLOBALS['BAB_SESS_EMAIL'] = $arr['email'];
 				$GLOBALS['BAB_SESS_USERID'] = $arr['id'];
