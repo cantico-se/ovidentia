@@ -467,10 +467,8 @@ function unzipcore()
 					}
 
 
-				if (!bab_upgrade($new_dir, $GLOBALS['message'])) {
-						$babBody->msgerror = bab_translate('ERROR');
-						return false;
-					}
+				header('location:'.$GLOBALS['babUrlScript'].'?tg=version&idx=upgrade');
+				exit;
 				}
 			}
 		else
