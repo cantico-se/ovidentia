@@ -457,7 +457,7 @@ a:hover {
 		{
 		?>
 		<p><?php echo $trans->str('Welcome to ovidentia setup') ?></p>
-		<form method="post" action="<? echo basename($_SERVER['PHP_SELF']) ?>">
+		<form method="post" action="<?php echo basename($_SERVER['PHP_SELF']) ?>">
 			<dl>
 				<fieldset>
 					<legend><?php echo $trans->str('database') ?></legend>
