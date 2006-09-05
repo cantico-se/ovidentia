@@ -179,6 +179,7 @@ function bab_upgrade($core_dir, &$ret)
 	{
 		$filename = "config.php";
 
+		clearstatcache();
 		$file = @fopen($filename, "r");
 		$txt = fread($file, filesize($filename));
 		fclose($file);
