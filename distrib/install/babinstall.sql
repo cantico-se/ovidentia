@@ -3373,14 +3373,14 @@ CREATE TABLE bab_tskmgr_working_hours (
 # --------------------------------------------------------
 
 # 
-# Structure de la table `bab_task_list_filter`
+# Structure de la table `bab_tskmgr_task_list_filter`
 # 
 
-CREATE TABLE bab_task_list_filter (
+CREATE TABLE bab_tskmgr_task_list_filter (
  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
  `idUser` INT UNSIGNED NOT NULL,
  `idProject` INT NOT NULL,
- `idTaskClass` INT NOT NULL,
+ `iTaskClass` INT NOT NULL,
  PRIMARY KEY(`id`),
  INDEX `idUser`(`idUser`)
 );
