@@ -38,12 +38,16 @@ function bab_cleanGpc() {
 	if (1 !== $firstcall) 
 		return;
 	$firstcall = 0;
-	function bab_slashes(&$val) {
+	function bab_slashes(&$val, $key='') {
 			if (is_array($val)) {
 				array_walk($val,'bab_slashes');
 				}
 			else
 				{
+				if( ini_get('register_globals') == 1 && isset($GLOBALS[$key]) && $GLOBALS[$key] === $val )
+					{
+					$GLOBALS[$key] =  stripslashes($val);
+					}
 				$val = stripslashes($val);
 				}
 	}
