@@ -109,7 +109,7 @@ if (trim($req2) != "")
 				else if ($he != "" && $option == "AND")
 					$like .= " AND (".$tablename." like '%".$mot."%'".$he.")";
 				else
-					$like .= " ".$db->db_escape_string($option)." ".$tablename." like '%".$mot."%'".$he;
+					$like .= " ".$babDB->db_escape_string($option)." ".$tablename." like '%".$mot."%'".$he;
 				}
 		break;
 		}
