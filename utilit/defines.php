@@ -288,5 +288,6 @@ define('BAB_TSKMGR_TASKS_RESPONSIBLES_TBL', 'bab_tskmgr_tasks_responsibles');
 define('BAB_TSKMGR_TASKS_COMMENTS_TBL', 'bab_tskmgr_tasks_comments');
 define('BAB_TSKMGR_NOTICE_TBL', 'bab_tskmgr_notice');
 define('BAB_TSKMGR_PERSONNAL_TASKS_CONFIGURATION_TBL', 'bab_tskmgr_personnal_tasks_configuration');
+define('BAB_TSKMGR_TASK_LIST_FILTER_TBL', 'bab_tskmgr_task_list_filter');
 
 ?>

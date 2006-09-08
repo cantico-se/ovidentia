@@ -245,7 +245,7 @@ function displayProjectsSpacesList()
 						$this->getUrl(BAB_TM_IDX_DISPLAY_TASK_FORM, $iIdProjectSpace, $iIdProject) . 
 						'&iIdTask=' . $datas['id'] . '&sFromIdx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST : null;
 					
-					$oTaskElement =& $this->createElement($this->m_dnt . '_' . $datas['id'], $this->m_dnt, $datas['taskNumber'], 
+					$oTaskElement =& $this->createElement($this->m_dnt . '_' . $datas['id'], $this->m_dnt, $datas['shortDescription'], 
 						$datas['description'], $sTaskUrl);
 						
                		$this->appendElement($oTaskElement, $this->m_dnp . '_' . $iIdProject);
@@ -256,9 +256,10 @@ function displayProjectsSpacesList()
 		function createPersonnalTaskSubTree()
 		{
 			$oTmCtx =& getTskMgrContext();
-			if(BAB_TM_PERSONNAL_TASK_OWNER === $oTmCtx->getUserProfil())
+			
+//			if(BAB_TM_PERSONNAL_TASK_OWNER === $oTmCtx->getUserProfil())
 			{
-				$oPersTaskElement =& $this->createElement($this->m_iIdPersTaskElement, 'snps', bab_translate("Personnal Task"), 'description', null);
+				$oPersTaskElement =& $this->createElement($this->m_iIdPersTaskElement, 'snps', bab_translate("Personnal task"), 'description', null);
 				
 				$oPersTaskElement->addAction('Add',
 	               bab_translate('Add'), $GLOBALS['babSkinPath'] . 'images/Puces/edit_add.png', 
@@ -284,7 +285,7 @@ function displayProjectsSpacesList()
 					$sTaskUrl = $this->getUrl(BAB_TM_IDX_DISPLAY_TASK_FORM, 0, 0) . '&iIdTask=' . $datas['id'] .
 					 	'&sFromIdx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST;
 					
-					$oTaskElement =& $this->createElement($this->m_dnt . '_' . $datas['id'], $this->m_dnt, $datas['taskNumber'], 
+					$oTaskElement =& $this->createElement($this->m_dnt . '_' . $datas['id'], $this->m_dnt, $datas['shortDescription'], 
 						$datas['description'], $sTaskUrl);
 						
                		$this->appendElement($oTaskElement, $this->m_iIdPersTaskElement);
@@ -780,28 +781,18 @@ function displayCommentaryForm()
 	$oTmCtx =& getTskMgrContext();
 	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
 	$iIdProject = $oTmCtx->getIdProject();
-	
-	if(bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject))
+	$iIdTask = $oTmCtx->getIdTask();
+
+	$iUserProfil = $oTmCtx->getUserProfil();
+
+	if(BAB_TM_PROJECT_MANAGER == $iUserProfil || BAB_TM_PERSONNAL_TASK_OWNER == $iUserProfil)
+//	if(bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject))
 	{
 		$iIdCommentary = bab_rp('iIdCommentary', 0);
 		$isPopUp = bab_rp('isPopUp', 0);
 		$tab_caption = ($iIdCommentary == 0) ? bab_translate("Add a commentary") : bab_translate("Edition of a commentary");
 		$babBody->title = $tab_caption;
 	
-		$itemMenu = array(		
-			array(
-				'idx' => BAB_TM_IDX_DISPLAY_PROJECT_COMMENTARY_LIST,
-				'mnuStr' => bab_translate("Commentaries list"),
-				'url' => $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECT_COMMENTARY_LIST . 
-				'&iIdProject=' . $iIdProject),
-			array(
-				'idx' => BAB_TM_IDX_DISPLAY_COMMENTARY_FORM,
-				'mnuStr' => $tab_caption,
-				'url' => $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_COMMENTARY_FORM . 
-				'&iIdProject=' . $iIdProject)
-		);
-		
-		add_item_menu($itemMenu);
 		
 		$oBf = & new BAB_BaseFormProcessing();
 		
@@ -809,23 +800,55 @@ function displayCommentaryForm()
 		$oBf->set_caption('modify', bab_translate("Modify"));
 		$oBf->set_caption('delete', bab_translate("Delete"));
 
-		$oBf->set_data('addIdx', BAB_TM_IDX_DISPLAY_PROJECT_COMMENTARY_LIST);
-		$oBf->set_data('addAction', BAB_TM_ACTION_ADD_PROJECT_COMMENTARY);
-		$oBf->set_data('modifyIdx', BAB_TM_IDX_DISPLAY_PROJECT_COMMENTARY_LIST);
-		$oBf->set_data('modifyAction', BAB_TM_ACTION_MODIFY_PROJECT_COMMENTARY);
-		$oBf->set_data('delIdx', BAB_TM_IDX_DISPLAY_DELETE_PROJECT_COMMENTARY);
-		$oBf->set_data('delAction', '');
-		$oBf->set_data('tg', 'usrTskMgr');
-
 		$oBf->set_data('iIdProjectSpace', $iIdProjectSpace);
 		$oBf->set_data('iIdCommentary', $iIdCommentary);
 		$oBf->set_data('iIdProject', $iIdProject);
-		$oBf->set_data('iIdTask', 0);
+		$oBf->set_data('iIdTask', $iIdTask);
 		$oBf->set_data('isPopUp', $isPopUp);
+		$oBf->set_data('delAction', '');
+		$oBf->set_data('tg', 'usrTskMgr');
+		
+		$success = false;
+		
+		if(0 == $isPopUp)
+		{
+			$itemMenu = array(		
+				array(
+					'idx' => BAB_TM_IDX_DISPLAY_PROJECT_COMMENTARY_LIST,
+					'mnuStr' => bab_translate("Commentaries list"),
+					'url' => $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECT_COMMENTARY_LIST . 
+					'&iIdProject=' . $iIdProject),
+				array(
+					'idx' => BAB_TM_IDX_DISPLAY_COMMENTARY_FORM,
+					'mnuStr' => $tab_caption,
+					'url' => $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_COMMENTARY_FORM . 
+					'&iIdProject=' . $iIdProject)
+			);
+			
+			add_item_menu($itemMenu);
+			
+			$oBf->set_data('addIdx', BAB_TM_IDX_DISPLAY_PROJECT_COMMENTARY_LIST);
+			$oBf->set_data('addAction', BAB_TM_ACTION_ADD_PROJECT_COMMENTARY);
+			$oBf->set_data('modifyIdx', BAB_TM_IDX_DISPLAY_PROJECT_COMMENTARY_LIST);
+			$oBf->set_data('modifyAction', BAB_TM_ACTION_MODIFY_PROJECT_COMMENTARY);
+			$oBf->set_data('delIdx', BAB_TM_IDX_DISPLAY_DELETE_PROJECT_COMMENTARY);
+			
+			$success = bab_getProjectCommentary($iIdCommentary, $sCommentary);
+		}
+		else 
+		{
+			$oBf->set_data('addIdx', BAB_TM_IDX_DISPLAY_TASK_COMMENTARY_LIST);
+			$oBf->set_data('addAction', BAB_TM_ACTION_ADD_TASK_COMMENTARY);
+			$oBf->set_data('modifyIdx', BAB_TM_IDX_DISPLAY_TASK_COMMENTARY_LIST);
+			$oBf->set_data('modifyAction', BAB_TM_ACTION_MODIFY_TASK_COMMENTARY);
+			$oBf->set_data('delIdx', '');
+			$oBf->set_data('delAction', BAB_TM_ACTION_DELETE_TASK_COMMENTARY);
+			
+			$success = bab_getTaskCommentary($iIdCommentary, $sCommentary);
+		}
+
 
 		$oBf->set_data('commentary', '');
-		
-		$success = bab_getProjectCommentary($iIdCommentary, $sCommentary);
 		if(false != $success)
 		{
 			$oBf->set_data('commentary', htmlentities($sCommentary, ENT_QUOTES));
@@ -898,24 +921,74 @@ function displayTaskList()
 	add_item_menu();
 	
 	
-	class BAB_TM_AddTaskForm extends BAB_BaseFormProcessing
+	class BAB_TM_TaskFilterForm extends BAB_BaseFormProcessing
 	{
-		var $aProjectList =  array();
-		var $iProjectCount = 0;
-		var $bIsOk = false;
+		var $m_aTasksFilter;
+		var $m_aTasksTypeFilter;
 		
-		function BAB_TM_AddTaskForm()
+		var $m_aSelectedFilterValues;
+		
+		function BAB_TM_TaskFilterForm()
 		{
 			$this->set_data('tg', bab_rp('tg', 'usrTskMgr'));				
-			$this->set_data('idx', BAB_TM_IDX_DISPLAY_TASK_FORM);
-			$this->set_data('isPersTaskAvailable', false);
-			$this->set_data('sPersonnalTask', bab_translate("Personnal task"));
+			$this->set_data('idx', bab_rp('tg', ''));				
 			$this->set_caption('sAddTask', bab_translate("Add a task"));
+			$this->set_caption('sFilter', bab_translate("Filter"));
 
-			$this->init();
+			$this->set_data('sFilterIdx', BAB_TM_IDX_DISPLAY_TASK_LIST);
+			$this->set_data('sFilterAction', '');
+			$this->set_data('sAddTaskIdx', BAB_TM_IDX_DISPLAY_TASK_FORM);
+			$this->set_data('sAddTaskAction', '');
+			$this->set_data('bIsAddButton', false);
+			
+			$this->m_aSelectedFilterValues = null;
+			bab_getTaskListFilter($GLOBALS['BAB_SESS_USERID'], $this->m_aSelectedFilterValues);
+			
+			$this->m_aSelectedFilterValues['iIdProject'] = (int) bab_rp('oTaskFilter', $this->m_aSelectedFilterValues['iIdProject']);
+			$this->m_aSelectedFilterValues['iTaskClass'] = (int) bab_rp('oTaskTypeFilter', $this->m_aSelectedFilterValues['iTaskClass']);
+			
+			
+			$this->set_data('iIdProjectSpace', (int) bab_rp('iIdProjectSpace', 0));
+			$this->set_data('iIdProject', (0 < $this->m_aSelectedFilterValues['iIdProject']) ? $this->m_aSelectedFilterValues['iIdProject'] : 0);
+			
+			//Task filter (-1 ==> All, -2 ==> personnal task)
+			$this->set_caption('sTask', bab_translate("Task"));
+			$this->set_data('iTaskFilterValue', -1);
+			$this->set_data('sTaskFilterSelected', '');
+			$this->set_data('sTaskFilterName', '');
+			$this->set_data('iSelectedTaskFilter', $this->m_aSelectedFilterValues['iIdProject']);
+
+			$this->m_aTasksFilter = array(
+				array('value' => -1, 'text' => bab_translate("All")));
+			
+			//Task type filter	
+			$this->set_caption('sTaskType', bab_translate("Task type"));
+			$this->set_data('iTaskTypeFilterValue', -1);
+			$this->set_data('sTaskTypeFilterSelected', '');
+			$this->set_data('sTaskTypeFilterName', '');
+			$this->set_data('iSelectedTaskTypeFilter', $this->m_aSelectedFilterValues['iTaskClass']);
+
+			$this->m_aTasksTypeFilter = array(
+				array('value' => -1, 'text' => bab_translate("All")),
+				array('value' => BAB_TM_TASK, 'text' => bab_translate("Task")),
+				array('value' => BAB_TM_CHECKPOINT, 'text' => bab_translate("Checkpoint")),
+				array('value' => BAB_TM_TODO, 'text' => bab_translate("ToDo"))
+			);
+				
+			$this->initTaskFilter();
+			
+			
+			if(-1 != $this->m_aSelectedFilterValues['id'])
+			{
+				bab_updateTaskListFilter($GLOBALS['BAB_SESS_USERID'], $this->m_aSelectedFilterValues);
+			}
+			else 
+			{
+				bab_createTaskListFilter($GLOBALS['BAB_SESS_USERID'], $this->m_aSelectedFilterValues);
+			}
 		}
 		
-		function init()
+		function initTaskFilter()
 		{
 			$oTmCtx =& getTskMgrContext();
 			$res = bab_selectProjectListByDelegation($oTmCtx->getIdDelegation());
@@ -931,33 +1004,57 @@ function displayTaskList()
 					{
 						if(bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $datas['iIdProject']))
 						{
-							$this->aProjectList[] = array('iIdProject' => $datas['iIdProject'], 
-								'sProjectName' => $datas['sProjectName']);
+							$this->m_aTasksFilter[] = array('value' => $datas['iIdProject'], 
+								'text' => $datas['sProjectName']);
 						}
 					}
 					$iIndex++;
 				}
-				$this->iProjectCount = count($this->aProjectList);
 			}
 			
-			$bIsPersonnalTaskAvailable = false;
 			$aPersTaskCreator = bab_getUserIdObjects(BAB_TSKMGR_PERSONNAL_TASK_CREATOR_GROUPS_TBL);
 			if(count($aPersTaskCreator) > 0 && isset($aPersTaskCreator[$oTmCtx->getIdDelegation()]))
 			{
-				$this->set_data('isPersTaskAvailable', true);
-				$bIsPersonnalTaskAvailable = true;
+				$this->m_aTasksFilter[] = array('value' => -2, 
+					'text' => bab_translate("Personnal task"));
 			}
 			
-			$this->bIsOk = ($bIsPersonnalTaskAvailable || 0 != $this->iProjectCount);
+			if(count($this->m_aTasksFilter) >= 2)
+			{
+				$this->set_data('bIsAddButton', true);
+			}
+			
+			reset($this->m_aTasksFilter);
+			//bab_debug($this->m_aTasksFilter);
 		}
 		
-		function getNextProject()
+		function getNextTaskFilter()
 		{
-			$datas = each($this->aProjectList);
+			$datas = each($this->m_aTasksFilter);
 			if(false != $datas)
 			{
-				$this->set_data('iIdProject', $datas['value']['iIdProject']);				
-				$this->set_data('sProjectName', $datas['value']['sProjectName']);
+				$this->get_data('iSelectedTaskFilter', $iSelectedTaskFilter);
+				$this->set_data('sTaskFilterSelected', ($iSelectedTaskFilter == $datas['value']['value']) ? 'selected="selected"' : '');
+				
+				$this->set_data('iTaskFilterValue', $datas['value']['value']);				
+				$this->set_data('sTaskFilterName', $datas['value']['text']);
+				
+				return true;				
+			}
+			return false;
+		}
+		
+		function getNextTaskTypeFilter()
+		{
+			$datas = each($this->m_aTasksTypeFilter);
+			if(false != $datas)
+			{
+				$this->get_data('iSelectedTaskTypeFilter', $iSelectedTaskTypeFilter);
+				$this->set_data('sTaskTypeFilterSelected', ($iSelectedTaskTypeFilter == $datas['value']['value']) ? 'selected="selected"' : '');
+				
+				$this->set_data('iTaskTypeFilterValue', $datas['value']['value']);				
+				$this->set_data('sTaskTypeFilterName', $datas['value']['text']);
+				
 				return true;				
 			}
 			return false;
@@ -965,24 +1062,26 @@ function displayTaskList()
 		
 		function printTemplate()
 		{
-			return bab_printTemplate($this, 'tmUser.html', 'addTask');
+			return bab_printTemplate($this, 'tmUser.html', 'taskListFilter');
 		}
 	}
 	
-	$oAddTaskForm = new BAB_TM_AddTaskForm();
-	$GLOBALS['babBody']->babecho($oAddTaskForm->printTemplate());
-
+	$oTaskFilterForm = new BAB_TM_TaskFilterForm();
+	$GLOBALS['babBody']->babecho($oTaskFilterForm->printTemplate());
+	$iTaskFilter = $oTaskFilterForm->m_aSelectedFilterValues['iIdProject'];
+	$iTaskClass = $oTaskFilterForm->m_aSelectedFilterValues['iTaskClass'];
+	
+	
 	$oMultiPage = new BAB_MultiPageBase();
 	$oMultiPage->sIdx = BAB_TM_IDX_DISPLAY_TASK_LIST;
 
-	$oMultiPage->setColumnDataSource(new BAB_TaskDS(bab_getOwnedTaskQuery(), (int) bab_rp('iPage', 1), $oMultiPage->iNbRowsPerPage));
+	$oMultiPage->setColumnDataSource(new BAB_TaskDS(bab_getOwnedTaskQuery($iTaskFilter, $iTaskClass), 
+		(int) bab_rp('iPage', 1), $oMultiPage->iNbRowsPerPage));
 	
-//	$oMultiPage->addColumnHeader(0, bab_translate("Space"), 'sProjectSpaceName');
-//	$oMultiPage->addColumnHeader(1, bab_translate("Project"), 'sProjectName');
-//	$oMultiPage->addColumnHeader(2, bab_translate("Task"), 'sTaskNumber');
-	$oMultiPage->addColumnHeader(3, bab_translate("Short description"), 'sShortDescription');
-	$oMultiPage->addColumnHeader(4, bab_translate("Start date"), 'startDate');
-	$oMultiPage->addColumnHeader(5, bab_translate("End date"), 'endDate');
+	$oMultiPage->addColumnHeader(0, bab_translate("Short description"), 'sShortDescription');
+	$oMultiPage->addColumnHeader(1, bab_translate("Type"), 'sClass');
+	$oMultiPage->addColumnHeader(2, bab_translate("Start date"), 'startDate');
+	$oMultiPage->addColumnHeader(3, bab_translate("End date"), 'endDate');
 	
 	$sTg = bab_rp('tg', 'admTskMgr');
 	$sLink = $GLOBALS['babUrlScript'] . '?tg=' . $sTg . '&idx=' . BAB_TM_IDX_DISPLAY_TASK_FORM .
@@ -1009,7 +1108,6 @@ function displayTaskForm()
 	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
 	$iIdProject = $oTmCtx->getIdProject();
 	
-	
 	if(0 != $iIdProject)
 	{
 		if(false != bab_getProject($iIdProject, $aProject))
@@ -1026,6 +1124,14 @@ function displayTaskForm()
 		$bIsTaskResp = bab_isAccessValid(BAB_TSKMGR_TASK_RESPONSIBLE_GROUPS_TBL, $iIdProject);
 		$bIsManager = bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject);
 	}
+	
+	//*
+	bab_debug('iIdProjectSpace ==> ' . $iIdProjectSpace . ' iIdProject ==> ' . 
+		$iIdProject . ' iIdTask ==> ' . $oTmCtx->m_iIdTask .
+		' UserProfil ==> ' . $oTmCtx->getUserProfil() . 
+		' bIsTaskResp ==> ' . (($bIsTaskResp) ? 'Yes' : 'No') .
+		' bIsManager ==> ' . (($bIsManager) ? 'Yes' : 'No'));
+	//*/
 	
 	if($bIsTaskResp || $bIsManager || BAB_TM_PERSONNAL_TASK_OWNER === $oTmCtx->getUserProfil())
 	{
@@ -1138,7 +1244,7 @@ function displayDeleteTaskForm()
 
 		$bf->set_caption('warning', bab_translate("This action will delete the task and all references"));
 		$bf->set_caption('message', bab_translate("Continue ?"));
-		$bf->set_caption('title', bab_translate("Task number = ") . htmlentities($oTask->m_aTask['sTaskNumber'], ENT_QUOTES));
+		$bf->set_caption('title', bab_translate("Task number = ") . htmlentities($oTask->m_aTask['sShortDescription'], ENT_QUOTES));
 	}
 	else 
 	{
@@ -1339,7 +1445,11 @@ function displayGanttChart()
 //*/
 }
 
-
+function tskmgClosePopup()
+{
+	$bf = & new BAB_BaseFormProcessing();
+	die(bab_printTemplate($bf, $GLOBALS['babAddonHtmlPath'] . 'tmUser.html', 'close_popup'));
+}
 //POST
 
 
@@ -1524,15 +1634,15 @@ function addModifyProjectCommentary()
 	{
 		$sCommentary = mysql_escape_string(trim(bab_rp('sCommentary', '')));
 		
-		if(strlen($sCommentary) > 0)
+		if(strlen(trim($sCommentary)) > 0)
 		{
 			if(0 == $iIdCommentary)
 			{
-				bab_createProjectCommentary($iIdProject, $sCommentary);
+				bab_createProjectCommentary($iIdProject, mysql_escape_string($sCommentary));
 			}
 			else 
 			{
-				bab_updateProjectCommentary($iIdCommentary, $sCommentary);
+				bab_updateProjectCommentary($iIdCommentary, mysql_escape_string($sCommentary));
 			}
 		}
 		else 
@@ -1558,6 +1668,70 @@ function deleteProjectCommentary()
 	else 
 	{
 		bab_debug('addModifyProjectCommentary: acces denied');
+	}
+}
+
+function addModifyTaskCommentary()
+{
+	$oTmCtx =& getTskMgrContext();
+	$iUserProfil = $oTmCtx->getUserProfil();
+
+	$iIdProject = $oTmCtx->getIdProject();
+	$iIdTask = $oTmCtx->getIdTask();
+	$iIdCommentary = (int) bab_rp('iIdCommentary', 0);
+
+	if(0 != $oTmCtx->m_iIdTask && (BAB_TM_PROJECT_MANAGER == $iUserProfil || BAB_TM_PERSONNAL_TASK_OWNER == $iUserProfil))
+	{
+		$sCommentary = mysql_escape_string(trim(bab_rp('sCommentary', '')));
+		
+		if(strlen(trim($sCommentary)) > 0)
+		{
+			if(0 == $iIdCommentary)
+			{
+				bab_createTaskCommentary($iIdProject, $iIdTask, mysql_escape_string($sCommentary));
+			}
+			else 
+			{
+				bab_updateTaskCommentary($iIdCommentary, mysql_escape_string($sCommentary));
+			}
+		}
+		else 
+		{
+			bab_debug('addModifyTaskCommentary: commentary empty');
+		}
+	}
+	else 
+	{
+		bab_debug('addModifyTaskCommentary: acces denied');
+	}
+	
+	if(1 == (int) bab_rp('isPopUp', 0))	
+	{
+		$bf = & new BAB_BaseFormProcessing();
+		die(bab_printTemplate($bf, $GLOBALS['babAddonHtmlPath'] . 'tmUser.html', 'close_popup'));
+	}
+}
+
+function deleteTaskCommentary()
+{
+	$oTmCtx =& getTskMgrContext();
+	$iUserProfil = $oTmCtx->getUserProfil();
+	
+	$iIdCommentary = (int) bab_rp('iIdCommentary', 0);
+
+	if(BAB_TM_PROJECT_MANAGER == $iUserProfil || BAB_TM_PERSONNAL_TASK_OWNER == $iUserProfil)
+	{
+		bab_deleteTaskCommentary($iIdCommentary);
+	}
+	else 
+	{
+		bab_debug('deleteTaskCommentary: acces denied');
+	}
+	
+	if(1 == (int) bab_rp('isPopUp', 0))	
+	{
+		$bf = & new BAB_BaseFormProcessing();
+		die(bab_printTemplate($bf, $GLOBALS['babAddonHtmlPath'] . 'tmUser.html', 'close_popup'));
 	}
 }
 
@@ -1650,7 +1824,7 @@ function deleteTask()
 			}
 		}
 
-		$sTaskNumber =& $aTaskToDel['sTaskNumber'];
+		$sTaskNumber = ((strlen(trim($aTaskToDel['sShortDescription'])) > 0) ? $aTaskToDel['sShortDescription'] : $aTaskToDel['sTaskNumber']);
 		{
 			$sProjectSpaceName = '???';
 			if(bab_getProjectSpace($iIdProjectSpace, $aProjectSpace))
@@ -1732,14 +1906,13 @@ function stopTask()
 
 function createSpecificFieldInstance()
 {
-	bab_debug('createSpecificFieldInstance()');
-	
 	$iIdProject = (int) bab_rp('iIdProject', 0);
 	$iIdTask = (int) bab_rp('iIdTask', 0);
+	$iIdSpecificField = (int) bab_rp('oSpfField', 0);
 
 	if(bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject) && 0 < $iIdTask)
 	{
-		//bab_createSpecificFieldInstance($iIdTask, $iIdSpecificField);
+		bab_createSpecificFieldInstance($iIdTask, $iIdSpecificField);
 	}
 	else 
 	{
@@ -1784,41 +1957,6 @@ upgrade585to586();
 //*/
 
 /* main */
-
-/*
-$context =& getTskMgrContext();
-if(true == $context->isUserProjectVisualizer())
-{
-	$babBody->msgerror = bab_translate("UserProjectVisualizer");
-}
-
-if(true == $context->isUserCanCreateProject())
-{
-	$babBody->msgerror = bab_translate("UserCanCreateProject");
-}
-
-if(true == $context->isUserProjectManager())
-{
-	$babBody->msgerror = bab_translate("UserProjectManager");
-}
-
-if(true == $context->isUserSuperviseProject())
-{
-	$babBody->msgerror = bab_translate("UserSuperviseProject");
-}
-
-if(true == $context->isUserManageTask())
-{
-	$babBody->msgerror = bab_translate("UserManageTask");
-}
-
-if(true == $context->isUserPersonnalTaskOwner())
-{
-	$babBody->msgerror = bab_translate("UserPersonnalTaskOwner");
-}
-//*/
-
-/* main */
 $action = isset($_POST['action']) ? $_POST['action'] : 
 	(isset($_GET['action']) ? $_GET['action'] :  
 	(isset($_POST[BAB_TM_ACTION_SET_RIGHT]) ? BAB_TM_ACTION_SET_RIGHT : '???')
@@ -1857,6 +1995,15 @@ switch($action)
 		
 	case BAB_TM_ACTION_DELETE_PROJECT_COMMENTARY:
 		deleteProjectCommentary();
+		break;
+		
+	case BAB_TM_ACTION_ADD_TASK_COMMENTARY:
+	case BAB_TM_ACTION_MODIFY_TASK_COMMENTARY:
+		addModifyTaskCommentary();
+		break;
+
+	case BAB_TM_ACTION_DELETE_TASK_COMMENTARY:
+		deleteTaskCommentary();
 		break;
 		
 	case BAB_TM_ACTION_ADD_OPTION:
@@ -2018,6 +2165,11 @@ switch($idx)
 	case BAB_TM_IDX_DISPLAY_GANTT_CHART:
 		displayGanttChart();
 		break;
+		
+	/*	
+	case BAB_TM_IDX_CLOSE_POPUP:
+		tskmgClosePopup();
+	//*/
 }
 $babBody->setCurrentItemMenu($idx);
 ?>

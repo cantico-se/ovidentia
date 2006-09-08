@@ -386,9 +386,13 @@ class BAB_TM_Context
 			else
 			{
 				$aPersTaskCreator = bab_getUserIdObjects(BAB_TSKMGR_PERSONNAL_TASK_CREATOR_GROUPS_TBL);
-				if(count($aPersTaskCreator) > 0 && isset($aPersTaskCreator[$this->m_iIdProjectSpace]))
+				if(count($aPersTaskCreator) > 0)
 				{
-					$iUserProfil = BAB_TM_PERSONNAL_TASK_OWNER;
+//					$success = array_search($this->m_iIdProjectSpace, $aPersTaskCreator);
+//					if(!is_null($success) && false !== $success)
+					{
+						$iUserProfil = BAB_TM_PERSONNAL_TASK_OWNER;
+					}
 				}
 			}
 		}

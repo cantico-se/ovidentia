@@ -181,7 +181,7 @@
 			$this->set_caption('sField', bab_translate("Field"));
 			$this->set_caption('sType', bab_translate("Type"));
 			$this->set_caption('sValue', bab_translate("Value"));
-			$this->set_caption('sAddSpf', bab_translate("Instanciate"));
+			$this->set_caption('sAddSpf', bab_translate("Create an instance"));
 			$this->set_caption('sAdd', bab_translate("Add"));
 			$this->set_caption('sModify', bab_translate("Modify"));
 			$this->set_caption('sDelete', bab_translate("Delete"));
@@ -392,11 +392,15 @@ $this->set_data('isStoppable', false);
 		var $m_aTaskResponsibles;
 		var $m_aAvailableTaskResponsible;
 		var $m_aLinkedTasks;
+		var $m_aDependingTasks;
 
 		var $m_catResult;
 		var $m_spfResult;
+		var $m_spfInstResult;
+		var $m_spfValueResult;
 		var $m_linkableTaskResult;
 		var $m_iLinkedTaskCount;
+		var $m_iDependingTasksCount;
 		
 		var $m_bIsManager;
 
@@ -409,6 +413,7 @@ $this->set_data('isStoppable', false);
 			$this->m_catResult = false;
 			$this->m_spfResult = false;
 			$this->m_linkableTaskResult = false;
+			$this->m_spfValueResult = false;
 
 			$this->m_aAvailableTaskResponsible = array();
 			$this->getTaskInfo();
@@ -426,8 +431,8 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 			$this->set_data('iMajorVersion', $iMajorVersion);
 			$this->set_data('iMinorVersion', $iMinorVersion);
 			//*/
-/*
-			$this->initCommentaries($iIdProjectSpace, $iIdProject, $iIdTask);
+//*
+			$this->initCommentaries($this->m_iIdProjectSpace, $this->m_iIdProject, $this->m_iIdTask);
 //*/			
 			$this->initFormVariables();
 		}
@@ -451,6 +456,11 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 			bab_getLinkedTasks($this->m_iIdTask, $this->m_aLinkedTasks);
 			$this->m_iLinkedTaskCount = count($this->m_aLinkedTasks);
 
+			bab_getDependingTasks($this->m_iIdTask, $this->m_aDependingTasks);
+			$this->m_iDependingTasksCount = count($this->m_aDependingTasks);
+			
+			//bab_debug('iDependingTasksCount ==> ' . $this->m_iDependingTasksCount);
+			
 			$this->set_data('isLinkable', false);
 			$this->m_linkableTaskResult = bab_selectLinkableTask($this->m_iIdProject, $this->m_iIdTask);
 			global $babDB;
@@ -462,8 +472,9 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 			bab_getAvailableTaskResponsibles($this->m_iIdProject, $this->m_aAvailableTaskResponsible);
 
 			$this->m_catResult = bab_selectAvailableCategories($this->m_iIdProject);
-			$this->m_spfResult = bab_selectAvailableSpecificFields($this->m_iIdProject);
-
+			$this->m_spfResult = bab_selectAvailableSpecificFieldClassesByProject($this->m_iIdProject);
+			$this->m_spfInstResult = bab_selectAllSpecificFieldInstance($this->m_iIdTask);
+			
 			global $babDB;
 			if($babDB->db_num_rows($this->m_spfResult))
 			{
@@ -484,7 +495,7 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 			$this->set_data('iSelectedClass', $iClassType);
 			
 			$this->set_data('sDisabledClass', 
-				(($this->m_bIsManager && 0 == $this->m_iLinkedTaskCount) ? '' : 'disabled="disabled"'));
+				(($this->m_bIsManager && 0 == $this->m_iLinkedTaskCount && 0 == $this->m_iDependingTasksCount) ? '' : 'disabled="disabled"'));
 			$this->set_data('sSelectedClass', '');
 		}
 
@@ -716,14 +727,14 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 		
 			$url = $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . 
 				BAB_TM_IDX_DISPLAY_COMMENTARY_FORM . '&isPopUp=1&iIdProjectSpace=' . $iIdProjectSpace .
-				'&iIdProject=' . $iIdProject;
+				'&iIdProject=' . $iIdProject . '&iIdTask=' . $iIdTask;
 			
 			$oList->set_caption('addCommentary', bab_translate("Add a commentary"));
 			$oList->set_data('addCommentaryUrl', $url);
 			$oList->set_data('iIdTask', $iIdTask);
 			
 			$oList->set_data('url', $url . '&iIdCommentary=');
-			$this->set_data('taskCommentaries', bab_printTemplate($oList, 'tmUser.html', 'taskCommentariesList'));
+			$this->set_data('sTaskCommentaries', bab_printTemplate($oList, 'tmUser.html', 'taskCommentariesList'));
 		}
 
 		//getNext function
@@ -794,7 +805,7 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 					$this->get_data('iSelectedPredecessor', $iSelectedPredecessor);
 					$this->set_data('sSelectedPredecessor', ($datas['id'] == $iSelectedPredecessor) ? 'checked="checked"' : '');
 					$this->set_data('iIdPredecessor', $datas['id']);
-					$this->set_data('sPredecessorNumber', $datas['taskNumber']);
+					$this->set_data('sPredecessorNumber', $datas['shortDescription']);
 					$this->set_data('iIsStarted', $datas['isStarted']);
 					return true;
 				}
@@ -835,6 +846,51 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 		{
 			static $i = 0;
 			return ($i++ == 0);
+		}
+		
+		function getNextSpecificFieldInstance()
+		{
+			global $babDB;
+			if(false != $this->m_spfInstResult)
+			{
+				$datas = $babDB->db_fetch_assoc($this->m_spfInstResult);
+				if(false != $datas)
+				{
+					$this->set_data('sSpFldInstanceName', $datas['sFieldName']);
+					$this->set_data('sSpFldInstanceType', $datas['sType']);
+					$this->set_data('sSpFldInstanceValue', $datas['sValue']);
+					$this->set_data('iSpFldInstanceClass', $datas['iType']);
+					$this->set_data('iSpFldInstanceId', $datas['iIdSpecificFieldInstance']);
+					
+					$this->set_data('sSpFldInstanceSelected', '');
+					if(BAB_TM_RADIO_FIELD == $datas['iType'])
+					{
+						$this->m_spfValueResult = bab_selectSpecificFieldClassValues($datas['iIdSpFldClass']);
+					}
+					
+					return true;
+				}
+			}
+			return false;
+		}
+		
+		function getNextSpecificFieldInstanceValue()
+		{
+			global $babDB;
+			if(false != $this->m_spfValueResult)
+			{
+				$datas = $babDB->db_fetch_assoc($this->m_spfValueResult);
+				if(false != $datas)
+				{
+					$this->get_data('sSpFldInstanceValue', $sSpFldInstanceValue);
+					$this->set_data('sSpFldInstanceSelected', ($datas['sValue'] == $sSpFldInstanceValue) ? 'selected="selected"' : '');
+					$this->set_data('sSpFldInstanceRdValue', $datas['sValue']);
+					
+					return true;
+				}
+			}
+			return false;
+			
 		}
 	}
 	
@@ -886,8 +942,9 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 		var $m_oTask					= null;
 		
 		var $m_aAvailableResponsibles	= null;
-		var $m_aLinkedTasks				= null;
+//		var $m_aLinkedTasks				= null;
 		var $m_aTaskResponsibles		= null;
+		var $m_aDependingTasks			= null;
 		
 		var $m_oSendMail				= null;
 
@@ -935,17 +992,17 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 			$this->m_iIsNotified			= BAB_TM_NO;
 			$this->m_iAnswer				= (int) bab_rp('oAnswerEnable', -1);
 			
-			$this->m_iIsLinked				= -1;
+			$this->m_iIsLinked				= (isset($_POST['oLinkedTask'])) ? BAB_TM_YES : BAB_TM_NO;
 			$this->m_iLinkType 				= -1;
 			$this->m_iIdPredecessor 		= (int) bab_rp('iPredecessor', -1);
 			$aTask = null;
-			if(-1 != $this->m_iIdPredecessor && bab_getTask($this->m_iIdPredecessor, $aTask))
+			if(BAB_TM_YES === $this->m_iIsLinked && -1 != $this->m_iIdPredecessor && bab_getTask($this->m_iIdPredecessor, $aTask))
 			{
 				$iPosition = $aTask['iPosition'] -1;
 				if( isset($_POST['oLinkType']) && isset($_POST['oLinkType'][$iPosition]) )
 				{
 					$this->m_iLinkType = (int) $_POST['oLinkType'][$iPosition];
-					$this->m_iIsLinked = (-1 != $this->m_iLinkType) ? BAB_TM_YES : BAB_TM_NO;
+//					$this->m_iIsLinked = (-1 != $this->m_iLinkType) ? BAB_TM_YES : BAB_TM_NO;
 				}
 			}
 			
@@ -981,7 +1038,7 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 				}
 				else 
 				{
-					bab_debug(__FUNCTION__ . ': LinkType error');
+					bab_debug(__CLASS__ . ' ' . __FUNCTION__ . ': LinkType error');
 				}
 			}
 
@@ -1006,9 +1063,9 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 			$this->m_iIdTaskResponsible = (int) bab_rp('iIdTaskResponsible', -1);
 
 			bab_getAvailableTaskResponsibles($this->m_iIdProject, $this->m_aAvailableResponsibles);
-			bab_getLinkedTasks($this->m_iIdTask, $this->m_aLinkedTasks);
+//			bab_getLinkedTasks($this->m_iIdTask, $this->m_aLinkedTasks);
 			bab_getTaskResponsibles($this->m_iIdTask, $this->m_aTaskResponsibles);
-			
+			bab_getDependingTasks($this->m_iIdTask, $this->m_aDependingTasks);
 			
 			if($this->m_oTask->m_isPersonnal)
 			{
@@ -1098,7 +1155,7 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 		
 		function isDateValid($sDate)
 		{
-			if(0 != trim(strlen($sDate)))
+			if('0000-00-00 00:00:00' !== $sDate && '0000-00-00 23:59:59' !== $sDate && 0 != trim(strlen($sDate)))
 			{
 				$oDate = BAB_DateTime::fromIsoDateTime($sDate);
 				return BAB_DateTime::isValidDate($oDate->_iDay, $oDate->_iMonth, $oDate->_iYear);
@@ -1136,7 +1193,7 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 			
 			$sProjectSpaceName = $this->getProjectSpaceName();
 			$sProjectName = $this->getProjectName();
-			$sBody = sprintf($sBody, $this->m_sTaskNumber, $sProjectName, $sProjectSpaceName);
+			$sBody = sprintf($sBody, ((strlen(trim($this->m_sShortDescription)) > 0) ? $this->m_sShortDescription : $this->m_sTaskNumber), $sProjectName, $sProjectSpaceName);
 			sendNotice($this->m_iIdProjectSpace, $this->m_iIdProject, $this->m_iIdTask, 
 				$iIdEvent, $sSubject, $sBody);
 		}
@@ -1150,7 +1207,7 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 			
 			$sProjectSpaceName = $this->getProjectSpaceName();
 			$sProjectName = $this->getProjectName();
-			$sBody = sprintf($sBody, $this->m_sTaskNumber, $sProjectName, $sProjectSpaceName);
+			$sBody = sprintf($sBody, ((strlen(trim($this->m_sShortDescription)) > 0) ? $this->m_sShortDescription : $this->m_sTaskNumber), $sProjectName, $sProjectSpaceName);
 			
 			if(is_null($this->m_oSendMail))
 			{
@@ -1168,7 +1225,7 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 			
 			$sProjectSpaceName = $this->getProjectSpaceName();
 			$sProjectName = $this->getProjectName();
-			$sBody = sprintf($sBody, $this->m_sTaskNumber, $sProjectName, $sProjectSpaceName);
+			$sBody = sprintf($sBody, ((strlen(trim($this->m_sShortDescription)) > 0) ? $this->m_sShortDescription : $this->m_sTaskNumber), $sProjectName, $sProjectSpaceName);
 			if(is_null($this->m_oSendMail))
 			{
 				$this->m_oSendMail = new BAB_TM_SendEmail();
@@ -1185,7 +1242,7 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 			
 			$sProjectSpaceName = $this->getProjectSpaceName();
 			$sProjectName = $this->getProjectName();
-			$sBody = sprintf($sBody, $this->m_sTaskNumber, $sProjectName, $sProjectSpaceName);
+			$sBody = sprintf($sBody, ((strlen(trim($this->m_sShortDescription)) > 0) ? $this->m_sShortDescription : $this->m_sTaskNumber), $sProjectName, $sProjectSpaceName);
 			
 			if(is_null($this->m_oSendMail))
 			{
@@ -1202,7 +1259,7 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 			
 			$sProjectSpaceName = $this->getProjectSpaceName();
 			$sProjectName = $this->getProjectName();
-			$sBody = sprintf($sBody, $this->m_sTaskNumber, $sProjectName, $sProjectSpaceName, 
+			$sBody = sprintf($sBody, ((strlen(trim($this->m_sShortDescription)) > 0) ? $this->m_sShortDescription : $this->m_sTaskNumber), $sProjectName, $sProjectSpaceName, 
 				bab_getUserName($GLOBALS['BAB_SESS_USERID']));
 			sendNotice($this->m_iIdProjectSpace, $this->m_iIdProject, $this->m_iIdTask, 
 				$iIdEvent, $sSubject, $sBody);
@@ -1223,6 +1280,8 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 
 		function isTaskValid()
 		{
+			//bab_debug(__CLASS__ . ' ' . __FUNCTION__);
+		
 			if($this->m_oTask->m_bIsEnded)
 			{
 				bab_debug(__FUNCTION__ . ' the task is ended');
@@ -1235,10 +1294,12 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 				if($this->isTaskNumberValid())
 				{
 					$success = true;
-					
+
 					//Si la tache est liée
 					if(BAB_TM_YES == $this->m_iIsLinked)
 					{
+						//bab_debug('class: ' . __CLASS__ . ' fn: ' . __FUNCTION__ . ' the task is linked');
+						
 						$success = bab_getTask($this->m_iIdPredecessor, $aTask);
 						if($success)
 						{
@@ -1492,6 +1553,7 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 					}
 					
 					$iIdOwner = (BAB_TM_PROJECT_MANAGER == $this->m_iUserProfil) ? $this->m_iIdTaskResponsible : $GLOBALS['BAB_SESS_USERID'];
+					
 					$iIsPersonnal = $this->m_oTask->m_isPersonnal ? BAB_TM_YES : BAB_TM_NO;
 					bab_createTaskInfo($iIdTask, $iIdOwner, $iIsPersonnal);
 
@@ -1557,7 +1619,7 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 				
 				$sEndDate = mysql_escape_string(trim($this->m_sEndDate));
 				$oEndDate = BAB_DateTime::fromIsoDateTime($sEndDate);
-				$oEndDate->init($oEndDate->_iYear, $oEndDate->_iMonth, $oEndDate->_iDay, 0, 0, 0);
+				$oEndDate->init($oEndDate->_iYear, $oEndDate->_iMonth, $oEndDate->_iDay, 23, 59, 59);
 				$sStartDate = date('Y-m-d H:i:s', $oEndDate->getTimeStamp());
 				
 				$aTask['sStartDate']			= $sStartDate;
@@ -1611,7 +1673,7 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 				
 				$sEndDate = mysql_escape_string(trim($this->m_sEndDate));
 				$oEndDate = BAB_DateTime::fromIsoDateTime($sEndDate);
-				$oEndDate->init($oEndDate->_iYear, $oEndDate->_iMonth, $oEndDate->_iDay, 0, 0, 0);
+				$oEndDate->init($oEndDate->_iYear, $oEndDate->_iMonth, $oEndDate->_iDay, 23, 59, 59);
 				$sStartDate = date('Y-m-d H:i:s', $oEndDate->getTimeStamp());
 				
 				$aTask['sStartDate']			= $sStartDate;
@@ -1639,8 +1701,7 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 	
 	class BAB_TM_TaskUpdaterValidator extends BAB_TM_MgrTaskValidatorBase
 	{
-		var $m_bIsNewTaskResponsable = false;
-		var $m_iIdOldTaskResponsible = 0;
+		var $m_bIsClassChanged = false;
 		
 		function BAB_TM_TaskUpdaterValidator()
 		{
@@ -1650,90 +1711,27 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 		function init()
 		{
 			parent::init();
-
-			switch($this->m_iUserProfil)
-			{
-				case BAB_TM_PROJECT_MANAGER:
-					$this->projectManagerInit();
-					break;
-				case BAB_TM_PERSONNAL_TASK_OWNER:
-					$this->personnalTaskOwnerInit();
-					break;
-				case BAB_TM_TASK_RESPONSIBLE:
-					$this->taskResponsibleInit();
-					break;
-			}
-		}
-		
-		function projectManagerInit()
-		{
+			
 			$aTask =& $this->m_oTask->m_aTask;
 			
-			if(!$this->m_oTask->m_bIsStarted)
+			//Si on a changé de type
+			if($this->m_iClass != $aTask['iClass'])
 			{
-				$this->m_iClass				= (0 == $this->m_aLinkedTasks) ? $this->m_iClass : $aTask['iClass'];
-//				$this->m_iCompletion		= $aTask['iCompletion'];
-			}
-			else
-			{
-				$this->defaultInitValueForStartedTask();
-			}
-			
-			if(false != ($aResponsible = each($this->m_aTaskResponsibles)))
-			{
-				reset($this->m_aTaskResponsibles);
-				$this->m_bIsNewTaskResponsable = ($this->m_iIdTaskResponsible != (int) $aResponsible['value']['id']);
-				$this->m_iIdOldTaskResponsible = (int) $aResponsible['value']['id'];
-			}
-		}
-		
-		function personnalTaskOwnerInit()
-		{
-			$aTask =& $this->m_oTask->m_aTask;
-/*			
-			if(!$this->m_oTask->m_bIsStarted)
-			{
-				$this->m_iClass				= (0 == $this->m_aLinkedTasks) ? $this->m_iClass : $aTask['iClass'];
-//				$this->m_iCompletion		= $aTask['iCompletion'];
-			}
-			else
-			{
-				$this->defaultInitValueForStartedTask();
-			}
-//*/
-		}
-
-		function taskResponsibleInit()
-		{
-			if($this->m_oTask->m_bIsStarted)
-			{
-				$this->defaultInitValueForStartedTask();
-				
-				if(false != ($aResponsible = each($this->m_aTaskResponsibles)))
+				//si c'était une tâche
+				if(BAB_TM_TASK == $aTask['iClass']) 
 				{
-					$this->m_iIdTaskResponsible = (int) $aResponsible['value']['id'];
+					if( BAB_TM_PERSONNAL_TASK_OWNER == $this->m_iUserProfil || 
+						BAB_TM_PROJECT_MANAGER == $this->m_iUserProfil    		)
+					{
+						$aTask['iClass'] = $this->m_iClass;
+						$this->m_bIsClassChanged = true;
+					}
 				}
-			}
-		}
-		
-		function defaultInitValueForStartedTask()
-		{
-			$aTask =& $this->m_oTask->m_aTask;
-			
-			$this->m_iClass				= $aTask['iClass'];
-			$this->m_iIsLinked			= $aTask['iIsLinked'];
-//			$this->m_iDuration			= $aTask['iDuration'];
-			$this->m_sPlannedStartDate	= $aTask['sPlannedStartDate'];
-			$this->m_sPlannedEndDate	= $aTask['sPlannedEndDate'];
-			$this->m_sStartDate			= $aTask['sStartDate'];
-			$this->m_sEndDate			= $aTask['sEndDate'];
-			
-			$this->m_iLinkType 			= -1; 
-			$this->m_iIdPredecessor 	= -1;
-			if(count($this->m_aLinkedTasks))
-			{
-				$this->m_iLinkType 		= $this->m_aLinkedTasks['iLinkType']; 
-				$this->m_iIdPredecessor = $this->m_aLinkedTasks['iIdPredecessorTask'];
+				else
+				{
+					$aTask['iClass'] = $this->m_iClass;
+					$this->m_bIsClassChanged = true;
+				}
 			}
 		}
 		
@@ -1784,28 +1782,18 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 				{
 					$aTask['sEndDate'] = date("Y-m-d");
 					$aTask['iParticipationStatus'] = BAB_TM_ENDED;
-					bab_startDependingTask($this->m_iIdProjectSpace, $this->m_iIdProject, 
-						$this->m_iIdTask, BAB_TM_END_TO_START);
+					/*bab_startDependingTask($this->m_iIdProjectSpace, $this->m_iIdProject, 
+						$this->m_iIdTask, BAB_TM_END_TO_START);//*/
 				}
-
+				
 				if(bab_updateTask($this->m_iIdTask, $aTask))
 				{
 					require_once $GLOBALS['babInstallPath'] . 'tmSendMail.php';
-					
+
+					$this->processTaskResponsible($iProposable);
 					$iIsNotified = BAB_TM_NO;
-					if($this->m_bIsNewTaskResponsable)
-					{
-						$iIsNotified = BAB_TM_YES;
-						$this->noticeNotAnyMoreTaskResponsible($this->m_iIdOldTaskResponsible);
-						if(BAB_TM_YES == $iProposable)
-						{
-							$this->noticeTaskResponsibleProposed($this->m_iIdTaskResponsible);
-						}
-						else
-						{
-							$this->noticeNewTaskResponsible($this->m_iIdTaskResponsible);
-						}
-					}
+					
+					$this->processTaskLink();
 					
 					//bab_debug('iUserProfil ==> ' . $this->m_iUserProfil);	
 					if(BAB_TM_PROJECT_MANAGER == $this->m_iUserProfil)
@@ -1816,9 +1804,195 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 					{
 						$this->noticeTaskUpdatedBy(BAB_TM_EV_TASK_UPDATED_BY_RESP);
 					}
+					
+					$this->processSpecificFieldIntance();
 				}
 				return true;
-			}			
+			}
+			return false;			
+		}
+		
+		function processTaskResponsible($iProposable)
+		{
+			$bIsNewTaskResponsible = false;
+			$iIdOldTaskResponsible = 0;
+			
+			if(false === $this->m_bIsClassChanged)
+			{
+				if(false !== ($aResponsible = each($this->m_aTaskResponsibles)))
+				{
+					reset($this->m_aTaskResponsibles);
+					$bIsNewTaskResponsible = ($this->m_iIdTaskResponsible != (int) $aResponsible['value']['id']);
+					$iIdOldTaskResponsible = (int) $aResponsible['value']['id'];
+					
+					/*
+					bab_debug('bIsNewTaskResponsible ==> ' . (($bIsNewTaskResponsible) ? 'YES' : 'NO') . 
+						' iIdOldTaskResponsible ==> ' . $iIdOldTaskResponsible . 
+						' iIdTaskResponsible ==> ' . $this->m_iIdTaskResponsible);
+					//*/
+						
+					if($bIsNewTaskResponsible)
+					{
+						if(0 != $iIdOldTaskResponsible)
+						{
+							$this->noticeNotAnyMoreTaskResponsible($iIdOldTaskResponsible);
+						}
+					}
+				}
+			}
+			
+			if(BAB_TM_PROJECT_MANAGER == $this->m_iUserProfil)
+			{
+				bab_deleteTaskResponsibles($this->m_iIdTask);
+				$aTaskResponsibles = array($this->m_iIdTaskResponsible);
+				bab_setTaskResponsibles($this->m_iIdTask, $aTaskResponsibles);
+				
+				$iIdOwner = (BAB_TM_PROJECT_MANAGER == $this->m_iUserProfil) ? $this->m_iIdTaskResponsible : $GLOBALS['BAB_SESS_USERID'];
+				$iIsPersonnal = $this->m_oTask->m_isPersonnal ? BAB_TM_YES : BAB_TM_NO;
+				bab_updateTaskInfo($this->m_iIdTask, $iIdOwner, $iIsPersonnal);
+			}
+
+			if(BAB_TM_YES == $iProposable)
+			{
+				$this->noticeTaskResponsibleProposed($this->m_iIdTaskResponsible);
+			}
+			else
+			{
+				$this->noticeNewTaskResponsible($this->m_iIdTaskResponsible);
+			}
+		}
+		
+		function processTaskLink()
+		{
+			bab_deleteTaskLinks($this->m_iIdTask);
+				
+			if(BAB_TM_YES == $this->m_iIsLinked && (BAB_TM_PROJECT_MANAGER == $this->m_iUserProfil || BAB_TM_PERSONNAL_TASK_OWNER == $this->m_iUserProfil))
+			{
+				$aPredecessors = array(
+					array('iIdPredecessorTask' => $this->m_iIdPredecessor, 'iLinkType' => $this->m_iLinkType)
+				);
+					
+				bab_setTaskLinks($this->m_iIdTask, $aPredecessors);
+			}
+		}
+
+		
+		function processSpecificFieldIntance()
+		{
+			$aDeletableSpfObjects = isset($_POST['aDeletableSpfObjects']) ? $_POST['aDeletableSpfObjects'] : array();
+			$aSpFldInstanceValue = isset($_POST['aSpFldInstanceValue']) ? $_POST['aSpFldInstanceValue'] : array();
+			
+			foreach($aSpFldInstanceValue as $key => $value)
+			{
+				if(!isset($aDeletableSpfObjects[$key]))
+				{
+					bab_updateSpecificInstanceValue($key, mysql_escape_string(trim($value)));
+				}
+				else
+				{
+					bab_deleteSpecificFieldInstance($key);
+				}
+			}
+		}
+
+		
+		function saveCheckPoint()
+		{
+			if($this->isCheckPointValid())
+			{
+				bab_debug(__CLASS__ . ' ' . __FUNCTION__ . ' is Valid');
+//*				
+				$aTask =& $this->m_oTask->m_aTask;
+				
+				$aTask['iIdProject']			= $this->m_iIdProject;
+				$aTask['sTaskNumber']			= mysql_escape_string($this->m_sTaskNumber);
+				$aTask['sDescription']			= mysql_escape_string($this->m_sDescription);
+				$aTask['sShortDescription']		= mysql_escape_string(substr($this->m_sShortDescription, 0, 255));
+				$aTask['iIdCategory']			= $this->m_iIdCategory;
+				$aTask['sModified']				= $this->m_sModified;
+				$aTask['iIdUserModified']		= $this->m_iIdUserModified;
+				//$aTask['iClass']				= $this->m_iClass;
+				$aTask['iParticipationStatus']	= 0;
+				$aTask['iIsLinked']				= BAB_TM_NO;
+				$aTask['iIdCalEvent']			= 0;
+				$aTask['sHashCalEvent']			= '';
+				$aTask['iDuration']				= 0;
+				$aTask['iMajorVersion']			= $this->m_iMajorVersion;
+				$aTask['iMinorVersion']			= $this->m_iMinorVersion;
+				$aTask['sColor']				= $this->m_sColor;
+				$aTask['iPosition']				= $this->m_iPosition;
+				$aTask['iCompletion']			= 0;
+				
+				$sEndDate = mysql_escape_string(trim($this->m_sEndDate));
+				$oEndDate = BAB_DateTime::fromIsoDateTime($sEndDate);
+				$oEndDate->init($oEndDate->_iYear, $oEndDate->_iMonth, $oEndDate->_iDay, 23, 59, 59);
+				
+				$aTask['sStartDate']			= '';
+				$aTask['sEndDate'] 				= $sEndDate;
+				$aTask['iIsNotified']			= BAB_TM_NO;
+				
+				$bSuccess = bab_updateTask($this->m_iIdTask, $aTask);
+				if(true === $bSuccess && -1 !== $this->m_iIdTaskResponsible)
+				{
+					if(BAB_TM_PROJECT_MANAGER == $this->m_iUserProfil)
+					{
+						//Faire ce qui suit dans la fn de sauvegarde
+						bab_deleteTaskResponsibles($this->m_iIdTask);
+					}
+				}
+				return (false !== $bSuccess);
+//*/
+			}
+			return false;
+		}
+		
+		function saveToDo()
+		{
+			if($this->isToDoValid())
+			{
+				bab_debug(__CLASS__ . ' ' . __FUNCTION__ . ' is Valid');
+				
+				$aTask =& $this->m_oTask->m_aTask;
+				
+				$aTask['iIdProject']			= $this->m_iIdProject;
+				$aTask['sTaskNumber']			= mysql_escape_string($this->m_sTaskNumber);
+				$aTask['sDescription']			= mysql_escape_string($this->m_sDescription);
+				$aTask['sShortDescription']		= mysql_escape_string(substr($this->m_sShortDescription, 0, 255));
+				$aTask['iIdCategory']			= $this->m_iIdCategory;
+				$aTask['sModified']				= $this->m_sModified;
+				$aTask['iIdUserModified']		= $this->m_iIdUserModified;
+				//$aTask['iClass']				= $this->m_iClass;
+				$aTask['iParticipationStatus']	= 0;
+				$aTask['iIsLinked']				= BAB_TM_NO;
+				$aTask['iIdCalEvent']			= 0;
+				$aTask['sHashCalEvent']			= '';
+				$aTask['iDuration']				= 0;
+				$aTask['iMajorVersion']			= $this->m_iMajorVersion;
+				$aTask['iMinorVersion']			= $this->m_iMinorVersion;
+				$aTask['sColor']				= $this->m_sColor;
+				$aTask['iPosition']				= $this->m_iPosition;
+				$aTask['iCompletion']			= 0;
+				
+				$sEndDate = mysql_escape_string(trim($this->m_sEndDate));
+				$oEndDate = BAB_DateTime::fromIsoDateTime($sEndDate);
+				$oEndDate->init($oEndDate->_iYear, $oEndDate->_iMonth, $oEndDate->_iDay, 23, 59, 59);
+				
+				$aTask['sStartDate']			= '';
+				$aTask['sEndDate'] 				= $sEndDate;
+				$aTask['iIsNotified']			= BAB_TM_NO;
+				
+				$bSuccess = bab_updateTask($this->m_iIdTask, $aTask);
+				if(true === $bSuccess && -1 !== $this->m_iIdTaskResponsible)
+				{
+					if(BAB_TM_PROJECT_MANAGER == $this->m_iUserProfil)
+					{
+						//Faire ce qui suit dans la fn de sauvegarde
+						bab_deleteTaskResponsibles($this->m_iIdTask);
+					}
+				}
+				return (false !== $bSuccess);
+			}
+			return false;
 		}
 	}
 ?>

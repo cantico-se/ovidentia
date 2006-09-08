@@ -24,11 +24,8 @@
 	include "base.php";
 	require_once($babInstallPath . 'utilit/baseFormProcessingClass.php');
 	require_once($babInstallPath . 'utilit/tableWrapperClass.php');
+	require_once($babInstallPath . 'utilit/tmdefines.php');
 	
-	define ('BAB_TM_TEXT_FIELD', 0);
-	define ('BAB_TM_TEXT_AREA_FIELD', 1);
-	define ('BAB_TM_RADIO_FIELD', 2);
-
 	
 class BAB_TM_FieldBase extends BAB_BaseFormProcessing
 {

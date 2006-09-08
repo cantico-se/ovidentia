@@ -1028,7 +1028,7 @@ class BAB_TM_Gantt
 			$this->m_iTaskPosY = $this->m_iTaskPosY + $this->m_iHeight;
 			$this->m_iTaskWidth = 200 - 1;
 			$this->m_sTaskColor = 'EFEFEF';
-			$this->m_sTask = $datas['sTaskNumber'];
+			$this->m_sTask = $datas['sShortDescription'];
 
 $this->_iPosX = $this->m_iTaskWidth;
 			

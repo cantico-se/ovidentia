@@ -44,7 +44,7 @@ class BAB_TM_ListBase extends BAB_BaseFormProcessing
 		$this->set_caption('name', bab_translate("Name"));
 		$this->set_caption('taskNumber', bab_translate("Task number"));
 		$this->set_caption('description', bab_translate("Description"));
-		$this->set_caption('commentary', bab_translate("Commentary"));
+		$this->set_caption('commentary', bab_translate("Comment"));
 		$this->set_caption('date', bab_translate("Date"));
 
 		$this->set_data('name', '');
