@@ -338,6 +338,122 @@ class bab_Addon extends bab_handler
 }
 
 
+class bab_ObjectsInfo extends bab_handler
+{
+	var $res;
+	var $fields = array();
+	var $ovmlfields = array();
+	var $index;
+	var $count;
+
+	function bab_ObjectsInfo( &$ctx)
+	{
+		global $babBody, $babDB;
+		$this->bab_handler($ctx);
+		$this->count = 0;
+		$type = $ctx->get_value('type');
+		if( $type !== false && $type !== '' )
+		{
+			$type = strtolower(trim($type));
+			switch( $type )
+			{
+				case 'folder':
+					$folder = $ctx->get_value('folder');
+					if( $folder !== false && $folder !== '' )
+					{
+					$this->fields = array('id', 'folder');
+					$this->ovmlfields = array('Id', 'Folder');
+					$this->res = $babDB->db_query('select id, folder from '.BAB_FM_FOLDERS_TBL.' where folder=\''.$babDB->db_escape_string($folder).'\'');
+					$this->count = $babDB->db_num_rows($this->res);
+					}
+				case 'articlecategories':
+					$category = $ctx->get_value('category');
+					if( $category !== false && $category !== '' )
+					{
+						$parent = $ctx->get_value('parent');
+						$parents = array();
+						if( $parent !== false && $parent !== '' )
+						{
+						$parents = array_reverse(explode('/', $parent));
+						}
+						$this->fields = array('id', 'title');
+						$this->ovmlfields = array('Id', 'Category');
+						$leftjoin = '';
+						$where = ' where c0.title=\''.$babDB->db_escape_string($category).'\'';
+						$req = 'select c0.title, c0.id from '.BAB_TOPICS_CATEGORIES_TBL.' c0';
+						for( $k=0; $k < count($parents); $k++ )
+						{
+							$leftjoin .= ' left join '.BAB_TOPICS_CATEGORIES_TBL.' c'.($k+1).' on c'.($k+1).'.id = c'.$k.'.id_parent';
+							$where .= ' and  c'.($k+1).'.title=\''.$babDB->db_escape_string($parents[$k]).'\'';
+						}
+						$this->res = $babDB->db_query($req.$leftjoin.$where);
+						$this->count = $babDB->db_num_rows($this->res);
+					}
+					break;
+				case 'articletopics':
+					$topic = $ctx->get_value('topic');
+					if( $topic !== false && $topic !== '' )
+					{
+						$parent = $ctx->get_value('parent');
+						$parents = array();
+						if( $parent !== false && $parent !== '' )
+						{
+						$parents = array_reverse(explode('/', $parent));
+						}
+						$this->fields = array('id', 'category');
+						$this->ovmlfields = array('Id', 'Topic');
+						$leftjoin = '';
+						$where = ' where c0.category=\''.$babDB->db_escape_string($topic).'\'';
+						$req = 'select c0.category, c0.id from '.BAB_TOPICS_TBL.' c0';
+						for( $k=0; $k < count($parents); $k++ )
+						{
+							$leftjoin .= ' left join '.BAB_TOPICS_CATEGORIES_TBL.' c'.($k+1).' on c'.($k+1).'.id = c'.$k.($k==0? '.id_cat':'.id_parent');
+							$where .= ' and  c'.($k+1).'.title=\''.$babDB->db_escape_string($parents[$k]).'\'';
+						}
+						$this->res = $babDB->db_query($req.$leftjoin.$where);
+						$this->count = $babDB->db_num_rows($this->res);
+					}
+					break;
+				case 'user':
+					$nickname = $ctx->get_value('nickname');
+					if( $nickname !== false && $nickname !== '' )
+					{
+					$this->fields = array('id', 'nickname', 'firstname', 'lastname', 'mn');
+					$this->ovmlfields = array('Id', 'Nickname', 'Firstname', 'Lastname', 'Middlename');
+					$this->res = $babDB->db_query('select u.id, u.nickname, u.firstname, u.lastname, d.mn from '.BAB_USERS_TBL.' u left join '.BAB_DBDIR_ENTRIES_TBL.' d on u.id=d.id_user where d.id_directory=0 and u.nickname=\''.$babDB->db_escape_string($nickname).'\'');
+					$this->count = $babDB->db_num_rows($this->res);
+					}
+					break;
+				default:
+					break;
+			}
+		}
+		$this->ctx->curctx->push('CCount', $this->count);
+	}
+
+	function getnext()
+	{
+		global $babBody,$babDB;
+		if( $this->idx < $this->count)
+		{
+			$arr = $babDB->db_fetch_array($this->res);
+			$this->ctx->curctx->push('CIndex', $this->idx);
+			for( $k=0; $k < count($this->fields); $k++ )
+			{
+			$this->ctx->curctx->push('Object'.$this->ovmlfields[$k], $arr[$this->fields[$k]]);
+			}
+			$this->idx++;
+			$this->index = $this->idx;
+			return true;
+		}
+		else
+		{
+			$this->idx=0;
+			return false;
+		}
+	}
+}
+
 class bab_ArticlesHomePages extends bab_handler
 {
 	var $IdEntries = array();
