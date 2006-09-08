@@ -3,55 +3,57 @@
 
 <script type="text/javascript">
 
-function table_name(objname)
+function table_name(obj)
 {
-	if (objname.name.match(/\[(.*?)\]\[/i))
+	if (obj.name.match(/\[(.*?)\]\[/))
 		return RegExp.$1;
 }
 
-function check_childs(checkbox)
+function checkbox_onClick()
 {
-	obj = checkbox.parentNode;
-	while ('' == obj.id)
-		{
-		obj = obj.parentNode;
-		}
-	
-	var tree = obj.getElementsByTagName('input');
-	for (var j = 0; j < tree.length ; j++)
-		{
-		if ((checkbox.name != tree[j].name || checkbox.value != tree[j].value) && table_name(checkbox) == table_name(tree[j]))
-			{
-			tree[j].disabled = checkbox.checked;
-			tree[j].checked = checkbox.checked;
-			}
-		}
+	checkChildren(this);
 }
 
-function macl_set_checkbox_events() {
+function checkChildren(checkbox)
+{
+	var obj = checkbox.parentNode;
+	while ('' == obj.id) {
+		obj = obj.parentNode;
+	}
 
-	var checkbox = document.getElementById('bab_groups_tree').getElementsByTagName('input');
-	for(var i = 0; i < checkbox.length; i++ )
-		{
-		/*
-		if (table_name(checkbox[i]) != table) {
-			checkbox[i].style.display = 'none';
-			}
-		else {
-			checkbox[i].style.display = '';
-			}
-		*/
-		if ('tree' == checkbox[i].name.substr(0,4) || ('group' == checkbox[i].name.substr(0,5) && checkbox[i].value < 3))
-			{
-			checkbox[i].onclick = function() {
-					check_childs(this);
-				}
+	var inputs = obj.getElementsByTagName('INPUT');
+	window.console && window.console.debug(checkbox.name + ' ' + inputs.length);
+	var nbInputs = inputs.length
+	for (var i = 0; i < nbInputs; i++) {
+//	for (var i = 0; i < inputs.length; i++) {
+		var input = inputs[i];
+		if (checkbox.bab_tableName == input.bab_tableName && checkbox != input) {
+			input.disabled = input.checked = checkbox.checked;
+		}
+	}
 
-			if (checkbox[i].checked) {
-					check_childs(checkbox[i]);
-				}
+}
+
+function macl_set_checkbox_events()
+{
+	var nbChecked = 0;
+	var checkboxes = document.getElementById('bab_groups_tree').getElementsByTagName('INPUT');
+	var nbCheckboxes = checkboxes.length;
+	for (var i = 0; i < nbCheckboxes; i++) {
+		var checkbox = checkboxes[i];
+		checkbox.bab_tableName = table_name(checkbox);
+	}
+	for (var i = 0; i < nbCheckboxes; i++) {
+		var checkbox = checkboxes[i];
+		var nameStart = checkbox.name.charAt(0);
+		if ((checkbox.value < 3 && 'g' == nameStart) || 't' == nameStart) {
+			checkbox.onclick = checkbox_onClick;
+			if (checkbox.checked && !checkbox.disabled) {
+				nbChecked++;
+				checkChildren(checkbox);
 			}
 		}
+	}
 }
 
 function macl_switch_view_on(table, tablenum)
@@ -164,10 +166,33 @@ function hideNonMultipleTable()
 
 <script type="text/javascript">
 var tree = new bab_ul_tree('bab_groups_tree');
+
+window.console && window.console.time('full init');
+
+window.console && console.time('processList');
 tree.processList();
-tree.expandChecked();
+window.console && console.timeEnd('processList');
+
+tree.collapse();
+
+document.getElementById('bab_groups_tree').display = 'none';
+
+window.console && console.time('setCheckBoxEvents');
 macl_set_checkbox_events();
+window.console && console.timeEnd('setCheckBoxEvents');
+
+window.console && console.time('switchViewOn');
 macl_switch_view_on();
+window.console && console.timeEnd('switchViewOn');
+
+window.console && console.time('expandChecked');
+tree.expandChecked();
+window.console && console.timeEnd('expandChecked');
+
+document.getElementById('bab_groups_tree').display = '';
+
+window.console && window.console.timeEnd('full init');
+
 // hideNonMultipleTable();
 </script>
 <!--#end grp_maintree -->

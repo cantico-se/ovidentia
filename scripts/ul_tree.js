@@ -14,7 +14,67 @@ function bab_ul_tree(id)
 }
 
 
-bab_ul_tree.prototype.processList = function(ul) {
+function bab_onNodeClick()
+{
+	var li = this.parentNode.parentNode;
+	if (li.className == this.tree.nodeOpenClass) {
+		li.className = this.tree.nodeClosedClass;
+	} else {
+		li.className = this.tree.nodeOpenClass;
+	}
+	return false;
+}
+
+
+
+
+bab_ul_tree.prototype.processList = function(rootList)
+{
+	if (rootList == null)
+		rootList = this.treeId;
+
+	if (!window.bab_ul_tree_lis)
+		 window.bab_ul_tree_lis = rootList.getElementsByTagName('LI');
+
+	var lis = rootList.getElementsByTagName('LI');
+	var nbLis = lis.length;
+	for (var i = 0; i < nbLis; i++) {
+		var li = lis[i];
+		li.className = this.nodeBulletClass;
+		var div = li.getElementsByTagName('DIV')[0];
+		div.className = this.nodeLineClass;
+		div.onmouseover = function() {
+				this.className='line hover';
+			}
+		div.onmouseout = function() {
+				this.className='line';
+			}
+		var span = document.createElement('SPAN');
+		var text = '\u00A0';
+		span.className = this.nodeLinkClass;
+		span.tree = this;
+		span.onclick = bab_onNodeClick;
+		span.appendChild(document.createTextNode(text));
+		div.insertBefore(span, div.firstChild);		
+	}
+
+	var uls = rootList.getElementsByTagName('UL');
+	var nbUls = uls.length;
+	for (var i = 0; i < nbUls; i++) {
+		var li = uls[i].parentNode;
+		li.className = this.nodeClosedClass;
+		var div = li.getElementsByTagName('DIV')[0];
+		var img = div.getElementsByTagName('IMG')[0];
+		img.tree = this;
+		img.onclick = bab_onNodeClick;
+		var span = div.firstChild;
+		span.className = this.nodeLinkClass;
+	}
+}
+
+
+bab_ul_tree.prototype._processList = function(ul)
+{
 	if (null == ul)
 		{	
 		ul = this.treeId;
@@ -71,6 +131,7 @@ bab_ul_tree.prototype.processList = function(ul) {
 }
 
 
+//
 bab_ul_tree.prototype.expandCollapseList = function(ul,cName,itemId) {
 	if (null == ul)
 		{	
@@ -104,17 +165,58 @@ bab_ul_tree.prototype.expandCollapseList = function(ul,cName,itemId) {
 
 
 
-
-bab_ul_tree.prototype.collapse = function() {
+//
+bab_ul_tree.prototype._collapse = function() {
 	this.expandCollapseList(this.treeId,this.nodeClosedClass);
 }
-
-bab_ul_tree.prototype.expand = function() {
+//
+bab_ul_tree.prototype._expand = function() {
 	this.expandCollapseList(this.treeId,this.nodeOpenClass);
 }
 
 
-bab_ul_tree.prototype.expandToItem = function(itemId, focus) {
+
+
+
+bab_ul_tree.prototype.expandCollapseAll = function(ul, className)
+{
+	var uls = ul.getElementsByTagName('UL');
+	var nbUls = uls.length;
+	for (var i = 0; i < nbUls; i++) {
+		if (uls[i].parentNode.className != className) {
+			uls[i].parentNode.className = className;
+		}
+	}
+}
+
+bab_ul_tree.prototype.collapse = function()
+{
+	this.expandCollapseAll(this.treeId, this.nodeClosedClass);
+}
+
+
+
+bab_ul_tree.prototype.expand = function()
+{
+	this.expandCollapseAll(this.treeId, this.nodeOpenClass);
+}
+
+
+bab_ul_tree.prototype.expandCollapseListItem = function(listItem, className)
+{
+	listItem = listItem.parentNode.parentNode;
+	while (listItem.tagName == 'LI') {
+		if (listItem.className != className) {
+			listItem.className = className;
+		}
+		listItem = listItem.parentNode.parentNode;
+	}
+}
+
+
+//
+bab_ul_tree.prototype.expandToItem = function(itemId, focus)
+{
 	var ret = this.expandCollapseList(this.treeId,this.nodeOpenClass,itemId);
 	if (ret && null != focus) {
 		var o = document.getElementById(itemId);
@@ -124,28 +226,31 @@ bab_ul_tree.prototype.expandToItem = function(itemId, focus) {
 	}
 }
 
-bab_ul_tree.prototype.expandChecked = function() {
+bab_ul_tree.prototype.expandChecked = function()
+{
 	this.collapse();
-	var input = this.treeId.getElementsByTagName('input');
-	for (var i =0; i < input.length ; i++ )
-	{
-		if ('checkbox' == input[i].type && input[i].checked && !input[i].disabled) {
-		li = input[i];
-		while (li.parentNode && li.parentNode.nodeName != 'LI') {
-			li = li.parentNode;
+	var inputs = this.treeId.getElementsByTagName('INPUT');
+	var nbInputs =  inputs.length
+	for (var i = 0; i < nbInputs; i++) {
+		var input = inputs[i];
+		if (input.checked && !input.disabled) {
+			li = input.parentNode;
+			while (li && li.nodeName != 'LI') {
+				li = li.parentNode;
 			}
-		this.expandToItem(li.parentNode.id);
+			this.expandCollapseListItem(li, this.nodeOpenClass);
 		}
 	}
 }
 
 
-bab_ul_tree.prototype.initSearch = function() {
+bab_ul_tree.prototype.initSearch = function()
+{
 	if (this.initDone)
 		return;
-	var listItems = this.treeId.getElementsByTagName('li');
-	for (var i = 0; i < listItems.length ; i++)
-	{
+	var listItems = this.treeId.getElementsByTagName('LI');
+	var nbListItems = listItems.length;
+	for (var i = 0; i < nbListItems; i++) {
 		var span = document.getElementById('content' + listItems[i].id);
 		var text = span.firstChild.nodeValue;
 		text = cleanStringDiacritics(text);
@@ -212,6 +317,7 @@ function cleanStringDiacritics(text)
 	}
 	return text;
 }
+
 
 function tree_check_childs(checkbox)
 {
