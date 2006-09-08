@@ -3379,7 +3379,7 @@ CREATE TABLE bab_task_list_filter (
  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
  `idUser` INT UNSIGNED NOT NULL,
  `idProject` INT NOT NULL,
- `iTaskClass` INT NOT NULL,
+ `idTaskClass` INT NOT NULL,
  PRIMARY KEY(`id`),
  INDEX `idUser`(`idUser`)
 );
