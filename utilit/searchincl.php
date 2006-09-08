@@ -81,8 +81,11 @@ if (trim($req1) != "") {
 		else
 			$like .= " OR (".$tablename." LIKE '%".$mot."%'".bab_sql_finder_he($tablename,$mot).")";
 		}
+	if( !empty($like))
+		{
+		$like .= ')';
+		}
 	}
-	$like .= ')';
 
 if (trim($req2) != "") 
 	{
