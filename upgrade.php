@@ -6957,11 +6957,24 @@ function upgrade588to589()
 	$ret = "";
 	$db = & $GLOBALS['babDB'];
 
+	if(!bab_isTable(BAB_TSKMGR_TASK_LIST_FILTER_TBL))
+	{
+		$res = $db->db_query("
+			CREATE TABLE `" . BAB_TSKMGR_TASK_LIST_FILTER_TBL . "` (
+				`id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+				`idUser` INT UNSIGNED NOT NULL,
+				`idProject` INT NOT NULL,
+				`iTaskClass` INT NOT NULL,
+				PRIMARY KEY(`id`),
+				INDEX `idUser`(`idUser`)) TYPE=MyISAM
+		");
+	}
+
 	if (!bab_isTableField(BAB_DG_GROUPS_TBL, 'battach')) {
 
 		$db->db_query("ALTER TABLE ".BAB_DG_GROUPS_TBL." ADD `battach` enum('N','Y') NOT NULL default 'N' AFTER `color`");
 	}
-
+	
 	return $ret;
 }
 ?>
