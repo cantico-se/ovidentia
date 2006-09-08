@@ -6952,4 +6952,16 @@ function upgrade587to588()
 	return $ret;
 }
 
+function upgrade588to589()
+{
+	$ret = "";
+	$db = & $GLOBALS['babDB'];
+
+	if (!bab_isTableField(BAB_DG_GROUPS_TBL, 'battach')) {
+
+		$db->db_query("ALTER TABLE ".BAB_DG_GROUPS_TBL." ADD `battach` enum('N','Y') NOT NULL default 'N' AFTER `color`");
+	}
+
+	return $ret;
+}
 ?>

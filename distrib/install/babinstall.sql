@@ -1616,6 +1616,7 @@ CREATE TABLE `bab_dg_groups` (
   `name` char(255) NOT NULL default '',
   `description` char(255) NOT NULL default '',
   `color` varchar(8) NOT NULL default '',
+  `battach` enum('N','Y') NOT NULL default 'N',
   `users` enum('N','Y') NOT NULL default 'N',
   `groups` enum('N','Y') NOT NULL default 'N',
   `sections` enum('N','Y') NOT NULL default 'N',
