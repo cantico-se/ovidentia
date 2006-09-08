@@ -77,7 +77,7 @@ function groupMembers($id)
 				$this->bmodname = false;
 				}
 
-			if( $babBody->currentAdmGroup != 0 && $id == $babBody->currentDGGroup['id_group'] )
+			if( $babBody->currentAdmGroup != 0 && $id == $babBody->currentDGGroup['id_group'] && $babBody->currentDGGroup['battach'] != 'Y' )
 				{
 				$this->bshowform = false;
 				}
@@ -245,9 +245,9 @@ switch($idx)
 		if( $babBody->currentAdmGroup == 0 || $babBody->currentDGGroup['groups'] == 'Y' )
 			$babBody->addItemMenu("List", bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=groups&idx=List");
 		$babBody->addItemMenu("Members", bab_translate("Members"), $GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$item);
-		if( $babBody->currentAdmGroup == 0 || $item != $babBody->currentDGGroup['id_group'] )
+		if( $babBody->currentAdmGroup == 0 || $babBody->currentDGGroup['battach'] == 'Y' || $item != $babBody->currentDGGroup['id_group'] )
 		{
-			$babBody->addItemMenu("Add", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=users&idx=List&grp=".$item);
+			$babBody->addItemMenu("Add", bab_translate("Attach"), $GLOBALS['babUrlScript']."?tg=users&idx=List&grp=".$item."&bupd=1");
 		}
 		break;
 	}

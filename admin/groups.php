@@ -180,6 +180,7 @@ function groupList()
 			$this->t_group = bab_translate("Main groups folder");
 			$this->t_create_group = bab_translate("Create group");
 			$this->t_edit_group = bab_translate("Edit group");
+			$this->t_members = bab_translate("Members");
 			$tree = & new bab_grptree();
 			$this->arr = $tree->getNodeInfo($tree->firstnode);
 			$this->arr['name'] = bab_translate($this->arr['name']);
@@ -189,6 +190,7 @@ function groupList()
 			$this->tpl_tree = bab_grp_node_html($tree, $tree->firstnode, 'groups.html', 'grp_childs');
 
 			$this->indelegat = $GLOBALS['babBody']->currentAdmGroup > 0;
+			$this->bupdate = $GLOBALS['babBody']->isSuperAdmin || $GLOBALS['babBody']->currentDGGroup['groups'] == 'Y';
 
 			if (isset($_REQUEST['expand_to']))
 				{
@@ -555,10 +557,10 @@ if ($idx != "brow")
 		{
 		$babBody->addItemMenu("sets", bab_translate("Sets of Group"), $GLOBALS['babUrlScript']."?tg=setsofgroups&idx=list");
 		$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=groups&idx=options");
+		$babBody->addItemMenu("plist", bab_translate("Profiles"), $GLOBALS['babUrlScript']."?tg=profiles&idx=plist");
 		}
-	$babBody->addItemMenu("plist", bab_translate("Profiles"), $GLOBALS['babUrlScript']."?tg=profiles&idx=plist");
 
-	if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['groups'] != 'Y')
+	if( !$babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 /*$babBody->currentDGGroup['groups'] != 'Y'*/)
 		{
 		$babBody->msgerror = bab_translate("Access denied");
 		return;
@@ -610,7 +612,8 @@ switch($idx)
 	case "List":
 	default:
 		groupList();
-		groupCreateMod();
+		if( $babBody->isSuperAdmin || $GLOBALS['babBody']->currentDGGroup['groups'] == 'Y' )
+			groupCreateMod();
 		$babBody->title = bab_translate("Groups list");
 		break;
 	}

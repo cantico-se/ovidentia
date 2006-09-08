@@ -2206,4 +2206,7 @@
 <string id="Who can add update events if he is the author">Qui peut mettre à jour des événements s'il est l'auteur</string>
 <string id="ERROR: You must indicate the delegated group !!">ERREUR: Vous devez indiquer le groupe délégué !!</string>
 <string id="Create a new article">Créer un nouvel article</string>
+<string id="Assign/unassign a user">Attacher/détacher un utilisateur du groupe administré</string>
+<string id="Create a new user">Créer un nouvel utilisateur</string>
+<string id="Manage groups">Gérer les groupes</string>
 </fr>

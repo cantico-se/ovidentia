@@ -163,6 +163,7 @@ function groupDelegatModify($gname, $description, $id = '')
 			$this->alert_msg = bab_translate("It is necessary to remove all associations with the users groups");
 			$this->grp_members = bab_translate("Managed group");
 			$this->functions = bab_translate("Deputy functions");
+			$this->attachdesc = bab_translate("Assign/unassign a user");
 			$this->none = bab_translate("None");
 			$db = &$GLOBALS['babDB'];
 			$this->db = &$db;
@@ -175,12 +176,22 @@ function groupDelegatModify($gname, $description, $id = '')
 				$this->idGrp = &$this->arr['id_group'];
 				$this->bdel = true;
 				$this->colorvalue = isset($_POST['color']) ? $_POST['color'] : $this->arr['color'] ;
+				$battach = isset($_POST['battach']) ? $_POST['color'] : $this->arr['battach'] ;
 				}
 			else
 				{
 				$this->idGrp = false;
 				$this->bdel = false;
 				$this->colorvalue = isset($_POST['color']) ? $_POST['color'] : '' ;
+				$battach = isset($_POST['battach']) ? $_POST['battach'] : 'N' ;
+				}
+			if( $battach == 'Y' )
+				{
+				$this->battachchecked = 'checked';
+				}
+			else
+				{
+				$this->battachchecked = '';
 				}
 
 
@@ -212,7 +223,18 @@ function groupDelegatModify($gname, $description, $id = '')
 			if( $i < count($babDG))
 				{
 				$this->delegitem = $babDG[$i][0];
-				$this->delegitemdesc = $babDG[$i][1];
+				switch($babDG[$i][0])
+					{
+					case 'users':
+						$this->delegitemdesc = bab_translate("Create a new user");
+						break;
+					case 'groups':
+						$this->delegitemdesc = bab_translate("Manage groups");
+						break;
+					default:
+						$this->delegitemdesc = $babDG[$i][1];
+						break;
+					}
 				if( $this->arr[$babDG[$i][0]] == 'Y')
 					$this->checked = 'checked';
 				else
@@ -284,7 +306,7 @@ function deleteDelegatGroup($id)
 	}
 
 
-function addDelegatGroup($name, $description, $color, $delegitems)
+function addDelegatGroup($name, $description, $color, $battach, $delegitems)
 	{
 	global $babBody, $babDB;
 
@@ -308,8 +330,13 @@ function addDelegatGroup($name, $description, $color, $delegitems)
 		}
 	else
 		{
-		$req1 = "(name, description, color";
-		$req2 = "('" .$babDB->db_escape_string($name). "', '" . $babDB->db_escape_string($description). "', '" . $babDB->db_escape_string($color). "'";
+		if( $battach != 'Y' )
+			{
+			$battach = 'N';
+			}
+
+		$req1 = "(name, description, color, battach";
+		$req2 = "('" .$babDB->db_escape_string($name). "', '" . $babDB->db_escape_string($description). "', '" . $babDB->db_escape_string($color). "', '" . $babDB->db_escape_string($battach). "'";
 		for( $i = 0; $i < count($delegitems); $i++)
 			{
 			$req1 .= ", ". $babDB->db_escape_string($delegitems[$i]);
@@ -329,7 +356,7 @@ function addDelegatGroup($name, $description, $color, $delegitems)
 	exit;
 	}
 
-function modifyDelegatGroup($name, $description, $color, $delegitems, $id)
+function modifyDelegatGroup($name, $description, $color, $battach, $delegitems, $id)
 	{
 	global $babBody, $babDB, $babDG;
 
@@ -350,10 +377,15 @@ function modifyDelegatGroup($name, $description, $color, $delegitems, $id)
 		}
 	else
 		{
+		if( $battach != 'Y' )
+			{
+			$battach = 'N';
+			}
 		$req = "update ".BAB_DG_GROUPS_TBL." set 
 			name='".$babDB->db_escape_string($name)."', 
 			description='".$babDB->db_escape_string($description)."', 
-			color='".$babDB->db_escape_string($color)."'";
+			color='".$babDB->db_escape_string($color)."',
+			battach='".$babDB->db_escape_string($battach)."'";
 		$cnt = count($delegitems);
 		for( $i = 0; $i < count($babDG); $i++)
 			{
@@ -504,14 +536,14 @@ if( isset($add))
 			{
 			if (!empty($_POST['id']))
 				{
-				if(!modifyDelegatGroup($_POST['gname'], $_POST['description'], $_POST['color'], $_POST['delegitems'], $_POST['id']))
+				if(!modifyDelegatGroup($_POST['gname'], $_POST['description'], $_POST['color'],	(isset($_POST['battach'])? $_POST['battach']: 'N'), (isset($_POST['delegitems'])? $_POST['delegitems']: array()), $_POST['id']))
 					$idx = "mod";
 				else
 					$idx = 'list';
 				}
 			else
 				{
-				if( !addDelegatGroup($_POST['gname'], $_POST['description'], $_POST['color'], $_POST['delegitems']) )
+				if( !addDelegatGroup($_POST['gname'], $_POST['description'], $_POST['color'],	(isset($_POST['battach'])? $_POST['battach']: 'N'), (isset($_POST['delegitems'])? $_POST['delegitems']: array())))
 					$idx = 'new';
 				else
 					$idx = 'list';

@@ -106,13 +106,16 @@ function listUsers($pos, $grp)
 				$this->users_logged[$id_user] = $id_user;
 				}
 
+
+			$this->bupdate = isset($_REQUEST['bupd'])? $_REQUEST['bupd']: 0;
+
 			$req = "SELECT distinct u.* from ".BAB_USERS_TBL." u";
 
 			if( isset($pos) &&  strlen($pos) > 0 && $pos[0] == "-" )
 				{
 				$this->pos = strlen($pos)>1? $pos[1]: '';
 				$this->ord = $pos[0];
-				if( $babBody->currentAdmGroup == 0)
+				if( $babBody->currentAdmGroup == 0 || ($this->bupdate && $babBody->currentDGGroup['battach'] == 'Y' && $this->grp == $babBody->currentDGGroup['id_group']))
 					{
 					$req .= " where ".$this->namesearch2." like '".$this->pos."%' order by ".$this->namesearch2.", ".$this->namesearch." asc";
 					}
@@ -128,7 +131,7 @@ function listUsers($pos, $grp)
 				{
 				$this->pos = $pos;
 				$this->ord = "";
-				if( $babBody->currentAdmGroup == 0)
+				if( $babBody->currentAdmGroup == 0 || ($this->bupdate && $babBody->currentDGGroup['battach'] == 'Y' && $this->grp == $babBody->currentDGGroup['id_group']))
 					$req .= " where ".$this->namesearch." like '".$this->pos."%' order by ".$this->namesearch.", ".$this->namesearch2." asc";
 				else
 					$req .= ", ".BAB_USERS_GROUPS_TBL." ug, ".BAB_GROUPS_TBL." g where u.disabled != '1' and ug.id_object=u.id and ug.id_group=g.id AND g.lf>='".$babBody->currentDGGroup['lf']."' AND g.lr<='".$babBody->currentDGGroup['lr']."' and u.".$this->namesearch." like '".$this->pos."%' order by u.".$this->namesearch.", u.".$this->namesearch2." asc";
@@ -143,7 +146,7 @@ function listUsers($pos, $grp)
 				$this->allselected = 1;
 			else
 				$this->allselected = 0;
-			$this->allurl = $GLOBALS['babUrlScript']."?tg=users&idx=List&pos=&grp=".$this->grp;
+			$this->allurl = $GLOBALS['babUrlScript']."?tg=users&idx=List&pos=&grp=".$this->grp."&bupd=".$this->bupdate;
 			$this->groupurl = $GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$this->grp;
 			
 			$this->set_directory = $babBody->currentAdmGroup == 0;
@@ -155,7 +158,7 @@ function listUsers($pos, $grp)
 
 			$this->userst = '';
 
-			if( $babBody->currentAdmGroup != 0 && $grp == $babBody->currentDGGroup['id_group'] )
+			if( $babBody->currentAdmGroup != 0 && $grp == $babBody->currentDGGroup['id_group'] && ($babBody->currentDGGroup['battach'] != 'Y' || $this->bupdate == 0))
 				{
 				$this->bshowform = false;
 				}
@@ -219,7 +222,7 @@ function listUsers($pos, $grp)
 			if( $k < 26)
 				{
 				$this->selectname = substr($t, $k, 1);
-				$this->selecturl = $GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$this->ord.$this->selectname."&grp=".$this->grp;
+				$this->selecturl = $GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$this->ord.$this->selectname."&grp=".$this->grp."&bupd=".$this->bupdate;
 				$this->selected = 0;
 				
 				if( $this->pos == $this->selectname)
@@ -425,7 +428,7 @@ if( isset($Updateg) && ($babBody->isSuperAdmin || $babBody->currentAdmGroup != 0
 {
 	$users = isset($_POST['users']) ? $_POST['users'] : array();
 	updateGroup($_POST['grp'], $users, $_POST['userst']);
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp);
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp."&bupd=".$_REQUEST['bupd']);
 	exit;
 }
 
@@ -471,11 +474,15 @@ switch($idx)
 			{
 			$babBody->title = bab_translate("Users list");
 			$cnt = listUsers($pos, $grp);
-			if ($grp != 3 && $grp != $babBody->currentAdmGroup) $babBody->addItemMenu("cancel", bab_translate("Group's members"),$GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$grp);
+			//if ($grp != 3 && $grp != $babBody->currentAdmGroup) $babBody->addItemMenu("cancel", bab_translate("Group's members"),$GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$grp);
 			$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List");
 			if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['users'] == 'Y')
 				{
 				$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=users&idx=Create&pos=".$pos."&grp=".$grp);
+				}
+			if( $babBody->currentAdmGroup != 0 && $babBody->currentDGGroup['battach'] == 'Y' && isset($_REQUEST['bupd']) && $_REQUEST['bupd'] == 0)
+				{
+				$babBody->addItemMenu("Attach", bab_translate("Attach"),$GLOBALS['babUrlScript']."?tg=users&idx=List&grp=".$grp."&bupd=1");
 				}
 			if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
 				{

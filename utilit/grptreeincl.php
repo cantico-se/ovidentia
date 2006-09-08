@@ -210,6 +210,7 @@ class bab_grp_node
 	$this->t_group_members = bab_translate("Group's members");
 	$this->t_members = bab_translate("Members");
 	$this->childs = $this->tree->getChilds($id_group);
+	$this->bupdate = $GLOBALS['babBody']->isSuperAdmin || $GLOBALS['babBody']->currentDGGroup['groups'] == 'Y';
 	}
 
 	function getnextgroup()
