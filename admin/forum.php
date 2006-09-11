@@ -127,15 +127,15 @@ function updateForum($id, $name, $description, $moderation, $notification, $nbms
 		}
 
 	$query = "UPDATE ".BAB_FORUMS_TBL." set 
-		name='".$babDB->db_escape_string($name)."', 
-		description='".$babDB->db_escape_string($description)."', 
-		moderation='".$babDB->db_escape_string($moderation)."', 
-		notification='".$babDB->db_escape_string($notification)."', 
-		display='".$babDB->db_escape_string($nbmsgdisplay)."', 
-		active='".$babDB->db_escape_string($active)."', 
-		nb_recipients='".$babDB->db_escape_string($nbrecipients)."' 
+		name='".$db->db_escape_string($name)."', 
+		description='".$db->db_escape_string($description)."', 
+		moderation='".$db->db_escape_string($moderation)."', 
+		notification='".$db->db_escape_string($notification)."', 
+		display='".$db->db_escape_string($nbmsgdisplay)."', 
+		active='".$db->db_escape_string($active)."', 
+		nb_recipients='".$db->db_escape_string($nbrecipients)."' 
 	where 
-		id = '".$babDB->db_escape_string($id)."'";
+		id = '".$db->db_escape_string($id)."'";
 
 	$db->db_query($query);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=forums&idx=List");
