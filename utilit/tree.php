@@ -24,6 +24,8 @@
  * @subpackage Widgets
  */
 
+
+
 /**
  * An ordered collection of nodes.
  * @package Utilities
@@ -718,6 +720,8 @@ class bab_TreeViewElement extends bab_Widget
 	var $_checkBoxes;
 
 	var $_info;
+	
+	var $_subTree;
 	/**#@-*/
 
 
@@ -739,6 +743,7 @@ class bab_TreeViewElement extends bab_Widget
 		$this->_checkBoxes = array();
 		$this->_icon= '';
 		$this->_info = '';
+		$this->_subTree = '';
 	}
 
 	/**
@@ -783,6 +788,16 @@ class bab_TreeViewElement extends bab_Widget
 	function setIcon($url)
 	{
 		$this->_icon = $url;
+	}
+
+	/**
+	 * Defines the url of the subTree (the url should provide the content of the subTree to be inserted).
+	 * The url will be called when the TreeViewElement is expanded.
+	 * @param string $url
+	 */
+	function setSubTree($url)
+	{
+		$this->_subTree = $url;
 	}
 
 
@@ -836,6 +851,12 @@ class bab_TreeView extends bab_Widget
 	var $t_levelVariation;
 	var $t_level;
 	var $t_previousLevel;
+	
+	var $t_isFirstChild;
+	var $t_isMiddleChild;
+	var $t_isSingleChild;
+	var $t_isLastChild;
+	
 	var $t_info;
 	var $t_showRightElements;
 
@@ -853,6 +874,8 @@ class bab_TreeView extends bab_Widget
 
 	var $_templateFile;
 	var $_templateSection;
+	var $_templateCss;
+	var $_templateScripts;
 	var $_templateCache;
 	/**#@-*/
 
@@ -872,8 +895,15 @@ class bab_TreeView extends bab_Widget
 		$this->t_collapse = bab_translate('Collapse');
 		$this->t_submit = bab_translate('Valider');
 		
+		$this->t_level = null;
+		$this->t_previousLevel = null;
+		
+		$this->t_layout = 'horizontal';
+	
 		$this->_templateFile = 'treeview.html';
 		$this->_templateSection = 'treeview';
+		$this->_templateCss = 'treeview_css';
+		$this->_templateScripts = 'treeview_scripts';
 		$this->_templateCache = null;
 		
 		$this->t_id_separator = BAB_TREE_VIEW_ID_SEPARATOR;
@@ -941,13 +971,25 @@ class bab_TreeView extends bab_Widget
 		}
 		$this->t_levelVariation = $this->t_level - $this->t_previousLevel;
 		if ($this->t_levelVariation < -1) {
+//			$this->t_previousLayout = ($this->t_previousLevel >= 3 ? 'vertical' : 'horizontal');
 			$this->t_previousLevel--;
+//			$this->t_layout = ($this->t_previousLevel >= 3 ? 'vertical' : 'horizontal');
 			return true;
 		}
 
+//		$this->t_previousLayout = ($this->t_previousLevel >= 3 ? 'vertical' : 'horizontal');
+		
 		$this->t_previousLevel = $this->t_level;
 
+//		$this->t_layout = ($this->t_previousLevel >= 3 ? 'vertical' : 'horizontal');
+
 		if ($node =& $this->_iterator->nextNode()) {
+			$this->t_isFirstChild = $node->isFirstChild();
+			$this->t_isLastChild = $node->isLastChild();
+			$this->t_isMiddleChild = (!$node->isFirstChild() && !$node->isLastChild());
+			$this->t_isSingleChild = ($node->isFirstChild() && $node->isLastChild());
+			
+				
 			$this->t_level = $this->_iterator->level();
 			$element =& $node->getData();
 			$this->t_id = $this->_id . '.' . $element->_id;
@@ -964,6 +1006,10 @@ class bab_TreeView extends bab_Widget
 							|| (count($this->_currentElement->_actions) > 0)
 							|| (count($this->_currentElement->_checkBoxes) > 0);
 			return true;
+		}
+		if ($this->t_level > -1) {
+			$this->t_level = -1;
+			return $this->getNextElement();
 		}
 		$this->_iterator = null;
 		return false;
@@ -1019,13 +1065,194 @@ class bab_TreeView extends bab_Widget
 		if (is_null($this->_templateCache)) {
 			if (!$this->_upToDate)
 				$this->_updateTree();
-			$this->_templateCache = bab_printTemplate($this, $this->_templateFile, 'treeview_css');
+			$this->_templateCache = bab_printTemplate($this, $this->_templateFile, $this->_templateCss);
 			$this->_templateCache .= bab_printTemplate($this, $this->_templateFile, $this->_templateSection);
-			$this->_templateCache .= bab_printTemplate($this, $this->_templateFile, 'treeview_scripts');
+			$this->_templateCache .= bab_printTemplate($this, $this->_templateFile, $this->_templateScripts);
 		}
 		return $this->_templateCache;
 	}
 }
+
+
+
+
+
+
+
+class bab_OrgChartElement extends bab_TreeViewElement
+{
+	/**#@+
+	 * @access private
+	 */	
+	var $_members;
+	/**#@-*/
+	
+	/**
+	 * @param string $id			A unique element id in the treeview.
+	 * @param string $type			Will be used as a css class to style the element.
+	 * @param string $title			The title (label) of the node.
+	 * @param string $description	An additional description that will appear as a tooltip.
+	 * @param string $link			A link when clicking the node title.
+	 */
+	function bab_OrgChartElement($id, $type, $title, $description, $link)
+	{
+		parent::bab_TreeViewElement($id, $type, $title, $description, $link);
+		$this->_members = array();
+	}
+
+	
+	function addMember($memberName, $role = '')
+	{
+		if (!isset($this->_members[$role])) {
+			$this->_members[$role] = array();
+		}
+		$this->_members[$role][] = $memberName;
+	}
+}
+
+
+
+
+
+
+class bab_OrgChart extends bab_TreeView
+{
+	/**#@+
+	 * @access private
+	 */	
+	var $_verticalThreshold;
+
+	var $t_layout;
+	var $t_previousLayout;
+	
+	var $t_nbMembers;
+	var $t_memberName;
+	/**#@-*/
+	
+	
+	/**
+	 * @param string $id A unique treeview id in the page. Must begin with a letter ([A-Za-z]) and may be followed by any number of letters, digits ([0-9]), hyphens ("-"), underscores ("_"), colons (":"), and periods (".").
+	 * @return bab_OrgChart
+	 */
+	function bab_OrgChart($id)
+	{
+		parent::bab_TreeView($id);
+		$this->_verticalThreshold = 3;
+		$this->_templateFile = 'treeview.html';
+		$this->_templateSection = 'orgchart';
+		$this->_templateCss = 'orgchart_css';
+		$this->_templateScripts = 'orgchart_scripts';
+	}
+
+	/**
+	 * @param string $id			A unique element id in the treeview.
+	 * @param string $type			Will be used as a css class to style the element.
+	 * @param string $title			The title (label) of the node.
+	 * @param string $description	An additional description that will appear as a tooltip.
+	 * @param string $link			A link when clicking the node title.
+	 * @return bab_OrgChartElement
+	 */
+	function &createElement($id, $type, $title, $description, $link)
+	{
+		$element =& new bab_OrgChartElement($id, $type, $title, $description, $link);
+		return $element;
+	}
+
+	/**
+	 * Defines the depth level from which the org chart branches are displayed vertically.
+	 * @access public
+	 */
+	function setVerticalThreshold($threshold)
+	{
+		$this->_verticalThreshold = $threshold;		
+	}
+
+	/**#@+
+	 * Template methods.
+	 * @ignore
+	 */	
+	function getNextElement()
+	{
+		if (is_null($this->_iterator)) {
+			$this->_iterator = $this->_rootNode->createNodeIterator($this->_rootNode);
+			$this->_iterator->nextNode();
+			$this->t_level = $this->_iterator->level();
+			$this->t_previousLevel = $this->t_level - 1;
+		}
+		$this->t_levelVariation = $this->t_level - $this->t_previousLevel;
+		if ($this->t_levelVariation < -1) {
+			$this->t_previousLayout = ($this->t_previousLevel >= $this->_verticalThreshold ? 'vertical' : 'horizontal');
+			$this->t_previousLevel--;
+			$this->t_layout = ($this->t_previousLevel >= $this->_verticalThreshold ? 'vertical' : 'horizontal');
+			return true;
+		}
+
+		$this->t_previousLayout = ($this->t_previousLevel >= $this->_verticalThreshold ? 'vertical' : 'horizontal');
+		
+		$this->t_previousLevel = $this->t_level;
+
+		$this->t_layout = ($this->t_previousLevel >= $this->_verticalThreshold ? 'vertical' : 'horizontal');
+
+		if ($node =& $this->_iterator->nextNode()) {
+			$this->t_isFirstChild = $node->isFirstChild();
+			$this->t_isLastChild = $node->isLastChild();
+			$this->t_isMiddleChild = (!$node->isFirstChild() && !$node->isLastChild());
+			$this->t_isSingleChild = ($node->isFirstChild() && $node->isLastChild());
+			
+				
+			$this->t_level = $this->_iterator->level();
+			$element =& $node->getData();
+			$this->t_id = $this->_id . '.' . $element->_id;
+			$this->t_type =& $element->_type;
+			$this->t_title =& $element->_title;
+			$this->t_description =& $element->_description;
+			$this->t_link =& $element->_link;
+			$this->t_info =& $element->_info;
+			$this->t_nodeIcon =& $element->_icon;
+			$this->_currentElement =& $element;
+			reset($this->_currentElement->_actions);
+			reset($this->_currentElement->_members);
+			$this->t_nbMembers = count($this->_currentElement->_members);
+			
+			$this->t_showRightElements = ($element->_info != '')
+							|| (count($this->_currentElement->_actions) > 0)
+							|| (count($this->_currentElement->_checkBoxes) > 0);
+			return true;
+		}
+		if ($this->t_level > -1) {
+			$this->t_level = -1;
+			return $this->getNextElement();
+		}
+		$this->_iterator = null;
+		return false;
+	}
+
+	function getNextMemberRole()
+	{
+		if (list($memberRole, ) = each($this->_currentElement->_members)) {
+			$this->t_memberRole = $memberRole;
+			$this->_members =& $this->_currentElement->_members[$memberRole];
+			reset($this->_members);
+			return true;
+		}
+		reset($this->_currentElement->_members);
+		return false;
+	}
+
+	function getNextMemberName()
+	{
+		if (list(,$memberName) = each($this->_members)) {
+			$this->t_memberName = $memberName;
+			return true;
+		}
+		reset($this->_members);
+		return false;
+	}
+	/**#@-*/
+}
+
+
+
 
 
 
@@ -1367,7 +1594,7 @@ class bab_FileTreeView extends bab_TreeView
 					$this->appendElement($element, null);
 				}
 			}
-			
+
 			foreach ($subdirs as $subdir) {
 				if (trim($subdir) !== '') {
 					if (is_null($this->_rootNode->getNodeById($parentId . ':' . $subdir))) {
@@ -1828,81 +2055,148 @@ class bab_FaqTreeView extends bab_TreeView
 
 
 
-
-
-/*
-
 function bab_tree_test()
 {
 	global $babBody;
 	
 	// Example of custom tree view.
 	//------------------------------
-	$treeView = new bab_TreeView('my_library');
+	$orgChart = new bab_OrgChart('my_library');
 
-	$element =& $treeView->createElement('book1', 'book', 'My Cookbook', 'My favorite cookbook', 'http://localhost/mycookbook/index.php');
-	$treeView->appendElement($element, null);
+	$element =& $orgChart->createElement('mayor', 'entity', 'Laurent LAFON', 'My favorite cookbook', 'http://localhost/mycookbook/index.php');
+	$element->setInfo('Maire');
+	$element->setIcon($GLOBALS['babSkinPath'] . 'images/maire.jpeg');
+	$element->addMember('Catherine GOMEZ', 'Cabinet et Direction');
+	$element->addMember('Claire DEWEERTD-PHLIX', 'Cabinet et Direction');
+	$element->addMember('Dominique MOYSE', 'Cabinet et Direction');
+	$element->addMember('Frédéric PARRINELLO', 'Cabinet et Direction');
+	$element->addMember('Gildas LECOQ', 'Cabinet et Direction');
+	$element->addMember('Sophie MARIN', 'Assistante');
+	$orgChart->appendElement($element, null);
 
-	$element =& $treeView->createElement('book1_1', 'chapter', 'Chapter 1', '', 'http://localhost/mycookbook/chapter1.php');
-	$treeView->appendElement($element, 'book1');
+	$element =& $orgChart->createElement('book1_1', 'entity', 'Chapter 1', '', 'http://localhost/mycookbook/chapter1.php');
+	$element->setIcon($GLOBALS['babSkinPath'] . 'images/dg1.jpeg');
+	$orgChart->appendElement($element, 'mayor');
 
-	$element =& $treeView->createElement('book1_2', 'chapter', 'Chapter 2', '', 'http://localhost/mycookbook/chapter2.php');
+	$element =& $orgChart->createElement('book1_2', 'entity', 'Chapter 2', '', 'http://localhost/mycookbook/chapter2.php');
 	$element->addAction('move_down', 'Move down', '', 'move_down.php', '');
 	$element->addAction('delete', 'Delete', '', 'delete.php', '');
 	$element->setInfo('Info');
-	$treeView->appendElement($element, 'book1');
+	$orgChart->appendElement($element, 'mayor');
 
-	$element =& $treeView->createElement('1.1.1', 'type2', 'Le titre 1.1.1', 'Description', 'lien');
-	$treeView->appendElement($element, '1.1');
+	$element =& $orgChart->createElement('1.1', 'entity', 'Paragraphe 1.1', 'Description', 'lien');
+	$orgChart->appendElement($element, 'book1_1');
 	$element->addAction('add', 'Add', '', 'add.php', '');
 
-	$element =& $treeView->createElement('1.1.2', 'type2', 'Le titre 1.1.2', 'Description', 'lien');
+	$element =& $orgChart->createElement('1.2', 'entity', 'Paragraphe 1.2', 'Description', 'lien');
 	$element->setInfo('Info');
-	$treeView->appendElement($element, '1.1');
+	$orgChart->appendElement($element, 'book1_1');
 
-	$element =& $treeView->createElement('1.1.3', 'type2', 'Le titre 1.1.3', 'Description', 'lien');
+	$element =& $orgChart->createElement('1.3', 'entity', 'Paragraphe 1.3', 'Description', 'lien');
 	$element->setInfo('Un autre noeud');
-	$treeView->appendElement($element, '1.1');
+	$orgChart->appendElement($element, 'book1_1');
 
-	$element =& $treeView->createElement('1.1.4', 'type2', 'Le titre 1.1.4', 'Description', 'lien');
+	$element =& $orgChart->createElement('1.3.1', 'entity', 'Sous-paragraphe 1.3.1', 'Description', 'lien');
 	$element->setInfo('Un autre noeud');
-	$treeView->appendElement($element, '1.1');
+	$orgChart->appendElement($element, '1.3');
 
-	$element =& $treeView->createElement('b', 'type2', 'b', 'Description', 'lien');
+	$element =& $orgChart->createElement('1.3.2', 'entity', 'Sous-paragraphe 1.3.2', 'Description', 'lien');
+	$element->setInfo('Un autre noeud');
+	$orgChart->appendElement($element, '1.3');
+
+	$element =& $orgChart->createElement('1.4', 'entity', 'Paragraphe 1.4', 'Description', 'lien');
+	$element->setInfo('Un autre noeud');
+	$element->setIcon($GLOBALS['babSkinPath'] . 'images/dg1.jpeg');
+	$orgChart->appendElement($element, 'book1_1');
+
+	$element =& $orgChart->createElement('b', 'entity', 'b', 'Description', 'lien');
 	$element->setInfo('Info');
-	$treeView->appendElement($element, '1.2');
+	$element->addMember('Jean TOTO');
+	$element->addMember('Marcel TURLUTUTU');
+	$element->addAction('move_down', 'Move down', $GLOBALS['babSkinPath'] . 'images/Puces/members.png', '', 'alert(\'hello\');');
+	$element->addAction('from_here', 'Show from here', $GLOBALS['babSkinPath'] . 'images/Puces/go-down.png', '', '');
+	$orgChart->appendElement($element, 'book1_2');
 
-	$element =& $treeView->createElement('a', 'type2', 'a', 'Description', 'lien');
+	$element =& $orgChart->createElement('a', 'entity', 'a', 'Description', 'lien');
 	$element->setInfo('Un autre noeud');
-	$treeView->appendElement($element, '1.2');
+	$element->addAction('move_down', 'Move down', $GLOBALS['babSkinPath'] . 'images/Puces/members.png', '', '');
+	$orgChart->appendElement($element, 'book1_2');
 
-	$element =& $treeView->createElement('x', 'type2', 'x', 'Description', 'lien');
+	$element =& $orgChart->createElement('x', 'entity', 'x', 'Description', 'lien');
 	$element->setInfo('Un autre noeud');
-	$treeView->appendElement($element, '1.2');
+	$element->addAction('move_down', 'Move down', $GLOBALS['babSkinPath'] . 'images/Puces/members.png', '', '');
+	$orgChart->appendElement($element, 'book1_2');
 
-	$element =& $treeView->createElement('s', 'type2', 's', 'Description', 'lien');
+	$element =& $orgChart->createElement('s', 'entity', 's', 'Description', 'lien');
 	$element->setInfo('Un autre noeud');
-	$treeView->appendElement($element, '1.2');
+	$orgChart->appendElement($element, 'book1_2');
 
-	$element =& $treeView->createElement('c', 'type2', 'c', 'Description', 'lien');
+	$element =& $orgChart->createElement('c', 'entity', 'c', 'Description', 'lien');
 	$element->setInfo('Un autre noeud');
-	$treeView->appendElement($element, '1.2');
+	$orgChart->appendElement($element, 'book1_2');
 
-	$element =& $treeView->createElement('2', 'type1', 'Le titre 2', 'Description', 'lien');
-	$treeView->appendElement($element, '0');
+	$element =& $orgChart->createElement('book1_3', 'entity', 'Chapitre 3', 'Description', 'lien');
+	$orgChart->appendElement($element, 'mayor');
+	$element->addMember('Albert TRUCMUCHE de la PALOMBIERE', 'Toto');
+	$element->addMember('Simone MACHIN', 'Toto');
+	
+	$element =& $orgChart->createElement('3.1', 'entity', 'Paragraphe 3.1', 'Description', 'lien');
+	$orgChart->appendElement($element, 'book1_3');
 
 	
-	$iterator = $treeView->_rootNode->createNodeIterator($treeView->_rootNode);
+	$element =& $orgChart->createElement('dg1', 'entity', 'Direction générale des services', '', 'lien');
+	$element->setInfo('Patrice BÉCU');
+	$orgChart->appendElement($element, 'mayor');
+	$element->setIcon($GLOBALS['babSkinPath'] . 'images/dg1.jpeg');
+/*
+	$element->addMember('Patrice BÉCU', 'Directeur générale des services');
+	$element->addMember('Catherine GOMEZ', 'Directeurs');
+	$element->addMember('Claire DEWEERTD-PHLIX', 'Directeurs');
+	$element->addMember('Isabelle CHASSAGNARD', 'Directeurs');
+	$element->addMember('Isabelle ETLIN', 'Directeurs');
+	$element->addMember('Joël DEGOUY', 'Directeurs');
+	$element->addMember('Françoise CHAMPAGNAC', 'Conseiller en gestion');
+	$element->addMember('Pierre BIGNON', 'Secrétariat CM et CME');
+	$element->addMember('Annabelle MARIEAU', 'Secrétariat D.G.S.');
+*/	
+//	$iterator = $treeView->_rootNode->createNodeIterator($treeView->_rootNode);
 
-	while ($node =& $iterator->nextNode()) {
-		$node->sortChildNodes();
-	}
+//	while ($node =& $iterator->nextNode()) {
+//		$node->sortChildNodes();
+//	}
 
+	
 	$babBody->babecho('<h2>Example of a simple custom tree (<code>bab_TreeView</code>)</h2>');
-	$babBody->babecho($treeView->printTemplate());
-	
+	$babBody->babecho($orgChart->printTemplate());
 	
 
+	
+	$treeView = new bab_FileTreeView('file', 'N', '0');
+//	$end = microtime_float(true);
+//	echo '<div style="background-color: #FFFFFF; border: 1px solid red; padding: 4px; position: relative; z-index: 255"><pre>';
+//	print_r('new bab_FileTreeView : ' . ($end - $start));
+//	echo "</div></pre>\n";
+
+//	$start = microtime_float(true);
+//	$treeView->addStatistics('2000-01-01 00:00', '2007-01-01 00:00');
+//	$end = microtime_float(true);
+//	echo '<div style="background-color: #FFFFFF; border: 1px solid red; padding: 4px; position: relative; z-index: 255"><pre>';
+//	print_r('addStatistics : ' . ($end - $start));
+//	echo "</div></pre>\n";
+
+//	$start = microtime_float(true);
+	$treeView->sort();
+//	$end = microtime_float(true);
+//	echo '<div style="background-color: #FFFFFF; border: 1px solid red; padding: 4px; position: relative; z-index: 255"><pre>';
+//	print_r('sort : ' . ($end - $start));
+//	echo "</div></pre>\n";
+
+//	$babBody->babecho('<h2>Example of file tree (<code>bab_FileTreeView</code>)</h2>');
+	
+//	$babBody->babecho($treeView->printTemplate());
+	
+	
+/*
 	
 
 	// Example of faq tree view.
@@ -1956,8 +2250,8 @@ function bab_tree_test()
 
 	$babBody->babecho('<h2>Example of file tree (<code>bab_FileTreeView</code>)</h2>');
 	$babBody->babecho($treeView->printTemplate());
-}
 */
+}
 
 
 ?>
