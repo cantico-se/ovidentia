@@ -1137,7 +1137,7 @@ class bab_OrgChart extends bab_TreeView
 	function bab_OrgChart($id)
 	{
 		parent::bab_TreeView($id);
-		$this->_verticalThreshold = 3;
+		$this->_verticalThreshold = 4;
 		$this->_templateFile = 'treeview.html';
 		$this->_templateSection = 'orgchart';
 		$this->_templateCss = 'orgchart_css';
@@ -2054,13 +2054,64 @@ class bab_FaqTreeView extends bab_TreeView
 
 
 
+class bab_OvidentiaOrgChart extends bab_OrgChart 
+{
+	var $_db;
+	var $_babBody;
+	var $_orgChartId; // Ovidentia org chart id
+
+	function bab_OvidentiaOrgChart($id, $orgChartId)
+	{
+		parent::bab_OrgChart($id);
+		
+		$this->_db =& $GLOBALS['babDB'];
+		$this->_babBody =& $GLOBALS['babBody'];
+		$this->_orgChartId = $orgChartId;
+	
+	}
+
+	function _addEntities($startNode)
+	{
+		$entityType = 'entity';
+
+		$sql = 'SELECT * ';
+		$sql .= ' FROM ' . BAB_OC_TREES_TBL . ' AS trees';
+		$sql .= ' LEFT JOIN ' . BAB_OC_ENTITIES_TBL . ' AS entities ON entities.id_node = trees.id';
+		$sql .= ' WHERE trees.id_user = ' . $this->_db->quote($this->_orgChartId);
+ 
+		$entities = $this->_db->db_query($sql);
+		while ($entity = $this->_db->db_fetch_array($entities)) {
+			$element =& $this->createElement('entity' . BAB_TREE_VIEW_ID_SEPARATOR . $entity['id'],
+											 $entityType,
+											 bab_toHtml($entity['name']),
+											 '',
+											 '');
+			$element->setInfo();
+			$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
+			$this->appendElement($element, $entity['id_parent'] ? 'entity' . BAB_TREE_VIEW_ID_SEPARATOR .  $entity['id_parent'] : null);
+			
+		}
+	}
+	/**
+	 * @access private
+	 */
+	function _updateTree()
+	{
+		$this->_addEntities();
+		parent::_updateTree();
+	}
+}
+
 
 function bab_tree_test()
 {
 	global $babBody;
 	
+	
+	
 	// Example of custom tree view.
 	//------------------------------
+/*
 	$orgChart = new bab_OrgChart('my_library');
 
 	$element =& $orgChart->createElement('mayor', 'entity', 'Laurent LAFON', 'My favorite cookbook', 'http://localhost/mycookbook/index.php');
@@ -2148,6 +2199,7 @@ function bab_tree_test()
 	$element->setInfo('Patrice BÉCU');
 	$orgChart->appendElement($element, 'mayor');
 	$element->setIcon($GLOBALS['babSkinPath'] . 'images/dg1.jpeg');
+*/
 /*
 	$element->addMember('Patrice BÉCU', 'Directeur générale des services');
 	$element->addMember('Catherine GOMEZ', 'Directeurs');
@@ -2165,6 +2217,7 @@ function bab_tree_test()
 //		$node->sortChildNodes();
 //	}
 
+	$orgChart = new bab_OvidentiaOrgChart('my_library', 1);
 	
 	$babBody->babecho('<h2>Example of a simple custom tree (<code>bab_TreeView</code>)</h2>');
 	$babBody->babecho($orgChart->printTemplate());

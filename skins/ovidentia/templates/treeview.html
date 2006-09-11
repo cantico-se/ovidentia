@@ -108,6 +108,162 @@ document.getElementById("{ t_treeViewId }").onSubmitTree = function()
 
 bab_initTrees();
 
--->
+//-->
 </script>
 <!--#end treeview_scripts -->
+
+
+
+
+
+<!--#begin orgchart_css -->
+
+<style type="text/css">
+	@import url('{ babInstallPath }styles/orgchart.css');
+</style>
+
+<!--#end orgchart_css -->
+
+
+
+<!--#begin orgchart_scripts -->
+
+<script type="text/javascript" src="{ babSkinPath }templates/orgchart.js"></script>
+<script type="text/javascript">
+<!--
+
+bab_initOrgChart(document.getElementById('{ t_treeViewId }'));
+
+//-->
+</script>
+
+<!--#end orgchart_scripts -->
+
+
+
+<!--#begin orgchart -->
+
+<!-- BEGIN ORGCHART -->
+
+<div class="orgchart" class="bab_tree BabLoginCadreBackground" style="position: relative; width: 100%; overflow: auto;" id="{ t_treeViewId }">
+<!--#in getNextElement -->
+
+<!--#if t_previousLayout "== horizontal" -->
+
+  <!--#if t_levelVariation "<= -1" --></td></tr></tbody></table><!--#endif t_levelVariation -->
+  <!--#if t_levelVariation "== 0" --></td><!--#endif t_levelVariation -->
+  
+<!--#else t_previousLayout -->
+
+  <!--#if t_levelVariation "<= -1" --></li></ul><!--#endif t_levelVariation -->
+  <!--#if t_levelVariation "== 0" --></li><!--#endif t_levelVariation -->
+
+<!--#endif t_previousLayout -->
+ 
+<!--#if t_layout "== horizontal" -->
+
+  <!--#if t_levelVariation "== 1" --><table class="level{ t_previousLevel } horizontal"><tbody><tr><!--#endif t_levelVariation -->
+  <!--#if t_levelVariation ">= -1" -->
+  <td class="subtree">
+
+  <!--#if t_isMiddleChild -->
+  <div class="middle_sibling">
+  <!--#else t_isMiddleChild -->
+  <!--#if t_isSingleChild -->
+  <div class="single_sibling">
+  <!--#else t_isSingleChild -->
+  <!--#if t_isFirstChild -->
+  <div class="first_sibling">
+  <!--#else t_isFirstChild -->
+  <!--#if t_isLastChild -->
+  <div class="last_sibling">
+  <!--#endif t_isLastChild -->
+  <!--#endif t_isFirstChild -->
+  <!--#endif t_isSingleChild -->
+  <!--#endif t_isMiddleChild -->
+  <div class="{ t_type }">
+  <!--#if t_nodeIcon -->
+  <table width="100%" style="margin: 0; padding: 0"><tr>
+  <td width="1%"><img class="icon" src="{ t_nodeIcon }" /></td>
+  <td><b>{ t_title }</b><br />{ t_info }</td>
+  </tr></table>
+  <!--#else t_nodeIcon -->
+  <b>{ t_title }</b><br />{ t_info }
+  <!--#endif t_nodeIcon -->
+
+  <div class="actions">
+  <!--#in getNextAction -->
+  <a href="{ action_url }" title="{ action_caption }"><img class="action" src="{ action_icon }" /></a>
+  <!--#endin getNextAction -->
+  </div>
+  
+  <!--#if t_nbMembers "> 0" -->
+  <div class="members">
+  <!--#in getNextMemberRole -->
+  <div class="member_role">{ t_memberRole }</div>
+  <!--#in getNextMemberName -->
+  <div class="member">{ t_memberName }</div>
+  <!--#endin getNextMemberName -->
+  <!--#endin getNextMemberRole -->
+  </div>
+  <!--#endif t_nbMembers -->
+  </div>
+  <!--#endif t_levelVariation -->
+
+<!--#else t_layout -->
+
+  <!--#if t_levelVariation "== 1" --><ul class="level{ t_previousLevel } vertical"><!--#endif t_levelVariation -->
+  <!--#if t_levelVariation ">= -1" -->
+
+  <!--#if t_isMiddleChild -->
+  <li class="subtree middle_sibling">
+  <!--#else t_isMiddleChild -->
+  <!--#if t_isSingleChild -->
+  <li class="subtree single_sibling">
+  <!--#else t_isSingleChild -->
+  <!--#if t_isFirstChild -->
+  <li class="subtree first_sibling">
+  <!--#else t_isFirstChild -->
+  <!--#if t_isLastChild -->
+  <li class="subtree last_sibling">
+  <!--#endif t_isLastChild -->
+  <!--#endif t_isFirstChild -->
+  <!--#endif t_isSingleChild -->
+  <!--#endif t_isMiddleChild -->
+  <div class="{ t_type }">
+  <!--#if t_nodeIcon -->
+  <table width="100%" style="margin: 0; padding: 0"><tr>
+  <td width="1%"><img class="icon" src="{ t_nodeIcon }" /></td>
+  <td><b>{ t_title }</b><br />{ t_info }</div></td>
+  </tr></table>
+  <!--#else t_nodeIcon -->
+  <b>{ t_title }</b><br />{ t_info }
+  <!--#endif t_nodeIcon -->
+
+  <div class="actions">
+  <!--#in getNextAction -->
+  <a href="{ action_url }" title="{ action_caption }" <!--#if action_script -->onclick="{ action_script }"<!--#endif action_script -->><img class="action" src="{ action_icon }" /></a>
+  <!--#endin getNextAction -->
+  </div>
+  
+  <!--#if t_nbMembers "> 0" -->
+  <div class="members">
+  <!--#in getNextMemberRole -->
+  <div class="member_role">{ t_memberRole }</div>
+  <!--#in getNextMemberName -->
+  <div class="member">{ t_memberName }</div>
+  <!--#endin getNextMemberName -->
+  <!--#endin getNextMemberRole -->
+  </div>
+  <!--#endif t_nbMembers -->
+  </div>
+  <!--#endif t_levelVariation -->
+
+<!--#endif t_layout -->
+
+<!--#endin getNextElement -->
+</div>
+<!-- END ORGCHART -->
+
+<!--#end orgchart -->
+
