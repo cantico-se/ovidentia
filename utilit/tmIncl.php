@@ -1783,10 +1783,14 @@ function bab_selectOwnedTaskQueryByDate($sStartDate, $sEndDate)
 			't.shortDescription sShortDescription, ' .
 			't.class iClass, ' .
 			't.startDate startDate, ' .
-			't.endDate endDate ' .
+			't.endDate endDate, ' .
+			'cat.id iIdCategory, ' .
+			'IFNULL(cat.color, \'\' ) sBgColor ' .
 		'FROM ' . 
 			BAB_TSKMGR_TASKS_INFO_TBL . ' ti, ' .
 			BAB_TSKMGR_TASKS_TBL . ' t ' .
+		'LEFT JOIN ' . 
+			BAB_TSKMGR_CATEGORIES_TBL . ' cat ON cat.id = t.idCategory ' .
 		'LEFT JOIN ' . 
 			BAB_TSKMGR_PROJECTS_TBL . ' p ON p.id = t.idProject ' .
 		'LEFT JOIN ' . 
@@ -1799,8 +1803,9 @@ function bab_selectOwnedTaskQueryByDate($sStartDate, $sEndDate)
 		'GROUP BY ' .
 			'sProjectSpaceName ASC, sProjectName ASC, sTaskNumber ASC';
 
-//	bab_debug($query);
-//	echo $query . '<br />';
+	//bab_debug($query);
+	
+	//echo $query . '<br />';
 	global $babDB;
 	return $babDB->db_query($query);
 }
@@ -2063,7 +2068,7 @@ function bab_createDefaultWorkingHours($iIdUser)
 	}
 }
 
-function bab_selectAvailableCategories($iIdProject)
+function bab_selectAvailableCategories($iIdProjectSpace, $iIdProject)
 {
 	global $babBody, $babDB;
 
@@ -2074,13 +2079,14 @@ function bab_selectAvailableCategories($iIdProject)
 		'FROM ' .
 			BAB_TSKMGR_CATEGORIES_TBL . ' ' .
 		'WHERE ' . 
+			'idProjectSpace IN(\'' . $iIdProjectSpace . '\') AND ' .
 			'idProject IN(\'' . $iIdProject . '\',\'' . 0 . '\')';
 	
 	//bab_debug($query);
 	return $babDB->db_query($query);
 }
 
-function bab_selectAvailableSpecificFieldClassesByProject($iIdProject)
+function bab_selectAvailableSpecificFieldClassesByProject($iIdProjectSpace, $iIdProject)
 {
 	global $babBody, $babDB;
 
@@ -2098,6 +2104,7 @@ function bab_selectAvailableSpecificFieldClassesByProject($iIdProject)
 		'FROM ' .
 			BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' ' .
 		'WHERE ' . 
+			'idProjectSpace IN(\'' . $iIdProjectSpace . '\') AND ' .
 			'idProject IN(\'' . $iIdProject . '\',\'' . 0 . '\')';
 	
 	//bab_debug($query);

@@ -1608,14 +1608,18 @@ function saveProjectConfiguration()
 			'emailNotice' => $iEmailNotice,
 			'faqUrl' => $sFaqUrl);
 			
-		$oTmCtx =& getTskMgrContext();
 		$aDPC = $oTmCtx->getConfiguration();
 				
 		if(!is_null($aDPC))
 		{
 			global $babDB;
 			$result = bab_selectTasksList($iIdProject);
-			if(false != $result && $babDB->db_num_rows($result) > 0)
+			
+			if(false == $result)
+				bab_debug('Result ==> false');
+			
+			
+			if(false != $result && $babDB->db_num_rows($result) === 0)
 			{
 				$aConfiguration['tasksNumerotation'] = $aDPC['tasksNumerotation'];
 			}
@@ -1688,11 +1692,11 @@ function addModifyTaskCommentary()
 		{
 			if(0 == $iIdCommentary)
 			{
-				bab_createTaskCommentary($iIdProject, $iIdTask, mysql_escape_string($sCommentary));
+				bab_createTaskCommentary($iIdProject, $iIdTask, $sCommentary);
 			}
 			else 
 			{
-				bab_updateTaskCommentary($iIdCommentary, mysql_escape_string($sCommentary));
+				bab_updateTaskCommentary($iIdCommentary, $sCommentary);
 			}
 		}
 		else 

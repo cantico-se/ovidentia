@@ -454,6 +454,7 @@ function addModifyProjectSpace()
 	
 	if(strlen(trim($sName)) > 0)
 	{
+/*
 		$id = bab_isProjectSpaceExist($iIdDelegation, $sName);
 		if(false === $id)
 		{
@@ -468,6 +469,35 @@ function addModifyProjectSpace()
 			}
 		}
 		else if((int) $id === (int) $iIdProjectSpace)
+		{
+			bab_updateProjectSpace($iIdProjectSpace, $sName, $sDescription);
+		}
+		else
+		{
+			$GLOBALS['babBody']->msgerror = bab_translate("A project space with the name '") . $sName . bab_translate("' already exist");
+			$_POST['idx'] = BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_FORM;
+		}
+//*/
+		$id = bab_isProjectSpaceExist($iIdDelegation, $sName);
+		
+		//Si le nom n'est pas utilisé
+		if(false === $id)
+		{
+			if(0 === $iIdProjectSpace)
+			{
+				$iIdProjectSpace = bab_createProjectSpace($iIdDelegation, $sName, $sDescription);
+				if(false != $iIdProjectSpace)
+				{
+					bab_createDefaultProjectSpaceConfiguration($iIdProjectSpace);
+					bab_createDefaultProjectSpaceNoticeEvent($iIdProjectSpace);
+				}
+			}
+			else if(0 !== (int) $iIdProjectSpace)
+			{
+				bab_updateProjectSpace($iIdProjectSpace, $sName, $sDescription);
+			}
+		}
+		else if((int) $id === (int) $iIdProjectSpace )
 		{
 			bab_updateProjectSpace($iIdProjectSpace, $sName, $sDescription);
 		}

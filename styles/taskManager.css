@@ -43,3 +43,24 @@
 .displayNome {
 	display: none;
 	}
+	
+	
+	
+	
+.gantt {
+	position:relative;
+	}
+		
+.gantt div {
+	position:absolute;
+	}
+
+	/*
+.ganttTaskTitle {
+	position:relative;
+	}
+		
+.ganttTasksList {
+	position:relative;
+	}
+*/

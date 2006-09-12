@@ -117,7 +117,7 @@
 			
 			$this->m_aClasses = array(
 				array('iClassType' => BAB_TM_TASK, 'sClassName' => bab_translate("Task")),
-				array('iClassType' => BAB_TM_CHECKPOINT, 'sClassName' => bab_translate("CheckPoint")),
+				array('iClassType' => BAB_TM_CHECKPOINT, 'sClassName' => bab_translate("Checkpoint")),
 				array('iClassType' => BAB_TM_TODO, 'sClassName' => bab_translate("ToDo"))
 			);
 			
@@ -187,6 +187,8 @@
 			$this->set_caption('sDelete', bab_translate("Delete"));
 			$this->set_caption('sStop', bab_translate("Stop"));
 			$this->set_caption('sAnwser', bab_translate("Do you accept the task ?"));
+			$this->set_caption('sProjectSpace', bab_translate("Project space"));
+			$this->set_caption('sProject', bab_translate("Project"));
 		}
 
 		function initDatas()
@@ -198,6 +200,7 @@
 			$this->set_data('isCompletionEnabled', false);
 			$this->set_data('isResourceAvailable', false);
 			$this->set_data('isAnswerEnable', false);
+			$this->set_data('bIsProjectSpace', true);
 			
 $this->set_data('isDeletable', false);
 $this->set_data('isStoppable', false);
@@ -280,6 +283,9 @@ $this->set_data('isStoppable', false);
 			$this->set_data('sTaskCommentaries', '');
 			$this->set_data('sSelectedSpfField', '');
 			$this->set_data('sSpFieldName', '');
+			
+			$this->set_data('sProjectSpace', '');
+			$this->set_data('sProject', '');
 		}
 
 		//getNext function
@@ -443,13 +449,27 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 			
 			if($this->m_oTask->m_isPersonnal)
 			{
+				$this->set_data('bIsProjectSpace', false);
+				$this->set_data('sProject', bab_translate("Personnal task"));
+				
 				$this->m_aCfg =& $this->m_oTask->getConfiguration();
 			}
 			else
 			{
+				if(bab_getProjectSpace($this->m_iIdProjectSpace, $aProjectSpace))
+				{
+					$this->set_data('sProjectSpace', $aProjectSpace['name']);
+				}
+				
+				if(bab_getProject($this->m_iIdProject, $aProject))
+				{
+					$this->set_data('sProject', $aProject['name']);
+				}
+				
 				$oTmCtx =& getTskMgrContext();
 				$this->m_aCfg =& $oTmCtx->getConfiguration();
 			}
+			
 			
 			bab_getTaskResponsibles($this->m_iIdTask, $this->m_aTaskResponsibles);
 
@@ -471,14 +491,13 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 
 			bab_getAvailableTaskResponsibles($this->m_iIdProject, $this->m_aAvailableTaskResponsible);
 
-			$this->m_catResult = bab_selectAvailableCategories($this->m_iIdProject);
-			$this->m_spfResult = bab_selectAvailableSpecificFieldClassesByProject($this->m_iIdProject);
+			$this->m_catResult = bab_selectAvailableCategories($this->m_iIdProjectSpace, $this->m_iIdProject);
+			$this->m_spfResult = bab_selectAvailableSpecificFieldClassesByProject($this->m_iIdProjectSpace, $this->m_iIdProject);
 			$this->m_spfInstResult = bab_selectAllSpecificFieldInstance($this->m_iIdTask);
 			
-			global $babDB;
-			if($babDB->db_num_rows($this->m_spfResult))
-			{
-			}
+			$this->set_caption('sProjectSpace', bab_translate("Project space"));
+			$this->set_caption('sProject', bab_translate("Project"));
+
 		}
 
 		
