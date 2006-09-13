@@ -1435,6 +1435,9 @@ function displayPersonnalTaskConfigurationForm()
 
 function displayGanttChart()
 {
+	global $babInstallPath;
+	require_once($babInstallPath . 'tmGantt.php');
+
 	$sStartDate = bab_rp('date', date("Y-m-d"));
 	$oGantt = new BAB_TM_Gantt($sStartDate);
 	

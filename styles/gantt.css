@@ -1,0 +1,105 @@
+.gantt {
+	position: relative;
+	}
+		
+.gantt div {
+	position: absolute;
+	}
+
+/* Header */
+.ganttHeader {
+	background-color: #BD6363;
+	border-style: solid; 
+	border-color: red;
+/*	border-color: #000;*/
+	}
+
+/**/
+.ganttHeader div {
+	font-family: Arial, sans-serif; 
+	font-size: 10px; 
+	border-style: solid; 
+	border-color: #CCC;
+	border-color: red;
+	}
+
+.ganttHeader div div {
+	background-color: #BD6363;
+	border: none	
+	}
+/**/
+
+.ganttMonth {
+	background-color: #BD6363;
+	color: #FFF;	
+	}
+
+.ganttWeekNumber {
+	background-color: #BD6363;
+	color: #FFF	
+	}
+
+.ganttDay {
+	background-color: #BD6363;
+	color: #FFF	
+	}
+
+.ganttTasks {
+	position: absolute;
+	background-color: #787878;
+	color: #FFF;
+	font-family: Arial, sans-serif;
+	font-size: 10px; 
+	border-style: solid; 
+	border-color: red; 
+}
+	
+.ganttTaskTitle {
+	position: absolute;
+	background-color: #787878;
+	color: #FFF;
+	font-family: Arial, sans-serif;
+	font-size: 10px; 
+	border-style: solid; 
+	border-color: #CCC	
+	}
+	
+.ganttTasksList {
+	position: absolute;
+	}
+	
+.ganttTasksList div {
+	position: absolute;
+	font-family: Arial, sans-serif;
+	font-size: 10px; 
+	border-style: solid; 
+	border-color: #CCC	
+	}
+	
+.ganttView {
+	position: absolute;
+	border-style: solid; 
+	border-color: red; 
+	}
+	
+.ganttView div {
+	position: absolute;
+	}
+	
+.ganttColumn {
+	background-color: #CCC; 
+	}
+
+.ganttRow {
+	background-color: transparent; 
+	border-style: solid;
+	border-color: #CCC;
+	}
+
+.ganttTask {
+	position: absolute;
+	font-family: Arial, sans serif; 
+	font-size: 10px; 
+	border-style: solid; 
+	border-color: #CCC;
+	}
