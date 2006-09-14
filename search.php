@@ -259,6 +259,7 @@ function searchKeyword($item , $option = "OR")
 				}
 
 			$restc = $this->db->db_query("select tt.id,tt.category, tt.id_cat, tc.title from ".BAB_TOPICS_TBL." tt left join ".BAB_TOPICS_CATEGORIES_TBL." tc on tt.id_cat=tc.id order by tt.category, tc.title ");
+			$this->arrtopicscategories = array();
 			while( $row = $this->db->db_fetch_array($restc))
 				{
 				if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $row['id']))

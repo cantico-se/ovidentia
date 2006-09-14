@@ -16,7 +16,7 @@
 							<!--#in getnextfile -->
 							<dd>
 								<a href="{ file[url] }">{ file[name] }</a> 
-								<span>( { file[size] }<!--#if ismanager -->, { file[index_label] }<!--#endif ismanager --> )</span>
+								<span>( { file[size] }<!--#if displayIndex -->, { file[index_label] }<!--#endif displayIndex --> )</span>
 							</dd>
 							<!--#endin getnextfile -->
 						</dl>
@@ -217,7 +217,7 @@ class="BabForumTopicsConfirm" href="{ moreurl }">{ morename }</a><img src="{ bab
 				<dl class="BabForumFiles">
 					<dt>{ t_files }:</dt>
 					<!--#in getnextfile -->
-					<dd><a href="{ file[url] }">{ file[name] }</a> <span>( { file[size] }<!--#if ismanager -->, { file[index_label] }<!--#endif ismanager --> )</span></dd>
+					<dd><a href="{ file[url] }">{ file[name] }</a> <span>( { file[size] }<!--#if displayIndex -->, { file[index_label] }<!--#endif displayIndex --> )</span></dd>
 					<!--#endin getnextfile -->
 				</dl>
 				<!--#endif files -->
@@ -354,7 +354,7 @@ class="BabForumTopicsConfirm" href="{ moreurl }">{ morename }</a><img src="{ bab
 			<dl class="BabForumFiles">
 				<dt>{ t_files }:</dt>
 				<!--#in getnextfile -->
-				<dd><a href="{ file[url] }">{ file[name] }</a> <span>( { file[size] }<!--#if ismanager -->, { file[index_label] }<!--#endif ismanager --> )</span></dd>
+				<dd><a href="{ file[url] }">{ file[name] }</a> <span>( { file[size] }<!--#if displayIndex -->, { file[index_label] }<!--#endif displayIndex --> )</span></dd>
 				<!--#endin getnextfile -->
 			</dl>
 			<!--#endif files -->

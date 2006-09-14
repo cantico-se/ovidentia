@@ -1175,17 +1175,16 @@ function remove_field()
 <td> 
 	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
 	<tr> 
-	<td align="left" valign="middle" colspan="3"><b>{ filetitle }: &nbsp;{ maxsizetxt }&nbsp;</b></td>
+	<td align="left" valign="middle" colspan="2"><b>{ filetitle }: &nbsp;{ maxsizetxt }&nbsp;</b></td>
 	</tr>
 	<tr> 
-	<td align="right">&nbsp;</td>
+
 	<td colspan="2">{ filetxt }:<br /><input type="file" name="docf0" size="50" maxlength="255" value=""><br />{ desctxt }:<br /><input type="text" name="docdesc[]" size="50" maxlength="255" value="">
 	<p><a href="javascript:add_field()">{ t_add_field }</a>
 	</p>
 	</td>
 	</tr>
 	<tr> 
-	<td align="right">&nbsp;</td>
 	<td colspan="2">
 	<div id="post_addfiles">
 	</div>
@@ -1194,14 +1193,13 @@ function remove_field()
 	</td>
 	</tr>
 	<tr> 
-		<td align="right">&nbsp;</td>
-		<td colspan="2"><input type="submit" name="badd" value="{ addtxt }" onclick="javascript:stepSubmitForm('fadd','propform');">
+		<td colspan="2" align="center"><input type="submit" name="badd" value="{ addtxt }" onclick="javascript:stepSubmitForm('fadd','propform');">
 		</td>
 	</tr>
 	<!--#if countfiles -->
 	<tr class="BabSiteAdminTitleFontBackground">
 		<td>{ t_file }</td>
-		<td colspan="2">{ t_description }</td>
+		<td>{ t_description }</td>
 	</tr>
 	<!--#in getnextfile -->
 	<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->  
@@ -1209,7 +1207,7 @@ function remove_field()
 			<a title="{ deletetxt }" href="{ deleteurl }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/del.gif" alt="{ deletetxt }" border="0"></a>&nbsp;&nbsp;<a href="{ urlfile }">{ name }</a>
 		</td>
 		
-		<td colspan="2">{ docdesc }</td>
+		<td>{ docdesc }</td>
 	</tr>
 	<!--#endin getnextfile -->
 	<!--#endif countfiles -->

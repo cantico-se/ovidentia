@@ -169,6 +169,12 @@ class bab_indexObject {
 			return $r;
 		}
 
+		if (0 === count($files)) {
+			$r = new bab_indexReturn;
+			$r->result = false;
+			return $r;
+		}
+
 		switch($this->engineName) {
 			case 'swish':
 				include_once $GLOBALS['babInstallPath'].'utilit/searchincl.swish.php';
@@ -197,6 +203,8 @@ class bab_indexObject {
 	 */
 	function prepareIndex($files, $require_once, $function, $function_parameter) {
 
+		$this->autorized_files_only($files);
+		
 		if ($this->disabled) {
 			$r = new bab_indexReturn;
 			$r->addError(sprintf(bab_translate("This indexation is disabled : %s"),$this->label));
@@ -204,7 +212,11 @@ class bab_indexObject {
 			return $r;
 		}
 
-		$this->autorized_files_only($files);
+		if (0 === count($files)) {
+			$r = new bab_indexReturn;
+			$r->result = false;
+			return $r;
+		}
 
 		switch($this->engineName) {
 			case 'swish':
@@ -256,11 +268,14 @@ class bab_indexObject {
 	 */
 	function addFilesToIndex($files) {
 
-		if ($this->disabled) {
-			return false;
+		$this->autorized_files_only($files);
+
+		if ($this->disabled || 0 === count($files)) {
+			$r = new bab_indexReturn;
+			$r->result = false;
+			return $r;
 		}
 
-		$this->autorized_files_only($files);
 
 		switch($this->engineName) {
 			case 'swish':
@@ -349,7 +364,7 @@ function bab_indexOnLoadFiles($files, $object) {
 	$obj->autorized_files_only($files);
 	$status = $obj->get_onLoadStatus();
 
-	if (BAB_INDEX_STATUS_INDEXED === $status) {
+	if (BAB_INDEX_STATUS_INDEXED === $status && 0 < count($files)) {
 		if (false !== $obj->addFilesToIndex($files)) {
 			return BAB_INDEX_STATUS_INDEXED;
 		} else {
@@ -413,6 +428,17 @@ function bab_getIndexStatusLabel($status) {
 		case BAB_INDEX_STATUS_TOINDEX:
 			return bab_translate("Wait indexation");
 	}
+}
+
+
+function bab_isFileIndex($filename) {
+	$engine = bab_searchEngineInfos();
+	if (!$engine)
+		return false;
+	$type = bab_getFileMimeType($filename);
+	if (!in_array($type, $engine['types']))
+		return false;
+	return true;
 }
 
 ?>

@@ -1996,7 +1996,11 @@ function viewFile( $idf)
 
 				// indexation
 
-				if ($engine = bab_searchEngineInfos()) {
+				
+
+				if (bab_isFileIndex($fullpath) && bab_isUserAdministrator()) {
+
+						$engine = bab_searchEngineInfos();
 						
 						$this->index = true;
 						$this->index_status = $arr['index_status'];

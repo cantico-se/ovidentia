@@ -145,6 +145,7 @@ function listPosts($forum, $thread, $post)
 
 				$this->files = bab_getPostFiles($this->forum, $this->postid);
 				$this->ismanager = bab_isAccessValid(BAB_FORUMSMAN_GROUPS_TBL, $forum );
+				$this->displayIndex = bab_isUserAdministrator();
 				}
 
 
@@ -428,6 +429,7 @@ function listPostsFlat($forum, $thread, $open)
 				$GLOBALS['babWebStat']->addForumPost($arr['id']);
 				$this->files = bab_getPostFiles($this->forum,$arr['id']);
 				$this->ismanager = bab_isAccessValid(BAB_FORUMSMAN_GROUPS_TBL, $this->forum);
+				$this->displayIndex = bab_isUserAdministrator();
 				$this->what = $arr['confirmed'];
 				$this->postdate = bab_strftime(bab_mktime($arr['date']));
 				$this->postauthor = $arr['author'];
@@ -573,6 +575,7 @@ function newReply($forum, $thread, $post)
 				$this->noteforum = "";
 
 			$this->ismanager = bab_isAccessValid(BAB_FORUMSMAN_GROUPS_TBL, $forum );
+			$this->displayIndex = bab_isUserAdministrator();
 
 			$this->files = bab_getPostFiles($this->forum,$post);
 			$this->allow_post_files = bab_isAccessValid(BAB_FORUMSFILES_GROUPS_TBL,$forum);
