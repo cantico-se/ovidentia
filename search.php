@@ -1917,10 +1917,12 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
                 $this->artauthor = $arr['author'];
 				$this->filedesc = put_text($arr['description']);
 				$this->path = $arr['path'];
+				
 				if ($arr['bgroup'] == 'N')
-					$this->arttopic = $arr['path'];
+					$this->arttopic = bab_translate("Private folder")."/".$arr['path'];
 				else
 					$this->arttopic = $arr['folder']."/".$arr['path'];
+
 				$this->arttopicid = $arr['id_owner'];
 				$this->bgroup = $arr['bgroup'];
 				$this->filedesc = $arr['description'];
@@ -2442,7 +2444,7 @@ function viewFile($id, $w)
 
 			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_FILES_TBL." where id='$id' and state='' and confirmed='Y'";
+			$req = "select * from ".BAB_FILES_TBL." where id=".$this->db->quote($id)." and state='' and confirmed='Y'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
 			$access = bab_isAccessFileValid($this->arr['bgroup'], $this->arr['id_owner']);
@@ -2461,18 +2463,18 @@ function viewFile($id, $w)
 				else
 					$fstat = stat($GLOBALS['babUploadPath']."/U".$this->arr['id_owner']."/".$this->arr['path']."/".$this->arr['name']);
 				$this->size = bab_formatSizeFile($fstat[7])." ".bab_translate("Kb");
-				if( $this->arr['bgroup'] == "Y")
+				if( $this->arr['bgroup'] == "Y") {
 					$this->rootpath = bab_getFolderName($this->arr['id_owner']);
-				else
-					$this->rootpath = "";
-				$this->path = $this->rootpath."/".$this->arr['path'];
-				if( $this->arr['bgroup'] == 'Y' )
-					{
+
 					$this->resff = $this->db->db_query("select * from ".BAB_FM_FIELDS_TBL." where id_folder='".$this->arr['id_owner']."'");
 					$this->countff = $this->db->db_num_rows($this->resff);
 					}
-				else
+				else 
+					{
+					$this->rootpath = bab_translate("Private folder");
 					$this->countff = 0;
+					}
+				$this->path = $this->rootpath."/".$this->arr['path'];	
 
 				$this->resversion = $this->db->db_query("
 					SELECT 
@@ -2485,7 +2487,7 @@ function viewFile($id, $w)
 						".BAB_INDEX_ACCESS_TBL." a 
 					WHERE 
 						f.id = v.id_file 
-						AND v.id_file='".$this->arr['id']."' 
+						AND v.id_file=".$this->db->quote($this->arr['id'])." 
 						AND a.id_object = v.id 
 						AND a.id_object_access = f.id_owner
 
@@ -2505,7 +2507,7 @@ function viewFile($id, $w)
 				}
 			else
 				{
-				$this->title = bab_translate("Access denied");
+				$GLOBALS['babBody']->msgerror = bab_translate("Access denied");
 				$this->arr['description'] = "";
 				$this->arr['keywords'] = "";
 				$this->created = "";
@@ -2514,6 +2516,8 @@ function viewFile($id, $w)
 				$this->postedby = "";
 				$this->geturl = "";
 				$this->countff = 0;
+				$this->path ='';
+				$this->size = '';
 				}
 			}
 
@@ -2526,7 +2530,7 @@ function viewFile($id, $w)
 				$arr = $babDB->db_fetch_array($this->resff);
 				$this->field = bab_translate($arr['name']);
 				$this->fieldval = '';
-				$res = $babDB->db_query("select fvalue from ".BAB_FM_FIELDSVAL_TBL." where id_field='".$arr['id']."' and id_file='".$this->arr['id']."'");
+				$res = $babDB->db_query("select fvalue from ".BAB_FM_FIELDSVAL_TBL." where id_field=".$babDB->quote($arr['id'])." and id_file='".$this->arr['id']."'");
 				if( $res && $babDB->db_num_rows($res) > 0)
 					{
 					list($this->fieldval) = $babDB->db_fetch_array($res);

@@ -143,9 +143,9 @@ function bab_isAccessFileValid($gr, $id)
 			}
 		else
 			{
-			for( $i = 0; $i < count($babBody->usergroups); $i++)
+			foreach( $babBody->usergroups as $grpid)
 				{
-				if( $babBody->ovgroups[1]['ustorage'] == 'Y')
+				if( $babBody->ovgroups[$grpid]['ustorage'] == 'Y')
 					{
 					$access = true;
 					break;

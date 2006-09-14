@@ -221,7 +221,8 @@ function bab_upgrade($core_dir, &$ret)
 		$requirements = $ini->getRequirements();
 		foreach($requirements as $req) {
 			if (false === $req['result']) {
-				return bab_translate("This version can't be installed because of the missing requirement").' '.$req['description'].' '.$req['required'];
+				$ret = bab_translate("This version can't be installed because of the missing requirement").' '.$req['description'].' '.$req['required'];
+				return false;
 			}
 		}
 	}
