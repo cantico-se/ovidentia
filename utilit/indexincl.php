@@ -343,9 +343,10 @@ class bab_indexObject {
  */
 function bab_indexOnLoadFiles($files, $object) {
 
-	$this->autorized_files_only($files);
+	
 	
 	$obj = new bab_indexObject($object);
+	$obj->autorized_files_only($files);
 	$status = $obj->get_onLoadStatus();
 
 	if (BAB_INDEX_STATUS_INDEXED === $status) {
