@@ -118,6 +118,23 @@ class bab_indexObject {
 
 
 	/**
+	 * @private
+	 * @param array $arr files
+	 */
+	function autorized_files_only(&$arr) {
+		$tmp = bab_searchEngineInfos();
+		$types = array_flip($tmp['types']);
+		
+		foreach($arr as $k => $file) {
+			
+			$t = bab_getFileMimeType($file);
+			if (!isset($types[$t])) {
+				unset($arr[$k]);
+			}
+		}
+	}
+
+	/**
 	 * get status for new uploaded files for a index file
 	 * this function take care of disabled status, on upload status, ...
 	 * @param int $id_indexFile
@@ -142,7 +159,7 @@ class bab_indexObject {
 	 * @return object bab_indexReturn
 	 */
 	function resetIndex($files) {
-
+		$this->autorized_files_only($files);
 		$this->db->db_query("DELETE FROM ".BAB_INDEX_ACCESS_TBL." WHERE object = '".$this->db->db_escape_string($this->object)."'");
 
 		if ($this->disabled) {
@@ -186,6 +203,8 @@ class bab_indexObject {
 			$r->result = false;
 			return $r;
 		}
+
+		$this->autorized_files_only($files);
 
 		switch($this->engineName) {
 			case 'swish':
@@ -240,6 +259,8 @@ class bab_indexObject {
 		if ($this->disabled) {
 			return false;
 		}
+
+		$this->autorized_files_only($files);
 
 		switch($this->engineName) {
 			case 'swish':
@@ -321,6 +342,8 @@ class bab_indexObject {
  * @return integer
  */
 function bab_indexOnLoadFiles($files, $object) {
+
+	$this->autorized_files_only($files);
 	
 	$obj = new bab_indexObject($object);
 	$status = $obj->get_onLoadStatus();

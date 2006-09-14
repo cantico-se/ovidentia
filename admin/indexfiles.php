@@ -36,27 +36,31 @@ function listIndexFiles()
 	class bab_listIndexFilesCls {
 
 		var $db;
+		var $reg;
 		var $altbg = true;
 
 		function bab_listIndexFilesCls() {
-			$this->t_title		= bab_translate("Name");
-			$this->t_all		= bab_translate("Index all files");
-			$this->t_waiting	= bab_translate("Index waiting files");
-			$this->t_onload		= bab_translate("Index on load");
-			$this->t_disabled	= bab_translate("Disabled");
-			$this->t_update		= bab_translate("Update");
-			$this->t_allowed_ip = bab_translate("Allowed IP address");
-
-			$this->t_all_all	= bab_translate("Index all files from all indexes");
-			$this->t_all_waiting= bab_translate("Index waiting files from all indexes");
+			$this->t_title			= bab_translate("Name");
+			$this->t_all			= bab_translate("Index all files");
+			$this->t_waiting		= bab_translate("Index waiting files");
+			$this->t_onload			= bab_translate("Index on load");
+			$this->t_disabled		= bab_translate("Disabled");
+			$this->t_update			= bab_translate("Update");
+			$this->t_allowed_ip		= bab_translate("Allowed IP address");
+			$this->t_lock			= bab_translate("Lock");
+			$this->t_unlock			= bab_translate("Unlock");
+			$this->t_unlock_confirm = bab_toHtml(bab_translate("The index is probably in process, do you really want to unlock?"), BAB_HTML_JS);
+			$this->t_all_all		= bab_translate("Index all files from all indexes");
+			$this->t_all_waiting	= bab_translate("Index waiting files from all indexes");
+			$this->t_confirm		= bab_translate("Indexing directly from interface could take a lot of cpu time, do you really want to index?");
 
 			$this->db = &$GLOBALS['babDB'];
 
 			$this->all = BAB_INDEX_ALL;
 			$this->waiting = BAB_INDEX_WAITING;
 
-			$reg = bab_getRegistryInstance();
-			$reg->changeDirectory('/bab/indexfiles/');
+			$this->reg = bab_getRegistryInstance();
+			$this->reg->changeDirectory('/bab/indexfiles/');
 
 			if (isset($_POST['action']) && 'index' == $_POST['action']) {
 				$this->db->db_query("UPDATE ".BAB_INDEX_FILES_TBL." SET index_onload='0', index_disabled='0'");
@@ -73,13 +77,17 @@ function listIndexFiles()
 					}
 				}
 
-				$reg->setKeyValue('allowed_ip', $_POST['allowed_ip']);
+				$this->reg->setKeyValue('allowed_ip', $_POST['allowed_ip']);
 			}
 
 			$this->res = $this->db->db_query("SELECT * FROM ".BAB_INDEX_FILES_TBL."");			
 			
-			$this->allowed_ip = $reg->getValue('allowed_ip', '127.0.0.1');
+			$this->allowed_ip = $this->reg->getValue('allowed_ip', '127.0.0.1');
+			$this->reg->changeDirectory('/bab/indexfiles/lock/');
 
+			if (isset($_GET['unlock']) && isset($_GET['obj'])) {
+				$this->reg->removeKey($_GET['obj']);
+			}
 		}
 
 
@@ -92,7 +100,8 @@ function listIndexFiles()
 				$this->onload		= 1 == $arr['index_onload'];
 				$this->disabled		= 1 == $arr['index_disabled'];
 				$this->object		= bab_toHtml(urlencode($arr['object']));
-
+				$lock				= $this->reg->getValue($arr['object']);
+				$this->locked		= NULL !== $lock;
 				return true;
 			}
 			return false;

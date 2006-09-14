@@ -1388,7 +1388,8 @@ function bab_getDebug() {
  * <li>BAB_HTML_P			: double line breaks will be replaced by html paragraphs, if there is no double line breaks, all the text will be in one paragraph</li>
  * <li>BAB_HTML_BR			: Line-breaks will be replaced by html line breaks</li>
  * <li>BAB_HTML_LINKS		: url and email adress will be replaced by links</li>
- * <li>BAB_HTML_JS			: ' and " are encoded for javascript strings, not into BAB_HTML_ALL</li>
+ * <li>BAB_HTML_JS			: ' and " are encoded for javascript strings, not in BAB_HTML_ALL</li>
+ * <li>BAB_HTML_REPLACE		: Replace ovidentia macro $XXX()</li>
  * </ul>
  * @param string $str
  * @param int [$opt] the default value for the option is BAB_HTML_ENTITIES

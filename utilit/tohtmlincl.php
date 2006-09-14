@@ -53,8 +53,18 @@ function bab_f_toHtml($pee, $opt) {
 		$pee = preg_replace("/\n?(.+?)(\n\n|\z)/s", "<p>$1</p>", $pee);
 	}
 
-	if (BAB_HTML_BR === ($opt & BAB_HTML_BR))
+	if (BAB_HTML_BR === ($opt & BAB_HTML_BR)) {
 		$pee = nl2br($pee);
+	}
+
+	if (BAB_HTML_JS === ($opt & BAB_HTML_JS)) {
+		$pee = str_replace("'", "\'", $pee);
+		$pee = str_replace('"', "'+String.fromCharCode(34)+'",$pee);
+	}
+
+	if (BAB_HTML_REPLACE === ($opt & BAB_HTML_REPLACE)) {
+		bab_replace_ref($pee);
+	}
 
 	return $pee;
 	}

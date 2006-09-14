@@ -1,6 +1,16 @@
 <!--#begin list -->
 <br />
 <br />
+<script type="text/javascript">
+function index_confirm(obj) {
+	//}
+	if (confirm('{ t_confirm }')) {
+		bab_popup(obj.href);
+	}
+
+	return false;
+}
+</script>
 <form method="post" action="{ babPhpSelf }" name="listform">
 <input type="hidden" name="tg" value="admindex" />
 <input type="hidden" name="action" value="index" />
@@ -19,12 +29,20 @@
 		<!--#in getnext --> 
 		<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
 			<td>{ title }</td>
+
+			<!--#if locked -->
+			<td colspan="2" align="center">
+				<img src="{ babSkinPath }images/Puces/lock.gif" alt="{ t_lock }" /> &nbsp; 
+				<a href="{ babUrlScript }?tg=admindex&amp;idx=files&amp;unlock=1&amp;obj={ object }">{ t_unlock }</a>
+			</td>
+			<!--#else locked -->
 			<td align="center">
-				<a href="{ babUrlScript }?tg=usrindex&amp;idx={ all }&amp;obj={ object }&prepare=1" onclick="bab_popup(this.href);return false;"><img src="{ babSkinPath }images/Puces/check-orange.gif" alt="{ t_all }"  border="0" /></a>
+				<a href="{ babUrlScript }?tg=usrindex&amp;idx={ all }&amp;obj={ object }" onclick="return index_confirm(this);"><img src="{ babSkinPath }images/Puces/check-orange.gif" alt="{ t_all }" border="0" /></a>
 			</td>
 			<td align="center">
-				<a href="{ babUrlScript }?tg=usrindex&amp;idx={ waiting }&amp;obj={ object }" onclick="bab_popup(this.href);return false;"><img src="{ babSkinPath }images/Puces/check-green.gif" alt="{ t_waiting }"  border="0" /></a>
+				<a href="{ babUrlScript }?tg=usrindex&amp;idx={ waiting }&amp;obj={ object }" onclick="return index_confirm(this);"><img src="{ babSkinPath }images/Puces/check-green.gif" alt="{ t_waiting }"  border="0" /></a>
 			</td>
+			<!--#endif locked -->
 			<td align="center"> 
 				<input type="checkbox" name="onload[]" value="{ id_index }" <!--#if onload --> checked="checked"<!--#endif onload --> />
 			</td>
@@ -56,9 +74,9 @@
 </div>
 
 <p>
-	<img src="{ babSkinPath }images/Puces/check-orange.gif" alt=""  border="0" /> <a href="{ babUrlScript }?tg=usrindex&amp;idx={ all }&prepare=1" onclick="bab_popup(this.href);return false;">{ t_all_all }</a> &nbsp; - &nbsp; 
+	<img src="{ babSkinPath }images/Puces/check-orange.gif" alt=""  border="0" /> <a href="{ babUrlScript }?tg=usrindex&amp;idx={ all }" onclick="return index_confirm(this);">{ t_all_all }</a> &nbsp; - &nbsp; 
 	
-	<img src="{ babSkinPath }images/Puces/check-green.gif" alt=""  border="0" /> <a href="{ babUrlScript }?tg=usrindex&amp;idx={ waiting }" onclick="bab_popup(this.href);return false;">{ t_all_waiting }</a>
+	<img src="{ babSkinPath }images/Puces/check-green.gif" alt=""  border="0" /> <a href="{ babUrlScript }?tg=usrindex&amp;idx={ waiting }" onclick="return index_confirm(this);" >{ t_all_waiting }</a>
 </p>
 
 <br />
