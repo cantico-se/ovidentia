@@ -49,7 +49,7 @@ function bab_mktime($time)
 	{
 	$arr = explode(" ", $time);
 	if ('0000-00-00' == $arr[0]) {
-		return 0;
+		return -1;
 	}
 	$arr0 = explode("-", $arr[0]);
 	if (isset($arr[1])) {
@@ -1388,6 +1388,7 @@ function bab_getDebug() {
  * <li>BAB_HTML_P			: double line breaks will be replaced by html paragraphs, if there is no double line breaks, all the text will be in one paragraph</li>
  * <li>BAB_HTML_BR			: Line-breaks will be replaced by html line breaks</li>
  * <li>BAB_HTML_LINKS		: url and email adress will be replaced by links</li>
+ * <li>BAB_HTML_JS			: ' and " are encoded for javascript strings, not into BAB_HTML_ALL</li>
  * </ul>
  * @param string $str
  * @param int [$opt] the default value for the option is BAB_HTML_ENTITIES
@@ -1414,7 +1415,7 @@ function bab_searchEngineInfos() {
 		return array(
 			'name'			=> $GLOBALS['babSearchEngine'],
 			'description'	=> $obj->getDescription(),
-		//	'types'			=> $obj->getAvailableMimeTypes(),
+			'types'			=> $obj->getAvailableMimeTypes(),
 			'indexes'		=> bab_searchEngineIndexes()
 		);
 	}
