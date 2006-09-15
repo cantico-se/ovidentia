@@ -1097,6 +1097,8 @@ function displayTaskList()
 		$GLOBALS['babSkinPath'] . 'images/Puces/edit.png', 
 		$sLink, $aDataSourceFields);
 	
+	$GLOBALS['babBody']->babecho(bab_printTemplate($oTaskFilterForm, 'tmUser.html', 'ganttView'));
+	
 	$GLOBALS['babBody']->babecho($oMultiPage->printTemplate());
 }
 

@@ -1504,6 +1504,14 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 		{
 			return false;
 		}
+		
+		function getIsoDatesFromEndDate(&$sStartDate, &$sEndDate)
+		{
+			$sEndDate = mysql_escape_string(trim($this->m_sEndDate));
+			$oStartDate = BAB_DateTime::fromIsoDateTime($sEndDate);
+			$oStartDate->init($oStartDate->_iYear, $oStartDate->_iMonth, $oStartDate->_iDay, 00, 00, 00);
+			$sStartDate = date('Y-m-d H:i:s', $oStartDate->getTimeStamp());
+		}
 	}
 	
 	class BAB_TM_MgrTaskCreatorValidator extends BAB_TM_MgrTaskValidatorBase
@@ -1636,10 +1644,7 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 				$aTask['iPosition']				= $this->m_iPosition;
 				$aTask['iCompletion']			= 0;
 				
-				$sEndDate = mysql_escape_string(trim($this->m_sEndDate));
-				$oEndDate = BAB_DateTime::fromIsoDateTime($sEndDate);
-				$oEndDate->init($oEndDate->_iYear, $oEndDate->_iMonth, $oEndDate->_iDay, 23, 59, 59);
-				$sStartDate = date('Y-m-d H:i:s', $oEndDate->getTimeStamp());
+				$this->getIsoDatesFromEndDate($sStartDate, $sEndDate);
 				
 				$aTask['sStartDate']			= $sStartDate;
 				$aTask['sEndDate'] 				= $sEndDate;
@@ -1690,10 +1695,7 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 				$aTask['iPosition']				= $this->m_iPosition;
 				$aTask['iCompletion']			= 0;
 				
-				$sEndDate = mysql_escape_string(trim($this->m_sEndDate));
-				$oEndDate = BAB_DateTime::fromIsoDateTime($sEndDate);
-				$oEndDate->init($oEndDate->_iYear, $oEndDate->_iMonth, $oEndDate->_iDay, 23, 59, 59);
-				$sStartDate = date('Y-m-d H:i:s', $oEndDate->getTimeStamp());
+				$this->getIsoDatesFromEndDate($sStartDate, $sEndDate);
 				
 				$aTask['sStartDate']			= $sStartDate;
 				$aTask['sEndDate'] 				= $sEndDate;
@@ -1942,11 +1944,9 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 				$aTask['iPosition']				= $this->m_iPosition;
 				$aTask['iCompletion']			= 0;
 				
-				$sEndDate = mysql_escape_string(trim($this->m_sEndDate));
-				$oEndDate = BAB_DateTime::fromIsoDateTime($sEndDate);
-				$oEndDate->init($oEndDate->_iYear, $oEndDate->_iMonth, $oEndDate->_iDay, 23, 59, 59);
+				$this->getIsoDatesFromEndDate($sStartDate, $sEndDate);
 				
-				$aTask['sStartDate']			= '';
+				$aTask['sStartDate']			= $sStartDate;
 				$aTask['sEndDate'] 				= $sEndDate;
 				$aTask['iIsNotified']			= BAB_TM_NO;
 				
@@ -1992,11 +1992,9 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 				$aTask['iPosition']				= $this->m_iPosition;
 				$aTask['iCompletion']			= 0;
 				
-				$sEndDate = mysql_escape_string(trim($this->m_sEndDate));
-				$oEndDate = BAB_DateTime::fromIsoDateTime($sEndDate);
-				$oEndDate->init($oEndDate->_iYear, $oEndDate->_iMonth, $oEndDate->_iDay, 23, 59, 59);
+				$this->getIsoDatesFromEndDate($sStartDate, $sEndDate);
 				
-				$aTask['sStartDate']			= '';
+				$aTask['sStartDate']			= $sStartDate;
 				$aTask['sEndDate'] 				= $sEndDate;
 				$aTask['iIsNotified']			= BAB_TM_NO;
 				

@@ -576,9 +576,10 @@ bab_debug('8 heures de train');
 
 	function buildPageUrl($iPageNumber)
 	{
-		$sPageUrl = ereg_replace('&iPage=[^&.]+', '', $_SERVER['REQUEST_URI']);
+		$sPageUrl = ereg_replace('\?tg=[^&.]+', '', $_SERVER['REQUEST_URI']);
+		$sPageUrl = ereg_replace('&iPage=[^&.]+', '', $sPageUrl);
 		$sPageUrl = ereg_replace('&iNbRowsPerPage=[^&.]+', '', $sPageUrl);
-		
+		$sPageUrl = '?tg=' . $this->sTg;
 		return htmlentities($sPageUrl .= '&iPage=' . $iPageNumber . '&iNbRowsPerPage=' . $this->iNbRowsPerPage);
 	}
 	

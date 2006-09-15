@@ -27,7 +27,7 @@ include "base.php";
 
 class BAB_TM_GanttBase
 {
-	var $m_iWidth = '16';
+	var $m_iWidth = '14';
 	var $m_iHeight = '25';
 	
 	//m_iWidth = 1 day = 86400 secondes
@@ -138,8 +138,14 @@ class BAB_TM_GanttBase
 		
 		$this->initDates($sStartDate, $iStartWeekDay);
 		
+		$aSelectedFilterValues = null;
+		bab_getTaskListFilter($GLOBALS['BAB_SESS_USERID'], $aSelectedFilterValues);
+
+		$iTaskFilter =& $aSelectedFilterValues['iIdProject'];
+		$iTaskClass =& $aSelectedFilterValues['iTaskClass'];
+
 		$this->m_result = bab_selectOwnedTaskQueryByDate(date("Y-m-d H:i:s", $this->m_aDisplayedStartDate[0]), 
-			date("Y-m-d H:i:s", $this->m_aDisplayedEndDate[0]));
+			date("Y-m-d H:i:s", $this->m_aDisplayedEndDate[0]), $iTaskFilter, $iTaskClass);
 		
 		if(false != $this->m_result)	
 		{
@@ -554,140 +560,45 @@ class BAB_TM_Gantt extends BAB_TM_GanttBase
 	var $m_sTask = '';
 
 	var $m_iTaskIndex = 1;
+	
+	var $m_bIsTaskCompletion = false;
+	
+	var $m_sAdditionnalClass = '';
 
 	function BAB_TM_Gantt($sStartDate, $iStartWeekDay = 1)
 	{
 		parent::BAB_TM_GanttBase($sStartDate, $iStartWeekDay);
 	}
-
+	
 	function getNextTask()
 	{
 		global $babDB;
 		
-		static $iIndex = 1;
-		
 		if(false != $this->m_result && false != ($datas = $babDB->db_fetch_assoc($this->m_result)))
 		{
-			$this->m_iBorderLeft	= 1;
-			$this->m_iBorderRight	= 1;
-			$this->m_iBorderTop		= 0;
-			$this->m_iBorderBottom	= 1;
-			
-			$oTaskStartDate = BAB_DateTime::fromIsoDateTime($datas['startDate']);
-			$oTaskEndDate = BAB_DateTime::fromIsoDateTime($datas['endDate']);
-			
-			$oDisplayedStartDate = BAB_DateTime::fromTimeStamp($this->m_aDisplayedStartDate[0]);
-			$oDisplayedEndDate = BAB_DateTime::fromTimeStamp($this->m_aDisplayedEndDate[0]);
-
-			//0 the dates are equal
-			//-1 d1 is before d2
-			//1 d1 is after d2
-			
-			$iIsEqual	= 0;
-			$iIsBefore	= -1;
-			$iIsAfter	= 1;
-
-$iTaskDuration = BAB_DateTime::dateDiff($oTaskEndDate->_iDay, $oTaskEndDate->_iMonth, $oTaskEndDate->_iYear, 
-	$oTaskStartDate->_iDay, $oTaskStartDate->_iMonth, $oTaskStartDate->_iYear) + 1; //+1 for the start day
-
-/*	
-if('Veronica T6' == $datas['sShortDescription'] || 'Veronica T7' == $datas['sShortDescription'])	
-	echo 'iTaskDuration ==> ' . $iTaskDuration . '<br />';
-//*/
-			
-$iNbDaysBeforeStartDate = 0;
-$iPercentBeforeBigining = 0;
-			
-			if($iIsBefore == BAB_DateTime::compare($oTaskStartDate, $oDisplayedStartDate))
+			if(BAB_TM_TASK == $datas['iClass'])
 			{
-				
-$iNbDaysBeforeStartDate = BAB_DateTime::dateDiff($oTaskStartDate->_iDay, $oTaskStartDate->_iMonth, 
-				$oTaskStartDate->_iYear, $oDisplayedStartDate->_iDay, $oDisplayedStartDate->_iMonth, 
-				$oDisplayedStartDate->_iYear);
-
-$iPercentBeforeBigining = ($iNbDaysBeforeStartDate / $iTaskDuration) * 100;		
-				
-//echo 'iNbDaysBeforeStartDate ==> ' . $iNbDaysBeforeStartDate . ' iPercentBeforeBigining ==> ' . $iPercentBeforeBigining . '<br />';
-
-				$oTaskStartDate = $oDisplayedStartDate;
+				$this->m_iBorderLeft	= 1;
+				$this->m_iBorderRight	= 1;
+				$this->m_iBorderTop		= 0;
+				$this->m_iBorderBottom	= 1;
 			}
-			
-$iNbDaysAfterEndDate = 0;
-$iPercentAfterEnding = 0;
-
-			$bIsAfter = false;
-			if($iIsAfter == BAB_DateTime::compare($oTaskEndDate, $oDisplayedEndDate))
-			{
-				
-$iNbDaysAfterEndDate = BAB_DateTime::dateDiff($oTaskEndDate->_iDay, $oTaskEndDate->_iMonth, 
-				$oTaskEndDate->_iYear, $oDisplayedEndDate->_iDay, $oDisplayedEndDate->_iMonth, 
-				$oDisplayedEndDate->_iYear) + 1;
-
-$iPercentAfterEnding = ($iNbDaysAfterEndDate / $iTaskDuration) * 100;		
-				
-//echo 'iNbDaysAfterEndDate ==> ' . $iNbDaysAfterEndDate . ' iPercentAfterEnding ==> ' . $iPercentAfterEnding . '<br />';
-
-				$oTaskEndDate = $oDisplayedEndDate;
-				$bIsAfter = true;
+			else {
+				$this->m_iBorderLeft	= 0;
+				$this->m_iBorderRight	= 0;
+				$this->m_iBorderTop		= 0;
+				$this->m_iBorderBottom	= 0;
 			}
-			
-			$iDaysFromBegining = BAB_DateTime::dateDiff($oTaskStartDate->_iDay, $oTaskStartDate->_iMonth, 
-				$oTaskStartDate->_iYear, $oDisplayedStartDate->_iDay, $oDisplayedStartDate->_iMonth, 
-				$oDisplayedStartDate->_iYear);
-			
-			//+1 to include the start day			
-			$_iTaskDuration = BAB_DateTime::dateDiff($oTaskEndDate->_iDay, $oTaskEndDate->_iMonth, $oTaskEndDate->_iYear, 
-				$oTaskStartDate->_iDay, $oTaskStartDate->_iMonth, $oTaskStartDate->_iYear) + (($bIsAfter) ? 0 : 1);
-			
-			$this->m_iTaskPosX = ($iDaysFromBegining * $this->m_iWidth) - $this->m_iBorderLeft;
-			$this->m_iTaskPosY = $iIndex++ * $this->m_iHeight;
-			$this->m_iTaskHeigth = $this->m_iHeight - ($this->m_iBorderTop + $this->m_iBorderBottom);
-			$this->m_iTaskWidth = ($_iTaskDuration * $this->m_iWidth) - ($this->m_iBorderLeft);
-			$this->m_sTaskBgColor = 'B0B0B0';
-			$this->m_sTask = '';
-			
-			$iPercentDone = 97;
-			
-			if('Veronica T6' == $datas['sShortDescription'])
-			{
-				if($iPercentDone > $iPercentBeforeBigining)
-				{
-					$iNbDays = ((($iPercentDone - $iPercentBeforeBigining) * $iTaskDuration) / 100);
 
-					$this->m_sDoneBgColor = '00F';
-					$this->m_sDoneColor = 'FFF';
-					$this->m_iDonePosY = $this->m_iTaskPosY;
-					$this->m_iDonePosX = $this->m_iTaskPosX + 1;
-					$this->m_iDoneHeigth = $this->m_iTaskHeigth;
-					$this->m_iDoneWidth = ((($iPercentDone - $iPercentBeforeBigining) * $iTaskDuration) / 100) *  $this->m_iWidth - 1;
-					
-					
-					//$this->m_iDoneWidth = ($iPercentDone - $iPercentBeforeBigining) * $this->m_iWidth;
-					
-					echo 'remain % ==> ' . ($iPercentDone - $iPercentBeforeBigining) . '<br />';
-					echo 'width ==> ' . ((($iPercentDone - $iPercentBeforeBigining) * $iTaskDuration) / 100) *  $this->m_iWidth . '<br />';
-					echo 'iNbDays ==> ' . $iNbDays . '<br />';
-
-				}
-			}
+			$this->m_bIsTaskCompletion = false;
 			
-			return true;
-		}
-		
-		if($babDB->db_num_rows($this->m_result) > 0)
-		{
-			$babDB->db_data_seek($this->m_result, 0);
-		}
-		
-		return false;
-	}
-	
-	function getNextTask2()
-	{
-		global $babDB;
-		
-		if(false != $this->m_result && false != ($datas = $babDB->db_fetch_assoc($this->m_result)))
-		{
+			/*
+			$this->m_sAdditionnalClass = (BAB_TM_CHECKPOINT == $datas['iClass']) ? 'ganttCheckpoint' : 
+				((BAB_TM_TODO == $datas['iClass']) ? 'ganttToDo' : '');
+			//*/
+			
+			$this->m_sAdditionnalClass = $datas['sAdditionnalClass'];
+			
 			$oTaskStartDate = BAB_DateTime::fromIsoDateTime($datas['startDate']);
 			$oTaskEndDate = BAB_DateTime::fromIsoDateTime($datas['endDate']);
 			
@@ -700,21 +611,23 @@ $iPercentAfterEnding = ($iNbDaysAfterEndDate / $iTaskDuration) * 100;
 			$this->m_sTaskBgColor = 'B0B0B0';
 			$this->m_sTask = '';
 			
-			$iDoneDurationInSeconds = (10 * $iTaskDurationInSeconds) / 100;
+			$iDoneDurationInSeconds = ($datas['iCompletion'] * $iTaskDurationInSeconds) / 100;
 			$iDoneEndDateTs = $iTaskStartDateTs + $iDoneDurationInSeconds;
-
-			$this->getBox($iTaskStartDateTs, $iDoneEndDateTs, $this->m_iDonePosX, $this->m_iDonePosY, $this->m_iDoneHeigth, $this->m_iDoneWidth);
-			$this->m_sDoneBgColor = '00F';
-			$this->m_sDoneColor = 'FFF';
-
-			/*
-			if('Veronica T7' == $datas['sShortDescription'])
+			
+			if($iDoneEndDateTs > $this->m_aDisplayedStartDate[0])
 			{
+				$this->m_bIsTaskCompletion = true;
+				
+				$this->getBox($iTaskStartDateTs, $iDoneEndDateTs, $this->m_iDonePosX, $this->m_iDonePosY, $this->m_iDoneHeigth, $this->m_iDoneWidth);
+				$this->m_sDoneBgColor = '00F';
+				$this->m_sDoneColor = 'FFF';
+				
+				/*
 				$oDoneStartDate = BAB_DateTime::fromTimeStamp($iTaskStartDateTs);
 				$oDoneEndDate = BAB_DateTime::fromTimeStamp($iDoneEndDateTs);
 				echo 'startDate ==> ' . $oDoneStartDate->getIsoDateTime() . ' endDate ==> ' . $oDoneEndDate->getIsoDateTime() . '<br />';
+				//*/
 			}
-			//*/
 			
 			$this->m_iTaskIndex++;
 			return true;
@@ -731,11 +644,6 @@ $iPercentAfterEnding = ($iNbDaysAfterEndDate / $iTaskDuration) * 100;
 	
 	function getBox($iTaskStartDateTs, $iTaskEndDateTs, &$iPosX, &$iPosY, &$iHeigth, &$iWidth)
 	{
-		$this->m_iBorderLeft	= 1;
-		$this->m_iBorderRight	= 1;
-		$this->m_iBorderTop		= 0;
-		$this->m_iBorderBottom	= 1;
-
 		$iDisplayedStartDateTs =& $this->m_aDisplayedStartDate[0];
 		$iDisplayedEndDateTs =& $this->m_aDisplayedEndDate[0];
 		
@@ -752,10 +660,10 @@ $iPercentAfterEnding = ($iNbDaysAfterEndDate / $iTaskDuration) * 100;
 		$iElaspedSecondsFromBigining = $iTaskStartDateTs - $iDisplayedStartDateTs;
 		$iDisplayedTaskDurationInSeconds = $iTaskEndDateTs - $iTaskStartDateTs;
 		
-		$iPosX = ($iElaspedSecondsFromBigining / $this->m_iOnePxInSecondes) - $this->m_iBorderLeft;
-		$iPosY = $this->m_iTaskIndex * $this->m_iHeight;
-		$iHeigth = $this->m_iHeight - ($this->m_iBorderTop + $this->m_iBorderBottom);
-		$iWidth = ($iDisplayedTaskDurationInSeconds / $this->m_iOnePxInSecondes) - ($this->m_iBorderLeft);
+		$iPosX = round(($iElaspedSecondsFromBigining / $this->m_iOnePxInSecondes) - $this->m_iBorderLeft);
+		$iPosY = round($this->m_iTaskIndex * $this->m_iHeight);
+		$iHeigth = round($this->m_iHeight - ($this->m_iBorderTop + $this->m_iBorderBottom));
+		$iWidth = round(($iDisplayedTaskDurationInSeconds / $this->m_iOnePxInSecondes) - ($this->m_iBorderLeft));
 	}
 }
 ?>

@@ -1770,7 +1770,7 @@ function bab_getOwnedTaskQuery($iTaskFilter = null, $iTaskClass = null)
 	return $query;
 }
 
-function bab_selectOwnedTaskQueryByDate($sStartDate, $sEndDate)
+function bab_selectOwnedTaskQueryByDate($sStartDate, $sEndDate, $iTaskFilter = null, $iTaskClass = null)
 {
 	$query = 
 		'SELECT ' . 
@@ -1782,6 +1782,12 @@ function bab_selectOwnedTaskQueryByDate($sStartDate, $sEndDate)
 			't.taskNumber sTaskNumber, ' .
 			't.shortDescription sShortDescription, ' .
 			't.class iClass, ' .
+		'CASE t.class ' .
+			'WHEN \'' . BAB_TM_CHECKPOINT . '\' THEN \'ganttCheckpoint\' ' . 
+			'WHEN \'' . BAB_TM_TODO . '\' THEN \'ganttToDo\' ' .
+			'ELSE \'\' ' .
+		'END AS sAdditionnalClass, ' .
+			't.completion iCompletion, ' .
 			't.startDate startDate, ' .
 			't.endDate endDate, ' .
 			'cat.id iIdCategory, ' .
@@ -1799,7 +1805,27 @@ function bab_selectOwnedTaskQueryByDate($sStartDate, $sEndDate)
 			'ti.idOwner = \'' . $GLOBALS['BAB_SESS_USERID'] . '\' AND ' .
 			't.id = ti.idTask AND ' .
 			't.endDate > \'' . $sStartDate . '\' AND ' .
-			't.startDate < \'' . $sEndDate . '\' ' .
+			't.startDate < \'' . $sEndDate . '\' ';
+
+	if(!is_null($iTaskFilter) && -1 != $iTaskFilter)
+	{
+		//iTaskFilter (-1 ==> All, -2 ==> personnal task)
+		if(-2 == $iTaskFilter)
+		{
+			$query .= 'AND ti.isPersonnal = \'' . BAB_TM_YES . '\' ';
+		}
+		else 
+		{
+			$query .= 'AND t.idProject = \'' . $iTaskFilter . '\' ';
+		}
+	}
+		
+	if(!is_null($iTaskClass) && -1 != $iTaskClass)
+	{
+		$query .= 'AND t.class = \'' . $iTaskClass . '\' ';
+	}
+			
+	$query .= 
 		'GROUP BY ' .
 			'sProjectSpaceName ASC, sProjectName ASC, sTaskNumber ASC';
 
@@ -2452,6 +2478,7 @@ function bab_getTaskListFilter($iIdUser, &$aTaskFilters)
 		'WHERE ' . 
 			'idUser =\'' . $iIdUser . '\'';
 
+	//echo $query . '<br />';
 	//bab_debug($query);
 
 	$res = $babDB->db_query($query);
