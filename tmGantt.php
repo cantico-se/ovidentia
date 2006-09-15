@@ -130,7 +130,27 @@ class BAB_TM_GanttBase
 	var $m_sPrevWeekUrl = "";
 	var $m_sNextWeekUrl = "";
 	var $m_sNextMonthUrl = "";
+	var $m_sGotoDate = "";
+	
+	var $m_iNavPosX = 0;
+	var $m_iNavPosY = 0;
+	var $m_iNavHeight = 0;
+	var $m_iNavWidth = 0;
 
+	var $m_iNextMonthPosX = 0;
+	var $m_iNextMonthPosY = 0;
+	var $m_iNextMonthHeight = 0;
+	var $m_iNextMonthWidth = 0;
+
+	var $m_iNextWeekPosX = 0;
+	var $m_iNextWeekPosY = 0;
+	var $m_iNextWeekHeight = 0;
+	var $m_iNextWeekWidth = 0;
+
+	var $m_iGotoDatePosX = 0;
+	var $m_iGotoDatePosY = 0;
+	var $m_iGotoDateHeight = 0;
+	var $m_iGotoDateWidth = 0;
 
 	function BAB_TM_GanttBase($sStartDate, $iStartWeekDay = 1)
 	{
@@ -163,6 +183,7 @@ class BAB_TM_GanttBase
 		
 		$this->m_sPrevMonth = bab_translate("Previous month");
 		$this->m_sPrevWeek	= bab_translate("Previous week");
+		$this->m_sGotoDate	= bab_translate("Go to date");
 		$this->m_sNextWeek	= bab_translate("Next week");
 		$this->m_sNextMonth	= bab_translate("Next month");
 		$sUrlBase			= $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_GANTT_CHART . '&date=';
@@ -242,10 +263,15 @@ class BAB_TM_GanttBase
 	{
 		$iBorderWidth = 1;
 		
+		$this->m_iNavPosX = 0;
+		$this->m_iNavPosY = 0;
+		$this->m_iNavHeight = $this->m_iHeight;
+		$this->m_iNavWidth = ($this->m_iTaskCaptionWidth + ($this->m_iTotalDaysToDisplay * $this->m_iWidth));
+
 		$this->m_iGanttHeaderPosX = 0;
-		$this->m_iGanttHeaderPosY = 0;
-		$this->m_iGanttHeaderHeight = (3 * $this->m_iHeight);
-		$this->m_iGanttHeaderWidth = ($this->m_iTaskCaptionWidth + ($this->m_iTotalDaysToDisplay * $this->m_iWidth)) ;
+		$this->m_iGanttHeaderPosY = $this->m_iHeight;
+		$this->m_iGanttHeaderHeight = (4 * $this->m_iHeight);
+		$this->m_iGanttHeaderWidth = ($this->m_iTaskCaptionWidth + ($this->m_iTotalDaysToDisplay * $this->m_iWidth));
 	
 		$this->m_iGanttTasksPosX = 0;
 		$this->m_iGanttTasksPosY = $this->m_iGanttHeaderHeight + $iBorderWidth;
@@ -256,6 +282,36 @@ class BAB_TM_GanttBase
 		$this->m_iGanttViewPosY = $this->m_iGanttHeaderHeight + $iBorderWidth;
 		$this->m_iGanttViewHeight = $this->m_iGanttTasksHeight;
 		$this->m_iGanttViewWidth = $this->m_iTotalDaysToDisplay * $this->m_iWidth;
+		
+		$this->initGanttNav();
+	}
+	
+	function initGanttNav()
+	{
+		$this->m_iPrevWeekPosX = 0;
+		$this->m_iPrevWeekPosY = 0;
+		$this->m_iPrevWeekHeight = $this->m_iHeight;
+		$this->m_iPrevWeekWidth = $this->m_iWidth;
+		
+		$this->m_iPrevMonthPosX = $this->m_iPrevWeekPosX + $this->m_iWidth;
+		$this->m_iPrevMonthPosY = 0;
+		$this->m_iPrevMonthHeight = $this->m_iHeight;
+		$this->m_iPrevMonthWidth = $this->m_iWidth;
+	
+		$this->m_iGotoDatePosX = (($this->m_iTaskCaptionWidth + ($this->m_iTotalDaysToDisplay * $this->m_iWidth)) / 2) - ($this->m_iWidth / 2);
+		$this->m_iGotoDatePosY = 0;
+		$this->m_iGotoDateHeight = $this->m_iHeight;
+		$this->m_iGotoDateWidth = $this->m_iWidth;
+		
+		$this->m_iNextWeekPosX = $this->m_iNavWidth - $this->m_iWidth;
+		$this->m_iNextWeekPosY = 0;
+		$this->m_iNextWeekHeight = $this->m_iHeight;
+		$this->m_iNextWeekWidth = $this->m_iWidth;
+		
+		$this->m_iNextMonthPosX = $this->m_iNextWeekPosX- $this->m_iWidth;
+		$this->m_iNextMonthPosY = 0;
+		$this->m_iNextMonthHeight = $this->m_iHeight;
+		$this->m_iNextMonthWidth = $this->m_iWidth;
 	}
 	
 	// Tools functions

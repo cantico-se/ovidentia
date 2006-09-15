@@ -602,7 +602,7 @@ function bab_updateProjectConfiguration($aConfiguration)
 		'WHERE ' . 
 			'`id` = \'' . $aConfiguration['id'] . '\'';
 
-	//bab_debug($query);
+	bab_debug($query);
 	return $babDB->db_query($query);
 }
 

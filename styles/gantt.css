@@ -6,6 +6,33 @@
 	position: absolute;
 	}
 
+.ganttNav {
+	background-color: #BD6363;
+	border-style: solid; 
+	border-color: #CCC;
+	border-width: 1px 0px 0px 1px;
+	}
+
+.ganttNav a {
+	position: absolute;
+	border-width: 0px;
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	background-color: transparent;
+	text-decoration:none;
+	}
+
+.ganttNav a.ganttPrevWeek {background-image: url('../skins/ovidentia/images/Puces/arrowPrev2a.gif');}
+.ganttNav a.ganttPrevWeek:hover {background-image:url('../skins/ovidentia/images/Puces/arrowPrev2b.gif');}
+.ganttNav a.ganttPrevMonth {background-image: url('../skins/ovidentia/images/Puces/arrowPrev1a.gif');}
+.ganttNav a.ganttPrevMonth:hover {background-image:url('../skins/ovidentia/images/Puces/arrowPrev1b.gif');}
+.ganttNav a.ganttgotoDate {background-image: url('../skins/ovidentia/images/Puces/calendar.gif');}
+.ganttNav a.ganttNextMonth {background-image: url('../skins/ovidentia/images/Puces/arrowNext1a.gif');}
+.ganttNav a.ganttNextMonth:hover {background-image:url('../skins/ovidentia/images/Puces/arrowNext1b.gif');}
+.ganttNav a.ganttNextWeek {background-image: url('../skins/ovidentia/images/Puces/arrowNext2a.gif');}
+.ganttNav a.ganttNextWeek:hover {background-image:url('../skins/ovidentia/images/Puces/arrowNext2b.gif');}
+
+	
 /* Header */
 .ganttHeader {
 	background-color: #BD6363;
@@ -13,7 +40,6 @@
 	border-color: #CCC;
 	border-width: 1px 0px 0px 1px;
 	}
-
 
 .ganttHeader div {
 	font-family: Arial, sans-serif; 

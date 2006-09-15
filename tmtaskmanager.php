@@ -1640,16 +1640,11 @@ function saveProjectConfiguration()
 			global $babDB;
 			$result = bab_selectTasksList($iIdProject);
 			
-			if(false == $result)
-				bab_debug('Result ==> false');
-			
-			
-			if(false != $result && $babDB->db_num_rows($result) === 0)
+			if(false != $result && $babDB->db_num_rows($result) !== 0)
 			{
 				$aConfiguration['tasksNumerotation'] = $aDPC['tasksNumerotation'];
 			}
 		}
-		
 		bab_updateProjectConfiguration($aConfiguration);
 	}
 }	
