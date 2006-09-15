@@ -1071,7 +1071,27 @@ function displayTaskList()
 	$iTaskFilter = $oTaskFilterForm->m_aSelectedFilterValues['iIdProject'];
 	$iTaskClass = $oTaskFilterForm->m_aSelectedFilterValues['iTaskClass'];
 	
+	require_once($GLOBALS['babInstallPath'] . 'utilit/multipage.php');
 	
+	class BAB_TaskDS extends BAB_MySqlDataSource
+	{
+		function BAB_TaskDS($query, $iPage, $iNbRowsPerPage)
+		{
+			parent::BAB_MySqlDataSource($query, $iPage, $iNbRowsPerPage);
+		}
+		
+		function getNextItem()
+		{
+			$datas = parent::getNextItem();
+			if(false != $datas)
+			{
+				$datas['startDate'] = bab_shortDate(bab_mktime($datas['startDate']), false);
+				$datas['endDate'] = bab_shortDate(bab_mktime($datas['endDate']), false);
+			}
+			return $datas;
+		}
+	}
+
 	$oMultiPage = new BAB_MultiPageBase();
 	$oMultiPage->sIdx = BAB_TM_IDX_DISPLAY_TASK_LIST;
 
