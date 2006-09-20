@@ -126,11 +126,12 @@ class BAB_TM_GanttBase
 	var $m_sPrevWeek = "";
 	var $m_sNextWeek = "";
 	var $m_sNextMonth = "";
+	var $m_sGotoDate = "";
 	var $m_sPrevMonthUrl = "";
 	var $m_sPrevWeekUrl = "";
 	var $m_sNextWeekUrl = "";
 	var $m_sNextMonthUrl = "";
-	var $m_sGotoDate = "";
+	var $m_sGotoDateUrl = "";
 	
 	var $m_iNavPosX = 0;
 	var $m_iNavPosY = 0;
@@ -152,24 +153,57 @@ class BAB_TM_GanttBase
 	var $m_iGotoDateHeight = 0;
 	var $m_iGotoDateWidth = 0;
 
+	var $m_GanttViewParamUrl = '';
+	
 	function BAB_TM_GanttBase($sStartDate, $iStartWeekDay = 1)
 	{
 		$this->m_iOnePxInSecondes = 86400 / $this->m_iWidth;
 		
-		$this->initDates($sStartDate, $iStartWeekDay);
+		{
+			$aFilters = array();
+
+			$isPersonnal = bab_rp('isPersonnal', -1);
+			if(-1 != $isPersonnal)
+			{
+				$aFilters['isPersonnal'] = BAB_TM_YES;
+				$this->m_GanttViewParamUrl .= '&isPersonnal=' . $aFilters['isPersonnal'];
+			}
+			
+			$iIdProject = bab_rp('iIdProject', -1);
+			if(-1 != $iIdProject)
+			{
+				$aFilters['iIdProject'] = $iIdProject;
+				$this->m_GanttViewParamUrl .= '&iIdProject=' . $aFilters['iIdProject'];
+			}
+			
+			$iIdOwner = bab_rp('iIdOwner', -1);
+			if(-1 != $iIdOwner)
+			{
+				$aFilters['iIdOwner'] = $iIdOwner;
+				$this->m_GanttViewParamUrl .= '&iIdOwner=' . $aFilters['iIdOwner'];
+			}
+			
+			$iTaskClass = bab_rp('iTaskClass', -1);
+			if(-1 != $iTaskClass)
+			{
+				$aFilters['iTaskClass'] = $iTaskClass;
+				$this->m_GanttViewParamUrl .= '&iTaskClass=' . $aFilters['iTaskClass'];
+			}
+			
 		
-		$aSelectedFilterValues = null;
-		bab_getTaskListFilter($GLOBALS['BAB_SESS_USERID'], $aSelectedFilterValues);
+			$this->initDates($sStartDate, $iStartWeekDay);
 
-		$iTaskFilter =& $aSelectedFilterValues['iIdProject'];
-		$iTaskClass =& $aSelectedFilterValues['iTaskClass'];
-
-		$this->m_result = bab_selectOwnedTaskQueryByDate(date("Y-m-d H:i:s", $this->m_aDisplayedStartDate[0]), 
-			date("Y-m-d H:i:s", $this->m_aDisplayedEndDate[0]), $iTaskFilter, $iTaskClass);
+			$aFilters['sStartDate'] = date("Y-m-d H:i:s", $this->m_aDisplayedStartDate[0]);
+			$aFilters['sEndDate'] = date("Y-m-d H:i:s", $this->m_aDisplayedEndDate[0]);
+			
+			global $babDB;
+			bab_selectTaskQuery($aFilters);
+			
+			$this->m_result = $babDB->db_query(bab_selectTaskQuery($aFilters));
+		}
 		
 		if(false != $this->m_result)	
 		{
-			global $babDB;
 			$this->m_iNbResult = $babDB->db_num_rows($this->m_result);
 		}
 		
@@ -186,7 +220,8 @@ class BAB_TM_GanttBase
 		$this->m_sGotoDate	= bab_translate("Go to date");
 		$this->m_sNextWeek	= bab_translate("Next week");
 		$this->m_sNextMonth	= bab_translate("Next month");
-		$sUrlBase			= $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_GANTT_CHART . '&date=';
+		$sUrlBase			= $GLOBALS['babUrlScript'] . 
+			'?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_GANTT_CHART . $this->m_GanttViewParamUrl . '&date=';
 
 		$this->setDates($sStartDate, $iStartWeekDay);
 		//echo 'StartDate ==> ' . $sStartDate . '<br />';
@@ -210,6 +245,8 @@ class BAB_TM_GanttBase
 		$oDate->add(1, BAB_DATETIME_MONTH);
 		$this->m_sNextMonthUrl = $sUrlBase . urlencode(date("Y-m-d", $oDate->_aDate[0]));
 		//echo 'sNextMonth ==> ' . date("Y-m-d", $oDate->_aDate[0]) . '<br />';
+		
+		$this->m_sGotoDateUrl = $sUrlBase;
 	}
 	
 	function setDates($sStartDate, $iStartWeekDay)
@@ -620,6 +657,7 @@ class BAB_TM_Gantt extends BAB_TM_GanttBase
 	var $m_bIsTaskCompletion = false;
 	
 	var $m_sAdditionnalClass = '';
+	var	$m_iClass;
 
 	function BAB_TM_Gantt($sStartDate, $iStartWeekDay = 1)
 	{
@@ -654,6 +692,7 @@ class BAB_TM_Gantt extends BAB_TM_GanttBase
 			//*/
 			
 			$this->m_sAdditionnalClass = $datas['sAdditionnalClass'];
+			$this->m_iClass = $datas['iClass'];
 			
 			$oTaskStartDate = BAB_DateTime::fromIsoDateTime($datas['startDate']);
 			$oTaskEndDate = BAB_DateTime::fromIsoDateTime($datas['endDate']);

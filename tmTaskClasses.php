@@ -1017,10 +1017,9 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 			$aTask = null;
 			if(BAB_TM_YES === $this->m_iIsLinked && -1 != $this->m_iIdPredecessor && bab_getTask($this->m_iIdPredecessor, $aTask))
 			{
-				$iPosition = $aTask['iPosition'] -1;
-				if( isset($_POST['oLinkType']) && isset($_POST['oLinkType'][$iPosition]) )
+				if( isset($_POST['oLinkType']) && isset($_POST['oLinkType'][$this->m_iIdPredecessor]) )
 				{
-					$this->m_iLinkType = (int) $_POST['oLinkType'][$iPosition];
+					$this->m_iLinkType = (int) $_POST['oLinkType'][$this->m_iIdPredecessor];
 //					$this->m_iIsLinked = (-1 != $this->m_iLinkType) ? BAB_TM_YES : BAB_TM_NO;
 				}
 			}

@@ -148,7 +148,7 @@ function add_item_menu($items = array())
 		
 	if('admTskMgr' == $sTg)
 	{
-		$babBody->addItemMenu(BAB_TM_IDX_DISPLAY_PERSONNAL_TASK_RIGHT, bab_translate("Personnal task"), 
+		$babBody->addItemMenu(BAB_TM_IDX_DISPLAY_PERSONNAL_TASK_RIGHT, bab_translate("Personnals tasks"), 
 			$GLOBALS['babUrlScript'] . '?tg=' . $sTg . '&idx=' . BAB_TM_IDX_DISPLAY_PERSONNAL_TASK_RIGHT);
 	}
 }

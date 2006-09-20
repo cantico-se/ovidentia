@@ -436,7 +436,7 @@ function displayPersonnalTaskRight()
 	$iIdDelegation = $oTmCtx->getIdDelegation();
 	$macl = new macl('admTskMgr', BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST, $iIdDelegation, BAB_TM_ACTION_SET_RIGHT);
 
-	$macl->addtable(BAB_TSKMGR_PERSONNAL_TASK_CREATOR_GROUPS_TBL, bab_translate("Default personnal task owner"));
+	$macl->addtable(BAB_TSKMGR_PERSONNAL_TASK_CREATOR_GROUPS_TBL, bab_translate("Who can create personnals tasks"));
 	$macl->filter($enableGroup, $enableGroup, $disableGroup, $enableGroup, $disableGroup);
 	$macl->babecho();
 }

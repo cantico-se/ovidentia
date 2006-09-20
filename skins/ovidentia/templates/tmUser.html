@@ -879,7 +879,7 @@ function check_all(strCtrlName, checked)
 						<input class="BabLoginMenuBackground" { m_datas[sSelectedPredecessor] } type="radio" name="iPredecessor" value="{ m_datas[iIdPredecessor] }" />{ m_datas[sPredecessorNumber] }
 					</td>
 					<td>
-						<select id="oLinkType" name="oLinkType[]">
+						<select id="oLinkType" name="oLinkType[{ m_datas[iIdPredecessor] }]">
 							<!--#in getNextRelation -->
 							<option { m_datas[sSelectedLinkType] } value="{ m_datas[iLink] }">{ m_datas[sLink] }</option>
 							<!--#endin getNextRelation -->
@@ -1117,7 +1117,7 @@ function onTaskFilterChanged(oCtrl, sHiddenName)
 			<td class="BabLoginCadreBackground">
 				<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center" class="BabLoginMenuBackground">
 				<tr>
-					<td>{ m_captions[sTask] }</td>
+					<td>{ m_captions[sProject] }</td>
 					<td>
 						<select name="oTaskFilter" onchange="onTaskFilterChanged(this, 'iIdProject')">
 						<!--#in getNextTaskFilter -->
@@ -1241,14 +1241,7 @@ function submit_form()
 </form>
 <!--#end PersonnalTaskConfiguration -->
 
-			<a href="{ m_sPrevMonthUrl }" title="{ m_sPrevMonth }">{ m_sPrevMonth }</a>
-			<a href="{ m_sPrevWeekUrl }" title="{ m_sPrevWeek }">{ m_sPrevWeek }</a>
-			
-			<a class="" href="{ m_sNextMonthUrl }" title="{ m_sNextMonth }">{ m_sNextWeek }</a>
-				<div class="ganttPrevMonth"></div>
-				<div class="ganttPrevWeek"></div>
-				<div class="ganttGoto"></div>
-
+onload="tmInit('ganttTask')"
 
 <!--#begin gantt -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -1256,26 +1249,27 @@ function submit_form()
 	<head>
 		<title>Gantt Chart</title>
 		<link rel="stylesheet" type="text/css" href="{ babInstallPath }styles/gantt.css" />
+		<script type="text/javascript" src="{ babInstallPath }scripts/ovidentia.js"></script>
+		<script type="text/javascript" src="{ babInstallPath }scripts/prototype/prototype.js"></script>
+		<script type="text/javascript" src="{ babInstallPath }scripts/eventutil.js"></script>
+		<script type="text/javascript" src="{ babInstallPath }scripts/tmGantt.js"></script>
+		<script type="text/javascript">
+			function gotoDate(day, month, year)
+			{
+				//{}
+				document.location.href='{ m_sGotoDateUrl }&date=' + year + '-' + month + '-' + day;
+			}
+		</script>
 	</head>
 	<body>
-		<div style="width:100%; height:{ m_iHeight }"> 									
+		<div id="ganttDebug" style="width:100%; height:{ m_iHeight }"> 									
 		</div>
 		
 		<div class="gantt">
 			<div class="ganttNav" style="top:{ m_iNavPosY }px; left:{ m_iNavPosX }px; height:{ m_iNavHeight }px; width:{ m_iNavWidth }px">
 				<a class="ganttPrevWeek" style="top:{ m_iPrevWeekPosY }px; left:{ m_iPrevWeekPosX }px; height:{ m_iPrevWeekHeight }px; width:{ m_iPrevWeekWidth }px" href="{ m_sPrevWeekUrl }" title="{ m_sPrevWeek }">&nbsp;&nbsp;</a>
 				<a class="ganttPrevMonth" style="top:{ m_iPrevMonthPosY }px; left:{ m_iPrevMonthPosX }px; height:{ m_iPrevMonthHeight }px; width:{ m_iPrevMonthWidth }px" href="{ m_sPrevMonthUrl }" title="{ m_sPrevMonth }">&nbsp;&nbsp;</a>
-				
-				<script type="text/javascript" src="{ babInstallPath }scripts/ovidentia.js"></script>
-				<script type="text/javascript">
-				function gotoDate(day, month, year)
-				{
-					document.location.href='{ babUrlScript }?tg=usrTskMgr&idx=displayGanttChart&date=' + year + '-' + month + '-' + day;
-				}
-				</script>
 				<a class="ganttgotoDate" style="top:{ m_iGotoDatePosY }px; left:{ m_iGotoDatePosX }px; height:{ m_iGotoDateHeight }px; width:{ m_iGotoDateWidth }px" href="javascript: Start('{ babUrlScript }?tg=month&callback=gotoDate&ymin=30&ymax=30', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');" title="{ m_sGotoDate }">&nbsp;&nbsp;</a>
-				
-				
 				<a class="ganttNextMonth" style="top:{ m_iNextMonthPosY }px; left:{ m_iNextMonthPosX }px; height:{ m_iNextMonthHeight }px; width:{ m_iNextMonthWidth }px" href="{ m_sNextMonthUrl }" title="{ m_sNextMonth }">&nbsp;&nbsp;</a>
 				<a class="ganttNextWeek" style="top:{ m_iNextWeekPosY }px; left:{ m_iNextWeekPosX }px; height:{ m_iNextWeekHeight }px; width:{ m_iNextWeekWidth }px" href="{ m_sNextWeekUrl }" title="{ m_sNextWeek }">&nbsp;&nbsp;</a>
 			</div>
@@ -1329,7 +1323,11 @@ function submit_form()
 				<!--#endin getNextRow -->	
 	
 				<!--#in getNextTask -->
-				<div class="ganttTask { m_sAdditionnalClass }" style="top:{ m_iTaskPosY }px; left:{ m_iTaskPosX }px; height:{ m_iTaskHeigth }px; width:{ m_iTaskWidth }px; border-width:{ m_iBorderTop }px { m_iBorderRight }px { m_iBorderBottom }px { m_iBorderLeft }px;">
+			<!--#if m_iClass "== 0" -->
+				<div id="Menteur" class="ganttTask" style="top:{ m_iTaskPosY }px; left:{ m_iTaskPosX }px; height:{ m_iTaskHeigth }px; width:{ m_iTaskWidth }px; border-width:{ m_iBorderTop }px { m_iBorderRight }px { m_iBorderBottom }px { m_iBorderLeft }px;">
+			<!--#else m_iClass -->
+				<div class="{ m_sAdditionnalClass }" style="top:{ m_iTaskPosY }px; left:{ m_iTaskPosX }px; height:{ m_iTaskHeigth }px; width:{ m_iTaskWidth }px; border-width:{ m_iBorderTop }px { m_iBorderRight }px { m_iBorderBottom }px { m_iBorderLeft }px;">
+			<!--#endif m_iClass -->
 				</div>
 			<!--#if m_bIsTaskCompletion -->
 				<div class="ganttTaskDone" style="background-color:#{ m_sDoneBgColor }; color:#{ m_sDoneColor }; top:{ m_iDonePosY }px; left:{ m_iDonePosX }px; height:{ m_iDoneHeigth }px; width:{ m_iDoneWidth }px;">
@@ -1344,10 +1342,9 @@ function submit_form()
 <!--#end gantt -->
 
 <!--#begin ganttView -->
-<a href="javascript:bab_popup('{ babUrlScript }?tg=usrTskMgr&idx=displayGanttChart');" title="GANTT">
+<a href="javascript:bab_popup('{ m_sGanttViewUrl }');" title="GANTT">
 	<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/ganttView.png" />
 </a>
 <br />
 <br />
 <!--#end ganttView -->
-

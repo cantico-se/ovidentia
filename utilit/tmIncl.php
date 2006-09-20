@@ -1713,6 +1713,7 @@ function bab_getLinkedTasks($iIdTask, &$aLinkedTasks)
 	}
 }
 
+/*
 function bab_getOwnedTaskQuery($iTaskFilter = null, $iTaskClass = null)
 {
 	$query = 
@@ -1769,7 +1770,9 @@ function bab_getOwnedTaskQuery($iTaskFilter = null, $iTaskClass = null)
 	//bab_debug($query);
 	return $query;
 }
+//*/
 
+/*
 function bab_selectOwnedTaskQueryByDate($sStartDate, $sEndDate, $iTaskFilter = null, $iTaskClass = null)
 {
 	$query = 
@@ -1834,6 +1837,86 @@ function bab_selectOwnedTaskQueryByDate($sStartDate, $sEndDate, $iTaskFilter = n
 	//echo $query . '<br />';
 	global $babDB;
 	return $babDB->db_query($query);
+}
+//*/
+
+function bab_selectTaskQuery($aFilters)
+{
+	$query = 
+		'SELECT ' . 
+			'IFNULL(ps.id, 0) iIdProjectSpace, ' .
+			'IFNULL(ps.name, \'\') sProjectSpaceName, ' .
+			'IFNULL(p.id, 0) iIdProject, ' .
+			'IFNULL(p.name, \'\') sProjectName, ' .
+			't.id iIdTask, ' .
+			't.taskNumber sTaskNumber, ' .
+			't.shortDescription sShortDescription, ' .
+			't.class iClass, ' .
+		'CASE t.class ' .
+			'WHEN \'' . BAB_TM_CHECKPOINT . '\' THEN \'ganttCheckpoint\' ' . 
+			'WHEN \'' . BAB_TM_TODO . '\' THEN \'ganttToDo\' ' .
+			'ELSE \'\' ' .
+		'END AS sAdditionnalClass, ' .
+		'CASE t.class ' .			
+			'WHEN \'' . BAB_TM_TASK . '\' THEN \'' . bab_translate("Task") . '\' ' .
+			'WHEN \'' . BAB_TM_CHECKPOINT . '\' THEN \'' . bab_translate("Checkpoint") . '\' ' .
+			'WHEN \'' . BAB_TM_TODO . '\' THEN \'' . bab_translate("ToDo") . '\' ' .
+			'ELSE \'???\' ' .
+		'END AS sClass, ' .
+			't.completion iCompletion, ' .
+			't.startDate startDate, ' .
+			't.endDate endDate, ' .
+			'cat.id iIdCategory, ' .
+			'IFNULL(cat.color, \'\' ) sBgColor ' .
+		'FROM ' . 
+			BAB_TSKMGR_TASKS_INFO_TBL . ' ti, ' .
+			BAB_TSKMGR_TASKS_TBL . ' t ' .
+		'LEFT JOIN ' . 
+			BAB_TSKMGR_CATEGORIES_TBL . ' cat ON cat.id = t.idCategory ' .
+		'LEFT JOIN ' . 
+			BAB_TSKMGR_PROJECTS_TBL . ' p ON p.id = t.idProject ' .
+		'LEFT JOIN ' . 
+			BAB_TSKMGR_PROJECTS_SPACES_TBL . ' ps ON ps.id = p.idProjectSpace ' .
+		'WHERE ' . 
+			't.id = ti.idTask ';
+
+	if(isset($aFilters['iIdProject']))
+	{
+		$query .= 'AND t.idProject = \'' . (int) $aFilters['iIdProject'] . '\' ';
+	}
+
+	if(isset($aFilters['iIdOwner']))
+	{
+		$query .= 'AND ti.idOwner = \'' . (int) $aFilters['iIdOwner'] . '\' ';
+	}
+
+	if(isset($aFilters['sStartDate']))
+	{
+		$query .= 'AND t.startDate < \'' . $aFilters['sEndDate'] . '\' ';
+	}
+
+	if(isset($aFilters['sEndDate']))
+	{
+		$query .= 'AND t.endDate > \'' . $aFilters['sStartDate'] . '\' ';
+	}
+
+	if(isset($aFilters['iTaskClass']))
+	{
+		$query .= 'AND t.class = \'' . (int) $aFilters['iTaskClass'] . '\' ';
+	}
+
+	if(isset($aFilters['isPersonnal']))
+	{
+		$query .= 'AND ti.isPersonnal = \'' . BAB_TM_YES . '\' ';
+	}
+
+	$query .= 
+		'GROUP BY ' .
+			'sProjectSpaceName ASC, sProjectName ASC, sTaskNumber ASC';
+
+	//bab_debug($query);
+	//echo $query . '<br />';
+	return $query;
 }
 
 function bab_createTaskInfo($iIdTask, $iIdOwner, $iIsPersonnal)
