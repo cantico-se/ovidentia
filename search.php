@@ -1582,18 +1582,27 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				if ($arr_dir) {
 					$db_arr_dir = "e.id_directory IN ( '".implode("','",$arr_dir)."' ) OR ";
 				}
+				else
+					{
+					$db_arr_dir = '';
+					}
 
 				$req = "SELECT 
 					e.id 
 				FROM `".BAB_DBDIR_ENTRIES_TBL."` e
 				LEFT JOIN 
 						".BAB_DBDIR_ENTRIES_EXTRA_TBL." t 
-						ON t.id_entry = e.id
-
-				LEFT JOIN ".BAB_USERS_GROUPS_TBL." u ON u.id_object = e.id_user AND u.id_group IN ('".implode("','",$arr_grp)."') 
-				LEFT JOIN ".BAB_USERS_TBL." dis ON dis.id = u.id_object AND dis.disabled='0' 
+						ON t.id_entry = e.id";
+				if( count($arr_grp) && in_array(BAB_REGISTERED_GROUP, $arr_grp))
+					{
+					$req .= " LEFT JOIN ".BAB_USERS_TBL." dis ON dis.id = e.id_user AND dis.disabled='0' ";
+					}
+				else
+					{
+					$req .= " LEFT JOIN ".BAB_USERS_GROUPS_TBL." u ON u.id_object = e.id_user AND u.id_group IN ('".implode("','",$arr_grp)."') LEFT JOIN ".BAB_USERS_TBL." dis ON dis.id = u.id_object AND dis.disabled='0' ";
+					}
 					
-				WHERE 
+				$req .= " WHERE 
 				".$crit_fields." 
 				".$crit_fields_add_str." 
 					(
