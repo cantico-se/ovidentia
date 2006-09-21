@@ -6033,6 +6033,12 @@ function upgrade582to583()
 	$ret = "";
 	$db = & $GLOBALS['babDB'];
 
+	//miss in babinstall.sql version 5.8.2
+	if (!bab_isTableField(BAB_STATS_IPAGES_TBL, 'id_dgowner')) {
+
+		$db->db_query("ALTER TABLE `".BAB_STATS_IPAGES_TBL."` id_dgowner INT( 11 )  UNSIGNED DEFAULT '0' NOT NULL");
+	}
+
 	if (!bab_isTable(BAB_INDEX_ACCESS_TBL)) {
 
 		$db->db_query("
