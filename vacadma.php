@@ -420,7 +420,7 @@ function listVacationRigths($idtype, $idcreditor, $dateb, $datee, $active, $pos)
 
 				if( $dateb != "" && $datee != "")
 					{
-					$aaareq[] = "( date_entry between '".$this->db->db_escape_string($dateb)."' and '".$babDB->db_escape_string($datee)."')";
+					$aaareq[] = "( date_entry between '".$this->db->db_escape_string($dateb)."' and '".$this->db->db_escape_string($datee)."')";
 					}
 				else if( $dateb == "" && $datee != "" )
 					{
