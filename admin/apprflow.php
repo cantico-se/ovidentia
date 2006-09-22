@@ -540,7 +540,7 @@ function saveSchema($rows, $cols, $order, $schname, $schdesc, $idsch, $ocid, $ty
 		}
 	else
 		{
-		$req = "select * from ".BAB_FLOW_APPROVERS_TBL." where id='".$babDB->db_escape_string($idsch)."'";	
+		$req = "select * from ".BAB_FLOW_APPROVERS_TBL." where id='".$db->db_escape_string($idsch)."'";	
 		$res = $db->db_query($req);
 		if( $res && $db->db_num_rows($res) > 0)
 			{
