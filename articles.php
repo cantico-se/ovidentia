@@ -520,13 +520,13 @@ function readMore($topics, $article)
 			$this->categoriesHierarchy($topics, -1, $GLOBALS['babUrlScript']."?tg=topusr");
 			$this->printtxt = bab_translate("Print Friendly");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_ARTICLES_TBL." where id='".$article."'";
+			$req = "select * from ".BAB_ARTICLES_TBL." where id='".$article."' and (date_publication='0000-00-00 00:00:00' or date_publication <= now())";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
 			$this->count = $this->db->db_num_rows($this->res);
 			$res = $this->db->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$this->topics."' and archive='Y'");
 			list($this->nbarch) = $this->db->db_fetch_row($res);
-			$req = "select id,title, restriction from ".BAB_ARTICLES_TBL." where id_topic='".$this->topics."' and archive='N' order by date desc";
+			$req = "select id,title, restriction from ".BAB_ARTICLES_TBL." where id_topic='".$this->topics."' and archive='N' and (date_publication='0000-00-00 00:00:00' or date_publication <= now()) order by date desc";
 			$this->resart = $this->db->db_query($req);
 			$this->countart = $this->db->db_num_rows($this->resart);
 			$this->topictxt = bab_translate("In the same topic");
