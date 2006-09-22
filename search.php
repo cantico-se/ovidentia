@@ -1593,7 +1593,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				LEFT JOIN 
 						".BAB_DBDIR_ENTRIES_EXTRA_TBL." t 
 						ON t.id_entry = e.id";
-				if( count($arr_grp) && in_array(BAB_REGISTERED_GROUP, $arr_grp))
+				if( count($arr_grp) && in_array(BAB_REGISTERED_GROUP, $arr_grp) && empty($id_directory) && ( empty($id_directory) || BAB_REGISTERED_GROUP == $chosen_dir['id']))
 					{
 					$req .= " LEFT JOIN ".BAB_USERS_TBL." dis ON dis.id = e.id_user AND dis.disabled='0' ";
 					}
@@ -1610,7 +1610,6 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 						(e.id_directory = '0' AND dis.id IS NOT NULL )
 					) ".$option_dir." 
 				GROUP BY e.id ";
-
 
 				//print_r($req);
 
