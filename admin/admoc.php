@@ -315,8 +315,8 @@ function updateOrgChart($id, $name, $description)
 	$db = $GLOBALS['babDB'];
 
 	$query = "update ".BAB_ORG_CHARTS_TBL." set 
-		name='".$babDB->db_escape_string($name)."', 
-		description='".$babDB->db_escape_string($description)."' 
+		name='".$db->db_escape_string($name)."', 
+		description='".$db->db_escape_string($description)."' 
 		where id = '$id'";
 	$db->db_query($query);
 
