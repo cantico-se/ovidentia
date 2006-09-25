@@ -131,7 +131,7 @@ function add_item_menu($items = array())
 		
 	if('usrTskMgr' == $sTg)
 	{
-		$babBody->addItemMenu(BAB_TM_IDX_DISPLAY_TASK_LIST, bab_translate("Tasks list"), 
+		$babBody->addItemMenu(BAB_TM_IDX_DISPLAY_TASK_LIST, bab_translate("My task(s)"), 
 			$GLOBALS['babUrlScript'] . '?tg=' . $sTg . '&idx=' . BAB_TM_IDX_DISPLAY_TASK_LIST);
 	}
 

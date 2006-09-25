@@ -2080,10 +2080,10 @@
 <string id="Commentaries">Commentaires</string>
 <string id="Linked task">Tâche liée</string>
 <string id="Proposed">Proposée</string>
-<string id="Duration type">Type de durée</string>
+<string id="Duration type">Type de planification</string>
 <string id="Start Date">Date de début</string>
 <string id="End Date">Date de fin</string>
-<string id="Completion">Terminaison</string>
+<string id="Completion">Avancement</string>
 <string id="Task Responsible">Responsable de la tâche</string>
 <string id="Instanciate">Instanciate</string>
 <string id="Stop">Arrêter</string>

@@ -160,7 +160,7 @@
 		{
 			$this->set_caption('sTaskNumber', bab_translate("Task number"));
 			$this->set_caption('sClass', bab_translate("Type"));
-			$this->set_caption('sCategories', bab_translate("Categories"));
+			$this->set_caption('sCategory', bab_translate("Category"));
 			$this->set_caption('sGeneral', bab_translate("General"));
 			$this->set_caption('sPredecessors', bab_translate("Predecessors"));
 			$this->set_caption('sResources', bab_translate("Resources"));

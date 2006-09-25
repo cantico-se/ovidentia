@@ -1141,15 +1141,24 @@ function displayTaskList()
 {
 	$isProject = (int) bab_rp('isProject', 0);
 	
-	if(1 === $isProject && !bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, (int) bab_rp('iIdProject', 0)))
+	$sTitle = bab_translate("My task(s)");
+	
+	if(1 === $isProject)
 	{
-		$GLOBALS['babBody']->msgerror = bab_translate("You are not a projects manager");
-		return false;
+		if(!bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, (int) bab_rp('iIdProject', 0)))
+		{
+			$GLOBALS['babBody']->msgerror = bab_translate("You are not a projects manager");
+			return false;
+		}
+		else
+		{
+			$sTitle = bab_translate("Tasks of the project");
+		}
 	}
 	
 	global $babBody;
 	$oTmCtx =& getTskMgrContext();
-	$babBody->title = bab_translate("Task list");
+	$babBody->title = $sTitle;
 	add_item_menu();
 	
 	
@@ -2233,17 +2242,26 @@ function stopTask()
 
 function createSpecificFieldInstance()
 {
+	$oTmCtx =& getTskMgrContext();
+	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
+	$iIdProject = $oTmCtx->getIdProject();
+	$iIdTask = $oTmCtx->getIdTask();
+	$iUserProfil = $oTmCtx->getUserProfil();
+
 	$iIdProject = (int) bab_rp('iIdProject', 0);
 	$iIdTask = (int) bab_rp('iIdTask', 0);
 	$iIdSpecificField = (int) bab_rp('oSpfField', 0);
 
-	if(bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject) && 0 < $iIdTask)
+	if(0 !== $iIdSpecificField)
 	{
-		bab_createSpecificFieldInstance($iIdTask, $iIdSpecificField);
-	}
-	else 
-	{
-		bab_debug('createSpecificFieldInstance: acces denied');
+		if((bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject) || BAB_TM_PERSONNAL_TASK_OWNER == $iUserProfil)&& 0 < $iIdTask)
+		{
+			bab_createSpecificFieldInstance($iIdTask, $iIdSpecificField);
+		}
+		else 
+		{
+			bab_debug('createSpecificFieldInstance: acces denied');
+		}
 	}
 }
 

@@ -282,8 +282,6 @@ function displayDeleteSpecificFieldForm()
 	
 	if('\'\'' != $sDeletableField)
 	{	
-		$bf = & new BAB_BaseFormProcessing();
-		
 		$query = 
 			'SELECT ' .
 				'fb.id iIdField, ' .
@@ -295,7 +293,7 @@ function displayDeleteSpecificFieldForm()
 				'fb.refCount = \'0\' ' .
 			'GROUP BY fb.name ASC';
 		
-			//bab_debug($query);
+			bab_debug($query);
 				
 			$db = & $GLOBALS['babDB'];
 			$res = $db->db_query($query);
