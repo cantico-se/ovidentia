@@ -143,8 +143,10 @@ function add_item_menu($items = array())
 		}
 	}
 
+	/*
 	$babBody->addItemMenu(BAB_TM_IDX_DISPLAY_MENU, bab_translate("Option(s)"), 
 		$GLOBALS['babUrlScript'] . '?tg=' . $sTg . '&idx=' . BAB_TM_IDX_DISPLAY_MENU);
+	//*/
 		
 	if('admTskMgr' == $sTg)
 	{

@@ -18,6 +18,7 @@ define('BAB_TM_ACTION_MODIFY_CATEGORY', 'modifyCategory');
 define('BAB_TM_ACTION_DELETE_CATEGORY', 'deleteCategory');
 define('BAB_TM_ACTION_ADD_PROJECT', 'addProject');
 define('BAB_TM_ACTION_MODIFY_PROJECT', 'modifyProject');
+define('BAB_TM_ACTION_MODIFY_PROJECT_PROPERTIES', 'modifyProjectProperties');
 define('BAB_TM_ACTION_DELETE_PROJECT', 'deleteProject');
 define('BAB_TM_ACTION_UPDATE_WORKING_HOURS', 'updateWorkingHours');
 define('BAB_TM_ACTION_ADD_PROJECT_COMMENTARY', 'addProjectCommentary');
@@ -66,6 +67,8 @@ define('BAB_TM_IDX_DISPLAY_NOTICE_EVENT_FORM', 'displayNoticeEventForm');
 
 define('BAB_TM_IDX_DISPLAY_PERSONNAL_TASK_RIGHT', 'displayPersonnalTaskRight');
 define('BAB_TM_IDX_DISPLAY_GANTT_CHART', 'displayGanttChart');
+define('BAB_TM_IDX_DISPLAY_PROJECT_PROPERTIES_FORM', 'displayProjectPropertiesForm');
+
 //define('BAB_TM_IDX_CLOSE_POPUP', 'closePopup');
 
 

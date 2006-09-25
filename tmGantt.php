@@ -591,7 +591,7 @@ class BAB_TM_GanttBase
 			$this->m_iTaskInfoHeigth = $this->m_iHeight - ($this->m_iBorderTop + $this->m_iBorderBottom);
 			$this->m_iTaskInfoWidth = $this->m_iTaskCaptionWidth - ($this->m_iBorderLeft + $this->m_iBorderRight);
 			$this->m_sTaskInfoBgColor = (strlen($datas['sBgColor']) != 0) ? $datas['sBgColor'] : 'EFEFEF';
-			$this->m_sTaskInfoColor = 'FFF';
+			$this->m_sTaskInfoColor =  (strlen($datas['sColor']) != 0) ? $datas['sColor'] : '000000';
 			$this->m_sTaskInfo = $datas['sShortDescription'];
 		
 			return true;

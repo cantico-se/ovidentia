@@ -87,6 +87,7 @@ class BAB_TM_FieldBase extends BAB_BaseFormProcessing
 		$iIdProject = $oTmCtx->getIdProject();
 		$this->set_data('iIdProjectSpace', $iIdProjectSpace);
 		$this->set_data('iIdProject', $iIdProject);
+		$this->set_data('iIdUser', (int) bab_rp('iIdUser', 0));
 		$this->set_data('iFieldType', (int) bab_rp('iFieldType', BAB_TM_TEXT_FIELD));
 		$this->set_data('iIdField', (int) bab_rp('iIdField', 0));
 
@@ -146,6 +147,7 @@ class BAB_TM_FieldText extends BAB_TM_FieldBase
 		$this->set_data('sFieldType', bab_translate("Text"));
 		$this->get_data('iIdProject', $iIdProject);
 		$this->get_data('iIdField', $iIdField);
+		$this->get_data('iIdUser', $iIdUser);
 		
 		$query = 
 			'SELECT ' .

@@ -703,7 +703,10 @@ switch($idx)
 		break;
 
 	case BAB_TM_IDX_DISPLAY_CATEGORIES_LIST:
-		displayCategoriesList();
+		$oTmCtx =& getTskMgrContext();
+		$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
+		$iIdProject = $oTmCtx->getIdProject();
+		displayCategoriesList($iIdProjectSpace, $iIdProject, 0);
 		break;
 		
 	case BAB_TM_IDX_DISPLAY_CATEGORY_FORM:

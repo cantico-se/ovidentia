@@ -36,8 +36,11 @@ function displaySpecificFieldList()
 
 	$oTmCtx =& getTskMgrContext();
 	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
-
-	if(0 != $iIdProjectSpace)
+	$iIdProject = $oTmCtx->getIdProject();
+	
+	$iIdUser = (0 === $iIdProjectSpace && 0 === $iIdProject) ? $GLOBALS['BAB_SESS_USERID'] : 0;
+	
+	if(/*0 != $iIdProjectSpace*/1)
 	{
 		$iIdProject = $oTmCtx->getIdProject();
 		
@@ -102,6 +105,7 @@ function displaySpecificFieldList()
 					
 					$this->set_data('sFieldLink', $GLOBALS['babUrlScript'] . '?tg=' . $tg . 
 						'&iIdProjectSpace=' . $iIdProjectSpace . '&iIdProject=' . $iIdProject .
+						'&iIdUser=' . $datas['iIdUser'] .
 						'&iIdField=' . $datas['iIdField'] . '&iFieldType=' . $datas['iFieldType'] . 
 						'&idx=' . BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_FORM);
 					$this->set_data('refCount', $datas['refCount']);
@@ -133,19 +137,22 @@ function displaySpecificFieldList()
 				'idx' => BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_LIST,
 				'mnuStr' => bab_translate("Specific field list"),
 				'url' => $GLOBALS['babUrlScript'] . '?tg=' . $tg . '&iIdProjectSpace=' . $iIdProjectSpace . 
-					'&iIdProject=' . $iIdProject . '&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST);
+					'&iIdProject=' . $iIdProject . '&iIdUser=' . $iIdUser .
+					'&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST);
 					
 		$itemMenu[] = array(
 				'idx' => BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_FORM,
 				'mnuStr' => bab_translate("Add specific field"),
 				'url' => $GLOBALS['babUrlScript'] . '?tg=' . $tg . '&iIdProjectSpace=' . $iIdProjectSpace . 
-					'&iIdProject=' . $iIdProject .'&idx=' . BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_FORM);
+					'&iIdProject=' . $iIdProject . '&iIdUser=' . $iIdUser .
+					'&idx=' . BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_FORM);
 		add_item_menu($itemMenu);
 		$babBody->title = bab_translate("Specific field list");
 	
 		$query = 
 			'SELECT ' .
 				'fb.id iIdField, ' .
+				'fb.idUser iIdUser, ' .
 				'fb.name sFieldName, ' .
 				'fb.refCount refCount, ' .
 				'fb.nature iFieldType, ' .
@@ -160,7 +167,8 @@ function displaySpecificFieldList()
 				BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' fb ' .
 			'WHERE ' .
 				'idProjectSpace = \'' . $iIdProjectSpace . '\' AND ' .
-				'(idProject = \'' . 0 . '\' OR idProject = \'' . $iIdProject . '\')' .
+				'(idProject = \'' . 0 . '\' OR idProject = \'' . $iIdProject . '\') AND ' .
+				'idUser = \'' . $iIdUser . '\' ' .
 			'GROUP BY fb.name ASC';
 		
 		//bab_debug($query);	
@@ -182,7 +190,8 @@ function displaySpecificFieldForm()
 	$oTmCtx =& getTskMgrContext();
 	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
 	$iIdProject = $oTmCtx->getIdProject();
-
+	$iIdUser = (int) bab_rp('iIdUser', 0);
+	
 	{
 		$iFieldType = (int) bab_rp('iFieldType', BAB_TM_TEXT_FIELD);
 		
@@ -239,13 +248,15 @@ function displaySpecificFieldForm()
 			'idx' => BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_LIST,
 			'mnuStr' => bab_translate("Specific field list"),
 			'url' => $GLOBALS['babUrlScript'] . '?tg=' . $tg . '&iIdProjectSpace=' . $iIdProjectSpace . 
-				'&iIdProject=' . $iIdProject . '&idx=' . BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_LIST);
+				'&iIdProject=' . $iIdProject . '&iIdUser=' . $iIdUser .
+				'&idx=' . BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_LIST);
 				
 		$itemMenu[] = array(
 			'idx' => BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_FORM,
 			'mnuStr' => $babBody->title,
 			'url' => $GLOBALS['babUrlScript'] . '?tg=' . $tg . '&iIdProjectSpace=' . $iIdProjectSpace . 
-				'&iIdProject=' . $iIdProject . '&idx=' . BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_FORM);
+				'&iIdProject=' . $iIdProject . '&iIdUser=' . $iIdUser .
+				'&idx=' . BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_FORM);
 			
 		add_item_menu($itemMenu);
 		$babBody->babecho(bab_printTemplate($oField, 'tmCommon.html', $sTemplateName));
@@ -343,7 +354,7 @@ function addOption()
 	$oTmCtx =& getTskMgrContext();
 	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
 
-	if(0 != $iIdProjectSpace)
+	if(/*0 != $iIdProjectSpace*/1)
 	{
 		if(isset($_POST['aOptions']))
 		{
@@ -368,7 +379,7 @@ function delOption()
 	$oTmCtx =& getTskMgrContext();
 	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
 
-	if(0 != $iIdProjectSpace)
+	if(/*0 != $iIdProjectSpace*/1)
 	{
 		$iOptionCount = (int) bab_rp('iOptionCount', 0);
 		$iDefaultOption = (int) bab_rp('iDefaultOption', 0);
@@ -408,7 +419,7 @@ function addModifySpecificField()
 	$oTmCtx =& getTskMgrContext();
 	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
 
-	if(0 != $iIdProjectSpace)
+	if(/*0 != $iIdProjectSpace*/1)
 	{
 		$iIdProject = $oTmCtx->getIdProject();
 		$iFieldType = (int) bab_rp('iFieldType', -1);
@@ -517,6 +528,7 @@ function processSpecificFieldBaseClass($iIdProjectSpace, $iIdProject, $iFieldTyp
 	if(0 < strlen($sFieldName))
 	{
 		$iIdField = (int) bab_rp('iIdField', 0);
+		$iIdUser = (int) bab_rp('iIdUser', 0);
 		
 		$isValid = isNameUsedInProjectAndProjectSpace(BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL, $iIdProjectSpace, $iIdProject, $iIdField, $sFieldName);
 		$sFieldName = mysql_escape_string($sFieldName);
@@ -533,6 +545,7 @@ function processSpecificFieldBaseClass($iIdProjectSpace, $iIdProject, $iFieldTyp
 				'nature' => $iFieldType,
 				'idProjectSpace' => $iIdProjectSpace,
 				'idProject' => $iIdProject,
+				'idUser' => $iIdUser
 			);
 			
 			if(0 == $iIdField)

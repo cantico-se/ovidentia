@@ -491,7 +491,9 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 
 			bab_getAvailableTaskResponsibles($this->m_iIdProject, $this->m_aAvailableTaskResponsible);
 
-			$this->m_catResult = bab_selectAvailableCategories($this->m_iIdProjectSpace, $this->m_iIdProject);
+			$iIdUser = (0 === $this->m_iIdProjectSpace && 0 === $this->m_iIdProject) ? $GLOBALS['BAB_SESS_USERID'] : 0;
+			
+			$this->m_catResult = bab_selectAvailableCategories($this->m_iIdProjectSpace, $this->m_iIdProject, $iIdUser);
 			$this->m_spfResult = bab_selectAvailableSpecificFieldClassesByProject($this->m_iIdProjectSpace, $this->m_iIdProject);
 			$this->m_spfInstResult = bab_selectAllSpecificFieldInstance($this->m_iIdTask);
 			

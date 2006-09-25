@@ -602,7 +602,7 @@ function bab_updateProjectConfiguration($aConfiguration)
 		'WHERE ' . 
 			'`id` = \'' . $aConfiguration['id'] . '\'';
 
-	bab_debug($query);
+	//bab_debug($query);
 	return $babDB->db_query($query);
 }
 
@@ -828,7 +828,7 @@ function bab_startDependingTask($iIdProjectSpace, $iIdProject, $iIdTask, $iLinkT
 }
 //*/
 
-function bab_getTaskCount($iIdProject)
+function bab_getTaskCount($iIdProject, $iIdUser = -1)
 {
 	$query = 
 		'SELECT ' . 
@@ -837,6 +837,11 @@ function bab_getTaskCount($iIdProject)
 			BAB_TSKMGR_TASKS_TBL . ' t ' .
 		'WHERE ' . 
 			't.idProject = \'' . $iIdProject . '\' ';
+			
+	if(-1 !== $iIdUser)
+	{
+		$query .= 'AND idUserCreated = \'' . $iIdUser . '\'';
+	}
 		
 	//bab_debug($query);
 	
@@ -1866,8 +1871,10 @@ function bab_selectTaskQuery($aFilters)
 			't.completion iCompletion, ' .
 			't.startDate startDate, ' .
 			't.endDate endDate, ' .
+			'ti.idOwner idOwner, ' .
 			'cat.id iIdCategory, ' .
-			'IFNULL(cat.color, \'\' ) sBgColor ' .
+			'IFNULL(cat.bgColor, \'\' ) sBgColor, ' .
+			'IFNULL(cat.color, \'\' ) sColor ' .
 		'FROM ' . 
 			BAB_TSKMGR_TASKS_INFO_TBL . ' ti, ' .
 			BAB_TSKMGR_TASKS_TBL . ' t ' .
@@ -2175,24 +2182,6 @@ function bab_createDefaultWorkingHours($iIdUser)
 		bab_insertWorkingHours($iIdUser, $iWeekDay, '09:00', '12:00');
 		bab_insertWorkingHours($iIdUser, $iWeekDay, '13:00', '18:00');
 	}
-}
-
-function bab_selectAvailableCategories($iIdProjectSpace, $iIdProject)
-{
-	global $babBody, $babDB;
-
-	$query = 
-		'SELECT ' .
-			'id, ' . 
-			'name ' . 
-		'FROM ' .
-			BAB_TSKMGR_CATEGORIES_TBL . ' ' .
-		'WHERE ' . 
-			'idProjectSpace IN(\'' . $iIdProjectSpace . '\') AND ' .
-			'idProject IN(\'' . $iIdProject . '\',\'' . 0 . '\')';
-	
-	//bab_debug($query);
-	return $babDB->db_query($query);
 }
 
 function bab_selectAvailableSpecificFieldClassesByProject($iIdProjectSpace, $iIdProject)
@@ -2615,6 +2604,49 @@ function bab_updateTaskListFilter($iIdUser, $aTaskFilters)
 	//bab_debug($query);
 
 	global $babDB;
+	return $babDB->db_query($query);
+}
+
+function bab_getCategoriesListQuery($iIdProjectSpace, $iIdProject, $iIdUser)
+{
+	$query = 
+		'SELECT ' .
+			'cat.id iIdCategory, ' .
+			'cat.name sCategoryName, ' .
+			'cat.description sCategoryDescription, ' .
+			'cat.refCount refCount,' .
+			'cat.idProject iIdProject,' .
+			'cat.color sColor,' .
+			'cat.bgColor sBgColor,' .
+			'cat.idUser iIdUser,' .
+			'IF(cat.idProject = \'' . $iIdProject . '\' AND cat.refCount = \'' . 0 . '\', 1, 0) is_deletable ' .
+		'FROM ' .
+			BAB_TSKMGR_CATEGORIES_TBL . ' cat ' .
+		'WHERE ' .
+			'idProjectSpace = \'' . $iIdProjectSpace . '\' AND ' .
+			'(idProject = \'' . 0 . '\' OR idProject = \'' . $iIdProject . '\') AND ' .
+			'idUser = \'' . $iIdUser . '\' ' .
+		'GROUP BY cat.name ASC';
+		
+	return $query;
+}
+
+function bab_selectAvailableCategories($iIdProjectSpace, $iIdProject, $iIdUser)
+{
+	global $babBody, $babDB;
+
+	$query = 
+		'SELECT ' .
+			'id, ' . 
+			'name ' . 
+		'FROM ' .
+			BAB_TSKMGR_CATEGORIES_TBL . ' ' .
+		'WHERE ' . 
+			'idProjectSpace IN(\'' . $iIdProjectSpace . '\') AND ' .
+			'idProject IN(\'' . $iIdProject . '\',\'' . 0 . '\') AND ' .
+			'idUser = \'' . $iIdUser . '\'';
+	
+	//bab_debug($query);
 	return $babDB->db_query($query);
 }
 ?>
