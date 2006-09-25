@@ -2263,4 +2263,13 @@
 <string id="Personnals tasks">Tâches personnelles</string>
 <string id="Personnal(s) task(s)">Tâche(s) personnelle(s)</string>
 <string id="Color">Couleur</string>
+<string id="Attach">Attacher</string>
+<string id="Indexing directly from interface could take a lot of cpu time, do you really want to index?">Indexing directly from interface could take a lot of cpu time, do you really want to index?</string>
+<string id="Text color">Couleur du texte</string>
+<string id="Background color">Couleur du fond</string>
+<string id="You are not a projet manager">Vous n'êtes pas gestionnaire</string>
+<string id="Project properties">Propriétés du projet</string>
+<string id="My task(s)">Mes tâche(s)</string>
+<string id="You are not a projects manager">Vous n'êtes pas gestionnaire</string>
+<string id="Tasks of the project">Tâches du projet</string>
 </fr>
