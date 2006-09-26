@@ -6991,7 +6991,7 @@ function upgrade589to600()
 
 	if(!bab_isTableField(BAB_TSKMGR_CATEGORIES_TBL, 'bgColor')) 
 	{
-		$db->db_query("ALTER TABLE ".BAB_TSKMGR_CATEGORIES_TBL." ADD `bgColor` VARCHAR( 20 ) NOT NULL , ADD `idUser` INT( 11 ) NOT UNSIGNED NULL");
+		$db->db_query("ALTER TABLE ".BAB_TSKMGR_CATEGORIES_TBL." ADD `bgColor` VARCHAR( 20 ) NOT NULL , ADD `idUser` INT( 11 ) UNSIGNED NOT NULL");
 	}
 	
 	if(!bab_isTableField(BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL, 'idUser')) 
