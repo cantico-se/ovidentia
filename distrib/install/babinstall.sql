@@ -2849,6 +2849,8 @@ CREATE TABLE bab_tskmgr_categories (
   idUserCreated int(10) unsigned NOT NULL default '0',
   modified datetime NOT NULL default '0000-00-00 00:00:00',
   idUserModified int(10) unsigned NOT NULL default '0',
+  bgColor varchar(20) NOT NULL, 
+  idUser int(11) unsigned NOT NULL,
   PRIMARY KEY  (id),
   KEY idProjectSpace (idProjectSpace),
   KEY idProject (idProject),
@@ -3167,10 +3169,12 @@ CREATE TABLE bab_tskmgr_specific_fields_base_class (
   idProject int(10) unsigned NOT NULL default '0',
   created datetime NOT NULL default '0000-00-00 00:00:00',
   idUserCreated int(10) unsigned NOT NULL default '0',
+  idUser int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (id),
   KEY `name` (`name`),
   KEY idProjectSpace (idProjectSpace),
-  KEY idProject (idProject)
+  KEY idProject (idProject),
+  KEY idUser (idUser)
 ) ;
 
 # --------------------------------------------------------
