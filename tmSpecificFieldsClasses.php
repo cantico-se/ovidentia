@@ -269,8 +269,6 @@ class BAB_TM_FieldRadio extends BAB_TM_FieldBase
 		
 		$this->set_data('addOptionAction', BAB_TM_ACTION_ADD_OPTION);
 		$this->set_data('delOptionAction', BAB_TM_ACTION_DEL_OPTION);
-		
-		$this->m_guid = uniqid();
 	}
 
 	function loadDatas()
