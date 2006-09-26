@@ -297,6 +297,9 @@ class bab_stats_modules extends bab_stats_base
 			case 'usrTskMgr':
 				$id = 24; /* Task manager  */
 				break;
+			case "omlsoap":
+				$id = 25; /* Web services */
+				break;
 
 			case "aclug":
 			case "lusers":

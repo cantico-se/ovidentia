@@ -2421,6 +2421,7 @@ INSERT INTO bab_stats_imodules VALUES (21, 'Workflow approbations');
 INSERT INTO bab_stats_imodules VALUES (22, 'Ovidentia Editor');
 INSERT INTO bab_stats_imodules VALUES (23, 'OvML');
 INSERT INTO bab_stats_imodules VALUES (24, 'Task manager');
+INSERT INTO bab_stats_imodules VALUES (25, 'Web services');
 
 #
 # Table structure for table `bab_stats_ipages`

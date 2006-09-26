@@ -6998,6 +6998,13 @@ function upgrade589to600()
 	{
 		$db->db_query("ALTER TABLE ".BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL." ADD `idUser` INT( 11 ) UNSIGNED NOT NULL");
 	}
+
+	$res = $db->db_query("select * from ".BAB_STATS_IMODULES_TBL." where id='25'");
+	if( !$res || $db->db_num_rows($res) == 0 )
+	{
+	$db->db_query("INSERT INTO ".BAB_STATS_IMODULES_TBL." VALUES (25, 'Web services')");
+	}
+
 	return $ret;
 }
 ?>
