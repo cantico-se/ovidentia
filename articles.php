@@ -1223,7 +1223,7 @@ if(!isset($idx))
 	$idx = "Articles";
 	}
 
-if( count($babBody->topview) == 0 || (!isset($babBody->topview[$topics]) && in_array($idx, array('Articles','getf','More','Print','larch')) ))
+if( count($babBody->topview) == 0 || !isset($babBody->topview[$topics]) )
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	$idx = 'denied';
