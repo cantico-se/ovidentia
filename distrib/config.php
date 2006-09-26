@@ -29,6 +29,6 @@ $babInstallPath = "ovidentia/"; /* relatif path to ovidentia distribution */
 $babSlogan = "Ovidentia: enterprise portal"; /* your slogan */
 $babSiteName = "Ovidentia"; /* your site name */
 $babUrl = "http://yourdomain/"; /* url to access to your site */
-$babVersion = "5.8"; /* current version */
+$babVersion = "6.0"; /* current version */
 $babFileNameTranslation = array("&" => "_","\"" => "_","'" => "_",";"=>"_","~"=>"-","+"=>""); /* translation characters for files names.*/
 ?>

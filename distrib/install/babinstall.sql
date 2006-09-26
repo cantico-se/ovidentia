@@ -1016,9 +1016,9 @@ CREATE TABLE bab_ini (
 	UNIQUE KEY foption (foption)
 );
 
-INSERT INTO bab_ini VALUES ('ver_major', '5');
-INSERT INTO bab_ini VALUES ('ver_minor', '8');
-INSERT INTO bab_ini VALUES ('ver_build', '9');
+INSERT INTO bab_ini VALUES ('ver_major', '6');
+INSERT INTO bab_ini VALUES ('ver_minor', '0');
+INSERT INTO bab_ini VALUES ('ver_build', '0');
 INSERT INTO bab_ini VALUES ('ver_prod', 'E');
 
 #
