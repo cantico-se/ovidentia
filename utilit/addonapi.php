@@ -738,31 +738,14 @@ function bab_userIsloggedin()
 
 function bab_isAccessValidByUser($table, $idobject, $iduser)
 {
-	$db = &$GLOBALS['babDB'];
+	include_once $GLOBALS['babInstallPath']."admin/acl.php";
 
-	$res = $db->db_query("select 
-							t.id_group 
-						FROM 
-								".$table." t, 
-								".BAB_USERS_GROUPS_TBL." u  
-						WHERE 
-								t.id_object='".$idobject."' 
-								AND (
-								(u.id_object='".$iduser."' AND u.id_group = t.id_group) 
-								OR 
-								t.id_group >= '".BAB_ACL_GROUP_TREE."')
-							");
+	$users = aclGetAccessUsers($table, $idobject);
 
-	if( $res && $db->db_num_rows($res) > 0)
-		{
-		$row = $db->db_fetch_assoc($res);
-		if ($row['id_group'] >= BAB_ACL_GROUP_TREE)
-			{
-			$row['id_group'] -= BAB_ACL_GROUP_TREE;
-			return bab_isMemberOfTree($row['id_group'], $iduser);
-			}
+	if( isset($users[ $iduser]))
+	{
 		return true;
-		}
+	}
 	return false;
 }
 
