@@ -98,57 +98,6 @@ function emailPassword()
 	$babBody->babecho(	bab_printTemplate($temp,"login.html", "emailpassword"));
 	}
 
-function signOff()
-	{
-	global $babBody, $BAB_HASH_VAR, $BAB_SESS_USER, $BAB_SESS_EMAIL, $BAB_SESS_USERID, $BAB_SESS_HASHID,$BAB_SESS_LOGGED;
-	
-	$db = $GLOBALS['babDB'];
-	$db->db_query("delete from ".BAB_USERS_LOG_TBL." where id_user='".$BAB_SESS_USERID."' and sessid='".session_id()."'");
-
-	if( isset($_SESSION))
-		{
-		$_SESSION['BAB_SESS_NICKNAME'] = "";
-		$_SESSION['BAB_SESS_USER'] = "";
-		$_SESSION['BAB_SESS_FIRSTNAME'] = "";
-		$_SESSION['BAB_SESS_LASTNAME'] = "";
-		$_SESSION['BAB_SESS_EMAIL'] = "";
-		$_SESSION['BAB_SESS_USERID'] = "";
-		$_SESSION['BAB_SESS_HASHID'] = "";
-		unset($_SESSION['BAB_SESS_NICKNAME']);
-		unset($_SESSION['BAB_SESS_USER']);
-		unset($_SESSION['BAB_SESS_FIRSTNAME']);
-		unset($_SESSION['BAB_SESS_LASTNAME']);
-		unset($_SESSION['BAB_SESS_EMAIL']);
-		unset($_SESSION['BAB_SESS_USERID']);
-		unset($_SESSION['BAB_SESS_HASHID']);
-		unset($_SESSION);
-		session_destroy();
-		}
-	else
-		{
-		$GLOBALS['BAB_SESS_NICKNAME'] = "";
-		$GLOBALS['BAB_SESS_USER'] = "";
-		$GLOBALS['BAB_SESS_FIRSTNAME'] = "";
-		$GLOBALS['BAB_SESS_LASTNAME'] = "";
-		$GLOBALS['BAB_SESS_EMAIL'] = "";
-		$GLOBALS['BAB_SESS_USERID'] ="";
-		$GLOBALS['BAB_SESS_HASHID'] = "";
-		session_unregister("BAB_SESS_NICKNAME");
-		session_unregister("BAB_SESS_USER");
-		session_unregister("BAB_SESS_FIRSTNAME");
-		session_unregister("BAB_SESS_LASTNAME");
-		session_unregister("BAB_SESS_EMAIL");
-		session_unregister("BAB_SESS_USERID");
-		session_unregister("BAB_SESS_HASHID");
-		session_destroy();
-		}
-
-	if ( $GLOBALS['babCookieIdent'] != 'login' ) 
-		setcookie('c_nickname'," ");
-	setcookie('c_password'," ");
-
-	loginRedirect($GLOBALS['babPhpSelf']);
-	}
 
 function userCreate($firstname, $middlename, $lastname, $nickname, $email)
 	{
@@ -777,6 +726,7 @@ switch($cmd)
 	{
 	case "signoff":
 		signOff();
+		loginRedirect($GLOBALS['babPhpSelf']);
 		break;
 
 	case "showdp":

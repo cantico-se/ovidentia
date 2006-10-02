@@ -2272,4 +2272,7 @@
 <string id="My task(s)">Mes tâche(s)</string>
 <string id="You are not a projects manager">Vous n'êtes pas gestionnaire</string>
 <string id="Tasks of the project">Tâches du projet</string>
+<string id="Who can connect as user of web services">Qui peut s'authentifier par les web services</string>
+<string id="Who can use OVML containers">Qui peut utiliser l'OVML par Web services</string>
+<string id="Who can use OVML files">Qui peut utiliser les fichiers OVML par Web services</string>
 </fr>

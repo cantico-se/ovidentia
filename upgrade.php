@@ -7005,6 +7005,57 @@ function upgrade589to600()
 	$db->db_query("INSERT INTO ".BAB_STATS_IMODULES_TBL." VALUES (25, 'Web services')");
 	}
 
+
+	if (!bab_isTable(BAB_SITES_WS_GROUPS_TBL)) {
+
+		$db->db_query("
+		
+				CREATE TABLE ".BAB_SITES_WS_GROUPS_TBL." (
+				  id int(11) unsigned NOT NULL auto_increment,
+				  id_object int(11) unsigned NOT NULL default '0',
+				  id_group int(11) unsigned NOT NULL default '0',
+				  PRIMARY KEY  (id),
+				  KEY id_object (id_object),
+				  KEY id_group (id_group)
+				)
+			
+		");
+
+	}
+
+	if (!bab_isTable(BAB_SITES_WSOVML_GROUPS_TBL)) {
+
+		$db->db_query("
+		
+				CREATE TABLE ".BAB_SITES_WSOVML_GROUPS_TBL." (
+				  id int(11) unsigned NOT NULL auto_increment,
+				  id_object int(11) unsigned NOT NULL default '0',
+				  id_group int(11) unsigned NOT NULL default '0',
+				  PRIMARY KEY  (id),
+				  KEY id_object (id_object),
+				  KEY id_group (id_group)
+				)
+			
+		");
+
+	}
+
+	if (!bab_isTable(BAB_SITES_WSFILES_GROUPS_TBL)) {
+
+		$db->db_query("
+		
+				CREATE TABLE ".BAB_SITES_WSFILES_GROUPS_TBL." (
+				  id int(11) unsigned NOT NULL auto_increment,
+				  id_object int(11) unsigned NOT NULL default '0',
+				  id_group int(11) unsigned NOT NULL default '0',
+				  PRIMARY KEY  (id),
+				  KEY id_object (id_object),
+				  KEY id_group (id_group)
+				)
+			
+		");
+
+	}
 	return $ret;
 }
 ?>

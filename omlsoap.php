@@ -93,6 +93,13 @@ $babSoapServer->register(
 
 function babSoapOvml($container, $args)
 	{
+	global $babBody, $babDB;
+	if( !bab_isAccessValid(BAB_SITES_WS_GROUPS_TBL, $babBody->babsite['id']) && !bab_isAccessValid(BAB_SITES_WSOVML_GROUPS_TBL, $babBody->babsite['id']))
+		{
+		return '';
+		}
+
+	$_SESSION['BAB_SESS_WSUSER'] = true;
 	include_once $GLOBALS['babInstallPath']."utilit/omlincl.php";
 
 
@@ -116,7 +123,14 @@ $babSoapServer->register(
 
 function babSoapOvmlContent($content, $args)
 	{
+	global $babBody, $babDB;
 	$tmp = array();
+	if( !bab_isAccessValid(BAB_SITES_WS_GROUPS_TBL, $babBody->babsite['id']) && !bab_isAccessValid(BAB_SITES_WSOVML_GROUPS_TBL, $babBody->babsite['id']))
+		{
+		return '';
+		}
+
+	$_SESSION['BAB_SESS_WSUSER'] = true;
 
 	for( $k=0; $k < count($args); $k++)
 		{
@@ -133,8 +147,14 @@ $babSoapServer->register(
 
 function babSoapOvmlFile($file, $args=array())
 	{
+	global $babBody, $babDB;
 	$tmp = array();
+	if( !bab_isAccessValid(BAB_SITES_WS_GROUPS_TBL, $babBody->babsite['id']) && !bab_isAccessValid(BAB_SITES_WSFILES_GROUPS_TBL, $babBody->babsite['id']))
+		{
+		return '';
+		}
 
+	$_SESSION['BAB_SESS_WSUSER'] = true;
 	for( $k=0; $k < count($args); $k++)
 		{
 		$tmp[$args[$k]['name']] = $args[$k]['value'];
@@ -150,15 +170,55 @@ $babSoapServer->register(
 
 function login($nickname, $password)
 	{
-	global $babBody;
+	global $babBody, $babDB;
 	include_once $GLOBALS['babInstallPath']."admin/register.php";
 
-	if( signOn($nickname, $password, 0))
+	$res = $babDB->db_query("select id from ".BAB_USERS_TBL." where nickname='".$babDB->db_escape_string($nickname)."' and password='". $babDB->db_escape_string(md5(strtolower($password))) ."'");
+	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
-		return array('id'=>session_id(), 'error'=>$error);	
+		list($iduser) = $babDB->db_fetch_row($res);
+		if( bab_isAccessValidByUser(BAB_SITES_WS_GROUPS_TBL, $babBody->babsite['id'], $iduser))
+			{
+			if( signOn($nickname, $password, 0))
+				{
+				$_SESSION['BAB_SESS_WSUSER'] = true;
+				return array('id'=>session_id(), 'error'=>$error);	
+				}
+			}
+		else
+			{
+			$babBody->msgerror = bab_translate("Access denied");
+			}
+		}
+	else
+		{
+		$babBody->msgerror = bab_translate("Access denied");
 		}
 
 	return array('id'=>0, 'error'=>$babBody->msgerror);	
+	}
+
+$babSoapServer->register(
+        'logout',
+        array('session'=>'xsd:string'),
+        array('return'=>'xsd:int'),
+        $BABWS_NAMESPACE); 
+
+function logout($session)
+	{
+	global $babBody;
+	include_once $GLOBALS['babInstallPath']."admin/register.php";
+
+	if( isset($_REQUEST['WSSESSIONID']) && $_REQUEST['WSSESSIONID'] == $session && bab_isAccessValid(BAB_SITES_WS_GROUPS_TBL, $babBody->babsite['id']))
+		{
+		signOff();
+		$_SESSION['BAB_SESS_WSUSER'] = false;
+		return 1;
+		}
+	else
+		{
+		return 0;
+		}
 	}
 
 $HTTP_RAW_POST_DATA = isset($HTTP_RAW_POST_DATA)? $HTTP_RAW_POST_DATA : '';

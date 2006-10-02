@@ -76,6 +76,7 @@ class site_configuration_cls
 		{
 		$this->menu[11] = bab_translate('Search engine configuration');
 		}
+	$this->menu[12] = bab_translate('Web services groups');
 
 	if (false !== $id_site)
 		{
@@ -1943,11 +1944,10 @@ switch ($_POST['action'])
 }
 
 
-if( isset($aclman) )
+if( isset($aclman) || isset($acluws))
 	{
 	maclGroups();
 	}
-
 
 
 $babBody->addItemMenu("List", bab_translate("Sites"),$GLOBALS['babUrlScript']."?tg=sites&idx=list");
@@ -2059,6 +2059,17 @@ switch($idx)
 
 		call_site_menu11($_REQUEST['item']);
 
+		break;
+
+	case "menu12":
+		$babBody->title = bab_translate("Web services groups").": ".getSiteName($_REQUEST['item']);
+		$macl = new macl("site", "menusite", $_REQUEST['item'], "acluws");
+        $macl->addtable( BAB_SITES_WS_GROUPS_TBL,bab_translate("Who can connect as user of web services").'?');
+        $macl->addtable( BAB_SITES_WSOVML_GROUPS_TBL,bab_translate("Who can use OVML containers").'?');
+        $macl->addtable( BAB_SITES_WSFILES_GROUPS_TBL,bab_translate("Who can use OVML files").'?');
+        $macl->babecho();
+		$babBody->addItemMenu("menusite", bab_translate("Menu"),$GLOBALS['babUrlScript']."?tg=site&item=".$_REQUEST['item']);
+		$babBody->addItemMenu("menu7", bab_translate("Web services"),$GLOBALS['babUrlScript']."?tg=site&idx=hman&item=".$_REQUEST['item']);
 		break;
 
 	default:

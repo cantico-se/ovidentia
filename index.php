@@ -65,7 +65,7 @@ bab_cleanGpc();
 if( isset($_REQUEST['WSSESSIONID']))
 {
 		session_name(sprintf("OV%u", crc32($babUrl)));
-		session_id($_GET['WSSESSIONID']);
+		session_id($_REQUEST['WSSESSIONID']);
 		session_start();
 }
 elseif(!session_id())
@@ -82,6 +82,8 @@ if (!session_is_registered('BAB_SESS_USERID')) { session_register("BAB_SESS_USER
 if (!session_is_registered('BAB_SESS_HASHID')) { session_register("BAB_SESS_HASHID"); $BAB_SESS_HASHID = ""; }
 if (!session_is_registered('BAB_SESS_GROUPID')) { session_register("BAB_SESS_GROUPID"); $BAB_SESS_GROUPID = ""; }
 if (!session_is_registered('BAB_SESS_GROUPNAME')) { session_register("BAB_SESS_GROUPNAME"); $BAB_SESS_GROUPNAME = ""; }
+if (!session_is_registered('BAB_SESS_WSUSER')) { session_register("BAB_SESS_WSUSER"); $BAB_SESS_WSUSER = false; }
+
 if (!empty($_GET))
 	$babTmp =& $_GET;
 else  if (!empty($HTTP_GET_VARS)) 
