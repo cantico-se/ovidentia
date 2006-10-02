@@ -76,7 +76,7 @@ class site_configuration_cls
 		{
 		$this->menu[11] = bab_translate('Search engine configuration');
 		}
-	$this->menu[12] = bab_translate('Web services groups');
+	$this->menu[12] = bab_translate('Web services');
 
 	if (false !== $id_site)
 		{
@@ -2062,7 +2062,7 @@ switch($idx)
 		break;
 
 	case "menu12":
-		$babBody->title = bab_translate("Web services groups").": ".getSiteName($_REQUEST['item']);
+		$babBody->title = bab_translate("Web services").": ".getSiteName($_REQUEST['item']);
 		$macl = new macl("site", "menusite", $_REQUEST['item'], "acluws");
         $macl->addtable( BAB_SITES_WS_GROUPS_TBL,bab_translate("Who can connect as user of web services").'?');
         $macl->addtable( BAB_SITES_WSOVML_GROUPS_TBL,bab_translate("Who can use OVML containers").'?');
