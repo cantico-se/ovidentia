@@ -228,6 +228,7 @@ define("BAB_STATS_BASKETS_TBL", "bab_stats_baskets");
 define("BAB_STATSBASKETS_GROUPS_TBL", "bab_statsbaskets_groups");
 define("BAB_STATS_BASKET_CONTENT_TBL", "bab_stats_basket_content");
 define("BAB_STATSMAN_GROUPS_TBL", "bab_statsman_groups");
+define("BAB_STATS_CONNECTIONS_TBL", "bab_stats_connections");
 define("BAB_THREADS_TBL", "bab_threads");
 define("BAB_TOPCAT_ORDER_TBL", "bab_topcat_order");
 define("BAB_TOPICS_TBL", "bab_topics");
