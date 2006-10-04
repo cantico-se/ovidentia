@@ -50,6 +50,11 @@ function addForum($nameval, $descriptionval, $nbmsgdisplayval)
 			$this->moderation = bab_translate("Moderation");
 			$this->notification = bab_translate("Notify moderator");
 			$this->nbrecipients = bab_translate("Number of recipients per sending");
+			$this->show_email_txt = bab_translate("Display user's email address");
+			$this->show_authordetails_txt = bab_translate("Display user's personal informations");
+			$this->use_flatview_txt = bab_translate("Use flat view");
+			$this->allow_moderatorupdate_txt = bab_translate("Allow moderators to modify posts");
+			$this->allow_authorupdate_txt = bab_translate("Allow authors to modify their posts");
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
 			$this->add = bab_translate("Add");
@@ -236,7 +241,22 @@ function saveForum($name, $description, $moderation, $notification, $nbmsgdispla
 		$nbrecipients = 30;
 		}
 
-	$query = "insert into ".BAB_FORUMS_TBL." (name, description, display, moderation, notification, active, ordering, id_dgowner, nb_recipients)";
+	$bdisplayemailaddress = bab_rp('bdisplayemailaddress', 'N');
+	$bdisplayemailaddress = $bdisplayemailaddress == 'Y'? 'Y' : 'N';
+
+	$bdisplayauhtordetails = bab_rp('bdisplayauhtordetails', 'N');
+	$bdisplayauhtordetails = $bdisplayauhtordetails == 'Y'? 'Y' : 'N';
+
+	$bflatview = bab_rp('bflatview', 'Y');
+	$bflatview = $bflatview == 'N'? 'N' : 'Y';
+
+	$bupdatemoderator = bab_rp('bupdatemoderator', 'Y');
+	$bupdatemoderator = $bupdatemoderator == 'N'? 'N' : 'Y';
+
+	$bupdateauthor = bab_rp('bupdateauthor', 'N');
+	$bupdateauthor = $bupdateauthor == 'Y'? 'Y' : 'N';
+
+	$query = "insert into ".BAB_FORUMS_TBL." (name, description, display, moderation, notification, active, ordering, id_dgowner, nb_recipients, bdisplayemailaddress, bdisplayauhtordetails, bflatview, bupdatemoderator, bupdateauthor)";
 
 	$query .= " values (
 		'" . $db->db_escape_string($name). "',
@@ -247,7 +267,12 @@ function saveForum($name, $description, $moderation, $notification, $nbmsgdispla
 		'" . $db->db_escape_string($active). "', 
 		'" . $db->db_escape_string($max). "', 
 		'" . $db->db_escape_string($babBody->currentAdmGroup). "',
-		'" . $db->db_escape_string($nbrecipients). "'
+		'" . $db->db_escape_string($nbrecipients). "',
+		'" . $db->db_escape_string($bdisplayemailaddress). "',
+		'" . $db->db_escape_string($bdisplayauhtordetails). "',
+		'" . $db->db_escape_string($bflatview). "',
+		'" . $db->db_escape_string($bupdatemoderator). "',
+		'" . $db->db_escape_string($bupdateauthor). "'
 	)";
 
 	$db->db_query($query);

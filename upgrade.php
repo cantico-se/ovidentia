@@ -7058,4 +7058,61 @@ function upgrade589to600()
 	}
 	return $ret;
 }
+
+function upgrade600to601()
+{
+	$ret = "";
+	$db = & $GLOBALS['babDB'];
+
+	if (!bab_isTableField(BAB_FORUMS_TBL, 'bdisplayemailaddress')) {
+
+		$db->db_query("ALTER TABLE ".BAB_FORUMS_TBL." ADD `bdisplayemailaddress` enum('N','Y') NOT NULL default 'N'");
+	}
+
+	if (!bab_isTableField(BAB_FORUMS_TBL, 'bdisplayauhtordetails')) {
+
+		$db->db_query("ALTER TABLE ".BAB_FORUMS_TBL." ADD `bdisplayauhtordetails` enum('N','Y') NOT NULL default 'N'");
+	}
+
+	if (!bab_isTableField(BAB_FORUMS_TBL, 'bflatview')) {
+
+		$db->db_query("ALTER TABLE ".BAB_FORUMS_TBL." ADD `bflatview` enum('Y','N') NOT NULL default 'Y'");
+	}
+
+	if (!bab_isTableField(BAB_POSTS_TBL, 'id_author')) {
+
+		$db->db_query("ALTER TABLE ".BAB_POSTS_TBL." ADD `id_author` INT( 11 )  UNSIGNED DEFAULT '0' NOT NULL AFTER `author`");
+	}
+
+	if (!bab_isTableField(BAB_FORUMS_TBL, 'bupdatemoderator')) {
+
+		$db->db_query("ALTER TABLE ".BAB_FORUMS_TBL." ADD `bupdatemoderator` enum('Y','N') NOT NULL default 'Y'");
+	}
+
+	if (!bab_isTableField(BAB_FORUMS_TBL, 'bupdateauthor')) {
+
+		$db->db_query("ALTER TABLE ".BAB_FORUMS_TBL." ADD `bupdateauthor` enum('Y','N') NOT NULL default 'N'");
+	}
+
+	if (!bab_isTableField(BAB_USERS_LOG_TBL, 'tg')) {
+
+		$db->db_query("ALTER TABLE ".BAB_USERS_LOG_TBL." ADD `tg` VARCHAR( 255 ) NOT NULL");
+	}
+
+	if (!bab_isTableField(BAB_POSTS_TBL, 'date_confirm')) {
+
+		$db->db_query("ALTER TABLE ".BAB_POSTS_TBL." ADD `date_confirm` DATETIME NOT NULL");
+	}
+
+	$db->db_query("update ".BAB_POSTS_TBL." set date_confirm=date where 1");
+
+	$res = $db->db_query("SELECT pt.id, tt.starter FROM ".BAB_POSTS_TBL." pt LEFT JOIN ".BAB_THREADS_TBL." tt ON tt.id = pt.id_thread WHERE tt.post = pt.id");
+
+	while( $arr = $db->db_fetch_array($res))
+	{
+		$db->db_query("update ".BAB_POSTS_TBL." set id_author='".$arr['starter']."' where id='".$arr['id']."'");
+	}
+
+	return $ret;
+}
 ?>

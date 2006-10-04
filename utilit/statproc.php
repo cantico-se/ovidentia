@@ -174,6 +174,7 @@ class bab_stats_modules extends bab_stats_base
 				break;
 			case "threads":
 			case "posts":
+			case "forumsuser":
 				$id = 3; /* Forums */
 				break;
 			case "fileman":

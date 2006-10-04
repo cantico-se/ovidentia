@@ -2275,4 +2275,20 @@
 <string id="Who can connect as user of web services">Qui peut s'authentifier par les web services</string>
 <string id="Who can use OVML containers">Qui peut utiliser l'OVML par Web services</string>
 <string id="Who can use OVML files">Qui peut utiliser les fichiers OVML par Web services</string>
+<string id="Last posts">Dernières contributions</string>
+<string id="No new posts">Pas de nouvelles contributions</string>
+<string id="View latest post">Voir le dernier message</string>
+<string id="Jump to">Aller à</string>
+<string id="Select a forum">Sélectionner un forum</string>
+<string id="Go">Aller</string>
+<string id="Display user's email address">Afficher l'adresse email du contributeur</string>
+<string id="Display user's personal informations">Afficher les informations personnelles du contributeur</string>
+<string id="Use flat view">Utiliser l'affichage à plat</string>
+<string id="Allow authors to modify their posts">Permettre aux auteurs de modifier leurs contributions</string>
+<string id="Allow moderators to modify posts">Permettre aux modérateurs de modifier les contributions</string>
+<string id="Who is online">Qui est en ligne?</string>
+<string id="Number of users using forums">Nombre total d'utilisateurs utilisant les forums</string>
+<string id="Number of posts since last visit">Nombre de contributions depuis votre dernière visite</string>
+
+
 </fr>

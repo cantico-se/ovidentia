@@ -1106,7 +1106,7 @@ function updateConfirmationWaitingPost($thread, $post)
 	global $babBody, $babDB;
 
 	$babDB->db_query("update ".BAB_THREADS_TBL." set lastpost='".$post."' where id='".$thread."'");
-	$babDB->db_query("update ".BAB_POSTS_TBL." set confirmed='Y' where id='".$post."'");
+	$babDB->db_query("update ".BAB_POSTS_TBL." set confirmed='Y', date_confirm=now() where id='".$post."'");
 
 	$res = $babDB->db_query("select tt.forum, tt.starter, tt.notify, pt.subject from ".BAB_THREADS_TBL." tt left join ".BAB_POSTS_TBL." pt on tt.post=pt.id where tt.id='".$thread."'");
 	$arrf = $babDB->db_fetch_array($res);

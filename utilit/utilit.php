@@ -1075,6 +1075,31 @@ function get_newcomments() {
 	return $newcomments;
 	}
 
+function get_forums() {
+		static $forumsview = null;
+		if (!is_null($forumsview))
+			return $forumsview;
+
+		global $babDB;
+
+		$fv = bab_getUserIdObjects(BAB_FORUMSVIEW_GROUPS_TBL);
+		$res = $babDB->db_query("select * from ".BAB_FORUMS_TBL." where active='Y' and id in ('".implode("','",array_keys($fv))."')  order by ordering asc");
+		while($arr = $babDB->db_fetch_array($res))
+			{
+			$forumsview[$arr['id']]['name'] = $arr['name'];
+			$forumsview[$arr['id']]['description'] = $arr['description'];
+			$forumsview[$arr['id']]['display'] = $arr['display'];
+			$forumsview[$arr['id']]['moderation'] = $arr['moderation'];
+			$forumsview[$arr['id']]['bdisplayemailaddress'] = $arr['bdisplayemailaddress'];
+			$forumsview[$arr['id']]['bdisplayauhtordetails'] = $arr['bdisplayauhtordetails'];
+			$forumsview[$arr['id']]['bflatview'] = $arr['bflatview'];
+			$forumsview[$arr['id']]['bupdatemoderator'] = $arr['bupdatemoderator'];
+			$forumsview[$arr['id']]['bupdateauthor'] = $arr['bupdateauthor'];
+			}
+
+		return $forumsview;
+	}
+
 function get_newposts() {
 
 	static $newposts = null;
@@ -1388,7 +1413,7 @@ function bab_updateUserSettings()
 			}
 
 
-		$babDB->db_query("update ".BAB_USERS_LOG_TBL." set dateact=now(), remote_addr='".$GLOBALS['REMOTE_ADDR']."', forwarded_for='".$GLOBALS['HTTP_X_FORWARDED_FOR']."', id_dg='".$babBody->currentDGGroup['id']."', grp_change=NULL, schi_change=NULL  where id = '".$arr['id']."'");
+		$babDB->db_query("update ".BAB_USERS_LOG_TBL." set dateact=now(), remote_addr='".$GLOBALS['REMOTE_ADDR']."', forwarded_for='".$GLOBALS['HTTP_X_FORWARDED_FOR']."', id_dg='".$babBody->currentDGGroup['id']."', grp_change=NULL, schi_change=NULL, tg='".$babDB->db_escape_string($GLOBALS['tg'])."'  where id = '".$arr['id']."'");
 		}
 	else
 		{
@@ -1406,7 +1431,7 @@ function bab_updateUserSettings()
 			$userid = 0;
 			}
 
-		$babDB->db_query("insert into ".BAB_USERS_LOG_TBL." (id_user, sessid, dateact, remote_addr, forwarded_for, id_dg, grp_change, schi_change) values ('".$userid."', '".session_id()."', now(), '".$GLOBALS['REMOTE_ADDR']."', '".$GLOBALS['HTTP_X_FORWARDED_FOR']."', '".$babBody->currentDGGroup['id']."', NULL, NULL)");
+		$babDB->db_query("insert into ".BAB_USERS_LOG_TBL." (id_user, sessid, dateact, remote_addr, forwarded_for, id_dg, grp_change, schi_change, tg) values ('".$userid."', '".session_id()."', now(), '".$GLOBALS['REMOTE_ADDR']."', '".$GLOBALS['HTTP_X_FORWARDED_FOR']."', '".$babBody->currentDGGroup['id']."', NULL, NULL, '".$babDB->db_escape_string($GLOBALS['tg'])."')");
 		}
 
 	$res = $babDB->db_query("select id, UNIX_TIMESTAMP(dateact) as time from ".BAB_USERS_LOG_TBL);

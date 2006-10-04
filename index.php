@@ -862,6 +862,11 @@ switch($tg)
 		$babLevelOne = bab_translate("Statistics");
 		$incl = "statconf";
 		break;
+	case "forumsuser":
+		$babLevelOne = bab_translate("Forums");
+		$babLevelTwo = bab_translate("Forums");
+   		$incl = "forumsuser";
+		break;
 	case "threads":
 		$babLevelOne = bab_translate("Forums");
 		$incl = "threads";

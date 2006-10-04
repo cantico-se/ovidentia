@@ -137,6 +137,11 @@ CREATE TABLE bab_forums (
    ordering smallint(6) unsigned NOT NULL default '0',
    id_dgowner int(11) unsigned NOT NULL default '0',
    nb_recipients smallint(2) unsigned NOT NULL default '0',
+   bdisplayemailaddress enum('N','Y') DEFAULT 'N' NOT NULL,
+   bdisplayauhtordetails enum('N','Y') DEFAULT 'N' NOT NULL,
+   bflatview enum('Y','N') DEFAULT 'Y' NOT NULL,
+   bupdatemoderator enum('Y','N') DEFAULT 'Y' NOT NULL,
+   bupdateauthor enum('N','Y') DEFAULT 'N' NOT NULL,
    PRIMARY KEY  (id),
    KEY id_dgowner (id_dgowner)
 );
@@ -281,7 +286,9 @@ CREATE TABLE bab_posts (
    id_parent int(11) unsigned DEFAULT '0' NOT NULL,
    `date` datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
    dateupdate datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+   date_confirm datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
    author text NOT NULL,
+   id_author int(11) unsigned DEFAULT '0' NOT NULL,
    subject varchar(100) NOT NULL,
    message text NOT NULL,
    confirmed enum('N','Y') DEFAULT 'N' NOT NULL,
@@ -598,6 +605,7 @@ CREATE TABLE `bab_users_log` (
   `schi_change` tinyint(1) unsigned default NULL,
   `cnx_try` int(2) unsigned NOT NULL default '0',
   `cpw` varchar(255) NOT NULL default '',
+  `tg` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`id`),
   KEY `id_user` (`id_user`)
 );
@@ -1018,7 +1026,7 @@ CREATE TABLE bab_ini (
 
 INSERT INTO bab_ini VALUES ('ver_major', '6');
 INSERT INTO bab_ini VALUES ('ver_minor', '0');
-INSERT INTO bab_ini VALUES ('ver_build', '0');
+INSERT INTO bab_ini VALUES ('ver_build', '1');
 INSERT INTO bab_ini VALUES ('ver_prod', 'E');
 
 #

@@ -61,6 +61,11 @@ function modifyForum($id)
 			$this->notification = bab_translate("Notify moderator");
 			$this->delete = bab_translate("Delete");
 			$this->nbrecipients = bab_translate("Number of recipients per sending");
+			$this->show_email_txt = bab_translate("Display user's email address");
+			$this->show_authordetails_txt = bab_translate("Display user's personal informations");
+			$this->use_flatview_txt = bab_translate("Use flat view");
+			$this->allow_moderatorupdate_txt = bab_translate("Allow moderators to modify posts");
+			$this->allow_authorupdate_txt = bab_translate("Allow authors to modify their posts");
 
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_FORUMS_TBL." where id='$id'";
@@ -126,6 +131,21 @@ function updateForum($id, $name, $description, $moderation, $notification, $nbms
 		$nbrecipients = 30;
 		}
 
+	$bdisplayemailaddress = bab_rp('bdisplayemailaddress', 'N');
+	$bdisplayemailaddress = $bdisplayemailaddress == 'Y'? 'Y' : 'N';
+
+	$bdisplayauhtordetails = bab_rp('bdisplayauhtordetails', 'N');
+	$bdisplayauhtordetails = $bdisplayauhtordetails == 'Y'? 'Y' : 'N';
+
+	$bflatview = bab_rp('bflatview', 'Y');
+	$bflatview = $bflatview == 'N'? 'N' : 'Y';
+
+	$bupdatemoderator = bab_rp('bupdatemoderator', 'Y');
+	$bupdatemoderator = $bupdatemoderator == 'N'? 'N' : 'Y';
+
+	$bupdateauthor = bab_rp('bupdateauthor', 'N');
+	$bupdateauthor = $bupdateauthor == 'Y'? 'Y' : 'N';
+
 	$query = "UPDATE ".BAB_FORUMS_TBL." set 
 		name='".$db->db_escape_string($name)."', 
 		description='".$db->db_escape_string($description)."', 
@@ -133,7 +153,12 @@ function updateForum($id, $name, $description, $moderation, $notification, $nbms
 		notification='".$db->db_escape_string($notification)."', 
 		display='".$db->db_escape_string($nbmsgdisplay)."', 
 		active='".$db->db_escape_string($active)."', 
-		nb_recipients='".$db->db_escape_string($nbrecipients)."' 
+		nb_recipients='".$db->db_escape_string($nbrecipients)."', 
+		bdisplayemailaddress='".$db->db_escape_string($bdisplayemailaddress)."', 
+		bdisplayauhtordetails='".$db->db_escape_string($bdisplayauhtordetails)."', 
+		bflatview='".$db->db_escape_string($bflatview)."', 
+		bupdatemoderator='".$db->db_escape_string($bupdatemoderator)."', 
+		bupdateauthor='".$db->db_escape_string($bupdateauthor)."' 
 	where 
 		id = '".$db->db_escape_string($id)."'";
 

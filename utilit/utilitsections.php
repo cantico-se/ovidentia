@@ -518,6 +518,12 @@ function babUserSection($close)
 		$this->array_urls[bab_translate("Task Manager")] = $GLOBALS['babUrlScript'].'?tg=usrTskMgr';
 		}
 		
+	$forums = $babBody->get_forums();
+	if(count($forums))
+		{
+		$this->array_urls[bab_translate("Forums")] = $GLOBALS['babUrlScript'].'?tg=forumsuser';
+		}
+
 	foreach( $babBody->babaddons as $row ) 
 		{
 		if($row['access'])
@@ -811,19 +817,13 @@ function babForumsSection($close)
 	$this->babSectionTemplate("forumssection.html", "template");
 	$this->title = bab_translate("Forums");
 
-	$res = $babDB->db_query("select * from ".BAB_FORUMS_TBL." where active='Y' order by ordering asc");
-	while( $row = $babDB->db_fetch_array($res))
+	$this->arrid = $babBody->get_forums();
+	if( count($this->arrid) && $close )
 		{
-		if(bab_isAccessValid(BAB_FORUMSVIEW_GROUPS_TBL, $row['id']))
-			{
-			if( $close )
-				{
-				$this->count = 1;
-				return;
-				}
-			array_push($this->arrid, $row);
-			}
+		$this->count = 1;
+		return;
 		}
+	
 	if( empty($waitingpostsimg)) $waitingpostsimg = bab_printTemplate($this, "config.html", "babWaitingPosts");
 	$this->waitingpostsimg = &$waitingpostsimg;
 	$this->head = bab_translate("List of different forums");
@@ -837,16 +837,15 @@ function forumsGetNext()
 	{
 	global $babDB, $babBody, $BAB_SESS_USERID;
 	static $i = 0;
-	if( $i < $this->count)
+	if( list($key,$val) = each($this->arrid) )
 		{
-		$this->arr = $this->arrid[$i];
-		$this->text = $this->arr['name'];
-		$this->url = $GLOBALS['babUrlScript']."?tg=threads&amp;forum=".$this->arr['id'];
+		$this->text = $val['name'];
+		$this->url = $GLOBALS['babUrlScript']."?tg=threads&amp;forum=".$key;
 		$this->waiting = "";
-		if( bab_isAccessValid(BAB_FORUMSMAN_GROUPS_TBL, $this->arr['id']))
+		if( bab_isAccessValid(BAB_FORUMSMAN_GROUPS_TBL, $key))
 			{
 			$this->bfooter = 1;
-			$req = "select count(".BAB_POSTS_TBL.".id) as total from ".BAB_POSTS_TBL." join ".BAB_THREADS_TBL." where ".BAB_THREADS_TBL.".active='Y' and ".BAB_THREADS_TBL.".forum='".$this->arr['id'];
+			$req = "select count(".BAB_POSTS_TBL.".id) as total from ".BAB_POSTS_TBL." join ".BAB_THREADS_TBL." where ".BAB_THREADS_TBL.".active='Y' and ".BAB_THREADS_TBL.".forum='".$key;
 			$req .= "' and ".BAB_POSTS_TBL.".confirmed='N' and ".BAB_THREADS_TBL.".id=".BAB_POSTS_TBL.".id_thread";
 			$res = $babDB->db_query($req);
 			$ar = $babDB->db_fetch_array($res);
@@ -860,6 +859,7 @@ function forumsGetNext()
 		}
 	else
 		{
+		reset($this->arrid);
 		return false;
 		}
 	}
