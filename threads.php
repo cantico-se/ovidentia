@@ -466,7 +466,7 @@ function saveThread($forum, $name, $subject, $message, $notifyme)
 
 	bab_editor_record($message);
 
-	$req = "insert into ".BAB_POSTS_TBL." (id_thread, date, subject, message, id_author, author, confirmed, date_confirmed) values ";
+	$req = "insert into ".BAB_POSTS_TBL." (id_thread, date, subject, message, id_author, author, confirmed, date_confirm) values ";
 	$req .= "('" .$db->db_escape_string($idthread). "', now(), '";
 	$req .= $db->db_escape_string($subject). "', '" . $db->db_escape_string($message). "', '" . $db->db_escape_string($idstarter). "', '". $db->db_escape_string($name);
 
