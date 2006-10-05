@@ -480,6 +480,8 @@ function listPostsFlat($forum, $thread, $open, $pos)
 			$this->treeview_txt = bab_translate("Tree view");
 			$this->waiting_txt = bab_translate("Waiting posts");
 			$this->search_txt = bab_translate("Search");
+			$this->postsubject_txt = bab_translate("Post subject");
+			$this->posted_txt = bab_translate("Posted");
 			$this->forum = $forum;
 			$this->thread = $thread;
 			$this->alternate = 0;

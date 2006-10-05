@@ -431,6 +431,8 @@ function viewSearchResultForums()
 			$this->noposts_txt = bab_translate("No new posts");
 			$this->waiting_txt = bab_translate("Waiting posts");
 			$this->close_txt = bab_translate("Close");
+			$this->postsubject_txt = bab_translate("Post subject");
+			$this->posted_txt = bab_translate("Posted");
 
 			$this->forums = $babBody->get_forums();
 			
