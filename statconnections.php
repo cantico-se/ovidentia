@@ -38,6 +38,9 @@ function summaryConnections($col, $order, $pos, $startday, $endday)
 		var $urlname;
 		var $altbg = true;
 		
+		var $startday;
+		var $endday;
+
 		var $startnum;
 		var $lastnum;
 		var $total;
@@ -55,6 +58,9 @@ function summaryConnections($col, $order, $pos, $startday, $endday)
 			$this->t_user_name = bab_translate("User");
 			$this->t_connections = bab_translate("Connections");
 	
+			$this->startday = $startday;
+			$this->endday = $endday;
+
 			$req = 'SELECT users.id AS id_user, users.firstname, users.lastname, COUNT(*) AS nb_connections';
 			$req .= ' FROM ' . BAB_STATS_CONNECTIONS_TBL . ' AS connections LEFT JOIN ' . BAB_USERS_TBL . ' AS users ON users.id=connections.id_user';
 			$where = array();
@@ -145,7 +151,7 @@ function summaryConnections($col, $order, $pos, $startday, $endday)
 			$this->user_name = $this->arrinfo[$i]['user'];
 			$this->nb_connections = $this->arrinfo[$i]['connections'];
 			$this->nb_connectionspc = $this->totalconnections > 0 ? round(($this->nb_connections * 100) / $this->totalconnections, 2) : 0;
-			$this->urldetail = $GLOBALS['babUrlScript'] . '?tg=stat&idx=connection&item=' . $this->arrinfo[$i]['id_user'] . '&sd=' . $startday . '&ed=' . $endday;
+			$this->urldetail = $GLOBALS['babUrlScript'] . '?tg=stat&idx=connection&item=' . $this->arrinfo[$i]['id_user'] . '&sd=' . $this->startday . '&ed=' . $this->endday;
 			$i++;
 			return true;
 		}
