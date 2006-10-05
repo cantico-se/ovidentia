@@ -36,7 +36,7 @@ php_version="4.1.2"
 
 mod_mysql="Available"
 mysql_version="3.23"
-images_directory="Available" 
+; images_directory="Available" 
 mod_zlib="Available"
 
 [recommendations]
