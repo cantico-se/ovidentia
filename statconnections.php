@@ -29,6 +29,7 @@ include_once $babInstallPath . 'utilit/uiutil.php';
 function summaryConnections($col, $order, $pos, $startday, $endday)
 {
 	global $babBody;
+
 	class summaryConnectionsCls extends summaryBaseCls
 	{
 		var $res;
@@ -101,7 +102,7 @@ function summaryConnections($col, $order, $pos, $startday, $endday)
 					$tmparr['user'] = $arr['lastname'] . ' ' . $arr['firstname'];
 					$tmparr['connections'] = $arr['nb_connections'];
 					$this->arrinfo[] = $tmparr;
-					$this->ptotalconnections += $tmparr['nb_connections'];
+					$this->ptotalconnections += $arr['nb_connections'];
 				}
 				$this->totalconnections += $arr['nb_connections'];
 			}
@@ -186,9 +187,9 @@ function summaryConnections($col, $order, $pos, $startday, $endday)
 
 function detailConnections($col, $order, $pos, $startday, $endday, $userId)
 {
-	global $babBodyPopup;
+	global $babBody;
 
-	class detailConnectionsCls extends summaryDetailBaseCls
+	class detailConnectionsCls extends summaryBaseCls
 	{
 		var $res;
 		var $count;
@@ -204,16 +205,20 @@ function detailConnections($col, $order, $pos, $startday, $endday, $userId)
 		
 		var $bnavigation;
 		
+		var $id_user;
+
 		var $t_connection_time;
 		var $t_duration;
 
 		function detailConnectionsCls($col, $order, $pos, $startday, $endday, $userId)
 		{
-			global $babBodyPopup, $babBody, $babDB;
+			global $babBody, $babDB;
 
 			$this->sorttxt = bab_translate("Sort");
 			$this->t_connection_time = bab_translate("Connection start");
 			$this->t_duration = bab_translate("Duration");
+
+			$this->id_user = $userId;
 
 			$req = 'SELECT connections.login_time, UNIX_TIMESTAMP(connections.last_action_time) - UNIX_TIMESTAMP(connections.login_time) AS connection_duration';
 			$req .= ' FROM ' . BAB_STATS_CONNECTIONS_TBL . ' AS connections';
@@ -226,8 +231,18 @@ function detailConnections($col, $order, $pos, $startday, $endday, $userId)
 			}
 			if (!empty($where))
 				$req .= ' WHERE ' . implode(' AND ', $where);
-			$req .= ' ORDER BY login_time DESC';
-
+				
+			switch($col) {
+				case 'duration':
+					$order_column = 'connection_duration';
+					break;
+				case 'connection':
+				default:
+					$order_column = 'login_time';
+					break;
+			}
+			$req .= ' ORDER BY ' . $order_column . ' ' . ($order == 'asc' ? 'desc': 'asc');
+			
 			$res = $babDB->db_query($req);
 			$this->total = $babDB->db_num_rows($res);
 
@@ -258,7 +273,7 @@ function detailConnections($col, $order, $pos, $startday, $endday, $userId)
 				if ((isset($GLOBALS['export']) && $GLOBALS['export'] == 1) || ($i >= $pos && $i < $pos + BAB_STAT_MAX_ROWS)) {
 					$tmparr = array();
 					$tmparr['connection'] = $arr['login_time'];
-					$tmparr['login_time'] = bab_longDate(bab_mktime($arr['login_time']));
+					$tmparr['login_time'] = bab_shortDate(bab_mktime($arr['login_time']));
 					$nbSeconds = $arr['connection_duration'] % 60;
 					$nbMinutes = floor($arr['connection_duration'] / 60) % 60;
 					$nbHours = floor($arr['connection_duration'] / 3600);
@@ -287,7 +302,7 @@ function detailConnections($col, $order, $pos, $startday, $endday, $userId)
 				$this->toppageurl = 'idx=connection&order=' . $order . '&col=' . $col . '&pos=' . $top . '&item=' . $userId;
 				$this->bottompageurl = 'idx=connection&order=' . $order . '&col=' . $col . '&pos=' . $bottom . '&item=' . $userId;
 			}
-			$this->summaryDetailBaseCls();
+			$this->summaryBaseCls();
 		}
 
 		function formatTime($nbSeconds)
@@ -301,8 +316,10 @@ function detailConnections($col, $order, $pos, $startday, $endday, $userId)
 
 		function isNumeric($col)
 		{
-			switch ($this->sortcol)
+			switch($col)
 			{
+				case 'duration':
+					return true;
 				default:
 					return false;
 			}
@@ -323,28 +340,6 @@ function detailConnections($col, $order, $pos, $startday, $endday, $userId)
 			return true;
 		}
 
-		function compare($a, $b)
-		{
-			$r = 0;
-			if( $this->isNumeric($this->sortcol))
-			{
-				if( $a[$this->sortcol]  < $b[$this->sortcol] ) {
-					$r = -1;
-				} elseif( $a[$this->sortcol]  > $b[$this->sortcol] ) {
-					$r = 1;
-				} else {
-					$r = 0;
-				}
-			} else {
-				$r = strnatcmp($a[$this->sortcol],$b[$this->sortcol]);
-			}
-	
-			if ($this->sortord == "desc") {
-				$r = $r * -1;
-			}
-			return $r;
-		}
-		
 	}
 		
 	$temp = new detailConnectionsCls($col, $order, $pos, $startday, $endday, $userId);
@@ -362,7 +357,7 @@ function detailConnections($col, $order, $pos, $startday, $endday, $userId)
 		$output .= "\n";
 		$output .= $temp->t_connection_time . $GLOBALS['exportchr'] . $temp->t_duration . "\n";
 		while ($temp->getnext()) {
-			$output .= $temp->connection . $GLOBALS['exportchr'] . $temp->duration . "\n";
+			$output .= $temp->login_time . $GLOBALS['exportchr'] . $temp->connection_duration . "\n";
 		}
 		header('Content-Disposition: attachment; filename="export.csv"' . "\n");
 		header('Content-Type: text/plain' . "\n");
@@ -371,7 +366,7 @@ function detailConnections($col, $order, $pos, $startday, $endday, $userId)
 		print $output;
 		exit;
 	} else {
-		$babBodyPopup->babecho(bab_printTemplate($temp, 'statconnections.html', 'detailconnectionslist'));
+		$babBody->babecho(bab_printTemplate($temp, 'statconnections.html', 'detailconnectionslist'));
 	}
 
 }
