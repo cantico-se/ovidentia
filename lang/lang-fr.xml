@@ -2289,6 +2289,13 @@
 <string id="Who is online">Qui est en ligne?</string>
 <string id="Number of users using forums">Nombre total d'utilisateurs utilisant les forums</string>
 <string id="Number of posts since last visit">Nombre de contributions depuis votre dernière visite</string>
-
-
+<string id="Web services">Web services</string>
+<string id="Text to search">Texte à rechercher</string>
+<string id="Search post title and message">Rechercher dans les titres et messages</string>
+<string id="Search post message only">Rechercher dans les messages uniquement</string>
+<string id="View post">Voir la contribution</string>
+<string id="Goto page">Aller à la page</string>
+<string id="Tree view">Vue en arbre</string>
+<string id="Connections">Connections</string>
+<string id="Connection start">Connection start</string>
 </fr>
