@@ -105,6 +105,9 @@ class bab_WebStatEvent
 			return;
 		}
 		global $babBody, $babDB, $BAB_SESS_USERID;
+
+		bab_logUserActionTime($BAB_SESS_USERID, session_id());
+
 		$babDB->db_query("insert into ".BAB_STATS_EVENTS_TBL." (evt_time, evt_tg, evt_id_site, evt_referer, evt_ip, evt_host, evt_client, evt_url, evt_session_id, evt_iduser) values (now(), '".addslashes($this->tg)."', '0', '".addslashes($this->referer)."', '".$this->ip."', '".addslashes($this->host)."', '".addslashes($this->client)."', '".addslashes($this->url)."', '".session_id()."', '0')");
 		$this->idevt = $babDB->db_insert_id();
 	}
@@ -405,5 +408,60 @@ if( isset($tg) && $tg == "statinfo" )
 	}
   exit;
 }
+
+
+/**
+ * Log the time of the user connection (for use in statistics).
+ * @param string userId		Ovidentia user id.
+ * @param string sessionId	The PHP session id.
+ */
+function bab_logUserConnectionTime($userId, $sessionId)
+{
+	global $babDB;
+
+	$data = array(
+		'id_user' => $babDB->quote($userId),
+		'id_session' => $babDB->quote($sessionId),
+		'login_time' => 'NOW()', 
+		'last_action_time' => 'NOW()'
+	);
+	$sql = 'INSERT INTO ' . BAB_STATS_CONNECTIONS_TBL . '(' . implode(',', array_keys($data)) . ')';
+	$sql .= ' VALUES (' . implode(',', $data) . ')';
+
+	$babDB->db_query($sql);
+}
+
+
+/**
+ * Log the time of a user action (for use in statistics).
+ * @param string userId		Ovidentia user id.
+ * @param string sessionId	The PHP session id.
+ */
+function bab_logUserActionTime($userId, $sessionId)
+{
+	global $babDB;
+
+	$sql = 'UPDATE ' . BAB_STATS_CONNECTIONS_TBL . ' SET last_action_time = NOW()';
+	$sql .= ' WHERE id_user = ' . $babDB->quote($userId);
+	$sql .= ' AND id_session = ' . $babDB->quote($sessionId);
+	
+	$babDB->db_query($sql);
+}
+
+
+/**
+ * Delete connection logs for which 'login_time' is prior to $before.
+ * @param string before  A datetime.
+ */
+function bab_deleteConnectionLog($before)
+{
+	global $babDB;
+
+	$sql = 'DELETE FROM ' . BAB_STATS_CONNECTIONS_TBL;
+	$sql .= ' WHERE login_time < ' . $babDB->quote($before);
+	
+	$babDB->db_query($sql);
+}
+
 
 ?>
