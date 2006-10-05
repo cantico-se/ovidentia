@@ -24,6 +24,7 @@
 include_once "base.php";
 //include_once $babInstallPath."utilit/uiutil.php";
 
+
 define("STAT_IT_TOTAL",		0);
 define("STAT_IT_TODAY",		1);
 define("STAT_IT_YESTERDAY",	2);
@@ -174,9 +175,12 @@ function displayStatisticPanel($idx)
 				$tmparr[] = array('idx' => 'baskets', 'item' => bab_translate("Baskets"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=baskets");
 				}
 
+			$tmparr[] = array('idx' => 'connections', 'item' => bab_translate("Connections"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=connections");
+			
 			$this->itemarray[] = $tmparr;
 			if( empty($this->current)) { $this->current = 'dashboard'; }
 
+			
 			$this->maxcols = 1;
 			$this->count = count($this->itemarray);
 			for( $i = 0; $i < $this->count; $i++ )
@@ -243,12 +247,12 @@ function displayStatisticPanel($idx)
 }
 
 class displayTimeIntervalCls
-	{
+{
 	var $timeintervaltxt;
 	var $itemarray = array();
 	var $current;
 
-	function displayTimeIntervalCls($iwhat, $sd, $ed, $idx, $idbasket = null)
+	function displayTimeIntervalCls($iwhat, $sd, $ed, $idx, $params = null)
 		{
 		$this->current = $iwhat;
 		switch($idx)
@@ -264,7 +268,12 @@ class displayTimeIntervalCls
 				$this->showform = true;
 				break;
 			}
-		$this->idbasket = $idbasket;
+		if (!is_null($params)) {
+			$this->hiddenParameters = $params;
+			reset($this->hiddenParameters);
+		} else {
+			$this->hiddenParameters = array();
+		}
 		$this->submittxt = bab_translate("Ok");
 		$this->fromtxt = bab_translate("From");
 		$this->totxt = bab_translate("to");
@@ -389,19 +398,30 @@ class displayTimeIntervalCls
 			return false;
 			}
 		}
+		
+	function getNextHiddenParameter()
+	{
+		while (list($this->param_name, $this->param_value) = each($this->hiddenParameters)) {
+			$this->param_name = bab_toHtml($this->param_name);
+			$this->param_value = bab_toHtml($this->param_value);
+			return true;
+		}
+		reset($this->hiddenParameters);
+		return false;
 	}
+}
 
-function displayTimeInterval($iwhat, $sd, $ed, $idx)
+function displayTimeInterval($iwhat, $sd, $ed, $idx, $params)
 {
 	global $babBody;
-	$temp = new displayTimeIntervalCls($iwhat, $sd, $ed, $idx);
+	$temp = new displayTimeIntervalCls($iwhat, $sd, $ed, $idx, $params);
 	$babBody->babecho(bab_printTemplate($temp, "stat.html", "timeinterval"));
 }
 
 function displayTimeIntervalInPopup($iwhat, $sd, $ed, $idx, &$body, $idbasket = null)
 {
 //	global $babBody;
-	$temp = new displayTimeIntervalCls($iwhat, $sd, $ed, $idx, $idbasket);
+	$temp = new displayTimeIntervalCls($iwhat, $sd, $ed, $idx, array('idbasket' => $idbasket)); //$idbasket);
 	$body->babecho(bab_printTemplate($temp, "stat.html", "timeinterval"));
 }
 
@@ -415,7 +435,9 @@ if( !bab_isAccessValid(BAB_STATSMAN_GROUPS_TBL, 1) && $babBody->currentAdmGroup 
 if( !isset($idx)) { $idx = '';}
 displayStatisticPanel($idx);
 updateStatPreferences();
-displayTimeInterval($itwhat, $sd, $ed, $idx);
+
+isset($reqvars) && parse_str($reqvars, $stat_params);
+displayTimeInterval($itwhat, $sd, $ed, $idx, isset($stat_params) ? $stat_params : bab_rp('stat_params', null));
 
 if( isset($reqvars))
 {
@@ -424,6 +446,21 @@ if( isset($reqvars))
 
 switch($idx)
 	{
+	case 'connections':
+		include_once $babInstallPath . 'statconnections.php';
+		if (!isset($col)) $col = 'connections';
+		if (!isset($order)) $order = 'asc';
+		if (!isset($pos)) $pos = 0;
+		summaryConnections($col, $order, $pos, $sd, $ed);
+		break;
+	case 'connection':
+		include_once $babInstallPath . 'statconnections.php';
+		if (!isset($col)) $col = 'connection';
+		if (!isset($order)) $order = 'asc';
+		if (!isset($pos)) $pos = 0;
+		if (!isset($item)) $item = bab_rp('item');
+		detailConnections($col, $order, $pos, $sd, $ed, $item);
+		break;
 	case "xlink":
 		include_once $babInstallPath."statxlink.php";
 		if( !isset($col)) { $col = 'hits';}
