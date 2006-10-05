@@ -76,6 +76,54 @@ function confirmCleanStatTables()
 	$babDB->db_query("truncate table `".BAB_STATS_XLINKS_TBL."`");
 }
 
+
+function editConnectionLogSettings()
+{
+	global $babBody;
+	class ConnectionLoggingSetupTemplate
+	{
+		var $t_log_activated;
+		var $t_log_deactivated;
+
+		var $t_save_user_connection_history;
+		var $t_activate;
+		var $t_deactivate;
+		var $t_delete_logs_before;
+		var $t_save;
+		
+		function ConnectionLoggingSetupTemplate()
+		{
+			$registry = bab_getRegistryInstance();
+			$registry->changeDirectory('/statistics');
+			$this->t_log_activated = $registry->getValue('logConnections', false);
+			$this->t_log_deactivated = !$this->t_log_activated;
+			
+			$this->t_save_user_connection_history = bab_translate("Users connections history:");
+			$this->t_activate = bab_translate("Enabled");
+			$this->t_deactivate = bab_translate("Disabled");
+			$this->t_delete_logs_before = bab_translate("Delete logs before");
+			$this->t_save = bab_translate("Save");
+		}
+	}
+	
+	$connectionLoggingSetupTemplate = new ConnectionLoggingSetupTemplate();
+	$babBody->babecho(bab_printTemplate($connectionLoggingSetupTemplate, 'admstats.html', 'edit_connection_logging_setup'));
+}
+
+/**
+ * @param bool activate	Whether the logging for user connections should be activated.
+ * @param string|null deleteBefore	The date before which the logged connections must be removed or null if nothing should be removed.
+ * 
+ */
+function saveConnectionLogSettings($activate, $deleteBefore = null)
+{
+	$registry = bab_getRegistryInstance();
+	$registry->changeDirectory('/statistics');
+	$registry->setKeyValue('logConnections', $activate);
+	
+	//TODO delete logs.
+}
+
 /* main */
 if( !$babBody->isSuperAdmin )
 {
@@ -88,34 +136,62 @@ if( !isset($idx))
 	$idx = "man";
 
 if( isset($aclman) )
-	{
+{
 	maclGroups();
-	}
+}
 
 switch($idx)
-	{
-	case "empty":
+{
+	case 'empty':
 		$babBody->title = bab_translate("Clean statistics logs");
 		cleanStatsTables();
 		$babBody->addItemMenu("man", bab_translate("Managers"), $GLOBALS['babUrlScript']."?tg=admstats&idx=man");
 		$babBody->addItemMenu("empty", bab_translate("Empty"), $GLOBALS['babUrlScript']."?tg=admstats&idx=empty");
+		$babBody->addItemMenu("connections", bab_translate("Connections"), $GLOBALS['babUrlScript']."?tg=admstats&idx=connections");
 		break;
-	case "delete":
+
+	case 'connections':
+		$babBody->title = bab_translate("Connections Log");
+		$babBody->addItemMenu("man", bab_translate("Managers"), $GLOBALS['babUrlScript']."?tg=admstats&idx=man");
+		$babBody->addItemMenu("empty", bab_translate("Empty"), $GLOBALS['babUrlScript']."?tg=admstats&idx=empty");
+		$babBody->addItemMenu("connections", bab_translate("Connections"), $GLOBALS['babUrlScript']."?tg=admstats&idx=connections");
+		editConnectionLogSettings();
+		break;
+		
+	case 'save_connections':
+		$babBody->title = bab_translate("Connections Log");
+		$babBody->addItemMenu("man", bab_translate("Managers"), $GLOBALS['babUrlScript']."?tg=admstats&idx=man");
+		$babBody->addItemMenu("empty", bab_translate("Empty"), $GLOBALS['babUrlScript']."?tg=admstats&idx=empty");
+		$babBody->addItemMenu("connections", bab_translate("Connections"), $GLOBALS['babUrlScript']."?tg=admstats&idx=connections");
+		$activate = (bab_rp('activate') == 'activated');
+		$remove = bab_rp('remove', false);
+		if ($remove) {
+			$removeBefore = bab_rp('remove_before', '');
+		} else {
+			$removeBefore = false;
+		}
+		saveConnectionLogSettings($activate, $removeBefore);
+		editConnectionLogSettings();
+		$idx = 'connections';
+		break;
+
+	case 'delete':
 		if( isset($action) && $action == 'yes' )
 		{
 			confirmCleanStatTables();
 			$babBody->msgerror = bab_translate("Done");
 			$babBody->addItemMenu("man", bab_translate("Managers"), $GLOBALS['babUrlScript']."?tg=admstats&idx=man");
 			$babBody->addItemMenu("delete", bab_translate("Empty"), $GLOBALS['babUrlScript']."?tg=admstats&idx=empty");
+			$babBody->addItemMenu("connections", bab_translate("Connections"), $GLOBALS['babUrlScript']."?tg=admstats&idx=connections");
 			break;
 		}
 		else
 		{
-		$idx = 'man';
-		/* no break */
+			$idx = 'man';
 		}
+	/* !!! no break !!! */
 	default:
-	case "man":
+	case 'man':
 		$babBody->title = bab_translate("Groups List");
 		$macl = new macl("admstats", "groups", 1, "aclman");
         $macl->addtable( BAB_STATSMAN_GROUPS_TBL,bab_translate("Who can view statistics?"));
@@ -123,8 +199,9 @@ switch($idx)
         $macl->babecho();
 		$babBody->addItemMenu("man", bab_translate("Managers"), $GLOBALS['babUrlScript']."?tg=admstats&idx=man");
 		$babBody->addItemMenu("empty", bab_translate("Empty"), $GLOBALS['babUrlScript']."?tg=admstats&idx=empty");
+		$babBody->addItemMenu("connections", bab_translate("Connections"), $GLOBALS['babUrlScript']."?tg=admstats&idx=connections");
 		break;
-	}
+}
 
 $babBody->setCurrentItemMenu($idx);
 
