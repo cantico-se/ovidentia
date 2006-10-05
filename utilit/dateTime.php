@@ -408,5 +408,45 @@ class BAB_DateTime
         }
         return true;
     }
+    
+	/**
+	 * Extract the year, the month and the day from a string representing a date.
+	 * 
+	 * The extraction tries to guess the position of the day, month and year value in the
+	 * string according to the short date output format of the function bab_shortDate.
+	 * @static
+	 * @param string $value
+	 * @return BAB_DateTime
+	 */
+	function fromDateStr($value)
+	{
+		$tsDate = mktime(0, 0, 0, 12, 31, 2000);
+		$strDate = bab_shortDate($tsDate, false);
+		$strPattern = $strDate;
+		$strPattern = str_replace('31', '([0-9]{1,2})', $strPattern);
+		$strPattern = str_replace('12', '([0-9]{1,2})', $strPattern);
+		$strPattern = str_replace('2000', '([0-9]{4})', $strPattern);
+		$strPattern = str_replace('00', '([0-9]{2})', $strPattern);
+		$indexDay = strpos($strDate, '31');
+		$indexMonth = strpos($strDate, '12');
+		if ($indexMonth === false)
+			$indexMonth = strpos($strDate, 'Dec');
+		$indexYear = strpos($strDate, '2000');
+		if ($indexYear === false)
+			$indexYear = strpos($strDate, '00');
+		$d = array($indexDay => 1, $indexMonth => 2, $indexYear => 3);
+		ksort($d);
+		if (preg_match('`' . $strPattern . '`', $value, $matches) < 1)
+			return null;
+		$day = $matches[current($d)];
+		$month = $matches[next($d)];
+		$year = $matches[next($d)];
+		if ($year < 30)
+			$year += 2000;
+		elseif ($year < 100)
+			$year += 1900;
+		return new BAB_DateTime($year, $month, $day);
+	}
+    
 }
 ?>

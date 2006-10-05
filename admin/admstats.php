@@ -101,7 +101,7 @@ function editConnectionLogSettings()
 			$this->t_save_user_connection_history = bab_translate("Users connections history:");
 			$this->t_activate = bab_translate("Enabled");
 			$this->t_deactivate = bab_translate("Disabled");
-			$this->t_delete_logs_before = bab_translate("Delete logs before");
+			$this->t_delete_logs_before = bab_translate("Delete logs before (dd/mm/yyyy)");
 			$this->t_save = bab_translate("Save");
 		}
 	}
@@ -112,7 +112,7 @@ function editConnectionLogSettings()
 
 /**
  * @param bool activate	Whether the logging for user connections should be activated.
- * @param string|null deleteBefore	The date before which the logged connections must be removed or null if nothing should be removed.
+ * @param BAB_DateTime deleteBefore	The date before which the logged connections must be removed or null if nothing should be removed.
  * 
  */
 function saveConnectionLogSettings($activate, $deleteBefore = null)
@@ -121,7 +121,10 @@ function saveConnectionLogSettings($activate, $deleteBefore = null)
 	$registry->changeDirectory('/statistics');
 	$registry->setKeyValue('logConnections', $activate);
 	
-	//TODO delete logs.
+	if (!is_null($deleteBefore)) {
+		//echo "bab_deleteConnectionLog(" . $deleteBefore->getIsoDate() . ")";
+		bab_deleteConnectionLog($deleteBefore->getIsoDate());
+	}
 }
 
 /* main */
@@ -157,7 +160,7 @@ switch($idx)
 		$babBody->addItemMenu("connections", bab_translate("Connections"), $GLOBALS['babUrlScript']."?tg=admstats&idx=connections");
 		editConnectionLogSettings();
 		break;
-		
+
 	case 'save_connections':
 		$babBody->title = bab_translate("Connections Log");
 		$babBody->addItemMenu("man", bab_translate("Managers"), $GLOBALS['babUrlScript']."?tg=admstats&idx=man");
@@ -166,9 +169,13 @@ switch($idx)
 		$activate = (bab_rp('activate') == 'activated');
 		$remove = bab_rp('remove', false);
 		if ($remove) {
-			$removeBefore = bab_rp('remove_before', '');
+			$removeBefore = bab_rp('remove_before', null);
 		} else {
-			$removeBefore = false;
+			$removeBefore = null;
+		}
+		if (!is_null($removeBefore)) {
+			require_once $babInstallPath . 'utilit/dateTime.php';
+			$removeBefore = BAB_DateTime::fromDateStr($removeBefore);
 		}
 		saveConnectionLogSettings($activate, $removeBefore);
 		editConnectionLogSettings();
