@@ -357,6 +357,15 @@ function signOn( $nickname, $password,$lifetime)
 	if( !userLogin($nickname, $password))
 		return false;
 
+	// Here we log the connection.
+	if ($GLOBALS['babStatOnOff'] == 'Y') {
+		$registry = bab_getRegistryInstance();
+		$registry->changeDirectory('/statistics');
+		if ($registry->getValue('logConnections')) {
+			bab_logUserConnectionTime($BAB_SESS_USERID, session_id());
+		}
+	}
+		
 	$db = $GLOBALS['babDB'];
 	$res=$db->db_query("select datelog from ".BAB_USERS_TBL." where id='".$BAB_SESS_USERID."'");
 	if( $res && $db->db_num_rows($res) > 0)
@@ -861,7 +870,6 @@ function signOff()
 		unset($_SESSION['BAB_SESS_USERID']);
 		unset($_SESSION['BAB_SESS_HASHID']);
 		unset($_SESSION);
-		session_destroy();
 		}
 	else
 		{
@@ -879,9 +887,14 @@ function signOff()
 		session_unregister("BAB_SESS_EMAIL");
 		session_unregister("BAB_SESS_USERID");
 		session_unregister("BAB_SESS_HASHID");
-		session_destroy();
 		}
 
+	// We destroy the session cookie. A new one will be created at the next session.
+	if (isset($_COOKIE[session_name()])) {
+	   setcookie(session_name(), '', time()-42000, '/');
+	}
+	session_destroy();
+	
 	if ( $GLOBALS['babCookieIdent'] != 'login' ) 
 		setcookie('c_nickname'," ");
 	setcookie('c_password'," ");
