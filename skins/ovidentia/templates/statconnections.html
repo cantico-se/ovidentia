@@ -33,7 +33,7 @@
 <tr valign="middle" class="BabForumBackground1">
 <!--#endif altbg -->
 <td nowrap>
-<a class="BabSiteAdminListLink" href="javascript:bab_popup('{ urldetail }')">{ user_name }</a>
+<a class="BabSiteAdminListLink" href="{ urldetail }">{ user_name }</a>
 </td>
 <td align="right">
 { nb_connections }
@@ -70,25 +70,8 @@
 
 
 
+
 <!--#begin detailconnectionslist -->
-
-<script type="text/javascript">
-<!--
-function FormModules(reqvar)
-{
-  document.forms.statinttime.reqvars.value=reqvar;
-  document.forms.statinttime.submit();
-  document.forms.statinttime.reqvars.value='';
-}
-
-//-->
-</script>
-
-<form name="statinttime" method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="stat" />
-<input type="hidden" name="idx" value="{ idx }" />
-<input type="hidden" name="reqvars" value="" />
-</form>
 
 <div class="BabLoginCadreBackground" style="padding: 2px; margin: 1em 2em">
 <table class="BabMailBackground" border="0" width="100%" cellpadding="2" cellspacing="2">
