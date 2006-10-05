@@ -7113,6 +7113,21 @@ function upgrade600to601()
 		$db->db_query("update ".BAB_POSTS_TBL." set id_author='".$arr['starter']."' where id='".$arr['id']."'");
 	}
 
+	if (!bab_isTable(BAB_STATS_CONNECTIONS_TBL))
+	{
+		$res = $db->db_query("
+			CREATE TABLE " . BAB_STATS_CONNECTIONS_TBL . " (
+				id_user INT(11) UNSIGNED NOT NULL,
+				id_session VARCHAR(255) NOT NULL,
+				login_time DATETIME NOT NULL,
+				last_action_time DATETIME NOT NULL,
+				KEY id_user (id_user),
+				KEY id_session (id_session),
+				KEY login_time (login_time)	
+			)
+		");
+	}
+	
 	return $ret;
 }
 ?>

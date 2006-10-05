@@ -3485,3 +3485,13 @@ CREATE TABLE bab_sites_wsfiles_groups (
   KEY id_object (id_object),
   KEY id_group (id_group)
 );
+
+CREATE TABLE bab_stats_connections (
+  id_user INT(11) UNSIGNED NOT NULL,
+  id_session VARCHAR(32) NOT NULL,
+  login_time DATETIME NOT NULL,
+  last_action_time DATETIME NOT NULL,
+  KEY id_user (id_user),
+  KEY id_session (id_session),
+  KEY login_time (login_time)	
+);
