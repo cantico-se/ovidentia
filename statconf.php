@@ -395,7 +395,7 @@ function statContentBasket($baskid)
 			static $k=1;
 			if( $k < $this->countf)
 				{
-				$this->t_familyname = $this->families[$k][0];
+				$this->t_familyname = bab_translate($this->families[$k][0]);
 				$this->addurl = $GLOBALS['babUrlScript']."?tg=statconf&idx=baskcadd&w=".$this->families[$k][1]."&baskid=".$this->baskid;
 				$this->counti = 0;
 				switch($k)
@@ -936,7 +936,7 @@ switch($idx)
 		$babBody->addItemMenu("pref", bab_translate("Preferences"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pref");
 		$babBody->addItemMenu("bask", bab_translate("Baskets"), $GLOBALS['babUrlScript']."?tg=statconf&idx=bask");
 		$babBody->addItemMenu("baskcedit", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=statconf&idx=baskcedit&baskid=".$baskid);
-		$babBody->addItemMenu("baskcadd", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=statconf&idx=baskcadd");
+//		$babBody->addItemMenu("baskcadd", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=statconf&idx=baskcadd&baskid=".$baskid);
 		if( $babBody->currentAdmGroup == 0 )
 			{
 			$babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
@@ -951,7 +951,7 @@ switch($idx)
 		$babBody->addItemMenu("pref", bab_translate("Preferences"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pref");
 		$babBody->addItemMenu("bask", bab_translate("Baskets"), $GLOBALS['babUrlScript']."?tg=statconf&idx=bask");
 		$babBody->addItemMenu("baskcontent", bab_translate("Content"), $GLOBALS['babUrlScript']."?tg=statconf&idx=baskcontent&baskid=".$baskid);
-		$babBody->addItemMenu("baskcadd", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=statconf&idx=baskcadd");
+		$babBody->addItemMenu("baskcadd", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=statconf&idx=baskcadd&baskid=".$baskid);
 		if( $babBody->currentAdmGroup == 0 )
 			{
 			$babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
