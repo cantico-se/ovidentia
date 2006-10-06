@@ -67,6 +67,10 @@ if( isset($_REQUEST['WSSESSIONID']))
 		session_name(sprintf("OV%u", crc32($babUrl)));
 		session_id($_REQUEST['WSSESSIONID']);
 		session_start();
+		if( !isset($_SESSION['BAB_SESS_WSUSER']) || !$_SESSION['BAB_SESS_WSUSER'])
+			{
+			die('Access denied');
+			}
 }
 elseif(!session_id())
 	{
@@ -182,7 +186,8 @@ if( $tg != "version" || !isset($idx) || $idx != "upgrade")
 		// We force the cache about groups to reload to avoid problems when
 		// using the NT auto login.
 		$babDB->db_query('UPDATE ' . BAB_USERS_LOG_TBL . ' SET grp_change=\'1\'');
-		unset($_SESSION['bab_groupAccess']);
+		unset($_SESSION['bab_groupAccess']['acltables']);
+		unset($_SESSION['bab_groupAccess']['usergroups']);
 		include $babInstallPath."utilit/ntident.php";
 		}
 	bab_isUserLogged();
