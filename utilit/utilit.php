@@ -577,10 +577,9 @@ function babBody()
 		}
 	
 
-	if (isset($_SESSION['bab_groupAccess']))
+	if (isset($_SESSION['bab_groupAccess']['ovgroups']))
 		{
 		$this->ovgroups = &$_SESSION['bab_groupAccess']['ovgroups'];
-		$this->usergroups = &$_SESSION['bab_groupAccess']['usergroups'];
 		}
 	else
 		{
@@ -593,6 +592,14 @@ function babBody()
 			}
 
 		$_SESSION['bab_groupAccess']['ovgroups'] = &$this->ovgroups;
+		}
+	
+	if (isset($_SESSION['bab_groupAccess']['usergroups']))
+		{
+		$this->usergroups = &$_SESSION['bab_groupAccess']['usergroups'];
+		}
+	else
+		{
 		$_SESSION['bab_groupAccess']['usergroups'] = &$this->usergroups;
 		}
 }
@@ -1178,7 +1185,6 @@ function bab_isMemberOfTree($id_group, $id_user = '')
 		list($n) = $db->db_fetch_array($res);
 		return $n > 0 ? true : false;
 		}
-	
 	foreach($babBody->usergroups as $idg)
 	{
 	if ($babBody->ovgroups[$idg]['lf'] >= $lf && $babBody->ovgroups[$idg]['lr'] <= $lr)
@@ -1197,6 +1203,11 @@ function bab_updateUserSettings()
 	
 	if( 0 == count($babBody->usergroups) )
 		{
+		foreach($babBody->ovgroups as $key => $val)
+			{
+			$babBody->ovgroups[$key]['member'] = 'N';
+			}
+
 		$babBody->ovgroups[BAB_ALLUSERS_GROUP]['member'] = 'Y';
 		$babBody->usergroups[] = BAB_ALLUSERS_GROUP;
 
