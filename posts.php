@@ -239,7 +239,7 @@ function listPosts($forum, $thread, $post)
 					}
 				else
 					{
-					$req = "select * from ".BAB_POSTS_TBL." where id_thread='".$this->thread."' and id='".$id."'' and confirmed='Y'";
+					$req = "select * from ".BAB_POSTS_TBL." where id_thread='".$this->thread."' and id='".$id."' and confirmed='Y'";
 					}
 				}
 			$res = $this->db->db_query($req);
