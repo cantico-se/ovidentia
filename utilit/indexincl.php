@@ -123,13 +123,16 @@ class bab_indexObject {
 	 */
 	function autorized_files_only(&$arr) {
 		$tmp = bab_searchEngineInfos();
-		$types = array_flip($tmp['types']);
-		
-		foreach($arr as $k => $file) {
+		if( is_array($tmp))
+		{
+			$types = array_flip($tmp['types']);
 			
-			$t = bab_getFileMimeType($file);
-			if (!isset($types[$t])) {
-				unset($arr[$k]);
+			foreach($arr as $k => $file) {
+				
+				$t = bab_getFileMimeType($file);
+				if (!isset($types[$t])) {
+					unset($arr[$k]);
+				}
 			}
 		}
 	}
