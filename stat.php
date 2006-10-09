@@ -192,7 +192,14 @@ function displayStatisticPanel($idx)
 				}
 			$this->colspanval = $this->maxcols - 1;
 			$this->row = 0;
-			$this->urlexport = "idx=".$this->current."&export=1";
+			if( $this->current != 'users' )
+				{
+				$this->urlexport = "idx=".$this->current."&export=1";
+				}
+			else
+				{
+				$this->urlexport = '';
+				}
 			}
 
 		function getnextrow()
