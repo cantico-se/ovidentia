@@ -4686,6 +4686,7 @@ class bab_OvmlArray extends bab_handler
 	{
 		if( $this->idx < $this->count )
 		{
+			$this->ctx->curctx->push('CIndex', $this->idx);
 			list( $key, $val) = each ($this->IdEntries );
 			$this->ctx->curctx->push($this->name.'Key', $key);
 			$this->ctx->curctx->push($this->name.'Value', $val);
