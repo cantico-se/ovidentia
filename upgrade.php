@@ -7076,7 +7076,7 @@ function upgrade600to601()
 
 	if (!bab_isTableField(BAB_FORUMS_TBL, 'bflatview')) {
 
-		$db->db_query("ALTER TABLE ".BAB_FORUMS_TBL." ADD `bflatview` enum('Y','N') NOT NULL default 'Y'");
+		$db->db_query("ALTER TABLE ".BAB_FORUMS_TBL." ADD `bflatview` enum('N','Y') NOT NULL default 'N'");
 	}
 
 	if (!bab_isTableField(BAB_POSTS_TBL, 'id_author')) {
