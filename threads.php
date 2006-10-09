@@ -130,7 +130,7 @@ function listThreads($forum, $active, $pos)
 			$this->gotopages = bab_generatePagination($total, $this->maxrows, $pos);
 			$this->countpages = count($this->gotopages);
 		
-			$req = "select tt.*, pt.subject, pt.author from ".BAB_THREADS_TBL." tt left join ".BAB_POSTS_TBL." pt on tt.post=pt.id where forum='".$forum."' and active='".$active."' order by pt.date desc";
+			$req = "select tt.*, pt.author, pt.id_author, pt.date as lastpostdate from ".BAB_THREADS_TBL." tt left join ".BAB_POSTS_TBL." pt on tt.lastpost=pt.id where forum='".$forum."' and active='".$active."' order by pt.date desc";
 			if( $total > $this->maxrows)
 				{
 				$req .= " limit ".$pos.",".$this->maxrows;
@@ -153,9 +153,15 @@ function listThreads($forum, $active, $pos)
 				{
 				$this->altbg = !$this->altbg;
 				$this->arrthread = $this->db->db_fetch_array($this->res);
+				$res = $this->db->db_query("select * from ".BAB_POSTS_TBL." where id='".$this->arrthread['post']."'");
+				$ar = $this->db->db_fetch_array($res);
+
+				
 				$this->subjecturl = $GLOBALS['babUrlScript']."?tg=posts&idx=List&flat=".$this->flat."&forum=".$this->forum."&thread=".$this->arrthread['id']."&views=1";
-				$this->subjectname = $this->arrthread['subject'];
+				$this->subjectname = $ar['subject'];
 				$this->subjecturlflat  = $this->subjecturl."&flat=".$this->flat;
+
+				$this->threadauthor = bab_getUserName($this->arrthread['starter']);
 
 				$this->threadauthordetailsurl = '';
 				if( $this->arrthread['starter'] != 0 && $this->bdisplayauhtordetails == 'Y')
@@ -241,16 +247,16 @@ function listThreads($forum, $active, $pos)
 				
 				
 
-				$res = $this->db->db_query("select id, date, id_author, author from ".BAB_POSTS_TBL." where id='".($this->arrthread['lastpost'] != 0? $this->arrthread['lastpost']:$this->arrthread['post'])."'");
-				$ar = $this->db->db_fetch_array($res);
-				$this->lastpostdate = bab_shortDate(bab_mktime($ar['date']), true);
+				//$res = $this->db->db_query("select id, date, id_author, author from ".BAB_POSTS_TBL." where id='".($this->arrthread['lastpost'] != 0? $this->arrthread['lastpost']:$this->arrthread['post'])."'");
+				//$ar = $this->db->db_fetch_array($res);
+				$this->lastpostdate = bab_shortDate(bab_mktime($this->arrthread['lastpostdate']), true);
 
 				$this->lastpostauthordetailsurl = '';
-				if( $ar['id_author'] != 0 && $this->bdisplayauhtordetails == 'Y')
+				if( $this->arrthread['id_author'] != 0 && $this->bdisplayauhtordetails == 'Y')
 					{
 					if( bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $this->iddir))
 						{
-						$this->lastpostauthordetailsurl = $GLOBALS['babUrlScript']."?tg=directory&idx=ddbovml&directoryid=".$this->iddir."&userid=".$ar['id_author'];	
+						$this->lastpostauthordetailsurl = $GLOBALS['babUrlScript']."?tg=directory&idx=ddbovml&directoryid=".$this->iddir."&userid=".$this->arrthread['id_author'];	
 						}
 					}
 
@@ -258,7 +264,7 @@ function listThreads($forum, $active, $pos)
 				$this->lastpostauthoremail = '';
 				if( $this->bdisplayemailaddress == 'Y' )
 					{
-					$idauthor = $ar['id_author'] != 0? $ar['id_author']: bab_getUserId( $ar['author']); 
+					$idauthor = $this->arrthread['id_author'] != 0? $this->arrthread['id_author']: bab_getUserId( $this->arrthread['author']); 
 					if( $idauthor )
 						{
 						$res = $this->db->db_query("select email from ".BAB_USERS_TBL." where id='".$idauthor."'");
@@ -270,15 +276,22 @@ function listThreads($forum, $active, $pos)
 						}
 					}
 
-				$this->lastpostauthor = $ar['author'];
-				$this->lastposturl = $GLOBALS['babUrlScript']."?tg=posts&flat=".$this->flat."&forum=".$this->forum."&thread=".$this->arrthread['id']."&pos=".$postpos."#p".$ar['id'];
+				if( $this->arrthread['id_author'] )
+					{
+					$this->lastpostauthor = bab_getUserName($this->arrthread['id_author']);
+					}
+				else
+					{
+					$this->lastpostauthor = $this->arrthread['author'];
+					}
+				$this->lastposturl = $GLOBALS['babUrlScript']."?tg=posts&flat=".$this->flat."&forum=".$this->forum."&thread=".$this->arrthread['id']."&pos=".$postpos."#p".$this->arrthread['lastpost'];
 
 				$this->brecent = false;
-				if( mktime() - bab_mktime($ar['date']) <= DELTA_TIME )
+				if( mktime() - bab_mktime($this->arrthread['lastpostdate']) <= DELTA_TIME )
 					$this->brecent = true;
 				else if($GLOBALS['BAB_SESS_LOGGED'])
 					{
-					if( $ar['date'] >= $babBody->lastlog )
+					if( $this->arrthread['lastpostdate'] >= $babBody->lastlog )
 						$this->brecent = true;
 					}
 					

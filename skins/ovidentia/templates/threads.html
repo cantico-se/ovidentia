@@ -1,11 +1,11 @@
 <!--#begin threadlist -->
 <table width="99%" border="0" cellspacing="1" cellpadding="0" align="center">
-<!--#if countforums -->
     <tr>
     <td class="BabForumBackground" valign="midlle">
 	<table width="100%">
 	<tr>
 	<td>
+<!--#if countforums -->
 	<form name="threadl" method="post" action="{ babPhpSelf }">
 	<input type="hidden" name="tg" value="threads">
 	<input type="hidden" name="idx" value="{ idx }">
@@ -17,6 +17,7 @@
 	</select>&nbsp;
 	<input type="submit" name="submit" value="{ go_txt }">
 	</form>
+<!--#endif countforums -->
 	</td>
 	<td align="right"><b><a href="{ search_url }">{ search_txt }</b></a>
 	</td>
@@ -26,7 +27,6 @@
 
     </td>
     </tr>
-<!--#endif countforums -->
 <tr>
     <td class="BabForumBackground" align="center" valign="midlle">
 <!--#if active "== Y" --><img src="{ babSkinPath }images/Puces/PuceForumOpen.gif" alt="{ openthreadsinfo }" border="0" align="absmiddle"> :<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ openthreadsinfo }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"><!--#endif active -->
@@ -154,9 +154,9 @@
 
 		<td align="center" nowrap width="1%">
 		<!--#if threadauthordetailsurl -->
-		<a href="javascript: Start('{ threadauthordetailsurl }', 'OviContactB', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ arrthread[author] }</a>
+		<a href="javascript: Start('{ threadauthordetailsurl }', 'OviContactB', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ threadauthor }</a>
 		<!--#else threadauthordetailsurl -->
-		{ arrthread[author] }
+		{ threadauthor }
 		<!--#endif threadauthordetailsurl -->
 		<!--#if threadauthoremail -->
 		<br /><br /><a class="BabForumTopicsNavContribution" href="mailto:{ threadauthoremail }" target=_top><img src="{ babSkinPath }images/Puces/mail.png" border="0" align="absmiddle"></a>
@@ -198,12 +198,12 @@
     </tr>
 <!--#endif countpages -->
 
-<!--#if countforums -->
     <tr>
     <td class="BabForumBackground" valign="midlle">
 	<table width="100%">
 	<tr>
 	<td>
+<!--#if countforums -->
 	<form name="threadl" method="post" action="{ babPhpSelf }">
 	<input type="hidden" name="tg" value="threads">
 	<input type="hidden" name="idx" value="{ idx }">
@@ -215,6 +215,7 @@
 	</select>&nbsp;
 	<input type="submit" name="submit" value="{ go_txt }">
 	</form>
+<!--#endif countforums -->
 	</td>
 	<td align="right"><b><a href="{ search_url }">{ search_txt }</b></a>
 	</td>
@@ -224,7 +225,6 @@
 
     </td>
     </tr>
-<!--#endif countforums -->
 </table>
 <!--#end threadlist -->
 <br><br><br><br><br>
