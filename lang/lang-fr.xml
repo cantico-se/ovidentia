@@ -2265,8 +2265,8 @@
 <string id="Result(s) from %d to %d (%d %s / %d %s )">Résultat(s) de %d à %d (%d %s / %d %s )</string>
 <string id="All results (%d %s / 1 %s)">Tous les résultats (%d %s / 1 %s)</string>
 <string id="Tasks">Tâches</string>
-<string id="Collective folders">Collective folders</string>
-<string id="Personal folders">Personal folders</string>
+<string id="Collective folders">Répertoires collectifs</string>
+<string id="Personal folders">Répertoires personnels</string>
 <string id="Call to undefined function">Call to undefined function</string>
 <string id="Private folder">Répertoire personnel</string>
 <string id="The index is probably in process, do you really want to unlock?">L'indexation est probablement en cours de traitement, voulez-vous vraiment déverrouiller?</string>
