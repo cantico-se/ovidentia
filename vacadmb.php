@@ -234,6 +234,8 @@ function listVacationRequestsb($idstatus, $userid, $dateb, $datee, $vpos)
 			$this->nexturl = "";
 			$this->prevurl = "";
 
+			$this->t_position = '';
+
 			$this->db = & $GLOBALS['babDB'];
 			$this->statarr = array(bab_translate(""), bab_translate("Accepted"), bab_translate("Refused"));
 			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=vacadmb&idx=browlp&cb=";

@@ -1149,17 +1149,7 @@ function confirmVacationRequest($veid, $remarks, $action)
 			$remarks = $babDB->db_escape_string($remarks);
 
 			$babDB->db_query("update ".BAB_VAC_ENTRIES_TBL." set status='Y', idfai='0', id_approver='".$GLOBALS['BAB_SESS_USERID']."', comment2='".$remarks."' where id = '".$veid."'");
-			$idcal = bab_getCalendarId($arr['id_user'], 1);
-			if( $idcal != 0 )
-				{
-				list($idcat) = $babDB->db_fetch_row($babDB->db_query("select vct.id_cat from ".BAB_VAC_COLLECTIONS_TBL." vct left join ".BAB_VAC_PERSONNEL_TBL." vpt on vpt.id_coll=vct.id left join ".BAB_VAC_ENTRIES_TBL." vet on vet.id_user=vpt.id_user where vet.id='".$veid."'"));
 
-				$req = "insert into ".BAB_CAL_EVENTS_TBL." ( title, id_cat, start_date, end_date, id_creator, hash) values ";
-				$req .= "('".bab_translate("Vacation")."', '".$idcat."', '".$arr['date_begin']."', '".$arr['date_end']."', '0', 'V_".$veid."')";
-				$babDB->db_query($req);
-				$id_event = $babDB->db_insert_id();
-				$babDB->db_query("INSERT INTO ".BAB_CAL_EVENTS_OWNERS_TBL." (id_event,id_cal, status) VALUES ('".$id_event."','".$idcal."', '".BAB_CAL_STATUS_ACCEPTED."')");
-				}
 			$subject = bab_translate("Your vacation request has been accepted");
 			notifyVacationAuthor($veid, $subject);
 			break;
