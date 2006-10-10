@@ -146,6 +146,38 @@ function updateAccessUsers( $users, $calid, $urla)
 	exit;
 }
 
+
+
+
+
+function cal_half_working_days($day) {
+	include_once $GLOBALS['babInstallPath']."utilit/workinghoursincl.php";
+
+	$arr = bab_getWHours($GLOBALS['BAB_SESS_USERID'], $day);
+	$result = array(
+		'am' => false,
+		'pm' => false
+	);
+
+	foreach($arr as $p) {
+		list($startHour)	= explode(':',$p['startHour']);
+		list($endHour)		= explode(':',$p['endHour']);
+
+		if ($startHour < 12) {
+			$result['am'] = true;
+		}
+
+		if ($endHour > 12) {
+			$result['pm'] = true;
+		}
+	}
+
+	return $result;
+}
+
+
+
+
 function calendarOptions($calid, $urla)
 	{
 	global $babBody;
@@ -169,6 +201,8 @@ function calendarOptions($calid, $urla)
 			$this->modify = bab_translate("Modify");
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
+			$this->t_am = bab_translate("Morning");
+			$this->t_pm = bab_translate("Afternoon");
 			$this->elapstime = bab_translate("Time scale");
 			$this->minutes = bab_translate("Minutes");
 			$this->defaultview = bab_translate("Calendar default view");
@@ -206,14 +240,6 @@ function calendarOptions($calid, $urla)
 				}
 
 			$this->dispdays = explode(',', $this->arr['dispdays']);
-
-			if( empty($this->arr['workdays']))
-				{
-				$this->arr['workdays'] = $babBody->icalendars->workdays;
-				}
-
-			$this->workdays = explode(',', $this->arr['workdays']);
-
 			$this->sttime = $this->arr['start_time'];
 			}
 
@@ -225,7 +251,10 @@ function calendarOptions($calid, $urla)
 			if( $i < 7 )
 				{
 				$this->disp_selected = in_array($i, $this->dispdays) ? "checked" : "";
-				$this->work_selected = in_array($i, $this->workdays) ? "checked" : "";
+
+				$arr = cal_half_working_days($i);
+				$this->work_am = $arr['am'];
+				$this->work_pm = $arr['pm'];
 
 				$this->dayid = $i;
 				$this->shortday = $babDays[$i];
@@ -416,15 +445,13 @@ function unload()
 
 	}
 
-function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor, $elapstime, $defaultview, $dispdays, $workdays)
+function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor, $elapstime, $defaultview)
 	{
 	global $BAB_SESS_USERID;
 	$db = & $GLOBALS['babDB'];
 
-
+	$dispdays = isset($_POST['dispdays']) ? $_POST['dispdays'] : array();
 	$dispdays = ( count($dispdays) > 0 ) ? implode(',', $dispdays) : "1,2,3,4,5" ;
-	$workdays = ( count($workdays) > 0 ) ? implode(',', $workdays) : "" ;
-
 
 	if( $starttime > $endtime )
 		{
@@ -446,7 +473,6 @@ function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor,
 			elapstime	=".$db->quote($elapstime).", 
 			defaultview	=".$db->quote($defaultview).", 
 			dispdays	=".$db->quote($dispdays).", 
-			workdays	=".$db->quote($workdays).", 
 			week_numbers='Y' 
 		WHERE 
 			id_user=".$db->quote($BAB_SESS_USERID)."
@@ -465,7 +491,6 @@ function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor,
 				elapstime, 
 				defaultview, 
 				dispdays, 
-				workdays, 
 				week_numbers
 			) 
 		VALUES ";
@@ -480,12 +505,95 @@ function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor,
 			".$db->quote($elapstime).",
 			".$db->quote($defaultview).",
 			".$db->quote($dispdays).",
-			".$db->quote($workdays).",
 			'Y'
 		";
 		}
 	$res = $db->db_query($req);
+
+
+	function setUserPeriod($day, $ampm, $startHour, $endHour, $insert) {
+		$db = $GLOBALS['babDB'];
+		$op = 'am' == $ampm ? 'startHour <=' : 'endHour >';
+		$db->db_query("
+
+			DELETE FROM ".BAB_WORKING_HOURS_TBL." 
+			WHERE 
+				idUser=".$db->quote($GLOBALS['BAB_SESS_USERID'])." AND 
+				weekDay=".$db->quote($day)." AND 
+				".$op." '12:00:00' 
+		");
+
+
+		if ($insert) {
+
+			$db->db_query("
+				INSERT INTO ".BAB_WORKING_HOURS_TBL." 
+					(weekDay, idUser, startHour, endHour) 
+					VALUES 
+					(".$db->quote($day).",
+					".$db->quote($GLOBALS['BAB_SESS_USERID']).",
+					".$db->quote($startHour).", 
+					".$db->quote($endHour).") 
+				");
+		}
 	}
+
+
+
+	$am_startHour	= '00:00:00';
+	$am_endHour		= '12:00:00';
+
+	$pm_startHour	= '12:00:00';
+	$pm_endHour		= '24:00:00';
+
+
+	list($tmp) = explode(':', $starttime);
+	if ($tmp < 12) {
+		$am_startHour = $starttime;
+	}
+
+	list($tmp) = explode(':', $endtime);
+	if ($tmp > 12) {
+		$pm_endHour = $endtime;
+	}
+	
+
+	$res = $db->db_query("
+				SELECT COUNT(*) FROM ".BAB_WORKING_HOURS_TBL." 
+					WHERE idUser=".$db->quote($GLOBALS['BAB_SESS_USERID'])." 
+				");
+
+	list($user_nb_rows) = $db->db_fetch_array($res);
+
+
+	$change = false; 
+	
+	for ($i = 0 ; $i < 7 ; $i++) {
+		$arr = cal_half_working_days($i);
+		
+		$am = isset($_POST['work'][$i]['am']);
+		$pm = isset($_POST['work'][$i]['pm']);
+
+		if ($arr['am'] != $am || 0 == $user_nb_rows) {
+			setUserPeriod($i, 'am', $am_startHour, $am_endHour, $am);
+			$change = true;
+		}
+
+		if ($arr['pm'] != $pm || 0 == $user_nb_rows) {
+			setUserPeriod($i, 'pm', $pm_startHour, $pm_endHour, $pm);
+			$change = true;
+		}
+	}
+
+	if ($change) {
+		include_once $GLOBALS['babInstallPath'].'utilit/vacincl.php';
+		bab_vac_clearUserCalendar();
+	}
+
+
+	header('location:'.$GLOBALS['babUrlScript']."?tg=calopt&idx=options");
+	exit;
+}
 
 /* main */
 if(!isset($idx))
@@ -507,10 +615,7 @@ if( isset($add) && $add == "addu" && $idcal == bab_getCalendarId($BAB_SESS_USERI
 	updateAccessUsers($users, $idcal, $urla);
 }elseif( isset($modify) && $modify == "options" && $BAB_SESS_USERID != '')
 	{
-	$dispdays = isset($_POST['dispdays']) ? $_POST['dispdays'] : array();
-	$workdays = isset($_POST['workdays']) ? $_POST['workdays'] : array();
-
-	updateCalOptions($_POST['startday'], $_POST['starttime'], $_POST['endtime'], $_POST['allday'], $_POST['usebgcolor'], $_POST['elapstime'], $_POST['defaultview'], $dispdays, $workdays );
+	updateCalOptions($_POST['startday'], $_POST['starttime'], $_POST['endtime'], $_POST['allday'], $_POST['usebgcolor'], $_POST['elapstime'], $_POST['defaultview'] );
 	}
 
 $babBody->addItemMenu("global", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=options&idx=global");

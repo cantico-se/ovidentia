@@ -10,9 +10,12 @@
 			<td>{ t_calendar }</td>
 			<td>{ t_requests }</td>
 			<td align="center">{ t_planning }</td>
+			<!--#if all_manager -->
+			<td align="center">{ t_comanager }</td>
+			<!--#endif all_manager -->
 		</tr>
 		<!--#in getnext -->
-		<tr class="BabSiteAdminFontBackground"> 
+		<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg --> 
 			<td title="{ arr[description] }">{ arr[name] }</td>
 			<td>
 				<a href="{ babUrlScript }?tg=vacchart&idx=entity_members&ide={ arr[id] }"><img src="{ babSkinPath }images/Puces/head.gif" alt="{ t_members }" border="0" /></a>
@@ -26,6 +29,14 @@
 			<td align="center">
 				<a href="{ babUrlScript }?tg=vacchart&idx=entity_planning&ide={ arr[id] }" title="{ t_planning }"><img src="{ babSkinPath }images/Puces/planning.gif" alt="{ t_planning }" border="0" /></a>
 			</td>
+
+			<!--#if all_manager -->
+			<td align="center">
+				<!--#if manager -->
+				<a href="{ babUrlScript }?tg=vacchart&idx=comanager&ide={ arr[id] }" title="{ t_comanager }"><img src="{ babSkinPath }images/Puces/PuceUsers.gif" alt="{ t_comanager }" border="0" /></a>
+				<!--#endif manager -->
+			</td>
+			<!--#endif all_manager -->
 		</tr>
 		<!--#endin getnext -->
 	</table>
@@ -102,7 +113,7 @@ if (users != '')
 		<tr class="BabSiteAdminTitleFontBackground"> 
 			<td>{ t_name }</td>
 			<td>{ t_collection }</td>
-			<td>{ t_schema }</td>
+			<td>{ t_viewrights }</td>
 			<td>{ t_asks }</td>
 			<td>{ t_rights }</td>
 			<td>
@@ -115,14 +126,14 @@ if (users != '')
 		<!--#if superior_id -->
 		<tr class="BabSiteAdminFontBackground"> 
 			<td><strong>
-			<!--#if b_rights -->
-			<a href="{ babUrlScript }?tg=vacchart&amp;idx=modp&ide={ ide }&amp;iduser={ superior_id }">{ superior_name }</a>
-			<!--#else b_rights -->
-			{ superior_name }
-			<!--#endif b_rights -->
+			<a href="{ babUrlScript }?tg=vacchart&amp;idx=view&ide={ ide }&amp;iduser={ superior_id }">{ superior_name }</a>
 			</strong></td>
 			<td>{ s_collection }</td>
-			<td>{ s_schema }</td>
+			<td>
+				<a href="{ babUrlScript }?tg=vacuser&amp;idx=viewrights&amp;id_user={ superior_id }">
+					<img src="{ babSkinPath }images/Puces/balance.gif" alt="{ t_viewrights }" border="0" />
+				</a>
+			</td>
 			<td>
 				<a href="{ babUrlScript }?tg=vacchart&amp;idx=asks&amp;id_user={ superior_id }&amp;ide={ ide }">{ t_asks }</a>
 			</td>
@@ -138,10 +149,16 @@ if (users != '')
 		</tr>
 		<!--#endif superior_id -->
 		<!--#in getnext -->
-		<tr class="BabSiteAdminFontBackground"> 
-			<td><a href="{ babUrlScript }?tg=vacchart&amp;idx=modp&amp;ide={ ide }&amp;iduser={ id_user }">{ name }</a></td>
+		<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+			<td><a href="{ babUrlScript }?tg=vacchart&amp;idx=view&amp;ide={ ide }&amp;iduser={ id_user }">{ name }</a></td>
 			<td>{ collection }</td>
-			<td>{ schema }</td>
+			
+			<td>
+				<a href="{ babUrlScript }?tg=vacuser&amp;idx=viewrights&amp;id_user={ id_user }">
+					<img src="{ babSkinPath }images/Puces/balance.gif" alt="{ t_viewrights }" border="0" />
+				</a>
+			</td>
+			
 			<td>
 				<a href="{ babUrlScript }?tg=vacchart&amp;idx=asks&amp;id_user={ id_user }&amp;ide={ ide }">{ t_asks }</a>
 			</td>
@@ -299,3 +316,37 @@ if (users != '')
 </div>
 </form>
 <!--#end entity_planning -->
+
+
+
+<!--#begin user_details -->
+<table width="55%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+		
+		<!--#if b_rights -->
+		<tr> 
+			<td colspan="2" align="center">
+				<br />
+				<a href="{ babUrlScript }?tg=vacchart&idx=modp&ide={ ide }&iduser={ id_user }">{ t_modify }</a>
+				<br />
+				<br />
+			</td>
+		</tr>
+		<!--#endif b_rights -->
+		
+		<tr> 
+			<td align="right" width="50%">{ t_collection } :</td>
+			<td>{ collection }</td>
+		</tr>
+
+		<tr>
+			<td align="right">{ t_schema } :</td>
+			<td>{ schema }</td>
+		</tr>
+	</table>
+</td>
+</tr>
+</table>
+<!--#end user_details -->

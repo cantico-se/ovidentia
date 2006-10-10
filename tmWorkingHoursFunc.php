@@ -21,8 +21,46 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-	include "base.php";
-	require_once($GLOBALS['babInstallPath'] . 'utilit/baseFormProcessingClass.php');
+include "base.php";
+require_once($GLOBALS['babInstallPath'] . 'utilit/baseFormProcessingClass.php');
+
+
+
+
+
+function bab_selectWorkingHours($iIdUser, $iWeekDay, &$bHaveWorkingHours)
+{
+	global $babDB;
+
+	$bHaveWorkingHours = false;
+	
+	$query = 
+		'SELECT ' .
+			'wd.weekDay, ' .
+			'wh.idUser, ' .
+			'LEFT(wh.startHour, 5) startHour, ' .
+			'LEFT(wh.endHour, 5) endHour ' .
+		'FROM ' .
+			BAB_WEEK_DAYS_TBL . ' wd, ' . 
+			BAB_WORKING_HOURS_TBL . ' wh ' .
+		'WHERE ' .
+			'wd.weekDay = ' . $babDB->quote($iWeekDay) . ' AND ' .
+			'wh.weekDay = wd.weekDay AND ' .
+			'wh.idUser = ' . $babDB->quote($iIdUser) . ' ' .
+		'ORDER BY ' . 
+			'wd.position, ' .
+			'wh.startHour';
+			
+	//bab_debug($query);
+	$result = $babDB->db_query($query);
+	if(false != $result)
+	{
+		$bHaveWorkingHours = (0 != $babDB->db_num_rows($result) ? true : false);
+	}
+	return $result;
+}
+
+
 
 function displayWorkingHoursForm()
 {

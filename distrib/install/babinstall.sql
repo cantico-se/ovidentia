@@ -1431,10 +1431,8 @@ CREATE TABLE bab_vac_collections (
 CREATE TABLE bab_vac_entries (
   id int(11) unsigned NOT NULL auto_increment,
   id_user int(11) unsigned NOT NULL default '0',
-  date_begin date NOT NULL default '0000-00-00',
-  date_end date NOT NULL default '0000-00-00',
-  day_begin tinyint(3) unsigned NOT NULL default '0',
-  day_end tinyint(3) unsigned NOT NULL default '0',
+  date_begin datetime NOT NULL default '0000-00-00 00:00:00',
+  date_end datetime NOT NULL default '0000-00-00 00:00:00',
   idfai int(11) unsigned NOT NULL default '0',
   comment tinytext NOT NULL,
   `date` date NOT NULL default '0000-00-00',
@@ -1456,11 +1454,11 @@ CREATE TABLE bab_vac_entries (
 CREATE TABLE bab_vac_entries_elem (
   id int(11) unsigned NOT NULL auto_increment,
   id_entry int(11) unsigned NOT NULL default '0',
-  id_type int(11) unsigned NOT NULL default '0',
+  id_right int(11) unsigned NOT NULL default '0',
   quantity decimal(3,1) NOT NULL default '0.0',
   PRIMARY KEY  (id),
   KEY id_entry (id_entry),
-  KEY id_type (id_type)
+  KEY id_right (id_right)
 );
 
 #
@@ -1493,27 +1491,29 @@ CREATE TABLE bab_vac_personnel (
 # Structure de la table `bab_vac_rights`
 #
 
-CREATE TABLE bab_vac_rights (
-  id int(11) unsigned NOT NULL auto_increment,
-  id_creditor int(11) unsigned NOT NULL default '0',
-  date_entry date NOT NULL default '0000-00-00',
-  date_begin date NOT NULL default '0000-00-00',
-  date_end date NOT NULL default '0000-00-00',
-  quantity decimal(3,1) NOT NULL default '0.0',
-  id_type int(11) unsigned NOT NULL default '0',
-  description varchar(255) NOT NULL default '',
-  active enum('Y','N') NOT NULL default 'Y',
-  cbalance enum('Y','N') NOT NULL default 'Y',
-  date_begin_valid date NOT NULL default '0000-00-00',
-  date_end_valid date NOT NULL default '0000-00-00',
-  date_begin_fixed date NOT NULL default '0000-00-00',
-  date_end_fixed date NOT NULL default '0000-00-00',
-  day_begin_fixed tinyint(3) unsigned NOT NULL default '0',
-  day_end_fixed tinyint(3) unsigned NOT NULL default '0',
-  no_distribution tinyint(1) unsigned NOT NULL default '0',
-  PRIMARY KEY  (id),
-  KEY id_type (id_type),
-  KEY date_entry (date_entry)
+CREATE TABLE `bab_vac_rights` (
+  `id` int(11) unsigned NOT NULL auto_increment,
+  `id_creditor` int(11) unsigned NOT NULL,
+  `date_entry` date NOT NULL default '0000-00-00',
+  `date_begin` date NOT NULL default '0000-00-00',
+  `date_end` date NOT NULL default '0000-00-00',
+  `quantity` decimal(3,1) unsigned NOT NULL default '0.0',
+  `id_type` int(11) unsigned NOT NULL,
+  `description` varchar(255) NOT NULL,
+  `active` enum('Y','N') NOT NULL default 'Y',
+  `cbalance` enum('Y','N') NOT NULL default 'Y',
+  `date_begin_valid` date NOT NULL default '0000-00-00',
+  `date_end_valid` date NOT NULL default '0000-00-00',
+  `date_end_fixed` date NOT NULL default '0000-00-00',
+  `date_begin_fixed` date NOT NULL default '0000-00-00',
+  `day_begin_fixed` tinyint(3) unsigned NOT NULL,
+  `day_end_fixed` tinyint(3) unsigned NOT NULL,
+  `no_distribution` tinyint(1) unsigned NOT NULL,
+  `id_rgroup` int(10) unsigned NOT NULL,
+  PRIMARY KEY  (`id`),
+  KEY `id_type` (`id_type`),
+  KEY `date_entry` (`date_entry`),
+  KEY `id_rgroup` (`id_rgroup`)
 );
 
 #
@@ -2573,12 +2573,13 @@ CREATE TABLE `bab_sites_nonworking_config` (
 );
 
 CREATE TABLE `bab_sites_nonworking_days` (
-`id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
-`id_site` INT UNSIGNED NOT NULL ,
-`nw_day` DATE NOT NULL ,
-`nw_type` VARCHAR( 64 ) NOT NULL ,
-PRIMARY KEY ( `id` ) ,
-INDEX ( `id_site` )
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `id_site` int(10) unsigned NOT NULL,
+  `nw_day` date NOT NULL default '0000-00-00',
+  `nw_type` varchar(64) NOT NULL,
+  PRIMARY KEY  (`id`),
+  KEY `id_site` (`id_site`),
+  KEY `nw_day` (`nw_day`)
 );
 
 CREATE TABLE `bab_vac_rights_rules` (
@@ -3448,6 +3449,7 @@ CREATE TABLE bab_mail_spooler (
   mail_date datetime NOT NULL,
   PRIMARY KEY  (id),
   KEY mail_date (mail_date)
+
 );
 
 CREATE TABLE bab_cal_res_upd_groups (
@@ -3494,4 +3496,32 @@ CREATE TABLE bab_stats_connections (
   KEY id_user (id_user),
   KEY id_session (id_session),
   KEY login_time (login_time)	
+);
+
+
+CREATE TABLE `bab_vac_calendar` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `id_user` int(10) unsigned NOT NULL,
+  `monthkey` mediumint(6) unsigned NOT NULL,
+  `cal_date` date NOT NULL,
+  `ampm` tinyint(1) unsigned NOT NULL,
+  `period_type` tinyint(3) unsigned NOT NULL,
+  `id_entry` int(10) unsigned NOT NULL,
+  `color` varchar(6) NOT NULL,
+  PRIMARY KEY  (`id`),
+  KEY `id_user` (`id_user`,`monthkey`,`cal_date`)
+);
+
+
+CREATE TABLE `bab_vac_rgroup` (
+`id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
+`name` VARCHAR( 255 ) NOT NULL ,
+PRIMARY KEY ( `id` )
+);
+
+
+CREATE TABLE `bab_vac_comanager` (
+`id_entity` INT UNSIGNED NOT NULL ,
+`id_user` INT UNSIGNED NOT NULL ,
+PRIMARY KEY ( `id_entity` , `id_user` )
 );

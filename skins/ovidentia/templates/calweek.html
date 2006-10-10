@@ -105,7 +105,7 @@ document.onmousemove = bab_tooltipPosition;
 					<!--#in getnextcal -->
 					<!--#in getnexteventcol -->
 						<!--#if bevent -->
-						<td class="event" style="background-color:#{ bgcolor }" onclick="bab_popup('{ vieweventurl }',5)"  onmouseover="bab_showOnMouse('calevent{ idcal }{ idevent }',1)" onmouseout="bab_showOnMouse('calevent{ idcal }{ idevent }',0)">
+						<td class="event <!--#if popup --> popup<!--#endif popup -->" style="background-color:#{ bgcolor }" <!--#if popup --> onclick="bab_popup('{ vieweventurl }',5)" <!--#endif popup -->   onmouseover="bab_showOnMouse('calevent{ idcal }{ idevent }',1)" onmouseout="bab_showOnMouse('calevent{ idcal }{ idevent }',0)">
 							<!--#if first -->
 							
 							<div id="calevent{ idcal }{ idevent }" class="bab_cal_tooltip" style="background-color:#{ bgcolor }">

@@ -25,17 +25,17 @@ include_once "base.php";
 include_once $babInstallPath."utilit/calincl.php";
 include_once $babInstallPath."utilit/mcalincl.php";
 
-class cal_monthCls  extends cal_wmdbaseCls
+class cal_monthCls extends cal_wmdbaseCls
 	{
+
+	var $iso_time1;
+	var $iso_time2;
  
 	function cal_monthCls($idx, $calids, $date)
 		{
 		global $babBody, $babMonths;
-
 		$this->cal_wmdbaseCls("calmonth", $idx, $calids, $date);
-		
 		$this->w = 0;
-
 		$dispdays = explode(',', $babBody->icalendars->dispdays);
 		$time = mktime(0,0,0,$this->month,1,$this->year);
 		$this->monthname = $babMonths[date("n", $time)]."  ".$this->year;
@@ -58,13 +58,25 @@ class cal_monthCls  extends cal_wmdbaseCls
 
 		$time1 = mktime( 0,0,0, $this->month, $this->dworkdays[$this->workdays[0]], $this->year);
 		$time2 = $time1 + 41*24*3600;
-		$this->mcals = & new bab_mcalendars(sprintf("%s-%02s-%02s 00:00:00", date("Y", $time1), date("n", $time1), date("j", $time1)), sprintf("%04s-%02s-%02s 23:59:59", date("Y", $time2), date("n", $time2), date("j", $time2)), $this->idcals);
 
+		$this->iso_time1 = sprintf("%s-%02s-%02s 00:00:00", date("Y", $time1), date("n", $time1), date("j", $time1));
+		$this->iso_time2 = sprintf("%04s-%02s-%02s 23:59:59", date("Y", $time2), date("n", $time2), date("j", $time2));
+
+		
 		$this->eventlisturl = $GLOBALS['babUrlScript']."?tg=calendar&idx=eventlist&calid=".$this->currentidcals."&from=".date('Y,n,j',$time1)."&to=".date('Y,n,j',$time2)."";
 
 		$this->cindex = 0;
 		$this->evtidx = 0;
 
+		}
+
+	function prepare_events() {
+
+		$this->mcals = & new bab_mcalendars($this->iso_time1, $this->iso_time2, $this->idcals);
+		}
+
+	function prepare_free_events() {
+		$this->whObj = bab_mcalendars::create_free_events($this->iso_time1, $this->iso_time2, $this->idcals);
 		}
 
 	function getnextdayname()
@@ -118,7 +130,7 @@ class cal_monthCls  extends cal_wmdbaseCls
 			$dday = date("j", $mktime);
 			$this->week = bab_translate("Week").' '.date('W', $mktime);
 			$this->cdate = sprintf("%04s-%02s-%02s", date("Y", $mktime), date("n", $mktime), date("j", $mktime));
-			if( $dday == date("j", mktime()) && $this->month == date("n", mktime()) && $this->year ==  date("Y", mktime()))
+			if( $dday == date("j") && $this->month == date("n") && $this->year ==  date("Y"))
 				{
 				$this->currentday = 1;
 				}
@@ -167,75 +179,7 @@ class cal_monthCls  extends cal_wmdbaseCls
 		if( $i < $this->countevent)
 			{
 			$this->evtidx++;
-			$arr = $this->evtarr[$i];
-			$this->idcal = $arr['id_cal'];
-			$this->status = $arr['status'];
-			$iarr = $babBody->icalendars->getCalendarInfo($arr['id_cal']);
-			$this->updateAccess($arr, $iarr);
-			if( $arr['id_cat'] == 0 )
-				{
-				$this->category = '';
-				}
-			else
-				{
-				$this->category = $this->mcals->getCategoryName($arr['id_cat']);
-				}
-
-			$this->bgcolor = $babBody->icalendars->usebgcolor == 'Y' ? ( empty($arr['color']) ? ($arr['id_cat'] != 0 ? $this->mcals->getCategoryColor($arr['id_cat']):''): $arr['color']) : 'ffff';
-			$this->idevent = $arr['id'];
-			$time = bab_mktime($arr['start_date']);
-			$this->starttime = bab_time($time);
-			$this->startdate = bab_shortDate($time, false);
-			$time = bab_mktime($arr['end_date']);
-			$this->endtime = bab_time($time);
-			$this->enddate = bab_shortDate($time, false);
-			$this->id_cat = $arr['id_cat'];
-			$this->id_creator = $arr['id_creator'];
-			if( $this->id_creator != 0 )
-				{
-				$this->creatorname = bab_getUserName($this->id_creator); 
-				}
-			$this->hash = $arr['hash'];
-			$this->bprivate = $arr['bprivate'];
-			$this->block = $arr['block'];
-			$this->bfree = $arr['bfree'];
-			$this->properties = $this->getPropertiesString($arr);
-			$this->nbowners = $arr['nbowners'];
-			if( !$this->allow_viewtitle  )
-				{
-				$this->title = bab_translate("Private");
-				$this->titleten = $this->title;
-				$this->description = "";
-				$this->location = "";
-				}
-			else
-				{
-				$this->title = $arr['title'];
-				$this->titleten = $this->calstr($arr['title']);
-				$this->description = bab_replace($arr['description']);
-				$this->location = htmlentities($arr['location']);
-				}
-			if( $this->allow_modify )
-				{
-				$this->titletenurl = $GLOBALS['babUrlScript']."?tg=event&idx=modevent&evtid=".$arr['id']."&calid=".$arr['id_cal']."&cci=".$this->currentidcals."&view=viewm&date=".$this->currentdate;
-				}
-			elseif( $this->allow_view )
-				{
-				$this->titletenurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=veventupd&evtid=".$arr['id']."&idcal=".$arr['id_cal'];
-				}
-			else
-				{
-				$this->titletenurl = "";
-				}
-			$this->attendeesurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=attendees&evtid=".$arr['id']."&idcal=".$arr['id_cal'];
-			$this->vieweventurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=veventupd&evtid=".$arr['id']."&idcal=".$arr['id_cal'];
-			$this->bnote = false;
-			if( isset($arr['note']) && !empty($arr['note']))
-				{
-				$this->bnote = true;
-				$this->noteval = $arr['note'];
-				}
-			$this->balert = $arr['alert'];
+			$this->createCommonEventVars($this->evtarr[$i]);
 			$i++;
 			return true;
 			}
@@ -248,48 +192,15 @@ class cal_monthCls  extends cal_wmdbaseCls
 		}
 
 
-	function getfreeevent(&$skip)
+	function getfreeevent()
 		{
 		global $babBody;
 		$arr = array();
-		if( $this->mcals->getNextFreeEvent($this->cdate." 00:00:00", $this->cdate." 23:59:00", $arr))
+		if( bab_mcalendars::getNextFreeEvent($this->whObj, $this->cdate." 00:00:00", $this->cdate." 23:59:00", $arr))
 			{
-			$this->free = $arr[2] == 0;
-			$workdate0 = $this->cdate.' '.$babBody->icalendars->starttime;
-			$workdate1 = $this->cdate.' '.$babBody->icalendars->endtime;
-			if( $this->free )
-				{
-				if( $arr[1] <= $workdate0 || $arr[0] >= $workdate1 )
-					{
-					$skip = true;
-					return true;
-					}
-				if( $arr[0] <= $workdate0 )
-					{
-					$startdate = $workdate0;
-					}
-				else
-					{
-					$startdate = $arr[0];
-					}
-
-				if( $arr[1] >= $workdate1 )
-					{
-					$enddate = $workdate1;
-					}
-				else
-					{
-					$enddate = $arr[1];
-					}
-				}
-			else
-				{
-				$startdate = $arr[0];
-				$enddate = $arr[1];
-				}
-
-			$time0 = bab_mktime($startdate);
-			$time1 = bab_mktime($enddate);
+			$this->free = 0 == $arr[2];
+			$time0 = bab_mktime($arr[0]);
+			$time1 = bab_mktime($arr[1]);
 			$this->starttime = bab_time($time0);
 			$this->startdate = bab_shortDate($time0, false);
 			$this->endtime = bab_time($time1);
@@ -311,6 +222,7 @@ function cal_month($calids, $date)
 	global $babBody;
 
 	$temp = new cal_monthCls("view", $calids, $date);
+	$temp->prepare_events();
 	$temp->printout("calmonth.html", "calmonth");
 }
 
@@ -320,6 +232,7 @@ function cal_month_free($calids, $date)
 	global $babBody;
 
 	$temp = new cal_monthCls("free", $calids, $date);
+	$temp->prepare_free_events();
 	$temp->printout("calmonth.html", "calfreemonth");
 }
 
@@ -339,7 +252,7 @@ function searchAvailability($calid, $date, $date0, $date1, $gap, $bopt)
 
 /* main */
 
-$calid = isset($_GET['calid']) ? $_GET['calid'] : $babBody->icalendars->user_calendarids;
+$calid =bab_rp('calid',$babBody->icalendars->user_calendarids);
 
 if(!isset($idx))
 	{

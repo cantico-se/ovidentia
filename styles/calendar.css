@@ -100,9 +100,14 @@ a img {
 
 	}
 
-.bab_calendar .free, .bab_calendar .freeover, .bab_calendar .event {
+.bab_calendar .free, .bab_calendar .freeover, .bab_calendar .popup {
 	text-align:center;
 	cursor:pointer;
+	}
+
+.bab_calendar .event {
+	/* Default color for events */
+	background-color:#fff;
 	}
 
 .bab_calendar .free {

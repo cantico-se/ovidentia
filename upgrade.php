@@ -6661,11 +6661,11 @@ function upgrade583to584()
 		}
 	}
 	
-	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_WEEK_DAYS_TBL . '\''));
-	if($arr[0] != BAB_TSKMGR_WEEK_DAYS_TBL)
+	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_WEEK_DAYS_TBL . '\''));
+	if($arr[0] != BAB_WEEK_DAYS_TBL)
 	{
 		$res = $db->db_query("
-			CREATE TABLE `" . BAB_TSKMGR_WEEK_DAYS_TBL . "` (
+			CREATE TABLE `" . BAB_WEEK_DAYS_TBL . "` (
 				`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 				`weekDay` TINYINT UNSIGNED NOT NULL default '0',
 				`position` TINYINT UNSIGNED NOT NULL default '0',
@@ -6680,20 +6680,20 @@ function upgrade583to584()
 			return $res;
 		}
 		
-		$db->db_query("insert into " . BAB_TSKMGR_WEEK_DAYS_TBL . " (`id`, `weekDay`, `position`) VALUES ('1', '0', '6')");
-		$db->db_query("insert into " . BAB_TSKMGR_WEEK_DAYS_TBL . " (`id`, `weekDay`, `position`) VALUES ('2', '1', '0')");
-		$db->db_query("insert into " . BAB_TSKMGR_WEEK_DAYS_TBL . " (`id`, `weekDay`, `position`) VALUES ('3', '2', '1')");
-		$db->db_query("insert into " . BAB_TSKMGR_WEEK_DAYS_TBL . " (`id`, `weekDay`, `position`) VALUES ('4', '3', '2')");
-		$db->db_query("insert into " . BAB_TSKMGR_WEEK_DAYS_TBL . " (`id`, `weekDay`, `position`) VALUES ('5', '4', '3')");
-		$db->db_query("insert into " . BAB_TSKMGR_WEEK_DAYS_TBL . " (`id`, `weekDay`, `position`) VALUES ('6', '5', '4')");
-		$db->db_query("insert into " . BAB_TSKMGR_WEEK_DAYS_TBL . " (`id`, `weekDay`, `position`) VALUES ('7', '6', '5')");
+		$db->db_query("insert into " . BAB_WEEK_DAYS_TBL . " (`id`, `weekDay`, `position`) VALUES ('1', '0', '6')");
+		$db->db_query("insert into " . BAB_WEEK_DAYS_TBL . " (`id`, `weekDay`, `position`) VALUES ('2', '1', '0')");
+		$db->db_query("insert into " . BAB_WEEK_DAYS_TBL . " (`id`, `weekDay`, `position`) VALUES ('3', '2', '1')");
+		$db->db_query("insert into " . BAB_WEEK_DAYS_TBL . " (`id`, `weekDay`, `position`) VALUES ('4', '3', '2')");
+		$db->db_query("insert into " . BAB_WEEK_DAYS_TBL . " (`id`, `weekDay`, `position`) VALUES ('5', '4', '3')");
+		$db->db_query("insert into " . BAB_WEEK_DAYS_TBL . " (`id`, `weekDay`, `position`) VALUES ('6', '5', '4')");
+		$db->db_query("insert into " . BAB_WEEK_DAYS_TBL . " (`id`, `weekDay`, `position`) VALUES ('7', '6', '5')");
 	}
 	
-	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_WORKING_HOURS_TBL . '\''));
-	if($arr[0] != BAB_TSKMGR_WORKING_HOURS_TBL)
+	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_WORKING_HOURS_TBL . '\''));
+	if($arr[0] != BAB_WORKING_HOURS_TBL)
 	{
 		$res = $db->db_query("
-			CREATE TABLE `" . BAB_TSKMGR_WORKING_HOURS_TBL . "` (
+			CREATE TABLE `" . BAB_WORKING_HOURS_TBL . "` (
 				`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 				`weekDay` INTEGER UNSIGNED NOT NULL default '0',
 				`idUser` INTEGER UNSIGNED NOT NULL default '0',
@@ -6710,7 +6710,7 @@ function upgrade583to584()
 			return $res;
 		}
 		
-		require_once($GLOBALS['babInstallPath'] . 'utilit/tmIncl.php');
+		require_once($GLOBALS['babInstallPath'] . 'utilit/workinghoursincl.php');
 		bab_createDefaultWorkingHours(0);
 	}
 	
@@ -6958,6 +6958,7 @@ function upgrade587to588()
 	return $ret;
 }
 
+
 function upgrade588to589()
 {
 	$ret = "";
@@ -7130,4 +7131,199 @@ function upgrade600to601()
 	
 	return $ret;
 }
+
+
+
+
+
+
+function upgrade601to602()
+{
+	$ret = "";
+	$db = & $GLOBALS['babDB'];
+
+
+	function change_time($date, $time) {
+		$temp = explode(' ',$date);
+		return $temp[0].' '.$time;
+	}
+
+
+	if (bab_isTableField(BAB_VAC_ENTRIES_TBL, 'day_begin')) {
+
+		// transformer bab_vac_entries
+		// 1 = journée entière
+		// 2 = matin
+		// 3 = apres-midi
+
+		$db->db_query("ALTER TABLE `".BAB_VAC_ENTRIES_TBL."` CHANGE `date_begin` `date_begin` DATETIME DEFAULT '0000-00-00 00:00:00' NOT NULL");
+		$db->db_query("ALTER TABLE `".BAB_VAC_ENTRIES_TBL."` CHANGE `date_end` `date_end` DATETIME DEFAULT '0000-00-00 00:00:00' NOT NULL");
+
+		$res = $db->db_query("SELECT id, date_begin, date_end, day_begin, day_end  FROM `".BAB_VAC_ENTRIES_TBL."`");
+
+		while ($arr = $db->db_fetch_assoc($res)) {
+			$time_begin = '00:00:00';
+			$time_end	= '23:59:59';
+
+			if (3 == $arr['day_begin']) {
+				$time_begin = '12:00:00';
+			}
+			
+			if (2 == $arr['day_end']) {
+				$time_end = '11:59:59';
+			}
+
+			$arr['date_begin']	= change_time($arr['date_begin'], $time_begin);
+			$arr['date_end']	= change_time($arr['date_end']	, $time_end);
+
+			$db->db_query("
+				UPDATE `".BAB_VAC_ENTRIES_TBL."` SET 
+					date_begin =".$db->quote($arr['date_begin']).",  
+					date_end =".$db->quote($arr['date_end'])." 
+				WHERE 
+					id=".$db->quote($arr['id'])
+			);
+		}
+
+		$db->db_query("ALTER TABLE `".BAB_VAC_ENTRIES_TBL."` DROP `day_begin`");
+		$db->db_query("ALTER TABLE `".BAB_VAC_ENTRIES_TBL."` DROP `day_end`");
+	}
+
+
+	if (bab_isTable('bab_tskmgr_week_days')) {
+
+		$db->db_query("ALTER TABLE `bab_tskmgr_week_days` RENAME `".BAB_WEEK_DAYS_TBL."` ");
+
+	} elseif(!bab_isTable(BAB_WEEK_DAYS_TBL)) {
+
+		$res = $db->db_query("
+			CREATE TABLE `" . BAB_WEEK_DAYS_TBL . "` (
+				`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+				`weekDay` TINYINT UNSIGNED NOT NULL default '0',
+				`position` TINYINT UNSIGNED NOT NULL default '0',
+				PRIMARY KEY(`id`),
+				INDEX `weekDay`(`weekDay`),
+				INDEX `position`(`position`)
+				) TYPE=MyISAM
+		");
+		
+		if(false == $res)
+		{
+			return "Creation of <b>".BAB_WEEK_DAYS_TBL."</b> failed !<br>";
+		}
+		
+		$db->db_query("insert into " . BAB_WEEK_DAYS_TBL . " (`id`, `weekDay`, `position`) VALUES ('1', '0', '6')");
+		$db->db_query("insert into " . BAB_WEEK_DAYS_TBL . " (`id`, `weekDay`, `position`) VALUES ('2', '1', '0')");
+		$db->db_query("insert into " . BAB_WEEK_DAYS_TBL . " (`id`, `weekDay`, `position`) VALUES ('3', '2', '1')");
+		$db->db_query("insert into " . BAB_WEEK_DAYS_TBL . " (`id`, `weekDay`, `position`) VALUES ('4', '3', '2')");
+		$db->db_query("insert into " . BAB_WEEK_DAYS_TBL . " (`id`, `weekDay`, `position`) VALUES ('5', '4', '3')");
+		$db->db_query("insert into " . BAB_WEEK_DAYS_TBL . " (`id`, `weekDay`, `position`) VALUES ('6', '5', '4')");
+		$db->db_query("insert into " . BAB_WEEK_DAYS_TBL . " (`id`, `weekDay`, `position`) VALUES ('7', '6', '5')");
+	}
+
+	if (bab_isTable('bab_tskmgr_working_hours')) {
+		$db->db_query("ALTER TABLE `bab_tskmgr_working_hours` RENAME `".BAB_WORKING_HOURS_TBL."` ");
+		$db->db_query("ALTER TABLE `bab_sites_nonworking_days` ADD INDEX ( `nw_day` )");
+	}
+
+
+	
+
+
+	if (!bab_isTable(BAB_VAC_CALENDAR_TBL)) {
+		$res = $db->db_query("
+		CREATE TABLE `".BAB_VAC_CALENDAR_TBL."` (
+		  `id` int(10) unsigned NOT NULL auto_increment,
+		  `id_user` int(10) unsigned NOT NULL,
+		  `monthkey` mediumint(6) unsigned NOT NULL,
+		  `cal_date` date NOT NULL,
+		  `ampm` tinyint(1) unsigned NOT NULL,
+		  `period_type` tinyint(3) unsigned NOT NULL,
+		  `id_entry` int(10) unsigned NOT NULL,
+		  `color` varchar(6) NOT NULL,
+		  PRIMARY KEY  (`id`),
+		  KEY `id_user` (`id_user`,`monthkey`,`cal_date`)
+		)
+		");
+
+		if(false == $res)
+		{
+			return "Creation of <b>".BAB_VAC_CALENDAR_TBL."</b> failed !<br>";
+		}
+	}
+
+	if (bab_isTableField(BAB_VAC_ENTRIES_ELEM_TBL, 'id_type')) {
+		$db->db_query("ALTER TABLE `".BAB_VAC_ENTRIES_ELEM_TBL."` CHANGE `id_type` `id_right` int(11) unsigned default NULL");
+	}
+
+
+	if (!bab_isTable(BAB_VAC_RGROUPS_TBL)) {
+		$res = $db->db_query("
+			CREATE TABLE `".BAB_VAC_RGROUPS_TBL."` (
+			`id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
+			`name` VARCHAR( 255 ) NOT NULL ,
+			PRIMARY KEY ( `id` )
+			)
+		");
+
+		if(false == $res)
+		{
+			return "Creation of <b>".BAB_VAC_RGROUPS_TBL."</b> failed !<br>";
+		}
+	}
+
+
+	if (!bab_isTableField(BAB_VAC_RIGHTS_TBL, 'id_rgroup')) {
+		$db->db_query("ALTER TABLE `bab_vac_rights` ADD `id_rgroup` INT UNSIGNED NOT NULL");
+		$db->db_query("ALTER TABLE `bab_vac_rights` ADD INDEX ( `id_rgroup` )");
+	}
+
+	$res = $db->db_query("SELECT id FROM ".BAB_CAL_EVENTS_TBL." WHERE hash LIKE 'V_%'");
+	while ($arr = $db->db_fetch_assoc($res)) {
+		$db->db_query("DELETE FROM ".BAB_CAL_EVENTS_OWNERS_TBL." WHERE id_event=".$db->quote($arr['id']));
+		$db->db_query("DELETE FROM ".BAB_CAL_EVENTS_REMINDERS_TBL." WHERE id_event=".$db->quote($arr['id']));
+		$db->db_query("DELETE FROM ".BAB_CAL_EVENTS_NOTES_TBL." WHERE id_event=".$db->quote($arr['id']));
+		$db->db_query("DELETE FROM ".BAB_CAL_EVENTS_TBL." WHERE id=".$db->quote($arr['id']));
+	}
+
+
+	if (!bab_isTable(BAB_VAC_COMANAGER_TBL)) {
+		$res = $db->db_query("
+			CREATE TABLE `".BAB_VAC_COMANAGER_TBL."` (
+			`id_entity` INT UNSIGNED NOT NULL ,
+			`id_user` INT UNSIGNED NOT NULL ,
+			PRIMARY KEY ( `id_entity` , `id_user` )
+			)
+		");
+
+		if(false == $res)
+		{
+			return "Creation of <b>".BAB_VAC_RGROUPS_TBL."</b> failed !<br>";
+		}
+	}
+
+
+	// working days
+
+	function setUserWd($id_user, $WDStr) {
+		$awd = explode(',',$WDStr);
+
+		$db = &$GLOBALS['babDB'];
+		$db->db_query("DELETE FROM ".BAB_WORKING_HOURS_TBL." WHERE idUser=".$db->quote($id_user));
+		foreach($awd as $d) {
+			$db->db_query("INSERT INTO ".BAB_WORKING_HOURS_TBL."( weekDay, idUser,  startHour, endHour) VALUES (".$db->quote($d).','.$db->quote($id_user).", '00:00:00', '24:00:00')");
+		}
+	}
+
+	$res = $db->db_query("SELECT workdays FROM ".BAB_SITES_TBL." WHERE name=".$db->quote($GLOBALS['babSiteName']));
+	$arr = $db->db_fetch_assoc($res);
+	setUserWd(0, $arr['workdays']);
+
+	$res = $db->db_query("SELECT id_user, workdays FROM ".BAB_CAL_USER_OPTIONS_TBL." WHERE workdays<>".$db->quote($arr['workdays']));
+	$arr = $db->db_fetch_assoc($res);
+	setUserWd($arr['id_user'], $arr['workdays']);
+
+	return $ret;
+}
+
 ?>

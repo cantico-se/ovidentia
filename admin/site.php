@@ -515,7 +515,7 @@ function site_menu6($id)
 
 		function temp($id)
 			{
-			$this->t_workdays = bab_translate("Working days");
+			$this->t_workdays = bab_translate("Working days (for all sites)");
 			$this->t_dispdays = bab_translate("Days to display");
 			$this->t_nonworking = bab_translate("Non-working days");
 			$this->t_startdaytxt = bab_translate("First day of week");
@@ -530,7 +530,11 @@ function site_menu6($id)
 			
 			$this->site_configuration_cls($id);
 
-			$this->workdays = array_flip(explode(',',$GLOBALS['babBody']->babsite['workdays']));
+			include_once $GLOBALS['babInstallPath']."utilit/calapi.php";
+			$sWorkingDays = '';
+			bab_calGetWorkingDays(0, $sWorkingDays);
+
+			$this->workdays = array_flip(explode(',',$sWorkingDays));
 			$this->dispdays = array_flip(explode(',',$GLOBALS['babBody']->babsite['dispdays']));
 			$this->startday = $GLOBALS['babBody']->babsite['startday'];
 			$this->resnw = $this->db->db_query("SELECT * FROM ".BAB_SITES_NONWORKING_CONFIG_TBL." WHERE id_site='".$id."'");
@@ -1602,11 +1606,19 @@ function siteUpdate_menu6($item)
 	{
 	$db = & $GLOBALS['babDB'];
 
-	$reqarr = array("startday='".$_POST['startday']."'");
+	include_once $GLOBALS['babInstallPath']."utilit/workinghoursincl.php";
+	bab_deleteAllWorkingHours(0);
+
+
 	if (isset($_POST['workdays']) && count($_POST['workdays']))
 		{
-		$reqarr[] = "workdays='".implode(',',$_POST['workdays'])."'";
+		foreach($_POST['workdays'] as $day) {
+			bab_insertWorkingHours(0, $day, '00:00:00', '24:00:00');
 		}
+	}
+
+
+	$reqarr = array("startday='".$_POST['startday']."'");
 
 	if (isset($_POST['dispdays']) && count($_POST['dispdays']))
 		{

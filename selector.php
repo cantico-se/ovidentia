@@ -150,6 +150,14 @@ function selectFiles()
 
 
 
+function selectGroups() {
+	
+	$treeView = new bab_GroupTreeView('bab_tv_groups');
+	$treeView->sort();
+	$GLOBALS['babBody']->babpopup($treeView->printTemplate());
+}
+
+
 
 $idx = isset($_REQUEST['idx']) ? $_REQUEST['idx'] : '';
 
@@ -169,6 +177,10 @@ switch ($idx) {
 		
 	case 'files':
 		selectFiles();
+		break;
+
+	case 'groups':
+		selectGroups();
 		break;
 		
 	default:

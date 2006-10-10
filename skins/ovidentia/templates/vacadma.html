@@ -16,7 +16,7 @@ function dateEnd(day, month, year)
 <table width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
-	<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 		<tr class="BabSiteAdminTitleFontBackground">
 			<td>{ desctxt }</td>
 			<td align="center">{ t_edit }</td>
@@ -26,7 +26,7 @@ function dateEnd(day, month, year)
 			<td>&nbsp;</td>
 		</tr>
         <!--#in getnext -->
-        <tr class="BabSiteAdminFontBackground">
+        <!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
 			<td>
 				<a href="javascript: Start('{ vrviewurl }', 'OviListPr', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ description }</a>
 			</td>
@@ -40,16 +40,21 @@ function dateEnd(day, month, year)
         </tr>
         <!--#endin getnext -->
 		<tr>
-			<td colspan="6" class="BabSiteAdminTitleFontBackground"> 
-				<table border="0" cellpadding="0" cellspacing="0" align="right" class="BabSiteAdminTitleFontBackground">
-				<tr> 
-					<td width="1%" nowrap>&nbsp;</td>
-					<td width="1%" nowrap><a href="{ topurl }">{ topname }</a></td>
-					<td width="1%" nowrap><a href="{ prevurl }">{ prevname }</a></td>
-					<td width="1%" nowrap><a href="{ nexturl }">{ nextname }</a></td>
-					<td width="1%" nowrap><a href="{ bottomurl }">{ bottomname }</a></td>
-				</tr>
-				</table>
+			<td class="BabSiteAdminTitleFontBackground"> 
+				&nbsp; 
+				<!--#if topurl --><a href="{ topurl }"><img src="{ babSkinPath }images/Puces/arrowPrev3aa.gif" alt="{ t_first_page }" /></a><!--#endif topurl -->
+				<!--#if prevurl --><a href="{ prevurl }"><img src="{ babSkinPath }images/Puces/arrowPrev3a.gif" alt="{ t_previous_page }" /></a><!--#endif prevurl -->
+			</td>
+
+			<td colspan="3" class="BabSiteAdminTitleFontBackground" align="center">
+				{ t_position }
+			</td>
+
+			<td colspan="2" class="BabSiteAdminTitleFontBackground" align="right"> 
+
+				<!--#if nexturl --><a href="{ nexturl }"><img src="{ babSkinPath }images/Puces/arrowNext3a.gif" alt="{ t_next_page }" /></a><!--#endif nexturl -->
+				<!--#if bottomurl --><a href="{ bottomurl }"><img src="{ babSkinPath }images/Puces/arrowNext3aa.gif" alt="{ t_last_page }" /></a><!--#endif bottomurl -->
+				&nbsp; 
 			</td>
 		</tr>
 </table>
@@ -124,6 +129,7 @@ function dateEnd(day, month, year)
 
 
 <!--#begin rightsedit -->
+<script type="text/javascript" src="{ babInstallPath }scripts/bab_dialog.js"></script>
 <script type="text/javascript">
 <!--
 function use_rules_change(obj)
@@ -159,72 +165,119 @@ function calwin(callback)
 }
 function validateForm(fr)
 {
-var ret = true;
+	
+	var sel_groups = fr.elements['id_groups[]'];
+	for (i = sel_groups.options.length; i > 0 ; i--) {
+		sel_groups.options[i-1].selected = true;
+	}	
+	
+	
+	var ret = true;
 
-if( fr.righttype.options[fr.righttype.selectedIndex].value == 0 ||  fr.righttype.options[fr.righttype.selectedIndex].value == 1)
-{
-	return true;
-}
-if( fr.yearbeginfx.selectedIndex > fr.yearendfx.selectedIndex )
+	if( fr.righttype.options[fr.righttype.selectedIndex].value == 0 ||  fr.righttype.options[fr.righttype.selectedIndex].value == 1)
 	{
-	ret = false;
+		return true;
 	}
-else if( fr.yearbeginfx.selectedIndex == fr.yearendfx.selectedIndex )
-	{
-		if( fr.monthbeginfx.selectedIndex > fr.monthendfx.selectedIndex )
+	if( fr.yearbeginfx.selectedIndex > fr.yearendfx.selectedIndex )
 		{
 		ret = false;
 		}
-		else if( fr.monthbeginfx.selectedIndex == fr.monthendfx.selectedIndex ) 
+	else if( fr.yearbeginfx.selectedIndex == fr.yearendfx.selectedIndex )
 		{
-		if( fr.daybeginfx.selectedIndex > fr.dayendfx.selectedIndex )
+			if( fr.monthbeginfx.selectedIndex > fr.monthendfx.selectedIndex )
 			{
 			ret = false;
 			}
+			else if( fr.monthbeginfx.selectedIndex == fr.monthendfx.selectedIndex ) 
+			{
+			if( fr.daybeginfx.selectedIndex > fr.dayendfx.selectedIndex )
+				{
+				ret = false;
+				}
+			}
+		}
+
+	if( ret == false)
+		{
+		var d1;
+		alert ('{ invaliddate }');
+		return false;
+		}
+
+	dateA = new Date(fr.yearbeginfx.options[fr.yearbeginfx.selectedIndex].text, fr.monthbeginfx.options[fr.monthbeginfx.selectedIndex].value-1, fr.daybeginfx.options[fr.daybeginfx.selectedIndex].text );
+	dateB = new Date(fr.yearendfx.options[fr.yearendfx.selectedIndex].text, fr.monthendfx.options[fr.monthendfx.selectedIndex].value-1, fr.dayendfx.options[fr.dayendfx.selectedIndex].text );
+
+	dayb = fr.halfdaybeginfx.options[fr.halfdaybeginfx.selectedIndex].value;
+	daye = fr.halfdayendfx.options[fr.halfdayendfx.selectedIndex].value;
+	diff = ((dateB - dateA)/86400000)+1;
+	if( diff == 1 )
+	{
+		if( dayb != daye )
+		{
+		ret = false;
+		}
+		else if( dayb == 1 && fr.quantity.value != 1)
+		{
+		ret = false;
+		}
+		else if( dayb != 1 && fr.quantity.value != '0.5')
+		{
+		ret = false;
 		}
 	}
-
-if( ret == false)
+	else
 	{
-	var d1;
-	alert ('{ invaliddate }');
+	if( dayb == 2 || daye == 3 ) { ret = false; }
+	else if( fr.quantity.value > diff ) { ret = false; }
+	}
+
+	if( ret == false) { 
+	var d1; 
+	alert ('{ invalidtotal }'); 
 	return false;
 	}
-
-dateA = new Date(fr.yearbeginfx.options[fr.yearbeginfx.selectedIndex].text, fr.monthbeginfx.options[fr.monthbeginfx.selectedIndex].value-1, fr.daybeginfx.options[fr.daybeginfx.selectedIndex].text );
-dateB = new Date(fr.yearendfx.options[fr.yearendfx.selectedIndex].text, fr.monthendfx.options[fr.monthendfx.selectedIndex].value-1, fr.dayendfx.options[fr.dayendfx.selectedIndex].text );
-
-dayb = fr.halfdaybeginfx.options[fr.halfdaybeginfx.selectedIndex].value;
-daye = fr.halfdayendfx.options[fr.halfdayendfx.selectedIndex].value;
-diff = ((dateB - dateA)/86400000)+1;
-if( diff == 1 )
-{
-	if( dayb != daye )
-	{
-	ret = false;
-	}
-	else if( dayb == 1 && fr.quantity.value != 1)
-	{
-	ret = false;
-	}
-	else if( dayb != 1 && fr.quantity.value != '0.5')
-	{
-	ret = false;
-	}
-}
-else
-{
-if( dayb == 2 || daye == 3 ) { ret = false; }
-else if( fr.quantity.value > diff ) { ret = false; }
+	return true;
 }
 
-if( ret == false) { 
-var d1; 
-alert ('{ invalidtotal }'); 
-return false;
+
+
+
+function onAssignmentType(sel) {
+
+	for(i = 1 ; i <= 3; i++) {
+		obj = document.getElementById('bab_vac_assignment_type_'+i);
+		obj.style.display = 'none';
+	}
+
+	val = sel.value;
+	obj = document.getElementById('bab_vac_assignment_type_'+val);
+	obj.style.display = '';
 }
-return true;
+
+
+function opengroups() {
+	bab_dialog.selectgroups( function(arr) {
+			var group;
+			var sel_groups = document.forms['rightsedit'].elements['id_groups[]'];
+			for (var i = 0; i < arr.length; i++) {
+				group = arr[i];
+				opt = new Option(group.content, group.id);
+				sel_groups.options[sel_groups.options.length] = opt;
+			}
+		}
+	);
 }
+
+
+function group_delete_selected() {
+	var sel_groups = document.forms['rightsedit'].elements['id_groups[]'];
+	for (i = sel_groups.options.length; i > 0 ; i--) {
+		if (sel_groups.options[i-1].selected) {
+			sel_groups.options[i-1] = null;
+		}
+	}
+}
+
 //-->
 </script>
 
@@ -256,6 +309,17 @@ return true;
 					<input type="text" name="date_end" size="10" maxlength="10" value="{ arr[date_end] }" />
 				</td>
 			</tr>
+			<tr> 
+				<td align="right">{ t_id_rgroup }:</td>
+				<td>
+					<select name="id_rgroup">
+						<option value=""></option>
+					<!--#in getnextrgroup -->
+						<option value="{ rg_id }" <!--#if selected --> selected="selected" <!--#endif selected -->>{ rg_name }</option>
+					<!--#endin getnextrgroup -->
+					</select>
+				</td>
+			</tr>
 			<!--#if arr[idvr] -->
 			<tr> 
 				<td align="right">{ t_id_type }:</td>
@@ -265,6 +329,7 @@ return true;
 				</td>
 			</tr>
 			<!--#else arr[idvr] -->
+			
 			<tr> 
 				<td align="right">{ t_id_type }:</td>
 				<td>
@@ -275,27 +340,61 @@ return true;
 					</select>
 				</td>
 			</tr>
+
+
+
 			<tr> 
-				<td align="right"><a href="javascript: openPopup('{ usersbrowurl }');">{ t_id_creditor }</a>:</td>
-				<td> 
-					<input type="text" name="id_creditorDisplay" size="45" maxlength="255" value="{ arr[id_creditorDisplay] }" disabled="disabled" />
-					<input type="hidden" name="id_creditor" value="{ arr[id_creditor] }" />
+				<td colspan="2">
+				
+				<fieldset>
+						<legend>{ t_assignment }</legend>
+
+						<label for="bab_vac_assignment_type">{ t_assignment_type }</label> : 
+						<select id="bab_vac_assignment_type" name="assignment_type" onchange="onAssignmentType(this)">
+							<option value="1">{ t_by_user }</option>
+							<option value="2">{ t_by_coll }</option>
+							<option value="3">{ t_by_group }</option>
+						</select>
+						<br />
+						<br />
+	
+						<div id="bab_vac_assignment_type_1">
+							<a href="javascript: openPopup('{ usersbrowurl }');">{ t_id_creditor }</a> :
+							<input type="text" name="id_creditorDisplay" size="45" maxlength="255" value="{ arr[id_creditorDisplay] }" disabled="disabled" />
+							<input type="hidden" name="id_creditor" value="{ arr[id_creditor] }" />
+						</div>
+
+						<div id="bab_vac_assignment_type_2">
+							{ t_collid } : 
+							<select name="collid" onchange="onCollection()">
+								<option value=""></option>
+								<option value="-2">{ t_allcol }</option>
+								<option value="-1">{ t_allpers }</option>
+							</select>
+						</div>
+
+						<div id="bab_vac_assignment_type_3">
+							<table>
+							<tr>
+								<td valign="top" align="right">
+									<p><a href="#" onclick="opengroups()">{ t_id_groups }</a> : </p>
+									<p>
+										<img src="{ babSkinPath }images/Puces/del.gif" onclick="group_delete_selected()" style="cursor:pointer" />
+									</p>
+								</td>
+								<td>
+									<select name="id_groups[]" multiple="multiple" size="5">
+									</select>
+								</td>
+							</tr>
+							</table>
+						</div>
+				
+				</fieldset>
+
 				</td>
 			</tr>
-			<tr> 
-				<td align="right">&nbsp;</td>
-				<td>{ t_orand }</td>
-			</tr>
-			<tr> 
-				<td align="right">{ t_collid }:</td>
-				<td> 
-					<select name="collid" onchange="onCollection()">
-						<option value=""></option>
-						<option value="-2">{ t_allcol }</option>
-						<option value="-1">{ t_allpers }</option>
-					</select>
-				</td>
-			</tr>
+
 			<!--#endif arr[idvr] -->
 			<tr> 
 				<td align="right">{ t_quantity }:</td>
@@ -546,6 +645,9 @@ return true;
 
 <script type="text/javascript">
 <!--
+
+
+onAssignmentType(document.forms['rightsedit'].assignment_type);
 
 use_rules_change(document.forms['rightsedit'].righttype);
 
@@ -862,3 +964,164 @@ window.focus();
 </BODY>
 </HTML>
 <!--#end viewvacright -->
+
+
+<!--#begin rightsdelete -->
+<table width="60%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+		<td class="BabLoginCadreBackground"> 
+			<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="10">
+			
+			<tr> 
+				<td>
+					<h5>{ t_alert }</h5>
+
+					<p>
+						{ t_request } : { request }
+					</p>
+					<p>
+						{ t_nb_requests }
+					</p>
+					
+					<form method="post" action="{ babPhpSelf }">
+						<input type="hidden" name="tg" value="vacadma" />
+						<input type="hidden" name="idx" value="lrig" />
+						<input type="hidden" name="action" value="delete" />
+						<input type="hidden" name="idvr" value="{ idvr }" />
+						<p align="center">
+							<input type="submit" name="confirmed" value="{ t_confirm }" />
+						</p>
+					</form>
+				</td>
+			</tr>
+
+			</table>
+		</td>
+	</tr>
+</table>
+<!--#end rightsdelete -->
+
+<!--#begin rgrouplist -->
+
+<table width="60%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+		<td class="BabLoginCadreBackground"> 
+			<table width="100%" border="0" cellspacing="0" cellpadding="5">
+			
+			<tr class="BabSiteAdminTitleFontBackground"> 
+				<td>{ t_name }</td>
+				<td>{ t_edit }</td>
+			</tr>
+			<!--#in getnext -->
+			<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+				<td>{ name }</td>
+				<td><a href="{ babUrlScript }?tg=vacadma&amp;idx=rgroupmod&amp;id_rgroup={ id_rgroup }"><img src="{ babSkinPath }images/Puces/edit.gif" border="0" alt="{ t_edit }" /></a></td>
+			</tr>
+			<!--#endin getnext -->
+			</table>
+		</td>
+	</tr>
+</table>
+<!--#end rgrouplist -->
+
+
+<!--#begin rgroupmod -->
+<form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="vacadma" />
+<input type="hidden" name="idx" value="rgroup" />
+<input type="hidden" name="action" value="rgroupmod" />
+<input type="hidden" name="id_rgroup" value="{ id_rgroup }" />
+<table width="60%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+		<td class="BabLoginCadreBackground"> 
+			<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5">
+			
+			<tr> 
+				<td align="right">{ t_name } :</td>
+				<td><input type="text" name="name" value="{ name }" size="50" /></td>
+			</tr>
+
+			<tr>
+				<td colspan="2" align="center">
+					<br />
+					
+					<input type="submit" value="{ t_record }" />
+					<br />
+					<br />
+				</td>
+			</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+</form>
+<!--#end rgroupmod -->
+
+
+
+<!--#begin rightcopy -->
+<form name="copy" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="vacadma" />
+<input type="hidden" name="idx" value="copy" />
+<table width="60%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+		<td class="BabLoginCadreBackground"> 
+			<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5">
+			
+			<tr> 
+				<td>
+				<p>{ t_year_from } :
+					<select name="year_from" onchange="document.forms['copy'].submit()">
+						<!--#in getnextyear -->
+						<option value="{ year }" <!--#if selected --> selected="selected"<!--#endif selected -->>{ year }</option>
+						<!--#endin getnextyear -->
+					</select>
+				</p>
+				<!--#in year_to --><!--#endin year_to -->
+				<p><br /></p>
+
+				<blockquote>
+				
+				<!--#in getnextright -->
+				<p>
+					<input type="checkbox" name="rights[{ id_right }]" id="bab_vac_right_{ id_right }" value="{ id_right }" <!--#if checked --> checked="checked" <!--#endif checked --> /> 
+					<label for="bab_vac_right_{ id_right }">{ right_description }</label>
+				</p>
+				<!--#endin getnextright -->
+
+				</blockquote>
+
+				<p><br /></p>
+				
+				<p>{ t_year_to } : <input type="text" name="year_to" value="{ year_to }" /></p>
+				
+				<p align="center"><input type="submit" name="copy_rights" value="{ t_record }" /></p>
+				</td>
+			</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+</form>
+<!--#end rightcopy -->
+
+
+<!--#begin rightcopy2 -->
+<table width="60%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+		<td class="BabLoginCadreBackground"> 
+			<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5">
+			
+			<tr> 
+				<td>
+					<!--#in getnextmessage -->
+					<p>{ message }</p>
+					<!--#endin getnextmessage -->
+					
+				</td>
+			</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+<!--#end rightcopy2 -->

@@ -731,13 +731,20 @@ function admmenu()
 							$GLOBALS['babUrlScript']."?tg=vacadm&idx=lcol" => bab_translate("Collections"),
 							$GLOBALS['babUrlScript']."?tg=vacadm&idx=lper" => bab_translate("Personnel"), 
 							$GLOBALS['babUrlScript']."?tg=vacadma&idx=lrig" => bab_translate("Rights"),
-							$GLOBALS['babUrlScript']."?tg=vacadmb&idx=lreq" => bab_translate("Requests")
+							$GLOBALS['babUrlScript']."?tg=vacadma&idx=rgroup" => bab_translate("Rights groups"),
+							$GLOBALS['babUrlScript']."?tg=vacadmb&idx=lreq" => bab_translate("Requests"),
+							$GLOBALS['babUrlScript']."?tg=vacadma&idx=copy" => bab_translate("Rights renewal by years")
 							);
 			}
 
 		function getnext()
 			{
-			return list($this->url, $this->text) = each($this->menu);
+			if (list($url, $text) = each($this->menu)) {
+				$this->url	= bab_toHtml($url); 
+				$this->text	= bab_toHtml($text);
+				return true;
+			}
+			return false;
 			}
 		}
 
@@ -1031,6 +1038,9 @@ function confirmDeletePersonnel($items)
 	$cnt = count($arr);
 	for($i = 0; $i < $cnt; $i++)
 		{
+
+		bab_vac_clearUserCalendar($arr[$i]);
+
 		$res = $babDB->db_query("select id from ".BAB_VAC_ENTRIES_TBL." where id_user='".$this->db->db_escape_string($arr[$i])."'");
 		while( $row = $babDB->db_fetch_array($res))
 			{

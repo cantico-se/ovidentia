@@ -11,26 +11,44 @@
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
 
-	<table  width="100%" border="0" cellspacing="0" cellpadding="5" class="BabLoginMenuBackground">
+	<table  width="100%" border="0" cellspacing="0" cellpadding="10" class="BabLoginMenuBackground">
 	<tr valign="top"> 
 		<td>
 		<!--#if calweekwork -->
-		<dl>
-			<dt><h5>{ calweekworktxt }</h5><dt>
-			<!--#in getnextshortday -->
-			<dd ><input  type="checkbox" name="workdays[]" id="{ dayid }" value="{ dayid }"  { work_selected } /><label for="{ dayid }">{ shortday }</label></dd>
-			<!--#endin getnextshortday -->
-		</dl>
-		<!--#endif calweekwork -->
-		</td>
+		
+		<table border="0" cellspacing="0" cellpadding="4" width="80%">
+			<thead>
+			<tr>
+				<td width="33%">&nbsp;</td>
+				<th colspan="2" width="33%">{ calweekworktxt }</th>
+				<th rowspan="2" width="33%">{ calweekdisptxt }</th>
+			</tr>
 
-		<td>
-		<dl>
-			<dt><h5>{ calweekdisptxt }</h5><dt>
+			<tr>
+				<td>&nbsp;</td>
+				<td>{ t_am }</td>
+				<td>{ t_pm }</td>
+			</tr>
+			</thead>
+			<tbody>
 			<!--#in getnextshortday -->
-			<dd ><input  type="checkbox" name="dispdays[]" id="{ dayid }" value="{ dayid }"  { disp_selected } /><label for="{ dayid }">{ shortday }</label></dd>
+			<tr align="center">
+				<td align="right">{ shortday }</td>
+				<td><input  type="checkbox" name="work[{ dayid }][am]" value="1"  <!--#if work_am --> checked="checked"<!--#endif work_am --> />
+				</td>
+				<td><input  type="checkbox" name="work[{ dayid }][pm]" value="1"  <!--#if work_pm --> checked="checked"<!--#endif work_pm --> />
+				</td>
+
+				<td>
+					<input  type="checkbox" name="dispdays[]" id="{ dayid }" value="{ dayid }"  { disp_selected } />
+				</td>
+			</tr>
 			<!--#endin getnextshortday -->
-		</dl>
+			</tbody>
+		</table>
+		<br />
+		<!--#endif calweekwork -->
+		<br />
 		</td>
 	</tr>
 
@@ -124,7 +142,7 @@
 </tr>
 </table>
 <br>
-<input type="submit" name="submit" value="{ modify }">
+<input type="submit" name="submit" value="{ modify }" />
 </center>
 </form>
 <!--#end caloptions -->

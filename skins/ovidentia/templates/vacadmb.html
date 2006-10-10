@@ -1,5 +1,6 @@
 <!--#begin vrequestslist -->
-<SCRIPT language="JavaScript">
+<script type="text/javascript" src="{ babInstallPath }scripts/bab_dialog.js"></script>
+<script type="text/javascript">
 <!--
 function dateBegin(day, month, year)
 {
@@ -11,21 +12,15 @@ function dateEnd(day, month, year)
 	document.vacfreqs.elements['datee'].value = day+'-'+month+'-'+year;
 }
 
-function onUser(id, fn)
-{
-document.forms.vacfreqs.user.value=fn;
-document.forms.vacfreqs.userid.value=id;
-this.focus();
-op.close();
-}
 
-var op = null;
-function openPopup(url)
+function openPopup()
 {
-if( op == null || op.closed )
-	op = this.open(url+'onUser', 'babuserslist', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');
-else
-	op.focus();
+	bab_dialog.selectuser( 
+		function(arr) {
+		document.forms['vacfreqs'].user.value	= arr['name'];
+		document.forms['vacfreqs'].userid.value	= arr['id_user'];
+		}
+	)
 }
 function babReset()
 {
@@ -35,7 +30,7 @@ document.forms['vacfreqs'].datee.value ='';
 document.forms['vacfreqs'].dateb.value ='';
 }
 //-->
-</SCRIPT>
+</script>
 
 <form method="post" action="{ babPhpSelf }" name="listform">
 <input type="hidden" name="tg" value="vacadmb">
@@ -43,36 +38,42 @@ document.forms['vacfreqs'].dateb.value ='';
 <table width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
-	<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
         <tr class="BabSiteAdminTitleFontBackground"> 
             <td>{ nametxt }</td>
-			<td align="center">{ t_edit }</td>
             <td>{ begindatetxt }</td>
             <td>{ enddatetxt }</td>
             <td>{ quantitytxt }</td>
             <td width="5%">{ statustxt }</td>
+			<td align="center">{ t_edit }</td>
+			<td align="center">{ t_delete }</td>
         </tr>
           <!--#in getnext -->
-        <tr class="BabSiteAdminFontBackground"> 
+        <!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
             <td><a href="javascript: Start('{ url }', 'VacationWindow', 'width=500,height=380,status=no,resizable=yes,top=200,left=200');">{ urlname }</a></td>
-            <td align="center"><a href="{ editurl }"><img src="{ babSkinPath }images/Puces/edit.gif" alt="{ alttxt }" border="0" /></a></td>
             <td>{ begindate }</td>
             <td>{ enddate }</td>
             <td>{ quantity }</td>
             <td>{ status }</td>
+            <td align="center"><a href="{ editurl }"><img src="{ babSkinPath }images/Puces/edit.gif" alt="{ alttxt }" border="0" /></a></td>
+			<td align="center"><a href="{ urldelete }"><img src="{ babSkinPath }images/Puces/PuceDelete.png" alt="{ t_delete }" border="0" /></a></td>
         </tr>
           <!--#endin getnext -->
-		<tr>
-			<td colspan="8" nowrap class="BabSiteAdminTitleFontBackground"> 
-				<table border="0" cellpadding="0" cellspacing="0" align="right" class="BabSiteAdminTitleFontBackground">
-				<tr> 
-				<td width="1%" nowrap>&nbsp;</td>
-				<td width="1%" nowrap><a href="{ topurl }">{ topname }</a></td>
-				<td width="1%" nowrap><a href="{ prevurl }">{ prevname }</a></td>
-				<td width="1%" nowrap><a href="{ nexturl }">{ nextname }</a></td>
-				<td width="1%" nowrap><a href="{ bottomurl }">{ bottomname }</a></td>
-				</tr>
-				</table>
+		<tr class="BabSiteAdminTitleFontBackground">
+			<td> 
+				&nbsp; 
+				<!--#if topurl --><a href="{ topurl }"><img src="{ babSkinPath }images/Puces/arrowPrev3aa.gif" alt="{ t_first_page }" /></a><!--#endif topurl -->
+				<!--#if prevurl --><a href="{ prevurl }"><img src="{ babSkinPath }images/Puces/arrowPrev3a.gif" alt="{ t_previous_page }" /></a><!--#endif prevurl -->
+			</td>
+
+			<td colspan="5" align="center">
+				{ t_position }
+			</td>
+
+			<td align="right"> 
+				<!--#if nexturl --><a href="{ nexturl }"><img src="{ babSkinPath }images/Puces/arrowNext3a.gif" alt="{ t_next_page }" /></a><!--#endif nexturl -->
+				<!--#if bottomurl --><a href="{ bottomurl }"><img src="{ babSkinPath }images/Puces/arrowNext3aa.gif" alt="{ t_last_page }" /></a><!--#endif bottomurl -->
+				&nbsp; 
 			</td>
 		</tr>
 	</table>
@@ -80,6 +81,7 @@ document.forms['vacfreqs'].dateb.value ='';
 </tr>
 </table>
 </form>
+
 
 <br>
 <form name="vacfreqs" method="post" action="{ babPhpSelf }" >
@@ -93,7 +95,7 @@ document.forms['vacfreqs'].dateb.value ='';
 	<tr valign="middle"> 
 		<td>&nbsp;</td>
 		<td>{ statustxt }</td>
-		<td><a href="javascript: openPopup('{ usersbrowurl }');">{ usertxt }</a></td>
+		<td><a href="#" onclick="openPopup()">{ usertxt }</a></td>
 		<td>{ datetxt }</td>
 	</tr>
 	<tr> 
@@ -397,10 +399,10 @@ window.focus();
 <td class="BabLoginMenuBackground"> 
 <table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr>
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ datebegintxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ datebegin }&nbsp;&nbsp;{ halfnamebegin }</td>
+<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ datebegintxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ datebegin }</td>
 </tr>
 <tr>
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ dateendtxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ dateend }&nbsp;&nbsp;{ halfnameend }</td>
+<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ dateendtxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ dateend }</td>
 </tr>
 <tr>
 <td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ nbdaystxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">

@@ -684,19 +684,34 @@ function validateDayField(field) {
 			<td>{ desctxt }</td>
 			<td>{ quantitytxt }</td>
 			<td>{ consumedtxt }</td>
-			<td>{ datetxt }</td>
 			<td>{ datebtxt }</td>
 			<td>{ dateetxt }</td>
 		</tr> 
 		<!--#in getnextright -->
 		<!--#if bview -->
+		<!--#if year -->
+		<tr class="BabLoginMenuBackground"> 
+			<td colspan="5">{ year }</td>
+		</tr>
+		<!--#endif year -->
+
+		<!--#if rgroup -->
 		<tr class="BabSiteAdminFontBackground"> 
+			<td colspan="5"><strong><u>{ rgroup }</u></strong></td>
+		</tr>
+		<!--#endif rgroup -->
+		
+			<!--#if in_rgroup -->
+			<tr class="BabForumBackground1"> 
+			<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ description }</td>
+			<!--#else in_rgroup -->
+			<tr class="BabSiteAdminFontBackground"> 
 			<td>{ description }</td>
+			<!--#endif in_rgroup -->
 			<td>
 			<input type="text" name="quantities[]" size="5" maxlength="5" value="{ quantity }" onBlur="validateDayField(this)"></td>
 			<input type="hidden" name="idrights[]" value="{ idright }">
 			<td>{ consumed }</td>
-			<td>{ date }</td>
 			<td>{ dateb }</td>
 			<td>{ datee }</td>
 		</tr>

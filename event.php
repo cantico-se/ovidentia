@@ -1234,119 +1234,56 @@ function eventAvariabilityCheck(&$avariability_message)
 
 	$db = &$GLOBALS['babDB'];
 
-	$workdays = array();
-	$workdays_user = array();
 
-	function time_to_sec($time)
-		{
-		list($h,$m,$s) = explode(':',$time);
-		return $h*3600 + $m*60 + $s;
-		}
-
-	function sec_to_time($sec)
-		{
-		$min = $sec%3600;
-		return sprintf("%02s:%02s:%02s", ($sec/3600), ($min/60), ($min%60));
-		}
-
-	$starttime_sec = 0;
-	$endtime_sec = 3600*24;
-
-	$res = $db->db_query("SELECT c.id,o.workdays, o.start_time, o.end_time FROM ".BAB_CAL_USER_OPTIONS_TBL." o, ".BAB_CALENDAR_TBL." c WHERE c.id IN(".$db->quote($calid).") AND o.id_user = c.owner AND c.type='1'");
-
-	$calopt = array();
-	while ($arr = $db->db_fetch_array($res))
-		{
-		$calopt[$arr['id']] = empty($arr['workdays']) ? explode( ',', $GLOBALS['babBody']->babsite['workdays']) : explode( ',', $arr['workdays'] );
-		$workdays = array_merge ($workdays,  $calopt[$arr['id']]);
-		
-		$s = time_to_sec($arr['start_time']);
-		$starttime_sec = $s > $starttime_sec ? $s : $starttime_sec;
-		$s = time_to_sec($arr['end_time']);
-		$endtime_sec = $s < $endtime_sec ? $s : $endtime_sec;
-		}
-
-	$workdays = array_unique($workdays);
-
-	if( count($calopt) > 0 )
-		{
-		foreach ($calopt as $user)
-			{
-			foreach ($workdays as $k => $day)
-				{
-				if (!in_array($day,$user))
-					{
-					unset($workdays[$k]);
-					}
-				}
-			}
-		}
-
-	$starttime = sec_to_time($starttime_sec);
-	$endtime = sec_to_time($endtime_sec);
-
-	$nbdays = ($end - $begin)/(24*3600);
-
-	$GLOBALS['avariability'] = array();
-
-	if( count($workdays) > 0)
-		{
-		for($i = 0; $i < $nbdays; $i++)
-			{
-			$begin_day = $begin + $i*(24*3600);
-			$end_day = $end + $i*(24*3600);
-			$day = mktime( 0,0,0,date('n',$begin_day), date('j',$begin_day), date('Y',$begin_day) );
-
-			if (!in_array(date('w',$begin_day),$workdays))
-				{
-				$GLOBALS['avariability'][] = bab_longDate($begin_day,false);
-				$message1 = bab_translate("The event is on a non-working day");
-				}
-
-			if ($end_day <= ($day + $starttime_sec) || $begin_day >= ($day + $endtime_sec) )
-				{
-				$GLOBALS['avariability'][] = bab_longDate($begin_day);
-				$message3 = bab_translate("The event isn't on displayed hours for all calendars");
-				}
-			}
-		}
-
-	$begin++;
-	$end--;
 
 	$sdate = sprintf("%04s-%02s-%02s %02s:%02s:%02s", date('Y',$begin), date('m',$begin), date('d',$begin), date('H',$begin), date('i',$begin), date('s',$begin));
 	$edate = sprintf("%04s-%02s-%02s %02s:%02s:%02s",  date('Y',$end), date('m',$end), date('d',$end),date('H',$end),date('i',$end), date('s',$end));
 
+
+	// working hours test
+	$free_events = cal_getFreeEvents($calid, $sdate, $edate, 0);
+	if (1 !== count($free_events)) {
+		$message = bab_translate("The event is in conflict with a calendar");
+	}
+
+
+	// events tests
 	$mcals = & new bab_mcalendars($sdate, $edate, $calid);
 	while ($cal = current($mcals->objcals)) 
 		{
-		foreach ($cal->events as $event)
+		$GLOBALS['avariability'] = array();
+		$arr = array();
+		$cal->getEvents($sdate, $edate, $arr);
+		foreach ($arr as $calPeriod)
 			{
+			$event = $calPeriod->getData();
+
 			if ($event['bfree'] !='Y' && (!isset($_POST['evtid']) || $_POST['evtid'] != $event['id_event']))
 				{
 				global $babBody;
 				$title = bab_translate("Private");
-				if( ('Y' == $event['bprivate'] && $event['id_cal'] == $babBody->icalendars->id_percal) || 'Y' != $event['bprivate'])
+				if( ('PUBLIC' !== $calPeriod->getProperty('CLASS') && $event['id_cal'] == $babBody->icalendars->id_percal) || 'PUBLIC' === $calPeriod->getProperty('CLASS'))
 				{
-					$title = $event['title'];
+					$title = $calPeriod->getProperty('SUMMARY');
 				}
 
-				$GLOBALS['avariability'][] = $cal->cal_name.' '.bab_translate("on the event").' : '. $title .' ('.bab_shortDate(bab_mktime($event['start_date']),false).')';
-				$message2 = bab_translate("The event is in conflict with a calendar");
+				$GLOBALS['avariability'][] = $cal->cal_name.' '.bab_translate("on the event").' : '. $title .' ('.bab_shortDate(bab_mktime($calPeriod->getProperty('DTSTART')),false).')';
+
 				}
 			}
 		next($mcals->objcals);
 		}
 
-	if ( count($GLOBALS['avariability']) > 0 )
+	
+
+	if (is_array($GLOBALS['avariability']) && count($GLOBALS['avariability']) > 0 )
 		{
-		$avariability_message = isset($message1) ? $message1 : '';
-		$avariability_message .= isset($message2) ? '<br />'.$message2 : '';
-		$avariability_message .= isset($message3) ? '<br />'.$message3 : '';
+		$avariability_message = isset($message) ? $message : '';
 		return false;
 		}
 	else
 		{
+		
 		$GLOBALS['avariability'] = 0;
 		return true;
 		}

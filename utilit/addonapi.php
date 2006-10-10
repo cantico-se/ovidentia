@@ -562,7 +562,7 @@ function bab_getGroupsMembers($ids)
 				if ($babBody->ovgroups[$idg]['nb_groups'] > 0)
 					{
 					$res = $db->db_query("SELECT id_group FROM ".BAB_GROUPS_SET_ASSOC_TBL." WHERE id_set='".$idg."'");
-					while ($arr = $db->db_fetc_assoc($res))
+					while ($arr = $db->db_fetch_assoc($res))
 						{
 						$ids[] = $arr['id_group'];
 						}

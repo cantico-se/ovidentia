@@ -125,7 +125,7 @@ document.onmousemove = bab_tooltipPosition;
 						<!--#endif bnote -->
 				</div>
 				
-				<div class="event" style="background-color:#{ bgcolor }" onClick="bab_popup('{ vieweventurl }',5)"  onmouseover="bab_showOnMouse('calevent{ evtidx }',1)" onMouseOut="bab_showOnMouse('calevent{ evtidx }',0)">
+				<div class="event <!--#if popup --> popup<!--#endif popup -->" style="background-color:#{ bgcolor }" <!--#if popup -->  onClick="bab_popup('{ vieweventurl }',5)" <!--#endif popup --> onmouseover="bab_showOnMouse('calevent{ evtidx }',1)" onMouseOut="bab_showOnMouse('calevent{ evtidx }',0)">
 					<!--#if allow_modify -->
 					<a href="javascript:bab_popup('{ titletenurl }')" title="{ t_modify_event }"><img src="{ babSkinPath }images/Puces/entryview.gif" alt="{ t_modify_event }" /></a>
 					<!--#endif allow_modify -->

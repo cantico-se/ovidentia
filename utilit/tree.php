@@ -952,6 +952,7 @@ class bab_TreeView extends bab_Widget
 		
 	function sort($comparisonFunctionName = 'treeViewNodeComparison')
 	{
+		$this->_updateTree();
 		$this->_invalidateCache();
 		$this->_rootNode->sortSubTree($comparisonFunctionName);
 	}
@@ -2305,6 +2306,73 @@ function bab_tree_test()
 	$babBody->babecho($treeView->printTemplate());
 */
 }
+
+
+
+
+
+
+
+
+
+
+
+class bab_GroupTreeView extends bab_TreeView
+{
+	/**#@+
+	 * @access private
+	 */	
+	var $_db;
+
+	/**#@-*/
+
+	function bab_GroupTreeView($id)
+	{
+		parent::bab_TreeView($id);
+		$this->t_isMultiSelect = true;
+		$this->_db =& $GLOBALS['babDB'];
+	}
+
+	/**
+	 * @access private
+	 */
+	function _addGroups()
+	{
+
+		include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
+
+		$tree = new bab_grptree();
+		$groups = $tree->getGroups(BAB_ALLUSERS_GROUP, '');
+
+		foreach ($groups as $group) {
+			$element =& $this->createElement('group' . BAB_TREE_VIEW_ID_SEPARATOR . $group['id'],
+											 'group',
+											 bab_toHtml(bab_translate($group['name'])),
+											 '',
+											 '');
+			$element->addCheckBox('select');
+
+			$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
+			$parentId = (BAB_REGISTERED_GROUP === (int) $group['id'] ? NULL : 'group' . BAB_TREE_VIEW_ID_SEPARATOR . $group['id_parent']);
+			$this->appendElement($element, $parentId);
+		}
+
+	}
+
+
+	/**
+	 * @access private
+	 */
+	function _updateTree()
+	{
+		$this->_categories = array();
+		$this->_addGroups();
+		
+		
+		parent::_updateTree();
+	}
+}
+
 
 
 ?>

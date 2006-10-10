@@ -57,10 +57,20 @@ define('BAB_HTML_JS'			,BAB_HTML_ENTITIES << 5);
 define('BAB_HTML_REPLACE'		,BAB_HTML_ENTITIES << 6);
 define('BAB_HTML_ALL'			,BAB_HTML_ENTITIES | BAB_HTML_P | BAB_HTML_BR | BAB_HTML_LINKS | BAB_HTML_REPLACE);
 
+
+define("BAB_PERIOD_WORKING"		, 1);
+define("BAB_PERIOD_NONWORKING"	, 2);
+define("BAB_PERIOD_NWDAY"		, 4);
+define("BAB_PERIOD_CALEVENT"	, 8);
+define("BAB_PERIOD_TSKMGR"		, 16);
+define("BAB_PERIOD_VACATION"	, 32);
+
+
 /* calendars */
-define("BAB_CAL_USER_TYPE", 1);
-define("BAB_CAL_PUB_TYPE", 2);
-define("BAB_CAL_RES_TYPE", 3);
+define("BAB_CAL_USER_TYPE"		, 1);
+define("BAB_CAL_PUB_TYPE"		, 2);
+define("BAB_CAL_RES_TYPE"		, 3);
+
 
 define("BAB_CAL_ACCESS_VIEW",	0); /* only for viewing */
 define("BAB_CAL_ACCESS_UPDATE", 1); /* can modify/delete event if user is creator */
@@ -259,7 +269,15 @@ define("BAB_VAC_ENTRIES_TBL", "bab_vac_entries");
 define("BAB_VAC_ENTRIES_ELEM_TBL", "bab_vac_entries_elem");
 define("BAB_VAC_PLANNING_TBL", "bab_vac_planning");
 define("BAB_VAC_OPTIONS_TBL", "bab_vac_options");
+define("BAB_VAC_CALENDAR_TBL", "bab_vac_calendar");
+define("BAB_VAC_RGROUPS_TBL", "bab_vac_rgroup");
+define("BAB_VAC_COMANAGER_TBL", "bab_vac_comanager");
+
+
 define("BAB_REGISTRY_TBL", "bab_registry");
+define('BAB_WEEK_DAYS_TBL', 'bab_week_days');
+define('BAB_WORKING_HOURS_TBL', 'bab_working_hours');
+
 // Task manager tables
 define('BAB_TSKMGR_PROJECT_CREATOR_GROUPS_TBL', 'bab_tskmgr_project_creator_groups');
 define('BAB_TSKMGR_PERSONNAL_TASK_CREATOR_GROUPS_TBL', 'bab_tskmgr_personnal_task_creator_groups');
@@ -273,8 +291,7 @@ define('BAB_TSKMGR_PROJECTS_SUPERVISORS_GROUPS_TBL', 'bab_tskmgr_projects_superv
 define('BAB_TSKMGR_PROJECTS_VISUALIZERS_GROUPS_TBL', 'bab_tskmgr_projects_visualizers_groups');
 define('BAB_TSKMGR_TASK_RESPONSIBLE_GROUPS_TBL', 'bab_tskmgr_task_responsible_groups');
 
-define('BAB_TSKMGR_WEEK_DAYS_TBL', 'bab_tskmgr_week_days');
-define('BAB_TSKMGR_WORKING_HOURS_TBL', 'bab_tskmgr_working_hours');
+
 define('BAB_TSKMGR_PROJECTS_SPACES_TBL', 'bab_tskmgr_projects_spaces');
 define('BAB_TSKMGR_DEFAULT_PROJECTS_CONFIGURATION_TBL', 'bab_tskmgr_default_projects_configuration');
 define('BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL', 'bab_tskmgr_specific_fields_base_class');

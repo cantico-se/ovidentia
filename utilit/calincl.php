@@ -553,6 +553,8 @@ class bab_icalendars
 	return false;
 	}
 
+
+
 	function getCalendarType($idcal)
 	{
 		if( $idcal == $this->id_percal )
@@ -654,7 +656,13 @@ class bab_icalendars
 	{
 		if( $idcal == $this->id_percal )
 		{
-			return array('name' => bab_getUserName($this->iduser), 'description' => '', 'type' => BAB_CAL_USER_TYPE, 'idowner' => $this->iduser, 'access' => BAB_CAL_ACCESS_FULL);
+			return array(
+				'name' => bab_getUserName($this->iduser), 
+				'description' => '', 
+				'type' => BAB_CAL_USER_TYPE, 
+				'idowner' => $this->iduser, 
+				'access' => BAB_CAL_ACCESS_FULL
+				);
 		}
 		else
 		{
@@ -751,6 +759,140 @@ function bab_getCalendarTitle($calid) {
 
 
 	return bab_translate('Calendar');
+}
+
+
+/**
+ * set calendar events into object
+ * @see bab_userWorkingHours 
+ * @param object	$obj bab_userWorkingHours instance
+ * @param array		$id_calendars
+ * @param object	$begin
+ * @param object	$end
+ */
+function bab_cal_setEventsPeriods($obj, $id_calendars, $begin, $end) {
+
+	global $babDB;
+	
+	$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
+
+
+	$events = array();
+	$query = "
+		SELECT 
+			ceo.*, 
+			ce.*,
+			ca.name category 
+		FROM 
+			".BAB_CAL_EVENTS_OWNERS_TBL." ceo 
+			LEFT JOIN ".BAB_CAL_EVENTS_TBL." ce ON ceo.id_event=ce.id 
+			LEFT JOIN ".BAB_CAL_CATEGORIES_TBL." ca ON ca.id = ce.id_cat 
+
+		WHERE 
+			ceo.id_cal			IN(".$babDB->quote($id_calendars).") 
+			AND ceo.status		!= '".BAB_CAL_STATUS_DECLINED."' 
+			AND ce.start_date	<= '".$babDB->db_escape_string($end->getIsoDateTime())."' 
+			AND ce.end_date		>= '".$babDB->db_escape_string($begin->getIsoDateTime())."' 
+		ORDER BY 
+			ce.start_date asc 
+	";
+
+	$res = $babDB->db_query($query);
+
+	$events = array();
+	$idevtarr = array();
+	
+	while( $arr = $babDB->db_fetch_assoc($res))
+		{
+		$events[$arr['id']] = new bab_calendarPeriod(bab_mktime($arr['start_date']), bab_mktime($arr['end_date']), BAB_PERIOD_CALEVENT);
+		$uid = & $events[$arr['id']]->getProperty('UID');
+		$uid .= '.'.$arr['id'];
+		$obj->addPeriod($events[$arr['id']]);
+
+		$events[$arr['id']]->setProperty('DTSTART'		, $arr['start_date']);
+		$events[$arr['id']]->setProperty('DTEND'		, $arr['end_date']);
+		$events[$arr['id']]->setProperty('SUMMARY'		, $arr['title']);
+		$events[$arr['id']]->setProperty('DESCRIPTION'	, $arr['description']);
+		$events[$arr['id']]->setProperty('LOCATION'		, $arr['location']);
+		$events[$arr['id']]->setProperty('CATEGORIES'	, $arr['category']);
+		$events[$arr['id']]->color = $arr['color'];
+
+		if ('Y' == $arr['bprivate']) {
+			$events[$arr['id']]->setProperty('CLASS'	, 'PRIVATE');
+		}
+
+		unset($arr['start_date']);
+		unset($arr['end_date']);
+		unset($arr['title']);
+		unset($arr['description']);
+		unset($arr['location']);
+		unset($arr['category']);
+		unset($arr['bprivate']);
+		unset($arr['color']);
+
+		$iarr = $GLOBALS['babBody']->icalendars->getCalendarInfo($arr['id_cal']);
+
+
+
+		$arr['alert'] = false;
+		$arr['idcal_owners'] = array(); /* id calendars that ownes this event */
+		$resco = $babDB->db_query("
+		
+			SELECT ceo.id_cal 
+			FROM ".BAB_CAL_EVENTS_OWNERS_TBL." ceo 
+				WHERE 
+					ceo.id_event ='".$babDB->db_escape_string($arr['id'])."' AND 
+					ceo.id_cal != '".$babDB->db_escape_string($arr['id_cal'])."' 
+
+			");
+
+		while( $arr2 = $babDB->db_fetch_array($resco)) {
+			$arr['idcal_owners'][] = $arr2['id_cal'];
+		}
+
+		$arr['nbowners'] = count($arr['idcal_owners']);
+		if( 
+			$arr['nbowners'] == 0 
+			&& $arr['id_creator'] != 0 
+			&& $arr['id_creator'] != $GLOBALS['BAB_SESS_USERID'] 
+			&& $iarr['access'] == BAB_CAL_ACCESS_FULL
+			) {
+				$arr['nbowners'] = 1;
+			}
+
+		if( $arr['status'] == BAB_CAL_STATUS_NONE && $arr['idfai'] != 0 )
+			{
+			if( count($arrschi) > 0 && in_array($arr['idfai'], $arrschi))
+				{
+				$idevtarr[] = $arr['id'];
+				}
+			}
+		else
+			{
+			$idevtarr[] = $arr['id'];
+			}
+
+		$events[$arr['id']]->setData($arr);
+		}
+
+	
+
+	if( !empty($GLOBALS['BAB_SESS_USERID']) && count($idevtarr) > 0 )
+		{
+		$res = $babDB->db_query("SELECT * from ".BAB_CAL_EVENTS_NOTES_TBL." where id_event in (".$babDB->quote($idevtarr).") and id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
+		while( $arr = $babDB->db_fetch_array($res)) {
+
+			$data = & $events[$arr['id_event']]->getData();
+			$data['note'] = $arr['note'];
+		}
+
+		$res = $babDB->db_query("SELECT id_event from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_event in (".$babDB->quote( $idevtarr).") and id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
+		while( $arr = $babDB->db_fetch_array($res)) {
+
+			$data = & $events[$arr['id_event']]->getData();
+			$data['alert'] = true;
+		}
+	}
 }
 
 ?>

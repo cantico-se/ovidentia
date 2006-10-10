@@ -36,18 +36,24 @@ function validateDayField(field) {
 	var total = 0;
 	for( i=0; i < document.vacform.elements.length; i++)
 	{
-		if( document.vacform.elements[i].name.substring(0, 6) == 'nbdays')
+		obj = document.vacform.elements[i];
+		if( obj.name.substring(0, 6) == 'nbdays' || obj.name.substring(0, 12) == 'rgroup_value')
 		{
-			total += parseFloat(document.vacform.elements[i].value);
+			total += parseFloat(obj.value);
 		}
 	}
 	document.vacform.elements['total'].value = total;
 	}
 }
 
-function validateForm(fr)
+function validateForm()
 {
-return true;
+	var f = document.forms['vacform'];
+	if ({ period_nbdays } != f.total.value) {
+		//}
+		return confirm('{ t_confirm_nomatch }');
+	}
+	return true;
 }
 
 function delete_request()
@@ -61,13 +67,20 @@ if (confirm('{ t_delete_confirm } ?'))
 	 }
 }
 
+
+function rgroup_display(obj, str_dest) {
+	dest = document.getElementById(str_dest);
+	obj = document.getElementById('bab_vac_right_'+obj.value);
+	dest.innerHTML = obj.title;
+}
+
 //-->
 </script>
 <div align="center">
 	<a  href="{ calurl }" onclick="bab_popup(this.href,5,1);return false;">{ calendar }</a>
 </div>
 <br />
-<form name="vacform" method="post" action="{ babPhpSelf }" onSubmit="return validateForm(this);">
+<form name="vacform" method="post" action="{ babPhpSelf }" onSubmit="return validateForm();">
 <input type="hidden" name="tg" value="vacuser" />
 <input type="hidden" name="idx" value="vunew" />
 <input type="hidden" name="action" value="vacation_request" />
@@ -114,13 +127,35 @@ if (confirm('{ t_delete_confirm } ?'))
 						<td>{ balancetxt }</td>
 					</tr>
 					<!--#in getnextright -->
+					<!--#if id_rgroup -->
 					<tr>
 						<td>
-							<input type="text" name="nbdays{ right[id] }" size="5" maxlength="5" value="{ nbdays }" onKeyUp="validateDayField(this)" />
+							<input type="text" name="rgroup_value[{ id_rgroup }]" size="5" maxlength="5" value="{ nbdays }" onKeyUp="validateDayField(this)" />
+						</td>
+						<td>
+							{ rgroup } : 
+							<select name="rgroup_right[{ id_rgroup }]" onchange="rgroup_display(this, 'bab_vac_rgroup_display{ id_rgroup }')">
+								<!--#in getnextrgroupright -->
+								<option id="bab_vac_right_{ id_right }" title="{ quantitydays }" value="{ id_right }" <!--#if selected --> selected="selected"<!--#endif selected -->>{ description }</option>
+								<!--#endin getnextrgroupright -->
+							</select>							
+						</td>
+						<td id="bab_vac_rgroup_display{ id_rgroup }"></td>
+					</tr>
+
+					<script type="text/javascript">
+						rgroup_display(document.forms['vacform'].elements['rgroup_right[{ id_rgroup }]'], 'bab_vac_rgroup_display{ id_rgroup }');
+					</script>
+					<!--#else id_rgroup -->
+
+					<tr>
+						<td>
+							<input type="text" name="nbdays[{ right[id] }]" size="5" maxlength="5" value="{ nbdays }" onKeyUp="validateDayField(this)" />
 						</td>
 						<td>{ right[description] }</td>
 						<td>{ right[quantitydays] }</td>
 					</tr>
+					<!--#endif id_rgroup -->
 					<!--#endin getnextright -->
 				</table>
 			</td>
@@ -142,9 +177,6 @@ if (confirm('{ t_delete_confirm } ?'))
 			<td>&nbsp;</td>
 			<td> 
 				<input type="submit" name="Submit" value="{ addvac }" />
-				<!--#if id -->
-				<input type="button" value="{ t_delete }" onclick="delete_request()" />
-				<!--#endif id -->
 			</td>
 		</tr>
 		</table>
@@ -196,7 +228,7 @@ if (confirm('{ t_delete_confirm } ?'))
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
-	<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 		<tr class="BabSiteAdminTitleFontBackground"> 
 			<td>{ nametxt }</td>
 			<td>{ begindatetxt }</td>
@@ -204,9 +236,10 @@ if (confirm('{ t_delete_confirm } ?'))
 			<td>{ quantitytxt }</td>
 			<td>{ statustxt }</td>
 			<td align="center">{ t_edit }</td>
+			<td align="center">{ t_delete }</td>
 		</tr>
 		<!--#in getnext -->
-		<tr class="BabSiteAdminFontBackground"> 
+		<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
 			<td><a href="{ url }" onclick="bab_popup(this.href,2,1);return false;">{ urlname }</a></td>
 			<td>{ begindate }</td>
 			<td>{ enddate }</td>
@@ -217,19 +250,30 @@ if (confirm('{ t_delete_confirm } ?'))
 				<a href="{ urledit }" title="{ t_edit }"><img src="{ babSkinPath }images/Puces/edit.gif" border="0" alt="{ t_edit }" /></a>
 				<!--#endif modify -->
 			</td>
+
+			<td align="center">
+				<!--#if modify -->
+				<a href="{ urldelete }" title="{ t_delete }"><img src="{ babSkinPath }images/Puces/PuceDelete.png" border="0" alt="{ t_delete }" /></a>
+				<!--#endif modify -->
+			</td>
 		</tr>
 		<!--#endin getnext -->
 		<tr>
-			<td colspan="9" class="BabSiteAdminTitleFontBackground"> 
-				<table border="0" cellpadding="0" cellspacing="0" align="right">
-				<tr> 
-					<td width="1%" nowrap>&nbsp;</td>
-					<td width="1%" nowrap><a href="{ topurl }">{ topname }</a></td>
-					<td width="1%" nowrap><a href="{ prevurl }">{ prevname }</a></td>
-					<td width="1%" nowrap><a href="{ nexturl }">{ nextname }</a></td>
-					<td width="1%" nowrap><a href="{ bottomurl }">{ bottomname }</a></td>
-				</tr>
-				</table>
+			<td class="BabSiteAdminTitleFontBackground"> 
+				&nbsp; 
+				<!--#if topurl --><a href="{ topurl }"><img src="{ babSkinPath }images/Puces/arrowPrev3aa.gif" alt="{ t_first_page }" /></a><!--#endif topurl -->
+				<!--#if prevurl --><a href="{ prevurl }"><img src="{ babSkinPath }images/Puces/arrowPrev3a.gif" alt="{ t_previous_page }" /></a><!--#endif prevurl -->
+			</td>
+
+			<td colspan="5" class="BabSiteAdminTitleFontBackground" align="center">
+				{ t_position }
+			</td>
+
+			<td class="BabSiteAdminTitleFontBackground" align="right"> 
+
+				<!--#if nexturl --><a href="{ nexturl }"><img src="{ babSkinPath }images/Puces/arrowNext3a.gif" alt="{ t_next_page }" /></a><!--#endif nexturl -->
+				<!--#if bottomurl --><a href="{ bottomurl }"><img src="{ babSkinPath }images/Puces/arrowNext3aa.gif" alt="{ t_last_page }" /></a><!--#endif bottomurl -->
+				&nbsp; 
 			</td>
 		</tr>
 	</table>
@@ -263,11 +307,11 @@ window.focus();
 	</tr>
 	<tr> 
 		<td align="right">{ datebegintxt }:</td>
-		<td>{ datebegin }&nbsp;&nbsp;{ halfnamebegin }</td>
+		<td>{ datebegin }</td>
 	</tr>
 	<tr> 
 		<td align="right">{ dateendtxt }:</td>
-		<td>{ dateend }&nbsp;&nbsp;{ halfnameend }</td>
+		<td>{ dateend }</td>
 	</tr>
 	<tr> 
 		<td align="right">{ nbdaystxt }:</td>
@@ -364,70 +408,69 @@ close }</a> </td>
 <!--#end vedunload -->
 
 <!--#begin ventrydetail -->
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE>{ babSiteName }</TITLE>
-{ babMeta }
-{ babCss }
-<script type="text/javascript" src="{ babOvidentiaJs }">
-<!--
-window.focus();
-//-->
-</script>
-</HEAD>
-<BODY class="BabBackground">
 
-
-<br>
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
-<td class="BabLoginMenuBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr>
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ datebegintxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ datebegin }&nbsp;&nbsp;{ halfnamebegin }</td>
-</tr>
-<tr>
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ dateendtxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ dateend }&nbsp;&nbsp;{ halfnameend }</td>
-</tr>
-<tr>
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ nbdaystxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">
-<!--#in getnexttype -->
-{ nbdays }&nbsp;&nbsp;&nbsp;&nbsp;{ typename }&nbsp;&nbsp;<br>
-<!--#endin getnexttype -->
-</td>
-</tr>
-<tr>
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ totaltxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ totalval }</td>
-</tr>
-<tr>
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ commenttxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ comment }</td>
-</tr>
-</table>
-</td>
+	<td class="BabLoginMenuBackground"> 
+		<table class="BabSiteAdminFontBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+		
+		
+		<tr>
+			<td align="right" width="30%"><strong>{ datebegintxt }:</strong></td>
+			<td>{ datebegin }</td>
+		</tr>
+		<tr>
+		<td align="right"><strong>{ dateendtxt }:</strong></td>
+		<td>{ dateend }</td>
+		</tr>
+		<tr>
+		<td align="right" width="30%"><strong>{ nbdaystxt }:</strong></td>
+		<td>
+		<!--#in getnexttype -->
+		{ nbdays }&nbsp;&nbsp;&nbsp;&nbsp;{ typename }&nbsp;&nbsp;<br>
+		<!--#endin getnexttype -->
+		</td>
+		</tr>
+		<tr>
+		<td align="right" width="30%"><strong>{ totaltxt }:</strong></td><td>{ totalval }</td>
+		</tr>
+		<tr>
+		<td align="right" width="30%"><strong>{ commenttxt }:</strong></td><td>{ comment }</td>
+		</tr>
+		</table>
+	</td>
 </tr>
 </table>
 <br>
+
+
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
-<td class="BabLoginMenuBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr>
-<td class="BabSiteAdminFontBackground" align="right" valign="top" width="30%"><b>{ statustxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ status }<br>
-<!--#in getnextuser -->
-<br>{ fullname }
-<!--#endin getnextuser -->
-</td>
-</tr>
-<tr>
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ remarktxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ remark }</td>
+	<td class="BabLoginMenuBackground"> 
+		<table class="BabSiteAdminFontBackground"  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+		<!--#if approb -->
+		<tr>
+			<td align="right" width="30%"><strong>{ t_approb }:</strong></td>
+			<td>{ approb }</td>
+		</tr>
+		<!--#endif approb -->
+		<tr>
+			<td align="right" valign="top" width="30%"><b>{ statustxt }:</b></td>
+			<td>{ status }<br>
+			<!--#in getnextuser -->
+			<br>{ fullname }
+			<!--#endin getnextuser -->
+			</td>
+		</tr>
+		<tr>
+			<td align="right" width="30%"><b>{ remarktxt }:</b></td>
+			<td>{ remark }</td>
+		</tr>
+		</table>
+	</td>
 </tr>
 </table>
-</td>
-</tr>
-</table>
-</BODY>
-</HTML>
+
 <!--#end ventrydetail -->
 
 <!--#begin calendarbyuser -->
@@ -438,7 +481,9 @@ window.focus();
 			<a href="{ previousmonth }" title="{ t_previousmonth }" class="prev2"><strong>&lt;</strong></a> 
 			<a href="{ previousyear }" title="{ t_previousyear }" class="prev1"><strong>&lt;&lt;</strong></a>
 		</td>
-		<td align="center">&nbsp;</td>
+		<td align="center">
+			<a href="{ switchurl }">{ switchlabel }</a>
+		</td>
 		<td align="right" class="next">
 			<a href="{ nextmonth }" title="{ t_nextmonth }" class="next2"><strong>&gt;</strong></a>
 			<a href="{ nextyear }" title="{ t_nextyear }" class="next1"><strong>&gt;&gt;</strong></a>
@@ -476,29 +521,13 @@ window.focus();
 		<th class="user">{ username }</th>
 		<!--#endif nbusers -->
 		<!--#in getday -->
+
+		<td class="{ day_classname }" <!--#if tdtext --> title="{ tdtext }"<!--#endif tdtext -->>
 		
-		<!--#if noday -->
-		<td class="noday">
-		<!--#else noday -->
-			<!--#if nonworking -->
-			<td class="nonworking" title="{ titledate } : { nonworking_text }">
-			<!--#else nonworking -->
-				<!--#if weekend -->
-				<td  class="weekend" title="{ titledate } : { t_weekend }">
-				<!--#else weekend -->
-					<!--#if bvac -->
-					<td class="{ classname }" <!--#if color --> style="background-color:#{ color }" <!--#endif color --> title="{ titledate }<!--#if tdtext --> : { vacapprovedtxt }<!--#endif tdtext -->"><!--#if tdtext -->ok<!--#endif tdtext -->
-					<!--#else bvac -->
-						<!--#if bwait -->
-						<td class="{ classname }" <!--#if color --> style="background-color:#{ color }" <!--#endif color --> title="{ titledate }<!--#if tdtext --> : { vacwaitingtxt }<!--#endif tdtext -->"><!--#if tdtext -->?<!--#endif tdtext -->
-						<!--#else bwait -->
-						<td <!--#if period --> class="free" onclick="setPeriod(this)" <!--#else period --> class="default" <!--#endif period -->  id="{ date }" title="{ titledate }">
-						<!--#endif bwait -->
-					<!--#endif bvac -->
-				<!--#endif weekend -->
-			<!--#endif nonworking -->
-		<!--#endif noday -->
-			
+			<!--#if halfday -->
+			<div id="{ date }.0" class="{ am_classname }" <!--#if am_color --> style="background-color:#{ am_color }"<!--#endif am_color -->  title="{ am_text }" <!--#if period --> onclick="setPeriod(this)"<!--#endif period -->></div>
+			<div id="{ date }.1" class="{ pm_classname }" <!--#if pm_color --> style="background-color:#{ pm_color }"<!--#endif pm_color -->  title="{ pm_text }" <!--#if period --> onclick="setPeriod(this)"<!--#endif period -->></div>
+			<!--#endif halfday -->
 		</td> 
 		<!--#endin getday -->
 	</tr>
@@ -568,6 +597,19 @@ window.focus();
 var begindate = false;
 var firstclick = false;
 
+
+function decompose_date(str) {
+	tmp = str.split('.');
+	arr = tmp[0].split('-');
+	var r = new Array();
+	r['year']	= arr[0];
+	r['month']	= arr[1];
+	r['day']	= arr[2];
+	r['half']	= tmp[1];
+
+	return r;
+}
+
 function setPeriod(obj, init)
 	{
 	if ((null == init && firstclick == false) || begindate == false)
@@ -576,21 +618,22 @@ function setPeriod(obj, init)
 		var setbegin = true;
 		begindate = obj.id;
 		}
-	else
+	else {
 		if(begindate > obj.id)
 			{
 			begindate = obj.id;
 			}
+		}
 
 	var f = document.forms['vacform'];
-	f.begin_tmp.value = begindate+','+f.halfdaybegin.value;
-	f.end_tmp.value = obj.id+','+f.halfdayend.value;
+	f.begin_tmp.value = begindate;
+	f.end_tmp.value = obj.id;
 
-	var arr1 = begindate.split('-');
-	var arr2 = obj.id.split('-');
+	arr = decompose_date(begindate);
+	dateBegin(arr['day'], arr['month'], arr['year'], arr['half']);
 
-	dateBegin(arr1[2], arr1[1], arr1[0]);
-	dateEnd(arr2[2], arr2[1], arr2[0]);
+	arr = decompose_date(obj.id);
+	dateEnd(arr['day'], arr['month'], arr['year'], arr['half']);
 
 	setPeriod2();
 
@@ -599,65 +642,74 @@ function setPeriod(obj, init)
 	}
 
 
+function id_to_date(str) {
+	arr = decompose_date(str);
+	hours = 0;
+	if (1 == arr['half']) {
+		hours = 12;
+	}
+
+	return new Date(arr['year'], arr['month'], arr['day'], hours, 0, 0, 0);
+
+}
+
+
+function update_selection(obj, begindate, enddate) {
+
+	dateObj = id_to_date(obj.id);
+	
+	if (dateObj >= begindate && dateObj <= enddate && (obj.className == 'free' || obj.className == 'selected' || obj.className == 'period'))
+		{
+		obj.className = 'period';
+		return true;
+		}
+	else if (obj.className == 'period' || obj.className == 'selected' )
+		{
+		obj.className = 'free';
+		}
+
+	return false;
+}
+
+
 function setPeriod2()
 	{
 	var f = document.forms['vacform'];
-	var field1 = f.begin_tmp.value.split(',');
-	var field2 = f.end_tmp.value.split(',');
-	var begindate = field1[0];
-	var enddate = field2[0];
 
-	var v1 = field1[1];
-	var v2 = field2[1];
+	var begindate = id_to_date(f.begin_tmp.value);
+	var enddate = id_to_date(f.end_tmp.value);
+
 
 	var nbd = 0;
 	
 	var tdlist = document.getElementById('vac_calendar_body').getElementsByTagName('td');
-
+	
 	for (var i = 0 ; i < tdlist.length ; i++)
 		{
-		var td = tdlist[i];
-
-		if (td.id >= begindate && td.id <= enddate && (td.className == 'free' || td.className == 'selected' || td.className == 'period'))
-			{
-			td.className = 'period';
-			nbd++;
+		
+		if (tdlist[i].childNodes) {
+			obj = tdlist[i].firstChild;
+			if (obj) {
+				do {
+					if (1 == obj.nodeType && obj.id) {
+						if (update_selection(obj, begindate, enddate)) {
+							nbd++;
+						}
+					}
+					
+				} while (obj = obj.nextSibling)
 			}
-		else if (td.className == 'period' || td.className == 'selected' )
-			{
-			td.className = 'free';
+
 			}
 		}	
 
-	if (v1 == 2 && v2 == 3 && nbd == 1)
-		{
-		nbd = nbd;
-		}
-	else if ((v1 == v2 == 2 && nbd == 1) || (v1 == v2 == 3 && nbd == 1))
-		{
-		nbd -= 0.5;
-		}
-	else if ((v1 >= 2 && v2 == 1) || (v2 >= 2 && v1 == 1))
-		{
-		nbd -= 0.5;
-		}
-	else if ((v1 == 2 && v2 == 2) || (v1 == 3 && v2 == 3))
-		{
-		nbd -= 0.5;
-		}
-	else if (v1 >= 2 && v2 >= 2)
-		{
-		nbd -= 1;
-		}
 
-	if (nbd < 0)
-		nbd = 0;
 
-	f.period_nbdays.value = nbd;
-	window.status = '{ t_period_nbdays } : '+nbd;
+	f.period_nbdays.value = nbd/2;
+	window.status = '{ t_period_nbdays } : '+nbd/2;
 	
-	if (document.getElementById(enddate))
-		document.getElementById(enddate).className = 'selected';
+	if (document.getElementById(f.end_tmp.value))
+		document.getElementById(f.end_tmp.value).className = 'selected';
 
 
 
@@ -680,8 +732,8 @@ function update_plan()
 	var monthbegin = f.monthbegin.value < 10 ? '0'+f.monthbegin.value : f.monthbegin.value;
 	var monthend = f.monthend.value < 10 ? '0'+f.monthend.value : f.monthend.value;
 
-	f.begin_tmp.value = yearbegin+'-'+monthbegin+'-'+daybegin+','+f.halfdaybegin.value;
-	f.end_tmp.value = yearend+'-'+monthend+'-'+dayend+','+f.halfdayend.value;
+	f.begin_tmp.value = yearbegin+'-'+monthbegin+'-'+daybegin+'.'+f.halfdaybegin.value;
+	f.end_tmp.value = yearend+'-'+monthend+'-'+dayend+'.'+f.halfdayend.value;
 
 	setPeriod2();
 }
@@ -710,23 +762,24 @@ function updateDates(elemDay, elemMonth, elemYear)
 
 
 
-function dateBegin(day, month, year)
+function dateBegin(day, month, year, half)
 {
 	var f = document.forms['vacform'];
 	f.elements['monthbegin'].options[month-1].selected = true;
 	f.elements['yearbegin'].options[year-{ yearbegin }].selected = true;
 	updateDates(f.elements['daybegin'], f.elements['monthbegin'], f.elements['yearbegin']);
 	f.elements['daybegin'].options[day-1].selected = true;
+	f.elements['halfdaybegin'].options[half].selected = true;
 }
 
-function dateEnd(day, month, year)
+function dateEnd(day, month, year, half)
 {
 	var f = document.forms['vacform'];
 	f.elements['monthend'].options[month-1].selected = true;
 	f.elements['yearend'].options[year-{ yearbegin }].selected = true;
 	updateDates(f.elements['dayend'], f.elements['monthend'], f.elements['yearend']);
 	f.elements['dayend'].options[day-1].selected = true;
-
+	f.elements['halfdayend'].options[half].selected = true;
 }
 
 function validateForm(fr)
@@ -849,27 +902,44 @@ return true;
 		<td>&nbsp;</td>
 		<td colspan="4"> 
 		<input type="submit" name="Submit" value="{ addvac }" />
+
+		<script type="text/javascript">
+			function view_rights() {
+				obj = document.getElementById('view_rights');
+				if (obj.style.display == 'none') {
+					obj.style.display = '';
+				} else {
+					obj.style.display = 'none';
+				}
+			}
+		</script>
+
+
+		&nbsp; &nbsp;<a href="javascript:view_rights();"><img src="{ babSkinPath }images/Puces/asc_order.png" border="0" />  { t_view_rights }</a>
+
 		<br />
 		<br />
 		</td>
 	</tr>
-	<tr> 
-		<td colspan="2" align="right">&nbsp;</td>
-		<td colspan="2" align="center">{ t_avariable_days }</td>
-		<td colspan="1" align="center">{ t_waiting_days }</td>
-	</tr>
-	<!--#in getnextright -->
-	<tr> 
-		<td colspan="2" align="right">{ right[description] }</td>
-		<td colspan="2" align="center">{ right[quantitydays] }</td>
-		<td colspan="1" align="center">{ right[waiting] }</td>
-	</tr>
-	<!--#endin getnextright -->
-	<tr> 
-		<th colspan="2" align="right">{ t_total }</th>
-		<th colspan="2" align="center">{ total }</th>
-		<th colspan="1" align="center">{ total_waiting }</th>
-	</tr>
+	<tbody id="view_rights" style="display:none">
+		<tr> 
+			<td colspan="2" align="right">&nbsp;</td>
+			<td colspan="2" align="center">{ t_avariable_days }</td>
+			<td colspan="1" align="center">{ t_waiting_days }</td>
+		</tr>
+		<!--#in getnextright -->
+		<tr> 
+			<td colspan="2" align="right">{ right[description] }</td>
+			<td colspan="2" align="center">{ right[quantitydays] }</td>
+			<td colspan="1" align="center">{ right[waiting] }</td>
+		</tr>
+		<!--#endin getnextright -->
+		<tr> 
+			<th colspan="2" align="right">{ t_total }</th>
+			<th colspan="2" align="center">{ total }</th>
+			<th colspan="1" align="center">{ total_waiting }</th>
+		</tr>
+	</tbody>
 	</table>
 </td>
 </tr>
@@ -882,21 +952,144 @@ function initialize()
 var daybegin = parseInt('{ daybegin }');
 var monthbegin = parseInt('{ monthbegin }');
 var yearbegin = parseInt('{ yearbegin }');
+var halfdaybegin = parseInt('{ halfdaybegin }');
 
 var dayend = parseInt('{ dayend }');
 var monthend = parseInt('{ monthend }');
 var yearend = parseInt('{ yearend }');
+var halfdayend = parseInt('{ halfdayend }');
 
-dateBegin( daybegin, monthbegin, yearbegin);
-dateEnd( dayend, monthend, yearend);
+
+dateBegin( daybegin, monthbegin, yearbegin, halfdaybegin);
+dateEnd( dayend, monthend, yearend, halfdayend);
 
 }
 
-begindate = '{ yearbegin }-{ monthbegin }-{ daybegin }';
-if (td = document.getElementById('{ yearend }-{ monthend }-{ dayend }'))
+begindate = '{ yearbegin }-{ monthbegin }-{ daybegin }.{ halfdaybegin }';
+if (td = document.getElementById('{ yearend }-{ monthend }-{ dayend }.{ halfdayend }')) {
 	setPeriod(td, true);
+	}
 
 initialize();
 -->
 </script>
 <!--#end period -->
+
+
+<!--#begin delete -->
+
+<table width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr>
+	<td class="BabLoginCadreBackground"> 
+		<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+			
+			<tr>
+				<td align="center" colspan="2"><br />
+					<h5>{ fullname }</h5><br />
+				</td>
+			</tr>
+			
+			
+			<tr>
+				<td align="right" width="30%">{ datebegintxt } :</td>
+				<td>{ datebegin }</td>
+			</tr>
+			<tr>
+				<td align="right">{ dateendtxt } :</td>
+				<td>{ dateend }</td>
+			</tr>
+
+			<tr>
+				<td align="right">{ nbdaystxt }:</td>
+				<td>
+				<!--#in getnexttype -->
+				{ nbdays }&nbsp;&nbsp;&nbsp;&nbsp;{ typename }&nbsp;&nbsp;<br>
+				<!--#endin getnexttype -->
+				</td>
+			</tr>
+			
+			<tr>
+				<td align="right">{ totaltxt } :</td>
+				<td>{ totalval }</td>
+			</tr>
+			<tr>
+				<td align="right">{ commenttxt } :</td>
+				<td>{ comment }</td>
+			</tr>
+
+
+			<tr>
+				<td align="right" valign="top">{ statustxt } :</td>
+				<td>{ status }<br />
+				<!--#in getnextuser -->
+				{ fullname }<br />
+				<!--#endin getnextuser -->
+				</td>
+			</tr>
+			<tr>
+				<td align="right" valign="top">{ remarktxt } :</td>
+				<td>{ remark }<br /><br /><br /></td>
+			</tr>
+
+			<tr>
+				<td colspan="2" align="center">
+					<div class="BabSiteAdminFontBackground">
+					<br />
+					<h5>{ t_deleteconfirm }</h5>
+					
+					<form name="vacform" method="post" action="{ babPhpSelf }">
+						<p>
+							<input type="hidden" name="tg" value="vacuser" />
+							<input type="hidden" name="action" value="delete_request" />
+							<input type="hidden" name="id_entry" value="{ id_entry }" />
+							<input type="hidden" name="url" value="{ url }" />
+							<input type="submit" value="{ t_delete }" />
+							<br />
+							<br />
+						</p>
+					</form>
+					
+					</div>
+				</td>
+			</tr>
+		</table>
+	</td>
+</tr>
+</table>
+
+<!--#end delete -->
+
+
+<!--#begin viewrights -->
+<table width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr>
+	<td class="BabLoginCadreBackground"> 
+		<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+			<thead>
+			<tr class="BabSiteAdminTitleFontBackground"> 
+				<td align="right">&nbsp;</td>
+				<td align="center">{ t_avariable_days }</td>
+				<td align="center">{ t_waiting_days }</td>
+			</tr>
+			</thead>
+			<tbody>
+			<!--#in getnextright -->
+			<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg --> 
+				<td align="right">{ right[description] }</td>
+				<td align="center">{ right[quantitydays] }</td>
+				<td align="center">{ right[waiting] }</td>
+			</tr>
+			<!--#endin getnextright -->
+			</tbody>
+			<tfoot>
+			<tr class="BabSiteAdminTitleFontBackground"> 
+				<th align="right">{ t_total }</th>
+				<th align="center">{ total }</th>
+				<th align="center">{ total_waiting }</th>
+			</tr>
+			</tfoot>
+		</table>
+	</td>
+</tr>
+</table>
+<!--#end viewrights -->

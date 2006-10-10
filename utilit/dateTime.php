@@ -115,11 +115,34 @@ class BAB_DateTime
 	{
 		return $this->_aDate['wday'];
 	}
+
+	function getHour() 
+	{
+		return $this->_iHours;
+	}
+
+	function getMinute() 
+	{
+		return $this->_iMinutes;
+	}
+
+	function getSecond() 
+	{
+		return $this->_iSeconds;
+	}
+
+	/**
+	 * Elapsed time in the current day
+	 * @return int (seconds)
+	 */
+	function getDayTime()
+	{
+		return $this->_iSeconds + (60*$this->_iMinutes) + (3600*$this->_iHours);
+	}
     
 	function getTimeStamp()  
 	{
-		if(!is_null($this->_aDate) && isset($this->_aDate[0]))
-		{
+		if(!is_null($this->_aDate) && isset($this->_aDate[0])) {
 			return $this->_aDate[0];
 		}
 		return 0;
@@ -408,6 +431,7 @@ class BAB_DateTime
         }
         return true;
     }
+
     
 	/**
 	 * Extract the year, the month and the day from a string representing a date.
@@ -448,5 +472,23 @@ class BAB_DateTime
 		return new BAB_DateTime($year, $month, $day);
 	}
     
+
+
+
+	/**
+	 * Create a copy
+	 */
+	function cloneDate() {
+
+		return new BAB_DateTime(
+			$this->_iYear,
+			$this->_iMonth,
+			$this->_iDay,
+			$this->_iHours,
+			$this->_iMinutes,
+			$this->_iSeconds
+			);	
+	}
+
 }
 ?>

@@ -232,39 +232,34 @@ function bab_emptyCalendar( $idcal )
 
 }
 
+
+/**
+ * @param int		$iIdUser
+ * @param string	&$sWorkingDays
+ */
 function bab_calGetWorkingDays($iIdUser, &$sWorkingDays)
 {
-	global $babDB;
-	global $babBody;
 
-	$sWorkingDays = $babBody->babsite['workdays'];
-	
-	if(0 != $iIdUser)
-	{
-		$query = 
-			'SELECT ' .
-				'workdays ' .
-			'FROM ' .
-				BAB_CAL_USER_OPTIONS_TBL . ' ' .
-			'WHERE ' .
-				'id_user = \'' . $babDB->db_escape_string($iIdUser) . '\'';
-			
-		//bab_debug($query);
-			
-		$res = $babDB->db_query($query);
-		if(false != $res)
-		{
-			$iNumRows = $babDB->db_num_rows($res);
-			if(0 != $iNumRows)
-			{
-				$data = $babDB->db_fetch_assoc($res);
-				if(false != $data)
-				{
-					$sWorkingDays = $data['workdays'];
-				}
-			}
+	include_once $GLOBALS['babInstallPath']."utilit/workinghoursincl.php";
+
+	function day_push(&$arr, $iIdUser, $day) {
+		$tmp = bab_getWHours($iIdUser, $day);
+		if ($tmp) {
+			$arr[] = $day;
 		}
 	}
+
+	$arr = array();
+
+	day_push($arr, $iIdUser, 0);
+	day_push($arr, $iIdUser, 1);
+	day_push($arr, $iIdUser, 2);
+	day_push($arr, $iIdUser, 3);
+	day_push($arr, $iIdUser, 4);
+	day_push($arr, $iIdUser, 5);
+	day_push($arr, $iIdUser, 6);
+
+	$sWorkingDays = implode(',',$arr);
 }
 
 ?>

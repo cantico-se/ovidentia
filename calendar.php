@@ -176,19 +176,48 @@ function displayAttendees($evtid, $idcal)
 }
 
 function getPropertiesString(&$arr, &$t_option)
+	{
+	$el = array('bprivate' => bab_translate('Private'),'block' => bab_translate('Locked'),'bfree' => bab_translate('Free'));
+	foreach ($el as $k => $v)
 		{
-		$el = array('bprivate' => bab_translate('Private'),'block' => bab_translate('Locked'),'bfree' => bab_translate('Free'));
-		foreach ($el as $k => $v)
-			{
-			if ($arr[$k] != 'Y')
-				unset($el[$k]);
-			}
+		if ($arr[$k] != 'Y')
+			unset($el[$k]);
+		}
+	$t_option = count($el) > 1 ? bab_translate("Options") : bab_translate("Option"); 
+	if (count($el) > 0)
+		return implode(', ',$el);
+	else
+		return '';
+	}
+
+
+function getPropertiesStringObj(&$calPeriod, &$t_option)
+		{
+		$el = array();
+
+		if ('PUBLIC' !== $calPeriod->getProperty('CLASS')) {
+			$el[] = bab_translate('Private');
+		}
+
+		$arr = $calPeriod->getData();
+
+		if ('Y' == $arr['block']) {
+			$el[] = bab_translate('Locked');
+		}
+
+		if ('Y' == $arr['bfree']) {
+			$el[] = bab_translate('Free');
+		}
+
 		$t_option = count($el) > 1 ? bab_translate("Options") : bab_translate("Option"); 
 		if (count($el) > 0)
 			return implode(', ',$el);
 		else
 			return '';
 		}
+
+
+
 
 
 function displayEventDetail($evtid, $idcal)
@@ -543,8 +572,9 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 
 			foreach ($idcals as $idcal)
 				{
-				while ($this->mcals->getNextEvent($idcal, $this->from, $this->to, $arr))
+				while ($this->mcals->getNextEvent($idcal, $this->from, $this->to, $calPeriod))
 					{
+					$arr = $calPeriod->getData();
 					if (!isset($this->resevent[$arr['id_event']]))
 						{
 						$this->resevent[$arr['id_event']] = array();
@@ -552,40 +582,50 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 						}
 
 					$evt = & $this->resevent[$arr['id_event']];
-					switch($this->mcals->getCalendarType($arr['id_cal']))
-						{
-						case 1:
-							$type = bab_translate('User');
-							break;
-						case 2:
-							$type = bab_translate('Public');
-							break;
-						case 3:
-							$type = bab_translate('Resource');
-							break;
+					
+
+					if ($arr['id_cal']) {
+						$evt['cals'][$arr['id_cal']] = array(
+							'name' => $this->mcals->getCalendarName($arr['id_cal']), 
+							'type' => $this->getTypeLabel($this->mcals->getCalendarType($arr['id_cal']))
+						);
+					}
+
+					
+					if ($arr['idcal_owners']) {
+						foreach($arr['idcal_owners'] as $id_cal) {	
+							$type = bab_getCalendarType($id_cal);
+							$evt['cals'][$id_cal] = array(
+								'name' => bab_getCalendarOwnerName($id_cal), 
+								'type' => $this->getTypeLabel($type)
+							);
 						}
-					$evt['cals'][$arr['id_cal']] = array('name' => $this->mcals->getCalendarName($arr['id_cal']), 'type' => $type);
-					$evt['title'] = $arr['title'];
-					$evt['description'] = $arr['description'];
-					$ts = bab_mktime($arr['end_date']);
+					}
+					
+
+
+
+					$evt['title'] = $calPeriod->getProperty('SUMMARY');
+					$evt['description'] = $calPeriod->getProperty('DESCRIPTION');
+					$ts = bab_mktime($calPeriod->getProperty('DTEND'));
 					if ($ts <= time() && $last_ts < $ts)
 						{
 						$last_ts = $ts;
 						$this->last_id = $arr['id_event'];
 						}
-					$evt['start_date'] = bab_toHtml(bab_longDate(bab_mktime($arr['start_date'])));
+					$evt['start_date'] = bab_toHtml(bab_longDate(bab_mktime($calPeriod->getProperty('DTSTART'))));
 					$evt['end_date'] = bab_toHtml(bab_longDate($ts));
 					$evt['categoryname'] = !empty($this->mcals->categories[$arr['id_cat']]) ? bab_toHtml($this->mcals->categories[$arr['id_cat']]['name']) : '';
 					$evt['categorydescription'] = !empty($this->mcals->categories[$arr['id_cat']]) ? bab_toHtml($this->mcals->categories[$arr['id_cat']]['description']) : '';
 					$evt['color'] = !empty($this->mcals->categories[$arr['id_cat']]) ? bab_toHtml($this->mcals->categories[$arr['id_cat']]['bgcolor']) : $arr['color'];
 					$evt['creator'] = $arr['id_creator'] != $GLOBALS['BAB_SESS_USERID'] ? bab_toHtml(bab_getUserName($arr['id_creator'])) : '';
-					$evt['private'] = $arr['id_creator'] != $GLOBALS['BAB_SESS_USERID'] && (isset($arr['bprivate']) && $arr['bprivate'] == 'Y');
+					$evt['private'] = $arr['id_creator'] != $GLOBALS['BAB_SESS_USERID'] && 'PUBLIC' !== $calPeriod->getProperty('CLASS');
 					$evt['nbowners'] = $arr['nbowners']+1;
 					$evt['t_option'] = ''; 
-					$evt['properties'] = bab_toHtml(getPropertiesString($arr, $evt['t_option']));
+					$evt['properties'] = bab_toHtml(getPropertiesStringObj($calPeriod, $evt['t_option']));
 
 
-					$evt['location']=bab_toHtml($arr['location']);
+					$evt['location']=bab_toHtml($calPeriod->getProperty('LOCATION'));
 					global $babDB;
 					$res_note = $babDB->db_query("select note from ".BAB_CAL_EVENTS_NOTES_TBL." where id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and id_event='".$babDB->db_escape_string($arr['id_event'])."'");
 					if( $res_note && $babDB->db_num_rows($res_note) > 0 )
@@ -598,7 +638,7 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 						$evt['notes'] = '';
 						}
 
-					$sortvalue[$arr['id_event']] = $arr['start_date'];
+					$sortvalue[$arr['id_event']] = $calPeriod->getProperty('DTSTART');
 					}
 				}
 			
@@ -616,6 +656,19 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 				}
 
 			}
+
+		function getTypeLabel($type) {
+			switch($type)
+				{
+				case BAB_CAL_USER_TYPE:
+					return bab_translate('User');
+				case BAB_CAL_PUB_TYPE:
+					return bab_translate('Public');
+				case BAB_CAL_RES_TYPE:
+					return bab_translate('Resource');
+				}
+			}
+
 
 		function getnextevent()
 			{

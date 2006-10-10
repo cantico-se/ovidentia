@@ -23,7 +23,7 @@
 ************************************************************************/
 include "base.php";
 
-
+require_once($GLOBALS['babInstallPath'] . 'utilit/workinghoursincl.php');
 
 
 //Project space functions
@@ -2092,97 +2092,9 @@ function bab_deleteAllSpecificFields($sDbFieldName, $sDbFieldValue)
 	$babDB->db_query($query);
 }
 
-function bab_selectWorkingHours($iIdUser, $iWeekDay, &$bHaveWorkingHours)
-{
-	global $babDB;
 
-	$bHaveWorkingHours = false;
-	
-	$query = 
-		'SELECT ' .
-			'wd.weekDay, ' .
-			'wh.idUser, ' .
-			'LEFT(wh.startHour, 5) startHour, ' .
-			'LEFT(wh.endHour, 5) endHour ' .
-		'FROM ' .
-			BAB_TSKMGR_WEEK_DAYS_TBL . ' wd, ' . 
-			BAB_TSKMGR_WORKING_HOURS_TBL . ' wh ' .
-		'WHERE ' .
-			'wd.weekDay = \'' . $iWeekDay . '\' AND ' .
-			'wh.weekDay = wd.weekDay AND ' .
-			'wh.idUser = \'' . $iIdUser . '\' ' .
-		'ORDER BY ' . 
-			'wd.position, ' .
-			'wh.startHour';
-			
-	//bab_debug($query);
-	$result = $babDB->db_query($query);
-	if(false != $result)
-	{
-		$bHaveWorkingHours = (0 != $babDB->db_num_rows($result) ? true : false);
-	}
-	return $result;
-}
 
-function bab_insertWorkingHours($iIdUser, $iWeekDay, $sStartHour, $sEndHour)
-{
-	global $babDB;
 
-	$query = 
-		'INSERT INTO ' . BAB_TSKMGR_WORKING_HOURS_TBL . ' ' .
-			'(' .
-				'`id`, ' .
-				'`weekDay`, `idUser`, `startHour`, `endHour`' .
-			') ' .
-		'VALUES ' . 
-			'(\'\', \'' . 
-				$iWeekDay . '\', \'' . $iIdUser . '\', \'' . $sStartHour . '\', \'' . $sEndHour . '\')'; 
-
-	//bab_debug($query);
-	
-	$res = $babDB->db_query($query);
-	if(false != $res)
-	{
-		return $babDB->db_insert_id();
-	}
-	return false;
-}
-
-function bab_deleteAllWorkingHours($iIdUser)
-{
-	global $babDB;
-	$query = 'DELETE FROM '	. BAB_TSKMGR_WORKING_HOURS_TBL . ' WHERE idUser = \'' . $iIdUser . '\'';
-	$babDB->db_query($query);
-}
-
-function bab_onWorkingHoursChanged($iIdUser, $aWorkingDays)
-{
-	if(count($aWorkingDays) > 0)
-	{
-		bab_deleteAllWorkingHours($iIdUser);
-		foreach($aWorkingDays as $key => $iWeekDay)
-		{
-			bab_insertWorkingHours($iIdUser, $iWeekDay, '09:00', '12:00');
-			bab_insertWorkingHours($iIdUser, $iWeekDay, '13:00', '18:00');
-		}
-	}
-}
-
-function bab_createDefaultWorkingHours($iIdUser)
-{
-	global $babDB, $babInstallPath;
-	require_once($babInstallPath . 'utilit/calapi.php');
-
-	$sWorkingDays = null;
-	bab_calGetWorkingDays($iIdUser, $sWorkingDays);
-	$aWorkingDays = explode(',', $sWorkingDays);
-	
-	foreach($aWorkingDays as $key => $iWeekDay)
-	{
-		bab_insertWorkingHours($iIdUser, $iWeekDay, '09:00', '12:00');
-		bab_insertWorkingHours($iIdUser, $iWeekDay, '13:00', '18:00');
-	}
-}
 
 function bab_selectAvailableSpecificFieldClassesByProject($iIdProjectSpace, $iIdProject)
 {

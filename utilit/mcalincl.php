@@ -36,19 +36,10 @@ class bab_mcalendars
 
 	function bab_mcalendars($startdate, $enddate, $idcals)
 		{
-		$this->freeevents[] = array($startdate, $enddate, 0);
 		$this->idcals = $idcals;
 		for( $i = 0; $i < count($this->idcals); $i++ )
 			{
 			$this->objcals[$this->idcals[$i]] =& new bab_icalendar($startdate, $enddate, $this->idcals[$i]);
-			if (isset($this->objcals[$this->idcals[$i]]->events))
-			for( $k= 0; $k < count($this->objcals[$this->idcals[$i]]->events); $k++ )
-				{
-				if( $this->objcals[$this->idcals[$i]]->events[$k]['bfree'] != 'Y' )
-					{
-					$this->updateFreeEvents($this->objcals[$this->idcals[$i]]->events[$k]['start_date'], $this->objcals[$this->idcals[$i]]->events[$k]['end_date']);
-					}
-				}			
 			}
 		}
 
@@ -69,6 +60,8 @@ class bab_mcalendars
 			}
 		return "";
 		}
+
+	
 
 	function getCalendarAccess($idcal)
 		{
@@ -147,7 +140,11 @@ class bab_mcalendars
 			$res = $babDB->db_query("select * from ".BAB_CAL_CATEGORIES_TBL." order by name");
 			while( $arr = $babDB->db_fetch_array($res))
 				{
-				$this->categories[$arr['id']] = array('name' => $arr['name'], 'description' => $arr['description'],'bgcolor' => $arr['bgcolor']);
+				$this->categories[$arr['id']] = array(
+					'name' => $arr['name'], 
+					'description' => $arr['description'],
+					'bgcolor' => $arr['bgcolor']
+					);
 				}
 			}
 		}
@@ -185,106 +182,80 @@ class bab_mcalendars
 		return "";
 		}
 
+	/**
+	 * Create free events
+	 * for all calendars
+	 * @static
+	 * @param	string	$startdate	ISO datetime
+	 * @param	string	$enddate	ISO datetime
+	 * @return	object
+	 */
+	function create_free_events($startdate, $enddate, $idcals) {
+		include_once $GLOBALS['babInstallPath']."utilit/workinghoursincl.php";
+		include_once $GLOBALS['babInstallPath']."utilit/dateTime.php";
 
-	function updateFreeEvents($startdate, $enddate)
-		{
-		if( count($this->freeevents) > 0 )
-			{
-			if( $startdate > $enddate )
-				{
-				$tmp = $startdate;
-				$startdate = $enddate;
-				$enddate = $tmp;
-				}
+		$whObj = new bab_userWorkingHours(
+			BAB_dateTime::fromIsoDateTime($startdate), 
+			BAB_dateTime::fromIsoDateTime($enddate)
+		);
 
-			$tmparr = array();
+		foreach($idcals as $idcal) {
+			$iarr = $GLOBALS['babBody']->icalendars->getCalendarInfo($idcal);
 
-			for( $i =0; $i < count($this->freeevents); $i++ )
-				{
-				if( $this->freeevents[$i][2] == 0 )
-					{
-					if( $enddate > $this->freeevents[$i][0] && $startdate < $this->freeevents[$i][1])
-						{
-						if( $startdate > $this->freeevents[$i][0] && $enddate < $this->freeevents[$i][1])
-							{
-							$tmparr[] = array($this->freeevents[$i][0], $startdate, 0);
-							$tmparr[] = array($startdate, $enddate, 1);
-							$tmparr[] = array($enddate, $this->freeevents[$i][1], 0);		
-							}
-						elseif( $startdate > $this->freeevents[$i][0] )
-							{
-							$tmparr[] = array($this->freeevents[$i][0], $startdate, 0);
-							$tmparr[] = array($startdate, $this->freeevents[$i][1], 1);
-							}
-						elseif(  $enddate < $this->freeevents[$i][1] )
-							{
-							$tmparr[] = array($this->freeevents[$i][0], $enddate, 1);		
-							$tmparr[] = array($enddate, $this->freeevents[$i][1], 0);		
-							}
-						else
-							{
-							$tmparr[] = array($this->freeevents[$i][0], $this->freeevents[$i][1], 1);		
-							}
-						}
-					else
-						{
-						$tmparr[] = $this->freeevents[$i]; 
-						}
-					}
-				else
-					{
-					$tmparr[] = $this->freeevents[$i]; 
-					}
-
-				}
-			$this->freeevents = $tmparr;
-			}
-		}
-
-
-	function getNextFreeEvent($startdate, $enddate, &$arr, $gap=0)
-		{
-		static $i =0;
-		while( $i < count($this->freeevents) )
-			{			
-			if( $enddate <= $this->freeevents[$i][0] || $startdate >= $this->freeevents[$i][1] )
-				{
-				$i++;
-				}
-			else
-				{
-				if( $gap != 0 && $this->freeevents[$i][2] == 0)
-					{
-					$max = bab_mktime($this->freeevents[$i][1] > $enddate ? $enddate: $this->freeevents[$i][1]);
-					$min = bab_mktime($this->freeevents[$i][0] < $startdate ? $startdate: $this->freeevents[$i][0]);
-					if( $gap <= $max - $min )
-						{
-						break;
-						}
-					else
-						{
-						$i++;
-						}
-					}
-				else
-					{
+			switch($iarr['type']) {
+				case BAB_CAL_USER_TYPE:
+					$whObj->addIdUser($iarr['idowner']);
+					$whObj->addCalendar($idcal);
 					break;
-					}
-				}
-			}
 
-		if( $i < count($this->freeevents))
-			{
-			$arr = $this->freeevents[$i];
-			$i++;
-			return true;
-			}
-		else
-			{
-			$i = 0;
-			return false;
+				case BAB_CAL_PUB_TYPE:
+				case BAB_CAL_RES_TYPE:
+					$whObj->addCalendar($idcal);
+					break;
 			}
 		}
+
+		$whObj->createPeriods(BAB_PERIOD_NWDAY | BAB_PERIOD_WORKING | BAB_PERIOD_VACATION | BAB_PERIOD_CALEVENT);
+		$whObj->orderBoundaries();
+
+		return $whObj;
+	}
+	
+
+	/**
+	 * $arr = array(
+	 *			0 => ISO date
+	 *			1 => ISO date
+	 *			2 => 1|0
+	 *			)
+	 *
+	 * if $arr[2] == 0, this is a free event
+	 *
+	 * @param object	$whObj		
+	 * @param string	$startdate	ISO date
+	 * @param string	$startdate	ISO date
+	 * @param array		$arr		reference for event
+	 * @param int		$gap		minimum event duration in seconds
+	 * @static
+	 */
+	function getNextFreeEvent($whObj, $startdate, $enddate, &$arr, $gap=0)
+		{
+		static $freeevents = array();
+		if (!isset($freeevents[$startdate.$enddate])) {
+			$freeevents[$startdate.$enddate] = $whObj->getAvailabilityBetween(bab_mktime($startdate), bab_mktime($enddate), $gap);
+		}
+
+		if (list(,$event) = each($freeevents[$startdate.$enddate])) {
+			$arr = array(
+					0 => date('Y-m-d H:i:s',$event->ts_begin),
+					1 => date('Y-m-d H:i:s',$event->ts_end),
+					2 => 0
+				);
+			return true;
+		}
+		
+		return false;
+	}
 
 }
 
@@ -293,14 +264,28 @@ class bab_icalendar
 	var $idcalendar = 0;
 	var $access = -1;
 	var $cal_type;
+	var $whObj;	// working hours object
 
+	/**
+	 * @param string	$startdate
+	 * @param string	$enddate
+	 * @param int		$calid
+	 */
 	function bab_icalendar($startdate, $enddate, $calid)
 		{
 		global $babBody, $babDB;
 
+		include_once $GLOBALS['babInstallPath']."utilit/workinghoursincl.php";
+		include_once $GLOBALS['babInstallPath']."utilit/dateTime.php";
+
 		$babBody->icalendars->initializeCalendars();
 
 		$this->cal_type = $babBody->icalendars->getCalendarType($calid);
+
+		$this->whObj = new bab_userWorkingHours(
+			BAB_dateTime::fromIsoDateTime($startdate), 
+			BAB_dateTime::fromIsoDateTime($enddate)
+		);
 
 		if( $this->cal_type !== false )
 			{
@@ -308,6 +293,8 @@ class bab_icalendar
 			$this->idcalendar = $calid;
 			if( $calid == $babBody->icalendars->id_percal ) /* user's calendar */
 				{
+				$this->whObj->addIdUser($GLOBALS['BAB_SESS_USERID']);
+				$this->whObj->addCalendar($this->idcalendar);
 				$this->access = BAB_CAL_ACCESS_FULL;
 				}
 			else
@@ -315,9 +302,12 @@ class bab_icalendar
 				switch($this->cal_type)
 					{
 					case BAB_CAL_USER_TYPE:
+						$this->whObj->addIdUser($babBody->icalendars->getCalendarOwner($calid));
+						$this->whObj->addCalendar($this->idcalendar);
 						$this->access = $babBody->icalendars->usercal[$calid]['access'];
 						break;
 					case BAB_CAL_PUB_TYPE:
+						$this->whObj->addCalendar($this->idcalendar);
 						if( $babBody->icalendars->pubcal[$calid]['manager'] )
 							{
 							$this->access = BAB_CAL_ACCESS_FULL;							
@@ -328,6 +318,7 @@ class bab_icalendar
 							}
 						break;
 					case BAB_CAL_RES_TYPE:
+						$this->whObj->addCalendar($this->idcalendar);
 						if( $babBody->icalendars->rescal[$calid]['manager'] )
 							{
 							$this->access = BAB_CAL_ACCESS_FULL;							
@@ -339,130 +330,59 @@ class bab_icalendar
 						break;
 					}
 				}
-
-			$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
-
-			$this->events = array();
-			$res = $babDB->db_query("select ceo.*, ce.* from ".BAB_CAL_EVENTS_OWNERS_TBL." ceo left join ".BAB_CAL_EVENTS_TBL." ce on ceo.id_event=ce.id where ceo.id_cal='".$babDB->db_escape_string($calid)."' and ceo.status != '".BAB_CAL_STATUS_DECLINED."' and ce.start_date <= '".$babDB->db_escape_string($enddate)."' and  ce.end_date >= '".$babDB->db_escape_string($startdate)."' order by ce.start_date asc");
-			$idevtarr = array();
-			while( $arr = $babDB->db_fetch_array($res))
-				{
-				$arr['alert'] = false;
-				$arr['idcal_owners'] = array(); /* id calendars that ownes this event */
-				$resco = $babDB->db_query("select ceo.id_cal from ".BAB_CAL_EVENTS_OWNERS_TBL." ceo where ceo.id_event='".$babDB->db_escape_string($arr['id'])."' and ceo.id_cal != '".$babDB->db_escape_string($calid)."'");
-				while( $arr2 = $babDB->db_fetch_array($resco))
-					{
-					$arr['idcal_owners'][] = $arr2['id_cal'];
-					}
-
-				$arr['nbowners'] = count($arr['idcal_owners']);
-				if( $arr['nbowners'] == 0 && $arr['id_creator'] != 0 && $arr['id_creator'] != $GLOBALS['BAB_SESS_USERID'] && $this->access == BAB_CAL_ACCESS_FULL)
-					{
-					$arr['nbowners'] = 1;
-					}
-
-				if( $arr['status'] == BAB_CAL_STATUS_NONE && $arr['idfai'] != 0 )
-					{
-					if( count($arrschi) > 0 && in_array($arr['idfai'], $arrschi))
-						{
-						$this->events[] = $arr;
-						$idevtarr[] = $arr['id'];
-						}
-					}
-				else
-					{
-					$this->events[] = $arr;
-					$idevtarr[] = $arr['id'];
-					}
-				}
-
-			if( !empty($GLOBALS['BAB_SESS_USERID']) && count($idevtarr) > 0 )
-				{
-				$eventsnotes = array();
-				$res = $babDB->db_query("select * from ".BAB_CAL_EVENTS_NOTES_TBL." where id_event in (".$babDB->quote($idevtarr).") and id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
-				while( $arr = $babDB->db_fetch_array($res))
-					{
-					$eventsnotes[$arr['id_event']] = $arr['note'];
-					}
-				$eventsalerts = array();
-				$res = $babDB->db_query("select id_event from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_event in (".$babDB->quote( $idevtarr).") and id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
-				while( $arr = $babDB->db_fetch_array($res))
-					{
-					$eventsalerts[$arr['id_event']] = 1;
-					}
-				if( count($eventsnotes) > 0 || count($eventsalerts) > 0)
-					{
-					for($i=0; $i < count($this->events); $i++)
-						{
-						if( isset($eventsnotes[$this->events[$i]['id']]))
-							{
-							$this->events[$i]['note'] = $eventsnotes[$this->events[$i]['id']];
-							}
-						if( isset($eventsalerts[$this->events[$i]['id']]))
-							{
-							$this->events[$i]['alert'] = true;
-							}
-						else
-							{
-							$this->events[$i]['alert'] = false;
-							}
-						}
-					}
-				}
 			}
+		
+		$this->whObj->createPeriods(BAB_PERIOD_NWDAY | BAB_PERIOD_WORKING | BAB_PERIOD_VACATION | BAB_PERIOD_CALEVENT);
+		$this->whObj->orderBoundaries();
 		}
 
-
-	function getNextEvent($startdate, $enddate, &$arr) /* YYYY-MM-DD HH:MM:SS */
+	/**
+	 * @param	string	$startdate	ISO date time
+	 * @param	string	$enddate	ISO date time
+	 * @param	object	$calPeriod
+	 * @return	boolean
+	 */
+	function getNextEvent($startdate, $enddate, &$calPeriod)
 		{
-		static $i =0;
-		if (isset($this->events))
-		while( $i < count($this->events) )
-			{			
-			if( $enddate <= $this->events[$i]['start_date'] || $startdate >= $this->events[$i]['end_date'] )
+		while( $p = $this->whObj->getNextEvent(BAB_PERIOD_NWDAY | BAB_PERIOD_VACATION | BAB_PERIOD_CALEVENT) )
+			{
+			
+			if (bab_mktime($startdate) < $p->ts_end && bab_mktime($enddate) > $p->ts_begin )
 				{
-				$i++;
-				}
-			else
-				{
-				break;
+				$calPeriod = $p;
+				return true;
 				}
 			}
 
-		if( isset($this->events) && $i < count($this->events))
-			{
-			$arr = $this->events[$i];
-			$i++;
-			return true;
-			}
-		else
-			{
-			$i = 0;
-			return false;
-			}
+		return false;
 		}
+	
 
-	function getEvents($startdate, $enddate, &$arr) /* YYYY-MM-DD HH:MM:SS */
+	/**
+	 * @param	string	$startdate	ISO date time
+	 * @param	string	$enddate	ISO date time
+	 * @param	array	$arr
+	 * @return	int
+	 */
+	function getEvents($startdate, $enddate, &$arr)
 		{
 		$arr = array();
-		$i = 0;
-		if (isset($this->events))
-		while( $i < count($this->events) )
-			{			
-			if( $enddate >= $this->events[$i]['start_date'] && $startdate <= $this->events[$i]['end_date'] )
-				{
-				$arr[] = $this->events[$i];
-				}
-			$i++;
+		$events = $this->whObj->getEventsBetween(bab_mktime($startdate), bab_mktime($enddate), BAB_PERIOD_NWDAY | BAB_PERIOD_VACATION | BAB_PERIOD_CALEVENT);
+
+			foreach($events as $event) {
+				$arr[] = $event;
 			}
+
 		return count($arr);
 		}
 
+
+
 	function getHtmlArea($startdate, $enddate, &$harray)
 		{
-		$arr = array();
+		$calPeriod = NULL;
 		$harray = array();
-		while( $this->getNextEvent($startdate, $enddate, $arr))
+		while( $this->getNextEvent($startdate, $enddate, $calPeriod))
 			{
 			$done = false;
 			for( $k = 0; $k < count($harray); $k++ )
@@ -470,7 +390,9 @@ class bab_icalendar
 				$append = true;
 				for( $m = 0; $m < count($harray[$k]); $m++ )
 					{
-					if( $harray[$k][$m]['end_date'] > $arr['start_date'] && $harray[$k][$m]['start_date'] < $arr['end_date'] )
+					if( 
+						$harray[$k][$m]->getProperty('DTEND') > $calPeriod->getProperty('DTSTART') && 
+						$harray[$k][$m]->getProperty('DTSTART') < $calPeriod->getProperty('DTEND') )
 						{
 						$append = false;
 						break;
@@ -480,12 +402,12 @@ class bab_icalendar
 				if( $append )
 					{
 					$done = true;
-					$harray[$k][] = $arr;
+					$harray[$k][] = $calPeriod;
 					}
 				}
 			if( !$done)
 				{
-				$harray[][] = $arr;
+				$harray[][] = $calPeriod;
 				}
 			}
 		return count($harray);
@@ -607,12 +529,13 @@ class cal_wmdbaseCls
 	}
 
 
-	function updateAccessCalendar(&$evtarr, &$calinfo, &$result)
+	function updateAccessCalendar(&$calPeriod, &$calinfo, &$result)
 	{
 
 		$view = 1;
 		$modify = 0;
 		$viewtitle = 0;
+		$evtarr = & $calPeriod->getData();
 
 		switch( $calinfo['type'] )
 			{
@@ -643,7 +566,7 @@ class cal_wmdbaseCls
 					}
 				}
 
-				if( $evtarr['bprivate'] == "Y" && $GLOBALS['BAB_SESS_USERID'] != $calinfo['idowner'] )
+				if( 'PUBLIC' !== $calPeriod->getProperty('CLASS') && $GLOBALS['BAB_SESS_USERID'] != $calinfo['idowner'] )
 					{
 					$viewtitle = 0;
 					}
@@ -666,6 +589,12 @@ class cal_wmdbaseCls
 					}
 				$viewtitle = 1;
 				break;
+
+			default: // no calendar associated with event
+				$viewtitle	= 1;
+				$view		= 0;
+				$modify		= 0;
+				break;
 			}
 	
 		$result['view'][] = $view;
@@ -674,20 +603,28 @@ class cal_wmdbaseCls
 	
 	}
 
-	function updateAccess($evtarr, $calinfo)
+	function updateAccess($calPeriod, $calinfo)
 	{
 		global $babBody;
 
-		$this->allow_view = true;
-		$this->allow_modify = true;
-		$this->allow_viewtitle = true;
-		$this->bstatus = false;
+		$this->allow_view		= true;
+		$this->allow_modify		= true;
+		$this->allow_viewtitle	= true;
+		$this->bstatus			= false;
 
-		$result['view'] = array();
-		$result['modify'] = array();
-		$result['viewtitle'] = array();
+		$result['view']			= array();
+		$result['modify']		= array();
+		$result['viewtitle']	= array();
+		$this->updateAccessCalendar($calPeriod, $calinfo, $result);
 
-		$this->updateAccessCalendar($evtarr, $calinfo, $result);
+		
+		if (BAB_PERIOD_CALEVENT != $calPeriod->type) {
+			$this->allow_view	= false;
+			$this->allow_modify = false;
+			return;
+		}
+		
+		$evtarr = $calPeriod->getData();
 
 		$nbcoals = count($evtarr['idcal_owners']);
 		if( $nbcoals && $result['modify'][0] && $calinfo['type'] == BAB_CAL_USER_TYPE )
@@ -697,7 +634,7 @@ class cal_wmdbaseCls
 				$iarr = $babBody->icalendars->getCalendarInfo($evtarr['idcal_owners'][$i]);
 				if( $iarr['type'] != BAB_CAL_USER_TYPE )
 					{
-					$this->updateAccessCalendar($evtarr, $iarr, $result);
+					$this->updateAccessCalendar($calPeriod, $iarr, $result);
 					}
 				}
 			}
@@ -769,19 +706,115 @@ class cal_wmdbaseCls
 			return bab_toHtml($str);
 		}
 
-	function getPropertiesString(&$arr)
+	function createCommonEventVars(&$calPeriod)
 		{
-		$el = array('bprivate' => bab_translate('Private'),'block' => bab_translate('Locked'),'bfree' => bab_translate('Free'));
-		foreach ($el as $k => $v)
-			{
-			if ($arr[$k] != 'Y')
-				unset($el[$k]);
+		if (BAB_PERIOD_CALEVENT != $calPeriod->type) {
+			$this->properties = '';
+		} else {
+			$el = array();
+
+			if ('PUBLIC' !== $calPeriod->getProperty('CLASS')) {
+				$el[] = bab_translate('Private');
 			}
-		$this->t_option = count($el) > 1 ? bab_translate("Options") : bab_translate("Option"); 
-		if (count($el) > 0)
-			return implode(', ',$el);
+
+			$arr = $calPeriod->getData();
+
+			if ('Y' == $arr['block']) {
+				$el[] = bab_translate('Locked');
+			}
+
+			if ('Y' == $arr['bfree']) {
+				$el[] = bab_translate('Free');
+			}
+
+			$this->t_option = count($el) > 1 ? bab_translate("Options") : bab_translate("Option"); 
+			if (count($el) > 0) {
+				$this->properties = implode(', ',$el);
+				}
+			else {
+				$this->properties = '';
+				}
+		}
+		
+		global $babBody;
+
+		$arr = $calPeriod->getData();
+		$this->idcal		= isset($arr['id_cal'])		? $arr['id_cal'] : 0;
+		$this->status		= isset($arr['status'])		? $arr['status'] : 0;
+		$this->id_cat		= isset($arr['id_cat'])		? $arr['id_cat'] : 0;
+		$this->id_creator	= isset($arr['id_creator']) ? $arr['id_creator'] : 0;
+		$this->hash			= isset($arr['hash'])		? $arr['hash'] : '';
+		$this->balert		= isset($arr['alert'])		? $arr['alert'] : false;
+		$this->nbowners		= isset($arr['nbowners'])	? $arr['nbowners'] : 0;
+		$this->idevent		= isset($arr['id'])			? $arr['id'] : 0;
+		$this->bgcolor		= 'fff';
+
+		if( $this->id_creator != 0 )
+			{
+			$this->creatorname = bab_getUserName($this->id_creator); 
+			}
+		$iarr = $babBody->icalendars->getCalendarInfo($this->idcal);
+		$this->updateAccess($calPeriod, $iarr);
+
+		$this->category = $calPeriod->getProperty('CATEGORIES');
+
+
+		if ($babBody->icalendars->usebgcolor == 'Y') {
+			if (empty($calPeriod->color)) {
+				$this->bgcolor = $this->id_cat != 0 ? $this->mcals->getCategoryColor($this->id_cat) : 'fff';
+			} else {
+				$this->bgcolor = $calPeriod->color;
+			}
+		}
+
+
+		$time = bab_mktime($calPeriod->getProperty('DTSTART'));
+		$this->starttime = bab_time($time);
+		$this->startdate = bab_shortDate($time, false);
+		$time = bab_mktime($calPeriod->getProperty('DTEND'));
+		$this->endtime = bab_time($time);
+		$this->enddate = bab_shortDate($time, false);
+
+		
+		
+		if( !$this->allow_viewtitle  )
+			{
+			$this->title		= bab_translate("Private");
+			$this->titleten		= $this->title;
+			$this->description	= "";
+			$this->location		= "";
+			}
 		else
-			return '';
+			{
+			$this->title		= bab_toHtml($calPeriod->getProperty('SUMMARY'));
+			$this->titleten		= $this->calstr($calPeriod->getProperty('SUMMARY'));
+			$this->description	= bab_replace($calPeriod->getProperty('DESCRIPTION'));
+			$this->location		= bab_toHtml($calPeriod->getProperty('LOCATION'));
+			}
+
+		if( $this->allow_modify )
+			{
+			$this->popup		= true;
+			$this->titletenurl	= $GLOBALS['babUrlScript']."?tg=event&idx=modevent&evtid=".$this->idevent	."&calid=".$this->idcal."&cci=".$this->currentidcals."&view=viewm&date=".$this->currentdate;
+			}
+		elseif( $this->allow_view )
+			{
+			$this->popup		= true;
+			$this->titletenurl	= $GLOBALS['babUrlScript']."?tg=calendar&idx=veventupd&evtid=". $this->idevent	."&idcal=".$this->idcal;
+			}
+		else
+			{
+			$this->popup		= false;
+			$this->titletenurl	= "";
+			}
+		$this->attendeesurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=attendees&evtid=".$this->idevent ."&idcal=".$this->idcal;
+		$this->vieweventurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=veventupd&evtid=".$this->idevent ."&idcal=".$this->idcal;
+		$this->bnote = false;
+		if( isset($arr['note']) && !empty($arr['note']))
+			{
+			$this->bnote = true;
+			$this->noteval = $arr['note'];
+			}
 		}
 
 	function printout($file,$template)
@@ -968,8 +1001,15 @@ if ($GLOBALS['BAB_SESS_LOGGED'] && !empty($_POST['database_record']))
 
 }
 
-/* idcals array, $date0 and $date1 sql date, $gap in seconds, $bopt='Y' if you want to use user'soptions */
-function cal_getFreeEvents($idcals, $date0, $date1, $gap, $bopt)
+/**
+ * @param	array	$idcals
+ * @param	string	$date0		ISO date or ISO datetime
+ * @param	string	$date1		ISO date or ISO datetime
+ * @param	int		$gap		seconds	
+ * @param	Y|N		$bopt		if you want to use user's options (deprecated)
+ * @return array
+ */
+function cal_getFreeEvents($idcals, $date0, $date1, $gap, $bopt = 0)
 {
 	global $babDB;
 
@@ -979,117 +1019,21 @@ function cal_getFreeEvents($idcals, $date0, $date1, $gap, $bopt)
 		return $freeevents;
 		}
 
-	$workdays = array();
-	$workdays_user = array();
 
-	function time_to_sec($time)
-		{
-		list($h,$m,$s) = explode(':',$time);
-		return $h*3600 + $m*60 + $s;
+	$sdate = 10 === strlen($date0) ? $date0.' 00:00:00' : $date0;
+	$edate = 10 === strlen($date0) ? $date1.' 23:59:59' : $date1;
+
+	$whObj = bab_mcalendars::create_free_events($sdate, $edate, $idcals);
+
+	
+	while(  bab_mcalendars::getNextFreeEvent($whObj, $sdate, $edate, $arr, $gap)) {
+		if( 0 === $arr[2] ) {
+			$freeevents[] = array(
+				bab_mktime($arr[0]), 
+				bab_mktime($arr[1])
+			);
 		}
-
-	function sec_to_time($sec)
-		{
-		$min = $sec%3600;
-		return sprintf("%02s:%02s:%02s", ($sec/3600), ($min/60), ($min%60));
-		}
-
-	$sdate = $date0.' 00:00:00';
-	$edate = $date1.' 23:59:00';
-
-	$mcals = & new bab_mcalendars($sdate, $edate, $idcals);
-
-	$starttime_sec = 0;
-	$endtime_sec = 3600*24;
-
-	$calopt = array();
-
-	$res = $babDB->db_query("SELECT c.id,o.workdays, o.start_time, o.end_time FROM ".BAB_CAL_USER_OPTIONS_TBL." o, ".BAB_CALENDAR_TBL." c WHERE c.id IN(".$babDB->quote($idcals).") AND o.id_user = c.owner AND c.type='1'");
-
-	while ($arr = $babDB->db_fetch_array($res))
-		{
-		$calopt[$arr['id']] = explode( ',', $arr['workdays'] );
-		$workdays = array_merge ($workdays,  $calopt[$arr['id']]);
-		
-		$s = time_to_sec($arr['start_time']);
-		$starttime_sec = $s > $starttime_sec ? $s : $starttime_sec;
-		$s = time_to_sec($arr['end_time']);
-		$endtime_sec = $s < $endtime_sec ? $s : $endtime_sec;
-		}
-
-	$workdays = array_unique($workdays);
-
-	foreach ($calopt as $user)
-		{
-		foreach ($workdays as $k => $day)
-			{
-			if (!in_array($day,$user))
-				{
-				unset($workdays[$k]);
-				}
-			}
-		}
-
-	$starttime = sec_to_time($starttime_sec);
-	$endtime = sec_to_time($endtime_sec);
-
-	while( $mcals->getNextFreeEvent($sdate, $edate, $arr, $gap))
-		{
-		$free = $arr[2] == 0;
-		if( $free )
-			{
-			if( $bopt == 'Y')
-				{
-				$rr = explode(' ', $arr[0]);
-				$time0 = bab_mktime($rr[0].' 00:00:00');
-				$rr = explode(' ', $arr[1]);
-				$time1 = bab_mktime($rr[0].' 23:59:00');
-
-				while( $time0 < $time1 )
-					{
-					if( count($workdays) == 0 || in_array(date('w', $time0), $workdays))
-						{
-						$cdate = sprintf("%04s-%02s-%02s", date("Y", $time0), date("n", $time0), date("j", $time0));
-
-						$workdate0 = $cdate.' '.$starttime;
-						$workdate1 = $cdate.' '.$endtime;
-
-						if( $arr[1] > $workdate0 && $arr[0] < $workdate1 )
-							{
-							if( $arr[0] <= $workdate0 )
-								{
-								$startdate = $workdate0;
-								}
-							else
-								{
-								$startdate = $arr[0];
-								}
-
-							if( $arr[1] >= $workdate1 )
-								{
-								$enddate = $workdate1;
-								}
-							else
-								{
-								$enddate = $arr[1];
-								}
-							$stime = bab_mktime($startdate);
-							$etime = bab_mktime($enddate);
-							if( $gap <= $etime - $stime )
-								{
-								$freeevents[] = array($stime, $etime);
-								}
-							}
-						}
-					$time0 += 24*3600;
-					}
-				}
-			else
-				{
-				$freeevents[] = array(bab_mktime($arr[0]), bab_mktime($arr[1]));
-				}
-			}
-		}
+	}
 
 	return $freeevents;
 }
@@ -1108,7 +1052,8 @@ function cal_searchAvailability($tg, $calid, $date, $date0, $date1, $gap, $bopt)
 			$this->dateendtxt = bab_translate("Until date")." ".bab_translate("dd-mm-yyyy");
 			$this->searchtxt = bab_translate("Search");
 			$this->gaptxt = bab_translate("Minimum interval time");
-			$this->datestxt = bab_translate("Dates");
+			$this->t_begindate = bab_translate("Begin date");
+			$this->t_enddate = bab_translate("End date");
 			$this->intervaltxt = bab_translate("Duration");
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
@@ -1172,17 +1117,15 @@ function cal_searchAvailability($tg, $calid, $date, $date0, $date1, $gap, $bopt)
 			global $babBody;
 			if( $i < $this->countfree )
 				{
-				$this->altbg != $this->altbg;
+				$this->altbg = !$this->altbg;
 				$time0 = $this->freeevents[$i][0];
-				$this->starttime = bab_time($time0);
-				$this->startdate = bab_shortDate($time0, false);
+				$this->startdate = bab_shortDate($time0);
 				$time1 = $this->freeevents[$i][1];
-				$this->endtime = bab_time($time1);
-				$this->enddate = bab_shortDate($time1, false);
+				$this->enddate = bab_shortDate($time1);
 				$this->refurl = $GLOBALS['babUrlScript']."?tg=".$this->tg."&idx=unload&date=".date("Y,n,j", $time1)."&calid=".implode(',',$this->idcals);
 				$interval = $time1 - $time0;
 				$tmp = (int)($interval / 86400);
-				if( $tmp )
+				if( $tmp)
 					{
 					$this->interval = $tmp." ".$this->daystxt;
 					}

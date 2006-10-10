@@ -203,6 +203,7 @@ function listVacationRequestsb($idstatus, $userid, $dateb, $datee, $vpos)
 
 		var $entryid;
 		var $alttxt;
+		var $altbg = true;
 
 		function temp($idstatus, $userid, $dateb, $datee, $vpos)
 			{
@@ -221,14 +222,18 @@ function listVacationRequestsb($idstatus, $userid, $dateb, $datee, $vpos)
 			$this->resettxt = bab_translate("Reset");
 			$this->alttxt = bab_translate("Modify");
 			$this->t_edit = bab_translate("Modification");
+			$this->t_delete = bab_translate("Delete");
+
+			$this->t_first_page = bab_translate("First page");
+			$this->t_previous_page = bab_translate("Previous page");
+			$this->t_next_page = bab_translate("Next page");
+			$this->t_last_page = bab_translate("Last page");
+
 			$this->topurl = "";
 			$this->bottomurl = "";
 			$this->nexturl = "";
 			$this->prevurl = "";
-			$this->topname = "";
-			$this->bottomname = "";
-			$this->nextname = "";
-			$this->prevname = "";
+
 			$this->db = & $GLOBALS['babDB'];
 			$this->statarr = array(bab_translate(""), bab_translate("Accepted"), bab_translate("Refused"));
 			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=vacadmb&idx=browlp&cb=";
@@ -299,24 +304,25 @@ function listVacationRequestsb($idstatus, $userid, $dateb, $datee, $vpos)
 				{
 				$urltmp = $GLOBALS['babUrlScript']."?tg=vacadmb&idx=lreq&idstatus=".$this->idstatus."&userid=".$this->userid."&dateb=".$this->dateb."&datee=".$this->datee."&vpos=";
 
+				$page_number = 1 + ($this->pos / VAC_MAX_REQUESTS_LIST);
+				$page_total = 1 + ($total / VAC_MAX_REQUESTS_LIST);
+				$this->t_position = sprintf(bab_translate("Page %d/%d"), $page_number,$page_total);
+
 				if( $vpos > 0)
 					{
 					$this->topurl = $urltmp."0";
-					$this->topname = "&lt;&lt;";
 					}
 
 				$next = $vpos - VAC_MAX_REQUESTS_LIST;
 				if( $next >= 0)
 					{
 					$this->prevurl = $urltmp.$next;
-					$this->prevname = "&lt;";
 					}
 
 				$next = $vpos + VAC_MAX_REQUESTS_LIST;
 				if( $next < $total)
 					{
 					$this->nexturl = $urltmp.$next;
-					$this->nextname = "&gt;";
 					if( $next + VAC_MAX_REQUESTS_LIST < $total)
 						{
 						$bottom = $total - VAC_MAX_REQUESTS_LIST;
@@ -324,7 +330,6 @@ function listVacationRequestsb($idstatus, $userid, $dateb, $datee, $vpos)
 					else
 						$bottom = $next;
 					$this->bottomurl = $urltmp.$bottom;
-					$this->bottomname = "&gt;&gt;";
 					}
 				}
 
@@ -343,21 +348,19 @@ function listVacationRequestsb($idstatus, $userid, $dateb, $datee, $vpos)
 
 		function getnext()
 			{
-			global $babDayType;
 			static $i = 0;
 			if( $i < $this->count)
 				{
+				$this->altbg = !$this->altbg;
 				$arr = $this->db->db_fetch_array($this->res);
 				$this->url = $GLOBALS['babUrlScript']."?tg=vacadmb&idx=morvw&id=".$arr['id'];
-				$this->editurl = $GLOBALS['babUrlScript']."?tg=vacadmb&idx=edvr&id=".$arr['id'];
-				list($this->quantity) = $this->db->db_fetch_row($this->db->db_query("select sum(quantity) from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry ='".$arr['id']."'"));
-				$this->urlname = bab_getUserName($arr['id_user']);
-				$this->begindate = bab_strftime(bab_mktime($arr['date_begin']." 00:00:00"), false);
-				if( $arr['day_begin'] != 1)
-					$this->begindate .= " ". $babDayType[$arr['day_begin']];
-				$this->enddate = bab_strftime(bab_mktime($arr['date_end']." 00:00:00"), false);
-				if( $arr['day_begin'] != 1)
-					$this->enddate .= " ". $babDayType[$arr['day_end']];
+				$this->editurl = $GLOBALS['babUrlScript']."?tg=vacadmb&amp;idx=edvr&amp;id=".$arr['id'];
+				$this->urldelete = $GLOBALS['babUrlScript']."?tg=vacuser&amp;idx=delete&amp;id_entry=".$arr['id'];
+				list($this->quantity) = $this->db->db_fetch_row($this->db->db_query("select sum(quantity) from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry =".$this->db->quote($arr['id'])));
+				$this->urlname		= bab_getUserName($arr['id_user']);
+				$this->begindate	= bab_vac_shortDate(bab_mktime($arr['date_begin']));
+				$this->enddate		= bab_vac_shortDate(bab_mktime($arr['date_end']));
+
 				switch($arr['status'])
 					{
 					case 'Y':
@@ -476,25 +479,31 @@ function editVacationRequest($vrid)
 			$arr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where id='".$id."'"));
 			$this->iduser = $arr['id_user'];
 
-			$rr1 = explode('-', $arr['date_begin']);
-			$this->daybegin = $rr1[2];
-			$this->daysel = $this->daybegin;
+			
+			include_once $GLOBALS['babInstallPath']."utilit/dateTime.php";
+			
 
-			$rr2 = explode('-', $arr['date_end']);
-			$this->dayend = $rr2[2];
+			$date_begin = BAB_DateTime::fromIsoDateTime($arr['date_begin']);
+			$date_end	= BAB_DateTime::fromIsoDateTime($arr['date_end']);
+			
+			
+			$this->daybegin		= $date_begin->getDayOfMonth();
+			$this->daysel		= $this->daybegin;
 
-			$this->monthbegin = $rr1[1];
-			$this->monthsel = $this->monthbegin;
+			$this->dayend		= $date_end->getDayOfMonth();
 
-			$this->monthend = $rr2[1];
+			$this->monthbegin	= $date_begin->getMonth();
+			$this->monthsel		= $this->monthbegin;
+
+			$this->monthend		= $date_end->getMonth();
 
 
-			$this->halfdaybegin = $arr['day_begin'];
-			$this->halfsel = $this->halfdaybegin;
+			$this->halfdaybegin	= 'am' === date('a', $date_begin->getTimeStamp()) ? 0 : 1;
+			$this->halfsel		= $this->halfdaybegin;
 
-			$this->halfdayend = $arr['day_end'];
+			$this->halfdayend	= 'am' === date('a', $date_end->getTimeStamp()) ? 0 : 1;
 
-			$this->remarks = $arr['comment'];
+			$this->remarks		= $arr['comment'];
 			
 
 			$ymin = max(0, date("Y") - $rr1[0])+2;
@@ -510,9 +519,11 @@ function editVacationRequest($vrid)
 			$this->yearend = $this->startyear;
 			$this->yearendsel = $rr2[0] - $this->startyear + 1;
 
-			$this->res = $this->db->db_query("select * from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry='".$id."'");
+			$this->res = $this->db->db_query("select * from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry=".$this->db->quote($id));
 			$this->count = $this->db->db_num_rows($this->res);
 			$this->totalval = 0;
+
+			$this->dayType = array(bab_translate("Morning"), bab_translate("Afternoon"));
 			}
 
 
@@ -523,18 +534,22 @@ function editVacationRequest($vrid)
 			if( $i < $this->count)
 				{
 				$arr = $this->db->db_fetch_array($this->res);
-				$row = $this->db->db_fetch_array($this->db->db_query("select id, description, quantity from ".BAB_VAC_RIGHTS_TBL." where id='".$arr['id_type']."'"));
+				$row = $this->db->db_fetch_array($this->db->db_query("select id, description, quantity from ".BAB_VAC_RIGHTS_TBL." where id='".$arr['id_right']."'"));
 				$this->typename = $row['description'];
-				//$this->maxdays = $row['maxdays'];
-				//$this->quantitydays = $row['quantity'];
 				$this->nbdaysname = "nbdays".$arr['id'];
 				$this->nbdays = $arr['quantity'];
 				$this->totalval += $this->nbdays;
 
-				$row2 = $this->db->db_fetch_array($this->db->db_query("select sum(quantity) as total from ".BAB_VAC_ENTRIES_ELEM_TBL." join ".BAB_VAC_ENTRIES_TBL." where ".BAB_VAC_ENTRIES_TBL.".id_user='".$this->iduser."' and ".BAB_VAC_ENTRIES_TBL.".status!='N' and ".BAB_VAC_ENTRIES_ELEM_TBL.".id_type='".$arr['id_type']."' and ".BAB_VAC_ENTRIES_ELEM_TBL.".id_entry=".BAB_VAC_ENTRIES_TBL.".id"));
+				$row2 = $this->db->db_fetch_array($this->db->db_query("select sum(quantity) as total from ".BAB_VAC_ENTRIES_ELEM_TBL." ee
+				join ".BAB_VAC_ENTRIES_TBL." e 
+				where e.id_user='".$this->db->db_escape_string($this->iduser)."' 
+					and e.status!='N' 
+					and ee.id_right='".$this->db->db_escape_string($arr['id_right'])."' 
+					and ee.id_entry=e.id"));
+
 				$qdp = isset($row2['total'])? $row2['total'] : 0;
 
-				list($quant) = $this->db->db_fetch_row($this->db->db_query("select quantity from ".BAB_VAC_USERS_RIGHTS_TBL." where id_right='".$arr['id_type']."' and id_user='".$this->iduser."'"));
+				list($quant) = $this->db->db_fetch_row($this->db->db_query("select quantity from ".BAB_VAC_USERS_RIGHTS_TBL." where id_right='".$this->db->db_escape_string($arr['id_right'])."' and id_user='".$this->db->db_escape_string($this->iduser)."'"));
 				if( $quant == '' )
 					$quant = $row['quantity'];
 
@@ -631,12 +646,10 @@ function editVacationRequest($vrid)
 			}
 		function getnexthalf()
 			{
-			global $babDayType;
-			static $i = 1;
-			static $count = 4;
-			if( $i < $count)
+			static $i = 0;
+			if( $i < 2)
 				{
-				$this->halfname = $babDayType[$i];
+				$this->halfname = $this->dayType[$i];
 				$this->halfid = $i;
 				if( $this->halfsel == $this->halfid )
 					$this->selected = "selected";
@@ -647,7 +660,7 @@ function editVacationRequest($vrid)
 				}
 			else
 				{
-				$i = 1;
+				$i = 0;
 				$this->halfsel = $this->halfdayend;
 				return false;
 				}
@@ -660,115 +673,6 @@ function editVacationRequest($vrid)
 	$babBody->babecho( bab_printTemplate($temp,"vacadmb.html", "editvacrequest"));
 }
 
-function viewVacationRequestDetail($id)
-	{
-	global $babBody;
-
-	class temp
-		{
-		var $datebegintxt;
-		var $datebegin;
-		var $halfnamebegin;
-		var $dateendtxt;
-		var $dateend;
-		var $halfnameend;
-		var $nbdaystxt;
-		var $typename;
-		var $nbdays;
-		var $totaltxt;
-		var $totalval;
-		var $confirm;
-		var $refuse;
-		var $fullname;
-		var $commenttxt;
-				
-		var $arr = array();
-		var $db;
-		var $count;
-		var $res;
-		var $veid;
-		var $wusers = array();
-
-		var $statustxt;
-		var $status;
-
-		function temp($id)
-			{
-			global $babDayType;
-			$this->datebegintxt = bab_translate("Begin date");
-			$this->dateendtxt = bab_translate("End date");
-			$this->nbdaystxt = bab_translate("Quantities");
-			$this->totaltxt = bab_translate("Total");
-			$this->statustxt = bab_translate("Status");
-			$this->db = $GLOBALS['babDB'];
-			$row = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where id='".$id."'"));
-			$this->datebegin = bab_strftime(bab_mktime($row['date_begin']." 00:00:00"), false);
-			$this->halfnamebegin = $babDayType[$row['day_begin']];
-			$this->dateend = bab_strftime(bab_mktime($row['date_end']." 00:00:00"), false);
-			$this->halfnameend = $babDayType[$row['day_end']];
-			$this->fullname1 = bab_getUserName($row['id_user']);
-			$this->statarr = array(bab_translate("Waiting to be valiadte by"), bab_translate("Accepted"), bab_translate("Refused"));
-			$this->commenttxt = bab_translate("Description");
-			$this->remarktxt = bab_translate("Additional detailed information ");
-			$this->comment = nl2br($row['comment']);
-			$this->remark = nl2br($row['comment2']);
-			switch($row['status'])
-				{
-				case 'Y':
-					$this->status = $this->statarr[1];
-					break;
-				case 'N':
-					$this->status = $this->statarr[2];
-					break;
-				default:
-					$this->status = $this->statarr[0];
-					$this->wusers = getWaitingApproversFlowInstance($row['idfai'] , false);
-					break;
-				}
-
-			$req = "select * from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry='".$id."'";
-			$this->res = $this->db->db_query($req);
-			$this->count = $this->db->db_num_rows($this->res);
-			$this->totalval = 0;
-			$this->veid = $id;
-			}
-
-		function getnexttype()
-			{
-			static $i = 0;
-			if( $i < $this->count)
-				{
-				$arr = $this->db->db_fetch_array($this->res);
-				list($this->typename) = $this->db->db_fetch_row($this->db->db_query("select description from ".BAB_VAC_RIGHTS_TBL." where id ='".$arr['id_type']."'"));
-				$this->nbdays = $arr['quantity'];
-				$this->totalval += $this->nbdays;
-				$i++;
-				return true;
-				}
-			else
-				return false;
-
-			}
-
-		function getnextuser()
-			{
-			static $i = 0;
-			if( $i < count($this->wusers))
-				{
-				$this->fullname = bab_getUserName($this->wusers[$i]);
-				$i++;
-				return true;
-				}
-			else
-				return false;
-
-			}
-		}
-
-	$temp = new temp($id);
-	echo bab_printTemplate($temp, "vacadmb.html", "ventrydetail");
-	return $temp->count;
-	}
 
 function exportVacationRequests()
 	{
@@ -1001,33 +905,59 @@ function updateVacationRequest($daybegin, $monthbegin, $yearbegin,$dayend, $mont
 		return false;
 		}
 
-	$begin = mktime( 0,0,0,$monthbegin, $daybegin, $startyear + $yearbegin - 1);
-	$end = mktime( 0,0,0,$monthend, $dayend, $startyear + $yearend - 1);
+	$begin_hour	= 0;
+	$begin_min	= 0;
+	$begin_sec	= 0;
 
-	if( $begin > $end || ( $begin == $end && $halfdaybegin != $halfdayend ))
+	$end_hour	= 23;
+	$end_min	= 59;
+	$end_sec	= 59;
+
+	if (1 == $halfdaybegin) {
+		$begin_hour = 12;
+		$begin_min	= 0;
+		$begin_sec	= 0;
+	}
+	
+	if (0 == $halfdayend) {
+		$end_hour	= 11;
+		$end_min	= 59;
+		$end_sec	= 59;
+	}
+
+
+	$begin = mktime( $begin_hour, $begin_min, $begin_sec, $monthbegin, $daybegin, $startyear + $yearbegin - 1);
+	$end = mktime( $end_hour,$end_min, $end_sec,$monthend, $dayend, $startyear + $yearend - 1);
+
+	if( $begin >= $end)
 		{
 		$babBody->msgerror = bab_translate("ERROR: End date must be older")." !";
 		return false;
 		}
 
 
-	$remarks = $babDB->db_escape_string($remarks);
+	$b = date('Y-m-d H:i:s', $begin);
+	$e = date('Y-m-d H:i:s', $end);
 
-	$b = sprintf("%04d-%02d-%02d", $startyear + $yearbegin - 1, $monthbegin, $daybegin);
-	$e = sprintf("%04d-%02d-%02d", $startyear + $yearend - 1, $monthend, $dayend);
-
-	$babDB->db_query("update ".BAB_VAC_ENTRIES_TBL." set date_begin='".$b."', date_end='".$e."', day_begin='".$halfdaybegin."', day_end='".$halfdayend."', comment='".$remarks."' where id='".$vrid."'");
-
-	$res = $babDB->db_query("UPDATE ".BAB_CAL_EVENTS_TBL." SET start_date='".$b." 00:00:00', end_date='".$e." 23:59:59' where hash='V_".$vrid."'");
+	$babDB->db_query("
+		update ".BAB_VAC_ENTRIES_TBL." SET 
+			date_begin	= '".$babDB->db_escape_string($b)."', 
+			date_end	= '".$babDB->db_escape_string($e)."',  
+			comment		= '".$babDB->db_escape_string($remarks)."' 
+		where 
+			id='".$babDB->db_escape_string($vrid)."'
+		");
 
 
 	for( $i = 0; $i < count($nbdays['id']); $i++)
 		{
 		if( $nbdays['val'][$i] > 0 )
-			$babDB->db_query("update ".BAB_VAC_ENTRIES_ELEM_TBL." set quantity='".$nbdays['val'][$i]."' where id='".$nbdays['id'][$i]."'");
+			$babDB->db_query("update ".BAB_VAC_ENTRIES_ELEM_TBL." set quantity='".$babDB->db_escape_string($nbdays['val'][$i])."' where id='".$babDB->db_escape_string($nbdays['id'][$i])."'");
 		else
-			$babDB->db_query("delete from ".BAB_VAC_ENTRIES_ELEM_TBL." where id='".$nbdays['id'][$i]."'");
+			$babDB->db_query("delete from ".BAB_VAC_ENTRIES_ELEM_TBL." where id='".$babDB->db_escape_string($nbdays['id'][$i])."'");
 		}
+
+	bab_vac_updateEventCalendar($vrid);
 	
 	return true;
 }
@@ -1169,7 +1099,7 @@ function doExportVacationRequests($dateb, $datee, $idstatus, $wsepar, $separ, $s
 
 		$entry_type = array();
 		$sum = 0;
-		$res2 = $babDB->db_query("select SUM(e.quantity) quantity,r.id_type from ".BAB_VAC_ENTRIES_ELEM_TBL." e,".BAB_VAC_RIGHTS_TBL." r where e.id_entry='".$row['id']."' AND r.id=e.id_type GROUP BY r.id_type");
+		$res2 = $babDB->db_query("select SUM(e.quantity) quantity,r.id_type from ".BAB_VAC_ENTRIES_ELEM_TBL." e,".BAB_VAC_RIGHTS_TBL." r where e.id_entry='".$row['id']."' AND r.id=e.id_right GROUP BY r.id_type");
 		while( $arr = $babDB->db_fetch_array($res2))
 		{
 			$entry_type[$arr['id_type']] = number_format($arr['quantity'], 1, $sepdec, '');
@@ -1249,16 +1179,12 @@ function doDeleteVacationRequest($vrid)
 {
 	global $babDB;
 
-	$res = $babDB->db_query("select id from ".BAB_CAL_EVENTS_TBL." where hash='V_".$vrid."'");
-	while( $arr = $babDB->db_fetch_array($res))
-		{
-		$babDB->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id='".$arr['id']."'");
-		$babDB->db_query("delete from ".BAB_CAL_EVENTS_NOTES_TBL." where id_event='".$arr['id']."'");
-		$babDB->db_query("delete from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_event='".$arr['id']."'");
-		}
-	$babDB->db_query("delete from ".BAB_CAL_EVENTS_TBL." where hash='V_".$vrid."'");
-	$babDB->db_query("delete from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry='".$vrid."'");
-	$babDB->db_query("delete from ".BAB_VAC_ENTRIES_TBL." where id='".$vrid."'");
+	$res = $babDB->db_query("SELECT id_user FROM ".BAB_VAC_ENTRIES_TBL." where id=".$babDB->quote($vrid));
+	$arr = $babDB->db_fetch_assoc($res);
+	bab_vac_clearUserCalendar($arr['id_user']);
+
+	$babDB->db_query("delete from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry='".$babDB->db_escape_string($vrid)."'");
+	$babDB->db_query("delete from ".BAB_VAC_ENTRIES_TBL." where id='".$babDB->db_escape_string($vrid)."'");
 }
 
 /* main */
@@ -1303,7 +1229,7 @@ $babBody->addItemMenu("menu", bab_translate("Management"), $GLOBALS['babUrlScrip
 switch($idx)
 	{
 	case "morvw":
-		viewVacationRequestDetail($id);
+		bab_viewVacationRequestDetail(bab_rp('id'));
 		exit;
 		break;
 

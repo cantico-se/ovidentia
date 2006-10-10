@@ -52,13 +52,12 @@ function notifyVacationAuthor($id, $subject)
 
 			function tempa($row, $subject)
 				{
-				global $babDayType;
 				$this->message = $subject;
 				$this->fromuser = bab_translate("User");
 				$this->from = bab_translate("from");
 				$this->until = bab_translate("until");
-				$this->begindate = bab_strftime(bab_mktime($row['date_begin']." 00:00:00"), false). " ". $babDayType[$row['day_begin']];
-				$this->enddate = bab_strftime(bab_mktime($row['date_end']." 00:00:00"), false). " ". $babDayType[$row['day_end']];
+				$this->begindate = bab_longDate(bab_mktime($row['date_begin']));
+				$this->enddate = bab_longDate(bab_mktime($row['date_end']));
 				$this->reasontxt = bab_translate("Additional information");
 				$this->reason = nl2br($row['comment2']);
 				if( $row['status'] == 'N')
@@ -700,7 +699,6 @@ function confirmWaitingVacation($id)
 
 		function temp($id)
 			{
-			global $babDayType;
 			$this->datebegintxt = bab_translate("Begin date");
 			$this->dateendtxt = bab_translate("End date");
 			$this->nbdaystxt = bab_translate("Quantities");
@@ -712,10 +710,8 @@ function confirmWaitingVacation($id)
 			$this->t_alert = bab_translate("Negative balance");
 			$this->db = $GLOBALS['babDB'];
 			$row = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where id='".$id."'"));
-			$this->datebegin = bab_strftime(bab_mktime($row['date_begin']." 00:00:00"), false);
-			$this->halfnamebegin = $babDayType[$row['day_begin']];
-			$this->dateend = bab_strftime(bab_mktime($row['date_end']." 00:00:00"), false);
-			$this->halfnameend = $babDayType[$row['day_end']];
+			$this->datebegin = bab_vac_longDate(bab_mktime($row['date_begin']));
+			$this->dateend = bab_vac_longDate(bab_mktime($row['date_end']));
 			$this->fullname = bab_getUserName($row['id_user']);
 			$this->remark = nl2br($row['comment']);
 
@@ -741,9 +737,9 @@ function confirmWaitingVacation($id)
 			if( $i < $this->count)
 				{
 				$arr = $this->db->db_fetch_array($this->res);
-				list($this->typename) = $this->db->db_fetch_row($this->db->db_query("select description from ".BAB_VAC_RIGHTS_TBL." where id ='".$arr['id_type']."'"));
+				list($this->typename) = $this->db->db_fetch_row($this->db->db_query("select description from ".BAB_VAC_RIGHTS_TBL." where id =".$this->db->quote($arr['id_right']).""));
 				$this->nbdays = $arr['quantity'];
-				$this->alert = isset($this->negative[$arr['id_type']]) ? $this->negative[$arr['id_type']] : false;
+				$this->alert = isset($this->negative[$arr['id_right']]) ? $this->negative[$arr['id_right']] : false;
 
 				$this->totalval += $this->nbdays;
 				$i++;
@@ -1127,7 +1123,7 @@ function confirmVacationRequest($veid, $remarks, $action)
 {
 	global $babBody, $babDB, $approbinit;
 
-	$res = $babDB->db_query("select idfai, id_user, date_begin, date_end, day_begin, day_end from ".BAB_VAC_ENTRIES_TBL." where id='".$veid."'");
+	$res = $babDB->db_query("select idfai, id_user, date_begin, date_end FROM ".BAB_VAC_ENTRIES_TBL." where id='".$veid."'");
 	$arr = $babDB->db_fetch_array($res);
 	if( !in_array($arr['idfai'], $approbinit))
 	{
@@ -1158,10 +1154,8 @@ function confirmVacationRequest($veid, $remarks, $action)
 				{
 				list($idcat) = $babDB->db_fetch_row($babDB->db_query("select vct.id_cat from ".BAB_VAC_COLLECTIONS_TBL." vct left join ".BAB_VAC_PERSONNEL_TBL." vpt on vpt.id_coll=vct.id left join ".BAB_VAC_ENTRIES_TBL." vet on vet.id_user=vpt.id_user where vet.id='".$veid."'"));
 
-				$tbegin = $arr['day_begin'] == 3? '12:00:00': '00:00:00';
-				$tend = $arr['day_end'] == 2? '12:00:00': '23:59:59';
 				$req = "insert into ".BAB_CAL_EVENTS_TBL." ( title, id_cat, start_date, end_date, id_creator, hash) values ";
-				$req .= "('".bab_translate("Vacation")."', '".$idcat."', '".$arr['date_begin']." ".$tbegin."', '".$arr['date_end']." ".$tend."', '0', 'V_".$veid."')";
+				$req .= "('".bab_translate("Vacation")."', '".$idcat."', '".$arr['date_begin']."', '".$arr['date_end']."', '0', 'V_".$veid."')";
 				$babDB->db_query($req);
 				$id_event = $babDB->db_insert_id();
 				$babDB->db_query("INSERT INTO ".BAB_CAL_EVENTS_OWNERS_TBL." (id_event,id_cal, status) VALUES ('".$id_event."','".$idcal."', '".BAB_CAL_STATUS_ACCEPTED."')");
@@ -1177,6 +1171,8 @@ function confirmVacationRequest($veid, $remarks, $action)
 				}
 			break;
 		}
+
+	bab_vac_updateEventCalendar($veid);
 }
 
 

@@ -57,7 +57,10 @@ function bab_getNonWorkingDayTypes($with_date = false)
 	return $arr;
 }
 
-
+/**
+ * @param int $year (4 digits)
+ * @return array
+ */
 function bab_setNonWorkingDays($year)
 {
 	$return = array();
@@ -118,7 +121,10 @@ function bab_setNonWorkingDays($year)
 	return $return;
 }
 
-
+/**
+ * @param int $year (4 digits)
+ * @return array
+ */
 function bab_getNonWorkingDays($year)
 {
 	$db = & $GLOBALS['babDB'];
@@ -143,7 +149,12 @@ function bab_getNonWorkingDays($year)
 	return $return;
 }
 
-
+/**
+ * Get non-working days between two dates
+ * @param int $from (timestamp or ISO date)
+ * @param int $to	(timestamp or ISO date)
+ * @return array
+ */
 function bab_getNonWorkingDaysBetween($from, $to)
 {
 	include_once $GLOBALS['babInstallPath']."utilit/nwdaysincl.php";
@@ -169,14 +180,14 @@ function bab_getNonWorkingDaysBetween($from, $to)
 
 	for($year = $y_from; $year<= $y_to; $year++)
 		{
-		$res = $db->db_query("SELECT * FROM ".BAB_SITES_NONWORKING_DAYS_TBL." WHERE id_site='".$id_site."' AND YEAR(nw_day) = '".$year."'");
+		$res = $db->db_query("SELECT * FROM ".BAB_SITES_NONWORKING_DAYS_TBL." WHERE id_site='".$db->db_escape_string($id_site)."' AND YEAR(nw_day) = '".$db->db_escape_string($year)."'");
 		if ($db->db_num_rows($res) == 0)
 			{
 			bab_setNonWorkingDays($year);
 			}
 		}
 
-	$res = $db->db_query("SELECT ".$date_col.", nw_type FROM ".BAB_SITES_NONWORKING_DAYS_TBL." WHERE id_site='".$id_site."' AND nw_day BETWEEN '".$from."' AND '".$to."' ORDER BY nw_day");
+	$res = $db->db_query("SELECT ".$date_col.", nw_type FROM ".BAB_SITES_NONWORKING_DAYS_TBL." WHERE id_site='".$db->db_escape_string($id_site)."' AND nw_day BETWEEN '".$db->db_escape_string($from)."' AND '".$db->db_escape_string($to)."' ORDER BY nw_day");
 	while ($arr = $db->db_fetch_assoc($res))
 		{
 		$result[$arr['nw_day']] = bab_translate($arr['nw_type']);
@@ -191,7 +202,27 @@ function bab_emptyNonWorkingDays($id_site = false)
 	if (!$id_site) $id_site = & $GLOBALS['babBody']->babsite['id'];
 	$db = & $GLOBALS['babDB'];
 
-	$db->db_query("DELETE FROM ".BAB_SITES_NONWORKING_DAYS_TBL." WHERE id_site='".$id_site."'");
+	$db->db_query("DELETE FROM ".BAB_SITES_NONWORKING_DAYS_TBL." WHERE id_site=".$db->quote($id_site)."");
 	}
+
+
+/**
+ * get non working day info for a date object
+ * instance of BAB_DateTime
+ * @param object $dateObj
+ * @return string|false
+ */
+function bab_getNonWorkingDayLabel($dateObj) {
+	static $year = array();
+	if (!isset($year[$dateObj->getYear()])) {
+		$year[$dateObj->getYear()] = bab_getNonWorkingDays($dateObj->getYear());
+	}
+
+	if (isset($year[$dateObj->getYear()][$dateObj->getIsoDate()])) {
+		return $year[$dateObj->getYear()][$dateObj->getIsoDate()];
+	}
+
+	return false;
+}
 
 ?>

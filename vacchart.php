@@ -26,29 +26,39 @@ include_once $babInstallPath."utilit/vacincl.php";
 
 
 
-function entities($template)
+function entities($u_entities, $template)
 {
 global $babBody;
 
 	class temp
 		{
+		var $altbg = true;
 
 		function temp($entities)
 			{
 			
-
+			$this->all_manager = false;
 			$this->entities = array();
 			while (list(,$arr) = each($entities))
 				{
-				$arr2 = bab_OCGetChildsEntities($arr['id']);
-				for ($i = 0 ; $i < count($arr2) ; $i++)
-					{
-					if (!isset($this->entities[$arr2[$i]['id']]))
-					$this->entities[$arr2[$i]['id']] = $arr2[$i];
-					}
-				if (!isset($this->entities[$arr['id']]))
+				if (!isset($arr['comanager'])) {
+					$this->all_manager = true;
+				}
+
+				if (!isset($this->entities[$arr['id']])) {
 					$this->entities[$arr['id']] = $arr;
 				}
+				$arr2 = bab_OCGetChildsEntities($arr['id']);
+				for ($i = 0 ; $i < count($arr2) ; $i++) {
+					if (isset($arr['comanager'])) {
+						$arr2[$i]['comanager'] = 1;
+					}
+
+					if (!isset($this->entities[$arr2[$i]['id']])) {
+						$this->entities[$arr2[$i]['id']] = $arr2[$i];
+					}
+				}
+			}
 			
 			if (count($this->entities) > 0)
 				$this->entities = & $this->_array_sort($this->entities, 'name');
@@ -59,6 +69,7 @@ global $babBody;
 			$this->t_calendar = bab_translate('Planning');
 			$this->t_requests = bab_translate('Requests');
 			$this->t_planning = bab_translate('Planning acces');
+			$this->t_comanager = bab_translate('Co-managers');
 			}
 
 		
@@ -82,6 +93,8 @@ global $babBody;
 			{
 			if (list(,$this->arr) = each($this->entities))
 				{
+				$this->manager = !isset($this->arr['comanager']);
+				$this->altbg = !$this->altbg;
 				return true;
 				}
 			else
@@ -90,7 +103,6 @@ global $babBody;
 		}
 
 	
-	$u_entities = bab_OCGetUserEntities($GLOBALS['BAB_SESS_USERID']);
 	
 	switch ($template)
 	{
@@ -127,6 +139,8 @@ function entity_members($ide, $template)
 
 	class temp
 		{
+		var $altbg = true;
+
 		function temp($ide)
 			{
 			$this->ide = $ide;
@@ -146,11 +160,12 @@ function entity_members($ide, $template)
 			$this->t_collection = bab_translate('Collection');
 			$this->t_schema = bab_translate('Approbation schema');
 			$this->t_request = bab_translate('Request');
+			$this->t_viewrights = bab_translate('Balance');
 
 			$this->requests = bab_getVacationOption('chart_superiors_create_request');
 			
 			$this->users = array();
-			$this->b_rights = $this->superior_id != $GLOBALS['BAB_SESS_USERID'];
+			
 
 			while (list(,$arr) = each($users))
 				{
@@ -199,6 +214,7 @@ function entity_members($ide, $template)
 			{
 			if (list($this->id_user,$this->name) = each($this->users))
 				{
+				$this->altbg = !$this->altbg;
 				$this->b_rights = $this->id_user != $GLOBALS['BAB_SESS_USERID'];
 				$this->collection = isset($this->more[$this->id_user][0]) ? $this->more[$this->id_user][0] : '';
 				$this->schema = isset($this->more[$this->id_user][1]) ? $this->more[$this->id_user][1] : '';
@@ -261,64 +277,119 @@ function entity_requests($ide )
 
 function entity_planning($ide)
 {
+	$e =  bab_OCGetEntity($ide);
+	$GLOBALS['babBody']->title = bab_translate("Planning acces").' : '.$e['name'];
+
+	include_once $GLOBALS['babInstallPath'].'utilit/selectusers.php';
 	global $babBody;
-	class temp
+	$db = &$GLOBALS['babDB'];
+	$obj = new bab_selectusers();
+	$obj->addVar('ide', $ide);
+	$res = $db->db_query("SELECT id_user FROM ".BAB_VAC_PLANNING_TBL." WHERE id_entity=".$db->quote($ide));
+	while (list($id) = $db->db_fetch_array($res))
 		{
-		function temp($ide)
-			{
-			$this->ide = $ide;
-			$this->users = entity_users($ide);
-			$this->t_members = bab_translate("Entity members");
-			$this->t_record = bab_translate("Record");
-
-			$e =  bab_OCGetEntity($this->ide);
-
-			$GLOBALS['babBody']->title = bab_translate("Planning acces").' : '.$e['name'];
-
-			$db = &$GLOBALS['babDB'];
-			$res = $db->db_query("SELECT id_user FROM ".BAB_VAC_PLANNING_TBL." WHERE id_entity='".$this->ide."'");
-			$this->selected_users = array();
-			while (list($id) = $db->db_fetch_array($res))
-				{
-				$this->selected_users[$id] = 1;
-				}
-			}
-
-		function getnext()
-			{
-			if (list(,$this->id_user) = each($this->users))
-				{
-				$this->name = bab_getUserName($this->id_user);
-				$this->checked = isset($this->selected_users[$this->id_user]);
-				return true;
-				}
-			else
-				return false;
-			}
+		$obj->addUser($id);
 		}
-
-	$temp = new temp($ide);
-	$babBody->babecho(bab_printTemplate($temp, "vacchart.html", "entity_planning"));
+	$obj->setRecordCallback('savePlanning');
+	$babBody->babecho($obj->getHtml());
 }
 
 
-function savePlanning($ide, $userids)
-{
+function entity_comanager($ide) {
+	$e =  bab_OCGetEntity($ide);
+	$GLOBALS['babBody']->title = bab_translate("Co-managers").' : '.$e['name'];
+
+	include_once $GLOBALS['babInstallPath'].'utilit/selectusers.php';
+	global $babBody;
 	$db = &$GLOBALS['babDB'];
-	$db->db_query("DELETE FROM ".BAB_VAC_PLANNING_TBL." WHERE id_entity = '".$ide."'");
+	$obj = new bab_selectusers();
+	$obj->addVar('ide', $ide);
+	$res = $db->db_query("SELECT id_user FROM ".BAB_VAC_COMANAGER_TBL." WHERE id_entity=".$db->quote($ide));
+	while (list($id) = $db->db_fetch_array($res))
+		{
+		$obj->addUser($id);
+		}
+	$obj->setRecordCallback('saveCoManager');
+	$babBody->babecho($obj->getHtml());
+
+}
+
+
+function viewVacUserDetails($ide, $id_user) {
+
+	global $babBody;
+
+	class temp
+		{
+		function temp($ide, $id_user)
+			{
+			$this->ide = $ide;
+			$this->id_user = $id_user;
+			$this->b_rights = $id_user != $GLOBALS['BAB_SESS_USERID'];
+
+			$this->t_modify		= bab_translate("Modify");
+			$this->t_collection = bab_translate("Collection");
+			$this->t_schema		= bab_translate("Schema");
+			$this->collection	= '';
+			$this->schema		= '';
+
+			$db = & $GLOBALS['babDB'];
+			$req = "SELECT c.name coll,f.name sa FROM ".BAB_VAC_PERSONNEL_TBL." p LEFT JOIN ".BAB_VAC_COLLECTIONS_TBL." c ON c.id=p.id_coll LEFT JOIN ".BAB_FLOW_APPROVERS_TBL." f ON f.id=p.id_sa WHERE p.id_user=".$db->quote($this->id_user);
+
+			$res = $db->db_query($req);
+			$arr = $db->db_fetch_assoc($res);
+
+			$this->collection	= bab_toHtml($arr['coll']);
+			$this->schema		= bab_toHtml($arr['sa']);
+
+			}
+		}
+
+	$temp = new temp($ide, $id_user);
+	$babBody->babecho(bab_printTemplate($temp, "vacchart.html", 'user_details'));
+
+}
+
+
+
+
+function savePlanning($userids, $params)
+{
+	$ide = $params['ide'];
+	$db = &$GLOBALS['babDB'];
+	$db->db_query("DELETE FROM ".BAB_VAC_PLANNING_TBL." WHERE id_entity = ".$db->quote($ide));
 
 	foreach ($userids as $uid)
 	{
-		$db->db_query("INSERT INTO ".BAB_VAC_PLANNING_TBL." (id_user, id_entity) VALUES ('".$uid."','".$ide."')");
+		$db->db_query("INSERT INTO ".BAB_VAC_PLANNING_TBL." (id_user, id_entity) VALUES ('".$db->db_escape_string($uid)."','".$db->db_escape_string($ide)."')");
 	}
 	
-	return true;
+	header('location:'.$GLOBALS['babUrlScript']."?tg=vacchart&idx=entities");
+	exit;
+}
+
+
+function saveCoManager($userids, $params) {
+
+	$ide = $params['ide'];
+	$db = &$GLOBALS['babDB'];
+	$db->db_query("DELETE FROM ".BAB_VAC_COMANAGER_TBL." WHERE id_entity = ".$db->quote($ide));
+
+	foreach ($userids as $uid)
+	{
+		$db->db_query("INSERT INTO ".BAB_VAC_COMANAGER_TBL." (id_user, id_entity) VALUES ('".$db->db_escape_string($uid)."','".$db->db_escape_string($ide)."')");
+	}
+	
+	header('location:'.$GLOBALS['babUrlScript']."?tg=vacchart&idx=entities");
+	exit;
 }
 
 
 // main
 $userentities = & bab_OCGetUserEntities($GLOBALS['BAB_SESS_USERID']);
+bab_addCoManagerEntities($userentities, $GLOBALS['BAB_SESS_USERID']);
 $entities_access = count($userentities['superior']);
+
 
 $idx = isset($_REQUEST['idx']) ? $_REQUEST['idx'] : '';
 
@@ -354,14 +425,7 @@ if( isset($_POST['add']) && $entities_access > 0 )
 					}
 				}
 			break;
-
-		case 'planning':
-			$userids = isset($_POST['userids']) ? $_POST['userids'] : array();
-			if(!savePlanning($_POST['ide'], $userids))
-				{
-				$idx ='entity_planning';
-				}
-			break;
+		
 
 		case 'changeucol':
 			if (!updateUserColl())
@@ -465,9 +529,37 @@ switch($idx)
 		$babBody->addItemMenu("entities", bab_translate("Delegate management"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entities");
 
 		$babBody->addItemMenu("entity_planning", bab_translate("Planning accès"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entity_requests");
+
+		$ide = bab_rp('ide');
 		
-		if ($entities_access > 0 && !empty($_GET['ide']))
-			entity_planning($_GET['ide']);
+		if ($entities_access > 0 && !empty($ide))
+			entity_planning($ide);
+		break;
+
+	case 'comanager':
+		$babBody->addItemMenu("entities", bab_translate("Delegate management"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entities");
+		$babBody->addItemMenu("comanager", bab_translate("Co-managers"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=comanager");
+
+		$ide = bab_rp('ide');
+		
+		if ($entities_access > 0 && !empty($ide))
+			entity_comanager($ide);
+		break;
+
+	case 'view':
+		$babBody->addItemMenu("entities", bab_translate("Delegate management"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entities");
+		$babBody->addItemMenu("entity_members", bab_translate("Entity members"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entity_members&ide=".$_GET['ide']);
+		
+		if (bab_IsUserUnderSuperior($_GET['iduser']) && $_GET['iduser'] != $GLOBALS['BAB_SESS_USERID'])
+			{
+			$babBody->addItemMenu("view", bab_translate("User"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=view&ide=".$_GET['ide']);
+			$babBody->title = bab_getUserName($_GET['iduser']);
+			viewVacUserDetails($_GET['ide'], $_GET['iduser']);
+			}
+		else
+			{
+			$babBody->title = bab_translate("Access denied");
+			}
 		break;
 
 	case "modp":
@@ -508,7 +600,7 @@ switch($idx)
 			{
 			$babBody->addItemMenu("planning", bab_translate("Planning"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=planning");
 			$babBody->title = bab_translate("Planning list");
-			entities('planning');
+			entities($userentities, 'planning');
 			}
 		break;
 
@@ -519,7 +611,7 @@ switch($idx)
 			$babBody->addItemMenu("entities", bab_translate("Delegate management"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entities");
 
 			$babBody->title = bab_translate("Entities list");
-			entities('entities');
+			entities($userentities, 'entities');
 			}
 		break;
 	}

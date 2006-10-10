@@ -758,7 +758,7 @@
 <string id="Topics with asterisk have waiting articles or comments ">Les thèmes marqués d'un "*" ont des articles ou des commentaires en attente</string>
 <string id="Topics">Thèmes d'articles</string>
 <string id="Total access">Accès total</string>
-<string id="Total days does'nt fit between dates">Le nombre de jours total est plus grand que l'intervalle de temps</string>
+<string id="Total number of days does not fit between dates">Le nombre de jours total est plus grand que l'intervalle de temps</string>
 <string id="Total">Total</string>
 <string id="Trash">Corbeille</string>
 <string id="Tuesday">Mardi</string>
@@ -912,7 +912,7 @@
 <string id="You must select at least one calendar type">Vous devez sélectionner au moins un type de calendrier</string>
 <string id="You must select at least one group">Vous devez sélectionner au moins un groupe</string>
 <string id="You must specify a correct number days">Vous devez indiquer un nombre de jours correct</string>
-<string id="You must specify a user or collection">Vous devez spécifier un utilisateur ou un régime</string>
+<string id="You must specify a user, collection or groups">Vous devez spécifier un utilisateur, un régime ou des groupes</string>
 <string id="You must specify a user or group">Vous devez spécifier un utilisateur ou un groupe</string>
 <string id="You must specify a vacation collection">Vous devez spécifier un régime</string>
 <string id="You must specify a vacation description">Vous devez spécifiez une description</string>
@@ -1639,6 +1639,7 @@
 <string id="Referents">Référents</string>
 <string id="Can't create forums directory in">Impossible de créer le répertoire forums dans</string>
 <string id="Non-working day">Jour non travaillé</string>
+<string id="Non-working day2">Jour férié</string>
 <string id="Invalid date">Date invalide</string>
 <string id="Firstname is required">Le prénom est obligatoire</string>
 <string id="Lastname is required">Le nom est obligatoire</string>
@@ -1826,7 +1827,7 @@
 <string id="Personal note">Notes personelles</string>
 <string id="Ascension">Ascension</string>
 <string id="Access denied, your session id has been created by another ip address than yours">Accès refusé, votre identifiant de session a été créé par une adresse ip différente de celle utilisée lors de cette requête</string>
-<string id="Ooops, something is wrong">Ooops, something is wrong</string>
+<string id="Something is wrong">Erreur</string>
 <string id="lastname">nom</string>
 <string id="firstname">prénom</string>
 <string id="Planning accès">Accès au planning</string>
@@ -2309,4 +2310,39 @@
 <string id="Connections">Connexions</string>
 <string id="Posted">Posté le</string>
 <string id="Post subject">Sujet de la contribution</string>
+<string id="View rights details">Voir le détail des droits</string>
+<string id="Indexing directly from interface could take a lot of cpu time, do you really want to index?">Indexer directement à partir de l'interface peut prendre beaucoup de temps CPU, voulez-vous vraiment indexer?</string>
+<string id="First page">Première page</string>
+<string id="Previous page">Page précédente</string>
+<string id="Next page">Page suivante</string>
+<string id="Last page">Dernière page</string>
+<string id="Page %d/%d">Page %d/%d</string>
+<string id="Total days does'nt fit between dates">Le nombre total de jour n'est pas adapté à l'intervale de date</string>
+<string id="Working period">Période travaillée</string>
+<string id="Selected users">Utilisateurs sélectionnés</string>
+<string id="Search by login, firstname and lastname">Recherche par identifiant, nom et prénom</string>
+<string id="Grab users">Ajouter</string>
+<string id="Drop users">Enlever</string>
+<string id="Do you really want to delete the vacation request ?">Voulez-vous vraiment supprimer la demande de congés ?</string>
+<string id="Total number of affected days does not match the period, do you really want to submit your request with this mismatch?">Le nombre total de jours affectés ne corespond pas à la durée de la période, voulez-vous vraiment soumettre votre demande avec cette incohérence ?</string>
+<string id="Year view">Visualisation année</string>
+<string id="Month view">Visualisation mois</string>
+<string id="Some vacation requests are linked to this right, if you delete the right, the vacation requests will be deleted with it">Des demandes de congés sont liées à ce droit, si vous supprimez le droit, les demandes de congés serons supprimées avec lui</string>
+<string id="%d requests will be deleted">%d demandes serons supprimées</string>
+<string id="Last request with this right">Dernière demande liée à ce droit</string>
+<string id="Rights groups">Regroupements de droits</string>
+<string id="Right group">Regroupement de droits</string>
+<string id="Rights renewal by years">Renouvellement des droits par années</string>
+<string id="Rights renewal">Renouvellement des droits</string>
+<string id="%d rights has been inserted">%d droits ont été insérés</string>
+<string id="The right %s allready exist">Le droit %s existe déja</string>
+<string id="Personnel assignement">Affectation du personnel</string>
+<string id="By user">Par utilisateur</string>
+<string id="By collection">Par régime</string>
+<string id="By groups">Par groupes</string>
+<string id="The personnel assignement is empty">L'affectation du personnel est vide</string>
+<string id="Co-managers">Co-gestionnaires</string>
+<string id="The user is not registered in the personnel list for vacations">L'utilisateur n'est pas enregistré dans la liste du personnel pour les congés</string>
+<string id="Working days (for all sites)">Jours travaillés (pour tout les sites)</string>
+
 </fr>

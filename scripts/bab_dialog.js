@@ -252,3 +252,17 @@ bab_dialog.selectfile = function(action, attributes) {
 		url += '&' + attributes;
 	bab_dialog(url, useparam, action);
 }
+
+
+/**
+ * A groups dialog.
+ */
+bab_dialog.selectgroups = function(action) {
+	var useparam = {
+		'width'		: 700,
+		'height'	: 500
+	};
+	url = '?tg=selector&idx=groups';
+
+	bab_dialog(url, useparam, action);
+}

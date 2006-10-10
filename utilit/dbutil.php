@@ -346,6 +346,17 @@ class babDatabase extends bab_database
 		//return parent::db_real_escape_string($str, $this->db_connect());
 		}
 
+	/**
+	 * Special chars for LIKE query
+	 * @param string $str
+	 */
+	function db_escape_like($str)
+		{
+		$str = str_replace('%','\%',$str);
+		$str = str_replace('?','\?',$str);
+		return parent::db_escape_string($str);
+		}
+
 	function quote($param) 
 		{
 			if (is_array($param)) {

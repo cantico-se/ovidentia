@@ -244,7 +244,7 @@ class bab_Template
 	 * @static
 	 */
 	function _parseTemplate($templateString, $templateObjectName)
-	{
+	{		
 		$search = array('/<!--#if\s+(\w+)(?:\s+"(?:\s*(== |\!= |<= |>= |< |> )\s*([^"]+))("))?\s+-->/',
 						'/<!--#if\s+(\w+)\[(\w+)\](?:\s+"(?:\s*(== |\!= |<= |>= |< |> )\s*([^"]+))("))?\s+-->/',
 						'/<!--#else\s+(?:(?:[A-Za-z0-9_\[\]]+)\s+)?-->/',
@@ -261,8 +261,8 @@ class bab_Template
 						 '<?php while (' . $templateObjectName . '->$1($skip = false)): if ($skip) continue; ?>',
 						 '<?php endwhile; ?>',
 						 '<?php $params = explode(\',\', \'$1\'); $ovml = array_shift($params); $args = array(); foreach ($params as $param) { $tmp = explode(\'=\', $param); if (is_array($tmp) && count($tmp) == 2) { $var = trim($tmp[1], \'"\'); $var = isset(' . $templateObjectName . '->$var) ? ' . $templateObjectName . '->$var : $var; $args[trim($tmp[0])] = $var; } } print(bab_printOvmlTemplate($ovml, $args)); ?>',
-						 '<?php @print(isset(' . $templateObjectName . '->$1) ? ' . $templateObjectName . '->$1 : (isset($GLOBALS["$1"]) ? $GLOBALS["$1"] : "")); ?>',
-						 '<?php isset(' . $templateObjectName . '->$1["$2"]) && @print(' . $templateObjectName . '->$1["$2"]); ?>');
+						 '<?php isset(' . $templateObjectName . '->$1) ? print(' . $templateObjectName . '->$1) : (isset($GLOBALS["$1"]) ? print($GLOBALS["$1"]) : print("no match for : { $1 }")); ?>',
+						 '<?php isset(' . $templateObjectName . '->$1["$2"]) && print(' . $templateObjectName . '->$1["$2"]); ?>');
 		$templatePhp = preg_replace($search, $replace, $templateString);
 		return $templatePhp;
 	}
