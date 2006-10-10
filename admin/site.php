@@ -1608,6 +1608,8 @@ function siteUpdate_menu6($item)
 
 	include_once $GLOBALS['babInstallPath']."utilit/workinghoursincl.php";
 	bab_deleteAllWorkingHours(0);
+	include_once $GLOBALS['babInstallPath']."utilit/vacincl.php";
+	bab_vac_clearCalendars();
 
 
 	if (isset($_POST['workdays']) && count($_POST['workdays']))

@@ -464,7 +464,7 @@ function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor,
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
-		$req = "UPDATE ".BAB_CAL_USER_OPTIONS_TBL." SET
+		$req = "UPDATE ".BAB_CAL_USER_OPTIONS_TBL." SET 
 			startday	=".$db->quote($startday).", 
 			allday		=".$db->quote($allday).", 
 			start_time	=".$db->quote($starttime).", 
@@ -505,7 +505,7 @@ function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor,
 			".$db->quote($elapstime).",
 			".$db->quote($defaultview).",
 			".$db->quote($dispdays).",
-			'Y'
+			'Y')
 		";
 		}
 	$res = $db->db_query($req);
