@@ -404,6 +404,8 @@ class bab_Tree
 
 	function removeNode($nodeId)
 	{
+		if (!isset($this->nodes[$nodeId]))
+			return;
 		$node =& $this->nodes[$nodeId];
 		$parent =& $this->nodes[$node->parentId];
 		$nextSiblingId = $node->nextSiblingId;
@@ -422,7 +424,8 @@ class bab_Tree
 
 	function removeBranch($nodeId)
 	{
-//		$node =& $this->nodes[$nodeId];
+		if (!isset($this->nodes[$nodeId]))
+			return;
 		do 
 		{
 			$id = $nodeId;
@@ -694,8 +697,8 @@ function showTopicTree($actionType, $selectedTopicId)
 		if (!$tree->nodes[$nodeId]->hasChildren() && $tree->nodes[$nodeId]->data['type'] === 'category')
 			$deadBranches[] = $nodeId;
 	}
-//	foreach ($deadBranches as $deadBranch)
-//		$tree->removeBranch($deadBranch);
+	foreach ($deadBranches as $deadBranch)
+		$tree->removeBranch($deadBranch);
 
 	$template = new Template($tree, $nextIdx, $actionType, $selectedTopicId);
 
