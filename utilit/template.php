@@ -126,6 +126,10 @@ function bab_templateHighlightSyntax($templateString, $highlightLineNumber = -1)
  */
 class bab_Template
 {
+	var $_templateString;
+	var $_parsedTemplate;
+	var $_errors;
+
 	/**
 	 * @param	string	$filename	The path to the template file.
 	 * @param	string	$section	The section name in the template file.
@@ -160,7 +164,7 @@ class bab_Template
 	 * @access public
 	 * @static
 	 */
-	function highlightSyntax($templateString, $highlightLineNumber = -1)
+	function highlightSyntax($templateString, $highlightLineNumbers = array())
 	{
 		$lines = preg_split('/\n|\r\n|\r/', $templateString);
 		
@@ -168,7 +172,7 @@ class bab_Template
 		$lineNumber = 1;
 		foreach ($lines as $line) {
 			$line = preg_replace('/(&lt;!--#(?:if|else|endif|in|endin)\s+(?:(?:[A-Za-z0-9_\[\]]+)\s+)?--&gt;)/', '<span style="color: #4466DD; font-weight: bold">$1</span>', htmlEntities($line));
-			if ($lineNumber == $highlightLineNumber) {
+			if (isset($highlightLineNumbers[$lineNumber])) {
 				$highlightedTemplateString .= '<li style="font-weight: bold; padding: 2px; border-bottom: 1px solid white; background-color: #FFBBBB">' . $line . '</li>';
 			} else {
 				$highlightedTemplateString .= '<li style="padding: 2px; border-bottom: 1px solid white; background-color: #F7F7F7">' . $line . '</li>';
@@ -178,6 +182,18 @@ class bab_Template
 		$highlightedTemplateString .= '</ol>';
 		
 		return $highlightedTemplateString;
+	}
+
+	/**
+	 * @access private
+	 */
+	function addError(&$templateObject, $errorMessage, $lineNumber)
+	{
+		if (!isset($templateObject->_errors)) {
+			$templateObject->_errors = array();
+		}
+		$error = array('message' => $errorMessage, 'line' => $lineNumber);
+		$templateObject->_errors[] = $error;
 	}
 
 	/**
@@ -193,32 +209,40 @@ class bab_Template
 	 */
 	function printTemplate(&$template, $filename, $section = '')
 	{
-		$parsedTemplate = bab_TemplateCache::get($filename, $section);
-		if ($parsedTemplate === null) {
-			$templateString = bab_Template::_loadTemplate($filename, $section);
-			if ($templateString === null) {
+		$this->_parsedTemplate = bab_TemplateCache::get($filename, $section);
+		if ($this->_parsedTemplate === null) {
+			$this->_templateString = bab_Template::_loadTemplate($filename, $section);
+			if ($this->_templateString === null) {
 				return null;
 			}
-			$parsedTemplate = bab_Template::_parseTemplate($templateString, '$template');
-			bab_TemplateCache::set($filename, $section, $parsedTemplate);
+			$this->_parsedTemplate = bab_Template::_parseTemplate($this->_templateString, '$template');
+			bab_TemplateCache::set($filename, $section, $this->_parsedTemplate);
 		}
+
 		ob_start();
-		if (eval('?>' . $parsedTemplate) === false) {
+		if (eval('?>' . $this->_parsedTemplate) === false) {
 			$errorMessage = ob_get_contents();
-			bab_debug($errorMessage);
-			if (preg_match('/line ([0-9]+)$/', strip_tags($errorMessage), $matches)) {
-				$lineNumber = $matches[1];
-			} else {
-				$lineNumber = -1;
-			}
-			var_dump($matches);
-			bab_debug('Template :<br \>' . bab_Template::highlightSyntax($templateString, $lineNumber));
-			bab_debug('Parsed template :<br \>' . bab_Template::highlightSyntax($parsedTemplate, $lineNumber));
+			$lineNumber = preg_match('/line ([0-9]+)$/', strip_tags($errorMessage), $matches) ? $matches[1] : -1;
+			bab_Template::addError($template, $errorMessage, $lineNumber);
 			$processedTemplate = '';
 		} else {
 			$processedTemplate = ob_get_contents();
 		}
 		ob_end_clean();
+
+		if (isset($template->_errors) && is_array($template->_errors) && count($template->_errors) > 0) {
+			$errors = array();
+			foreach ($template->_errors as $error) {
+				bab_debug('Line ' . $error['line'] . ': ' . $error['message']);
+				if (isset($errors[$error['line']])) {
+					$errors[$error['line']] .= '<br />' . $error['message'];
+				} else {
+					$errors[$error['line']] = $error['message'];
+				}
+			}
+			bab_debug('Template :<br \>' . bab_Template::highlightSyntax($this->_templateString, $errors));
+			bab_debug('Parsed template :<br \>' . bab_Template::highlightSyntax($this->_parsedTemplate, $errors));
+		}
 		return $processedTemplate;
 	}
 
@@ -233,6 +257,76 @@ class bab_Template
 		return bab_Template::printTemplate($this, $filename, $section);
 	}
 
+
+	/**
+	 * @access private
+	 * @static
+	 */
+	function lvalue($templateObjectName, $propertyName)
+	{
+		return 'bab_Template::getLValue(' . $templateObjectName . ', "' .  $propertyName . '")';
+	}
+
+	/**
+	 * @access private
+	 * @static
+	 */
+	function lvalueArray($templateObjectName, $propertyName, $indexValue)
+	{
+		return 'bab_Template::getLValueArray(' . $templateObjectName . ', "' .  $propertyName . '", "' . $indexValue . '")';
+	}
+
+	/**
+	 * @access private
+	 * @static
+	 */
+	function rvalue($templateObjectName, $propertyName)
+	{
+		return 'bab_Template::getRValue(' . $templateObjectName . ', "' .  $propertyName . '")';
+	}
+
+	/**
+	 * @access private
+	 * @static
+	 */
+	function getRValue(&$templateObject, $propertyName)
+	{
+		return (@isset($templateObject->{$propertyName}) ? $templateObject->{$propertyName} : $propertyName);
+	}
+
+	/**
+	 * @access private
+	 * @static
+	 */
+	function getLValue(&$templateObject, $propertyName)
+	{
+		if (@isset($templateObject->{$propertyName})) {
+			return $templateObject->{$propertyName};
+		}
+		if (@isset($GLOBALS[$propertyName])) {
+			return $GLOBALS[$propertyName];
+		}
+		$call = reset(debug_backtrace()); // $call will contain debug info about the line in the script where this function was called.
+		bab_Template::addError($templateObject, 'Unknown property or global variable (' . $propertyName . ')', $call['line']);
+		return '{ ' . $propertyName . ' }';
+	}
+
+	/**
+	 * @access private
+	 * @static
+	 */
+	function getLValueArray(&$templateObject, $propertyName, $index)
+	{
+		if (@isset($templateObject->{$propertyName}[$index])) {
+			return $templateObject->{$propertyName}[$index];
+		}
+		$call = reset(debug_backtrace()); // $call will contain debug info about the line in the script where this function was called.
+		bab_Template::addError($templateObject, 'Unknown property (' . $propertyName . '[' . $index . '])', $call['line']);
+		return '{ ' . $propertyName . '[' . $index . '] }';
+	}
+
+
+
 	/**
 	 * Parses an Ovidentia template string and returns the equivalent php code in a string.
 	 * The code returned can be processed with a call to eval().
@@ -244,9 +338,11 @@ class bab_Template
 	 * @static
 	 */
 	function _parseTemplate($templateString, $templateObjectName)
-	{		
-		$search = array('/<!--#if\s+(\w+)(?:\s+"(?:\s*(== |\!= |<= |>= |< |> )\s*([^"]+))("))?\s+-->/',
-						'/<!--#if\s+(\w+)\[(\w+)\](?:\s+"(?:\s*(== |\!= |<= |>= |< |> )\s*([^"]+))("))?\s+-->/',
+	{
+		$search = array('/<!--#if\s+(\w+)\s+-->/',
+						'/<!--#if\s+(\w+)(?:\s+"(?:\s*(== |\!= |<= |>= |< |> )\s*([^"]+))")\s+-->/',
+						'/<!--#if\s+(\w+)\[(\w+)\]\s+-->/',
+						'/<!--#if\s+(\w+)\[(\w+)\](?:\s+"(?:\s*(== |\!= |<= |>= |< |> )\s*([^"]+))("))\s+-->/',
 						'/<!--#else\s+(?:(?:[A-Za-z0-9_\[\]]+)\s+)?-->/',
 						'/<!--#endif\s+(?:(?:[A-Za-z0-9_\[\]]+)\s+)?-->/',
 						'/<!--#in\s+(\w+)\s+-->/',
@@ -254,15 +350,17 @@ class bab_Template
 						'/\{\s+\$OVML\(([^)]+)\)\s+\}/',
 						'/\{\s+(\w+)\s+\}/',
 						'/\{\s+(\w+)\[(\w+)\]\s+\}/');
-		$replace = array('<?php if ((isset(' . $templateObjectName . '->$1) ? ' . $templateObjectName . '->$1 : (isset($GLOBALS["$1"]) ? $GLOBALS["$1"] : "")) $2$4$3$4): ?>',
-						 '<?php if ((isset(' . $templateObjectName . '->$1["$2"]) ? ' . $templateObjectName . '->$1["$2"] : "") $3$5$4$5): ?>',
+		$replace = array('<?php if (' . bab_Template::lvalue($templateObjectName, '$1') . '): ?>',
+						 '<?php if (' . bab_Template::lvalue($templateObjectName, '$1') . ' $2 ' . bab_Template::rvalue($templateObjectName, '$3') . '): ?>',
+						 '<?php if (' . bab_Template::lvalueArray($templateObjectName, '$1', '$2') . '): ?>',
+						 '<?php if (' . bab_Template::lvalueArray($templateObjectName, '$1', '$2') . ' $3 ' . bab_Template::rvalue($templateObjectName, '$4') . '): ?>',
 						 '<?php else: ?>',
 						 '<?php endif; ?>',
 						 '<?php while (' . $templateObjectName . '->$1($skip = false)): if ($skip) continue; ?>',
 						 '<?php endwhile; ?>',
 						 '<?php $params = explode(\',\', \'$1\'); $ovml = array_shift($params); $args = array(); foreach ($params as $param) { $tmp = explode(\'=\', $param); if (is_array($tmp) && count($tmp) == 2) { $var = trim($tmp[1], \'"\'); $var = isset(' . $templateObjectName . '->$var) ? ' . $templateObjectName . '->$var : $var; $args[trim($tmp[0])] = $var; } } print(bab_printOvmlTemplate($ovml, $args)); ?>',
-						 '<?php isset(' . $templateObjectName . '->$1) ? print(' . $templateObjectName . '->$1) : (isset($GLOBALS["$1"]) ? print($GLOBALS["$1"]) : print("no match for : { $1 }")); ?>',
-						 '<?php isset(' . $templateObjectName . '->$1["$2"]) && print(' . $templateObjectName . '->$1["$2"]); ?>');
+						 '<?php @print(' . bab_Template::lvalue($templateObjectName, '$1') . '); ?>',
+						 '<?php isset(' . $templateObjectName . '->$1["$2"]) && @print(' . $templateObjectName . '->$1["$2"]); ?>');
 		$templatePhp = preg_replace($search, $replace, $templateString);
 		return $templatePhp;
 	}
