@@ -7323,6 +7323,10 @@ function upgrade601to602()
 	$arr = $db->db_fetch_assoc($res);
 	setUserWd($arr['id_user'], $arr['workdays']);
 
+	if (!bab_isTableField(BAB_COMMENTS_TBL, 'id_author')) {
+
+		$db->db_query("ALTER TABLE ".BAB_COMMENTS_TBL." ADD `id_author` INT( 11 )  UNSIGNED DEFAULT '0' NOT NULL AFTER `id_topic`");
+	}
 	return $ret;
 }
 

@@ -676,7 +676,14 @@ function readMore($topics, $article)
 				$arr = $this->db->db_fetch_array($this->rescom);
 				$this->altbg = !$this->altbg;
 				$this->commentdate = bab_strftime(bab_mktime($arr['date']));
-				$this->authorname = $arr['name'];
+				if( $arr['id_author'] )
+					{
+					$this->authorname = bab_getUserName($arr['id_author']);
+					}
+				else
+					{
+					$this->authorname = $arr['name'];
+					}
 				$this->commenttitle = $arr['subject'];
 				$this->commentbody = bab_replace($arr['message']);
 				$i++;
@@ -1113,7 +1120,14 @@ function viewArticle($article)
 				$arr = $this->db->db_fetch_array($this->rescom);
 				$this->altbg = !$this->altbg;
 				$this->commentdate = bab_strftime(bab_mktime($arr['date']));
-				$this->authorname = $arr['name'];
+				if( $arr['id_author'] )
+					{
+					$this->authorname = bab_getUserName($arr['id_author']);
+					}
+				else
+					{
+					$this->authorname = $arr['name'];
+					}
 				$this->commenttitle = $arr['subject'];
 				$this->commentbody = bab_replace($arr['message']);
 				$i++;

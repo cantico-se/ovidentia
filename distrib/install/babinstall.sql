@@ -43,6 +43,7 @@ CREATE TABLE bab_comments (
    id_parent mediumint(11) unsigned DEFAULT '0' NOT NULL,
    id_article int(11) unsigned DEFAULT '0' NOT NULL,
    id_topic int(11) unsigned DEFAULT '0' NOT NULL,
+   id_author int(11) unsigned DEFAULT '0' NOT NULL,
    `date` datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
    subject tinytext NOT NULL,
    message text NOT NULL,
@@ -1026,7 +1027,7 @@ CREATE TABLE bab_ini (
 
 INSERT INTO bab_ini VALUES ('ver_major', '6');
 INSERT INTO bab_ini VALUES ('ver_minor', '0');
-INSERT INTO bab_ini VALUES ('ver_build', '1');
+INSERT INTO bab_ini VALUES ('ver_build', '2');
 INSERT INTO bab_ini VALUES ('ver_prod', 'E');
 
 #

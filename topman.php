@@ -294,7 +294,14 @@ function listArticles($id)
 			if ($this->com = $this->db->db_fetch_assoc($this->rescom))
 				{
 				$this->com['subject'] = bab_toHtml($this->com['subject']);
+				if( $this->com['id_author'] )
+					{
+					$this->com['name'] = bab_toHtml(bab_getUserName($this->com['id_author']));
+					}
+				else
+					{
 				$this->com['name'] = bab_toHtml($this->com['name']);
+					}
 				return true;
 				}
 			else {
@@ -473,7 +480,14 @@ function viewArticle($article)
 				$arr = $this->db->db_fetch_array($this->rescom);
 				$this->altbg = !$this->altbg;
 				$this->commentdate = bab_strftime(bab_mktime($arr['date']));
+				if( $arr['id_author'] )
+					{
+					$this->authorname = bab_getUserName($arr['id_author']);
+					}
+				else
+					{
 				$this->authorname = $arr['name'];
+					}
 				$this->commenttitle = $arr['subject'];
 				$this->commentbody = bab_replace($arr['message']);
 				$this->delcomurl = $GLOBALS['babUrlScript']."?tg=topman&idx=viewa&delc=com&item=".$this->arr['id_topic']."&art=".$this->arr['id']."&idc=".$arr['id'];

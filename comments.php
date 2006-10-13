@@ -64,7 +64,14 @@ function listComments($topics, $article)
 				$this->altbg = !$this->altbg;
 				$arr = $this->db->db_fetch_array($this->res);
 				$this->commentdate = bab_strftime(bab_mktime($arr['date']));
-				$this->authorname = $arr['name'];
+				if( $arr['id_author'] )
+					{
+					$this->authorname = bab_getUserName($arr['id_author']);
+					}
+				else
+					{
+					$this->authorname = $arr['name'];
+					}
 				$this->commenttitle = $arr['subject'];
 				$this->commentbody = bab_replace($arr['message']);
 				$i++;
@@ -114,14 +121,6 @@ function addComment($topics, $article, $subject, $message, $com="")
 			$this->subjectval = $subject;
 			$this->messageval = $message;
 			$this->com = $com;
-			if( empty($BAB_SESS_USER))
-				{
-				$this->authorname = "Anonymous";
-				}
-			else
-				{
-				$this->authorname = $BAB_SESS_USER;
-				}
 			$db = $GLOBALS['babDB'];
 			$req = "select title from ".BAB_ARTICLES_TBL." where id='".$article."'";
 			$res = $db->db_query($req);
@@ -141,9 +140,9 @@ function addComment($topics, $article, $subject, $message, $com="")
 	$babBodyPopup->babecho(	bab_printTemplate($temp,"comments.html", "commentcreate"));
 	}
 
-function saveComment($topics, $article, $name, $subject, $message, $com, &$msgerror)
+function saveComment($topics, $article, $subject, $message, $com, &$msgerror)
 	{
-	global $BAB_SESS_USER, $BAB_SESS_EMAIL;
+	global $BAB_SESS_USER, $BAB_SESS_EMAIL, $BAB_SESS_USERID;
 
 	if( empty($subject))
 		{
@@ -165,7 +164,7 @@ function saveComment($topics, $article, $name, $subject, $message, $com, &$msger
 		$com = 0;
 		}
 	
-	$req = "insert into ".BAB_COMMENTS_TBL." (id_topic, id_article, id_parent, date, subject, message, name, email) values ";
+	$req = "insert into ".BAB_COMMENTS_TBL." (id_topic, id_article, id_parent, date, subject, message, id_author, name, email) values ";
 	$req .= "(
 		'" .$db->db_escape_string($topics). "', 
 		'" . $db->db_escape_string($article).  "', 
@@ -175,14 +174,20 @@ function saveComment($topics, $article, $name, $subject, $message, $com, &$msger
 		'" . $db->db_escape_string($message). "', '
 	";
 
-	if( !isset($name) || empty($name))
+	if( empty($BAB_SESS_USER))
 		{
-		$req .= $BAB_SESS_USER. "', '" . $BAB_SESS_EMAIL. "')";
+		$name = bab_translate("Anonymous");
+		$email = '';
+		$idauthor = 0;
 		}
 	else
 		{
-		$req .= $name. "', '')";
+		$name = $BAB_SESS_USER;
+		$email = $BAB_SESS_EMAIL;
+		$idauthor = $BAB_SESS_USERID;
 		}
+
+	$req .= $idauthor. "', '" .$name. "', '" . $email. "')";
 
 	$db->db_query($req);
 	$id = $db->db_insert_id();
@@ -230,7 +235,7 @@ if( count($babBody->topview) == 0 || !isset($babBody->topview[$topics]))
 if(isset($addcomment) && bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $topics))
 	{
 	$msgerror = '';
-	if( !saveComment($topics, $article, $cname, $subject, $message, $com, $msgerror))
+	if( !saveComment($topics, $article, $subject, $message, $com, $msgerror))
 		{
 		$idx = "List";
 		}
