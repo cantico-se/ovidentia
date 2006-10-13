@@ -708,7 +708,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$req = "alter table artresults add unique (id)";
 				$this->db->db_query($req);
 
-				$req = "create temporary table comresults select C.id, C.id_article, C.id_topic, C.subject,C.message, UNIX_TIMESTAMP(C.date) date, name,email, a.title arttitle, a.body,a.restriction, T.category topic from ".BAB_COMMENTS_TBL." C, ".BAB_ARTICLES_TBL." a, ".BAB_TOPICS_TBL." T where C.id_article=a.id and a.id_topic = T.id and 0";
+				$req = "create temporary table comresults select C.id, C.id_article, C.id_topic, C.subject,C.message, UNIX_TIMESTAMP(C.date) date, name,email, C.id_author, a.title arttitle, a.body,a.restriction, T.category topic from ".BAB_COMMENTS_TBL." C, ".BAB_ARTICLES_TBL." a, ".BAB_TOPICS_TBL." T where C.id_article=a.id and a.id_topic = T.id and 0";
 				$this->db->db_query($req);
 				$req = "alter table comresults add unique (id)";
 				$this->db->db_query($req); 
@@ -854,7 +854,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					if ($this->like || $this->like2)
 						$reqsup = "and (".finder($this->like,"subject",$option,$this->like2)." or ".finder($this->like,"message",$option,$this->like2).")";
 
-					$req = "insert into comresults select C.id, C.id_article, C.id_topic, C.subject,C.message, UNIX_TIMESTAMP(C.date) date, name author,email,  a.title arttitle,LEFT(a.body,100) body, a.restriction, T.category topic  from ".BAB_COMMENTS_TBL." C, ".BAB_ARTICLES_TBL." a, ".BAB_TOPICS_TBL." T where C.id_article=a.id and a.id_topic = T.id ".$reqsup." and C.confirmed='Y' ".$incom." ".$crit_com." order by $order ";
+					$req = "insert into comresults select C.id, C.id_article, C.id_topic, C.subject,C.message, UNIX_TIMESTAMP(C.date) date, name author,email,C.id_author,  a.title arttitle,LEFT(a.body,100) body, a.restriction, T.category topic  from ".BAB_COMMENTS_TBL." C, ".BAB_ARTICLES_TBL." a, ".BAB_TOPICS_TBL." T where C.id_article=a.id and a.id_topic = T.id ".$reqsup." and C.confirmed='Y' ".$incom." ".$crit_com." order by $order ";
 
 					$this->db->db_query($req);
 					$res = $this->db->db_query("select id, restriction from comresults where restriction!=''");
@@ -1839,8 +1839,16 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				{
 				$arr = $this->db->db_fetch_array($this->rescom);
 				$this->artdate = bab_shortDate($arr['date'], true);
-				$this->artauthor = $arr['name'];
-				$this->authormail = $arr['email'];
+				if( $arr['id_author'] )
+					{
+					$this->artauthor = bab_getUserName($arr['id_author']);
+					$this->authormail = bab_getUserEmail($arr['id_author']);
+					}
+				else
+					{
+					$this->artauthor = $arr['name'];
+					$this->authormail = $arr['email'];
+					}
 				$this->arttopic = returnCategoriesHierarchy($arr['id_topic']);
 				$this->article = put_text($arr['arttitle']);
 				$this->arttopicid = $arr['id_topic'];
@@ -2319,7 +2327,7 @@ function viewComment($topics, $article, $com, $w)
 		}
 
 	$ctp = new ctp($topics, $article, $com, $w);
-	$temp->printHTML("search.html", "viewcom");
+	$ctp->printHTML("search.html", "viewcom");
 	}
 
 function viewPost($thread, $post, $w)
