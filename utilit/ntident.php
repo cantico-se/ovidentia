@@ -81,6 +81,8 @@ if (isset($NTidUser) && $GLOBALS['BAB_SESS_NTREGISTER'] && isset($_COOKIE['ntide
 	if (NTuserLogin($NTidUser)) {
 		$GLOBALS['BAB_SESS_NTREGISTER2'] = true;
 		$GLOBALS['BAB_SESS_NTREGISTER'] = false;
+		$_SESSION['BAB_SESS_NTREGISTER2'] = true;
+		$_SESSION['BAB_SESS_NTREGISTER'] = false;
 		$db = $GLOBALS['babDB'];
 		$res = $db->db_query("SELECT datelog FROM ".BAB_USERS_TBL." WHERE id='".$BAB_SESS_USERID."'");
 		if ($res && $db->db_num_rows($res) > 0) {
