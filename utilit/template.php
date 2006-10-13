@@ -262,6 +262,15 @@ class bab_Template
 	 * @access private
 	 * @static
 	 */
+	function value($templateObjectName, $propertyName)
+	{
+		return 'bab_Template::getValue(' . $templateObjectName . ', "' .  $propertyName . '")';
+	}
+
+	/**
+	 * @access private
+	 * @static
+	 */
 	function lvalue($templateObjectName, $propertyName)
 	{
 		return 'bab_Template::getLValue(' . $templateObjectName . ', "' .  $propertyName . '")';
@@ -306,6 +315,23 @@ class bab_Template
 		if (@isset($GLOBALS[$propertyName])) {
 			return $GLOBALS[$propertyName];
 		}
+//		$call = reset(debug_backtrace()); // $call will contain debug info about the line in the script where this function was called.
+//		bab_Template::addError($templateObject, 'Unknown property or global variable (' . $propertyName . ')', $call['line']);
+		return '';
+	}
+
+	/**
+	 * @access private
+	 * @static
+	 */
+	function getValue(&$templateObject, $propertyName)
+	{
+		if (@isset($templateObject->{$propertyName})) {
+			return $templateObject->{$propertyName};
+		}
+		if (@isset($GLOBALS[$propertyName])) {
+			return $GLOBALS[$propertyName];
+		}
 		$call = reset(debug_backtrace()); // $call will contain debug info about the line in the script where this function was called.
 		bab_Template::addError($templateObject, 'Unknown property or global variable (' . $propertyName . ')', $call['line']);
 		return '{ ' . $propertyName . ' }';
@@ -322,7 +348,7 @@ class bab_Template
 		}
 		$call = reset(debug_backtrace()); // $call will contain debug info about the line in the script where this function was called.
 		bab_Template::addError($templateObject, 'Unknown property (' . $propertyName . '[' . $index . '])', $call['line']);
-		return '{ ' . $propertyName . '[' . $index . '] }';
+		return '';
 	}
 
 
@@ -359,7 +385,7 @@ class bab_Template
 						 '<?php while (' . $templateObjectName . '->$1($skip = false)): if ($skip) continue; ?>',
 						 '<?php endwhile; ?>',
 						 '<?php $params = explode(\',\', \'$1\'); $ovml = array_shift($params); $args = array(); foreach ($params as $param) { $tmp = explode(\'=\', $param); if (is_array($tmp) && count($tmp) == 2) { $var = trim($tmp[1], \'"\'); $var = isset(' . $templateObjectName . '->$var) ? ' . $templateObjectName . '->$var : $var; $args[trim($tmp[0])] = $var; } } print(bab_printOvmlTemplate($ovml, $args)); ?>',
-						 '<?php @print(' . bab_Template::lvalue($templateObjectName, '$1') . '); ?>',
+						 '<?php @print(' . bab_Template::value($templateObjectName, '$1') . '); ?>',
 						 '<?php isset(' . $templateObjectName . '->$1["$2"]) && @print(' . $templateObjectName . '->$1["$2"]); ?>');
 		$templatePhp = preg_replace($search, $replace, $templateString);
 		return $templatePhp;
