@@ -231,7 +231,14 @@ function listWaitingComments()
 				$this->comdate = $arr['date'] == "0000-00-00 00:00:00"? "":bab_shortDate(bab_mktime($arr['date']), true);
 				$this->compath = viewCategoriesHierarchy_txt($arr['id_topic']);
 				$this->comtitle = $arr['subject'];
-				$this->author = $arr['name'];
+				if( $arr['id_author'] )
+					{
+					$this->author = bab_getUserName($arr['id_author']);
+					}
+				else
+					{
+					$this->author = $arr['name'];
+					}
 				$this->confirmurl = $GLOBALS['babUrlScript']."?tg=approb&idx=confcom&idcom=".$arr['id'];
 				$this->comviewurl = $GLOBALS['babUrlScript']."?tg=approb&idx=viewcom&idcom=".$arr['id'];
 				$this->altbg = !$this->altbg;
@@ -984,7 +991,7 @@ function previewWaitingArticle($idart)
 function previewWaitingComment($idcom)
 	{
 	global $babBody, $babDB, $BAB_SESS_USERID;
-	$res = $babDB->db_query("select * from ".BAB_COMMENTS_TBL." where id='".$idcom."'");
+	$res = $babDB->db_query("select idfai from ".BAB_COMMENTS_TBL." where id='".$idcom."'");
 	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
 		$arr = $babDB->db_fetch_array($res);
