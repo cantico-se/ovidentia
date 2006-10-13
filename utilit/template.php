@@ -187,8 +187,10 @@ class bab_Template
 	/**
 	 * @access private
 	 */
-	function resetErrors(&$templateObject)
+	function resetErrors(&$templateObject, $filename, $section)
 	{
+		$templateObject->_templateFilename = $filename;
+		$templateObject->_templateSection = $filename;
 		$templateObject->_errors = array();
 	}
 
@@ -217,7 +219,7 @@ class bab_Template
 	 */
 	function printTemplate(&$template, $filename, $section = '')
 	{
-		bab_Template::resetErrors($template);
+		bab_Template::resetErrors($template, $filename, $section);
 		$this->_parsedTemplate = bab_TemplateCache::get($filename, $section);
 		if ($this->_parsedTemplate === null) {
 			$this->_templateString = bab_Template::_loadTemplate($filename, $section);
@@ -249,7 +251,7 @@ class bab_Template
 					$errors[$error['line']] = $error['message'];
 				}
 			}
-			bab_debug('Template :<br \>' . bab_Template::highlightSyntax($this->_templateString, $errors));
+			bab_debug('Template file : ('.$filename . ') section (' . $section . ')<br \>' . bab_Template::highlightSyntax($this->_templateString, $errors));
 			bab_debug('Parsed template :<br \>' . bab_Template::highlightSyntax($this->_parsedTemplate, $errors));
 		}
 		return $processedTemplate;
