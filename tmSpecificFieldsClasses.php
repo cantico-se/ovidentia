@@ -39,7 +39,8 @@ class BAB_TM_FieldBase extends BAB_BaseFormProcessing
 
 		$this->set_caption('fieldName', bab_translate("Field name"));
 		$this->set_caption('fieldType', bab_translate("Field type"));
-		$this->set_caption('defaultValue', bab_translate("Default value"));
+		$this->set_caption('value', bab_translate("Value"));
+		$this->set_caption('supp', bab_translate("Del"));
 		$this->set_caption('defaultChoice', bab_translate("Default choice"));
 		
 		$this->set_caption('text', bab_translate("Text"));
@@ -297,6 +298,20 @@ class BAB_TM_FieldRadio extends BAB_TM_FieldBase
 		}
 	}
 
+	function getResubmittedDatas()
+	{
+		parent::getResubmittedDatas();
+		
+		$this->set_data('iDefaultOption', bab_rp('iDefaultOption', 0));
+		
+		$this->get_data('iIdProject', $iIdProject);
+		$this->get_data('iIdField', $iIdField);
+		
+		$this->isFieldModifiableAndDeletable($iIdProject, $iIdField, $is_deletable, $is_modifiable);
+		$this->set_data('is_deletable', $is_deletable);
+		$this->set_data('is_modifiable', $is_modifiable);
+	}
+
 	function buildHtmlselectFieldType()
 	{
 		$this->set_data('sChoiceSelected', 'selected="selected"');
@@ -326,10 +341,8 @@ class BAB_TM_FieldRadio extends BAB_TM_FieldBase
 		$this->set_data('iOptionCount', $iOptionCount);
 	}
 	
-	
-	function getFieldNameAndDefaultChoice($iIdField)
+	function selectFieldNameAndDefaultChoiceQuery($iIdProject, $iIdField)
 	{
-		$this->get_data('iIdProject', $iIdProject);
 		$db = &$GLOBALS['babDB'];
 		
 		$query = 
@@ -349,7 +362,15 @@ class BAB_TM_FieldRadio extends BAB_TM_FieldBase
 
 		//bab_debug($query);
 
-		$result = $db->db_query($query);
+		return $db->db_query($query);
+	}
+	
+	function getFieldNameAndDefaultChoice($iIdField)
+	{
+		$db = &$GLOBALS['babDB'];
+		$this->get_data('iIdProject', $iIdProject);
+		$result = $this->selectFieldNameAndDefaultChoiceQuery($iIdProject, $iIdField);
+
 		if(false != $result && $db->db_num_rows($result) > 0)
 		{
 			$datas = $db->db_fetch_assoc($result);
@@ -364,6 +385,25 @@ class BAB_TM_FieldRadio extends BAB_TM_FieldBase
 		}
 	}
 
+	function isFieldModifiableAndDeletable($iIdProject, $iIdField, &$is_deletable, &$is_modifiable)
+	{
+		$is_deletable = 0;
+		$is_modifiable = false;
+
+		$db = &$GLOBALS['babDB'];
+		
+		$result = $this->selectFieldNameAndDefaultChoiceQuery($iIdProject, $iIdField);
+		if(false != $result && $db->db_num_rows($result) > 0)
+		{
+			$datas = $db->db_fetch_assoc($result);
+			if(false != $datas)
+			{
+				$is_deletable = $datas['is_deletable'];
+				$is_modifiable = ($datas['idProject'] == $iIdProject);
+			}
+		}
+	}
+	
 	function nextOption() 
 	{
 		$this->get_data('bResubmission', $bResubmission);

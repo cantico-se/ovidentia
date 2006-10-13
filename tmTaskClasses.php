@@ -1052,7 +1052,7 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 					else 
 					{
 						$oStartDate = BAB_DateTime::fromIsoDateTime($aTask['sEndDate']);
-						$oStartDate->init($oStartDate->_iYear, $oStartDate->_iMonth, $oStartDate->_iDay, 0, 0, 0);
+//						$oStartDate->init($oStartDate->_iYear, $oStartDate->_iMonth, $oStartDate->_iDay, 0, 0, 0);
 						$this->m_sStartDate = date('Y-m-d H:i:s', $oStartDate->getTimeStamp());
 					}
 				}
@@ -1329,7 +1329,7 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 								$GLOBALS['babBody']->msgerror = bab_translate("Invalid LinkType");
 								return false;
 							}
-							
+/*							
 							$sStartDate = (BAB_TM_END_TO_START == $this->m_iLinkType) ? $aTask['sEndDate'] : $aTask['sStartDate'];
 							if(!preg_match("/(^[0-9]{4}-[0-9]{2}-[0-9]{2}).*$/", $sStartDate, $aExplodedDate))
 							{
@@ -1338,7 +1338,8 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 								return false;
 							}
 							
-							$this->m_sStartDate = $aExplodedDate[1] . ' 00:00:00';						
+							$this->m_sStartDate = $aExplodedDate[1] . ' 00:00:00';
+//*/					
 						}
 						else 
 						{
@@ -1768,6 +1769,8 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 				
 				$sStartDate = mysql_escape_string($this->m_sStartDate);
 				$sEndDate = mysql_escape_string($this->m_sEndDate);
+
+bab_debug($sStartDate);				
 				
 				$aTask =& $this->m_oTask->m_aTask;
 				
