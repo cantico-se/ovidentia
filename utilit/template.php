@@ -187,6 +187,14 @@ class bab_Template
 	/**
 	 * @access private
 	 */
+	function resetErrors(&$templateObject)
+	{
+		$templateObject->_errors = array();
+	}
+
+	/**
+	 * @access private
+	 */
 	function addError(&$templateObject, $errorMessage, $lineNumber)
 	{
 		if (!isset($templateObject->_errors)) {
@@ -209,6 +217,7 @@ class bab_Template
 	 */
 	function printTemplate(&$template, $filename, $section = '')
 	{
+		bab_Template::resetErrors($template);
 		$this->_parsedTemplate = bab_TemplateCache::get($filename, $section);
 		if ($this->_parsedTemplate === null) {
 			$this->_templateString = bab_Template::_loadTemplate($filename, $section);
@@ -315,8 +324,6 @@ class bab_Template
 		if (@isset($GLOBALS[$propertyName])) {
 			return $GLOBALS[$propertyName];
 		}
-//		$call = reset(debug_backtrace()); // $call will contain debug info about the line in the script where this function was called.
-//		bab_Template::addError($templateObject, 'Unknown property or global variable (' . $propertyName . ')', $call['line']);
 		return '';
 	}
 
@@ -346,7 +353,8 @@ class bab_Template
 		if (@isset($templateObject->{$propertyName}[$index])) {
 			return $templateObject->{$propertyName}[$index];
 		}
-		$call = reset(debug_backtrace()); // $call will contain debug info about the line in the script where this function was called.
+		$calls = debug_backtrace();
+		$call = reset($calls); // $call will contain debug info about the line in the script where this function was called.
 		bab_Template::addError($templateObject, 'Unknown property (' . $propertyName . '[' . $index . '])', $call['line']);
 		return '';
 	}
