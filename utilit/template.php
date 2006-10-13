@@ -187,10 +187,8 @@ class bab_Template
 	/**
 	 * @access private
 	 */
-	function resetErrors(&$templateObject, $filename, $section)
+	function resetErrors(&$templateObject)
 	{
-		$templateObject->_templateFilename = $filename;
-		$templateObject->_templateSection = $filename;
 		$templateObject->_errors = array();
 	}
 
@@ -219,7 +217,7 @@ class bab_Template
 	 */
 	function printTemplate(&$template, $filename, $section = '')
 	{
-		bab_Template::resetErrors($template, $filename, $section);
+		bab_Template::resetErrors($template);
 		$this->_parsedTemplate = bab_TemplateCache::get($filename, $section);
 		if ($this->_parsedTemplate === null) {
 			$this->_templateString = bab_Template::_loadTemplate($filename, $section);
@@ -251,7 +249,7 @@ class bab_Template
 					$errors[$error['line']] = $error['message'];
 				}
 			}
-			bab_debug('Template file : ('.$filename . ') section (' . $section . ')<br \>' . bab_Template::highlightSyntax($this->_templateString, $errors));
+			bab_debug('Template filename (' . $filename . ') section (' . $section . '):<br \>' . bab_Template::highlightSyntax($this->_templateString, $errors));
 			bab_debug('Parsed template :<br \>' . bab_Template::highlightSyntax($this->_parsedTemplate, $errors));
 		}
 		return $processedTemplate;
@@ -392,7 +390,7 @@ class bab_Template
 						 '<?php if (' . bab_Template::lvalueArray($templateObjectName, '$1', '$2') . ' $3 ' . bab_Template::rvalue($templateObjectName, '$4') . '): ?>',
 						 '<?php else: ?>',
 						 '<?php endif; ?>',
-						 '<?php while (' . $templateObjectName . '->$1($skip = false)): if ($skip) continue; ?>',
+						 '<?php $$1skip = false; while (' . $templateObjectName . '->$1($$1skip)): if ($$1skip) continue; ?>',
 						 '<?php endwhile; ?>',
 						 '<?php $params = explode(\',\', \'$1\'); $ovml = array_shift($params); $args = array(); foreach ($params as $param) { $tmp = explode(\'=\', $param); if (is_array($tmp) && count($tmp) == 2) { $var = trim($tmp[1], \'"\'); $var = isset(' . $templateObjectName . '->$var) ? ' . $templateObjectName . '->$var : $var; $args[trim($tmp[0])] = $var; } } print(bab_printOvmlTemplate($ovml, $args)); ?>',
 						 '<?php @print(' . bab_Template::value($templateObjectName, '$1') . '); ?>',
