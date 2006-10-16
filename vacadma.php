@@ -2133,7 +2133,7 @@ switch($idx)
 		$idtype			= bab_rp('idtype');
 		$idcreditor		= bab_rp('idcreditor');
 		$pos			= bab_rp('pos',0);
-		$active			= bab_rp('active');
+		$active			= bab_rp('active','Y');
 
 		listVacationRigths($idtype, $idcreditor, $dateb, $datee, $active, $pos);
 		$babBody->addItemMenu("lrig", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=vacadma&idx=lrig");

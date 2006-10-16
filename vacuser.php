@@ -140,61 +140,14 @@ function requestVacation($begin,$end, $halfdaybegin, $halfdayend, $id)
 			$begin	= $date_begin->getTimeStamp();
 			$end	= $date_end->getTimeStamp();
 
-			$calcul = round(($end - $begin)/86400, 1);
+			$this->period_nbdays = bab_vac_getFreeDaysBetween($this->id_user, $begin, $end);
 
-
-			include_once $GLOBALS['babInstallPath']."utilit/nwdaysincl.php";
-			$beginY = date('Y',$begin);
-			$endY = date('Y',$end);
-
-			if ($beginY != $endY) {
-				$nonWorkingDays = array_merge(bab_getNonWorkingDays($beginY), bab_getNonWorkingDays($endY));
-				}
-			else {
-				$nonWorkingDays = bab_getNonWorkingDays($beginY);
-				}
-
-
-			include_once $GLOBALS['babInstallPath']."utilit/workinghoursincl.php";
-			
-			for ($i = $begin; $i <= $end ; $i = mktime(0, 0, 0, date("m",$i) , date("d",$i) + 1, date("Y",$i)) )
-				{
-				$arr = bab_getWHours($this->id_user, date('w',$i ));
-				$am = false;
-				$pm = false;
-				foreach($arr as $wh_period) {
-					if ($wh_period['startHour'] < '12:00:00') {
-						$am = true;
-					}
-
-					if ($wh_period['endHour'] > '12:00:00') {
-						$pm = true;
-					}
-				}
-
-				if (!$am) {
-					$calcul -= 0.5;
-				}
-
-				if (!$pm) {
-					$calcul -= 0.5;
-				}
-
-				if (isset($nonWorkingDays[date('Y-m-d',$i )])) {
-					$calcul--;
-				}
-			}
-
-			
-
-
-			$this->period_nbdays = $calcul;
 			$this->t_days = bab_translate("Day(s)");
 
 			$this->period_nbdays2 = $this->period_nbdays;
 
-			$this->begin = $date_begin->getIsoDate();
-			$this->end = $date_end->getIsoDate();
+			$this->begin	= $date_begin->getIsoDate();
+			$this->end		= $date_end->getIsoDate();
 
 			$this->rfrom = isset($_POST['rfrom'])? $_POST['rfrom'] : 0;
 			$this->rights = array();
@@ -215,7 +168,7 @@ function requestVacation($begin,$end, $halfdaybegin, $halfdayend, $id)
 						$right['id'] => array(
 							'description' => $right['description'],
 							'quantitydays'	=> $right['quantitydays'] - $right['waiting']
-							)
+						)
 					);
 				}
 				
@@ -227,7 +180,7 @@ function requestVacation($begin,$end, $halfdaybegin, $halfdayend, $id)
 				$res = $this->db->db_query("SELECT id_right, quantity FROM ".BAB_VAC_ENTRIES_ELEM_TBL." WHERE id_entry='".$this->id."'");
 				while ($arr = $this->db->db_fetch_array($res))
 					{
-					$this->current[$arr['id_right']] = $arr['quantity'];
+					$this->current['r'.$arr['id_right']] = $arr['quantity'];
 					}
 				}
 
@@ -237,7 +190,8 @@ function requestVacation($begin,$end, $halfdaybegin, $halfdayend, $id)
 				$res = $this->db->db_query("
 				SELECT 
 					e.id_right, 
-					r.id_rgroup 
+					r.id_rgroup,
+					e.quantity 
 				FROM 
 					".BAB_VAC_ENTRIES_ELEM_TBL." e, 
 					".BAB_VAC_RIGHTS_TBL." r 
@@ -249,13 +203,13 @@ function requestVacation($begin,$end, $halfdaybegin, $halfdayend, $id)
 				while($arr = $this->db->db_fetch_array($res))
 					{
 						if (empty($arr['id_rgroup'])) {
-							$this->recorded[$arr['id_right']] = $arr['quantity'];
+							$this->recorded['r'.$arr['id_right']] = $arr['quantity'];
 						} else {
-							$this->recorded[$arr['id_rgroup']] = $arr['quantity'];
+							$this->recorded['g'.$arr['id_rgroup']] = $arr['quantity'];
 						}
 					}
 
-				list($this->remarks) = $this->db->db_fetch_array($this->db->db_query("SELECT comment FROM ".BAB_VAC_ENTRIES_TBL." WHERE id='".$this->db->quote($this->id)));
+				list($this->remarks) = $this->db->db_fetch_array($this->db->db_query("SELECT comment FROM ".BAB_VAC_ENTRIES_TBL." WHERE id=".$this->db->quote($this->id)));
 				}
 			else
 				{
@@ -267,8 +221,6 @@ function requestVacation($begin,$end, $halfdaybegin, $halfdayend, $id)
 
 			
 			$this->calurl = $GLOBALS['babUrlScript']."?tg=vacuser&idx=cal&idu=".$this->id_user."&popup=1";
-
-			
 
 			}
 
@@ -282,10 +234,9 @@ function requestVacation($begin,$end, $halfdaybegin, $halfdayend, $id)
 				$this->id_rgroup = $this->right['id_rgroup'];
 				$this->rgroup = bab_toHtml($this->right['rgroup']);
 
-				
+				$this->right['description'] = bab_toHtml($this->right['description']);
 				$this->right['waiting'] -= isset($this->current[$id]) ? $this->current[$id] : 0;
 				$this->right['quantitydays'] = $this->right['quantitydays'] - $this->right['waiting'];
-
 
 				if (isset($_POST['nbdays'][$id]))
 					{
@@ -293,13 +244,16 @@ function requestVacation($begin,$end, $halfdaybegin, $halfdayend, $id)
 					}
 				elseif( count($this->recorded) > 0)
 					{
-					if (isset($this->recorded[$id]))
+					if (isset($this->recorded[$id])) {
 						$this->nbdays = $this->recorded[$id];
-					else
+					}
+					else {
 						$this->nbdays = 0;
+					}
 					}
 				elseif (0 == $this->right['no_distribution'] && $this->period_nbdays2 > 0 && $this->right['quantitydays'] > 0)
 					{
+					
 					if ($this->period_nbdays2 >= $this->right['quantitydays'])
 						{
 						$this->nbdays = $this->right['quantitydays'];
@@ -719,8 +673,6 @@ function addNewVacation()
 		}
 
 
-	$remarks = addslashes($remarks);
-
 	if (empty($id_request))
 		{
 		$babDB->db_query("
@@ -1045,7 +997,7 @@ switch($idx)
 		break;
 
 	case 'delete':
-		$babBody->title = bab_translate("Delete Vacation request");
+		$babBody->title = bab_translate("Delete vacation request");
 		deleteVacationRequest(bab_rp('id_entry'));
 		break;
 

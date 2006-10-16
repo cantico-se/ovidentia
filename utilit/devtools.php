@@ -446,4 +446,58 @@ function bab_f_getDebug() {
 	return bab_printTemplate($temp, 'devtools.html', 'debug');
 }
 
+
+
+function bab_debug_print_backtrace($echo = false)
+{
+    // Get backtrace
+    static $uniqueId = 0;
+	$uniqueId++;
+    $backtrace = debug_backtrace();
+
+    // Unset call to debug_print_backtrace
+    array_shift($backtrace);
+    
+    // Iterate backtrace
+    $calls = array();
+    foreach ($backtrace as $i => $call) {
+        $location = $call['file'] . ':' . $call['line'];
+        $function = (isset($call['class'])) ?
+            '<b>' . $call['class'] . '</b>.<b>' . $call['function'] . '</b>':
+            '<b>' . $call['function'] . '</b>';
+       
+        $params = '';
+        if (isset($call['args'])) {
+			$nbParam = 0;
+			foreach ($call['args'] as $param)
+			{
+				ob_start();
+				print_r($param);
+				$param_str = ob_get_contents();
+				ob_end_clean();
+
+
+				if ($nbParam > 0)
+					$params .= ', ';
+				$spanId = 'peParam_' . $uniqueId . '_' . $i . '_' . $nbParam;
+				$params .= '<span title="' . htmlEntities('[' . $param . ']') . '" style="cursor: pointer" onclick="s=document.getElementById(\'' . $spanId . '\'); s.style.display==\'none\'?s.style.display=\'\':s.style.display=\'none\'">[+]</span>'
+						.  '<div style="display: none; background-color: #EEEECC" id="' . $spanId . '">' . htmlEntities('[' . $param_str . ']') . '</div>';
+				$nbParam++;
+			}
+        }
+
+        $calls[] = '#' . $i . ' ' . $function . '(' . $params . ') <i>called at</i> [' . $location . ']';
+    }
+
+	$display = implode("\n", $calls);
+
+	if ($echo && bab_isUserAdministrator()) {
+		echo '<pre>'.$display.'</pre>';
+	} else {
+		bab_debug($display);
+	}
+
+	
+}
+
 ?>

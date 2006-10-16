@@ -39,7 +39,7 @@
 
 
 #vacationcalendar {
-	font-size:9px;
+	font-size:10px;
 	text-align:center;
 	background-color:#fff;
 	margin:.5em;
@@ -65,7 +65,7 @@
 	}
 
 #vacationcalendar .calendar thead td {
-	padding:.2em .1em;
+	padding:.2em .3em;
 }
 
 #vacationcalendar .calendar tbody th {

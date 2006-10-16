@@ -244,6 +244,10 @@ function validateForm(fr)
 
 function onAssignmentType(sel) {
 
+	if (!sel) {
+		return;
+	}
+
 	for(i = 1 ; i <= 3; i++) {
 		obj = document.getElementById('bab_vac_assignment_type_'+i);
 		obj.style.display = 'none';
@@ -1093,7 +1097,7 @@ window.focus();
 
 				<p><br /></p>
 				
-				<p>{ t_year_to } : <input type="text" name="year_to" value="{ year_to }" /></p>
+				<p>{ t_year_to } : <input type="text" name="year_to" value="{ year_to }" maxlength="4" size="4" /></p>
 				
 				<p align="center"><input type="submit" name="copy_rights" value="{ t_record }" /></p>
 				</td>

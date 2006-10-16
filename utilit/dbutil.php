@@ -35,7 +35,15 @@ function bab_database($die = false, $dbtype = "mysql")
 
 function db_print_error($text)
     {
-    $str = "<h2>" . $text . "</h2>\n";
+    
+	
+	if (isset($_COOKIE['bab_debug'])) {
+		include_once 'devtools.php';
+		bab_debug_print_backtrace(true);
+	}
+
+	
+	$str = "<h2>" . $text . "</h2>\n";
     $str .= "<p><b>Database Error: ";
 	switch($this->db_type )
 		{

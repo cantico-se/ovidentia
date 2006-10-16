@@ -443,6 +443,12 @@ window.focus();
 		<td align="right">{ totaltxt }:</td>
 		<td>{ totalval }</td>
 	</tr>
+	<!--#in getmatch --><!--#endin getmatch -->
+	<!--#if nomatch -->
+	<tr> 
+		<td colspan="2" style="color:red">{ t_nomatch }</td>
+	</tr>
+	<!--#endif nomatch -->
 	<tr> 
 		<td align="right">{ remarktxt }:</td>
 		<td>{ remark }</td>

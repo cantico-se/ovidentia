@@ -442,6 +442,7 @@ function listWaitingVacations()
 			$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
 			if( count($arrschi) > 0 )
 				{
+				include_once $GLOBALS['babInstallPath']."utilit/vacincl.php";
 				$this->res = $this->db->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where idfai IN (".implode(',', $arrschi).") order by date desc");
 				$this->wvacationscount = $this->db->db_num_rows($this->res);
 				$this->waitingvacationstxt = bab_translate("Request vacations waiting to be validate");
@@ -465,10 +466,10 @@ function listWaitingVacations()
 				$this->altbg = !$this->altbg;
 				$arr = $this->db->db_fetch_array($this->res);
 				$this->url = $GLOBALS['babUrlScript']."?tg=approb&idx=confvac&idvac=".$arr['id'];
-				list($this->total) = $this->db->db_fetch_row($this->db->db_query("select sum(quantity) from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry ='".$arr['id']."'"));
+				list($this->total) = $this->db->db_fetch_row($this->db->db_query("select sum(quantity) from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry =".$this->db->quote($arr['id']).""));
 				$this->urlname = bab_getUserName($arr['id_user']);
-				$this->dateb = bab_shortDate(bab_mktime($arr['date_begin']." 00:00:00"), false);
-				$this->datee = bab_shortDate(bab_mktime($arr['date_end']." 00:00:00"), false);
+				$this->dateb = bab_vac_shortDate(bab_mktime($arr['date_begin']));
+				$this->datee = bab_vac_shortDate(bab_mktime($arr['date_end']));
 				$this->entryid = $arr['id'];
 				$i++;
 				return true;
@@ -715,12 +716,16 @@ function confirmWaitingVacation($id)
 			$this->refuse = bab_translate("Refuse");
 			$this->remarktxt = bab_translate("Description");
 			$this->t_alert = bab_translate("Negative balance");
+			$this->t_nomatch = bab_translate("The length of the period is different from the requested vacation");
 			$this->db = $GLOBALS['babDB'];
 			$row = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where id='".$id."'"));
-			$this->datebegin = bab_vac_longDate(bab_mktime($row['date_begin']));
-			$this->dateend = bab_vac_longDate(bab_mktime($row['date_end']));
-			$this->fullname = bab_getUserName($row['id_user']);
-			$this->remark = nl2br($row['comment']);
+			$this->begin = bab_mktime($row['date_begin']);
+			$this->end = bab_mktime($row['date_end']);
+			$this->datebegin	= bab_vac_longDate($this->begin);
+			$this->dateend		= bab_vac_longDate($this->end);
+			$this->id_user		= $row['id_user'];
+			$this->fullname		= bab_getUserName($row['id_user']);
+			$this->remark = bab_toHtml($row['comment'], BAB_HTML_ALL);
 
 			$rights = bab_getRightsOnPeriod($row['date_begin'], $row['date_end'], $row['id_user']);
 			$this->negative = array();
@@ -731,11 +736,12 @@ function confirmWaitingVacation($id)
 					$this->negative[$r['id']] = $after;
 				}
 
-			$req = "select * from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry='".$id."'";
+			$req = "select * from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry=".$this->db->quote($id);
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			$this->totalval = 0;
 			$this->veid = $id;
+			$this->nomatch = false;
 			}
 
 		function getnexttype()
@@ -755,6 +761,12 @@ function confirmWaitingVacation($id)
 			else
 				return false;
 
+			}
+
+		function getmatch() {
+			$n = bab_vac_getFreeDaysBetween($this->id_user, $this->begin, $this->end);
+			$this->nomatch = $this->totalval != $n;
+			return false;
 			}
 		}
 

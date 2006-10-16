@@ -502,14 +502,15 @@ function viewVacationCalendar($users, $period = false )
 			$this->t_weekend = bab_translate("Week-end");
 			$this->t_rotate = bab_translate("Print in landscape");
 			$this->t_non_used = bab_translate("Non-used days");
+			$this->t_waiting = bab_translate("Waiting vacation request");
 
 			$this->t_waiting_vac = bab_translate("Waiting vacation request");
 			
-			$id = isset($_REQUEST['id']) ? $_REQUEST['id'] : 0;
+			$this->id_request = isset($_REQUEST['id']) ? $_REQUEST['id'] : 0;
 
 			$this->nbmonth = bab_rp('nbmonth',12);
 
-			$urltmp = $GLOBALS['babUrlScript']."?tg=".$_REQUEST['tg']."&amp;idx=".$_REQUEST['idx']."&amp;id=".$id;
+			$urltmp = $GLOBALS['babUrlScript']."?tg=".$_REQUEST['tg']."&amp;idx=".$_REQUEST['idx']."&amp;id=".$this->id_request;
 
 			
 
@@ -740,13 +741,18 @@ function viewVacationCalendar($users, $period = false )
 							$this->am_classname = $this->period ? 'free' : 'default';
 
 						} elseif (BAB_PERIOD_VACATION == $period_am['period_type']) {
-							if ('' == $period_am['status']) {
-								$this->am_text = $this->t_waiting_vac;
-								$this->am_classname = 'wait';
+
+							if ($period_am['id_entry'] == $this->id_request) {
+								$this->am_classname = 'period';
 							} else {
-								$this->am_classname = 'used';
+								if ('' == $period_am['status']) {
+									$this->am_text = $this->t_waiting_vac;
+									$this->am_classname = 'wait';
+								} else {
+									$this->am_classname = 'used';
+								}
+								$this->am_color = $period_am['color'];
 							}
-							$this->am_color = $period_am['color'];
 						}
 					}
 
@@ -757,13 +763,23 @@ function viewVacationCalendar($users, $period = false )
 							$this->pm_classname = $this->period ? 'free' : 'default';
 
 						} elseif (BAB_PERIOD_VACATION == $period_pm['period_type']) {
-							if ('' == $period_pm['status']) {
-								$this->pm_text = $this->t_waiting_vac;
-								$this->pm_classname = 'wait';
+							
+							if ($period_pm['id_entry'] == $this->id_request) {
+								$this->pm_classname = 'period';
 							} else {
-								$this->pm_classname = 'used';
+								if ('' == $period_pm['status']) {
+									$this->pm_text = $this->t_waiting_vac;
+									$this->pm_classname = 'wait';
+								} else {
+									$this->pm_classname = 'used';
+								}
+								$this->pm_color = $period_pm['color'];
 							}
-							$this->pm_color = $period_pm['color'];
+							
+							
+							
+							
+							
 						}
 					}
 
@@ -1494,11 +1510,12 @@ function changeucol($id_user,$newcol)
 						c.name new, 
 						IFNULL(c2.name,'') old 
 					FROM 
-						".BAB_VAC_PERSONNEL_TBL." p, 
-						".BAB_VAC_COLLECTIONS_TBL." c 
+						".BAB_VAC_PERSONNEL_TBL." p
 					LEFT JOIN 
 						".BAB_VAC_COLLECTIONS_TBL." c2 
-						ON c2.id = p.id_coll 
+						ON c2.id = p.id_coll , 
+						".BAB_VAC_COLLECTIONS_TBL." c 
+					
 					WHERE 
 						p.id_user='".$id_user."' AND c.id='".$newcol."'
 					";
@@ -2036,15 +2053,18 @@ function bab_vac_updateCalendar($id_user, $year, $month) {
 	$obj->createPeriods(BAB_PERIOD_NWDAY | BAB_PERIOD_WORKING | BAB_PERIOD_VACATION);
 	$obj->orderBoundaries();
 
-	
 	if (!function_exists('compare')) {
 		/**
 		 * si type2 est prioritaire, return true
 		 */
 		function compare($type1, $type2) {
 
-			if (BAB_PERIOD_NWDAY == $type2) {
+			if (BAB_PERIOD_NWDAY === $type2) {
 				return true;
+			}
+
+			if (BAB_PERIOD_NWDAY === $type1) {
+				return false;
 			}
 
 			if ($type2 > $type1) {
@@ -2066,29 +2086,7 @@ function bab_vac_updateCalendar($id_user, $year, $month) {
 					return false;
 			}
 		}
-	}
-	
 
-	$index = array();
-	$is_free = array();
-	while (false !== $arr = $obj->getNextPeriod()) {
-		foreach($arr as $p) {
-			$group = $p->split(12*3600);
-			foreach($group as $p) {
-				$key = date('Ymda',$p->ts_begin);
-				if (is_free($p)) {
-					$is_free[$key] = 1;
-				}
-				if (!isset($index[$key]) || compare($index[$key]->type, $p->type)) {
-					$index[$key] = $p;
-				}
-			}
-		}
-	}
-
-	
-
-	if (!function_exists('group_insert')) {
 		function group_insert($query, $exec = false) {
 			static $values = array();
 			if ($query) {
@@ -2106,13 +2104,34 @@ function bab_vac_updateCalendar($id_user, $year, $month) {
 			}
 		}
 	}
+	
+
+	$index = array();
+	$is_free = array();
+	while (false !== $arr = $obj->getNextPeriod()) {
+		foreach($arr as $p) {
+			$group = $p->split(12*3600);
+			foreach($group as $p) {
+				
+				$key = date('Ymda',$p->ts_begin);
+				if (is_free($p)) {
+					$is_free[$key] = 1;
+				}
+
+				if (!isset($index[$key]) || compare($index[$key]->type, $p->type)) {
+					$index[$key] = $p;
+				}
+			}
+		}
+	}
+
+	
 
 	foreach($index as $key => $p) {
 
 		$ampm		= 'pm' === date('a',$p->ts_begin) ? 1 : 0;
 		$data		= $p->getData();
 		$id_entry	= 0;
-		$id_nwday	= 0;
 		$color		= '';
 		$type		= $p->type;
 		
@@ -2126,11 +2145,8 @@ function bab_vac_updateCalendar($id_user, $year, $month) {
 			}
 		} elseif (BAB_PERIOD_VACATION === $p->type) {
 			$type = BAB_PERIOD_NONWORKING;
-		}
+		} 
 
-		if (BAB_PERIOD_NWDAY === $p->type) {
-			$id_nwday = 0;
-		}
 
 		group_insert("(
 				".$db->quote($id_user).",
@@ -2183,14 +2199,14 @@ function bab_vac_delete_request($id_request)
 	notifyOnRequestChange($id_request, true);
 
 	$db = &$GLOBALS['babDB'];
-	$db->db_query("DELETE FROM ".BAB_VAC_ENTRIES_ELEM_TBL." WHERE id_entry='".$id_request."'");
+	$db->db_query("DELETE FROM ".BAB_VAC_ENTRIES_ELEM_TBL." WHERE id_entry='".$db->quote($id_request)."'");
 
-	list($idfai) = $db->db_fetch_array($db->db_query("SELECT idfai FROM ".BAB_VAC_ENTRIES_TBL." WHERE id='".$id_request."'"));
+	list($idfai) = $db->db_fetch_array($db->db_query("SELECT idfai FROM ".BAB_VAC_ENTRIES_TBL." WHERE id='".$db->quote($id_request)."'"));
 	
 	if ($idfai > 0)
 		deleteFlowInstance($idfai);
 
-	$db->db_query("DELETE FROM ".BAB_VAC_ENTRIES_TBL." WHERE id='".$id_request."'");
+	$db->db_query("DELETE FROM ".BAB_VAC_ENTRIES_TBL." WHERE id='".$db->quote($id_request)."'");
 }
 
 
@@ -2347,10 +2363,61 @@ function bab_addCoManagerEntities(&$entities, $id_user) {
 			$entities['superior'][] = $e;
 		}
 	}
+}
 
-	
 
+/**
+ * Number of free days between two dates
+ * @param	int	$id_user	
+ * @param	int	$begin		timestamp
+ * @param	int	$end		timestamp
+ * @return	int
+ */
+function bab_vac_getFreeDaysBetween($id_user, $begin, $end) {
+	$calcul = round(($end - $begin)/86400, 1);
+
+	include_once $GLOBALS['babInstallPath']."utilit/nwdaysincl.php";
+	$beginY = date('Y',$begin);
+	$endY = date('Y',$end);
+
+	if ($beginY != $endY) {
+		$nonWorkingDays = array_merge(bab_getNonWorkingDays($beginY), bab_getNonWorkingDays($endY));
+		}
+	else {
+		$nonWorkingDays = bab_getNonWorkingDays($beginY);
+		}
+
+	include_once $GLOBALS['babInstallPath']."utilit/workinghoursincl.php";
 	
+	for ($i = $begin; $i <= $end ; $i = mktime(0, 0, 0, date("m",$i) , date("d",$i) + 1, date("Y",$i)) )
+		{
+		$arr = bab_getWHours($id_user, date('w',$i ));
+		$am = false;
+		$pm = false;
+		foreach($arr as $wh_period) {
+			if ($wh_period['startHour'] < '12:00:00') {
+				$am = true;
+			}
+
+			if ($wh_period['endHour'] > '12:00:00') {
+				$pm = true;
+			}
+		}
+
+		if (!$am) {
+			$calcul -= 0.5;
+		}
+
+		if (!$pm) {
+			$calcul -= 0.5;
+		}
+
+		if (isset($nonWorkingDays[date('Y-m-d',$i )])) {
+			$calcul--;
+		}
+	}
+
+	return $calcul;
 }
 
 ?>
