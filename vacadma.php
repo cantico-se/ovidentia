@@ -1888,6 +1888,15 @@ function rightcopy() {
 			$row['date_end_fixed']		= $this->increment_ISO($row['date_end_fixed']);
 			$row['date_begin_fixed']	= $this->increment_ISO($row['date_begin_fixed']);
 
+
+			$row['description'] = preg_replace_callback("/\d{4}/", 
+				create_function(
+				   '$matches',
+				   'return $matches[0] + '.$this->increment.';'
+				 ),
+				$row['description'] 
+			);
+/*
 			if (preg_match_all("/\d{4}/", $row['description'], $matches)) {
 				for($i = 0; $i < count($matches[0]); $i++) {
 					$current_year = $matches[0][$i];
@@ -1895,7 +1904,7 @@ function rightcopy() {
 					$row['description'] = preg_replace("/".preg_quote($current_year,"/")."/", $new_year, $row['description']);
 				}
 			}
-
+*/
 			$res = $this->db->db_query("
 			SELECT COUNT(*) FROM ".BAB_VAC_RIGHTS_TBL." 
 			WHERE 
