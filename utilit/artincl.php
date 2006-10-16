@@ -524,7 +524,7 @@ function acceptWaitingArticle($idart)
 		if( $arr['id_article'] != 0 )
 			{
 			$articleid = $arr['id_article'];
-			$req = "update ".BAB_ARTICLES_TBL." set id_modifiedby='".$arr['id_author']."', date_archiving='".$arr['date_archiving']."', restriction='".$arr['restriction']."', lang='".$arr['lang']."'";
+			$req = "update ".BAB_ARTICLES_TBL." set id_modifiedby='".$arr['id_author']."', date_archiving='".$arr['date_archiving']."', date_publication='".$arr['date_publication']."', restriction='".$arr['restriction']."', lang='".$arr['lang']."'";
 			if( $arr['update_datemodif'] != 'N')
 				{
 				$req .= ", date_modification=now()";
