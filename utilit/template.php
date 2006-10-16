@@ -280,6 +280,15 @@ class bab_Template
 	 * @access private
 	 * @static
 	 */
+	function valueArray($templateObjectName, $propertyName, $indexValue)
+	{
+		return 'bab_Template::getValueArray(' . $templateObjectName . ', "' .  $propertyName . '", "' . $indexValue . '")';
+			}
+
+	/**
+	 * @access private
+	 * @static
+	 */
 	function lvalue($templateObjectName, $propertyName)
 	{
 		return 'bab_Template::getLValue(' . $templateObjectName . ', "' .  $propertyName . '")';
@@ -331,6 +340,21 @@ class bab_Template
 	 * @access private
 	 * @static
 	 */
+	function getLValueArray(&$templateObject, $propertyName, $index)
+	{
+		if (@isset($templateObject->{$propertyName}[$index])) {
+			return $templateObject->{$propertyName}[$index];
+		}
+		$calls = debug_backtrace();
+		$call = reset($calls); // $call will contain debug info about the line in the script where this function was called.
+		bab_Template::addError($templateObject, 'Unknown property (' . $propertyName . '[' . $index . '])', $call['line']);
+		return '';
+	}
+
+	/**
+	 * @access private
+	 * @static
+	 */
 	function getValue(&$templateObject, $propertyName)
 	{
 		if (@isset($templateObject->{$propertyName})) {
@@ -348,18 +372,17 @@ class bab_Template
 	 * @access private
 	 * @static
 	 */
-	function getLValueArray(&$templateObject, $propertyName, $index)
+	function getValueArray(&$templateObject, $propertyName, $index)
 	{
 		if (@isset($templateObject->{$propertyName}[$index])) {
 			return $templateObject->{$propertyName}[$index];
 		}
-		$calls = debug_backtrace();
-		$call = reset($calls); // $call will contain debug info about the line in the script where this function was called.
+		$call = reset(debug_backtrace()); // $call will contain debug info about the line in the script where this function was called.
 		bab_Template::addError($templateObject, 'Unknown property (' . $propertyName . '[' . $index . '])', $call['line']);
-		return '';
+		return '{ ' . $propertyName . '[' . $index . '] }';
 	}
 
-
+	
 
 	/**
 	 * Parses an Ovidentia template string and returns the equivalent php code in a string.
@@ -382,8 +405,9 @@ class bab_Template
 						'/<!--#in\s+(\w+)\s+-->/',
 						'/<!--#endin\s+(?:(?:\w+)\s+)?-->/',
 						'/\{\s+\$OVML\(([^)]+)\)\s+\}/',
+/*						'/\{\s+([^{}]+{([^}]+)}.*)\s+\}/', */
 						'/\{\s+(\w+)\s+\}/',
-						'/\{\s+(\w+)\[(\w+)\]\s+\}/');
+						'/\{\s+(\w+)\[((?:\w+\s*)+)\]\s+\}/');
 		$replace = array('<?php if (' . bab_Template::lvalue($templateObjectName, '$1') . '): ?>',
 						 '<?php if (' . bab_Template::lvalue($templateObjectName, '$1') . ' $2 ' . bab_Template::rvalue($templateObjectName, '$3') . '): ?>',
 						 '<?php if (' . bab_Template::lvalueArray($templateObjectName, '$1', '$2') . '): ?>',
@@ -393,8 +417,9 @@ class bab_Template
 						 '<?php $$1skip = false; while (' . $templateObjectName . '->$1($$1skip)): if ($$1skip) { $$1skip = false; continue; } ?>',
 						 '<?php endwhile; ?>',
 						 '<?php $params = explode(\',\', \'$1\'); $ovml = array_shift($params); $args = array(); foreach ($params as $param) { $tmp = explode(\'=\', $param); if (is_array($tmp) && count($tmp) == 2) { $var = trim($tmp[1], \'"\'); $var = isset(' . $templateObjectName . '->$var) ? ' . $templateObjectName . '->$var : $var; $args[trim($tmp[0])] = $var; } } print(bab_printOvmlTemplate($ovml, $args)); ?>',
+/*						 'TOTO($1)($2)TOTO', */
 						 '<?php @print(' . bab_Template::value($templateObjectName, '$1') . '); ?>',
-						 '<?php isset(' . $templateObjectName . '->$1["$2"]) && @print(' . $templateObjectName . '->$1["$2"]); ?>');
+						 '<?php @print(' . bab_Template::valueArray($templateObjectName, '$1', '$2') . '); ?>');
 		$templatePhp = preg_replace($search, $replace, $templateString);
 		return $templatePhp;
 	}
