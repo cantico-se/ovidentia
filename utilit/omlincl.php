@@ -1043,36 +1043,51 @@ class bab_Articles extends bab_handler
 
 			}
 
+			$orderby = $ctx->get_value('orderby');
+			if( $orderby === false || $orderby === '' )
+				$orderby = "at.date";
+			else
+				{
+				switch(strtolower($orderby))
+					{
+					case 'creation': $orderby = 'at.date'; break;
+					case 'publication': $orderby = 'at.date_publication'; break;
+					case 'modification':
+					default:
+						$orderby = 'at.date_modification'; break;
+					}
+				}
+
 			switch(strtoupper($order))
 			{
-				case "ASC":
+				case 'ASC':
 					if( $forder )
 					{
-						$order = "at.ordering asc, at.date_modification desc"; 
+						$order = 'at.ordering asc, at.date_modification desc'; 
 					}
 					else
 					{
-						$order = "at.date asc";
+						$order = $orderby.' asc';
 					}
 					break;
-				case "RAND": 
-					$order = "rand()"; 
+				case 'RAND': 
+					$order = 'rand()'; 
 					break;
-				case "DESC":
+				case 'DESC':
 				default:
 					if( $forder )
 					{
-						$order = "at.ordering desc, at.date_modification asc"; 
+						$order = 'at.ordering desc, at.date_modification asc'; 
 					}
 					else
 					{
-						$order = "at.date desc";
+						$order = $orderby.' desc';
 					}
 					break;
 
 			}
 
-			$req .= " order by ".$order;
+			$req .=  'order by '.$order;
 
 			$rows = $ctx->get_value('rows');
 			$offset = $ctx->get_value('offset');
@@ -1083,7 +1098,7 @@ class bab_Articles extends bab_handler
 				$offset = "0";
 
 			if ($rows != -1)
-				$req .= " limit ".$offset.", ".$rows;
+				$req .= ' limit '.$offset.', '.$rows;
 
 			$res = $babDB->db_query($req);
 
@@ -1130,7 +1145,10 @@ class bab_Articles extends bab_handler
 				$this->ctx->curctx->push('ArticleModifiedBy', $arr['id_author']);
 			else
 				$this->ctx->curctx->push('ArticleModifiedBy', $arr['id_modifiedby']);
-			$this->ctx->curctx->push('ArticleDate', bab_mktime($arr['date']));
+			$this->ctx->curctx->push('ArticleDate', bab_mktime($arr['date'])); /* for compatibility */
+			$this->ctx->curctx->push('ArticleDateCreation', bab_mktime($arr['date']));
+			$this->ctx->curctx->push('ArticleDateModifcation', bab_mktime($arr['date_modification']));
+			$this->ctx->curctx->push('ArticleDatePublication', bab_mktime($arr['date_publication']));
 			$this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
 			$this->ctx->curctx->push('ArticleLanguage', $arr['lang']);
 			$this->ctx->curctx->push('ArticleFiles', $arr['nfiles']);
@@ -2213,25 +2231,25 @@ class bab_RecentArticles extends bab_handler
 
 			switch(strtoupper($archive))
 			{
-				case 'NO': $archive = " AND art.archive='N' "; break;
-				case 'YES': $archive = " AND art.archive='Y' "; break;
+				case 'NO': $archive = " AND at.archive='N' "; break;
+				case 'YES': $archive = " AND at.archive='Y' "; break;
 				default: $archive = ""; break;
 
 			}
 
 			$req = 
 				'SELECT ' . 
-					'art.id, ' .
-					'art.restriction ' .
+					'at.id, ' .
+					'at.restriction ' .
 				'FROM ' . 
-					BAB_ARTICLES_TBL . ' art ';
+					BAB_ARTICLES_TBL . ' at ';
 					
 			$sDelegation = ' ';	
 			if(0 != $delegationid)	
 			{
 				$req .= 
 					'LEFT JOIN ' .
-						BAB_TOPICS_TBL . ' tp ON tp.id = art.id_topic ' .
+						BAB_TOPICS_TBL . ' tp ON tp.id = at.id_topic ' .
 					'LEFT JOIN ' .
 						BAB_TOPICS_CATEGORIES_TBL . ' tpCat ON tpCat.id = tp.id_cat ';
 						
@@ -2240,30 +2258,45 @@ class bab_RecentArticles extends bab_handler
 					
 			$req .= 
 				'WHERE ' .
-					'art.id_topic IN (' . implode(',', $this->topicid). ') AND ' .
-					'(art.date_publication = \'0000-00-00 00:00:00\' OR art.date_publication <= now()) ' .
+					'at.id_topic IN (' . implode(',', $this->topicid). ') AND ' .
+					'(at.date_publication = \'0000-00-00 00:00:00\' OR at.date_publication <= now()) ' .
 					$sDelegation;
 
 			if( $this->nbdays !== false)
-				$req .= " AND art.date >= DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
+				$req .= " AND at.date >= DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
 
 			
 			if ($lang !== false ) {
-				$req .= " AND art.lang='".$lang."'";
+				$req .= " AND at.lang='".$lang."'";
 			}
 			
 			$req .= $archive;
 
 			$order = $ctx->get_value('order');
 			if( $order === false || $order === '' )
-				$order = "desc";
+				$order = 'desc';
+
+			$orderby = $ctx->get_value('orderby');
+			if( $orderby === false || $orderby === '' )
+				$orderby = 'at.date_modification';
+			else
+				{
+				switch(strtolower($orderby))
+					{
+					case 'creation': $orderby = 'at.date'; break;
+					case 'publication': $orderby = 'at.date_publication'; break;
+					case 'modification':
+					default:
+						$orderby = 'at.date_modification'; break;
+					}
+				}
 
 			switch(strtoupper($order))
 			{
-				case 'ASC': $order = 'date_modification ASC'; break;
+				case 'ASC': $order = $orderby.' ASC'; break;
 				case 'RAND': $order = 'rand()'; break;
 				case 'DESC':
-				default: $order = 'date_modification DESC'; break;
+				default: $order = $orderby.' DESC'; break;
 			}
 
 			$req .= ' ORDER BY ' . $order;
@@ -2335,7 +2368,10 @@ class bab_RecentArticles extends bab_handler
 				$this->ctx->curctx->push('ArticleModifiedBy', $arr['id_author']);
 			else
 				$this->ctx->curctx->push('ArticleModifiedBy', $arr['id_modifiedby']);
-			$this->ctx->curctx->push('ArticleDate', bab_mktime($arr['date_modification']));
+			$this->ctx->curctx->push('ArticleDate', bab_mktime($arr['date_modification'])); /* for compatibility */
+			$this->ctx->curctx->push('ArticleDateModifcation', bab_mktime($arr['date_modification']));
+			$this->ctx->curctx->push('ArticleDatePublication', bab_mktime($arr['date_publication']));
+			$this->ctx->curctx->push('ArticleDateCreation', bab_mktime($arr['date']));
 			$this->ctx->curctx->push('ArticleUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']);
 			$this->ctx->curctx->push('ArticlePopupUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=viewa&topics=".$arr['id_topic']."&article=".$arr['id']);
 			$this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
@@ -2456,7 +2492,15 @@ class bab_RecentComments extends bab_handler
 			$this->ctx->curctx->push('CommentTopicId', $arr['id_topic']);
 			$this->ctx->curctx->push('CommentArticleId', $arr['id_article']);
 			$this->ctx->curctx->push('CommentDate', bab_mktime($arr['date']));
-			$this->ctx->curctx->push('CommentAuthor', $arr['name']);
+			if( $arr['id_author'] )
+				{
+				$this->ctx->curctx->push('CommentAuthor', bab_getUserName($arr['id_author']));
+				}
+			else
+				{
+				$this->ctx->curctx->push('CommentAuthor', $arr['name']);
+				}
+
 			$this->ctx->curctx->push('CommentLanguage', $arr['lang']);
 			$this->ctx->curctx->push('CommentUrl', $GLOBALS['babUrlScript']."?tg=comments&idx=read&topics=".$arr['id_topic']."&article=".$arr['id_article']."&com=".$arr['id']);
 			$this->ctx->curctx->push('CommentPopupUrl', $GLOBALS['babUrlScript']."?tg=comments&idx=viewc&com=".$arr['id']."&article=".$arr['id_article']."&topics=".$arr['id_topic']);
@@ -3014,7 +3058,14 @@ class bab_WaitingComments extends bab_handler
 			$this->ctx->curctx->push('CommentTopicId', $arr['id_topic']);
 			$this->ctx->curctx->push('CommentArticleId', $arr['id_article']);
 			$this->ctx->curctx->push('CommentDate', bab_mktime($arr['date']));
-			$this->ctx->curctx->push('CommentAuthor', $arr['name']);
+			if( $arr['id_author'] )
+				{
+				$this->ctx->curctx->push('CommentAuthor', bab_getUserName($arr['id_author']));
+				}
+			else
+				{
+				$this->ctx->curctx->push('CommentAuthor', $arr['name']);
+				}
 			$this->ctx->curctx->push('CommentLanguage', $arr['lang']);
 			$this->ctx->curctx->push('CommentUrl', $GLOBALS['babUrlScript']."?tg=approb");
 			$this->ctx->curctx->push('CommentPopupUrl', $GLOBALS['babUrlScript']."?tg=approb&idx=viewcom&idcom=".$arr['id']."&idart=".$arr['id_article']."&topics=".$arr['id_topic']);
