@@ -92,6 +92,9 @@ function rgroup_display(obj, str_dest) {
 <input type="hidden" name="id" value="{ id }" />
 <input type="hidden" name="id_user" value="{ id_user }" />
 <input type="hidden" name="rfrom" value="{ rfrom }" />
+<!--#if ide -->
+<input type="hidden" name="ide" value="{ ide }" />
+<!--#endif ide -->
 
 	<table class="BabLoginCadreBackground" width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
 	<tr> 
@@ -819,16 +822,19 @@ return true;
 </script>
 
 <form name="vacform" method="post" action="{ babPhpSelf }" onSubmit="return validateForm(this);">
-<input type="hidden" name="tg" value="vacuser">
-<input type="hidden" name="idx" value="vunew">
-<input type="hidden" name="action" value="period">
-<input type="hidden" name="id" value="{ id }">
-<input type="hidden" name="year" value="{ year }">
-<input type="hidden" name="begin_tmp" value="0">
-<input type="hidden" name="end_tmp" value="0">
-<input type="hidden" name="period_nbdays" value="0">
-<input type="hidden" name="id_user" value="{ id_user }">
-<input type="hidden" name="rfrom" value="{ rfrom }">
+<input type="hidden" name="tg" value="vacuser" />
+<input type="hidden" name="idx" value="vunew" />
+<input type="hidden" name="action" value="period" />
+<input type="hidden" name="id" value="{ id }" />
+<input type="hidden" name="year" value="{ year }" />
+<input type="hidden" name="begin_tmp" value="0" />
+<input type="hidden" name="end_tmp" value="0" />
+<input type="hidden" name="period_nbdays" value="0" />
+<input type="hidden" name="id_user" value="{ id_user }" />
+<input type="hidden" name="rfrom" value="{ rfrom }" />
+<!--#if ide -->
+<input type="hidden" name="ide" value="{ ide }" />
+<!--#endif ide -->
 
 <table class="BabLoginCadreBackground" width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 

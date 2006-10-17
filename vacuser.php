@@ -504,12 +504,12 @@ function period($id_user, $id = 0)
 
 function viewrights($id_user)
 	{
-	class ptemp
+	class temp
 		{
 
 		var $altbg = true;
 
-		function ptemp($id_user) {
+		function temp($id_user) {
 			$this->rights = bab_getRightsByGroupOnPeriod($id_user);
 			$this->total = 0;
 			$this->total_waiting = 0;
@@ -536,7 +536,7 @@ function viewrights($id_user)
 			}
 
 		}
-		$temp = new ptemp($id_user);
+		$temp = new temp($id_user);
 		$GLOBALS['babBody']->babecho(bab_printTemplate($temp, "vacuser.html", "viewrights"));
 	}
 
@@ -854,6 +854,7 @@ return test_period2($id_entry, $_POST['id_user'], $begin->getTimeStamp(), $end->
 /* main */
 $acclevel = bab_vacationsAccess();
 $userentities = & bab_OCGetUserEntities($GLOBALS['BAB_SESS_USERID']);
+bab_addCoManagerEntities($userentities, $GLOBALS['BAB_SESS_USERID']);
 $entities_access = count($userentities['superior']);
 
 if( count($acclevel) == 0)
@@ -883,12 +884,17 @@ switch ($_POST['action'])
 			}
 		elseif ($_POST['id_user'] == $GLOBALS['BAB_SESS_USERID'])
 			{
-			Header("Location: ". $GLOBALS['babUrlScript']."?tg=vacuser&idx=lvreq");
+			header("Location: ". $GLOBALS['babUrlScript']."?tg=vacuser&idx=lvreq");
 			exit;
 			}
 		else
 			{
-			Header("Location: ". $GLOBALS['babUrlScript']."?tg=vacchart&idx=entities");
+			if (isset($_POST['ide'])) {
+				header("Location: ". $GLOBALS['babUrlScript'].'?tg=vacchart&idx=entity_members&ide='.$_POST['ide']);
+				exit;
+			}
+			header("Location: ". $GLOBALS['babUrlScript']."?tg=vacchart&idx=entities");
+			exit;
 			}
 		}
 		break;
@@ -1004,6 +1010,11 @@ switch($idx)
 	case 'viewrights':
 		if (bab_IsUserUnderSuperior($_GET['id_user']) || !empty($acclevel['manager'])) {
 			$babBody->title = bab_translate("Balance").' : '.bab_getUserName($_GET['id_user']);
+
+			if (isset($_GET['ide'])) {
+				$babBody->addItemMenu("entity_members", bab_translate("Entity members"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entity_members&ide=".$_GET['ide']);
+			}
+
 			$babBody->addItemMenu("viewrights", bab_translate("Balance"), $GLOBALS['babUrlScript']."?tg=vacuser&idx=lvreq");
 			viewrights($_GET['id_user']);
 		} else {

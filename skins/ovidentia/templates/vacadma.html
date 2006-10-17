@@ -295,7 +295,16 @@ function group_delete_selected() {
 	<tr> 
 		<td class="BabLoginCadreBackground"> 
 			<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5">
-			
+			<tr> 
+				<td align="right">{ t_right_type }:</td>
+				<td > 
+					<select name="righttype" onchange="use_rules_change(this)">
+					<!--#in getnextrighttype -->
+					<option value="{ righttypeid }" { selected }>{ righttypeval }</option>
+					<!--#endin getnextrighttype -->
+					</select>
+				</td>
+			</tr>
 			<tr> 
 				<td align="right">{ t_description }:</td>
 				<td> 
@@ -324,6 +333,58 @@ function group_delete_selected() {
 					</select>
 				</td>
 			</tr>
+			
+			<tr> 
+				<td align="right">{ t_quantity }:</td>
+				<td> 
+					<input type="text" name="quantity" size="5" maxlength="5" value="{ arr[quantity] }" onBlur="validateNum(this)" />&nbsp;&nbsp;{ t_days }
+				</td>
+			</tr>
+			
+			<tr> 
+				<td align="right">{ t_active }:</td>
+				<td> 
+					<select name="active">
+					<!--#if arr[active] "== Y" -->
+					<option value="Y" selected="selected">{ yes }</option>
+					<option value="N">{ no }</option>
+					<!--#else arr[active] -->
+					<option value="Y">{ yes }</option>
+					<option value="N" selected="selected">{ no }</option>
+					<!--#endif arr[active] -->
+					</select>
+				</td>
+			</tr>
+			<tr> 
+				<td align="right">{ t_cbalance }:</td>
+				<td > 
+					<select name="cbalance">
+					<!--#if arr[cbalance] "== Y" -->
+					<option value="Y" selected="selected">{ yes }</option>
+					<option value="N">{ no }</option>
+					<!--#else arr[cbalance] -->
+					<option value="Y">{ yes }</option>
+					<option value="N" selected="selected">{ no }</option>
+					<!--#endif arr[cbalance] -->
+					</select>
+				</td>
+			</tr>
+			<tr> 
+				<td align="right">{ t_no_distribution }:</td>
+				<td > 
+					<select name="no_distribution">
+					<!--#if arr[no_distribution] -->
+					<option value="1" selected="selected">{ no }</option>
+					<option value="0">{ yes }</option>
+					<!--#else arr[no_distribution] -->
+					<option value="1">{ no }</option>
+					<option value="0" selected="selected">{ yes }</option>
+					<!--#endif arr[no_distribution] -->
+					</select>
+				</td>
+			</tr>
+
+
 			<!--#if arr[idvr] -->
 			<tr> 
 				<td align="right">{ t_id_type }:</td>
@@ -352,7 +413,7 @@ function group_delete_selected() {
 				
 				<fieldset>
 						<legend>{ t_assignment }</legend>
-
+						<br />
 						<label for="bab_vac_assignment_type">{ t_assignment_type }</label> : 
 						<select id="bab_vac_assignment_type" name="assignment_type" onchange="onAssignmentType(this)">
 							<option value="1">{ t_by_user }</option>
@@ -400,22 +461,7 @@ function group_delete_selected() {
 			</tr>
 
 			<!--#endif arr[idvr] -->
-			<tr> 
-				<td align="right">{ t_quantity }:</td>
-				<td> 
-					<input type="text" name="quantity" size="5" maxlength="5" value="{ arr[quantity] }" onBlur="validateNum(this)" />&nbsp;&nbsp;{ t_days }
-				</td>
-			</tr>
-			<tr> 
-				<td align="right">{ t_right_type }:</td>
-				<td > 
-					<select name="righttype" onchange="use_rules_change(this)">
-					<!--#in getnextrighttype -->
-					<option value="{ righttypeid }" { selected }>{ righttypeval }</option>
-					<!--#endin getnextrighttype -->
-					</select>
-				</td>
-			</tr>
+
 			<tbody id="vac_right_fixed">
 			<tr> 
 				<td align="right">{ t_datebegintxt }:</td>
@@ -470,113 +516,57 @@ function group_delete_selected() {
 			</tbody>
 			<tbody id="vac_right_common">
 			<tr> 
-				<td align="right">{ t_periodvalid }:</td>
-				<td> 
-					<a href="javascript:calwin('date_begin_valid')">{ t_date_begin }</a>
-					<input type="text" name="date_begin_valid" size="10" maxlength="10" value="{ arr[date_begin_valid] }" />
-
-					&nbsp;<a href="javascript:calwin('date_end_valid')">{ t_date_end }</a>
-					<input type="text" name="date_end_valid" size="10" maxlength="10" value="{ arr[date_end_valid] }" />
+				<td colspan="2">
+					<br />
+					<fieldset>
+						<legend>{ t_periodvalid }</legend>
+						<br />
+						<p>{ t_periodvalid_help1 }</p>
+						<p>
+						<a href="javascript:calwin('date_begin_valid')">{ t_date_begin }</a>
+						<input type="text" name="date_begin_valid" size="10" maxlength="10" value="{ arr[date_begin_valid] }" />
+						 &nbsp; 
+						<a href="javascript:calwin('date_end_valid')">{ t_date_end }</a>
+						<input type="text" name="date_end_valid" size="10" maxlength="10" value="{ arr[date_end_valid] }" />
+						</p>
+						<p>{ t_periodvalid_help2 }</p>
+					</fieldset>
 				</td>
 			</tr>
 			
-			<tr> 
-				<td align="right">{ t_active }:</td>
-				<td> 
-					<select name="active">
-					<!--#if arr[active] "== Y" -->
-					<option value="Y" selected>{ yes }</option>
-					<option value="N">{ no }</option>
-					<!--#else arr[active] -->
-					<option value="Y">{ yes }</option>
-					<option value="N" selected>{ no }</option>
-					<!--#endif arr[active] -->
-					</select>
-				</td>
-			</tr>
-			<tr> 
-				<td align="right">{ t_cbalance }:</td>
-				<td > 
-					<select name="cbalance">
-					<!--#if arr[cbalance] "== Y" -->
-					<option value="Y" selected="selected">{ yes }</option>
-					<option value="N">{ no }</option>
-					<!--#else arr[cbalance] -->
-					<option value="Y">{ yes }</option>
-					<option value="N" selected="selected">{ no }</option>
-					<!--#endif arr[cbalance] -->
-					</select>
-				</td>
-			</tr>
-			<tr> 
-				<td align="right">{ t_no_distribution }:</td>
-				<td > 
-					<select name="no_distribution">
-					<!--#if arr[no_distribution] -->
-					<option value="1" selected="selected">{ no }</option>
-					<option value="0">{ yes }</option>
-					<!--#else arr[no_distribution] -->
-					<option value="1">{ no }</option>
-					<option value="0" selected="selected">{ yes }</option>
-					<!--#endif arr[no_distribution] -->
-					</select>
-				</td>
-			</tr>
+			
 			</tbody>
 			<tbody id="vac_right_rules">
-				
+
 				<tr> 
-					<td colspan="2" align="center">
-					<br />
-					<h5>{ t_rules }</h5>
-					</td>
-				</tr>
-				
-				
-				<tr> 
-					<td align="right">{ t_period_rule }:</td>
-					<td> 
-						<a href="javascript:calwin('period_start')">{ t_period_start }</a>
+					<td colspan="2" align="left">
+						<br />
+					
+						<fieldset>
+						<legend>{ t_zoneapplication }</legend>
+						
+						<br />
+						
+						<p>{ t_right_inperiod }</p>
+							
+						<p><select name="right_inperiod">
+								<option value="1">{ t_inperiod }</option>
+								<option value="2">{ t_outperiod }</option>
+							</select>
+							
+						{ t_period_rule } : <a href="javascript:calwin('period_start')">{ t_period_start }</a>
 							<input type="text" name="period_start" size="10" maxlength="10" value="{ arr[period_start] }" />
 
 							&nbsp;<a href="javascript:calwin('period_end')">{ t_period_end }</a>
 							<input type="text" name="period_end" size="10" maxlength="10" value="{ arr[period_end] }" />
-					</td>
-				</tr>
+						</p>
 
-				<tr> 
-					<td colspan="2" align="left">
-					
-						<fieldset>
-						<legend>{ t_zoneapplication }</legend>
-
-
-						
-						<dl>
-						
-						<dt><br />{ t_right_inperiod }:</dt>
-							<dd><p>
-							<select name="right_inperiod">
-								<option value="0">{ t_always }</option>
-								<option value="1">{ t_inperiod }</option>
-								<option value="2">{ t_outperiod }</option>
-							</select>
-							</p></dd>
-						
-						
-						<dt>{ t_validoverlap }: </dt>
-							<dd><p>
-							<select name="validoverlap">
-								<!--#if arr[validoverlap] -->
-								<option value="0">{ t_inperiod_strict }</option>
-								<option value="1" selected="selected">{ t_inperiod_or_overlap }</option>
-								<!--#else arr[validoverlap] -->
-								<option value="0" selected="selected">{ t_inperiod_strict }</option>
-								<option value="1">{ t_inperiod_or_overlap }</option>
-								<!--#endif arr[validoverlap] -->
-							</select>
-							</p></dd>
-						</dl>
+						<!--#if arr[validoverlap] -->
+						<p><input type="checkbox" name="validoverlap" value="1" checked="checked" /> { t_validoverlap } </p>
+						<!--#else arr[validoverlap] -->
+						<p><input type="checkbox" name="validoverlap" value="1" /> { t_validoverlap } </p>
+						<!--#endif arr[validoverlap] -->
+							
 						
 						</fieldset>
 
@@ -589,33 +579,35 @@ function group_delete_selected() {
 						<br />
 						<fieldset>
 						<legend>{ t_trigger }</legend>
+						<br />
 						
-						<p><br />{ t_trigger_nbdays_min }&nbsp;:&nbsp;<input type="text" name="trigger_nbdays_min" size="5" maxlength="10" value="{ arr[trigger_nbdays_min] }" onBlur="validateNum(this)" />&nbsp;&nbsp;{ t_days }</p>
-						<p>{ t_trigger_nbdays_max }&nbsp;:&nbsp;<input type="text" name="trigger_nbdays_max" size="5" maxlength="10" value="{ arr[trigger_nbdays_max] }" onBlur="validateNum(this)" />&nbsp;&nbsp;{ t_days }</p>
+						<p>{ t_trigger_nbdays }</p>
 						
-						<dl>
+						<p><br />
+						{ t_between }&nbsp;:&nbsp;<input type="text" name="trigger_nbdays_min" size="5" maxlength="10" value="{ arr[trigger_nbdays_min] }" onBlur="validateNum(this)" />&nbsp;&nbsp;{ t_days } 
 						
-						<dt>{ t_trigger_type }:</dt>
-							<dd><p>
+						{ t_and }&nbsp;:&nbsp;<input type="text" name="trigger_nbdays_max" size="5" maxlength="10" value="{ arr[trigger_nbdays_max] }" onBlur="validateNum(this)" />&nbsp;&nbsp;{ t_days }</p>
+						
+						<p>
+							{ t_vacation_type } : 
 							<select name="trigger_type">
 								<option value="0">{ t_all }</option>
 								<!--#in getnexttype -->
 								<option value="{ typeid }">{ typename }</option>
 								<!--#endin getnexttype -->
 							</select>
-							</p></dd>
-						
-						
-						<dt>{ t_trigger_inperiod }:</dt>
-							<dd><p>
+							</p>
+
+						<p>
+							{ t_trigger_inperiod } :
 							<select name="trigger_inperiod">
 								<option value="0">{ t_all_period }</option>
 								<option value="1">{ t_inperiod }</option>
 								<option value="2">{ t_outperiod2 }</option>
 							</select>
-							</p></dd>
-						</dl>
-						
+							</p>
+
+
 						</fieldset>
 
 						<script type="text/javascript">

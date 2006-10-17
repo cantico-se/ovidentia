@@ -32,8 +32,8 @@ function addFixedVacation($id_user, $id_right, $datebegin , $dateend, $halfdaybe
 	global $babBody, $babDB;
 
 
-	$datebegin	.= 1 == $halfdaybegin	? '12:00:00' : '00:00:00';
-	$dateend	.= 1 == $halfdayend		? '23:59:59' : '11:59:59';
+	$datebegin	.= 1 == $halfdaybegin	? ' 12:00:00' : ' 00:00:00';
+	$dateend	.= 1 == $halfdayend		? ' 23:59:59' : ' 11:59:59';
 
 	$babDB->db_query("insert into ".BAB_VAC_ENTRIES_TBL." 
 	(id_user, date_begin, date_end, comment, date, idfai, status) 
@@ -73,8 +73,8 @@ function updateFixedVacation($id_user, $id_right, $datebegin , $dateend, $halfda
 {
 	global $babBody, $babDB;
 
-	$datebegin	.= 1 == $halfdaybegin	? '12:00:00' : '00:00:00';
-	$dateend	.= 1 == $halfdayend		? '23:59:59' : '11:59:59';
+	$datebegin	.= 1 == $halfdaybegin	? ' 12:00:00' : ' 00:00:00';
+	$dateend	.= 1 == $halfdayend		? ' 23:59:59' : ' 11:59:59';
 
 	$res = $babDB->db_query("select vet.id as entry, veet.id as entryelem 
 	from ".BAB_VAC_ENTRIES_ELEM_TBL." veet 
@@ -583,18 +583,20 @@ function addModifyVacationRigths($id = false)
 			$this->t_use_rules = bab_translate("Use rules");
 			$this->t_trigger_nbdays_min = bab_translate("Minimum number of days");
 			$this->t_trigger_nbdays_max = bab_translate("Maximum number of days");
-			$this->t_period_rule = bab_translate("Rule period"). " (".bab_translate("dd-mm-yyyy").")";
-			$this->t_trigger_inperiod = bab_translate("Allow rule");
+			$this->t_period_rule = bab_translate("in this period");
+			$this->t_trigger_inperiod = bab_translate("of period");
 			$this->t_always = bab_translate("Always");
 			$this->t_all_period = bab_translate("On all right period");
 			$this->t_inperiod = bab_translate("In rule period");
 			$this->t_outperiod = bab_translate("Out of rule period");
 			$this->t_outperiod2 = bab_translate("Out of rule period and in right period");
-			$this->t_right_inperiod = bab_translate("Apply right");
+			$this->t_right_inperiod = bab_translate("The right is available if the vacation request is");
 			$this->t_record = bab_translate("Record");
 			$this->t_trigger_type = bab_translate("Allow rule with type");
 			$this->t_all = bab_translate("All");
-			$this->t_periodvalid = bab_translate("Retention period"). " (".bab_translate("dd-mm-yyyy").")";
+			$this->t_periodvalid = bab_translate("Retention period :");
+			$this->t_periodvalid_help1 = bab_translate("The right is available if the request is in the period");
+			$this->t_periodvalid_help2 = bab_translate("if empty, the right will be available with others conditions");
 			$this->t_right_type = bab_translate("Nature of the right");
 			$this->t_no_distribution = bab_translate("Distribution on request");
 
@@ -604,13 +606,17 @@ function addModifyVacationRigths($id = false)
 			$this->invalidentry2 = bab_translate("Days must be multiple of 0.5");
 			$this->invalidentry3 = bab_translate("The number of days exceed the total allowed");
 			$this->t_rules = bab_translate("Rules");
-			$this->t_trigger = bab_translate("Rule trigger");
+			$this->t_trigger = bab_translate("Right assignement in function of requested days");
+			$this->t_trigger_nbdays = bab_translate("The right is displayed if the user has requested");
+			$this->t_between = bab_translate("between");
+			$this->t_and = bab_translate("and");
+			$this->t_vacation_type = bab_translate("vacation of type");
 			$this->t_zoneapplication = bab_translate("Zone of application of the rule");
-			$this->t_validoverlap = bab_translate("Request is valid when the request period is");
+			$this->t_validoverlap = bab_translate("Allow overlap between the request period and the test period");
 			$this->t_inperiod_strict = bab_translate("in zone of application");
 			$this->t_inperiod_or_overlap = bab_translate("in or overlap zone of application");
 
-			$this->t_assignment = bab_translate("Personnel assignement");
+			$this->t_assignment = bab_translate("Personnel assignement :");
 			$this->t_assignment_type = bab_translate("Assignement type");
 			$this->t_by_user = bab_translate("By user");
 			$this->t_by_coll = bab_translate("By collection");
@@ -765,13 +771,13 @@ function addModifyVacationRigths($id = false)
 			if( $id )
 				{
 				if( $this->arr['righttype'] == '2' )
-					$this->rightypes = array(2=>bab_translate("Fixed dates"));
+					$this->rightypes = array(2 => bab_translate("Fixed dates"));
 				else
-					$this->rightypes = array(0=> "", 1=> bab_translate("Use rules"));
+					$this->rightypes = array(1 => bab_translate("Default"));
 				}
 			else
 				{
-				$this->rightypes = array(0=> "", 1 => bab_translate("Use rules"), 2 => bab_translate("Fixed dates"));
+				$this->rightypes = array( 1 => bab_translate("Default"), 2 => bab_translate("Fixed dates"));
 				}
 
 
@@ -1878,7 +1884,7 @@ function rightcopy() {
 
 		function transform_row(&$row) {
 
-			
+			$row['id_user']				= $GLOBALS['BAB_SESS_USERID'];
 
 			$row['date_entry']			= date('Y-m-d');
 			$row['date_begin']			= $this->increment_ISO($row['date_begin']);
@@ -1889,6 +1895,11 @@ function rightcopy() {
 			$row['date_begin_fixed']	= $this->increment_ISO($row['date_begin_fixed']);
 
 
+			if ($row['date_begin_valid'] > date('Y-m-d') || date('Y-m-d') > $row['date_end_valid']) {
+				$row['active'] = 'N';
+			}
+
+
 			$row['description'] = preg_replace_callback("/\d{4}/", 
 				create_function(
 				   '$matches',
@@ -1896,15 +1907,7 @@ function rightcopy() {
 				 ),
 				$row['description'] 
 			);
-/*
-			if (preg_match_all("/\d{4}/", $row['description'], $matches)) {
-				for($i = 0; $i < count($matches[0]); $i++) {
-					$current_year = $matches[0][$i];
-					$new_year = $current_year + $this->increment;
-					$row['description'] = preg_replace("/".preg_quote($current_year,"/")."/", $new_year, $row['description']);
-				}
-			}
-*/
+
 			$res = $this->db->db_query("
 			SELECT COUNT(*) FROM ".BAB_VAC_RIGHTS_TBL." 
 			WHERE 
@@ -1940,6 +1943,17 @@ function rightcopy() {
 			$this->nb_right_insert++;
 
 			$new_id_right = $this->db->db_insert_id();
+
+
+			$res = $this->db->db_query("SELECT * FROM ".BAB_VAC_RIGHTS_RULES_TBL." WHERE id_right=".$db->quote($old_id_right));
+			if ($rule = $this->db->db_fetch_assoc($res)) {
+				unset($rule['id']);
+				$rule['id_right'] = $new_id_right;
+				$rule['period_start']	= $this->increment_ISO($rule['period_start']);
+				$rule['period_end']		= $this->increment_ISO($rule['period_end']);
+				$this->db->db_query("INSERT INTO ".BAB_VAC_RIGHTS_RULES_TBL." (".implode(',',array_keys($rule)).") VALUES (".$this->db->quote($rule).")");
+			}
+
 
 			$this->db->db_query("INSERT INTO ".BAB_VAC_USERS_RIGHTS_TBL." (id_user, id_right, quantity) SELECT 
 				id_user, 
@@ -2125,12 +2139,6 @@ switch($idx)
 		$babBody->title = bab_translate("Rights renewal by years");
 		$babBody->addItemMenu('copy', bab_translate("Rights renewal"), $GLOBALS['babUrlScript']."?tg=vacadma&idx=rgroupmod");
 		rightcopy();
-		break;
-
-	case 'copy2':
-		$babBody->title = bab_translate("Rights renewal by years");
-		$babBody->addItemMenu('copy2', bab_translate("Rights renewal"), $GLOBALS['babUrlScript']."?tg=vacadma&idx=rgroupmod");
-		rightcopy2();
 		break;
 
 	case "lrig":

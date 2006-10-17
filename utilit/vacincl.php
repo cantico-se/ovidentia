@@ -2192,6 +2192,7 @@ function bab_vac_shortDate($timestamp) {
  * Delete vacation request
  * notify user if vacation not elapsed
  * delete approbation instance
+ * Update calendar
  * @param int $id_request
  */
 function bab_vac_delete_request($id_request)
@@ -2199,14 +2200,31 @@ function bab_vac_delete_request($id_request)
 	notifyOnRequestChange($id_request, true);
 
 	$db = &$GLOBALS['babDB'];
-	$db->db_query("DELETE FROM ".BAB_VAC_ENTRIES_ELEM_TBL." WHERE id_entry='".$db->quote($id_request)."'");
+	$db->db_query("DELETE FROM ".BAB_VAC_ENTRIES_ELEM_TBL." WHERE id_entry=".$db->quote($id_request)."");
 
-	list($idfai) = $db->db_fetch_array($db->db_query("SELECT idfai FROM ".BAB_VAC_ENTRIES_TBL." WHERE id='".$db->quote($id_request)."'"));
+	$arr = $db->db_fetch_assoc($db->db_query("
+		SELECT idfai, id_user, date_begin, date_end  
+			FROM ".BAB_VAC_ENTRIES_TBL." 
+			WHERE id=".$db->quote($id_request)));
+
+
+	include_once $GLOBALS['babInstallPath']."utilit/dateTime.php";
+
+	$date_begin = BAB_DateTime::fromIsoDateTime($event['date_begin']);
+	$date_end	= BAB_DateTime::fromIsoDateTime($event['date_end']);
+
+	while ($date_begin->getTimeStamp() <= $date_end->getTimeStamp()) {
+		$month	= $date_begin->getMonth();
+		$year	= $date_begin->getYear();
+		bab_vac_updateCalendar($event['id_user'], $year, $month);
+		$date_begin->add(1, BAB_DATETIME_MONTH);
+	}
 	
-	if ($idfai > 0)
-		deleteFlowInstance($idfai);
+	
+	if ($arr['idfai'] > 0)
+		deleteFlowInstance($arr['idfai']);
 
-	$db->db_query("DELETE FROM ".BAB_VAC_ENTRIES_TBL." WHERE id='".$db->quote($id_request)."'");
+	$db->db_query("DELETE FROM ".BAB_VAC_ENTRIES_TBL." WHERE id=".$db->quote($id_request));
 }
 
 

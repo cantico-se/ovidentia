@@ -491,12 +491,13 @@ function bab_debug_print_backtrace($echo = false)
 
 	$display = implode("\n", $calls);
 
-	if ($echo && bab_isUserAdministrator()) {
-		echo '<pre>'.$display.'</pre>';
-	} else {
-		bab_debug($display);
+	if (function_exists('bab_isUserAdministrator')) {
+		if ($echo && bab_isUserAdministrator()) {
+			echo '<pre>'.$display.'</pre>';
+		} else {
+			bab_debug($display);
+		}
 	}
-
 	
 }
 

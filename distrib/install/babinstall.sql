@@ -862,7 +862,7 @@ CREATE TABLE `bab_sites` (
   `stat_update_time` datetime NOT NULL default '0000-00-00 00:00:00',
   `workdays` varchar(20) NOT NULL default '',
   `dispdays` varchar(20) NOT NULL default '',
-  `startday` tinyint(4) NOT NULL default '0',
+  `startday` tinyint(4) NOT NULL default '1',
   `user_workdays` enum('Y','N') NOT NULL default 'Y',
   `stat_log` enum('Y','N') NOT NULL default 'N',
   PRIMARY KEY  (`id`),
@@ -870,7 +870,7 @@ CREATE TABLE `bab_sites` (
 );
 
 
-INSERT INTO bab_sites (id, name, description, lang, adminemail,  adminname, skin, style, workdays, dispdays, startday ) values ('1', 'Ovidentia', 'Ovidentia site', 'en', 'admin@your-domain.com', 'Ovidentia Administrator', 'ovidentia_sw', 'ovidentia.css', '1,2,3,4,5', '1,2,3,4,5','0');
+INSERT INTO bab_sites (id, name, description, lang, adminemail,  adminname, skin, style, workdays, dispdays, startday ) values ('1', 'Ovidentia', 'Ovidentia site', 'en', 'admin@your-domain.com', 'Ovidentia Administrator', 'ovidentia_sw', 'ovidentia.css', '1,2,3,4,5', '1,2,3,4,5','1');
 
 
 # --------------------------------------------------------
@@ -3356,25 +3356,35 @@ CREATE TABLE bab_tskmgr_tasks_responsibles (
 # --------------------------------------------------------
 
 # 
-# Structure de la table `bab_tskmgr_week_days`
+# Structure de la table `bab_week_days`
 # 
 
-CREATE TABLE bab_tskmgr_week_days (
-  id int(10) unsigned NOT NULL auto_increment,
-  weekDay tinyint(3) unsigned NOT NULL default '0',
-  position tinyint(3) unsigned NOT NULL default '0',
-  PRIMARY KEY  (id),
-  KEY weekDay (weekDay),
-  KEY position (position)
+CREATE TABLE `bab_week_days` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `weekDay` tinyint(3) unsigned NOT NULL default '0',
+  `position` tinyint(3) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`id`),
+  KEY `weekDay` (`weekDay`),
+  KEY `position` (`position`)
 ) ;
+
+
+INSERT INTO `bab_week_days` (`id`, `weekDay`, `position`) VALUES 
+(1, 0, 6),
+(2, 1, 0),
+(3, 2, 1),
+(4, 3, 2),
+(5, 4, 3),
+(6, 5, 4),
+(7, 6, 5);
 
 # --------------------------------------------------------
 
 # 
-# Structure de la table `bab_tskmgr_working_hours`
+# Structure de la table `bab_working_hours`
 # 
 
-CREATE TABLE bab_tskmgr_working_hours (
+CREATE TABLE bab_working_hours (
   id int(10) unsigned NOT NULL auto_increment,
   weekDay int(10) unsigned NOT NULL default '0',
   idUser int(10) unsigned NOT NULL default '0',
@@ -3384,6 +3394,14 @@ CREATE TABLE bab_tskmgr_working_hours (
   KEY startHour (startHour),
   KEY endHour (endHour)
 ) ;
+
+
+INSERT INTO `bab_working_hours` (`id`, `weekDay`, `idUser`, `startHour`, `endHour`) VALUES 
+(63, 5, 0, '00:00:00', '24:00:00'),
+(62, 4, 0, '00:00:00', '24:00:00'),
+(61, 3, 0, '00:00:00', '24:00:00'),
+(60, 2, 0, '00:00:00', '24:00:00'),
+(59, 1, 0, '00:00:00', '24:00:00');
 
 # --------------------------------------------------------
 
