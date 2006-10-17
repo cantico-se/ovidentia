@@ -1097,6 +1097,7 @@ class bab_OrgChartElement extends bab_TreeViewElement
 	 * @access private
 	 */	
 	var $_members;
+	var $_linkEntity;
 	/**#@-*/
 	
 	/**
@@ -1120,6 +1121,16 @@ class bab_OrgChartElement extends bab_TreeViewElement
 		}
 		$this->_members[$role][] = $memberName;
 	}
+
+	/**
+	 * Defines the url link when the entity is clicked.
+	 * @param string $url
+	 */
+	function setLinkEntity($url)
+	{
+		$this->_linkEntity = $url;
+	}
+
 }
 
 
@@ -1146,6 +1157,8 @@ class bab_OrgChart extends bab_TreeView
 	
 	var $t_nbMembers;
 	var $t_memberName;
+
+	var $t_linkEntity;
 	/**#@-*/
 	
 	
@@ -1272,6 +1285,7 @@ class bab_OrgChart extends bab_TreeView
 			$this->t_title =& $element->_title;
 			$this->t_description =& $element->_description;
 			$this->t_link =& $element->_link;
+			$this->t_linkEntity =& $element->_linkEntity;
 			$this->t_info =& $element->_info;
 			$this->t_nodeIcon =& $element->_icon;
 			$this->_currentElement =& $element;
@@ -2225,10 +2239,11 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
 					}
 					$element->setInfo($memberName);
 					$element->setLink("javascript:flbhref('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&idx=detr&ocid=" . $this->_orgChartId . "&oeid=" . $entity['id'] . "&iduser=" . $memberDirectoryEntryId . "');changestyle('ENT" . $entity['id'] . "','BabLoginMenuBackground','BabTopicsButtonBackground');updateFltFrame('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&rf=0&ocid=" . $this->_orgChartId . "&oeid=" . $entity['id'] . "&idx=listr');");
-					
 				}
 				$element->addMember($memberName, $member['role_name']);
 			}
+			$element->setLinkEntity("javascript:updateFlbFrame('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&rf=0&ocid=" . $this->_orgChartId . "&oeid=" . $entity['id'] . "&idx=detr');updateFltFrame('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&rf=0&ocid=" . $this->_orgChartId . "&oeid=" . $entity['id'] . "&idx=listr');changestyle('ENT" . $entity['id'] . "','BabLoginMenuBackground','BabTopicsButtonBackground');");
+
 			$element->addAction('show_from_here', bab_translate("Show from here"), $GLOBALS['babSkinPath'] . 'images/Puces/bottom.png', $GLOBALS['babUrlScript'] . '?tg=' . bab_rp('tg') . '&idx' . bab_rp('idx') . '&ocid=' . $this->_orgChartId . '&oeid=' . $entity['id'] . '&disp=disp3', '');
 			$element->addAction('toggle_members', bab_translate("Members"), $GLOBALS['babSkinPath'] . 'images/Puces/members.png', '', 'toggleMembers');
 			if ($this->_adminMode) {
