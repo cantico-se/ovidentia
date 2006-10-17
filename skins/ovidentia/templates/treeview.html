@@ -270,10 +270,10 @@ top.flb.document.location.href=url;
   <!--#if t_nodeIcon -->
   <table width="100%" cellspacing="0" cellpadding="0" border="0" style="margin: 0; padding: 0"><tr>
   <td width="1%"><img class="icon" src="{ t_nodeIcon }" /></td>
-  <td><b>{ t_title }</b><br /><a name="{ t_id }" href="{ t_link }"><!--#if t_info -->{ t_info }<!--#else t_info -->&nbsp;<!--#endif t_info --></a></td>
+  <td><b>{ t_title }</b><br /><a name="{ t_id }" <!--#if t_link --> href="{ t_link }" <!--#endif t_link --> ><!--#if t_info -->{ t_info }<!--#else t_info -->&nbsp;<!--#endif t_info --></a></td>
   </tr></table>
   <!--#else t_nodeIcon -->
- <b>{ t_title }</b><br /><a name="{ t_id }" href="{ t_link }"><!--#if t_info -->{ t_info }<!--#else t_info -->&nbsp;<!--#endif t_info --></a>
+ <b>{ t_title }</b><br /><a name="{ t_id }" <!--#if t_link --> href="{ t_link }" <!--#endif t_link --> ><!--#if t_info -->{ t_info }<!--#else t_info -->&nbsp;<!--#endif t_info --></a>
   <!--#endif t_nodeIcon -->
 
   <div class="actions">
@@ -320,10 +320,10 @@ top.flb.document.location.href=url;
   <!--#if t_nodeIcon -->
   <table width="100%" cellspacing="0" cellpadding="0" border="0" style="margin: 0; padding: 0"><tr>
   <td width="1%"><img class="icon" src="{ t_nodeIcon }" /></td>
-  <td><b>{ t_title }</b><br /><a name="{ t_id }" href="{ t_link }"><!--#if t_info -->{ t_info }<!--#else t_info -->&nbsp;<!--#endif t_info --></a></td>
+  <td><b>{ t_title }</b><br /><a name="{ t_id }" <!--#if t_link --> href="{ t_link }" <!--#endif t_link --> ><!--#if t_info -->{ t_info }<!--#else t_info -->&nbsp;<!--#endif t_info --></a></td>
   </tr></table>
   <!--#else t_nodeIcon -->
-  <b>{ t_title }</b><br /><a name="{ t_id }" href="{ t_link }"><!--#if t_info -->{ t_info }<!--#else t_info -->&nbsp;<!--#endif t_info --></a>
+  <b>{ t_title }</b><br /><a name="{ t_id }" <!--#if t_link --> href="{ t_link }" <!--#endif t_link --> ><!--#if t_info -->{ t_info }<!--#else t_info -->&nbsp;<!--#endif t_info --></a>
   <!--#endif t_nodeIcon -->
 
   <div class="actions">
