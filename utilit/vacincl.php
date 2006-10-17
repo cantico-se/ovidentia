@@ -2134,8 +2134,6 @@ function bab_vac_updateCalendar($id_user, $year, $month) {
 		$id_entry	= 0;
 		$color		= '';
 		$type		= $p->type;
-		
-		$key = date('Ymda',$p->ts_begin);
 
 		if (isset($is_free[$key])) {
 			if (BAB_PERIOD_VACATION === $p->type) { 
@@ -2210,8 +2208,8 @@ function bab_vac_delete_request($id_request)
 
 	include_once $GLOBALS['babInstallPath']."utilit/dateTime.php";
 
-	$date_begin = BAB_DateTime::fromIsoDateTime($event['date_begin']);
-	$date_end	= BAB_DateTime::fromIsoDateTime($event['date_end']);
+	$date_begin = BAB_DateTime::fromIsoDateTime($arr['date_begin']);
+	$date_end	= BAB_DateTime::fromIsoDateTime($arr['date_end']);
 
 	while ($date_begin->getTimeStamp() <= $date_end->getTimeStamp()) {
 		$month	= $date_begin->getMonth();

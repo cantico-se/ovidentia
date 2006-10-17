@@ -404,7 +404,7 @@ class bab_Tree
 
 	function removeNode($nodeId)
 	{
-		if (!isset($this->nodes[$nodeId]))
+		if (!isset($this->nodes[$nodeId]) || !isset($this->nodes[$this->nodes[$nodeId]->parentId]) )
 			return;
 		$node =& $this->nodes[$nodeId];
 		$parent =& $this->nodes[$node->parentId];

@@ -7304,12 +7304,12 @@ function upgrade601to602()
 
 
 	// working days
+	$db->db_query("DELETE FROM ".BAB_WORKING_HOURS_TBL);
 
 	function setUserWd($id_user, $WDStr) {
 		$awd = explode(',',$WDStr);
 
 		$db = &$GLOBALS['babDB'];
-		$db->db_query("DELETE FROM ".BAB_WORKING_HOURS_TBL." WHERE idUser=".$db->quote($id_user));
 		foreach($awd as $d) {
 			$db->db_query("INSERT INTO ".BAB_WORKING_HOURS_TBL."( weekDay, idUser,  startHour, endHour) VALUES (".$db->quote($d).','.$db->quote($id_user).", '00:00:00', '24:00:00')");
 		}
@@ -7320,8 +7320,9 @@ function upgrade601to602()
 	setUserWd(0, $arr['workdays']);
 
 	$res = $db->db_query("SELECT id_user, workdays FROM ".BAB_CAL_USER_OPTIONS_TBL." WHERE workdays<>".$db->quote($arr['workdays']));
-	$arr = $db->db_fetch_assoc($res);
-	setUserWd($arr['id_user'], $arr['workdays']);
+	while($arr = $db->db_fetch_assoc($res)) {
+		setUserWd($arr['id_user'], $arr['workdays']);
+	}
 
 	if (!bab_isTableField(BAB_COMMENTS_TBL, 'id_author')) {
 

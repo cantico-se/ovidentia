@@ -1619,6 +1619,12 @@ function updateVacationRight()
 			}
 		else // rules
 			{
+			$validoverlap = isset($post['validoverlap']) ? 1 : 0;
+			$trigger_inperiod = isset($post['trigger_inperiod']) ? $post['trigger_inperiod'] : 0;
+			$trigger_type = isset($post['trigger_type']) ? $post['trigger_type'] : 0;
+			$right_inperiod = isset($post['right_inperiod']) ? $post['right_inperiod'] : 0;
+
+
 			$res = $babDB->db_query("SELECT id FROM ".BAB_VAC_RIGHTS_RULES_TBL." WHERE id_right=".$babDB->quote($id));
 			if ($babDB->db_num_rows($res) > 0)
 				{
@@ -1628,12 +1634,12 @@ function updateVacationRight()
 						SET 
 							period_start		=".$babDB->quote($post['period_start']).", 
 							period_end			=".$babDB->quote($post['period_end']).",
-							validoverlap		=".$babDB->quote($post['validoverlap']).",
+							validoverlap		=".$babDB->quote($validoverlap).",
 							trigger_nbdays_min	=".$babDB->quote($post['trigger_nbdays_min']).",
 							trigger_nbdays_max	=".$babDB->quote($post['trigger_nbdays_max']).", 
-							trigger_inperiod	=".$babDB->quote($post['trigger_inperiod']).", 
-							trigger_type		=".$babDB->quote($post['trigger_type']).", 
-							right_inperiod		=".$babDB->quote($post['right_inperiod'])." 
+							trigger_inperiod	=".$babDB->quote($trigger_inperiod).", 
+							trigger_type		=".$babDB->quote($trigger_type).", 
+							right_inperiod		=".$babDB->quote($right_inperiod)." 
 						WHERE 
 							id=".$babDB->quote($id_rule)."
 						");
@@ -1657,12 +1663,12 @@ function updateVacationRight()
 							( ".$babDB->quote($id).",
 							".$babDB->quote($post['period_start']).", 
 							".$babDB->quote($post['period_end']).", 
-							".$babDB->quote($post['validoverlap']).", 
+							".$babDB->quote($validoverlap).", 
 							".$babDB->quote($post['trigger_nbdays_min']).", 
 							".$babDB->quote($post['trigger_nbdays_max']).", 
-							".$babDB->quote($post['trigger_inperiod']).", 
-							".$babDB->quote($post['trigger_type']).", 
-							".$babDB->quote($post['right_inperiod'])." 
+							".$babDB->quote($trigger_inperiod).", 
+							".$babDB->quote($trigger_type).", 
+							".$babDB->quote($right_inperiod)." 
 							)
 						");
 				}
@@ -1884,7 +1890,7 @@ function rightcopy() {
 
 		function transform_row(&$row) {
 
-			$row['id_user']				= $GLOBALS['BAB_SESS_USERID'];
+			$row['id_creditor']			= $GLOBALS['BAB_SESS_USERID'];
 
 			$row['date_entry']			= date('Y-m-d');
 			$row['date_begin']			= $this->increment_ISO($row['date_begin']);
@@ -1945,7 +1951,7 @@ function rightcopy() {
 			$new_id_right = $this->db->db_insert_id();
 
 
-			$res = $this->db->db_query("SELECT * FROM ".BAB_VAC_RIGHTS_RULES_TBL." WHERE id_right=".$db->quote($old_id_right));
+			$res = $this->db->db_query("SELECT * FROM ".BAB_VAC_RIGHTS_RULES_TBL." WHERE id_right=".$this->db->quote($old_id_right));
 			if ($rule = $this->db->db_fetch_assoc($res)) {
 				unset($rule['id']);
 				$rule['id_right'] = $new_id_right;
