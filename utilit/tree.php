@@ -1,7 +1,7 @@
 <?php
 //-------------------------------------------------------------------------
 // OVIDENTIA http://www.ovidentia.org
-//
+//"admin/admfaq.php"
 // Ovidentia is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2, or (at your option)
@@ -327,7 +327,7 @@ class bab_Node
 	 * @param bab_Node $oldNode
 	 * @return bab_Node The node replaced.
 	 */
-	function &replaceChild(&$newNode, &$oldNode) // TODO Finish
+	function &replaceChild(&$newNode, &$oldNode)
 	{
 		$newNode->_parent =& $this;
 
@@ -782,6 +782,15 @@ class bab_TreeViewElement extends bab_Widget
 	}
 
 	/**
+	 * Defines the url link when the element is clicked.
+	 * @param string $url
+	 */
+	function setLink($url)
+	{
+		$this->_link = $url;
+	}
+
+	/**
 	 * Defines the url of the treeview element icon.
 	 * @param string $url
 	 */
@@ -844,6 +853,7 @@ class bab_TreeView extends bab_Widget
 
 	var $t_treeViewId;
 	var $t_id;
+	var $t_previousId;
 	var $t_type;
 	var $t_title;
 	var $t_description;
@@ -993,6 +1003,7 @@ class bab_TreeView extends bab_Widget
 				
 			$this->t_level = $this->_iterator->level();
 			$element =& $node->getData();
+			$this->t_previousId = $this->t_id;
 			$this->t_id = $this->_id . '.' . $element->_id;
 			$this->t_type =& $element->_type;
 			$this->t_title =& $element->_title;
@@ -1122,7 +1133,14 @@ class bab_OrgChart extends bab_TreeView
 	 * @access private
 	 */	
 	var $_verticalThreshold;
+	var $_startLevel;
+	
+	var $_openNodes;
+	var $_openMembers;
 
+	var $t_zoomFactor;
+	
+	var $t_nodeId;
 	var $t_layout;
 	var $t_previousLayout;
 	
@@ -1135,14 +1153,18 @@ class bab_OrgChart extends bab_TreeView
 	 * @param string $id A unique treeview id in the page. Must begin with a letter ([A-Za-z]) and may be followed by any number of letters, digits ([0-9]), hyphens ("-"), underscores ("_"), colons (":"), and periods (".").
 	 * @return bab_OrgChart
 	 */
-	function bab_OrgChart($id)
+	function bab_OrgChart($id, $startLevel = 0)
 	{
 		parent::bab_TreeView($id);
 		$this->_verticalThreshold = 4;
+		$this->_startLevel = $startLevel;
 		$this->_templateFile = 'treeview.html';
 		$this->_templateSection = 'orgchart';
 		$this->_templateCss = 'orgchart_css';
 		$this->_templateScripts = 'orgchart_scripts';
+		$this->_openNodes = array();
+		$this->_openMembers = array();
+		$this->_zoomFactor = 1.0;
 	}
 
 	/**
@@ -1159,6 +1181,24 @@ class bab_OrgChart extends bab_TreeView
 		return $element;
 	}
 
+	
+	function setOpenNodes($openNodes)
+	{
+		$this->_openNodes = $openNodes;
+		reset($this->_openNodes);
+	}
+
+
+	function setOpenMembers($openMembers)
+	{
+		$this->_openMembers = $openMembers;
+		reset($this->_openMembers);
+	}
+
+	function setZoomFactor($zoomFactor)
+	{
+		$this->t_zoomFactor = $zoomFactor;
+	}
 	/**
 	 * Defines the depth level from which the org chart branches are displayed vertically.
 	 * @access public
@@ -1172,8 +1212,31 @@ class bab_OrgChart extends bab_TreeView
 	 * Template methods.
 	 * @ignore
 	 */	
+	
+	function getNextOpenNode()
+	{
+		while (list(, $nodeId) = each($this->_openNodes)) {
+			$this->t_nodeId = $nodeId;
+			return true;	
+		}
+		reset($this->_openNodes);
+		return false;
+	}
+
+	function getNextOpenMember()
+	{
+		while (list(, $nodeId) = each($this->_openMembers)) {
+			$this->t_memberId = $nodeId;
+			return true;	
+		}
+		reset($this->_openMembers);
+		return false;
+	}
+
 	function getNextElement()
 	{
+		$verticalThreshold = $this->_verticalThreshold - $this->_startLevel;
+		
 		if (is_null($this->_iterator)) {
 			$this->_iterator = $this->_rootNode->createNodeIterator($this->_rootNode);
 			$this->_iterator->nextNode();
@@ -1182,17 +1245,17 @@ class bab_OrgChart extends bab_TreeView
 		}
 		$this->t_levelVariation = $this->t_level - $this->t_previousLevel;
 		if ($this->t_levelVariation < -1) {
-			$this->t_previousLayout = ($this->t_previousLevel >= $this->_verticalThreshold ? 'vertical' : 'horizontal');
+			$this->t_previousLayout = ($this->t_previousLevel >= $verticalThreshold ? 'vertical' : 'horizontal');
 			$this->t_previousLevel--;
-			$this->t_layout = ($this->t_previousLevel >= $this->_verticalThreshold ? 'vertical' : 'horizontal');
+			$this->t_layout = ($this->t_previousLevel >= $verticalThreshold ? 'vertical' : 'horizontal');
 			return true;
 		}
 
-		$this->t_previousLayout = ($this->t_previousLevel >= $this->_verticalThreshold ? 'vertical' : 'horizontal');
+		$this->t_previousLayout = ($this->t_previousLevel >= $verticalThreshold ? 'vertical' : 'horizontal');
 		
 		$this->t_previousLevel = $this->t_level;
 
-		$this->t_layout = ($this->t_previousLevel >= $this->_verticalThreshold ? 'vertical' : 'horizontal');
+		$this->t_layout = ($this->t_previousLevel >= $verticalThreshold ? 'vertical' : 'horizontal');
 
 		if ($node =& $this->_iterator->nextNode()) {
 			$this->t_isFirstChild = $node->isFirstChild();
@@ -1202,6 +1265,7 @@ class bab_OrgChart extends bab_TreeView
 			
 				
 			$this->t_level = $this->_iterator->level();
+			$this->t_total_level = $this->t_level + $this->_startLevel;
 			$element =& $node->getData();
 			$this->t_id = $this->_id . '.' . $element->_id;
 			$this->t_type =& $element->_type;
@@ -1395,8 +1459,8 @@ class bab_ArticleTreeView extends bab_TreeView
 		if ($start || $end) {
 			$sql .= ' WHERE ';
 			$where = array();
-			$start && $where[] = 'st_date >= \'' . $start . '\'';
-			$end && $where[] = 'st_date <= \'' . $end . ' 23:59:59\'';
+			$start && $where[] = 'st_date >= ' . $this->_db->quote($start);
+			$end && $where[] = 'st_date <= ' . $this->_db->quote($end . ' 23:59:59');
 			$sql .= implode(' AND ', $where);
 		}
 		$sql .= ' GROUP BY id';
@@ -1643,8 +1707,8 @@ class bab_FileTreeView extends bab_TreeView
 		if ($start || $end) {
 			$sql .= ' WHERE ';
 			$where = array();
-			$start && $where[] = 'st_date >= \'' . $start . '\'';
-			$end && $where[] = 'st_date <= \'' . $end . ' 23:59:59\'';
+			$start && $where[] = 'st_date >= ' . $this->_db->quote($start);
+			$end && $where[] = 'st_date <= ' . $this->_db->quote($end . ' 23:59:59');
 			$sql .= implode(' AND ', $where);
 		}
 		$sql .= ' GROUP BY id';
@@ -1810,8 +1874,8 @@ class bab_ForumTreeView extends bab_TreeView
 		if ($start || $end) {
 			$sql .= ' WHERE ';
 			$where = array();
-			$start && $where[] = 'st_date >= \'' . $start . '\'';
-			$end && $where[] = 'st_date <= \'' . $end . ' 23:59:59\'';
+			$start && $where[] = 'st_date >= ' . $this->_db->quote($start);
+			$end && $where[] = 'st_date <= ' . $this->_db->quote($end . ' 23:59:59');
 			$sql .= implode(' AND ', $where);
 		}
 		$sql .= ' GROUP BY id';
@@ -1823,6 +1887,21 @@ class bab_ForumTreeView extends bab_TreeView
 				$element =& $node->getData();
 				$element->setInfo($post['hits']);
 			}
+		}
+
+		// For each forum we calculate the total number of hits for all the posts in the forum.
+
+		// We loop over the forum nodes (ie. the siblings of the root node's first child).		
+		for ($forumNode =& $this->_rootNode->firstChild(); !is_null($forumNode); $forumNode =& $forumNode->nextSibling()) {
+			$total = 0;
+			$iterator = $this->_rootNode->createNodeIterator($forumNode);
+			// We iterate all the nodes under the current forum node and calculate the total hits.
+			while ($node =& $iterator->nextNode()) {
+				if (!is_null($node)) {
+					$total += (int)($node->_data->_info);
+				}
+			}
+			$forumNode->_data->setInfo('' . $total);
 		}
 	}
 
@@ -2012,8 +2091,8 @@ class bab_FaqTreeView extends bab_TreeView
 		if ($start || $end) {
 			$sql .= ' WHERE ';
 			$where = array();
-			$start && $where[] = 'st_date >= \'' . $start . '\'';
-			$end && $where[] = 'st_date <= \'' . $end . ' 23:59:59\'';
+			$start && $where[] = 'st_date >= ' . $this->_db->quote($start);
+			$end && $where[] = 'st_date <= ' . $this->_db->quote($end . ' 23:59:59');
 			$sql .= implode(' AND ', $where);
 		}
 		$sql .= ' GROUP BY id';
@@ -2060,51 +2139,118 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
 	var $_db;
 	var $_babBody;
 	var $_orgChartId; // Ovidentia org chart id
-
-	function bab_OvidentiaOrgChart($id, $orgChartId)
+	var $_startEntityId; 
+	var $_userId;
+	var $_adminMode;
+	
+	var $t_orgChartId;
+	var $t_entityId;
+	var $t_adminMode;
+	var $t_userId;
+	
+	function bab_OvidentiaOrgChart($id, $orgChartId, $startEntityId = 0, $userId = 0, $startLevel = 0, $adminMode = false)
 	{
-		parent::bab_OrgChart($id);
+		parent::bab_OrgChart($id, $startLevel);
 		
 		$this->_db =& $GLOBALS['babDB'];
 		$this->_babBody =& $GLOBALS['babBody'];
-		$this->_orgChartId = $orgChartId;
-	
+		$this->_orgChartId = $this->t_orgChartId = $orgChartId;
+		$this->_startEntityId = $this->t_entityId = $startEntityId;
+		$this->_userId = $this->t_userId = $userId;
+		$this->_adminMode = $this->t_adminMode = $adminMode;
+	}
+
+	function _selectEntities($startNode)
+	{
+		$where = array('trees.id_user = ' . $this->_db->quote($this->_orgChartId));
+		
+		if ($this->_startEntityId != 0) {
+			$sql = 'SELECT trees.lf, trees.lr ';
+			$sql .= ' FROM ' . BAB_OC_TREES_TBL . ' AS trees';
+			$sql .= ' WHERE trees.id_user = ' . $this->_db->quote($this->_orgChartId);
+			$sql .= ' AND trees.id = ' . $this->_db->quote($this->_startEntityId);
+			$trees = $this->_db->db_query($sql);
+			$tree = $this->_db->db_fetch_array($trees);
+			$where[] = '(trees.id = ' . $this->_db->quote($this->_startEntityId) . ' OR (trees.id >= ' . $tree['lf'] . ' AND trees.id <= '  . $tree['lr'] . '))';
+		}
+
+		$sql = 'SELECT * ';
+		$sql .= ' FROM ' . BAB_OC_TREES_TBL . ' AS trees';
+		$sql .= ' LEFT JOIN ' . BAB_OC_ENTITIES_TBL . ' AS entities ON entities.id_node = trees.id';
+
+		$sql .= ' WHERE ' . implode(' AND ', $where);
+//		$sql .= ' ORDER BY trees.id DESC';
+		
+		$entities = $this->_db->db_query($sql);
+		
+		return $entities;
+	}
+
+	function _selectMembers($entityId)
+	{
+		$sql = 'SELECT users.id_user AS id_dir_entry, roles.type AS role_type, roles.name AS role_name';
+		$sql .= ' FROM ' . BAB_OC_ROLES_USERS_TBL . ' AS users';
+		$sql .= ' LEFT JOIN ' . BAB_OC_ROLES_TBL . ' AS roles ON users.id_role = roles.id';
+		$sql .= ' WHERE roles.id_entity = ' . $this->_db->quote($entityId);
+		$sql .= ' AND roles.id_oc = ' . $this->_db->quote($this->_orgChartId);
+		$sql .= ' ORDER BY (roles.type - 1 % 4) ASC'; // We want role types to appear in the order 1,2,3,0
+		
+		$members = $this->_db->db_query($sql);
+		
+		return $members;
 	}
 
 	function _addEntities($startNode)
 	{
 		$entityType = 'entity';
-
-		$sql = 'SELECT * ';
-		$sql .= ' FROM ' . BAB_OC_TREES_TBL . ' AS trees';
-		$sql .= ' LEFT JOIN ' . BAB_OC_ENTITIES_TBL . ' AS entities ON entities.id_node = trees.id';
-		$sql .= ' WHERE trees.id_user = ' . $this->_db->quote($this->_orgChartId);
- 
-		$entities = $this->_db->db_query($sql);
+//		$elementIdPrefix = 'entity' . BAB_TREE_VIEW_ID_SEPARATOR;
+		$elementIdPrefix = 'ENT';
+		
+		$entities = $this->_selectEntities($startNode);
 		while ($entity = $this->_db->db_fetch_array($entities)) {
-			$element =& $this->createElement('entity' . BAB_TREE_VIEW_ID_SEPARATOR . $entity['id'],
+			$element =& $this->createElement($elementIdPrefix . $entity['id'],
 											 $entityType,
 											 bab_toHtml($entity['name']),
 											 '',
 											 '');
-			$element->setInfo();
-			$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
-			$this->appendElement($element, $entity['id_parent'] ? 'entity' . BAB_TREE_VIEW_ID_SEPARATOR .  $entity['id_parent'] : null);
-			
+			$members = $this->_selectMembers($entity['id']);
+			while ($member = $this->_db->db_fetch_array($members)) {
+				$memberDirectoryEntryId = $member['id_dir_entry'];
+				$dirEntry = bab_getDirEntry($member['id_dir_entry'], BAB_DIR_ENTRY_ID/*, $member['id_directory']*/);
+				
+				$memberName = $dirEntry['givenname']['value'] . ' ' . $dirEntry['sn']['value'];
+				if ($member['role_type'] == 1) {
+					if (isset($dirEntry['jpegphoto'])) {
+						$element->setIcon($dirEntry['jpegphoto']['value']);
+					}
+					$element->setInfo($memberName);
+					$element->setLink("javascript:flbhref('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&idx=detr&ocid=" . $this->_orgChartId . "&oeid=" . $entity['id'] . "&iduser=" . $memberDirectoryEntryId . "');changestyle('ENT" . $entity['id'] . "','BabLoginMenuBackground','BabTopicsButtonBackground');updateFltFrame('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&rf=0&ocid=" . $this->_orgChartId . "&oeid=" . $entity['id'] . "&idx=listr');");
+					
+				}
+				$element->addMember($memberName, $member['role_name']);
+			}
+			$element->addAction('show_from_here', bab_translate("Show from here"), $GLOBALS['babSkinPath'] . 'images/Puces/bottom.png', $GLOBALS['babUrlScript'] . '?tg=' . bab_rp('tg') . '&idx' . bab_rp('idx') . '&ocid=' . $this->_orgChartId . '&oeid=' . $entity['id'] . '&disp=disp3', '');
+			$element->addAction('toggle_members', bab_translate("Members"), $GLOBALS['babSkinPath'] . 'images/Puces/members.png', '', 'toggleMembers');
+			if ($this->_update) {
+				$element->addAction('edit', bab_translate("Roles"), $GLOBALS['babSkinPath'] . 'images/Puces/edit.gif', "javascript:updateFltFrame('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&rf=0&ocid=" . $this->_orgChartId . "&oeid=" . $entity['id'] . "&idx=listr');updateFlbFrame('" . $GLOBALS['babUrlScript'] . "?tg=flbchart&rf=0&ocid=" . $this->_orgChartId . "&oeid=" . $entity['id'] . "&idx=listr');", '');
+				$element->addAction('delete', bab_translate("Delete"), $GLOBALS['babSkinPath'] . 'images/Puces/delete.png', "javascript:updateFltFrame('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&rf=0&ocid=" . $this->_orgChartId . "&oeid=" . $entity['id'] . "&idx=listr');updateFlbFrame('" . $GLOBALS['babUrlScript'] . "?tg=flbchart&rf=0&ocid=" . $this->_orgChartId . "&oeid=" . $entity['id'] . "&idx=dele');", '');
+			}
+			$this->appendElement($element, ($entity['id_parent'] == 0 || $entity['id'] == $this->_startEntityId) ? null : $elementIdPrefix . $entity['id_parent']);		
 		}
 	}
+
 	/**
 	 * @access private
 	 */
 	function _updateTree()
 	{
-		$this->_addEntities();
+		$this->_addEntities($this->_startEntityId);
 		parent::_updateTree();
 	}
 }
 
 
-function bab_tree_test()
+function bab_tree_test($entityId)
 {
 	global $babBody;
 	
@@ -2112,18 +2258,19 @@ function bab_tree_test()
 	
 	// Example of custom tree view.
 	//------------------------------
-/*
-	$orgChart = new bab_OrgChart('my_library');
 
+//	$orgChart = new bab_OrgChart('my_library');
+	$orgChart = new bab_TreeView('test');
+	
 	$element =& $orgChart->createElement('mayor', 'entity', 'Laurent LAFON', 'My favorite cookbook', 'http://localhost/mycookbook/index.php');
 	$element->setInfo('Maire');
 	$element->setIcon($GLOBALS['babSkinPath'] . 'images/maire.jpeg');
-	$element->addMember('Catherine GOMEZ', 'Cabinet et Direction');
-	$element->addMember('Claire DEWEERTD-PHLIX', 'Cabinet et Direction');
-	$element->addMember('Dominique MOYSE', 'Cabinet et Direction');
-	$element->addMember('Frédéric PARRINELLO', 'Cabinet et Direction');
-	$element->addMember('Gildas LECOQ', 'Cabinet et Direction');
-	$element->addMember('Sophie MARIN', 'Assistante');
+//	$element->addMember('Catherine GOMEZ', 'Cabinet et Direction');
+//	$element->addMember('Claire DEWEERTD-PHLIX', 'Cabinet et Direction');
+//	$element->addMember('Dominique MOYSE', 'Cabinet et Direction');
+//	$element->addMember('Frédéric PARRINELLO', 'Cabinet et Direction');
+//	$element->addMember('Gildas LECOQ', 'Cabinet et Direction');
+//	$element->addMember('Sophie MARIN', 'Assistante');
 	$orgChart->appendElement($element, null);
 
 	$element =& $orgChart->createElement('book1_1', 'entity', 'Chapter 1', '', 'http://localhost/mycookbook/chapter1.php');
@@ -2163,8 +2310,8 @@ function bab_tree_test()
 
 	$element =& $orgChart->createElement('b', 'entity', 'b', 'Description', 'lien');
 	$element->setInfo('Info');
-	$element->addMember('Jean TOTO');
-	$element->addMember('Marcel TURLUTUTU');
+//	$element->addMember('Jean TOTO');
+//	$element->addMember('Marcel TURLUTUTU');
 	$element->addAction('move_down', 'Move down', $GLOBALS['babSkinPath'] . 'images/Puces/members.png', '', 'alert(\'hello\');');
 	$element->addAction('from_here', 'Show from here', $GLOBALS['babSkinPath'] . 'images/Puces/go-down.png', '', '');
 	$orgChart->appendElement($element, 'book1_2');
@@ -2189,8 +2336,8 @@ function bab_tree_test()
 
 	$element =& $orgChart->createElement('book1_3', 'entity', 'Chapitre 3', 'Description', 'lien');
 	$orgChart->appendElement($element, 'mayor');
-	$element->addMember('Albert TRUCMUCHE de la PALOMBIERE', 'Toto');
-	$element->addMember('Simone MACHIN', 'Toto');
+//	$element->addMember('Albert TRUCMUCHE de la PALOMBIERE', 'Toto');
+//	$element->addMember('Simone MACHIN', 'Toto');
 	
 	$element =& $orgChart->createElement('3.1', 'entity', 'Paragraphe 3.1', 'Description', 'lien');
 	$orgChart->appendElement($element, 'book1_3');
@@ -2200,7 +2347,7 @@ function bab_tree_test()
 	$element->setInfo('Patrice BÉCU');
 	$orgChart->appendElement($element, 'mayor');
 	$element->setIcon($GLOBALS['babSkinPath'] . 'images/dg1.jpeg');
-*/
+
 /*
 	$element->addMember('Patrice BÉCU', 'Directeur générale des services');
 	$element->addMember('Catherine GOMEZ', 'Directeurs');
@@ -2217,10 +2364,13 @@ function bab_tree_test()
 //	while ($node =& $iterator->nextNode()) {
 //		$node->sortChildNodes();
 //	}
-
-	$orgChart = new bab_OvidentiaOrgChart('my_library', 1);
+//	$babBody->babecho('<h2>Exemple de treeview</h2>');
+//	$babBody->babecho($orgChart->printTemplate());
 	
-	$babBody->babecho('<h2>Example of a simple custom tree (<code>bab_TreeView</code>)</h2>');
+
+	$orgChart = new bab_OvidentiaOrgChart('my_library', 1, $entityId, 0);
+	
+	$babBody->babecho('<h2>Exemple d\'organigramme</h2>');
 	$babBody->babecho($orgChart->printTemplate());
 	
 
