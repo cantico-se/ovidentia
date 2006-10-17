@@ -2231,7 +2231,7 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
 			}
 			$element->addAction('show_from_here', bab_translate("Show from here"), $GLOBALS['babSkinPath'] . 'images/Puces/bottom.png', $GLOBALS['babUrlScript'] . '?tg=' . bab_rp('tg') . '&idx' . bab_rp('idx') . '&ocid=' . $this->_orgChartId . '&oeid=' . $entity['id'] . '&disp=disp3', '');
 			$element->addAction('toggle_members', bab_translate("Members"), $GLOBALS['babSkinPath'] . 'images/Puces/members.png', '', 'toggleMembers');
-			if ($this->_update) {
+			if ($this->_adminMode) {
 				$element->addAction('edit', bab_translate("Roles"), $GLOBALS['babSkinPath'] . 'images/Puces/edit.gif', "javascript:updateFltFrame('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&rf=0&ocid=" . $this->_orgChartId . "&oeid=" . $entity['id'] . "&idx=listr');updateFlbFrame('" . $GLOBALS['babUrlScript'] . "?tg=flbchart&rf=0&ocid=" . $this->_orgChartId . "&oeid=" . $entity['id'] . "&idx=listr');", '');
 				$element->addAction('delete', bab_translate("Delete"), $GLOBALS['babSkinPath'] . 'images/Puces/delete.png', "javascript:updateFltFrame('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&rf=0&ocid=" . $this->_orgChartId . "&oeid=" . $entity['id'] . "&idx=listr');updateFlbFrame('" . $GLOBALS['babUrlScript'] . "?tg=flbchart&rf=0&ocid=" . $this->_orgChartId . "&oeid=" . $entity['id'] . "&idx=dele');", '');
 			}
