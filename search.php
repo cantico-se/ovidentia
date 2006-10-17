@@ -1593,7 +1593,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				LEFT JOIN 
 						".BAB_DBDIR_ENTRIES_EXTRA_TBL." t 
 						ON t.id_entry = e.id";
-				if( count($arr_grp) && in_array(BAB_REGISTERED_GROUP, $arr_grp) && empty($id_directory) && ( empty($id_directory) || BAB_REGISTERED_GROUP == $chosen_dir['id']))
+				if( count($arr_grp) && in_array(BAB_REGISTERED_GROUP, $arr_grp) && ( empty($id_directory) || BAB_REGISTERED_GROUP == $chosen_dir['id']))
 					{
 					$req .= " LEFT JOIN ".BAB_USERS_TBL." dis ON dis.id = e.id_user AND dis.disabled='0' ";
 					}
@@ -1776,7 +1776,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			$like = "(";
 			while (list($colname) = $this->db->db_fetch_array($res))
 				{
-				if ($colname != 'id')
+				if ($colname != 'id' && $colname != 'photo_data' && $colname != 'photo_type')
 					{
 					if ($like != "(")
 							$like .= " or ";
