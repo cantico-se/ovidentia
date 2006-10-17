@@ -216,10 +216,12 @@ function bab_setZoom(zoomFactor)
 {
 //	var orgChartDiv = this.getControlledElement();
 	this.style.display = 'none';
-	var tables = this.getElementsByTagName('TABLE');
 	this.zoomFactor = zoomFactor;
 	this.zoomWidget.zoomText.firstChild.nodeValue = parseInt(this.zoomFactor * 100 + 0.5) + "%";
-	tables[0].style.fontSize = this.zoomFactor + 'em';
+	var tables = this.getElementsByTagName('TABLE');
+	try {
+		tables[0].style.fontSize = this.zoomFactor + 'em';
+	} catch(e) { }
 	this.style.display = '';
 }
 
@@ -227,10 +229,12 @@ function bab_zoomIn()
 {
 	var orgChartDiv = this.getControlledElement();
 	orgChartDiv.style.display = 'none';
-	var tables = orgChartDiv.getElementsByTagName('TABLE');
 	orgChartDiv.zoomFactor *= 1.125;
 	this.zoomText.firstChild.nodeValue = parseInt(orgChartDiv.zoomFactor * 100 + 0.5) + "%";
-	tables[0].style.fontSize = orgChartDiv.zoomFactor + 'em';
+	var tables = orgChartDiv.getElementsByTagName('TABLE');
+	try {
+		tables[0].style.fontSize = orgChartDiv.zoomFactor + 'em';
+	} catch(e) { }
 	orgChartDiv.style.display = '';
 }
 
@@ -238,10 +242,12 @@ function bab_zoomOut()
 {
 	var orgChartDiv = this.getControlledElement();
 	orgChartDiv.style.display = 'none';
-	var tables = orgChartDiv.getElementsByTagName('TABLE');
 	orgChartDiv.zoomFactor /= 1.125;
 	this.zoomText.firstChild.nodeValue = parseInt(orgChartDiv.zoomFactor * 100 + 0.5) + "%";
-	tables[0].style.fontSize = orgChartDiv.zoomFactor + 'em';
+	var tables = orgChartDiv.getElementsByTagName('TABLE');
+	try {
+		tables[0].style.fontSize = orgChartDiv.zoomFactor + 'em';
+	} catch(e) { }
 	orgChartDiv.style.display = '';
 }
 
