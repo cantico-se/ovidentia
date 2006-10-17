@@ -22,9 +22,11 @@
 <!--#in getNextCheckBox -->
 <input type="checkbox" name="{ checkbox_name }" />
 <!--#endin getNextCheckBox -->
+<span class="actions" style="background-color: white">
 <!--#in getNextAction -->
-<a href="{ action_url }" title="{ action_caption }"><img src="{ action_icon }" /></a>
+<a class="action" href="{ action_url }" title="{ action_caption }"><img src="{ action_icon }" /></a>
 <!--#endin getNextAction -->
+</span>
 </span>
 <!--#endif t_showRightElements -->
 </div>
@@ -128,11 +130,92 @@ bab_initTrees();
 
 <!--#begin orgchart_scripts -->
 
+<script type="text/javascript" src="{ babInstallPath }scripts/prototype/prototype.js"></script>
+
 <script type="text/javascript" src="{ babSkinPath }templates/orgchart.js"></script>
 <script type="text/javascript">
 <!--
 
+var orgchart = document.getElementById('{ t_treeViewId }');
+orgchart.bab_openNodes = new Array();
+
+<!--#in getNextOpenNode -->
+orgchart.bab_openNodes.push('{ t_nodeId }');
+<!--#endin getNextOpenNode -->
+
+orgchart.bab_openMembers = new Array();
+
+<!--#in getNextOpenMember -->
+orgchart.bab_openMembers.push('{ t_memberId }');
+<!--#endin getNextOpenMember -->
+
+orgchart.zoomFactor = <!--#if t_zoomFactor --> { t_zoomFactor } <!--#else t_zoomFactor --> 1.0 <!--#endif t_zoomFactor -->;
+orgchart.orgChartId = <!--#if t_orgChartId --> { t_orgChartId } <!--#else t_orgChartId --> 1 <!--#endif t_orgChartId -->;
+orgchart.entityId = <!--#if t_entityId --> { t_entityId } <!--#else t_entityId --> 0 <!--#endif t_entityId -->;
+orgchart.userId = <!--#if t_userId --> { t_userId } <!--#else t_userId --> 0 <!--#endif t_userId -->;
+orgchart.adminMode = <!--#if t_adminMode --> true <!--#else t_adminMode --> false <!--#endif t_adminMode -->;
+
+//console && console.time('bab_initOrgChart');
 bab_initOrgChart(document.getElementById('{ t_treeViewId }'));
+//console && console.timeEnd('bab_initOrgChart');
+
+function changestyle(ent,oldstyle,newstyle)
+{
+
+	var ctrlPrefix = 'ENT';
+	var obj = document.getElementById(ent);
+	if (!obj)
+		return;
+	var objtag = obj.tagName;
+	var tas = document.getElementsByTagName(objtag);
+
+	for (i = 0; i < tas.length; i++)
+		{
+		if (tas.item(i).id.substring(0,ctrlPrefix.length) == ctrlPrefix)
+			{
+			var el = document.getElementById(tas.item(i).id);
+			el.className = oldstyle;
+			}
+		}
+obj.className = newstyle;
+}
+
+function left_refresh()
+{
+var left_refresh = top.flb.document.forms.left_refresh;
+if (typeof left_refresh == 'undefined')
+	return true;
+
+var left_refresh_disabled = left_refresh.left_refresh_disabled;
+if ((typeof left_refresh_disabled != 'undefined') && left_refresh_disabled.value==1)
+	{
+	left_refresh_disabled.value=0;
+	return false;
+	}
+else
+	return true;
+}
+
+function updateFlbFrame(url)
+{
+	if (left_refresh()) {
+	//	top.flb.document.location.href='http://lau-cho/ovidentia/index.php?tg=fltchart&rf=0&ocid=1&oeid=' + more;
+		top.flb.document.location.href = url;
+	}
+}
+
+function updateFltFrame(url)
+{
+	if (left_refresh()) {
+	//	top.flt.document.location.href='http://lau-cho/ovidentia/index.php?tg=fltchart&rf=0&ocid=1&oeid=' + more;
+		top.flt.document.location.href = url;
+	}
+}
+
+function flbhref(url)
+{
+top.flb.document.location.href=url;
+}
 
 //-->
 </script>
@@ -145,7 +228,9 @@ bab_initOrgChart(document.getElementById('{ t_treeViewId }'));
 
 <!-- BEGIN ORGCHART -->
 
-<div class="orgchart" class="bab_tree BabLoginCadreBackground" style="position: relative; width: 100%; overflow: auto;" id="{ t_treeViewId }">
+<div class="orgchartcontainer">
+<div class="bab_treeToolbar BabSiteAdminTitleFontBackground"></div>
+<div class="orgchart" class="bab_tree BabLoginCadreBackground" id="{ t_treeViewId }">
 <!--#in getNextElement -->
 
 <!--#if t_previousLayout "== horizontal" -->
@@ -181,22 +266,22 @@ bab_initOrgChart(document.getElementById('{ t_treeViewId }'));
   <!--#endif t_isFirstChild -->
   <!--#endif t_isSingleChild -->
   <!--#endif t_isMiddleChild -->
-  <div class="{ t_type }">
+  <div class="{ t_type }" id="{ t_id }">
   <!--#if t_nodeIcon -->
-  <table width="100%" style="margin: 0; padding: 0"><tr>
+  <table width="100%" cellspacing="0" cellpadding="0" border="0" style="margin: 0; padding: 0"><tr>
   <td width="1%"><img class="icon" src="{ t_nodeIcon }" /></td>
-  <td><b>{ t_title }</b><br />{ t_info }</td>
+  <td><b>{ t_title }</b><br /><a name="{ t_id }" href="{ t_link }"><!--#if t_info -->{ t_info }<!--#else t_info -->&nbsp;<!--#endif t_info --></a></td>
   </tr></table>
   <!--#else t_nodeIcon -->
-  <b>{ t_title }</b><br />{ t_info }
+ <b>{ t_title }</b><br /><a name="{ t_id }" href="{ t_link }"><!--#if t_info -->{ t_info }<!--#else t_info -->&nbsp;<!--#endif t_info --></a>
   <!--#endif t_nodeIcon -->
 
   <div class="actions">
   <!--#in getNextAction -->
-  <a href="{ action_url }" title="{ action_caption }"><img class="action" src="{ action_icon }" /></a>
+  <a href="{ action_url }" title="{ action_caption }" <!--#if action_script --> onclick="return bab_{ action_script }(this);" <!--#endif action_script --> ><img class="action" src="{ action_icon }" /></a>
   <!--#endin getNextAction -->
   </div>
-  
+
   <!--#if t_nbMembers "> 0" -->
   <div class="members">
   <!--#in getNextMemberRole -->
@@ -207,6 +292,7 @@ bab_initOrgChart(document.getElementById('{ t_treeViewId }'));
   <!--#endin getNextMemberRole -->
   </div>
   <!--#endif t_nbMembers -->
+
   </div>
   <!--#endif t_levelVariation -->
 
@@ -230,19 +316,19 @@ bab_initOrgChart(document.getElementById('{ t_treeViewId }'));
   <!--#endif t_isFirstChild -->
   <!--#endif t_isSingleChild -->
   <!--#endif t_isMiddleChild -->
-  <div class="{ t_type }">
+  <div class="{ t_type }" id="{ t_id }">
   <!--#if t_nodeIcon -->
-  <table width="100%" style="margin: 0; padding: 0"><tr>
+  <table width="100%" cellspacing="0" cellpadding="0" border="0" style="margin: 0; padding: 0"><tr>
   <td width="1%"><img class="icon" src="{ t_nodeIcon }" /></td>
-  <td><b>{ t_title }</b><br />{ t_info }</div></td>
+  <td><b>{ t_title }</b><br /><a name="{ t_id }" href="{ t_link }"><!--#if t_info -->{ t_info }<!--#else t_info -->&nbsp;<!--#endif t_info --></a></td>
   </tr></table>
   <!--#else t_nodeIcon -->
-  <b>{ t_title }</b><br />{ t_info }
+  <b>{ t_title }</b><br /><a name="{ t_id }" href="{ t_link }"><!--#if t_info -->{ t_info }<!--#else t_info -->&nbsp;<!--#endif t_info --></a>
   <!--#endif t_nodeIcon -->
 
   <div class="actions">
   <!--#in getNextAction -->
-  <a href="{ action_url }" title="{ action_caption }" <!--#if action_script -->onclick="{ action_script }"<!--#endif action_script -->><img class="action" src="{ action_icon }" /></a>
+  <a href="{ action_url }" title="{ action_caption }" <!--#if action_script --> onclick="return bab_{ action_script }(this);" <!--#endif action_script --> ><img class="action" src="{ action_icon }" /></a>
   <!--#endin getNextAction -->
   </div>
   
@@ -256,12 +342,14 @@ bab_initOrgChart(document.getElementById('{ t_treeViewId }'));
   <!--#endin getNextMemberRole -->
   </div>
   <!--#endif t_nbMembers -->
+
   </div>
   <!--#endif t_levelVariation -->
 
 <!--#endif t_layout -->
 
 <!--#endin getNextElement -->
+</div>
 </div>
 <!-- END ORGCHART -->
 

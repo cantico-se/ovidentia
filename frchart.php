@@ -24,8 +24,10 @@
 include_once "base.php";
 include_once $babInstallPath."utilit/orgincl.php";
 include_once $babInstallPath."utilit/treeincl.php";
+include_once $babInstallPath."utilit/tree.php";
 
 define("ORG_MAX_REQUESTS_LIST", 100);
+
 
 function displayChart($ocid, $oeid, $update, $iduser, $disp='')
 	{
@@ -406,8 +408,37 @@ function printChartNode(&$obj, $id)
 		}
 }
 
+function displayChartTree($ocid, $oeid, $iduser, $adminMode)
+{
+	global $babBody;
+	$orgChart = new bab_OvidentiaOrgChart('orgChart_' . $ocid, $ocid, $oeid, $iduser, 0, $adminMode);
 
-function displayChartTree($ocid, $oeid, $update, $iduser)
+	// 
+	$registry = bab_getRegistryInstance();
+	$registry->changeDirectory('/orgchart/' . $ocid);
+
+	$openNodes = $registry->getValue('open_nodes');
+	if (!is_array($openNodes)) {
+		$openNodes = array();
+	}
+	$orgChart->setOpenNodes($openNodes);
+
+	$openMembers = $registry->getValue('open_members');
+	if (!is_array($openMembers)) {
+		$openMembers = array();
+	}
+	$orgChart->setOpenMembers($openMembers);
+
+	$zoomFactor = (float)$registry->getValue('zoom_factor');
+	$orgChart->setZoomFactor($zoomFactor);
+
+	$babBody->title = '';
+	$babBody->babpopup($orgChart->printTemplate());
+}
+
+
+//TODO REMOVE
+function displayChartTree2($ocid, $oeid, $update, $iduser)
 	{
 	global $babBody;
 	class temp
@@ -1122,6 +1153,7 @@ if( bab_isAccessValid(BAB_OCUPDATE_GROUPS_TBL, $ocid))
 	}
 }
 
+
 if( !$update && !bab_isAccessValid(BAB_OCVIEW_GROUPS_TBL, $ocid))
 {
 	echo bab_translate("Access denied");
@@ -1136,14 +1168,14 @@ $oeid = !isset($oeid)? $_SESSION['BAB_SESS_CHARTOEID-'.$ocid] :$oeid;
 
 
 if(!isset($idx))
-	{
+{
 	$idx = "list";
-	}
+}
 
 if(!isset($disp))
-	{
+{
 	$disp = "disp1";
-	}
+}
 if( $idx == "startn" )
 {
 	changeRootNode($ocid, $oeid);
@@ -1164,6 +1196,22 @@ else if ( $idx == "openn" )
 	openNode($ocid, $oeid);
 	$idx = "list";
 }
+else if ($idx == 'save_state')
+{
+	if (bab_isAccessValid(BAB_OCUPDATE_GROUPS_TBL, $ocid)) {
+		// Only for user with update rights.
+		// Here we store the tree state (open entities(nodes)/open members/zoom factor).
+		$openNodes = explode(',', bab_rp('open_nodes', ''));
+		$openMembers = explode(',', bab_rp('open_members', ''));
+		$zoomFactor = bab_rp('zoom_factor', 1.0);
+		$registry = bab_getRegistryInstance();
+		$registry->changeDirectory('/orgchart/' . $ocid);
+		$registry->setKeyValue('open_nodes', $openNodes);
+		$registry->setKeyValue('open_members', $openMembers);
+		$registry->setKeyValue('zoom_factor', $zoomFactor);
+	}
+	$idx = 'list';
+}
 
 $sess = "BAB_SESS_CHARTDISP-".$ocid;
 if (isset($disp))
@@ -1175,6 +1223,8 @@ elseif( isset($$sess))
 {
 	$disp = $$sess;
 }
+
+
 
 chart_session_oeid($ocid);
 switch($idx)
@@ -1210,13 +1260,14 @@ switch($idx)
 				displayUsersList($ocid, $oeid, $update, $pos, $xf, $q);
 				break;
 			case "disp3":
-				displayChartTree($ocid, $oeid, $update, $iduser);
+				displayChartTree($ocid, $oeid, $iduser, $update);
 				break;
 			default:
-				displayChart($ocid, $oeid, $update, $iduser,$disp);
+				displayChart($ocid, $oeid, $update, $iduser, $disp);
 				break;
 		}
 		break;
 	}
 exit;
+
 ?>
