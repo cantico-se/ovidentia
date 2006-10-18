@@ -261,6 +261,25 @@ class BAB_DateTime
                    - BAB_DateTime::dateToDays($day2, $month2, $year2)));
     }
 
+	/**
+	 * Returns number of days between two given dates
+	 * @param	string	ISO date
+	 * @param	string	ISO date
+	 * @return int  the absolute number of days between the two dates.
+     *               If an error occurs, -1 is returned.
+	 * @access public
+	 * @static
+	 */
+	function dateDiffIso($date1, $date2) {
+
+		list($year1, $month1, $day1) = explode('-',$date1);
+		list($year2, $month2, $day2) = explode('-',$date2);
+
+		return abs((BAB_DateTime::dateToDays($day1, $month1, $year1)
+                   - BAB_DateTime::dateToDays($day2, $month2, $year2)));
+	}
+
+
     /**
      * Converts a date to number of days since a distant unspecified epoch
      *
@@ -473,6 +492,39 @@ class BAB_DateTime
 	}
     
 
+	/**
+	 * intersection of two periods
+	 * All attributes must be ISO date OR ISO datetime
+	 * 
+	 * @param	string		$p1_begin
+	 * @param	string		$p1_end
+	 * @param	string		$p2_begin
+	 * @param	string		$p2_end
+	 * @return	array|false
+	 * @static
+	 */
+	function periodIntersect($p1_begin, $p1_end, $p2_begin, $p2_end) {
+		if ($p1_begin >= $p2_end || $p1_end <= $p2_begin) {
+			return false;
+		}
+
+		$begin = $p1_begin;
+
+		if ($p1_begin < $p2_begin) {
+			$begin = $p2_begin;
+		}
+
+		$end = $p2_end;
+
+		if ($p1_end < $p2_end) {
+			$end = $p1_end;
+		}
+
+		return array(
+			'begin' => $begin, 
+			'end'	=> $end	
+		);
+	}
 
 
 	/**

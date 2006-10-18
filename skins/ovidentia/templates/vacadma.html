@@ -160,9 +160,16 @@ var tb_fixed = document.getElementById('vac_right_fixed');
 
 function calwin(callback)
 {
-    var dummy;
-	Start('{ babUrlScript }?tg=month&ymin=0&ymax=3&callback='+callback , 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');
+    window['bab_vac_cal_callback'] = callback;
+	Start('{ babUrlScript }?tg=month&ymin=0&ymax=3&callback=setDate' , 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');
 }
+
+
+function setDate(day, month, year) {
+	document.forms['rightsedit'].elements[window['bab_vac_cal_callback']].value = day+'-'+month+'-'+year;
+}
+
+
 function validateForm(fr)
 {
 	
@@ -588,6 +595,8 @@ function group_delete_selected() {
 						
 						{ t_and }&nbsp;:&nbsp;<input type="text" name="trigger_nbdays_max" size="5" maxlength="10" value="{ arr[trigger_nbdays_max] }" onBlur="validateNum(this)" />&nbsp;&nbsp;{ t_days }</p>
 						
+						<br />
+						
 						<p>
 							{ t_vacation_type } : 
 							<select name="trigger_type">
@@ -596,24 +605,44 @@ function group_delete_selected() {
 								<option value="{ typeid }">{ typename }</option>
 								<!--#endin getnexttype -->
 							</select>
-							</p>
+						</p>
+
+						<br />
 
 						<p>
-							{ t_trigger_inperiod } :
-							<select name="trigger_inperiod">
-								<option value="0">{ t_all_period }</option>
-								<option value="1">{ t_inperiod }</option>
-								<option value="2">{ t_outperiod2 }</option>
-							</select>
-							</p>
+							{ t_trigger_p1 } : 
+
+							<a href="javascript:calwin('trigger_p1_begin')">{ t_date_begin }</a>
+							<input type="text" name="trigger_p1_begin" size="10" maxlength="10" value="{ arr[trigger_p1_begin] }" />
+							 &nbsp; 
+							<a href="javascript:calwin('trigger_p1_end')">{ t_date_end }</a>
+							<input type="text" name="trigger_p1_end" size="10" maxlength="10" value="{ arr[trigger_p1_end] }" />
+						</p>
+
+						<p>
+							{ t_trigger_p2 } : 
+
+							<a href="javascript:calwin('trigger_p2_begin')">{ t_date_begin }</a>
+							<input type="text" name="trigger_p2_begin" size="10" maxlength="10" value="{ arr[trigger_p2_begin] }" />
+							 &nbsp; 
+							<a href="javascript:calwin('trigger_p2_end')">{ t_date_end }</a>
+							<input type="text" name="trigger_p2_end" size="10" maxlength="10" value="{ arr[trigger_p2_end] }" />
+						</p>
+
+						<!--#if arr[trigger_overlap] -->
+						<p><input type="checkbox" name="trigger_overlap" value="1" checked="checked" /> { t_trigger_overlap } </p>
+						<!--#else arr[trigger_overlap] -->
+						<p><input type="checkbox" name="trigger_overlap" value="1" /> { t_trigger_overlap } </p>
+						<!--#endif arr[trigger_overlap] -->
 
 
 						</fieldset>
 
+						<br />
+
 						<script type="text/javascript">
 						<!--
 						document.forms['rightsedit'].trigger_type.value = '{ arr[trigger_type] }';
-						document.forms['rightsedit'].trigger_inperiod.value = '{ arr[trigger_inperiod] }';
 						document.forms['rightsedit'].right_inperiod.value = '{ arr[right_inperiod] }';
 						-->
 						</script>
@@ -684,36 +713,6 @@ function mmvac(index)
 }
 mmvac(tpsel);
 <!--#endif arr[idvr] -->
-
-function date_begin(day, month, year)
-{
-	document.forms['rightsedit'].elements['date_begin'].value = day+'-'+month+'-'+year;
-}
-
-function date_end(day, month, year)
-{
-	document.forms['rightsedit'].elements['date_end'].value = day+'-'+month+'-'+year;
-}
-
-function date_begin_valid(day, month, year)
-{
-	document.forms['rightsedit'].elements['date_begin_valid'].value = day+'-'+month+'-'+year;
-}
-
-function date_end_valid(day, month, year)
-{
-	document.forms['rightsedit'].elements['date_end_valid'].value = day+'-'+month+'-'+year;
-}
-
-function period_start(day, month, year)
-{
-	document.forms['rightsedit'].elements['period_start'].value = day+'-'+month+'-'+year;
-}
-
-function period_end(day, month, year)
-{
-	document.forms['rightsedit'].elements['period_end'].value = day+'-'+month+'-'+year;
-}
 
 function validateNum(field) {
 	var valid = ".0123456789"

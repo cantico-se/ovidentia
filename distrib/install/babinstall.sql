@@ -2592,8 +2592,12 @@ CREATE TABLE `bab_vac_rights_rules` (
   `trigger_nbdays_min` float NOT NULL default '0',
   `trigger_nbdays_max` float NOT NULL default '0',
   `trigger_type` int(10) unsigned NOT NULL default '0',
-  `trigger_inperiod` tinyint(4) NOT NULL default '0',
   `right_inperiod` tinyint(4) NOT NULL default '0',
+  `trigger_p1_begin` date NOT NULL,
+  `trigger_p1_end` date NOT NULL,
+  `trigger_p2_begin` date NOT NULL,
+  `trigger_p2_end` date NOT NULL,
+  `trigger_overlap` tinyint(3) unsigned NOT NULL,
   PRIMARY KEY  (`id`),
   KEY `id_right` (`id_right`,`period_start`,`period_end`),
   KEY `trigger_type` (`trigger_type`)

@@ -584,7 +584,6 @@ function addModifyVacationRigths($id = false)
 			$this->t_trigger_nbdays_min = bab_translate("Minimum number of days");
 			$this->t_trigger_nbdays_max = bab_translate("Maximum number of days");
 			$this->t_period_rule = bab_translate("in this period");
-			$this->t_trigger_inperiod = bab_translate("of period");
 			$this->t_always = bab_translate("Always");
 			$this->t_all_period = bab_translate("On all right period");
 			$this->t_inperiod = bab_translate("In rule period");
@@ -622,6 +621,10 @@ function addModifyVacationRigths($id = false)
 			$this->t_by_coll = bab_translate("By collection");
 			$this->t_by_group = bab_translate("By groups");
 			$this->t_id_groups = bab_translate("Groups");
+
+			$this->t_trigger_p1 = bab_translate("First period");
+			$this->t_trigger_p2 = bab_translate("Second period");
+			$this->t_trigger_overlap = bab_translate("Use vacation requests witch overlap the test period");
 		
 			$this->t_id_rgroup = bab_translate("Right group");
 			$this->yes = bab_translate("Yes");
@@ -635,9 +638,9 @@ function addModifyVacationRigths($id = false)
 
 			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=vacadma&idx=browt";
 			$this->db = & $GLOBALS['babDB'];
-			$el_to_init = array('idvr', 'id_creditor', 'date_begin', 'date_end', 'quantity', 'id_type', 'description', 'active', 'cbalance','period_start', 'period_end', 'trigger_nbdays_min', 'trigger_nbdays_max', 'trigger_inperiod', 'right_inperiod', 'righttype', 'trigger_type', 'date_begin_valid', 'date_end_valid', 'validoverlap', 'id_rgroup');
+			$el_to_init = array('idvr', 'id_creditor', 'date_begin', 'date_end', 'quantity', 'id_type', 'description', 'active', 'cbalance','period_start', 'period_end', 'trigger_nbdays_min', 'trigger_nbdays_max', 'trigger_p1_begin', 'trigger_p1_end', 'trigger_p2_begin', 'trigger_p2_end', 'right_inperiod', 'righttype', 'trigger_type', 'date_begin_valid', 'date_end_valid', 'validoverlap', 'id_rgroup');
 
-			$dates_to_init = array('date_begin', 'date_end', 'period_start','period_end', 'date_begin_valid', 'date_end_valid');
+			$dates_to_init = array('date_begin', 'date_end', 'period_start','period_end', 'date_begin_valid', 'date_end_valid', 'trigger_p1_begin', 'trigger_p1_end', 'trigger_p2_begin', 'trigger_p2_end');
 			
 			
 			$this->arr['righttype'] = '0';
@@ -655,8 +658,12 @@ function addModifyVacationRigths($id = false)
 						t2.period_end, 
 						t2.trigger_nbdays_min, 
 						t2.trigger_nbdays_max, 
-						t2.trigger_inperiod,
+						t2.trigger_p1_begin,
+						t2.trigger_p1_end,
+						t2.trigger_p2_begin,
+						t2.trigger_p2_end,
 						t2.trigger_type,
+						t2.trigger_overlap,
 						t2.right_inperiod, 
 						t2.validoverlap,
 						t3.name type 
@@ -1326,7 +1333,11 @@ function updateVacationRight()
 			'period_start'		=> 0,
 			'period_end'		=> 0, 
 			'date_begin_valid'	=> 0,
-			'date_end_valid'	=> 0
+			'date_end_valid'	=> 0,
+			'trigger_p1_begin'	=> 0,
+			'trigger_p1_end'	=> 0,
+			'trigger_p2_begin'	=> 0,
+			'trigger_p2_end'	=> 0
 		);
 	
     if( $post['righttype'] == '2')
@@ -1620,9 +1631,9 @@ function updateVacationRight()
 		else // rules
 			{
 			$validoverlap = isset($post['validoverlap']) ? 1 : 0;
-			$trigger_inperiod = isset($post['trigger_inperiod']) ? $post['trigger_inperiod'] : 0;
 			$trigger_type = isset($post['trigger_type']) ? $post['trigger_type'] : 0;
 			$right_inperiod = isset($post['right_inperiod']) ? $post['right_inperiod'] : 0;
+			$trigger_overlap = isset($post['trigger_overlap']) ? 1 : 0;
 
 
 			$res = $babDB->db_query("SELECT id FROM ".BAB_VAC_RIGHTS_RULES_TBL." WHERE id_right=".$babDB->quote($id));
@@ -1635,11 +1646,15 @@ function updateVacationRight()
 							period_start		=".$babDB->quote($post['period_start']).", 
 							period_end			=".$babDB->quote($post['period_end']).",
 							validoverlap		=".$babDB->quote($validoverlap).",
-							trigger_nbdays_min	=".$babDB->quote($post['trigger_nbdays_min']).",
-							trigger_nbdays_max	=".$babDB->quote($post['trigger_nbdays_max']).", 
-							trigger_inperiod	=".$babDB->quote($trigger_inperiod).", 
+							trigger_nbdays_min	=".$babDB->quote((int) $post['trigger_nbdays_min']).",
+							trigger_nbdays_max	=".$babDB->quote((int) $post['trigger_nbdays_max']).", 
 							trigger_type		=".$babDB->quote($trigger_type).", 
-							right_inperiod		=".$babDB->quote($right_inperiod)." 
+							right_inperiod		=".$babDB->quote($right_inperiod).", 
+							trigger_p1_begin	=".$babDB->quote($post['trigger_p1_begin']).", 
+							trigger_p1_end		=".$babDB->quote($post['trigger_p1_end']).",
+							trigger_p2_begin	=".$babDB->quote($post['trigger_p2_begin']).", 
+							trigger_p2_end		=".$babDB->quote($post['trigger_p2_end']).", 
+							trigger_overlap		=".$babDB->quote($trigger_overlap)." 
 						WHERE 
 							id=".$babDB->quote($id_rule)."
 						");
@@ -1655,20 +1670,29 @@ function updateVacationRight()
 							validoverlap, 
 							trigger_nbdays_min, 
 							trigger_nbdays_max, 
-							trigger_inperiod, 
 							trigger_type,
-							right_inperiod 
+							right_inperiod, 
+							trigger_p1_begin, 
+							trigger_p1_end, 
+							trigger_p2_begin, 
+							trigger_p2_end,
+							trigger_overlap 
 							) 
 						VALUES 
-							( ".$babDB->quote($id).",
+							( 
+							".$babDB->quote($id).",
 							".$babDB->quote($post['period_start']).", 
 							".$babDB->quote($post['period_end']).", 
 							".$babDB->quote($validoverlap).", 
-							".$babDB->quote($post['trigger_nbdays_min']).", 
-							".$babDB->quote($post['trigger_nbdays_max']).", 
-							".$babDB->quote($trigger_inperiod).", 
+							".$babDB->quote((int) $post['trigger_nbdays_min']).", 
+							".$babDB->quote((int) $post['trigger_nbdays_max']).", 
 							".$babDB->quote($trigger_type).", 
-							".$babDB->quote($right_inperiod)." 
+							".$babDB->quote($right_inperiod).", 
+							".$babDB->quote($post['trigger_p1_begin']).", 
+							".$babDB->quote($post['trigger_p1_end']).",
+							".$babDB->quote($post['trigger_p2_begin']).", 
+							".$babDB->quote($post['trigger_p2_end']).",
+							".$babDB->quote($trigger_overlap)." 
 							)
 						");
 				}

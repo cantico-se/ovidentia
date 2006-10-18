@@ -166,6 +166,9 @@ function notifyOnRequestChange($id, $delete = false)
  */
 function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $rfrom = 0)
 	{
+
+	include_once $GLOBALS['babInstallPath']."utilit/dateTime.php";	
+
 	$return = array();
 	$begin = $begin ? bab_mktime( $begin ) : $begin;
 	$end = $end ? bab_mktime( $end ) : $end;
@@ -193,7 +196,7 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 					ON rg.id = r.id_rgroup 
 				WHERE t.id = c.id_type 
 					AND c.id_coll=p.id_coll 
-					AND p.id_user='".$id_user."' ";
+					AND p.id_user=".$db->quote($id_user)." ";
 	
 	if( $rfrom == 1 )
 		{
@@ -215,11 +218,17 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 		$access_on_period = false;
 		}
 
-	$req .= " AND ur.id_user='".$id_user."' AND ur.id_right=r.id 	AND r.id_type=t.id 	GROUP BY r.id ORDER BY r.description";
-	$res = $db->db_query($req);
+	$req .= " AND ur.id_user=".$db->quote($id_user)." AND ur.id_right=r.id 	AND r.id_type=t.id 	GROUP BY r.id ORDER BY r.description";
 	
-	while ( $arr = $db->db_fetch_array($res) )
+	
+	
+	$res = $db->db_query($req);
+
+	
+	while ( $arr = $db->db_fetch_assoc($res) )
 		{
+
+		
 		$access = true;
 
 		if( $arr['date_begin_valid'] != '0000-00-00' && (bab_mktime($arr['date_begin_valid']." 00:00:00") > mktime())){
@@ -232,7 +241,7 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 
 		if( !$access )
 			{
-			$db->db_query("update ".BAB_VAC_RIGHTS_TBL." set active='N' where id='".$arr['id']."'");
+			$db->db_query("update ".BAB_VAC_RIGHTS_TBL." set active='N' where id=".$db->quote($arr['id']));
 			}
 
 		
@@ -249,12 +258,12 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 			$endp = bab_mktime($arr['date_end_valid']);
 			}
 		
-		$req = "select sum(el.quantity) total from ".BAB_VAC_ENTRIES_ELEM_TBL." el, ".BAB_VAC_ENTRIES_TBL." e where e.id_user='".$id_user."' and e.status='Y' and el.id_right='".$arr['id']."' and el.id_entry=e.id";
+		$req = "select sum(el.quantity) total from ".BAB_VAC_ENTRIES_ELEM_TBL." el, ".BAB_VAC_ENTRIES_TBL." e where e.id_user=".$db->quote($id_user)." and e.status='Y' and el.id_right=".$db->quote($arr['id'])." and el.id_entry=e.id";
 		$row = $db->db_fetch_array($db->db_query($req));
 				
 		$qdp = isset($row['total'])? $row['total'] : 0;
 
-		$req = "select sum(el.quantity) total from ".BAB_VAC_ENTRIES_ELEM_TBL." el, ".BAB_VAC_ENTRIES_TBL." e where e.id_user='".$id_user."' and e.status='' and el.id_right='".$arr['id']."' and el.id_entry=e.id";
+		$req = "select sum(el.quantity) total from ".BAB_VAC_ENTRIES_ELEM_TBL." el, ".BAB_VAC_ENTRIES_TBL." e where e.id_user=".$db->quote($id_user)." and e.status='' and el.id_right=".$db->quote($arr['id'])." and el.id_entry=e.id";
 		$row = $db->db_fetch_array($db->db_query($req));
 
 		$waiting = isset($row['total'])? $row['total'] : 0;
@@ -267,7 +276,7 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 			{
 			$quantitydays = $arr['quantity'] - $qdp;
 			}	
-
+		
 		if ( !empty($arr['id_right']) )
 			{
 			// rules 
@@ -275,16 +284,10 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 			$period_start = bab_mktime($arr['period_start']);
 			$period_end = bab_mktime($arr['period_end']);
 			
-			$nbdays = round(($endp - $beginp) / 86400);
-
-
 			if ($period_start == -1 || $period_end == -1)
 				continue;
 
-			
-
 			$access = !$access_on_period;
-
 
 			$period_acess = $arr['right_inperiod']+($arr['validoverlap']*10);
 			switch ($period_acess)
@@ -339,20 +342,23 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 			
 			if ( $access )
 				{
+				$p1 = '';
+				$p2 = '';
+				if ('0000-00-00' != $arr['trigger_p1_begin'] && '0000-00-00' != $arr['trigger_p1_end']) {
+					$p1 = "(e.date_begin < ".$db->quote($arr['trigger_p1_end'])." AND e.date_end > ".$db->quote($arr['trigger_p1_begin']).')';
+				}
 
-				switch ($arr['trigger_inperiod'])
-					{
-					case 0: //Sur toute la période du droit
-						$req = " AND e.date_begin >= '".$arr['date_begin']."' AND e.date_end <= '".$arr['date_end']."'";
-						break;
-					case 1: //Dans la période de la règle
-						$req = " AND e.date_begin >= '".$arr['period_start']."' AND e.date_end <= '".$arr['period_end']."'";
-						break;
-					case 2: //En dehors de la période de la règle et dans la période du droit
-						$req = " AND e.date_begin >= '".$arr['date_begin']."' AND e.date_end <= '".$arr['date_end']."'";
-						$req .= " AND ((e.date_begin < '".$arr['period_start']."' AND e.date_end <= '".$arr['period_start']."') OR (e.date_begin >= '".$arr['period_end']."' AND e.date_end > '".$arr['period_end']."'))";
-						break;
-					}
+				if ('0000-00-00' != $arr['trigger_p2_begin'] && '0000-00-00' != $arr['trigger_p2_end']) {
+					$p2 = "(e.date_begin < ".$db->quote($arr['trigger_p2_end'])." AND e.date_end > ".$db->quote($arr['trigger_p2_begin']).')';
+				}
+
+				if ($p1 && $p2) {
+					$req = 'AND ('.$p1.' OR '.$p2.')';
+				} else if ($p1 || $p2) {
+					$req = 'AND '.$p1.$p2;
+				} else {
+					continue;
+				}
 
 				
 				if (!empty($arr['trigger_type']))
@@ -366,17 +372,67 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 					$where = '';
 					}
 				
-				$req = "select sum(el.quantity) total from ".BAB_VAC_ENTRIES_ELEM_TBL." el, ".BAB_VAC_ENTRIES_TBL." e ".$table." where e.id_user='".$id_user."' and e.status='Y' and el.id_entry=e.id ".$req.$where;
+				$req = "SELECT 
+					e.date_begin,
+					e.date_end,
+					sum(el.quantity) total 
+					FROM 
+						".BAB_VAC_ENTRIES_ELEM_TBL." el, 
+						".BAB_VAC_ENTRIES_TBL." e 
+						".$table." 
+					WHERE  
+						e.id_user=".$db->quote($id_user)." 
+						and e.status='Y' 
+						and el.id_entry=e.id 
+						".$req.$where."
+					GROUP BY e.id";
 
+				$nbdays = 0;
+				$res_entry = $db->db_query($req);
+				while ($entry = $db->db_fetch_assoc($res_entry)) {
 
-				list($nbdays) = $db->db_fetch_array($db->db_query($req));
+					list($entry_date_begin) = explode(' ',$entry['date_begin']);
+					list($entry_date_end) = explode(' ',$entry['date_end']);
 
-				if (empty($nbdays))
-					$nbdays = 0;
+					$intersect_p1 = BAB_DateTime::periodIntersect(
+							$entry_date_begin, 
+							$entry_date_end, 
+							$arr['trigger_p1_begin'], 
+							$arr['trigger_p1_end']
+						);
 
-				//if ($nbdays > 0)
-				//	echo $arr['description']." - nb de jours pris : ".$nbdays." min : ".$arr['trigger_nbdays_min']." max : ".$arr['trigger_nbdays_max']."\n";
+					if (false !== $intersect_p1) {
+						$period_length = 1 + BAB_DateTime::dateDiffIso($intersect_p1['begin'], $intersect_p1['end']);
+						// + 1 for end day
+						if ($period_length < $entry['total']) {
+							$nbdays += $period_length;
+						} else {
+							$nbdays += $entry['total'];
+						}
+					}
 
+					$intersect_p2 = BAB_DateTime::periodIntersect(
+							$entry['date_begin'], 
+							$entry['date_end'], 
+							$arr['trigger_p2_begin'], 
+							$arr['trigger_p2_end']
+						);
+
+					if (false !== $intersect_p2) {
+						$period_length = 1 + BAB_DateTime::dateDiffIso($intersect_p2['begin'], $intersect_p2['end']);
+						// + 1 for end day
+						if ($period_length < $entry['total']) {
+							$nbdays += $period_length;
+						} else {
+							$nbdays += $entry['total'];
+						}
+					}
+				}
+	
+
+				if ($nbdays > 0) {
+					bab_debug($arr['description']." - nb de jours pris : ".$nbdays." min : ".$arr['trigger_nbdays_min']." max : ".$arr['trigger_nbdays_max']);
+				}
 
 				$access = false;
 				if ( $arr['trigger_nbdays_min'] <= $nbdays && $nbdays <= $arr['trigger_nbdays_max'] )
@@ -385,7 +441,7 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 			}
 
 		
-		
+
 		if ( $access )
 			$return[] = array(
 						'id'				=> $arr['id'],
@@ -1856,12 +1912,7 @@ function bab_vac_typeColorStack($id_entry, $push = false) {
 	$stack[$id_entry][] = $push;
 }
 
-/*
-function bab_vac_notUsablePeriod($begin = false, $end = false) {
-	static $halfday
 
-}
-*/
 
 
 /**
@@ -2028,6 +2079,7 @@ function bab_vac_updateEventCalendar($id_entry) {
 }
 
 
+
 /**
  * Update planning for the given user
  * and the given period
@@ -2039,6 +2091,8 @@ function bab_vac_updateCalendar($id_user, $year, $month) {
 
 	$db = $GLOBALS['babDB'];
 	include_once $GLOBALS['babInstallPath']."utilit/workinghoursincl.php";
+
+	$db->db_query("DELETE FROM ".BAB_VAC_CALENDAR_TBL." WHERE monthkey=".$db->quote($month.$year));
 
 	$dateb = new BAB_dateTime($year, $month, 1); 
 	$datee = $dateb->cloneDate();
@@ -2053,11 +2107,11 @@ function bab_vac_updateCalendar($id_user, $year, $month) {
 	$obj->createPeriods(BAB_PERIOD_NWDAY | BAB_PERIOD_WORKING | BAB_PERIOD_VACATION);
 	$obj->orderBoundaries();
 
-	if (!function_exists('compare')) {
+	if (!function_exists('bab_vac_compare')) {
 		/**
 		 * si type2 est prioritaire, return true
 		 */
-		function compare($type1, $type2) {
+		function bab_vac_compare($type1, $type2) {
 
 			if (BAB_PERIOD_NWDAY === $type2) {
 				return true;
@@ -2073,7 +2127,7 @@ function bab_vac_updateCalendar($id_user, $year, $month) {
 			return false;
 		}
 
-		function is_free($p) {
+		function bab_vac_is_free($p) {
 			switch($p->type) {
 				case BAB_PERIOD_WORKING:
 				case BAB_PERIOD_CALEVENT:
@@ -2087,7 +2141,7 @@ function bab_vac_updateCalendar($id_user, $year, $month) {
 			}
 		}
 
-		function group_insert($query, $exec = false) {
+		function bab_vac_group_insert($query, $exec = false) {
 			static $values = array();
 			if ($query) {
 				$values[] = $query;
@@ -2114,11 +2168,11 @@ function bab_vac_updateCalendar($id_user, $year, $month) {
 			foreach($group as $p) {
 				
 				$key = date('Ymda',$p->ts_begin);
-				if (is_free($p)) {
+				if (bab_vac_is_free($p)) {
 					$is_free[$key] = 1;
 				}
 
-				if (!isset($index[$key]) || compare($index[$key]->type, $p->type)) {
+				if (!isset($index[$key]) || bab_vac_compare($index[$key]->type, $p->type)) {
 					$index[$key] = $p;
 				}
 			}
@@ -2146,7 +2200,7 @@ function bab_vac_updateCalendar($id_user, $year, $month) {
 		} 
 
 
-		group_insert("(
+		bab_vac_group_insert("(
 				".$db->quote($id_user).",
 				".$db->quote($month.$year).",
 				".$db->quote(date('Y-m-d',$p->ts_begin)).",
@@ -2159,7 +2213,7 @@ function bab_vac_updateCalendar($id_user, $year, $month) {
 		
 	}
 
-	group_insert('',true);
+	bab_vac_group_insert('',true);
 }
 
 
@@ -2198,7 +2252,7 @@ function bab_vac_delete_request($id_request)
 	notifyOnRequestChange($id_request, true);
 
 	$db = &$GLOBALS['babDB'];
-	$db->db_query("DELETE FROM ".BAB_VAC_ENTRIES_ELEM_TBL." WHERE id_entry=".$db->quote($id_request)."");
+	
 
 	$arr = $db->db_fetch_assoc($db->db_query("
 		SELECT idfai, id_user, date_begin, date_end  
@@ -2222,6 +2276,7 @@ function bab_vac_delete_request($id_request)
 	if ($arr['idfai'] > 0)
 		deleteFlowInstance($arr['idfai']);
 
+	$db->db_query("DELETE FROM ".BAB_VAC_ENTRIES_ELEM_TBL." WHERE id_entry=".$db->quote($id_request)."");
 	$db->db_query("DELETE FROM ".BAB_VAC_ENTRIES_TBL." WHERE id=".$db->quote($id_request));
 }
 

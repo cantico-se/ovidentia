@@ -7331,4 +7331,96 @@ function upgrade601to602()
 	return $ret;
 }
 
+
+
+
+function upgrade601to602()
+{
+	$ret = "";
+	$db = & $GLOBALS['babDB'];
+
+
+	if (!bab_isTableField(BAB_VAC_RIGHTS_RULES_TBL, 'trigger_p1_begin')) {
+
+		$db->db_query("ALTER TABLE `".BAB_VAC_RIGHTS_RULES_TBL."` 
+			ADD `trigger_p1_begin` DATE NOT NULL ,
+			ADD `trigger_p1_end` DATE NOT NULL ,
+			ADD `trigger_p2_begin` DATE NOT NULL ,
+			ADD `trigger_p2_end` DATE NOT NULL
+		");
+
+		/**
+		 * remove trigger_inperiod
+		 * 
+		 *	0 : Sur toute la période du droit
+		 *  1 : Dans la période de la règle
+		 *  2 : En dehors de la période de la règle et dans la période du droit
+		 */
+
+		 $res = $db->db_query("
+			SELECT 
+				t1.id,
+				t1.trigger_inperiod, 
+				t1.period_start,
+				t1.period_end,
+				t2.date_begin,
+				t2.date_end 
+
+			FROM 
+				".BAB_VAC_RIGHTS_RULES_TBL." t1,
+				".BAB_VAC_RIGHTS_RULES_TBL." t2 
+			WHERE 
+				t1.id_right = t2.id 
+			");
+
+		while ($arr = $db->db_fetch_assoc($res)) {
+			switch($arr['trigger_inperiod']) {
+				case 0:
+					$trigger_p1_begin	= $arr['date_begin'];
+					$trigger_p1_end		= $arr['date_end'];
+					$trigger_p2_begin	= '0000-00-00';
+					$trigger_p2_end		= '0000-00-00';
+					break;
+
+				case 1:
+					$trigger_p1_begin	= $arr['period_start'];
+					$trigger_p1_end		= $arr['period_end'];
+					$trigger_p2_begin	= '0000-00-00';
+					$trigger_p2_end		= '0000-00-00';
+					break;
+
+				case 2:
+					$trigger_p1_begin	= $arr['date_begin'];
+					$trigger_p1_end		= $arr['period_start'];
+					$trigger_p2_begin	= $arr['period_end'];
+					$trigger_p2_end		= $arr['date_end'];
+					break;
+			}
+
+
+			$db->db_query("
+				UPDATE ".BAB_VAC_RIGHTS_RULES_TBL." 
+				SET 
+					trigger_p1_begin	=".$db->quote($trigger_p1_begin).", 
+					trigger_p1_end		=".$db->quote($trigger_p1_end).", 
+					trigger_p2_begin	=".$db->quote($trigger_p2_begin).", 
+					trigger_p2_end		=".$db->quote($trigger_p2_end)." 
+				WHERE 
+					id=".$db->quote($arr['id'])."
+				");
+		}
+
+		$db->db_query("ALTER TABLE `".BAB_VAC_RIGHTS_RULES_TBL."` DROP `trigger_inperiod`");
+		$db->db_query("ALTER TABLE `".BAB_VAC_RIGHTS_RULES_TBL."` ADD `trigger_overlap` TINYINT UNSIGNED NOT NULL");
+		
+	}
+
+
+	return $ret;
+}
+
+
+
+
+
 ?>

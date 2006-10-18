@@ -1616,10 +1616,10 @@
 <string id="Allow rule">Autoriser la condition de la règle</string>
 <string id="The right is available if the vacation request is">Le droit est disponible si la période de congés demandée est</string>
 <string id="Rule period">Période de la règle</string>
-<string id="Out of rule period">En dehors de la période de la règle</string>
+<string id="Out of rule period">En dehors de l'intervalle</string>
 <string id="Out of rule period and in right period">En dehors de la période de la règle et dans la période du droit</string>
 <string id="In right period">Dans la période du droit</string>
-<string id="In rule period">Dans la période de la règle</string>
+<string id="In rule period">Dans l'intervalle</string>
 <string id="On all period">Sur toute la période</string>
 <string id="Always">Toujours</string>
 <string id="Values">Valeurs</string>
@@ -2351,11 +2351,14 @@
 <string id="The length of the period is different from the requested vacation">La longueur de la période est différente de celle de la demande de congés</string>
 <string id="Default">Défaut</string>
 <string id="Assignement type">Type d'assignation</string>
-<string id="in this period">dans la période suivante</string>
+<string id="in this period">de la période suivante</string>
 <string id="Allow overlap between the request period and the test period">Permettre le chevauchement de la période de congés avec la période de test</string>
 <string id="Right assignement in function of requested days">Attribution du droit en fonction des jours demandés et validés</string>
 <string id="The right is displayed if the user has requested">Le droit est accordé si l'utilisateur a pris</string>
 <string id="between">entre</string>
 <string id="vacation of type">de congés du type</string>
-<string id="of period">de la période suivante</string>
+<string id="First period">Première période</string>
+<string id="Second period">Seconde période</string>
+<string id="Use vacation requests witch overlap the test period">Pour les congés qui chevauchent la période de test, prendre en compte le nombre de jours inclu dans la période de test en tenant compte du type du congé</string>
+
 </fr>
