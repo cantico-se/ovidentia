@@ -5690,6 +5690,29 @@ function bab_PutArray($args)
 	$this->gctx->push($name, $arr);
 	}
 
+/* save a soap array type to global space */
+function bab_PutSoapArray($args)
+	{
+	$name = "";
+	$arr = array();
+	if($this->match_args($args, $mm))
+		{
+		for( $j = 0; $j< count($mm[1]); $j++)
+			{
+			switch(strtolower(trim($mm[1][$j])))
+				{
+				case 'name':
+					$name = trim($mm[3][$j]);
+					break;
+				default:
+					$arr[] = array('name'=> trim($mm[1][$j]), 'value'=>$this->cast(trim($mm[3][$j])));
+					break;
+			}
+		}
+	}
+
+	$this->gctx->push($name, $arr);
+	}
 
 /**
  * Experimental ( can be changed in futur )
