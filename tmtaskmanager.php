@@ -599,7 +599,7 @@ function displayProjectRightsForm()
 			);
 	
 		add_item_menu($itemMenu);
-		$babBody->title = bab_translate("Projects rights");
+		$babBody->title = bab_translate("Project right");
 		
 		$enableGroup	= 0;
 		$disableGroup	= 1;

@@ -2360,5 +2360,6 @@
 <string id="First period">Première période</string>
 <string id="Second period">Seconde période</string>
 <string id="Use vacation requests witch overlap the test period">Pour les congés qui chevauchent la période de test, prendre en compte le nombre de jours inclu dans la période de test en tenant compte du type du congé</string>
+<string id="Project right">Droit du projet</string>
 
 </fr>
