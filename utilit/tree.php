@@ -1061,7 +1061,7 @@ class bab_TreeView extends bab_Widget
 	}
 
 	/**
-	 * @access private
+	 * @access protected
 	 */
 	function _updateTree()
 	{
@@ -1502,6 +1502,8 @@ class bab_ArticleTreeView extends bab_TreeView
 	 */
 	function _updateTree()
 	{
+		if ($this->_upToDate)
+			return;
 		if ($this->_attributes & BAB_ARTICLE_TREE_VIEW_SHOW_TOPICS
 			|| $this->_attributes & BAB_ARTICLE_TREE_VIEW_SHOW_ARTICLES)
 			$this->_addTopics();
@@ -1749,6 +1751,8 @@ class bab_FileTreeView extends bab_TreeView
 	 */
 	function _updateTree()
 	{
+		if ($this->_upToDate)
+			return;
 		$this->_addCollectiveDirectories();
 		if ($this->_attributes & BAB_FILE_TREE_VIEW_SHOW_FILES
 			|| $this->_attributes & BAB_FILE_TREE_VIEW_SHOW_SUB_DIRECTORIES) {
@@ -1924,6 +1928,8 @@ class bab_ForumTreeView extends bab_TreeView
 	 */
 	function _updateTree()
 	{
+		if ($this->_upToDate)
+			return;
 		$this->_addForums();
 		if ($this->_attributes & BAB_FORUM_TREE_VIEW_SHOW_THREADS
 			|| $this->_attributes & BAB_FORUM_TREE_VIEW_SHOW_POSTS) {
@@ -2133,6 +2139,8 @@ class bab_FaqTreeView extends bab_TreeView
 	 */
 	function _updateTree()
 	{
+		if ($this->_upToDate)
+			return;
 		$this->_categories = array();
 		$this->_addCategories();
 		if (($this->_attributes & BAB_FAQ_TREE_VIEW_SHOW_SUB_CATEGORIES)
@@ -2174,7 +2182,7 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
 		$this->_adminMode = $this->t_adminMode = $adminMode;
 	}
 
-	function _selectEntities($startNode)
+	function _selectEntities($startEntityId)
 	{
 		$where = array('trees.id_user = ' . $this->_db->quote($this->_orgChartId));
 		
@@ -2182,19 +2190,21 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
 			$sql = 'SELECT trees.lf, trees.lr ';
 			$sql .= ' FROM ' . BAB_OC_TREES_TBL . ' AS trees';
 			$sql .= ' WHERE trees.id_user = ' . $this->_db->quote($this->_orgChartId);
-			$sql .= ' AND trees.id = ' . $this->_db->quote($this->_startEntityId);
+			$sql .= ' AND trees.id = ' . $this->_db->quote($startEntityId);
 			$trees = $this->_db->db_query($sql);
 			$tree = $this->_db->db_fetch_array($trees);
-			$where[] = '(trees.id = ' . $this->_db->quote($this->_startEntityId) . ' OR (trees.id >= ' . $tree['lf'] . ' AND trees.id <= '  . $tree['lr'] . '))';
+
+			$where[] = '(trees.id = ' . $this->_db->quote($this->_startEntityId) . ' OR (trees.lf > ' . $tree['lf'] . ' AND trees.lr < '  . $tree['lr'] . '))';
 		}
 
+		
 		$sql = 'SELECT * ';
 		$sql .= ' FROM ' . BAB_OC_TREES_TBL . ' AS trees';
 		$sql .= ' LEFT JOIN ' . BAB_OC_ENTITIES_TBL . ' AS entities ON entities.id_node = trees.id';
 
 		$sql .= ' WHERE ' . implode(' AND ', $where);
-//		$sql .= ' ORDER BY trees.id DESC';
-		
+		$sql .= ' ORDER BY trees.lf ASC';
+
 		$entities = $this->_db->db_query($sql);
 		
 		return $entities;
@@ -2259,6 +2269,8 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
 	 */
 	function _updateTree()
 	{
+		if ($this->_upToDate)
+			return;
 		$this->_addEntities($this->_startEntityId);
 		parent::_updateTree();
 	}
@@ -2320,7 +2332,9 @@ class bab_GroupTreeView extends bab_TreeView
 	 */
 	function _updateTree()
 	{
-		$this->_categories = array();
+		if ($this->_upToDate)
+			return;
+			$this->_categories = array();
 		$this->_addGroups();
 		
 		
