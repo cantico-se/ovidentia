@@ -1234,6 +1234,7 @@ function rgrouplist() {
 			{
 			$this->t_name = bab_translate('Name');
 			$this->t_edit = bab_translate('Edit');
+			$this->t_rights = bab_translate('Rights');
 			$this->db = &$GLOBALS['babDB'];
 			$this->res = $this->db->db_query("SELECT * FROM ".BAB_VAC_RGROUPS_TBL."");
 			}
@@ -1244,11 +1245,24 @@ function rgrouplist() {
 				$this->altbg		= !$this->altbg;
 				$this->name			= bab_toHtml($arr['name']);
 				$this->id_rgroup	= bab_toHtml($arr['id']);
+
+
+				$this->rgroup = $this->db->db_query("SELECT description FROM ".BAB_VAC_RIGHTS_TBL." WHERE id_rgroup=".$this->db->quote($arr['id']));
+				
 				return true;
 			}
 			return false;
-			}
 		}
+
+		function getnextright() {
+			if ($arr = $this->db->db_fetch_assoc($this->rgroup)) {
+				$this->description = bab_toHtml($arr['description']);
+				return true;
+			}
+			return false;
+		}
+
+	}
 
 	$temp = new temp();
 	$babBody->babecho(bab_printTemplate($temp, "vacadma.html", "rgrouplist"));
@@ -1927,6 +1941,8 @@ function rightcopy() {
 
 			if ($row['date_begin_valid'] > date('Y-m-d') || date('Y-m-d') > $row['date_end_valid']) {
 				$row['active'] = 'N';
+			} else {
+				$row['active'] = 'Y';
 			}
 
 

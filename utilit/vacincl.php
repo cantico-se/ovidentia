@@ -239,8 +239,7 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 			$access= false;
 			}
 
-		if( !$access )
-			{
+		if( !$access ) {
 			$db->db_query("update ".BAB_VAC_RIGHTS_TBL." set active='N' where id=".$db->quote($arr['id']));
 			}
 
@@ -1864,7 +1863,7 @@ function notifyOnVacationChange($idusers, $quantity, $date_begin, $date_end, $wh
 function bab_isPlanningAccessValid()
 {
 	global $babDB;
-	$res = $babDB->db_query("SELECT id_user FROM ".BAB_VAC_PLANNING_TBL." WHERE id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+	$res = $babDB->db_query("SELECT id_user FROM ".BAB_VAC_PLANNING_TBL." WHERE id_user=".$babDB->quote($GLOBALS['BAB_SESS_USERID']));
 	return  $babDB->db_num_rows($res) > 0;
 }
 

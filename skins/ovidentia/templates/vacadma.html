@@ -1005,12 +1005,18 @@ window.focus();
 			
 			<tr class="BabSiteAdminTitleFontBackground"> 
 				<td>{ t_name }</td>
+				<td>{ t_rights }</td>
 				<td>{ t_edit }</td>
 			</tr>
 			<!--#in getnext -->
 			<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
-				<td>{ name }</td>
-				<td><a href="{ babUrlScript }?tg=vacadma&amp;idx=rgroupmod&amp;id_rgroup={ id_rgroup }"><img src="{ babSkinPath }images/Puces/edit.gif" border="0" alt="{ t_edit }" /></a></td>
+				<td valign="top">{ name }</td>
+				<td valign="top">
+					<!--#in getnextright -->
+					{ description }<br />
+					<!--#endin getnextright -->
+				</td>
+				<td valign="top"><a href="{ babUrlScript }?tg=vacadma&amp;idx=rgroupmod&amp;id_rgroup={ id_rgroup }"><img src="{ babSkinPath }images/Puces/edit.gif" border="0" alt="{ t_edit }" /></a></td>
 			</tr>
 			<!--#endin getnext -->
 			</table>

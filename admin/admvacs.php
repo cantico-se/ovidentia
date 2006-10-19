@@ -25,60 +25,17 @@ include_once "base.php";
 
 function listVacationManagers()
 {
-	global $babBody;
-
-	class temp
+	include_once $GLOBALS['babInstallPath'].'utilit/selectusers.php';
+	$db = $GLOBALS['babDB'];
+	$obj = new bab_selectusers();
+	$res = $db->db_query("select id_user from ".BAB_VAC_MANAGERS_TBL);
+	while (list($id) = $db->db_fetch_array($res))
 		{
-		var $fullnametxt;
-		var $fullname;
-		var $checkall;
-		var $uncheckall;
-		var $delete;
-		var $usersbrowurl;
-		var $adduser;
-		var $userid;
-
-		var $arr = array();
-		var $count;
-		var $res;
-
-		function temp()
-			{
-			global $babDB;
-			$this->fullnametxt = bab_translate("Vacation managers");
-			$this->delete = bab_translate("Delete");
-			$this->uncheckall = bab_translate("Uncheck all");
-			$this->checkall = bab_translate("Check all");
-			$this->adduser = bab_translate("Add");
-			$this->managertext = bab_translate("New manager");
-			$this->managerval = "";
-			$this->managerid = "";
-			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&cb=";
-			$this->res = $babDB->db_query("select * from ".BAB_VAC_MANAGERS_TBL."");
-			$this->count = $babDB->db_num_rows($this->res);
-			}
-
-		function getnext()
-			{
-			global $babDB;
-			static $i = 0;
-			if( $i < $this->count)
-				{
-				$arr = $babDB->db_fetch_array($this->res);
-				$this->fullname = bab_getUserName($arr['id_user']);
-				$this->userid = $arr['id_user'];
-				$i++;
-				return true;
-				}
-			else
-				return false;
-
-			}
+		$obj->addUser($id);
 		}
+	$obj->setRecordCallback('recordVacationManager');
+	$GLOBALS['babBody']->babecho($obj->getHtml());
 
-	$temp = new temp();
-	$babBody->babecho(	bab_printTemplate($temp, "admvacs.html", "managerslist"));
-	return $temp->count;
 }
 
 
@@ -114,28 +71,16 @@ function vacationOptions()
 
 
 
-function addVacationManager($managerid)
+function recordVacationManager($userids, $params)
 {
-	global $babBody, $babDB;
-	$res = $babDB->db_query("select id from ".BAB_VAC_MANAGERS_TBL." where id_user='".$managerid."'");
-	if( $res && $babDB->db_num_rows($res) > 0 )
-	{
-		$babBody->msgerror = bab_translate("User is already in the list!");
-		return;
-	}
-
-	$babDB->db_query("insert into ".BAB_VAC_MANAGERS_TBL." (id_user) values ('".$managerid."')");
-}
-
-function delVacationManagers($managers)
-{
-	global $babBody, $babDB;
-
-	for( $i=0; $i < count($managers); $i++)
-	{
-		$babDB->db_query("delete from  ".BAB_VAC_MANAGERS_TBL." where id_user='".$managers[$i]."'"); 
+	
+	$db = $GLOBALS['babDB'];
+	$db->db_query("DELETE FROM ".BAB_VAC_MANAGERS_TBL."");
+	foreach($userids as $id) {
+		$db->db_query("INSERT into ".BAB_VAC_MANAGERS_TBL." (id_user) values (".$db->quote($id).")");
 	}
 }
+
 
 
 function record_options() {
