@@ -584,7 +584,7 @@ function submit_form()
 					</tr>
 					<tr>
 						<td>
-							{ m_captions[defaultValue] }:
+							{ m_captions[value] }:
 						</td>
 						<td>
 							<input type="text" name="sFieldValue" size="40" maxlength ="255" value="{ m_datas[sFieldValue] }" />
@@ -652,7 +652,7 @@ function submit_form()
 					</tr>
 					<tr>
 						<td>
-							{ m_captions[defaultValue] }:
+							{ m_captions[value] }:
 						</td>
 						<td>
 							<textarea name="sFieldValue" cols="40" rows="5" >{ m_datas[sFieldValue] }</textarea>
@@ -747,28 +747,28 @@ function submit_form()
 						<td>
 							{ m_captions[fieldName] }<font color="red">*</font>:<br/>
 						</td>
-						<td>
+						<td colspan="2">
 							<input type="text" name="sFieldName" size="40" maxlength ="255" value="{ m_datas[sFieldName] }" />
 						</td>
 					</tr>
 					<tr>
-						<td colspan="2">&nbsp;</td>
+						<td colspan="3">&nbsp;</td>
 					</tr>
-					<tr>
-						<td>{ m_captions[defaultValue] }:</td>
-						<td>{ m_captions[defaultChoice] }:</td>
+					<tr class="BabSiteAdminTitleFontBackground">
+						<td>{ m_captions[defaultChoice] }</td>
+						<td>{ m_captions[value] }</td>
+						<td align="center">{ m_captions[supp] }</td>
 					</tr>
 					<!--#in nextOption --> 
 					<tr>
 						<td>
-							&nbsp;
-						</td>
-						<td>
-							<input type="checkbox" name="aDelOptions[]" value="{ m_datas[sOptionNbr] }" style="background-color:transparent;border=0" />{ m_datas[sOptionText] }:
-								<br /><input type="text" name="aOptions[]" size="30" maxlength="30" value="{ m_datas[sOptionValue] }" />&nbsp;
-						</td>
-						<td>
 							<input type="radio" name="iDefaultOption" value="{ m_datas[sOptionNbr] }" { m_datas[sOptionChecked] } style="background-color:transparent;border=0" />
+						</td>
+						<td>
+							<input type="text" name="aOptions[]" size="30" maxlength="30" value="{ m_datas[sOptionValue] }" />
+						</td>
+						<td align="center">
+							<input type="checkbox" name="aDelOptions[]" value="{ m_datas[sOptionNbr] }" style="background-color:transparent;border=0" />
 						</td>
 					</tr>
 					<!--#endin nextOption --> 
@@ -776,12 +776,14 @@ function submit_form()
 						<td>&nbsp;</td>
 					</tr>
 					<tr>
-						<td colspan="3" align="center">
-							<input type="submit" value="{ m_captions[oneMoreOption] }" onclick="addOption();" />&nbsp;
+						<td colspan="2">
+							<input type="submit" value="{ m_captions[oneMoreOption] }" onclick="addOption();" />
+						</td>
+						<td align="center">
 							<input type="submit" value="{ m_captions[deleteOptions] }" onclick="delOption();" />
 						</td>
 					</tr>
-					<tr>
+					<tr colspan="3">
 						<td>&nbsp;</td>
 					</tr>
 				</table>
