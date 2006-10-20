@@ -2127,7 +2127,7 @@
 <string id="Cannot retrieve task information">Impossible de récupérer les informations de la tâche</string>
 <string id="Invalid task">Tâche invalide</string>
 <string id="You do not have the right to delete a task">Vous n'avez pas les droits suffisants pour supprimer la tâche</string>
-<string id="Delete task">Suuprimer la tâche</string>
+<string id="Delete task">Supprimer la tâche</string>
 <string id="This action will delete the task and all references">Cette action supprime la tâche et toutes références</string>
 <string id="Task number = ">Numéro de tâche = </string>
 <string id="This task is not deletable">Cette tâche ne peut pas être supprimée</string>
