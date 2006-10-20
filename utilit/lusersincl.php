@@ -163,4 +163,120 @@ function browseUsers($pos, $cb)
 	die();
 
 	}
+
+function browseArticlesAuthors($pos, $cb)
+	{
+	global $babBody;
+	class temp
+		{
+		function temp($pos, $cb)
+			{
+			global $babBody;
+
+			$this->allname = bab_translate("All");
+			$this->nickname = bab_translate("Nickname");
+			$this->db = &$GLOBALS['babDB'];
+			$this->cb = $cb;
+			$this->altbg = false;
+
+			switch ($babBody->nameorder[0]) {
+				case "L":
+					$this->namesearch = "lastname";
+					$this->namesearch2 = "firstname";
+				break;
+				case "F":
+				default:
+					$this->namesearch = "firstname";
+					$this->namesearch2 = "lastname";
+				break; }
+
+			if( strlen($pos) > 0 && $pos[0] == "-" )
+				{
+				$this->pos = strlen($pos)>1? $pos[1]: '';
+				$this->ord = $pos[0];
+
+				$req = "select distinct ut.* from ".BAB_USERS_TBL." ut left join ".BAB_ARTICLES_TBL." at on ut.id=at.id_author where at.id_author!=0 and at.id_topic in (".implode(',', array_keys($babBody->topview)).") and ut.".$this->namesearch2." like '".$this->pos."%' order by ut.".$this->namesearch2.", ut.".$this->namesearch." asc";
+
+				$this->fullname = bab_composeUserName(bab_translate("Lastname"),bab_translate("Firstname"));
+				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=".$_REQUEST['tg']."&idx=".$_REQUEST['idx']."&pos=".$this->pos."&cb=".$this->cb;
+				}
+			else
+				{
+				$this->pos = $pos;
+				$this->ord = "";
+				$req = "select distinct ut.* from ".BAB_USERS_TBL." ut left join ".BAB_ARTICLES_TBL." at on ut.id=at.id_author where at.id_author!=0 and at.id_topic in (".implode(',', array_keys($babBody->topview)).")  and ut.".$this->namesearch." like '".$this->pos."%' order by ut.".$this->namesearch.", ut.".$this->namesearch2." asc";
+
+				$this->fullname = bab_composeUserName(bab_translate("Firstname"),bab_translate("Lastname"));
+				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=".$_REQUEST['tg']."&idx=".$_REQUEST['idx']."&pos=-".$this->pos."&cb=".$this->cb;
+				}
+
+			$this->res = $this->db->db_query($req);
+			$this->count = $this->db->db_num_rows($this->res);
+
+			if( empty($this->pos))
+				$this->allselected = 1;
+			else
+				$this->allselected = 0;
+			$this->allurl = $GLOBALS['babUrlScript']."?tg=".$_REQUEST['tg']."&idx=".$_REQUEST['idx']."&pos=&cb=".$this->cb;
+			}
+
+		function getnext()
+			{
+			static $i = 0;
+			if( $i < $this->count)
+				{
+				$this->arr = $this->db->db_fetch_array($this->res);
+				$this->firstlast = bab_composeUserName($this->arr['firstname'],$this->arr['lastname']);
+				$this->firstlast = str_replace("'", "\'", $this->firstlast);
+				$this->firstlast = str_replace('"', "'+String.fromCharCode(34)+'",$this->firstlast);
+				if( $this->ord == "-" )
+					$this->urlname = bab_composeUserName($this->arr['lastname'],$this->arr['firstname']);
+				else
+					$this->urlname = bab_composeUserName($this->arr['firstname'],$this->arr['lastname']);
+				$this->userid = $this->arr['id'];
+				$this->nicknameval = $this->arr['nickname'];
+				$this->altbg = !$this->altbg;
+				$i++;
+				return true;
+				}
+			else
+				return false;
+
+			}
+
+		function getnextselect()
+			{
+			global $babBody, $BAB_SESS_USERID;
+			static $k = 0;
+			static $t = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+			if( $k < 26)
+				{
+				$this->selectname = substr($t, $k, 1);
+				$this->selecturl = $GLOBALS['babUrlScript']."?tg=".$_REQUEST['tg']."&idx=".$_REQUEST['idx']."&pos=".$this->ord.$this->selectname."&cb=".$this->cb;
+
+				$this->selected = 0;
+				if( $this->pos == $this->selectname)
+					$this->selected = 1;
+				$k++;
+				return true;
+				}
+			else
+				return false;
+
+			}
+		}
+
+	
+	include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
+	$GLOBALS['babBodyPopup'] = new babBodyPopup();
+	$GLOBALS['babBodyPopup']->title = & $GLOBALS['babBody']->title;
+	$GLOBALS['babBodyPopup']->msgerror = & $GLOBALS['babBody']->msgerror;
+
+	$temp = new temp($pos, $cb);
+
+	$GLOBALS['babBodyPopup']->babecho(bab_printTemplate($temp, "lusers.html", "browseusers"));
+	printBabBodyPopup();
+	die();
+
+	}
 ?>

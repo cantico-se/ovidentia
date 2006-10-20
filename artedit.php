@@ -1541,6 +1541,21 @@ function showSetArticleProperties($idart)
 					$this->topicpath = viewCategoriesHierarchy_txt($this->drafttopic);
 					$arrtop = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_TOPICS_TBL." where id='".$this->drafttopic."'"));
 
+					if( $arrtop['busetags'] == 'Y')
+						{
+						$this->tagsvalue = '';
+						$this->busetags = true;
+						$this->tagstxt = bab_translate("Tags");
+						$babBody->addJavascriptFile($GLOBALS['babScriptPath']."prototype/prototype.js");
+						$babBody->addJavascriptFile($GLOBALS['babScriptPath']."scriptaculous/scriptaculous.js");
+						$babBodyPopup->addStyleSheet('ajax.css');
+						$res = $babDB->db_query("select tt.tag_name from ".BAB_TAGS_TBL." tt left join ".BAB_ART_DRAFTS_TAGS_TBL." adtt on adtt.id_tag=tt.id where adtt.id_draft='".$babDB->db_escape_string($idart)."'");
+						while( $rr = $babDB->db_fetch_array($res))
+							{
+							$this->tagsvalue .= $rr['tag_name'].', ';
+							}
+						}
+
 					if( $arrtop['notify'] == 'Y')
 						{
 						$this->notifymembers = true;
@@ -2365,16 +2380,51 @@ function updatePropertiesArticleDraft()
 	if( $topicid != 0 )
 	{
 	$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set id_topic='".$topicid."', restriction='".$restriction."', notify_members='".$notifm."', hpage_public='".$hpage0."', hpage_private='".$hpage1."', date_submission='".$date_sub."', date_publication='".$date_pub."', date_archiving='".$date_arch."', approbation='".$approbid."'  where id='".$idart."' and id_author='".$GLOBALS['BAB_SESS_USERID']."'");
-	list($allowattach) = $babDB->db_fetch_array($babDB->db_query("select allow_attachments from ".BAB_TOPICS_TBL." where id='".$topicid."'"));
+	list($allowattach, $busetags) = $babDB->db_fetch_array($babDB->db_query("select allow_attachments, busetags from ".BAB_TOPICS_TBL." where id='".$topicid."'"));
 	if( $allowattach == 'N' )
 		{
 		bab_deleteDraftFiles($idart);
+		}
+	if( $busetags == 'N' )
+		{
+		$babDB->db_query("delete from ".BAB_ART_DRAFTS_TAGS_TBL." where id_draft='".$babDB->db_escape_string($idart)."'");
 		}
 	}
 	else
 	{
 	$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set id_topic='0', restriction='', notify_members='N', hpage_public='N', hpage_private='N', date_submission='".$date_pub."', date_publication='0000-00-00 00:00:00', date_archiving='0000-00-00 00:00:00', approbation='".$approbid."' where id='".$idart."' and id_author='".$GLOBALS['BAB_SESS_USERID']."'");
 	bab_deleteDraftFiles($idart);
+	}
+
+	$tags = bab_rp('tagsname', false);
+	if( $tags !== false)
+	{
+		$tags = trim($tags);
+		$babDB->db_query("delete from ".BAB_ART_DRAFTS_TAGS_TBL." where id_draft='".$babDB->db_escape_string($idart)."'");
+
+		if( !empty($tags))
+		{
+			$atags = explode(',', $tags);
+			for( $k = 0; $k < count($atags); $k++ )
+			{
+				$tag = trim($atags[$k]);
+				if( !empty($tag) && strpos($tag, ' ') === false )
+				{
+					$res = $babDB->db_query("select id from ".BAB_TAGS_TBL." where tag_name='".$babDB->db_escape_string($tag)."'");
+					if( $res && $babDB->db_num_rows($res))
+					{
+						$arr = $babDB->db_fetch_array($res);
+						$babDB->db_query("insert into ".BAB_ART_DRAFTS_TAGS_TBL." (id_draft ,id_tag) values ('".$babDB->db_escape_string($idart)."','".$arr['id']."')");
+
+					}
+					elseif( bab_isAccessValid(BAB_TAGSMAN_GROUPS_TBL, 1))
+					{
+						$babDB->db_query("insert into ".BAB_TAGS_TBL." (tag_name) values ('".$babDB->db_escape_string($tag)."')");
+						$babDB->db_query("insert into ".BAB_ART_DRAFTS_TAGS_TBL." (id_draft ,id_tag) values ('".$babDB->db_escape_string($idart)."','".$babDB->db_insert_id()."')");
+					}
+				}
+			}
+		}
 	}
 
 }
@@ -2467,6 +2517,22 @@ function artedit_init()
 	}
 	return $aredit;
 }
+
+function outPutTagsToJson()
+{
+	global $babBody, $babDB;
+	$like = bab_rp('like', '');
+	$res = $babDB->db_query("select * from ".BAB_TAGS_TBL." where tag_name like '%".$babDB->db_escape_string($like)."%' order by tag_name asc");
+
+	$ret = array();
+	while( $arr = $babDB->db_fetch_array($res))
+	{
+		$ret[] = '{"id": "'.$arr['id'].'", "tagname": "'.$arr['tag_name'].'"}';		
+	}
+
+	print '['.join(',', $ret).']';
+}
+
 /* main */
 $artedit = array();
 if( count($babBody->topsub) == 0  && count($babBody->topmod) == 0)
@@ -2798,6 +2864,10 @@ if($idx == 'movet')
 
 switch($idx)
 	{
+	case 'tagsjson':
+		outPutTagsToJson();
+		exit;
+		break;
 	case "denied":
 		$babBody->msgerror = bab_translate("Access denied");
 		break;

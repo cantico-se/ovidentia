@@ -226,6 +226,7 @@ function searchKeyword($item , $option = "OR")
 			$this->after = bab_translate("after date");
 			$this->t_search_files_only = bab_translate("Search attached files only");
 			$this->t_index_priority = bab_translate("Give priority to file content for order");
+			$this->tags_txt = bab_translate("Tags");
 
 			$this->index = bab_searchEngineInfos();
 			$this->search_files_only = isset($_POST['search_files_only']);
@@ -233,6 +234,9 @@ function searchKeyword($item , $option = "OR")
 			$this->beforelink = $GLOBALS['babUrlScript']."?tg=month&callback=beforeJs&ymin=100&ymax=10&month=".date('m')."&year=".date('Y');
 			$this->afterlink = $GLOBALS['babUrlScript']."?tg=month&callback=afterJs&ymin=100&ymax=10&month=".date('m')."&year=".date('Y');
 
+			$this->author_url = $GLOBALS['babUrlScript']."?tg=search&idx=browauthor&cb=";
+
+			
 			$this->or_selected = "";
 			$this->and_selected = "";
 			$this->not_selected = "";
@@ -246,7 +250,7 @@ function searchKeyword($item , $option = "OR")
 
 			$this->addons = new bab_addonsSearch;
 
-			$this->el_to_init = Array ( 'a_author','a_dd','a_mm','a_yyyy','before','after','before_display' ,'after_display','before_memo','after_memo','what2','what','advenced');
+			$this->el_to_init = Array ( 'a_author', 'a_author_memo', 'a_authorid','a_dd','a_mm','a_yyyy','before','after','before_display' ,'after_display','before_memo','after_memo','what2','what','advenced', 'tagsname');
 
 			for ($i =0 ;$i < FIELDS_TO_SEARCH ; $i++)
 				$this->el_to_init[] = "dirfield_".$i;
@@ -258,7 +262,8 @@ function searchKeyword($item , $option = "OR")
 					if (! isset($this->fields[$value])) $this->fields[$value] = "";
 				}
 
-			$restc = $this->db->db_query("select tt.id,tt.category, tt.id_cat, tc.title from ".BAB_TOPICS_TBL." tt left join ".BAB_TOPICS_CATEGORIES_TBL." tc on tt.id_cat=tc.id order by tt.category, tc.title ");
+			$this->busetags = false;
+			$restc = $this->db->db_query("select tt.id,tt.category, tt.id_cat, tc.title, tt.busetags from ".BAB_TOPICS_TBL." tt left join ".BAB_TOPICS_CATEGORIES_TBL." tc on tt.id_cat=tc.id order by tt.category, tc.title ");
 			$this->arrtopicscategories = array();
 			while( $row = $this->db->db_fetch_array($restc))
 				{
@@ -268,12 +273,21 @@ function searchKeyword($item , $option = "OR")
 					if( !isset($this->arrtopicscategories[$row['id_cat']]))
 						{
 						$this->arrtopicscategories[$row['id_cat']] = $row['title'];
+						if(  $row['busetags'] == 'Y' )
+							{
+							$this->busetags = true;
+							}
 						}
 					}
 				}
 
 			$this->counttopicscategories = count($this->arrtopicscategories);
-
+			if( $this->busetags )
+				{
+				$babBody->addJavascriptFile($GLOBALS['babScriptPath']."prototype/prototype.js");
+				$babBody->addJavascriptFile($GLOBALS['babScriptPath']."scriptaculous/scriptaculous.js");
+				$babBody->addStyleSheet('ajax.css');
+				}
 
 			$req = "select D.id, D.name, D.id_group id_group from ".BAB_DB_DIRECTORIES_TBL." D,".BAB_GROUPS_TBL." G where D.id_group = '0' OR (D.id_group = G.id AND G.directory='Y') order by D.name";
 			$this->resdirs = $this->db->db_query($req);
@@ -715,10 +729,18 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				
 				$crit_art = "";
 				$crit_com = "";
-				if (isset($this->fields['a_author']) && trim($this->fields['a_author']) != "")
+				if (isset($this->fields['a_author_memo']) && trim($this->fields['a_author_memo']) != "")
 					{
-					$crit_art = " and (".finder($this->fields['a_author'],"concat(U.lastname,U.firstname)",$option).")";
-					$crit_com = " and (".finder($this->fields['a_author'],"name",$option).")";
+					if( $GLOBALS['BAB_SESS_USERID'])
+						{
+						$crit_art = " and (U.id='".$this->db->db_escape_string($this->fields['a_authorid'])."')";
+						$crit_com = " and (".finder($this->fields['a_author_memo'],"name",$option)." OR C.id_author='".$this->db->db_escape_string($this->fields['a_authorid'])."')";
+						}
+					else
+						{					
+						$crit_art = " and (".finder($this->fields['a_author_memo'],"concat(U.lastname,U.firstname)",$option).")";
+						$crit_com = " and (".finder($this->fields['a_author_memo'],"name",$option).")";
+						}
 					}
 
 				if (isset($this->fields['a_topic']) && trim($this->fields['a_topic']) != "")
@@ -744,6 +766,44 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$reqsup = '';
 				if (!empty($inart))
 					{
+					$arrids = array();
+					$restrictedart = '';
+					if( isset($this->fields['tagsname']) && !empty($this->fields['tagsname']))
+						{
+						$this->fields['tagsname'] = trim($this->fields['tagsname']);
+						if( !empty($this->fields['tagsname']))
+							{
+							$tags = array();
+							$atags = explode(',', $this->fields['tagsname']);
+							for( $k = 0; $k < count($atags); $k++ )
+							{
+								$atags[$k] = trim($atags[$k]);
+								if( !empty($atags[$k]))
+									{
+									$tags[] = "'".$this->db->db_escape_string($atags[$k])."'";
+									}
+							}
+							if( count($tags))
+								{
+								$res = $this->db->db_query("select id_art from ".BAB_ART_TAGS_TBL." att left join ".BAB_TAGS_TBL." tt on tt.id = att.id_tag WHERE tag_name like ".implode(' or tag_name = ', $tags));
+								while( $rr = $this->db->db_fetch_array($res))
+									{
+									$arrids[] = $rr['id_art'];
+									}
+								}
+
+							$restrictedart = count($arrids) ? implode(',', $arrids):'';
+							if( $restrictedart )
+								{
+								$restrictedart = ' and a.id in ('.$restrictedart.')';
+								}
+							else
+								{
+								$restrictedart = ' and 0';
+								}
+							}
+						}
+
 					if (!isset($_POST['search_files_only'])) {
 
 						if ($this->like || $this->like2)
@@ -778,12 +838,11 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 							".BAB_ART_FILES_TBL." f ON f.id_article = a.id 
 
 						WHERE 
-							a.id_topic = T.id ".$reqsup." ".$inart." ".$crit_art."  
+							a.id_topic = T.id ".$reqsup." ".$inart." ".$crit_art.$restrictedart."  
 							GROUP BY a.id 
 							";
 
 						bab_debug($req);
-
 						$this->db->db_query($req);
 					}
 
@@ -831,7 +890,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 								i.id_object_access = T.id AND 
 								i.file_path IN('".implode("', '",$file_path)."') AND 
 								a.id NOT IN('".implode("', '",$this->tmp_inserted_id)."') AND 
-								a.id_topic = T.id ".$inart." ".$crit_art." 
+								a.id_topic = T.id ".$inart." ".$crit_art.$restrictedart." 
 							GROUP BY a.id ORDER BY $order 
 								";
 
@@ -845,7 +904,9 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					while( $rr = $this->db->db_fetch_array($res))
 						{
 						if( !bab_articleAccessByRestriction($rr['restriction']))
+							{
 							$this->db->db_query("delete from artresults where id='".$rr['id']."'");
+							}
 						}
 					}
 
@@ -855,7 +916,6 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 						$reqsup = "and (".finder($this->like,"subject",$option,$this->like2)." or ".finder($this->like,"message",$option,$this->like2).")";
 
 					$req = "insert into comresults select C.id, C.id_article, C.id_topic, C.subject,C.message, UNIX_TIMESTAMP(C.date) date, name author,email,C.id_author,  a.title arttitle,LEFT(a.body,100) body, a.restriction, T.category topic  from ".BAB_COMMENTS_TBL." C, ".BAB_ARTICLES_TBL." a, ".BAB_TOPICS_TBL." T where C.id_article=a.id and a.id_topic = T.id ".$reqsup." and C.confirmed='Y' ".$incom." ".$crit_com." order by $order ";
-
 					$this->db->db_query($req);
 					$res = $this->db->db_query("select id, restriction from comresults where restriction!=''");
 					while( $rr = $this->db->db_fetch_array($res))
@@ -2192,6 +2252,7 @@ function viewArticle($article,$w)
 			$this->t_name = bab_translate("Name");
 			$this->t_description = bab_translate("Description");
 			$this->t_index = bab_translate("Result in file");
+			$this->tags_txt = bab_translate("Tags");
 			$this->db = &$GLOBALS['babDB'];
 			$req = "select * from ".BAB_ARTICLES_TBL." where id='$article'";
 			$this->res = $this->db->db_query($req);
@@ -2237,6 +2298,9 @@ function viewArticle($article,$w)
 
 				$this->rescom = $this->db->db_query("select * from ".BAB_COMMENTS_TBL." where id_article='".$article."' and confirmed='Y' order by date desc");
 				$this->countcom = $this->db->db_num_rows($this->rescom);
+
+				$this->restags = $this->db->db_query("select tag_name from ".BAB_TAGS_TBL." tt left join ".BAB_ART_TAGS_TBL." att on tt.id=att.id_tag where id_art='".$article."'");
+				$this->counttags = $this->db->db_num_rows($this->restags);
 				}
 			else
 				{
@@ -2284,6 +2348,22 @@ function viewArticle($article,$w)
 			else
 				{
 				$this->db->db_data_seek($this->rescom,0);
+				$i=0;
+				return false;
+				}
+			}
+		function getnexttag()
+			{
+			static $i = 0;
+			if( $i < $this->counttags)
+				{
+				$arr = $this->db->db_fetch_array($this->restags);
+				$this->tagname = $arr['tag_name'];;
+				$i++;
+				return true;
+				}
+			else
+				{
 				$i=0;
 				return false;
 				}
@@ -2757,6 +2837,12 @@ if (isset($_POST['item']) && substr($_POST['item'],0,3) == 'al-')
 
 switch($idx)
 	{
+	case "browauthor":
+		include_once $babInstallPath."utilit/lusersincl.php";
+		if( !isset($pos)) { $pos = ''; }
+		browseArticlesAuthors($pos, $cb);
+		exit;
+		break;
 	case "a":
 		viewArticle($id, $w);
 		exit;

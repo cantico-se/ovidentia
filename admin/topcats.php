@@ -22,6 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
+include_once $babInstallPath."admin/acl.php";
 include_once $babInstallPath."utilit/topincl.php";
 
 function topcatCreate($idp)
@@ -449,8 +450,11 @@ if( isset($add))
 	addTopCat($name, $description, $benabled, $template, $disptmpl, $topcatid);
 	$idp = $topcatid;
 	}
-
-if( isset($update))
+elseif( isset($tagsman) )
+{
+	maclGroups();
+}
+elseif( isset($update))
 	{
 	if( $update == "disable" )
 		disableTopcats($topcats, $idp);
@@ -462,6 +466,20 @@ if( isset($update))
 
 switch($idx)
 	{
+	case 'tags':
+		$babBody->title = bab_translate("Tags");
+		$macl = new macl("topcats", "List", 1, "tagsman");
+        $macl->addtable( BAB_TAGSMAN_GROUPS_TBL,bab_translate("Who can manage tags?"));
+		$macl->filter(0,0,1,1,1);
+        $macl->babecho();
+		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List&idp=".$idp);
+		if( $idp != 0 || ( $idp == 0 && $babBody->isSuperAdmin ))
+			{
+			$babBody->addItemMenu("Order", bab_translate("Order"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Order&idp=".$idp);
+			}
+		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Create&idp=".$idp);
+		$babBody->addItemMenu("tags", bab_translate("Tags"), $GLOBALS['babUrlScript']."?tg=topcats&idx=tags");
+		break;
 	case "Order":
 		orderTopcat($idp);
 		$babBody->title = bab_translate("Order a topic category");
@@ -471,6 +489,7 @@ switch($idx)
 			$babBody->addItemMenu("Order", bab_translate("Order"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Order&idp=".$idp);
 			}
 		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Create&idp=".$idp);
+		$babBody->addItemMenu("tags", bab_translate("Tags"), $GLOBALS['babUrlScript']."?tg=topcats&idx=tags&idp=".$idp);
 		break;
 	case "Create":
 		topcatCreate($idp);
@@ -481,6 +500,7 @@ switch($idx)
 			$babBody->addItemMenu("Order", bab_translate("Order"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Order&idp=".$idp);
 			}
 		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Create&idp=".$idp);
+		$babBody->addItemMenu("tags", bab_translate("Tags"), $GLOBALS['babUrlScript']."?tg=topcats&idx=tags&idp=".$idp);
 		break;
 	case "List":
 	default:
@@ -492,6 +512,7 @@ switch($idx)
 			$babBody->addItemMenu("Order", bab_translate("Order"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Order&idp=".$idp);
 			}
 		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Create&idp=".$idp);
+		$babBody->addItemMenu("tags", bab_translate("Tags"), $GLOBALS['babUrlScript']."?tg=topcats&idx=tags&idp=".$idp);
 		break;
 	}
 

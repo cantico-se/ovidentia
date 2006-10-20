@@ -2362,4 +2362,19 @@
 <string id="Use vacation requests witch overlap the test period">Pour les congés qui chevauchent la période de test, prendre en compte le nombre de jours inclu dans la période de test en tenant compte du type du congé</string>
 <string id="Project right">Droit du projet</string>
 
+<string id="Connections Log">Connections Log</string>
+<string id="Tags">Mots clés</string>
+<string id="Who can manage tags?">Qui peut gérer les mots clés?</string>
+<string id="Use tags">Utiliser les mots clés</string>
+<string id="Tags to add ( Comma separated: tag1, tag2, etc )">Mots clés à ajouter ( Séparés par des virgules: tag1, tag2, etc )</string>
+<string id="Tag to update ( empty = delete )">Mot clé à mettre à jour ( vide = supprimer )</string>
+<string id="Choose the column">Choisissez la colonne</string>
+<string id="Column">Colonne</string>
+<string id="Some tags are malformed">Des mots clés sont mal formés</string>
+<string id="Tags import">Import des mots clés</string>
+<string id="Tags management">Gestion des mots clés</string>
+<string id="Show from here">Afficher à partir d'ici</string>
+<string id="Retention period">Disponibilité en fonction de la date de saisie de la demande de congés</string>
+<string id="Delete vacation right">Supprimer le droit de congés</string>
+<string id="Schema">Schéma</string>
 </fr>

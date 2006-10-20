@@ -968,6 +968,35 @@ function remove_field()
 		}
 	}
 <!--#endif allowattachments -->
+
+<!--#if busetags -->
+
+window.onload = function()
+{
+
+  aTokens = [','];
+  aConfiguration = {tokens: aTokens, minChars: 1, fullSearch: false, choices: 10};
+  
+  var rAjax = new Ajax.Request(
+    'index.php?tg=artedit&idx=tagsjson',
+    {
+      method: 'get',
+      onSuccess: function(xhr)
+      {
+		atags = [];
+		aConfiguration.afterUpdateElement = function() { $('idtags').value += ', ' };
+		eval("var tags = " + xhr.responseText);
+		for(i=0;i<tags.length;i++) {
+			atags.push(tags[i].tagname + '');
+		}
+		new Autocompleter.Local("idtags", "tags-ac", atags, aConfiguration)
+      }
+    }
+  );
+  
+}
+<!--#endif busetags -->
+
 //-->
 </script>
 
@@ -1015,6 +1044,29 @@ function remove_field()
 </tr>
 </table>
 <br />
+
+<!--#if busetags -->
+<table class="BabLoginCadreBackground" width="97%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td> 
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
+	<tr> 
+	<td><b>{ tagstxt } :</b></td>
+	</tr>
+	<tr> 
+	<td valign="middle">
+	<input type="text" id="idtags" name="tagsname" size="80"  maxlength="255" value="{ tagsvalue }" />
+	<div align="left" id="tags-ac" class="auto_complete">
+	</div>
+	</td>
+	</tr>
+	</table>
+</td>
+</tr>
+</table>
+<br />
+<!--#endif busetags -->
+
 
 <table class="BabLoginCadreBackground" width="97%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 

@@ -406,7 +406,7 @@ function babUserSection($close)
 			}
 		}
 
-	if( count($babBody->topman) > 0 || bab_isAccessValid(BAB_SITES_HPMAN_GROUPS_TBL, $babBody->babsite['id']))
+	if( count($babBody->topman) > 0 || bab_isAccessValid(BAB_SITES_HPMAN_GROUPS_TBL, $babBody->babsite['id'])|| bab_isAccessValid(BAB_TAGSMAN_GROUPS_TBL, 1))
 		{
 		$this->array_urls[bab_translate("Articles management")] = $GLOBALS['babUrlScript']."?tg=topman";
 		}

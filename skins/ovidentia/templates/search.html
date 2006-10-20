@@ -168,6 +168,12 @@ function afterJs(day, month, year)
 	}
 
 <!--#if item "== a" -->
+function cleanAuthor() {
+	var sf = document.forms.searchForm;
+	sf.a_authorid.value='';
+	sf.a_author.value='';
+	sf.a_author_memo.value='';
+}
 function cleanBefore() {
 	var sf = document.forms.searchForm;
 	sf.before_display.value='';
@@ -180,7 +186,52 @@ function cleanAfter() {
 	sf.after_memo.value='';
 	sf.after.value='';
 }
+function onAuthor(id, fn)
+{
+document.forms['searchForm'].a_author.value=fn;
+document.forms['searchForm'].a_author_memo.value=fn;
+document.forms['searchForm'].a_authorid.value=id;
+this.focus();
+op.close();
+}
+
+var op = null;
+function openPopup(url)
+{
+if( op == null || op.closed )
+	op = this.open(url+'onAuthor', 'babuserslist', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');
+else
+	op.focus();
+}
 <!--#endif item -->
+<!--#if busetags -->
+
+window.onload = function()
+{
+
+  aTokens = [','];
+  aConfiguration = {tokens: aTokens, minChars: 1, fullSearch: false, choices: 10};
+  
+  var rAjax = new Ajax.Request(
+    'index.php?tg=artedit&idx=tagsjson',
+    {
+      method: 'get',
+      onSuccess: function(xhr)
+      {
+		atags = [];
+		aConfiguration.afterUpdateElement = function() { $('idtags').value += ', ' };
+		eval("var tags = " + xhr.responseText);
+		for(i=0;i<tags.length;i++) {
+			atags.push(tags[i].tagname + '');
+		}
+		new Autocompleter.Local("idtags", "tags-ac", atags, aConfiguration)
+      }
+    }
+  );
+  
+}
+<!--#endif busetags -->
+
 -->
 </script>
 
@@ -243,7 +294,7 @@ function cleanAfter() {
 <td>
 	<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
 	<tr>
-	<td>{ Topic }</td>
+	<td align="right">{ Topic }</td>
 	<td>
 		<select name="a_topic">
 			<option value="">{ all }</option>
@@ -261,9 +312,28 @@ function cleanAfter() {
 		  <!--#endin getnexttopiccategory -->
 		</select>
 	</td></tr>
+<!--#if busetags -->
 	<tr>
-	<td>{ Author }</td>
-	<td><input name="a_author" value="{ fields[a_author] }"></td>
+	<td align="right">{ tags_txt }</td>
+	<td>
+	<input type="text" id="idtags" name="tagsname" size="30" maxlength="255" value="{ fields[tagsname] }" />
+	<div align="left" id="tags-ac" class="auto_complete">
+	</div>
+	</td>
+	</tr>
+<!--#endif busetags -->
+	<tr>
+	<!--#if BAB_SESS_USERID -->
+	<td align="right"><a class="BabAlphabetLink" href="javascript: openPopup('{ author_url }');">{ Author }</a></td>
+	<td>
+	<input name="a_author" value="{ fields[a_author_memo] }" size="30" disabled>&nbsp;<a href="javascript:cleanAuthor()"><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" align="absmiddle"></a>
+	<input type="hidden" name="a_authorid" value="{ fields[a_authorid] }">
+	<input type="hidden" name="a_author_memo" value="{ fields[a_author_memo] }">
+	<!--#else BAB_SESS_USERID -->
+	<td align="right">{ Author }</td>
+	<td><input name="a_author_memo" value="{ fields[a_author_memo] }"></td>
+	<!--#endif BAB_SESS_USERID -->
+	</td>
 	</tr>
 	<tr>
 		<td align="right">
@@ -686,6 +756,19 @@ setselects(document.forms.searchForm.g_directory);
 		<td class="BabTopicsBackground">{ content }</td>
 	</tr>
 </table>
+
+<!--#if counttags -->
+<table border="0" width="100%" cellpadding="5" cellspacing="0">
+	<tr>
+		<td class="BabTopicsTitleBackground">{ tags_txt }:&nbsp;
+		<!--#in getnexttag -->
+		<i>{ tagname }</i>&nbsp;&nbsp;
+		<!--#endin getnexttag -->
+		</td>
+	</tr>
+</table>
+
+<!--#endif counttags -->
 	
 <!--#if countf -->
 <p>{ attachmentxt } :</p>

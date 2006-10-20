@@ -515,7 +515,7 @@ function acceptWaitingArticle($idart)
 {
 	global $babBody, $babDB;
 
-	$res = $babDB->db_query("select adt.*, tt.category as topicname, tt.allow_attachments, tct.id_dgowner from ".BAB_ART_DRAFTS_TBL." adt left join ".BAB_TOPICS_TBL." tt on adt.id_topic=tt.id left join ".BAB_TOPICS_CATEGORIES_TBL." tct on tt.id_cat=tct.id  where adt.id='".$idart."'");
+	$res = $babDB->db_query("select adt.*, tt.category as topicname, tt.allow_attachments, tct.id_dgowner, tt.busetags from ".BAB_ART_DRAFTS_TBL." adt left join ".BAB_TOPICS_TBL." tt on adt.id_topic=tt.id left join ".BAB_TOPICS_CATEGORIES_TBL." tct on tt.id_cat=tct.id  where adt.id='".$idart."'");
 	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
 		include_once $GLOBALS['babInstallPath']."utilit/imgincl.php";
@@ -606,6 +606,17 @@ function acceptWaitingArticle($idart)
 					");
 				}
 			}
+
+		$babDB->db_query("delete from ".BAB_ART_TAGS_TBL." where id_art='".$articleid."'");
+		if( $arr['busetags'] ==  'Y' )
+			{
+			$res = $babDB->db_query("select id_tag from ".BAB_ART_DRAFTS_TAGS_TBL." where id_draft='".$babDB->db_escape_string($idart)."'");
+			while($rr = $babDB->db_fetch_array($res))
+				{
+				$babDB->db_query("insert into ".BAB_ART_TAGS_TBL." (id_art ,id_tag) values ('".$articleid."','".$rr['id_tag']."')");
+				}
+			}
+		$babDB->db_query("delete from ".BAB_ART_DRAFTS_TAGS_TBL." where id_draft='".$babDB->db_escape_string($idart)."'");		
 
 		if( $arr['id_author'] == 0 || (($artauthor = bab_getUserName($arr['id_author'])) == ''))
 			{

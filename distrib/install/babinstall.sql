@@ -447,6 +447,7 @@ CREATE TABLE bab_topics (
   max_articles tinyint(3) unsigned NOT NULL default '0',
   allow_manupdate enum('0','1','2') NOT NULL default '0',
   auto_approbation enum('N','Y') NOT NULL default 'N',
+  busetags enum('Y','N') NOT NULL default 'Y',
   PRIMARY KEY  (id),
   KEY id_cat (id_cat)
 );
@@ -1027,7 +1028,7 @@ CREATE TABLE bab_ini (
 
 INSERT INTO bab_ini VALUES ('ver_major', '6');
 INSERT INTO bab_ini VALUES ('ver_minor', '0');
-INSERT INTO bab_ini VALUES ('ver_build', '2');
+INSERT INTO bab_ini VALUES ('ver_build', '3');
 INSERT INTO bab_ini VALUES ('ver_prod', 'E');
 
 #
@@ -3547,4 +3548,47 @@ CREATE TABLE `bab_vac_comanager` (
 `id_entity` INT UNSIGNED NOT NULL ,
 `id_user` INT UNSIGNED NOT NULL ,
 PRIMARY KEY ( `id_entity` , `id_user` )
+);
+
+
+# --------------------------------------------------------
+#
+# Structure de la table 'bab_tags'
+#
+
+CREATE TABLE bab_tags (
+    id int(11) unsigned NOT NULL auto_increment,
+	tag_name VARCHAR (255) not null,
+	PRIMARY KEY (id),
+    KEY tag_name (tag_name)
+);
+
+
+# --------------------------------------------------------
+#
+# Structure de la table 'bab_tagsman_groups'
+#
+
+CREATE TABLE bab_tagsman_groups (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group)
+);
+
+
+CREATE TABLE bab_art_drafts_tags (
+  id_draft int(11) unsigned NOT NULL default '0',
+  id_tag int(11) unsigned NOT NULL default '0',
+  KEY id_draft (id_draft),
+  KEY id_tag (id_tag)
+);
+
+CREATE TABLE bab_art_tags (
+  id_art int(11) unsigned NOT NULL default '0',
+  id_tag int(11) unsigned NOT NULL default '0',
+  KEY id_art (id_art),
+  KEY id_tag (id_tag)
 );

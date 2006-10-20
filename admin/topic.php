@@ -173,7 +173,7 @@ function deleteArticles($art, $item)
 	$babBody->babecho(	bab_printTemplate($tempa,"warning.html", "warningyesno"));
 	}
 
-function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp)
+function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags)
 	{
 	global $babBody;
 	if( !isset($id))
@@ -230,7 +230,7 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 		var $manmodysel;
 		var $manmodnsel;
 
-		function temp($id, $cat, $category, $description, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp)
+		function temp($id, $cat, $category, $description, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags)
 			{
 			global $babBody;
 			$this->topcat = bab_translate("Topic category");
@@ -257,6 +257,7 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 			$this->yeswithapprobation = bab_translate("Yes with approbation");
 			$this->yesnoapprobation = bab_translate("Yes without approbation");
 			$this->autoapprobationtxt = bab_translate("Automatically approve author if he belongs to approbation schema");
+			$this->tagstxt = bab_translate("Use tags");
 			$this->tgval = "topic";
 			$this->item = $id;
 			$this->langLabel = bab_translate("Language");
@@ -416,6 +417,23 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 				$this->attachmentysel = "selected";
 				$this->attachmentnsel = "";
 				}
+
+			if(empty($busetags))
+				{
+				$busetags = $this->arr['busetags'];
+				}
+
+			if( $busetags == "N")
+				{
+				$this->tagsnsel = "selected";
+				$this->tagsysel = "";
+				}
+			else
+				{
+				$this->tagsnsel = "";
+				$this->tagsysel = "selected";
+				}
+
 
 			if(empty($bartupdate))
 				{
@@ -677,7 +695,7 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 
 		}
 
-	$temp = new temp($id, $cat, $category, $description, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp);
+	$temp = new temp($id, $cat, $category, $description, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags);
 	$babBody->babecho(	bab_printTemplate($temp,"topics.html", "categorycreate"));
 	}
 
@@ -781,7 +799,7 @@ function warnRestrictionArticle($topics)
 	$babBody->babecho( bab_printTemplate($temp,"topics.html", "articlewarning"));
 	}
 
-function updateCategory($id, $category, $description, $cat, $saart, $sacom, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates,$battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp)
+function updateCategory($id, $category, $description, $cat, $saart, $sacom, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates,$battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags)
 	{
 	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 	global $babBody;
@@ -803,10 +821,10 @@ function updateCategory($id, $category, $description, $cat, $saart, $sacom, $sau
 		$maxarts = 10;
 		}
 	
-	$arr = $db->db_fetch_array($db->db_query("select * from ".BAB_TOPICS_TBL." where id='".$id."'"));
+	$arr = $db->db_fetch_array($db->db_query("select * from ".BAB_TOPICS_TBL." where id='".$db->db_escape_string($id)."'"));
 	if( $arr['idsaart'] != $saart )
 		{
-		$res = $db->db_query("select id, idfai from ".BAB_ART_DRAFTS_TBL." where id_topic='".$id."' and result='".BAB_ART_STATUS_WAIT."'");
+		$res = $db->db_query("select id, idfai from ".BAB_ART_DRAFTS_TBL." where id_topic='".$db->db_escape_string($id)."' and result='".BAB_ART_STATUS_WAIT."'");
 		while( $row = $db->db_fetch_array($res))
 			{
 			if( $row['idfai'] != 0 )
@@ -848,7 +866,7 @@ function updateCategory($id, $category, $description, $cat, $saart, $sacom, $sau
 
 	if( $arr['idsacom'] != $sacom )
 		{
-		$res = $db->db_query("select id, idfai from ".BAB_COMMENTS_TBL." where id_topic='".$id."' and confirmed='N'");
+		$res = $db->db_query("select id, idfai from ".BAB_COMMENTS_TBL." where id_topic='".$db->db_escape_string($id)."' and confirmed='N'");
 		while( $row = $db->db_fetch_array($res))
 			{
 			if( $row['idfai'] != 0 )
@@ -884,7 +902,7 @@ function updateCategory($id, $category, $description, $cat, $saart, $sacom, $sau
 
 	if( $arr['idsa_update'] != $saupd )
 	{
-		$res = $db->db_query("select id, idfai from ".BAB_ART_DRAFTS_TBL." where id_topic='".$id."' and result='".BAB_ART_STATUS_WAIT."'");
+		$res = $db->db_query("select id, idfai from ".BAB_ART_DRAFTS_TBL." where id_topic='".$db->db_escape_string($id)."' and result='".BAB_ART_STATUS_WAIT."'");
 		while( $row = $db->db_fetch_array($res))
 			{
 			if( $row['idfai'] != 0 )
@@ -924,22 +942,22 @@ function updateCategory($id, $category, $description, $cat, $saart, $sacom, $sau
 
 	if ((isset($GLOBALS['babApplyLanguageFilter']) && $GLOBALS['babApplyLanguageFilter'] == 'loose') and ($lang != $arr['lang']) and ($lang != '*'))
 	{
-		$query = "update ".BAB_ARTICLES_TBL." set lang='*' where id_topic='".$id."'";
+		$query = "update ".BAB_ARTICLES_TBL." set lang='*' where id_topic='".$db->db_escape_string($id)."'";
 		$db->db_query($query);
 	}
 
-	$query = "update ".BAB_TOPICS_TBL." set category='".$category."', description='".$description."', id_cat='".$cat."', idsaart='".$saart."', idsacom='".$sacom."', idsa_update='".$saupd."', notify='".$bnotif."', lang='".$lang."', article_tmpl='".$atid."', display_tmpl='".$disptid."', restrict_access='".$restrict."', allow_hpages='".$bhpages."', allow_pubdates='".$bpubdates."', allow_attachments='".$battachment."', allow_update='".$bartupdate."', allow_manupdate='".$bmanmod."', max_articles='".$maxarts."', auto_approbation='".$bautoapp."' where id = '".$id."'";
+	$query = "update ".BAB_TOPICS_TBL." set category='".$category."', description='".$description."', id_cat='".$db->db_escape_string($cat)."', idsaart='".$db->db_escape_string($saart)."', idsacom='".$db->db_escape_string($sacom)."', idsa_update='".$db->db_escape_string($saupd)."', notify='".$db->db_escape_string($bnotif)."', lang='".$db->db_escape_string($lang)."', article_tmpl='".$db->db_escape_string($atid)."', display_tmpl='".$db->db_escape_string($disptid)."', restrict_access='".$db->db_escape_string($restrict)."', allow_hpages='".$db->db_escape_string($bhpages)."', allow_pubdates='".$db->db_escape_string($bpubdates)."', allow_attachments='".$db->db_escape_string($battachment)."', allow_update='".$db->db_escape_string($bartupdate)."', allow_manupdate='".$db->db_escape_string($bmanmod)."', max_articles='".$db->db_escape_string($maxarts)."', auto_approbation='".$db->db_escape_string($bautoapp)."', busetags='".$db->db_escape_string($busetags)."' where id = '".$id."'";
 	$db->db_query($query);
 
 	if( $arr['id_cat'] != $cat )
 		{
-		$res = $db->db_query("select max(ordering) from ".BAB_TOPCAT_ORDER_TBL." where id_parent='".$cat."'");
+		$res = $db->db_query("select max(ordering) from ".BAB_TOPCAT_ORDER_TBL." where id_parent='".$db->db_escape_string($cat)."'");
 		$arr = $db->db_fetch_array($res);
 		if( isset($arr[0]))
 			$ord = $arr[0] + 1;
 		else
 			$ord = 1;
-		$db->db_query("update ".BAB_TOPCAT_ORDER_TBL." set id_parent='".$cat."', ordering='".$ord."' where id_topcat='".$id."' and type='2'");
+		$db->db_query("update ".BAB_TOPCAT_ORDER_TBL." set id_parent='".$db->db_escape_string($cat)."', ordering='".$ord."' where id_topcat='".$db->db_escape_string($id)."' and type='2'");
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 	}
@@ -1002,7 +1020,7 @@ if( isset($add) )
 	{
 	if( isset($submit))
 		{
-		if(!updateCategory($item, $category, $topdesc, $ncat, $saart, $sacom, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates,$battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp))
+		if(!updateCategory($item, $category, $topdesc, $ncat, $saart, $sacom, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates,$battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags))
 			$idx = "Modify";
 		}
 	else if( isset($topdel))
@@ -1111,7 +1129,8 @@ switch($idx)
 		if( !isset($bautoapp)) { $bautoapp='';}
 		if( !isset($bmanmod)) { $bmanmod='';}
 		if( !isset($maxarts)) { $maxarts='';}
-		modifyCategory($item, $ncat, $category, $topdesc, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp);
+		if( !isset($busetags)) { $busetags='';}
+		modifyCategory($item, $ncat, $category, $topdesc, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags);
 		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=topic&idx=Modify&item=".$item);
 		$babBody->addItemMenu("rights", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=topic&idx=rights&item=".$item);

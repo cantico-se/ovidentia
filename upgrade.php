@@ -7334,7 +7334,7 @@ function upgrade601to602()
 
 
 
-function upgrade601to602()
+function upgrade602to603()
 {
 	$ret = "";
 	$db = & $GLOBALS['babDB'];
@@ -7415,6 +7415,68 @@ function upgrade601to602()
 		
 	}
 
+	if (!bab_isTable(BAB_TAGSMAN_GROUPS_TBL)) {
+
+		$db->db_query("
+		
+				CREATE TABLE ".BAB_TAGSMAN_GROUPS_TBL." (
+				  id int(11) unsigned NOT NULL auto_increment,
+				  id_object int(11) unsigned NOT NULL default '0',
+				  id_group int(11) unsigned NOT NULL default '0',
+				  PRIMARY KEY  (id),
+				  KEY id_object (id_object),
+				  KEY id_group (id_group)
+				)
+			
+		");
+
+	}
+
+	if (!bab_isTable(BAB_TAGS_TBL))
+	{
+		$res = $db->db_query("
+			CREATE TABLE " . BAB_TAGS_TBL . " (
+				id int(11) unsigned NOT NULL auto_increment,
+				tag_name VARCHAR (255) not null,
+				PRIMARY KEY (id),
+				KEY tag_name (tag_name)
+			)
+		");
+	}
+
+	if (!bab_isTableField(BAB_TOPICS_TBL, 'busetags')) {
+		$db->db_query("ALTER TABLE ".BAB_TOPICS_TBL." ADD busetags ENUM('Y','N') DEFAULT 'Y' NOT NULL");
+		$db->db_query("update ".BAB_TOPICS_TBL." set busetags='N'");
+	}
+
+	if (!bab_isTable(BAB_ART_DRAFTS_TAGS_TBL)) {
+
+		$db->db_query("
+		
+				CREATE TABLE ".BAB_ART_DRAFTS_TAGS_TBL." (
+				  id_draft int(11) unsigned NOT NULL default '0',
+				  id_tag int(11) unsigned NOT NULL default '0',
+				  KEY id_draft (id_draft),
+				  KEY id_tag (id_tag)
+				)
+			
+		");
+
+	}
+	if (!bab_isTable(BAB_ART_TAGS_TBL)) {
+
+		$db->db_query("
+		
+				CREATE TABLE ".BAB_ART_TAGS_TBL." (
+				  id_art int(11) unsigned NOT NULL default '0',
+				  id_tag int(11) unsigned NOT NULL default '0',
+				  KEY id_art (id_art),
+				  KEY id_tag (id_tag)
+				)
+			
+		");
+
+	}
 
 	return $ret;
 }
