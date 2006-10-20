@@ -419,8 +419,13 @@ function bab_initOrgChart(orgChartDiv)
 
 		var levelSelect = document.createElement('SELECT');
 		levelSelect.controlledElement = orgChartDiv;
+
+		var option = document.createElement('OPTION');
+		option.appendChild(document.createTextNode('-'));
+		levelSelect.appendChild(option);
+
 		for (var i = 1; i <= 7; i++) {
-			var option = document.createElement('OPTION');
+			option = document.createElement('OPTION');
 			option.value = i;
 			option.appendChild(document.createTextNode(i));
 			levelSelect.appendChild(option);
@@ -504,7 +509,7 @@ function bab_initOrgChart(orgChartDiv)
 	//orgChartDiv.updateDisplay = bab_updateDisplay;
 //	orgChartDiv.zoomFactor = 1.0;
 
-	orgChartDiv.levelSelect.value = '4';
+	orgChartDiv.levelSelect.value = '-';
 //	orgChartDiv.levelSelect.onchange();
 
 //	alert(orgChartDiv.bab_openNodes.length);
