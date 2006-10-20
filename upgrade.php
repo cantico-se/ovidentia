@@ -7368,7 +7368,7 @@ function upgrade602to603()
 
 			FROM 
 				".BAB_VAC_RIGHTS_RULES_TBL." t1,
-				".BAB_VAC_RIGHTS_RULES_TBL." t2 
+				".BAB_VAC_RIGHTS_TBL." t2 
 			WHERE 
 				t1.id_right = t2.id 
 			");
