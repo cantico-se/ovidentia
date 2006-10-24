@@ -139,6 +139,7 @@ function bab_deleteDraft($idart)
 		bab_deleteDraftFiles($idart);
 		$babDB->db_query("delete from ".BAB_ART_DRAFTS_NOTES_TBL." where id_draft='".$idart."'");
 		$babDB->db_query("delete from ".BAB_ART_DRAFTS_TBL." where id='".$idart."'");
+		$babDB->db_query("delete from ".BAB_ART_DRAFTS_TAGS_TBL." where id_draft='".$idart."'");
 		}
 	}
 
@@ -175,6 +176,7 @@ function bab_confirmDeleteArticle($article)
 
 	bab_deleteArticleFiles($article);
 
+	$db->db_query("delete from ".BAB_ART_TAGS_TBL." where id_art='".$article."'");
 	// delete article
 	$req = "delete from ".BAB_ARTICLES_TBL." where id='".$article."'";
 	$res = $db->db_query($req);
