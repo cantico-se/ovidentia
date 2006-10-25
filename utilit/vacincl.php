@@ -1129,6 +1129,7 @@ function listRightsByUser($id)
 			$this->iduser = $id;
 			$this->updatetxt = bab_translate("Update");
 			$this->desctxt = bab_translate("Description");
+			$this->typetxt = bab_translate("Type");
 			$this->consumedtxt = bab_translate("Consumed");
 			$this->datebtxt = bab_translate("Begin date");
 			$this->dateetxt = bab_translate("End date");
@@ -1150,6 +1151,7 @@ function listRightsByUser($id)
 					u.id_right,
 					u.quantity, 
 					r.id_type,
+					t.name type, 
 					r.description,
 					r.quantity r_quantity,
 					YEAR(r.date_begin) year,
@@ -1162,8 +1164,11 @@ function listRightsByUser($id)
 					".BAB_VAC_RIGHTS_TBL." r 
 					LEFT JOIN 
 						".BAB_VAC_RGROUPS_TBL." rg ON rg.id = r.id_rgroup 
+					, 
+					".BAB_VAC_TYPES_TBL." t 
 				WHERE id_user=".$this->db->quote($id)." 
-					AND r.id = u.id_right
+					AND r.id = u.id_right 
+					AND t.id = r.id_type 
 					ORDER BY year DESC, label ASC
 			");
 
@@ -1184,7 +1189,8 @@ function listRightsByUser($id)
 				if( $res && $this->db->db_num_rows($res) > 0 )
 					{
 					$this->idright = $arr['id_right'];
-					$this->description = $arr['description'];
+					$this->description = bab_toHtml($arr['description']);
+					$this->type = bab_toHtml($arr['type']);
 					if( $arr['quantity'] != '' )
 						$this->quantity = $arr['quantity'];
 					else

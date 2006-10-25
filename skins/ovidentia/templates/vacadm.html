@@ -234,12 +234,12 @@ if (users != '')
 		
 		<tr class="BabSiteAdminTitleFontBackground"> 
 
-			<td align="right" colspan="7">
+			<td align="right" colspan="8">
 				<a href="{ addpurl }">{ addpersonnel }</a>&nbsp|&nbsp<a href="{ addgurl }">{ g_addpersonnel }</a>
 			</td>
 		</tr>
 		<tr class="BabSiteAdminTitleFontBackground"> 
-			<td colspan="7" class="BabLetterlists">
+			<td colspan="8" class="BabLetterlists">
 				<!--#if allselected "== 1" -->
 				{ allname }&nbsp;
 				<!--#else allselected -->
@@ -259,7 +259,8 @@ if (users != '')
 			<td width="1%">
 				<a href="javascript:onCheckAll('userids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" border="0"></a><a href="javascript:onCheckAll('userids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" border="0"></a>
 			</td>
-			<td><a href="{ fullnameurl }">{ fullname }</a></td>
+			<td>{ t_lastname }</td>
+			<td>{ t_firstname }</td>
 			<td>{ collection }</td>
 			<td>{ appschema }</td>
 			<td>{ altlrbu }</td>
@@ -269,14 +270,16 @@ if (users != '')
 			<td>{ altvunew }</td>
 		</tr>
 		<!--#in getnext -->
-		<tr class="BabSiteAdminFontBackground"> 
+		<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+		
 			<td width="1%"> 
-			<input type="checkbox" name="userids[]" value="{ userid }" />
+				<input type="checkbox" name="userids[]" value="{ userid }" />
 			</td>
-			<td width="20%"><a class="BabNameEmailLink" href="{ url }">{ urlname }</a></td>
+			<td><a href="{ url }">{ lastname }</a></td>
+			<td>{ firstname }</td>
 			<td>{ collname }</td>
 			<td>{ saname }</td>
-			<td  align="center"><a href="{ lrbuurl }" onclick="bab_popup(this.href);return false;"><img src="{ babSkinPath }images/Puces/PuceRightVacation.gif" alt="{ altlrbu }" border="0" align="middle"></a></td>
+			<td><a href="{ lrbuurl }" onclick="bab_popup(this.href);return false;"><img src="{ babSkinPath }images/Puces/PuceRightVacation.gif" alt="{ altlrbu }" border="0" align="middle"></a></td>
 			<td align="center"><input type="checkbox" name="calendar[]" value="{ userid }" /></td>
 			<td  align="center"><a href="{ vunewurl }" title="{ altvunew }"><img src="{ babSkinPath }images/Puces/insertInto.gif" alt="{ altvunew }" border="0" align="middle"></a></td>
 		</tr> 
@@ -285,7 +288,7 @@ if (users != '')
 			<td align="center">
 				<a href="javascript:submitForm('delu','listform')"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deletealt }" border="0"></a>
 			</td>
-			<td colspan="4">
+			<td colspan="5">
 				&nbsp;
 			</td>
 			<td align="center">
@@ -682,6 +685,7 @@ function validateDayField(field) {
 	<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 		<tr class="BabSiteAdminTitleFontBackground"> 
 			<td>{ desctxt }</td>
+			<td>{ typetxt }</td>
 			<td>{ quantitytxt }</td>
 			<td>{ consumedtxt }</td>
 			<td>{ datebtxt }</td>
@@ -691,13 +695,13 @@ function validateDayField(field) {
 		<!--#if bview -->
 		<!--#if year -->
 		<tr class="BabLoginMenuBackground"> 
-			<td colspan="5">{ year }</td>
+			<td colspan="6">{ year }</td>
 		</tr>
 		<!--#endif year -->
 
 		<!--#if rgroup -->
 		<tr class="BabSiteAdminFontBackground"> 
-			<td colspan="5"><strong><u>{ rgroup }</u></strong></td>
+			<td colspan="6"><strong><u>{ rgroup }</u></strong></td>
 		</tr>
 		<!--#endif rgroup -->
 		
@@ -708,6 +712,7 @@ function validateDayField(field) {
 			<tr class="BabSiteAdminFontBackground"> 
 			<td>{ description }</td>
 			<!--#endif in_rgroup -->
+			<td>{ type }</td>
 			<td>
 			<input type="text" name="quantities[]" size="5" maxlength="5" value="{ quantity }" onBlur="validateDayField(this)"></td>
 			<input type="hidden" name="idrights[]" value="{ idright }">

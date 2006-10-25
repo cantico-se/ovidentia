@@ -172,16 +172,19 @@ function setDate(day, month, year) {
 
 function validateForm(fr)
 {
-	
-	var sel_groups = fr.elements['id_groups[]'];
-	for (i = sel_groups.options.length; i > 0 ; i--) {
-		sel_groups.options[i-1].selected = true;
-	}	
-	
+	if (fr.elements['id_groups[]']) {
+		var sel_groups = fr.elements['id_groups[]'];
+		for (i = sel_groups.options.length; i > 0 ; i--) {
+			sel_groups.options[i-1].selected = true;
+		}
+	}
 	
 	var ret = true;
 
-	if( fr.righttype.options[fr.righttype.selectedIndex].value == 0 ||  fr.righttype.options[fr.righttype.selectedIndex].value == 1)
+	if( 
+		fr.righttype.options[fr.righttype.selectedIndex].value == 0 || 
+		fr.righttype.options[fr.righttype.selectedIndex].value == 1
+		)
 	{
 		return true;
 	}
@@ -329,6 +332,33 @@ function group_delete_selected() {
 					<input type="text" name="date_end" size="10" maxlength="10" value="{ arr[date_end] }" />
 				</td>
 			</tr>
+
+
+			<!--#if arr[idvr] -->
+			
+			<tr> 
+				<td align="right">{ t_id_type }:</td>
+				<td>
+					{ arr[type] }
+					<input type="hidden" name="type" value="{ arr[type] }" />
+				</td>
+			</tr>
+
+			<!--#else arr[idvr] -->
+			
+			<tr> 
+				<td align="right">{ t_id_type }:</td>
+				<td>
+					<select name="id_type" onChange="mmvac(this.selectedIndex)">
+					<!--#in getnexttype -->
+					<option value="{ typeid }" { selected }>{ typename }</option>
+					<!--#endin getnexttype -->
+					</select>
+				</td>
+			</tr>
+
+			<!--#endif arr[idvr] -->
+
 			<tr> 
 				<td align="right">{ t_id_rgroup }:</td>
 				<td>
@@ -393,27 +423,8 @@ function group_delete_selected() {
 
 
 			<!--#if arr[idvr] -->
-			<tr> 
-				<td align="right">{ t_id_type }:</td>
-				<td>
-					{ arr[type] }
-					<input type="hidden" name="type" value="{ arr[type] }" />
-				</td>
-			</tr>
-			<!--#else arr[idvr] -->
 			
-			<tr> 
-				<td align="right">{ t_id_type }:</td>
-				<td>
-					<select name="id_type" onChange="mmvac(this.selectedIndex)">
-					<!--#in getnexttype -->
-					<option value="{ typeid }" { selected }>{ typename }</option>
-					<!--#endin getnexttype -->
-					</select>
-				</td>
-			</tr>
-
-
+			<!--#else arr[idvr] -->
 
 			<tr> 
 				<td colspan="2">
@@ -423,10 +434,12 @@ function group_delete_selected() {
 						<br />
 						<label for="bab_vac_assignment_type">{ t_assignment_type }</label> : 
 						<select id="bab_vac_assignment_type" name="assignment_type" onchange="onAssignmentType(this)">
-							<option value="1">{ t_by_user }</option>
-							<option value="2">{ t_by_coll }</option>
-							<option value="3">{ t_by_group }</option>
+							<option value="1" <!--#if assignment_type "== 1" --> selected="selected"<!--#endif assignment_type -->>{ t_by_user }</option>
+							<option value="2" <!--#if assignment_type "== 2" --> selected="selected"<!--#endif assignment_type -->>{ t_by_coll }</option>
+							<option value="3" <!--#if assignment_type "== 3" --> selected="selected"<!--#endif assignment_type -->>{ t_by_group }</option>
 						</select>
+
+
 						<br />
 						<br />
 	
@@ -443,6 +456,7 @@ function group_delete_selected() {
 								<option value="-2">{ t_allcol }</option>
 								<option value="-1">{ t_allpers }</option>
 							</select>
+
 						</div>
 
 						<div id="bab_vac_assignment_type_3">
@@ -705,13 +719,18 @@ function mmvac(index)
 	{
 	f.collid.options[i+3] = new Option(tabvacn[index][i],tabvaci[index][i]);
 	}
+	
+	/*
 	if( index == tpsel )
 	{
 		f.collid.options[colsel].selected = true;
 	}
+	*/
+	
 
 }
 mmvac(tpsel);
+document.forms['rightsedit'].collid.value = '{ arr[collid] }';
 <!--#endif arr[idvr] -->
 
 function validateNum(field) {

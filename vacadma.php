@@ -51,7 +51,7 @@ function addFixedVacation($id_user, $id_right, $datebegin , $dateend, $halfdaybe
 
 	$identry = $babDB->db_insert_id();
 
-	$babDB->db_query("insert into ".BAB_VAC_ENTRIES_ELEM_TBL." 
+	$babDB->db_query("INSERT INTO ".BAB_VAC_ENTRIES_ELEM_TBL." 
 		(id_entry, id_right, quantity) 
 		values  
 			(
@@ -325,7 +325,7 @@ function listVacationRigths($idtype, $idcreditor, $dateb, $datee, $active, $pos)
 			$this->desctxt = bab_translate("Description");
 			$this->typetxt = bab_translate("Type");
 			$this->nametxt = bab_translate("Name");
-			$this->quantitytxt = bab_translate("Quantity");
+			$this->quantitytxt = bab_translate("Number of days");
 			$this->creditortxt = bab_translate("Author");
 			$this->datetxt = bab_translate("Entry date");
 			$this->date2txt = bab_translate("Entry date ( dd-mm-yyyy )");
@@ -567,7 +567,7 @@ function addModifyVacationRigths($id = false)
 			$this->t_id_type = bab_translate("Type");
 			$this->t_id_creditor = bab_translate("User");
 			$this->t_collid = bab_translate("Collection");
-			$this->t_quantity = bab_translate("Quantity");
+			$this->t_quantity = bab_translate("Number of day for this right");
 			$this->t_reset = bab_translate("Reset");
 			$this->t_delete = bab_translate("Delete");
 			$this->t_orand = bab_translate("Or users having ");

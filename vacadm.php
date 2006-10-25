@@ -385,6 +385,8 @@ function listVacationPersonnel($pos, $idcol, $idsa)
 		var $calurl;
 		var $altcal;
 
+		var $altbg = true;
+
 		function temp($pos, $idcol, $idsa)
 			{
 			$this->allname = bab_translate("All");
@@ -403,37 +405,43 @@ function listVacationPersonnel($pos, $idcol, $idsa)
 			$this->addpurl = $GLOBALS['babUrlScript']."?tg=vacadm&idx=addp&pos=".$pos."&idcol=".$idcol."&idsa=".$idsa;
 			$this->addgurl = $GLOBALS['babUrlScript']."?tg=vacadm&idx=addg&pos=".$pos."&idcol=".$idcol."&idsa=".$idsa;
 
+			$this->t_lastname = bab_translate("Lastname");
+			$this->t_firstname = bab_translate("Firstname");
+
 			$this->db = & $GLOBALS['babDB'];
 
 			$this->idcol = $idcol;
 			$this->idsa = $idsa;
 
-			if( strlen($pos) > 0 && $pos[0] == "-" )
-				{
-				$this->pos =strlen($pos)>1? $pos[1]: '';
-				$this->ord = $pos[0];
-				$req = "select ".BAB_USERS_TBL.".*, ".BAB_VAC_PERSONNEL_TBL.".id_sa, ".BAB_VAC_PERSONNEL_TBL.".id_coll from ".BAB_USERS_TBL." join ".BAB_VAC_PERSONNEL_TBL." where ".BAB_USERS_TBL.".id=".BAB_VAC_PERSONNEL_TBL.".id_user and ".BAB_USERS_TBL.".lastname like '".$this->db->db_escape_string($this->pos)."%' ";
-				if( !empty($idcol))
-					$req .= "and ".BAB_VAC_PERSONNEL_TBL.".id_coll='".$this->db->db_escape_string($idcol)."'";
-				if( !empty($idsa))
-					$req .= "and ".BAB_VAC_PERSONNEL_TBL.".id_sa='".$this->db->db_escape_string($idsa)."'";
-				$req .= "order by ".BAB_USERS_TBL.".lastname, ".BAB_USERS_TBL.".firstname asc";
-				$this->fullname = bab_translate("Lastname"). " " . bab_translate("Firstname");
-				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper&chg=&pos=".$this->ord.$this->pos."&idcol=".$this->idcol."&idsa=".$this->idsa;
-				}
-			else
-				{
-				$this->pos = $pos;
-				$this->ord = "";
-				$req = "select ".BAB_USERS_TBL.".*, ".BAB_VAC_PERSONNEL_TBL.".id_sa, ".BAB_VAC_PERSONNEL_TBL.".id_coll from ".BAB_USERS_TBL." join ".BAB_VAC_PERSONNEL_TBL." where ".BAB_USERS_TBL.".id=".BAB_VAC_PERSONNEL_TBL.".id_user and ".BAB_USERS_TBL.".firstname like '".$this->db->db_escape_string($this->pos)."%' ";
-				if( !empty($idcol))
-					$req .= "and ".BAB_VAC_PERSONNEL_TBL.".id_coll='".$this->db->db_escape_string($idcol)."'";
-				if( !empty($idsa))
-					$req .= "and ".BAB_VAC_PERSONNEL_TBL.".id_sa='".$this->db->db_escape_string($idsa)."'";
-				$req .= "order by ".BAB_USERS_TBL.".firstname, ".BAB_USERS_TBL.".lastname asc";
-				$this->fullname = bab_translate("Firstname"). " " . bab_translate("Lastname");
-				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper&chg=&pos=".$this->ord.$this->pos."&idcol=".$this->idcol."&idsa=".$this->idsa;
-				}
+			$this->pos = $pos;
+
+			$req = "SELECT  
+					u.id, 
+					u.lastname, 
+					u.firstname, 
+					p.id_sa, 
+					p.id_coll 
+				FROM 
+					".BAB_USERS_TBL." u 
+					join ".BAB_VAC_PERSONNEL_TBL." p 
+				WHERE 
+					u.id=p.id_user and 
+					u.lastname like '".$this->db->db_escape_string($this->pos)."%' 
+				";
+
+
+			if( !empty($idcol))
+				$req .= " and p.id_coll='".$this->db->db_escape_string($idcol)."' ";
+
+			if( !empty($idsa))
+				$req .= " and p.id_sa='".$this->db->db_escape_string($idsa)."' ";
+
+
+			$req .= "order by u.lastname, u.firstname asc";
+			
+			$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper&chg=&pos=".$this->pos."&idcol=".$this->idcol."&idsa=".$this->idsa;
+			
+
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 
@@ -458,13 +466,14 @@ function listVacationPersonnel($pos, $idcol, $idsa)
 			static $i = 0;
 			if( $i < $this->count)
 				{
+				$this->altbg = !$this->altbg;
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->url = $GLOBALS['babUrlScript']."?tg=vacadm&idx=modp&idp=".$this->arr['id']."&pos=".$this->ord.$this->pos;
-				if( $this->ord == "-" )
-					$this->urlname = bab_composeUserName($this->arr['lastname'],$this->arr['firstname']);
-				else
-					$this->urlname = bab_composeUserName($this->arr['firstname'],$this->arr['lastname']);
-
+				$this->url = $GLOBALS['babUrlScript']."?tg=vacadm&idx=modp&idp=".$this->arr['id']."&pos=".$this->pos;
+				
+				$this->firstname = bab_toHtml($this->arr['firstname']);
+				$this->lastname = bab_toHtml($this->arr['lastname']);
+				
+					
 				$this->userid = $this->arr['id'];
 				$this->lrbuurl = $GLOBALS['babUrlScript']."?tg=vacadm&idx=lrbu&idu=".$this->userid;
 				$this->calurl = $GLOBALS['babUrlScript']."?tg=vacuser&idx=cal&idu=".$this->userid;
@@ -488,24 +497,20 @@ function listVacationPersonnel($pos, $idcol, $idsa)
 			if( $k < 26)
 				{
 				$this->selectname = substr($t, $k, 1);
-				$this->selecturl = $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper&pos=".$this->ord.$this->selectname."&idcol=".$this->idcol."&idsa=".$this->idsa;
+				$this->selecturl = $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper&pos=".$this->selectname."&idcol=".$this->idcol."&idsa=".$this->idsa;
 
 				if( $this->pos == $this->selectname)
 					$this->selected = 1;
 				else 
 					{
-					if( $this->ord == "-" )
-						{
-						$req = "select ".BAB_USERS_TBL.".id from ".BAB_USERS_TBL." join ".BAB_VAC_PERSONNEL_TBL." where ".BAB_USERS_TBL.".id=".BAB_VAC_PERSONNEL_TBL.".id_user and ".BAB_USERS_TBL.".lastname like '".$this->selectname."%'";
-						}
-					else
-						{
-						$req = "select ".BAB_USERS_TBL.".id from ".BAB_USERS_TBL." join ".BAB_VAC_PERSONNEL_TBL." where ".BAB_USERS_TBL.".id=".BAB_VAC_PERSONNEL_TBL.".id_user and ".BAB_USERS_TBL.".firstname like '".$this->selectname."%'";
-						}
+
+					$req = "select u.id from ".BAB_USERS_TBL." u join ".BAB_VAC_PERSONNEL_TBL." p where u.id=p.id_user and u.lastname like '".$this->selectname."%'";
+
 					if( !empty($this->idcol))
-						$req .= "and ".BAB_VAC_PERSONNEL_TBL.".id_coll='".$this->db->db_escape_string($this->idcol)."'";
+						$req .= " and p.id_coll='".$this->db->db_escape_string($this->idcol)."'";
 					if( !empty($this->idsa))
-						$req .= "and ".BAB_VAC_PERSONNEL_TBL.".id_sa='".$this->db->db_escape_string($this->idsa)."'";
+						$req .= " and p.id_sa='".$this->db->db_escape_string($this->idsa)."'";
+
 					$res = $this->db->db_query($req);
 					if( $this->db->db_num_rows($res) > 0 )
 						$this->selected = 0;
