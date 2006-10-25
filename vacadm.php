@@ -1191,11 +1191,13 @@ switch($idx)
 		exit;
 		break;
 	case "delu":
-		if( !isset($pos)) $pos ="";
-		if( !isset($idcol)) $idcol ="";
-		if( !isset($idsa)) $idsa ="";
 		$babBody->title = bab_translate("Delete users");
-		deleteVacationPersonnel($pos, $idcol, $idsa, $userids);
+		deleteVacationPersonnel(
+			bab_rp('pos'), 
+			bab_rp('idcol'), 
+			bab_rp('idsa'), 
+			bab_rp('userids',array())
+		);
 		$babBody->addItemMenu("lper", bab_translate("Personnel"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper&pos=".$pos."&idcol=".$idcol."&idsa=".$idsa);
 		$babBody->addItemMenu("delu", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=delu");
 		break;
