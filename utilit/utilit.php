@@ -225,30 +225,7 @@ function bab_getTimeFormat($format)
 	return $format;
 }
 
-function bab_printOvmlTemplate( $file, $args=array())
-	{
-	global $babInstallPath, $babSkinPath, $babOvmlPath;
-	if( strstr($file, "..") || strtolower(substr($file, 0, 4)) == 'http' )
-		return "<!-- ERROR filename: ".$file." -->";
 
-	$filepath = $babOvmlPath.$file;
-	if( !file_exists( $filepath ) )
-		{
-		$filepath = $babSkinPath."ovml/". $file;
-		if( !file_exists( $filepath ) )
-			{
-			$filepath = $babInstallPath."skins/ovidentia/ovml/". $file;
-			}
-		}
-
-	if( !file_exists( $filepath ) )
-		return "<!-- ERROR filename: ".$filepath." -->";
-
-	$GLOBALS['babWebStat']->addOvmlFile($filepath);
-	include_once $GLOBALS['babInstallPath']."utilit/omlincl.php";
-	$tpl = new babOvTemplate($args);
-	return $tpl->printout(implode("", file($filepath)));
-	}
 
 function babLoadLanguage($lang, $folder, &$arr)
 	{
