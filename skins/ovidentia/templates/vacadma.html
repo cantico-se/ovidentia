@@ -381,15 +381,11 @@ function group_delete_selected() {
 			<tr> 
 				<td align="right">{ t_active }:</td>
 				<td> 
-					<select name="active">
 					<!--#if arr[active] "== Y" -->
-					<option value="Y" selected="selected">{ yes }</option>
-					<option value="N">{ no }</option>
+					<input type="checkbox" name="active" value="Y" checked="checked" />
 					<!--#else arr[active] -->
-					<option value="Y">{ yes }</option>
-					<option value="N" selected="selected">{ no }</option>
+					<input type="checkbox" name="active" value="Y" />
 					<!--#endif arr[active] -->
-					</select>
 				</td>
 			</tr>
 			<tr> 

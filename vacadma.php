@@ -578,7 +578,7 @@ function addModifyVacationRigths($id = false)
 			$this->t_period = bab_translate("Right period"). " (".bab_translate("dd-mm-yyyy").")";
 			$this->t_date_begin = $this->t_period_start = bab_translate("Begin");
 			$this->t_date_end = $this->t_period_end = bab_translate("End");
-			$this->t_active = bab_translate("Opened right");
+			$this->t_active = bab_translate("Active");
 			$this->t_cbalance = bab_translate("Accept negative balance");
 			$this->t_use_rules = bab_translate("Use rules");
 			$this->t_trigger_nbdays_min = bab_translate("Minimum number of days");
@@ -635,6 +635,7 @@ function addModifyVacationRigths($id = false)
 			$this->invalidtotal = bab_translate("Total days does'nt fit between dates");
 			$this->invalidtotal = str_replace("'", "\'", $this->invalidtotal);
 			$this->invalidtotal = str_replace('"', "'+String.fromCharCode(34)+'",$this->invalidtotal);
+
 
 			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=vacadma&idx=browt";
 			$this->db = & $GLOBALS['babDB'];
@@ -707,9 +708,9 @@ function addModifyVacationRigths($id = false)
 				}
 			
 			if (isset($_GET['idtype']))
-				$default = array('id_type' => $_GET['idtype']);
+				$default = array('id_type' => $_GET['idtype'], 'active' => 'Y');
 			else
-				$default = array();
+				$default = array('active' => 'Y');
 			
 			foreach($el_to_init as $field)
 				{
@@ -1358,8 +1359,8 @@ function updateVacationRight()
         {
         $post['date_begin_fixed'] = sprintf("%02d-%02d-%04d", $post['daybeginfx'], $post['monthbeginfx'], ($post['yearbeginfx'] + $post['year'] - 1 ));
         $post['date_end_fixed'] = sprintf("%02d-%02d-%04d", $post['dayendfx'], $post['monthendfx'], ($post['yearendfx']+ $post['year'] - 1 ));
-        $dates_to_init['date_begin_fixed'] = 1;
-        $dates_to_init['date_end_fixed'] = 1;
+        $dates_to_init['date_begin_fixed']	= 1;
+        $dates_to_init['date_end_fixed']	= 1;
         }
     else
         {

@@ -254,7 +254,11 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 
 		if (!$endp || -1 == $endp)
 			{
-			$endp = bab_mktime($arr['date_end_valid']);
+			$endp = 86400 + bab_mktime($arr['date_end_valid']);
+			}
+		else 
+			{
+			$endp += 86400;
 			}
 		
 		$req = "select sum(el.quantity) total from ".BAB_VAC_ENTRIES_ELEM_TBL." el, ".BAB_VAC_ENTRIES_TBL." e where e.id_user=".$db->quote($id_user)." and e.status='Y' and el.id_right=".$db->quote($arr['id'])." and el.id_entry=e.id";
@@ -276,73 +280,67 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 			$quantitydays = $arr['quantity'] - $qdp;
 			}	
 		
-		if ( !empty($arr['id_right']) )
-			{
+		if ( !empty($arr['id_right']) ) {
 			// rules 
 
 			$period_start = bab_mktime($arr['period_start']);
 			$period_end = bab_mktime($arr['period_end']);
 			
-			if ($period_start == -1 || $period_end == -1)
-				continue;
+			if ($period_start != -1 && $period_end != -1) {
+				// acces sur la période, en fonction de la période de la demande
 
-			$access = !$access_on_period;
+				$access = !$access_on_period; // $access sera false si les droits on été demandés avec une période
 
-			$period_acess = $arr['right_inperiod']+($arr['validoverlap']*10);
-			switch ($period_acess)
-				{
-				case 0: // Toujours
-				case 10:
-					$access = true;
-					break;
-				
-				case 1: // Dans la période de la règle
-					if ($beginp == -1 || $endp == -1)
-						continue;
-					if (!empty($arr['period_start']) && 
-						!empty($arr['period_end']) && 
-						($period_start <= $beginp && $period_end >= $endp) ) {
-							$access = true;
-							}
-					break;
-				
-				case 2: // En dehors de la période de la règle
-					if ($beginp == -1 || $endp == -1)
-						continue;
-					if (!empty($arr['period_start']) && 
-						!empty($arr['period_end']) && 
-						($period_end <= $beginp || $period_start >= $endp) ) {
-							$access = true;
-							}
-					break;
+				$period_acess = $arr['right_inperiod']+($arr['validoverlap']*10);
+				switch ($period_acess)
+					{
+					case 0: // Toujours
+					case 10:
+						$access = true;
+						break;
 					
-				case 11: // Dans la période de la règle mais peut dépasser à l'exterieur
-					if ($beginp == -1 || $endp == -1)
-						continue;
-					if (!empty($arr['period_start']) && 
-						!empty($arr['period_end']) && 
-						($period_start < $endp && $period_end > $beginp) ) {
-							$access = true;
-							}
-					break;
+					case 1: // Dans la période de la règle
+						if ($period_start <= $beginp && $period_end >= $endp) {
+								$access = true;
+								}
+						break;
+					
+					case 2: // En dehors de la période de la règle
+						if ($period_end <= $beginp || $period_start >= $endp) {
+								$access = true;
+								}
+						break;
+						
+					case 11: // Dans la période de la règle mais peut dépasser à l'exterieur
+						
+						if ($period_start < $endp && $period_end > $beginp ) {
+								bab_debug(
+									$arr['description']."\n".
+									bab_shortDate($period_start).' < '.bab_shortDate($endp). 
+									' && '.bab_shortDate($period_end).' > '.bab_shortDate($beginp)
+									);
+								$access = true;
+								}
+						break;
 
-				case 12: // En dehors de la période de la règle mais peut dépasser à l'intérieur
-					if ($beginp == -1 || $endp == -1)
-						continue;
-					if (!empty($arr['period_start']) && 
-						!empty($arr['period_end']) && 
-						($period_start > $beginp || $period_end < $endp) ) {
-							$access = true;
-							}
-					break;
+					case 12: // En dehors de la période de la règle mais peut dépasser à l'intérieur
+						if ($period_start > $beginp || $period_end < $endp) {
+								$access = true;
+								}
+						break;
+					}
 				}
 
+			
 
 			
-			if ( $access )
-				{
+			// Attribution du droit en fonction des jours demandés et validés
+			if ( $access ) {
+
 				$p1 = '';
 				$p2 = '';
+				$req = '';
+
 				if ('0000-00-00' != $arr['trigger_p1_begin'] && '0000-00-00' != $arr['trigger_p1_end']) {
 					$p1 = "(e.date_begin < ".$db->quote($arr['trigger_p1_end'])." AND e.date_end > ".$db->quote($arr['trigger_p1_begin']).')';
 				}
@@ -355,89 +353,92 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 					$req = 'AND ('.$p1.' OR '.$p2.')';
 				} else if ($p1 || $p2) {
 					$req = 'AND '.$p1.$p2;
-				} else {
-					continue;
 				}
 
+
+				if ($req) { // une requete valide a pu être crée a partir des périodes
 				
-				if (!empty($arr['trigger_type']))
-					{
-					$table = ", ".BAB_VAC_RIGHTS_TBL." r ";
-					$where = " AND el.id_right=r.id AND r.id_type='".$arr['trigger_type']."' ";
-					}
-				else
-					{
-					$table = '';
-					$where = '';
-					}
-				
-				$req = "SELECT 
-					e.date_begin,
-					e.date_end,
-					sum(el.quantity) total 
-					FROM 
-						".BAB_VAC_ENTRIES_ELEM_TBL." el, 
-						".BAB_VAC_ENTRIES_TBL." e 
-						".$table." 
-					WHERE  
-						e.id_user=".$db->quote($id_user)." 
-						and e.status='Y' 
-						and el.id_entry=e.id 
-						".$req.$where."
-					GROUP BY e.id";
+					if (!empty($arr['trigger_type']))
+						{
+						$table = ", ".BAB_VAC_RIGHTS_TBL." r ";
+						$where = " AND el.id_right=r.id AND r.id_type='".$arr['trigger_type']."' ";
+						}
+					else
+						{
+						$table = '';
+						$where = '';
+						}
+					
+					$req = "SELECT 
+						e.date_begin,
+						e.date_end,
+						sum(el.quantity) total 
+						FROM 
+							".BAB_VAC_ENTRIES_ELEM_TBL." el, 
+							".BAB_VAC_ENTRIES_TBL." e 
+							".$table." 
+						WHERE  
+							e.id_user=".$db->quote($id_user)." 
+							and e.status='Y' 
+							and el.id_entry=e.id 
+							".$req.$where."
+						GROUP BY e.id";
 
-				$nbdays = 0;
-				$res_entry = $db->db_query($req);
-				while ($entry = $db->db_fetch_assoc($res_entry)) {
+					$nbdays = 0;
+					$res_entry = $db->db_query($req);
+					while ($entry = $db->db_fetch_assoc($res_entry)) {
 
-					list($entry_date_begin) = explode(' ',$entry['date_begin']);
-					list($entry_date_end) = explode(' ',$entry['date_end']);
+						list($entry_date_begin) = explode(' ',$entry['date_begin']);
+						list($entry_date_end) = explode(' ',$entry['date_end']);
 
-					$intersect_p1 = BAB_DateTime::periodIntersect(
-							$entry_date_begin, 
-							$entry_date_end, 
-							$arr['trigger_p1_begin'], 
-							$arr['trigger_p1_end']
-						);
+						$intersect_p1 = BAB_DateTime::periodIntersect(
+								$entry_date_begin, 
+								$entry_date_end, 
+								$arr['trigger_p1_begin'], 
+								$arr['trigger_p1_end']
+							);
 
-					if (false !== $intersect_p1) {
-						$period_length = 1 + BAB_DateTime::dateDiffIso($intersect_p1['begin'], $intersect_p1['end']);
-						// + 1 for end day
-						if ($period_length < $entry['total']) {
-							$nbdays += $period_length;
-						} else {
-							$nbdays += $entry['total'];
+						if (false !== $intersect_p1) {
+							$period_length = 1 + BAB_DateTime::dateDiffIso($intersect_p1['begin'], $intersect_p1['end']);
+							// + 1 for end day
+							if ($period_length < $entry['total']) {
+								$nbdays += $period_length;
+							} else {
+								$nbdays += $entry['total'];
+							}
+						}
+
+						$intersect_p2 = BAB_DateTime::periodIntersect(
+								$entry['date_begin'], 
+								$entry['date_end'], 
+								$arr['trigger_p2_begin'], 
+								$arr['trigger_p2_end']
+							);
+
+						if (false !== $intersect_p2) {
+							$period_length = 1 + BAB_DateTime::dateDiffIso($intersect_p2['begin'], $intersect_p2['end']);
+							// + 1 for end day
+							if ($period_length < $entry['total']) {
+								$nbdays += $period_length;
+							} else {
+								$nbdays += $entry['total'];
+							}
+						}
+					
+						if ($nbdays > 0) {
+							bab_debug($arr['description']." - nb de jours pris:".$nbdays." min:".$arr['trigger_nbdays_min']." max:".$arr['trigger_nbdays_max']);
+						}
+
+						$access = false;
+						if ( '' !== $arr['trigger_nbdays_min'] && '' !== $arr['trigger_nbdays_max'] && $arr['trigger_nbdays_min'] <= $nbdays && $nbdays <= $arr['trigger_nbdays_max'] ) {
+							$access = true;
 						}
 					}
-
-					$intersect_p2 = BAB_DateTime::periodIntersect(
-							$entry['date_begin'], 
-							$entry['date_end'], 
-							$arr['trigger_p2_begin'], 
-							$arr['trigger_p2_end']
-						);
-
-					if (false !== $intersect_p2) {
-						$period_length = 1 + BAB_DateTime::dateDiffIso($intersect_p2['begin'], $intersect_p2['end']);
-						// + 1 for end day
-						if ($period_length < $entry['total']) {
-							$nbdays += $period_length;
-						} else {
-							$nbdays += $entry['total'];
-						}
-					}
-				}
-	
-
-				if ($nbdays > 0) {
-					bab_debug($arr['description']." - nb de jours pris : ".$nbdays." min : ".$arr['trigger_nbdays_min']." max : ".$arr['trigger_nbdays_max']);
-				}
-
-				$access = false;
-				if ( $arr['trigger_nbdays_min'] <= $nbdays && $nbdays <= $arr['trigger_nbdays_max'] )
-					$access = true;
-				}
-			}
+					
+					
+				} // endif ($req)	
+			} // endif ($access)
+		} // endif rule ($arr[id_right])
 
 		
 
@@ -560,6 +561,7 @@ function viewVacationCalendar($users, $period = false )
 			$this->t_waiting = bab_translate("Waiting vacation request");
 
 			$this->t_waiting_vac = bab_translate("Waiting vacation request");
+			$this->t_legend = bab_translate("Legend");
 			
 			$this->id_request = isset($_REQUEST['id']) ? $_REQUEST['id'] : 0;
 

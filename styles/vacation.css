@@ -75,6 +75,24 @@
 	border-bottom:#000 1px solid;
 	}
 
+#vacationcalendar .calendar tfoot a {
+	padding-left:18px;
+	font-size:11px;
+	text-decoration:none;
+}
+
+#vacationcalendar .calendar tfoot a:hover {
+	text-decoration:underline;
+}
+
+#vacationcalendar .calendar tfoot .plus {
+	background:transparent url('../skins/ovidentia/images/Puces/plus.gif') no-repeat 0 50%;
+}
+
+#vacationcalendar .calendar tfoot .minus {
+	background:transparent url('../skins/ovidentia/images/Puces/minus.gif') no-repeat 0 50%;
+}
+
 #vacationcalendar td {
 	font-size:.92em;
 	text-align:center;

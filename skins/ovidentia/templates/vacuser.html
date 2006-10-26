@@ -541,7 +541,11 @@ close }</a> </td>
 	<tr>
 		<td class="legend" colspan="<!--#if nbusers "> 1" -->33<!--#else nbusers -->32<!--#endif nbusers -->">
 		
-		<ul>
+		
+
+		<a href="#" onclick="show_hide_legend(this)" class="plus">{ t_legend }</a>
+		
+		<ul id="bab_vac_legend">
 			<!--#in getnexttype -->
 			<li title="{ arr[description] }"><span class="used" style="background-color:#{ arr[color] }"> &nbsp; </span>{ arr[name] }</li>
 			<!--#endin getnexttype -->
@@ -553,6 +557,18 @@ close }</a> </td>
 			<li><span class="used"> &nbsp; </span>{ t_non_used }</li>
 			<li><span class="wait"> &nbsp; </span>{ t_waiting }</li>
 		</ul>
+
+		<script type="text/javascript">
+			function show_hide_legend(link) {
+				obj = document.getElementById('bab_vac_legend');
+				none = 'none' == obj.style.display;
+				obj.style.display = none ? '' : 'none';
+				if (null != link) {
+					link.className = none ? 'minus' : 'plus';
+				}
+			}
+			show_hide_legend();
+		</script>
 
 		</td>
 	</tr>
@@ -661,9 +677,7 @@ function id_to_date(str) {
 
 function update_selection(obj, begindate, enddate) {
 
-	dateObj = id_to_date(obj.id);
-	
-	if (dateObj >= begindate && dateObj <= enddate && (obj.className == 'free' || obj.className == 'selected' || obj.className == 'period'))
+	if (obj.id >= begindate && obj.id <= enddate && (obj.className == 'free' || obj.className == 'selected' || obj.className == 'period'))
 		{
 		obj.className = 'period';
 		return true;
@@ -681,10 +695,6 @@ function setPeriod2()
 	{
 	var f = document.forms['vacform'];
 
-	var begindate = id_to_date(f.begin_tmp.value);
-	var enddate = id_to_date(f.end_tmp.value);
-
-
 	var nbd = 0;
 	
 	var tdlist = document.getElementById('vac_calendar_body').getElementsByTagName('td');
@@ -697,7 +707,7 @@ function setPeriod2()
 			if (obj) {
 				do {
 					if (1 == obj.nodeType && obj.id) {
-						if (update_selection(obj, begindate, enddate)) {
+						if (update_selection(obj, f.begin_tmp.value, f.end_tmp.value)) {
 							nbd++;
 						}
 					}
