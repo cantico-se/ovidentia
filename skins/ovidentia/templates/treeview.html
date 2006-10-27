@@ -135,6 +135,10 @@ bab_initTrees();
 <script type="text/javascript" src="{ babSkinPath }templates/orgchart.js"></script>
 <script type="text/javascript">
 <!--
+if (!window.bab_Translations) {
+	window.bab_Translations = new Array();
+}
+window.bab_Translations['Loading...'] = '{ t_loading }';
 
 var orgchart = document.getElementById('{ t_treeViewId }');
 orgchart.bab_openNodes = new Array();
@@ -161,7 +165,6 @@ bab_initOrgChart(document.getElementById('{ t_treeViewId }'));
 
 function changestyle(ent,oldstyle,newstyle)
 {
-
 	var ctrlPrefix = 'ENT';
 	var obj = document.getElementById(ent);
 	if (!obj)
@@ -169,37 +172,32 @@ function changestyle(ent,oldstyle,newstyle)
 	var objtag = obj.tagName;
 	var tas = document.getElementsByTagName(objtag);
 
-	for (i = 0; i < tas.length; i++)
-		{
-		if (tas.item(i).id.substring(0,ctrlPrefix.length) == ctrlPrefix)
-			{
+	for (i = 0; i < tas.length; i++) {
+		if (tas.item(i).id.substring(0,ctrlPrefix.length) == ctrlPrefix) {
 			var el = document.getElementById(tas.item(i).id);
 			el.className = oldstyle;
-			}
 		}
-obj.className = newstyle;
+	}
+	obj.className = newstyle;
 }
 
 function left_refresh()
 {
-var left_refresh = top.flb.document.forms.left_refresh;
-if (typeof left_refresh == 'undefined')
-	return true;
+	var left_refresh = top.flb.document.forms.left_refresh;
+	if (typeof left_refresh == 'undefined')
+		return true;
 
-var left_refresh_disabled = left_refresh.left_refresh_disabled;
-if ((typeof left_refresh_disabled != 'undefined') && left_refresh_disabled.value==1)
-	{
-	left_refresh_disabled.value=0;
-	return false;
-	}
-else
-	return true;
+	var left_refresh_disabled = left_refresh.left_refresh_disabled;
+	if ((typeof left_refresh_disabled != 'undefined') && left_refresh_disabled.value == 1) {
+		left_refresh_disabled.value = 0;
+		return false;
+	} else
+		return true;
 }
 
 function updateFlbFrame(url)
 {
 	if (left_refresh()) {
-	//	top.flb.document.location.href='http://lau-cho/ovidentia/index.php?tg=fltchart&rf=0&ocid=1&oeid=' + more;
 		top.flb.document.location.href = url;
 	}
 }
@@ -207,14 +205,13 @@ function updateFlbFrame(url)
 function updateFltFrame(url)
 {
 	if (left_refresh()) {
-	//	top.flt.document.location.href='http://lau-cho/ovidentia/index.php?tg=fltchart&rf=0&ocid=1&oeid=' + more;
 		top.flt.document.location.href = url;
 	}
 }
 
 function flbhref(url)
 {
-top.flb.document.location.href=url;
+	top.flb.document.location.href = url;
 }
 
 //-->
@@ -227,6 +224,13 @@ top.flb.document.location.href=url;
 <!--#begin orgchart -->
 
 <!-- BEGIN ORGCHART -->
+
+<script type="text/javascript">
+document.write('<div id="bab_loading" style="z-index: 255; padding: 4px; margin: 10 auto; position: absolute; left: 0; top: 0; width: 100%; height: 100%; background-color: white; vertical-align: middle">');
+document.write('<img style="vertical-align: middle" src="{ babSkinPath }images/indicator.gif" />');
+document.write(' { t_loading }');
+document.write('</div>');
+</script>
 
 <div class="orgchartcontainer">
 <div class="bab_treeToolbar BabSiteAdminTitleFontBackground"></div>
@@ -351,6 +355,7 @@ top.flb.document.location.href=url;
 <!--#endin getNextElement -->
 </div>
 </div>
+
 <!-- END ORGCHART -->
 
 <!--#end orgchart -->
