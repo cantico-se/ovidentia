@@ -38,7 +38,7 @@ body {
 div.entity .members {
 	text-align: left;
 	margin-top: 0.4em;
-	padding: 0.5em 0.1em 0.1em 3em;
+	padding: 0.5em 0.1em 0.1em 1em;
 	font-weight: normal;
 	background-position: 0.4em 0.4em;
 	background-repeat: no-repeat;
@@ -53,7 +53,7 @@ div.entity .members .member_role {
 
 div.entity .members .member {
 	display: list-item;
-	list-style: square;
+	list-style: none;
 	margin-left: 1em;
 }
 
@@ -102,9 +102,13 @@ div.entity .members .member {
 	background-color: #FFFFFF;
 	float: right;
 	position: absolute;
-	z-index: 255;
+	z-index: 127;
 	top: 0;
 	right: 0;
+}
+
+.orgchart div.entity a {
+	text-decoration: none;
 }
 
 .orgchart div.entity img.action {

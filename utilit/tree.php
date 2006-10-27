@@ -26,6 +26,21 @@
 
 
 
+if (!function_exists('is_a'))
+{
+    function is_a($object, $class)
+    {
+        if (!is_object($object))
+            return false;
+        if (strtolower(get_class($object)) === strtolower($class))
+            return true;
+        return is_subclass_of($object, $class);
+    }
+}
+
+
+
+
 /**
  * An ordered collection of nodes.
  * @package Utilities
@@ -656,6 +671,9 @@ class bab_OrphanRootNode extends bab_RootNode
 	 */
 	function appendChild(&$newNode, $id = null)
 	{
+		if (!is_a($newNode, 'bab_Node'))
+			return false;
+
 		if (is_null($id)) {
 			return parent::appendChild($newNode);
 		}
@@ -876,6 +894,8 @@ class bab_TreeView extends bab_Widget
 	var $t_collapse;
 	var $t_submit;
 	
+	var $t_loading;
+
 	var $t_id_separator;
 
 	var $t_isMultiSelect;
@@ -901,6 +921,8 @@ class bab_TreeView extends bab_Widget
 		$this->_iterator = null;
 
 		$this->t_treeViewId= $this->_id;
+		
+		$this->t_loading = bab_translate('Loading...');
 		$this->t_expand = bab_translate('Expand');
 		$this->t_collapse = bab_translate('Collapse');
 		$this->t_submit = bab_translate('Valider');
@@ -962,7 +984,7 @@ class bab_TreeView extends bab_Widget
 		
 	function sort($comparisonFunctionName = 'treeViewNodeComparison')
 	{
-		$this->_updateTree();
+//		$this->_updateTree();
 		$this->_invalidateCache();
 		$this->_rootNode->sortSubTree($comparisonFunctionName);
 	}
@@ -2254,7 +2276,11 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
 			}
 			$element->setLinkEntity("javascript:updateFlbFrame('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&rf=0&ocid=" . $this->_orgChartId . "&oeid=" . $entity['id'] . "&idx=detr');updateFltFrame('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&rf=0&ocid=" . $this->_orgChartId . "&oeid=" . $entity['id'] . "&idx=listr');changestyle('ENT" . $entity['id'] . "','BabLoginMenuBackground','BabTopicsButtonBackground');");
 
-			$element->addAction('show_from_here', bab_translate("Show from here"), $GLOBALS['babSkinPath'] . 'images/Puces/bottom.png', $GLOBALS['babUrlScript'] . '?tg=' . bab_rp('tg') . '&idx' . bab_rp('idx') . '&ocid=' . $this->_orgChartId . '&oeid=' . $entity['id'] . '&disp=disp3', '');
+			if ($entity['id'] != $startNode) {
+				$element->addAction('show_from_here', bab_translate("Show from here"), $GLOBALS['babSkinPath'] . 'images/Puces/bottom.png', $GLOBALS['babUrlScript'] . '?tg=' . bab_rp('tg') . '&idx' . bab_rp('idx') . '&ocid=' . $this->_orgChartId . '&oeid=' . $entity['id'] . '&disp=disp3', '');
+			} else if ($entity['id_parent'] != 0) {
+				$element->addAction('show_from_parent', bab_translate("Show from parent"), $GLOBALS['babSkinPath'] . 'images/Puces/parent.gif', $GLOBALS['babUrlScript'] . '?tg=' . bab_rp('tg') . '&idx' . bab_rp('idx') . '&ocid=' . $this->_orgChartId . '&oeid=' . $entity['id_parent'] . '&disp=disp3', '');
+			}
 			$element->addAction('toggle_members', bab_translate("Members"), $GLOBALS['babSkinPath'] . 'images/Puces/members.png', '', 'toggleMembers');
 			if ($this->_adminMode) {
 				$element->addAction('edit', bab_translate("Roles"), $GLOBALS['babSkinPath'] . 'images/Puces/edit.gif', "javascript:updateFltFrame('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&rf=0&ocid=" . $this->_orgChartId . "&oeid=" . $entity['id'] . "&idx=listr');updateFlbFrame('" . $GLOBALS['babUrlScript'] . "?tg=flbchart&rf=0&ocid=" . $this->_orgChartId . "&oeid=" . $entity['id'] . "&idx=listr');", '');
@@ -2334,7 +2360,7 @@ class bab_GroupTreeView extends bab_TreeView
 	{
 		if ($this->_upToDate)
 			return;
-			$this->_categories = array();
+		$this->_categories = array();
 		$this->_addGroups();
 		
 		
