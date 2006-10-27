@@ -239,10 +239,6 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 			$access= false;
 			}
 
-		if( !$access ) {
-			$db->db_query("update ".BAB_VAC_RIGHTS_TBL." set active='N' where id=".$db->quote($arr['id']));
-			}
-
 		
 		$beginp = $begin;
 		$endp = $end;
@@ -2275,7 +2271,7 @@ function bab_vac_delete_request($id_request)
 	while ($date_begin->getTimeStamp() <= $date_end->getTimeStamp()) {
 		$month	= $date_begin->getMonth();
 		$year	= $date_begin->getYear();
-		bab_vac_updateCalendar($event['id_user'], $year, $month);
+		bab_vac_updateCalendar($arr['id_user'], $year, $month);
 		$date_begin->add(1, BAB_DATETIME_MONTH);
 	}
 	

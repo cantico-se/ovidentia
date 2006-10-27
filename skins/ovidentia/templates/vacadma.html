@@ -19,9 +19,10 @@ function dateEnd(day, month, year)
 	<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 		<tr class="BabSiteAdminTitleFontBackground">
 			<td>{ desctxt }</td>
-			<td align="center">{ t_edit }</td>
-			<td>{ statustxt }</td>
 			<td>{ typetxt }</td>
+			<td align="center">{ t_edit }</td>
+			<td align="center">{ statustxt }</td>
+			<td>{ t_available }</td>
 			<td align="center">{ quantitytxt }</td>
 			<td>&nbsp;</td>
 		</tr>
@@ -30,27 +31,34 @@ function dateEnd(day, month, year)
 			<td>
 				<a href="javascript: Start('{ vrviewurl }', 'OviListPr', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ description }</a>
 			</td>
+			<td>{ typename }</td>
 			<td align="center">
 				<a href="{ vrurl }" title="{ creditortxt } : { creditor }"><img src="{ babSkinPath }images/Puces/edit.gif" border="0" alt="{ alttxt }" /></a>
 			</td>
-			<td>{ statusval }</td>
-			<td>{ typename }</td>
+			<td align="center">
+				<!--#if bclose -->
+				<img src="{ babSkinPath }images/Puces/action_fail.gif" alt="{ closedtxt }" />
+				<!--#else bclose -->
+				<img src="{ babSkinPath }images/Puces/action_success.gif" alt="{ openedtxt }" />
+				<!--#endif bclose -->
+			</td>
+			<td>{ available }</td>
 			<td align="center">{ quantity }</td>
 			<td width="1%"><a href="javascript: Start('{ urllistp }', 'OviListPr', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');" title="{ altlistp }"><img src="{ babSkinPath }images/Puces/PuceUserAttrib.gif" alt="{ altlistp }" border="0" align="middle" /></a></td>
         </tr>
         <!--#endin getnext -->
-		<tr>
-			<td class="BabSiteAdminTitleFontBackground"> 
+		<tr class="BabSiteAdminTitleFontBackground">
+			<td> 
 				&nbsp; 
 				<!--#if topurl --><a href="{ topurl }"><img src="{ babSkinPath }images/Puces/arrowPrev3aa.gif" alt="{ t_first_page }" /></a><!--#endif topurl -->
 				<!--#if prevurl --><a href="{ prevurl }"><img src="{ babSkinPath }images/Puces/arrowPrev3a.gif" alt="{ t_previous_page }" /></a><!--#endif prevurl -->
 			</td>
 
-			<td colspan="3" class="BabSiteAdminTitleFontBackground" align="center">
+			<td colspan="4" align="center">
 				{ t_position }
 			</td>
 
-			<td colspan="2" class="BabSiteAdminTitleFontBackground" align="right"> 
+			<td colspan="2" align="right"> 
 
 				<!--#if nexturl --><a href="{ nexturl }"><img src="{ babSkinPath }images/Puces/arrowNext3a.gif" alt="{ t_next_page }" /></a><!--#endif nexturl -->
 				<!--#if bottomurl --><a href="{ bottomurl }"><img src="{ babSkinPath }images/Puces/arrowNext3aa.gif" alt="{ t_last_page }" /></a><!--#endif bottomurl -->
@@ -915,64 +923,54 @@ function updateDates(elemDay, elemMonth, elemYear)
 <!--#end browseusers -->
 
 <!--#begin viewvacright -->
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE>{ babSiteName }</TITLE>
-{ babMeta }
-{ babCss }
-<script type="text/javascript" src="{ babOvidentiaJs }">
-<!--
-//-->
-</script>
-<script type="text/javascript">
-<!--
-window.focus();
-//-->
-</script>
-</HEAD>
-<BODY class="BabBackground">
-<table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
-<tr>
-<td class="BabErrorMessage" align="center" >{ description }</td>
-</tr></table></center>
-<br>
+
+
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
-<td class="BabLoginMenuBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr>
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ typetxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ type }</td>
-</tr>
-<tr>
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ quantitytxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ quantity }</td>
-</tr>
-<tr>
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ creditortxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ creditor }</td>
-</tr>
-<tr>
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ dateentrytxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ dateentry }</td>
-</tr>
-<tr>
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ datebegintxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ datebegin }</td>
-</tr>
-<tr>
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ dateendtxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ dateend }</td>
-</tr>
-<tr>
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ validperiodtxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">
-<!--#if bvalidperiod -->
-{ datebeginvalid }&nbsp;&nbsp;-&nbsp;&nbsp;{ dateendvalid }
-<!--#endif bvalidperiod -->&nbsp;
-</td>
-</tr>
-<tr>
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ statustxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ status }</td>
+<td class="BabLoginCadreBackground"> 
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="8" align="center">
+	<tr>
+		<td align="right" width="50%">{ typetxt }:</td>
+		<td>{ type }</td>
+	</tr>
+	<tr>
+		<td align="right">{ quantitytxt }:</td>
+		<td>{ quantity }</td>
+	</tr>
+	<tr>
+		<td align="right">{ creditortxt }:</td>
+		<td>{ creditor }</td>
+	</tr>
+	<tr>
+		<td align="right">{ dateentrytxt }:</td>
+		<td>{ dateentry }</td>
+	</tr>
+	<tr>
+		<td align="right">{ datebegintxt }:</td>
+		<td>{ datebegin }</td>
+	</tr>
+	<tr>
+		<td align="right">{ dateendtxt }:</td>
+		<td>{ dateend }</td>
+	</tr>
+	<!--#if bvalidperiod -->
+	<tr>
+		<td align="right" valign="top">{ validperiodtxt }:</td>
+		<td>
+		{ t_from } { datebeginvalid }<br />
+		{ t_to } { dateendvalid }
+		</td>
+	</tr>
+	<!--#endif bvalidperiod -->
+	<tr>
+		<td align="right">{ statustxt }:</td>
+		<td>{ status }</td>
+	</tr>
+	</table>
+	</td>
 </tr>
 </table>
-<br>
-</BODY>
-</HTML>
+
 <!--#end viewvacright -->
 
 

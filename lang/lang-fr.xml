@@ -166,7 +166,7 @@
 <string id="Close right">Droit fermé</string>
 <string id="Close thread">Clore le sujet</string>
 <string id="Close">Fermer</string>
-<string id="Closed rights">Droits fermés</string>
+<string id="Closed rights">Droits désactivés</string>
 <string id="Closed threads">Sujets fermés</string>
 <string id="Closed">Sujets fermés</string>
 <string id="Collection">Régime</string>
@@ -499,7 +499,7 @@
 <string id="Modify">Modifier</string>
 <string id="Monday">Lundi</string>
 <string id="Month">Mois</string>
-<string id="Morning">Matin</string>
+<string id="Morning">Matinée</string>
 <string id="Move Down">Vers le bas</string>
 <string id="Move Up">Vers le haut</string>
 <string id="Move selected articles from archive">Déplacer des archives les articles sélectionnés</string>
@@ -552,8 +552,8 @@
 <string id="On site">Sur le site</string>
 <string id="Only valid if registration is actif">Valide seulement si l'inscription est active</string>
 <string id="Open thread">Ouvrir le sujet</string>
-<string id="Opened right">Droit ouvert</string>
-<string id="Opened rights">Droits ouverts</string>
+<string id="Opened right">Droit actif</string>
+<string id="Opened rights">Droits actifs</string>
 <string id="Opened threads">Sujets ouverts</string>
 <string id="Options">Options</string>
 <string id="Or users having ">Ou les utilisateurs ayant pour régime</string>
@@ -655,8 +655,8 @@
 <string id="Retype New Password">Retapez le nouveau mot de passe</string>
 <string id="Retype Paasword">Retapez le mot de passe</string>
 <string id="Retype default password">Retapez le mot de passe</string>
-<string id="Right closed">Droit fermé</string>
-<string id="Right opened">Droit ouvert</string>
+<string id="Right closed">Droit désactivé</string>
+<string id="Right opened">Droit actif</string>
 <string id="Right sections">Sections à droite</string>
 <string id="Right">Droite</string>
 <string id="Rights">Droits</string>
@@ -813,8 +813,8 @@
 <string id="Users does'nt exist">Les utilisateurs n'existent pas</string>
 <string id="Users list">Liste des utilisateurs</string>
 <string id="Users">Utilisateurs</string>
-<string id="Vac. closed">Fermé</string>
-<string id="Vac. opened">Ouvert</string>
+<string id="Vac. closed">Droit désactivé</string>
+<string id="Vac. opened">Droit actif</string>
 <string id="Vacation entry has been updated">Demande de congé mise à jour</string>
 <string id="Vacation has been accepted">Demande de congé acceptée</string>
 <string id="Vacation has been refused">Demande de congé refusée</string>
@@ -2333,6 +2333,7 @@
 <string id="Month view">Afficher la vue mois</string>
 <string id="Some vacation requests are linked to this right, if you delete the right, the vacation requests will be deleted with it">Des demandes de congés sont liées à ce droit, si vous supprimez le droit, les demandes de congés serons supprimées avec lui</string>
 <string id="%d requests will be deleted">%d demandes serons supprimées</string>
+<string id="one request will be deleted">Une demande de congés sera supprimée</string>
 <string id="Last request with this right">Dernière demande liée à ce droit</string>
 <string id="Rights groups">Regroupements de droits</string>
 <string id="Right group">Regroupement de droits</string>

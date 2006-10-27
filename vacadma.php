@@ -334,7 +334,7 @@ function listVacationRigths($idtype, $idcreditor, $dateb, $datee, $active, $pos)
 			$this->begintxt = bab_translate("Begin");
 			$this->endtxt = bab_translate("End");
 			$this->altlistp = bab_translate("Beneficiaries");
-			$this->statustxt = bab_translate("Status");
+			$this->statustxt = bab_translate("Active");
 			$this->activeyes = bab_translate("Opened rights");
 			$this->activeno = bab_translate("Closed rights");
 			$this->closedtxt = bab_translate("Vac. closed");
@@ -345,6 +345,7 @@ function listVacationRigths($idtype, $idcreditor, $dateb, $datee, $active, $pos)
 			$this->t_previous_page = bab_translate("Previous page");
 			$this->t_next_page = bab_translate("Next page");
 			$this->t_last_page = bab_translate("Last page");
+			$this->t_available = bab_translate("Availability");
 			$this->topurl = "";
 			$this->bottomurl = "";
 			$this->nexturl = "";
@@ -365,20 +366,20 @@ function listVacationRigths($idtype, $idcreditor, $dateb, $datee, $active, $pos)
 			else if( $this->active == "N")
 				$this->nselected = "selected";
 
-			$req = "".BAB_VAC_RIGHTS_TBL;
+			$req = "".BAB_VAC_RIGHTS_TBL." r LEFT JOIN ".BAB_VAC_TYPES_TBL." t ON t.id=r.id_type ";
 			if( $idtype != "" || $idcreditor != "" || $dateb != "" || $datee != ""|| $active != "")
 				{
 				$req .= " where ";
 
 				if( $idtype != "")
-					$aaareq[] = "id_type='".$this->db->db_escape_string($idtype)."'";
+					$aaareq[] = "r.id_type='".$this->db->db_escape_string($idtype)."'";
 
 				if( $active != "")
-					$aaareq[] = "active='".$this->db->db_escape_string($active)."'";
+					$aaareq[] = "r.active='".$this->db->db_escape_string($active)."'";
 
 				if( $idcreditor != "")
 					{
-					$aaareq[] = "id_creditor='".$this->db->db_escape_string($idcreditor)."'";
+					$aaareq[] = "r.id_creditor='".$this->db->db_escape_string($idcreditor)."'";
 					}
 
 				if( $dateb != "" )
@@ -395,15 +396,15 @@ function listVacationRigths($idtype, $idcreditor, $dateb, $datee, $active, $pos)
 
 				if( $dateb != "" && $datee != "")
 					{
-					$aaareq[] = "( date_entry between '".$this->db->db_escape_string($dateb)."' and '".$this->db->db_escape_string($datee)."')";
+					$aaareq[] = "( r.date_entry between '".$this->db->db_escape_string($dateb)."' and '".$this->db->db_escape_string($datee)."')";
 					}
 				else if( $dateb == "" && $datee != "" )
 					{
-					$aaareq[] = "date_entry <= '".$this->db->db_escape_string($datee)."'";
+					$aaareq[] = "r.date_entry <= '".$this->db->db_escape_string($datee)."'";
 					}
 				else if ($dateb != "" )
 					{
-					$aaareq[] = "date_entry >= '".$this->db->db_escape_string($dateb)."'";
+					$aaareq[] = "r.date_entry >= '".$this->db->db_escape_string($dateb)."'";
 					}
 				}
 
@@ -414,7 +415,7 @@ function listVacationRigths($idtype, $idcreditor, $dateb, $datee, $active, $pos)
 				else
 					$req .= $aaareq[0];
 				}
-			$req .= " order by date_entry desc";
+			$req .= " order by r.date_entry desc";
 
 			list($total) = $this->db->db_fetch_row($this->db->db_query("select count(*) as total from ".$req));
 
@@ -457,7 +458,7 @@ function listVacationRigths($idtype, $idcreditor, $dateb, $datee, $active, $pos)
 				{
 				$req .= " limit ".$pos.",".VAC_MAX_RIGHTS_LIST;
 				}
-			$this->res = $this->db->db_query("select * from ".$req);
+			$this->res = $this->db->db_query("select r.*, t.name type from ".$req);
 			$this->count = $this->db->db_num_rows($this->res);
 			$this->addurl = $GLOBALS['babUrlScript']."?tg=vacadma&idx=addvr";
 
@@ -479,15 +480,27 @@ function listVacationRigths($idtype, $idcreditor, $dateb, $datee, $active, $pos)
 				{
 				$this->altbg = !$this->altbg;
 				$arr = $this->db->db_fetch_array($this->res);
-				$rr = $this->db->db_fetch_array($this->db->db_query("select name from ".BAB_VAC_TYPES_TBL." where id='".$this->db->db_escape_string($arr['id_type'])."'"));
-				$this->vrurl = $GLOBALS['babUrlScript']."?tg=vacadma&idx=modvr&idvr=".$arr['id'];
-				$this->vrviewurl = $GLOBALS['babUrlScript']."?tg=vacadma&idx=viewvr&idvr=".$arr['id'];
-				$this->typename = $rr['name'];
-				$this->description = $arr['description'];
-				$this->quantity = $arr['quantity'];
-				$this->creditor = bab_getUserName($arr['id_creditor']);
-				$this->date = bab_shortDate(bab_mktime($arr['date_entry']." 00:00:00"), false);
-				$this->bclose = $arr['active'] == "N"? true: false;
+				
+				$this->vrurl		= $GLOBALS['babUrlScript']."?tg=vacadma&idx=modvr&idvr=".$arr['id'];
+				$this->vrviewurl	= $GLOBALS['babUrlScript']."?tg=vacadma&idx=viewvr&idvr=".$arr['id'];
+				$this->typename		= bab_toHtml($arr['type']);
+				$this->description	= bab_toHtml($arr['description']);
+				$this->quantity		= $arr['quantity'];
+				$this->creditor		= bab_getUserName($arr['id_creditor']);
+				$this->date			= bab_shortDate(bab_mktime($arr['date_entry']), false);
+				$this->bclose		= $arr['active'] == "N";
+
+				$available = true;
+				if ('0000-00-00' !== $arr['date_begin_valid'] && $arr['date_begin_valid'] > date('Y-m-d')) {
+					$available = false;
+				}
+
+				if ('0000-00-00' !== $arr['date_end_valid'] && $arr['date_end_valid'] < date('Y-m-d')) {
+					$available = false;
+				}
+
+				$this->available	= $available ? bab_translate('Available') : '';
+
 				if( $this->bclose )
 					$this->statusval = $this->closedtxt;
 				else
@@ -1193,6 +1206,8 @@ function viewVacationRightPersonnel($idvr)
 			$this->creditortxt = bab_translate("Author");
 			$this->statustxt = bab_translate("Status");
 			$this->validperiodtxt = bab_translate("Retention period");
+			$this->t_from = bab_translate("date_from");
+			$this->t_to = bab_translate("date_to");
 			$this->db = &$GLOBALS['babDB'];
 
 			$row = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_VAC_RIGHTS_TBL." where id='".$this->db->db_escape_string($idvr)."'"));
@@ -1209,7 +1224,7 @@ function viewVacationRightPersonnel($idvr)
 				{
 				$this->bvalidperiod = false;
 				}
-			$this->description = $row['description'];
+			$GLOBALS['babBody']->title = $row['description'];
 			$this->creditor = bab_getUserName($row['id_creditor']);
 			$this->quantity = $row['quantity'];
 			$this->status = $row['active'] == "Y"? bab_translate("Right opened"): bab_translate("Right closed");
@@ -1219,7 +1234,7 @@ function viewVacationRightPersonnel($idvr)
 		}
 
 	$temp = new temp($idvr);
-	echo bab_printTemplate($temp, "vacadma.html", "viewvacright");
+	$babBody->babPopup(bab_printTemplate($temp, "vacadma.html", "viewvacright"));
 	}
 
 
@@ -1393,19 +1408,6 @@ function updateVacationRight()
 		{
 		$babBody->msgerror = bab_translate("Begin date must be less than end date");
 		return false;
-		}
-
-	if( $post['active'] == 'Y' )
-		{
-		if( !empty($post['date_begin_valid']) && $post['date_begin_valid'] != '0000-00-00' && (bab_mktime($post['date_begin_valid']." 00:00:00") > mktime()))
-			{
-			$post['active'] = 'N';
-			}
-
-		if( !empty($post['date_end_valid']) && $post['date_end_valid'] != '0000-00-00' && (bab_mktime($post['date_end_valid']." 23:59:59") < mktime()))
-			{
-			$post['active'] = 'N';
-			}
 		}
 
 
@@ -1792,9 +1794,13 @@ function deleteVacationRightConf($idvr) {
 			$arr = $this->db->db_fetch_assoc($this->res);
 			$nb_requests = $this->db->db_num_rows($this->res);
 			$this->request = bab_toHtml(bab_vac_longDate($arr['date_begin']));
-			$this->t_nb_requests = bab_toHtml(sprintf(bab_translate("%d requests will be deleted"),$nb_requests));
+			if (1 == $nb_requests) {
+				$this->t_nb_requests = bab_toHtml(bab_translate("one request will be deleted"));
+			} else {
+				$this->t_nb_requests = bab_toHtml(sprintf(bab_translate("%d requests will be deleted"),$nb_requests));
 			}
 		}
+	}
 
 	$temp = new temp($idvr);
 	$babBody->babecho(bab_printTemplate($temp,"vacadma.html", "rightsdelete"));
@@ -1938,13 +1944,6 @@ function rightcopy() {
 			$row['date_end_valid']		= $this->increment_ISO($row['date_end_valid']);
 			$row['date_end_fixed']		= $this->increment_ISO($row['date_end_fixed']);
 			$row['date_begin_fixed']	= $this->increment_ISO($row['date_begin_fixed']);
-
-
-			if ($row['date_begin_valid'] > date('Y-m-d') || date('Y-m-d') > $row['date_end_valid']) {
-				$row['active'] = 'N';
-			} else {
-				$row['active'] = 'Y';
-			}
 
 
 			$row['description'] = preg_replace_callback("/\d{4}/", 
