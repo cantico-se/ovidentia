@@ -314,12 +314,14 @@ function displayDeleteSpecificFieldForm()
 			$bf->set_data('objectName', 'sDeletableField');
 			$bf->set_data('iIdObject', implode(',', array_unique($items)));
 	
-			if(count($items) > 0)
+			if(count($items) > 1)
 			{
+				$babBody->title = bab_translate("Delete specifics fields");
 				$bf->set_caption('warning', bab_translate("This action will delete those specific fields and all references"));
 			}
 			else
 			{
+				$babBody->title = bab_translate("Delete specific field");
 				$bf->set_caption('warning', bab_translate("This action will delete the specific field and all references"));
 			}
 
@@ -329,7 +331,7 @@ function displayDeleteSpecificFieldForm()
 			$bf->set_caption('yes', bab_translate("Yes"));
 			$bf->set_caption('no', bab_translate("No"));
 	
-			$babBody->title = bab_translate("Delete specific field");
+			
 	}
 	else 
 	{

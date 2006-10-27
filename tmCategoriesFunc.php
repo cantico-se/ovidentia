@@ -314,12 +314,14 @@ function displayDeleteCategoryForm()
 			$bf->set_data('objectName', 'sDeletableObjects');
 			$bf->set_data('iIdObject', implode(',', array_unique($items)));
 	
-			if(count($items) > 0)
+			if(count($items) > 1)
 			{
+				$babBody->title = bab_translate("Delete categories");
 				$bf->set_caption('warning', bab_translate("This action will delete those categories and all references"));
 			}
 			else
 			{
+				$babBody->title = bab_translate("Delete category");
 				$bf->set_caption('warning', bab_translate("This action will delete the category and all references"));
 			}
 			
@@ -328,7 +330,6 @@ function displayDeleteCategoryForm()
 			$bf->set_caption('yes', bab_translate("Yes"));
 			$bf->set_caption('no', bab_translate("No"));
 	
-			$babBody->title = bab_translate("Delete category");
 	}
 	else 
 	{
