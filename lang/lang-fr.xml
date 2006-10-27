@@ -1443,7 +1443,7 @@
 <string id="Export table data">Exporter les données des tables</string>
 <string id="Export table structure">Exporter la structure des tables</string>
 <string id="Database management">Gestion de la base de données</string>
-<string id="Database">base de données</string>
+<string id="Database">Base de données</string>
 <string id="date_from">Du</string>
 <string id="date_to">Au</string>
 <string id="View event">Voir l'événement</string>
@@ -2287,7 +2287,7 @@
 <string id="My task(s)">Mes tâche(s)</string>
 <string id="You are not a projects manager">Vous n'êtes pas gestionnaire</string>
 <string id="Tasks of the project">Tâches du projet</string>
-<string id="Who can connect as user of web services">Qui peut s'authentifier par les web services</string>
+<string id="Who can connect as user of web services">Qui peut s'authentifier par les Web services</string>
 <string id="Who can use OVML containers">Qui peut utiliser l'OVML par Web services</string>
 <string id="Who can use OVML files">Qui peut utiliser les fichiers OVML par Web services</string>
 <string id="Last posts">Dernières contributions</string>
