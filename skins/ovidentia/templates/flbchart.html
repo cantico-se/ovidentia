@@ -1,27 +1,20 @@
 <!--#begin flbchartpage -->
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE>{ babSiteName }</TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+<head>
+ <meta http-equiv="Content-type" content="text/html; charset=iso-8859-1" />
+ <title>{ babSiteName }</title>
 { babMeta }
 { babCss }
-<script type="text/javascript" src="{ babOvidentiaJs }">
-<!--
-//-->
-</script>
-
-
-</HEAD>
+<script type="text/javascript" src="{ babOvidentiaJs }"></script>
+</head>
 <body>
 <form name="left_refresh" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="left_refresh_disabled" value="0">
 </form>
-<table width="100%" height="100%" border="0" cellspacing="10" cellpadding="0" align="center">
-<tr> 
-	<td class="BabContentBackground" valign="top"> 
 <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
 <tr> 
-	<td> 
+	<td>
 		<table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
 		<tr> 
 		<td align="center" valign="middle"> 
@@ -30,13 +23,13 @@
 			<!--#in getNextMenu -->
 			<!--#if enabled "== 0" -->
 			<td align="center" valign="middle" nowrap width="20%" class="BabMenuActiveBackground"> 
-			<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0">{ menutext }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"></td>
+			<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0" />{ menutext }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0" /></td>
 			<!--#else enabled -->
-			<td width="20%" align="center" valign="middle" nowrap class="BabLoginMenuBackground"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"><a class="BabMenuLink" href="{ menuurl }" { menuattribute }>{ 
-			 menutext }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"></td>
+			<td width="20%" align="center" valign="middle" nowrap class="BabLoginMenuBackground"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0" /><a class="BabMenuLink" href="{ menuurl }" { menuattribute }>{ 
+			 menutext }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0" /></td>
 			<!--#endif enabled -->
 			<!--#endin getNextMenu -->
-			<td><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+			<td><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0" /></td>
 			</tr>
 			</table>
 		</td>
@@ -69,8 +62,6 @@
 	</td>
 </tr>
 </table>
-</td></tr>
-</table>
 <!--#if frrefresh -->
 <script type="text/javascript">
 <!--
@@ -90,6 +81,7 @@ top.frames['flt'].document.location.reload();
 </body>
 </html>
 <!--#end flbchartpage -->
+
 
 <!--#begin ocecreate -->
 <!--#if count -->

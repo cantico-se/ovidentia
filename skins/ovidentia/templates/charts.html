@@ -7,7 +7,7 @@ function open_Chart(url,name)
 var f = document.forms.gcreate;
 if( opc == null || opc.closed )
 	{
-	opc = this.open(url, name, 'width='+(screen.width-6)+',height='+(screen.height-60)+',menubar=yes,status=no,resizable=yes,top=1,left=1,scrollbars=yes');
+	opc = this.open(url, name, 'width='+(screen.width-6)+',height='+(screen.height-100)+',menubar=yes,status=no,resizable=yes,top=1,left=1,scrollbars=yes');
 	}
 else
 	{
@@ -19,21 +19,19 @@ else
 </script>
 <table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
-<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<td class="BabLoginCadreBackground" valign="middle"> 
 <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" valign="middle"	nowrap>{ name }</td>
-<td class="BabSiteAdminTitleFontBackground" 
-valign="middle">{ description }</td>
-<td class="BabSiteAdminTitleFontBackground" 
-valign="middle" align="center" colspan="1">&nbsp;</td>
+<tr class="BabSiteAdminTitleFontBackground"> 
+<td valign="middle">{ name }</td>
+<td valign="middle">{ description }</td>
+<td valign="middle" align="center">&nbsp;</td>
 </tr>
 <!--#in getnext -->
-<tr> 
-<td class="BabSiteAdminFontBackground" valign="middle" 
-nowrap><a class="BabSiteAdminListLink" href="javascript: open_Chart('{ viewurl }', 'OrgChartWin{ ocid }');" nowrap>{ urlname }</a></td>
-<td class="BabSiteAdminFontBackground" valign="middle">{ descval }</td>
-<td class="BabSiteAdminFontBackground" valign="middle">
+<tr class="BabSiteAdminFontBackground"> 
+<td valign="middle" 
+nowrap><a href="javascript: open_Chart('{ viewurl }', 'OrgChartWin{ ocid }');">{ urlname }</a></td>
+<td valign="middle">{ descval }</td>
+<td valign="middle">
 <!--#if bedit -->
 <!--#if bediturl -->
 <a class="BabSiteAdminListLink" href="javascript: open_Chart('{ editurl }', 'OrgChartWin{ ocid }');" nowrap>{ edit }</a>
