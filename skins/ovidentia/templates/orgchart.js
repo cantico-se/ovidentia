@@ -159,10 +159,10 @@ function bab_loadStateFromCookie()
 	for (var i = 0; i < pairs.length; i++) {
 		var keyValue = pairs[i].split('=');
 		if (keyValue[1] != '') {
-			if (keyValue[0] == this.id + 'nodes') {
+/*			if (keyValue[0] == this.id + 'nodes') {
 				var nodeIds = unescape(keyValue[1]).split('/');
 				this.setOpenNodes(nodeIds);
-			} else if (keyValue[0] == this.id + 'members') {
+			} else */if (keyValue[0] == this.id + 'members') {
 				var memberIds = unescape(keyValue[1]).split('/');
 				this.setOpenMembers(memberIds);
 			} else if (keyValue[0] == this.id + 'zoom') {
@@ -507,13 +507,13 @@ function bab_initOrgChart(orgChartDiv)
 	orgChartDiv.levelSelect.value = '-';
 //	orgChartDiv.levelSelect.onchange();
 
-	orgChartDiv.setOpenNodes(orgChartDiv.bab_openNodes);
+//	orgChartDiv.setOpenNodes(orgChartDiv.bab_openNodes);
 	orgChartDiv.setOpenMembers(orgChartDiv.bab_openMembers);
 
 	orgChartDiv.loadStateFromCookie();
 
-//	bab_resizeOrgChartContainer();
-	window.setTimeout('bab_resizeOrgChartContainer()', 1000);
+	bab_resizeOrgChartContainer();
+//	window.setTimeout('bab_resizeOrgChartContainer()', 500);
 	window.onresize = bab_resizeOrgChartContainer;
 
 	window.onunload = function() {
