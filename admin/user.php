@@ -217,7 +217,17 @@ function changePassword($item, $pos, $grp)
 		function changePasswordCls($item, $pos, $grp)
 			{
 			global $babBody, $babDB;
-			switch( $babBody->babsite['authentification'] )
+
+			$res=$babDB->db_query("select db_authentification from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($item)."'");
+			$arruser = $babDB->db_fetch_array($res);
+
+			$authentification = $babBody->babsite['authentification'];
+			if( $arruser['db_authentification'] == 'Y' )
+				{
+				$authentification = ''; // force to default
+				}
+
+			switch( $authentification )
 				{
 				case BAB_AUTHENTIFICATION_AD:
 					$this->bshowform = false;
@@ -432,9 +442,15 @@ function updatePassword($item, $newpwd1, $newpwd2)
 		return false;
 		}
 
-	list($nickname) = $babDB->db_fetch_row($babDB->db_query("select nickname from ".BAB_USERS_TBL." where id='".$item."'"));
+	list($nickname, $dbauth) = $babDB->db_fetch_row($babDB->db_query("select nickname, db_authentification from ".BAB_USERS_TBL." where id='".$item."'"));
 
-	switch($babBody->babsite['authentification'])
+	$authentification = $babBody->babsite['authentification'];
+	if( $dbauth == 'Y' )
+		{
+		$authentification = ''; // force to default
+		}
+
+	switch($authentification)
 		{
 		case BAB_AUTHENTIFICATION_AD: // Active Directory
 			$babBody->msgerror = bab_translate("Nothing Changed !!");
