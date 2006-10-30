@@ -82,6 +82,9 @@
 				$this->m_bIsEnded = (BAB_TM_ENDED == $this->m_aTask['iParticipationStatus']);
 				$this->m_bIsFirstTask = ($this->m_aTask['iPosition'] == 1);
 				
+				$this->isoDateToFrench($this->m_aTask['sStartDate']);
+				$this->isoDateToFrench($this->m_aTask['sEndDate']);
+
 				/*
 				bab_debug('m_bIsStarted ==> ' . ($this->m_bIsStarted ? 'Yes' : 'No'));
 				bab_debug('m_bIsEnded ==> ' . ($this->m_bIsEnded ? 'Yes' : 'No'));
@@ -89,9 +92,31 @@
 				bab_debug('iPosition ==> ' . $this->m_aTask['iPosition']);
 				//*/
 			}
+			
+			
 			return $success;
 		}
 		
+		function isoDateToFrench(&$sDate)
+		{
+			$aDate = explode(' ', $sDate);
+			if(count($aDate) == 2)
+			{
+				$aDate = explode('-', $aDate[0]);
+				if(count($aDate) == 3)
+				{
+					$iYear = 0;
+					$iMonth = 1;
+					$iDay = 2;
+					
+					if(strlen($aDate[0]) == 4)
+					{
+						$sDate = $aDate[$iDay] . '-' . $aDate[$iMonth] . '-' . $aDate[$iYear];
+					}
+				}
+			}
+		}
+
 		function &getConfiguration()
 		{
 			return $this->m_aCfg;
@@ -204,6 +229,8 @@
 			
 $this->set_data('isDeletable', false);
 $this->set_data('isStoppable', false);
+
+			$this->set_data('isProject', (int) bab_rp('isProject', 0));
 			$this->set_data('iClass', -1);
 			$this->set_data('iClassType', -1);
 			$this->set_data('iIdCategory', 0);
@@ -1026,11 +1053,17 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 				}
 			}
 			
+			
+			
 			$this->m_sPlannedStartDate		= '';
 			$this->m_sPlannedEndDate		= '';
+			
 			$this->m_sStartDate				= trim(bab_rp('sPlannedStartDate', ''));
+			$this->frenchDateToIso($this->m_sStartDate);
 			$this->m_sStartDate				.= (0 != strlen($this->m_sStartDate)) ? ' 00:00:00' : '';
+
 			$this->m_sEndDate 				= trim(bab_rp('sPlannedEndDate', ''));
+			$this->frenchDateToIso($this->m_sEndDate);
 			$this->m_sEndDate 				.= (0 != strlen($this->m_sEndDate)) ? ' 23:59:59' : '';
 
 
@@ -1094,6 +1127,22 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 			else
 			{
 				$this->m_aCfg =& $oTmCtx->getConfiguration();
+			}
+		}
+		
+		function frenchDateToIso(&$sDate)
+		{
+			$aDate = explode('-', $sDate);
+			if(count($aDate) == 3)
+			{
+				$iYear = 2;
+				$iMonth = 1;
+				$iDay = 0;
+				
+				if(strlen($aDate[0]) != 4)
+				{
+					$sDate = $aDate[$iYear] . '-' . $aDate[$iMonth] . '-' . $aDate[$iDay];
+				}
 			}
 		}
 		
@@ -1766,18 +1815,16 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 
 				$this->m_iIsLinked = (false === $this->m_oTask->m_bIsFirstTask && BAB_TM_YES === $this->m_iIsLinked) ? 
 					BAB_TM_YES : BAB_TM_NO;
-				
+
 				$sStartDate = mysql_escape_string($this->m_sStartDate);
 				$sEndDate = mysql_escape_string($this->m_sEndDate);
 
-bab_debug($sStartDate);				
-				
 				$aTask =& $this->m_oTask->m_aTask;
-				
+
 //				$aTask['iIdProject']			= $this->m_iIdProject;
 				$aTask['sTaskNumber']			= mysql_escape_string($this->m_sTaskNumber);
-				$aTask['sDescription']			= mysql_escape_string($this->m_sDescription);
-				$aTask['sShortDescription']		= mysql_escape_string(substr($this->m_sShortDescription, 0, 255));
+				$aTask['sDescription']			= (BAB_TM_TASK_RESPONSIBLE !== $this->m_iUserProfil) ? mysql_escape_string($this->m_sDescription) : $aTask['sShortDescription'];
+				$aTask['sShortDescription']		= (BAB_TM_TASK_RESPONSIBLE !== $this->m_iUserProfil) ? mysql_escape_string(substr($this->m_sShortDescription, 0, 255)) : $aTask['sShortDescription'];
 				$aTask['iIdCategory']			= $this->m_iIdCategory;
 //				$aTask['sCreated']				= $this->m_sCreated;
 //				$aTask['iIdUserCreated']		= $this->m_iIdUserCreated;

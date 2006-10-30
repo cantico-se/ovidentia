@@ -360,6 +360,9 @@ function on_btn_clicked(idx, action)
 
 function submit_form()
 {
+//	var oShortDescription = document.getElementById("sShortDescription");
+//	oShortDescription.disabled = false;
+	
 	return true;
 }
 
@@ -470,7 +473,7 @@ function onMenuSelected(oSelectedLi)
 function setDateValue(aDate)
 {
 	var form = document.forms.taskForm;
-	form[form.selectedDateFieldName.value].value = aDate['year'] + '-' + aDate['month'] + '-' + aDate['day'];
+	form[form.selectedDateFieldName.value].value =  aDate['day'] + '-' + aDate['month'] + '-' + aDate['year'];
 }
 
 function dateCallback(sFieldName)
@@ -666,6 +669,7 @@ function check_all(strCtrlName, checked)
 	<input type="hidden" name="selectedDateFieldName" value="" />
 	<input type="hidden" name="selectedMenu" value="" />
 	<input type="hidden" name="sFromIdx" value="{ m_datas[sFromIdx] }" />
+	<input type="hidden" name="isProject" value="{ m_datas[isProject] }" />
 	
 	<div class="BabSiteAdminTitleFontBackground" align="center">
 		<!--#if m_datas[bIsProjectSpace] --><h4>{ m_captions[sProjectSpace] }:&nbsp;{ m_datas[sProjectSpace] }&nbsp;&nbsp;</h4><!--#endif m_datas[bIsProjectSpace] --><h5>{ m_captions[sProject] }:&nbsp;{ m_datas[sProject] }</h5>
@@ -821,7 +825,7 @@ function check_all(strCtrlName, checked)
 					<td>
 						<select id="oCompletion" name="oCompletion">
 							<!--#in getNextCompletion -->
-							<option { m_datas[sSelectedCompletion] } value="{ m_datas[iCompletion] }">{ m_datas[iCompletion] }</option>
+							<option { m_datas[sSelectedCompletion] } value="{ m_datas[iCompletion] }">{ m_datas[iCompletion] } %</option>
 							<!--#endin getNextCompletion -->
 						</select>
 					</td>
@@ -1111,6 +1115,7 @@ function onTaskFilterChanged(oCtrl, sHiddenName)
 	<input type="hidden" name="idx" value="{ m_datas[idx] }" />
 	<input type="hidden" name="iIdProjectSpace" value="{ m_datas[iIdProjectSpace] }" />
 	<input type="hidden" name="iIdProject" value="{ m_datas[iIdProject] }" />
+	<input type="hidden" name="isProject" value="{ m_datas[isProject] }" />
 	
 	<table width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
 		<tr> 
@@ -1346,8 +1351,8 @@ onload="tmInit('ganttTask')"
 <!--#end gantt -->
 
 <!--#begin ganttView -->
-<a href="javascript:bab_popup('{ m_sGanttViewUrl }');" title="GANTT">
-	<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/ganttView.png" />
+<a href="javascript:bab_popup('{ m_sGanttViewUrl }');" title="{ m_captions[ganttView] }">
+	<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/ganttView.png" alt="{ m_captions[ganttView] }" />
 </a>
 <br />
 <br />

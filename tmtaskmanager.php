@@ -1153,6 +1153,11 @@ function displayTaskList()
 		else
 		{
 			$sTitle = bab_translate("Tasks of the project");
+			$iIdProject = (int) bab_rp('iIdProject', 0);
+			if(false !== bab_getProject($iIdProject, $aProject))
+			{
+				$sTitle .= ': ' . $aProject['name'];
+			}
 		}
 	}
 	
@@ -1173,9 +1178,11 @@ function displayTaskList()
 		function BAB_TM_TaskFilterForm()
 		{
 			$this->set_data('tg', bab_rp('tg', 'usrTskMgr'));				
-			$this->set_data('idx', bab_rp('tg', ''));				
+			$this->set_data('idx', bab_rp('tg', ''));
+			$this->set_data('isProject', (int) bab_rp('isProject', 0));		
 			$this->set_caption('sAddTask', bab_translate("Add a task"));
 			$this->set_caption('sFilter', bab_translate("Filter"));
+			$this->set_caption('ganttView', bab_translate("Display the gantt View"));
 			
 			$this->set_data('sFilterIdx', BAB_TM_IDX_DISPLAY_TASK_LIST);
 			$this->set_data('sFilterAction', '');
@@ -1344,9 +1351,9 @@ function displayTaskList()
 	if(0 === $isProject)
 	{
 		$aFilters['iIdOwner'] = $GLOBALS['BAB_SESS_USERID'];
-	}
 		
-	$sGanttViewUrl .= '&iIdOwner=' . $GLOBALS['BAB_SESS_USERID'];
+		$sGanttViewUrl .= '&iIdOwner=' . $GLOBALS['BAB_SESS_USERID'];
+	}
 	
 	$oTaskFilterForm->m_sGanttViewUrl = urlencode($sGanttViewUrl);
 	

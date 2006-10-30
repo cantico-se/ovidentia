@@ -2383,5 +2383,7 @@
 <string id="Number of days">Nombre de jours</string>
 <string id="Number of day for this right">Nombre de jours attribués par ce droit</string>
 <string id="Legend">Légende</string>
-
+<string id="Delete categories">Supprimer les catégories</string>
+<string id="Delete specifics fields">Supprimer les champs spécifiques</string>
+<string id="Display the gantt View">Afficher la vue gantt</string>
 </fr>
