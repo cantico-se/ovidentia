@@ -249,6 +249,8 @@ class bab_calendarPeriod {
 		$start = bab_mktime(date('Y-m-d',$this->ts_begin));
 
 
+
+
 		// ignore periods before begin date
 		while ($start < ($this->ts_begin - $duration)) {
 			$this->add($start, $duration);
@@ -368,7 +370,15 @@ class bab_userWorkingHours {
 		}
 
 		$loop = $this->begin->cloneDate();
-		while ($loop->getTimeStamp() < $this->end->getTimeStamp()) {
+		$endts = $this->end->getTimeStamp();
+		$begints = $this->begin->getTimeStamp();
+		$nworking = (BAB_PERIOD_NONWORKING === ($this->options & BAB_PERIOD_NONWORKING));
+		$previous_end = NULL;
+
+
+		
+
+		while ($loop->getTimeStamp() < $endts) {
 			
 			if (BAB_PERIOD_NWDAY === ($this->options & BAB_PERIOD_NWDAY) && $this->id_users) {
 				
@@ -390,6 +400,9 @@ class bab_userWorkingHours {
 			
 
 			if (BAB_PERIOD_WORKING === ($this->options & BAB_PERIOD_WORKING) && $this->id_users) {
+
+				
+				
 
 				foreach($this->id_users as $id_user) {
 				
@@ -417,15 +430,41 @@ class bab_userWorkingHours {
 							$endHour[2]
 							);
 
+						if ($nworking && NULL == $previous_end) {
+							$previous_end = $this->begin; // reference
+						}
+
+						// add non-working period between 2 working period and at the begining
+						if ($nworking && $beginDate->getTimeStamp() > $previous_end->getTimeStamp()) {
+
+							$p = $this->setUserPeriod($id_user, $previous_end, $beginDate, BAB_PERIOD_NONWORKING);
+							$p->setProperty('SUMMARY'		, bab_translate('Non-working period'));
+							$p->setProperty('DTSTART'		, $previous_end->getIsoDateTime());
+							$p->setProperty('DTEND'			, $beginDate->getIsoDateTime());
+						}
+
 						$p = $this->setUserPeriod($id_user, $beginDate, $endDate, BAB_PERIOD_WORKING);
 
 						$p->setProperty('SUMMARY'		, bab_translate('Working period'));
 						$p->setProperty('DTSTART'		, $beginDate->getIsoDateTime());
 						$p->setProperty('DTEND'			, $endDate->getIsoDateTime());
+
+						$previous_end = $endDate; // the begin date of the non-working period will be a reference to the enddate of the working period
 					}
 				}
 			}
 			$loop->add(1, BAB_DATETIME_DAY);
+		}
+
+		// add final non-working period
+		if ($nworking && $this->end->getTimeStamp() > $previous_end->getTimeStamp()) {
+
+			
+
+			$p = $this->setUserPeriod($id_user, $previous_end, $this->end, BAB_PERIOD_NONWORKING);
+			$p->setProperty('SUMMARY'		, bab_translate('Non-working period'));
+			$p->setProperty('DTSTART'		, $previous_end->getIsoDateTime());
+			$p->setProperty('DTEND'			, $this->end->getIsoDateTime());
 		}
 	}
 
@@ -537,16 +576,10 @@ class bab_userWorkingHours {
 		if (NULL === $call) {
 			$call = 1;
 			reset($this->boundaries);
-			if (BAB_PERIOD_NONWORKING === ($this->options & BAB_PERIOD_NONWORKING) && $this->begin->getTimeStamp() < key($this->boundaries)) {
-				return $this->createUsersPeriods($this->begin->getTimeStamp(), $this->getEndDate(), BAB_PERIOD_NONWORKING);
-			}
 		}
 
 
 		if (list(,$events) = each($this->boundaries)) {
-			if (0 === count($events) && BAB_PERIOD_NONWORKING === ($this->options & BAB_PERIOD_NONWORKING)) {
-				$events = $this->createUsersPeriods($this->getBeginDate(), $this->getEndDate(), BAB_PERIOD_NONWORKING);
-			}
 			return $events;
 		}
 

@@ -616,7 +616,7 @@ function viewVacationCalendar($users, $period = false )
 				}
 
 			$datee = $dateb->cloneDate();
-			$datee->add(1, BAB_DATETIME_YEAR);
+			$datee->add($this->nbmonth, BAB_DATETIME_MONTH);
 
 			// find computed months
 
@@ -742,13 +742,12 @@ function viewVacationCalendar($users, $period = false )
 				{
 
 				$dateb = new BAB_DateTime($this->year, $this->month + $i, 1);
-				$datee = $dateb->cloneDate();
-				$datee->add(1, BAB_DATETIME_MONTH);
 
 				$this->curyear = $dateb->getYear();
 				$this->curmonth = $dateb->getMonth();
 				$this->monthname = $GLOBALS['babShortMonths'][$this->curmonth];
 				$this->totaldays = date("t", $dateb->getTimeStamp());
+				$this->previous_period = NULL;
 				$i++;
 				return true;
 				}
@@ -765,8 +764,6 @@ function viewVacationCalendar($users, $period = false )
 				if( $d <= $this->totaldays )
 					{
 					$this->daynumbername = $d;
-					$curdate = mktime(0,0,0,$this->curmonth,$d,$this->curyear);
-					$dayweek = date("w", $curdate);
 					$this->date = sprintf("%04d-%02d-%02d", $this->curyear, $this->curmonth, $d);
 					$this->day_classname = '';
 					$this->am_classname = 'weekend';
@@ -776,65 +773,73 @@ function viewVacationCalendar($users, $period = false )
 					$this->halfday = true;
 
 					$this->tdtext = '';
-					$this->am_text = bab_vac_longDate($curdate);
-					$this->pm_text = bab_vac_longDate($curdate+43200);
+					$this->am_text = '';
+					$this->pm_text = '';
 
+					$period_am = $this->previous_period;
+					
 					
 					if (isset($this->periodIndex[$this->date.'am'])) {
 						$period_am = $this->periodIndex[$this->date.'am'];
-
-						if (BAB_PERIOD_NWDAY == $period_am['period_type']) {
-							$this->day_classname = 'nonworking';
-							$this->halfday = false;
-							$this->tdtext = bab_translate($period_am['nw_type']);
-							$d++;
-							return true;
-
-						} elseif (BAB_PERIOD_WORKING == $period_am['period_type']) {
-							$this->am_classname = $this->period ? 'free' : 'default';
-
-						} elseif (BAB_PERIOD_VACATION == $period_am['period_type']) {
-
-							if ($period_am['id_entry'] == $this->id_request) {
-								$this->am_classname = 'period';
-							} else {
-								if ('' == $period_am['status']) {
-									$this->am_text = $this->t_waiting_vac;
-									$this->am_classname = 'wait';
-								} else {
-									$this->am_classname = 'used';
-								}
-								$this->am_color = $period_am['color'];
-							}
-						}
+						$this->previous_period = $period_am;
 					}
-
+					
+					$period_pm = $this->previous_period;
+					
 					if (isset($this->periodIndex[$this->date.'pm'])) {
 						$period_pm = $this->periodIndex[$this->date.'pm'];
+						$this->previous_period = $period_pm;
+					}
 
-						if (BAB_PERIOD_WORKING == $period_pm['period_type']) {
-							$this->pm_classname = $this->period ? 'free' : 'default';
 
-						} elseif (BAB_PERIOD_VACATION == $period_pm['period_type']) {
-							
-							if ($period_pm['id_entry'] == $this->id_request) {
-								$this->pm_classname = 'period';
+					// pm
+
+					if (BAB_PERIOD_NWDAY == $period_am['period_type']) {
+						$this->day_classname = 'nonworking';
+						$this->halfday = false;
+						$this->tdtext = bab_translate($period_am['nw_type']);
+						$d++;
+						return true;
+
+					} elseif (BAB_PERIOD_WORKING == $period_am['period_type']) {
+						$this->am_classname = $this->period ? 'free' : 'default';
+
+					} elseif (BAB_PERIOD_VACATION == $period_am['period_type']) {
+
+						if ($period_am['id_entry'] == $this->id_request) {
+							$this->am_classname = 'period';
+						} else {
+							if ('' == $period_am['status']) {
+								$this->am_text = $this->t_waiting_vac;
+								$this->am_classname = 'wait';
 							} else {
-								if ('' == $period_pm['status']) {
-									$this->pm_text = $this->t_waiting_vac;
-									$this->pm_classname = 'wait';
-								} else {
-									$this->pm_classname = 'used';
-								}
-								$this->pm_color = $period_pm['color'];
+								$this->am_classname = 'used';
 							}
-							
-							
-							
-							
-							
+							$this->am_color = $period_am['color'];
 						}
 					}
+
+					
+					// pm
+
+					if (BAB_PERIOD_WORKING == $period_pm['period_type']) {
+						$this->pm_classname = $this->period ? 'free' : 'default';
+
+					} elseif (BAB_PERIOD_VACATION == $period_pm['period_type']) {
+						
+						if ($period_pm['id_entry'] == $this->id_request) {
+							$this->pm_classname = 'period';
+						} else {
+							if ('' == $period_pm['status']) {
+								$this->pm_text = $this->t_waiting_vac;
+								$this->pm_classname = 'wait';
+							} else {
+								$this->pm_classname = 'used';
+							}
+							$this->pm_color = $period_pm['color'];
+						}
+					}
+
 
 
 					}
@@ -876,20 +881,12 @@ function viewVacationCalendar($users, $period = false )
 			else
 				$html = '';
 
-			if (isset($_REQUEST['popup']) && $_REQUEST['popup'] == 1)
-				{
-				include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
-				$GLOBALS['babBodyPopup'] = & new babBodyPopup();
-				$GLOBALS['babBodyPopup']->addStyleSheet('vacation.css');
-				$GLOBALS['babBodyPopup']->title = &$GLOBALS['babBody']->title;
-				$GLOBALS['babBodyPopup']->msgerror = &$GLOBALS['babBody']->msgerror;
-				$GLOBALS['babBodyPopup']->babecho($html);
-				printBabBodyPopup();
-				die();
+			$GLOBALS['babBody']->addStyleSheet('vacation.css');
+
+			if (isset($_REQUEST['popup']) && $_REQUEST['popup'] == 1) {
+				$GLOBALS['babBody']->babpopup($html);
 				}
-			else
-				{
-				$GLOBALS['babBody']->addStyleSheet('vacation.css');
+			else {
 				$GLOBALS['babBody']->babecho($html);
 				}
 			}
@@ -2107,7 +2104,7 @@ function bab_vac_updateCalendar($id_user, $year, $month) {
 		);
 
 	$obj->addIdUser($id_user);
-	$obj->createPeriods(BAB_PERIOD_NWDAY | BAB_PERIOD_WORKING | BAB_PERIOD_VACATION);
+	$obj->createPeriods(BAB_PERIOD_NWDAY | BAB_PERIOD_NONWORKING | BAB_PERIOD_WORKING | BAB_PERIOD_VACATION);
 	$obj->orderBoundaries();
 
 	if (!function_exists('bab_vac_compare')) {
@@ -2183,6 +2180,7 @@ function bab_vac_updateCalendar($id_user, $year, $month) {
 	}
 
 	
+	$previous = NULL;
 
 	foreach($index as $key => $p) {
 
@@ -2203,7 +2201,12 @@ function bab_vac_updateCalendar($id_user, $year, $month) {
 		} 
 
 
-		bab_vac_group_insert("(
+		$key = $id_user.$month.$year.$id_entry.$color.$type;
+
+		if ($key !== $previous) {
+
+			$previous = $key;
+			bab_vac_group_insert("(
 				".$db->quote($id_user).",
 				".$db->quote($month.$year).",
 				".$db->quote(date('Y-m-d',$p->ts_begin)).",
@@ -2213,7 +2216,7 @@ function bab_vac_updateCalendar($id_user, $year, $month) {
 				".$db->quote($color)."
 				)");
 
-		
+		}
 	}
 
 	bab_vac_group_insert('',true);
