@@ -369,6 +369,12 @@ class bab_userWorkingHours {
 			bab_cal_setEventsPeriods($this, $this->id_calendars, $this->begin, $this->end);
 		}
 
+		if (BAB_PERIOD_TSKMGR === ($this->options & BAB_PERIOD_TSKMGR) && $this->id_users) {
+			include_once $GLOBALS['babInstallPath']."utilit/tmdefines.php";
+			include_once $GLOBALS['babInstallPath']."utilit/tmIncl.php";
+			bab_tskmgr_setPeriods($this, $this->id_users, $this->begin, $this->end);
+		}
+
 		$loop = $this->begin->cloneDate();
 		$endts = $this->end->getTimeStamp();
 		$begints = $this->begin->getTimeStamp();

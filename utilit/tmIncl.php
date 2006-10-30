@@ -1873,6 +1873,7 @@ function bab_selectTaskQuery($aFilters)
 			't.endDate endDate, ' .
 			'ti.idOwner idOwner, ' .
 			'cat.id iIdCategory, ' .
+			'cat.name sCategoryName, ' .
 			'IFNULL(cat.bgColor, \'\' ) sBgColor, ' .
 			'IFNULL(cat.color, \'\' ) sColor ' .
 		'FROM ' . 
@@ -2560,5 +2561,38 @@ function bab_selectAvailableCategories($iIdProjectSpace, $iIdProject, $iIdUser)
 	
 	//bab_debug($query);
 	return $babDB->db_query($query);
+}
+
+
+function bab_tskmgr_setPeriods(&$oUserWorkingHours, $aIdUsers, $oStartDate, $oEndDate)
+{
+	global $babDB;
+
+	foreach($aIdUsers as $iIdUser)
+	{
+		$aFilters = array('iIdOwner' => (int) $iIdUser, 'sStartDate' => $oStartDate->getIsoDateTime(), 
+			'sEndDate' => $oEndDate->getIsoDateTime());
+		
+		$query = bab_selectTaskQuery($aFilters);	
+		
+		$result = $babDB->db_query($query);
+		
+		if(false != $result && $babDB->db_num_rows($result) > 0)
+		{
+			while(false != ($datas = $babDB->db_fetch_assoc($result)))
+			{
+				$date_begin = BAB_DateTime::fromIsoDateTime($datas['startDate']);
+				$date_end	= BAB_DateTime::fromIsoDateTime($datas['endDate']);
+
+				$oBabCalPeriod = $oUserWorkingHours->setUserPeriod($datas['idOwner'], $date_begin, $date_end, BAB_PERIOD_TSKMGR);
+
+				$oBabCalPeriod->setProperty('SUMMARY', $datas['sShortDescription']);
+				$oBabCalPeriod->setProperty('DTSTART', $datas['startDate']);
+				$oBabCalPeriod->setProperty('DTEND', $datas['endDate']);
+				$oBabCalPeriod->setProperty('CATEGORIES', $datas['sCategoryName']);
+				$oBabCalPeriod->color = $datas['sBgColor'];
+			}
+		}
+	}
 }
 ?>
