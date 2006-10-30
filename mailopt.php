@@ -26,7 +26,7 @@ include_once "base.php";
 function getDomainName($id)
 	{
 	$db = $GLOBALS['babDB'];
-	$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where id='$id'";
+	$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where id='".$db->db_escape_string($id)."'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -42,7 +42,7 @@ function getDomainName($id)
 function getAccountAccount($id)
 	{
 	$db = $GLOBALS['babDB'];
-	$req = "select login from ".BAB_MAIL_ACCOUNTS_TBL." where id='$id'";
+	$req = "select login from ".BAB_MAIL_ACCOUNTS_TBL." where id='".$db->db_escape_string($id)."'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -82,7 +82,7 @@ function accountsList()
 			$this->domname = bab_translate("Domain");
 			$this->db = $GLOBALS['babDB'];
 			$this->count = 0;
-			$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$BAB_SESS_USERID."'";
+			$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$this->db->db_escape_string($BAB_SESS_USERID)."'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			}
@@ -177,11 +177,11 @@ function accountCreate()
 			$this->resadm = $this->db->db_query($req);
 			$this->countadm = $this->db->db_num_rows($this->resadm);
 
-			$req = "select ".BAB_MAIL_DOMAINS_TBL.".* from ".BAB_MAIL_DOMAINS_TBL." join ".BAB_USERS_GROUPS_TBL." where bgroup='Y' and ".BAB_USERS_GROUPS_TBL.".id_object='".$BAB_SESS_USERID."' and owner=".BAB_USERS_GROUPS_TBL.".id_group";
+			$req = "select ".BAB_MAIL_DOMAINS_TBL.".* from ".BAB_MAIL_DOMAINS_TBL." join ".BAB_USERS_GROUPS_TBL." where bgroup='Y' and ".BAB_USERS_GROUPS_TBL.".id_object='".$this->db->db_escape_string($BAB_SESS_USERID)."' and owner=".BAB_USERS_GROUPS_TBL.".id_group";
 			$this->resgrp = $this->db->db_query($req);
 			$this->countgrp = $this->db->db_num_rows($this->resgrp);
 			
-			$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where owner='".$BAB_SESS_USERID."'";
+			$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where owner='".$this->db->db_escape_string($BAB_SESS_USERID)."'";
 			$this->resusr = $this->db->db_query($req);
 			$this->countusr = $this->db->db_num_rows($this->resusr);
 			}
@@ -300,7 +300,7 @@ function accountModify($item)
 			$this->countusr = 0;
 			$this->item = 0;
 			$this->domselect = "";
-			$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$BAB_SESS_USERID."' and id='".$item."'";
+			$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$this->db->db_escape_string($BAB_SESS_USERID)."' and id='".$this->db->db_escape_string($item)."'";
 			$res = $this->db->db_query($req);
 			if( $res && $this->db->db_num_rows($res) > 0)
 				{
@@ -459,7 +459,7 @@ function signaturesList()
 			{
             global $BAB_SESS_USERID;
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_MAIL_SIGNATURES_TBL." where owner='".$BAB_SESS_USERID."'";
+			$req = "select * from ".BAB_MAIL_SIGNATURES_TBL." where owner='".$this->db->db_escape_string($BAB_SESS_USERID)."'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			$this->editname = bab_translate("Edit");
@@ -581,7 +581,7 @@ function signatureModify($sigid, $signature, $name, $html)
 			if( empty($html))
 				{
 	            $db = $GLOBALS['babDB'];
-	            $req = "select * from ".BAB_MAIL_SIGNATURES_TBL." where id='".$sigid."'";
+	            $req = "select * from ".BAB_MAIL_SIGNATURES_TBL." where id='".$db->db_escape_string($sigid)."'";
 				$res = $db->db_query($req);
 				$this->arr = $db->db_fetch_array($res);
 				$this->signatureval = $this->arr['text'];
@@ -647,7 +647,7 @@ function addAccount($account_name,$fullname, $email, $login, $password1, $passwo
 	*/
 
 	$db = $GLOBALS['babDB'];
-	$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where account_name='$account_name' and domain='$domain' and owner='".$BAB_SESS_USERID."'";	
+	$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where account_name='".$db->db_escape_string($account_name)."' and domain='".$db->db_escape_string($domain)."' and owner='".$db->db_escape_string($BAB_SESS_USERID)."'";	
 	$res = $db->db_query($req);
 	if( $db->db_num_rows($res) > 0)
 		{
@@ -657,7 +657,7 @@ function addAccount($account_name,$fullname, $email, $login, $password1, $passwo
 
 	if( $prefacc == "Y" )
 		{
-		$req = "update ".BAB_MAIL_ACCOUNTS_TBL." set prefered='N' where owner='".$BAB_SESS_USERID."'";	
+		$req = "update ".BAB_MAIL_ACCOUNTS_TBL." set prefered='N' where owner='".$db->db_escape_string($BAB_SESS_USERID)."'";	
 		$res = $db->db_query($req);
 		}
 
@@ -749,7 +749,7 @@ function confirmDeleteAccount($item)
 
 	$db = $GLOBALS['babDB'];
 
-	$req = "delete from ".BAB_MAIL_ACCOUNTS_TBL." where id='$item' and owner='".$BAB_SESS_USERID."'";
+	$req = "delete from ".BAB_MAIL_ACCOUNTS_TBL." where id='".$db->db_escape_string($item)."' and owner='".$db->db_escape_string($BAB_SESS_USERID)."'";
 	$res = $db->db_query($req);	
 
 }
@@ -764,7 +764,7 @@ function addSignature($name, $signature, $html)
 		}
 	$db = $GLOBALS['babDB'];
 	$req = "insert into ".BAB_MAIL_SIGNATURES_TBL." (name, text, html, owner) values ";	
-	$req .= "('".$name."', '".$signature."', '".$html."', '".$BAB_SESS_USERID."')";	
+	$req .= "('".$db->db_escape_string($name)."', '".$db->db_escape_string($signature)."', '".$db->db_escape_string($html)."', '".$db->db_escape_string($BAB_SESS_USERID)."')";	
 	$res = $db->db_query($req);
 	if( empty($name))
 		{
@@ -784,9 +784,9 @@ function modifySignature($name, $signature, $html, $sigid)
 		}
 	$db = $GLOBALS['babDB'];
 	if( !empty($name))
-	    $req = "update ".BAB_MAIL_SIGNATURES_TBL." set name='".$name."', text='".$signature."', html='".$html."' where id='".$sigid."' and owner ='".$BAB_SESS_USERID."'";
+	    $req = "update ".BAB_MAIL_SIGNATURES_TBL." set name='".$db->db_escape_string($name)."', text='".$db->db_escape_string($signature)."', html='".$db->db_escape_string($html)."' where id='".$db->db_escape_string($sigid)."' and owner ='".$db->db_escape_string($BAB_SESS_USERID)."'";
     else
-	    $req = "update ".BAB_MAIL_SIGNATURES_TBL." set name='signature".$sigid."', text='".$signature."', html='".$html."' where id='".$sigid."' and owner ='".$BAB_SESS_USERID."'";
+	    $req = "update ".BAB_MAIL_SIGNATURES_TBL." set name='signature".$db->db_escape_string($sigid)."', text='".$db->db_escape_string($signature)."', html='".$db->db_escape_string($html)."' where id='".$db->db_escape_string($sigid)."' and owner ='".$db->db_escape_string($BAB_SESS_USERID)."'";
 	$res = $db->db_query($req);
 }
 
@@ -794,7 +794,7 @@ function deleteSignature($sigid)
 {
 	global $BAB_SESS_USERID;
 	$db = $GLOBALS['babDB'];
-    $req = "delete from ".BAB_MAIL_SIGNATURES_TBL." where id='".$sigid."' and owner ='".$BAB_SESS_USERID."'";
+    $req = "delete from ".BAB_MAIL_SIGNATURES_TBL." where id='".$db->db_escape_string($sigid)."' and owner ='".$db->db_escape_string($BAB_SESS_USERID)."'";
 	$res = $db->db_query($req);
 
 }
