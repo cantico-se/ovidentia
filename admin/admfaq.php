@@ -149,16 +149,15 @@ function deleteCategory($id)
 
 function updateCategory($id, $category, $description, $lang)
 	{
-	global $babBody;
+	global $babBody, $babDB;
 	if( empty($category))
 		{
 		$babBody->msgerror = bab_translate("ERROR: You must provide a FAQ name !!");
 		return false;
 		}
 
-	$db = $GLOBALS['babDB'];
 	$query = "update ".BAB_FAQCAT_TBL." set category='".$babDB->db_escape_string($category)."', description='".$babDB->db_escape_string($description)."', lang='".$babDB->db_escape_string($lang)."' where id = '".$babDB->db_escape_string($id)."'";
-	$db->db_query($query);
+	$babDB->db_query($query);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admfaqs&idx=Categories");
 
 	}
