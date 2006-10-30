@@ -405,7 +405,10 @@ function calendarOptions($calid, $urla)
 		}
 
 	$temp = new temp($calid, $urla);
-	$babBody->babecho(	bab_printTemplate($temp, "calopt.html", "caloptions"));
+	//$babBody->babecho(	bab_printTemplate($temp, "calopt.html", "caloptions"));
+
+	$babBody->addStyleSheet('calopt.css');
+	$babBody->babecho(bab_printTemplate($temp, "calopt.html", "caloptions2"));
 	}
 
 
