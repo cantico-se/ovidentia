@@ -344,7 +344,7 @@ class bab_icalendar
 	 */
 	function getNextEvent($startdate, $enddate, &$calPeriod)
 		{
-		while( $p = $this->whObj->getNextEvent(BAB_PERIOD_NWDAY | BAB_PERIOD_VACATION | BAB_PERIOD_CALEVENT) )
+		while( $p = & $this->whObj->getNextEvent(BAB_PERIOD_NWDAY | BAB_PERIOD_VACATION | BAB_PERIOD_CALEVENT) )
 			{
 			
 			if (bab_mktime($startdate) < $p->ts_end && bab_mktime($enddate) > $p->ts_begin )
@@ -380,6 +380,7 @@ class bab_icalendar
 
 	function getHtmlArea($startdate, $enddate, &$harray)
 		{
+		
 		$calPeriod = NULL;
 		$harray = array();
 		while( $this->getNextEvent($startdate, $enddate, $calPeriod))
@@ -387,6 +388,7 @@ class bab_icalendar
 			$done = false;
 			for( $k = 0; $k < count($harray); $k++ )
 				{
+				
 				$append = true;
 				for( $m = 0; $m < count($harray[$k]); $m++ )
 					{
@@ -402,6 +404,7 @@ class bab_icalendar
 				if( $append )
 					{
 					$done = true;
+				
 					$harray[$k][] = $calPeriod;
 					}
 				}
@@ -410,6 +413,8 @@ class bab_icalendar
 				$harray[][] = $calPeriod;
 				}
 			}
+
+		
 		return count($harray);
 		}
 }
@@ -706,7 +711,7 @@ class cal_wmdbaseCls
 			return bab_toHtml($str);
 		}
 
-	function createCommonEventVars(&$calPeriod)
+	function createCommonEventVars($calPeriod)
 		{
 		if (BAB_PERIOD_CALEVENT != $calPeriod->type) {
 			$this->properties = '';
@@ -739,6 +744,7 @@ class cal_wmdbaseCls
 		global $babBody;
 
 		$arr = $calPeriod->getData();
+
 		$this->idcal		= isset($arr['id_cal'])		? $arr['id_cal'] : 0;
 		$this->status		= isset($arr['status'])		? $arr['status'] : 0;
 		$this->id_cat		= isset($arr['id_cat'])		? $arr['id_cat'] : 0;
@@ -759,12 +765,8 @@ class cal_wmdbaseCls
 		$this->category = $calPeriod->getProperty('CATEGORIES');
 
 
-		if ($babBody->icalendars->usebgcolor == 'Y') {
-			if (empty($calPeriod->color)) {
-				$this->bgcolor = $this->id_cat != 0 ? $this->mcals->getCategoryColor($this->id_cat) : 'fff';
-			} else {
-				$this->bgcolor = $calPeriod->color;
-			}
+		if ($babBody->icalendars->usebgcolor == 'Y' && !empty($calPeriod->color)) {
+			$this->bgcolor = $calPeriod->color;
 		}
 
 

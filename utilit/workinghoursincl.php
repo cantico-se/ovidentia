@@ -395,7 +395,7 @@ class bab_userWorkingHours {
 					$endDate->add(1, BAB_DATETIME_DAY);
 
 					foreach($this->id_users as $id_user) {
-						$p = $this->setUserPeriod($id_user, $beginDate, $endDate, BAB_PERIOD_NWDAY);
+						$p = & $this->setUserPeriod($id_user, $beginDate, $endDate, BAB_PERIOD_NWDAY);
 						$p->setProperty('SUMMARY'		,bab_translate('Non-working day2'));
 						$p->setProperty('DESCRIPTION'	,$nwLabel);
 						$p->setProperty('DTSTART'		,$beginDate->getIsoDateTime());
@@ -443,13 +443,13 @@ class bab_userWorkingHours {
 						// add non-working period between 2 working period and at the begining
 						if ($nworking && $beginDate->getTimeStamp() > $previous_end->getTimeStamp()) {
 
-							$p = $this->setUserPeriod($id_user, $previous_end, $beginDate, BAB_PERIOD_NONWORKING);
+							$p = & $this->setUserPeriod($id_user, $previous_end, $beginDate, BAB_PERIOD_NONWORKING);
 							$p->setProperty('SUMMARY'		, bab_translate('Non-working period'));
 							$p->setProperty('DTSTART'		, $previous_end->getIsoDateTime());
 							$p->setProperty('DTEND'			, $beginDate->getIsoDateTime());
 						}
 
-						$p = $this->setUserPeriod($id_user, $beginDate, $endDate, BAB_PERIOD_WORKING);
+						$p = & $this->setUserPeriod($id_user, $beginDate, $endDate, BAB_PERIOD_WORKING);
 
 						$p->setProperty('SUMMARY'		, bab_translate('Working period'));
 						$p->setProperty('DTSTART'		, $beginDate->getIsoDateTime());
@@ -467,7 +467,7 @@ class bab_userWorkingHours {
 
 			
 
-			$p = $this->setUserPeriod($id_user, $previous_end, $this->end, BAB_PERIOD_NONWORKING);
+			$p = & $this->setUserPeriod($id_user, $previous_end, $this->end, BAB_PERIOD_NONWORKING);
 			$p->setProperty('SUMMARY'		, bab_translate('Non-working period'));
 			$p->setProperty('DTSTART'		, $previous_end->getIsoDateTime());
 			$p->setProperty('DTEND'			, $this->end->getIsoDateTime());
@@ -491,13 +491,13 @@ class bab_userWorkingHours {
 			$previous = $ts;
 		}
 
-		foreach($this->periods as $p) {
+		foreach($this->periods as $key => $p) {
 			$ts = $p->ts_begin;
 			if (isset($this->boundaries[$ts])) {
 				$current_boundary = $ts;
 				while ($current_boundary < $p->ts_end) {
 					// add period on overlapped boudaries
-					$this->boundaries[$current_boundary][] = $p;
+					$this->boundaries[$current_boundary][] = & $this->periods[$key];
 					if (!isset($this->sibling[$current_boundary])) {
 						break;
 					}
@@ -514,9 +514,9 @@ class bab_userWorkingHours {
 	 * @param	int			$type
 	 * @return	object
 	 */
-	function setUserPeriod($id_user, $beginDate, $endDate, $type) {
+	function & setUserPeriod($id_user, $beginDate, $endDate, $type) {
 		
-		$p = new bab_calendarPeriod($beginDate->getTimeStamp(), $endDate->getTimeStamp(), $type);
+		$p = & new bab_calendarPeriod($beginDate->getTimeStamp(), $endDate->getTimeStamp(), $type);
 		if (false !== $id_user) {
 			$uid = & $p->getProperty('UID');
 			$uid .= '.'.$id_user;
@@ -527,8 +527,8 @@ class bab_userWorkingHours {
 	}
 
 	
-	function addPeriod($p) {
-		$this->periods[] = $p;
+	function addPeriod(&$p) {
+		$this->periods[] = &$p;
 
 		$ts = $p->ts_begin;
 		if (!isset($this->boundaries[$ts])) {
@@ -604,7 +604,7 @@ class bab_userWorkingHours {
 		static $events = NULL;
 
 		if (NULL === $events) {
-			$events = $this->getEventsBetween($this->begin->getTimeStamp(), $this->end->getTimeStamp(), $filter);
+			$events = & $this->getEventsBetween($this->begin->getTimeStamp(), $this->end->getTimeStamp(), $filter);
 		}
 
 		if (list(,$event) = each($events)) {
@@ -633,13 +633,12 @@ class bab_userWorkingHours {
 				break;
 			}
 				
-			foreach($events as $event) {
+			foreach($this->boundaries[$ts] as $event) {
 				if ($event->ts_end > $start && $event->ts_begin < $end && $event->type === ($filter & $event->type)) {
 					$r[$event->getProperty('UID')] = $event;
 				}
 			}
 		}
-
 		return $r;
 	}
 

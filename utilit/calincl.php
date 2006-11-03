@@ -770,7 +770,7 @@ function bab_getCalendarTitle($calid) {
  * @param object	$begin
  * @param object	$end
  */
-function bab_cal_setEventsPeriods($obj, $id_calendars, $begin, $end) {
+function bab_cal_setEventsPeriods(&$obj, $id_calendars, $begin, $end) {
 
 	global $babDB;
 	
@@ -782,7 +782,8 @@ function bab_cal_setEventsPeriods($obj, $id_calendars, $begin, $end) {
 		SELECT 
 			ceo.*, 
 			ce.*,
-			ca.name category 
+			ca.name category, 
+			ca.bgcolor 
 		FROM 
 			".BAB_CAL_EVENTS_OWNERS_TBL." ceo 
 			LEFT JOIN ".BAB_CAL_EVENTS_TBL." ce ON ceo.id_event=ce.id 
@@ -804,10 +805,11 @@ function bab_cal_setEventsPeriods($obj, $id_calendars, $begin, $end) {
 	
 	while( $arr = $babDB->db_fetch_assoc($res))
 		{
-		$events[$arr['id']] = new bab_calendarPeriod(bab_mktime($arr['start_date']), bab_mktime($arr['end_date']), BAB_PERIOD_CALEVENT);
+		$events[$arr['id']] = & new bab_calendarPeriod(bab_mktime($arr['start_date']), bab_mktime($arr['end_date']), BAB_PERIOD_CALEVENT);
 		$uid = & $events[$arr['id']]->getProperty('UID');
 		$uid .= '.'.$arr['id'];
-		$obj->addPeriod($events[$arr['id']]);
+		
+		
 
 		$events[$arr['id']]->setProperty('DTSTART'		, $arr['start_date']);
 		$events[$arr['id']]->setProperty('DTEND'		, $arr['end_date']);
@@ -815,7 +817,7 @@ function bab_cal_setEventsPeriods($obj, $id_calendars, $begin, $end) {
 		$events[$arr['id']]->setProperty('DESCRIPTION'	, $arr['description']);
 		$events[$arr['id']]->setProperty('LOCATION'		, $arr['location']);
 		$events[$arr['id']]->setProperty('CATEGORIES'	, $arr['category']);
-		$events[$arr['id']]->color = $arr['color'];
+		$events[$arr['id']]->color = isset($arr['bgcolor']) ? $arr['bgcolor'] : $arr['color'];
 
 		if ('Y' == $arr['bprivate']) {
 			$events[$arr['id']]->setProperty('CLASS'	, 'PRIVATE');
@@ -829,6 +831,7 @@ function bab_cal_setEventsPeriods($obj, $id_calendars, $begin, $end) {
 		unset($arr['category']);
 		unset($arr['bprivate']);
 		unset($arr['color']);
+		unset($arr['bgcolor']);
 
 		$iarr = $GLOBALS['babBody']->icalendars->getCalendarInfo($arr['id_cal']);
 
@@ -873,6 +876,8 @@ function bab_cal_setEventsPeriods($obj, $id_calendars, $begin, $end) {
 			}
 
 		$events[$arr['id']]->setData($arr);
+
+		$obj->addPeriod($events[$arr['id']]);
 		}
 
 	

@@ -1923,7 +1923,7 @@ function bab_vac_typeColorStack($id_entry, $push = false) {
  * @param object	$begin
  * @param object	$end
  */
-function bab_vac_setVacationPeriods($obj, $id_users, $begin, $end) {
+function bab_vac_setVacationPeriods(&$obj, $id_users, $begin, $end) {
 	$db = $GLOBALS['babDB'];
 
 	$res = $db->db_query("
@@ -1987,7 +1987,7 @@ function bab_vac_setVacationPeriods($obj, $id_users, $begin, $end) {
 			}
 
 
-		$p = $obj->setUserPeriod($row['id_user'], $date_begin, $date_end, BAB_PERIOD_VACATION);
+		$p = & $obj->setUserPeriod($row['id_user'], $date_begin, $date_end, BAB_PERIOD_VACATION);
 
 		list($category, $color) = $db->db_fetch_row($db->db_query("
 		
@@ -2006,11 +2006,8 @@ function bab_vac_setVacationPeriods($obj, $id_users, $begin, $end) {
 				AND cat.id = vct.id_cat 
 		"));
 
-		$p->setData(array(
-			'id' => $row['id']
-			)
-			
-		);
+		$data = array('id' => $row['id']);
+		$p->setData($data);
 
 		
 		$p->setProperty('SUMMARY'		, bab_translate("Vacation"));
@@ -2022,6 +2019,7 @@ function bab_vac_setVacationPeriods($obj, $id_users, $begin, $end) {
 		if ('Y' !== $row['status']) {
 			$p->setProperty('DESCRIPTION',bab_translate("Waiting to be validate"));
 		}
+
 	}
 }
 
