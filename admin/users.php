@@ -149,7 +149,8 @@ function listUsers($pos, $grp)
 			$this->allurl = $GLOBALS['babUrlScript']."?tg=users&idx=List&pos=&grp=".$this->grp."&bupd=".$this->bupdate;
 			$this->groupurl = $GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$this->grp;
 			
-			$this->set_directory = $babBody->currentAdmGroup == 0;
+			list($iddir) = $this->db->db_fetch_row($this->db->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group='1'"));
+			$this->set_directory = $babBody->currentAdmGroup == 0 && bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL,$iddir);
 			
 			if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['users'] == 'Y' )
 				$this->bmodname = true;
