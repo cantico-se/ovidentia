@@ -763,7 +763,7 @@ function bab_removeUserFromGroup($iduser, $idgroup)
 	bab_callAddonsFunction('onUserUnassignedFromGroup', $iduser, $idgroup);
 }
 
-function bab_addUser( $firstname, $lastname, $middlename, $email, $nickname, $password1, $password2, $isconfirmed, &$error)
+function bab_addUser( $firstname, $lastname, $middlename, $email, $nickname, $password1, $password2, $isconfirmed, &$error, $bgroup = true)
 	{
 	global $BAB_HASH_VAR, $babBody, $babLanguage;
 
@@ -836,7 +836,7 @@ function bab_addUser( $firstname, $lastname, $middlename, $email, $nickname, $pa
 		$db->db_query("insert into ".BAB_CALENDAR_TBL." (owner, type) values ('$id', '1')");
 		$db->db_query("insert into ".BAB_DBDIR_ENTRIES_TBL." (givenname, mn, sn, email, id_directory, id_user) values ('".addslashes($firstname)."', '".addslashes($middlename)."', '".addslashes($lastname)."', '".$email."', '0', '".$id."')");
 
-		if( isset($babBody->babsite['idgroup']) && $babBody->babsite['idgroup'] != 0)
+		if( $bgroup && isset($babBody->babsite['idgroup']) && $babBody->babsite['idgroup'] != 0)
 			{
 			bab_addUserToGroup($id, $babBody->babsite['idgroup']);
 			}

@@ -1137,9 +1137,9 @@ function bab_removeGroup($id)
 
 
 /* API Users */
-function bab_registerUser( $firstname, $lastname, $middlename, $email, $nickname, $password1, $password2, $confirmed, &$error)
+function bab_registerUser( $firstname, $lastname, $middlename, $email, $nickname, $password1, $password2, $confirmed, &$error, $bgroup = true)
 {
-	return bab_addUser( $firstname, $lastname, $middlename, $email, $nickname, $password1, $password2, $confirmed, $error);
+	return bab_addUser( $firstname, $lastname, $middlename, $email, $nickname, $password1, $password2, $confirmed, $error, $bgroup);
 }
 
 function bab_attachUserToGroup($iduser, $idgroup)
