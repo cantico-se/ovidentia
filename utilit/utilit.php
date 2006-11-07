@@ -21,13 +21,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
-include_once $babInstallPath."utilit/addonapi.php";
-include_once $babInstallPath."utilit/template.php";
-include_once $babInstallPath."utilit/userincl.php";
-include_once $babInstallPath."utilit/mailincl.php";
+include_once 'base.php';
+include_once $babInstallPath.'utilit/addonapi.php';
+include_once $babInstallPath.'utilit/template.php';
+include_once $babInstallPath.'utilit/userincl.php';
+include_once $babInstallPath.'utilit/mailincl.php';
 
-$babLdapEncodingTypes = array(0 => '', BAB_LDAP_UTF8_ISO_8859_1 => "UTF8 -> ISO_8859_1", BAB_LDAP_T61_ISO_8859_1 => "T61 -> ISO_8859_1");
+$babLdapEncodingTypes = array(0 => '', BAB_LDAP_UTF8_ISO_8859_1 => 'UTF8 -> ISO_8859_1', BAB_LDAP_T61_ISO_8859_1 => 'T61 -> ISO_8859_1');
 
 function bab_ldapDecode($str, $type)
 {
@@ -111,20 +111,20 @@ function bab_formatAuthor($format, $id)
 	global $babDB;
 	static $bab_authors = array();
 
-	$txt = bab_translate("Anonymous");
+	$txt = bab_translate('Anonymous');
 
 	if( !empty($id))
 		{
 		if( !isset($bab_authors[$id]))
 			{	
-			$res = $babDB->db_query("select givenname, sn, mn from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='0' and id_user='".$id."'");
+			$res = $babDB->db_query("select givenname, sn, mn from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='0' and id_user='".$babDB->db_escape_string($id)."'");
 			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
 				$bab_authors[$id] = $babDB->db_fetch_array($res);
 				}
 			}
 
-		if(preg_match_all("/%(.)/", $format, $m))
+		if(preg_match_all('/%(.)/', $format, $m))
 			{
 			$txt = $format;
 			for( $i = 0; $i< count($m[1]); $i++)
@@ -141,7 +141,7 @@ function bab_formatAuthor($format, $id)
 						$val = $bab_authors[$id]['mn'];
 						break;
 					}
-				$txt = preg_replace("/".preg_quote($m[0][$i])."/", $val, $txt);
+				$txt = preg_replace('/'.preg_quote($m[0][$i]).'/', $val, $txt);
 				}
 			}
 		}
@@ -151,7 +151,7 @@ function bab_formatAuthor($format, $id)
 
 function bab_stripDomainName ($txt)
 	{
-	return eregi_replace("((href|src)=['\"]?)".$GLOBALS['babUrl'], "\\1", $txt);
+	return eregi_replace("((href|src)=['\"]?)".$GLOBALS['babUrl'], '\\1', $txt);
 	}
 
 function bab_isEmailValid ($email)
@@ -165,13 +165,13 @@ function bab_isEmailValid ($email)
 function bab_getCssUrl()
 	{
 	global $babInstallPath, $babSkinPath;
-	$filepath = "skins/".$GLOBALS['babSkin']."/styles/". $GLOBALS['babStyle'];
+	$filepath = 'skins/'.$GLOBALS['babSkin'].'/styles/'. $GLOBALS['babStyle'];
 	if( !file_exists( $filepath ) )
 		{
-		$filepath = $babSkinPath."styles/". $GLOBALS['babStyle'];
+		$filepath = $babSkinPath.'styles/'. $GLOBALS['babStyle'];
 		if( !file_exists( $filepath ) )
 			{
-			$filepath = $babInstallPath."skins/ovidentia/styles/ovidentia.css";
+			$filepath = $babInstallPath.'skins/ovidentia/styles/ovidentia.css';
 			}
 		}
 	return $filepath;
@@ -200,7 +200,7 @@ function bab_getDateFormat($format)
 function bab_getTimeFormat($format)
 {
 	global $babBody;
-	$pos = strpos(strtolower($format), "t");
+	$pos = strpos(strtolower($format), 't');
 	if( $pos !== false)
 	{
 		$babBody->ampm = true;
@@ -231,15 +231,15 @@ function babLoadLanguage($lang, $folder, &$arr)
 	{
 	if( empty($folder))
 		{
-		$filename_c = "lang/lang-".$lang.".dat";
-		$filename_m = "lang/lang-".$lang.".xml";
-		$filename = $GLOBALS['babInstallPath']."lang/lang-".$lang.".xml";
+		$filename_c = 'lang/lang-'.$lang.'.dat';
+		$filename_m = 'lang/lang-'.$lang.'.xml';
+		$filename = $GLOBALS['babInstallPath'].'lang/lang-'.$lang.'.xml';
 		}
 	else
 		{
-		$filename_c = "lang/addons-".$folder."-lang-".$lang.".dat";
-		$filename_m = "lang/addons/".$folder."/lang-".$lang.".xml";
-		$filename = $GLOBALS['babInstallPath']."lang/addons/".$folder."/lang-".$lang.".xml";
+		$filename_c = 'lang/addons-'.$folder.'-lang-'.$lang.'.dat';
+		$filename_m = 'lang/addons/'.$folder.'/lang-'.$lang.'.xml';
+		$filename = $GLOBALS['babInstallPath'].'lang/addons/'.$folder.'/lang-'.$lang.'.xml';
 		}
 	
 	if (!file_exists($filename))
@@ -279,13 +279,13 @@ function babLoadLanguage($lang, $folder, &$arr)
 		{
 		if( $filename )
 			{
-			$file = @fopen($filename, "r");
+			$file = @fopen($filename, 'r');
 			if( $file )
 				{
 				$tmp = fread($file, filesize($filename));
 				fclose($file);
-				preg_match("/<".$lang.">(.*)<\/".$lang.">/s", $tmp, $m);
-				preg_match_all("/<string\s+id=\"([^\"]*)\">(.*?)<\/string>/s", isset($m[1]) ? $m[1] : '' , $tmparr);
+				preg_match('/<'.$lang.'>(.*)<\/'.$lang.'>/s', $tmp, $m);
+				preg_match_all('/<string\s+id=\"([^\"]*)\">(.*?)<\/string>/s', isset($m[1]) ? $m[1] : '' , $tmparr);
 				}
 			}
 
@@ -299,13 +299,13 @@ function babLoadLanguage($lang, $folder, &$arr)
 
 		if ($filename_m)
 			{
-			$file = @fopen($filename_m, "r");
+			$file = @fopen($filename_m, 'r');
 			if( $file )
 				{
 				$tmp = fread($file, filesize($filename_m));
 				fclose($file);
-				preg_match("/<".$lang.">(.*)<\/".$lang.">/s", $tmp, $m);
-				preg_match_all("/<string\s+id=\"([^\"]*)\">(.*?)<\/string>/s", $m[1], $arr_replace);
+				preg_match('/<'.$lang.'>(.*)<\/'.$lang.'>/s', $tmp, $m);
+				preg_match_all('/<string\s+id=\"([^\"]*)\">(.*?)<\/string>/s', $m[1], $arr_replace);
 				for( $i = 0; $i < count($arr_replace[0]); $i++ )
 					{
 					$arr[$arr_replace[1][$i]] = $arr_replace[2][$i];
@@ -349,24 +349,24 @@ function bab_callAddonsFunction($func)
 		if($row['access'])
 			{
 			$addonpath = $GLOBALS['babAddonsPath'].$row['title'];
-			if( is_file($addonpath."/init.php" ))
+			if( is_file($addonpath.'/init.php' ))
 				{
 				$GLOBALS['babAddonFolder'] = $row['title'];
-				$GLOBALS['babAddonTarget'] = "addon/".$row['id'];
-				$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$row['id']."/";
-				$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$row['title']."/";
-				$GLOBALS['babAddonHtmlPath'] = "addons/".$row['title']."/";
-				$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath']."/addons/".$row['title']."/";
-				require_once( $addonpath."/init.php" );
-				$call = $row['title']."_".$func;
+				$GLOBALS['babAddonTarget'] = 'addon/'.$row['id'];
+				$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript'].'?tg=addon/'.$row['id'].'/';
+				$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath'].'addons/'.$row['title'].'/';
+				$GLOBALS['babAddonHtmlPath'] = 'addons/'.$row['title'].'/';
+				$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath'].'/addons/'.$row['title'].'/';
+				require_once( $addonpath.'/init.php' );
+				$call = $row['title'].'_'.$func;
 				if( !empty($call)  && function_exists($call) )
 					{
 					$args = func_get_args();
-					$call .= "(";
+					$call .= '(';
 					for($k=1; $k < sizeof($args); $k++)
 						eval ( "\$call .= \"$args[$k],\";");
 					$call = substr($call, 0, -1);
-					$call .= ")";
+					$call .= ')';
 					eval ( "\$retval = $call;");
 					}
 				}
@@ -396,16 +396,16 @@ function bab_callAddonsFunctionArray($func, $args)
 	foreach($babBody->babaddons as $key => $row)
 		{ 
 		$addonpath = $GLOBALS['babAddonsPath'].$row['title'];
-		if( is_file($addonpath."/init.php" ))
+		if( is_file($addonpath.'/init.php' ))
 			{
 			$GLOBALS['babAddonFolder'] = $row['title'];
-			$GLOBALS['babAddonTarget'] = "addon/".$row['id'];
-			$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$row['id']."/";
-			$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$row['title']."/";
-			$GLOBALS['babAddonHtmlPath'] = "addons/".$row['title']."/";
-			$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath']."/addons/".$row['title']."/";
-			require_once( $addonpath."/init.php" );
-			$call = $row['title']."_".$func;
+			$GLOBALS['babAddonTarget'] = 'addon/'.$row['id'];
+			$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript'].'?tg=addon/'.$row['id'].'/';
+			$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath'].'addons/'.$row['title'].'/';
+			$GLOBALS['babAddonHtmlPath'] = 'addons/'.$row['title'].'/';
+			$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath'].'/addons/'.$row['title'].'/';
+			require_once( $addonpath.'/init.php' );
+			$call = $row['title'].'_'.$func;
 			if( function_exists($call) )
 				{
 				$call($args);
@@ -426,24 +426,24 @@ function bab_callAddonsFunctionArray($func, $args)
 
 class babMenu
 {
-var $curItem = "";
+var $curItem = '';
 var $items = array();
 
 function babMenu()
 {
-	$GLOBALS['babCurrentMenu'] = "";
+	$GLOBALS['babCurrentMenu'] = '';
 }
 
 function addItem($title, $txt, $url, $enabled=true)
 {
-	$this->items[$title]["text"] = $txt;
-	$this->items[$title]["url"] = $url;
-	$this->items[$title]["enabled"] = $enabled;
+	$this->items[$title]['text'] = $txt;
+	$this->items[$title]['url'] = $url;
+	$this->items[$title]['enabled'] = $enabled;
 }
 
 function addItemAttributes($title, $attr)
 {
-	$this->items[$title]["attributes"] = $attr;
+	$this->items[$title]['attributes'] = $attr;
 }
 
 function setCurrent($title, $enabled=false)
@@ -453,9 +453,9 @@ function setCurrent($title, $enabled=false)
 		if( !strcmp($key, $title))
 			{
 			$this->curItem = $key;
-			$this->items[$key]["enabled"] = $enabled;
+			$this->items[$key]['enabled'] = $enabled;
 			if( !$enabled )
-				$GLOBALS['babCurrentMenu'] = $this->items[$key]["text"];
+				$GLOBALS['babCurrentMenu'] = $this->items[$key]['text'];
 			break;
 			}
 		}
@@ -506,12 +506,12 @@ function babBody()
 {
 	global $babDB;
 	$this->menu = new babMenu();
-	$this->message = "";
-	$this->script = "";
-	$this->title = "";
-	$this->msgerror = "";
-	$this->content = "";
-	$this->lastlog = "";
+	$this->message = '';
+	$this->script = '';
+	$this->title = '';
+	$this->msgerror = '';
+	$this->content = '';
+	$this->lastlog = '';
 	$this->calaccess = false;
 	$this->isSuperAdmin = false;
 	$this->currentAdmGroup = 0;
@@ -586,7 +586,7 @@ function getGroupPathName($id_group, $id_parent = BAB_REGISTERED_GROUP)
 	if (isset($this->groupPathName[$id_parent][$id_group]))
 		return $this->groupPathName[$id_parent][$id_group];
 	
-	include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
+	include_once $GLOBALS['babInstallPath'].'utilit/grptreeincl.php';
 
 	$this->groupPathName[$id_parent] = array();
 	
@@ -603,7 +603,7 @@ function getGroupPathName($id_group, $id_parent = BAB_REGISTERED_GROUP)
 
 function resetContent()
 {
-	$this->content = "";
+	$this->content = '';
 }
 
 function babecho($txt)
@@ -613,7 +613,7 @@ function babecho($txt)
 
 
 function babpopup($txt) {
-	include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
+	include_once $GLOBALS['babInstallPath'].'utilit/uiutil.php';
 	$GLOBALS['babBodyPopup'] = new babBodyPopup();
 	$GLOBALS['babBodyPopup']->styleSheet = & $GLOBALS['babBody']->styleSheet;
 	$GLOBALS['babBodyPopup']->title = & $GLOBALS['babBody']->title;
@@ -627,11 +627,11 @@ function babpopup($txt) {
 function loadSections()
 {
 	
-	include $GLOBALS['babInstallPath']."utilit/utilitsections.php";
+	include $GLOBALS['babInstallPath'].'utilit/utilitsections.php';
 	
 	global $babDB, $babBody, $BAB_SESS_LOGGED, $BAB_SESS_USERID;
 
-	$req = "SELECT ".BAB_SECTIONS_ORDER_TBL.".*, ".BAB_SECTIONS_STATES_TBL.".closed, ".BAB_SECTIONS_STATES_TBL.".hidden, ".BAB_SECTIONS_STATES_TBL.".id_section AS states_id_section FROM ".BAB_SECTIONS_ORDER_TBL." LEFT JOIN ".BAB_SECTIONS_STATES_TBL." ON ".BAB_SECTIONS_STATES_TBL.".id_section=".BAB_SECTIONS_ORDER_TBL.".id_section AND ".BAB_SECTIONS_STATES_TBL.".type=".BAB_SECTIONS_ORDER_TBL.".type AND ".BAB_SECTIONS_STATES_TBL.".id_user='".$BAB_SESS_USERID."' ORDER BY ".BAB_SECTIONS_ORDER_TBL.".ordering ASC";
+	$req = "SELECT ".BAB_SECTIONS_ORDER_TBL.".*, ".BAB_SECTIONS_STATES_TBL.".closed, ".BAB_SECTIONS_STATES_TBL.".hidden, ".BAB_SECTIONS_STATES_TBL.".id_section AS states_id_section FROM ".BAB_SECTIONS_ORDER_TBL." LEFT JOIN ".BAB_SECTIONS_STATES_TBL." ON ".BAB_SECTIONS_STATES_TBL.".id_section=".BAB_SECTIONS_ORDER_TBL.".id_section AND ".BAB_SECTIONS_STATES_TBL.".type=".BAB_SECTIONS_ORDER_TBL.".type AND ".BAB_SECTIONS_STATES_TBL.".id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."' ORDER BY ".BAB_SECTIONS_ORDER_TBL.".ordering ASC";
 	$res = $babDB->db_query($req);
 	$arrsections = array();
 	$arrsectionsinfo = array();
@@ -648,11 +648,11 @@ function loadSections()
 
 			if(isset($arr['states_id_section']) && !empty($arr['states_id_section']))
 				{
-					if( $arr['closed'] == "Y")
+					if( $arr['closed'] == 'Y')
 						{
 							$arrsectioninfo['close'] = 1;
 						}
-					if( $arr['hidden'] == "N")
+					if( $arr['hidden'] == 'N')
 						{
 							$arrsectioninfo['bshow'] = true;
 						}
@@ -681,7 +681,7 @@ function loadSections()
 	$type = 1;
 	if(!empty($arrsectionsbytype[$type]))
 		{
-			$res2 = $babDB->db_query("select * from ".BAB_PRIVATE_SECTIONS_TBL." where id IN(".implode(',', array_keys($arrsectionsbytype[$type])).")");
+			$res2 = $babDB->db_query("select * from ".BAB_PRIVATE_SECTIONS_TBL." where id IN(".$babDB->quote(array_keys($arrsectionsbytype[$type])).")");
 			while($arr2 = $babDB->db_fetch_array($res2))
 				{
 					$arrdbinfo[$arr2['id']] = $arr2;
@@ -701,7 +701,7 @@ function loadSections()
 									}
 								break;
 							case 2: // month
-								if( $arr2['enabled'] == "Y" && ( $arr2['optional'] == 'N' || $arrsectioninfo['bshow'] ))
+								if( $arr2['enabled'] == 'Y' && ( $arr2['optional'] == 'N' || $arrsectioninfo['bshow'] ))
 									{
 										$sec = new babMonthA();
 										$arrsections[$objectid] = $sec;
@@ -711,7 +711,7 @@ function loadSections()
 								$sec = new babTopcatSection($arrsectioninfo['close']);
 								if( $sec->count > 0 )
 									{
-										if( $arr2['enabled'] == "Y" && ( $arr2['optional'] == 'N' || $arrsectioninfo['bshow'] ))
+										if( $arr2['enabled'] == 'Y' && ( $arr2['optional'] == 'N' || $arrsectioninfo['bshow'] ))
 											{
 												$arrsections[$objectid] = $sec;
 											}
@@ -721,14 +721,14 @@ function loadSections()
 								$sec = new babForumsSection($arrsectioninfo['close']);
 								if( $sec->count > 0 )
 									{
-										if( $arr2['enabled'] == "Y"  && ( $arr2['optional'] == 'N' || $arrsectioninfo['bshow'] ))
+										if( $arr2['enabled'] == 'Y'  && ( $arr2['optional'] == 'N' || $arrsectioninfo['bshow'] ))
 											{
 												$arrsections[$objectid] = $sec;
 											}
 									}
 								break;
 							case 5: // user's section
-								if( $arr2['enabled'] == "Y" )
+								if( $arr2['enabled'] == 'Y' )
 									{
 										$sec = new babUserSection($arrsectioninfo['close']);
 										$arrsections[$objectid] = $sec;
@@ -742,12 +742,12 @@ function loadSections()
 	$type = '3';
 	if(!empty($arrsectionsbytype[$type]))
 		{
-			$res2 = $babDB->db_query("select id, enabled, optional from ".BAB_TOPICS_CATEGORIES_TBL." where id IN(".implode(',', array_keys($arrsectionsbytype[$type])).")");
+			$res2 = $babDB->db_query("select id, enabled, optional from ".BAB_TOPICS_CATEGORIES_TBL." where id IN(".$babDB->quote(array_keys($arrsectionsbytype[$type])).")");
 			while($arr2 = $babDB->db_fetch_array($res2))
 				{
 					$sectionid = $arr2['id'];
 					$objectid = $arrsectionsbytype[$type][$sectionid];
-					if( $arr2['enabled'] == "Y" && ( $arr2['optional'] == 'N' || $arrsectionsinfo[$objectid]['bshow'] ))
+					if( $arr2['enabled'] == 'Y' && ( $arr2['optional'] == 'N' || $arrsectionsinfo[$objectid]['bshow'] ))
 						{
 							$sec = new babTopicsSection($sectionid, $arrsectionsinfo[$objectid]['close']);
 							if( $sec->count > 0 )
@@ -771,16 +771,16 @@ function loadSections()
 				$sectionid = $arr2['id'];
 				$objectid = $arrsectionsbytype[$type][$sectionid];
 
-				if( $arr2['access'] && is_file($GLOBALS['babAddonsPath'].$arr2['title']."/init.php"))
+				if( $arr2['access'] && is_file($GLOBALS['babAddonsPath'].$arr2['title'].'/init.php'))
 					{
 					$GLOBALS['babAddonFolder'] = $arr2['title'];
-					$GLOBALS['babAddonTarget'] = "addon/".$sectionid;
-					$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$sectionid."/";
-					$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$arr2['title']."/";
-					$GLOBALS['babAddonHtmlPath'] = "addons/".$arr2['title']."/";
-					$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath']."/addons/".$arr2['title']."/";
-					require_once( $GLOBALS['babAddonsPath'].$arr2['title']."/init.php" );
-					$func = $arr2['title']."_onSectionCreate";
+					$GLOBALS['babAddonTarget'] = 'addon/'.$sectionid;
+					$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript'].'?tg=addon/'.$sectionid.'/';
+					$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath'].'addons/'.$arr2['title'].'/';
+					$GLOBALS['babAddonHtmlPath'] = 'addons/'.$arr2['title'].'/';
+					$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath'].'/addons/'.$arr2['title'].'/';
+					require_once( $GLOBALS['babAddonsPath'].$arr2['title'].'/init.php' );
+					$func = $arr2['title'].'_onSectionCreate';
 					if(function_exists($func))
 						{
 						if (!isset($template)) $template = false;
@@ -793,7 +793,7 @@ function loadSections()
 									}
 								else
 									{
-									$sec = new babSection($stitle, "");
+									$sec = new babSection($stitle, '');
 									}
 								$sec->setTemplate($arr2['title']);
 								$sec->htmlid = $arr2['title'];
@@ -810,10 +810,10 @@ function loadSections()
 	if(!empty($arrsectionsbytype[$type]))
 		{
 			$langFilterValues = $GLOBALS['babLangFilter']->getLangValues();
-			$req = "SELECT * FROM ".BAB_SECTIONS_TBL." WHERE id IN(".implode(',', array_keys($arrsectionsbytype[$type])).") and enabled='Y'";
+			$req = "SELECT * FROM ".BAB_SECTIONS_TBL." WHERE id IN(".$babDB->quote(array_keys($arrsectionsbytype[$type])).") and enabled='Y'";
 			if( count($langFilterValues) > 0 )
 				{
-					$req .= " AND SUBSTRING(lang, 1, 2 ) IN (".implode(',', $langFilterValues).")";
+					$req .= " AND SUBSTRING(lang, 1, 2 ) IN (".$babDB->quote($langFilterValues).")";
 				}
 			$res2 = $babDB->db_query($req);
 			while($arr2 = $babDB->db_fetch_array($res2))
@@ -826,7 +826,7 @@ function loadSections()
 								{
 									if(!$arrsectionsinfo[$objectid]['close'])
 										{
-										if( $arr2['script'] == "Y")
+										if( $arr2['script'] == 'Y')
 											{
 												eval("\$arr2['content'] = \"".$arr2['content']."\";");
 											}
@@ -834,7 +834,7 @@ function loadSections()
 										}
 									else
 										{
-										$sec = new babSection($arr2['title'], "");
+										$sec = new babSection($arr2['title'], '');
 										}
 									$sec->setTemplate($arr2['template']);
 									$sec->htmlid = 'customsection';
@@ -860,11 +860,11 @@ function loadSections()
 						}
 					if( $sec->close )
 						{
-							$sec->boxurl = $GLOBALS['babUrlScript']."?tg=options&amp;idx=ob&amp;s=".$sectionid."&amp;w=".$type;
+							$sec->boxurl = $GLOBALS['babUrlScript'].'?tg=options&amp;idx=ob&amp;s='.$sectionid.'&amp;w='.$type;
 						}
 					else
 						{
-							$sec->boxurl = $GLOBALS['babUrlScript']."?tg=options&amp;idx=cb&amp;s=".$sectionid."&amp;w=".$type;
+							$sec->boxurl = $GLOBALS['babUrlScript'].'?tg=options&amp;idx=cb&amp;s='.$sectionid.'&amp;w='.$type;
 						}
 					$babBody->addSection($sec);
 				}
@@ -940,17 +940,17 @@ function printout()
 {
     if (count($this->styleSheet) > 0)
 		{
-		$this->content = bab_printTemplate($this,"uiutil.html", "styleSheet").$this->content;
+		$this->content = bab_printTemplate($this,'uiutil.html', 'styleSheet').$this->content;
 		}
 	
 	if(!empty($this->msgerror))
 		{
-		$this->message = bab_printTemplate($this,"warning.html", "texterror");
-		//return "";
+		$this->message = bab_printTemplate($this,'warning.html', 'texterror');
+		//return '';
 		}
 	else if(!empty($this->title))
 		{
-		$this->message = bab_printTemplate($this,"warning.html", "texttitle");
+		$this->message = bab_printTemplate($this,'warning.html', 'texttitle');
 		}
 	return $this->content;
 }
@@ -984,7 +984,7 @@ function get_topcatview() {
 
 		$topview = bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL);
 
-		$res = $babDB->db_query("select id_cat from ".BAB_TOPICS_TBL." where id in('".implode("','",array_keys($topview))."')");
+		$res = $babDB->db_query("select id_cat from ".BAB_TOPICS_TBL." where id in(".$babDB->quote(array_keys($topview)).")");
 		while( $row = $babDB->db_fetch_array($res))
 			{
 			if( !isset($topcatview[$row['id_cat']]))
@@ -1025,7 +1025,7 @@ function get_newarticles() {
 	if( count($this->topview) > 0 )
 		{
 		global $babDB;
-		$res = $babDB->db_query("select id_topic, restriction from ".BAB_ARTICLES_TBL." where (date_publication = '0000-00-00 00:00:00' OR date_publication <= now()) AND date >= '".$this->lastlog."'");
+		$res = $babDB->db_query("select id_topic, restriction from ".BAB_ARTICLES_TBL." where (date_publication = '0000-00-00 00:00:00' OR date_publication <= now()) AND date >= '".$babDB->db_escape_string($this->lastlog)."'");
 		while( $row = $babDB->db_fetch_array($res))
 			{
 			if( isset($this->topview[$row['id_topic']]) && ( $row['restriction'] == '' || bab_articleAccessByRestriction($row['restriction']) ))
@@ -1047,7 +1047,7 @@ function get_newcomments() {
 	if( count($this->topview) > 0 )
 		{
 		global $babDB;
-		$res = $babDB->db_query("select id_topic from ".BAB_COMMENTS_TBL." where confirmed='Y' and date >= '".$this->lastlog."'");
+		$res = $babDB->db_query("select id_topic from ".BAB_COMMENTS_TBL." where confirmed='Y' and date >= '".$babDB->db_escape_string($this->lastlog)."'");
 		while( $row = $babDB->db_fetch_array($res))
 			{
 			if( isset($this->topview[$row['id_topic']]) )
@@ -1067,7 +1067,7 @@ function get_forums() {
 		global $babDB;
 
 		$fv = bab_getUserIdObjects(BAB_FORUMSVIEW_GROUPS_TBL);
-		$res = $babDB->db_query("select * from ".BAB_FORUMS_TBL." where active='Y' and id in ('".implode("','",array_keys($fv))."')  order by ordering asc");
+		$res = $babDB->db_query("select * from ".BAB_FORUMS_TBL." where active='Y' and id in (".$babDB->quote(array_keys($fv)).")  order by ordering asc");
 		while($arr = $babDB->db_fetch_array($res))
 			{
 			$forumsview[$arr['id']]['name'] = $arr['name'];
@@ -1092,7 +1092,7 @@ function get_newposts() {
 
 	global $babDB;
 
-	list($newposts) = $babDB->db_fetch_array($babDB->db_query("select count(p.id) from ".BAB_POSTS_TBL." p, ".BAB_THREADS_TBL." t where p.date >= '".$this->lastlog."' and p.confirmed='Y' and p.id_thread=t.id and t.forum IN('".implode("','",array_keys(bab_getUserIdObjects(BAB_FORUMSVIEW_GROUPS_TBL)))."')"));
+	list($newposts) = $babDB->db_fetch_array($babDB->db_query("select count(p.id) from ".BAB_POSTS_TBL." p, ".BAB_THREADS_TBL." t where p.date >= '".$this->lastlog."' and p.confirmed='Y' and p.id_thread=t.id and t.forum IN(".$babDB->quote(array_keys(bab_getUserIdObjects(BAB_FORUMSVIEW_GROUPS_TBL))).")"));
 
 	return $newposts;
 	}
@@ -1119,8 +1119,8 @@ function get_newfiles() {
 	if( count($arrfid) > 0 )
 		{
 		global $babDB;
-		$req = "select count(f.id) from ".BAB_FILES_TBL." f where f.bgroup='Y' and f.state='' and f.confirmed='Y' and f.id_owner IN (".implode(',', $arrfid).")";
-		$req .= " and f.modified >= '".$this->lastlog."'";
+		$req = "select count(f.id) from ".BAB_FILES_TBL." f where f.bgroup='Y' and f.state='' and f.confirmed='Y' and f.id_owner IN (".$babDB->quote($arrfid).")";
+		$req .= " and f.modified >= '".$babDB->db_escape_string($this->lastlog)."'";
 		$req .= " order by f.modified desc";
 
 		list($newfiles) = $babDB->db_fetch_row($babDB->db_query($req));
@@ -1133,7 +1133,7 @@ function get_newfiles() {
 function & get_icalendars() {
 
 	if (!isset($this->priv_icalendars)) {
-		include_once $GLOBALS['babInstallPath']."utilit/calincl.php";
+		include_once $GLOBALS['babInstallPath'].'utilit/calincl.php';
 		$this->priv_icalendars = & new bab_icalendars();
 	}
 
@@ -1158,7 +1158,7 @@ function bab_isMemberOfTree($id_group, $id_user = '')
 			return true;
 
 		$db = &$GLOBALS['babDB'];
-		$res = $db->db_query("SELECT COUNT(g.id) FROM ".BAB_GROUPS_TBL." g, ".BAB_USERS_GROUPS_TBL." u WHERE u.id_group=g.id AND u.id_object='".$id_user."' AND g.lf >= '".$babBody->ovgroups[$id_group]['lf']."' AND g.lr <= '".$babBody->ovgroups[$id_group]['lr']."'");
+		$res = $db->db_query("SELECT COUNT(g.id) FROM ".BAB_GROUPS_TBL." g, ".BAB_USERS_GROUPS_TBL." u WHERE u.id_group=g.id AND u.id_object='".$db->db_escape_string($id_user)."' AND g.lf >= '".$db->db_escape_string($babBody->ovgroups[$id_group]['lf'])."' AND g.lr <= '".$db->db_escape_string($babBody->ovgroups[$id_group]['lr'])."'");
 		list($n) = $db->db_fetch_array($res);
 		return $n > 0 ? true : false;
 		}
@@ -1190,7 +1190,7 @@ function bab_updateUserSettings()
 
 		if( !empty($BAB_SESS_USERID))
 			{		
-			$res=$babDB->db_query("select id_group, isprimary from ".BAB_USERS_GROUPS_TBL." where id_object='".$BAB_SESS_USERID."'");
+			$res=$babDB->db_query("select id_group, isprimary from ".BAB_USERS_GROUPS_TBL." where id_object='".$babDB->db_escape_string($BAB_SESS_USERID)."'");
 			$babBody->ovgroups[BAB_REGISTERED_GROUP]['member'] = 'Y';
 			$babBody->usergroups[] = BAB_REGISTERED_GROUP;
 			while( $arr = $babDB->db_fetch_array($res))
@@ -1200,7 +1200,7 @@ function bab_updateUserSettings()
 				$babBody->ovgroups[$arr['id_group']]['primary'] = $arr['isprimary'];
 				}
 
-			$res=$babDB->db_query("select id_group, id_set from ".BAB_GROUPS_SET_ASSOC_TBL." where id_group IN('".implode("','",$babBody->usergroups)."')");
+			$res=$babDB->db_query("select id_group, id_set from ".BAB_GROUPS_SET_ASSOC_TBL." where id_group IN(".$babDB->quote($babBody->usergroups).")");
 			while( $arr = $babDB->db_fetch_array($res))
 				{
 				$babBody->usergroups[] = $arr['id_set'];
@@ -1223,14 +1223,14 @@ function bab_updateUserSettings()
 		$arr['access'] = false;
 		if (bab_isAccessValid(BAB_ADDONS_GROUPS_TBL, $arr['id']))
 			{
-			$arr_ini = @parse_ini_file( $GLOBALS['babAddonsPath'].$arr['title']."/addonini.php");
+			$arr_ini = @parse_ini_file( $GLOBALS['babAddonsPath'].$arr['title'].'/addonini.php');
 			if( !empty($arr_ini['version']))
 				{
 				if ($arr_ini['version'] == $arr['version']) {
 					$arr['access'] = true;
 					}
 				else {
-					$babDB->db_query("UPDATE ".BAB_ADDONS_TBL." SET installed='N' WHERE id='".$arr['id']."'");
+					$babDB->db_query("UPDATE ".BAB_ADDONS_TBL." SET installed='N' WHERE id='".$babDB->db_escape_string($arr['id'])."'");
 					}
 				}
 			}
@@ -1253,11 +1253,11 @@ function bab_updateUserSettings()
 	if( !empty($BAB_SESS_USERID))
 		{
 
-		$res=$babDB->db_query("select lang, skin, style, lastlog, langfilter, date_shortformat, date_longformat, time_format from ".BAB_USERS_TBL." where id='".$BAB_SESS_USERID."'");
+		$res=$babDB->db_query("select lang, skin, style, lastlog, langfilter, date_shortformat, date_longformat, time_format from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($BAB_SESS_USERID)."'");
 		if( $res && $babDB->db_num_rows($res) > 0 )
 			{
 			$arr = $babDB->db_fetch_array($res);
-			if( $arr['lang'] != "")
+			if( $arr['lang'] != '')
 				{
 				$GLOBALS['babLanguage'] = $arr['lang'];
 				}
@@ -1265,12 +1265,12 @@ function bab_updateUserSettings()
 			if($arr['langfilter'] != '')
 				$GLOBALS['babLangFilter']->setFilter($arr['langfilter']);
 			
-			if(!empty($arr['skin']) && is_dir("skins/".$arr['skin']))
+			if(!empty($arr['skin']) && is_dir('skins/'.$arr['skin']))
 				{
 				$GLOBALS['babSkin'] = $arr['skin'];
 				}
 
-			if(!empty($arr['style']) && is_file("skins/".$GLOBALS['babSkin']."/styles/".$arr['style']))
+			if(!empty($arr['style']) && is_file('skins/'.$GLOBALS['babSkin'].'/styles/'.$arr['style']))
 				{
 				$GLOBALS['babStyle'] = $arr['style'];
 				}
@@ -1310,7 +1310,7 @@ function bab_updateUserSettings()
 					}
 				}
 
-			$res = $babDB->db_query("SELECT dg.id FROM ".BAB_DG_ADMIN_TBL." da,".BAB_DG_GROUPS_TBL." dg where da.id_user='".$BAB_SESS_USERID."' AND da.id_dg=dg.id AND dg.id_group >= '0'");
+			$res = $babDB->db_query("SELECT dg.id FROM ".BAB_DG_ADMIN_TBL." da,".BAB_DG_GROUPS_TBL." dg where da.id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."' AND da.id_dg=dg.id AND dg.id_group >= '0'");
 			while( $arr = $babDB->db_fetch_array($res) )
 				{
 				$babBody->dgAdmGroups[] = $arr['id'];
@@ -1321,7 +1321,7 @@ function bab_updateUserSettings()
 		$res = $babDB->db_query("select id_user, id_substitute from ".BAB_USERS_UNAVAILABILITY_TBL." where curdate() between start_date and end_date");
 		if( $res && $babDB->db_num_rows($res) > 0 )
 			{
-			include_once $GLOBALS['babInstallPath']."utilit/ocapi.php";
+			include_once $GLOBALS['babInstallPath'].'utilit/ocapi.php';
 			$superiors = array();
 			$entities = bab_OCGetUserEntities($BAB_SESS_USERID);
 			if( count($entities['temporary']) > 0 )
@@ -1390,18 +1390,18 @@ function bab_updateUserSettings()
 
 		if( 0 != $arr['id_dg'] && count($babBody->dgAdmGroups) > 0 && in_array($arr['id_dg'], $babBody->dgAdmGroups ))
 			{
-			$babBody->currentDGGroup = $babDB->db_fetch_array($babDB->db_query("select dg.*, g.lf, g.lr from ".BAB_DG_GROUPS_TBL." dg, ".BAB_GROUPS_TBL." g where g.id=dg.id_group AND dg.id='".$arr['id_dg']."'"));
+			$babBody->currentDGGroup = $babDB->db_fetch_array($babDB->db_query("select dg.*, g.lf, g.lr from ".BAB_DG_GROUPS_TBL." dg, ".BAB_GROUPS_TBL." g where g.id=dg.id_group AND dg.id='".$babDB->db_escape_string($arr['id_dg'])."'"));
 			$babBody->currentAdmGroup = &$babBody->currentDGGroup['id'];
 			
 			}
 		else if( !$babBody->isSuperAdmin && count($babBody->dgAdmGroups) > 0 )
 			{
-			$babBody->currentDGGroup = $babDB->db_fetch_array($babDB->db_query("select dg.*, g.lf, g.lr from ".BAB_DG_GROUPS_TBL." dg, ".BAB_GROUPS_TBL." g where g.id=dg.id_group AND dg.id='".$babBody->dgAdmGroups[0]."'"));
+			$babBody->currentDGGroup = $babDB->db_fetch_array($babDB->db_query("select dg.*, g.lf, g.lr from ".BAB_DG_GROUPS_TBL." dg, ".BAB_GROUPS_TBL." g where g.id=dg.id_group AND dg.id='".$babDB->db_escape_string($babBody->dgAdmGroups[0])."'"));
 			$babBody->currentAdmGroup = &$babBody->currentDGGroup['id'];
 			}
 
 
-		$babDB->db_query("update ".BAB_USERS_LOG_TBL." set dateact=now(), remote_addr='".$GLOBALS['REMOTE_ADDR']."', forwarded_for='".$GLOBALS['HTTP_X_FORWARDED_FOR']."', id_dg='".$babBody->currentDGGroup['id']."', grp_change=NULL, schi_change=NULL, tg='".$babDB->db_escape_string($GLOBALS['tg'])."'  where id = '".$arr['id']."'");
+		$babDB->db_query("update ".BAB_USERS_LOG_TBL." set dateact=now(), remote_addr='".$GLOBALS['REMOTE_ADDR']."', forwarded_for='".$GLOBALS['HTTP_X_FORWARDED_FOR']."', id_dg='".$babDB->db_escape_string($babBody->currentDGGroup['id'])."', grp_change=NULL, schi_change=NULL, tg='".$babDB->db_escape_string($GLOBALS['tg'])."'  where id = '".$babDB->db_escape_string($arr['id'])."'");
 		}
 	else
 		{
@@ -1411,7 +1411,7 @@ function bab_updateUserSettings()
 			if( !$babBody->isSuperAdmin && count($babBody->dgAdmGroups) > 0 )
 				{
 				$babBody->currentAdmGroup = $babBody->dgAdmGroups[0];
-				$babBody->currentDGGroup = $babDB->db_fetch_array($babDB->db_query("select dg.* from ".BAB_DG_GROUPS_TBL." dg where dg.id_group='".$babBody->dgAdmGroups[0]."'"));
+				$babBody->currentDGGroup = $babDB->db_fetch_array($babDB->db_query("select dg.* from ".BAB_DG_GROUPS_TBL." dg where dg.id_group='".$babDB->db_escape_string($babBody->dgAdmGroups[0])."'"));
 				}
 			}
 		else
@@ -1419,14 +1419,14 @@ function bab_updateUserSettings()
 			$userid = 0;
 			}
 
-		$babDB->db_query("insert into ".BAB_USERS_LOG_TBL." (id_user, sessid, dateact, remote_addr, forwarded_for, id_dg, grp_change, schi_change, tg) values ('".$userid."', '".session_id()."', now(), '".$GLOBALS['REMOTE_ADDR']."', '".$GLOBALS['HTTP_X_FORWARDED_FOR']."', '".$babBody->currentDGGroup['id']."', NULL, NULL, '".$babDB->db_escape_string($GLOBALS['tg'])."')");
+		$babDB->db_query("insert into ".BAB_USERS_LOG_TBL." (id_user, sessid, dateact, remote_addr, forwarded_for, id_dg, grp_change, schi_change, tg) values ('".$babDB->db_escape_string($userid)."', '".session_id()."', now(), '".$babDB->db_escape_string($GLOBALS['REMOTE_ADDR'])."', '".$babDB->db_escape_string($GLOBALS['HTTP_X_FORWARDED_FOR'])."', '".$babDB->db_escape_string($babBody->currentDGGroup['id'])."', NULL, NULL, '".$babDB->db_escape_string($GLOBALS['tg'])."')");
 		}
 
 	$res = $babDB->db_query("select id, UNIX_TIMESTAMP(dateact) as time from ".BAB_USERS_LOG_TBL);
 	while( $row  = $babDB->db_fetch_array($res))
 		{
 		if( $row['time'] + get_cfg_var('session.gc_maxlifetime') < time()) 
-			$babDB->db_query("delete from ".BAB_USERS_LOG_TBL." where id='".$row['id']."'");
+			$babDB->db_query("delete from ".BAB_USERS_LOG_TBL." where id='".$babDB->db_escape_string($row['id'])."'");
 		}
 
 }
@@ -1444,33 +1444,33 @@ function bab_updateSiteSettings()
 	$arr = $babDB->db_fetch_array($res);
 	$babBody->babsite = $arr;
 
-	if( $arr['skin'] != "")
+	if( $arr['skin'] != '')
 		{
 		$GLOBALS['babSkin'] = $arr['skin'];
 		}
 	else {
-		$GLOBALS['babSkin'] = "ovidentia"; }
+		$GLOBALS['babSkin'] = 'ovidentia'; }
 
-	if( $arr['style'] != "")
+	if( $arr['style'] != '')
 		{
 		$GLOBALS['babStyle'] = $arr['style'];
 		}
 	else {
-		$GLOBALS['babStyle'] = "ovidentia.css"; }
+		$GLOBALS['babStyle'] = 'ovidentia.css'; }
 
-	if( $arr['lang'] != "")
+	if( $arr['lang'] != '')
 		{
 		$GLOBALS['babLanguage'] = $arr['lang'];
 		}
 	else {
-		$GLOBALS['babLanguage'] = "en"; }
-	if( $arr['adminemail'] != "")
+		$GLOBALS['babLanguage'] = 'en'; }
+	if( $arr['adminemail'] != '')
 		{
 		$GLOBALS['babAdminEmail'] = $arr['adminemail'];
 		}
 	else {
-		$GLOBALS['babAdminEmail'] = "admin@your-domain.com"; }
-	if( $arr['langfilter'] != "")
+		$GLOBALS['babAdminEmail'] = 'admin@your-domain.com'; }
+	if( $arr['langfilter'] != '')
 		{
 		$GLOBALS['babLangFilter']->setFilter($arr['langfilter']);
 		}
@@ -1483,7 +1483,7 @@ function bab_updateSiteSettings()
 		}
 	else
 		{
-		$GLOBALS['babMaxTotalSize'] = "200000000";
+		$GLOBALS['babMaxTotalSize'] = '200000000';
 		}
 	if( !empty($arr['user_diskspace']))
 		{
@@ -1491,7 +1491,7 @@ function bab_updateSiteSettings()
 		}
 	else
 		{
-		$GLOBALS['babMaxUserSize'] = "30000000";
+		$GLOBALS['babMaxUserSize'] = '30000000';
 		}
 	if( !empty($arr['folder_diskspace']))
 		{
@@ -1499,7 +1499,7 @@ function bab_updateSiteSettings()
 		}
 	else
 		{
-		$GLOBALS['babMaxGroupSize'] = "50000000"; 
+		$GLOBALS['babMaxGroupSize'] = '50000000'; 
 		}
 	if( !empty($arr['maxfilesize']))
 		{
@@ -1507,7 +1507,7 @@ function bab_updateSiteSettings()
 		}
 	else
 		{
-		$GLOBALS['babMaxFileSize'] = "30000000"; 
+		$GLOBALS['babMaxFileSize'] = '30000000'; 
 		}
 	if( !empty($arr['uploadpath']))
 		{
@@ -1518,27 +1518,27 @@ function bab_updateSiteSettings()
 		$GLOBALS['babUploadPath'] = '';
 		}
 
-	if(!empty($GLOBALS['babUploadPath']) && !is_dir($GLOBALS['babUploadPath']."/addons/"))
+	if(!empty($GLOBALS['babUploadPath']) && !is_dir($GLOBALS['babUploadPath'].'/addons/'))
 		{
-		bab_mkdir($GLOBALS['babUploadPath']."/addons/", $GLOBALS['babMkdirMode']);
+		bab_mkdir($GLOBALS['babUploadPath'].'/addons/', $GLOBALS['babMkdirMode']);
 		}
 
-	if( $arr['babslogan'] != "")
+	if( $arr['babslogan'] != '')
 		{
 		$GLOBALS['babSlogan'] = $arr['babslogan'];
 		}
-	if( $arr['name_order'] != "")
+	if( $arr['name_order'] != '')
 		{
-		$GLOBALS['babBody']->nameorder = explode(" ",$arr['name_order']);
+		$GLOBALS['babBody']->nameorder = explode(' ',$arr['name_order']);
 		}
 	else {
 		$GLOBALS['babBody']->nameorder = Array('F','L');}
-	if( $arr['remember_login'] == "Y")
+	if( $arr['remember_login'] == 'Y')
 		{
 		$GLOBALS['babCookieIdent'] = true;
 		$GLOBALS['c_nickname'] = '';
 		}
-	elseif ($arr['remember_login'] == "L")
+	elseif ($arr['remember_login'] == 'L')
 		{
 		$GLOBALS['babCookieIdent'] = 'login' ;
 		$GLOBALS['c_nickname'] = isset($_COOKIE['c_nickname']) ? trim($_COOKIE['c_nickname']) : '';
@@ -1547,26 +1547,26 @@ function bab_updateSiteSettings()
 		$GLOBALS['babCookieIdent'] = false ; 
 		$GLOBALS['c_nickname'] = '';
 		}
-	if( $arr['email_password'] == "Y") {
+	if( $arr['email_password'] == 'Y') {
 		$GLOBALS['babEmailPassword'] = true ; }
 	else {
 		$GLOBALS['babEmailPassword'] = false ; }
 
 	$GLOBALS['babAdminName'] = $arr['adminname'];
 
-	if( $arr['date_shortformat'] == "") {
-		$GLOBALS['babShortDateFormat'] = bab_getDateFormat("dd/mm/yyyy") ; }
+	if( $arr['date_shortformat'] == '') {
+		$GLOBALS['babShortDateFormat'] = bab_getDateFormat('dd/mm/yyyy') ; }
 	else {
 		$GLOBALS['babShortDateFormat'] = bab_getDateFormat($arr['date_shortformat']) ; }
 
-	if( $arr['date_longformat'] == "") {
-		$GLOBALS['babLongDateFormat'] = bab_getDateFormat("ddd dd MMMM yyyy") ; }
+	if( $arr['date_longformat'] == '') {
+		$GLOBALS['babLongDateFormat'] = bab_getDateFormat('ddd dd MMMM yyyy') ; }
 	else {
 		$GLOBALS['babLongDateFormat'] = bab_getDateFormat($arr['date_longformat']) ; }
 
-	if( $arr['time_format'] == "") {
+	if( $arr['time_format'] == '') {
 		$babBody->ampm = false;
-		$GLOBALS['babTimeFormat'] = bab_getTimeFormat("HH:mm") ; }
+		$GLOBALS['babTimeFormat'] = bab_getTimeFormat('HH:mm') ; }
 	else {
 		$GLOBALS['babTimeFormat'] = bab_getTimeFormat($arr['time_format']) ; }
 
@@ -1583,26 +1583,26 @@ function bab_updateSiteSettings()
 		{
 		if( $row['time'] + get_cfg_var('session.gc_maxlifetime') < time()) 
 			{
-			$res2 = $babDB->db_query("select id from ".BAB_ART_DRAFTS_TBL." where id_author='0' and id_anonymous='".$row['id']."'");
+			$res2 = $babDB->db_query("select id from ".BAB_ART_DRAFTS_TBL." where id_author='0' and id_anonymous='".$babDB->db_escape_string($row['id'])."'");
 			while( $arr  = $babDB->db_fetch_array($res2))
 				{
 				bab_deleteArticleDraft($arr['id']);
 				}
-			$babDB->db_query("delete from ".BAB_USERS_LOG_TBL." where id='".$row['id']."'");
+			$babDB->db_query("delete from ".BAB_USERS_LOG_TBL." where id='".$babDB->db_escape_string($row['id'])."'");
 			}
 		}
 
 	$res = $babDB->db_query("select id,id_author, id_topic, id_article, date_submission from ".BAB_ART_DRAFTS_TBL." where result='".BAB_ART_STATUS_DRAFT."' and date_submission <= now() and date_submission !='0000-00-00 00:00:00'");
 	if( $res && $babDB->db_num_rows($res) > 0 )
 	{
-	include_once $GLOBALS['babInstallPath']."utilit/topincl.php";
-	include_once $GLOBALS['babInstallPath']."utilit/artincl.php";
+	include_once $GLOBALS['babInstallPath'].'utilit/topincl.php';
+	include_once $GLOBALS['babInstallPath'].'utilit/artincl.php';
 	while( $arr  = $babDB->db_fetch_array($res))
 		{
 		$bsubmit = false;
 		if( $arr['id_article'] != 0 )
 			{
-			$res = $babDB->db_query("select at.id_topic, at.id_author, tt.allow_update, tt.allow_manupdate from ".BAB_ARTICLES_TBL." at left join ".BAB_TOPICS_TBL." tt on at.id_topic=tt.id  where at.id='".$arr['id_article']."'");
+			$res = $babDB->db_query("select at.id_topic, at.id_author, tt.allow_update, tt.allow_manupdate from ".BAB_ARTICLES_TBL." at left join ".BAB_TOPICS_TBL." tt on at.id_topic=tt.id  where at.id='".$babDB->db_escape_string($arr['id_article'])."'");
 			if( $res && $babDB->db_num_rows($res) == 1 )
 				{
 				$rr = $babDB->db_fetch_array($res);
@@ -1628,7 +1628,7 @@ function bab_updateSiteSettings()
 	$res = $babDB->db_query("select id from ".BAB_ARTICLES_TBL." where date_archiving <= now() and date_archiving !='0000-00-00 00:00:00' and archive='N'");
 	while( $arr  = $babDB->db_fetch_array($res))
 		{
-		$babDB->db_query("update ".BAB_ARTICLES_TBL." set archive='Y' where id = '".$arr['id']."'");
+		$babDB->db_query("update ".BAB_ARTICLES_TBL." set archive='Y' where id = '".$babDB->db_escape_string($arr['id'])."'");
 		}
 }
 
@@ -1712,9 +1712,9 @@ class babLanguageFilter
 		function isLangFile($fileName)
 			{
 				$res = substr($fileName, 0, 5);
-				if ($res != "lang-") return false;
-				$res = strtolower(strstr($fileName, "."));
-				if ($res != ".xml") return false;
+				if ($res != 'lang-') return false;
+				$res = strtolower(strstr($fileName, '.'));
+				if ($res != '.xml') return false;
 				return true;
 			}
 
@@ -1742,9 +1742,9 @@ class babLanguageFilter
 							}
 				closedir($folder);
 					}
-				if (file_exists("lang"))
+				if (file_exists('lang'))
 					{
-						$folder = opendir("lang");
+						$folder = opendir('lang');
 						while (false!==($file = readdir($folder)))
 							{
 								if ($this->isLangFile($file))
