@@ -89,7 +89,7 @@ function listUserAds()
 			if( $i < $this->countldap)
 				{
 				$this->altbg = !$this->altbg;
-				$arr = $this->db->db_fetch_array($this->db->db_query("select name, description from ".BAB_LDAP_DIRECTORIES_TBL." where id='".$this->ldapid[$i]."'"));
+				$arr = $this->db->db_fetch_array($this->db->db_query("select name, description from ".BAB_LDAP_DIRECTORIES_TBL." where id='".$this->db->db_escape_string($this->ldapid[$i])."'"));
 				$this->description = $arr['description'];
 				$this->url = $GLOBALS['babUrlScript']."?tg=directory&idx=sldap&id=".$this->ldapid[$i];
 				$this->urlname = $arr['name'];
@@ -106,7 +106,7 @@ function listUserAds()
 			if( $i < $this->countdb)
 				{
 				$this->altbg = !$this->altbg;
-				$arr = $this->db->db_fetch_array($this->db->db_query("select name, description, id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$this->dbid[$i]."'"));
+				$arr = $this->db->db_fetch_array($this->db->db_query("select name, description, id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$this->db->db_escape_string($this->dbid[$i])."'"));
 				$this->description = $arr['description'];
 				$this->adminurl = $GLOBALS['babUrlScript']."?tg=directory&idx=sdb&id=".$this->dbid[$i];
 				$this->url = $GLOBALS['babUrlScript']."?tg=directory&idx=sdbovml&directoryid=".$this->dbid[$i];
@@ -180,7 +180,7 @@ function browseLdapDirectory($id, $pos)
 			$this->allurl = $GLOBALS['babUrlScript']."?tg=directory&idx=sldap&id=".$id."&pos=";
 			$this->count = 0;
 			$db = $GLOBALS['babDB'];
-			$res = $db->db_query("select * , DECODE(password, \"".$GLOBALS['BAB_HASH_VAR']."\") as adpass from ".BAB_LDAP_DIRECTORIES_TBL." where id='".$id."'");
+			$res = $db->db_query("select * , DECODE(password, \"".$db->db_escape_string($GLOBALS['BAB_HASH_VAR'])."\") as adpass from ".BAB_LDAP_DIRECTORIES_TBL." where id='".$db->db_escape_string($id)."'");
 			if( $res && $db->db_num_rows($res) > 0)
 				{
 				$arr = $db->db_fetch_array($res);
@@ -206,11 +206,11 @@ function browseLdapDirectory($id, $pos)
 
 			/* find prefered mail account */
 			$this->db = &$GLOBALS['babDB'];
-			$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$GLOBALS['BAB_SESS_USERID']."' and prefered='Y'";
+			$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$this->db->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and prefered='Y'";
 			$res = $this->db->db_query($req);
 			if( !$res || $this->db->db_num_rows($res) == 0 )
 				{
-				$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$GLOBALS['BAB_SESS_USERID']."'";
+				$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$this->db->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'";
 				$res = $this->db->db_query($req);
 				}
 
@@ -320,12 +320,12 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 			$this->addurl = $GLOBALS['babUrlScript']."?tg=directory&idx=adbc&id=".$id;
 			$this->count = 0;
 			$this->db = &$GLOBALS['babDB'];
-			$arr = $this->db->db_fetch_array($this->db->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
+			$arr = $this->db->db_fetch_array($this->db->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$this->db->db_escape_string($id)."'"));
 			$this->idgroup = $arr['id_group'];
 			if(bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $id))
 				{
 				$GLOBALS['babWebStat']->addDatabaseDirectory($id);
-				$this->rescol = $this->db->db_query("select id, id_field from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($this->idgroup != 0? 0: $this->id)."' and ordering!='0' order by ordering asc");
+				$this->rescol = $this->db->db_query("select id, id_field from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($this->idgroup != 0? 0: $this->db->db_escape_string($this->id))."' and ordering!='0' order by ordering asc");
 				$this->countcol = $this->db->db_num_rows($this->rescol);
 				}
 			else
@@ -344,11 +344,11 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 			$this->bgroup = $arr['id_group'] > 0;
 
 			/* find prefered mail account */
-			$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$GLOBALS['BAB_SESS_USERID']."' and prefered='Y'";
+			$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$this->db->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and prefered='Y'";
 			$res = $this->db->db_query($req);
 			if( !$res || $this->db->db_num_rows($res) == 0 )
 				{
-				$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$GLOBALS['BAB_SESS_USERID']."'";
+				$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$this->db->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'";
 				$res = $this->db->db_query($req);
 				}
 
@@ -373,7 +373,7 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 				$arr = $this->db->db_fetch_array($this->rescol);
 				if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
 					{
-					$rr = $this->db->db_fetch_array($this->db->db_query("select name, description from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
+					$rr = $this->db->db_fetch_array($this->db->db_query("select name, description from ".BAB_DBDIR_FIELDS_TBL." where id='".$this->db->db_escape_string($arr['id_field'])."'"));
 					$this->coltxt = translateDirectoryField($rr['description']);
 					$filedname = $rr['name'];
 					$tmp[] = $filedname;
@@ -381,7 +381,7 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 					}
 				else
 					{
-					$rr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+					$rr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$this->db->db_escape_string(($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
 					$this->coltxt = translateDirectoryField($rr['name']);
 					$filedname = "babdirf".$arr['id'];
 
@@ -417,7 +417,7 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 								".BAB_USERS_GROUPS_TBL." u,
 								".BAB_DBDIR_ENTRIES_TBL." e 
 									".implode(' ',$leftjoin)." 
-									WHERE u.id_group='".$this->idgroup."' 
+									WHERE u.id_group='".$this->db->db_escape_string($this->idgroup)."' 
 									AND u2.id=e.id_user 
 									AND u2.disabled='0' 
 									AND u.id_object=e.id_user 
@@ -434,7 +434,7 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 						}
 					else
 						{
-						$req = " ".BAB_DBDIR_ENTRIES_TBL." e ".implode(' ',$leftjoin)." WHERE e.id_directory='".$this->id ."'";
+						$req = " ".BAB_DBDIR_ENTRIES_TBL." e ".implode(' ',$leftjoin)." WHERE e.id_directory='".$this->db->db_escape_string($this->id) ."'";
 						}
 
 
@@ -443,16 +443,16 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 						$this->select[] = 'e.email';
 
 					if (!empty($this->pos) && false === strpos($this->xf, 'babdirf'))
-						$like = " AND e.`".$this->xf."` LIKE '".$this->pos."%'";
+						$like = " AND e.`".$this->db->db_escape_string($this->xf)."` LIKE '".$this->db->db_escape_string($this->pos)."%'";
 					elseif (0 === strpos($this->xf, 'babdirf'))
 						{
 						$idfield = substr($this->xf,7);
-						$like = " AND lj".$idfield.".field_value LIKE '".$this->pos."%'";
+						$like = " AND lj".$idfield.".field_value LIKE '".$this->db->db_escape_string($this->pos)."%'";
 						}
 					else
 						$like = '';
 
-					$req = "select ".implode(',', $this->select)." from ".$req." ".$like." order by `".$this->xf."` ";
+					$req = "select ".implode(',', $this->select)." from ".$req." ".$like." order by `".$this->db->db_escape_string($this->xf)."` ";
 					if( $this->ord == "-" )
 						{
 						$req .= "asc";
@@ -560,7 +560,7 @@ function browseDbDirectoryWithOvml($badd)
 
 	if(bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $args['directoryid']))
 		{
-		$arr = $babDB->db_fetch_array($babDB->db_query("select id_group, ovml_list from ".BAB_DB_DIRECTORIES_TBL." where id='".$args['directoryid']."'"));
+		$arr = $babDB->db_fetch_array($babDB->db_query("select id_group, ovml_list from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($args['directoryid'])."'"));
 
 		if( !empty($arr['ovml_list']))
 			{
@@ -599,7 +599,7 @@ function summaryLdapContact($id, $cn)
 			else
 				$this->count = 0;
 
-			$res = $this->db->db_query("select * , DECODE(password, \"".$GLOBALS['BAB_HASH_VAR']."\") as adpass from ".BAB_LDAP_DIRECTORIES_TBL." where id='".$id."'");
+			$res = $this->db->db_query("select * , DECODE(password, \"".$GLOBALS['BAB_HASH_VAR']."\") as adpass from ".BAB_LDAP_DIRECTORIES_TBL." where id='".$this->db->db_escape_string($id)."'");
 			if( $res && $this->db->db_num_rows($res) > 0)
 				{
 				$arr = $this->db->db_fetch_array($res);
@@ -669,7 +669,7 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 
 			$this->db = &$GLOBALS['babDB'];
 			
-			$arr = $this->db->db_fetch_array($this->db->db_query("select id_group, user_update from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
+			$arr = $this->db->db_fetch_array($this->db->db_query("select id_group, user_update from ".BAB_DB_DIRECTORIES_TBL." where id='".$this->db->db_escape_string($id)."'"));
 			$this->idgroup = $arr['id_group'];
 			$allowuu = $arr['user_update'];
 
@@ -677,13 +677,13 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 
 			if (false === $idu)
 				{
-				$req = "select id from ".BAB_DBDIR_ENTRIES_TBL." where id_user='".$GLOBALS['BAB_SESS_USERID']."'";
+				$req = "select id from ".BAB_DBDIR_ENTRIES_TBL." where id_user='".$this->db->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'";
 				list($idu) = $this->db->db_fetch_array($this->db->db_query($req));
 				$personnal = true;
 				}
 			else
 				{
-				$req = "select id from ".BAB_DBDIR_ENTRIES_TBL." where id='".$idu."' AND id_user='".$GLOBALS['BAB_SESS_USERID']."'";
+				$req = "select id from ".BAB_DBDIR_ENTRIES_TBL." where id='".$this->db->db_escape_string($idu)."' AND id_user='".$this->db->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'";
 				$res =$this->db->db_query($req);
 				$personnal = $this->db->db_num_rows($res) > 0;
 				}
@@ -696,11 +696,11 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 				}
 
 			$this->showph = false;
-			$res = $this->db->db_query("select *, LENGTH(photo_data) as plen from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".($this->idgroup != 0? 0: $this->id)."' and id='".$idu."'");
+			$res = $this->db->db_query("select *, LENGTH(photo_data) as plen from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".($this->idgroup != 0? 0: $this->db->db_escape_string($this->id))."' and id='".$this->db->db_escape_string($idu)."'");
 			if( $res && $this->db->db_num_rows($res) > 0)
 				{
 				$this->arr = $this->db->db_fetch_array($res);
-				$res = $this->db->db_query("select * from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_entry='".$idu."'");
+				$res = $this->db->db_query("select * from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_entry='".$this->db->db_escape_string($idu)."'");
 				while( $arr = $this->db->db_fetch_array($res))
 					{
 					$this->arr['babdirf'.$arr['id_fieldx']] = $arr['field_value'];
@@ -723,7 +723,7 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 				$this->urlimg = "";
 				}
 
-			$res = $this->db->db_query("select modifiable, required from ".BAB_DBDIR_FIELDSEXTRA_TBL." join ".BAB_DBDIR_FIELDS_TBL." where id_directory='".($this->idgroup != 0? 0: $this->id)."' and id_field=".BAB_DBDIR_FIELDS_TBL.".id and ".BAB_DBDIR_FIELDS_TBL.".name='jpegphoto'");
+			$res = $this->db->db_query("select modifiable, required from ".BAB_DBDIR_FIELDSEXTRA_TBL." join ".BAB_DBDIR_FIELDS_TBL." where id_directory='".($this->idgroup != 0? 0: $this->db->db_escape_string($this->id))."' and id_field=".BAB_DBDIR_FIELDS_TBL.".id and ".BAB_DBDIR_FIELDS_TBL.".name='jpegphoto'");
 
 			$this->modify = false;
 			$this->phrequired = false;
@@ -745,7 +745,7 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 					}
 				}
 
-			$this->res = $this->db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($this->idgroup != 0? 0: $this->id)."' and disabled='N' order by list_ordering asc");
+			$this->res = $this->db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($this->idgroup != 0? 0: $this->db->db_escape_string($this->id))."' and disabled='N' order by list_ordering asc");
 			if( $this->res && $this->db->db_num_rows($this->res) > 0)
 				{
 				$this->count = $this->db->db_num_rows($this->res);
@@ -765,14 +765,14 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 				$arr = $this->db->db_fetch_array($this->res);
 				if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
 					{
-					$res = $this->db->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'");
+					$res = $this->db->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$this->db->db_escape_string($arr['id_field'])."'");
 					$rr = $this->db->db_fetch_array($res);
 					$this->fieldn = translateDirectoryField($rr['description']);
 					$this->fieldv = $rr['name'];
 					}
 				else
 					{
-					$rr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+					$rr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$this->db->db_escape_string(($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
 					$this->fieldn = translateDirectoryField($rr['name']);
 					$this->fieldv = "babdirf".$arr['id'];
 					}
@@ -796,7 +796,7 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 				$this->foriginalvalue = $this->fvalue;
 				$this->fvalue = htmlentities($this->fvalue);
 
-				$this->resfxv = $this->db->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." where id_fieldextra='".$arr['id']."'");
+				$this->resfxv = $this->db->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." where id_fieldextra='".$this->db->db_escape_string($arr['id'])."'");
 				$this->countfxv = $this->db->db_num_rows($this->resfxv); 
 
 				$this->required = $arr['required'];
@@ -934,7 +934,7 @@ function addDbContact($id, $fields)
 
 			
 
-			list($this->idgroup) = $this->db->db_fetch_array($this->db->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
+			list($this->idgroup) = $this->db->db_fetch_array($this->db->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$this->db->db_escape_string($id)."'"));
 			if( $this->idgroup >= 1 )
 				{
 				$iddir = 0;
@@ -964,7 +964,7 @@ function addDbContact($id, $fields)
 				join ".BAB_DBDIR_FIELDS_TBL." f 
 					
 				where 
-					id_directory='".($this->idgroup > 0 ? 0 : $this->id)."' 
+					id_directory='".($this->idgroup > 0 ? 0 : $this->db->db_escape_string($this->id))."' 
 					and id_field=f.id 
 					and f.name='jpegphoto' 
 					AND disabled ='N' 
@@ -979,7 +979,7 @@ function addDbContact($id, $fields)
 			else
 				$this->modify = false;
 
-			$this->res = $this->db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$iddir."' and disabled='N' order by id_field asc");
+			$this->res = $this->db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$this->db->db_escape_string($iddir)."' and disabled='N' order by id_field asc");
 			if( $this->res && $this->db->db_num_rows($this->res) > 0)
 				{
 				$this->count = $this->db->db_num_rows($this->res);
@@ -1000,14 +1000,14 @@ function addDbContact($id, $fields)
 				$arr = $this->db->db_fetch_array($this->res);
 				if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
 					{
-					$res = $this->db->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'");
+					$res = $this->db->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$this->db->db_escape_string($arr['id_field'])."'");
 					$rr = $this->db->db_fetch_array($res);
 					$this->fieldn = translateDirectoryField($rr['description']);
 					$this->fieldv = $rr['name'];
 					}
 				else
 					{
-					$rr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+					$rr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$this->db->db_escape_string(($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
 					$this->fieldn = translateDirectoryField($rr['name']);
 					$this->fieldv = "babdirf".$arr['id'];
 					}
@@ -1028,7 +1028,7 @@ function addDbContact($id, $fields)
 					$this->fvalue = "";
 					}
 
-				$this->resfxv = $this->db->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." where id_fieldextra='".$arr['id']."' ORDER BY field_value");
+				$this->resfxv = $this->db->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." where id_fieldextra='".$this->db->db_escape_string($arr['id'])."' ORDER BY field_value");
 				$this->countfxv = $this->db->db_num_rows($this->resfxv); 
 
 				$this->required = $arr['required'];
@@ -1048,7 +1048,7 @@ function addDbContact($id, $fields)
 				$this->fieldt = $arr['multilignes'];
 				if( !empty( $arr['default_value'] ) && empty($this->fvalue) && $this->countfxv > 0)
 					{
-					$rr = $this->db->db_fetch_array($this->db->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." where id='".$arr['default_value']."'"));
+					$rr = $this->db->db_fetch_array($this->db->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." where id='".$this->db->db_escape_string($arr['default_value'])."'"));
 					$this->fvalue = $rr['field_value'];
 					}
 
@@ -1150,7 +1150,7 @@ function exportDbFile($id)
 			$this->moveup = bab_translate("Move Up");
 			$this->movedown = bab_translate("Move Down");
 
-			$arr = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
+			$arr = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
 			if( $arr['id_group'] != 0 )
 				{
 				$iddir = 0;
@@ -1166,7 +1166,7 @@ function exportDbFile($id)
 			$this->selected_3 = '';
 			$this->separvalue = '';
 			
-			$res = $babDB->db_query("select separatorchar from ".BAB_DBDIR_CONFIGEXPORT_TBL." where id_directory='".$id."' and id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+			$res = $babDB->db_query("select separatorchar from ".BAB_DBDIR_CONFIGEXPORT_TBL." where id_directory='".$babDB->db_escape_string($id)."' and id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
 			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
 				$arr = $babDB->db_fetch_array($res);
@@ -1190,7 +1190,7 @@ function exportDbFile($id)
 					break;
 				}
 			
-			$this->resfd = $babDB->db_query("select id, id_field from ".BAB_DBDIR_FIELDSEXPORT_TBL." where id_directory='".$id."' and id_user='".$GLOBALS['BAB_SESS_USERID']."' AND id_field<>5 order by ordering asc");
+			$this->resfd = $babDB->db_query("select id, id_field from ".BAB_DBDIR_FIELDSEXPORT_TBL." where id_directory='".$babDB->db_escape_string($id)."' and id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' AND id_field<>5 order by ordering asc");
 			$this->countfd = $babDB->db_num_rows($this->resfd);
 			$arrexp = array(5);
 			if( $this->countfd )
@@ -1202,7 +1202,7 @@ function exportDbFile($id)
 				$babDB->db_data_seek($this->resfd,0);
 				}
 		
-			$this->resf = $babDB->db_query("select id, id_field from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$iddir."' and id_field NOT IN(".implode(',',$arrexp).")  order by list_ordering asc");
+			$this->resf = $babDB->db_query("select id, id_field from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$babDB->db_escape_string($iddir)."' and id_field NOT IN(".$babDB->quote($arrexp).")  order by list_ordering asc");
 			$this->countf = $babDB->db_num_rows($this->resf);
 
 			}
@@ -1217,12 +1217,12 @@ function exportDbFile($id)
 				$this->fid = $arr['id_field'];
 				if( $this->fid < BAB_DBDIR_MAX_COMMON_FIELDS )
 					{
-					$arr = $babDB->db_fetch_array($babDB->db_query("select description from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
+					$arr = $babDB->db_fetch_array($babDB->db_query("select description from ".BAB_DBDIR_FIELDS_TBL." where id='".$babDB->db_escape_string($arr['id_field'])."'"));
 					$this->fieldval = translateDirectoryField($arr['description']);
 					}
 				else
 					{
-					$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($this->fid - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+					$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string(($this->fid - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
 					$this->fieldval = translateDirectoryField($rr['name']);
 					}
 				$i++;
@@ -1242,12 +1242,12 @@ function exportDbFile($id)
 				$this->fid = $arr['id_field'];
 				if( $this->fid < BAB_DBDIR_MAX_COMMON_FIELDS )
 					{
-					$arr = $babDB->db_fetch_array($babDB->db_query("select description from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
+					$arr = $babDB->db_fetch_array($babDB->db_query("select description from ".BAB_DBDIR_FIELDS_TBL." where id='".$babDB->db_escape_string($arr['id_field'])."'"));
 					$this->fieldval = translateDirectoryField($arr['description']);
 					}
 				else
 					{
-					$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($this->fid - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+					$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string(($this->fid - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
 					$this->fieldval = translateDirectoryField($rr['name']);
 					}
 				$i++;
@@ -1281,7 +1281,7 @@ function mapDbFile($id, $file, $tmpfile, $wsepar, $separ)
 			$this->duphand0 = bab_translate("Allow duplicates to be created");
 			$this->duphand1 = bab_translate("Replace duplicates with items imported");
 			$this->duphand2 = bab_translate("Do not import duplicates");
-			list($this->idgroup) = $this->db->db_fetch_array($this->db->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
+			list($this->idgroup) = $this->db->db_fetch_array($this->db->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$this->db->db_escape_string($id)."'"));
 			if( $this->idgroup >= 1 )
 				{
 				$this->t_dupinfo = bab_translate("Entries with the same nickname are duplicates");
@@ -1303,7 +1303,7 @@ function mapDbFile($id, $file, $tmpfile, $wsepar, $separ)
 			$this->id = $id;
 			$this->pfile = $pfile;
 
-			$this->res = $this->db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($this->idgroup != 0? 0: $this->id)."'");
+			$this->res = $this->db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($this->idgroup != 0? 0: $this->db->db_escape_string($this->id))."'");
 			if( $this->res && $this->db->db_num_rows($this->res) > 0)
 				$this->count = $this->db->db_num_rows($this->res);
 			else
@@ -1336,14 +1336,14 @@ function mapDbFile($id, $file, $tmpfile, $wsepar, $separ)
 				$arr = $this->db->db_fetch_array($this->res);
 				if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
 					{
-					$res = $this->db->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'");
+					$res = $this->db->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$this->db->db_escape_string($arr['id_field'])."'");
 					$rr = $this->db->db_fetch_array($res);
 					$this->ofieldname = translateDirectoryField($rr['description']);
 					$this->ofieldv = $rr['name'];
 					}
 				else
 					{
-					$rr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+					$rr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$this->db->db_escape_string(($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
 					$this->ofieldname = translateDirectoryField($rr['name']);
 					$this->ofieldv = "babdirf".$arr['id'];
 					}
@@ -1468,7 +1468,7 @@ function dbEntryDirectories($id, $idu)
 			{
 			global $babDB;
 
-			list($iduser) = $babDB->db_fetch_row($babDB->db_query("select id_user from ".BAB_DBDIR_ENTRIES_TBL." where id='".$idu."'"));
+			list($iduser) = $babDB->db_fetch_row($babDB->db_query("select id_user from ".BAB_DBDIR_ENTRIES_TBL." where id='".$babDB->db_escape_string($idu)."'"));
 			if( $iduser == 0 )
 				{
 				die( bab_translate('Access denied') );
@@ -1572,7 +1572,7 @@ function assignList($id, $pos)
 			$this->db = $GLOBALS['babDB'];
 
 			$arrgrpids = array();
-			$res = $this->db->db_query("select id, id_group from ".BAB_DB_DIRECTORIES_TBL." where id != '".$id."' and id_group != 0");
+			$res = $this->db->db_query("select id, id_group from ".BAB_DB_DIRECTORIES_TBL." where id != '".$this->db->db_escape_string($id)."' and id_group != 0");
 			while( $arr = $this->db->db_fetch_array($res))
 				{
 				if( bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $arr['id']) )
@@ -1598,11 +1598,11 @@ function assignList($id, $pos)
 					$this->ord = $pos[0];
 					if( $arrgrpids === false )
 						{
-						$req = "select ut.id, ut.firstname, ut.lastname from ".BAB_USERS_TBL." ut where ut.disabled=0 and lastname like '".$this->pos."%' order by lastname, firstname asc";
+						$req = "select ut.id, ut.firstname, ut.lastname from ".BAB_USERS_TBL." ut where ut.disabled=0 and lastname like '".$this->db->db_escape_string($this->pos)."%' order by lastname, firstname asc";
 						}
 					else
 						{
-						$req = "select distinct ut.id, ut.firstname, ut.lastname from ".BAB_USERS_TBL." ut left join ".BAB_USERS_GROUPS_TBL." ug on ut.id=ug.id_object where ut.disabled=0 and ug.id in (".implode(',', $arrgrpids).") and lastname like '".$this->pos."%' order by lastname, firstname asc";
+						$req = "select distinct ut.id, ut.firstname, ut.lastname from ".BAB_USERS_TBL." ut left join ".BAB_USERS_GROUPS_TBL." ug on ut.id=ug.id_object where ut.disabled=0 and ug.id in (".$this->db->quote($arrgrpids).") and lastname like '".$this->db->db_escape_string($this->pos)."%' order by lastname, firstname asc";
 						}
 
 					$this->fullname = bab_translate("Lastname"). " " . bab_translate("Firstname");
@@ -1615,11 +1615,11 @@ function assignList($id, $pos)
 					$this->ord = "";
 					if( $arrgrpids === false )
 						{
-						$req = "select ut.id, ut.firstname, ut.lastname from ".BAB_USERS_TBL." ut where  ut.disabled=0 and  firstname like '".$this->pos."%' order by firstname, lastname asc";
+						$req = "select ut.id, ut.firstname, ut.lastname from ".BAB_USERS_TBL." ut where  ut.disabled=0 and  firstname like '".$this->db->db_escape_string($this->pos)."%' order by firstname, lastname asc";
 						}
 					else
 						{
-						$req = "select distinct ut.id, ut.firstname, ut.lastname from ".BAB_USERS_TBL." ut left join ".BAB_USERS_GROUPS_TBL." ug on ut.id=ug.id_object where ut.disabled=0 and ug.id in (".implode(',', $arrgrpids).") and firstname like '".$this->pos."%' order by firstname, lastname asc";
+						$req = "select distinct ut.id, ut.firstname, ut.lastname from ".BAB_USERS_TBL." ut left join ".BAB_USERS_GROUPS_TBL." ug on ut.id=ug.id_object where ut.disabled=0 and ug.id in (".$this->db->quote($arrgrpids).") and firstname like '".$this->db->db_escape_string($this->pos)."%' order by firstname, lastname asc";
 						}
 
 					$this->fullname = bab_translate("Firstname"). " " . bab_translate("Lastname");
@@ -1634,8 +1634,8 @@ function assignList($id, $pos)
 					$this->allselected = 0;
 				$this->allurl = $GLOBALS['babUrlScript']."?tg=directory&idx=assign&pos=&id=".$this->id;
 
-				list($idgroup) = $this->db->db_fetch_array($this->db->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
-				$res = $this->db->db_query("select id_object from ".BAB_USERS_GROUPS_TBL." where id_group='$idgroup'");
+				list($idgroup) = $this->db->db_fetch_array($this->db->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$this->db->db_escape_string($id)."'"));
+				$res = $this->db->db_query("select id_object from ".BAB_USERS_GROUPS_TBL." where id_group='".$this->db->db_escape_string($idgroup)."'");
 				$this->groupmemebers = array();
 				while($arr = $this->db->db_fetch_array($res))
 					{
@@ -1745,8 +1745,8 @@ function confirmAssignEntry($id, $fields, $idauser, $idatype)
 			$this->id = $id;
 			$this->idauser = $idauser;
 			$this->fields =& $fields;
-			$arr = $babDB->db_fetch_array($babDB->db_query("select ut.nickname,det.sn, det.givenname, det.mn from ".BAB_DBDIR_ENTRIES_TBL." det left join ".BAB_USERS_TBL." ut on ut.id = det.id_user where id_user='".$idauser."' and id_directory='0'"));
-			list($this->directoryname) = $babDB->db_fetch_row($babDB->db_query("select name from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
+			$arr = $babDB->db_fetch_array($babDB->db_query("select ut.nickname,det.sn, det.givenname, det.mn from ".BAB_DBDIR_ENTRIES_TBL." det left join ".BAB_USERS_TBL." ut on ut.id = det.id_user where id_user='".$babDB->db_escape_string($idauser)."' and id_directory='0'"));
+			list($this->directoryname) = $babDB->db_fetch_row($babDB->db_query("select name from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
 			$this->fullnametxt = bab_translate("Fullname");
 			$this->nicknametxt = bab_translate("Nickname");
 			$this->usernickname = $arr['nickname'];
@@ -1785,22 +1785,22 @@ function processImportDbFile( $pfile, $id, $separ )
 	global $babBody;
 
 	$db = $GLOBALS['babDB'];
-	list($idgroup) = $db->db_fetch_array($db->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
+	list($idgroup) = $db->db_fetch_array($db->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$db->db_escape_string($id)."'"));
 
 	$arridfx = array();
 	$arrnamef = array();
-	$res = $db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup != 0? 0: $id)."'");
+	$res = $db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup != 0? 0: $db->db_escape_string($id))."'");
 	while( $arr = $db->db_fetch_array($res))
 		{
 		if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
 			{
-			$rr = $db->db_fetch_array($db->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
+			$rr = $db->db_fetch_array($db->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$db->db_escape_string($arr['id_field'])."'"));
 			$fieldname = $rr['name'];
 			$arrnamef[] = $fieldname;
 			}
 		else
 			{
-			$rr = $db->db_fetch_array($db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+			$rr = $db->db_fetch_array($db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$db->db_escape_string(($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
 			$fieldname = "babdirf".$arr['id'];
 			$arridfx[] = $arr['id'];
 			}
@@ -1854,7 +1854,7 @@ function processImportDbFile( $pfile, $id, $separ )
 				case 2: // Do not import duplicates
 					if( $idgroup > 0 )
 						{
-						$query = "select * from ".BAB_USERS_TBL." where nickname='".$arr[$GLOBALS['nickname']]."'";
+						$query = "select * from ".BAB_USERS_TBL." where nickname='".$db->db_escape_string($arr[$GLOBALS['nickname']])."'";
 						$res2 = $db->db_query($query);
 						if( $db->db_num_rows($res2) > 0 && $GLOBALS['duphand'] == 2 )
 							{
@@ -1863,20 +1863,20 @@ function processImportDbFile( $pfile, $id, $separ )
 		
 						$replace = array( " " => "", "-" => "");
 						$hashname = md5(strtolower(strtr($arr[$GLOBALS['givenname']].$arr[$GLOBALS['mn']].$arr[$GLOBALS['sn']], $replace)));
-						$query = "select id from ".BAB_USERS_TBL." where hashname='".$hashname."'";	
+						$query = "select id from ".BAB_USERS_TBL." where hashname='".$db->db_escape_string($hashname)."'";	
 						$res2 = $db->db_query($query);
 						if( $res2 && $db->db_num_rows($res2) > 0 )
 							{
 							if($GLOBALS['duphand'] == 2 )
 								break;
 							$rrr = $db->db_fetch_array($res2);
-							$req = "";
+							$req = '';
 
 							for( $k =0; $k < count($arrnamef); $k++ )
 								{
 								if( isset($GLOBALS[$arrnamef[$k]]) && $GLOBALS[$arrnamef[$k]] != "")
 									{
-									$req .= $arrnamef[$k]."='".addslashes($arr[$GLOBALS[$arrnamef[$k]]])."',";
+									$req .= $arrnamef[$k]."='".$db->db_escape_string($arr[$GLOBALS[$arrnamef[$k]]])."',";
 									}
 								}
 
@@ -1885,43 +1885,43 @@ function processImportDbFile( $pfile, $id, $separ )
 								{
 								$req = substr($req, 0, strlen($req) -1);
 								$req = "update ".BAB_DBDIR_ENTRIES_TBL." set " . $req;
-								$req .= " where id_directory='0' and id_user='".$rrr['id']."'";
+								$req .= " where id_directory='0' and id_user='".$db->db_escape_string($rrr['id'])."'";
 								$db->db_query($req);
 								$bupdate = true;
 								}
 
 							if( count($arridfx) > 0 )
 								{
-								list($idu) = $db->db_fetch_array($db->db_query("select id from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='0' and id_user='".$rrr['id']."'"));
+								list($idu) = $db->db_fetch_array($db->db_query("select id from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='0' and id_user='".$db->db_escape_string($rrr['id'])."'"));
 								for( $k=0; $k < count($arridfx); $k++ )
 									{
 									if( isset($arr[$GLOBALS["babdirf".$arridfx[$k]]]) )
 										{
 										$bupdate = true;
-										$rs = $db->db_query("select id from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$arridfx[$k]."' and  id_entry='".$idu."'");
+										$rs = $db->db_query("select id from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$db->db_escape_string($arridfx[$k])."' and  id_entry='".$db->db_escape_string($idu)."'");
 										if( $rs && $db->db_num_rows($rs) > 0 )
 											{
-											$db->db_query("update ".BAB_DBDIR_ENTRIES_EXTRA_TBL." set field_value='".addslashes($arr[$GLOBALS["babdirf".$arridfx[$k]]])."' where id_fieldx='".$arridfx[$k]."' and id_entry='".$idu."'");
+											$db->db_query("update ".BAB_DBDIR_ENTRIES_EXTRA_TBL." set field_value='".$db->db_escape_string($arr[$GLOBALS["babdirf".$arridfx[$k]]])."' where id_fieldx='".$db->db_escape_string($arridfx[$k])."' and id_entry='".$db->db_escape_string($idu)."'");
 											}
 										else
 											{
-											$db->db_query("insert into ".BAB_DBDIR_ENTRIES_EXTRA_TBL." ( field_value, id_fieldx, id_entry) values ('".addslashes($arr[$GLOBALS["babdirf".$arridfx[$k]]])."', '".$arridfx[$k]."', '".$idu."')");
+											$db->db_query("insert into ".BAB_DBDIR_ENTRIES_EXTRA_TBL." ( field_value, id_fieldx, id_entry) values ('".$db->db_escape_string($arr[$GLOBALS["babdirf".$arridfx[$k]]])."', '".$db->db_escape_string($arridfx[$k])."', '".$db->db_escape_string($idu)."')");
 											}
 										}
 									}
 								}
 
-							$db->db_query("update ".BAB_USERS_TBL." set nickname='".$arr[$GLOBALS['nickname']]."', firstname='".addslashes($arr[$GLOBALS['givenname']])."', lastname='".addslashes($arr[$GLOBALS['sn']])."', email='".addslashes($arr[$GLOBALS['email']])."', hashname='".$hashname."', password='".$password1."' where id='".$rrr['id']."'");
+							$db->db_query("update ".BAB_USERS_TBL." set nickname='".$db->db_escape_string($arr[$GLOBALS['nickname']])."', firstname='".$db->db_escape_string($arr[$GLOBALS['givenname']])."', lastname='".$db->db_escape_string($arr[$GLOBALS['sn']])."', email='".$db->db_escape_string($arr[$GLOBALS['email']])."', hashname='".$db->db_escape_string($hashname)."', password='".$db->db_escape_string($password1)."' where id='".$db->db_escape_string($rrr['id'])."'");
 							if( $bupdate )
 								{
-								$db->db_query("update ".BAB_DBDIR_ENTRIES_TBL." set date_modification=now(), id_modifiedby='".$GLOBALS['BAB_SESS_USERID']."' where id_directory='0' and id_user='".$rrr['id']."'");
+								$db->db_query("update ".BAB_DBDIR_ENTRIES_TBL." set date_modification=now(), id_modifiedby='".$db->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' where id_directory='0' and id_user='".$db->db_escape_string($rrr['id'])."'");
 								}
 							break;
 							}
 						}
 					else
 						{
-						$res2 = $db->db_query("select id from ".BAB_DBDIR_ENTRIES_TBL." where email='".(isset($arr[$GLOBALS['email']]) ? $arr[$GLOBALS['email']] : '')."' and id_directory='".$id."'");
+						$res2 = $db->db_query("select id from ".BAB_DBDIR_ENTRIES_TBL." where email='".(isset($arr[$GLOBALS['email']]) ? $db->db_escape_string($arr[$GLOBALS['email']]) : '')."' and id_directory='".$db->db_escape_string($id)."'");
 						if( $res2 && $db->db_num_rows($res2 ) > 0 )
 							{
 							if( $GLOBALS['duphand'] == 2 )
@@ -1932,12 +1932,12 @@ function processImportDbFile( $pfile, $id, $separ )
 								}
 							
 
-							$req = "";
+							$req = '';
 							for( $k =0; $k < count($arrnamef); $k++ )
 								{
 								if( isset($GLOBALS[$arrnamef[$k]]) && $GLOBALS[$arrnamef[$k]] != "")
 									{
-									$req .= $arrnamef[$k]."='".addslashes($arr[$GLOBALS[$arrnamef[$k]]])."',";
+									$req .= $arrnamef[$k]."='".$db->db_escape_string($arr[$GLOBALS[$arrnamef[$k]]])."',";
 									}
 								}
 
@@ -1946,7 +1946,7 @@ function processImportDbFile( $pfile, $id, $separ )
 								{
 								$req = substr($req, 0, strlen($req) -1);
 								$req = "update ".BAB_DBDIR_ENTRIES_TBL." set " . $req;
-								$req .= " where id='".$arr2['id']."'";
+								$req .= " where id='".$db->db_escape_string($arr2['id'])."'";
 								$db->db_query($req);
 								$bupdate = true;
 								}
@@ -1959,21 +1959,21 @@ function processImportDbFile( $pfile, $id, $separ )
 									if( isset($arr[$GLOBALS["babdirf".$arridfx[$k]]]) )
 										{
 										$bupdate = true;
-										$rs = $db->db_query("select id from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$arridfx[$k]."' and  id_entry='".$arr2['id']."'");
+										$rs = $db->db_query("select id from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$db->db_escape_string($arridfx[$k])."' and  id_entry='".$db->db_escape_string($arr2['id'])."'");
 										if( $rs && $db->db_num_rows($rs) > 0 )
 											{
-											$db->db_query("update ".BAB_DBDIR_ENTRIES_EXTRA_TBL." set field_value='".addslashes($arr[$GLOBALS["babdirf".$arridfx[$k]]])."' where id_fieldx='".$arridfx[$k]."' and id_entry='".$arr2['id']."'");
+											$db->db_query("update ".BAB_DBDIR_ENTRIES_EXTRA_TBL." set field_value='".addslashes($arr[$GLOBALS["babdirf".$arridfx[$k]]])."' where id_fieldx='".$db->db_escape_string($arridfx[$k])."' and id_entry='".$db->db_escape_string($arr2['id'])."'");
 											}
 										else
 											{
-											$db->db_query("insert into ".BAB_DBDIR_ENTRIES_EXTRA_TBL." ( field_value, id_fieldx, id_entry) values ('".addslashes($arr[$GLOBALS["babdirf".$arridfx[$k]]])."', '".$arridfx[$k]."', '".$arr2['id']."')");
+											$db->db_query("insert into ".BAB_DBDIR_ENTRIES_EXTRA_TBL." ( field_value, id_fieldx, id_entry) values ('".$db->db_escape_string($arr[$GLOBALS["babdirf".$arridfx[$k]]])."', '".$db->db_escape_string($arridfx[$k])."', '".$db->db_escape_string($arr2['id'])."')");
 											}
 										}
 									}
 								}
 							if( $bupdate )
 								{
-								$db->db_query("update ".BAB_DBDIR_ENTRIES_TBL." set date_modification=now(), id_modifiedby='".$GLOBALS['BAB_SESS_USERID']."' where id='".$arr2['id']."'");
+								$db->db_query("update ".BAB_DBDIR_ENTRIES_TBL." set date_modification=now(), id_modifiedby='".$db->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' where id='".$db->db_escape_string($arr2['id'])."'");
 								}
 							break;
 							}
@@ -1996,9 +1996,9 @@ function processImportDbFile( $pfile, $id, $separ )
 						{
 						$req = "insert into ".BAB_DBDIR_ENTRIES_TBL." (".$req."id_directory,date_modification,id_modifiedby) values (";
 						for( $i = 0; $i < count($arrv); $i++)
-							$req .= "'". addslashes($arrv[$i])."',";
-						$req .= "'".($idgroup !=0 ? 0: $id)."',";
-						$req .= "now(), '".$GLOBALS['BAB_SESS_USERID']."')";
+							$req .= "'". $db->db_escape_string($arrv[$i])."',";
+						$req .= "'".($idgroup !=0 ? 0: $db->db_escape_string($id))."',";
+						$req .= "now(), '".$db->db_escape_string($GLOBALS['BAB_SESS_USERID'])."')";
 						$db->db_query($req);
 						$idu = $db->db_insert_id();
 						if( $idgroup > 0 )
@@ -2006,10 +2006,10 @@ function processImportDbFile( $pfile, $id, $separ )
 							$replace = array( " " => "", "-" => "");
 							$hashname = md5(strtolower(strtr($arr[$GLOBALS['givenname']].$arr[$GLOBALS['mn']].$arr[$GLOBALS['sn']], $replace)));
 							$hash=md5($arr[$GLOBALS['nickname']].$GLOBALS['BAB_HASH_VAR']);
-							$db->db_query("insert into ".BAB_USERS_TBL." set nickname='".$arr[$GLOBALS['nickname']]."', firstname='".addslashes($arr[$GLOBALS['givenname']])."', lastname='".addslashes($arr[$GLOBALS['sn']])."', email='".addslashes($arr[$GLOBALS['email']])."', hashname='".$hashname."', password='".$password1."', confirm_hash='".$hash."', date=now(), is_confirmed='1', changepwd='1', lang='".$GLOBALS['babLanguage']."'");
+							$db->db_query("insert into ".BAB_USERS_TBL." set nickname='".$db->db_escape_string($arr[$GLOBALS['nickname']])."', firstname='".$db->db_escape_string($arr[$GLOBALS['givenname']])."', lastname='".$db->db_escape_string($arr[$GLOBALS['sn']])."', email='".$db->db_escape_string($arr[$GLOBALS['email']])."', hashname='".$hashname."', password='".$db->db_escape_string($password1)."', confirm_hash='".$db->db_escape_string($hash)."', date=now(), is_confirmed='1', changepwd='1', lang='".$db->db_escape_string($GLOBALS['babLanguage'])."'");
 							$iduser = $db->db_insert_id();
-							$db->db_query("insert into ".BAB_CALENDAR_TBL." (owner, type) values ('".$iduser."', '1')");
-							$db->db_query("update ".BAB_DBDIR_ENTRIES_TBL." set id_user='".$iduser."' where id='".$idu."'");
+							$db->db_query("insert into ".BAB_CALENDAR_TBL." (owner, type) values ('".$db->db_escape_string($iduser)."', '1')");
+							$db->db_query("update ".BAB_DBDIR_ENTRIES_TBL." set id_user='".$db->db_escape_string($iduser)."' where id='".$db->db_escape_string($idu)."'");
 							if( $idgroup > 1 )
 								{
 								bab_addUserToGroup($iduser, $idgroup);
@@ -2021,7 +2021,7 @@ function processImportDbFile( $pfile, $id, $separ )
 							for( $k=0; $k < count($arridfx); $k++ )
 								{
 								$val = isset($arr[$GLOBALS["babdirf".$arridfx[$k]]]) ? addslashes($arr[$GLOBALS["babdirf".$arridfx[$k]]]) : '';
-								$db->db_query("insert into ".BAB_DBDIR_ENTRIES_EXTRA_TBL." (id_fieldx, id_entry, field_value) values('".$arridfx[$k]."','".$idu."','".$val."')");
+								$db->db_query("insert into ".BAB_DBDIR_ENTRIES_EXTRA_TBL." (id_fieldx, id_entry, field_value) values('".$db->db_escape_string($arridfx[$k])."','".$db->db_escape_string($idu)."','".$db->db_escape_string($val)."')");
 								}
 							}
 
@@ -2038,8 +2038,8 @@ function processImportDbFile( $pfile, $id, $separ )
 function getDbContactImage($id, $idu)
 	{
 	$db = &$GLOBALS['babDB'];
-	list($idgroup) = $db->db_fetch_array($db->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
-	$res = $db->db_query("select photo_data, photo_type from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".($idgroup !=0 ? 0: $id)."' and id='".$idu."'");
+	list($idgroup) = $db->db_fetch_array($db->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$db->db_escape_string($id)."'"));
+	$res = $db->db_query("select photo_data, photo_type from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".($idgroup !=0 ? 0: $db->db_escape_string($id))."' and id='".$db->db_escape_string($idu)."'");
 	if( $res && $db->db_num_rows($res) > 0 )
 		{
 		$arr = $db->db_fetch_array($res);
@@ -2062,7 +2062,7 @@ function getDbContactImage($id, $idu)
 function getLdapContactImage($id, $cn)
 	{
 	$db = $GLOBALS['babDB'];
-	$res = $db->db_query("select * , DECODE(password, \"".$GLOBALS['BAB_HASH_VAR']."\") as adpass from ".BAB_LDAP_DIRECTORIES_TBL." where id='".$id."'");
+	$res = $db->db_query("select * , DECODE(password, \"".$GLOBALS['BAB_HASH_VAR']."\") as adpass from ".BAB_LDAP_DIRECTORIES_TBL." where id='".$db->db_escape_string($id)."'");
 
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -2099,10 +2099,10 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 	global $babBody;
 	$db = &$GLOBALS['babDB'];
 
-	list($idgroup, $allowuu) = $db->db_fetch_array($db->db_query("select id_group, user_update from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
+	list($idgroup, $allowuu) = $db->db_fetch_array($db->db_query("select id_group, user_update from ".BAB_DB_DIRECTORIES_TBL." where id='".$db->db_escape_string($id)."'"));
 
 
-	$usertbl = $db->db_fetch_assoc($db->db_query("select id_user,givenname,mn,sn from ".BAB_DBDIR_ENTRIES_TBL." where id='".$idu."'"));
+	$usertbl = $db->db_fetch_assoc($db->db_query("select id_user,givenname,mn,sn from ".BAB_DBDIR_ENTRIES_TBL." where id='".$db->db_escape_string($idu)."'"));
 
 	$iduser = &$usertbl['id_user'];
 
@@ -2114,11 +2114,11 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 		while( $arr = $db->db_fetch_array($res))
 			{
 
-			$rr = $db->db_fetch_array($db->db_query("select required, modifiable from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup !=0 ? 0: $id)."' and id_field='".$arr['id']."'"));
+			$rr = $db->db_fetch_array($db->db_query("select required, modifiable from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup !=0 ? 0: $db->db_escape_string($id))."' and id_field='".$db->db_escape_string($arr['id'])."'"));
 
 			if ($arr['name'] == 'jpegphoto' && $rr['required'] == "Y" && (empty($file) || $file == "none"))
 				{
-				$tmp = $db->db_fetch_assoc($db->db_query("select photo_data from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".($idgroup !=0 ? 0: $id)."' and id='".$idu."'"));
+				$tmp = $db->db_fetch_assoc($db->db_query("select photo_data from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".($idgroup !=0 ? 0: $db->db_escape_string($id))."' and id='".$db->db_escape_string($idu)."'"));
 
 				if (empty($tmp['photo_data']))
 					{
@@ -2136,7 +2136,7 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 					return false;
 					}
 
-				$req .= $arr['name']."='".addslashes($fields[$arr['name']])."',";
+				$req .= $arr['name']."='".$db->db_escape_string($fields[$arr['name']])."',";
 				}
 
 			if (($arr['name'] == 'sn' && empty($fields['sn']) && $rr['modifiable'] == 'Y') || ($arr['name'] == 'givenname' && empty($fields['sn']) && $rr['modifiable'] == 'Y'))
@@ -2170,7 +2170,7 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 			
 			
 			$hashname = md5(strtolower(strtr($fields['givenname'].$fields['mn'].$fields['sn'], $replace)));
-			$query = "select * from ".BAB_USERS_TBL." where hashname='".$hashname."' and id!='".$iduser."'";	
+			$query = "select * from ".BAB_USERS_TBL." where hashname='".$db->db_escape_string($hashname)."' and id!='".$db->db_escape_string($iduser)."'";	
 			$res = $db->db_query($query);
 			if( $db->db_num_rows($res) > 0)
 				{
@@ -2178,7 +2178,7 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 				return false;
 				}
 
-			$db->db_query("update ".BAB_USERS_TBL." set firstname='".addslashes($fields['givenname'])."', lastname='".addslashes($fields['sn'])."', email='".addslashes($fields['email'])."', hashname='".$hashname."' where id='".$iduser."'");
+			$db->db_query("update ".BAB_USERS_TBL." set firstname='".$db->db_escape_string($fields['givenname'])."', lastname='".$db->db_escape_string($fields['sn'])."', email='".$db->db_escape_string($fields['email'])."', hashname='".$db->db_escape_string($hashname)."' where id='".$db->db_escape_string($iduser)."'");
 			}
 		if( !empty($file) && $file != "none")
 			{
@@ -2190,7 +2190,7 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 			$fp=fopen($tmp_file,"rb");
 			if( $fp )
 				{
-				$cphoto = addslashes(fread($fp,filesize($tmp_file)));
+				$cphoto = fread($fp,filesize($tmp_file));
 				fclose($fp);
 				}
 			}
@@ -2202,7 +2202,7 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 			if( empty($value) && substr($key, 0, strlen("babdirf")) == 'babdirf' )
 				{
 				$tmp = substr($key, strlen("babdirf"));
-				$rs = $db->db_query("select d.name from ".BAB_DBDIR_FIELDSEXTRA_TBL." e,".BAB_DBDIR_FIELDS_DIRECTORY_TBL." d where e.id='".$tmp."' AND e.required='Y' AND d.id=(e.id_field-'".BAB_DBDIR_MAX_COMMON_FIELDS."')");
+				$rs = $db->db_query("select d.name from ".BAB_DBDIR_FIELDSEXTRA_TBL." e,".BAB_DBDIR_FIELDS_DIRECTORY_TBL." d where e.id='".$db->db_escape_string($tmp)."' AND e.required='Y' AND d.id=(e.id_field-'".BAB_DBDIR_MAX_COMMON_FIELDS."')");
 				if( $rs && $db->db_num_rows($rs) > 0 )
 					{
 					list($name) = $db->db_fetch_array($rs);
@@ -2216,7 +2216,7 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 
 
 		if( !empty($cphoto))
-			$req .= " photo_data='".$cphoto."'";
+			$req .= " photo_data='".$db->db_escape_string($cphoto)."'";
 		elseif ($photod == "delete")
 			$req .= " photo_data=''";
 		else
@@ -2227,7 +2227,7 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 		if( !empty($req))
 			{
 			$req = "update ".BAB_DBDIR_ENTRIES_TBL." set " . $req;
-			$req .= " where id='".$idu."'";
+			$req .= " where id='".$db->db_escape_string($idu)."'";
 			$db->db_query($req);
 			$bupdate = true;
 			}
@@ -2242,21 +2242,21 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 				$value = $db->db_escape_string($value);
 
 				$bupdate = true;
-				$rs = $db->db_query("select id from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$tmp."' and  id_entry='".$idu."'");
+				$rs = $db->db_query("select id from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$db->db_escape_string($tmp)."' and  id_entry='".$db->db_escape_string($idu)."'");
 				if( $rs && $db->db_num_rows($rs) > 0 )
 					{
-					$db->db_query("update ".BAB_DBDIR_ENTRIES_EXTRA_TBL." set field_value='".$value."' where id_fieldx='".$tmp."' and id_entry='".$idu."'");
+					$db->db_query("update ".BAB_DBDIR_ENTRIES_EXTRA_TBL." set field_value='".$db->db_escape_string($value)."' where id_fieldx='".$db->db_escape_string($tmp)."' and id_entry='".$db->db_escape_string($idu)."'");
 					}
 				else
 					{
-					$db->db_query("insert into ".BAB_DBDIR_ENTRIES_EXTRA_TBL." ( field_value, id_fieldx, id_entry) values ('".$value."', '".$tmp."', '".$idu."')");
+					$db->db_query("insert into ".BAB_DBDIR_ENTRIES_EXTRA_TBL." ( field_value, id_fieldx, id_entry) values ('".$db->db_escape_string($value)."', '".$db->db_escape_string($tmp)."', '".$db->db_escape_string($idu)."')");
 					}
 				}
 			}
 
 		if( $bupdate )
 			{
-			$db->db_query("update ".BAB_DBDIR_ENTRIES_TBL." set date_modification=now(), id_modifiedby='".$GLOBALS['BAB_SESS_USERID']."' where id='".$idu."'");
+			$db->db_query("update ".BAB_DBDIR_ENTRIES_TBL." set date_modification=now(), id_modifiedby='".$db->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' where id='".$db->db_escape_string($idu)."'");
 			if( $iduser )
 				{
 				bab_callAddonsFunction('onUserUpdateInformations', $iduser);
@@ -2273,7 +2273,7 @@ function confirmAddDbContact($id, $fields, $file, $tmp_file, $password1, $passwo
 	$db = $GLOBALS['babDB'];
 	$bassign = false;
 
-	list($idgroup) = $db->db_fetch_array($db->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
+	list($idgroup) = $db->db_fetch_array($db->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$db->db_escape_string($id)."'"));
 
 	if ( !empty($fields['email']) && !bab_isEmailValid($fields['email']))
 		{
@@ -2296,7 +2296,7 @@ function confirmAddDbContact($id, $fields, $file, $tmp_file, $password1, $passwo
 			{
 			$bassign = true;
 			$arrgrpids = array();
-			$res = $db->db_query("select id, id_group from ".BAB_DB_DIRECTORIES_TBL." where id != '".$id."' and id_group != 0");
+			$res = $db->db_query("select id, id_group from ".BAB_DB_DIRECTORIES_TBL." where id != '".$db->db_escape_string($id)."' and id_group != 0");
 			while( $arr = $db->db_fetch_array($res))
 				{
 				if( bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $arr['id']) )
@@ -2389,10 +2389,10 @@ function confirmAddDbContact($id, $fields, $file, $tmp_file, $password1, $passwo
 		}
 
 	$res = $db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL."");
-	$req = "";
+	$req = '';
 	while( $arr = $db->db_fetch_array($res))
 		{
-		$rr = $db->db_fetch_array($db->db_query("select required from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup !=0 ? 0: $id)."' and id_field='".$arr['id']."'"));
+		$rr = $db->db_fetch_array($db->db_query("select required from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup !=0 ? 0: $db->db_escape_string($id))."' and id_field='".$db->db_escape_string($arr['id'])."'"));
 		if( $arr['name'] != 'jpegphoto' && $rr['required'] == "Y" && empty($fields[$arr['name']]))
 			{
 			$babBody->msgerror = bab_translate("You must complete required fields");
@@ -2401,7 +2401,7 @@ function confirmAddDbContact($id, $fields, $file, $tmp_file, $password1, $passwo
 
 		if ( $arr['name'] == 'jpegphoto' && $rr['required'] == "Y" && (empty($file) || $file == "none"))
 			{
-			$tmp = $db->db_fetch_assoc($db->db_query("select photo_data from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".($idgroup !=0 ? 0: $id)."' and id='".$idu."'"));
+			$tmp = $db->db_fetch_assoc($db->db_query("select photo_data from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".($idgroup !=0 ? 0: $db->db_escape_string($id))."' and id='".$db->db_escape_string($idu)."'"));
 
 			if (empty($tmp['photo_data']))
 				{
@@ -2413,7 +2413,7 @@ function confirmAddDbContact($id, $fields, $file, $tmp_file, $password1, $passwo
 		if( isset($fields[$arr['name']]) && $arr['name'] != 'jpegphoto')
 			{
 			if( $idgroup > 0 )
-				$req .= $arr['name']."='".addslashes($fields[$arr['name']])."',";
+				$req .= $arr['name']."='".$db->db_escape_string($fields[$arr['name']])."',";
 			else
 				$req .= $arr['name'].",";
 			}
@@ -2449,7 +2449,7 @@ function confirmAddDbContact($id, $fields, $file, $tmp_file, $password1, $passwo
 		$fp=fopen($tmp_file,"rb");
 		if( $fp )
 			{
-			$cphoto = addslashes(fread($fp,filesize($tmp_file)));
+			$cphoto = fread($fp,filesize($tmp_file));
 			fclose($fp);
 			}
 		}
@@ -2458,7 +2458,7 @@ function confirmAddDbContact($id, $fields, $file, $tmp_file, $password1, $passwo
 		{
 		if( $idgroup > 0 )
 			{
-			$req .= " photo_data='".$cphoto."',";
+			$req .= " photo_data='".$db->db_escape_string($cphoto)."',";
 			}
 		else
 			$req .= "photo_data,";
@@ -2466,9 +2466,9 @@ function confirmAddDbContact($id, $fields, $file, $tmp_file, $password1, $passwo
 
 	if( $idgroup > 0 && !empty($req))
 		{
-		list($iddbu) = $db->db_fetch_array($db->db_query("select id from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='0' and id_user='".$iduser."'"));
+		list($iddbu) = $db->db_fetch_array($db->db_query("select id from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='0' and id_user='".$db->db_escape_string($iduser)."'"));
 		$req = "update ".BAB_DBDIR_ENTRIES_TBL." set " . substr($req, 0, strlen($req) -1);
-		$req .= " where id='".$iddbu."'";
+		$req .= " where id='".$db->db_escape_string($iddbu)."'";
 		$db->db_query($req);
 		}
 	else if( !empty($req))
@@ -2479,16 +2479,16 @@ function confirmAddDbContact($id, $fields, $file, $tmp_file, $password1, $passwo
 			{
 			if( isset($fields[$arr['name']]))
 				{
-				$req .= "'".addslashes($fields[$arr['name']])."',";
+				$req .= "'".$db->db_escape_string($fields[$arr['name']])."',";
 				}
 			}
 		if( !empty($cphoto))
-			$req .= "'".$cphoto."',";
+			$req .= "'".$db->db_escape_string($cphoto)."',";
 
 		if( $idgroup > 0 )
-			$req .= "'0', '".$iduser."')";
+			$req .= "'0', '".$db->db_escape_string($iduser)."')";
 		else
-			$req .= "'".$id."', '0')";
+			$req .= "'".$db->db_escape_string($id)."', '0')";
 		$db->db_query($req);
 		$iddbu = $db->db_insert_id();
 		}
@@ -2520,23 +2520,23 @@ function confirmAddDbContact($id, $fields, $file, $tmp_file, $password1, $passwo
 function confirmEmptyDb($id)
 	{
 	global $babDB;
-	list($idgroup) = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
+	list($idgroup) = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
 	if( $idgroup != 0 && $idgroup <= BAB_ADMINISTRATOR_GROUP ) /* Ovidentia directory and administrators group */
 		return;
 
 	if( $idgroup == 0 )
 		{
-		$res = $babDB->db_query("select id, id_user from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".$id."'");
+		$res = $babDB->db_query("select id, id_user from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".$babDB->db_escape_string($id)."'");
 		while( $arr = $babDB->db_fetch_array($res))
 		{
-			$babDB->db_query("delete from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_entry='".$arr['id']."'");
+			$babDB->db_query("delete from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_entry='".$babDB->db_escape_string($arr['id'])."'");
 		}
-		$babDB->db_query("delete from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".$id."'");
+		$babDB->db_query("delete from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".$babDB->db_escape_string($id)."'");
 		}
 	elseif( $idgroup > BAB_ADMINISTRATOR_GROUP )
 		{
 			include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
-			$res = $babDB->db_query("select id_object from ".BAB_USERS_GROUPS_TBL." where id_group='".$idgroup."'");
+			$res = $babDB->db_query("select id_object from ".BAB_USERS_GROUPS_TBL." where id_group='".$babDB->db_escape_string($idgroup)."'");
 			while( $arr = $babDB->db_fetch_array($res))
 			{
 				bab_deleteUser($arr['id_object']);
@@ -2547,25 +2547,25 @@ function confirmEmptyDb($id)
 function deleteDbContact($id, $idu)
 	{
 	$db = $GLOBALS['babDB'];
-	list($idgroup) = $db->db_fetch_array($db->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
+	list($idgroup) = $db->db_fetch_array($db->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$db->db_escape_string($id)."'"));
 	if( $idgroup != 0)
 		{
 		include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
-		list($iddu) = $db->db_fetch_array($db->db_query("select id_user from ".BAB_DBDIR_ENTRIES_TBL." where id='".$idu."'"));	
+		list($iddu) = $db->db_fetch_array($db->db_query("select id_user from ".BAB_DBDIR_ENTRIES_TBL." where id='".$db->db_escape_string($idu)."'"));	
 		bab_deleteUser($iddu);
 		return;
 		}
-	$db->db_query("delete from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_entry='".$idu."'");
-	$db->db_query("delete from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".$id."' and id='".$idu."'");
+	$db->db_query("delete from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_entry='".$db->db_escape_string($idu)."'");
+	$db->db_query("delete from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".$db->db_escape_string($id)."' and id='".$db->db_escape_string($idu)."'");
 	}
 
 function unassignDbContact($id, $idu)
 	{
 	$db = $GLOBALS['babDB'];
-	list($idgroup) = $db->db_fetch_array($db->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
+	list($idgroup) = $db->db_fetch_array($db->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$db->db_escape_string($id)."'"));
 	if( $idgroup != 0  && $idgroup != BAB_REGISTERED_GROUP )
 		{
-		list($iddu) = $db->db_fetch_array($db->db_query("select id_user from ".BAB_DBDIR_ENTRIES_TBL." where id='".$idu."'"));	
+		list($iddu) = $db->db_fetch_array($db->db_query("select id_user from ".BAB_DBDIR_ENTRIES_TBL." where id='".$db->db_escape_string($idu)."'"));	
 		bab_removeUserFromGroup($iddu, $idgroup);
 		return;
 		}
@@ -2590,20 +2590,20 @@ function exportDbDirectory($id, $wsepar, $separ, $listfd)
 		}
 
 
-	list($idgroup, $idname) = $db->db_fetch_array($db->db_query("select id_group, name from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
+	list($idgroup, $idname) = $db->db_fetch_array($db->db_query("select id_group, name from ".BAB_DB_DIRECTORIES_TBL." where id='".$db->db_escape_string($id)."'"));
 
 
 	if( $GLOBALS['BAB_SESS_USERID'])
 		{
-		$db->db_query("delete from ".BAB_DBDIR_FIELDSEXPORT_TBL." where id_directory='".$id."' and id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+		$db->db_query("delete from ".BAB_DBDIR_FIELDSEXPORT_TBL." where id_directory='".$db->db_escape_string($id)."' and id_user='".$db->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
 
 		for($i=0; $i < count($listfd); $i++)
 			{
-			$db->db_query("insert into ".BAB_DBDIR_FIELDSEXPORT_TBL." (id_user, id_directory, id_field, ordering) values ('".$GLOBALS['BAB_SESS_USERID']."','".$id."','".$listfd[$i]."','".($i + 1)."')");
+			$db->db_query("insert into ".BAB_DBDIR_FIELDSEXPORT_TBL." (id_user, id_directory, id_field, ordering) values ('".$db->db_escape_string($GLOBALS['BAB_SESS_USERID'])."','".$db->db_escape_string($id)."','".$db->db_escape_string($listfd[$i])."','".($i + 1)."')");
 			}
 
-		$db->db_query("delete from ".BAB_DBDIR_CONFIGEXPORT_TBL." where id_directory='".$id."' and id_user='".$GLOBALS['BAB_SESS_USERID']."'");
-		$db->db_query("insert into ".BAB_DBDIR_CONFIGEXPORT_TBL." (id_user, id_directory, separatorchar) values ('".$GLOBALS['BAB_SESS_USERID']."','".$id."','".Ord($separ)."')");	
+		$db->db_query("delete from ".BAB_DBDIR_CONFIGEXPORT_TBL." where id_directory='".$db->db_escape_string($id)."' and id_user='".$db->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
+		$db->db_query("insert into ".BAB_DBDIR_CONFIGEXPORT_TBL." (id_user, id_directory, separatorchar) values ('".$db->db_escape_string($GLOBALS['BAB_SESS_USERID'])."','".$db->db_escape_string($id)."','".$db->db_escape_string(Ord($separ))."')");	
 		}
 
 
@@ -2619,30 +2619,30 @@ function exportDbDirectory($id, $wsepar, $separ, $listfd)
 
 	if( $GLOBALS['BAB_SESS_USERID'])
 		{
-		$res = $db->db_query("select dbf.* from ".BAB_DBDIR_FIELDSEXPORT_TBL." dbfex left join ".BAB_DBDIR_FIELDSEXTRA_TBL." dbf on dbf.id_field=dbfex.id_field where dbf.id_directory='".($idgroup != 0? 0: $id)."' and dbfex.id_user='".$GLOBALS['BAB_SESS_USERID']."' and dbfex.id_directory='".$id."' order by dbfex.ordering asc");
+		$res = $db->db_query("select dbf.* from ".BAB_DBDIR_FIELDSEXPORT_TBL." dbfex left join ".BAB_DBDIR_FIELDSEXTRA_TBL." dbf on dbf.id_field=dbfex.id_field where dbf.id_directory='".($idgroup != 0? 0: $db->db_escape_string($id))."' and dbfex.id_user='".$db->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and dbfex.id_directory='".$db->db_escape_string($id)."' order by dbfex.ordering asc");
 		}
 	else
 		{
-		$res = $db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup != 0? 0: $id)."' order by list_ordering asc");
+		$res = $db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup != 0? 0: $db->db_escape_string($id))."' order by list_ordering asc");
 		}
 
 	while( $arr = $db->db_fetch_array($res))
 		{
 		if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
 			{
-			$rr = $db->db_fetch_array($db->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
+			$rr = $db->db_fetch_array($db->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$db->db_escape_string($arr['id_field'])."'"));
 			$fieldn = translateDirectoryField($rr['description']);
 			$arrnamef[] = $rr['name'];
 			$select[] = 'e.'.$rr['name'];
 			}
 		else
 			{
-			$rr = $db->db_fetch_array($db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+			$rr = $db->db_fetch_array($db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$db->db_escape_string(($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
 			$fieldn = translateDirectoryField($rr['name']);
 			$arrnamef[] = "babdirf".$arr['id'];
 
-			$leftjoin[] = 'LEFT JOIN '.BAB_DBDIR_ENTRIES_EXTRA_TBL.' lj'.$arr['id']." ON lj".$arr['id'].".id_fieldx='".$arr['id']."' AND e.id=lj".$arr['id'].".id_entry";
-			$select[] = "lj".$arr['id'].'.field_value '."babdirf".$arr['id']."";
+			$leftjoin[] = 'LEFT JOIN '.BAB_DBDIR_ENTRIES_EXTRA_TBL.' lj'.$arr['id']." ON lj".$arr['id'].".id_fieldx='".$db->db_escape_string($arr['id'])."' AND e.id=lj".$db->db_escape_string($arr['id']).".id_entry";
+			$select[] = "lj".$arr['id'].'.field_value '."babdirf".$db->db_escape_string($arr['id'])."";
 			}
 		$output .= '"'.str_replace('"','""',translateDirectoryField($fieldn)).'"'.$separ;
 		}
@@ -2660,7 +2660,7 @@ function exportDbDirectory($id, $wsepar, $separ, $listfd)
 		}
 	else
 		{
-		$req = " ".BAB_DBDIR_ENTRIES_TBL." e ".implode(' ',$leftjoin)." WHERE e.id_directory='".(1 == $idgroup ? 0 : $id )."'";
+		$req = " ".BAB_DBDIR_ENTRIES_TBL." e ".implode(' ',$leftjoin)." WHERE e.id_directory='".(1 == $idgroup ? 0 : $db->db_escape_string($id) )."'";
 		}
 
 	$select[] = 'e.id_user';
@@ -2672,7 +2672,7 @@ function exportDbDirectory($id, $wsepar, $separ, $listfd)
 		{
 		if( $idgroup > 0 )
 			{
-			list($nickname) = $db->db_fetch_array($db->db_query("select nickname from ".BAB_USERS_TBL." where id='".$row['id_user']."'"));
+			list($nickname) = $db->db_fetch_array($db->db_query("select nickname from ".BAB_USERS_TBL." where id='".$db->db_escape_string($row['id_user'])."'"));
 			$output .= '"'.str_replace('"','""',$nickname).'"'.$separ;
 			}
 
@@ -2698,7 +2698,7 @@ function assignDbContact($id, $userids)
 {
 	global $babDB;
 
-	list($idgroup) = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
+	list($idgroup) = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
 	if( $idgroup && $idgroup != BAB_REGISTERED_GROUP )
 	{
 		for( $i=0; $i < count($userids); $i++ )
