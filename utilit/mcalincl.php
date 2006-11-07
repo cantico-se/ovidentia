@@ -864,7 +864,7 @@ class calendarchoice
 			}
 		else
 			{
-			$this->selectedCalendars = !empty($_REQUEST['calid']) ? explode(',',$_REQUEST['calid']) : isset($icalendars->user_calendarids) ? explode(',',$icalendars->user_calendarids) : array();
+			$this->selectedCalendars = !empty($_REQUEST['calid']) ? explode(',',$_REQUEST['calid']) : (isset($icalendars->user_calendarids) ? explode(',',$icalendars->user_calendarids) : array());
 			}
 
 		$this->usrcalendarstxt = bab_translate("Users");
