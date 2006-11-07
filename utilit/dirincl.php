@@ -597,8 +597,6 @@ function getDirEntry($id, $type, $id_directory) {
 		case BAB_DIR_ENTRY_ID_USER:
 			$id_fieldextra_directory = 0;
 			$colname = 'e.id_user';
-			if (is_array($id))
-				$id = $babDB->quote($id);
 
 			if ($id == $GLOBALS['BAB_SESS_USERID']) {
 				break; // user can always view his dir entry
@@ -620,8 +618,6 @@ function getDirEntry($id, $type, $id_directory) {
 
 		case BAB_DIR_ENTRY_ID:
 			$colname = 'e.id';
-			if (is_array($id))
-				$id = $babDB->quote($id);
 
 			if (NULL == $id_directory) {
 				list($id_directory) = $babDB->db_fetch_array($babDB->db_query("SELECT id_directory FROM ".BAB_DBDIR_ENTRIES_TBL." WHERE id IN(".$id.")"));
@@ -739,7 +735,7 @@ function getDirEntry($id, $type, $id_directory) {
 					LEFT JOIN ".BAB_USERS_TBL." dis ON dis.id = e.id_user AND dis.disabled='1' 
 					".$str_leftjoin." 
 				WHERE 
-					".$colname." IN(".$id.") ".$test_on_directory." AND dis.id IS NULL
+					".$colname." IN(".$babDB->quote($id).") ".$test_on_directory." AND dis.id IS NULL
 
 	");
 
