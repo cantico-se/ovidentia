@@ -21,17 +21,17 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include "base.php";
-include_once $babInstallPath."utilit/uiutil.php";
-include_once $babInstallPath."utilit/dirincl.php";
-include_once $babInstallPath."admin/acl.php";
+include 'base.php';
+include_once $babInstallPath.'utilit/uiutil.php';
+include_once $babInstallPath.'utilit/dirincl.php';
+include_once $babInstallPath.'admin/acl.php';
 
 
 
 function isDirectoryGroup($id)
 {
 	global $babDB;
-	list($id_group) = $babDB->db_fetch_row($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
+	list($id_group) = $babDB->db_fetch_row($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
 	return $id_group;
 }
 
@@ -78,12 +78,12 @@ function listAds()
 			$this->add = bab_translate("Add");
 			$this->gview = bab_translate("View");
 			$this->grights = bab_translate("Rights");
-			$this->urladdldap = $GLOBALS['babUrlScript']."?tg=admdir&idx=ldap";
-			$this->urladddb = $GLOBALS['babUrlScript']."?tg=admdir&idx=db";
+			$this->urladdldap = $GLOBALS['babUrlScript'].'?tg=admdir&idx=ldap';
+			$this->urladddb = $GLOBALS['babUrlScript'].'?tg=admdir&idx=db';
 			$this->db = $GLOBALS['babDB'];
-			$this->resldap = $this->db->db_query("select * from ".BAB_LDAP_DIRECTORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."' ORDER BY name");
+			$this->resldap = $this->db->db_query("select * from ".BAB_LDAP_DIRECTORIES_TBL." where id_dgowner='".$this->db->db_escape_string($babBody->currentAdmGroup)."' ORDER BY name");
 			$this->countldap = $this->db->db_num_rows($this->resldap);
-			$this->resdb = $this->db->db_query("select * from ".BAB_DB_DIRECTORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."' ORDER BY name");
+			$this->resdb = $this->db->db_query("select * from ".BAB_DB_DIRECTORIES_TBL." where id_dgowner='".$this->db->db_escape_string($babBody->currentAdmGroup)."' ORDER BY name");
 			$this->countdb = $this->db->db_num_rows($this->resdb);
 			}
 
@@ -95,9 +95,9 @@ function listAds()
 				$this->altbg = $this->altbg ? false : true;
 				$arr = $this->db->db_fetch_array($this->resldap);
 				$this->description = $arr['description'];
-				$this->url = $GLOBALS['babUrlScript']."?tg=admdir&idx=mldap&id=".$arr['id'];
+				$this->url = $GLOBALS['babUrlScript'].'?tg=admdir&idx=mldap&id='.$arr['id'];
 				$this->urlname = $arr['name'];
-				$this->gviewurl = $GLOBALS['babUrlScript']."?tg=admdir&idx=gviewl&id=".$arr['id'];
+				$this->gviewurl = $GLOBALS['babUrlScript'].'?tg=admdir&idx=gviewl&id='.$arr['id'];
 				$i++;
 				return true;
 				}
@@ -113,7 +113,7 @@ function listAds()
 				$arr = $this->db->db_fetch_array($this->resdb);
 				if( $arr['id_group'] != '0' )
 					{
-					list($this->bshow) = $this->db->db_fetch_row($this->db->db_query("select directory from ".BAB_GROUPS_TBL." where id='".$arr['id_group']."'"));
+					list($this->bshow) = $this->db->db_fetch_row($this->db->db_query("select directory from ".BAB_GROUPS_TBL." where id='".$this->db->db_escape_string($arr['id_group'])."'"));
 					if ($this->bshow == 'Y') $this->altbg = $this->altbg ? false : true;
 					if ($arr['id_group'] == BAB_REGISTERED_GROUP)
 						$this->group = bab_getGroupName($arr['id_group'], false);
@@ -124,12 +124,12 @@ function listAds()
 					{
 					$this->altbg = $this->altbg ? false : true;
 					$this->bshow = 'Y';
-					$this->group = "";
+					$this->group = '';
 					}
 				$this->description = $arr['description'];
-				$this->url = $GLOBALS['babUrlScript']."?tg=admdir&idx=mdb&id=".$arr['id'];
+				$this->url = $GLOBALS['babUrlScript'].'?tg=admdir&idx=mdb&id='.$arr['id'];
 				$this->urlname = $arr['name'];
-				$this->grightsurl = $GLOBALS['babUrlScript']."?tg=admdir&idx=db_rights&id=".$arr['id'];
+				$this->grightsurl = $GLOBALS['babUrlScript'].'?tg=admdir&idx=db_rights&id='.$arr['id'];
 				$i++;
 				return true;
 				}
@@ -139,7 +139,7 @@ function listAds()
 		}
 
 	$temp = new temp();
-	$babBody->babecho(	bab_printTemplate($temp, "admdir.html", "adlist"));
+	$babBody->babecho(	bab_printTemplate($temp, 'admdir.html', 'adlist'));
 }
 
 
@@ -155,7 +155,7 @@ function search_options()
 		function temp()
 			{
 			global $babBody;
-			$this->listftxt = "---- ".bab_translate("Fields")." ----";
+			$this->listftxt = '---- '.bab_translate("Fields").' ----';
 			$this->moveup = bab_translate("Move Up");
 			$this->movedown = bab_translate("Move Down");
 			$this->update = bab_translate("Update");
@@ -167,7 +167,7 @@ function search_options()
 				$tmp = '2,4';
 			
 			$this->resdb = $this->db->db_query("SELECT id,description FROM ".BAB_DBDIR_FIELDS_TBL."");
-			$this->resdf = $this->db->db_query("SELECT id,description FROM ".BAB_DBDIR_FIELDS_TBL." WHERE id IN(".$tmp.")");
+			$this->resdf = $this->db->db_query("SELECT id,description FROM ".BAB_DBDIR_FIELDS_TBL." WHERE id IN(".$this->db->db_escape_string($tmp).")");
 			}
 
 		function getnext()
@@ -194,8 +194,8 @@ function search_options()
 		}
 
 	$temp = new temp();
-	$babBody->babecho(	bab_printTemplate($temp, "admdir.html", "dbscripts"));
-	$babBody->babecho(	bab_printTemplate($temp, "admdir.html", "search"));
+	$babBody->babecho(	bab_printTemplate($temp, 'admdir.html', 'dbscripts'));
+	$babBody->babecho(	bab_printTemplate($temp, 'admdir.html', 'search'));
 }
 
 
@@ -241,11 +241,11 @@ function addAdLdap($name, $description, $servertype, $decodetype, $host, $basedn
 			$this->type = "ldap";
 			$this->add = bab_translate("Add");
 
-			$this->vname = $name == "" ? "" : $name;
-			$this->vdescription = $description == "" ? "" : $description;
-			$this->vhost = $host == "" ? "" : $host;
-			$this->vbasedn = $basedn == "" ? "" : $basedn;
-			$this->vuserdn = $userdn == "" ? "" : $userdn;
+			$this->vname = $name == '' ? '' : $name;
+			$this->vdescription = $description == '' ? '' : $description;
+			$this->vhost = $host == '' ? '' : $host;
+			$this->vbasedn = $basedn == '' ? '' : $basedn;
+			$this->vuserdn = $userdn == '' ? '' : $userdn;
 			$this->vservettype = $servertype;
 			$this->vdecodetype = $decodetype;
 			$this->count = count($babLdapServerTypes);
@@ -300,7 +300,7 @@ function addAdLdap($name, $description, $servertype, $decodetype, $host, $basedn
 		}
 
 	$temp = new temp($name, $description, $servertype, $decodetype, $host, $basedn, $userdn);
-	$babBody->babecho(	bab_printTemplate($temp,"admdir.html", "ldapadd"));
+	$babBody->babecho(	bab_printTemplate($temp,'admdir.html', 'ldapadd'));
 	}
 
 function modifyLdap($id)
@@ -342,7 +342,7 @@ function modifyLdap($id)
 			$this->delete = bab_translate("Delete");
 
 			$db = $GLOBALS['babDB'];
-			$res = $db->db_query("select * from ".BAB_LDAP_DIRECTORIES_TBL." where id='".$id."'");
+			$res = $db->db_query("select * from ".BAB_LDAP_DIRECTORIES_TBL." where id='".$db->db_escape_string($id)."'");
 			if( $res && $db->db_num_rows($res) > 0)
 				{
 				$arr = $db->db_fetch_array($res);
@@ -407,7 +407,7 @@ function modifyLdap($id)
 		}
 
 	$temp = new temp($id);
-	$babBody->babecho(bab_printTemplate($temp,"admdir.html", "ldapmodify"));
+	$babBody->babecho(bab_printTemplate($temp,'admdir.html', 'ldapmodify'));
 	}
 
 function addAdDb($adname, $description)
@@ -437,8 +437,8 @@ function addAdDb($adname, $description)
 
 		function temp($adname, $description)
 			{
-			$this->vname = $adname == "" ? "" : $adname;
-			$this->vdescription = $description == "" ? "" : $description;
+			$this->vname = $adname == '' ? '' : $adname;
+			$this->vdescription = $description == '' ? '' : $description;
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
 			$this->field = bab_translate("Fields");
@@ -468,9 +468,9 @@ function addAdDb($adname, $description)
 				$this->fieldn = translateDirectoryField($arr['description']);
 				$this->fieldv = $arr['name'];
 				$this->fieldid = $arr['id'];
-				$this->reqchecked = "";
-				$this->rwchecked = "";
-				$this->mlchecked = "";
+				$this->reqchecked = '';
+				$this->rwchecked = '';
+				$this->mlchecked = '';
 				if (in_array( $this->fieldid, array(2, 4)) )
 					$this->disabled = true;
 				else 
@@ -485,7 +485,7 @@ function addAdDb($adname, $description)
 		}
 
 	$temp = new temp($adname, $description);
-	$babBody->babecho( bab_printTemplate($temp,"admdir.html", "dbadd"));
+	$babBody->babecho( bab_printTemplate($temp,'admdir.html', 'dbadd'));
 	}
 
 
@@ -532,7 +532,7 @@ function modifyDb($id)
 			$this->bfields = true;
 			$this->ballowuserupdate = false;
 			$this->db = $GLOBALS['babDB'];
-			$arr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
+			$arr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DB_DIRECTORIES_TBL." where id='".$this->db->db_escape_string($id)."'"));
 			$this->vname = $arr['name'];
 			$this->vdescription = $arr['description'];
 			if( $arr['id_group'] != 0 )
@@ -549,13 +549,13 @@ function modifyDb($id)
 					}
 				if( $arr['user_update'] == 'Y')
 					{
-					$this->noselected = "";
-					$this->yesselected = "selected";
+					$this->noselected = '';
+					$this->yesselected = 'selected';
 					}
 				else
 					{
-					$this->noselected = "selected";
-					$this->yesselected = "";
+					$this->noselected = 'selected';
+					$this->yesselected = '';
 					}
 				}
 			else
@@ -564,16 +564,16 @@ function modifyDb($id)
 				}
 			if( $arr['show_update_info'] == 'Y')
 				{
-				$this->noduselected = "";
-				$this->yesduselected = "selected";
+				$this->noduselected = '';
+				$this->yesduselected = 'selected';
 				}
 			else
 				{
-				$this->noduselected = "selected";
-				$this->yesduselected = "";
+				$this->noduselected = 'selected';
+				$this->yesduselected = '';
 				}
 
-			$this->res = $this->db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$iddir."' and id_field < '".BAB_DBDIR_MAX_COMMON_FIELDS."' order by id_field asc");
+			$this->res = $this->db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$this->db->db_escape_string($iddir)."' and id_field < '".BAB_DBDIR_MAX_COMMON_FIELDS."' order by id_field asc");
 			if( $this->res && $this->db->db_num_rows($this->res) > 0)
 				{
 				$this->count = $this->db->db_num_rows($this->res);
@@ -583,7 +583,7 @@ function modifyDb($id)
 				$this->count = 0;
 				}
 			
-			$this->resfx = $this->db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$iddir."' and id_field > '".BAB_DBDIR_MAX_COMMON_FIELDS."' order by id asc");
+			$this->resfx = $this->db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$this->db->db_escape_string($iddir)."' and id_field > '".BAB_DBDIR_MAX_COMMON_FIELDS."' order by id asc");
 			if( $this->resfx && $this->db->db_num_rows($this->resfx) > 0)
 				{
 				$this->countfx = $this->db->db_num_rows($this->resfx);
@@ -594,7 +594,7 @@ function modifyDb($id)
 				}
 
 			$this->altbg = true;
-			$this->addfurl = $GLOBALS['babUrlScript']."?tg=admdir&idx=addf&id=".$this->id;
+			$this->addfurl = $GLOBALS['babUrlScript'].'?tg=admdir&idx=addf&id='.$this->id;
 			}
 
 		function getnextfield()
@@ -605,23 +605,23 @@ function modifyDb($id)
 				$this->altbg = !$this->altbg;
 				$arr = $this->db->db_fetch_array($this->res);
 				$this->fieldid = $arr['id_field'];
-				if( $arr['modifiable'] == "Y")
-					$this->rwchecked = "checked";
+				if( $arr['modifiable'] == 'Y')
+					$this->rwchecked = 'checked';
 				else
-					$this->rwchecked = "";
+					$this->rwchecked = '';
 
-				if( $arr['required'] == "Y")
-					$this->reqchecked = "checked";
+				if( $arr['required'] == 'Y')
+					$this->reqchecked = 'checked';
 				else
-					$this->reqchecked = "";
-				if( $arr['multilignes'] == "Y")
-					$this->mlchecked = "checked";
+					$this->reqchecked = '';
+				if( $arr['multilignes'] == 'Y')
+					$this->mlchecked = 'checked';
 				else
-					$this->mlchecked = "";
-				if( $arr['disabled'] == "Y")
-					$this->dzchecked = "checked";
+					$this->mlchecked = '';
+				if( $arr['disabled'] == 'Y')
+					$this->dzchecked = 'checked';
 				else
-					$this->dzchecked = "";
+					$this->dzchecked = '';
 				if ((!$this->bdel && in_array( $this->fieldid, array( 2, 4, 6) )) || ($this->bdel && in_array( $this->fieldid, array(2, 4) )) )
 					$this->disabled = true;
 				else 
@@ -633,15 +633,15 @@ function modifyDb($id)
 					}
 				else 
 					{
-					$this->addvalurl = $GLOBALS['babUrlScript']."?tg=admdir&idx=addval&id=".$this->id."&fxid=".$arr['id'];
+					$this->addvalurl = $GLOBALS['babUrlScript'].'?tg=admdir&idx=addval&id='.$this->id.'&fxid='.$arr['id'];
 					}
 
-				$rr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
+				$rr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL." where id='".$this->db->db_escape_string($arr['id_field'])."'"));
 				$this->fieldn = translateDirectoryField($rr['description']);
 				$this->fieldv = $rr['name'];
 				if( $arr['default_value'] != 0 )
 					{
-					$rr = $this->db->db_fetch_array($this->db->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." where id='".$arr['default_value']."'"));
+					$rr = $this->db->db_fetch_array($this->db->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." where id='".$this->db->db_escape_string($arr['default_value'])."'"));
 					$this->defvalue = $rr['field_value'];
 					}
 				else
@@ -666,34 +666,34 @@ function modifyDb($id)
 				$this->altbg = !$this->altbg;
 				$arr = $this->db->db_fetch_array($this->resfx);
 				$this->fieldid = $arr['id_field'];
-				if( $arr['modifiable'] == "Y")
-					$this->rwchecked = "checked";
+				if( $arr['modifiable'] == 'Y')
+					$this->rwchecked = 'checked';
 				else
-					$this->rwchecked = "";
+					$this->rwchecked = '';
 
-				if( $arr['required'] == "Y")
-					$this->reqchecked = "checked";
+				if( $arr['required'] == 'Y')
+					$this->reqchecked = 'checked';
 				else
-					$this->reqchecked = "";
-				if( $arr['multilignes'] == "Y")
-					$this->mlchecked = "checked";
+					$this->reqchecked = '';
+				if( $arr['multilignes'] == 'Y')
+					$this->mlchecked = 'checked';
 				else
-					$this->mlchecked = "";
+					$this->mlchecked = '';
 
-				if( $arr['disabled'] == "Y")
-					$this->dzchecked = "checked";
+				if( $arr['disabled'] == 'Y')
+					$this->dzchecked = 'checked';
 				else
-					$this->dzchecked = "";
+					$this->dzchecked = '';
 
 				$this->disabled = false;
 
-				$this->addvalurl = $GLOBALS['babUrlScript']."?tg=admdir&idx=addval&id=".$this->id."&fxid=".$arr['id'];
+				$this->addvalurl = $GLOBALS['babUrlScript'].'?tg=admdir&idx=addval&id='.$this->id.'&fxid='.$arr['id'];
 
-				$rr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+				$rr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$this->db->db_escape_string(($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
 				$this->fieldn = translateDirectoryField($rr['name']);
 				if( $arr['default_value'] != 0 )
 					{
-					$rr = $this->db->db_fetch_array($this->db->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." where id='".$arr['default_value']."'"));
+					$rr = $this->db->db_fetch_array($this->db->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." where id='".$this->db->db_escape_string($arr['default_value'])."'"));
 					$this->defvalue = $rr['field_value'];
 					}
 				else
@@ -712,7 +712,7 @@ function modifyDb($id)
 		}
 
 	$temp = new temp($id);
-	$babBody->babecho( bab_printTemplate($temp,"admdir.html", "dbmodify"));
+	$babBody->babecho( bab_printTemplate($temp,'admdir.html', 'dbmodify'));
 	}
 
 function displayDb($id)
@@ -725,17 +725,17 @@ function displayDb($id)
 			global $babDB;
 			$this->id = $id;
 			$this->infotxt = bab_translate("Specify which fields will be displayed when browsing directory");
-			$this->listftxt = "---- ".bab_translate("Fields")." ----";
-			$this->listdftxt = "---- ".bab_translate("Fields to display")." ----";
+			$this->listftxt = '---- '.bab_translate("Fields").' ----';
+			$this->listdftxt = '---- '.bab_translate("Fields to display").' ----';
 			$this->ovmllisttxt = bab_translate("OVML file to be used for list");
 			$this->ovmldetailtxt = bab_translate("OVML file to be used for detail");
 			$this->browsetxt = bab_translate("Browse");
-			$this->browseurl = $GLOBALS['babUrlScript']."?tg=editorovml";
+			$this->browseurl = $GLOBALS['babUrlScript'].'?tg=editorovml';
 
 			$this->moveup = bab_translate("Move Up");
 			$this->movedown = bab_translate("Move Down");
 			$this->update = bab_translate("Update");
-			$arr = $babDB->db_fetch_array($babDB->db_query("select id_group, ovml_detail, ovml_list from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
+			$arr = $babDB->db_fetch_array($babDB->db_query("select id_group, ovml_detail, ovml_list from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
 			if( $arr['id_group'] != 0 )
 				{
 				$iddir = 0;
@@ -747,9 +747,9 @@ function displayDb($id)
 			$this->ovmllistval = $arr['ovml_list'];
 			$this->ovmldetailval = $arr['ovml_detail'];
 
-			$this->resf = $babDB->db_query("select id, id_field from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$iddir."' and ordering='0' AND id_field<>5");
+			$this->resf = $babDB->db_query("select id, id_field from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$babDB->db_escape_string($iddir)."' and ordering='0' AND id_field<>5");
 			$this->countf = $babDB->db_num_rows($this->resf);
-			$this->resfd = $babDB->db_query("select id, id_field from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$iddir."' and ordering!='0' AND id_field<>5 order by ordering asc");
+			$this->resfd = $babDB->db_query("select id, id_field from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$babDB->db_escape_string($iddir)."' and ordering!='0' AND id_field<>5 order by ordering asc");
 			$this->countfd = $babDB->db_num_rows($this->resfd);
 			}
 
@@ -763,12 +763,12 @@ function displayDb($id)
 				$this->fid = $arr['id_field'];
 				if( $this->fid < BAB_DBDIR_MAX_COMMON_FIELDS )
 					{
-					$arr = $babDB->db_fetch_array($babDB->db_query("select description from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
+					$arr = $babDB->db_fetch_array($babDB->db_query("select description from ".BAB_DBDIR_FIELDS_TBL." where id='".$babDB->db_escape_string($arr['id_field'])."'"));
 					$this->fieldval = translateDirectoryField($arr['description']);
 					}
 				else
 					{
-					$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($this->fid - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+					$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string(($this->fid - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
 					$this->fieldval = translateDirectoryField($rr['name']);
 					}
 				$i++;
@@ -788,12 +788,12 @@ function displayDb($id)
 				$this->fid = $arr['id_field'];
 				if( $this->fid < BAB_DBDIR_MAX_COMMON_FIELDS )
 					{
-					$arr = $babDB->db_fetch_array($babDB->db_query("select description from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
+					$arr = $babDB->db_fetch_array($babDB->db_query("select description from ".BAB_DBDIR_FIELDS_TBL." where id='".$babDB->db_escape_string($arr['id_field'])."'"));
 					$this->fieldval = translateDirectoryField($arr['description']);
 					}
 				else
 					{
-					$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($this->fid - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+					$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string(($this->fid - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
 					$this->fieldval = translateDirectoryField($rr['name']);
 					}
 				$i++;
@@ -805,8 +805,8 @@ function displayDb($id)
 		}
 
 	$temp = new temp($id);
-	$babBody->babecho(	bab_printTemplate($temp, "admdir.html", "dbscripts"));
-	$babBody->babecho( bab_printTemplate($temp,"admdir.html", "dbdisplay"));
+	$babBody->babecho(	bab_printTemplate($temp, 'admdir.html', 'dbscripts'));
+	$babBody->babecho( bab_printTemplate($temp,'admdir.html', 'dbdisplay'));
 	}
 
 
@@ -819,11 +819,11 @@ function dbListOrder($id)
 			{
 			global $babDB;
 			$this->id = $id;
-			$this->listftxt = "---- ".bab_translate("Fields")." ----";
+			$this->listftxt = '---- '.bab_translate("Fields").' ----';
 			$this->moveup = bab_translate("Move Up");
 			$this->movedown = bab_translate("Move Down");
 			$this->update = bab_translate("Update");
-			$arr = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
+			$arr = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
 			if( $arr['id_group'] != 0 )
 				{
 				$iddir = 0;
@@ -832,7 +832,7 @@ function dbListOrder($id)
 				{
 				$iddir = $id;
 				}
-			$this->resf = $babDB->db_query("select id, id_field from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$iddir."' order by list_ordering asc");
+			$this->resf = $babDB->db_query("select id, id_field from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$babDB->db_escape_string($iddir)."' order by list_ordering asc");
 			$this->countf = $babDB->db_num_rows($this->resf);
 			}
 
@@ -846,12 +846,12 @@ function dbListOrder($id)
 				$this->fid = $arr['id_field'];
 				if( $this->fid < BAB_DBDIR_MAX_COMMON_FIELDS )
 					{
-					$arr = $babDB->db_fetch_array($babDB->db_query("select description from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
+					$arr = $babDB->db_fetch_array($babDB->db_query("select description from ".BAB_DBDIR_FIELDS_TBL." where id='".$babDB->db_escape_string($arr['id_field'])."'"));
 					$this->fieldval = translateDirectoryField($arr['description']);
 					}
 				else
 					{
-					$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($this->fid - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+					$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string(($this->fid - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
 					$this->fieldval = translateDirectoryField($rr['name']);
 					}
 				$i++;
@@ -863,8 +863,8 @@ function dbListOrder($id)
 		}
 
 	$temp = new temp($id);
-	$babBody->babecho(	bab_printTemplate($temp, "admdir.html", "dbscripts"));
-	$babBody->babecho( bab_printTemplate($temp,"admdir.html", "dblistorder"));
+	$babBody->babecho(	bab_printTemplate($temp, 'admdir.html', 'dbscripts'));
+	$babBody->babecho( bab_printTemplate($temp,'admdir.html', 'dblistorder'));
 	}
 
 function deleteAd($id, $table)
@@ -887,21 +887,21 @@ function deleteAd($id, $table)
 			{
 			$this->message = bab_translate("Are you sure you want to delete this directory");
 			$this->title = getDirectoryName($id, $table);
-			$this->warning = bab_translate("WARNING: This operation will delete directory and all references"). "!";
-			$this->urlyes = $GLOBALS['babUrlScript']."?tg=admdir&idx=list&id=".$id."&action=Yes&type=";
+			$this->warning = bab_translate("WARNING: This operation will delete directory and all references"). '!';
+			$this->urlyes = $GLOBALS['babUrlScript'].'?tg=admdir&idx=list&id='.$id.'&action=Yes&type=';
 			if( $table == BAB_DB_DIRECTORIES_TBL )
 				{
-				$this->urlyes .= "d";
+				$this->urlyes .= 'd';
 				}
 			else if( $table == BAB_LDAP_DIRECTORIES_TBL )
-				$this->urlyes .= "l";
+				$this->urlyes .= 'l';
 			$this->yes = bab_translate("Yes");
-			$this->urlno = $GLOBALS['babUrlScript']."?tg=admdir&idx=list";
+			$this->urlno = $GLOBALS['babUrlScript'].'?tg=admdir&idx=list';
 			$this->no = bab_translate("No");
 			}
 		}
 	$temp = new temp($id, $table);
-	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
+	$babBody->babecho(	bab_printTemplate($temp,'warning.html', 'warningyesno'));
 	}
 
 
@@ -925,10 +925,10 @@ function showDbFieldValuesModify($id, $idfieldx)
 			$this->js_error = bab_translate("You must enter two or more values");
 			$this->id = $id;
 			$this->idfield = $idfieldx;
-			$this->res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSVALUES_TBL." where id_fieldextra='".$idfieldx."' order by id asc");
+			$this->res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSVALUES_TBL." where id_fieldextra='".$babDB->db_escape_string($idfieldx)."' order by id asc");
 			$this->count = $babDB->db_num_rows($this->res);
 			$this->fvalnum = 1;
-			$rr = $babDB->db_fetch_array($babDB->db_query("select id_field, default_value, multi_values from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id='".$idfieldx."'"));
+			$rr = $babDB->db_fetch_array($babDB->db_query("select id_field, default_value, multi_values from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id='".$babDB->db_escape_string($idfieldx)."'"));
 			$this->fvdefid = $rr['default_value'];
 
 			if( $rr['multi_values'] == 'Y' )
@@ -952,7 +952,7 @@ function showDbFieldValuesModify($id, $idfieldx)
 				{
 				$this->bdelete = true;
 				$this->deltxt = bab_translate("Delete this field");
-				$rr = $babDB->db_fetch_array($babDB->db_query("select name from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($rr['id_field']-BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+				$rr = $babDB->db_fetch_array($babDB->db_query("select name from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string(($rr['id_field']-BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
 				$this->fieldval = $rr['name'];
 				}
 			else
@@ -989,7 +989,7 @@ function showDbFieldValuesModify($id, $idfieldx)
 			}
 		}
 	$temp = new temp($id, $idfieldx);
-	$babBodyPopup->babecho(bab_printTemplate($temp, "admdir.html", "dbfieldvalues"));
+	$babBodyPopup->babecho(bab_printTemplate($temp, 'admdir.html', 'dbfieldvalues'));
 }
 
 
@@ -1011,7 +1011,7 @@ function showDbAddField($id, $fieldn, $fieldv)
 		}
 
 	$temp = new temp($id, $fieldn, $fieldv);
-	$babBodyPopup->babecho(bab_printTemplate($temp, "admdir.html", "dbaddfield"));
+	$babBodyPopup->babecho(bab_printTemplate($temp, 'admdir.html', 'dbaddfield'));
 }
 
 function addLdapDirectory($name, $description, $servertype, $decodetype, $host, $basedn, $userdn, $password1, $password2)
@@ -1036,14 +1036,8 @@ function addLdapDirectory($name, $description, $servertype, $decodetype, $host, 
 		return;
 		}
 
-	if( strtolower(ini_get("magic_quotes_gpc")) == "off" || !get_cfg_var("magic_quotes_gpc"))
-		{
-		$description = addslashes($description);
-		$name = addslashes($name);
-		}
-
 	$db = $GLOBALS['babDB'];
-	$res = $db->db_query("select name from ".BAB_LDAP_DIRECTORIES_TBL." where name='".$name."'");
+	$res = $db->db_query("select name from ".BAB_LDAP_DIRECTORIES_TBL." where name='".$db->db_escape_string($name)."'");
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$babBody->msgerror = bab_translate("ERROR: This directory already exists");
@@ -1051,7 +1045,7 @@ function addLdapDirectory($name, $description, $servertype, $decodetype, $host, 
 		}
 	else
 		{
-		$req = "insert into ".BAB_LDAP_DIRECTORIES_TBL." (name, description, server_type, decoding_type, host, basedn, userdn, password, id_dgowner) VALUES ('" .$name. "', '" . $description. "', '" . $servertype. "', '" . $decodetype. "', '" . $host. "', '" . $basedn. "', '" . $userdn. "', ENCODE(\"".$password1."\",\"".$GLOBALS['BAB_HASH_VAR']."\"), '".$babBody->currentAdmGroup."')";
+		$req = "insert into ".BAB_LDAP_DIRECTORIES_TBL." (name, description, server_type, decoding_type, host, basedn, userdn, password, id_dgowner) VALUES ('" .$db->db_escape_string($name). "', '" . $db->db_escape_string($description). "', '" . $db->db_escape_string($servertype). "', '" . $db->db_escape_string($decodetype). "', '" . $db->db_escape_string($host). "', '" . $db->db_escape_string($basedn). "', '" . $db->db_escape_string($userdn). "', ENCODE(\"".$password1."\",\"".$GLOBALS['BAB_HASH_VAR']."\"), '".$db->db_escape_string($babBody->currentAdmGroup)."')";
 		$db->db_query($req);
 		}
 	return true;
@@ -1067,14 +1061,8 @@ function addDbDirectory($name, $description, $displayiu, $fields, $rw, $rq, $ml,
 		return false;
 		}
 
-	if( strtolower(ini_get("magic_quotes_gpc")) == "off" || !get_cfg_var("magic_quotes_gpc"))
-		{
-		$description = addslashes($description);
-		$name = addslashes($name);
-		}
-
 	$db = $GLOBALS['babDB'];
-	$res = $db->db_query("select name from ".BAB_DB_DIRECTORIES_TBL." where name='".$name."'");
+	$res = $db->db_query("select name from ".BAB_DB_DIRECTORIES_TBL." where name='".$db->db_escape_string($name)."'");
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$babBody->msgerror = bab_translate("ERROR: This directory already exists");
@@ -1082,7 +1070,7 @@ function addDbDirectory($name, $description, $displayiu, $fields, $rw, $rq, $ml,
 		}
 	else
 		{
-		$req = "insert into ".BAB_DB_DIRECTORIES_TBL." (name, description, show_update_info, id_dgowner) VALUES ('" .$name. "', '" . $description. "', '" .$displayiu. "', '" .$babBody->currentAdmGroup. "')";
+		$req = "insert into ".BAB_DB_DIRECTORIES_TBL." (name, description, show_update_info, id_dgowner) VALUES ('" .$db->db_escape_string($name). "', '" . $db->db_escape_string($description). "', '" .$db->db_escape_string($displayiu). "', '" .$db->db_escape_string($babBody->currentAdmGroup). "')";
 		$db->db_query($req);
 		$id = $db->db_insert_id();
 		$res = $db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL);
@@ -1090,21 +1078,21 @@ function addDbDirectory($name, $description, $displayiu, $fields, $rw, $rq, $ml,
 		while( $arr = $db->db_fetch_array($res))
 			{
 			if( count($rw) > 0 && in_array($arr['id'], $rw))
-				$modifiable = "Y";
+				$modifiable = 'Y';
 			else
-				$modifiable = "N";
+				$modifiable = 'N';
 			if( count($rq) > 0 && in_array($arr['id'], $rq))
-				$required = "Y";
+				$required = 'Y';
 			else
-				$required = "N";
+				$required = 'N';
 			if( count($ml) > 0 && in_array($arr['id'], $ml))
-				$multilignes = "Y";
+				$multilignes = 'Y';
 			else
-				$multilignes = "N";
+				$multilignes = 'N';
 			if( count($dz) > 0 && in_array($arr['id'], $dz))
-				$disabled = "Y";
+				$disabled = 'Y';
 			else
-				$disabled = "N";
+				$disabled = 'N';
 			switch($arr['name'])
 				{
 				case 'givenname':
@@ -1115,15 +1103,15 @@ function addDbDirectory($name, $description, $displayiu, $fields, $rw, $rq, $ml,
 					$ordering = 0; break;
 				}
 
-			$req = "insert into ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, disabled, ordering, list_ordering) VALUES ('" .$id. "', '" . $arr['id']. "', '0', '".$modifiable."', '".$required."', '".$multilignes."', '".$disabled."', '".$ordering."', '".($k++)."')";
+			$req = "insert into ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, disabled, ordering, list_ordering) VALUES ('" .$db->db_escape_string($id). "', '" . $db->db_escape_string($arr['id']). "', '0', '".$db->db_escape_string($modifiable)."', '".$db->db_escape_string($required)."', '".$db->db_escape_string($multilignes)."', '".$db->db_escape_string($disabled)."', '".$db->db_escape_string($ordering)."', '".($k++)."')";
 			$db->db_query($req);
 			$fxid = $db->db_insert_id();
 			$fieldval = trim($fields[$arr['name']]); 
 			if( !empty($fieldval))
 				{
-				$db->db_query("insert into ".BAB_DBDIR_FIELDSVALUES_TBL." (id_fieldextra, field_value) VALUES ('" .$fxid."', '".$fieldval."')");		
+				$db->db_query("insert into ".BAB_DBDIR_FIELDSVALUES_TBL." (id_fieldextra, field_value) VALUES ('" .$db->db_escape_string($fxid)."', '".$db->db_escape_string($fieldval)."')");		
 				$fvid = $db->db_insert_id();			
-				$db->db_query("update ".BAB_DBDIR_FIELDSEXTRA_TBL." set default_value='".$fvid."' where id='".$fxid."'");
+				$db->db_query("update ".BAB_DBDIR_FIELDSEXTRA_TBL." set default_value='".$db->db_escape_string($fvid)."' where id='".$db->db_escape_string($fxid)."'");
 				}
 			}
 		}
@@ -1155,14 +1143,8 @@ function modifyAdLdap($id, $name, $description, $servertype, $decodetype, $host,
 			}
 		}
 
-	if( strtolower(ini_get("magic_quotes_gpc")) == "off" || !get_cfg_var("magic_quotes_gpc"))
-		{
-		$description = addslashes($description);
-		$name = addslashes($name);
-		}
-
 	$db = $GLOBALS['babDB'];
-	$res = $db->db_query("select name from ".BAB_LDAP_DIRECTORIES_TBL." where name='".$name."' and id!='".$id."'");
+	$res = $db->db_query("select name from ".BAB_LDAP_DIRECTORIES_TBL." where name='".$db->db_escape_string($name)."' and id!='".$db->db_escape_string($id)."'");
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$babBody->msgerror = bab_translate("ERROR: This directory already exists");
@@ -1170,10 +1152,10 @@ function modifyAdLdap($id, $name, $description, $servertype, $decodetype, $host,
 		}
 	else
 		{
-		$req = "update ".BAB_LDAP_DIRECTORIES_TBL." set name='".$name."', description='".$description."', server_type='".$servertype."', decoding_type='".$decodetype."', host='".$host."', basedn='".$basedn."', userdn='".$userdn."'";
+		$req = "update ".BAB_LDAP_DIRECTORIES_TBL." set name='".$db->db_escape_string($name)."', description='".$db->db_escape_string($description)."', server_type='".$db->db_escape_string($servertype)."', decoding_type='".$db->db_escape_string($decodetype)."', host='".$db->db_escape_string($host)."', basedn='".$db->db_escape_string($basedn)."', userdn='".$db->db_escape_string($userdn)."'";
 		if( !empty($password1) )
 			$req .= ", password=ENCODE(\"".$password1."\",\"".$GLOBALS['BAB_HASH_VAR']."\")";
-		$req .= " where id='".$id."'";
+		$req .= " where id='".$db->db_escape_string($id)."'";
 		$db->db_query($req);
 		}
 	return true;
@@ -1189,14 +1171,8 @@ function modifyAdDb($id, $name, $description, $displayiu, $rw, $rq, $ml, $dz, $a
 		return false;
 		}
 
-	if( strtolower(ini_get("magic_quotes_gpc")) == "off" || !get_cfg_var("magic_quotes_gpc"))
-		{
-		$description = addslashes($description);
-		$name = addslashes($name);
-		}
-
 	$db = $GLOBALS['babDB'];
-	$res = $db->db_query("select name from ".BAB_DB_DIRECTORIES_TBL." where name='".$name."' and id!='".$id."'");
+	$res = $db->db_query("select name from ".BAB_DB_DIRECTORIES_TBL." where name='".$db->db_escape_string($name)."' and id!='".$db->db_escape_string($id)."'");
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$babBody->msgerror = bab_translate("ERROR: This directory already exists");
@@ -1204,7 +1180,7 @@ function modifyAdDb($id, $name, $description, $displayiu, $rw, $rq, $ml, $dz, $a
 		}
 	else
 		{
-		$arr = $db->db_fetch_array($db->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
+		$arr = $db->db_fetch_array($db->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$db->db_escape_string($id)."'"));
 		if( $arr['id_group'] != 0)
 			{
 			$iddir = 0;
@@ -1212,41 +1188,41 @@ function modifyAdDb($id, $name, $description, $displayiu, $rw, $rq, $ml, $dz, $a
 		else
 			{
 			$iddir = $id;
-			$allowuu = "N";
+			$allowuu = 'N';
 			}
 
-		$req = "update ".BAB_DB_DIRECTORIES_TBL." set name='".$name."', description='".$description."', show_update_info='".$displayiu."'";
+		$req = "update ".BAB_DB_DIRECTORIES_TBL." set name='".$db->db_escape_string($name)."', description='".$db->db_escape_string($description)."', show_update_info='".$db->db_escape_string($displayiu)."'";
 
 		if( $arr['id_group'] == 1)
 			{
-			$req .= ", user_update='".$allowuu."'";
+			$req .= ", user_update='".$db->db_escape_string($allowuu)."'";
 			}
 			
-		$req .= " where id='".$id."'";
+		$req .= " where id='".$db->db_escape_string($id)."'";
 		$db->db_query($req);
 
 		if( $arr['id_group'] == 0 || $arr['id_group'] == BAB_REGISTERED_GROUP)
 			{
-			$res = $db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$iddir."'");
+			$res = $db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$db->db_escape_string($iddir)."'");
 			while( $arr = $db->db_fetch_array($res))
 				{
 				if( count($rw) > 0 && in_array($arr['id_field'], $rw))
-					$modifiable = "Y";
+					$modifiable = 'Y';
 				else
-					$modifiable = "N";
+					$modifiable = 'N';
 				if( count($rq) > 0 && in_array($arr['id_field'], $rq))
-					$required = "Y";
+					$required = 'Y';
 				else
-					$required = "N";
+					$required = 'N';
 				if( count($ml) > 0 && in_array($arr['id_field'], $ml))
-					$multilignes = "Y";
+					$multilignes = 'Y';
 				else
-					$multilignes = "N";
+					$multilignes = 'N';
 				if( count($dz) > 0 && in_array($arr['id_field'], $dz))
-					$disabled = "Y";
+					$disabled = 'Y';
 				else
-					$disabled = "N";
-				$req = "update ".BAB_DBDIR_FIELDSEXTRA_TBL." set modifiable='".$modifiable."', required='".$required."', multilignes='".$multilignes."', disabled='".$disabled."' where id='".$arr['id']."'";
+					$disabled = 'N';
+				$req = "update ".BAB_DBDIR_FIELDSEXTRA_TBL." set modifiable='".$modifiable."', required='".$required."', multilignes='".$multilignes."', disabled='".$disabled."' where id='".$db->db_escape_string($arr['id'])."'";
 				$db->db_query($req);
 				}
 			}
@@ -1257,27 +1233,27 @@ function modifyAdDb($id, $name, $description, $displayiu, $rw, $rq, $ml, $dz, $a
 
 function confirmDeleteDirectory($id, $type)
 	{
-	include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
+	include_once $GLOBALS['babInstallPath'].'utilit/delincl.php';
 	
-	if( $type == "d")
+	if( $type == 'd')
 		{
 		bab_deleteDbDirectory($id);
 		}
-	else if( $type == "l")
+	else if( $type == 'l')
 		{
 		bab_deleteLdapDirectory($id);
 		}
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admdir&idx=list");
+	Header('Location: '. $GLOBALS['babUrlScript'].'?tg=admdir&idx=list');
 	}
 
 function dbUpdateDiplay($id, $listfd)
 {
 	global $babDB;
-	list($idgroup) = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
-	$babDB->db_query("update ".BAB_DBDIR_FIELDSEXTRA_TBL." set ordering='0' where id_directory='".($idgroup != 0? 0: $id)."'");
+	list($idgroup) = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
+	$babDB->db_query("update ".BAB_DBDIR_FIELDSEXTRA_TBL." set ordering='0' where id_directory='".($idgroup != 0? 0: $babDB->db_escape_string($id))."'");
 	for($i=0; $i < count($listfd); $i++)
 		{
-		$babDB->db_query("update ".BAB_DBDIR_FIELDSEXTRA_TBL." set ordering='".($i + 1)."' where id_directory='".($idgroup != 0? 0: $id)."' and id_field='".$listfd[$i]."'");
+		$babDB->db_query("update ".BAB_DBDIR_FIELDSEXTRA_TBL." set ordering='".($i + 1)."' where id_directory='".($idgroup != 0? 0: $babDB->db_escape_string($id))."' and id_field='".$babDB->db_escape_string($listfd[$i])."'");
 		}
 }
 
@@ -1292,17 +1268,17 @@ function dbUpdateOvmlFile($id, $ovmllist, $ovmldetail)
 function dbUpdateListOrder($id, $listfd)
 {
 	global $babDB;
-	list($idgroup) = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
+	list($idgroup) = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
 	for($i=0; $i < count($listfd); $i++)
 		{
-		$babDB->db_query("update ".BAB_DBDIR_FIELDSEXTRA_TBL." set list_ordering='".($i + 1)."' where id_directory='".($idgroup != 0? 0: $id)."' and id_field='".$listfd[$i]."'");
+		$babDB->db_query("update ".BAB_DBDIR_FIELDSEXTRA_TBL." set list_ordering='".($i + 1)."' where id_directory='".($idgroup != 0? 0: $babDB->db_escape_string($id))."' and id_field='".$babDB->db_escape_string($listfd[$i])."'");
 		}
 }
 
 function deleteFieldsExtra($id, $fxid)
 {
 	global $babDB;
-	$res = $babDB->db_query("select id_directory, id_field from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id='".$fxid."'");
+	$res = $babDB->db_query("select id_directory, id_field from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id='".$babDB->db_escape_string($fxid)."'");
 	if( $res && $babDB->db_num_rows($res) > 0 )
 	{
 		$arr = $babDB->db_fetch_array($res);
@@ -1311,14 +1287,14 @@ function deleteFieldsExtra($id, $fxid)
 			return;
 		}
 
-		$babDB->db_query("delete from ".BAB_DBDIR_FIELDSVALUES_TBL." where id_fieldextra='".$fxid."'");
-		$babDB->db_query("delete from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$fxid."'");
-		$babDB->db_query("delete from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'");
-		$babDB->db_query("delete from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id='".$fxid."'");
+		$babDB->db_query("delete from ".BAB_DBDIR_FIELDSVALUES_TBL." where id_fieldextra='".$babDB->db_escape_string($fxid)."'");
+		$babDB->db_query("delete from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$babDB->db_escape_string($fxid)."'");
+		$babDB->db_query("delete from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string(($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS))."'");
+		$babDB->db_query("delete from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id='".$babDB->db_escape_string($fxid)."'");
 		if( $arr['id_directory'] == 0 )
 		{
-		$babDB->db_query("delete from ".BAB_SITES_FIELDS_REGISTRATION_TBL." where id_field='".$arr['id_field']."'");
-		$babDB->db_query("delete from ".BAB_LDAP_SITES_FIELDS_TBL." where id_field='".$arr['id_field']."'");
+		$babDB->db_query("delete from ".BAB_SITES_FIELDS_REGISTRATION_TBL." where id_field='".$babDB->db_escape_string($arr['id_field'])."'");
+		$babDB->db_query("delete from ".BAB_LDAP_SITES_FIELDS_TBL." where id_field='".$babDB->db_escape_string($arr['id_field'])."'");
 		}
 	}
 }
@@ -1328,7 +1304,7 @@ function updateFieldsExtraValues($id, $fxid, $fields_values, $fvdef,$value, $mvy
 	global $babDB;
 	$addslashes = false;
 
-	$rr = $babDB->db_fetch_array($babDB->db_query("select id_field, default_value from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id='".$fxid."'"));
+	$rr = $babDB->db_fetch_array($babDB->db_query("select id_field, default_value from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id='".$babDB->db_escape_string($fxid)."'"));
 
 	if( !isset($rr['id_field']) || $rr['id_field'] < 7 )
 	{
@@ -1341,7 +1317,7 @@ function updateFieldsExtraValues($id, $fxid, $fields_values, $fvdef,$value, $mvy
 		if( isset($GLOBALS['fieldname']) && !empty($GLOBALS['fieldname']))
 		{
 
-			$babDB->db_query("update ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." set name='".$babDB->db_escape_string($GLOBALS['fieldname'])."' where id='".($rr['id_field']-BAB_DBDIR_MAX_COMMON_FIELDS)."'");
+			$babDB->db_query("update ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." set name='".$babDB->db_escape_string($GLOBALS['fieldname'])."' where id='".$babDB->db_escape_string(($rr['id_field']-BAB_DBDIR_MAX_COMMON_FIELDS))."'");
 		}
 	}
 
@@ -1431,12 +1407,12 @@ function addDbField($id, $fieldn, $fieldv, &$message)
 			$res = $babDB->db_query("select id from ".BAB_SITES_TBL."");
 			while( $row = $babDB->db_fetch_array($res))
 				{
-				$babDB->db_query("insert into ".BAB_SITES_FIELDS_REGISTRATION_TBL." (id_site, id_field, registration, required, multilignes) values ('".$babDB->db_escape_string($row['id'])."', '".(BAB_DBDIR_MAX_COMMON_FIELDS + $id)."','N','N', 'N')");
-				$babDB->db_query("insert into ".BAB_LDAP_SITES_FIELDS_TBL." (id_field, id_site) values ('".(BAB_DBDIR_MAX_COMMON_FIELDS + $id)."', '".$babDB->db_escape_string($row['id'])."')");
+				$babDB->db_query("insert into ".BAB_SITES_FIELDS_REGISTRATION_TBL." (id_site, id_field, registration, required, multilignes) values ('".$babDB->db_escape_string($row['id'])."', '".$babDB->db_escape_string((BAB_DBDIR_MAX_COMMON_FIELDS + $id))."','N','N', 'N')");
+				$babDB->db_query("insert into ".BAB_LDAP_SITES_FIELDS_TBL." (id_field, id_site) values ('".$babDB->db_escape_string((BAB_DBDIR_MAX_COMMON_FIELDS + $id))."', '".$babDB->db_escape_string($row['id'])."')");
 				}
 			}
 		
-		$req = "insert into ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES ('" .$babDB->db_escape_string($iddir). "', '" . (BAB_DBDIR_MAX_COMMON_FIELDS + $id). "', '0', 'N', 'N', 'N', '0', '".($rr[0]+1)."')";
+		$req = "insert into ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES ('" .$babDB->db_escape_string($iddir). "', '" . $babDB->db_escape_string((BAB_DBDIR_MAX_COMMON_FIELDS + $id)). "', '0', 'N', 'N', 'N', '0', '".$babDB->db_escape_string(($rr[0]+1))."')";
 		$babDB->db_query($req);
 		$fxid = $babDB->db_insert_id();
 		if( !empty($fieldv))
@@ -1465,9 +1441,9 @@ function record_search_options()
 
 	list($n) = $db->db_fetch_array($db->db_query("SELECT COUNT(*) FROM ".BAB_DBDIR_OPTIONS_TBL));
 	if ($n > 0)
-		$db->db_query("UPDATE ".BAB_DBDIR_OPTIONS_TBL." SET search_view_fields='".$listfd."'");
+		$db->db_query("UPDATE ".BAB_DBDIR_OPTIONS_TBL." SET search_view_fields='".$db->db_escape_string($listfd)."'");
 	else
-		$db->db_query("INSERT INTO ".BAB_DBDIR_OPTIONS_TBL." (search_view_fields) VALUES ('".$listfd."')");
+		$db->db_query("INSERT INTO ".BAB_DBDIR_OPTIONS_TBL." (search_view_fields) VALUES ('".$db->db_escape_string($listfd)."')");
 
 	return true;
 }
@@ -1481,26 +1457,26 @@ if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['directories'] != 'Y')
 }
 
 if( !isset($idx ))
-	$idx = "list";
+	$idx = 'list';
 
 if( isset($add))
 {
 	switch($add)
 	{
-		case "ldap":
+		case 'ldap':
 			if( !addLdapDirectory($adname, $description, $servertype, $decodetype, $host, $basedn, $userdn, $password1, $password2))
 				{
-				$idx = "new";
+				$idx = 'new';
 				}
 			break;
-		case "db":
+		case 'db':
 			if (!isset($ml)) { $ml = array(); }
 			if (!isset($rw)) { $rw = array(); }
 			if (!isset($dz)) { $dz = array(); }
 			if (!isset($req)) { $req = array(); }
 			if( !addDbDirectory($adname, $description, $displayiu, $fields, $rw, $req, $ml, $dz))
 				{
-				$idx = "new";
+				$idx = 'new';
 				}
 			break;
 	}
@@ -1512,14 +1488,14 @@ if( isset($modify))
 	{
 		switch($modify)
 		{
-			case "ldap":
+			case 'ldap':
 				if( !modifyAdLdap($id, $adname, $description, $servertype, $decodetype, $host, $basedn, $userdn, $password1, $password2))
 				{
-				$idx = "mldap";
+				$idx = 'mldap';
 				}
 				break;
 
-			case "db":
+			case 'db':
 				if (!isset($ml)) { $ml = array(); }
 				if (!isset($rw)) { $rw = array(); }
 				if (!isset($dz)) { $dz = array(); }
@@ -1527,7 +1503,7 @@ if( isset($modify))
 				if (!isset($allowuu)) { $allowuu= ''; }
 				if( !modifyAdDb($id, $adname, $description, $displayiu, $rw, $req, $ml, $dz, $allowuu))
 				{
-				$idx = "mdb";
+				$idx = 'mdb';
 				}
 				break;
 		}
@@ -1536,11 +1512,11 @@ if( isset($modify))
 	{
 		switch($modify)
 		{
-			case "ldap":
-				$idx = "delldap";
+			case 'ldap':
+				$idx = 'delldap';
 				break;
-			case "db":
-				$idx = "deldb";
+			case 'db':
+				$idx = 'deldb';
 				break;
 		}
 	}
@@ -1548,7 +1524,7 @@ if( isset($modify))
 	{
 		switch($modify)
 		{
-			case "dbfval":
+			case 'dbfval':
 				if( !isset($fvdef)) { $fvdef=0;}
 				if( !isset($mvyn)) { $mvyn='';}
 				if( isset($adfdel))
@@ -1565,27 +1541,27 @@ if( isset($modify))
 					{
 					$idx='unload';
 					$popupmessage = bab_translate("Update done");
-					$refreshurl = $GLOBALS['babUrlScript']."?tg=admdir&idx=mdb&id=".$id."";
+					$refreshurl = $GLOBALS['babUrlScript'].'?tg=admdir&idx=mdb&id='.$id.'';
 					}
 				break;
-			case "addfield":
+			case 'addfield':
 				$message = '';
 				if( !addDbField($id, $fieldn, $fieldv, $message))
 					{
-					$idx = "addf";
+					$idx = 'addf';
 					}
 				else
 					{
 					$idx='unload';
 					$popupmessage = bab_translate("Update done");
-					$refreshurl = $GLOBALS['babUrlScript']."?tg=admdir&idx=mdb&id=".$id."";
+					$refreshurl = $GLOBALS['babUrlScript'].'?tg=admdir&idx=mdb&id='.$id.'';
 					}
 				break;
 		}
 	}
 }
 
-if( isset($action) && $action == "Yes")
+if( isset($action) && $action == 'Yes')
 	{
 	confirmDeleteDirectory($id, $type);
 	}
@@ -1593,26 +1569,26 @@ if( isset($action) && $action == "Yes")
 if( isset($aclview))
 	{
 	maclGroups();
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admdir&idx=list");
+	Header('Location: '. $GLOBALS['babUrlScript'].'?tg=admdir&idx=list');
 	}
 
 
 if( isset($update) )
 	{
-	if( $update == "displaydb" )
+	if( $update == 'displaydb' )
 		{
 		if(!dbUpdateDiplay($id, $listfd))
-			$idx = "list";
+			$idx = 'list';
 		}
-	elseif( $update == "ovmldb" )
+	elseif( $update == 'ovmldb' )
 		{
 		if(!dbUpdateOvmlFile($id, $ovmllist, $ovmldetail))
-			$idx = "list";
+			$idx = 'list';
 		}
-	elseif( $update == "dblistord" )
+	elseif( $update == 'dblistord' )
 		{
 		if(!dbUpdateListOrder($id, $listfields))
-			$idx = "list";
+			$idx = 'list';
 		}
 	elseif( 'search' == $_POST['update'] && $babBody->isSuperAdmin)
 		{
@@ -1625,13 +1601,13 @@ if( isset($update) )
 
 switch($idx)
 	{
-	case "unload":
+	case 'unload':
 		if( !isset($popupmessage)) { $popupmessage ='';}
 		if( !isset($refreshurl)) { $refreshurl = '';}
 		popupUnload($popupmessage, $refreshurl);
 		exit;
 
-	case "addval":
+	case 'addval':
 		$babBodyPopup = new babBodyPopup();
 		$babBodyPopup->title = bab_translate("List of values");
 		showDbFieldValuesModify($id, $fxid);
@@ -1639,7 +1615,7 @@ switch($idx)
 		exit;
 		break;
 
-	case "addf":
+	case 'addf':
 		if( !isset($message)) { $message = '';}
 		if( !isset($fieldn)) { $fieldn = '';}
 		if( !isset($fieldv)) { $fieldv = '';}
@@ -1651,18 +1627,18 @@ switch($idx)
 		exit;
 		break;
 
-	case "gviewl":
+	case 'gviewl':
 		$babBody->title = getDirectoryName($id, BAB_LDAP_DIRECTORIES_TBL);
-		aclGroups("admdir", "list", BAB_LDAPDIRVIEW_GROUPS_TBL, $id, "aclview");
-		$babBody->addItemMenu("list", bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=admdir&idx=list");
-		$babBody->addItemMenu("gviewl", bab_translate("View"), $GLOBALS['babUrlScript']."?tg=admdir&idx=gviewl&id=".$id);
+		aclGroups('admdir', 'list', BAB_LDAPDIRVIEW_GROUPS_TBL, $id, 'aclview');
+		$babBody->addItemMenu('list', bab_translate("Directories"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=list');
+		$babBody->addItemMenu('gviewl', bab_translate("View"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=gviewl&id='.$id);
 		break;
 
-	case "db_rights":
+	case 'db_rights':
 		$babBody->title = getDirectoryName($id, BAB_DB_DIRECTORIES_TBL);
 		$idgroup =  isDirectoryGroup($id);
 
-		$macl = new macl("admdir", "list", $id, "aclview");
+		$macl = new macl('admdir', 'list', $id, 'aclview');
         $macl->addtable( BAB_DBDIRVIEW_GROUPS_TBL, bab_translate("View"));
 		$macl->addtable( BAB_DBDIRUPDATE_GROUPS_TBL, bab_translate("Modify"));
 		$macl->addtable( BAB_DBDIRADD_GROUPS_TBL, bab_translate("Add"));
@@ -1682,80 +1658,80 @@ switch($idx)
 			}
         $macl->babecho();
 
-		$babBody->addItemMenu("list", bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=admdir&idx=list");
-		$babBody->addItemMenu("db_rights", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=admdir&idx=db_rights&id=".$id);
+		$babBody->addItemMenu('list', bab_translate("Directories"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=list');
+		$babBody->addItemMenu('db_rights', bab_translate("Rights"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=db_rights&id='.$id);
 		break;
 
-	case "gmodify":
+	case 'gmodify':
 		$babBody->title = getDirectoryName($id, BAB_DB_DIRECTORIES_TBL);
-		aclGroups("admdir", "list", BAB_DBDIRUPDATE_GROUPS_TBL, $id, "aclview");
-		$babBody->addItemMenu("list", bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=admdir&idx=list");
-		$babBody->addItemMenu("gviewd", bab_translate("View"), $GLOBALS['babUrlScript']."?tg=admdir&idx=gviewd&id=".$id);
-		$babBody->addItemMenu("gmodify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admdir&idx=gmodify&id=".$id);
-		$babBody->addItemMenu("gadd", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admdir&idx=gadd&id=".$id);
+		aclGroups('admdir', 'list', BAB_DBDIRUPDATE_GROUPS_TBL, $id, 'aclview');
+		$babBody->addItemMenu('list', bab_translate("Directories"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=list');
+		$babBody->addItemMenu('gviewd', bab_translate("View"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=gviewd&id='.$id);
+		$babBody->addItemMenu('gmodify', bab_translate("Modify"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=gmodify&id='.$id);
+		$babBody->addItemMenu('gadd', bab_translate("Add"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=gadd&id='.$id);
 		break;
 	
-	case "gadd":
+	case 'gadd':
 		$babBody->title = getDirectoryName($id, BAB_DB_DIRECTORIES_TBL);
-		aclGroups("admdir", "list", BAB_DBDIRADD_GROUPS_TBL, $id, "aclview");
-		$babBody->addItemMenu("list", bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=admdir&idx=list");
-		$babBody->addItemMenu("gviewd", bab_translate("View"), $GLOBALS['babUrlScript']."?tg=admdir&idx=gviewd&id=".$id);
-		$babBody->addItemMenu("gmodify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admdir&idx=gmodify&id=".$id);
-		$babBody->addItemMenu("gadd", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admdir&idx=gadd&id=".$id);
+		aclGroups('admdir', 'list', BAB_DBDIRADD_GROUPS_TBL, $id, 'aclview');
+		$babBody->addItemMenu('list', bab_translate("Directories"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=list');
+		$babBody->addItemMenu('gviewd', bab_translate("View"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=gviewd&id='.$id);
+		$babBody->addItemMenu('gmodify', bab_translate("Modify"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=gmodify&id='.$id);
+		$babBody->addItemMenu('gadd', bab_translate("Add"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=gadd&id='.$id);
 		break;
 
-	case "delldap":
+	case 'delldap':
 		$babBody->title = bab_translate("Delete directory");
 		deleteAd($id, BAB_LDAP_DIRECTORIES_TBL);
-		$babBody->addItemMenu("list", bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=admdir&idx=list");
-		$babBody->addItemMenu("del", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=admdir&idx=del&id=".$id);
+		$babBody->addItemMenu('list', bab_translate("Directories"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=list');
+		$babBody->addItemMenu('del', bab_translate("Delete"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=del&id='.$id);
 		break;
 
-	case "deldb":
+	case 'deldb':
 		$babBody->title = bab_translate("Delete directory");
 		deleteAd($id, BAB_DB_DIRECTORIES_TBL);
-		$babBody->addItemMenu("list", bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=admdir&idx=list");
-		$babBody->addItemMenu("del", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=admdir&idx=del&id=".$id);
+		$babBody->addItemMenu('list', bab_translate("Directories"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=list');
+		$babBody->addItemMenu('del', bab_translate("Delete"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=del&id='.$id);
 		break;
 
-	case "mldap":
+	case 'mldap':
 		$babBody->title = bab_translate("Modify directory");
 		modifyLdap($id);
-		$babBody->addItemMenu("list", bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=admdir&idx=list");
-		$babBody->addItemMenu("mldap", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admdir&idx=mldap&id=".$id);
+		$babBody->addItemMenu('list', bab_translate("Directories"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=list');
+		$babBody->addItemMenu('mldap', bab_translate("Modify"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=mldap&id='.$id);
 		break;
 
-	case "dispdb":
+	case 'dispdb':
 		$babBody->title = bab_translate("Modify directory");
 		displayDb($id);
-		$babBody->addItemMenu("list", bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=admdir&idx=list");
-		$babBody->addItemMenu("mdb", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admdir&idx=mdb&id=".$id);
-		$babBody->addItemMenu("dispdb", bab_translate("Display"), $GLOBALS['babUrlScript']."?tg=admdir&idx=dispdb&id=".$id);
-		$babBody->addItemMenu("lorddb", bab_translate("Order"), $GLOBALS['babUrlScript']."?tg=admdir&idx=lorddb&id=".$id);
+		$babBody->addItemMenu('list', bab_translate("Directories"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=list');
+		$babBody->addItemMenu('mdb', bab_translate("Modify"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=mdb&id='.$id);
+		$babBody->addItemMenu('dispdb', bab_translate("Display"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=dispdb&id='.$id);
+		$babBody->addItemMenu('lorddb', bab_translate("Order"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=lorddb&id='.$id);
 		break;
 
-	case "lorddb":
+	case 'lorddb':
 		$babBody->title = bab_translate("Modify directory");
 		dbListOrder($id);
-		$babBody->addItemMenu("list", bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=admdir&idx=list");
-		$babBody->addItemMenu("mdb", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admdir&idx=mdb&id=".$id);
-		$babBody->addItemMenu("dispdb", bab_translate("Display"), $GLOBALS['babUrlScript']."?tg=admdir&idx=dispdb&id=".$id);
-		$babBody->addItemMenu("lorddb", bab_translate("Order"), $GLOBALS['babUrlScript']."?tg=admdir&idx=lorddb&id=".$id);
+		$babBody->addItemMenu('list', bab_translate("Directories"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=list');
+		$babBody->addItemMenu('mdb', bab_translate("Modify"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=mdb&id='.$id);
+		$babBody->addItemMenu('dispdb', bab_translate("Display"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=dispdb&id='.$id);
+		$babBody->addItemMenu('lorddb', bab_translate("Order"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=lorddb&id='.$id);
 		break;
 
-	case "mdb":
+	case 'mdb':
 		$babBody->title = bab_translate("Modify directory");
 		modifyDb($id);
-		$babBody->addItemMenu("list", bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=admdir&idx=list");
-		$babBody->addItemMenu("mdb", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admdir&idx=mdb&id=".$id);
-		$babBody->addItemMenu("dispdb", bab_translate("Display"), $GLOBALS['babUrlScript']."?tg=admdir&idx=dispdb&id=".$id);
-		$babBody->addItemMenu("lorddb", bab_translate("Order"), $GLOBALS['babUrlScript']."?tg=admdir&idx=lorddb&id=".$id);
+		$babBody->addItemMenu('list', bab_translate("Directories"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=list');
+		$babBody->addItemMenu('mdb', bab_translate("Modify"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=mdb&id='.$id);
+		$babBody->addItemMenu('dispdb', bab_translate("Display"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=dispdb&id='.$id);
+		$babBody->addItemMenu('lorddb', bab_translate("Order"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=lorddb&id='.$id);
 		break;
 
-	case "ldap":
+	case 'ldap':
 		$babBody->title = bab_translate("Add new ldap directory");
-		$babBody->addItemMenu("list", bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=admdir&idx=list");
-		$babBody->addItemMenu("ldap", bab_translate("New"), $GLOBALS['babUrlScript']."?tg=admdir&idx=ldap");
+		$babBody->addItemMenu('list', bab_translate("Directories"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=list');
+		$babBody->addItemMenu('ldap', bab_translate("New"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=ldap');
 		if (!function_exists('ldap_connect'))
 			{
 			$babBody->msgerror = bab_translate("You must have LDAP enabled on the server");
@@ -1771,13 +1747,13 @@ switch($idx)
 		addAdLdap($adname, $description, $servertype, $decodetype, $host, $basedn, $userdn);
 		break;
 
-	case "db":
+	case 'db':
 		$babBody->title = bab_translate("Add new database directory");
 		if( !isset($adname) ) { $adname ='';}
 		if( !isset($description) ) { $description ='';}
 		addAdDb($adname, $description);
-		$babBody->addItemMenu("list", bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=admdir&idx=list");
-		$babBody->addItemMenu("db", bab_translate("New"), $GLOBALS['babUrlScript']."?tg=admdir&idx=db");
+		$babBody->addItemMenu('list', bab_translate("Directories"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=list');
+		$babBody->addItemMenu('db', bab_translate("New"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=db');
 		break;
 
 	case 'search':
@@ -1785,8 +1761,8 @@ switch($idx)
 		{
 		$babBody->title = bab_translate("Fields to display for a search in all directories");
 		search_options();
-		$babBody->addItemMenu("list", bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=admdir&idx=list");
-		$babBody->addItemMenu("search", bab_translate("Search options"), $GLOBALS['babUrlScript']."?tg=admdir&idx=search");
+		$babBody->addItemMenu('list', bab_translate("Directories"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=list');
+		$babBody->addItemMenu('search', bab_translate("Search options"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=search');
 		}
 		else
 		{
@@ -1794,14 +1770,14 @@ switch($idx)
 		}
 		break;
 
-	case "list":
+	case 'list':
 	default:
 		$babBody->title = bab_translate("Directories");
 		listAds();
-		$babBody->addItemMenu("list", bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=admdir&idx=list");
+		$babBody->addItemMenu('list', bab_translate("Directories"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=list');
 		if( $babBody->isSuperAdmin )
 		{
-		$babBody->addItemMenu("search", bab_translate("Search options"), $GLOBALS['babUrlScript']."?tg=admdir&idx=search");
+		$babBody->addItemMenu('search', bab_translate("Search options"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=search');
 		}
 		break;
 	}
