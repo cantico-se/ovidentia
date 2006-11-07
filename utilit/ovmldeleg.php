@@ -63,7 +63,7 @@ class bab_Delegations extends bab_handler
 					}
 				else
 					{
-					$this->res = $babDB->db_query("SELECT dgt.* FROM ".BAB_DG_GROUPS_TBL." dgt LEFT JOIN ".BAB_USERS_GROUPS_TBL." ugt ON ugt.id_group = dgt.id_group WHERE ugt.id_object='".$userid."' order by dgt.name asc");
+					$this->res = $babDB->db_query("SELECT dgt.* FROM ".BAB_DG_GROUPS_TBL." dgt LEFT JOIN ".BAB_USERS_GROUPS_TBL." ugt ON ugt.id_group = dgt.id_group WHERE ugt.id_object='".$babDB->db_escape_string($userid)."' order by dgt.name asc");
 					}
 				}
 			else
@@ -71,12 +71,12 @@ class bab_Delegations extends bab_handler
 				if( $filter == false )
 					{
 					$delegationid = explode(',', $delegationid);
-					$this->res = $babDB->db_query("SELECT dgt.* FROM ".BAB_DG_GROUPS_TBL." dgt WHERE dgt.id IN (".implode(',', $delegationid).") order by dgt.name asc");
+					$this->res = $babDB->db_query("SELECT dgt.* FROM ".BAB_DG_GROUPS_TBL." dgt WHERE dgt.id IN (".$babDB->quote($delegationid).") order by dgt.name asc");
 					}
 				else
 					{
 					$delegationid = explode(',', $delegationid);
-					$this->res = $babDB->db_query("SELECT dgt.* FROM ".BAB_DG_GROUPS_TBL." dgt LEFT JOIN ".BAB_USERS_GROUPS_TBL." ugt ON ugt.id_group = dgt.id_group WHERE ugt.id_object='".$userid."' AND dgt.id IN (".implode(',', $delegationid).") order by dgt.name asc");
+					$this->res = $babDB->db_query("SELECT dgt.* FROM ".BAB_DG_GROUPS_TBL." dgt LEFT JOIN ".BAB_USERS_GROUPS_TBL." ugt ON ugt.id_group = dgt.id_group WHERE ugt.id_object='".$babDB->db_escape_string($userid)."' AND dgt.id IN (".$babDB->db_escape_string( $delegationid).") order by dgt.name asc");
 					}
 				}
 			$this->count = $babDB->db_num_rows($this->res);
@@ -158,12 +158,12 @@ class bab_DelegationsManaged extends bab_handler
 			{
 			if( $delegationid === false || $delegationid === '' )
 				{
-				$this->res = $babDB->db_query("select dgt.* from ".BAB_DG_ADMIN_TBL." dat left join ".BAB_DG_GROUPS_TBL." dgt on dat.id_dg=dgt.id where dat.id_user='".$userid."' order by dgt.name asc");
+				$this->res = $babDB->db_query("select dgt.* from ".BAB_DG_ADMIN_TBL." dat left join ".BAB_DG_GROUPS_TBL." dgt on dat.id_dg=dgt.id where dat.id_user='".$babDB->db_escape_string($userid)."' order by dgt.name asc");
 				}
 			else
 				{
 				$delegationid = explode(',', $delegationid);
-				$this->res = $babDB->db_query("select dgt.* from ".BAB_DG_ADMIN_TBL." dat left join ".BAB_DG_GROUPS_TBL." dgt on dat.id_dg=dgt.id where dat.id_user='".$userid."' where id IN (".implode(',', $delegationid).") order by dgt.name asc");
+				$this->res = $babDB->db_query("select dgt.* from ".BAB_DG_ADMIN_TBL." dat left join ".BAB_DG_GROUPS_TBL." dgt on dat.id_dg=dgt.id where dat.id_user='".$babDB->db_escape_string($userid)."' where id IN (".$babDB->quote($delegationid).") order by dgt.name asc");
 				}
 			$this->count = $babDB->db_num_rows($this->res);
 			}
@@ -236,7 +236,7 @@ class bab_DelegationItems extends bab_handler
 
 		if( $delegationid !== false && $delegationid !== '' )
 			{
-			$res = $babDB->db_query("select dgt.* from ".BAB_DG_GROUPS_TBL." dgt where dgt.id='".$delegationid."'");
+			$res = $babDB->db_query("select dgt.* from ".BAB_DG_GROUPS_TBL." dgt where dgt.id='".$babDB->db_escape_string($delegationid)."'");
 			$this->arr = $babDB->db_fetch_array($res);
 
 			$this->count = count($babDG);
@@ -292,7 +292,7 @@ class bab_DelegationAdministrators extends bab_handler
 
 		if( $delegationid !== false && $delegationid !== '' )
 			{
-			$this->res = $babDB->db_query("select id_user from ".BAB_DG_ADMIN_TBL." where id_dg='".$delegationid."'");
+			$this->res = $babDB->db_query("select id_user from ".BAB_DG_ADMIN_TBL." where id_dg='".$babDB->db_escape_string($delegationid)."'");
 			$this->count = $babDB->db_num_rows($this->res);
 			}
 		else
