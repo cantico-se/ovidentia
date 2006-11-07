@@ -2111,6 +2111,24 @@ function bab_vac_updateCalendar($id_user, $year, $month) {
 		 */
 		function bab_vac_compare($type1, $type2) {
 
+			$order = array(
+
+				BAB_PERIOD_NONWORKING		=> 1,
+				BAB_PERIOD_WORKING 			=> 2,
+				BAB_PERIOD_CALEVENT			=> 3,
+				BAB_PERIOD_TSKMGR			=> 4,
+				BAB_PERIOD_VACATION			=> 5,
+				BAB_PERIOD_NWDAY			=> 6
+			);
+
+			
+			if ($order[$type2] > $order[$type1]) {
+				return true;
+			}
+
+			/*
+
+
 			if (BAB_PERIOD_NWDAY === $type2) {
 				return true;
 			}
@@ -2119,9 +2137,15 @@ function bab_vac_updateCalendar($id_user, $year, $month) {
 				return false;
 			}
 
+			if (BAB_PERIOD_WORKING === $type2 && BAB_PERIOD_NONWORKING === $type1) {
+				return true;
+			}
+
 			if ($type2 > $type1) {
 				return true;
 			}
+			*/
+
 			return false;
 		}
 
@@ -2164,7 +2188,6 @@ function bab_vac_updateCalendar($id_user, $year, $month) {
 		foreach($arr as $p) {
 			$group = $p->split(12*3600);
 			foreach($group as $p) {
-				
 				$key = date('Ymda',$p->ts_begin);
 				if (bab_vac_is_free($p)) {
 					$is_free[$key] = 1;
