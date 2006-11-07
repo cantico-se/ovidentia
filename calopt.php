@@ -405,10 +405,10 @@ function calendarOptions($calid, $urla)
 		}
 
 	$temp = new temp($calid, $urla);
-	//$babBody->babecho(	bab_printTemplate($temp, "calopt.html", "caloptions"));
+	$babBody->babecho(	bab_printTemplate($temp, "calopt.html", "caloptions"));
 
-	$babBody->addStyleSheet('calopt.css');
-	$babBody->babecho(bab_printTemplate($temp, "calopt.html", "caloptions2"));
+	//$babBody->addStyleSheet('calopt.css');
+	//$babBody->babecho(bab_printTemplate($temp, "calopt.html", "caloptions2"));
 	}
 
 
@@ -588,10 +588,10 @@ function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor,
 		}
 	}
 
-	if ($change) {
-		include_once $GLOBALS['babInstallPath'].'utilit/vacincl.php';
-		bab_vac_clearUserCalendar();
-	}
+	
+	include_once $GLOBALS['babInstallPath'].'utilit/vacincl.php';
+	bab_vac_clearUserCalendar();
+	
 
 
 	header('location:'.$GLOBALS['babUrlScript']."?tg=calopt&idx=options");
@@ -682,5 +682,6 @@ switch($idx)
 			}
 		break;
 	}
+
 $babBody->setCurrentItemMenu($idx);
 ?>
