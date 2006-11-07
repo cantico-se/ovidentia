@@ -114,7 +114,7 @@ function bab_isUserArticleApprover($topics)
 	global $BAB_SESS_USERID;
 	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 	$db = &$GLOBALS['babDB'];
-	$query = "select idsaart from ".BAB_TOPICS_TBL." where id='".$topics."'";
+	$query = "select idsaart from ".BAB_TOPICS_TBL." where id='".$db->db_escape_string($topics)."'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -132,7 +132,7 @@ function bab_isUserCommentApprover($topics)
 	global $BAB_SESS_USERID;
 	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 	$db = &$GLOBALS['babDB'];
-	$query = "select idsacom from ".BAB_TOPICS_TBL." where id='".$topics."'";
+	$query = "select idsacom from ".BAB_TOPICS_TBL." where id='".$db->db_escape_string($topics)."'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -223,7 +223,7 @@ function bab_getWaitingArticles($topics)
 		$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
 		if( count($arrschi) > 0 )
 			{
-			$res = $babDB->db_query("SELECT adt.id , adt.idfai, adt.id_topic FROM ".BAB_ART_DRAFTS_TBL." adt WHERE adt.result='".BAB_ART_STATUS_WAIT."'");
+			$res = $babDB->db_query("SELECT adt.id , adt.idfai, adt.id_topic FROM ".BAB_ART_DRAFTS_TBL." adt WHERE adt.result='".$babDB->db_escape_string(BAB_ART_STATUS_WAIT)."'");
 			while( $arr = $babDB->db_fetch_array($res))
 				{
 				$babBody->waitingarticles[$arr['id_topic']][] = $arr['id'];
@@ -329,7 +329,7 @@ function bab_isUserLogged($iduser = "")
 		if( $iduser == 0)
 			return false;
 		$db = &$GLOBALS['babDB'];
-		$res=$db->db_query("select * from ".BAB_USERS_LOG_TBL." where id_user='".$iduser."'");
+		$res=$db->db_query("select * from ".BAB_USERS_LOG_TBL." where id_user='".$db->db_escape_string($iduser)."'");
 		if( $res && $db->db_num_rows($res) > 0)
 			return true;		
 		return false;
@@ -344,7 +344,7 @@ function bab_getDbUserName($id)
 		return $arrnames[$id];
 
 	$db = &$GLOBALS['babDB'];
-	$query = "select sn, givenname, mn from ".BAB_DBDIR_ENTRIES_TBL." where id='$id'";
+	$query = "select sn, givenname, mn from ".BAB_DBDIR_ENTRIES_TBL." where id='".$db->db_escape_string($id)."'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -443,20 +443,20 @@ function bab_vacationsAccess()
 	$db = &$GLOBALS['babDB'];
 
 	$array = array();
-	$res = $db->db_query("select id from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+	$res = $db->db_query("select id from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$db->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$array['user'] = true;
 		}
 
-	$res = $db->db_query("select id from ".BAB_VAC_MANAGERS_TBL." where id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+	$res = $db->db_query("select id from ".BAB_VAC_MANAGERS_TBL." where id_user='".$db->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$array['manager'] = true;
 		}
 
 	$arrchi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
-	$res = $db->db_query("select * from ".BAB_VAC_ENTRIES_TBL."  where status=''");
+	$res = $db->db_query("select idfai from ".BAB_VAC_ENTRIES_TBL."  where status=''");
 	while($arr =  $db->db_fetch_array($res) )
 		{
 		if( count($arrchi) > 0  && in_array($arr['idfai'], $arrchi))
@@ -485,7 +485,7 @@ function bab_articleAccessByRestriction($restriction, $iduser ='')
 	if( empty($iduser))
 		$iduser = $GLOBALS['BAB_SESS_USERID'];
 
-	$req = "select id from ".BAB_USERS_GROUPS_TBL." where id_object='".$iduser."' and id_group IN (".implode(',', $arr).")";
+	$req = "select id from ".BAB_USERS_GROUPS_TBL." where id_object='".$db->db_escape_string($iduser)."' and id_group IN (".$db->quote($arr).")";
 	$res = $db->db_query($req);
 	$num = $db->db_num_rows($res);
 	if( $res && $num > 0)
@@ -503,7 +503,7 @@ function bab_articleAccessById($id, $iduser ='')
 	{
 	$db = &$GLOBALS['babDB'];
 
-	list($restriction) = $db->db_fetch_row($db->db_query("select restriction from ".BAB_ARTICLES_TBL." where id='".$id."'"));
+	list($restriction) = $db->db_fetch_row($db->db_query("select restriction from ".BAB_ARTICLES_TBL." where id='".$db->db_escape_string($id)."'"));
 	if( empty($restriction))
 		return true;
 	return bab_articleAccessByRestriction($restriction, $iduser);
@@ -515,7 +515,7 @@ function bab_getCalendarId($iduser, $type)
 
 	if( empty($iduser))
 		return 0;
-	$res = $babDB->db_query("select id from ".BAB_CALENDAR_TBL." where owner='".$iduser."' and type='".$type."'");
+	$res = $babDB->db_query("select id from ".BAB_CALENDAR_TBL." where owner='".$babDB->db_escape_string($iduser)."' and type='".$babDB->db_escape_string($type)."'");
 	if( $res && $babDB->db_num_rows($res) == 1 )
 	{
 		$arr = $babDB->db_fetch_array($res);
@@ -594,7 +594,7 @@ function bab_fileManagerAccessLevel()
 function bab_getGroupEmails($id)
 {
 	$db = &$GLOBALS['babDB'];
-	$query = "select distinct email from ".BAB_USERS_TBL." usr , ".BAB_USERS_GROUPS_TBL." grp where grp.id_group in ($id) and grp.id_object=usr.id";
+	$query = "select distinct email from ".BAB_USERS_TBL." usr , ".BAB_USERS_GROUPS_TBL." grp where grp.id_group in ('".$db->db_escape_string($id)."') and grp.id_object=usr.id";
 	$res = $db->db_query($query);
 	$emails = "";
 	if( $res && $db->db_num_rows($res) > 0)
@@ -615,12 +615,10 @@ function bab_getGroupEmails($id)
 }
 
 
-
-
 function bab_getOrgChartRoleUsers($idroles)
 {
 	global $babDB;
-	$roles =  is_array($idroles)? implode(',', $idroles): $idroles;
+	$roles =  $babDB->quote($idroles);
 	$arr = array();
 	$res = $babDB->db_query("select det.sn, det.givenname, det.id_user, ocrut.id_role from ".BAB_DBDIR_ENTRIES_TBL." det left join ".BAB_OC_ROLES_USERS_TBL." ocrut on det.id=ocrut.id_user where ocrut.id_role IN (".$roles.")");
 	while( $row = $babDB->db_fetch_array($res))
@@ -667,14 +665,14 @@ function bab_getSuperior($iduser, $idoc = '')
 
 
 	/* find user primary role */
-	$res = $babDB->db_query("SELECT ocet.id_node, ocet.id as id_entity, ocrut.id_role, ocrt.type  FROM ".BAB_DBDIR_ENTRIES_TBL." det LEFT JOIN ".BAB_OC_ROLES_USERS_TBL." ocrut ON det.id = ocrut.id_user LEFT  JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrt.id = ocrut.id_role LEFT JOIN ".BAB_OC_ENTITIES_TBL." ocet ON ocet.id = ocrt.id_entity WHERE ocrt.id_oc='".$idoc."' and det.id_user IN ( ".$iduser."  )  AND det.id_directory = '0' and ocrut.isprimary='Y'");
+	$res = $babDB->db_query("SELECT ocet.id_node, ocet.id as id_entity, ocrut.id_role, ocrt.type  FROM ".BAB_DBDIR_ENTRIES_TBL." det LEFT JOIN ".BAB_OC_ROLES_USERS_TBL." ocrut ON det.id = ocrut.id_user LEFT  JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrt.id = ocrut.id_role LEFT JOIN ".BAB_OC_ENTITIES_TBL." ocet ON ocet.id = ocrt.id_entity WHERE ocrt.id_oc='".$babDB->db_escape_string($idoc)."' and det.id_user IN ( ".$babDB->db_escape_string($iduser)."  )  AND det.id_directory = '0' and ocrut.isprimary='Y'");
 	while( $arr = $babDB->db_fetch_array($res) )
 	{
 		$arroles = array();
 		if( $arr['type'] != 1) /* not responsable */
 		{
 			/* find user's responsable */
-			$res = $babDB->db_query("SELECT ocrut.*  FROM ".BAB_OC_ROLES_USERS_TBL." ocrut LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrt.id = ocrut.id_role  WHERE ocrt.id_entity IN (".$arr['id_entity'].")  AND ocrt.type = '1'");
+			$res = $babDB->db_query("SELECT ocrut.*  FROM ".BAB_OC_ROLES_USERS_TBL." ocrut LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrt.id = ocrut.id_role  WHERE ocrt.id_entity IN (".$babDB->quote($arr['id_entity']).")  AND ocrt.type = '1'");
 
 			while( $row = $babDB->db_fetch_array($res) )
 			{
@@ -688,8 +686,8 @@ function bab_getSuperior($iduser, $idoc = '')
 
 		if( count($arroles) == 0 )
 			{
-			$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_OC_TREES_TBL." where id='".$arr['id_node']."'"));
-			$res = $babDB->db_query("SELECT ocrut.* FROM ".BAB_OC_ROLES_USERS_TBL." ocrut LEFT  JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrt.id = ocrut.id_role LEFT  JOIN ".BAB_OC_ENTITIES_TBL." ocet ON ocrt.id_entity = ocet.id LEFT  JOIN ".BAB_OC_TREES_TBL." oct ON oct.id = ocet.id_node and oct.id_user='".$idoc."' WHERE ocrt.id_oc='".$idoc."' and oct.lf <  '".$rr['lf']."' AND oct.lr >  '".$rr['lr']."' AND ocrut.isprimary='Y' and ocrt.type ='1' ORDER  BY oct.lf desc limit 0,1");
+			$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_OC_TREES_TBL." where id='".$babDB->db_escape_string($arr['id_node'])."'"));
+			$res = $babDB->db_query("SELECT ocrut.* FROM ".BAB_OC_ROLES_USERS_TBL." ocrut LEFT  JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrt.id = ocrut.id_role LEFT  JOIN ".BAB_OC_ENTITIES_TBL." ocet ON ocrt.id_entity = ocet.id LEFT  JOIN ".BAB_OC_TREES_TBL." oct ON oct.id = ocet.id_node and oct.id_user='".$idoc."' WHERE ocrt.id_oc='".$babDB->db_escape_string($idoc)."' and oct.lf <  '".$rr['lf']."' AND oct.lr >  '".$babDB->db_escape_string($rr['lr'])."' AND ocrut.isprimary='Y' and ocrt.type ='1' ORDER  BY oct.lf desc limit 0,1");
 			while( $row = $babDB->db_fetch_array($res) )
 			{
 				$arroles[]= $row['id_role'];
@@ -710,24 +708,24 @@ function bab_addUserToGroup($iduser, $idgroup, $oc = true)
 
 	if( $oc )
 	{
-		list($identity) = $babDB->db_fetch_row($babDB->db_query("select id_ocentity from ".BAB_GROUPS_TBL." where id='".$idgroup."'"));
+		list($identity) = $babDB->db_fetch_row($babDB->db_query("select id_ocentity from ".BAB_GROUPS_TBL." where id='".$babDB->db_escape_string($idgroup)."'"));
 		if( $identity )
 		{
 			list($idrole) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_OC_ROLES_TBL." where id_entity='".$identity."' and type='3'"));
-			list($idduser) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='0' and id_user='".$iduser."'"));
-			list($total) = $babDB->db_fetch_row($babDB->db_query("select count(id) as total from ".BAB_OC_ROLES_USERS_TBL." where id_role='".$idrole."' and id_user='".$idduser."'"));
+			list($idduser) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='0' and id_user='".$babDB->db_escape_string($iduser)."'"));
+			list($total) = $babDB->db_fetch_row($babDB->db_query("select count(id) as total from ".BAB_OC_ROLES_USERS_TBL." where id_role='".$babDB->db_escape_string($idrole)."' and id_user='".$babDB->db_escape_string($idduser)."'"));
 			if( !$total )
 				{
-				$req = "insert into ".BAB_OC_ROLES_USERS_TBL." (id_role, id_user, isprimary) values ('".$idrole."','".$idduser."','Y')";
+				$req = "insert into ".BAB_OC_ROLES_USERS_TBL." (id_role, id_user, isprimary) values ('".$babDB->db_escape_string($idrole)."','".$babDB->db_escape_string($idduser)."','Y')";
 				$babDB->db_query($req);
 				}
 		}
 	}
 
-	list($total) = $babDB->db_fetch_row($babDB->db_query("select count(id) as total from ".BAB_USERS_GROUPS_TBL." where id_group='".$idgroup."' and id_object='".$iduser."'"));
+	list($total) = $babDB->db_fetch_row($babDB->db_query("select count(id) as total from ".BAB_USERS_GROUPS_TBL." where id_group='".$babDB->db_escape_string($idgroup)."' and id_object='".$babDB->db_escape_string($iduser)."'"));
 	if( !$total )
 		{
-		$res = $babDB->db_query("insert into ".BAB_USERS_GROUPS_TBL." (id_group, id_object) VALUES ('" .$idgroup. "', '" . $iduser. "')");
+		$res = $babDB->db_query("insert into ".BAB_USERS_GROUPS_TBL." (id_group, id_object) VALUES ('" .$babDB->db_escape_string($idgroup). "', '" . $babDB->db_escape_string($iduser). "')");
 		if( isset($GLOBALS['BAB_SESS_LOGGED']) && $GLOBALS['BAB_SESS_LOGGED'] && $GLOBALS['BAB_SESS_USERID'] == $iduser )
 			{
 			$babBody->usergroups[] = $idgroup;
@@ -742,20 +740,20 @@ function bab_removeUserFromGroup($iduser, $idgroup)
 {
 	global $babDB, $babBody;
 
-	$babDB->db_query("delete from ".BAB_USERS_GROUPS_TBL." where id_group='".$idgroup."' and id_object='".$iduser."'");
+	$babDB->db_query("delete from ".BAB_USERS_GROUPS_TBL." where id_group='".$babDB->db_escape_string($idgroup)."' and id_object='".$babDB->db_escape_string($iduser)."'");
 	$idx = bab_array_search($idgroup, $babBody->usergroups);
 	if( $idx )
 		{
 		array_splice($babBody->usergroups, $idx, 1);
 		}
 
-	list($identity) = $babDB->db_fetch_row($babDB->db_query("select id_ocentity from ".BAB_GROUPS_TBL." where id='".$idgroup."'"));
+	list($identity) = $babDB->db_fetch_row($babDB->db_query("select id_ocentity from ".BAB_GROUPS_TBL." where id='".$babDB->db_escape_string($idgroup)."'"));
 	if( $identity )
 		{
-		$res = $babDB->db_query("select ocrut.id FROM ".BAB_OC_ROLES_USERS_TBL." ocrut LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrut.id_role = ocrt.id LEFT JOIN ".BAB_DBDIR_ENTRIES_TBL." det ON ocrut.id_user = det.id WHERE ocrt.id_entity =  '".$identity."' AND det.id_directory =  '0' AND det.id_user =  '".$iduser."'");
+		$res = $babDB->db_query("select ocrut.id FROM ".BAB_OC_ROLES_USERS_TBL." ocrut LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrut.id_role = ocrt.id LEFT JOIN ".BAB_DBDIR_ENTRIES_TBL." det ON ocrut.id_user = det.id WHERE ocrt.id_entity =  '".$babDB->db_escape_string($identity)."' AND det.id_directory =  '0' AND det.id_user =  '".$babDB->db_escape_string($iduser)."'");
 		while( $row = $babDB->db_fetch_array($res))
 			{
-			$babDB->db_query("delete from ".BAB_OC_ROLES_USERS_TBL." where id='".$row['id']."'");
+			$babDB->db_query("delete from ".BAB_OC_ROLES_USERS_TBL." where id='".$babDB->db_escape_string($row['id'])."'");
 			}
 		}
 
@@ -811,7 +809,7 @@ function bab_addUser( $firstname, $lastname, $middlename, $email, $nickname, $pa
 	$replace = array( " " => "", "-" => "");
 
 	$hashname = md5(strtolower(strtr($firstname.$middlename.$lastname, $replace)));
-	$query = "select id from ".BAB_USERS_TBL." where hashname='".$hashname."'";	
+	$query = "select id from ".BAB_USERS_TBL." where hashname='".$db->db_escape_string($hashname)."'";	
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) > 0)
 		{
@@ -821,8 +819,14 @@ function bab_addUser( $firstname, $lastname, $middlename, $email, $nickname, $pa
 
 	$password1=strtolower($password1);
 	$hash=md5($nickname.$BAB_HASH_VAR);
-
-	$db = &$GLOBALS['babDB'];
+	if( $isconfirmed )
+		{
+		$isconfirmed = 1;
+		}
+	else
+		{
+		$isconfirmed = 0;
+		}
 
 	$sql="insert into ".BAB_USERS_TBL." (nickname, firstname, lastname, hashname, password,email,date,confirm_hash,is_confirmed,changepwd,lang, langfilter, datelog, lastlog) ".
 		"values ('";
@@ -834,7 +838,7 @@ function bab_addUser( $firstname, $lastname, $middlename, $email, $nickname, $pa
 		{
 		$id = $db->db_insert_id();
 		$db->db_query("insert into ".BAB_CALENDAR_TBL." (owner, type) values ('$id', '1')");
-		$db->db_query("insert into ".BAB_DBDIR_ENTRIES_TBL." (givenname, mn, sn, email, id_directory, id_user) values ('".addslashes($firstname)."', '".addslashes($middlename)."', '".addslashes($lastname)."', '".$email."', '0', '".$id."')");
+		$db->db_query("insert into ".BAB_DBDIR_ENTRIES_TBL." (givenname, mn, sn, email, id_directory, id_user) values ('".addslashes($firstname)."', '".addslashes($middlename)."', '".addslashes($lastname)."', '".$db->db_escape_string($email)."', '0', '".$id."')");
 
 		if( $bgroup && isset($babBody->babsite['idgroup']) && $babBody->babsite['idgroup'] != 0)
 			{
@@ -941,7 +945,7 @@ function bab_replace_ref( &$txt, $remove = '')
 							$title_object = isset($param[1]) ? $param[1] : '';
 							$popup = isset($param[2]) ? $param[2] : false;
 							$connect = isset($param[3]) ? $param[3] : false;
-							$res = $db->db_query("select * from ".BAB_ARTICLES_TBL." where id='".$id_object."'");
+							$res = $db->db_query("select * from ".BAB_ARTICLES_TBL." where id='".$db->db_escape_string($id_object)."'");
 							if( $res && $db->db_num_rows($res) > 0)
 								{
 								$arr = $db->db_fetch_array($res);
@@ -962,7 +966,7 @@ function bab_replace_ref( &$txt, $remove = '')
 						case 'ARTICLEFILEID':
 							$id_object = $param[0];
 							$title_object = isset($param[1]) ? $param[1] : '';
-							$res = $db->db_query("select aft.*, at.id_topic, at.restriction from ".BAB_ART_FILES_TBL." aft left join ".BAB_ARTICLES_TBL." at on aft.id_article=at.id where aft.id='".$id_object."'");
+							$res = $db->db_query("select aft.*, at.id_topic, at.restriction from ".BAB_ART_FILES_TBL." aft left join ".BAB_ARTICLES_TBL." at on aft.id_article=at.id where aft.id='".$db->db_escape_string($id_object)."'");
 							if( $res && $db->db_num_rows($res) > 0)
 								{
 								$arr = $db->db_fetch_array($res);
@@ -978,7 +982,7 @@ function bab_replace_ref( &$txt, $remove = '')
 
 						case 'CONTACT':
 							$title_object = $param[0].' '.$param[1];
-							$res = $db->db_query("select * from ".BAB_CONTACTS_TBL." where  owner='".$GLOBALS['BAB_SESS_USERID']."' and firstname LIKE '%".addslashes($param[0])."%' and lastname LIKE '%".addslashes($param[1])."%'");
+							$res = $db->db_query("select * from ".BAB_CONTACTS_TBL." where  owner='".$db->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and firstname LIKE '%".addslashes($param[0])."%' and lastname LIKE '%".addslashes($param[1])."%'");
 							if( $res && $db->db_num_rows($res) > 0)
 								{
 								$arr = $db->db_fetch_array($res);
@@ -990,7 +994,7 @@ function bab_replace_ref( &$txt, $remove = '')
 						case 'CONTACTID':
 							$id_object = $param[0];
 							$title_object = isset($param[1]) ? $param[1] : '';
-							$res = $db->db_query("select * from ".BAB_CONTACTS_TBL." where  owner='".$GLOBALS['BAB_SESS_USERID']."' and id= '".$id_object."'");
+							$res = $db->db_query("select * from ".BAB_CONTACTS_TBL." where  owner='".$db->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and id= '".$db->db_escape_string($id_object)."'");
 							if( $res && $db->db_num_rows($res) > 0)
 								{
 								$arr = $db->db_fetch_array($res);
@@ -1003,7 +1007,7 @@ function bab_replace_ref( &$txt, $remove = '')
 						case 'DIRECTORYID':
 							$id_object = trim($param[0]);
 							$title_object = isset($param[1]) ? $param[1] : '';
-							$res = $db->db_query("select id,sn,givenname,id_directory from ".BAB_DBDIR_ENTRIES_TBL." where id= '".$id_object."'");
+							$res = $db->db_query("select id,sn,givenname,id_directory from ".BAB_DBDIR_ENTRIES_TBL." where id= '".$db->db_escape_string($id_object)."'");
 							if( $res && $db->db_num_rows($res) > 0)
 								{
 								$arr = $db->db_fetch_array($res);
@@ -1049,7 +1053,7 @@ function bab_replace_ref( &$txt, $remove = '')
 							$id_object = $param[0];
 							$title_object = isset($param[1]) ? $param[1] : '';
 							$popup = isset($param[2]) ? $param[2] : false;
-							$res = $db->db_query("select * from ".BAB_FAQQR_TBL." where id='".$id_object."'");
+							$res = $db->db_query("select * from ".BAB_FAQQR_TBL." where id='".$db->db_escape_string($id_object)."'");
 							if( $res && $db->db_num_rows($res) > 0)
 								{
 								$arr = $db->db_fetch_array($res);
@@ -1067,7 +1071,7 @@ function bab_replace_ref( &$txt, $remove = '')
 							$id_object = $param[0];
 							$title_object = isset($param[1]) ? $param[1] : '';
 							include_once $GLOBALS['babInstallPath']."utilit/fileincl.php";
-							$res = $db->db_query("select * from ".BAB_FILES_TBL." where id='".$id_object."' and state='' and confirmed='Y'");
+							$res = $db->db_query("select * from ".BAB_FILES_TBL." where id='".$db->db_escape_string($id_object)."' and state='' and confirmed='Y'");
 							if( $res && $db->db_num_rows($res) > 0)
 								{
 								$arr = $db->db_fetch_array($res);
@@ -1093,7 +1097,7 @@ function bab_replace_ref( &$txt, $remove = '')
 							$id_object = $param[0];
 							$path_object = isset($param[1]) ? $param[1] : '';
 							$title_object = isset($param[2]) ? $param[2] : '';
-							$res = $db->db_query("select id,folder from ".BAB_FM_FOLDERS_TBL." where id='".$id_object."' and active='Y'");
+							$res = $db->db_query("select id,folder from ".BAB_FM_FOLDERS_TBL." where id='".$db->db_escape_string($id_object)."' and active='Y'");
 							bab_fileManagerAccessLevel();
 							if( $res && $db->db_num_rows($res) > 0)
 								{
