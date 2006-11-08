@@ -1989,9 +1989,10 @@ function bab_vac_setVacationPeriods(&$obj, $id_users, $begin, $end) {
 
 		$p = & $obj->setUserPeriod($row['id_user'], $date_begin, $date_end, BAB_PERIOD_VACATION);
 
-		list($category, $color) = $db->db_fetch_row($db->db_query("
+		list($id_cat, $category, $color) = $db->db_fetch_row($db->db_query("
 		
 			SELECT 
+				cat.id,
 				cat.name,
 				cat.bgcolor  
 			FROM 
@@ -2006,7 +2007,10 @@ function bab_vac_setVacationPeriods(&$obj, $id_users, $begin, $end) {
 				AND cat.id = vct.id_cat 
 		"));
 
-		$data = array('id' => $row['id']);
+		$data = array(
+			'id' 		=> $row['id'],
+			'id_cat'	=> $id_cat
+		);
 		$p->setData($data);
 
 		
@@ -2121,30 +2125,9 @@ function bab_vac_updateCalendar($id_user, $year, $month) {
 				BAB_PERIOD_NWDAY			=> 6
 			);
 
-			
 			if ($order[$type2] > $order[$type1]) {
 				return true;
 			}
-
-			/*
-
-
-			if (BAB_PERIOD_NWDAY === $type2) {
-				return true;
-			}
-
-			if (BAB_PERIOD_NWDAY === $type1) {
-				return false;
-			}
-
-			if (BAB_PERIOD_WORKING === $type2 && BAB_PERIOD_NONWORKING === $type1) {
-				return true;
-			}
-
-			if ($type2 > $type1) {
-				return true;
-			}
-			*/
 
 			return false;
 		}

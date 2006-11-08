@@ -769,13 +769,18 @@ function bab_getCalendarTitle($calid) {
  * @param array		$id_calendars
  * @param object	$begin
  * @param object	$end
+ * @param array|int|NULL	[$category]
  */
-function bab_cal_setEventsPeriods(&$obj, $id_calendars, $begin, $end) {
+function bab_cal_setEventsPeriods(&$obj, $id_calendars, $begin, $end, $category = NULL) {
 
 	global $babDB;
 	
 	$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
-
+	
+	$query_category = '';	
+	if (NULL !== $category) {
+		$query_category = "AND ce.id_cat IN(".$babDB->quote($category).")";
+	}
 
 	$events = array();
 	$query = "
@@ -794,6 +799,8 @@ function bab_cal_setEventsPeriods(&$obj, $id_calendars, $begin, $end) {
 			AND ceo.status		!= '".BAB_CAL_STATUS_DECLINED."' 
 			AND ce.start_date	<= '".$babDB->db_escape_string($end->getIsoDateTime())."' 
 			AND ce.end_date		>= '".$babDB->db_escape_string($begin->getIsoDateTime())."' 
+
+			".$query_category." 
 		ORDER BY 
 			ce.start_date asc 
 	";

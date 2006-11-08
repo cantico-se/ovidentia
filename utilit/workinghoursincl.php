@@ -131,7 +131,6 @@ class bab_calendarPeriod {
 	var $ts_begin;		// public
 	var $ts_end;		// public
 	var $type;			// public
-	var $id_user;		// public
 	var $data;			// private
 	var $properties;	// private
 
@@ -141,7 +140,6 @@ class bab_calendarPeriod {
 	var $color;
 
 	/**
-	 * @param int		$id_user
 	 * @param int		$begin		timestamp
 	 * @param int		$end		timestamp
 	 * @param int		$type
@@ -319,6 +317,13 @@ class bab_userWorkingHours {
 	var $id_calendars;
 
 	/**
+	 * category filter for calendar events
+	 * @public
+	 * array|int|NULL
+	 */
+	var $category = NULL; 
+
+	/**
 	 * Working hours object on period
 	 * for the current user
 	 * parameters are instance of BAB_DateTime
@@ -366,7 +371,7 @@ class bab_userWorkingHours {
 
 		if (BAB_PERIOD_CALEVENT === ($this->options & BAB_PERIOD_CALEVENT) && $this->id_calendars) {
 			include_once $GLOBALS['babInstallPath']."utilit/calincl.php";
-			bab_cal_setEventsPeriods($this, $this->id_calendars, $this->begin, $this->end);
+			bab_cal_setEventsPeriods($this, $this->id_calendars, $this->begin, $this->end, $this->category);
 		}
 
 		if (BAB_PERIOD_TSKMGR === ($this->options & BAB_PERIOD_TSKMGR) && $this->id_users) {
@@ -394,69 +399,61 @@ class bab_userWorkingHours {
 					$endDate	= $beginDate->cloneDate();
 					$endDate->add(1, BAB_DATETIME_DAY);
 
-					foreach($this->id_users as $id_user) {
-						$p = & $this->setUserPeriod($id_user, $beginDate, $endDate, BAB_PERIOD_NWDAY);
-						$p->setProperty('SUMMARY'		,bab_translate('Non-working day2'));
-						$p->setProperty('DESCRIPTION'	,$nwLabel);
-						$p->setProperty('DTSTART'		,$beginDate->getIsoDateTime());
-						$p->setProperty('DTEND'			,$endDate->getIsoDateTime());
-					}
+					$p = & $this->setUserPeriod(false, $beginDate, $endDate, BAB_PERIOD_NWDAY);
+					$p->setProperty('SUMMARY'		,bab_translate('Non-working day2'));
+					$p->setProperty('DESCRIPTION'	,$nwLabel);
+					$p->setProperty('DTSTART'		,$beginDate->getIsoDateTime());
+					$p->setProperty('DTEND'			,$endDate->getIsoDateTime());
 				}
 			}
 			
 
 			if (BAB_PERIOD_WORKING === ($this->options & BAB_PERIOD_WORKING) && $this->id_users) {
 
-				
-				
+				$arr = bab_getWHours($id_user, $loop->getDayOfWeek());
 
-				foreach($this->id_users as $id_user) {
-				
-					$arr = bab_getWHours($id_user, $loop->getDayOfWeek());
+				foreach($arr as $h) {
+					$startHour	= explode(':', $h['startHour']);
+					$endHour	= explode(':', $h['endHour']);
+					
+					$beginDate = new BAB_DateTime(
+						$loop->getYear(),
+						$loop->getMonth(),
+						$loop->getDayOfMonth(),
+						$startHour[0],
+						$startHour[1],
+						$startHour[2]
+						);
 
-					foreach($arr as $h) {
-						$startHour	= explode(':', $h['startHour']);
-						$endHour	= explode(':', $h['endHour']);
-						
-						$beginDate = new BAB_DateTime(
-							$loop->getYear(),
-							$loop->getMonth(),
-							$loop->getDayOfMonth(),
-							$startHour[0],
-							$startHour[1],
-							$startHour[2]
-							);
+					$endDate = new BAB_DateTime(
+						$loop->getYear(),
+						$loop->getMonth(),
+						$loop->getDayOfMonth(),
+						$endHour[0], 
+						$endHour[1], 
+						$endHour[2]
+						);
 
-						$endDate = new BAB_DateTime(
-							$loop->getYear(),
-							$loop->getMonth(),
-							$loop->getDayOfMonth(),
-							$endHour[0], 
-							$endHour[1], 
-							$endHour[2]
-							);
-
-						if ($nworking && NULL == $previous_end) {
-							$previous_end = $this->begin; // reference
-						}
-
-						// add non-working period between 2 working period and at the begining
-						if ($nworking && $beginDate->getTimeStamp() > $previous_end->getTimeStamp()) {
-
-							$p = & $this->setUserPeriod($id_user, $previous_end, $beginDate, BAB_PERIOD_NONWORKING);
-							$p->setProperty('SUMMARY'		, bab_translate('Non-working period'));
-							$p->setProperty('DTSTART'		, $previous_end->getIsoDateTime());
-							$p->setProperty('DTEND'			, $beginDate->getIsoDateTime());
-						}
-
-						$p = & $this->setUserPeriod($id_user, $beginDate, $endDate, BAB_PERIOD_WORKING);
-
-						$p->setProperty('SUMMARY'		, bab_translate('Working period'));
-						$p->setProperty('DTSTART'		, $beginDate->getIsoDateTime());
-						$p->setProperty('DTEND'			, $endDate->getIsoDateTime());
-
-						$previous_end = $endDate; // the begin date of the non-working period will be a reference to the enddate of the working period
+					if ($nworking && NULL == $previous_end) {
+						$previous_end = $this->begin; // reference
 					}
+
+					// add non-working period between 2 working period and at the begining
+					if ($nworking && $beginDate->getTimeStamp() > $previous_end->getTimeStamp()) {
+
+						$p = & $this->setUserPeriod(false, $previous_end, $beginDate, BAB_PERIOD_NONWORKING);
+						$p->setProperty('SUMMARY'		, bab_translate('Non-working period'));
+						$p->setProperty('DTSTART'		, $previous_end->getIsoDateTime());
+						$p->setProperty('DTEND'			, $beginDate->getIsoDateTime());
+					}
+
+					$p = & $this->setUserPeriod(false, $beginDate, $endDate, BAB_PERIOD_WORKING);
+
+					$p->setProperty('SUMMARY'		, bab_translate('Working period'));
+					$p->setProperty('DTSTART'		, $beginDate->getIsoDateTime());
+					$p->setProperty('DTEND'			, $endDate->getIsoDateTime());
+
+					$previous_end = $endDate; // the begin date of the non-working period will be a reference to the enddate of the working period
 				}
 			}
 			$loop->add(1, BAB_DATETIME_DAY);
@@ -465,9 +462,7 @@ class bab_userWorkingHours {
 		// add final non-working period
 		if ($nworking && $this->end->getTimeStamp() > $previous_end->getTimeStamp()) {
 
-			
-
-			$p = & $this->setUserPeriod($id_user, $previous_end, $this->end, BAB_PERIOD_NONWORKING);
+			$p = & $this->setUserPeriod(false, $previous_end, $this->end, BAB_PERIOD_NONWORKING);
 			$p->setProperty('SUMMARY'		, bab_translate('Non-working period'));
 			$p->setProperty('DTSTART'		, $previous_end->getIsoDateTime());
 			$p->setProperty('DTEND'			, $this->end->getIsoDateTime());
@@ -595,7 +590,7 @@ class bab_userWorkingHours {
 
 	
 	/**
-	 * BAB_PERIOD_NONWORKING not supported
+	 *
 	 * @param int $filter : events types to get
 	 *
 	 * @return	object
@@ -616,7 +611,7 @@ class bab_userWorkingHours {
 
 
 	/**
-	 * BAB_PERIOD_NONWORKING not supported
+	 * 
 	 *
 	 * @param	int		$start		timestamp
 	 * @param	int		$end		timestamp
