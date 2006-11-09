@@ -21,8 +21,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
-include_once $babInstallPath."utilit/forumincl.php";
+include_once 'base.php';
+include_once $babInstallPath.'utilit/forumincl.php';
 
 // serach type 
 define('BAB_FORUMS_ST_LASTPOSTS',	'lastposts');
@@ -64,14 +64,14 @@ function listForums()
 			$this->forums = array();
 			if( count($fv))
 			{
-			list($iddir) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group='".BAB_REGISTERED_GROUP."'"));
+			list($iddir) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group='".$babDB->db_escape_string(BAB_REGISTERED_GROUP)."'"));
 			$this->baccessdir = bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $iddir);
 			foreach( $fv as $key => $val )
 				{
 				$val['id'] = $key;
-				list($val['threads']) = $babDB->db_fetch_row($babDB->db_query("select count(id) from ".BAB_THREADS_TBL." where forum='".$key."'"));
-				list($val['posts']) = $babDB->db_fetch_row($babDB->db_query("select count(p.id) from ".BAB_POSTS_TBL." p left join ".BAB_THREADS_TBL." t on p.id_thread = t.id where t.forum = '".$key."' and p.id_parent!='0'"));
-				$res = $babDB->db_query("select p.* from ".BAB_POSTS_TBL." p left join ".BAB_THREADS_TBL." t on p.id_thread = t.id where t.forum = '".$key."' and p.id=t.lastpost and confirmed='Y' order by p.date desc limit 0,1");
+				list($val['threads']) = $babDB->db_fetch_row($babDB->db_query("select count(id) from ".BAB_THREADS_TBL." where forum='".$babDB->db_escape_string($key)."'"));
+				list($val['posts']) = $babDB->db_fetch_row($babDB->db_query("select count(p.id) from ".BAB_POSTS_TBL." p left join ".BAB_THREADS_TBL." t on p.id_thread = t.id where t.forum = '".$babDB->db_escape_string($key)."' and p.id_parent!='0'"));
+				$res = $babDB->db_query("select p.* from ".BAB_POSTS_TBL." p left join ".BAB_THREADS_TBL." t on p.id_thread = t.id where t.forum = '".$babDB->db_escape_string($key)."' and p.id=t.lastpost and confirmed='Y' order by p.date desc limit 0,1");
 				$val['lastpostauthoremail'] = '';
 				$val['lastpostauthordetails'] = '';
 				if( $res && $babDB->db_num_rows($res) > 0 )
@@ -79,7 +79,7 @@ function listForums()
 					$arr = $babDB->db_fetch_array($res);
 					$val['author'] = $arr['author'];
 					$val['date'] = bab_shortDate(bab_mktime($arr['date']), true);
-					$res = $babDB->db_query("select count(p.id) as total from ".BAB_POSTS_TBL." p left join ".BAB_THREADS_TBL." t on p.id_thread = t.id where p.id_thread = '".$arr['id_thread']."' and confirmed='Y'");
+					$res = $babDB->db_query("select count(p.id) as total from ".BAB_POSTS_TBL." p left join ".BAB_THREADS_TBL." t on p.id_thread = t.id where p.id_thread = '".$babDB->db_escape_string($arr['id_thread'])."' and confirmed='Y'");
 					$rr = $babDB->db_fetch_array($res);
 					$val['lastposturl'] = '&thread='.$arr['id_thread'];
 					if( $rr['total'] >  $val['display'])
@@ -89,7 +89,7 @@ function listForums()
 					$val['lastposturl'] .= '#p'.$arr['id'];
 					if( $arr['id_author'] != 0 && $val['bdisplayemailaddress'] == 'Y')
 						{
-						$res = $babDB->db_query("select email from ".BAB_USERS_TBL." where id='".$arr['id_author']."'");
+						$res = $babDB->db_query("select email from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($arr['id_author'])."'");
 						if( $res && $babDB->db_num_rows($res) > 0 )
 							{
 							$rr = $babDB->db_fetch_array($res);
@@ -110,7 +110,7 @@ function listForums()
 
 				if($GLOBALS['BAB_SESS_LOGGED'])
 					{
-					list($val['nbnewposts']) = $babDB->db_fetch_row($babDB->db_query("select count(p.id) from ".BAB_POSTS_TBL." p left join ".BAB_THREADS_TBL." t on p.id_thread = t.id where t.forum = '".$key."' and p.date_confirm >= '".$babBody->lastlog."' and p.confirmed='Y'"));
+					list($val['nbnewposts']) = $babDB->db_fetch_row($babDB->db_query("select count(p.id) from ".BAB_POSTS_TBL." p left join ".BAB_THREADS_TBL." t on p.id_thread = t.id where t.forum = '".$babDB->db_escape_string($key)."' and p.date_confirm >= '".$babDB->db_escape_string($babBody->lastlog)."' and p.confirmed='Y'"));
 					$this->nbtotalnewposts += $val['nbnewposts'];
 					}
 				else
@@ -149,10 +149,10 @@ function listForums()
 				$this->forumdescription = $this->forums[$i]['description'];
 				$this->threads = $this->forums[$i]['threads'];
 				$this->posts = $this->forums[$i]['posts'];
-				$this->lastpostauthor = $this->forums[$i]['author'];
+				$this->lastpostauthor = bab_toHTML($this->forums[$i]['author']);
 				$this->lastpostdate = $this->forums[$i]['date'];
 				$this->nbnewposts = $this->forums[$i]['nbnewposts'];
-				$this->lastpostauthoremail = $this->forums[$i]['lastpostauthoremail'];
+				$this->lastpostauthoremail = bab_toHTML($this->forums[$i]['lastpostauthoremail']);
 				$this->forumurl = $GLOBALS['babUrlScript']."?tg=threads&forum=".$this->forums[$i]['id'];
 				$this->lastposturl = $GLOBALS['babUrlScript']."?tg=posts&flat=1&forum=".$this->forums[$i]['id'].$this->forums[$i]['lastposturl'];
 				$this->lastpostauthordetails = $this->forums[$i]['lastpostauthordetails'];
@@ -247,7 +247,7 @@ function displaySearchResultsForums()
 			$this->countpages = 0;
 			$this->forums = $babBody->get_forums();
 			$fstype = bab_rp('fstype', '');
-			list($this->iddir) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group='".BAB_REGISTERED_GROUP."'"));
+			list($this->iddir) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group='".$babDB->db_escape_string(BAB_REGISTERED_GROUP)."'"));
 
 			switch($fstype)
 				{
@@ -281,11 +281,11 @@ function displaySearchResultsForums()
 
 					if( $sopt == 'subject' )
 						{
-						$req .= "and pt.subject like '%".$babDB->db_escape_string($sword)."%' ";
+						$req .= "and pt.subject like '%".$babDB->db_escape_like($sword)."%' ";
 						}
 					else
 						{
-						$req .= "and (pt.subject like '%".$babDB->db_escape_string($sword)."%' or pt.message like '%".$babDB->db_escape_string($sword)."%') ";
+						$req .= "and (pt.subject like '%".$babDB->db_escape_like($sword)."%' or pt.message like '%".$babDB->db_escape_like($sword)."%') ";
 						}
 					
 					$res = $babDB->db_query("select count(pt.id) as total from ".$req);							
@@ -302,6 +302,7 @@ function displaySearchResultsForums()
 						$this->countpages = count($this->gotopages);
 						}
 					$this->res = $babDB->db_query($req);
+					echo $req;
 					$this->count = $babDB->db_num_rows($this->res);
 					}
 					else
@@ -321,9 +322,9 @@ function displaySearchResultsForums()
 				{
 				$this->altbg = !$this->altbg;
 				$arr = $babDB->db_fetch_array($this->res);
-				$this->forum_name = $arr['name'];
+				$this->forum_name = bab_toHTML($arr['name']);
 				$this->forum_url = $GLOBALS['babUrlScript']."?tg=threads&forum=".$arr['forum'];
-				$this->thread_name = $arr['thread'];
+				$this->thread_name = bab_toHTML($arr['thread']);
 				$this->thread_url = $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$arr['forum']."&thread=".$arr['id_thread']."&flat=".($this->forums[$arr['forum']]['bflatview']=='Y'?1:0);
 				if( $arr['id_author'] )
 					{
@@ -333,7 +334,9 @@ function displaySearchResultsForums()
 					{
 					$this->author_name = $arr['author'];
 					}
-				$this->post_name = $arr['subject'];
+				$this->author_name = bab_toHTML($this->author_name);
+
+				$this->post_name = bab_toHTML($arr['subject']);
 				$this->post_url = $GLOBALS['babUrlScript']."?tg=forumsuser&idx=viewr&post=".$arr['id'];
 
 
@@ -354,11 +357,11 @@ function displaySearchResultsForums()
 					$idauthor = $arr['id_author'] != 0? $arr['id_author']: bab_getUserId( $arr['id_author']); 
 					if( $idauthor )
 						{
-						$res = $babDB->db_query("select email from ".BAB_USERS_TBL." where id='".$idauthor."'");
+						$res = $babDB->db_query("select email from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($idauthor)."'");
 						if( $res && $babDB->db_num_rows($res) > 0 )
 							{
 							$rr = $babDB->db_fetch_array($res);
-							$this->authoremail = $rr['email'];
+							$this->authoremail = bab_toHTML($rr['email']);
 							}
 						}
 					}
@@ -377,7 +380,7 @@ function displaySearchResultsForums()
 			if( list($key, $val) = each($this->forums))
 				{
 				$this->forumid = $key;
-				$this->forumname = $val['name'];
+				$this->forumname = bab_toHTML($val['name']);
 				$i++;
 				return true;
 				}
@@ -464,11 +467,11 @@ function viewSearchResultForums()
 						$this->postsubject = $arr['subject'];
 						$this->postmessage = bab_replace($arr['message']);
 
-						list($this->iddir) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group='".BAB_REGISTERED_GROUP."'"));
+						list($this->iddir) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group='".$babDB->db_escape_string(BAB_REGISTERED_GROUP)."'"));
 						$this->postauthordetailsurl = '';
 						if( $arr['id_author'] != 0 && $this->forums[$this->forum]['bdisplayauhtordetails'] == 'Y')
 							{
-							list($this->iddir) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group='".BAB_REGISTERED_GROUP."'"));
+							list($this->iddir) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group='".$babDB->db_escape_string(BAB_REGISTERED_GROUP)."'"));
 							if( bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $this->iddir))
 								{
 								$this->postauthordetailsurl = $GLOBALS['babUrlScript']."?tg=directory&idx=ddbovml&directoryid=".$this->iddir."&userid=".$arr['id_author'];	
@@ -482,7 +485,7 @@ function viewSearchResultForums()
 							$idauthor = $arr['id_author'] != 0? $arr['id_author']: bab_getUserId( $arr['author']); 
 							if( $idauthor )
 								{
-								$res = $babDB->db_query("select email from ".BAB_USERS_TBL." where id='".$idauthor."'");
+								$res = $babDB->db_query("select email from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($idauthor)."'");
 								if( $res && $babDB->db_num_rows($res) > 0 )
 									{
 									$rr = $babDB->db_fetch_array($res);
