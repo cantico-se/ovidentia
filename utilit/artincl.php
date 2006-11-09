@@ -1082,6 +1082,11 @@ function bab_newArticleDraft($idtopic, $idarticle)
 					$babDB->db_query("insert into ".BAB_ART_DRAFTS_FILES_TBL." (id_draft, name, description) values ('".$id."','".addslashes($rr['name'])."','".addslashes($rr['description'])."')");
 					}
 				}
+			$res = $babDB->db_query("select * from ".BAB_ART_TAGS_TBL." where id_art='".$idarticle."'");
+			while($rr = $babDB->db_fetch_array($res))
+				{
+				$babDB->db_query("insert into ".BAB_ART_DRAFTS_TAGS_TBL." (id_draft, id_tag) values ('".$id."','".$rr['id_tag']."')");
+				}
 			}
 		}
 
