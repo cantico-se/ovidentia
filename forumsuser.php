@@ -302,7 +302,6 @@ function displaySearchResultsForums()
 						$this->countpages = count($this->gotopages);
 						}
 					$this->res = $babDB->db_query($req);
-					echo $req;
 					$this->count = $babDB->db_num_rows($this->res);
 					}
 					else
