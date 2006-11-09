@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
+include_once 'base.php';
 
 function notesModify($id)
 	{
@@ -42,12 +42,13 @@ function notesModify($id)
 
 		function temp($id)
 			{
+			global $babDB, $BAB_SESS_USERID;
 			$this->notes = bab_translate("Content");
 			$this->modify = bab_translate("Update Note");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_NOTES_TBL." where id='$id'";
-			$this->res = $this->db->db_query($req);
-			$this->arr = $this->db->db_fetch_array($this->res);
+			$req = "select * from ".BAB_NOTES_TBL." where id='".$babDB->db_escape_string($id)."' and id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
+			$this->res = $babDB->db_query($req);
+			$this->arr = $babDB->db_fetch_array($this->res);
 			$this->editor = bab_editor($this->arr['content'], 'content', 'notemod');	
 			}
 		}
@@ -58,21 +59,21 @@ function notesModify($id)
 
 function deleteNotes($id)
 	{
-	$db = $GLOBALS['babDB'];
-	$query = "delete from ".BAB_NOTES_TBL." where id = '$id'";
-	$db->db_query($query);
+	global $babDB, $BAB_SESS_USERID;
+	$query = "delete from ".BAB_NOTES_TBL." where id = '".$babDB->db_escape_string($id)."' and id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
+	$babDB->db_query($query);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=notes&idx=List");
 	}
 
 function updateNotes($id, $content)
 	{
-	$db = &$GLOBALS['babDB'];
+	global $babDB, $BAB_SESS_USERID;
 
 	bab_editor_record($content);
-	$content = $db->db_escape_string($content);
+	$content = $babDB->db_escape_string($content);
 
-	$query = "update ".BAB_NOTES_TBL." set content='$content' where id = '$id'";
-	$db->db_query($query);
+	$query = "update ".BAB_NOTES_TBL." set content='".$content."' where id = '".$babDB->db_escape_string($id)."' and id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
+	$babDB->db_query($query);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=notes&idx=List");
 	}
 
@@ -82,10 +83,12 @@ if( !isset($idx))
 	$idx = "Modify";
 	}
 
-list($iduser) = $babDB->db_fetch_row($babDB->db_query("select id_user from ".BAB_NOTES_TBL." where id = '".$item."'"));
+list($iduser) = $babDB->db_fetch_row($babDB->db_query("select id_user from ".BAB_NOTES_TBL." where id = '".$babDB->db_escape_string($item)."'"));
 
 if( isset($update) && $iduser == $BAB_SESS_USERID)
+	{
 	updateNotes($item, $content);
+	}
 
 switch($idx)
 	{

@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
+include_once 'base.php';
 
 function notesCreate()
 	{
@@ -64,28 +64,29 @@ function notesList($id)
 
 		function temp($id)
 			{
-			global $BAB_SESS_USERID;
+			global $babDB, $BAB_SESS_USERID;
 			$this->editname = bab_translate("Edit");
 			$this->delname = bab_translate("Delete");
 			$this->date = bab_translate("Date");
 			$this->content = bab_translate("Content");
 			$this->db = $GLOBALS['babDB'];
 			if( $id != '' )
-				$reqid = " and id='".$id."' ";
+				$reqid = " and id='".$babDB->db_escape_string($id)."' ";
 			else
 				$reqid = '';
 
-			$req = "select * from ".BAB_NOTES_TBL." where id_user='".$BAB_SESS_USERID."'".$reqid." order by date desc";
-			$this->res = $this->db->db_query($req);
-			$this->count = $this->db->db_num_rows($this->res);
+			$req = "select * from ".BAB_NOTES_TBL." where id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."'".$reqid." order by date desc";
+			$this->res = $babDB->db_query($req);
+			$this->count = $babDB->db_num_rows($this->res);
 			}
 
 		function getnext()
 			{
+			global $babDB;
 			static $i = 0;
 			if( $i < $this->count)
 				{
-				$this->arr = $this->db->db_fetch_array($this->res);
+				$this->arr = $babDB->db_fetch_array($this->res);
 				$this->editurl = $GLOBALS['babUrlScript']."?tg=note&idx=Modify&item=".$this->arr['id'];
 				$this->delurl = $GLOBALS['babUrlScript']."?tg=note&idx=Delete&item=".$this->arr['id'];
 				$this->arr['content'] = bab_replace($this->arr['content']);
@@ -106,8 +107,7 @@ function notesList($id)
 
 function saveNotes($content)
 	{
-	global $BAB_SESS_USERID;
-	$db = &$GLOBALS['babDB'];
+	global $babDB, $BAB_SESS_USERID;
 
 	if( empty($content) || empty($BAB_SESS_USERID))
 		{
@@ -115,11 +115,11 @@ function saveNotes($content)
 		}
 
 	bab_editor_record($content);
-	$content = $db->db_escape_string($content);
+	$content = $babDB->db_escape_string($content);
 
 	
-	$query = "insert into ".BAB_NOTES_TBL." (id_user, date, content) VALUES ('". $BAB_SESS_USERID. "',now(), '" . $content. "')";
-	$db->db_query($query);
+	$query = "insert into ".BAB_NOTES_TBL." (id_user, date, content) VALUES ('". $babDB->db_escape_string($BAB_SESS_USERID). "',now(), '" . $content. "')";
+	$babDB->db_query($query);
 	}
 
 /* main */
@@ -133,7 +133,9 @@ if( !isset($id))
 	}
 
 if( isset($create))
+{
 	saveNotes($content);
+}
 
 switch($idx)
 	{
