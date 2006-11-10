@@ -21,9 +21,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
-include_once $babInstallPath."utilit/forumincl.php";
-include_once $babInstallPath."utilit/mailincl.php";
+include_once 'base.php';
+include_once $babInstallPath.'utilit/forumincl.php';
+include_once $babInstallPath.'utilit/mailincl.php';
 
 function listThreads($forum, $active, $pos)
 	{
@@ -70,15 +70,15 @@ function listThreads($forum, $active, $pos)
 
 		function temp($forum, $active, $pos)
 			{
-			global $babBody;
-			$this->topurl = "";
-			$this->bottomurl = "";
-			$this->nexturl = "";
-			$this->prevurl = "";
-			$this->topname = "";
-			$this->bottomname = "";
-			$this->nextname = "";
-			$this->prevname = "";
+			global $babBody, $babDB;
+			$this->topurl = '';
+			$this->bottomurl = '';
+			$this->nexturl = '';
+			$this->prevurl = '';
+			$this->topname = '';
+			$this->bottomname = '';
+			$this->nextname = '';
+			$this->prevname = '';
 			$this->thread = bab_translate("Thread");
 			$this->starter = bab_translate("Starter");
 			$this->repliesname = bab_translate("Replies");
@@ -98,77 +98,76 @@ function listThreads($forum, $active, $pos)
 			$this->active = $active;
 			$this->altbg = true;
 
-			$this->search_url = $GLOBALS['babUrlScript']."?tg=forumsuser&idx=search&forum=".$forum;
+			$this->search_url = $GLOBALS['babUrlScript'].'?tg=forumsuser&idx=search&forum='.$forum;
 
 			$this->forums = $babBody->get_forums();
 
 			if( $active == 'N')
 				{
-				$this->idx = "ListC";
+				$this->idx = 'ListC';
 				}
 			else
 				{
 				$active = 'Y';
-				$this->idx = "List";
+				$this->idx = 'List';
 				}
 			$this->moderator = bab_isAccessValid(BAB_FORUMSMAN_GROUPS_TBL, $forum);
 
-			$this->db = $GLOBALS['babDB'];
 			$this->maxrows = $this->forums[$forum]['display'];
 			$this->flat = $this->forums[$forum]['bflatview'] == 'Y'? 1: 0;
 			$this->bdisplayemailaddress = $this->forums[$forum]['bdisplayemailaddress'];
 			$this->bdisplayauhtordetails = $this->forums[$forum]['bdisplayauhtordetails'];;
 			$this->bupdateauthor = $this->forums[$forum]['bupdateauthor'];;
 
-			$req = "select count(*) as total from ".BAB_THREADS_TBL." where forum='".$forum."' and active='".$active."'";
-			$this->res = $this->db->db_query($req);
-			$row = $this->db->db_fetch_array($this->res);
-			$total = $row["total"];
+			$req = "select count(*) as total from ".BAB_THREADS_TBL." where forum='".$babDB->db_escape_string($forum)."' and active='".$active."'";
+			$this->res = $babDB->db_query($req);
+			$row = $babDB->db_fetch_array($this->res);
+			$total = $row['total'];
 
 			$this->gotopage_txt = bab_translate("Goto page");
-			$this->gotourl = $GLOBALS['babUrlScript']."?tg=threads&idx=".$this->idx."&forum=".$forum."&pos=";
+			$this->gotourl = $GLOBALS['babUrlScript'].'?tg=threads&idx='.$this->idx.'&forum='.$forum.'&pos=';
 			$this->gotopages = bab_generatePagination($total, $this->maxrows, $pos);
 			$this->countpages = count($this->gotopages);
 		
-			$req = "select tt.*, pt.author, pt.id_author, pt.date as lastpostdate from ".BAB_THREADS_TBL." tt left join ".BAB_POSTS_TBL." pt on tt.lastpost=pt.id where forum='".$forum."' and active='".$active."' order by pt.date desc";
+			$req = "select tt.*, pt.author, pt.id_author, pt.date as lastpostdate from ".BAB_THREADS_TBL." tt left join ".BAB_POSTS_TBL." pt on tt.lastpost=pt.id where forum='".$babDB->db_escape_string($forum)."' and active='".$babDB->db_escape_string($active)."' order by pt.date desc";
 			if( $total > $this->maxrows)
 				{
-				$req .= " limit ".$pos.",".$this->maxrows;
+				$req .= ' limit '.$pos.','.$this->maxrows;
 				}
 
-			$this->res = $this->db->db_query($req);
-			$this->count = $this->db->db_num_rows($this->res);
+			$this->res = $babDB->db_query($req);
+			$this->count = $babDB->db_num_rows($this->res);
 			$this->forum = $forum;
 
 			unset($this->forums[$this->forum]);
 			$this->countforums = count($this->forums);
-			list($this->iddir) = $this->db->db_fetch_row($this->db->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group='".BAB_REGISTERED_GROUP."'"));
+			list($this->iddir) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group='".$babDB->db_escape_string(BAB_REGISTERED_GROUP)."'"));
 			}
 
 		function getnext()
 			{
-			global $babBody, $BAB_SESS_USERID;
+			global $babBody, $babDB, $BAB_SESS_USERID;
 			static $i = 0;
 			if( $i < $this->count)
 				{
 				$this->altbg = !$this->altbg;
-				$this->arrthread = $this->db->db_fetch_array($this->res);
-				$res = $this->db->db_query("select * from ".BAB_POSTS_TBL." where id='".$this->arrthread['post']."'");
-				$ar = $this->db->db_fetch_array($res);
+				$this->arrthread = $babDB->db_fetch_array($this->res);
+				$res = $babDB->db_query("select * from ".BAB_POSTS_TBL." where id='".$babDB->db_escape_string($this->arrthread['post'])."'");
+				$ar = $babDB->db_fetch_array($res);
 
 				
-				$this->subjecturl = $GLOBALS['babUrlScript']."?tg=posts&idx=List&flat=".$this->flat."&forum=".$this->forum."&thread=".$this->arrthread['id']."&views=1";
-				$this->subjectname = $ar['subject'];
-				$this->subjecturlflat  = $this->subjecturl."&flat=".$this->flat;
+				$this->subjecturl = $GLOBALS['babUrlScript'].'?tg=posts&idx=List&flat='.$this->flat.'&forum='.$this->forum.'&thread='.$this->arrthread['id'].'&views=1';
+				$this->subjectname = bab_toHTML($ar['subject']);
+				$this->subjecturlflat  = $this->subjecturl.'&flat='.$this->flat;
 
-				$this->threadauthor = bab_getUserName($this->arrthread['starter']);
+				$this->threadauthor = bab_toHTML(bab_getUserName($this->arrthread['starter']));
 
 				$this->threadauthordetailsurl = '';
 				if( $this->arrthread['starter'] != 0 && $this->bdisplayauhtordetails == 'Y')
 					{
 					if( bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $this->iddir))
 						{
-						$this->threadauthordetailsurl = $GLOBALS['babUrlScript']."?tg=directory&idx=ddbovml&directoryid=".$this->iddir."&userid=".$this->arrthread['starter'];	
+						$this->threadauthordetailsurl = $GLOBALS['babUrlScript'].'?tg=directory&idx=ddbovml&directoryid='.$this->iddir.'&userid='.$this->arrthread['starter'];	
 						}
 					}
 
@@ -179,20 +178,20 @@ function listThreads($forum, $active, $pos)
 					$idauthor = $this->arrthread['starter'] != 0? $this->arrthread['starter']: bab_getUserId( $this->arrthread['author']); 
 					if( $idauthor )
 						{
-						$res = $this->db->db_query("select email from ".BAB_USERS_TBL." where id='".$idauthor."'");
-						if( $res && $this->db->db_num_rows($res) > 0 )
+						$res = $babDB->db_query("select email from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($idauthor)."'");
+						if( $res && $babDB->db_num_rows($res) > 0 )
 							{
-							$rr = $this->db->db_fetch_array($res);
+							$rr = $babDB->db_fetch_array($res);
 							$this->threadauthoremail = $rr['email'];
 							}
 						}
 					}
 
-				$req = "select count(*) as total from ".BAB_POSTS_TBL." where id_thread='".$this->arrthread['id']."' and confirmed='Y'";
-				$res = $this->db->db_query($req);
-				$row = $this->db->db_fetch_array($res);
-				$this->replies = $row["total"] > 0 ? ($row["total"] -1): 0;
-				if( $row["total"] == 0 && $this->moderator == false && ($this->bupdateauthor == 'N' || ($BAB_SESS_USERID && $BAB_SESS_USERID != $this->arrthread['starter']) )  )
+				$req = "select count(*) as total from ".BAB_POSTS_TBL." where id_thread='".$babDB->db_escape_string($this->arrthread['id'])."' and confirmed='Y'";
+				$res = $babDB->db_query($req);
+				$row = $babDB->db_fetch_array($res);
+				$this->replies = $row['total'] > 0 ? ($row['total'] -1): 0;
+				if( $row['total'] == 0 && $this->moderator == false && ($this->bupdateauthor == 'N' || ($BAB_SESS_USERID && $BAB_SESS_USERID != $this->arrthread['starter']) )  )
 					{
 					$this->disabled = 1;
 					}
@@ -202,12 +201,12 @@ function listThreads($forum, $active, $pos)
 					}
 
 
-				$res = $this->db->db_query("select count(*) as total from ".BAB_POSTS_TBL." where id_thread='".$this->arrthread['id']."' and confirmed='N'");
-				$ar = $this->db->db_fetch_array($res);
-				if( $this->arrthread['active'] != "N" && $ar['total'] > 0)
-					$this->status = "*";
+				$res = $babDB->db_query("select count(*) as total from ".BAB_POSTS_TBL." where id_thread='".$babDB->db_escape_string($this->arrthread['id'])."' and confirmed='N'");
+				$ar = $babDB->db_fetch_array($res);
+				if( $this->arrthread['active'] != 'N' && $ar['total'] > 0)
+					$this->status = '*';
 				else
-					$this->status = "";
+					$this->status = '';
 
 				$this->gotothreadpages = array();
 				if( ($row['total'] ) > $this->maxrows)
@@ -217,7 +216,7 @@ function listThreads($forum, $active, $pos)
 					for($j = 0; $j < $row['total']; $j += $this->maxrows)
 						{
 
-							$this->gotothreadurl = $GLOBALS['babUrlScript']."?tg=posts&idx=".$this->idx."&flat=".$this->flat."&forum=".$this->forum."&thread=".$this->arrthread['id']."&pos=";
+							$this->gotothreadurl = $GLOBALS['babUrlScript'].'?tg=posts&idx='.$this->idx.'&flat='.$this->flat.'&forum='.$this->forum.'&thread='.$this->arrthread['id'].'&pos=';
 
 							$this->gotothreadpages[] = array($times, $j, 1);
 
@@ -247,8 +246,6 @@ function listThreads($forum, $active, $pos)
 				
 				
 
-				//$res = $this->db->db_query("select id, date, id_author, author from ".BAB_POSTS_TBL." where id='".($this->arrthread['lastpost'] != 0? $this->arrthread['lastpost']:$this->arrthread['post'])."'");
-				//$ar = $this->db->db_fetch_array($res);
 				$this->lastpostdate = bab_shortDate(bab_mktime($this->arrthread['lastpostdate']), true);
 
 				$this->lastpostauthordetailsurl = '';
@@ -256,7 +253,7 @@ function listThreads($forum, $active, $pos)
 					{
 					if( bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $this->iddir))
 						{
-						$this->lastpostauthordetailsurl = $GLOBALS['babUrlScript']."?tg=directory&idx=ddbovml&directoryid=".$this->iddir."&userid=".$this->arrthread['id_author'];	
+						$this->lastpostauthordetailsurl = $GLOBALS['babUrlScript'].'?tg=directory&idx=ddbovml&directoryid='.$this->iddir.'&userid='.$this->arrthread['id_author'];	
 						}
 					}
 
@@ -267,10 +264,10 @@ function listThreads($forum, $active, $pos)
 					$idauthor = $this->arrthread['id_author'] != 0? $this->arrthread['id_author']: bab_getUserId( $this->arrthread['author']); 
 					if( $idauthor )
 						{
-						$res = $this->db->db_query("select email from ".BAB_USERS_TBL." where id='".$idauthor."'");
-						if( $res && $this->db->db_num_rows($res) > 0 )
+						$res = $babDB->db_query("select email from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($idauthor)."'");
+						if( $res && $babDB->db_num_rows($res) > 0 )
 							{
-							$rr = $this->db->db_fetch_array($res);
+							$rr = $babDB->db_fetch_array($res);
 							$this->lastpostauthoremail = $rr['email'];
 							}
 						}
@@ -284,7 +281,8 @@ function listThreads($forum, $active, $pos)
 					{
 					$this->lastpostauthor = $this->arrthread['author'];
 					}
-				$this->lastposturl = $GLOBALS['babUrlScript']."?tg=posts&flat=".$this->flat."&forum=".$this->forum."&thread=".$this->arrthread['id']."&pos=".$postpos."#p".$this->arrthread['lastpost'];
+				$this->lastpostauthor = bab_toHTML($this->lastpostauthor);
+				$this->lastposturl = $GLOBALS['babUrlScript'].'?tg=posts&flat='.$this->flat.'&forum='.$this->forum.'&thread='.$this->arrthread['id'].'&pos='.$postpos.'#p'.$this->arrthread['lastpost'];
 
 				$this->brecent = false;
 				if( mktime() - bab_mktime($this->arrthread['lastpostdate']) <= DELTA_TIME )
@@ -360,7 +358,7 @@ function listThreads($forum, $active, $pos)
 		}
 	
 	$temp = new temp($forum, $active, $pos);
-	$babBody->babecho(	bab_printTemplate($temp,"threads.html", "threadlist"));
+	$babBody->babecho(	bab_printTemplate($temp,'threads.html', 'threadlist'));
 	return $temp->count;
 	}
 
@@ -417,27 +415,27 @@ function newThread($forum)
 			if( bab_isForumModerated($forum))
 				$this->noteforum = bab_translate("Note: Posts are moderate and consequently your post will not be visible immediately");
 			else
-				$this->noteforum = "";
+				$this->noteforum = '';
 			}
 		}
 
 	$temp = new temp($forum);
-	$babBody->babecho(	bab_printTemplate($temp,"threads.html", "threadcreate"));
+	$babBody->babecho(	bab_printTemplate($temp,'threads.html', 'threadcreate'));
 	}
 
 function saveThread($forum, $name, $subject, $message, $notifyme)
 	{
-	global $BAB_SESS_USER, $BAB_SESS_USERID, $babBody;
+	global $BAB_SESS_USER, $BAB_SESS_USERID, $babBody, $babDB;
 
 	if( empty($message))
 		{
-		$babBody->msgerror = bab_translate("ERROR: You must provide a content for your message")." !";
+		$babBody->msgerror = bab_translate("ERROR: You must provide a content for your message").' !';
 		return false;
 		}
 
 	if( empty($subject))
 		{
-		$babBody->msgerror = bab_translate("ERROR: You must provide a subject for your message")." !";
+		$babBody->msgerror = bab_translate("ERROR: You must provide a subject for your message").' !';
 		return false;
 		}
 
@@ -455,94 +453,93 @@ function saveThread($forum, $name, $subject, $message, $notifyme)
 		$idstarter = $BAB_SESS_USERID;
 		}
 
-	if( $notifyme == "Y")
-		$notifyme = "Y";
+	if( $notifyme == 'Y')
+		$notifyme = 'Y';
 	else
-		$notifyme = "N";
+		$notifyme = 'N';
 
-	$db = $GLOBALS['babDB'];
 	$req = "insert into ".BAB_THREADS_TBL." (forum, date, notify, starter) values ";
-	$req .= "('" .$forum. "', now(), '" . $notifyme. "', '". $idstarter. "')";
-	$res = $db->db_query($req);
-	$idthread = $db->db_insert_id();
+	$req .= "('" .$babDB->db_escape_string($forum). "', now(), '" . $notifyme. "', '". $babDB->db_escape_string($idstarter). "')";
+	$res = $babDB->db_query($req);
+	$idthread = $babDB->db_insert_id();
 
-	$arr = $db->db_fetch_array($db->db_query("select * from ".BAB_FORUMS_TBL." where id='".$forum."'"));
+	$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FORUMS_TBL." where id='".$babDB->db_escape_string($forum)."'"));
 
-	if( $arr['moderation'] == "Y" )
+	if( $arr['moderation'] == 'Y' )
 		{
-		$confirmed = "N";
+		$confirmed = 'N';
 		}
 	else
 		{
-		$confirmed = "Y";
+		$confirmed = 'Y';
 		}
 
 	bab_editor_record($message);
 
 	$req = "insert into ".BAB_POSTS_TBL." (id_thread, date, subject, message, id_author, author, confirmed, date_confirm) values ";
-	$req .= "('" .$db->db_escape_string($idthread). "', now(), '";
-	$req .= $db->db_escape_string($subject). "', '" . $db->db_escape_string($message). "', '" . $db->db_escape_string($idstarter). "', '". $db->db_escape_string($name);
+	$req .= "('" .$babDB->db_escape_string($idthread). "', now(), '";
+	$req .= $babDB->db_escape_string($subject). "', '" . $babDB->db_escape_string($message). "', '" . $babDB->db_escape_string($idstarter). "', '". $babDB->db_escape_string($name);
 
 
-	$req .= "', '". $db->db_escape_string($confirmed). "', now())";
-	$res = $db->db_query($req);
-	$idpost = $db->db_insert_id();
+	$req .= "', '". $babDB->db_escape_string($confirmed). "', now())";
+	$res = $babDB->db_query($req);
+	$idpost = $babDB->db_insert_id();
 
 	if (bab_isAccessValid(BAB_FORUMSFILES_GROUPS_TBL,$forum))
 		bab_uploadPostFiles($idpost, $forum);
 	
 	$req = "update ".BAB_THREADS_TBL." set 
-		lastpost='".$db->db_escape_string($idpost)."', 
-		post='".$db->db_escape_string($idpost)."' 
-		where id = '".$db->db_escape_string($idthread)."'";
-	$res = $db->db_query($req);
+		lastpost='".$babDB->db_escape_string($idpost)."', 
+		post='".$babDB->db_escape_string($idpost)."' 
+		where id = '".$babDB->db_escape_string($idthread)."'";
+	$res = $babDB->db_query($req);
 
 	$tables = array();
-	if( $confirmed == "Y"  )
+	if( $confirmed == 'Y'  )
 		{
 		$tables[] = BAB_FORUMSNOTIFY_GROUPS_TBL;
 		}
 
-	if( $arr['notification'] == "Y" )
+	if( $arr['notification'] == 'Y' )
 		{
 		$tables[] = BAB_FORUMSMAN_GROUPS_TBL;
 		}
 
 	if( count($tables) > 0 )
 		{
-		$url = $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$forum."&thread=".$idthread."&flat=".$arr['bflatview']."&views=1";
+		$url = $GLOBALS['babUrlScript'].'?tg=posts&idx=List&forum='.$forum.'&thread='.$idthread.'&flat='.$arr['bflatview'].'&views=1';
 		notifyForumGroups($forum, stripslashes($subject), stripslashes($name), $arr['name'], $tables, $url);
 		}
 
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=threads&forum=".$forum);
+	Header('Location: '. $GLOBALS['babUrlScript'].'?tg=threads&forum='.$forum);
 	exit;
 	}
 
 function getClosedThreads($forum)
 	{
-	$db = $GLOBALS['babDB'];
-	$req = "select count(*) as total from ".BAB_THREADS_TBL." where forum='$forum' and active='N'";
-	$res = $db->db_query($req);
-	$arr = $db->db_fetch_array($res);
+	global $babDB;
+	$req = "select count(*) as total from ".BAB_THREADS_TBL." where forum='".$babDB->db_escape_string($forum)."' and active='N'";
+	$res = $babDB->db_query($req);
+	$arr = $babDB->db_fetch_array($res);
 	return $arr['total'];
 	}
 
 /* main */
 if(!isset($idx))
 	{
-	$idx = "List";
+	$idx = 'List';
 	}
 
 if( !isset($pos))
 	$pos = 0;
 
-if( isset($add) && $add == "addthread" && bab_isAccessValid(BAB_FORUMSPOST_GROUPS_TBL, $forum))
+if( isset($add) && $add == 'addthread' && bab_isAccessValid(BAB_FORUMSPOST_GROUPS_TBL, $forum))
 	{
 	if (!isset($uname)) $uname = '';
 	if (!isset($notifyme)) $notifyme = '';
 	if (!saveThread($forum, $uname, $subject, $message, $notifyme))
 		{
-		$idx = "newthread";
+		$idx = 'newthread';
 		}
 	}
 
@@ -550,47 +547,47 @@ $babLevelTwo = bab_getForumName($forum);
 
 switch($idx)
 	{
-	case "newthread":
+	case 'newthread':
 		if( bab_isAccessValid(BAB_FORUMSPOST_GROUPS_TBL, $forum))
 			{
 			$babBody->title = bab_getForumName($forum);
 			newThread($forum);
-			$babBody->addItemMenu("List", bab_translate("Threads"), $GLOBALS['babUrlScript']."?tg=threads&idx=List&forum=".$forum."&flat=".bab_rp('flat', 1));
-			$babBody->addItemMenu("newthread", bab_translate("New thread"), $GLOBALS['babUrlScript']."?tg=threads&idx=newthread&forum=".$forum);
+			$babBody->addItemMenu('List', bab_translate("Threads"), $GLOBALS['babUrlScript'].'?tg=threads&idx=List&forum='.$forum.'&flat='.bab_rp('flat', 1));
+			$babBody->addItemMenu('newthread', bab_translate("New thread"), $GLOBALS['babUrlScript'].'?tg=threads&idx=newthread&forum='.$forum);
 
 			}		
 		break;
 
-	case "ListC":
+	case 'ListC':
 		$babBody->title = bab_getForumName($forum);
 		if( bab_isAccessValid(BAB_FORUMSVIEW_GROUPS_TBL, $forum))
 			{
-			$babBody->addItemMenu("List", bab_translate("Threads"), $GLOBALS['babUrlScript']."?tg=threads&idx=List&forum=".$forum);
-			$count = listThreads($forum, "N", $pos);
+			$babBody->addItemMenu('List', bab_translate("Threads"), $GLOBALS['babUrlScript'].'?tg=threads&idx=List&forum='.$forum);
+			$count = listThreads($forum, 'N', $pos);
 			if( $count > 0)
-				$babBody->addItemMenu("ListC", bab_translate("Closed"), $GLOBALS['babUrlScript']."?tg=threads&idx=ListC&forum=".$forum);
+				$babBody->addItemMenu('ListC', bab_translate("Closed"), $GLOBALS['babUrlScript'].'?tg=threads&idx=ListC&forum='.$forum);
 
 			if( bab_isAccessValid(BAB_FORUMSPOST_GROUPS_TBL, $forum))
 				{
-				$babBody->addItemMenu("newthread", bab_translate("New thread"), $GLOBALS['babUrlScript']."?tg=threads&idx=newthread&forum=".$forum);
+				$babBody->addItemMenu('newthread', bab_translate("New thread"), $GLOBALS['babUrlScript'].'?tg=threads&idx=newthread&forum='.$forum);
 				}
 			}
 		break;
 
 	default:
-	case "List":
+	case 'List':
 		$babBody->title = bab_getForumName($forum);
 		if( bab_isAccessValid(BAB_FORUMSVIEW_GROUPS_TBL, $forum))
 			{
 			$GLOBALS['babWebStat']->addForum($forum);
-			$count = listThreads($forum, "Y", $pos);
-			$babBody->addItemMenu("List", bab_translate("Threads"), $GLOBALS['babUrlScript']."?tg=threads&idx=List&forum=".$forum);
+			$count = listThreads($forum, 'Y', $pos);
+			$babBody->addItemMenu('List', bab_translate("Threads"), $GLOBALS['babUrlScript'].'?tg=threads&idx=List&forum='.$forum);
 			if( getClosedThreads($forum) > 0)
-				$babBody->addItemMenu("ListC", bab_translate("Closed"), $GLOBALS['babUrlScript']."?tg=threads&idx=ListC&forum=".$forum);
+				$babBody->addItemMenu('ListC', bab_translate("Closed"), $GLOBALS['babUrlScript'].'?tg=threads&idx=ListC&forum='.$forum);
 
 			if( bab_isAccessValid(BAB_FORUMSPOST_GROUPS_TBL, $forum))
 				{
-				$babBody->addItemMenu("newthread", bab_translate("New thread"), $GLOBALS['babUrlScript']."?tg=threads&idx=newthread&forum=".$forum);
+				$babBody->addItemMenu('newthread', bab_translate("New thread"), $GLOBALS['babUrlScript'].'?tg=threads&idx=newthread&forum='.$forum);
 				}
 			}
 		break;

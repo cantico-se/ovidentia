@@ -15,8 +15,8 @@
 							<dt>{ t_files }:</dt>
 							<!--#in getnextfile -->
 							<dd>
-								<a href="{ file[url] }">{ file[name] }</a> 
-								<span>( { file[size] }<!--#if displayIndex -->, { file[index_label] }<!--#endif displayIndex --> )</span>
+								<a href="{ file_url }">{ file_name }</a> 
+								<span>( { file_size }<!--#if displayIndex -->, { file_index_label }<!--#endif displayIndex --> )</span>
 							</dd>
 							<!--#endin getnextfile -->
 						</dl>
@@ -147,7 +147,7 @@
 	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 	<tr> 
 	<td width="30%" align="right" nowrap valign="middle">{ name }:</td>
-	<td width="70%" valign="middle"><b>{ arr[author] }</b></td>
+	<td width="70%" valign="middle"><b>{ author }</b></td>
 	</tr>
 	<tr> 
 		<td align="right">{ subject }</td>
@@ -227,7 +227,7 @@ class="BabForumTopicsNavContribution" href="{ confirmurl }">{ confirmname }</a><
 				<dl class="BabForumFiles">
 					<dt>{ t_files }:</dt>
 					<!--#in getnextfile -->
-					<dd><a href="{ file[url] }">{ file[name] }</a> <span>( { file[size] }<!--#if displayIndex -->, { file[index_label] }<!--#endif displayIndex --> )</span></dd>
+					<dd><a href="{ file[url] }">{ file_name }</a> <span>( { file_size }<!--#if displayIndex -->, { file_index_label }<!--#endif displayIndex --> )</span></dd>
 					<!--#endin getnextfile -->
 				</dl>
 				<!--#endif files -->
@@ -488,7 +488,7 @@ window.focus();
 			<dl class="BabForumFiles">
 				<dt><span>{ t_files }:</span></dt>
 				<!--#in getnextfile -->
-				<dd><a href="{ file[url] }">{ file[name] }</a> <span>( { file[size] }<!--#if ismanager -->, { file[index_label] }<!--#endif ismanager --> )</span></dd>
+				<dd><a href="{ file_url }">{ file_name }</a> <span>( { file_size }<!--#if ismanager -->, { file_index_label }<!--#endif ismanager --> )</span></dd>
 				<!--#endin getnextfile -->
 			</dl>
 			<!--#endif files -->

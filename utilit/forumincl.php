@@ -21,35 +21,35 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
+include_once 'base.php';
 
-define("DELTA_TIME", 86400);
+define('DELTA_TIME', 86400);
 
 function bab_getForumName($id)
 	{
-	$db = $GLOBALS['babDB'];
-	$query = "select name from ".BAB_FORUMS_TBL." where id='".$id."'";
-	$res = $db->db_query($query);
-	if( $res && $db->db_num_rows($res) > 0)
+	global $babDB;
+	$query = "select name from ".BAB_FORUMS_TBL." where id='".$babDB->db_escape_string($id)."'";
+	$res = $babDB->db_query($query);
+	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-		$arr = $db->db_fetch_array($res);
+		$arr = $babDB->db_fetch_array($res);
 		return $arr['name'];
 		}
 	else
 		{
-		return "";
+		return '';
 		}
 	}
 
 function bab_isForumModerated($forum)
 	{
-	$db = $GLOBALS['babDB'];
-	$query = "select moderation from ".BAB_FORUMS_TBL." where id='".$forum."'";
-	$res = $db->db_query($query);
-	if( $res && $db->db_num_rows($res) > 0)
+	global $babDB;
+	$query = "select moderation from ".BAB_FORUMS_TBL." where id='".$babDB->db_escape_string($forum)."'";
+	$res = $babDB->db_query($query);
+	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-		$arr = $db->db_fetch_array($res);
-		if( $arr['moderation'] == "Y")
+		$arr = $babDB->db_fetch_array($res);
+		if( $arr['moderation'] == 'Y')
 			return true;
 		else
 			return false;
@@ -59,13 +59,13 @@ function bab_isForumModerated($forum)
 
 function bab_isForumThreadOpen($forum, $thread)
 	{
-	$db = $GLOBALS['babDB'];
-	$query = "select active from ".BAB_THREADS_TBL." where id='".$thread."' and forum='".$forum."'";
-	$res = $db->db_query($query);
-	if( $res && $db->db_num_rows($res) > 0)
+	global $babDB;
+	$query = "select active from ".BAB_THREADS_TBL." where id='".$babDB->db_escape_string($thread)."' and forum='".$babDB->db_escape_string($forum)."'";
+	$res = $babDB->db_query($query);
+	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-		$arr = $db->db_fetch_array($res);
-		if( $arr['active'] == "Y")
+		$arr = $babDB->db_fetch_array($res);
+		if( $arr['active'] == 'Y')
 			return true;
 		else
 			return false;
@@ -75,24 +75,24 @@ function bab_isForumThreadOpen($forum, $thread)
 
 function bab_getForumThreadTitle($id)
 	{
-	$db = $GLOBALS['babDB'];
-	$query = "select post from ".BAB_THREADS_TBL." where id='".$id."'";
-	$res = $db->db_query($query);
-	if( $res && $db->db_num_rows($res) > 0)
+	global $babDB;
+	$query = "select post from ".BAB_THREADS_TBL." where id='".$babDB->db_escape_string($id)."'";
+	$res = $babDB->db_query($query);
+	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-		$arr = $db->db_fetch_array($res);
-		$query = "select subject from ".BAB_POSTS_TBL." where id='".$arr['post']."'";
-		$res = $db->db_query($query);
-		if( $res && $db->db_num_rows($res) > 0)
+		$arr = $babDB->db_fetch_array($res);
+		$query = "select subject from ".BAB_POSTS_TBL." where id='".$babDB->db_escape_string($arr['post'])."'";
+		$res = $babDB->db_query($query);
+		if( $res && $babDB->db_num_rows($res) > 0)
 			{
-			$arr = $db->db_fetch_array($res);
+			$arr = $babDB->db_fetch_array($res);
 			return $arr['subject'];
 			}
-		return "";
+		return '';
 		}
 	else
 		{
-		return "";
+		return '';
 		}
 	}
 
@@ -116,7 +116,7 @@ function notifyForumGroups($forum, $threadTitle, $author, $forumname, $tables, $
 		function tempa($forum, $threadTitle, $author, $forumname, $url)
 			{
             global $BAB_SESS_USER, $BAB_SESS_EMAIL, $babSiteName;
-            $this->message = bab_translate("A new post has been registered on forum") .": ".$forumname;
+            $this->message = bab_translate("A new post has been registered on forum") .': '.$forumname;
             $this->from = bab_translate("Author");
             $this->thread = bab_translate("Thread");
             $this->threadname = $threadTitle;
@@ -134,7 +134,7 @@ function notifyForumGroups($forum, $threadTitle, $author, $forumname, $tables, $
 					}
 				else
 					{
-					$this->url = $GLOBALS['babUrlScript']."?tg=login&cmd=detect&referer=".urlencode($url);
+					$this->url = $GLOBALS['babUrlScript'].'?tg=login&cmd=detect&referer='.urlencode($url);
 					}
 				}
 			else
@@ -155,22 +155,22 @@ function notifyForumGroups($forum, $threadTitle, $author, $forumname, $tables, $
     $mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
 
 	$tempa = new tempa($forum, $threadTitle, $author, $forumname, $url);
-	$message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "newpost"));
-	$messagetxt = bab_printTemplate($tempa,"mailinfo.html", "newposttxt");
+	$message = $mail->mailTemplate(bab_printTemplate($tempa,'mailinfo.html', 'newpost'));
+	$messagetxt = bab_printTemplate($tempa,'mailinfo.html', 'newposttxt');
 
-	$mail->mailBody($message, "html");
+	$mail->mailBody($message, 'html');
 	$mail->mailAltBody($messagetxt);
 
-	$subject = bab_printTemplate($tempa,"mailinfo.html", "newpost_subject");
+	$subject = bab_printTemplate($tempa,'mailinfo.html', 'newpost_subject');
 	if( empty($subject) )
 		$mail->mailSubject(bab_translate("New post"));
 	else
 		$mail->mailSubject($subject);
 
-	list($nbrecipients) = $babDB->db_fetch_row($babDB->db_query("select nb_recipients from ".BAB_FORUMS_TBL." where id='".$forum."'"));
+	list($nbrecipients) = $babDB->db_fetch_row($babDB->db_query("select nb_recipients from ".BAB_FORUMS_TBL." where id='".$babDB->db_escape_string($forum)."'"));
 	for( $mk=0; $mk < count($tables); $mk++ )
 		{
-		include_once $babInstallPath."admin/acl.php";
+		include_once $babInstallPath.'admin/acl.php';
 		$users = aclGetAccessUsers($tables[$mk], $forum);
 		$arrusers = array();
 		$count = 0;
@@ -252,10 +252,10 @@ function notifyThreadAuthor($threadTitle, $email, $author)
     $mail->mailSubject(bab_translate("New post"));
 
 	$tempb = new tempb($threadTitle, $email, $author);
-	$message = $mail->mailTemplate(bab_printTemplate($tempb,"mailinfo.html", "newpost"));
-    $mail->mailBody($message, "html");
+	$message = $mail->mailTemplate(bab_printTemplate($tempb,'mailinfo.html', 'newpost'));
+    $mail->mailBody($message, 'html');
 
-	$message = bab_printTemplate($tempb,"mailinfo.html", "newposttxt");
+	$message = bab_printTemplate($tempb,'mailinfo.html', 'newposttxt');
     $mail->mailAltBody($message);
 
 	$mail->send();
@@ -263,7 +263,7 @@ function notifyThreadAuthor($threadTitle, $email, $author)
 
 
 function bab_uploadPostFiles($postid, $id_forum) {
-	$db = $GLOBALS['babDB'];
+	global $babDB;
 	$baseurl = $GLOBALS['babUploadPath'].'/forums/';
 	if (!is_dir($baseurl))
 		{
@@ -274,7 +274,7 @@ function bab_uploadPostFiles($postid, $id_forum) {
 			}
 		}
 
-	include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
+	include_once $GLOBALS['babInstallPath'].'utilit/indexincl.php';
 	$postfiles = array();
 
 
@@ -301,22 +301,22 @@ function bab_uploadPostFiles($postid, $id_forum) {
 	foreach($postfiles as $name => $dest) {
 	
 
-		$res = $db->db_query("SELECT id, index_status FROM ".BAB_FORUMSFILES_TBL." WHERE id_post='".$postid."' AND name='".$db->db_escape_string($name)."'");
+		$res = $babDB->db_query("SELECT id, index_status FROM ".BAB_FORUMSFILES_TBL." WHERE id_post='".$babDB->db_escape_string($postid)."' AND name='".$babDB->db_escape_string($name)."'");
 
 
-		if ($res && $arr = $db->db_fetch_assoc($res)) {
+		if ($res && $arr = $babDB->db_fetch_assoc($res)) {
 			// old file overwrited
 			
 			if ($index_status != $arr['index_status']) {
-				$db->db_query("UPDATE ".BAB_FORUMSFILES_TBL." SET index_status='".$index_status."' WHERE id='".$arr['id']."'");
+				$babDB->db_query("UPDATE ".BAB_FORUMSFILES_TBL." SET index_status='".$index_status."' WHERE id='".$arr['id']."'");
 			}
 			
 		} else {
 			// new file
-			$db->db_query("INSERT INTO ".BAB_FORUMSFILES_TBL." 
+			$babDB->db_query("INSERT INTO ".BAB_FORUMSFILES_TBL." 
 					(id_post, name, index_status) 
 				VALUES 
-					('".$postid."', '".$db->db_escape_string($name)."', '".$index_status."')
+					('".$postid."', '".$babDB->db_escape_string($name)."', '".$index_status."')
 			");
 		}
 	}	
@@ -336,12 +336,11 @@ function bab_uploadPostFiles($postid, $id_forum) {
  */
 function bab_getPostFiles($forum,$postid)
 	{
-	include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
+	global $babDB;
+	include_once $GLOBALS['babInstallPath'].'utilit/indexincl.php';
 	$filedirectory = array();
 	$out = array();
 	$baseurl = $GLOBALS['babUploadPath'].'/forums/';
-	$db  =&$GLOBALS['babDB'];
-
 
 	if (is_dir($baseurl) && $h = opendir($baseurl)) {
 		while (false !== ($file = readdir($h))) {
@@ -353,14 +352,14 @@ function bab_getPostFiles($forum,$postid)
 	}
 
 
-	$res = $db->db_query("SELECT * FROM ".BAB_FORUMSFILES_TBL." WHERE id_post='".$postid."'");
-	while ($arr = $db->db_fetch_assoc($res)) {
+	$res = $babDB->db_query("SELECT * FROM ".BAB_FORUMSFILES_TBL." WHERE id_post='".$babDB->db_escape_string($postid)."'");
+	while ($arr = $babDB->db_fetch_assoc($res)) {
 
 		if (isset($filedirectory[$arr['name']])) {
 			$path = $filedirectory[$arr['name']];
 
 			$out[] = array(
-						'url' => $GLOBALS['babUrlScript']."?tg=posts&idx=dlfile&forum=".$forum."&post=".$postid."&file=".urlencode($arr['name']),
+						'url' => $GLOBALS['babUrlScript'].'?tg=posts&idx=dlfile&forum='.$forum.'&post='.$postid.'&file='.urlencode($arr['name']),
 						'path' =>  $path,
 						'name' => $arr['name'],
 						'size' => ceil(filesize($path)/1024).' '.bab_translate('Kb'),
@@ -371,7 +370,7 @@ function bab_getPostFiles($forum,$postid)
 			unset($filedirectory[$arr['name']]);
 
 		} else {
-			$db->db_query("DELETE FROM ".BAB_FORUMSFILES_TBL." WHERE id='".$arr['id']."'");
+			$babDB->db_query("DELETE FROM ".BAB_FORUMSFILES_TBL." WHERE id='".$babDB->db_escape_string($arr['id'])."'");
 		}
 	}
 
@@ -399,9 +398,9 @@ function bab_getPostFiles($forum,$postid)
  */
 function indexAllForumFiles($status, $prepare) {
 	
-	$db = &$GLOBALS['babDB'];
+	global $babDB;
 
-	$res = $db->db_query("
+	$res = $babDB->db_query("
 	
 		SELECT 
 			f.id,
@@ -414,7 +413,7 @@ function indexAllForumFiles($status, $prepare) {
 			".BAB_POSTS_TBL." p,
 			".BAB_THREADS_TBL." t 
 		WHERE 
-			f.index_status IN('".implode("','",$status)."') 
+			f.index_status IN(".$babDB->quote($status).") 
 			AND p.id = f.id_post 
 			AND t.id = p.id_thread 
 		
@@ -424,10 +423,10 @@ function indexAllForumFiles($status, $prepare) {
 	$files = array();
 	$rights = array();
 
-	while ($arr = $db->db_fetch_assoc($res)) {
+	while ($arr = $babDB->db_fetch_assoc($res)) {
 
-		$files[] = $baseurl.$arr['id_post'].",".$arr['name'];
-		$rights['forums/'.$arr['id_post'].",".$arr['name']] = array(
+		$files[] = $baseurl.$arr['id_post'].','.$arr['name'];
+		$rights['forums/'.$arr['id_post'].','.$arr['name']] = array(
 				'id' => $arr['id'],
 				'id_forum' => $arr['forum']
 			);
@@ -440,7 +439,7 @@ function indexAllForumFiles($status, $prepare) {
 		return $r;
 	}
 
-	include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
+	include_once $GLOBALS['babInstallPath'].'utilit/indexincl.php';
 
 	$obj = new bab_indexObject('bab_forumsfiles');
 
@@ -469,12 +468,12 @@ function indexAllForumFiles($status, $prepare) {
 
 function indexAllForumFiles_end($param) {
 
-	$db = &$GLOBALS['babDB'];
-	$db->db_query("
+	global $babDB;
+	$babDB->db_query("
 	
 		UPDATE ".BAB_FORUMSFILES_TBL." SET index_status='".BAB_INDEX_STATUS_INDEXED."'
 		WHERE 
-			index_status IN('".implode("','",$param['status'])."')
+			index_status IN(".$babDB->db_escape_string($param['status']).")
 	");
 
 	$obj = new bab_indexObject('bab_forumsfiles');
