@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
+include_once 'base.php';
 
 function listAddress($pos)
 	{
@@ -67,13 +67,13 @@ function listAddress($pos)
 
 		function temp($pos)
 			{
-			global $BAB_SESS_USERID,$babBody;
+			global $BAB_SESS_USERID,$babDB, $babBody;
 			$this->fullname = bab_translate("Contact")." / ".bab_translate("List");
 			$this->email = bab_translate("Email");
 			$this->allname = bab_translate("All");
-			$this->totoname = bab_translate("To") ." ->";
-			$this->toccname = bab_translate("Cc")." ->";
-			$this->tobccname = bab_translate("Bcc")." ->";
+			$this->totoname = bab_translate("To") .' ->';
+			$this->toccname = bab_translate("Cc").' ->';
+			$this->tobccname = bab_translate("Bcc").' ->';
 			$this->uncheckall = bab_translate("Uncheck all");
 			$this->checkall = bab_translate("Check all");
 			$this->closename = bab_translate("Close");
@@ -81,24 +81,23 @@ function listAddress($pos)
 			$this->toccurl = "javascript:updateDestination('cc')";
 			$this->tobccurl = "javascript:updateDestination('bcc')";
 			$this->closeurl = "javascript:this.close()";
-			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
+			$this->babCss = bab_printTemplate($this,'config.html', 'babCss');
 
-			$this->db = $GLOBALS['babDB'];
 
 			switch ($babBody->nameorder[0]) {
-			case "L":
-				$this->namesearch = "lastname";
-				$this->namesearch2 = "firstname";
+			case 'L':
+				$this->namesearch = 'lastname';
+				$this->namesearch2 = 'firstname';
 			break; 
-			case "F":
+			case 'F':
 			default:
-				$this->namesearch = "firstname";
-				$this->namesearch2 = "lastname";
+				$this->namesearch = 'firstname';
+				$this->namesearch2 = 'lastname';
 			break;}
 
-			$req = "select * from ".BAB_CONTACTS_TBL." where owner='".$BAB_SESS_USERID."' and ".$this->namesearch." like '".$pos."%' order by ".$this->namesearch.", ".$this->namesearch2." asc";
-			$this->res = $this->db->db_query($req);
-			$this->count = $this->db->db_num_rows($this->res);
+			$req = "select * from ".BAB_CONTACTS_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."' and ".$this->namesearch." like '".$babDB->db_escape_like($pos)."%' order by ".$this->namesearch.", ".$this->namesearch2." asc";
+			$this->res = $babDB->db_query($req);
+			$this->count = $babDB->db_num_rows($this->res);
 
 			$this->pos = $pos;
 
@@ -107,23 +106,24 @@ function listAddress($pos)
 			else
 				$this->allselected = 0;
 			$this->allurl = $GLOBALS['babUrlScript']."?tg=address&idx=list&pos=";
-			$req = "select distinct p3.id, p4.mn, p3.".$this->namesearch.", p3.".$this->namesearch2.", p3.email from ".BAB_USERS_TBL." as p3, ".BAB_DBDIR_ENTRIES_TBL." as p4, ".BAB_USERS_GROUPS_TBL." as p1,  ".BAB_USERS_GROUPS_TBL." as p2 where p1.id_object='".$BAB_SESS_USERID."' and p3.id=p4.id_user and p1.id_group = p2.id_group and p3.id=p2.id_object and ".$this->namesearch." like '".$pos."%' order by ".$this->namesearch.", ".$this->namesearch2." asc";
+			$req = "select distinct p3.id, p4.mn, p3.".$this->namesearch.", p3.".$this->namesearch2.", p3.email from ".BAB_USERS_TBL." as p3, ".BAB_DBDIR_ENTRIES_TBL." as p4, ".BAB_USERS_GROUPS_TBL." as p1,  ".BAB_USERS_GROUPS_TBL." as p2 where p1.id_object='".$babDB->db_escape_string($BAB_SESS_USERID)."' and p3.id=p4.id_user and p1.id_group = p2.id_group and p3.id=p2.id_object and ".$this->namesearch." like '".$babDB->db_escape_like($pos)."%' order by ".$this->namesearch.", ".$this->namesearch2." asc";
 
-			$this->resgrpm = $this->db->db_query($req);
-			$this->countgrpm = $this->db->db_num_rows($this->resgrpm);
+			$this->resgrpm = $babDB->db_query($req);
+			$this->countgrpm = $babDB->db_num_rows($this->resgrpm);
 
-			$req = "select ".BAB_GROUPS_TBL.".id, ".BAB_GROUPS_TBL.".name from  ".BAB_GROUPS_TBL.", ".BAB_USERS_GROUPS_TBL." as p1 where p1.id_object='".$BAB_SESS_USERID."' and p1.id_group = ".BAB_GROUPS_TBL.".id and ".BAB_GROUPS_TBL.".name like '".$pos."%' order by ".BAB_GROUPS_TBL.".name asc";
-			$this->resgrp = $this->db->db_query($req);
-			$this->countgrp = $this->db->db_num_rows($this->resgrp);
+			$req = "select ".BAB_GROUPS_TBL.".id, ".BAB_GROUPS_TBL.".name from  ".BAB_GROUPS_TBL.", ".BAB_USERS_GROUPS_TBL." as p1 where p1.id_object='".$babDB->db_escape_string($BAB_SESS_USERID)."' and p1.id_group = ".BAB_GROUPS_TBL.".id and ".BAB_GROUPS_TBL.".name like '".$babDB->db_escape_like($pos)."%' order by ".BAB_GROUPS_TBL.".name asc";
+			$this->resgrp = $babDB->db_query($req);
+			$this->countgrp = $babDB->db_num_rows($this->resgrp);
 
 			}
 
 		function getnextcontact()
 			{
+			global $babDB;
 			static $i = 0;
 			if( $i < $this->count)
 				{
-				$this->arr = $this->db->db_fetch_array($this->res);
+				$this->arr = $babDB->db_fetch_array($this->res);
 				$this->nameval = bab_composeUserName($this->arr['firstname'],$this->arr['lastname']);
 				$this->emailval = $this->arr['email'];
 				$this->checkval = $this->nameval;
@@ -139,10 +139,11 @@ function listAddress($pos)
 
 		function getnextgroupmember()
 			{
+			global $babDB;
 			static $j = 0;
 			if( $j < $this->countgrpm)
 				{
-				$arr = $this->db->db_fetch_array($this->resgrpm);
+				$arr = $babDB->db_fetch_array($this->resgrpm);
 				$this->nameval = bab_composeUserName($arr['firstname'],$arr['lastname']);
 				$this->emailval = $arr['email'];
 				$this->checkval = $arr['firstname'].' '.$arr['mn'].' '.$arr['lastname']."(g)";
@@ -158,13 +159,14 @@ function listAddress($pos)
 
 		function getnextgroup()
 			{
+			global $babDB;
 			static $j = 0;
 			if( $j < $this->countgrp)
 				{
-				$arr = $this->db->db_fetch_array($this->resgrp);
+				$arr = $babDB->db_fetch_array($this->resgrp);
 				$this->nameval = $arr['name'];
-				$this->emailval = "";
-				$this->checkval = $this->nameval."(g)";
+				$this->emailval = '';
+				$this->checkval = $this->nameval.'(g)';
 				$j++;
 				return true;
 				}
@@ -177,33 +179,33 @@ function listAddress($pos)
 
 		function getnextselect()
 			{
-			global $BAB_SESS_USERID;
+			global $BAB_SESS_USERID, $babDB;
 			static $k = 0;
-			static $t = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+			static $t = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 			if( $k < 26)
 				{
 				$this->selectname = substr($t, $k, 1);
-				$this->selecturl = $GLOBALS['babUrlScript']."?tg=address&idx=list&pos=".$this->selectname;
+				$this->selecturl = $GLOBALS['babUrlScript'].'?tg=address&idx=list&pos='.$this->selectname;
 
 				if( $this->pos == $this->selectname)
 					$this->selected = 1;
 				else 
 					{
-					$req = "select * from ".BAB_CONTACTS_TBL." where firstname like '".$this->selectname."%'";
-					$res = $this->db->db_query($req);
-					if( $this->db->db_num_rows($res) < 1 )
+					$req = "select * from ".BAB_CONTACTS_TBL." where firstname like '".$babDB->db_escape_like($this->selectname)."%'";
+					$res = $babDB->db_query($req);
+					if( $babDB->db_num_rows($res) < 1 )
 						{
-						$req = "select distinct p3.id, p3.".$this->namesearch.", p3.".$this->namesearch2.", p3.email from ".BAB_USERS_TBL." as p3, ".BAB_USERS_GROUPS_TBL." as p1,  ".BAB_USERS_GROUPS_TBL." as p2 where p1.id_object='".$BAB_SESS_USERID."' and p1.id_group = p2.id_group and p3.id=p2.id_object and ".$this->namesearch." like '".$this->selectname."%'";
-						$res = $this->db->db_query($req);
-						if( $this->db->db_num_rows($res) > 0 )
+						$req = "select distinct p3.id, p3.".$this->namesearch.", p3.".$this->namesearch2.", p3.email from ".BAB_USERS_TBL." as p3, ".BAB_USERS_GROUPS_TBL." as p1,  ".BAB_USERS_GROUPS_TBL." as p2 where p1.id_object='".$babDB->db_escape_string($BAB_SESS_USERID)."' and p1.id_group = p2.id_group and p3.id=p2.id_object and ".$this->namesearch." like '".$babDB->db_escape_like($this->selectname)."%'";
+						$res = $babDB->db_query($req);
+						if( $babDB->db_num_rows($res) > 0 )
 							{
 							$this->selected = 0;
 							}
 						else
 							{
-							$req = "select ".BAB_GROUPS_TBL.".id from  ".BAB_GROUPS_TBL.", ".BAB_USERS_GROUPS_TBL." as p1 where p1.id_object='".$BAB_SESS_USERID."' and p1.id_group = ".BAB_GROUPS_TBL.".id and ".BAB_GROUPS_TBL.".name like '".$this->selectname."%'";
-							$res = $this->db->db_query($req);
-							if( $this->db->db_num_rows($res) > 0 )
+							$req = "select ".BAB_GROUPS_TBL.".id from  ".BAB_GROUPS_TBL.", ".BAB_USERS_GROUPS_TBL." as p1 where p1.id_object='".$babDB->db_escape_string($BAB_SESS_USERID)."' and p1.id_group = ".BAB_GROUPS_TBL.".id and ".BAB_GROUPS_TBL.".name like '".$babDB->db_escape_like($this->selectname)."%'";
+							$res = $babDB->db_query($req);
+							if( $babDB->db_num_rows($res) > 0 )
 								{
 								$this->selected = 0;
 								}
@@ -226,23 +228,23 @@ function listAddress($pos)
 		}
 
 	$temp = new temp($pos);
-	echo bab_printTemplate($temp, "address.html", "addresslist");
+	echo bab_printTemplate($temp, 'address.html', 'addresslist');
 	}
 
 /* main */
 if( !isset($pos))
-	$pos = "A";
+	$pos = 'A';
 
 if( !isset($idx))
-	$idx = "list";
+	$idx = 'list';
 
 switch($idx)
 	{
-	case "list":
+	case 'list':
 		$babBody->title = bab_translate("Users list");
 		listAddress($pos);
-		$babBody->addItemMenu("list", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=address&idx=list");
-		//$babBody->addItemMenu("Find", bab_translate("Find"), $GLOBALS['babUrlScript']."?tg=users&idx=Find");
+		$babBody->addItemMenu('list', bab_translate("Users"),$GLOBALS['babUrlScript'].'?tg=address&idx=list');
+		//$babBody->addItemMenu('Find', bab_translate("Find"), $GLOBALS['babUrlScript'].'?tg=users&idx=Find');
 		break;
 	default:
 		break;
