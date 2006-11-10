@@ -122,7 +122,7 @@ function browse($topics,$cat,$cb)
 
 		function getnextcat()
 			{
-			global $babBody;
+			global $babBody, $babDB;
 			static $i = 0;
 			if( $i < $this->countcat)
 				{
@@ -147,7 +147,7 @@ function browse($topics,$cat,$cb)
 
 		function getnexttop()
 			{
-			global $babBody;
+			global $babBody, $babDB;
 			static $i = 0;
 			if( $i < $this->counttop)
 				{
@@ -171,7 +171,7 @@ function browse($topics,$cat,$cb)
 
 		function getnextarticle(&$skip)
 			{
-			global $babBody;
+			global $babBody, $babDB;
 			static $i = 0;
 			if( $i < $this->countarticles)
 				{
@@ -194,10 +194,10 @@ function browse($topics,$cat,$cb)
 					$this->author = bab_translate("by") . ' '. $this->articleauthor. ' - '. $this->articledate;
 
 					$tmp = str_replace('\n',' ',substr(strip_tags(bab_replace($arr['head'])), 0, 400).' -- '.$this->author);
-					$this->content = str_replace('\r',' ',$tmp);
-					$this->content = str_replace('\"',"'",$this->content);
-					$this->titledisp = $arr['title'];
-					$tmp = str_replace('\"',' ',$arr['title']);
+					$this->content = str_replace("\r"," ",$tmp);
+					$this->content = str_replace("\"","'",$this->content);
+					$this->titledisp = bab_toHTML($arr['title']);
+					$tmp = str_replace("\""," ",$arr['title']);
 					$this->title = addslashes($tmp);
 					$this->articleid = $arr['id'];
 					}

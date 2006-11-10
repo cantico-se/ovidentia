@@ -21,10 +21,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include "base.php";
-include_once $babInstallPath."utilit/uiutil.php";
-include_once $babInstallPath."utilit/topincl.php";
-include_once $babInstallPath."utilit/artincl.php";
+include 'base.php';
+include_once $babInstallPath.'utilit/uiutil.php';
+include_once $babInstallPath.'utilit/topincl.php';
+include_once $babInstallPath.'utilit/artincl.php';
 
 define("BAB_ART_MAXLOGS"	, 25);
 
@@ -134,19 +134,20 @@ function listArticles($topics)
 	
 		function temp($topics)
 			{
+			global $babDB;
 			$this->listArticles($topics);
-			$this->db = $GLOBALS['babDB'];
+			$babDB = $GLOBALS['babDB'];
 			$this->bmanager = bab_isUserTopicManager($this->topics);
 
-			$req = "select at.id, at.id_topic, at.id_author, at.date, at.date_modification, at.title, at.head, LENGTH(at.body) as blen, at.restriction from ".BAB_ARTICLES_TBL." at where at.id_topic='".$topics."' and at.archive='N' and (date_publication='0000-00-00 00:00:00' or date_publication <= now())";
+			$req = "select at.id, at.id_topic, at.id_author, at.date, at.date_modification, at.title, at.head, LENGTH(at.body) as blen, at.restriction from ".BAB_ARTICLES_TBL." at where at.id_topic='".$babDB->db_escape_string($topics)."' and at.archive='N' and (date_publication='0000-00-00 00:00:00' or date_publication <= now())";
 			$langFilterValue = $GLOBALS['babLangFilter']->getFilterAsInt();
 			switch($langFilterValue)
 				{
 					case 2:
-						$req .= " and (at.lang='".$GLOBALS['babLanguage']."' or at.lang='*' or lang='')  order by at.ordering asc";
+						$req .= " and (at.lang='".$babDB->db_escape_string($GLOBALS['babLanguage'])."' or at.lang='*' or lang='')  order by at.ordering asc";
 						break;
 					case 1:
-						$req .= " and ((at.lang like '". substr($GLOBALS['babLanguage'], 0, 2) ."%') or at.lang='*' or lang='') order by at.ordering asc";
+						$req .= " and ((at.lang like '". $babDB->db_escape_like(substr($GLOBALS['babLanguage'], 0, 2)) ."%') or at.lang='*' or lang='') order by at.ordering asc";
 						break;
 					case 0:
 					default:
@@ -154,8 +155,8 @@ function listArticles($topics)
 				}
 				
 			$req .= ", at.date_modification desc";
-			$this->res = $this->db->db_query($req);
-			$this->count = $this->db->db_num_rows($this->res);
+			$this->res = $babDB->db_query($req);
+			$this->count = $babDB->db_num_rows($this->res);
 			if( bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $this->topics))
 				{
 				$this->bcomment = true;
@@ -181,11 +182,11 @@ function listArticles($topics)
 
 		function getnext(&$skip)
 			{
-			global $arrtop;
+			global $babDB, $arrtop;
 			static $i = 0;
 			if( $i < $this->count)
 				{
-				$this->arr = $this->db->db_fetch_array($this->res);
+				$this->arr = $babDB->db_fetch_array($this->res);
 				if( $this->arr['restriction'] != '' && !bab_articleAccessByRestriction($this->arr['restriction']))
 					{
 					$skip = true;
@@ -195,7 +196,7 @@ function listArticles($topics)
 				$this->articleid = $this->arr['id'];
 				if( $this->arr['id_author'] != 0 && (($author = bab_getUserName($this->arr['id_author'])) != ""))
 					{
-					$this->articleauthor = $author;
+					$this->articleauthor = bab_toHtml($author);
 					}
 				else
 					{
@@ -205,13 +206,13 @@ function listArticles($topics)
 				if( bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $this->topics) || ( $arrtop['allow_update'] != '0' && $this->arr['id_author'] == $GLOBALS['BAB_SESS_USERID']) || ( $arrtop['allow_manupdate'] != '0' && bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $this->topics)))
 					{
 					$this->bmodify = true;
-					$res =  $this->db->db_query("select id, id_author from ".BAB_ART_DRAFTS_TBL." where id_article='".$this->arr['id']."'");
-					if( $res && $this->db->db_num_rows($res) > 0 )
+					$res =  $babDB->db_query("select id, id_author from ".BAB_ART_DRAFTS_TBL." where id_article='".$babDB->db_escape_string($this->arr['id'])."'");
+					if( $res && $babDB->db_num_rows($res) > 0 )
 						{
-						$rr = $this->db->db_fetch_array($res);
+						$rr = $babDB->db_fetch_array($res);
 						$this->bmodifyurl = false;
 						$this->modifybytxt = bab_translate("In modification by");
-						$this->modifyauthor	= bab_getUserName($rr['id_author']);
+						$this->modifyauthor	= bab_toHtml(bab_getUserName($rr['id_author']));
 						$this->modifyurl = $GLOBALS['babUrlScript']."?tg=articles&idx=log&topics=".$this->topics."&article=".$this->arr['id'];
 						if( $rr['id_author'] == $GLOBALS['BAB_SESS_USERID'] )
 							{
@@ -239,10 +240,10 @@ function listArticles($topics)
 				/* template variables */
 				$this->babtpl_authorid = $this->arr['id_author'];
 
-				$this->articledate = bab_strftime(bab_mktime($this->arr['date_modification']));
-				$this->author = bab_translate("by") . " ". $this->articleauthor. " - ". $this->articledate;
+				$this->articledate = bab_toHtml(bab_strftime(bab_mktime($this->arr['date_modification'])));
+				$this->author = bab_toHtml(bab_translate("by") . " ". $this->articleauthor. " - ". $this->articledate);
 				$this->content = bab_replace($this->arr['head']);
-				$this->title = stripslashes($this->arr['title']);
+				$this->title = bab_toHtml(stripslashes($this->arr['title']));
 				$this->topictitle = bab_getCategoryTitle($this->arr['id_topic']);
 				$this->printurl = $GLOBALS['babUrlScript']."?tg=articles&idx=Print&topics=".$this->topics."&article=".$this->arr['id'];
 				$this->bbody = $this->arr['blen'];
@@ -255,7 +256,7 @@ function listArticles($topics)
 					$GLOBALS['babWebStat']->addArticle($this->arr['id']);
 					}
 
-				list($totalc) = $this->db->db_fetch_row($this->db->db_query("select count(id) as total from ".BAB_COMMENTS_TBL." where id_article='".$this->arr['id']."' and confirmed='Y'"));
+				list($totalc) = $babDB->db_fetch_row($babDB->db_query("select count(id) as total from ".BAB_COMMENTS_TBL." where id_article='".$babDB->db_escape_string($this->arr['id'])."' and confirmed='Y'"));
 
 				if( $totalc > 0 || $this->bcomment)
 					{
@@ -275,8 +276,8 @@ function listArticles($topics)
 					$this->commentstxt = "";
 					}
 
-				$this->resf = $this->db->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$this->arr['id']."' order by name asc");
-				$this->countf = $this->db->db_num_rows($this->resf);
+				$this->resf = $babDB->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$babDB->db_escape_string($this->arr['id'])."' order by name asc");
+				$this->countf = $babDB->db_num_rows($this->resf);
 
 				if( $this->countf > 0 )
 					{
@@ -295,14 +296,14 @@ function listArticles($topics)
 
 		function getnextdoc()
 			{
-			global $arrtop;
+			global $babDB, $arrtop;
 			static $i = 0;
 			if( $i < $this->countf)
 				{
-				$arr = $this->db->db_fetch_array($this->resf);
+				$arr = $babDB->db_fetch_array($this->resf);
 				$this->docurl = $GLOBALS['babUrlScript']."?tg=articles&idx=getf&topics=".$this->topics."&idf=".$arr['id'];
-				$this->docname = $arr['name'];
-				$this->docdesc = $arr['description'];
+				$this->docname = bab_toHtml($arr['name']);
+				$this->docdesc = bab_toHtml($arr['description']);
 				$i++;
 				return true;
 				}
@@ -336,14 +337,13 @@ function listArchiveArticles($topics, $pos)
 
 		function listArchiveArticlesCls($topics, $pos)
 			{
-			global $arrtop;
+			global $babDB, $arrtop;
 
 			$this->listArticles($topics);
-			$this->db = $GLOBALS['babDB'];
 			$maxarticles = $arrtop['max_articles'];
 
-			$res = $this->db->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$topics."'and archive='Y'");
-			list($total)= $this->db->db_fetch_array($res);
+			$res = $babDB->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$babDB->db_escape_string($topics)."'and archive='Y'");
+			list($total)= $babDB->db_fetch_array($res);
 
 			if( $total > $maxarticles)
 				{
@@ -383,19 +383,19 @@ function listArchiveArticles($topics, $pos)
 			$req = "select id, id_topic, id_author, date, title, head, LENGTH(body) as blen, restriction from ".BAB_ARTICLES_TBL." where id_topic='$topics' and archive='Y' order by date desc";
 			if( $total > $maxarticles)
 				{
-				$req .= " limit ".$pos.",".$maxarticles;
+				$req .= " limit ".$babDB->db_escape_string($pos).",".$maxarticles;
 				}
-			$this->res = $this->db->db_query($req);
-			$this->count = $this->db->db_num_rows($this->res);
+			$this->res = $babDB->db_query($req);
+			$this->count = $babDB->db_num_rows($this->res);
 			}
 
 		function getnext(&$skip)
 			{
-			global $new; 
+			global $babDB, $new; 
 			static $i = 0;
 			if( $i < $this->count)
 				{
-				$this->arr = $this->db->db_fetch_array($this->res);
+				$this->arr = $babDB->db_fetch_array($this->res);
 				if( $this->arr['restriction'] != '' && !bab_articleAccessByRestriction($this->arr['restriction']))
 					{
 					$skip = true;
@@ -422,9 +422,9 @@ function listArchiveArticles($topics, $pos)
 				$this->modifyurl = $GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$this->topics."&article=".$this->arr['id'];
 				$this->delurl = $GLOBALS['babUrlScript']."?tg=articles&idx=Delete&topics=".$this->topics."&article=".$this->arr['id'];
 
-				$req = "select count(id) as total from ".BAB_COMMENTS_TBL." where id_article='".$this->arr['id']."' and confirmed='Y'";
-				$res = $this->db->db_query($req);
-				$ar = $this->db->db_fetch_array($res);
+				$req = "select count(id) as total from ".BAB_COMMENTS_TBL." where id_article='".$babDB->db_escape_string($this->arr['id'])."' and confirmed='Y'";
+				$res = $babDB->db_query($req);
+				$ar = $babDB->db_fetch_array($res);
 				$total = $ar['total'];
 				if( $total > 0)
 					{
@@ -439,8 +439,8 @@ function listArchiveArticles($topics, $pos)
 
 				$this->moreurl = $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$this->topics."&article=".$this->arr['id'];
 
-				$this->resf = $this->db->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$this->arr['id']."' order by name asc");
-				$this->countf = $this->db->db_num_rows($this->resf);
+				$this->resf = $babDB->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$babDB->db_escape_string($this->arr['id'])."' order by name asc");
+				$this->countf = $babDB->db_num_rows($this->resf);
 
 				if( $this->countf > 0 )
 					{
@@ -459,11 +459,11 @@ function listArchiveArticles($topics, $pos)
 
 		function getnextdoc()
 			{
-			global $arrtop;
+			global $babDB, $arrtop;
 			static $i = 0;
 			if( $i < $this->countf)
 				{
-				$arr = $this->db->db_fetch_array($this->resf);
+				$arr = $babDB->db_fetch_array($this->resf);
 				$this->docurl = $GLOBALS['babUrlScript']."?tg=articles&idx=getf&topics=".$this->topics."&idf=".$arr['id'];
 				$this->docname = $arr['name'];
 				$this->docdesc = $arr['description'];
@@ -513,40 +513,40 @@ function readMore($topics, $article)
 
 		function temp($topics, $article)
 			{
-			global $arrtop;
+			global $babDB, $arrtop;
 			/* template variables */
 			$this->babtpl_topicid = $topics;
 
 			$this->categoriesHierarchy($topics, -1, $GLOBALS['babUrlScript']."?tg=topusr");
 			$this->printtxt = bab_translate("Print Friendly");
-			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_ARTICLES_TBL." where id='".$article."' and (date_publication='0000-00-00 00:00:00' or date_publication <= now())";
-			$this->res = $this->db->db_query($req);
-			$this->arr = $this->db->db_fetch_array($this->res);
-			$this->count = $this->db->db_num_rows($this->res);
-			$res = $this->db->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$this->topics."' and archive='Y'");
-			list($this->nbarch) = $this->db->db_fetch_row($res);
-			$req = "select id,title, restriction from ".BAB_ARTICLES_TBL." where id_topic='".$this->topics."' and archive='N' and (date_publication='0000-00-00 00:00:00' or date_publication <= now()) order by date desc";
-			$this->resart = $this->db->db_query($req);
-			$this->countart = $this->db->db_num_rows($this->resart);
+			$babDB = $GLOBALS['babDB'];
+			$req = "select * from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($article)."' and (date_publication='0000-00-00 00:00:00' or date_publication <= now())";
+			$this->res = $babDB->db_query($req);
+			$this->arr = $babDB->db_fetch_array($this->res);
+			$this->count = $babDB->db_num_rows($this->res);
+			$res = $babDB->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$babDB->db_escape_string($this->topics)."' and archive='Y'");
+			list($this->nbarch) = $babDB->db_fetch_row($res);
+			$req = "select id,title, restriction from ".BAB_ARTICLES_TBL." where id_topic='".$babDB->db_escape_string($this->topics)."' and archive='N' and (date_publication='0000-00-00 00:00:00' or date_publication <= now()) order by date desc";
+			$this->resart = $babDB->db_query($req);
+			$this->countart = $babDB->db_num_rows($this->resart);
 			$this->topictxt = bab_translate("In the same topic");
 			$this->commenttxt = bab_translate("Comments");
-			$this->article = $article;
+			$this->article = bab_toHtml($article);
 			$this->artcount = 0;
 
-			$this->rescom = $this->db->db_query("select * from ".BAB_COMMENTS_TBL." where id_article='".$article."' and confirmed='Y' order by date desc");
-			$this->countcom = $this->db->db_num_rows($this->rescom);
+			$this->rescom = $babDB->db_query("select * from ".BAB_COMMENTS_TBL." where id_article='".$babDB->db_escape_string($article)."' and confirmed='Y' order by date desc");
+			$this->countcom = $babDB->db_num_rows($this->rescom);
 
 			if( $this->count > 0 && $this->arr['archive'] == 'N' && (bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $this->topics) || ( $arrtop['allow_update'] != '0' && $this->arr['id_author'] == $GLOBALS['BAB_SESS_USERID']) || ($arrtop['allow_manupdate'] != '0' && bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $this->topics))))
 				{
 				$this->bmodify = true;
-				$res =  $this->db->db_query("select id_author from ".BAB_ART_DRAFTS_TBL." where id_article='".$this->arr['id']."'");
-				if( $res && $this->db->db_num_rows($res) > 0 )
+				$res =  $babDB->db_query("select id_author from ".BAB_ART_DRAFTS_TBL." where id_article='".$babDB->db_escape_string($this->arr['id'])."'");
+				if( $res && $babDB->db_num_rows($res) > 0 )
 					{
-					$rr = $this->db->db_fetch_array($res);
+					$rr = $babDB->db_fetch_array($res);
 					$this->bmodifyurl = false;
 					$this->modifybytxt = bab_translate("In modification by");
-					$this->modifyauthor	= bab_getUserName($rr['id_author']);
+					$this->modifyauthor	= bab_toHtml(bab_getUserName($rr['id_author']));
 					$this->modifyurl = $GLOBALS['babUrlScript']."?tg=articles&idx=log&topics=".$this->topics."&article=".$this->arr['id'];
 					}
 				else
@@ -584,8 +584,8 @@ function readMore($topics, $article)
 				$this->bsubmit = false;
 				}
 
-			$this->resf = $this->db->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$article."' order by name asc");
-			$this->countf = $this->db->db_num_rows($this->resf);
+			$this->resf = $babDB->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$babDB->db_escape_string($article)."' order by name asc");
+			$this->countf = $babDB->db_num_rows($this->resf);
 
 			if( $this->countf > 0 )
 				{
@@ -611,7 +611,7 @@ function readMore($topics, $article)
 					return true;
 					}
 				$GLOBALS['babWebStat']->addArticle($this->arr['id']);
-				$this->title = bab_replace($this->arr['title']);
+				$this->title = bab_toHtml(bab_replace($this->arr['title']));
 				if( !empty($this->arr['body']))
 					{
 					$this->head = bab_replace($this->arr['head']);
@@ -623,13 +623,13 @@ function readMore($topics, $article)
 					}
 				if( $this->arr['id_author'] != 0 && (($author = bab_getUserName($this->arr['id_author'])) != ""))
 					{
-					$this->articleauthor = $author;
+					$this->articleauthor = bab_toHtml($author);
 					}
 				else
 					{
 					$this->articleauthor = bab_translate("Anonymous");
 					}
-				$this->articledate = bab_strftime(bab_mktime($this->arr['date']));
+				$this->articledate = bab_toHtml(bab_strftime(bab_mktime($this->arr['date'])));
 				$this->author = bab_translate("by") . " ". $this->articleauthor. " - ". $this->articledate;
 				$this->printurl = $GLOBALS['babUrlScript']."?tg=articles&idx=Print&topics=".$this->topics."&article=".$this->arr['id'];
 				$i++;
@@ -641,10 +641,11 @@ function readMore($topics, $article)
 
 		function getnextart(&$skip)
 			{
+			global $babDB;
 			static $i = 0;
 			if( $i < $this->countart)
 				{
-				$arr = $this->db->db_fetch_array($this->resart);
+				$arr = $babDB->db_fetch_array($this->resart);
 				if( ($arr['restriction'] != '' && !bab_articleAccessByRestriction($arr['restriction'])) || $this->article == $arr['id'])
 					{
 					$skip = true;
@@ -652,7 +653,7 @@ function readMore($topics, $article)
 					return true;
 					}
 				$this->artcount++;
-				$this->titlearticle = $arr['title']; 
+				$this->titlearticle = bab_toHtml($arr['title']); 
 				$this->urlview = $GLOBALS['babUrlScript']."?tg=articles&idx=viewa&topics=".$this->topics."&article=".$arr['id'];
 				$this->urlreadmore = $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$this->topics."&article=".$arr['id'];
 				$i++;
@@ -662,7 +663,7 @@ function readMore($topics, $article)
 				{
 				if( $this->countart > 0 )
 					{
-					$this->db->db_data_seek($this->resart,0);
+					$babDB->db_data_seek($this->resart,0);
 					}
 				$i=0;
 				return false;
@@ -670,12 +671,13 @@ function readMore($topics, $article)
 			}
 		function getnextcom()
 			{
+			global $babDB;
 			static $i = 0;
 			if( $i < $this->countcom)
 				{
-				$arr = $this->db->db_fetch_array($this->rescom);
+				$arr = $babDB->db_fetch_array($this->rescom);
 				$this->altbg = !$this->altbg;
-				$this->commentdate = bab_strftime(bab_mktime($arr['date']));
+				$this->commentdate = bab_toHtml(bab_strftime(bab_mktime($arr['date'])));
 				if( $arr['id_author'] )
 					{
 					$this->authorname = bab_getUserName($arr['id_author']);
@@ -684,7 +686,9 @@ function readMore($topics, $article)
 					{
 					$this->authorname = $arr['name'];
 					}
-				$this->commenttitle = $arr['subject'];
+				$this->authorname = bab_toHtml($arr['name']);
+				
+				$this->commenttitle = bab_toHtml($arr['subject']);
 				$this->commentbody = bab_replace($arr['message']);
 				$i++;
 				return true;
@@ -693,7 +697,7 @@ function readMore($topics, $article)
 				{
 				if( $this->countcom > 0 )
 					{
-					$this->db->db_data_seek($this->rescom,0);
+					$babDB->db_data_seek($this->rescom,0);
 					}
 				$i=0;
 				return false;
@@ -702,14 +706,14 @@ function readMore($topics, $article)
 
 		function getnextdoc()
 			{
-			global $arrtop;
+			global $babDB, $arrtop;
 			static $i = 0;
 			if( $i < $this->countf)
 				{
-				$arr = $this->db->db_fetch_array($this->resf);
+				$arr = $babDB->db_fetch_array($this->resf);
 				$this->docurl = $GLOBALS['babUrlScript']."?tg=articles&idx=getf&topics=".$this->topics."&idf=".$arr['id'];
-				$this->docname = $arr['name'];
-				$this->docdesc = $arr['description'];
+				$this->docname = bab_toHtml($arr['name']);
+				$this->docdesc = bab_toHtml($arr['description']);
 				$i++;
 				return true;
 				}
@@ -779,17 +783,17 @@ function articlePrint($topics, $article)
 
 		function temp($topics, $article)
 			{
-			$this->db = $GLOBALS['babDB'];
-			$this->res = $this->db->db_query("select * from ".BAB_ARTICLES_TBL." where id='".$article."'");
-			$this->count = $this->db->db_num_rows($this->res);
+			global $babDB;
+			$this->res = $babDB->db_query("select * from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($article)."'");
+			$this->count = $babDB->db_num_rows($this->res);
 			$this->topics = $topics;
 			if( $this->count > 0)
 				{
 				$GLOBALS['babWebStat']->addArticle($article);
-				$this->arr = $this->db->db_fetch_array($this->res);
+				$this->arr = $babDB->db_fetch_array($this->res);
 				$this->head = bab_replace($this->arr['head']);
 				$this->content = bab_replace($this->arr['body']);
-				$this->title = $this->arr['title'];
+				$this->title = bab_toHTML($this->arr['title']);
 				$this->url = "<a href=\"".$GLOBALS['babUrl']."\">".$GLOBALS['babSiteName']."</a>";
 				}
 			$this->print_head = bab_translate('With/without introduction');
@@ -826,7 +830,7 @@ function modifyArticle($topics, $article)
 					}
 				else
 					{
-					list($author) = $babDB->db_fetch_row($babDB->db_query("select id_author from ".BAB_ARTICLES_TBL." where id='".$article."'"));
+					list($author) = $babDB->db_fetch_row($babDB->db_query("select id_author from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($article)."'"));
 					if( $arrtop['allow_update'] != '0' && $author == $GLOBALS['BAB_SESS_USERID'] )
 						{
 						$access = true;
@@ -845,18 +849,18 @@ function modifyArticle($topics, $article)
 				
 			if( $access )
 				{
-				list($this->blog) = $babDB->db_fetch_row($babDB->db_query("select count(id) as total from ".BAB_ART_LOG_TBL." where id_article='".$article."'"));
-				$res = $babDB->db_query("select at.id, at.title, at.id_topic, adt.id_author as id_modifier from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_DRAFTS_TBL." adt on at.id=adt.id_article where at.id='".$article."'");
+				list($this->blog) = $babDB->db_fetch_row($babDB->db_query("select count(id) as total from ".BAB_ART_LOG_TBL." where id_article='".$babDB->db_escape_string($article)."'"));
+				$res = $babDB->db_query("select at.id, at.title, at.id_topic, adt.id_author as id_modifier from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_DRAFTS_TBL." adt on at.id=adt.id_article where at.id='".$babDB->db_escape_string($article)."'");
 				$this->bmodiy = false;
 
 				if( $access && $res && $babDB->db_num_rows($res) > 0 )
 					{
 					$arr = $babDB->db_fetch_array($res);
-					$this->article = $article;
-					$this->topics = $topics;
+					$this->article = bab_toHTML($article);
+					$this->topics = bab_toHTML($topics);
 					$this->arttxt = bab_translate("Article");
 					$this->pathtxt = bab_translate("Path");
-					$this->arttitle = $arr['title'];
+					$this->arttitle = bab_toHTML($arr['title']);
 					$this->pathname = viewCategoriesHierarchy_txt($arr['id_topic']);
 					if( !isset($arr['id_modifier']) || empty($arr['id_modifier']) )
 						{
@@ -924,7 +928,7 @@ function viewArticleLog($topics, $article, $pos)
 			$this->actiontxt = bab_translate("Action");
 			$this->commenttxt = bab_translate("Reason of the modification");
 
-			$res = $babDB->db_query("select id, id_author  from ".BAB_ART_DRAFTS_TBL." where id_article='".$article."'");
+			$res = $babDB->db_query("select id, id_author  from ".BAB_ART_DRAFTS_TBL." where id_article='".$babDB->db_escape_string($article)."'");
 			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
 				$arr = $babDB->db_fetch_array($res);
@@ -947,7 +951,7 @@ function viewArticleLog($topics, $article, $pos)
 				}
 
 
-			$res = $babDB->db_query("select count(*) as total from ".BAB_ART_LOG_TBL." where id_article='".$article."' order by date_log desc");
+			$res = $babDB->db_query("select count(*) as total from ".BAB_ART_LOG_TBL." where id_article='".$babDB->db_escape_string($article)."' order by date_log desc");
 			$row = $babDB->db_fetch_array($res);
 			$total = $row["total"];
 
@@ -985,27 +989,29 @@ function viewArticleLog($topics, $article, $pos)
 					}
 				}
 
-			$req = "select * from ".BAB_ART_LOG_TBL." where id_article='".$article."' order by date_log desc";
+			$req = "select * from ".BAB_ART_LOG_TBL." where id_article='".$babDB->db_escape_string($article)."' order by date_log desc";
 			if( $total > BAB_ART_MAXLOGS)
 				{
-				$req .= " limit ".$pos.",".BAB_ART_MAXLOGS;
+				$req .= " limit ".$babDB->db_escape_string($pos).",".BAB_ART_MAXLOGS;
 				}
 
 			$this->artpath = viewCategoriesHierarchy_txt($topics);
-			list($this->arttitle) = $babDB->db_fetch_row($babDB->db_query("select title from ".BAB_ARTICLES_TBL." where id='".$article."'"));
+			list($this->arttitle) = $babDB->db_fetch_row($babDB->db_query("select title from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($article)."'"));
+			$this->arttitle = bab_toHTML($this->arttitle);
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
 			}
 
 		function getnextlog()
 			{
+			global $babDB;
 			static $i = 0;
 			if( $i < $this->count)
 				{
 				global $babDB;
 				$arr = $babDB->db_fetch_array($this->res);
-				$this->datelock = bab_strftime(bab_mktime($arr['date_log']), true);
-				$this->author = bab_getUserName($arr['id_author']);
+				$this->datelock = bab_toHTML(bab_strftime(bab_mktime($arr['date_log']), true));
+				$this->author = bab_toHTML(bab_getUserName($arr['id_author']));
 				switch($arr['action_log'])
 					{
 					case 'lock': $this->action = bab_translate("Lock"); break;
@@ -1015,7 +1021,7 @@ function viewArticleLog($topics, $article, $pos)
 					case 'accepted': $this->action = bab_translate("Accepted"); break;
 					default: $this->action = ""; break;
 					}
-				$this->comment = str_replace("\n", "<br>", $arr['art_log']);
+				$this->comment = str_replace("\n", "<br>", bab_toHTML($arr['art_log']));
 				$i++;
 				return true;
 				}
@@ -1056,13 +1062,14 @@ function viewArticle($article)
 
 		function temp($article)
 			{
+			global $babDB;
 			$this->close = bab_translate("Close");
 			$this->attachmentxt = bab_translate("Associated documents");
 			$this->commentstxt = bab_translate("Comments");
-			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_ARTICLES_TBL." where id='$article'";
-			$this->res = $this->db->db_query($req);
-			$this->arr = $this->db->db_fetch_array($this->res);
+			$req = "select * from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($article)."'";
+			$this->res = $babDB->db_query($req);
+			$this->arr = $babDB->db_fetch_array($this->res);
+			$this->arr['title'] = bab_toHTML($this->arr['title']);
 			$this->countf = 0;
 			$this->countcom = 0;
 			if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $this->arr['id_topic']) && bab_articleAccessByRestriction($this->arr['restriction']))
@@ -1070,8 +1077,8 @@ function viewArticle($article)
 				$this->content = bab_replace($this->arr['body']);
 				$this->head = bab_replace($this->arr['head']);
 
-				$this->resf = $this->db->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$article."' order by name asc");
-				$this->countf = $this->db->db_num_rows($this->resf);
+				$this->resf = $babDB->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$babDB->db_escape_string($article)."' order by name asc");
+				$this->countf = $babDB->db_num_rows($this->resf);
 
 				if( $this->countf > 0 )
 					{
@@ -1082,8 +1089,8 @@ function viewArticle($article)
 					$this->battachments = false;
 					}
 
-				$this->rescom = $this->db->db_query("select * from ".BAB_COMMENTS_TBL." where id_article='".$article."' and confirmed='Y' order by date desc");
-				$this->countcom = $this->db->db_num_rows($this->rescom);
+				$this->rescom = $babDB->db_query("select * from ".BAB_COMMENTS_TBL." where id_article='".$babDB->db_escape_string($article)."' and confirmed='Y' order by date desc");
+				$this->countcom = $babDB->db_num_rows($this->rescom);
 				$GLOBALS['babWebStat']->addArticle($article);
 				}
 			else
@@ -1095,13 +1102,13 @@ function viewArticle($article)
 
 		function getnextdoc()
 			{
-			global $arrtop;
+			global $babDB, $arrtop;
 			static $i = 0;
 			if( $i < $this->countf)
 				{
-				$arr = $this->db->db_fetch_array($this->resf);
+				$arr = $babDB->db_fetch_array($this->resf);
 				$this->docurl = $GLOBALS['babUrlScript']."?tg=articles&idx=getf&topics=".$this->arr['id_topic']."&article=".$this->arr['id']."&idf=".$arr['id'];
-				$this->docname = $arr['name'];
+				$this->docname = bab_toHTML($arr['name']);
 				$i++;
 				return true;
 				}
@@ -1114,10 +1121,11 @@ function viewArticle($article)
 
 		function getnextcom()
 			{
+			global $babDB;
 			static $i = 0;
 			if( $i < $this->countcom)
 				{
-				$arr = $this->db->db_fetch_array($this->rescom);
+				$arr = $babDB->db_fetch_array($this->rescom);
 				$this->altbg = !$this->altbg;
 				$this->commentdate = bab_strftime(bab_mktime($arr['date']));
 				if( $arr['id_author'] )
@@ -1128,7 +1136,8 @@ function viewArticle($article)
 					{
 					$this->authorname = $arr['name'];
 					}
-				$this->commenttitle = $arr['subject'];
+				$this->authorname = bab_toHTML($this->authorname);
+				$this->commenttitle = bab_toHTML($arr['subject']);
 				$this->commentbody = bab_replace($arr['message']);
 				$i++;
 				return true;
@@ -1137,7 +1146,7 @@ function viewArticle($article)
 				{
 				if( $this->countcom > 0 )
 					{
-					$this->db->db_data_seek($this->rescom,0);
+					$babDB->db_data_seek($this->rescom,0);
 					}
 				$i=0;
 				return false;
@@ -1153,23 +1162,23 @@ function viewArticle($article)
 function confirmModifyArticle($topics, $article, $comment, $bupdmod)
 {
 	global $babBody, $babDB, $arrtop, $rfurl;
-	$res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_TBL." where id_article='".$article."'");
+	$res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_TBL." where id_article='".$babDB->db_escape_string($article)."'");
 	if( $res && $babDB->db_num_rows($res) > 0 )
 	{
 		echo bab_translate("This article is in modification");
 	}
 	else
 	{
-		list($author) = $babDB->db_fetch_row($babDB->db_query("select id_author from ".BAB_ARTICLES_TBL." where id='".$article."'"));
+		list($author) = $babDB->db_fetch_row($babDB->db_query("select id_author from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($article)."'"));
 		if( bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $topics) || ( $arrtop['allow_update'] != '0' && $author == $GLOBALS['BAB_SESS_USERID']) || ( $arrtop['allow_manupdate'] != '0' && bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $topics)))
 		{
 			$idart = bab_newArticleDraft($topics, $article);
 			if( $idart != 0 )
 			{
-				$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set update_datemodif='".$bupdmod."' where id='".$idart."'");		
+				$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set update_datemodif='".$babDB->db_escape_string($bupdmod)."' where id='".$idart."'");		
 
 
-				$babDB->db_query("insert into ".BAB_ART_LOG_TBL." (id_article, id_author, date_log, action_log, art_log) values ('".$babDB->db_escape_string($article)."', '".$GLOBALS['BAB_SESS_USERID']."', now(), 'lock', '".$babDB->db_escape_string($comment)."')");		
+				$babDB->db_query("insert into ".BAB_ART_LOG_TBL." (id_article, id_author, date_log, action_log, art_log) values ('".$babDB->db_escape_string($article)."', '".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', now(), 'lock', '".$babDB->db_escape_string($comment)."')");		
 				Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=s1&idart=".$idart."&rfurl=".urlencode($rfurl));
 				exit;
 			}
@@ -1199,7 +1208,7 @@ function articles_init($topics)
 	global $babDB;
 	$arrret = array();
 
-	$res = $babDB->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$topics."' and archive='Y'");
+	$res = $babDB->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$babDB->db_escape_string($topics)."' and archive='Y'");
 	list($arrret['nbarchive']) = $babDB->db_fetch_row($res);
 	return $arrret;
 }
@@ -1208,7 +1217,7 @@ function getDocumentArticle($idf, $topics)
 {
 	global $babDB;
 	$access = false;
-	$res = $babDB->db_query("select at.restriction, at.id_topic from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_FILES_TBL." aft on at.id=aft.id_article where aft.id='".$idf."'");
+	$res = $babDB->db_query("select at.restriction, at.id_topic from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_FILES_TBL." aft on at.id=aft.id_article where aft.id='".$babDB->db_escape_string($idf)."'");
 	if( $res && $babDB->db_num_rows($res))
 	{
 	$arr = $babDB->db_fetch_array($res);
@@ -1244,7 +1253,7 @@ if( count($babBody->topview) == 0 || !isset($babBody->topview[$topics]) )
 }
 elseif (count($babBody->topview) > 0)
 {
-$res = $babDB->db_query("select * from ".BAB_TOPICS_TBL." where id='".$topics."'");
+$res = $babDB->db_query("select * from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($topics)."'");
 $arrtop = $babDB->db_fetch_array($res);
 }
 

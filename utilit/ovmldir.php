@@ -21,8 +21,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
-include_once $GLOBALS['babInstallPath']."utilit/dirincl.php";
+include_once 'base.php';
+include_once $GLOBALS['babInstallPath'].'utilit/dirincl.php';
 
 
 class bab_DbDirectories extends bab_handler
@@ -43,14 +43,14 @@ class bab_DbDirectories extends bab_handler
 		$sDelegation = ' ';	
 		if(0 != $delegationid)	
 		{
-			$sDelegation = ' AND id_dgowner = \'' . $delegationid . '\' ';
+			$sDelegation = ' AND id_dgowner = \'' . $babDB->db_escape_string($delegationid). '\' ';
 		}
 
 		if( $directoryid === false || $directoryid === '' )
 			{
 			if( $directorytype === false || !in_array($directorytype, array('database', 'group')) )
 				{
-				$res = $babDB->db_query("select id, name, description from ".BAB_DB_DIRECTORIES_TBL. ((0 != $delegationid) ? ' where id_dgowner = \'' . $delegationid . '\' ' : ' ') .  " order by name asc");
+				$res = $babDB->db_query("select id, name, description from ".BAB_DB_DIRECTORIES_TBL. ((0 != $delegationid) ? ' where id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ' : ' ') .  " order by name asc");
 				}
 			elseif ('database' == $directorytype)
 				{
@@ -66,15 +66,15 @@ class bab_DbDirectories extends bab_handler
 			$directoryid = explode(',', $directoryid);
 			if( $directorytype === false || !in_array($directorytype, array('database', 'group')) )
 				{
-				$res = $babDB->db_query("select id, name, description from ".BAB_DB_DIRECTORIES_TBL." where id IN (".implode(',', $directoryid).")" . $sDelegation . "order by name asc");
+				$res = $babDB->db_query("select id, name, description from ".BAB_DB_DIRECTORIES_TBL." where id IN (".$babDB->quote($directoryid).")" . $sDelegation . "order by name asc");
 				}
 			elseif ('database' == $directorytype)
 				{
-				$res = $babDB->db_query("select id, name, description from ".BAB_DB_DIRECTORIES_TBL." where id IN (".implode(',', $directoryid).")" . $sDelegation . "AND id_group='0' order by name asc");
+				$res = $babDB->db_query("select id, name, description from ".BAB_DB_DIRECTORIES_TBL." where id IN (".$babDB->quote($directoryid).")" . $sDelegation . "AND id_group='0' order by name asc");
 				}
 			elseif ('group' == $directorytype)
 				{
-				$res = $babDB->db_query("select id, name, description from ".BAB_DB_DIRECTORIES_TBL." where id IN (".implode(',', $directoryid).")" . $sDelegation . "AND id_group>'0' order by name asc");
+				$res = $babDB->db_query("select id, name, description from ".BAB_DB_DIRECTORIES_TBL." where id IN (".$babDB->quote($directoryid).")" . $sDelegation . "AND id_group>'0' order by name asc");
 				}
 			}
 
@@ -149,18 +149,18 @@ class bab_DbDirectoryFields extends bab_handler
 		if( $directoryid !== false && !empty($directoryid) && bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $directoryid) )
 			{
 			$ball = $ctx->get_value('all');
-			$res = $babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$directoryid."'");
+			$res = $babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($directoryid)."'");
 			if( $res && $babDB->db_num_rows($res ) > 0 )
 				{
 				$arr = $babDB->db_fetch_array($res);
 				$idgroup = $arr['id_group'];
 				if( $ball )
 					{
-					$res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup != 0? 0: $directoryid)."' order by list_ordering asc");
+					$res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup != 0? 0: $babDB->db_escape_string($directoryid))."' order by list_ordering asc");
 					}
 				else
 					{
-					$res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup != 0? 0: $directoryid)."' and ordering!='0' order by ordering asc");
+					$res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup != 0? 0: $babDB->db_escape_string($directoryid))."' and ordering!='0' order by ordering asc");
 					}
 
 				while( $arr = $babDB->db_fetch_array($res))
@@ -227,7 +227,7 @@ class bab_DbDirectoryMembers extends bab_handler
 		$this->directoryid = $ctx->get_value('directoryid');
 		if( $this->directoryid !== false && !empty($this->directoryid) && bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $this->directoryid) )
 			{
-			$res = $babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$this->directoryid."'");
+			$res = $babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($this->directoryid)."'");
 			if( $res && $babDB->db_num_rows($res ) > 0 )
 				{
 				$arr = $babDB->db_fetch_array($res);
@@ -238,7 +238,7 @@ class bab_DbDirectoryMembers extends bab_handler
 					$ball = $ctx->get_value('all');
 					if( !$ball )
 						{
-						$res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup != 0? 0: $this->directoryid)."' and ordering!='0' order by ordering asc");
+						$res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup != 0? 0: $babDB->db_escape_string($this->directoryid))."' and ordering!='0' order by ordering asc");
 						$idfields = array();
 						while( $arr = $babDB->db_fetch_array($res))
 							{
@@ -260,7 +260,7 @@ class bab_DbDirectoryMembers extends bab_handler
 					$idfields = explode(',', $idfields );
 					}
 
-				$res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup != 0? 0: $this->directoryid)."' order by list_ordering asc");
+				$res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup != 0? 0: $babDB->db_escape_string($this->directoryid))."' order by list_ordering asc");
 
 				$nfields = array();
 				$xfields = array();
@@ -329,11 +329,11 @@ class bab_DbDirectoryMembers extends bab_handler
 					else
 						{
 						if ( false === strpos($orderby, 'babdirf'))
-							$like = " AND `".$orderby."` LIKE '".$like."%'";
+							$like = " AND `".$babDB->db_escape_string($orderby)."` LIKE '".$babDB->db_escape_string($like)."%'";
 						elseif (0 === strpos($orderby, 'babdirf'))
 							{
 							$idfield = substr($orderby,7);
-							$like = " AND lj".$idfield.".field_value LIKE '".$like."%'";
+							$like = " AND lj".$idfield.".field_value LIKE '".$babDB->db_escape_string($like)."%'";
 							}
 						else
 							$like = '';
@@ -364,18 +364,18 @@ class bab_DbDirectoryMembers extends bab_handler
 						}
 					else
 						{
-						$req = " ".BAB_DBDIR_ENTRIES_TBL." e ".implode(' ',$leftjoin)." WHERE e.id_directory='".$this->directoryid ."'";
+						$req = " ".BAB_DBDIR_ENTRIES_TBL." e ".implode(' ',$leftjoin)." WHERE e.id_directory='".$babDB->db_escape_string($this->directoryid) ."'";
 						}
 
 
-					$req = "select ".implode(',', $select)." from ".$req." ".$like." order by `".$orderby."` ".$order;
+					$req = "select ".implode(',', $select)." from ".$req." ".$like." order by `".$babDB->db_escape_string($orderby)."` ".$babDB->db_escape_string($order);
 
 					$this->res = $babDB->db_query($req);				
 					$this->count = $babDB->db_num_rows($this->res);
 
 					/* find prefered mail account */
 					$this->accountid = 0;
-					$res = $babDB->db_query("select id from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$GLOBALS['BAB_SESS_USERID']."' order by prefered desc limit 0,1");
+					$res = $babDB->db_query("select id from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' order by prefered desc limit 0,1");
 					if( $res && $babDB->db_num_rows($res) > 0 )
 						{
 						$arr = $babDB->db_fetch_array($res);
@@ -521,9 +521,9 @@ class bab_DbDirectoryEntry extends bab_handler
 			$this->memberid = $ctx->get_value('memberid');
 			if( ($this->userid !== false && !empty($this->userid)) ||  ($this->memberid !== false && !empty($this->memberid)) )
 				{
-				list($idgroup) = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$this->directoryid."'"));
+				list($idgroup) = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($this->directoryid)."'"));
 
-				$res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup != 0? 0: $this->directoryid)."' AND disabled='N' order by list_ordering asc");
+				$res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup != 0? 0: $babDB->db_escape_string($this->directoryid))."' AND disabled='N' order by list_ordering asc");
 
 				while( $arr = $babDB->db_fetch_array($res))
 					{
@@ -545,13 +545,13 @@ class bab_DbDirectoryEntry extends bab_handler
 
 				if( $this->memberid !== false && !empty($this->memberid) )
 					{
-					$wh = "id='".$this->memberid."'";
+					$wh = "id='".$babDB->db_escape_string($this->memberid)."'";
 					}
 				else
 					{
-					$wh = "id_user='".$this->userid."'";
+					$wh = "id_user='".$babDB->db_escape_string($this->userid)."'";
 					}
-				$res = $babDB->db_query("select *, LENGTH(photo_data) as plen from ".BAB_DBDIR_ENTRIES_TBL." det where det.id_directory='".($idgroup != 0? 0: $this->directoryid)."' and ".$wh);
+				$res = $babDB->db_query("select *, LENGTH(photo_data) as plen from ".BAB_DBDIR_ENTRIES_TBL." det where det.id_directory='".($idgroup != 0? 0: $babDB->db_escape_string($this->directoryid))."' and ".$wh);
 
 				$this->arrentries = $babDB->db_fetch_array($res);
 
@@ -733,7 +733,7 @@ class bab_DbDirectoryAcl extends bab_handler
 				$table = BAB_DBDIRVIEW_GROUPS_TBL;
 			}
 
-			include_once $GLOBALS['babInstallPath']."utilit/addonapi.php";
+			include_once $GLOBALS['babInstallPath'].'utilit/addonapi.php';
 			$groups = bab_getGroupsAccess($table, $directoryid);
 			$this->IdEntries = bab_getGroupsMembers($groups);	
 			$this->count = count($this->IdEntries);

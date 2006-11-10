@@ -27,26 +27,26 @@ function bab_deleteDraftFiles($idart)
 {
 	global $babDB;
 	$fullpath = bab_getUploadDraftsPath();
-	$res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_FILES_TBL." where id_draft='".$idart."'");
+	$res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_FILES_TBL." where id_draft='".$babDB->db_escape_string($idart)."'");
 	while( $arr = $babDB->db_fetch_array($res))
 		{
 		unlink($fullpath.$arr['id_draft'].",".$arr['name']);
 		}
 
-	$babDB->db_query("delete from ".BAB_ART_DRAFTS_FILES_TBL." where id_draft='".$idart."'");
+	$babDB->db_query("delete from ".BAB_ART_DRAFTS_FILES_TBL." where id_draft='".$babDB->db_escape_string($idart)."'");
 }
 
 function bab_deleteArticleFiles($idart)
 {
 	global $babDB;
 	$fullpath = bab_getUploadArticlesPath();
-	$res = $babDB->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$idart."'");
+	$res = $babDB->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$babDB->db_escape_string($idart)."'");
 	while( $arr = $babDB->db_fetch_array($res))
 		{
 		unlink($fullpath.$arr['id_article'].",".$arr['name']);
 		}
 
-	$babDB->db_query("delete from ".BAB_ART_FILES_TBL." where id_article='".$idart."'");
+	$babDB->db_query("delete from ".BAB_ART_FILES_TBL." where id_article='".$babDB->db_escape_string($idart)."'");
 }
 
 function bab_getUploadDraftsPath()
@@ -113,9 +113,9 @@ function notifyArticleDraftApprovers($id, $users)
 
 			function tempa($id)
 				{
-				global $BAB_SESS_USER, $BAB_SESS_EMAIL, $babSiteName;
+				global $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babSiteName;
 				$db = $GLOBALS['babDB'];
-				$arr = $db->db_fetch_array($db->db_query("select * from ".BAB_ART_DRAFTS_TBL." where id='".$id."'"));
+				$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_ART_DRAFTS_TBL." where id='".$babDB->db_escape_string($id)."'"));
 				$this->articletitle = $arr['title'];
 				$this->articleurl = $GLOBALS['babUrlScript']."?tg=login&cmd=detect&referer=".urlencode($GLOBALS['babUrlScript']."?tg=approb&idx=all");
 				$this->message = bab_translate("A new article is waiting for you");
@@ -147,7 +147,7 @@ function notifyArticleDraftApprovers($id, $users)
 
 	if( count($users) > 0 )
 		{
-		$sql = "select email from ".BAB_USERS_TBL." where id IN (".implode(',', $users).")";
+		$sql = "select email from ".BAB_USERS_TBL." where id IN (".$babDB->quote($users).")";
 		$result=$babDB->db_query($sql);
 		while( $arr = $babDB->db_fetch_array($result))
 			{
@@ -219,7 +219,7 @@ function notifyArticleDraftAuthor($idart, $what)
 	if( $mail == false )
 		return;
 
-	$arr = $babDB->db_fetch_array($babDB->db_query("select title, id_topic, id_author from ".BAB_ART_DRAFTS_TBL." where id='".$idart."'"));
+	$arr = $babDB->db_fetch_array($babDB->db_query("select title, id_topic, id_author from ".BAB_ART_DRAFTS_TBL." where id='".$babDB->db_escape_string($idart)."'"));
 
 	if( !empty($arr['id_author']) && $arr['id_author'] != 0)
 		{
@@ -242,7 +242,7 @@ function notifyArticleDraftAuthor($idart, $what)
 
 function notifyArticleHomePage($top, $title, $homepage0, $homepage1)
 	{
-	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
+	global $babBody, $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
 
 	if(!class_exists("tempa"))
 		{
@@ -298,8 +298,8 @@ function notifyArticleHomePage($top, $title, $homepage0, $homepage1)
 
 	$db = $GLOBALS['babDB'];
 	$sql = "select email, firstname, lastname from ".BAB_USERS_TBL." ut LEFT JOIN ".BAB_USERS_GROUPS_TBL." ugt on ut.id=ugt.id_object where id_group='3'";
-	$result=$db->db_query($sql);
-	while( $arr = $db->db_fetch_array($result))
+	$result=$babDB->db_query($sql);
+	while( $arr = $babDB->db_fetch_array($result))
 		{
 		$mail->mailBcc($arr['email'], bab_composeUserName($arr['firstname'] , $arr['lastname']));
 		}
@@ -455,9 +455,8 @@ function notifyCommentApprovers($idcom, $nfusers)
 
 			function tempca($idcom)
 				{
-				global $BAB_SESS_USER, $BAB_SESS_EMAIL, $babSiteName;
-				$db = $GLOBALS['babDB'];
-				$arr = $db->db_fetch_array($db->db_query("select * from ".BAB_COMMENTS_TBL." where id='".$idcom."'"));
+				global $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babSiteName;
+				$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_COMMENTS_TBL." where id='".$babDB->db_escape_string($idcom)."'"));
 
 				$this->message = bab_translate("A new comment is waiting for you");
 				$this->from = bab_translate("Author");
@@ -490,7 +489,7 @@ function notifyCommentApprovers($idcom, $nfusers)
 
 		if( count($nfusers) > 0 )
 			{
-			$sql = "select email from ".BAB_USERS_TBL." where id IN (".implode(',', $nfusers).")";
+			$sql = "select email from ".BAB_USERS_TBL." where id IN (".$babDB->quote($nfusers).")";
 			$result=$babDB->db_query($sql);
 			while( $arr = $babDB->db_fetch_array($result))
 				{
@@ -515,7 +514,7 @@ function acceptWaitingArticle($idart)
 {
 	global $babBody, $babDB;
 
-	$res = $babDB->db_query("select adt.*, tt.category as topicname, tt.allow_attachments, tct.id_dgowner, tt.busetags from ".BAB_ART_DRAFTS_TBL." adt left join ".BAB_TOPICS_TBL." tt on adt.id_topic=tt.id left join ".BAB_TOPICS_CATEGORIES_TBL." tct on tt.id_cat=tct.id  where adt.id='".$idart."'");
+	$res = $babDB->db_query("select adt.*, tt.category as topicname, tt.allow_attachments, tct.id_dgowner, tt.busetags from ".BAB_ART_DRAFTS_TBL." adt left join ".BAB_TOPICS_TBL." tt on adt.id_topic=tt.id left join ".BAB_TOPICS_CATEGORIES_TBL." tct on tt.id_cat=tct.id  where adt.id='".$babDB->db_escape_string($idart)."'");
 	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
 		include_once $GLOBALS['babInstallPath']."utilit/imgincl.php";
@@ -524,19 +523,19 @@ function acceptWaitingArticle($idart)
 		if( $arr['id_article'] != 0 )
 			{
 			$articleid = $arr['id_article'];
-			$req = "update ".BAB_ARTICLES_TBL." set id_modifiedby='".$arr['id_author']."', date_archiving='".$arr['date_archiving']."', date_publication='".$arr['date_publication']."', restriction='".$arr['restriction']."', lang='".$arr['lang']."'";
+			$req = "update ".BAB_ARTICLES_TBL." set id_modifiedby='".$babDB->db_escape_string($arr['id_author'])."', date_archiving='".$babDB->db_escape_string($arr['date_archiving'])."', date_publication='".$babDB->db_escape_string($arr['date_publication'])."', restriction='".$babDB->db_escape_string($arr['restriction'])."', lang='".$babDB->db_escape_string($arr['lang'])."'";
 			if( $arr['update_datemodif'] != 'N')
 				{
 				$req .= ", date_modification=now()";
 				}
-			$req .= " where id='".$articleid."'";
+			$req .= " where id='".$babDB->db_escape_string($articleid)."'";
 			$babDB->db_query($req);
 			bab_deleteArticleFiles($articleid);
 			}
 		else
 			{
 			$req = "insert into ".BAB_ARTICLES_TBL." (id_topic, id_author, date, date_publication, date_archiving, date_modification, restriction, lang) values ";
-			$req .= "('" .$arr['id_topic']. "', '".$arr['id_author']. "', now()";
+			$req .= "('" .$babDB->db_escape_string($arr['id_topic']). "', '".$babDB->db_escape_string($arr['id_author']). "', now()";
 
 			if( $arr['date_publication'] == '0000-00-00 00:00:00' )	
 				{
@@ -544,9 +543,9 @@ function acceptWaitingArticle($idart)
 				}
 			else
 				{
-				$req .= ", '".$arr['date_publication']."'";
+				$req .= ", '".$babDB->db_escape_string($arr['date_publication'])."'";
 				}
-			$req .= ", '".$arr['date_archiving']."', now(), '".$arr['restriction']."', '".$arr['lang']. "')";
+			$req .= ", '".$babDB->db_escape_string($arr['date_archiving'])."', now(), '".$babDB->db_escape_string($arr['restriction'])."', '".$babDB->db_escape_string($arr['lang']). "')";
 			$babDB->db_query($req);
 			$articleid = $babDB->db_insert_id();
 			}
@@ -557,13 +556,13 @@ function acceptWaitingArticle($idart)
 		$head = imagesUpdateLink($arr['head'], $idart."_draft_", $articleid."_art_" );
 		$body = imagesUpdateLink($arr['body'], $idart."_draft_", $articleid."_art_" );
 
-		$req = "update ".BAB_ARTICLES_TBL." set head='".addslashes($head)."', body='".addslashes($body)."', title='".addslashes($arr['title'])."' where id='".$articleid."'";
+		$req = "update ".BAB_ARTICLES_TBL." set head='".$babDB->db_escape_string($head)."', body='".$babDB->db_escape_string($body)."', title='".$babDB->db_escape_string($arr['title'])."' where id='".$babDB->db_escape_string($articleid)."'";
 		$res = $babDB->db_query($req);
 
 		/* move attachements */
 		if( $arr['allow_attachments'] ==  'Y' )
 			{
-			$res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_FILES_TBL." where id_draft='".$idart."'");
+			$res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_FILES_TBL." where id_draft='".$babDB->db_escape_string($idart)."'");
 			$pathdest = bab_getUploadArticlesPath();
 			$pathorg = bab_getUploadDraftsPath();
 			$files_to_index = array();
@@ -607,13 +606,13 @@ function acceptWaitingArticle($idart)
 				}
 			}
 
-		$babDB->db_query("delete from ".BAB_ART_TAGS_TBL." where id_art='".$articleid."'");
+		$babDB->db_query("delete from ".BAB_ART_TAGS_TBL." where id_art='".$babDB->db_escape_string($articleid)."'");
 		if( $arr['busetags'] ==  'Y' )
 			{
 			$res = $babDB->db_query("select id_tag from ".BAB_ART_DRAFTS_TAGS_TBL." where id_draft='".$babDB->db_escape_string($idart)."'");
 			while($rr = $babDB->db_fetch_array($res))
 				{
-				$babDB->db_query("insert into ".BAB_ART_TAGS_TBL." (id_art ,id_tag) values ('".$articleid."','".$rr['id_tag']."')");
+				$babDB->db_query("insert into ".BAB_ART_TAGS_TBL." (id_art ,id_tag) values ('".$babDB->db_escape_string($articleid)."','".$babDB->db_escape_string($rr['id_tag'])."')");
 				}
 			}
 		$babDB->db_query("delete from ".BAB_ART_DRAFTS_TAGS_TBL." where id_draft='".$babDB->db_escape_string($idart)."'");		
@@ -631,12 +630,12 @@ function acceptWaitingArticle($idart)
 			{
 			if( $arr['hpage_private'] == "Y")
 				{
-				$res = $babDB->db_query("insert into ".BAB_HOMEPAGES_TBL." (id_article, id_site, id_group) values ('" .$articleid. "', '" . $babBody->babsite['id']. "', '1')");
+				$res = $babDB->db_query("insert into ".BAB_HOMEPAGES_TBL." (id_article, id_site, id_group) values ('" .$babDB->db_escape_string($articleid). "', '" . $babDB->db_escape_string($babBody->babsite['id']). "', '1')");
 				}
 
 			if( $arr['hpage_public'] == "Y" )
 				{
-				$res = $babDB->db_query("insert into ".BAB_HOMEPAGES_TBL." (id_article, id_site, id_group) values ('" .$articleid. "', '" . $babBody->babsite['id']. "', '2')");
+				$res = $babDB->db_query("insert into ".BAB_HOMEPAGES_TBL." (id_article, id_site, id_group) values ('" .$babDB->db_escape_string($articleid). "', '" . $babDB->db_escape_string($babBody->babsite['id']). "', '2')");
 				}
 
 			notifyArticleHomePage($arr['topicname'], $arr['title'], ($arr['hpage_public'] == "Y"? 2:0), ($arr['hpage_private'] == "Y"?1:0));
@@ -803,21 +802,21 @@ function bab_previewArticleDraft($idart, $echo=0)
 			global $babDB;
 			$this->counf = 0;
 
-			$res = $babDB->db_query("select adt.* from ".BAB_ART_DRAFTS_TBL." adt where adt.id='".$idart."'");
+			$res = $babDB->db_query("select adt.* from ".BAB_ART_DRAFTS_TBL." adt where adt.id='".$babDB->db_escape_string($idart)."'");
 			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
-				$this->idart = $idart;
+				$this->idart = bab_toHTML($idart);
 				$this->filesval = bab_translate("Associated documents");
 				$this->notesval = bab_translate("Associated comments");
 				$arr = $babDB->db_fetch_array($res);
-				$this->titleval = bab_replace($arr['title']);
+				$this->titleval = bab_toHTML(bab_replace($arr['title']));
 				$this->headval = bab_replace($arr['head']);
 				$this->bodyval = bab_replace($arr['body']);
 				
-				$this->resf = $babDB->db_query("select * from ".BAB_ART_DRAFTS_FILES_TBL." where id_draft='".$idart."'");
+				$this->resf = $babDB->db_query("select * from ".BAB_ART_DRAFTS_FILES_TBL." where id_draft='".$babDB->db_escape_string($idart)."'");
 				$this->countf =  $babDB->db_num_rows($this->resf);
 
-				$this->resn = $babDB->db_query("select * from ".BAB_ART_DRAFTS_NOTES_TBL." where id_draft='".$idart."' order by date_note asc");
+				$this->resn = $babDB->db_query("select * from ".BAB_ART_DRAFTS_NOTES_TBL." where id_draft='".$babDB->db_escape_string($idart)."' order by date_note asc");
 				$this->countn =  $babDB->db_num_rows($this->resn);
 				$this->altbg = false;
 				}
@@ -837,7 +836,7 @@ function bab_previewArticleDraft($idart, $echo=0)
 				{
 				$arr = $babDB->db_fetch_array($this->resf);
 				$this->urlfile = $GLOBALS['babUrlScript']."?tg=artedit&idx=getf&idart=".$this->idart."&idf=".$arr['id'];
-				$this->filename = $arr['name'];
+				$this->filename = bab_toHTML($arr['name']);
 				$i++;
 				return true;
 				}
@@ -852,9 +851,9 @@ function bab_previewArticleDraft($idart, $echo=0)
 			if( $i < $this->countn)
 				{
 				$arr = $babDB->db_fetch_array($this->resn);
-				$this->note = str_replace("\n", "<br>", $arr['content']);
-				$this->author = bab_getUserName($arr['id_author']);
-				$this->date = bab_strftime(bab_mktime($arr['date_note']));
+				$this->note = str_replace("\n", "<br>", bab_toHTML($arr['content']));
+				$this->author = bab_toHTML(bab_getUserName($arr['id_author']));
+				$this->date = bab_toHTML(bab_strftime(bab_mktime($arr['date_note'])));
 				$this->altbg = !$this->altbg;
 				$i++;
 				return true;
@@ -894,11 +893,11 @@ function bab_previewComment($com)
 
 		function bab_previewCommentCls($com)
 			{
+			global $babDB;
 			$this->close = bab_translate("Close");
-			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_COMMENTS_TBL." where id='".$com."'";
-			$this->res = $this->db->db_query($req);
-			$this->arr = $this->db->db_fetch_array($this->res);
+			$req = "select * from ".BAB_COMMENTS_TBL." where id='".$babDB->db_escape_string($com)."'";
+			$this->res = $babDB->db_query($req);
+			$this->arr = $babDB->db_fetch_array($this->res);
 			$this->title = bab_replace($this->arr['subject']);
 			$this->content = bab_replace($this->arr['message']);
 			}
@@ -913,7 +912,7 @@ function bab_getDocumentArticle( $idf )
 	global $babDB, $babBody, $BAB_SESS_USERID;
 	$access = false;
 
-	$res = $babDB->db_query("select * from ".BAB_ART_FILES_TBL." where id='".$idf."'");
+	$res = $babDB->db_query("select * from ".BAB_ART_FILES_TBL." where id='".$babDB->db_escape_string($idf)."'");
 	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
 		$access = true;
@@ -958,7 +957,7 @@ function bab_submitArticleDraft($idart)
 {
 	
 	global $babBody, $babDB, $BAB_SESS_USERID;
-	$res = $babDB->db_query("select id_article, id_topic, id_author, approbation from ".BAB_ART_DRAFTS_TBL." where id='".$idart."'");
+	$res = $babDB->db_query("select id_article, id_topic, id_author, approbation from ".BAB_ART_DRAFTS_TBL." where id='".$babDB->db_escape_string($idart)."'");
 	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
 		$arr = $babDB->db_fetch_array($res);
@@ -970,9 +969,9 @@ function bab_submitArticleDraft($idart)
 
 		if( $arr['id_article'] != 0 )
 			{
-			$babDB->db_query("insert into ".BAB_ART_LOG_TBL." (id_article, id_author, date_log, action_log) values ('".$arr['id_article']."', '".$arr['id_author']."', now(), 'commit')");	
+			$babDB->db_query("insert into ".BAB_ART_LOG_TBL." (id_article, id_author, date_log, action_log) values ('".$arr['id_article']."', '".$babDB->db_escape_string($arr['id_author'])."', now(), 'commit')");	
 			
-			$res = $babDB->db_query("select at.id_topic, at.id_author, tt.allow_update, tt.allow_manupdate, tt.idsa_update as saupdate, tt.auto_approbation from ".BAB_ARTICLES_TBL." at left join ".BAB_TOPICS_TBL." tt on at.id_topic=tt.id where at.id='".$arr['id_article']."'");
+			$res = $babDB->db_query("select at.id_topic, at.id_author, tt.allow_update, tt.allow_manupdate, tt.idsa_update as saupdate, tt.auto_approbation from ".BAB_ARTICLES_TBL." at left join ".BAB_TOPICS_TBL." tt on at.id_topic=tt.id where at.id='".$babDB->db_escape_string($arr['id_article'])."'");
 			$rr = $babDB->db_fetch_array($res);
 			if( $rr['saupdate'] != 0 && ( $rr['allow_update'] == '2' && $rr['id_author'] == $GLOBALS['BAB_SESS_USERID']) || ( $rr['allow_manupdate'] == '2' && bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $rr['id_topic'])))
 				{
@@ -984,7 +983,7 @@ function bab_submitArticleDraft($idart)
 			}
 		else
 			{
-			$res = $babDB->db_query("select tt.idsaart as saupdate, tt.auto_approbation from ".BAB_TOPICS_TBL." tt where tt.id='".$arr['id_topic']."'");
+			$res = $babDB->db_query("select tt.idsaart as saupdate, tt.auto_approbation from ".BAB_TOPICS_TBL." tt where tt.id='".$babDB->db_escape_string($arr['id_topic'])."'");
 			$rr = $babDB->db_fetch_array($res);
 			}
 
@@ -1005,7 +1004,7 @@ function bab_submitArticleDraft($idart)
 			{
 			if( $arr['id_article'] != 0 )
 				{
-				$babDB->db_query("insert into ".BAB_ART_LOG_TBL." (id_article, id_author, date_log, action_log) values ('".$arr['id_article']."', '".$arr['id_author']."', now(), 'accepted')");		
+				$babDB->db_query("insert into ".BAB_ART_LOG_TBL." (id_article, id_author, date_log, action_log) values ('".$babDB->db_escape_string($arr['id_article'])."', '".$arr['id_author']."', now(), 'accepted')");		
 				}
 
 			$articleid = acceptWaitingArticle($idart);
@@ -1019,7 +1018,7 @@ function bab_submitArticleDraft($idart)
 			{
 			if( !empty($idfai))
 				{
-				$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set result='".BAB_ART_STATUS_WAIT."' , idfai='".$idfai."', date_submission=now() where id='".$idart."'");
+				$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set result='".BAB_ART_STATUS_WAIT."' , idfai='".$idfai."', date_submission=now() where id='".$babDB->db_escape_string($idart)."'");
 				$nfusers = getWaitingApproversFlowInstance($idfai, true);
 				notifyArticleDraftApprovers($idart, $nfusers);
 				}
@@ -1049,43 +1048,34 @@ function bab_newArticleDraft($idtopic, $idarticle)
 		{
 		$idanonymous = 0;
 		}
-/*
-	if( !empty($idtopic))
-		{
-		list($notify) = $babDB->db_fetch_row($babDB->db_query("select notify from ".BAB_TOPICS_TBL." where id='".$idtopic."'"));
-		}
-	else
-		{
-		$notify = 'Y';
-		}
-*/
+
 	$notify = 'N';
 
-	$babDB->db_query("insert into ".BAB_ART_DRAFTS_TBL." (id_author, id_topic, id_article, title, date_creation, date_modification, id_anonymous, notify_members) values ('" .$BAB_SESS_USERID. "', '".$idtopic. "', '".$idarticle."', '".bab_translate("New article")."', now(), now(), '".$idanonymous."', '".$notify."')");
+	$babDB->db_query("insert into ".BAB_ART_DRAFTS_TBL." (id_author, id_topic, id_article, title, date_creation, date_modification, id_anonymous, notify_members) values ('" .$babDB->db_escape_string($BAB_SESS_USERID). "', '".$babDB->db_escape_string($idtopic). "', '".$babDB->db_escape_string($idarticle)."', '".bab_translate("New article")."', now(), now(), '".$babDB->db_escape_string($idanonymous)."', '".$babDB->db_escape_string($notify)."')");
 	$id = $babDB->db_insert_id();
 
 	if( $idarticle != 0 )
 		{
-		$res = $babDB->db_query("select * from ".BAB_ARTICLES_TBL." where id='".$idarticle."'");
+		$res = $babDB->db_query("select * from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($idarticle)."'");
 		if( $res && $babDB->db_num_rows($res) == 1 )
 			{
 			$arr = $babDB->db_fetch_array($res);
-			$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set head='".addslashes($arr['head'])."', body='".addslashes($arr['body'])."', title='".addslashes($arr['title'])."', date_archiving='".$arr['date_archiving']."', lang='".$arr['lang']."', restriction='".$arr['restriction']."' where id='".$id."'");
+			$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set head='".$babDB->db_escape_string($arr['head'])."', body='".$babDB->db_escape_string($arr['body'])."', title='".$babDB->db_escape_string($arr['title'])."', date_archiving='".$babDB->db_escape_string($arr['date_archiving'])."', lang='".$babDB->db_escape_string($arr['lang'])."', restriction='".$babDB->db_escape_string($arr['restriction'])."' where id='".$babDB->db_escape_string($id)."'");
 
-			$res = $babDB->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$idarticle."'");
+			$res = $babDB->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$babDB->db_escape_string($idarticle)."'");
 			$pathorg = bab_getUploadArticlesPath();
 			$pathdest = bab_getUploadDraftsPath();
 			while($rr = $babDB->db_fetch_array($res))
 				{
 				if( copy($pathorg.$idarticle.",".$rr['name'], $pathdest.$id.",".$rr['name']))
 					{
-					$babDB->db_query("insert into ".BAB_ART_DRAFTS_FILES_TBL." (id_draft, name, description) values ('".$id."','".addslashes($rr['name'])."','".addslashes($rr['description'])."')");
+					$babDB->db_query("insert into ".BAB_ART_DRAFTS_FILES_TBL." (id_draft, name, description) values ('".$id."','".$babDB->db_escape_string($rr['name'])."','".$babDB->db_escape_string($rr['description'])."')");
 					}
 				}
-			$res = $babDB->db_query("select * from ".BAB_ART_TAGS_TBL." where id_art='".$idarticle."'");
+			$res = $babDB->db_query("select * from ".BAB_ART_TAGS_TBL." where id_art='".$babDB->db_escape_string($idarticle)."'");
 			while($rr = $babDB->db_fetch_array($res))
 				{
-				$babDB->db_query("insert into ".BAB_ART_DRAFTS_TAGS_TBL." (id_draft, id_tag) values ('".$id."','".$rr['id_tag']."')");
+				$babDB->db_query("insert into ".BAB_ART_DRAFTS_TAGS_TBL." (id_draft, id_tag) values ('".$id."','".$babDB->db_escape_string($rr['id_tag'])."')");
 				}
 			}
 		}
@@ -1104,11 +1094,12 @@ function bab_newArticleDraft($idtopic, $idarticle)
  * @param array $status
  * @return object bab_indexReturn
  */
-function indexAllArtFiles($status, $prepare) {
+function indexAllArtFiles($status, $prepare) 
+	{
 	
-	$db = &$GLOBALS['babDB'];
+	global $babDB;
 
-	$res = $db->db_query("
+	$res = $babDB->db_query("
 	
 		SELECT 
 			f.id,
@@ -1121,7 +1112,7 @@ function indexAllArtFiles($status, $prepare) {
 			".BAB_ARTICLES_TBL." a 
 		WHERE 
 			a.id = f.id_article 
-			AND f.index_status IN('".implode("','",$status)."')
+			AND f.index_status IN(".$babDB->quote($status).")
 		
 	");
 
@@ -1134,7 +1125,7 @@ function indexAllArtFiles($status, $prepare) {
 
 	
 
-	while ($arr = $db->db_fetch_assoc($res)) {
+	while ($arr = $babDB->db_fetch_assoc($res)) {
 		$files[] = $fullpath.$arr['id_article'].",".$arr['name'];
 		$rights[$articlepath.$arr['id_article'].",".$arr['name']] = array(
 				'id_file'		=> $arr['id'],
@@ -1180,8 +1171,9 @@ function indexAllArtFiles($status, $prepare) {
 
 function indexAllArtFiles_end($param) {
 	
-	$db = &$GLOBALS['babDB'];
-	$db->db_query("
+	global $babDB;
+
+	$babDB->db_query("
 	
 		UPDATE ".BAB_ART_FILES_TBL." SET index_status='".BAB_INDEX_STATUS_INDEXED."'
 		WHERE 

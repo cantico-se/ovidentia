@@ -21,19 +21,19 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
+include_once 'base.php';
 
 
 $babLdapServerTypes = array(BAB_LDAP_SERVER_OL => "OPENLDAP", BAB_LDAP_SERVER_AD => "ACTIVE DIRECTORY");
 
 function getDirectoryName($id, $table)
 	{
-	$db = $GLOBALS['babDB'];
-	$query = "select name from ".$table." where id='".$db->db_escape_string($id)."'";
-	$res = $db->db_query($query);
-	if( $res && $db->db_num_rows($res) > 0)
+	global $babDB;
+	$query = "select name from ".$table." where id='".$babDB->db_escape_string($id)."'";
+	$res = $babDB->db_query($query);
+	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-		$arr = $db->db_fetch_array($res);
+		$arr = $babDB->db_fetch_array($res);
 		return $arr['name'];
 		}
 	else
@@ -62,21 +62,22 @@ function UBrowseDbDirectory($id, $pos, $xf, $cb)
 
 		function temp($id, $pos, $xf, $cb)
 			{
+			global $babDB;
 			$this->allname = bab_translate("All");
-			$this->id = $id;
+			$this->id = bab_toHtml($id);
 			$this->pos = $pos;
 			$this->badd = false;
-			$this->xf = $xf;
-			$this->cb=$cb;
+			$this->xf = bab_toHtml($xf);
+			$this->cb=bab_toHtml($cb);
 			if( !empty($pos) && $pos[0] == "-" )
 				{
-				$this->pos = strlen($pos) > 1? $pos[1]: '';
-				$this->ord = "";
+				$this->pos = strlen($pos) > 1? bab_toHtml($pos[1]): '';
+				$this->ord = '';
 				}
 			else
 				{
-				$this->pos = $pos;
-				$this->ord = "-";
+				$this->pos = bab_toHtml($pos);
+				$this->ord = '-';
 				}
 
 			if( empty($pos))
@@ -85,13 +86,12 @@ function UBrowseDbDirectory($id, $pos, $xf, $cb)
 				$this->allselected = 0;
 			$this->allurl = $GLOBALS['babUrlScript']."?tg=directory&idx=usdb&id=".$id."&pos=".($this->ord == "-"? "":$this->ord)."&xf=".$this->xf."&cb=".$this->cb;
 			$this->count = 0;
-			$this->db = $GLOBALS['babDB'];
-			$arr = $this->db->db_fetch_array($this->db->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$this->db->db_escape_string($id)."'"));
+			$arr = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
 			if(bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $id))
 				{
 				$this->idgroup = $arr['id_group'];
-				$this->rescol = $this->db->db_query("select id, id_field from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($this->idgroup != 0? 0: $this->db->db_escape_string($this->id))."' and ordering!='0' order by ordering asc");
-				$this->countcol = $this->db->db_num_rows($this->rescol);
+				$this->rescol = $babDB->db_query("select id, id_field from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($this->idgroup != 0? 0: $babDB->db_escape_string($this->id))."' and ordering!='0' order by ordering asc");
+				$this->countcol = $babDB->db_num_rows($this->rescol);
 				}
 			else
 				{
@@ -103,25 +103,26 @@ function UBrowseDbDirectory($id, $pos, $xf, $cb)
 
 		function getnextcol()
 			{
+			global $babDB;
 			static $i = 0;
 			static $tmp = array();
 			static $sqlf = array();
 			static $leftjoin = array();
 			if( $i < $this->countcol)
 				{
-				$arr = $this->db->db_fetch_array($this->rescol);
+				$arr = $babDB->db_fetch_array($this->rescol);
 				if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
 					{
-					$rr = $this->db->db_fetch_array($this->db->db_query("select name, description from ".BAB_DBDIR_FIELDS_TBL." where id='".$this->db->db_escape_string($arr['id_field'])."'"));
-					$this->coltxt = translateDirectoryField($rr['description']);
+					$rr = $babDB->db_fetch_array($babDB->db_query("select name, description from ".BAB_DBDIR_FIELDS_TBL." where id='".$babDB->db_escape_string($arr['id_field'])."'"));
+					$this->coltxt = bab_toHtml(translateDirectoryField($rr['description']));
 					$filedname = $rr['name'];
 					$tmp[] = $filedname;
 					$this->select[] = 'e.'.$filedname;
 					}
 				else
 					{
-					$rr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$this->db->db_escape_string(($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
-					$this->coltxt = translateDirectoryField($rr['name']);
+					$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string(($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
+					$this->coltxt = bab_toHtml(translateDirectoryField($rr['name']));
 					$filedname = "babdirf".$arr['id'];
 					$sqlf[] = $filedname;
 
@@ -147,13 +148,13 @@ function UBrowseDbDirectory($id, $pos, $xf, $cb)
 						{
 						$req = " ".BAB_DBDIR_ENTRIES_TBL." e,
 								".BAB_USERS_GROUPS_TBL." u ".implode(' ',$leftjoin)." 
-									WHERE u.id_group='".$this->db->db_escape_string($this->idgroup)."' 
+									WHERE u.id_group='".$babDB->db_escape_string($this->idgroup)."' 
 									AND u.id_object=e.id_user 
 									AND e.id_directory='0'";
 						}
 					else
 						{
-						$req = " ".BAB_DBDIR_ENTRIES_TBL." e ".implode(' ',$leftjoin)." WHERE e.id_directory='".(1 == $this->idgroup ? 0 : $this->db->db_escape_string($this->id))."'";
+						$req = " ".BAB_DBDIR_ENTRIES_TBL." e ".implode(' ',$leftjoin)." WHERE e.id_directory='".(1 == $this->idgroup ? 0 : $babDB->db_escape_string($this->id))."'";
 						}
 
 					$this->select[] = 'e.id';
@@ -161,16 +162,16 @@ function UBrowseDbDirectory($id, $pos, $xf, $cb)
 						$this->select[] = 'e.email';
 
 					if (!empty($this->pos) && false === strpos($this->xf, 'babdirf'))
-						$like = " AND `".$this->db->db_escape_string($this->xf)."` LIKE '".$this->db->db_escape_string($this->pos)."%'";
+						$like = " AND `".$babDB->db_escape_string($this->xf)."` LIKE '".$babDB->db_escape_string($this->pos)."%'";
 					elseif (0 === strpos($this->xf, 'babdirf'))
 						{
 						$idfield = substr($this->xf,7);
-						$like = " AND lj".$idfield.".field_value LIKE '".$this->db->db_escape_string($this->pos)."%'";
+						$like = " AND lj".$idfield.".field_value LIKE '".$babDB->db_escape_string($this->pos)."%'";
 						}
 					else
 						$like = '';
 
-					$req = "select ".implode(',', $this->select)." from ".$req." ".$like." order by `".$this->db->db_escape_string($this->xf)."` ";
+					$req = "select ".implode(',', $this->select)." from ".$req." ".$like." order by `".$babDB->db_escape_string($this->xf)."` ";
 					if( $this->ord == "-" )
 						{
 						$req .= "asc";
@@ -181,8 +182,8 @@ function UBrowseDbDirectory($id, $pos, $xf, $cb)
 						}					
 					
 
-					$this->res = $this->db->db_query($req);				
-					$this->count = $this->db->db_num_rows($this->res);
+					$this->res = $babDB->db_query($req);				
+					$this->count = $babDB->db_num_rows($this->res);
 					}
 				else
 					$this->count = 0;
@@ -193,13 +194,14 @@ function UBrowseDbDirectory($id, $pos, $xf, $cb)
 
 		function getnext()
 			{
+			global $babDB;
 			static $i = 0;
 			if( $i < $this->count)
 				{
 				$this->altbg = $this->altbg ? false : true;
-				$this->arrf = $this->db->db_fetch_array($this->res);
+				$this->arrf = $babDB->db_fetch_array($this->res);
 				$this->userid = $this->arrf['id'];
-				$this->firstlast = bab_composeUserName($this->arrf['givenname'],$this->arrf['sn']);
+				$this->firstlast = bab_composeUserName(bab_toHtml($this->arrf['givenname']),bab_toHtml($this->arrf['sn']));
 				$this->firstlast = str_replace("'", "\'", $this->firstlast);
 				$this->firstlast = str_replace('"', "'+String.fromCharCode(34)+'",$this->firstlast);
 				$i++;
@@ -216,7 +218,7 @@ function UBrowseDbDirectory($id, $pos, $xf, $cb)
 			static $i = 0;
 			if( $i < $this->countcol)
 				{
-				$this->coltxt = stripslashes(bab_translate($this->arrf[$i]));
+				$this->coltxt = bab_toHtml(stripslashes(bab_translate($this->arrf[$i])));
 				$i++;
 				return true;
 				}
@@ -257,27 +259,27 @@ class bab_viewDirectoryUser
 
 function bab_viewDirectoryUser($id)
 	{
-	$this->db = $GLOBALS['babDB'];
+	global $babDB;
 	
-	$res = $this->db->db_query("select *, LENGTH(photo_data) as plen from ".BAB_DBDIR_ENTRIES_TBL." where id='".$this->db->db_escape_string($id)."'");
+	$res = $babDB->db_query("select *, LENGTH(photo_data) as plen from ".BAB_DBDIR_ENTRIES_TBL." where id='".$babDB->db_escape_string($id)."'");
 	$this->showph = false;
 	$this->fields = array();
 	$this->access = false;
-	if( $res && $this->db->db_num_rows($res) > 0)
+	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-		$arr = $this->db->db_fetch_array($res);
-		$res = $this->db->db_query("select * from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_entry='".$this->db->db_escape_string($id)."'");
-		while( $rr = $this->db->db_fetch_array($res))
+		$arr = $babDB->db_fetch_array($res);
+		$res = $babDB->db_query("select * from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_entry='".$babDB->db_escape_string($id)."'");
+		while( $rr = $babDB->db_fetch_array($res))
 			{
 			$arr['babdirf'.$rr['id_fieldx']] = $rr['field_value'];
 			}
 
 		if( $arr['id_directory'] == 0 )
 			{
-			$res = $this->db->db_query("select id, id_group from ".BAB_DB_DIRECTORIES_TBL." where id_group != '0'");
-			while( $row = $this->db->db_fetch_array($res))
+			$res = $babDB->db_query("select id, id_group from ".BAB_DB_DIRECTORIES_TBL." where id_group != '0'");
+			while( $row = $babDB->db_fetch_array($res))
 				{
-				list($bdir) = $this->db->db_fetch_array($this->db->db_query("select directory from ".BAB_GROUPS_TBL." where id='".$this->db->db_escape_string($row['id_group'])."'"));
+				list($bdir) = $babDB->db_fetch_array($babDB->db_query("select directory from ".BAB_GROUPS_TBL." where id='".$babDB->db_escape_string($row['id_group'])."'"));
 				if( $bdir == 'Y' && bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $row['id']))
 					{
 					if( $row['id_group'] == 1 && $GLOBALS['BAB_SESS_USERID'] != "" )
@@ -285,8 +287,8 @@ function bab_viewDirectoryUser($id)
 						$this->access = true;
 						break;
 						}
-					$res2 = $this->db->db_query("select id from ".BAB_USERS_GROUPS_TBL." where id_object='".$this->db->db_escape_string($arr['id_user'])."' and id_group='".$this->db->db_escape_string($row['id_group'])."'");
-					if( $res2 && $this->db->db_num_rows($res2) > 0 )
+					$res2 = $babDB->db_query("select id from ".BAB_USERS_GROUPS_TBL." where id_object='".$babDB->db_escape_string($arr['id_user'])."' and id_group='".$babDB->db_escape_string($row['id_group'])."'");
+					if( $res2 && $babDB->db_num_rows($res2) > 0 )
 						{
 						$this->access = true;
 						break;
@@ -302,7 +304,7 @@ function bab_viewDirectoryUser($id)
 
 		if( $this->access )
 			{
-			$this->name = $arr['givenname']. " ". $arr['sn'];
+			$this->name = bab_toHtml($arr['givenname']). " ". bab_toHtml($arr['sn']);
 			if( $arr['plen'] > 0 )
 				{
 				$this->showph = true;
@@ -311,12 +313,12 @@ function bab_viewDirectoryUser($id)
 
 			$this->urlimg = $GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$arr['id_directory']."&idu=".$id;
 
-			$res = $this->db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$this->db->db_escape_string($arr['id_directory'])."' order by list_ordering asc");
-			while( $row = $this->db->db_fetch_array($res))
+			$res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$babDB->db_escape_string($arr['id_directory'])."' order by list_ordering asc");
+			while( $row = $babDB->db_fetch_array($res))
 				{
 				if( $row['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
 					{
-					$rr = $this->db->db_fetch_array($this->db->db_query("select name, description from ".BAB_DBDIR_FIELDS_TBL." where id='".$this->db->db_escape_string($row['id_field'])."'"));
+					$rr = $babDB->db_fetch_array($babDB->db_query("select name, description from ".BAB_DBDIR_FIELDS_TBL." where id='".$babDB->db_escape_string($row['id_field'])."'"));
 					if( $rr['name'] != 'jpegphoto' )
 						{
 						if ('email' == $rr['name'])
@@ -332,7 +334,7 @@ function bab_viewDirectoryUser($id)
 					}
 				else
 					{
-					$rr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$this->db->db_escape_string(($row['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
+					$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string(($row['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
 					$this->fields[] = array('name' => translateDirectoryField($rr['name']), 'value' => isset($arr["babdirf".$row['id']]) ? stripslashes($arr["babdirf".$row['id']]): '');
 					}
 				}
@@ -358,6 +360,7 @@ function summaryDbContact($id, $idu, $update=true)
 
 		function temp($id, $idu, $update)
 			{
+			global $babDB;
 			if (!bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL,$id))
 				{
 				die( bab_translate('Access denied') );
@@ -365,31 +368,31 @@ function summaryDbContact($id, $idu, $update=true)
 			$this->t_print = bab_translate("Print");
 			$this->t_delconf = bab_translate("Do you really want to delete the contact ?");
 
-			$this->db = &$GLOBALS['babDB'];
-			list($idgroup, $allowuu, $bshowui) = $this->db->db_fetch_array($this->db->db_query("select id_group, user_update, show_update_info from ".BAB_DB_DIRECTORIES_TBL." where id='".$this->db->db_escape_string($id)."'"));
+			list($idgroup, $allowuu, $bshowui) = $babDB->db_fetch_array($babDB->db_query("select id_group, user_update, show_update_info from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
 
-			$this->res = $this->db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup != 0? 0: $this->db->db_escape_string($id))."' AND disabled='N' order by list_ordering asc");
-			if( $this->res && $this->db->db_num_rows($this->res) > 0)
+			$this->res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup != 0? 0: $babDB->db_escape_string($id))."' AND disabled='N' order by list_ordering asc");
+			if( $this->res && $babDB->db_num_rows($this->res) > 0)
 				{
-				$this->count = $this->db->db_num_rows($this->res);
+				$this->count = $babDB->db_num_rows($this->res);
 				}
 			else
 				{
 				$this->count = 0;
 				}
 
-			$res = $this->db->db_query("select *, LENGTH(photo_data) as plen from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".($idgroup != 0? 0: $this->db->db_escape_string($id))."' and id='".$this->db->db_escape_string($idu)."'");
+			$res = $babDB->db_query("select *, LENGTH(photo_data) as plen from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".($idgroup != 0? 0: $babDB->db_escape_string($id))."' and id='".$babDB->db_escape_string($idu)."'");
 			$this->showph = false;
-			if( $res && $this->db->db_num_rows($res) > 0 )
+			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
-				$this->arr = $this->db->db_fetch_array($res);
-				$res = $this->db->db_query("select * from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_entry='".$this->db->db_escape_string($idu)."'");
-				while( $arr = $this->db->db_fetch_array($res))
+				$this->arr = $babDB->db_fetch_array($res);
+				$res = $babDB->db_query("select * from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_entry='".$babDB->db_escape_string($idu)."'");
+				while( $arr = $babDB->db_fetch_array($res))
 					{
 					$this->arr['babdirf'.$arr['id_fieldx']] = $arr['field_value'];
 					}
 				
 				$this->name = stripslashes($this->arr['givenname']). " ". stripslashes($this->arr['sn']);
+				$this->name = bab_toHtml($this->name);
 				if( $this->arr['plen'] > 0 )
 					{
 					$this->showph = true;
@@ -442,13 +445,13 @@ function summaryDbContact($id, $idu, $update=true)
 					$this->modifiedontxt = bab_translate("Update on");
 					$this->bytxt = bab_translate("By");
 					$this->updatedate = bab_shortDate(bab_mktime($this->arr['date_modification']), true);
-					$this->updateauthor = bab_getUserName($this->arr['id_modifiedby']);
+					$this->updateauthor = bab_toHtml(bab_getUserName($this->arr['id_modifiedby']));
 					}
 
-				$this->idu = $idu;
+				$this->idu = bab_toHtml($idu);
 				$this->arrorgid = array();
-				$this->resorg = $this->db->db_query("SELECT distinct oct.name, oct.id, oct.id_directory from ".BAB_ORG_CHARTS_TBL." oct left join ".BAB_OC_ROLES_TBL." ocrt on oct.id=ocrt.id_oc left join ".BAB_OC_ROLES_USERS_TBL." ocrut on ocrt.id=ocrut.id_role where ocrut.id_user='".$this->db->db_escape_string($idu)."'");
-				while( $rr = $this->db->db_fetch_array($this->resorg))
+				$this->resorg = $babDB->db_query("SELECT distinct oct.name, oct.id, oct.id_directory from ".BAB_ORG_CHARTS_TBL." oct left join ".BAB_OC_ROLES_TBL." ocrt on oct.id=ocrt.id_oc left join ".BAB_OC_ROLES_USERS_TBL." ocrut on ocrt.id=ocrut.id_role where ocrut.id_user='".$babDB->db_escape_string($idu)."'");
+				while( $rr = $babDB->db_fetch_array($this->resorg))
 					{
 					if( bab_isAccessValid(BAB_OCVIEW_GROUPS_TBL, $rr['id']))
 						{
@@ -464,8 +467,8 @@ function summaryDbContact($id, $idu, $update=true)
 				}
 			else
 				{
-				$this->name = "";
-				$this->urlimg = "";
+				$this->name = '';
+				$this->urlimg = '';
 				}
 
 			if( !$update )
@@ -477,20 +480,21 @@ function summaryDbContact($id, $idu, $update=true)
 		
 		function getnextfield(&$skip)
 			{
+			global $babDB;
 			static $i = 0;
 			if( $i < $this->count)
 				{
-				$arr = $this->db->db_fetch_array($this->res);
+				$arr = $babDB->db_fetch_array($this->res);
 				if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
 					{
-					$rr = $this->db->db_fetch_array($this->db->db_query("select name, description from ".BAB_DBDIR_FIELDS_TBL." where id='".$this->db->db_escape_string($arr['id_field'])."'"));
-					$this->fieldn = translateDirectoryField($rr['description']);
-					$this->fieldv = $rr['name'];
+					$rr = $babDB->db_fetch_array($babDB->db_query("select name, description from ".BAB_DBDIR_FIELDS_TBL." where id='".$babDB->db_escape_string($arr['id_field'])."'"));
+					$this->fieldn = bab_toHtml(translateDirectoryField($rr['description']));
+					$this->fieldv = bab_toHtml($rr['name']);
 					}
 				else
 					{
-					$rr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$this->db->db_escape_string(($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
-					$this->fieldn = translateDirectoryField($rr['name']);
+					$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string(($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
+					$this->fieldn = bab_toHtml(translateDirectoryField($rr['name']));
 					$this->fieldv = "babdirf".$arr['id'];
 					}
 
@@ -503,7 +507,7 @@ function summaryDbContact($id, $idu, $update=true)
 
 				if( isset($this->arr[$this->fieldv]) )
 					{
-					$this->fieldv = nl2br(stripslashes($this->arr[$this->fieldv]));
+					$this->fieldv = bab_toHtml(nl2br(stripslashes($this->arr[$this->fieldv])));
 					}
 				else
 					{
@@ -527,15 +531,16 @@ function summaryDbContact($id, $idu, $update=true)
 
 		function getnextorg()
 			{
+			global $babDB;
 			static $i = 0;
 			if( $i < $this->orgcount)
 				{
 				$this->orgid = $this->arrorgid[$i][0];
 				$this->orgn = $this->arrorgid[$i][1];
-				$res = $this->db->db_query("SELECT  ocrt.id_entity FROM ".BAB_OC_ROLES_TBL." ocrt LEFT JOIN ".BAB_OC_ROLES_USERS_TBL." ocrut ON ocrt.id = ocrut.id_role WHERE ocrut.id_user='".$this->db->db_escape_string($this->idu)."' and ocrt.id_oc='".$this->db->db_escape_string($this->orgid)."' and ocrut.isprimary='Y' ");
-				if( $res && $this->db->db_num_rows($res) > 0 )
+				$res = $babDB->db_query("SELECT  ocrt.id_entity FROM ".BAB_OC_ROLES_TBL." ocrt LEFT JOIN ".BAB_OC_ROLES_USERS_TBL." ocrut ON ocrt.id = ocrut.id_role WHERE ocrut.id_user='".$babDB->db_escape_string($this->idu)."' and ocrt.id_oc='".$babDB->db_escape_string($this->orgid)."' and ocrut.isprimary='Y' ");
+				if( $res && $babDB->db_num_rows($res) > 0 )
 					{
-					$arr = $this->db->db_fetch_array($res);
+					$arr = $babDB->db_fetch_array($res);
 					$this->oeid = $arr['id_entity'];
 					}
 				else
@@ -579,8 +584,9 @@ function summaryDbContactWithOvml($args)
 }
 
 
-function getDirEntry($id, $type, $id_directory) {
-	$babDB = &$GLOBALS['babDB'];
+function getDirEntry($id, $type, $id_directory) 
+	{
+	global $babDB;
 
 	if (BAB_DIR_ENTRY_ID_USER === $type && false === $id) {
 		$id = &$GLOBALS['BAB_SESS_USERID'];
@@ -763,15 +769,15 @@ function getDirEntry($id, $type, $id_directory) {
 }
 
 
-function getUserDirectories() {
-	
+function getUserDirectories()
+	{
+	global $babDB;
 	static $return = array();
 
 	if (0 == count($return)) {
-		$db = &$GLOBALS['babDB'];
-		$res = $db->db_query("SELECT d.id, d.name, d.description, d.id_group FROM ".BAB_DB_DIRECTORIES_TBL." d 
+		$res = $babDB->db_query("SELECT d.id, d.name, d.description, d.id_group FROM ".BAB_DB_DIRECTORIES_TBL." d 
 		LEFT JOIN ".BAB_GROUPS_TBL." g ON g.id=d.id_group AND g.directory='Y' WHERE (d.id_group='0' OR g.id>'0') ORDER BY name");
-		while( $row = $db->db_fetch_array($res))
+		while( $row = $babDB->db_fetch_array($res))
 			{
 			if(bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $row['id']))
 				{

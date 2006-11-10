@@ -21,11 +21,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
-include_once $babInstallPath."utilit/uiutil.php";
-include_once $babInstallPath."utilit/mailincl.php";
-include_once $babInstallPath."utilit/topincl.php";
-include_once $babInstallPath."utilit/artincl.php";
+include_once 'base.php';
+include_once $babInstallPath.'utilit/uiutil.php';
+include_once $babInstallPath.'utilit/mailincl.php';
+include_once $babInstallPath.'utilit/topincl.php';
+include_once $babInstallPath.'utilit/artincl.php';
 
 function listComments($topics, $article)
 	{
@@ -45,24 +45,24 @@ function listComments($topics, $article)
 
 		function temp($topics, $article)
 			{
-			global $babBodyPopup;
-			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_COMMENTS_TBL." where id_article='".$article."' and confirmed='Y' order by date desc";
-			$this->res = $this->db->db_query($req);
-			$this->count = $this->db->db_num_rows($this->res);
+			global $babBodyPopup, $babDB;
+			$req = "select * from ".BAB_COMMENTS_TBL." where id_article='".$babDB->db_escape_string($article)."' and confirmed='Y' order by date desc";
+			$this->res = $babDB->db_query($req);
+			$this->count = $babDB->db_num_rows($this->res);
 			$this->article = $article;
 			$this->alternate = 0;
-			$res = $this->db->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$topics."' and archive='Y'");
+			$res = $babDB->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$babDB->db_escape_string($topics)."' and archive='Y'");
 			$this->altbg = false;
 			}
 
 		function getnext()
 			{
+			global $babDB;
 			static $i = 0;
 			if( $i < $this->count)
 				{
 				$this->altbg = !$this->altbg;
-				$arr = $this->db->db_fetch_array($this->res);
+				$arr = $babDB->db_fetch_array($this->res);
 				$this->commentdate = bab_strftime(bab_mktime($arr['date']));
 				if( $arr['id_author'] )
 					{
@@ -72,7 +72,9 @@ function listComments($topics, $article)
 					{
 					$this->authorname = $arr['name'];
 					}
-				$this->commenttitle = $arr['subject'];
+				$this->authorname = bab_toHTML($this->authorname);
+				
+				$this->commenttitle = bab_toHTML($arr['subject']);
 				$this->commentbody = bab_replace($arr['message']);
 				$i++;
 				return true;
@@ -110,7 +112,7 @@ function addComment($topics, $article, $subject, $message, $com="")
 
 		function addCommentCls($topics, $article, $subject, $message, $com)
 			{
-			global $BAB_SESS_USER;
+			global $BAB_SESS_USER, $babDB;
 			$this->subject = bab_translate("comments-Title");
 			$this->name = bab_translate("Name");
 			$this->email = bab_translate("Email");
@@ -120,19 +122,18 @@ function addComment($topics, $article, $subject, $message, $com="")
 			$this->article = $article;
 			$this->subjectval = $subject;
 			$this->messageval = $message;
-			$this->com = $com;
-			$db = $GLOBALS['babDB'];
-			$req = "select title from ".BAB_ARTICLES_TBL." where id='".$article."'";
-			$res = $db->db_query($req);
-			$arr = $db->db_fetch_array($res);
-			$this->titleval = $arr['title'];
+			$this->com = bab_toHTML($com);
+			$req = "select title from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($article)."'";
+			$res = $babDB->db_query($req);
+			$arr = $babDB->db_fetch_array($res);
+			$this->titleval = bab_toHTML($arr['title']);
 			$this->editor = bab_editor($this->messageval, 'message', 'comcreate');
 
-			$arr = $db->db_fetch_array($db->db_query("select idsacom from ".BAB_TOPICS_TBL." where id='".$topics."'"));
+			$arr = $babDB->db_fetch_array($babDB->db_query("select idsacom from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($topics)."'"));
 			if( $arr['idsacom'] != 0 )
 				$this->notcom = bab_translate("Note: for this topic, comments are moderate");
 			else
-				$this->notcom = "";
+				$this->notcom = '';
 			}
 		}
 
@@ -142,7 +143,7 @@ function addComment($topics, $article, $subject, $message, $com="")
 
 function saveComment($topics, $article, $subject, $message, $com, &$msgerror)
 	{
-	global $BAB_SESS_USER, $BAB_SESS_EMAIL, $BAB_SESS_USERID;
+	global $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL, $BAB_SESS_USERID;
 
 	if( empty($subject))
 		{
@@ -156,9 +157,6 @@ function saveComment($topics, $article, $subject, $message, $com, &$msgerror)
 		return false;
 		}
 
-	$db = $GLOBALS['babDB'];
-
-
 	if( empty($com))
 		{
 		$com = 0;
@@ -166,12 +164,12 @@ function saveComment($topics, $article, $subject, $message, $com, &$msgerror)
 	
 	$req = "insert into ".BAB_COMMENTS_TBL." (id_topic, id_article, id_parent, date, subject, message, id_author, name, email) values ";
 	$req .= "(
-		'" .$db->db_escape_string($topics). "', 
-		'" . $db->db_escape_string($article).  "', 
-		'" . $db->db_escape_string($com). "', 
+		'" .$babDB->db_escape_string($topics). "', 
+		'" . $babDB->db_escape_string($article).  "', 
+		'" . $babDB->db_escape_string($com). "', 
 		now(), 
-		'" . $db->db_escape_string($subject). "', 
-		'" . $db->db_escape_string($message). "', '
+		'" . $babDB->db_escape_string($subject). "', 
+		'" . $babDB->db_escape_string($message). "', '
 	";
 
 	if( empty($BAB_SESS_USER))
@@ -187,16 +185,16 @@ function saveComment($topics, $article, $subject, $message, $com, &$msgerror)
 		$idauthor = $BAB_SESS_USERID;
 		}
 
-	$req .= $idauthor. "', '" .$name. "', '" . $email. "')";
+	$req .= $babDB->db_escape_string($idauthor). "', '" .$babDB->db_escape_string($name). "', '" . $babDB->db_escape_string($email). "')";
 
-	$db->db_query($req);
-	$id = $db->db_insert_id();
+	$babDB->db_query($req);
+	$id = $babDB->db_insert_id();
 
-	$req = "select * from ".BAB_TOPICS_TBL." where id='".$topics."'";
-	$res = $db->db_query($req);
-	if( $res && $db->db_num_rows($res) > 0)
+	$req = "select * from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($topics)."'";
+	$res = $babDB->db_query($req);
+	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-		$arr = $db->db_fetch_array($res);
+		$arr = $babDB->db_fetch_array($res);
 
 		if( $arr['idsacom'] != 0 )
 			{
@@ -213,11 +211,11 @@ function saveComment($topics, $article, $subject, $message, $com, &$msgerror)
 
 		if( $arr['idsacom'] == 0 || $idfai === true)
 			{
-			$db->db_query("update ".BAB_COMMENTS_TBL." set confirmed='Y' where id='".$id."'");
+			$babDB->db_query("update ".BAB_COMMENTS_TBL." set confirmed='Y' where id='".$id."'");
 			}
 		elseif(!empty($idfai))
 			{
-			$db->db_query("update ".BAB_COMMENTS_TBL." set idfai='".$idfai."' where id='".$id."'");
+			$babDB->db_query("update ".BAB_COMMENTS_TBL." set idfai='".$idfai."' where id='".$id."'");
 			$nfusers = getWaitingApproversFlowInstance($idfai, true);
 			notifyCommentApprovers($id, $nfusers);
 			}

@@ -21,8 +21,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
-include_once $babInstallPath."utilit/dirincl.php";
+include_once 'base.php';
+include_once $babInstallPath.'utilit/dirincl.php';
 
 
 function dirlist()
@@ -35,22 +35,22 @@ function dirlist()
 
 		function temp()
 			{
+			global $babDB;
 			$this->conttitle = bab_translate("Contacts");
 			$this->conturl = $GLOBALS['babUrlScript']."?tg=editorcontdir&idx=contact";
 			$this->dirtitle = bab_translate("Directories");
 			$this->dirurl = $GLOBALS['babUrlScript']."?tg=editorcontdir&idx=directory";
 			$this->contactif = false;
 
-			$this->db = $GLOBALS['babDB'];
-			$res = $this->db->db_query("select id, id_group,name,description from ".BAB_DB_DIRECTORIES_TBL."");
+			$res = $babDB->db_query("select id, id_group,name,description from ".BAB_DB_DIRECTORIES_TBL."");
 			$this->count = 0;
-			while( $row = $this->db->db_fetch_array($res))
+			while( $row = $babDB->db_fetch_array($res))
 				{
 				if(bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $row['id']))
 					{
 					if( $row['id_group'] > 0 )
 						{
-						list($bdir) = $this->db->db_fetch_array($this->db->db_query("select directory from ".BAB_GROUPS_TBL." where id='".$row['id_group']."'"));
+						list($bdir) = $babDB->db_fetch_array($babDB->db_query("select directory from ".BAB_GROUPS_TBL." where id='".$babDB->db_escape_string($row['id_group'])."'"));
 						if( $bdir == 'Y' )
 							{
 							$this->dbdir[] = $row;
@@ -102,6 +102,7 @@ function directory($id, $pos, $xf, $badd)
 
 		function temp($id, $pos, $xf, $badd)
 			{
+			global $babDB;
 			$this->conttitle = bab_translate("Contacts");
 			$this->conturl = $GLOBALS['babUrlScript']."?tg=editorcontdir&idx=contact";
 			$this->dirtitle = bab_translate("Directories");
@@ -131,13 +132,12 @@ function directory($id, $pos, $xf, $badd)
 			$this->allurl = $GLOBALS['babUrlScript']."?tg=editorcontdir&idx=directory&id=".$id."&pos=".($this->ord == "-"? "":$this->ord)."&xf=".$this->xf;
 			$this->addurl = $GLOBALS['babUrlScript']."?tg=editorcontdir&idx=directory&id=".$id;
 			$this->count = 0;
-			$this->db = $GLOBALS['babDB'];
-			$arr = $this->db->db_fetch_array($this->db->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
+			$arr = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
 			if(bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $id))
 				{
 				$this->idgroup = $arr['id_group'];
-				$this->rescol = $this->db->db_query("select id, id_field from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($this->idgroup != 0? 0: $this->id)."' and ordering!='0' order by ordering asc");
-				$this->countcol = $this->db->db_num_rows($this->rescol);
+				$this->rescol = $babDB->db_query("select id, id_field from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($this->idgroup != 0? 0: $babDB->db_escape_string($this->id))."' and ordering!='0' order by ordering asc");
+				$this->countcol = $babDB->db_num_rows($this->rescol);
 				}
 			else
 				{
@@ -146,17 +146,17 @@ function directory($id, $pos, $xf, $badd)
 				}
 
 			/* find prefered mail account */
-			$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$GLOBALS['BAB_SESS_USERID']."' and prefered='Y'";
-			$res = $this->db->db_query($req);
-			if( !$res || $this->db->db_num_rows($res) == 0 )
+			$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and prefered='Y'";
+			$res = $babDB->db_query($req);
+			if( !$res || $babDB->db_num_rows($res) == 0 )
 				{
-				$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$GLOBALS['BAB_SESS_USERID']."'";
-				$res = $this->db->db_query($req);
+				$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'";
+				$res = $babDB->db_query($req);
 				}
 
-			if( $this->db->db_num_rows($res) > 0 )
+			if( $babDB->db_num_rows($res) > 0 )
 				{
-				$arr = $this->db->db_fetch_array($res);
+				$arr = $babDB->db_fetch_array($res);
 				$this->accid = $arr['id'];
 				}
 			else
@@ -165,16 +165,17 @@ function directory($id, $pos, $xf, $badd)
 
 		function getnextcol()
 			{
+			global $babDB;
 			static $i = 0;
 			static $tmp = array();
 			static $sqlf = array();
 			static $leftjoin = array();
 			if( $i < $this->countcol)
 				{
-				$arr = $this->db->db_fetch_array($this->rescol);
+				$arr = $babDB->db_fetch_array($this->rescol);
 				if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
 					{
-					$rr = $this->db->db_fetch_array($this->db->db_query("select name, description from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
+					$rr = $babDB->db_fetch_array($babDB->db_query("select name, description from ".BAB_DBDIR_FIELDS_TBL." where id='".$babDB->db_escape_string($arr['id_field'])."'"));
 					$this->coltxt = translateDirectoryField($rr['description']);
 					$filedname = $rr['name'];
 					$tmp[] = $filedname;
@@ -182,7 +183,7 @@ function directory($id, $pos, $xf, $badd)
 					}
 				else
 					{
-					$rr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+					$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string(($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
 					$this->coltxt = translateDirectoryField($rr['name']);
 					$filedname = "babdirf".$arr['id'];
 					$sqlf[] = $filedname;
@@ -205,15 +206,15 @@ function directory($id, $pos, $xf, $badd)
 
 					if( $this->idgroup > 1 )
 						{
-						$req = " ".BAB_DBDIR_ENTRIES_TBL." e,
-								".BAB_USERS_GROUPS_TBL." u ".implode(' ',$leftjoin)." 
+						$req = " ".BAB_USERS_GROUPS_TBL." u,
+								".BAB_DBDIR_ENTRIES_TBL." e ".implode(' ',$leftjoin)." 
 									WHERE u.id_group='".$this->idgroup."' 
 									AND u.id_object=e.id_user 
 									AND e.id_directory='0'";
 						}
 					else
 						{
-						$req = " ".BAB_DBDIR_ENTRIES_TBL." e ".implode(' ',$leftjoin)." WHERE e.id_directory='".(1 == $this->idgroup ? 0 : $this->id )."'";
+						$req = " ".BAB_DBDIR_ENTRIES_TBL." e ".implode(' ',$leftjoin)." WHERE e.id_directory='".(1 == $this->idgroup ? 0 : $babDB->db_escape_string($this->id) )."'";
 						}
 
 					$this->select[] = 'e.id';
@@ -221,11 +222,11 @@ function directory($id, $pos, $xf, $badd)
 						$this->select[] = 'e.email';
 
 					if (!empty($this->pos) && false === strpos($this->xf, 'babdirf'))
-						$like = " AND `".$this->xf."` LIKE '".$this->pos."%'";
+						$like = " AND `".$this->xf."` LIKE '".$babDB->db_escape_like($this->pos)."%'";
 					elseif (0 === strpos($this->xf, 'babdirf'))
 						{
 						$idfield = substr($this->xf,7);
-						$like = " AND lj".$idfield.".field_value LIKE '".$this->pos."%'";
+						$like = " AND lj".$idfield.".field_value LIKE '".$babDB->db_escape_like($this->pos)."%'";
 						}
 					else
 						$like = '';
@@ -240,8 +241,8 @@ function directory($id, $pos, $xf, $badd)
 						$req .= "desc";
 						}					
 
-					$this->res = $this->db->db_query($req);				
-					$this->count = $this->db->db_num_rows($this->res);
+					$this->res = $babDB->db_query($req);				
+					$this->count = $babDB->db_num_rows($this->res);
 					}
 				else
 					$this->count = 0;
@@ -252,10 +253,11 @@ function directory($id, $pos, $xf, $badd)
 
 		function getnext()
 			{
+			global $babDB;
 			static $i = 0;
 			if( $i < $this->count)
 				{
-				$this->arrf = $this->db->db_fetch_array($this->res);
+				$this->arrf = $babDB->db_fetch_array($this->res);
 				$this->urlmail = $GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".$this->accid."&to=".$this->arrf['email'];
 				$this->email = $this->arrf['email'];
 				$this->js_id = $this->arrf['id'];
@@ -276,7 +278,7 @@ function directory($id, $pos, $xf, $badd)
 			static $i = 0;
 			if( $i < $this->countcol)
 				{
-				$this->coltxt = bab_translate($this->arrf[$i]);
+				$this->coltxt = isset($this->arrf[$i])?bab_translate($this->arrf[$i]):'';
 				$i++;
 				return true;
 				}
@@ -323,18 +325,17 @@ function editorcont()
 		var $count;
 		function temp()
 			{
+			global $BAB_SESS_USERID, $babDB;
 			$this->conttitle = bab_translate("Contacts");
 			$this->conturl = $GLOBALS['babUrlScript']."?tg=editorcontdir&idx=contact";
 			$this->dirtitle = bab_translate("Directories");
 			$this->dirurl = $GLOBALS['babUrlScript']."?tg=editorcontdir&idx=directory";
 			$this->contactif = true;
 
-			global $BAB_SESS_USERID;
-			$req = "select * from ".BAB_CONTACTS_TBL." where owner='".$BAB_SESS_USERID."' order by lastname, firstname asc";
-			$this->db = $GLOBALS['babDB'];
-			$this->res = $this->db->db_query($req);
+			$req = "select * from ".BAB_CONTACTS_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."' order by lastname, firstname asc";
+			$this->res = $babDB->db_query($req);
 			if( $this->res )
-				$this->count = $this->db->db_num_rows($this->res);
+				$this->count = $babDB->db_num_rows($this->res);
 			else
 				$this->count = 0;
 			}
@@ -342,10 +343,11 @@ function editorcont()
 
 		function getnext()
 			{
+			global $babDB;
 			static $i = 0;
 			if( $i < $this->count)
 				{
-				$arr = $this->db->db_fetch_array($this->res);
+				$arr = $babDB->db_fetch_array($this->res);
 				$this->contid = $arr['id'];
 				$this->title = bab_composeUserName( $arr['firstname'], $arr['lastname']);
 				$tmp = str_replace("\""," ",$this->title);

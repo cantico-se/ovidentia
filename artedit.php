@@ -21,11 +21,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include "base.php";
-include_once $babInstallPath."utilit/uiutil.php";
-include_once $babInstallPath."utilit/mailincl.php";
-include_once $babInstallPath."utilit/topincl.php";
-include_once $babInstallPath."utilit/artincl.php";
+include 'base.php';
+include_once $babInstallPath.'utilit/uiutil.php';
+include_once $babInstallPath.'utilit/mailincl.php';
+include_once $babInstallPath.'utilit/topincl.php';
+include_once $babInstallPath.'utilit/artincl.php';
 
 function listDrafts()
 	{
@@ -71,7 +71,7 @@ function listDrafts()
 			$this->js_confirm_submit = bab_translate("Do you really want to submit")."?";
 			$this->urladd = $GLOBALS['babUrlScript']."?tg=artedit&idx=s0";
 			$this->urlmod = $GLOBALS['babUrlScript']."?tg=artedit&idx=s00";
-			$req = "select adt.*, count(adft.id) as total from ".BAB_ART_DRAFTS_TBL." adt left join ".BAB_ART_DRAFTS_FILES_TBL." adft on adft.id_draft=adt.id where id_author='".$GLOBALS['BAB_SESS_USERID']."' and adt.trash !='Y' and adt.idfai='0' and adt.result='".BAB_ART_STATUS_DRAFT."' GROUP BY adt.id order by date_modification desc";
+			$req = "select adt.*, count(adft.id) as total from ".BAB_ART_DRAFTS_TBL." adt left join ".BAB_ART_DRAFTS_FILES_TBL." adft on adft.id_draft=adt.id where id_author='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and adt.trash !='Y' and adt.idfai='0' and adt.result='".BAB_ART_STATUS_DRAFT."' GROUP BY adt.id order by date_modification desc";
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
 			}
@@ -87,10 +87,13 @@ function listDrafts()
 				$this->propurl = $GLOBALS['babUrlScript']."?tg=artedit&idx=s3&idart=".$arr['id'];
 				$this->deleteurl = $GLOBALS['babUrlScript']."?tg=artedit&idx=movet&idart=".$arr['id'];
 				$this->previewurl = $GLOBALS['babUrlScript']."?tg=artedit&idx=preview&idart=".$arr['id'];
-				$this->name = $arr['title'];
+				$this->name = bab_toHTML($arr['title']);
 				$this->datesub = $arr['date_submission'] == "0000-00-00 00:00:00"? "":bab_shortDate(bab_mktime($arr['date_submission']), true);
+				$this->datesub = bab_toHTML($this->datesub);
 				$this->datepub = $arr['date_publication'] == "0000-00-00 00:00:00"? "":bab_shortDate(bab_mktime($arr['date_publication']), true);
+				$this->datepub = bab_toHTML($this->datepub);
 				$this->datearch = $arr['date_archiving'] == "0000-00-00 00:00:00"? "":bab_shortDate(bab_mktime($arr['date_archiving']), true);
+				$this->datearch = bab_toHTML($this->datearch);
 				if( $arr['total'] > 0 )
 					{
 					$this->attachment = true;
@@ -168,7 +171,7 @@ function listSubmitedArticles()
 			$this->attachmenttxt = bab_translate("Attachments");
 			$this->notestxt = bab_translate("Notes");
 			$this->urladd = $GLOBALS['babUrlScript']."?tg=artedit&idx=new";
-			$req = "select adt.*, count(adft.id) as totalf, count(adnt.id) as totaln from ".BAB_ART_DRAFTS_TBL." adt left join ".BAB_ART_DRAFTS_FILES_TBL." adft on adft.id_draft=adt.id  left join ".BAB_ART_DRAFTS_NOTES_TBL." adnt on adnt.id_draft=adt.id where adt.id_author='".$GLOBALS['BAB_SESS_USERID']."' and adt.trash !='Y' and adt.result!='".BAB_ART_STATUS_DRAFT."' GROUP BY adt.id order by date_submission desc";
+			$req = "select adt.*, count(adft.id) as totalf, count(adnt.id) as totaln from ".BAB_ART_DRAFTS_TBL." adt left join ".BAB_ART_DRAFTS_FILES_TBL." adft on adft.id_draft=adt.id  left join ".BAB_ART_DRAFTS_NOTES_TBL." adnt on adnt.id_draft=adt.id where adt.id_author='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and adt.trash !='Y' and adt.result!='".BAB_ART_STATUS_DRAFT."' GROUP BY adt.id order by date_submission desc";
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
 			}
@@ -185,8 +188,10 @@ function listSubmitedArticles()
 				$this->deleteurl = $GLOBALS['babUrlScript']."?tg=artedit&idx=delt&idart=".$arr['id'];
 				$this->previewurl = $GLOBALS['babUrlScript']."?tg=artedit&idx=preview&idart=".$arr['id'];
 				$this->restoreurl = $GLOBALS['babUrlScript']."?tg=artedit&idx=rests&idart=".$arr['id'];
-				$this->name = $arr['title'];
+				$this->name = bab_toHTML($arr['title']);
 				$this->datesub = $arr['date_submission'] == "0000-00-00 00:00:00"? "":bab_shortDate(bab_mktime($arr['date_submission']), true);
+				$this->datesub = bab_toHTML($this->datesub);
+
 				if( $arr['result'] == BAB_ART_STATUS_WAIT )
 					{
 					$this->bdelete = false;
@@ -268,7 +273,7 @@ function listDraftsInTrash()
 			$this->previewtxt = bab_translate("Preview");
 			$this->addtxt = bab_translate("Empty");
 			$this->urladd = $GLOBALS['babUrlScript']."?tg=artedit&idx=empty";
-			$req = "select * from ".BAB_ART_DRAFTS_TBL." where id_author='".$GLOBALS['BAB_SESS_USERID']."' and trash !='N' order by date_modification desc";
+			$req = "select * from ".BAB_ART_DRAFTS_TBL." where id_author='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and trash !='N' order by date_modification desc";
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
 			}
@@ -283,9 +288,9 @@ function listDraftsInTrash()
 				$this->urlname = $GLOBALS['babUrlScript']."?tg=artedit&idx=view&idart=".$arr['id'];
 				$this->restoreurl = $GLOBALS['babUrlScript']."?tg=artedit&idx=restore&idart=".$arr['id'];
 				$this->previewurl = $GLOBALS['babUrlScript']."?tg=artedit&idx=preview&idart=".$arr['id'];
-				$this->name = $arr['title'];
-				$this->datecreate = bab_shortDate(bab_mktime($arr['date_creation']), true);
-				$this->datemodify = bab_shortDate(bab_mktime($arr['date_modification']), true);
+				$this->name = bab_toHTML($arr['title']);
+				$this->datecreate = bab_toHTML(bab_shortDate(bab_mktime($arr['date_creation']), true));
+				$this->datemodify = bab_toHTML(bab_shortDate(bab_mktime($arr['date_modification']), true));
 				$i++;
 				return true;
 				}
@@ -311,7 +316,7 @@ function propertiesArticle($idart)
 		function temp($idart)
 			{
 			global $babDB;
-			$res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_TBL." where id='".$idart."' and id_author='".$GLOBALS['BAB_SESS_USERID']."'");
+			$res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_TBL." where id='".$babDB->db_escape_string($idart)."' and id_author='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
 			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
 				$arr = $babDB->db_fetch_array($res);
@@ -331,11 +336,14 @@ function propertiesArticle($idart)
 				$this->hpages1txt = bab_translate("Proposed to registered users home page");
 				$this->updatetxt = bab_translate("Update");
 
-				$this->arttitle = $arr['title'];
+				$this->arttitle = bab_toHTML($arr['title']);
 				$this->pathname = viewCategoriesHierarchy_txt($arr['id_topic']);
-				$this->author = bab_getUserName($arr['id_author']);
+				$this->author = bab_toHTML(bab_getUserName($arr['id_author']));
 				$this->datepub = $arr['date_publication'] == "0000-00-00 00:00:00"? "":bab_shortDate(bab_mktime($arr['date_publication']), true);
+				$this->datepub = bab_toHTML($this->datepub);
 				$this->datearch = $arr['date_archiving'] == "0000-00-00 00:00:00"? "":bab_shortDate(bab_mktime($arr['date_archiving']), true);
+				$this->datearch = bab_toHTML($this->datearch);
+
 				if( $arr['hpage_public'] == 'Y')
 					{
 					$this->hpages0 = $this->yes;
@@ -568,7 +576,8 @@ define('BAB_TOPIC_MODIFY', 2);
 
 function showTopicTree($actionType, $selectedTopicId)
 {
-	global $babBodyPopup;
+	global $babBodyPopup,$babBody, $babDB;
+;
 
 	class Template
 	{
@@ -618,8 +627,8 @@ function showTopicTree($actionType, $selectedTopicId)
 			if (!is_null($this->node_id))
 			{
 				$this->data =& $this->tree->nodes[$this->node_id]->data;
-				$this->data['title'] = htmlEntities($this->data['title']);
-				$this->data['description'] = htmlEntities(strip_tags($this->data['description']));
+				$this->data['title'] = bab_toHTML($this->data['title']);
+				$this->data['description'] = bab_toHTML(strip_tags($this->data['description']));
 				$this->data['description'] = preg_replace("/\r?\n|\r/", '', $this->data['description']);
 				$this->data['description'] = substr($this->data['description'], 0, 400);
 				return true;
@@ -629,14 +638,13 @@ function showTopicTree($actionType, $selectedTopicId)
 
 	}
 
-	global $babBody;
-	global $babDB;
 
+	$sql = '';
 	switch ($actionType)
 	{
 		case BAB_TOPIC_SUBMIT:
 			$sql = 'SELECT * FROM ' . BAB_TOPICS_TBL
-				. ' WHERE id IN (' . implode(',', array_keys($babBody->topsub)) . ')'
+				. ' WHERE id IN (' . $babDB->quote(array_keys($babBody->topsub)) . ')'
 				. ' ORDER BY id_cat';
 			$nextIdx = 's1';
 			break;
@@ -645,11 +653,11 @@ function showTopicTree($actionType, $selectedTopicId)
 			if (count($babBody->topsub) > 0  || count($babBody->topman) > 0 || count($babBody->topmod) > 0)
 			{
 				if (count($babBody->topsub) > 0)
-					$tmp[] = '(tt.id IN (' . implode(',', array_keys($babBody->topsub)) . ") and tt.allow_update != '0')";
+					$tmp[] = '(tt.id IN (' . $babDB->quote(array_keys($babBody->topsub)) . ") and tt.allow_update != '0')";
 				if( count($babBody->topman) > 0 )
-					$tmp[] = '(tt.id IN (' . implode(',', array_keys($babBody->topman)) . ") and tt.allow_manupdate != '0')";
+					$tmp[] = '(tt.id IN (' . $babDB->quote(array_keys($babBody->topman)) . ") and tt.allow_manupdate != '0')";
 				if( count($babBody->topmod) > 0 )
-					$tmp[] = '(tt.id IN (' . implode(',', array_keys($babBody->topmod)) . '))';
+					$tmp[] = '(tt.id IN (' . $babDB->quote(array_keys($babBody->topmod)) . '))';
 				$sql = 'SELECT distinct tt.* FROM '.BAB_ARTICLES_TBL.' at left join '.BAB_TOPICS_TBL.' tt on tt.id = at.id_topic'
 					. ' WHERE at.archive=\'N\' and ' . implode(' OR ', $tmp)
 					. ' ORDER BY tt.id_cat';
@@ -707,201 +715,6 @@ function showTopicTree($actionType, $selectedTopicId)
 }
 
 
-/*
-function showChoiceTopic()
-{
-	global $babBodyPopup;
-	class temp
-		{
-		var $res;
-		var $count;
-		var $topicname;
-		var $topicpath;
-		var $description;
-		var $idtopic;
-		var $topicchecked;
-		var $idtopicsel;
-		var $articleid;
-		var $title; 
-		var $headtext;
-		var $bodytext;
-		var $lang;
-		var $bcontent;
-
-		function temp()
-			{
-			global $babBodyPopup, $babBody, $babDB, $idart, $topicid, $articleid, $title, $headtext, $bodytext, $lang, $rfurl;
-			$this->count = $babBody->topsub;
-			if( $this->count > 0 )
-				{
-				if(!isset($idart)) { $idart = 0;}
-				if(!isset($topicid)) { $topicid = 0;}
-				if(!isset($articleid)) { $articleid = 0;}
-				$this->rfurl = $rfurl;
-				$this->idart = $idart;
-				$this->idtopicsel = $topicid;
-				if( (isset($title) && !empty($title)) || (isset($headtext) && !empty($headtext)) || (isset($bodytext) && !empty($bodytext)) )
-					{
-					$this->title = htmlentities($title);
-					$this->headtext = htmlentities($headtext);
-					$this->bodytext = htmlentities($bodytext);
-					$this->lang = htmlentities($lang);
-					$this->bcontent = true;
-					}
-				else
-					{
-					$this->bcontent = false;
-					}
-				$babBodyPopup->title = bab_translate("Choose the topic");
-				$this->res = $babDB->db_query("select * from ".BAB_TOPICS_TBL." where id IN (".implode(',', array_keys($babBody->topsub)).") order by id_cat");
-				$this->count = $babDB->db_num_rows($this->res);
-				$this->steptitle = bab_translate("list of topics");
-				$this->nexttxt = bab_translate("Next");
-				$this->savetxt = bab_translate("Save and close");
-				$this->canceltxt = bab_translate("Cancel");
-				}
-
-			if( $this->count == 0 )
-				{
-				$babBodyPopup->msgerror = bab_translate("Access denied");
-				}
-			}
-
-		function getnexttopic()
-			{
-			global $babDB, $babBody;
-			static $i = 0;
-			if( $i < $this->count)
-				{
-				$arr = $babDB->db_fetch_array($this->res);
-				$this->idtopic = $arr['id'];
-				$this->topicname = $arr['category'];
-				$this->topicpath = viewCategoriesHierarchy_txt($arr['id']);
-				$this->description = $arr['description'];
-				if( $this->idtopicsel == $this->idtopic )
-					{
-					$this->topicchecked = 'checked';
-					}
-				else
-					{
-					$this->topicchecked = '';
-					}
-				$i++;
-				return true;
-				}
-			else
-				return false;
-
-			}
-
-		}
-	print "start " . microtime() . "<br>";
-	$temp = new temp();
-	$babBodyPopup->babecho(bab_printTemplate($temp, "artedit.html", "topicchoicestep"));
-}
-*/
-
-/*
-function showChoiceTopicModify()
-{
-	global $babBodyPopup;
-	class temp
-		{
-		var $res;
-		var $count;
-		var $topicname;
-		var $topicpath;
-		var $description;
-		var $idtopic;
-		var $topicchecked;
-		var $idtopicsel;
-		var $articleid;
-		var $title; 
-		var $headtext;
-		var $bodytext;
-		var $lang;
-
-		function temp()
-			{
-			global $babBodyPopup, $babBody, $babDB, $topicid, $rfurl;
-			if( count($babBody->topsub) > 0  || count($babBody->topman) > 0 || count($babBody->topmod) > 0 )
-				{
-				if( count($babBody->topsub) > 0 )
-					{
-					$tmp[] = "(id IN (".implode(',', array_keys($babBody->topsub)).") and allow_update != '0' )";
-					}
-				if( count($babBody->topman) > 0 )
-					{
-					$tmp[] = "(id IN (".implode(',', array_keys($babBody->topman)).") and allow_manupdate != '0' )";
-					}
-				if( count($babBody->topmod) > 0 )
-					{
-					$tmp[] = "(id IN (".implode(',', array_keys($babBody->topmod))."))";
-					}
-				$req = "select id, description, category from ".BAB_TOPICS_TBL." where ";
-				$req .= implode(' or ', $tmp)." order by id_cat";
-				$this->res = $babDB->db_query($req);		
-				$this->count = $babDB->db_num_rows($this->res);
-				}
-			else
-				{
-				$this->count = 0;
-				}
-
-
-			if( $this->count > 0 )
-				{
-				if(!isset($topicid)) { $topicid = 0;}
-				$this->rfurl = $rfurl;
-				$this->idtopicsel = isset($topicid)? $topicid: '';
-				$babBodyPopup->title = bab_translate("Choose the topic");
-				$this->steptitle = bab_translate("list of topics");
-				$this->nexttxt = bab_translate("Next");
-				$this->canceltxt = bab_translate("Cancel");
-				}
-
-			if( $this->count == 0 )
-				{
-				$babBodyPopup->msgerror = bab_translate("Access denied");
-				}
-			}
-
-		function getnexttopic()
-			{
-			global $babDB, $babBody;
-			static $i = 0;
-			if( $i < $this->count)
-				{
-				$arr = $babDB->db_fetch_array($this->res);
-				$this->idtopic = $arr['id'];
-				$this->topicname = $arr['category'];
-				$this->topicpath = viewCategoriesHierarchy_txt($arr['id']);
-				$this->description = $arr['description'];
-				$this->topicchecked = '';
-				if( $this->idtopicsel == '' )
-					{
-					if( $i == 0 )
-						{
-						$this->topicchecked = 'checked';
-						}
-					}
-				else if( $this->idtopicsel == $this->idtopic )
-					{
-					$this->topicchecked = 'checked';
-					}
-				$i++;
-				return true;
-				}
-			else
-				return false;
-
-			}
-
-		}
-	$temp = new temp();
-	$babBodyPopup->babecho(bab_printTemplate($temp, "artedit.html", "modtopicchoicestep"));
-}
-*/
 
 function showArticleList($topicId)
 {
@@ -913,7 +726,7 @@ function showArticleList($topicId)
 		{
 			global $babDB, $babBody;
 
-			$sql = "SELECT * FROM " . BAB_TOPICS_TBL . " WHERE id='" . $topicid . "'";
+			$sql = "SELECT * FROM " . BAB_TOPICS_TBL . " WHERE id='" . $babDB->db_escape_string($topicid) . "'";
 			$res = $babDB->db_query($sql);
 			if ($res && $babDB->db_num_rows($res) > 0)
 			{
@@ -924,7 +737,7 @@ function showArticleList($topicId)
 					$req = "SELECT at.id, at.title, adt.id_author, adt.id as id_draft ".
 						   " FROM " . BAB_ARTICLES_TBL . " at ".
 								" LEFT JOIN " . BAB_ART_DRAFTS_TBL . " adt ON at.id=adt.id_article " . 
-						   " WHERE at.id_topic='" . $topicid . "' AND at.archive='N' " .
+						   " WHERE at.id_topic='" . $babDB->db_escape_string($topicid) . "' AND at.archive='N' " .
 						   " ORDER BY at.ordering ASC";
 				}
 				elseif ($arr['allow_update'] && $babBody->topsub && isset($babBody->topsub[$topicid]))
@@ -932,9 +745,9 @@ function showArticleList($topicId)
 					$req = "SELECT at.id, at.title, adt.id_author, adt.id as id_draft ".
 						   " FROM " . BAB_ARTICLES_TBL . " at ".
 								" LEFT JOIN " . BAB_ART_DRAFTS_TBL . " adt ON at.id=adt.id_article " . 
-						   " WHERE at.id_topic='" . $topicid . "' " . 
+						   " WHERE at.id_topic='" . $babDB->db_escape_string($topicid) . "' " . 
 								" AND at.archive='N' " .
-								" AND at.id_author='" . $GLOBALS['BAB_SESS_USERID'] . "'" .
+								" AND at.id_author='" . $babDB->db_escape_string($GLOBALS['BAB_SESS_USERID']) . "'" .
 						   " ORDER BY at.ordering ASC";
 				}
 				else
@@ -960,8 +773,8 @@ function showArticleList($topicId)
 			global $babDB;
 			if ($this->res && $arr = $babDB->db_fetch_array($this->res))
 			{
-				$this->articleid = $arr['id'];
-				$this->articletitle = $arr['title'];
+				$this->articleid = bab_toHTML($arr['id']);
+				$this->articletitle = bab_toHTML($arr['title']);
 				if (!isset($arr['id_author']) || empty($arr['id_author']))
 				{
 					$this->modifybytxt = '';
@@ -1020,17 +833,17 @@ function showChoiceArticleModify($topicid)
 			{
 			global $babBodyPopup, $babBody, $babDB, $topicid, $articleid, $rfurl;
 			$this->count = 0;
-			$res = $babDB->db_query("select * from ".BAB_TOPICS_TBL." where id='".$topicid."'");
+			$res = $babDB->db_query("select * from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($topicid)."'");
 			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
 				$arr = $babDB->db_fetch_array($res);
 				if( (count($babBody->topmod) && isset($babBody->topmod[$topicid])) || ($arr['allow_manupdate'] != '0' && count($babBody->topman) && isset($babBody->topman[$topicid])) )
 					{
-					$req = "select at.id, at.title, adt.id_author, adt.id as id_draft from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_DRAFTS_TBL." adt on at.id=adt.id_article where at.id_topic='".$topicid."' and at.archive='N' order by at.ordering asc";
+					$req = "select at.id, at.title, adt.id_author, adt.id as id_draft from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_DRAFTS_TBL." adt on at.id=adt.id_article where at.id_topic='".$babDB->db_escape_string($topicid)."' and at.archive='N' order by at.ordering asc";
 					}
 				elseif( $arr['allow_update'] && count($babBody->topsub) && isset($babBody->topsub[$topicid]))
 					{
-					$req = "select at.id, at.title, adt.id_author, adt.id as id_draft from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_DRAFTS_TBL." adt on at.id=adt.id_article where at.id_topic='".$topicid."' and at.archive='N' and at.id_author='".$GLOBALS['BAB_SESS_USERID']."' order by at.ordering asc";
+					$req = "select at.id, at.title, adt.id_author, adt.id as id_draft from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_DRAFTS_TBL." adt on at.id=adt.id_article where at.id_topic='".$babDB->db_escape_string($topicid)."' and at.archive='N' and at.id_author='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' order by at.ordering asc";
 					}
 				else
 					{
@@ -1042,7 +855,7 @@ function showChoiceArticleModify($topicid)
 					$this->res = $babDB->db_query($req);
 					$this->count = $babDB->db_num_rows($this->res);
 					$this->rfurl = $rfurl;
-					$this->topicid = $topicid;
+					$this->topicid = bab_toHTML($topicid);
 					$babBodyPopup->title = bab_translate("Choose the article");
 					$this->steptitle = viewCategoriesHierarchy_txt($topicid);
 					$this->nexttxt = bab_translate("Next");
@@ -1065,8 +878,8 @@ function showChoiceArticleModify($topicid)
 				{
 				$this->altbg = !$this->altbg;
 				$arr = $babDB->db_fetch_array($this->res);
-				$this->articleid = $arr['id'];
-				$this->articletitle = $arr['title'];
+				$this->articleid = bab_toHTML($arr['id']);
+				$this->articletitle = bab_toHTML($arr['title']);
 				if( $i == 0 )
 					{
 					$this->articlechecked = 'checked';
@@ -1085,7 +898,7 @@ function showChoiceArticleModify($topicid)
 				else
 					{
 					$this->modifybytxt = bab_translate("In modification by");
-					$this->modifauthor = bab_getUserName($arr['id_author']);
+					$this->modifauthor = bab_toHTML(bab_getUserName($arr['id_author']));
 					$this->bmodify = false;
 					if( $arr['id_author'] == $GLOBALS['BAB_SESS_USERID'] )
 						{
@@ -1140,10 +953,10 @@ function showEditArticle()
 
 			if( $topicid != 0 && $idart != 0 )
 				{
-				list($drafidtopic) = $babDB->db_fetch_array($babDB->db_query("select id_topic from ".BAB_ART_DRAFTS_TBL." where id='".$idart."'"));
+				list($drafidtopic) = $babDB->db_fetch_array($babDB->db_query("select id_topic from ".BAB_ART_DRAFTS_TBL." where id='".$babDB->db_escape_string($idart)."'"));
 				if( $topicid != $drafidtopic )
 					{
-					$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set id_topic='".$topicid."', id_article='0', restriction='', notify_members='N', hpage_public='N', hpage_private='N', date_submission='0000-00-00 00:00:00', date_publication='0000-00-00 00:00:00', date_archiving='0000-00-00 00:00:00'  where id='".$idart."'");
+					$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set id_topic='".$babDB->db_escape_string($topicid)."', id_article='0', restriction='', notify_members='N', hpage_public='N', hpage_private='N', date_submission='0000-00-00 00:00:00', date_publication='0000-00-00 00:00:00', date_archiving='0000-00-00 00:00:00'  where id='".$babDB->db_escape_string($idart)."'");
 					$articleid = 0;
 					}
 				}
@@ -1152,7 +965,7 @@ function showEditArticle()
 				{
 				if( $idart != 0 )
 					{
-					$res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_TBL." where id='".$idart."' and id_author='".$GLOBALS['BAB_SESS_USERID']."'");
+					$res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_TBL." where id='".$babDB->db_escape_string($idart)."' and id_author='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
 					if( $res && $babDB->db_num_rows($res) > 0 )
 						{
 						$this->access = true;
@@ -1164,7 +977,7 @@ function showEditArticle()
 					}
 				elseif( $articleid != 0 )
 					{
-					$res = $babDB->db_query("select at.*, tt.allow_update, tt.allow_manupdate from ".BAB_ARTICLES_TBL." at left join ".BAB_TOPICS_TBL." tt on at.id_topic=tt.id  where at.id='".$articleid."'");
+					$res = $babDB->db_query("select at.*, tt.allow_update, tt.allow_manupdate from ".BAB_ARTICLES_TBL." at left join ".BAB_TOPICS_TBL." tt on at.id_topic=tt.id  where at.id='".$babDB->db_escape_string($articleid)."'");
 					if( $res && $babDB->db_num_rows($res) == 1 )
 						{
 						$arr = $babDB->db_fetch_array($res);
@@ -1183,7 +996,7 @@ function showEditArticle()
 					{
 					if( count($babBody->topsub) > 0 && isset($babBody->topsub[$topicid] ))
 						{
-						$res = $babDB->db_query("select tt.article_tmpl,tt.lang from ".BAB_TOPICS_TBL." tt  where id='".$topicid."'");
+						$res = $babDB->db_query("select tt.article_tmpl,tt.lang from ".BAB_TOPICS_TBL." tt  where id='".$babDB->db_escape_string($topicid)."'");
 						if( $res && $babDB->db_num_rows($res) == 1 )
 							{
 							$arr = $babDB->db_fetch_array($res);
@@ -1245,7 +1058,7 @@ function showEditArticle()
 					{
 					if( $this->idarticle != 0 )
 						{
-						$res = $babDB->db_query("select at.id_topic, at.id_author, tt.allow_update, tt.allow_manupdate, tt.idsa_update as saupdate, adt.approbation from ".BAB_ARTICLES_TBL." at left join ".BAB_TOPICS_TBL." tt on at.id_topic=tt.id left join ".BAB_ART_DRAFTS_TBL." adt on at.id=adt.id_article where at.id='".$this->idarticle."'");
+						$res = $babDB->db_query("select at.id_topic, at.id_author, tt.allow_update, tt.allow_manupdate, tt.idsa_update as saupdate, adt.approbation from ".BAB_ARTICLES_TBL." at left join ".BAB_TOPICS_TBL." tt on at.id_topic=tt.id left join ".BAB_ART_DRAFTS_TBL." adt on at.id=adt.id_article where at.id='".$babDB->db_escape_string($this->idarticle)."'");
 						$arr = $babDB->db_fetch_array($res);
 						if( $arr['saupdate'] != 0 && ( $arr['allow_update'] == '2' && $arr['id_author'] == $GLOBALS['BAB_SESS_USERID']) || ( $arr['allow_manupdate'] == '2' && bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $arr['id_topic'])))
 							{
@@ -1271,7 +1084,7 @@ function showEditArticle()
 						}
 					else
 						{
-						$res = $babDB->db_query("select tt.idsaart as saupdate from ".BAB_TOPICS_TBL." tt where tt.id='".$this->idtopic."'");
+						$res = $babDB->db_query("select tt.idsaart as saupdate from ".BAB_TOPICS_TBL." tt where tt.id='".$babDB->db_escape_string($this->idtopic)."'");
 						$arr = $babDB->db_fetch_array($res);
 						}
 
@@ -1305,9 +1118,9 @@ function showPreviewArticle($idart)
 			{
 			global $babBodyPopup, $babBody, $babDB, $BAB_SESS_USERID, $rfurl;
 			$babBodyPopup->title = bab_translate("Preview article");
-			$this->rfurl = $rfurl;
+			$this->rfurl = bab_toHTML($rfurl);
 			$this->access = false;
-			$res = $babDB->db_query("select id_topic, id_article, title, head, approbation from ".BAB_ART_DRAFTS_TBL." where id='".$idart."' and id_author='".$BAB_SESS_USERID."'");
+			$res = $babDB->db_query("select id_topic, id_article, title, head, approbation from ".BAB_ART_DRAFTS_TBL." where id='".$babDB->db_escape_string($idart)."' and id_author='".$babDB->db_escape_string($BAB_SESS_USERID)."'");
 			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
 				$arr = $babDB->db_fetch_array($res);
@@ -1323,7 +1136,7 @@ function showPreviewArticle($idart)
 				$this->canceltxt = bab_translate("Cancel");
 				$this->confirmsubmit = bab_translate("Are you sure you want to submit this article?");
 				$this->confirmcancel = bab_translate("Are you sure you want to remove this draft?");
-				$this->idart = $idart;
+				$this->idart = bab_toHTML($idart);
 				if( $arr['id_topic'] != 0 )
 					{
 					$this->steptitle = viewCategoriesHierarchy_txt($arr['id_topic']);
@@ -1344,7 +1157,7 @@ function showPreviewArticle($idart)
 				
 				if( $arr['id_article'] != 0 )
 					{
-					$res = $babDB->db_query("select at.id_topic, at.id_author, tt.allow_update, tt.allow_manupdate, tt.idsa_update as saupdate from ".BAB_ARTICLES_TBL." at left join ".BAB_TOPICS_TBL." tt on at.id_topic=tt.id where at.id='".$arr['id_article']."'");
+					$res = $babDB->db_query("select at.id_topic, at.id_author, tt.allow_update, tt.allow_manupdate, tt.idsa_update as saupdate from ".BAB_ARTICLES_TBL." at left join ".BAB_TOPICS_TBL." tt on at.id_topic=tt.id where at.id='".$babDB->db_escape_string($arr['id_article'])."'");
 					$rr = $babDB->db_fetch_array($res);
 					if( $rr['saupdate'] != 0 && ( $rr['allow_update'] == '2' && $rr['id_author'] == $GLOBALS['BAB_SESS_USERID']) || ( $rr['allow_manupdate'] == '2' && bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $rr['id_topic'])))
 						{
@@ -1400,13 +1213,13 @@ function showSetArticleProperties($idart)
 			$this->access = false;
 			$this->rfurl = $rfurl;
 
-			$req = "select * from ".BAB_ART_DRAFTS_TBL." where id_author='".$GLOBALS['BAB_SESS_USERID']."' and id='".$idart."'";
+			$req = "select * from ".BAB_ART_DRAFTS_TBL." where id_author='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and id='".$babDB->db_escape_string($idart)."'";
 			$res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($res);
 			if( $this->count > 0 )
 				{
 				$this->access = true;
-				$this->idart = $idart;
+				$this->idart = bab_toHTML($idart);
 				$arr = $babDB->db_fetch_array($res);
 				$this->submittxt = bab_translate("Finish");
 				$this->previoustxt = bab_translate("Previous");
@@ -1421,7 +1234,6 @@ function showSetArticleProperties($idart)
 				$this->t_description = bab_translate("Description");
 				$this->t_index_status = bab_translate("Indexation");
 
-				$this->idart = $idart;
 				if( $arr['id_topic'] != 0 && bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $arr['id_topic']))
 					{
 					$this->steptitle = viewCategoriesHierarchy_txt($arr['id_topic']);
@@ -1429,7 +1241,7 @@ function showSetArticleProperties($idart)
 				else
 					{
 					$arr['id_topic'] = 0;
-					$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set id_topic='0' where id='".$idart."'");
+					$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set id_topic='0' where id='".$babDB->db_escape_string($idart)."'");
 					$this->steptitle = bab_translate("No topic");
 					}
 
@@ -1445,7 +1257,7 @@ function showSetArticleProperties($idart)
 				if( $arr['id_article'] != 0 )
 					{
 					$this->bshowtopics = false;
-					$res = $babDB->db_query("select at.id_topic, at.id_author, tt.allow_update, tt.allow_manupdate, tt.idsa_update as saupdate from ".BAB_ARTICLES_TBL." at left join ".BAB_TOPICS_TBL." tt on at.id_topic=tt.id where at.id='".$arr['id_article']."'");
+					$res = $babDB->db_query("select at.id_topic, at.id_author, tt.allow_update, tt.allow_manupdate, tt.idsa_update as saupdate from ".BAB_ARTICLES_TBL." at left join ".BAB_TOPICS_TBL." tt on at.id_topic=tt.id where at.id='".$babDB->db_escape_string($arr['id_article'])."'");
 					$rr = $babDB->db_fetch_array($res);
 					if( $rr['saupdate'] != 0 && ( $rr['allow_update'] == '2' && $rr['id_author'] == $GLOBALS['BAB_SESS_USERID']) || ( $rr['allow_manupdate'] == '2' && bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $rr['id_topic'])))
 						{
@@ -1475,11 +1287,11 @@ function showSetArticleProperties($idart)
 					$this->bshowtopics = true;
 					}
 
-				$this->draftname = $arr['title'];
+				$this->draftname = bab_toHTML($arr['title']);
 
 				if( count($babBody->topsub) > 0 )
 					{
-					$this->restopics = $babDB->db_query("select tt.id, tt.category, tt.restrict_access, tct.title, tt.notify from ".BAB_TOPICS_TBL." tt LEFT JOIN ".BAB_TOPICS_CATEGORIES_TBL." tct on tct.id=tt.id_cat where tt.id IN(".implode(',', array_keys($babBody->topsub)).")");
+					$this->restopics = $babDB->db_query("select tt.id, tt.category, tt.restrict_access, tct.title, tt.notify from ".BAB_TOPICS_TBL." tt LEFT JOIN ".BAB_TOPICS_CATEGORIES_TBL." tct on tct.id=tt.id_cat where tt.id IN(".$babDB->quote(array_keys($babBody->topsub)).")");
 					$this->counttopics = $babDB->db_num_rows($this->restopics);
 					}
 				else
@@ -1539,7 +1351,7 @@ function showSetArticleProperties($idart)
 				if( $this->drafttopic != 0 )
 					{
 					$this->topicpath = viewCategoriesHierarchy_txt($this->drafttopic);
-					$arrtop = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_TOPICS_TBL." where id='".$this->drafttopic."'"));
+					$arrtop = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($this->drafttopic)."'"));
 
 					if( $arrtop['busetags'] == 'Y')
 						{
@@ -1583,7 +1395,7 @@ function showSetArticleProperties($idart)
 						$this->norestricttxt = bab_translate("No restriction");
 						$this->yesrestricttxt = bab_translate("Groups");
 						$this->t_grp_error = bab_translate("The read access on the topic must be defined with a list of groups to use the group restriction");
-						$this->resgrp = $babDB->db_query("select r.* from ".BAB_TOPICSVIEW_GROUPS_TBL." r,".BAB_GROUPS_TBL." g where r.id_object='".$this->drafttopic."' AND r.id_group = g.id AND g.lf>='3'");
+						$this->resgrp = $babDB->db_query("select r.* from ".BAB_TOPICSVIEW_GROUPS_TBL." r,".BAB_GROUPS_TBL." g where r.id_object='".$babDB->db_escape_string($this->drafttopic)."' AND r.id_group = g.id AND g.lf>='3'");
 						if( $this->resgrp )
 							{
 							$this->countgrp = $babDB->db_num_rows($this->resgrp);
@@ -1708,7 +1520,7 @@ function showSetArticleProperties($idart)
 						$this->deletetxt = bab_translate("Delete");
 						$this->t_add_field = bab_translate("Attach another file");
 						$this->t_remove_field = bab_translate("Remove");
-						$this->resfiles = $babDB->db_query("select id, name, description from ".BAB_ART_DRAFTS_FILES_TBL." where id_draft='".$idart."'");
+						$this->resfiles = $babDB->db_query("select id, name, description from ".BAB_ART_DRAFTS_FILES_TBL." where id_draft='".$babDB->db_escape_string($idart)."'");
 						$this->maximagessize = $babBody->babsite['imgsize'];
 						if( $babBody->babsite['maxfilesize'] != 0 )
 							{
@@ -1754,9 +1566,9 @@ function showSetArticleProperties($idart)
 			if( $i < $this->counttopics)
 				{
 				$arr = $babDB->db_fetch_array($this->restopics);
-				$this->topicname = $arr['category'];
-				$this->categoryname = $arr['title'];
-				$this->idtopic = $arr['id'];
+				$this->topicname = bab_toHTML($arr['category']);
+				$this->categoryname = bab_toHTML($arr['title']);
+				$this->idtopic = bab_toHTML($arr['id']);
 				if( $this->drafttopic == $arr['id'] )
 					{
 					$this->selected = 'selected';
@@ -1807,8 +1619,8 @@ function showSetArticleProperties($idart)
 				$arr = $babDB->db_fetch_array($this->resfiles);
 				$this->urlfile = $GLOBALS['babUrlScript']."?tg=artedit&idx=getf&idart=".$this->idart."&idf=".$arr['id'];
 				$this->deleteurl = $GLOBALS['babUrlScript']."?tg=artedit&idx=s3&updstep3=delf&idart=".$this->idart."&idf=".$arr['id'];
-				$this->name = $arr['name'];
-				$this->docdesc = $arr['description'];
+				$this->name = bab_toHTML($arr['name']);
+				$this->docdesc = bab_toHTML($arr['description']);
 				$i++;
 				return true;
 				}
@@ -1968,13 +1780,13 @@ function getDocumentArticleDraft( $idart, $idf )
 	{
 	global $babDB, $babBody, $BAB_SESS_USERID;
 	$access = false;
-	$res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_TBL." where id='".$idart."' and id_author='".$BAB_SESS_USERID."'");
+	$res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_TBL." where id='".$babDB->db_escape_string($idart)."' and id_author='".$babDB->db_escape_string($BAB_SESS_USERID)."'");
 	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
 		$access = true;
 		}
 
-	$res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_FILES_TBL." where id='".$idf."' and id_draft='".$idart."'");
+	$res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_FILES_TBL." where id='".$babDB->db_escape_string($idf)."' and id_draft='".$babDB->db_escape_string($idart)."'");
 	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
 		$access = true;
@@ -2020,7 +1832,7 @@ function delDocumentArticleDraft( $idart, $idf )
 	{
 	global $babDB, $babBody, $BAB_SESS_USERID;
 	$access = false;
-	$res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_TBL." where id='".$idart."' and id_author='".$BAB_SESS_USERID."'");
+	$res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_TBL." where id='".$babDB->db_escape_string($idart)."' and id_author='".$babDB->db_escape_string($BAB_SESS_USERID)."'");
 	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
 		$access = true;
@@ -2032,14 +1844,14 @@ function delDocumentArticleDraft( $idart, $idf )
 		return;
 		}
 
-	$res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_FILES_TBL." where id='".$idf."' and id_draft='".$idart."'");
+	$res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_FILES_TBL." where id='".$babDB->db_escape_string($idf)."' and id_draft='".$babDB->db_escape_string($idart)."'");
 	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
 		$arr = $babDB->db_fetch_array($res);
 		$fullpath = bab_getUploadDraftsPath();
 		$fullpath .= $arr['id_draft'].",".$arr['name'];
 		unlink($fullpath);
-		$babDB->db_query("delete from ".BAB_ART_DRAFTS_FILES_TBL." where id='".$idf."'");
+		$babDB->db_query("delete from ".BAB_ART_DRAFTS_FILES_TBL." where id='".$babDB->db_escape_string($idf)."'");
 		}
 	}
 
@@ -2047,7 +1859,7 @@ function delDocumentArticleDraft( $idart, $idf )
 function deleteDraft($idart)
 	{
 	global $babDB, $BAB_SESS_USERID;
-	$res = $babDB->db_query("select result, id_article from ".BAB_ART_DRAFTS_TBL." where id='".$idart."' and id_author='".$BAB_SESS_USERID."'");
+	$res = $babDB->db_query("select result, id_article from ".BAB_ART_DRAFTS_TBL." where id='".$babDB->db_escape_string($idart)."' and id_author='".$babDB->db_escape_string($BAB_SESS_USERID)."'");
 	if( $res && $babDB->db_num_rows($res) == 1 )
 		{
 		$arr = $babDB->db_fetch_array($res);
@@ -2055,7 +1867,7 @@ function deleteDraft($idart)
 			{
 			if( $arr['id_article'] != 0 )
 				{
-				$babDB->db_query("insert into ".BAB_ART_LOG_TBL." (id_article, id_author, date_log, action_log) values ('".$arr['id_article']."', '".$BAB_SESS_USERID."', now(), 'unlock')");		
+				$babDB->db_query("insert into ".BAB_ART_LOG_TBL." (id_article, id_author, date_log, action_log) values ('".$babDB->db_escape_string($arr['id_article'])."', '".$babDB->db_escape_string($BAB_SESS_USERID)."', now(), 'unlock')");		
 				}
 			bab_deleteArticleDraft($idart);
 			}
@@ -2065,7 +1877,7 @@ function deleteDraft($idart)
 function emptyTrash()
 	{
 	global $babDB, $BAB_SESS_USERID;
-	$res = $babDB->db_query("select id from ".BAB_ART_DRAFTS_TBL." where trash='Y' and id_author='".$BAB_SESS_USERID."'");
+	$res = $babDB->db_query("select id from ".BAB_ART_DRAFTS_TBL." where trash='Y' and id_author='".$babDB->db_escape_string($BAB_SESS_USERID)."'");
 	while( $arr = $babDB->db_fetch_array($res))
 		{
 		deleteDraft($arr['id']);
@@ -2075,7 +1887,7 @@ function emptyTrash()
 function moveArticleDraftToTrash($idart)
 	{
 	global $babDB, $BAB_SESS_USERID;
-	$res = $babDB->db_query("select id, result, id_article from ".BAB_ART_DRAFTS_TBL." where trash='N' and id='".$idart."' and id_author='".$BAB_SESS_USERID."'");
+	$res = $babDB->db_query("select id, result, id_article from ".BAB_ART_DRAFTS_TBL." where trash='N' and id='".$idart."' and id_author='".$babDB->db_escape_string($BAB_SESS_USERID)."'");
 	if( $res && $babDB->db_num_rows($res) == 1 )
 		{
 		$arr = $babDB->db_fetch_array($res);
@@ -2083,9 +1895,9 @@ function moveArticleDraftToTrash($idart)
 			{
 			if( $arr['id_article'] != 0 )
 				{
-				$babDB->db_query("insert into ".BAB_ART_LOG_TBL." (id_article, id_author, date_log, action_log) values ('".$arr['id_article']."', '".$BAB_SESS_USERID."', now(), 'unlock')");		
+				$babDB->db_query("insert into ".BAB_ART_LOG_TBL." (id_article, id_author, date_log, action_log) values ('".$arr['id_article']."', '".$babDB->db_escape_string($BAB_SESS_USERID)."', now(), 'unlock')");		
 				}
-			$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set id_article='0', trash='Y' where id='".$idart."' and id_author='".$BAB_SESS_USERID."'");
+			$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set id_article='0', trash='Y' where id='".$babDB->db_escape_string($idart)."' and id_author='".$babDB->db_escape_string($BAB_SESS_USERID)."'");
 			}
 		}
 	}
@@ -2093,8 +1905,8 @@ function moveArticleDraftToTrash($idart)
 function restoreArticleDraft($idart)
 	{
 	global $babDB;
-	$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set trash='N' where id='".$idart."' and id_author='".$GLOBALS['BAB_SESS_USERID']."'");
-	list($nbtrash) = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_ART_DRAFTS_TBL." where id_author='".$GLOBALS['BAB_SESS_USERID']."' and trash !='N'"));
+	$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set trash='N' where id='".$babDB->db_escape_string($idart)."' and id_author='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
+	list($nbtrash) = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_ART_DRAFTS_TBL." where id_author='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and trash !='N'"));
 	if( $nbtrash > 0 )
 		{
 		return false;
@@ -2108,8 +1920,8 @@ function restoreArticleDraft($idart)
 function restoreRefusedArticleDraft($idart)
 	{
 	global $babDB;
-	$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set trash='N', result='', date_submission='0000-00-00 :00:00:00' where id='".$idart."' and id_author='".$GLOBALS['BAB_SESS_USERID']."'");
-	list($nbsub) = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_ART_DRAFTS_TBL." where id_author='".$GLOBALS['BAB_SESS_USERID']."' and result !='".BAB_ART_STATUS_DRAFT."'"));
+	$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set trash='N', result='', date_submission='0000-00-00 :00:00:00' where id='".$idart."' and id_author='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
+	list($nbsub) = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_ART_DRAFTS_TBL." where id_author='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and result !='".BAB_ART_STATUS_DRAFT."'"));
 	if( $nbsub > 0 )
 		{
 		return false;
@@ -2132,7 +1944,7 @@ function editArticleDraft($idart, $title, $headtext, $bodytext, $lang, $message)
 		function temp($idart, $title, $headtext, $bodytext, $lang, $message)
 			{
 			global $babDB, $babBodyPopup, $BAB_SESS_USERID;
-			$this->idart = $idart;
+			$this->idart = bab_toHTML($idart);
 			if(!empty($message))
 				{
 				$babBodyPopup->msgerror = $message;
@@ -2141,7 +1953,7 @@ function editArticleDraft($idart, $title, $headtext, $bodytext, $lang, $message)
 				{
 				$babBodyPopup->message = '';
 				}
-			$res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_TBL." where id='".$idart."' and id_author='".$BAB_SESS_USERID."'");
+			$res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_TBL." where id='".$babDB->db_escape_string($idart)."' and id_author='".$babDB->db_escape_string($BAB_SESS_USERID)."'");
 			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
 				$this->updatetxt = bab_translate("Update");
@@ -2170,7 +1982,7 @@ function editArticleDraft($idart, $title, $headtext, $bodytext, $lang, $message)
 function previewArticleDraft($idart)
 	{
 	global $babBody, $babDB, $BAB_SESS_USERID;
-	$res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_TBL." where id='".$idart."' and id_author='".$BAB_SESS_USERID."'");
+	$res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_TBL." where id='".$babDB->db_escape_string($idart)."' and id_author='".$babDB->db_escape_string($BAB_SESS_USERID)."'");
 	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
 		$arr = $babDB->db_fetch_array($res);
@@ -2228,12 +2040,10 @@ function updateArticleDraft($idart, $title, $headtext, $bodytext, $lang, $approb
 	$bodytext = imagesReplace($bodytext, $idart."_draft_", $ar);
 
 	bab_editor_record($headtext);
-	$headtext = $babDB->db_escape_string($headtext);
 
 	bab_editor_record($bodytext);
-	$bodytext = $babDB->db_escape_string($bodytext);
 
-	$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set title='".addslashes($title)."', head='".$headtext."', body='".$bodytext."', date_modification=now(), lang='" .$lang. "', approbation='".$approbid."' where id='".$idart."'");
+	$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set title='".$babDB->db_escape_string($title)."', head='".$babDB->db_escape_string($headtext)."', body='".$babDB->db_escape_string($bodytext)."', date_modification=now(), lang='" .$babDB->db_escape_string($lang). "', approbation='".$babDB->db_escape_string($approbid)."' where id='".$babDB->db_escape_string($idart)."'");
 	return true;
 }
 
@@ -2241,7 +2051,7 @@ function updateArticleDraft($idart, $title, $headtext, $bodytext, $lang, $approb
 function addDocumentArticleDraft($idart, &$message)
 {
 	global $babDB, $BAB_SESS_USERID, $babMaxFileSize;
-	$res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_TBL." where id='".$idart."' and id_author='".$BAB_SESS_USERID."'");
+	$res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_TBL." where id='".$babDB->db_escape_string($idart)."' and id_author='".$babDB->db_escape_string($BAB_SESS_USERID)."'");
 	$k = 0;
 	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
@@ -2379,8 +2189,8 @@ function updatePropertiesArticleDraft()
 
 	if( $topicid != 0 )
 	{
-	$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set id_topic='".$topicid."', restriction='".$restriction."', notify_members='".$notifm."', hpage_public='".$hpage0."', hpage_private='".$hpage1."', date_submission='".$date_sub."', date_publication='".$date_pub."', date_archiving='".$date_arch."', approbation='".$approbid."'  where id='".$idart."' and id_author='".$GLOBALS['BAB_SESS_USERID']."'");
-	list($allowattach, $busetags) = $babDB->db_fetch_array($babDB->db_query("select allow_attachments, busetags from ".BAB_TOPICS_TBL." where id='".$topicid."'"));
+	$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set id_topic='".$babDB->db_escape_string($topicid)."', restriction='".$babDB->db_escape_string($restriction)."', notify_members='".$babDB->db_escape_string($notifm)."', hpage_public='".$babDB->db_escape_string($hpage0)."', hpage_private='".$babDB->db_escape_string($hpage1)."', date_submission='".$babDB->db_escape_string($date_sub)."', date_publication='".$babDB->db_escape_string($date_pub)."', date_archiving='".$babDB->db_escape_string($date_arch)."', approbation='".$babDB->db_escape_string($approbid)."'  where id='".$babDB->db_escape_string($idart)."' and id_author='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
+	list($allowattach, $busetags) = $babDB->db_fetch_array($babDB->db_query("select allow_attachments, busetags from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($topicid)."'"));
 	if( $allowattach == 'N' )
 		{
 		bab_deleteDraftFiles($idart);
@@ -2392,7 +2202,7 @@ function updatePropertiesArticleDraft()
 	}
 	else
 	{
-	$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set id_topic='0', restriction='', notify_members='N', hpage_public='N', hpage_private='N', date_submission='".$date_pub."', date_publication='0000-00-00 00:00:00', date_archiving='0000-00-00 00:00:00', approbation='".$approbid."' where id='".$idart."' and id_author='".$GLOBALS['BAB_SESS_USERID']."'");
+	$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set id_topic='0', restriction='', notify_members='N', hpage_public='N', hpage_private='N', date_submission='".$babDB->db_escape_string($date_pub)."', date_publication='0000-00-00 00:00:00', date_archiving='0000-00-00 00:00:00', approbation='".$babDB->db_escape_string($approbid)."' where id='".$babDB->db_escape_string($idart)."' and id_author='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
 	bab_deleteDraftFiles($idart);
 	}
 
@@ -2433,14 +2243,14 @@ function updatePropertiesArticleDraft()
 function submitArticleDraft( $idart, $message, $force=false)
 {
 	global $babBody, $babDB;
-	$res = $babDB->db_query("select id_article,id_topic, date_submission from ".BAB_ART_DRAFTS_TBL." where id='".$idart."'");
+	$res = $babDB->db_query("select id_article,id_topic, date_submission from ".BAB_ART_DRAFTS_TBL." where id='".$babDB->db_escape_string($idart)."'");
 	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
 		$arr = $babDB->db_fetch_array($res);
 		if( $arr['id_article'] !=  0 )
 			{
 			$access = false;
-			$res = $babDB->db_query("select at.id_topic, at.id_author, tt.allow_update, tt.allow_manupdate from ".BAB_ARTICLES_TBL." at left join ".BAB_TOPICS_TBL." tt on at.id_topic=tt.id  where at.id='".$arr['id_article']."'");
+			$res = $babDB->db_query("select at.id_topic, at.id_author, tt.allow_update, tt.allow_manupdate from ".BAB_ARTICLES_TBL." at left join ".BAB_TOPICS_TBL." tt on at.id_topic=tt.id  where at.id='".$babDB->db_escape_string($arr['id_article'])."'");
 			if( $res && $babDB->db_num_rows($res) == 1 )
 				{
 				$rr = $babDB->db_fetch_array($res);
@@ -2486,10 +2296,10 @@ function submitArticleDraft( $idart, $message, $force=false)
 function savePreviewDraft($idart, $approbid)
 {
 	global $babDB, $BAB_SESS_USERID;
-	$res = $babDB->db_query("select id from ".BAB_ART_DRAFTS_TBL." where id='".$idart."' and id_author='".$BAB_SESS_USERID."'");
+	$res = $babDB->db_query("select id from ".BAB_ART_DRAFTS_TBL." where id='".$babDB->db_escape_string($idart)."' and id_author='".$BAB_SESS_USERID."'");
 	if( $res && $babDB->db_num_rows($res) == 1 )
 		{
-		$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set approbation='".$approbid."' where id='".$idart."'");
+		$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set approbation='".$babDB->db_escape_string($approbid)."' where id='".$babDB->db_escape_string($idart)."'");
 		}
 }
 
@@ -2503,13 +2313,13 @@ function artedit_init()
 
 	if( $GLOBALS['BAB_SESS_USERID'] )
 	{
-		$arr = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_ART_DRAFTS_TBL." where id_author='".$GLOBALS['BAB_SESS_USERID']."' and trash='Y'"));
+		$arr = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_ART_DRAFTS_TBL." where id_author='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and trash='Y'"));
 		if( $arr['total'] != 0 )
 		{
 			$aredit['trash'] = true;
 		}
 
-		$arr = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_ART_DRAFTS_TBL." where id_author='".$GLOBALS['BAB_SESS_USERID']."' and result!='".BAB_ART_STATUS_DRAFT."' and trash='N'"));
+		$arr = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_ART_DRAFTS_TBL." where id_author='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and result!='".BAB_ART_STATUS_DRAFT."' and trash='N'"));
 		if( $arr['total'] != 0 )
 		{
 			$aredit['articles'] = true;
@@ -2522,7 +2332,7 @@ function outPutTagsToJson()
 {
 	global $babBody, $babDB;
 	$like = bab_rp('like', '');
-	$res = $babDB->db_query("select * from ".BAB_TAGS_TBL." where tag_name like '%".$babDB->db_escape_string($like)."%' order by tag_name asc");
+	$res = $babDB->db_query("select * from ".BAB_TAGS_TBL." where tag_name like '%".$babDB->db_escape_like($like)."%' order by tag_name asc");
 
 	$ret = array();
 	while( $arr = $babDB->db_fetch_array($res))

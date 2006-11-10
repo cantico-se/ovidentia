@@ -21,8 +21,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
-include_once $babInstallPath."utilit/grptreeincl.php";
+include_once 'base.php';
+include_once $babInstallPath.'utilit/grptreeincl.php';
 
 function profileCreate($pname, $pdesc, $grpids, $cinscription, $cmultiple, $crequired)
 	{
@@ -142,7 +142,7 @@ function profileModify($idprof,$pname, $pdesc, $grpids, $cinscription, $cmultipl
 			$this->no = bab_translate("No");
 			$this->yes = bab_translate("Yes");
 
-			$res = $babDB->db_query("select * from ".BAB_PROFILES_TBL." where id ='".$idprof."'");
+			$res = $babDB->db_query("select * from ".BAB_PROFILES_TBL." where id ='".$babDB->db_escape_string($idprof)."'");
 			$arr = $babDB->db_fetch_array($res);
 			
 			$tree = new bab_grptree();
@@ -173,7 +173,7 @@ function profileModify($idprof,$pname, $pdesc, $grpids, $cinscription, $cmultipl
 			if( count($grpids) ==  0 )
 				{
 				$this->grpids = array();
-				$res = $babDB->db_query("select * from ".BAB_PROFILES_GROUPSSET_TBL." where id_object ='".$idprof."'");
+				$res = $babDB->db_query("select * from ".BAB_PROFILES_GROUPSSET_TBL." where id_object ='".$babDB->db_escape_string($idprof)."'");
 				while( $rr = $babDB->db_fetch_array($res))
 					{
 					$this->grpids[] = $rr['id_group'];
@@ -271,7 +271,7 @@ function profilesList()
 			$this->rightstxt = bab_translate("Rights");
 			$this->yestxt = bab_translate("Yes");
 			$this->notxt = bab_translate("No");
-			$this->res = $babDB->db_query("select * from ".BAB_PROFILES_TBL." where id_dgowner='".$babBody->currentAdmGroup."' order by name asc");
+			$this->res = $babDB->db_query("select * from ".BAB_PROFILES_TBL." where id_dgowner='".$babDB->db_escape_string($babBody->currentAdmGroup)."' order by name asc");
 			$this->count = $babDB->db_num_rows($this->res);
 			}
 
@@ -327,7 +327,7 @@ function profileDelete($idprof)
 			{
 			global $babDB;
 			$this->message = bab_translate("Are you sure you want to delete this profile");
-			list($this->title) = $babDB->db_fetch_row($babDB->db_query("select name from ".BAB_PROFILES_TBL." where id='".$idprof."'"));
+			list($this->title) = $babDB->db_fetch_row($babDB->db_query("select name from ".BAB_PROFILES_TBL." where id='".$babDB->db_escape_string($idprof)."'"));
 			$this->warning = bab_translate("WARNING: This operation will delete the profile with all references"). "!";
 			$this->urlyes = $GLOBALS['babUrlScript']."?tg=profiles&idx=pdel&idprof=".$idprof."&action=Yes";
 			$this->yes = bab_translate("Yes");
@@ -431,7 +431,7 @@ function updateProfile($idprof, $pname, $pdesc, $grpids, $cinscription, $cmultip
 		return false;
 		}
 
-	$res = $babDB->db_query("select name from ".BAB_PROFILES_TBL." where name='".$babDB->db_escape_string($pname)."' and id !='".$idprof."'");
+	$res = $babDB->db_query("select name from ".BAB_PROFILES_TBL." where name='".$babDB->db_escape_string($pname)."' and id !='".$babDB->db_escape_string($idprof)."'");
 	if( $babDB->db_num_rows($res) > 0)
 		{
 		$babBody->msgerror = bab_translate("This profile already exists");
@@ -492,14 +492,14 @@ function confirmDeleteProfile($idprof)
 {
 	global $babBody, $babDB;
 
-	$babDB->db_query("delete from ".BAB_PROFILES_TBL." where id='".$idprof."'");
-	$babDB->db_query("delete from ".BAB_PROFILES_GROUPSSET_TBL." where id_object='".$idprof."'");
-	include_once $GLOBALS['babInstallPath']."admin/acl.php";
+	$babDB->db_query("delete from ".BAB_PROFILES_TBL." where id='".$babDB->db_escape_string($idprof)."'");
+	$babDB->db_query("delete from ".BAB_PROFILES_GROUPSSET_TBL." where id_object='".$babDB->db_escape_string($idprof)."'");
+	include_once $GLOBALS['babInstallPath'].'admin/acl.php';
 	aclDelete(BAB_PROFILES_GROUPS_TBL, $idprof);
 }
 
 /* main */
-if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['profiles'] != 'Y')
+if( !$babBody->isSuperAdmin /*&& $babBody->currentDGGroup['profiles'] != 'Y'*/)
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;
