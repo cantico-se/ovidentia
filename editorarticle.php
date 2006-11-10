@@ -21,8 +21,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include "base.php";
-include_once $babInstallPath."utilit/topincl.php";
+include 'base.php';
+include_once $babInstallPath.'utilit/topincl.php';
 
 class categoriesHierarchyPopup
 {
@@ -38,17 +38,17 @@ class categoriesHierarchyPopup
 		$this->link = $link;
 		if ($topics!=0 || $cat!=0) $this->arrparents[] = $topics;
 		if ($cat == -1)
-			list($cat) = $babDB->db_fetch_row($babDB->db_query("select id_cat from ".BAB_TOPICS_TBL." where id='".$topics."'"));
+			list($cat) = $babDB->db_fetch_row($babDB->db_query("select id_cat from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($topics)."'"));
 		$this->topics = $topics;
 		$this->cat = $cat;
 		$this->arrparents[] = $cat;
-		$res = $babDB->db_query("select id_parent from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$cat."'");
+		$res = $babDB->db_query("select id_parent from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$babDB->db_escape_string($cat)."'");
 		while($arr = $babDB->db_fetch_array($res))
 			{
 			if( $arr['id_parent'] == 0 )
 				break;
 			$this->arrparents[] = $arr['id_parent'];
-			$res = $babDB->db_query("select id_parent from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$arr['id_parent']."'");
+			$res = $babDB->db_query("select id_parent from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$babDB->db_escape_string($arr['id_parent'])."'");
 			}
 		$this->arrparents[] = 0;
 		$this->parentscount = count($this->arrparents);
@@ -63,7 +63,7 @@ class categoriesHierarchyPopup
 			if( $i == $this->parentscount - 1 )
 				{
 				$this->parentname = bab_getCategoryTitle($this->arrparents[$i]);
-				$this->parenturl = "";
+				$this->parenturl = '';
 				$this->burl = false;
 				}
 			else
@@ -73,7 +73,7 @@ class categoriesHierarchyPopup
 					$this->parentname = bab_translate("Top");
 				else
 					$this->parentname = bab_getTopicCategoryTitle($this->arrparents[$i]);
-				$this->parenturl = $this->link."&cat=".$this->arrparents[$i];
+				$this->parenturl = $this->link.'&cat='.$this->arrparents[$i];
 				}
 			$i++;
 			return true;
@@ -98,25 +98,24 @@ function browse($topics,$cat,$cb)
 
 		function temp($topics,$cat,$cb)
 			{
-			
-			$this->categoriesHierarchyPopup($topics,$cat,$GLOBALS['babUrlScript']."?tg=editorarticle&cb=".$cb);
-			$this->db = $GLOBALS['babDB'];
+			global $babDB;
+			$this->categoriesHierarchyPopup($topics,$cat,$GLOBALS['babUrlScript'].'?tg=editorarticle&cb='.$cb);
 
 			$this->cat = $cat;
 			$this->topics = $topics;
-			$this->cb = "".$cb;
+			$this->cb = ''.$cb;
 
-			$reqcat = "select id from ".BAB_TOPICS_CATEGORIES_TBL." where id_parent='".$cat."'";
-			$this->rescat = $this->db->db_query($reqcat);
-			$this->countcat = $this->db->db_num_rows($this->rescat);
+			$reqcat = "select id from ".BAB_TOPICS_CATEGORIES_TBL." where id_parent='".$babDB->db_escape_string($cat)."'";
+			$this->rescat = $babDB->db_query($reqcat);
+			$this->countcat = $babDB->db_num_rows($this->rescat);
 			
-			$reqtop = "select id,category from ".BAB_TOPICS_TBL." where id_cat='".$cat."'";
-			$this->restop = $this->db->db_query($reqtop);
-			$this->counttop = $this->db->db_num_rows($this->restop);
+			$reqtop = "select id,category from ".BAB_TOPICS_TBL." where id_cat='".$babDB->db_escape_string($cat)."'";
+			$this->restop = $babDB->db_query($reqtop);
+			$this->counttop = $babDB->db_num_rows($this->restop);
 
-			$req = "select id, id_topic, id_author, date, title, head, restriction from ".BAB_ARTICLES_TBL." where id_topic='$topics' order by date desc";
-			$this->resart = $this->db->db_query($req);
-			$this->countarticles = $this->db->db_num_rows($this->resart);
+			$req = "select id, id_topic, id_author, date, title, head, restriction from ".BAB_ARTICLES_TBL." where id_topic='".$babDB->db_escape_string($topics)."' order by date desc";
+			$this->resart = $babDB->db_query($req);
+			$this->countarticles = $babDB->db_num_rows($this->resart);
 			
 			$this->target_txt = bab_translate("popup");
 			}
@@ -127,13 +126,13 @@ function browse($topics,$cat,$cb)
 			static $i = 0;
 			if( $i < $this->countcat)
 				{
-				$arr = $this->db->db_fetch_array($this->rescat);
+				$arr = $babDB->db_fetch_array($this->rescat);
 				$topcatview = $babBody->get_topcatview();
 				if (isset($topcatview[$arr['id']]))
 					{
 					$this->displaycat = true;
 					$this->title = bab_getTopicCategoryTitle($arr['id']);
-					$this->url = $GLOBALS['babUrlScript']."?tg=editorarticle&idx=browse&cat=".$arr['id']."&cb=".$this->cb;
+					$this->url = $GLOBALS['babUrlScript'].'?tg=editorarticle&idx=browse&cat='.$arr['id'].'&cb='.$this->cb;
 					}
 				else
 					{
@@ -152,12 +151,12 @@ function browse($topics,$cat,$cb)
 			static $i = 0;
 			if( $i < $this->counttop)
 				{
-				$arr = $this->db->db_fetch_array($this->restop);
+				$arr = $babDB->db_fetch_array($this->restop);
 				if (isset($babBody->topview[$arr['id']]) && $this->topics == 0 )
 					{
 					$this->displaytop = true;
 					$this->title = strip_tags($arr['category']);
-					$this->url = $GLOBALS['babUrlScript']."?tg=editorarticle&idx=browse&topics=".$arr['id']."&cat=".$this->cat."&cb=".$this->cb;
+					$this->url = $GLOBALS['babUrlScript'].'?tg=editorarticle&idx=browse&topics='.$arr['id'].'&cat='.$this->cat.'&cb='.$this->cb;
 					}
 				else
 					{
@@ -176,7 +175,7 @@ function browse($topics,$cat,$cb)
 			static $i = 0;
 			if( $i < $this->countarticles)
 				{
-				$arr = $this->db->db_fetch_array($this->resart);
+				$arr = $babDB->db_fetch_array($this->resart);
 				if( $arr['restriction'] != '' && !bab_articleAccessByRestriction($arr['restriction']))
 					{
 					$skip = true;
@@ -187,18 +186,18 @@ function browse($topics,$cat,$cb)
 				if (isset($babBody->topview[$arr['id_topic']]))
 					{
 					$this->display = true;
-					if( $arr['id_author'] != 0 && (($author = bab_getUserName($arr['id_author'])) != ""))
+					if( $arr['id_author'] != 0 && (($author = bab_getUserName($arr['id_author'])) != ''))
 						$this->articleauthor = $author;
 					else
 						$this->articleauthor = bab_translate("Anonymous");
 					$this->articledate = bab_strftime(bab_mktime($arr['date']));
-					$this->author = bab_translate("by") . " ". $this->articleauthor. " - ". $this->articledate;
+					$this->author = bab_translate("by") . ' '. $this->articleauthor. ' - '. $this->articledate;
 
-					$tmp = str_replace("\n"," ",substr(strip_tags(bab_replace($arr['head'])), 0, 400)." -- ".$this->author);
-					$this->content = str_replace("\r"," ",$tmp);
-					$this->content = str_replace("\"","'",$this->content);
+					$tmp = str_replace('\n',' ',substr(strip_tags(bab_replace($arr['head'])), 0, 400).' -- '.$this->author);
+					$this->content = str_replace('\r',' ',$tmp);
+					$this->content = str_replace('\"',"'",$this->content);
 					$this->titledisp = $arr['title'];
-					$tmp = str_replace("\""," ",$arr['title']);
+					$tmp = str_replace('\"',' ',$arr['title']);
 					$this->title = addslashes($tmp);
 					$this->articleid = $arr['id'];
 					}
@@ -215,7 +214,7 @@ function browse($topics,$cat,$cb)
 		}
 	
 	$temp = new temp($topics,$cat,$cb);
-	echo bab_printTemplate($temp,"editorarticle.html", "editorarticle");
+	echo bab_printTemplate($temp,'editorarticle.html', 'editorarticle');
 	}
 
 if(!isset($idx))
@@ -235,13 +234,13 @@ if(!isset($topics))
 
 if(!isset($cb))
 	{
-	$cb = "EditorOnInsertArticle";
+	$cb = 'EditorOnInsertArticle';
 	}
 
 switch($idx)
 	{
 	default:
-	case "browse":
+	case 'browse':
 		browse($topics,$cat,$cb);
 		exit;
 	}
