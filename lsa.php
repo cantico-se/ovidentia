@@ -70,6 +70,7 @@ function browseSa($cb)
 
 /* main */
 if( !isset($idx)) { $idx = 0; }
+if( !isset($cb)) { $cb = ''; }
 switch($idx)
 	{
 	default:
