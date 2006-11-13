@@ -1042,7 +1042,7 @@ function cal_getFreeEvents($idcals, $date0, $date1, $gap, $bopt = 0)
 
 function cal_searchAvailability($tg, $calid, $date, $date0, $date1, $gap, $bopt)
 {
-	global $babBodyPopup;
+	global $babBody;
 	class cal_searchAvailabilityCls
 		{
 
@@ -1124,7 +1124,9 @@ function cal_searchAvailability($tg, $calid, $date, $date0, $date1, $gap, $bopt)
 				$this->startdate = bab_shortDate($time0);
 				$time1 = $this->freeevents[$i][1];
 				$this->enddate = bab_shortDate($time1);
-				$this->refurl = $GLOBALS['babUrlScript']."?tg=".$this->tg."&idx=unload&date=".date("Y,n,j", $time1)."&calid=".implode(',',$this->idcals);
+				
+				$this->refurl = $GLOBALS['babUrlScript']."?tg=event&amp;idx=newevent&amp;date=".urlencode(date("Y,n,j", $time1))."&amp;calid=".urlencode(implode(',',$this->idcals))."&amp;&st=".$time0;
+
 				$interval = $time1 - $time0;
 				$tmp = (int)($interval / 86400);
 				if( $tmp)
@@ -1180,7 +1182,7 @@ function cal_searchAvailability($tg, $calid, $date, $date0, $date1, $gap, $bopt)
 		}
 
 	$temp = new cal_searchAvailabilityCls($tg, $calid, $date, $date0, $date1, $gap, $bopt);
-	$babBodyPopup->babecho(bab_printTemplate($temp, "calendar.html", "searchavailability"));
+	$babBody->babecho(bab_printTemplate($temp, "calendar.html", "searchavailability"));
 }
 
 ?>

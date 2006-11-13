@@ -448,7 +448,7 @@ function dateEnd(day, month, year)
 	<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
 		<td>{ startdate }</td>
 		<td>{ enddate }</td>
-		<td align="right"><a href="{ refurl }">{ interval }</a></td>
+		<td align="right"><a href="{ refurl }" onclick="bab_popup(this.href);return false;">{ interval }</a></td>
 	</tr>        
 	<!--#endin getnextfreeevent -->
 	<tr class="BabSiteAdminTitleFontBackground"> 

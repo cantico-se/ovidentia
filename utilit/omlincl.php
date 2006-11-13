@@ -4394,7 +4394,8 @@ class bab_CalendarEvents extends bab_handler
 		$babBody->icalendars->initializeCalendars();
 		$calendarid = $ctx->get_value('calendarid');
 		$delegationid = (int) $ctx->get_value('delegationid');
-		
+		$filter = strtoupper($ctx->get_value('filter')) !== "NO"; 
+			
 
 		include_once $GLOBALS['babInstallPath']."utilit/workinghoursincl.php";
 		include_once $GLOBALS['babInstallPath']."utilit/dateTime.php";
@@ -4433,82 +4434,18 @@ class bab_CalendarEvents extends bab_handler
 
 
 		$this->whObj = new bab_userWorkingHours($startdate, $enddate);
-		
 
-
-		if( $calendarid === false || $calendarid === '' )
-			{
-			if( $babBody->icalendars->id_percal )
-				{
-				$this->whObj->addCalendar($babBody->icalendars->id_percal);
-				$this->whObj->addIdUser($GLOBALS['BAB_SESS_USERID']);
-				}
-
-			foreach( $babBody->icalendars->usercal as $key => $val )
-				{
-				$this->whObj->addIdUser($babBody->icalendars->getCalendarOwner($key));
-				$this->whObj->addCalendar($key);
-				}
-			foreach( $babBody->icalendars->rescal as $key => $val )
-				{
-				if(0 != $delegationid && $delegationid != $val['id_dgowner'])
-					continue;
-				$this->whObj->addCalendar($key);
-				}
-			foreach( $babBody->icalendars->pubcal as $key => $val )
-				{
-				if(0 != $delegationid && $delegationid != $val['id_dgowner'])
-					continue;
-				$this->whObj->addCalendar($key);
-				}
-			}
-		else
-			{
-			
-			$rr = explode(',', $calendarid);
-
-			if( $babBody->icalendars->id_percal && in_array($babBody->icalendars->id_percal, $rr))
-				{
-				$this->whObj->addCalendar($babBody->icalendars->id_percal);
-				$this->whObj->addIdUser($GLOBALS['BAB_SESS_USERID']);
-				}
-
-			foreach( $babBody->icalendars->usercal as $key => $val )
-				{
-				if( in_array($key, $rr))
-					{
-					$this->whObj->addIdUser($babBody->icalendars->getCalendarOwner($key));
-					$this->whObj->addCalendar($key);
-					}
-				}
-			foreach( $babBody->icalendars->pubcal as $key => $val )
-				{
-				if( in_array($key, $rr))
-					{
-					if(0 != $delegationid && $delegationid != $val['id_dgowner'])
-						continue;
-					$this->whObj->addCalendar($key);
-					}
-				}				
-			foreach( $babBody->icalendars->rescal as $key => $val )
-				{
-				if( in_array($key, $rr))
-					{
-					if(0 != $delegationid && $delegationid != $val['id_dgowner'])
-						continue;
-					$this->whObj->addCalendar($key);
-					}
-				}
-			}
-
-		
-
+		if ($filter) {
+			$this->getUserCalendars($calendarid, $delegationid);
+		} else {
+			$this->getCalendars($calendarid);
+		}
 
 		$categoryid = $ctx->get_value('categoryid');
 		if( $categoryid !== false && $categoryid !== '' )
 			{
 			$this->whObj->category = $categoryid;
-			}
+		}
 
 		
 		$this->whObj->createPeriods(BAB_PERIOD_NWDAY | BAB_PERIOD_WORKING | BAB_PERIOD_VACATION | BAB_PERIOD_CALEVENT);
@@ -4523,6 +4460,72 @@ class bab_CalendarEvents extends bab_handler
 		$this->count = count($this->events);
 	}
 
+
+	/**
+ 	 * Get available calendar without filter
+	 */
+	function getCalendars($calendarid) {
+		global $babDB;
+		
+		if (empty($calendarid)) {
+			trigger_error('filter=NO must be used with calendarid');
+			return;
+		}
+
+		$res = $babDB->db_query("select id, type, owner from ".BAB_CALENDAR_TBL." where id IN (".$babDB->quote($calendarid).") and  actif='Y'");
+		while( $arr = $babDB->db_fetch_array($res) )
+			{
+			switch($arr['type']) {
+				case BAB_CAL_USER_TYPE:
+					$this->whObj->addCalendar($arr['id']);
+					$this->whObj->addIdUser($arr['owner']);
+					break;
+				
+				case BAB_CAL_PUB_TYPE:
+				case BAB_CAL_RES_TYPE:
+					$this->whObj->addCalendar($arr['id']);
+					break;
+			}
+		}
+	}
+
+	/**
+ 	 * Get available calendar with filter
+	 */
+	function getUserCalendars($calendarid, $delegationid) {
+		global $babBody;
+		$rr = empty($calendarid) ? false : array_flip(explode(',', $calendarid));
+
+		if( $babBody->icalendars->id_percal ) {
+			if (false === $rr || isset($rr[$babBody->icalendars->id_percal])) {
+				$this->whObj->addCalendar($babBody->icalendars->id_percal);
+				$this->whObj->addIdUser($GLOBALS['BAB_SESS_USERID']);
+			}
+		}
+
+		foreach( $babBody->icalendars->usercal as $key => $val ) {
+			if (false === $rr || isset($rr[$key])) {
+				$this->whObj->addIdUser($babBody->icalendars->getCalendarOwner($key));
+				$this->whObj->addCalendar($key);
+			}
+		}
+
+		foreach( $babBody->icalendars->rescal as $key => $val ) {
+			if(0 != $delegationid && $delegationid != $val['id_dgowner'])
+				continue;
+			if (false === $rr || isset($rr[$key])) {
+				$this->whObj->addCalendar($key);
+			}
+		}
+
+		foreach( $babBody->icalendars->pubcal as $key => $val ) {
+			if(0 != $delegationid && $delegationid != $val['id_dgowner'])
+				continue;
+			if (false === $rr || isset($rr[$key])) {
+				$this->whObj->addCalendar($key);
+			}
+		}
+	}
 	
 	function getnext()
 	{
@@ -4534,11 +4537,13 @@ class bab_CalendarEvents extends bab_handler
 
 			$id_category = isset($arr['id_cat']) ? $arr['id_cat'] : 0;
 
+			$id_event = isset($arr['id']) ? $arr['id'] : 0;
+
 			if (0 < $arr['nbowners']) {
 				$arr['id_cal'] = implode(',',$this->whObj->id_calendars);
 			}
 
-			$calid_param = !empty($arr['id_cal']) ? '&calid='.$arr['id_cal'] : '';
+			$calid_param = !empty($arr['id_cal']) ? '&idcal='.$arr['id_cal'] : '';
 			$description = $p->getProperty('DESCRIPTION');
 			bab_replace_ref($description,'OVML');
 			$date = explode(' ', $p->getProperty('DTSTART'));
@@ -4553,7 +4558,7 @@ class bab_CalendarEvents extends bab_handler
 			$this->ctx->curctx->push('EventEndDate'				, bab_mktime($p->getProperty('DTEND')));
 			$this->ctx->curctx->push('EventCategoryId'			, $id_category);
 			$this->ctx->curctx->push('EventCategoryColor'		, $p->color);
-			$this->ctx->curctx->push('EventUrl'					, $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$arr['id'].$calid_param);
+			$this->ctx->curctx->push('EventUrl'					, $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$id_event.$calid_param);
 			$this->ctx->curctx->push('EventCalendarUrl'			, $GLOBALS['babUrlScript']."?tg=calmonth".$calid_param."&date=".$date);
 			$this->ctx->curctx->push('EventCategoriesPopupUrl'	, $GLOBALS['babUrlScript']."?tg=calendar&idx=viewc".$calid_param);
 			$this->ctx->curctx->push('EventCategoryName'		, $p->getProperty('CATEGORIES'));

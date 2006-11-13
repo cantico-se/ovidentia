@@ -273,12 +273,12 @@ function displayEventDetail($evtid, $idcal)
 					}
 				else
 					{
-					$babBodyPopup->msgerror = bab_translate("Access denied");
+					$babBodyPopup->msgerror = bab_translate("There is no additional informations for this event");
 					}
 				}
 				else
 					{
-					$babBodyPopup->msgerror = bab_translate("Access denied");
+					$babBodyPopup->msgerror = bab_translate("Access denied to the calendar");
 					}
 			}
 		}
@@ -806,6 +806,7 @@ switch($idx)
 		popupUnload($popupmessage, '', $reload);
 		exit;
 		break;
+
 	case "evtnote":
 		include_once $babInstallPath."utilit/uiutil.php";
 		$babBodyPopup = new babBodyPopup();
@@ -818,6 +819,7 @@ switch($idx)
 		printBabBodyPopup();
 		exit;
 		break;
+
 	case "viewc":
 		include_once $babInstallPath."utilit/uiutil.php";
 		$babBodyPopup = new babBodyPopup();
@@ -826,6 +828,7 @@ switch($idx)
 		printBabBodyPopup();
 		exit;
 		break;
+
 	case "veventupd":
 	case "vevent":
 	case "attendees":

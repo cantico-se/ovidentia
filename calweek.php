@@ -388,16 +388,16 @@ switch($idx)
 		exit;
 		break;
 	case "rfree":
-		include_once $babInstallPath."utilit/uiutil.php";
-		$babBodyPopup = new babBodyPopup();
-		$babBodyPopup->title = bab_translate("Search free events");
-		if( !isset($gap)) { $gap = 0;}
-		if( !isset($date0)) { $date0 = "";}
-		if( !isset($date1)) { $date1 = "";}
-		if( !isset($bopt)) { $bopt = "Y";}
+		
+		$babBody->title = bab_translate("Search free events");
+		$babBody->addItemMenu("view", bab_translate("Calendar"), $GLOBALS['babUrlScript']."?tg=calweek&calid=".$calid."&date=".$date);
+		$babBody->addItemMenu("free", bab_translate("Availability"), $GLOBALS['babUrlScript']."?tg=calweek&idx=free&calid=".$calid."&date=".$date);
+		$babBody->addItemMenu("rfree", bab_translate("Search"), $GLOBALS['babUrlScript']."?tg=calweek&idx=rfree&calid=".$calid."&date=".$date);		
+		$gap 	= bab_rp('gap',0);
+		$date0 	= bab_rp('date0');
+		$date1 	= bab_rp('date1');
+		$bopt 	= bab_rp('bopt','Y');
 		searchAvailability($calid, $date, $date0, $date1, $gap, $bopt);
-		printBabBodyPopup();
-		exit;
 		break;
 
 	case "free":
@@ -412,6 +412,7 @@ switch($idx)
 			cal_week_free($calid, $date);
 			$babBody->addItemMenu("view", $babBody->title, $GLOBALS['babUrlScript']."?tg=calweek&calid=".$calid."&date=".$date);
 			$babBody->addItemMenu("free", bab_translate("Availability"), $GLOBALS['babUrlScript']."?tg=calweek&idx=free&calid=".$calid."&date=".$date);
+			$babBody->addItemMenu("rfree", bab_translate("Search"), $GLOBALS['babUrlScript']."?tg=calweek&idx=rfree&calid=".$calid."&date=".$date);
 			if ($GLOBALS['BAB_SESS_LOGGED'])
 				$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options&urla=".urlencode($GLOBALS['babUrlScript']."?tg=calweek&calid=".$calid."&date=".$date));			}
 		break;
