@@ -251,6 +251,7 @@ class bab_mcalendars
 					1 => date('Y-m-d H:i:s',$event->ts_end),
 					2 => 0
 				);
+
 			return true;
 		}
 		

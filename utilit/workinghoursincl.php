@@ -114,7 +114,7 @@ function bab_getWHours($id_user, $weekday, $db_id_user = NULL) {
 	while ($arr = $db->db_fetch_assoc($res)) {
 		$result[$id_user.','.$arr['weekDay']][] = $arr;
 	}
-
+	
 
 	return $result[$id_user.','.$weekday];
 }
@@ -410,50 +410,55 @@ class bab_userWorkingHours {
 
 			if (BAB_PERIOD_WORKING === ($this->options & BAB_PERIOD_WORKING) && $this->id_users) {
 
-				$arr = bab_getWHours($id_user, $loop->getDayOfWeek());
+				
+				foreach($this->id_users as $id_user) {
 
-				foreach($arr as $h) {
-					$startHour	= explode(':', $h['startHour']);
-					$endHour	= explode(':', $h['endHour']);
+					$arr = bab_getWHours($id_user, $loop->getDayOfWeek());
 					
-					$beginDate = new BAB_DateTime(
-						$loop->getYear(),
-						$loop->getMonth(),
-						$loop->getDayOfMonth(),
-						$startHour[0],
-						$startHour[1],
-						$startHour[2]
-						);
-
-					$endDate = new BAB_DateTime(
-						$loop->getYear(),
-						$loop->getMonth(),
-						$loop->getDayOfMonth(),
-						$endHour[0], 
-						$endHour[1], 
-						$endHour[2]
-						);
-
-					if ($nworking && NULL == $previous_end) {
-						$previous_end = $this->begin; // reference
+	
+					foreach($arr as $h) {
+						$startHour	= explode(':', $h['startHour']);
+						$endHour	= explode(':', $h['endHour']);
+						
+						$beginDate = new BAB_DateTime(
+							$loop->getYear(),
+							$loop->getMonth(),
+							$loop->getDayOfMonth(),
+							$startHour[0],
+							$startHour[1],
+							$startHour[2]
+							);
+	
+						$endDate = new BAB_DateTime(
+							$loop->getYear(),
+							$loop->getMonth(),
+							$loop->getDayOfMonth(),
+							$endHour[0], 
+							$endHour[1], 
+							$endHour[2]
+							);
+	
+						if ($nworking && NULL == $previous_end) {
+							$previous_end = $this->begin; // reference
+						}
+	
+						// add non-working period between 2 working period and at the begining
+						if ($nworking && $beginDate->getTimeStamp() > $previous_end->getTimeStamp()) {
+	
+							$p = & $this->setUserPeriod(false, $previous_end, $beginDate, BAB_PERIOD_NONWORKING);
+							$p->setProperty('SUMMARY'		, bab_translate('Non-working period'));
+							$p->setProperty('DTSTART'		, $previous_end->getIsoDateTime());
+							$p->setProperty('DTEND'			, $beginDate->getIsoDateTime());
+						}
+	
+						$p = & $this->setUserPeriod(false, $beginDate, $endDate, BAB_PERIOD_WORKING);
+	
+						$p->setProperty('SUMMARY'		, bab_translate('Working period'));
+						$p->setProperty('DTSTART'		, $beginDate->getIsoDateTime());
+						$p->setProperty('DTEND'			, $endDate->getIsoDateTime());
+	
+						$previous_end = $endDate; // the begin date of the non-working period will be a reference to the enddate of the working period
 					}
-
-					// add non-working period between 2 working period and at the begining
-					if ($nworking && $beginDate->getTimeStamp() > $previous_end->getTimeStamp()) {
-
-						$p = & $this->setUserPeriod(false, $previous_end, $beginDate, BAB_PERIOD_NONWORKING);
-						$p->setProperty('SUMMARY'		, bab_translate('Non-working period'));
-						$p->setProperty('DTSTART'		, $previous_end->getIsoDateTime());
-						$p->setProperty('DTEND'			, $beginDate->getIsoDateTime());
-					}
-
-					$p = & $this->setUserPeriod(false, $beginDate, $endDate, BAB_PERIOD_WORKING);
-
-					$p->setProperty('SUMMARY'		, bab_translate('Working period'));
-					$p->setProperty('DTSTART'		, $beginDate->getIsoDateTime());
-					$p->setProperty('DTEND'			, $endDate->getIsoDateTime());
-
-					$previous_end = $endDate; // the begin date of the non-working period will be a reference to the enddate of the working period
 				}
 			}
 			$loop->add(1, BAB_DATETIME_DAY);
