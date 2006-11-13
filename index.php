@@ -148,6 +148,7 @@ if (!empty($_FILES))
 	}
 
 $babUserPassword = '';
+$incl = '';
 
 if( !isset($GLOBALS['babMkdirMode']))
 	{
