@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
+include_once 'base.php';
 function browseSa($cb)
 	{
 	global $babBody;
@@ -68,8 +68,11 @@ function browseSa($cb)
 	echo bab_printTemplate($temp, "lsa.html", "browsesa");
 	}
 
+/* main */
+if( !isset($idx)) { $idx = 0; }
 switch($idx)
-	{	
+	{
+	default:
 	case "brow":
 		browseSa($cb);
 		exit;
