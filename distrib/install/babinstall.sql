@@ -1896,6 +1896,7 @@ CREATE TABLE bab_art_drafts_files (
   id_draft int(11) unsigned NOT NULL default '0',
   name varchar(255) NOT NULL default '',
   description varchar(255) NOT NULL default '',
+  ordering smallint(2) NOT NULL default '0',
   PRIMARY KEY  (id),
   KEY id_draft (id_draft)
 );
@@ -1925,6 +1926,7 @@ CREATE TABLE bab_art_files (
   name varchar(255) NOT NULL default '',
   description varchar(255) NOT NULL default '',
   index_status int(11) unsigned NOT NULL default '0',
+  ordering smallint(2) NOT NULL default '0',
   PRIMARY KEY  (id),
   KEY id_article (id_article),
   KEY index_status (index_status)
