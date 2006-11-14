@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
+include_once 'base.php';
 
 function changeAdmGroup()
 	{
@@ -49,7 +49,7 @@ function changeAdmGroup()
 				$this->delegat[0] = bab_translate("All site");
 				}
 
-			$res = $babDB->db_query("SELECT id,name FROM ".BAB_DG_GROUPS_TBL." WHERE id IN('".implode("','",$babBody->dgAdmGroups)."')");
+			$res = $babDB->db_query("SELECT id,name FROM ".BAB_DG_GROUPS_TBL." WHERE id IN(".$babDB->quote($babBody->dgAdmGroups).")");
 			while ($arr = $babDB->db_fetch_assoc($res))
 				{
 				$this->delegat[$arr['id']] = $arr['name'];
@@ -83,7 +83,7 @@ function updateAdmGroup($grpdg)
 {
 	global $babBody, $babDB;
 
-	$babBody->currentDGGroup = $babDB->db_fetch_array($babDB->db_query("select dg.*, g.lf, g.lr from ".BAB_DG_GROUPS_TBL." dg, ".BAB_GROUPS_TBL." g where g.id=dg.id_group and dg.id='".$grpdg."'"));
+	$babBody->currentDGGroup = $babDB->db_fetch_array($babDB->db_query("select dg.*, g.lf, g.lr from ".BAB_DG_GROUPS_TBL." dg, ".BAB_GROUPS_TBL." g where g.id=dg.id_group and dg.id='".$babDB->db_escape_string($grpdg)."'"));
 	
 	if ($grpdg > 0 && isset($babBody->currentDGGroup['id_group']))
 		{
@@ -98,8 +98,8 @@ function updateAdmGroup($grpdg)
 		trigger_error('no group in delegation');
 		}
 
-	$babDB->db_query("update ".BAB_USERS_LOG_TBL." set id_dg='".$grpdg."' where sessid='".session_id()."'");
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=delegusr");
+	$babDB->db_query("update ".BAB_USERS_LOG_TBL." set id_dg='".$babDB->db_escape_string($grpdg)."' where sessid='".session_id()."'");
+	Header('Location: '. $GLOBALS['babUrlScript'].'?tg=delegusr');
 		
 }
 

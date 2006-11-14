@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
+include_once 'base.php';
 
 function listContacts($pos)
 	{
@@ -47,7 +47,7 @@ function listContacts($pos)
 
 		function temp($pos)
 			{
-			global $BAB_SESS_USERID,$babBody;
+			global $BAB_SESS_USERID,$babBody, $babDB;
 
 			switch ($babBody->nameorder[0]) {
 			case "L":
@@ -64,7 +64,7 @@ function listContacts($pos)
 				{
 				$this->pos = '-';
 				$this->ord = substr($pos,1);
-				$req = "select * from ".BAB_CONTACTS_TBL." where owner='".$BAB_SESS_USERID."' and ".$this->namesearch2." like '".$this->pos."%' order by ".$this->namesearch2.", ".$this->namesearch." asc";
+				$req = "select * from ".BAB_CONTACTS_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."' and ".$this->namesearch2." like '".$babDB->db_escape_like($this->pos)."%' order by ".$babDB->db_escape_string($this->namesearch2).", ".$babDB->db_escape_string($this->namesearch)." asc";
 				$this->fullname = bab_composeUserName(bab_translate("Lastname"),bab_translate("Firstname"));
 				$this->urlfullname = $GLOBALS['babUrlScript']."?tg=contacts&idx=chg&pos=".$pos;
 				}
@@ -72,7 +72,7 @@ function listContacts($pos)
 				{
 				$this->pos = $pos;
 				$this->ord = "";
-				$req = "select * from ".BAB_CONTACTS_TBL." where owner='".$BAB_SESS_USERID."' and ".$this->namesearch." like '".$this->pos."%' order by ".$this->namesearch.", ".$this->namesearch2." asc";
+				$req = "select * from ".BAB_CONTACTS_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."' and ".$babDB->db_escape_string($this->namesearch)." like '".$babDB->db_escape_like($this->pos)."%' order by ".$babDB->db_escape_string($this->namesearch).", ".$babDB->db_escape_string($this->namesearch2)." asc";
 				$this->fullname = bab_composeUserName(bab_translate("Firstname"), bab_translate("Lastname"));
 				$this->urlfullname = $GLOBALS['babUrlScript']."?tg=contacts&idx=chg&pos=".$pos;
 				}
@@ -86,10 +86,9 @@ function listContacts($pos)
 			$this->allname = bab_translate("All");
 			$this->addcontact = bab_translate("Add");
 			$this->deletealt = bab_translate("Delete Contacts");
-			$this->db = $GLOBALS['babDB'];
-			$this->res = $this->db->db_query($req);
+			$this->res = $babDB->db_query($req);
 			if( $this->res )
-				$this->count = $this->db->db_num_rows($this->res);
+				$this->count = $babDB->db_num_rows($this->res);
 			else
 				$this->count = 0;
 
@@ -101,17 +100,17 @@ function listContacts($pos)
 			$this->addurl = $GLOBALS['babUrlScript']."?tg=contact&idx=create&bliste=1";
 
 			/* find prefered mail account */
-			$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$BAB_SESS_USERID."' and prefered='Y'";
-			$res = $this->db->db_query($req);
-			if( !$res || $this->db->db_num_rows($res) == 0 )
+			$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."' and prefered='Y'";
+			$res = $babDB->db_query($req);
+			if( !$res || $babDB->db_num_rows($res) == 0 )
 				{
-				$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$BAB_SESS_USERID."'";
-				$res = $this->db->db_query($req);
+				$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
+				$res = $babDB->db_query($req);
 				}
 
-			if( $this->db->db_num_rows($res) > 0 )
+			if( $babDB->db_num_rows($res) > 0 )
 				{
-				$arr = $this->db->db_fetch_array($res);
+				$arr = $babDB->db_fetch_array($res);
 				$this->accid = $arr['id'];
 				}
 			else
@@ -120,11 +119,12 @@ function listContacts($pos)
 
 		function getnext()
 			{
+			global $babDB;
 			static $i = 0;
 			if( $i < $this->count)
 				{
 				$this->altbg = !$this->altbg;
-				$this->arr = $this->db->db_fetch_array($this->res);
+				$this->arr = $babDB->db_fetch_array($this->res);
 				$this->url =$GLOBALS['babUrlScript']."?tg=contact&idx=modify&item=".$this->arr['id']."&bliste=1";
 				$this->urlmail =$GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".$this->accid."&to=".$this->arr['email'];
 				if( $this->ord == "-" )
@@ -140,7 +140,7 @@ function listContacts($pos)
 			}
 		function getnextselect()
 			{
-			global $BAB_SESS_USERID;
+			global $BAB_SESS_USERID, $babDB;
 			static $k = 0;
 			static $t = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 			if( $k < 26)
@@ -154,14 +154,14 @@ function listContacts($pos)
 					{
 					if( $this->ord == "-" )
 						{
-						$req = "select * from ".BAB_CONTACTS_TBL." where owner='".$BAB_SESS_USERID."' and ".$this->namesearch2." like '".$this->selectname."%'";
+						$req = "select * from ".BAB_CONTACTS_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."' and ".$babDB->db_escape_string($this->namesearch2)." like '".$babDB->db_escape_like($this->selectname)."%'";
 						}
 					else
 						{
-						$req = "select * from ".BAB_CONTACTS_TBL." where owner='".$BAB_SESS_USERID."' and ".$this->namesearch." like '".$this->selectname."%'";
+						$req = "select * from ".BAB_CONTACTS_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."' and ".$babDB->db_escape_string($this->namesearch)." like '".$babDB->db_escape_like($this->selectname)."%'";
 						}
-					$res = $this->db->db_query($req);
-					if( $this->db->db_num_rows($res) > 0 )
+					$res = $babDB->db_query($req);
+					if( $babDB->db_num_rows($res) > 0 )
 						$this->selected = 0;
 					else
 						$this->selected = 1;
@@ -196,18 +196,17 @@ function contactsDelete($item, $pos)
 
 		function tempa($item, $pos)
 			{
-			global $BAB_SESS_USERID;
+			global $BAB_SESS_USERID, $babDB;
 			$this->message = bab_translate("Are you sure you want to delete those contacts");
 			$this->title = "";
 			$items = "";
-			$db = $GLOBALS['babDB'];
 			for($i = 0; $i < count($item); $i++)
 				{
-				$req = "select * from ".BAB_CONTACTS_TBL." where id='".$item[$i]."'and owner='".$BAB_SESS_USERID."'";	
-				$res = $db->db_query($req);
-				if( $db->db_num_rows($res) > 0)
+				$req = "select * from ".BAB_CONTACTS_TBL." where id='".$babDB->db_escape_string($item[$i])."'and owner='".$babDB->db_escape_string($BAB_SESS_USERID)."'";	
+				$res = $babDB->db_query($req);
+				if( $babDB->db_num_rows($res) > 0)
 					{
-					$arr = $db->db_fetch_array($res);
+					$arr = $babDB->db_fetch_array($res);
 					$this->title .= "<br>". bab_composeUserName($arr['firstname'], $arr['lastname']);
 					$items .= $arr['id'];
 					}
@@ -236,14 +235,13 @@ function contactsDelete($item, $pos)
 
 function confirmDeleteContacts($items)
 {
-	global $BAB_SESS_USERID;
+	global $BAB_SESS_USERID, $babDB;
 	$arr = explode(",", $items);
 	$cnt = count($arr);
-	$db = $GLOBALS['babDB'];
 	for($i = 0; $i < $cnt; $i++)
 		{
-		$req = "delete from ".BAB_CONTACTS_TBL." where id='".$arr[$i]."' and owner='".$BAB_SESS_USERID."'";	
-		$res = $db->db_query($req);
+		$req = "delete from ".BAB_CONTACTS_TBL." where id='".$babDB->db_escape_string($arr[$i])."' and owner='".$babDB->db_escape_string($BAB_SESS_USERID)."'";	
+		$res = $babDB->db_query($req);
 		}
 }
 
