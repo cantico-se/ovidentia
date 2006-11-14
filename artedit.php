@@ -1232,6 +1232,8 @@ function showSetArticleProperties($idart)
 
 				$this->t_file = bab_translate("File");
 				$this->t_description = bab_translate("Description");
+				$this->t_dragmessage = bab_translate("To order files, drag and drop here");
+				$this->t_dragmessage_user = bab_translate("To order files, drag and drop and don't forget to save");
 				$this->t_index_status = bab_translate("Indexation");
 
 				if( $arr['id_topic'] != 0 && bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $arr['id_topic']))
@@ -1520,7 +1522,7 @@ function showSetArticleProperties($idart)
 						$this->deletetxt = bab_translate("Delete");
 						$this->t_add_field = bab_translate("Attach another file");
 						$this->t_remove_field = bab_translate("Remove");
-						$this->resfiles = $babDB->db_query("select id, name, description from ".BAB_ART_DRAFTS_FILES_TBL." where id_draft='".$babDB->db_escape_string($idart)."'");
+						$this->resfiles = $babDB->db_query("select id, name, description from ".BAB_ART_DRAFTS_FILES_TBL." where id_draft='".$babDB->db_escape_string($idart)."' order by ordering asc");
 						$this->maximagessize = $babBody->babsite['imgsize'];
 						if( $babBody->babsite['maxfilesize'] != 0 )
 							{
@@ -1533,6 +1535,8 @@ function showSetArticleProperties($idart)
 						$this->countfiles = $babDB->db_num_rows($this->resfiles);
 						if( $this->countfiles > 0 )
 							{
+							$babBody->addJavascriptFile($GLOBALS['babScriptPath']."prototype/prototype.js");
+							$babBody->addJavascriptFile($GLOBALS['babScriptPath']."scriptaculous/scriptaculous.js");
 							$this->warnfilemessage = bab_translate("Warning! If you change topic, you can lost associated documents");
 							}
 						else
@@ -1621,6 +1625,7 @@ function showSetArticleProperties($idart)
 				$this->deleteurl = $GLOBALS['babUrlScript']."?tg=artedit&idx=s3&updstep3=delf&idart=".$this->idart."&idf=".$arr['id'];
 				$this->name = bab_toHTML($arr['name']);
 				$this->docdesc = bab_toHTML($arr['description']);
+				$this->idfile = $arr['id'];
 				$i++;
 				return true;
 				}
@@ -2118,8 +2123,19 @@ function addDocumentArticleDraft($idart, &$message)
 				}
 
 			$description = $_POST['docdesc'][$k];
-
-			$babDB->db_query("insert into ".BAB_ART_DRAFTS_FILES_TBL." (id_draft, name, description) values ('" .$babDB->db_escape_string($idart). "', '".$babDB->db_escape_string($filename)."','".$babDB->db_escape_string($description)."')");
+			
+			$res = $babDB->db_query("select max(ordering) from  ".BAB_ART_DRAFTS_FILES_TBL." where id_draft='".$babDB->db_escape_string($idart)."'");
+			$rr = $babDB->db_fetch_array($res);
+			if( isset($rr[0]))
+				{
+				$ord = $rr[0] + 1;
+				}
+			else
+				{
+				$ord = 1;
+				}
+			
+			$babDB->db_query("insert into ".BAB_ART_DRAFTS_FILES_TBL." (id_draft, name, description, ordering) values ('" .$babDB->db_escape_string($idart). "', '".$babDB->db_escape_string($filename)."','".$babDB->db_escape_string($description)."', '".$ord."')");
 			$okfiles++;
 			$k++;
 			}
@@ -2237,6 +2253,15 @@ function updatePropertiesArticleDraft()
 		}
 	}
 
+	$sfiles = bab_rp('sfiles', '');
+	if( !empty($sfiles))
+	{
+		$asfiles = explode(',', $sfiles );
+		for( $k = 0; $k < count($asfiles); $k++ )
+		{
+			$babDB->db_query("update ".BAB_ART_DRAFTS_FILES_TBL." set ordering='".$k."' where id='".$babDB->db_escape_string($asfiles[$k])."'");
+		}
+	}
 }
 
 

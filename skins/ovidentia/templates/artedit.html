@@ -967,6 +967,15 @@ function remove_field()
 
 		}
 	}
+
+<!--#if countfiles -->
+function onSortChange()
+{
+var pars = Sortable.sequence('sortfiles');
+document.forms['propform'].sfiles.value=pars;
+
+}
+<!--#endif countfiles -->
 <!--#endif allowattachments -->
 
 <!--#if busetags -->
@@ -1011,6 +1020,7 @@ window.onload = function()
 <input type="hidden" name="idx" value="s3">
 <input type="hidden" name="idart" value="{ idart }">
 <input type="hidden" name="rfurl" value="{ rfurl }">
+<input type="hidden" name="sfiles" value="">
 <input type="hidden" name="updstep3" value="">
 
 <p>{ steptitle }</p>
@@ -1250,18 +1260,22 @@ window.onload = function()
 	</tr>
 	<!--#if countfiles -->
 	<tr class="BabSiteAdminTitleFontBackground">
-		<td>{ t_file }</td>
-		<td>{ t_description }</td>
+		<td><b>{ t_file }</b></td>
+		<td><b>{ t_description }</b></td>
 	</tr>
+	<tr>
+		<td colspan="2">
+		<ul id="sortfiles">
 	<!--#in getnextfile -->
-	<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->  
-		<td>
-			<a title="{ deletetxt }" href="{ deleteurl }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/del.gif" alt="{ deletetxt }" border="0"></a>&nbsp;&nbsp;<a href="{ urlfile }">{ name }</a>
-		</td>
-		
-		<td>{ docdesc }</td>
-	</tr>
+		<li id="file_{ idfile }">
+		<span class="handle"><img src="{ babSkinPath }images/Puces/PuceArrowDown.gif" alt="{ t_dragmessage }" border="0" title="{ t_dragmessage }" style="cursor:move;"></span>
+		<a title="{ deletetxt }" href="{ deleteurl }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/del.gif" alt="{ deletetxt }" border="0"></a>&nbsp;&nbsp;<a href="{ urlfile }">{ name }</a>&nbsp;&nbsp;{ docdesc }
+		</li>
 	<!--#endin getnextfile -->
+		</ul>
+		<br />{ t_dragmessage_user }&nbsp;!
+		</td>
+	</tr>
 	<!--#endif countfiles -->
 	</table>
 </td>
@@ -1371,6 +1385,11 @@ window.onload = function()
 
 </form>
 <!--#endif access -->
+<!--#if countfiles -->
+<script type="text/javascript" language="javascript">
+  Sortable.create('sortfiles',{dropOnEmpty:true,handle:'handle',ghosting:true,constraint:false,onUpdate:onSortChange})
+</script>
+<!--#endif countfiles -->
 <!--#end propertiesarticlestep -->
 
 

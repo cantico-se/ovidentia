@@ -7494,6 +7494,35 @@ function upgrade604to605()
 	$ret = "";
 	$db = & $GLOBALS['babDB'];
 
+	if (!bab_isTableField(BAB_ART_DRAFTS_FILES_TBL, 'ordering')) {
+		$db->db_query("ALTER TABLE ".BAB_ART_DRAFTS_FILES_TBL." ADD ordering smallint(2) UNSIGNED NOT NULL");
+		$res = $db->db_query('select distinct id_draft from '.BAB_ART_DRAFTS_FILES_TBL.'');
+		while($row = $db->db_fetch_array($res))
+			{
+			$ord = 0;
+			$res2 = $db->db_query("select id from ".BAB_ART_DRAFTS_FILES_TBL." where id_draft='".$row['id_draft']."' order by name asc");
+			while($row2 = $db->db_fetch_array($res2))
+				{
+				$db->db_query("update ".BAB_ART_DRAFTS_FILES_TBL." set ordering='".$ord."' where id='".$row2['id']."'");
+				$ord++;
+				}
+			}
+	}
+
+	if (!bab_isTableField(BAB_ART_FILES_TBL, 'ordering')) {
+		$db->db_query("ALTER TABLE ".BAB_ART_FILES_TBL." ADD ordering smallint(2) UNSIGNED NOT NULL");
+		$res = $db->db_query('select distinct id_article from '.BAB_ART_FILES_TBL.'');
+		while($row = $db->db_fetch_array($res))
+			{
+			$ord = 0;
+			$res2 = $db->db_query("select id from ".BAB_ART_FILES_TBL." where id_article='".$row['id_article']."' order by name asc");
+			while($row2 = $db->db_fetch_array($res2))
+				{
+				$db->db_query("update ".BAB_ART_FILES_TBL." set ordering='".$ord."' where id='".$row2['id']."'");
+				$ord++;
+				}
+			}
+	}
 	return $ret;
 }
 

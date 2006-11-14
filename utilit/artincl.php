@@ -581,7 +581,8 @@ function acceptWaitingArticle($idart)
 					$files_to_insert[] = array(
 							'id_article'	=> $articleid,
 							'name'			=> $rr['name'],
-							'description'	=> $rr['description']
+							'description'	=> $rr['description'],
+							'ordering'	=> $rr['ordering']
 						);
 					}
 				}
@@ -594,12 +595,13 @@ function acceptWaitingArticle($idart)
 					$babDB->db_query(
 					
 					"INSERT INTO ".BAB_ART_FILES_TBL." 
-						(id_article, name, description, index_status) 
+						(id_article, name, description, ordering, index_status) 
 					VALUES 
 						(
 						'".$babDB->db_escape_string($arrf['id_article'])."', 
 						'".$babDB->db_escape_string($arrf['name'])."', 
 						'".$babDB->db_escape_string($arrf['description'])."', 
+						'".$babDB->db_escape_string($arrf['ordering'])."', 
 						'".$babDB->db_escape_string($index_status)."' 
 						)
 					");
@@ -813,7 +815,7 @@ function bab_previewArticleDraft($idart, $echo=0)
 				$this->headval = bab_replace($arr['head']);
 				$this->bodyval = bab_replace($arr['body']);
 				
-				$this->resf = $babDB->db_query("select * from ".BAB_ART_DRAFTS_FILES_TBL." where id_draft='".$babDB->db_escape_string($idart)."'");
+				$this->resf = $babDB->db_query("select * from ".BAB_ART_DRAFTS_FILES_TBL." where id_draft='".$babDB->db_escape_string($idart)."' order by ordering asc");
 				$this->countf =  $babDB->db_num_rows($this->resf);
 
 				$this->resn = $babDB->db_query("select * from ".BAB_ART_DRAFTS_NOTES_TBL." where id_draft='".$babDB->db_escape_string($idart)."' order by date_note asc");
@@ -1069,7 +1071,7 @@ function bab_newArticleDraft($idtopic, $idarticle)
 				{
 				if( copy($pathorg.$idarticle.",".$rr['name'], $pathdest.$id.",".$rr['name']))
 					{
-					$babDB->db_query("insert into ".BAB_ART_DRAFTS_FILES_TBL." (id_draft, name, description) values ('".$id."','".$babDB->db_escape_string($rr['name'])."','".$babDB->db_escape_string($rr['description'])."')");
+					$babDB->db_query("insert into ".BAB_ART_DRAFTS_FILES_TBL." (id_draft, name, description, ordering) values ('".$id."','".$babDB->db_escape_string($rr['name'])."','".$babDB->db_escape_string($rr['description'])."','".$babDB->db_escape_string($rr['ordering'])."')");
 					}
 				}
 			$res = $babDB->db_query("select * from ".BAB_ART_TAGS_TBL." where id_art='".$babDB->db_escape_string($idarticle)."'");
