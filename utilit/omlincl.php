@@ -3880,9 +3880,10 @@ class bab_CalendarEvents extends bab_handler
 	var $index;
 	var $count;
 
-	var $cal_groups 	= 1;
-	var $cal_resources	= 1;
-	var $cal_users		= 1;
+	var $cal_groups 		= 1;
+	var $cal_resources		= 1;
+	var $cal_users			= 1;
+	var $cal_default_users 	= 1; // if empty calendarid, get all accessibles user calendars
 
 	function bab_CalendarEvents( &$ctx)
 	{
@@ -4010,10 +4011,14 @@ class bab_CalendarEvents extends bab_handler
 		}
 
 		if ($this->cal_users) {
-			foreach( $babBody->icalendars->usercal as $key => $val ) {
-				if (false === $rr || isset($rr[$key])) {
-					$this->whObj->addIdUser($babBody->icalendars->getCalendarOwner($key));
-					$this->whObj->addCalendar($key);
+			
+			if ($rr || (false === $rr && $this->cal_default_users)) {
+			
+				foreach( $babBody->icalendars->usercal as $key => $val ) {
+					if (false === $rr || isset($rr[$key])) {
+						$this->whObj->addIdUser($babBody->icalendars->getCalendarOwner($key));
+						$this->whObj->addCalendar($key);
+					}
 				}
 			}
 		}
@@ -4112,9 +4117,10 @@ class bab_CalendarUserEvents extends bab_CalendarEvents
 {
 	function bab_CalendarUserEvents(&$ctx)
 	{
-		$this->cal_users 		= 1;
-		$this->cal_groups		= 0;
-		$this->cal_resources	= 0;
+		$this->cal_users 			= 1;
+		$this->cal_groups			= 0;
+		$this->cal_resources		= 0;
+		$this->cal_default_users	= 0;
 
 		$userid = $ctx->get_value('userid');
 
