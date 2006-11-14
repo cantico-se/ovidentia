@@ -2288,7 +2288,7 @@ function autoFile($id_dir,$path)
 				   array_push($this->newarr, $stack[$key]);
 				   if ($dir = @opendir($stack[$key])) {
 					   while (($file = readdir($dir)) !== false) {
-						   if (($file != '.') && ($file != '..')) {
+						   if (($file != '.') && ($file != '..') && is_dir($stack[$key].'/'.$file)) {
 							   array_push($arr, $stack[$key].'/'.$file);
 						   }
 					   }
