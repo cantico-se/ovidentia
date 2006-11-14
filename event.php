@@ -1258,7 +1258,7 @@ function eventAvariabilityCheck(&$avariability_message)
 			{
 			$event = $calPeriod->getData();
 
-			if ($event['bfree'] !='Y' && (!isset($_POST['evtid']) || $_POST['evtid'] != $event['id_event']))
+			if (isset($event['bfree']) && $event['bfree'] !='Y' && (!isset($_POST['evtid']) || $_POST['evtid'] != $event['id_event']))
 				{
 				global $babBody;
 				$title = bab_translate("Private");
