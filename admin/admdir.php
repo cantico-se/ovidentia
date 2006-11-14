@@ -832,7 +832,7 @@ function dbListOrder($id)
 				{
 				$iddir = $id;
 				}
-			$this->resf = $babDB->db_query("select id, id_field from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$babDB->db_escape_string($iddir)."' order by list_ordering asc");
+			$this->resf = $babDB->db_query("select id, id_field from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$babDB->db_escape_string($iddir)."' and disabled='N' order by list_ordering asc");
 			$this->countf = $babDB->db_num_rows($this->resf);
 			}
 
@@ -1269,10 +1269,24 @@ function dbUpdateListOrder($id, $listfd)
 {
 	global $babDB;
 	list($idgroup) = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
+
+	$updated = array();
 	for($i=0; $i < count($listfd); $i++)
 		{
 		$babDB->db_query("update ".BAB_DBDIR_FIELDSEXTRA_TBL." set list_ordering='".($i + 1)."' where id_directory='".($idgroup != 0? 0: $babDB->db_escape_string($id))."' and id_field='".$babDB->db_escape_string($listfd[$i])."'");
+		$updated[$listfd[$i]] = true;
 		}
+
+	$res = $babDB->db_query("select id, id_field from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup != 0? 0: $babDB->db_escape_string($id))."'");
+	while( $arr = $babDB->db_fetch_array($res))
+	{
+		if( !isset($arr['id_field']))
+		{
+		$babDB->db_query("update ".BAB_DBDIR_FIELDSEXTRA_TBL." set list_ordering='".($i + 1)."' where id='".$babDB->db_escape_string($arr['id'])."");
+		$i++;
+		}
+	}
+
 }
 
 function deleteFieldsExtra($id, $fxid)
