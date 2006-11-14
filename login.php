@@ -21,8 +21,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
-include_once $babInstallPath."admin/register.php";
+include_once 'base.php';
+include_once $babInstallPath.'admin/register.php';
 
 function isEmailPassword()
 {
@@ -161,7 +161,7 @@ function displayRegistration($nickname, $fields, $cagree)
 			$this->requiredtxt = bab_translate("Those fields are required");
 			$this->passwordlengthtxt = bab_translate("At least 6 characters");
 
-			list($email_confirm) = $babDB->db_fetch_array($babDB->db_query("select email_confirm FROM ".BAB_SITES_TBL." where id='".$babBody->babsite['id']."'"));
+			list($email_confirm) = $babDB->db_fetch_array($babDB->db_query("select email_confirm FROM ".BAB_SITES_TBL." where id='".$babDB->db_escape_string($babBody->babsite['id'])."'"));
 
 			if ($email_confirm == 'Y')
 				{
@@ -206,7 +206,7 @@ function displayRegistration($nickname, $fields, $cagree)
 				$this->cagreechecked = "";
 				}
 
-			list($jpegphoto) = $babDB->db_fetch_array($babDB->db_query("select registration from ".BAB_SITES_FIELDS_REGISTRATION_TBL." where id_site='".$babBody->babsite['id']."' and id_field='5'"));
+			list($jpegphoto) = $babDB->db_fetch_array($babDB->db_query("select registration from ".BAB_SITES_FIELDS_REGISTRATION_TBL." where id_site='".$babDB->db_escape_string($babBody->babsite['id'])."' and id_field='5'"));
 			if( $jpegphoto == "Y" )
 				{
 				$this->bphoto = true;
@@ -216,7 +216,7 @@ function displayRegistration($nickname, $fields, $cagree)
 				$this->bphoto = false;
 				}
 
-			$this->res = $babDB->db_query("select sfrt.*, sfxt.id as idfx from ".BAB_SITES_FIELDS_REGISTRATION_TBL." sfrt left join ".BAB_DBDIR_FIELDSEXTRA_TBL." sfxt on sfxt.id_field=sfrt.id_field where sfrt.id_site='".$babBody->babsite['id']."' and sfrt.registration='Y' and sfxt.id_directory='0'");
+			$this->res = $babDB->db_query("select sfrt.*, sfxt.id as idfx from ".BAB_SITES_FIELDS_REGISTRATION_TBL." sfrt left join ".BAB_DBDIR_FIELDSEXTRA_TBL." sfxt on sfxt.id_field=sfrt.id_field where sfrt.id_site='".$babDB->db_escape_string($babBody->babsite['id'])."' and sfrt.registration='Y' and sfxt.id_directory='0'");
 
 			$this->count = $babDB->db_num_rows($this->res);
 
@@ -234,14 +234,14 @@ function displayRegistration($nickname, $fields, $cagree)
 				$arr = $babDB->db_fetch_array($this->res);
 				if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
 					{
-					$res = $babDB->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'");
+					$res = $babDB->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$babDB->db_escape_string($arr['id_field'])."'");
 					$rr = $babDB->db_fetch_array($res);
 					$this->fieldname = translateDirectoryField($rr['description']);
 					$this->fieldv = $rr['name'];
 					}
 				else
 					{
-					$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+					$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string(($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
 					$this->fieldname = translateDirectoryField($rr['name']);
 					$this->fieldv = "babdirf".$arr['id'];
 					}
@@ -256,7 +256,7 @@ function displayRegistration($nickname, $fields, $cagree)
 					$this->fieldval = '';
 					}
 
-				$this->resfxv = $babDB->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." where id_fieldextra='".$arr['idfx']."'");
+				$this->resfxv = $babDB->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." where id_fieldextra='".$babDB->db_escape_string($arr['idfx'])."'");
 				$this->countfxv = $babDB->db_num_rows($this->resfxv); 
 
 				$this->required = $arr['required'];
@@ -276,7 +276,7 @@ function displayRegistration($nickname, $fields, $cagree)
 				$this->fieldt = $arr['multilignes'];
 				if( !empty( $arr['default_value'] ) && empty($this->fvalue) && $this->countfxv > 0)
 					{
-					$rr = $babDB->db_fetch_array($babDB->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." where id='".$arr['default_value']."'"));
+					$rr = $babDB->db_fetch_array($babDB->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." where id='".$babDB->db_escape_string($arr['default_value'])."'"));
 					$this->fieldval = $rr['field_value'];
 					}
 
@@ -344,7 +344,7 @@ function displayRegistration($nickname, $fields, $cagree)
 					{
 					$this->brequired = false;
 					}
-				$this->resgrp = $babDB->db_query("select gt.* from ".BAB_PROFILES_GROUPSSET_TBL." pgt left join ".BAB_GROUPS_TBL." gt on pgt.id_group=gt.id where pgt.id_object ='".$arr['id']."'");
+				$this->resgrp = $babDB->db_query("select gt.* from ".BAB_PROFILES_GROUPSSET_TBL." pgt left join ".BAB_GROUPS_TBL." gt on pgt.id_group=gt.id where pgt.id_object ='".$babDB->db_escape_string($arr['id'])."'");
 				$this->countgrp = $babDB->db_num_rows($this->resgrp);
 				$j++;
 				return true;
@@ -408,7 +408,7 @@ function displayDisclaimer()
 			{
 			global $babBody, $babDB;
 			$this->title = bab_translate("Disclaimer/Privacy statement");
-			$res = $babDB->db_query("select * from ".BAB_SITES_DISCLAIMERS_TBL." where id_site='".$babBody->babsite['id']."'");
+			$res = $babDB->db_query("select * from ".BAB_SITES_DISCLAIMERS_TBL." where id_site='".$babDB->db_escape_string($babBody->babsite['id'])."'");
 			$arr = $babDB->db_fetch_array($res);
 			$this->content = bab_replace($arr['disclaimer_text']);
 			}
@@ -422,28 +422,27 @@ function displayDisclaimer()
 
 function confirmUser($hash, $nickname)
 	{
-	global $BAB_HASH_VAR, $babBody;
+	global $BAB_HASH_VAR, $babBody, $babDB;
 	$new_hash=md5($nickname.$BAB_HASH_VAR);
 	if ($new_hash && ($new_hash==$hash))
 		{
-		$sql="select * from ".BAB_USERS_TBL." where confirm_hash='$hash'";
-		$db = $GLOBALS['babDB'];
-		$result=$db->db_query($sql);
-		if( $db->db_num_rows($result) < 1)
+		$sql="select * from ".BAB_USERS_TBL." where confirm_hash='".$hash."'";
+		$result=$babDB->db_query($sql);
+		if( $babDB->db_num_rows($result) < 1)
 			{
 			$babBody->msgerror = bab_translate("User Not Found") ." !";
 			return false;
 			}
 		else
 			{
-			$arr = $db->db_fetch_array($result);
+			$arr = $babDB->db_fetch_array($result);
 			$babBody->msgerror = bab_translate("User Account Updated - You can now log to our site");
-			$sql="update ".BAB_USERS_TBL." set is_confirmed='1', datelog=now(), lastlog=now()  WHERE id='".$arr['id']."'";
-			$db->db_query($sql);
+			$sql="update ".BAB_USERS_TBL." set is_confirmed='1', datelog=now(), lastlog=now()  WHERE id='".$babDB->db_escape_string($arr['id'])."'";
+			$babDB->db_query($sql);
 			if( $babBody->babsite['idgroup'] != 0)
 				{
-				$res = $db->db_query("select * from ".BAB_USERS_GROUPS_TBL." where id_object='".$arr['id']."' and id_group='".$babBody->babsite['idgroup']."'");
-				if( !$res || $db->db_num_rows($res) < 1)
+				$res = $babDB->db_query("select * from ".BAB_USERS_GROUPS_TBL." where id_object='".$babDB->db_escape_string($arr['id'])."' and id_group='".$babDB->db_escape_string($babBody->babsite['idgroup'])."'");
+				if( !$res || $babDB->db_num_rows($res) < 1)
 					{
 					bab_addUserToGroup($arr['id'], $babBody->babsite['idgroup']);
 					}
@@ -493,20 +492,20 @@ function addNewUser( $nickname, $password1, $password2)
 
 	$bphoto = false;
 
-	$res = $babDB->db_query("select sfrt.*, sfxt.id as idfx from ".BAB_SITES_FIELDS_REGISTRATION_TBL." sfrt left join ".BAB_DBDIR_FIELDSEXTRA_TBL." sfxt on sfxt.id_field=sfrt.id_field where sfrt.id_site='".$babBody->babsite['id']."' and sfrt.registration='Y' and sfxt.id_directory='0'");
+	$res = $babDB->db_query("select sfrt.*, sfxt.id as idfx from ".BAB_SITES_FIELDS_REGISTRATION_TBL." sfrt left join ".BAB_DBDIR_FIELDSEXTRA_TBL." sfxt on sfxt.id_field=sfrt.id_field where sfrt.id_site='".$babDB->db_escape_string($babBody->babsite['id'])."' and sfrt.registration='Y' and sfxt.id_directory='0'");
 
-	$req = "";
+	$req = '';
 	$arridfx = array();
 	while( $arr = $babDB->db_fetch_array($res))
 		{
 		if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
 			{
-			$rr = $babDB->db_fetch_array($babDB->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
+			$rr = $babDB->db_fetch_array($babDB->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$babDB->db_escape_string($arr['id_field'])."'"));
 			$fieldv = $rr['name'];
 			}
 		else
 			{
-			$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+			$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string(($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
 			$fieldv = "babdirf".$arr['id'];
 			}
 
@@ -531,7 +530,7 @@ function addNewUser( $nickname, $password1, $password2)
 				}
 			if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
 				{
-				$req .= $fieldv."='".addslashes($fields[$fieldv])."',";
+				$req .= $fieldv."='".$babDB->db_escape_string($fields[$fieldv])."',";
 				}
 			else
 				{
@@ -597,7 +596,7 @@ function addNewUser( $nickname, $password1, $password2)
 	
 	if( !empty($cphoto))
 		{
-		$req .= " photo_data='".$cphoto."'";
+		$req .= " photo_data='".$babDB->db_escape_string($cphoto)."'";
 		}
 	else
 		{
@@ -606,11 +605,11 @@ function addNewUser( $nickname, $password1, $password2)
 
 	if( !empty($req))
 		{
-		list($idu) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_TBL." where id_user='".$iduser."' and id_directory='0'"));
+		list($idu) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_TBL." where id_user='".$babDB->db_escape_string($iduser)."' and id_directory='0'"));
 		if( $idu )
 			{
 			$req = "update ".BAB_DBDIR_ENTRIES_TBL." set " . $req;
-			$req .= " where id='".$idu."'";
+			$req .= " where id='".$babDB->db_escape_string($idu)."'";
 			$babDB->db_query($req);
 
 			foreach( $fields as $key => $value )
