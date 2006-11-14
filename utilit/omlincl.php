@@ -21,18 +21,18 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
-define("BAB_TAG_CONTAINER", "OC");
-define("BAB_TAG_VARIABLE", "OV");
-define("BAB_TAG_FUNCTION", "OF");
+include_once 'base.php';
+define('BAB_TAG_CONTAINER', 'OC');
+define('BAB_TAG_VARIABLE', 'OV');
+define('BAB_TAG_FUNCTION', 'OF');
 
 
-define("BAB_OPE_EQUAL"				, 1);
-define("BAB_OPE_NOTEQUAL"			, 2);
-define("BAB_OPE_LESSTHAN"			, 3);
-define("BAB_OPE_LESSTHANOREQUAL"	, 4);
-define("BAB_OPE_GREATERTHAN"		, 5);
-define("BAB_OPE_GREATERTHANOREQUAL"	, 6);
+define('BAB_OPE_EQUAL'				, 1);
+define('BAB_OPE_NOTEQUAL'			, 2);
+define('BAB_OPE_LESSTHAN'			, 3);
+define('BAB_OPE_LESSTHANOREQUAL'	, 4);
+define('BAB_OPE_GREATERTHAN'		, 5);
+define('BAB_OPE_GREATERTHANOREQUAL'	, 6);
 
 class bab_handler
 {
@@ -506,7 +506,7 @@ class bab_ArticlesHomePages extends bab_handler
 		else
 			$filter = true;
 
-		$res = $babDB->db_query("select ht.id, at.id_topic, at.restriction from ".BAB_ARTICLES_TBL." at LEFT JOIN ".BAB_HOMEPAGES_TBL." ht on ht.id_article=at.id where ht.id_group='".$this->idgroup."' and ht.id_site='".$arr['id']."' and ht.ordering!='0' GROUP BY at.id order by ".$order);
+		$res = $babDB->db_query("select ht.id, at.id_topic, at.restriction from ".BAB_ARTICLES_TBL." at LEFT JOIN ".BAB_HOMEPAGES_TBL." ht on ht.id_article=at.id where ht.id_group='".$babDB->db_escape_string($this->idgroup)."' and ht.id_site='".$arr['id']."' and ht.ordering!='0' GROUP BY at.id order by ".$babDB->db_escape_string($order));
 		while($arr = $babDB->db_fetch_array($res))
 		{
 			if( $arr['restriction'] == '' || bab_articleAccessByRestriction($arr['restriction']) )
@@ -521,7 +521,7 @@ class bab_ArticlesHomePages extends bab_handler
 		$this->count = count($this->IdEntries);
 		if( $this->count > 0 )
 			{
-			$this->res = $babDB->db_query("select at.*, count(aft.id) as nfiles from ".BAB_ARTICLES_TBL." at LEFT JOIN ".BAB_HOMEPAGES_TBL." ht on ht.id_article=at.id left join ".BAB_ART_FILES_TBL." aft on aft.id_article=at.id where ht.id IN (".implode(',', $this->IdEntries).") group by at.id order by ".$order);
+			$this->res = $babDB->db_query("select at.*, count(aft.id) as nfiles from ".BAB_ARTICLES_TBL." at LEFT JOIN ".BAB_HOMEPAGES_TBL." ht on ht.id_article=at.id left join ".BAB_ART_FILES_TBL." aft on aft.id_article=at.id where ht.id IN (".$babDB->quote($this->IdEntries).") group by at.id order by ".$babDB->db_escape_string($order));
 			}
 
 		$this->count = isset($this->res) ? $babDB->db_num_rows($this->res) : 0;
@@ -552,10 +552,13 @@ class bab_ArticlesHomePages extends bab_handler
 			else
 				$this->ctx->curctx->push('ArticleModifiedBy', $arr['id_modifiedby']);
 			$this->ctx->curctx->push('ArticleDate', bab_mktime($arr['date']));
+			$this->ctx->curctx->push('ArticleDateModifcation', bab_mktime($arr['date_modification']));
+			$this->ctx->curctx->push('ArticleDatePublication', bab_mktime($arr['date_publication']));
+			$this->ctx->curctx->push('ArticleDateCreation', bab_mktime($arr['date']));
 			$this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
 			$this->ctx->curctx->push('ArticleLanguage', $arr['lang']);
 			$this->ctx->curctx->push('ArticleFiles', $arr['nfiles']);			
-			list($topictitle) = $babDB->db_fetch_array($babDB->db_query("select category from ".BAB_TOPICS_TBL." where id='".$arr['id_topic']."'"));
+			list($topictitle) = $babDB->db_fetch_array($babDB->db_query("select category from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($arr['id_topic'])."'"));
 			$this->ctx->curctx->push('ArticleTopicTitle', $topictitle);
 			$this->idx++;
 			$this->index = $this->idx;
@@ -591,13 +594,13 @@ class bab_ArticleCategories extends bab_handler
 		$sDelegation = ' ';
 		if(0 != $delegationid)
 		{
-			$sDelegation = ' AND id_dgowner = \'' . $delegationid . '\' ';
+			$sDelegation = ' AND id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
 		}
 
 		
 		if( count($parentid) > 0 )
 		{
-		$res = $babDB->db_query("select id from ".BAB_TOPICS_CATEGORIES_TBL." where id_parent IN (".implode(',', $parentid).")");
+		$res = $babDB->db_query("select id from ".BAB_TOPICS_CATEGORIES_TBL." where id_parent IN (".$babDB->quote($parentid).")");
 		$topcatview = $babBody->get_topcatview();
 		while( $row = $babDB->db_fetch_array($res))
 			{
@@ -613,7 +616,7 @@ class bab_ArticleCategories extends bab_handler
 		$this->count = count($this->IdEntries);
 		if( $this->count > 0)
 			{
-			$req = "select tc.* from ".BAB_TOPICS_CATEGORIES_TBL." tc left join ".BAB_TOPCAT_ORDER_TBL." tot on tc.id=tot.id_topcat where tc.id IN (".implode(',', $this->IdEntries).") and tot.type='1'" . $sDelegation .  " order by tot.ordering asc";
+			$req = "select tc.* from ".BAB_TOPICS_CATEGORIES_TBL." tc left join ".BAB_TOPCAT_ORDER_TBL." tot on tc.id=tot.id_topcat where tc.id IN (".$babDB->quote($this->IdEntries).") and tot.type='1'" . $sDelegation .  " order by tot.ordering asc";
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
 			}
@@ -674,7 +677,7 @@ class bab_ParentsArticleCategory extends bab_handler
 				$reverse = $ctx->get_value('reverse');
 				if( $reverse === false || $reverse !== '1' )
 					$this->IdEntries = array_reverse($this->IdEntries);
-				$this->res = $babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id IN (".implode(',', $this->IdEntries).")");
+				$this->res = $babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id IN (".$babDB->quote($this->IdEntries).")");
 				$this->count = $babDB->db_num_rows($this->res);
 				}
 			}
@@ -726,7 +729,7 @@ class bab_ArticleCategory extends bab_handler
 		
 		if( count($catid) > 0 )
 		{
-		$this->res = $babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id IN (".implode(',', $catid).")");
+		$this->res = $babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id IN (".$babDB->quote($catid).")");
 		$this->count = $babDB->db_num_rows($this->res);
 		}
 		$this->ctx->curctx->push('CCount', $this->count);
@@ -824,7 +827,7 @@ class bab_ArticleTopics extends bab_handler
 				'LEFT JOIN ' .
 					BAB_TOPICS_CATEGORIES_TBL . ' tpc ON tpc.id = tc.id_cat ';
 			
-			$sDelegation = ' AND tpc.id_dgowner = \'' . $delegationid . '\' ';
+			$sDelegation = ' AND tpc.id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
 		}
 		
 		
@@ -835,7 +838,7 @@ class bab_ArticleTopics extends bab_handler
 
 		if( count($catid) > 0 )
 		{
-		$req = "select * from ".BAB_TOPCAT_ORDER_TBL. " tco " . $sLeftJoin . " where tco.type='2' and tco.id_parent IN (".implode(',', $catid).")" . $sDelegation . " order by tco.ordering asc";
+		$req = "select * from ".BAB_TOPCAT_ORDER_TBL. " tco " . $sLeftJoin . " where tco.type='2' and tco.id_parent IN (".$babDB->quote($catid).")" . $sDelegation . " order by tco.ordering asc";
 
 		$res = $babDB->db_query($req);
 		while( $row = $babDB->db_fetch_array($res))
@@ -849,7 +852,7 @@ class bab_ArticleTopics extends bab_handler
 		$this->count = count($this->IdEntries);
 		if( $this->count > 0 )
 			{
-			$req = "select tc.* from ".BAB_TOPICS_TBL." tc left join ".BAB_TOPCAT_ORDER_TBL." tot on tc.id=tot.id_topcat where tc.id IN (".implode(',', $this->IdEntries).") and tot.type='2' order by tot.ordering asc";
+			$req = "select tc.* from ".BAB_TOPICS_TBL." tc left join ".BAB_TOPCAT_ORDER_TBL." tot on tc.id=tot.id_topcat where tc.id IN (".$babDB->quote($this->IdEntries).") and tot.type='2' order by tot.ordering asc";
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
 			}
@@ -869,7 +872,7 @@ class bab_ArticleTopics extends bab_handler
 			$this->ctx->curctx->push('TopicId', $arr['id']);
 			$this->ctx->curctx->push('TopicLanguage', $arr['lang']);
 			$this->ctx->curctx->push('ArticlesListUrl', $GLOBALS['babUrlScript']."?tg=articles&topics=".$arr['id']);
-			list($cattitle) = $babDB->db_fetch_array($babDB->db_query("select title from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$arr['id_cat']."'"));
+			list($cattitle) = $babDB->db_fetch_array($babDB->db_query("select title from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$babDB->db_escape_string($arr['id_cat'])."'"));
 			$this->ctx->curctx->push('TopicCategoryId', $arr['id_cat']);
 			$this->ctx->curctx->push('TopicCategoryTitle', $cattitle);
 			$this->idx++;
@@ -905,7 +908,7 @@ class bab_ArticleTopic extends bab_handler
 
 		if( $this->count > 0 )
 			{
-			$this->res = $babDB->db_query("select * from ".BAB_TOPICS_TBL." where id IN (".implode(',', $this->IdEntries).")");
+			$this->res = $babDB->db_query("select * from ".BAB_TOPICS_TBL." where id IN (".$babDB->quote($this->IdEntries).")");
 			$this->count = $babDB->db_num_rows($this->res);
 			}
 		$this->ctx->curctx->push('CCount', $this->count);
@@ -923,7 +926,7 @@ class bab_ArticleTopic extends bab_handler
 			$this->ctx->curctx->push('TopicId', $arr['id']);
 			$this->ctx->curctx->push('TopicLanguage', $arr['lang']);
 			$this->ctx->curctx->push('ArticlesListUrl', $GLOBALS['babUrlScript']."?tg=articles&topics=".$arr['id']);
-			list($cattitle) = $babDB->db_fetch_array($babDB->db_query("select title from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$arr['id_cat']."'"));
+			list($cattitle) = $babDB->db_fetch_array($babDB->db_query("select title from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$babDB->db_escape_string($arr['id_cat'])."'"));
 			$this->ctx->curctx->push('TopicCategoryId', $arr['id_cat']);
 			$this->ctx->curctx->push('TopicCategoryTitle', $cattitle);
 			$this->idx++;
@@ -1006,7 +1009,7 @@ class bab_Articles extends bab_handler
 				'LEFT JOIN ' .
 					BAB_TOPICS_CATEGORIES_TBL . ' tpc ON tpc.id = t.id_cat ';
 			
-			$sDelegation = ' AND tpc.id_dgowner = \'' . $delegationid . '\' ';
+			$sDelegation = ' AND tpc.id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
 		}
 
 		if( $topicid === false || $topicid === '' )
@@ -1028,11 +1031,11 @@ class bab_Articles extends bab_handler
 
 			}
 
-			$req = "select at.id, at.restriction from " . BAB_ARTICLES_TBL . " at " . $sLeftJoin . "where at.id_topic IN (".implode(',', $topicid).") and (at.date_publication='0000-00-00 00:00:00' or at.date_publication <= now())" . $archive . $sDelegation;
+			$req = "select at.id, at.restriction from " . BAB_ARTICLES_TBL . " at " . $sLeftJoin . "where at.id_topic IN (".$babDB->quote($topicid).") and (at.date_publication='0000-00-00 00:00:00' or at.date_publication <= now())" . $archive . $sDelegation;
 
 			$order = $ctx->get_value('order');
 			if( $order === false || $order === '' )
-				$order = "asc";
+				$order = 'asc';
 
 			$forder = $ctx->get_value('topicorder');
 			switch(strtoupper($forder))
@@ -1098,7 +1101,7 @@ class bab_Articles extends bab_handler
 				$offset = "0";
 
 			if ($rows != -1)
-				$req .= ' limit '.$offset.', '.$rows;
+				$req .= ' limit '.$babDB->db_escape_string($offset).', '.$babDB->db_escape_string($rows);
 
 			$res = $babDB->db_query($req);
 
@@ -1113,7 +1116,7 @@ class bab_Articles extends bab_handler
 			$this->count = count($this->IdEntries);
 			if( $this->count > 0 )
 			{
-			$this->res = $babDB->db_query("select at.*, count(aft.id) as nfiles from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_FILES_TBL." aft on at.id=aft.id_article where at.id IN (".implode(',', $this->IdEntries).") group by at.id order by ".$order);
+			$this->res = $babDB->db_query("select at.*, count(aft.id) as nfiles from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_FILES_TBL." aft on at.id=aft.id_article where at.id IN (".$babDB->quote($this->IdEntries).") group by at.id order by ".$order);
 			}
 		}
 		else
@@ -1180,7 +1183,7 @@ class bab_Article extends bab_handler
 			$this->count = 0;
 		else
 		{
-			$res = $babDB->db_query("select id, id_topic, restriction from ".BAB_ARTICLES_TBL." where id IN (".$articleid.") and (date_publication='0000-00-00 00:00:00' or date_publication <= now())");
+			$res = $babDB->db_query("select id, id_topic, restriction from ".BAB_ARTICLES_TBL." where id IN (".$babDB->quote(explode(',', $articleid)).") and (date_publication='0000-00-00 00:00:00' or date_publication <= now())");
 			while( $arr = $babDB->db_fetch_array($res))
 			{
 			if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $arr['id_topic']) && ($arr['restriction'] == '' || bab_articleAccessByRestriction($arr['restriction'])))
@@ -1191,7 +1194,7 @@ class bab_Article extends bab_handler
 			$this->count = count($this->IdEntries);
 			if( $this->count > 0 )
 				{
-				$this->res = $babDB->db_query("select at.*, count(aft.id) as nfiles from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_FILES_TBL." aft on at.id=aft.id_article where at.id IN (".implode(',', $this->IdEntries).") group by at.id");
+				$this->res = $babDB->db_query("select at.*, count(aft.id) as nfiles from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_FILES_TBL." aft on at.id=aft.id_article where at.id IN (".$babDB->quote($this->IdEntries).") group by at.id");
 				$this->count = $babDB->db_num_rows($this->res);
 				}
 		}
@@ -1256,7 +1259,7 @@ class bab_ArticleFiles extends bab_handler
 			$this->count = 0;
 		else
 		{
-			$res = $babDB->db_query("select id, id_topic, restriction from ".BAB_ARTICLES_TBL." where id IN (".$articleid.") and (date_publication='0000-00-00 00:00:00' or date_publication <= now())");
+			$res = $babDB->db_query("select id, id_topic, restriction from ".BAB_ARTICLES_TBL." where id IN (".$babDB->quote(explode(',', $articleid)).") and (date_publication='0000-00-00 00:00:00' or date_publication <= now())");
 			while( $arr = $babDB->db_fetch_array($res))
 			{
 			if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $arr['id_topic']) && ($arr['restriction'] == '' || bab_articleAccessByRestriction($arr['restriction'])))
@@ -1267,7 +1270,7 @@ class bab_ArticleFiles extends bab_handler
 			$this->count = count($this->IdEntries);
 			if( $this->count > 0 )
 				{
-				$this->res = $babDB->db_query("select aft.*, at.id_topic from ".BAB_ART_FILES_TBL." aft left join ".BAB_ARTICLES_TBL." at on aft.id_article=at.id where aft.id_article IN (".implode(',', $this->IdEntries).")");
+				$this->res = $babDB->db_query("select aft.*, at.id_topic from ".BAB_ART_FILES_TBL." aft left join ".BAB_ARTICLES_TBL." at on aft.id_article=at.id where aft.id_article IN (".$babDB->quote($this->IdEntries).")");
 				$this->count = $babDB->db_num_rows($this->res);
 				}
 		}
@@ -1355,7 +1358,7 @@ class bab_Forums extends bab_handler
 		$sDelegation = ' ';	
 		if(0 != $delegationid)	
 		{
-			$sDelegation = ' AND id_dgowner = \'' . $delegationid . '\' ';
+			$sDelegation = ' AND id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
 		}
 		
 		if( $forumid === false || $forumid === '' )
@@ -1363,7 +1366,7 @@ class bab_Forums extends bab_handler
 		else
 			{
 			$forumid = explode(',', $forumid);
-			$res = $babDB->db_query("select id from ".BAB_FORUMS_TBL." where active='Y'" . $sDelegation . "and id IN (".implode(',', $forumid).") order by ordering asc");
+			$res = $babDB->db_query("select id from ".BAB_FORUMS_TBL." where active='Y'" . $sDelegation . "and id IN (".$babDB->quote($forumid).") order by ordering asc");
 			}
 		while( $row = $babDB->db_fetch_array($res))
 			{
@@ -1375,7 +1378,7 @@ class bab_Forums extends bab_handler
 		$this->count = count($this->IdEntries);
 		if( $this->count > 0 )
 			{
-			$this->res = $babDB->db_query("select * from ".BAB_FORUMS_TBL." where active='Y' and id IN (".implode(',', $this->IdEntries).") order by ordering asc");
+			$this->res = $babDB->db_query("select * from ".BAB_FORUMS_TBL." where active='Y' and id IN (".$babDB->quote($this->IdEntries).") order by ordering asc");
 			$this->count = $babDB->db_num_rows($this->res);
 			}
 		$this->ctx->curctx->push('CCount', $this->count);
@@ -1416,7 +1419,7 @@ class bab_Forum extends bab_handler
 	{
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
-		$this->res = $babDB->db_query("select * from ".BAB_FORUMS_TBL." where id='".$ctx->get_value('forumid')."' and active='Y'");
+		$this->res = $babDB->db_query("select * from ".BAB_FORUMS_TBL." where id='".$babDB->db_escape_string($ctx->get_value('forumid'))."' and active='Y'");
 		if( $this->res && $babDB->db_num_rows($this->res) == 1 )
 			$this->count = 1;
 		else
@@ -1510,7 +1513,7 @@ class bab_Post extends bab_handler
 
 		if( count($arr) > 0 )
 			{
-			$req = "SELECT p.id, p.id_thread, f.id id_forum FROM ".BAB_POSTS_TBL." p LEFT JOIN ".BAB_THREADS_TBL." t on p.id_thread = t.id LEFT JOIN ".BAB_FORUMS_TBL." f on f.id = t.forum WHERE f.active='Y' and p.id IN (".implode(',', $arr).") AND p.confirmed =  'Y'";			
+			$req = "SELECT p.id, p.id_thread, f.id id_forum FROM ".BAB_POSTS_TBL." p LEFT JOIN ".BAB_THREADS_TBL." t on p.id_thread = t.id LEFT JOIN ".BAB_FORUMS_TBL." f on f.id = t.forum WHERE f.active='Y' and p.id IN (".$babDB->quote($arr).") AND p.confirmed =  'Y'";			
 			$order = $ctx->get_value('order');
 			if( $order === false || $order === '' )
 				{
@@ -1542,7 +1545,7 @@ class bab_Post extends bab_handler
 		$this->count = count($this->arrid);
 		if( $this->count > 0 )
 			{
-			$this->res = $babDB->db_query("select * from ".BAB_POSTS_TBL." p where id IN (".implode(',', $this->arrid).") order by ".$order);
+			$this->res = $babDB->db_query("select * from ".BAB_POSTS_TBL." p where id IN (".$babDB->quote($this->arrid).") order by ".$order);
 			$this->count = $babDB->db_num_rows($this->res);
 			}
 
@@ -1598,7 +1601,7 @@ class bab_PostFiles extends bab_handler
 			$baseurl = $GLOBALS['babUploadPath'].'/forums/';
 			if (is_dir($baseurl) && $h = opendir($baseurl))
 				{
-				$req = "SELECT t.forum FROM ".BAB_THREADS_TBL." t,".BAB_POSTS_TBL." p WHERE t.id = p.id_thread AND p.id='".$postid."'";
+				$req = "SELECT t.forum FROM ".BAB_THREADS_TBL." t,".BAB_POSTS_TBL." p WHERE t.id = p.id_thread AND p.id='".$babDB->db_escape_string($postid)."'";
 				list($forum) = $babDB->db_fetch_array($babDB->db_query($req));
 
 				$this->arr = array();
@@ -1660,7 +1663,7 @@ class bab_Thread extends bab_handler
 
 		if( count($arr) > 0 )
 			{
-			$req = "select tt.id, tt.forum from ".BAB_THREADS_TBL." tt left join ".BAB_FORUMS_TBL." ft on ft.id=tt.forum WHERE ft.active='Y' and tt.id IN (".implode(',', $arr).") and tt.active='Y'";
+			$req = "select tt.id, tt.forum from ".BAB_THREADS_TBL." tt left join ".BAB_FORUMS_TBL." ft on ft.id=tt.forum WHERE ft.active='Y' and tt.id IN (".$babDB->quote($arr).") and tt.active='Y'";
 
 			$order = $ctx->get_value('order');
 			if( $order === false || $order === '' )
@@ -1690,7 +1693,7 @@ class bab_Thread extends bab_handler
 		$this->count = count($this->arrid);
 		if( $this->count > 0 )
 			{
-			$this->res = $babDB->db_query("select * from ".BAB_THREADS_TBL." where id IN (".implode(',', $this->arrid).") order by ".$order);
+			$this->res = $babDB->db_query("select * from ".BAB_THREADS_TBL." where id IN (".$babDB->quote($this->arrid).") order by ".$order);
 			$this->count = $babDB->db_num_rows($this->res);
 			}
 		$this->ctx->curctx->push('CCount', $this->count);
@@ -1740,15 +1743,17 @@ class bab_Folders extends bab_handler
 		$sDelegation = ' ';	
 		if(0 != $delegationid)	
 		{
-			$sDelegation = ' AND id_dgowner = \'' . $delegationid . '\' ';
+			$sDelegation = ' AND id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
 		}
 
 		if( $folderid === false || $folderid === '' )
+			{
 			$res = $babDB->db_query("select id from ".BAB_FM_FOLDERS_TBL." where active='Y' " . $sDelegation . " order by folder asc");
+			}
 		else
 			{
 			$folderid = explode(',', $folderid);
-			$res = $babDB->db_query("select id from ".BAB_FM_FOLDERS_TBL." where active='Y' " . $sDelegation . " and id IN (".implode(',', $folderid).") order by folder asc");
+			$res = $babDB->db_query("select id from ".BAB_FM_FOLDERS_TBL." where active='Y' " . $sDelegation . " and id IN (".$babDB->quote($folderid).") order by folder asc");
 			}
 
 		while( $row = $babDB->db_fetch_array($res))
@@ -1761,7 +1766,7 @@ class bab_Folders extends bab_handler
 		$this->count = count($this->IdEntries);
 		if( $this->count > 0 )
 			{
-			$this->res = $babDB->db_query("select * from ".BAB_FM_FOLDERS_TBL." where id IN (".implode(',', $this->IdEntries).") order by folder asc");
+			$this->res = $babDB->db_query("select * from ".BAB_FM_FOLDERS_TBL." where id IN (".$babDB->quote($this->IdEntries).") order by folder asc");
 			$this->count = $babDB->db_num_rows($this->res);
 			}
 		$this->ctx->curctx->push('CCount', $this->count);
@@ -1804,7 +1809,7 @@ class bab_Folder extends bab_handler
 		$this->count = 0;
 		if($folderid !== false && $folderid !== '' && bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $folderid))
 		{
-		$this->res = $babDB->db_query("select * from ".BAB_FM_FOLDERS_TBL." where id='".$folderid."'");
+		$this->res = $babDB->db_query("select * from ".BAB_FM_FOLDERS_TBL." where id='".$babDB->db_escape_string($folderid)."'");
 		if( $this->res && $babDB->db_num_rows($this->res) == 1 )
 			$this->count = 1;
 		}
@@ -1892,7 +1897,7 @@ class bab_SubFolders extends bab_handler
 		
 		if($folderid !== false && $folderid !== '' && bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $folderid))
 		{
-		$res = $babDB->db_query("select * from ".BAB_FM_FOLDERS_TBL." where id='".$folderid."'");
+		$res = $babDB->db_query("select * from ".BAB_FM_FOLDERS_TBL." where id='".$babDB->db_escape_string($folderid)."'");
 		if( $res && $babDB->db_num_rows($res) == 1 )
 			{
 			$arr = $babDB->db_fetch_array($res);
@@ -1976,9 +1981,9 @@ class bab_Files extends bab_handler
 
 			if( $offset === false || $offset === '')
 				$offset = "0";
-			$req = "select id from ".BAB_FILES_TBL." where id_owner='".$folderid."' and bgroup='Y' and state='' and path='".addslashes($path)."' and confirmed='Y' order by name asc";
+			$req = "select id from ".BAB_FILES_TBL." where id_owner='".$babDB->db_escape_string($folderid)."' and bgroup='Y' and state='' and path='".$babDB->db_escape_string($path)."' and confirmed='Y' order by name asc";
 			if ($rows != "-1")
-				$req .= " limit ".$offset.", ".$rows;
+				$req .= " limit ".$babDB->db_escape_string($offset).", ".$babDB->db_escape_string($rows);
 
 			$this->res = $babDB->db_query($req);
 			while($arr = $babDB->db_fetch_array($this->res))
@@ -1989,7 +1994,7 @@ class bab_Files extends bab_handler
 			$this->count =  count($this->IdEntries);
 			if( $this->count > 0 )
 				{
-				$this->res = $babDB->db_query("select * from ".BAB_FILES_TBL." where id IN (".implode(',', $this->IdEntries).") order by name asc");
+				$this->res = $babDB->db_query("select * from ".BAB_FILES_TBL." where id IN (".$babDB->quote($this->IdEntries).") order by name asc");
 				$this->count = $babDB->db_num_rows($this->res);
 				}
 		}
@@ -2047,7 +2052,7 @@ class bab_File extends bab_handler
 		$fileid = $ctx->get_value('fileid');
 		if($fileid !== false && $fileid !== '')
 		{
-			$res = $babDB->db_query("select * from ".BAB_FILES_TBL." where id='".$fileid."'");
+			$res = $babDB->db_query("select * from ".BAB_FILES_TBL." where id='".$babDB->db_escape_string($fileid)."'");
 			if( $res && $babDB->db_num_rows($res) > 0 )
 			{
 			$this->arr = $babDB->db_fetch_array($res);
@@ -2106,13 +2111,13 @@ class bab_FileFields extends bab_handler
 		$this->fileid = $ctx->get_value('fileid');
 		if($this->fileid !== false && $this->fileid !== '')
 		{
-			$res = $babDB->db_query("select * from ".BAB_FILES_TBL." where id='".$this->fileid."'");
+			$res = $babDB->db_query("select * from ".BAB_FILES_TBL." where id='".$babDB->db_escape_string($this->fileid)."'");
 			if( $res && $babDB->db_num_rows($res) > 0 )
 			{
 			$arr = $babDB->db_fetch_array($res);
 			if( $arr['bgroup'] == 'Y' && $arr['state'] == '' && $arr['confirmed'] == 'Y' && bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $arr['id_owner']))
 				{
-				$this->res = $babDB->db_query("select ff.*, fft.name from ".BAB_FM_FIELDSVAL_TBL." ff LEFT JOIN ".BAB_FM_FIELDS_TBL." fft on fft.id = ff.id_field where id_file='".$this->fileid."' and id_folder='".$arr['id_owner']."'");
+				$this->res = $babDB->db_query("select ff.*, fft.name from ".BAB_FM_FIELDSVAL_TBL." ff LEFT JOIN ".BAB_FM_FIELDS_TBL." fft on fft.id = ff.id_field where id_file='".$babDB->db_escape_string($this->fileid)."' and id_folder='".$babDB->db_escape_string($arr['id_owner'])."'");
 				if( $this->res )
 					{
 					$this->count = $babDB->db_num_rows($this->res);
@@ -2233,7 +2238,7 @@ class bab_RecentArticles extends bab_handler
 			{
 				case 'NO': $archive = " AND at.archive='N' "; break;
 				case 'YES': $archive = " AND at.archive='Y' "; break;
-				default: $archive = ""; break;
+				default: $archive = ''; break;
 
 			}
 
@@ -2253,21 +2258,23 @@ class bab_RecentArticles extends bab_handler
 					'LEFT JOIN ' .
 						BAB_TOPICS_CATEGORIES_TBL . ' tpCat ON tpCat.id = tp.id_cat ';
 						
-				$sDelegation = ' AND tpCat.id_dgowner = \'' . $delegationid . '\' ';
+				$sDelegation = ' AND tpCat.id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
 			}
 					
 			$req .= 
 				'WHERE ' .
-					'at.id_topic IN (' . implode(',', $this->topicid). ') AND ' .
+					'at.id_topic IN (' . $babDB->quote($this->topicid). ') AND ' .
 					'(at.date_publication = \'0000-00-00 00:00:00\' OR at.date_publication <= now()) ' .
 					$sDelegation;
 
 			if( $this->nbdays !== false)
-				$req .= " AND at.date >= DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
+				{
+				$req .= " AND at.date >= DATE_ADD(\"".$babDB->db_escape_string($babBody->lastlog)."\", INTERVAL -".$babDB->db_escape_string($this->nbdays)." DAY)";
+				}
 
 			
 			if ($lang !== false ) {
-				$req .= " AND at.lang='".$lang."'";
+				$req .= " AND at.lang='".$babDB->db_escape_string($lang)."'";
 			}
 			
 			$req .= $archive;
@@ -2302,7 +2309,7 @@ class bab_RecentArticles extends bab_handler
 			$req .= ' ORDER BY ' . $order;
 
 			if( $this->last !== false)
-				$req .= ' LIMIT 0, ' . $this->last;
+				$req .= ' LIMIT 0, ' . $babDB->db_escape_string($this->last);
 
 			$this->resarticles = $babDB->db_query($req);
 			while( $arr = $babDB->db_fetch_array($this->resarticles))
@@ -2315,7 +2322,7 @@ class bab_RecentArticles extends bab_handler
 			$this->count = count($this->IdEntries);
 			if( $this->count > 0 )
 				{
-				$this->res = $babDB->db_query("select at.*, count(aft.id) as nfiles from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_FILES_TBL." aft on at.id=aft.id_article where at.id IN (".implode(',', $this->IdEntries).") group by at.id order by ".$order);
+				$this->res = $babDB->db_query("select at.*, count(aft.id) as nfiles from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_FILES_TBL." aft on at.id=aft.id_article where at.id IN (".$babDB->quote($this->IdEntries).") group by at.id order by ".$order);
 				$this->count = $babDB->db_num_rows($this->res);
 				}
 			}
@@ -2339,7 +2346,7 @@ class bab_RecentArticles extends bab_handler
 		$babDB = &$GLOBALS['babDB'];
 
 
-		$res = $babDB->db_query("select id from ".BAB_TOPICS_TBL." where id_cat='".$idparent."' AND id IN('".implode("','",array_keys($GLOBALS['babBody']->topview))."')");
+		$res = $babDB->db_query("select id from ".BAB_TOPICS_TBL." where id_cat='".$babDB->db_escape_string($idparent)."' AND id IN(".$babDB->quote(array_keys($GLOBALS['babBody']->topview)).")");
 		while( $row = $babDB->db_fetch_array($res))
 			{
 			$this->topicid[] = $row['id'];
@@ -2427,11 +2434,11 @@ class bab_RecentComments extends bab_handler
 				
 			if( count($arrid) > 0 )
 				{
-				$topview = "where id_article IN (".implode(',', $arrid).") and confirmed='Y' and id_topic IN (".implode(',', array_keys($babBody->topview)).")";
+				$topview = "where id_article IN (".$babDB->quote($arrid).") and confirmed='Y' and id_topic IN (".$babDB->quote(array_keys($babBody->topview)).")";
 				}
 			else
 				{
-				$topview = "where confirmed='Y' and id_topic IN (".implode(',', array_keys($babBody->topview)).")";
+				$topview = "where confirmed='Y' and id_topic IN (".$babDB->quote(array_keys($babBody->topview)).")";
 				}
 
 			$sDelegation = ' ';	
@@ -2443,7 +2450,7 @@ class bab_RecentComments extends bab_handler
 					'LEFT JOIN ' .
 						BAB_TOPICS_CATEGORIES_TBL . ' tpCat ON tpCat.id = tp.id_cat ';
 						
-				$sDelegation = ' AND tpCat.id_dgowner = \'' . $delegationid . '\' ';
+				$sDelegation = ' AND tpCat.id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
 			}
 				
 			$req .= $topview . $sDelegation;
@@ -2453,7 +2460,7 @@ class bab_RecentComments extends bab_handler
 		if( $req != '' )
 			{
 			if( $this->nbdays !== false)
-				$req .= " and date >= DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
+				$req .= " and date >= DATE_ADD(\"".$babDB->db_escape_string($babBody->lastlog)."\", INTERVAL -".$babDB->db_escape_string($this->nbdays)." DAY)";
 
 			$order = $ctx->get_value('order');
 			if( $order === false || $order === '' )
@@ -2470,7 +2477,7 @@ class bab_RecentComments extends bab_handler
 			$req .= " order by ".$order;
 
 			if( $this->last !== false)
-				$req .= " limit 0, ".$this->last;
+				$req .= " limit 0, ".$babDB->db_escape_string($this->last);
 			$this->rescomments = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->rescomments);
 			}
@@ -2553,14 +2560,16 @@ class bab_RecentPosts extends bab_handler
 			$sDelegation = ' ';	
 			if(0 != $delegationid)	
 			{
-				$sDelegation = ' AND f.id_dgowner = \'' . $delegationid . '\' ';
+				$sDelegation = ' AND f.id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
 			}
 
 		
-			$req = "SELECT p.*, f.id id_forum FROM ".BAB_POSTS_TBL." p LEFT JOIN ".BAB_THREADS_TBL." t on p.id_thread = t.id LEFT JOIN ".BAB_FORUMS_TBL." f on f.id = t.forum WHERE f.active='Y'" . $sDelegation . "and t.forum IN (".implode(',', $arr).") and p.confirmed='Y'";	
+			$req = "SELECT p.*, f.id id_forum FROM ".BAB_POSTS_TBL." p LEFT JOIN ".BAB_THREADS_TBL." t on p.id_thread = t.id LEFT JOIN ".BAB_FORUMS_TBL." f on f.id = t.forum WHERE f.active='Y'" . $sDelegation . "and t.forum IN (".$babDB->quote($arr).") and p.confirmed='Y'";	
 
 			if( $this->nbdays !== false)
-				$req .= " and p.date >= DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
+				{
+				$req .= " and p.date >= DATE_ADD(\"".$babDB->db_escape_string($babBody->lastlog)."\", INTERVAL -".$babDB->db_escape_string($this->nbdays)." DAY)";
+				}
 
 
 			$order = $ctx->get_value('order');
@@ -2578,7 +2587,7 @@ class bab_RecentPosts extends bab_handler
 			$req .= " order by ".$order;
 			
 			if( $this->last !== false)
-				$req .= " limit 0, ".$this->last;
+				$req .= " limit 0, ".$babDB->db_escape_string($this->last);
 
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
@@ -2644,7 +2653,7 @@ class bab_RecentThreads extends bab_handler
 		$sDelegation = ' ';	
 		if(0 != $delegationid)	
 		{
-			$sDelegation = ' AND id_dgowner = \'' . $delegationid . '\' ';
+			$sDelegation = ' AND id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
 		}
 
 		if( $this->forumid === false || $this->forumid === '' )
@@ -2654,7 +2663,7 @@ class bab_RecentThreads extends bab_handler
 
 		if( count($arr) > 0 )
 			{
-			$req = "SELECT p.id, p.id_thread, f.id id_forum FROM ".BAB_POSTS_TBL." p LEFT JOIN ".BAB_THREADS_TBL." t on p.id_thread = t.id LEFT JOIN ".BAB_FORUMS_TBL." f on f.id = t.forum WHERE f.active='Y'" . $sDelegation . "and t.forum IN (".implode(',', $arr).") and p.confirmed='Y' and p.id_parent='0'";			
+			$req = "SELECT p.id, p.id_thread, f.id id_forum FROM ".BAB_POSTS_TBL." p LEFT JOIN ".BAB_THREADS_TBL." t on p.id_thread = t.id LEFT JOIN ".BAB_FORUMS_TBL." f on f.id = t.forum WHERE f.active='Y'" . $sDelegation . "and t.forum IN (".$babDB->quote($arr).") and p.confirmed='Y' and p.id_parent='0'";			
 			}
 		else
 			{
@@ -2662,7 +2671,7 @@ class bab_RecentThreads extends bab_handler
 			}
 
 		if( $this->nbdays !== false)
-			$req .= " and p.date >= DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
+			$req .= " and p.date >= DATE_ADD(\"".$babDB->db_escape_string($babBody->lastlog)."\", INTERVAL -".$babDB->db_escape_string($this->nbdays)." DAY)";
 
 		$order = $ctx->get_value('order');
 		if( $order === false || $order === '' )
@@ -2694,7 +2703,7 @@ class bab_RecentThreads extends bab_handler
 		$this->count = count($this->arrid);
 		if( $this->count > 0 )
 			{
-			$this->res = $babDB->db_query("select * from ".BAB_POSTS_TBL." p where id IN (".implode(',', $this->arrid).") order by ".$order);
+			$this->res = $babDB->db_query("select * from ".BAB_POSTS_TBL." p where id IN (".$babDB->quote($this->arrid).") order by ".$order);
 			$this->count = $babDB->db_num_rows($this->res);
 			}
 		$this->ctx->curctx->push('CCount', $this->count);
@@ -2755,13 +2764,17 @@ class bab_RecentFiles extends bab_handler
 		$sDelegation = ' ';	
 		if(0 != $delegationid)	
 		{
-			$sDelegation = ' AND id_dgowner = \'' . $delegationid . '\' ';
+			$sDelegation = ' AND id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
 		}
 
 		if( $this->folderid === false || $this->folderid === '' )
+			{
 			$arr = array();
+			}
 		else
+			{
 			$arr = explode(',', $this->folderid);
+			}
 		
 		if( count($arr) == 0 )
 			{
@@ -2769,7 +2782,7 @@ class bab_RecentFiles extends bab_handler
 			}
 		else
 			{
-			$req = "select * from ".BAB_FM_FOLDERS_TBL." where active='Y' and id IN (".implode(',', $arr).")" . $sDelegation;
+			$req = "select * from ".BAB_FM_FOLDERS_TBL." where active='Y' and id IN (".$babDB->quote($arr).")" . $sDelegation;
 			}
 
 		$arrid = array();
@@ -2790,35 +2803,38 @@ class bab_RecentFiles extends bab_handler
 				}
 			if( $path != '' )
 				{
-				$req .= " and f.path='".addslashes($path)."'";
+				$req .= " and f.path='".$babDB->db_escape_string($path)."'";
 				}
 
-			$req .= " and f.id_owner IN (".implode(',', $arrid).")";
+			$req .= " and f.id_owner IN (".$babDB->quote($arrid).")";
 
 			if( $this->nbdays !== false)
-				$req .= " and f.modified >= DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
+				{
+				$req .= " and f.modified >= DATE_ADD(\"".$babDB->db_escape_string($babBody->lastlog)."\", INTERVAL -".$babDB->db_escape_string($this->nbdays)." DAY)";
+				}
 
 			$order = $ctx->get_value('order');
 			if( $order === false || $order === '' )
+				{
 				$order = "desc";
+				}
 
 			switch(strtoupper($order))
 			{
-				case "ASC": $order = "f.modified ASC"; break;
-				case "RAND": $order = "rand()"; break;
+				case "ASC": $order = 'f.modified ASC'; break;
+				case "RAND": $order = 'rand()'; break;
 				case "DESC":
-				default: $order = "f.modified DESC"; break;
+				default: $order = 'f.modified DESC'; break;
 			}
 
-			$req .= " group by f.id";
+			$req .= ' group by f.id';
 
-			$req .= " order by ".$order;
-
-			
-			
+			$req .= ' order by '.$order;
 			
 			if( $this->last !== false)
-				$req .= " limit 0, ".$this->last;
+				{
+				$req .= " limit 0, ".$babDB->db_escape_string($this->last);
+				}
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
 			}
@@ -2905,7 +2921,7 @@ class bab_WaitingArticles extends bab_handler
 					'LEFT JOIN ' .
 						BAB_TOPICS_CATEGORIES_TBL . ' tpCat ON tpCat.id = tp.id_cat ';
 						
-				$sDelegation = ' AND tpCat.id_dgowner = \'' . $delegationid . '\' ';
+				$sDelegation = ' AND tpCat.id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
 			}
 			
 					
@@ -2913,7 +2929,9 @@ class bab_WaitingArticles extends bab_handler
 
 			
 			if( $this->topicid !== false && $this->topicid !== '' )
-				$req .= " and adt.id_topic IN (".$this->topicid.")";
+				{
+				$req .= " and adt.id_topic IN (".$babDB->quote(explode(',', $this->topicid)).")";
+				}
 
 			$res = $babDB->db_query($req);
 			while( $arr = $babDB->db_fetch_array($res))
@@ -2928,7 +2946,7 @@ class bab_WaitingArticles extends bab_handler
 			$this->count = count($this->IdEntries);
 			if( $this->count > 0 )
 				{
-				$this->res = $babDB->db_query("select adt.*, count(adft.id) as nfiles from ".BAB_ART_DRAFTS_TBL." adt left join ".BAB_ART_DRAFTS_FILES_TBL." adft on adt.id=adft.id_draft where adt.id IN (".implode(',', $this->IdEntries).") group by adt.id order by adt.date_submission desc");
+				$this->res = $babDB->db_query("select adt.*, count(adft.id) as nfiles from ".BAB_ART_DRAFTS_TBL." adt left join ".BAB_ART_DRAFTS_FILES_TBL." adft on adt.id=adft.id_draft where adt.id IN (".$babDB->quote($this->IdEntries).") group by adt.id order by adt.date_submission desc");
 				$this->count = $babDB->db_num_rows($this->res);
 				}
 			}
@@ -3014,14 +3032,16 @@ class bab_WaitingComments extends bab_handler
 					'LEFT JOIN ' .
 						BAB_TOPICS_CATEGORIES_TBL . ' tpCat ON tpCat.id = tp.id_cat ';
 						
-				$sDelegation = ' AND tpCat.id_dgowner = \'' . $delegationid . '\' ';
+				$sDelegation = ' AND tpCat.id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
 			}
 					
 			$req .= "where c.confirmed='N'" . $sDelegation;
 
 			
 			if( $this->articleid !== false && $this->articleid !== '' )
-				$req .= " and c.id_article IN (".$this->articleid.")";
+				{
+				$req .= " and c.id_article IN (".$babDB->quote(explode(',', $this->articleid)).")";
+				}
 
 			$res = $babDB->db_query($req);
 			while( $arr = $babDB->db_fetch_array($res))
@@ -3035,7 +3055,7 @@ class bab_WaitingComments extends bab_handler
 			$this->count = count($this->IdEntries);
 			if( $this->count > 0 )
 				{
-				$this->res = $babDB->db_query("select * from ".BAB_COMMENTS_TBL." where id IN (".implode(',', $this->IdEntries).") order by date desc");
+				$this->res = $babDB->db_query("select * from ".BAB_COMMENTS_TBL." where id IN (".$babDB->quote($this->IdEntries).") order by date desc");
 				$this->count = $babDB->db_num_rows($this->res);
 				}
 			}
@@ -3102,19 +3122,23 @@ class bab_WaitingFiles extends bab_handler
 		{
 			$sLeftJoin = 'LEFT JOIN ' .
 				BAB_FM_FOLDERS_TBL . ' fld ON fld.id = id_owner ';
-			$sDelegation = ' AND fld.id_dgowner = \'' . $delegationid . '\' ';
+			$sDelegation = ' AND fld.id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
 		}
 
 		$userid = $ctx->get_value('userid');
 		if( $userid === false || $userid === '' )
+			{
 			$userid = $GLOBALS['BAB_SESS_USERID'];
+			}
 
 		if( $userid != '')
 			{
 			$this->folderid = $ctx->get_value('folderid');
 			$req = "select f.id, f.idfai from ".BAB_FILES_TBL . " f " . $sLeftJoin . "where f.bgroup='Y' and f.confirmed='N'" . $sDelegation;
 			if( $this->folderid !== false && $this->folderid !== '' )
-				$req .= " and f.id_owner IN (".$this->folderid.")";
+				{
+				$req .= " and f.id_owner IN (".$babDB->quote(explode(',', $this->folderid)).")";
+				}
 
 			$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
 			if( count($arrschi) > 0 )
@@ -3131,7 +3155,7 @@ class bab_WaitingFiles extends bab_handler
 				$this->count = count($this->IdEntries);
 				if( $this->count > 0 )
 					{
-					$this->res = $babDB->db_query("select * from ".BAB_FILES_TBL." where id IN (".implode(',', $this->IdEntries).")");
+					$this->res = $babDB->db_query("select * from ".BAB_FILES_TBL." where id IN (".$babDB->quote($this->IdEntries).")");
 					$this->count = $babDB->db_num_rows($this->res);
 					}
 				}
@@ -3196,14 +3220,14 @@ class bab_WaitingPosts extends bab_handler
 		$this->forumid = $ctx->get_value('forumid');
 		if( $this->forumid !== false && $this->forumid !== '' )
 			{
-			$req .= " and id IN (".$this->forumid.")";
+			$req .= " and id IN (".$babDB->quote(explode(',', $this->forumid)).")";
 			}
 
 		$delegationid = (int) $ctx->get_value('delegationid');
 		$sDelegation = ' ';	
 		if(0 != $delegationid)	
 		{
-			$req .= ' AND id_dgowner = \'' . $delegationid . '\' ';
+			$req .= ' AND id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
 			
 		}
 
@@ -3223,7 +3247,7 @@ class bab_WaitingPosts extends bab_handler
 
 		if( count($arrf) > 0)
 			{
-			$req = "SELECT p.*, t.forum  FROM  ".BAB_POSTS_TBL." p, ".BAB_FORUMS_TBL." f, ".BAB_THREADS_TBL." t WHERE p.confirmed ='N' AND t.forum = f.id AND t.id = p.id_thread and f.id IN (".implode(',', $arrf).")";
+			$req = "SELECT p.*, t.forum  FROM  ".BAB_POSTS_TBL." p, ".BAB_FORUMS_TBL." f, ".BAB_THREADS_TBL." t WHERE p.confirmed ='N' AND t.forum = f.id AND t.id = p.id_thread and f.id IN (".$babDB->quote($arrf).")";
 
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
@@ -3282,12 +3306,14 @@ class bab_Faqs extends bab_handler
 		
 		$isFaqId = ( $faqid !== false && $faqid !== '' );
 		if( $isFaqId )
-			$req .= " where id IN (".$faqid.")";
+		{
+			$req .= " where id IN (".$babDB->quote(explode(',', $faqid)).")";
+		}
 
 		$sDelegation = ' ';	
 		if(0 != $delegationid)	
 		{
-			$sDelegation = 'id_dgowner = \'' . $delegationid . '\' ';
+			$sDelegation = 'id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
 			$req .= ($isFaqId) ? (' AND ' . $sDelegation) : (' WHERE ' . $sDelegation);
 		}
 
@@ -3303,7 +3329,7 @@ class bab_Faqs extends bab_handler
 		$this->count = count($this->IdEntries);
 		if( $this->count > 0 )
 			{
-			$this->res = $babDB->db_query("select * from ".BAB_FAQCAT_TBL." where id IN (".implode(',', $this->IdEntries).")");
+			$this->res = $babDB->db_query("select * from ".BAB_FAQCAT_TBL." where id IN (".$babDB->quote($this->IdEntries).")");
 			$this->count = $babDB->db_num_rows($this->res);
 			}
 		$this->ctx->curctx->push('CCount', $this->count);
@@ -3343,7 +3369,7 @@ class bab_Faq extends bab_handler
 	{
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
-		$this->res = $babDB->db_query("select * from ".BAB_FAQCAT_TBL." where id='".$ctx->get_value('faqid')."'");
+		$this->res = $babDB->db_query("select * from ".BAB_FAQCAT_TBL." where id='".$babDB->db_escape_string($ctx->get_value('faqid'))."'");
 		if( $this->res && $babDB->db_num_rows($this->res) == 1 )
 			$this->count = 1;
 		else
@@ -3435,8 +3461,8 @@ class bab_FaqSubCategories extends bab_handler
 			{
 			if(bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $faqid))
 				{
-				$this->faqinfo = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FAQCAT_TBL." where id='".$faqid."'"));
-				$this->res = $babDB->db_query("select * from ".BAB_FAQ_SUBCAT_TBL." where id_cat='".$faqid."'");
+				$this->faqinfo = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FAQCAT_TBL." where id='".$babDB->db_escape_string($faqid)."'"));
+				$this->res = $babDB->db_query("select * from ".BAB_FAQ_SUBCAT_TBL." where id_cat='".$babDB->db_escape_string($faqid)."'");
 				$this->count = $babDB->db_num_rows($this->res);
 				}
 
@@ -3490,7 +3516,7 @@ class bab_FaqSubCategory extends bab_handler
 		$faqsubcatid = $ctx->get_value('faqsubcatid');
 		if( $faqsubcatid !== false && $faqsubcatid !== '' )
 		{
-			$res = $babDB->db_query("select * from ".BAB_FAQ_SUBCAT_TBL." where id_cat IN (".$faqsubcatid.")");
+			$res = $babDB->db_query("select * from ".BAB_FAQ_SUBCAT_TBL." where id_cat IN (".$babDB->quote(explode(',', $faqsubcatid)).")");
 			while( $row = $babDB->db_fetch_array($res))
 				{
 				if(bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $row['id_cat']))
@@ -3503,7 +3529,7 @@ class bab_FaqSubCategory extends bab_handler
 		$this->count = count($this->IdEntries);
 		if( $this->count > 0 )
 			{
-			$this->res = $babDB->db_query("select * from ".BAB_FAQ_SUBCAT_TBL." where id IN (".implode(',', $this->IdEntries).")");
+			$this->res = $babDB->db_query("select * from ".BAB_FAQ_SUBCAT_TBL." where id IN (".$babDB->quote($this->IdEntries).")");
 			$this->count = $babDB->db_num_rows($this->res);
 			}
 		$this->ctx->curctx->push('CCount', $this->count);
@@ -3518,7 +3544,7 @@ class bab_FaqSubCategory extends bab_handler
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			if( empty($arr['name']) )
 			{
-			$faqinfo = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FAQCAT_TBL." where id='".$arr['id_cat']."'"));
+			$faqinfo = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FAQCAT_TBL." where id='".$babDB->db_escape_string($arr['id_cat'])."'"));
 			$this->ctx->curctx->push('FaqSubCatName', $faqinfo['category']);
 			}
 			else
@@ -3557,12 +3583,16 @@ class bab_FaqQuestions extends bab_handler
 		$req = "select id, idcat from ".BAB_FAQQR_TBL;
 		if( $faqid !== false && $faqid !== '' )
 			{
-			$req .= " where idcat IN (".$faqid.")";
+			$req .= " where idcat IN (".$babDB->quote(explode(',', $faqid)).")";
 			if( $faqsubcatid !== false && $faqsubcatid !== '' )
-				$req .= " and id_subcat IN (".$faqsubcatid.")";
+				{
+				$req .= " and id_subcat IN (".$babDB->quote(explode(',', $faqsubcatid)).")";
+				}
 			}
 		elseif( $faqsubcatid !== false && $faqsubcatid !== '' )
-			$req .= " where id_subcat IN (".$faqsubcatid.")";
+			{
+			$req .= " where id_subcat IN (".$babDB->quote(explode(',', $faqsubcatid)).")";
+			}
 
 		$res = $babDB->db_query($req);
 		while( $row = $babDB->db_fetch_array($res))
@@ -3576,7 +3606,7 @@ class bab_FaqQuestions extends bab_handler
 		$this->count = count($this->IdEntries);
 		if( $this->count > 0 )
 			{
-			$this->res = $babDB->db_query("select * from ".BAB_FAQQR_TBL." where id IN (".implode(',', $this->IdEntries).")");
+			$this->res = $babDB->db_query("select * from ".BAB_FAQQR_TBL." where id IN (".$babDB->quote($this->IdEntries).")");
 			$this->count = $babDB->db_num_rows($this->res);
 			}
 		$this->ctx->curctx->push('CCount', $this->count);
@@ -3618,7 +3648,7 @@ class bab_FaqQuestion extends bab_handler
 	{
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
-		$this->res = $babDB->db_query("select * from ".BAB_FAQQR_TBL." where id='".$ctx->get_value('questionid')."'");
+		$this->res = $babDB->db_query("select * from ".BAB_FAQQR_TBL." where id='".$babDB->db_escape_string($ctx->get_value('questionid'))."'");
 		if( $this->res && $babDB->db_num_rows($this->res) == 1 )
 			$this->count = 1;
 		else
@@ -4234,7 +4264,7 @@ class bab_IfUserMemberOfGroups extends bab_handler
 
 			if( count($groupid))
 				{
-				list($total) = $babDB->db_fetch_row($babDB->db_query("select count(id) as total from ".BAB_USERS_GROUPS_TBL." where id_object='".$userid."' and id_group IN (".implode(',', $groupid).")"));
+				list($total) = $babDB->db_fetch_row($babDB->db_query("select count(id) as total from ".BAB_USERS_GROUPS_TBL." where id_object='".$babDB->db_escape_string($userid)."' and id_group IN (".$babDB->quote($groupid).")"));
 				if( $all == false)
 					{
 					if( $total )

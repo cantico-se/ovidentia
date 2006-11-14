@@ -21,10 +21,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
+include_once 'base.php';
 
-define("BAB_CAL_NAME_LENGTH", 18);
-define("BAB_CAL_EVENT_LENGTH", 18);
+define('BAB_CAL_NAME_LENGTH', 18);
+define('BAB_CAL_EVENT_LENGTH', 18);
 
 class bab_mcalendars
 {
@@ -758,7 +758,7 @@ class cal_wmdbaseCls
 
 		if( $this->id_creator != 0 )
 			{
-			$this->creatorname = bab_getUserName($this->id_creator); 
+			$this->creatorname = bab_toHtml(bab_getUserName($this->id_creator)); 
 			}
 		$iarr = $babBody->icalendars->getCalendarInfo($this->idcal);
 		$this->updateAccess($calPeriod, $iarr);
@@ -816,7 +816,7 @@ class cal_wmdbaseCls
 		if( isset($arr['note']) && !empty($arr['note']))
 			{
 			$this->bnote = true;
-			$this->noteval = $arr['note'];
+			$this->noteval = bab_toHtml($arr['note']);
 			}
 		}
 
@@ -982,7 +982,7 @@ return $temp->printhtml();
 
 function record_calendarchoice()
 {
-global $babBody;
+global $babBody, $babDB;
 
 $selected = isset($_POST['selected_calendars']) ? $_POST['selected_calendars'] : array();
 
@@ -990,15 +990,14 @@ if ($GLOBALS['BAB_SESS_LOGGED'] && !empty($_POST['database_record']))
 	{
 	$babBody->icalendars->user_calendarids = implode(',',$selected);
 	
-	$db = &$GLOBALS['babDB'];
-	list($n) = $db->db_fetch_array($db->db_query("SELECT COUNT(*) FROM ".BAB_CAL_USER_OPTIONS_TBL." WHERE id_user='".$db->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'"));
+	list($n) = $babDB->db_fetch_array($babDB->db_query("SELECT COUNT(*) FROM ".BAB_CAL_USER_OPTIONS_TBL." WHERE id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'"));
 	if ($n > 0)
 		{
-		$db->db_query("UPDATE ".BAB_CAL_USER_OPTIONS_TBL." SET  user_calendarids='".$db->db_escape_string($babBody->icalendars->user_calendarids)."' WHERE id_user='".$db->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
+		$babDB->db_query("UPDATE ".BAB_CAL_USER_OPTIONS_TBL." SET  user_calendarids='".$babDB->db_escape_string($babBody->icalendars->user_calendarids)."' WHERE id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
 		}
 	else
 		{
-		$db->db_query("insert into ".BAB_CAL_USER_OPTIONS_TBL." ( id_user, startday, allday, start_time, end_time, usebgcolor, elapstime, defaultview, workdays, week_numbers, user_calendarids) values ('".$db->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', '1', 'N', '08:00:00', '18:00:00', 'Y', '30', '0', '1,2,3,4,5', 'N', '".$db->db_escape_string($babBody->icalendars->user_calendarids)."')");
+		$babDB->db_query("insert into ".BAB_CAL_USER_OPTIONS_TBL." ( id_user, startday, allday, start_time, end_time, usebgcolor, elapstime, defaultview, workdays, week_numbers, user_calendarids) values ('".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', '1', 'N', '08:00:00', '18:00:00', 'Y', '30', '0', '1,2,3,4,5', 'N', '".$babDB->db_escape_string($babBody->icalendars->user_calendarids)."')");
 		}
 	}
 

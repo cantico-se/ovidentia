@@ -21,20 +21,20 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
-include_once $babInstallPath."utilit/calincl.php";
-include_once $babInstallPath."utilit/mcalincl.php";
-include_once $babInstallPath."utilit/uiutil.php";
-include_once $babInstallPath."utilit/evtincl.php";
+include_once 'base.php';
+include_once $babInstallPath.'utilit/calincl.php';
+include_once $babInstallPath.'utilit/mcalincl.php';
+include_once $babInstallPath.'utilit/uiutil.php';
+include_once $babInstallPath.'utilit/evtincl.php';
 
 function bab_getCalendarEventTitle($evtid)
 {
-	$db = $GLOBALS['babDB'];
-	$query = "select title from ".BAB_CAL_EVENTS_TBL." where id='".$db->db_escape_string($evtid)."'";
-	$res = $db->db_query($query);
-	if( $res && $db->db_num_rows($res) > 0)
+	global $babDB;
+	$query = "select title from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($evtid)."'";
+	$res = $babDB->db_query($query);
+	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-		$arr = $db->db_fetch_array($res);
+		$arr = $babDB->db_fetch_array($res);
 		return $arr['title'];
 		}
 	else
@@ -49,8 +49,7 @@ class bab_event
 	function bab_event()
 
 		{
-		global $babBody;
-		$this->db = & $GLOBALS['babDB'];
+		global $babBody, $babDB;
 
 		$this->curdate = !empty($_REQUEST['date']) ? $_REQUEST['date'] : date('Y').",".date('m').",".date('d');
 
@@ -115,7 +114,7 @@ class bab_event
 		$this->icalendar = $babBody->icalendars;
 		$this->icalendar->initializeCalendars();
 
-		$this->rescat = $this->db->db_query("SELECT * FROM ".BAB_CAL_CATEGORIES_TBL." ORDER BY name");
+		$this->rescat = $babDB->db_query("SELECT * FROM ".BAB_CAL_CATEGORIES_TBL." ORDER BY name");
 		}
 
 
@@ -128,7 +127,8 @@ class bab_event
 
 	function getnextcat()
 		{
-		$this->cat = $this->db->db_fetch_array($this->rescat);
+		global $babDB;
+		$this->cat = $babDB->db_fetch_array($this->rescat);
 		$this->selected = isset($_POST['category']) && $_POST['category'] == $this->cat['id'] ? 'selected' : '';
 		return $this->cat;
 		}
@@ -543,7 +543,7 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 
 		function temp($idcal, $evtid, $cci, $view, $date)
 			{
-			global $babBody, $BAB_SESS_USERID, $babBodyPopup;
+			global $babBody, $babDB, $BAB_SESS_USERID, $babBodyPopup;
 
 			$this->delete = bab_translate("Delete");
 			$this->t_color = bab_translate("Color");
@@ -554,15 +554,14 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 			$this->t_no = bab_translate("No");
 			$this->t_modify = bab_translate("Modify the event");
 			$this->t_test_conflicts = bab_translate("Test conflicts");
-			$this->db = $GLOBALS['babDB'];
 			$this->calid = $idcal;
 			$this->evtid = $evtid;
 			$this->bmodif = false;
 			$this->ccids = $cci;
 			$this->curview = $view;
 			$this->curdate = $date;
-			$res = $this->db->db_query("select * from ".BAB_CAL_EVENTS_TBL." where id='".$this->db->db_escape_string($evtid)."'");
-			$this->evtarr = $this->db->db_fetch_array($res);
+			$res = $babDB->db_query("select * from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($evtid)."'");
+			$this->evtarr = $babDB->db_fetch_array($res);
 			
 			$iarr = $babBody->icalendars->getCalendarInfo($this->calid);
 			switch( $iarr['type'] )
@@ -670,8 +669,8 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 
 			
 
-			$this->rescat = $this->db->db_query("select * from ".BAB_CAL_CATEGORIES_TBL." ORDER BY name");
-			$this->rescount = $this->db->db_num_rows($this->rescat);
+			$this->rescat = $babDB->db_query("select * from ".BAB_CAL_CATEGORIES_TBL." ORDER BY name");
+			$this->rescount = $babDB->db_num_rows($this->rescat);
 			}
 
 		function getnextcat()
@@ -903,7 +902,7 @@ function post_string2($key)
 
 function addEvent(&$message)
 	{
-	global $babBody;
+	global $babBody, $babDB;
 	
 	if( empty($_POST['title']))
 		{
@@ -982,8 +981,7 @@ function addEvent(&$message)
 
 	if (isset($_POST['event_owner']) && isset($babBody->icalendars->usercal[$_POST['event_owner']]) )
 		{
-		$db = &$GLOBALS['babDB'];
-		$arr = $db->db_fetch_array($db->db_query("SELECT owner FROM ".BAB_CALENDAR_TBL." WHERE id='".$db->db_escape_string($_POST['event_owner'])."'"));
+		$arr = $babDB->db_fetch_array($babDB->db_query("SELECT owner FROM ".BAB_CALENDAR_TBL." WHERE id='".$babDB->db_escape_string($_POST['event_owner'])."'"));
 		$id_owner = isset($arr['owner']) ? $arr['owner'] : $GLOBALS['BAB_SESS_USERID'];
 		}
 	$args['owner'] = $id_owner;
@@ -1057,7 +1055,7 @@ function addEvent(&$message)
 
 function updateEvent(&$message)
 {
-	global $babBody;
+	global $babBody, $babDB;
 	
 	if( empty($_POST['title']))
 		{
@@ -1069,7 +1067,6 @@ function updateEvent(&$message)
 	$title = post_string('title');
 	$location = post_string('location');
 		
-	$db = &$GLOBALS['babDB'];
 
 	$description = post_string2('evtdesc');
 	bab_editor_record($description);
@@ -1079,14 +1076,14 @@ function updateEvent(&$message)
 	else
 		$catid = $_POST['category'];
 
-	$evtinfo = $db->db_fetch_array($db->db_query("select hash, start_date, end_date from ".BAB_CAL_EVENTS_TBL." where id='".$db->db_escape_string($_POST['evtid'])."'"));
+	$evtinfo = $babDB->db_fetch_array($babDB->db_query("select hash, start_date, end_date from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($_POST['evtid'])."'"));
 
 	$arrupdate = array();
 
 	if( !empty($evtinfo['hash']) &&  $evtinfo['hash'][0] == 'R' && isset($_POST['bupdrec']) && $_POST['bupdrec'] == "1" )
 	{
-		$res = $db->db_query("select * from ".BAB_CAL_EVENTS_TBL." where hash='".$db->db_escape_string($evtinfo['hash'])."'");
-		while( $arr = $db->db_fetch_array($res))
+		$res = $babDB->db_query("select * from ".BAB_CAL_EVENTS_TBL." where hash='".$babDB->db_escape_string($evtinfo['hash'])."'");
+		while( $arr = $babDB->db_fetch_array($res))
 		{
 			$rr = explode(" ", $arr['start_date']);
 			$rr0 = explode("-", $rr[0]);
@@ -1127,18 +1124,18 @@ function updateEvent(&$message)
 	reset($arrupdate);
 	$req = "UPDATE ".BAB_CAL_EVENTS_TBL." 
 	SET 
-		title			=".$db->quote($title).", 
-		description		=".$db->quote($description).", 
-		location		=".$db->quote($location).", 
-		id_cat			=".$db->quote($catid).", 
-		color			=".$db->quote($_POST['color']).", 
-		bprivate		=".$db->quote($_POST['bprivate']).", 
-		block			=".$db->quote($_POST['block']).", 
-		bfree			=".$db->quote($_POST['bfree'])."
+		title			=".$babDB->quote($title).", 
+		description		=".$babDB->quote($description).", 
+		location		=".$babDB->quote($location).", 
+		id_cat			=".$babDB->quote($catid).", 
+		color			=".$babDB->quote($_POST['color']).", 
+		bprivate		=".$babDB->quote($_POST['bprivate']).", 
+		block			=".$babDB->quote($_POST['block']).", 
+		bfree			=".$babDB->quote($_POST['bfree'])."
 	";
 	foreach($arrupdate as $key => $val)
 	{
-		$db->db_query($req.", start_date=".$db->quote($val['start']).", end_date=".$db->quote($val['end'])." where id=".$db->quote($key)."" );
+		$babDB->db_query($req.", start_date=".$babDB->quote($val['start']).", end_date=".$babDB->quote($val['end'])." where id=".$babDB->quote($key)."" );
 	}
 
 	notifyEventUpdate($_POST['evtid'], false);
@@ -1147,46 +1144,47 @@ function updateEvent(&$message)
 
 function confirmDeleteEvent()
 {
-	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
-	$db = $GLOBALS['babDB'];
+	global $babDB;
+	include_once $GLOBALS['babInstallPath'].'utilit/afincl.php';
+	global $babDB;
 	if( $GLOBALS['bupdrec'] == "1" )
 		{
-		$res = $db->db_query("select hash from ".BAB_CAL_EVENTS_TBL." where id='".$db->db_escape_string($GLOBALS['evtid'])."'");
-		$arr = $db->db_fetch_array($res);
+		$res = $babDB->db_query("select hash from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($GLOBALS['evtid'])."'");
+		$arr = $babDB->db_fetch_array($res);
 		if( $arr['hash'] != "" && $arr['hash'][0] == 'R')
 			{
-			$res = $db->db_query("select id from ".BAB_CAL_EVENTS_TBL." where hash='".$db->db_escape_string($arr['hash'])."'");
-			while( $arr = $db->db_fetch_array($res) )
+			$res = $babDB->db_query("select id from ".BAB_CAL_EVENTS_TBL." where hash='".$babDB->db_escape_string($arr['hash'])."'");
+			while( $arr = $babDB->db_fetch_array($res) )
 				{
-				$db->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id='".$db->db_escape_string($arr['id'])."'");
-				$res2 = $db->db_query("select idfai from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event='".$db->db_escape_string($arr['id'])."'");
-				while( $rr = $db->db_fetch_array($res2) )
+				$babDB->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($arr['id'])."'");
+				$res2 = $babDB->db_query("select idfai from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event='".$babDB->db_escape_string($arr['id'])."'");
+				while( $rr = $babDB->db_fetch_array($res2) )
 					{
 					if( $rr['idfai'] != 0 )
 						{
 						deleteFlowInstance($rr['idfai']);
 						}
 					}
-				$db->db_query("delete from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event='".$db->db_escape_string($arr['id'])."'");
-				$db->db_query("delete from ".BAB_CAL_EVENTS_NOTES_TBL." where id_event='".$db->db_escape_string($arr['id'])."'");
-				$db->db_query("delete from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_event='".$db->db_escape_string($arr['id'])."'");
+				$babDB->db_query("delete from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event='".$babDB->db_escape_string($arr['id'])."'");
+				$babDB->db_query("delete from ".BAB_CAL_EVENTS_NOTES_TBL." where id_event='".$babDB->db_escape_string($arr['id'])."'");
+				$babDB->db_query("delete from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_event='".$babDB->db_escape_string($arr['id'])."'");
 				}
 			}
 		}
 	else
 		{
-		$db->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id='".$db->db_escape_string($GLOBALS['evtid'])."'");
-		$res2 = $db->db_query("select idfai from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event='".$db->db_escape_string($GLOBALS['evtid'])."'");
-		while( $rr = $db->db_fetch_array($res2) )
+		$babDB->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($GLOBALS['evtid'])."'");
+		$res2 = $babDB->db_query("select idfai from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event='".$babDB->db_escape_string($GLOBALS['evtid'])."'");
+		while( $rr = $babDB->db_fetch_array($res2) )
 			{
 			if( $rr['idfai'] != 0 )
 				{
 				deleteFlowInstance($rr['idfai']);
 				}
 			}
-		$db->db_query("delete from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event='".$db->db_escape_string($GLOBALS['evtid'])."'");
-		$db->db_query("delete from ".BAB_CAL_EVENTS_NOTES_TBL." where id_event='".$db->db_escape_string($GLOBALS['evtid'])."'");
-		$db->db_query("delete from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_event='".$db->db_escape_string($GLOBALS['evtid'])."'");
+		$babDB->db_query("delete from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event='".$babDB->db_escape_string($GLOBALS['evtid'])."'");
+		$babDB->db_query("delete from ".BAB_CAL_EVENTS_NOTES_TBL." where id_event='".$babDB->db_escape_string($GLOBALS['evtid'])."'");
+		$babDB->db_query("delete from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_event='".$babDB->db_escape_string($GLOBALS['evtid'])."'");
 		}
 }
 
@@ -1204,6 +1202,7 @@ function calendarquerystring()
 
 function eventAvariabilityCheck(&$avariability_message)
 	{
+	global $babDB;
 	if( !isset($_POST['monthbegin']))
 		{
 		return true; /* to rmove php warnings. This function must be rewrited */
@@ -1231,10 +1230,6 @@ function eventAvariabilityCheck(&$avariability_message)
 	$end = mktime( $te[0],$te[1],0,$_POST['monthend'], $_POST['dayend'], $_POST['yearend'] );
 
 	$begin_day = mktime( 0,0,0,$_POST['monthbegin'], $_POST['daybegin'], $_POST['yearbegin'] );
-
-	$db = &$GLOBALS['babDB'];
-
-
 
 	$sdate = sprintf("%04s-%02s-%02s %02s:%02s:%02s", date('Y',$begin), date('m',$begin), date('d',$begin), date('H',$begin), date('i',$begin), date('s',$begin));
 	$edate = sprintf("%04s-%02s-%02s %02s:%02s:%02s",  date('Y',$end), date('m',$end), date('d',$end),date('H',$end),date('i',$end), date('s',$end));

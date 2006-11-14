@@ -21,8 +21,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
-include_once $babInstallPath."admin/register.php";
+include_once 'base.php';
+include_once $babInstallPath.'admin/register.php';
 
 function changePassword()
 	{
@@ -39,7 +39,7 @@ function changePassword()
 			{
 			global $babBody, $babDB;
 
-			$res=$babDB->db_query("select changepwd, db_authentification from ".BAB_USERS_TBL." where id='".$GLOBALS['BAB_SESS_USERID']."'");
+			$res=$babDB->db_query("select changepwd, db_authentification from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
 			$arr = $babDB->db_fetch_array($res);
 			if( $babBody->babsite['change_password'] == 'Y' && $arr['changepwd'] == 1 )
 				{
@@ -154,20 +154,20 @@ function changeNickname($nickname)
 			list($id, $allowuu) = $babDB->db_fetch_array($babDB->db_query("select id, user_update from ".BAB_DB_DIRECTORIES_TBL." where id_group='1'"));
 			if( $allowuu == "N")
 				{
-				$res = $babDB->db_query("select dbd.id from ".BAB_DB_DIRECTORIES_TBL." dbd join ".BAB_USERS_GROUPS_TBL." ug where ug.id_object='".$GLOBALS['BAB_SESS_USERID']."' and ug.id_group=dbd.id_group and dbd.user_update='Y'");
+				$res = $babDB->db_query("select dbd.id from ".BAB_DB_DIRECTORIES_TBL." dbd join ".BAB_USERS_GROUPS_TBL." ug where ug.id_object='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and ug.id_group=dbd.id_group and dbd.user_update='Y'");
 				if( $res && $babDB->db_num_rows($res) > 0 )
 					$allowuu = "Y";
 				}
 
 			if( $allowuu == "Y")
 				{
-				list($idu) = $babDB->db_fetch_array($babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='0' and id_user='".$GLOBALS['BAB_SESS_USERID']."'"));
+				list($idu) = $babDB->db_fetch_array($babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='0' and id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'"));
 				$this->bupdateuserinfo = true;
 				$this->urldbmod = $GLOBALS['babUrlScript']."?tg=directory&idx=dbmod&id=".$id."&refresh=1";
 				$this->updateuserinfo = bab_translate("Update personal informations");
 				}
 
-			$res=$babDB->db_query("select changepwd, db_authentification from ".BAB_USERS_TBL." where id='".$GLOBALS['BAB_SESS_USERID']."'");
+			$res=$babDB->db_query("select changepwd, db_authentification from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
 			$arr = $babDB->db_fetch_array($res);
 			$this->changenickname = $babBody->babsite['change_nickname'] == 'Y' ? true : false;
 			if( $babBody->babsite['change_password'] == 'Y' && $arr['changepwd'] == 1 )
@@ -221,7 +221,7 @@ function changeRegionalSettings()
 			$this->time_format_title = bab_translate("Time format");
 			$this->regsettings_title = bab_translate("Date and Time formats");
 
-			$res = $babDB->db_query("select date_shortformat, date_longformat, time_format from ".BAB_USERS_TBL." where id='".$GLOBALS['BAB_SESS_USERID']."'");
+			$res = $babDB->db_query("select date_shortformat, date_longformat, time_format from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
 			$arr = $babDB->db_fetch_array($res);
 			if( empty($arr['date_shortformat']))
 				{
@@ -346,17 +346,17 @@ function changeLanguage()
 
 		function tempa()
 			{
-        	global $BAB_SESS_USERID;
+        	global $babDB, $BAB_SESS_USERID;
 			$this->title = bab_translate("Prefered language");
 			$this->update = bab_translate("Update Language");
             $this->count = 0;
 
             $db = $GLOBALS['babDB'];
-            $req = "select * from ".BAB_USERS_TBL." where id='$BAB_SESS_USERID'";
-            $res = $db->db_query($req);
-            if( $res && $db->db_num_rows($res) > 0 )
+            $req = "select * from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
+            $res = $babDB->db_query($req);
+            if( $res && $babDB->db_num_rows($res) > 0 )
                 {
-    			$arr = $db->db_fetch_array($res);
+    			$arr = $babDB->db_fetch_array($res);
                 $this->userlang = $arr['lang'];
                 }
             else
@@ -442,7 +442,7 @@ function changeSkin($skin)
 
 		function tempc($skin)
 			{
-        	global $BAB_SESS_USERID;
+        	global $babDB, $BAB_SESS_USERID;
 			$this->title = bab_translate("Prefered skin");
 			$this->title_style = bab_translate("Prefered style");
 			$this->update = bab_translate("Update Skin");
@@ -450,11 +450,11 @@ function changeSkin($skin)
             $this->cntstyles = 0;
 
 			$db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_USERS_TBL." where id='$BAB_SESS_USERID'";
-			$res = $db->db_query($req);
-			if( $res && $db->db_num_rows($res) > 0 )
+			$req = "select * from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
+			$res = $babDB->db_query($req);
+			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
-				$arr = $db->db_fetch_array($res);
+				$arr = $babDB->db_fetch_array($res);
 				$this->userskin = $arr['skin'];
 				$this->userstyle = $arr['style'];
 				}
@@ -623,7 +623,7 @@ function changeProfiles()
 					$this->pname = $arr['name'];
 					$this->pdesc = $arr['description'];
 					$this->idprofile = $arr['id'];
-					$this->resgrp = $babDB->db_query("select gt.* from ".BAB_PROFILES_GROUPSSET_TBL." pgt left join ".BAB_GROUPS_TBL." gt on pgt.id_group=gt.id where pgt.id_object ='".$arr['id']."'");
+					$this->resgrp = $babDB->db_query("select gt.* from ".BAB_PROFILES_GROUPSSET_TBL." pgt left join ".BAB_GROUPS_TBL." gt on pgt.id_group=gt.id where pgt.id_object ='".$babDB->db_escape_string($arr['id'])."'");
 					$this->countgrp = $babDB->db_num_rows($this->resgrp);
 					if( $arr['multiplicity'] == 'Y' )
 						{
@@ -727,7 +727,7 @@ function showUnavailability($iduser, $fromdate, $todate, $id_substitute)
 
 			$this->iduser = $iduser;
 
-			$res = $babDB->db_query("select * from ".BAB_USERS_UNAVAILABILITY_TBL." where id_user='".$iduser."'");
+			$res = $babDB->db_query("select * from ".BAB_USERS_UNAVAILABILITY_TBL." where id_user='".$babDB->db_escape_string($iduser)."'");
 			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
 				$arr = $babDB->db_fetch_array($res);
@@ -804,13 +804,12 @@ function showUnavailability($iduser, $fromdate, $todate, $id_substitute)
 
 function userChangePassword($oldpwd, $newpwd)
 	{
-	global $babBody, $BAB_SESS_USERID, $BAB_SESS_HASHID;
+	global $babBody, $babDB, $BAB_SESS_USERID, $BAB_SESS_HASHID;
 
 	$new_password1=strtolower($newpwd);
-	$db = $GLOBALS['babDB'];
 
-	$res=$db->db_query("select password, changepwd, db_authentification from ".BAB_USERS_TBL." where id='".$GLOBALS['BAB_SESS_USERID']."'");
-	$arruser = $db->db_fetch_array($res);
+	$res=$babDB->db_query("select password, changepwd, db_authentification from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
+	$arruser = $babDB->db_fetch_array($res);
 	if( $babBody->babsite['change_password'] == 'Y' && $arruser['changepwd'] == 1 )
 		{
 		if( $babBody->babsite['authentification'] != BAB_AUTHENTIFICATION_OVIDENTIA && empty($babBody->babsite['ldap_encryptiontype']) && $arruser['db_authentification'] == 'N')
@@ -957,8 +956,8 @@ function userChangePassword($oldpwd, $newpwd)
 			break;
 		}
 
-	$result=$db->db_query("update ".BAB_USERS_TBL." set password='". md5(strtolower($newpwd)). "' where id='". $BAB_SESS_USERID . "'");
-	if ($db->db_affected_rows() < 1)
+	$result=$babDB->db_query("update ".BAB_USERS_TBL." set password='". md5(strtolower($newpwd)). "' where id='". $babDB->db_escape_string($BAB_SESS_USERID) . "'");
+	if ($babDB->db_affected_rows() < 1)
 		{
 		$babBody->msgerror = bab_translate("Nothing Changed");
 		return false;
@@ -1008,47 +1007,44 @@ function updatePassword($oldpwd, $newpwd1, $newpwd2)
 
 function updateLanguage($lang, $langfilter)
 	{
-    global $BAB_SESS_USERID;
+    global $babDB, $BAB_SESS_USERID;
 	if( !empty($lang) && !empty($BAB_SESS_USERID))
 		{
-        $db = $GLOBALS['babDB'];
-		$req = "update ".BAB_USERS_TBL." set lang='".$lang."', langfilter='" .$langfilter. "' where id='".$BAB_SESS_USERID."'";
-        $res = $db->db_query($req);
+		$req = "update ".BAB_USERS_TBL." set lang='".$babDB->db_escape_string($lang)."', langfilter='" .$babDB->db_escape_string($langfilter). "' where id='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
+        $res = $babDB->db_query($req);
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=options&idx=global");
 	}
 
 function updateSkin($skin, $style)
 	{
-    global $BAB_SESS_USERID;
+    global $babDB, $BAB_SESS_USERID;
 	if( !empty($skin) && !empty($BAB_SESS_USERID))
 		{
-        $db = $GLOBALS['babDB'];
-        $req = "update ".BAB_USERS_TBL." set skin='".$skin."', style='".$style."' where id='".$BAB_SESS_USERID."'";
-        $res = $db->db_query($req);
+        $req = "update ".BAB_USERS_TBL." set skin='".$babDB->db_escape_string($skin)."', style='".$babDB->db_escape_string($style)."' where id='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
+        $res = $babDB->db_query($req);
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=options&idx=global");
 	}
 
 function updateUserInfo($password, $firstname, $middlename, $lastname, $nickname, $email)
 	{
-	global $babBody, $BAB_HASH_VAR, $BAB_SESS_NICKNAME, $BAB_SESS_USERID, $BAB_SESS_USER, $BAB_SESS_EMAIL;
+	global $babBody, $babDB, $BAB_HASH_VAR, $BAB_SESS_NICKNAME, $BAB_SESS_USERID, $BAB_SESS_USER, $BAB_SESS_EMAIL;
 
 	if( empty($GLOBALS['BAB_SESS_USERID']))
 		return false;
 
 	$password = strtolower($password);
-	$req = "select id from ".BAB_USERS_TBL." where nickname='".$BAB_SESS_NICKNAME."' and password='". md5($password) ."'";
-	$db = $GLOBALS['babDB'];
-	$res = $db->db_query($req);
-	if (!$res || $db->db_num_rows($res) < 1)
+	$req = "select id from ".BAB_USERS_TBL." where nickname='".$babDB->db_escape_string($BAB_SESS_NICKNAME)."' and password='". md5($password) ."'";
+	$res = $babDB->db_query($req);
+	if (!$res || $babDB->db_num_rows($res) < 1)
 		{
 		$babBody->msgerror = bab_translate("Password incorrect");
 		return false;
 		}
 	else
 		{
-		$arr = $db->db_fetch_array($res);
+		$arr = $babDB->db_fetch_array($res);
 		if( empty($firstname) || empty($lastname) || empty($email))
 			{
 			$babBody->msgerror = bab_translate( "You must complete all fields !!");
@@ -1063,9 +1059,9 @@ function updateUserInfo($password, $firstname, $middlename, $lastname, $nickname
 		
 		if( $BAB_SESS_NICKNAME != $nickname )
 			{
-			$req = "select id from ".BAB_USERS_TBL." where nickname='".$nickname."'";	
-			$res = $db->db_query($req);
-			if( $db->db_num_rows($res) > 0)
+			$req = "select id from ".BAB_USERS_TBL." where nickname='".$babDB->db_escape_string($nickname)."'";	
+			$res = $babDB->db_query($req);
+			if( $babDB->db_num_rows($res) > 0)
 				{
 				$babBody->msgerror = bab_translate("This nickname already exists !!");
 				return false;
@@ -1074,20 +1070,20 @@ function updateUserInfo($password, $firstname, $middlename, $lastname, $nickname
 
 		$replace = array( " " => "", "-" => "");
 		$hashname = md5(strtolower(strtr($firstname.$middlename.$lastname, $replace)));
-		$query = "select id from ".BAB_USERS_TBL." where hashname='".$hashname."' and id!='".$BAB_SESS_USERID."'";	
-		$res = $db->db_query($query);
-		if( $db->db_num_rows($res) > 0)
+		$query = "select id from ".BAB_USERS_TBL." where hashname='".$hashname."' and id!='".$babDB->db_escape_string($BAB_SESS_USERID)."'";	
+		$res = $babDB->db_query($query);
+		if( $babDB->db_num_rows($res) > 0)
 			{
 			$babBody->msgerror = bab_translate("Firstname and Lastname already exists !!");
 			return false;
 			}
 
 		$hash=md5($nickname.$BAB_HASH_VAR);
-		$req = "update ".BAB_USERS_TBL." set firstname='".$firstname."', lastname='".$lastname."', nickname='".$nickname."', email='".$email."', confirm_hash='".$hash."', hashname='".$hashname."' where id='".$BAB_SESS_USERID."'";
-		$res = $db->db_query($req);
+		$req = "update ".BAB_USERS_TBL." set firstname='".$babDB->db_escape_string($firstname)."', lastname='".$babDB->db_escape_string($lastname)."', nickname='".$babDB->db_escape_string($nickname)."', email='".$babDB->db_escape_string($email)."', confirm_hash='".$babDB->db_escape_string($hash)."', hashname='".$babDB->db_escape_string($hashname)."' where id='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
+		$res = $babDB->db_query($req);
 
-		$req = "update ".BAB_DBDIR_ENTRIES_TBL." set givenname='".$firstname."', mn='".$middlename."', sn='".$lastname."', email='".$email."', date_modification=now(), id_modifiedby='".$GLOBALS['BAB_SESS_USERID']."' where id_directory='0' and id_user='".$BAB_SESS_USERID."'";
-		$res = $db->db_query($req);
+		$req = "update ".BAB_DBDIR_ENTRIES_TBL." set givenname='".$babDB->db_escape_string($firstname)."', mn='".$babDB->db_escape_string($middlename)."', sn='".$babDB->db_escape_string($lastname)."', email='".$babDB->db_escape_string($email)."', date_modification=now(), id_modifiedby='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' where id_directory='0' and id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
+		$res = $babDB->db_query($req);
 
 		$BAB_SESS_NICKNAME = $nickname;
 		$BAB_SESS_USER = bab_composeUserName($firstname, $lastname);
@@ -1100,23 +1096,22 @@ function updateUserInfo($password, $firstname, $middlename, $lastname, $nickname
 
 function updateNickname($password, $nickname)
 	{
-	global $babBody, $BAB_HASH_VAR, $BAB_SESS_NICKNAME, $BAB_SESS_USERID, $BAB_SESS_USER, $BAB_SESS_HASHID;
+	global $babBody, $babDB, $BAB_HASH_VAR, $BAB_SESS_NICKNAME, $BAB_SESS_USERID, $BAB_SESS_USER, $BAB_SESS_HASHID;
 
 	if( empty($GLOBALS['BAB_SESS_USERID']))
 		return false;
 
 	$password = strtolower($password);
-	$req = "select id from ".BAB_USERS_TBL." where nickname='".$BAB_SESS_NICKNAME."' and password='". md5($password) ."'";
-	$db = $GLOBALS['babDB'];
-	$res = $db->db_query($req);
-	if (!$res || $db->db_num_rows($res) < 1)
+	$req = "select id from ".BAB_USERS_TBL." where nickname='".$babDB->db_escape_string($BAB_SESS_NICKNAME)."' and password='". md5($password) ."'";
+	$res = $babDB->db_query($req);
+	if (!$res || $babDB->db_num_rows($res) < 1)
 		{
 		$babBody->msgerror = bab_translate("Password incorrect");
 		return false;
 		}
 	else
 		{
-		$arr = $db->db_fetch_array($res);
+		$arr = $babDB->db_fetch_array($res);
 		if( empty($nickname))
 			{
 			$babBody->msgerror = bab_translate( "You must complete all fields !!");
@@ -1126,9 +1121,9 @@ function updateNickname($password, $nickname)
 	
 		if( $BAB_SESS_NICKNAME != $nickname )
 			{
-			$req = "select id from ".BAB_USERS_TBL." where nickname='".$nickname."'";	
-			$res = $db->db_query($req);
-			if( $db->db_num_rows($res) > 0)
+			$req = "select id from ".BAB_USERS_TBL." where nickname='".$babDB->db_escape_string($nickname)."'";	
+			$res = $babDB->db_query($req);
+			if( $babDB->db_num_rows($res) > 0)
 				{
 				$babBody->msgerror = bab_translate("This nickname already exists !!");
 				return false;
@@ -1136,8 +1131,8 @@ function updateNickname($password, $nickname)
 			}
 
 		$hash=md5($nickname.$BAB_HASH_VAR);
-		$req = "update ".BAB_USERS_TBL." set nickname='".$nickname."', hashname='".$hash."', confirm_hash='".$hash."' where id='".$BAB_SESS_USERID."'";
-		$res = $db->db_query($req);
+		$req = "update ".BAB_USERS_TBL." set nickname='".$babDB->db_escape_string($nickname)."', hashname='".$hash."', confirm_hash='".$hash."' where id='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
+		$res = $babDB->db_query($req);
 
 		$BAB_SESS_NICKNAME = $nickname;
 		$BAB_SESS_HASHID = $hash;
@@ -1148,7 +1143,7 @@ function updateNickname($password, $nickname)
 function updateRegionalSettings($datelformat, $datesformat, $timeformat)
 {
 	global $babBody, $BAB_SESS_USERID, $babDB;
-	$babDB->db_query("update ".BAB_USERS_TBL." set date_shortformat='".$datesformat."', date_longformat='".$datelformat."', time_format='".$timeformat."' where id='".$BAB_SESS_USERID."'");
+	$babDB->db_query("update ".BAB_USERS_TBL." set date_shortformat='".$babDB->db_escape_string($datesformat)."', date_longformat='".$babDB->db_escape_string($datelformat)."', time_format='".$babDB->db_escape_string($timeformat)."' where id='".$babDB->db_escape_string($BAB_SESS_USERID)."'");
 	return true;
 }
 
@@ -1180,7 +1175,7 @@ function updateProfiles()
 			return false;
 			}
 
-		$resgrp = $babDB->db_query("select pgt.id_group from ".BAB_PROFILES_GROUPSSET_TBL." pgt where pgt.id_object ='".$arr['id']."'");
+		$resgrp = $babDB->db_query("select pgt.id_group from ".BAB_PROFILES_GROUPSSET_TBL." pgt where pgt.id_object ='".$babDB->db_escape_string($arr['id'])."'");
 		while( $row = $babDB->db_fetch_array($resgrp))
 			{
 			if( count($grpvar) > 0  && in_array($row['id_group'], $grpvar ) )
@@ -1214,19 +1209,22 @@ function updateProfiles()
 
 function updateStateSection($c, $w, $closed)
 	{
-	global $HTTP_REFERER, $BAB_SESS_USERID;
+	global $babDB, $HTTP_REFERER, $BAB_SESS_USERID;
 
 	if( !empty($BAB_SESS_USERID))
 		{
-		$db = $GLOBALS['babDB'];
-		$req = "select * from ".BAB_SECTIONS_STATES_TBL." where type='".$w."' and id_section='".$c."' and  id_user='".$BAB_SESS_USERID."'";
-		$res = $db->db_query($req);
-		if( $res && $db->db_num_rows($res) > 0 )
-			$req = "update ".BAB_SECTIONS_STATES_TBL." set closed='".$closed."' where type='".$w."' and id_section='".$c."' and  id_user='".$BAB_SESS_USERID."'";
+		$req = "select * from ".BAB_SECTIONS_STATES_TBL." where type='".$babDB->db_escape_string($w)."' and id_section='".$babDB->db_escape_string($c)."' and  id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
+		$res = $babDB->db_query($req);
+		if( $res && $babDB->db_num_rows($res) > 0 )
+			{
+			$req = "update ".BAB_SECTIONS_STATES_TBL." set closed='".$babDB->db_escape_string($closed)."' where type='".$babDB->db_escape_string($w)."' and id_section='".$babDB->db_escape_string($c)."' and  id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
+			}
 		else
-			$req = "insert into ".BAB_SECTIONS_STATES_TBL." (id_section, closed, type, id_user) values ('".$c."', '".$closed."', '".$w."', '".$BAB_SESS_USERID."')";
+			{
+			$req = "insert into ".BAB_SECTIONS_STATES_TBL." (id_section, closed, type, id_user) values ('".$babDB->db_escape_string($c)."', '".$babDB->db_escape_string($closed)."', '".$babDB->db_escape_string($w)."', '".$BAB_SESS_USERID."')";
+			}
 
-		$db->db_query($req);
+		$babDB->db_query($req);
 		}
 
 	Header("Location: ". $HTTP_REFERER);
@@ -1271,14 +1269,14 @@ function updateUnavailability($iduser, $fromdate, $todate, $id_substitute)
 		return false;
 		}
 
-	$res = $babDB->db_query("select * from ".BAB_USERS_UNAVAILABILITY_TBL." where id_user='".$iduser."'");
+	$res = $babDB->db_query("select * from ".BAB_USERS_UNAVAILABILITY_TBL." where id_user='".$babDB->db_escape_string($iduser)."'");
 	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
-		$babDB->db_query("update ".BAB_USERS_UNAVAILABILITY_TBL." set start_date='".$sqlstartdate."', end_date='".$sqlenddate."', id_substitute='".$id_substitute."' where id_user='".$iduser."'");
+		$babDB->db_query("update ".BAB_USERS_UNAVAILABILITY_TBL." set start_date='".$babDB->db_escape_string($sqlstartdate)."', end_date='".$babDB->db_escape_string($sqlenddate)."', id_substitute='".$babDB->db_escape_string($id_substitute)."' where id_user='".$babDB->db_escape_string($iduser)."'");
 		}
 	else
 		{
-		$babDB->db_query("insert into ".BAB_USERS_UNAVAILABILITY_TBL." (id_user, start_date, end_date, id_substitute ) values ('".$iduser."','".$sqlstartdate."','".$sqlenddate."','".$id_substitute."')");
+		$babDB->db_query("insert into ".BAB_USERS_UNAVAILABILITY_TBL." (id_user, start_date, end_date, id_substitute ) values ('".$babDB->db_escape_string($iduser)."','".$babDB->db_escape_string($sqlstartdate)."','".$babDB->db_escape_string($sqlenddate)."','".$babDB->db_escape_string($id_substitute)."')");
 		}
 	$babBody->msgerror = bab_translate("Update done");
 	return true;
@@ -1288,7 +1286,7 @@ function deleteUnavailability($iduser)
 	{
 	global $babDB;
 
-	$babDB->db_query("delete from ".BAB_USERS_UNAVAILABILITY_TBL." where id_user='".$iduser."'");
+	$babDB->db_query("delete from ".BAB_USERS_UNAVAILABILITY_TBL." where id_user='".$babDB->db_escape_string($iduser)."'");
 	}
 
 
@@ -1380,12 +1378,11 @@ if( isset($update))
 
 if( !isset($firstname) &&  !isset($middlename) &&  !isset($lastname) && !isset($nickname) && !isset($email) && $BAB_SESS_USERID != '')
 	{
-	$db = $GLOBALS['babDB'];
-	$req = "select sn, mn, givenname, email from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='0' and id_user='".$BAB_SESS_USERID."'";
-	$res = $db->db_query($req);
-	if( $res && $db->db_num_rows($res) > 0)
+	$req = "select sn, mn, givenname, email from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='0' and id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
+	$res = $babDB->db_query($req);
+	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-		$arr = $db->db_fetch_array($res);
+		$arr = $babDB->db_fetch_array($res);
 		$firstname = $arr['givenname'];
 		$lastname = $arr['sn'];
 		$middlename = $arr['mn'];
