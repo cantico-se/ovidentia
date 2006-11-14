@@ -21,9 +21,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
-include_once $babInstallPath."utilit/topincl.php";
-include_once $babInstallPath."utilit/artincl.php";
+include_once 'base.php';
+include_once $babInstallPath.'utilit/topincl.php';
+include_once $babInstallPath.'utilit/artincl.php';
 
 function ListArticles($idgroup)
 	{
@@ -43,12 +43,11 @@ function ListArticles($idgroup)
 
 		function temp($idgroup)
 			{
-			global $babBody;
-			$this->db = $GLOBALS['babDB'];
+			global $babBody, $babDB;
 			$this->idgroup = $idgroup;
-			$req = "select at.id, at.id_topic ,at.id_author, at.date, at.date_modification, at.title, at.head , LENGTH(at.body) as blen, at.restriction   from ".BAB_HOMEPAGES_TBL." ht left join ".BAB_ARTICLES_TBL." at on ht.id_article=at.id where ht.id_group='".$idgroup."' and ht.id_site='".$babBody->babsite['id']."' and ht.ordering!='0' order by ht.ordering asc";
-			$this->res = $this->db->db_query($req);
-			$this->countres = $this->db->db_num_rows($this->res);
+			$req = "select at.id, at.id_topic ,at.id_author, at.date, at.date_modification, at.title, at.head , LENGTH(at.body) as blen, at.restriction   from ".BAB_HOMEPAGES_TBL." ht left join ".BAB_ARTICLES_TBL." at on ht.id_article=at.id where ht.id_group='".$babDB->db_escape_string($idgroup)."' and ht.id_site='".$babDB->db_escape_string($babBody->babsite['id'])."' and ht.ordering!='0' order by ht.ordering asc";
+			$this->res = $babDB->db_query($req);
+			$this->countres = $babDB->db_num_rows($this->res);
 			$this->morename = bab_translate("Read More");
 			$this->printable = bab_translate("Print Friendly");
 			$this->attachmentxt = bab_translate("Associated documents");
@@ -56,11 +55,11 @@ function ListArticles($idgroup)
 
 		function getnext(&$skip)
 			{
-			global $new; 
+			global $babDB, $new; 
 			static $i = 0;
 			if( $i < $this->countres)
 				{
-				$arr = $this->db->db_fetch_array($this->res);
+				$arr = $babDB->db_fetch_array($this->res);
 				if( $arr['restriction'] != '' && !bab_articleAccessByRestriction($arr['restriction']))
 					{
 					$skip = true;
@@ -87,8 +86,8 @@ function ListArticles($idgroup)
 				$this->moreurl = $GLOBALS['babUrlScript']."?tg=entry&idx=more&article=".$arr['id']."&idg=".$this->idgroup;
 				$this->printurl = $GLOBALS['babUrlScript']."?tg=entry&idx=print&topics=".$arr['id_topic']."&article=".$arr['id'];
 
-				$this->resf = $this->db->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$arr['id']."'");
-				$this->countf = $this->db->db_num_rows($this->resf);
+				$this->resf = $babDB->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$babDB->db_escape_string($arr['id'])."' order by ordering asc");
+				$this->countf = $babDB->db_num_rows($this->resf);
 
 				if( $this->countf > 0 )
 					{
@@ -107,11 +106,11 @@ function ListArticles($idgroup)
 
 		function getnextdoc()
 			{
-			global $arrtop;
+			global $babDB, $arrtop;
 			static $i = 0;
 			if( $i < $this->countf)
 				{
-				$arr = $this->db->db_fetch_array($this->resf);
+				$arr = $babDB->db_fetch_array($this->resf);
 				$this->docurl = $GLOBALS['babUrlScript']."?tg=entry&idx=getf&idf=".$arr['id']."&article=".$arr['id_article']."&idg=".$this->idgroup;
 				$this->docname = $arr['name'];
 				$this->docdesc = $arr['description'];
@@ -147,11 +146,11 @@ function readMore($article, $idg)
 
 		function temp($article, $idg)
 			{
-			$this->db = $GLOBALS['babDB'];
+			global $babDB;
 			$this->idgroup = $idg;
-			$req = "select * from ".BAB_ARTICLES_TBL." where id='".$article."'";
-			$this->res = $this->db->db_query($req);
-			$arr = $this->db->db_fetch_array($this->res);
+			$req = "select * from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($article)."'";
+			$this->res = $babDB->db_query($req);
+			$arr = $babDB->db_fetch_array($this->res);
 			$this->content = bab_replace($arr['body']);
 			$this->title = $arr['title'];
 			if( $arr['id_author'] != 0 && (($author = bab_getUserName($arr['id_author'])) != ""))
@@ -165,8 +164,8 @@ function readMore($article, $idg)
 			$this->articledate = bab_strftime(bab_mktime($arr['date']));
 			$this->author = bab_translate("by") . " ". $this->articleauthor. " - ". $this->articledate;
 
-			$this->resf = $this->db->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$article."'");
-			$this->countf = $this->db->db_num_rows($this->resf);
+			$this->resf = $babDB->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$babDB->db_escape_string($article)."' order by ordering asc");
+			$this->countf = $babDB->db_num_rows($this->resf);
 
 			if( $this->countf > 0 )
 				{
@@ -182,11 +181,11 @@ function readMore($article, $idg)
 
 		function getnextdoc()
 			{
-			global $arrtop;
+			global $babDB, $arrtop;
 			static $i = 0;
 			if( $i < $this->countf)
 				{
-				$arr = $this->db->db_fetch_array($this->resf);
+				$arr = $babDB->db_fetch_array($this->resf);
 				$this->docurl = $GLOBALS['babUrlScript']."?tg=entry&idx=getf&idf=".$arr['id']."&article=".$arr['id_article']."&idg=".$this->idgroup;
 				$this->docname = $arr['name'];
 				$this->docdesc = $arr['description'];
@@ -220,15 +219,15 @@ function articlePrint($topics, $article)
 
 		function temp($topics, $article)
 			{
-			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_ARTICLES_TBL." where id='$article'";
-			$this->res = $this->db->db_query($req);
-			$this->count = $this->db->db_num_rows($this->res);
+			global $babDB;
+			$req = "select * from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($article)."'";
+			$this->res = $babDB->db_query($req);
+			$this->count = $babDB->db_num_rows($this->res);
 			$this->topics = $topics;
 			if( $this->count > 0 )
 				{
 				$GLOBALS['babWebStat']->addArticle($article);
-				$this->arr = $this->db->db_fetch_array($this->res);
+				$this->arr = $babDB->db_fetch_array($this->res);
 				$this->head = bab_replace($this->arr['head']);
 				$this->content = bab_replace($this->arr['body']);
 				$this->title = $this->arr['title'];
@@ -245,7 +244,7 @@ function articlePrint($topics, $article)
 function getDocumentArticle($idf, $article)
 {
 	global $babDB;
-	$arr = $babDB->db_fetch_array($babDB->db_query("select id_article from ".BAB_ART_FILES_TBL." where id='".$idf."'"));
+	$arr = $babDB->db_fetch_array($babDB->db_query("select id_article from ".BAB_ART_FILES_TBL." where id='".$babDB->db_escape_string($idf)."'"));
 
 	$access = false;
 	if( $arr['id_article'] == $article )
@@ -266,15 +265,14 @@ function getDocumentArticle($idf, $article)
 
 function isAccessValid($article, $idg)
 {
-	global $babBody;
+	global $babBody, $babDB;
 	$access = false;
-	$db = $GLOBALS['babDB'];
 
 	if( !bab_articleAccessById($article))
 		return $access;
 
-	$res = $db->db_query("select * from ".BAB_HOMEPAGES_TBL." where id_group='".$idg."' and id_site='".$babBody->babsite['id']."' and id_article='".$article."' and ordering!='0'");
-	if( $res && $db->db_num_rows($res) > 0 )
+	$res = $babDB->db_query("select * from ".BAB_HOMEPAGES_TBL." where id_group='".$babDB->db_escape_string($idg)."' and id_site='".$babDB->db_escape_string($babBody->babsite['id'])."' and id_article='".$babDB->db_escape_string($article)."' and ordering!='0'");
+	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
 		$access = true;
 		}
