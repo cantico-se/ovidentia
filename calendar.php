@@ -21,9 +21,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
-include_once $babInstallPath."utilit/calincl.php";
-include_once $babInstallPath."utilit/evtincl.php";
+include_once 'base.php';
+include_once $babInstallPath.'utilit/calincl.php';
+include_once $babInstallPath.'utilit/evtincl.php';
  
 function displayAttendees($evtid, $idcal)
 {
