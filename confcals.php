@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
+include_once 'base.php';
 
 function categoryCreate($userid, $grpid)
 	{
@@ -41,6 +41,7 @@ function categoryCreate($userid, $grpid)
 
 		function temp($userid, $grpid)
 			{
+			global $babDB;
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
 			$this->groupsname = bab_translate("Groups");
@@ -49,17 +50,17 @@ function categoryCreate($userid, $grpid)
 			$this->idgrp = $grpid;
 			$this->userid = $userid;
 			$this->count = count($grpid);
-			$this->db = $GLOBALS['babDB'];
 			}
 
 		function getnextgroup()
 			{
+			global $babDB;
 			static $i = 0;
 			if( $i < $this->count)
 				{
-				$req = "select * from ".BAB_GROUPS_TBL." where id=".$this->db->quote($this->idgrp[$i]);
-				$res = $this->db->db_query($req);
-				$this->arrgroups = $this->db->db_fetch_array($res);
+				$req = "select * from ".BAB_GROUPS_TBL." where id=".$babDB->quote($this->idgrp[$i]);
+				$res = $babDB->db_query($req);
+				$this->arrgroups = $babDB->db_fetch_array($res);
 				if( $i == 0 )
 					$this->arrgroups['select'] = "selected";
 				else
@@ -95,6 +96,7 @@ function resourceCreate($userid, $grpid)
 
 		function temp($userid, $grpid)
 			{
+			global $babDB;
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
 			$this->groupsname = bab_translate("Groups");
@@ -102,17 +104,17 @@ function resourceCreate($userid, $grpid)
 			$this->idgrp = $grpid;
 			$this->userid = $userid;
 			$this->count = count($grpid);
-			$this->db = $GLOBALS['babDB'];
 			}
 
 		function getnextgroup()
 			{
+			global $babDB;
 			static $i = 0;
 			if( $i < $this->count)
 				{
-				$req = "select * from ".BAB_GROUPS_TBL." where id=".$this->db->quote($this->idgrp[$i]);
-				$res = $this->db->db_query($req);
-				$this->arrgroups = $this->db->db_fetch_array($res);
+				$req = "select * from ".BAB_GROUPS_TBL." where id=".$babDB->quote($this->idgrp[$i]);
+				$res = $babDB->db_query($req);
+				$this->arrgroups = $babDB->db_fetch_array($res);
 
 				if( $i == 0 )
 					$this->arrgroups['select'] = "selected";
@@ -155,26 +157,27 @@ function categoriesList($grpid, $userid)
 
 		function temp($grpid, $userid)
 			{
+			global $babDB;
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
 			$this->bgcolor = bab_translate("Color");
 			$this->group = bab_translate("Group");
 			$this->idgrp = $grpid;
 			$this->count = count($grpid);
-			$this->db = $GLOBALS['babDB'];
 			$this->userid = $userid;
 			$req = "select * from ".BAB_CATEGORIESCAL_TBL."";
-			$this->res = $this->db->db_query($req);
-			$this->countcal = $this->db->db_num_rows($this->res);
+			$this->res = $babDB->db_query($req);
+			$this->countcal = $babDB->db_num_rows($this->res);
 			}
 			
 		function getnext()
 			{
+			global $babDB;
 			static $i = 0;
 			if( $i < $this->countcal)
 				{
 				$this->altbg = $this->altbg ? false : true;
-				$this->arr = $this->db->db_fetch_array($this->res);
+				$this->arr = $babDB->db_fetch_array($this->res);
 				$this->groupname = bab_getGroupName($this->arr['id_group']);
 				$this->burl = 0;
 				for( $k = 0; $k < $this->count; $k++)
@@ -232,6 +235,7 @@ function resourcesList($grpid, $userid)
 
 		function temp($grpid, $userid)
 			{
+			global $babDB;
 			$this->disabled = bab_translate("Disabled");
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
@@ -239,20 +243,20 @@ function resourcesList($grpid, $userid)
 			$this->update = bab_translate("Update");
 			$this->idgrp = $grpid;
 			$this->count = count($grpid);
-			$this->db = $GLOBALS['babDB'];
 			$this->userid = $userid;
-			$this->res = $this->db->db_query("select * from ".BAB_RESOURCESCAL_TBL."");
-			$this->countcal = $this->db->db_num_rows($this->res);
+			$this->res = $babDB->db_query("select * from ".BAB_RESOURCESCAL_TBL."");
+			$this->countcal = $babDB->db_num_rows($this->res);
 			}
 		
 			
 		function getnext()
 			{
+			global $babDB;
 			static $i = 0;
 			if( $i < $this->countcal)
 				{
 				$this->altbg = $this->altbg ? false : true;
-				$this->arr = $this->db->db_fetch_array($this->res);
+				$this->arr = $babDB->db_fetch_array($this->res);
 				$this->burl = 0;
 				for( $k = 0; $k < $this->count; $k++)
 					{
@@ -265,7 +269,7 @@ function resourcesList($grpid, $userid)
 				$this->groupname = bab_getGroupName($this->arr['id_group']);
 				$this->url = $GLOBALS['babUrlScript']."?tg=confcal&idx=modifyres&item=".$this->arr['id']."&userid=".$this->userid;
 				$this->urlname = $this->arr['name'];
-				$arr = $this->db->db_fetch_array($this->db->db_query("select id, actif from ".BAB_CALENDAR_TBL." where owner='".$this->db->db_escape_string($this->arr['id'])."' and type='3'"));
+				$arr = $babDB->db_fetch_array($babDB->db_query("select id, actif from ".BAB_CALENDAR_TBL." where owner='".$babDB->db_escape_string($this->arr['id'])."' and type='3'"));
 				$this->resid = $this->arr['id'];
 				if( $arr['actif'] == 'N' )
 					$this->calrescheck = "checked";
@@ -289,7 +293,7 @@ function resourcesList($grpid, $userid)
 
 function addCalCategory($groups, $name, $description, $bgcolor)
 	{
-	global $babBody;
+	global $babBody, $babDB;
 	if( empty($name))
 		{
 		$babBody->msgerror = bab_translate("You must provide a name"). " !!";
@@ -302,27 +306,26 @@ function addCalCategory($groups, $name, $description, $bgcolor)
 		$babBody->msgerror = bab_translate("You must select at least one group"). " !!";
 		return;
 		}
-	$db = $GLOBALS['babDB'];
 
 	for( $i = 0; $i < $count; $i++)
 		{		
-		$query = "select * from ".BAB_CATEGORIESCAL_TBL." where name='".$db->db_escape_string($name)."' and id_group='".$db->db_escape_string($groups[$i])."'";	
-		$res = $db->db_query($query);
-		if( $res && $db->db_num_rows($res) > 0)
+		$query = "select * from ".BAB_CATEGORIESCAL_TBL." where name='".$babDB->db_escape_string($name)."' and id_group='".$babDB->db_escape_string($groups[$i])."'";	
+		$res = $babDB->db_query($query);
+		if( $res && $babDB->db_num_rows($res) > 0)
 			{
 			//$babBody->msgerror = bab_translate("ERROR: This category already exists");
 			}
 		else
 			{
-			$query = "insert into ".BAB_CATEGORIESCAL_TBL." (name, id_group, description, bgcolor) VALUES ('" .$db->db_escape_string($name). "', '" . $db->db_escape_string($groups[$i]). "', '" . $db->db_escape_string($description). "', '" . $db->db_escape_string($bgcolor). "')";
-			$db->db_query($query);
+			$query = "insert into ".BAB_CATEGORIESCAL_TBL." (name, id_group, description, bgcolor) VALUES ('" .$babDB->db_escape_string($name). "', '" . $babDB->db_escape_string($groups[$i]). "', '" . $babDB->db_escape_string($description). "', '" . $babDB->db_escape_string($bgcolor). "')";
+			$babDB->db_query($query);
 			}
 		}
 	}
 
 function addCalResource($groups, $name, $description)
 	{
-	global $babBody;
+	global $babBody, $babDB;
 	if( empty($name))
 		{
 		$babBody->msgerror = bab_translate("You must provide a name"). " !!";
@@ -335,24 +338,22 @@ function addCalResource($groups, $name, $description)
 		return;
 		}
 
-	$db = $GLOBALS['babDB'];
-
 	for( $i = 0; $i < $count; $i++)
 		{		
-		$query = "select * from ".BAB_RESOURCESCAL_TBL." where name='".$db->db_escape_string($name)."' and id_group='".$db->db_escape_string($groups[$i])."'";	
-		$res = $db->db_query($query);
-		if( $db->db_num_rows($res) > 0)
+		$query = "select * from ".BAB_RESOURCESCAL_TBL." where name='".$babDB->db_escape_string($name)."' and id_group='".$babDB->db_escape_string($groups[$i])."'";	
+		$res = $babDB->db_query($query);
+		if( $babDB->db_num_rows($res) > 0)
 			{
 			//$babBody->msgerror = bab_translate("This resource already exists");
 			}
 		else
 			{
-			$query = "insert into ".BAB_RESOURCESCAL_TBL." (name, description, id_group) VALUES ('" .$db->db_escape_string($name). "', '" . $db->db_escape_string($description). "', '" . $db->db_escape_string($groups[$i]). "')";
-			$db->db_query($query);
-			$id = $db->db_insert_id();
+			$query = "insert into ".BAB_RESOURCESCAL_TBL." (name, description, id_group) VALUES ('" .$babDB->db_escape_string($name). "', '" . $babDB->db_escape_string($description). "', '" . $babDB->db_escape_string($groups[$i]). "')";
+			$babDB->db_query($query);
+			$id = $babDB->db_insert_id();
 
-			$query = "insert into ".BAB_CALENDAR_TBL." (owner, actif, type) VALUES ('" .$db->db_escape_string($id). "', 'Y', '3')";
-			$db->db_query($query);
+			$query = "insert into ".BAB_CALENDAR_TBL." (owner, actif, type) VALUES ('" .$babDB->db_escape_string($id). "', 'Y', '3')";
+			$babDB->db_query($query);
 			
 			}
 		}
@@ -395,12 +396,11 @@ if( $userid == 0 )
 	}
 else
 	{
-	$db = $GLOBALS['babDB'];
-	$req = "select * from ".BAB_GROUPS_TBL." where manager='".$db->db_escape_string($userid)."'";
-	$res = $db->db_query($req);
-	if( $res && $db->db_num_rows($res) > 0)
+	$req = "select * from ".BAB_GROUPS_TBL." where manager='".$babDB->db_escape_string($userid)."'";
+	$res = $babDB->db_query($req);
+	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-		while( $arr = $db->db_fetch_array($res))
+		while( $arr = $babDB->db_fetch_array($res))
 			array_push($grpid, $arr['id']);
 		}
 	else

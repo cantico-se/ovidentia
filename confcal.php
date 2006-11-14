@@ -21,16 +21,16 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
+include_once 'base.php';
 
 function bab_getCategoryCalName($id)
 	{
-	$db = $GLOBALS['babDB'];
-	$query = "select name from ".BAB_CATEGORIESCAL_TBL." where id=".$db->quote($id);
-	$res = $db->db_query($query);
-	if( $res && $db->db_num_rows($res) > 0)
+	global $babDB;
+	$query = "select name from ".BAB_CATEGORIESCAL_TBL." where id=".$babDB->quote($id);
+	$res = $babDB->db_query($query);
+	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-		$arr = $db->db_fetch_array($res);
+		$arr = $babDB->db_fetch_array($res);
 		return $arr['name'];
 		}
 	else
@@ -41,12 +41,12 @@ function bab_getCategoryCalName($id)
 
 function bab_getResourceCalName($id)
 	{
-	$db = $GLOBALS['babDB'];
-	$query = "select name from ".BAB_RESOURCESCAL_TBL." where id=".$db->quote($id);
-	$res = $db->db_query($query);
-	if( $res && $db->db_num_rows($res) > 0)
+	global $babDB;
+	$query = "select name from ".BAB_RESOURCESCAL_TBL." where id=".$babDB->quote($id);
+	$res = $babDB->db_query($query);
+	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-		$arr = $db->db_fetch_array($res);
+		$arr = $babDB->db_fetch_array($res);
 		return $arr['name'];
 		}
 	else
@@ -78,15 +78,15 @@ function categoryCalModify($userid, $id)
 
 		function temp($userid, $id)
 			{
+			global $babDB;
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
 			$this->bgcolor = bab_translate("Color");
 			$this->modify = bab_translate("Modify Category");
 			$this->delete = bab_translate("Delete");
-			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_CATEGORIESCAL_TBL." where id=".$this->db->quote($id);
-			$this->res = $this->db->db_query($req);
-			$this->arr = $this->db->db_fetch_array($this->res);
+			$req = "select * from ".BAB_CATEGORIESCAL_TBL." where id=".$babDB->quote($id);
+			$this->res = $babDB->db_query($req);
+			$this->arr = $babDB->db_fetch_array($this->res);
 			$this->userid = $userid;
 			}
 		}
@@ -116,14 +116,14 @@ function resourceCalModify($userid, $id)
 
 		function temp($userid, $id)
 			{
+			global $babDB;
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
 			$this->modify = bab_translate("Modify Resource");
 			$this->delete = bab_translate("Delete");
-			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_RESOURCESCAL_TBL." where id=".$this->db->quote($id);
-			$this->res = $this->db->db_query($req);
-			$this->arr = $this->db->db_fetch_array($this->res);
+			$req = "select * from ".BAB_RESOURCESCAL_TBL." where id=".$babDB->quote($id);
+			$this->res = $babDB->db_query($req);
+			$this->arr = $babDB->db_fetch_array($this->res);
 			$this->userid = $userid;
 			}
 		}
@@ -198,17 +198,16 @@ function resourceCalDelete($userid, $id)
 
 function modifyCategoryCal($userid, $oldname, $name, $description, $bgcolor, $id)
 	{
-	global $babBody;
+	global $babBody, $babDB;
 	if( empty($name))
 		{
 		$babBody->msgerror = bab_translate("You must provide a name !!");
 		return;
 		}
 
-	$db = $GLOBALS['babDB'];
-	$query = "select * from ".BAB_CATEGORIESCAL_TBL." where name='".$db->db_escape_string($oldname)."'";	
-	$res = $db->db_query($query);
-	if( $db->db_num_rows($res) < 1)
+	$query = "select * from ".BAB_CATEGORIESCAL_TBL." where name='".$babDB->db_escape_string($oldname)."'";	
+	$res = $babDB->db_query($query);
+	if( $babDB->db_num_rows($res) < 1)
 		{
 		$babBody->msgerror = bab_translate("The category doesn't exist");
 		}
@@ -217,31 +216,30 @@ function modifyCategoryCal($userid, $oldname, $name, $description, $bgcolor, $id
 
 		$query = "UPDATE ".BAB_CATEGORIESCAL_TBL." 
 		set 
-			name='".$db->db_escape_string($name)."', 
-			description='".$db->db_escape_string($description)."', 
-			bgcolor='".$db->db_escape_string($bgcolor)."' 
+			name='".$babDB->db_escape_string($name)."', 
+			description='".$babDB->db_escape_string($description)."', 
+			bgcolor='".$babDB->db_escape_string($bgcolor)."' 
 		where 
-			id='".$db->db_escape_string($id)."'
+			id='".$babDB->db_escape_string($id)."'
 		";
 
-		$db->db_query($query);
+		$babDB->db_query($query);
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=confcals&idx=listcat&userid=".$userid);
 	}
 
 function modifyResourceCal($userid, $oldname, $name, $description, $id)
 	{
-	global $babBody;
+	global $babBody, $babDB;
 	if( empty($name))
 		{
 		$babBody->msgerror = bab_translate("You must provide a name !!");
 		return;
 		}
 
-	$db = $GLOBALS['babDB'];
-	$query = "select * from ".BAB_RESOURCESCAL_TBL." where name=".$db->quote($oldname);	
-	$res = $db->db_query($query);
-	if( $db->db_num_rows($res) < 1)
+	$query = "select * from ".BAB_RESOURCESCAL_TBL." where name=".$babDB->quote($oldname);	
+	$res = $babDB->db_query($query);
+	if( $babDB->db_num_rows($res) < 1)
 		{
 		$babBody->msgerror = bab_translate("The resource doesn't exist");
 		}
@@ -250,42 +248,42 @@ function modifyResourceCal($userid, $oldname, $name, $description, $id)
 
 		$query = "UPDATE ".BAB_RESOURCESCAL_TBL." 
 		set 
-			name='".$db->db_escape_string($name)."', 
-			description='".$db->db_escape_string($description)."' 
+			name='".$babDB->db_escape_string($name)."', 
+			description='".$babDB->db_escape_string($description)."' 
 		where 
-			id='".$db->db_escape_string($id)."'
+			id='".$babDB->db_escape_string($id)."'
 		";
 
-		$db->db_query($query);
+		$babDB->db_query($query);
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=confcals&idx=listres&userid=".$userid);
 	}
 
 function confirmDeletecategoriescal($userid, $id)
 	{
-	$db = $GLOBALS['babDB'];
+	global $babDB;
 
-	$req = "select* from ".BAB_CATEGORIESCAL_TBL." where id=".$db->quote($id);
-	$res = $db->db_query($req);
-	$arr = $db->db_fetch_array($res);
+	$req = "select* from ".BAB_CATEGORIESCAL_TBL." where id=".$babDB->quote($id);
+	$res = $babDB->db_query($req);
+	$arr = $babDB->db_fetch_array($res);
 
 	// delete category
-	$req = "delete from ".BAB_CATEGORIESCAL_TBL." where id=".$db->quote($id);
-	$res = $db->db_query($req);
+	$req = "delete from ".BAB_CATEGORIESCAL_TBL." where id=".$babDB->quote($id);
+	$res = $babDB->db_query($req);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=confcals&idx=listcat&userid=".$userid);
 	}
 
 function confirmDeleteresourcescal($userid, $id)
 	{
-	$db = $GLOBALS['babDB'];
+	global $babDB;
 
-	$req = "select* from ".BAB_RESOURCESCAL_TBL." where id=".$db->quote($id);
-	$res = $db->db_query($req);
-	$arr = $db->db_fetch_array($res);
+	$req = "select* from ".BAB_RESOURCESCAL_TBL." where id=".$babDB->quote($id);
+	$res = $babDB->db_query($req);
+	$arr = $babDB->db_fetch_array($res);
 
 	// delete category
-	$req = "delete from ".BAB_RESOURCESCAL_TBL." where id=".$db->quote($id);
-	$res = $db->db_query($req);
+	$req = "delete from ".BAB_RESOURCESCAL_TBL." where id=".$babDB->quote($id);
+	$res = $babDB->db_query($req);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=confcals&idx=listres&userid=".$userid);
 	}
 
@@ -303,12 +301,11 @@ if( $userid == 0 )
 	}
 else
 	{
-	$db = $GLOBALS['babDB'];
-	$req = "select * from ".BAB_GROUPS_TBL." where manager=".$db->quote($userid);
-	$res = $db->db_query($req);
-	if( $res && $db->db_num_rows($res) > 0)
+	$req = "select * from ".BAB_GROUPS_TBL." where manager=".$babDB->quote($userid);
+	$res = $babDB->db_query($req);
+	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-		//while( $arr = $db->db_fetch_array($res))
+		//while( $arr = $babDB->db_fetch_array($res))
 		//	array_push($grpid, $arr['id']);
 		}
 	else
