@@ -21,9 +21,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
-include_once $babInstallPath."utilit/topincl.php";
-include_once $babInstallPath."utilit/forumincl.php";
+include_once 'base.php';
+include_once $babInstallPath.'utilit/topincl.php';
+include_once $babInstallPath.'utilit/forumincl.php';
 
 function showOthers()
 {
@@ -59,8 +59,7 @@ function upComingEvents()
 
 		function temp()
 			{
-			global $babBody, $BAB_SESS_USERID;
-			$this->db = $GLOBALS['babDB'];
+			global $babBody, $babDB, $BAB_SESS_USERID;
 			$mktime = mktime();
 			$this->newevents = bab_translate("Upcoming Events ( in the seven next days )");
 			$this->daymin = sprintf("%04d-%02d-%02d 00:00:00", date("Y", $mktime), Date("n", $mktime), Date("j", $mktime));
@@ -70,18 +69,18 @@ function upComingEvents()
 			$babBody->icalendars->initializeCalendars();
 			if (!empty($babBody->icalendars->id_percal))
 				{
-				$this->resevent = $this->db->db_query(
+				$this->resevent = $babDB->db_query(
 					"select 
 						ce.*, 
 						ceo.id_cal 
 					from ".BAB_CAL_EVENTS_TBL." ce 
 					left join ".BAB_CAL_EVENTS_OWNERS_TBL." ceo on ce.id=ceo.id_event 
-					where ceo.id_cal='".$this->db->db_escape_string($babBody->icalendars->id_percal)."' 
-						and ce.start_date < '".$this->db->db_escape_string($this->daymax)."' 
-						and ce.end_date > '".$this->db->db_escape_string($this->daymin)."'
+					where ceo.id_cal='".$babDB->db_escape_string($babBody->icalendars->id_percal)."' 
+						and ce.start_date < '".$babDB->db_escape_string($this->daymax)."' 
+						and ce.end_date > '".$babDB->db_escape_string($this->daymin)."'
 					order by ce.start_date
 				");
-				$this->countevent = $this->db->db_num_rows($this->resevent);
+				$this->countevent = $babDB->db_num_rows($this->resevent);
 				}
 			else
 				{
@@ -97,17 +96,17 @@ function upComingEvents()
 
 		if (count($idpubcals))
 				{
-				$this->resgrpevent = $this->db->db_query("
+				$this->resgrpevent = $babDB->db_query("
 				
 				select ce.*, ceo.id_cal from ".BAB_CAL_EVENTS_TBL." ce 
 					left join ".BAB_CAL_EVENTS_OWNERS_TBL." ceo on ce.id=ceo.id_event 
-					where ceo.id_cal IN (".$this->db->quote($idpubcals).") 
-						AND ce.start_date < '".$this->db->db_escape_string($this->daymax)."' 
-						AND ce.end_date > '".$this->db->db_escape_string($this->daymin)."'
+					where ceo.id_cal IN (".$babDB->quote($idpubcals).") 
+						AND ce.start_date < '".$babDB->db_escape_string($this->daymax)."' 
+						AND ce.end_date > '".$babDB->db_escape_string($this->daymin)."'
 					ORDER BY ce.start_date 
 					");
 
-				$this->countgrpevent = $this->db->db_num_rows($this->resgrpevent);
+				$this->countgrpevent = $babDB->db_num_rows($this->resgrpevent);
 				}
 			else
 				{
@@ -127,10 +126,11 @@ function upComingEvents()
 
 		function getevent()
 			{
+			global $babDB;
 			static $k=0;
 			if( $k < $this->countevent)
 				{
-				$arr = $this->db->db_fetch_array($this->resevent);
+				$arr = $babDB->db_fetch_array($this->resevent);
 				bab_debug($arr);
 				$this->enddate = bab_toHtml(bab_shortDate(bab_mktime($arr['end_date'])));
 				$this->startdate = bab_toHtml(bab_shortDate(bab_mktime($arr['start_date'])));
@@ -152,10 +152,11 @@ function upComingEvents()
 
 		function getgrpevent()
 			{
+			global $babDB;
 			static $k=0;
 			if( $k < $this->countgrpevent)
 				{
-				$arr = $this->db->db_fetch_array($this->resgrpevent);
+				$arr = $babDB->db_fetch_array($this->resgrpevent);
 				$this->enddate = bab_toHtml(bab_shortDate(bab_mktime($arr['end_date'])));
 				$this->startdate = bab_toHtml(bab_shortDate(bab_mktime($arr['start_date'])));
 				$this->title = bab_toHtml($arr['title']);
@@ -197,28 +198,28 @@ function newEmails()
 
 		function temp4()
 			{
-			global $BAB_SESS_USERID, $BAB_HASH_VAR;
-			$this->db = $GLOBALS['babDB'];
-			$req = "select *, DECODE(password, \"".$this->db->db_escape_string($BAB_HASH_VAR)."\") as accpass from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$this->db->db_escape_string($BAB_SESS_USERID)."'";
-			$this->res = $this->db->db_query($req);
-			$this->count = $this->db->db_num_rows($this->res);
+			global $babDB, $BAB_SESS_USERID, $BAB_HASH_VAR;
+			$req = "select *, DECODE(password, \"".$babDB->db_escape_string($BAB_HASH_VAR)."\") as accpass from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
+			$this->res = $babDB->db_query($req);
+			$this->count = $babDB->db_num_rows($this->res);
 			$this->newmails = bab_translate("Waiting mails");
 			}
 
 		function getmail()
 			{
+			global $babDB;
 			static $i=0;
 			if( $i < $this->count )
 				{
-				$arr = $this->db->db_fetch_array($this->res);
-				$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where id='".$this->db->db_escape_string($arr['domain'])."'";
-				$res2 = $this->db->db_query($req);
+				$arr = $babDB->db_fetch_array($this->res);
+				$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where id='".$babDB->db_escape_string($arr['domain'])."'";
+				$res2 = $babDB->db_query($req);
 				$this->domain = "";
 				$this->nbemails = "";
 				$this->domainurl = "";
-				if( $res2 && $this->db->db_num_rows($res2) > 0 )
+				if( $res2 && $babDB->db_num_rows($res2) > 0 )
 					{
-					$arr2 = $this->db->db_fetch_array($res2);
+					$arr2 = $babDB->db_fetch_array($res2);
 					$this->domain = $arr2['name'];
 					$protocol = '';
 					if( isset($GLOBALS['babImapProtocol']) && count($GLOBALS['babImapProtocol'])) 
@@ -269,9 +270,8 @@ function newFiles($nbdays)
 
 		function temp6($nbdays)
 			{
-			global $babBody, $BAB_SESS_USERID, $BAB_HASH_VAR;
+			global $babBody, $babDB, $BAB_SESS_USERID, $BAB_HASH_VAR;
 			$this->nbdays = $nbdays;
-			$this->db = $GLOBALS['babDB'];
 			$req = "select f.* 
 			from ".BAB_FILES_TBL." f, 
 				".BAB_FMDOWNLOAD_GROUPS_TBL." fmg,  
@@ -285,19 +285,19 @@ function newFiles($nbdays)
 			";
 
 			if( $BAB_SESS_USERID != "" )
-			$req .= " or fmg.id_group='1' or (fmg.id_group=ug.id_group and ug.id_object='".$this->db->db_escape_string($BAB_SESS_USERID)."')";
+			$req .= " or fmg.id_group='1' or (fmg.id_group=ug.id_group and ug.id_object='".$babDB->db_escape_string($BAB_SESS_USERID)."')";
 			$req .= ")";
 			
 			if( $this->nbdays > 0)
-				$req .= " and f.modified >= DATE_ADD(\"".$this->db->db_escape_string($babBody->lastlog)."\", INTERVAL -".$this->db->db_escape_string($this->nbdays)." DAY)";
+				$req .= " and f.modified >= DATE_ADD(\"".$babDB->db_escape_string($babBody->lastlog)."\", INTERVAL -".$babDB->db_escape_string($this->nbdays)." DAY)";
 			else
-				$req .= " and f.modified >= '".$this->db->db_escape_string($babBody->lastlog)."'";
+				$req .= " and f.modified >= '".$babDB->db_escape_string($babBody->lastlog)."'";
 
 			$req .= " group by f.id";
 		
 
-			$this->res = $this->db->db_query($req);
-			$this->count = $this->db->db_num_rows($this->res);
+			$this->res = $babDB->db_query($req);
+			$this->count = $babDB->db_num_rows($this->res);
 			if( $nbdays > 0)
 				$this->newfiles = bab_translate("Last files ( Since seven days before your last visit )");
 			else
@@ -306,10 +306,11 @@ function newFiles($nbdays)
 
 		function getfile()
 			{
+			global $babDB;
 			static $i=0;
 			if( $i < $this->count )
 				{
-				$arr = $this->db->db_fetch_array($this->res);
+				$arr = $babDB->db_fetch_array($this->res);
 				$this->file = $arr['name'];
 				if( !empty($arr['description']))
 					$this->filedesc = $arr['description'];
