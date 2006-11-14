@@ -21,8 +21,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
-include_once $GLOBALS['babInstallPath']."utilit/mailincl.php";
+include_once 'base.php';
+include_once $GLOBALS['babInstallPath'].'utilit/mailincl.php';
 
 function auth_decode($str)
 {
@@ -90,7 +90,7 @@ function notifyUserRegistration($link, $name, $email)
 
 function notifyAdminRegistration($name, $useremail, $warning)
 	{
-	global $babBody, $babAdminEmail, $babInstallPath;
+	global $babBody, $babDB, $babAdminEmail, $babInstallPath;
 
 	class tempb
 		{
@@ -116,16 +116,15 @@ function notifyAdminRegistration($name, $useremail, $warning)
 	if( $mail == false )
 		return;
 
-	$db = $GLOBALS['babDB'];
 	$sql = "select * from ".BAB_USERS_GROUPS_TBL." where id_group='3'";
-	$result=$db->db_query($sql);
-	if( $result && $db->db_num_rows($result) > 0 )
+	$result=$babDB->db_query($sql);
+	if( $result && $babDB->db_num_rows($result) > 0 )
 		{
-		while( $arr = $db->db_fetch_array($result))
+		while( $arr = $babDB->db_fetch_array($result))
 			{
-			$sql = "select email, firstname, lastname, disabled from ".BAB_USERS_TBL." where id='".$arr['id_object']."'";
-			$res=$db->db_query($sql);
-			$r = $db->db_fetch_array($res);
+			$sql = "select email, firstname, lastname, disabled from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($arr['id_object'])."'";
+			$res=$babDB->db_query($sql);
+			$r = $babDB->db_fetch_array($res);
 			if( $r['disabled'] != 1 )
 				$mail->mailBcc($r['email'], bab_composeUserName($r['firstname'] , $r['lastname']));
 			}
@@ -347,7 +346,7 @@ function notifyAdminUserRegistration($name, $email, $nickname, $pwd)
 
 function signOn( $nickname, $password,$lifetime)
 	{
-	global $babBody, $BAB_SESS_USER, $BAB_SESS_USERID;
+	global $babBody, $babDB, $BAB_SESS_USER, $BAB_SESS_USERID;
 	if( empty($nickname) || empty($password))
 		{
 		$babBody->msgerror = bab_translate("You must complete all fields !!");
@@ -366,24 +365,23 @@ function signOn( $nickname, $password,$lifetime)
 		}
 	}
 		
-	$db = $GLOBALS['babDB'];
-	$res=$db->db_query("select datelog from ".BAB_USERS_TBL." where id='".$BAB_SESS_USERID."'");
-	if( $res && $db->db_num_rows($res) > 0)
+	$res=$babDB->db_query("select datelog from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($BAB_SESS_USERID)."'");
+	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-		$arr = $db->db_fetch_array($res);
-		$db->db_query("update ".BAB_USERS_TBL." set datelog=now(), lastlog='".$arr['datelog']."' where id='".$BAB_SESS_USERID."'");
+		$arr = $babDB->db_fetch_array($res);
+		$babDB->db_query("update ".BAB_USERS_TBL." set datelog=now(), lastlog='".$babDB->db_escape_string($arr['datelog'])."' where id='".$babDB->db_escape_string($BAB_SESS_USERID)."'");
 		}
 
-	$res=$db->db_query("select * from ".BAB_USERS_LOG_TBL." where id_user='0' and sessid='".session_id()."'");
-	if( $res && $db->db_num_rows($res) > 0)
+	$res=$babDB->db_query("select * from ".BAB_USERS_LOG_TBL." where id_user='0' and sessid='".session_id()."'");
+	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-		$arr = $db->db_fetch_array($res);
+		$arr = $babDB->db_fetch_array($res);
 		$cpw = '';
 		if( extension_loaded('mcrypt') && isset($GLOBALS['babEncryptionKey']) && !empty($GLOBALS['babEncryptionKey']) && !isset($_REQUEST['babEncryptionKey']))
 			{
 			$cpw = bab_encrypt($password, md5($arr['id'].$arr['sessid'].$BAB_SESS_USERID.$GLOBALS['babEncryptionKey']));
 			}
-		$db->db_query("update ".BAB_USERS_LOG_TBL." set id_user='".$BAB_SESS_USERID."', cpw='".addslashes($cpw)."' where id='".$arr['id']."'");
+		$babDB->db_query("update ".BAB_USERS_LOG_TBL." set id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."', cpw='".$babDB->db_escape_string($cpw)."' where id='".$babDB->db_escape_string($arr['id'])."'");
 		}
 
 	// ajout cookie
@@ -398,21 +396,20 @@ function signOn( $nickname, $password,$lifetime)
 
 function sendPassword ($nickname)
 	{
-	global $babBody, $BAB_HASH_VAR, $babAdminEmail;
+	global $babBody, $babDB, $BAB_HASH_VAR, $babAdminEmail;
 
 	if (!empty($nickname))
 		{
-		$req="select id, email from ".BAB_USERS_TBL." where nickname='$nickname'";
-		$db = $GLOBALS['babDB'];
-		$res = $db->db_query($req);
-		if (!$res || $db->db_num_rows($res) < 1)
+		$req="select id, email from ".BAB_USERS_TBL." where nickname='".$babDB->db_escape_string($nickname)."'";
+		$res = $babDB->db_query($req);
+		if (!$res || $babDB->db_num_rows($res) < 1)
 			{
 			$babBody->msgerror = bab_translate("Incorrect nickname");
 			return false;
 			}
 		else
 			{
-			$arr = $db->db_fetch_array($res);
+			$arr = $babDB->db_fetch_array($res);
 			$new_pass=strtolower(random_password(8));
 
 			switch($babBody->babsite['authentification'])
@@ -477,8 +474,8 @@ function sendPassword ($nickname)
 
 
 			//update the database to include the new password
-			$req="update ".BAB_USERS_TBL." set password='". md5($new_pass) ."' where nickname='$nickname'";
-			$res=$db->db_query($req);
+			$req="update ".BAB_USERS_TBL." set password='". md5($new_pass) ."' where nickname='".$babDB->db_escape_string($nickname)."'";
+			$res=$babDB->db_query($req);
 
 			//send a simple email with the new password
 			notifyUserPassword($new_pass, $arr['email']);
@@ -503,15 +500,14 @@ function sendPassword ($nickname)
 
 function userLogin($nickname,$password)
 	{
-	global $babBody;
-	$db = $GLOBALS['babDB'];
+	global $babBody, $babDB;
 	$iduser = 0;
 	$logok = true;
 	$authtype = isset($babBody->babsite['authentification'])? $babBody->babsite['authentification']: BAB_AUTHENTIFICATION_OVIDENTIA;
 
-	$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
-	$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET cnx_try=cnx_try+1 WHERE sessid='".session_id()."'");
-	list($cnx_try) = $db->db_fetch_array($db->db_query("SELECT cnx_try FROM ".BAB_USERS_LOG_TBL." WHERE sessid='".session_id()."'"));
+	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
+	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET cnx_try=cnx_try+1 WHERE sessid='".session_id()."'");
+	list($cnx_try) = $babDB->db_fetch_array($babDB->db_query("SELECT cnx_try FROM ".BAB_USERS_LOG_TBL." WHERE sessid='".session_id()."'"));
 	if( $cnx_try > 5)
 		{
 		$babBody->msgerror = bab_translate("Maximum connexion attempts has been reached");
@@ -519,10 +515,10 @@ function userLogin($nickname,$password)
 		}
 
 	//$password=strtolower($password);
-	$res = $db->db_query("select * from ".BAB_USERS_TBL." where nickname='".$db->db_escape_string($nickname)."' and password='". $db->db_escape_string(md5(strtolower($password))) ."'");
-	if( $res && $db->db_num_rows($res) > 0 )
+	$res = $babDB->db_query("select * from ".BAB_USERS_TBL." where nickname='".$babDB->db_escape_string($nickname)."' and password='". $babDB->db_escape_string(md5(strtolower($password))) ."'");
+	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
-		$arruser = $db->db_fetch_array($res);
+		$arruser = $babDB->db_fetch_array($res);
 		if( $arruser['db_authentification'] == 'Y')
 			{
 			$authtype = BAB_AUTHENTIFICATION_OVIDENTIA;
@@ -545,19 +541,19 @@ function userLogin($nickname,$password)
 		if( $logok )
 			{
 			$updattributes = array();
-			$res = $db->db_query("select sfrt.*, sfxt.id as idfx from ".BAB_LDAP_SITES_FIELDS_TBL." sfrt left join ".BAB_DBDIR_FIELDSEXTRA_TBL." sfxt on sfxt.id_field=sfrt.id_field where sfrt.id_site='".$babBody->babsite['id']."' and sfxt.id_directory='0'");
+			$res = $babDB->db_query("select sfrt.*, sfxt.id as idfx from ".BAB_LDAP_SITES_FIELDS_TBL." sfrt left join ".BAB_DBDIR_FIELDSEXTRA_TBL." sfxt on sfxt.id_field=sfrt.id_field where sfrt.id_site='".$babDB->db_escape_string($babBody->babsite['id'])."' and sfxt.id_directory='0'");
 			$arridfx = array();
 
-			while( $arr = $db->db_fetch_array($res))
+			while( $arr = $babDB->db_fetch_array($res))
 				{
 				if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
 					{
-					$rr = $db->db_fetch_array($db->db_query("select name, description from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
+					$rr = $babDB->db_fetch_array($babDB->db_query("select name, description from ".BAB_DBDIR_FIELDS_TBL." where id='".$babDB->db_escape_string($arr['id_field'])."'"));
 					$fieldname = $rr['name'];
 					}
 				else
 					{
-					$rr = $db->db_fetch_array($db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+					$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string(($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
 					$fieldname = "babdirf".$arr['id'];
 					$arridfx[$arr['id']] = $arr['idfx'];
 					}
@@ -656,11 +652,11 @@ function userLogin($nickname,$password)
 
 			if( $logok )
 				{
-				$req = "select * from ".BAB_USERS_TBL." where nickname='".$nickname."'";
-				$res=$db->db_query($req);
-				if( $res && $db->db_num_rows($res) > 0 )
+				$req = "select * from ".BAB_USERS_TBL." where nickname='".$babDB->db_escape_string($nickname)."'";
+				$res=$babDB->db_query($req);
+				if( $res && $babDB->db_num_rows($res) > 0 )
 					{
-					$arruser = $db->db_fetch_array($res);
+					$arruser = $babDB->db_fetch_array($res);
 					$iduser = $arruser['id'];
 					if( $arruser['disabled'] == '1')
 						{
@@ -679,7 +675,7 @@ function userLogin($nickname,$password)
 						{
 						return false;
 						}
-					$arruser = $db->db_fetch_array($db->db_query("select * from ".BAB_USERS_TBL." where id='".$iduser."'"));
+					$arruser = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($iduser)."'"));
 					}
 				}
 			}
@@ -693,23 +689,23 @@ function userLogin($nickname,$password)
 				switch($key)
 					{
 					case "sn":
-						$req .= ", lastname='".addslashes(auth_decode($entries[0][$key][0]))."'";
+						$req .= ", lastname='".$babDB->db_escape_string(auth_decode($entries[0][$key][0]))."'";
 						break;
 					case "givenname":
-						$req .= ", firstname='".addslashes(auth_decode($entries[0][$key][0]))."'";
+						$req .= ", firstname='".$babDB->db_escape_string(auth_decode($entries[0][$key][0]))."'";
 						break;
 					case "mail":
-						$req .= ", email='".addslashes(auth_decode($entries[0][$key][0]))."'";
+						$req .= ", email='".$babDB->db_escape_string(auth_decode($entries[0][$key][0]))."'";
 						break;
 					default:
 						break;
 					}
 				}
-			$req .= " where id='".$iduser."'";
-			$db->db_query($req);
-			$req = "";
+			$req .= " where id='".$babDB->db_escape_string($iduser)."'";
+			$babDB->db_query($req);
+			$req = '';
 
-			list($idu) = $db->db_fetch_row($db->db_query("select id from ".BAB_DBDIR_ENTRIES_TBL." where id_user='".$iduser."' and id_directory='0'"));
+			list($idu) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_TBL." where id_user='".$babDB->db_escape_string($iduser)."' and id_directory='0'"));
 			if( count($updattributes) > 0 )
 				{
 				reset($updattributes);
@@ -727,39 +723,39 @@ function userLogin($nickname,$password)
 									$info = $ldap->get_values_len($ei, "jpegphoto");
 									if( $info && is_array($info))
 										{
-										$req .= ", photo_data='".addslashes($info[0])."'";
+										$req .= ", photo_data='".$babDB->db_escape_string($info[0])."'";
 										}
 									}
 								}
 							break;
 						case "mail":
-							$req .= ", email='".addslashes(auth_decode($entries[0][$key][0]))."'";
+							$req .= ", email='".$babDB->db_escape_string(auth_decode($entries[0][$key][0]))."'";
 							break;
 						default:
 							if( substr($val, 0, strlen("babdirf")) == 'babdirf' )
 								{
 								$tmp = substr($val, strlen("babdirf"));
-								$rs = $db->db_query("select id from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$arridfx[$tmp]."' and  id_entry='".$idu."'");
-								if( $rs && $db->db_num_rows($rs) > 0 )
+								$rs = $babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$babDB->db_escape_string($arridfx[$tmp])."' and  id_entry='".$babDB->db_escape_string($idu)."'");
+								if( $rs && $babDB->db_num_rows($rs) > 0 )
 									{
-									$db->db_query("update ".BAB_DBDIR_ENTRIES_EXTRA_TBL." set field_value='".addslashes(auth_decode($entries[0][$key][0]))."' where id_fieldx='".$arridfx[$tmp]."' and id_entry='".$idu."'");
+									$babDB->db_query("update ".BAB_DBDIR_ENTRIES_EXTRA_TBL." set field_value='".$babDB->db_escape_string(auth_decode($entries[0][$key][0]))."' where id_fieldx='".$babDB->db_escape_string($arridfx[$tmp])."' and id_entry='".$babDB->db_escape_string($idu)."'");
 									}
 								else
 									{
-									$db->db_query("insert into ".BAB_DBDIR_ENTRIES_EXTRA_TBL." ( field_value, id_fieldx, id_entry) values ('".addslashes(auth_decode($entries[0][$key][0]))."', '".$arridfx[$tmp]."', '".$idu."')");
+									$babDB->db_query("insert into ".BAB_DBDIR_ENTRIES_EXTRA_TBL." ( field_value, id_fieldx, id_entry) values ('".$babDB->db_escape_string(auth_decode($entries[0][$key][0]))."', '".$babDB->db_escape_string($arridfx[$tmp])."', '".$babDB->db_escape_string($idu)."')");
 									}
 								}
 							else
 								{
-								$req .= ", ".$val."='".addslashes(auth_decode($entries[0][$key][0]))."'";
+								$req .= ", ".$val."='".$babDB->db_escape_string(auth_decode($entries[0][$key][0]))."'";
 								}
 							break;
 						}
 					}
 
 				$req = "update ".BAB_DBDIR_ENTRIES_TBL." set ".substr($req, 1);
-				$req .= " where id_directory='0' and id_user='".$iduser."'";
-				$db->db_query($req);
+				$req .= " where id_directory='0' and id_user='".$babDB->db_escape_string($iduser)."'";
+				$babDB->db_query($req);
 				}
 			}
 
@@ -776,8 +772,8 @@ function userLogin($nickname,$password)
 			$iduser = $arruser['id'];
 			if( !$logok && $babBody->babsite['ldap_allowadmincnx'] == 'Y' )
 				{
-				$res = $db->db_query("select id from ".BAB_USERS_GROUPS_TBL." where id_object='".$iduser."' and id_group='3'");
-				if( $db->db_num_rows($res) == 0)
+				$res = $babDB->db_query("select id from ".BAB_USERS_GROUPS_TBL." where id_object='".$babDB->db_escape_string($iduser)."' and id_group='3'");
+				if( $babDB->db_num_rows($res) == 0)
 					{
 					$babBody->msgerror = bab_translate("LDAP authentification failed. Please verify your nickname and your password");
 					return false;
@@ -848,10 +844,9 @@ function userLogin($nickname,$password)
 
 function signOff()
 	{
-	global $babBody, $BAB_HASH_VAR, $BAB_SESS_USER, $BAB_SESS_EMAIL, $BAB_SESS_USERID, $BAB_SESS_HASHID,$BAB_SESS_LOGGED;
+	global $babBody, $babDB, $BAB_HASH_VAR, $BAB_SESS_USER, $BAB_SESS_EMAIL, $BAB_SESS_USERID, $BAB_SESS_HASHID,$BAB_SESS_LOGGED;
 	
-	$db = $GLOBALS['babDB'];
-	$db->db_query("delete from ".BAB_USERS_LOG_TBL." where id_user='".$BAB_SESS_USERID."' and sessid='".session_id()."'");
+	$babDB->db_query("delete from ".BAB_USERS_LOG_TBL." where id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."' and sessid='".session_id()."'");
 
 	if( isset($_SESSION))
 		{
