@@ -4158,7 +4158,7 @@ class bab_CalendarUserEvents extends bab_CalendarEvents
 			$this->getCalendarsFromOwner($ctx, explode(',',$userid));
 		}
 
-		$this->bab_CalendarEvents(&$ctx);
+		$this->bab_CalendarEvents($ctx);
 	}
 }
 
@@ -4177,7 +4177,7 @@ class bab_CalendarGroupEvents extends bab_CalendarEvents
 			$this->getCalendarsFromOwner($ctx, explode(',',$groupid));
 		}
 
-		$this->bab_CalendarEvents(&$ctx);
+		$this->bab_CalendarEvents($ctx);
 	}
 }
 
@@ -4196,7 +4196,7 @@ class bab_CalendarResourceEvents extends bab_CalendarEvents
 			$this->getCalendarsFromOwner($ctx, explode(',',$resourceid));
 		}
 
-		$this->bab_CalendarEvents(&$ctx);
+		$this->bab_CalendarEvents($ctx);
 	}
 }
 
