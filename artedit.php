@@ -2362,7 +2362,7 @@ function outPutTagsToJson()
 	$ret = array();
 	while( $arr = $babDB->db_fetch_array($res))
 	{
-		$ret[] = '{"id": "'.$arr['id'].'", "tagname": "'.$arr['tag_name'].'"}';		
+		$ret[] = '{"id": "'.$arr['id'].'", "tagname": "'.utf8_encode($arr['tag_name']).'"}';		
 	}
 
 	print '['.join(',', $ret).']';
