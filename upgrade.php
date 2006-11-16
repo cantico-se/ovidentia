@@ -2397,20 +2397,20 @@ if( !$res)
 	return $ret;
 	}
 
-$req = "ALTER TABLE `bab_mail_accounts` ADD `account_name` VARCHAR( 255 ) NOT NULL AFTER `id`";
+$req = "ALTER TABLE ".BAB_MAIL_ACCOUNTS_TBL." ADD `account_name` VARCHAR( 255 ) NOT NULL AFTER `id`";
 $res = $db->db_query($req);
 if( !$res)
 	{
-	$ret = "Alteration of <b>".BAB_SITES_TBL."</b> table failed !<br>";
+	$ret = "Alteration of <b>".BAB_MAIL_ACCOUNTS_TBL."</b> table failed !<br>";
 	return $ret;
 	}
 
-$req = "SELECT id,account FROM `bab_mail_accounts`";
+$req = "SELECT id,account FROM ".BAB_MAIL_ACCOUNTS_TBL."";
 $res = $db->db_query($req);
 while ($arr = $db->db_fetch_array($res))
-	 $db->db_query("UPDATE `bab_mail_accounts` SET `account_name` = '".$arr['account']."' WHERE `id` = '".$arr['id']."' LIMIT 1");
+	 $db->db_query("UPDATE ".BAB_MAIL_ACCOUNTS_TBL." SET `account_name` = '".$arr['account']."' WHERE `id` = '".$arr['id']."' LIMIT 1");
 
-$req = "ALTER TABLE `bab_mail_accounts` CHANGE `account` `login` VARCHAR( 255 ) NOT NULL";
+$req = "ALTER TABLE ".BAB_MAIL_ACCOUNTS_TBL." CHANGE `account` `login` VARCHAR( 255 ) NOT NULL";
 $res = $db->db_query($req);
 if( !$res)
 	{
@@ -5286,7 +5286,7 @@ if ($arr[0] != 'ldap_filter')
 	$res = $db->db_query("ALTER TABLE ".BAB_SITES_TBL." ADD ldap_filter TEXT NOT NULL");
 	if( !$res)
 		{
-		$ret = "Alteration of <b>".BAB_DBDIR_ENTRIES_EXTRA_TBL."</b> table failed !<br>";
+		$ret = "Alteration of <b>".BAB_SITES_TBL."</b> table failed !<br>";
 		return $ret;
 		}
 
@@ -5315,7 +5315,7 @@ if ($arr[0] != 'ldap_admindn')
 	$res = $db->db_query("ALTER TABLE ".BAB_SITES_TBL." ADD ldap_admindn TEXT NOT NULL");
 	if( !$res)
 		{
-		$ret = "Alteration of <b>".BAB_DBDIR_ENTRIES_EXTRA_TBL."</b> table failed !<br>";
+		$ret = "Alteration of <b>".BAB_SITES_TBL."</b> table failed !<br>";
 		return $ret;
 		}
 	}
@@ -5326,7 +5326,7 @@ if ($arr[0] != 'ldap_adminpassword')
 	$res = $db->db_query("ALTER TABLE ".BAB_SITES_TBL." ADD ldap_adminpassword tinyblob NOT NULL");
 	if( !$res)
 		{
-		$ret = "Alteration of <b>".BAB_DBDIR_ENTRIES_EXTRA_TBL."</b> table failed !<br>";
+		$ret = "Alteration of <b>".BAB_SITES_TBL."</b> table failed !<br>";
 		return $ret;
 		}
 	}
