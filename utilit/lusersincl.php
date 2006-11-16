@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
+include_once 'base.php';
 
 function browseUsers($pos, $cb)
 	{
@@ -51,22 +51,21 @@ function browseUsers($pos, $cb)
 
 		function temp($pos, $cb)
 			{
-			global $babBody;
+			global $babBody, $babDB;
 
 			$this->allname = bab_translate("All");
 			$this->nickname = bab_translate("Nickname");
-			$this->db = &$GLOBALS['babDB'];
 			$this->cb = $cb;
 
 			switch ($babBody->nameorder[0]) {
 				case "L":
-					$this->namesearch = "lastname";
-					$this->namesearch2 = "firstname";
+					$this->namesearch = 'lastname';
+					$this->namesearch2 = 'firstname';
 				break;
 				case "F":
 				default:
-					$this->namesearch = "firstname";
-					$this->namesearch2 = "lastname";
+					$this->namesearch = 'firstname';
+					$this->namesearch2 = 'lastname';
 				break; }
 
 			if( strlen($pos) > 0 && $pos[0] == "-" )
@@ -74,9 +73,13 @@ function browseUsers($pos, $cb)
 				$this->pos = strlen($pos)>1? $pos[1]: '';
 				$this->ord = $pos[0];
 				if( $babBody->currentAdmGroup == 0)
-					$req = "select * from ".BAB_USERS_TBL." where disabled != '1' and ".$this->namesearch2." like '".$this->pos."%' order by ".$this->namesearch2.", ".$this->namesearch." asc";
+					{
+					$req = "select * from ".BAB_USERS_TBL." where disabled != '1' and ".$this->namesearch2." like '".$babDB->db_escape_like($this->pos)."%' order by ".$this->namesearch2.", ".$this->namesearch." asc";
+					}
 				else
-					$req .= "select distinct u.* from ".BAB_USERS_TBL." u, ".BAB_USERS_GROUPS_TBL." ug, ".BAB_GROUPS_TBL." g where u.disabled != '1' and ug.id_object=u.id and ug.id_group=g.id AND g.lf>='".$babBody->currentDGGroup['lf']."' AND g.lr<='".$babBody->currentDGGroup['lr']."' and u.".$this->namesearch2." like '".$this->pos."%' order by u.".$this->namesearch2.", u.".$this->namesearch." asc";
+					{
+					$req .= "select distinct u.* from ".BAB_USERS_TBL." u, ".BAB_USERS_GROUPS_TBL." ug, ".BAB_GROUPS_TBL." g where u.disabled != '1' and ug.id_object=u.id and ug.id_group=g.id AND g.lf>='".$babDB->db_escape_string($babBody->currentDGGroup['lf'])."' AND g.lr<='".$babDB->db_escape_string($babBody->currentDGGroup['lr'])."' and u.".$this->namesearch2." like '".$babDB->db_escape_like($this->pos)."%' order by u.".$this->namesearch2.", u.".$this->namesearch." asc";
+					}
 
 				$this->fullname = bab_composeUserName(bab_translate("Lastname"),bab_translate("Firstname"));
 				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&pos=".$this->pos."&cb=".$this->cb;
@@ -86,16 +89,20 @@ function browseUsers($pos, $cb)
 				$this->pos = $pos;
 				$this->ord = "";
 				if( $babBody->currentAdmGroup == 0)
-					$req = "select * from ".BAB_USERS_TBL." where disabled != '1' and ".$this->namesearch." like '".$this->pos."%' order by ".$this->namesearch.", ".$this->namesearch2." asc";
+					{
+					$req = "select * from ".BAB_USERS_TBL." where disabled != '1' and ".$this->namesearch." like '".$babDB->db_escape_like($this->pos)."%' order by ".$this->namesearch.", ".$this->namesearch2." asc";
+					}
 				else
-					$req = "select distinct u.* from ".BAB_USERS_TBL." u, ".BAB_USERS_GROUPS_TBL." ug, ".BAB_GROUPS_TBL." g where u.disabled != '1' and ug.id_object=u.id and ug.id_group=g.id AND g.lf>='".$babBody->currentDGGroup['lf']."' AND g.lr<='".$babBody->currentDGGroup['lr']."' and u.".$this->namesearch." like '".$this->pos."%' order by u.".$this->namesearch.", u.".$this->namesearch2." asc";
+					{
+					$req = "select distinct u.* from ".BAB_USERS_TBL." u, ".BAB_USERS_GROUPS_TBL." ug, ".BAB_GROUPS_TBL." g where u.disabled != '1' and ug.id_object=u.id and ug.id_group=g.id AND g.lf>='".$babDB->db_escape_string($babBody->currentDGGroup['lf'])."' AND g.lr<='".$babDB->db_escape_string($babBody->currentDGGroup['lr'])."' and u.".$this->namesearch." like '".$babDB->db_escape_like($this->pos)."%' order by u.".$this->namesearch.", u.".$this->namesearch2." asc";
+					}
 
 				$this->fullname = bab_composeUserName(bab_translate("Firstname"),bab_translate("Lastname"));
 				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&pos=-".$this->pos."&cb=".$this->cb;
 				}
 
-			$this->res = $this->db->db_query($req);
-			$this->count = $this->db->db_num_rows($this->res);
+			$this->res = $babDB->db_query($req);
+			$this->count = $babDB->db_num_rows($this->res);
 
 			if( empty($this->pos))
 				$this->allselected = 1;
@@ -106,10 +113,11 @@ function browseUsers($pos, $cb)
 
 		function getnext()
 			{
+			global $babDB;
 			static $i = 0;
 			if( $i < $this->count)
 				{
-				$this->arr = $this->db->db_fetch_array($this->res);
+				$this->arr = $babDB->db_fetch_array($this->res);
 				$this->firstlast = bab_composeUserName($this->arr['firstname'],$this->arr['lastname']);
 				$this->firstlast = str_replace("'", "\'", $this->firstlast);
 				$this->firstlast = str_replace('"', "'+String.fromCharCode(34)+'",$this->firstlast);
@@ -117,8 +125,9 @@ function browseUsers($pos, $cb)
 					$this->urlname = bab_composeUserName($this->arr['lastname'],$this->arr['firstname']);
 				else
 					$this->urlname = bab_composeUserName($this->arr['firstname'],$this->arr['lastname']);
+				$this->urlname = bab_toHTML($this->urlname);
 				$this->userid = $this->arr['id'];
-				$this->nicknameval = $this->arr['nickname'];
+				$this->nicknameval = bab_toHTML($this->arr['nickname']);
 				$this->altbg = !$this->altbg;
 				$i++;
 				return true;
@@ -171,23 +180,22 @@ function browseArticlesAuthors($pos, $cb)
 		{
 		function temp($pos, $cb)
 			{
-			global $babBody;
+			global $babBody, $babDB;
 
 			$this->allname = bab_translate("All");
 			$this->nickname = bab_translate("Nickname");
-			$this->db = &$GLOBALS['babDB'];
 			$this->cb = $cb;
 			$this->altbg = false;
 
 			switch ($babBody->nameorder[0]) {
 				case "L":
-					$this->namesearch = "lastname";
-					$this->namesearch2 = "firstname";
+					$this->namesearch = 'lastname';
+					$this->namesearch2 = 'firstname';
 				break;
 				case "F":
 				default:
-					$this->namesearch = "firstname";
-					$this->namesearch2 = "lastname";
+					$this->namesearch = 'firstname';
+					$this->namesearch2 = 'lastname';
 				break; }
 
 			if( strlen($pos) > 0 && $pos[0] == "-" )
@@ -195,7 +203,7 @@ function browseArticlesAuthors($pos, $cb)
 				$this->pos = strlen($pos)>1? $pos[1]: '';
 				$this->ord = $pos[0];
 
-				$req = "select distinct ut.* from ".BAB_USERS_TBL." ut left join ".BAB_ARTICLES_TBL." at on ut.id=at.id_author where at.id_author!=0 and at.id_topic in (".implode(',', array_keys($babBody->topview)).") and ut.".$this->namesearch2." like '".$this->pos."%' order by ut.".$this->namesearch2.", ut.".$this->namesearch." asc";
+				$req = "select distinct ut.* from ".BAB_USERS_TBL." ut left join ".BAB_ARTICLES_TBL." at on ut.id=at.id_author where at.id_author!=0 and at.id_topic in (".$babDB->quote(array_keys($babBody->topview)).") and ut.".$this->namesearch2." like '".$babDB->db_escape_like($this->pos)."%' order by ut.".$this->namesearch2.", ut.".$this->namesearch." asc";
 
 				$this->fullname = bab_composeUserName(bab_translate("Lastname"),bab_translate("Firstname"));
 				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=".$_REQUEST['tg']."&idx=".$_REQUEST['idx']."&pos=".$this->pos."&cb=".$this->cb;
@@ -204,14 +212,14 @@ function browseArticlesAuthors($pos, $cb)
 				{
 				$this->pos = $pos;
 				$this->ord = "";
-				$req = "select distinct ut.* from ".BAB_USERS_TBL." ut left join ".BAB_ARTICLES_TBL." at on ut.id=at.id_author where at.id_author!=0 and at.id_topic in (".implode(',', array_keys($babBody->topview)).")  and ut.".$this->namesearch." like '".$this->pos."%' order by ut.".$this->namesearch.", ut.".$this->namesearch2." asc";
+				$req = "select distinct ut.* from ".BAB_USERS_TBL." ut left join ".BAB_ARTICLES_TBL." at on ut.id=at.id_author where at.id_author!=0 and at.id_topic in (".$babDB->quote(array_keys($babBody->topview)).")  and ut.".$this->namesearch." like '".$babDB->db_escape_like($this->pos)."%' order by ut.".$this->namesearch.", ut.".$this->namesearch2." asc";
 
 				$this->fullname = bab_composeUserName(bab_translate("Firstname"),bab_translate("Lastname"));
 				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=".$_REQUEST['tg']."&idx=".$_REQUEST['idx']."&pos=-".$this->pos."&cb=".$this->cb;
 				}
 
-			$this->res = $this->db->db_query($req);
-			$this->count = $this->db->db_num_rows($this->res);
+			$this->res = $babDB->db_query($req);
+			$this->count = $babDB->db_num_rows($this->res);
 
 			if( empty($this->pos))
 				$this->allselected = 1;
@@ -222,10 +230,11 @@ function browseArticlesAuthors($pos, $cb)
 
 		function getnext()
 			{
+			global $babDB;
 			static $i = 0;
 			if( $i < $this->count)
 				{
-				$this->arr = $this->db->db_fetch_array($this->res);
+				$this->arr = $babDB->db_fetch_array($this->res);
 				$this->firstlast = bab_composeUserName($this->arr['firstname'],$this->arr['lastname']);
 				$this->firstlast = str_replace("'", "\'", $this->firstlast);
 				$this->firstlast = str_replace('"', "'+String.fromCharCode(34)+'",$this->firstlast);
@@ -233,8 +242,10 @@ function browseArticlesAuthors($pos, $cb)
 					$this->urlname = bab_composeUserName($this->arr['lastname'],$this->arr['firstname']);
 				else
 					$this->urlname = bab_composeUserName($this->arr['firstname'],$this->arr['lastname']);
+
+				$this->urlname = bab_toHTML($this->urlname);
 				$this->userid = $this->arr['id'];
-				$this->nicknameval = $this->arr['nickname'];
+				$this->nicknameval = bab_toHTML($this->arr['nickname']);
 				$this->altbg = !$this->altbg;
 				$i++;
 				return true;
