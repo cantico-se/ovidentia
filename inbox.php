@@ -21,8 +21,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
-include_once $babInstallPath."utilit/mailincl.php";
+include_once 'base.php';
+include_once $babInstallPath.'utilit/mailincl.php';
 
 define('MAX_MSGROWS', 10);
 
@@ -67,7 +67,7 @@ function listMails($accid, $criteria, $reverse, $start)
 
 		function temp($accid, $criteria, $reverse, $start)
 			{
-			global $babBody, $BAB_SESS_USERID, $BAB_HASH_VAR;
+			global $babBody, $babDB, $BAB_SESS_USERID, $BAB_HASH_VAR;
 			$this->reverse = $reverse;
 			$this->criteria = $criteria;
 			$this->accid = $accid;
@@ -95,24 +95,25 @@ function listMails($accid, $criteria, $reverse, $start)
 			$this->dateurl = $GLOBALS['babUrlScript']."?tg=inbox&idx=list&accid=".$this->accid."&criteria=".SORTARRIVAL."&reverse=".$reverse;
 
 			$this->mailcount = 0;
-			$this->db = &$GLOBALS['babDB'];
 			if( empty($accid))
 				{
-				$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$BAB_SESS_USERID."' and prefered='Y'";
-				$res = $this->db->db_query($req);
-				if( !$res || $this->db->db_num_rows($res) == 0 )
+				$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."' and prefered='Y'";
+				$res = $babDB->db_query($req);
+				if( !$res || $babDB->db_num_rows($res) == 0 )
 					{
-					$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$BAB_SESS_USERID."'";
+					$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
 					}
 				}
 			else
-				$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from ".BAB_MAIL_ACCOUNTS_TBL." where id='".$accid."' and owner='".$BAB_SESS_USERID."'";
+				{
+				$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from ".BAB_MAIL_ACCOUNTS_TBL." where id='".$babDB->db_escape_string($accid)."' and owner='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
+				}
 			$this->composeurl = $GLOBALS['babUrlScript']."?tg=mail&idx=compose&criteria=".$criteria."&reverse=".$reverse;
 
-			$res = $this->db->db_query($req);
-			if( $res && $this->db->db_num_rows($res) > 0 )
+			$res = $babDB->db_query($req);
+			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
-				$arr = $this->db->db_fetch_array($res);
+				$arr = $babDB->db_fetch_array($res);
 				$this->maxrows = $arr['maxrows'];
 				$this->mailboxname = $arr['account_name'];
 				if( empty($accid))
@@ -122,11 +123,11 @@ function listMails($accid, $criteria, $reverse, $start)
 				else
 					$this->accid = $accid;
 				$this->composeurl .= "&accid=".$this->accid;
-				$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where id='".$arr['domain']."'";
-				$res2 = $this->db->db_query($req);
-				if( $res2 && $this->db->db_num_rows($res2) > 0 )
+				$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where id='".$babDB->db_escape_string($arr['domain'])."'";
+				$res2 = $babDB->db_query($req);
+				if( $res2 && $babDB->db_num_rows($res2) > 0 )
 					{
-					$arr2 = $this->db->db_fetch_array($res2);
+					$arr2 = $babDB->db_fetch_array($res2);
 					$this->access = $arr2['access'];
 					$protocol = '';
 					if( isset($GLOBALS['babImapProtocol']) && count($GLOBALS['babImapProtocol'])) 
@@ -161,9 +162,9 @@ function listMails($accid, $criteria, $reverse, $start)
 						}
 					}
 				}
-			$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$BAB_SESS_USERID."'";
-			$this->resacc = $this->db->db_query($req);
-			$this->countacc = $this->db->db_num_rows($this->resacc);
+			$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
+			$this->resacc = $babDB->db_query($req);
+			$this->countacc = $babDB->db_num_rows($this->resacc);
 
 			if ($this->countacc == 0)
 				{
@@ -268,10 +269,11 @@ function listMails($accid, $criteria, $reverse, $start)
 
 		function getnextacc()
 			{
+			global $babDB;
 			static $k=0;
 			if( $k < $this->countacc)
 				{
-				$arr = $this->db->db_fetch_array($this->resacc);
+				$arr = $babDB->db_fetch_array($this->resacc);
 				$this->accountname = $arr['account_name'];
 				$this->accountid = $arr['id'];
 				if( $this->accountid == $this->accid)
@@ -332,7 +334,7 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 
 		function temp($accid, $msg, $criteria, $reverse, $start)
 			{
-			global $babBody, $BAB_HASH_VAR;
+			global $babBody, $babDB, $BAB_HASH_VAR;
 			$this->fromname = bab_translate("From");
 			$this->subjectname = bab_translate("Subject");
 			$this->toname = bab_translate("To");
@@ -356,17 +358,16 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 			$this->accid = $accid;
 			$this->ccval = "";
 
-			$db = $GLOBALS['babDB'];
-			$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from ".BAB_MAIL_ACCOUNTS_TBL." where id='".$accid."'";
-			$res = $db->db_query($req);
-			if( $res && $db->db_num_rows($res) > 0 )
+			$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from ".BAB_MAIL_ACCOUNTS_TBL." where id='".$babDB->db_escape_string($accid)."'";
+			$res = $babDB->db_query($req);
+			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
-				$arr = $db->db_fetch_array($res);
-				$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where id='".$arr['domain']."'";
-				$res2 = $db->db_query($req);
-				if( $res2 && $db->db_num_rows($res2) > 0 )
+				$arr = $babDB->db_fetch_array($res);
+				$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where id='".$babDB->db_escape_string($arr['domain'])."'";
+				$res2 = $babDB->db_query($req);
+				if( $res2 && $babDB->db_num_rows($res2) > 0 )
 					{
-					$arr2 = $db->db_fetch_array($res2);
+					$arr2 = $babDB->db_fetch_array($res2);
 					$protocol = '';
 					if( isset($GLOBALS['babImapProtocol']) && count($GLOBALS['babImapProtocol'])) 
 						{
@@ -683,18 +684,17 @@ function get_cid_part($mbox, $msg_number, $cid, $structure = false, $part_number
 
 function showPart($accid, $msg, $cid)
 	{
-		global $BAB_SESS_USERID, $BAB_HASH_VAR;
-	$db = $GLOBALS['babDB'];
-	$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$BAB_SESS_USERID."' and id='".$accid."'";
-	$res = $db->db_query($req);
-	if( $res && $db->db_num_rows($res)> 0)
+	global $BAB_SESS_USERID, $babDB, $BAB_HASH_VAR;
+	$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."' and id='".$babDB->db_escape_string($accid)."'";
+	$res = $babDB->db_query($req);
+	if( $res && $babDB->db_num_rows($res)> 0)
 		{
-		$arr = $db->db_fetch_array($res);
-		$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where id='".$arr['domain']."'";
-		$res2 = $db->db_query($req);
-		if( $res2 && $db->db_num_rows($res2)> 0)
+		$arr = $babDB->db_fetch_array($res);
+		$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where id='".$babDB->db_escape_string($arr['domain'])."'";
+		$res2 = $babDB->db_query($req);
+		if( $res2 && $babDB->db_num_rows($res2)> 0)
 			{
-			$arr2 = $db->db_fetch_array($res2);
+			$arr2 = $babDB->db_fetch_array($res2);
 			$protocol = '';
 			if( isset($GLOBALS['babImapProtocol']) && count($GLOBALS['babImapProtocol'])) 
 				{
@@ -719,19 +719,18 @@ function showPart($accid, $msg, $cid)
 
 function getAttachment($accid, $msg, $part, $mime, $enc, $file)
 	{
-	global $BAB_SESS_USERID, $BAB_HASH_VAR;
+	global $BAB_SESS_USERID, $babDB, $BAB_HASH_VAR;
 
-	$db = $GLOBALS['babDB'];
-	$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$BAB_SESS_USERID."' and id='".$accid."'";
-	$res = $db->db_query($req);
-	if( $res && $db->db_num_rows($res)> 0)
+	$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."' and id='".$babDB->db_escape_string($accid)."'";
+	$res = $babDB->db_query($req);
+	if( $res && $babDB->db_num_rows($res)> 0)
 		{
-		$arr = $db->db_fetch_array($res);
-		$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where id='".$arr['domain']."'";
-		$res2 = $db->db_query($req);
-		if( $res2 && $db->db_num_rows($res2)> 0)
+		$arr = $babDB->db_fetch_array($res);
+		$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where id='".$babDB->db_escape_string($arr['domain'])."'";
+		$res2 = $babDB->db_query($req);
+		if( $res2 && $babDB->db_num_rows($res2)> 0)
 			{
-			$arr2 = $db->db_fetch_array($res2);
+			$arr2 = $babDB->db_fetch_array($res2);
 			$protocol = '';
 			if( isset($GLOBALS['babImapProtocol']) && count($GLOBALS['babImapProtocol'])) 
 				{
@@ -794,19 +793,18 @@ function getAttachment($accid, $msg, $part, $mime, $enc, $file)
 
 function deleteMails($item, $accid, $criteria, $reverse)
 	{
-	global $BAB_SESS_USERID, $BAB_HASH_VAR;
+	global $BAB_SESS_USERID, $babDB, $BAB_HASH_VAR;
 
-	$db = $GLOBALS['babDB'];
-	$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$BAB_SESS_USERID."' and id='".$accid."'";
-	$res = $db->db_query($req);
-	if( $res && $db->db_num_rows($res)> 0)
+	$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."' and id='".$babDB->db_escape_string($accid)."'";
+	$res = $babDB->db_query($req);
+	if( $res && $babDB->db_num_rows($res)> 0)
 		{
-		$arr = $db->db_fetch_array($res);
-		$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where id='".$arr['domain']."'";
-		$res2 = $db->db_query($req);
-		if( $res2 && $db->db_num_rows($res2)> 0)
+		$arr = $babDB->db_fetch_array($res);
+		$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where id='".$babDB->db_escape_string($arr['domain'])."'";
+		$res2 = $babDB->db_query($req);
+		if( $res2 && $babDB->db_num_rows($res2)> 0)
 			{
-			$arr2 = $db->db_fetch_array($res2);
+			$arr2 = $babDB->db_fetch_array($res2);
 			$protocol = '';
 			if( isset($GLOBALS['babImapProtocol']) && count($GLOBALS['babImapProtocol'])) 
 				{
