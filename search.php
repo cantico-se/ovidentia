@@ -270,13 +270,13 @@ function searchKeyword($item , $option = "OR")
 				if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $row['id']))
 					{
 					$this->arrtopics[$row['id_cat']][] = array('id'=>$row['id'], 'category'=>$row['category']);
+					if(  $row['busetags'] == 'Y' )
+						{
+						$this->busetags = true;
+						}
 					if( !isset($this->arrtopicscategories[$row['id_cat']]))
 						{
 						$this->arrtopicscategories[$row['id_cat']] = $row['title'];
-						if(  $row['busetags'] == 'Y' )
-							{
-							$this->busetags = true;
-							}
 						}
 					}
 				}

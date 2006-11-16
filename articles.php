@@ -1237,6 +1237,20 @@ function getDocumentArticle($idf, $topics)
 	}
 }
 
+function outPutTagsToJson()
+{
+	global $babBody, $babDB;
+	$like = bab_rp('like', '');
+	$res = $babDB->db_query("select * from ".BAB_TAGS_TBL." where tag_name like '%".$babDB->db_escape_like($like)."%' order by tag_name asc");
+
+	$ret = array();
+	while( $arr = $babDB->db_fetch_array($res))
+	{
+		$ret[] = '{"id": "'.$arr['id'].'", "tagname": "'.$arr['tag_name'].'"}';		
+	}
+
+	print '['.join(',', $ret).']';
+}
 
 /* main */
 $arrtop = array();
@@ -1246,13 +1260,18 @@ if(!isset($idx))
 	$idx = "Articles";
 	}
 
-if( count($babBody->topview) == 0 || !isset($babBody->topview[$topics]) )
+if( count($babBody->topview) == 0 )
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	$idx = 'denied';
 }
-elseif (count($babBody->topview) > 0)
+else
 {
+if( !isset($topics))
+	{
+	$rr = array_keys($babBody->topview);
+	$topics = $rr[0];
+	}
 $res = $babDB->db_query("select * from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($topics)."'");
 $arrtop = $babDB->db_fetch_array($res);
 }
@@ -1272,6 +1291,11 @@ $supp_rfurl = isset($rfurl) ? '&rfurl='.urlencode($rfurl) : '';
 
 switch($idx)
 	{
+	case 'tagsjson':
+		outPutTagsToJson();
+		exit;
+		break;
+
 	case "unload":
 		if( !isset($popupmessage)) { $popupmessage ='';}
 		if( !isset($refreshurl)) { $refreshurl ='';}

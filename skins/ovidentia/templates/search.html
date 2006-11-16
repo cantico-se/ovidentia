@@ -204,33 +204,6 @@ else
 	op.focus();
 }
 <!--#endif item -->
-<!--#if busetags -->
-
-window.onload = function()
-{
-
-  aTokens = [','];
-  aConfiguration = {tokens: aTokens, minChars: 1, fullSearch: false, choices: 10};
-  
-  var rAjax = new Ajax.Request(
-    'index.php?tg=artedit&idx=tagsjson',
-    {
-      method: 'get',
-      onSuccess: function(xhr)
-      {
-		atags = [];
-		aConfiguration.afterUpdateElement = function() { $('idtags').value += ', ' };
-		eval("var tags = " + xhr.responseText);
-		for(i=0;i<tags.length;i++) {
-			atags.push(tags[i].tagname + '');
-		}
-		new Autocompleter.Local("idtags", "tags-ac", atags, aConfiguration)
-      }
-    }
-  );
-  
-}
-<!--#endif busetags -->
 
 -->
 </script>
@@ -472,6 +445,38 @@ setselects(document.forms.searchForm.g_directory);
 </tr>
 </table>
 </form>
+<!--#if busetags -->
+<script type="text/javascript">
+<!--
+
+//window.onload = function()
+//{
+
+  aTokens = [','];
+  aConfiguration = {tokens: aTokens, minChars: 1, fullSearch: false, choices: 10};
+  
+  var rAjax = new Ajax.Request(
+    'index.php?tg=articles&idx=tagsjson',
+    {
+      method: 'get',
+      onSuccess: function(xhr)
+      {
+		atags = [];
+		aConfiguration.afterUpdateElement = function() { $('idtags').value += ', ' };
+		eval("var tags = " + xhr.responseText);
+		for(i=0;i<tags.length;i++) {
+			atags.push(tags[i].tagname + '');
+		}
+		new Autocompleter.Local("idtags", "tags-ac", atags, aConfiguration)
+      }
+    }
+  );
+  
+//}
+<!--#endif busetags -->
+//-->
+</script>
+
 <!--#end search -->
 
 <!--#begin navbar -->

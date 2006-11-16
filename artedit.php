@@ -2353,20 +2353,6 @@ function artedit_init()
 	return $aredit;
 }
 
-function outPutTagsToJson()
-{
-	global $babBody, $babDB;
-	$like = bab_rp('like', '');
-	$res = $babDB->db_query("select * from ".BAB_TAGS_TBL." where tag_name like '%".$babDB->db_escape_like($like)."%' order by tag_name asc");
-
-	$ret = array();
-	while( $arr = $babDB->db_fetch_array($res))
-	{
-		$ret[] = '{"id": "'.$arr['id'].'", "tagname": "'.utf8_encode($arr['tag_name']).'"}';		
-	}
-
-	print '['.join(',', $ret).']';
-}
 
 /* main */
 $artedit = array();
@@ -2699,10 +2685,6 @@ if($idx == 'movet')
 
 switch($idx)
 	{
-	case 'tagsjson':
-		outPutTagsToJson();
-		exit;
-		break;
 	case "denied":
 		$babBody->msgerror = bab_translate("Access denied");
 		break;
