@@ -21,15 +21,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
-include_once $babInstallPath."utilit/gdiincl.php";
+include_once 'base.php';
+include_once $babInstallPath.'utilit/gdiincl.php';
 
 function getFmImage($idf, $w, $h)
 	{
 	global $babDB;
 	include_once $GLOBALS['babInstallPath']."utilit/fileincl.php";
 
-	$res = $babDB->db_query("select * from ".BAB_FILES_TBL." where id='".$idf."'");
+	$res = $babDB->db_query("select * from ".BAB_FILES_TBL." where id='".$babDB->db_escape_string($idf)."'");
 	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
 		$arr = $babDB->db_fetch_array($res);
