@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
+include_once 'base.php';
 
 class bab_WebStatEvent
 {
@@ -108,7 +108,7 @@ class bab_WebStatEvent
 
 		bab_logUserActionTime($BAB_SESS_USERID, session_id());
 
-		$babDB->db_query("insert into ".BAB_STATS_EVENTS_TBL." (evt_time, evt_tg, evt_id_site, evt_referer, evt_ip, evt_host, evt_client, evt_url, evt_session_id, evt_iduser) values (now(), '".addslashes($this->tg)."', '0', '".addslashes($this->referer)."', '".$this->ip."', '".addslashes($this->host)."', '".addslashes($this->client)."', '".addslashes($this->url)."', '".session_id()."', '0')");
+		$babDB->db_query("insert into ".BAB_STATS_EVENTS_TBL." (evt_time, evt_tg, evt_id_site, evt_referer, evt_ip, evt_host, evt_client, evt_url, evt_session_id, evt_iduser) values (now(), '".$babDB->db_escape_string($this->tg)."', '0', '".$babDB->db_escape_string($this->referer)."', '".$babDB->db_escape_string($this->ip)."', '".$babDB->db_escape_string($this->host)."', '".$babDB->db_escape_string($this->client)."', '".$babDB->db_escape_string($this->url)."', '".session_id()."', '0')");
 		$this->idevt = $babDB->db_insert_id();
 	}
 
@@ -120,15 +120,15 @@ class bab_WebStatEvent
 		$idg = $id_dgowner != 0? array(0, $id_dgowner): array(0);
 		for($k=0; $k <count($idg); $k++ )
 		{
-			$res = $babDB->db_query("select st_nb_articles from ".BAB_STATS_ARTICLES_NEW_TBL." where st_date='".$date."' and st_hour='".$hour."' and st_id_dgowner='".$idg[$k]."'");
+			$res = $babDB->db_query("select st_nb_articles from ".BAB_STATS_ARTICLES_NEW_TBL." where st_date='".$babDB->db_escape_string($date)."' and st_hour='".$babDB->db_escape_string($hour)."' and st_id_dgowner='".$babDB->db_escape_string($idg[$k])."'");
 			if( $res && $babDB->db_num_rows($res) > 0 )
 			{
 				$arr = $babDB->db_fetch_array($res);
-				$babDB->db_query("update ".BAB_STATS_ARTICLES_NEW_TBL." set st_nb_articles='".($arr['st_nb_articles']+1)."' where st_date='".$date."' and st_hour='".$hour."' and st_id_dgowner='".$idg[$k]."'");
+				$babDB->db_query("update ".BAB_STATS_ARTICLES_NEW_TBL." set st_nb_articles='".$babDB->db_escape_string(($arr['st_nb_articles']+1))."' where st_date='".$babDB->db_escape_string($date)."' and st_hour='".$babDB->db_escape_string($hour)."' and st_id_dgowner='".$babDB->db_escape_string($idg[$k])."'");
 			}
 			else
 			{
-				$babDB->db_query("insert into ".BAB_STATS_ARTICLES_NEW_TBL." (st_date, st_hour, st_id_dgowner, st_nb_articles ) values ('".$date."', '".$hour."', '".$idg[$k]."', '1')");
+				$babDB->db_query("insert into ".BAB_STATS_ARTICLES_NEW_TBL." (st_date, st_hour, st_id_dgowner, st_nb_articles ) values ('".$babDB->db_escape_string($date)."', '".$babDB->db_escape_string($hour)."', '".$babDB->db_escape_string($idg[$k])."', '1')");
 			}
 		}
 	}
@@ -141,15 +141,15 @@ class bab_WebStatEvent
 		$idg = $id_dgowner != 0? array(0, $id_dgowner): array(0);
 		for($k=0; $k <count($idg); $k++ )
 		{
-			$res = $babDB->db_query("select st_nb_files from ".BAB_STATS_FMFILES_NEW_TBL." where st_date='".$date."' and st_hour='".$hour."' and st_id_dgowner='".$idg[$k]."'");
+			$res = $babDB->db_query("select st_nb_files from ".BAB_STATS_FMFILES_NEW_TBL." where st_date='".$babDB->db_escape_string($date)."' and st_hour='".$babDB->db_escape_string($hour)."' and st_id_dgowner='".$babDB->db_escape_string($idg[$k])."'");
 			if( $res && $babDB->db_num_rows($res) > 0 )
 			{
 				$arr = $babDB->db_fetch_array($res);
-				$babDB->db_query("update ".BAB_STATS_FMFILES_NEW_TBL." set st_nb_files='".($arr['st_nb_files']+1)."' where st_date='".$date."' and st_hour='".$hour."' and st_id_dgowner='".$idg[$k]."'");
+				$babDB->db_query("update ".BAB_STATS_FMFILES_NEW_TBL." set st_nb_files='".$babDB->db_escape_string(($arr['st_nb_files']+1))."' where st_date='".$babDB->db_escape_string($date)."' and st_hour='".$babDB->db_escape_string($hour)."' and st_id_dgowner='".$idg[$k]."'");
 			}
 			else
 			{
-				$babDB->db_query("insert into ".BAB_STATS_FMFILES_NEW_TBL." (st_date, st_hour, st_id_dgowner, st_nb_files ) values ('".$date."', '".$hour."', '".$idg[$k]."', '1')");
+				$babDB->db_query("insert into ".BAB_STATS_FMFILES_NEW_TBL." (st_date, st_hour, st_id_dgowner, st_nb_files ) values ('".$babDB->db_escape_string($date)."', '".$babDB->db_escape_string($hour)."', '".$babDB->db_escape_string($idg[$k])."', '1')");
 			}
 		}
 	}
@@ -346,7 +346,7 @@ class bab_WebStatEvent
 				{
 				$iduser = 0;
 				}
-			$babDB->db_query("update ".BAB_STATS_EVENTS_TBL." set evt_id_site='".$babBody->babsite['id']."', evt_iduser='".$iduser."', evt_info='".serialize($this->info)."' where id='".$this->idevt."'");
+			$babDB->db_query("update ".BAB_STATS_EVENTS_TBL." set evt_id_site='".$babDB->db_escape_string($babBody->babsite['id'])."', evt_iduser='".$babDB->db_escape_string($iduser)."', evt_info='".$babDB->db_escape_string(serialize($this->info))."' where id='".$babDB->db_escape_string($this->idevt)."'");
 			}
 	}
 }
@@ -357,12 +357,12 @@ if( isset($tg) && $tg == "version" )
 }
 else
 {
-list($babStatOnOff) = $babDB->db_fetch_row($babDB->db_query("select stat_log from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'"));
+list($babStatOnOff) = $babDB->db_fetch_row($babDB->db_query("select stat_log from ".BAB_SITES_TBL." where name='".$babDB->db_escape_string($GLOBALS['babSiteName'])."'"));
 }
 
 if( isset($tg) && $tg == "statinfo" )
 {
-	$res = $babDB->db_query("select evt_info from ".BAB_STATS_EVENTS_TBL." where id='".$statevt."'");
+	$res = $babDB->db_query("select evt_info from ".BAB_STATS_EVENTS_TBL." where id='".$babDB->db_escape_string($statevt)."'");
 	if( $res && $babDB->db_num_rows($res) > 0 )
 	{
 		$arr = $babDB->db_fetch_array($res);
@@ -402,7 +402,7 @@ if( isset($tg) && $tg == "statinfo" )
 
 		if( count($variables) > 0 )
 		{
-			$babDB->db_query("update ".BAB_STATS_EVENTS_TBL." set evt_info='".serialize($variables)."' where id='".$statevt."'");
+			$babDB->db_query("update ".BAB_STATS_EVENTS_TBL." set evt_info='".$babDB->db_escape_string(serialize($variables))."' where id='".$babDB->db_escape_string($statevt)."'");
 		}
 	
 	}
