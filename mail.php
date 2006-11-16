@@ -21,19 +21,19 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
-include_once $babInstallPath."utilit/mailincl.php";
+include_once 'base.php';
+include_once $babInstallPath.'utilit/mailincl.php';
 
 function getContactId( $name )
 	{
+	global $babDB;
 	$replace = array( " " => "", "-" => "");
-	$db = $GLOBALS['babDB'];
 	$hash = md5(strtolower(strtr($name, $replace)));
-	$req = "select * from ".BAB_CONTACTS_TBL." where hashname='".$hash."'";	
-	$res = $db->db_query($req);
-	if( $db->db_num_rows($res) > 0)
+	$req = "select * from ".BAB_CONTACTS_TBL." where hashname='".$babDB->db_escape_string($hash)."'";	
+	$res = $babDB->db_query($req);
+	if( $babDB->db_num_rows($res) > 0)
 		{
-		$arr = $db->db_fetch_array($res);
+		$arr = $babDB->db_fetch_array($res);
 		return $arr['id'];
 		}
 	else
@@ -42,9 +42,9 @@ function getContactId( $name )
 
 function addAddress( $val, $to, &$adarr)
 {
+	global $babDB;
 	if( !empty($val))
 	{
-		$db = $GLOBALS['babDB'];
 		$tmp = explode(",", $val);
 		for($i=0; $i<count($tmp); $i++)
 		{
@@ -61,11 +61,11 @@ function addAddress( $val, $to, &$adarr)
 					$idgrp = bab_isMemberOfGroup(substr($addr, 0, -3));
 					if( $idgrp > 0 )
 					{
-					$req = "select p1.firstname, p1.lastname, p1.email from ".BAB_USERS_TBL." as p1, ".BAB_USERS_GROUPS_TBL." as p2 where p2.id_group='".$idgrp."' and p1.id=p2.id_object";
-					$res = $db->db_query($req);
-					if( $db->db_num_rows($res) > 0)
+					$req = "select p1.firstname, p1.lastname, p1.email from ".BAB_USERS_TBL." as p1, ".BAB_USERS_GROUPS_TBL." as p2 where p2.id_group='".$babDB->db_escape_string($idgrp)."' and p1.id=p2.id_object";
+					$res = $babDB->db_query($req);
+					if( $babDB->db_num_rows($res) > 0)
 						{
-						while( $arr = $db->db_fetch_array($res))
+						while( $arr = $babDB->db_fetch_array($res))
 							{
 							$adarr[$to][] = array($arr['email'], bab_composeUserName($arr['firstname'], $arr['lastname']));
 							}
@@ -74,11 +74,11 @@ function addAddress( $val, $to, &$adarr)
 				}
 				else // it's user
 				{
-					$req = "select * from ".BAB_USERS_TBL." where id='".$id."'";
-					$res = $db->db_query($req);
-					if( $db->db_num_rows($res) > 0)
+					$req = "select * from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($id)."'";
+					$res = $babDB->db_query($req);
+					if( $babDB->db_num_rows($res) > 0)
 						{
-						$arr = $db->db_fetch_array($res);
+						$arr = $babDB->db_fetch_array($res);
 						$adarr[$to][] = array($arr['email'], bab_composeUserName($arr['firstname'], $arr['lastname']));
 						}
 				}
@@ -91,11 +91,11 @@ function addAddress( $val, $to, &$adarr)
 				}
 				else // it's contact
 				{
-					$req = "select * from ".BAB_CONTACTS_TBL." where id='".$id."'";
-					$res = $db->db_query($req);
-					if( $db->db_num_rows($res) > 0)
+					$req = "select * from ".BAB_CONTACTS_TBL." where id='".$babDB->db_escape_string($id)."'";
+					$res = $babDB->db_query($req);
+					if( $babDB->db_num_rows($res) > 0)
 						{
-						$arr = $db->db_fetch_array($res);
+						$arr = $babDB->db_fetch_array($res);
 						$adarr[$to][] = array($arr['email'], bab_composeUserName($arr['firstname'], $arr['lastname']));
 						}
 				}
@@ -148,7 +148,7 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
 
 		function temp($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, $pfiles, $pformat, $pmsg, $psigid, $error)
 			{
-			global $BAB_SESS_USERID,$BAB_SESS_USER,$BAB_SESS_EMAIL;
+			global $babDB, $BAB_SESS_USERID,$BAB_SESS_USER,$BAB_SESS_EMAIL;
 			$this->psigid = $psigid;
 			$this->msgerror = $error;
 			$this->toval = "";
@@ -211,18 +211,17 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
 
 			$this->editor = bab_editor($this->messageval, 'message', 'composef');
 
-			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$BAB_SESS_USERID."' and id='".$accid."'";
-			$res = $this->db->db_query($req);
-			if( $res && $this->db->db_num_rows($res) > 0)
+			$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."' and id='".$babDB->db_escape_string($accid)."'";
+			$res = $babDB->db_query($req);
+			if( $res && $babDB->db_num_rows($res) > 0)
 				{
-				$arr = $this->db->db_fetch_array($res);
+				$arr = $babDB->db_fetch_array($res);
 				$this->fromval = "\"".$arr['name']."\" &lt;".$arr['email']."&gt;";
                 if( empty($pformat))
                     $pformat = $arr['format'];
-                $req = "select * from ".BAB_MAIL_SIGNATURES_TBL." where owner='".$BAB_SESS_USERID."'";
-                $this->ressig = $this->db->db_query($req);
-                $this->countsig = $this->db->db_num_rows($this->ressig);
+                $req = "select * from ".BAB_MAIL_SIGNATURES_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
+                $this->ressig = $babDB->db_query($req);
+                $this->countsig = $babDB->db_num_rows($this->ressig);
 				}
 			else
 				{
@@ -242,17 +241,18 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
                 $this->defaultselected = "selected";
             else
                 $this->defaultselected = "";
-			$req = "select * from ".BAB_CONTACTS_TBL." where owner='".$BAB_SESS_USERID."' order by lastname asc";
-			$this->rescl = $this->db->db_query($req);
-			$this->countcl = $this->db->db_num_rows($this->rescl);
+			$req = "select * from ".BAB_CONTACTS_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."' order by lastname asc";
+			$this->rescl = $babDB->db_query($req);
+			$this->countcl = $babDB->db_num_rows($this->rescl);
 			}
 
         function getnextsig()
             {
+			global $babDB;
 			static $i = 0;
 			if( $i < $this->countsig)
 				{
-				$arr = $this->db->db_fetch_array($this->ressig);
+				$arr = $babDB->db_fetch_array($this->ressig);
                 $this->signame = $arr['name'];
                 if($arr['html'] == "Y")
                     $this->signame = $arr['name'] . " ( html )";
@@ -281,7 +281,7 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
 
 function createMail($accid, $to, $cc, $bcc, $subject, $message, $files, $files_name, $files_type,$criteria, $reverse, $format, $sigid)
 	{
-	global $babBody, $BAB_SESS_USERID;
+	global $babBody, $babDB, $BAB_SESS_USERID;
 	if( empty($to))
 		{
 		$babBody->msgerror = bab_translate("You must fill to field !!");
@@ -305,16 +305,15 @@ function createMail($accid, $to, $cc, $bcc, $subject, $message, $files, $files_n
 		return false;
 		}
 
-	$db = $GLOBALS['babDB'];
-	$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$BAB_SESS_USERID."' and id='".$accid."'";
-	$res = $db->db_query($req);
-	if( $res && $db->db_num_rows($res) > 0)
+	$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."' and id='".$babDB->db_escape_string($accid)."'";
+	$res = $babDB->db_query($req);
+	if( $res && $babDB->db_num_rows($res) > 0)
 		{
 		$adarr = array();
 		$adarr['to'] = array();
 		$adarr['cc'] = array();
 		$adarr['bcc'] = array();
-		$arr = $db->db_fetch_array($res);
+		$arr = $babDB->db_fetch_array($res);
 		addAddress($to, "to", $adarr);
 		if(!empty($cc))
 			{
@@ -331,11 +330,11 @@ function createMail($accid, $to, $cc, $bcc, $subject, $message, $files, $files_n
 
 		if( $sigid != 0)
 			{
-			$req = "select * from ".BAB_MAIL_SIGNATURES_TBL." where id='".$sigid."' and owner='".$BAB_SESS_USERID."'";
-			$res = $db->db_query($req);
-			if( $res && $db->db_num_rows($res) > 0)
+			$req = "select * from ".BAB_MAIL_SIGNATURES_TBL." where id='".$babDB->db_escape_string($sigid)."' and owner='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
+			$res = $babDB->db_query($req);
+			if( $res && $babDB->db_num_rows($res) > 0)
 				{
-				$arr = $db->db_fetch_array($res);
+				$arr = $babDB->db_fetch_array($res);
 				$message .= $arr['text'];
 				}
 
@@ -422,22 +421,21 @@ function createMail($accid, $to, $cc, $bcc, $subject, $message, $files, $files_n
 
 function mailReply($accid, $criteria, $reverse, $idreply, $all, $fw)
     {
-    global $babBody, $BAB_SESS_USERID, $BAB_HASH_VAR;
+    global $babBody, $babDB, $BAB_SESS_USERID, $BAB_HASH_VAR;
     $CRLF = "\r\n";
-	$db = $GLOBALS['babDB'];
-	$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$BAB_SESS_USERID."' and id='".$accid."'";
-	$res = $db->db_query($req);
+	$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."' and id='".$babDB->db_escape_string($accid)."'";
+	$res = $babDB->db_query($req);
 	
-    if( $res && $db->db_num_rows($res) > 0 )
+    if( $res && $babDB->db_num_rows($res) > 0 )
         {
 		
-        $arr = $db->db_fetch_array($res);
-        $req = "select * from ".BAB_MAIL_DOMAINS_TBL." where id='".$arr['domain']."'";
-        $res2 = $db->db_query($req);
-        if( $res2 && $db->db_num_rows($res2) > 0 )
+        $arr = $babDB->db_fetch_array($res);
+        $req = "select * from ".BAB_MAIL_DOMAINS_TBL." where id='".$babDB->db_escape_string($arr['domain'])."'";
+        $res2 = $babDB->db_query($req);
+        if( $res2 && $babDB->db_num_rows($res2) > 0 )
             {
 			
-            $arr2 = $db->db_fetch_array($res2);
+            $arr2 = $babDB->db_fetch_array($res2);
 			$protocol = '';
 			if( isset($GLOBALS['babImapProtocol']) && count($GLOBALS['babImapProtocol'])) 
 				{
