@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
+include_once 'base.php';
 
 function contactCreate($id, $firstname, $lastname, $email, $compagny, $hometel, $mobiletel, $businesstel, $businessfax, $jobtitle, $baddress, $haddress, $bliste)
 	{
@@ -130,20 +130,19 @@ function contactUnload($pos, $bliste)
 
 function contactUpdate($id)
 {
-	global $bliste, $BAB_SESS_USERID;
-	$db = $GLOBALS['babDB'];
-	$req = "select * from ".BAB_CONTACTS_TBL." where id='$id' and owner='".$BAB_SESS_USERID."'";
-	$res = $db->db_query($req);
-	if( $db->db_num_rows($res) > 0)
+	global $bliste, $babDB, $BAB_SESS_USERID;
+	$req = "select * from ".BAB_CONTACTS_TBL." where id='$id' and owner='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
+	$res = $babDB->db_query($req);
+	if( $babDB->db_num_rows($res) > 0)
 		{
-		$arr = $db->db_fetch_array($res);
+		$arr = $babDB->db_fetch_array($res);
 		contactCreate($id, $arr['firstname'], $arr['lastname'], $arr['email'], $arr['compagny'], $arr['hometel'], $arr['mobiletel'], $arr['businesstel'], $arr['businessfax'], $arr['jobtitle'], $arr['businessaddress'], $arr['homeaddress'], $bliste);
 		}
 }
 
 function addContact( $firstname, $lastname, $email, $compagny, $hometel, $mobiletel, $businesstel, $businessfax, $jobtitle, $baddress, $haddress)
 	{
-	global $msgerror, $BAB_SESS_USERID;
+	global $babDB, $msgerror, $BAB_SESS_USERID;
 	if( empty($firstname))
 		{
 		$msgerror = bab_translate("ERROR: You must provide a first name");
@@ -155,25 +154,24 @@ function addContact( $firstname, $lastname, $email, $compagny, $hometel, $mobile
 		return false;
 		}
 
-	$db = $GLOBALS['babDB'];
 	$replace = array( " " => "", "-" => "");
 	$hash = md5(strtolower(strtr($firstname.$lastname, $replace)));
-	$req = "select * from ".BAB_CONTACTS_TBL." where hashname='".$hash."' and owner='".$BAB_SESS_USERID."'";	
-	$res = $db->db_query($req);
-	if( $db->db_num_rows($res) > 0)
+	$req = "select * from ".BAB_CONTACTS_TBL." where hashname='".$babDB->db_escape_string($hash)."' and owner='".$babDB->db_escape_string($BAB_SESS_USERID)."'";	
+	$res = $babDB->db_query($req);
+	if( $babDB->db_num_rows($res) > 0)
 		{
 		$msgerror = bab_translate("ERROR: This contact already exists");
 		return false;
 		}
-	$req = "insert into ".BAB_CONTACTS_TBL." (owner, firstname, lastname, hashname, email, compagny, hometel, mobiletel, businesstel, businessfax, jobtitle, businessaddress, homeaddress) VALUES ('". $BAB_SESS_USERID. "','" . $firstname. "','". $lastname. "','". $hash. "','" . $email. "','" . $compagny. "','" . $hometel. "','" . $mobiletel. "','" . $businesstel. "','" . $businessfax. "','" . $jobtitle. "','" . $baddress. "','" . $haddress. "')";
-	$res = $db->db_query($req);	
+	$req = "insert into ".BAB_CONTACTS_TBL." (owner, firstname, lastname, hashname, email, compagny, hometel, mobiletel, businesstel, businessfax, jobtitle, businessaddress, homeaddress) VALUES ('". $babDB->db_escape_string($BAB_SESS_USERID). "','" . $babDB->db_escape_string($firstname). "','". $babDB->db_escape_string($lastname). "','". $babDB->db_escape_string($hash). "','" . $babDB->db_escape_string($email). "','" . $babDB->db_escape_string($compagny). "','" . $babDB->db_escape_string($hometel). "','" . $babDB->db_escape_string($mobiletel). "','" . $babDB->db_escape_string($businesstel). "','" . $babDB->db_escape_string($businessfax). "','" . $babDB->db_escape_string($jobtitle). "','" . $babDB->db_escape_string($baddress). "','" . $babDB->db_escape_string($haddress). "')";
+	$res = $babDB->db_query($req);	
 	return true;
 }
 
 
 function updateContact( $id, $firstname, $lastname, $email, $compagny, $hometel, $mobiletel, $businesstel, $businessfax, $jobtitle, $baddress, $haddress)
 	{
-	global $msgerror, $BAB_SESS_USERID;
+	global $babDB, $msgerror, $BAB_SESS_USERID;
 	if( empty($firstname))
 		{
 		$msgerror = bab_translate("ERROR: You must provide a first name");
@@ -187,17 +185,16 @@ function updateContact( $id, $firstname, $lastname, $email, $compagny, $hometel,
 
 	$replace = array( " " => "", "-" => "");
 	$hash = md5(strtolower(strtr($firstname.$lastname, $replace)));
-	$req = "select * from ".BAB_CONTACTS_TBL." where hashname='".$hash."' and owner='".$BAB_SESS_USERID."' and id!='".$id."'";	
-	$db = $GLOBALS['babDB'];
-	$res = $db->db_query($req);
-	if( $db->db_num_rows($res) > 0)
+	$req = "select * from ".BAB_CONTACTS_TBL." where hashname='".$babDB->db_escape_string($hash)."' and owner='".$babDB->db_escape_string($BAB_SESS_USERID)."' and id!='".$babDB->db_escape_string($id)."'";	
+	$res = $babDB->db_query($req);
+	if( $babDB->db_num_rows($res) > 0)
 		{
 		$msgerror = bab_translate("ERROR: This contact already exists");
 		return false;
 		}
 
-	$req = "update ".BAB_CONTACTS_TBL." set owner='$BAB_SESS_USERID', firstname='$firstname', lastname='$lastname', hashname='$hash',email='$email', compagny='$compagny', hometel='$hometel', mobiletel='$mobiletel', businesstel='$businesstel', businessfax='$businessfax', jobtitle='$jobtitle', businessaddress='$baddress', homeaddress='$haddress' where id='$id'";
-	$res = $db->db_query($req);	
+	$req = "update ".BAB_CONTACTS_TBL." set owner='".$babDB->db_escape_string($BAB_SESS_USERID)."', firstname='".$babDB->db_escape_string($firstname)."', lastname='".$babDB->db_escape_string($lastname)."', hashname='".$babDB->db_escape_string($hash)."',email='".$babDB->db_escape_string($email)."', compagny='".$babDB->db_escape_string($compagny)."', hometel='".$babDB->db_escape_string($hometel)."', mobiletel='".$babDB->db_escape_string($mobiletel)."', businesstel='".$babDB->db_escape_string($businesstel)."', businessfax='".$babDB->db_escape_string($businessfax)."', jobtitle='".$babDB->db_escape_string($jobtitle)."', businessaddress='".$babDB->db_escape_string($baddress)."', homeaddress='".$babDB->db_escape_string($haddress)."' where id='".$babDB->db_escape_string($id)."'";
+	$res = $babDB->db_query($req);	
 	return true;
 }
 
