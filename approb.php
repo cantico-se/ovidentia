@@ -21,20 +21,20 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include "base.php";
-include_once $babInstallPath."utilit/mailincl.php";
-include_once $babInstallPath."utilit/afincl.php";
-include_once $babInstallPath."utilit/topincl.php";
-include_once $babInstallPath."utilit/artincl.php";
-include_once $babInstallPath."utilit/vacincl.php";
-include_once $babInstallPath."utilit/evtincl.php";
-include_once $babInstallPath."utilit/calincl.php";
+include 'base.php';
+include_once $babInstallPath.'utilit/mailincl.php';
+include_once $babInstallPath.'utilit/afincl.php';
+include_once $babInstallPath.'utilit/topincl.php';
+include_once $babInstallPath.'utilit/artincl.php';
+include_once $babInstallPath.'utilit/vacincl.php';
+include_once $babInstallPath.'utilit/evtincl.php';
+include_once $babInstallPath.'utilit/calincl.php';
 
 function notifyVacationAuthor($id, $subject)
 	{
 	global $babBody, $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail;
 
-	if(!class_exists("tempa"))
+	if(!class_exists('tempa'))
 		{
 		class tempa
 			{
@@ -73,7 +73,7 @@ function notifyVacationAuthor($id, $subject)
 				}
 			}
 		}
-	$row = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where id='".$id."'"));
+	$row = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
 
 	$mail = bab_mail();
 	if( $mail == false )
@@ -122,7 +122,7 @@ function listWaitingArticles()
 			$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
 			if( count($arrschi) > 0 )
 				{
-				$req = "select adt.*, count(adft.id) as totalf, count(adnt.id) as totaln from ".BAB_ART_DRAFTS_TBL." adt left join ".BAB_ART_DRAFTS_FILES_TBL." adft on adft.id_draft=adt.id  left join ".BAB_ART_DRAFTS_NOTES_TBL." adnt on adnt.id_draft=adt.id where adt.trash !='Y' and adt.idfai IN(".implode(',', $arrschi).") GROUP BY adt.id order by date_submission desc";
+				$req = "select adt.*, count(adft.id) as totalf, count(adnt.id) as totaln from ".BAB_ART_DRAFTS_TBL." adt left join ".BAB_ART_DRAFTS_FILES_TBL." adft on adft.id_draft=adt.id  left join ".BAB_ART_DRAFTS_NOTES_TBL." adnt on adnt.id_draft=adt.id where adt.trash !='Y' and adt.idfai IN(".$babDB->quote($arrschi).") GROUP BY adt.id order by date_submission desc";
 				$this->wartres = $babDB->db_query($req);
 				$this->wartcount = $babDB->db_num_rows($this->wartres);
 				if( $this->wartcount > 0 )
@@ -207,7 +207,7 @@ function listWaitingComments()
 			$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
 			if( count($arrschi) > 0 )
 				{
-				$req = "select ct.* from ".BAB_COMMENTS_TBL." ct where ct.idfai IN(".implode(',', $arrschi).") order by date desc";
+				$req = "select ct.* from ".BAB_COMMENTS_TBL." ct where ct.idfai IN(".$babDB->quote($arrschi).") order by date desc";
 				$this->wcomres = $babDB->db_query($req);
 				$this->wcomcount = $babDB->db_num_rows($this->wcomres);
 				if( $this->wcomcount > 0 )
@@ -284,7 +284,7 @@ function listWaitingFiles()
 			$this->wfilescount = 0;
 			if( count($arrschi) > 0 )
 				{
-				$req = "select * from ".BAB_FILES_TBL." where bgroup='Y' and confirmed='N' and idfai IN(".implode(',', $arrschi).") order by created desc";
+				$req = "select * from ".BAB_FILES_TBL." where bgroup='Y' and confirmed='N' and idfai IN(".$babDB->quote($arrschi).") order by created desc";
 				$this->wfilesres = $babDB->db_query($req);
 				$this->wfilescount = $babDB->db_num_rows($this->wfilesres);
 				if( $this->wfilescount > 0 )
@@ -364,7 +364,7 @@ function listWaitingPosts()
 				}
 			if( count($arrf) > 0 )
 				{
-				$req = "select pt.*, pt2.subject as threadtitle, tt.id as threadid, tt.forum as forumid, ft.name as forumname from ".BAB_POSTS_TBL." pt left join ".BAB_THREADS_TBL." tt on pt.id_thread=tt.id left join ".BAB_POSTS_TBL." pt2 on tt.post=pt2.id left join ".BAB_FORUMS_TBL." ft on ft.id=tt.forum where pt.confirmed='N' and ft.id IN(".implode(',', $arrf).") order by date desc";
+				$req = "select pt.*, pt2.subject as threadtitle, tt.id as threadid, tt.forum as forumid, ft.name as forumname from ".BAB_POSTS_TBL." pt left join ".BAB_THREADS_TBL." tt on pt.id_thread=tt.id left join ".BAB_POSTS_TBL." pt2 on tt.post=pt2.id left join ".BAB_FORUMS_TBL." ft on ft.id=tt.forum where pt.confirmed='N' and ft.id IN(".$babDB->quote($arrf).") order by date desc";
 				$this->wpostsres = $babDB->db_query($req);
 				$this->wpostscount = $babDB->db_num_rows($this->wpostsres);
 				if( $this->wpostscount > 0 )
@@ -438,13 +438,13 @@ function listWaitingVacations()
 
 		function temp()
 			{
-			$this->db = $GLOBALS['babDB'];
+			global $babDB;
 			$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
 			if( count($arrschi) > 0 )
 				{
 				include_once $GLOBALS['babInstallPath']."utilit/vacincl.php";
-				$this->res = $this->db->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where idfai IN (".implode(',', $arrschi).") order by date desc");
-				$this->wvacationscount = $this->db->db_num_rows($this->res);
+				$this->res = $babDB->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where idfai IN (".$babDB->quote($arrschi).") order by date desc");
+				$this->wvacationscount = $babDB->db_num_rows($this->res);
 				$this->waitingvacationstxt = bab_translate("Request vacations waiting to be validate");
 				$this->validationtxt = bab_translate("Validation");
 				$this->nametxt = bab_translate("Fullname");
@@ -460,13 +460,14 @@ function listWaitingVacations()
 
 		function getnextvacation()
 			{
+			global $babDB;
 			static $i = 0;
 			if( $i < $this->wvacationscount)
 				{
 				$this->altbg = !$this->altbg;
-				$arr = $this->db->db_fetch_array($this->res);
+				$arr = $babDB->db_fetch_array($this->res);
 				$this->url = $GLOBALS['babUrlScript']."?tg=approb&idx=confvac&idvac=".$arr['id'];
-				list($this->total) = $this->db->db_fetch_row($this->db->db_query("select sum(quantity) from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry =".$this->db->quote($arr['id']).""));
+				list($this->total) = $babDB->db_fetch_row($babDB->db_query("select sum(quantity) from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry =".$babDB->quote($arr['id']).""));
 				$this->urlname = bab_getUserName($arr['id_user']);
 				$this->dateb = bab_vac_shortDate(bab_mktime($arr['date_begin']));
 				$this->datee = bab_vac_shortDate(bab_mktime($arr['date_end']));
@@ -513,7 +514,7 @@ function listWaitingEvents()
 			$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
 			if( count($arrschi) > 0 )
 				{
-				$res = $babDB->db_query("SELECT cet.*, ceot.id_cal from ".BAB_CAL_EVENTS_TBL." cet , ".BAB_CAL_EVENTS_OWNERS_TBL." ceot where cet.id=ceot.id_event and ceot.idfai in (".implode(',', $arrschi).") order by cet.start_date asc");
+				$res = $babDB->db_query("SELECT cet.*, ceot.id_cal from ".BAB_CAL_EVENTS_TBL." cet , ".BAB_CAL_EVENTS_OWNERS_TBL." ceot where cet.id=ceot.id_event and ceot.idfai in (".$babDB->quote($arrschi).") order by cet.start_date asc");
 				while( $arr = $babDB->db_fetch_array($res) )
 					{
 					$tmp = array();
@@ -707,6 +708,7 @@ function confirmWaitingVacation($id)
 
 		function temp($id)
 			{
+			global $babDB;
 			$this->datebegintxt = bab_translate("Begin date");
 			$this->dateendtxt = bab_translate("End date");
 			$this->nbdaystxt = bab_translate("Quantities");
@@ -717,8 +719,7 @@ function confirmWaitingVacation($id)
 			$this->remarktxt = bab_translate("Description");
 			$this->t_alert = bab_translate("Negative balance");
 			$this->t_nomatch = bab_translate("The length of the period is different from the requested vacation");
-			$this->db = $GLOBALS['babDB'];
-			$row = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where id='".$id."'"));
+			$row = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
 			$this->begin = bab_mktime($row['date_begin']);
 			$this->end = bab_mktime($row['date_end']);
 			$this->datebegin	= bab_vac_longDate($this->begin);
@@ -736,9 +737,9 @@ function confirmWaitingVacation($id)
 					$this->negative[$r['id']] = $after;
 				}
 
-			$req = "select * from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry=".$this->db->quote($id);
-			$this->res = $this->db->db_query($req);
-			$this->count = $this->db->db_num_rows($this->res);
+			$req = "select * from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry=".$babDB->quote($id);
+			$this->res = $babDB->db_query($req);
+			$this->count = $babDB->db_num_rows($this->res);
 			$this->totalval = 0;
 			$this->veid = $id;
 			$this->nomatch = false;
@@ -746,11 +747,12 @@ function confirmWaitingVacation($id)
 
 		function getnexttype()
 			{
+			global $babDB;
 			static $i = 0;
 			if( $i < $this->count)
 				{
-				$arr = $this->db->db_fetch_array($this->res);
-				list($this->typename) = $this->db->db_fetch_row($this->db->db_query("select description from ".BAB_VAC_RIGHTS_TBL." where id =".$this->db->quote($arr['id_right']).""));
+				$arr = $babDB->db_fetch_array($this->res);
+				list($this->typename) = $babDB->db_fetch_row($babDB->db_query("select description from ".BAB_VAC_RIGHTS_TBL." where id =".$babDB->quote($arr['id_right']).""));
 				$this->nbdays = $arr['quantity'];
 				$this->alert = isset($this->negative[$arr['id_right']]) ? $this->negative[$arr['id_right']] : false;
 
@@ -785,7 +787,7 @@ function confirmWaitingArticle($idart)
 		function temp($idart)
 			{
 			global $babDB;
-			$res = $babDB->db_query("select id, title, idfai, id_topic, id_author from ".BAB_ART_DRAFTS_TBL." where id='".$idart."'");
+			$res = $babDB->db_query("select id, title, idfai, id_topic, id_author from ".BAB_ART_DRAFTS_TBL." where id='".$babDB->db_escape_string($idart)."'");
 			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
 				$arr = $babDB->db_fetch_array($res);
@@ -840,13 +842,13 @@ function confirmWaitingPost($thread, $post)
 
 		function confirmWaitingPostCls($thread, $post)
 			{
-			$db = $GLOBALS['babDB'];
+			global $babDB;
 			$this->idpost = $post;
 			$this->thread = $thread;
 
-			$req = "select pt.*, ft.name as forumname from ".BAB_POSTS_TBL." pt left join ".BAB_THREADS_TBL." tt on tt.id=pt.id_thread left join ".BAB_FORUMS_TBL." ft on ft.id=tt.forum where pt.id='".$post."'";
+			$req = "select pt.*, ft.name as forumname from ".BAB_POSTS_TBL." pt left join ".BAB_THREADS_TBL." tt on tt.id=pt.id_thread left join ".BAB_FORUMS_TBL." ft on ft.id=tt.forum where pt.id='".$babDB->db_escape_string($post)."'";
 			
-			$arr = $db->db_fetch_array($db->db_query($req));
+			$arr = $babDB->db_fetch_array($babDB->db_query($req));
 			
 			$GLOBALS['babBody']->title = $arr['forumname'];
 			$this->postdate = bab_strftime(bab_mktime($arr['date']));
@@ -883,13 +885,13 @@ function confirmWaitingComment($idcom)
 
 		function confirmWaitingCommentCls($idcom)
 			{
-			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_COMMENTS_TBL." where id='".$idcom."'";
-			$res = $this->db->db_query($req);
-			$this->count = $this->db->db_num_rows($res);
+			global $babDB;
+			$req = "select * from ".BAB_COMMENTS_TBL." where id='".$babDB->db_escape_string($idcom)."'";
+			$res = $babDB->db_query($req);
+			$this->count = $babDB->db_num_rows($res);
 			if( $this->count > 0)
 				{
-				$arr = $this->db->db_fetch_array($res);
+				$arr = $babDB->db_fetch_array($res);
 				$this->idcom = $idcom;
 				$this->name = bab_translate("Submiter");
 				$this->modify = bab_translate("Update");
@@ -932,7 +934,7 @@ function confirmWaitingEvent($idevent, $idcal)
 			$this->commenttxt = bab_translate("Raison");
 			$this->idevent = $idevent;
 			$this->idcal = $idcal;
-			$res = $babDB->db_query("select cet.*, ceot.id_cal from ".BAB_CAL_EVENTS_TBL." cet left join ".BAB_CAL_EVENTS_OWNERS_TBL." ceot on cet.id=ceot.id_event where ceot.id_cal='".$idcal."' and ceot.id_event='".$idevent."'");
+			$res = $babDB->db_query("select cet.*, ceot.id_cal from ".BAB_CAL_EVENTS_TBL." cet left join ".BAB_CAL_EVENTS_OWNERS_TBL." ceot on cet.id=ceot.id_event where ceot.id_cal='".$babDB->db_escape_string($idcal)."' and ceot.id_event='".$babDB->db_escape_string($idevent)."'");
 			$arr = $babDB->db_fetch_array($res);
 			$GLOBALS['babBody']->title = $arr['title'];
 			$this->eventstartdate = bab_shortDate(bab_mktime($arr['start_date']), true);
@@ -949,7 +951,7 @@ function confirmWaitingEvent($idevent, $idcal)
 				$this->recurrent = false;
 				}
 
-			$this->resatt = $babDB->db_query("select * from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event='".$idevent."' and id_cal!='".$idcal."'");
+			$this->resatt = $babDB->db_query("select * from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event='".$babDB->db_escape_string($idevent)."' and id_cal!='".$babDB->db_escape_string($idcal)."'");
 			$this->count = $babDB->db_num_rows($this->resatt);
 			}
 
@@ -978,7 +980,7 @@ function confirmWaitingEvent($idevent, $idcal)
 function previewWaitingArticle($idart)
 	{
 	global $babBody, $babDB, $BAB_SESS_USERID;
-	$res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_TBL." where id='".$idart."'");
+	$res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_TBL." where id='".$babDB->db_escape_string($idart)."'");
 	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
 		$arr = $babDB->db_fetch_array($res);
@@ -1003,7 +1005,7 @@ function previewWaitingArticle($idart)
 function previewWaitingComment($idcom)
 	{
 	global $babBody, $babDB, $BAB_SESS_USERID;
-	$res = $babDB->db_query("select idfai from ".BAB_COMMENTS_TBL." where id='".$idcom."'");
+	$res = $babDB->db_query("select idfai from ".BAB_COMMENTS_TBL." where id='".$babDB->db_escape_string($idcom)."'");
 	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
 		$arr = $babDB->db_fetch_array($res);
@@ -1021,7 +1023,7 @@ function updateConfirmationWaitingArticle($idart, $bconfirm, $comment)
 	{
 	global $babDB;
 
-	$res = $babDB->db_query("select id, idfai, id_author, id_article from ".BAB_ART_DRAFTS_TBL." where id='".$idart."'");
+	$res = $babDB->db_query("select id, idfai, id_author, id_article from ".BAB_ART_DRAFTS_TBL." where id='".$babDB->db_escape_string($idart)."'");
 	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
 		$arr = $babDB->db_fetch_array($res);
@@ -1030,17 +1032,16 @@ function updateConfirmationWaitingArticle($idart, $bconfirm, $comment)
 			{
 			$bret = $bconfirm == "Y"? true: false;
 			
-			$comment = $babDB->db_escape_string($comment);
-			$babDB->db_query("insert into ".BAB_ART_DRAFTS_NOTES_TBL." (id_draft, content, id_author, date_note) values ('".$idart."','".$comment."','".$GLOBALS['BAB_SESS_USERID']."', now())");
+			$babDB->db_query("insert into ".BAB_ART_DRAFTS_NOTES_TBL." (id_draft, content, id_author, date_note) values ('".$babDB->db_escape_string($idart)."','".$babDB->db_escape_string($comment)."','".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', now())");
 
 			$res = updateFlowInstance($arr['idfai'], $GLOBALS['BAB_SESS_USERID'], $bret);
 			switch($res)
 				{
 				case 0:
-					$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set result='".BAB_ART_STATUS_NOK."', idfai='0' where id = '".$idart."'");
+					$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set result='".BAB_ART_STATUS_NOK."', idfai='0' where id = '".$babDB->db_escape_string($idart)."'");
 					if( $arr['id_article'] != 0 )
 						{
-						$babDB->db_query("insert into ".BAB_ART_LOG_TBL." (id_article, id_author, date_log, action_log, art_log) values ('".$arr['id_article']."', '".$arr['id_author']."', now(), 'refused', '".$comment."')");		
+						$babDB->db_query("insert into ".BAB_ART_LOG_TBL." (id_article, id_author, date_log, action_log, art_log) values ('".$babDB->db_escape_string($arr['id_article'])."', '".$babDB->db_escape_string($arr['id_author'])."', now(), 'refused', '".$babDB->db_escape_string($comment)."')");		
 						}
 					deleteFlowInstance($arr['idfai']);				
 					notifyArticleDraftAuthor($idart, 0);
@@ -1056,7 +1057,7 @@ function updateConfirmationWaitingArticle($idart, $bconfirm, $comment)
 					bab_deleteArticleDraft($idart);
 					if( $arr['id_article'] != 0 )
 						{
-						$babDB->db_query("insert into ".BAB_ART_LOG_TBL." (id_article, id_author, date_log, action_log) values ('".$arr['id_article']."', '".$arr['id_author']."', now(), 'accepted')");		
+						$babDB->db_query("insert into ".BAB_ART_LOG_TBL." (id_article, id_author, date_log, action_log) values ('".$babDB->db_escape_string($arr['id_article'])."', '".$babDB->db_escape_string($arr['id_author'])."', now(), 'accepted')");		
 						}
 					break;
 				default:
@@ -1077,12 +1078,11 @@ function updateConfirmationWaitingArticle($idart, $bconfirm, $comment)
 
 function updateConfirmationWaitingComment($idcom, $action, $send, $message)
 	{
-	global $babBody, $new, $BAB_SESS_USERID, $babAdminEmail;
+	global $babBody, $babDB, $new, $BAB_SESS_USERID, $babAdminEmail;
 
-	$db = $GLOBALS['babDB'];
-	$query = "select * from ".BAB_COMMENTS_TBL." where id='".$idcom."'";
-	$res = $db->db_query($query);
-	$arr = $db->db_fetch_array($res);
+	$query = "select * from ".BAB_COMMENTS_TBL." where id='".$babDB->db_escape_string($idcom)."'";
+	$res = $babDB->db_query($query);
+	$arr = $babDB->db_fetch_array($res);
 
 	$bret = $action == "1"? true: false;
 	$res = updateFlowInstance($arr['idfai'], $GLOBALS['BAB_SESS_USERID'], $bret);
@@ -1097,7 +1097,7 @@ function updateConfirmationWaitingComment($idcom, $action, $send, $message)
 		case 1:
 			$subject = "Your comment has been accepted";
 			deleteFlowInstance($arr['idfai']);
-			$db->db_query("update ".BAB_COMMENTS_TBL." set confirmed='Y', idfai='0' where id = '".$idcom."'");
+			$babDB->db_query("update ".BAB_COMMENTS_TBL." set confirmed='Y', idfai='0' where id = '".$babDB->db_escape_string($idcom)."'");
 			break;
 		default:
 			$subject = "About your comment";
@@ -1120,16 +1120,16 @@ function updateConfirmationWaitingPost($thread, $post)
 	{
 	global $babBody, $babDB;
 
-	$babDB->db_query("update ".BAB_THREADS_TBL." set lastpost='".$post."' where id='".$thread."'");
-	$babDB->db_query("update ".BAB_POSTS_TBL." set confirmed='Y', date_confirm=now() where id='".$post."'");
+	$babDB->db_query("update ".BAB_THREADS_TBL." set lastpost='".$babDB->db_escape_string($post)."' where id='".$babDB->db_escape_string($thread)."'");
+	$babDB->db_query("update ".BAB_POSTS_TBL." set confirmed='Y', date_confirm=now() where id='".$babDB->db_escape_string($post)."'");
 
-	$res = $babDB->db_query("select tt.forum, tt.starter, tt.notify, pt.subject from ".BAB_THREADS_TBL." tt left join ".BAB_POSTS_TBL." pt on tt.post=pt.id where tt.id='".$thread."'");
+	$res = $babDB->db_query("select tt.forum, tt.starter, tt.notify, pt.subject from ".BAB_THREADS_TBL." tt left join ".BAB_POSTS_TBL." pt on tt.post=pt.id where tt.id='".$babDB->db_escape_string($thread)."'");
 	$arrf = $babDB->db_fetch_array($res);
-	$arrpost = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_POSTS_TBL." where id='".$post."'"));
+	$arrpost = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_POSTS_TBL." where id='".$babDB->db_escape_string($post)."'"));
 	include_once $GLOBALS['babInstallPath']."utilit/forumincl.php";
 	if( $arrf['notify'] == "Y" && $arrf['starter'] != 0)
 		{
-		$res = $babDB->db_query("select email from ".BAB_USERS_TBL." where id='".$arrf['starter']."'");
+		$res = $babDB->db_query("select email from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($arrf['starter'])."'");
 		$arr = $babDB->db_fetch_array($res);
 		$email = $arr['email'];
 		notifyThreadAuthor($arrf['subject'], $email, $arrpost['author']);
@@ -1142,7 +1142,7 @@ function confirmVacationRequest($veid, $remarks, $action)
 {
 	global $babBody, $babDB, $approbinit;
 
-	$res = $babDB->db_query("select idfai, id_user, date_begin, date_end FROM ".BAB_VAC_ENTRIES_TBL." where id='".$veid."'");
+	$res = $babDB->db_query("select idfai, id_user, date_begin, date_end FROM ".BAB_VAC_ENTRIES_TBL." where id='".$babDB->db_escape_string($veid)."'");
 	$arr = $babDB->db_fetch_array($res);
 	if( !in_array($arr['idfai'], $approbinit))
 	{
@@ -1156,9 +1156,7 @@ function confirmVacationRequest($veid, $remarks, $action)
 		case 0:
 			deleteFlowInstance($arr['idfai']);
 
-			$remarks = $babDB->db_escape_string($remarks);
-
-			$babDB->db_query("update ".BAB_VAC_ENTRIES_TBL." set status='N', idfai='0', id_approver='".$GLOBALS['BAB_SESS_USERID']."', comment2='".$remarks."' where id = '".$veid."'");
+			$babDB->db_query("update ".BAB_VAC_ENTRIES_TBL." set status='N', idfai='0', id_approver='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', comment2='".$babDB->db_escape_string($remarks)."' where id = '".$babDB->db_escape_string($veid)."'");
 			$subject = bab_translate("Your vacation request has been refused");
 			notifyVacationAuthor($veid, $subject);
 			break;
@@ -1167,7 +1165,7 @@ function confirmVacationRequest($veid, $remarks, $action)
 
 			$remarks = $babDB->db_escape_string($remarks);
 
-			$babDB->db_query("update ".BAB_VAC_ENTRIES_TBL." set status='Y', idfai='0', id_approver='".$GLOBALS['BAB_SESS_USERID']."', comment2='".$remarks."' where id = '".$veid."'");
+			$babDB->db_query("update ".BAB_VAC_ENTRIES_TBL." set status='Y', idfai='0', id_approver='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', comment2='".$babDB->db_escape_string($remarks)."' where id = '".$babDB->db_escape_string($veid)."'");
 
 			$subject = bab_translate("Your vacation request has been accepted");
 			notifyVacationAuthor($veid, $subject);

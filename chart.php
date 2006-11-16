@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
+include_once 'base.php';
 
 function OrgChartPage($ocid, $oeid, $iduser, $disp)
 	{
@@ -47,7 +47,7 @@ if (!isset($idx))
 
 if (!isset($oeid))
 {
-$oeinfo = $babDB->db_fetch_array($babDB->db_query("select oet.id from ".BAB_OC_ENTITIES_TBL." oet left join ".BAB_OC_TREES_TBL." ctt on ctt.id=oet.id_node where oet.id_oc='".$ocid."' and ctt.id_parent='0'"));
+$oeinfo = $babDB->db_fetch_array($babDB->db_query("select oet.id from ".BAB_OC_ENTITIES_TBL." oet left join ".BAB_OC_TREES_TBL." ctt on ctt.id=oet.id_node where oet.id_oc='".$babDB->db_escape_string($ocid)."' and ctt.id_parent='0'"));
 $oeid = $oeinfo['id'];
 }
 

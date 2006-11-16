@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
+include_once 'base.php';
 
 function listOrgCharts()
 	{
@@ -49,17 +49,16 @@ function listOrgCharts()
 
 		function temp()
 			{
-			global $babBody;
+			global $babBody, $babDB;
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
 			$this->edit = bab_translate("Edit");
 			$this->view = bab_translate("View");
-			$this->db = $GLOBALS['babDB'];
 			if( count($babBody->ocids) > 0 )
 				{
-				$req = "select * from ".BAB_ORG_CHARTS_TBL." where id IN (".implode(',', $babBody->ocids).") order by name asc";
-				$this->res = $this->db->db_query($req);
-				$this->count = $this->db->db_num_rows($this->res);
+				$req = "select * from ".BAB_ORG_CHARTS_TBL." where id IN (".$babDB->quote($babBody->ocids).") order by name asc";
+				$this->res = $babDB->db_query($req);
+				$this->count = $babDB->db_num_rows($this->res);
 				}
 			else
 				{
@@ -72,7 +71,7 @@ function listOrgCharts()
 			static $i = 0;
 			if( $i < $this->count)
 				{
-				$arr = $this->db->db_fetch_array($this->res);
+				$arr = $babDB->db_fetch_array($this->res);
 				$this->ocid = $arr['id'];
 				$this->viewurl = $GLOBALS['babUrlScript']."?tg=chart&ocid=".$arr['id']."&disp=disp3";
 				$this->urlname = $arr['name'];
@@ -140,7 +139,7 @@ if( count($babBody->ocids) > 0)
 	{
 	if( isset($ocid) && bab_isAccessValid(BAB_OCUPDATE_GROUPS_TBL, $ocid))
 		{
-		$ocinfo = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_ORG_CHARTS_TBL." where id='".$ocid."'"));
+		$ocinfo = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_ORG_CHARTS_TBL." where id='".$babDB->db_escape_string($ocid)."'"));
 		if( $ocinfo['edit'] == 'Y' && $ocinfo['edit_author'] == $BAB_SESS_USERID)
 			{
 			if( $idx == "edit" )
@@ -150,7 +149,7 @@ if( count($babBody->ocids) > 0)
 				}
 			else
 				{
-				$babDB->db_query("update ".BAB_ORG_CHARTS_TBL." set edit='N' where id='".$ocid."'");
+				$babDB->db_query("update ".BAB_ORG_CHARTS_TBL." set edit='N' where id='".$babDB->db_escape_string($ocid)."'");
 				Header("Location: ". $GLOBALS['babUrlScript']."?tg=charts&disp=".$disp);
 				exit;
 				}
@@ -159,7 +158,7 @@ if( count($babBody->ocids) > 0)
 			{
 			if( $idx == "edit" )
 				{
-				$babDB->db_query("update ".BAB_ORG_CHARTS_TBL." set edit='Y', edit_author='".$BAB_SESS_USERID."', edit_date=now() where id='".$ocid."'");
+				$babDB->db_query("update ".BAB_ORG_CHARTS_TBL." set edit='Y', edit_author='".$babDB->db_escape_string($BAB_SESS_USERID)."', edit_date=now() where id='".$babDB->db_escape_string($ocid)."'");
 				Header("Location: ". $GLOBALS['babUrlScript']."?tg=chart&ocid=".$ocid."&disp=".$disp);
 				exit;
 				}
