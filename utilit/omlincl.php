@@ -552,7 +552,7 @@ class bab_ArticlesHomePages extends bab_handler
 			else
 				$this->ctx->curctx->push('ArticleModifiedBy', $arr['id_modifiedby']);
 			$this->ctx->curctx->push('ArticleDate', bab_mktime($arr['date']));
-			$this->ctx->curctx->push('ArticleDateModifcation', bab_mktime($arr['date_modification']));
+			$this->ctx->curctx->push('ArticleDateModification', bab_mktime($arr['date_modification']));
 			$this->ctx->curctx->push('ArticleDatePublication', bab_mktime($arr['date_publication']));
 			$this->ctx->curctx->push('ArticleDateCreation', bab_mktime($arr['date']));
 			$this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
@@ -1150,7 +1150,7 @@ class bab_Articles extends bab_handler
 				$this->ctx->curctx->push('ArticleModifiedBy', $arr['id_modifiedby']);
 			$this->ctx->curctx->push('ArticleDate', bab_mktime($arr['date'])); /* for compatibility */
 			$this->ctx->curctx->push('ArticleDateCreation', bab_mktime($arr['date']));
-			$this->ctx->curctx->push('ArticleDateModifcation', bab_mktime($arr['date_modification']));
+			$this->ctx->curctx->push('ArticleDateModification', bab_mktime($arr['date_modification']));
 			$this->ctx->curctx->push('ArticleDatePublication', bab_mktime($arr['date_publication']));
 			$this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
 			$this->ctx->curctx->push('ArticleLanguage', $arr['lang']);
@@ -2376,7 +2376,7 @@ class bab_RecentArticles extends bab_handler
 			else
 				$this->ctx->curctx->push('ArticleModifiedBy', $arr['id_modifiedby']);
 			$this->ctx->curctx->push('ArticleDate', bab_mktime($arr['date_modification'])); /* for compatibility */
-			$this->ctx->curctx->push('ArticleDateModifcation', bab_mktime($arr['date_modification']));
+			$this->ctx->curctx->push('ArticleDateModification', bab_mktime($arr['date_modification']));
 			$this->ctx->curctx->push('ArticleDatePublication', bab_mktime($arr['date_publication']));
 			$this->ctx->curctx->push('ArticleDateCreation', bab_mktime($arr['date']));
 			$this->ctx->curctx->push('ArticleUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']);
