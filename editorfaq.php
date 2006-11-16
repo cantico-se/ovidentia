@@ -21,8 +21,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
-include_once $babInstallPath."utilit/topincl.php";
+include_once 'base.php';
+include_once $babInstallPath.'utilit/topincl.php';
 
 function browse($cat,$cb)
 	{
@@ -37,12 +37,12 @@ function browse($cat,$cb)
 
 		function temp($cat,$cb)
 			{
-			$this->db = $GLOBALS['babDB'];
+			global $babDB;
 			$this->cb = "".$cb;
 			
 			if ($cat != 0 )
 				{
-				$req = "select * from ".BAB_FAQQR_TBL." where idcat='$cat'";
+				$req = "select * from ".BAB_FAQQR_TBL." where idcat='".$babDB->db_escape_string($cat)."'";
 				$this->q = true;
 				}
 			else
@@ -50,19 +50,19 @@ function browse($cat,$cb)
 				$req = "select * from ".BAB_FAQCAT_TBL;
 				$this->q = false;
 				}
-			$this->res = $this->db->db_query($req);	
-			$this->count = $this->db->db_num_rows($this->res);
+			$this->res = $babDB->db_query($req);	
+			$this->count = $babDB->db_num_rows($this->res);
 			$this->target_txt = bab_translate("popup");
 			}
 
 		function getnext()
 			{
-			global $babBody;
+			global $babBody, $babDB;
 			static $i = 0;
 			if( $i < $this->count)
 				{
 				$this->display = true;
-				$arr = $this->db->db_fetch_array($this->res);
+				$arr = $babDB->db_fetch_array($this->res);
 				if ($this->q)
 					{
 					if(bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $arr['idcat']))
@@ -83,8 +83,8 @@ function browse($cat,$cb)
 					if(bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $arr['id']))
 						{
 						$this->displink = false;
-						$test = $this->db->db_query("select id from ".BAB_FAQQR_TBL." where idcat='".$arr['id']."'");
-						$n = $this->db->db_num_rows($test);
+						$test = $babDB->db_query("select id from ".BAB_FAQQR_TBL." where idcat='".$babDB->db_escape_string($arr['id'])."'");
+						$n = $babDB->db_num_rows($test);
 						if ($n > 0)
 							$this->displink = true;
 						$this->title = $arr['category'];
