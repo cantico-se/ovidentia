@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
+include_once 'base.php';
 function browseUsers($pos, $cb)
 	{
 	global $babBody;
@@ -49,26 +49,25 @@ function browseUsers($pos, $cb)
 
 		function temp($pos, $cb)
 			{
-			global $babBody;
+			global $babBody, $babDB;
 
 			$this->allname = bab_translate("All");
 			$this->nickname = bab_translate("Nickname");
-			$this->db = $GLOBALS['babDB'];
 			$this->cb = $cb;
 
 			if( !bab_isUserAdministrator() && $babBody->babsite['browse_users'] == 'N')
 				{
-				$req = "select ".BAB_GROUPS_TBL.".id from ".BAB_GROUPS_TBL." join ".BAB_USERS_GROUPS_TBL." where id_object='".$GLOBALS['BAB_SESS_USERID']."' and ".BAB_GROUPS_TBL.".id=".BAB_USERS_GROUPS_TBL.".id_group";
-				$resgroups = $this->db->db_query($req);
+				$req = "select ".BAB_GROUPS_TBL.".id from ".BAB_GROUPS_TBL." join ".BAB_USERS_GROUPS_TBL." where id_object='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and ".BAB_GROUPS_TBL.".id=".BAB_USERS_GROUPS_TBL.".id_group";
+				$resgroups = $babDB->db_query($req);
 
 				$reqa = "select distinct ".BAB_USERS_TBL.".id, ".BAB_USERS_TBL.".firstname, ".BAB_USERS_TBL.".lastname, ".BAB_USERS_TBL.".nickname from ".BAB_USERS_TBL." join ".BAB_USERS_GROUPS_TBL." where is_confirmed ='1' and disabled='0'";
-				if( $this->db->db_num_rows($resgroups) > 0 )
+				if( $babDB->db_num_rows($resgroups) > 0 )
 					{
-					$arr = $this->db->db_fetch_array($resgroups);
-					$reqa .= " and ( ".BAB_USERS_GROUPS_TBL.".id_group='".$arr['id']."'";
-					while($arr = $this->db->db_fetch_array($resgroups))
+					$arr = $babDB->db_fetch_array($resgroups);
+					$reqa .= " and ( ".BAB_USERS_GROUPS_TBL.".id_group='".$babDB->db_escape_string($arr['id'])."'";
+					while($arr = $babDB->db_fetch_array($resgroups))
 						{
-						$reqa .= " or ".BAB_USERS_GROUPS_TBL.".id_group='".$arr['id']."'"; 
+						$reqa .= " or ".BAB_USERS_GROUPS_TBL.".id_group='".$babDB->db_escape_string($arr['id'])."'"; 
 						}
 					$reqa .= ") and ".BAB_USERS_GROUPS_TBL.".id_object=".BAB_USERS_TBL.".id";
 					}
@@ -80,7 +79,7 @@ function browseUsers($pos, $cb)
 				{
 				$this->pos = isset($pos[1]) ? $pos[1] : '';
 				$this->ord = $pos[0];
-				$reqa .= " and lastname like '".$this->pos."%' order by lastname, firstname asc";
+				$reqa .= " and lastname like '".$babDB->db_escape_like($this->pos)."%' order by lastname, firstname asc";
 				$this->fullname = bab_composeUserName(bab_translate("Lastname"), bab_translate("Firstname"));
 				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=lusers&idx=brow&pos=".$this->pos."&cb=".$this->cb;
 				}
@@ -88,12 +87,12 @@ function browseUsers($pos, $cb)
 				{
 				$this->pos = $pos;
 				$this->ord = "";
-				$reqa .= " and firstname like '".$this->pos."%' order by firstname, lastname asc";
+				$reqa .= " and firstname like '".$babDB->db_escape_like($this->pos)."%' order by firstname, lastname asc";
 				$this->fullname = bab_composeUserName(bab_translate("Firstname"),bab_translate("Lastname"));
 				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=lusers&idx=brow&pos=-".$this->pos."&cb=".$this->cb;
 				}
-			$this->res = $this->db->db_query($reqa);
-			$this->count = $this->db->db_num_rows($this->res);
+			$this->res = $babDB->db_query($reqa);
+			$this->count = $babDB->db_num_rows($this->res);
 
 			if( empty($this->pos))
 				$this->allselected = 1;
@@ -104,10 +103,11 @@ function browseUsers($pos, $cb)
 
 		function getnext()
 			{
+			global $babDB;
 			static $i = 0;
 			if( $i < $this->count)
 				{
-				$this->arr = $this->db->db_fetch_array($this->res);
+				$this->arr = $babDB->db_fetch_array($this->res);
 				$this->url = $GLOBALS['babUrlScript']."?tg=user&idx=Modify&item=".$this->arr['id']."&pos=".$this->ord.$this->pos."&cb=".$this->cb;
 				$this->firstlast = bab_composeUserName($this->arr['firstname'],$this->arr['lastname']);
 				$this->firstlast = str_replace("'", "\'", $this->firstlast);
@@ -116,8 +116,9 @@ function browseUsers($pos, $cb)
 					$this->urlname = $this->arr['lastname'].' '.$this->arr['firstname'];
 				else
 					$this->urlname = $this->arr['firstname'].' '.$this->arr['lastname'];
+				$this->urlname = bab_toHTML($this->urlname);
 				$this->userid = $this->arr['id'];
-				$this->nicknameval = $this->arr['nickname'];
+				$this->nicknameval = bab_toHTML($this->arr['nickname']);
 				$this->altbg = !$this->altbg;
 				$i++;
 				return true;
@@ -129,7 +130,7 @@ function browseUsers($pos, $cb)
 
 		function getnextselect()
 			{
-			global $BAB_SESS_USERID;
+			global $BAB_SESS_USERID, $babDB;
 			static $k = 0;
 			static $t = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 			if( $k < 26)
@@ -142,11 +143,11 @@ function browseUsers($pos, $cb)
 				else 
 					{
 					if( $this->ord == "-" )
-						$req = "select * from ".BAB_USERS_TBL." where lastname like '".$this->selectname."%'";
+						$req = "select * from ".BAB_USERS_TBL." where lastname like '".$babDB->db_escape_like($this->selectname)."%'";
 					else
-						$req = "select * from ".BAB_USERS_TBL." where firstname like '".$this->selectname."%'";
-					$res = $this->db->db_query($req);
-					if( $this->db->db_num_rows($res) > 0 )
+						$req = "select * from ".BAB_USERS_TBL." where firstname like '".$babDB->db_escape_like($this->selectname)."%'";
+					$res = $babDB->db_query($req);
+					if( $babDB->db_num_rows($res) > 0 )
 						$this->selected = 0;
 					else
 						$this->selected = 1;
