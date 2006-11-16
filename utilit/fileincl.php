@@ -21,15 +21,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
+include_once 'base.php';
 
-define("BAB_FVERSION_FOLDER", "OVF");
+define('BAB_FVERSION_FOLDER', 'OVF');
 
 /* 0 -> other, 1 -> edit, 2 -> unedit, 3 -> commit */
-define("BAB_FACTION_OTHER"	, 0);
-define("BAB_FACTION_EDIT"	, 1);
-define("BAB_FACTION_UNEDIT"	, 2);
-define("BAB_FACTION_COMMIT"	, 3);
+define('BAB_FACTION_OTHER'	, 0);
+define('BAB_FACTION_EDIT'	, 1);
+define('BAB_FACTION_UNEDIT'	, 2);
+define('BAB_FACTION_COMMIT'	, 3);
 $babFileActions = array(bab_translate("Other"), bab_translate("Edit file"),
 				bab_translate("Unedit file"), bab_translate("Commit file"));
 
@@ -58,7 +58,7 @@ function getDirSize( $dir )
 function bab_getFolderName($id)
 	{
 	global $babDB;
-	$res = $babDB->db_query("select folder from ".BAB_FM_FOLDERS_TBL." where id='".$id."'");
+	$res = $babDB->db_query("select folder from ".BAB_FM_FOLDERS_TBL." where id='".$babDB->db_escape_string($id)."'");
 	if( $res && $babDB->db_num_rows($res) > 0)
 		{
 		$arr = $babDB->db_fetch_array($res);
@@ -127,7 +127,7 @@ function bab_isAccessFileValid($gr, $id)
 	$access = false;
 	if( $gr == "Y")
 		{
-		$res = $babDB->db_query("select id from ".BAB_FM_FOLDERS_TBL." where id ='".$id."' and active='Y'");
+		$res = $babDB->db_query("select id from ".BAB_FM_FOLDERS_TBL." where id ='".$babDB->db_escape_string($id)."' and active='Y'");
 		if( $res && $babDB->db_num_rows($res) > 0 )
 			{
 			$arr = $babDB->db_fetch_array($res);
@@ -182,7 +182,7 @@ function notifyFileApprovers($id, $users, $msg)
 			function notifyFileApproversCls($id, $msg)
 				{
 				global $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL;
-				$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FILES_TBL." where id='".$id."'"));
+				$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FILES_TBL." where id='".$babDB->db_escape_string($id)."'"));
 				$this->filename = $arr['name'];
 				$this->message = $msg;
 				$this->from = bab_translate("Author");
@@ -213,7 +213,7 @@ function notifyFileApprovers($id, $users, $msg)
 	
 	if( count($users) > 0 )
 		{
-		$sql = "select email, firstname, lastname from ".BAB_USERS_TBL." where id IN (".implode(',', $users).")";
+		$sql = "select email, firstname, lastname from ".BAB_USERS_TBL." where id IN (".$babDB->quote($users).")";
 		$result=$babDB->db_query($sql);
 		while( $arr = $babDB->db_fetch_array($result))
 			{
@@ -334,10 +334,10 @@ function acceptFileVersion($arrfile, $arrvf, $bnotify)
 	copy($pathx.$arrfile['name'], $pathx.BAB_FVERSION_FOLDER."/".$arrfile['ver_major'].",".$arrfile['ver_minor'].",".$arrfile['name']);
 	copy($pathx.BAB_FVERSION_FOLDER."/".$arrvf['ver_major'].",".$arrvf['ver_minor'].",".$arrfile['name'], $pathx.$arrfile['name']);
 	unlink($pathx.BAB_FVERSION_FOLDER."/".$arrvf['ver_major'].",".$arrvf['ver_minor'].",".$arrfile['name']);
-	$babDB->db_query("update ".BAB_FILES_TBL." set edit='0', modified='".$arrvf['date']."', modifiedby='".$arrvf['author']."', ver_major='".$arrvf['ver_major']."', ver_minor='".$arrvf['ver_minor']."', ver_comment='".addslashes($arrvf['comment'])."' where id='".$arrfile['id']."'");
+	$babDB->db_query("update ".BAB_FILES_TBL." set edit='0', modified='".$babDB->db_escape_string($arrvf['date'])."', modifiedby='".$babDB->db_escape_string($arrvf['author'])."', ver_major='".$babDB->db_escape_string($arrvf['ver_major'])."', ver_minor='".$babDB->db_escape_string($arrvf['ver_minor'])."', ver_comment='".$babDB->db_escape_string($arrvf['comment'])."' where id='".$babDB->db_escape_string($arrfile['id'])."'");
 
-	$babDB->db_query("insert into ".BAB_FM_FILESLOG_TBL." ( id_file, date, author, action, comment, version) values ('".$arrfile['id']."', now(), '".$arrvf['author']."', '".BAB_FACTION_COMMIT."', '".addslashes($arrvf['comment'])."', '".$arrvf['ver_major'].".".$arrvf['ver_minor']."')");
-	$babDB->db_query("update ".BAB_FM_FILESVER_TBL." set idfai='0', confirmed='Y', ver_major='".$arrfile['ver_major']."', ver_minor='".$arrfile['ver_minor']."', author='".($arrfile['modifiedby']==0?$arrfile['author']: $arrfile['modifiedby'])."', comment='".addslashes($arrfile['ver_comment'])."' where id='".$arrfile['edit']."'");
+	$babDB->db_query("insert into ".BAB_FM_FILESLOG_TBL." ( id_file, date, author, action, comment, version) values ('".$babDB->db_escape_string($arrfile['id'])."', now(), '".$babDB->db_escape_string($arrvf['author'])."', '".BAB_FACTION_COMMIT."', '".$babDB->db_escape_string($arrvf['comment'])."', '".$babDB->db_escape_string($arrvf['ver_major']).".".$babDB->db_escape_string($arrvf['ver_minor'])."')");
+	$babDB->db_query("update ".BAB_FM_FILESVER_TBL." set idfai='0', confirmed='Y', ver_major='".$babDB->db_escape_string($arrfile['ver_major'])."', ver_minor='".$babDB->db_escape_string($arrfile['ver_minor'])."', author='".($arrfile['modifiedby']==0?$babDB->db_escape_string($arrfile['author']): $babDB->db_escape_string($arrfile['modifiedby']))."', comment='".$babDB->db_escape_string($arrfile['ver_comment'])."' where id='".$babDB->db_escape_string($arrfile['edit'])."'");
 	notifyFileAuthor(bab_translate("Your new file version has been accepted"), $arrvf['ver_major'].".".$arrvf['ver_minor'], $arrvf['author'], $arrfile['name']);
 	if( $bnotify == "Y")
 		{
@@ -407,9 +407,9 @@ function notifyFileAuthor($subject, $version, $author, $filename)
  */
 function indexAllFmFiles($status, $prepare) {
 	
-	$db = &$GLOBALS['babDB'];
+	global $babDB;
 
-	$res = $db->db_query("
+	$res = $babDB->db_query("
 	
 		SELECT 
 			f.id,
@@ -423,7 +423,7 @@ function indexAllFmFiles($status, $prepare) {
 			".BAB_FILES_TBL." f 
 			LEFT JOIN ".BAB_FM_FOLDERS_TBL." d ON d.id = f.id_owner AND f.bgroup ='Y' AND d.version ='Y'
 		WHERE 
-			f.index_status IN('".implode("','",$status)."')
+			f.index_status IN('".$babDB->quote($status)."')
 		
 	");
 
@@ -431,7 +431,7 @@ function indexAllFmFiles($status, $prepare) {
 	$files = array();
 	$rights = array();
 
-	while ($arr = $db->db_fetch_assoc($res)) {
+	while ($arr = $babDB->db_fetch_assoc($res)) {
 
 		$pathx = bab_getUploadFullPath($arr['bgroup'], $arr['id_owner']);
 		$pathy =  bab_getUploadFmPath($arr['bgroup'], $arr['id_owner']);
@@ -447,7 +447,7 @@ function indexAllFmFiles($status, $prepare) {
 			);
 
 		if (null != $arr['version']) {
-			$resv = $db->db_query("
+			$resv = $babDB->db_query("
 			
 				SELECT 
 					id,	
@@ -455,11 +455,11 @@ function indexAllFmFiles($status, $prepare) {
 					ver_minor 
 				FROM ".BAB_FM_FILESVER_TBL." 
 				WHERE 
-					id_file='".$arr['id']."' 
-					AND index_status IN('".implode("','",$status)."')
+					id_file='".$babDB->db_escape_string($arr['id'])."' 
+					AND index_status IN('".$babDB->quote($status)."')
 			");
 
-			while ($arrv = $db->db_fetch_assoc($resv)) {
+			while ($arrv = $babDB->db_fetch_assoc($resv)) {
 				if( is_dir($pathx.BAB_FVERSION_FOLDER)) {
 					$file = BAB_FVERSION_FOLDER."/".$arrv['ver_major'].",".$arrv['ver_minor'].",".$arr['name'];
 					$files[] = $pathx.$file;
@@ -516,20 +516,20 @@ function indexAllFmFiles($status, $prepare) {
 
 function indexAllFmFiles_end($param) {
 
-	$db = &$GLOBALS['babDB'];
+	global $babDB;
 	$obj = new bab_indexObject('bab_files');
 
-	$res = $db->db_query("
+	$res = $babDB->db_query("
 		UPDATE ".BAB_FILES_TBL." SET index_status='".BAB_INDEX_STATUS_INDEXED."'
 		WHERE 
-			index_status IN('".implode("','",$param['status'])."')
+			index_status IN('".$babDB->quote($param['status'])."')
 	");
 
 
-	$res = $db->db_query("
+	$res = $babDB->db_query("
 		UPDATE ".BAB_FM_FILESVER_TBL." SET index_status='".BAB_INDEX_STATUS_INDEXED."'
 		WHERE 
-			index_status IN('".implode("','",$param['status'])."')
+			index_status IN('".$babDB->quote($param['status'])."')
 	");
 
 	foreach($param['rights'] as $f => $arr) {

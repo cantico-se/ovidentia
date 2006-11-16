@@ -21,15 +21,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
-include_once $babInstallPath."utilit/fileincl.php";
-include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
+include_once 'base.php';
+include_once $babInstallPath.'utilit/fileincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/indexincl.php';
 
 function notifyApprovers($id, $fid)
 	{
 	global $babBody, $babDB;
 
-	$arr = $babDB->db_fetch_array($babDB->db_query("select idsa, auto_approbation from ".BAB_FM_FOLDERS_TBL." where id='".$fid."'"));
+	$arr = $babDB->db_fetch_array($babDB->db_query("select idsa, auto_approbation from ".BAB_FM_FOLDERS_TBL." where id='".$babDB->db_escape_string($fid)."'"));
 
 	if( $arr['idsa'] !=  0 )
 		{
@@ -46,13 +46,13 @@ function notifyApprovers($id, $fid)
 
 	if( $arr['idsa'] ==  0 || $idfai === true)
 		{
-		$babDB->db_query("update ".BAB_FILES_TBL." set confirmed='Y' where id='".$id."'");
+		$babDB->db_query("update ".BAB_FILES_TBL." set confirmed='Y' where id='".$babDB->db_escape_string($id)."'");
 		$GLOBALS['babWebStat']->addNewFile($babBody->currentAdmGroup);
 		return true;
 		}
 	elseif(!empty($idfai))
 		{
-		$babDB->db_query("update ".BAB_FILES_TBL." set idfai='".$idfai."' where id='".$id."'");
+		$babDB->db_query("update ".BAB_FILES_TBL." set idfai='".$babDB->db_escape_string($idfai)."' where id='".$babDB->db_escape_string($id)."'");
 		$nfusers = getWaitingApproversFlowInstance($idfai, true);
 		if( count($nfusers))
 			{
@@ -70,16 +70,16 @@ function deleteFile($idf, $name, $path)
 
 	if( is_dir($path.BAB_FVERSION_FOLDER."/"))
 		{
-		$res = $babDB->db_query("select * from ".BAB_FM_FILESVER_TBL." where id_file='".$idf."'");
+		$res = $babDB->db_query("select * from ".BAB_FM_FILESVER_TBL." where id_file='".$babDB->db_escape_string($idf)."'");
 		while($arr = $babDB->db_fetch_array($res))
 			{
 			unlink($path.BAB_FVERSION_FOLDER."/".$arr['ver_major'].",".$arr['ver_minor'].",".$name);
 			}
 		}
-	$babDB->db_query("delete from ".BAB_FM_FILESVER_TBL." where id_file='".$idf."'");
-	$babDB->db_query("delete from ".BAB_FM_FILESLOG_TBL." where id_file='".$idf."'");
-	$babDB->db_query("delete from ".BAB_FM_FIELDSVAL_TBL." where id_file='".$idf."'");
-	$babDB->db_query("delete from ".BAB_FILES_TBL." where id='".$idf."'");
+	$babDB->db_query("delete from ".BAB_FM_FILESVER_TBL." where id_file='".$babDB->db_escape_string($idf)."'");
+	$babDB->db_query("delete from ".BAB_FM_FILESLOG_TBL." where id_file='".$babDB->db_escape_string($idf)."'");
+	$babDB->db_query("delete from ".BAB_FM_FIELDSVAL_TBL." where id_file='".$babDB->db_escape_string($idf)."'");
+	$babDB->db_query("delete from ".BAB_FILES_TBL." where id='".$babDB->db_escape_string($idf)."'");
 	}
 
 class listFiles
@@ -104,7 +104,7 @@ class listFiles
 
 	function listFiles($id, $gr, $path, $bmanager, $what ="list")
 		{
-		global $babBody, $BAB_SESS_USERID;
+		global $babBody, $babDB, $BAB_SESS_USERID;
 		include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 		$this->fullpath = bab_getUploadFullPath($gr, $id);
 		$this->path = $path;
@@ -116,7 +116,6 @@ class listFiles
 		$this->countgrp = 0;
 		$this->buaf = false;
 
-		$this->db = $GLOBALS['babDB'];
 		$this->bmanager = $bmanager;
 		$this->countwf = 0;
 		$this->bdownload = false;
@@ -135,9 +134,9 @@ class listFiles
 					$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
 					if( count($arrschi) > 0 )
 						{
-						$req = "select f.* from ".BAB_FILES_TBL." f where id_owner='".$id."' and bgroup='".$gr."' and state='' and path='".addslashes($path)."' and confirmed='N' and f.idfai IN (".implode(',', $arrschi).")";
-						$this->reswf = $this->db->db_query($req);
-						$this->countwf = $this->db->db_num_rows($this->reswf);
+						$req = "select f.* from ".BAB_FILES_TBL." f where id_owner='".$babDB->db_escape_string($id)."' and bgroup='".$babDB->db_escape_string($gr)."' and state='' and path='".$babDB->db_escape_string($path)."' and confirmed='N' and f.idfai IN (".$babDB->quote($arrschi).")";
+						$this->reswf = $babDB->db_query($req);
+						$this->countwf = $babDB->db_num_rows($this->reswf);
 						}
 					else
 						{
@@ -205,10 +204,10 @@ class listFiles
 					$this->arrudir[] = $GLOBALS['babUrlScript']."?tg=fileman&idx=".$what."&id=".$id."&gr=".$gr."&path=".urlencode($p);
 					}
 				}
-			$req = "select * from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and state='' and path='".addslashes($path)."' and confirmed='Y'";
-			$req .= " order by name asc";
-			$this->res = $this->db->db_query($req);
-			$this->count = $this->db->db_num_rows($this->res);
+			$req = "select * from ".BAB_FILES_TBL." where id_owner='".$babDB->db_escape_string($id)."' and bgroup='".$babDB->db_escape_string($gr)."' and state='' and path='".$babDB->db_escape_string($path)."' and confirmed='Y'";
+			$req .= ' order by name asc';
+			$this->res = $babDB->db_query($req);
+			$this->count = $babDB->db_num_rows($this->res);
 			}
 		else
 			$this->count = 0;
@@ -239,6 +238,7 @@ function listTrashFiles($id, $gr)
 
 		function temp($id, $gr)
 			{
+			global $babDB;
 			$this->id = $id;
 			$this->gr = $gr;
 			$this->bytes = bab_translate("bytes");
@@ -251,18 +251,18 @@ function listTrashFiles($id, $gr)
 			$this->checkall = bab_translate("Check all");
 			$this->uncheckall = bab_translate("Uncheck all");
 			$this->fullpath = bab_getUploadFullPath($gr, $id);
-			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and state='D' order by name asc";
-			$this->res = $this->db->db_query($req);
-			$this->count = $this->db->db_num_rows($this->res);
+			$req = "select * from ".BAB_FILES_TBL." where id_owner='".$babDB->db_escape_string($id)."' and bgroup='".$babDB->db_escape_string($gr)."' and state='D' order by name asc";
+			$this->res = $babDB->db_query($req);
+			$this->count = $babDB->db_num_rows($this->res);
 			}
 
 		function getnextfile()
 			{
+			global $babDB;
 			static $i = 0;
 			if( $i < $this->count)
 				{
-				$arr = $this->db->db_fetch_array($this->res);
+				$arr = $babDB->db_fetch_array($this->res);
 				$ext = substr(strrchr($arr['name'], "."), 1);
 				if( empty($this->arrext[$ext]))
 					$this->arrext[$ext] = bab_printTemplate($this, "config.html", ".".$ext);
@@ -521,11 +521,12 @@ function browseFiles($id, $gr, $path, $bmanager, $editor)
 
 		function getnextfile()
 			{
+			global $babDB;
 			static $i = 0;
 			if( $i < $this->count)
 				{
 				$this->altbg = !$this->altbg;
-				$arr = $this->db->db_fetch_array($this->res);
+				$arr = $babDB->db_fetch_array($this->res);
 				$ext = strtolower(substr(strrchr($arr['name'], "."), 1));
 				if( !empty($ext) && empty($this->arrext[$ext]))
 					{
@@ -610,7 +611,7 @@ function listFiles($id, $gr, $path, $bmanager)
 
 		function temp($id, $gr, $path, $bmanager)
 			{
-			global $BAB_SESS_USERID;
+			global $BAB_SESS_USERID, $babDB;
 			$this->listFiles($id, $gr, $path, $bmanager);
 			$this->bytes = bab_translate("bytes");
 			$this->mkdir = bab_translate("Create");
@@ -643,7 +644,7 @@ function listFiles($id, $gr, $path, $bmanager)
 
 			if( $gr == "Y")
 				{
-				list($version) = $this->db->db_fetch_array($this->db->db_query("select version from ".BAB_FM_FOLDERS_TBL." where id='".$id."'"));
+				list($version) = $babDB->db_fetch_array($babDB->db_query("select version from ".BAB_FM_FOLDERS_TBL." where id='".$babDB->db_escape_string($id)."'"));
 				$this->rootpath = bab_getFolderName($id);
 				$this->bupdate = bab_isAccessValid(BAB_FMUPDATE_GROUPS_TBL, $id);
 				if( !$this->bupdate )
@@ -668,9 +669,9 @@ function listFiles($id, $gr, $path, $bmanager)
 			$this->bdel = false;
 			if( $this->bmanager )
 				{
-				$req = "select * from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and state='X' order by name asc";
-				$this->xres = $this->db->db_query($req);
-				$this->xcount = $this->db->db_num_rows($this->xres);
+				$req = "select * from ".BAB_FILES_TBL." where id_owner='".$babDB->db_escape_string($id)."' and bgroup='".$babDB->db_escape_string($gr)."' and state='X' order by name asc";
+				$this->xres = $babDB->db_query($req);
+				$this->xcount = $babDB->db_num_rows($this->xres);
 				if( !empty($path) && count($this->arrdir) <= 1 && $this->count == 0 )
 					$this->bdel = true;
 				}
@@ -753,10 +754,11 @@ function listFiles($id, $gr, $path, $bmanager)
 
 		function getnextfile()
 			{
+			global $babDB;
 			static $i = 0;
 			if( $i < $this->count)
 				{
-				$arr = $this->db->db_fetch_array($this->res);
+				$arr = $babDB->db_fetch_array($this->res);
 				$this->bconfirmed = 0;
 				$this->updateFileInfo($arr);
 				$ufile = urlencode($arr['name']);
@@ -780,7 +782,7 @@ function listFiles($id, $gr, $path, $bmanager)
 					if( $arr['edit'] )
 						{
 						$this->block = true;
-						list($lockauthor, $idfvai) = $this->db->db_fetch_array($this->db->db_query("select author, idfai from ".BAB_FM_FILESVER_TBL." where id='".$arr['edit']."'"));
+						list($lockauthor, $idfvai) = $babDB->db_fetch_array($babDB->db_query("select author, idfai from ".BAB_FM_FILESVER_TBL." where id='".$babDB->db_escape_string($arr['edit'])."'"));
 						if( $idfvai == 0 && $lockauthor == $GLOBALS['BAB_SESS_USERID'])
 							$this->blockauth = true;
 
@@ -810,10 +812,11 @@ function listFiles($id, $gr, $path, $bmanager)
 
 		function getnextwfile()
 			{
+			global $babDB;
 			static $i = 0;
 			if( $i < $this->countwf)
 				{
-				$arr = $this->db->db_fetch_array($this->reswf);
+				$arr = $babDB->db_fetch_array($this->reswf);
 				$this->bconfirmed = 1;
 				$this->updateFileInfo($arr);
 				$ufile = urlencode($arr['name']);
@@ -835,10 +838,11 @@ function listFiles($id, $gr, $path, $bmanager)
 
 		function getnextxfile()
 			{
+			global $babDB;
 			static $i = 0;
 			if( $i < $this->xcount)
 				{
-				$arr = $this->db->db_fetch_array($this->xres);
+				$arr = $babDB->db_fetch_array($this->xres);
 				$this->bconfirmed = 0;
 				$this->updateFileInfo($arr);
 				$ufile = urlencode($arr['name']);
@@ -923,7 +927,7 @@ function addFile($id, $gr, $path, $description, $keywords)
 			$this->keysval = isset($keywords)? $keywords: "";
 			if( $gr == 'Y' )
 				{
-				$this->res = $babDB->db_query("select * from ".BAB_FM_FIELDS_TBL." where id_folder='".$id."'");
+				$this->res = $babDB->db_query("select * from ".BAB_FM_FIELDS_TBL." where id_folder='".$babDB->db_escape_string($id)."'");
 				$this->count = $babDB->db_num_rows($this->res);
 				}
 			else
@@ -985,11 +989,11 @@ function addFile($id, $gr, $path, $description, $keywords)
 
 function saveFile($id, $gr, $path, $description, $keywords, $readonly)
 	{
-	global $babBody, $BAB_SESS_USERID;
+	global $babBody, $babDB, $BAB_SESS_USERID;
 	$access = false;
 	$bmanager = false;
 	$access = false;
-	$confirmed = "N";
+	$confirmed = 'N';
 
 	if( $gr == "N" && !empty($BAB_SESS_USERID))
 		{
@@ -1062,21 +1066,15 @@ function saveFile($id, $gr, $path, $description, $keywords, $readonly)
 	if( isset($GLOBALS['babFileNameTranslation']))
 		$osfname = strtr($osfname, $GLOBALS['babFileNameTranslation']);
 
-	$db = $GLOBALS['babDB'];
-	$name = $db->db_escape_string($osfname);
-
-
-	$description = $db->db_escape_string($description);
-	$keywords = $db->db_escape_string($keywords);
-
+	$name = $osfname;
 
 	$bexist = false;
 	if( file_exists($pathx.$osfname))
 		{
-		$res = $db->db_query("select * from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and name='".$name."' and path='".addslashes($path)."'");
-		if( $res && $db->db_num_rows($res) > 0)
+		$res = $babDB->db_query("select * from ".BAB_FILES_TBL." where id_owner='".$babDB->db_escape_string($id)."' and bgroup='".$babDB->db_escape_string($gr)."' and name='".$babDB->db_escape_string($name)."' and path='".$babDB->db_escape_string($path)."'");
+		if( $res && $babDB->db_num_rows($res) > 0)
 			{
-			$arr = $db->db_fetch_array($res);
+			$arr = $babDB->db_fetch_array($res);
 			if( $arr['state'] == "D")
 				{
 				$bexist = true;
@@ -1107,7 +1105,7 @@ function saveFile($id, $gr, $path, $description, $keywords, $readonly)
 	$bnotify = false;
 	if( $gr == "Y" )
 		{
-		$rr = $db->db_fetch_array($db->db_query("select filenotify from ".BAB_FM_FOLDERS_TBL." where id='".$id."'"));
+		$rr = $babDB->db_fetch_array($babDB->db_query("select filenotify from ".BAB_FM_FOLDERS_TBL." where id='".$babDB->db_escape_string($id)."'"));
 		if( $rr['filenotify'] == "Y" )
 			$bnotify = true;
 
@@ -1115,15 +1113,15 @@ function saveFile($id, $gr, $path, $description, $keywords, $readonly)
 			{
 			if( is_dir($pathx.BAB_FVERSION_FOLDER."/"))
 				{
-				$res = $db->db_query("select * from ".BAB_FM_FILESVER_TBL." where id_file='".$arr['id']."'");
-				while($rr = $db->db_fetch_array($res))
+				$res = $babDB->db_query("select * from ".BAB_FM_FILESVER_TBL." where id_file='".$babDB->db_escape_string($arr['id'])."'");
+				while($rr = $babDB->db_fetch_array($res))
 					{
 					unlink($pathx.BAB_FVERSION_FOLDER."/".$rr['ver_major'].",".$rr['ver_minor'].",".$osfname);
 					}
 				}
-			$db->db_query("delete from ".BAB_FM_FILESVER_TBL." where id_file='".$arr['id']."'");
-			$db->db_query("delete from ".BAB_FM_FILESLOG_TBL." where id_file='".$arr['id']."'");
-			$db->db_query("delete from ".BAB_FM_FIELDSVAL_TBL." where id_file='".$arr['id']."'");
+			$babDB->db_query("delete from ".BAB_FM_FILESVER_TBL." where id_file='".$babDB->db_escape_string($arr['id'])."'");
+			$babDB->db_query("delete from ".BAB_FM_FILESLOG_TBL." where id_file='".$babDB->db_escape_string($arr['id'])."'");
+			$babDB->db_query("delete from ".BAB_FM_FIELDSVAL_TBL." where id_file='".$babDB->db_escape_string($arr['id'])."'");
 			}
 		
 		}
@@ -1131,18 +1129,23 @@ function saveFile($id, $gr, $path, $description, $keywords, $readonly)
 	include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
 	$index_status = bab_indexOnLoadFiles(array($pathx.$osfname), 'bab_files');
 
+	if( $readonly != 'Y')
+		{
+		$readonly = 'N';
+		}
+
 	if( $bexist)
 		{
-		$req = "update ".BAB_FILES_TBL." set description='".$description."', keywords='".$keywords."', readonly='".$readonly."', confirmed='".$confirmed."', modified=now(), hits='0', modifiedby='".$idcreator."', state='', index_status='".$index_status."' where id='".$arr['id']."'";
-		$db->db_query($req);
+		$req = "update ".BAB_FILES_TBL." set description='".$babDB->db_escape_string($description)."', keywords='".$babDB->db_escape_string($keywords)."', readonly='".$babDB->db_escape_string($readonly)."', confirmed='".$babDB->db_escape_string($confirmed)."', modified=now(), hits='0', modifiedby='".$babDB->db_escape_string($idcreator)."', state='', index_status='".$babDB->db_escape_string($index_status)."' where id='".$babDB->db_escape_string($arr['id'])."'";
+		$babDB->db_query($req);
 		$idf = $arr['id'];
 		}
 	else
 		{
 		$req = "insert into ".BAB_FILES_TBL." (name, description, keywords, path, id_owner, bgroup, link, readonly, state, created, author, modified, modifiedby, confirmed, index_status) values ";
-		$req .= "('" .$name. "', '" . $description. "', '" . $keywords. "', '" .addslashes($path). "', '" . $id. "', '" . $gr. "', '0', '" . $readonly. "', '', now(), '" . $idcreator. "', now(), '" . $idcreator. "', '". $confirmed."', '".$index_status."')";
-		$db->db_query($req);
-		$idf = $db->db_insert_id(); 
+		$req .= "('" .$babDB->db_escape_string($name). "', '" . $babDB->db_escape_string($description). "', '" . $babDB->db_escape_string($keywords). "', '" .$babDB->db_escape_string($path). "', '" . $babDB->db_escape_string($id). "', '" . $babDB->db_escape_string($gr). "', '0', '" . $babDB->db_escape_string($readonly). "', '', now(), '" . $babDB->db_escape_string($idcreator). "', now(), '" . $babDB->db_escape_string($idcreator). "', '". $babDB->db_escape_string($confirmed)."', '".$babDB->db_escape_string($index_status)."')";
+		$babDB->db_query($req);
+		$idf = $babDB->db_insert_id(); 
 		}
 
 		$okfiles[] = $idf;
@@ -1159,23 +1162,23 @@ function saveFile($id, $gr, $path, $description, $keywords, $readonly)
 			$GLOBALS['babWebStat']->addNewFile($babBody->currentAdmGroup);
 			}
 
-		$res = $db->db_query("select id from ".BAB_FM_FIELDS_TBL." where id_folder='".$id."'");
-		while($arr = $db->db_fetch_array($res))
+		$res = $babDB->db_query("select id from ".BAB_FM_FIELDS_TBL." where id_folder='".$babDB->db_escape_string($id)."'");
+		while($arr = $babDB->db_fetch_array($res))
 			{
 			$fd = 'field'.$arr['id'];
 			if( isset($GLOBALS[$fd]) )
 				{
-				$fval = $db->db_escape_string($GLOBALS[$fd]);
+				$fval = $babDB->db_escape_string($GLOBALS[$fd]);
 
-				$res2 = $db->db_query("select id from ".BAB_FM_FIELDSVAL_TBL." where id_file='".$idf."' and id_field='".$arr['id']."'");
-				if( $res2 && $db->db_num_rows($res2) > 0)
+				$res2 = $babDB->db_query("select id from ".BAB_FM_FIELDSVAL_TBL." where id_file='".$babDB->db_escape_string($idf)."' and id_field='".$babDB->db_escape_string($arr['id'])."'");
+				if( $res2 && $babDB->db_num_rows($res2) > 0)
 					{
-					$arr2 = $db->db_fetch_array($res2);
-					$db->db_query("update ".BAB_FM_FIELDSVAL_TBL." set fvalue='".$fval."' where id='".$arr2['id']."'");
+					$arr2 = $babDB->db_fetch_array($res2);
+					$babDB->db_query("update ".BAB_FM_FIELDSVAL_TBL." set fvalue='".$babDB->db_escape_string($fval)."' where id='".$babDB->db_escape_string($arr2['id'])."'");
 					}
 				else
 					{
-					$db->db_query("insert into ".BAB_FM_FIELDSVAL_TBL." set fvalue='".$fval."', id_file='".$idf."', id_field='".$arr['id']."'");
+					$babDB->db_query("insert into ".BAB_FM_FIELDSVAL_TBL." set fvalue='".$babDB->db_escape_string($fval)."', id_file='".$babDB->db_escape_string($idf)."', id_field='".$babDB->db_escape_string($arr['id'])."'");
 					}
 				}
 			}
@@ -1212,13 +1215,12 @@ function saveFile($id, $gr, $path, $description, $keywords, $readonly)
 
 function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $description, $keywords, $readonly, $confirm, $bnotify, $newfolder, $descup)
 	{
-	global $babBody, $BAB_SESS_USERID;
-	$db = $GLOBALS['babDB'];
+	global $babBody, $babDB, $BAB_SESS_USERID;
 
-	$res = $db->db_query("select * from ".BAB_FILES_TBL." where id='".$idf."'");
-	if( $res && $db->db_num_rows($res))
+	$res = $babDB->db_query("select * from ".BAB_FILES_TBL." where id='".$babDB->db_escape_string($idf)."'");
+	if( $res && $babDB->db_num_rows($res))
 		{
-		$arr = $db->db_fetch_array($res);
+		$arr = $babDB->db_fetch_array($res);
 		if( $arr['bgroup'] == "Y" )
 			{
 			for( $i = 0; $i < count($babBody->aclfm['id']); $i++)
@@ -1306,8 +1308,8 @@ function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $de
 				$frename = true;
 				if( is_dir($pathx.BAB_FVERSION_FOLDER."/"))
 					{
-					$res = $db->db_query("select * from ".BAB_FM_FILESVER_TBL." where id_file='".$idf."'");
-					while($rr = $db->db_fetch_array($res))
+					$res = $babDB->db_query("select * from ".BAB_FM_FILESVER_TBL." where id_file='".$babDB->db_escape_string($idf)."'");
+					while($rr = $babDB->db_fetch_array($res))
 						{
 						$filename = $rr['ver_major'].",".$rr['ver_minor'].",".$osfname;
 						rename($pathx.BAB_FVERSION_FOLDER."/".$rr['ver_major'].",".$rr['ver_minor'].",".$arr['name'], $pathx.BAB_FVERSION_FOLDER."/".$rr['ver_major'].",".$rr['ver_minor'].",".$osfname);
@@ -1318,11 +1320,6 @@ function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $de
 
 
 
-		$fname = addslashes($fname);
-		$description = addslashes($description);
-		$keywords = addslashes($keywords);
-
-
 		if( empty($BAB_SESS_USERID))
 			$idcreator = 0;
 		else
@@ -1331,23 +1328,32 @@ function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $de
 		$tmp = array();
 		if( $descup )
 			{
-			$tmp[] = "description='".$description."'";
-			$tmp[] = "keywords='".$keywords."'";
+			$tmp[] = "description='".$babDB->db_escape_string($description)."'";
+			$tmp[] = "keywords='".$babDB->db_escape_string($keywords)."'";
 			}
 		if( $bmodified)
 			{
 			$tmp[] = "modified=now()";
-			$tmp[] = "modifiedby='".$idcreator."'";
+			$tmp[] = "modifiedby='".$babDB->db_escape_string($idcreator)."'";
 			}
 		if( $frename)
 			{
-			$tmp[] = "name='".$fname."'";
+			$tmp[] = "name='".$babDB->db_escape_string($fname)."'";
 			}
 		else
+			{
 			$osfname = $arr['name'];
+			}
 
 		if( !empty($readonly))
-			$tmp[] = "readonly='".$readonly."'";
+			{
+			if( $readonly != 'Y' ) 
+				{
+				$readonly = 'N';
+				}
+			$tmp[] = "readonly='".$babDB->db_escape_string($readonly)."'";
+			}
+
 		if( !empty($newfolder))
 			{
 			$pathxnew = bab_getUploadFullPath($arr['bgroup'], $newfolder);
@@ -1358,18 +1364,20 @@ function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $de
 
 			if( rename( $pathx.$osfname, $pathxnew.$osfname))
 				{
-				$db->db_query("delete from ".BAB_FM_FIELDSVAL_TBL." where id_file='".$idf."'");
-				$tmp[] = "id_owner='".$newfolder."'";
+				$babDB->db_query("delete from ".BAB_FM_FIELDSVAL_TBL." where id_file='".$babDB->db_escape_string($idf)."'");
+				$tmp[] = "id_owner='".$babDB->db_escape_string($newfolder)."'";
 				$tmp[] = "path=''";
 				$arr['id_owner'] = $newfolder;
 
 				if( is_dir($pathx.BAB_FVERSION_FOLDER."/"))
 					{
 					if( !is_dir($pathxnew.BAB_FVERSION_FOLDER."/"))
+						{
 						bab_mkdir($pathxnew.BAB_FVERSION_FOLDER, $GLOBALS['babMkdirMode']);
+						}
 
-					$res = $db->db_query("select * from ".BAB_FM_FILESVER_TBL." where id_file='".$idf."'");
-					while($rr = $db->db_fetch_array($res))
+					$res = $babDB->db_query("select * from ".BAB_FM_FILESVER_TBL." where id_file='".$babDB->db_escape_string($idf)."'");
+					while($rr = $babDB->db_fetch_array($res))
 						{
 						$filename = $rr['ver_major'].",".$rr['ver_minor'].",".$osfname;
 						rename($pathx.BAB_FVERSION_FOLDER."/".$filename, $pathxnew.BAB_FVERSION_FOLDER."/".$filename);
@@ -1380,34 +1388,36 @@ function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $de
 			}
 
 		if( count($tmp) > 0 )
-			$db->db_query("update ".BAB_FILES_TBL." set ".implode(", ", $tmp)." where id='".$idf."'");
+			{
+			$babDB->db_query("update ".BAB_FILES_TBL." set ".implode(", ", $tmp)." where id='".$babDB->db_escape_string($idf)."'");
+			}
 
 		if( $arr['bgroup'] == 'Y')
 			{
-			$res = $db->db_query("select id from ".BAB_FM_FIELDS_TBL." where id_folder='".$arr['id_owner']."'");
-			while($arrf = $db->db_fetch_array($res))
+			$res = $babDB->db_query("select id from ".BAB_FM_FIELDS_TBL." where id_folder='".$babDB->db_escape_string($arr['id_owner'])."'");
+			while($arrf = $babDB->db_fetch_array($res))
 				{
 				$fd = 'field'.$arrf['id'];
 				if( isset($GLOBALS[$fd]) )
 					{
 
-					$fval = $db->db_escape_string($GLOBALS[$fd]);
+					$fval = $babDB->db_escape_string($GLOBALS[$fd]);
 
-					$res2 = $db->db_query("select id from ".BAB_FM_FIELDSVAL_TBL." where id_file='".$idf."' and id_field='".$arrf['id']."'");
-					if( $res2 && $db->db_num_rows($res2) > 0)
+					$res2 = $babDB->db_query("select id from ".BAB_FM_FIELDSVAL_TBL." where id_file='".$babDB->db_escape_string($idf)."' and id_field='".$babDB->db_escape_string($arrf['id'])."'");
+					if( $res2 && $babDB->db_num_rows($res2) > 0)
 						{
-						$arr2 = $db->db_fetch_array($res2);
-						$db->db_query("update ".BAB_FM_FIELDSVAL_TBL." set fvalue='".$fval."' where id='".$arr2['id']."'");
+						$arr2 = $babDB->db_fetch_array($res2);
+						$babDB->db_query("update ".BAB_FM_FIELDSVAL_TBL." set fvalue='".$babDB->db_escape_string($fval)."' where id='".$babDB->db_escape_string($arr2['id'])."'");
 						}
 					else
 						{
-						$db->db_query("insert into ".BAB_FM_FIELDSVAL_TBL." set fvalue='".$fval."', id_file='".$idf."', id_field='".$arrf['id']."'");
+						$babDB->db_query("insert into ".BAB_FM_FIELDSVAL_TBL." set fvalue='".$babDB->db_escape_string($fval)."', id_file='".$babDB->db_escape_string($idf)."', id_field='".$babDB->db_escape_string($arrf['id'])."'");
 						}
 					}
 				}
 			}
 
-		$rr = $db->db_fetch_array($db->db_query("select filenotify, id_dgowner from ".BAB_FM_FOLDERS_TBL." where id='".$arr['id_owner']."'"));
+		$rr = $babDB->db_fetch_array($babDB->db_query("select filenotify, id_dgowner from ".BAB_FM_FOLDERS_TBL." where id='".$babDB->db_escape_string($arr['id_owner'])."'"));
 		if( empty($bnotify))
 			{
 			$bnotify = $rr['filenotify'];
@@ -1427,7 +1437,7 @@ function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $de
 						break;
 					case 1:
 						deleteFlowInstance($arr['idfai']);
-						$db->db_query("update ".BAB_FILES_TBL." set confirmed='Y', idfai='0' where id = '".$arr['id']."'");
+						$babDB->db_query("update ".BAB_FILES_TBL." set confirmed='Y', idfai='0' where id = '".$babDB->db_escape_string($arr['id'])."'");
 						$GLOBALS['babWebStat']->addNewFile($rr['id_dgowner']);
 						notifyFileAuthor(bab_translate("Your file has been accepted"),"", $arr['author'], $arr['name']);
 						if( $bnotify == "Y")
@@ -1505,7 +1515,7 @@ function createDirectory($dirname, $id, $gr, $path)
 
 function renameDirectory($dirname, $id, $gr, $path)
 	{
-	global $babBody, $BAB_SESS_USERID, $aclfm;
+	global $babBody, $babDB, $BAB_SESS_USERID, $aclfm;
 	if( empty($path))
 		return false;
 
@@ -1566,15 +1576,14 @@ function renameDirectory($dirname, $id, $gr, $path)
 		if(rename($pathx.$uppath.$oldname, $pathx.$uppath.$dirname))
 			{
 			$len = strlen($path);
-			$db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."'";
-			$res = $db->db_query($req);
-			while( $arr = $db->db_fetch_array($res))
+			$req = "select * from ".BAB_FILES_TBL." where id_owner='".$babDB->db_escape_string($id)."' and bgroup='".$babDB->db_escape_string($gr)."'";
+			$res = $babDB->db_query($req);
+			while( $arr = $babDB->db_fetch_array($res))
 				{
 				if( substr($arr['path'], 0, $len) == $path )
 					{
-					$req = "update ".BAB_FILES_TBL." set path='".addslashes(str_replace($path, $uppath.$dirname, $arr['path']))."' where id='".$arr['id']."'";
-					$db->db_query($req);
+					$req = "update ".BAB_FILES_TBL." set path='".$babDB->db_escape_string(str_replace($path, $uppath.$dirname, $arr['path']))."' where id='".$babDB->db_escape_string($arr['id'])."'";
+					$babDB->db_query($req);
 					}
 				}
 			$GLOBALS['path'] = $uppath.$dirname;
@@ -1589,7 +1598,7 @@ function renameDirectory($dirname, $id, $gr, $path)
 
 function removeDirectory($id, $gr, $path)
 	{
-	global $babBody, $BAB_SESS_USERID, $aclfm;
+	global $babBody, $babDB, $BAB_SESS_USERID, $aclfm;
 	if( empty($path))
 		return false;
 
@@ -1622,10 +1631,9 @@ function removeDirectory($id, $gr, $path)
 
 	if( is_dir($pathx.$path))
 		{
-		$db = $GLOBALS['babDB'];
-		$req = "select * from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and path='".addslashes($path)."'";
-		$res = $db->db_query($req);
-		while( $arr = $db->db_fetch_array($res))
+		$req = "select * from ".BAB_FILES_TBL." where id_owner='".$babDB->db_escape_string($id)."' and bgroup='".$babDB->db_escape_string($gr)."' and path='".$babDB->db_escape_string($path)."'";
+		$res = $babDB->db_query($req);
+		while( $arr = $babDB->db_fetch_array($res))
 			{
 			if( @unlink($pathx.$path."/".$arr['name']))
 				deleteFile($arr['id'], $arr['name'], $pathx.$path."/");
@@ -1657,7 +1665,7 @@ function removeDirectory($id, $gr, $path)
 
 function getFile( $file, $id, $gr, $path, $inl)
 	{
-	global $babBody, $BAB_SESS_USERID;
+	global $babBody, $babDB, $BAB_SESS_USERID;
 	$access = false;
 
 	if( $gr == "N" && $babBody->ustorage)
@@ -1680,13 +1688,12 @@ function getFile( $file, $id, $gr, $path, $inl)
 	if( $access )
 		{
 		$file = stripslashes($file);
-		$db = $GLOBALS['babDB'];
-		$req = "select * from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and path='".addslashes($path)."' and name='".addslashes($file)."'";
-		$res = $db->db_query($req);
-		if( $res && $db->db_num_rows($res) > 0 )
+		$req = "select * from ".BAB_FILES_TBL." where id_owner='".$babDB->db_escape_string($id)."' and bgroup='".$babDB->db_escape_string($gr)."' and path='".$babDB->db_escape_string($path)."' and name='".$babDB->db_escape_string($file)."'";
+		$res = $babDB->db_query($req);
+		if( $res && $babDB->db_num_rows($res) > 0 )
 			{
-			$arr = $db->db_fetch_array($res);
-			$db->db_query("update ".BAB_FILES_TBL." set hits='".($arr['hits'] + 1)."' where id='".$arr['id']."'");
+			$arr = $babDB->db_fetch_array($res);
+			$babDB->db_query("update ".BAB_FILES_TBL." set hits='".$babDB->db_escape_string(($arr['hits'] + 1))."' where id='".$babDB->db_escape_string($arr['id'])."'");
 			$access = true;
 			}
 		else
@@ -1726,16 +1733,15 @@ function getFile( $file, $id, $gr, $path, $inl)
 
 function cutFile( $file, $id, $gr, $path, $bmanager)
 	{
-	global $babBody;
+	global $babBody, $babDB;
 
 	if( !$bmanager)
 		{
 		$babBody->msgerror = bab_translate("Access denied");
 		return false;
 		}
-	$db = $GLOBALS['babDB'];
-	$req = "update ".BAB_FILES_TBL." set state='X' where id_owner='".$id."' and bgroup='".$gr."' and state='' and path='".addslashes($path)."' and name='".$file."'";
-	$res = $db->db_query($req);
+	$req = "update ".BAB_FILES_TBL." set state='X' where id_owner='".$babDB->db_escape_string($id)."' and bgroup='".$babDB->db_escape_string($gr)."' and state='' and path='".$babDB->db_escape_string($path)."' and name='".$babDB->db_escape_string($file)."'";
+	$res = $babDB->db_query($req);
 	return true;
 	}
 
@@ -1754,14 +1760,14 @@ function delFile( $file, $id, $gr, $path, $bmanager)
 	$file = $babDB->db_escape_string($file);
 	
 	$db = $GLOBALS['babDB'];
-	$req = "update ".BAB_FILES_TBL." set state='D' where id_owner='".$id."' and bgroup='".$gr."' and state='' and path='".addslashes($path)."' and name='".$file."'";
-	$res = $db->db_query($req);
+	$req = "update ".BAB_FILES_TBL." set state='D' where id_owner='".$babDB->db_escape_string($id)."' and bgroup='".$babDB->db_escape_string($gr)."' and state='' and path='".$babDB->db_escape_string($path)."' and name='".$babDB->db_escape_string($file)."'";
+	$res = $babDB->db_query($req);
 	return true;
 	}
 
 function pasteFile( $file, $id, $gr, $path, $tp, $bmanager)
 	{
-	global $babBody;
+	global $babBody, $babDB;
 
 	if( !$bmanager)
 		{
@@ -1776,9 +1782,8 @@ function pasteFile( $file, $id, $gr, $path, $tp, $bmanager)
 		{
 		if( $path == $tp )
 			{
-			$db = $GLOBALS['babDB'];
-			$req = "update ".BAB_FILES_TBL." set state='' where id_owner='".$id."' and bgroup='".$gr."' and path='".addslashes($path)."' and name='".addslashes($file)."'";
-			$res = $db->db_query($req);
+			$req = "update ".BAB_FILES_TBL." set state='' where id_owner='".$babDB->db_escape_string($id)."' and bgroup='".$babDB->db_escape_string($gr)."' and path='".$babDB->db_escape_string($path)."' and name='".$babDB->db_escape_string($file)."'";
+			$res = $babDB->db_query($req);
 			return true;
 			}
 		$babBody->msgerror = bab_translate("A file with the same name already exists");
@@ -1788,17 +1793,17 @@ function pasteFile( $file, $id, $gr, $path, $tp, $bmanager)
 	if( rename( $pathx.$path."/".$file, $pathx.$tp."/".$file))
 		{
 		$db = $GLOBALS['babDB'];
-		list($idf) = $db->db_fetch_row($db->db_query("select id from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and path='".addslashes($path)."' and name='".addslashes($file)."'"));
+		list($idf) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_FILES_TBL." where id_owner='".$babDB->db_escape_string($id)."' and bgroup='".$babDB->db_escape_string($gr)."' and path='".$babDB->db_escape_string($path)."' and name='".$babDB->db_escape_string($file)."'"));
 
-		$db->db_query("update ".BAB_FILES_TBL." set state='', path='".addslashes($tp)."' where id='".$idf."'");
+		$babDB->db_query("update ".BAB_FILES_TBL." set state='', path='".$babDB->db_escape_string($tp)."' where id='".$babDB->db_escape_string($idf)."'");
 
 		if( is_dir($pathx.$path."/".BAB_FVERSION_FOLDER."/"))
 			{
 			if( !is_dir($pathx.$tp."/".BAB_FVERSION_FOLDER))
 				bab_mkdir($pathx.$tp."/".BAB_FVERSION_FOLDER, $GLOBALS['babMkdirMode']);
 
-			$res = $db->db_query("select * from ".BAB_FM_FILESVER_TBL." where id_file='".$idf."'");
-			while($arr = $db->db_fetch_array($res))
+			$res = $babDB->db_query("select * from ".BAB_FM_FILESVER_TBL." where id_file='".$babDB->db_escape_string($idf)."'");
+			while($arr = $babDB->db_fetch_array($res))
 				{
 				$filename = $arr['ver_major'].",".$arr['ver_minor'].",".$file;
 				rename($pathx.$path."/".BAB_FVERSION_FOLDER."/".$filename, $pathx.$tp."/".BAB_FVERSION_FOLDER."/".$filename);
@@ -1816,7 +1821,7 @@ function pasteFile( $file, $id, $gr, $path, $tp, $bmanager)
 
 function viewFile( $idf)
 	{
-	global $babBody, $BAB_SESS_USERID;
+	global $babBody, $babDB, $BAB_SESS_USERID;
 	class temp
 		{
 		var $name;
@@ -1859,6 +1864,7 @@ function viewFile( $idf)
 
 		function temp($idf, $arr, $bmanager, $access, $bconfirm, $bupdate, $bdownload,$bversion)
 			{
+			global $babDB;
 			$this->access = $access;
 			if( $access)
 				{
@@ -1943,8 +1949,7 @@ function viewFile( $idf)
 				$this->bviewnf = false;
 
 
-				$db = $GLOBALS['babDB'];
-				$rr = $db->db_fetch_array($db->db_query("select filenotify, version from ".BAB_FM_FOLDERS_TBL." where id='".$arr['id_owner']."'"));
+				$rr = $babDB->db_fetch_array($babDB->db_query("select filenotify, version from ".BAB_FM_FOLDERS_TBL." where id='".$babDB->db_escape_string($arr['id_owner'])."'"));
 
 				if ('Y' == $rr['version']) {
 					$this->versions = true;
@@ -1973,8 +1978,8 @@ function viewFile( $idf)
 
 					$this->arrfolders = array();
 					$this->movetofolder = bab_translate("Move to folder");
-					$res = $db->db_query("select id, folder from ".BAB_FM_FOLDERS_TBL." where id !='".$arr['id_owner']."'");
-					while($arrf = $db->db_fetch_array($res))
+					$res = $babDB->db_query("select id, folder from ".BAB_FM_FOLDERS_TBL." where id !='".$babDB->db_escape_string($arr['id_owner'])."'");
+					while($arrf = $babDB->db_fetch_array($res))
 						{
 						if( bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $arrf['id']))
 							{
@@ -1988,8 +1993,8 @@ function viewFile( $idf)
 				
 				if( $arr['bgroup'] == 'Y' )
 					{
-					$this->resff = $db->db_query("select * from ".BAB_FM_FIELDS_TBL." where id_folder='".$arr['id_owner']."'");
-					$this->countff = $db->db_num_rows($this->resff);
+					$this->resff = $babDB->db_query("select * from ".BAB_FM_FIELDS_TBL." where id_folder='".$babDB->db_escape_string($arr['id_owner'])."'");
+					$this->countff = $babDB->db_num_rows($this->resff);
 					}
 				else
 					$this->countff = 0;
@@ -2011,19 +2016,19 @@ function viewFile( $idf)
 						if (isset($_POST['index_status'])) {
 							// modify status
 
-							$db->db_query(
-									"UPDATE ".BAB_FILES_TBL." SET index_status='".$db->db_escape_string($_POST['index_status'])."' WHERE id='".$_POST['idf']."'"
+							$babDB->db_query(
+									"UPDATE ".BAB_FILES_TBL." SET index_status='".$babDB->db_escape_string($_POST['index_status'])."' WHERE id='".$babDB->db_escape_string($_POST['idf'])."'"
 								);
 
 							$files_to_index = array($fullpath);
 
 							if (isset($_POST['change_all']) && 1 == $_POST['change_all']) {
 								// modifiy index status for older versions
-								$res = $db->db_query("SELECT id, ver_major, ver_minor FROM ".BAB_FM_FILESVER_TBL." WHERE id_file='".$db->db_escape_string($_POST['idf'])."'");
-								while ($arrfv = $db->db_fetch_assoc($res)) {
+								$res = $babDB->db_query("SELECT id, ver_major, ver_minor FROM ".BAB_FM_FILESVER_TBL." WHERE id_file='".$babDB->db_escape_string($_POST['idf'])."'");
+								while ($arrfv = $babDB->db_fetch_assoc($res)) {
 									
-									$db->db_query(
-										"UPDATE ".BAB_FM_FILESVER_TBL." SET index_status='".$db->db_escape_string($_POST['index_status'])."' WHERE id='".$arrfv['id']."'"
+									$babDB->db_query(
+										"UPDATE ".BAB_FM_FILESVER_TBL." SET index_status='".$babDB->db_escape_string($_POST['index_status'])."' WHERE id='".$babDB->db_escape_string($arrfv['id'])."'"
 									);
 
 									if ($this->index_onload && BAB_INDEX_STATUS_INDEXED == $_POST['index_status']) {
@@ -2058,7 +2063,6 @@ function viewFile( $idf)
 
 		function getnextfm()
 			{
-			global $babDB;
 			static $i=0;
 			if( $i < $this->countfm )
 				{
@@ -2082,7 +2086,7 @@ function viewFile( $idf)
 				$this->fieldid = 'field'.$arr['id'];
 				$this->fieldval = '';
 				$this->fieldvalhtml = '';
-				$res = $babDB->db_query("select fvalue from ".BAB_FM_FIELDSVAL_TBL." where id_field='".$arr['id']."' and id_file='".$this->idf."'");
+				$res = $babDB->db_query("select fvalue from ".BAB_FM_FIELDSVAL_TBL." where id_field='".$babDB->db_escape_string($arr['id'])."' and id_file='".$babDB->db_escape_string($this->idf)."'");
 				if( $res && $babDB->db_num_rows($res) > 0)
 					{
 					list($this->fieldval) = $babDB->db_fetch_array($res);
@@ -2129,12 +2133,11 @@ function viewFile( $idf)
 	$bdownload = false;
 	$arr = array();
 	$bversion = '';
-	$db = $GLOBALS['babDB'];
-	$req = "select * from ".BAB_FILES_TBL." where id='".$idf."' and state=''";
-	$res = $db->db_query($req);
-	if( $res && $db->db_num_rows($res) > 0 )
+	$req = "select * from ".BAB_FILES_TBL." where id='".$babDB->db_escape_string($idf)."' and state=''";
+	$res = $babDB->db_query($req);
+	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
-		$arr = $db->db_fetch_array($res);
+		$arr = $babDB->db_fetch_array($res);
 		if( $arr['bgroup'] == "N" )
 			{
 			if( $babBody->ustorage && $BAB_SESS_USERID == $arr['id_owner'])
@@ -2184,7 +2187,7 @@ function viewFile( $idf)
 				$bmanager = false;
 				}
 
-			list($bversion) = $db->db_fetch_row($db->db_query("select version from ".BAB_FM_FOLDERS_TBL." where id='".$arr['id_owner']."'"));
+			list($bversion) = $babDB->db_fetch_row($babDB->db_query("select version from ".BAB_FM_FOLDERS_TBL." where id='".$babDB->db_escape_string($arr['id_owner'])."'"));
 			if(  $arr['edit'] != 0 || $bversion ==  'Y')
 				{
 				$bupdate = false;
@@ -2230,14 +2233,14 @@ function fileUnload($id, $gr, $path)
 
 function deleteFiles($items, $gr, $id)
 	{
-	$db = $GLOBALS['babDB'];	
+	global $babDB;	
 	$pathx = bab_getUploadFullPath($gr, $id);
 	for( $i = 0; $i < count($items); $i++)
 		{
-		$res = $db->db_query("select * from ".BAB_FILES_TBL." where id='".$items[$i]."'");
-		if( $res && $db->db_num_rows($res) > 0 )
+		$res = $babDB->db_query("select * from ".BAB_FILES_TBL." where id='".$babDB->db_escape_string($items[$i])."'");
+		if( $res && $babDB->db_num_rows($res) > 0 )
 			{
-			$arr = $db->db_fetch_array($res);
+			$arr = $babDB->db_fetch_array($res);
 			if( file_exists($pathx.$arr['path']."/".$arr['name']))
 				{
 				if( unlink($pathx.$arr['path']."/".$arr['name']))
@@ -2252,10 +2255,10 @@ function deleteFiles($items, $gr, $id)
 
 function restoreFiles($items)
 	{
-	$db = $GLOBALS['babDB'];	
+	global $babDB;	
 	for( $i = 0; $i < count($items); $i++)
 		{
-		$arr = $db->db_fetch_array($db->db_query("select * from ".BAB_FILES_TBL." where id='".$items[$i]."'"));
+		$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FILES_TBL." where id='".$babDB->db_escape_string($items[$i])."'"));
 		$pathx = bab_getUploadFullPath($arr['bgroup'], $arr['id_owner']);
 		if( !is_dir($pathx.$arr['path']."/"))
 			{
@@ -2268,14 +2271,15 @@ function restoreFiles($items)
 					bab_mkdir($path, $GLOBALS['babMkdirMode']);
 				}
 			}
-		$db->db_query("update ".BAB_FILES_TBL." set state='' where id='".$items[$i]."'");
+		$babDB->db_query("update ".BAB_FILES_TBL." set state='' where id='".$babDB->db_escape_string($items[$i])."'");
 		}
 	}
 
 function autoFile($id_dir,$path)
 	{
+	global $babDB;	
 	$path = urldecode($path);
-	$db = & $GLOBALS['babDB'];
+
 
 
 	class FolderListing {
@@ -2309,8 +2313,8 @@ function autoFile($id_dir,$path)
 	$start->loop($base);
 
 	$filelist = array();
-	$res = $db->db_query("SELECT CONCAT(path,'/',name) FROM ".BAB_FILES_TBL." WHERE id_owner='".$id_dir."'");
-	while (list($name) = $db->db_fetch_array($res))
+	$res = $babDB->db_query("SELECT CONCAT(path,'/',name) FROM ".BAB_FILES_TBL." WHERE id_owner='".$babDB->db_escape_string($id_dir)."'");
+	while (list($name) = $babDB->db_fetch_array($res))
 		{
 		$filelist[trim($name,'/')] = 1;
 		}
@@ -2332,9 +2336,9 @@ function autoFile($id_dir,$path)
 				if ($path == '.')
 					$path = '';
 				
-				$db->db_query("INSERT INTO ".BAB_FILES_TBL." (name, path, id_owner, bgroup, created, author, modified, modifiedby, confirmed) VALUES ('".basename($value)."','".$path."','".$id_dir."','Y',NOW(),'".$GLOBALS['BAB_SESS_USERID']."', NOW(),'".$GLOBALS['BAB_SESS_USERID']."','Y' )");
+				$babDB->db_query("INSERT INTO ".BAB_FILES_TBL." (name, path, id_owner, bgroup, created, author, modified, modifiedby, confirmed) VALUES ('".$babDB->db_escape_string(basename($value))."','".$babDB->db_escape_string($path)."','".$babDB->db_escape_string($id_dir)."','Y',NOW(),'".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', NOW(),'".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."','Y' )");
 
-				echo $db->db_insert_id().', '.basename($value)."\n";
+				echo $babDB->db_insert_id().', '.basename($value)."\n";
 
 				$i++;
 				}
