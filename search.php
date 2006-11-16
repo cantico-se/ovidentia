@@ -657,7 +657,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 		function temp( $item, $what, $order, $option ,$navitem ,$navpos )
 			{
-			global $BAB_SESS_USERID, $babLimit, $babBody;
+			global $BAB_SESS_USERID, $babLimit, $babBody, $babDB;
 			
 			$this->db = $GLOBALS['babDB'];
 			$this->search = bab_translate("Search");
@@ -688,18 +688,18 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			$this->t_to = bab_translate("date_to");
 			$this->t_private = bab_translate("Private");
 
-
+			$navpos = (int) $navpos;
 			$this->fields = $_POST;
 
 
-			$this->like2 = addslashes($what);
-			$this->like = isset($this->fields['what2']) ? addslashes($this->fields['what2']) : '';
+			$this->like2 = trim($what);
+			$this->like = isset($this->fields['what2']) ? trim($this->fields['what2']) : '';
 		
 
 			$this->option = &$option;
 
 			
-			$this->what = urlencode(addslashes($what." ".stripslashes($this->like)));
+			$this->what = urlencode($what." ".$this->like);
 			$this->countart = 0;
 			$this->countfor = 0;
 			$this->countnot = 0;
@@ -733,8 +733,8 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					{
 					if( $GLOBALS['BAB_SESS_USERID'])
 						{
-						$crit_art = " and (U.id='".$this->db->db_escape_string($this->fields['a_authorid'])."')";
-						$crit_com = " and (".finder($this->fields['a_author_memo'],"name",$option)." OR C.id_author='".$this->db->db_escape_string($this->fields['a_authorid'])."')";
+						$crit_art = " and (U.id='".$babDB->db_escape_string($this->fields['a_authorid'])."')";
+						$crit_com = " and (".finder($this->fields['a_author_memo'],"name",$option)." OR C.id_author='".$babDB->db_escape_string($this->fields['a_authorid'])."')";
 						}
 					else
 						{					
@@ -745,23 +745,23 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 				if (isset($this->fields['a_topic']) && trim($this->fields['a_topic']) != "")
 					{
-					$crit_art .= " and id_topic = ".$this->fields['a_topic'];
-					$crit_com .= " and C.id_topic = ".$this->fields['a_topic'];
+					$crit_art .= " and id_topic = ".$babDB->quote($this->fields['a_topic']);
+					$crit_com .= " and C.id_topic = ".$babDB->quote($this->fields['a_topic']);
 					}
 
 				if (isset($this->fields['after']) && trim($this->fields['after']) != "")
 					{
-					$crit_art .= " and a.date >= '".$this->fields['after']."'";
-					$crit_com .= " and C.date >= '".$this->fields['after']."'";
+					$crit_art .= " and a.date >= ".$babDB->quote($this->fields['after'])."";
+					$crit_com .= " and C.date >= ".$babDB->quote($this->fields['after'])."";
 					}
 				if (isset($this->fields['before']) && trim($this->fields['before']) != "")
 					{
-					$crit_art .= " and a.date <= '".$this->fields['before']."'";
-					$crit_com .= " and C.date <= '".$this->fields['before']."'";
+					$crit_art .= " and a.date <= ".$babDB->quote($this->fields['before'])."";
+					$crit_com .= " and C.date <= ".$babDB->quote($this->fields['before'])."";
 					}
 
-				$inart = (is_array($babBody->topview) && count($babBody->topview) > 0 ) ? "and id_topic in (".implode(",",array_keys($babBody->topview)).")" : "and id_topic ='0'";
-				$incom = (is_array($babBody->topview) && count($babBody->topview) > 0 ) ? "and C.id_topic in (".implode(",",array_keys($babBody->topview)).")" : "and C.id_topic ='0'";
+				$inart = (is_array($babBody->topview) && count($babBody->topview) > 0 ) ? "and id_topic in (".$babDB->quote(array_keys($babBody->topview)).")" : "and id_topic ='0'";
+				$incom = (is_array($babBody->topview) && count($babBody->topview) > 0 ) ? "and C.id_topic in (".$babDB->quote(array_keys($babBody->topview)).")" : "and C.id_topic ='0'";
 
 				$reqsup = '';
 				if (!empty($inart))
@@ -792,14 +792,14 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 									}
 								}
 
-							$restrictedart = count($arrids) ? implode(',', $arrids):'';
-							if( $restrictedart )
+
+							if( $arrids )
 								{
-								$restrictedart = ' and a.id in ('.$restrictedart.')';
+								$restrictedart = ' AND a.id in ('.$this->db->quote($arrids).')';
 								}
 							else
 								{
-								$restrictedart = ' and 0';
+								$restrictedart = ' AND 0';
 								}
 							}
 						}
@@ -855,7 +855,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 							$file_path = array();
 							foreach($found_files as $arr) {
-								$file_path[] = $this->db->db_escape_string(bab_removeUploadPath($arr['file']));
+								$file_path[] = bab_removeUploadPath($arr['file']);
 							}
 
 							
@@ -888,10 +888,10 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 								f.id_article = a.id AND 
 								f.id = i.id_object AND 
 								i.id_object_access = T.id AND 
-								i.file_path IN('".implode("', '",$file_path)."') AND 
-								a.id NOT IN('".implode("', '",$this->tmp_inserted_id)."') AND 
+								i.file_path IN(".$babDB->quote($file_path).") AND 
+								a.id NOT IN(".$babDB->quote($this->tmp_inserted_id).") AND 
 								a.id_topic = T.id ".$inart." ".$crit_art.$restrictedart." 
-							GROUP BY a.id ORDER BY $order 
+							GROUP BY a.id ORDER BY ".$babDB->db_escape_string($order)."  
 								";
 
 							bab_debug($req);
@@ -905,7 +905,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 						{
 						if( !bab_articleAccessByRestriction($rr['restriction']))
 							{
-							$this->db->db_query("delete from artresults where id='".$rr['id']."'");
+							$this->db->db_query("delete from artresults where id=".$babDB->quote($rr['id']));
 							}
 						}
 					}
@@ -915,13 +915,13 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					if ($this->like || $this->like2)
 						$reqsup = "and (".finder($this->like,"subject",$option,$this->like2)." or ".finder($this->like,"message",$option,$this->like2).")";
 
-					$req = "insert into comresults select C.id, C.id_article, C.id_topic, C.subject,C.message, UNIX_TIMESTAMP(C.date) date, name author,email,C.id_author,  a.title arttitle,LEFT(a.body,100) body, a.restriction, T.category topic  from ".BAB_COMMENTS_TBL." C, ".BAB_ARTICLES_TBL." a, ".BAB_TOPICS_TBL." T where C.id_article=a.id and a.id_topic = T.id ".$reqsup." and C.confirmed='Y' ".$incom." ".$crit_com." order by $order ";
+					$req = "insert into comresults select C.id, C.id_article, C.id_topic, C.subject,C.message, UNIX_TIMESTAMP(C.date) date, name author,email,C.id_author,  a.title arttitle,LEFT(a.body,100) body, a.restriction, T.category topic  from ".BAB_COMMENTS_TBL." C, ".BAB_ARTICLES_TBL." a, ".BAB_TOPICS_TBL." T where C.id_article=a.id and a.id_topic = T.id ".$reqsup." and C.confirmed='Y' ".$incom." ".$crit_com." order by ".$babDB->db_escape_string($order);
 					$this->db->db_query($req);
 					$res = $this->db->db_query("select id, restriction from comresults where restriction!=''");
 					while( $rr = $this->db->db_fetch_array($res))
 						{
 						if( !bab_articleAccessByRestriction($rr['restriction']))
-							$this->db->db_query("delete from comresults where id='".$rr['id']."'");
+							$this->db->db_query("delete from comresults where id=".$babDB->quote($rr['id']));
 						}
 					}
 
@@ -931,7 +931,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$this->nbresult += $nbrows;
 
 				if ($navitem != "a") $navpos=0;
-				$req = "select * from artresults ORDER BY $order limit ".$navpos.", ".$babLimit;
+				$req = "select * from artresults ORDER BY ".$babDB->db_escape_string($order)." limit ".$navpos.", ".$babLimit;
 
 				$this->resart = $this->db->db_query($req);
 				$this->countart = $this->db->db_num_rows($this->resart);
@@ -965,16 +965,16 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$this->db->db_query($req);
 				$req = "select id from ".BAB_FORUMS_TBL."";
 				$res = $this->db->db_query($req);
-				$idthreads = "";
+				$idthreads = array();
 				while( $row = $this->db->db_fetch_array($res))
 					{
 					if(bab_isAccessValid(BAB_FORUMSVIEW_GROUPS_TBL, $row['id']))
 						{
-						$req = "select id from ".BAB_THREADS_TBL." where forum='".$row['id']."'";
+						$req = "select id from ".BAB_THREADS_TBL." where forum=".$babDB->quote($row['id']);
 						$res2 = $this->db->db_query($req);
 						while( $r = $this->db->db_fetch_array($res2))
 							{
-							$idthreads .= $r['id'].",";
+							$idthreads[] = $r['id'];
 							}
 						}
 					}
@@ -983,7 +983,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				if ($temp1 != "" && $temp2 != "")
 					$plus = "( ".$temp1." or ".$temp2.") and";
 				else $plus = "";
-				if ($idthreads != "") { 
+				if (0 < count($idthreads)) { 
 					$req = "
 					
 					INSERT INTO 
@@ -1005,7 +1005,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 						b.id_thread=T.id 
 						AND T.forum=F.id 
 						AND ".$plus." b.confirmed='Y' 
-						AND b.id_thread IN (".substr($idthreads,0,-1).")";
+						AND b.id_thread IN (".$babDB->quote($idthreads).")";
 
 					$this->db->db_query($req);
 				}
@@ -1021,7 +1021,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 						$file_path = array();
 						foreach($found_files as $arr) {
-							$file_path[] = $this->db->db_escape_string(bab_removeUploadPath($arr['file']));
+							$file_path[] = bab_removeUploadPath($arr['file']);
 						}
 
 						$this->tmptable_inserted_id('forresults');
@@ -1054,12 +1054,12 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 								AND fi.id_post = b.id 
 								AND i.id_object_access = F.id 
 								AND i.id_object = fi.id 
-								AND i.file_path IN('".implode("', '",$file_path)."') 
+								AND i.file_path IN(".$babDB->quote($file_path).") 
 								AND b.confirmed='Y' 
-								AND b.id_thread IN (".substr($idthreads,0,-1).")";
+								AND b.id_thread IN (".$babDB->quote($idthreads).")";
 
 						if ($this->tmp_inserted_id) {
-							$req .= "AND b.id NOT IN('".implode("', '",$this->tmp_inserted_id)."') ";
+							$req .= "AND b.id NOT IN(".$babDB->quote($this->tmp_inserted_id).") ";
 						}
 
 						$req .= " GROUP BY b.id";
@@ -1083,7 +1083,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				if ($navitem != "b") $navpos = 0;
 				$this->navbar_b = navbar($babLimit,$nbrows,"b",$navpos);
 			
-				$req = "select * from forresults ORDER BY ".$order." LIMIT ".$navpos.", ".$babLimit;
+				$req = "select * from forresults ORDER BY ".$babDB->db_escape_string($order)." LIMIT ".$navpos.", ".$babLimit;
 				$this->resfor = $this->db->db_query($req);
 				$this->countfor = $this->db->db_num_rows($this->resfor);
 				if( !$this->counttot && $this->countfor > 0 )
@@ -1116,7 +1116,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				else $plus = "";
 
 				if ($idcat != "") {
-					$req = "insert into faqresults select T.id, idcat, question title, response, category topic from ".BAB_FAQQR_TBL." T, ".BAB_FAQCAT_TBL." C where idcat=C.id and ".$plus." idcat in (".substr($idcat,0,-1).") order by ".$order;
+					$req = "insert into faqresults select T.id, idcat, question title, response, category topic from ".BAB_FAQQR_TBL." T, ".BAB_FAQCAT_TBL." C where idcat=C.id and ".$plus." idcat in (".substr($idcat,0,-1).") order by ".$babDB->db_escape_string($order);
 					$this->db->db_query($req);
 				}
 
@@ -1142,14 +1142,14 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 				$plus = finder($this->like,"content",$option,$this->like2);
 				if ($plus != "") $plus = "($plus) and";
-				$req = "select count(*) from ".BAB_NOTES_TBL." where ".$plus." id_user='".$BAB_SESS_USERID."'";
+				$req = "select count(*) from ".BAB_NOTES_TBL." where ".$plus." id_user=".$babDB->quote($BAB_SESS_USERID);
 				$res = $this->db->db_query($req);
 				list($nbrows) = $this->db->db_fetch_row($res);
 				$navpos = $this->navpos;
 				if ($navitem != "d") $navpos = 0;
 				$this->navbar_d = navbar($babLimit,$nbrows,"d",$navpos);
 
-				$req = "select id, content, UNIX_TIMESTAMP(date) date from ".BAB_NOTES_TBL." where ".$plus." id_user='".$BAB_SESS_USERID."' limit ".$navpos.", ".$babLimit;
+				$req = "select id, content, UNIX_TIMESTAMP(date) date from ".BAB_NOTES_TBL." where ".$plus." id_user=".$babDB->quote($BAB_SESS_USERID)." limit ".$navpos.", ".$babLimit;
 				$this->resnot = $this->db->db_query($req);
 				$this->countnot = $this->db->db_num_rows($this->resnot);
 				if( !$this->counttot && $this->countnot > 0 )
@@ -1430,9 +1430,9 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$req = "SELECT * FROM filresults ";
 
 				if (isset($_POST['index_priority'])) {
-					$req .= " ORDER BY type_match DESC,".$order;
+					$req .= " ORDER BY type_match DESC,".$babDB->db_escape_string($order);
 				} else {
-					$req .= " ORDER BY ".$order;
+					$req .= " ORDER BY ".$babDB->db_escape_string($order);
 				}
 
 				$req .= " LIMIT ".$navpos.", ".$babLimit;
@@ -1468,7 +1468,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					$plus = "( ".$temp1." or ".$temp2." or ".$temp3." or ".$temp4." or ".$temp5." or ".$temp6." or ".$temp7.") and";
 				else $plus = "";
 
-				$req = "insert into conresults select lastname title, firstname, compagny, email, id from ".BAB_CONTACTS_TBL." where ".$plus." owner='".$BAB_SESS_USERID."' order by ".$order;
+				$req = "insert into conresults select lastname title, firstname, compagny, email, id from ".BAB_CONTACTS_TBL." where ".$plus." owner='".$BAB_SESS_USERID."' order by ".$babDB->db_escape_string($order);
 				$this->db->db_query($req);
 
 				$req = "select count(*) from conresults";
@@ -1504,8 +1504,10 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 					if (empty($search_view_fields))
 						$search_view_fields = '2,4';
+						
+					$search_view_fields = explode(',',$search_view_fields);
 
-					$rescol = $this->db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL." where id IN(".$search_view_fields.")");
+					$rescol = $this->db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL." where id IN(".$babDB->quote($search_view_fields).")");
 					while( $row3 = $this->db->db_fetch_array($rescol))
 						{
 						$this->dirfields['name'][] = $row3['name'];
@@ -1515,7 +1517,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				else
 					{
 					// un seul annuaire
-					$row = $this->db->db_fetch_array($this->db->db_query("SELECT * FROM ".BAB_DB_DIRECTORIES_TBL." WHERE id='".$id_directory."'"));
+					$row = $this->db->db_fetch_array($this->db->db_query("SELECT * FROM ".BAB_DB_DIRECTORIES_TBL." WHERE id=".$babDB->quote($id_directory).""));
 
 					$rescol = $this->db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($row['id_group'] != 0? 0: $row['id'])."' and ordering!='0' order by ordering asc");
 					while( $row3 = $this->db->db_fetch_array($rescol))
@@ -1683,7 +1685,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$this->navbar_g = navbar($babLimit,$nbrows,"g",$navpos);
 				$tmp = explode(" ",$order);
 				if (in_array("title",$tmp)) $order_tmp = "order by sn ASC, givenname ASC";
-				else $order_tmp = "order by ".$order;
+				else $order_tmp = "order by ".$babDB->db_escape_string($order);
 
 				$req .= " ".$order_tmp." LIMIT ".$navpos.", ".$babLimit;
 				$this->resdir = $this->db->db_query($req);
@@ -1718,7 +1720,23 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					$select_idcal = " and ceo.id_cal = '".$this->fields['h_calendar']."'";
 					}
 
-				$req = "create temporary table ageresults select ceo.id_cal owner, ce.id id, ce.title, ce.description, ce.start_date, ce.end_date, ceo.id_cal id_cal, cct.name categorie, cct.description catdesc, ce.bprivate from ".BAB_CAL_EVENTS_OWNERS_TBL." ceo, ".BAB_CAL_EVENTS_TBL." ce, ".BAB_CAL_CATEGORIES_TBL." cct where 0";
+				$req = "create temporary table ageresults 
+				select 
+					ceo.id_cal owner, 
+					ce.id id, ce.title, 
+					ce.description, 
+					ce.location, 
+					ce.start_date, 
+					ce.end_date, 
+					ceo.id_cal id_cal, 
+					cct.name categorie, 
+					cct.description catdesc, 
+					ce.bprivate 
+				from 
+					".BAB_CAL_EVENTS_OWNERS_TBL." ceo, 
+					".BAB_CAL_EVENTS_TBL." ce, 
+					".BAB_CAL_CATEGORIES_TBL." cct 
+				where 0";
 				$this->db->db_query($req);
 				
 				$list_id_cal = array();
@@ -1728,13 +1746,17 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				
 				if ($this->like || $this->like2)
 					{
-					$reqsup = "(".finder($this->like,"ce.title",$option,$this->like2)." or ".finder($this->like,"ce.description",$option,$this->like2).")";
-					$reqsupc = "AND (".finder($this->like,"cct.description",$option,$this->like2)." or ".finder($this->like,"cct.name",$option,$this->like2).")";
+					$reqsup = "(".
+						finder($this->like,"ce.title",$option,$this->like2)." or ".
+						finder($this->like,"ce.description",$option,$this->like2)." or ".
+						finder($this->like,"cct.description",$option,$this->like2)." or ".
+						finder($this->like,"cct.name",$option,$this->like2)." or ".
+						finder($this->like,"ce.location",$option,$this->like2)
+						.")";
 					}
 				else 
 					{
 					$reqsup = "";
-					$reqsupc = "";
 					}
 
 				if (count($list_id_cal) > 0) 
@@ -1746,7 +1768,25 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					if (!empty($crit_date))
 						$crit_date .= ' and ';
 
-					$req = "insert into ageresults select ceo.id_cal owner, ce.id id, ce.title, ce.description, ce.start_date, ce.end_date, ceo.id_cal id_cal, cct.name categorie, cct.description catdesc, ce.bprivate from ".BAB_CAL_EVENTS_OWNERS_TBL." ceo left join ".BAB_CAL_EVENTS_TBL." ce on ceo.id_event=ce.id left join ".BAB_CAL_CATEGORIES_TBL." cct on cct.id=ce.id_cat where ".$reqsup." ".$crit_date." ceo.id_cal in(".implode(',',$list_id_cal).")".$select_idcal." order by ce.start_date";
+					$req = "insert into ageresults 
+					select 
+						ceo.id_cal owner, 
+						ce.id id, ce.title, 
+						ce.description, 
+						ce.location, 
+						ce.start_date, 
+						ce.end_date, 
+						ceo.id_cal id_cal, 
+						cct.name categorie, 
+						cct.description catdesc, 
+						ce.bprivate 
+					from 
+						".BAB_CAL_EVENTS_OWNERS_TBL." ceo 
+						left join ".BAB_CAL_EVENTS_TBL." ce on ceo.id_event=ce.id 
+						left join ".BAB_CAL_CATEGORIES_TBL." cct on cct.id=ce.id_cat 
+					where 
+						".$reqsup." ".$crit_date." 
+						ceo.id_cal in(".implode(',',$list_id_cal).")".$select_idcal." order by ce.start_date";
 					$this->db->db_query($req);
 					}
 

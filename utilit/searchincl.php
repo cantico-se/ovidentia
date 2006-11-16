@@ -27,17 +27,15 @@ include_once "base.php";
 function bab_highlightWord( $w, $text)
 {
 	
-	$arr = explode(' ',trim($w));
+	$w = trim($w);
+	if (empty($w)) {
+		return $text;
+	}
+	$arr = explode(' ',$w);
 	
 	foreach($arr as $mot)
 		{
-		//$text = preg_replace("/(\s*>[^<]*|\s+)(".preg_quote(htmlentities($mot),"/").")(\s+|[^>]*<\s*)/si", "\\1<span class=\"Babhighlight\">\\2</span>\\3", $text);
-		
 
-		//$text = preg_replace("/(\s*>[^<]*|\s+)(".preg_quote($mot,"/").")(\s+|[^>]*<\s*)/si", "\\1<span class=\"Babhighlight\">\\2</span>\\3", $text);
-
-
-		
 		$text = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace('#(" . preg_quote($mot,'#') . ")#i', '<span class=\"Babhighlight\">\\\\1</span>', '\\0')", '>' . $text . '<'), 1, -1));
 
 		$he = htmlentities($mot);
@@ -51,14 +49,18 @@ function bab_highlightWord( $w, $text)
 	return trim($text);
 }
 
-
+/**
+ * Search a string with htmlentities
+ */
 function bab_sql_finder_he($tbl, $str, $not="")
 	{
+	global $babDB;
+	
 	if ($not == "NOT") $op = "AND";
 	else $op =  "OR";
 	$tmp = htmlentities($str);
 	if ($tmp != $str)
-		return " ".$op." ".$tbl.$not." like '%".$tmp."%'";
+		return " ".$op." ".$tbl.$not." like '%".$babDB->db_escape_like($tmp)."%'";
 	}
 
 function bab_sql_finder($req2,$tablename,$option = "OR",$req1="")
@@ -66,10 +68,17 @@ function bab_sql_finder($req2,$tablename,$option = "OR",$req1="")
 	global $babDB;
 
 	$like = '';
-
-
-	$req2 = $babDB->db_escape_string($req2);
-	$req1 = $babDB->db_escape_string($req1);
+	
+	switch($option) {
+		case 'AND':
+		case 'OR':
+		case 'NOT':
+		
+		break;
+		default:
+			$option = 'OR';
+		break;
+	}
 
 
 if (trim($req1) != "") {
@@ -77,9 +86,9 @@ if (trim($req1) != "") {
 	foreach($tb as $key => $mot)
 		{
 		if ( $like == "" )
-			$like = '('.$tablename." LIKE '%".$mot."%'".bab_sql_finder_he($tablename,$mot);
+			$like = '('.$tablename." LIKE '%".$babDB->db_escape_like($mot)."%'".bab_sql_finder_he($tablename,$mot);
 		else
-			$like .= " OR (".$tablename." LIKE '%".$mot."%'".bab_sql_finder_he($tablename,$mot).")";
+			$like .= " OR (".$tablename." LIKE '%".$babDB->db_escape_like($mot)."%'".bab_sql_finder_he($tablename,$mot).")";
 		}
 	if( !empty($like))
 		{
@@ -96,9 +105,9 @@ if (trim($req2) != "")
 			foreach($tb as $key => $mot)
 				{
 				if (trim($req1) == "" && $key==0)
-					$like = $tablename." NOT like '%".$mot."%'";
+					$like = $tablename." NOT like '%".$babDB->db_escape_like($mot)."%'";
 				else
-					$like .= " AND ".$tablename." NOT like '%".$mot."%'".bab_sql_finder_he($tablename,$mot," NOT");
+					$like .= " AND ".$tablename." NOT like '%".$babDB->db_escape_like($mot)."%'".bab_sql_finder_he($tablename,$mot," NOT");
 				}
 		break;
 		case "OR":
@@ -108,11 +117,11 @@ if (trim($req2) != "")
 				{
 				$he = bab_sql_finder_he($tablename,$mot);
 				if ( trim($req1) == "" && $key == 0 )
-					$like = $tablename." like '%".$mot."%'".$he;
+					$like = $tablename." like '%".$babDB->db_escape_like($mot)."%'".$he;
 				else if ($he != "" && $option == "AND")
-					$like .= " AND (".$tablename." like '%".$mot."%'".$he.")";
+					$like .= " AND (".$tablename." like '%".$babDB->db_escape_like($mot)."%'".$he.")";
 				else
-					$like .= " ".$babDB->db_escape_string($option)." ".$tablename." like '%".$mot."%'".$he;
+					$like .= " ".$option." ".$tablename." like '%".$babDB->db_escape_like($mot)."%'".$he;
 				}
 		break;
 		}
