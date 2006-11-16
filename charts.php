@@ -68,6 +68,7 @@ function listOrgCharts()
 
 		function getnext()
 			{
+			global $babDB;
 			static $i = 0;
 			if( $i < $this->count)
 				{
