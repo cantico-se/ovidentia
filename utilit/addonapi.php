@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
+include_once 'base.php';
 
 
 /**
@@ -136,7 +136,10 @@ function bab_formatDate($format, $time)
 					$val = bab_time($time);
 					break;
 				}
-			$txt = preg_replace("/".preg_quote($m[0][$i])."/", $val, $txt);
+			if( isset($val))
+				{
+				$txt = preg_replace("/".preg_quote($m[0][$i])."/", $val, $txt);
+				}
 			}
 		}
 	return $txt;
@@ -221,12 +224,12 @@ function bab_editor($content, $editname, $formname, $heightpx=300, $what=3)
 
 			function babEditorCls($content, $editname, $formname, $heightpx,$what)
 				{
+				global $babDB;
 				$this->editname = $editname;
 				$this->formname = $formname;
 				$this->heightpx = $heightpx;
 				$this->what = $what;
-				$db = &$GLOBALS['babDB'];
-				if (!list($use_editor,$this->filter_html) = $db->db_fetch_array($db->db_query("SELECT use_editor, filter_html FROM ".BAB_SITES_EDITOR_TBL." WHERE id_site='".$GLOBALS['babBody']->babsite['id']."'")))
+				if (!list($use_editor,$this->filter_html) = $babDB->db_fetch_array($babDB->db_query("SELECT use_editor, filter_html FROM ".BAB_SITES_EDITOR_TBL." WHERE id_site='".$babDB->db_escape_string($GLOBALS['babBody']->babsite['id'])."'")))
 					{
 					$use_editor = 1;
 					$this->filter_html = 0;
@@ -261,11 +264,10 @@ function bab_editor($content, $editname, $formname, $heightpx=300, $what=3)
 
 function bab_editor_record(&$str)
 	{
+	global $babDB;
 	$str = eregi_replace("((href|src)=['\"]?)".$GLOBALS['babUrl'], "\\1", $str);
 
-	$db = &$GLOBALS['babDB'];
-
-	if (!$arr = $db->db_fetch_array($db->db_query("SELECT * FROM ".BAB_SITES_EDITOR_TBL." WHERE id_site='".$GLOBALS['babBody']->babsite['id']."'")))
+	if (!$arr = $babDB->db_fetch_array($babDB->db_query("SELECT * FROM ".BAB_SITES_EDITOR_TBL." WHERE id_site='".$babDB->db_escape_string($GLOBALS['babBody']->babsite['id'])."'")))
 		{
 		return;
 		}
@@ -450,6 +452,7 @@ function bab_isUserGroupManager($grpid="")
 
 function bab_getUserName($id)
 	{
+	global $babDB;
 	static $arrnames = array();
 
 	if( isset($arrnames[$id]) )
@@ -457,12 +460,11 @@ function bab_getUserName($id)
 		return $arrnames[$id];
 		}
 
-	$db = $GLOBALS['babDB'];
-	$query = "select firstname, lastname from ".BAB_USERS_TBL." where id='$id'";
-	$res = $db->db_query($query);
-	if( $res && $db->db_num_rows($res) > 0)
+	$query = "select firstname, lastname from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($id)."'";
+	$res = $babDB->db_query($query);
+	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-		$arr = $db->db_fetch_array($res);
+		$arr = $babDB->db_fetch_array($res);
 		$arrnames[$id] = bab_composeUserName($arr['firstname'], $arr['lastname']);
 		}
 	else
@@ -474,12 +476,12 @@ function bab_getUserName($id)
 
 function bab_getUserEmail($id)
 	{
-	$db = $GLOBALS['babDB'];
-	$query = "select email from ".BAB_USERS_TBL." where id='$id'";
-	$res = $db->db_query($query);
-	if( $res && $db->db_num_rows($res) > 0)
+	global $babDB;
+	$query = "select email from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($id)."'";
+	$res = $babDB->db_query($query);
+	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-		$arr = $db->db_fetch_array($res);
+		$arr = $babDB->db_fetch_array($res);
 		return $arr['email'];
 		}
 	else
@@ -490,12 +492,12 @@ function bab_getUserEmail($id)
 
 function bab_getUserNickname($id)
 	{
-	$db = $GLOBALS['babDB'];
-	$query = "select nickname from ".BAB_USERS_TBL." where id='$id'";
-	$res = $db->db_query($query);
-	if( $res && $db->db_num_rows($res) > 0)
+	global $babDB;
+	$query = "select nickname from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($id)."'";
+	$res = $babDB->db_query($query);
+	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-		$arr = $db->db_fetch_array($res);
+		$arr = $babDB->db_fetch_array($res);
 		return $arr['nickname'];
 		}
 	else
@@ -506,12 +508,12 @@ function bab_getUserNickname($id)
 
 function bab_getUserSetting($id, $what)
 	{
-	$db = $GLOBALS['babDB'];
-	$query = "select ".$what." from ".BAB_USERS_TBL." where id='$id'";
-	$res = $db->db_query($query);
-	if( $res && $db->db_num_rows($res) > 0)
+	global $babDB;
+	$query = "select ".$babDB->db_escape_string($what)." from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($id)."'";
+	$res = $babDB->db_query($query);
+	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-		$arr = $db->db_fetch_array($res);
+		$arr = $babDB->db_fetch_array($res);
 		return $arr[$what];
 		}
 	else
@@ -522,14 +524,14 @@ function bab_getUserSetting($id, $what)
 
 function bab_getPrimaryGroupId($userid)
 	{
-	$db = $GLOBALS['babDB'];
+	global $babDB;
 	if( empty($userid) || $userid == 0 )
 		return "";
-	$query = "select id_group from ".BAB_USERS_GROUPS_TBL." where id_object='$userid' and isprimary='Y'";
-	$res = $db->db_query($query);
-	if( $res && $db->db_num_rows($res) > 0)
+	$query = "select id_group from ".BAB_USERS_GROUPS_TBL." where id_object='".$babDB->db_escape_string($userid)."' and isprimary='Y'";
+	$res = $babDB->db_query($query);
+	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-		$arr = $db->db_fetch_array($res);
+		$arr = $babDB->db_fetch_array($res);
 		return $arr['id_group'];
 		}
 	else
@@ -540,6 +542,7 @@ function bab_getPrimaryGroupId($userid)
 
 function bab_getGroupsMembers($ids)
 	{
+	global $babDB;
 	if (!is_array($ids))
 		{
 		$ids = array($ids);
@@ -547,8 +550,6 @@ function bab_getGroupsMembers($ids)
 
 	if( is_array($ids) && count($ids) > 0 )
 		{
-		$db = &$GLOBALS['babDB'];
-
 		if( in_array(BAB_REGISTERED_GROUP, $ids))
 			{
 			$req = "SELECT id, email, firstname, lastname FROM ".BAB_USERS_TBL." where disabled='0' and is_confirmed='1'";
@@ -561,24 +562,24 @@ function bab_getGroupsMembers($ids)
 				{
 				if ($babBody->ovgroups[$idg]['nb_groups'] > 0)
 					{
-					$res = $db->db_query("SELECT id_group FROM ".BAB_GROUPS_SET_ASSOC_TBL." WHERE id_set='".$idg."'");
-					while ($arr = $db->db_fetch_assoc($res))
+					$res = $babDB->db_query("SELECT id_group FROM ".BAB_GROUPS_SET_ASSOC_TBL." WHERE id_set='".$babDB->db_escape_string($idg)."'");
+					while ($arr = $babDB->db_fetch_assoc($res))
 						{
 						$ids[] = $arr['id_group'];
 						}
 					}
 				}
 
-			$req = "SELECT distinct u.id, u.email, u.firstname, u.lastname FROM ".BAB_USERS_GROUPS_TBL." g, ".BAB_USERS_TBL." u WHERE u.disabled='0' and u.is_confirmed='1' and g.id_group IN (".implode(',', $ids).") AND g.id_object=u.id";
+			$req = "SELECT distinct u.id, u.email, u.firstname, u.lastname FROM ".BAB_USERS_GROUPS_TBL." g, ".BAB_USERS_TBL." u WHERE u.disabled='0' and u.is_confirmed='1' and g.id_group IN (".$babDB->quote($ids).") AND g.id_object=u.id";
 			}
 
 		
-		$res = $db->db_query($req);
+		$res = $babDB->db_query($req);
 		$users = array();
-		if( $res && $db->db_num_rows($res) > 0)
+		if( $res && $babDB->db_num_rows($res) > 0)
 			{
 			$i = 0;
-			while ($arr = $db->db_fetch_array($res))
+			while ($arr = $babDB->db_fetch_array($res))
 				{
 				$users[$i]['id'] = $arr['id'];
 				$users[$i]['name'] = bab_composeUserName($arr['firstname'],$arr['lastname']);
@@ -594,20 +595,19 @@ function bab_getGroupsMembers($ids)
 
 function bab_isMemberOfGroup($groupname, $userid="")
 {
-	global $BAB_SESS_USERID;
+	global $BAB_SESS_USERID, $babDB;
 	if( !empty($groupname))
 		{
 		if( $userid == "")
 			$userid = $BAB_SESS_USERID;
-		$db = &$GLOBALS['babDB'];
-		$req = "select id from ".BAB_GROUPS_TBL." where name='".$db->db_escape_string($groupname)."'";
-		$res = $db->db_query($req);
-		if( $res && $db->db_num_rows($res) > 0)
+		$req = "select id from ".BAB_GROUPS_TBL." where name='".$babDB->db_escape_string($groupname)."'";
+		$res = $babDB->db_query($req);
+		if( $res && $babDB->db_num_rows($res) > 0)
 			{
-			$arr = $db->db_fetch_array($res);
-			$req = "select id from ".BAB_USERS_GROUPS_TBL." where id_object='$userid' and id_group='".$arr['id']."'";
-			$res = $db->db_query($req);
-			if( $res && $db->db_num_rows($res) > 0)
+			$arr = $babDB->db_fetch_array($res);
+			$req = "select id from ".BAB_USERS_GROUPS_TBL." where id_object='$userid' and id_group='".$babDB->db_escape_string($arr['id'])."'";
+			$res = $babDB->db_query($req);
+			if( $res && $babDB->db_num_rows($res) > 0)
 				return $arr['id'];
 			else
 				return 0;
@@ -621,12 +621,12 @@ function bab_isMemberOfGroup($groupname, $userid="")
 
 function bab_getUserIdByEmail($email)
 	{
-	$db = $GLOBALS['babDB'];
-	$query = "select id from ".BAB_USERS_TBL." where email='".$db->db_escape_string($email)."'";
-	$res = $db->db_query($query);
-	if( $res && $db->db_num_rows($res) > 0)
+	global $babDB;
+	$query = "select id from ".BAB_USERS_TBL." where email='".$babDB->db_escape_string($email)."'";
+	$res = $babDB->db_query($query);
+	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-		$arr = $db->db_fetch_array($res);
+		$arr = $babDB->db_fetch_array($res);
 		return $arr['id'];
 		}
 	else
@@ -637,11 +637,11 @@ function bab_getUserIdByEmail($email)
 
 function bab_getUserIdByNickname($nickname)
 	{
-	$db = $GLOBALS['babDB'];
-	$res = $db->db_query("select id from ".BAB_USERS_TBL." where nickname='".$db->db_escape_string($nickname)."'");
-	if( $res && $db->db_num_rows($res) > 0)
+	global $babDB;
+	$res = $babDB->db_query("select id from ".BAB_USERS_TBL." where nickname='".$babDB->db_escape_string($nickname)."'");
+	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-		$arr = $db->db_fetch_array($res);
+		$arr = $babDB->db_fetch_array($res);
 		return $arr['id'];
 		}
 	else
@@ -652,14 +652,14 @@ function bab_getUserIdByNickname($nickname)
 
 function bab_getUserId( $name )
 	{
+	global $babDB;
 	$replace = array( " " => "", "-" => "");
-	$db = $GLOBALS['babDB'];
 	$hash = md5(strtolower(strtr($name, $replace)));
-	$query = "select id from ".BAB_USERS_TBL." where hashname='".$db->db_escape_string($hash)."'";	
-	$res = $db->db_query($query);
-	if( $db->db_num_rows($res) > 0)
+	$query = "select id from ".BAB_USERS_TBL." where hashname='".$babDB->db_escape_string($hash)."'";	
+	$res = $babDB->db_query($query);
+	if( $babDB->db_num_rows($res) > 0)
 		{
-		$arr = $db->db_fetch_array($res);
+		$arr = $babDB->db_fetch_array($res);
 		return $arr['id'];
 		}
 	else
@@ -668,7 +668,7 @@ function bab_getUserId( $name )
 	
 function bab_getUserGroups($id = "")
 	{
-	global $babBody;
+	global $babBody, $babDB;
 	$arr = array('id' => array(), 'name' => array());
 	if( empty($id))
 		{
@@ -684,11 +684,10 @@ function bab_getUserGroups($id = "")
 		}
 	if( !empty($id))
 		{
-		$db = &$GLOBALS['babDB'];
-		$res = $db->db_query("select id_group from ".BAB_USERS_GROUPS_TBL." where id_object=".$id."");
-		if( $res && $db->db_num_rows($res) > 0 )
+		$res = $babDB->db_query("select id_group from ".BAB_USERS_GROUPS_TBL." where id_object=".$babDB->db_escape_string($id)."");
+		if( $res && $babDB->db_num_rows($res) > 0 )
 			{
-			while( $r = $db->db_fetch_array($res))
+			while( $r = $babDB->db_fetch_array($res))
 				{
 				$arr['id'][] = $r['id_group'];
 				$arr['name'][] = $babBody->getGroupPathName($r['id_group']);
@@ -767,15 +766,14 @@ function bab_isAccessValid($table, $idobject, $iduser='')
 
 function bab_getUserIdObjects($table)
 {
-global $babBody;
+global $babBody, $babDB;
 if( !isset($_SESSION['bab_groupAccess']['acltables'][$table]))
 	{
 	$_SESSION['bab_groupAccess']['acltables'][$table] = array();
 	
-	$db = &$GLOBALS['babDB'];
-	$res = $db->db_query("select id_object, id_group from ".$table." WHERE id_group IN('".implode("','",$babBody->usergroups)."') OR id_group>='".BAB_ACL_GROUP_TREE."'");
+	$res = $babDB->db_query("select id_object, id_group from ".$babDB->db_escape_string($table)." WHERE id_group IN(".$babDB->quote($babBody->usergroups).") OR id_group>='".BAB_ACL_GROUP_TREE."'");
 	
-	while( $row = $db->db_fetch_assoc($res))
+	while( $row = $babDB->db_fetch_assoc($res))
 		{
 		if ($row['id_group'] >= BAB_ACL_GROUP_TREE )
 			{
@@ -794,14 +792,12 @@ if( !isset($_SESSION['bab_groupAccess']['acltables'][$table]))
 //Il manque la partie pour les ensemble de groupes
 function bab_getUsersAccess($table)
 {
-	global $babBody;
-
-	$db = &$GLOBALS['babDB'];
+	global $babBody, $babDB;
 
 	$ids = array();
 
-	$res = $db->db_query("select id_group from ".$table);
-	while($row = $db->db_fetch_array($res))
+	$res = $babDB->db_query("select id_group from ".$babDB->db_escape_string($table));
+	while($row = $babDB->db_fetch_array($res))
 		{
 		$ids[] = $row['id_group'] - BAB_ACL_GROUP_TREE;
 		}
@@ -810,14 +806,12 @@ function bab_getUsersAccess($table)
 
 function bab_getGroupsAccess($table, $idobject)
 {
-	global $babBody;
-
-	$db = &$GLOBALS['babDB'];
+	global $babBody, $babDB;
 
 	$ret = array();
 
-	$res = $db->db_query("select id_group from ".$table." where id_object='".$idobject."'");
-	while( $row = $db->db_fetch_array($res))
+	$res = $babDB->db_query("select id_group from ".$babDB->db_escape_string($table)." where id_object='".$babDB->db_escape_string($idobject)."'");
+	while( $row = $babDB->db_fetch_array($res))
 		{
 		if ($row['id_group'] >= BAB_ACL_GROUP_TREE)
 			{
@@ -994,9 +988,9 @@ function bab_printTemplate( &$class, $file, $section="")
 
 function bab_getActiveSessions()
 {
-	$db = &$GLOBALS['babDB'];
+	global $babDB;
 	$output = array();
-	$res = $db->db_query("SELECT l.id_user,
+	$res = $babDB->db_query("SELECT l.id_user,
 								l.sessid,
 								l.remote_addr,
 								l.forwarded_for,
@@ -1010,7 +1004,7 @@ function bab_getActiveSessions()
 								FROM ".BAB_USERS_LOG_TBL." l 
 								LEFT JOIN ".BAB_USERS_TBL." u ON u.id=l.id_user");
 
-	while($arr = $db->db_fetch_array($res))
+	while($arr = $babDB->db_fetch_array($res))
 		{
 		$output[] = array(
 						'id_user' => $arr['id_user'],
@@ -1031,15 +1025,15 @@ function bab_getActiveSessions()
 
 function bab_getFileMimeType($file)
 {
+	global $babDB;
 	$mime = "application/octet-stream";
 	if ($ext = strrchr($file,"."))
 		{
 		$ext = substr($ext,1);
-		$db = &$GLOBALS['babDB'];
-		$res = $db->db_query("select * from ".BAB_MIME_TYPES_TBL." where ext='".$ext."'");
-		if( $res && $db->db_num_rows($res) > 0)
+		$res = $babDB->db_query("select * from ".BAB_MIME_TYPES_TBL." where ext='".$babDB->db_escape_string($ext)."'");
+		if( $res && $babDB->db_num_rows($res) > 0)
 			{
-			$arr = $db->db_fetch_array($res);
+			$arr = $babDB->db_fetch_array($res);
 			$mime = $arr['mimetype'];
 			}
 		}
@@ -1050,12 +1044,12 @@ function bab_getFileMimeType($file)
 
 function bab_getUserDirFields($id = false)
 	{
+	global $babDB;
 	if (false == $id) $id = &$GLOBALS['BAB_SESS_USERID'];
-	$db = &$GLOBALS['babDB'];
-	$query = "select * from ".BAB_DBDIR_ENTRIES_TBL." where id_user='".$id."'";
-	$res = $db->db_query($query);
-	if( $res && $db->db_num_rows($res) > 0) {
-		return $db->db_fetch_assoc($res);
+	$query = "select * from ".BAB_DBDIR_ENTRIES_TBL." where id_user='".$babDB->db_escape_string($id)."'";
+	$res = $babDB->db_query($query);
+	if( $res && $babDB->db_num_rows($res) > 0) {
+		return $babDB->db_fetch_assoc($res);
 		}
 	else
 		return array();
@@ -1155,7 +1149,7 @@ function bab_detachUserFromGroup($iduser, $idgroup)
 function bab_uppdateUserById($id, $info, &$error)
 {
 	global $babDB;
-	$res = $babDB->db_query('select u.*, det.mn, det.id as id_entry from '.BAB_USERS_TBL.' u left join '.BAB_DBDIR_ENTRIES_TBL.' det on det.id_user=u.id where u.id=\''.$id.'\'');
+	$res = $babDB->db_query('select u.*, det.mn, det.id as id_entry from '.BAB_USERS_TBL.' u left join '.BAB_DBDIR_ENTRIES_TBL.' det on det.id_user=u.id where u.id=\''.$babDB->db_escape_string($id).'\'');
 	$arruq = array();
 	$arrdq = array();
 
@@ -1174,7 +1168,7 @@ function bab_uppdateUserById($id, $info, &$error)
 
 			if( isset($info['password']) )
 			{
-				$arruq[] = 'password=\''.md5(strtolower($info['password'])).'\'';
+				$arruq[] = 'password=\''.$babDB->db_escape_string(md5(strtolower($info['password']))).'\'';
 			}
 			
 			if( isset($info['disabled']))
@@ -1191,7 +1185,7 @@ function bab_uppdateUserById($id, $info, &$error)
 
 			if( isset($info['email']))
 			{
-				$arruq[] =  'email=\''.addslashes($info['email']).'\'';
+				$arruq[] =  'email=\''.$babDB->db_escape_string($info['email']).'\'';
 			}
 
 			if( isset($info['sn']) || isset($info['givenname']) || isset($info['mn']))
@@ -1227,19 +1221,19 @@ function bab_uppdateUserById($id, $info, &$error)
 
 				$replace = array( " " => "", "-" => "");
 				$hashname = md5(strtolower(strtr($firstname.$mn.$lastname, $replace)));
-				$arruq[] =  'firstname=\''.addslashes($firstname).'\'';
-				$arruq[] =  'lastname=\''.addslashes($lastname).'\'';
-				$arruq[] =  'hashname=\''.$hashname.'\'';
+				$arruq[] =  'firstname=\''.$babDB->db_escape_string($firstname).'\'';
+				$arruq[] =  'lastname=\''.$babDB->db_escape_string($lastname).'\'';
+				$arruq[] =  'hashname=\''.$babDB->db_escape_string($hashname).'\'';
 
-				$arrdq[] =  'givenname=\''.addslashes($firstname).'\'';
-				$arrdq[] =  'sn=\''.addslashes($lastname).'\'';
-				$arrdq[] =  'mn=\''.addslashes($mn).'\'';
+				$arrdq[] =  'givenname=\''.$babDB->db_escape_string($firstname).'\'';
+				$arrdq[] =  'sn=\''.$babDB->db_escape_string($lastname).'\'';
+				$arrdq[] =  'mn=\''.$babDB->db_escape_string($mn).'\'';
 
 			}
 
 			if( count($arruq))
 			{
-				$babDB->db_query('update '.BAB_USERS_TBL.' set '.implode(',', $arruq).' where id=\''.$id.'\'');
+				$babDB->db_query('update '.BAB_USERS_TBL.' set '.implode(',', $arruq).' where id=\''.$babDB->db_escape_string($id).'\'');
 			}
 
 			$res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='0'");
@@ -1247,7 +1241,7 @@ function bab_uppdateUserById($id, $info, &$error)
 				{
 				if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
 					{
-					$rr = $babDB->db_fetch_array($babDB->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
+					$rr = $babDB->db_fetch_array($babDB->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$babDB->db_escape_string($arr['id_field'])."'"));
 					$fieldname = $rr['name'];
 						switch( $fieldname )
 						{
@@ -1258,7 +1252,7 @@ function bab_uppdateUserById($id, $info, &$error)
 							default:
 								if( isset($info[$fieldname]))
 								{
-								$arrdq[] =  $fieldname.'=\''.addslashes($info[$fieldname]).'\'';
+								$arrdq[] =  $fieldname.'=\''.$babDB->db_escape_string($info[$fieldname]).'\'';
 								}
 								break;
 						}
@@ -1266,19 +1260,19 @@ function bab_uppdateUserById($id, $info, &$error)
 					}
 				else
 					{
-					$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+					$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string(($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
 					$fieldname = "babdirf".$arr['id'];
 					if( isset($info[$fieldname]))
 						{
-						$res2 = $babDB->db_query("select * from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$arr['id']."' and id_entry='".$arruinfo['id_entry']."'");
+						$res2 = $babDB->db_query("select * from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$babDB->db_escape_string($arr['id'])."' and id_entry='".$babDB->db_escape_string($arruinfo['id_entry'])."'");
 						if( $res2 && $babDB->db_num_rows($res2) > 0 )
 							{
 							$arr2 = $babDB->db_fetch_array($res2);
-							$babDB->db_query("update ".BAB_DBDIR_ENTRIES_EXTRA_TBL." set field_value='".addslashes($info[$fieldname])."' where id='".$arr2['id']."'");
+							$babDB->db_query("update ".BAB_DBDIR_ENTRIES_EXTRA_TBL." set field_value='".$babDB->db_escape_string($info[$fieldname])."' where id='".$babDB->db_escape_string($arr2['id'])."'");
 							}
 						else
 							{
-							$babDB->db_query("insert into ".BAB_DBDIR_ENTRIES_EXTRA_TBL." (id_fieldx, id_entry, field_value) values('".$arr['id']."','".$arruinfo['id_entry']."','".addslashes($info[$fieldname])."')");
+							$babDB->db_query("insert into ".BAB_DBDIR_ENTRIES_EXTRA_TBL." (id_fieldx, id_entry, field_value) values('".$babDB->db_escape_string($arr['id'])."','".$babDB->db_escape_string($arruinfo['id_entry'])."','".$babDB->db_escape_string($info[$fieldname])."')");
 							}
 						}
 					}
@@ -1286,7 +1280,7 @@ function bab_uppdateUserById($id, $info, &$error)
 
 			if( count($arrdq))
 			{
-				$babDB->db_query('update '.BAB_DBDIR_ENTRIES_TBL.' set '.implode(',', $arrdq).' where id=\''.$arruinfo['id_entry'].'\'');
+				$babDB->db_query('update '.BAB_DBDIR_ENTRIES_TBL.' set '.implode(',', $arrdq).' where id=\''.$babDB->db_escape_string($arruinfo['id_entry']).'\'');
 			}
 			return true;
 		}
