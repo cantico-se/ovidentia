@@ -1440,6 +1440,32 @@ function bab_rp($name, $default = '') {
 }
 
 /**
+ * Post param
+ * @param string $name
+ * @param mixed	$default
+ * @return string
+ */
+function bab_pp($name, $default = '') {
+	if (isset($_POST[$name])) {
+		return $_POST[$name];
+	}
+	return $default;
+}
+
+/**
+ * Get param
+ * @param string $name
+ * @param mixed	$default
+ * @return string
+ */
+function bab_gp($name, $default = '') {
+	if (isset($_GET[$name])) {
+		return $_GET[$name];
+	}
+	return $default;
+}
+
+/**
  * Return the current file content disposition ( attchement, inline, undefined )
  * @return mixed ('': undefined, 1: inline, 2: attachment )
  */
