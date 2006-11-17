@@ -513,7 +513,7 @@ function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor,
 
 
 	function setUserPeriod($day, $ampm, $startHour, $endHour, $insert) {
-		$db = $GLOBALS['babDB'];
+		global $babDB;
 		$op = 'am' == $ampm ? 'startHour <=' : 'endHour >';
 		$babDB->db_query("
 
