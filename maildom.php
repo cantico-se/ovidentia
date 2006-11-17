@@ -21,15 +21,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
+include_once 'base.php';
 function getDomainName($id)
 	{
-	$db = $GLOBALS['babDB'];
-	$query = "select * from ".BAB_MAIL_DOMAINS_TBL." where id='$id'";
-	$res = $db->db_query($query);
-	if( $res && $db->db_num_rows($res) > 0)
+	global $babDB;
+	$query = "select * from ".BAB_MAIL_DOMAINS_TBL." where id='".$babDB->db_escape_string($id)."'";
+	$res = $babDB->db_query($query);
+	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-		$arr = $db->db_fetch_array($res);
+		$arr = $babDB->db_fetch_array($res);
 		return $arr['name'];
 		}
 	else
@@ -60,6 +60,7 @@ function domainModify($userid, $id, $bgrp)
 
 		function temp($userid, $id, $bgrp)
 			{
+			global $babDB;
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
 			$this->inmailserver = bab_translate("Incoming mail server");
@@ -69,10 +70,9 @@ function domainModify($userid, $id, $bgrp)
 			$this->accessmethod = bab_translate("Access method");
 			$this->modify = bab_translate("Modify mail domain");
 			$this->bgrp = $bgrp;
-			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where id='$id'";
-			$this->res = $this->db->db_query($req);
-			$this->arr = $this->db->db_fetch_array($this->res);
+			$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where id='".$babDB->db_escape_string($id)."'";
+			$this->res = $babDB->db_query($req);
+			$this->arr = $babDB->db_fetch_array($this->res);
 			if( strtolower($this->arr['access']) == "pop3")
 				{
 				$this->popselected = "selected";
@@ -126,7 +126,7 @@ function domainDelete($userid, $id, $bgrp)
 
 function modifyDomain($bgrp, $userid, $oldname, $name, $description, $accessmethod, $inmailserver, $inportserver, $outmailserver, $outportserver, $id)
 	{
-	global $babBody;
+	global $babBody, $babDB;
 	if( empty($name))
 		{
 		$babBody->msgerror = bab_translate("You must provide a name !!");
@@ -151,37 +151,36 @@ function modifyDomain($bgrp, $userid, $oldname, $name, $description, $accessmeth
 	if( empty($outportserver) || !is_numeric($outportserver))
 		$outportserver = 25;
 
-	$db = $GLOBALS['babDB'];
-	$query = "select * from ".BAB_MAIL_DOMAINS_TBL." where id='$id'";	
-	$res = $db->db_query($query);
-	if( $db->db_num_rows($res) < 1)
+	$query = "select * from ".BAB_MAIL_DOMAINS_TBL." where id='".$babDB->db_escape_string($id)."'";	
+	$res = $babDB->db_query($query);
+	if( $babDB->db_num_rows($res) < 1)
 		{
 		$babBody->msgerror = bab_translate("Mail domain doesn't exist");
 		}
 	else
 		{
 		$query = "UPDATE ".BAB_MAIL_DOMAINS_TBL." SET 
-			name='".$db->db_escape_string($name)."', 
-			description='".$db->db_escape_string($description)."', 
-			access='".$db->db_escape_string($accessmethod)."', 
-			inserver='".$db->db_escape_string($inmailserver)."', 
-			inport='".$db->db_escape_string($inportserver)."', 
-			outserver='".$db->db_escape_string($outmailserver)."', 
-			outport='".$db->db_escape_string($outportserver)."' 
-		where id='".$db->db_escape_string($id)."'";
+			name='".$babDB->db_escape_string($name)."', 
+			description='".$babDB->db_escape_string($description)."', 
+			access='".$babDB->db_escape_string($accessmethod)."', 
+			inserver='".$babDB->db_escape_string($inmailserver)."', 
+			inport='".$babDB->db_escape_string($inportserver)."', 
+			outserver='".$babDB->db_escape_string($outmailserver)."', 
+			outport='".$babDB->db_escape_string($outportserver)."' 
+		where id='".$babDB->db_escape_string($id)."'";
 
-		$db->db_query($query);
+		$babDB->db_query($query);
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".$userid."&bgrp=".$bgrp);
 	}
 
 function confirmDeleteDomain($userid, $id, $bgrp)
 	{
-	$db = $GLOBALS['babDB'];
+	global $babDB;
 
 	// delete category
-	$req = "delete from ".BAB_MAIL_DOMAINS_TBL." where id='$id'";
-	$res = $db->db_query($req);
+	$req = "delete from ".BAB_MAIL_DOMAINS_TBL." where id='".$babDB->db_escape_string($id)."'";
+	$res = $babDB->db_query($req);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".$userid."&bgrp=".$bgrp);
 	}
 
@@ -201,10 +200,9 @@ if(  $userid == 0 )
 	}
 else
 	{
-	$db = $GLOBALS['babDB'];
-	$req = "select * from ".BAB_GROUPS_TBL." where manager='".$userid."'";
-	$res = $db->db_query($req);
-	if( $res && $db->db_num_rows($res) > 0)
+	$req = "select * from ".BAB_GROUPS_TBL." where manager='".$babDB->db_escape_string($userid)."'";
+	$res = $babDB->db_query($req);
+	if( $res && $babDB->db_num_rows($res) > 0)
 		{
 		}
 	else
