@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
+include_once 'base.php';
 
 function domainCreate($userid, $grpid, $bgrp)
 	{
@@ -61,17 +61,17 @@ function domainCreate($userid, $grpid, $bgrp)
 			$this->count = count($grpid);
 			if( $this->count == 1 && $grpid[0] == 1)
 				$this->count = 0;
-			$this->db = $GLOBALS['babDB'];
 			}
 
 		function getnextgroup()
 			{
+			global $babDB;
 			static $i = 0;
 			if( $i < $this->count)
 				{
-				$req = "select * from ".BAB_GROUPS_TBL." where id='".$this->idgrp[$i]."'";
-				$res = $this->db->db_query($req);
-				$this->arrgroups = $this->db->db_fetch_array($res);
+				$req = "select * from ".BAB_GROUPS_TBL." where id='".$babDB->db_escape_string($this->idgrp[$i])."'";
+				$res = $babDB->db_query($req);
+				$this->arrgroups = $babDB->db_fetch_array($res);
 				if( $i == 0 )
 					$this->arrgroups['select'] = "selected";
 				else
@@ -116,14 +116,13 @@ function domainsList($userid, $grpid, $bgrp)
 
 		function temp($grpid, $userid, $bgrp)
 			{
-			global $babBody, $BAB_SESS_USERID;
+			global $babBody, $babDB, $BAB_SESS_USERID;
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
 			$this->group = bab_translate("Access");
 			$this->idgrp = $grpid;
 			$this->bgrp = $bgrp;
 			$this->count = count($grpid);
-			$this->db = $GLOBALS['babDB'];
 			$this->userid = $userid;
 			$this->countadm = 0;
 			$this->countgrp = 0;
@@ -131,45 +130,45 @@ function domainsList($userid, $grpid, $bgrp)
 			if( $bgrp == "y" && $userid == 0)
 				{
 				if( $babBody->currentAdmGroup == 0 )
-					$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where bgroup='Y' and owner='1' and id_dgowner='".$babBody->currentAdmGroup."'";
+					$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where bgroup='Y' and owner='1' and id_dgowner='".$babDB->db_escape_string($babBody->currentAdmGroup)."'";
 				else
 					$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where bgroup='Y' and owner='1'";
-				$this->resadm = $this->db->db_query($req);
-				$this->countadm = $this->db->db_num_rows($this->resadm);
+				$this->resadm = $babDB->db_query($req);
+				$this->countadm = $babDB->db_num_rows($this->resadm);
 				}
 			else if( $bgrp == "y" && $userid != 0)
 				{
 				$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where bgroup='Y' and owner='1'";
-				$this->resadm = $this->db->db_query($req);
-				$this->countadm = $this->db->db_num_rows($this->resadm);
+				$this->resadm = $babDB->db_query($req);
+				$this->countadm = $babDB->db_num_rows($this->resadm);
 
-				$req = "select ".BAB_MAIL_DOMAINS_TBL.".* from ".BAB_MAIL_DOMAINS_TBL." join ".BAB_GROUPS_TBL." where bgroup='Y' and ".BAB_GROUPS_TBL.".manager='".$BAB_SESS_USERID."' and owner=".BAB_GROUPS_TBL.".id";
-				$this->resgrp = $this->db->db_query($req);
-				$this->countgrp = $this->db->db_num_rows($this->resgrp);
+				$req = "select ".BAB_MAIL_DOMAINS_TBL.".* from ".BAB_MAIL_DOMAINS_TBL." join ".BAB_GROUPS_TBL." where bgroup='Y' and ".BAB_GROUPS_TBL.".manager='".$babDB->db_escape_string($BAB_SESS_USERID)."' and owner=".BAB_GROUPS_TBL.".id";
+				$this->resgrp = $babDB->db_query($req);
+				$this->countgrp = $babDB->db_num_rows($this->resgrp);
 				}
 			else
 				{
 				$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where bgroup='Y' and owner='1'";
-				$this->resadm = $this->db->db_query($req);
-				$this->countadm = $this->db->db_num_rows($this->resadm);
+				$this->resadm = $babDB->db_query($req);
+				$this->countadm = $babDB->db_num_rows($this->resadm);
 
-				$req = "select ".BAB_MAIL_DOMAINS_TBL.".* from ".BAB_MAIL_DOMAINS_TBL." join ".BAB_USERS_GROUPS_TBL." where bgroup='Y' and ".BAB_USERS_GROUPS_TBL.".id_object='".$BAB_SESS_USERID."' and owner=".BAB_USERS_GROUPS_TBL.".id_group";
-				$this->resgrp = $this->db->db_query($req);
-				$this->countgrp = $this->db->db_num_rows($this->resgrp);
+				$req = "select ".BAB_MAIL_DOMAINS_TBL.".* from ".BAB_MAIL_DOMAINS_TBL." join ".BAB_USERS_GROUPS_TBL." where bgroup='Y' and ".BAB_USERS_GROUPS_TBL.".id_object='".$babDB->db_escape_string($BAB_SESS_USERID)."' and owner=".BAB_USERS_GROUPS_TBL.".id_group";
+				$this->resgrp = $babDB->db_query($req);
+				$this->countgrp = $babDB->db_num_rows($this->resgrp);
 				
-				$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where owner='".$BAB_SESS_USERID."'";
-				$this->resusr = $this->db->db_query($req);
-				$this->countusr = $this->db->db_num_rows($this->resusr);
+				$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
+				$this->resusr = $babDB->db_query($req);
+				$this->countusr = $babDB->db_num_rows($this->resusr);
 				}
 			}
 			
 		function getnextadm()
 			{
-			global $babBody, $BAB_SESS_USERID;
+			global $babBody, $babDB, $BAB_SESS_USERID;
 			static $i = 0;
 			if( $i < $this->countadm)
 				{
-				$this->arr = $this->db->db_fetch_array($this->resadm);
+				$this->arr = $babDB->db_fetch_array($this->resadm);
 				if( $this->arr['owner'] == 1 && $this->arr['bgroup'] == "Y")
 					{
 					if( $this->arr['id_dgowner'] == 0 )
@@ -201,11 +200,11 @@ function domainsList($userid, $grpid, $bgrp)
 			}
 		function getnextgrp()
 			{
-			global $BAB_SESS_USERID;
+			global $BAB_SESS_USERID, $babDB;
 			static $m = 0;
 			if( $m < $this->countgrp)
 				{
-				$this->arr = $this->db->db_fetch_array($this->resgrp);
+				$this->arr = $babDB->db_fetch_array($this->resgrp);
 				if( $this->arr['owner'] != 1 && $this->arr['bgroup'] == "Y")
 					$this->groupname = bab_getGroupName($this->arr['owner']);
 				else
@@ -233,11 +232,11 @@ function domainsList($userid, $grpid, $bgrp)
 			}
 		function getnextusr()
 			{
-			global $BAB_SESS_USERID;
+			global $BAB_SESS_USERID, $babDB;
 			static $k = 0;
 			if( $k < $this->countusr)
 				{
-				$this->arr = $this->db->db_fetch_array($this->resusr);
+				$this->arr = $babDB->db_fetch_array($this->resusr);
 				$this->groupname = "";
 				$this->burl = 0;
 				if( $this->arr['owner'] == $BAB_SESS_USERID)
@@ -266,7 +265,7 @@ function domainsList($userid, $grpid, $bgrp)
 
 function addDomain($bgrp, $userid, $groups, $name, $description, $accessmethod, $inmailserver, $inportserver, $outmailserver, $outportserver)
 	{
-	global $babBody;
+	global $babBody, $babDB;
 	if( empty($name))
 		{
 		$babBody->msgerror = bab_translate("You must provide a name"). " !!";
@@ -309,18 +308,16 @@ function addDomain($bgrp, $userid, $groups, $name, $description, $accessmethod, 
 		array_push($groups, $userid);
 		$count = 1;
 		}
-	$db = $GLOBALS['babDB'];
-
 
 	for( $i = 0; $i < $count; $i++)
 		{		
 		$query = "select * from ".BAB_MAIL_DOMAINS_TBL." where 
-			name='".$db->db_escape_string($name)."' 
-			and owner='".$db->db_escape_string($groups[$i])."' 
-			and bgroup='".$db->db_escape_string($bgroup)."'";
+			name='".$babDB->db_escape_string($name)."' 
+			and owner='".$babDB->db_escape_string($groups[$i])."' 
+			and bgroup='".$babDB->db_escape_string($bgroup)."'";
 			
-		$res = $db->db_query($query);
-		if( $res && $db->db_num_rows($res) > 0)
+		$res = $babDB->db_query($query);
+		if( $res && $babDB->db_num_rows($res) > 0)
 			{
 			$babBody->msgerror = bab_translate("ERROR: This domain already exists");
 			}
@@ -334,19 +331,19 @@ function addDomain($bgrp, $userid, $groups, $name, $description, $accessmethod, 
 				VALUES ";
 
 			$query .= "(
-				'" . $db->db_escape_string($name). "', 
-				'" . $db->db_escape_string($description). "', 
-				'" . $db->db_escape_string($accessmethod). "', 
-				'" . $db->db_escape_string($inmailserver). "', 
-				'" . $db->db_escape_string($inportserver). "', 
-				'" . $db->db_escape_string($outmailserver). "', 
-				'" . $db->db_escape_string($outportserver). "', 
-				'" . $db->db_escape_string($bgroup). "', 
-				'" . $db->db_escape_string($groups[$i]). "', 
-				'" . $db->db_escape_string($iddgowner). "'
+				'" . $babDB->db_escape_string($name). "', 
+				'" . $babDB->db_escape_string($description). "', 
+				'" . $babDB->db_escape_string($accessmethod). "', 
+				'" . $babDB->db_escape_string($inmailserver). "', 
+				'" . $babDB->db_escape_string($inportserver). "', 
+				'" . $babDB->db_escape_string($outmailserver). "', 
+				'" . $babDB->db_escape_string($outportserver). "', 
+				'" . $babDB->db_escape_string($bgroup). "', 
+				'" . $babDB->db_escape_string($groups[$i]). "', 
+				'" . $babDB->db_escape_string($iddgowner). "'
 				)";
 
-			$db->db_query($query);
+			$babDB->db_query($query);
 			}
 		}
 	}
@@ -373,12 +370,11 @@ if( $bgrp == "y")
 		}
 	else
 		{
-		$db = $GLOBALS['babDB'];
-		$req = "select * from ".BAB_GROUPS_TBL." where manager='".$userid."'";
-		$res = $db->db_query($req);
-		if( $res && $db->db_num_rows($res) > 0)
+		$req = "select * from ".BAB_GROUPS_TBL." where manager='".$babDB->db_escape_string($userid)."'";
+		$res = $babDB->db_query($req);
+		if( $res && $babDB->db_num_rows($res) > 0)
 			{
-			while( $arr = $db->db_fetch_array($res))
+			while( $arr = $babDB->db_fetch_array($res))
 				array_push($grpid, $arr['id']);
 			}
 		}
