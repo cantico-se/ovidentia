@@ -1357,16 +1357,19 @@ function showSetArticleProperties($idart)
 
 					if( $arrtop['busetags'] == 'Y')
 						{
-						$this->tagsvalue = '';
+						$this->tagsvalue = bab_pp('tagsname', '');
 						$this->busetags = true;
 						$this->tagstxt = bab_translate("Tags");
 						$babBody->addJavascriptFile($GLOBALS['babScriptPath']."prototype/prototype.js");
 						$babBody->addJavascriptFile($GLOBALS['babScriptPath']."scriptaculous/scriptaculous.js");
 						$babBodyPopup->addStyleSheet('ajax.css');
-						$res = $babDB->db_query("select tt.tag_name from ".BAB_TAGS_TBL." tt left join ".BAB_ART_DRAFTS_TAGS_TBL." adtt on adtt.id_tag=tt.id where adtt.id_draft='".$babDB->db_escape_string($idart)."'");
-						while( $rr = $babDB->db_fetch_array($res))
+						if( empty($this->tagsvalue))
 							{
-							$this->tagsvalue .= $rr['tag_name'].', ';
+							$res = $babDB->db_query("select tt.tag_name from ".BAB_TAGS_TBL." tt left join ".BAB_ART_DRAFTS_TAGS_TBL." adtt on adtt.id_tag=tt.id where adtt.id_draft='".$babDB->db_escape_string($idart)."'");
+							while( $rr = $babDB->db_fetch_array($res))
+								{
+								$this->tagsvalue .= $rr['tag_name'].', ';
+								}
 							}
 						}
 
@@ -2160,9 +2163,56 @@ function addDocumentArticleDraft($idart, &$message)
 }
 
 
-function updatePropertiesArticleDraft()
+function updatePropertiesArticleDraft(&$message)
 {
 	global $babBody, $babDB, $BAB_SESS_USERID, $idart, $topicid, $cdateb, $cdatee, $cdates, $yearbegin, $monthbegin, $daybegin, $timebegin, $yearend, $monthend, $dayend, $timeend, $yearsub, $monthsub, $daysub, $timesub, $restriction, $grpids, $operator, $hpage0, $hpage1, $notifm, $approbid;
+
+	if( $topicid != 0 )
+	{
+	list($busetags) = $babDB->db_fetch_array($babDB->db_query("select busetags from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($topicid)."'"));
+	}
+	else
+	{
+		$busetags = 'N';
+	}
+
+	$otags = array();
+	if( $busetags == 'Y' )
+	{
+		$tags = bab_rp('tagsname', '');
+		$tags = trim($tags);
+
+		if( !empty($tags))
+		{
+			$atags = explode(',', $tags);
+			for( $k = 0; $k < count($atags); $k++ )
+			{
+				$tag = trim($atags[$k]);
+				if( !empty($tag) )
+				{
+					$res = $babDB->db_query("select id from ".BAB_TAGS_TBL." where tag_name='".$babDB->db_escape_string($tag)."'");
+					if( $res && $babDB->db_num_rows($res))
+					{
+						$arr = $babDB->db_fetch_array($res);
+						$otags[] = $arr['id'];
+
+					}
+					else
+					{
+						$message = bab_translate("Some tags doesn't exist");
+						return false;
+					}
+				}
+			}
+		}
+
+		if( empty($tags) || count($otags) == 0 )
+		{
+			$message = bab_translate("You must sepcify at least one tag");
+			return false;
+		}
+	}
+
 
 	$date_sub = "0000-00-00 00:00";
 	$date_pub = "0000-00-00 00:00";
@@ -2222,35 +2272,14 @@ function updatePropertiesArticleDraft()
 	bab_deleteDraftFiles($idart);
 	}
 
-	$tags = bab_rp('tagsname', false);
-	if( $tags !== false)
+	if( count($otags))
 	{
-		$tags = trim($tags);
 		$babDB->db_query("delete from ".BAB_ART_DRAFTS_TAGS_TBL." where id_draft='".$babDB->db_escape_string($idart)."'");
 
-		if( !empty($tags))
-		{
-			$atags = explode(',', $tags);
-			for( $k = 0; $k < count($atags); $k++ )
+		for( $k = 0; $k < count($otags); $k++ )
 			{
-				$tag = trim($atags[$k]);
-				if( !empty($tag) && strpos($tag, ' ') === false )
-				{
-					$res = $babDB->db_query("select id from ".BAB_TAGS_TBL." where tag_name='".$babDB->db_escape_string($tag)."'");
-					if( $res && $babDB->db_num_rows($res))
-					{
-						$arr = $babDB->db_fetch_array($res);
-						$babDB->db_query("insert into ".BAB_ART_DRAFTS_TAGS_TBL." (id_draft ,id_tag) values ('".$babDB->db_escape_string($idart)."','".$arr['id']."')");
-
-					}
-					elseif( bab_isAccessValid(BAB_TAGSMAN_GROUPS_TBL, 1))
-					{
-						$babDB->db_query("insert into ".BAB_TAGS_TBL." (tag_name) values ('".$babDB->db_escape_string($tag)."')");
-						$babDB->db_query("insert into ".BAB_ART_DRAFTS_TAGS_TBL." (id_draft ,id_tag) values ('".$babDB->db_escape_string($idart)."','".$babDB->db_insert_id()."')");
-					}
-				}
+			$babDB->db_query("insert into ".BAB_ART_DRAFTS_TAGS_TBL." (id_draft ,id_tag) values ('".$babDB->db_escape_string($idart)."','".$babDB->db_escape_string($otags[$k])."')");
 			}
-		}
 	}
 
 	$sfiles = bab_rp('sfiles', '');
@@ -2262,6 +2291,8 @@ function updatePropertiesArticleDraft()
 			$babDB->db_query("update ".BAB_ART_DRAFTS_FILES_TBL." set ordering='".$k."' where id='".$babDB->db_escape_string($asfiles[$k])."'");
 		}
 	}
+
+	return true;
 }
 
 
@@ -2614,15 +2645,28 @@ elseif( isset($updstep3))
 	}
 	elseif( $updstep3 == 'save' )
 	{
-		updatePropertiesArticleDraft();
+		$message = '';
+		if(!updatePropertiesArticleDraft($message))
+		{
+			$idx = 's3';
+		}
+		else
+		{
 		$idx='unload';
 		$popupmessage = bab_translate("Update done");
 		$refreshurl = $rfurl;
+		}
 	}
 	elseif( $updstep3 == 'submit' )
 	{
 		$message = '';
-		updatePropertiesArticleDraft();
+		if(!updatePropertiesArticleDraft($message))
+		{
+			$idx = 's3';
+		}
+		else
+		{
+		$message = '';
 		if( !submitArticleDraft( $idart, $message) )
 			{
 			$idx = 's3';
@@ -2633,6 +2677,7 @@ elseif( isset($updstep3))
 			$popupmessage = bab_translate("Update done");
 			$refreshurl = $rfurl;
 			}
+		}
 	}
 	elseif( $updstep3 == 'prev' )
 	{

@@ -1486,8 +1486,6 @@ function updateTags()
 	$GLOBALS['tagvalue'] = '';
 	$GLOBALS['tagidvalue'] = 0;
 
-	$notok = array();
-
 	$tags = trim(bab_rp('tagsname', ''));
 	if( !empty($tags))
 	{
@@ -1495,7 +1493,7 @@ function updateTags()
 		for( $k = 0; $k < count($arr); $k++ )
 		{
 			$tag = trim($arr[$k]);
-			if( strpos($tag, ' ') === false )
+			if( !empty($tag) )
 			{
 				$res = $babDB->db_query("select * from ".BAB_TAGS_TBL." where tag_name='".$babDB->db_escape_string($tag)."'");
 				if( !$res || $babDB->db_num_rows($res) == 0 )
@@ -1504,50 +1502,29 @@ function updateTags()
 					$GLOBALS['lasttags'][] = $babDB->db_insert_id();
 				}
 			}
-			else
-			{
-				$notok[] = $arr[$k];
-			}
 		}
-	}
-
-	if( count($notok))
-	{
-		$GLOBALS['tagsvalue'] = implode(',', $notok);
 	}
 
 	$tag = trim(bab_rp('tagname', ''));
 	$tagid = trim(bab_rp('tagid', 0));
-	if( strpos($tag, ' ') === false )
+
+	if( !empty($tag) && $tagid )
 	{
-		if( !empty($tag) && $tagid )
+		$res = $babDB->db_query("select * from ".BAB_TAGS_TBL." where id !='".$babDB->db_escape_string($tagid)."' and tag_name='".$babDB->db_escape_string($tag)."'");
+		if( !$res || $babDB->db_num_rows($res) == 0 )
 		{
-			$res = $babDB->db_query("select * from ".BAB_TAGS_TBL." where id !='".$babDB->db_escape_string($tagid)."' and tag_name='".$babDB->db_escape_string($tag)."'");
-			if( !$res || $babDB->db_num_rows($res) == 0 )
-			{
-				$babDB->db_query("update ".BAB_TAGS_TBL." set tag_name='".$babDB->db_escape_string($tag)."' where id='".$babDB->db_escape_string($tagid)."'");
-				$GLOBALS['lasttags'][] = $tagid;
-			}
+			$babDB->db_query("update ".BAB_TAGS_TBL." set tag_name='".$babDB->db_escape_string($tag)."' where id='".$babDB->db_escape_string($tagid)."'");
+			$GLOBALS['lasttags'][] = $tagid;
 		}
-		elseif( $tagid )
-		{
-			$babDB->db_query("delete from ".BAB_TAGS_TBL." where id='".$babDB->db_escape_string($tagid)."'");
-		}
-		else
-		{
-			$GLOBALS['tagvalue'] = $tag;
-			$GLOBALS['tagidvalue'] = $tagid;
-		}
+	}
+	elseif( $tagid )
+	{
+		$babDB->db_query("delete from ".BAB_TAGS_TBL." where id='".$babDB->db_escape_string($tagid)."'");
 	}
 	else
 	{
 		$GLOBALS['tagvalue'] = $tag;
 		$GLOBALS['tagidvalue'] = $tagid;
-	}
-
-	if( $GLOBALS['tagsvalue'] || $GLOBALS['tagvalue'] )
-	{
-		$babBody->msgerror = bab_translate("Some tags are malformed");
 	}
 }
 
@@ -1567,7 +1544,7 @@ function processImportTagsFile()
 		while ($arr = fgetcsv($fd, 4096, $separ))
 			{
 				$tag = trim($arr[$tagcol]);
-				if( strpos($tag, ' ') === false )
+				if( !empty($tag) )
 				{
 					$res = $babDB->db_query("select * from ".BAB_TAGS_TBL." where tag_name='".$babDB->db_escape_string($tag)."'");
 					if( !$res || $babDB->db_num_rows($res) == 0 )
@@ -1887,7 +1864,7 @@ switch($idx)
 		}
 		if( bab_isAccessValid(BAB_TAGSMAN_GROUPS_TBL, 1) )
 		{
-			$babBody->addItemMenu("tagsman", bab_translate("Tags"), $GLOBALS['babUrlScript']."?tg=topman&idx=tagsman=");
+			$babBody->addItemMenu("tagsman", bab_translate("Tags"), $GLOBALS['babUrlScript']."?tg=topman&idx=tagsman");
 			$babBody->addItemMenu("tagsimp", bab_translate("Import"), $GLOBALS['babUrlScript']."?tg=topman&idx=tagsimp");
 			importTagsFile();
 		}
