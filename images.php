@@ -21,27 +21,27 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
-include_once $babInstallPath."utilit/tempfile.php";
-include_once $babInstallPath."utilit/imgincl.php";
+include_once 'base.php';
+include_once $babInstallPath.'utilit/tempfile.php';
+include_once $babInstallPath.'utilit/imgincl.php';
 
 function put_text($txt,$limit=12,$limitmot=15)
 {
 	if (strlen($txt) > $limit)
-		$out = substr(strip_tags($txt),0,$limit)."...";
+		$out = substr(strip_tags($txt),0,$limit).'...';
 	else
 		$out = strip_tags($txt);
-	$arr = explode(" ",$out);
+	$arr = explode(' ',$out);
 	foreach($arr as $key => $mot)
 		{
 		$arr[$key] = substr($mot,0,$limitmot);
 		}
-return bab_replace(implode(" ",$arr));
+return bab_replace(implode(' ',$arr));
 }
 
 function getResizedImage($img, $w, $h, $com)
 	{
-	$type = "";
+	$type = '';
 	$imgf = $img;
 	if( file_exists($imgf))
 		{
@@ -51,15 +51,15 @@ function getResizedImage($img, $w, $h, $com)
 			switch($imgsize[2])
 				{
 				case '2':
-					$type = "jpeg";
+					$type = 'jpeg';
 					$tmp = imagecreatefromjpeg($imgf);
 					break;
 				case '1':
-					$type = "gif";
+					$type = 'gif';
 					$tmp = imagecreatefromgif($imgf);
 					break;
 				case '3':
-					$type = "png";
+					$type = 'png';
 					$tmp = imagecreatefrompng($imgf);
 					break;
 				default:
@@ -72,9 +72,9 @@ function getResizedImage($img, $w, $h, $com)
 		{
 		$wtmp = imagesx($tmp);
 		$htmp = imagesy($tmp);
-		if( $w == "" )
+		if( $w == '' )
 			$w = $wtmp;
-		if( $h == "" )
+		if( $h == '' )
 			$h = $htmp;
 		if( $wtmp > $w )
 			{
@@ -113,20 +113,19 @@ function getResizedImage($img, $w, $h, $com)
 		}
 	}
 
-function listImages($editor,$path="")
+function listImages($editor,$path='')
 	{
 	class temp
 		{
 
 		function temp($editor,$path)
 			{
-			global $babBody;
-			$db = $GLOBALS['babDB'];
+			global $babBody, $babDB;
 
 			$this->maximagessize = $babBody->babsite['imgsize'];
 			if( $this->maximagessize != 0 )
 				{
-				$this->maxsizetxt = bab_translate("Image size must not exceed")." ".$this->maximagessize. " ". bab_translate("Kb");
+				$this->maxsizetxt = bab_translate("Image size must not exceed").' '.$this->maximagessize. ' '. bab_translate("Kb");
 				}
 			else
 				{
@@ -181,16 +180,15 @@ function listImages($editor,$path="")
 					}
 				}
 			closedir($h);
-			$db = $GLOBALS['babDB'];
-			$res = $db->db_query("select * from ".BAB_IMAGES_TEMP_TBL." where id_owner='".$GLOBALS['BAB_SESS_USERID']."'");
-			if( $res && $db->db_num_rows($res) > 0 )
+			$res = $babDB->db_query("select * from ".BAB_IMAGES_TEMP_TBL." where id_owner='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
+			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
-				while( $arr = $db->db_fetch_array($res))
+				while( $arr = $babDB->db_fetch_array($res))
 					{
 					if( is_file(BAB_IUD_TMP.$arr['name']))
 						$this->arrufile[] = BAB_IUD_TMP.$arr['name'];
 					else
-						$db->db_query("delete from ".BAB_IMAGES_TEMP_TBL." where id='".$arr['id']."'");
+						$babDB->db_query("delete from ".BAB_IMAGES_TEMP_TBL." where id='".$babDB->db_escape_string($arr['id'])."'");
 					}
 				}
 
@@ -214,8 +212,7 @@ function iframe($editor,$path="")
 
 		function temp($editor,$path)
 			{
-			global $babBody;
-			$db = $GLOBALS['babDB'];
+			global $babBody, $babDB;
 
 			$this->maximagessize = $babBody->babsite['imgsize'];
 
@@ -256,16 +253,15 @@ function iframe($editor,$path="")
 					}
 				}
 			closedir($h);
-			$db = $GLOBALS['babDB'];
-			$res = $db->db_query("select * from ".BAB_IMAGES_TEMP_TBL." where id_owner='".$GLOBALS['BAB_SESS_USERID']."'");
-			if( $res && $db->db_num_rows($res) > 0 )
+			$res = $babDB->db_query("select * from ".BAB_IMAGES_TEMP_TBL." where id_owner='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
+			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
-				while( $arr = $db->db_fetch_array($res))
+				while( $arr = $babDB->db_fetch_array($res))
 					{
 					if( is_file(BAB_IUD_TMP.$arr['name']))
 						$this->arrufile[] = BAB_IUD_TMP.$arr['name'];
 					else
-						$db->db_query("delete from ".BAB_IMAGES_TEMP_TBL." where id='".$arr['id']."'");
+						$babDB->db_query("delete from ".BAB_IMAGES_TEMP_TBL." where id='".$babDB->db_escape_string($arr['id'])."'");
 					}
 				}
 
@@ -419,12 +415,13 @@ function rename_popup($old_name,$path)
 $msgerror = "";
 function saveImage($file, $size, $tmpfile, $share,$path="")
 	{
+	global $babDB;
 	if ($path != "") $path.="/";
 	$nf = "";
-	if( !strstr($file, "..") && is_uploaded_file($tmpfile))
+	if( !strstr($file, '..') && is_uploaded_file($tmpfile))
 		{
 		$tf = new babTempFiles(BAB_IUD_TMP, BAB_FILE_TIMEOUT);
-		if( !empty($share) && $share == "Y" && bab_isUserAdministrator())
+		if( !empty($share) && $share == 'Y' && bab_isUserAdministrator())
 			{
 			if( is_file(BAB_IUD_COMMON.$path.$file))
 				{
@@ -439,8 +436,7 @@ function saveImage($file, $size, $tmpfile, $share,$path="")
 			$nf = $tf->tempfile($tmpfile, $file);
 			if( !empty($nf))
 				{
-				$db = $GLOBALS['babDB'];
-				$db->db_query("insert into ".BAB_IMAGES_TEMP_TBL." (name, id_owner) values ('".basename($nf)."', '".$GLOBALS['BAB_SESS_USERID']."')");
+				$babDB->db_query("insert into ".BAB_IMAGES_TEMP_TBL." (name, id_owner) values ('".$babDB->db_escape_string(basename($nf))."', '".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."')");
 				}
 			}
 		}
@@ -454,6 +450,7 @@ function saveImage($file, $size, $tmpfile, $share,$path="")
 
 function delImage($com, $f)
 	{
+	global $babDB;
 	switch($com)
 		{
 		case 1:
@@ -461,11 +458,10 @@ function delImage($com, $f)
 				@unlink(BAB_IUD_COMMON.$f);
 			break;
 		case 0:
-			$db = $GLOBALS['babDB'];
-			$res = $db->db_query("select * from ".BAB_IMAGES_TEMP_TBL." where id_owner='".$GLOBALS['BAB_SESS_USERID']."' and name='".$f."'");
-			if( $res && $db->db_num_rows($res) == 1 )
+			$res = $babDB->db_query("select * from ".BAB_IMAGES_TEMP_TBL." where id_owner='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and name='".$babDB->db_escape_string($f)."'");
+			if( $res && $babDB->db_num_rows($res) == 1 )
 				{
-				$db->db_query("delete from ".BAB_IMAGES_TEMP_TBL." where id_owner='".$GLOBALS['BAB_SESS_USERID']."' and name='".$f."'");
+				$babDB->db_query("delete from ".BAB_IMAGES_TEMP_TBL." where id_owner='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and name='".$babDB->db_escape_string($f)."'");
 				@unlink(BAB_IUD_TMP.$f);
 				}
 			break;
