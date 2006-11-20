@@ -21,9 +21,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
-include_once $babInstallPath."utilit/statutil.php";
-include_once $babInstallPath."utilit/uiutil.php";
+include_once 'base.php';
+include_once $babInstallPath.'utilit/statutil.php';
+include_once $babInstallPath.'utilit/uiutil.php';
 
 function summaryArticles($col, $order, $pos, $startday, $endday)
 	{
@@ -50,19 +50,19 @@ function summaryArticles($col, $order, $pos, $startday, $endday)
 			$req.= " where at.title is not null";
 			if( $babBody->currentAdmGroup != 0 )
 				{
-				$req .= " and tct.id_dgowner='".$babBody->currentAdmGroup."'";
+				$req .= " and tct.id_dgowner='".$babDB->db_escape_string($babBody->currentAdmGroup)."'";
 				}
 			if( !empty($startday) && !empty($endday))
 				{
-				$req .= " and sat.st_date between '".$startday."' and '".$endday."'";
+				$req .= " and sat.st_date between '".$babDB->db_escape_string($startday)."' and '".$babDB->db_escape_string($endday)."'";
 				}
 			else if( !empty($startday))
 				{
-				$req .= " and sat.st_date >= '".$startday."'";
+				$req .= " and sat.st_date >= '".$babDB->db_escape_string($startday)."'";
 				}
 			else if( !empty($endday))
 				{
-				$req .= " and sat.st_date <= '".$endday."'";
+				$req .= " and sat.st_date <= '".$babDB->db_escape_string($endday)."'";
 				}
 
 			$req .= " GROUP  by sat.st_article_id order by hits desc";
@@ -223,9 +223,9 @@ function showReferentsArticle($col, $order, $pos, $item, $date)
 			$this->fullname = bab_translate("Ovidentia functions");
 			$this->hitstxt = bab_translate("Hits");
 
-			list($babBodyPopup->title) = $babDB->db_fetch_row($babDB->db_query("select title from ".BAB_ARTICLES_TBL." where id='".$item."'"));
+			list($babBodyPopup->title) = $babDB->db_fetch_row($babDB->db_query("select title from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($item)."'"));
 
-			$req = "SELECT  it.id, it.module_name, sum( sat.st_hits ) hits FROM  ".BAB_STATS_ARTICLES_REF_TBL." sat left join ".BAB_STATS_IMODULES_TBL." it  on sat.st_module_id=it.id where sat.st_article_id='".$item."'";
+			$req = "SELECT  it.id, it.module_name, sum( sat.st_hits ) hits FROM  ".BAB_STATS_ARTICLES_REF_TBL." sat left join ".BAB_STATS_IMODULES_TBL." it  on sat.st_module_id=it.id where sat.st_article_id='".$babDB->db_escape_string($item)."'";
 			$req .= " GROUP  by sat.st_module_id order by hits desc";
 
 			$res = $babDB->db_query($req);
@@ -356,19 +356,19 @@ function summaryTopicsArticles($col, $order, $pos, $startday, $endday)
 			$req.= " where at.title is not null";
 			if( $babBody->currentAdmGroup != 0 )
 				{
-				$req.= " and  tct.id_dgowner='".$babBody->currentAdmGroup."'";
+				$req.= " and  tct.id_dgowner='".$babDB->db_escape_string($babBody->currentAdmGroup)."'";
 				}
 			if( !empty($startday) && !empty($endday))
 				{
-				$req .= " and sat.st_date between '".$startday."' and '".$endday."'";
+				$req .= " and sat.st_date between '".$babDB->db_escape_string($startday)."' and '".$babDB->db_escape_string($endday)."'";
 				}
 			else if( !empty($startday))
 				{
-				$req .= " and sat.st_date >= '".$startday."'";
+				$req .= " and sat.st_date >= '".$babDB->db_escape_string($startday)."'";
 				}
 			else if( !empty($endday))
 				{
-				$req .= " and sat.st_date <= '".$endday."'";
+				$req .= " and sat.st_date <= '".$babDB->db_escape_string($endday)."'";
 				}
 
 			$req .= " GROUP  by at.id_topic order by hits desc";
@@ -531,19 +531,19 @@ function summaryTopicCategoryArticles($col, $order, $pos, $startday, $endday)
 			$req = "SELECT tct.id, tct.title, sum( sat.st_hits ) hits FROM ".BAB_STATS_ARTICLES_TBL." sat left join ".BAB_ARTICLES_TBL." at on sat.st_article_id=at.id left join ".BAB_TOPICS_TBL." tt on tt.id=at.id_topic left join ".BAB_TOPICS_CATEGORIES_TBL." tct on tct.id=tt.id_cat where at.title is not null";
 			if( $babBody->currentAdmGroup != 0 )
 				{
-				$req .= " and tct.id_dgowner='".$babBody->currentAdmGroup."'";
+				$req .= " and tct.id_dgowner='".$babDB->db_escape_string($babBody->currentAdmGroup)."'";
 				}
 			if( !empty($startday) && !empty($endday))
 				{
-				$req .= " and sat.st_date between '".$startday."' and '".$endday."'";
+				$req .= " and sat.st_date between '".$babDB->db_escape_string($startday)."' and '".$babDB->db_escape_string($endday)."'";
 				}
 			else if( !empty($startday))
 				{
-				$req .= " and sat.st_date >= '".$startday."'";
+				$req .= " and sat.st_date >= '".$babDB->db_escape_string($startday)."'";
 				}
 			else if( !empty($endday))
 				{
-				$req .= " and sat.st_date <= '".$endday."'";
+				$req .= " and sat.st_date <= '".$babDB->db_escape_string($endday)."'";
 				}
 
 			$req .= " GROUP  by tct.id order by hits desc";
@@ -696,7 +696,7 @@ function showStatArticle($idart, $date)
 			global $babBodyPopup, $babBody, $babDB;
 
 
-			list($babBodyPopup->title) = $babDB->db_fetch_row($babDB->db_query("select title from ".BAB_ARTICLES_TBL." where id='".$idart."'"));
+			list($babBodyPopup->title) = $babDB->db_fetch_row($babDB->db_query("select title from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($idart)."'"));
 
 			$rr = explode(',', $date);
 			if( !is_array($rr) || count($rr) != 3)
@@ -706,7 +706,7 @@ function showStatArticle($idart, $date)
 
 			$this->summaryDetailBaseCls($rr[0], $rr[1], $rr[2], "sart", $idart);
 
-			$req = "SELECT  st_date , EXTRACT(DAY FROM st_date) as day, sum( st_hits ) hits FROM  ".BAB_STATS_ARTICLES_TBL." WHERE st_article_id ='".$idart."' and st_date between '".sprintf("%04s-%02s-01", $rr[0], $rr[1])."' and '".sprintf("%04s-%02s-%02s", $rr[0], $rr[1], $this->nbdays)."' GROUP  BY st_date ORDER  BY st_date ASC ";
+			$req = "SELECT  st_date , EXTRACT(DAY FROM st_date) as day, sum( st_hits ) hits FROM  ".BAB_STATS_ARTICLES_TBL." WHERE st_article_id ='".$babDB->db_escape_string($idart)."' and st_date between '".$babDB->db_escape_string(sprintf("%04s-%02s-01", $rr[0], $rr[1]))."' and '".$babDB->db_escape_string(sprintf("%04s-%02s-%02s", $rr[0], $rr[1], $this->nbdays))."' GROUP  BY st_date ORDER  BY st_date ASC ";
 
 			$this->dayinfo = array();
 			$this->maxdayhits = 0;
@@ -721,7 +721,7 @@ function showStatArticle($idart, $date)
 				}
 
 
-			$req = "SELECT  EXTRACT(MONTH FROM st_date) as month, sum( st_hits ) hits FROM  ".BAB_STATS_ARTICLES_TBL." WHERE st_article_id ='".$idart."' and st_date between '".sprintf("%04s-01-01", $rr[0])."' and '".sprintf("%04s-12-31", $rr[0])."' GROUP BY month ORDER  BY month ASC ";
+			$req = "SELECT  EXTRACT(MONTH FROM st_date) as month, sum( st_hits ) hits FROM  ".BAB_STATS_ARTICLES_TBL." WHERE st_article_id ='".$babDB->db_escape_string($idart)."' and st_date between '".$babDB->db_escape_string(sprintf("%04s-01-01", $rr[0]))."' and '".$babDB->db_escape_string(sprintf("%04s-12-31", $rr[0]))."' GROUP BY month ORDER  BY month ASC ";
 			$this->monthinfo = array();
 			$this->maxmonthhits = 0;
 			$res = $babDB->db_query($req);
@@ -734,7 +734,7 @@ function showStatArticle($idart, $date)
 					}
 				}
 
-			$req = "SELECT  st_hour, st_hits as hits FROM  ".BAB_STATS_ARTICLES_TBL." WHERE st_article_id ='".$idart."' and st_date ='".sprintf("%04s-%02s-%02s", $rr[0], $rr[1], $rr[2] )."' ORDER  BY st_hour ASC ";
+			$req = "SELECT  st_hour, st_hits as hits FROM  ".BAB_STATS_ARTICLES_TBL." WHERE st_article_id ='".$babDB->db_escape_string($idart)."' and st_date ='".$babDB->db_escape_string(sprintf("%04s-%02s-%02s", $rr[0], $rr[1], $rr[2] ))."' ORDER  BY st_hour ASC ";
 			$this->hourinfo = array();
 			$this->maxhourhits = 0;
 			$res = $babDB->db_query($req);
@@ -807,7 +807,7 @@ function showStatTopic($idtopic, $date)
 			global $babBodyPopup, $babBody, $babDB;
 
 
-			list($babBodyPopup->title) = $babDB->db_fetch_row($babDB->db_query("select category from ".BAB_TOPICS_TBL." where id='".$idtopic."'"));
+			list($babBodyPopup->title) = $babDB->db_fetch_row($babDB->db_query("select category from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($idtopic)."'"));
 
 			$rr = explode(',', $date);
 			if( !is_array($rr) || count($rr) != 3)
@@ -817,7 +817,7 @@ function showStatTopic($idtopic, $date)
 
 			$this->summaryDetailBaseCls($rr[0], $rr[1], $rr[2], "stop", $idtopic);
 
-			$req = "SELECT  sat.st_date , EXTRACT(DAY FROM sat.st_date) as day, sum( sat.st_hits ) hits FROM  ".BAB_STATS_ARTICLES_TBL." sat left join ".BAB_ARTICLES_TBL." at on at.id=sat.st_article_id left join ".BAB_TOPICS_TBL." tt on tt.id=at.id_topic WHERE tt.id ='".$idtopic."' and sat.st_date between '".sprintf("%04s-%02s-01", $rr[0], $rr[1])."' and '".sprintf("%04s-%02s-%02s", $rr[0], $rr[1], $this->nbdays)."' GROUP  BY st_date ORDER  BY st_date ASC ";
+			$req = "SELECT  sat.st_date , EXTRACT(DAY FROM sat.st_date) as day, sum( sat.st_hits ) hits FROM  ".BAB_STATS_ARTICLES_TBL." sat left join ".BAB_ARTICLES_TBL." at on at.id=sat.st_article_id left join ".BAB_TOPICS_TBL." tt on tt.id=at.id_topic WHERE tt.id ='".$babDB->db_escape_string($idtopic)."' and sat.st_date between '".$babDB->db_escape_string(sprintf("%04s-%02s-01", $rr[0], $rr[1]))."' and '".$babDB->db_escape_string(sprintf("%04s-%02s-%02s", $rr[0], $rr[1], $this->nbdays))."' GROUP  BY st_date ORDER  BY st_date ASC ";
 
 			$this->dayinfo = array();
 			$this->maxdayhits = 0;
@@ -832,7 +832,7 @@ function showStatTopic($idtopic, $date)
 				}
 
 
-			$req = "SELECT  EXTRACT(MONTH FROM st_date) as month, sum( st_hits ) hits FROM  ".BAB_STATS_ARTICLES_TBL." sat left join ".BAB_ARTICLES_TBL." at on at.id=sat.st_article_id left join ".BAB_TOPICS_TBL." tt on tt.id=at.id_topic WHERE tt.id ='".$idtopic."' and st_date between '".sprintf("%04s-01-01", $rr[0])."' and '".sprintf("%04s-12-31", $rr[0])."' GROUP BY month ORDER  BY month ASC ";
+			$req = "SELECT  EXTRACT(MONTH FROM st_date) as month, sum( st_hits ) hits FROM  ".BAB_STATS_ARTICLES_TBL." sat left join ".BAB_ARTICLES_TBL." at on at.id=sat.st_article_id left join ".BAB_TOPICS_TBL." tt on tt.id=at.id_topic WHERE tt.id ='".$babDB->db_escape_string($idtopic)."' and st_date between '".$babDB->db_escape_string(sprintf("%04s-01-01", $rr[0]))."' and '".$babDB->db_escape_string(sprintf("%04s-12-31", $rr[0]))."' GROUP BY month ORDER  BY month ASC ";
 			$this->monthinfo = array();
 			$this->maxmonthhits = 0;
 			$res = $babDB->db_query($req);
@@ -845,7 +845,7 @@ function showStatTopic($idtopic, $date)
 					}
 				}
 
-			$req = "SELECT  st_hour, sum(st_hits) as hits FROM  ".BAB_STATS_ARTICLES_TBL."  sat left join ".BAB_ARTICLES_TBL." at on at.id=sat.st_article_id left join ".BAB_TOPICS_TBL." tt on tt.id=at.id_topic WHERE tt.id ='".$idtopic."' and st_date ='".sprintf("%04s-%02s-%02s", $rr[0], $rr[1], $rr[2] )."' group by st_hour ORDER  BY st_hour ASC ";
+			$req = "SELECT  st_hour, sum(st_hits) as hits FROM  ".BAB_STATS_ARTICLES_TBL."  sat left join ".BAB_ARTICLES_TBL." at on at.id=sat.st_article_id left join ".BAB_TOPICS_TBL." tt on tt.id=at.id_topic WHERE tt.id ='".$babDB->db_escape_string($idtopic)."' and st_date ='".$babDB->db_escape_string(sprintf("%04s-%02s-%02s", $rr[0], $rr[1], $rr[2] ))."' group by st_hour ORDER  BY st_hour ASC ";
 
 			$this->hourinfo = array();
 			$this->maxhourhits = 0;
@@ -919,7 +919,7 @@ function showStatTopicCategory($idtopcat, $date)
 			global $babBodyPopup, $babBody, $babDB;
 
 
-			list($babBodyPopup->title) = $babDB->db_fetch_row($babDB->db_query("select title from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$idtopcat."'"));
+			list($babBodyPopup->title) = $babDB->db_fetch_row($babDB->db_query("select title from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$babDB->db_escape_string($idtopcat)."'"));
 
 			$rr = explode(',', $date);
 			if( !is_array($rr) || count($rr) != 3)
@@ -929,7 +929,7 @@ function showStatTopicCategory($idtopcat, $date)
 
 			$this->summaryDetailBaseCls($rr[0], $rr[1], $rr[2], "scat", $idtopcat);
 
-			$req = "SELECT  sat.st_date , EXTRACT(DAY FROM sat.st_date) as day, sum( sat.st_hits ) hits FROM  ".BAB_STATS_ARTICLES_TBL." sat left join ".BAB_ARTICLES_TBL." at on at.id=sat.st_article_id left join ".BAB_TOPICS_TBL." tt on tt.id=at.id_topic left join ".BAB_TOPICS_CATEGORIES_TBL." ttc on ttc.id=tt.id_cat WHERE ttc.id ='".$idtopcat."' and sat.st_date between '".sprintf("%04s-%02s-01", $rr[0], $rr[1])."' and '".sprintf("%04s-%02s-%02s", $rr[0], $rr[1], $this->nbdays)."' GROUP  BY st_date ORDER  BY st_date ASC ";
+			$req = "SELECT  sat.st_date , EXTRACT(DAY FROM sat.st_date) as day, sum( sat.st_hits ) hits FROM  ".BAB_STATS_ARTICLES_TBL." sat left join ".BAB_ARTICLES_TBL." at on at.id=sat.st_article_id left join ".BAB_TOPICS_TBL." tt on tt.id=at.id_topic left join ".BAB_TOPICS_CATEGORIES_TBL." ttc on ttc.id=tt.id_cat WHERE ttc.id ='".$babDB->db_escape_string($idtopcat)."' and sat.st_date between '".$babDB->db_escape_string(sprintf("%04s-%02s-01", $rr[0], $rr[1]))."' and '".$babDB->db_escape_string(sprintf("%04s-%02s-%02s", $rr[0], $rr[1], $this->nbdays))."' GROUP  BY st_date ORDER  BY st_date ASC ";
 
 			$this->dayinfo = array();
 			$this->maxdayhits = 0;
@@ -944,7 +944,7 @@ function showStatTopicCategory($idtopcat, $date)
 				}
 
 
-			$req = "SELECT  EXTRACT(MONTH FROM st_date) as month, sum( st_hits ) hits FROM  ".BAB_STATS_ARTICLES_TBL." sat left join ".BAB_ARTICLES_TBL." at on at.id=sat.st_article_id left join ".BAB_TOPICS_TBL." tt on tt.id=at.id_topic left join ".BAB_TOPICS_CATEGORIES_TBL." ttc on ttc.id=tt.id_cat WHERE ttc.id ='".$idtopcat."' and st_date between '".sprintf("%04s-01-01", $rr[0])."' and '".sprintf("%04s-12-31", $rr[0])."' GROUP BY month ORDER  BY month ASC ";
+			$req = "SELECT  EXTRACT(MONTH FROM st_date) as month, sum( st_hits ) hits FROM  ".BAB_STATS_ARTICLES_TBL." sat left join ".BAB_ARTICLES_TBL." at on at.id=sat.st_article_id left join ".BAB_TOPICS_TBL." tt on tt.id=at.id_topic left join ".BAB_TOPICS_CATEGORIES_TBL." ttc on ttc.id=tt.id_cat WHERE ttc.id ='".$babDB->db_escape_string($idtopcat)."' and st_date between '".$babDB->db_escape_string(sprintf("%04s-01-01", $rr[0]))."' and '".$babDB->db_escape_string(sprintf("%04s-12-31", $rr[0]))."' GROUP BY month ORDER  BY month ASC ";
 			$this->monthinfo = array();
 			$this->maxmonthhits = 0;
 			$res = $babDB->db_query($req);
@@ -957,7 +957,7 @@ function showStatTopicCategory($idtopcat, $date)
 					}
 				}
 
-			$req = "SELECT  st_hour, sum(st_hits) as hits FROM  ".BAB_STATS_ARTICLES_TBL."  sat left join ".BAB_ARTICLES_TBL." at on at.id=sat.st_article_id left join ".BAB_TOPICS_TBL." tt on tt.id=at.id_topic left join ".BAB_TOPICS_CATEGORIES_TBL." ttc on ttc.id=tt.id_cat WHERE ttc.id ='".$idtopcat."' and st_date ='".sprintf("%04s-%02s-%02s", $rr[0], $rr[1], $rr[2] )."' group by st_hour ORDER  BY st_hour ASC ";
+			$req = "SELECT  st_hour, sum(st_hits) as hits FROM  ".BAB_STATS_ARTICLES_TBL."  sat left join ".BAB_ARTICLES_TBL." at on at.id=sat.st_article_id left join ".BAB_TOPICS_TBL." tt on tt.id=at.id_topic left join ".BAB_TOPICS_CATEGORIES_TBL." ttc on ttc.id=tt.id_cat WHERE ttc.id ='".$babDB->db_escape_string($idtopcat)."' and st_date ='".$babDB->db_escape_string(sprintf("%04s-%02s-%02s", $rr[0], $rr[1], $rr[2] ))."' group by st_hour ORDER  BY st_hour ASC ";
 
 			$this->hourinfo = array();
 			$this->maxhourhits = 0;
