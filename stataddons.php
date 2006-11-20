@@ -21,9 +21,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
-include_once $babInstallPath."utilit/statutil.php";
-include_once $babInstallPath."utilit/uiutil.php";
+include_once 'base.php';
+include_once $babInstallPath.'utilit/statutil.php';
+include_once $babInstallPath.'utilit/uiutil.php';
 
 function summaryAddons($col, $order, $pos, $startday, $endday)
 	{
@@ -45,15 +45,15 @@ function summaryAddons($col, $order, $pos, $startday, $endday)
 			$req = "SELECT  sat.st_addon, sum( sat.st_hits ) hits FROM  ".BAB_STATS_ADDONS_TBL." sat";
 			if( !empty($startday) && !empty($endday))
 				{
-				$req .= " where sat.st_date between '".$startday."' and '".$endday."'";
+				$req .= " where sat.st_date between '".$babDB->db_escape_string($startday)."' and '".$babDB->db_escape_string($endday)."'";
 				}
 			else if( !empty($startday))
 				{
-				$req .= " where sat.st_date >= '".$startday."'";
+				$req .= " where sat.st_date >= '".$babDB->db_escape_string($startday)."'";
 				}
 			else if( !empty($endday))
 				{
-				$req .= " where sat.st_date <= '".$endday."'";
+				$req .= " where sat.st_date <= '".$babDB->db_escape_string($endday)."'";
 				}
 
 			$req .= " GROUP  by sat.st_addon order by hits desc";
@@ -217,7 +217,7 @@ function showStatAddon($id, $date)
 
 			$this->summaryDetailBaseCls($rr[0], $rr[1], $rr[2], "saddon", $id);
 
-			$req = "SELECT  st_date , EXTRACT(DAY FROM st_date) as day, sum( st_hits ) hits FROM  ".BAB_STATS_ADDONS_TBL." WHERE st_addon ='".$id."' and st_date between '".sprintf("%04s-%02s-01", $rr[0], $rr[1])."' and '".sprintf("%04s-%02s-%02s", $rr[0], $rr[1], $this->nbdays)."' GROUP  BY st_date ORDER  BY st_date ASC ";
+			$req = "SELECT  st_date , EXTRACT(DAY FROM st_date) as day, sum( st_hits ) hits FROM  ".BAB_STATS_ADDONS_TBL." WHERE st_addon ='".$babDB->db_escape_string($id)."' and st_date between '".$babDB->db_escape_string(sprintf("%04s-%02s-01", $rr[0], $rr[1]))."' and '".$babDB->db_escape_string(sprintf("%04s-%02s-%02s", $rr[0], $rr[1], $this->nbdays))."' GROUP  BY st_date ORDER  BY st_date ASC ";
 
 			$this->dayinfo = array();
 			$this->maxdayhits = 0;
@@ -232,7 +232,7 @@ function showStatAddon($id, $date)
 				}
 
 
-			$req = "SELECT  EXTRACT(MONTH FROM st_date) as month, sum( st_hits ) hits FROM  ".BAB_STATS_ADDONS_TBL." WHERE st_addon ='".$id."' and st_date between '".sprintf("%04s-01-01", $rr[0])."' and '".sprintf("%04s-12-31", $rr[0])."' GROUP BY month ORDER  BY month ASC ";
+			$req = "SELECT  EXTRACT(MONTH FROM st_date) as month, sum( st_hits ) hits FROM  ".BAB_STATS_ADDONS_TBL." WHERE st_addon ='".$babDB->db_escape_string($id)."' and st_date between '".$babDB->db_escape_string(sprintf("%04s-01-01", $rr[0]))."' and '".$babDB->db_escape_string(sprintf("%04s-12-31", $rr[0]))."' GROUP BY month ORDER  BY month ASC ";
 			$this->monthinfo = array();
 			$this->maxmonthhits = 0;
 			$res = $babDB->db_query($req);
@@ -245,7 +245,7 @@ function showStatAddon($id, $date)
 					}
 				}
 
-			$req = "SELECT  st_hour, st_hits as hits FROM  ".BAB_STATS_ADDONS_TBL." WHERE st_addon ='".$id."' and st_date ='".sprintf("%04s-%02s-%02s", $rr[0], $rr[1], $rr[2] )."' ORDER  BY st_hour ASC ";
+			$req = "SELECT  st_hour, st_hits as hits FROM  ".BAB_STATS_ADDONS_TBL." WHERE st_addon ='".$babDB->db_escape_string($id)."' and st_date ='".$babDB->db_escape_string(sprintf("%04s-%02s-%02s", $rr[0], $rr[1], $rr[2] ))."' ORDER  BY st_hour ASC ";
 			$this->hourinfo = array();
 			$this->maxhourhits = 0;
 			$res = $babDB->db_query($req);
