@@ -7526,6 +7526,12 @@ function upgrade604to605()
 	return $ret;
 }
 
+function upgrade605to606()
+{
+	$ret = "";
+	$db = & $GLOBALS['babDB'];
 
+	return $ret;
+}
 
 ?>
