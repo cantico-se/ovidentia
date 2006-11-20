@@ -21,9 +21,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
-include_once $babInstallPath."utilit/statutil.php";
-include_once $babInstallPath."utilit/uiutil.php";
+include_once 'base.php';
+include_once $babInstallPath.'utilit/statutil.php';
+include_once $babInstallPath.'utilit/uiutil.php';
 
 
 function listUserBaskets()
@@ -56,7 +56,7 @@ function listUserBaskets()
 			if( $i < $this->count)
 				{
 				$this->altbg = !$this->altbg;
-				$this->itemname = $this->arrbaskets[$i]['name'];
+				$this->itemname = bab_toHTML($this->arrbaskets[$i]['name']);
 				$this->itemurl = '?tg=stat&idx=basket&idbasket=' . $this->arrbaskets[$i]['id'];
 				$i++;
 				return true;
