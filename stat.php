@@ -21,20 +21,19 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
-//include_once $babInstallPath."utilit/uiutil.php";
+include_once 'base.php';
 
 
-define("STAT_IT_TOTAL",		0);
-define("STAT_IT_TODAY",		1);
-define("STAT_IT_YESTERDAY",	2);
-define("STAT_IT_WEEK",		3);
-define("STAT_IT_LASTWEEK",	4);
-define("STAT_IT_MONTH",		5);
-define("STAT_IT_LASTMONTH",	6);
-define("STAT_IT_YEAR",		7);
-define("STAT_IT_LASTYEAR",	8);
-define("STAT_IT_OTHER",		9);
+define('STAT_IT_TOTAL',		0);
+define('STAT_IT_TODAY',		1);
+define('STAT_IT_YESTERDAY',	2);
+define('STAT_IT_WEEK',		3);
+define('STAT_IT_LASTWEEK',	4);
+define('STAT_IT_MONTH',		5);
+define('STAT_IT_LASTMONTH',	6);
+define('STAT_IT_YEAR',		7);
+define('STAT_IT_LASTYEAR',	8);
+define('STAT_IT_OTHER',		9);
 
 
 
@@ -42,7 +41,7 @@ function updateStatPreferences()
 {
 	global $babDB;
 
-	$res = $babDB->db_query("select * from ".BAB_STATS_PREFERENCES_TBL." where id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+	$res = $babDB->db_query("select * from ".BAB_STATS_PREFERENCES_TBL." where id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
 	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
 		$arr = $babDB->db_fetch_array($res);
@@ -53,7 +52,7 @@ function updateStatPreferences()
 		}
 	else
 		{
-		$babDB->db_query("insert into ".BAB_STATS_PREFERENCES_TBL." (id_user, time_interval, begin_date, end_date, separatorchar) values ('".$GLOBALS['BAB_SESS_USERID']."', '".STAT_IT_TOTAL."', '', '', '".ord(",")."')");
+		$babDB->db_query("insert into ".BAB_STATS_PREFERENCES_TBL." (id_user, time_interval, begin_date, end_date, separatorchar) values ('".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', '".STAT_IT_TOTAL."', '', '', '".ord(",")."')");
 		$pref['itwhat'] = STAT_IT_TOTAL;
 		$pref['sd'] = '';
 		$pref['ed'] = '';
@@ -76,7 +75,7 @@ function updateStatPreferences()
 			}
 
 		$GLOBALS['exportchr'] = $pref['exportchr'];
-		$babDB->db_query("update ".BAB_STATS_PREFERENCES_TBL." set time_interval='".$GLOBALS['itwhat']."', begin_date='".$GLOBALS['sd']."', end_date='".$GLOBALS['ed']."' where id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+		$babDB->db_query("update ".BAB_STATS_PREFERENCES_TBL." set time_interval='".$babDB->db_escape_string($GLOBALS['itwhat'])."', begin_date='".$babDB->db_escape_string($GLOBALS['sd'])."', end_date='".$babDB->db_escape_string($GLOBALS['ed'])."' where id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
 		}
 }
 
@@ -224,7 +223,7 @@ function displayStatisticPanel($idx)
 				if( isset($this->itemarray[$this->row][$i]))
 					{
 					$item =& $this->itemarray[$this->row][$i];
-					$this->itemurltxt = $item['item'];
+					$this->itemurltxt = bab_toHTML($item['item']);
 					$this->itemurl = $item['url'];
 					$this->itemtreeviewurl = isset($item['treeviewurl']) ? $item['treeviewurl'] : '';
 					$this->popup = isset($item['popup']);
