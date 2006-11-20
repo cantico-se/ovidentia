@@ -444,7 +444,7 @@ function summaryDbContact($id, $idu, $update=true)
 					$this->bshowupadetinfo = true;
 					$this->modifiedontxt = bab_translate("Update on");
 					$this->bytxt = bab_translate("By");
-					$this->updatedate = bab_shortDate(bab_mktime($this->arr['date_modification']), true);
+					$this->updatedate = bab_toHtml(bab_shortDate(bab_mktime($this->arr['date_modification']), true));
 					$this->updateauthor = bab_toHtml(bab_getUserName($this->arr['id_modifiedby']));
 					}
 
@@ -507,7 +507,7 @@ function summaryDbContact($id, $idu, $update=true)
 
 				if( isset($this->arr[$this->fieldv]) )
 					{
-					$this->fieldv = bab_toHtml(nl2br(stripslashes($this->arr[$this->fieldv])));
+					$this->fieldv = bab_toHtml(stripslashes($this->arr[$this->fieldv]), BAB_HTML_ALL);
 					}
 				else
 					{

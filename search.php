@@ -1903,14 +1903,14 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$arr = $babDB->db_fetch_array($this->resart);
 				$this->article = put_text($arr['title']);
 				$this->artdate = bab_shortDate($arr['date'], true);
-				$this->artauthor = empty($arr['author']) ? bab_translate("Anonymous") : $arr['author'];
+				$this->artauthor = empty($arr['author']) ? bab_translate("Anonymous") : bab_toHtml($arr['author']);
 				$this->archive = 'Y' == $arr['archive'];
 				$this->arttopic = returnCategoriesHierarchy($arr['id_topic']);
 				$this->arttopicid = $arr['id_topic'];
-				$this->articleurlpop = $GLOBALS['babUrlScript']."?tg=search&idx=a&id=".$arr['id']."&w=".urlencode($this->what);
+				$this->articleurlpop = bab_toHtml($GLOBALS['babUrlScript']."?tg=search&idx=a&id=".$arr['id']."&w=".$this->what);
 				if (strlen(trim(stripslashes($arr['body']))) > 0)
 					{
-					$this->articleurl = $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id'];
+					$this->articleurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']);
 					}
 				else
 					{
@@ -1922,9 +1922,9 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 						{
 						$urlidx = "Articles";
 						}
-					$this->articleurl = $GLOBALS['babUrlScript']."?tg=articles&idx=".$urlidx."&topics=".$arr['id_topic']."#art".$arr['id'];
+					$this->articleurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=".$urlidx."&topics=".$arr['id_topic']."#art".$arr['id']);
 					}
-				$this->authormail = isset($arr['email']) ? $arr['email'] : '';
+				$this->authormail = isset($arr['email']) ? bab_toHtml($arr['email']) : '';
 				$this->intro = put_text($arr['head'],300);
 				$i++;
 				return true;
@@ -1944,16 +1944,16 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			if( $i < $this->countcom)
 				{
 				$arr = $babDB->db_fetch_array($this->rescom);
-				$this->artdate = bab_shortDate($arr['date'], true);
+				$this->artdate = bab_toHtml(bab_shortDate($arr['date'], true));
 				if( $arr['id_author'] )
 					{
-					$this->artauthor = bab_getUserName($arr['id_author']);
-					$this->authormail = bab_getUserEmail($arr['id_author']);
+					$this->artauthor = bab_toHtml(bab_getUserName($arr['id_author']));
+					$this->authormail = bab_toHtml(bab_getUserEmail($arr['id_author']));
 					}
 				else
 					{
-					$this->artauthor = $arr['name'];
-					$this->authormail = $arr['email'];
+					$this->artauthor = bab_toHtml($arr['name']);
+					$this->authormail = bab_toHtml($arr['email']);
 					}
 				$this->arttopic = returnCategoriesHierarchy($arr['id_topic']);
 				$this->article = put_text($arr['arttitle']);
@@ -1963,10 +1963,10 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					$this->urlok = true;
 				else
 					$this->urlok = false;
-				$this->articleurl = $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id_article'];
-				$this->articleurlpop = $GLOBALS['babUrlScript']."?tg=search&idx=a&id=".$arr['id_article']."&w=".$this->what;
+				$this->articleurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id_article']);
+				$this->articleurlpop = bab_toHtml($GLOBALS['babUrlScript']."?tg=search&idx=a&id=".$arr['id_article']."&w=".$this->what);
 				$this->comurl = $this->articleurl;
-				$this->comurlpop = $GLOBALS['babUrlScript']."?tg=search&idx=ac&idt=".$arr['id_topic']."&ida=".$arr['id_article']."&idc=".$arr['id']."&w=".$this->what;
+				$this->comurlpop = bab_toHtml($GLOBALS['babUrlScript']."?tg=search&idx=ac&idt=".$arr['id_topic']."&ida=".$arr['id_article']."&idc=".$arr['id']."&w=".$this->what);
 				$this->intro = put_text($arr['message'],300);
 				$i++;
 				return true;
@@ -1987,13 +1987,13 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				{
 				$arr = $babDB->db_fetch_array($this->resfor);
 				$this->post = put_text($arr['title']);
-				$this->postauthor = $arr['author'];
-				$this->postdate = bab_shortDate($arr['date'], true);
+				$this->postauthor = bab_toHtml($arr['author']);
+				$this->postdate = bab_toHtml(bab_shortDate($arr['date'], true));
 				$this->forum = put_text($arr['topic']);
-				$this->forumurl = $GLOBALS['babUrlScript']."?tg=threads&forum=".$arr['id_topic'];
+				$this->forumurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=threads&forum=".$arr['id_topic']);
 				$this->intro = put_text($arr['message'],300);
-				$this->posturl = $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$arr['id_topic']."&thread=".$arr['id_thread']."&post=".$arr['id']."&flat=0";
-				$this->posturlpop = $GLOBALS['babUrlScript']."?tg=search&idx=b&idt=".$arr['id_thread']."&idp=".$arr['id']."&w=".$this->what;
+				$this->posturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$arr['id_topic']."&thread=".$arr['id_thread']."&post=".$arr['id']."&flat=0");
+				$this->posturlpop = bab_toHtml($GLOBALS['babUrlScript']."?tg=search&idx=b&idt=".$arr['id_thread']."&idp=".$arr['id']."&w=".$this->what);
 				$i++;
 				return true;
 				}
@@ -2014,9 +2014,9 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$this->question = put_text($arr['title']);
 				$this->faqtopic = put_text($arr['topic']);
 				$this->faqtopicid = $arr['idcat'];
-				$this->topicurl = $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$arr['idcat'];
-				$this->questionurlpop = $GLOBALS['babUrlScript']."?tg=search&idx=c&idc=".$arr['idcat']."&idq=".$arr['id']."&w=".$this->what;
-				$this->questionurl = $GLOBALS['babUrlScript']."?tg=faq&idx=viewq&item=".$arr['idcat']."&idq=".$arr['id'];
+				$this->topicurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$arr['idcat']);
+				$this->questionurlpop = bab_toHtml($GLOBALS['babUrlScript']."?tg=search&idx=c&idc=".$arr['idcat']."&idq=".$arr['id']."&w=".urlencode($this->what));
+				$this->questionurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=faq&idx=viewq&item=".$arr['idcat']."&idq=".$arr['id']);
 				$this->intro = put_text($arr['response'],300);
 				$i++;
 				return true;
@@ -2038,22 +2038,22 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$this->altbg = !$this->altbg;
 				$arr = $babDB->db_fetch_array($this->resfil);
 				$this->file = put_text($arr['title']);
-				$this->update = bab_shortDate($arr['datem'], true);
-				$this->created = bab_shortDate($arr['datec'], true);
-                $this->artauthor = $arr['author'];
+				$this->update = bab_toHtml(bab_shortDate($arr['datem'], true));
+				$this->created = bab_toHtml(bab_shortDate($arr['datec'], true));
+                $this->artauthor = bab_toHtml($arr['author']);
 				$this->filedesc = put_text($arr['description']);
-				$this->path = $arr['path'];
+				$this->path = bab_toHtml($arr['path']);
 				
 				if ($arr['bgroup'] == 'N')
-					$this->arttopic = bab_translate("Private folder")."/".$arr['path'];
+					$this->arttopic = bab_translate("Private folder")."/".bab_toHtml($arr['path']);
 				else
-					$this->arttopic = $arr['folder']."/".$arr['path'];
+					$this->arttopic = bab_toHtml($arr['folder'])."/".bab_toHtml($arr['path']);
 
 				$this->arttopicid = $arr['id_owner'];
 				$this->bgroup = $arr['bgroup'];
-				$this->filedesc = $arr['description'];
-				$this->fileurl = $GLOBALS['babUrlScript']."?tg=search&idx=e&id=".$arr['id']."&w=".$this->what;
-				$this->type_match = $arr['type_match'];
+				$this->filedesc = bab_toHtml($arr['description']);
+				$this->fileurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=search&idx=e&id=".$arr['id']."&w=".$this->what);
+				$this->type_match = bab_toHtml($arr['type_match']);
 				if (0 != $arr['version_count']) {
 					$this->version_count = sprintf(bab_translate('There are matches in %d older versions'),$arr['version_count']);
 				} else {
@@ -2079,11 +2079,11 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$arr = $babDB->db_fetch_array($this->rescon);
 				$arr['firstname'] = isset($arr['firstname']) ? $arr['firstname']: '';
 				$arr['lastname'] = isset($arr['lastname']) ? $arr['lastname']: '';
-				$this->fullname = bab_composeUserName( $arr['firstname'], $arr['lastname']);
-				$this->confirstname = $arr['firstname'];
+				$this->fullname = bab_toHtml(bab_composeUserName( $arr['firstname'], $arr['lastname']));
+				$this->confirstname = bab_toHtml($arr['firstname']);
 				$this->conlastname = put_text($arr['title']);
-				$this->conemail = $arr['email'];
-				$this->concompany = $arr['compagny'];
+				$this->conemail = bab_toHtml($arr['email']);
+				$this->concompany = bab_toHtml($arr['compagny']);
 				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=search&idx=f&id=".$arr['id']."&w=".$this->what;
 				$i++;
 				return true;
@@ -2104,10 +2104,10 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$arr = $babDB->db_fetch_array($this->resnot);
 				$this->content = put_text($arr['content'],400);
 				$this->notauthor = $GLOBALS['BAB_SESS_USER'];
-				$this->notauthormail = bab_getUserEmail($GLOBALS['BAB_SESS_USERID']);
-                $this->notdate = bab_shortDate($arr['date'], true);
+				$this->notauthormail = bab_toHtml(bab_getUserEmail($GLOBALS['BAB_SESS_USERID']));
+                $this->notdate = bab_toHtml(bab_shortDate($arr['date'], true));
 				$this->read_more = bab_translate("Edit");
-				$this->noteurl = $GLOBALS['babUrlScript']."?tg=note&idx=Modify&item=".$arr['id'];
+				$this->noteurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=note&idx=Modify&item=".$arr['id']);
 				$i++;
 				return true;
 				}
@@ -2129,22 +2129,22 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				switch ($this->name)
 					{
 					case 'sn':
-						$this->dirvalue = isset($this->dir[$this->name]) ? $this->dir[$this->name]  : '';
-						$this->dirurl = $GLOBALS['babUrlScript']."?tg=search&idx=g&id=".$this->dir['id']."&w=".$this->what;
+						$this->dirvalue = isset($this->dir[$this->name]) ? bab_toHtml($this->dir[$this->name])  : '';
+						$this->dirurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=search&idx=g&id=".$this->dir['id']."&w=".$this->what);
 						$this->popup = true;
 						break;
 					case 'givenname':
-						$this->dirvalue = isset($this->dir[$this->name]) ? $this->dir[$this->name]  : '';
-						$this->dirurl = $GLOBALS['babUrlScript']."?tg=search&idx=g&id=".$this->dir['id']."&w=".$this->what;
+						$this->dirvalue = isset($this->dir[$this->name]) ? bab_toHtml($this->dir[$this->name])  : '';
+						$this->dirurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=search&idx=g&id=".$this->dir['id']."&w=".$this->what);
 						$this->popup = true;
 						break;
 					case 'mfunction':
-						$this->dirvalue = isset($this->dir[$this->name]) ? $this->dir[$this->name]  : '';
+						$this->dirvalue = isset($this->dir[$this->name]) ? bab_toHtml($this->dir[$this->name])  : '';
 						$this->dirurl = 'mailto:'.$this->dirvalue;
 						$this->popup = false;
 						break;
 					default:
-						$this->dirvalue = isset($this->dir[$this->name]) ? $this->dir[$this->name]  : '';
+						$this->dirvalue = isset($this->dir[$this->name]) ? bab_toHtml($this->dir[$this->name])  : '';
 						$this->dirurl = false;
 						$this->popup = false;
 						break;
@@ -2203,16 +2203,16 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				switch ($iarr['type'])
 					{
 					case BAB_CAL_USER_TYPE:
-						$this->agecreatormail = bab_getUserEmail($iarr['idowner']);
+						$this->agecreatormail = bab_toHtml(bab_getUserEmail($iarr['idowner']));
 						break;
 					case BAB_CAL_PUB_TYPE:
 					case BAB_CAL_RES_TYPE:
 						$this->agecreatormail = "";
 						break;
 					}
-				$this->agecat = "".$arr['categorie'];
-				$this->agecatdesc = "".put_text($arr['catdesc'],200);
-				$this->ageurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$arr['id']."&idcal=".$arr['id_cal'];
+				$this->agecat = bab_toHtml($arr['categorie']);
+				$this->agecatdesc = put_text($arr['catdesc'],200);
+				$this->ageurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$arr['id']."&idcal=".$arr['id_cal']);
 				$i++;
 				return true;
 				}
@@ -2240,9 +2240,19 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					}
 				else
 					$addon_searchresults = $this->addons->callSearchFunction($this->addon_id);
-				$this->text = isset($addon_searchresults[0]) ? $addon_searchresults[0]  : '';
+					
+				$this->text = isset($addon_searchresults[0]) ? bab_toHtml($addon_searchresults[0])  : '';
+				
 				list( $this->url, $this->urltxt ) = isset($addon_searchresults[2]) && is_array($addon_searchresults[2]) && !empty($addon_searchresults[2][0]) && !empty($addon_searchresults[2][1]) ? $addon_searchresults[2] : array(false,false);
+				
+				$this->url = bab_toHtml($this->url);
+				$this->urltxt = bab_toHtml($this->urltxt);
+				
 				list( $this->urlpopup, $this->urlpopuptxt ) = isset($addon_searchresults[3]) && is_array($addon_searchresults[3]) && !empty($addon_searchresults[3][0]) && !empty($addon_searchresults[3][1]) ? $addon_searchresults[3] : array(false,false);
+				
+				$this->urlpopup = bab_toHtml($this->urlpopup);
+				$this->urlpopuptxt = bab_toHtml($this->urlpopuptxt);
+				
 				} 
 			return isset($addon_searchresults) && is_array($addon_searchresults) ? true : false;
 			}
@@ -2308,6 +2318,7 @@ function viewArticle($article,$w)
 			$req = "select * from ".BAB_ARTICLES_TBL." where id=".$babDB->quote($article);
 			$this->res = $babDB->db_query($req);
 			$this->arr = $babDB->db_fetch_array($this->res);
+			$this->title = bab_toHtml($this->arr['title']);
 			$this->countf = 0;
 			$this->countcom = 0;
 			$this->w = $w;
@@ -2384,14 +2395,15 @@ function viewArticle($article,$w)
 
 		function getnextcom()
 			{
+			global $babDB;
 			static $i = 0;
 			if( $i < $this->countcom)
 				{
 				$arr = $babDB->db_fetch_array($this->rescom);
 				$this->altbg = !$this->altbg;
-				$this->commentdate = bab_strftime(bab_mktime($arr['date']));
-				$this->authorname = highlightWord($this->w,$arr['name']);
-				$this->commenttitle = highlightWord($this->w,$arr['subject']);
+				$this->commentdate = bab_toHtml(bab_strftime(bab_mktime($arr['date'])));
+				$this->authorname = highlightWord($this->w,bab_toHtml($arr['name']));
+				$this->commenttitle = highlightWord($this->w,bab_toHtml($arr['subject']));
 				$this->commentbody = highlightWord($this->w,bab_replace($arr['message']));
 				$i++;
 				return true;
@@ -2405,11 +2417,12 @@ function viewArticle($article,$w)
 			}
 		function getnexttag()
 			{
+			global $babDB;
 			static $i = 0;
 			if( $i < $this->counttags)
 				{
 				$arr = $babDB->db_fetch_array($this->restags);
-				$this->tagname = $arr['tag_name'];;
+				$this->tagname = bab_toHtml($arr['tag_name']);
 				$i++;
 				return true;
 				}
@@ -2443,7 +2456,7 @@ function viewComment($topics, $article, $com, $w)
 			global $babDB;
 			
 			$this->bab_searchVisuPopup();
-			$this->title = bab_getArticleTitle($article);
+			$this->title = bab_toHtml(bab_getArticleTitle($article));
 			$this->subject = bab_translate("Subject");
 			$this->by = bab_translate("By");
 			$this->date = bab_translate("Date");
@@ -2452,8 +2465,8 @@ function viewComment($topics, $article, $com, $w)
 			$req = "select * from ".BAB_COMMENTS_TBL." where id=".$babDB->quote($com);
 			$res = $babDB->db_query($req);
 			$this->arr = $babDB->db_fetch_array($res);
-			$this->arr['date'] = bab_strftime(bab_mktime($this->arr['date']));
-			$this->arr['subject'] = highlightWord( $w, bab_replace($this->arr['subject']));
+			$this->arr['date'] = bab_toHtml(bab_strftime(bab_mktime($this->arr['date'])));
+			$this->arr['subject'] = highlightWord( $w, bab_toHtml($this->arr['subject']));
 			$this->arr['message'] = highlightWord( $w, bab_replace($this->arr['message']));
 			}
 		}
@@ -2484,15 +2497,17 @@ function viewPost($thread, $post, $w)
 			$this->bab_searchVisuPopup();
 			$req = "select forum from ".BAB_THREADS_TBL." where id=".$babDB->quote($thread);
 			$arr = $babDB->db_fetch_array($babDB->db_query($req));
+			
 			$this->t_files = bab_translate("Dependent files");
 			$this->t_found_in_index = bab_translate("Result in file");
 			$this->files = bab_getPostFiles($arr['forum'], $post);
-			$GLOBALS['babBody']->title = bab_getForumName($arr['forum']);
+			
+			$GLOBALS['babBody']->title = bab_toHtml(bab_getForumName($arr['forum']));
 			$req = "select * from ".BAB_POSTS_TBL." where id=".$babDB->quote($post);
 			$arr = $babDB->db_fetch_array($babDB->db_query($req));
-			$this->postdate = bab_strftime(bab_mktime($arr['date']));
-			$this->postauthor = $arr['author'];
-			$this->postsubject = highlightWord( $w, bab_replace($arr['subject']));
+			$this->postdate = bab_toHtml(bab_strftime(bab_mktime($arr['date'])));
+			$this->postauthor = bab_toHtml($arr['author']);
+			$this->postsubject = highlightWord( $w, bab_toHtml($arr['subject']));
 			$this->postmessage = highlightWord( $w, bab_replace($arr['message']));
 
 			if ($this->files && bab_searchEngineInfos()) {
@@ -2506,8 +2521,14 @@ function viewPost($thread, $post, $w)
 		
 		function getnextfile()
 			{
-			if ($this->file = current($this->files))
+			if ($file = current($this->files))
 				{
+				
+				$this->url = bab_toHtml($file['url']);
+				$this->name = bab_toHtml($file['name']);
+				$this->size = bab_toHtml($file['size']);
+				
+				
 				next($this->files);
 				$this->in_index = isset($this->found_in_index['forums/'.basename($this->file['path'])]);
 				return true;
@@ -2537,11 +2558,11 @@ function viewQuestion($idcat, $id, $w)
 			$req = "select * from ".BAB_FAQQR_TBL." where id=".$babDB->quote($id);
 			$this->res = $babDB->db_query($req);
 			$this->arr = $babDB->db_fetch_array($this->res);
-			$this->arr['question'] = highlightWord( $w, bab_replace($this->arr['question']));
+			$this->arr['question'] = highlightWord( $w, bab_toHtml($this->arr['question']));
 			$this->arr['response'] = highlightWord( $w, bab_replace($this->arr['response']));
 			$req = "select category from ".BAB_FAQCAT_TBL." where id=".$babDB->quote($idcat);
 			$a = $babDB->db_fetch_array($babDB->db_query($req));
-			$this->title = highlightWord( $w,  $a['category']);
+			$this->title = highlightWord( $w,  bab_toHtml($a['category']));
 			}
 			
 		}
@@ -2598,14 +2619,14 @@ function viewFile($id, $w)
 			$access = bab_isAccessFileValid($this->arr['bgroup'], $this->arr['id_owner']);
 			if( $access )
 				{
-				$GLOBALS['babBody']->title = $this->arr['name'];
-				$this->arr['description'] = highlightWord( $w, $this->arr['description']);
-				$this->arr['keywords'] = highlightWord( $w, $this->arr['keywords']);
-				$this->modified = bab_shortDate(bab_mktime($this->arr['modified']), true);
-				$this->created = bab_shortDate(bab_mktime($this->arr['created']), true);
-				$this->postedby = bab_getUserName($this->arr['author']);
-				$this->modifiedby = bab_getUserName($this->arr['modifiedby']);
-				$this->geturl = $GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$this->arr['id_owner']."&gr=".$this->arr['bgroup']."&path=".urlencode($this->arr['path'])."&file=".urlencode($this->arr['name']);
+				$GLOBALS['babBody']->title = bab_toHtml($this->arr['name']);
+				$this->arr['description'] = highlightWord( $w, bab_toHtml($this->arr['description']));
+				$this->arr['keywords'] = highlightWord( $w, bab_toHtml($this->arr['keywords']));
+				$this->modified = bab_toHtml(bab_shortDate(bab_mktime($this->arr['modified']), true));
+				$this->created = bab_toHtml(bab_shortDate(bab_mktime($this->arr['created']), true));
+				$this->postedby = bab_toHtml(bab_getUserName($this->arr['author']));
+				$this->modifiedby = bab_toHtml(bab_getUserName($this->arr['modifiedby']));
+				$this->geturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$this->arr['id_owner']."&gr=".$this->arr['bgroup']."&path=".urlencode($this->arr['path'])."&file=".urlencode($this->arr['name']));
 				if( $this->arr['bgroup'] == "Y")
 					$fstat = stat($GLOBALS['babUploadPath']."/G".$this->arr['id_owner']."/".$this->arr['path']."/".$this->arr['name']);
 				else
@@ -2622,7 +2643,7 @@ function viewFile($id, $w)
 					$this->rootpath = bab_translate("Private folder");
 					$this->countff = 0;
 					}
-				$this->path = $this->rootpath."/".$this->arr['path'];	
+				$this->path = bab_toHtml($this->rootpath."/".$this->arr['path']);	
 
 				$this->resversion = $babDB->db_query("
 					SELECT 
@@ -2676,12 +2697,13 @@ function viewFile($id, $w)
 			if( $i < $this->countff)
 				{
 				$arr = $babDB->db_fetch_array($this->resff);
-				$this->field = bab_translate($arr['name']);
+				$this->field = bab_toHtml(bab_translate($arr['name']));
 				$this->fieldval = '';
 				$res = $babDB->db_query("select fvalue from ".BAB_FM_FIELDSVAL_TBL." where  id_field=".$babDB->quote($arr['id'])." and id_file=".$babDB->quote($this->arr['id']));
 				if( $res && $babDB->db_num_rows($res) > 0)
 					{
 					list($this->fieldval) = $babDB->db_fetch_array($res);
+					$this->fieldval = bab_toHtml($this->fieldval);
 					}
 				$i++;
 				return true;
