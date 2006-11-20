@@ -21,8 +21,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
-include_once $babInstallPath."utilit/topincl.php";
+include_once 'base.php';
+include_once $babInstallPath.'utilit/topincl.php';
 
 function listTopicCategory($cat)
 	{
@@ -60,19 +60,18 @@ function listTopicCategory($cat)
 
 		function temp($cat)
 			{
-			global $babBody, $BAB_SESS_USERID;
+			global $babBody, $babDB, $BAB_SESS_USERID;
 			$this->articlestxt = bab_translate("Article") ."(s)";
 			$this->waitingtxt = bab_translate("Waiting");
 			$this->submittxt = bab_translate("Submit");
-			$this->db = $GLOBALS['babDB'];
 			$this->idcat = $cat; /* don't change variable name */
 
 			$arrtopcat = array();
 			$arrtop = array();
-			$req = "select * from ".BAB_TOPCAT_ORDER_TBL." where id_parent='".$cat."' order by ordering asc";
-			$res = $this->db->db_query($req);
+			$req = "select * from ".BAB_TOPCAT_ORDER_TBL." where id_parent='".$babDB->db_escape_string($cat)."' order by ordering asc";
+			$res = $babDB->db_query($req);
 			$topcatview = $babBody->get_topcatview();
-			while( $row = $this->db->db_fetch_array($res))
+			while( $row = $babDB->db_fetch_array($res))
 				{
 				if($row['type'] == '2' && isset($babBody->topview[$row['id_topcat']]))
 					{
@@ -104,8 +103,8 @@ function listTopicCategory($cat)
 
 			if( count($arrtop) > 0 )
 				{
-				$res = $this->db->db_query("select * from ".BAB_TOPICS_TBL." where id IN (".implode(',', $arrtop).")");
-				while( $arr = $this->db->db_fetch_array($res))
+				$res = $babDB->db_query("select * from ".BAB_TOPICS_TBL." where id IN (".$babDB->quote($arrtop).")");
+				while( $arr = $babDB->db_fetch_array($res))
 					{
 					for($i=0; $i < $this->count; $i++)
 						{
@@ -118,8 +117,8 @@ function listTopicCategory($cat)
 						}
 					}
 
-				$res = $this->db->db_query("select count(id) total, id_topic from ".BAB_ARTICLES_TBL." where id IN (".implode(',', $arrtop).") GROUP by id_topic");
-				while( $arr = $this->db->db_fetch_array($res))
+				$res = $babDB->db_query("select count(id) total, id_topic from ".BAB_ARTICLES_TBL." where id IN (".$babDB->quote($arrtop).") GROUP by id_topic");
+				while( $arr = $babDB->db_fetch_array($res))
 					{
 					for($i=0; $i < $this->count; $i++)
 						{
@@ -133,8 +132,8 @@ function listTopicCategory($cat)
 
 			if( count($arrtopcat) > 0 )
 				{
-				$res = $this->db->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id IN (".implode(',', $arrtopcat).")");
-				while( $arr = $this->db->db_fetch_array($res))
+				$res = $babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id IN (".$babDB->quote($arrtopcat).")");
+				while( $arr = $babDB->db_fetch_array($res))
 					{
 					for($i=0; $i < $this->count; $i++)
 						{
@@ -216,7 +215,7 @@ function listTopicCategory($cat)
 	$template = "default";
 	if( $cat != 0 )
 		{
-		$res = $babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$cat."'");
+		$res = $babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$babDB->db_escape_string($cat)."'");
 		if( $res && $babDB->db_num_rows($res) > 0 )
 			{
 			$arr = $babDB->db_fetch_array($res);
