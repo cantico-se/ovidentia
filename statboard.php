@@ -21,9 +21,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
-include_once $babInstallPath."utilit/statutil.php";
-include_once $babInstallPath."utilit/uiutil.php";
+include_once 'base.php';
+include_once $babInstallPath.'utilit/statutil.php';
+include_once $babInstallPath.'utilit/uiutil.php';
 
 function summaryDelegatList($col, $order)
 	{
@@ -72,14 +72,14 @@ function summaryDelegatList($col, $order)
 				$tmparr = array();
 				$tmparr['dgname'] = $arr['name'];
 
-				list($tmparr['groups']) = $babDB->db_fetch_row($babDB->db_query("select count(id) from ".BAB_GROUPS_TBL." where nb_set>='0' AND lf>'".$arr['lf']."' AND lr<'".$arr['lr']."'"));
-				list($tmparr['sections']) = $babDB->db_fetch_row($babDB->db_query("select count(id) from ".BAB_SECTIONS_TBL." where id_dgowner = '".$arr['id']."'"));
-				list($tmparr['topcats']) = $babDB->db_fetch_row($babDB->db_query("select count(id) from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner = '".$arr['id']."'"));
-				list($tmparr['faqs']) = $babDB->db_fetch_row($babDB->db_query("select count(id) from ".BAB_FAQCAT_TBL." where id_dgowner = '".$arr['id']."'"));
-				list($tmparr['forums']) = $babDB->db_fetch_row($babDB->db_query("select count(id) from ".BAB_FORUMS_TBL." where id_dgowner = '".$arr['id']."'"));
-				list($tmparr['directories']) = $babDB->db_fetch_row($babDB->db_query("select count(id) from ".BAB_DB_DIRECTORIES_TBL." where id_dgowner = '".$arr['id']."'"));
-				list($tmparr['folders']) = $babDB->db_fetch_row($babDB->db_query("select count(*) from ".BAB_FM_FOLDERS_TBL." where id_dgowner = '".$arr['id']."'"));
-				list($tmparr['orgcharts']) = $babDB->db_fetch_row($babDB->db_query("select count(*) from ".BAB_ORG_CHARTS_TBL." where id_dgowner = '".$arr['id']."'"));
+				list($tmparr['groups']) = $babDB->db_fetch_row($babDB->db_query("select count(id) from ".BAB_GROUPS_TBL." where nb_set>='0' AND lf>'".$babDB->db_escape_string($arr['lf'])."' AND lr<'".$babDB->db_escape_string($arr['lr'])."'"));
+				list($tmparr['sections']) = $babDB->db_fetch_row($babDB->db_query("select count(id) from ".BAB_SECTIONS_TBL." where id_dgowner = '".$babDB->db_escape_string($arr['id'])."'"));
+				list($tmparr['topcats']) = $babDB->db_fetch_row($babDB->db_query("select count(id) from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner = '".$babDB->db_escape_string($arr['id'])."'"));
+				list($tmparr['faqs']) = $babDB->db_fetch_row($babDB->db_query("select count(id) from ".BAB_FAQCAT_TBL." where id_dgowner = '".$babDB->db_escape_string($arr['id'])."'"));
+				list($tmparr['forums']) = $babDB->db_fetch_row($babDB->db_query("select count(id) from ".BAB_FORUMS_TBL." where id_dgowner = '".$babDB->db_escape_string($arr['id'])."'"));
+				list($tmparr['directories']) = $babDB->db_fetch_row($babDB->db_query("select count(id) from ".BAB_DB_DIRECTORIES_TBL." where id_dgowner = '".$babDB->db_escape_string($arr['id'])."'"));
+				list($tmparr['folders']) = $babDB->db_fetch_row($babDB->db_query("select count(*) from ".BAB_FM_FOLDERS_TBL." where id_dgowner = '".$babDB->db_escape_string($arr['id'])."'"));
+				list($tmparr['orgcharts']) = $babDB->db_fetch_row($babDB->db_query("select count(*) from ".BAB_ORG_CHARTS_TBL." where id_dgowner = '".$babDB->db_escape_string($arr['id'])."'"));
 				$this->arrinfo[] = $tmparr;
 				}
 
@@ -199,7 +199,7 @@ function summarySections($col, $order)
 
 		function summarySectionsCls($col, $order)
 			{
-			global $babBody;
+			global $babBody, $babDB;
 			$this->summaryBaseCls();
 			$this->sectiontxt = bab_translate("Section");
 			$this->delegattxt = bab_translate("Delegation");
@@ -209,27 +209,24 @@ function summarySections($col, $order)
 			$this->sortord = $order == "asc"? "desc": "asc";
 			$this->sortcol = $col;
 	
-			$this->db = $GLOBALS['babDB'];
 
-			list($this->utotal) = $this->db->db_fetch_row($this->db->db_query("select count(id) from ".BAB_USERS_TBL.""));
+			list($this->utotal) = $babDB->db_fetch_row($babDB->db_query("select count(id) from ".BAB_USERS_TBL.""));
 			
-			//$req = "select st.*, dgt.name as dgname from ".BAB_SECTIONS_TBL." st left join ".BAB_GROUPS_TBL." gt on st.id_dgowner=gt.id left join ".BAB_DG_GROUPS_TBL." dgt on gt.id_dggroup=dgt.id where st.optional='Y'";
-
 			$req = "select st.*, dg.name as dgname from ".BAB_SECTIONS_TBL." st left join ".BAB_DG_GROUPS_TBL." dg on st.id_dgowner=dg.id where st.optional='Y'";
-			$ressec = $this->db->db_query($req);
+			$ressec = $babDB->db_query($req);
 
 			$this->arrinfo = array();
-			while($arr = $this->db->db_fetch_array($ressec))
+			while($arr = $babDB->db_fetch_array($ressec))
 				{
 				$upercent = "0";
 				if( $arr['enabled'] == "Y")
 					{
-					list($totalh) = $this->db->db_fetch_row($this->db->db_query("select count(sst.id_user) from ".BAB_SECTIONS_STATES_TBL." sst where sst.type='2' and sst.id_section='".$arr['id']."' and sst.hidden='Y'"));
+					list($totalh) = $babDB->db_fetch_row($babDB->db_query("select count(sst.id_user) from ".BAB_SECTIONS_STATES_TBL." sst where sst.type='2' and sst.id_section='".$babDB->db_escape_string($arr['id'])."' and sst.hidden='Y'"));
 					$groups = array();
 					if( $totalh != 0 )
 						{
-						$res = $this->db->db_query("select * from ".BAB_SECTIONS_GROUPS_TBL." where id_object='".$arr['id']."'");
-						while( $row = $this->db->db_fetch_array($res))
+						$res = $babDB->db_query("select * from ".BAB_SECTIONS_GROUPS_TBL." where id_object='".$babDB->db_escape_string($arr['id'])."'");
+						while( $row = $babDB->db_fetch_array($res))
 							{
 							switch($row['id_group'])
 								{
@@ -255,7 +252,7 @@ function summarySections($col, $order)
 
 						if( count($groups) > 0 )
 							{
-							list($total) = $this->db->db_fetch_row($this->db->db_query("select distinct count(id_object) from ".BAB_USERS_GROUPS_TBL." where id_group in (".implode(',', $groups).")"));
+							list($total) = $babDB->db_fetch_row($babDB->db_query("select distinct count(id_object) from ".BAB_USERS_GROUPS_TBL." where id_group in (".$babDB->quote($groups).")"));
 							if( $total <= $totalh )
 								{
 								$upercent = 0;
@@ -276,14 +273,14 @@ function summarySections($col, $order)
 				}
 
 			/* don't get Administrator section */
-			$res = $this->db->db_query("select pst.* from ".BAB_PRIVATE_SECTIONS_TBL." pst where pst.optional='Y' and pst.id > '1'");
-			while($arr = $this->db->db_fetch_array($res))
+			$res = $babDB->db_query("select pst.* from ".BAB_PRIVATE_SECTIONS_TBL." pst where pst.optional='Y' and pst.id > '1'");
+			while($arr = $babDB->db_fetch_array($res))
 				{
 				$upercent = 0;
 				$tmparr = array();
 				if( $arr['enabled'] == "Y")
 					{
-					list($totalh) = $this->db->db_fetch_row($this->db->db_query("select count(sst.id_user) as totalh from ".BAB_SECTIONS_STATES_TBL." sst where sst.type='1' and sst.id_section='".$arr['id']."' and sst.hidden='Y'"));
+					list($totalh) = $babDB->db_fetch_row($babDB->db_query("select count(sst.id_user) as totalh from ".BAB_SECTIONS_STATES_TBL." sst where sst.type='1' and sst.id_section='".$babDB->db_escape_string($arr['id'])."' and sst.hidden='Y'"));
 					if( $totalh != 0 )
 						{
 						if( $this->utotal <= $totalh )
@@ -304,12 +301,12 @@ function summarySections($col, $order)
 				}
 
 			$arrtopcat = array();
-			$res1 = $this->db->db_query("select id, id_cat from ".BAB_TOPICS_TBL."");
-			while( $arr = $this->db->db_fetch_array($res1))
+			$res1 = $babDB->db_query("select id, id_cat from ".BAB_TOPICS_TBL."");
+			while( $arr = $babDB->db_fetch_array($res1))
 				{
 				$arrtopcat[$arr['id_cat']] = array();
-				$res = $this->db->db_query("select * from ".BAB_TOPICSVIEW_GROUPS_TBL." where id_object='".$arr['id']."'");
-				while( $row = $this->db->db_fetch_array($res))
+				$res = $babDB->db_query("select * from ".BAB_TOPICSVIEW_GROUPS_TBL." where id_object='".$babDB->db_escape_string($arr['id'])."'");
+				while( $row = $babDB->db_fetch_array($res))
 					{
 					if( count($arrtopcat[$arr['id_cat']]) == 0 || !in_array($row['id_group'], $arrtopcat[$arr['id_cat']]))
 						{
@@ -319,11 +316,11 @@ function summarySections($col, $order)
 				}
 
 			$req = "select tct.*, dg.name as dgname  from ".BAB_TOPICS_CATEGORIES_TBL." tct left join ".BAB_DG_GROUPS_TBL." dg on tct.id_dgowner=dg.id where tct.optional='Y'";
-			$rescat = $this->db->db_query($req);
+			$rescat = $babDB->db_query($req);
 
 			$topcats = $babBody->get_topcats();
 			
-			while( $arr = $this->db->db_fetch_array($rescat) )
+			while( $arr = $babDB->db_fetch_array($rescat) )
 				{
 				$upercent = 0;
 				$cat = $arr['id'];
@@ -346,7 +343,7 @@ function summarySections($col, $order)
 
 				if( $arr['enabled'] == "Y")
 					{
-					list($totalh) = $this->db->db_fetch_row($this->db->db_query("select count(sst.id_user) as totalh from ".BAB_SECTIONS_STATES_TBL." sst where sst.type='3' and sst.id_section='".$arr['id']."' and sst.hidden='Y'"));
+					list($totalh) = $babDB->db_fetch_row($babDB->db_query("select count(sst.id_user) as totalh from ".BAB_SECTIONS_STATES_TBL." sst where sst.type='3' and sst.id_section='".$babDB->db_escape_string($arr['id'])."' and sst.hidden='Y'"));
 
 					if( $totalh != 0  && count($arrtopcat[$arr['id']]) > 0 )
 						{
@@ -363,7 +360,7 @@ function summarySections($col, $order)
 							}
 						else
 							{
-							list($total) = $this->db->db_fetch_row($this->db->db_query("select distinct count(id_object) from ".BAB_USERS_GROUPS_TBL." where id_group in (".implode(',', $arrtopcat[$arr['id']]).")"));
+							list($total) = $babDB->db_fetch_row($babDB->db_query("select distinct count(id_object) from ".BAB_USERS_GROUPS_TBL." where id_group in (".$babDB->quote($arrtopcat[$arr['id']]).")"));
 							if( $total <= $totalh )
 								{
 								$upercent = 0;
