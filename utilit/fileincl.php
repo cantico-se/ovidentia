@@ -423,7 +423,7 @@ function indexAllFmFiles($status, $prepare) {
 			".BAB_FILES_TBL." f 
 			LEFT JOIN ".BAB_FM_FOLDERS_TBL." d ON d.id = f.id_owner AND f.bgroup ='Y' AND d.version ='Y'
 		WHERE 
-			f.index_status IN('".$babDB->quote($status)."')
+			f.index_status IN(".$babDB->quote($status).")
 		
 	");
 
@@ -456,7 +456,7 @@ function indexAllFmFiles($status, $prepare) {
 				FROM ".BAB_FM_FILESVER_TBL." 
 				WHERE 
 					id_file='".$babDB->db_escape_string($arr['id'])."' 
-					AND index_status IN('".$babDB->quote($status)."')
+					AND index_status IN(".$babDB->quote($status).")
 			");
 
 			while ($arrv = $babDB->db_fetch_assoc($resv)) {
@@ -522,14 +522,14 @@ function indexAllFmFiles_end($param) {
 	$res = $babDB->db_query("
 		UPDATE ".BAB_FILES_TBL." SET index_status='".BAB_INDEX_STATUS_INDEXED."'
 		WHERE 
-			index_status IN('".$babDB->quote($param['status'])."')
+			index_status IN(".$babDB->quote($param['status']).")
 	");
 
 
 	$res = $babDB->db_query("
 		UPDATE ".BAB_FM_FILESVER_TBL." SET index_status='".BAB_INDEX_STATUS_INDEXED."'
 		WHERE 
-			index_status IN('".$babDB->quote($param['status'])."')
+			index_status IN(".$babDB->quote($param['status']).")
 	");
 
 	foreach($param['rights'] as $f => $arr) {
