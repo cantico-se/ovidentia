@@ -3293,7 +3293,7 @@ $db->db_query("INSERT INTO ".BAB_SITES_HPMAN_GROUPS_TBL." (id_object, id_group) 
 
 
 $subdir = trim(substr($_SERVER['SCRIPT_NAME'],0,strlen($_SERVER['SCRIPT_NAME'])-strlen(strrchr($_SERVER['SCRIPT_NAME'],'/'))),'/');
-if (substr($_SERVER['DOCUMENT_ROOT'],-1) == '/')
+if ((substr($_SERVER['DOCUMENT_ROOT'],-1) == '/') || ($subdir == ''))
 	$subdir = $_SERVER['DOCUMENT_ROOT'].$subdir.'/skins/';
 else
 	$subdir = $_SERVER['DOCUMENT_ROOT'].'/'.$subdir.'/skins/';
@@ -7541,15 +7541,6 @@ function upgrade605to606()
 	$ret = "";
 	$db = & $GLOBALS['babDB'];
 
-	return $ret;
-}
-
-
-function upgrade606to607()
-{
-	$ret = "";
-	global $babDB;
-	
 	if (bab_isTableField(BAB_SITES_TBL, 'workdays')) {
 		$babDB->query("ALTER TABLE ".BAB_SITES_TBL." DROP workdays");
 	}
