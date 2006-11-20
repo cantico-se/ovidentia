@@ -2814,22 +2814,22 @@ function viewDirectoryUser($id, $what)
 			{
 			$idd = $row['id'];
 			list($bdir) = $babDB->db_fetch_array($babDB->db_query("select directory from ".BAB_GROUPS_TBL." where id=".$babDB->quote($row['id_group'])));
-			if( $bdir == 'Y' && bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $row['id']))
+			if( $bdir == 'Y' && bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $row['id'])) 
 				{
 				if( $row['id_group'] == 1 )
 					{
 					$access = true;
 					break;
-					}
+				}
+				
 				$res2 = $babDB->db_query("select id from ".BAB_USERS_GROUPS_TBL." where id_object=".$babDB->quote($idu)." and id_group=".$babDB->quote($row['id_group']));
 				if( $res2 && $babDB->db_num_rows($res2) > 0 )
 					{
 					$access = true;
 					break;
-					}
 				}
-
 			}
+		}
 	}
 	elseif( bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $idd))
 		{
