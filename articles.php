@@ -1260,22 +1260,29 @@ if(!isset($idx))
 	$idx = "Articles";
 	}
 
-if( count($babBody->topview) == 0 )
-{
-	$babBody->msgerror = bab_translate("Access denied");
-	$idx = 'denied';
-}
-else
-{
 if( !isset($topics))
 	{
-	$rr = array_keys($babBody->topview);
-	$topics = $rr[0];
+	if( count($babBody->topview) > 0 )
+		{
+		$rr = array_keys($babBody->topview);
+		$topics = $rr[0];
+		}
+	else
+		{
+		$topics = false;
+		}
 	}
-$res = $babDB->db_query("select * from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($topics)."'");
-$arrtop = $babDB->db_fetch_array($res);
-}
 
+if( $topics === false || !isset($babBody->topview[$topics]) )
+	{
+	$babBody->msgerror = bab_translate("Access denied");
+	$idx = 'denied';
+	}
+else 
+	{
+	$res = $babDB->db_query("select * from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($topics)."'");
+	$arrtop = $babDB->db_fetch_array($res);
+	}
 
 
 if( isset($conf) && $conf == "mod" )
