@@ -95,9 +95,9 @@ class categoriesHierarchy
 			else
 				{
 				$this->burl = true;
-				$this->parenturl = $this->link."&cat=".$this->arrparents[$i][0];
+				$this->parenturl = bab_toHtml($this->link."&cat=".$this->arrparents[$i][0]);
 					}
-			$this->parentname = $this->arrparents[$i][1];
+			$this->parentname = bab_toHtml($this->arrparents[$i][1]);
 			$i++;
 			return true;
 			}

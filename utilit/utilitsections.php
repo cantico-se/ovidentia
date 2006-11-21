@@ -655,7 +655,7 @@ function topcatGetNext()
 	static $i = 0;
 	if( $i < $this->count)
 		{
-		$this->text = $this->arrid[$i][1];
+		$this->text = bab_toHtml($this->arrid[$i][1]);
 		$this->url = $GLOBALS['babUrlScript']."?tg=topusr&amp;cat=".$this->arrid[$i][0];
 		$i++;
 		return true;
@@ -686,12 +686,12 @@ function babTopicsSection($cat, $close)
 	global $babDB, $babBody;
 	static $foot, $waitingc, $waitinga, $waitingaimg, $waitingcimg;
 	$this->babSectionTemplate("topicssection.html", "template");
-	$r = $babDB->db_fetch_array($babDB->db_query("select description, title, template from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$cat."'"));
+	$r = $babDB->db_fetch_array($babDB->db_query("select description, title, template from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$babDB->db_escape_string($cat)."'"));
 	$this->setTemplate($r['template']);
-	$this->title = $r['title'];
-	$this->head = $r['description'];
+	$this->title = bab_toHtml($r['title']);
+	$this->head = bab_replace($r['description']);
 
-	$req = "select top.id topid, type, top.id_topcat id, lang, idsaart, idsacom from ".BAB_TOPCAT_ORDER_TBL." top LEFT JOIN ".BAB_TOPICS_TBL." t ON top.id_topcat=t.id and top.type=2 LEFT JOIN ".BAB_TOPICS_CATEGORIES_TBL." tc ON top.id_topcat=tc.id and top.type=1 where top.id_parent='".$cat."' order by top.ordering asc";
+	$req = "select top.id topid, type, top.id_topcat id, lang, idsaart, idsacom from ".BAB_TOPCAT_ORDER_TBL." top LEFT JOIN ".BAB_TOPICS_TBL." t ON top.id_topcat=t.id and top.type=2 LEFT JOIN ".BAB_TOPICS_CATEGORIES_TBL." tc ON top.id_topcat=tc.id and top.type=1 where top.id_parent='".$babDB->db_escape_string($cat)."' order by top.ordering asc";
 	$res = $babDB->db_query($req);
 	$topcatview = $babBody->get_topcatview();
 	while( $arr = $babDB->db_fetch_array($res))
@@ -776,14 +776,14 @@ function topicsGetNext()
 					$this->newc = "c";
 					}
 				}
-			$this->text = $arr['category'];
+			$this->text = bab_toHtml($arr['category']);
 			$this->url = $GLOBALS['babUrlScript']."?tg=articles&amp;topics=".$arr['id_tt'];
 			}
 		else if( $arr['type'] == 1 )
 			{
 			$this->newa = "";
 			$this->newc = "";
-			$this->text = $arr['title'];
+			$this->text = bab_toHtml($arr['title']);
 			$this->url = $GLOBALS['babUrlScript']."?tg=topusr&amp;cat=".$arr['id_tct'];
 			}
 		$i++;
@@ -839,13 +839,13 @@ function forumsGetNext()
 	static $i = 0;
 	if( list($key,$val) = each($this->arrid) )
 		{
-		$this->text = $val['name'];
+		$this->text = bab_toHtml($val['name']);
 		$this->url = $GLOBALS['babUrlScript']."?tg=threads&amp;forum=".$key;
 		$this->waiting = "";
 		if( bab_isAccessValid(BAB_FORUMSMAN_GROUPS_TBL, $key))
 			{
 			$this->bfooter = 1;
-			$req = "select count(".BAB_POSTS_TBL.".id) as total from ".BAB_POSTS_TBL." join ".BAB_THREADS_TBL." where ".BAB_THREADS_TBL.".active='Y' and ".BAB_THREADS_TBL.".forum='".$key;
+			$req = "select count(".BAB_POSTS_TBL.".id) as total from ".BAB_POSTS_TBL." join ".BAB_THREADS_TBL." where ".BAB_THREADS_TBL.".active='Y' and ".BAB_THREADS_TBL.".forum='".$babDB->db_escape_string($key);
 			$req .= "' and ".BAB_POSTS_TBL.".confirmed='N' and ".BAB_THREADS_TBL.".id=".BAB_POSTS_TBL.".id_thread";
 			$res = $babDB->db_query($req);
 			$ar = $babDB->db_fetch_array($res);

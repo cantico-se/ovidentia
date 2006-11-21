@@ -49,7 +49,8 @@ function listComments($topics, $article)
 			$req = "select * from ".BAB_COMMENTS_TBL." where id_article='".$babDB->db_escape_string($article)."' and confirmed='Y' order by date desc";
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
-			$this->article = $article;
+			$this->article = bab_toHtml($article);
+			$this->topics = bab_toHtml($topics);
 			$this->alternate = 0;
 			$res = $babDB->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$babDB->db_escape_string($topics)."' and archive='Y'");
 			$this->altbg = false;
@@ -63,16 +64,16 @@ function listComments($topics, $article)
 				{
 				$this->altbg = !$this->altbg;
 				$arr = $babDB->db_fetch_array($this->res);
-				$this->commentdate = bab_strftime(bab_mktime($arr['date']));
+				$this->commentdate = bab_toHtml(bab_strftime(bab_mktime($arr['date'])));
 				if( $arr['id_author'] )
 					{
-					$this->authorname = bab_getUserName($arr['id_author']);
+					$this->authorname = bab_toHtml(bab_getUserName($arr['id_author']));
 					}
 				else
 					{
-					$this->authorname = $arr['name'];
+					$this->authorname = bab_toHtml($arr['name']);
 					}
-				$this->authorname = bab_toHTML($this->authorname);
+
 				
 				$this->commenttitle = bab_toHTML($arr['subject']);
 				$this->commentbody = bab_replace($arr['message']);
@@ -119,15 +120,16 @@ function addComment($topics, $article, $subject, $message, $com="")
 			$this->message = bab_translate("comments-Comment");
 			$this->add = bab_translate("Add comment");
 			$this->title = bab_translate("Article");
-			$this->article = $article;
-			$this->subjectval = $subject;
-			$this->messageval = $message;
+			$this->article = bab_toHtml($article);
+			$this->topics = bab_toHtml($topics);
+			$this->subjectval = bab_toHtml($subject);
+
 			$this->com = bab_toHTML($com);
 			$req = "select title from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($article)."'";
 			$res = $babDB->db_query($req);
 			$arr = $babDB->db_fetch_array($res);
 			$this->titleval = bab_toHTML($arr['title']);
-			$this->editor = bab_editor($this->messageval, 'message', 'comcreate');
+			$this->editor = bab_editor($message, 'message', 'comcreate');
 
 			$arr = $babDB->db_fetch_array($babDB->db_query("select idsacom from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($topics)."'"));
 			if( $arr['idsacom'] != 0 )

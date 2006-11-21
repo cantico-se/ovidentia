@@ -61,7 +61,7 @@ function displayLogin($url)
 			$this->nickname = bab_translate("Nickname");
 			$this->password = bab_translate("Password");
 			$this->login = bab_translate("Login");
-			$this->referer = $url;
+			$this->referer = bab_toHtml($url);
 			$this->life = bab_translate("Remember my login");
 			$this->nolife = bab_translate("No");
 			$this->oneday = bab_translate("one day");
@@ -70,7 +70,7 @@ function displayLogin($url)
 			$this->oneyear = bab_translate("one year");
 			$this->infinite = bab_translate("unlimited");
 
-			if (!isset($GLOBALS['c_nickname'])) $this->c_nickname = '';
+			$this->c_nickname = isset($_COOKIE['c_nickname']) ? $_COOKIE['c_nickname'] : '';
 			}
 		}
 
@@ -684,7 +684,7 @@ if( isset($login) && $login == "login")
 		$idx = 'signon';
 	else
 		{
-		$url = urldecode($referer);
+		$url = bab_rp('referer');
 		if (substr_count($url,$GLOBALS['babUrlScript']) == 1 && substr_count($url,'tg=login&cmd=') == 0)
 			loginRedirect($url);
 		else
@@ -719,7 +719,7 @@ if ($cmd == "emailpwd" && !isEmailPassword())
 	}
 
 if ($cmd == "detect" && $GLOBALS['BAB_SESS_LOGGED'])
-	header( "location:".$referer );
+	header( "location:".bab_rp('referer') );
 
 switch($cmd)
 	{
@@ -776,7 +776,7 @@ switch($cmd)
 			$babBody->addItemMenu("register", bab_translate("Register"), $GLOBALS['babUrlScript']."?tg=login&cmd=register");
 		if (isEmailPassword() ) 
 			$babBody->addItemMenu("emailpwd", bab_translate("Lost Password"), $GLOBALS['babUrlScript']."?tg=login&cmd=emailpwd");
-		if (!isset($referer)) $referer = !empty($GLOBALS['HTTP_REFERER']) ? urlencode($GLOBALS['HTTP_REFERER']) : '';
+		if (!isset($referer)) $referer = !empty($GLOBALS['HTTP_REFERER']) ? $GLOBALS['HTTP_REFERER'] : '';
 			displayLogin($referer);
 		break;
 	}

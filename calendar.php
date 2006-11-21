@@ -244,11 +244,11 @@ function displayEventDetail($evtid, $idcal)
 					$this->desctxt = bab_translate("Description");
 					$this->locationtxt = bab_translate("Location");
 					$this->cattxt = bab_translate("Category");
-					$this->begindate = bab_longDate(bab_mktime($arr['start_date']));
-					$this->enddate = bab_longDate(bab_mktime($arr['end_date']));
+					$this->begindate = bab_toHtml(bab_longDate(bab_mktime($arr['start_date'])));
+					$this->enddate = bab_toHtml(bab_longDate(bab_mktime($arr['end_date'])));
 
 					$this->t_option = ''; 
-					$this->properties = getPropertiesString($arr, $this->t_option);
+					$this->properties = bab_toHtml(getPropertiesString($arr, $this->t_option));
 
 					if( $arr['bprivate'] ==  'Y' && $GLOBALS['BAB_SESS_USERID']  != $iarr['idowner'])
 						{
@@ -258,13 +258,15 @@ function displayEventDetail($evtid, $idcal)
 						}
 					else
 						{
-						$this->title= $arr['title'];
+						$this->title= bab_toHtml($arr['title']);
 						$this->description = bab_replace($arr['description']);
-						$this->location= $arr['location'];
+						$this->location= bab_toHtml($arr['location']);
 						}
 					if( $arr['id_cat'] != 0 )
 						{
 						list($this->category) = $babDB->db_fetch_row($babDB->db_query("select name from ".BAB_CAL_CATEGORIES_TBL." where id='".$babDB->db_escape_string($arr['id_cat'])."'"));
+						
+						$this->category = bab_toHtml($this->category);
 						}
 					else
 						{

@@ -44,22 +44,27 @@ function getGlobalVariable($var)
 		case 'babsectionpuce': return $GLOBALS['babsectionpuce'];
 		case 'babsectionbullet': return $GLOBALS['babsectionbullet'];
 		case 'babIE': return $GLOBALS['babIE'];
-		case 'babCssPath': return $GLOBALS['babCssPath'];
-		case 'babScriptPath': return $GLOBALS['babScriptPath'];
-		case 'babEditorImages': return $GLOBALS['babEditorImages'];
+		case 'babCssPath': return bab_toHtml($GLOBALS['babCssPath']);
+		case 'babScriptPath': return bab_toHtml($GLOBALS['babScriptPath']);
+		//case 'babEditorImages': return $GLOBALS['babEditorImages'];
 		case 'babOvidentiaJs': return $GLOBALS['babOvidentiaJs'];
-		case 'babOvmlPath': return $GLOBALS['babOvmlPath'];
-		case 'babSkinPath': return $GLOBALS['babSkinPath'];
-		case 'babLanguage': return $GLOBALS['babLanguage'];
-		case 'babStyle': return $GLOBALS['babStyle'];
-		case 'babSkin': return $GLOBALS['babSkin'];
-		case 'babSiteName': return $GLOBALS['babSkin'];
-		case 'BAB_SESS_USERID': return $GLOBALS['babSiteName'];
-		case 'BAB_SESS_NICKNAME': return $GLOBALS['BAB_SESS_NICKNAME'];
-		case 'BAB_SESS_USER': return $GLOBALS['BAB_SESS_USER'];
-		case 'BAB_SESS_FIRSTNAME': return $GLOBALS['BAB_SESS_FIRSTNAME'];
-		case 'BAB_SESS_LASTNAME': return $GLOBALS['BAB_SESS_LASTNAME'];
-		case 'BAB_SESS_EMAIL': return $GLOBALS['BAB_SESS_EMAIL'];
+		case 'babOvmlPath': return bab_toHtml($GLOBALS['babOvmlPath']);
+		case 'babSkinPath': return bab_toHtml($GLOBALS['babSkinPath']);
+		case 'babLanguage': return bab_toHtml($GLOBALS['babLanguage']);
+		case 'babStyle': return bab_toHtml($GLOBALS['babStyle']);
+		case 'babSkin': return bab_toHtml($GLOBALS['babSkin']);
+		case 'babSiteName': return bab_toHtml($GLOBALS['babSkin']);
+		case 'BAB_SESS_USERID': return bab_toHtml($GLOBALS['babSiteName']);
+		case 'BAB_SESS_NICKNAME': return bab_toHtml($GLOBALS['BAB_SESS_NICKNAME']);
+		case 'BAB_SESS_USER': return bab_toHtml($GLOBALS['BAB_SESS_USER']);
+		case 'BAB_SESS_FIRSTNAME': return bab_toHtml($GLOBALS['BAB_SESS_FIRSTNAME']);
+		case 'BAB_SESS_LASTNAME': return bab_toHtml($GLOBALS['BAB_SESS_LASTNAME']);
+		case 'BAB_SESS_EMAIL': return bab_toHtml($GLOBALS['BAB_SESS_EMAIL']);
+		case 'babPhpSelf': return bab_toHtml($GLOBALS['babPhpSelf']);
+		case 'babUrl': return bab_toHtml($GLOBALS['babUrl']);
+		case 'babInstallPath': return bab_toHtml($GLOBALS['babInstallPath']);
+		case 'babUrlScript': return bab_toHtml($GLOBALS['babUrlScript']);
+		
 	}
 	return false;
 }

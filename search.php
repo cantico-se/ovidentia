@@ -228,6 +228,10 @@ function searchKeyword($item , $option = "OR")
 			$this->t_search_files_only = bab_translate("Search attached files only");
 			$this->t_index_priority = bab_translate("Give priority to file content for order");
 			$this->tags_txt = bab_translate("Tags");
+			
+			$this->pat = bab_rp('pat');
+			$this->field = bab_rp('field');
+			$this->order = bab_rp('order');
 
 			$this->index = bab_searchEngineInfos();
 			$this->search_files_only = isset($_POST['search_files_only']);
