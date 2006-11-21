@@ -11,11 +11,11 @@
 		<OCRecentArticles last="5">
 		<!--<OVArticleDate date="%D %j %M" saveas="tmpdate"> -->
 		<OCIfNotEqual expr1="<OVRecentArticles_date>" expr2="<OVtmpdate>">
-		<dt><OVtmpdate saveas="RecentArticles_date"></dt>
+		<dt><OVtmpdate saveas="RecentArticles_date" htmlentities="1"></dt>
 		</OCIfNotEqual>
 		<dd>
-			<h4> <a href="<OVArticleUrl>"><OVArticleTitle></a> <em>|</em> <span><OVArticleDate date="%H:%i"></span> </h4>
-			<p><OVArticleHead striptags="1" strlen="100,..."></p>
+			<h4> <a href="<OVArticleUrl htmlentities="1">"><OVArticleTitle  htmlentities="1"></a> <em>|</em> <span><OVArticleDate date="%H:%i"  htmlentities="1"></span> </h4>
+			<p><OVArticleHead striptags="1" strlen="100,..."  htmlentities="1"></p>
 		</dd>
 		</OCRecentArticles>
 	</dl>
@@ -27,11 +27,11 @@
 		<OCRecentPosts last="5">
 		<!--<OVPostDate date="%D %j %M" saveas="tmpdate"> -->
 		<OCIfNotEqual expr1="<OVRecentPosts_date>" expr2="<OVtmpdate>">
-		<dt><OVtmpdate saveas="RecentPosts_date"></dt>
+		<dt><OVtmpdate saveas="RecentPosts_date"  htmlentities="1"></dt>
 		</OCIfNotEqual>
 		<dd>
-			<h4> <a href="<OVPostUrl>"><OVPostTitle></a> <em>|</em> <span><OVPostDate date="%H:%i"></span> </h4>
-			<p><OVPostText striptags="1" strlen="100,..."></p>
+			<h4> <a href="<OVPostUrl htmlentities="1">"><OVPostTitle  htmlentities="1"></a> <em>|</em> <span><OVPostDate date="%H:%i"  htmlentities="1"></span> </h4>
+			<p><OVPostText striptags="1" strlen="100,..." htmlentities="1"></p>
 		</dd>
 		</OCRecentPosts>
 	</dl>
@@ -47,8 +47,8 @@
 		<dt><OVtmpdate saveas="CalendarUserEvents_date"></dt>
 		</OCIfNotEqual>
 		<dd>
-			<h4><a href="<OVEventUrl>"><OVEventTitle></a> <em>|</em> <span style="background-color:#<OVEventCategoryColor>"><OVEventBeginDate date="%H:%i"></span></h4>
-			<p><OVEventDescription striptags="1" strlen="100,..."></p>
+			<h4><a href="<OVEventUrl htmlentities="1">"><OVEventTitle htmlentities="1"></a> <em>|</em> <span style="background-color:#<OVEventCategoryColor>"><OVEventBeginDate date="%H:%i" htmlentities="1"></span></h4>
+			<p><OVEventDescription striptags="1" strlen="100,..." htmlentities="1"></p>
 		</dd>
 		</OCCalendarUserEvents>
 	</dl>
@@ -57,10 +57,10 @@
 <OCArticlesHomePages type="private">
 <OFPutVar name="nopub" value="1">
 <div class="article">
-<h4 class="title"><OVArticleTitle></h4>
+<h4 class="title"><OVArticleTitle htmlentities="1"></h4>
 <OVArticleHead>
 <OCIfEqual expr1="<OVArticleReadMore>" expr2="1">
-<p class="readmore"><a href="<OVArticleUrl>"><OFTranslate text="Read More"></a></p>
+<p class="readmore"><a href="<OVArticleUrl htmlentities="1">"><OFTranslate text="Read More"></a></p>
 </OCIfEqual>
 </div>
 </OCArticlesHomePages>

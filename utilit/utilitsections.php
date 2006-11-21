@@ -348,7 +348,7 @@ function babUserSection($close)
 	if( !empty($GLOBALS['BAB_SESS_USER']))
 		{
 		$this->head = bab_translate("You are logged on as").":<br><center><b>";
-		$this->head .= $GLOBALS['BAB_SESS_USER'];
+		$this->head .= bab_toHtml($GLOBALS['BAB_SESS_USER']);
 		$this->login = bab_translate("You are logged on as");
 		}
 	else

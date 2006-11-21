@@ -5,10 +5,10 @@
  <OCArticlesHomePages type="public"> 
 	<OFPutVar name="nopub" value="1">
 	<div class="article">
-	<h3><OVArticleTitle></h3>
+	<h3><OVArticleTitle htmlentities="1"></h3>
 	<div class="head"><OVArticleHead></div>
 	<OCIfEqual expr1="<OVArticleReadMore>" expr2="1">
-	<p class="readmore"><a href="<OVArticleUrl>"><OFTranslate text="Read More"></a></p>
+	<p class="readmore"><a href="<OVArticleUrl htmlentities="1">"><OFTranslate text="Read More"></a></p>
 	</OCIfEqual>
 	</div>
   </OCArticlesHomePages> 

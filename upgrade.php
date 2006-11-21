@@ -7539,7 +7539,8 @@ function upgrade604to605()
 function upgrade605to606()
 {
 	$ret = "";
-	$db = & $GLOBALS['babDB'];
+	// $db = & $GLOBALS['babDB'];
+	global $babDB;
 
 	if (bab_isTableField(BAB_SITES_TBL, 'workdays')) {
 		$babDB->query("ALTER TABLE ".BAB_SITES_TBL." DROP workdays");
