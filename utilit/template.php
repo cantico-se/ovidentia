@@ -35,6 +35,34 @@ function &bab_TemplateCache_getStore()
 	return $cacheStore;
 }
 
+function getGlobalVariable($var)
+{
+	switch($var)
+	{
+		case 'babCss': return $GLOBALS['babCss'];
+		case 'babMeta': return $GLOBALS['babMeta'];
+		case 'babsectionpuce': return $GLOBALS['babsectionpuce'];
+		case 'babsectionbullet': return $GLOBALS['babsectionbullet'];
+		case 'babIE': return $GLOBALS['babIE'];
+		case 'babCssPath': return $GLOBALS['babCssPath'];
+		case 'babScriptPath': return $GLOBALS['babScriptPath'];
+		case 'babEditorImages': return $GLOBALS['babEditorImages'];
+		case 'babOvidentiaJs': return $GLOBALS['babOvidentiaJs'];
+		case 'babOvmlPath': return $GLOBALS['babOvmlPath'];
+		case 'babSkinPath': return $GLOBALS['babSkinPath'];
+		case 'babLanguage': return $GLOBALS['babLanguage'];
+		case 'babStyle': return $GLOBALS['babStyle'];
+		case 'babSkin': return $GLOBALS['babSkin'];
+		case 'babSiteName': return $GLOBALS['babSkin'];
+		case 'BAB_SESS_USERID': return $GLOBALS['babSiteName'];
+		case 'BAB_SESS_NICKNAME': return $GLOBALS['BAB_SESS_NICKNAME'];
+		case 'BAB_SESS_USER': return $GLOBALS['BAB_SESS_USER'];
+		case 'BAB_SESS_FIRSTNAME': return $GLOBALS['BAB_SESS_FIRSTNAME'];
+		case 'BAB_SESS_LASTNAME': return $GLOBALS['BAB_SESS_LASTNAME'];
+		case 'BAB_SESS_EMAIL': return $GLOBALS['BAB_SESS_EMAIL'];
+	}
+	return false;
+}
 
 /**
  * This class is used to cache the parsed templates in memory.
@@ -360,9 +388,11 @@ class bab_Template
 		if (@isset($templateObject->{$propertyName})) {
 			return $templateObject->{$propertyName};
 		}
-		if (@isset($GLOBALS[$propertyName])) {
-			return $GLOBALS[$propertyName];
-		}
+		$tr = getGlobalVariable($propertyName);
+		if($tr !== false)
+			{
+			return $tr;
+			}
 		$call = reset(debug_backtrace()); // $call will contain debug info about the line in the script where this function was called.
 		bab_Template::addError($templateObject, 'Unknown property or global variable (' . $propertyName . ')', $call['line']);
 		return '{ ' . $propertyName . ' }';
@@ -648,8 +678,14 @@ function processTemplate(&$class, $str)
 				$tmp = $class->$m[1][$i];
 				$str = preg_replace($reg, preg_replace("/\\$[0-9]/", "\\\\$0", $tmp) , $str);
 				}
-			else if( isset($GLOBALS[$m[1][$i]]))
-				$str = preg_replace($reg, $GLOBALS[$m[1][$i]], $str);
+			else 
+				{
+				$tr = getGlobalVariable($m[1][$i]);
+				if($tr !== false)
+					{
+					$str = preg_replace($reg, $tr, $str);
+					}
+				}
 			}
 		}
 	return $str;
