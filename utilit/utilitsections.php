@@ -216,7 +216,7 @@ function babAdminSection($close)
 		$this->array_urls[bab_translate("Sites")] = $GLOBALS['babUrlScript']."?tg=sites";
 		}
 
-	$this->array_urls[bab_translate("Users")] = $GLOBALS['babUrlScript']."?tg=users&bupd=0";
+	$this->array_urls[bab_translate("Users")] = $GLOBALS['babUrlScript']."?tg=users&amp;bupd=0";
 	//if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['groups'] == 'Y')
 		$this->array_urls[bab_translate("Groups")] = $GLOBALS['babUrlScript']."?tg=groups";
 	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['sections'] == 'Y')
