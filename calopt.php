@@ -210,6 +210,9 @@ function calendarOptions($calid, $urla)
 			$req = "select * from ".BAB_CAL_USER_OPTIONS_TBL." where id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
 			$res = $babDB->db_query($req);
 			$this->arr = $babDB->db_fetch_array($res);
+			
+			
+			
 			$this->arrdv = array(bab_translate("Month"), bab_translate("Week"),bab_translate("Day"));
 			$this->arrdvw = array(bab_translate("Columns"), bab_translate("Rows"));
 			if( empty($this->arr['start_time']))
@@ -220,9 +223,9 @@ function calendarOptions($calid, $urla)
 				{
 				$this->arr['end_time'] = "18:00:00";
 				}
-			if( empty($this->arr['startday']))
+			if( !isset($this->arr['startday']))
 				{
-				$this->arr['startday'] = 3;
+				$this->arr['startday'] = 1;
 				}
 			if( empty($this->arr['defaultview']))
 				{
@@ -240,6 +243,7 @@ function calendarOptions($calid, $urla)
 
 			$this->dispdays = explode(',', $this->arr['dispdays']);
 			$this->sttime = $this->arr['start_time'];
+			
 			}
 
 		function getnextshortday()
