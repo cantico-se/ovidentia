@@ -776,8 +776,12 @@ switch($cmd)
 			$babBody->addItemMenu("register", bab_translate("Register"), $GLOBALS['babUrlScript']."?tg=login&cmd=register");
 		if (isEmailPassword() ) 
 			$babBody->addItemMenu("emailpwd", bab_translate("Lost Password"), $GLOBALS['babUrlScript']."?tg=login&cmd=emailpwd");
-		if (!isset($referer)) $referer = !empty($GLOBALS['HTTP_REFERER']) ? $GLOBALS['HTTP_REFERER'] : '';
-			displayLogin($referer);
+		if (!isset($_REQUEST['referer'])) {
+			$referer = !empty($GLOBALS['HTTP_REFERER']) ? $GLOBALS['HTTP_REFERER'] : '';
+		} else {
+			$referer = $_REQUEST['referer'];
+		}
+		displayLogin($referer);
 		break;
 	}
 $babBody->setCurrentItemMenu($cmd);

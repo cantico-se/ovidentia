@@ -33,11 +33,7 @@ class bab_selectusers {
 		if ($idx = bab_rp('idx')) {
 			$this->addVar('idx', $idx);
 		}
-
-
-		
 	}
-
 
 	/**
 	 * @private
@@ -103,6 +99,14 @@ class bab_selectusers {
 	function addUser($id_user) {
 		$this->selected[$id_user] = $id_user;
 	}
+	
+	/**
+	 * @public
+	 */
+	function setRecordLabel($label) {
+		$this->t_record = bab_toHtml($label);
+	}
+	
 
 	/**
 	 * get html for the form

@@ -74,6 +74,9 @@ function listUsers($pos, $grp)
 			$this->t_unconfirmed = bab_translate("Unconfirmed");
 			$this->t_disabled = bab_translate("Disabled");
 			$this->t_dirdetail = bab_translate("Detail");
+			
+			$this->checkall = bab_translate("Check all");
+			$this->uncheckall = bab_translate("Uncheck all");
 
 			$this->db = &$GLOBALS['babDB'];
 			$this->group = bab_getGroupName($grp);

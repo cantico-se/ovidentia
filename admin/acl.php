@@ -256,6 +256,8 @@ class acl_grp_node extends macl
 	$this->tree = &$acl->tree;
 	$this->tables = &$acl->tables;
 	$this->childs = $this->tree->getChilds($id_group);
+	
+	$this->t_group = bab_translate("Group");
 	}
 
 	function getnextgroup()
