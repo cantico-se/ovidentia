@@ -78,9 +78,9 @@ document.onmousemove = bab_tooltipPosition;
 	<tr valign="top" class="BabCalendarBodyBadMonthBackground">
 		<!--#in getnextday -->
 		<!--#if currentmonth "== 1" -->
-		<td  <!--#if currentday "== 1" --> class="BabTodayEvent" <!--#else currentday --> class="BabMonthCalendarCurentDayBackground" <!--#endif currentday --> >
+		<td <!--#if currentday "== 1" --> class="BabTodayEvent" <!--#else currentday --> class="BabMonthCalendarCurentDayBackground" <!--#endif currentday --> >
 		<!--#else currentmonth -->
-		<td>
+		<td <!--#if currentday "== 1" --> class="BabTodayEvent" <!--#else currentday --> >
 		<!--#endif currentmonth -->
 			<div class="HeaderDayCalendar">
 				<a class="day" title="{ week }" href="{ daynumberurl }">{ daynumbername }</a>
@@ -119,7 +119,7 @@ document.onmousemove = bab_tooltipPosition;
 					<div class="description">{ description }</div>
 						<!--#if bnote -->
 					<h5>
-						<p><center>{ notestxt }</center></p>
+						<p>{ notestxt }</p>
 					</h5>
 					<div class="description">{ noteval }</div>
 						<!--#endif bnote -->
