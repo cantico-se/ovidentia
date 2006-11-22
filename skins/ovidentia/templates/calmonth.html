@@ -80,7 +80,7 @@ document.onmousemove = bab_tooltipPosition;
 		<!--#if currentmonth "== 1" -->
 		<td <!--#if currentday "== 1" --> class="BabTodayEvent" <!--#else currentday --> class="BabMonthCalendarCurentDayBackground" <!--#endif currentday --> >
 		<!--#else currentmonth -->
-		<td <!--#if currentday "== 1" --> class="BabTodayEvent" <!--#else currentday --> >
+		<td <!--#if currentday "== 1" --> class="BabTodayEvent" <!--#endif currentday --> >
 		<!--#endif currentmonth -->
 			<div class="HeaderDayCalendar">
 				<a class="day" title="{ week }" href="{ daynumberurl }">{ daynumbername }</a>
