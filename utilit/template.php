@@ -66,7 +66,7 @@ function getGlobalVariable($var)
 		case 'babUrlScript': return bab_toHtml($GLOBALS['babUrlScript']);
 		case 'babAddonUrl': return bab_toHtml($GLOBALS['babAddonUrl']);
 		case 'babAddonTarget': return bab_toHtml($GLOBALS['babAddonTarget']);
-		
+		case 'babSlogan': return bab_toHtml($GLOBALS['babSlogan']);
 		
 	}
 	return false;
