@@ -1693,11 +1693,20 @@ function getFile( $file, $id, $gr, $path, $inl)
 		if( $res && $babDB->db_num_rows($res) > 0 )
 			{
 			$arr = $babDB->db_fetch_array($res);
-			$babDB->db_query("update ".BAB_FILES_TBL." set hits='".$babDB->db_escape_string(($arr['hits'] + 1))."' where id='".$babDB->db_escape_string($arr['id'])."'");
-			$access = true;
+			if( $arr['state'] == '')
+				{
+				$babDB->db_query("update ".BAB_FILES_TBL." set hits='".$babDB->db_escape_string(($arr['hits'] + 1))."' where id='".$babDB->db_escape_string($arr['id'])."'");
+				$access = true;
+				}
+			else
+				{
+				$access = false;
+				}
 			}
 		else
+			{
 			$access = false;
+			}
 		}
 
 	if( !$access )

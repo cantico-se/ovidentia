@@ -811,7 +811,7 @@ if( isset($_REQUEST['idf']) )
 {
 	$idf = $_REQUEST['idf'];
 
-	$res = $babDB->db_query("select * from ".BAB_FILES_TBL." where id='".$babDB->db_escape_string($idf)."'");
+	$res = $babDB->db_query("select * from ".BAB_FILES_TBL." where id='".$babDB->db_escape_string($idf)."' and state=''");
 	if( $res && $babDB->db_num_rows($res) > 0 )
 	{
 		$arrfile = $babDB->db_fetch_array($res);
