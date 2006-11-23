@@ -1274,15 +1274,15 @@ if( !isset($topics))
 	}
 
 if( $topics === false || !isset($babBody->topview[$topics]) )
-	{
+{
 	$babBody->msgerror = bab_translate("Access denied");
 	$idx = 'denied';
-	}
-else 
-	{
-	$res = $babDB->db_query("select * from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($topics)."'");
-	$arrtop = $babDB->db_fetch_array($res);
-	}
+}
+else
+{
+$res = $babDB->db_query("select * from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($topics)."'");
+$arrtop = $babDB->db_fetch_array($res);
+}
 
 
 if( isset($conf) && $conf == "mod" )
