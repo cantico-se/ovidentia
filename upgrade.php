@@ -7543,11 +7543,11 @@ function upgrade605to606()
 	global $babDB;
 
 	if (bab_isTableField(BAB_SITES_TBL, 'workdays')) {
-		$babDB->query("ALTER TABLE ".BAB_SITES_TBL." DROP workdays");
+		$babDB->db_query("ALTER TABLE ".BAB_SITES_TBL." DROP workdays");
 	}
 	
 	if (bab_isTableField(BAB_CAL_USER_OPTIONS_TBL, 'workdays')) {
-		$babDB->query("ALTER TABLE ".BAB_CAL_USER_OPTIONS_TBL." DROP workdays");
+		$babDB->db_query("ALTER TABLE ".BAB_CAL_USER_OPTIONS_TBL." DROP workdays");
 	}
 
 	return $ret;
