@@ -1695,10 +1695,10 @@ function getFile( $file, $id, $gr, $path, $inl)
 			$arr = $babDB->db_fetch_array($res);
 			if( $arr['state'] == '')
 				{
-				$babDB->db_query("update ".BAB_FILES_TBL." set hits='".$babDB->db_escape_string(($arr['hits'] + 1))."' where id='".$babDB->db_escape_string($arr['id'])."'");
-				$access = true;
-				}
-			else
+			$babDB->db_query("update ".BAB_FILES_TBL." set hits='".$babDB->db_escape_string(($arr['hits'] + 1))."' where id='".$babDB->db_escape_string($arr['id'])."'");
+			$access = true;
+			}
+		else
 				{
 				$access = false;
 				}
@@ -1706,7 +1706,7 @@ function getFile( $file, $id, $gr, $path, $inl)
 		else
 			{
 			$access = false;
-			}
+		}
 		}
 
 	if( !$access )
@@ -1733,12 +1733,10 @@ function getFile( $file, $id, $gr, $path, $inl)
 	header("Content-Length: ". $fsize."\n");
 	header("Content-transfert-encoding: binary"."\n");
 	$fp=fopen($fullpath,"rb");
-	if ($fp) {
-		while (!feof($fp)) {
-			print fread($fp, 8192);
-			}
-		fclose($fp);
+	while (!feof($fp)) {
+		print fread($fp, 8192);
 		}
+	fclose($fp);
 	}
 
 
