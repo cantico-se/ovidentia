@@ -606,9 +606,30 @@ function resetContent()
 	$this->content = '';
 }
 
+
 function babecho($txt)
 {
 	$this->content .= $txt;
+}
+
+/**
+ * Set page title with a text string (no html)
+ * @param	string $title
+ */
+function setTitle($title) {
+	$this->title = bab_toHtml($title);
+}
+
+/**
+ * Add error message
+ * @param	string $title
+ */
+function addError($error) {
+	if (empty($this->msgerror)) {
+		$this->msgerror = bab_toHtml($error);
+	} else {
+		$this->msgerror .= '<br /> '.bab_toHtml($error);
+	}
 }
 
 
