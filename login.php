@@ -121,11 +121,11 @@ function userCreate($firstname, $middlename, $lastname, $nickname, $email)
 
 		function temp($firstname, $middlename, $lastname, $nickname, $email)
 			{
-			$this->firstnameval = $firstname != ""? $firstname: "";
-			$this->middlenameval = $middlename != ""? $middlename: "";
-			$this->lastnameval = $lastname != ""? $lastname: "";
-			$this->nicknameval = $nickname != ""? $nickname: "";
-			$this->emailval = $email != ""? $email: "";
+			$this->firstnameval = bab_toHtml($firstname);
+			$this->middlenameval = bab_toHtml($middlename);
+			$this->lastnameval = bab_toHtml($lastname);
+			$this->nicknameval = bab_toHtml($nickname);
+			$this->emailval = bab_toHtml($email);
 			$this->firstname = bab_translate("First Name");
 			$this->middlename = bab_translate("Middle Name");
 			$this->lastname = bab_translate("Last Name");
@@ -146,12 +146,14 @@ function userCreate($firstname, $middlename, $lastname, $nickname, $email)
 
 function displayRegistration($nickname, $fields, $cagree)
 	{
+
 	global $babBody, $babDB;
 	class temp
 		{
 
 		function temp($nickname, $fields, $cagree)
 			{
+			
 			global $babBody, $babDB;
 			$this->nickname = bab_translate("Nickname");
 			$this->password = bab_translate("Password");
@@ -186,7 +188,7 @@ function displayRegistration($nickname, $fields, $cagree)
 				{
 				$this->disclaimer = bab_translate("I have read and accept the agreement");
 				$this->readtxt = bab_translate("Read");
-				$this->urlshowdp = $GLOBALS['babUrlScript']."?tg=login&cmd=showdp";
+				$this->urlshowdp = bab_toHtml($GLOBALS['babUrlScript']."?tg=login&cmd=showdp");
 				$this->bagree = true;
 				}
 			else
@@ -194,7 +196,7 @@ function displayRegistration($nickname, $fields, $cagree)
 				$this->bagree = false;
 				}
 
-			$this->nicknameval = $nickname != ""? $nickname: "";
+			$this->nicknameval = bab_toHtml($nickname);
 			$this->fields = $fields;
 
 			if( $cagree == 'Y' )
@@ -216,7 +218,7 @@ function displayRegistration($nickname, $fields, $cagree)
 				$this->bphoto = false;
 				}
 
-			$this->res = $babDB->db_query("select sfrt.*, sfxt.id as idfx from ".BAB_SITES_FIELDS_REGISTRATION_TBL." sfrt left join ".BAB_DBDIR_FIELDSEXTRA_TBL." sfxt on sfxt.id_field=sfrt.id_field where sfrt.id_site='".$babDB->db_escape_string($babBody->babsite['id'])."' and sfrt.registration='Y' and sfxt.id_directory='0'");
+			$this->res = $babDB->db_query("select sfrt.*, sfxt.id as idfx from ".BAB_SITES_FIELDS_REGISTRATION_TBL." sfrt left join ".BAB_DBDIR_FIELDSEXTRA_TBL." sfxt on sfxt.id_field=sfrt.id_field WHERE sfrt.id_site='".$babDB->db_escape_string($babBody->babsite['id'])."' and sfrt.registration='Y' and sfxt.id_directory='0'");
 
 			$this->count = $babDB->db_num_rows($this->res);
 
@@ -236,20 +238,20 @@ function displayRegistration($nickname, $fields, $cagree)
 					{
 					$res = $babDB->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$babDB->db_escape_string($arr['id_field'])."'");
 					$rr = $babDB->db_fetch_array($res);
-					$this->fieldname = translateDirectoryField($rr['description']);
+					$this->fieldname = bab_toHtml(translateDirectoryField($rr['description']));
 					$this->fieldv = $rr['name'];
 					}
 				else
 					{
 					$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string(($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
-					$this->fieldname = translateDirectoryField($rr['name']);
+					$this->fieldname = bab_toHtml(translateDirectoryField($rr['name']));
 					$this->fieldv = "babdirf".$arr['id'];
 					}
 
 				$this->bfieldphoto = false;
 				if( isset($this->fields[$this->fieldv]))
 					{
-					$this->fieldval = isset($this->fields[$this->fieldv]) ? $this->fields[$this->fieldv] : '';
+					$this->fieldval = bab_toHtml($this->fields[$this->fieldv]);
 					}
 				else
 					{
@@ -276,8 +278,9 @@ function displayRegistration($nickname, $fields, $cagree)
 				$this->fieldt = $arr['multilignes'];
 				if( !empty( $arr['default_value'] ) && empty($this->fvalue) && $this->countfxv > 0)
 					{
-					$rr = $babDB->db_fetch_array($babDB->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." where id='".$babDB->db_escape_string($arr['default_value'])."'"));
-					$this->fieldval = $rr['field_value'];
+					$rr = $babDB->db_fetch_array($babDB->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." WHERE id='".$babDB->db_escape_string($arr['default_value'])."'"));
+					
+					$this->fieldval = bab_toHtml($rr['field_value']);
 					}
 
 				if( $this->bphoto && $this->fieldv == "jpegphoto" )
@@ -299,8 +302,8 @@ function displayRegistration($nickname, $fields, $cagree)
 			if( $i < $this->countfxv)
 				{
 				$arr = $babDB->db_fetch_array($this->resfxv);
-				$this->fxvvalue = $arr['field_value'];
-				if( $this->fieldval == $this->fxvvalue )
+				$this->fxvvalue = bab_toHtml($arr['field_value']);
+				if( $this->fieldval == $this->fxvvalue ) 
 					{
 					$this->selected = 'selected';
 					}
@@ -325,14 +328,14 @@ function displayRegistration($nickname, $fields, $cagree)
 			if( $j < $this->countpf)
 				{
 				$arr = $babDB->db_fetch_array($this->respf);
-				$this->pname = $arr['name'];
-				$this->pdesc = $arr['description'];
+				$this->pname = bab_toHtml($arr['name']);
+				$this->pdesc =  bab_toHtml($arr['description']);
 				$this->idprofile = $arr['id'];
 				if( $arr['multiplicity'] == 'Y' )
 					{
 					$this->bmultiplicity = true;
 					}
-				else
+				else 
 					{
 					$this->bmultiplicity = false;
 					}
@@ -344,7 +347,15 @@ function displayRegistration($nickname, $fields, $cagree)
 					{
 					$this->brequired = false;
 					}
-				$this->resgrp = $babDB->db_query("select gt.* from ".BAB_PROFILES_GROUPSSET_TBL." pgt left join ".BAB_GROUPS_TBL." gt on pgt.id_group=gt.id where pgt.id_object ='".$babDB->db_escape_string($arr['id'])."'");
+				$this->resgrp = $babDB->db_query("
+					SELECT 
+						gt.* 
+					FROM 
+						".BAB_PROFILES_GROUPSSET_TBL." pgt 
+						LEFT JOIN ".BAB_GROUPS_TBL." gt on pgt.id_group=gt.id 
+					WHERE 
+						pgt.id_object ='".$babDB->db_escape_string($arr['id'])."'
+					");
 				$this->countgrp = $babDB->db_num_rows($this->resgrp);
 				$j++;
 				return true;
@@ -365,8 +376,8 @@ function displayRegistration($nickname, $fields, $cagree)
 				$arr = $babDB->db_fetch_array($this->resgrp);
 				$this->altbg = !$this->altbg;
 				$this->grpid = $arr['id'];
-				$this->grpname = $arr['name'];
-				$this->grpdesc = empty($arr['description'])? $arr['name']: $arr['description'];
+				$this->grpname = bab_toHtml($arr['name']);
+				$this->grpdesc = empty($arr['description']) ? bab_toHtml($arr['name']) : bab_toHtml($arr['description']);
 				if( isset($GLOBALS["grpids".$this->idprofile]) && count($GLOBALS["grpids".$this->idprofile]) > 0 && in_array($arr['id'] , $GLOBALS["grpids".$this->idprofile]))
 					{
 					if( $this->bmultiplicity == true )
@@ -391,17 +402,15 @@ function displayRegistration($nickname, $fields, $cagree)
 				return false;
 				}
 			}
-
-		
 		}
-
+	
 	$temp = new temp($nickname, $fields, $cagree);
-	$babBody->babecho( bab_printTemplate($temp,"login.html", "registration"));
+	$babBody->babecho(bab_printTemplate($temp,"login.html", "registration"));
 	}
 
 function displayDisclaimer()
 {
-	global $babBody, $babBodyPopup;
+	global $babBody;
 	class temp
 		{
 		function temp()
@@ -416,7 +425,7 @@ function displayDisclaimer()
 		}
 
 	$temp = new temp();
-	$babBodyPopup->babecho( bab_printTemplate($temp, "login.html", "displaydisclaimer"));
+	$babBody->babpopup( bab_printTemplate($temp, "login.html", "displaydisclaimer"));
 }
 
 
@@ -426,7 +435,7 @@ function confirmUser($hash, $nickname)
 	$new_hash=md5($nickname.$BAB_HASH_VAR);
 	if ($new_hash && ($new_hash==$hash))
 		{
-		$sql="select * from ".BAB_USERS_TBL." where confirm_hash='".$hash."'";
+		$sql="select * from ".BAB_USERS_TBL." where confirm_hash='".$babDB->db_escape_string($hash)."'";
 		$result=$babDB->db_query($sql);
 		if( $babDB->db_num_rows($result) < 1)
 			{
@@ -461,7 +470,11 @@ function confirmUser($hash, $nickname)
 
 function addNewUser( $nickname, $password1, $password2)
 	{
-	global $babBody, $babDB, $fields, $cagree, $photof, $photof_name;
+	global $babBody, $babDB;
+	
+	$fields = bab_pp('fields', array());
+	$cagree = bab_pp('cagree');
+	
 	if( empty($nickname) || empty($fields['email']) || empty($fields['givenname']) || empty($fields['sn']) || empty($password1) || empty($password2))
 		{
 		$babBody->msgerror = bab_translate( "You must complete all fields !!");
@@ -492,7 +505,7 @@ function addNewUser( $nickname, $password1, $password2)
 
 	$bphoto = false;
 
-	$res = $babDB->db_query("select sfrt.*, sfxt.id as idfx from ".BAB_SITES_FIELDS_REGISTRATION_TBL." sfrt left join ".BAB_DBDIR_FIELDSEXTRA_TBL." sfxt on sfxt.id_field=sfrt.id_field where sfrt.id_site='".$babDB->db_escape_string($babBody->babsite['id'])."' and sfrt.registration='Y' and sfxt.id_directory='0'");
+	$res = $babDB->db_query("SELECT sfrt.*, sfxt.id as idfx from ".BAB_SITES_FIELDS_REGISTRATION_TBL." sfrt left join ".BAB_DBDIR_FIELDSEXTRA_TBL." sfxt on sfxt.id_field=sfrt.id_field where sfrt.id_site='".$babDB->db_escape_string($babBody->babsite['id'])."' and sfrt.registration='Y' and sfxt.id_directory='0'");
 
 	$req = '';
 	$arridfx = array();
@@ -511,7 +524,7 @@ function addNewUser( $nickname, $password1, $password2)
 
 		if( $fieldv ==  'jpegphoto')
 			{
-			if($arr['required'] == 'Y' && !isset($photof_name))
+			if($arr['required'] == 'Y' && (!isset($_FILES['photof']) || $_FILES['photof']['size'] == 0))
 				{
 				$babBody->msgerror = bab_translate( "You must complete all fields !!");
 				return false;
@@ -579,19 +592,15 @@ function addNewUser( $nickname, $password1, $password2)
 		return false;
 		}
 
-	if( $bphoto && !empty($photof_name) && $photof_name != "none")
+	if( $bphoto && isset($_FILES['photof']) && $_FILES['photof']['name'] != "none")
 		{
-		if ($babBody->babsite['imgsize']*1000 < filesize($photof))
+		if (0 == $_FILES['photof']['size'] || ($babBody->babsite['imgsize']*1000) < filesize($_FILES['photof']['tmp_name']))
 			{
 			$babBody->msgerror = bab_translate("The image file is too big, maximum is :").$babBody->babsite['imgsize'].bab_translate("Kb");
 			return false;
 			}
-		$fp=fopen($photof,"rb");
-		if( $fp )
-			{
-			$cphoto = addslashes(fread($fp,filesize($photof)));
-			fclose($fp);
-			}
+		include_once $babInstallPath."utilit/uploadincl.php";
+		$cphoto = bab_getUploadedFileContent('photof');
 		}
 	
 	if( !empty($cphoto))
@@ -621,7 +630,13 @@ function addNewUser( $nickname, $password1, $password2)
 					$rs = $babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$babDB->db_escape_string($arridfx[$tmp])."' and  id_entry='".$babDB->db_escape_string($idu)."'");
 					if( $rs && $babDB->db_num_rows($rs) > 0 )
 						{
-						$babDB->db_query("update ".BAB_DBDIR_ENTRIES_EXTRA_TBL." set field_value='".$babDB->db_escape_string($value)."' where id_fieldx='".$arridfx[$tmp]."' and  id_entry='".$babDB->db_escape_string($idu)."'");
+						$babDB->db_query("UPDATE ".BAB_DBDIR_ENTRIES_EXTRA_TBL." 
+							SET 
+								field_value='".$babDB->db_escape_string($value)."' 
+							WHERE 
+								id_fieldx='".$babDB->db_escape_string($arridfx[$tmp])."' 
+								AND  id_entry='".$babDB->db_escape_string($idu)."'
+							");
 						}
 					else
 						{
@@ -663,41 +678,37 @@ function loginRedirect($url)
 	}
 	else
 	{
-		Header("Location: ". $url);
+		Header("Location:". $url);
 	}
 }
 /* main */
-// ajout cookie
-if (!isset($lifetime))
-	{
-	$lifetime = 0;
-	}
 
-if (!isset($cmd))
-	{
-	$cmd = 'signon';
-	}
+$cmd = bab_rp('cmd','signon');
 
-if( isset($login) && $login == "login")
+if('login' === bab_pp('login'))
 	{
-	if(!signOn($nickname, $password, $lifetime))
-		$idx = 'signon';
+	if(!signOn(bab_pp('nickname'), bab_pp('password'), bab_pp('lifetime', 0))) {
+		$cmd = 'signon';
+		}
 	else
 		{
 		$url = bab_rp('referer');
-		if (substr_count($url,$GLOBALS['babUrlScript']) == 1 && substr_count($url,'tg=login&cmd=') == 0)
+		if (substr_count($url,$GLOBALS['babUrlScript']) == 1 && substr_count($url,'tg=login&cmd=') == 0) {
 			loginRedirect($url);
-		else
+			}
+		else {
 			loginRedirect($GLOBALS['babUrlScript']);
+			}
 		}
 	}
-else if( isset($adduser) && $adduser == "register" && $babBody->babsite['registration'] == 'Y')
+else if( 'register' === bab_pp('adduser') && $babBody->babsite['registration'] == 'Y')
 	{
-	if( !addNewUser( $nickname, $password1, $password2))
-		$cmd = "register";
-	elseif( $babBody->babsite['email_confirm'] == 2 )
+	if( !addNewUser( bab_pp('nickname'), bab_pp('password1'), bab_pp('password2'))) {
+		$cmd = 'register';
+		}
+	elseif( 2 == $babBody->babsite['email_confirm'] )
 		{
-		if( !signOn( $nickname, $password1, $lifetime))
+		if( !signOn( bab_pp('nickname'), bab_pp('password1'), bab_pp('lifetime', 0)))
 			{
 			$cmd = 'signon';
 			}
@@ -707,48 +718,40 @@ else if( isset($adduser) && $adduser == "register" && $babBody->babsite['registr
 			}
 		}
 	}
-else if( isset($sendpassword) && $sendpassword == "send")
+else if( 'send' === bab_pp('sendpassword'))
 	{
-	sendPassword($nickname);
+	sendPassword(bab_pp('nickname'));
 	}
 
-if ($cmd == "emailpwd" && !isEmailPassword())
-	{
-	$babBody->msgerror = bab_translate("Acces denied");
-	$cmd = "signon";
-	}
 
-if ($cmd == "detect" && $GLOBALS['BAB_SESS_LOGGED'])
-	header( "location:".bab_rp('referer') );
 
 switch($cmd)
 	{
-	case "signoff":
+	case 'signoff':
 		signOff();
 		loginRedirect($GLOBALS['babPhpSelf']);
 		break;
 
 	case "showdp":
-		include_once $babInstallPath."utilit/uiutil.php";
-		$babBodyPopup = new babBodyPopup();
 		displayDisclaimer();
-		printBabBodyPopup();
-		exit;
 		break;
 
 	case "register":
 		$babBody->title = bab_translate("Register");
 		$babBody->addItemMenu("signon", bab_translate("Login"), $GLOBALS['babUrlScript']."?tg=login&cmd=signon");
-		if( $babBody->babsite['registration'] == 'Y')
+		if( $babBody->babsite['registration'] == 'Y') {
 			$babBody->addItemMenu("register", bab_translate("Register"), $GLOBALS['babUrlScript']."?tg=login&cmd=register");
-		if ($GLOBALS['babEmailPassword'] ) 
+		}
+		if ($GLOBALS['babEmailPassword'] ) {
 			$babBody->addItemMenu("emailpwd", bab_translate("Lost Password"), $GLOBALS['babUrlScript']."?tg=login&cmd=emailpwd");
-		if( !isset($nickname)) { $nickname = '';}
-		if( !isset($cagree)) { $cagree = '';}
-		//userCreate($firstname, $middlename, $lastname, $nickname, $email);
-		if( !isset($fields)) { $fields = array();}
+		}
+
 		include_once $babInstallPath."utilit/dirincl.php";
-		displayRegistration($nickname, $fields, $cagree);
+		displayRegistration(
+				bab_pp('nickname'), 
+				bab_rp('fields', array()), 
+				bab_pp('cagree')
+			);
 		break;
 
 	case "emailpwd":
@@ -756,17 +759,32 @@ switch($cmd)
 		$babBody->addItemMenu("signon", bab_translate("Login"), $GLOBALS['babUrlScript']."?tg=login&cmd=signon");
 		if( $babBody->babsite['registration'] == 'Y')
 			$babBody->addItemMenu("register", bab_translate("Register"), $GLOBALS['babUrlScript']."?tg=login&cmd=register");
-		if (isEmailPassword() ) 
+		if (isEmailPassword() )  {
 			$babBody->addItemMenu("emailpwd", bab_translate("Lost Password"), $GLOBALS['babUrlScript']."?tg=login&cmd=emailpwd");
-		emailPassword();
+			emailPassword();
+		} else {
+			$babBody->msgerror = bab_translate("Acces denied");
+		}
 		break;
 
 	case "confirm":
 		confirmUser( $hash, $name );
 		/* no break; */
+		
+	case 'detect':
+		if ($GLOBALS['BAB_SESS_LOGGED']) {
+			header( "location:".bab_rp('referer') );
+			exit;
+		}
+		/* no break; */
+		
 	case "signon":
 	default:
-		if (!empty($_SERVER['HTTP_HOST']) && !isset($_GET['redirected']) && substr_count($GLOBALS['babUrl'],$_SERVER['HTTP_HOST']) == 0 && !$GLOBALS['BAB_SESS_LOGGED'])
+		if (
+			!empty($_SERVER['HTTP_HOST']) 
+			&& !isset($_GET['redirected']) 
+			&& substr_count($GLOBALS['babUrl'],$_SERVER['HTTP_HOST']) == 0 
+			&& !$GLOBALS['BAB_SESS_LOGGED'])
 			{
 			header('location:'.$GLOBALS['babUrlScript'].'?tg=login&cmd=signon&redirected=1');
 			}
@@ -774,8 +792,9 @@ switch($cmd)
 		$babBody->addItemMenu("signon", bab_translate("Login"), $GLOBALS['babUrlScript']."?tg=login&cmd=signon");
 		if( $babBody->babsite['registration'] == 'Y')
 			$babBody->addItemMenu("register", bab_translate("Register"), $GLOBALS['babUrlScript']."?tg=login&cmd=register");
-		if (isEmailPassword() ) 
+		if (isEmailPassword() ) {
 			$babBody->addItemMenu("emailpwd", bab_translate("Lost Password"), $GLOBALS['babUrlScript']."?tg=login&cmd=emailpwd");
+		}
 		if (!isset($_REQUEST['referer'])) {
 			$referer = !empty($GLOBALS['HTTP_REFERER']) ? $GLOBALS['HTTP_REFERER'] : '';
 		} else {

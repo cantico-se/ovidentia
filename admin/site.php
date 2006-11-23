@@ -80,13 +80,13 @@ class site_configuration_cls
 
 	if (false !== $id_site)
 		{
-		$res = $this->db->db_query("SELECT *, DECODE(smtppassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as smtppass FROM ".BAB_SITES_TBL." WHERE id='".$id_site."'");
+		$res = $this->db->db_query("SELECT *, DECODE(smtppassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as smtppass FROM ".BAB_SITES_TBL." WHERE id='".$this->db->db_escape_string($id_site)."'");
 		$this->row = $this->db->db_fetch_assoc($res);
 
 		$this->arr = array();
 		foreach($this->row as $k => $val)
 			{
-			$this->arr[$k] = htmlentities($val);
+			$this->arr[$k] = bab_toHtml($val);
 			}
 
 		if (isset($_REQUEST['idx']))
