@@ -1724,10 +1724,12 @@ function getFile( $file, $id, $gr, $path, $inl)
 	header("Content-Length: ". $fsize."\n");
 	header("Content-transfert-encoding: binary"."\n");
 	$fp=fopen($fullpath,"rb");
-	while (!feof($fp)) {
-		print fread($fp, 8192);
+	if ($fp) {
+		while (!feof($fp)) {
+			print fread($fp, 8192);
+			}
+		fclose($fp);
 		}
-	fclose($fp);
 	}
 
 
