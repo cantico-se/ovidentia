@@ -521,9 +521,9 @@ function categoriesList()
 			if( $i < $this->count)
 				{
 				$arr = $babDB->db_fetch_array($this->res);
-				$this->name = $arr['name'];
-				$this->description = $arr['description'];
-				$this->bgcolor = $arr['bgcolor'];
+				$this->name = bab_toHtml($arr['name']);
+				$this->description = bab_toHtml($arr['description']);
+				$this->bgcolor = bab_toHtml($arr['bgcolor']);
 				$i++;
 				return true;
 				}
@@ -619,7 +619,7 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 					$evt['end_date'] = bab_toHtml(bab_longDate($ts));
 					$evt['categoryname'] = !empty($this->mcals->categories[$arr['id_cat']]) ? bab_toHtml($this->mcals->categories[$arr['id_cat']]['name']) : '';
 					$evt['categorydescription'] = !empty($this->mcals->categories[$arr['id_cat']]) ? bab_toHtml($this->mcals->categories[$arr['id_cat']]['description']) : '';
-					$evt['color'] = !empty($this->mcals->categories[$arr['id_cat']]) ? bab_toHtml($this->mcals->categories[$arr['id_cat']]['bgcolor']) : $arr['color'];
+					$evt['color'] = !empty($this->mcals->categories[$arr['id_cat']]) ? bab_toHtml($this->mcals->categories[$arr['id_cat']]['bgcolor']) : bab_toHtml($arr['color']);
 					$evt['creator'] = $arr['id_creator'] != $GLOBALS['BAB_SESS_USERID'] ? bab_toHtml(bab_getUserName($arr['id_creator'])) : '';
 					$evt['private'] = $arr['id_creator'] != $GLOBALS['BAB_SESS_USERID'] && 'PUBLIC' !== $calPeriod->getProperty('CLASS');
 					$evt['nbowners'] = $arr['nbowners']+1;
@@ -672,15 +672,23 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 			}
 
 
-		function getnextevent()
-			{
-			return list($this->idevent,$this->evt) = each($this->resevent);
+		function getnextevent() {
+			if (list($this->idevent,$this->evt) = each($this->resevent)) {
+				return true;
 			}
+			
+			return false;
+		}
 
-		function getnextcalendar()
-			{
-			return list($this->id,$this->calendar) = each($this->evt['cals']);
+		function getnextcalendar() {
+			if (list($this->id,$this->calendar) = each($this->evt['cals'])) {
+				$this->calendar['type'] = bab_toHtml($this->calendar['type']);
+				$this->calendar['name'] = bab_toHtml($this->calendar['name']);
+				return true;
 			}
+			
+			return false;
+		}
 
 		function printout()
 			{

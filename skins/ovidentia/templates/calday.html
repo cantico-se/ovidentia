@@ -6,16 +6,17 @@ document.onmousemove = bab_tooltipPosition;
 </script>
 
 <div class="bab_cal_buttons">
-	<!--#if print -->
+		<!--#if print -->
 	<a class="print" href="javascript:window.print()">{ t_print }</a>
 	<!--#else print -->
-	<a class="calendars" href="javascript:bab_popup('{ calendarchoiceurl }')">{ t_calendarchoice }</a>
-	<a class="print" href="javascript:bab_popup(document.location.href+'&print=1',6,1)">{ t_print_friendly }</a>
-	<a class="print" href="javascript:bab_popup('{ eventlisturl }',6,1)">{ t_eventlist }</a>
-	<a class="categories" href="javascript:bab_popup('{ babUrlScript }?tg=calendar&idx=viewc')">{ t_catlist }</a>
+	<a class="calendars" href="{ calendarchoiceurl }" onclick="bab_popup(this.href);return false;">{ t_calendarchoice }</a>
+	<a class="print" href="{ printurl }" onclick="bab_popup(this.href,6,1);return false;">{ t_print_friendly }</a>
+	<a class="print" href="{ eventlisturl }" onclick="bab_popup(this.href,6,1);return false;">{ t_eventlist }</a>
+	<a class="categories" href="{ babUrlScript }?tg=calendar&amp;idx=viewc" onclick="bab_popup(this.href);return false;">{ t_catlist }</a>
 	<a class="notifier" href="{ calnotifierurl }" onclick="bab_popup_obj = 0;bab_popup(this.href, 2);return false;">{ t_notifier }</a>
 	<!--#endif print -->
 </div>
+
 <table class="bab_calnavbar" width="100%" cellpadding="2" cellspacing="0" align="center">
 	<tr class="BabLoginMenuBackground"> 
 		<td class="prev" width="25%">
@@ -96,7 +97,7 @@ document.onmousemove = bab_tooltipPosition;
 					{ titleten }
 					<div id="calevent{ idcal }{ idevent }" class="bab_cal_tooltip" style="background-color:#{ bgcolor }">
 						<h3>{ title }</h3>
-						<h5>
+						<div>
 							<p><strong>{ t_date_from } : </strong> { startdate } { starttime }</p>
 							<p><strong>{ t_date_to } : </strong> { enddate } { endtime }</p>
 							<!--#if id_creator -->
@@ -111,11 +112,11 @@ document.onmousemove = bab_tooltipPosition;
 							<!--#if location -->
 							<p><strong>{ t_location } : </strong> { location }</p>
 							<!--#endif location -->
-						</h5>
+						</div>
 						<div class="description">{ description }</div>
 							<!--#if bnote -->
 						<h5>
-							<p>{ notestxt }</p>
+							{ notestxt }
 						</h5>
 						<div class="description">{ noteval }</div>
 							<!--#endif bnote -->
@@ -161,13 +162,13 @@ document.onmousemove = bab_tooltipPosition;
 
 
 <div class="bab_cal_buttons">
-	<!--#if print -->
+		<!--#if print -->
 	<a class="print" href="javascript:window.print()">{ t_print }</a>
 	<!--#else print -->
-	<a class="calendars" href="javascript:bab_popup('{ calendarchoiceurl }')">{ t_calendarchoice }</a>
-	<a class="print" href="javascript:bab_popup(document.location.href+'&print=1',6,1)">{ t_print_friendly }</a>
-	<a class="print" href="javascript:bab_popup('{ eventlisturl }',6,1)">{ t_eventlist }</a>
-	<a class="categories" href="javascript:bab_popup('{ babUrlScript }?tg=calendar&idx=viewc')">{ t_catlist }</a>
+	<a class="calendars" href="{ calendarchoiceurl }" onclick="bab_popup(this.href);return false;">{ t_calendarchoice }</a>
+	<a class="print" href="{ printurl }" onclick="bab_popup(this.href,6,1);return false;">{ t_print_friendly }</a>
+	<a class="print" href="{ eventlisturl }" onclick="bab_popup(this.href,6,1);return false;">{ t_eventlist }</a>
+	<a class="categories" href="{ babUrlScript }?tg=calendar&amp;idx=viewc" onclick="bab_popup(this.href);return false;">{ t_catlist }</a>
 	<a class="notifier" href="{ calnotifierurl }" onclick="bab_popup_obj = 0;bab_popup(this.href, 2);return false;">{ t_notifier }</a>
 	<!--#endif print -->
 </div>
