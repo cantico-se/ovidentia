@@ -21,9 +21,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
-include_once $babInstallPath."admin/acl.php";
-include_once $babInstallPath."utilit/forumincl.php";
+include_once 'base.php';
+include_once $babInstallPath.'admin/acl.php';
+include_once $babInstallPath.'utilit/forumincl.php';
 
 function modifyForum($id)
 	{
@@ -50,6 +50,7 @@ function modifyForum($id)
 
 		function temp($id)
 			{
+			global $babDB;
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
 			$this->update = bab_translate("Update Forum");
@@ -67,10 +68,14 @@ function modifyForum($id)
 			$this->allow_moderatorupdate_txt = bab_translate("Allow moderators to modify posts");
 			$this->allow_authorupdate_txt = bab_translate("Allow authors to modify their posts");
 
-			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_FORUMS_TBL." where id='$id'";
-			$this->res = $this->db->db_query($req);
-			$this->arr = $this->db->db_fetch_array($this->res);
+			$req = "select * from ".BAB_FORUMS_TBL." where id='".$babDB->db_escape_string($id)."'";
+			$this->res = $babDB->db_query($req);
+			$this->arr = $babDB->db_fetch_array($this->res);
+			$this->arr['id'] = bab_toHTML($this->arr['id']);
+			$this->arr['name'] = bab_toHTML($this->arr['name']);
+			$this->arr['description'] = bab_toHTML($this->arr['description']);
+			$this->arr['display'] = bab_toHTML($this->arr['display']);
+			$this->arr['nb_recipients'] = bab_toHTML($this->arr['nb_recipients']);
 			}
 		}
 
@@ -97,7 +102,7 @@ function deleteForum($id)
 		function temp($id)
 			{
 			$this->message = bab_translate("Are you sure you want to delete this forum");
-			$this->title = bab_getForumName($id);
+			$this->title = bab_toHTML(bab_getForumName($id));
 			$this->warning = bab_translate("WARNING: This operation will delete the forum and all posts"). "!";
 			$this->urlyes = $GLOBALS['babUrlScript']."?tg=forum&idx=Delete&category=".$id."&action=Yes";
 			$this->yes = bab_translate("Yes");
@@ -112,14 +117,12 @@ function deleteForum($id)
 
 function updateForum($id, $name, $description, $moderation, $notification, $nbmsgdisplay, $active, $nbrecipients)
 	{
-	global $babBody;
+	global $babBody, $babDB;
 	if( empty($name))
 		{
 		$babBody->msgerror = bab_translate("ERROR: You must provide a name")." !!";
 		return;
 		}
-
-	$db = $GLOBALS['babDB'];
 
 	if (!is_numeric($nbmsgdisplay) || empty($nbmsgdisplay))
 		{
@@ -147,22 +150,22 @@ function updateForum($id, $name, $description, $moderation, $notification, $nbms
 	$bupdateauthor = $bupdateauthor == 'Y'? 'Y' : 'N';
 
 	$query = "UPDATE ".BAB_FORUMS_TBL." set 
-		name='".$db->db_escape_string($name)."', 
-		description='".$db->db_escape_string($description)."', 
-		moderation='".$db->db_escape_string($moderation)."', 
-		notification='".$db->db_escape_string($notification)."', 
-		display='".$db->db_escape_string($nbmsgdisplay)."', 
-		active='".$db->db_escape_string($active)."', 
-		nb_recipients='".$db->db_escape_string($nbrecipients)."', 
-		bdisplayemailaddress='".$db->db_escape_string($bdisplayemailaddress)."', 
-		bdisplayauhtordetails='".$db->db_escape_string($bdisplayauhtordetails)."', 
-		bflatview='".$db->db_escape_string($bflatview)."', 
-		bupdatemoderator='".$db->db_escape_string($bupdatemoderator)."', 
-		bupdateauthor='".$db->db_escape_string($bupdateauthor)."' 
+		name='".$babDB->db_escape_string($name)."', 
+		description='".$babDB->db_escape_string($description)."', 
+		moderation='".$babDB->db_escape_string($moderation)."', 
+		notification='".$babDB->db_escape_string($notification)."', 
+		display='".$babDB->db_escape_string($nbmsgdisplay)."', 
+		active='".$babDB->db_escape_string($active)."', 
+		nb_recipients='".$babDB->db_escape_string($nbrecipients)."', 
+		bdisplayemailaddress='".$babDB->db_escape_string($bdisplayemailaddress)."', 
+		bdisplayauhtordetails='".$babDB->db_escape_string($bdisplayauhtordetails)."', 
+		bflatview='".$babDB->db_escape_string($bflatview)."', 
+		bupdatemoderator='".$babDB->db_escape_string($bupdatemoderator)."', 
+		bupdateauthor='".$babDB->db_escape_string($bupdateauthor)."' 
 	where 
-		id = '".$db->db_escape_string($id)."'";
+		id = '".$babDB->db_escape_string($id)."'";
 
-	$db->db_query($query);
+	$babDB->db_query($query);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=forums&idx=List");
 	}
 
