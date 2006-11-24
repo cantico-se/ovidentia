@@ -152,6 +152,7 @@ function listThreads($forum, $active, $pos)
 				{
 				$this->altbg = !$this->altbg;
 				$this->arrthread = $babDB->db_fetch_array($this->res);
+				$this->thread_views = bab_toHTML($this->arrthread['views']);
 				$res = $babDB->db_query("select * from ".BAB_POSTS_TBL." where id='".$babDB->db_escape_string($this->arrthread['post'])."'");
 				$ar = $babDB->db_fetch_array($res);
 
@@ -182,7 +183,7 @@ function listThreads($forum, $active, $pos)
 						if( $res && $babDB->db_num_rows($res) > 0 )
 							{
 							$rr = $babDB->db_fetch_array($res);
-							$this->threadauthoremail = $rr['email'];
+							$this->threadauthoremail = bab_toHTML($rr['email']);
 							}
 						}
 					}
@@ -190,7 +191,7 @@ function listThreads($forum, $active, $pos)
 				$req = "select count(*) as total from ".BAB_POSTS_TBL." where id_thread='".$babDB->db_escape_string($this->arrthread['id'])."' and confirmed='Y'";
 				$res = $babDB->db_query($req);
 				$row = $babDB->db_fetch_array($res);
-				$this->replies = $row['total'] > 0 ? ($row['total'] -1): 0;
+				$this->replies = bab_toHTML(($row['total'] > 0 ? ($row['total'] -1): 0));
 				if( $row['total'] == 0 && $this->moderator == false && ($this->bupdateauthor == 'N' || ($BAB_SESS_USERID && $BAB_SESS_USERID != $this->arrthread['starter']) )  )
 					{
 					$this->disabled = 1;
@@ -246,7 +247,7 @@ function listThreads($forum, $active, $pos)
 				
 				
 
-				$this->lastpostdate = bab_shortDate(bab_mktime($this->arrthread['lastpostdate']), true);
+				$this->lastpostdate = bab_toHTML(bab_shortDate(bab_mktime($this->arrthread['lastpostdate']), true));
 
 				$this->lastpostauthordetailsurl = '';
 				if( $this->arrthread['id_author'] != 0 && $this->bdisplayauhtordetails == 'Y')
@@ -268,7 +269,7 @@ function listThreads($forum, $active, $pos)
 						if( $res && $babDB->db_num_rows($res) > 0 )
 							{
 							$rr = $babDB->db_fetch_array($res);
-							$this->lastpostauthoremail = $rr['email'];
+							$this->lastpostauthoremail = bab_toHTML($rr['email']);
 							}
 						}
 					}
@@ -308,7 +309,7 @@ function listThreads($forum, $active, $pos)
 			static $i = 0;
 			if( $i < $this->countgotothreadpages)
 				{
-				$this->page = $this->gotothreadpages[$i][0];
+				$this->page = bab_toHTML($this->gotothreadpages[$i][0]);
 				$this->bpageurl = $this->gotothreadpages[$i][2];
 				$this->pageurl = $this->gotothreadurl.$this->gotothreadpages[$i][1];
 				$i++;
@@ -326,7 +327,7 @@ function listThreads($forum, $active, $pos)
 			static $i = 0;
 			if( $i < $this->countpages)
 				{
-				$this->page = $this->gotopages[$i]['page'];
+				$this->page = bab_toHTML($this->gotopages[$i]['page']);
 				$this->bpageurl = $this->gotopages[$i]['url'];
 				$this->pageurl = $this->gotourl.$this->gotopages[$i]['pagepos'];
 				$i++;
@@ -343,8 +344,8 @@ function listThreads($forum, $active, $pos)
 			static $i = 0;
 			if( list($key, $val) = each($this->forums))
 				{
-				$this->forumid = $key;
-				$this->forumname = $val['name'];
+				$this->forumid = bab_toHTML($key);
+				$this->forumname = bab_toHTML($val['name']);
 				$i++;
 				return true;
 				}
@@ -380,7 +381,7 @@ function newThread($forum)
 
 		function temp($forum)
 			{
-			global $BAB_SESS_USER;
+			global $babBody, $BAB_SESS_USER;
 			$this->subject = bab_translate("Subject");
 			$this->name = bab_translate("Your Name");
 			$this->notifyme = bab_translate("Notify me whenever someone replies ( only valid for registered users )");
@@ -390,8 +391,8 @@ function newThread($forum)
 			$this->t_files = bab_translate("Dependent files");
 			$this->t_add_field = bab_translate("Add field");
 			$this->t_remove_field = bab_translate("Remove field");
-			$this->forum = $forum;
-			$this->flat = bab_rp('flat', 1);;
+			$this->forum = bab_toHTML($forum);
+			$this->flat = bab_toHTML(bab_rp('flat', 1));
 
 			if( !isset($_POST['subject']))
 				{
@@ -399,18 +400,22 @@ function newThread($forum)
 				}
 			else
 				{
-				$this->subjectval = htmlentities($_POST['subject']);
+				$this->subjectval = bab_toHTML(bab_pp('subject', ''));
 				}
+
 			if( empty($BAB_SESS_USER))
+				{
 				$this->anonyme = 1;
+				}
 			else
 				{
 				$this->anonyme = 0;
-				$this->username = $BAB_SESS_USER;
+				$this->username = bab_toHTML($BAB_SESS_USER);
 				}
 			$message = isset($_POST['message']) ? $_POST['message'] : '';
 			$this->editor = bab_editor($message, 'message', 'threadcr');
 			$this->allow_post_files = bab_isAccessValid(BAB_FORUMSFILES_GROUPS_TBL,$forum);
+			$this->maxfilesize = bab_toHTML($babBody->babsite['maxfilesize']);
 
 			if( bab_isForumModerated($forum))
 				$this->noteforum = bab_translate("Note: Posts are moderate and consequently your post will not be visible immediately");
@@ -423,9 +428,21 @@ function newThread($forum)
 	$babBody->babecho(	bab_printTemplate($temp,'threads.html', 'threadcreate'));
 	}
 
-function saveThread($forum, $name, $subject, $message, $notifyme)
+function saveThread()
 	{
 	global $BAB_SESS_USER, $BAB_SESS_USERID, $babBody, $babDB;
+
+	$forum = intval(bab_pp('forum', 0));
+	$subject = strval(bab_pp('subject', ''));
+	$message = strval(bab_pp('message', ''));
+	$notifyme = bab_pp('notifyme', 'N');
+	$name = strval(bab_pp('uname', ''));
+
+	if(!bab_isAccessValid(BAB_FORUMSPOST_GROUPS_TBL, $forum))
+		{
+		$babBody->msgerror = bab_translate("Access denied");
+		return false;
+		}
 
 	if( empty($message))
 		{
@@ -486,7 +503,9 @@ function saveThread($forum, $name, $subject, $message, $notifyme)
 	$idpost = $babDB->db_insert_id();
 
 	if (bab_isAccessValid(BAB_FORUMSFILES_GROUPS_TBL,$forum))
+		{
 		bab_uploadPostFiles($idpost, $forum);
+		}
 	
 	$req = "update ".BAB_THREADS_TBL." set 
 		lastpost='".$babDB->db_escape_string($idpost)."', 
@@ -511,7 +530,7 @@ function saveThread($forum, $name, $subject, $message, $notifyme)
 		notifyForumGroups($forum, stripslashes($subject), stripslashes($name), $arr['name'], $tables, $url);
 		}
 
-	Header('Location: '. $GLOBALS['babUrlScript'].'?tg=threads&forum='.$forum);
+	Header('Location: '. $GLOBALS['babUrlScript'].'?tg=threads&forum='.urlencode($forum));
 	exit;
 	}
 
@@ -535,9 +554,7 @@ if( !isset($pos))
 
 if( isset($add) && $add == 'addthread' && bab_isAccessValid(BAB_FORUMSPOST_GROUPS_TBL, $forum))
 	{
-	if (!isset($uname)) $uname = '';
-	if (!isset($notifyme)) $notifyme = '';
-	if (!saveThread($forum, $uname, $subject, $message, $notifyme))
+	if (!saveThread())
 		{
 		$idx = 'newthread';
 		}

@@ -152,7 +152,7 @@
 	<tr> 
 		<td align="right">{ subject }</td>
 		<td> 
-			<input type="text" name="subject" size="45" maxlength="60" value="{ arr[subject] }" />
+			<input type="text" name="subject" size="45" maxlength="60" value="{ subjectval }" />
 		</td>
 	</tr>
 	<tr>
@@ -227,7 +227,7 @@ class="BabForumTopicsNavContribution" href="{ confirmurl }">{ confirmname }</a><
 				<dl class="BabForumFiles">
 					<dt>{ t_files }:</dt>
 					<!--#in getnextfile -->
-					<dd><a href="{ file[url] }">{ file_name }</a> <span>( { file_size }<!--#if displayIndex -->, { file_index_label }<!--#endif displayIndex --> )</span></dd>
+					<dd><a href="{ file_url }">{ file_name }</a> <span>( { file_size }<!--#if displayIndex -->, { file_index_label }<!--#endif displayIndex --> )</span></dd>
 					<!--#endin getnextfile -->
 				</dl>
 				<!--#endif files -->
@@ -469,8 +469,7 @@ window.focus();
 			<!--#endif moreurl --> 
 
 			<!--#endif what -->
-			<span>{ posted_txt }: { 
-            postdate }</span><br /><span>{ postsubject_txt }: <b>{ postsubject }</b></span></td>
+			<span>{ posted_txt }: { postdate }</span><br /><span>{ postsubject_txt }: <b>{ postsubject }</b></span></td>
 			<td valign="top" nowrap="nowrap">
 			<!--#if breply -->
 			<!--#if what "== Y" -->

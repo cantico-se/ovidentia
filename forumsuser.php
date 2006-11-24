@@ -145,17 +145,17 @@ function listForums()
 			static $i=0;
 			if( $i < $this->count )
 				{
-				$this->forumname = $this->forums[$i]['name'];
-				$this->forumdescription = $this->forums[$i]['description'];
-				$this->threads = $this->forums[$i]['threads'];
-				$this->posts = $this->forums[$i]['posts'];
+				$this->forumname = bab_toHTML($this->forums[$i]['name']);
+				$this->forumdescription = bab_toHTML($this->forums[$i]['description']);
+				$this->threads = bab_toHTML($this->forums[$i]['threads']);
+				$this->posts = bab_toHTML($this->forums[$i]['posts']);
 				$this->lastpostauthor = bab_toHTML($this->forums[$i]['author']);
-				$this->lastpostdate = $this->forums[$i]['date'];
-				$this->nbnewposts = $this->forums[$i]['nbnewposts'];
+				$this->lastpostdate = bab_toHTML($this->forums[$i]['date']);
+				$this->nbnewposts = bab_toHTML($this->forums[$i]['nbnewposts']);
 				$this->lastpostauthoremail = bab_toHTML($this->forums[$i]['lastpostauthoremail']);
-				$this->forumurl = $GLOBALS['babUrlScript']."?tg=threads&forum=".$this->forums[$i]['id'];
-				$this->lastposturl = $GLOBALS['babUrlScript']."?tg=posts&flat=1&forum=".$this->forums[$i]['id'].$this->forums[$i]['lastposturl'];
-				$this->lastpostauthordetails = $this->forums[$i]['lastpostauthordetails'];
+				$this->forumurl = $GLOBALS['babUrlScript']."?tg=threads&forum=".urlencode($this->forums[$i]['id']);
+				$this->lastposturl = $GLOBALS['babUrlScript']."?tg=posts&flat=1&forum=".urlencode($this->forums[$i]['id']).$this->forums[$i]['lastposturl'];
+				$this->lastpostauthordetails = bab_toHTML($this->forums[$i]['lastpostauthordetails']);
 				$i++;
 				return true;
 				}
@@ -200,8 +200,8 @@ function searchForums()
 			static $i=0;
 			if( list($key, $val) = each($this->forums))
 				{
-				$this->forumid = $key;
-				$this->forumname = $val['name'];
+				$this->forumid = bab_toHTML($key);
+				$this->forumname = bab_toHTML($val['name']);
 				if( isset($_REQUEST['forum']) && $this->forumid == $_REQUEST['forum'] )
 					{
 					$this->selected = 'selected';
@@ -297,7 +297,7 @@ function displaySearchResultsForums()
 						{
 						$req .= " limit ".$spos.",".BAB_FORUMS_MAXRESULTS;
 						$this->gotopage_txt = bab_translate("Goto page");
-						$this->gotourl = $GLOBALS['babUrlScript']."?tg=forumsuser&idx=searchr&forum=".$forum."&sword=".$sword."&sopt=".$sopt."&spos=";
+						$this->gotourl = $GLOBALS['babUrlScript']."?tg=forumsuser&idx=searchr&forum=".urlencode($forum)."&sword=".urlencode($sword)."&sopt=".urlencode($sopt)."&spos=";
 						$this->gotopages = bab_generatePagination($total, BAB_FORUMS_MAXRESULTS, $spos);
 						$this->countpages = count($this->gotopages);
 						}
@@ -322,21 +322,20 @@ function displaySearchResultsForums()
 				$this->altbg = !$this->altbg;
 				$arr = $babDB->db_fetch_array($this->res);
 				$this->forum_name = bab_toHTML($arr['name']);
-				$this->forum_url = $GLOBALS['babUrlScript']."?tg=threads&forum=".$arr['forum'];
+				$this->forum_url = $GLOBALS['babUrlScript']."?tg=threads&forum=".urlencode($arr['forum']);
 				$this->thread_name = bab_toHTML($arr['thread']);
-				$this->thread_url = $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$arr['forum']."&thread=".$arr['id_thread']."&flat=".($this->forums[$arr['forum']]['bflatview']=='Y'?1:0);
+				$this->thread_url = $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".urlencode($arr['forum'])."&thread=".urlencode($arr['id_thread'])."&flat=".urlencode(($this->forums[$arr['forum']]['bflatview']=='Y'?1:0));
 				if( $arr['id_author'] )
 					{
-					$this->author_name = bab_getUserName($arr['id_author']);
+					$this->author_name = bab_toHTML(bab_getUserName($arr['id_author']));
 					}
 				else
 					{
-					$this->author_name = $arr['author'];
+					$this->author_name = bab_toHTML($arr['author']);
 					}
-				$this->author_name = bab_toHTML($this->author_name);
 
 				$this->post_name = bab_toHTML($arr['subject']);
-				$this->post_url = $GLOBALS['babUrlScript']."?tg=forumsuser&idx=viewr&post=".$arr['id'];
+				$this->post_url = $GLOBALS['babUrlScript']."?tg=forumsuser&idx=viewr&post=".urlencode($arr['id']);
 
 
 				$this->authordetailsurl = '';
@@ -345,7 +344,7 @@ function displaySearchResultsForums()
 					{
 					if( bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $this->iddir))
 						{
-						$this->authordetailsurl = $GLOBALS['babUrlScript']."?tg=directory&idx=ddbovml&directoryid=".$this->iddir."&userid=".$arr['id_author'];	
+						$this->authordetailsurl =  $GLOBALS['babUrlScript']."?tg=directory&idx=ddbovml&directoryid=".urlencode($this->iddir)."&userid=".urlencode($arr['id_author']);	
 						}
 					}
 
@@ -378,7 +377,7 @@ function displaySearchResultsForums()
 			static $i=0;
 			if( list($key, $val) = each($this->forums))
 				{
-				$this->forumid = $key;
+				$this->forumid = bab_toHTML($key);
 				$this->forumname = bab_toHTML($val['name']);
 				$i++;
 				return true;
@@ -394,7 +393,7 @@ function displaySearchResultsForums()
 			static $i = 0;
 			if( $i < $this->countpages)
 				{
-				$this->page = $this->gotopages[$i]['page'];
+				$this->page = bab_toHTML($this->gotopages[$i]['page']);
 				$this->bpageurl = $this->gotopages[$i]['url'];
 				$this->pageurl = $this->gotourl.$this->gotopages[$i]['pagepos'];
 				$i++;
@@ -457,13 +456,13 @@ function viewSearchResultForums()
 						$this->postdate = bab_strftime(bab_mktime($arr['date']));
 						if( $arr['id_author'] )
 							{
-							$this->postauthor = bab_getUserName($arr['id_author']);
+							$this->postauthor = bab_toHTML(bab_getUserName($arr['id_author']));
 							}
 						else
 							{
-							$this->postauthor = $arr['author'];
+							$this->postauthor = bab_toHTML($arr['author']);
 							}
-						$this->postsubject = $arr['subject'];
+						$this->postsubject = bab_toHTML($arr['subject']);
 						$this->postmessage = bab_replace($arr['message']);
 
 						list($this->iddir) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group='".$babDB->db_escape_string(BAB_REGISTERED_GROUP)."'"));
@@ -488,7 +487,7 @@ function viewSearchResultForums()
 								if( $res && $babDB->db_num_rows($res) > 0 )
 									{
 									$rr = $babDB->db_fetch_array($res);
-									$this->postauthoremail = $rr['email'];
+									$this->postauthoremail = bab_toHTML($rr['email']);
 									}
 								}
 							}
@@ -498,11 +497,6 @@ function viewSearchResultForums()
 						}
 					}
 				}
-			else
-				{
-				}
-
-
 			}
 
 
@@ -511,6 +505,8 @@ function viewSearchResultForums()
 			{
 			if ($this->file = current($this->files))
 				{
+				$this->file_name = bab_toHTML($this->file['name']);
+				$this->file_url = bab_toHTML($this->file['url']);
 				next($this->files);
 				return true;
 				}
@@ -540,19 +536,19 @@ switch($idx)
 	case "searchr":
 		displaySearchResultsForums();
 		$babBody->addItemMenu("list", bab_translate("Forums"), $GLOBALS['babUrlScript']."?tg=forumsuser&idx=list");
-		$babBody->addItemMenu("search", bab_translate("Search"), $GLOBALS['babUrlScript']."?tg=forumsuser&idx=search&sword=".bab_rp('sword', ''));
+		$babBody->addItemMenu("search", bab_translate("Search"), $GLOBALS['babUrlScript']."?tg=forumsuser&idx=search&sword=".urlencode(bab_rp('sword', '')));
 		$babBody->addItemMenu("searchr", bab_translate("Results"), $GLOBALS['babUrlScript']."?tg=forumsuser&idx=search");
 		break;
 	case "search":
 		searchForums();
 		$babBody->addItemMenu("list", bab_translate("Forums"), $GLOBALS['babUrlScript']."?tg=forumsuser&idx=list");
-		$babBody->addItemMenu("search", bab_translate("Search"), $GLOBALS['babUrlScript']."?tg=forumsuser&idx=search&sword=".bab_rp('sword', ''));
+		$babBody->addItemMenu("search", bab_translate("Search"), $GLOBALS['babUrlScript']."?tg=forumsuser&idx=search&sword=".urlencode(bab_rp('sword', '')));
 		break;
 	default:
 	case "list":
 		listForums();
 		$babBody->addItemMenu("list", bab_translate("Forums"), $GLOBALS['babUrlScript']."?tg=forumsuser&idx=list");
-		$babBody->addItemMenu("search", bab_translate("Search"), $GLOBALS['babUrlScript']."?tg=forumsuser&idx=search&sword=".bab_rp('sword', ''));
+		$babBody->addItemMenu("search", bab_translate("Search"), $GLOBALS['babUrlScript']."?tg=forumsuser&idx=search&sword=".urlencode(bab_rp('sword', '')));
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);

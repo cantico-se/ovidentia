@@ -119,12 +119,12 @@ function notifyForumGroups($forum, $threadTitle, $author, $forumname, $tables, $
             $this->message = bab_translate("A new post has been registered on forum") .': '.$forumname;
             $this->from = bab_translate("Author");
             $this->thread = bab_translate("Thread");
-            $this->threadname = $threadTitle;
+            $this->threadname = bab_toHTML($threadTitle);
             $this->site = bab_translate("Web site");
-            $this->sitename = $babSiteName;
+            $this->sitename = bab_toHTML($babSiteName);
             $this->date = bab_translate("Date");
             $this->dateval = bab_strftime(mktime());
-            $this->author = $author;
+            $this->author = bab_toHTML($author);
 			if( !empty($url) )
 				{
 				$groups = bab_getGroupsAccess(BAB_FORUMSVIEW_GROUPS_TBL, $forum);
@@ -142,9 +142,9 @@ function notifyForumGroups($forum, $threadTitle, $author, $forumname, $tables, $
 				$this->url = false;
 				}
 
-			$this->babtpl_thread = $this->threadname;
-			$this->babtpl_author = $this->author;
-			$this->babtpl_forum = $forumname;
+			$this->babtpl_thread = bab_toHTML($this->threadname);
+			$this->babtpl_author = bab_toHTML($this->author);
+			$this->babtpl_forum = bab_toHTML($forumname);
 			}
 		}
 	
