@@ -38,7 +38,7 @@ class cal_monthCls extends cal_wmdbaseCls
 		$this->w = 0;
 		$dispdays = explode(',', $babBody->icalendars->dispdays);
 		$time = mktime(0,0,0,$this->month,1,$this->year);
-		$this->monthname = $babMonths[date("n", $time)]."  ".$this->year;
+		$this->monthname = bab_toHtml($babMonths[date("n", $time)]."  ".$this->year);
 		$this->totaldays = date("t", $time);
 		$b = date("w", $time) - $babBody->icalendars->startday;
 		if( $b < 0)
@@ -63,7 +63,7 @@ class cal_monthCls extends cal_wmdbaseCls
 		$this->iso_time2 = sprintf("%04s-%02s-%02s 23:59:59", date("Y", $time2), date("n", $time2), date("j", $time2));
 
 		
-		$this->eventlisturl = $GLOBALS['babUrlScript']."?tg=calendar&idx=eventlist&calid=".$this->currentidcals."&from=".date('Y,n,j',$time1)."&to=".date('Y,n,j',$time2)."";
+		$this->eventlisturl = bab_toHtml( $GLOBALS['babUrlScript']."?tg=calendar&idx=eventlist&calid=".$this->currentidcals."&from=".date('Y,n,j',$time1)."&to=".date('Y,n,j',$time2)."");
 
 		$this->cindex = 0;
 		$this->evtidx = 0;
@@ -85,7 +85,7 @@ class cal_monthCls extends cal_wmdbaseCls
 		static $i = 0;
 		if( $i < count($this->workdays))
 			{
-			$this->dayname = $babDays[$this->workdays[$i]];
+			$this->dayname = bab_toHtml($babDays[$this->workdays[$i]]);
 			$i++;
 			return true;
 			}
@@ -128,7 +128,7 @@ class cal_monthCls extends cal_wmdbaseCls
 
 			$mktime = mktime(0,0,0,$this->month, $this->mday,$this->year);
 			$dday = date("j", $mktime);
-			$this->week = bab_translate("Week").' '.date('W', $mktime);
+			$this->week = bab_toHtml(bab_translate("Week").' '.date('W', $mktime));
 			$this->cdate = sprintf("%04s-%02s-%02s", date("Y", $mktime), date("n", $mktime), date("j", $mktime));
 			if( $dday == date("j") && $this->month == date("n") && $this->year ==  date("Y"))
 				{
@@ -139,10 +139,10 @@ class cal_monthCls extends cal_wmdbaseCls
 				$this->currentday = 0;
 				}
 			$this->daynumbername = $dday;
-			$this->daynumberurl = $this->commonurl."&date=".date("Y", $mktime).",".date("n", $mktime).",".$dday;
-			$this->dayviewurl = $GLOBALS['babUrlScript']."?tg=calday&calid=".implode(',',$this->idcals)."&date=".date("Y", $mktime).",".date("n", $mktime).",".$dday;
-			$this->dayfreeviewurl = $this->dayviewurl."&idx=free";
-			$this->neweventurl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".date("Y", $mktime).",".date("n", $mktime).",".$dday."&calid=".implode(',',$this->idcals)."&view=viewm";
+			$this->daynumberurl = bab_toHtml($this->commonurl."&date=".date("Y", $mktime).",".date("n", $mktime).",".$dday);
+			$this->dayviewurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calday&calid=".implode(',',$this->idcals)."&date=".date("Y", $mktime).",".date("n", $mktime).",".$dday);
+			$this->dayfreeviewurl = $this->dayviewurl."&amp;idx=free";
+			$this->neweventurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".date("Y", $mktime).",".date("n", $mktime).",".$dday."&calid=".implode(',',$this->idcals)."&view=viewm");
 			$d++;
 			return true;
 			}
@@ -158,7 +158,7 @@ class cal_monthCls extends cal_wmdbaseCls
 		if( $this->cindex < count($this->idcals))
 			{
 			$calname = $this->mcals->getCalendarName($this->idcals[$this->cindex]);
-			$this->fullname = htmlentities($calname);
+			$this->fullname = bab_toHtml($calname);
 			$this->fullnameten = $this->calstr($calname,BAB_CAL_NAME_LENGTH);
 			$this->evtarr = array();
 			$this->mcals->getEvents($this->idcals[$this->cindex], $this->cdate." 00:00:00", $this->cdate." 23:59:59", $this->evtarr);
@@ -205,7 +205,7 @@ class cal_monthCls extends cal_wmdbaseCls
 			$this->startdate = bab_shortDate($time0, false);
 			$this->endtime = bab_time($time1);
 			$this->enddate = bab_shortDate($time1, false);
-			$this->addeventurl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".$this->currentdate."&calid=".implode(',',$this->idcals)."&view=viewm&date0=".$time0."&date1=".$time1;
+			$this->addeventurl = bab_toHtml( $GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".$this->currentdate."&calid=".implode(',',$this->idcals)."&view=viewm&date0=".$time0."&date1=".$time1);
 			return true;
 			}
 		else
@@ -253,16 +253,9 @@ function searchAvailability($calid, $date, $date0, $date1, $gap, $bopt)
 /* main */
 
 $calid =bab_rp('calid',$babBody->icalendars->user_calendarids);
+$idx = bab_rp('idx', 'view');
+$date = bab_rp('date', date("Y,n,j"));
 
-if(!isset($idx))
-	{
-	$idx='view';
-	}
-
-if( empty($date))
-	{
-	$date = Date("Y,n,j");
-	}
 
 
 
@@ -277,15 +270,19 @@ switch($idx)
 		exit;
 		break;
 	case "rfree":
-		$babBody->title = bab_translate("Search free events");
+		$babBody->setTitle(bab_translate("Search free events"));
 		$babBody->addItemMenu("view", bab_translate("Calendar"), $GLOBALS['babUrlScript']."?tg=calmonth&calid=".$calid."&date=".$date);
 		$babBody->addItemMenu("free", bab_translate("Availability"), $GLOBALS['babUrlScript']."?tg=calmonth&idx=free&calid=".$calid."&date=".$date);
 		$babBody->addItemMenu("rfree", bab_translate("Search"), $GLOBALS['babUrlScript']."?tg=calmonth&idx=rfree&calid=".$calid."&date=".$date);
-		$gap 	= bab_rp('gap',0);
-		$date0 	= bab_rp('date0');
-		$date1 	= bab_rp('date1');
-		$bopt 	= bab_rp('bopt','Y');
-		searchAvailability($calid, $date, $date0, $date1, $gap, $bopt);
+
+		searchAvailability(
+			$calid, 
+			$date, 
+			bab_rp('date0'), 
+			bab_rp('date1'), 
+			bab_rp('gap',0), 
+			bab_rp('bopt','Y')
+		);
 
 		break;
 
@@ -293,17 +290,19 @@ switch($idx)
 		$calid = bab_isCalendarAccessValid($calid);
 		if( !$calid )
 			{
-			$babBody->title = bab_translate("Acces denied");
+			$babBody->setTitle(bab_translate("Acces denied"));
 			}
 		else
 			{
-			$babBody->title = bab_translate("Calendar");
+			$babBody->setTitle(bab_translate("Calendar"));
 			cal_month_free($calid, $date);
 			$babBody->addItemMenu("view", $babBody->title, $GLOBALS['babUrlScript']."?tg=calmonth&calid=".$calid."&date=".$date);
 			$babBody->addItemMenu("free", bab_translate("Availability"), $GLOBALS['babUrlScript']."?tg=calmonth&idx=free&calid=".$calid."&date=".$date);
 			$babBody->addItemMenu("rfree", bab_translate("Search"), $GLOBALS['babUrlScript']."?tg=calmonth&idx=rfree&calid=".$calid."&date=".$date);
-			if ($GLOBALS['BAB_SESS_LOGGED'])
-				$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options&urla=".urlencode($GLOBALS['babUrlScript']."?tg=calmonth&calid=".$calid."&date=".$date));
+			if ($GLOBALS['BAB_SESS_LOGGED']) {
+				$urla = $GLOBALS['babUrlScript']."?tg=calmonth&calid=".$calid."&date=".$date;
+				$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options&urla=".urlencode($urla));
+				}
 			}
 		break;
 	case "viewm":
@@ -318,11 +317,11 @@ switch($idx)
 
 		if( !$calid )
 			{
-			$babBody->title = bab_translate("Acces denied");
+			$babBody->setTitle(bab_translate("Acces denied"));
 			}
 		else
 			{
-			$babBody->title = bab_getCalendarTitle($calid);
+			$babBody->setTitle(bab_getCalendarTitle($calid));
 			cal_month($calid, $date);
 			$babBody->addItemMenu("view", bab_translate('Calendar'), $GLOBALS['babUrlScript']."?tg=calmonth&calid=".$calid."&date=".$date);
 			$babBody->addItemMenu("free", bab_translate("Availability"), $GLOBALS['babUrlScript']."?tg=calmonth&idx=free&calid=".$calid."&date=".$date);
