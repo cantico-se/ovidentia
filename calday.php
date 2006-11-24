@@ -43,14 +43,14 @@ class cal_dayCls extends cal_wmdbaseCls
 		$time2 = $time1 + 24*3600;
 		
 		$this->cdate = sprintf("%04s-%02s-%02s", date("Y", $time1), date("n", $time1), date("j", $time1));
-		$this->dayname = bab_longDate($time1, false);
-		$this->week = bab_translate("week").' '.date('W',$time1);
+		$this->dayname = bab_toHtml(bab_longDate($time1, false));
+		$this->week = bab_toHtml(bab_translate("week").' '.date('W',$time1));
 
 		$this->iso_time1 = sprintf("%s-%02s-%02s 00:00:00", date("Y", $time1), date("n", $time1), date("j", $time1));
 		$this->iso_time2 = sprintf("%04s-%02s-%02s 23:59:59", date("Y", $time2), date("n", $time2), date("j", $time2));
 
-
-		$this->eventlisturl = $GLOBALS['babUrlScript']."?tg=calendar&idx=eventlist&calid=".$this->currentidcals."&from=".date('Y,n,j',$time1)."&to=".date('Y,n,j',$time2)."";
+		$this->eventlisturl = bab_toHtml( $GLOBALS['babUrlScript']."?tg=calendar&idx=eventlist&calid=".$this->currentidcals."&from=".date('Y,n,j',$time1)."&to=".date('Y,n,j',$time2));
+		
 
 		$this->alternate = false;
 		$this->cindex = 0;
@@ -101,7 +101,7 @@ class cal_dayCls extends cal_wmdbaseCls
 					{
 					$this->hour = sprintf("%02d<sup>%02d</sup>", $curhour/60, $curhour%60);
 					}
-				$this->hoururl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".$this->year.",".$this->month.",".$this->day."&calid=".implode(',',$this->idcals)."&view=viewd&st=".mktime($curhour/60,$curhour%60,0,$this->month,$this->day,$this->year);
+				$this->hoururl = bab_toHtml( $GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".$this->year.",".$this->month.",".$this->day."&calid=".implode(',',$this->idcals)."&view=viewd&st=".mktime($curhour/60,$curhour%60,0,$this->month,$this->day,$this->year));
 				if( $i % 2)
 					{
 					$this->altbgcolor = true;
@@ -176,7 +176,7 @@ class cal_dayCls extends cal_wmdbaseCls
 					}
 				}
 
-			$this->md5 = md5($this->cindex.$this->h_start.$this->icols);
+			$this->md5 = 'm'.md5($this->cindex.$this->h_start.$this->icols);
 			$this->icols++;
 			return true;
 			}
@@ -203,13 +203,13 @@ class cal_dayCls extends cal_wmdbaseCls
 
 			$time0 = bab_mktime($arr[0]);
 			$time1 = bab_mktime($arr[1]);
-			$this->starttime = bab_time($time0);
-			$this->startdate = bab_shortDate($time0, false);
-			$this->endtime = bab_time($time1);
-			$this->enddate = bab_shortDate($time1, false);
-			$this->addeventurl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".$this->currentdate."&calid=".implode(',',$this->idcals)."&view=viewm&date0=".$time0."&date1=".$time1.'&st='.bab_mktime($this->startdt);
+			$this->starttime = bab_toHtml(bab_time($time0));
+			$this->startdate = bab_toHtml(bab_shortDate($time0, false));
+			$this->endtime = bab_toHtml(bab_time($time1));
+			$this->enddate = bab_toHtml(bab_shortDate($time1, false));
+			$this->addeventurl = bab_toHtml( $GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".$this->currentdate."&calid=".implode(',',$this->idcals)."&view=viewm&date0=".$time0."&date1=".$time1.'&st='.bab_mktime($this->startdt));
 
-			$this->md5 = md5($this->cindex.$this->h_start);
+			$this->md5 = 'm'.md5($this->cindex.$this->h_start);
 			return true;
 			}
 		else
@@ -254,20 +254,10 @@ function searchAvailability($calid, $date, $date0, $date1, $gap, $bopt)
 }
 
 /* main */
-if(!isset($idx))
-	{
-	$idx='viewd';
-	}
 
-if( !isset($start)) { $start='';}
-
-if( empty($date))
-	{
-	$date = Date("Y,n,j");
-	}
-
-if( !isset($calid) )
-	$calid = bab_getCalendarId($BAB_SESS_USERID, 1);
+$idx = bab_rp('idx','view');
+$date = bab_rp('date', date("Y,n,j"));
+$calid =bab_rp('calid',$babBody->icalendars->user_calendarids);
 
 
 switch($idx)
@@ -283,11 +273,15 @@ switch($idx)
 		$babBody->addItemMenu("view", bab_translate("Calendar"), $GLOBALS['babUrlScript']."?tg=calday&calid=".$calid."&date=".$date);
 		$babBody->addItemMenu("free", bab_translate("Availability"), $GLOBALS['babUrlScript']."?tg=calday&idx=free&calid=".$calid."&date=".$date);
 		$babBody->addItemMenu("rfree", bab_translate("Search"), $GLOBALS['babUrlScript']."?tg=calday&idx=rfree&calid=".$calid."&date=".$date);	
-		$gap 	= bab_rp('gap',0);
-		$date0 	= bab_rp('date0');
-		$date1 	= bab_rp('date1');
-		$bopt 	= bab_rp('bopt','Y');
-		searchAvailability($calid, $date, $date0, $date1, $gap, $bopt);
+
+		searchAvailability(
+			$calid, 
+			$date, 
+			bab_rp('date0'), 
+			bab_rp('date1'), 
+			bab_rp('gap',0), 
+			bab_rp('bopt','Y')
+		);
 		break;
 
 	case "free":
@@ -299,12 +293,13 @@ switch($idx)
 		else
 			{
 			$babBody->title = bab_translate("Calendar");
-			cal_day_free($calid, $date, $start);
+			cal_day_free($calid, $date, bab_rp('start'));
 			$babBody->addItemMenu("view", $babBody->title, $GLOBALS['babUrlScript']."?tg=calday&calid=".$calid."&date=".$date);
 			$babBody->addItemMenu("free", bab_translate("Availability"), $GLOBALS['babUrlScript']."?tg=calday&idx=free&calid=".$calid."&date=".$date);
 			$babBody->addItemMenu("rfree", bab_translate("Search"), $GLOBALS['babUrlScript']."?tg=calday&idx=rfree&calid=".$calid."&date=".$date);
-			if ($GLOBALS['BAB_SESS_LOGGED'])
+			if ($GLOBALS['BAB_SESS_LOGGED']) {
 				$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options&urla=".urlencode($GLOBALS['babUrlScript']."?tg=calday&calid=".$calid."&date=".$date));
+				}
 			}
 		break;
 	case "viewd":
@@ -324,12 +319,13 @@ switch($idx)
 			}
 		else
 			{
-			$babBody->title = bab_getCalendarTitle($calid);
-			cal_day($calid, $date, $start);
+			$babBody->setTitle(bab_getCalendarTitle($calid));
+			cal_day($calid, $date, bab_rp('start'));
 			$babBody->addItemMenu("view", bab_translate('Calendar'), $GLOBALS['babUrlScript']."?tg=calday&calid=".$calid."&date=".$date);
 			$babBody->addItemMenu("free", bab_translate("Availability"), $GLOBALS['babUrlScript']."?tg=calday&idx=free&calid=".$calid."&date=".$date);
-			if ($GLOBALS['BAB_SESS_LOGGED'])
+			if ($GLOBALS['BAB_SESS_LOGGED']) {
 				$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options&urla=".urlencode($GLOBALS['babUrlScript']."?tg=calday&calid=".$calid."&date=".$date));
+				}
 			}
 		break;
 	}
