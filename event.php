@@ -114,6 +114,8 @@ class bab_event
 		$this->icalendar = $babBody->icalendars;
 		$this->icalendar->initializeCalendars();
 
+		
+
 		$this->rescat = $babDB->db_query("SELECT * FROM ".BAB_CAL_CATEGORIES_TBL." ORDER BY name");
 		}
 
@@ -121,16 +123,20 @@ class bab_event
 
 	function urlDate($callback,$month,$year)
 		{
-		return $GLOBALS['babUrlScript']."?tg=month&callback=".$callback."&ymin=".$this->ymin."&ymax=".$this->ymax."&month=".$month."&year=".$year;
+		return bab_toHtml( $GLOBALS['babUrlScript']."?tg=month&callback=".$callback."&ymin=".$this->ymin."&ymax=".$this->ymax."&month=".$month."&year=".$year);
 		}
 
 
 	function getnextcat()
 		{
 		global $babDB;
-		$this->cat = $babDB->db_fetch_array($this->rescat);
-		$this->selected = isset($_POST['category']) && $_POST['category'] == $this->cat['id'] ? 'selected' : '';
-		return $this->cat;
+		if ($this->cat = $babDB->db_fetch_array($this->rescat)) {
+			$this->cat['name'] = bab_toHtml($this->cat['name']);
+			$this->selected = isset($_POST['category']) && $_POST['category'] == $this->cat['id'] ? 'selected' : '';
+			return true;
+			} 
+			
+		return false;
 		}
 
 	
@@ -163,32 +169,35 @@ function newEvent()
 			$this->dateendurl = $this->urlDate('dateEnd',$this->curmonth,$this->curyear);
 			$this->repeat_dateend = $this->urlDate('repeat_dateend',$this->curmonth,$this->curyear);
 			$this->yearmin = $this->curyear - $this->ymin;
+			
+			$date0 = (int) bab_rp('date0', time());
+			$date1 = (int) bab_rp('date1', time());
 
-			$this->yearbegin = !isset($GLOBALS['date0'])? $this->curyear: date("Y", (int)$GLOBALS['date0']);
-			$this->monthbegin = !isset($GLOBALS['date0'])? $this->curmonth: date("m", (int)$GLOBALS['date0']);
-			$this->daybegin = !isset($GLOBALS['date0'])? $this->curday: date("d", (int)$GLOBALS['date0']);
-			$this->timebegin = !isset($GLOBALS['date0'])? substr($babBody->icalendars->starttime, 0, 5): date("H:i", (int)$GLOBALS['date0']);
+			$this->yearbegin = date("Y", $date0);
+			$this->monthbegin = date("m", $date0);
+			$this->daybegin = date("d", $date0);
+			$this->timebegin = !isset($_REQUEST['date0'])? substr($babBody->icalendars->starttime, 0, 5): date("H:i", (int) $_REQUEST['date0']);
 
-			$this->yearend = !isset($GLOBALS['date1'])? $this->curyear: date("Y", (int)$GLOBALS['date1']);
-			$this->monthend = !isset($GLOBALS['date1'])? $this->curmonth: date("m", (int)$GLOBALS['date1']);
-			$this->dayend = !isset($GLOBALS['date1'])? $this->curday: date("d", (int)$GLOBALS['date1']);
-			$this->timeend = !isset($GLOBALS['date1'])? substr($babBody->icalendars->endtime, 0, 5): date("H:i", (int)$GLOBALS['date1']);
+			$this->yearend = date("Y", $date1);
+			$this->monthend = date("m", $date1);
+			$this->dayend = date("d", $date1);
+			$this->timeend = !isset($_REQUEST['date1'])? substr($babBody->icalendars->endtime, 0, 5): date("H:i", (int) $_REQUEST['date1']);
 
-			$this->repeat_yearend = !isset($GLOBALS['repeat_yearend'])? $this->curyear: $GLOBALS['repeat_yearend'];
-			$this->repeat_monthend = !isset($GLOBALS['repeat_monthend'])? $this->curmonth: $GLOBALS['repeat_monthend'];
-			$this->repeat_dayend = !isset($GLOBALS['repeat_dayend'])? $this->curday: $GLOBALS['repeat_dayend'];
+			$this->repeat_yearend 	= !isset($_REQUEST['repeat_yearend']) 	? $this->curyear	: $_REQUEST['repeat_yearend'];
+			$this->repeat_monthend 	= !isset($_REQUEST['repeat_monthend']) 	? $this->curmonth	: $_REQUEST['repeat_monthend'];
+			$this->repeat_dayend 	= !isset($_REQUEST['repeat_dayend']) 	? $this->curday		: $_REQUEST['repeat_dayend'];
 
 
-			$this->colorvalue = isset($GLOBALS['color']) ? $GLOBALS['color'] : '' ;
+			$this->colorvalue = isset($_REQUEST['color']) ? $_REQUEST['color'] : '' ;
 
-			$descriptionval = isset($GLOBALS['evtdesc'])? $GLOBALS['evtdesc'] : "";
+			$descriptionval = isset($_REQUEST['evtdesc'])? $_REQUEST['evtdesc'] : "";
 			$this->editor = bab_editor($descriptionval, 'evtdesc', 'vacform',150);
 
 			$this->daytypechecked = $this->icalendar->allday == 'Y' ? "checked"  :'';
 			$this->elapstime = $this->icalendar->elapstime;
 			$this->ampm = $GLOBALS['babBody']->ampm == 'Y' ? true : false;
 			$this->calendars = calendarchoice('vacform');
-			$this->totaldays = date("t",mktime(0,0,0,$this->curmonth,$this->curday,$this->curyear));
+			$this->totaldays = date("t", mktime(0,0,0,$this->curmonth,$this->curday,$this->curyear));
 
 			$this->daysel = !empty($_GET['st']) ? date('j',$_GET['st']) : $this->daybegin;
 			$this->monthsel = !empty($_GET['st']) ? date('n',$_GET['st']) : $this->monthbegin;
@@ -200,7 +209,8 @@ function newEvent()
 			$this->bfree = true;
 
 			$this->avariability = isset($GLOBALS['avariability']) && is_array($GLOBALS['avariability'])  ? 1 : 0;
-
+			$this->avariability_message = &$GLOBALS['avariability_message'];
+			
 			$this->days = array(0, 1, 2, 3, 5, 6, 7, 8, 10, 11, 12);
 			$this->hours = array(0, 1, 2, 3, 5, 6, 7, 8, 10, 11, 12);
 			$this->minutes = array(0, 5, 10, 15, 30, 45);
@@ -231,10 +241,7 @@ function newEvent()
 				$this->timesel = isset($this->arr['timebegin']) ? $this->arr['timebegin'] : $this->timesel;
 				$this->colorvalue = $this->arr['color'];
 
-				for ($i = 0 ; $i < 7 ; $i++)
-					{
-					$this->repeat_wd_checked[$i] = isset($this->arr['repeat_wd']) && in_array($i,$this->arr['repeat_wd']) ? 'checked' : '';
-					}
+				
 				$this->rcheckedval = isset($this->arr['creminder']) ? 'checked' : '';
 				$this->rmcheckedval = isset($this->arr['remail']) ? 'checked' : '';
 				$this->arralert['day'] = isset($this->arr['rday']) ? $this->arr['rday'] : '';
@@ -254,6 +261,16 @@ function newEvent()
 				$this->arralert['day'] = '';
 				$this->arralert['hour'] = '';
 				$this->arralert['minute'] = '';
+				$this->arr['event_owner'] = 0;
+				$this->arr['bprivate'] = 'N';
+				$this->arr['block'] = 'N';
+				$this->arr['bfree'] = 'N';
+				}
+				
+				
+			for ($i = 0 ; $i < 7 ; $i++)
+				{
+				$this->repeat_wd_checked[$i] = isset($this->arr['repeat_wd']) && in_array($i,$this->arr['repeat_wd']) ? 'checked' : '';
 				}
 
 	
@@ -299,7 +316,7 @@ function newEvent()
 			if( $i < 13)
 				{
 				$this->monthid = $i;
-				$this->monthname = $babMonths[$i];
+				$this->monthname = bab_toHtml($babMonths[$i]);
 				if( $this->monthsel == $i)
 					{
 					$this->selected = "selected";
@@ -356,12 +373,10 @@ function newEvent()
 					}
 				return false;
 				}
-
 			}
 
 		function getnexttime()
 			{
-
 			static $i = 0;
 
 			if( $i < 1440/$this->elapstime)
@@ -585,7 +600,7 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 						}
 					break;
 				}
-			$babBodyPopup->title = bab_translate("Calendar"). ":  ". bab_getCalendarOwnerName($this->calid, $iarr['type']);
+			$babBodyPopup->title = bab_toHtml(bab_translate("Calendar"). ":  ". bab_getCalendarOwnerName($this->calid, $iarr['type']));
 
 			if( !empty($this->evtarr['hash']) && $this->evtarr['hash'][0] == 'R')
 				{
@@ -638,17 +653,17 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 			$tmp = explode(':',$this->timeend);
 			$this->minend = $tmp[0]*60+$tmp[1];
 
-			$this->evtarr['title'] = htmlentities($this->evtarr['title']);
-			$this->evtarr['location'] = htmlentities($this->evtarr['location']);
+			$this->evtarr['title'] = bab_toHtml($this->evtarr['title']);
+			$this->evtarr['location'] = bab_toHtml($this->evtarr['location']);
 
 			$this->yearmin = $this->yearbegin - $this->ymin;
 
 			$this->nbdaysbegin = date("t", mktime(0,0,0, $this->monthbegin, $this->daybegin,$this->yearbegin));
 			$this->nbdaysend = date("t", mktime(0,0,0, $this->monthend, $this->dayend,$this->yearend));
 
-			$this->datebegin = $GLOBALS['babUrlScript']."?tg=month&callback=dateBegin&ymin=".$this->ymin."&ymax=".$this->ymax."&month=".$this->monthbegin."&year=".$this->yearbegin;
+			$this->datebegin = bab_toHtml( $GLOBALS['babUrlScript']."?tg=month&callback=dateBegin&ymin=".$this->ymin."&ymax=".$this->ymax."&month=".$this->monthbegin."&year=".$this->yearbegin);
 			$this->datebegintxt = bab_translate("Begin date");
-			$this->dateend = $GLOBALS['babUrlScript']."?tg=month&callback=dateEnd&ymin=".$this->ymin."&ymax=".$this->ymax."&month=".$this->monthend."&year=".$this->yearend;
+			$this->dateend = bab_toHtml( $GLOBALS['babUrlScript']."?tg=month&callback=dateEnd&ymin=".$this->ymin."&ymax=".$this->ymax."&month=".$this->monthend."&year=".$this->yearend);
 			$this->dateendtxt = bab_translate("End date");
 			$this->modify = bab_translate("Update Event");
 			$this->starttime = bab_translate("starttime");
@@ -657,7 +672,7 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 			$this->description = bab_translate("Description");
 			$this->location = bab_translate("Location");
 			$this->category = bab_translate("Category");
-			$this->descurl = $GLOBALS['babUrlScript']."?tg=event&idx=updesc&calid=".$this->calid."&evtid=".$evtid;
+			$this->descurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=event&idx=updesc&calid=".$this->calid."&evtid=".$evtid);
 
 			
 
@@ -666,7 +681,7 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 			$this->ampm = $babBody->ampm;
 			$this->colorvalue = isset($_POST['color']) ? $_POST['color'] : $this->evtarr['color'] ;
 			$this->avariability = isset($GLOBALS['avariability']) && is_array($GLOBALS['avariability'])  ? 1 : 0;
-
+			$this->avariability_message = &$GLOBALS['avariability_message'];
 			
 
 			$this->rescat = $babDB->db_query("select * from ".BAB_CAL_CATEGORIES_TBL." ORDER BY name");
@@ -681,7 +696,7 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 				{
 				$arr = $babDB->db_fetch_array($this->rescat);
 				$this->catid = $arr['id'];
-				$this->catname = $arr['name'];
+				$this->catname = bab_toHtml($arr['name']);
 				if( $this->evtarr['id_cat'] == $this->catid )
 					{
 					$this->selected = "selected";
@@ -742,7 +757,7 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 			if( $i < 13)
 				{
 				$this->monthid = $i;
-				$this->monthname = $babMonths[$i];
+				$this->monthname = bab_toHtml($babMonths[$i]);
 				if( $tr == 0 && $this->monthbegin == $i)
 					{
 					$this->selected = "selected";
@@ -879,9 +894,9 @@ function deleteEvent()
 				$this->warning = bab_translate("WARNING: This operation will delete event permanently"). "!";
 				}
 			$this->title = bab_getCalendarEventTitle($_POST['evtid']);
-			$this->urlyes = $GLOBALS['babUrlScript']."?tg=event&date=".$_POST['date']."&calid=".$_POST['calid']."&evtid=".$_POST['evtid']."&action=yes&view=".$_POST['view']."&bupdrec=".$bupd."&curcalids=".$_POST['curcalids'];
+			$this->urlyes = bab_toHtml( $GLOBALS['babUrlScript']."?tg=event&date=".$_POST['date']."&calid=".$_POST['calid']."&evtid=".$_POST['evtid']."&action=yes&view=".$_POST['view']."&bupdrec=".$bupd."&curcalids=".$_POST['curcalids']);
 			$this->yes = bab_translate("Yes");
-			$this->urlno = $GLOBALS['babUrlScript']."?tg=event&idx=unload&action=no&calid=".$_POST['calid']."&view=";
+			$this->urlno = bab_toHtml($GLOBALS['babUrlScript']."?tg=event&idx=unload&action=no&calid=".$_POST['calid']."&view=");
 			$this->no = bab_translate("No");
 			}
 		}
@@ -1285,8 +1300,12 @@ function eventAvariabilityCheck(&$avariability_message)
 	}
 
 /* main */
-$idx = isset($_REQUEST['idx']) ? $_REQUEST['idx'] : "newevent";
-$calid = isset($_POST['selected_calendars'])? implode(',', $_POST['selected_calendars']): $calid;
+$idx = bab_rp('idx','newevent');
+if (isset($_POST['selected_calendars'])) {
+	$calid = implode(',', $_POST['selected_calendars']);
+} else {
+	$calid = bab_rp('calid');
+}
 
 $calid = bab_isCalendarAccessValid($calid);
 if( !$calid )
@@ -1352,7 +1371,9 @@ switch($idx)
 	{
 	case "unload":
 		include_once $babInstallPath."utilit/uiutil.php";
-		if( !isset($popupmessage)) { $popupmessage = bab_translate("Your event has been updated");}
+		if( !isset($popupmessage)) { 
+			$popupmessage = bab_translate("Your event has been updated");
+		}
 		switch($view)
 		{
 			case 'viewd':
@@ -1377,7 +1398,7 @@ switch($idx)
 		if( !isset($message)) { $message = '';}
 		$babBodyPopup = new babBodyPopup();
 		$babBodyPopup->msgerror = $message;
-		modifyEvent($calid, $evtid, $cci, $view, $date);
+		modifyEvent($calid, bab_rp('evtid'), bab_rp('cci'), bab_rp('view'), bab_rp('date'));
 		printBabBodyPopup();
 		exit;
 		break;

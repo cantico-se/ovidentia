@@ -449,46 +449,49 @@ class cal_wmdbaseCls
 		$tmp = mktime( 0,0,0, $this->month-1, 1, $this->year);
 		$m = date("t", $tmp) < $this->day ? date("n", $tmp) : date("n", $time);
 		$j = date("t", $tmp) < $this->day ? date("t", $tmp) : date("j", $time);
-		$this->previousmonthurl = $this->commonurl."&date=".date("Y", $time).",".$m.",".$j;
+		$this->previousmonthurl = bab_toHtml($this->commonurl."&date=".date("Y", $time).",".$m.",".$j);
 
 		$time = mktime( 0,0,0, $this->month+1, $this->day, $this->year);
 		$tmp = mktime( 0,0,0, $this->month+1, 1, $this->year);
 		$m = date("t", $tmp) < $this->day ? date("n", $tmp) : date("n", $time);
 		$j = date("t", $tmp) < $this->day ? date("t", $tmp) : date("j", $time);
-		$this->nextmonthurl = $this->commonurl."&date=".date("Y", $time).",".$m.",".$j;
+		$this->nextmonthurl = bab_toHtml($this->commonurl."&date=".date("Y", $time).",".$m.",".$j);
 
 		$time = mktime( 0,0,0, $this->month, $this->day, $this->year-1);
-		$this->previousyearurl = $this->commonurl."&date=".date("Y", $time).",".date("n", $time).",".date("j", $time);
+		$this->previousyearurl = bab_toHtml($this->commonurl."&date=".date("Y", $time).",".date("n", $time).",".date("j", $time));
+
 		$time = mktime( 0,0,0, $this->month, $this->day, $this->year+1);
-		$this->nextyearurl = $this->commonurl."&date=".date("Y", $time).",".date("n", $time).",".date("j", $time);
+		$this->nextyearurl = bab_toHtml($this->commonurl."&date=".date("Y", $time).",".date("n", $time).",".date("j", $time));
 
 		$time = mktime( 0,0,0, $this->month, $this->day -7, $this->year);
-		$this->previousweekurl = $this->commonurl."&date=".date("Y", $time).",".date("n", $time).",".date("j", $time);
+		$this->previousweekurl = bab_toHtml($this->commonurl."&date=".date("Y", $time).",".date("n", $time).",".date("j", $time));
+
 		$time = mktime( 0,0,0, $this->month, $this->day +7, $this->year);
-		$this->nextweekurl = $this->commonurl."&date=".date("Y", $time).",".date("n", $time).",".date("j", $time);
+		$this->nextweekurl = bab_toHtml($this->commonurl."&date=".date("Y", $time).",".date("n", $time).",".date("j", $time));
 
 		$time = mktime( 0,0,0, $this->month, $this->day -1, $this->year);
-		$this->previousdayurl = $this->commonurl."&date=".date("Y", $time).",".date("n", $time).",".date("j", $time);
-		$time = mktime( 0,0,0, $this->month, $this->day +1, $this->year);
-		$this->nextdayurl = $this->commonurl."&date=".date("Y", $time).",".date("n", $time).",".date("j", $time);
+		$this->previousdayurl = bab_toHtml($this->commonurl."&date=".date("Y", $time).",".date("n", $time).",".date("j", $time));
 
-		$this->gotodateurl = $GLOBALS['babUrlScript']."?tg=month&year=".date('Y')."&month=".date('n')."&callback=gotodate";
+		$time = mktime( 0,0,0, $this->month, $this->day +1, $this->year);
+		$this->nextdayurl = bab_toHtml($this->commonurl."&date=".date("Y", $time).",".date("n", $time).",".date("j", $time));
+
+		$this->gotodateurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=month&year=".date('Y')."&month=".date('n')."&callback=gotodate");
 
 		switch($tg)
 		{
 			case "calmonth":
 				$this->monthurl = "";
-				$this->dayurl = $GLOBALS['babUrlScript']."?tg=calday&idx=".$idx."&calid=".$this->currentidcals."&date=".$date;
-				$this->weekurl = $GLOBALS['babUrlScript']."?tg=calweek&idx=".$idx."&calid=".$this->currentidcals."&date=".$date;
+				$this->dayurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calday&idx=".$idx."&calid=".$this->currentidcals."&date=".$date);
+				$this->weekurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calweek&idx=".$idx."&calid=".$this->currentidcals."&date=".$date);
 				break;
 			case "calday":
-				$this->monthurl = $GLOBALS['babUrlScript']."?tg=calmonth&idx=".$idx."&calid=".$this->currentidcals."&date=".$date;
+				$this->monthurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calmonth&idx=".$idx."&calid=".$this->currentidcals."&date=".$date);
 				$this->dayurl = "";
-				$this->weekurl = $GLOBALS['babUrlScript']."?tg=calweek&idx=".$idx."&calid=".$this->currentidcals."&date=".$date;
+				$this->weekurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calweek&idx=".$idx."&calid=".$this->currentidcals."&date=".$date);
 				break;
 			case "calweek":
-				$this->monthurl = $GLOBALS['babUrlScript']."?tg=calmonth&idx=".$idx."&calid=".$this->currentidcals."&date=".$date;
-				$this->dayurl = $GLOBALS['babUrlScript']."?tg=calday&idx=".$idx."&calid=".$this->currentidcals."&date=".$date;
+				$this->monthurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calmonth&idx=".$idx."&calid=".$this->currentidcals."&date=".$date);
+				$this->dayurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calday&idx=".$idx."&calid=".$this->currentidcals."&date=".$date);
 				$this->weekurl = "";
 				break;
 		}
@@ -528,10 +531,13 @@ class cal_wmdbaseCls
 		$this->t_notifier = bab_translate("Open notifier");
 		
 
-		$backurl = urlencode(urlencode($GLOBALS['babUrlScript']."?tg=".$tg."|date=".$date."|calid="));
-		$this->calendarchoiceurl = $GLOBALS['babUrlScript']."?tg=calopt&idx=pop_calendarchoice&calid=".$this->currentidcals."&date=".$date."&backurl=".$backurl;
-		$this->searcheventurl = $GLOBALS['babUrlScript']."?tg=".$tg."&idx=rfree&date=".$date."&calid=".$this->currentidcals;
-		$this->calnotifierurl = $GLOBALS['babUrlScript']."?tg=calnotif&idx=popup";
+		$backurl = $GLOBALS['babUrlScript']."?tg=".$tg."&date=".$date."&calid=";
+		$this->calendarchoiceurl = bab_toHtml( $GLOBALS['babUrlScript']."?tg=calopt&idx=pop_calendarchoice&calid=".$this->currentidcals."&date=".$date."&backurl=".urlencode($backurl));
+		$this->searcheventurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=".$tg."&idx=rfree&date=".$date."&calid=".$this->currentidcals);
+		$this->calnotifierurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calnotif&idx=popup");
+		$this->printurl = bab_toHtml($this->commonurl.'&print=1');
+
+		$this->eventlisturl = bab_toHtml( $GLOBALS['babUrlScript']."?tg=calendar&idx=eventlist&calid=".$this->currentidcals."&from=".date('Y,n,j',$time1)."&to=".date('Y,n,j',$time2));
 	}
 
 
@@ -706,7 +712,7 @@ class cal_wmdbaseCls
 
 	function calstr($str,$n = BAB_CAL_EVENT_LENGTH)
 		{
-		if (strlen($str) > $n && (!$this->print || $GLOBALS['tg'] == 'calweek'))
+		if (strlen($str) > $n && (!$this->print || 'calweek' === bab_rp('tg') ))
 			return bab_toHtml(substr($str, 0, $n))."...";
 		else
 			return bab_toHtml($str);
@@ -735,7 +741,7 @@ class cal_wmdbaseCls
 
 			$this->t_option = count($el) > 1 ? bab_translate("Options") : bab_translate("Option"); 
 			if (count($el) > 0) {
-				$this->properties = implode(', ',$el);
+				$this->properties = bab_toHtml(implode(', ',$el));
 				}
 			else {
 				$this->properties = '';
@@ -763,7 +769,7 @@ class cal_wmdbaseCls
 		$iarr = $babBody->icalendars->getCalendarInfo($this->idcal);
 		$this->updateAccess($calPeriod, $iarr);
 
-		$this->category = $calPeriod->getProperty('CATEGORIES');
+		$this->category = bab_toHtml($calPeriod->getProperty('CATEGORIES'));
 
 
 		if ($babBody->icalendars->usebgcolor == 'Y' && !empty($calPeriod->color)) {
@@ -772,17 +778,17 @@ class cal_wmdbaseCls
 
 
 		$time = bab_mktime($calPeriod->getProperty('DTSTART'));
-		$this->starttime = bab_time($time);
-		$this->startdate = bab_shortDate($time, false);
+		$this->starttime = bab_toHtml(bab_time($time));
+		$this->startdate = bab_toHtml(bab_shortDate($time, false));
 		$time = bab_mktime($calPeriod->getProperty('DTEND'));
-		$this->endtime = bab_time($time);
-		$this->enddate = bab_shortDate($time, false);
+		$this->endtime = bab_toHtml(bab_time($time));
+		$this->enddate =  bab_toHtml(bab_shortDate($time, false));
 
 		
 		
 		if( !$this->allow_viewtitle  )
 			{
-			$this->title		= bab_translate("Private");
+			$this->title		= bab_toHtml(bab_translate("Private"));
 			$this->titleten		= $this->title;
 			$this->description	= "";
 			$this->location		= "";
@@ -798,20 +804,20 @@ class cal_wmdbaseCls
 		if( $this->allow_modify )
 			{
 			$this->popup		= true;
-			$this->titletenurl	= $GLOBALS['babUrlScript']."?tg=event&idx=modevent&evtid=".$this->idevent	."&calid=".$this->idcal."&cci=".$this->currentidcals."&view=viewm&date=".$this->currentdate;
+			$this->titletenurl	= bab_toHtml($GLOBALS['babUrlScript']."?tg=event&idx=modevent&evtid=".$this->idevent	."&calid=".$this->idcal."&cci=".$this->currentidcals."&view=viewm&date=".$this->currentdate);
 			}
 		elseif( $this->allow_view )
 			{
 			$this->popup		= true;
-			$this->titletenurl	= $GLOBALS['babUrlScript']."?tg=calendar&idx=veventupd&evtid=". $this->idevent	."&idcal=".$this->idcal;
+			$this->titletenurl	= bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=veventupd&evtid=". $this->idevent	."&idcal=".$this->idcal);
 			}
 		else
 			{
 			$this->popup		= false;
 			$this->titletenurl	= "";
 			}
-		$this->attendeesurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=attendees&evtid=".$this->idevent ."&idcal=".$this->idcal;
-		$this->vieweventurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=veventupd&evtid=".$this->idevent ."&idcal=".$this->idcal;
+		$this->attendeesurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=attendees&evtid=".$this->idevent ."&idcal=".$this->idcal);
+		$this->vieweventurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=veventupd&evtid=".$this->idevent ."&idcal=".$this->idcal);
 		$this->bnote = false;
 		if( isset($arr['note']) && !empty($arr['note']))
 			{
@@ -919,7 +925,7 @@ class calendarchoice
 		$out = list($this->id) = each($this->resuser_sort);
 		if ($out)
 			{
-			$this->name = isset($this->resuser[$this->id]['name']) ? $this->resuser[$this->id]['name'] : '';
+			$this->name = isset($this->resuser[$this->id]['name']) ? bab_toHtml($this->resuser[$this->id]['name']) : '';
 			$this->selected = in_array($this->id,$this->selectedCalendars) ? 'selected' : '';
 			}
 		return $out;
@@ -930,10 +936,11 @@ class calendarchoice
 		$out = list($this->id) = each($this->respub_sort);
 		if ($out)
 			{
-			$this->name = $this->respub[$this->id]['name'];
+			$this->name = bab_toHtml($this->respub[$this->id]['name']);
 			$this->selected = in_array($this->id,$this->selectedCalendars) ? 'selected' : '';
-			if (!empty($this->respub[$this->id]['idsa']))
+			if (!empty($this->respub[$this->id]['idsa'])) {
 				$this->approb[] = $this->name;
+				}
 			}
 		return $out;
 		}
@@ -943,10 +950,11 @@ class calendarchoice
 		$out = list($this->id) = each($this->resres_sort);
 		if ($out)
 			{
-			$this->name = $this->resres[$this->id]['name'];
+			$this->name = bab_toHtml($this->resres[$this->id]['name']);
 			$this->selected = in_array($this->id,$this->selectedCalendars) ? 'selected' : '';
-			if (!empty($this->resres[$this->id]['idsa']))
+			if (!empty($this->resres[$this->id]['idsa'])) {
 				$this->approb[] = $this->name;
+				}
 			}
 		return $out;
 		}
@@ -955,14 +963,14 @@ class calendarchoice
 		{
 		if (count($this->approb) == 1)
 			{
-			$this->t_approb = bab_translate("The calendar").' "'.implode('',$this->approb).'" '.bab_translate("is restricted with approbation, your event will not appear until it has been approved");
+			$this->t_approb = bab_toHtml(bab_translate("The calendar").' "'.implode('',$this->approb).'" '.bab_translate("is restricted with approbation, your event will not appear until it has been approved"));
 			$this->approb = array();
 			return true;
 			}
 
 		if (count($this->approb) > 1)
 			{
-			$this->t_approb = '"'.implode('", "',$this->approb).'" '.bab_translate("are restricted with approbation, your event will not appear until it has been approved");
+			$this->t_approb = bab_toHtml('"'.implode('", "',$this->approb).'" '.bab_translate("are restricted with approbation, your event will not appear until it has been approved"));
 			$this->approb = array();
 			return true;
 			}

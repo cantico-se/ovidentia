@@ -29,8 +29,8 @@
 		
 		
 		<tr align="center"> 
-			<td>
-				<select name="searchresult[]" multiple="multiple" size="20" style="width:100%">
+			<td valign="top">
+				<select name="searchresult[]" multiple="multiple" size="10" style="width:100%">
 					<!--#in _getnextsearchresult -->
 					<option value="{ id_user }">{ username }</option>
 					<!--#endin _getnextsearchresult -->
@@ -42,8 +42,8 @@
 				<p><input type="submit" name="act[drop]" value="{ t_drop_users }" /></p>
 			</td>
 
-			<td>
-				<select name="selectedusers[]" multiple="multiple" size="20" style="width:100%">
+			<td valign="top">
+				<select name="selectedusers[]" multiple="multiple" size="10" style="width:100%">
 					<!--#in _getnextselecteduser -->
 					<option value="{ id_user }">{ username }</option>
 					<!--#endin _getnextselecteduser -->

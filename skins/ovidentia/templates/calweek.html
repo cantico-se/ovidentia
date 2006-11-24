@@ -202,8 +202,8 @@ document.onmousemove = bab_tooltipPosition;
 	<!--#if print -->
 	<a class="print" href="javascript:window.print()">{ t_print }</a>
 	<!--#else print -->
-	<a class="calendars" href="javascript:bab_popup('{ calendarchoiceurl }')">{ t_calendarchoice }</a>
-	<a class="print" href="javascript:bab_popup(document.location.href+'&print=1',6,1)">{ t_print_friendly }</a>
+	<a class="calendars" href="{ calendarchoiceurl }" onclick="bab_popup(this.href);return false;">{ t_calendarchoice }</a>
+	<a class="print" href="{ printurl }" onclick="bab_popup(this.href,6,1);return false;">{ t_print_friendly }</a>
 	<!--#endif print -->
 </div>
 
@@ -320,8 +320,8 @@ document.onmousemove = bab_tooltipPosition;
 	<!--#if print -->
 	<a class="print" href="javascript:window.print()">{ t_print }</a>
 	<!--#else print -->
-	<a class="calendars" href="javascript:bab_popup('{ calendarchoiceurl }')">{ t_calendarchoice }</a>
-	<a class="print" href="javascript:bab_popup(document.location.href+'&print=1',6,1)">{ t_print_friendly }</a>
+	<a class="calendars" href="{ calendarchoiceurl }" onclick="bab_popup(this.href);return false;">{ t_calendarchoice }</a>
+	<a class="print" href="{ printurl }" onclick="bab_popup(this.href,6,1);return false;">{ t_print_friendly }</a>
 	<!--#endif print -->
 </div>
 <!--#end calfreeweek -->
