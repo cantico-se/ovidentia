@@ -7,16 +7,20 @@ document.onmousemove = bab_tooltipPosition;
 </script>
 
 <div class="bab_cal_buttons">
-	<!--#if print -->
+		<!--#if print -->
 	<a class="print" href="javascript:window.print()">{ t_print }</a>
 	<!--#else print -->
-	<a class="calendars" href="javascript:bab_popup('{ calendarchoiceurl }')">{ t_calendarchoice }</a>
-	<a class="print" href="javascript:bab_popup(document.location.href+'&print=1',6,1)">{ t_print_friendly }</a>
-	<a class="print" href="javascript:bab_popup('{ eventlisturl }',6,1)">{ t_eventlist }</a>
-	<a class="categories" href="{ babUrlScript }?tg=calendar&idx=viewc" onclick="bab_popup(this.href);return false;">{ t_catlist }</a>
+	<a class="calendars" href="{ calendarchoiceurl }" onclick="bab_popup(this.href);return false;">{ t_calendarchoice }</a>
+	<a class="print" href="{ printurl }" onclick="bab_popup(this.href,6,1);return false;">{ t_print_friendly }</a>
+	<a class="print" href="{ eventlisturl }" onclick="bab_popup(this.href,6,1);return false;">{ t_eventlist }</a>
+	<a class="categories" href="{ babUrlScript }?tg=calendar&amp;idx=viewc" onclick="bab_popup(this.href);return false;">{ t_catlist }</a>
 	<a class="notifier" href="{ calnotifierurl }" onclick="bab_popup_obj = 0;bab_popup(this.href, 2);return false;">{ t_notifier }</a>
 	<!--#endif print -->
 </div>
+
+
+
+
 
 <table class="bab_calnavbar" width="100%" cellpadding="2" cellspacing="0">
 	<tr class="BabLoginMenuBackground"> 
@@ -72,9 +76,11 @@ document.onmousemove = bab_tooltipPosition;
 		<td width="14%" class="BabCalendarDays">{ dayname }</td>
 		<!--#endin getnextdayname -->	
 	</tr>
-	<!--#in getnextweek -->
 	</thead>
+	
+	
 	<tbody>
+	<!--#in getnextweek -->
 	<tr valign="top" class="BabCalendarBodyBadMonthBackground">
 		<!--#in getnextday -->
 		<!--#if currentmonth "== 1" -->
@@ -100,7 +106,7 @@ document.onmousemove = bab_tooltipPosition;
 				<!--#in getnextevent -->
 				<div id="calevent{ evtidx }" class="bab_cal_tooltip" style="background-color:#{ bgcolor }">
 					<h3>{ title }</h3>
-					<h5>
+					<div>
 						<p><strong>{ t_date_from } : </strong> { startdate } { starttime }</p>
 						<p><strong>{ t_date_to } : </strong> { enddate } { endtime }</p>
 						<!--#if id_creator -->
@@ -115,17 +121,17 @@ document.onmousemove = bab_tooltipPosition;
 						<!--#if location -->
 						<p><strong>{ t_location } : </strong> { location }</p>
 						<!--#endif location -->
-					</h5>
+					</div>
 					<div class="description">{ description }</div>
 						<!--#if bnote -->
 					<h5>
-						<p>{ notestxt }</p>
+						{ notestxt }
 					</h5>
 					<div class="description">{ noteval }</div>
 						<!--#endif bnote -->
 				</div>
 				
-				<div class="event <!--#if popup --> popup<!--#endif popup -->" style="background-color:#{ bgcolor }" <!--#if popup -->  onClick="bab_popup('{ vieweventurl }',5)" <!--#endif popup --> onmouseover="bab_showOnMouse('calevent{ evtidx }',1)" onMouseOut="bab_showOnMouse('calevent{ evtidx }',0)">
+				<div class="event <!--#if popup --> popup<!--#endif popup -->" style="background-color:#{ bgcolor }" <!--#if popup -->  onclick="bab_popup('{ vieweventurl }',5)" <!--#endif popup --> onmouseover="bab_showOnMouse('calevent{ evtidx }',1)" onmouseout="bab_showOnMouse('calevent{ evtidx }',0)">
 					<!--#if allow_modify -->
 					<a href="javascript:bab_popup('{ titletenurl }')" title="{ t_modify_event }"><img src="{ babSkinPath }images/Puces/entryview.gif" alt="{ t_modify_event }" /></a>
 					<!--#endif allow_modify -->
@@ -157,13 +163,13 @@ document.onmousemove = bab_tooltipPosition;
 	</tbody>
 </table>
 <div class="bab_cal_buttons">
-	<!--#if print -->
+		<!--#if print -->
 	<a class="print" href="javascript:window.print()">{ t_print }</a>
 	<!--#else print -->
-	<a class="calendars" href="javascript:bab_popup('{ calendarchoiceurl }')">{ t_calendarchoice }</a>
-	<a class="print" href="javascript:bab_popup(document.location.href+'&print=1',6,1)">{ t_print_friendly }</a>
-	<a class="print" href="javascript:bab_popup('{ eventlisturl }',6,1)">{ t_eventlist }</a>
-	<a class="categories" href="javascript:bab_popup('{ babUrlScript }?tg=calendar&idx=viewc')">{ t_catlist }</a>
+	<a class="calendars" href="{ calendarchoiceurl }" onclick="bab_popup(this.href);return false;">{ t_calendarchoice }</a>
+	<a class="print" href="{ printurl }" onclick="bab_popup(this.href,6,1);return false;">{ t_print_friendly }</a>
+	<a class="print" href="{ eventlisturl }" onclick="bab_popup(this.href,6,1);return false;">{ t_eventlist }</a>
+	<a class="categories" href="{ babUrlScript }?tg=calendar&amp;idx=viewc" onclick="bab_popup(this.href);return false;">{ t_catlist }</a>
 	<a class="notifier" href="{ calnotifierurl }" onclick="bab_popup_obj = 0;bab_popup(this.href, 2);return false;">{ t_notifier }</a>
 	<!--#endif print -->
 </div>
@@ -239,9 +245,11 @@ document.onmousemove = bab_tooltipPosition;
 		<td width="14%" class="BabCalendarDays">{ dayname }</td>
 		<!--#endin getnextdayname -->	
 	</tr>
-	<!--#in getnextweek -->
 	</thead>
+	
+	
 	<tbody>
+	<!--#in getnextweek -->
 	<tr valign="top" class="BabCalendarBodyBadMonthBackground">
 		<!--#in getnextday -->
 		<!--#if currentmonth "== 1" -->
@@ -256,7 +264,7 @@ document.onmousemove = bab_tooltipPosition;
 			<!--#in getfreeevent -->
 			<!--#if free -->
 				<!--#if allow_create -->
-				<div class="freeevent" style="cursor:pointer" onClick="bab_popup('{ addeventurl }',5)">
+				<div class="freeevent" style="cursor:pointer" onclick="bab_popup('{ addeventurl }',5)">
 				<!--#else allow_create -->
 				<div class="freeevent">
 				<!--#endif allow_create -->
