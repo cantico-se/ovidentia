@@ -73,7 +73,7 @@ function accessCalendar($calid, $urla)
 			static $k=0;
 			if( $k < $this->count)
 				{
-				$this->fullnameval = $this->arrusers[$k]['user'];
+				$this->fullnameval = bab_toHtml($this->arrusers[$k]['user']);
 				$this->userid = $this->arrusers[$k]['id'];
 				switch( $this->arrusers[$k]['access'])
 					{
@@ -475,7 +475,7 @@ function pop_calendarchoice()
 		function temp()
 			{
 			
-			$this->backurl = str_replace('|','&',$_GET['backurl']);
+			$this->backurl = bab_toHtml($_GET['backurl']);
 			$this->calendars = calendarchoice('calendarchoice');
 			$this->t_record = bab_translate("Record");
 			$this->t_view = bab_translate("View");
