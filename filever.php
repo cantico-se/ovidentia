@@ -225,6 +225,7 @@ function showHistoricFile($idf, $pos)
 		var $nexturl;
 		var $bottomname;
 		var $bottomurl;
+		var $altbg = true;
 
 		function temp($idf, $pos)
 			{
@@ -245,7 +246,7 @@ function showHistoricFile($idf, $pos)
 			$this->authortxt = bab_translate("Author");
 			$this->actiontxt = bab_translate("Action");
 			$this->versiontxt = bab_translate("Version");
-			
+			$this->idf = $idf;
 			
 
 			if(bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $arrfold['id']))
@@ -266,21 +267,21 @@ function showHistoricFile($idf, $pos)
 				{
 				if( $pos > 0)
 					{
-					$this->topurl = $GLOBALS['babUrlScript']."?tg=filever&idx=hist&idf=".$idf."&pos=0";
+					$this->topurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=filever&idx=hist&idf=".$idf."&pos=0");
 					$this->topname = "&lt;&lt;";
 					}
 
 				$next = $pos - BAB_FM_MAXLOGS;
 				if( $next >= 0)
 					{
-					$this->prevurl = $GLOBALS['babUrlScript']."?tg=filever&idx=hist&idf=".$idf."&pos=".$next;
+					$this->prevurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=filever&idx=hist&idf=".$idf."&pos=".$next);
 					$this->prevname = "&lt;";
 					}
 
 				$next = $pos + BAB_FM_MAXLOGS;
 				if( $next < $total)
 					{
-					$this->nexturl = $GLOBALS['babUrlScript']."?tg=filever&idx=hist&idf=".$idf."&pos=".$next;
+					$this->nexturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=filever&idx=hist&idf=".$idf."&pos=".$next);
 					$this->nextname = "&gt;";
 					if( $next + BAB_FM_MAXLOGS < $total)
 						{
@@ -288,7 +289,7 @@ function showHistoricFile($idf, $pos)
 						}
 					else
 						$bottom = $next;
-					$this->bottomurl = $GLOBALS['babUrlScript']."?tg=filever&idx=hist&idf=".$idf."&pos=".$bottom;
+					$this->bottomurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=filever&idx=hist&idf=".$idf."&pos=".$bottom);
 					$this->bottomname = "&gt;&gt;";
 					}
 				}
@@ -313,13 +314,14 @@ function showHistoricFile($idf, $pos)
 				{
 				global $babDB, $arrfile, $babFileActions;
 				$arr = $babDB->db_fetch_array($this->res);
+				$this->altbg = !$this->altbg;
 				$time = bab_mktime($arr['date']);
-				$this->date = bab_strftime($time, false);
-				$this->hour = bab_time($time);
-				$this->author = bab_getUserName($arr['author']);
-				$this->comment = $arr['comment'];
-				$this->action = $arr['action'];
-				$this->version = $arr['version'];
+				$this->date = bab_toHtml(bab_strftime($time, false));
+				$this->hour = bab_toHtml(bab_time($time));
+				$this->author = bab_toHtml(bab_getUserName($arr['author']));
+				$this->comment = bab_toHtml($arr['comment']);
+				$this->action = bab_toHtml($arr['action']);
+				$this->version = bab_toHtml($arr['version']);
 				
 				$i++;
 				return true;
@@ -332,18 +334,9 @@ function showHistoricFile($idf, $pos)
 
 	
 
-
-
-	include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
-	$GLOBALS['babBodyPopup'] = new babBodyPopup();
-	$GLOBALS['babBodyPopup']->title = & $babBody->title;
-	$GLOBALS['babBodyPopup']->msgerror = & $babBody->msgerror;
-
 	$temp = new temp($idf, $pos);
+	$babBody->babpopup(bab_printTemplate($temp, "filever.html", "filehistoric"));
 
-	$GLOBALS['babBodyPopup']->babecho(bab_printTemplate($temp, "filever.html", "filehistoric"));
-	printBabBodyPopup();
-	die();
 }
 
 
@@ -416,21 +409,21 @@ function showVersionHistoricFile($idf, $pos)
 				{
 				if( $pos > 0)
 					{
-					$this->topurl = $GLOBALS['babUrlScript']."?tg=filever&idx=lvers&idf=".$idf."&pos=0";
+					$this->topurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=filever&idx=lvers&idf=".$idf."&pos=0");
 					$this->topname = "&lt;&lt;";
 					}
 
 				$next = $pos - BAB_FM_MAXLOGS;
 				if( $next >= 0)
 					{
-					$this->prevurl = $GLOBALS['babUrlScript']."?tg=filever&idx=lvers&idf=".$idf."&pos=".$next;
+					$this->prevurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=filever&idx=lvers&idf=".$idf."&pos=".$next);
 					$this->prevname = "&lt;";
 					}
 
 				$next = $pos + BAB_FM_MAXLOGS;
 				if( $next < $total)
 					{
-					$this->nexturl = $GLOBALS['babUrlScript']."?tg=filever&idx=lvers&idf=".$idf."&pos=".$next;
+					$this->nexturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=filever&idx=lvers&idf=".$idf."&pos=".$next);
 					$this->nextname = "&gt;";
 					if( $next + BAB_FM_MAXLOGS < $total)
 						{
@@ -438,7 +431,7 @@ function showVersionHistoricFile($idf, $pos)
 						}
 					else
 						$bottom = $next;
-					$this->bottomurl = $GLOBALS['babUrlScript']."?tg=filever&idx=lvers&idf=".$idf."&pos=".$bottom;
+					$this->bottomurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=filever&idx=lvers&idf=".$idf."&pos=".$bottom);
 					$this->bottomname = "&gt;&gt;";
 					}
 				}
@@ -448,7 +441,7 @@ function showVersionHistoricFile($idf, $pos)
 				{
 				$req .= " limit ".$babDB->db_escape_string($pos).",".BAB_FM_MAXLOGS;
 				}
-			$this->filename = $arrfile['name'];
+			$GLOBALS['babBody']->setTitle($arrfile['name']);
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
 
@@ -467,13 +460,13 @@ function showVersionHistoricFile($idf, $pos)
 				global $babDB, $arrfile, $babFileActions;
 				$arr = $babDB->db_fetch_array($this->res);
 				$time = bab_mktime($arr['date']);
-				$this->date = bab_strftime($time, false);
-				$this->hour = bab_time($time);
-				$this->author = bab_getUserName($arr['author']);
-				$this->comment = $arr['comment'];
-				$this->version = $arr['ver_major'].".".$arr['ver_minor'];
-				$this->geturl = $GLOBALS['babUrlScript']."?tg=filever&idx=get&idf=".$this->idf."&vmaj=".$arr['ver_major']."&vmin=".$arr['ver_minor'];
-				$this->index_status = bab_getIndexStatusLabel($arr['index_status']);
+				$this->date = bab_toHtml(bab_strftime($time, false));
+				$this->hour = bab_toHtml(bab_time($time));
+				$this->author = bab_toHtml(bab_getUserName($arr['author']));
+				$this->comment = bab_toHtml($arr['comment']);
+				$this->version = bab_toHtml($arr['ver_major'].".".$arr['ver_minor']);
+				$this->geturl = bab_toHtml( $GLOBALS['babUrlScript']."?tg=filever&idx=get&idf=".$this->idf."&vmaj=".$arr['ver_major']."&vmin=".$arr['ver_minor']);
+				$this->index_status = bab_toHtml(bab_getIndexStatusLabel($arr['index_status']));
 				$i++;
 				return true;
 				}
@@ -484,7 +477,7 @@ function showVersionHistoricFile($idf, $pos)
 		}
 
 	$temp = new temp($idf, $pos);
-	echo bab_printTemplate($temp, "filever.html", "filevershistoric");
+	$babBody->babpopup(bab_printTemplate($temp, "filever.html", "filevershistoric"));
 }
 
 

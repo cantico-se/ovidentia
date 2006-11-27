@@ -2393,4 +2393,5 @@
 <string id="Some tags doesn't exist">Certains mots clés n'existent pas</string>
 <string id="You must sepcify at least one tag">Vous devez spécifier au moins un mot clé</string>
 <string id="Add selected users">Ajouter les utilisateurs sélectionnés</string>
+<string id="The file is not on the server">Le fichier n'est pas sur le serveur</string>
 </fr>

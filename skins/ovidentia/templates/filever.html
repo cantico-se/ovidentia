@@ -153,7 +153,7 @@ close }</a> </td>
 	<td>{ commenttxt }</td>
 </tr> 
 <!--#in getnextlog -->
-<tr class="BabSiteAdminFontBackground"> 
+<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
 	<td>
 	<!--#if action "== 1" -->
 	<img src="{ babSkinPath }images/Puces/FileLock.gif" alt="" border="0" align="middle">
@@ -372,34 +372,15 @@ window.focus();
 <!--#end confirmfile -->
 
 <!--#begin filevershistoric -->
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<title>{ babSiteName }</title>
-{ babMeta }
-{ babCss }
-<script type="text/javascript" src="{ babOvidentiaJs }"></script>
-<script type="text/javascript">
-<!--
-window.focus();
-//-->
-</script>
-</HEAD>
-<body class="BabBackground">
-<br />
+
 <!--#if bmanager -->
 <form method="post" action="{ babPhpSelf }" name="listform">
-<input type="hidden" name="tg" value="filever">
-<input type="hidden" name="idx" value="lvers">
-<input type="hidden" name="afile" value="delv">
-<input type="hidden" name="idf" value="{ idf }">
+<input type="hidden" name="tg" value="filever" />
+<input type="hidden" name="idx" value="lvers" />
+<input type="hidden" name="afile" value="delv" />
+<input type="hidden" name="idf" value="{ idf }" />
 <!--#endif bmanager -->
-<table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
-<tr>
-<td class="BabSiteAdminFontBackground" align="right" >{ titletxt }:&nbsp;</td>
-<td class="BabErrorMessage" align="left" >{ filename }</td>
-</tr></table>
-<br>
+
 
 
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
@@ -422,12 +403,12 @@ window.focus();
 	<tr class="BabSiteAdminFontBackground"> 
 		<td>
 		<!--#if bmanager -->
-		<input type="checkbox" name="versions[]" value="{ version }">
+		<input type="checkbox" name="versions[]" value="{ version }" />
 		<!--#endif bmanager -->
 		&nbsp;</td>
-		<td nowrap><a href="{ geturl }">{ version }</a></td>
-		<td nowrap>{ date }</td>
-		<td nowrap>{ hour }</td>
+		<td><a href="{ geturl }">{ version }</a></td>
+		<td>{ date }</td>
+		<td>{ hour }</td>
 		<td>{ author }</td>
 		<td>{ comment }</td>
 		<!--#if index -->
@@ -438,7 +419,7 @@ window.focus();
 	<tr class="BabSiteAdminTitleFontBackground"> 
 		<td>
 		<!--#if bmanager -->
-		<a href="javascript:submitForm('lvers','listform')"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deletealt }" border="0"></a>
+		<a href="javascript:submitForm('lvers','listform')"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deletealt }" border="0" /></a>
 		<!--#endif bmanager -->&nbsp;
 		</td>
 		<td colspan="<!--#if index -->6<!--#else index -->5<!--#endif index -->">
@@ -460,7 +441,5 @@ window.focus();
 <!--#if bmanager -->
 </form>
 <!--#endif bmanager -->
-<br>
-</body>
-</HTML>
+
 <!--#end filevershistoric -->
