@@ -41,6 +41,7 @@ mod_zlib="Available"
 
 [recommendations]
 lang_directory="Available" 
+upload_directory="Available"
 mod_xml="Available"
 mod_calendar="Available"
 mod_ldap="Available"

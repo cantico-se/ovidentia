@@ -149,12 +149,11 @@ function bab_formatAuthor($format, $id)
 	return $txt;
 }
 
-function bab_stripDomainName ($txt)
-	{
+function bab_stripDomainName($txt) {
 	return eregi_replace("((href|src)=['\"]?)".$GLOBALS['babUrl'], '\\1', $txt);
 	}
 
-function bab_isEmailValid ($email)
+function bab_isEmailValid($email)
 	{
 	if( empty($email) || ereg(' ', $email))
 		return false;
@@ -1168,7 +1167,7 @@ function & get_icalendars() {
 
 function bab_isMemberOfTree($id_group, $id_user = '')
 {
-	global $babBody;
+	global $babBody, $babDB;
 
 	$lf = &$babBody->ovgroups[$id_group]['lf'];
 	$lr = &$babBody->ovgroups[$id_group]['lr'];
@@ -1178,9 +1177,9 @@ function bab_isMemberOfTree($id_group, $id_user = '')
 		if ($id_group == 0 || $id_group == 1)
 			return true;
 
-		$db = &$GLOBALS['babDB'];
-		$res = $db->db_query("SELECT COUNT(g.id) FROM ".BAB_GROUPS_TBL." g, ".BAB_USERS_GROUPS_TBL." u WHERE u.id_group=g.id AND u.id_object='".$db->db_escape_string($id_user)."' AND g.lf >= '".$db->db_escape_string($babBody->ovgroups[$id_group]['lf'])."' AND g.lr <= '".$db->db_escape_string($babBody->ovgroups[$id_group]['lr'])."'");
-		list($n) = $db->db_fetch_array($res);
+
+		$res = $babDB->db_query("SELECT COUNT(g.id) FROM ".BAB_GROUPS_TBL." g, ".BAB_USERS_GROUPS_TBL." u WHERE u.id_group=g.id AND u.id_object='".$babDB->db_escape_string($id_user)."' AND g.lf >= '".$babDB->db_escape_string($babBody->ovgroups[$id_group]['lf'])."' AND g.lr <= '".$babDB->db_escape_string($babBody->ovgroups[$id_group]['lr'])."'");
+		list($n) = $babDB->db_fetch_array($res);
 		return $n > 0 ? true : false;
 		}
 	foreach($babBody->usergroups as $idg)
@@ -1273,7 +1272,6 @@ function bab_updateUserSettings()
 
 	if( !empty($BAB_SESS_USERID))
 		{
-
 		$res=$babDB->db_query("select lang, skin, style, lastlog, langfilter, date_shortformat, date_longformat, time_format from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($BAB_SESS_USERID)."'");
 		if( $res && $babDB->db_num_rows($res) > 0 )
 			{
@@ -1400,7 +1398,7 @@ function bab_updateUserSettings()
 		}
 
 	
-	$res = $babDB->db_query("select id, id_dg, id_user, cpw from ".BAB_USERS_LOG_TBL." where sessid='".session_id()."'");
+	$res = $babDB->db_query("select id, id_dg, id_user, cpw from ".BAB_USERS_LOG_TBL." where sessid='".$babDB->db_escape_string(session_id())."'");
 	if( $res && $babDB->db_num_rows($res) > 0)
 		{
 		$arr = $babDB->db_fetch_array($res);
@@ -1456,7 +1454,7 @@ function bab_updateSiteSettings()
 {
 	global $babDB, $babBody;
 
-	$req="select *, DECODE(smtppassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as smtppass, DECODE(ldap_adminpassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as ldap_adminpassword from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
+	$req="select *, DECODE(smtppassword, \"".$babDB->db_escape_string($GLOBALS['BAB_HASH_VAR'])."\") as smtppass, DECODE(ldap_adminpassword, \"".$babDB->db_escape_string($GLOBALS['BAB_HASH_VAR'])."\") as ldap_adminpassword from ".BAB_SITES_TBL." where name='".$babDB->db_escape_string($GLOBALS['babSiteName'])."'";
 	$res=$babDB->db_query($req);
 	if ($babDB->db_num_rows($res) == 0)
 		{
@@ -1537,11 +1535,6 @@ function bab_updateSiteSettings()
 	else
 		{
 		$GLOBALS['babUploadPath'] = '';
-		}
-
-	if(!empty($GLOBALS['babUploadPath']) && !is_dir($GLOBALS['babUploadPath'].'/addons/'))
-		{
-		bab_mkdir($GLOBALS['babUploadPath'].'/addons/', $GLOBALS['babMkdirMode']);
 		}
 
 	if( $arr['babslogan'] != '')

@@ -166,6 +166,37 @@ class bab_inifile_requirements {
 			'result'		=> $status
 		);
 	}
+	
+	function require_upload_directory($value) {
+	
+		$current =  bab_translate("Unavailable");
+		$status = false;
+
+		if (is_writable($GLOBALS['babUploadPath'])) {
+			$current = bab_translate("The directory is writable but this is not the full pathname");
+
+		}
+		
+		if (preg_match('/^(\/|[a-zA-Z]{1}\:\\\\)/',$GLOBALS['babUploadPath'])) {
+			$current = bab_translate("The addons directory is not writable");
+		}
+		
+		$addons = $GLOBALS['babUploadPath'].'/addons';
+		if (!is_dir($addons)) {
+			bab_mkdir($addons);
+		}
+		
+		if (is_writable($addons)) {
+			$current = bab_translate("Available");
+			$status = true;
+		}
+
+		return array(
+			'description'	=> bab_translate("Writable upload directory, absolute path"),
+			'current'		=> $current,
+			'result'		=> $status
+		);
+	}
 
 	function require_mod_imap($value) {
 		

@@ -89,10 +89,10 @@ function showLockUnlockFile($idf, $idx)
 			$this->pathtxt = bab_translate("Path");
 			$this->commenttxt = bab_translate("Comment");
 
-			$this->filename = $arrfile['name'];
-			$this->pathname = "/".$arrfile['path'];
+			$this->filename = bab_toHtml($arrfile['name']);
+			$this->pathname = bab_toHtml("/".$arrfile['path']);
 			if( $arrfile['bgroup'] == 'Y')
-				$this->foldername = $arrfold['folder'];
+				$this->foldername = bab_toHtml($arrfold['folder']);
 			else
 				$this->foldername = '';
 			}
@@ -140,9 +140,9 @@ function showCommitFile($idf)
 			$this->no = bab_translate("No");
 			$this->yes = bab_translate("Yes");
 
-			$this->idf = $idf;
-			$this->filename = $arrfile['name'];
-			$this->fileversion = $arrfile['ver_major'].".".$arrfile['ver_minor'];
+			$this->idf = bab_toHtml($idf);
+			$this->filename = bab_toHtml($arrfile['name']);
+			$this->fileversion = bab_toHtml($arrfile['ver_major'].".".$arrfile['ver_minor']);
 			}
 
 		}
@@ -179,11 +179,11 @@ function showConfirmFile($idf)
 			$this->no = bab_translate("No");
 			$this->yes = bab_translate("Yes");
 
-			$this->idf = $idf;
-			$this->filename = $arrfile['name'];
-			$this->fileversion = $arr['ver_major'].".".$arr['ver_minor'];
-			$this->comment = $arr['comment'];
-			$this->urlget = $GLOBALS['babUrlScript']."?tg=filever&idx=get&idf=".$idf."&vmaj=".$arr['ver_major']."&vmin=".$arr['ver_minor'];
+			$this->idf = bab_toHtml($idf);
+			$this->filename = bab_toHtml($arrfile['name']);
+			$this->fileversion = bab_toHtml($arr['ver_major'].".".$arr['ver_minor']);
+			$this->comment = bab_toHtml($arr['comment']);
+			$this->urlget = bab_toHtml($GLOBALS['babUrlScript']."?tg=filever&idx=get&idf=".$idf."&vmaj=".$arr['ver_major']."&vmin=".$arr['ver_minor']);
 			}
 
 		}
@@ -481,9 +481,14 @@ function showVersionHistoricFile($idf, $pos)
 }
 
 
-function getFile( $idf, $vmajor, $vminor, $inl )
+function getFile( $idf, $vmajor, $vminor )
 	{
 	global $babBody, $babDB, $babFileActions, $arrfile, $arrfold, $lockauthor;
+	
+	$inl = bab_rp('inl', false);
+	if (false === $inl) {
+		$inl = bab_getFileContentDisposition() == 1? 1: ''; 
+	}
 
 	$mime = bab_getFileMimeType($arrfile['name']);
 
@@ -502,9 +507,15 @@ function getFile( $idf, $vmajor, $vminor, $inl )
 	header("Content-Type: $mime"."\n");
 	header("Content-Length: ". $fsize."\n");
 	header("Content-transfert-encoding: binary"."\n");
+
 	$fp=fopen($fullpath,"rb");
-	print fread($fp,$fsize);
-	fclose($fp);
+	if ($fp) {
+		while (!feof($fp)) {
+			print fread($fp, 8192);
+			}
+		fclose($fp);
+		exit;
+		}
 	}
 
 
@@ -521,9 +532,7 @@ function fileUnload($idf)
 			global $arrfile;
 			$this->message = bab_translate("Your file list has been updated");
 			$this->close = bab_translate("Close");
-			$path = str_replace("'", "\'", $arrfile['path']);
-			$path = str_replace('"', "'+String.fromCharCode(34)+'",$path);
-			$this->redirecturl = $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$arrfile['id_owner']."&gr=".$arrfile['bgroup']."&path=".urlencode($path);
+			$this->redirecturl = bab_toHtml( $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$arrfile['id_owner']."&gr=".$arrfile['bgroup']."&path=".urlencode($arrfile['path']));
 			}
 		}
 
@@ -789,10 +798,7 @@ function cleanFileLog($idf, $date )
 /* main */
 $bupdate = false;
 $bdownload = false;
-if(!isset($idx))
-	{
-	$idx = "denied";
-	}
+$idx = bab_rp('idx','denied');
 
 $arrfile = array();
 $arrfold = array();
@@ -802,7 +808,7 @@ $lockauthor = 0;
 
 if( isset($_REQUEST['idf']) )
 {
-	$idf = $_REQUEST['idf'];
+	$idf = (int) $_REQUEST['idf'];
 
 	$res = $babDB->db_query("select * from ".BAB_FILES_TBL." where id='".$babDB->db_escape_string($idf)."' and state=''");
 	if( $res && $babDB->db_num_rows($res) > 0 )
@@ -864,15 +870,17 @@ else
 switch($idx)
 	{
 	case "commit":
-		showCommitFile($idf);
+		showCommitFile(bab_rp('idf'));
 		exit;
 		break;
 
 	case "hist":
 		if( $bupdate )
 			{
-			if( !isset($pos)) $pos = 0;
-			showHistoricFile($idf, $pos);
+			showHistoricFile(
+				bab_rp('idf'), 
+				bab_rp('pos',0)
+				);
 			exit;
 			}
 		else
@@ -882,8 +890,10 @@ switch($idx)
 	case "lvers":
 		if( $bupdate || $bdownload )
 			{
-			if( !isset($pos)) $pos = 0;
-			showVersionHistoricFile($idf, $pos);
+			showVersionHistoricFile(
+				bab_rp('idf'), 
+				bab_rp('pos',0)
+				);
 			exit;
 			}
 		else
@@ -891,14 +901,16 @@ switch($idx)
 		break;
 
 	case "unload":
-		fileUnload($idf);
+		fileUnload(
+			bab_rp('idf')
+			);
 		exit;
 		break;
 
 	case 'lock':
 		if( $bupdate)
 			{
-			showLockUnlockFile($idf, $idx);
+			showLockUnlockFile(bab_rp('idf'), $idx);
 			exit;
 			}
 		else
@@ -908,7 +920,7 @@ switch($idx)
 	case 'unlock':
 		if( $bupdate)
 			{
-			showLockUnlockFile($idf, $idx);
+			showLockUnlockFile(bab_rp('idf'), $idx);
 			exit;
 			}
 		else
@@ -919,7 +931,7 @@ switch($idx)
 		include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 		if( isUserApproverFlow($arrfold['idsa'], $BAB_SESS_USERID) )
 		{
-			showConfirmFile($idf);
+			showConfirmFile(bab_rp('idf'));
 			exit;
 		}
 		else
@@ -929,8 +941,11 @@ switch($idx)
 	case "get":
 		if( $bupdate || $bdownload)
 			{
-			if(!isset($inl)) { $inl = bab_getFileContentDisposition() == 1? 1: ''; }
-			getFile($idf, $vmaj, $vmin, $inl);
+			getFile(
+				bab_rp('idf'), 
+				bab_rp('vmaj'), 
+				bab_rp('vmin')
+			);
 			exit;
 			}
 		else
