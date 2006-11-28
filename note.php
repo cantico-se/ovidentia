@@ -45,11 +45,10 @@ function notesModify($id)
 			global $babDB, $BAB_SESS_USERID;
 			$this->notes = bab_translate("Content");
 			$this->modify = bab_translate("Update Note");
-			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_NOTES_TBL." where id='".$babDB->db_escape_string($id)."' and id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
-			$this->res = $babDB->db_query($req);
-			$this->arr = $babDB->db_fetch_array($this->res);
-			$this->editor = bab_editor($this->arr['content'], 'content', 'notemod');	
+			$res = $babDB->db_query("select * from ".BAB_NOTES_TBL." where id='".$babDB->db_escape_string($id)."' and id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."'");
+			$arr = $babDB->db_fetch_array($res);
+			$this->note_id = bab_toHTML($arr['id']);
+			$this->editor = bab_editor($arr['content'], 'content', 'notemod');	
 			}
 		}
 
@@ -78,31 +77,41 @@ function updateNotes($id, $content)
 	}
 
 /* main */
-if( !isset($idx))
-	{
-	$idx = "Modify";
-	}
+if( !bab_notesAccess() )
+{
+	$babBody->addError(bab_translate("Access denied"));
+	return;
+}
+
+$idx = bab_rp('idx', 'Modify');
+$item = bab_rp('item', 0);
 
 list($iduser) = $babDB->db_fetch_row($babDB->db_query("select id_user from ".BAB_NOTES_TBL." where id = '".$babDB->db_escape_string($item)."'"));
 
-if( isset($update) && $iduser == $BAB_SESS_USERID)
+if( isset($_POST['update']) && $iduser == $BAB_SESS_USERID)
 	{
-	updateNotes($item, $content);
+	updateNotes($item, bab_pp('content'));
 	}
 
 switch($idx)
 	{
-	case "Delete":
+	case 'Delete':
 		if( $iduser != $BAB_SESS_USERID )
+			{
 			$babBody->msgerror = bab_translate("Access denied");
+			}
 		else
+			{
 			deleteNotes($item);
+			}
 		break;
 
 	default:
-	case "Modify":
+	case 'Modify':
 		if( $iduser != $BAB_SESS_USERID )
+			{
 			$babBody->msgerror = bab_translate("Access denied");
+			}
 		else
 		{
 			$babBody->title = bab_translate("Modify a note");

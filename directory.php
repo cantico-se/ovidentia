@@ -21,11 +21,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include "base.php";
-include_once $babInstallPath."utilit/dirincl.php";
-include_once $babInstallPath."utilit/ldap.php";
-include_once $babInstallPath."utilit/tempfile.php";
-include_once $babInstallPath."admin/register.php";
+include 'base.php';
+include_once $babInstallPath.'utilit/dirincl.php';
+include_once $babInstallPath.'utilit/ldap.php';
+include_once $babInstallPath.'utilit/tempfile.php';
+include_once $babInstallPath.'admin/register.php';
 
 function trimQuotes($str)
 {
@@ -242,7 +242,7 @@ function browseLdapDirectory($id, $pos)
 				$this->btel = isset($this->entries[$o]['telephonenumber'][0])?bab_toHtml(bab_ldapDecode($this->entries[$o]['telephonenumber'][0], $this->ldapdecodetype)):"";
 				$this->htel = isset($this->entries[$o]['homephone'][0])?bab_toHtml(bab_ldapDecode($this->entries[$o]['homephone'][0], $this->ldapdecodetype)):"";
 				$this->email = isset($this->entries[$o]['mail'][0])?bab_toHtml(bab_ldapDecode($this->entries[$o]['mail'][0], $this->ldapdecodetype)):"";
-				$this->urlmail = $GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".$this->accid."&to=".$this->email;
+				$this->urlmail = $GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".$this->accid."&to=".urlencode($this->email);
 				$i++;
 				return true;
 				}
@@ -313,13 +313,13 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 				$this->allselected = 0;
 			if ($_GET['idx'] == 'sdbovml')
 				{
-				$this->allurl = $GLOBALS['babUrlScript']."?tg=directory&idx=sdbovml&directoryid=".$id."&pos=".($this->ord == "-"? "":$this->ord)."&xf=".$this->xf;
+				$this->allurl = $GLOBALS['babUrlScript']."?tg=directory&idx=sdbovml&directoryid=".$id."&pos=".urlencode(($this->ord == "-"? "":$this->ord))."&xf=".urlencode($this->xf);
 				}
 			else
 				{
-				$this->allurl = $GLOBALS['babUrlScript']."?tg=directory&idx=sdb&id=".$id."&pos=".($this->ord == "-"? "":$this->ord)."&xf=".$this->xf;
+				$this->allurl = $GLOBALS['babUrlScript']."?tg=directory&idx=sdb&id=".$id."&pos=".urlencode(($this->ord == "-"? "":$this->ord))."&xf=".urlencode($this->xf);
 				}
-			$this->addurl = $GLOBALS['babUrlScript']."?tg=directory&idx=adbc&id=".$id;
+			$this->addurl = $GLOBALS['babUrlScript']."?tg=directory&idx=adbc&id=".urlencode($id);
 			$this->count = 0;
 			$arr = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
 			$this->idgroup = $arr['id_group'];
@@ -340,7 +340,7 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 			if( bab_isAccessValid(BAB_DBDIRBIND_GROUPS_TBL, $id) && $arr['id_group'] && $arr['id_group'] != BAB_REGISTERED_GROUP )
 				{
 				$this->bassign = true;
-				$this->assignurl = $GLOBALS['babUrlScript']."?tg=directory&idx=assign&id=".$id;
+				$this->assignurl = $GLOBALS['babUrlScript']."?tg=directory&idx=assign&id=".urlencode($id);
 				}
 			$this->bgroup = $arr['id_group'] > 0;
 
@@ -394,11 +394,11 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 
 				if ($_GET['idx'] == 'sdbovml')
 					{
-					$this->colurl = $GLOBALS['babUrlScript']."?tg=directory&idx=sdbovml&directoryid=".$this->id."&pos=".$this->ord.$this->pos."&xf=".$filedname;
+					$this->colurl = $GLOBALS['babUrlScript']."?tg=directory&idx=sdbovml&directoryid=".urlencode($this->id)."&pos=".urlencode($this->ord.$this->pos)."&xf=".urlencode($filedname);
 					}
 				else
 					{
-					$this->colurl = $GLOBALS['babUrlScript']."?tg=directory&idx=sdb&id=".$this->id."&pos=".$this->ord.$this->pos."&xf=".$filedname;
+					$this->colurl = $GLOBALS['babUrlScript']."?tg=directory&idx=sdb&id=".$this->id."&pos=".urlencode($this->ord.$this->pos)."&xf=".urlencode($filedname);
 					}
 				$i++;
 				return true;
@@ -483,18 +483,18 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 				{
 				$this->altbg = !$this->altbg;
 				$this->arrf = $babDB->db_fetch_array($this->res);
-				$this->urlmail = $GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".$this->accid."&to=".$this->arrf['email'];
+				$this->urlmail = $GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".urlencode($this->accid)."&to=".urlencode($this->arrf['email']);
 				$this->email = $this->arrf['email'];
 				
 				if ($_GET['idx'] == 'sdbovml')
 					{
-					$this->url = $GLOBALS['babUrlScript']."?tg=directory&idx=ddbovml&directoryid=".$this->id."&userid=".$this->arrf['id']."&pos=".$this->ord.$this->pos."&xf=".$this->xf;
+					$this->url = $GLOBALS['babUrlScript']."?tg=directory&idx=ddbovml&directoryid=".$this->id."&userid=".$this->arrf['id']."&pos=".urlencode($this->ord.$this->pos)."&xf=".urlencode($this->xf);
 					}
 				else
 					{
-					$this->url = $GLOBALS['babUrlScript']."?tg=directory&idx=ddb&id=".$this->id."&idu=".$this->arrf['id'];
+					$this->url = $GLOBALS['babUrlScript']."?tg=directory&idx=ddb&id=".urlencode($this->id)."&idu=".urlencode($this->arrf['id']);
 					}
-				$this->urledir = $GLOBALS['babUrlScript']."?tg=directory&idx=ddbed&id=".$this->id."&idu=".$this->arrf['id'];
+				$this->urledir = $GLOBALS['babUrlScript']."?tg=directory&idx=ddbed&id=".urlencode($this->id)."&idu=".urlencode($this->arrf['id']);
 				$i++;
 				return true;
 				}
@@ -530,11 +530,11 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 				$this->selectname = substr($t, $k, 1);
 				if ($_GET['idx'] == 'sdbovml')
 					{
-					$this->selecturl = $GLOBALS['babUrlScript']."?tg=directory&idx=sdbovml&directoryid=".$this->id."&pos=".($this->ord == "-"? "":$this->ord).$this->selectname."&xf=".$this->xf;
+					$this->selecturl = $GLOBALS['babUrlScript']."?tg=directory&idx=sdbovml&directoryid=".urlencode($this->id)."&pos=".urlencode(($this->ord == "-"? "":$this->ord)).$this->selectname."&xf=".urlencode($this->xf);
 					}
 				else
 					{
-					$this->selecturl = $GLOBALS['babUrlScript']."?tg=directory&idx=sdb&id=".$this->id."&pos=".($this->ord == "-"? "":$this->ord).$this->selectname."&xf=".$this->xf;
+					$this->selecturl = $GLOBALS['babUrlScript']."?tg=directory&idx=sdb&id=".urlencode($this->id)."&pos=".urlencode(($this->ord == "-"? "":$this->ord)).$this->selectname."&xf=".urlencode($this->xf);
 					}
 				if( $this->pos == $this->selectname)
 					$this->selected = 1;
@@ -612,8 +612,8 @@ function summaryLdapContact($id, $cn)
 				$this->ldap->bind($arr['userdn'], $arr['adpass']);
 				$this->entries = $this->ldap->search($arr['basedn'],"(|(cn=".bab_ldapEncode(ldap_escapefilter($cn), $this->ldapdecodetype)."))");
 				$this->ldap->close();
-				$this->name = bab_ldapDecode($this->entries[0]['cn'][0], $this->ldapdecodetype);
-				$this->urlimg = $GLOBALS['babUrlScript']."?tg=directory&idx=getimgl&id=".$id."&cn=".$cn;
+				$this->name = bab_toHTML(bab_ldapDecode($this->entries[0]['cn'][0], $this->ldapdecodetype));
+				$this->urlimg = $GLOBALS['babUrlScript']."?tg=directory&idx=getimgl&id=".$id."&cn=".urlencode($cn);
 				}
 			$this->bfieldv = true;
 			$this->showph = true;
@@ -626,8 +626,8 @@ function summaryLdapContact($id, $cn)
 			if( $i < $this->count)
 				{
 				$arr = $babDB->db_fetch_array($this->res);
-				$this->fieldn = translateDirectoryField($arr['description']);
-				$this->fieldv = isset($this->entries[0][$arr['x_name']][0]) ? bab_ldapDecode($this->entries[0][$arr['x_name']][0], $this->ldapdecodetype) : '';
+				$this->fieldn = bab_toHTML(translateDirectoryField($arr['description']));
+				$this->fieldv = isset($this->entries[0][$arr['x_name']][0]) ? bab_toHTML(bab_ldapDecode($this->entries[0][$arr['x_name']][0], $this->ldapdecodetype)) : '';
 				$i++;
 				return true;
 				}
@@ -713,7 +713,7 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 				if( $this->arr['plen'] > 0 )
 					{
 					$this->showph = true;
-					$this->urlimg = $GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$this->id."&idu=".$idu;
+					$this->urlimg = $GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$id."&idu=".$idu;
 					$this->delete = bab_translate("Delete this picture");
 					}
 				
@@ -1113,7 +1113,7 @@ function importDbFile($id)
 
 		function temp($id)
 			{
-			$this->id = $id;
+			$this->id = bab_toHTML($id);
 			$this->import = bab_translate("Import");
 			$this->name = bab_translate("File");
 			$this->separator = bab_translate("Separator");
@@ -1170,7 +1170,7 @@ function exportDbFile($id)
 
 			$this->selected_1 = '';
 			$this->selected_2 = '';
-			$this->selected_3 = '';
+			$this->selected_0 = '';
 			$this->separvalue = '';
 			
 			$res = $babDB->db_query("select separatorchar from ".BAB_DBDIR_CONFIGEXPORT_TBL." where id_directory='".$babDB->db_escape_string($id)."' and id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
@@ -1453,9 +1453,13 @@ function contactDbUnload($msg, $refresh)
 		function temp($msg, $refresh)
 			{
 			if( empty($refresh))
+				{
 				$this->refresh = true;
+				}
 			else
+				{
 				$this->refresh = false;
+				}
 			$this->message = bab_toHtml($msg);
 			$this->close = bab_translate("Close");
 			}
@@ -1630,16 +1634,20 @@ function assignList($id, $pos)
 						}
 
 					$this->fullname = bab_translate("Firstname"). " " . bab_translate("Lastname");
-					$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=directory&idx=assign&chg=&pos=".$this->ord.$this->pos."&id=".$this->id;
+					$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=directory&idx=assign&chg=&pos=".$this->ord.$this->pos."&id=".$id;
 					}
 				$this->res = $babDB->db_query($req);
 				$this->count = $babDB->db_num_rows($this->res);
 
 				if( empty($this->pos))
+					{
 					$this->allselected = 1;
+					}
 				else
+					{
 					$this->allselected = 0;
-				$this->allurl = $GLOBALS['babUrlScript']."?tg=directory&idx=assign&pos=&id=".$this->id;
+					}
+				$this->allurl = $GLOBALS['babUrlScript']."?tg=directory&idx=assign&pos=&id=".$id;
 
 				list($idgroup) = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
 				$res = $babDB->db_query("select id_object from ".BAB_USERS_GROUPS_TBL." where id_group='".$babDB->db_escape_string($idgroup)."'");
@@ -1667,18 +1675,22 @@ function assignList($id, $pos)
 				$this->arr = $babDB->db_fetch_array($this->res);
 				if( !isset($this->groupmemebers[$this->arr['id']]))
 					{
-					$this->selected = "";
+					$this->selected = '';
 
 					$this->altbg = !$this->altbg;
 
 					
 					$this->url = $GLOBALS['babUrlScript']."?tg=directory&idx=assign&id=".$this->id."&pos=".$this->ord.$this->pos;
-					if( $this->ord == "-" )
+					if( $this->ord == '-' )
+						{
 						$this->urlname = bab_toHtml(bab_composeUserName($this->arr['lastname'],$this->arr['firstname']));
+						}
 					else
+						{
 						$this->urlname = bab_toHtml(bab_composeUserName($this->arr['firstname'],$this->arr['lastname']));
+						}
 
-					$this->userid = $this->arr['id'];
+					$this->userid = bab_toHTML($this->arr['id']);
 					}
 				else
 					{
@@ -1703,9 +1715,13 @@ function assignList($id, $pos)
 					{
 					$this->selecturl = $GLOBALS['babUrlScript']."?tg=directory&idx=assign&pos=".$this->ord.$this->selectname."&id=".$this->id;
 					if( $this->pos == $this->selectname)
+						{
 						$this->selected = 1;
+						}
 					else
+						{
 						$this->selected = 0;
+						}
 					}
 				else
 					{
@@ -1724,7 +1740,7 @@ function assignList($id, $pos)
 
 	$temp = new temp($id, $pos);
 
-	include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
+	include_once $GLOBALS['babInstallPath'].'utilit/uiutil.php';
 	$GLOBALS['babBodyPopup'] = new babBodyPopup();
 	$GLOBALS['babBodyPopup']->title = $GLOBALS['babBody']->title;
 	$GLOBALS['babBodyPopup']->msgerror = $GLOBALS['babBody']->msgerror;
@@ -1750,11 +1766,13 @@ function confirmAssignEntry($id, $fields, $idauser, $idatype)
 			{
 			global $babDB;
 
+			$this->refresh = '';
 			$this->id = bab_toHtml($id);
 			$this->idauser = bab_toHtml($idauser);
 			$this->fields =& $fields;
 			$arr = $babDB->db_fetch_array($babDB->db_query("select ut.nickname,det.sn, det.givenname, det.mn from ".BAB_DBDIR_ENTRIES_TBL." det left join ".BAB_USERS_TBL." ut on ut.id = det.id_user where id_user='".$babDB->db_escape_string($idauser)."' and id_directory='0'"));
 			list($this->directoryname) = $babDB->db_fetch_row($babDB->db_query("select name from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
+			$this->directoryname = bab_toHTML($this->directoryname);
 			$this->fullnametxt = bab_translate("Fullname");
 			$this->nicknametxt = bab_translate("Nickname");
 			$this->usernickname = bab_toHtml($arr['nickname']);
@@ -2198,7 +2216,7 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 				return false;
 				}
 				
-			include_once $babInstallPath."utilit/uploadincl.php";
+			include_once $GLOBALS['babInstallPath']."utilit/uploadincl.php";
 			$cphoto = bab_getUploadedFileContent('photof');
 			
 			}
@@ -2716,47 +2734,44 @@ function assignDbContact($id, $userids)
 }
 
 /* main */
-if( isset($directoryid)) { $id = $directoryid; }
-
-if( !isset($idx ))
-	$idx = 'list';
-
-if( isset($pfile) && !empty($pfile) && bab_isAccessValid(BAB_DBDIRIMPORT_GROUPS_TBL, $id))
+if( isset($_REQUEST['directoryid'])) 
 	{
-	processImportDbFile($pfile, $id, $separ);
+	$directoryid = intval($_REQUEST['directoryid']); 
+	$id = $directoryid;
+	}
+else
+	{
+	$id = intval(bab_rp('id', ''));
+	$directoryid = $id; 
 	}
 
-if( isset($action) && $action == 'Yes'  && bab_isAccessValid(BAB_DBDIREMPTY_GROUPS_TBL, $id))
+$idx = bab_rp('idx', 'list');
+
+if( ('' != bab_pp('pfile')) && bab_isAccessValid(BAB_DBDIRIMPORT_GROUPS_TBL, $id))
+	{
+	processImportDbFile(bab_pp('pfile'), $id, bab_pp('separ'));
+	}
+
+if( ('Yes' ==  bab_gp('action'))  && bab_isAccessValid(BAB_DBDIREMPTY_GROUPS_TBL, $id))
 	{
 	confirmEmptyDb($id);
 	}
 
-if( isset($modify))
+if( '' != ($modify = bab_pp('modify')))
 	{
 		if( $modify == 'dbc' )
 			{
 			$idx = 'dbmod';
-			if(!isset($photof_name) ) { $photof_name = '';}
-			if(!isset($photof) ) { $photof = '';}
-			if(!isset($photod) ) { $photod = '';}
-			if(updateDbContact($id, $idu, $fields, $photof_name,$photof,$photod))
+			if(updateDbContact($id, bab_pp('idu'), bab_pp('fields', array()), $_FILES['photof']['name'],$_FILES['photof']['tmp_name'],bab_pp('photod')))
 				{
 				$msg = bab_translate("Your contact has been updated");
 				$idx = 'dbcunload';
 				$fields = array();
 				}
 			}
-		else if( $modify == 'dbac' && bab_isAccessValid(BAB_DBDIRADD_GROUPS_TBL, $id))
+		else if( $modify == 'dbac'  && bab_isAccessValid(BAB_DBDIRADD_GROUPS_TBL, $id))
 			{
-			if(!isset($photof_name) ) { $photof_name = '';}
-			if(!isset($photof) ) { $photof = '';}
-			if(!isset($password1) ) { $password1 = '';}
-			if(!isset($password2) ) { $password2 = '';}
-			if(!isset($nickname) ) { $nickname = '';}
-			if(!isset($notifyuser) ) { $notifyuser = '';}
-			if(!isset($sendpwd) ) { $sendpwd = '';}
-			$ret = confirmAddDbContact($id, $fields, $photof_name,$photof, $password1, $password2, $nickname, $notifyuser, $sendpwd);
-
+			$ret = confirmAddDbContact($id, bab_pp('fields', array()), $_FILES['photof']['name'],$_FILES['photof']['tmp_name'], bab_pp('password1'), bab_pp('password2'), bab_pp('nickname'), bab_pp('$notifyuser'), bab_pp('$sendpwd'));
 			switch($ret)
 				{
 				case 2:
@@ -2765,7 +2780,6 @@ if( isset($modify))
 				case 1:
 					$msg = bab_translate("Your contact has been added");
 					$idx = 'dbcunload';
-					$fields = array();
 					break;
 				case 0:
 				default:
@@ -2775,7 +2789,7 @@ if( isset($modify))
 			}
 		elseif( $modify == 'assign' && bab_isAccessValid(BAB_DBDIRBIND_GROUPS_TBL, $id))
 			{
-			assignDbContact($id, $userids);
+			assignDbContact($id, bab_pp('userids', array()));
 			$msg = bab_translate("Your contacts has been assigned");
 			$idx = 'dbcunload';
 			}
@@ -2783,10 +2797,10 @@ if( isset($modify))
 			{
 			if( isset($byes) && bab_isAccessValid(BAB_DBDIRBIND_GROUPS_TBL, $id))
 				{
-				assignDbContact($id, array($idauser));
+				$idauser = bab_pp('idauser');
+				assignDbContact($id, ($idauser == ''? array(): array($idauser)));
 				$msg = bab_translate("Your contact has been assigned");
 				$idx = 'dbcunload';
-				$fields = array();
 				}
 			else
 				{
@@ -2794,9 +2808,9 @@ if( isset($modify))
 				}
 			}
 	}
-else if (isset($expfile) && bab_isAccessValid(BAB_DBDIREXPORT_GROUPS_TBL, $id))
+else if (  ('' !=  bab_pp('expfile'))  && bab_isAccessValid(BAB_DBDIREXPORT_GROUPS_TBL, $id))
 {
-	exportDbDirectory($id, $wsepar, $separ, $listfd);
+	exportDbDirectory($id, bab_pp('wsepar'), bab_pp('separ'), bab_pp('listfd', array()));
 	$idx = 'sdb';
 }
 
@@ -2804,6 +2818,8 @@ else if (isset($expfile) && bab_isAccessValid(BAB_DBDIREXPORT_GROUPS_TBL, $id))
 switch($idx)
 	{
 	case 'deldbc':
+		$id = $id;
+		$idu = bab_gp('idu');
 		if( bab_isAccessValid(BAB_DBDIRDEL_GROUPS_TBL, $id))
 			{
 			$msg = bab_translate("Your contact has been deleted");
@@ -2815,12 +2831,13 @@ switch($idx)
 			}
 		/* no break */
 	case 'dbcunload':
-		if (!isset($refresh)) {$refresh = '';}
-		contactDbUnload($msg, $refresh);
+		contactDbUnload($msg, bab_rp('refresh'));
 		exit();
 		break;
 
 	case 'unassign':
+		$id = $id;
+		$idu = bab_gp('idu');
 		if( bab_isAccessValid(BAB_DBDIRUNBIND_GROUPS_TBL, $id))
 			{
 			$msg = bab_translate("Your contact has been unassigned");
@@ -2831,30 +2848,26 @@ switch($idx)
 			$msg = bab_translate("Access denied");
 			exit;
 			}
-		if (!isset($refresh)) {$refresh = '';}
-		contactDbUnload($msg, $refresh);
+		contactDbUnload($msg, bab_gp('refresh'));
 		exit();
 		break;
 
 	case 'ddbed':
 		$babBody->title = '';
-		dbEntryDirectories($id, $idu);
+		dbEntryDirectories($id, bab_gp('idu'));
 		exit;
 		break;
 
 	case 'dbmod':
-		if (!isset($fields)) {$fields = array();}
-		if (!isset($refresh)) {$refresh = '';}
-		$idu = isset($_REQUEST['idu']) ? $_REQUEST['idu'] : false;
-		modifyDbContact($id, $idu, $fields, $refresh);
+		modifyDbContact($id, bab_rp('idu', false), bab_rp('fields', array()), bab_rp('refresh'));
 		exit;
 		break;
 	case 'getimg':
-		getDbContactImage($id, $idu);
+		getDbContactImage($id, bab_gp('idu'));
 		exit;
 		break;
 	case 'getimgl':
-		getLdapContactImage($id, $cn);
+		getLdapContactImage($id, bab_gp('cn'));
 		exit;
 		break;
 
@@ -2866,18 +2879,18 @@ switch($idx)
 
 	case 'ddb':
 		$babBody->title = '';
-		summaryDbContact($id, $idu);
+		summaryDbContact($id, bab_gp('idu'));
 		exit;
 		break;
 
 	case 'cassign':
-		confirmAssignEntry($id, $fields, $GLOBALS['idauser'], $GLOBALS['idatype']);
+		confirmAssignEntry($id, bab_pp('fields', array()), $GLOBALS['idauser'], $GLOBALS['idatype']);
 		exit;
 		break;
 
 	case 'assign':
-		if( !isset($pos)) $pos ='';
-		if( isset($chg))
+		$pos = bab_gp('pos', '');
+		if( isset($_GET['chg']))
 		{
 			if( $pos[0] == '-')
 				$pos = $pos[1];
@@ -2892,25 +2905,23 @@ switch($idx)
 		$babBody->title = bab_translate("Add entry to").": ".getDirectoryName($id,BAB_DB_DIRECTORIES_TBL);
 		if(bab_isAccessValid(BAB_DBDIRADD_GROUPS_TBL, $id))
 			{
-			if (!isset($fields)) { $fields = array() ;}
-			addDbContact($id, $fields);
+			addDbContact($id, bab_pp('fields', array()));
 			exit;
 			}
 		else
+			{
 			$babBody->msgerror = bab_translate("Access denied");
+			}
 		$babBody->addItemMenu('list', bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=directory&idx=list");
 		break;
 
 	case 'usdb':
-		if( !isset($xf ))
-			$xf = '';
-		if( !isset($pos ))
-			$pos = 'A';
-		UBrowseDbDirectory($id, $pos, $xf, $cb);
+		UBrowseDbDirectory($id, bab_gp('pos', 'A'), bab_gp('xf'), bab_gp('cb'));
 		exit;
 		break;
 
 	case 'sdbovml':
+		$pos = bab_gp('pos', 'A');
 		$babBody->title = bab_translate("Database Directory").": ".getDirectoryName($directoryid,BAB_DB_DIRECTORIES_TBL);
 		$idgroup = browseDbDirectoryWithOvml(bab_isAccessValid(BAB_DBDIRADD_GROUPS_TBL, $id));
 		$babBody->addItemMenu('list', bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=directory&idx=list");
@@ -2932,11 +2943,9 @@ switch($idx)
 		break;
 
 	case 'sdb':
+		$pos = bab_gp('pos', 'A');
+		$xf = bab_gp('xf');
 		$babBody->title = bab_translate("Database Directory").": ".getDirectoryName($id,BAB_DB_DIRECTORIES_TBL);
-		if( !isset($xf ))
-			$xf = '';
-		if( !isset($pos ))
-			$pos = 'A';
 		$idgroup = browseDbDirectory($id, $pos, $xf, bab_isAccessValid(BAB_DBDIRADD_GROUPS_TBL, $id));
 		$babBody->addItemMenu('list', bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=directory&idx=list");
 		$babBody->addItemMenu('sdb', bab_translate("Browse"), $GLOBALS['babUrlScript']."?tg=directory&idx=sdb&id=".$id."&pos=".$pos);
@@ -2957,8 +2966,7 @@ switch($idx)
 		break;
 
 	case 'dbimp':
-		if( !isset($pos ))
-			$pos = 'A';
+		$pos = bab_gp('pos', 'A');
 		$babBody->title = bab_translate("Import file to").": ".getDirectoryName($id,BAB_DB_DIRECTORIES_TBL);
 		$babBody->addItemMenu('list', bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=directory&idx=list");
 		$babBody->addItemMenu('sdb', bab_translate("Browse"), $GLOBALS['babUrlScript']."?tg=directory&idx=sdb&id=".$id."&pos=".$pos);
@@ -2975,8 +2983,7 @@ switch($idx)
 		break;
 
 	case 'dbexp':
-		if( !isset($pos ))
-			$pos = 'A';
+		$pos = bab_gp('pos', 'A');
 		$babBody->title = bab_translate("Export file from").": ".getDirectoryName($id,BAB_DB_DIRECTORIES_TBL);
 		$babBody->addItemMenu('list', bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=directory&idx=list");
 		$babBody->addItemMenu('sdb', bab_translate("Browse"), $GLOBALS['babUrlScript']."?tg=directory&idx=sdb&id=".$id."&pos=".$pos);
@@ -2993,14 +3000,16 @@ switch($idx)
 		break;
 
 	case 'dbmap':
-		if( !isset($pos ))
-			$pos = 'A';
+		$id = $id;
+		$pos = bab_pp('pos', 'A');
+		$wsepar = bab_pp('wsepar', 1);
+		$separ = bab_pp('separ');
 		$babBody->title = bab_translate("Import file to").": ".getDirectoryName($id,BAB_DB_DIRECTORIES_TBL);
 		$babBody->addItemMenu('list', bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=directory&idx=list");
 		$babBody->addItemMenu('sdb', bab_translate("Browse"), $GLOBALS['babUrlScript']."?tg=directory&idx=sdb&id=".$id."&pos=".$pos);
 		if(bab_isAccessValid(BAB_DBDIRIMPORT_GROUPS_TBL, $id))
 			{
-			mapDbFile($id, $uploadf_name, $uploadf, $wsepar, $separ);
+			mapDbFile($id, $_FILES['uploadf']['name'], $_FILES['uploadf']['tmp_name'], $wsepar, $separ);
 			$babBody->addItemMenu('dbimp', bab_translate("Import"), $GLOBALS['babUrlScript']."?tg=directory&idx=dbimp&id=".$id);
 			}
 		
@@ -3012,14 +3021,14 @@ switch($idx)
 		break;
 
 	case 'dldap':
+		$cn = bab_gp('cn', '');
 		$babBody->title = bab_translate("Summary of information about").': '.$cn;
 		summaryLdapContact($id, $cn);
 		exit;
 		break;
 
 	case 'sldap':
-		if( !isset($pos ))
-			$pos = 'A';
+		$pos = bab_gp('pos', 'A');
 		$babBody->title = bab_translate("Ldap Directory").': '.getDirectoryName($id,BAB_LDAP_DIRECTORIES_TBL);
 		browseLdapDirectory($id, $pos);
 		$babBody->addItemMenu('list', bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=directory&idx=list");

@@ -42,12 +42,12 @@
 <td class="BabLoginCadreBackground">
 <table border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
 <tr> 
-<td class="BabFaqTitleFontBg" valign="middle" width="90%">{ arr[date] } </td>
+<td class="BabFaqTitleFontBg" valign="middle" width="90%">{ note_date } </td>
 <td class="BabFaqTitleFontBg" nowrap align="right" valign="middle" 
 width="10%"><a class="BabFaqLink" href="{ editurl }">{ editname }</a>&nbsp;|&nbsp;<a class="BabFaqLink" href="{ delurl }">{ delname }</a> </td>
 </tr>
 <tr> 
-<td class="BabTopicsBackground" colspan="2" valign="top"> { arr[content] } </td>
+<td class="BabTopicsBackground" colspan="2" valign="top"> { note_content } </td>
 </tr>
 </table>
 </td>
@@ -66,7 +66,7 @@ width="10%"><a class="BabFaqLink" href="{ editurl }">{ editname }</a>&nbsp;|&nbs
 <form name="notemod" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="note">
 <input type="hidden" name="idx" value="Modify">
-<input type="hidden" name="item" value="{ arr[id] }">
+<input type="hidden" name="item" value="{ note_id }">
 <input type="hidden" name="update" value="update">
 <table class="BabLoginCadreBackground" width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 

@@ -69,11 +69,14 @@ function notesList($id)
 			$this->delname = bab_translate("Delete");
 			$this->date = bab_translate("Date");
 			$this->content = bab_translate("Content");
-			$this->db = $GLOBALS['babDB'];
 			if( $id != '' )
+				{
 				$reqid = " and id='".$babDB->db_escape_string($id)."' ";
+				}
 			else
+				{
 				$reqid = '';
+				}
 
 			$req = "select * from ".BAB_NOTES_TBL." where id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."'".$reqid." order by date desc";
 			$this->res = $babDB->db_query($req);
@@ -89,8 +92,8 @@ function notesList($id)
 				$this->arr = $babDB->db_fetch_array($this->res);
 				$this->editurl = $GLOBALS['babUrlScript']."?tg=note&idx=Modify&item=".$this->arr['id'];
 				$this->delurl = $GLOBALS['babUrlScript']."?tg=note&idx=Delete&item=".$this->arr['id'];
-				$this->arr['content'] = bab_replace($this->arr['content']);
-				$this->arr['date'] = bab_strftime(bab_mktime($this->arr['date']));
+				$this->note_content = bab_replace($this->arr['content']);
+				$this->note_date = bab_toHTML(bab_strftime(bab_mktime($this->arr['date'])));
 				$i++;
 				return true;
 				}
@@ -100,7 +103,7 @@ function notesList($id)
 		}
 
 	$temp = new temp($id);
-	$babBody->babecho(	bab_printTemplate($temp, "notes.html", "noteslist"));
+	$babBody->babecho(	bab_printTemplate($temp, 'notes.html', 'noteslist'));
 	return $temp->count;
 	}
 
@@ -123,18 +126,19 @@ function saveNotes($content)
 	}
 
 /* main */
-if( !isset($idx))
-	{
-	$idx="List";
-	}
-if( !isset($id))
-	{
-	$id='';
-	}
-
-if( isset($create))
+if( !bab_notesAccess() )
 {
-	saveNotes($content);
+	$babBody->addError(bab_translate("Access denied"));
+	return;
+}
+
+$idx = bab_rp('idx', 'List');
+$id = bab_rp('id', '');
+
+
+if( isset($_POST['create']))
+{
+	saveNotes(bab_pp('content'));
 }
 
 switch($idx)
