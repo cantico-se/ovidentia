@@ -70,17 +70,27 @@ function bab_getFolderName($id)
 		}
 	}
 
-function bab_getUploadFullPath($gr, $id)
+/**
+ * @param	Y|N		$gr
+ * @param	int		$id
+ * @param	string	$path
+ * @return 	string
+ */
+function bab_getUploadFullPath($gr, $id, $path = '')
 {
 	if( substr($GLOBALS['babUploadPath'], -1) == "/" )
-		$path = $GLOBALS['babUploadPath'];
+		$root = $GLOBALS['babUploadPath'];
 	else
-		$path = $GLOBALS['babUploadPath']."/";
-
-	if( $gr == "Y")
-		return $path."G".$id."/";
-	else
-		return $path."U".$id."/";
+		$root = $GLOBALS['babUploadPath']."/";
+		
+	// clear path security
+	$path = trim(str_replace('..','',$path),' /');
+	
+	if (!empty($path)) {
+		$path .= '/';
+	}
+		
+	return $root.bab_getUploadFmPath($gr, $id).$path;
 }
 
 function bab_getUploadFmPath($gr, $id)
@@ -325,20 +335,65 @@ function acceptFileVersion($arrfile, $arrvf, $bnotify)
 {
 	global $babDB;
 
-	$pathx = bab_getUploadFullPath($arrfile['bgroup'], $arrfile['id_owner']);
-	if( substr($arrfile['path'], -1) == "/")
-		$pathx .= substr($arrfile['path'], 0 , -1);
-	else if( !empty($arrfile['path']))
-		$pathx .= $arrfile['path']."/";
+	$pathx = bab_getUploadFullPath($arrfile['bgroup'], $arrfile['id_owner'], $arrfile['path']);
+	
 
 	copy($pathx.$arrfile['name'], $pathx.BAB_FVERSION_FOLDER."/".$arrfile['ver_major'].",".$arrfile['ver_minor'].",".$arrfile['name']);
 	copy($pathx.BAB_FVERSION_FOLDER."/".$arrvf['ver_major'].",".$arrvf['ver_minor'].",".$arrfile['name'], $pathx.$arrfile['name']);
 	unlink($pathx.BAB_FVERSION_FOLDER."/".$arrvf['ver_major'].",".$arrvf['ver_minor'].",".$arrfile['name']);
-	$babDB->db_query("update ".BAB_FILES_TBL." set edit='0', modified='".$babDB->db_escape_string($arrvf['date'])."', modifiedby='".$babDB->db_escape_string($arrvf['author'])."', ver_major='".$babDB->db_escape_string($arrvf['ver_major'])."', ver_minor='".$babDB->db_escape_string($arrvf['ver_minor'])."', ver_comment='".$babDB->db_escape_string($arrvf['comment'])."' where id='".$babDB->db_escape_string($arrfile['id'])."'");
+	$babDB->db_query("
+	
+	update ".BAB_FILES_TBL." 
+	set 
+		edit='0', 
+		modified='".$babDB->db_escape_string($arrvf['date'])."', 
+		modifiedby='".$babDB->db_escape_string($arrvf['author'])."', 
+		ver_major='".$babDB->db_escape_string($arrvf['ver_major'])."', 
+		ver_minor='".$babDB->db_escape_string($arrvf['ver_minor'])."', 
+		ver_comment='".$babDB->db_escape_string($arrvf['comment'])."' 
+	where 
+		id='".$babDB->db_escape_string($arrfile['id'])."'
+	");
 
-	$babDB->db_query("insert into ".BAB_FM_FILESLOG_TBL." ( id_file, date, author, action, comment, version) values ('".$babDB->db_escape_string($arrfile['id'])."', now(), '".$babDB->db_escape_string($arrvf['author'])."', '".BAB_FACTION_COMMIT."', '".$babDB->db_escape_string($arrvf['comment'])."', '".$babDB->db_escape_string($arrvf['ver_major']).".".$babDB->db_escape_string($arrvf['ver_minor'])."')");
-	$babDB->db_query("update ".BAB_FM_FILESVER_TBL." set idfai='0', confirmed='Y', ver_major='".$babDB->db_escape_string($arrfile['ver_major'])."', ver_minor='".$babDB->db_escape_string($arrfile['ver_minor'])."', author='".($arrfile['modifiedby']==0?$babDB->db_escape_string($arrfile['author']): $babDB->db_escape_string($arrfile['modifiedby']))."', comment='".$babDB->db_escape_string($arrfile['ver_comment'])."' where id='".$babDB->db_escape_string($arrfile['edit'])."'");
+	$babDB->db_query("
+	
+	insert into ".BAB_FM_FILESLOG_TBL." 
+		( 
+			id_file, 
+			date, 
+			author, 
+			action, 
+			comment, 
+			version
+		) 
+	values 
+		(
+			'".$babDB->db_escape_string($arrfile['id'])."', 
+			now(), 
+			'".$babDB->db_escape_string($arrvf['author'])."', 
+			'".BAB_FACTION_COMMIT."', 
+			'".$babDB->db_escape_string($arrvf['comment'])."', 
+			'".$babDB->db_escape_string($arrvf['ver_major']).".".$babDB->db_escape_string($arrvf['ver_minor'])."'
+		)
+	");
+	
+	
+	$babDB->db_query("
+	
+	update ".BAB_FM_FILESVER_TBL." 
+	set 
+		idfai='0', 
+		confirmed='Y', 
+		ver_major='".$babDB->db_escape_string($arrfile['ver_major'])."', 
+		ver_minor='".$babDB->db_escape_string($arrfile['ver_minor'])."', 
+		author='".($arrfile['modifiedby']==0 ? $babDB->db_escape_string($arrfile['author']): $babDB->db_escape_string($arrfile['modifiedby']))."',
+		comment='".$babDB->db_escape_string($arrfile['ver_comment'])."' 
+	where 
+		id='".$babDB->db_escape_string($arrfile['edit'])."'
+	");
+	
 	notifyFileAuthor(bab_translate("Your new file version has been accepted"), $arrvf['ver_major'].".".$arrvf['ver_minor'], $arrvf['author'], $arrfile['name']);
+	
 	if( $bnotify == "Y")
 		{
 		fileNotifyMembers($arrfile['name'], $arrfile['path'], $arrfile['id_owner'], bab_translate("A new version file has been uploaded"));
@@ -400,10 +455,848 @@ function notifyFileAuthor($subject, $version, $author, $filename)
 	}
 
 
+
+
+
+/**
+ * @param 	array 	$fmFiles	(array of bab_fmFile instances)
+ * @param	int		$id
+ * @param	Y|N		$gr
+ * @param	string	$path
+ * @param	string	$description
+ * @param	string	$keywords
+ * @param	Y|N		$readonly
+ *
+ * @return	boolean
+ */
+function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
+	{
+	global $babBody, $babDB, $BAB_SESS_USERID;
+	$access = false;
+	$bmanager = false;
+	$access = false;
+	$confirmed = 'N';
+
+	if( $gr == "N" && !empty($BAB_SESS_USERID))
+		{
+		if( $babBody->ustorage )
+			{
+			$access = true;
+			$confirmed = "Y";
+			}
+		}
+
+	if( $gr == "Y" && !empty($BAB_SESS_USERID))
+		{
+		for( $i = 0; $i < count($babBody->aclfm['id']); $i++)
+			{
+			if( $babBody->aclfm['id'][$i] == $id && ( $babBody->aclfm['uplo'][$i] || $babBody->aclfm['ma'][$i] == 1))
+				{
+				$access = true;
+				break;
+				}
+			}
+
+		}
+
+
+	if( !$access )
+		{
+		$babBody->msgerror = bab_translate("Access denied");
+		return false;
+		}
+
+	$pathx = bab_getUploadFullPath($gr, $id);
+	$okfiles = array();
+	$errfiles = array();
+
+	if( substr($path, -1) == "/")
+		$pathx .= substr($path, 0 , -1);
+	else if( !empty($path))
+		$pathx .= $path."/";	
+
+	foreach ($fmFiles as $fmFile) 
+		{
+		
+		$file = array(
+			'name' => trim($fmFile->filename),
+			'size' => $fmFile->size
+		);
+
+		if( empty($file['name']) || $file['name'] == 'none')
+			{
+			continue;
+			}
+
+		if( $file['size'] > $GLOBALS['babMaxFileSize'])
+			{
+				$errfiles[] = array('error' => bab_translate("The file was greater than the maximum allowed") ." : ". $GLOBALS['babMaxFileSize'], 'file' => $file['name']);
+				continue;
+			}
+
+		$totalsize = getDirSize($GLOBALS['babUploadPath']);
+		if( $file['size'] + $totalsize > $GLOBALS['babMaxTotalSize'])
+			{
+				$errfiles[] = array('error' => bab_translate("There is not enough free space"), 'file'=>$file['name']);
+				continue;
+			}
+
+		$totalsize = getDirSize($pathx);
+		if( $file['size'] + $totalsize > ($gr == "Y"? $GLOBALS['babMaxGroupSize']: $GLOBALS['babMaxUserSize']))
+			{
+				$errfiles[] = array('error' => bab_translate("There is not enough free space"), 'file'=>$file['name']);
+				continue;
+			}
+
+		$osfname = $file['name'];
+
+		if( isset($GLOBALS['babFileNameTranslation'])) {
+			$osfname = strtr($osfname, $GLOBALS['babFileNameTranslation']);
+		}
+	
+		$name = $osfname;
+
+		$bexist = false;
+		if( file_exists($pathx.$osfname))
+			{
+			$res = $babDB->db_query("
+				SELECT * FROM ".BAB_FILES_TBL." 
+				WHERE 
+					id_owner=	'".$babDB->db_escape_string($id)."' 
+					AND bgroup=	'".$babDB->db_escape_string($gr)."' 
+					AND name=	'".$babDB->db_escape_string($name)."' 
+					AND path=	'".$babDB->db_escape_string($path)."'
+				");
+			if( $res && $babDB->db_num_rows($res) > 0)
+				{
+				$arr = $babDB->db_fetch_array($res);
+				if( $arr['state'] == "D")
+					{
+					$bexist = true;
+					}
+				}
+	
+			if( $bexist == false)
+				{
+					$errfiles[] = array('error'=> bab_translate("A file with the same name already exists"), 'file' => $file['name']);
+					continue;
+				}
+			}
+
+		if( !get_cfg_var('safe_mode')) {
+			set_time_limit(0);
+			}
+			
+		if( !$fmFile->import($pathx.$osfname))
+			{
+				$errfiles[] = array('error'=> bab_translate("The file could not be uploaded"), 'file' => $file['name']);
+				continue;
+			}
+	
+	
+		if( empty($BAB_SESS_USERID))
+			$idcreator = 0;
+		else
+			$idcreator = $BAB_SESS_USERID;
+	
+		$bnotify = false;
+		if( $gr == "Y" )
+			{
+			$rr = $babDB->db_fetch_array($babDB->db_query("select filenotify from ".BAB_FM_FOLDERS_TBL." where id='".$babDB->db_escape_string($id)."'"));
+			if( $rr['filenotify'] == "Y" )
+				$bnotify = true;
+	
+			if( $bexist )
+				{
+				if( is_dir($pathx.BAB_FVERSION_FOLDER."/"))
+					{
+					$res = $babDB->db_query("select * from ".BAB_FM_FILESVER_TBL." where id_file='".$babDB->db_escape_string($arr['id'])."'");
+					while($rr = $babDB->db_fetch_array($res))
+						{
+						unlink($pathx.BAB_FVERSION_FOLDER."/".$rr['ver_major'].",".$rr['ver_minor'].",".$osfname);
+						}
+					}
+				$babDB->db_query("delete from ".BAB_FM_FILESVER_TBL." where id_file='".$babDB->db_escape_string($arr['id'])."'");
+				$babDB->db_query("delete from ".BAB_FM_FILESLOG_TBL." where id_file='".$babDB->db_escape_string($arr['id'])."'");
+				$babDB->db_query("delete from ".BAB_FM_FIELDSVAL_TBL." where id_file='".$babDB->db_escape_string($arr['id'])."'");
+				}
+			
+			}
+
+		include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
+		$index_status = bab_indexOnLoadFiles(array($pathx.$osfname), 'bab_files');
+
+		if( $readonly != 'Y')
+			{
+			$readonly = 'N';
+			}
+	
+		if( $bexist)
+			{
+			$req = "
+			UPDATE ".BAB_FILES_TBL." set 
+				description='".$babDB->db_escape_string($description)."', 
+				keywords='".$babDB->db_escape_string($keywords)."', 
+				readonly='".$babDB->db_escape_string($readonly)."', 
+				confirmed='".$babDB->db_escape_string($confirmed)."', 
+				modified=now(), 
+				hits='0', 
+				modifiedby='".$babDB->db_escape_string($idcreator)."', 
+				state='', 
+				index_status='".$babDB->db_escape_string($index_status)."' 
+			WHERE 
+				id='".$babDB->db_escape_string($arr['id'])."'";
+			$babDB->db_query($req);
+			$idf = $arr['id'];
+			}
+		else
+			{
+			$req = "insert into ".BAB_FILES_TBL." 
+			(name, description, keywords, path, id_owner, bgroup, link, readonly, state, created, author, modified, modifiedby, confirmed, index_status) values ";
+			$req .= "('" .$babDB->db_escape_string($name). "', '" . $babDB->db_escape_string($description). "', '" . $babDB->db_escape_string($keywords). "', '" .$babDB->db_escape_string($path). "', '" . $babDB->db_escape_string($id). "', '" . $babDB->db_escape_string($gr). "', '0', '" . $babDB->db_escape_string($readonly). "', '', now(), '" . $babDB->db_escape_string($idcreator). "', now(), '" . $babDB->db_escape_string($idcreator). "', '". $babDB->db_escape_string($confirmed)."', '".$babDB->db_escape_string($index_status)."')";
+			$babDB->db_query($req);
+			$idf = $babDB->db_insert_id(); 
+			}
+
+		$okfiles[] = $idf;
+
+		if (BAB_INDEX_STATUS_INDEXED === $index_status) {
+			$obj = new bab_indexObject('bab_files');
+			$obj->setIdObjectFile($pathx.$osfname, $idf, $id);
+		}
+
+		if( $gr == 'Y')
+			{
+			if( $confirmed == "Y" )
+				{
+				$GLOBALS['babWebStat']->addNewFile($babBody->currentAdmGroup);
+				}
+	
+			$res = $babDB->db_query("select id from ".BAB_FM_FIELDS_TBL." where id_folder='".$babDB->db_escape_string($id)."'");
+			while($arr = $babDB->db_fetch_array($res))
+				{
+				$fd = 'field'.$arr['id'];
+				if( isset($GLOBALS[$fd]) )
+					{
+					$fval = $babDB->db_escape_string($GLOBALS[$fd]);
+	
+					$res2 = $babDB->db_query("select id from ".BAB_FM_FIELDSVAL_TBL." where id_file='".$babDB->db_escape_string($idf)."' and id_field='".$babDB->db_escape_string($arr['id'])."'");
+					if( $res2 && $babDB->db_num_rows($res2) > 0)
+						{
+						$arr2 = $babDB->db_fetch_array($res2);
+						$babDB->db_query("update ".BAB_FM_FIELDSVAL_TBL." set fvalue='".$babDB->db_escape_string($fval)."' where id='".$babDB->db_escape_string($arr2['id'])."'");
+						}
+					else
+						{
+						$babDB->db_query("insert into ".BAB_FM_FIELDSVAL_TBL." set fvalue='".$babDB->db_escape_string($fval)."', id_file='".$babDB->db_escape_string($idf)."', id_field='".$babDB->db_escape_string($arr['id'])."'");
+						}
+					}
+				}
+			}
+
+		if( $gr == "Y" && $confirmed == "N" )
+			{
+			if( notifyApprovers($idf, $id) && $bnotify)
+				{
+				fileNotifyMembers($osfname, $path, $id, bab_translate("A new file has been uploaded"));
+				}
+			}
+		}
+
+	if( count($errfiles))
+		{
+		for( $k=0; $k < count($errfiles); $k++)
+			{
+			$babBody->addError($errfiles[$k]['file'].'['.$errfiles[$k]['error'].']');
+			}
+		return false;
+		}
+	
+	if( !count($okfiles))
+		{
+		$babBody->msgerror = bab_translate("Please select a file to upload");
+		return false;
+		}
+		
+	return true;
+	}
+	
+	
+	
+
+	
+/**
+ * Modify a file
+ * @param	int			$idf
+ * @param	object		$fmFile			bab_fmFile instance
+ * @param	string		$fname
+ * @param	string		$description
+ * @param	string		$keywords
+ * @param	Y|N			$readonly
+ * @param	Y|N			$confirm
+ * @param	Y|N|false	$bnotify
+ * @param	int			$newfolder
+ * @param	boolean		$descup			Update description & keywords
+ */
+function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonly, $confirm, $bnotify, $newfolder, $descup)
+	{
+	global $babBody, $babDB, $BAB_SESS_USERID;
+	
+	$uploadf_name = $fmFile->filename; 
+	$uploadf_size = $fmFile->size;
+	
+
+	$res = $babDB->db_query("select * from ".BAB_FILES_TBL." where id='".$babDB->db_escape_string($idf)."'");
+	if( $res && $babDB->db_num_rows($res))
+		{
+		$arr = $babDB->db_fetch_array($res);
+		if( $arr['bgroup'] == "Y" )
+			{
+			for( $i = 0; $i < count($babBody->aclfm['id']); $i++)
+				{
+				if( $babBody->aclfm['id'][$i] == $arr['id_owner'] )
+					{
+					if ( $babBody->aclfm['upda'][$i] || $babBody->aclfm['ma'][$i] == 1)
+						{
+						break;
+						}
+					else
+						{
+						$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
+						if( count($arrschi) > 0 && in_array($arr['idfai'], $arrschi))
+							{
+							break;
+							}
+						else
+							{
+								$babBody->msgerror = bab_translate("Access denied");
+								return false;
+							}
+						}
+					}
+				}
+			}
+
+		$pathx = bab_getUploadFullPath($arr['bgroup'], $arr['id_owner'], $arr['path']);
+		
+
+		if( !file_exists($pathx.$arr['name']))
+			{
+			$babBody->msgerror = bab_translate("File does'nt exist");
+			return false;
+			}
+
+		$bmodified = false;
+		if( !empty($uploadf_name) && $uploadf_name != "none")
+			{
+			if( $size > $GLOBALS['babMaxFileSize'])
+				{
+				$babBody->msgerror = bab_translate("The file was greater than the maximum allowed") ." :". $GLOBALS['babMaxFileSize'];
+				return false;
+				}
+			$totalsize = getDirSize($GLOBALS['babUploadPath']);
+			if( $size + $totalsize > $GLOBALS['babMaxTotalSize'])
+				{
+				$babBody->msgerror = bab_translate("There is not enough free space");
+				return false;
+				}
+
+			$totalsize = getDirSize($pathx);
+			if( $size + $totalsize > ($arr['bgroup'] == "Y"? $GLOBALS['babMaxGroupSize']: $GLOBALS['babMaxUserSize']))
+				{
+				$babBody->msgerror = bab_translate("There is not enough free space");
+				return false;
+				}
+
+			if( isset($GLOBALS['babFileNameTranslation'])) {
+				$uploadf_name = strtr($uploadf_name, $GLOBALS['babFileNameTranslation']);
+			}
+
+			if( !$fmFile->import($pathx.$arr['name']))
+				{
+				$babBody->msgerror = bab_translate("The file could not be uploaded");
+				return false;
+				}
+			$bmodified = true;
+			}
+
+		$fname = trim($fname);
+		$frename = false;
+		$osfname = $fname;
+
+		if( !empty($fname) && strcmp($arr['name'], $osfname))
+			{
+			if( isset($GLOBALS['babFileNameTranslation']))
+				$osfname = strtr($osfname, $GLOBALS['babFileNameTranslation']);
+			if( rename($pathx.$arr['name'], $pathx.$osfname))
+				{
+				$frename = true;
+				if( is_dir($pathx.BAB_FVERSION_FOLDER."/"))
+					{
+					$res = $babDB->db_query("select * from ".BAB_FM_FILESVER_TBL." where id_file='".$babDB->db_escape_string($idf)."'");
+					while($rr = $babDB->db_fetch_array($res))
+						{
+						$filename = $rr['ver_major'].",".$rr['ver_minor'].",".$osfname;
+						rename($pathx.BAB_FVERSION_FOLDER."/".$rr['ver_major'].",".$rr['ver_minor'].",".$arr['name'], $pathx.BAB_FVERSION_FOLDER."/".$rr['ver_major'].",".$rr['ver_minor'].",".$osfname);
+						}
+					}
+				}
+			}
+
+
+
+		if( empty($BAB_SESS_USERID))
+			$idcreator = 0;
+		else
+			$idcreator = $BAB_SESS_USERID;
+	
+		$tmp = array();
+		if( $descup )
+			{
+			$tmp[] = "description='".$babDB->db_escape_string($description)."'";
+			$tmp[] = "keywords='".$babDB->db_escape_string($keywords)."'";
+			}
+		if( $bmodified)
+			{
+			$tmp[] = "modified=now()";
+			$tmp[] = "modifiedby='".$babDB->db_escape_string($idcreator)."'";
+			}
+		if( $frename)
+			{
+			$tmp[] = "name='".$babDB->db_escape_string($fname)."'";
+			}
+		else
+			{
+			$osfname = $arr['name'];
+			}
+
+		if( !empty($readonly))
+			{
+			if( $readonly != 'Y' ) 
+				{
+				$readonly = 'N';
+				}
+			$tmp[] = "readonly='".$babDB->db_escape_string($readonly)."'";
+			}
+
+		if( !empty($newfolder))
+			{
+			$pathxnew = bab_getUploadFullPath($arr['bgroup'], $newfolder);
+			if(!is_dir($pathxnew))
+				{
+				bab_mkdir($pathxnew, $GLOBALS['babMkdirMode']);
+				}
+
+			if( rename( $pathx.$osfname, $pathxnew.$osfname))
+				{
+				$babDB->db_query("delete from ".BAB_FM_FIELDSVAL_TBL." where id_file='".$babDB->db_escape_string($idf)."'");
+				$tmp[] = "id_owner='".$babDB->db_escape_string($newfolder)."'";
+				$tmp[] = "path=''";
+				$arr['id_owner'] = $newfolder;
+
+				if( is_dir($pathx.BAB_FVERSION_FOLDER."/"))
+					{
+					if( !is_dir($pathxnew.BAB_FVERSION_FOLDER."/"))
+						{
+						bab_mkdir($pathxnew.BAB_FVERSION_FOLDER, $GLOBALS['babMkdirMode']);
+						}
+
+					$res = $babDB->db_query("select * from ".BAB_FM_FILESVER_TBL." where id_file='".$babDB->db_escape_string($idf)."'");
+					while($rr = $babDB->db_fetch_array($res))
+						{
+						$filename = $rr['ver_major'].",".$rr['ver_minor'].",".$osfname;
+						rename($pathx.BAB_FVERSION_FOLDER."/".$filename, $pathxnew.BAB_FVERSION_FOLDER."/".$filename);
+						}
+					}
+
+				}
+			}
+
+		if( count($tmp) > 0 )
+			{
+			$babDB->db_query("update ".BAB_FILES_TBL." set ".implode(", ", $tmp)." where id='".$babDB->db_escape_string($idf)."'");
+			}
+
+		if( $arr['bgroup'] == 'Y')
+			{
+			$res = $babDB->db_query("select id from ".BAB_FM_FIELDS_TBL." where id_folder='".$babDB->db_escape_string($arr['id_owner'])."'");
+			while($arrf = $babDB->db_fetch_array($res))
+				{
+				$fd = 'field'.$arrf['id'];
+				if( isset($GLOBALS[$fd]) )
+					{
+
+					$fval = $babDB->db_escape_string($GLOBALS[$fd]);
+
+					$res2 = $babDB->db_query("select id from ".BAB_FM_FIELDSVAL_TBL." where id_file='".$babDB->db_escape_string($idf)."' and id_field='".$babDB->db_escape_string($arrf['id'])."'");
+					if( $res2 && $babDB->db_num_rows($res2) > 0)
+						{
+						$arr2 = $babDB->db_fetch_array($res2);
+						$babDB->db_query("update ".BAB_FM_FIELDSVAL_TBL." set fvalue='".$babDB->db_escape_string($fval)."' where id='".$babDB->db_escape_string($arr2['id'])."'");
+						}
+					else
+						{
+						$babDB->db_query("insert into ".BAB_FM_FIELDSVAL_TBL." set fvalue='".$babDB->db_escape_string($fval)."', id_file='".$babDB->db_escape_string($idf)."', id_field='".$babDB->db_escape_string($arrf['id'])."'");
+						}
+					}
+				}
+			}
+
+		$rr = $babDB->db_fetch_array($babDB->db_query("select filenotify, id_dgowner from ".BAB_FM_FOLDERS_TBL." where id='".$babDB->db_escape_string($arr['id_owner'])."'"));
+		if( empty($bnotify))
+			{
+			$bnotify = $rr['filenotify'];
+			}
+		if( $arr['bgroup'] == "Y" )
+			{
+			if( $arr['confirmed'] == "N")
+				{
+				include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
+				$res = updateFlowInstance($arr['idfai'], $GLOBALS['BAB_SESS_USERID'], $confirm == "Y"? true: false);
+				switch($res)
+					{
+					case 0:
+						deleteFile($arr['id'], $arr['name'], $pathx);
+						unlink($pathx.$arr['name']);
+						notifyFileAuthor(bab_translate("Your file has been refused"),"", $arr['author'], $arr['name']);
+						break;
+					case 1:
+						deleteFlowInstance($arr['idfai']);
+						$babDB->db_query("update ".BAB_FILES_TBL." set confirmed='Y', idfai='0' where id = '".$babDB->db_escape_string($arr['id'])."'");
+						$GLOBALS['babWebStat']->addNewFile($rr['id_dgowner']);
+						notifyFileAuthor(bab_translate("Your file has been accepted"),"", $arr['author'], $arr['name']);
+						if( $bnotify == "Y")
+							{
+							fileNotifyMembers($arr['name'], $arr['path'], $arr['id_owner'], bab_translate("A new file has been uploaded"));
+							}
+						break;
+					default:
+						$nfusers = getWaitingApproversFlowInstance($arr['idfai'], true);
+						if( count($nfusers) > 0 )
+							notifyFileApprovers($arr['id'], $nfusers, bab_translate("A new file is waiting for you"));
+						break;
+					}
+				}
+			else if( $bnotify == "Y" && $bmodified) {
+				fileNotifyMembers($arr['name'], $arr['path'], $arr['id_owner'], bab_translate("File has been updated"));
+				}
+			}
+		return true;
+		}
+		
+	// the file does not exists
+	return false;
+	}
+
+
+
+
+/**
+ * Get file array and access rights on the file
+ * For versionning
+ */
+function fm_getFileAccess($idf) {
+
+	static $result = array();
+	
+	if (!$result[$idf]) {
+	
+		$bupdate = false;
+		$bdownload = false;
+		$arrfold =  array();
+		$arrfile = array();
+		$lockauthor = 0;
+		
+		global $babDB;
+	
+		$res = $babDB->db_query("select * from ".BAB_FILES_TBL." where id='".$babDB->db_escape_string($idf)."' and state=''");
+		if( $res && $babDB->db_num_rows($res) > 0 )
+		{
+			$arrfile = $babDB->db_fetch_assoc($res);
+			if( $arrfile['bgroup'] == 'Y' && $arrfile['confirmed'] == 'Y')
+			{
+				$res = $babDB->db_query("select * from ".BAB_FM_FOLDERS_TBL." where id='".$babDB->db_escape_string($arrfile['id_owner'])."'");
+				$arrfold = $babDB->db_fetch_array($res);
+	
+				if( $arrfold['version'] ==  'Y' )
+				{
+					if(bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $arrfold['id']) || bab_isAccessValid(BAB_FMUPDATE_GROUPS_TBL, $arrfile['id_owner']))
+					{
+						$bupdate = true;
+						if( $arrfile['edit'] != 0 ) {
+							list($lockauthor) = $babDB->db_fetch_array($babDB->db_query("select author from ".BAB_FM_FILESVER_TBL." where id='".$babDB->db_escape_string($arrfile['edit'])."'"));
+							}
+					}
+	
+					if(bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $arrfile['id_owner'])) {
+						$bdownload = true;
+					}
+				}
+			} elseif ('N' == $arrfile['bgroup']) {
+			
+				
+				
+				if( $GLOBALS['babBody']->ustorage && !empty($BAB_SESS_USERID) && $BAB_SESS_USERID == $arrfile['id_owner'] ) {
+					$bupdate = true;
+					$bdownload = true;
+				}
+			}
+		}
+		
+		$result[$idf] = array(
+			'arrfile' => $arrfile,
+			'arrfold' => $arrfold,
+			'bupdate' => $bupdate,
+			'bdownload' => $bdownload,
+			'lockauthor' => $lockauthor
+		);
+	}
+	
+	return $result[$idf];
+}
+
+
+
+/**
+ * Lock a file
+ * Versionning
+ * @param	int		$idf
+ * @param	string	$comment
+ */
+function fm_lockFile($idf, $comment)
+{
+	global $babBody, $babDB;
+	
+	$fm_file = fm_getFileAccess($idf);
+	$arrfile = $fm_file['arrfile'];
+
+	if( $arrfile['edit'] == 0 && $GLOBALS['BAB_SESS_USERID'] != '' )
+		{
+		$babDB->db_query("insert into ".BAB_FM_FILESLOG_TBL." 
+		( id_file, date, author, action, comment, version) 
+		values (
+			'".$babDB->db_escape_string($idf)."',
+			 now(), 
+			 '".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', 
+			 '".BAB_FACTION_EDIT."', 
+			 '".$babDB->db_escape_string($comment)."', 
+			 '".$arrfile['ver_major'].".".$babDB->db_escape_string($arrfile['ver_minor'])."'
+		)");
+
+		$babDB->db_query("insert into ".BAB_FM_FILESVER_TBL." 
+		( id_file, date, author, ver_major, ver_minor, idfai ) 
+		values (
+			'".$babDB->db_escape_string($idf)."',
+			now(),
+			'".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', 
+			'".$babDB->db_escape_string($arrfile['ver_major'])."', 
+			'".$babDB->db_escape_string($arrfile['ver_minor'])."', 
+			'0'
+		)");
+		$idfver = $babDB->db_insert_id(); 
+		
+		$babDB->db_query("update ".BAB_FILES_TBL." set edit='".$babDB->db_escape_string($idfver)."' WHERE id='".$babDB->db_escape_string($idf)."'");
+	}
+}
+
+
+
+/**
+ * Unlock a file
+ * Versionning
+ * @param	int		$idf
+ * @param	string	$comment
+ */
+function fm_unlockFile($idf, $comment )
+{
+	global $babBody, $babDB;
+	
+	$fm_file = fm_getFileAccess($idf);
+	$arrfile = $fm_file['arrfile'];
+	$arrfold = $fm_file['arrfold'];
+	$lockauthor = $fm_file['lockauthor'];
+
+	if( $arrfile['edit'] != 0 && $GLOBALS['BAB_SESS_USERID'] != '' )
+		{
+		if( $lockauthor == $GLOBALS['BAB_SESS_USERID'] || bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $arrfold['id']) )
+			{
+			$babDB->db_query("insert into ".BAB_FM_FILESLOG_TBL." ( id_file, date, author, action, comment, version) values ('".$babDB->db_escape_string($idf)."', now(), '".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', '".BAB_FACTION_UNEDIT."', '".$babDB->db_escape_string($comment)."', '".$babDB->db_escape_string($arrfile['ver_major']).".".$babDB->db_escape_string($arrfile['ver_minor'])."')");
+			
+			$arr = $babDB->db_fetch_array($babDB->db_query("select idfai, ver_major, ver_minor from ".BAB_FM_FILESVER_TBL." where id='".$babDB->db_escape_string($arrfile['edit'])."'"));
+			if( $arr['idfai'] != 0 )
+				{
+				include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
+				deleteFlowInstance($arr['idfai']);
+				$pathx = bab_getUploadFullPath($arrfile['bgroup'], $arrfile['id_owner']);
+				if( substr($arrfile['path'], -1) == "/")
+					$pathx .= substr($arrfile['path'], 0 , -1);
+				else if( !empty($arrfile['path']))
+					$pathx .= $arrfile['path']."/";
+
+				unlink($pathx.BAB_FVERSION_FOLDER."/".$arr['ver_major'].",".$arr['ver_minor'].",".$arrfile['name']);
+				}
+
+			$babDB->db_query("delete from ".BAB_FM_FILESVER_TBL." where id='".$babDB->db_escape_string($arrfile['edit'])."'");
+			$babDB->db_query("update ".BAB_FILES_TBL." set edit='0' where id='".$babDB->db_escape_string($idf)."'");
+			}
+		}
+
+}
+
+
+
+/**
+ * Commit a file
+ * versionning
+ * @param	int		$idf
+ * @param	string	$comment
+ * @param	Y|N		$vermajor
+ * @param	object	$fmFile			bab_fmFile instance
+ *
+ * @return boolean
+ */
+function fm_commitFile($idf, $comment, $vermajor, $fmFile)
+{
+	global $babBody, $babDB;
+	
+	$filename = $fmFile->filename;
+	$size = $fmFile->size;
+	
+	$fm_file = fm_getFileAccess($idf);
+	$arrfile = $fm_file['arrfile'];
+	$arrfold = $fm_file['arrfold'];
+	$lockauthor = $fm_file['lockauthor'];
+
+	if( $lockauthor != $GLOBALS['BAB_SESS_USERID'])
+		{
+		$babBody->msgerror = bab_translate("Access denied");
+		return false;
+		}
+
+	if( empty($filename) || $filename == "none")
+		{
+		$babBody->msgerror = bab_translate("Please select a file to upload");
+		return false;
+		}
+
+	if( $size > $GLOBALS['babMaxFileSize'])
+		{
+		$babBody->msgerror = bab_translate("The file was greater than the maximum allowed") ." :". $GLOBALS['babMaxFileSize'];
+		return false;
+		}
+
+	$totalsize = getDirSize($GLOBALS['babUploadPath']);
+	if( $size + $totalsize > $GLOBALS['babMaxTotalSize'])
+		{
+		$babBody->msgerror = bab_translate("There is not enough free space");
+		return false;
+		}
+
+	$pathx = bab_getUploadFullPath($arrfile['bgroup'], $arrfile['id_owner']);
+	$pathy = bab_getUploadFmPath($arrfile['bgroup'], $arrfile['id_owner']);
+
+	$totalsize = getDirSize($pathx);
+	if( $size + $totalsize > $GLOBALS['babMaxGroupSize'] )
+		{
+		$babBody->msgerror = bab_translate("There is not enough free space");
+		return false;
+		}
+
+	if( substr($arrfile['path'], -1) == "/")
+		$pathx .= substr($arrfile['path'], 0 , -1);
+	else if( !empty($arrfile['path']))
+		$pathx .= $arrfile['path']."/";
+
+	if( !is_dir($pathx.BAB_FVERSION_FOLDER))
+		bab_mkdir($pathx.BAB_FVERSION_FOLDER, $GLOBALS['babMkdirMode']);
+
+	if( $vermajor == 'Y' )
+		{
+		$vmajor = ($arrfile['ver_major'] + 1);
+		$vminor = 0;
+		}
+	else
+		{
+		$vmajor = $arrfile['ver_major'];
+		$vminor = ($arrfile['ver_minor'] + 1);
+		}
+
+
+	if( !$fmFile->import($pathx.BAB_FVERSION_FOLDER."/".$vmajor.",".$vminor.",".$arrfile['name']))
+		{
+		$babBody->msgerror = bab_translate("The file could not be uploaded");
+		return false;
+		}
+
+	if( $arrfold['idsa'] != 0 )
+		{
+		include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
+		if( $arrfold['auto_approbation'] == 'Y' )
+			{
+			$idfai = makeFlowInstance($arrfold['idsa'], "filv-".$arrfile['edit'], $GLOBALS['BAB_SESS_USERID']);
+			}
+		else
+			{
+			$idfai = makeFlowInstance($arrfold['idsa'], "filv-".$arrfile['edit']);
+			}
+		}
+
+	if( $arrfold['idsa'] == 0 || $idfai === true)
+		{
+		$babDB->db_query("insert into ".BAB_FM_FILESLOG_TBL." ( id_file, date, author, action, comment, version) values ('".$babDB->db_escape_string($idf)."', now(), '".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', '".BAB_FACTION_COMMIT."', '".$babDB->db_escape_string($comment)."', '".$babDB->db_escape_string($vmajor).".".$babDB->db_escape_string($vminor)."')");
+
+		copy($pathx.$arrfile['name'], $pathx.BAB_FVERSION_FOLDER."/".$arrfile['ver_major'].",".$arrfile['ver_minor'].",".$arrfile['name']);
+		copy($pathx.BAB_FVERSION_FOLDER."/".$vmajor.",".$vminor.",".$arrfile['name'], $pathx.$arrfile['name']);
+		unlink($pathx.BAB_FVERSION_FOLDER."/".$vmajor.",".$vminor.",".$arrfile['name']);
+
+		// index
+
+		include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
+		$index_status = bab_indexOnLoadFiles(
+			array($pathx.$arrfile['name'],  $pathx.BAB_FVERSION_FOLDER."/".$arrfile['ver_major'].",".$arrfile['ver_minor'].",".$arrfile['name']),
+			'bab_files'
+		);
+
+		$babDB->db_query("update ".BAB_FILES_TBL." set edit='0', modified=now(), modifiedby='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', ver_major='".$babDB->db_escape_string($vmajor)."', ver_minor='".$babDB->db_escape_string($vminor)."', ver_comment='".$babDB->db_escape_string($comment)."', index_status='".$babDB->db_escape_string($index_status)."' where id='".$babDB->db_escape_string($idf)."'");
+
+		
+
+		$babDB->db_query("update ".BAB_FM_FILESVER_TBL." set ver_major='".$babDB->db_escape_string($arrfile['ver_major'])."', ver_minor='".$babDB->db_escape_string($arrfile['ver_minor'])."', comment='".$babDB->db_escape_string($arrfile['ver_comment'])."', idfai='0', confirmed='Y', index_status='".$babDB->db_escape_string($index_status)."' where id='".$babDB->db_escape_string($arrfile['edit'])."'");
+
+		if (BAB_INDEX_STATUS_INDEXED === $index_status) {
+			$obj = new bab_indexObject('bab_files');
+			$obj->setIdObjectFile($pathy.$arrfile['name'], $idf, $arrfile['id_owner']);
+		
+			$obj->setIdObjectFile($pathy.BAB_FVERSION_FOLDER."/".$arrfile['ver_major'].",".$arrfile['ver_minor'].",".$arrfile['name'], $idf, $arrfile['id_owner']);
+		}
+
+		if( $arrfold['filenotify'] == 'Y' )
+			fileNotifyMembers($filename, $arrfile['path'], $arrfile['id_owner'], bab_translate("A new version file has been uploaded"));
+		}
+	elseif(!empty($idfai))
+		{
+		$babDB->db_query("insert into ".BAB_FM_FILESLOG_TBL." ( id_file, date, author, action, comment, version) values ('".$babDB->db_escape_string($idf)."', now(), '".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', '".BAB_FACTION_COMMIT."', '".$babDB->db_escape_string(bab_translate("Waiting to be validate"))."', '".$babDB->db_escape_string($vmajor).".".$babDB->db_escape_string($vminor)."')");
+
+		$babDB->db_query("update ".BAB_FM_FILESVER_TBL." set ver_major='".$babDB->db_escape_string($vmajor)."', ver_minor='".$babDB->db_escape_string($vminor)."', comment='".$babDB->db_escape_string($comment)."', idfai='0' where id='".$babDB->db_escape_string($arrfile['edit'])."'");
+
+		$babDB->db_query("update ".BAB_FM_FILESVER_TBL." set idfai='".$babDB->db_escape_string($idfai)."' where id='".$babDB->db_escape_string($arrfile['edit'])."'");
+		$nfusers = getWaitingApproversFlowInstance($idfai, true);
+		notifyFileApprovers($arrfile['id'], $nfusers, bab_translate("A new version file is waiting for you"));
+		}
+		
+	return true;
+}
+
+
+
+
+
+
+
 /**
  * Index all files of file manager
- * @param array $status
- * @param boolean $prepare
+ * @param 	array 	$status
+ * @param 	boolean $prepare
  */
 function indexAllFmFiles($status, $prepare) {
 	
@@ -433,14 +1326,14 @@ function indexAllFmFiles($status, $prepare) {
 
 	while ($arr = $babDB->db_fetch_assoc($res)) {
 
-		$pathx = bab_getUploadFullPath($arr['bgroup'], $arr['id_owner']);
-		$pathy =  bab_getUploadFmPath($arr['bgroup'], $arr['id_owner']);
+		$pathx = bab_getUploadFullPath($arr['bgroup'], $arr['id_owner'], $arr['path']);
+		$pathy = bab_getUploadFmPath($arr['bgroup'], $arr['id_owner']);
 
 		if (!empty($arr['path'])) {
 			$arr['path'] .= '/';
 		}
 
-		$files[] = $pathx.$arr['path'].$arr['name'];
+		$files[] = $pathx.$arr['name'];
 		$rights[$pathy.$arr['path'].$arr['name']] = array(
 			'id' => $arr['id'],
 			'id_owner' => $arr['id_owner']

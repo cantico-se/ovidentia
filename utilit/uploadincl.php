@@ -23,6 +23,179 @@
 ************************************************************************/
 include_once 'base.php';
 
+define('BAB_FMFILE_UPLOAD'	, 1);
+define('BAB_FMFILE_MOVE'	, 2);
+define('BAB_FMFILE_COPY'	, 3);
+
+
+/**
+ * Wrapper for file manager insertion
+ * Instance of this object is the source to create a file in the filemanager
+ */
+class bab_fmFile {
+
+	/**#@+
+	 * @private
+	 */
+	var $type;
+	var $source;
+	/**#@-*/
+	
+	/**#@+
+	 * @public
+	 */
+	var $filename;
+	var $size;
+	/**#@-*/
+	
+	/**
+	 * @private
+	 * Create object with specified type
+	 * @param	int		$type		BAB_FMFILE_UPLOAD, BAB_FMFILE_MOVE, BAB_FMFILE_COPY
+	 */
+	function bab_fmFile($type, $source) {
+		$this->type = $type;
+		$this->source = $source;
+	}
+	
+	/**
+	 * @static
+	 * @public
+	 * Prepare file for upload
+	 * @param	string	$fieldname
+	 */
+	function upload($fieldname) {
+		$obj = new bab_fmFile(BAB_FMFILE_UPLOAD, $_FILES[$fieldname]['tmp_name']);
+		$obj->filename 	= $_FILES[$fieldname]['name'];
+		$obj->size	 	= $_FILES[$fieldname]['size'];
+		return $obj;
+	}
+	
+	/**
+	 * @static
+	 * @public
+	 * Prepare file for copy
+	 * @param	string	$sourcefile
+	 */
+	function copy($sourcefile) {
+		$obj = new bab_fmFile(BAB_FMFILE_COPY, $sourcefile);
+		$obj->filename 	= basename($sourcefile);
+		$obj->size	 	= filesize($sourcefile);
+		return $obj;
+	}
+	
+	/**
+	 * @static
+	 * @public
+	 * Prepare file for move
+	 * @param	string	$sourcefile
+	 */
+	function move($sourcefile) {
+		$obj = new bab_fmFile(BAB_FMFILE_MOVE, $sourcefile);
+		$obj->filename 	= basename($sourcefile);
+		$obj->size	 	= filesize($sourcefile);
+		return $obj;
+	}
+	
+	/**
+	 * install the prepared file into destination
+	 * @param	string	$destination 	(destination full path and file name)
+	 * @return	boolean
+	 */
+	function import($destination) {
+	
+		if( !get_cfg_var('safe_mode')) {
+			set_time_limit(0);
+		}
+	
+		switch($this->type) {
+			case BAB_FMFILE_UPLOAD:
+				return move_uploaded_file($this->source, $destination);
+				break;
+				
+			case BAB_FMFILE_COPY:
+				return copy($this->source, $destination);
+				break;
+				
+			case BAB_FMFILE_MOVE:
+				return move($this->source, $destination);
+				break;
+		}
+	}
+}
+
+
+
+/** 
+ * Move uploaded file into the file manager
+ * if the file exists, the file is updated or a new version of the file is created
+ * @param 	object	$fmFile			bab_fmFile instance
+ * @param	int		$id_owner
+ * @param	string	$path
+ * @param	boolean	$bgroup			true if the $id_owner is a folder, false if the $id_owner is a user
+ *
+ * @return 	boolean	id_file
+ */
+function bab_moveUploadedFile($fmFile, $id_owner, $path, $bgroup) {
+	
+	global $babDB;
+	include_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
+
+	$filename = $_FILES[$field_name]['name'];
+	$pathx = bab_getUploadFullPath($arr['bgroup'], $arr['id_owner'], $path);
+	$gr = $bgroup ? 'Y' : 'N';
+
+	if( file_exists($pathx.$fmFile->filename)) {
+
+		$res = $babDB->db_query('
+		SELECT 
+			id, description, keywords 
+		FROM '.BAB_FILES_TBL.' 
+			WHERE path='.$babDB->quote($path).' 
+			AND name='.$babDB->quote($fmFile->filename).' 
+			AND id_owner='.$babDB->quote($id_owner).' 
+			AND bgroup='.$babDB->quote($gr)
+		);
+		
+		$arr = $babDB->db_fetch_assoc($res);
+		$fm_file = fm_getFileAccess($arr['id']);
+		
+		if (!$fm_file['bupdate']) {
+			return false;
+		}
+
+		if ($bgroup && 'Y' == $fm_file['arrfold']['version']) {
+			// add a version
+			fm_lockFile($arr['id'], ''); 
+			return fm_commitFile($arr['id'], '', 'N', $fmFile->filename, $_FILES[$field_name]['size'], $_FILES[$field_name]['tmp_name']);
+		}
+
+	
+		// update a file
+		return saveUpdateFile(
+			$arr['id'], 
+			$fmFile->filename, 
+			$_FILES[$field_name]['size'],
+			$_FILES[$field_name]['tmp_name'], 
+			$fmFile->filename, 
+			$arr['description'], 
+			$arr['keywords'], 
+			$arr['readonly'], 'Y', false, false, false
+		);
+			
+	} else {
+		// create new file
+		return saveFile(
+			array($field_name => $_FILES[$field_name]),
+			$id_owner, 
+			$gr, 
+			$path, '', '', 'N'
+		);
+	}
+}
+
+
+
 /**
  * get the content of a file from upload
  * the file is opened in the upload directory
@@ -57,10 +230,5 @@ function bab_getUploadedFileContent($fieldname) {
 	}
 	return false;
 }
-
-
-
-
-
 
 ?>

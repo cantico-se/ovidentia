@@ -134,7 +134,7 @@ class bab_inifile_requirements {
 	function require_images_directory($value) {
 
 		$images = dirname($_SERVER['SCRIPT_FILENAME']).'/images/';
-		$status = is_dir($images) && is_writable($images.'articles/') && is_writable($images.'common/') && is_writable($images.'tmp/');
+		$status = is_dir($images) && is_writable($images);
 		
 		return array(
 			'description'	=> bab_translate("Images directory for articles"),
@@ -171,13 +171,15 @@ class bab_inifile_requirements {
 	
 		$current =  bab_translate("Unavailable");
 		$status = false;
+		
+		$ul = $GLOBALS['babBody']->babsite['uploadpath'];
 
-		if (is_writable($GLOBALS['babUploadPath'])) {
+		if (is_writable($ul)) {
 			$current = bab_translate("The directory is writable but this is not the full pathname");
 
 		}
 		
-		if (preg_match('/^(\/|[a-zA-Z]{1}\:\\\\)/',$GLOBALS['babUploadPath'])) {
+		if (preg_match('/^(\/|[a-zA-Z]{1}\:\\\\)/', $ul)) {
 			$current = bab_translate("The addons directory is not writable");
 		}
 		
@@ -197,6 +199,7 @@ class bab_inifile_requirements {
 			'result'		=> $status
 		);
 	}
+	
 
 	function require_mod_imap($value) {
 		

@@ -1674,7 +1674,7 @@ class bab_FileTreeView extends bab_TreeView
 		$files = $this->_db->db_query($sql);
 		while ($file = $this->_db->db_fetch_array($files)) {
 			
-			$fullpath = bab_getUploadFullPath($file['bgroup'], $file['id_owner']) . $file['path'] . '/' . $file['name'];
+			$fullpath = bab_getUploadFullPath($file['bgroup'], $file['id_owner'], $file['path']) . $file['name'];
 			if (!is_file($fullpath))
 				continue;
 

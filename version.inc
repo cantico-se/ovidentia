@@ -35,13 +35,13 @@ php_version="4.1.2"
 ; available since 5.8.7
 
 mod_mysql="Available"
-mysql_version="3.23"
-; images_directory="Available" 
+mysql_version="3.23" 
 mod_zlib="Available"
 
 [recommendations]
 lang_directory="Available" 
 upload_directory="Available"
+images_directory="Available" 
 mod_xml="Available"
 mod_calendar="Available"
 mod_ldap="Available"

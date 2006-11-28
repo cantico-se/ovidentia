@@ -22,7 +22,8 @@
  * USA.																	*
 ************************************************************************/
 include_once 'base.php';
-include_once $babInstallPath.'utilit/fileincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/uploadincl.php';
 include_once $GLOBALS['babInstallPath'].'utilit/indexincl.php';
 
 function notifyApprovers($id, $fid)
@@ -990,485 +991,6 @@ function addFile($id, $gr, $path, $description, $keywords)
 	}
 
 
-function saveFile($id, $gr, $path, $description, $keywords, $readonly)
-	{
-	global $babBody, $babDB, $BAB_SESS_USERID;
-	$access = false;
-	$bmanager = false;
-	$access = false;
-	$confirmed = 'N';
-
-	if( $gr == "N" && !empty($BAB_SESS_USERID))
-		{
-		if( $babBody->ustorage )
-			{
-			$access = true;
-			$confirmed = "Y";
-			}
-		}
-
-	if( $gr == "Y" && !empty($BAB_SESS_USERID))
-		{
-		for( $i = 0; $i < count($babBody->aclfm['id']); $i++)
-			{
-			if( $babBody->aclfm['id'][$i] == $id && ( $babBody->aclfm['uplo'][$i] || $babBody->aclfm['ma'][$i] == 1))
-				{
-				$access = true;
-				break;
-				}
-			}
-
-		}
-
-
-	if( !$access )
-		{
-		$babBody->msgerror = bab_translate("Access denied");
-		return false;
-		}
-
-	$pathx = bab_getUploadFullPath($gr, $id);
-	$okfiles = array();
-	$errfiles = array();
-
-	if( substr($path, -1) == "/")
-		$pathx .= substr($path, 0 , -1);
-	else if( !empty($path))
-		$pathx .= $path."/";	
-
-	foreach ($_FILES as $file) 
-		{
-		$file['name'] = trim($file['name']);
-		if( empty($file['name']) || $file['name'] == 'none')
-			{
-			continue;
-		}
-
-	if( $file['size'] > $GLOBALS['babMaxFileSize'])
-		{
-			$errfiles[] = array('error' => bab_translate("The file was greater than the maximum allowed") ." : ". $GLOBALS['babMaxFileSize'], 'file' => $file['name']);
-			continue;
-		}
-
-	$totalsize = getDirSize($GLOBALS['babUploadPath']);
-		if( $file['size'] + $totalsize > $GLOBALS['babMaxTotalSize'])
-		{
-			$errfiles[] = array('error' => bab_translate("There is not enough free space"), 'file'=>$file['name']);
-			continue;
-		}
-
-	$totalsize = getDirSize($pathx);
-		if( $file['size'] + $totalsize > ($gr == "Y"? $GLOBALS['babMaxGroupSize']: $GLOBALS['babMaxUserSize']))
-		{
-			$errfiles[] = array('error' => bab_translate("There is not enough free space"), 'file'=>$file['name']);
-			continue;
-		}
-
-	$osfname = $file['name'];
-
-	if( isset($GLOBALS['babFileNameTranslation'])) {
-		$osfname = strtr($osfname, $GLOBALS['babFileNameTranslation']);
-	}
-	
-	$name = $osfname;
-
-	$bexist = false;
-	if( file_exists($pathx.$osfname))
-		{
-		$res = $babDB->db_query("
-			SELECT * FROM ".BAB_FILES_TBL." 
-			WHERE 
-				id_owner=	'".$babDB->db_escape_string($id)."' 
-				AND bgroup=	'".$babDB->db_escape_string($gr)."' 
-				AND name=	'".$babDB->db_escape_string($name)."' 
-				AND path=	'".$babDB->db_escape_string($path)."'
-			");
-		if( $res && $babDB->db_num_rows($res) > 0)
-			{
-			$arr = $babDB->db_fetch_array($res);
-			if( $arr['state'] == "D")
-				{
-				$bexist = true;
-				}
-			}
-
-		if( $bexist == false)
-			{
-				$errfiles[] = array('error'=> bab_translate("A file with the same name already exists"), 'file'=>$file['name']);
-				continue;
-			}
-		}
-
-	if( !get_cfg_var('safe_mode'))
-		set_time_limit(0);
-		if( !move_uploaded_file($file['tmp_name'], $pathx.$osfname))
-		{
-			$errfiles[] = array('error'=> bab_translate("The file could not be uploaded"), 'file'=>$file['name']);
-			continue;
-		}
-	
-	
-	if( empty($BAB_SESS_USERID))
-		$idcreator = 0;
-	else
-		$idcreator = $BAB_SESS_USERID;
-
-	$bnotify = false;
-	if( $gr == "Y" )
-		{
-		$rr = $babDB->db_fetch_array($babDB->db_query("select filenotify from ".BAB_FM_FOLDERS_TBL." where id='".$babDB->db_escape_string($id)."'"));
-		if( $rr['filenotify'] == "Y" )
-			$bnotify = true;
-
-		if( $bexist )
-			{
-			if( is_dir($pathx.BAB_FVERSION_FOLDER."/"))
-				{
-				$res = $babDB->db_query("select * from ".BAB_FM_FILESVER_TBL." where id_file='".$babDB->db_escape_string($arr['id'])."'");
-				while($rr = $babDB->db_fetch_array($res))
-					{
-					unlink($pathx.BAB_FVERSION_FOLDER."/".$rr['ver_major'].",".$rr['ver_minor'].",".$osfname);
-					}
-				}
-			$babDB->db_query("delete from ".BAB_FM_FILESVER_TBL." where id_file='".$babDB->db_escape_string($arr['id'])."'");
-			$babDB->db_query("delete from ".BAB_FM_FILESLOG_TBL." where id_file='".$babDB->db_escape_string($arr['id'])."'");
-			$babDB->db_query("delete from ".BAB_FM_FIELDSVAL_TBL." where id_file='".$babDB->db_escape_string($arr['id'])."'");
-			}
-		
-		}
-
-	include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
-	$index_status = bab_indexOnLoadFiles(array($pathx.$osfname), 'bab_files');
-
-	if( $readonly != 'Y')
-		{
-		$readonly = 'N';
-		}
-
-	if( $bexist)
-		{
-		$req = "update ".BAB_FILES_TBL." set description='".$babDB->db_escape_string($description)."', keywords='".$babDB->db_escape_string($keywords)."', readonly='".$babDB->db_escape_string($readonly)."', confirmed='".$babDB->db_escape_string($confirmed)."', modified=now(), hits='0', modifiedby='".$babDB->db_escape_string($idcreator)."', state='', index_status='".$babDB->db_escape_string($index_status)."' where id='".$babDB->db_escape_string($arr['id'])."'";
-		$babDB->db_query($req);
-		$idf = $arr['id'];
-		}
-	else
-		{
-		$req = "insert into ".BAB_FILES_TBL." (name, description, keywords, path, id_owner, bgroup, link, readonly, state, created, author, modified, modifiedby, confirmed, index_status) values ";
-		$req .= "('" .$babDB->db_escape_string($name). "', '" . $babDB->db_escape_string($description). "', '" . $babDB->db_escape_string($keywords). "', '" .$babDB->db_escape_string($path). "', '" . $babDB->db_escape_string($id). "', '" . $babDB->db_escape_string($gr). "', '0', '" . $babDB->db_escape_string($readonly). "', '', now(), '" . $babDB->db_escape_string($idcreator). "', now(), '" . $babDB->db_escape_string($idcreator). "', '". $babDB->db_escape_string($confirmed)."', '".$babDB->db_escape_string($index_status)."')";
-		$babDB->db_query($req);
-		$idf = $babDB->db_insert_id(); 
-		}
-
-		$okfiles[] = $idf;
-
-	if (BAB_INDEX_STATUS_INDEXED === $index_status) {
-		$obj = new bab_indexObject('bab_files');
-		$obj->setIdObjectFile($pathx.$osfname, $idf, $id);
-	}
-
-	if( $gr == 'Y')
-		{
-		if( $confirmed == "Y" )
-			{
-			$GLOBALS['babWebStat']->addNewFile($babBody->currentAdmGroup);
-			}
-
-		$res = $babDB->db_query("select id from ".BAB_FM_FIELDS_TBL." where id_folder='".$babDB->db_escape_string($id)."'");
-		while($arr = $babDB->db_fetch_array($res))
-			{
-			$fd = 'field'.$arr['id'];
-			if( isset($GLOBALS[$fd]) )
-				{
-				$fval = $babDB->db_escape_string($GLOBALS[$fd]);
-
-				$res2 = $babDB->db_query("select id from ".BAB_FM_FIELDSVAL_TBL." where id_file='".$babDB->db_escape_string($idf)."' and id_field='".$babDB->db_escape_string($arr['id'])."'");
-				if( $res2 && $babDB->db_num_rows($res2) > 0)
-					{
-					$arr2 = $babDB->db_fetch_array($res2);
-					$babDB->db_query("update ".BAB_FM_FIELDSVAL_TBL." set fvalue='".$babDB->db_escape_string($fval)."' where id='".$babDB->db_escape_string($arr2['id'])."'");
-					}
-				else
-					{
-					$babDB->db_query("insert into ".BAB_FM_FIELDSVAL_TBL." set fvalue='".$babDB->db_escape_string($fval)."', id_file='".$babDB->db_escape_string($idf)."', id_field='".$babDB->db_escape_string($arr['id'])."'");
-					}
-				}
-			}
-		}
-
-		if( $gr == "Y" && $confirmed == "N" )
-			{
-			if( notifyApprovers($idf, $id) && $bnotify)
-				{
-				fileNotifyMembers($osfname, $path, $id, bab_translate("A new file has been uploaded"));
-				}
-			}
-		}
-
-	if( count($errfiles))
-		{
-		for( $k=0; $k < count($errfiles); $k++)
-			{
-			$babBody->addError($errfiles[$k]['file'].'['.$errfiles[$k]['error'].']');
-			}
-		return false;
-		}
-	
-	if( !count($okfiles))
-		{
-		$babBody->msgerror = bab_translate("Please select a file to upload");
-		return false;
-		}
-
-
-
-	return true;
-	}
-
-function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $description, $keywords, $readonly, $confirm, $bnotify, $newfolder, $descup)
-	{
-	global $babBody, $babDB, $BAB_SESS_USERID;
-
-	$res = $babDB->db_query("select * from ".BAB_FILES_TBL." where id='".$babDB->db_escape_string($idf)."'");
-	if( $res && $babDB->db_num_rows($res))
-		{
-		$arr = $babDB->db_fetch_array($res);
-		if( $arr['bgroup'] == "Y" )
-			{
-			for( $i = 0; $i < count($babBody->aclfm['id']); $i++)
-				{
-				if( $babBody->aclfm['id'][$i] == $arr['id_owner'] )
-					{
-					if ( $babBody->aclfm['upda'][$i] || $babBody->aclfm['ma'][$i] == 1)
-						{
-						break;
-						}
-					else
-						{
-						$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
-						if( count($arrschi) > 0 && in_array($arr['idfai'], $arrschi))
-							{
-							break;
-							}
-						else
-							{
-								$babBody->msgerror = bab_translate("Access denied");
-								return false;
-							}
-						}
-					}
-				}
-			}
-
-		$pathx = bab_getUploadFullPath($arr['bgroup'], $arr['id_owner']);
-		if( substr($arr['path'], -1) == "/")
-			$pathx .= substr($arr['path'], 0 , -1);
-		else if( !empty($arr['path']))
-			$pathx .= $arr['path']."/";	
-
-		if( !file_exists($pathx.$arr['name']))
-			{
-			$babBody->msgerror = bab_translate("File does'nt exist");
-			return false;
-			}
-
-		$bmodified = false;
-		if( !empty($uploadf_name) && $uploadf_name != "none")
-			{
-			if( $size > $GLOBALS['babMaxFileSize'])
-				{
-				$babBody->msgerror = bab_translate("The file was greater than the maximum allowed") ." :". $GLOBALS['babMaxFileSize'];
-				return false;
-				}
-			$totalsize = getDirSize($GLOBALS['babUploadPath']);
-			if( $size + $totalsize > $GLOBALS['babMaxTotalSize'])
-				{
-				$babBody->msgerror = bab_translate("There is not enough free space");
-				return false;
-				}
-
-			$totalsize = getDirSize($pathx);
-			if( $size + $totalsize > ($arr['bgroup'] == "Y"? $GLOBALS['babMaxGroupSize']: $GLOBALS['babMaxUserSize']))
-				{
-				$babBody->msgerror = bab_translate("There is not enough free space");
-				return false;
-				}
-
-			if( isset($GLOBALS['babFileNameTranslation']))
-				$uploadf_name = strtr($uploadf_name, $GLOBALS['babFileNameTranslation']);
-
-			if( !get_cfg_var('safe_mode'))
-				set_time_limit(0);
-			if( !move_uploaded_file($uploadf, $pathx.$arr['name']))
-				{
-				$babBody->msgerror = bab_translate("The file could not be uploaded");
-				return false;
-				}
-			$bmodified = true;
-			}
-
-		$fname = trim($fname);
-		$frename = false;
-		$osfname = $fname;
-
-		if( !empty($fname) && strcmp($arr['name'], $osfname))
-			{
-			if( isset($GLOBALS['babFileNameTranslation']))
-				$osfname = strtr($osfname, $GLOBALS['babFileNameTranslation']);
-			if( rename($pathx.$arr['name'], $pathx.$osfname))
-				{
-				$frename = true;
-				if( is_dir($pathx.BAB_FVERSION_FOLDER."/"))
-					{
-					$res = $babDB->db_query("select * from ".BAB_FM_FILESVER_TBL." where id_file='".$babDB->db_escape_string($idf)."'");
-					while($rr = $babDB->db_fetch_array($res))
-						{
-						$filename = $rr['ver_major'].",".$rr['ver_minor'].",".$osfname;
-						rename($pathx.BAB_FVERSION_FOLDER."/".$rr['ver_major'].",".$rr['ver_minor'].",".$arr['name'], $pathx.BAB_FVERSION_FOLDER."/".$rr['ver_major'].",".$rr['ver_minor'].",".$osfname);
-						}
-					}
-				}
-			}
-
-
-
-		if( empty($BAB_SESS_USERID))
-			$idcreator = 0;
-		else
-			$idcreator = $BAB_SESS_USERID;
-	
-		$tmp = array();
-		if( $descup )
-			{
-			$tmp[] = "description='".$babDB->db_escape_string($description)."'";
-			$tmp[] = "keywords='".$babDB->db_escape_string($keywords)."'";
-			}
-		if( $bmodified)
-			{
-			$tmp[] = "modified=now()";
-			$tmp[] = "modifiedby='".$babDB->db_escape_string($idcreator)."'";
-			}
-		if( $frename)
-			{
-			$tmp[] = "name='".$babDB->db_escape_string($fname)."'";
-			}
-		else
-			{
-			$osfname = $arr['name'];
-			}
-
-		if( !empty($readonly))
-			{
-			if( $readonly != 'Y' ) 
-				{
-				$readonly = 'N';
-				}
-			$tmp[] = "readonly='".$babDB->db_escape_string($readonly)."'";
-			}
-
-		if( !empty($newfolder))
-			{
-			$pathxnew = bab_getUploadFullPath($arr['bgroup'], $newfolder);
-			if(!is_dir($pathxnew))
-				{
-				bab_mkdir($pathxnew, $GLOBALS['babMkdirMode']);
-				}
-
-			if( rename( $pathx.$osfname, $pathxnew.$osfname))
-				{
-				$babDB->db_query("delete from ".BAB_FM_FIELDSVAL_TBL." where id_file='".$babDB->db_escape_string($idf)."'");
-				$tmp[] = "id_owner='".$babDB->db_escape_string($newfolder)."'";
-				$tmp[] = "path=''";
-				$arr['id_owner'] = $newfolder;
-
-				if( is_dir($pathx.BAB_FVERSION_FOLDER."/"))
-					{
-					if( !is_dir($pathxnew.BAB_FVERSION_FOLDER."/"))
-						{
-						bab_mkdir($pathxnew.BAB_FVERSION_FOLDER, $GLOBALS['babMkdirMode']);
-						}
-
-					$res = $babDB->db_query("select * from ".BAB_FM_FILESVER_TBL." where id_file='".$babDB->db_escape_string($idf)."'");
-					while($rr = $babDB->db_fetch_array($res))
-						{
-						$filename = $rr['ver_major'].",".$rr['ver_minor'].",".$osfname;
-						rename($pathx.BAB_FVERSION_FOLDER."/".$filename, $pathxnew.BAB_FVERSION_FOLDER."/".$filename);
-						}
-					}
-
-				}
-			}
-
-		if( count($tmp) > 0 )
-			{
-			$babDB->db_query("update ".BAB_FILES_TBL." set ".implode(", ", $tmp)." where id='".$babDB->db_escape_string($idf)."'");
-			}
-
-		if( $arr['bgroup'] == 'Y')
-			{
-			$res = $babDB->db_query("select id from ".BAB_FM_FIELDS_TBL." where id_folder='".$babDB->db_escape_string($arr['id_owner'])."'");
-			while($arrf = $babDB->db_fetch_array($res))
-				{
-				$fd = 'field'.$arrf['id'];
-				if( isset($GLOBALS[$fd]) )
-					{
-
-					$fval = $babDB->db_escape_string($GLOBALS[$fd]);
-
-					$res2 = $babDB->db_query("select id from ".BAB_FM_FIELDSVAL_TBL." where id_file='".$babDB->db_escape_string($idf)."' and id_field='".$babDB->db_escape_string($arrf['id'])."'");
-					if( $res2 && $babDB->db_num_rows($res2) > 0)
-						{
-						$arr2 = $babDB->db_fetch_array($res2);
-						$babDB->db_query("update ".BAB_FM_FIELDSVAL_TBL." set fvalue='".$babDB->db_escape_string($fval)."' where id='".$babDB->db_escape_string($arr2['id'])."'");
-						}
-					else
-						{
-						$babDB->db_query("insert into ".BAB_FM_FIELDSVAL_TBL." set fvalue='".$babDB->db_escape_string($fval)."', id_file='".$babDB->db_escape_string($idf)."', id_field='".$babDB->db_escape_string($arrf['id'])."'");
-						}
-					}
-				}
-			}
-
-		$rr = $babDB->db_fetch_array($babDB->db_query("select filenotify, id_dgowner from ".BAB_FM_FOLDERS_TBL." where id='".$babDB->db_escape_string($arr['id_owner'])."'"));
-		if( empty($bnotify))
-			{
-			$bnotify = $rr['filenotify'];
-			}
-		if( $arr['bgroup'] == "Y" )
-			{
-			if( $arr['confirmed'] == "N")
-				{
-				include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
-				$res = updateFlowInstance($arr['idfai'], $GLOBALS['BAB_SESS_USERID'], $confirm == "Y"? true: false);
-				switch($res)
-					{
-					case 0:
-						deleteFile($arr['id'], $arr['name'], $pathx);
-						unlink($pathx.$arr['name']);
-						notifyFileAuthor(bab_translate("Your file has been refused"),"", $arr['author'], $arr['name']);
-						break;
-					case 1:
-						deleteFlowInstance($arr['idfai']);
-						$babDB->db_query("update ".BAB_FILES_TBL." set confirmed='Y', idfai='0' where id = '".$babDB->db_escape_string($arr['id'])."'");
-						$GLOBALS['babWebStat']->addNewFile($rr['id_dgowner']);
-						notifyFileAuthor(bab_translate("Your file has been accepted"),"", $arr['author'], $arr['name']);
-						if( $bnotify == "Y")
-							{
-							fileNotifyMembers($arr['name'], $arr['path'], $arr['id_owner'], bab_translate("A new file has been uploaded"));
-							}
-						break;
-					default:
-						$nfusers = getWaitingApproversFlowInstance($arr['idfai'], true);
-						if( count($nfusers) > 0 )
-							notifyFileApprovers($arr['id'], $nfusers, bab_translate("A new file is waiting for you"));
-						break;
-					}
-				}
-			else if( $bnotify == "Y" && $bmodified)
-				fileNotifyMembers($arr['name'], $arr['path'], $arr['id_owner'], bab_translate("File has been updated"));
-			}
-		return true;
-		}
-	}
 
 function createDirectory($dirname, $id, $gr, $path)
 	{
@@ -1511,7 +1033,7 @@ function createDirectory($dirname, $id, $gr, $path)
 	if( isset($GLOBALS['babFileNameTranslation']))
 		$dirname = strtr($dirname, $GLOBALS['babFileNameTranslation']);
 
-	$pathx = bab_getUploadFullPath($gr, $id).$path."/".$dirname;
+	$pathx = bab_getUploadFullPath($gr, $id, $path).$dirname;
 
 	if( is_dir($pathx))
 		{
@@ -1933,7 +1455,7 @@ function viewFile( $idf)
 				$this->keysvalhtml = bab_toHtml($arr['keywords']);
 
 				$this->fsizetxt = bab_translate("Size");
-				$fullpath = bab_getUploadFullPath($arr['bgroup'], $arr['id_owner']).$arr['path']."/".$arr['name'];
+				$fullpath = bab_getUploadFullPath($arr['bgroup'], $arr['id_owner'], $arr['path']).$arr['name'];
 				
 				if (file_exists($fullpath)) {
 					$fstat = stat($fullpath);
@@ -2075,7 +1597,7 @@ function viewFile( $idf)
 
 									if ($this->index_onload && BAB_INDEX_STATUS_INDEXED == $_POST['index_status']) {
 										
-										$files_to_index[] = bab_getUploadFullPath($arr['bgroup'], $arr['id_owner']).$arr['path']."/OVF/".$arrfv['ver_major'].','.$arrfv['ver_minor'].','.$arr['name'];
+										$files_to_index[] = bab_getUploadFullPath($arr['bgroup'], $arr['id_owner'], $arr['path']).BAB_FVERSION_FOLDER.'/'.$arrfv['ver_major'].','.$arrfv['ver_minor'].','.$arr['name'];
 									}
 								}
 							}
@@ -2463,7 +1985,14 @@ if( $gr == "Y")
 
 if( "add" === bab_pp('addf') )
 	{
-	if( !saveFile(
+	
+	$arr_obj = array();
+	foreach($_FILES as $fieldname => $file) {
+		$arr_obj[] = bab_fmFile::upload($fieldname);
+	}
+	
+	if(!saveFile(
+			$arr_obj,
 			$id, 
 			$gr, 
 			$path, 
@@ -2488,9 +2017,7 @@ if( 'upd' === bab_pp('updf'))
 	
 	if( !saveUpdateFile(
 			bab_pp('idf'), 
-			$_FILES['uploadf']['name'], 
-			$_FILES['uploadf']['size'],
-			$_FILES['uploadf']['tmp_name'], 
+			bab_fmFile::upload('uploadf'), 
 			bab_pp('fname'), 
 			bab_pp('description'), 
 			bab_pp('keywords'), 
