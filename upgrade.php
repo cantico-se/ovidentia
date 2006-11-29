@@ -7549,6 +7549,8 @@ function upgrade605to606()
 	if (bab_isTableField(BAB_CAL_USER_OPTIONS_TBL, 'workdays')) {
 		$babDB->db_query("ALTER TABLE ".BAB_CAL_USER_OPTIONS_TBL." DROP workdays");
 	}
+	
+	$babDB->db_query("TRUNCATE bab_vac_calendar"); 
 
 	return $ret;
 }

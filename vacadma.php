@@ -2001,14 +2001,17 @@ function rightcopy() {
 			}
 
 
-			$this->db->db_query("INSERT INTO ".BAB_VAC_USERS_RIGHTS_TBL." (id_user, id_right, quantity) SELECT 
-				id_user, 
-				".$this->db->quote($new_id_right)." id_right, 
-				quantity 
-				FROM 
-					".BAB_VAC_USERS_RIGHTS_TBL." 
-					WHERE id_right=".$this->db->quote($old_id_right)
-				);
+			$res = $this->db->db_query("SELECT 
+				t2.id_user, 
+				t2.quantity 
+			FROM 
+					".BAB_VAC_USERS_RIGHTS_TBL." t2 
+					WHERE t2.id_right=".$this->db->quote($old_id_right));
+					
+			while ($arr = $this->db->db_fetch_assoc($res)) {
+				$this->db->db_query("INSERT INTO ".BAB_VAC_USERS_RIGHTS_TBL." (id_user, id_right, quantity) VALUES (".$this->db->quote($arr['id_user']).",".$this->db->quote($new_id_right).", ".$this->db->quote($arr['quantity']).")");
+			}
+
 		}
 	}
 

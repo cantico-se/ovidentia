@@ -133,6 +133,8 @@ function requestVacation($begin,$end, $halfdaybegin, $halfdayend, $id)
 			$this->t_confirm_nomatch = bab_toHtml(bab_translate("Total number of affected days does not match the period, do you really want to submit your request with this mismatch?"),BAB_HTML_JS);
 
 			$this->db = & $GLOBALS['babDB'];
+			
+			
 
 			$date_begin = getDateFromHalfDay($begin,	$halfdaybegin,	false);
 			$date_end	= getDateFromHalfDay($end,		$halfdayend,	true);
@@ -146,8 +148,10 @@ function requestVacation($begin,$end, $halfdaybegin, $halfdayend, $id)
 
 			$this->period_nbdays2 = $this->period_nbdays;
 
-			$this->begin	= $date_begin->getIsoDate();
-			$this->end		= $date_end->getIsoDate();
+			$this->begin		= $date_begin->getIsoDate();
+			$this->end			= $date_end->getIsoDate();
+			$this->halfdaybegin = $halfdaybegin;
+			$this->halfdayend 	= $halfdayend;
 
 			$this->rfrom = isset($_POST['rfrom'])? $_POST['rfrom'] : 0;
 			$this->rights = array();
@@ -762,6 +766,8 @@ function deleteVacationRequest($id)
 		function temp($id)
 			{
 				parent::bab_vacationRequestDetail($id);
+				
+				$this->id_entry = bab_rp('id_entry');
 
 				$this->t_deleteconfirm = bab_translate("Do you really want to delete the vacation request ?");
 
