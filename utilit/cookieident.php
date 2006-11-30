@@ -22,98 +22,24 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-
-function cookieUserLogin($nickname,$password)
+/*
+function cookieUserLogin($token)
 	{
-	global $babBody;
-	$password=strtolower($password);
-	$db = &$GLOBALS['babDB'];
-	$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET cnx_try=cnx_try+1 WHERE sessid='".session_id()."'");
-	list($cnx_try) = $db->db_fetch_array($db->db_query("SELECT cnx_try FROM ".BAB_USERS_LOG_TBL." WHERE sessid='".session_id()."'"));
-	if( $cnx_try > 5)
-		{
-		$babBody->msgerror = bab_translate("Maximum connexion attempts has been reached");
-		return false;
-		}
-
-	$nickname = $db->db_escape_string($nickname);
-
-	$sql="select * from ".BAB_USERS_TBL." where nickname='".$nickname."' and password='".$password."'";
-	$result=$db->db_query($sql);
+	global $babBody, $babDB;
 	
-	if ($db->db_num_rows($result) < 1)
-		{
-		setcookie ("c_nickname", "", time() - 3600);
-		setcookie ("c_password", "", time() - 3600);
-		return false;
-		} 
-	else 
-		{
-		$arr = $db->db_fetch_array($result);
-		if( $arr['disabled'] == '1')
-			{
-			$babBody->msgerror = bab_translate("Sorry, your account is disabled. Please contact your administrator");
-			return false;
-			}
-		if ($arr['is_confirmed'] == '1')
-			{
-			if( isset($_SESSION))
-				{
-				$_SESSION['BAB_SESS_NICKNAME'] = $arr['nickname'];
-				$_SESSION['BAB_SESS_USER'] = bab_composeUserName($arr['firstname'], $arr['lastname']);
-				$_SESSION['BAB_SESS_FIRSTNAME'] = $arr['firstname'];
-				$_SESSION['BAB_SESS_LASTNAME'] = $arr['lastname'];
-				$_SESSION['BAB_SESS_EMAIL'] = $arr['email'];
-				$_SESSION['BAB_SESS_USERID'] = $arr['id'];
-				$_SESSION['BAB_SESS_HASHID'] = $arr['confirm_hash'];
-				$GLOBALS['BAB_SESS_NICKNAME'] = $_SESSION['BAB_SESS_NICKNAME'];
-				$GLOBALS['BAB_SESS_USER'] = $_SESSION['BAB_SESS_USER'];
-				$GLOBALS['BAB_SESS_FIRSTNAME'] = $_SESSION['BAB_SESS_FIRSTNAME'];
-				$GLOBALS['BAB_SESS_LASTNAME'] = $_SESSION['BAB_SESS_LASTNAME'];
-				$GLOBALS['BAB_SESS_EMAIL'] = $_SESSION['BAB_SESS_EMAIL'];
-				$GLOBALS['BAB_SESS_USERID'] = $_SESSION['BAB_SESS_USERID'];
-				$GLOBALS['BAB_SESS_HASHID'] = $_SESSION['BAB_SESS_HASHID'];
-				}
-			else
-				{
-				$GLOBALS['BAB_SESS_NICKNAME'] = $arr['nickname'];
-				$GLOBALS['BAB_SESS_USER'] = bab_composeUserName($arr['firstname'], $arr['lastname']);
-				$GLOBALS['BAB_SESS_FIRSTNAME'] = $arr['firstname'];
-				$GLOBALS['BAB_SESS_LASTNAME'] = $arr['lastname'];
-				$GLOBALS['BAB_SESS_EMAIL'] = $arr['email'];
-				$GLOBALS['BAB_SESS_USERID'] = $arr['id'];
-				$GLOBALS['BAB_SESS_HASHID'] = $arr['confirm_hash'];
-				}
-
-			$res=$db->db_query("select datelog from ".BAB_USERS_TBL." where id='".$GLOBALS['BAB_SESS_USERID']."'");
-			if( $res && $db->db_num_rows($res) > 0)
-				{
-				$arr = $db->db_fetch_array($res);
-				$db->db_query("update ".BAB_USERS_TBL." set datelog=now(), lastlog='".$arr['datelog']."' where id='".$GLOBALS['BAB_SESS_USERID']."'");
-				}
-
-			$res=$db->db_query("select * from ".BAB_USERS_LOG_TBL." where id_user='0' and sessid='".session_id()."'");
-			if( $res && $db->db_num_rows($res) > 0)
-				{
-				$arr = $db->db_fetch_array($res);
-				$db->db_query("update ".BAB_USERS_LOG_TBL." set id_user='".$GLOBALS['BAB_SESS_USERID']."' where id='".$arr['id']."'");
-				}
-			
-			return true;
-			}
-		else
-			{
-			$babBody->msgerror =  bab_translate("Sorry - You haven't Confirmed Your Account Yet");
-			return false;
-			}
-		}
+	$babDB->db_query("SELECT nickname FROM ".BAB_USERS_TBL." WHERE cookie_id=".$babDB->quote($token));
+	
+	
 	}
+*/
 
-if (!isset($_COOKIE['c_nickname'])) $_COOKIE['c_nickname'] = '';
-if (!isset($_COOKIE['c_password'])) $_COOKIE['c_password'] = '';
+$token = trim($_COOKIE['c_password']);
 
-if (trim($_COOKIE['c_nickname']) != "" && trim($_COOKIE['c_password']) != "" && !$GLOBALS['BAB_SESS_USERID'])
+if (!empty($token) && !$GLOBALS['BAB_SESS_USERID'])
 	{
-	cookieUserLogin($_COOKIE['c_nickname'],$_COOKIE['c_password']);
+	include_once $babInstallPath.'admin/register.php';
+	if (!userLogin('','', $token)) {
+		destroyAuthCookie();
 	}
+}
 ?>

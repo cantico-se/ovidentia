@@ -53,6 +53,13 @@ function notifyUserRegistration($link, $name, $email)
 			$this->sitename = $babSiteName;
 			$this->message = $msg;
 			}
+			
+		function toHtml() {
+			$this->linkurl = bab_toHtml($this->linkurl);
+            $this->username = bab_toHtml($this->username);
+			$this->sitename = bab_toHtml($this->sitename);
+			$this->message = bab_toHtml($this->message);
+			}
 		}
 
 	$mail = bab_mail();
@@ -63,10 +70,11 @@ function notifyUserRegistration($link, $name, $email)
     $mail->mailSubject(bab_translate("Registration Confirmation"));
 	
 	$message = bab_translate("Thank You For Registering at our site");
-	$message .= "<br>". bab_translate("To confirm your registration");
+	$message .= "\n". bab_translate("To confirm your registration");
 	$message .= ", ". bab_translate("simply follow this").": ";
 
 	$tempa = new tempa($link, $name, $message);
+	$tempa->toHtml();
 	$message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "userregistration"));
 
     $mail->mailBody($message, "html");
@@ -110,6 +118,13 @@ function notifyAdminRegistration($name, $useremail, $warning)
 			$this->warning = $warning;
 			$this->message = bab_translate("Your site recorded a new registration on behalf of");
 			}
+			
+		function toHtml() {
+			$this->email = bab_toHtml($this->email);
+            $this->username = bab_toHtml($this->username);
+			$this->sitename = bab_toHtml($this->sitename);
+			$this->warning = bab_toHtml($this->warning);
+			}
 		}
 	
     $mail = bab_mail();
@@ -133,6 +148,7 @@ function notifyAdminRegistration($name, $useremail, $warning)
     $mail->mailSubject(bab_translate("Inscription notification"));
 
 	$tempb = new tempb($name, $useremail, $warning);
+	$tempb->toHtml();
 	$message = $mail->mailTemplate(bab_printTemplate($tempb,"mailinfo.html", "adminregistration"));
     $mail->mailBody($message, "html");
 
@@ -343,6 +359,18 @@ function notifyAdminUserRegistration($name, $email, $nickname, $pwd)
 	$mail->mailAltBody($message);
     $mail->send();
 	}
+	
+	
+	
+function destroyAuthCookie() {
+
+	if ( $GLOBALS['babCookieIdent'] != 'login' ) {
+		setcookie('c_nickname'," ");
+	}
+	setcookie('c_password'," ");
+}
+	
+	
 
 function signOn( $nickname, $password,$lifetime)
 	{
@@ -365,10 +393,11 @@ function signOn( $nickname, $password,$lifetime)
 		}
 	}
 		
-	$res=$babDB->db_query("select datelog from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($BAB_SESS_USERID)."'");
+	$res=$babDB->db_query("select datelog, cookie_id from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($BAB_SESS_USERID)."'");
 	if( $res && $babDB->db_num_rows($res) > 0)
 		{
 		$arr = $babDB->db_fetch_array($res);
+		$old_token = $arr['cookie_id'];
 		$babDB->db_query("update ".BAB_USERS_TBL." set datelog=now(), lastlog='".$babDB->db_escape_string($arr['datelog'])."' where id='".$babDB->db_escape_string($BAB_SESS_USERID)."'");
 		}
 
@@ -377,7 +406,11 @@ function signOn( $nickname, $password,$lifetime)
 		{
 		$arr = $babDB->db_fetch_array($res);
 		$cpw = '';
-		if( extension_loaded('mcrypt') && isset($GLOBALS['babEncryptionKey']) && !empty($GLOBALS['babEncryptionKey']) && !isset($_REQUEST['babEncryptionKey']))
+		if( 
+			extension_loaded('mcrypt') 
+			&& isset($GLOBALS['babEncryptionKey']) 
+			&& !empty($GLOBALS['babEncryptionKey']) 
+			&& !isset($_REQUEST['babEncryptionKey']))
 			{
 			$cpw = bab_encrypt($password, md5($arr['id'].$arr['sessid'].$BAB_SESS_USERID.$GLOBALS['babEncryptionKey']));
 			}
@@ -387,9 +420,21 @@ function signOn( $nickname, $password,$lifetime)
 	// ajout cookie
 	if ( $lifetime > 0 )
 		{
-		setcookie('c_nickname',$nickname,time()+$lifetime);
-		$password = strtolower($password);
-		if ($GLOBALS['babCookieIdent'] === true) setcookie('c_password',md5($password),time()+$lifetime);
+		$cookie_validity = time()+$lifetime;
+		
+		if (true === $GLOBALS['babCookieIdent']) {
+			$token = empty($old_token) ? md5(uniqid(rand(), true)) : $old_token;
+			setcookie('c_password', $token, $cookie_validity);
+			
+			$babDB->db_query("UPDATE ".BAB_USERS_TBL." SET 
+				cookie_validity='".$babDB->db_escape_string(date('Y-m-d H:i:s',$cookie_validity))."', 
+				cookie_id='".$babDB->db_escape_string($token)."' 
+			WHERE id='".$babDB->db_escape_string($BAB_SESS_USERID)."'");
+			}
+			
+		if ('login' === $GLOBALS['babCookieIdent']) {
+			setcookie('c_nickname',$nickname,$cookie_validity);
+			}
 		}
 	return true;
 	}
@@ -497,13 +542,22 @@ function sendPassword ($nickname)
 		}
 }
 
-
-function userLogin($nickname,$password)
+/**
+ * Authentication
+ * @param 	string 	$nickname
+ * @param 	string 	$password (clear)
+ * @param	string	[$cookie_id] if cookie_id is defined, authentication type is BAB_AUTHENTIFICATION_OVIDENTIA
+ * @return 	boolean
+ */
+function userLogin($nickname,$password, $cookie_id = false)
 	{
 	global $babBody, $babDB;
 	$iduser = 0;
 	$logok = true;
-	$authtype = isset($babBody->babsite['authentification'])? $babBody->babsite['authentification']: BAB_AUTHENTIFICATION_OVIDENTIA;
+	$authtype = BAB_AUTHENTIFICATION_OVIDENTIA;
+	if (isset($babBody->babsite['authentification']) && false === $cookie_id) {
+		$authtype = $babBody->babsite['authentification'];
+	}
 
 	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET cnx_try=cnx_try+1 WHERE sessid='".session_id()."'");
@@ -514,8 +568,14 @@ function userLogin($nickname,$password)
 		return false;
 		}
 
-	//$password=strtolower($password);
-	$res = $babDB->db_query("select * from ".BAB_USERS_TBL." where nickname='".$babDB->db_escape_string($nickname)."' and password='". $babDB->db_escape_string(md5(strtolower($password))) ."'");
+	
+	if (false === $cookie_id) {
+		$authentication_condition = "nickname='".$babDB->db_escape_string($nickname)."' and password='". $babDB->db_escape_string(md5(strtolower($password))) ."'";
+	} else {
+		$authentication_condition = "cookie_id='". $babDB->db_escape_string($cookie_id) ."' AND cookie_validity>NOW()";
+	}
+	
+	$res = $babDB->db_query("select * from ".BAB_USERS_TBL." WHERE ".$authentication_condition);
 	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
 		$arruser = $babDB->db_fetch_array($res);
@@ -847,6 +907,8 @@ function signOff()
 	global $babBody, $babDB, $BAB_HASH_VAR, $BAB_SESS_USER, $BAB_SESS_EMAIL, $BAB_SESS_USERID, $BAB_SESS_HASHID,$BAB_SESS_LOGGED;
 	
 	$babDB->db_query("delete from ".BAB_USERS_LOG_TBL." where id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."' and sessid='".session_id()."'");
+	
+	$babDB->db_query("UPDATE ".BAB_USERS_TBL." SET  cookie_validity=NOW(), cookie_id='' WHERE id='".$babDB->db_escape_string($BAB_SESS_USERID)."'");
 
 	if( isset($_SESSION))
 		{
@@ -889,11 +951,7 @@ function signOff()
 	   setcookie(session_name(), '', time()-42000, '/');
 	}
 	session_destroy();
-	
-	if ( $GLOBALS['babCookieIdent'] != 'login' ) 
-		setcookie('c_nickname'," ");
-	setcookie('c_password'," ");
-
+	destroyAuthCookie();
 	}
 
 ?>

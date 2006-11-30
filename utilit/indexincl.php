@@ -123,7 +123,7 @@ class bab_indexObject {
 	 */
 	function autorized_files_only(&$arr) {
 		$tmp = bab_searchEngineInfos();
-		if( is_array($tmp))
+		if( is_array($tmp['types']))
 		{
 			$types = array_flip($tmp['types']);
 			

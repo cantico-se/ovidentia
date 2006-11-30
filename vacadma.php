@@ -1995,8 +1995,15 @@ function rightcopy() {
 			if ($rule = $this->db->db_fetch_assoc($res)) {
 				unset($rule['id']);
 				$rule['id_right'] = $new_id_right;
-				$rule['period_start']	= $this->increment_ISO($rule['period_start']);
-				$rule['period_end']		= $this->increment_ISO($rule['period_end']);
+				$rule['period_start']		= $this->increment_ISO($rule['period_start']);
+				$rule['period_end']			= $this->increment_ISO($rule['period_end']);
+				
+				$rule['trigger_p1_begin']	= $this->increment_ISO($rule['trigger_p1_begin']);
+				$rule['trigger_p1_end']		= $this->increment_ISO($rule['trigger_p1_end']);
+				
+				$rule['trigger_p2_begin']	= $this->increment_ISO($rule['trigger_p2_begin']);
+				$rule['trigger_p2_end']		= $this->increment_ISO($rule['trigger_p2_end']);
+				
 				$this->db->db_query("INSERT INTO ".BAB_VAC_RIGHTS_RULES_TBL." (".implode(',',array_keys($rule)).") VALUES (".$this->db->quote($rule).")");
 			}
 
@@ -2009,7 +2016,7 @@ function rightcopy() {
 					WHERE t2.id_right=".$this->db->quote($old_id_right));
 					
 			while ($arr = $this->db->db_fetch_assoc($res)) {
-				$this->db->db_query("INSERT INTO ".BAB_VAC_USERS_RIGHTS_TBL." (id_user, id_right, quantity) VALUES (".$this->db->quote($arr['id_user']).",".$this->db->quote($new_id_right).", ".$this->db->quote($arr['quantity']).")");
+				$this->db->db_query("INSERT INTO ".BAB_VAC_USERS_RIGHTS_TBL." (id_user, id_right) VALUES (".$this->db->quote($arr['id_user']).",".$this->db->quote($new_id_right).")");
 			}
 
 		}

@@ -7550,9 +7550,26 @@ function upgrade605to606()
 		$babDB->db_query("ALTER TABLE ".BAB_CAL_USER_OPTIONS_TBL." DROP workdays");
 	}
 	
-	$babDB->db_query("TRUNCATE bab_vac_calendar"); 
+	 
 
 	return $ret;
 }
+
+
+function upgrade606to610()
+{
+	global $babDB;
+	$ret = "";
+	
+	$babDB->db_query("TRUNCATE bab_vac_calendar");
+	
+	if (!bab_isTableField(BAB_USERS_TBL, 'cookie_validity')) {
+		$babDB->db_query("ALTER TABLE `".BAB_USERS_TBL."` ADD `cookie_validity` DATETIME NOT NULL , ADD `cookie_id` VARCHAR( 255 ) NOT NULL");
+		$babDB->db_query("ALTER TABLE `".BAB_USERS_TBL."` ADD INDEX ( `cookie_id` )");
+	} 
+	return $ret;
+}
+
+
 
 ?>

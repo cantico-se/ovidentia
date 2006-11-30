@@ -61,6 +61,36 @@ function displayLogin($url)
 			$this->nickname = bab_translate("Nickname");
 			$this->password = bab_translate("Password");
 			$this->login = bab_translate("Login");
+			
+			// verify and buid url
+			$params = array();
+			$arr = explode('?',$url);
+			
+			if (isset($arr[1])) {
+				$params = explode('&',$arr[1]);
+			}
+			
+			$url = $GLOBALS['babPhpSelf'];
+
+			foreach($params as $key => $param) {
+				$arr = explode('=',$param);
+				if (2 == count($arr)) {
+					
+					$params[$key] = $arr[0].'='.$arr[1];
+				} else {
+					unset($params[$key]);
+				}
+			}
+
+			if (0 < count($params)) {
+				$url .= '?'.implode('&',$params);
+			}
+			
+			$url = str_replace("\n",'', $url);
+			$url = str_replace("\r",'', $url);
+			$url = str_replace('%0d','', $url);
+			$url = str_replace('%0a','', $url);
+			
 			$this->referer = bab_toHtml($url);
 			$this->life = bab_translate("Remember my login");
 			$this->nolife = bab_translate("No");
@@ -70,7 +100,7 @@ function displayLogin($url)
 			$this->oneyear = bab_translate("one year");
 			$this->infinite = bab_translate("unlimited");
 
-			$this->c_nickname = isset($_COOKIE['c_nickname']) ? $_COOKIE['c_nickname'] : '';
+			$this->c_nickname = isset($_COOKIE['c_nickname']) ? bab_toHtml($_COOKIE['c_nickname']) : '';
 			}
 		}
 

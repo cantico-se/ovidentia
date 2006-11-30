@@ -1027,6 +1027,10 @@ switch($idx)
 			$babBody->msgerror = bab_translate("Access denied");
 		}
 		break;
+		
+		
+	case 'clear':
+		$babDB->db_query("TRUNCATE ".BAB_VAC_CALENDAR_TBL);
 
 	case "lvreq":
 	default:

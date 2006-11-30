@@ -177,20 +177,20 @@ class bab_inifile_requirements {
 		if (is_writable($ul)) {
 			$current = bab_translate("The directory is writable but this is not the full pathname");
 
-		}
-		
-		if (preg_match('/^(\/|[a-zA-Z]{1}\:\\\\)/', $ul)) {
-			$current = bab_translate("The addons directory is not writable");
-		}
-		
-		$addons = $GLOBALS['babUploadPath'].'/addons';
-		if (!is_dir($addons)) {
-			bab_mkdir($addons);
-		}
-		
-		if (is_writable($addons)) {
-			$current = bab_translate("Available");
-			$status = true;
+			if (preg_match('/^(\/|[a-zA-Z]{1}\:\\\\)/', $ul)) {
+				$current = bab_translate("The addons directory is not writable");
+			}
+			
+			
+			$addons = $ul.'/addons';
+			if (!is_dir($addons)) {
+				bab_mkdir($addons);
+			}
+			
+			if (is_writable($addons)) {
+				$current = bab_translate("Available");
+				$status = true;
+			}
 		}
 
 		return array(
