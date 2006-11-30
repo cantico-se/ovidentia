@@ -2396,5 +2396,6 @@
 <string id="The file is not on the server">Le fichier n'est pas sur le serveur</string>
 <string id="The directory is writable but this is not the full pathname">Le répertoire est accessible en écriture, mais ce n'est pas le chemin complet</string>
 <string id="The addons directory is not writable">Le répertoire addons n'est pas accessible en écriture</string>
+<string id="Gantt view">Vue gantt</string>
 
 </fr>
