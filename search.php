@@ -432,6 +432,7 @@ function searchKeyword($item , $option = "OR")
 
 		function getnextdir() 
 			{
+			global $babDB;
 			static $l = 0;
 			if( $l < $this->countdirs)
 				{
@@ -1873,10 +1874,13 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 		function searchInAllCols($table)
 			{
-			if (!$this->like && !$this->like2)
-				return '';
-
 			global $babDB;
+
+			if (!$this->like && !$this->like2)
+				{
+				return '';
+				}
+
 
 			$res = $babDB->db_query("DESCRIBE ".$babDB->db_escape_string($table));
 			$like = "(";
@@ -2077,6 +2081,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 		function getnextcon()
 			{
+			global $babDB;
 			static $i = 0;
 			if( $i < $this->countcon)
 				{
@@ -2102,6 +2107,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 		function getnextnot()
 			{
+			global $babDB;
 			static $i = 0;
 			if( $i < $this->countnot)
 				{
@@ -2377,7 +2383,7 @@ function viewArticle($article,$w)
 
 		function getnextdoc()
 			{
-			global $arrtop;
+			global $babDB, $arrtop;
 			static $i = 0;
 			if( $i < $this->countf)
 				{
@@ -2720,16 +2726,19 @@ function viewFile($id, $w)
 			}
 
 
-		function getnextversion() {
-			if ($arr = $babDB->db_fetch_assoc($this->resversion)) {
+		function getnextversion() 
+			{
+			global $babDB;
+			if ($arr = $babDB->db_fetch_assoc($this->resversion)) 
+				{
 				$this->altbg = !$this->altbg;
 				$this->name = bab_toHtml($arr['name']);
 				$this->versiondate = bab_toHtml(bab_longDate($arr['versiondate']));
 				$this->in_index = isset($this->found_in_index[$arr['file_path']]);
 				return true;
-			}
+				}
 			return false;
-		}
+			}
 	}
 
 	$temp = new temp($id, $w);
@@ -2771,9 +2780,9 @@ function viewContact($id, $what)
 
 		function temp($id, $what)
 			{
+			global $babDB, $BAB_SESS_USERID;
 			
 			$this->bab_searchVisuPopup();
-			global $babDB, $BAB_SESS_USERID;
 			
 			$this->firstname = bab_translate("First Name");
 			$this->lastname = bab_translate("Last Name");
