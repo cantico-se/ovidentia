@@ -4846,6 +4846,17 @@ function handle_tag( $handler, $txt, $args, $fprint = 'printout' )
 function format_output($val, $matches)
 	{
 	$saveas = false;
+	$lhtmlentities = false;
+	$ghtmlentities = $this->get_value('babHtmlEntities');
+
+	if( $ghtmlentities === false )
+		{
+		$ghtmlentities = 0;
+		}
+	else
+		{
+		$ghtmlentities = intval($ghtmlentities);
+		}
 
 	for( $j = 0; $j< count($matches[1]); $j++)
 		{
@@ -4877,14 +4888,19 @@ function format_output($val, $matches)
 			case 'htmlentities':
 				switch($matches[3][$j])
 					{
+					case '0':
+						$lhtmlentities = true; break;
 					case '1':
+						$lhtmlentities = true;
 						$val = htmlentities($val); break;
 					case '2':
+						$lhtmlentities = true;
 						$trans = get_html_translation_table(HTML_ENTITIES);
 						$trans = array_flip($trans);
 						$val = strtr($val, $trans);
 						break;
 					case '3':
+						$lhtmlentities = true;
 						$val = htmlspecialchars($val);
 						break;
 					}
@@ -4963,7 +4979,14 @@ function format_output($val, $matches)
 		}
 
 	if( $saveas )
+		{
 		$this->gctx->push($varname, $val);
+		}
+
+	if( !$lhtmlentities && $ghtmlentities ) 
+		{
+		return bab_toHTML($val);
+		}
 	return $val;
 	}
 
@@ -5010,13 +5033,8 @@ function vars_replace($txt)
 					$args = $this->vars_replace(trim($m[3][$i]));
 					if( $val !== false )
 						{
-						if( $args != "" )
-							{
-							if(preg_match_all("/(\w+)\s*=\s*([\"'])(.*?)\\2/", $args, $mm))
-								{
-								$val = $this->format_output($val, $mm);
-								}
-							}
+						preg_match_all("/(\w+)\s*=\s*([\"'])(.*?)\\2/", $args, $mm);
+						$val = $this->format_output($val, $mm);
 						$txt = preg_replace("/".preg_quote($m[0][$i], "/")."/", preg_replace("/\\$[0-9]/", "\\\\$0", $val), $txt);
 						}
 					break;
@@ -5568,7 +5586,7 @@ function printout($txt)
 	return $this->handle_text($txt);
 	}
 
-}
+} // end class
 
 
 function bab_rel2abs($relative, $url)
