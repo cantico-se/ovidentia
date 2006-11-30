@@ -98,7 +98,7 @@ function listThreads($forum, $active, $pos)
 			$this->active = $active;
 			$this->altbg = true;
 
-			$this->search_url = $GLOBALS['babUrlScript'].'?tg=forumsuser&idx=search&forum='.$forum;
+			$this->search_url = bab_toHTML($GLOBALS['babUrlScript'].'?tg=forumsuser&idx=search&forum='.$forum);
 
 			$this->forums = $babBody->get_forums();
 
@@ -157,7 +157,7 @@ function listThreads($forum, $active, $pos)
 				$ar = $babDB->db_fetch_array($res);
 
 				
-				$this->subjecturl = $GLOBALS['babUrlScript'].'?tg=posts&idx=List&flat='.$this->flat.'&forum='.$this->forum.'&thread='.$this->arrthread['id'].'&views=1';
+				$this->subjecturl = bab_toHTML($GLOBALS['babUrlScript'].'?tg=posts&idx=List&flat='.$this->flat.'&forum='.$this->forum.'&thread='.$this->arrthread['id'].'&views=1');
 				$this->subjectname = bab_toHTML($ar['subject']);
 				$this->subjecturlflat  = $this->subjecturl.'&flat='.$this->flat;
 
@@ -168,7 +168,7 @@ function listThreads($forum, $active, $pos)
 					{
 					if( bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $this->iddir))
 						{
-						$this->threadauthordetailsurl = $GLOBALS['babUrlScript'].'?tg=directory&idx=ddbovml&directoryid='.$this->iddir.'&userid='.$this->arrthread['starter'];	
+						$this->threadauthordetailsurl = bab_toHTML($GLOBALS['babUrlScript'].'?tg=directory&idx=ddbovml&directoryid='.$this->iddir.'&userid='.$this->arrthread['starter']);	
 						}
 					}
 
@@ -254,7 +254,7 @@ function listThreads($forum, $active, $pos)
 					{
 					if( bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $this->iddir))
 						{
-						$this->lastpostauthordetailsurl = $GLOBALS['babUrlScript'].'?tg=directory&idx=ddbovml&directoryid='.$this->iddir.'&userid='.$this->arrthread['id_author'];	
+						$this->lastpostauthordetailsurl = bab_toHTML($GLOBALS['babUrlScript'].'?tg=directory&idx=ddbovml&directoryid='.$this->iddir.'&userid='.$this->arrthread['id_author']);	
 						}
 					}
 
@@ -283,7 +283,7 @@ function listThreads($forum, $active, $pos)
 					$this->lastpostauthor = $this->arrthread['author'];
 					}
 				$this->lastpostauthor = bab_toHTML($this->lastpostauthor);
-				$this->lastposturl = $GLOBALS['babUrlScript'].'?tg=posts&flat='.$this->flat.'&forum='.$this->forum.'&thread='.$this->arrthread['id'].'&pos='.$postpos.'#p'.$this->arrthread['lastpost'];
+				$this->lastposturl = bab_toHTML($GLOBALS['babUrlScript'].'?tg=posts&flat='.$this->flat.'&forum='.$this->forum.'&thread='.$this->arrthread['id'].'&pos='.$postpos.'#p'.$this->arrthread['lastpost']);
 
 				$this->brecent = false;
 				if( mktime() - bab_mktime($this->arrthread['lastpostdate']) <= DELTA_TIME )
@@ -311,7 +311,7 @@ function listThreads($forum, $active, $pos)
 				{
 				$this->page = bab_toHTML($this->gotothreadpages[$i][0]);
 				$this->bpageurl = $this->gotothreadpages[$i][2];
-				$this->pageurl = $this->gotothreadurl.$this->gotothreadpages[$i][1];
+				$this->pageurl = bab_toHTML($this->gotothreadurl.$this->gotothreadpages[$i][1]);
 				$i++;
 				return true;
 				}
@@ -329,7 +329,7 @@ function listThreads($forum, $active, $pos)
 				{
 				$this->page = bab_toHTML($this->gotopages[$i]['page']);
 				$this->bpageurl = $this->gotopages[$i]['url'];
-				$this->pageurl = $this->gotourl.$this->gotopages[$i]['pagepos'];
+				$this->pageurl = bab_toHTML($this->gotourl.$this->gotopages[$i]['pagepos']);
 				$i++;
 				return true;
 				}

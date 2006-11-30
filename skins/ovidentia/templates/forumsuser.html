@@ -13,8 +13,8 @@
 </tr>
 <!--#in getNextForum -->
 <tr height="50" >
-<td class="BabForumBackground1" align="center" width="1%" nowrap>
-<!--#if nbnewposts --><img src="{ babSkinPath }images/Puces/RecentPost.gif" alt="{ recentposts_txt }" title="{ recentposts_txt }" border="0" align="absmiddle"><!--#else nbnewposts --><img src="{ babSkinPath }images/Puces/PuceForumOpen.gif" alt="{ noposts_txt }" title="{ noposts_txt }" border="0" align="absmiddle"><!--#endif nbnewposts --><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
+<td class="BabForumBackground1" align="center" width="1%" nowrap="nowrap">
+<!--#if nbnewposts --><img src="{ babSkinPath }images/Puces/RecentPost.gif" alt="{ recentposts_txt }" title="{ recentposts_txt }" border="0" align="absmiddle" /><!--#else nbnewposts --><img src="{ babSkinPath }images/Puces/PuceForumOpen.gif" alt="{ noposts_txt }" title="{ noposts_txt }" border="0" align="absmiddle" /><!--#endif nbnewposts --><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0" /></td>
 <td class="BabForumBackground1" align="left" valign="top"><b><a href="{ forumurl }">{ forumname }</a></b><br />{ forumdescription }</td>
 
 <td class="BabForumBackground1" align="center" width="1%">{ threads }</td>
@@ -31,7 +31,7 @@
 <!--#if lastpostauthoremail -->
 <br />&lt;{ lastpostauthoremail }&gt;
 <!--#endif lastpostauthoremail -->
-<br /><a href="{ lastposturl }"><img src="{ babSkinPath }images/Puces/PuceArrowRight.gif" alt="{ viewlastpost_txt }" title="{ viewlastpost_txt }" border="0" align="absmiddle"></a><!--#endif lastpostdate --></td>
+<br /><a href="{ lastposturl }"><img src="{ babSkinPath }images/Puces/PuceArrowRight.gif" alt="{ viewlastpost_txt }" title="{ viewlastpost_txt }" border="0" align="absmiddle" /></a><!--#endif lastpostdate --></td>
 
 </tr>
 <!--#endin getNextForum -->
@@ -168,7 +168,7 @@
 <!--#else altbg -->
 <tr class="BabSiteAdminFontBackground" height="40">
 <!--#endif altbg -->
-	<td align="center"><a href="javascript:bab_popup('{ post_url }');"><img src="{ babSkinPath }images/Puces/popupselect.gif" alt="{ viewpost_txt }" title="{ viewpost_txt }" border="0" align="absmiddle"></a></td>
+	<td align="center"><a href="javascript:bab_popup('{ post_url }');"><img src="{ babSkinPath }images/Puces/popupselect.gif" alt="{ viewpost_txt }" title="{ viewpost_txt }" border="0" align="absmiddle" /></a></td>
 	<td ><a href="{ forum_url }">{ forum_name }</a></td>
 	<td ><a href="{ thread_url }">{ thread_name }</a></td>
 	<td align="center">
@@ -232,6 +232,11 @@
 <TITLE>{ babSiteName }</TITLE>
 { babMeta }
 { babCss }
+<script type="text/javascript" src="{ babOvidentiaJs }">
+<!--
+window.focus();
+//-->
+</script>
 </HEAD>
 <BODY class="BabBackground">
 <br />
