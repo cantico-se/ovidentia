@@ -76,7 +76,7 @@ class bab_Delegations extends bab_handler
 				else
 					{
 					$delegationid = explode(',', $delegationid);
-					$this->res = $babDB->db_query("SELECT dgt.* FROM ".BAB_DG_GROUPS_TBL." dgt LEFT JOIN ".BAB_USERS_GROUPS_TBL." ugt ON ugt.id_group = dgt.id_group WHERE ugt.id_object='".$babDB->db_escape_string($userid)."' AND dgt.id IN (".$babDB->db_escape_string( $delegationid).") order by dgt.name asc");
+					$this->res = $babDB->db_query("SELECT dgt.* FROM ".BAB_DG_GROUPS_TBL." dgt LEFT JOIN ".BAB_USERS_GROUPS_TBL." ugt ON ugt.id_group = dgt.id_group WHERE ugt.id_object='".$babDB->db_escape_string($userid)."' AND dgt.id IN (".$babDB->quote( $delegationid).") order by dgt.name asc");
 					}
 				}
 			$this->count = $babDB->db_num_rows($this->res);
