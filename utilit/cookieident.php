@@ -22,24 +22,16 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-/*
-function cookieUserLogin($token)
-	{
-	global $babBody, $babDB;
-	
-	$babDB->db_query("SELECT nickname FROM ".BAB_USERS_TBL." WHERE cookie_id=".$babDB->quote($token));
-	
-	
-	}
-*/
 
-$token = trim($_COOKIE['c_password']);
-
-if (!empty($token) && !$GLOBALS['BAB_SESS_USERID'])
-	{
-	include_once $babInstallPath.'admin/register.php';
-	if (!userLogin('','', $token)) {
-		destroyAuthCookie();
+if (isset($_COOKIE['c_password'])) {
+	$token = trim($_COOKIE['c_password']);
+	
+	if (!empty($token) && !$GLOBALS['BAB_SESS_USERID'])
+		{
+		include_once $babInstallPath.'admin/register.php';
+		if (!userLogin('','', $token)) {
+			destroyAuthCookie();
+		}
 	}
 }
 ?>
