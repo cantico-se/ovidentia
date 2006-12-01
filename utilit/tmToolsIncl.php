@@ -26,16 +26,18 @@ include "base.php";
 
 function isNameUsedInProjectAndProjectSpace($sTblName, $iIdProjectSpace, $iIdProject, $iIdObject, $sName)
 {
-	$sName = mysql_escape_string(str_replace('\\', '\\\\', $sName));
+	$sName = str_replace('\\', '\\\\', $sName);
 	
 	$bIsDefined = isNameUsedInProjectSpace($sTblName, $iIdProjectSpace, $iIdObject, $sName);
 	
 	if(0 != $iIdProject && false == $bIsDefined)
 	{
+		global $babDB;
+		
 		$sIdObject = '';
 		if(0 != $iIdObject)
 		{
-			$sIdObject = ' AND id <> \'' . $iIdObject . '\'';
+			$sIdObject = ' AND id <> \'' . $babDB->db_escape_string($iIdObject) . '\'';
 		}
 	
 		$query = 
@@ -45,27 +47,27 @@ function isNameUsedInProjectAndProjectSpace($sTblName, $iIdProjectSpace, $iIdPro
 			'FROM ' . 
 				$sTblName . ' ' .
 			'WHERE ' . 
-				'idProjectSpace = \'' . $iIdProjectSpace . '\' AND ' .
-				'idProject = \'' . $iIdProject . '\' AND ' .
-				'name LIKE \'' . $sName . '\' ' .
+				'idProjectSpace = \'' . $babDB->db_escape_string($iIdProjectSpace) . '\' AND ' .
+				'idProject = \'' . $babDB->db_escape_string($iIdProject) . '\' AND ' .
+				'name LIKE \'' . $babDB->db_escape_like($sName) . '\' ' .
 				$sIdObject;
 			
 		//bab_debug($query);
 		
-		$db	= & $GLOBALS['babDB'];
-		
-		$result = $db->db_query($query);
-		$bIsDefined = (false != $result && 0 == $db->db_num_rows($result));
+		$result = $babDB->db_query($query);
+		$bIsDefined = (false != $result && 0 == $babDB->db_num_rows($result));
 	}
 	return $bIsDefined;
 }
 
 function isNameUsedInProjectSpace($sTblName, $iIdProjectSpace, $iIdObject, $sName)
 {
+	global $babDB;
+
 	$sIdObject = '';
 	if(0 != $iIdObject)
 	{
-		$sIdObject = ' AND id <> \'' . $iIdObject . '\'';
+		$sIdObject = ' AND id <> \'' . $babDB->db_escape_string($iIdObject) . '\'';
 	}
 
 	$query = 
@@ -75,18 +77,17 @@ function isNameUsedInProjectSpace($sTblName, $iIdProjectSpace, $iIdObject, $sNam
 		'FROM ' . 
 			$sTblName . ' ' .
 		'WHERE ' . 
-			'idProjectSpace = \'' . $iIdProjectSpace . '\' AND ' .
-			'name LIKE \'' . $sName . '\'' .
+			'idProjectSpace = \'' . $babDB->db_escape_string($iIdProjectSpace) . '\' AND ' .
+			'name LIKE \'' . $babDB->db_escape_like($sName) . '\'' .
 			$sIdObject;
 		
 	//bab_debug($query);
 	
-	$db	= & $GLOBALS['babDB'];
-	
-	$result = $db->db_query($query);
-	return (false != $result && 0 == $db->db_num_rows($result));
+	$result = $babDB->db_query($query);
+	return (false != $result && 0 == $babDB->db_num_rows($result));
 }
 
+/*
 function getVisualisedIdProjectSpaces(&$aIdProjectSpaces)
 {
 	require_once($GLOBALS['babInstallPath'] . 'admin/acl.php');
@@ -96,22 +97,24 @@ function getVisualisedIdProjectSpaces(&$aIdProjectSpaces)
 	$aIdProjects = bab_getUserIdObjects(BAB_TSKMGR_PROJECTS_VISUALIZERS_GROUPS_TBL);
 	if(count($aIdProjects) > 0)
 	{
+		global $babDB;
+		
 		$query = 
 			'SELECT ' . 
 				'idProjectSpace ' .
 			'FROM ' . 
 				BAB_TSKMGR_PROJECTS_TBL . ' ' .
 			'WHERE ' . 
-				'id IN(\'' . implode('\',\'', array_keys($aIdProjects)) . '\')';
-			
-		$db	= & $GLOBALS['babDB'];
+				'id IN(' . $babDB->quote($aIdProjects) . ')';
 		
-		$result = $db->db_query($query);
+		bab_debug($query);
+			
+		$result = $babDB->db_query($query);
 		if(false != $result)
 		{
-			$iRows = $db->db_num_rows($result);
+			$iRows = $babDB->db_num_rows($result);
 			$iIdx = 0;
-			while($iIdx < $iRows && false != ($datas = $db->db_fetch_array($result)))
+			while($iIdx < $iRows && false != ($datas = $babDB->db_fetch_array($result)))
 			{
 				$iIdx++;
 				$aIdProjectSpaces[$datas['idProjectSpace']] = 1;
@@ -119,6 +122,7 @@ function getVisualisedIdProjectSpaces(&$aIdProjectSpaces)
 		}
 	}
 }
+//*/
 
 function add_item_menu($items = array())
 {
@@ -127,12 +131,19 @@ function add_item_menu($items = array())
 	$sTg = bab_rp('tg', '');
 	
 	$babBody->addItemMenu(BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST, bab_translate("Projects spaces"), 
-		$GLOBALS['babUrlScript'] . '?tg=' . $sTg . '&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST);
+		$GLOBALS['babUrlScript'] . '?tg=' . urlencode($sTg) . '&idx=' . urlencode(BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST));
 		
 	if('usrTskMgr' == $sTg)
 	{
-		$babBody->addItemMenu(BAB_TM_IDX_DISPLAY_TASK_LIST, bab_translate("My task(s)"), 
-			$GLOBALS['babUrlScript'] . '?tg=' . $sTg . '&idx=' . BAB_TM_IDX_DISPLAY_TASK_LIST);
+		$sTitle = bab_translate("My task(s)");
+		
+		if(1 === (int) bab_rp('isProject', 0))
+		{
+			$sTitle = bab_translate("Tasks of the project");
+		}
+
+		$babBody->addItemMenu(BAB_TM_IDX_DISPLAY_TASK_LIST, $sTitle, 
+			$GLOBALS['babUrlScript'] . '?tg=' . urlencode($sTg) . '&idx=' . urlencode(BAB_TM_IDX_DISPLAY_TASK_LIST));
 	}
 
 	if(count($items) > 0)
@@ -143,15 +154,10 @@ function add_item_menu($items = array())
 		}
 	}
 
-	/*
-	$babBody->addItemMenu(BAB_TM_IDX_DISPLAY_MENU, bab_translate("Option(s)"), 
-		$GLOBALS['babUrlScript'] . '?tg=' . $sTg . '&idx=' . BAB_TM_IDX_DISPLAY_MENU);
-	//*/
-		
 	if('admTskMgr' == $sTg)
 	{
 		$babBody->addItemMenu(BAB_TM_IDX_DISPLAY_PERSONNAL_TASK_RIGHT, bab_translate("Personnals tasks"), 
-			$GLOBALS['babUrlScript'] . '?tg=' . $sTg . '&idx=' . BAB_TM_IDX_DISPLAY_PERSONNAL_TASK_RIGHT);
+			$GLOBALS['babUrlScript'] . '?tg=' . urlencode($sTg) . '&idx=' . urlencode(BAB_TM_IDX_DISPLAY_PERSONNAL_TASK_RIGHT));
 	}
 }
 

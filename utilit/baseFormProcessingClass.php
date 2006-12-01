@@ -24,7 +24,8 @@
 	include_once 'base.php';
 	
 	define('BAB_RAW_2_HTML_DATA', 0x0);
-	define('BAB_RAW_2_HTML_CAPTION', 0x1);
+	define('BAB_RAW_2_HTML_HTMLDATA', 0x1);
+	define('BAB_RAW_2_HTML_CAPTION', 0x2);
 
 
 	class BAB_RawToHtml
@@ -33,11 +34,11 @@
 		{
 		}
 
-		function transform(& $value, $key)
+		function transform(& $value, $key, $option)
 		{
 			if(false === is_numeric($value))
 			{
-				$value = htmlentities($value, ENT_QUOTES);
+				$value = bab_toHtml($value, $option);
 			}
 		}
 	}
@@ -45,10 +46,10 @@
 	class BAB_BaseFormProcessing
 	{
 		var $m_datas;
+		var $m_htmlDatas;
 		var $m_captions;
 
 		var $m_errors;
-
 		var $m_implodedErrorKeys;
 		var $m_implodedErrorValues;
 
@@ -58,6 +59,7 @@
 		function BAB_BaseFormProcessing()
 		{
 			$this->m_datas					= array();
+			$this->m_htmlDatas				= array();
 			$this->m_captions				= array();
 			$this->m_errors					= array();
 			$this->m_anchor					= array();
@@ -80,6 +82,22 @@
 		function set_data($property_name, $property_value)
 		{
 			$this->m_datas[$property_name] = $property_value;
+			return true;
+		}
+
+		function get_htmlData($property_name, &$property_value)
+		{
+			if(isset($this->m_htmlDatas[$property_name]))
+			{
+				$property_value = $this->m_htmlDatas[$property_name];
+				return true;
+			}
+			return false;
+		}
+
+		function set_htmlData($property_name, $property_value)
+		{
+			$this->m_htmlDatas[$property_name] = $property_value;
 			return true;
 		}
 
@@ -109,29 +127,33 @@
 		{
 			$this->m_implodedErrorKeys = implode($separator, array_keys($this->m_errors));
 			$this->m_implodedErrorValues = implode($separator, array_values($this->m_errors));
-			$this->m_implodedErrorValues = htmlentities($this->m_implodedErrorValues, ENT_QUOTES);
+			$this->m_implodedErrorValues = bab_toHtml($this->m_implodedErrorValues);
 		}
 
-		function raw_2_html($type)
+		function raw_2_html($type, $option = BAB_HTML_ENTITIES)
 		{
 			switch($type)
 			{
 				case BAB_RAW_2_HTML_DATA:
-					array_walk($this->m_datas, array('BAB_RawToHtml', 'transform'));
+					array_walk($this->m_datas, array('BAB_RawToHtml', 'transform'), $option);
+					break;
+
+				case BAB_RAW_2_HTML_HTMLDATA:
+					array_walk($this->m_htmlDatas, array('BAB_RawToHtml', 'transform'), $option);
 					break;
 
 				case BAB_RAW_2_HTML_CAPTION:
-					array_walk($this->m_captions, array('BAB_RawToHtml', 'transform'));
+					array_walk($this->m_captions, array('BAB_RawToHtml', 'transform'), $option);
 					break;
 			}
 		}
 
 		function set_anchor($href, $imgSrc, $title, $msg = '')
 		{
-			$item = array('href' => htmlentities($href),
-				'title' => htmlentities(bab_translate($title)),
+			$item = array('href' => bab_toHtml($href),
+				'title' => bab_toHtml($title),
 				'imgSrc' => $imgSrc,
-				'msg' => htmlentities($msg));
+				'msg' => bab_toHtml($msg));
 
 			array_push($this->m_anchor, $item);
 		}
@@ -144,7 +166,7 @@
 			//il y a des choses comme m_datas[XXX] qui doivent être parsée par le
 			//moteur de template
 
-			if(false != $this->m_datas && false != $this->m_anchorItem)
+			if(false !== $this->m_datas && false !== $this->m_anchorItem)
 			{
 				/*
 					La fonction each retourne un tableau associatif

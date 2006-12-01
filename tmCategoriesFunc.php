@@ -59,8 +59,8 @@ function displayCategoriesList($iIdProjectSpace, $iIdProject, $iIdUser)
 				$this->set_caption('update', bab_translate("Update"));
 				
 				$oTmCtx =& getTskMgrContext();
-				$this->set_data('iIdProjectSpace', $oTmCtx->getIdProjectSpace());
-				$this->set_data('iIdProject', $oTmCtx->getIdProject());
+				$this->set_data('iIdProjectSpace', (int) $oTmCtx->getIdProjectSpace());
+				$this->set_data('iIdProject', (int) $oTmCtx->getIdProject());
 				
 				$this->set_data('preview', bab_translate("Preview"));
 				$this->set_data('iIdCategory', 0);
@@ -85,25 +85,24 @@ function displayCategoriesList($iIdProjectSpace, $iIdProject, $iIdUser)
 				{
 					$this->m_is_altbg = !$this->m_is_altbg;
 
-					$this->get_data('iIdProjectSpace', $iIdProjectSpace);
-					
-					$this->set_data('iIdCategory', $datas['iIdCategory']);
-					$this->set_data('sCategoryName', $datas['sCategoryName']);
-					$this->set_data('sBgColor', $datas['sBgColor']);
-					$this->set_data('sColor', $datas['sColor']);
-					$this->set_data('sCategoryDescription', $datas['sCategoryDescription']);
+					$this->set_data('iIdCategory', bab_toHtml($datas['iIdCategory']));
+					$this->set_data('sCategoryName', bab_toHtml($datas['sCategoryName']));
+					$this->set_data('sBgColor', bab_toHtml($datas['sBgColor']));
+					$this->set_data('sColor', bab_toHtml($datas['sColor']));
+					$this->set_data('sCategoryDescription', bab_toHtml($datas['sCategoryDescription']));
 					$this->set_data('bIsDeletable', ($datas['is_deletable'] == 1));
 
-					$iIdProjectSpace = $this->m_oTmCtx->getIdProjectSpace();
-					$iIdProject = $this->m_oTmCtx->getIdProject();
+					$iIdProjectSpace = (int) $this->m_oTmCtx->getIdProjectSpace();
+					$iIdProject = (int) $this->m_oTmCtx->getIdProject();
 					
 					$tg = bab_rp('tg', '');
 					
-					$this->set_data('sCategoryLink', $GLOBALS['babUrlScript'] . '?tg=' . $tg .
-						'&iIdProjectSpace=' . $iIdProjectSpace . '&iIdProject=' . $iIdProject .
-						'&iIdUser=' . $datas['iIdUser'] . '&iIdCategory=' . $datas['iIdCategory'] . 
-						'&idx=' . BAB_TM_IDX_DISPLAY_CATEGORY_FORM);
-					$this->set_data('refCount', $datas['refCount']);
+					$this->set_data('sCategoryLink', bab_toHtml($GLOBALS['babUrlScript'] . '?tg=' . urlencode($tg) .
+						'&iIdProjectSpace=' . urlencode($iIdProjectSpace) . '&iIdProject=' . urlencode($iIdProject) .
+						'&iIdUser=' . urlencode($datas['iIdUser']) . '&iIdCategory=' . urlencode($datas['iIdCategory']) . 
+						'&idx=' . urlencode(BAB_TM_IDX_DISPLAY_CATEGORY_FORM)));
+						
+					$this->set_data('refCount', bab_toHtml($datas['refCount']));
 					return true;
 				}
 				return false;
@@ -115,33 +114,35 @@ function displayCategoriesList($iIdProjectSpace, $iIdProject, $iIdUser)
 			array(
 				'idx' => BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST,
 				'mnuStr' => bab_translate("Projects spaces"),
-				'url' => $GLOBALS['babUrlScript'] . '?tg=' . $tg . '&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST));
+				'url' => $GLOBALS['babUrlScript'] . '?tg=' . urlencode($tg) . '&idx=' . urlencode(BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST)));
 
 		$itemMenu[] = array(
 				'idx' => BAB_TM_IDX_DISPLAY_CATEGORIES_LIST,
 				'mnuStr' => bab_translate("Categories list"),
-				'url' => $GLOBALS['babUrlScript'] . '?tg=' . $tg . '&iIdProjectSpace=' . $iIdProjectSpace . 
-					'&iIdProject=' . $iIdProject . '&iIdUser=' . $iIdUser . 
-					'&idx=' . BAB_TM_IDX_DISPLAY_CATEGORIES_LIST);
+				'url' => $GLOBALS['babUrlScript'] . '?tg=' . urlencode($tg) . '&iIdProjectSpace=' . urlencode($iIdProjectSpace) . 
+					'&iIdProject=' . urlencode($iIdProject) . '&iIdUser=' . urlencode($iIdUser) . 
+					'&idx=' . urlencode(BAB_TM_IDX_DISPLAY_CATEGORIES_LIST));
 		$itemMenu[] = array(
 				'idx' => BAB_TM_IDX_DISPLAY_CATEGORY_FORM,
 				'mnuStr' => bab_translate("Add a category"),
-				'url' => $GLOBALS['babUrlScript'] . '?tg=' . $tg . '&iIdProjectSpace=' . $iIdProjectSpace . 
-					'&iIdProject=' . $iIdProject . '&iIdUser=' . $iIdUser . 
-					'&idx=' . BAB_TM_IDX_DISPLAY_CATEGORY_FORM);
+				'url' => $GLOBALS['babUrlScript'] . '?tg=' . urlencode($tg) . '&iIdProjectSpace=' . urlencode($iIdProjectSpace) . 
+					'&iIdProject=' . urlencode($iIdProject) . '&iIdUser=' . urlencode($iIdUser) . 
+					'&idx=' . urlencode(BAB_TM_IDX_DISPLAY_CATEGORY_FORM));
 					
 		add_item_menu($itemMenu);
-		$babBody->title = bab_translate("Categories list");
+		$babBody->title = bab_toHtml(bab_translate("Categories list"));
 	
 		
 		//bab_debug($query);	
 		$list = & new BAB_List(bab_getCategoriesListQuery($iIdProjectSpace, $iIdProject, $iIdUser));
+		$list->raw_2_html(BAB_RAW_2_HTML_CAPTION);
+		$list->raw_2_html(BAB_RAW_2_HTML_DATA);
 		
 		$babBody->babecho(bab_printTemplate($list, 'tmCommon.html', 'categoriesList'));
 	}
 	else 
 	{
-		$GLOBALS['babBody']->msgerror = bab_translate("Invalid project space");
+		$GLOBALS['babBody']->msgerror = bab_toHtml(bab_translate("Invalid project space"));
 	}	
 }
 
@@ -151,8 +152,8 @@ function displayCategoryForm()
 	
 	$oTmCtx =& getTskMgrContext();
 	
-	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
-	$iIdProject = $oTmCtx->getIdProject();
+	$iIdProjectSpace = (int) $oTmCtx->getIdProjectSpace();
+	$iIdProject = (int) $oTmCtx->getIdProject();
 	$iIdCategory = (int) bab_rp('iIdCategory', 0);
 	$iIdUser = (int) bab_rp('iIdUser', 0);
 		
@@ -217,13 +218,13 @@ function displayCategoryForm()
 				
 				if(false != ($attributs = $tblWr->load($attributs, 2, 7, 0, 2)))
 				{
-					$this->set_data('sName', htmlentities($attributs['name'], ENT_QUOTES) );
-					$this->set_data('sDescription', htmlentities($attributs['description'], ENT_QUOTES));
+					$this->set_data('sName', bab_toHtml($attributs['name']) );
+					$this->set_data('sDescription', bab_toHtml($attributs['description']));
 					$this->set_data('iRefCount', $attributs['refCount']);
 					$this->set_data('bIsDeletable', ($attributs['refCount'] == 0 && $attributs['idProject'] == $iIdProject));
 					$this->set_data('bIsModifiable', ($attributs['idProject'] == $iIdProject));
-					$this->set_data('sColor', $attributs['color']);
-					$this->set_data('sBgColor', $attributs['bgColor']);
+					$this->set_data('sColor', bab_toHtml($attributs['color']));
+					$this->set_data('sBgColor', bab_toHtml($attributs['bgColor']));
 				}
 			}
 			else
@@ -241,26 +242,28 @@ function displayCategoryForm()
 		array(
 			'idx' => BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST,
 			'mnuStr' => bab_translate("Projects spaces"),
-			'url' => $GLOBALS['babUrlScript'] . '?tg=' . $tg . '&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST));
+			'url' => $GLOBALS['babUrlScript'] . '?tg=' . urlencode($tg) . '&idx=' . urlencode(BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST)));
 
 	$itemMenu[] = array(
 		'idx' => BAB_TM_IDX_DISPLAY_CATEGORIES_LIST,
 		'mnuStr' => bab_translate("Categories list"),
-		'url' => $GLOBALS['babUrlScript'] . '?tg=' . $tg . '&iIdProjectSpace=' . $iIdProjectSpace . 
-			'&iIdProject=' . $iIdProject . '&iIdUser=' . $iIdUser . 
-			'&idx=' . BAB_TM_IDX_DISPLAY_CATEGORIES_LIST);
+		'url' => $GLOBALS['babUrlScript'] . '?tg=' . urlencode($tg) . '&iIdProjectSpace=' . urlencode($iIdProjectSpace) . 
+			'&iIdProject=' . urlencode($iIdProject) . '&iIdUser=' . urlencode($iIdUser) . 
+			'&idx=' . urlencode(BAB_TM_IDX_DISPLAY_CATEGORIES_LIST));
 			
 	$itemMenu[] = array(
 		'idx' => BAB_TM_IDX_DISPLAY_CATEGORY_FORM,
 		'mnuStr' => $tab_caption,
-		'url' => $GLOBALS['babUrlScript'] . '?tg=' . $tg . '&iIdProjectSpace=' . $iIdProjectSpace . 
-			'&iIdProject=' . $iIdProject . '&iIdUser=' . $iIdUser . '&iIdCategory=' . $iIdCategory . 
-			'&idx=' . BAB_TM_IDX_DISPLAY_CATEGORY_FORM);		
+		'url' => $GLOBALS['babUrlScript'] . '?tg=' . urlencode($tg) . '&iIdProjectSpace=' . urlencode($iIdProjectSpace) . 
+			'&iIdProject=' . urlencode($iIdProject) . '&iIdUser=' . urlencode($iIdUser) . '&iIdCategory=' . urlencode($iIdCategory) . 
+			'&idx=' . urlencode(BAB_TM_IDX_DISPLAY_CATEGORY_FORM));		
 			
 	add_item_menu($itemMenu);
-	$babBody->title = $tab_caption;
+	$babBody->title = bab_toHtml($tab_caption);
 
 	$cat = new BAB_Category($iIdProjectSpace, $iIdProject, $iIdUser);
+	$cat->raw_2_html(BAB_RAW_2_HTML_CAPTION);
+	$cat->raw_2_html(BAB_RAW_2_HTML_DATA);
 	$babBody->babecho(bab_printTemplate($cat, 'tmCommon.html', 'categoryForm'));
 	
 }
@@ -271,65 +274,43 @@ function displayDeleteCategoryForm()
 
 	$aDeletableObjects = bab_rp('aDeletableObjects', array());
 
-	$sDeletableObjects = '\'' . implode('\',\'', array_unique($aDeletableObjects)) . '\'';
-
-	//bab_debug('sDeletableObjects ==> ' . $sDeletableObjects);
 	$bf = & new BAB_BaseFormProcessing();
 	$bf->set_data('idx', BAB_TM_IDX_DISPLAY_CATEGORIES_LIST);
 	$oTmCtx =& getTskMgrContext();
-	$bf->set_data('iIdProjectSpace', $oTmCtx->getIdProjectSpace());
-	$bf->set_data('iIdProject', $oTmCtx->getIdProject());
+	$bf->set_data('iIdProjectSpace', (int) $oTmCtx->getIdProjectSpace());
+	$bf->set_data('iIdProject', (int) $oTmCtx->getIdProject());
 	$bf->set_data('tg', bab_rp('tg', ''));
 
-	if('\'\'' != $sDeletableObjects)
+	$aIdCategories = bab_getCategoriesName($aDeletableObjects, true);
+	
+	if(count($aIdCategories) > 0)
 	{	
-		$query = 
-			'SELECT ' .
-				'id iIdCategory, ' .
-				'name sCategoryName ' .
-			'FROM ' .
-				BAB_TSKMGR_CATEGORIES_TBL . ' ' .
-			'WHERE ' .
-				'id IN (' . $sDeletableObjects . ') AND ' .
-				'refCount = \'0\' ' .
-			'GROUP BY name ASC';
-		
-			//bab_debug($query);
-				
-			$db = & $GLOBALS['babDB'];
-			$res = $db->db_query($query);
-			$numrows = $db->db_num_rows($res);
+		$title = '';
+		foreach($aIdCategories as $key => $aItem)
+		{
+			$title .= "\n"."-". $aItem['sCategoryName'];
+			$items[] = $aItem['iIdCategory'];
+		}
+	
+		$bf->set_data('action', BAB_TM_ACTION_DELETE_CATEGORY);
+		$bf->set_data('objectName', 'sDeletableObjects');
+		$bf->set_data('iIdObject', implode(',', array_unique($items)));
 
-			$title = '';
-			$items = array();
-			$idx = 0;
-			while($idx < $numrows && false != ($data = $db->db_fetch_array($res)))
-			{
-				$title .= "<br>"."-". $data['sCategoryName'];
-				$items[] = $data['iIdCategory'];
-				$idx++;
-			}
-					
-			$bf->set_data('action', BAB_TM_ACTION_DELETE_CATEGORY);
-			$bf->set_data('objectName', 'sDeletableObjects');
-			$bf->set_data('iIdObject', implode(',', array_unique($items)));
-	
-			if(count($items) > 1)
-			{
-				$babBody->title = bab_translate("Delete categories");
-				$bf->set_caption('warning', bab_translate("This action will delete those categories and all references"));
-			}
-			else
-			{
-				$babBody->title = bab_translate("Delete category");
-				$bf->set_caption('warning', bab_translate("This action will delete the category and all references"));
-			}
-			
-			$bf->set_caption('message', bab_translate("Continue ?"));
-			$bf->set_caption('title', $title);
-			$bf->set_caption('yes', bab_translate("Yes"));
-			$bf->set_caption('no', bab_translate("No"));
-	
+		if(count($items) > 1)
+		{
+			$babBody->title = bab_toHtml(bab_translate("Delete categories"));
+			$bf->set_caption('warning', bab_translate("This action will delete those categories and all references"));
+		}
+		else
+		{
+			$babBody->title = bab_toHtml(bab_translate("Delete category"));
+			$bf->set_caption('warning', bab_translate("This action will delete the category and all references"));
+		}
+		
+		$bf->set_caption('message', bab_translate("Continue ?"));
+		$bf->set_caption('title', $title);
+		$bf->set_caption('yes', bab_translate("Yes"));
+		$bf->set_caption('no', bab_translate("No"));
 	}
 	else 
 	{
@@ -338,8 +319,11 @@ function displayDeleteCategoryForm()
 		$bf->set_caption('title', '');
 		$bf->set_caption('yes', bab_translate("Yes"));
 		$bf->set_caption('no', bab_translate("No"));
-		$babBody->title = bab_translate("Delete category");
+		$babBody->title = bab_toHtml(bab_translate("Delete category"));
 	}
+	
+	$bf->raw_2_html(BAB_RAW_2_HTML_CAPTION, BAB_HTML_ENTITIES | BAB_HTML_BR);
+	$bf->raw_2_html(BAB_RAW_2_HTML_DATA);
 	$babBody->babecho(bab_printTemplate($bf, 'tmCommon.html', 'warningyesno'));
 }
 

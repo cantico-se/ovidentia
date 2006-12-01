@@ -1,46 +1,52 @@
 <!--#begin treeview -->
 <div id="{ t_treeViewId }" class="bab_tree BabLoginCadreBackground" style="padding: 1px">
-
-<div class="tree" style="position: relative">
-<script type="text/javascript">document.getElementById("{ t_treeViewId }").getElementsByTagName('DIV')[0].style.display='none'</script>
-<!--#in getNextElement -->
-<!--#if t_levelVariation "== 1" --><ul><!--#endif t_levelVariation -->
-<!--#if t_levelVariation "<= -1" --></li></ul><!--#endif t_levelVariation -->
-<!--#if t_levelVariation "== 0" --></li><!--#endif t_levelVariation -->
-<!--#if t_levelVariation ">= -1" -->
-<li id="li{ t_id }" class="bab_ul_tree_leaf">
-<div class="line">
-<img class="bullet" src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="20" height="16" />
-<!--#if t_nodeIcon --><img src="{ t_nodeIcon }" /> <!--#else t_nodeIcon --><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" /> <!--#endif t_nodeIcon -->
-<!--#if t_link  -->
-<a href="{ t_link }"><span class="level{ t_previousLevel } { t_type }">{ t_title }</span></a>
-<!--#else t_link  -->
-<span class="level{ t_previousLevel } { t_type }">{ t_title }</span>
-<!--#endif t_link  -->
-<!--#if t_showRightElements -->
-<span class="right_elements">{ t_info }
-<!--#in getNextCheckBox -->
-<input type="checkbox" name="{ checkbox_name }" />
-<!--#endin getNextCheckBox -->
-<span class="actions" style="background-color: white">
-<!--#in getNextAction -->
-<a class="action" href="{ action_url }" title="{ action_caption }"><img src="{ action_icon }" /></a>
-<!--#endin getNextAction -->
-</span>
-</span>
-<!--#endif t_showRightElements -->
+	
+	<div class="tree" style="position: relative">
+		<script type="text/javascript">document.getElementById("{ t_treeViewId }").getElementsByTagName('DIV')[0].style.display='none'</script>
+		<!--#in getNextElement -->
+		<!--#if t_levelVariation "== 1" --><ul><!--#endif t_levelVariation -->
+		<!--#if t_levelVariation "<= -1" --></li></ul><!--#endif t_levelVariation -->
+		<!--#if t_levelVariation "== 0" --></li><!--#endif t_levelVariation -->
+		<!--#if t_levelVariation ">= -1" -->
+		<li id="li{ t_id }" class="bab_ul_tree_leaf">
+		<div class="line">
+			<img class="bullet" src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="20" height="16" alt="" />
+			<!--#if t_nodeIcon --><img src="{ t_nodeIcon }" alt="" /> <!--#else t_nodeIcon --><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" /> <!--#endif t_nodeIcon -->
+			<!--#if t_link  -->
+			<a href="{ t_link }"><span class="level{ t_previousLevel } { t_type }">{ t_title }</span></a>
+			<!--#else t_link  -->
+			<span class="level{ t_previousLevel } { t_type }">{ t_title }</span>
+			<!--#endif t_link  -->
+			<!--#if t_showRightElements -->
+			<span class="right_elements">{ t_info }
+				<!--#in getNextCheckBox -->
+				<input type="checkbox" name="{ checkbox_name }" />
+				<!--#endin getNextCheckBox -->
+				<span class="actions" style="background-color: white">
+					<!--#in getNextAction -->
+					<a class="action" href="{ action_url }" title="{ action_caption }"><img src="{ action_icon }" alt="" /></a>
+					<!--#endin getNextAction -->
+				</span>
+			</span>
+			<!--#endif t_showRightElements -->
+		</div>
+		<!--#endif t_levelVariation -->
+		<!--#endin getNextElement -->
+	</div>
+	
+	<!--#if t_isMultiSelect -->
+	<div style="text-align: center;"><button type="submit" onclick="document.getElementById('{ t_treeViewId }').onSubmitTree();">{ t_submit }</button></div>
+	<!--#endif t_isMultiSelect  -->
 </div>
-<!--#endif t_levelVariation -->
-<!--#endin getNextElement -->
-</div>
-
-<!--#if t_isMultiSelect -->
-<div style="text-align: center;"><button type="submit" onclick="document.getElementById('{ t_treeViewId }').onSubmitTree();">{ t_submit }</button></div>
-<!--#endif t_isMultiSelect  -->
-</div>
-<script type="text/javascript">document.getElementById("{ t_treeViewId }").getElementsByTagName('DIV')[0].style.display=''</script>
 
 <script type="text/javascript">
+//<![CDATA[
+document.getElementById("{ t_treeViewId }").getElementsByTagName('DIV')[0].style.display=''
+//]]>
+</script>
+
+<script type="text/javascript">
+//<![CDATA[
 if (!window.bab_Translations) {
 	window.bab_Translations = new Array();
 }
@@ -93,6 +99,7 @@ document.getElementById("{ t_treeViewId }").onSubmitTree = function()
 		window.close();
 	} catch(e) {alert(e)};
 }
+//]]>
 </script>
 
 <!--#end treeview -->
@@ -106,11 +113,9 @@ document.getElementById("{ t_treeViewId }").onSubmitTree = function()
 <!--#begin treeview_scripts -->
 <script type="text/javascript" src="{ babSkinPath }templates/tree.js"></script>
 <script type="text/javascript">
-<!--
-
+//<![CDATA[
 bab_initTrees();
-
-//-->
+//]]>
 </script>
 <!--#end treeview_scripts -->
 
@@ -134,7 +139,7 @@ bab_initTrees();
 
 <script type="text/javascript" src="{ babSkinPath }templates/orgchart.js"></script>
 <script type="text/javascript">
-<!--
+//<![CDATA[
 if (!window.bab_Translations) {
 	window.bab_Translations = new Array();
 }
@@ -213,8 +218,7 @@ function flbhref(url)
 {
 	top.flb.document.location.href = url;
 }
-
-//-->
+//]]>
 </script>
 
 <!--#end orgchart_scripts -->
@@ -226,10 +230,12 @@ function flbhref(url)
 <!-- BEGIN ORGCHART -->
 
 <script type="text/javascript">
+//<![CDATA[
 document.write('<div id="bab_loading" style="z-index: 255; padding: 4px; margin: 10 auto; position: absolute; left: 0; top: 0; width: 100%; height: 100%; background-color: white; vertical-align: middle">');
-document.write('<img style="vertical-align: middle" src="{ babSkinPath }images/indicator.gif" />');
+document.write('<img style="vertical-align: middle" src="{ babSkinPath }images/indicator.gif" alt="" />');
 document.write(' { t_loading }');
 document.write('</div>');
+//]]>
 </script>
 
 <div class="orgchartcontainer">
@@ -273,7 +279,7 @@ document.write('</div>');
   <div class="{ t_type }" id="{ t_id }">
   <!--#if t_nodeIcon -->
   <table width="100%" cellspacing="0" cellpadding="0" border="0" style="margin: 0; padding: 0"><tr>
-  <td width="1%"><img class="icon" src="{ t_nodeIcon }" /></td>
+  <td width="1%"><img class="icon" src="{ t_nodeIcon }" alt="" /></td>
   <td><b><a <!--#if t_linkEntity --> href="{ t_linkEntity }" <!--#endif t_linkEntity --> >{ t_title }</a></b><br /><a name="{ t_id }" <!--#if t_link --> href="{ t_link }" <!--#endif t_link --> ><!--#if t_info -->{ t_info }<!--#else t_info -->&nbsp;<!--#endif t_info --></a></td>
   </tr></table>
   <!--#else t_nodeIcon -->
@@ -282,7 +288,7 @@ document.write('</div>');
 
   <div class="actions">
   <!--#in getNextAction -->
-  <a href="{ action_url }" title="{ action_caption }" <!--#if action_script --> onclick="return bab_{ action_script }(this);" <!--#endif action_script --> ><img class="action" src="{ action_icon }" /></a>
+  <a href="{ action_url }" title="{ action_caption }" <!--#if action_script --> onclick="return bab_{ action_script }(this);" <!--#endif action_script --> ><img class="action" src="{ action_icon }" alt="" /></a>
   <!--#endin getNextAction -->
   </div>
 
@@ -323,7 +329,7 @@ document.write('</div>');
   <div class="{ t_type }" id="{ t_id }">
   <!--#if t_nodeIcon -->
   <table width="100%" cellspacing="0" cellpadding="0" border="0" style="margin: 0; padding: 0"><tr>
-  <td width="1%"><img class="icon" src="{ t_nodeIcon }" /></td>
+  <td width="1%"><img class="icon" src="{ t_nodeIcon }" alt="" /></td>
   <td><b><a <!--#if t_linkEntity --> href="{ t_linkEntity }" <!--#endif t_linkEntity --> >{ t_title }</a></b><br /><a name="{ t_id }" <!--#if t_link --> href="{ t_link }" <!--#endif t_link --> ><!--#if t_info -->{ t_info }<!--#else t_info -->&nbsp;<!--#endif t_info --></a></td>
   </tr></table>
   <!--#else t_nodeIcon -->
@@ -332,7 +338,7 @@ document.write('</div>');
 
   <div class="actions">
   <!--#in getNextAction -->
-  <a href="{ action_url }" title="{ action_caption }" <!--#if action_script --> onclick="return bab_{ action_script }(this);" <!--#endif action_script --> ><img class="action" src="{ action_icon }" /></a>
+  <a href="{ action_url }" title="{ action_caption }" <!--#if action_script --> onclick="return bab_{ action_script }(this);" <!--#endif action_script --> ><img class="action" src="{ action_icon }" alt="" /></a>
   <!--#endin getNextAction -->
   </div>
   

@@ -125,7 +125,7 @@
 			while($idx < $size) 
 			{
 				list($key, $value) = each($reducedArray);
-				$whereClause .= ' AND ' . $key . '=\'' . $value . '\'';
+				$whereClause .= ' AND ' . $key . '=\'' . $this->m_db->db_escape_string($value) . '\'';
 				++$idx;
 			}
 
@@ -164,7 +164,7 @@
 			while($item = each($attributsList))
 			{
 				$insert .= ', `' . $item['key'] . '`';
-				$values .= ', ' . '\'' . $item['value'] . '\'';
+				$values .= ', ' . '\'' . $this->m_db->db_escape_string($item['value']) . '\'';
 			}
 
 			$requete = 'INSERT INTO ' . $this->m_TableName . '(  '. substr($insert, strlen(', ')) . ') ' . 
@@ -185,11 +185,11 @@
 			$item = '';
 			while($item = each($attributsList))
 			{
-				$requete .= ', `' . $item['key'] . '`=\'' . $item['value'] . '\'';
+				$requete .= ', `' . $item['key'] . '`=\'' . $this->m_db->db_escape_string($item['value']) . '\'';
 			}
 			
 			$requete = 'UPDATE ' . $this->m_TableName . ' SET ' . substr($requete, strlen(', ')) . ' WHERE id = \'' 
-				. $attributsList['id'] . '\'';
+				. $this->m_db->db_escape_string($attributsList['id']) . '\'';
 
 			//bab_debug($requete);
 

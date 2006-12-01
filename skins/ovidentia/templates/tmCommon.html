@@ -74,7 +74,7 @@
 
 <!--#begin workingHours -->
 <script type="text/javascript">
-<!--
+//<![CDATA[
 function isIE()
 {
 	var userAgent = navigator.userAgent.toLowerCase();
@@ -196,13 +196,11 @@ function deleteCheckedRows(sCtrlName, sTbodyId)
 		}
 	}
 }
-
-//-->
+//]]>
 </script>
 
 <script type="text/javascript" src="{ babInstallPath }scripts/dynamic_fields.js"></script>
 
-</script>
 <style type="text/css">
 	@import url('{ babInstallPath }/styles/dynamic_fields.css');
 </style>
@@ -269,19 +267,19 @@ function deleteCheckedRows(sCtrlName, sTbodyId)
 	</div>
 </form>
 	<script type="text/javascript">
-	<!--
+	//<![CDATA[
 	bab_updateTimeSelect('{ babSkinPath }images/Puces/PuceAgenda.gif');
-	//-->
+	//]]>
 	</script>
 <!--#end workingHours -->
 
 
 <!--#begin warningyesno -->
 <script type="text/javascript">
-<!--
+//<![CDATA[
 function on_delete()
 {
-	document.warningyesno.submit();
+	document.forms.warningyesno.submit();
 }
 
 function on_cancel()
@@ -290,7 +288,7 @@ function on_cancel()
 	form.action.value = '';
 	form.submit();
 }
-//-->
+//]]>
 </script>
 <form name ="warningyesno" method="post" action="{ babPhpSelf }">
 	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
@@ -338,7 +336,7 @@ function on_cancel()
 
 <!--#begin configuration -->
 <script type="text/javascript">
-<!--
+//<![CDATA[
 function on_btn_clicked(idx, action)
 {
 	var form = document.forms.configuration;
@@ -351,7 +349,7 @@ function submit_form()
 {
 	return true;
 }
-//-->
+//]]>
 </script>
 
 <form name="configuration" method="post" action="{ babPhpSelf }" onsubmit="return(submit_form())">
@@ -446,7 +444,7 @@ function submit_form()
 
 <!--#begin fieldList -->
 <script type="text/javascript">
-<!--
+//<![CDATA[
 function suppfield()
 {
 	//{}
@@ -484,7 +482,8 @@ function on_btn_clicked(idx, action)
 function submit_form()
 {
 	return true;
-}//-->
+}
+//]]>
 </script>
 <form name ="spfList" method="post" action="{ babPhpSelf }" onsubmit="return(submit_form())">
 	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
@@ -535,7 +534,7 @@ function submit_form()
 
 <!--#begin fieldText -->
 <script type="text/javascript">
-<!--
+//<![CDATA[
 function selChg(index)
 {
 	//{}
@@ -556,17 +555,17 @@ function submit_form()
 {
 	return true;
 }
-//-->
+//]]>
 </script>
 <form name="fieldText" method="post" action="{ babPhpSelf }" onsubmit="return(submit_form())">
-	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
+	<input type="hidden" name="tg" value="{ m_htmlDatas[tg] }" />
 	<input type="hidden" name="idx" value="" />
 	<input type="hidden" name="action" value="" />
-	<input type="hidden" name="iIdProjectSpace" value="{ m_datas[iIdProjectSpace] }" />
-	<input type="hidden" name="iIdProject" value="{ m_datas[iIdProject] }" />
-	<input type="hidden" name="iIdUser" value="{ m_datas[iIdUser] }" />
-	<input type="hidden" name="iIdField" value="{ m_datas[iIdField] }" />
-	<input type="hidden" name="aDeletableObjects[]" value="{ m_datas[iIdField] }" />
+	<input type="hidden" name="iIdProjectSpace" value="{ m_htmlDatas[iIdProjectSpace] }" />
+	<input type="hidden" name="iIdProject" value="{ m_htmlDatas[iIdProject] }" />
+	<input type="hidden" name="iIdUser" value="{ m_htmlDatas[iIdUser] }" />
+	<input type="hidden" name="iIdField" value="{ m_htmlDatas[iIdField] }" />
+	<input type="hidden" name="aDeletableObjects[]" value="{ m_htmlDatas[iIdField] }" />
 
 	{ m_datas[selectFieldType] }
 	<br />
@@ -579,7 +578,7 @@ function submit_form()
 							{ m_captions[fieldName] }<font color="red">*</font>:<br/>
 						</td>
 						<td>
-							<input type="text" name="sFieldName" size="40" maxlength ="255" value="{ m_datas[sFieldName] }" />
+							<input type="text" name="sFieldName" size="40" maxlength ="255" value="{ m_htmlDatas[sFieldName] }" />
 						</td>
 					</tr>
 					<tr>
@@ -587,8 +586,9 @@ function submit_form()
 							{ m_captions[value] }:
 						</td>
 						<td>
-							<input type="text" name="sFieldValue" size="40" maxlength ="255" value="{ m_datas[sFieldValue] }" />
+							<input type="text" name="sFieldValue" size="40" maxlength ="255" value="{ m_htmlDatas[sFieldValue] }" />
 						</td>
+					</tr>
 					<tr>
 						<td colspan="2">&nbsp;</td>
 					</tr>
@@ -603,7 +603,7 @@ function submit_form()
 
 <!--#begin fieldArea -->
 <script type="text/javascript">
-<!--
+//<![CDATA[
 function selChg(index)
 {
 	//{}
@@ -624,17 +624,17 @@ function submit_form()
 {
 	return true;
 }
-//-->
+//]]>
 </script>
 <form name="fieldArea" method="post" action="{ babPhpSelf }">
-	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
+	<input type="hidden" name="tg" value="{ m_htmlDatas[tg] }" />
 	<input type="hidden" name="idx" value="" />
 	<input type="hidden" name="action" value="" />
-	<input type="hidden" name="iIdProjectSpace" value="{ m_datas[iIdProjectSpace] }" />
-	<input type="hidden" name="iIdProject" value="{ m_datas[iIdProject] }" />
-	<input type="hidden" name="iIdUser" value="{ m_datas[iIdUser] }" />
-	<input type="hidden" name="iIdField" value="{ m_datas[iIdField] }" />
-	<input type="hidden" name="aDeletableObjects[]" value="{ m_datas[iIdField] }" />
+	<input type="hidden" name="iIdProjectSpace" value="{ m_htmlDatas[iIdProjectSpace] }" />
+	<input type="hidden" name="iIdProject" value="{ m_htmlDatas[iIdProject] }" />
+	<input type="hidden" name="iIdUser" value="{ m_htmlDatas[iIdUser] }" />
+	<input type="hidden" name="iIdField" value="{ m_htmlDatas[iIdField] }" />
+	<input type="hidden" name="aDeletableObjects[]" value="{ m_htmlDatas[iIdField] }" />
 
 	{ m_datas[selectFieldType] }
 	<br />
@@ -647,7 +647,7 @@ function submit_form()
 							{ m_captions[fieldName] }<font color="red">*</font>:<br/>
 						</td>
 						<td>
-							<input type="text" name="sFieldName" size="40" maxlength ="255" value="{ m_datas[sFieldName] }" />
+							<input type="text" name="sFieldName" size="40" maxlength ="255" value="{ m_htmlDatas[sFieldName] }" />
 						</td>
 					</tr>
 					<tr>
@@ -655,7 +655,7 @@ function submit_form()
 							{ m_captions[value] }:
 						</td>
 						<td>
-							<textarea name="sFieldValue" cols="40" rows="5" >{ m_datas[sFieldValue] }</textarea>
+							<textarea name="sFieldValue" cols="40" rows="5" >{ m_htmlDatas[sFieldValue] }</textarea>
 						</td>
 					</tr>
 					<tr>
@@ -672,7 +672,7 @@ function submit_form()
 
 <!--#begin fieldRadio -->
 <script type="text/javascript">
-<!--
+//<![CDATA[
 function selChg(index)
 {
 	//{}
@@ -724,18 +724,19 @@ function on_btn_clicked(idx, action)
 function submit_form()
 {
 	return true;
-}//-->
+}
+//]]>
 </script>
 <form name="addfield" method="post" action="{ babPhpSelf }">
-	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
+	<input type="hidden" name="tg" value="{ m_htmlDatas[tg] }" />
 	<input type="hidden" name="idx" value="" />
 	<input type="hidden" name="action" value="" />
-	<input type="hidden" name="iIdProjectSpace" value="{ m_datas[iIdProjectSpace] }" />
-	<input type="hidden" name="iIdProject" value="{ m_datas[iIdProject] }" />
-	<input type="hidden" name="iIdUser" value="{ m_datas[iIdUser] }" />
-	<input type="hidden" name="iIdField" value="{ m_datas[iIdField] }" />
-	<input type="hidden" name="aDeletableObjects[]" value="{ m_datas[iIdField] }" />
-	<input type="hidden" name="iOptionCount" value="{ m_datas[iOptionCount] }" />
+	<input type="hidden" name="iIdProjectSpace" value="{ m_htmlDatas[iIdProjectSpace] }" />
+	<input type="hidden" name="iIdProject" value="{ m_htmlDatas[iIdProject] }" />
+	<input type="hidden" name="iIdUser" value="{ m_htmlDatas[iIdUser] }" />
+	<input type="hidden" name="iIdField" value="{ m_htmlDatas[iIdField] }" />
+	<input type="hidden" name="aDeletableObjects[]" value="{ m_htmlDatas[iIdField] }" />
+	<input type="hidden" name="iOptionCount" value="{ m_htmlDatas[iOptionCount] }" />
 
 	{ m_datas[selectFieldType] }
 	<br />
@@ -748,7 +749,7 @@ function submit_form()
 							{ m_captions[fieldName] }<font color="red">*</font>:<br/>
 						</td>
 						<td colspan="2">
-							<input type="text" name="sFieldName" size="40" maxlength ="255" value="{ m_datas[sFieldName] }" />
+							<input type="text" name="sFieldName" size="40" maxlength ="255" value="{ m_htmlDatas[sFieldName] }" />
 						</td>
 					</tr>
 					<tr>
@@ -762,13 +763,13 @@ function submit_form()
 					<!--#in nextOption --> 
 					<tr>
 						<td>
-							<input type="radio" name="iDefaultOption" value="{ m_datas[sOptionNbr] }" { m_datas[sOptionChecked] } style="background-color:transparent;border=0" />
+							<input type="radio" name="iDefaultOption" value="{ m_htmlDatas[sOptionNbr] }" { m_htmlDatas[sOptionChecked] } style="background-color:transparent;border=0" />
 						</td>
 						<td>
-							<input type="text" name="aOptions[]" size="30" maxlength="30" value="{ m_datas[sOptionValue] }" />
+							<input type="text" name="aOptions[]" size="30" maxlength="30" value="{ m_htmlDatas[sOptionValue] }" />
 						</td>
 						<td align="center">
-							<input type="checkbox" name="aDelOptions[]" value="{ m_datas[sOptionNbr] }" style="background-color:transparent;border=0" />
+							<input type="checkbox" name="aDelOptions[]" value="{ m_htmlDatas[sOptionNbr] }" style="background-color:transparent;border=0" />
 						</td>
 					</tr>
 					<!--#endin nextOption --> 
@@ -777,14 +778,14 @@ function submit_form()
 					</tr>
 					<tr>
 						<td colspan="2">
-							<input type="submit" value="{ m_captions[oneMoreOption] }" onclick="addOption();" />
+							<input type="button" value="{ m_captions[oneMoreOption] }" onclick="addOption();" />
 						</td>
 						<td align="center">
-							<input type="submit" value="{ m_captions[deleteOptions] }" onclick="delOption();" />
+							<input type="button" value="{ m_captions[deleteOptions] }" onclick="delOption();" />
 						</td>
 					</tr>
-					<tr colspan="3">
-						<td>&nbsp;</td>
+					<tr>
+						<td colspan="3">&nbsp;</td>
 					</tr>
 				</table>
 			</td>
@@ -805,21 +806,21 @@ function submit_form()
 						{ m_captions[type] }:
 					</td>
 					<td colspan="2"> 
-						<select size="1" type="string" name="iFieldType" onchange="selChg();">
-							<option value="{ m_datas[iTextType] }" { m_datas[sTextSelected] }>{ m_captions[text] }</option>
-							<option value="{ m_datas[iAreaType] }" { m_datas[sAreaSelected] }>{ m_captions[area] }</option>
-							<option value="{ m_datas[iChoiceType] }" { m_datas[sChoiceSelected] }>{ m_captions[choice] }</option>
+						<select size="1" name="iFieldType" onchange="selChg();">
+							<option value="{ m_htmlDatas[iTextType] }" { m_htmlDatas[sTextSelected] }>{ m_captions[text] }</option>
+							<option value="{ m_htmlDatas[iAreaType] }" { m_htmlDatas[sAreaSelected] }>{ m_captions[area] }</option>
+							<option value="{ m_htmlDatas[iChoiceType] }" { m_htmlDatas[sChoiceSelected] }>{ m_captions[choice] }</option>
 						</select>
 					</td>
 					<!--#else m_datas[iIdField] -->
 					<td colspan="2" align="center"> 
 						<input type="hidden" name="iFieldType" value="{ m_datas[iFieldType] }" />
-						{ m_captions[fieldType] }:{ m_datas[sFieldType] }
+						{ m_captions[fieldType] }:{ m_htmlDatas[sFieldType] }
 					</td>
 					<!--#endif m_datas[iIdField] -->
+				</tr>
 				<tr>
 					<td colspan="2">&nbsp;</td>
-				</tr>
 				</tr>
 			</table>
 		</td>
@@ -832,13 +833,13 @@ function submit_form()
 <br />
 <div align="center">
 <!--#if m_datas[iIdField] "== 0" -->
-	<input type="submit" value="{ m_captions[add] }" onclick="on_btn_clicked('{ m_datas[addIdx] }', '{ m_datas[addAction] }')" />
+	<input type="submit" value="{ m_captions[add] }" onclick="on_btn_clicked('{ m_htmlDatas[addIdx] }', '{ m_htmlDatas[addAction] }')" />
 <!--#else m_datas[iIdField] -->
 	<!--#if m_datas[is_modifiable] -->
-	<input type="submit" value="{ m_captions[modify] }" onclick="on_btn_clicked('{ m_datas[modifyIdx] }', '{ m_datas[modifyAction] }')" />
+	<input type="submit" value="{ m_captions[modify] }" onclick="on_btn_clicked('{ m_htmlDatas[modifyIdx] }', '{ m_htmlDatas[modifyAction] }')" />
 	<!--#endif m_datas[is_modifiable] -->
 	<!--#if m_datas[is_deletable] "== 1" -->
-		<input type="submit" value="{ m_captions[delete] }" onclick="on_btn_clicked('{ m_datas[delIdx] }', '{ m_datas[delAction] }')" />
+		<input type="submit" value="{ m_captions[delete] }" onclick="on_btn_clicked('{ m_htmlDatas[delIdx] }', '{ m_htmlDatas[delAction] }')" />
 	<!--#endif m_datas[is_deletable] -->
 <!--#endif m_datas[iIdField] -->
 </div>
@@ -847,7 +848,7 @@ function submit_form()
 
 <!--#begin categoriesList -->
 <script type="text/javascript">
-<!--
+//<![CDATA[
 function suppfield()
 {
 	//{}
@@ -896,7 +897,7 @@ function evtSetColor(iIdCategory, sColor)
 	
 	document.getElementById(evtColor).style.backgroundColor = '#'+sColor;
 }
-//-->
+//]]>
 </script>
 <form name ="categoriesList" method="post" action="{ babPhpSelf }" onsubmit="return(submit_form())">
 	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
@@ -928,7 +929,7 @@ function evtSetColor(iIdCategory, sColor)
 						</td>
 						<td align="center">
 						<!--#if m_datas[bIsDeletable] -->
-							<input type="checkbox" name="aDeletableObjects[]" value="{ m_datas[iIdCategory] }" Style="background-color:transparent;border=0" />
+							<input type="checkbox" name="aDeletableObjects[]" value="{ m_datas[iIdCategory] }" style="background-color:transparent;border=0" />
 						<!--#else m_datas[bIsDeletable] -->
 							&nbsp;
 						<!--#endif m_datas[bIsDeletable] -->
@@ -938,7 +939,7 @@ function evtSetColor(iIdCategory, sColor)
 					<tr class="BabSiteAdminTitleFontBackground">
 						<td colspan="3" align="right">&nbsp;</td>
 						<td>
-							<a href="javascript:check_all('aDeletableObjects', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ m_captions[checkAll] }" width="10" height="10" border="0" /></a><a href="javascript:check_all('aDeletableObjects', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ m_captions[uncheckAll] }" width="10" height="10" border="0"></a>&nbsp;<a href="javascript:suppfield()"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ m_captions[uncheckAll] }" border="0" /></a>
+							<a href="javascript:check_all('aDeletableObjects', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ m_captions[checkAll] }" width="10" height="10" border="0" /></a><a href="javascript:check_all('aDeletableObjects', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ m_captions[uncheckAll] }" width="10" height="10" border="0" /></a>&nbsp;<a href="javascript:suppfield()"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ m_captions[uncheckAll] }" border="0" /></a>
 						</td>
 					</tr>
 				</table>
@@ -951,7 +952,7 @@ function evtSetColor(iIdCategory, sColor)
 
 <!--#begin categoryForm -->
 <script type="text/javascript">
-<!--
+//<![CDATA[
 function on_btn_clicked(idx, action)
 {
 	var form = document.forms.categoryForm;
@@ -989,8 +990,7 @@ function evtSetColor(color)
 	document.getElementById('evtColor').style.backgroundColor = '#'+color;
 	document.getElementById('evtPreview').style.color = '#'+color;
 }
-
-//-->
+//]]>
 </script>
 <form name="categoryForm" method="post" action="{ babPhpSelf }">
 	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
@@ -1023,21 +1023,21 @@ function evtSetColor(color)
 						</td>
 					</tr>
 					<tr id="bgColor_tr"> 
-						<td><a href="javascript: Start('{ babUrlScript }?tg=selectcolor&idx=popup&callback=evtBgSetColor', 'ColorWindow', 'width=250,height=200,status=no,resizable=no,top=200,left=200');">{ m_datas[sBgColorTxt] }</a>:</td>
+						<td><a href="javascript: Start('{ babUrlScript }?tg=selectcolor&amp;idx=popup&amp;callback=evtBgSetColor', 'ColorWindow', 'width=250,height=200,status=no,resizable=no,top=200,left=200');">{ m_datas[sBgColorTxt] }</a>:</td>
 						<td> 
 							<div id="evtBgColor" style="width:30px;height:15px;border:#000 1px solid;background-color:#{ m_datas[sBgColor] };float:left"></div><input type="hidden" name="sBgColor" value="" />
 							&nbsp;<a href="javascript:evtBgSetColor('')"><img src="ovidentia/skins/ovidentia/images/Puces/del.gif" alt="" border="0" /></a>
 						</td>
 					</tr>
 					<tr id="color_tr"> 
-						<td><a href="javascript: Start('{ babUrlScript }?tg=selectcolor&idx=popup&callback=evtSetColor', 'ColorWindow', 'width=250,height=200,status=no,resizable=no,top=200,left=200');">{ m_datas[sColorTxt] }</a>:</td>
+						<td><a href="javascript: Start('{ babUrlScript }?tg=selectcolor&amp;idx=popup&amp;callback=evtSetColor', 'ColorWindow', 'width=250,height=200,status=no,resizable=no,top=200,left=200');">{ m_datas[sColorTxt] }</a>:</td>
 						<td> 
 							<div id="evtColor" style="width:30px;height:15px;border:#000 1px solid;background-color:#{ m_datas[sColor] };float:left"></div><input type="hidden" name="sColor" value="" />
 							&nbsp;<a href="javascript:evtSetColor('')"><img src="ovidentia/skins/ovidentia/images/Puces/del.gif" alt="" border="0" /></a>
 						</td>
 					</tr>
 					<tr> 
-						<td>{ m_captions[sPreview] }</a>:</td>
+						<td>{ m_captions[sPreview] }:</td>
 						<td> 
 							<span id="evtPreview" style="padding:2px;border:#000 1px solid;background-color:#{ m_datas[sBgColor] };color:#{ m_datas[sColor] };">{ m_datas[sPreview] }</span>
 						</td>
@@ -1063,10 +1063,10 @@ function evtSetColor(color)
 	<!--#endif m_datas[iIdCategory] -->
 	</div>
 	<script type="text/javascript">
-	<!--
+	//<![CDATA[
 	evtBgSetColor('{ m_datas[sBgColor] }');
 	evtSetColor('{ m_datas[sColor] }');
-	//-->
+	//]]>
 	</script>
 </form>
 <!--#end categoryForm -->
@@ -1074,7 +1074,7 @@ function evtSetColor(color)
 
 <!--#begin noticeForm -->
 <script type="text/javascript">
-<!--
+//<![CDATA[
 function on_btn_clicked(idx, action)
 {
 	var form = document.forms.noticeForm;
@@ -1088,7 +1088,7 @@ function submit_form()
 {
 	return true;
 }
-//-->
+//]]>
 </script>
 <form name="noticeForm" method="post" action="{ babPhpSelf }">
 	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
@@ -1145,4 +1145,3 @@ function submit_form()
 </font>
 <br>
 <!--#end notify_user -->
-
