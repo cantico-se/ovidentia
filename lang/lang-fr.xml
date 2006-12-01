@@ -2397,5 +2397,8 @@
 <string id="The directory is writable but this is not the full pathname">Le répertoire est accessible en écriture, mais ce n'est pas le chemin complet</string>
 <string id="The addons directory is not writable">Le répertoire addons n'est pas accessible en écriture</string>
 <string id="Gantt view">Vue gantt</string>
+<string id="Loading...">En cours de chargement...</string>
+<string id="Fit width">Ajuster à la largeur de la page</string>
+<string id="Visible levels">Niveaux visibles</string>
 
 </fr>
