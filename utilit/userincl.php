@@ -846,8 +846,8 @@ function bab_addUser( $firstname, $lastname, $middlename, $email, $nickname, $pa
 		}
 
 	$sql="insert into ".BAB_USERS_TBL." (nickname, firstname, lastname, hashname, password,email,date,confirm_hash,is_confirmed,changepwd,lang, langfilter, datelog, lastlog) ".
-		"values ('
-		". $babDB->db_escape_string($nickname)."',
+		"values (
+		'". $babDB->db_escape_string($nickname)."',
 		'".$babDB->db_escape_string($firstname)."',
 		'".$babDB->db_escape_string($lastname)."',
 		'".$babDB->db_escape_string($hashname)."',
