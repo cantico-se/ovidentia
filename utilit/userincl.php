@@ -310,6 +310,7 @@ function bab_isUserLogged($iduser = "")
 			$hash=md5($BAB_SESS_NICKNAME.$BAB_HASH_VAR);
 			if ($hash == $BAB_SESS_HASHID)
 				{
+				
 				$BAB_SESS_LOGGED=true;
 				}
 			else

@@ -160,20 +160,17 @@ function printFlbChartPage()
 function chart_session_oeid($ocid)
 	{
 	global $oeid;
-	//session_register("BAB_SESS_CHARTOEID-".$ocid);
 	$_SESSION['BAB_SESS_CHARTOEID-'.$ocid] = $oeid ;
 	}
 
 
 function chart_session_rootnode($ocid, $rootnode)
 	{
-	//session_register("BAB_SESS_CHARTRN-".$ocid);
 	$_SESSION['BAB_SESS_CHARTRN-'.$ocid] = $rootnode;
 	}
 
 function chart_session_closednodes($ocid, $closednodes)
 	{
-	//session_register("BAB_SESS_CHARTCN-".$ocid);
 	$_SESSION['BAB_SESS_CHARTCN-'.$ocid] = $closednodes;
 	}
 

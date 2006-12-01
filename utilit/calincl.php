@@ -264,7 +264,6 @@ class bab_icalendars
 		$this->starttime = "00:00:00";
 		$this->endtime = "23:59:59";
 		$this->dispdays = $babBody->babsite['dispdays'];
-		$this->workdays = $babBody->babsite['workdays'];
 		$this->startday = $babBody->babsite['startday'];
 		$this->user_calendarids = '';
 		if( empty($iduser) && isset($GLOBALS['BAB_SESS_USERID']))

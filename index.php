@@ -77,16 +77,9 @@ elseif(!session_id())
 		session_name(sprintf("OV%u", crc32($babUrl)));
 		session_start();
 	}
-if (!session_is_registered('BAB_SESS_NICKNAME')) { session_register("BAB_SESS_NICKNAME"); $BAB_SESS_NICKNAME = ""; }
-if (!session_is_registered('BAB_SESS_USER')) { session_register("BAB_SESS_USER"); $BAB_SESS_USER = ""; }
-if (!session_is_registered('BAB_SESS_FIRSTNAME')) { session_register("BAB_SESS_FIRSTNAME"); $BAB_SESS_FIRSTNAME = ""; }
-if (!session_is_registered('BAB_SESS_LASTNAME')) { session_register("BAB_SESS_LASTNAME"); $BAB_SESS_LASTNAME = ""; }
-if (!session_is_registered('BAB_SESS_EMAIL')) { session_register("BAB_SESS_EMAIL"); $BAB_SESS_EMAIL = ""; }
-if (!session_is_registered('BAB_SESS_USERID')) { session_register("BAB_SESS_USERID"); $BAB_SESS_USERID = ""; }
-if (!session_is_registered('BAB_SESS_HASHID')) { session_register("BAB_SESS_HASHID"); $BAB_SESS_HASHID = ""; }
-if (!session_is_registered('BAB_SESS_GROUPID')) { session_register("BAB_SESS_GROUPID"); $BAB_SESS_GROUPID = ""; }
-if (!session_is_registered('BAB_SESS_GROUPNAME')) { session_register("BAB_SESS_GROUPNAME"); $BAB_SESS_GROUPNAME = ""; }
-if (!session_is_registered('BAB_SESS_WSUSER')) { session_register("BAB_SESS_WSUSER"); $BAB_SESS_WSUSER = false; }
+	
+
+
 
 if (!empty($_GET))
 	$babTmp =& $_GET;
@@ -100,12 +93,6 @@ else  if (!empty($HTTP_POST_VARS))
 	$babTmp =& $HTTP_POST_VARS;
 if( isset($babTmp)) { extract($babTmp, EXTR_SKIP); bab_unset($babTmp); }
 
-if (!empty($_SESSION))
-	$babTmp =& $_SESSION;
-else  if (!empty($HTTP_SESSION_VARS)) 
-	$babTmp =& $HTTP_SESSION_VARS;
-if( isset($babTmp)) { extract($babTmp, EXTR_SKIP); bab_unset($babTmp); }
-
 if (!empty($_SERVER))
 	$babTmp =& $_SERVER;
 else  if (!empty($HTTP_SERVER_VARS)) 
@@ -114,38 +101,21 @@ if( isset($babTmp)) { extract($babTmp, EXTR_SKIP); bab_unset($babTmp); }
 
 bab_unset($_REQUEST);
 bab_unset($_SERVER);
-bab_unset($_SESSION);
 bab_unset($_COOKIE);
 
 
-
-
-if (!empty($_FILES))
-	{
-	while (list($name, $value) = each($_FILES))
-		{
-		$$name = $value['tmp_name'];
-		$file = $name."_size";
-		$$file = $value['size'];
-		$file = $name."_name";
-		$$file = $value['name'];
-		$file = $name."_type";
-		$$file = $value['type'];
-		}
-	}
-	else if (!empty($HTTP_POST_FILES))
-		{
-		while (list($name, $value) = each($HTTP_POST_FILES))
-			{
-			$$name = $value['tmp_name'];
-			$file = $name."_size";
-			$$file = $value['size'];
-			$file = $name."_name";
-			$$file = $value['name'];
-			$file = $name."_type";
-			$$file = $value['type'];
-			}
-	}
+	
+$BAB_SESS_NICKNAME 		= isset($_SESSION['BAB_SESS_NICKNAME']) 	? $_SESSION['BAB_SESS_NICKNAME'] 	: "";
+$BAB_SESS_USER 			= isset($_SESSION['BAB_SESS_USER']) 		? $_SESSION['BAB_SESS_USER'] 		: "";
+$BAB_SESS_FIRSTNAME 	= isset($_SESSION['BAB_SESS_FIRSTNAME']) 	? $_SESSION['BAB_SESS_FIRSTNAME'] 	: "";
+$BAB_SESS_LASTNAME 		= isset($_SESSION['BAB_SESS_LASTNAME']) 	? $_SESSION['BAB_SESS_LASTNAME'] 	: "";
+$BAB_SESS_EMAIL 		= isset($_SESSION['BAB_SESS_EMAIL']) 		? $_SESSION['BAB_SESS_EMAIL'] 		: "";
+$BAB_SESS_USERID 		= isset($_SESSION['BAB_SESS_USERID']) 		? $_SESSION['BAB_SESS_USERID'] 		: "";
+$BAB_SESS_HASHID 		= isset($_SESSION['BAB_SESS_HASHID']) 		? $_SESSION['BAB_SESS_HASHID'] 		: "";
+$BAB_SESS_GROUPID 		= isset($_SESSION['BAB_SESS_GROUPID']) 		? $_SESSION['BAB_SESS_GROUPID'] 	: "";
+$BAB_SESS_GROUPNAME 	= isset($_SESSION['BAB_SESS_GROUPNAME']) 	? $_SESSION['BAB_SESS_GROUPNAME'] 	: "";
+$BAB_SESS_WSUSER 		= isset($_SESSION['BAB_SESS_WSUSER']) 		? $_SESSION['BAB_SESS_WSUSER'] 		: false;
+	
 
 $babUserPassword = '';
 $incl = '';

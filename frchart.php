@@ -1213,15 +1213,14 @@ else if ($idx == 'save_state')
 	$idx = 'list';
 }
 
-$sess = "BAB_SESS_CHARTDISP-".$ocid;
+$sess = ;
 if (isset($disp))
 {
-session_register("BAB_SESS_CHARTDISP-".$ocid);
-$$sess = $disp;
+	$_SESSION["BAB_SESS_CHARTDISP-".$ocid] = $disp;
 }
-elseif( isset($$sess))
+elseif( isset($_SESSION["BAB_SESS_CHARTDISP-".$ocid]))
 {
-	$disp = $$sess;
+	$disp = $_SESSION["BAB_SESS_CHARTDISP-".$ocid];
 }
 
 

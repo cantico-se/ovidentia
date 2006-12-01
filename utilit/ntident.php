@@ -25,9 +25,9 @@ include_once "base.php";
 
 function NTuserLogin($nickname)
 {
-	global $babBody;
-	$sql = "SELECT * FROM ".BAB_USERS_TBL." WHERE nickname='" . $nickname . "'";
-	$db = $GLOBALS['babDB'];
+	global $babBody, $babDB;
+	$sql = "SELECT * FROM ".BAB_USERS_TBL." WHERE nickname='" . $babDB->db_escape_string($nickname) . "'";
+
 	$result = $db->db_query($sql);
 	if ($db->db_num_rows($result) < 1) {
 		$_SESSION['BAB_SESS_NTREGISTER'] = false;
@@ -84,16 +84,16 @@ if (isset($NTidUser) && $GLOBALS['BAB_SESS_NTREGISTER'] && isset($_COOKIE['ntide
 		$_SESSION['BAB_SESS_NTREGISTER2'] = true;
 		$_SESSION['BAB_SESS_NTREGISTER'] = false;
 		$db = $GLOBALS['babDB'];
-		$res = $db->db_query("SELECT datelog FROM ".BAB_USERS_TBL." WHERE id='".$BAB_SESS_USERID."'");
+		$res = $db->db_query("SELECT datelog FROM ".BAB_USERS_TBL." WHERE id='".$babDB->db_escape_string($BAB_SESS_USERID)."'");
 		if ($res && $db->db_num_rows($res) > 0) {
 			$arr = $db->db_fetch_array($res);
-			$db->db_query("UPDATE ".BAB_USERS_TBL." SET datelog=now(), lastlog='".$arr['datelog']."' WHERE id='".$BAB_SESS_USERID."'");
+			$db->db_query("UPDATE ".BAB_USERS_TBL." SET datelog=now(), lastlog='".$babDB->db_escape_string($arr['datelog'])."' WHERE id='".$babDB->db_escape_string($BAB_SESS_USERID)."'");
 		}
 
-		$res=$db->db_query("SELECT * FROM ".BAB_USERS_LOG_TBL." WHERE id_user='0' AND sessid='".session_id()."'");
+		$res=$db->db_query("SELECT * FROM ".BAB_USERS_LOG_TBL." WHERE id_user='0' AND sessid='".$babDB->db_escape_string(session_id())."'");
 		if ($res && $db->db_num_rows($res) > 0) {
 			$arr = $db->db_fetch_array($res);
-			$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET id_user='".$BAB_SESS_USERID."' WHERE id='".$arr['id']."'");
+			$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."' WHERE id='".$babDB->db_escape_string($arr['id'])."'");
 		}
 	}
 }

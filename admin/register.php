@@ -365,15 +365,20 @@ function notifyAdminUserRegistration($name, $email, $nickname, $pwd)
 function destroyAuthCookie() {
 
 	if ( $GLOBALS['babCookieIdent'] != 'login' ) {
-		setcookie('c_nickname'," ");
+		setcookie('c_nickname','');
 	}
-	setcookie('c_password'," ");
+	setcookie('c_password','');
 }
 	
 	
 
 function signOn( $nickname, $password,$lifetime)
 	{
+	
+	$nickname = trim($nickname);
+	$password = trim($password);
+	$lifetime = (int) $lifetime;
+	
 	global $babBody, $babDB, $BAB_SESS_USER, $BAB_SESS_USERID;
 	if( empty($nickname) || empty($password))
 		{
@@ -519,17 +524,17 @@ function sendPassword ($nickname)
 
 
 			//update the database to include the new password
-			$req="update ".BAB_USERS_TBL." set password='". md5($new_pass) ."' where nickname='".$babDB->db_escape_string($nickname)."'";
+			$req="update ".BAB_USERS_TBL." set password='". $babDB->db_escape_string(md5($new_pass)) ."' where nickname='".$babDB->db_escape_string($nickname)."'";
 			$res=$babDB->db_query($req);
 
 			//send a simple email with the new password
 			notifyUserPassword($new_pass, $arr['email']);
-			$babBody->msgerror = bab_translate("Your new password has been emailed to you.") ." &lt;".$arr['email']."&gt;";
+			$babBody->addError(bab_translate("Your new password has been emailed to you.") ." <".$arr['email'].">");
 			$error = '';
 			bab_callAddonsFunctionArray('onUserChangePassword', array('id'=>$arr['id'], 'nickname'=>$nickname, 'password'=>$new_pass, 'error'=>&$error));
 			if( !empty($error))
 				{
-				$babBody->msgerror = $error;
+				$babBody->addError($error);
 				return false;
 				}
 			return true;
@@ -653,7 +658,8 @@ function userLogin($nickname,$password, $cookie_id = false)
 					if( isset($GLOBALS['babAdLdapOptions']))
 					{
 						for( $k=0; $k < count($GLOBALS['babAdLdapOptions']); $k++)
-						{						$ldap->set_option($GLOBALS['babAdLdapOptions'][$k][0],$GLOBALS['babAdLdapOptions'][$k][1]);
+						{						
+						$ldap->set_option($GLOBALS['babAdLdapOptions'][$k][0],$GLOBALS['babAdLdapOptions'][$k][1]);
 						}
 					}
 
@@ -730,6 +736,7 @@ function userLogin($nickname,$password, $cookie_id = false)
 					$sn = isset($updattributes['sn'])?$entries[0][$updattributes['sn']][0]:$entries[0]['sn'][0];
 					$mn = isset($updattributes['mn'])?$entries[0][$updattributes['mn']][0]:'';
 					$mail = isset($updattributes['email'])?$entries[0][$updattributes['email']][0]:$entries[0]['mail'][0];
+					
 					$iduser = registerUser(auth_decode($givenname), auth_decode($sn), auth_decode($mn), auth_decode($mail),$nickname, $password, $password, true);
 					if( $iduser === false )
 						{
@@ -862,37 +869,26 @@ function userLogin($nickname,$password, $cookie_id = false)
 	$babBody->msgerror = "";
 	if ($arruser['is_confirmed'] == '1')
 		{
-		if( isset($_SESSION))
-			{
-			$_SESSION['BAB_SESS_NICKNAME'] = $arruser['nickname'];
-			$_SESSION['BAB_SESS_USER'] = bab_composeUserName($arruser['firstname'], $arruser['lastname']);
-			$_SESSION['BAB_SESS_FIRSTNAME'] = $arruser['firstname'];
-			$_SESSION['BAB_SESS_LASTNAME'] = $arruser['lastname'];
-			$_SESSION['BAB_SESS_EMAIL'] = $arruser['email'];
-			$_SESSION['BAB_SESS_USERID'] = $arruser['id'];
-			$_SESSION['BAB_SESS_HASHID'] = $arruser['confirm_hash'];
-			$_SESSION['BAB_SESS_GROUPID'] = bab_getPrimaryGroupId($arruser['id']);
-			$_SESSION['BAB_SESS_GROUPNAME'] = bab_getGroupName($_SESSION['BAB_SESS_GROUPID']);
-			$GLOBALS['BAB_SESS_NICKNAME'] = $_SESSION['BAB_SESS_NICKNAME'];
-			$GLOBALS['BAB_SESS_USER'] = $_SESSION['BAB_SESS_USER'];
-			$GLOBALS['BAB_SESS_FIRSTNAME'] = $_SESSION['BAB_SESS_FIRSTNAME'];
-			$GLOBALS['BAB_SESS_LASTNAME'] = $_SESSION['BAB_SESS_LASTNAME'];
-			$GLOBALS['BAB_SESS_EMAIL'] = $_SESSION['BAB_SESS_EMAIL'];
-			$GLOBALS['BAB_SESS_USERID'] = $_SESSION['BAB_SESS_USERID'];
-			$GLOBALS['BAB_SESS_HASHID'] = $_SESSION['BAB_SESS_HASHID'];
-			}
-		else
-			{
-			$GLOBALS['BAB_SESS_NICKNAME'] = $arruser['nickname'];
-			$GLOBALS['BAB_SESS_USER'] = bab_composeUserName($arruser['firstname'], $arruser['lastname']);
-			$GLOBALS['BAB_SESS_FIRSTNAME'] = $arruser['firstname'];
-			$GLOBALS['BAB_SESS_LASTNAME'] = $arruser['lastname'];
-			$GLOBALS['BAB_SESS_EMAIL'] = $arruser['email'];
-			$GLOBALS['BAB_SESS_USERID'] = $arruser['id'];
-			$GLOBALS['BAB_SESS_HASHID'] = $arruser['confirm_hash'];
-			$GLOBALS['BAB_SESS_GROUPID']  = bab_getPrimaryGroupId($arruser['id']);
-			$GLOBALS['BAB_SESS_GROUPNAME'] = bab_getGroupName($GLOBALS['BAB_SESS_GROUPID']);
-			}
+		
+		$_SESSION['BAB_SESS_NICKNAME'] = $arruser['nickname'];
+		$_SESSION['BAB_SESS_USER'] = bab_composeUserName($arruser['firstname'], $arruser['lastname']);
+		$_SESSION['BAB_SESS_FIRSTNAME'] = $arruser['firstname'];
+		$_SESSION['BAB_SESS_LASTNAME'] = $arruser['lastname'];
+		$_SESSION['BAB_SESS_EMAIL'] = $arruser['email'];
+		$_SESSION['BAB_SESS_USERID'] = $arruser['id'];
+		$_SESSION['BAB_SESS_HASHID'] = $arruser['confirm_hash'];
+		$_SESSION['BAB_SESS_GROUPID'] = bab_getPrimaryGroupId($arruser['id']);
+		$_SESSION['BAB_SESS_GROUPNAME'] = bab_getGroupName($_SESSION['BAB_SESS_GROUPID']);
+		
+		$GLOBALS['BAB_SESS_NICKNAME'] 	= $_SESSION['BAB_SESS_NICKNAME'];
+		$GLOBALS['BAB_SESS_USER'] 		= $_SESSION['BAB_SESS_USER'];
+		$GLOBALS['BAB_SESS_FIRSTNAME'] 	= $_SESSION['BAB_SESS_FIRSTNAME'];
+		$GLOBALS['BAB_SESS_LASTNAME'] 	= $_SESSION['BAB_SESS_LASTNAME'];
+		$GLOBALS['BAB_SESS_EMAIL'] 		= $_SESSION['BAB_SESS_EMAIL'];
+		$GLOBALS['BAB_SESS_USERID'] 	= $_SESSION['BAB_SESS_USERID'];
+		$GLOBALS['BAB_SESS_HASHID'] 	= $_SESSION['BAB_SESS_HASHID'];
+		
+
 		return true;
 		}
 	else
@@ -906,45 +902,29 @@ function signOff()
 	{
 	global $babBody, $babDB, $BAB_HASH_VAR, $BAB_SESS_USER, $BAB_SESS_EMAIL, $BAB_SESS_USERID, $BAB_SESS_HASHID,$BAB_SESS_LOGGED;
 	
-	$babDB->db_query("delete from ".BAB_USERS_LOG_TBL." where id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."' and sessid='".session_id()."'");
+	$babDB->db_query("delete from ".BAB_USERS_LOG_TBL." where id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."' and sessid='".$babDB->db_escape_string(session_id())."'");
 	
 	$babDB->db_query("UPDATE ".BAB_USERS_TBL." SET  cookie_validity=NOW(), cookie_id='' WHERE id='".$babDB->db_escape_string($BAB_SESS_USERID)."'");
 
-	if( isset($_SESSION))
-		{
-		$_SESSION['BAB_SESS_NICKNAME'] = "";
-		$_SESSION['BAB_SESS_USER'] = "";
-		$_SESSION['BAB_SESS_FIRSTNAME'] = "";
-		$_SESSION['BAB_SESS_LASTNAME'] = "";
-		$_SESSION['BAB_SESS_EMAIL'] = "";
-		$_SESSION['BAB_SESS_USERID'] = "";
-		$_SESSION['BAB_SESS_HASHID'] = "";
-		unset($_SESSION['BAB_SESS_NICKNAME']);
-		unset($_SESSION['BAB_SESS_USER']);
-		unset($_SESSION['BAB_SESS_FIRSTNAME']);
-		unset($_SESSION['BAB_SESS_LASTNAME']);
-		unset($_SESSION['BAB_SESS_EMAIL']);
-		unset($_SESSION['BAB_SESS_USERID']);
-		unset($_SESSION['BAB_SESS_HASHID']);
-		unset($_SESSION);
-		}
-	else
-		{
-		$GLOBALS['BAB_SESS_NICKNAME'] = "";
-		$GLOBALS['BAB_SESS_USER'] = "";
-		$GLOBALS['BAB_SESS_FIRSTNAME'] = "";
-		$GLOBALS['BAB_SESS_LASTNAME'] = "";
-		$GLOBALS['BAB_SESS_EMAIL'] = "";
-		$GLOBALS['BAB_SESS_USERID'] ="";
-		$GLOBALS['BAB_SESS_HASHID'] = "";
-		session_unregister("BAB_SESS_NICKNAME");
-		session_unregister("BAB_SESS_USER");
-		session_unregister("BAB_SESS_FIRSTNAME");
-		session_unregister("BAB_SESS_LASTNAME");
-		session_unregister("BAB_SESS_EMAIL");
-		session_unregister("BAB_SESS_USERID");
-		session_unregister("BAB_SESS_HASHID");
-		}
+
+
+	unset($_SESSION['BAB_SESS_NICKNAME']);
+	unset($_SESSION['BAB_SESS_USER']);
+	unset($_SESSION['BAB_SESS_FIRSTNAME']);
+	unset($_SESSION['BAB_SESS_LASTNAME']);
+	unset($_SESSION['BAB_SESS_EMAIL']);
+	unset($_SESSION['BAB_SESS_USERID']);
+	unset($_SESSION['BAB_SESS_HASHID']);
+
+	
+	$GLOBALS['BAB_SESS_NICKNAME'] = "";
+	$GLOBALS['BAB_SESS_USER'] = "";
+	$GLOBALS['BAB_SESS_FIRSTNAME'] = "";
+	$GLOBALS['BAB_SESS_LASTNAME'] = "";
+	$GLOBALS['BAB_SESS_EMAIL'] = "";
+	$GLOBALS['BAB_SESS_USERID'] ="";
+	$GLOBALS['BAB_SESS_HASHID'] = "";
+
 
 	// We destroy the session cookie. A new one will be created at the next session.
 	if (isset($_COOKIE[session_name()])) {
