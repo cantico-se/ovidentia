@@ -36,7 +36,7 @@ class macl
 		
 	function macl($target, $index,$id_object, $return)
 		{
-		global $babBody;
+		global $babBody, $babDB;
 		$this->target = &$target;
 		$this->index = &$index;
 		$this->id_object = $id_object;
@@ -49,22 +49,18 @@ class macl
 		$this->t_record = bab_translate("Record");
 		$this->t_sets_of_groups = bab_translate("Sets of groups");
 
-		
-
-		$this->db = &$GLOBALS['babDB'];
-
 		$this->tree = & new bab_grptree();
 
-		$res = $this->db->db_query("SELECT * FROM ".BAB_GROUPS_TBL."");
-		while ($arr = $this->db->db_fetch_assoc($res))
+		$res = $babDB->db_query("SELECT * FROM ".BAB_GROUPS_TBL."");
+		while ($arr = $babDB->db_fetch_assoc($res))
 			{
 			$this->df_groups[$arr['id']] = 1;
 			}
 
 		if ($babBody->currentAdmGroup == 0)
 			{
-			$this->resset = $this->db->db_query("SELECT * FROM ".BAB_GROUPS_TBL." WHERE nb_groups>='0'");
-			$this->countsets = $this->db->db_num_rows($this->resset);
+			$this->resset = $babDB->db_query("SELECT * FROM ".BAB_GROUPS_TBL." WHERE nb_groups>='0'");
+			$this->countsets = $babDB->db_num_rows($this->resset);
 			}
 		else
 			{
@@ -74,9 +70,10 @@ class macl
 		
 	function addtable($table,$name = '')
 		{
+		global $babDB;
 		$checked = array();
-		$res = $this->db->db_query("SELECT id_group FROM ".$table." WHERE id_object='".$this->id_object."'");
-		while ($arr = $this->db->db_fetch_assoc($res))
+		$res = $babDB->db_query("SELECT id_group FROM ".$table." WHERE id_object='".$babDB->db_escape_string($this->id_object)."'");
+		while ($arr = $babDB->db_fetch_assoc($res))
 			{
 			$checked[$arr['id_group']] = 1;
 			}
@@ -88,6 +85,8 @@ class macl
 				'groups'	=> $this->df_groups,
 				'checked'	=> $checked
 			);
+			
+		$_SESSION['bab_acl_tablelist'][$table] = $table;
 		}
 		
 	function filter($listgroups = 0,$disabled = 0,$everybody = 0,$users = 0,$guest = 0,$groups = array())
@@ -167,7 +166,8 @@ class macl
 
 	function getnextset()
 		{
-		if ($this->arr = $this->db->db_fetch_assoc($this->resset))
+		global $babDB;
+		if ($this->arr = $babDB->db_fetch_assoc($this->resset))
 			{
 			$this->id_group = $this->arr['id'];
 			$this->altbg = !$this->altbg;
@@ -301,75 +301,83 @@ function acl_grp_node_html(&$acl, $id_group)
 
 
 
-	
+/**
+ * Record ACL form
+ */
 function maclGroups()
 	{
-	global $babBody;
-	$db = &$GLOBALS['babDB'];
+	global $babBody,$babDB;
 	$id_object = &$_POST['item'];
 
 	unset($_SESSION['bab_groupAccess']['acltables']);
-	$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
+	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
+	
+	$s_table = $_SESSION['bab_acl_tablelist'];
+	unset($_SESSION['bab_acl_tablelist']);
 
 	if (isset($_POST['group']) && count($_POST['group']) > 0) {
 		foreach($_POST['group'] as $table => $groups)
 			{
-			$db->db_query("DELETE FROM ".$table." WHERE id_object='".$id_object."' AND id_group NOT IN('".implode("','",$groups)."') AND id_group < '".BAB_ACL_GROUP_TREE."'");
-
-			$groups = array_flip($groups);
-
-			$res = $db->db_query("SELECT id_group FROM ".$table." WHERE id_object='".$id_object."' AND id_group < '".BAB_ACL_GROUP_TREE."'");
-			while ($arr = $db->db_fetch_assoc($res))
-				{
-				if (isset($groups[$arr['id_group']])) {
-					unset($groups[$arr['id_group']]);
+			if (isset($s_table[$table])) {
+				$babDB->db_query("DELETE FROM ".$table." WHERE id_object='".$babDB->db_escape_string($id_object)."' AND id_group NOT IN(".$babDB->quote($groups).") AND id_group < '".BAB_ACL_GROUP_TREE."'");
+	
+				$groups = array_flip($groups);
+	
+				$res = $babDB->db_query("SELECT id_group FROM ".$table." WHERE id_object='".$babDB->db_escape_string($id_object)."' AND id_group < '".BAB_ACL_GROUP_TREE."'");
+				while ($arr = $babDB->db_fetch_assoc($res))
+					{
+					if (isset($groups[$arr['id_group']])) {
+						unset($groups[$arr['id_group']]);
+						}
 					}
-				}
-
-			foreach ($groups as $id => $value)
-				{
-				$db->db_query("INSERT INTO ".$table." (id_object, id_group) VALUES ('".$id_object."', '".$id."')");
+	
+				foreach ($groups as $id => $value)
+					{
+					$babDB->db_query("INSERT INTO ".$table." (id_object, id_group) VALUES ('".$babDB->db_escape_string($id_object)."', '".$babDB->db_escape_string($id)."')");
+					}
 				}
 			}
 		}
 
-	if (isset($_POST['tablelist']))
-		foreach($_POST['tablelist'] as $table)
+	if (isset($_SESSION['bab_acl_tablelist']))
+		foreach($_SESSION['bab_acl_tablelist'] as $table)
 			{
 			if (!isset($_POST['group'][$table]))
-				$db->db_query("DELETE FROM ".$table." WHERE id_object='".$id_object."' AND id_group < '".BAB_ACL_GROUP_TREE."'");
+				$babDB->db_query("DELETE FROM ".$table." WHERE id_object='".$babDB->db_escape_string($id_object)."' AND id_group < '".BAB_ACL_GROUP_TREE."'");
 			}
 
 	
 	if (isset($_POST['tree']) && count($_POST['tree']) > 0) {
 		foreach($_POST['tree'] as $table => $groups)
 			{
-			array_walk($groups, create_function('&$v,$k','$v += BAB_ACL_GROUP_TREE;'));
-			
-			$db->db_query("DELETE FROM ".$table." WHERE id_object='".$id_object."' AND id_group NOT IN('".implode("','",$groups)."') AND id_group >= '".BAB_ACL_GROUP_TREE."'");
-
-			$groups = array_flip($groups);
-
-			$res = $db->db_query("SELECT id_group FROM ".$table." WHERE id_object='".$id_object."' AND id_group > '".BAB_ACL_GROUP_TREE."'");
-			while ($arr = $db->db_fetch_assoc($res))
-				{
-				if (isset($groups[$arr['id_group']])) {
-					unset($groups[$arr['id_group']]);
+			if (isset($s_table[$table])) {
+				array_walk($groups, create_function('&$v,$k','$v += BAB_ACL_GROUP_TREE;'));
+				
+				$babDB->db_query("DELETE FROM ".$table." WHERE id_object='".$babDB->db_escape_string($id_object)."' AND id_group NOT IN(".$babDB->quote($groups).") AND id_group >= '".BAB_ACL_GROUP_TREE."'");
+	
+				$groups = array_flip($groups);
+	
+				$res = $babDB->db_query("SELECT id_group FROM ".$table." WHERE id_object='".$babDB->db_escape_string($id_object)."' AND id_group > '".BAB_ACL_GROUP_TREE."'");
+				while ($arr = $babDB->db_fetch_assoc($res))
+					{
+					if (isset($groups[$arr['id_group']])) {
+						unset($groups[$arr['id_group']]);
+						}
 					}
-				}
-
-			foreach ($groups as $id => $value)
-				{
-				$db->db_query("INSERT INTO ".$table."  (id_object, id_group) VALUES ('".$id_object."', '".$id."')");
+	
+				foreach ($groups as $id => $value)
+					{
+					$babDB->db_query("INSERT INTO ".$table."  (id_object, id_group) VALUES ('".$babDB->db_escape_string($id_object)."', '".$babDB->db_escape_string($id)."')");
+					}
 				}
 			}
 		}
 
-	if (isset($_POST['tablelist']))
-		foreach($_POST['tablelist'] as $table)
+	if (isset($_SESSION['bab_acl_tablelist']))
+		foreach($_SESSION['bab_acl_tablelist'] as $table)
 			{
 			if (!isset($_POST['tree'][$table]))
-				$db->db_query("DELETE FROM ".$table." WHERE id_object='".$id_object."' AND id_group >= '".BAB_ACL_GROUP_TREE."'");
+				$babDB->db_query("DELETE FROM ".$table." WHERE id_object='".$babDB->db_escape_string($id_object)."' AND id_group >= '".BAB_ACL_GROUP_TREE."'");
 			}
 	}
 	
@@ -388,43 +396,42 @@ function aclUpdate($table, $id, $groups, $what)
 
 function aclDelete($table, $id_object)
 	{
-	$db = &$GLOBALS['babDB'];
-	$db->db_query("DELETE FROM ".$table." WHERE id_object='".$id_object."'");
-	$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
+	global $babDB;
+	$babDB->db_query("DELETE FROM ".$table." WHERE id_object='".$babDB->db_escape_string($id_object)."'");
+	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 	}
 
 
 function aclSetGroups_all($table, $id_object)
 	{
-	$db = &$GLOBALS['babDB'];
-	$db->db_query("INSERT INTO ".$table."  (id_object, id_group) VALUES ('".$id_object."', '".BAB_ALLUSERS_GROUP."')");
-	$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
+	global $babDB;
+	$babDB->db_query("INSERT INTO ".$table."  (id_object, id_group) VALUES ('".$babDB->db_escape_string($id_object)."', '".BAB_ALLUSERS_GROUP."')");
+	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 	}
 
 function aclSetGroups_registered($table, $id_object)
 	{
-	$db = &$GLOBALS['babDB'];
-	$db->db_query("INSERT INTO ".$table."  (id_object, id_group) VALUES ('".$id_object."', '".BAB_REGISTERED_GROUP."')");
-	$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
+	global $babDB;
+	$babDB->db_query("INSERT INTO ".$table."  (id_object, id_group) VALUES ('".$babDB->db_escape_string($id_object)."', '".BAB_REGISTERED_GROUP."')");
+	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 	}
 
 function aclSetGroups_unregistered($table, $id_object)
 	{
-	$db = &$GLOBALS['babDB'];
-	$db->db_query("INSERT INTO ".$table."  (id_object, id_group) VALUES ('".$id_object."', '".BAB_UNREGISTERED_GROUP."')");
-	$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
+	global $babDB;
+	$babDB->db_query("INSERT INTO ".$table."  (id_object, id_group) VALUES ('".$babDB->db_escape_string($id_object)."', '".BAB_UNREGISTERED_GROUP."')");
+	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 	}
 
 
 function aclGetAccessUsers($table, $id_object) {
-	$db = &$GLOBALS['babDB'];
-	global $babBody;
+	global $babBody, $babDB;
 	
 	$tree = & new bab_grptree();
 	$groups = array();
 	
-	$res = $db->db_query("SELECT id_group FROM ".$table." WHERE id_object='".$id_object."'");
-	while ($arr = $db->db_fetch_assoc($res)) {
+	$res = $babDB->db_query("SELECT id_group FROM ".$table." WHERE id_object='".$babDB->db_escape_string($id_object)."'");
+	while ($arr = $babDB->db_fetch_assoc($res)) {
 		if ($arr['id_group'] >= BAB_ACL_GROUP_TREE )
 			{
 			$arr['id_group'] -= BAB_ACL_GROUP_TREE;
@@ -453,15 +460,15 @@ function aclGetAccessUsers($table, $id_object) {
 		{
 		$query = "SELECT u.id,u.firstname, u.lastname,u.email 
 					FROM ".BAB_USERS_TBL." u, ".BAB_USERS_GROUPS_TBL." g
-						WHERE g.id_object=u.id AND g.id_group IN('".implode("','",$groups)."') 
+						WHERE g.id_object=u.id AND g.id_group IN(".$babDB->quote($groups).") 
 						AND u.disabled='0' AND u.is_confirmed='1'";
 		}
 	
 	$user = array();
 	if( !empty($query))
 	{
-	$res = $db->db_query($query);
-	while ($arr = $db->db_fetch_assoc($res)) {
+	$res = $babDB->db_query($query);
+	while ($arr = $babDB->db_fetch_assoc($res)) {
 		$user[$arr['id']] = array(
 					'name' => bab_composeUserName($arr['firstname'],$arr['lastname']),
 					'email' => isset($arr['email']) ? $arr['email'] : false
@@ -484,17 +491,16 @@ function aclGetAccessUsers($table, $id_object) {
  * @param   int		$trgIdObject	new affected rights id_object 
  * 
  */function aclDuplicateRights($srcTable, $srcIdObject, $trgTable, $trgIdObject) {
-	$db = &$GLOBALS['babDB'];
-	global $babBody;
+	global $babBody,$babDB;
 	
 	$tree = & new bab_grptree();
 	$groups = array();
 	
-	$res = $db->db_query('SELECT id_group FROM '.$srcTable.' WHERE id_object=\''.$srcIdObject.'\'');
-	while ($arr = $db->db_fetch_assoc($res)) {
-		$db->db_query('INSERT INTO ' . $trgTable . ' (`id` , `id_object` , `id_group`) VALUES (\'\', \'' . $trgIdObject . '\', \'' . $arr['id_group'] . '\')');
+	$res = $babDB->db_query('SELECT id_group FROM '.$srcTable.' WHERE id_object='.$babDB->quote($srcIdObject));
+	while ($arr = $babDB->db_fetch_assoc($res)) {
+		$babDB->db_query('INSERT INTO ' . $trgTable . ' (`id` , `id_object` , `id_group`) VALUES (\'\', ' . $babDB->quote($srcIdObject) . ', ' . $babDB->quote($arr['id_group']) . ')');
 	}
 	
-	$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
+	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 }
 ?>
