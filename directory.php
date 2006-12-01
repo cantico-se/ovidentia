@@ -982,7 +982,7 @@ function addDbContact($id, $fields)
 			else
 				$this->modify = false;
 
-			$this->res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$babDB->db_escape_string($iddir)."' and disabled='N' order by id_field asc");
+			$this->res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$babDB->db_escape_string($iddir)."' and disabled='N'  order by list_ordering asc");
 			if( $this->res && $babDB->db_num_rows($this->res) > 0)
 				{
 				$this->count = $babDB->db_num_rows($this->res);
