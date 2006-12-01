@@ -1974,13 +1974,16 @@ function bab_vac_setVacationPeriods(&$obj, $id_users, $begin, $end) {
 
 			while ($type_day->getTimeStamp() < $type_day_end->getTimeStamp() ) {
 
-				bab_vac_typeColorStack(
-					$row['id'], 
-					array(
-						'id_type'	=> $arr['type'], 
-						'color'		=> $arr['color']
-					)
-				);
+				if ($type_day->getTimeStamp() >= $begin->getTimeStamp()) {
+
+					bab_vac_typeColorStack(
+						$row['id'], 
+						array(
+							'id_type'	=> $arr['type'], 
+							'color'		=> $arr['color']
+						)
+					);
+				}
 
 				$type_day->add(12, BAB_DATETIME_HOUR);
 				}
