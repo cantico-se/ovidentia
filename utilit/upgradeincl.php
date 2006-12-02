@@ -189,10 +189,13 @@ function bab_upgrade($core_dir, &$ret)
 
 		$reg = "babVersion[[:space:]]*=[[:space:]]*\"".$match[1]."\"";
 		$out = ereg_replace($reg, "babVersion = \"".$version."\"", $txt);
-		$file = fopen($filename, "w");
-		fputs($file, $out);
-		fclose($file);
-		return $match[1];
+		if (is_writable($filename)) {
+			$file = fopen($filename, "w");
+			fputs($file, $out);
+			fclose($file);
+			return $match[1];
+		}
+		return false;
 	}
 
 	$db = &$GLOBALS['babDB'];
