@@ -2102,7 +2102,7 @@
 <string id="Display tasks list">Afficher la liste des tâches</string>
 <string id="Edition of a project">Edition d'un projet</string>
 <string id="You do not have the right to create/modify a project">Vous n'avez pas les droits suffisants pour créer ou modifier le projet</string>
-<string id="This action will delete the project and all references">Cette action supprimele projet et toutes références</string>
+<string id="This action will delete the project and all references">Cette action supprime le projet et toutes ses références</string>
 <string id="Project = ">Projet = </string>
 <string id="Delete project">Supprimer le projet</string>
 <string id="You do not have the right to delete a project">Vous n'avez pas les droits suffisants pour supprimer le projet</string>
