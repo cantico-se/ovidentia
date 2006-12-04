@@ -306,6 +306,7 @@ function acl_grp_node_html(&$acl, $id_group)
  */
 function maclGroups()
 	{
+
 	global $babBody,$babDB;
 	$id_object = &$_POST['item'];
 
@@ -339,12 +340,14 @@ function maclGroups()
 			}
 		}
 
-	if (isset($_SESSION['bab_acl_tablelist']))
-		foreach($_SESSION['bab_acl_tablelist'] as $table)
+	if (isset($s_table)) {
+		foreach($s_table as $table)
 			{
-			if (!isset($_POST['group'][$table]))
+			if (!isset($_POST['group'][$table])) {
 				$babDB->db_query("DELETE FROM ".$table." WHERE id_object='".$babDB->db_escape_string($id_object)."' AND id_group < '".BAB_ACL_GROUP_TREE."'");
 			}
+		}
+	}
 
 	
 	if (isset($_POST['tree']) && count($_POST['tree']) > 0) {
@@ -373,13 +376,15 @@ function maclGroups()
 			}
 		}
 
-	if (isset($_SESSION['bab_acl_tablelist']))
-		foreach($_SESSION['bab_acl_tablelist'] as $table)
-			{
-			if (!isset($_POST['tree'][$table]))
+	
+	if (isset($s_table)) { 
+		foreach($s_table as $table) {
+			if (!isset($_POST['tree'][$table])) {
 				$babDB->db_query("DELETE FROM ".$table." WHERE id_object='".$babDB->db_escape_string($id_object)."' AND id_group >= '".BAB_ACL_GROUP_TREE."'");
 			}
+		}
 	}
+}
 	
 function aclGroups($target, $index, $table, $id, $return)
 	{
