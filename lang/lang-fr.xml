@@ -2056,7 +2056,7 @@
 <string id="The task %s of the project %s in the project space %s have been deleted by %s">La tâche %s du projet %s dans l'espace projets %s a été supprimée par %s</string>
 <string id="Notice alert">Notification d'alerte</string>
 <string id="The task %s of the project %s in the project space %s is about to exceed the envisaged time">La tâche %s du projet %s dans l'espace projets %s est sur le point de dépasser le temps alloué</string>
-<string id="Task responsible">Utilisateurs pouvant être responsables de tâches</string>
+<string id="Task responsible">Responsables de tâches</string>
 <string id="You are responsible for task %s of the %s project in %s project space">Vous êtes le responsable de la tâche %s du projet %s dans l'espace projets %s</string>
 <string id="You are not responsible any more for the task %s of the %s project in %s project space">Vous n'êtes plus responsable de la tâche %s du projet %s de l'espace projets %s</string>
 <string id="You are responsible for task %s of the %s project in %s project space. Please accept/refuse">Vous êtes responsable de la tâche %s du projet %s de l'espce projets %s. Veuillez accepter ou refuser </string>
