@@ -74,7 +74,7 @@ function getGlobalVariable($var)
 		case 'idx': return bab_toHtml($GLOBALS['idx']);
 		
 	}
-	return false;
+	return NULL;
 }
 
 /**
@@ -402,7 +402,7 @@ class bab_Template
 			return $templateObject->{$propertyName};
 		}
 		$tr = getGlobalVariable($propertyName);
-		if($tr !== false)
+		if($tr !== NULL)
 			{
 			return $tr;
 			}
@@ -694,7 +694,7 @@ function processTemplate(&$class, $str)
 			else 
 				{
 				$tr = getGlobalVariable($m[1][$i]);
-				if($tr !== false)
+				if($tr !== NULL)
 					{
 					$str = preg_replace($reg, $tr, $str);
 					}
