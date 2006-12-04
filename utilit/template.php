@@ -35,42 +35,6 @@ function &bab_TemplateCache_getStore()
 	return $cacheStore;
 }
 
-function getGlobalVariable($var)
-{
-	switch($var)
-	{
-		case 'babCss': return $GLOBALS['babCss'];
-		case 'babMeta': return $GLOBALS['babMeta'];
-		case 'babsectionpuce': return $GLOBALS['babsectionpuce'];
-		case 'babsectionbullet': return $GLOBALS['babsectionbullet'];
-		case 'babIE': return $GLOBALS['babIE'];
-		case 'babCssPath': return bab_toHtml($GLOBALS['babCssPath']);
-		case 'babScriptPath': return bab_toHtml($GLOBALS['babScriptPath']);
-		//case 'babEditorImages': return $GLOBALS['babEditorImages'];
-		case 'babOvidentiaJs': return $GLOBALS['babOvidentiaJs'];
-		case 'babOvmlPath': return bab_toHtml($GLOBALS['babOvmlPath']);
-		case 'babSkinPath': return bab_toHtml($GLOBALS['babSkinPath']);
-		case 'babLanguage': return bab_toHtml($GLOBALS['babLanguage']);
-		case 'babStyle': return bab_toHtml($GLOBALS['babStyle']);
-		case 'babSkin': return bab_toHtml($GLOBALS['babSkin']);
-		case 'babSiteName': return bab_toHtml($GLOBALS['babSkin']);
-		case 'BAB_SESS_USERID': return bab_toHtml($GLOBALS['babSiteName']);
-		case 'BAB_SESS_NICKNAME': return bab_toHtml($GLOBALS['BAB_SESS_NICKNAME']);
-		case 'BAB_SESS_USER': return bab_toHtml($GLOBALS['BAB_SESS_USER']);
-		case 'BAB_SESS_FIRSTNAME': return bab_toHtml($GLOBALS['BAB_SESS_FIRSTNAME']);
-		case 'BAB_SESS_LASTNAME': return bab_toHtml($GLOBALS['BAB_SESS_LASTNAME']);
-		case 'BAB_SESS_EMAIL': return bab_toHtml($GLOBALS['BAB_SESS_EMAIL']);
-		case 'babPhpSelf': return bab_toHtml($GLOBALS['babPhpSelf']);
-		case 'babUrl': return bab_toHtml($GLOBALS['babUrl']);
-		case 'babInstallPath': return bab_toHtml($GLOBALS['babInstallPath']);
-		case 'babUrlScript': return bab_toHtml($GLOBALS['babUrlScript']);
-		case 'babAddonUrl': return bab_toHtml($GLOBALS['babAddonUrl']);
-		case 'babAddonTarget': return bab_toHtml($GLOBALS['babAddonTarget']);
-		case 'babSlogan': return bab_toHtml($GLOBALS['babSlogan']);
-		
-	}
-	return false;
-}
 
 /**
  * This class is used to cache the parsed templates in memory.
@@ -396,11 +360,9 @@ class bab_Template
 		if (@isset($templateObject->{$propertyName})) {
 			return $templateObject->{$propertyName};
 		}
-		$tr = getGlobalVariable($propertyName);
-		if($tr !== false)
-			{
-			return $tr;
-			}
+		if (@isset($GLOBALS[$propertyName])) {
+			return $GLOBALS[$propertyName];
+		}
 		$call = reset(debug_backtrace()); // $call will contain debug info about the line in the script where this function was called.
 		bab_Template::addError($templateObject, 'Unknown property or global variable (' . $propertyName . ')', $call['line']);
 		return '{ ' . $propertyName . ' }';
@@ -661,7 +623,7 @@ function processTemplate(&$class, $str)
 							}
 					}
 				}
-			$str = preg_replace($reg, bab_printOvmlTemplate($param[0], $args), $str);
+			$str = preg_replace($reg, preg_replace("/\\$[0-9]/", "\\\\$0", bab_printOvmlTemplate($param[0], $args)), $str);
 			}
 		}
 
@@ -686,14 +648,8 @@ function processTemplate(&$class, $str)
 				$tmp = $class->$m[1][$i];
 				$str = preg_replace($reg, preg_replace("/\\$[0-9]/", "\\\\$0", $tmp) , $str);
 				}
-			else 
-				{
-				$tr = getGlobalVariable($m[1][$i]);
-				if($tr !== false)
-					{
-					$str = preg_replace($reg, $tr, $str);
-					}
-				}
+			else if( isset($GLOBALS[$m[1][$i]]))
+				$str = preg_replace($reg, $GLOBALS[$m[1][$i]], $str);
 			}
 		}
 	return $str;
