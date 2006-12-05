@@ -935,9 +935,12 @@ function setCurrentItemMenu($title, $enabled=false)
 	$this->menu->setCurrent($title, $enabled);
 }
 
-function addStyleSheet($file)
+function addStyleSheet($filename)
 {
-	$this->styleSheet[] = $file;
+	if (!in_array($filename, $this->styleSheet))
+	{
+		$this->styleSheet[] = $filename;
+	}
 }
 
 function addJavascriptFile($file)
