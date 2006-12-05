@@ -2208,7 +2208,7 @@ function updatePropertiesArticleDraft(&$message)
 
 		if( empty($tags) || count($otags) == 0 )
 		{
-			$message = bab_translate("You must sepcify at least one tag");
+			$message = bab_translate("You must specify at least one tag");
 			return false;
 		}
 	}
@@ -2296,7 +2296,7 @@ function updatePropertiesArticleDraft(&$message)
 }
 
 
-function submitArticleDraft( $idart, $message, $force=false)
+function submitArticleDraft( $idart, &$message, $force=false)
 {
 	global $babBody, $babDB;
 	$res = $babDB->db_query("select id_article,id_topic, date_submission from ".BAB_ART_DRAFTS_TBL." where id='".$babDB->db_escape_string($idart)."'");
@@ -2334,6 +2334,26 @@ function submitArticleDraft( $idart, $message, $force=false)
 				$message = bab_translate("You don't have rights to submit articles in this topic");
 				return false;
 				}			
+			}
+		
+		if( $arr['id_topic'] != 0 )
+		{
+		list($busetags) = $babDB->db_fetch_array($babDB->db_query("select busetags from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($arr['id_topic'])."'"));
+		}
+		else
+		{
+			$busetags = 'N';
+		}
+
+		if( $busetags == 'Y' )
+			{
+			list($nbtags) = $babDB->db_fetch_array($babDB->db_query("select count(id_tag) from ".BAB_ART_DRAFTS_TAGS_TBL." where id_draft='".$babDB->db_escape_string($idart)."'"));
+
+			if( !$nbtags )
+				{
+				$message = bab_translate("You must specify at least one tag in article properties page");
+				return false;
+				}
 			}
 
 		if( !$force && $arr['date_submission'] != "0000-00-00 00:00:00" && bab_mktime($arr['date_submission']) > mktime())

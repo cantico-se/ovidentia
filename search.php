@@ -76,10 +76,9 @@ class bab_addonsSearch
 
 	function bab_addonsSearch()
 		{
-		global $babDB;
-		
-		$res = $babDB->db_query("select id,title from ".BAB_ADDONS_TBL." where enabled='Y' AND installed='Y'");
-		while (list($id,$title) = $babDB->db_fetch_array($res))
+		$db = &$GLOBALS['babDB'];
+		$res = $db->db_query("select id,title from ".BAB_ADDONS_TBL." where enabled='Y' AND installed='Y'");
+		while (list($id,$title) = $db->db_fetch_array($res))
 			{
 			
 			if (bab_isAccessValid(BAB_ADDONS_GROUPS_TBL, $id) && is_file($GLOBALS['babAddonsPath'].$title."/init.php"))
@@ -203,8 +202,8 @@ function searchKeyword($item , $option = "OR")
 
 		function tempb($item ,$option )
 			{
-
-			global  $babDB,$babBody,$babSearchItems;
+			$this->db = $GLOBALS['babDB'];
+			global  $babBody,$babSearchItems;
 			$this->item = $item;
 			$this->fields = isset($_POST) ? $_POST : array();
 			$this->search = bab_translate("Search");
@@ -228,10 +227,8 @@ function searchKeyword($item , $option = "OR")
 			$this->t_search_files_only = bab_translate("Search attached files only");
 			$this->t_index_priority = bab_translate("Give priority to file content for order");
 			$this->tags_txt = bab_translate("Tags");
-			
-			$this->pat = bab_rp('pat');
-			$this->field = bab_rp('field');
-			$this->order = bab_rp('order');
+			$this->atleastone_txt = bab_translate("At least one");
+			$this->all_txt = bab_translate("All");
 
 			$this->index = bab_searchEngineInfos();
 			$this->search_files_only = isset($_POST['search_files_only']);
@@ -268,9 +265,9 @@ function searchKeyword($item , $option = "OR")
 				}
 
 			$this->busetags = false;
-			$restc = $babDB->db_query("select tt.id,tt.category, tt.id_cat, tc.title, tt.busetags from ".BAB_TOPICS_TBL." tt left join ".BAB_TOPICS_CATEGORIES_TBL." tc on tt.id_cat=tc.id order by tt.category, tc.title ");
+			$restc = $this->db->db_query("select tt.id,tt.category, tt.id_cat, tc.title, tt.busetags from ".BAB_TOPICS_TBL." tt left join ".BAB_TOPICS_CATEGORIES_TBL." tc on tt.id_cat=tc.id order by tt.category, tc.title ");
 			$this->arrtopicscategories = array();
-			while( $row = $babDB->db_fetch_array($restc))
+			while( $row = $this->db->db_fetch_array($restc))
 				{
 				if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $row['id']))
 					{
@@ -295,9 +292,9 @@ function searchKeyword($item , $option = "OR")
 				}
 
 			$req = "select D.id, D.name, D.id_group id_group from ".BAB_DB_DIRECTORIES_TBL." D,".BAB_GROUPS_TBL." G where D.id_group = '0' OR (D.id_group = G.id AND G.directory='Y') order by D.name";
-			$this->resdirs = $babDB->db_query($req);
+			$this->resdirs = $this->db->db_query($req);
 			$i = 0;
-			while ($arr = $babDB->db_fetch_array($this->resdirs) )
+			while ($arr = $this->db->db_fetch_array($this->resdirs) )
 				{
 				$prevname = $i >= 1 && is_array($this->dirarr[$i-1]) ? $this->dirarr[$i-1]['name'] : '';
 				if ($arr['name'] != $prevname && bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $arr['id']))
@@ -309,10 +306,10 @@ function searchKeyword($item , $option = "OR")
 			$this->countdirs = $i;
 
 			$req = "select name,description from ".BAB_DBDIR_FIELDS_TBL." WHERE name != 'jpegphoto' order by description";
-			$this->resfields = $babDB->db_query($req);
-			$this->countfields = $babDB->db_num_rows($this->resfields);
+			$this->resfields = $this->db->db_query($req);
+			$this->countfields = $this->db->db_num_rows($this->resfields);
 			$i = 0;
-			while ($arr = $babDB->db_fetch_array($this->resfields))
+			while ($arr = $this->db->db_fetch_array($this->resfields))
 				{
 				$this->tbln[$i] = $arr['name'];
 				$this->tbld[$i] = translateDirectoryField($arr['description']);
@@ -352,8 +349,8 @@ function searchKeyword($item , $option = "OR")
 			$this->acces['g'] = $this->countdirs;
 			$this->acces['h'] = bab_calendarAccess();
 
-			$res = $babDB->db_query("select id from ".BAB_FORUMS_TBL);
-			while( $row = $babDB->db_fetch_array($res))
+			$res = $this->db->db_query("select id from ".BAB_FORUMS_TBL);
+			while( $row = $this->db->db_fetch_array($res))
 				{
 				if(bab_isAccessValid(BAB_FORUMSVIEW_GROUPS_TBL, $row['id']))
 					{
@@ -362,8 +359,8 @@ function searchKeyword($item , $option = "OR")
 					}
 				}
 
-			$res = $babDB->db_query("select id from ".BAB_FAQCAT_TBL);
-			while( $row = $babDB->db_fetch_array($res))
+			$res = $this->db->db_query("select id from ".BAB_FAQCAT_TBL);
+			while( $row = $this->db->db_fetch_array($res))
 				{
 				if(bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $row['id']))
 					{
@@ -443,10 +440,10 @@ function searchKeyword($item , $option = "OR")
 				$this->topictitle = put_text($arr['name'],30);
 
 				$req = "select df.id, dfd.name from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." dfd left join ".BAB_DBDIR_FIELDSEXTRA_TBL." df ON df.id_directory=dfd.id_directory and df.id_field = ( ".BAB_DBDIR_MAX_COMMON_FIELDS." + dfd.id ) where df.id_directory='".(($arr['id_group']==0) ? $arr['id'] : 0)."'";
-				$res = $babDB->db_query($req);
+				$res = $this->db->db_query($req);
 
 				$lk = 0;
-				while ($arr = $babDB->db_fetch_array($res))
+				while ($arr = $this->db->db_fetch_array($res))
 					{
 					$tblxn[$lk] = $arr['id'];
 					$tblxd[$lk] = translateDirectoryField($arr['name']);
@@ -639,6 +636,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 		{
 		var $what;
 		var $search;
+		var $db;
 		var $arttitle;
 		var $comtitle;
 		var $fortitle;
@@ -663,6 +661,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			{
 			global $BAB_SESS_USERID, $babLimit, $babBody, $babDB;
 			
+			$this->db = $GLOBALS['babDB'];
 			$this->search = bab_translate("Search");
 			$this->arttitle = bab_translate("Articles");
 			$this->comtitle = bab_translate("Comments");
@@ -721,14 +720,14 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			if( empty($item) || $item == "a")
 				{
 				$req = "create temporary table artresults SELECT a.id, a.id_topic, a.archive, a.title, a.head, a.body, a.restriction, T.category topic, concat( U.lastname, ' ', U.firstname ) author,U.email, UNIX_TIMESTAMP(a.date) date from ".BAB_TOPICS_TBL." T, ".BAB_ARTICLES_TBL." a LEFT JOIN ".BAB_USERS_TBL." U ON a.id_author = U.id WHERE a.id_topic = T.id and 0";
-				$babDB->db_query($req);
+				$this->db->db_query($req);
 				$req = "alter table artresults add unique (id)";
-				$babDB->db_query($req);
+				$this->db->db_query($req);
 
 				$req = "create temporary table comresults select C.id, C.id_article, C.id_topic, C.subject,C.message, UNIX_TIMESTAMP(C.date) date, name,email, C.id_author, a.title arttitle, a.body,a.restriction, T.category topic from ".BAB_COMMENTS_TBL." C, ".BAB_ARTICLES_TBL." a, ".BAB_TOPICS_TBL." T where C.id_article=a.id and a.id_topic = T.id and 0";
-				$babDB->db_query($req);
+				$this->db->db_query($req);
 				$req = "alter table comresults add unique (id)";
-				$babDB->db_query($req); 
+				$this->db->db_query($req); 
 				
 				$crit_art = "";
 				$crit_com = "";
@@ -773,9 +772,11 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					$restrictedart = '';
 					if( isset($this->fields['tagsname']) && !empty($this->fields['tagsname']))
 						{
+						$incom = ''; /* don't display comments in search result */
 						$this->fields['tagsname'] = trim($this->fields['tagsname']);
 						if( !empty($this->fields['tagsname']))
 							{
+							$maptags = array();
 							$tags = array();
 							$atags = explode(',', $this->fields['tagsname']);
 							for( $k = 0; $k < count($atags); $k++ )
@@ -783,22 +784,33 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 								$atags[$k] = trim($atags[$k]);
 								if( !empty($atags[$k]))
 									{
-									$tags[] = "'".$babDB->db_escape_string($atags[$k])."'";
+									$tags[] = "'".$this->db->db_escape_string($atags[$k])."'";
+									$maptags[$atags[$k]] = array();
 									}
+
 							}
 							if( count($tags))
 								{
-								$res = $babDB->db_query("select id_art from ".BAB_ART_TAGS_TBL." att left join ".BAB_TAGS_TBL." tt on tt.id = att.id_tag WHERE tag_name like ".implode(' or tag_name = ', $tags));
-								while( $rr = $babDB->db_fetch_array($res))
+								$res = $this->db->db_query("select id_art, tag_name from ".BAB_ART_TAGS_TBL." att left join ".BAB_TAGS_TBL." tt on tt.id = att.id_tag WHERE tag_name = ".implode(' or tag_name = ', $tags));
+								while( $rr = $this->db->db_fetch_array($res))
 									{
+									$maptags[$rr['tag_name']][] = $rr['id_art'];
 									$arrids[] = $rr['id_art'];
+									}
+								$optags = intval(bab_pp('optags', 1));
+								if( $optags == 0 && count($maptags))
+									{
+									list(,$arrids) = each($maptags);
+									while( list(,$t) = each($maptags) )
+										{
+										$arrids = array_intersect($arrids, $t);
+										}
 									}
 								}
 
-
 							if( $arrids )
 								{
-								$restrictedart = ' AND a.id in ('.$babDB->quote($arrids).')';
+								$restrictedart = ' AND a.id in ('.$this->db->quote($arrids).')';
 								}
 							else
 								{
@@ -846,7 +858,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 							";
 
 						bab_debug($req);
-						$babDB->db_query($req);
+						$this->db->db_query($req);
 					}
 
 					// indexation
@@ -899,16 +911,16 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 							bab_debug($req);
 
-							$babDB->db_query($req);
+							$this->db->db_query($req);
 						}
 					}
 
-					$res = $babDB->db_query("select id, restriction from artresults where restriction!=''");
-					while( $rr = $babDB->db_fetch_array($res))
+					$res = $this->db->db_query("select id, restriction from artresults where restriction!=''");
+					while( $rr = $this->db->db_fetch_array($res))
 						{
 						if( !bab_articleAccessByRestriction($rr['restriction']))
 							{
-							$babDB->db_query("delete from artresults where id=".$babDB->quote($rr['id']));
+							$this->db->db_query("delete from artresults where id=".$babDB->quote($rr['id']));
 							}
 						}
 					}
@@ -919,25 +931,25 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 						$reqsup = "and (".finder($this->like,"subject",$option,$this->like2)." or ".finder($this->like,"message",$option,$this->like2).")";
 
 					$req = "insert into comresults select C.id, C.id_article, C.id_topic, C.subject,C.message, UNIX_TIMESTAMP(C.date) date, name author,email,C.id_author,  a.title arttitle,LEFT(a.body,100) body, a.restriction, T.category topic  from ".BAB_COMMENTS_TBL." C, ".BAB_ARTICLES_TBL." a, ".BAB_TOPICS_TBL." T where C.id_article=a.id and a.id_topic = T.id ".$reqsup." and C.confirmed='Y' ".$incom." ".$crit_com." order by ".$babDB->db_escape_string($order);
-					$babDB->db_query($req);
-					$res = $babDB->db_query("select id, restriction from comresults where restriction!=''");
-					while( $rr = $babDB->db_fetch_array($res))
+					$this->db->db_query($req);
+					$res = $this->db->db_query("select id, restriction from comresults where restriction!=''");
+					while( $rr = $this->db->db_fetch_array($res))
 						{
 						if( !bab_articleAccessByRestriction($rr['restriction']))
-							$babDB->db_query("delete from comresults where id=".$babDB->quote($rr['id']));
+							$this->db->db_query("delete from comresults where id=".$babDB->quote($rr['id']));
 						}
 					}
 
 				$req = "select count(*) from artresults";
-				$res = $babDB->db_query($req);
-				list($nbrows) = $babDB->db_fetch_row($res);
+				$res = $this->db->db_query($req);
+				list($nbrows) = $this->db->db_fetch_row($res);
 				$this->nbresult += $nbrows;
 
 				if ($navitem != "a") $navpos=0;
 				$req = "select * from artresults ORDER BY ".$babDB->db_escape_string($order)." limit ".$navpos.", ".$babLimit;
 
-				$this->resart = $babDB->db_query($req);
-				$this->countart = $babDB->db_num_rows($this->resart);
+				$this->resart = $this->db->db_query($req);
+				$this->countart = $this->db->db_num_rows($this->resart);
 				if( !$this->counttot && $this->countart > 0 )
 					$this->counttot = true;
 				$this->navbar_a = navbar($babLimit,$nbrows,"a",$navpos);
@@ -945,14 +957,14 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$navpos=$this->navpos;
 				if ($navitem != "ac") $navpos=0;
 				$req = "select count(*) from comresults";
-				$res = $babDB->db_query($req);
-				list($nbrows) = $babDB->db_fetch_row($res);
+				$res = $this->db->db_query($req);
+				list($nbrows) = $this->db->db_fetch_row($res);
 
 				$this->navbar_ac = navbar($babLimit,$nbrows,"ac",$navpos);
 				$req = "select * from comresults limit ".$navpos.", ".$babLimit;
 
-				$this->rescom = $babDB->db_query($req);
-				$this->countcom = $babDB->db_num_rows($this->rescom);
+				$this->rescom = $this->db->db_query($req);
+				$this->countcom = $this->db->db_num_rows($this->rescom);
 				if( !$this->counttot && $this->countcom > 0 )
 					$this->counttot = true;
 				}
@@ -963,19 +975,19 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			if( empty($item) || $item == "b")
 				{
 				$req = "create temporary table forresults select id, id_thread, subject topic, id id_topic, subject title,message, author, 'dd-mm-yyyy' date from ".BAB_POSTS_TBL." where 0";
-				$babDB->db_query($req);
+				$this->db->db_query($req);
 				$req = "alter table forresults add unique (id)";
-				$babDB->db_query($req);
+				$this->db->db_query($req);
 				$req = "select id from ".BAB_FORUMS_TBL."";
-				$res = $babDB->db_query($req);
+				$res = $this->db->db_query($req);
 				$idthreads = array();
-				while( $row = $babDB->db_fetch_array($res))
+				while( $row = $this->db->db_fetch_array($res))
 					{
 					if(bab_isAccessValid(BAB_FORUMSVIEW_GROUPS_TBL, $row['id']))
 						{
 						$req = "select id from ".BAB_THREADS_TBL." where forum=".$babDB->quote($row['id']);
-						$res2 = $babDB->db_query($req);
-						while( $r = $babDB->db_fetch_array($res2))
+						$res2 = $this->db->db_query($req);
+						while( $r = $this->db->db_fetch_array($res2))
 							{
 							$idthreads[] = $r['id'];
 							}
@@ -1010,7 +1022,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 						AND ".$plus." b.confirmed='Y' 
 						AND b.id_thread IN (".$babDB->quote($idthreads).")";
 
-					$babDB->db_query($req);
+					$this->db->db_query($req);
 				}
 
 
@@ -1067,7 +1079,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 						$req .= " GROUP BY b.id";
 
-						$babDB->db_query($req);
+						$this->db->db_query($req);
 
 						bab_debug($req);
 
@@ -1080,15 +1092,15 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 
 				$req = "SELECT count(*) FROM forresults";
-				$res = $babDB->db_query($req);
-				list($nbrows) = $babDB->db_fetch_row($res);
+				$res = $this->db->db_query($req);
+				list($nbrows) = $this->db->db_fetch_row($res);
 				$navpos = $this->navpos;
 				if ($navitem != "b") $navpos = 0;
 				$this->navbar_b = navbar($babLimit,$nbrows,"b",$navpos);
 			
 				$req = "select * from forresults ORDER BY ".$babDB->db_escape_string($order)." LIMIT ".$navpos.", ".$babLimit;
-				$this->resfor = $babDB->db_query($req);
-				$this->countfor = $babDB->db_num_rows($this->resfor);
+				$this->resfor = $this->db->db_query($req);
+				$this->countfor = $this->db->db_num_rows($this->resfor);
 				if( !$this->counttot && $this->countfor > 0 )
 					$this->counttot = true;
 				}
@@ -1098,14 +1110,14 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			if( empty($item) || $item == "c")
 				{
 				$req = "create temporary table faqresults select id, idcat, question title, response, question topic from ".BAB_FAQQR_TBL." where 0";
-				$babDB->db_query($req);
+				$this->db->db_query($req);
 				$req = "alter table faqresults add unique (id)";
-				$babDB->db_query($req);
+				$this->db->db_query($req);
 				$req = "select id from ".BAB_FAQCAT_TBL."";
-				$res = $babDB->db_query($req);
+				$res = $this->db->db_query($req);
 
 				$idcat = "";
-				while( $row = $babDB->db_fetch_array($res))
+				while( $row = $this->db->db_fetch_array($res))
 					{
 					if(bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $row['id']))
 						{
@@ -1120,20 +1132,20 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 				if ($idcat != "") {
 					$req = "insert into faqresults select T.id, idcat, question title, response, category topic from ".BAB_FAQQR_TBL." T, ".BAB_FAQCAT_TBL." C where idcat=C.id and ".$plus." idcat in (".substr($idcat,0,-1).") order by ".$babDB->db_escape_string($order);
-					$babDB->db_query($req);
+					$this->db->db_query($req);
 				}
 
 
 				$req = "select count(*) from faqresults";
-				$res = $babDB->db_query($req);
-				list($nbrows) = $babDB->db_fetch_row($res);
+				$res = $this->db->db_query($req);
+				list($nbrows) = $this->db->db_fetch_row($res);
 				$navpos = $this->navpos;
 				if ($navitem != "c") $navpos = 0;
 				$this->navbar_c = navbar($babLimit,$nbrows,"c",$navpos);
 
 				$req = "select * from faqresults limit ".$navpos.", ".$babLimit;
-				$this->resfaq = $babDB->db_query($req);
-				$this->countfaq = $babDB->db_num_rows($this->resfaq);
+				$this->resfaq = $this->db->db_query($req);
+				$this->countfaq = $this->db->db_num_rows($this->resfaq);
 				if( !$this->counttot && $this->countfaq > 0 )
 					$this->counttot = true;
 				}
@@ -1146,15 +1158,15 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$plus = finder($this->like,"content",$option,$this->like2);
 				if ($plus != "") $plus = "($plus) and";
 				$req = "select count(*) from ".BAB_NOTES_TBL." where ".$plus." id_user=".$babDB->quote($BAB_SESS_USERID);
-				$res = $babDB->db_query($req);
-				list($nbrows) = $babDB->db_fetch_row($res);
+				$res = $this->db->db_query($req);
+				list($nbrows) = $this->db->db_fetch_row($res);
 				$navpos = $this->navpos;
 				if ($navitem != "d") $navpos = 0;
 				$this->navbar_d = navbar($babLimit,$nbrows,"d",$navpos);
 
 				$req = "select id, content, UNIX_TIMESTAMP(date) date from ".BAB_NOTES_TBL." where ".$plus." id_user=".$babDB->quote($BAB_SESS_USERID)." limit ".$navpos.", ".$babLimit;
-				$this->resnot = $babDB->db_query($req);
-				$this->countnot = $babDB->db_num_rows($this->resnot);
+				$this->resnot = $this->db->db_query($req);
+				$this->countnot = $this->db->db_num_rows($this->resnot);
 				if( !$this->counttot && $this->countnot > 0 )
 					$this->counttot = true;
 				}
@@ -1191,9 +1203,9 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 						".BAB_FILES_TBL." 
 					WHERE 0
 				";
-				$babDB->db_query($req);
+				$this->db->db_query($req);
 				$req = "ALTER TABLE filresults add unique (id)";
-				$babDB->db_query($req);
+				$this->db->db_query($req);
 				bab_fileManagerAccessLevel();
 				$private = false;
 				$idfile = "";
@@ -1253,10 +1265,10 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 								$name = basename($fullpath);
 								
 								
-								$current_version[] = '(F.path=\''.$babDB->db_escape_string($path).'\' AND F.name=\''. $babDB->db_escape_string($name)."')";
+								$current_version[] = '(F.path=\''.$this->db->db_escape_string($path).'\' AND F.name=\''. $this->db->db_escape_string($name)."')";
 
 								if (preg_match( "/OVF\/\d,\d,(.*)/", $fullpath)) {
-									$old_version[] = $babDB->db_escape_string($fullpath);
+									$old_version[] = $this->db->db_escape_string($fullpath);
 								}
 							}
 
@@ -1296,7 +1308,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 								bab_debug($req);
 
-								$babDB->db_query($req);
+								$this->db->db_query($req);
 
 								}
 
@@ -1341,7 +1353,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 							bab_debug($req);
 
-							$babDB->db_query($req);
+							$this->db->db_query($req);
 
 						}
 					}
@@ -1375,7 +1387,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 						GROUP BY 
 							F.id ";
 
-                    $babDB->db_query($req);
+                    $this->db->db_query($req);
 					
 					// additional fields
 					if ($temp6 != "")
@@ -1413,7 +1425,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 							F.id ";
 
 						
-						$babDB->db_query($req);
+						$this->db->db_query($req);
 						}
 
 
@@ -1421,8 +1433,8 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 
 				$req = "select count(*) from filresults";
-				$res = $babDB->db_query($req);
-				list($nbrows) = $babDB->db_fetch_row($res);
+				$res = $this->db->db_query($req);
+				list($nbrows) = $this->db->db_fetch_row($res);
 
 
 
@@ -1441,8 +1453,8 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$req .= " LIMIT ".$navpos.", ".$babLimit;
 		
 
-				$this->resfil = $babDB->db_query($req);
-				$this->countfil = $babDB->db_num_rows($this->resfil);
+				$this->resfil = $this->db->db_query($req);
+				$this->countfil = $this->db->db_num_rows($this->resfil);
 				if( !$this->counttot && $this->countfil > 0 )
 					$this->counttot = true;
 				}
@@ -1454,9 +1466,9 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			if( empty($item) || $item == "f")
 				{
 				$req = "create temporary table conresults select lastname title, firstname, compagny, email, id from ".BAB_CONTACTS_TBL." where 0";
-				$babDB->db_query($req);
+				$this->db->db_query($req);
 				$req = "alter table conresults add unique (id)";
-				$babDB->db_query($req);
+				$this->db->db_query($req);
 
 				$plus = "";
 				$temp1 = finder($this->like,"firstname",$option,$this->like2);
@@ -1471,19 +1483,19 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					$plus = "( ".$temp1." or ".$temp2." or ".$temp3." or ".$temp4." or ".$temp5." or ".$temp6." or ".$temp7.") and";
 				else $plus = "";
 
-				$req = "insert into conresults select lastname title, firstname, compagny, email, id from ".BAB_CONTACTS_TBL." where ".$plus." owner='".$babDB->db_escape_string($BAB_SESS_USERID)."' order by ".$babDB->db_escape_string($order);
-				$babDB->db_query($req);
+				$req = "insert into conresults select lastname title, firstname, compagny, email, id from ".BAB_CONTACTS_TBL." where ".$plus." owner='".$BAB_SESS_USERID."' order by ".$babDB->db_escape_string($order);
+				$this->db->db_query($req);
 
 				$req = "select count(*) from conresults";
-				$res = $babDB->db_query($req);
-				list($nbrows) = $babDB->db_fetch_row($res);
+				$res = $this->db->db_query($req);
+				list($nbrows) = $this->db->db_fetch_row($res);
 				$navpos = $this->navpos;
 				if ($navitem != "f") $navpos = 0;
 				$this->navbar_f = navbar($babLimit,$nbrows,"f",$navpos);
 
 				$req = "select * from conresults limit ".$navpos.", ".$babLimit;
-				$this->rescon = $babDB->db_query($req);
-				$this->countcon = $babDB->db_num_rows($this->rescon);
+				$this->rescon = $this->db->db_query($req);
+				$this->countcon = $this->db->db_num_rows($this->rescon);
 				if( !$this->counttot && $this->countcon > 0 )
 					$this->counttot = true;
 				}
@@ -1503,15 +1515,15 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					{
 					// tout les annuaires
 
-					list($search_view_fields) = $babDB->db_fetch_array($babDB->db_query("SELECT search_view_fields FROM ".BAB_DBDIR_OPTIONS_TBL.""));
+					list($search_view_fields) = $this->db->db_fetch_array($this->db->db_query("SELECT search_view_fields FROM ".BAB_DBDIR_OPTIONS_TBL.""));
 
 					if (empty($search_view_fields))
 						$search_view_fields = '2,4';
 						
 					$search_view_fields = explode(',',$search_view_fields);
 
-					$rescol = $babDB->db_query("select * from ".BAB_DBDIR_FIELDS_TBL." where id IN(".$babDB->quote($search_view_fields).")");
-					while( $row3 = $babDB->db_fetch_array($rescol))
+					$rescol = $this->db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL." where id IN(".$babDB->quote($search_view_fields).")");
+					while( $row3 = $this->db->db_fetch_array($rescol))
 						{
 						$this->dirfields['name'][] = $row3['name'];
 						$this->dirfields['description'][] = $row3['description'];
@@ -1520,20 +1532,20 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				else
 					{
 					// un seul annuaire
-					$row = $babDB->db_fetch_array($babDB->db_query("SELECT * FROM ".BAB_DB_DIRECTORIES_TBL." WHERE id=".$babDB->quote($id_directory).""));
+					$row = $this->db->db_fetch_array($this->db->db_query("SELECT * FROM ".BAB_DB_DIRECTORIES_TBL." WHERE id=".$babDB->quote($id_directory).""));
 
-					$rescol = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($row['id_group'] != 0? 0: $row['id'])."' and ordering!='0' order by ordering asc");
-					while( $row3 = $babDB->db_fetch_array($rescol))
+					$rescol = $this->db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($row['id_group'] != 0? 0: $row['id'])."' and ordering!='0' order by ordering asc");
+					while( $row3 = $this->db->db_fetch_array($rescol))
 						{
 						if( $row3['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
 							{
-							$rr = $babDB->db_fetch_array($babDB->db_query("select name, description from ".BAB_DBDIR_FIELDS_TBL." where id=".$babDB->quote($row3['id_field'])));
+							$rr = $this->db->db_fetch_array($this->db->db_query("select name, description from ".BAB_DBDIR_FIELDS_TBL." where id='".$row3['id_field']."'"));
 							$this->dirfields['name'][] = $rr['name'];
 							$this->dirfields['description'][] = translateDirectoryField($rr['description']);
 							}
 						else
 							{
-							$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id=".$babDB->quote($row3['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS).""));
+							$rr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($row3['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
 							$this->arrcols[] = array("babdirf".$row3['id'], translateDirectoryField($rr['name']), 1);
 							$this->dirfields['name'][] = "babdirf".$row3['id'];
 							$this->dirfields['description'][] = translateDirectoryField($rr['name']);
@@ -1575,8 +1587,8 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				// Liste des groupe des annuaires
 
 				$arr_grp = array();
-				$res = $babDB->db_query("SELECT g.id FROM ".BAB_GROUPS_TBL." g, ".BAB_DB_DIRECTORIES_TBL." d WHERE g.directory='Y' AND d.id_group=g.id AND d.id IN(".$babDB->quote($arrview).")");
-				while ($arr = $babDB->db_fetch_array($res))
+				$res = $this->db->db_query("SELECT g.id FROM ".BAB_GROUPS_TBL." g, ".BAB_DB_DIRECTORIES_TBL." d WHERE g.directory='Y' AND d.id_group=g.id AND d.id IN('".implode("','",array_keys($arrview))."')");
+				while ($arr = $this->db->db_fetch_array($res))
 					{
 					$arr_grp[] = $arr['id'];
 					}
@@ -1585,8 +1597,8 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				// Liste des annuaires base de donnés
 
 				$arr_dir = array();
-				$res = $babDB->db_query("SELECT id FROM ".BAB_DB_DIRECTORIES_TBL." WHERE id_group='0' AND id IN(".$babDB->quote($arrview).")");
-				while ($arr = $babDB->db_fetch_array($res))
+				$res = $this->db->db_query("SELECT id FROM ".BAB_DB_DIRECTORIES_TBL." WHERE id_group='0' AND id IN('".implode("','",array_keys($arrview))."')");
+				while ($arr = $this->db->db_fetch_array($res))
 					{
 					$arr_dir[] = $arr['id'];
 					}
@@ -1627,7 +1639,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 				if (!empty($id_directory))
 					{
-					$chosen_dir = $babDB->db_fetch_array($babDB->db_query("SELECT * FROM ".BAB_DB_DIRECTORIES_TBL." WHERE id=".$babDB->quote($id_directory).""));
+					$chosen_dir = $this->db->db_fetch_array($this->db->db_query("SELECT * FROM ".BAB_DB_DIRECTORIES_TBL." WHERE id='".$id_directory."'"));
 					
 					if ($chosen_dir['id_group'] == BAB_REGISTERED_GROUP)
 						{
@@ -1635,17 +1647,17 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 						}
 					elseif ($chosen_dir['id_group'] > 0)
 						{
-						$option_dir = " AND u.id_group=".$babDB->quote($chosen_dir['id_group'])." ";
+						$option_dir = " AND u.id_group='".$chosen_dir['id_group']."'";
 						}
 					else
 						{
-						$option_dir = " AND e.id_directory =".$babDB->quote($id_directory)." ";
+						$option_dir = " AND e.id_directory ='".$id_directory."'";
 						}
 					} else $option_dir = '';
 
 
 				if ($arr_dir) {
-					$db_arr_dir = "e.id_directory IN (".$babDB->quote($arr_dir).") OR ";
+					$db_arr_dir = "e.id_directory IN ( '".implode("','",$arr_dir)."' ) OR ";
 				}
 				else
 					{
@@ -1664,14 +1676,14 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					}
 				else
 					{
-					$req .= " LEFT JOIN ".BAB_USERS_GROUPS_TBL." u ON u.id_object = e.id_user AND u.id_group IN  (".$babDB->quote($arr_grp).") LEFT JOIN ".BAB_USERS_TBL." dis ON dis.id = u.id_object AND dis.disabled='0' ";
+					$req .= " LEFT JOIN ".BAB_USERS_GROUPS_TBL." u ON u.id_object = e.id_user AND u.id_group IN ('".implode("','",$arr_grp)."') LEFT JOIN ".BAB_USERS_TBL." dis ON dis.id = u.id_object AND dis.disabled='0' ";
 					}
 					
 				$req .= " WHERE 
 				".$crit_fields." 
 				".$crit_fields_add_str." 
 					(
-						".$db_arr_dir." 
+						".$db_arr_dir."
 						(e.id_directory = '0' AND dis.id IS NOT NULL )
 					) ".$option_dir." 
 				GROUP BY e.id ";
@@ -1680,8 +1692,8 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 				$this->countdirfields = count($this->dirfields['name']);
 
-				$res = $babDB->db_query($req);
-				$nbrows = $babDB->db_num_rows($res);
+				$res = $this->db->db_query($req);
+				$nbrows = $this->db->db_num_rows($res);
 
 				$navpos = $this->navpos;
 				if ($navitem != "g") $navpos = 0;
@@ -1691,8 +1703,8 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				else $order_tmp = "order by ".$babDB->db_escape_string($order);
 
 				$req .= " ".$order_tmp." LIMIT ".$navpos.", ".$babLimit;
-				$this->resdir = $babDB->db_query($req);
-				$this->countdir = $babDB->db_num_rows($this->resdir);
+				$this->resdir = $this->db->db_query($req);
+				$this->countdir = $this->db->db_num_rows($this->resdir);
 
 				if( !$this->counttot && $this->countdir > 0 )
 					$this->counttot = true;
@@ -1710,24 +1722,23 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$select_idcal = '';
 				if (isset($this->fields['after']) && trim($this->fields['after']) != "")
 					{
-					$crit_date = " ce.start_date >= '".$babDB->db_escape_string($this->fields['after'])." 00:00:00'";
+					$crit_date = " ce.start_date >= '".$this->fields['after']." 00:00:00'";
 					}
 				if (isset($this->fields['before']) && trim($this->fields['before']) != "")
 					{
 					if (!empty($crit_date))
 						$crit_date .= " and ";
-					$crit_date .= "ce.end_date <= '".$babDB->db_escape_string($this->fields['before'])." 23:59:59'";
+					$crit_date .= "ce.end_date <= '".$this->fields['before']." 23:59:59'";
 					}
 				if (isset($this->fields['h_calendar']) && trim($this->fields['h_calendar']) != "")
 					{
-					$select_idcal = " and ceo.id_cal = '".$babDB->db_escape_string($this->fields['h_calendar'])."'";
+					$select_idcal = " and ceo.id_cal = '".$this->fields['h_calendar']."'";
 					}
 
 				$req = "create temporary table ageresults 
 				select 
 					ceo.id_cal owner, 
-					ce.id id, 
-					ce.title, 
+					ce.id id, ce.title, 
 					ce.description, 
 					ce.location, 
 					ce.start_date, 
@@ -1741,10 +1752,10 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					".BAB_CAL_EVENTS_TBL." ce, 
 					".BAB_CAL_CATEGORIES_TBL." cct 
 				where 0";
-				$babDB->db_query($req);
+				$this->db->db_query($req);
 				
 				$list_id_cal = array();
-				$tmp =  array_merge(getAvailableUsersCalendars(),getAvailableGroupsCalendars(),getAvailableResourcesCalendars());
+				$tmp = array_merge(getAvailableUsersCalendars(),getAvailableGroupsCalendars(),getAvailableResourcesCalendars());
 				foreach ($tmp as $arr)
 					$list_id_cal[] = $arr['idcal'];
 				
@@ -1790,20 +1801,20 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 						left join ".BAB_CAL_CATEGORIES_TBL." cct on cct.id=ce.id_cat 
 					where 
 						".$reqsup." ".$crit_date." 
-						ceo.id_cal in(".$babDB->quote($list_id_cal).") ".$select_idcal." order by ce.start_date";
-					$babDB->db_query($req);
+						ceo.id_cal in(".implode(',',$list_id_cal).")".$select_idcal." order by ce.start_date";
+					$this->db->db_query($req);
 					}
 
 				$req = "select count(*) from ageresults";
-				$res = $babDB->db_query($req);
-				list($nbrows) = $babDB->db_fetch_row($res);
+				$res = $this->db->db_query($req);
+				list($nbrows) = $this->db->db_fetch_row($res);
 				$navpos = $this->navpos;
 				if ($navitem != "h") $navpos = 0;
 				$this->navbar_h = navbar($babLimit,$nbrows,"h",$navpos);
 
 				$req = "select * from ageresults limit ".$navpos.", ".$babLimit;
-				$this->resage = $babDB->db_query($req);
-				$this->countage = $babDB->db_num_rows($this->resage);
+				$this->resage = $this->db->db_query($req);
+				$this->countage = $this->db->db_num_rows($this->resage);
 				if( !$this->counttot && $this->countage > 0 )
 					$this->counttot = true;
 				$this->nbresult += $nbrows;
@@ -1857,10 +1868,10 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 		function tmptable_inserted_id($tablename)
 			{
-			global $babDB;
-			$res = $babDB->db_query("SELECT id FROM ".$babDB->db_escape_string($tablename));
+			$db = &$GLOBALS['babDB'];
+			$res = $db->db_query("SELECT id FROM ".$tablename);
 			$this->tmp_inserted_id = array();
-			while ($arr = $babDB->db_fetch_assoc($res))
+			while ($arr = $db->db_fetch_assoc($res))
 				{
 				$this->tmp_inserted_id[] = $arr['id'];
 				}
@@ -1876,19 +1887,15 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			if (!$this->like && !$this->like2)
 				return '';
 
-			global $babDB;
-
-			$res = $babDB->db_query("DESCRIBE ".$babDB->db_escape_string($table));
+			$res = $this->db->db_query("DESCRIBE ".$table);
 			$like = "(";
-			while (list($colname) = $babDB->db_fetch_array($res))
+			while (list($colname) = $this->db->db_fetch_array($res))
 				{
 				if ($colname != 'id' && $colname != 'photo_data' && $colname != 'photo_type')
 					{
-						if ($like != "(") {
+					if ($like != "(")
 							$like .= " or ";
-						}
-						
-						$like .= finder($this->like, 'e.'.$colname, $this->option, $this->like2);
+						$like .= finder($this->like,'e.'.$colname,$this->option,$this->like2);
 					}
 				}
 			$like .= ") ";
@@ -1900,21 +1907,20 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 		function getnextart()
 			{
-			global $babDB;
 			static $i = 0;
 			if( $i < $this->countart)
 				{
-				$arr = $babDB->db_fetch_array($this->resart);
+				$arr = $this->db->db_fetch_array($this->resart);
 				$this->article = put_text($arr['title']);
 				$this->artdate = bab_shortDate($arr['date'], true);
-				$this->artauthor = empty($arr['author']) ? bab_translate("Anonymous") : bab_toHtml($arr['author']);
+				$this->artauthor = empty($arr['author']) ? bab_translate("Anonymous") : $arr['author'];
 				$this->archive = 'Y' == $arr['archive'];
 				$this->arttopic = returnCategoriesHierarchy($arr['id_topic']);
 				$this->arttopicid = $arr['id_topic'];
-				$this->articleurlpop = bab_toHtml($GLOBALS['babUrlScript']."?tg=search&idx=a&id=".$arr['id']."&w=".$this->what);
+				$this->articleurlpop = $GLOBALS['babUrlScript']."?tg=search&idx=a&id=".$arr['id']."&w=".urlencode($this->what);
 				if (strlen(trim(stripslashes($arr['body']))) > 0)
 					{
-					$this->articleurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']);
+					$this->articleurl = $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id'];
 					}
 				else
 					{
@@ -1926,9 +1932,9 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 						{
 						$urlidx = "Articles";
 						}
-					$this->articleurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=".$urlidx."&topics=".$arr['id_topic']."#art".$arr['id']);
+					$this->articleurl = $GLOBALS['babUrlScript']."?tg=articles&idx=".$urlidx."&topics=".$arr['id_topic']."#art".$arr['id'];
 					}
-				$this->authormail = isset($arr['email']) ? bab_toHtml($arr['email']) : '';
+				$this->authormail = isset($arr['email']) ? $arr['email'] : '';
 				$this->intro = put_text($arr['head'],300);
 				$i++;
 				return true;
@@ -1936,28 +1942,27 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			else
 				{
 				$req = "drop table if exists artresults";
-				$babDB->db_query($req);
+				$this->db->db_query($req);
 				return false;
 				}
 			}
 
 		function getnextcom()
 			{
-			global $babDB;
 			static $i = 0;
 			if( $i < $this->countcom)
 				{
-				$arr = $babDB->db_fetch_array($this->rescom);
-				$this->artdate = bab_toHtml(bab_shortDate($arr['date'], true));
+				$arr = $this->db->db_fetch_array($this->rescom);
+				$this->artdate = bab_shortDate($arr['date'], true);
 				if( $arr['id_author'] )
 					{
-					$this->artauthor = bab_toHtml(bab_getUserName($arr['id_author']));
-					$this->authormail = bab_toHtml(bab_getUserEmail($arr['id_author']));
+					$this->artauthor = bab_getUserName($arr['id_author']);
+					$this->authormail = bab_getUserEmail($arr['id_author']);
 					}
 				else
 					{
-					$this->artauthor = bab_toHtml($arr['name']);
-					$this->authormail = bab_toHtml($arr['email']);
+					$this->artauthor = $arr['name'];
+					$this->authormail = $arr['email'];
 					}
 				$this->arttopic = returnCategoriesHierarchy($arr['id_topic']);
 				$this->article = put_text($arr['arttitle']);
@@ -1967,10 +1972,10 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					$this->urlok = true;
 				else
 					$this->urlok = false;
-				$this->articleurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id_article']);
-				$this->articleurlpop = bab_toHtml($GLOBALS['babUrlScript']."?tg=search&idx=a&id=".$arr['id_article']."&w=".$this->what);
+				$this->articleurl = $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id_article'];
+				$this->articleurlpop = $GLOBALS['babUrlScript']."?tg=search&idx=a&id=".$arr['id_article']."&w=".$this->what;
 				$this->comurl = $this->articleurl;
-				$this->comurlpop = bab_toHtml($GLOBALS['babUrlScript']."?tg=search&idx=ac&idt=".$arr['id_topic']."&ida=".$arr['id_article']."&idc=".$arr['id']."&w=".$this->what);
+				$this->comurlpop = $GLOBALS['babUrlScript']."?tg=search&idx=ac&idt=".$arr['id_topic']."&ida=".$arr['id_article']."&idc=".$arr['id']."&w=".$this->what;
 				$this->intro = put_text($arr['message'],300);
 				$i++;
 				return true;
@@ -1978,49 +1983,47 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			else
 				{
 				$req = "drop table if exists comresults";
-				$babDB->db_query($req);
+				$this->db->db_query($req);
 				return false;
 				}
 			}
 
 		function getnextfor()
 			{
-			global $babDB;
 			static $i = 0;
 			if( $i < $this->countfor)
 				{
-				$arr = $babDB->db_fetch_array($this->resfor);
+				$arr = $this->db->db_fetch_array($this->resfor);
 				$this->post = put_text($arr['title']);
-				$this->postauthor = bab_toHtml($arr['author']);
-				$this->postdate = bab_toHtml(bab_shortDate($arr['date'], true));
+				$this->postauthor = $arr['author'];
+				$this->postdate = bab_shortDate($arr['date'], true);
 				$this->forum = put_text($arr['topic']);
-				$this->forumurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=threads&forum=".$arr['id_topic']);
+				$this->forumurl = $GLOBALS['babUrlScript']."?tg=threads&forum=".$arr['id_topic'];
 				$this->intro = put_text($arr['message'],300);
-				$this->posturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$arr['id_topic']."&thread=".$arr['id_thread']."&post=".$arr['id']."&flat=0");
-				$this->posturlpop = bab_toHtml($GLOBALS['babUrlScript']."?tg=search&idx=b&idt=".$arr['id_thread']."&idp=".$arr['id']."&w=".$this->what);
+				$this->posturl = $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$arr['id_topic']."&thread=".$arr['id_thread']."&post=".$arr['id']."&flat=0";
+				$this->posturlpop = $GLOBALS['babUrlScript']."?tg=search&idx=b&idt=".$arr['id_thread']."&idp=".$arr['id']."&w=".$this->what;
 				$i++;
 				return true;
 				}
 			else
 				{
 				$req = "drop table if exists forresults";
-				$babDB->db_query($req);
+				$this->db->db_query($req);
 				return false;
 				}
 			}
 		function getnextfaq()
 			{
-			global $babDB;
 			static $i = 0;
 			if( $i < $this->countfaq)
 				{
-				$arr = $babDB->db_fetch_array($this->resfaq);
+				$arr = $this->db->db_fetch_array($this->resfaq);
 				$this->question = put_text($arr['title']);
 				$this->faqtopic = put_text($arr['topic']);
 				$this->faqtopicid = $arr['idcat'];
-				$this->topicurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$arr['idcat']);
-				$this->questionurlpop = bab_toHtml($GLOBALS['babUrlScript']."?tg=search&idx=c&idc=".$arr['idcat']."&idq=".$arr['id']."&w=".urlencode($this->what));
-				$this->questionurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=faq&idx=viewq&item=".$arr['idcat']."&idq=".$arr['id']);
+				$this->topicurl = $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$arr['idcat'];
+				$this->questionurlpop = $GLOBALS['babUrlScript']."?tg=search&idx=c&idc=".$arr['idcat']."&idq=".$arr['id']."&w=".$this->what;
+				$this->questionurl = $GLOBALS['babUrlScript']."?tg=faq&idx=viewq&item=".$arr['idcat']."&idq=".$arr['id'];
 				$this->intro = put_text($arr['response'],300);
 				$i++;
 				return true;
@@ -2028,36 +2031,35 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			else
 				{
 				$req = "drop table if exists faqresults";
-				$babDB->db_query($req);
+				$this->db->db_query($req);
 				return false;
 				}
 			}
 
 		function getnextfil()
 			{
-			global $babDB;
 			static $i = 0;
 			if( $i < $this->countfil)
 				{
 				$this->altbg = !$this->altbg;
-				$arr = $babDB->db_fetch_array($this->resfil);
+				$arr = $this->db->db_fetch_array($this->resfil);
 				$this->file = put_text($arr['title']);
-				$this->update = bab_toHtml(bab_shortDate($arr['datem'], true));
-				$this->created = bab_toHtml(bab_shortDate($arr['datec'], true));
-                $this->artauthor = bab_toHtml($arr['author']);
+				$this->update = bab_shortDate($arr['datem'], true);
+				$this->created = bab_shortDate($arr['datec'], true);
+                $this->artauthor = $arr['author'];
 				$this->filedesc = put_text($arr['description']);
-				$this->path = bab_toHtml($arr['path']);
+				$this->path = $arr['path'];
 				
 				if ($arr['bgroup'] == 'N')
-					$this->arttopic = bab_translate("Private folder")."/".bab_toHtml($arr['path']);
+					$this->arttopic = bab_translate("Private folder")."/".$arr['path'];
 				else
-					$this->arttopic = bab_toHtml($arr['folder'])."/".bab_toHtml($arr['path']);
+					$this->arttopic = $arr['folder']."/".$arr['path'];
 
 				$this->arttopicid = $arr['id_owner'];
 				$this->bgroup = $arr['bgroup'];
-				$this->filedesc = bab_toHtml($arr['description']);
-				$this->fileurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=search&idx=e&id=".$arr['id']."&w=".$this->what);
-				$this->type_match = bab_toHtml($arr['type_match']);
+				$this->filedesc = $arr['description'];
+				$this->fileurl = $GLOBALS['babUrlScript']."?tg=search&idx=e&id=".$arr['id']."&w=".$this->what;
+				$this->type_match = $arr['type_match'];
 				if (0 != $arr['version_count']) {
 					$this->version_count = sprintf(bab_translate('There are matches in %d older versions'),$arr['version_count']);
 				} else {
@@ -2070,7 +2072,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			else
 				{
 				$req = "drop table if exists filresults";
-				$babDB->db_query($req);
+				$this->db->db_query($req);
 				return false;
 				}
 			}
@@ -2080,14 +2082,14 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			static $i = 0;
 			if( $i < $this->countcon)
 				{
-				$arr = $babDB->db_fetch_array($this->rescon);
+				$arr = $this->db->db_fetch_array($this->rescon);
 				$arr['firstname'] = isset($arr['firstname']) ? $arr['firstname']: '';
 				$arr['lastname'] = isset($arr['lastname']) ? $arr['lastname']: '';
-				$this->fullname = bab_toHtml(bab_composeUserName( $arr['firstname'], $arr['lastname']));
-				$this->confirstname = bab_toHtml($arr['firstname']);
+				$this->fullname = bab_composeUserName( $arr['firstname'], $arr['lastname']);
+				$this->confirstname = $arr['firstname'];
 				$this->conlastname = put_text($arr['title']);
-				$this->conemail = bab_toHtml($arr['email']);
-				$this->concompany = bab_toHtml($arr['compagny']);
+				$this->conemail = $arr['email'];
+				$this->concompany = $arr['compagny'];
 				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=search&idx=f&id=".$arr['id']."&w=".$this->what;
 				$i++;
 				return true;
@@ -2095,7 +2097,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			else
 				{
 				$req = "drop table if exists conresults";
-				$babDB->db_query($req);
+				$this->db->db_query($req);
 				return false;
 				}
 			}
@@ -2105,13 +2107,13 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			static $i = 0;
 			if( $i < $this->countnot)
 				{
-				$arr = $babDB->db_fetch_array($this->resnot);
+				$arr = $this->db->db_fetch_array($this->resnot);
 				$this->content = put_text($arr['content'],400);
 				$this->notauthor = $GLOBALS['BAB_SESS_USER'];
-				$this->notauthormail = bab_toHtml(bab_getUserEmail($GLOBALS['BAB_SESS_USERID']));
-                $this->notdate = bab_toHtml(bab_shortDate($arr['date'], true));
+				$this->notauthormail = bab_getUserEmail($GLOBALS['BAB_SESS_USERID']);
+                $this->notdate = bab_shortDate($arr['date'], true);
 				$this->read_more = bab_translate("Edit");
-				$this->noteurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=note&idx=Modify&item=".$arr['id']);
+				$this->noteurl = $GLOBALS['babUrlScript']."?tg=note&idx=Modify&item=".$arr['id'];
 				$i++;
 				return true;
 				}
@@ -2133,22 +2135,22 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				switch ($this->name)
 					{
 					case 'sn':
-						$this->dirvalue = isset($this->dir[$this->name]) ? bab_toHtml($this->dir[$this->name])  : '';
-						$this->dirurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=search&idx=g&id=".$this->dir['id']."&w=".$this->what);
+						$this->dirvalue = isset($this->dir[$this->name]) ? $this->dir[$this->name]  : '';
+						$this->dirurl = $GLOBALS['babUrlScript']."?tg=search&idx=g&id=".$this->dir['id']."&w=".$this->what;
 						$this->popup = true;
 						break;
 					case 'givenname':
-						$this->dirvalue = isset($this->dir[$this->name]) ? bab_toHtml($this->dir[$this->name])  : '';
-						$this->dirurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=search&idx=g&id=".$this->dir['id']."&w=".$this->what);
+						$this->dirvalue = isset($this->dir[$this->name]) ? $this->dir[$this->name]  : '';
+						$this->dirurl = $GLOBALS['babUrlScript']."?tg=search&idx=g&id=".$this->dir['id']."&w=".$this->what;
 						$this->popup = true;
 						break;
 					case 'mfunction':
-						$this->dirvalue = isset($this->dir[$this->name]) ? bab_toHtml($this->dir[$this->name])  : '';
+						$this->dirvalue = isset($this->dir[$this->name]) ? $this->dir[$this->name]  : '';
 						$this->dirurl = 'mailto:'.$this->dirvalue;
 						$this->popup = false;
 						break;
 					default:
-						$this->dirvalue = isset($this->dir[$this->name]) ? bab_toHtml($this->dir[$this->name])  : '';
+						$this->dirvalue = isset($this->dir[$this->name]) ? $this->dir[$this->name]  : '';
 						$this->dirurl = false;
 						$this->popup = false;
 						break;
@@ -2168,15 +2170,14 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 		function getnextdir()
 			{
-			global $babDB;
 			static $i = 0;
 			if( $i < $this->countdir)
 				{
-				list($id) = $babDB->db_fetch_array($this->resdir);
-				$this->dir = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_ENTRIES_TBL." where id=".$babDB->quote($id).""));
+				list($id) = $this->db->db_fetch_array($this->resdir);
+				$this->dir = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DBDIR_ENTRIES_TBL." where id='".$id."'"));
 
-				$res = $babDB->db_query("select * from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_entry=".$babDB->quote($id)."");
-				while( $arr = $babDB->db_fetch_array($res))
+				$res = $this->db->db_query("select * from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_entry='".$id."'");
+				while( $arr = $this->db->db_fetch_array($res))
 					{
 					$this->dir['babdirf'.$arr['id_fieldx']] = $arr['field_value'];
 					}
@@ -2192,11 +2193,11 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 		function getnextage()
 			{
-			global $babDB,$babBody;
+			global $babBody;
 			static $i = 0;
 			if( $i < $this->countage)
 				{
-				$arr = $babDB->db_fetch_array($this->resage);
+				$arr = $this->db->db_fetch_array($this->resage);
 				$this->agetitle = put_text($arr['title']);
 				$this->agedescription = put_text($arr['description'],400);
 				$this->agestart_date = $this->dateformat(bab_mktime($arr['start_date']));
@@ -2207,23 +2208,23 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				switch ($iarr['type'])
 					{
 					case BAB_CAL_USER_TYPE:
-						$this->agecreatormail = bab_toHtml(bab_getUserEmail($iarr['idowner']));
+						$this->agecreatormail = bab_getUserEmail($iarr['idowner']);
 						break;
 					case BAB_CAL_PUB_TYPE:
 					case BAB_CAL_RES_TYPE:
 						$this->agecreatormail = "";
 						break;
 					}
-				$this->agecat = bab_toHtml($arr['categorie']);
-				$this->agecatdesc = put_text($arr['catdesc'],200);
-				$this->ageurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$arr['id']."&idcal=".$arr['id_cal']);
+				$this->agecat = "".$arr['categorie'];
+				$this->agecatdesc = "".put_text($arr['catdesc'],200);
+				$this->ageurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$arr['id']."&idcal=".$arr['id_cal'];
 				$i++;
 				return true;
 				}
 			else
 				{
 				$req = "drop table if exists ageresults";
-				$babDB->db_query($req);
+				$this->db->db_query($req);
 				return false;
 				}
 			}
@@ -2244,19 +2245,9 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					}
 				else
 					$addon_searchresults = $this->addons->callSearchFunction($this->addon_id);
-					
-				$this->text = isset($addon_searchresults[0]) ? bab_toHtml($addon_searchresults[0])  : '';
-				
+				$this->text = isset($addon_searchresults[0]) ? $addon_searchresults[0]  : '';
 				list( $this->url, $this->urltxt ) = isset($addon_searchresults[2]) && is_array($addon_searchresults[2]) && !empty($addon_searchresults[2][0]) && !empty($addon_searchresults[2][1]) ? $addon_searchresults[2] : array(false,false);
-				
-				$this->url = bab_toHtml($this->url);
-				$this->urltxt = bab_toHtml($this->urltxt);
-				
 				list( $this->urlpopup, $this->urlpopuptxt ) = isset($addon_searchresults[3]) && is_array($addon_searchresults[3]) && !empty($addon_searchresults[3][0]) && !empty($addon_searchresults[3][1]) ? $addon_searchresults[3] : array(false,false);
-				
-				$this->urlpopup = bab_toHtml($this->urlpopup);
-				$this->urlpopuptxt = bab_toHtml($this->urlpopuptxt);
-				
 				} 
 			return isset($addon_searchresults) && is_array($addon_searchresults) ? true : false;
 			}
@@ -2275,7 +2266,6 @@ class bab_searchVisuPopup
 
 		$GLOBALS['babBodyPopup'] = new babBodyPopup();
 		}
-		
 
 	function printHTML($file,$tpl)
 		{
@@ -2297,6 +2287,7 @@ function viewArticle($article,$w)
 		var $content;
 		var $head;
 		var $arr = array();
+		var $db;
 		var $count;
 		var $res;
 		var $more;
@@ -2309,8 +2300,6 @@ function viewArticle($article,$w)
 
 		function temp($article,$w)
 			{
-			global $babDB;
-			
 			$this->bab_searchVisuPopup();
 			$this->close = bab_translate("Close");
 			$this->attachmentxt = bab_translate("Associated documents");
@@ -2319,10 +2308,10 @@ function viewArticle($article,$w)
 			$this->t_description = bab_translate("Description");
 			$this->t_index = bab_translate("Result in file");
 			$this->tags_txt = bab_translate("Tags");
-			$req = "select * from ".BAB_ARTICLES_TBL." where id=".$babDB->quote($article);
-			$this->res = $babDB->db_query($req);
-			$this->arr = $babDB->db_fetch_array($this->res);
-			$this->title = bab_toHtml($this->arr['title']);
+			$this->db = &$GLOBALS['babDB'];
+			$req = "select * from ".BAB_ARTICLES_TBL." where id='$article'";
+			$this->res = $this->db->db_query($req);
+			$this->arr = $this->db->db_fetch_array($this->res);
 			$this->countf = 0;
 			$this->countcom = 0;
 			$this->w = $w;
@@ -2332,16 +2321,16 @@ function viewArticle($article,$w)
 				$this->content = highlightWord($w,bab_replace($this->arr['body']));
 				$this->head = highlightWord($w,bab_replace($this->arr['head']));
 
-				$this->resf = $babDB->db_query("
+				$this->resf = $this->db->db_query("
 					
 					SELECT f.*, i.file_path FROM  
 						".BAB_ART_FILES_TBL." f
 						LEFT JOIN ".BAB_INDEX_ACCESS_TBL." i ON i.id_object = f.id
-					WHERE id_article=".$babDB->quote($article)." 
+					WHERE id_article='".$article."'
 					 GROUP BY f.id
 				");
 
-				$this->countf = $babDB->db_num_rows($this->resf);
+				$this->countf = $this->db->db_num_rows($this->resf);
 
 				$this->found_in_index = array();
 				
@@ -2362,11 +2351,11 @@ function viewArticle($article,$w)
 					$this->battachments = false;
 					}
 
-				$this->rescom = $babDB->db_query("select * from ".BAB_COMMENTS_TBL." where id_article=".$babDB->quote($article)." and confirmed='Y' order by date desc");
-				$this->countcom = $babDB->db_num_rows($this->rescom);
+				$this->rescom = $this->db->db_query("select * from ".BAB_COMMENTS_TBL." where id_article='".$article."' and confirmed='Y' order by date desc");
+				$this->countcom = $this->db->db_num_rows($this->rescom);
 
-				$this->restags = $babDB->db_query("select tag_name from ".BAB_TAGS_TBL." tt left join ".BAB_ART_TAGS_TBL." att on tt.id=att.id_tag where id_art=".$babDB->quote($article)."");
-				$this->counttags = $babDB->db_num_rows($this->restags);
+				$this->restags = $this->db->db_query("select tag_name from ".BAB_TAGS_TBL." tt left join ".BAB_ART_TAGS_TBL." att on tt.id=att.id_tag where id_art='".$article."'");
+				$this->counttags = $this->db->db_num_rows($this->restags);
 				}
 			else
 				{
@@ -2381,7 +2370,7 @@ function viewArticle($article,$w)
 			static $i = 0;
 			if( $i < $this->countf)
 				{
-				$arr = $babDB->db_fetch_array($this->resf);
+				$arr = $this->db->db_fetch_array($this->resf);
 				$this->docurl = $GLOBALS['babUrlScript']."?tg=articles&idx=getf&topics=".$this->arr['id_topic']."&article=".$this->arr['id']."&idf=".$arr['id'];
 				$this->docname = highlightWord($this->w, bab_toHtml($arr['name']));
 				$this->docdescription = highlightWord($this->w, bab_toHtml($arr['description']));
@@ -2399,34 +2388,32 @@ function viewArticle($article,$w)
 
 		function getnextcom()
 			{
-			global $babDB;
 			static $i = 0;
 			if( $i < $this->countcom)
 				{
-				$arr = $babDB->db_fetch_array($this->rescom);
+				$arr = $this->db->db_fetch_array($this->rescom);
 				$this->altbg = !$this->altbg;
-				$this->commentdate = bab_toHtml(bab_strftime(bab_mktime($arr['date'])));
-				$this->authorname = highlightWord($this->w,bab_toHtml($arr['name']));
-				$this->commenttitle = highlightWord($this->w,bab_toHtml($arr['subject']));
+				$this->commentdate = bab_strftime(bab_mktime($arr['date']));
+				$this->authorname = highlightWord($this->w,$arr['name']);
+				$this->commenttitle = highlightWord($this->w,$arr['subject']);
 				$this->commentbody = highlightWord($this->w,bab_replace($arr['message']));
 				$i++;
 				return true;
 				}
 			else
 				{
-				$babDB->db_data_seek($this->rescom,0);
+				$this->db->db_data_seek($this->rescom,0);
 				$i=0;
 				return false;
 				}
 			}
 		function getnexttag()
 			{
-			global $babDB;
 			static $i = 0;
 			if( $i < $this->counttags)
 				{
-				$arr = $babDB->db_fetch_array($this->restags);
-				$this->tagname = bab_toHtml($arr['tag_name']);
+				$arr = $this->db->db_fetch_array($this->restags);
+				$this->tagname = $arr['tag_name'];;
 				$i++;
 				return true;
 				}
@@ -2457,20 +2444,19 @@ function viewComment($topics, $article, $com, $w)
 
 		function ctp($topics, $article, $com, $w)
 			{
-			global $babDB;
-			
 			$this->bab_searchVisuPopup();
-			$this->title = bab_toHtml(bab_getArticleTitle($article));
+			$this->title = bab_getArticleTitle($article);
 			$this->subject = bab_translate("Subject");
 			$this->by = bab_translate("By");
 			$this->date = bab_translate("Date");
 			$this->topics = $topics;
 			$this->article = $article;
-			$req = "select * from ".BAB_COMMENTS_TBL." where id=".$babDB->quote($com);
-			$res = $babDB->db_query($req);
-			$this->arr = $babDB->db_fetch_array($res);
-			$this->arr['date'] = bab_toHtml(bab_strftime(bab_mktime($this->arr['date'])));
-			$this->arr['subject'] = highlightWord( $w, bab_toHtml($this->arr['subject']));
+			$db = $GLOBALS['babDB'];
+			$req = "select * from ".BAB_COMMENTS_TBL." where id='$com'";
+			$res = $db->db_query($req);
+			$this->arr = $db->db_fetch_array($res);
+			$this->arr['date'] = bab_strftime(bab_mktime($this->arr['date']));
+			$this->arr['subject'] = highlightWord( $w, bab_replace($this->arr['subject']));
 			$this->arr['message'] = highlightWord( $w, bab_replace($this->arr['message']));
 			}
 		}
@@ -2495,23 +2481,20 @@ function viewPost($thread, $post, $w)
 
 		function temp($thread, $post, $w)
 			{
-			global $babDB;
-			
 			$post = (int) $post;
 			$this->bab_searchVisuPopup();
-			$req = "select forum from ".BAB_THREADS_TBL." where id=".$babDB->quote($thread);
-			$arr = $babDB->db_fetch_array($babDB->db_query($req));
-			
+			$db = $GLOBALS['babDB'];
+			$req = "select forum from ".BAB_THREADS_TBL." where id='".$thread."'";
+			$arr = $db->db_fetch_array($db->db_query($req));
 			$this->t_files = bab_translate("Dependent files");
 			$this->t_found_in_index = bab_translate("Result in file");
 			$this->files = bab_getPostFiles($arr['forum'], $post);
-			
-			$GLOBALS['babBody']->title = bab_toHtml(bab_getForumName($arr['forum']));
-			$req = "select * from ".BAB_POSTS_TBL." where id=".$babDB->quote($post);
-			$arr = $babDB->db_fetch_array($babDB->db_query($req));
-			$this->postdate = bab_toHtml(bab_strftime(bab_mktime($arr['date'])));
-			$this->postauthor = bab_toHtml($arr['author']);
-			$this->postsubject = highlightWord( $w, bab_toHtml($arr['subject']));
+			$GLOBALS['babBody']->title = bab_getForumName($arr['forum']);
+			$req = "select * from ".BAB_POSTS_TBL." where id='".$post."'";
+			$arr = $db->db_fetch_array($db->db_query($req));
+			$this->postdate = bab_strftime(bab_mktime($arr['date']));
+			$this->postauthor = $arr['author'];
+			$this->postsubject = highlightWord( $w, bab_replace($arr['subject']));
 			$this->postmessage = highlightWord( $w, bab_replace($arr['message']));
 
 			if ($this->files && bab_searchEngineInfos()) {
@@ -2525,14 +2508,8 @@ function viewPost($thread, $post, $w)
 		
 		function getnextfile()
 			{
-			if ($file = current($this->files))
+			if ($this->file = current($this->files))
 				{
-				
-				$this->url = bab_toHtml($file['url']);
-				$this->name = bab_toHtml($file['name']);
-				$this->size = bab_toHtml($file['size']);
-				
-				
 				next($this->files);
 				$this->in_index = isset($this->found_in_index['forums/'.basename($this->file['path'])]);
 				return true;
@@ -2552,23 +2529,24 @@ function viewQuestion($idcat, $id, $w)
 	class temp extends bab_searchVisuPopup
 		{
 		var $arr = array();
+		var $db;
 		var $res;
 		var $babCss;
 
 		function temp($idcat, $id, $w)
 			{
-			global $babDB;
 			$this->bab_searchVisuPopup();
-			$req = "select * from ".BAB_FAQQR_TBL." where id=".$babDB->quote($id);
-			$this->res = $babDB->db_query($req);
-			$this->arr = $babDB->db_fetch_array($this->res);
-			$this->arr['question'] = highlightWord( $w, bab_toHtml($this->arr['question']));
+			$this->db = $GLOBALS['babDB'];
+			$req = "select * from ".BAB_FAQQR_TBL." where id='$id'";
+			$this->res = $this->db->db_query($req);
+			$this->arr = $this->db->db_fetch_array($this->res);
+			$this->arr['question'] = highlightWord( $w, bab_replace($this->arr['question']));
 			$this->arr['response'] = highlightWord( $w, bab_replace($this->arr['response']));
-			$req = "select category from ".BAB_FAQCAT_TBL." where id=".$babDB->quote($idcat);
-			$a = $babDB->db_fetch_array($babDB->db_query($req));
-			$this->title = highlightWord( $w,  bab_toHtml($a['category']));
+			$req = "select category from ".BAB_FAQCAT_TBL." where id='$idcat'";
+			$a = $this->db->db_fetch_array($this->db->db_query($req));
+			$this->title = highlightWord( $w,  $a['category']);
 			}
-			
+
 		}
 
 	$temp = new temp($idcat, $id, $w);
@@ -2581,6 +2559,7 @@ function viewFile($id, $w)
 	class temp extends bab_searchVisuPopup
 		{
 		var $arr = array();
+		var $db;
 		var $res;
 		var $babCss;
 		var $description;
@@ -2601,7 +2580,6 @@ function viewFile($id, $w)
 
 		function temp($id, $w)
 			{
-			global $babDB;
 			$this->bab_searchVisuPopup();
 			$this->description = bab_translate("Description");
 			$this->keywords = bab_translate("Keywords");
@@ -2617,20 +2595,21 @@ function viewFile($id, $w)
 			$this->t_index = bab_translate("Result in file");
 
 			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
-			$req = "select * from ".BAB_FILES_TBL." where id=".$babDB->quote($id)." and state='' and confirmed='Y'";
-			$this->res = $babDB->db_query($req);
-			$this->arr = $babDB->db_fetch_array($this->res);
+			$this->db = $GLOBALS['babDB'];
+			$req = "select * from ".BAB_FILES_TBL." where id=".$this->db->quote($id)." and state='' and confirmed='Y'";
+			$this->res = $this->db->db_query($req);
+			$this->arr = $this->db->db_fetch_array($this->res);
 			$access = bab_isAccessFileValid($this->arr['bgroup'], $this->arr['id_owner']);
 			if( $access )
 				{
-				$GLOBALS['babBody']->title = bab_toHtml($this->arr['name']);
-				$this->arr['description'] = highlightWord( $w, bab_toHtml($this->arr['description']));
-				$this->arr['keywords'] = highlightWord( $w, bab_toHtml($this->arr['keywords']));
-				$this->modified = bab_toHtml(bab_shortDate(bab_mktime($this->arr['modified']), true));
-				$this->created = bab_toHtml(bab_shortDate(bab_mktime($this->arr['created']), true));
-				$this->postedby = bab_toHtml(bab_getUserName($this->arr['author']));
-				$this->modifiedby = bab_toHtml(bab_getUserName($this->arr['modifiedby']));
-				$this->geturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$this->arr['id_owner']."&gr=".$this->arr['bgroup']."&path=".urlencode($this->arr['path'])."&file=".urlencode($this->arr['name']));
+				$GLOBALS['babBody']->title = $this->arr['name'];
+				$this->arr['description'] = highlightWord( $w, $this->arr['description']);
+				$this->arr['keywords'] = highlightWord( $w, $this->arr['keywords']);
+				$this->modified = bab_shortDate(bab_mktime($this->arr['modified']), true);
+				$this->created = bab_shortDate(bab_mktime($this->arr['created']), true);
+				$this->postedby = bab_getUserName($this->arr['author']);
+				$this->modifiedby = bab_getUserName($this->arr['modifiedby']);
+				$this->geturl = $GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$this->arr['id_owner']."&gr=".$this->arr['bgroup']."&path=".urlencode($this->arr['path'])."&file=".urlencode($this->arr['name']);
 				if( $this->arr['bgroup'] == "Y")
 					$fstat = stat($GLOBALS['babUploadPath']."/G".$this->arr['id_owner']."/".$this->arr['path']."/".$this->arr['name']);
 				else
@@ -2639,17 +2618,17 @@ function viewFile($id, $w)
 				if( $this->arr['bgroup'] == "Y") {
 					$this->rootpath = bab_getFolderName($this->arr['id_owner']);
 
-					$this->resff = $babDB->db_query("select * from ".BAB_FM_FIELDS_TBL." where id_folder=".$babDB->quote($this->arr['id_owner']));
-					$this->countff = $babDB->db_num_rows($this->resff);
+					$this->resff = $this->db->db_query("select * from ".BAB_FM_FIELDS_TBL." where id_folder='".$this->arr['id_owner']."'");
+					$this->countff = $this->db->db_num_rows($this->resff);
 					}
 				else 
 					{
 					$this->rootpath = bab_translate("Private folder");
 					$this->countff = 0;
 					}
-				$this->path = bab_toHtml($this->rootpath."/".$this->arr['path']);	
+				$this->path = $this->rootpath."/".$this->arr['path'];	
 
-				$this->resversion = $babDB->db_query("
+				$this->resversion = $this->db->db_query("
 					SELECT 
 						UNIX_TIMESTAMP(date) versiondate, 
 						CONCAT(f.name,' ',v.ver_major,'.',v.ver_minor) name,
@@ -2660,14 +2639,14 @@ function viewFile($id, $w)
 						".BAB_INDEX_ACCESS_TBL." a 
 					WHERE 
 						f.id = v.id_file 
-						AND v.id_file=".$babDB->quote($this->arr['id'])." 
+						AND v.id_file=".$this->db->quote($this->arr['id'])." 
 						AND a.id_object = v.id 
 						AND a.id_object_access = f.id_owner
 
 					ORDER BY v.ver_major DESC,v.ver_minor DESC
 					");
 
-				$this->countversions = $babDB->db_num_rows($this->resversion);
+				$this->countversions = $this->db->db_num_rows($this->resversion);
 
 				if (bab_searchEngineInfos()) {
 						$found_files = bab_searchIndexedFiles(trim($w), false, false, 'bab_files');
@@ -2701,13 +2680,12 @@ function viewFile($id, $w)
 			if( $i < $this->countff)
 				{
 				$arr = $babDB->db_fetch_array($this->resff);
-				$this->field = bab_toHtml(bab_translate($arr['name']));
+				$this->field = bab_translate($arr['name']);
 				$this->fieldval = '';
-				$res = $babDB->db_query("select fvalue from ".BAB_FM_FIELDSVAL_TBL." where  id_field=".$babDB->quote($arr['id'])." and id_file=".$babDB->quote($this->arr['id']));
+				$res = $babDB->db_query("select fvalue from ".BAB_FM_FIELDSVAL_TBL." where id_field=".$babDB->quote($arr['id'])." and id_file='".$this->arr['id']."'");
 				if( $res && $babDB->db_num_rows($res) > 0)
 					{
 					list($this->fieldval) = $babDB->db_fetch_array($res);
-					$this->fieldval = bab_toHtml($this->fieldval);
 					}
 				$i++;
 				return true;
@@ -2721,7 +2699,7 @@ function viewFile($id, $w)
 
 
 		function getnextversion() {
-			if ($arr = $babDB->db_fetch_assoc($this->resversion)) {
+			if ($arr = $this->db->db_fetch_assoc($this->resversion)) {
 				$this->altbg = !$this->altbg;
 				$this->name = bab_toHtml($arr['name']);
 				$this->versiondate = bab_toHtml(bab_longDate($arr['versiondate']));
@@ -2771,10 +2749,8 @@ function viewContact($id, $what)
 
 		function temp($id, $what)
 			{
-			
 			$this->bab_searchVisuPopup();
-			global $babDB, $BAB_SESS_USERID;
-			
+			global $BAB_SESS_USERID;
 			$this->firstname = bab_translate("First Name");
 			$this->lastname = bab_translate("Last Name");
 			$this->email = bab_translate("Email");
@@ -2790,8 +2766,9 @@ function viewContact($id, $what)
 			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
 			$this->msgerror = "";
 
-			$req = "select * from ".BAB_CONTACTS_TBL." where id=".$babDB->quote($id);
-			$arr = $babDB->db_fetch_array($babDB->db_query($req));
+			$db = $GLOBALS['babDB'];
+			$req = "select * from ".BAB_CONTACTS_TBL." where id='".$id."'";
+			$arr = $db->db_fetch_array($db->db_query($req));
 			if( !empty($BAB_SESS_USERID) && $arr['owner'] == $BAB_SESS_USERID )
 				{
 				$this->firstnameval = $arr['firstname'];
@@ -2831,7 +2808,7 @@ function viewContact($id, $what)
 function viewDirectoryUser($id, $what)
 {
 	global $babBody, $babDB, $babInstallPath;
-	list($idd, $idu) = $babDB->db_fetch_array($babDB->db_query("select id_directory, id_user from ".BAB_DBDIR_ENTRIES_TBL." where id=".$babDB->quote($id)));
+	list($idd, $idu) = $babDB->db_fetch_array($babDB->db_query("select id_directory, id_user from ".BAB_DBDIR_ENTRIES_TBL." where id='".$id."'"));
 	$access = false;
 	if( $idd == 0 )
 	{
@@ -2839,23 +2816,23 @@ function viewDirectoryUser($id, $what)
 		while( $row = $babDB->db_fetch_array($res))
 			{
 			$idd = $row['id'];
-			list($bdir) = $babDB->db_fetch_array($babDB->db_query("select directory from ".BAB_GROUPS_TBL." where id=".$babDB->quote($row['id_group'])));
-			if( $bdir == 'Y' && bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $row['id'])) 
+			list($bdir) = $babDB->db_fetch_array($babDB->db_query("select directory from ".BAB_GROUPS_TBL." where id='".$row['id_group']."'"));
+			if( $bdir == 'Y' && bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $row['id']))
 				{
 				if( $row['id_group'] == 1 )
 					{
 					$access = true;
 					break;
-				}
-				
-				$res2 = $babDB->db_query("select id from ".BAB_USERS_GROUPS_TBL." where id_object=".$babDB->quote($idu)." and id_group=".$babDB->quote($row['id_group']));
+					}
+				$res2 = $babDB->db_query("select id from ".BAB_USERS_GROUPS_TBL." where id_object='".$idu."' and id_group='".$row['id_group']."'");
 				if( $res2 && $babDB->db_num_rows($res2) > 0 )
 					{
 					$access = true;
 					break;
+					}
 				}
+
 			}
-		}
 	}
 	elseif( bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $idd))
 		{

@@ -671,7 +671,7 @@ switch($idx)
 		if( !isset($bautoapp)) { $bautoapp='N';}
 		if( !isset($bmanmod)) { $bmanmod='N';}
 		if( !isset($maxarts)) { $maxarts='10';}
-		if( !isset($busetags)) { $busetags='Y';}
+		if( !isset($busetags)) { $busetags='N';}
 		addCategory($cat, $ncat, $category, $topdesc, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags);
 		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List&idp=".$idp);
 		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
