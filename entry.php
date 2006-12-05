@@ -21,6 +21,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
+/**
+* @internal SEC1 NA 05/12/2006 FULL
+*/
 include_once 'base.php';
 include_once $babInstallPath.'utilit/topincl.php';
 include_once $babInstallPath.'utilit/artincl.php';
@@ -280,15 +283,8 @@ function isAccessValid($article, $idg)
 }
 
 /* main */
-if(!isset($idx))
-	{
-	$idx = "list";
-	}
-
-if(!isset($idg))
-	{
-	$idg = 2; // non registered users
-	}
+$idx = bab_rp('idx', 'list');
+$idg = bab_rp('idg', 2); // non registered users
 
 if( $BAB_SESS_LOGGED)
 	{
@@ -298,6 +294,7 @@ if( $BAB_SESS_LOGGED)
 switch($idx)
 	{
 	case "getf":
+		$article = bab_rp('article');
 		if( !isAccessValid($article, $idg) )
 			{
 			$babBody->msgerror = bab_translate("Access denied");
@@ -305,12 +302,14 @@ switch($idx)
 			}
 		else
 			{
+			$idf = bab_rp('idf');
 			getDocumentArticle($idf, $article);
 			exit;
 			}
 		break;
 
 	case "print":
+		$article = bab_rp('article');
 		if( !isAccessValid($article, $idg) )
 			{
 			$babBody->msgerror = bab_translate("Access denied");
@@ -318,12 +317,14 @@ switch($idx)
 			}
 		else
 			{
+			$topics = bab_rp('topics');
 			articlePrint($topics, $article);
 			exit();
 			}
 		break;
 
 	case "more":
+		$article = bab_rp('article');
 		if( !isAccessValid($article, $idg) )
 			{
 			$babBody->msgerror = bab_translate("Access denied");
