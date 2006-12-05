@@ -200,29 +200,20 @@ function updateDates(elemDay, elemMonth, elemYear)
 	elemDay.options[daysInMonth-1].selected = true;
 }
 
-function dateBegin()
+function dateBegin(day, month, year)
 {
-	bab_dialog.selectdate(function(arr) {
-
-	
-	document.vacform.elements['daybegin'].options[arr['day']-1].selected = true;
-	document.vacform.elements['monthbegin'].options[arr['month']-1].selected = true;
-	document.vacform.elements['yearbegin'].options[arr['year']-{ startyear }].selected = true;
+	document.vacform.elements['daybegin'].options[day-1].selected = true;
+	document.vacform.elements['monthbegin'].options[month-1].selected = true;
+	document.vacform.elements['yearbegin'].options[year-{ yearbegin }].selected = true;
 	updateDates(document.vacform.elements['daybegin'], document.vacform.elements['monthbegin'], document.vacform.elements['yearbegin']);
-	
-	});
 }
 
-function dateEnd()
+function dateEnd(day, month, year)
 {
-	bab_dialog.selectdate(function(arr) {
-	
-	document.vacform.elements['dayend'].options[arr['day']-1].selected = true;
-	document.vacform.elements['monthend'].options[arr['month']-1].selected = true;
-	document.vacform.elements['yearend'].options[arr['year']-{ startyear }].selected = true;
+	document.vacform.elements['dayend'].options[day-1].selected = true;
+	document.vacform.elements['monthend'].options[month-1].selected = true;
+	document.vacform.elements['yearend'].options[year-{ yearbegin }].selected = true;
 	updateDates(document.vacform.elements['dayend'], document.vacform.elements['monthend'], document.vacform.elements['yearend']);
-	
-	});
 
 }
 
@@ -271,109 +262,109 @@ return true;
 //-->
 </script>
 <form name="vacform" method="post" action="{ babPhpSelf }" onSubmit="return validateForm(this);">
-<input type="hidden" name="tg" value="vacadmb" />
-<input type="hidden" name="idx" value="lreq" />
-<input type="hidden" name="add" value="modvr" />
-<input type="hidden" name="vrid" value="{ vrid }" />
-
+<input type="hidden" name="tg" value="vacadmb">
+<input type="hidden" name="idx" value="lreq">
+<input type="hidden" name="add" value="modvr">
+<input type="hidden" name="vrid" value="{ vrid }">
+<input type="hidden" name="styear" value="{ startyear }">
 <table class="BabLoginCadreBackground" width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
-	<td> 
-		<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-		<tr> 
-		<td align="right"><a href="javascript:dateBegin();">{ datebegintxt }</a>: </td>
-		<td valign="middle"> 
-		<select name="daybegin">
-		  <!--#in getnextday -->
-		  <option value="{ dayid }" { selected }>{ dayid }</option>
-		  <!--#endin getnextday -->
-		</select>
-		</td>
-		<td valign="middle"> 
-		<select name="monthbegin" onchange="updateDates(this.form.daybegin, this.form.monthbegin, this.form.yearbegin);">
-		  <!--#in getnextmonth -->
-		  <option value="{ monthid }" { selected }>{ monthname }</option>
-		  <!--#endin getnextmonth -->
-		</select>
-		</td>
-		<td valign="middle"> 
-		<select name="yearbegin" onchange="updateDates(this.form.daybegin, this.form.monthbegin, this.form.yearbegin);">
-		  <!--#in getnextyear -->
-		  <option value="{ yearidval }"  { selected }>{ yearidval }</option>
-		  <!--#endin getnextyear -->
-		</select>
-		</td>
-		<td valign="middle"> 
-		<select name="halfdaybegin">
-		  <!--#in getnexthalf -->
-		  <option value="{ halfid }" { selected }>{ halfname }</option>
-		  <!--#endin getnexthalf -->
-		</select>
-		</td>
-		</tr>
-		<tr> 
-		<td width="45%" align="right" valign="middle"><a href="javascript:dateEnd();">{ dateendtxt }</a>: </td>
-		<td valign="middle"> 
-		<select name="dayend">
-		  <!--#in getnextday -->
-		  <option value="{ dayid }"  { selected }>{ dayid }</option>
-		  <!--#endin getnextday -->
-		</select >
-		</td>
-		<td valign="middle"> 
-		<select name="monthend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
-		  <!--#in getnextmonth -->
-		  <option value="{ monthid }"  { selected }>{ monthname }</option>
-		  <!--#endin getnextmonth -->
-		</select >
-		</td>
-		<td valign="middle"> 
-		<select name="yearend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
-		  <!--#in getnextyear -->
-		  <option value="{ yearidval }" { selected }>{ yearidval }</option>
-		  <!--#endin getnextyear -->
-		</select >
-		</td>
-		<td valign="middle"> 
-		<select name="halfdayend">
-		  <!--#in getnexthalf -->
-		  <option value="{ halfid }" { selected }>{ halfname }</option>
-		  <!--#endin getnexthalf -->
-		</select >
-		</td>
-		</tr>
-		<tr> 
-		<td align="right">{ nbdaystxt }: </td>
-		<td colspan="4">
-		<table width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
-		<tr><td>&nbsp;</td><td>&nbsp;</td><td>{ balancetxt }</td></tr>
-		<!--#in getnexttype -->
-		<tr><td><input type="text" name="{ nbdaysname }" size="5" maxlength="5" value="{ nbdays }" onBlur="validateDayField(this)" /></td><td>{ typename }</td><td>{ quantitydays }</td></tr>
-		<!--#endin getnexttype -->
-		</table>
-		</td>
-		</tr>
-		<tr> 
-		<td align="right">{ totaltxt }: </td>
-		<td colspan="4">
-		<input type="text" name="total" size="5" maxlength="5" value="{ totalval }" />
-		</td>
-		</tr>
-		<tr> 
-		<td align="right">{ remark }: </td>
-		<td colspan="4">
-		<textarea cols="40" rows="10" name="remarks">{ remarks }</textarea>
-		</td>
-		</tr>
-		<tr> 
-		<td>&nbsp;</td>
-		<td colspan="4" valign="middle"> 
-		<input type="submit" name="Submit" value="{ addvac }" />&nbsp;&nbsp;<input type="submit" name="bdelete" value="{ deletetxt }" />
-		<br>
-		</td>
-		</tr>
-		</table>
-	</td>
+<td> 
+<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td align="right"><a href="javascript: Start('{ datebegin }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ datebegintxt }</a>: </td>
+<td valign="middle"> 
+<select name="daybegin">
+  <!--#in getnextday -->
+  <option value="{ dayid }" { selected }>{ dayid }</option>
+  <!--#endin getnextday -->
+</select>
+</td>
+<td valign="middle"> 
+<select name="monthbegin" onChange="updateDates(this.form.daybegin, this.form.monthbegin, this.form.yearbegin);">
+  <!--#in getnextmonth -->
+  <option value="{ monthid }" { selected }>{ monthname }</option>
+  <!--#endin getnextmonth -->
+</select>
+</td>
+<td valign="middle"> 
+<select name="yearbegin" onChange="updateDates(this.form.daybegin, this.form.monthbegin, this.form.yearbegin);">
+  <!--#in getnextyear -->
+  <option value="{ yearid }"  { selected }>{ yearidval }</option>
+  <!--#endin getnextyear -->
+</select>
+</td>
+<td valign="middle"> 
+<select name="halfdaybegin">
+  <!--#in getnexthalf -->
+  <option value="{ halfid }" { selected }>{ halfname }</option>
+  <!--#endin getnexthalf -->
+</select>
+</td>
+</tr>
+<tr> 
+<td width="45%" align="right" valign="middle"><a href="javascript: Start('{ dateend }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');"">{ dateendtxt }</a>: </td>
+<td valign="middle"> 
+<select name="dayend">
+  <!--#in getnextday -->
+  <option value="{ dayid }"  { selected }>{ dayid }</option>
+  <!--#endin getnextday -->
+</select >
+</td>
+<td valign="middle"> 
+<select name="monthend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
+  <!--#in getnextmonth -->
+  <option value="{ monthid }"  { selected }>{ monthname }</option>
+  <!--#endin getnextmonth -->
+</select >
+</td>
+<td valign="middle"> 
+<select name="yearend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
+  <!--#in getnextyear -->
+  <option value="{ yearid }" { selected }>{ yearidval }</option>
+  <!--#endin getnextyear -->
+</select >
+</td>
+<td valign="middle"> 
+<select name="halfdayend">
+  <!--#in getnexthalf -->
+  <option value="{ halfid }" { selected }>{ halfname }</option>
+  <!--#endin getnexthalf -->
+</select >
+</td>
+</tr>
+<tr> 
+<td align="right">{ nbdaystxt }: </td>
+<td colspan="4">
+<table width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
+<tr><td>&nbsp;</td><td>&nbsp;</td><td>{ balancetxt }</td></tr>
+<!--#in getnexttype -->
+<tr><td><input type="text" name="{ nbdaysname }" size="5" maxlength="5" value="{ nbdays }" onBlur="validateDayField(this)" /></td><td>{ typename }</td><td>{ quantitydays }</td></tr>
+<!--#endin getnexttype -->
+</table>
+</td>
+</tr>
+<tr> 
+<td align="right">{ totaltxt }: </td>
+<td colspan="4">
+<input type="text" name="total" size="5" maxlength="5" value="{ totalval }" />
+</td>
+</tr>
+<tr> 
+<td align="right">{ remark }: </td>
+<td colspan="4">
+<textarea cols="40" rows="10" name="remarks">{ remarks }</textarea>
+</td>
+</tr>
+<tr> 
+<td>&nbsp;</td>
+<td colspan="4" valign="middle"> 
+<input type="submit" name="Submit" value="{ addvac }" />&nbsp;&nbsp;<input type="submit" name="bdelete" value="{ deletetxt }" />
+<br>
+</td>
+</tr>
+</table>
+</td>
 </tr>
 </table>
 <br>

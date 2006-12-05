@@ -1295,6 +1295,7 @@ function rgroupmod() {
 			{
 			$this->t_name = bab_translate('Name');
 			$this->t_record = bab_translate('Record');
+			$this->t_delete = bab_translate('Delete');
 			$this->db = &$GLOBALS['babDB'];
 			$this->id_rgroup = bab_rp('id_rgroup');
 			if ($this->id_rgroup) {
@@ -2075,6 +2076,15 @@ function modRgroup() {
 }
 
 
+function deleteRgroup() {
+	$db = $GLOBALS['babDB'];
+	$id = bab_rp('id_rgroup');
+	if (!empty($id)) {
+		$db->db_query("DELETE FROM ".BAB_VAC_RGROUPS_TBL." WHERE id=".$db->quote($id));
+	}
+}
+
+
 /* main */
 $acclevel = bab_vacationsAccess();
 if( !isset($acclevel['manager']) || $acclevel['manager'] != true)
@@ -2112,7 +2122,10 @@ if( isset($_POST['action']) )
 			break;
 
 		case 'rgroupmod':
-			if (!modRgroup()) {
+			if (isset($_POST['rgroup_delete'])) {
+				deleteRgroup();
+				
+			} else if (!modRgroup()) {
 				$idx = 'rgroupmod';
 			}
 			break;

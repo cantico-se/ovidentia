@@ -7539,16 +7539,9 @@ function upgrade604to605()
 function upgrade605to606()
 {
 	$ret = "";
-	// $db = & $GLOBALS['babDB'];
 	global $babDB;
 
-	if (bab_isTableField(BAB_SITES_TBL, 'workdays')) {
-		$babDB->db_query("ALTER TABLE ".BAB_SITES_TBL." DROP workdays");
-	}
-	
-	if (bab_isTableField(BAB_CAL_USER_OPTIONS_TBL, 'workdays')) {
-		$babDB->db_query("ALTER TABLE ".BAB_CAL_USER_OPTIONS_TBL." DROP workdays");
-	}
+	$babDB->db_query("TRUNCATE bab_vac_calendar");
 	
 	 
 
@@ -7562,6 +7555,14 @@ function upgrade606to610()
 	$ret = "";
 	
 	$babDB->db_query("TRUNCATE bab_vac_calendar");
+	
+	if (bab_isTableField(BAB_SITES_TBL, 'workdays')) {
+		$babDB->db_query("ALTER TABLE ".BAB_SITES_TBL." DROP workdays");
+	}
+	
+	if (bab_isTableField(BAB_CAL_USER_OPTIONS_TBL, 'workdays')) {
+		$babDB->db_query("ALTER TABLE ".BAB_CAL_USER_OPTIONS_TBL." DROP workdays");
+	}
 	
 	if (!bab_isTableField(BAB_USERS_TBL, 'cookie_validity')) {
 		$babDB->db_query("ALTER TABLE `".BAB_USERS_TBL."` ADD `cookie_validity` DATETIME NOT NULL , ADD `cookie_id` VARCHAR( 255 ) NOT NULL");
