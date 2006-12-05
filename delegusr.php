@@ -21,6 +21,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
+/**
+* @internal SEC1 NA 05/12/2006 FULL
+*/
+
 include_once 'base.php';
 
 function changeAdmGroup()
@@ -110,12 +114,11 @@ if( count($babBody->dgAdmGroups) < 1)
 	exit;
 	}
 	
-if( !isset($idx))
-	$idx = "chgdg";
+$idx = bab_rp('idx', 'chgdg');
 
-if( isset($mod) && $mod == 'moddg')
+if( 'moddg' == bab_rp('mod'))
 {
-	updateAdmGroup($grpdg);
+	updateAdmGroup(bab_rp('grpdg'));
 }
 
 switch($idx)
