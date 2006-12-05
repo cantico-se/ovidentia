@@ -67,12 +67,12 @@ function createEvent($idcals,$id_owner, $title, $description, $location, $startd
 					$add = true;
 					$ustatus = BAB_CAL_STATUS_ACCEPTED;
 					}
-				elseif( $arr['access'] == BAB_CAL_ACCESS_UPDATE )
+				elseif( $arr['access'] == BAB_CAL_ACCESS_UPDATE || $arr['access'] == BAB_CAL_ACCESS_SHARED_UPDATE)
 					{
 					$add = true;
 					$ustatus = BAB_CAL_STATUS_NONE;
 					}
-				elseif( $arr['access'] == BAB_CAL_ACCESS_FULL )
+				elseif( $arr['access'] == BAB_CAL_ACCESS_FULL || $arr['access'] == BAB_CAL_ACCESS_SHARED_FULL)
 					{
 					$add = true;
 					$ustatus = BAB_CAL_STATUS_ACCEPTED;
@@ -444,7 +444,7 @@ function confirmEvent($evtid, $idcal, $bconfirm, $comment, $bupdrec)
 	switch($arr['type'])
 	{
 		case BAB_CAL_USER_TYPE:
-			if( count($arrevtids) > 0 && $arr['access'] == BAB_CAL_ACCESS_FULL)
+			if( count($arrevtids) > 0 && ($arr['access'] == BAB_CAL_ACCESS_FULL || $arr['access'] == BAB_CAL_ACCESS_SHARED_FULL))
 				{
 				$babDB->db_query("update ".BAB_CAL_EVENTS_OWNERS_TBL." set status='".$babDB->db_escape_string($bconfirm)."' where id_event IN (".$babDB->quote($arrevtids).") and id_cal=".$babDB->quote($idcal));
 				notifyEventApprobation($evtid, $bconfirm, $comment, bab_translate("Personal calendar"));

@@ -64,21 +64,21 @@
 				<td>
 				<select name="startday">
 				<!--#in getnextday -->
-				<option value="{ dayid }" <!--#if selected --> selected="selected" <!--#endif selected --> >{ dayname }</option>
+				<option value="{ dayid }" { selected }>{ dayname }</option>
 				<!--#endin getnextday -->
 				</select>
 				</td>
 				<td>
 				<select name="starttime">
 				<!--#in getnexttime -->
-				<option value="{ timeid }" <!--#if selected --> selected="selected" <!--#endif selected --> >{ timeval }</option>
+				<option value="{ timeid }" { selected }>{ timeval }</option>
 				<!--#endin getnexttime -->
 				</select>
 				</td>
 				<td>
 				<select name="endtime">
 				<!--#in getnexttime -->
-				<option value="{ timeid }" <!--#if selected --> selected="selected" <!--#endif selected --> >{ timeval }</option>
+				<option value="{ timeid }" { selected }>{ timeval }</option>
 				<!--#endin getnexttime -->
 				</select>
 				</td>
@@ -394,44 +394,90 @@
 
 
 <!--#begin access -->
-<br />
-<br />
-<br />
 <form name="accform" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="calopt">
 <input type="hidden" name="idx" value="access">
 <input type="hidden" name="idcal" value="{ calid }">
 <input type="hidden" name="urla" value="{ urla }">
 <input type="hidden" name="update" value="access">
-<table  width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
+<table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-	<table  width="100%" border="0" cellspacing="0" cellpadding="5">
+	<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 	<tr class="BabSiteAdminTitleFontBackground" align="center"> 
 	<td>{ fullname }</td>
 	<td>{ access0txt }</td>
 	<td>{ access1txt }</td>
+	<td>{ access11txt }</td>
 	<td>{ access2txt }</td>
+	<td>{ access22txt }</td>
+	<td>{ deletetxt }</td>
 	</tr>
 	<!--#in getnext -->
 	<tr class="BabSiteAdminFontBackground" align="center"> 
 	<td align="left">{ fullnameval }</td>
 	<td><input type="radio" name="acc_{ userid }" value="0" { cheched0 } /></td>
 	<td><input type="radio" name="acc_{ userid }" value="1" { cheched1 } /></td>
+	<td><input type="radio" name="acc_{ userid }" value="3" { cheched11 } /></td>
 	<td><input type="radio" name="acc_{ userid }" value="2" { cheched2 } /></td>
+	<td><input type="radio" name="acc_{ userid }" value="4" { cheched21 } /></td>
+	<td><input type="checkbox" name="users[]" value="{ userid }" /></td>
 	</tr>
 	<!--#endin getnext -->
 	<tr> 
-	<td class="BabSiteAdminTitleFontBackground" colspan="4">&nbsp;</td>
+	<td class="BabSiteAdminTitleFontBackground" colspan="7">&nbsp;</td>
 	</tr>
 	</table>
 </td>
 </tr>
 </table>
-<div align="center"><br><input type="submit" name="submit" value="{ upduserstxt }" /></div>
+<center><br><input type="submit" name="submit" value="{ upduserstxt }"></center>
 </form>
+<br>
+<br>
+<script type="text/javascript" src="{ babInstallPath }scripts/bab_dialog.js"></script>
+<script type="text/javascript">
+<!--
 
+function co_selectUser() {
+	bab_dialog.selectuser( function(param) {
+				document.forms['gcreate'].nuser.value=param['name'];
+				document.forms['gcreate'].nuserid.value=param['id_user'];
+			}
+		);
+	}
 
+//-->
+</script>
+<form name="gcreate" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="calopt">
+<input type="hidden" name="idx" value="access">
+<input type="hidden" name="urla" value="{ urla }">
+<input type="hidden" name="idcal" value="{ calid }">
+<input type="hidden" name="add" value="addu">
+<table  width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+	<table class="BabLoginMenuBackground"  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+	<tr> 
+	<td align="right"><a href="#" onclick="co_selectUser();return false;">{ usertxt }</a>:</td>
+	<td> 
+		<input type="text" name="nuser" size="40" maxlength="255" value="" disabled="disabled" />
+		<input type="hidden" name="nuserid" value="" />
+	</td>
+	</tr>
+	<tr> 
+	<td>&nbsp;</td>
+	<td> 
+		<input type="submit" name="submit" value="{ addtxt }" />
+	<br>
+	</td>
+	</tr>
+	</table>
+</td>
+</tr>
+</table>
+</form>
 <!--#end access -->
 
 

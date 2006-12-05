@@ -31,7 +31,7 @@ function accessCalendar($calid, $urla)
 	
 	class temp
 		{
-		function temp($calid, $urla, $users)
+		function temp($calid, $urla)
 			{
 			global $babDB;
 			$this->calid = $calid;
@@ -39,7 +39,9 @@ function accessCalendar($calid, $urla)
 			$this->fullname = bab_translate("Fullname");
 			$this->access0txt = bab_translate("Consultation");
 			$this->access1txt = bab_translate("Creation and modification");
+			$this->access11txt = bab_translate("Shared creation and modification");
 			$this->access2txt = bab_translate("Full access");
+			$this->access22txt = bab_translate("Shared full access");
 			$this->deletetxt = bab_translate("Delete");
 			$this->upduserstxt = bab_translate("Update access");
 			$this->usertxt = bab_translate("Add user");
@@ -51,16 +53,11 @@ function accessCalendar($calid, $urla)
 			$this->arrusers = array();
 			while( $arr = $babDB->db_fetch_array($res))
 				{
-					$this->arrusers[] = array(
-						'user'=>bab_composeUserName($arr['firstname'], $arr['lastname']), 
-						'id'=>$arr['id_user'], 
-						'access'=>$arr['bwrite']
-					);
-					
-					$users->addUser($arr['id_user']);
+				$this->arrusers[] = array('user'=>bab_composeUserName($arr['firstname'], $arr['lastname']), 'id'=>$arr['id_user'], 'access'=>$arr['bwrite']);
 				}
 			usort($this->arrusers, array($this, 'compare'));
 			$this->count = count($this->arrusers);
+
 			}
 
 		function compare($a, $b)
@@ -75,22 +72,27 @@ function accessCalendar($calid, $urla)
 				{
 				$this->fullnameval = $this->arrusers[$k]['user'];
 				$this->userid = $this->arrusers[$k]['id'];
+				$this->cheched0 = '';
+				$this->cheched1 = '';
+				$this->cheched11 = '';
+				$this->cheched2 = '';
+				$this->cheched21 = '';
 				switch( $this->arrusers[$k]['access'])
 					{
 					case 1:
-						$this->cheched0 = "";
-						$this->cheched1 = "checked";
-						$this->cheched2 = "";
+						$this->cheched1 = 'checked';
 						break;
 					case 2:
-						$this->cheched0 = "";
-						$this->cheched1 = "";
-						$this->cheched2 = "checked";
+						$this->cheched2 = 'checked';
+						break;
+					case 3:
+						$this->cheched11 = 'checked';
+						break;
+					case 4:
+						$this->cheched21 = 'checked';
 						break;
 					default:
-						$this->cheched0 = "checked";
-						$this->cheched1 = "";
-						$this->cheched2 = "";
+						$this->cheched0 = 'checked';
 						break;
 					}
 				$k++;
@@ -103,63 +105,26 @@ function accessCalendar($calid, $urla)
 				}
 			}
 		}
-		
-		
-	include_once $GLOBALS['babInstallPath'].'utilit/selectusers.php';
-	$obj = new bab_selectusers();
-	
-	$temp = new temp($calid, $urla, $obj);	
-	$obj->addVar('urla', $urla);
-	$obj->addVar('calid', $calid);
-	$obj->setRecordCallback('addAccessUsers');
-	$obj->setRecordLabel(bab_translate('Add selected users'));
-	$babBody->babecho($obj->getHtml()); 
-	
-	
+
+	$temp = new temp($calid, $urla);
 	$babBody->babecho(	bab_printTemplate($temp,"calopt.html", "access"));
 }
 
-function addAccessUsers( $userids, $params)
+function addAccessUsers( $nuserid, $calid, $urla)
 {
-	global $babDB;
-		
-	if (isset($userids[$GLOBALS['BAB_SESS_USERID']])) {
-		unset($userids[$GLOBALS['BAB_SESS_USERID']]);
-	}
-		
-	$req = "
-		SELECT u.id, a.id_user inserted FROM ".BAB_USERS_TBL." u 
-			LEFT JOIN ".BAB_CALACCESS_USERS_TBL." a ON a.id_user=u.id 
-			WHERE u.id IN(".$babDB->quote($userids).") 
-		";
 
-	$res = $babDB->db_query($req);
-	
-	$inserted = array();
-	
-	while ($arr = $babDB->db_fetch_assoc($res)) {
-		if (!empty($arr['inserted'])) {
-			$inserted[$arr['id']] = $arr['id'];
-		} else {
-			
-			$req = "insert into ".BAB_CALACCESS_USERS_TBL." (id_cal, id_user, bwrite) values (
-			'".$babDB->db_escape_string($params['calid'])."', 
-			'".$babDB->db_escape_string($arr['id'])."', 
-			'0'
-			)";
-			$babDB->db_query($req);
-			$inserted[$arr['id']] = $arr['id'];
+	global $babDB;
+	if( !empty($nuserid) && $nuserid != $GLOBALS['BAB_SESS_USERID'])
+		{
+		$req = "select * from ".BAB_CALACCESS_USERS_TBL." where id_cal='".$babDB->db_escape_string($calid)."' and id_user='".$babDB->db_escape_string($nuserid)."'";
+		$res = $babDB->db_query($req);
+		if( !$res || $babDB->db_num_rows($res) == 0)
+			{
+			$req = "insert into ".BAB_CALACCESS_USERS_TBL." (id_cal, id_user, bwrite) values ('".$babDB->db_escape_string($calid)."', '".$babDB->db_escape_string($nuserid)."', '0')";
+			$res = $babDB->db_query($req);
+			}
 		}
-	}
-	
-	if (0 < count($inserted)) {
-		$req = "DELETE FROM ".BAB_CALACCESS_USERS_TBL." WHERE id_cal='".$babDB->db_escape_string($params['calid'])."' AND id_user NOT IN(".$babDB->quote($inserted).")";
-		$babDB->db_query($req);
-	} else {
-		$babDB->db_query("DELETE FROM ".BAB_CALACCESS_USERS_TBL." WHERE id_cal='".$babDB->db_escape_string($params['calid'])."'");
-	}
-	
-	Header("Location:".$GLOBALS['babUrlScript']."?tg=calopt&idx=access&urla=".urlencode($params['urla']));
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=calopt&idx=access&urla=".urlencode($urla));
 	exit;
 }
 
@@ -252,9 +217,6 @@ function calendarOptions($calid, $urla)
 			$req = "select * from ".BAB_CAL_USER_OPTIONS_TBL." where id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
 			$res = $babDB->db_query($req);
 			$this->arr = $babDB->db_fetch_array($res);
-			
-			
-			
 			$this->arrdv = array(bab_translate("Month"), bab_translate("Week"),bab_translate("Day"));
 			$this->arrdvw = array(bab_translate("Columns"), bab_translate("Rows"));
 			if( empty($this->arr['start_time']))
@@ -265,9 +227,9 @@ function calendarOptions($calid, $urla)
 				{
 				$this->arr['end_time'] = "18:00:00";
 				}
-			if( !isset($this->arr['startday']))
+			if( empty($this->arr['startday']))
 				{
-				$this->arr['startday'] = 1;
+				$this->arr['startday'] = 3;
 				}
 			if( empty($this->arr['defaultview']))
 				{
@@ -282,20 +244,9 @@ function calendarOptions($calid, $urla)
 				{
 				$this->arr['dispdays'] = "1,2,3,4,5";
 				}
-				
-			if( !isset($this->arr['bgcolor']))
-				{
-				$this->arr['bgcolor'] = "Y";
-				}
-				
-			if( !isset($this->arr['allday']))
-				{
-				$this->arr['allday'] = "Y";
-				}
 
 			$this->dispdays = explode(',', $this->arr['dispdays']);
 			$this->sttime = $this->arr['start_time'];
-			
 			}
 
 		function getnextshortday()
@@ -701,7 +652,10 @@ switch($idx)
 		$babBody->title = bab_translate("Calendar Options");
 		if( $babBody->icalendars->id_percal != 0 )
 		{
-			accessCalendar($babBody->icalendars->id_percal, bab_rp('urla'));
+			if (!isset($idcal))
+				$idcal = $babBody->icalendars->id_percal;
+			
+			accessCalendar($idcal, $urla);
 			$babBody->addItemMenu("options", bab_translate("Calendar Options"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options&urla=".urlencode($urla));
 			$babBody->addItemMenu("access", bab_translate("Calendar access"), $GLOBALS['babUrlScript']."?tg=options&idx=access&idcal=".$idcal);
 			if( isset($urla) && !empty($urla) )
@@ -729,7 +683,7 @@ switch($idx)
 
 		if( isset($urla) && !empty($urla) && $babBody->icalendars->calendarAccess() )
 			{
-			$babBody->addItemMenu("cal", bab_translate("Calendar"), $urla);
+			$babBody->addItemMenu("cal", bab_translate("Calendar"), urldecode($urla));
 			}
 		break;
 	}

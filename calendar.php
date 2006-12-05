@@ -67,7 +67,7 @@ function displayAttendees($evtid, $idcal)
 							switch($icalinfo['type'])
 								{
 								case BAB_CAL_USER_TYPE:
-									if( $icalinfo['access'] == BAB_CAL_ACCESS_FULL)
+									if( $icalinfo['access'] == BAB_CAL_ACCESS_FULL || $icalinfo['access'] == BAB_CAL_ACCESS_SHARED_FULL)
 							{
 							$this->idcal = $arr['id_cal'];
 							switch($arr['status'] )
@@ -244,11 +244,11 @@ function displayEventDetail($evtid, $idcal)
 					$this->desctxt = bab_translate("Description");
 					$this->locationtxt = bab_translate("Location");
 					$this->cattxt = bab_translate("Category");
-					$this->begindate = bab_toHtml(bab_longDate(bab_mktime($arr['start_date'])));
-					$this->enddate = bab_toHtml(bab_longDate(bab_mktime($arr['end_date'])));
+					$this->begindate = bab_longDate(bab_mktime($arr['start_date']));
+					$this->enddate = bab_longDate(bab_mktime($arr['end_date']));
 
 					$this->t_option = ''; 
-					$this->properties = bab_toHtml(getPropertiesString($arr, $this->t_option));
+					$this->properties = getPropertiesString($arr, $this->t_option);
 
 					if( $arr['bprivate'] ==  'Y' && $GLOBALS['BAB_SESS_USERID']  != $iarr['idowner'])
 						{
@@ -258,15 +258,13 @@ function displayEventDetail($evtid, $idcal)
 						}
 					else
 						{
-						$this->title= bab_toHtml($arr['title']);
+						$this->title= $arr['title'];
 						$this->description = bab_replace($arr['description']);
-						$this->location= bab_toHtml($arr['location']);
+						$this->location= $arr['location'];
 						}
 					if( $arr['id_cat'] != 0 )
 						{
 						list($this->category) = $babDB->db_fetch_row($babDB->db_query("select name from ".BAB_CAL_CATEGORIES_TBL." where id='".$babDB->db_escape_string($arr['id_cat'])."'"));
-						
-						$this->category = bab_toHtml($this->category);
 						}
 					else
 						{

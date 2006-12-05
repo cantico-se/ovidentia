@@ -164,7 +164,7 @@ function getAvailableUsersCalendars($bwrite = false)
 			{
 			if( $bwrite )
 				{
-				if( $row[1]['access'] == BAB_CAL_ACCESS_UPDATE || $row[1]['access'] == BAB_CAL_ACCESS_FULL )
+				if( $row[1]['access'] == BAB_CAL_ACCESS_UPDATE || $row[1]['access'] == BAB_CAL_ACCESS_FULL || $row[1]['access'] == BAB_CAL_ACCESS_SHARED_UPDATE || $row[1]['access'] == BAB_CAL_ACCESS_SHARED_FULL)
 					{
 					$tab[] = array('idcal' => $row[0], 'name' => $row[1]['name']);
 					}
@@ -440,7 +440,24 @@ class bab_icalendars
 			$this->usercal[$arr['id_cal']]['type'] = BAB_CAL_USER_TYPE;
 			$this->usercal[$arr['id_cal']]['idowner'] = $arr['owner'];
 			$this->usercal[$arr['id_cal']]['access'] = $arr['bwrite'];
+			$this->usercal[$arr['id_cal']]['asu_users'] = array();
+			$this->usercal[$arr['id_cal']]['asf_users'] = array();
+
+			$rs = $babDB->db_query("select cut.id_user, bwrite from ".BAB_CALACCESS_USERS_TBL." cut where id_cal='".$babDB->db_escape_string($arr['id_cal'])."'");
+
+			while( $row =  $babDB->db_fetch_array($rs))
+			{
+				if( $row['bwrite'] == BAB_CAL_ACCESS_SHARED_UPDATE )
+				{
+					$this->usercal[$arr['id_cal']]['asu_users'][] = $row['id_user'];
+				}
+				elseif( $row['bwrite'] == BAB_CAL_ACCESS_SHARED_FULL )
+				{
+					$this->usercal[$arr['id_cal']]['asf_users'][] = $row['id_user'];
+				}
+			}
 		}
+
 		if( empty($this->user_calendarids) && count($this->usercal) > 0)
 			{
 			$keys = array_keys($this->usercal);
@@ -865,7 +882,7 @@ function bab_cal_setEventsPeriods(&$obj, $id_calendars, $begin, $end, $category 
 			$arr['nbowners'] == 0 
 			&& $arr['id_creator'] != 0 
 			&& $arr['id_creator'] != $GLOBALS['BAB_SESS_USERID'] 
-			&& $iarr['access'] == BAB_CAL_ACCESS_FULL
+			&& ( $iarr['access'] == BAB_CAL_ACCESS_FULL || $iarr['access'] == BAB_CAL_ACCESS_SHARED_FULL )
 			) {
 				$arr['nbowners'] = 1;
 			}

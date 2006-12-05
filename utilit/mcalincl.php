@@ -555,19 +555,33 @@ class cal_wmdbaseCls
 				}
 				else
 				{
-					if( $calinfo['access'] == BAB_CAL_ACCESS_FULL )
+					if( $calinfo['access'] == BAB_CAL_ACCESS_FULL || $calinfo['access'] == BAB_CAL_ACCESS_SHARED_FULL )
 					{
 						if( $evtarr['id_creator'] == $GLOBALS['BAB_SESS_USERID'] || ($evtarr['id_creator'] ==  $calinfo['idowner'] && $evtarr['block'] == 'N') )
 						{
 							$modify = 1;
 						}
+						elseif( $calinfo['access'] == BAB_CAL_ACCESS_SHARED_FULL )
+						{
+						if( count($calinfo['asf_users']) && in_array($evtarr['id_creator'], $calinfo['asf_users']) )
+							{
+							$modify = 1;
+							}
+						}
 
 					}
-					elseif( $calinfo['access'] == BAB_CAL_ACCESS_UPDATE )
+					elseif( $calinfo['access'] == BAB_CAL_ACCESS_UPDATE || $calinfo['access'] == BAB_CAL_ACCESS_SHARED_UPDATE )
 					{
 						if( $evtarr['id_creator'] == $GLOBALS['BAB_SESS_USERID'] )
 						{
 							$modify = 1;
+						}
+						elseif( $calinfo['access'] == BAB_CAL_ACCESS_SHARED_UPDATE )
+						{
+						if( count($calinfo['asu_users']) && in_array($evtarr['id_creator'], $calinfo['asu_users']) )
+							{
+							$modify = 1;
+							}
 						}
 					}
 				}
@@ -680,7 +694,7 @@ class cal_wmdbaseCls
 			switch( $calinfo['type'] )
 				{
 				case BAB_CAL_USER_TYPE:
-					if( $calinfo['idowner'] ==  $GLOBALS['BAB_SESS_USERID'] || $calinfo['access'] == BAB_CAL_ACCESS_FULL || $calinfo['access'] == BAB_CAL_ACCESS_UPDATE)
+					if( $calinfo['idowner'] ==  $GLOBALS['BAB_SESS_USERID'] || $calinfo['access'] == BAB_CAL_ACCESS_FULL || $calinfo['access'] == BAB_CAL_ACCESS_UPDATE || $calinfo['access'] == BAB_CAL_ACCESS_SHARED_FULL || $calinfo['access'] == BAB_CAL_ACCESS_SHARED_UPDATE)
 						{
 						$this->allow_create = true;
 						return;
