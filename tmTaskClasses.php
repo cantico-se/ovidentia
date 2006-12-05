@@ -261,8 +261,6 @@ $this->set_data('isStoppable', false);
 			$this->set_data('iModifyAction', BAB_TM_ACTION_MODIFY_TASK);
 			$this->set_data('iDeleteIdx', BAB_TM_IDX_DISPLAY_DELETE_TASK_FORM);
 			$this->set_data('iDeleteAction', '');
-			$this->set_data('iStopIdx', BAB_TM_IDX_DISPLAY_STOP_TASK_FORM);
-			$this->set_data('iStopAction', '');
 			
 			$this->set_data('selectedMenu', bab_rp('selectedMenu', 'oLiGeneral'));
 			$this->set_data('iDateTypeDuration', BAB_TM_DURATION);
@@ -1188,7 +1186,6 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 				{
 					if(BAB_TM_MANUAL == $this->m_aCfg['tasksNumerotation'])
 					{
-						$sName = mysql_escape_string(str_replace('\\', '\\\\', $this->m_sTaskNumber));
 						return bab_isTaskNumberUsed($this->m_iIdProject, $this->m_iIdTask, $sName);
 					}
 					else
@@ -1558,7 +1555,7 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 		
 		function getIsoDatesFromEndDate(&$sStartDate, &$sEndDate)
 		{
-			$sEndDate = mysql_escape_string(trim($this->m_sEndDate));
+			$sEndDate = trim($this->m_sEndDate);
 			$oStartDate = BAB_DateTime::fromIsoDateTime($sEndDate);
 			$oStartDate->init($oStartDate->_iYear, $oStartDate->_iMonth, $oStartDate->_iDay, 00, 00, 00);
 			$sStartDate = date('Y-m-d H:i:s', $oStartDate->getTimeStamp());
@@ -1581,21 +1578,26 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 		{
 			if($this->isTaskValid())
 			{
-				$iProposable = (int) bab_rp('oProposable', BAB_TM_NO);
+				$iProposable = BAB_TM_NO;
+				if((int) $GLOBALS['BAB_SESS_USERID'] !== (int) $this->m_iIdTaskResponsible)
+				{
+					$iProposable = (int) bab_rp('oProposable', BAB_TM_NO);
+				}
+				
 				$iParticipationStatus = (int) (BAB_TM_NO == $iProposable) ? BAB_TM_ACCEPTED : BAB_TM_TENTATIVE;
 				
 				$this->m_iIsLinked = (false === $this->m_oTask->m_bIsFirstTask && BAB_TM_YES === $this->m_iIsLinked) ? 
 					BAB_TM_YES : BAB_TM_NO;
 				
-				$sStartDate = mysql_escape_string(trim($this->m_sStartDate));
-				$sEndDate = mysql_escape_string(trim($this->m_sEndDate));
+				$sStartDate = trim($this->m_sStartDate);
+				$sEndDate = trim($this->m_sEndDate);
 				
 				$aTask =& $this->m_oTask->m_aTask;
 				
 				$aTask['iIdProject']			= $this->m_iIdProject;
-				$aTask['sTaskNumber']			= mysql_escape_string($this->m_sTaskNumber);
-				$aTask['sDescription']			= mysql_escape_string($this->m_sDescription);
-				$aTask['sShortDescription']		= mysql_escape_string(substr($this->m_sShortDescription, 0, 255));
+				$aTask['sTaskNumber']			= $this->m_sTaskNumber;
+				$aTask['sDescription']			= $this->m_sDescription;
+				$aTask['sShortDescription']		= substr($this->m_sShortDescription, 0, 255);
 				$aTask['iIdCategory']			= $this->m_iIdCategory;
 				$aTask['sCreated']				= $this->m_sCreated;
 				$aTask['iIdUserCreated']		= $this->m_iIdUserCreated;
@@ -1675,9 +1677,9 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 				$aTask =& $this->m_oTask->m_aTask;
 				
 				$aTask['iIdProject']			= $this->m_iIdProject;
-				$aTask['sTaskNumber']			= mysql_escape_string($this->m_sTaskNumber);
-				$aTask['sDescription']			= mysql_escape_string($this->m_sDescription);
-				$aTask['sShortDescription']		= mysql_escape_string(substr($this->m_sShortDescription, 0, 255));
+				$aTask['sTaskNumber']			= $this->m_sTaskNumber;
+				$aTask['sDescription']			= $this->m_sDescription;
+				$aTask['sShortDescription']		= substr($this->m_sShortDescription, 0, 255);
 				$aTask['iIdCategory']			= $this->m_iIdCategory;
 				$aTask['sCreated']				= $this->m_sCreated;
 				$aTask['iIdUserCreated']		= $this->m_iIdUserCreated;
@@ -1726,9 +1728,9 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 				$aTask =& $this->m_oTask->m_aTask;
 				
 				$aTask['iIdProject']			= $this->m_iIdProject;
-				$aTask['sTaskNumber']			= mysql_escape_string($this->m_sTaskNumber);
-				$aTask['sDescription']			= mysql_escape_string($this->m_sDescription);
-				$aTask['sShortDescription']		= mysql_escape_string(substr($this->m_sShortDescription, 0, 255));
+				$aTask['sTaskNumber']			= $this->m_sTaskNumber;
+				$aTask['sDescription']			= $this->m_sDescription;
+				$aTask['sShortDescription']		= substr($this->m_sShortDescription, 0, 255);
 				$aTask['iIdCategory']			= $this->m_iIdCategory;
 				$aTask['sCreated']				= $this->m_sCreated;
 				$aTask['iIdUserCreated']		= $this->m_iIdUserCreated;
@@ -1811,20 +1813,21 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 		{
 			if($this->isTaskValid())
 			{
-				$iProposable = (int) bab_rp('oProposable', BAB_TM_NO);
+				$iProposable = BAB_TM_NO;
+				if((int) $GLOBALS['BAB_SESS_USERID'] !== (int) $this->m_iIdTaskResponsible)
+				{
+					$iProposable = (int) bab_rp('oProposable', BAB_TM_NO);
+				}
 
 				$this->m_iIsLinked = (false === $this->m_oTask->m_bIsFirstTask && BAB_TM_YES === $this->m_iIsLinked) ? 
 					BAB_TM_YES : BAB_TM_NO;
 
-				$sStartDate = mysql_escape_string($this->m_sStartDate);
-				$sEndDate = mysql_escape_string($this->m_sEndDate);
-
 				$aTask =& $this->m_oTask->m_aTask;
 
 //				$aTask['iIdProject']			= $this->m_iIdProject;
-				$aTask['sTaskNumber']			= mysql_escape_string($this->m_sTaskNumber);
-				$aTask['sDescription']			= (BAB_TM_TASK_RESPONSIBLE !== $this->m_iUserProfil) ? mysql_escape_string($this->m_sDescription) : $aTask['sShortDescription'];
-				$aTask['sShortDescription']		= (BAB_TM_TASK_RESPONSIBLE !== $this->m_iUserProfil) ? mysql_escape_string(substr($this->m_sShortDescription, 0, 255)) : $aTask['sShortDescription'];
+				$aTask['sTaskNumber']			= $this->m_sTaskNumber;
+				$aTask['sDescription']			= (BAB_TM_TASK_RESPONSIBLE !== $this->m_iUserProfil) ? $this->m_sDescription : $aTask['sShortDescription'];
+				$aTask['sShortDescription']		= (BAB_TM_TASK_RESPONSIBLE !== $this->m_iUserProfil) ? substr($this->m_sShortDescription, 0, 255) : $aTask['sShortDescription'];
 				$aTask['iIdCategory']			= $this->m_iIdCategory;
 //				$aTask['sCreated']				= $this->m_sCreated;
 //				$aTask['iIdUserCreated']		= $this->m_iIdUserCreated;
@@ -1841,16 +1844,16 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 //				$aTask['sColor']				= $this->m_sColor;
 //				$aTask['iPosition']				= $this->m_iPosition;
 				$aTask['iCompletion']			= $this->m_iCompletion;
-				$aTask['sStartDate']			= $sStartDate;
-				$aTask['sEndDate'] 				= $sEndDate;
+				$aTask['sStartDate']			= $this->m_sStartDate;
+				$aTask['sEndDate'] 				= $this->m_sEndDate;
 				$aTask['iIsNotified']			= BAB_TM_YES;
 
 				if(-1 != $this->m_iAnswer)
 				{
-					$aTask['iParticipationStatus'] = (BAB_TM_YES == $this->m_iAnswer) ? BAB_TM_ACCEPTED : BAB_TM_ENDED;
+					$aTask['iParticipationStatus'] = (BAB_TM_YES == $this->m_iAnswer) ? BAB_TM_ACCEPTED : BAB_TM_REFUSED;
 				}
 				
-				if(100 <= $this->m_iCompletion || BAB_TM_ENDED == $aTask['iParticipationStatus'])
+				if(100 >= (int) $this->m_iCompletion || BAB_TM_ENDED == $aTask['iParticipationStatus'])
 				{
 					$aTask['sEndDate'] = date("Y-m-d");
 					$aTask['iParticipationStatus'] = BAB_TM_ENDED;
@@ -1878,10 +1881,44 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 					}
 					
 					$this->processSpecificFieldIntance();
+					
+					$this->updateDependingTask($this->m_iIdTask, $aTask);
 				}
 				return true;
 			}
 			return false;			
+		}
+		
+		function updateDependingTask($iIdTask, $aTask)
+		{
+bab_debug('A terminer, PB avec la date butoir de fin');
+			return;	
+			$aDependingTasks = array();
+			
+			bab_getDependingTasks($iIdTask, $aDependingTasks);
+			
+			if(count($aDependingTasks) > 0)
+			{
+				foreach($aDependingTasks as $key => $value)
+				{
+					//$value[iIdTask]
+					//$value[iIdResponsible]
+					
+					$aDependingTask = array();
+					if(true === bab_getTask($value['iIdTask'], $aDependingTask))
+					{
+						if(BAB_TM_START_TO_START === (int) $value['iLinkType'])
+						{
+							$aDependingTask['startDate'] = $aTask['startDate'];
+							bab_updateTask($aDependingTask['id'], $aDependingTask);
+							$this->noticeTaskUpdatedBy(BAB_TM_EV_TASK_UPDATED_BY_MGR);
+						}
+						else if(BAB_TM_END_TO_START === (int) $value['iLinkType'])
+						{
+						}
+					}
+				}
+			}
 		}
 		
 		function processTaskResponsible($iProposable)
@@ -1958,7 +1995,7 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 			{
 				if(!isset($aDeletableSpfObjects[$key]))
 				{
-					bab_updateSpecificInstanceValue($key, mysql_escape_string(trim($value)));
+					bab_updateSpecificInstanceValue($key, trim($value));
 				}
 				else
 				{
@@ -1977,9 +2014,9 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 				$aTask =& $this->m_oTask->m_aTask;
 				
 				$aTask['iIdProject']			= $this->m_iIdProject;
-				$aTask['sTaskNumber']			= mysql_escape_string($this->m_sTaskNumber);
-				$aTask['sDescription']			= mysql_escape_string($this->m_sDescription);
-				$aTask['sShortDescription']		= mysql_escape_string(substr($this->m_sShortDescription, 0, 255));
+				$aTask['sTaskNumber']			= $this->m_sTaskNumber;
+				$aTask['sDescription']			= $this->m_sDescription;
+				$aTask['sShortDescription']		= substr($this->m_sShortDescription, 0, 255);
 				$aTask['iIdCategory']			= $this->m_iIdCategory;
 				$aTask['sModified']				= $this->m_sModified;
 				$aTask['iIdUserModified']		= $this->m_iIdUserModified;
@@ -2025,9 +2062,9 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 				$aTask =& $this->m_oTask->m_aTask;
 				
 				$aTask['iIdProject']			= $this->m_iIdProject;
-				$aTask['sTaskNumber']			= mysql_escape_string($this->m_sTaskNumber);
-				$aTask['sDescription']			= mysql_escape_string($this->m_sDescription);
-				$aTask['sShortDescription']		= mysql_escape_string(substr($this->m_sShortDescription, 0, 255));
+				$aTask['sTaskNumber']			= $this->m_sTaskNumber;
+				$aTask['sDescription']			= $this->m_sDescription;
+				$aTask['sShortDescription']		= substr($this->m_sShortDescription, 0, 255);
 				$aTask['iIdCategory']			= $this->m_iIdCategory;
 				$aTask['sModified']				= $this->m_sModified;
 				$aTask['iIdUserModified']		= $this->m_iIdUserModified;
