@@ -1381,6 +1381,7 @@ function submit_form()
 	<input type="hidden" name="iIdProjectSpace" value="{ m_datas[iIdProjectSpace] }" />
 	<input type="hidden" name="iIdProject" value="{ m_datas[iIdProject] }" />
 
+<!--#if m_datas[isProjectCreator] -->
 	<fieldset>
 		<legend>{ m_captions[Project] }</legend>
 		<br />
@@ -1417,7 +1418,9 @@ function submit_form()
 			</tr>
 		</table>
 	</fieldset>
+<!--#endif m_datas[isProjectCreator] -->
 	
+<!--#if m_datas[isProjectManager] -->
 	<fieldset>
 		<legend>{ m_captions[Configuration] }</legend>
 		<br />
@@ -1495,6 +1498,7 @@ function submit_form()
 			</tr>
 		</table>
 	</fieldset>
+<!--#endif m_datas[isProjectManager] -->
 	
 	<br />
 	<div align="center">

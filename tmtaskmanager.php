@@ -115,8 +115,8 @@ function displayProjectsSpacesList()
 				{
 					$oProjectSpaceElement =& $this->createElement($this->m_dnps . '_' . $datas['id'], $this->m_dnps, bab_toHtml($datas['name']), 
 						bab_toHtml($datas['description']), null);
-					
-					if(bab_isAccessValid(BAB_TSKMGR_PROJECT_CREATOR_GROUPS_TBL, $datas['id']))
+
+					if(bab_isAccessValid(BAB_TSKMGR_PROJECT_CREATOR_GROUPS_TBL, (int) $datas['id']))
 					{
 						$oProjectSpaceElement->addAction('add',
 			               bab_toHtml(bab_translate("Add a project")), $GLOBALS['babSkinPath'] . 'images/Puces/edit_add.png', 
@@ -512,6 +512,11 @@ function displayProjectPropertiesForm()
 					$this->set_data('faqUrl', '');
 					$this->set_data('iIdConfiguration', -1);
 		
+					$this->set_data('isProjectCreator', 
+						bab_isAccessValid(BAB_TSKMGR_PROJECT_CREATOR_GROUPS_TBL, $iIdProjectSpace));
+					$this->set_data('isProjectManager', 
+						bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject));
+					
 					$this->m_aTaskNumerotation = array(
 						BAB_TM_MANUAL => bab_translate("Manual"), BAB_TM_SEQUENTIAL => bab_translate("Sequential (automatique)"),
 						BAB_TM_YEAR_SEQUENTIAL => bab_translate("Year + Sequential (automatique)"),
@@ -575,8 +580,7 @@ function displayProjectPropertiesForm()
 					
 					if(!$isEmpty)
 					{
-						$this->get_data('aTaskNumerotation', $aTaskNumerotation);
-						$this->set_data('tmValue', $aTaskNumerotation[$aDPC['tasksNumerotation']]);
+						$this->set_data('tmValue', $this->m_aTaskNumerotation[$aDPC['tasksNumerotation']]);
 					}
 				}
 				
@@ -814,7 +818,7 @@ function displayTaskList()
 	$isProject = (int) bab_rp('isProject', 0);
 	$iIdProject = (int) bab_rp('iIdProject', 0);
 	
-	$sTitle = bab_translate("My task(s)");
+	$sTitle = bab_translate("My tasks");
 	
 	if(1 === $isProject)
 	{
@@ -1810,8 +1814,19 @@ function savePersonnalTaskConfiguration()
 
 function modifyProjectProperties()
 {
-	saveProjectConfiguration();
-	addModifyProject();
+	$oTmCtx =& getTskMgrContext();
+	$iIdProjectSpace = (int) $oTmCtx->getIdProjectSpace();
+	$iIdProject = (int) $oTmCtx->getIdProject();
+
+	if(bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject))
+	{
+		saveProjectConfiguration();
+	}
+	
+	if(true === bab_isAccessValid(BAB_TSKMGR_PROJECT_CREATOR_GROUPS_TBL, $iIdProjectSpace))
+	{
+		addModifyProject();
+	}
 }
 
 /* main */

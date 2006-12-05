@@ -1853,9 +1853,9 @@ $this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER &
 					$aTask['iParticipationStatus'] = (BAB_TM_YES == $this->m_iAnswer) ? BAB_TM_ACCEPTED : BAB_TM_REFUSED;
 				}
 				
-				if(100 >= (int) $this->m_iCompletion || BAB_TM_ENDED == $aTask['iParticipationStatus'])
+				if((int) $this->m_iCompletion >= 100 || BAB_TM_ENDED === (int) $aTask['iParticipationStatus'])
 				{
-					$aTask['sEndDate'] = date("Y-m-d");
+					$aTask['sEndDate'] = date("Y-m-d") . ' 23:59:59';
 					$aTask['iParticipationStatus'] = BAB_TM_ENDED;
 					/*bab_startDependingTask($this->m_iIdProjectSpace, $this->m_iIdProject, 
 						$this->m_iIdTask, BAB_TM_END_TO_START);//*/
