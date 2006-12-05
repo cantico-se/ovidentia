@@ -2051,12 +2051,12 @@
 <string id="Task creation">Création tâche</string>
 <string id="The task %s have been added to the project %s in the project space %s">La tâche %s a été ajoutée au projet %s dans l'espace projets %s</string>
 <string id="Task update">Mise à jour d'une tâche</string>
-<string id="The task %s of the project %s in the project space %s have been updated by %s">La tâche %s du projet %s dans l'espace projets %s a été supprimée par %s</string>
+<string id="The task %s of the project %s in the project space %s have been updated by %s">La tâche %s du projet %s dans l'espace projets %s a été mise à jour par %s</string>
 <string id="Task deletion">Suppression d'une tâche</string>
 <string id="The task %s of the project %s in the project space %s have been deleted by %s">La tâche %s du projet %s dans l'espace projets %s a été supprimée par %s</string>
 <string id="Notice alert">Notification d'alerte</string>
 <string id="The task %s of the project %s in the project space %s is about to exceed the envisaged time">La tâche %s du projet %s dans l'espace projets %s est sur le point de dépasser le temps alloué</string>
-<string id="Task responsible">Utilisateurs pouvant être responsables de tâches</string>
+<string id="Task responsible">Responsables de tâches</string>
 <string id="You are responsible for task %s of the %s project in %s project space">Vous êtes le responsable de la tâche %s du projet %s dans l'espace projets %s</string>
 <string id="You are not responsible any more for the task %s of the %s project in %s project space">Vous n'êtes plus responsable de la tâche %s du projet %s de l'espace projets %s</string>
 <string id="You are responsible for task %s of the %s project in %s project space. Please accept/refuse">Vous êtes responsable de la tâche %s du projet %s de l'espce projets %s. Veuillez accepter ou refuser </string>
@@ -2102,7 +2102,7 @@
 <string id="Display tasks list">Afficher la liste des tâches</string>
 <string id="Edition of a project">Edition d'un projet</string>
 <string id="You do not have the right to create/modify a project">Vous n'avez pas les droits suffisants pour créer ou modifier le projet</string>
-<string id="This action will delete the project and all references">Cette action supprimele projet et toutes références</string>
+<string id="This action will delete the project and all references">Cette action supprime le projet et toutes ses références</string>
 <string id="Project = ">Projet = </string>
 <string id="Delete project">Supprimer le projet</string>
 <string id="You do not have the right to delete a project">Vous n'avez pas les droits suffisants pour supprimer le projet</string>
@@ -2284,7 +2284,7 @@
 <string id="Background color">Couleur du fond</string>
 <string id="You are not a projet manager">Vous n'êtes pas gestionnaire</string>
 <string id="Project properties">Propriétés du projet</string>
-<string id="My task(s)">Mes tâche(s)</string>
+<string id="My tasks">Mes tâches</string>
 <string id="You are not a projects manager">Vous n'êtes pas gestionnaire</string>
 <string id="Tasks of the project">Tâches du projet</string>
 <string id="Who can connect as user of web services">Qui peut s'authentifier par les Web services</string>
@@ -2392,4 +2392,13 @@
 <string id="To order files, drag and drop and don't forget to save">Pour ordonner les fichiers, glisser et déposez et n'oubliez pas de sauvegarder</string>
 <string id="Some tags doesn't exist">Certains mots clés n'existent pas</string>
 <string id="You must sepcify at least one tag">Vous devez spécifier au moins un mot clé</string>
+<string id="Add selected users">Ajouter les utilisateurs sélectionnés</string>
+<string id="The file is not on the server">Le fichier n'est pas sur le serveur</string>
+<string id="The directory is writable but this is not the full pathname">Le répertoire est accessible en écriture, mais ce n'est pas le chemin complet</string>
+<string id="The addons directory is not writable">Le répertoire addons n'est pas accessible en écriture</string>
+<string id="Gantt view">Vue gantt</string>
+<string id="Loading...">En cours de chargement...</string>
+<string id="Fit width">Ajuster à la largeur de la page</string>
+<string id="Visible levels">Niveaux visibles</string>
+
 </fr>
