@@ -447,7 +447,7 @@ CREATE TABLE bab_topics (
   max_articles tinyint(3) unsigned NOT NULL default '0',
   allow_manupdate enum('0','1','2') NOT NULL default '0',
   auto_approbation enum('N','Y') NOT NULL default 'N',
-  busetags enum('Y','N') NOT NULL default 'Y',
+  busetags enum('N','Y') NOT NULL default 'N',
   PRIMARY KEY  (id),
   KEY id_cat (id_cat)
 );
