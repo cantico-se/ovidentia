@@ -145,6 +145,11 @@ class BAB_MultiPageBase
 	
 	var $m_iDummy = 0;
 	
+	var $m_aAdditionnalPaginationAndFormParameters = array();
+	var $m_sAdditionnalParameterName = '';
+	var $m_sAdditionnalParameterValue = '';
+	var $m_iAdditionnalParameterCount = 0;
+	
 	function BAB_MultiPageBase()
 	{
 		$this->sPrevPageText = bab_translate("Prev");
@@ -178,6 +183,9 @@ class BAB_MultiPageBase
 		
 		$this->sTg = bab_rp('tg', '');
 		$this->sIdx = bab_rp('idx', '');
+		
+		$this->m_sAdditionnalParameterName = '';
+		$this->m_sAdditionnalParameterValue = '';
 	}
 	
 	function getNextColumnHeader()
@@ -288,6 +296,24 @@ class BAB_MultiPageBase
 		return false;
 	}
 	
+	function getNextAdditionnalParameter()
+	{
+		$datas = each($this->m_aAdditionnalPaginationAndFormParameters);
+		if(false != $datas)
+		{
+			$this->m_sAdditionnalParameterName = htmlentities($datas['key']);
+			$this->m_sAdditionnalParameterValue = htmlentities($datas['value']);
+			return true;
+		}
+		else
+		{
+			$this->m_sAdditionnalParameterName = '';
+			$this->m_sAdditionnalParameterValue = '';
+			reset($this->m_aAdditionnalPaginationAndFormParameters);
+			return false;
+		}
+	}
+
 	/* calcul l'offset de début et de fin */
 	function computeStartEndPos()
 	{
@@ -424,8 +450,17 @@ bab_debug('8 heures de train');
 		$sPageUrl = ereg_replace('\?tg=[^&.]+', '', $_SERVER['REQUEST_URI']);
 		$sPageUrl = ereg_replace('&iPage=[^&.]+', '', $sPageUrl);
 		$sPageUrl = ereg_replace('&iNbRowsPerPage=[^&.]+', '', $sPageUrl);
-		$sPageUrl = '?tg=' . $this->sTg;
-		return htmlentities($sPageUrl .= '&iPage=' . $iPageNumber . '&iNbRowsPerPage=' . $this->iNbRowsPerPage);
+		
+		$sExtraParams = '';
+		reset($this->m_aAdditionnalPaginationAndFormParameters);
+		foreach($this->m_aAdditionnalPaginationAndFormParameters as $sName => $sValue)
+		{
+			$sPageUrl = ereg_replace('&' . $sName . '=[^&.]+', '', $sPageUrl);
+			$sExtraParams .= '&' . $sName . '=' . urlencode($sValue);
+		}
+		$sPageUrl = '?tg=' . urlencode($this->sTg);
+		
+		return htmlentities($sPageUrl .= '&iPage=' . urlencode($iPageNumber) . '&iNbRowsPerPage=' . urlencode($this->iNbRowsPerPage) . $sExtraParams);
 	}
 	
 	function getPagination()
@@ -443,6 +478,7 @@ bab_debug('8 heures de train');
 		$this->sStatusLine = $this->getStatusLine();
 		$this->sPagination = $this->getPagination();
 
+		reset($this->m_aAdditionnalPaginationAndFormParameters);
 		return bab_printTemplate($this, $this->sTemplateFileName, $this->sMultipageTemplate);
 	}
 		
@@ -474,6 +510,11 @@ bab_debug('8 heures de train');
 			return htmlentities(sprintf($sString, $this->iTotalNumOfRows, 
 				((1 < $this->iTotalNumOfRows) ? $sResults : $sResult), $sPage));
 		}
+	}
+	
+	function addPaginationAndFormParameters($sName, $sValue)
+	{
+		$this->m_aAdditionnalPaginationAndFormParameters[$sName] = $sValue;
 	}
 }
 ?>

@@ -983,9 +983,6 @@ function check_all(strCtrlName, checked)
 				<input type="submit" value="{ m_captions[sAdd] }" onclick="on_btn_clicked('{ m_datas[iAddIdx] }', '{ m_datas[iAddAction] }')" />
 			<!--#else m_iIdTask -->
 				<input type="submit" value="{ m_captions[sModify] }" onclick="on_btn_clicked('{ m_datas[iModifyIdx] }', '{ m_datas[iModifyAction] }')" />
-				<!--#if m_datas[isStoppable] -->
-					<input type="submit" value="{ m_captions[sStop] }" onclick="on_btn_clicked('{ m_datas[iStopIdx] }', '{ m_datas[iStopAction] }')" />
-				<!--#endif m_datas[isStoppable] -->
 				<!--#if m_datas[isDeletable] -->
 					<input type="submit" value="{ m_captions[sDelete] }" onclick="on_btn_clicked('{ m_datas[iDeleteIdx] }', '{ m_datas[iDeleteAction] }')" />
 				<!--#endif m_datas[isDeletable] -->
@@ -1384,6 +1381,7 @@ function submit_form()
 	<input type="hidden" name="iIdProjectSpace" value="{ m_datas[iIdProjectSpace] }" />
 	<input type="hidden" name="iIdProject" value="{ m_datas[iIdProject] }" />
 
+<!--#if m_datas[isProjectCreator] -->
 	<fieldset>
 		<legend>{ m_captions[Project] }</legend>
 		<br />
@@ -1420,7 +1418,9 @@ function submit_form()
 			</tr>
 		</table>
 	</fieldset>
+<!--#endif m_datas[isProjectCreator] -->
 	
+<!--#if m_datas[isProjectManager] -->
 	<fieldset>
 		<legend>{ m_captions[Configuration] }</legend>
 		<br />
@@ -1498,6 +1498,7 @@ function submit_form()
 			</tr>
 		</table>
 	</fieldset>
+<!--#endif m_datas[isProjectManager] -->
 	
 	<br />
 	<div align="center">

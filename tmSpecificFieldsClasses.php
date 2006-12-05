@@ -57,24 +57,31 @@ class BAB_TM_FieldBase extends BAB_BaseFormProcessing
 		$this->set_caption('type', bab_translate("Type"));
 
 		
-		$this->set_data('sTextSelected', '');
-		$this->set_data('sChoiceSelected', '');
-		$this->set_data('sAreaSelected', '');
-		$this->set_data('sOptionChecked', '');
-		$this->set_data('sOptionText', '');
+		$this->set_htmlData('sTextSelected', '');
+		$this->set_htmlData('sChoiceSelected', '');
+		$this->set_htmlData('sAreaSelected', '');
+		$this->set_htmlData('sOptionChecked', '');
+		$this->set_htmlData('sOptionText', '');
 
 		$this->set_data('isDeletable', false);
-		$this->set_data('sFieldName', '');
-		$this->set_data('sFieldValue', '');
-		$this->set_data('sFieldType', '');
-		$this->set_data('iRefCount', 0);
+		$this->set_htmlData('sFieldName', '');
+		$this->set_htmlData('sFieldValue', '');
+		$this->set_htmlData('sFieldType', '');
+		$this->set_htmlData('iRefCount', 0);
 
-		$this->set_data('iTextType', BAB_TM_TEXT_FIELD);
-		$this->set_data('iAreaType', BAB_TM_TEXT_AREA_FIELD);
-		$this->set_data('iChoiceType', BAB_TM_RADIO_FIELD);
+		$this->set_htmlData('iTextType', BAB_TM_TEXT_FIELD);
+		$this->set_htmlData('iAreaType', BAB_TM_TEXT_AREA_FIELD);
+		$this->set_htmlData('iChoiceType', BAB_TM_RADIO_FIELD);
 		
-		$this->set_data('tg', bab_rp('tg', ''));
+		$this->set_htmlData('tg', bab_rp('tg', ''));
 		$this->set_data('displaySpecificFieldFormIdx', BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_FORM);
+		
+		$this->set_htmlData('addIdx', BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_LIST);
+		$this->set_htmlData('addAction', BAB_TM_ACTION_ADD_SPECIFIC_FIELD);
+		$this->set_htmlData('modifyIdx', BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_LIST);
+		$this->set_htmlData('modifyAction', BAB_TM_ACTION_MODIFY_SPECIFIC_FIELD);
+		$this->set_htmlData('delIdx', BAB_TM_IDX_DISPLAY_DELETE_SPECIFIC_FIELD_FORM);
+		$this->set_htmlData('delAction', '');
 		
 		$this->set_data('addIdx', BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_LIST);
 		$this->set_data('addAction', BAB_TM_ACTION_ADD_SPECIFIC_FIELD);
@@ -82,15 +89,19 @@ class BAB_TM_FieldBase extends BAB_BaseFormProcessing
 		$this->set_data('modifyAction', BAB_TM_ACTION_MODIFY_SPECIFIC_FIELD);
 		$this->set_data('delIdx', BAB_TM_IDX_DISPLAY_DELETE_SPECIFIC_FIELD_FORM);
 		$this->set_data('delAction', '');
-		
+
 		$oTmCtx =& getTskMgrContext();
-		$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
-		$iIdProject = $oTmCtx->getIdProject();
-		$this->set_data('iIdProjectSpace', $iIdProjectSpace);
-		$this->set_data('iIdProject', $iIdProject);
-		$this->set_data('iIdUser', (int) bab_rp('iIdUser', 0));
+		$iIdProjectSpace = (int) $oTmCtx->getIdProjectSpace();
+		$iIdProject = (int) $oTmCtx->getIdProject();
+		$this->set_htmlData('iIdProjectSpace', $iIdProjectSpace);
 		$this->set_data('iFieldType', (int) bab_rp('iFieldType', BAB_TM_TEXT_FIELD));
+		$this->set_htmlData('iIdProject', $iIdProject);
+		$this->set_htmlData('iIdField', (int) bab_rp('iIdField', 0));
+		$this->set_htmlData('iIdUser', (int) bab_rp('iIdUser', 0));
+		
+		$this->set_data('iIdProject', $iIdProject);
 		$this->set_data('iIdField', (int) bab_rp('iIdField', 0));
+		$this->set_data('iIdUser', (int) bab_rp('iIdUser', 0));
 
 		if(!isset($_POST['iIdField']) && !isset($_GET['iIdField']))
 		{
@@ -128,8 +139,8 @@ class BAB_TM_FieldBase extends BAB_BaseFormProcessing
 	
 	function getResubmittedDatas()
 	{
-		$this->set_data('sFieldName', bab_rp('sFieldName', ''));
-		$this->set_data('sFieldValue', bab_rp('sFieldValue', ''));
+		$this->set_htmlData('sFieldName', bab_rp('sFieldName', ''));
+		$this->set_htmlData('sFieldValue', bab_rp('sFieldValue', ''));
 	}
 }
 
@@ -145,37 +156,19 @@ class BAB_TM_FieldText extends BAB_TM_FieldBase
 	{
 		$db = &$GLOBALS['babDB'];
 		
-		$this->set_data('sFieldType', bab_translate("Text"));
+		$this->set_htmlData('sFieldType', bab_translate("Text"));
 		$this->get_data('iIdProject', $iIdProject);
 		$this->get_data('iIdField', $iIdField);
-		$this->get_data('iIdUser', $iIdUser);
 		
-		$query = 
-			'SELECT ' .
-				'fb.name name, ' .
-				'fb.refCount refCount, ' .
-				'fb.idProject idProject, ' .
-				'ft.defaultValue defaultValue, ' .
-				'IF(fb.idProject = \'' . $iIdProject . '\' AND fb.refCount = \'' . 0 . '\', 1, 0) is_deletable ' .
-			'FROM ' . 
-				BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' fb ' .
-			'LEFT JOIN ' .
-				BAB_TSKMGR_SPECIFIC_FIELDS_TEXT_CLASS_TBL . ' ft ON ft.id = fb.id ' .
-			'WHERE ' . 
-				'fb.id = \'' . $iIdField . '\'';
-
-		//bab_debug($query);
-		
-		$result = $db->db_query($query);
+		$result = $db->db_query(bab_getSpecificTextFieldClassInfoQuery($iIdProject, $iIdField));
 		if(false != $result && $db->db_num_rows($result) > 0)
 		{
 			$datas = $db->db_fetch_assoc($result);
 			if(false != $datas)
 			{
-				//bab_debug($datas);
-				$this->set_data('sFieldName', htmlentities($datas['name'], ENT_QUOTES));
-				$this->set_data('sFieldValue', htmlentities($datas['defaultValue'], ENT_QUOTES));
-				$this->set_data('iRefCount', $datas['refCount']);
+				$this->set_htmlData('sFieldName', $datas['name']);
+				$this->set_htmlData('sFieldValue', $datas['defaultValue']);
+				$this->set_htmlData('iRefCount', $datas['refCount']);
 				$this->set_data('is_deletable', $datas['is_deletable']);
 				$this->set_data('is_modifiable', ($datas['idProject'] == $iIdProject));
 			}
@@ -184,7 +177,7 @@ class BAB_TM_FieldText extends BAB_TM_FieldBase
 
 	function buildHtmlselectFieldType()
 	{
-		$this->set_data('sTextSelected', 'selected="selected"');
+		$this->set_htmlData('sTextSelected', 'selected="selected"');
 		$this->set_data('selectFieldType', bab_printTemplate($this, 'tmCommon.html', 'selectFieldType'));
 	}
 	
@@ -207,35 +200,19 @@ class BAB_TM_FieldArea extends BAB_TM_FieldBase
 	{
 		$db = &$GLOBALS['babDB'];
 		
-		$this->set_data('sFieldType', bab_translate("Text Area"));
+		$this->set_htmlData('sFieldType', bab_translate("Text Area"));
 		$this->get_data('iIdProject', $iIdProject);
 		$this->get_data('iIdField', $iIdField);
 		
-		$query = 
-			'SELECT ' .
-				'fb.name name, ' .
-				'fb.refCount refCount, ' .
-				'fb.idProject idProject, ' .
-				'fa.defaultValue defaultValue, ' .
-				'IF(fb.idProject = \'' . $iIdProject . '\' AND fb.refCount = \'' . 0 . '\', 1, 0) is_deletable ' .
-			'FROM ' . 
-				BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' fb ' .
-			'LEFT JOIN ' .
-				BAB_TSKMGR_SPECIFIC_FIELDS_AREA_CLASS_TBL . ' fa ON fa.id = fb.id ' .
-			'WHERE ' . 
-				'fb.id = \'' . $iIdField . '\'';
-
-		//echo $query . '<br />';
-		
-		$result = $db->db_query($query);
+		$result = $db->db_query(bab_getSpecificAreaFieldClassInfoQuery($iIdProject, $iIdField));
 		if(false != $result && $db->db_num_rows($result) > 0)
 		{
 			$datas = $db->db_fetch_assoc($result);
 			if(false != $datas)
 			{
-				$this->set_data('sFieldName', htmlentities($datas['name'], ENT_QUOTES));
-				$this->set_data('sFieldValue', htmlentities($datas['defaultValue'], ENT_QUOTES));
-				$this->set_data('iRefCount', $datas['refCount']);
+				$this->set_htmlData('sFieldName', $datas['name']);
+				$this->set_htmlData('sFieldValue', $datas['defaultValue']);
+				$this->set_htmlData('iRefCount', $datas['refCount']);
 				$this->set_data('is_deletable', $datas['is_deletable']);
 				$this->set_data('is_modifiable', ($datas['idProject'] == $iIdProject));
 			}
@@ -244,7 +221,7 @@ class BAB_TM_FieldArea extends BAB_TM_FieldBase
 
 	function buildHtmlselectFieldType()
 	{
-		$this->set_data('sAreaSelected', 'selected="selected"');
+		$this->set_htmlData('sAreaSelected', 'selected="selected"');
 		$this->set_data('selectFieldType', bab_printTemplate($this, 'tmCommon.html', 'selectFieldType'));
 	}
 	
@@ -266,7 +243,7 @@ class BAB_TM_FieldRadio extends BAB_TM_FieldBase
 		$this->set_data('aOptions', bab_rp('aOptions', array('')));
 		
 		$this->get_data('aOptions', $aOptions);
-		$this->set_data('iOptionCount', (int) bab_rp('iOptionCount', count($aOptions)));
+		$this->set_htmlData('iOptionCount', (int) bab_rp('iOptionCount', count($aOptions)));
 		
 		$this->set_data('addOptionAction', BAB_TM_ACTION_ADD_OPTION);
 		$this->set_data('delOptionAction', BAB_TM_ACTION_DEL_OPTION);
@@ -276,26 +253,13 @@ class BAB_TM_FieldRadio extends BAB_TM_FieldBase
 	{
 		$db = &$GLOBALS['babDB'];
 
-		$this->set_data('sFieldType', bab_translate("Choice"));
+		$this->set_htmlData('sFieldType', bab_translate("Choice"));
 		$this->get_data('iIdField', $iIdField);
 		
 		$this->getOptionCount($iIdField);
 		$this->getFieldNameAndDefaultChoice($iIdField);
 
-		{
-			$query = 
-				'SELECT ' .
-					'frd.value defaultValue, ' .
-					'frd.position iPosition ' .
-				'FROM ' . 
-					BAB_TSKMGR_SPECIFIC_FIELDS_RADIO_CLASS_TBL . ' frd ' .
-				'WHERE ' . 
-					'frd.idFldBase = \'' . $iIdField . '\' ' .
-				'ORDER BY ' . 
-					'frd.position ASC';
-			
-			$this->m_result = $db->db_query($query);
-		}
+		$this->m_result = $db->db_query(bab_getSpecificChoiceFieldClassDefaultValueAndPositionQuery($iIdField));
 	}
 
 	function getResubmittedDatas()
@@ -314,7 +278,7 @@ class BAB_TM_FieldRadio extends BAB_TM_FieldBase
 
 	function buildHtmlselectFieldType()
 	{
-		$this->set_data('sChoiceSelected', 'selected="selected"');
+		$this->set_htmlData('sChoiceSelected', 'selected="selected"');
 		$this->set_data('selectFieldType', bab_printTemplate($this, 'tmCommon.html', 'selectFieldType'));
 	}
 	
@@ -325,44 +289,13 @@ class BAB_TM_FieldRadio extends BAB_TM_FieldBase
 	
 	function getOptionCount($iIdField)
 	{
-		$db = &$GLOBALS['babDB'];
-
-		$query = 
-			'SELECT ' .
-				'COUNT(DISTINCT(frd.id)) count ' .
-			'FROM ' . 
-				BAB_TSKMGR_SPECIFIC_FIELDS_RADIO_CLASS_TBL . ' frd ' .
-			'WHERE ' . 
-				'frd.idFldBase = \'' . $iIdField . '\'';
-
-		//bab_debug($query);
-
-		list($iOptionCount) = $db->db_fetch_row($db->db_query($query));
-		$this->set_data('iOptionCount', $iOptionCount);
+		$this->set_htmlData('iOptionCount', bab_getSpecificChoiceFieldClassOptionCount($iIdField));
 	}
 	
 	function selectFieldNameAndDefaultChoiceQuery($iIdProject, $iIdField)
 	{
 		$db = &$GLOBALS['babDB'];
-		
-		$query = 
-			'SELECT ' .
-				'fb.name sFieldName, ' .
-				'fb.refCount iRefCount, ' .
-				'fb.idProject idProject, ' .
-				'position iDefaultOption, ' .
-				'IF(fb.idProject = \'' . $iIdProject . '\' AND fb.refCount = \'' . 0 . '\', 1, 0) is_deletable ' .
-			'FROM ' . 
-				BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' fb ' .
-			'LEFT JOIN ' .
-				BAB_TSKMGR_SPECIFIC_FIELDS_RADIO_CLASS_TBL . ' frd ON frd.idFldBase = fb.id ' .
-			'WHERE ' . 
-				'fb.id = \'' . $iIdField . '\' AND ' .
-				'frd.isDefaultValue = \'' . BAB_TM_YES . '\'';
-
-		//bab_debug($query);
-
-		return $db->db_query($query);
+		return $db->db_query(bab_getSpecificChoiceFieldClassNameAndDefaultChoiceQuery($iIdProject, $iIdField));
 	}
 	
 	function getFieldNameAndDefaultChoice($iIdField)
@@ -376,7 +309,7 @@ class BAB_TM_FieldRadio extends BAB_TM_FieldBase
 			$datas = $db->db_fetch_assoc($result);
 			if(false != $datas)
 			{
-				$this->set_data('sFieldName', htmlentities($datas['sFieldName'], ENT_QUOTES));
+				$this->set_htmlData('sFieldName', $datas['sFieldName']);
 				$this->set_data('iRefCount', $datas['iRefCount']);
 				$this->set_data('iDefaultOption', $datas['iDefaultOption']);
 				$this->set_data('is_deletable', $datas['is_deletable']);
@@ -421,10 +354,10 @@ class BAB_TM_FieldRadio extends BAB_TM_FieldBase
 			if(false != $datas)
 			{
 				$sOption = 'option_' . $datas['iPosition'];				
-				$this->set_data('sOptionText', $sOption);
-				$this->set_data('sOptionNbr', $datas['iPosition']);
-				$this->set_data('sOptionValue', htmlentities($datas['defaultValue'], ENT_QUOTES));
-				$this->set_data('sOptionChecked', ($iDefaultOption == $datas['iPosition']) ? 'checked="checked"' : '');
+				$this->set_htmlData('sOptionText', $sOption);
+				$this->set_htmlData('sOptionNbr', $datas['iPosition']);
+				$this->set_htmlData('sOptionValue', $datas['defaultValue']);
+				$this->set_htmlData('sOptionChecked', ($iDefaultOption == $datas['iPosition']) ? 'checked="checked"' : '');
 				return true;
 			}
 		}
@@ -436,13 +369,11 @@ class BAB_TM_FieldRadio extends BAB_TM_FieldBase
 				if(false != $datas)
 				{
 					$sOption = 'option_' . $datas['key'];				
-					$this->set_data('sOptionText', $sOption);
-					$this->set_data('sOptionNbr', $datas['key']);
+					$this->set_htmlData('sOptionText', $sOption);
+					$this->set_htmlData('sOptionNbr', $datas['key']);
 					
-					//bab_debug('$aOptions[' . $aOptions[$datas['key']] . ']=' . $aOptions[$datas['key']] );
-					
-					$this->set_data('sOptionValue', htmlentities($aOptions[$datas['key']], ENT_QUOTES));
-					$this->set_data('sOptionChecked', ($iDefaultOption == $datas['key']) ? 'checked="checked"' : '');
+					$this->set_htmlData('sOptionValue', $aOptions[$datas['key']], ENT_QUOTES);
+					$this->set_htmlData('sOptionChecked', ($iDefaultOption == $datas['key']) ? 'checked="checked"' : '');
 					return true;
 				}
 			}

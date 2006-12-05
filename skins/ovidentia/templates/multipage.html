@@ -68,6 +68,9 @@ function hideOnNbRowPerPageChangedButton()
 <form method="get" action="{ babPhpSelf }" name="multipage">
 	<input type="hidden" name="tg" value="{ sTg }" />
 	<input type="hidden" name="idx" value="{ sIdx }" />
+	<!--#in getNextAdditionnalParameter -->
+	<input type="hidden" name="{ m_sAdditionnalParameterName }" value="{ m_sAdditionnalParameterValue }" />
+	<!--#endin getNextAdditionnalParameter -->
 	<input type="hidden" name="action" value="" />
 
 	<table width="99%" border="0" cellspacing="0" cellpadding="2" align="center" class="BabLoginCadreBackground">

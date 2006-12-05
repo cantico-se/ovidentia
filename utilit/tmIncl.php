@@ -22,15 +22,14 @@
  * USA.																	*
 ************************************************************************/
 include "base.php";
-
-require_once($GLOBALS['babInstallPath'] . 'utilit/workinghoursincl.php');
+require_once $GLOBALS['babInstallPath'] . 'utilit/workinghoursincl.php';
 
 
 //Project space functions
 
 function bab_selectProjectSpaceList()
 {
-	global $babBody, $babDB;
+	global $babDB, $babBody;
 
 	$query = 
 		'SELECT ' .
@@ -40,7 +39,7 @@ function bab_selectProjectSpaceList()
 		'FROM ' .
 			BAB_TSKMGR_PROJECTS_SPACES_TBL . ' ' .
 		'WHERE ' . 
-			'idDelegation =\'' . $babBody->currentAdmGroup . '\'';
+			'idDelegation =\'' . $babDB->db_escape_string($babBody->currentAdmGroup) . '\'';
 	
 	//bab_debug($query);
 	return $babDB->db_query($query);
@@ -48,7 +47,7 @@ function bab_selectProjectSpaceList()
 
 function bab_getProjectSpaceList(&$aProjectSpaceList)
 {
-	global $babBody, $babDB;
+	global $babDB;
 
 	$aProjectSpaceList = array();
 	
@@ -67,7 +66,7 @@ function bab_getProjectSpaceList(&$aProjectSpaceList)
 
 function bab_getProjectSpace($iIdProjectSpace, &$aProjectSpace)
 {
-	global $babBody, $babDB;
+	global $babDB;
 
 	$aProjectSpace = array();
 
@@ -81,7 +80,7 @@ function bab_getProjectSpace($iIdProjectSpace, &$aProjectSpace)
 		'FROM ' .
 			BAB_TSKMGR_PROJECTS_SPACES_TBL . ' ' .
 		'WHERE ' . 
-			'id =\'' . $iIdProjectSpace . '\'';
+			'id =\'' . $babDB->db_escape_string($iIdProjectSpace) . '\'';
 	
 	//bab_debug($query);
 	
@@ -100,7 +99,7 @@ function bab_getProjectSpace($iIdProjectSpace, &$aProjectSpace)
 
 function bab_isProjectSpaceExist($iIdDelegation, $sName)
 {
-	global $babBody, $babDB;
+	global $babDB;
 
 	$aProjectSpace = array();
 
@@ -110,8 +109,8 @@ function bab_isProjectSpaceExist($iIdDelegation, $sName)
 		'FROM ' .
 			BAB_TSKMGR_PROJECTS_SPACES_TBL . ' ' .
 		'WHERE ' . 
-			'idDelegation =\'' . $iIdDelegation . '\' AND ' .
-			'name =\'' . $sName . '\'';
+			'idDelegation =\'' . $babDB->db_escape_string($iIdDelegation) . '\' AND ' .
+			'name =\'' . $babDB->db_escape_string($sName) . '\'';
 	
 	//bab_debug($query);
 	
@@ -128,7 +127,7 @@ function bab_isProjectSpaceExist($iIdDelegation, $sName)
 
 function bab_deleteProjectSpace($iIdProjectSpace)
 {
-	global $babBody, $babDB;
+	global $babDB;
 
 	$query = 
 		'SELECT ' .
@@ -136,7 +135,7 @@ function bab_deleteProjectSpace($iIdProjectSpace)
 		'FROM ' .
 			BAB_TSKMGR_PROJECTS_TBL . ' ' .
 		'WHERE ' . 
-			'idProjectSpace =\'' . $iIdProjectSpace . '\'';
+			'idProjectSpace =\'' . $babDB->db_escape_string($iIdProjectSpace) . '\'';
 
 	//bab_debug($query);
 	
@@ -149,15 +148,15 @@ function bab_deleteProjectSpace($iIdProjectSpace)
 		}
 	}
 	
-	$query = 'DELETE FROM ' . BAB_TSKMGR_PROJECTS_SPACES_TBL . ' WHERE id = \'' . $iIdProjectSpace . '\''; 
+	$query = 'DELETE FROM ' . BAB_TSKMGR_PROJECTS_SPACES_TBL . ' WHERE id = \'' . $babDB->db_escape_string($iIdProjectSpace) . '\''; 
 	//bab_debug($query);
 	$babDB->db_query($query);
 	
-	$query = 'DELETE FROM ' . BAB_TSKMGR_DEFAULT_PROJECTS_CONFIGURATION_TBL . ' WHERE idProjectSpace = \'' . $iIdProjectSpace . '\''; 
+	$query = 'DELETE FROM ' . BAB_TSKMGR_DEFAULT_PROJECTS_CONFIGURATION_TBL . ' WHERE idProjectSpace = \'' . $babDB->db_escape_string($iIdProjectSpace) . '\''; 
 	//bab_debug($query);
 	$babDB->db_query($query);
 
-	$query = 'DELETE FROM ' . BAB_TSKMGR_CATEGORIES_TBL . ' WHERE idProjectSpace = \'' . $iIdProjectSpace . '\''; 
+	$query = 'DELETE FROM ' . BAB_TSKMGR_CATEGORIES_TBL . ' WHERE idProjectSpace = \'' . $babDB->db_escape_string($iIdProjectSpace) . '\''; 
 	//bab_debug($query);
 	$babDB->db_query($query);
 
@@ -178,7 +177,7 @@ function bab_deleteProjectSpace($iIdProjectSpace)
 
 function bab_createProjectSpace($iIdDelegation, $sName, $sDescription)
 {
-	global $babBody, $babDB;
+	global $babDB;
 
 	$query = 
 		'INSERT INTO ' . BAB_TSKMGR_PROJECTS_SPACES_TBL . ' ' .
@@ -188,8 +187,11 @@ function bab_createProjectSpace($iIdDelegation, $sName, $sDescription)
 			') ' .
 		'VALUES ' . 
 			'(\'\', \'' . 
-				$iIdDelegation . '\', \'' . $sName . '\', \'' . $sDescription . '\', \'' . 
-				date("Y-m-d H:i:s") . '\', \'' . $GLOBALS['BAB_SESS_USERID'] . 
+				$babDB->db_escape_string($iIdDelegation) . '\', \'' . 
+				$babDB->db_escape_string($sName) . '\', \'' . 
+				$babDB->db_escape_string($sDescription) . '\', \'' . 
+				$babDB->db_escape_string(date("Y-m-d H:i:s")) . '\', \'' . 
+				$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID']) . 
 			'\')'; 
 
 	//bab_debug($query);
@@ -203,18 +205,18 @@ function bab_createProjectSpace($iIdDelegation, $sName, $sDescription)
 
 function bab_updateProjectSpace($iIdProjectSpace, $sName, $sDescription)
 {
-	global $babBody, $babDB;
+	global $babDB;
 
 	$query = 
 		'UPDATE ' . 
 			BAB_TSKMGR_PROJECTS_SPACES_TBL . ' ' .
 		'SET ' . ' ' .
-				'`name` = \'' . $sName . '\', ' .
-				'`description` = \'' . $sDescription . '\', ' .
-				'`modified` = \'' . date("Y-m-d H:i:s") . '\', ' .
-				'`idUserModified` = \'' . $GLOBALS['BAB_SESS_USERID'] . '\' ' .
+				'`name` = \'' . $babDB->db_escape_string($sName) . '\', ' .
+				'`description` = \'' . $babDB->db_escape_string($sDescription) . '\', ' .
+				'`modified` = \'' . $babDB->db_escape_string(date("Y-m-d H:i:s")) . '\', ' .
+				'`idUserModified` = \'' . $babDB->db_escape_string($GLOBALS['BAB_SESS_USERID']) . '\' ' .
 		'WHERE ' . 
-			'`id` = \'' . $iIdProjectSpace . '\'';
+			'`id` = \'' . $babDB->db_escape_string($iIdProjectSpace) . '\'';
 
 	//bab_debug($query);
 	return $babDB->db_query($query);
@@ -222,7 +224,7 @@ function bab_updateProjectSpace($iIdProjectSpace, $sName, $sDescription)
 
 function bab_getDefaultProjectSpaceConfiguration($iIdProjectSpace, &$aConfiguration)
 {
-	global $babBody, $babDB;
+	global $babDB;
 
 	$aConfiguration = array();
 
@@ -238,7 +240,7 @@ function bab_getDefaultProjectSpaceConfiguration($iIdProjectSpace, &$aConfigurat
 		'FROM ' .
 			BAB_TSKMGR_DEFAULT_PROJECTS_CONFIGURATION_TBL . ' ' .
 		'WHERE ' . 
-			'idProjectSpace =\'' . $iIdProjectSpace . '\'';
+			'idProjectSpace =\'' . $babDB->db_escape_string($iIdProjectSpace) . '\'';
 	
 	//bab_debug($query);
 	
@@ -259,7 +261,7 @@ function bab_getDefaultProjectSpaceConfiguration($iIdProjectSpace, &$aConfigurat
 
 function bab_createDefaultProjectSpaceConfiguration($iIdProjectSpace)
 {
-	global $babBody, $babDB;
+	global $babDB;
 
 	$query = 
 		'INSERT INTO ' . BAB_TSKMGR_DEFAULT_PROJECTS_CONFIGURATION_TBL . ' ' .
@@ -269,8 +271,12 @@ function bab_createDefaultProjectSpaceConfiguration($iIdProjectSpace)
 			') ' .
 		'VALUES ' . 
 			'(\'\', \'' . 
-				$iIdProjectSpace . '\', \'' . BAB_TM_YES . '\', \'' . 5 . '\', \'' . BAB_TM_SEQUENTIAL . '\', \'' . 
-				BAB_TM_YES . '\', \'\')'; 
+				$babDB->db_escape_string($iIdProjectSpace) . '\', \'' . 
+				$babDB->db_escape_string(BAB_TM_YES) . '\', \'' . 
+				$babDB->db_escape_string(5) . '\', \'' . 
+				$babDB->db_escape_string(BAB_TM_SEQUENTIAL) . '\', \'' . 
+				$babDB->db_escape_string(BAB_TM_YES) . 
+			'\', \'\')'; 
 
 	//bab_debug($query);
 	return $babDB->db_query($query);
@@ -278,20 +284,20 @@ function bab_createDefaultProjectSpaceConfiguration($iIdProjectSpace)
 
 function bab_updateDefaultProjectSpaceConfiguration($aConfiguration)
 {
-	global $babBody, $babDB;
+	global $babDB;
 
 	$query = 
 		'UPDATE ' . 
 			BAB_TSKMGR_DEFAULT_PROJECTS_CONFIGURATION_TBL . ' ' .
 		'SET ' . ' ' .
-				'`idProjectSpace` = \'' . $aConfiguration['idProjectSpace'] . '\', ' .
-				'`tskUpdateByMgr` = \'' . $aConfiguration['tskUpdateByMgr'] . '\', ' .
-				'`endTaskReminder` = \'' . $aConfiguration['endTaskReminder'] . '\', ' .
-				'`tasksNumerotation` = \'' . $aConfiguration['tasksNumerotation'] . '\', ' .
-				'`emailNotice` = \'' . $aConfiguration['emailNotice'] . '\', ' .
-				'`faqUrl` = \'' . $aConfiguration['faqUrl'] . '\' ' .
+				'`idProjectSpace` = \'' . $babDB->db_escape_string($aConfiguration['idProjectSpace']) . '\', ' .
+				'`tskUpdateByMgr` = \'' . $babDB->db_escape_string($aConfiguration['tskUpdateByMgr']) . '\', ' .
+				'`endTaskReminder` = \'' . $babDB->db_escape_string($aConfiguration['endTaskReminder']) . '\', ' .
+				'`tasksNumerotation` = \'' . $babDB->db_escape_string($aConfiguration['tasksNumerotation']) . '\', ' .
+				'`emailNotice` = \'' . $babDB->db_escape_string($aConfiguration['emailNotice']) . '\', ' .
+				'`faqUrl` = \'' . $babDB->db_escape_string($aConfiguration['faqUrl']) . '\' ' .
 		'WHERE ' . 
-			'`id` = \'' . $aConfiguration['id'] . '\'';
+			'`id` = \'' . $babDB->db_escape_string($aConfiguration['id']) . '\'';
 
 	//bab_debug($query);
 	return $babDB->db_query($query);
@@ -333,7 +339,7 @@ function bab_selectProjectListByDelegation($iIdDelegation)
 		'LEFT JOIN ' .
 			BAB_TSKMGR_PROJECTS_SPACES_TBL . ' ps ON ps.id = p.idProjectSpace ' .
 		'WHERE ' . 
-			'ps.idDelegation = \'' . $iIdDelegation . '\'';
+			'ps.idDelegation = \'' . $babDB->db_escape_string($iIdDelegation) . '\'';
 			
 	//bab_debug($query);
 	return $babDB->db_query($query);
@@ -342,7 +348,7 @@ function bab_selectProjectListByDelegation($iIdDelegation)
 
 function bab_selectProjectList($iIdProjectSpace)
 {
-	global $babBody, $babDB;
+	global $babDB;
 
 	$query = 
 		'SELECT ' .
@@ -350,7 +356,7 @@ function bab_selectProjectList($iIdProjectSpace)
 		'FROM ' .
 			BAB_TSKMGR_PROJECTS_TBL . ' ' .
 		'WHERE ' . 
-			'idProjectSpace = \'' . $iIdProjectSpace . '\'';
+			'idProjectSpace = \'' . $babDB->db_escape_string($iIdProjectSpace) . '\'';
 			
 	//bab_debug($query);
 	return $babDB->db_query($query);
@@ -358,7 +364,7 @@ function bab_selectProjectList($iIdProjectSpace)
 
 function bab_getProjectList($iIdProjectSpace, &$aProjectList)
 {
-	global $babBody, $babDB;
+	global $babDB;
 
 	$aProjectList = array();
 	
@@ -377,7 +383,7 @@ function bab_getProjectList($iIdProjectSpace, &$aProjectList)
 
 function bab_getProject($iIdProject, &$aProject)
 {
-	global $babBody, $babDB;
+	global $babDB;
 
 	$aProject = array();
 	
@@ -387,7 +393,7 @@ function bab_getProject($iIdProject, &$aProject)
 		'FROM ' .
 			BAB_TSKMGR_PROJECTS_TBL . ' ' .
 		'WHERE ' . 
-			'id = \'' . $iIdProject . '\'';
+			'id = \'' . $babDB->db_escape_string($iIdProject) . '\'';
 
 	//bab_debug($query);
 	
@@ -409,7 +415,7 @@ function bab_getProject($iIdProject, &$aProject)
 
 function bab_createProject($iIdProjectSpace, $sName, $sDescription, $iMajorVersion, $iMinorVersion)
 {
-	global $babBody, $babDB;
+	global $babDB;
 
 	$query = 
 		'INSERT INTO ' . BAB_TSKMGR_PROJECTS_TBL . ' ' .
@@ -419,8 +425,11 @@ function bab_createProject($iIdProjectSpace, $sName, $sDescription, $iMajorVersi
 			') ' .
 		'VALUES ' . 
 			'(\'\', \'' . 
-				$iIdProjectSpace . '\', \'' . $sName . '\', \'' . $sDescription . '\', \'' . 
-				date("Y-m-d H:i:s") . '\', \'' . $GLOBALS['BAB_SESS_USERID'] . 
+				$babDB->db_escape_string($iIdProjectSpace) . '\', \'' . 
+				$babDB->db_escape_string($sName) . '\', \'' . 
+				$babDB->db_escape_string($sDescription) . '\', \'' . 
+				$babDB->db_escape_string(date("Y-m-d H:i:s")) . '\', \'' . 
+				$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID']) . 
 			'\')'; 
 
 	//bab_debug($query);
@@ -457,7 +466,7 @@ function bab_createProject($iIdProjectSpace, $sName, $sDescription, $iMajorVersi
 			bab_createProjectConfiguration($aConfiguration);
 		}
 		
-		bab_updateRefCount(BAB_TSKMGR_PROJECTS_SPACES_TBL, $iIdProjectSpace, '+ \'1\'');
+		bab_updateRefCount(BAB_TSKMGR_PROJECTS_SPACES_TBL, $iIdProjectSpace, '+ 1');
 		
 		$result = bab_selectProjectSpaceNoticeEvent($iIdProjectSpace);
 		if(false != $result)
@@ -477,18 +486,18 @@ function bab_createProject($iIdProjectSpace, $sName, $sDescription, $iMajorVersi
 
 function bab_updateProject($iIdProject, $sName, $sDescription)
 {
-	global $babBody, $babDB;
+	global $babDB;
 
 	$query = 
 		'UPDATE ' . 
 			BAB_TSKMGR_PROJECTS_TBL . ' ' .
 		'SET ' . ' ' .
-				'`name` = \'' . $sName . '\', ' .
-				'`description` = \'' . $sDescription . '\', ' .
-				'`modified` = \'' . date("Y-m-d H:i:s") . '\', ' .
-				'`idUserModified` = \'' . $GLOBALS['BAB_SESS_USERID'] . '\' ' .
+				'`name` = \'' . $babDB->db_escape_string($sName) . '\', ' .
+				'`description` = \'' . $babDB->db_escape_string($sDescription) . '\', ' .
+				'`modified` = \'' . $babDB->db_escape_string(date("Y-m-d H:i:s")) . '\', ' .
+				'`idUserModified` = \'' . $babDB->db_escape_string($GLOBALS['BAB_SESS_USERID']) . '\' ' .
 		'WHERE ' . 
-			'`id` = \'' . $iIdProject . '\'';
+			'`id` = \'' . $babDB->db_escape_string($iIdProject) . '\'';
 
 	//bab_debug($query);
 	return $babDB->db_query($query);
@@ -496,7 +505,7 @@ function bab_updateProject($iIdProject, $sName, $sDescription)
 
 function bab_deleteProject($iIdProject)
 {
-	global $babBody, $babDB;
+	global $babDB;
 	
 	bab_deleteAllTask($iIdProject);
 	
@@ -505,32 +514,52 @@ function bab_deleteProject($iIdProject)
 	aclDelete(BAB_TSKMGR_PROJECTS_VISUALIZERS_GROUPS_TBL, $iIdProject);
 	aclDelete(BAB_TSKMGR_TASK_RESPONSIBLE_GROUPS_TBL, $iIdProject);
 
-	$query = 'DELETE FROM ' . BAB_TSKMGR_PROJECTS_CONFIGURATION_TBL . ' WHERE idProject = \'' . $iIdProject . '\''; 
+	$query = 
+		'DELETE FROM ' . 
+			BAB_TSKMGR_PROJECTS_CONFIGURATION_TBL . ' ' .
+		'WHERE ' . 
+			'idProject = \'' . $babDB->db_escape_string($iIdProject) . '\''; 
 	//bab_debug($query);
 	$babDB->db_query($query);
 
-	$query = 'DELETE FROM ' . BAB_TSKMGR_PROJECTS_REVISIONS_TBL . ' WHERE idProject = \'' . $iIdProject . '\''; 
+	$query = 
+		'DELETE FROM ' . 
+			BAB_TSKMGR_PROJECTS_REVISIONS_TBL . ' ' . 
+		'WHERE ' .
+			'idProject = \'' . $babDB->db_escape_string($iIdProject) . '\''; 
 	//bab_debug($query);
 	$babDB->db_query($query);
 
-	$query = 'DELETE FROM ' . BAB_TSKMGR_PROJECTS_COMMENTS_TBL . ' WHERE idProject = \'' . $iIdProject . '\''; 
+	$query = 
+		'DELETE FROM ' . 
+			BAB_TSKMGR_PROJECTS_COMMENTS_TBL . ' ' .
+		'WHERE ' .
+			'idProject = \'' . $babDB->db_escape_string($iIdProject) . '\''; 
 	//bab_debug($query);
 	$babDB->db_query($query);
 
-	$query = 'DELETE FROM ' . BAB_TSKMGR_CATEGORIES_TBL . ' WHERE idProject = \'' . $iIdProject . '\''; 
+	$query = 
+		'DELETE FROM ' . 
+			BAB_TSKMGR_CATEGORIES_TBL . ' ' .
+		'WHERE ' . 
+			'idProject = \'' . $babDB->db_escape_string($iIdProject) . '\'';
 	//bab_debug($query);
 	$babDB->db_query($query);
 
 	bab_deleteProjectSpecificFields($iIdProject);	
 	
-	$query = 'DELETE FROM ' . BAB_TSKMGR_PROJECTS_TBL . ' WHERE id = \'' . $iIdProject . '\''; 
+	$query = 
+		'DELETE FROM ' . 
+			BAB_TSKMGR_PROJECTS_TBL . ' ' .
+		'WHERE ' .
+			'id = \'' . $babDB->db_escape_string($iIdProject) . '\''; 
 	//bab_debug($query);
 	return $babDB->db_query($query);
 }
 
 function bab_createProjectConfiguration($aConfiguration)
 {
-	global $babBody, $babDB;
+	global $babDB;
 
 	$query = 
 		'INSERT INTO ' . BAB_TSKMGR_PROJECTS_CONFIGURATION_TBL . ' ' .
@@ -540,9 +569,13 @@ function bab_createProjectConfiguration($aConfiguration)
 			') ' .
 		'VALUES ' . 
 			'(\'\', \'' . 
-				$aConfiguration['idProject'] . '\', \'' . $aConfiguration['tskUpdateByMgr'] . '\', \'' . 
-				$aConfiguration['endTaskReminder'] . '\', \'' . $aConfiguration['tasksNumerotation'] . '\', \'' . 
-				$aConfiguration['emailNotice'] . '\', \'' . $aConfiguration['faqUrl'] . '\')'; 
+				$babDB->db_escape_string($aConfiguration['idProject']) . '\', \'' . 
+				$babDB->db_escape_string($aConfiguration['tskUpdateByMgr']) . '\', \'' . 
+				$babDB->db_escape_string($aConfiguration['endTaskReminder']) . '\', \'' . 
+				$babDB->db_escape_string($aConfiguration['tasksNumerotation']) . '\', \'' . 
+				$babDB->db_escape_string($aConfiguration['emailNotice']) . '\', \'' . 
+				$babDB->db_escape_string($aConfiguration['faqUrl']) . 
+			'\')'; 
 
 	//bab_debug($query);
 	return $babDB->db_query($query);
@@ -550,7 +583,7 @@ function bab_createProjectConfiguration($aConfiguration)
 
 function bab_getProjectConfiguration($iIdProject, &$aConfiguration)
 {
-	global $babBody, $babDB;
+	global $babDB;
 
 	$aConfiguration = array();
 
@@ -566,7 +599,7 @@ function bab_getProjectConfiguration($iIdProject, &$aConfiguration)
 		'FROM ' .
 			BAB_TSKMGR_PROJECTS_CONFIGURATION_TBL . ' ' .
 		'WHERE ' . 
-			'idProject =\'' . $iIdProject . '\'';
+			'idProject =\'' . $babDB->db_escape_string($iIdProject) . '\'';
 	
 	//bab_debug($query);
 	
@@ -587,20 +620,20 @@ function bab_getProjectConfiguration($iIdProject, &$aConfiguration)
 
 function bab_updateProjectConfiguration($aConfiguration)
 {
-	global $babBody, $babDB;
+	global $babDB;
 
 	$query = 
 		'UPDATE ' . 
 			BAB_TSKMGR_PROJECTS_CONFIGURATION_TBL . ' ' .
 		'SET ' . ' ' .
-				'`idProject` = \'' . $aConfiguration['idProject'] . '\', ' .
-				'`tskUpdateByMgr` = \'' . $aConfiguration['tskUpdateByMgr'] . '\', ' .
-				'`endTaskReminder` = \'' . $aConfiguration['endTaskReminder'] . '\', ' .
-				'`tasksNumerotation` = \'' . $aConfiguration['tasksNumerotation'] . '\', ' .
-				'`emailNotice` = \'' . $aConfiguration['emailNotice'] . '\', ' .
-				'`faqUrl` = \'' . $aConfiguration['faqUrl'] . '\' ' .
+				'`idProject` = \'' . $babDB->db_escape_string($aConfiguration['idProject']) . '\', ' .
+				'`tskUpdateByMgr` = \'' . $babDB->db_escape_string($aConfiguration['tskUpdateByMgr']) . '\', ' .
+				'`endTaskReminder` = \'' . $babDB->db_escape_string($aConfiguration['endTaskReminder']) . '\', ' .
+				'`tasksNumerotation` = \'' . $babDB->db_escape_string($aConfiguration['tasksNumerotation']) . '\', ' .
+				'`emailNotice` = \'' . $babDB->db_escape_string($aConfiguration['emailNotice']) . '\', ' .
+				'`faqUrl` = \'' . $babDB->db_escape_string($aConfiguration['faqUrl']) . '\' ' .
 		'WHERE ' . 
-			'`id` = \'' . $aConfiguration['id'] . '\'';
+			'`id` = \'' . $babDB->db_escape_string($aConfiguration['id']) . '\'';
 
 	//bab_debug($query);
 	return $babDB->db_query($query);
@@ -619,17 +652,18 @@ function bab_isProjectDeletable($iIdProject)
 
 function bab_selectProjectCommentaryList($iIdProject, $iLenght = 50)
 {
-	global $babBody, $babDB;
+	global $babDB;
 	
 	$query = 
 		'SELECT ' .
 			'id, ' . 
-			'IF(LENGTH(commentary) > \'' . $iLenght . '\', CONCAT(LEFT(commentary, \'' . $iLenght . '\'), \'...\'), commentary) commentary, ' .
+			'IF(LENGTH(commentary) > \'' . $babDB->db_escape_string($iLenght) . '\', ' . 
+				'CONCAT(LEFT(commentary, \'' . $babDB->db_escape_string($iLenght) . '\'), \'...\'), commentary) commentary, ' .
 			'created ' .
 		'FROM ' .
 			BAB_TSKMGR_PROJECTS_COMMENTS_TBL . ' ' .
 		'WHERE ' . 
-			'idProject =\'' . $iIdProject . '\'';
+			'idProject =\'' . $babDB->db_escape_string($iIdProject) . '\'';
 	
 	//bab_debug($query);
 	return $babDB->db_query($query);
@@ -637,7 +671,7 @@ function bab_selectProjectCommentaryList($iIdProject, $iLenght = 50)
 
 function bab_getProjectCommentary($iIdCommentary, &$sCommentary)
 {
-	global $babBody, $babDB;
+	global $babDB;
 	
 	$sCommentary = '';
 	
@@ -648,17 +682,14 @@ function bab_getProjectCommentary($iIdCommentary, &$sCommentary)
 		'FROM ' .
 			BAB_TSKMGR_PROJECTS_COMMENTS_TBL . ' ' .
 		'WHERE ' . 
-			'id =\'' . $iIdCommentary . '\'';
+			'id =\'' . $babDB->db_escape_string($iIdCommentary) . '\'';
 	
 	//bab_debug($query);
 	$result = $babDB->db_query($query);
-	$iNumRows = $babDB->db_num_rows($result);
-	$iIndex = 0;
 	
-	if(/*$iIndex < $iNumRows &&*/ false != ($datas = $babDB->db_fetch_assoc($result)))
+	if(false != ($datas = $babDB->db_fetch_assoc($result)))
 	{
 		$sCommentary = $datas['commentary'];
-		$iIndex++;
 		return true;
 	}
 	return false;
@@ -666,7 +697,7 @@ function bab_getProjectCommentary($iIdCommentary, &$sCommentary)
 
 function bab_createProjectCommentary($iIdProject, $sCommentary)
 {
-	global $babBody, $babDB;
+	global $babDB;
 	
 	$query = 
 		'INSERT INTO ' . BAB_TSKMGR_PROJECTS_COMMENTS_TBL . ' ' .
@@ -676,10 +707,11 @@ function bab_createProjectCommentary($iIdProject, $sCommentary)
 			') ' .
 		'VALUES ' . 
 			'(\'\', \'' . 
-				$iIdProject . '\', \'' . $sCommentary . '\', \'' . 
-				date("Y-m-d H:i:s") . '\', \'' . $GLOBALS['BAB_SESS_USERID'] . 
+				$babDB->db_escape_string($iIdProject) . '\', \'' . 
+				$babDB->db_escape_string($sCommentary) . '\', \'' . 
+				$babDB->db_escape_string(date("Y-m-d H:i:s")) . '\', \'' . 
+				$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID']) . 
 			'\')'; 
-
 
 	//bab_debug($query);
 	return $babDB->db_query($query);
@@ -687,17 +719,17 @@ function bab_createProjectCommentary($iIdProject, $sCommentary)
 
 function bab_updateProjectCommentary($iIdCommentary, $sCommentary)
 {
-	global $babBody, $babDB;
+	global $babDB;
 
 	$query = 
 		'UPDATE ' . 
 			BAB_TSKMGR_PROJECTS_COMMENTS_TBL . ' ' .
 		'SET ' . ' ' .
-				'`commentary` = \'' . $sCommentary . '\', ' .
-				'`modified` = \'' . date("Y-m-d H:i:s") . '\', ' .
-				'`idUserModified` = \'' . $GLOBALS['BAB_SESS_USERID'] . '\' ' .
+				'`commentary` = \'' . $babDB->db_escape_string($sCommentary) . '\', ' .
+				'`modified` = \'' . $babDB->db_escape_string(date("Y-m-d H:i:s")) . '\', ' .
+				'`idUserModified` = \'' . $babDB->db_escape_string($GLOBALS['BAB_SESS_USERID']) . '\' ' .
 		'WHERE ' . 
-			'`id` = \'' . $iIdCommentary . '\'';
+			'`id` = \'' . $babDB->db_escape_string($iIdCommentary) . '\'';
 
 	//bab_debug($query);
 	return $babDB->db_query($query);
@@ -706,13 +738,19 @@ function bab_updateProjectCommentary($iIdCommentary, $sCommentary)
 function bab_deleteProjectCommentary($iIdCommentary)
 {
 	global $babDB;
-	$query = 'DELETE FROM '	. BAB_TSKMGR_PROJECTS_COMMENTS_TBL . ' WHERE id = \'' . $iIdCommentary . '\'';
+	
+	$query = 
+		'DELETE FROM '	. 
+			BAB_TSKMGR_PROJECTS_COMMENTS_TBL . ' ' . 
+		'WHERE ' . 
+			'id = \'' . $babDB->db_escape_string($iIdCommentary) . '\'';
+			
 	$babDB->db_query($query);
 }
 
 function bab_createProjectRevision($iIdProject, $iIdProjectComment, $iMajorVersion, $iMinorVersion)
 {
-	global $babBody, $babDB;
+	global $babDB;
 
 	$query = 
 		'INSERT INTO ' . BAB_TSKMGR_PROJECTS_REVISIONS_TBL . ' ' .
@@ -722,7 +760,11 @@ function bab_createProjectRevision($iIdProject, $iIdProjectComment, $iMajorVersi
 			') ' .
 		'VALUES ' . 
 			'(\'\', \'' . 
-				$iIdProject . '\', \'' . $iIdProjectComment . '\', \'' . $iMajorVersion . '\', \'' . $iMinorVersion . '\')'; 
+				$babDB->db_escape_string($iIdProject) . '\', \'' . 
+				$babDB->db_escape_string($iIdProjectComment) . '\', \'' . 
+				$babDB->db_escape_string($iMajorVersion) . '\', \'' . 
+				$babDB->db_escape_string($iMinorVersion) . 
+			'\')'; 
 
 	//bab_debug($query);
 	
@@ -731,6 +773,8 @@ function bab_createProjectRevision($iIdProject, $iIdProjectComment, $iMajorVersi
 
 function bab_getLastProjectRevision($iIdProject, &$iMajorVersion, &$iMinorVersion)
 {
+	global $babDB;
+	
 	//Selection de la date
 	$query_major = 
 		'SELECT ' .
@@ -738,7 +782,7 @@ function bab_getLastProjectRevision($iIdProject, &$iMajorVersion, &$iMinorVersio
 		'FROM ' .
 			BAB_TSKMGR_PROJECTS_REVISIONS_TBL . ' ' . 
 		'WHERE ' . 
-			'idProject = \'' . $iIdProject . '\'';
+			'idProject = \'' . $babDB->db_escape_string($iIdProject) . '\'';
 	
 	$query_minor = 
 		'SELECT ' .
@@ -746,7 +790,7 @@ function bab_getLastProjectRevision($iIdProject, &$iMajorVersion, &$iMinorVersio
 		'FROM ' .
 			BAB_TSKMGR_PROJECTS_REVISIONS_TBL . ' ' . 
 		'WHERE ' . 
-			'idProject = \'' . $iIdProject . '\' AND ' .
+			'idProject = \'' . $babDB->db_escape_string($iIdProject) . '\' AND ' .
 			'majorVersion = @major';
 			
 	$query = 
@@ -756,11 +800,10 @@ function bab_getLastProjectRevision($iIdProject, &$iMajorVersion, &$iMinorVersio
 		'FROM ' .
 			BAB_TSKMGR_PROJECTS_REVISIONS_TBL . ' ' . 
 		'WHERE ' . 
-			'idProject = \'' . $iIdProject . '\' AND ' .
+			'idProject = \'' . $babDB->db_escape_string($iIdProject) . '\' AND ' .
 			'majorVersion = @major AND ' .
 			'minorVersion = @minor';
 
-	global $babBody, $babDB;
 	$babDB->db_query($query_major);
 	$babDB->db_query($query_minor);
 	$result = $babDB->db_query($query);
@@ -830,24 +873,23 @@ function bab_startDependingTask($iIdProjectSpace, $iIdProject, $iIdTask, $iLinkT
 
 function bab_getTaskCount($iIdProject, $iIdUser = -1)
 {
+	global $babDB;
+	
 	$query = 
 		'SELECT ' . 
 			'COUNT(id) iTaskCount ' .
 		'FROM ' . 
 			BAB_TSKMGR_TASKS_TBL . ' t ' .
 		'WHERE ' . 
-			't.idProject = \'' . $iIdProject . '\' ';
+			't.idProject = \'' . $babDB->db_escape_string($iIdProject) . '\' ';
 			
 	if(-1 !== $iIdUser)
 	{
-		$query .= 'AND idUserCreated = \'' . $iIdUser . '\'';
+		$query .= 'AND idUserCreated = \'' . $babDB->db_escape_string($iIdUser) . '\'';
 	}
 		
 	//bab_debug($query);
 	
-	global $babDB;
-	$db	= & $GLOBALS['babDB'];
-
 	$result = $babDB->db_query($query);
 	$iNumRows = $babDB->db_num_rows($result);
 	if(false != $result && $iNumRows > 0)
@@ -896,9 +938,12 @@ function bab_getDependingTasks($iIdTask, $iLinkType, &$aDependingTasks)
 
 function bab_getDependingTasks($iIdTask, &$aDependingTasks, $iLinkType = -1)
 {
+	global $babDB;
+	
 	$query = 
 		'SELECT ' . 
 			'lt.idTask, ' .
+			'lt.linkType iLinkType, ' .
 			'IFNULL(tr.idResponsible, 0) idResponsible ' .
 		'FROM ' . 
 			BAB_TSKMGR_LINKED_TASKS_TBL . ' lt, ' .
@@ -906,14 +951,12 @@ function bab_getDependingTasks($iIdTask, &$aDependingTasks, $iLinkType = -1)
 		'LEFT JOIN ' .
 			BAB_TSKMGR_TASKS_RESPONSIBLES_TBL . ' tr ON tr.idTask = t.id ' .
 		'WHERE ' . 
-			'lt.idPredecessorTask = \'' . $iIdTask . '\'' .
-			(($iLinkType != -1) ? ' AND lt.linkType = \'' . $iLinkType . '\' ' : ' ') .
+			'lt.idPredecessorTask = \'' . $babDB->db_escape_string($iIdTask) . '\'' .
+			(($iLinkType != -1) ? ' AND lt.linkType = \'' . $babDB->db_escape_string($iLinkType) . '\' ' : ' ') .
 		'GROUP BY lt.idTask';
 		
 	//bab_debug($query);
 
-	global $babDB;
-	$db	= & $GLOBALS['babDB'];
 
 	$result = $babDB->db_query($query);
 	$iNumRows = $babDB->db_num_rows($result);
@@ -922,7 +965,7 @@ function bab_getDependingTasks($iIdTask, &$aDependingTasks, $iLinkType = -1)
 	while($iIndex < $iNumRows && false != ($datas = $babDB->db_fetch_assoc($result)))
 	{
 		$aDependingTasks[$datas['idTask']] = array('iIdTask' => $datas['idTask'],
-			'iIdResponsible' => $datas['idResponsible']);
+			'iIdResponsible' => $datas['idResponsible'], 'iLinkType' => $datas['iLinkType']);
 		$iIndex++;
 	}
 }
@@ -930,7 +973,7 @@ function bab_getDependingTasks($iIdTask, &$aDependingTasks, $iLinkType = -1)
 
 function bab_getAllTaskIndexedById($iIdProject, &$aTasks)
 {
-	global $babBody, $babDB;
+	global $babDB;
 
 	$aTasks = array();	
 
@@ -965,7 +1008,7 @@ function bab_getAllTaskIndexedById($iIdProject, &$aTasks)
 		'FROM ' .
 			BAB_TSKMGR_TASKS_TBL . ' ' .
 		'WHERE ' . 
-			'idProject = \'' . $iIdProject . '\'';
+			'idProject = \'' . $babDB->db_escape_string($iIdProject) . '\'';
 			
 	//bab_debug($query);
 
@@ -998,7 +1041,7 @@ function bab_getAllTaskIndexedById($iIdProject, &$aTasks)
 
 function bab_createTask($aParams)
 {
-	global $babBody, $babDB;
+	global $babDB;
 
 	$aTask = array();	
 
@@ -1015,19 +1058,32 @@ function bab_createTask($aParams)
 			') ' .
 		'VALUES ' . 
 			'(\'\', \'' . 
-				$aParams['iIdProject'] . '\', \'' . $aParams['sTaskNumber'] . '\', \'' . 
-				$aParams['sDescription'] . '\', \'' . $aParams['iIdCategory'] . '\', \'' . 
-				$aParams['iClass'] . '\', \'' . $aParams['iParticipationStatus'] . '\', \'' . 
-				$aParams['iIsLinked'] . '\', \'' . $aParams['iIdCalEvent'] . '\', \'' . 
-				$aParams['sHashCalEvent'] . '\', \'' . $aParams['iDuration'] . '\', \'' . 
-				$aParams['iMajorVersion'] . '\', \'' . $aParams['iMinorVersion'] . '\', \'' . 
-				$aParams['sColor'] . '\', \'' . $aParams['iPosition'] . '\', \'' . 
-				$aParams['iCompletion'] . '\', \'' . $aParams['sStartDate'] . '\', \'' . 
-				$aParams['sEndDate'] . '\', \'' . /*$aParams['sPlannedStartDate']*/'' . '\', \'' . 
-				/*$aParams['sPlannedEndDate']*/'' . '\', \'' . $aParams['sCreated'] . '\', \'' . 
-				$aParams['iIdUserCreated'] . '\', \'' . $aParams['iIsNotified'] . '\', \'' . 
-				$aParams['iIdUserModified'] . '\', \'' . $aParams['sModified'] . '\', \'' .
-				$aParams['sShortDescription'] . '\')'; 
+				$babDB->db_escape_string($aParams['iIdProject']) . '\', \'' . 
+				$babDB->db_escape_string($aParams['sTaskNumber']) . '\', \'' . 
+				$babDB->db_escape_string($aParams['sDescription']) . '\', \'' . 
+				$babDB->db_escape_string($aParams['iIdCategory']) . '\', \'' . 
+				$babDB->db_escape_string($aParams['iClass']) . '\', \'' . 
+				$babDB->db_escape_string($aParams['iParticipationStatus']) . '\', \'' . 
+				$babDB->db_escape_string($aParams['iIsLinked']) . '\', \'' . 
+				$babDB->db_escape_string($aParams['iIdCalEvent']) . '\', \'' . 
+				$babDB->db_escape_string($aParams['sHashCalEvent']) . '\', \'' . 
+				$babDB->db_escape_string($aParams['iDuration']) . '\', \'' . 
+				$babDB->db_escape_string($aParams['iMajorVersion']) . '\', \'' . 
+				$babDB->db_escape_string($aParams['iMinorVersion']) . '\', \'' . 
+				$babDB->db_escape_string($aParams['sColor']) . '\', \'' . 
+				$babDB->db_escape_string($aParams['iPosition']) . '\', \'' . 
+				$babDB->db_escape_string($aParams['iCompletion']) . '\', \'' . 
+				$babDB->db_escape_string($aParams['sStartDate']) . '\', \'' . 
+				$babDB->db_escape_string($aParams['sEndDate']) . '\', \'' . 
+				/*$babDB->db_escape_string($aParams['sPlannedStartDate'])*/'' . '\', \'' . 
+				/*$babDB->db_escape_string($aParams['sPlannedEndDate'])*/'' . '\', \'' . 
+				$babDB->db_escape_string($aParams['sCreated']) . '\', \'' . 
+				$babDB->db_escape_string($aParams['iIdUserCreated']) . '\', \'' . 
+				$babDB->db_escape_string($aParams['iIsNotified']) . '\', \'' . 
+				$babDB->db_escape_string($aParams['iIdUserModified']) . '\', \'' . 
+				$babDB->db_escape_string($aParams['sModified']) . '\', \'' .
+				$babDB->db_escape_string($aParams['sShortDescription']) . 
+			'\')'; 
 
 	//bab_debug($query);
 	$res = $babDB->db_query($query);
@@ -1041,7 +1097,7 @@ function bab_createTask($aParams)
 
 function bab_getTask($iIdTask, &$aTask)
 {
-	global $babBody, $babDB;
+	global $babDB;
 
 	$aTask = array();	
 
@@ -1079,7 +1135,7 @@ function bab_getTask($iIdTask, &$aTask)
 		'LEFT JOIN ' .
 			BAB_TSKMGR_TASKS_INFO_TBL . ' ti ON ti.idTask = t.id ' .
 		'WHERE ' . 
-			't.id = \'' . $iIdTask . '\'';
+			't.id = \'' . $babDB->db_escape_string($iIdTask) . '\'';
 			
 	//bab_debug($query);
 
@@ -1112,35 +1168,39 @@ function bab_getTask($iIdTask, &$aTask)
 
 function bab_updateTask($iIdTask, $aParams)
 {
-	global $babBody, $babDB;
+	global $babDB;
 	
 	$query = 
 		'UPDATE ' . 
 			BAB_TSKMGR_TASKS_TBL . ' ' .
 		'SET ' . ' ' .
-			'`taskNumber` = \'' . $aParams['sTaskNumber'] . '\', ' .
-			'`description` = \'' . $aParams['sDescription'] . '\', ' .
-			'`idCategory` = \'' . $aParams['iIdCategory'] . '\', ' .
-			'`class` = \'' . $aParams['iClass'] . '\', ' .
-			'`participationStatus` = \'' . $aParams['iParticipationStatus'] . '\', ' .
-			'`isLinked` = \'' . $aParams['iIsLinked'] . '\', ' .
-			'`duration` = \'' . $aParams['iDuration'] . '\', ' .
-			'`majorVersion` = \'' . $aParams['iMajorVersion'] . '\', ' .
-			'`minorVersion` = \'' . $aParams['iMinorVersion'] . '\', ' .
-			'`color` = \'' . $aParams['sColor'] . '\', ' .
-			'`completion` = \'' . $aParams['iCompletion'] . '\', ' .
-			'`startDate` = \'' . $aParams['sStartDate'] . '\', ' .
-			'`endDate` = \'' . $aParams['sEndDate'] . '\', ' .
-			'`plannedStartDate` = \'' . $aParams['sPlannedStartDate'] . '\', ' .
-			'`plannedEndDate` = \'' . $aParams['sPlannedEndDate'] . '\', ' .
-			'`idUserModified` = \'' . $aParams['iIdUserModified'] . '\', ' .
-			'`modified` = \'' . $aParams['sModified'] . '\', ' .
-			'`shortDescription` = \'' . $aParams['sShortDescription'] . '\' ' .
+			'`taskNumber` = \'' . $babDB->db_escape_string($aParams['sTaskNumber']) . '\', ' .
+			'`description` = \'' . $babDB->db_escape_string($aParams['sDescription']) . '\', ' .
+			'`idCategory` = \'' . $babDB->db_escape_string($aParams['iIdCategory']) . '\', ' .
+			'`class` = \'' . $babDB->db_escape_string($aParams['iClass']) . '\', ' .
+			'`participationStatus` = \'' . $babDB->db_escape_string($aParams['iParticipationStatus']) . '\', ' .
+			'`isLinked` = \'' . $babDB->db_escape_string($aParams['iIsLinked']) . '\', ' .
+			'`duration` = \'' . $babDB->db_escape_string($aParams['iDuration']) . '\', ' .
+			'`majorVersion` = \'' . $babDB->db_escape_string($aParams['iMajorVersion']) . '\', ' .
+			'`minorVersion` = \'' . $babDB->db_escape_string($aParams['iMinorVersion']) . '\', ' .
+			'`color` = \'' . $babDB->db_escape_string($aParams['sColor']) . '\', ' .
+			'`completion` = \'' . $babDB->db_escape_string($aParams['iCompletion']) . '\', ' .
+			'`startDate` = \'' . $babDB->db_escape_string($aParams['sStartDate']) . '\', ' .
+			'`endDate` = \'' . $babDB->db_escape_string($aParams['sEndDate']) . '\', ' .
+			'`plannedStartDate` = \'' . $babDB->db_escape_string($aParams['sPlannedStartDate']) . '\', ' .
+			'`plannedEndDate` = \'' . $babDB->db_escape_string($aParams['sPlannedEndDate']) . '\', ' .
+			'`idUserModified` = \'' . $babDB->db_escape_string($aParams['iIdUserModified']) . '\', ' .
+			'`modified` = \'' . $babDB->db_escape_string($aParams['sModified']) . '\', ' .
+			'`shortDescription` = \'' . $babDB->db_escape_string($aParams['sShortDescription']) . '\' ' .
 		'WHERE ' . 
-			'id = \'' . $iIdTask . '\'';
+			'id = \'' . $babDB->db_escape_string($iIdTask) . '\'';
 			
 	//bab_debug($query);
-	return $babDB->db_query($query);
+	if(true === $babDB->db_query($query))
+	{
+		return true;
+	}
+	return false;
 }
 
 function bab_deleteTask($iIdTask)
@@ -1150,13 +1210,25 @@ function bab_deleteTask($iIdTask)
 	bab_deleteTaskResponsibles($iIdTask);
 
 	global $babDB;
-	$query = 'DELETE FROM ' . BAB_TSKMGR_TASKS_INFO_TBL . ' WHERE idTask = \'' . $iIdTask . '\'';
+	$query = 
+		'DELETE FROM ' . 
+			BAB_TSKMGR_TASKS_INFO_TBL . ' ' .
+		'WHERE ' .
+			'idTask = \'' . $babDB->db_escape_string($iIdTask) . '\'';
 	$babDB->db_query($query);
 
-	$query = 'DELETE FROM ' . BAB_TSKMGR_TASKS_TBL . ' WHERE id = \'' . $iIdTask . '\'';
+	$query = 
+		'DELETE FROM ' . 
+			BAB_TSKMGR_TASKS_TBL . ' ' .
+		'WHERE ' .
+			'id = \'' . $babDB->db_escape_string($iIdTask) . '\'';
 	$babDB->db_query($query);
 
-	$query = 'DELETE FROM ' . BAB_TSKMGR_TASKS_COMMENTS_TBL . ' WHERE idTask = \'' . $iIdTask . '\'';
+	$query = 
+		'DELETE FROM ' . 
+			BAB_TSKMGR_TASKS_COMMENTS_TBL . ' ' .
+		'WHERE ' .
+			'idTask = \'' . $babDB->db_escape_string($iIdTask) . '\'';
 	$babDB->db_query($query);
 }
 
@@ -1170,8 +1242,7 @@ function bab_deleteAllTask($iIdProject)
 		'FROM ' .
 			BAB_TSKMGR_TASKS_TBL . ' ' .
 		'WHERE ' .
-			'idProject = \'' . $iIdProject . '\'';
-			
+			'idProject = \'' . $babDB->db_escape_string($iIdProject) . '\'';
 	
 	$result = $babDB->db_query($query);
 	$iNumRows = $babDB->db_num_rows($result);
@@ -1182,18 +1253,29 @@ function bab_deleteAllTask($iIdProject)
 		bab_deleteAllTaskSpecificFieldInstance($data['id']);
 		bab_deleteTaskLinks($data['id']);
 		bab_deleteTaskResponsibles($data['id']);
-//		aclDelete(BAB_TSKMGR_TASK_RESPONSIBLE_GROUPS_TBL, $data['id']);
 
-		$query = 'DELETE FROM ' . BAB_TSKMGR_TASKS_INFO_TBL . ' WHERE idTask = \'' . $data['id'] . '\'';
+		$query = 
+			'DELETE FROM ' . 
+				BAB_TSKMGR_TASKS_INFO_TBL . ' ' .
+			'WHERE ' .
+				'idTask = \'' . $babDB->db_escape_string($data['id']) . '\'';
 		$babDB->db_query($query);
 		
 		$iIndex++;
 	}
 
-	$query = 'DELETE FROM ' . BAB_TSKMGR_TASKS_COMMENTS_TBL . ' WHERE idProject = \'' . $iIdProject . '\'';
+	$query = 
+		'DELETE FROM ' . 
+			BAB_TSKMGR_TASKS_COMMENTS_TBL . ' ' .
+		'WHERE ' .
+			'idProject = \'' . $babDB->db_escape_string($iIdProject) . '\'';
 	$babDB->db_query($query);
 
-	$query = 'DELETE FROM ' . BAB_TSKMGR_TASKS_TBL . ' WHERE idProject = \'' . $iIdProject . '\'';
+	$query = 
+		'DELETE FROM ' . 
+			BAB_TSKMGR_TASKS_TBL . ' ' .
+		'WHERE ' .
+			'idProject = \'' . $babDB->db_escape_string($iIdProject) . '\'';
 	$babDB->db_query($query);
 }
 
@@ -1211,7 +1293,11 @@ function bab_setTaskLinks($iIdTask, $aPredecessors)
 						'`idTask`, `idPredecessorTask`, `linkType`' .
 					') ' .
 				'VALUES ' . 
-					'(\'\', \'' . $iIdTask . '\', \'' . $aPredecessor['iIdPredecessorTask'] . '\', \'' . $aPredecessor['iLinkType'] . '\')'; 
+					'(\'\', \'' . 
+						$babDB->db_escape_string($iIdTask) . '\', \'' . 
+						$babDB->db_escape_string($aPredecessor['iIdPredecessorTask']) . '\', \'' . 
+						$babDB->db_escape_string($aPredecessor['iLinkType']) . 
+					'\')'; 
 			
 			//bab_debug($query);
 			$babDB->db_query($query);
@@ -1231,14 +1317,12 @@ function bab_getLinkedTaskCount($iIdTask, &$iCount)
 		'FROM ' .
 			BAB_TSKMGR_LINKED_TASKS_TBL . ' ' .
 		'WHERE ' .
-			'idPredecessorTask = \'' . $iIdTask . '\'';
+			'idPredecessorTask = \'' . $babDB->db_escape_string($iIdTask) . '\'';
 			
-	
+	//bab_debug($query);
 	$result = $babDB->db_query($query);
-	$iNumRows = $babDB->db_num_rows($result);
-	$iIndex = 0;
 	
-	if(/*$iIndex < $iNumRows &&*/ false != ($data = $babDB->db_fetch_assoc($result)))
+	if(false != ($data = $babDB->db_fetch_assoc($result)))
 	{
 		$iCount = $data['iCount'];
 	}	
@@ -1247,17 +1331,26 @@ function bab_getLinkedTaskCount($iIdTask, &$iCount)
 function bab_deleteTaskLinks($iIdTask)
 {
 	global $babDB;
-	$query = 'DELETE FROM ' . BAB_TSKMGR_LINKED_TASKS_TBL . ' WHERE idTask = \'' . $iIdTask . '\'';
+	$query = 
+		'DELETE FROM ' . 
+			BAB_TSKMGR_LINKED_TASKS_TBL . ' ' .
+		'WHERE ' .
+			'idTask = \'' . $babDB->db_escape_string($iIdTask) . '\'';
+			
+	//bab_debug($query);
 	$babDB->db_query($query);
 }
 
 function bab_deleteTaskResponsibles($iIdTask)
 {
 	global $babDB;
-	$query = 'DELETE FROM ' . BAB_TSKMGR_TASKS_RESPONSIBLES_TBL . ' WHERE idTask = \'' . $iIdTask . '\'';
+	$query = 
+		'DELETE FROM ' . 
+			BAB_TSKMGR_TASKS_RESPONSIBLES_TBL . ' ' .
+		'WHERE ' .
+			'idTask = \'' . $babDB->db_escape_string($iIdTask) . '\'';
 	
 	//bab_debug($query);
-	
 	$babDB->db_query($query);
 }
 
@@ -1271,36 +1364,36 @@ function bab_deleteAllTaskSpecificFieldInstance($iIdTask)
 		'FROM ' .
 			BAB_TSKMGR_SPECIFIC_FIELDS_INSTANCE_LIST_TBL . ' ' .
 		'WHERE ' .
-			'idTask = \'' . $iIdTask . '\'';
+			'idTask = \'' . $babDB->db_escape_string($iIdTask) . '\'';
 			
-	
+	//bab_debug($query);
 	$result = $babDB->db_query($query);
 	$iNumRows = $babDB->db_num_rows($result);
 	$iIndex = 0;
 	
 	while($iIndex < $iNumRows && false != ($data = $babDB->db_fetch_assoc($result)))
 	{
-		bab_updateRefCount(BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL, $data['idSpFldClass'], '- \'1\'');
+		bab_updateRefCount(BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL, $data['idSpFldClass'], '- 1');
 		$iIndex++;
 	}
 }
 
 function bab_selectTasksList($iIdProject, $iLenght = 50)
 {
-	global $babBody, $babDB;
+	global $babDB;
 	
 	$query = 
 		'SELECT ' .
 			't.id, ' . 
 			't.taskNumber, ' . 
-			'IF(LENGTH(t.description) > \'' . $iLenght . '\', CONCAT(LEFT(t.description, \'' . $iLenght . '\'), \'...\'), t.description) description, ' .
+			'IF(LENGTH(t.description) > \'' . $babDB->db_escape_string($iLenght) . '\', ' . 
+				'CONCAT(LEFT(t.description, \'' . $babDB->db_escape_string($iLenght) . '\'), \'...\'), t.description) description, ' .
 			't.created, ' .
 			't.shortDescription ' .
 		'FROM ' .
-//			BAB_TSKMGR_TASKS_INFO_TBL . ' ti, ' . 
 			BAB_TSKMGR_TASKS_TBL . ' t ' .
 		'WHERE ' . 
-			't.idProject =\'' . $iIdProject . '\' ' .
+			't.idProject =\'' . $babDB->db_escape_string($iIdProject) . '\' ' .
 		'ORDER BY t.position';
 	
 	//bab_debug($query);
@@ -1309,21 +1402,22 @@ function bab_selectTasksList($iIdProject, $iLenght = 50)
 
 function bab_selectPersonnalTasksList($iLenght = 50)
 {
-	global $babBody, $babDB;
+	global $babDB;
 	
 	$query = 
 		'SELECT ' .
 			't.id, ' . 
 			't.taskNumber, ' . 
-			'IF(LENGTH(t.description) > \'' . $iLenght . '\', CONCAT(LEFT(t.description, \'' . $iLenght . '\'), \'...\'), t.description) description, ' .
+			'IF(LENGTH(t.description) > \'' . $babDB->db_escape_string($iLenght) . '\', ' . 
+				'CONCAT(LEFT(t.description, \'' . $babDB->db_escape_string($iLenght) . '\'), \'...\'), t.description) description, ' .
 			't.created, ' .
 			't.shortDescription ' .
 		'FROM ' .
 			BAB_TSKMGR_TASKS_INFO_TBL . ' ti, ' . 
 			BAB_TSKMGR_TASKS_TBL . ' t ' .
 		'WHERE ' . 
-			'ti.idOwner =\'' . $GLOBALS['BAB_SESS_USERID'] . '\' AND ' .
-			'ti.isPersonnal =\'' . BAB_TM_YES . '\' AND ' .
+			'ti.idOwner =\'' . $babDB->db_escape_string($GLOBALS['BAB_SESS_USERID']) . '\' AND ' .
+			'ti.isPersonnal =\'' . $babDB->db_escape_string(BAB_TM_YES) . '\' AND ' .
 			't.id = ti.idTask ' .
 		'ORDER BY t.position';
 	
@@ -1353,8 +1447,8 @@ function bab_getNextTaskNumber($iIdProject, $iTasksNumerotation, &$sTaskNumber)
 }
 
 function bab_getNextTaskPosition($iIdProject, &$iPosition)
-{
-	$db = & $GLOBALS['babDB'];
+{	
+	global $babDB;
 
 	//Personnal task
 	if(0 == $iIdProject)
@@ -1365,15 +1459,14 @@ function bab_getNextTaskPosition($iIdProject, &$iPosition)
 			'FROM ' . 
 				BAB_TSKMGR_TASKS_INFO_TBL . ' ti ' .
 			'WHERE ' . 
-				'ti.idOwner =\'' . $GLOBALS['BAB_SESS_USERID'] . '\' AND ' .
-				'ti.isPersonnal =\'' . BAB_TM_YES . '\'';
+				'ti.idOwner =\'' . $babDB->db_escape_string($GLOBALS['BAB_SESS_USERID']) . '\' AND ' .
+				'ti.isPersonnal =\'' . $babDB->db_escape_string(BAB_TM_YES) . '\'';
 				
 		//bab_debug($query);
-		
-		$res = $db->db_query($query);
-		if(false != $res && $db->db_num_rows($res) > 0)
+		$res = $babDB->db_query($query);
+		if(false != $res && $babDB->db_num_rows($res) > 0)
 		{
-			$data = $db->db_fetch_array($res);
+			$data = $babDB->db_fetch_array($res);
 			if(0 == $data['idTask'])
 			{
 				$iPosition = 1;
@@ -1386,15 +1479,14 @@ function bab_getNextTaskPosition($iIdProject, &$iPosition)
 				'FROM ' . 
 					BAB_TSKMGR_TASKS_TBL . ' ' .
 				'WHERE ' . 
-					'id=\'' . $data['idTask'] . '\'';
+					'id=\'' . $babDB->db_escape_string($data['idTask']) . '\'';
 		
 			//bab_debug($query);
+			$res = $babDB->db_query($query);
 		
-			$res = $db->db_query($query);
-		
-			if(false != $res && $db->db_num_rows($res) > 0)
+			if(false != $res && $babDB->db_num_rows($res) > 0)
 			{
-				$data = $db->db_fetch_array($res);
+				$data = $babDB->db_fetch_array($res);
 		
 				if(false != $data)
 				{
@@ -1417,15 +1509,14 @@ function bab_getNextTaskPosition($iIdProject, &$iPosition)
 			'FROM ' . 
 				BAB_TSKMGR_TASKS_TBL . ' ' .
 			'WHERE ' . 
-				'idProject=\'' . $iIdProject . '\'';
+				'idProject=\'' . $babDB->db_escape_string($iIdProject) . '\'';
 	
 		//bab_debug($query);
+		$res = $babDB->db_query($query);
 	
-		$res = $db->db_query($query);
-	
-		if(false != $res && $db->db_num_rows($res) > 0)
+		if(false != $res && $babDB->db_num_rows($res) > 0)
 		{
-			$data = $db->db_fetch_array($res);
+			$data = $babDB->db_fetch_array($res);
 	
 			if(false != $data)
 			{
@@ -1460,7 +1551,7 @@ function bab_getAvailableTaskResponsibles($iIdProject, &$aTaskResponsible)
 
 function bab_getTaskResponsibles($iIdTask, &$aTaskResponsible)
 {
-	global $babBody, $babDB;
+	global $babDB;
 	
 	$aTaskResponsible = array();
 
@@ -1470,7 +1561,7 @@ function bab_getTaskResponsibles($iIdTask, &$aTaskResponsible)
 		'FROM ' .
 			BAB_TSKMGR_TASKS_RESPONSIBLES_TBL . ' ' .
 		'WHERE ' . 
-			'idTask =\'' . $iIdTask . '\'';
+			'idTask =\'' . $babDB->db_escape_string($iIdTask) . '\'';
 	
 	//bab_debug($query);
 	$result = $babDB->db_query($query);
@@ -1500,7 +1591,10 @@ function bab_setTaskResponsibles($iIdTask, $aTaskResponsibles)
 						'`idTask`, `idResponsible`' .
 					') ' .
 				'VALUES ' . 
-					'(\'\', \'' . $iIdTask . '\', \'' . $iIdResponsible . '\')'; 
+					'(\'\', \'' . 
+						$babDB->db_escape_string($iIdTask) . '\', \'' . 
+						$babDB->db_escape_string($iIdResponsible) . 
+					'\')'; 
 			$babDB->db_query($query);
 		}
 	}
@@ -1508,17 +1602,18 @@ function bab_setTaskResponsibles($iIdTask, $aTaskResponsibles)
 
 function bab_selectTaskCommentary($iIdTask, $iLenght = 50)
 {
-	global $babBody, $babDB;
+	global $babDB;
 	
 	$query = 
 		'SELECT ' .
 			'id, ' . 
-			'IF(LENGTH(commentary) > \'' . $iLenght . '\', CONCAT(LEFT(commentary, \'' . $iLenght . '\'), \'...\'), commentary) commentary, ' .
+			'IF(LENGTH(commentary) > \'' . $babDB->db_escape_string($iLenght) . '\', ' . 
+				'CONCAT(LEFT(commentary, \'' . $babDB->db_escape_string($iLenght) . '\'), \'...\'), commentary) commentary, ' .
 			'created ' .
 		'FROM ' .
 			BAB_TSKMGR_TASKS_COMMENTS_TBL . ' ' .
 		'WHERE ' . 
-			'idTask =\'' . $iIdTask . '\'';
+			'idTask =\'' . $babDB->db_escape_string($iIdTask) . '\'';
 	
 	//bab_debug($query);
 	return $babDB->db_query($query);
@@ -1526,7 +1621,7 @@ function bab_selectTaskCommentary($iIdTask, $iLenght = 50)
 
 function bab_createTaskCommentary($iIdProject, $iIdTask, $sCommentary)
 {
-	global $babBody, $babDB;
+	global $babDB;
 	
 	$query = 
 		'INSERT INTO ' . BAB_TSKMGR_TASKS_COMMENTS_TBL . ' ' .
@@ -1536,8 +1631,11 @@ function bab_createTaskCommentary($iIdProject, $iIdTask, $sCommentary)
 			') ' .
 		'VALUES ' . 
 			'(\'\', \'' . 
-				$iIdTask . '\', \'' . $iIdProject . '\', \'' . $sCommentary . '\', \'' . 
-				date("Y-m-d H:i:s") . '\', \'' . $GLOBALS['BAB_SESS_USERID'] . 
+				$babDB->db_escape_string($iIdTask) . '\', \'' . 
+				$babDB->db_escape_string($iIdProject) . '\', \'' . 
+				$babDB->db_escape_string($sCommentary) . '\', \'' . 
+				$babDB->db_escape_string(date("Y-m-d H:i:s")) . '\', \'' . 
+				$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID']) . 
 			'\')'; 
 
 	//bab_debug($query);
@@ -1546,17 +1644,17 @@ function bab_createTaskCommentary($iIdProject, $iIdTask, $sCommentary)
 
 function bab_updateTaskCommentary($iIdCommentary, $sCommentary)
 {
-	global $babBody, $babDB;
+	global $babDB;
 
 	$query = 
 		'UPDATE ' . 
 			BAB_TSKMGR_TASKS_COMMENTS_TBL . ' ' .
 		'SET ' . ' ' .
-				'`commentary` = \'' . $sCommentary . '\', ' .
-				'`modified` = \'' . date("Y-m-d H:i:s") . '\', ' .
-				'`idUserModified` = \'' . $GLOBALS['BAB_SESS_USERID'] . '\' ' .
+				'`commentary` = \'' . $babDB->db_escape_string($sCommentary) . '\', ' .
+				'`modified` = \'' . $babDB->db_escape_string(date("Y-m-d H:i:s")) . '\', ' .
+				'`idUserModified` = \'' . $babDB->db_escape_string($GLOBALS['BAB_SESS_USERID']) . '\' ' .
 		'WHERE ' . 
-			'`id` = \'' . $iIdCommentary . '\'';
+			'`id` = \'' . $babDB->db_escape_string($iIdCommentary) . '\'';
 
 	//bab_debug($query);
 	return $babDB->db_query($query);
@@ -1565,13 +1663,17 @@ function bab_updateTaskCommentary($iIdCommentary, $sCommentary)
 function bab_deleteTaskCommentary($iIdCommentary)
 {
 	global $babDB;
-	$query = 'DELETE FROM '	. BAB_TSKMGR_TASKS_COMMENTS_TBL . ' WHERE id = \'' . $iIdCommentary . '\'';
+	$query = 
+		'DELETE FROM '	. 
+			BAB_TSKMGR_TASKS_COMMENTS_TBL . ' ' .
+		'WHERE ' . 
+			'id = \'' . $babDB->db_escape_string($iIdCommentary) . '\'';
 	$babDB->db_query($query);
 }
 
 function bab_getTaskCommentary($iIdCommentary, &$sCommentary)
 {
-	global $babBody, $babDB;
+	global $babDB;
 	
 	$sCommentary = '';
 	
@@ -1582,14 +1684,12 @@ function bab_getTaskCommentary($iIdCommentary, &$sCommentary)
 		'FROM ' .
 			BAB_TSKMGR_TASKS_COMMENTS_TBL . ' ' .
 		'WHERE ' . 
-			'id =\'' . $iIdCommentary . '\'';
+			'id =\'' . $babDB->db_escape_string($iIdCommentary) . '\'';
 	
 	//bab_debug($query);
 	$result = $babDB->db_query($query);
-	$iNumRows = $babDB->db_num_rows($result);
-	$iIndex = 0;
 	
-	if(/*$iIndex < $iNumRows &&*/ false != ($datas = $babDB->db_fetch_assoc($result)))
+	if(false != ($datas = $babDB->db_fetch_assoc($result)))
 	{
 		$sCommentary = $datas['commentary'];
 		$iIndex++;
@@ -1600,10 +1700,12 @@ function bab_getTaskCommentary($iIdCommentary, &$sCommentary)
 
 function bab_isTaskNumberUsed($iIdProject, $iIdTask, $sTaskNumber)
 {
+	global $babDB;
+	
 	$sIdTask = '';
 	if(0 != $iIdTask)
 	{
-		$sIdTask = ' AND id <> \'' . $iIdTask . '\'';
+		$sIdTask = ' AND id <> \'' . $babDB->db_escape_string($iIdTask) . '\'';
 	}
 
 	$query = 
@@ -1613,16 +1715,14 @@ function bab_isTaskNumberUsed($iIdProject, $iIdTask, $sTaskNumber)
 		'FROM ' . 
 			BAB_TSKMGR_TASKS_TBL . ' ' .
 		'WHERE ' . 
-			'idProject = \'' . $iIdProject . '\' AND ' .
-			'taskNumber LIKE \'' . $sTaskNumber . '\'' .
-			$sIdTask;
+			'idProject = \'' . $babDB->db_escape_string($iIdProject) . '\' AND ' .
+			'taskNumber LIKE \'' . $babDB->db_escape_like($sTaskNumber) . '\'' .
+			$babDB->db_escape_string($sIdTask);
 		
 	//bab_debug($query);
 	
-	$db	= & $GLOBALS['babDB'];
-	
-	$result = $db->db_query($query);
-	return (false != $result && 0 == $db->db_num_rows($result));
+	$result = $babDB->db_query($query);
+	return (false != $result && 0 == $babDB->db_num_rows($result));
 }
 
 function bab_selectLinkableTask($iIdProject, $iIdTask)
@@ -1634,11 +1734,11 @@ function bab_selectLinkableTask($iIdProject, $iIdTask)
 	{
 		if(0 == $iIdProject)
 		{
-			$sIdTask = ' AND idTask <> \'' . $iIdTask . '\'';
+			$sIdTask = ' AND idTask <> \'' . $babDB->db_escape_string($iIdTask) . '\'';
 		}
 		else
 		{
-			$sIdTask = ' AND id <> \'' . $iIdTask . '\'';
+			$sIdTask = ' AND id <> \'' . $babDB->db_escape_string($iIdTask) . '\'';
 		}
 	}
 
@@ -1651,7 +1751,7 @@ function bab_selectLinkableTask($iIdProject, $iIdTask)
 			'FROM ' . 
 				BAB_TSKMGR_TASKS_INFO_TBL . ' ' .
 			'WHERE ' . 
-				'idOwner =\'' . $GLOBALS['BAB_SESS_USERID'] . '\'' .
+				'idOwner =\'' . $babDB->db_escape_string($GLOBALS['BAB_SESS_USERID']) . '\'' .
 				$sIdTask;
 				
 		//bab_debug($query);
@@ -1679,9 +1779,9 @@ function bab_selectLinkableTask($iIdProject, $iIdTask)
 		'FROM ' . 
 			BAB_TSKMGR_TASKS_TBL . ' ' .
 		'WHERE ' . 
-			'idProject = \'' . $iIdProject . '\' AND ' .
-			'class =\'' . BAB_TM_TASK . '\' AND ' .
-			'participationStatus <> \'' . BAB_TM_ENDED . '\'' . ' ' . 
+			'idProject = \'' . $babDB->db_escape_string($iIdProject) . '\' AND ' .
+			'class =\'' . $babDB->db_escape_string(BAB_TM_TASK) . '\' AND ' .
+			'participationStatus <> \'' . $babDB->db_escape_string(BAB_TM_ENDED) . '\'' . ' ' . 
 			$sIdTask . ' ' .
 		'ORDER BY position';
 
@@ -1692,6 +1792,8 @@ function bab_selectLinkableTask($iIdProject, $iIdTask)
 
 function bab_getLinkedTasks($iIdTask, &$aLinkedTasks)
 {
+	global $babDB;
+	
 	$aLinkedTasks = array();
 	
 	$query = 
@@ -1701,11 +1803,10 @@ function bab_getLinkedTasks($iIdTask, &$aLinkedTasks)
 		'FROM ' . 
 			BAB_TSKMGR_LINKED_TASKS_TBL . ' ' .
 		'WHERE ' . 
-			'idTask = \'' . $iIdTask . '\'';
+			'idTask = \'' . $babDB->db_escape_string($iIdTask) . '\'';
 
 	//bab_debug($query);
 	
-	global $babDB;
 
 	$result = $babDB->db_query($query);
 	$iNumRows = $babDB->db_num_rows($result);
@@ -1847,6 +1948,8 @@ function bab_selectOwnedTaskQueryByDate($sStartDate, $sEndDate, $iTaskFilter = n
 
 function bab_selectTaskQuery($aFilters)
 {
+	global $babDB;
+	
 	$query = 
 		'SELECT ' . 
 			'IFNULL(ps.id, 0) iIdProjectSpace, ' .
@@ -1890,32 +1993,37 @@ function bab_selectTaskQuery($aFilters)
 
 	if(isset($aFilters['iIdProject']))
 	{
-		$query .= 'AND t.idProject = \'' . (int) $aFilters['iIdProject'] . '\' ';
+		$query .= 'AND t.idProject = \'' . $babDB->db_escape_string((int) $aFilters['iIdProject']) . '\' ';
 	}
 
 	if(isset($aFilters['iIdOwner']))
 	{
-		$query .= 'AND ti.idOwner = \'' . (int) $aFilters['iIdOwner'] . '\' ';
+		$query .= 'AND ti.idOwner = \'' . $babDB->db_escape_string((int) $aFilters['iIdOwner']) . '\' ';
 	}
 
 	if(isset($aFilters['sStartDate']))
 	{
-		$query .= 'AND t.startDate < \'' . $aFilters['sEndDate'] . '\' ';
+		$query .= 'AND t.startDate < \'' . $babDB->db_escape_string($aFilters['sEndDate']) . '\' ';
 	}
 
 	if(isset($aFilters['sEndDate']))
 	{
-		$query .= 'AND t.endDate > \'' . $aFilters['sStartDate'] . '\' ';
+		$query .= 'AND t.endDate > \'' . $babDB->db_escape_string($aFilters['sStartDate']) . '\' ';
 	}
 
 	if(isset($aFilters['iTaskClass']))
 	{
-		$query .= 'AND t.class = \'' . (int) $aFilters['iTaskClass'] . '\' ';
+		$query .= 'AND t.class = \'' . $babDB->db_escape_string((int) $aFilters['iTaskClass']) . '\' ';
 	}
 
 	if(isset($aFilters['isPersonnal']))
 	{
-		$query .= 'AND ti.isPersonnal = \'' . BAB_TM_YES . '\' ';
+		$query .= 'AND ti.isPersonnal = \'' . $babDB->db_escape_string(BAB_TM_YES) . '\' ';
+	}
+	
+	if(isset($aFilters['bIsManger']) && false === $aFilters['bIsManger'])
+	{
+		$query .= 'AND t.participationStatus <> \'' . $babDB->db_escape_string(BAB_TM_REFUSED) . '\' ';
 	}
 
 	$query .= 
@@ -1929,6 +2037,7 @@ function bab_selectTaskQuery($aFilters)
 
 function bab_createTaskInfo($iIdTask, $iIdOwner, $iIsPersonnal)
 {
+	global $babDB;
 	$query = 
 		'INSERT INTO ' . BAB_TSKMGR_TASKS_INFO_TBL . ' ' .
 			'(' .
@@ -1936,29 +2045,31 @@ function bab_createTaskInfo($iIdTask, $iIdOwner, $iIsPersonnal)
 				'`idTask`, `idOwner`, `isPersonnal` ' .
 			') ' .
 		'VALUES ' . 
-			'(\'\', \'' . $iIdTask . '\', \'' . $iIdOwner . '\', \'' . $iIsPersonnal . '\')'; 
+			'(\'\', \'' . 
+				$babDB->db_escape_string($iIdTask) . '\', \'' . 
+				$babDB->db_escape_string($iIdOwner) . '\', \'' . 
+				$babDB->db_escape_string($iIsPersonnal) . 
+			'\')'; 
 	
 	//bab_debug($query);
-
-	global $babDB;
 	return $babDB->db_query($query);
 }
 
 
 function bab_updateTaskInfo($iIdTask, $iIdOwner, $iIsPersonnal)
 {
+	global $babDB;
+	
 	$query = 
 		'UPDATE ' . 
 			BAB_TSKMGR_TASKS_INFO_TBL . ' ' .
 		'SET ' .
-			'idOwner = \'' . $iIdOwner . '\', ' .
-			'isPersonnal = \'' . $iIsPersonnal . '\' ' .
+			'idOwner = \'' . $babDB->db_escape_string($iIdOwner) . '\', ' .
+			'isPersonnal = \'' . $babDB->db_escape_string($iIsPersonnal) . '\' ' .
 		'WHERE ' .
-			'idTask = \'' . $iIdTask . '\'';
+			'idTask = \'' . $babDB->db_escape_string($iIdTask) . '\'';
 
 	//bab_debug($query);
-
-	global $babDB;
 	return $babDB->db_query($query);
 }
 
@@ -1979,10 +2090,9 @@ function bab_getPersonnalTaskConfiguration($iIdUser, &$aCfg)
 		'FROM ' .
 			BAB_TSKMGR_PERSONNAL_TASKS_CONFIGURATION_TBL . ' ' .
 		'WHERE ' . 
-			'idUser = \'' . $iIdUser . '\'';
+			'idUser = \'' . $babDB->db_escape_string($iIdUser) . '\'';
 			
 	//bab_debug($query);
-
 	$result = $babDB->db_query($query);
 	$iNumRows = $babDB->db_num_rows($result);
 	$iIndex = 0;
@@ -2000,6 +2110,8 @@ function bab_getPersonnalTaskConfiguration($iIdUser, &$aCfg)
 
 function bab_createPersonnalTaskConfiguration($iIdUser, &$aCfg)
 {
+	global $babDB;
+	
 	$query = 
 		'INSERT INTO ' . BAB_TSKMGR_PERSONNAL_TASKS_CONFIGURATION_TBL . ' ' .
 			'(' .
@@ -2007,63 +2119,213 @@ function bab_createPersonnalTaskConfiguration($iIdUser, &$aCfg)
 				'`idUser`, `endTaskReminder`, `tasksNumerotation`, `emailNotice` ' .
 			') ' .
 		'VALUES ' . 
-			'(\'\', \'' . $iIdUser . '\', \'' . $aCfg['endTaskReminder'] . '\', \'' . $aCfg['tasksNumerotation'] . '\', \'' . $aCfg['emailNotice'] . '\')'; 
+			'(\'\', \'' . 
+				$babDB->db_escape_string($iIdUser) . '\', \'' . 
+				$babDB->db_escape_string($aCfg['endTaskReminder']) . '\', \'' . 
+				$babDB->db_escape_string($aCfg['tasksNumerotation']) . '\', \'' . 
+				$babDB->db_escape_string($aCfg['emailNotice']) . 
+			'\')'; 
 	
 	//bab_debug($query);
-
-	global $babDB;
 	return $babDB->db_query($query);
 }
 
 function bab_updatePersonnalTaskConfiguration($iIdUser, &$aCfg)
 {
+	global $babDB;
+	
 	$query = 
 		'UPDATE ' . 
 			BAB_TSKMGR_PERSONNAL_TASKS_CONFIGURATION_TBL . ' ' .
 		'SET ' .
-			'endTaskReminder = \'' . $aCfg['endTaskReminder'] . '\', ' .
-			'tasksNumerotation = \'' . $aCfg['tasksNumerotation'] . '\', ' .
-			'emailNotice = \'' . $aCfg['emailNotice'] . '\' ' .
+			'endTaskReminder = \'' . $babDB->db_escape_string($aCfg['endTaskReminder']) . '\', ' .
+			'tasksNumerotation = \'' . $babDB->db_escape_string($aCfg['tasksNumerotation']) . '\', ' .
+			'emailNotice = \'' . $babDB->db_escape_string($aCfg['emailNotice']) . '\' ' .
 		'WHERE ' .
-			'idUser = \'' . $iIdUser . '\'';
+			'idUser = \'' . $babDB->db_escape_string($iIdUser) . '\'';
 
 	//bab_debug($query);
-
-	global $babDB;
 	return $babDB->db_query($query);
 }
 
 
 /*
-	$sRefCount == '+ \'1\'' ==> pour ajouter 1
-	$sRefCount == '- \'1\'' ==> pour retrancher 1
+	$sRefCount == '+ 1' ==> pour ajouter 1
+	$sRefCount == '- 1' ==> pour retrancher 1
 */
 function bab_updateRefCount($sTblName, $iId, $sRefCount)
 {
+	global $babDB;
 	$query = 
 		'UPDATE ' . 
 			$sTblName . ' ' .
 		'SET ' .
-			'refCount = refCount ' . $sRefCount . ' ' .
+			'refCount = refCount ' . $babDB->db_escape_string($sRefCount) . ' ' .
 		'WHERE ' .
-			'id = \'' . $iId . '\'';
+			'id = \'' . $babDB->db_escape_string($iId) . '\'';
 
 	//bab_debug($query);
 
-	global $babDB;
 	return $babDB->db_query($query);
+}
+
+function bab_getSpecificFieldListQuery($iIdProjectSpace, $iIdProject)
+{
+	global $babDB;
+	
+	$iIdUser = (0 === $iIdProjectSpace && 0 === $iIdProject) ? $GLOBALS['BAB_SESS_USERID'] : 0;
+	
+	$query = 
+		'SELECT ' .
+			'fb.id iIdField, ' .
+			'fb.idUser iIdUser, ' .
+			'fb.name sFieldName, ' .
+			'fb.refCount refCount, ' .
+			'fb.nature iFieldType, ' .
+			'CASE fb.nature ' .
+				'WHEN \'' . BAB_TM_TEXT_FIELD . '\' THEN \'' . bab_translate("Text") . '\' ' .
+				'WHEN \'' . BAB_TM_TEXT_AREA_FIELD . '\' THEN \'' . bab_translate("Text Area") . '\' ' .
+				'WHEN \'' . BAB_TM_RADIO_FIELD . '\' THEN \'' . bab_translate("Choice") . '\' ' .
+				'ELSE \'???\' ' .
+			'END AS sFieldType, ' .
+			'IF(fb.idProject = \'' . $babDB->db_escape_string($iIdProject) . 
+				'\' AND fb.refCount = \'' . $babDB->db_escape_string(0) . '\', 1, 0) is_deletable ' .
+		'FROM ' .
+			BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' fb ' .
+		'WHERE ' .
+			'idProjectSpace = \'' . $babDB->db_escape_string($iIdProjectSpace) . '\' AND ' .
+			'(idProject = \'' . $babDB->db_escape_string(0) . '\' OR idProject = \'' . $babDB->db_escape_string($iIdProject) . '\') AND ' .
+			'idUser = \'' . $babDB->db_escape_string($iIdUser) . '\' ' .
+		'GROUP BY fb.name ASC';
+	
+		//bab_debug($query);
+		return $query;
+}
+
+function bab_getSpecificTextFieldClassInfoQuery($iIdProject, $iIdField)
+{
+	global $babDB;
+	
+	$query = 
+		'SELECT ' .
+			'fb.name name, ' .
+			'fb.refCount refCount, ' .
+			'fb.idProject idProject, ' .
+			'ft.defaultValue defaultValue, ' .
+			'IF(fb.idProject = \'' . $babDB->db_escape_string($iIdProject) . '\' AND fb.refCount = \'' . 
+				$babDB->db_escape_string(0) . '\', 1, 0) is_deletable ' .
+		'FROM ' . 
+			BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' fb ' .
+		'LEFT JOIN ' .
+			BAB_TSKMGR_SPECIFIC_FIELDS_TEXT_CLASS_TBL . ' ft ON ft.id = fb.id ' .
+		'WHERE ' . 
+			'fb.id = \'' . $babDB->db_escape_string($iIdField) . '\'';
+	
+		//bab_debug($query);
+		return $query;
+}
+
+function bab_getSpecificAreaFieldClassInfoQuery($iIdProject, $iIdField)
+{
+	global $babDB;
+	
+	$query = 
+		'SELECT ' .
+			'fb.name name, ' .
+			'fb.refCount refCount, ' .
+			'fb.idProject idProject, ' .
+			'fa.defaultValue defaultValue, ' .
+			'IF(fb.idProject = \'' . $babDB->db_escape_string($iIdProject) . '\' AND fb.refCount = \'' . 
+				$babDB->db_escape_string(0) . '\', 1, 0) is_deletable ' .
+		'FROM ' . 
+			BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' fb ' .
+		'LEFT JOIN ' .
+			BAB_TSKMGR_SPECIFIC_FIELDS_AREA_CLASS_TBL . ' fa ON fa.id = fb.id ' .
+		'WHERE ' . 
+			'fb.id = \'' . $babDB->db_escape_string($iIdField) . '\'';
+	
+		//bab_debug($query);
+		return $query;
+}
+
+function bab_getSpecificChoiceFieldClassDefaultValueAndPositionQuery($iIdField)
+{
+	global $babDB;
+	
+	$query = 
+		'SELECT ' .
+			'frd.value defaultValue, ' .
+			'frd.position iPosition ' .
+		'FROM ' . 
+			BAB_TSKMGR_SPECIFIC_FIELDS_RADIO_CLASS_TBL . ' frd ' .
+		'WHERE ' . 
+			'frd.idFldBase = \'' . $babDB->db_escape_string($iIdField) . '\' ' .
+		'ORDER BY ' . 
+			'frd.position ASC';
+	
+		//bab_debug($query);
+		return $query;
+}
+
+function bab_getSpecificChoiceFieldClassNameAndDefaultChoiceQuery($iIdProject, $iIdField)
+{
+	global $babDB;
+	
+	$query = 
+		'SELECT ' .
+			'fb.name sFieldName, ' .
+			'fb.refCount iRefCount, ' .
+			'fb.idProject idProject, ' .
+			'position iDefaultOption, ' .
+			'IF(fb.idProject = \'' . $babDB->db_escape_string($iIdProject) . '\' AND fb.refCount = \'' . 
+				$babDB->db_escape_string(0) . '\', 1, 0) is_deletable ' .
+		'FROM ' . 
+			BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' fb ' .
+		'LEFT JOIN ' .
+			BAB_TSKMGR_SPECIFIC_FIELDS_RADIO_CLASS_TBL . ' frd ON frd.idFldBase = fb.id ' .
+		'WHERE ' . 
+			'fb.id = \'' . $babDB->db_escape_string($iIdField) . '\' AND ' .
+			'frd.isDefaultValue = \'' . $babDB->db_escape_string(BAB_TM_YES) . '\'';
+
+	//bab_debug($query);
+	return $query;
+}
+
+function bab_getSpecificChoiceFieldClassOptionCount($iIdField)
+{
+	global $babDB;
+	
+	$query = 
+		'SELECT ' .
+			'COUNT(DISTINCT(frd.id)) count ' .
+		'FROM ' . 
+			BAB_TSKMGR_SPECIFIC_FIELDS_RADIO_CLASS_TBL . ' frd ' .
+		'WHERE ' . 
+			'frd.idFldBase = \'' . $babDB->db_escape_string($iIdField) . '\'';
+	
+	//bab_debug($query);
+	$result = $babDB->db_query($query);
+	$iNumRows = $babDB->db_num_rows($result);
+	$iIndex = 0;
+	
+	if($iIndex < $iNumRows && false != ($datas = $babDB->db_fetch_assoc($result)))
+	{
+		return (int) $datas['count'];
+		$iIndex++;
+	}
+	return 0;
 }
 
 function bab_deleteAllSpecificFields($sDbFieldName, $sDbFieldValue)
 {
-	global $babBody, $babDB;
+	global $babDB;
 	$query = 
 		'SELECT ' .
 			'id ' . 
 		'FROM ' .
 			BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' ' .
 		'WHERE ' . 
-			$sDbFieldName . ' =\'' . $sDbFieldValue . '\'';
+			$sDbFieldName . ' =\'' . $babDB->db_escape_string($sDbFieldValue) . '\'';
 
 	//bab_debug($query);
 	
@@ -2073,22 +2335,37 @@ function bab_deleteAllSpecificFields($sDbFieldName, $sDbFieldValue)
 	
 	while($iIndex < $iNumRows && false != ($data = $babDB->db_fetch_assoc($result)))
 	{
-		$query = 'DELETE FROM ' . BAB_TSKMGR_SPECIFIC_FIELDS_TEXT_CLASS_TBL . ' WHERE id = \'' . $data['id'] . '\''; 
+		$query = 
+			'DELETE FROM ' . 
+				BAB_TSKMGR_SPECIFIC_FIELDS_TEXT_CLASS_TBL . ' ' .
+			'WHERE ' .
+				'id = \'' . $babDB->db_escape_string($data['id']) . '\''; 
 		//bab_debug($query);
 		$babDB->db_query($query);
 	
-		$query = 'DELETE FROM ' . BAB_TSKMGR_SPECIFIC_FIELDS_AREA_CLASS_TBL . ' WHERE id = \'' . $data['id'] . '\''; 
+		$query = 
+			'DELETE FROM ' . 
+				BAB_TSKMGR_SPECIFIC_FIELDS_AREA_CLASS_TBL . ' ' .
+			'WHERE ' .
+				'id = \'' . $babDB->db_escape_string($data['id']) . '\''; 
 		//bab_debug($query);
 		$babDB->db_query($query);
 	
-		$query = 'DELETE FROM ' . BAB_TSKMGR_SPECIFIC_FIELDS_RADIO_CLASS_TBL . ' WHERE idFldBase = \'' . $data['id'] . '\''; 
+		$query = 
+			'DELETE FROM ' . 
+				BAB_TSKMGR_SPECIFIC_FIELDS_RADIO_CLASS_TBL . ' ' .
+			'WHERE ' .
+				'idFldBase = \'' . $babDB->db_escape_string($data['id']) . '\''; 
 		//bab_debug($query);
 		$babDB->db_query($query);
 
 		$iIndex++;
 	}
 	
-	$query = 'DELETE FROM ' . BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' WHERE ' . $sDbFieldName . ' =\'' . $sDbFieldValue . '\''; 
+	$query = 
+		'DELETE FROM ' . 
+			BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' ' .
+		'WHERE ' . $sDbFieldName . ' =\'' . $babDB->db_escape_string($sDbFieldValue) . '\''; 
 	//bab_debug($query);
 	$babDB->db_query($query);
 }
@@ -2099,7 +2376,7 @@ function bab_deleteAllSpecificFields($sDbFieldName, $sDbFieldValue)
 
 function bab_selectAvailableSpecificFieldClassesByProject($iIdProjectSpace, $iIdProject)
 {
-	global $babBody, $babDB;
+	global $babDB;
 
 	$query = 
 		'SELECT ' .
@@ -2115,8 +2392,8 @@ function bab_selectAvailableSpecificFieldClassesByProject($iIdProjectSpace, $iId
 		'FROM ' .
 			BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' ' .
 		'WHERE ' . 
-			'idProjectSpace IN(\'' . $iIdProjectSpace . '\') AND ' .
-			'idProject IN(\'' . $iIdProject . '\',\'' . 0 . '\')';
+			'idProjectSpace IN(\'' . $babDB->db_escape_string($iIdProjectSpace) . '\') AND ' .
+			'idProject IN(\'' . $babDB->db_escape_string($iIdProject ). '\',\'' . $babDB->db_escape_string(0) . '\')';
 	
 	//bab_debug($query);
 	return $babDB->db_query($query);
@@ -2124,7 +2401,7 @@ function bab_selectAvailableSpecificFieldClassesByProject($iIdProjectSpace, $iId
 
 function bab_getSpecificFieldClassDefaultValue($iIdSpecificFieldClass, &$sDefaultValue)
 {
-	global $babBody, $babDB;
+	global $babDB;
 
 	$sDefaultValue = '';
 	
@@ -2148,8 +2425,11 @@ function bab_getSpecificFieldClassDefaultValue($iIdSpecificFieldClass, &$sDefaul
 		'LEFT JOIN ' .
 			BAB_TSKMGR_SPECIFIC_FIELDS_RADIO_CLASS_TBL . ' frd ON frd.idFldBase = fb.id ' .
 		'WHERE ' . 
-			'fb.id = \'' . $iIdSpecificFieldClass . '\' AND ' .
-			'(ft.isDefaultValue = \'' . BAB_TM_YES . '\' OR fa.isDefaultValue = \'' . BAB_TM_YES . '\' OR frd.isDefaultValue = \'' . BAB_TM_YES . '\')';
+			'fb.id = \'' . $babDB->db_escape_string($iIdSpecificFieldClass) . '\' AND ' .
+			'(ft.isDefaultValue = \'' . $babDB->db_escape_string(BAB_TM_YES) . '\' OR ' . 
+				'fa.isDefaultValue = \'' . $babDB->db_escape_string(BAB_TM_YES) . '\' OR ' . 
+				'frd.isDefaultValue = \'' . $babDB->db_escape_string(BAB_TM_YES) . 
+			'\')';
 			
 	//bab_debug($query);
 
@@ -2187,7 +2467,7 @@ function bab_selectSpecificFieldClassValues($iIdSpecificFieldClass)
 		'LEFT JOIN ' .
 			BAB_TSKMGR_SPECIFIC_FIELDS_RADIO_CLASS_TBL . ' frd ON frd.idFldBase = fb.id ' .
 		'WHERE ' . 
-			'fb.id = \'' . $iIdSpecificFieldClass . '\'';
+			'fb.id = \'' . $babDB->db_escape_string($iIdSpecificFieldClass) . '\'';
 
 	//bab_debug($query);
 	return $babDB->db_query($query);
@@ -2195,7 +2475,7 @@ function bab_selectSpecificFieldClassValues($iIdSpecificFieldClass)
 
 function bab_getNextSpecificFieldInstancePosition($iIdTask, &$iPosition)
 {
-	global $babBody, $babDB;
+	global $babDB;
 
 	$iPosition = 0;
 
@@ -2205,7 +2485,7 @@ function bab_getNextSpecificFieldInstancePosition($iIdTask, &$iPosition)
 		'FROM ' . 
 			BAB_TSKMGR_SPECIFIC_FIELDS_INSTANCE_LIST_TBL . ' ' .
 		'WHERE ' . 
-			'idTask =\'' . $iIdTask . '\'';
+			'idTask =\'' . $babDB->db_escape_string($iIdTask) . '\'';
 
 	//bab_debug($query);
 
@@ -2224,7 +2504,7 @@ function bab_getNextSpecificFieldInstancePosition($iIdTask, &$iPosition)
 
 function bab_createSpecificFieldInstance($iIdTask, $iIdSpecificField)
 {
-	global $babBody, $babDB;
+	global $babDB;
 	
 	$sDefaultValue = '';
 	$iPosition = 0;
@@ -2240,14 +2520,18 @@ function bab_createSpecificFieldInstance($iIdTask, $iIdSpecificField)
 			') ' .
 		'VALUES ' . 
 			'(\'\', \'' . 
-				$iIdSpecificField . '\', \'' . $iIdTask . '\', \'' . $sDefaultValue . '\', \'' . $iPosition . '\')'; 
+				$babDB->db_escape_string($iIdSpecificField) . '\', \'' . 
+				$babDB->db_escape_string($iIdTask) . '\', \'' . 
+				$babDB->db_escape_string($sDefaultValue) . '\', \'' . 
+				$babDB->db_escape_string($iPosition) . 
+			'\')'; 
 
 	//bab_debug($query);
 	
 	$res = $babDB->db_query($query);
 	if(false != $res)
 	{
-		bab_updateRefCount(BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL, $iIdSpecificField, '+ \'1\'');
+		bab_updateRefCount(BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL, $iIdSpecificField, '+ 1');
 		return true;
 	}
 	return false;
@@ -2255,17 +2539,16 @@ function bab_createSpecificFieldInstance($iIdTask, $iIdSpecificField)
 
 function bab_updateSpecificInstanceValue($iIdSpecificFieldInstance, $sValue)
 {
+	global $babDB;
 	$query = 
 		'UPDATE ' . 
 			BAB_TSKMGR_SPECIFIC_FIELDS_INSTANCE_LIST_TBL . ' ' .
 		'SET ' .
 			'value = \'' . $sValue . '\' ' .
 		'WHERE ' .
-			'id = \'' . $iIdSpecificFieldInstance . '\'';
+			'id = \'' . $babDB->db_escape_string($iIdSpecificFieldInstance) . '\'';
 
 	//bab_debug($query);
-
-	global $babDB;
 	return $babDB->db_query($query);
 }
 
@@ -2280,10 +2563,14 @@ function bab_deleteSpecificFieldInstance($iIdSpecificFieldInstance)
 	{
 		$datas = $babDB->db_fetch_array($result);
 		
-		$query = 'DELETE FROM '	. BAB_TSKMGR_SPECIFIC_FIELDS_INSTANCE_LIST_TBL . ' WHERE id = \'' . $iIdSpecificFieldInstance . '\'';
+		$query = 
+			'DELETE FROM '	. 
+				BAB_TSKMGR_SPECIFIC_FIELDS_INSTANCE_LIST_TBL . ' ' .
+			'WHERE ' .
+				'id = \'' . $babDB->db_escape_string($iIdSpecificFieldInstance) . '\'';
 		$babDB->db_query($query);
 		
-		bab_updateRefCount(BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL, $datas['iIdSpFldClass'], '- \'1\'');
+		bab_updateRefCount(BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL, $datas['iIdSpFldClass'], '- 1');
 		return true;
 	}
 	return false;
@@ -2305,10 +2592,14 @@ function bab_deleteAllSpecificFieldInstance($iIdTask)
 		
 		$datas = $babDB->db_fetch_array($result);
 		
-		$query = 'DELETE FROM '	. BAB_TSKMGR_SPECIFIC_FIELDS_INSTANCE_LIST_TBL . ' WHERE id = \'' . $datas['iIdSpecificFieldInstance'] . '\'';
+		$query = 
+			'DELETE FROM '	. 
+				BAB_TSKMGR_SPECIFIC_FIELDS_INSTANCE_LIST_TBL . ' ' .
+			'WHERE ' .
+				'id = \'' . $babDB->db_escape_string($datas['iIdSpecificFieldInstance']) . '\'';
 		$babDB->db_query($query);
 		
-		bab_updateRefCount(BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL, $datas['iIdSpFldClass'], '- \'1\'');
+		bab_updateRefCount(BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL, $datas['iIdSpFldClass'], '- 1');
 	}
 }
 
@@ -2334,7 +2625,7 @@ function bab_selectSpecificFieldInstance($iIdSpecificFieldInstance)
 		'LEFT JOIN ' .
 			BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' sb ON sb.id = si.idSpFldClass ' .
 		'WHERE ' .
-			'si.id = \'' . $iIdSpecificFieldInstance . '\'';
+			'si.id = \'' . $babDB->db_escape_string($iIdSpecificFieldInstance) . '\'';
 			
 	//bab_debug($query);
 	return $babDB->db_query($query);
@@ -2363,7 +2654,7 @@ function bab_selectAllSpecificFieldInstance($iIdTask)
 		'LEFT JOIN ' .
 			BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' sb ON sb.id = si.idSpFldClass ' .
 		'WHERE ' .
-			'idTask = \'' . $iIdTask . '\'';
+			'idTask = \'' . $babDB->db_escape_string($iIdTask) . '\'';
 			
 	//bab_debug($query);
 	return $babDB->db_query($query);
@@ -2382,10 +2673,13 @@ function bab_createNoticeEvent($iIdProjectSpace, $iIdProject, $iIdEvent, $iProfi
 			') ' .
 		'VALUES ' . 
 			'(\'\', \'' . 
-				$iIdProjectSpace . '\', \'' . $iIdProject . '\', \'' . $iProfil . '\', \'' . $iIdEvent . '\')'; 
+				$babDB->db_escape_string($iIdProjectSpace) . '\', \'' . 
+				$babDB->db_escape_string($iIdProject) . '\', \'' . 
+				$babDB->db_escape_string($iProfil) . '\', \'' . 
+				$babDB->db_escape_string($iIdEvent) . 
+			'\')'; 
 
 	//bab_debug($query);
-	
 	return $babDB->db_query($query);
 }
 
@@ -2399,10 +2693,10 @@ function bab_isNoticeEventSet($iIdProjectSpace, $iIdProject, $iIdEvent, $iProfil
 		'FROM ' .
 			BAB_TSKMGR_NOTICE_TBL . ' ' .
 		'WHERE ' .
-			'idProjectSpace = \'' . $iIdProjectSpace . '\' AND ' .
-			'idProject = \'' . $iIdProject . '\' AND ' .
-			'idEvent = \'' . $iIdEvent . '\' AND ' .
-			'profil = \'' . $iProfil . '\'';
+			'idProjectSpace = \'' . $babDB->db_escape_string($iIdProjectSpace) . '\' AND ' .
+			'idProject = \'' . $babDB->db_escape_string($iIdProject) . '\' AND ' .
+			'idEvent = \'' . $babDB->db_escape_string($iIdEvent) . '\' AND ' .
+			'profil = \'' . $babDB->db_escape_string($iProfil) . '\'';
 	//bab_debug($query);
 	$result = $babDB->db_query($query);
 	return (false != $result && $babDB->db_num_rows($result) == 1);
@@ -2420,8 +2714,8 @@ function bab_selectProjectSpaceNoticeEvent($iIdProjectSpace)
 		'FROM ' .
 			BAB_TSKMGR_NOTICE_TBL . ' ' .
 		'WHERE ' .
-			'idProjectSpace = \'' . $iIdProjectSpace . '\' AND ' .
-			'idProject = \'' . 0 . '\'';
+			'idProjectSpace = \'' . $babDB->db_escape_string($iIdProjectSpace) . '\' AND ' .
+			'idProject = \'' . $babDB->db_escape_string(0) . '\'';
 	//bab_debug($query);
 	return $babDB->db_query($query);
 }
@@ -2433,8 +2727,8 @@ function bab_deleteAllNoticeEvent($iIdProjectSpace, $iIdProject)
 		'DELETE FROM '	. 
 			BAB_TSKMGR_NOTICE_TBL . ' ' .
 		'WHERE ' .
-			'idProjectSpace = \'' . $iIdProjectSpace . '\' AND ' .
-			'idProject = \'' . $iIdProject . '\'';
+			'idProjectSpace = \'' . $babDB->db_escape_string($iIdProjectSpace) . '\' AND ' .
+			'idProject = \'' . $babDB->db_escape_string($iIdProject) . '\'';
 	return $babDB->db_query($query);
 }
 
@@ -2454,14 +2748,13 @@ function bab_getTaskListFilter($iIdUser, &$aTaskFilters)
 {
 	global $babDB;
 
-	
 	$query = 
 		'SELECT ' .
 			'* ' .
 		'FROM ' . 
 			BAB_TSKMGR_TASK_LIST_FILTER_TBL . ' ' .
 		'WHERE ' . 
-			'idUser =\'' . $iIdUser . '\'';
+			'idUser =\'' . $babDB->db_escape_string($iIdUser) . '\'';
 
 	//echo $query . '<br />';
 	//bab_debug($query);
@@ -2496,32 +2789,35 @@ function bab_createTaskListFilter($iIdUser, $aTaskFilters)
 			') ' .
 		'VALUES ' . 
 			'(\'\', \'' . 
-				$aTaskFilters['iIdUser'] . '\', \'' . $aTaskFilters['iIdProject'] . '\', \'' . $aTaskFilters['iTaskClass'] . '\')'; 
+				$babDB->db_escape_string($aTaskFilters['iIdUser']) . '\', \'' . 
+				$babDB->db_escape_string($aTaskFilters['iIdProject']) . '\', \'' . 
+				$babDB->db_escape_string($aTaskFilters['iTaskClass']) . 
+			'\')'; 
 
 	//bab_debug($query);
-	
 	return $babDB->db_query($query);
 }
 
 function bab_updateTaskListFilter($iIdUser, $aTaskFilters)
 {
+	global $babDB;
 	$query = 
 		'UPDATE ' . 
 			BAB_TSKMGR_TASK_LIST_FILTER_TBL . ' ' .
 		'SET ' .
-			'idProject = \'' . $aTaskFilters['iIdProject'] . '\', ' .
-			'iTaskClass = \'' . $aTaskFilters['iTaskClass'] . '\' ' .
+			'idProject = \'' . $babDB->db_escape_string($aTaskFilters['iIdProject']) . '\', ' .
+			'iTaskClass = \'' . $babDB->db_escape_string($aTaskFilters['iTaskClass']) . '\' ' .
 		'WHERE ' .
-			'idUser = \'' . $iIdUser . '\'';
+			'idUser = \'' . $babDB->db_escape_string($iIdUser) . '\'';
 
 	//bab_debug($query);
 
-	global $babDB;
 	return $babDB->db_query($query);
 }
 
 function bab_getCategoriesListQuery($iIdProjectSpace, $iIdProject, $iIdUser)
 {
+	global $babDB;
 	$query = 
 		'SELECT ' .
 			'cat.id iIdCategory, ' .
@@ -2532,13 +2828,15 @@ function bab_getCategoriesListQuery($iIdProjectSpace, $iIdProject, $iIdUser)
 			'cat.color sColor,' .
 			'cat.bgColor sBgColor,' .
 			'cat.idUser iIdUser,' .
-			'IF(cat.idProject = \'' . $iIdProject . '\' AND cat.refCount = \'' . 0 . '\', 1, 0) is_deletable ' .
+			'IF(cat.idProject = \'' . $babDB->db_escape_string($iIdProject) . '\' AND ' .
+				'cat.refCount = \'' . $babDB->db_escape_string(0) . '\', 1, 0) is_deletable ' .
 		'FROM ' .
 			BAB_TSKMGR_CATEGORIES_TBL . ' cat ' .
 		'WHERE ' .
-			'idProjectSpace = \'' . $iIdProjectSpace . '\' AND ' .
-			'(idProject = \'' . 0 . '\' OR idProject = \'' . $iIdProject . '\') AND ' .
-			'idUser = \'' . $iIdUser . '\' ' .
+			'idProjectSpace = \'' . $babDB->db_escape_string($iIdProjectSpace) . '\' AND ' .
+			'(idProject = \'' . $babDB->db_escape_string(0) . '\' OR ' . 
+				'idProject = \'' . $babDB->db_escape_string($iIdProject) . '\') AND ' .
+			'idUser = \'' . $babDB->db_escape_string($iIdUser) . '\' ' .
 		'GROUP BY cat.name ASC';
 		
 	return $query;
@@ -2546,7 +2844,7 @@ function bab_getCategoriesListQuery($iIdProjectSpace, $iIdProject, $iIdUser)
 
 function bab_selectAvailableCategories($iIdProjectSpace, $iIdProject, $iIdUser)
 {
-	global $babBody, $babDB;
+	global $babDB;
 
 	$query = 
 		'SELECT ' .
@@ -2555,19 +2853,67 @@ function bab_selectAvailableCategories($iIdProjectSpace, $iIdProject, $iIdUser)
 		'FROM ' .
 			BAB_TSKMGR_CATEGORIES_TBL . ' ' .
 		'WHERE ' . 
-			'idProjectSpace IN(\'' . $iIdProjectSpace . '\') AND ' .
-			'idProject IN(\'' . $iIdProject . '\',\'' . 0 . '\') AND ' .
-			'idUser = \'' . $iIdUser . '\'';
+			'idProjectSpace IN(\'' . $babDB->db_escape_string($iIdProjectSpace) . '\') AND ' .
+			'idProject IN(\'' . $babDB->db_escape_string($iIdProject) . '\',\'' . $babDB->db_escape_string(0) . '\') AND ' .
+			'idUser = \'' . $babDB->db_escape_string($iIdUser) . '\'';
 	
 	//bab_debug($query);
 	return $babDB->db_query($query);
 }
 
+function bab_getCategoriesName($aIdCategories, $bIsDeletable)
+{
+	if(is_array($aIdCategories) && count($aIdCategories) > 0)
+	{
+		global $babDB;
+		$sId = '';
+		
+		foreach($aIdCategories as $key => $iId)
+		{
+			$sId .= ', \'' . $babDB->db_escape_string($iId) . '\'';
+		}
+		
+		$sId = substr($sId, strlen(', '));
+		
+		$query = 
+			'SELECT ' .
+				'id iIdCategory, ' .
+				'name sCategoryName ' .
+			'FROM ' .
+				BAB_TSKMGR_CATEGORIES_TBL . ' ' .
+			'WHERE ' .
+				'id IN (' . $sId . ') ' .
+				(($bIsDeletable) ? 'AND refCount = \'0\'' : '') .
+			'GROUP BY name ASC';
+			
+		//bab_debug($query);
+		
+		$res = $babDB->db_query($query);
+		if(false != $res)
+		{
+			$iNumRows = $babDB->db_num_rows($res);
+			$iIdx = 0;
+			$aIdCategories = array();
+				
+			while($iIdx < $iNumRows)
+			{
+				$iIdx++;
+				$datas = $babDB->db_fetch_array($res);
+		
+				if(false != $datas)
+				{
+					$aIdCategories[] = array('iIdCategory' => $datas['iIdCategory'], 'sCategoryName' => $datas['sCategoryName']);
+				}
+			}
+			return $aIdCategories;
+		}
+		
+	}
+	return array();
+}
 
 function bab_tskmgr_setPeriods(&$oUserWorkingHours, $aIdUsers, $oStartDate, $oEndDate)
 {
-	global $babDB;
-
 	foreach($aIdUsers as $iIdUser)
 	{
 		$aFilters = array('iIdOwner' => (int) $iIdUser, 'sStartDate' => $oStartDate->getIsoDateTime(), 

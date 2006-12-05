@@ -28,37 +28,14 @@ require_once($babInstallPath . 'utilit/tmToolsIncl.php');
 require_once($babInstallPath . 'utilit/tmList.php');
 require_once($babInstallPath . 'tmSpecificFieldsFunc.php');
 require_once($babInstallPath . 'tmCategoriesFunc.php');
-
 require_once($babInstallPath . 'utilit/baseFormProcessingClass.php');
 require_once($babInstallPath . 'tmContext.php');
 
 
-function displayMenu()
-{
-	global $babBody;
-	
-	$bfp = & new BAB_BaseFormProcessing();
-	$bfp->set_data('dummy', 'dummy');
-
-	$babBody->title = bab_translate("Task Manager");
-	add_item_menu();
-
-	$bfp->set_anchor($GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_WORKING_HOURS_FORM , '', bab_translate("Working hours"));
-
-	$oTmCtx =& getTskMgrContext();
-	$aPersTaskCreator = bab_getUserIdObjects(BAB_TSKMGR_PERSONNAL_TASK_CREATOR_GROUPS_TBL);
-	if(count($aPersTaskCreator) > 0 && isset($aPersTaskCreator[$oTmCtx->getIdDelegation()]))
-	{
-		$bfp->set_anchor($GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PERSONNAL_TASK_CONFIGURATION_FORM , '', bab_translate("Personnals tasks configuration"));
-	}
-	
-	$babBody->babecho(bab_printTemplate($bfp, 'tmCommon.html', 'displayMenu'));
-}
-
 function displayProjectsSpacesList()
 {
 	global $babBody, $babDB;
-	$babBody->title = bab_translate("Projects spaces list");
+	$babBody->title = bab_toHtml(bab_translate("Projects spaces list"));
 	add_item_menu();
 
 	require_once $GLOBALS['babInstallPath'] . 'utilit/tree.php';
@@ -84,7 +61,7 @@ function displayProjectsSpacesList()
 			parent::bab_TreeView('myTreeView');
 			
 			$sTg = bab_rp('tg', 'admTskMgr');
-			$this->m_sUrlBase = $GLOBALS['babUrlScript'] . '?tg=' . $sTg . '&idx=%s&iIdProjectSpace=%d&iIdProject=%d';
+			$this->m_sUrlBase = $GLOBALS['babUrlScript'] . '?tg=' . urlencode($sTg) . '&idx=%s&iIdProjectSpace=%d&iIdProject=%d';
 			
 			$this->createProjectSpaceSubTree();
 			$this->createPersonnalTaskSubTree();
@@ -92,7 +69,7 @@ function displayProjectsSpacesList()
 		
 		function getUrl($sIdx, $iIdProjectSpace, $iIdProject)
 		{
-			return sprintf($this->m_sUrlBase, $sIdx, $iIdProjectSpace, $iIdProject);
+			return bab_toHtml(sprintf($this->m_sUrlBase, urlencode($sIdx), urlencode($iIdProjectSpace), urlencode($iIdProject)));
 		}
 		
 		function createProjectSpaceSubTree()
@@ -117,8 +94,8 @@ function displayProjectsSpacesList()
 				'FROM ' .
 					BAB_TSKMGR_PROJECTS_SPACES_TBL . ' ' .
 				'WHERE ' . 
-					'id IN(\'' . implode('\',\'', array_keys($oTmCtx->getVisualisedIdProjectSpace())) . '\')';
-		
+					'id IN(' . $babDB->quote(array_keys($oTmCtx->getVisualisedIdProjectSpace())) . ')';	
+					
 			//bab_debug($query);
 			return $babDB->db_query($query);
 		}
@@ -136,13 +113,13 @@ function displayProjectsSpacesList()
 				
 				while( $iIndex < $iNumRows && false != ($datas = $babDB->db_fetch_array($result)) )
 				{
-					$oProjectSpaceElement =& $this->createElement($this->m_dnps . '_' . $datas['id'], $this->m_dnps, $datas['name'], 
-						$datas['description'], null);
-					
-					if(bab_isAccessValid(BAB_TSKMGR_PROJECT_CREATOR_GROUPS_TBL, $datas['id']))
+					$oProjectSpaceElement =& $this->createElement($this->m_dnps . '_' . $datas['id'], $this->m_dnps, bab_toHtml($datas['name']), 
+						bab_toHtml($datas['description']), null);
+
+					if(bab_isAccessValid(BAB_TSKMGR_PROJECT_CREATOR_GROUPS_TBL, (int) $datas['id']))
 					{
 						$oProjectSpaceElement->addAction('add',
-			               bab_translate('Add a project'), $GLOBALS['babSkinPath'] . 'images/Puces/edit_add.png', 
+			               bab_toHtml(bab_translate("Add a project")), $GLOBALS['babSkinPath'] . 'images/Puces/edit_add.png', 
 			               $this->getUrl(BAB_TM_IDX_DISPLAY_PROJECT_FORM, $datas['id'], 0), '');
 					}
 					
@@ -176,19 +153,19 @@ function displayProjectsSpacesList()
 					
 					$isAccessValid = ($bIsCreator || $bIsManager);
 
-$iTaskCount = (int) bab_getTaskCount($datas['id']);					
+					$iTaskCount = (int) bab_getTaskCount($datas['id']);					
 					
-					$sProjectUrl = ($bIsManager) ? $this->getUrl(BAB_TM_IDX_DISPLAY_TASK_LIST, $iIdProjectSpace, $datas['id']) . '&isProject=1' : null;
-					$oProjectElement =& $this->createElement($this->m_dnp . '_' . $datas['id'], $this->m_dnp, $datas['name'] . ' (' . $iTaskCount . ')', 
-						$datas['description'], $sProjectUrl);
+					$sProjectUrl = ($bIsManager) ? $this->getUrl(BAB_TM_IDX_DISPLAY_TASK_LIST, $iIdProjectSpace, $datas['id']) . bab_toHtml('&isProject=' . urlencode(1)) : null;
+					$oProjectElement =& $this->createElement($this->m_dnp . '_' . $datas['id'], $this->m_dnp, bab_toHtml($datas['name']) . ' (' . $iTaskCount . ')', 
+						bab_toHtml($datas['description']), $sProjectUrl);
                		$this->appendElement($oProjectElement, $this->m_dnps . '_' . $iIdProjectSpace);
                		
-$oProjectElement->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
+					$oProjectElement->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
                		
                		if($isAccessValid)
                		{
 						$oProjectElement->addAction('Rights',
-			               bab_translate('Rights'), $GLOBALS['babSkinPath'] . 'images/Puces/agent.png', 
+			               bab_toHtml(bab_translate("Rights")), $GLOBALS['babSkinPath'] . 'images/Puces/agent.png', 
 			               $this->getUrl(BAB_TM_IDX_DISPLAY_PROJECT_RIGHTS_FORM, $iIdProjectSpace, $datas['id']), '');
                		}
                		
@@ -196,255 +173,85 @@ $oProjectElement->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png
                		{
                			$sGanttViewUrl = $this->getUrl(BAB_TM_IDX_DISPLAY_GANTT_CHART, $iIdProjectSpace, $datas['id']);
 						$oProjectElement->addAction('GanttView',
-			               bab_translate('Gantt view'), $GLOBALS['babSkinPath'] . 'images/Puces/schedule.png', 
+			               bab_toHtml(bab_translate("Gantt view")), $GLOBALS['babSkinPath'] . 'images/Puces/schedule.png', 
 			               'javascript:bab_popup(\'' . $sGanttViewUrl . '\')' , '');
 						$oProjectElement->addAction('Configuration',
-			               bab_translate('Project properties'), $GLOBALS['babSkinPath'] . 'images/Puces/package_settings.png', 
+			               bab_toHtml(bab_translate("Project properties")), $GLOBALS['babSkinPath'] . 'images/Puces/package_settings.png', 
 			               $this->getUrl(BAB_TM_IDX_DISPLAY_PROJECT_PROPERTIES_FORM, $iIdProjectSpace, $datas['id']), '');
 						$oProjectElement->addAction('Specific_fields',
-			               bab_translate('Specific fields'), $GLOBALS['babSkinPath'] . 'images/Puces/list.png', 
+			               bab_toHtml(bab_translate("Specific fields")), $GLOBALS['babSkinPath'] . 'images/Puces/list.png', 
 			               $this->getUrl(BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_LIST, $iIdProjectSpace, $datas['id']), '');
 						$oProjectElement->addAction('Categories_list',
-			               bab_translate('Categories list'), $GLOBALS['babSkinPath'] . 'images/Puces/kwikdisk.png', 
+			               bab_toHtml(bab_translate("Categories list")), $GLOBALS['babSkinPath'] . 'images/Puces/kwikdisk.png', 
 			               $this->getUrl(BAB_TM_IDX_DISPLAY_CATEGORIES_LIST, $iIdProjectSpace, $datas['id']), '');
 						$oProjectElement->addAction('Notices',
-			               bab_translate('Notices'), $GLOBALS['babSkinPath'] . 'images/Puces/mailreminder.png', 
+			               bab_toHtml(bab_translate("Notices")), $GLOBALS['babSkinPath'] . 'images/Puces/mailreminder.png', 
 			               $this->getUrl(BAB_TM_IDX_DISPLAY_NOTICE_EVENT_FORM, $iIdProjectSpace, $datas['id']), '');
 						$oProjectElement->addAction('Commentaries',
-			               bab_translate('Commentaries list'), $GLOBALS['babSkinPath'] . 'images/Puces/lists.png', 
+			               bab_toHtml(bab_translate("Commentaries list")), $GLOBALS['babSkinPath'] . 'images/Puces/lists.png', 
 			               $this->getUrl(BAB_TM_IDX_DISPLAY_PROJECT_COMMENTARY_LIST, $iIdProjectSpace, $datas['id']), '');
 
-if(0 === $iTaskCount)		               
-{
-	$oProjectElement->addAction('Task_list',
-	   bab_translate('Add a Task'), $GLOBALS['babSkinPath'] . 'images/Puces/edit_remove.png', 
-	   $this->getUrl(BAB_TM_IDX_DISPLAY_DELETE_PROJECT_FORM, $iIdProjectSpace, $datas['id']) 
-	   . '&sFromIdx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST, '');
-}
+						if(0 === $iTaskCount)		               
+						{
+							$oProjectElement->addAction('Delete_Project',
+							   bab_toHtml(bab_translate("Delete project")), $GLOBALS['babSkinPath'] . 'images/Puces/edit_remove.png', 
+							   $this->getUrl(BAB_TM_IDX_DISPLAY_DELETE_PROJECT_FORM, $iIdProjectSpace, $datas['id']) 
+							   . bab_toHtml('&sFromIdx=' . urlencode(BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST)), '');
+						}
 
 						$oProjectElement->addAction('Task_list',
-						   bab_translate('Add a Task'), $GLOBALS['babSkinPath'] . 'images/Puces/edit_add.png', 
+						   bab_toHtml(bab_translate("Add a task")), $GLOBALS['babSkinPath'] . 'images/Puces/edit_add.png', 
 						   $this->getUrl(BAB_TM_IDX_DISPLAY_TASK_FORM, $iIdProjectSpace, $datas['id']) 
-						   . '&sFromIdx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST, '');
+						   . bab_toHtml('&sFromIdx=' . urlencode(BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST)), '');
                		}
-               		
-               		//$this->insertTaskIntoProject($iIdProjectSpace, $datas['id']);
-               		
-		            /*   
-					$oProjectElement->addAction('Task_list',
-					   bab_translate('Tasks list'), $GLOBALS['babSkinPath'] . 'images/Puces/windowlist.png', 
-					   $this->getUrl(BAB_TM_IDX_DISPLAY_TASK_LIST, $iIdProjectSpace, $datas['id']), '');
-					//*/
 				}
 			}	
 		}
-		
-		/*
-		function insertTaskIntoProject($iIdProjectSpace, $iIdProject)
-		{
-			$result = bab_selectTasksList($iIdProject);
-			if(false != $result)
-			{
-				global $babDB;
-				
-				$iIndex = 0;
-				$iNumRows = $babDB->db_num_rows($result);
-				
-				$bIsManager = bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject);
-				
-				while( $iIndex < $iNumRows && false != ($datas = $babDB->db_fetch_array($result)) )
-				{
-					bab_getTaskResponsibles($datas['id'], $aTaskResponsible);
-					$isAccessValid = (isset($aTaskResponsible[$GLOBALS['BAB_SESS_USERID']]) || $bIsManager);
-
-					$sTaskUrl = ($isAccessValid) ? 
-						$this->getUrl(BAB_TM_IDX_DISPLAY_TASK_FORM, $iIdProjectSpace, $iIdProject) . 
-						'&iIdTask=' . $datas['id'] . '&sFromIdx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST : null;
-					
-					$oTaskElement =& $this->createElement($this->m_dnt . '_' . $datas['id'], $this->m_dnt, $datas['shortDescription'], 
-						$datas['description'], $sTaskUrl);
-						
-               		$this->appendElement($oTaskElement, $this->m_dnp . '_' . $iIdProject);
-
-$oTaskElement->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/file.png');
-				}
-			}	
-		}
-		//*/
 		
 		function createPersonnalTaskSubTree()
 		{
 			$oTmCtx =& getTskMgrContext();
+			$iIdDelegation = (int) $oTmCtx->getIdDelegation();
 			
-//			if(BAB_TM_PERSONNAL_TASK_OWNER === $oTmCtx->getUserProfil())
+			if(bab_isAccessValid(BAB_TSKMGR_PERSONNAL_TASK_CREATOR_GROUPS_TBL, $iIdDelegation))
 			{
 				$iTaskCount = bab_getTaskCount(0, $GLOBALS['BAB_SESS_USERID']);
 				
-				$oPersTaskElement =& $this->createElement($this->m_iIdPersTaskElement, 'snps', bab_translate("Personnal(s) task(s)") . '(' . $iTaskCount . ')', 'description', null);
+				$oPersTaskElement =& $this->createElement($this->m_iIdPersTaskElement, 'snps', bab_toHtml(bab_translate("Personnal(s) task(s)")) . '(' . $iTaskCount . ')', bab_toHtml('description'), null);
 				
        			$sGanttViewUrl = $this->getUrl(BAB_TM_IDX_DISPLAY_GANTT_CHART, 0, 0);
 				$oPersTaskElement->addAction('GanttView',
-	               bab_translate('Gantt view'), $GLOBALS['babSkinPath'] . 'images/Puces/schedule.png', 
+	               bab_toHtml(bab_translate("Gantt view")), $GLOBALS['babSkinPath'] . 'images/Puces/schedule.png', 
 	               'javascript:bab_popup(\'' . $sGanttViewUrl . '\')' , '');
 				$oPersTaskElement->addAction('Configuration',
-	               bab_translate('Configuration'), $GLOBALS['babSkinPath'] . 'images/Puces/package_settings.png', 
+	               bab_toHtml(bab_translate("Configuration")), $GLOBALS['babSkinPath'] . 'images/Puces/package_settings.png', 
 	               $this->getUrl(BAB_TM_IDX_DISPLAY_PERSONNAL_TASK_CONFIGURATION_FORM, 0, 0), '');
 				$oPersTaskElement->addAction('Specific_fields',
-	               bab_translate('Specific fields'), $GLOBALS['babSkinPath'] . 'images/Puces/list.png', 
-	               $this->getUrl(BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_LIST, 0, 0) . '&iIdUser=' . $GLOBALS['BAB_SESS_USERID'], '');
+	               bab_toHtml(bab_translate("Specific fields")), $GLOBALS['babSkinPath'] . 'images/Puces/list.png', 
+	               $this->getUrl(BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_LIST, 0, 0) . bab_toHtml('&iIdUser=' . urlencode($GLOBALS['BAB_SESS_USERID'])), '');
 				$oPersTaskElement->addAction('Categories list',
-	               bab_translate('Categories_list'), $GLOBALS['babSkinPath'] . 'images/Puces/kwikdisk.png', 
-	               $this->getUrl(BAB_TM_IDX_DISPLAY_CATEGORIES_LIST, 0, 0) . '&iIdUser=' . $GLOBALS['BAB_SESS_USERID'], '');
+	               bab_toHtml(bab_translate("Categories list")), $GLOBALS['babSkinPath'] . 'images/Puces/kwikdisk.png', 
+	               $this->getUrl(BAB_TM_IDX_DISPLAY_CATEGORIES_LIST, 0, 0) . bab_toHtml('&iIdUser=' . urlencode($GLOBALS['BAB_SESS_USERID'])), '');
 				$oPersTaskElement->addAction('Add',
-	               bab_translate('Add'), $GLOBALS['babSkinPath'] . 'images/Puces/edit_add.png', 
-	               $this->getUrl(BAB_TM_IDX_DISPLAY_TASK_FORM, 0, 0) . '&sFromIdx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST, '');
+	               bab_toHtml(bab_translate("Add")), $GLOBALS['babSkinPath'] . 'images/Puces/edit_add.png', 
+	               $this->getUrl(BAB_TM_IDX_DISPLAY_TASK_FORM, 0, 0) . bab_toHtml('&sFromIdx=' . urlencode(BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST)), '');
 
 			    $this->appendElement($oPersTaskElement, null);
-			    //$this->insertPersonnalTask();
 			}
 		}
-		
-		/*
-		function insertPersonnalTask()
-		{
-			$result = bab_selectPersonnalTasksList();
-			if(false != $result)
-			{
-				global $babDB;
-				
-				$iIndex = 0;
-				$iNumRows = $babDB->db_num_rows($result);
-				
-				while( $iIndex < $iNumRows && false != ($datas = $babDB->db_fetch_array($result)) )
-				{
-					$sTaskUrl = $this->getUrl(BAB_TM_IDX_DISPLAY_TASK_FORM, 0, 0) . '&iIdTask=' . $datas['id'] .
-					 	'&sFromIdx=' . BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST;
-					
-					$oTaskElement =& $this->createElement($this->m_dnt . '_' . $datas['id'], $this->m_dnt, $datas['shortDescription'], 
-						$datas['description'], $sTaskUrl);
-						
-               		$this->appendElement($oTaskElement, $this->m_iIdPersTaskElement);
-				}
-			}	
-		}
-		//*/
 	}
 	
-	//*
 	$list = new BAB_TM_List();
 	$GLOBALS['babBody']->babecho($list->printTemplate());
-	//*/
 }
-
-/*
-function displayProjectsList()
-{
-	global $babBody;
-	$oTmCtx =& getTskMgrContext();
-	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
-	
-	$babBody->title = bab_translate("Projects list");
-
-	$itemMenu = array();
-	add_item_menu($itemMenu);
-
-	class BAB_TM_ProjectList extends BAB_TM_ListBase
-	{
-		function BAB_TM_ProjectList()
-		{
-			parent::BAB_TM_ListBase();
-		}
-	
-		function init()
-		{
-			$this->set_caption('rights', bab_translate("Rights"));
-			$this->set_caption('configuration', bab_translate("Configuration"));
-			$this->set_caption('spfFld', bab_translate("Specific fields"));
-			$this->set_caption('category', bab_translate("Categories list"));
-			$this->set_caption('commentary', bab_translate("Display project commentaries list"));
-			$this->set_caption('task', bab_translate("Display tasks list"));
-			$this->set_caption('notice', bab_translate("Notice events"));
-
-			$oTmCtx =& getTskMgrContext();
-			$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
-
-			$this->set_data('iIdProjectSpace', $iIdProjectSpace);
-			$this->set_data('bIsProjectCreator', 
-				bab_isAccessValid(BAB_TSKMGR_PROJECT_CREATOR_GROUPS_TBL, $iIdProjectSpace));
-				
-			$this->set_data('rightsUrl', '#');
-			$this->set_data('configurationUrl', '#');
-			$this->set_data('specificFieldUrl', '#');
-			$this->set_data('categoryUrl', '#');
-			$this->set_data('commentaryUrl', '#');
-			$this->set_data('taskUrl', '#');
-			$this->set_data('noticeUrl', '#');
-			$this->m_result = bab_selectProjectList($iIdProjectSpace);
-		}
-		
-		function nextItem()
-		{
-			if(false != parent::nextItem())
-			{
-				$this->get_data('iIdProjectSpace', $iIdProjectSpace);
-				$this->get_data('bIsProjectCreator', $bIsProjectCreator);
-				$bIsManager = bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $this->m_rowDatas['id']);
-				$this->set_data('bIsManager', $bIsManager);
-				$this->set_data('bIsRightUrl', ($bIsProjectCreator || $bIsManager));
-				
-				$this->set_data('rightsUrl', $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . 
-					BAB_TM_IDX_DISPLAY_PROJECT_RIGHTS_FORM . '&iIdProjectSpace=' . $iIdProjectSpace . '&iIdProject=' . $this->m_rowDatas['id']
-					);
-					
-				$this->set_data('configurationUrl', $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' .
-					BAB_TM_IDX_DISPLAY_PROJECTS_CONFIGURATION_FORM . '&iIdProjectSpace=' . $iIdProjectSpace . '&iIdProject=' . $this->m_rowDatas['id']
-					);
-
-				$this->set_data('specificFieldUrl', $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' .
-					BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_LIST . '&iIdProjectSpace=' . $iIdProjectSpace . '&iIdProject=' . $this->m_rowDatas['id']
-					);
-
-				$this->set_data('categoryUrl', $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . 
-					BAB_TM_IDX_DISPLAY_CATEGORIES_LIST . '&iIdProjectSpace=' . $iIdProjectSpace . '&iIdProject=' . $this->m_rowDatas['id']
-					);
-					
-				$this->set_data('commentaryUrl', $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' .
-					BAB_TM_IDX_DISPLAY_PROJECT_COMMENTARY_LIST . '&iIdProjectSpace=' . $iIdProjectSpace . '&iIdProject=' . $this->m_rowDatas['id']
-					);
-
-				$this->set_data('taskUrl', $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' .
-					BAB_TM_IDX_DISPLAY_TASK_LIST . '&iIdProjectSpace=' . $iIdProjectSpace . '&iIdProject=' . $this->m_rowDatas['id']
-					);	
-
-				$this->set_data('noticeUrl', $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' .
-					BAB_TM_IDX_DISPLAY_NOTICE_EVENT_FORM . '&iIdProjectSpace=' . $iIdProjectSpace . '&iIdProject=' . $this->m_rowDatas['id']
-					);	
-
-				return true;
-			}
-			return false;
-		}
-	}
-	
-	$list = new BAB_TM_ProjectList();
-	
-	$list->set_data('url', $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . 
-		BAB_TM_IDX_DISPLAY_PROJECT_FORM . '&iIdProjectSpace=' . $iIdProjectSpace . '&iIdProject=');
-		
-	$babBody->babecho(bab_printTemplate($list, 'tmUser.html', 'displayProjectList'));	
-}
-//*/
 
 function displayProjectForm()
 {
 	global $babBody;
 
 	$oTmCtx =& getTskMgrContext();
-	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
-	$iIdProject = $oTmCtx->getIdProject();
-	
-	//bab_debug('iIdProjectSpace ==> ' . $iIdProjectSpace);
-	//bab_debug('iIdProject ==> ' . $iIdProject);
+	$iIdProjectSpace = (int) $oTmCtx->getIdProjectSpace();
+	$iIdProject = (int) $oTmCtx->getIdProject();
 	
 	if(bab_isAccessValid(BAB_TSKMGR_PROJECT_CREATOR_GROUPS_TBL, $iIdProjectSpace))
 	{
@@ -489,8 +296,8 @@ function displayProjectForm()
 					
 					if(false != $bSuccess)
 					{
-						$this->set_data('sName', htmlentities($aProject['name'], ENT_QUOTES) );
-						$this->set_data('sDescription', htmlentities($aProject['description'], ENT_QUOTES));
+						$this->set_data('sName', $aProject['name']);
+						$this->set_data('sDescription', $aProject['description']);
 					}
 					
 					$this->set_data('bIsDeletable', bab_isProjectDeletable($iIdProject));
@@ -508,20 +315,22 @@ function displayProjectForm()
 			array(
 				'idx' => BAB_TM_IDX_DISPLAY_PROJECT_FORM,
 				'mnuStr' => bab_translate("Add a project"),
-				'url' => $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECT_FORM . 
-				'&iIdProjectSpace=' . $iIdProjectSpace)
+				'url' => $GLOBALS['babUrlScript'] . '?tg=' . urlencode('usrTskMgr') . '&idx=' . urlencode(BAB_TM_IDX_DISPLAY_PROJECT_FORM) . 
+				'&iIdProjectSpace=' . urlencode($iIdProjectSpace))
 			);
 			
 		add_item_menu($itemMenu);
 
-		$babBody->title = $tab_caption;
+		$babBody->title = bab_toHtml($tab_caption);
 	
 		$oProject = new BAB_Project($iIdProjectSpace, $iIdProject);
+		$oProject->raw_2_html(BAB_RAW_2_HTML_CAPTION);
+		$oProject->raw_2_html(BAB_RAW_2_HTML_DATA);
 		$babBody->babecho(bab_printTemplate($oProject, 'tmUser.html', 'projectForm'));		
 	}
 	else
 	{
-		$GLOBALS['babBody']->msgerror = bab_translate("You do not have the right to create/modify a project");
+		$GLOBALS['babBody']->msgerror = bab_toHtml(bab_translate("You do not have the right to create/modify a project"));
 	}
 }
 
@@ -530,8 +339,8 @@ function displayDeleteProjectForm()
 	global $babBody;
 
 	$oTmCtx =& getTskMgrContext();
-	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
-	$iIdProject = $oTmCtx->getIdProject();
+	$iIdProjectSpace = (int) $oTmCtx->getIdProjectSpace();
+	$iIdProject = (int) $oTmCtx->getIdProject();
 
 	if(bab_isAccessValid(BAB_TSKMGR_PROJECT_CREATOR_GROUPS_TBL, $iIdProjectSpace))
 	{
@@ -551,18 +360,20 @@ function displayDeleteProjectForm()
 	
 				$bf->set_caption('warning', bab_translate("This action will delete the project and all references"));
 				$bf->set_caption('message', bab_translate("Continue ?"));
-				$bf->set_caption('title', bab_translate("Project = ") . htmlentities($aProject['name'], ENT_QUOTES));
+				$bf->set_caption('title', bab_translate("Project = ") . $aProject['name']);
 				$bf->set_caption('yes', bab_translate("Yes"));
 				$bf->set_caption('no', bab_translate("No"));
 	
-				$babBody->title = bab_translate("Delete project");
+				$babBody->title = bab_toHtml(bab_translate("Delete project"));
+				$bf->raw_2_html(BAB_RAW_2_HTML_CAPTION);
+				$bf->raw_2_html(BAB_RAW_2_HTML_DATA);
 				$babBody->babecho(bab_printTemplate($bf, 'tmCommon.html', 'warningyesno'));
 			}
 		}
 	}
 	else 
 	{
-		$GLOBALS['babBody']->msgerror = bab_translate("You do not have the right to delete a project");
+		$GLOBALS['babBody']->msgerror = bab_toHtml(bab_translate("You do not have the right to delete a project"));
 	}	
 }
 
@@ -571,15 +382,14 @@ function displayProjectRightsForm()
 	global $babBody;
 
 	$oTmCtx =& getTskMgrContext();
-	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
-	$iIdProject = $oTmCtx->getIdProject();
+	$iIdProjectSpace = (int) $oTmCtx->getIdProjectSpace();
+	$iIdProject = (int) $oTmCtx->getIdProject();
 	
 	$bIsCreator = bab_isAccessValid(BAB_TSKMGR_PROJECT_CREATOR_GROUPS_TBL, $iIdProjectSpace);
-//	$bIsManager = bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject);
 	$bIsManager = false;
 	if(!bab_isAccessValid(BAB_TSKMGR_DEFAULT_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProjectSpace))
 	{
-			$bIsManager = bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject);
+		$bIsManager = bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject);
 	}
 	else 
 	{
@@ -594,28 +404,24 @@ function displayProjectRightsForm()
 			array(
 				'idx' => BAB_TM_IDX_DISPLAY_PROJECT_RIGHTS_FORM,
 				'mnuStr' => bab_translate("Project rights"),
-				'url' => $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECT_RIGHTS_FORM . 
-				'&iIdProjectSpace=' . $iIdProjectSpace .'&iIdProject=' . $iIdProject)
+				'url' => $GLOBALS['babUrlScript'] . '?tg=' . urlencode('usrTskMgr') . '&idx=' . urlencode(BAB_TM_IDX_DISPLAY_PROJECT_RIGHTS_FORM) . 
+				'&iIdProjectSpace=' . urlencode($iIdProjectSpace) .'&iIdProject=' . urlencode($iIdProject))
 			);
 	
 		add_item_menu($itemMenu);
-		$babBody->title = bab_translate("Project right");
+		$babBody->title = bab_toHtml(bab_translate("Project right"));
 		
 		$enableGroup	= 0;
 		$disableGroup	= 1;
 	
 		require_once($GLOBALS['babInstallPath'] . 'admin/acl.php');
-	
 		
 		$macl = new macl('usrTskMgr', BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST, $iIdProject, BAB_TM_ACTION_SET_RIGHT);
 		$macl->set_hidden_field('iIdProjectSpace', $iIdProjectSpace);
 		$macl->set_hidden_field('iIdProject', $iIdProject);
 		
-		//if($bIsCreator)
-		{
-			$macl->addtable(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, bab_translate("Project manager"));
-			$macl->filter($enableGroup, $enableGroup, $disableGroup, $enableGroup, $disableGroup);
-		}
+		$macl->addtable(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, bab_translate("Project manager"));
+		$macl->filter($enableGroup, $enableGroup, $disableGroup, $enableGroup, $disableGroup);
 		
 		if($bIsManager)
 		{
@@ -635,151 +441,14 @@ function displayProjectRightsForm()
 	}
 }
 
-function displayProjectsConfigurationForm()
-{
-	global $babBody;
-
-	$oTmCtx =& getTskMgrContext();
-	
-	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
-	$iIdProject = $oTmCtx->getIdProject();
-
-	if(bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject))
-	{
-		if(0 != $iIdProjectSpace)
-		{
-			class BAB_TM_Configuration extends BAB_BaseFormProcessing
-			{
-				function BAB_TM_Configuration($iIdProjectSpace, $iIdProject)
-				{
-					parent::BAB_BaseFormProcessing();
-					
-					$this->set_caption('taskUpdate', bab_translate("Task updated by task responsible"));
-					$this->set_caption('notice', bab_translate("Reminder before project expiration"));
-					$this->set_caption('taskNumerotation', bab_translate("Task numerotation"));
-					$this->set_caption('emailNotice', bab_translate("Email notification"));
-					$this->set_caption('faq', bab_translate("Task manager FAQ"));
-					$this->set_caption('days', bab_translate("Day(s)"));
-				
-					$this->set_caption('yes', bab_translate("Yes"));
-					$this->set_caption('no', bab_translate("No"));
-					$this->set_caption('save', bab_translate("Save"));
-		
-					$this->set_data('aTaskNumerotation', array(
-						BAB_TM_MANUAL => bab_translate("Manual"), BAB_TM_SEQUENTIAL => bab_translate("Sequential (automatique)"),
-						BAB_TM_YEAR_SEQUENTIAL => bab_translate("Year + Sequential (automatique)"),
-						BAB_TM_YEAR_MONTH_SEQUENTIAL => bab_translate("Year + Month + Sequential (automatique)")));
-						
-					$this->set_data('yes', BAB_TM_YES);
-					$this->set_data('no', BAB_TM_NO);
-					$this->set_data('tg', 'usrTskMgr');
-					$this->set_data('save_idx', BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST);
-					$this->set_data('save_action', BAB_TM_ACTION_SAVE_PROJECTS_CONFIGURATION);
-					
-					$this->set_data('tmCode', '');
-					$this->set_data('tmValue', '');
-					$this->set_data('tnSelected', '');
-					
-					$this->set_data('iIdProjectSpace', $iIdProjectSpace);
-					$this->set_data('iIdProject', $iIdProject);
-					$this->set_data('isTaskUpdatedByMgr', true);
-					$this->set_data('endTaskReminder', 5);
-					$this->set_data('taskNumerotation', BAB_TM_SEQUENTIAL);
-					$this->set_data('isEmailNotice', true);
-					$this->set_data('faqUrl', '');
-					$this->set_data('iIdConfiguration', -1);
-					
-					$oTmCtx =& getTskMgrContext();
-					$aDPC = $oTmCtx->getConfiguration();
-					
-					if(null != $aDPC)
-					{
-						$this->set_data('iIdConfiguration', $aDPC['id']);
-						$this->set_data('isTaskUpdatedByMgr', (BAB_TM_YES == $aDPC['tskUpdateByMgr']));
-						$this->set_data('endTaskReminder', $aDPC['endTaskReminder']);
-						$this->set_data('taskNumerotation', $aDPC['tasksNumerotation']);
-						$this->set_data('isEmailNotice', (BAB_TM_YES == $aDPC['emailNotice']));
-						$this->set_data('faqUrl', htmlentities($aDPC['faqUrl']));
-						$this->set_data('iIdConfiguration', $aDPC['id']);
-					}
-	
-					$isEmpty = true;
-					global $babDB;
-					$result = bab_selectTasksList($iIdProject);
-					if(false != $result && $babDB->db_num_rows($result) > 0)
-					{
-						$isEmpty = false;
-					}
-					$this->set_data('isProjectEmpty', $isEmpty);
-					
-					if(!$isEmpty)
-					{
-						$this->get_data('aTaskNumerotation', $aTaskNumerotation);
-						$this->set_data('tmValue', $aTaskNumerotation[$aDPC['tasksNumerotation']]);
-					}
-				}
-				
-				function getNextTaskNumerotation()
-				{
-					$this->get_data('taskNumerotation', $taskNumerotation);
-					$this->set_data('tnSelected', '');
-					
-					$datas = each($this->m_datas['aTaskNumerotation']);
-					if(false != $datas)
-					{
-						$this->set_data('tmCode', $datas['key']);
-						$this->set_data('tmValue', $datas['value']);
-						
-						if($taskNumerotation == $datas['key'])
-						{
-							$this->set_data('tnSelected', 'selected="selected"');
-						}
-						
-						return true;
-					}
-					else
-					{
-						reset($this->m_datas['aTaskNumerotation']);
-						return false;
-					}
-				}
-			}
-
-			$itemMenu = array(		
-				array(
-					'idx' => BAB_TM_IDX_DISPLAY_PROJECTS_CONFIGURATION_FORM,
-					'mnuStr' => bab_translate("Projects configuration"),
-					'url' => $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECTS_CONFIGURATION_FORM . 
-					'&iIdProjectSpace=' . $iIdProjectSpace . '&iIdProject=' . $iIdProject)
-			);
-			add_item_menu($itemMenu);
-	
-			$babBody->title = bab_translate("Projects configuration");
-			
-			$pjc = & new BAB_TM_Configuration($iIdProjectSpace, $iIdProject);
-			$babBody->babecho(bab_printTemplate($pjc, 'tmCommon.html', 'configuration'));
-	
-		}
-		else 
-		{
-			$GLOBALS['babBody']->msgerror = bab_translate("Invalid project space");
-		}
-	}	
-	else 
-	{
-		$GLOBALS['babBody']->msgerror = bab_translate("You are not a projet manager");
-	}
-}
-
-
 function displayProjectPropertiesForm()
 {
 	global $babBody;
 
 	$oTmCtx =& getTskMgrContext();
 	
-	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
-	$iIdProject = $oTmCtx->getIdProject();
+	$iIdProjectSpace = (int) $oTmCtx->getIdProjectSpace();
+	$iIdProject = (int) $oTmCtx->getIdProject();
 
 	if(bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject))
 	{
@@ -789,15 +458,16 @@ function displayProjectPropertiesForm()
 				array(
 					'idx' => BAB_TM_IDX_DISPLAY_PROJECT_PROPERTIES_FORM,
 					'mnuStr' => bab_translate("Project properties"),
-					'url' => $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECT_PROPERTIES_FORM . 
-					'&iIdProjectSpace=' . $iIdProjectSpace . '&iIdProject=' . $iIdProject)
+					'url' => $GLOBALS['babUrlScript'] . '?tg=' . urlencode('usrTskMgr') . '&idx=' . urlencode(BAB_TM_IDX_DISPLAY_PROJECT_PROPERTIES_FORM) . 
+					'&iIdProjectSpace=' . urlencode($iIdProjectSpace) . '&iIdProject=' . urlencode($iIdProject))
 			);
 			add_item_menu($itemMenu);
 	
-			$babBody->title = bab_translate("Project properties");
+			$babBody->title = bab_toHtml(bab_translate("Project properties"));
 			
 			class BAB_ProjectProperties extends BAB_BaseFormProcessing
 			{
+				var $m_aTaskNumerotation;
 				function BAB_ProjectProperties($iIdProjectSpace, $iIdProject)
 				{
 					parent::BAB_BaseFormProcessing();
@@ -841,13 +511,16 @@ function displayProjectPropertiesForm()
 					$this->set_data('isEmailNotice', true);
 					$this->set_data('faqUrl', '');
 					$this->set_data('iIdConfiguration', -1);
-
-				
 		
-					$this->set_data('aTaskNumerotation', array(
+					$this->set_data('isProjectCreator', 
+						bab_isAccessValid(BAB_TSKMGR_PROJECT_CREATOR_GROUPS_TBL, $iIdProjectSpace));
+					$this->set_data('isProjectManager', 
+						bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject));
+					
+					$this->m_aTaskNumerotation = array(
 						BAB_TM_MANUAL => bab_translate("Manual"), BAB_TM_SEQUENTIAL => bab_translate("Sequential (automatique)"),
 						BAB_TM_YEAR_SEQUENTIAL => bab_translate("Year + Sequential (automatique)"),
-						BAB_TM_YEAR_MONTH_SEQUENTIAL => bab_translate("Year + Month + Sequential (automatique)")));
+						BAB_TM_YEAR_MONTH_SEQUENTIAL => bab_translate("Year + Month + Sequential (automatique)"));
 						
 					$this->set_data('yes', BAB_TM_YES);
 					$this->set_data('no', BAB_TM_NO);					
@@ -867,8 +540,8 @@ function displayProjectPropertiesForm()
 						
 						if(false != $bSuccess)
 						{
-							$this->set_data('sName', htmlentities($aProject['name'], ENT_QUOTES) );
-							$this->set_data('sDescription', htmlentities($aProject['description'], ENT_QUOTES));
+							$this->set_data('sName', $aProject['name']);
+							$this->set_data('sDescription', $aProject['description']);
 						}
 						
 						$this->set_data('bIsDeletable', bab_isProjectDeletable($iIdProject));
@@ -892,7 +565,7 @@ function displayProjectPropertiesForm()
 						$this->set_data('endTaskReminder', $aDPC['endTaskReminder']);
 						$this->set_data('taskNumerotation', $aDPC['tasksNumerotation']);
 						$this->set_data('isEmailNotice', (BAB_TM_YES == $aDPC['emailNotice']));
-						$this->set_data('faqUrl', htmlentities($aDPC['faqUrl']));
+						$this->set_data('faqUrl', $aDPC['faqUrl']);
 						$this->set_data('iIdConfiguration', $aDPC['id']);
 					}
 	
@@ -907,8 +580,7 @@ function displayProjectPropertiesForm()
 					
 					if(!$isEmpty)
 					{
-						$this->get_data('aTaskNumerotation', $aTaskNumerotation);
-						$this->set_data('tmValue', $aTaskNumerotation[$aDPC['tasksNumerotation']]);
+						$this->set_data('tmValue', $this->m_aTaskNumerotation[$aDPC['tasksNumerotation']]);
 					}
 				}
 				
@@ -917,66 +589,67 @@ function displayProjectPropertiesForm()
 					$this->get_data('taskNumerotation', $taskNumerotation);
 					$this->set_data('tnSelected', '');
 					
-					$datas = each($this->m_datas['aTaskNumerotation']);
+					$datas = each($this->m_aTaskNumerotation);
 					if(false != $datas)
 					{
-						$this->set_data('tmCode', $datas['key']);
-						$this->set_data('tmValue', $datas['value']);
+						$this->set_data('tmCode', bab_toHtml($datas['key']));
+						$this->set_data('tmValue', bab_toHtml($datas['value']));
 						
 						if($taskNumerotation == $datas['key'])
 						{
-							$this->set_data('tnSelected', 'selected="selected"');
+							$this->set_data('tnSelected', bab_toHtml('selected="selected"'));
 						}
 						
 						return true;
 					}
 					else
 					{
-						reset($this->m_datas['aTaskNumerotation']);
+						reset($this->m_aTaskNumerotation);
 						return false;
 					}
 				}
 			}				
 			
 			$oPrjP = & new BAB_ProjectProperties($iIdProjectSpace, $iIdProject);
+			$oPrjP->raw_2_html(BAB_RAW_2_HTML_CAPTION);
+			$oPrjP->raw_2_html(BAB_RAW_2_HTML_DATA);
 			$babBody->babecho(bab_printTemplate($oPrjP, 'tmUser.html', 'projectProperties'));
 			
 		}
 		else 
 		{
-			$GLOBALS['babBody']->msgerror = bab_translate("Invalid project space");
+			$GLOBALS['babBody']->msgerror = bab_toHtml(bab_translate("Invalid project space"));
 		}
 	}	
 	else 
 	{
-		$GLOBALS['babBody']->msgerror = bab_translate("You are not a projet manager");
+		$GLOBALS['babBody']->msgerror = bab_toHtml(bab_translate("You are not a projet manager"));
 	}
 }
-
 
 function displayProjectCommentaryList()
 {
 	global $babBody;
 
 	$oTmCtx =& getTskMgrContext();
-	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
-	$iIdProject = $oTmCtx->getIdProject();
-	
+	$iIdProjectSpace = (int) $oTmCtx->getIdProjectSpace();
+	$iIdProject = (int) $oTmCtx->getIdProject();
+		
 	if(bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject))
 	{
-		$babBody->title = bab_translate("Commentaries list");
+		$babBody->title = bab_toHtml(bab_translate("Commentaries list"));
 	
 		$itemMenu = array(		
 			array(
 				'idx' => BAB_TM_IDX_DISPLAY_PROJECT_COMMENTARY_LIST,
 				'mnuStr' => bab_translate("Commentaries list"),
-				'url' => $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECT_COMMENTARY_LIST . 
-				'&iIdProject=' . $iIdProject),
+				'url' => $GLOBALS['babUrlScript'] . '?tg=' . urlencode('usrTskMgr') . '&idx=' . urlencode(BAB_TM_IDX_DISPLAY_PROJECT_COMMENTARY_LIST) . 
+				'&iIdProject=' . urlencode($iIdProject)),
 			array(
 				'idx' => BAB_TM_IDX_DISPLAY_COMMENTARY_FORM,
 				'mnuStr' => bab_translate("Add a commentary"),
-				'url' => $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_COMMENTARY_FORM . 
-				'&iIdProjectSpace=' . $iIdProjectSpace . '&iIdProject=' . $iIdProject)
+				'url' => $GLOBALS['babUrlScript'] . '?tg=' . urlencode('usrTskMgr') . '&idx=' . urlencode(BAB_TM_IDX_DISPLAY_COMMENTARY_FORM) . 
+				'&iIdProjectSpace=' . urlencode($iIdProjectSpace) . '&iIdProject=' . urlencode($iIdProject))
 		);
 		
 		add_item_menu($itemMenu);
@@ -985,15 +658,17 @@ function displayProjectCommentaryList()
 		$oList = new BAB_TM_ListBase($result);
 	
 		$oList->set_data('isAddCommentaryUrl', true);
-		$oList->set_data('url', $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . 
-			BAB_TM_IDX_DISPLAY_COMMENTARY_FORM . '&iIdProjectSpace=' . $iIdProjectSpace .
-			'&iIdProject=' . $iIdProject . '&iIdCommentary=');
+		$oList->set_data('url', bab_toHtml($GLOBALS['babUrlScript'] . '?tg=' . urlencode('usrTskMgr') . '&idx=' . 
+			urlencode(BAB_TM_IDX_DISPLAY_COMMENTARY_FORM) . '&iIdProjectSpace=' . urlencode($iIdProjectSpace) .
+			'&iIdProject=' . urlencode($iIdProject) . '&iIdCommentary='));
 
+		$oList->raw_2_html(BAB_RAW_2_HTML_CAPTION);
+		$oList->raw_2_html(BAB_RAW_2_HTML_DATA);
 		$babBody->babecho(bab_printTemplate($oList, 'tmUser.html', 'commentariesList'));
 	}
 	else 
 	{
-		$GLOBALS['babBody']->msgerror = bab_translate("You do not have the right to list the commentaries");
+		$GLOBALS['babBody']->msgerror = bab_toHtml(bab_translate("You do not have the right to list the commentaries"));
 	}
 }
 
@@ -1002,20 +677,17 @@ function displayCommentaryForm()
 	global $babBody;
 
 	$oTmCtx =& getTskMgrContext();
-	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
-	$iIdProject = $oTmCtx->getIdProject();
-	$iIdTask = $oTmCtx->getIdTask();
-
-	$iUserProfil = $oTmCtx->getUserProfil();
+	$iIdProjectSpace = (int) $oTmCtx->getIdProjectSpace();
+	$iIdProject = (int) $oTmCtx->getIdProject();
+	$iIdTask = (int) $oTmCtx->getIdTask();
+	$iUserProfil = (int) $oTmCtx->getUserProfil();
 
 	if(BAB_TM_PROJECT_MANAGER == $iUserProfil || BAB_TM_PERSONNAL_TASK_OWNER == $iUserProfil)
-//	if(bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject))
 	{
-		$iIdCommentary = bab_rp('iIdCommentary', 0);
-		$isPopUp = bab_rp('isPopUp', 0);
+		$iIdCommentary = (int) bab_rp('iIdCommentary', 0);
+		$isPopUp = (int) bab_rp('isPopUp', 0);
 		$tab_caption = ($iIdCommentary == 0) ? bab_translate("Add a commentary") : bab_translate("Edition of a commentary");
-		$babBody->title = $tab_caption;
-	
+		$babBody->title = bab_toHtml($tab_caption);
 		
 		$oBf = & new BAB_BaseFormProcessing();
 		
@@ -1039,13 +711,13 @@ function displayCommentaryForm()
 				array(
 					'idx' => BAB_TM_IDX_DISPLAY_PROJECT_COMMENTARY_LIST,
 					'mnuStr' => bab_translate("Commentaries list"),
-					'url' => $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PROJECT_COMMENTARY_LIST . 
-					'&iIdProject=' . $iIdProject),
+					'url' => $GLOBALS['babUrlScript'] . '?tg=' . urlencode('usrTskMgr') . '&idx=' . urlencode(BAB_TM_IDX_DISPLAY_PROJECT_COMMENTARY_LIST) . 
+					'&iIdProject=' . urlencode($iIdProject)),
 				array(
 					'idx' => BAB_TM_IDX_DISPLAY_COMMENTARY_FORM,
 					'mnuStr' => $tab_caption,
-					'url' => $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_COMMENTARY_FORM . 
-					'&iIdProject=' . $iIdProject)
+					'url' => $GLOBALS['babUrlScript'] . '?tg=' . urlencode('usrTskMgr') . '&idx=' . urlencode(BAB_TM_IDX_DISPLAY_COMMENTARY_FORM) . 
+					'&iIdProject=' . urlencode($iIdProject))
 			);
 			
 			add_item_menu($itemMenu);
@@ -1070,12 +742,14 @@ function displayCommentaryForm()
 			$success = bab_getTaskCommentary($iIdCommentary, $sCommentary);
 		}
 
-
 		$oBf->set_data('commentary', '');
 		if(false != $success)
 		{
 			$oBf->set_data('commentary', htmlentities($sCommentary, ENT_QUOTES));
 		}
+		
+		$oBf->raw_2_html(BAB_RAW_2_HTML_CAPTION);
+		$oBf->raw_2_html(BAB_RAW_2_HTML_DATA);
 		
 		if(0 == $isPopUp)
 		{
@@ -1088,7 +762,7 @@ function displayCommentaryForm()
 	}
 	else 
 	{
-		$GLOBALS['babBody']->msgerror = bab_translate("You do not have the right to list the commentaries");
+		$GLOBALS['babBody']->msgerror = bab_toHtml(bab_translate("You do not have the right to list the commentaries"));
 	}
 }
 
@@ -1097,12 +771,12 @@ function displayDeleteProjectCommentary()
 	global $babBody;
 
 	$oTmCtx =& getTskMgrContext();
-	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
-	$iIdProject = $oTmCtx->getIdProject();
+	$iIdProjectSpace = (int) $oTmCtx->getIdProjectSpace();
+	$iIdProject = (int) $oTmCtx->getIdProject();
 
 	if(bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject))
 	{
-		$iIdCommentary = bab_rp('iIdCommentary', 0);
+		$iIdCommentary = (int) bab_rp('iIdCommentary', 0);
 		if(0 != $iIdCommentary)
 		{
 			$aProject = null;
@@ -1121,39 +795,41 @@ function displayDeleteProjectCommentary()
 	
 				$bf->set_caption('warning', bab_translate("This action will delete the project commentary"));
 				$bf->set_caption('message', bab_translate("Continue ?"));
-				$bf->set_caption('title', bab_translate("Project = ") . htmlentities($aProject['name'], ENT_QUOTES));
+				$bf->set_caption('title', bab_translate("Project = ") . $aProject['name']);
 				$bf->set_caption('yes', bab_translate("Yes"));
 				$bf->set_caption('no', bab_translate("No"));
 	
-				$babBody->title = bab_translate("Delete project commentary ");
+				$babBody->title = bab_toHtml(bab_translate("Delete project commentary "));
+				
+				$bf->raw_2_html(BAB_RAW_2_HTML_CAPTION);
+				$bf->raw_2_html(BAB_RAW_2_HTML_DATA);
 				$babBody->babecho(bab_printTemplate($bf, 'tmCommon.html', 'warningyesno'));
 			}
 		}
 	}
 	else 
 	{
-		$GLOBALS['babBody']->msgerror = bab_translate("You do not have the right to delete a project");
+		$GLOBALS['babBody']->msgerror = bab_toHtml(bab_translate("You do not have the right to delete a project"));
 	}	
 }
-
 
 function displayTaskList()
 {
 	$isProject = (int) bab_rp('isProject', 0);
+	$iIdProject = (int) bab_rp('iIdProject', 0);
 	
-	$sTitle = bab_translate("My task(s)");
+	$sTitle = bab_translate("My tasks");
 	
 	if(1 === $isProject)
 	{
-		if(!bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, (int) bab_rp('iIdProject', 0)))
+		if(!bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject))
 		{
-			$GLOBALS['babBody']->msgerror = bab_translate("You are not a projects manager");
+			$GLOBALS['babBody']->msgerror = bab_toHtml(bab_translate("You are not a projects manager"));
 			return false;
 		}
 		else
 		{
 			$sTitle = bab_translate("Tasks of the project");
-			$iIdProject = (int) bab_rp('iIdProject', 0);
 			if(false !== bab_getProject($iIdProject, $aProject))
 			{
 				$sTitle .= ': ' . $aProject['name'];
@@ -1163,9 +839,8 @@ function displayTaskList()
 	
 	global $babBody;
 	$oTmCtx =& getTskMgrContext();
-	$babBody->title = $sTitle;
+	$babBody->title = bab_toHtml($sTitle);
 	add_item_menu();
-	
 	
 	class BAB_TM_TaskFilterForm extends BAB_BaseFormProcessing
 	{
@@ -1286,10 +961,10 @@ function displayTaskList()
 			if(false != $datas)
 			{
 				$this->get_data('iSelectedTaskFilter', $iSelectedTaskFilter);
-				$this->set_data('sTaskFilterSelected', ($iSelectedTaskFilter == $datas['value']['value']) ? 'selected="selected"' : '');
+				$this->set_data('sTaskFilterSelected', bab_toHtml(($iSelectedTaskFilter == $datas['value']['value']) ? 'selected="selected"' : ''));
 				
-				$this->set_data('iTaskFilterValue', $datas['value']['value']);				
-				$this->set_data('sTaskFilterName', $datas['value']['text']);
+				$this->set_data('iTaskFilterValue', bab_toHtml($datas['value']['value']));				
+				$this->set_data('sTaskFilterName', bab_toHtml($datas['value']['text']));
 				
 				return true;				
 			}
@@ -1302,10 +977,10 @@ function displayTaskList()
 			if(false != $datas)
 			{
 				$this->get_data('iSelectedTaskTypeFilter', $iSelectedTaskTypeFilter);
-				$this->set_data('sTaskTypeFilterSelected', ($iSelectedTaskTypeFilter == $datas['value']['value']) ? 'selected="selected"' : '');
+				$this->set_data('sTaskTypeFilterSelected', bab_toHtml(($iSelectedTaskTypeFilter == $datas['value']['value']) ? 'selected="selected"' : ''));
 				
-				$this->set_data('iTaskTypeFilterValue', $datas['value']['value']);				
-				$this->set_data('sTaskTypeFilterName', $datas['value']['text']);
+				$this->set_data('iTaskTypeFilterValue', bab_toHtml($datas['value']['value']));				
+				$this->set_data('sTaskTypeFilterName', bab_toHtml($datas['value']['text']));
 				
 				return true;				
 			}
@@ -1319,12 +994,15 @@ function displayTaskList()
 	}
 	
 	$oTaskFilterForm = new BAB_TM_TaskFilterForm();
+	$oTaskFilterForm->raw_2_html(BAB_RAW_2_HTML_CAPTION);
+	$oTaskFilterForm->raw_2_html(BAB_RAW_2_HTML_DATA);
+	
 	$GLOBALS['babBody']->babecho($oTaskFilterForm->printTemplate());
 	$iTaskFilter =& $oTaskFilterForm->m_aSelectedFilterValues['iIdProject'];
 	$iTaskClass =& $oTaskFilterForm->m_aSelectedFilterValues['iTaskClass'];
 
 	global $babUrlScript;
-	$sGanttViewUrl = $babUrlScript . '?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_GANTT_CHART;
+	$sGanttViewUrl = $babUrlScript . '?tg=' . urlencode('usrTskMgr') . '&idx=' . urlencode(BAB_TM_IDX_DISPLAY_GANTT_CHART);
 	
 	$aFilters = array();
 	if(-1 != $iTaskFilter)
@@ -1333,29 +1011,34 @@ function displayTaskList()
 		if(-2 == $iTaskFilter)
 		{
 			$aFilters['isPersonnal'] = BAB_TM_YES;
-			$sGanttViewUrl .= '&isPersonnal=' . BAB_TM_YES;
+			$sGanttViewUrl .= '&isPersonnal=' . urlencode(BAB_TM_YES);
 		}
 		else 
 		{
 			$aFilters['iIdProject'] = $iTaskFilter;
-			$sGanttViewUrl .= '&iIdProject=' . $aFilters['iIdProject'];
+			$sGanttViewUrl .= '&iIdProject=' . urlencode($aFilters['iIdProject']);
 		}
 	}
 		
 	if(-1 != $iTaskClass)
 	{
 		$aFilters['iTaskClass'] = $iTaskClass;
-		$sGanttViewUrl .= '&iTaskClass=' . $iTaskClass;
+		$sGanttViewUrl .= '&iTaskClass=' . urlencode($iTaskClass);
 	}
 
 	if(0 === $isProject)
 	{
 		$aFilters['iIdOwner'] = $GLOBALS['BAB_SESS_USERID'];
 		
-		$sGanttViewUrl .= '&iIdOwner=' . $GLOBALS['BAB_SESS_USERID'];
+		$sGanttViewUrl .= '&iIdOwner=' . urlencode($GLOBALS['BAB_SESS_USERID']);
 	}
 	
-	$oTaskFilterForm->m_sGanttViewUrl = urlencode($sGanttViewUrl);
+	//Une personne non gestionnaire ne doit pas voir les tâches qu'elle
+	//à refusée
+	$iUserProfil = (int) $oTmCtx->getUserProfil();
+	$aFilters['bIsManger'] = ($iUserProfil === BAB_TM_PROJECT_MANAGER);
+	
+	$oTaskFilterForm->m_sGanttViewUrl = bab_toHtml($sGanttViewUrl);
 	
 	require_once($GLOBALS['babInstallPath'] . 'utilit/multipage.php');
 	
@@ -1374,29 +1057,29 @@ function displayTaskList()
 			$datas = parent::getNextItem();
 			if(false != $datas)
 			{
-				$datas['startDate'] = bab_shortDate(bab_mktime($datas['startDate']), false);
-				$datas['endDate'] = bab_shortDate(bab_mktime($datas['endDate']), false);
+				$datas['startDate'] = bab_toHtml(bab_shortDate(bab_mktime($datas['startDate']), false));
+				$datas['endDate'] = bab_toHtml(bab_shortDate(bab_mktime($datas['endDate']), false));
 
 				switch($datas['iClass'])
 				{
 					case BAB_TM_TASK:
 						$this->m_sImgSrc = $GLOBALS['babSkinPath'] . 'images/Puces/kded.png';
-						$this->m_sImgText = $datas['sClass'];
+						$this->m_sImgText = bab_toHtml($datas['sClass']);
 						$datas['sClass'] = bab_printTemplate($this, 'multipage.html', 'img');
 						break;
 					case BAB_TM_CHECKPOINT:
 						$this->m_sImgSrc = $GLOBALS['babSkinPath'] . 'images/Puces/kmines.png';
-						$this->m_sImgText = $datas['sClass'];
+						$this->m_sImgText = bab_toHtml($datas['sClass']);
 						$datas['sClass'] = bab_printTemplate($this, 'multipage.html', 'img');
 						break;
 					case BAB_TM_TODO:
 						$this->m_sImgSrc = $GLOBALS['babSkinPath'] . 'images/Puces/kate.png';
-						$this->m_sImgText = $datas['sClass'];
+						$this->m_sImgText = bab_toHtml($datas['sClass']);
 						$datas['sClass'] = bab_printTemplate($this, 'multipage.html', 'img');
 						break;
 				}
 				
-				$datas['idOwner'] = bab_getUserName($datas['idOwner']);
+				$datas['idOwner'] = bab_toHtml(bab_getUserName($datas['idOwner']));
 				
 			}
 			return $datas;
@@ -1404,8 +1087,14 @@ function displayTaskList()
 	}
 
 	$oMultiPage = new BAB_MultiPageBase();
+	$oMultiPage->addPaginationAndFormParameters('sFromIdx', BAB_TM_IDX_DISPLAY_TASK_LIST);
+	$oMultiPage->addPaginationAndFormParameters('isProject', $isProject);
+	$oMultiPage->addPaginationAndFormParameters('iIdProject', $iIdProject);
+	
 	$oMultiPage->sIdx = BAB_TM_IDX_DISPLAY_TASK_LIST;
 
+//	bab_debug($oMultiPage->m_aAdditionnalPaginationAndFormParameters);
+	
 	$oMultiPage->setColumnDataSource(new BAB_TaskDS(bab_selectTaskQuery($aFilters), 
 		(int) bab_rp('iPage', 1), $oMultiPage->iNbRowsPerPage));
 	
@@ -1420,8 +1109,8 @@ function displayTaskList()
 	}
 		
 	$sTg = bab_rp('tg', 'admTskMgr');
-	$sLink = $GLOBALS['babUrlScript'] . '?tg=' . $sTg . '&idx=' . BAB_TM_IDX_DISPLAY_TASK_FORM .
-		'&sFromIdx=' . BAB_TM_IDX_DISPLAY_TASK_LIST;
+	$sLink = $GLOBALS['babUrlScript'] . '?tg=' . urlencode($sTg) . '&idx=' . urlencode(BAB_TM_IDX_DISPLAY_TASK_FORM) .
+		'&sFromIdx=' . urlencode(BAB_TM_IDX_DISPLAY_TASK_LIST) . '&isProject=' . urlencode($isProject);
 
 	//Pour les icônes
 	{		
@@ -1440,20 +1129,19 @@ function displayTaskList()
 	$GLOBALS['babBody']->babecho($oMultiPage->printTemplate());
 }
 
-
 function displayTaskForm()
 {
 	global $babBody;
 
 	$oTmCtx =& getTskMgrContext();
-	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
-	$iIdProject = $oTmCtx->getIdProject();
+	$iIdProjectSpace = (int) $oTmCtx->getIdProjectSpace();
+	$iIdProject = (int) $oTmCtx->getIdProject();
 	
 	if(0 != $iIdProject)
 	{
 		if(false != bab_getProject($iIdProject, $aProject))
 		{
-			$iIdProjectSpace = $oTmCtx->m_iIdProjectSpace = $aProject['idProjectSpace'];
+			$iIdProjectSpace = $oTmCtx->m_iIdProjectSpace = (int) $aProject['idProjectSpace'];
 		}
 	}
 
@@ -1476,16 +1164,16 @@ function displayTaskForm()
 	
 	if($bIsTaskResp || $bIsManager || BAB_TM_PERSONNAL_TASK_OWNER === $oTmCtx->getUserProfil())
 	{
-		$iIdTask = bab_rp('iIdTask', 0);
+		$iIdTask = (int) bab_rp('iIdTask', 0);
 		$tab_caption = ($iIdTask == 0) ? bab_translate("Add a task") : bab_translate("Edition of a task");
-		$babBody->title = $tab_caption;
+		$babBody->title = bab_toHtml($tab_caption);
 
 		$itemMenu = array(		
 			array(
 				'idx' => BAB_TM_IDX_DISPLAY_TASK_FORM,
 				'mnuStr' => $tab_caption,
-				'url' => $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_TASK_FORM . 
-				'&iIdProject=' . $iIdProject)
+				'url' => $GLOBALS['babUrlScript'] . '?tg=' . urlencode('usrTskMgr') . '&idx=' . urlencode(BAB_TM_IDX_DISPLAY_TASK_FORM) . 
+				'&iIdProject=' . urlencode($iIdProject))
 		);
 		add_item_menu($itemMenu);
 		
@@ -1493,68 +1181,27 @@ function displayTaskForm()
 		require_once($babInstallPath . 'tmTaskClasses.php');
 		
 		$oTaskForm = & new BAB_TaskForm();
+		
+		$oTaskForm->raw_2_html(BAB_RAW_2_HTML_CAPTION);
+		$oTaskForm->raw_2_html(BAB_RAW_2_HTML_DATA);
 		$babBody->babecho(bab_printTemplate($oTaskForm, 'tmUser.html', 'taskForm'));
 	}
 	else 
 	{
-		$GLOBALS['babBody']->msgerror = bab_translate("You do not have the right to create/edit task");
+		$GLOBALS['babBody']->msgerror = bab_toHtml(bab_translate("You do not have the right to create/edit task"));
 	}
-}
-
-function isTaskDeletable($iIdTask, $iUserProfil, &$sTaskNumber)
-{
-	if(BAB_TM_PROJECT_MANAGER == $iUserProfil || BAB_TM_PERSONNAL_TASK_OWNER == $iUserProfil)
-	{
-		if(0 != $iIdTask)
-/*	
-		{
-			global $babInstallPath;
-			require_once($babInstallPath . 'tmTaskClasses.php');
-	
-			$oTask = new BAB_TM_Task();
-			if($oTask->loadFromDataBase($iIdTask))
-			{
-				if(BAB_TM_TENTATIVE == $oTask->m_aTask['iParticipationStatus'] || 
-					BAB_TM_ACCEPTED == $oTask->m_aTask['iParticipationStatus'] || 
-					BAB_TM_ENDED == $oTask->m_aTask['iParticipationStatus']			)
-				{
-					$sTaskNumber = $oTask->m_aTask['sTaskNumber'];
-					return true;
-				}
-				else
-				{
-					$GLOBALS['babBody']->msgerror = bab_translate("The task is not delatable because it is not stopped");					
-				}
-			}
-			else
-			{
-				$GLOBALS['babBody']->msgerror = bab_translate("Cannot retrieve task information");
-			}
-		}
-		else
-		{
-			$GLOBALS['babBody']->msgerror = bab_translate("Invalid task");
-		}
-//*/
-		return true;
-	}		
-	else 
-	{
-		$GLOBALS['babBody']->msgerror = bab_translate("You do not have the right to delete a task");
-	}
-	return false;
 }
 
 function displayDeleteTaskForm()
 {
 	global $babBody;
-	$babBody->title = bab_translate("Delete task");
+	$babBody->title = bab_toHtml(bab_translate("Delete task"));
 	
 	$oTmCtx =& getTskMgrContext();
-	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
-	$iIdProject = $oTmCtx->getIdProject();
-	$iIdTask = $oTmCtx->getIdTask();
-	$iUserProfil = $oTmCtx->getUserProfil();
+	$iIdProjectSpace = (int) $oTmCtx->getIdProjectSpace();
+	$iIdProject = (int) $oTmCtx->getIdProject();
+	$iIdTask = (int) $oTmCtx->getIdTask();
+	$iUserProfil = (int) $oTmCtx->getUserProfil();
 
 	$bf = & new BAB_BaseFormProcessing();
 	$bf->set_data('iIdProjectSpace', $iIdProjectSpace);
@@ -1565,7 +1212,6 @@ function displayDeleteTaskForm()
 
 	$bf->set_caption('yes', bab_translate("Yes"));
 	$bf->set_caption('no', bab_translate("No"));
-	
 			
 	$sFromIdx = bab_rp('sFromIdx', BAB_TM_IDX_DISPLAY_TASK_LIST);
 	if(!isFromIdxValid($sFromIdx))
@@ -1585,7 +1231,7 @@ function displayDeleteTaskForm()
 
 		$bf->set_caption('warning', bab_translate("This action will delete the task and all references"));
 		$bf->set_caption('message', bab_translate("Continue ?"));
-		$bf->set_caption('title', bab_translate("Task number = ") . htmlentities($oTask->m_aTask['sShortDescription'], ENT_QUOTES));
+		$bf->set_caption('title', bab_translate("Task number = ") . $oTask->m_aTask['sShortDescription']);
 	}
 	else 
 	{
@@ -1594,92 +1240,9 @@ function displayDeleteTaskForm()
 		$bf->set_caption('message', '');
 		$bf->set_caption('title', '');
 	}
-	
-	$babBody->babecho(bab_printTemplate($bf, 'tmCommon.html', 'warningyesno'));
-}
-
-function isTaskStoppable($iIdTask, $iUserProfil, &$sTaskNumber)
-{
-	if(BAB_TM_PROJECT_MANAGER == $iUserProfil)
-	{
-		if(0 != $iIdTask)
-		{
-			
-			global $babInstallPath;
-			require_once($babInstallPath . 'tmTaskClasses.php');
-	
-			$oTask = new BAB_TM_Task();
-			if($oTask->loadFromDataBase($iIdTask))
-			{
-				if(/*BAB_TM_IN_PROGRESS == $oTask->m_aTask['iParticipationStatus']*/$oTask->m_bIsStarted)
-				{
-					$sTaskNumber = $oTask->m_aTask['sTaskNumber'];
-					return true;
-				}
-				else
-				{
-					$GLOBALS['babBody']->msgerror = bab_translate("The task is not stoppable because it is not started");					
-				}
-			}
-			else
-			{
-				$GLOBALS['babBody']->msgerror = bab_translate("Cannot retrieve task information");
-			}
-		}
-		else
-		{
-			$GLOBALS['babBody']->msgerror = bab_translate("Invalid task");
-		}
-	}		
-	else 
-	{
-		$GLOBALS['babBody']->msgerror = bab_translate("You do not have the right to stop a task");
-	}
-	return false;
-}
-
-function displayStopTaskForm()
-{
-	global $babBody;
-	$babBody->title = bab_translate("Stop task");
-	
-
-	$oTmCtx =& getTskMgrContext();
-	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
-	$iIdProject = $oTmCtx->getIdProject();
-	$iIdTask = $oTmCtx->getIdTask();
-	$iUserProfil = $oTmCtx->getUserProfil();
-
-
-	$bf = & new BAB_BaseFormProcessing();
-	$bf->set_data('iIdProjectSpace', $iIdProjectSpace);
-	$bf->set_data('iIdProject', $iIdProject);
-	$bf->set_data('objectName', 'iIdTask');
-	$bf->set_data('iIdObject', $iIdTask);
-	$bf->set_data('tg', 'usrTskMgr');
-
-	$bf->set_caption('yes', bab_translate("Yes"));
-	$bf->set_caption('no', bab_translate("No"));
-	
-	$bf->set_data('idx', BAB_TM_IDX_DISPLAY_TASK_LIST);
-	
-	
-	if(isTaskStoppable($iIdTask, $iUserProfil, $sTaskNumber))
-	{
-		$bf->set_data('action', BAB_TM_ACTION_STOP_TASK);
-
-		$bf->set_caption('warning', bab_translate("This action will stop the task"));
-		$bf->set_caption('message', bab_translate("Continue ?"));
-		$bf->set_caption('title', bab_translate("Task number = ") . htmlentities($sTaskNumber, ENT_QUOTES));
-	}
-	else 
-	{
-		$bf->set_data('action', '');
-		$bf->set_caption('warning', bab_translate("This task is not stoppable"));
-		$bf->set_caption('message', '');
-		$bf->set_caption('title', '');
-	}
-	
+		
+	$bf->raw_2_html(BAB_RAW_2_HTML_CAPTION);
+	$bf->raw_2_html(BAB_RAW_2_HTML_DATA);
 	$babBody->babecho(bab_printTemplate($bf, 'tmCommon.html', 'warningyesno'));
 }
 
@@ -1742,12 +1305,12 @@ function displayPersonnalTaskConfigurationForm()
 				$datas = each($this->m_datas['aTaskNumerotation']);
 				if(false != $datas)
 				{
-					$this->set_data('tmCode', $datas['key']);
-					$this->set_data('tmValue', $datas['value']);
+					$this->set_data('tmCode', bab_toHtml($datas['key']));
+					$this->set_data('tmValue', bab_toHtml($datas['value']));
 					
 					if($taskNumerotation == $datas['key'])
 					{
-						$this->set_data('tnSelected', 'selected="selected"');
+						$this->set_data('tnSelected', bab_toHtml('selected="selected"'));
 					}
 					
 					return true;
@@ -1764,12 +1327,14 @@ function displayPersonnalTaskConfigurationForm()
 			array(
 				'idx' => BAB_TM_IDX_DISPLAY_PERSONNAL_TASK_CONFIGURATION_FORM,
 				'mnuStr' => bab_translate("Personnals tasks configuration"),
-				'url' => $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_PERSONNAL_TASK_CONFIGURATION_FORM)
+				'url' => $GLOBALS['babUrlScript'] . '?tg=' . urlencode('usrTskMgr') . '&idx=' . urlencode(BAB_TM_IDX_DISPLAY_PERSONNAL_TASK_CONFIGURATION_FORM))
 		);
 		
 		add_item_menu($itemMenu);
-		$babBody->title = bab_translate("Personnals tasks configuration");
+		$babBody->title = bab_toHtml(bab_translate("Personnals tasks configuration"));
 		$pjc = & new BAB_TM_Configuration();
+		$pjc->raw_2_html(BAB_RAW_2_HTML_CAPTION);
+		$pjc->raw_2_html(BAB_RAW_2_HTML_DATA);
 		$babBody->babecho(bab_printTemplate($pjc, 'tmUser.html', 'PersonnalTaskConfiguration'));
 	}
 }
@@ -1802,8 +1367,8 @@ function addModifyProject()
 	global $babBody, $babDB;
 
 	$oTmCtx =& getTskMgrContext();
-	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
-	$iIdProject = $oTmCtx->getIdProject();
+	$iIdProjectSpace = (int) $oTmCtx->getIdProjectSpace();
+	$iIdProject = (int) $oTmCtx->getIdProject();
 	
 	if(bab_isAccessValid(BAB_TSKMGR_PROJECT_CREATOR_GROUPS_TBL, $iIdProjectSpace))
 	{
@@ -1812,9 +1377,8 @@ function addModifyProject()
 		if(0 < strlen($sName))
 		{
 			$isValid = isNameUsedInProjectSpace(BAB_TSKMGR_PROJECTS_TBL, $iIdProjectSpace, $iIdProject, $sName);
-			$sName = mysql_escape_string($sName);
 			
-			$sDescription = mysql_escape_string(trim(bab_rp('sDescription', '')));
+			$sDescription = trim(bab_rp('sDescription', ''));
 			
 			if($isValid)
 			{
@@ -1851,14 +1415,14 @@ function addModifyProject()
 			}
 			else
 			{
-				$GLOBALS['babBody']->msgerror = bab_translate("There is an another project with the name") . '\'' . $sName . '\'';
+				$GLOBALS['babBody']->msgerror = bab_toHtml(bab_translate("There is an another project with the name") . '\'' . $sName . '\'');
 				$_POST['idx'] = BAB_TM_IDX_DISPLAY_PROJECT_FORM;
 				return false;
 			}
 		}
 		else
 		{
-			$GLOBALS['babBody']->msgerror = bab_translate("The field name must not be blank");
+			$GLOBALS['babBody']->msgerror = bab_toHtml(bab_translate("The field name must not be blank"));
 			$_POST['idx'] = BAB_TM_IDX_DISPLAY_PROJECT_FORM;
 			//unset($_POST['iIdProject']);
 			return false;
@@ -1866,7 +1430,7 @@ function addModifyProject()
 	}
 	else
 	{
-		$GLOBALS['babBody']->msgerror = bab_translate("You do not have the right to create a project");
+		$GLOBALS['babBody']->msgerror = bab_toHtml(bab_translate("You do not have the right to create a project"));
 	}
 	
 }
@@ -1876,8 +1440,8 @@ function deleteProject()
 	global $babBody;
 
 	$oTmCtx =& getTskMgrContext();
-	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
-	$iIdProject = $oTmCtx->getIdProject();
+	$iIdProjectSpace = (int) $oTmCtx->getIdProjectSpace();
+	$iIdProject = (int) $oTmCtx->getIdProject();
 	
 	if(bab_isAccessValid(BAB_TSKMGR_PROJECT_CREATOR_GROUPS_TBL, $iIdProjectSpace))
 	{
@@ -1911,14 +1475,14 @@ function deleteProject()
 
 			if(bab_deleteProject($iIdProject))
 			{
-				bab_updateRefCount(BAB_TSKMGR_PROJECTS_SPACES_TBL, $iIdProjectSpace, '- \'1\'');
+				bab_updateRefCount(BAB_TSKMGR_PROJECTS_SPACES_TBL, $iIdProjectSpace, '- 1');
 				bab_deleteAllNoticeEvent($iIdProjectSpace, $iIdProject);
 			}
 		}
 	}
 	else
 	{
-		$GLOBALS['babBody']->msgerror = bab_translate("You do not have the right to delete a project");
+		$GLOBALS['babBody']->msgerror = bab_toHtml(bab_translate("You do not have the right to delete a project"));
 	}
 }
 
@@ -1931,7 +1495,7 @@ function setRight()
 function saveProjectConfiguration()
 {
 	$oTmCtx =& getTskMgrContext();
-	$iIdProject = $oTmCtx->getIdProject();
+	$iIdProject = (int) $oTmCtx->getIdProject();
 	$bIsManager = bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject);
 	
 	$iTaskUpdateByMgr = (int) bab_rp('iTaskUpdateByMgr', BAB_TM_YES);
@@ -1939,7 +1503,7 @@ function saveProjectConfiguration()
 	$iEndTaskReminder = (int) bab_rp('iEndTaskReminder', 5);
 	$iTaskNumerotation = (int) bab_rp('iTaskNumerotation', BAB_TM_SEQUENTIAL);
 	$iEmailNotice = (int) bab_rp('iEmailNotice', BAB_TM_YES);
-	$sFaqUrl = mysql_escape_string(bab_rp('sFaqUrl', ''));
+	$sFaqUrl = bab_rp('sFaqUrl', '');
 
 	if(0 < $iIdConfiguration && 0 < $iIdProject && $bIsManager)
 	{
@@ -1975,17 +1539,17 @@ function addModifyProjectCommentary()
 
 	if(bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject))
 	{
-		$sCommentary = mysql_escape_string(trim(bab_rp('sCommentary', '')));
+		$sCommentary = trim(bab_rp('sCommentary', ''));
 		
 		if(strlen(trim($sCommentary)) > 0)
 		{
 			if(0 == $iIdCommentary)
 			{
-				bab_createProjectCommentary($iIdProject, mysql_escape_string($sCommentary));
+				bab_createProjectCommentary($iIdProject, $sCommentary);
 			}
 			else 
 			{
-				bab_updateProjectCommentary($iIdCommentary, mysql_escape_string($sCommentary));
+				bab_updateProjectCommentary($iIdCommentary, $sCommentary);
 			}
 		}
 		else 
@@ -2017,15 +1581,15 @@ function deleteProjectCommentary()
 function addModifyTaskCommentary()
 {
 	$oTmCtx =& getTskMgrContext();
-	$iUserProfil = $oTmCtx->getUserProfil();
+	$iUserProfil = (int) $oTmCtx->getUserProfil();
 
-	$iIdProject = $oTmCtx->getIdProject();
-	$iIdTask = $oTmCtx->getIdTask();
+	$iIdProject = (int) $oTmCtx->getIdProject();
+	$iIdTask = (int) $oTmCtx->getIdTask();
 	$iIdCommentary = (int) bab_rp('iIdCommentary', 0);
 
 	if(0 != $oTmCtx->m_iIdTask && (BAB_TM_PROJECT_MANAGER == $iUserProfil || BAB_TM_PERSONNAL_TASK_OWNER == $iUserProfil))
 	{
-		$sCommentary = mysql_escape_string(trim(bab_rp('sCommentary', '')));
+		$sCommentary = trim(bab_rp('sCommentary', ''));
 		
 		if(strlen(trim($sCommentary)) > 0)
 		{
@@ -2058,7 +1622,7 @@ function addModifyTaskCommentary()
 function deleteTaskCommentary()
 {
 	$oTmCtx =& getTskMgrContext();
-	$iUserProfil = $oTmCtx->getUserProfil();
+	$iUserProfil = (int) $oTmCtx->getUserProfil();
 	
 	$iIdCommentary = (int) bab_rp('iIdCommentary', 0);
 
@@ -2084,7 +1648,7 @@ function addModifyTask()
 	require_once($babInstallPath . 'tmTaskClasses.php');
 	
 	$oTmCtx =& getTskMgrContext();
-	$iUserProfil = $oTmCtx->getUserProfil();
+	$iUserProfil = (int) $oTmCtx->getUserProfil();
 	$bIsOk = false;
 	
 	$oTaskValidator = null;
@@ -2197,63 +1761,13 @@ function deleteTask()
 	}
 }
 
-function stopTask()
-{
-	$oTmCtx =& getTskMgrContext();
-	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
-	$iIdProject = $oTmCtx->getIdProject();
-	$iIdTask = $oTmCtx->getIdTask();
-	$iUserProfil = $oTmCtx->getUserProfil();
-
-	$sTaskNumber = '';
-	if((BAB_TM_PROJECT_MANAGER == $iUserProfil || BAB_TM_PERSONNAL_TASK_OWNER == $iUserProfil) && 
-		isTaskStoppable($iIdTask, $iUserProfil, $sTaskNumber))
-	{
-		if(bab_getTask($iIdTask, $aTask))
-		{
-			$aTask['sEndDate'] = date("Y-m-d");
-			$aTask['iParticipationStatus'] = BAB_TM_ENDED;
-	
-			if(bab_updateTask($iIdTask, $aTask))
-			{
-				bab_startDependingTask($iIdProjectSpace, $iIdProject, $iIdTask, BAB_TM_END_TO_START);
-	
-				{
-					$sProjectSpaceName = '???';
-					if(bab_getProjectSpace($iIdProjectSpace, $aProjectSpace))
-					{
-						$sProjectSpaceName = $aProjectSpace['name'];
-					}
-					
-					$sProjectName = '???';
-					if(bab_getProject($iIdProject, $aProject))
-					{
-						$sProjectName = $aProject['name'];
-					}
-					
-					require_once $GLOBALS['babInstallPath'] . 'tmSendMail.php';
-					$iIdEvent = BAB_TM_EV_TASK_UPDATED_BY_MGR;
-					$g_aEmailMsg =& $GLOBALS['g_aEmailMsg'];
-					$sSubject = $g_aEmailMsg[$iIdEvent]['subject'];
-					$sBody = $g_aEmailMsg[$iIdEvent]['body'];
-					
-					$sBody = sprintf($sBody, $sTaskNumber, $sProjectName, $sProjectSpaceName, 
-						bab_getUserName($GLOBALS['BAB_SESS_USERID']));
-					//bab_debug($sBody);
-					sendNotice($iIdProjectSpace, $iIdProject, $iIdTask, $iIdEvent, $sSubject, $sBody);
-				}
-			}
-		}
-	}
-}
-
 function createSpecificFieldInstance()
 {
 	$oTmCtx =& getTskMgrContext();
-	$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
-	$iIdProject = $oTmCtx->getIdProject();
-	$iIdTask = $oTmCtx->getIdTask();
-	$iUserProfil = $oTmCtx->getUserProfil();
+	$iIdProjectSpace = (int) $oTmCtx->getIdProjectSpace();
+//	$iIdProject = (int) $oTmCtx->getIdProject();
+//	$iIdTask = (int) $oTmCtx->getIdTask();
+	$iUserProfil = (int) $oTmCtx->getUserProfil();
 
 	$iIdProject = (int) bab_rp('iIdProject', 0);
 	$iIdTask = (int) bab_rp('iIdTask', 0);
@@ -2300,17 +1814,20 @@ function savePersonnalTaskConfiguration()
 
 function modifyProjectProperties()
 {
-	saveProjectConfiguration();
-	addModifyProject();
+	$oTmCtx =& getTskMgrContext();
+	$iIdProjectSpace = (int) $oTmCtx->getIdProjectSpace();
+	$iIdProject = (int) $oTmCtx->getIdProject();
+
+	if(bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject))
+	{
+		saveProjectConfiguration();
+	}
+	
+	if(true === bab_isAccessValid(BAB_TSKMGR_PROJECT_CREATOR_GROUPS_TBL, $iIdProjectSpace))
+	{
+		addModifyProject();
+	}
 }
-
-//bab_cleanGpc();
-
-/*
-require_once($babInstallPath . 'upgrade.php');
-require_once($babInstallPath . 'utilit\upgradeincl.php');
-upgrade585to586();
-//*/
 
 /* main */
 $action = isset($_POST['action']) ? $_POST['action'] : 
@@ -2397,10 +1914,6 @@ switch($action)
 		deleteTask();
 		break;
 		
-	case BAB_TM_ACTION_STOP_TASK:
-		stopTask();
-		break;
-		
 	case BAB_TM_ACTION_CREATE_SPECIFIC_FIELD_INSTANCE:
 		createSpecificFieldInstance();
 		break;
@@ -2421,16 +1934,11 @@ switch($action)
 
 
 $idx = isset($_POST['idx']) ? $_POST['idx'] : (isset($_GET['idx']) ? $_GET['idx'] : BAB_TM_IDX_DISPLAY_TASK_LIST);
-//$idx = isset($_POST['idx']) ? $_POST['idx'] : (isset($_GET['idx']) ? $_GET['idx'] : BAB_TM_IDX_DISPLAY_GANTT_CHART);
 
 //bab_debug('idx ==> ' . $idx);
 
 switch($idx)
 {
-	case BAB_TM_IDX_DISPLAY_MENU:
-		displayMenu();
-		break;
-		
 	case BAB_TM_IDX_DISPLAY_WORKING_HOURS_FORM:
 		require_once($GLOBALS['babInstallPath'] . 'tmWorkingHoursFunc.php');
 		displayWorkingHoursForm();
@@ -2439,11 +1947,6 @@ switch($idx)
 	case BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST:
 		displayProjectsSpacesList();
 		break;
-/*		
-	case BAB_TM_IDX_DISPLAY_PROJECTS_LIST:
-		displayProjectsList();
-		break;
-//*/
 		
 	case BAB_TM_IDX_DISPLAY_PROJECT_FORM:
 		displayProjectForm();
@@ -2485,10 +1988,6 @@ switch($idx)
 		displayDeleteTaskForm();
 		break;
 		
-	case BAB_TM_IDX_DISPLAY_STOP_TASK_FORM:
-		displayStopTaskForm();
-		break;
-//*//
 	case BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_LIST:
 		displaySpecificFieldList();
 		break;
@@ -2529,11 +2028,6 @@ switch($idx)
 		displayGanttChart();
 		break;
 		
-	/*	
-	case BAB_TM_IDX_CLOSE_POPUP:
-		tskmgClosePopup();
-	//*/
-	
 	case BAB_TM_IDX_DISPLAY_PROJECT_PROPERTIES_FORM:
 		displayProjectPropertiesForm();
 		break;
