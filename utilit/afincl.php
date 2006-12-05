@@ -21,14 +21,18 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
+/**
+* @internal SEC1 NA 05/12/2006 FULL
+*/
+include_once 'base.php';
+
 function updateSchemaInstance($idschi)
 {
+	global $babDB;
 
-	$db = $GLOBALS['babDB'];
-	$res = $db->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." join ".BAB_FA_INSTANCES_TBL." where ".BAB_FA_INSTANCES_TBL.".id='".$idschi."' and ".BAB_FA_INSTANCES_TBL.".idsch=".BAB_FLOW_APPROVERS_TBL.".id");
+	$res = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." join ".BAB_FA_INSTANCES_TBL." where ".BAB_FA_INSTANCES_TBL.".id='".$babDB->db_escape_string($idschi)."' and ".BAB_FA_INSTANCES_TBL.".idsch=".BAB_FLOW_APPROVERS_TBL.".id");
 	$tabusers = array();
-	$arr = $db->db_fetch_array($res);
+	$arr = $babDB->db_fetch_array($res);
 	$tab = explode(",", $arr['formula']);
 	for( $i= 0; $i < count($tab); $i++)
 		{
@@ -48,12 +52,12 @@ function updateSchemaInstance($idschi)
 
 	if( count($tabusers) > 0 )
 	{
-		$res = $db->db_query("select * from ".BAB_FAR_INSTANCES_TBL." where idschi='".$idschi."'");
-		while( $arr3 = $db->db_fetch_array($res))
+		$res = $babDB->db_query("select * from ".BAB_FAR_INSTANCES_TBL." where idschi='".$babDB->db_escape_string($idschi)."'");
+		while( $arr3 = $babDB->db_fetch_array($res))
 			{
 			if( !in_array($arr3['iduser'], $tabusers))
 				{
-				$db->db_query("delete from ".BAB_FAR_INSTANCES_TBL." where id='".$arr3['id']."'");
+				$babDB->db_query("delete from ".BAB_FAR_INSTANCES_TBL." where id='".$babDB->db_escape_string($arr3['id'])."'");
 				}
 			else 
 				{
@@ -70,21 +74,21 @@ function updateSchemaInstance($idschi)
 
 		for($j = 0; $j < count($tabusers); $j++)
 			{
-			$db->db_query("insert into ".BAB_FAR_INSTANCES_TBL." (idschi, iduser) VALUES ('".$idschi."', '".$tabusers[$j]."')");
+			$babDB->db_query("insert into ".BAB_FAR_INSTANCES_TBL." (idschi, iduser) VALUES ('".$babDB->db_escape_string($idschi)."', '".$babDB->db_escape_string($tabusers[$j])."')");
 			}
-		$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET schi_change='1'");
+		$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET schi_change='1'");
 	}
 
 }
 
 function makeFlowInstance($idsch, $extra, $user = 0)
 {
-	$db = $GLOBALS['babDB'];
-	$res = $db->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id='".$idsch."'");
+	global $babDB;
+	$res = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id='".$babDB->db_escape_string($idsch)."'");
 	$result = array();
-	if( $res && $db->db_num_rows($res) > 0)
+	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-		$arr = $db->db_fetch_array($res);
+		$arr = $babDB->db_fetch_array($res);
 		if( !empty($GLOBALS['BAB_SESS_USERID']))
 			{
 			$idcurrentuser = $GLOBALS['BAB_SESS_USERID'];
@@ -93,9 +97,9 @@ function makeFlowInstance($idsch, $extra, $user = 0)
 			{
 			$idcurrentuser = 0;
 			}
-		$db->db_query("insert into ".BAB_FA_INSTANCES_TBL." (idsch, extra, iduser) VALUES ('".$idsch."', '".$extra."', '".$idcurrentuser."')");
-		$id = $db->db_insert_id();
-		$db->db_query("update ".BAB_FLOW_APPROVERS_TBL." set refcount='".($arr['refcount'] + 1)."' where id='".$idsch."'");
+		$babDB->db_query("insert into ".BAB_FA_INSTANCES_TBL." (idsch, extra, iduser) VALUES ('".$babDB->db_escape_string($idsch)."', '".$babDB->db_escape_string($extra)."', '".$babDB->db_escape_string($idcurrentuser)."')");
+		$id = $babDB->db_insert_id();
+		$babDB->db_query("update ".BAB_FLOW_APPROVERS_TBL." set refcount='".$babDB->db_escape_string(($arr['refcount'] + 1))."' where id='".$babDB->db_escape_string($idsch)."'");
 		updateSchemaInstance($id);
 		if( $user )
 			{
@@ -123,16 +127,16 @@ function makeFlowInstance($idsch, $extra, $user = 0)
 
 function evalFlowInstance($idschi)
 {
-	$db = $GLOBALS['babDB'];
-	$res = $db->db_query("select * from ".BAB_FAR_INSTANCES_TBL." where idschi='".$idschi."' and result='0'");
-	if( $res && $db->db_num_rows($res) > 0 )
+	global $babDB;
+	$res = $babDB->db_query("select * from ".BAB_FAR_INSTANCES_TBL." where idschi='".$babDB->db_escape_string($idschi)."' and result='0'");
+	if( $res && $babDB->db_num_rows($res) > 0 )
 		return 0;
 
-	$res = $db->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." join ".BAB_FA_INSTANCES_TBL." where ".BAB_FA_INSTANCES_TBL.".id='".$idschi."' and ".BAB_FA_INSTANCES_TBL.".idsch=".BAB_FLOW_APPROVERS_TBL.".id");
+	$res = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." join ".BAB_FA_INSTANCES_TBL." where ".BAB_FA_INSTANCES_TBL.".id='".$babDB->db_escape_string($idschi)."' and ".BAB_FA_INSTANCES_TBL.".idsch=".BAB_FLOW_APPROVERS_TBL.".id");
 	$result = array();
-	if( $res && $db->db_num_rows($res) > 0)
+	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-		$arr = $db->db_fetch_array($res);
+		$arr = $babDB->db_fetch_array($res);
 		$arr = explode(",", $arr['formula']);
 		for( $i= 0; $i < count($arr); $i++)
 			{
@@ -149,8 +153,8 @@ function evalFlowInstance($idschi)
 					$rr = explode($op, $arr[$i]);
 					for( $k = 0; $k < count($rr); $k++)
 						{
-						$res = $db->db_query("select * from ".BAB_FAR_INSTANCES_TBL." where idschi='".$idschi."' and iduser='".$rr[$k]."' and result=''");
-						if( $res && $db->db_num_rows($res) > 0)
+						$res = $babDB->db_query("select * from ".BAB_FAR_INSTANCES_TBL." where idschi='".$babDB->db_escape_string($idschi)."' and iduser='".$babDB->db_escape_string($rr[$k])."' and result=''");
+						if( $res && $babDB->db_num_rows($res) > 0)
 							{
 							return -1;
 							}
@@ -160,16 +164,16 @@ function evalFlowInstance($idschi)
 					$rr = explode($op, $arr[$i]);
 					for( $k = 0; $k < count($rr); $k++)
 						{
-						$res = $db->db_query("select * from ".BAB_FAR_INSTANCES_TBL." where idschi='".$idschi."' and iduser='".$rr[$k]."' and result=''");
-						if( $res && $db->db_num_rows($res) > 0)
+						$res = $babDB->db_query("select * from ".BAB_FAR_INSTANCES_TBL." where idschi='".$babDB->db_escape_string($idschi)."' and iduser='".$babDB->db_escape_string($rr[$k])."' and result=''");
+						if( $res && $babDB->db_num_rows($res) > 0)
 							{
 							return -1;
 							}
 						}
 					break;
 				default:
-					$res = $db->db_query("select * from ".BAB_FAR_INSTANCES_TBL." where idschi='".$idschi."' and iduser='".$arr[$i]."'");
-					$tab = $db->db_fetch_array($res);
+					$res = $babDB->db_query("select * from ".BAB_FAR_INSTANCES_TBL." where idschi='".$babDB->db_escape_string($idschi)."' and iduser='".$babDB->db_escape_string($arr[$i])."'");
+					$tab = $babDB->db_fetch_array($res);
 					if( $tab['result'] == '')
 					{
 						return -1;
@@ -184,22 +188,20 @@ function evalFlowInstance($idschi)
 
 function deleteFlowInstance($idschi)
 {
-	$db = $GLOBALS['babDB'];
-	$arr = $db->db_fetch_array($db->db_query("select * from ".BAB_FA_INSTANCES_TBL." where id='".$idschi."'"));
-	$arr = $db->db_fetch_array($db->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id='".$arr['idsch']."'"));
+	global $babDB;
+	$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FA_INSTANCES_TBL." where id='".$babDB->db_escape_string($idschi)."'"));
+	$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id='".$babDB->db_escape_string($arr['idsch'])."'"));
 	if( $arr['refcount'] > 0)
-		$db->db_query("update ".BAB_FLOW_APPROVERS_TBL." set refcount='".($arr['refcount'] - 1 )."' where id='".$arr['id']."'");
+		$babDB->db_query("update ".BAB_FLOW_APPROVERS_TBL." set refcount='".$babDB->db_escape_string(($arr['refcount'] - 1 ))."' where id='".$babDB->db_escape_string($arr['id'])."'");
 
-	$db->db_query("delete from ".BAB_FAR_INSTANCES_TBL." where idschi='".$idschi."'");
-	$db->db_query("delete from ".BAB_FA_INSTANCES_TBL." where id='".$idschi."'");
-	$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET schi_change='1'");
+	$babDB->db_query("delete from ".BAB_FAR_INSTANCES_TBL." where idschi='".$babDB->db_escape_string($idschi)."'");
+	$babDB->db_query("delete from ".BAB_FA_INSTANCES_TBL." where id='".$babDB->db_escape_string($idschi)."'");
+	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET schi_change='1'");
 }
 
 function updateFlowInstance($idschi, $iduser, $bool)
 {
-	global $babBody;
-
-	$db = $GLOBALS['babDB'];
+	global $babBody, $babDB;
 
 	$idusers = array($iduser);
 	for( $j=0; $j < 2; $j++)
@@ -213,7 +215,7 @@ function updateFlowInstance($idschi, $iduser, $bool)
 		}
 	}
 
-	$scinfo = $db->db_fetch_array($db->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." fat left join ".BAB_FA_INSTANCES_TBL." fait on fait.idsch=fat.id where fait.id='".$idschi."'"));
+	$scinfo = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." fat left join ".BAB_FA_INSTANCES_TBL." fait on fait.idsch=fat.id where fait.id='".$babDB->db_escape_string($idschi)."'"));
 
 	if( $scinfo['satype'] == 1 )
 	{
@@ -268,8 +270,8 @@ function updateFlowInstance($idschi, $iduser, $bool)
 				$idgroups[] = 1;
 			}
 
-			$res = $db->db_query("select ugt.id_group from ".BAB_USERS_GROUPS_TBL." ugt where ugt.id_object='".$iduser."'");
-			while( $rr = $db->db_fetch_array($res))
+			$res = $babDB->db_query("select ugt.id_group from ".BAB_USERS_GROUPS_TBL." ugt where ugt.id_object='".$babDB->db_escape_string($iduser)."'");
+			while( $rr = $babDB->db_fetch_array($res))
 			{
 				if( in_array($rr['id_group'], $groups))
 				{
@@ -282,18 +284,18 @@ function updateFlowInstance($idschi, $iduser, $bool)
 
 	if( count($idusers) > 0 )
 	{
-		$res = $db->db_query("select * from ".BAB_FAR_INSTANCES_TBL." where idschi='".$idschi."' and iduser IN (".implode(',', $idusers).")");
-		while( $row = $db->db_fetch_array($res) )
+		$res = $babDB->db_query("select * from ".BAB_FAR_INSTANCES_TBL." where idschi='".$babDB->db_escape_string($idschi)."' and iduser IN (".$babDB->quote($idusers).")");
+		while( $row = $babDB->db_fetch_array($res) )
 		{
 		if( $bool)
 			$result = "1";
 		else
 			$result ="0";
-		$db->db_query("update ".BAB_FAR_INSTANCES_TBL." set result='".$result."', notified='Y' where id='".$row['id']."'");
+		$babDB->db_query("update ".BAB_FAR_INSTANCES_TBL." set result='".$babDB->db_escape_string($result)."', notified='Y' where id='".$babDB->db_escape_string($row['id'])."'");
 		
 		if( $result == 0 )
 			{
-			$db->db_query("update ".BAB_FAR_INSTANCES_TBL." set result='x' where idschi='".$idschi."' and result=''");
+			$babDB->db_query("update ".BAB_FAR_INSTANCES_TBL." set result='x' where idschi='".$babDB->db_escape_string($idschi)."' and result=''");
 			}
 		else
 			{
@@ -316,7 +318,7 @@ function updateFlowInstance($idschi, $iduser, $bool)
 						for( $k = 0; $k < count($rr); $k++)
 							{
 							if( !in_array($rr[$k], $idusers) )
-								$db->db_query("update ".BAB_FAR_INSTANCES_TBL." set result='x' where idschi='".$idschi."' and iduser='".$rr[$k]."'");
+								$babDB->db_query("update ".BAB_FAR_INSTANCES_TBL." set result='x' where idschi='".$babDB->db_escape_string($idschi)."' and iduser='".$babDB->db_escape_string($rr[$k])."'");
 							}
 						}
 					}
@@ -324,7 +326,7 @@ function updateFlowInstance($idschi, $iduser, $bool)
 			}
 		}
 	}
-	$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET schi_change='1'");
+	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET schi_change='1'");
 	return evalFlowInstance($idschi);
 }
 
@@ -365,7 +367,7 @@ function isUserApproverFlow($idsa, $iduser, $update=false)
 
 function getWaitingIdsFlowInstance($scinfo, $idschi, $notify=false)
 {
-	$db = $GLOBALS['babDB'];
+	global $babDB;
 	$result = array();
 	$notifytab = array();
 	$tab = explode(",", $scinfo['formula']);
@@ -380,17 +382,17 @@ function getWaitingIdsFlowInstance($scinfo, $idschi, $notify=false)
 
 		for( $k = 0; $k < count($rr); $k++)
 			{
-			$res = $db->db_query("select * from ".BAB_FAR_INSTANCES_TBL." where idschi='".$idschi."' and iduser='".$rr[$k]."'");
-			if( $res && $db->db_num_rows($res) > 0 )
+			$res = $babDB->db_query("select * from ".BAB_FAR_INSTANCES_TBL." where idschi='".$babDB->db_escape_string($idschi)."' and iduser='".$babDB->db_escape_string($rr[$k])."'");
+			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
-				$arr2 = $db->db_fetch_array($res);
+				$arr2 = $babDB->db_fetch_array($res);
 				if( $arr2['result'] == "")
 					{
 					$result[] = $rr[$k];
 					if( $notify && $arr2['notified'] == "N" )
 						{
 						$notifytab[] = $rr[$k];
-						$db->db_query("update ".BAB_FAR_INSTANCES_TBL." set notified='Y' where id='".$arr2['id']."'");
+						$babDB->db_query("update ".BAB_FAR_INSTANCES_TBL." set notified='Y' where id='".$babDB->db_escape_string($arr2['id'])."'");
 						}
 					}
 				}
@@ -404,7 +406,7 @@ function getWaitingIdsFlowInstance($scinfo, $idschi, $notify=false)
 
 	if( $notify)
 	{
-		$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET schi_change='1'");
+		$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET schi_change='1'");
 		return $notifytab;
 	}
 	else
@@ -415,12 +417,12 @@ function getWaitingIdsFlowInstance($scinfo, $idschi, $notify=false)
 
 function getWaitingApproversFlowInstance($idschi, $notify=false)
 {
-	$db = $GLOBALS['babDB'];
-	$res = $db->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." join ".BAB_FA_INSTANCES_TBL." where ".BAB_FA_INSTANCES_TBL.".id='".$idschi."' and ".BAB_FA_INSTANCES_TBL.".idsch=".BAB_FLOW_APPROVERS_TBL.".id");
+	global $babDB;
+	$res = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." join ".BAB_FA_INSTANCES_TBL." where ".BAB_FA_INSTANCES_TBL.".id='".$babDB->db_escape_string($idschi)."' and ".BAB_FA_INSTANCES_TBL.".idsch=".BAB_FLOW_APPROVERS_TBL.".id");
 	$result = array();
-	if( $res && $db->db_num_rows($res) > 0)
+	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-		$arr = $db->db_fetch_array($res);
+		$arr = $babDB->db_fetch_array($res);
 		$result = getWaitingIdsFlowInstance($arr, $idschi, $notify);
 		if( count($result) > 0 )
 			{
@@ -458,15 +460,15 @@ function getWaitingApproversFlowInstance($idschi, $notify=false)
 				case 2:
 					if( in_array(1, $result)) // registered users
 						{
-						$res2 = $db->db_query("select id from ".BAB_USERS_TBL." where is_confirmed='1' and disabled='0'");
+						$res2 = $babDB->db_query("select id from ".BAB_USERS_TBL." where is_confirmed='1' and disabled='0'");
 						}
 					else
 						{
-						$res2 = $db->db_query("select distinct ut.id from ".BAB_USERS_TBL." ut left join ".BAB_USERS_GROUPS_TBL." ugt on ugt.id_object=ut.id where ut.is_confirmed='1' and ut.disabled='0' and ugt.id_group in (".implode(',', $result).")");
+						$res2 = $babDB->db_query("select distinct ut.id from ".BAB_USERS_TBL." ut left join ".BAB_USERS_GROUPS_TBL." ugt on ugt.id_object=ut.id where ut.is_confirmed='1' and ut.disabled='0' and ugt.id_group in (".$babDB->quote($result).")");
 						}
 
 					$ret = array();
-					while( $rr = $db->db_fetch_array($res2))
+					while( $rr = $babDB->db_fetch_array($res2))
 						{
 						$ret[] = $rr['id'];
 						}
@@ -480,13 +482,13 @@ function getWaitingApproversFlowInstance($idschi, $notify=false)
 
 	if( count($result) > 0 )
 	{
-	$res = $db->db_query("select id_user, id_substitute from ".BAB_USERS_UNAVAILABILITY_TBL." where curdate() between start_date and end_date and id_user in (".implode(',', $result).")");
+	$res = $babDB->db_query("select id_user, id_substitute from ".BAB_USERS_UNAVAILABILITY_TBL." where curdate() between start_date and end_date and id_user in (".$babDB->quote($result).")");
 
 	$substitutes = array();
-	if( $res && $db->db_num_rows($res) > 0 )
+	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
 		include_once $GLOBALS['babInstallPath']."utilit/ocapi.php";
-		while( $arr = $db->db_fetch_array($res) )
+		while( $arr = $babDB->db_fetch_array($res) )
 			{
 			if( $arr['id_substitute'] !=  0 )
 				{
@@ -531,18 +533,17 @@ function getWaitingApproversFlowInstance($idschi, $notify=false)
 
 function getWaitingApprobations($iduser, $update=false)
 {
-	global $babBody;
+	global $babBody, $babDB;
 
 	if( isset($_SESSION['bab_waitingApprobations'][$iduser]) && !$update )
 	{
 		return $_SESSION['bab_waitingApprobations'][$iduser];
 	}
 
-	$db = &$GLOBALS['babDB'];
-	$res = $db->db_query("select frit.*, fit.idsch, fat.satype, fat.id_oc, fit.iduser as fit_iduser from ".BAB_FAR_INSTANCES_TBL." frit left join ".BAB_FA_INSTANCES_TBL." fit on frit.idschi=fit.id left join ".BAB_FLOW_APPROVERS_TBL." fat on fit.idsch=fat.id where frit.result='' and frit.notified='Y'");
+	$res = $babDB->db_query("select frit.*, fit.idsch, fat.satype, fat.id_oc, fit.iduser as fit_iduser from ".BAB_FAR_INSTANCES_TBL." frit left join ".BAB_FA_INSTANCES_TBL." fit on frit.idschi=fit.id left join ".BAB_FLOW_APPROVERS_TBL." fat on fit.idsch=fat.id where frit.result='' and frit.notified='Y'");
 	$result['idsch'] = array();
 	$result['idschi'] = array();
-	while( $row = $db->db_fetch_array($res))
+	while( $row = $babDB->db_fetch_array($res))
 		{
 		switch($row['satype'])
 			{
@@ -626,7 +627,7 @@ function getWaitingApprobations($iduser, $update=false)
 			{
 				$add = false;
 
-				list($type) = $db->db_fetch_row($db->db_query("select satype from ".BAB_FLOW_APPROVERS_TBL." where id='".$rr['idsch'][$k]."'"));
+				list($type) = $babDB->db_fetch_row($babDB->db_query("select satype from ".BAB_FLOW_APPROVERS_TBL." where id='".$babDB->db_escape_string($rr['idsch'][$k])."'"));
 				if( $type != 1 && in_array($arrsub[$i], $babBody->substitutes[0]))
 				{
 					$add = true;

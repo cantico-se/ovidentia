@@ -21,18 +21,24 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
-include_once $babInstallPath."utilit/afincl.php";
+
+/**
+* @internal SEC1 NA 05/12/2006 FULL
+*/
+
+include_once 'base.php';
+include_once $babInstallPath.'utilit/afincl.php';
+
 //define("BAB_DEBUG_FA", 1);
 
 function getApprovalSchemaName($id)
 {
-	$db = $GLOBALS['babDB'];
-	$query = "select * from ".BAB_FLOW_APPROVERS_TBL." where id='".$id."'";
-	$res = $db->db_query($query);
-	if( $res && $db->db_num_rows($res) > 0)
+	global $babDB;
+	$query = "select * from ".BAB_FLOW_APPROVERS_TBL." where id='".$babDB->db_escape_string($id)."'";
+	$res = $babDB->db_query($query);
+	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-		$arr = $db->db_fetch_array($res);
+		$arr = $babDB->db_fetch_array($res);
 		return $arr['name'];
 		}
 	else
@@ -43,12 +49,12 @@ function getApprovalSchemaName($id)
 
 function getRoleName($id)
 {
-	$db = $GLOBALS['babDB'];
-	$query = "select name from ".BAB_OC_ROLES_TBL." where id='".$id."'";
-	$res = $db->db_query($query);
-	if( $res && $db->db_num_rows($res) > 0)
+	global $babDB;
+	$query = "select name from ".BAB_OC_ROLES_TBL." where id='".$babDB->db_escape_string($id)."'";
+	$res = $babDB->db_query($query);
+	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-		$arr = $db->db_fetch_array($res);
+		$arr = $babDB->db_fetch_array($res);
 		return $arr['name'];
 		}
 	else
@@ -65,12 +71,12 @@ function testSchema($idsch, $idschi, $resf)
 		{
 		function temp($idsch, $idschi, $resf)
 			{
+			global $babDB;
 			if( !isset($idschi) || $idschi == "")
 				$idschi = makeFlowInstance($idsch, "test");
 
-			$db = $GLOBALS['babDB'];
-			$res = $db->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id='".$idsch."'");
-			$arr = $db->db_fetch_array($res);
+			$res = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id='".$babDB->db_escape_string($idsch)."'");
+			$arr = $babDB->db_fetch_array($res);
 			$this->formula = $arr['formula'];
 			$this->idschi = $idschi;
 			$this->idsch = $idsch;
@@ -145,7 +151,7 @@ function schemaCreate($formula, $idsch, $schname, $schdesc, $order, $bdel, $ocid
 				{
 				case 1:
 					$this->userslisttxt = bab_translate("Roles list");
-					list($this->ocname) = $babDB->db_fetch_row($babDB->db_query("select name from ".BAB_ORG_CHARTS_TBL." where id='".$this->ocid."'"));
+					list($this->ocname) = $babDB->db_fetch_row($babDB->db_query("select name from ".BAB_ORG_CHARTS_TBL." where id='".$babDB->db_escape_string($this->ocid)."'"));
 					$this->userslisturl = $GLOBALS['babUrlScript']."?tg=admoc&idx=browr&ocid=".$this->ocid."&cb=";
 					break;
 				case 2:
@@ -277,13 +283,12 @@ function schemaCreate($formula, $idsch, $schname, $schdesc, $order, $bdel, $ocid
 
 function modifySchema($idsch)
 {
-	global $idx;
+	global $babDB, $idx;
 
-	$db = $GLOBALS['babDB'];
-	$res = $db->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id='".$idsch."'");
-	if( $res && $db->db_num_rows($res) > 0)
+	$res = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id='".$babDB->db_escape_string($idsch)."'");
+	if( $res && $babDB->db_num_rows($res) > 0)
 	{
-		$arr = $db->db_fetch_array($res);
+		$arr = $babDB->db_fetch_array($res);
 		if( $arr['refcount'] == 0 )
 			schemaCreate($arr['formula'], $idsch, $arr['name'], $arr['description'], $arr['forder'], true, $arr['id_oc'], $arr['satype']);
 		else
@@ -310,7 +315,7 @@ function listSchemas()
 
 		function temp()
 			{
-			global $babBody;
+			global $babBody, $babDB;
 			$this->schnametxt = bab_translate("Name");
 			$this->schdesctxt = bab_translate("Description");
 			$this->schtypetxt = bab_translate("Type");
@@ -318,11 +323,10 @@ function listSchemas()
 			$this->nominative = bab_translate("Nominative");
 			$this->groups = bab_translate("Groups");
 			$this->orgnametxt = bab_translate("Charts");
-			$this->db = $GLOBALS['babDB'];
-			$req = "select fa.*, oc.name as orgname from ".BAB_FLOW_APPROVERS_TBL." fa left join ".BAB_ORG_CHARTS_TBL." oc on oc.id=fa.id_oc where fa.id_dgowner='".$babBody->currentAdmGroup."' order by fa.name asc";
-			$this->res = $this->db->db_query($req);
+			$req = "select fa.*, oc.name as orgname from ".BAB_FLOW_APPROVERS_TBL." fa left join ".BAB_ORG_CHARTS_TBL." oc on oc.id=fa.id_oc where fa.id_dgowner='".$babDB->db_escape_string($babBody->currentAdmGroup)."' order by fa.name asc";
+			$this->res = $babDB->db_query($req);
 
-			$this->count = $this->db->db_num_rows($this->res);
+			$this->count = $babDB->db_num_rows($this->res);
 			if( defined("BAB_DEBUG_FA"))
 				{
 				$this->testurltxt = "Test";
@@ -334,11 +338,12 @@ function listSchemas()
 
 		function getnext()
 			{
+			global $babDB;
 			static $i = 0;
 			if( $i < $this->count)
 				{
 				$this->altbg = $this->altbg ? false : true;
-				$arr = $this->db->db_fetch_array($this->res);
+				$arr = $babDB->db_fetch_array($this->res);
 				$this->urltxt = $arr['name'];
 				switch($arr['satype'])
 					{
@@ -400,7 +405,7 @@ function listOrgCharts()
 			$this->satype = 1;
 			$this->messagetxt = bab_translate("Select the organizational chart on which the workflow will be based");
 			$this->donetxt = bab_translate("Next");
-			$this->res = $babDB->db_query("select b.id, b.name from ".BAB_ORG_CHARTS_TBL." b left join ".BAB_DB_DIRECTORIES_TBL." dd on b.id_directory=dd.id where dd.id_group!=0 and b.id_dgowner='".$babBody->currentAdmGroup."' order by b.name asc");
+			$this->res = $babDB->db_query("select b.id, b.name from ".BAB_ORG_CHARTS_TBL." b left join ".BAB_DB_DIRECTORIES_TBL." dd on b.id_directory=dd.id where dd.id_group!=0 and b.id_dgowner='".$babDB->db_escape_string($babBody->currentAdmGroup)."' order by b.name asc");
 			$this->count = $babDB->db_num_rows($this->res);
 			}
 
@@ -460,7 +465,7 @@ function schemaDelete($id)
 
 function saveSchema($rows, $cols, $order, $schname, $schdesc, $idsch, $ocid, $type)
 {
-	global $babBody;
+	global $babBody, $babDB;
 
 	$row = 0;
 	$result = array();
@@ -511,12 +516,11 @@ function saveSchema($rows, $cols, $order, $schname, $schdesc, $idsch, $ocid, $ty
 		{
 		$order = "N";
 		}
-	$db = $GLOBALS['babDB'];
 	if( !isset($idsch) || $idsch == "")
 		{
-		$req = "select id from ".BAB_FLOW_APPROVERS_TBL." where name='".$schname."'";	
-		$res = $db->db_query($req);
-		if( $res && $db->db_num_rows($res) > 0)
+		$req = "select id from ".BAB_FLOW_APPROVERS_TBL." where name='".$babDB->db_escape_string($schname)."'";	
+		$res = $babDB->db_query($req);
+		if( $res && $babDB->db_num_rows($res) > 0)
 			{
 			$babBody->msgerror = bab_translate("This flow approvers already exists");
 			return $ret;
@@ -526,31 +530,31 @@ function saveSchema($rows, $cols, $order, $schname, $schdesc, $idsch, $ocid, $ty
 			$req = "insert into ".BAB_FLOW_APPROVERS_TBL." (name, description, formula, forder, id_dgowner, satype, id_oc) 
 			VALUES 
 				(
-				'" . $db->db_escape_string($schname). "', 
-				'" . $db->db_escape_string($schdesc). "', 
-				'" . $db->db_escape_string($ret). "', 
-				'" . $db->db_escape_string($order). "', 
-				'" . $db->db_escape_string($babBody->currentAdmGroup). "', 
-				'" . $db->db_escape_string($type). "', 
-				'" . $db->db_escape_string($ocid). "'
+				'" . $babDB->db_escape_string($schname). "', 
+				'" . $babDB->db_escape_string($schdesc). "', 
+				'" . $babDB->db_escape_string($ret). "', 
+				'" . $babDB->db_escape_string($order). "', 
+				'" . $babDB->db_escape_string($babBody->currentAdmGroup). "', 
+				'" . $babDB->db_escape_string($type). "', 
+				'" . $babDB->db_escape_string($ocid). "'
 			)";
 
-			$db->db_query($req);
+			$babDB->db_query($req);
 			}
 		}
 	else
 		{
-		$req = "select * from ".BAB_FLOW_APPROVERS_TBL." where id='".$db->db_escape_string($idsch)."'";	
-		$res = $db->db_query($req);
-		if( $res && $db->db_num_rows($res) > 0)
+		$req = "select * from ".BAB_FLOW_APPROVERS_TBL." where id='".$babDB->db_escape_string($idsch)."'";	
+		$res = $babDB->db_query($req);
+		if( $res && $babDB->db_num_rows($res) > 0)
 			{
-			$arr = $db->db_fetch_array($res);
-			$req = "update ".BAB_FLOW_APPROVERS_TBL." set name='".$db->db_escape_string($schname)."', description='".$db->db_escape_string($schdesc)."', formula='".$db->db_escape_string($ret)."', forder='".$db->db_escape_string($order)."' where id='".$db->db_escape_string($idsch)."'";
-			$db->db_query($req);
+			$arr = $babDB->db_fetch_array($res);
+			$req = "update ".BAB_FLOW_APPROVERS_TBL." set name='".$babDB->db_escape_string($schname)."', description='".$babDB->db_escape_string($schdesc)."', formula='".$babDB->db_escape_string($ret)."', forder='".$babDB->db_escape_string($order)."' where id='".$babDB->db_escape_string($idsch)."'";
+			$babDB->db_query($req);
 			if( $arr['formula'] != $ret )
 				{
-				$res = $db->db_query("select * from ".BAB_FA_INSTANCES_TBL." where idsch='".$db->db_escape_string($idsch)."'");
-				while( $arr = $db->db_fetch_array($res))
+				$res = $babDB->db_query("select * from ".BAB_FA_INSTANCES_TBL." where idsch='".$babDB->db_escape_string($idsch)."'");
+				while( $arr = $babDB->db_fetch_array($res))
 					{
 					updateSchemaInstance($arr['id']);
 					// force notifications otherwise approbations will not be seen
@@ -577,33 +581,35 @@ if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['approbations'] != 'Y')
 	return;
 }
 
-if( !isset($idx))
-	$idx = "list";
+$idx = bab_rp('idx', 'list');
+$res = bab_rp('res', -1);
 
-if( !isset($res))
-	$res = "-1";
-
-if( defined("BAB_DEBUG_FA") && isset($test) && $test == "testsc")
+if( defined("BAB_DEBUG_FA") && ('testsc' == bab_pp('test')))
 {
+	$userids = bab_pp('userids', array());
 	for( $k = 0; $k < count($userids); $k++)
 	{
 	$sel = "us".$userids[$k];
 	if( $$sel == "Y")
+		{
 		$bool = true;
+		}
 	else
+		{
 		$bool = false;
-	$res = updateFlowInstance($idschi, $userids[$k], $bool);
+		}
+	$res = updateFlowInstance(bab_pp('idschi'), $userids[$k], $bool);
 	}
 }
 
-if( isset($add))
+if( isset($_POST['add']))
 	{
-	if( isset($addb))
+	if( isset($_POST['addb']))
 		{
-		if( !isset($order)) { $order = 'N';} 
-		$formula = saveSchema($rows, $cols, $order, $schname, $schdesc, $idsch, $ocid, $type);
+		$order = bab_pp('order', 'N');
+		$formula = saveSchema(bab_pp('rows'), bab_pp('cols'), $order, bab_pp('schname'), bab_pp('schdesc'), bab_pp('idsch'), bab_pp('ocid'), bab_pp('type'));
 		if( $formula != "")
-			switch($add)
+			switch($_POST['add'])
 			{
 			case "sch":
 				$idx = "new";
@@ -613,15 +619,15 @@ if( isset($add))
 				break;
 			}
 		}
-	else if( isset($delb))
+	else if( isset($_POST['delb']))
 		{
 		$idx = "delsc";
 		}
 	}
 
-if( isset($action) && $action == "Yes")
+if( 'Yes' == bab_rp('action'))
 	{
-	confirmDeleteSchema($idsch);
+	confirmDeleteSchema(bab_rp('idsch'));
 	}
 
 switch($idx)
@@ -646,7 +652,7 @@ switch($idx)
 		$babBody->addItemMenu("newc", bab_translate("Group schema"), $GLOBALS['babUrlScript']."?tg=apprflow&idx=newc&type=2");
 		break;
 	case "newb":
-		if( !isset($ocid) || empty($ocid))
+		if( !isset($_POST['ocid']) || empty($_POST['ocid']))
 		{
 		$babBody->title = bab_translate("Choice of the organizational chart");
 		listOrgCharts();
@@ -660,12 +666,12 @@ switch($idx)
 	case "newa":
 	case "newc":
 		$babBody->title = bab_translate("Create a new approbation schema");
-		if (!isset($formula)) $formula = '';
-		if (!isset($idsch)) $idsch = '';
-		if (!isset($schname)) $schname = '';
-		if (!isset($schdesc)) $schdesc = '';
-		if (!isset($order)) $order = '';
-		if (!isset($ocid)) $ocid = '';
+		$formula = bab_pp('formula');
+		$idsch = bab_pp('idsch');
+		$schname = bab_pp('schname');
+		$schdesc = bab_pp('schdesc');
+		$order = bab_pp('order');
+		$ocid = bab_pp('ocid');
 		schemaCreate($formula, $idsch, $schname, $schdesc, $order, false, $ocid, $type);
 		$babBody->addItemMenu("list", bab_translate("Schemas"),$GLOBALS['babUrlScript']."?tg=apprflow&idx=list");
 		$babBody->addItemMenu("newa", bab_translate("Nominative schema"), $GLOBALS['babUrlScript']."?tg=apprflow&idx=newa&type=0");
@@ -676,8 +682,8 @@ switch($idx)
 		if( defined("BAB_DEBUG_FA"))
 		{
 			$babBody->title = bab_translate("Test an approbation schema");
-			if (!isset($idschi)) $idschi = '';
-			testSchema($idsch, $idschi, $res);
+			$idschi = bab_rp('idschi');
+			testSchema(bab_rp('idsch'), $idschi, $res);
 			$babBody->addItemMenu("list", bab_translate("Schemas"),$GLOBALS['babUrlScript']."?tg=apprflow&idx=list");
 			$babBody->addItemMenu("newa", bab_translate("Nominative schema"), $GLOBALS['babUrlScript']."?tg=apprflow&idx=newa&type=0");
 			$babBody->addItemMenu("newb", bab_translate("Staff schema"), $GLOBALS['babUrlScript']."?tg=apprflow&idx=newb&type=1");

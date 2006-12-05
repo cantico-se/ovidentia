@@ -21,8 +21,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
-include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
+/**
+* @internal SEC1 NA 05/12/2006 FULL
+*/
+include_once 'base.php';
+include_once $GLOBALS['babInstallPath'].'utilit/afincl.php';
 
 function bab_WFMakeInstance($idsch, $extra, $user=0)
 {
@@ -74,7 +77,7 @@ function bab_WFGetApprobationsList()
 {
 	global $babDB, $babBody;
 	$result = array();
-	$res = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babBody->currentAdmGroup."' order by name asc");
+	$res = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babDB->db_escape_string($babBody->currentAdmGroup)."' order by name asc");
 	while( $arr = $babDB->db_fetch_array($res))
 	{
 		$result[] = array('name' => $arr['name'], 'id' => $arr['id']);
