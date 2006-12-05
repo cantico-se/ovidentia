@@ -131,6 +131,7 @@ function listImages($editor,$path='')
 				{
 				$this->maxsizetxt = '';
 				}
+			$this->msgerror = bab_toHTML($GLOBALS['msgerror']);
 			$this->maximagessize *= 1000 ;
 			$this->file = bab_translate("File");
 			$this->add = bab_translate("Add");
@@ -215,6 +216,7 @@ function iframe($editor,$path="")
 			global $babBody, $babDB;
 
 			$this->maximagessize = $babBody->babsite['imgsize'];
+			$this->msgerror = bab_toHTML($GLOBALS['msgerror']);
 
 			$this->del = bab_translate("Delete");
 			$this->editor = $editor;
@@ -491,7 +493,7 @@ if( !isset($editor))
 
 if( isset($addf) && $addf == "add")
 	{
-	saveImage($uploadf_name, $uploadf_size,$uploadf, $share,$path);
+	saveImage($_FILES['uploadf']['name'], $_FILES['uploadf']['size'],$_FILES['uploadf']['tmp_name'], $share,$path);
 	}
 
 if ( isset($directory) && $directory != "" && bab_isUserAdministrator() )
@@ -525,7 +527,7 @@ if ( isset($old_name) && $old_name != "" && isset($new_name) && $new_name != "" 
 	}
 
 if (!isset($GLOBALS['msgerror']))
-	$GLOBALS['msgerror'] = "";
+	$GLOBALS['msgerror'] = '';
 
 if (!isset($path))
 	$path = '';
