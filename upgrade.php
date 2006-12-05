@@ -3293,7 +3293,7 @@ $db->db_query("INSERT INTO ".BAB_SITES_HPMAN_GROUPS_TBL." (id_object, id_group) 
 
 
 $subdir = trim(substr($_SERVER['SCRIPT_NAME'],0,strlen($_SERVER['SCRIPT_NAME'])-strlen(strrchr($_SERVER['SCRIPT_NAME'],'/'))),'/');
-if ((substr($_SERVER['DOCUMENT_ROOT'],-1) == '/') || ($subdir == ''))
+if (substr($_SERVER['DOCUMENT_ROOT'],-1) == '/')
 	$subdir = $_SERVER['DOCUMENT_ROOT'].$subdir.'/skins/';
 else
 	$subdir = $_SERVER['DOCUMENT_ROOT'].'/'.$subdir.'/skins/';
@@ -7304,40 +7304,30 @@ function upgrade601to602()
 
 
 	// working days
-	
-	
-	if (bab_isTableField(BAB_SITES_TBL, 'workdays')) {
-	
-		$db->db_query("DELETE FROM ".BAB_WORKING_HOURS_TBL." WHERE idUser='0'");
-	
-		function setUserWd($id_user, $WDStr) {
-			$awd = explode(',',$WDStr);
-	
-			$db = &$GLOBALS['babDB'];
-			foreach($awd as $d) {
-				$db->db_query("INSERT INTO ".BAB_WORKING_HOURS_TBL."( weekDay, idUser,  startHour, endHour) VALUES (".$db->quote($d).','.$db->quote($id_user).", '00:00:00', '24:00:00')");
-			}
-		}
-	
-		$res = $db->db_query("SELECT workdays FROM ".BAB_SITES_TBL." WHERE name=".$db->quote($GLOBALS['babSiteName']));
-		$arr = $db->db_fetch_assoc($res);
-		setUserWd(0, $arr['workdays']);
-	}
-	
-	if (bab_isTableField(BAB_CAL_USER_OPTIONS_TBL, 'workdays')) {
-		$db->db_query("DELETE FROM ".BAB_WORKING_HOURS_TBL." WHERE idUser>'0'");
-		
-		$res = $db->db_query("SELECT id_user, workdays FROM ".BAB_CAL_USER_OPTIONS_TBL." WHERE workdays<>".$db->quote($arr['workdays']));
-		while($arr = $db->db_fetch_assoc($res)) {
-			setUserWd($arr['id_user'], $arr['workdays']);
-		}
-	
-		if (!bab_isTableField(BAB_COMMENTS_TBL, 'id_author')) {
-	
-			$db->db_query("ALTER TABLE ".BAB_COMMENTS_TBL." ADD `id_author` INT( 11 )  UNSIGNED DEFAULT '0' NOT NULL AFTER `id_topic`");
+	$db->db_query("DELETE FROM ".BAB_WORKING_HOURS_TBL);
+
+	function setUserWd($id_user, $WDStr) {
+		$awd = explode(',',$WDStr);
+
+		$db = &$GLOBALS['babDB'];
+		foreach($awd as $d) {
+			$db->db_query("INSERT INTO ".BAB_WORKING_HOURS_TBL."( weekDay, idUser,  startHour, endHour) VALUES (".$db->quote($d).','.$db->quote($id_user).", '00:00:00', '24:00:00')");
 		}
 	}
-	
+
+	$res = $db->db_query("SELECT workdays FROM ".BAB_SITES_TBL." WHERE name=".$db->quote($GLOBALS['babSiteName']));
+	$arr = $db->db_fetch_assoc($res);
+	setUserWd(0, $arr['workdays']);
+
+	$res = $db->db_query("SELECT id_user, workdays FROM ".BAB_CAL_USER_OPTIONS_TBL." WHERE workdays<>".$db->quote($arr['workdays']));
+	while($arr = $db->db_fetch_assoc($res)) {
+		setUserWd($arr['id_user'], $arr['workdays']);
+	}
+
+	if (!bab_isTableField(BAB_COMMENTS_TBL, 'id_author')) {
+
+		$db->db_query("ALTER TABLE ".BAB_COMMENTS_TBL." ADD `id_author` INT( 11 )  UNSIGNED DEFAULT '0' NOT NULL AFTER `id_topic`");
+	}
 	return $ret;
 }
 
@@ -7539,16 +7529,9 @@ function upgrade604to605()
 function upgrade605to606()
 {
 	$ret = "";
-	// $db = & $GLOBALS['babDB'];
 	global $babDB;
-
-	if (bab_isTableField(BAB_SITES_TBL, 'workdays')) {
-		$babDB->db_query("ALTER TABLE ".BAB_SITES_TBL." DROP workdays");
-	}
 	
-	if (bab_isTableField(BAB_CAL_USER_OPTIONS_TBL, 'workdays')) {
-		$babDB->db_query("ALTER TABLE ".BAB_CAL_USER_OPTIONS_TBL." DROP workdays");
-	}
+	$babDB->db_query("TRUNCATE bab_vac_calendar");
 
 	return $ret;
 }

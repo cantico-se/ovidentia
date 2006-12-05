@@ -492,12 +492,21 @@ function editVacationRequest($vrid)
 			$this->daybegin		= $date_begin->getDayOfMonth();
 			$this->daysel		= $this->daybegin;
 
-			$this->dayend		= $date_end->getDayOfMonth();
+			
 
 			$this->monthbegin	= $date_begin->getMonth();
 			$this->monthsel		= $this->monthbegin;
+			
+			$this->yearbegin 	= $date_begin->getYear();
+			$this->yearsel 		= $this->yearbegin;
+			
+			
+			$this->dayend		= $date_end->getDayOfMonth();
 
 			$this->monthend		= $date_end->getMonth();
+			
+			$this->yearend 		= $date_end->getYear();
+			$this->yearendsel 	= $this->yearend;
 
 
 			$this->halfdaybegin	= 'am' === date('a', $date_begin->getTimeStamp()) ? 0 : 1;
@@ -507,25 +516,15 @@ function editVacationRequest($vrid)
 
 			$this->remarks		= $arr['comment'];
 			
-
-			$ymin = max(0, date("Y") - $rr1[0])+2;
-			$ymax = max(0, $rr2[0] - date("Y"))+2;
-			$this->datebegin = $GLOBALS['babUrlScript']."?tg=month&callback=dateBegin&ymin=".$ymin."&ymax=".$ymax."";
-			$this->dateend = $GLOBALS['babUrlScript']."?tg=month&callback=dateEnd&ymin=".$ymin."&ymax=".$ymax."";
-			$this->deltay = $ymax + $ymin + 1;
-			$this->startyear = date("Y") - $ymin;
-
-			$this->yearbegin = $this->startyear;
-			$this->yearsel = $rr1[0] - $this->startyear + 1;
-
-			$this->yearend = $this->startyear;
-			$this->yearendsel = $rr2[0] - $this->startyear + 1;
+			$this->startyear = $this->yearbegin - 5;
 
 			$this->res = $this->db->db_query("select * from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry=".$this->db->quote($id));
 			$this->count = $this->db->db_num_rows($this->res);
 			$this->totalval = 0;
 
 			$this->dayType = array(bab_translate("Morning"), bab_translate("Afternoon"));
+			
+			$babBody->addJavascriptFile($GLOBALS['babInstallPath'].'scripts/bab_dialog.js');
 			}
 
 
@@ -625,11 +624,10 @@ function editVacationRequest($vrid)
 		function getnextyear()
 			{
 			static $i = 0;
-			if( $i < $this->deltay)
+			if( $i < 20)
 				{
-				$this->yearid = $i+1;
 				$this->yearidval = $this->startyear + $i;
-				if( $this->yearsel == $this->yearid )
+				if( $this->yearsel == $this->yearidval )
 					{
 					$this->selected = "selected";
 					}
@@ -871,7 +869,7 @@ function deleteVacationRequest($vrid)
 	return true;
 	}
 
-function updateVacationRequest($daybegin, $monthbegin, $yearbegin,$dayend, $monthend, $yearend, $halfdaybegin, $halfdayend, $remarks, $total, $vrid, $startyear)
+function updateVacationRequest($daybegin, $monthbegin, $yearbegin,$dayend, $monthend, $yearend, $halfdaybegin, $halfdayend, $remarks, $total, $vrid)
 {
 	global $babBody, $babDB;
 	$nbdays = array();
@@ -928,14 +926,13 @@ function updateVacationRequest($daybegin, $monthbegin, $yearbegin,$dayend, $mont
 	}
 
 
-	$begin = mktime( $begin_hour, $begin_min, $begin_sec, $monthbegin, $daybegin, $startyear + $yearbegin - 1);
-	$end = mktime( $end_hour,$end_min, $end_sec,$monthend, $dayend, $startyear + $yearend - 1);
+	$begin = mktime( $begin_hour, $begin_min, $begin_sec, $monthbegin, $daybegin, $yearbegin);
+	$end = mktime( $end_hour,$end_min, $end_sec,$monthend, $dayend, $yearend);
 
-	if( $begin >= $end)
-		{
+	if( $begin >= $end) {
 		$babBody->msgerror = bab_translate("ERROR: End date must be older")." !";
 		return false;
-		}
+	}
 
 
 	$b = date('Y-m-d H:i:s', $begin);
@@ -953,11 +950,13 @@ function updateVacationRequest($daybegin, $monthbegin, $yearbegin,$dayend, $mont
 
 	for( $i = 0; $i < count($nbdays['id']); $i++)
 		{
-		if( $nbdays['val'][$i] > 0 )
+		if( $nbdays['val'][$i] > 0 ) {
 			$babDB->db_query("update ".BAB_VAC_ENTRIES_ELEM_TBL." set quantity='".$babDB->db_escape_string($nbdays['val'][$i])."' where id='".$babDB->db_escape_string($nbdays['id'][$i])."'");
-		else
+		}
+		else {
 			$babDB->db_query("delete from ".BAB_VAC_ENTRIES_ELEM_TBL." where id='".$babDB->db_escape_string($nbdays['id'][$i])."'");
 		}
+	}
 
 	bab_vac_updateEventCalendar($vrid);
 	
@@ -1204,7 +1203,7 @@ if( isset($add) && $add == "modvr")
 {
 	if( isset($Submit))
 	{
-	if(!updateVacationRequest($daybegin, $monthbegin, $yearbegin,$dayend, $monthend, $yearend, $halfdaybegin, $halfdayend, $remarks, $total, $vrid, $styear))
+	if(!updateVacationRequest($daybegin, $monthbegin, $yearbegin,$dayend, $monthend, $yearend, $halfdaybegin, $halfdayend, $remarks, $total, $vrid))
 		$idx = "vunew";
 	}
 	else if( isset($bdelete))

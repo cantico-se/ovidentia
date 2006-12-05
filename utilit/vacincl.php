@@ -1974,13 +1974,16 @@ function bab_vac_setVacationPeriods(&$obj, $id_users, $begin, $end) {
 
 			while ($type_day->getTimeStamp() < $type_day_end->getTimeStamp() ) {
 
-				bab_vac_typeColorStack(
-					$row['id'], 
-					array(
-						'id_type'	=> $arr['type'], 
-						'color'		=> $arr['color']
-					)
-				);
+				if ($type_day->getTimeStamp() >= $begin->getTimeStamp()) {
+
+					bab_vac_typeColorStack(
+						$row['id'], 
+						array(
+							'id_type'	=> $arr['type'], 
+							'color'		=> $arr['color']
+						)
+					);
+				}
 
 				$type_day->add(12, BAB_DATETIME_HOUR);
 				}
@@ -2071,6 +2074,7 @@ function bab_vac_updateEventCalendar($id_entry) {
 
 	$date_begin = BAB_DateTime::fromIsoDateTime($event['date_begin']);
 	$date_end	= BAB_DateTime::fromIsoDateTime($event['date_end']);
+	$date_end->add(1, BAB_DATETIME_MONTH);
 
 	while ($date_begin->getTimeStamp() <= $date_end->getTimeStamp()) {
 		$month	= $date_begin->getMonth();
@@ -2263,17 +2267,22 @@ function bab_vac_delete_request($id_request)
 
 	$db = &$GLOBALS['babDB'];
 	
-
 	$arr = $db->db_fetch_assoc($db->db_query("
 		SELECT idfai, id_user, date_begin, date_end  
 			FROM ".BAB_VAC_ENTRIES_TBL." 
 			WHERE id=".$db->quote($id_request)));
 
+	if ($arr['idfai'] > 0)
+		deleteFlowInstance($arr['idfai']);
+
+	$db->db_query("DELETE FROM ".BAB_VAC_ENTRIES_ELEM_TBL." WHERE id_entry=".$db->quote($id_request)."");
+	$db->db_query("DELETE FROM ".BAB_VAC_ENTRIES_TBL." WHERE id=".$db->quote($id_request));
 
 	include_once $GLOBALS['babInstallPath']."utilit/dateTime.php";
 
 	$date_begin = BAB_DateTime::fromIsoDateTime($arr['date_begin']);
 	$date_end	= BAB_DateTime::fromIsoDateTime($arr['date_end']);
+	$date_end->add(1, BAB_DATETIME_MONTH);
 
 	while ($date_begin->getTimeStamp() <= $date_end->getTimeStamp()) {
 		$month	= $date_begin->getMonth();
@@ -2281,13 +2290,6 @@ function bab_vac_delete_request($id_request)
 		bab_vac_updateCalendar($arr['id_user'], $year, $month);
 		$date_begin->add(1, BAB_DATETIME_MONTH);
 	}
-	
-	
-	if ($arr['idfai'] > 0)
-		deleteFlowInstance($arr['idfai']);
-
-	$db->db_query("DELETE FROM ".BAB_VAC_ENTRIES_ELEM_TBL." WHERE id_entry=".$db->quote($id_request)."");
-	$db->db_query("DELETE FROM ".BAB_VAC_ENTRIES_TBL." WHERE id=".$db->quote($id_request));
 }
 
 

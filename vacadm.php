@@ -990,11 +990,11 @@ function updateVacationPersonnelGroup($groupid, $addmodify,  $idcol, $idsa)
 		if( $groupid == 1 )
 			$res = $babDB->db_query("select id as id_user from ".BAB_USERS_TBL." where is_confirmed='1'");
 		else
-			$res = $babDB->db_query("select id_object as id_user from ".BAB_USERS_GROUPS_TBL." where id_group='".$this->db->db_escape_string($groupid)."'");
+			$res = $babDB->db_query("select id_object as id_user from ".BAB_USERS_GROUPS_TBL." where id_group='".$babDB->db_escape_string($groupid)."'");
 
 		while( $arr = $babDB->db_fetch_array($res))
 			{
-			$res2 = $babDB->db_query("select p.id, p.id_sa, e.id we from ".BAB_VAC_PERSONNEL_TBL." p LEFT JOIN ".BAB_VAC_ENTRIES_TBL." e ON e.id_user=p.id_user AND status='' WHERE p.id_user='".$this->db->db_escape_string($arr['id_user'])."' GROUP BY p.id");
+			$res2 = $babDB->db_query("select p.id, p.id_sa, e.id we from ".BAB_VAC_PERSONNEL_TBL." p LEFT JOIN ".BAB_VAC_ENTRIES_TBL." e ON e.id_user=p.id_user AND status='' WHERE p.id_user='".$babDB->db_escape_string($arr['id_user'])."' GROUP BY p.id");
 			if( $res2 && $babDB->db_num_rows($res2) > 0 )
 				{
 				$row = $babDB->db_fetch_array($res2);
@@ -1002,7 +1002,7 @@ function updateVacationPersonnelGroup($groupid, $addmodify,  $idcol, $idsa)
 					{
 					if (!empty($row['we']))
 						updateVacationUser($arr['id_user'], $idsa);
-					$babDB->db_query("update ".BAB_VAC_PERSONNEL_TBL." set id_sa='".$this->db->db_escape_string($idsa)."' where id_user='".$this->db->db_escape_string($arr['id_user'])."'");
+					$babDB->db_query("update ".BAB_VAC_PERSONNEL_TBL." set id_sa='".$babDB->db_escape_string($idsa)."' where id_user='".$babDB->db_escape_string($arr['id_user'])."'");
 					}
 				}
 			else
