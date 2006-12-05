@@ -2348,7 +2348,7 @@
 <string id="The personnel assignement is empty">L'affectation du personnel est vide</string>
 <string id="Co-managers">Co-gestionnaires</string>
 <string id="The user is not registered in the personnel list for vacations">L'utilisateur n'est pas enregistré dans la liste du personnel pour les congés</string>
-<string id="Working days (for all sites)">Jours travaillés (pour tout les sites)</string>
+<string id="Working days (for all sites)">Jours travaillés (pour tous les sites)</string>
 <string id="Create rights for year">Créer le droit pour l'année</string>
 <string id="Delete vacation request">Supprimer une demande de congés</string>
 <string id="The length of the period is different from the requested vacation">La longueur de la période est différente de celle de la demande de congés</string>
