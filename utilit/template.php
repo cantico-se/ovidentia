@@ -666,7 +666,7 @@ function processTemplate(&$class, $str)
 							}
 					}
 				}
-			$str = preg_replace($reg, bab_printOvmlTemplate($param[0], $args), $str);
+			$str = preg_replace($reg, preg_replace("/\\$[0-9]/", "\\\\$0", bab_printOvmlTemplate($param[0], $args)), $str);
 			}
 		}
 
