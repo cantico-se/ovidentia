@@ -21,6 +21,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
+/**
+* @internal SEC1 NA 05/12/2006 FULL
+*/
 include_once 'base.php';
 
 function listAddress($pos)
@@ -232,19 +235,16 @@ function listAddress($pos)
 	}
 
 /* main */
+$idx = bab_rp('idx', 'list');
+$pos = bab_rp('pos', 'A');
+
 if( !isset($pos))
-	$pos = 'A';
-
-if( !isset($idx))
-	$idx = 'list';
-
 switch($idx)
 	{
 	case 'list':
 		$babBody->title = bab_translate("Users list");
 		listAddress($pos);
 		$babBody->addItemMenu('list', bab_translate("Users"),$GLOBALS['babUrlScript'].'?tg=address&idx=list');
-		//$babBody->addItemMenu('Find', bab_translate("Find"), $GLOBALS['babUrlScript'].'?tg=users&idx=Find');
 		break;
 	default:
 		break;
