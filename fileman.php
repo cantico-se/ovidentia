@@ -102,6 +102,11 @@ class listFiles
 	var $reswf;
 	var $arrdir = array();
 	var $buaf;
+	
+	/**
+	 * Files extracted by readdir
+	 */
+	var $files_from_dir = array();
 
 	function listFiles($id, $gr, $path, $bmanager, $what ="list")
 		{
@@ -135,7 +140,18 @@ class listFiles
 					$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
 					if( count($arrschi) > 0 )
 						{
-						$req = "select f.* from ".BAB_FILES_TBL." f where id_owner='".$babDB->db_escape_string($id)."' and bgroup='".$babDB->db_escape_string($gr)."' and state='' and path='".$babDB->db_escape_string($path)."' and confirmed='N' and f.idfai IN (".$babDB->quote($arrschi).")";
+						$req = "
+						SELECT 
+							f.* 
+						FROM 
+							".BAB_FILES_TBL." f 
+						WHERE 
+							id_owner='".$babDB->db_escape_string($id)."' 
+							AND bgroup='".$babDB->db_escape_string($gr)."' 
+							AND state='' and path='".$babDB->db_escape_string($path)."' 
+							AND confirmed='N' 
+							AND f.idfai IN (".$babDB->quote($arrschi).")
+						";
 						$this->reswf = $babDB->db_query($req);
 						$this->countwf = $babDB->db_num_rows($this->reswf);
 						}
@@ -166,8 +182,11 @@ class listFiles
 				{
 				if ($f != "." and $f != ".." and $f != BAB_FVERSION_FOLDER) 
 					{
-					if (is_dir($this->fullpath.$path."/".$f))
-						$this->arrdir[] = $f;
+					if (is_dir($this->fullpath.$path."/".$f)) {
+							$this->arrdir[] = $f;
+						} else {
+							$this->files_from_dir[] = $f;
+						}
 					}
 				}
 			closedir($h);
@@ -183,7 +202,7 @@ class listFiles
 				
 				foreach ( $this->arrdir as $f )
 					{
-					$this->arrudir[] = $GLOBALS['babUrlScript']."?tg=fileman&idx=".$what."&id=".$id."&gr=".$gr."&path=".urlencode($path.($path ==""?"":"/").$f);
+					$this->arrudir[] = $GLOBALS['babUrlScript']."?tg=fileman&idx=".urlencode($what)."&id=".$id."&gr=".$gr."&path=".urlencode($path.($path ==""?"":"/").$f);
 					}
 				}
 
@@ -197,23 +216,97 @@ class listFiles
 				if (isset($this->arrudir) && is_array($this->arrudir))
 					{
 					array_unshift ($this->arrdir,". .");
-					array_unshift ($this->arrudir, $GLOBALS['babUrlScript']."?tg=fileman&idx=".$what."&id=".$id."&gr=".$gr."&path=".urlencode($p));
+					array_unshift ($this->arrudir, $GLOBALS['babUrlScript']."?tg=fileman&idx=".urlencode($what)."&id=".$id."&gr=".$gr."&path=".urlencode($p));
 					}
 				else
 					{
 					$this->arrdir[] = ". .";
-					$this->arrudir[] = $GLOBALS['babUrlScript']."?tg=fileman&idx=".$what."&id=".$id."&gr=".$gr."&path=".urlencode($p);
+					$this->arrudir[] = $GLOBALS['babUrlScript']."?tg=fileman&idx=".urlencode($what)."&id=".$id."&gr=".$gr."&path=".urlencode($p);
 					}
 				}
-			$req = "select * from ".BAB_FILES_TBL." where id_owner='".$babDB->db_escape_string($id)."' and bgroup='".$babDB->db_escape_string($gr)."' and state='' and path='".$babDB->db_escape_string($path)."' and confirmed='Y'";
-			$req .= ' order by name asc';
-			$this->res = $babDB->db_query($req);
-			$this->count = $babDB->db_num_rows($this->res);
+			
+			$this->prepare();
+			$this->autoadd_files();
 			}
 		else
 			$this->count = 0;
+			
+		
+		}
+		
+		
+		function prepare() {
+			global $babDB;
+		
+			$req = " 
+			SELECT * FROM 
+				".BAB_FILES_TBL." 
+			WHERE 
+				id_owner='".$babDB->db_escape_string($this->id)."' 
+				AND bgroup='".$babDB->db_escape_string($this->gr)."' 
+				AND state='' 
+				AND path='".$babDB->db_escape_string($this->path)."' 
+				AND confirmed='Y'
+			";
+			$req .= ' ORDER BY name asc';
+			$this->res = $babDB->db_query($req);
+			$this->count = $babDB->db_num_rows($this->res);
 		}
 
+
+		/** 
+		 * if there is file not presents in database, add and recreate $this->res
+		 */
+		function autoadd_files() {
+		
+			if ($this->count !== count($this->files_from_dir)) {
+			
+				global $babDB;
+				bab_debug($this->files_from_dir);
+				
+				foreach($this->files_from_dir as $dir_file) {
+				
+					$res = $babDB->db_query('
+						SELECT id FROM '.BAB_FILES_TBL.' 
+						WHERE 
+							id_owner = '.$babDB->quote($this->id).' 
+							AND path = '.$babDB->quote($this->path).' 
+							AND bgroup = '.$babDB->quote($this->gr).' 
+							AND name = '.$babDB->quote($dir_file).'
+					');
+					
+					if (0 == $babDB->db_num_rows($res)) {
+						$babDB->db_query("
+							INSERT INTO ".BAB_FILES_TBL." 
+								(
+								name, 
+								path, 
+								id_owner, 
+								bgroup, 
+								created, 
+								author, 
+								modified, 
+								modifiedby, 
+								confirmed
+							) 
+							VALUES (
+								'".$babDB->db_escape_string($dir_file)."',
+								'".$babDB->db_escape_string($this->path)."',
+								'".$babDB->db_escape_string($this->id)."',
+								'Y',
+								NOW(),
+								'".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."',
+								NOW(),
+								'".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."',
+								'Y'
+							)
+						");	
+					}
+				}
+				
+				$this->prepare();
+			}
+		}
 	}
 
 
@@ -1832,78 +1925,6 @@ function restoreFiles($items)
 		}
 	}
 
-function autoFile($id_dir,$path)
-	{
-	global $babDB;	
-	$path = urldecode($path);
-
-
-
-	class FolderListing {
-	   var $newarr = array();
-
-	   function loop($stack) {
-		   if(count($stack) > 0) {
-			   $arr = array();
-			   foreach($stack as $key => $value) {
-				   array_push($this->newarr, $stack[$key]);
-				   if ($dir = @opendir($stack[$key])) {
-					   while (($file = readdir($dir)) !== false) {
-						   if (($file != '.') && ($file != '..') && is_dir($stack[$key].'/'.$file)) {
-							   array_push($arr, $stack[$key].'/'.$file);
-						   }
-					   }
-				   }
-				   @closedir($dir);
-			   }
-			   $this->loop($arr);
-		   } else {
-			   $sorted = sort($this->newarr);
-			   return($sorted);
-		   }
-	   }
-	}
-
-	$start = new FolderListing;
-	$full = $GLOBALS['babUploadPath'].'/G'.$id_dir.'/';
-	$base = array($full.trim($path,'/'));
-	$start->loop($base);
-
-	$filelist = array();
-	$res = $babDB->db_query("SELECT CONCAT(path,'/',name) FROM ".BAB_FILES_TBL." WHERE id_owner='".$babDB->db_escape_string($id_dir)."'");
-	while (list($name) = $babDB->db_fetch_array($res))
-		{
-		$filelist[trim($name,'/')] = 1;
-		}
-
-	header("content-type:text/plain");
-
-	$i = 0;
-
-	foreach($start->newarr as $value) {
-
-		if (is_file($value))
-			{
-			$filepath = trim(substr($value,strlen($full)),'/');
-
-			if (!isset($filelist[$filepath]))
-				{
-
-				$path = dirname($filepath);
-				if ($path == '.')
-					$path = '';
-				
-				$babDB->db_query("INSERT INTO ".BAB_FILES_TBL." (name, path, id_owner, bgroup, created, author, modified, modifiedby, confirmed) VALUES ('".$babDB->db_escape_string(basename($value))."','".$babDB->db_escape_string($path)."','".$babDB->db_escape_string($id_dir)."','Y',NOW(),'".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', NOW(),'".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."','Y' )");
-
-				echo $babDB->db_insert_id().', '.basename($value)."\n";
-
-				$i++;
-				}
-			}
-		} 
-
-	die('inserted files : '.$i);
-	}
 
 	
 /* main */
@@ -2094,10 +2115,6 @@ switch($idx)
 
 	case "get":
 		getFile($file, $id, $gr, $path);
-		break;
-
-	case "auto":
-		autoFile(bab_gp('id'),bab_gp('path'));
 		break;
 
 	case "trash":

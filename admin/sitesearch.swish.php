@@ -34,6 +34,7 @@ function site_menu11($id_site)
 			{
 			$this->db = &$GLOBALS['babDB'];
 
+			$this->item = bab_rp('item');
 			$this->t_record = bab_translate("Record");
 			$this->t_swishcmd = bab_translate("Swish-e command (swish-e.exe)");
 			$this->t_pdftotext = bab_translate("Command to transform pdf documents into text (pdftotext.exe)");

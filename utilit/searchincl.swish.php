@@ -185,13 +185,11 @@ class bab_indexFilesCls extends swishCls
 
 			$str = bab_printTemplate($this, 'swish.config');
 
-			
-
 			if ($handle = fopen($this->tmpCfgFile, 'w+')) {
 				fwrite($handle, $str);
 				fclose($handle);
 				$r->result = true;
-				//$r->addDebug($str);
+				$r->addDebug($str);
 				return $r;
 				}
 			

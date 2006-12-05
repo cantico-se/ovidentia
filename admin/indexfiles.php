@@ -53,8 +53,10 @@ function listIndexFiles()
 			$this->t_all_all		= bab_translate("Index all files from all indexes");
 			$this->t_all_waiting	= bab_translate("Index waiting files from all indexes");
 			$this->t_confirm		= bab_translate("Indexing directly from interface could take a lot of cpu time, do you really want to index?");
+			$this->t_checkall		= bab_translate("Check all");
+			$this->t_uncheckall		= bab_translate("Uncheck all");
 
-			$this->db = &$GLOBALS['babDB'];
+			global $babDB;
 
 			$this->all = BAB_INDEX_ALL;
 			$this->waiting = BAB_INDEX_WAITING;
@@ -63,24 +65,24 @@ function listIndexFiles()
 			$this->reg->changeDirectory('/bab/indexfiles/');
 
 			if (isset($_POST['action']) && 'index' == $_POST['action']) {
-				$this->db->db_query("UPDATE ".BAB_INDEX_FILES_TBL." SET index_onload='0', index_disabled='0'");
+				$babDB->db_query("UPDATE ".BAB_INDEX_FILES_TBL." SET index_onload='0', index_disabled='0'");
 
 				if (isset($_POST['onload'])) {
 					foreach($_POST['onload'] as $id) {
-						$this->db->db_query("UPDATE ".BAB_INDEX_FILES_TBL." SET index_onload='1' WHERE id='".$id."'");
+						$babDB->db_query("UPDATE ".BAB_INDEX_FILES_TBL." SET index_onload='1' WHERE id=".$babDB->quote($id));
 					}
 				}
 
 				if (isset($_POST['disabled'])) {
 					foreach($_POST['disabled'] as $id) {
-						$this->db->db_query("UPDATE ".BAB_INDEX_FILES_TBL." SET index_disabled='1' WHERE id='".$id."'");
+						$babDB->db_query("UPDATE ".BAB_INDEX_FILES_TBL." SET index_disabled='1' WHERE id=".$babDB->quote($id));
 					}
 				}
 
 				$this->reg->setKeyValue('allowed_ip', $_POST['allowed_ip']);
 			}
 
-			$this->res = $this->db->db_query("SELECT * FROM ".BAB_INDEX_FILES_TBL."");			
+			$this->res = $babDB->db_query("SELECT * FROM ".BAB_INDEX_FILES_TBL."");			
 			
 			$this->allowed_ip = $this->reg->getValue('allowed_ip', '127.0.0.1');
 			$this->reg->changeDirectory('/bab/indexfiles/lock/');
@@ -92,8 +94,8 @@ function listIndexFiles()
 
 
 		function getnext() {
-			
-			if ($arr = $this->db->db_fetch_assoc($this->res)) {
+			global $babDB;
+			if ($arr = $babDB->db_fetch_assoc($this->res)) {
 				$this->altbg		= !$this->altbg;
 				$this->id_index		= $arr['id'];
 				$this->title		= bab_toHtml(bab_translate($arr['name']));
