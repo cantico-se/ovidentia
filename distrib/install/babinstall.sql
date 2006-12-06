@@ -988,6 +988,19 @@ INSERT INTO bab_mime_types VALUES ('xml', 'text/xml');
 INSERT INTO bab_mime_types VALUES ('zip', 'application/zip');
 INSERT INTO bab_mime_types VALUES ('pdf', 'application/pdf');
 INSERT INTO bab_mime_types VALUES ('sxw', 'application/vnd.sun.xml.writer');
+INSERT INTO bab_mime_types VALUES ('odt', 'application/vnd.oasis.opendocument.text');
+INSERT INTO bab_mime_types VALUES ('ods', 'application/vnd.oasis.opendocument.spreadsheet');
+INSERT INTO bab_mime_types VALUES ('odp', 'application/vnd.oasis.opendocument.presentation');
+INSERT INTO bab_mime_types VALUES ('odc', 'application/vnd.oasis.opendocument.chart');
+INSERT INTO bab_mime_types VALUES ('odf', 'application/vnd.oasis.opendocument.formula');
+INSERT INTO bab_mime_types VALUES ('odb', 'application/vnd.oasis.opendocument.database');
+INSERT INTO bab_mime_types VALUES ('odi', 'application/vnd.oasis.opendocument.image');
+INSERT INTO bab_mime_types VALUES ('odm', 'application/vnd.oasis.opendocument.text-master');
+INSERT INTO bab_mime_types VALUES ('ott', 'application/vnd.oasis.opendocument.text-template');
+INSERT INTO bab_mime_types VALUES ('ots', 'application/vnd.oasis.opendocument.spreadsheet-template');
+INSERT INTO bab_mime_types VALUES ('otp', 'application/vnd.oasis.opendocument.presentation-template');
+INSERT INTO bab_mime_types VALUES ('otg', 'application/vnd.oasis.opendocument.graphics-template');
+
 
 # --------------------------------------------------------
 #
