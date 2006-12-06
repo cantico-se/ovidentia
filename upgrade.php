@@ -7327,7 +7327,7 @@ function upgrade601to602()
 	if (bab_isTableField(BAB_CAL_USER_OPTIONS_TBL, 'workdays')) {
 		$db->db_query("DELETE FROM ".BAB_WORKING_HOURS_TBL." WHERE idUser>'0'");
 		
-		$res = $db->db_query("SELECT id_user, workdays FROM ".BAB_CAL_USER_OPTIONS_TBL." WHERE workdays<>".$db->quote($arr['workdays']));
+		$res = $db->db_query("SELECT id_user, workdays FROM ".BAB_CAL_USER_OPTIONS_TBL." WHERE workdays<>".$db->quote($arr['workdays']."  AND workdays<>''"));
 		while($arr = $db->db_fetch_assoc($res)) {
 			setUserWd($arr['id_user'], $arr['workdays']);
 		}
