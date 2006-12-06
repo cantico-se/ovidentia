@@ -70,6 +70,7 @@ function getGlobalVariable($var)
 		case 'babSlogan': return bab_toHtml($GLOBALS['babSlogan']);
 		case 'babAdminEmail': return bab_toHtml($GLOBALS['babAdminEmail']);
 		case 'babMaxFileSize' : return bab_toHtml($GLOBALS['babMaxFileSize']);
+		case 'babAddonFolder' : return bab_toHtml($GLOBALS['babAddonFolder']);
 		case 'tg': return bab_toHtml($GLOBALS['tg']);
 		case 'idx': return bab_toHtml($GLOBALS['idx']);
 		
