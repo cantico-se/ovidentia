@@ -155,8 +155,12 @@ class BAB_TM_GanttBase
 
 	var $m_GanttViewParamUrl = '';
 	
+	var $m_sTitle = '';
+	
 	function BAB_TM_GanttBase($sStartDate, $iStartWeekDay = 1)
 	{
+		$this->m_sTitle = bab_translate("Gantt view");
+		
 		$this->m_iOnePxInSecondes = 86400 / $this->m_iWidth;
 		
 		{

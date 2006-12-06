@@ -226,10 +226,8 @@
 			$this->set_data('isResourceAvailable', false);
 			$this->set_data('isAnswerEnable', false);
 			$this->set_data('bIsProjectSpace', true);
-			
-$this->set_data('isDeletable', false);
-$this->set_data('isStoppable', false);
-
+			$this->set_data('isModifiable', false);
+			$this->set_data('isDeletable', false);
 			$this->set_data('isProject', (int) bab_rp('isProject', 0));
 			$this->set_data('iClass', -1);
 			$this->set_data('iClassType', -1);
@@ -453,8 +451,12 @@ $this->set_data('isStoppable', false);
 			
 			$this->m_aRelation = array(BAB_TM_NONE => bab_translate("None"), BAB_TM_END_TO_START => bab_translate("End to start"), BAB_TM_START_TO_START => bab_translate("Start to start"));
 
-$this->set_data('isDeletable', ($this->m_bIsManager));
-$this->set_data('isStoppable', ($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER && $this->m_oTask->m_bIsStarted));
+			if($this->m_bIsManager ||  (is_array($this->m_aCfg) && BAB_TM_YES === (int) $this->m_aCfg['tskUpdateByMgr']))
+			{
+				$this->set_data('isModifiable', ($this->m_bIsManager || $this->m_iUserProfil == BAB_TM_PROJECT_MANAGER));
+			}
+			
+			$this->set_data('isDeletable', ($this->m_bIsManager));
 			
 			//A faire ds les classes spécialisées
 			/*

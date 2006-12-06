@@ -29,7 +29,7 @@ require_once $GLOBALS['babInstallPath'] . 'utilit/workinghoursincl.php';
 
 function bab_selectProjectSpaceList()
 {
-	global $babDB;
+	global $babDB, $babBody;
 
 	$query = 
 		'SELECT ' .
@@ -466,7 +466,7 @@ function bab_createProject($iIdProjectSpace, $sName, $sDescription, $iMajorVersi
 			bab_createProjectConfiguration($aConfiguration);
 		}
 		
-		bab_updateRefCount(BAB_TSKMGR_PROJECTS_SPACES_TBL, $iIdProjectSpace, '+ \'1\'');
+		bab_updateRefCount(BAB_TSKMGR_PROJECTS_SPACES_TBL, $iIdProjectSpace, '+ 1');
 		
 		$result = bab_selectProjectSpaceNoticeEvent($iIdProjectSpace);
 		if(false != $result)
@@ -943,6 +943,7 @@ function bab_getDependingTasks($iIdTask, &$aDependingTasks, $iLinkType = -1)
 	$query = 
 		'SELECT ' . 
 			'lt.idTask, ' .
+			'lt.linkType iLinkType, ' .
 			'IFNULL(tr.idResponsible, 0) idResponsible ' .
 		'FROM ' . 
 			BAB_TSKMGR_LINKED_TASKS_TBL . ' lt, ' .
@@ -964,7 +965,7 @@ function bab_getDependingTasks($iIdTask, &$aDependingTasks, $iLinkType = -1)
 	while($iIndex < $iNumRows && false != ($datas = $babDB->db_fetch_assoc($result)))
 	{
 		$aDependingTasks[$datas['idTask']] = array('iIdTask' => $datas['idTask'],
-			'iIdResponsible' => $datas['idResponsible']);
+			'iIdResponsible' => $datas['idResponsible'], 'iLinkType' => $datas['iLinkType']);
 		$iIndex++;
 	}
 }
@@ -1195,7 +1196,11 @@ function bab_updateTask($iIdTask, $aParams)
 			'id = \'' . $babDB->db_escape_string($iIdTask) . '\'';
 			
 	//bab_debug($query);
-	return $babDB->db_query($query);
+	if(true === $babDB->db_query($query))
+	{
+		return true;
+	}
+	return false;
 }
 
 function bab_deleteTask($iIdTask)
@@ -1368,7 +1373,7 @@ function bab_deleteAllTaskSpecificFieldInstance($iIdTask)
 	
 	while($iIndex < $iNumRows && false != ($data = $babDB->db_fetch_assoc($result)))
 	{
-		bab_updateRefCount(BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL, $data['idSpFldClass'], '- \'1\'');
+		bab_updateRefCount(BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL, $data['idSpFldClass'], '- 1');
 		$iIndex++;
 	}
 }
@@ -2015,6 +2020,11 @@ function bab_selectTaskQuery($aFilters)
 	{
 		$query .= 'AND ti.isPersonnal = \'' . $babDB->db_escape_string(BAB_TM_YES) . '\' ';
 	}
+	
+	if(isset($aFilters['bIsManger']) && false === $aFilters['bIsManger'])
+	{
+		$query .= 'AND t.participationStatus <> \'' . $babDB->db_escape_string(BAB_TM_REFUSED) . '\' ';
+	}
 
 	$query .= 
 		'GROUP BY ' .
@@ -2140,8 +2150,8 @@ function bab_updatePersonnalTaskConfiguration($iIdUser, &$aCfg)
 
 
 /*
-	$sRefCount == '+ \'1\'' ==> pour ajouter 1
-	$sRefCount == '- \'1\'' ==> pour retrancher 1
+	$sRefCount == '+ 1' ==> pour ajouter 1
+	$sRefCount == '- 1' ==> pour retrancher 1
 */
 function bab_updateRefCount($sTblName, $iId, $sRefCount)
 {
@@ -2521,7 +2531,7 @@ function bab_createSpecificFieldInstance($iIdTask, $iIdSpecificField)
 	$res = $babDB->db_query($query);
 	if(false != $res)
 	{
-		bab_updateRefCount(BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL, $iIdSpecificField, '+ \'1\'');
+		bab_updateRefCount(BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL, $iIdSpecificField, '+ 1');
 		return true;
 	}
 	return false;
@@ -2560,7 +2570,7 @@ function bab_deleteSpecificFieldInstance($iIdSpecificFieldInstance)
 				'id = \'' . $babDB->db_escape_string($iIdSpecificFieldInstance) . '\'';
 		$babDB->db_query($query);
 		
-		bab_updateRefCount(BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL, $datas['iIdSpFldClass'], '- \'1\'');
+		bab_updateRefCount(BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL, $datas['iIdSpFldClass'], '- 1');
 		return true;
 	}
 	return false;
@@ -2589,7 +2599,7 @@ function bab_deleteAllSpecificFieldInstance($iIdTask)
 				'id = \'' . $babDB->db_escape_string($datas['iIdSpecificFieldInstance']) . '\'';
 		$babDB->db_query($query);
 		
-		bab_updateRefCount(BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL, $datas['iIdSpFldClass'], '- \'1\'');
+		bab_updateRefCount(BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL, $datas['iIdSpFldClass'], '- 1');
 	}
 }
 

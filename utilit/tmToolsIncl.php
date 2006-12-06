@@ -135,7 +135,7 @@ function add_item_menu($items = array())
 		
 	if('usrTskMgr' == $sTg)
 	{
-		$sTitle = bab_translate("My task(s)");
+		$sTitle = bab_translate("My tasks");
 		
 		if(1 === (int) bab_rp('isProject', 0))
 		{

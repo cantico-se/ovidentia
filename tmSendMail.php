@@ -48,16 +48,16 @@
 			array('subject' => bab_translate("Notice alert"), 
 				'body' => bab_translate("The task %s of the project %s in the project space %s is about to exceed the envisaged time")),
 		BAB_TM_EV_NEW_TASK_RESPONSIBLE =>
-			array('subject' => bab_translate("Task responsible"),
+			array('subject' => bab_translate("Task update"),
 				'body' => bab_translate("You are responsible for task %s of the %s project in %s project space")),
 		BAB_TM_EV_NO_MORE_TASK_RESPONSIBLE =>
-			array('subject' => bab_translate("Task responsible"),
+			array('subject' => bab_translate("Task update"),
 				'body' => bab_translate("You are not responsible any more for the task %s of the %s project in %s project space")),
 		BAB_TM_EV_TASK_RESPONSIBLE_PROPOSED =>
-			array('subject' => bab_translate("Task responsible"),
+			array('subject' => bab_translate("Task update"),
 				'body' => bab_translate("You are responsible for task %s of the %s project in %s project space. Please accept/refuse")),
 		BAB_TM_EV_TASK_STARTED => 
-			array('subject' => bab_translate("Task responsible"), 
+			array('subject' => bab_translate("Task update"), 
 				'body' => bab_translate("The task %s of the project %s in the project space %s is started"))
 	);
 	
