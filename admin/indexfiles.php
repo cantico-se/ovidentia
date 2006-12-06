@@ -52,7 +52,7 @@ function listIndexFiles()
 			$this->t_unlock_confirm = bab_toHtml(bab_translate("The index is probably in process, do you really want to unlock?"), BAB_HTML_JS);
 			$this->t_all_all		= bab_translate("Index all files from all indexes");
 			$this->t_all_waiting	= bab_translate("Index waiting files from all indexes");
-			$this->t_confirm		= bab_translate("Indexing directly from interface could take a lot of cpu time, do you really want to index?");
+			$this->t_confirm		= bab_toHtml(bab_translate("Indexing directly from interface could take a lot of cpu time, do you really want to index?"),BAB_HTML_JS);
 			$this->t_checkall		= bab_translate("Check all");
 			$this->t_uncheckall		= bab_translate("Uncheck all");
 
