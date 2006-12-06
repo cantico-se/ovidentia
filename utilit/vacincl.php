@@ -276,7 +276,7 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 			$quantitydays = $arr['quantity'] - $qdp;
 			}	
 		
-		if ( !empty($arr['id_right']) ) {
+		if ($access && !empty($arr['id_right']) ) {
 			// rules 
 
 			$period_start = bab_mktime($arr['period_start']);
