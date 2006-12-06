@@ -196,7 +196,8 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 					ON rg.id = r.id_rgroup 
 				WHERE t.id = c.id_type 
 					AND c.id_coll=p.id_coll 
-					AND p.id_user=".$db->quote($id_user)." ";
+					AND p.id_user=".$db->quote($id_user)." 
+				";
 	
 	if( $rfrom == 1 )
 		{
@@ -276,7 +277,7 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 			$quantitydays = $arr['quantity'] - $qdp;
 			}	
 		
-		if ( !empty($arr['id_right']) ) {
+		if ($access && !empty($arr['id_right']) ) {
 			// rules 
 
 			$period_start = bab_mktime($arr['period_start']);

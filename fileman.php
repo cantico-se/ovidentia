@@ -259,7 +259,7 @@ class listFiles
 		 */
 		function autoadd_files() {
 		
-			if ($this->count !== count($this->files_from_dir)) {
+			if ($this->count < count($this->files_from_dir)) {
 			
 				global $babDB;
 				bab_debug($this->files_from_dir);

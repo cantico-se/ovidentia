@@ -7568,6 +7568,27 @@ function upgrade606to610()
 		$babDB->db_query("ALTER TABLE `".BAB_USERS_TBL."` ADD `cookie_validity` DATETIME NOT NULL , ADD `cookie_id` VARCHAR( 255 ) NOT NULL");
 		$babDB->db_query("ALTER TABLE `".BAB_USERS_TBL."` ADD INDEX ( `cookie_id` )");
 	} 
+	
+	$res = $babDB->db_query("SELECT * FROM ".BAB_MIME_TYPES." WHERE ext='odt'");
+	if (0 == $babDB->db_num_rows($res)) {
+	
+		$babDB->db_query("INSERT INTO `bab_mime_types` (`ext`, `mimetype`) VALUES 
+			('odt', 'application/vnd.oasis.opendocument.text'),
+			('ods', 'application/vnd.oasis.opendocument.spreadsheet'),
+			('odp', 'application/vnd.oasis.opendocument.presentation'),
+			('odc', 'application/vnd.oasis.opendocument.chart'),
+			('odf', 'application/vnd.oasis.opendocument.formula'),
+			('odb', 'application/vnd.oasis.opendocument.database'),
+			('odi', 'application/vnd.oasis.opendocument.image'),
+			('odm', 'application/vnd.oasis.opendocument.text-master'),
+			('ott', 'application/vnd.oasis.opendocument.text-template'),
+			('ots', 'application/vnd.oasis.opendocument.spreadsheet-template'),
+			('otp', 'application/vnd.oasis.opendocument.presentation-template'),
+			('otg', 'application/vnd.oasis.opendocument.graphics-template')
+		");
+	}
+	
+	
 	return $ret;
 }
 

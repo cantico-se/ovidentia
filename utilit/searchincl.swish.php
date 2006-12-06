@@ -472,14 +472,17 @@ class searchEngineInfosObjCls {
 
 	function getAvailableMimeTypes() {
 		return array(
-				'text/plain',
-				'application/pdf',
-				'application/vnd.sun.xml.writer',
-				'text/xml',
-				'text/html',
-				'application/vnd.ms-excel',
-				'application/msword'
-			);
+			'text/plain',
+			'application/pdf',
+			'application/vnd.sun.xml.writer',
+			'text/xml',
+			'text/html',
+			'application/vnd.ms-excel',
+			'application/msword',
+			'application/vnd.oasis.opendocument.text',
+			'application/vnd.oasis.opendocument.spreadsheet',
+			'application/vnd.oasis.opendocument.presentation'
+		);
 	}
 }
 
