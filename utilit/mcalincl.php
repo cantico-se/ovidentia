@@ -333,7 +333,8 @@ class bab_icalendar
 				}
 			}
 		
-		$this->whObj->createPeriods(BAB_PERIOD_NWDAY | BAB_PERIOD_WORKING | BAB_PERIOD_VACATION | BAB_PERIOD_CALEVENT | BAB_PERIOD_TSKMGR);
+//		$this->whObj->createPeriods(BAB_PERIOD_NWDAY | BAB_PERIOD_WORKING | BAB_PERIOD_VACATION | BAB_PERIOD_CALEVENT | BAB_PERIOD_TSKMGR);
+		$this->whObj->createPeriods(BAB_PERIOD_NWDAY | BAB_PERIOD_WORKING | BAB_PERIOD_VACATION | BAB_PERIOD_CALEVENT);
 		$this->whObj->orderBoundaries();
 		}
 
@@ -369,7 +370,8 @@ class bab_icalendar
 	function getEvents($startdate, $enddate, &$arr)
 		{
 		$arr = array();
-		$events = $this->whObj->getEventsBetween(bab_mktime($startdate), bab_mktime($enddate), BAB_PERIOD_NWDAY | BAB_PERIOD_VACATION | BAB_PERIOD_CALEVENT | BAB_PERIOD_TSKMGR);
+//		$events = $this->whObj->getEventsBetween(bab_mktime($startdate), bab_mktime($enddate), BAB_PERIOD_NWDAY | BAB_PERIOD_VACATION | BAB_PERIOD_CALEVENT | BAB_PERIOD_TSKMGR);
+		$events = $this->whObj->getEventsBetween(bab_mktime($startdate), bab_mktime($enddate), BAB_PERIOD_NWDAY | BAB_PERIOD_VACATION | BAB_PERIOD_CALEVENT);
 
 			foreach($events as $event) {
 				$arr[] = $event;
@@ -537,8 +539,6 @@ class cal_wmdbaseCls
 		$this->searcheventurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=".$tg."&idx=rfree&date=".$date."&calid=".$this->currentidcals);
 		$this->calnotifierurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calnotif&idx=popup");
 		$this->printurl = bab_toHtml($this->commonurl.'&print=1');
-
-		$this->eventlisturl = bab_toHtml( $GLOBALS['babUrlScript']."?tg=calendar&idx=eventlist&calid=".$this->currentidcals."&from=".date('Y,n,j',$time1)."&to=".date('Y,n,j',$time2));
 	}
 
 
