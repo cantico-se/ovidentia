@@ -318,7 +318,7 @@ class bab_indexFilesCls extends swishCls
 		function addEOF() {
 			$bat = new bab_batchFile($this->batchFile);
 			$bat->init();
-			$bat->addCmd('wget --spider '.escapeshellarg($GLOBALS['babUrlScript'].'?tg=usrindex&cmd=EOF'));
+			$bat->addCmd('wget -q --spider '.escapeshellarg($GLOBALS['babUrlScript'].'?tg=usrindex&cmd=EOF'));
 			$bat->close();
 		}
 
