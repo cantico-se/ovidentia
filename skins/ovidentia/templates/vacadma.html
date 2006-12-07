@@ -223,6 +223,7 @@ function validateForm(fr)
 		}
 
 	dateA = new Date(fr.yearbeginfx.options[fr.yearbeginfx.selectedIndex].text, fr.monthbeginfx.options[fr.monthbeginfx.selectedIndex].value-1, fr.daybeginfx.options[fr.daybeginfx.selectedIndex].text );
+	
 	dateB = new Date(fr.yearendfx.options[fr.yearendfx.selectedIndex].text, fr.monthendfx.options[fr.monthendfx.selectedIndex].value-1, fr.dayendfx.options[fr.dayendfx.selectedIndex].text );
 
 	dayb = fr.halfdaybeginfx.options[fr.halfdaybeginfx.selectedIndex].value;
@@ -230,24 +231,17 @@ function validateForm(fr)
 	diff = ((dateB - dateA)/86400000)+1;
 	if( diff == 1 )
 	{
-		if( dayb != daye )
+		if( dayb == 0 && daye ==1  && fr.quantity.value != 1)
 		{
 		ret = false;
 		}
-		else if( dayb == 1 && fr.quantity.value != 1)
-		{
-		ret = false;
-		}
-		else if( dayb != 1 && fr.quantity.value != '0.5')
+		else if( (daye == 0 || dateb == 1) && fr.quantity.value != '0.5')
 		{
 		ret = false;
 		}
 	}
-	else
-	{
-	if( dayb == 2 || daye == 3 ) { ret = false; }
 	else if( fr.quantity.value > diff ) { ret = false; }
-	}
+	
 
 	if( ret == false) { 
 	var d1; 
