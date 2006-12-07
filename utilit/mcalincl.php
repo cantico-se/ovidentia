@@ -333,7 +333,7 @@ class bab_icalendar
 				}
 			}
 		
-		$this->whObj->createPeriods(BAB_PERIOD_NWDAY | BAB_PERIOD_WORKING | BAB_PERIOD_VACATION | BAB_PERIOD_CALEVENT);
+		$this->whObj->createPeriods(BAB_PERIOD_NWDAY | BAB_PERIOD_WORKING | BAB_PERIOD_VACATION | BAB_PERIOD_CALEVENT | BAB_PERIOD_TSKMGR);
 		$this->whObj->orderBoundaries();
 		}
 
@@ -345,6 +345,7 @@ class bab_icalendar
 	 */
 	function getNextEvent($startdate, $enddate, &$calPeriod)
 		{
+//		while( $p = $this->whObj->getNextEvent(BAB_PERIOD_NWDAY | BAB_PERIOD_VACATION | BAB_PERIOD_CALEVENT | BAB_PERIOD_TSKMGR) )
 		while( $p = & $this->whObj->getNextEvent(BAB_PERIOD_NWDAY | BAB_PERIOD_VACATION | BAB_PERIOD_CALEVENT) )
 			{
 			
@@ -368,7 +369,7 @@ class bab_icalendar
 	function getEvents($startdate, $enddate, &$arr)
 		{
 		$arr = array();
-		$events = $this->whObj->getEventsBetween(bab_mktime($startdate), bab_mktime($enddate), BAB_PERIOD_NWDAY | BAB_PERIOD_VACATION | BAB_PERIOD_CALEVENT);
+		$events = $this->whObj->getEventsBetween(bab_mktime($startdate), bab_mktime($enddate), BAB_PERIOD_NWDAY | BAB_PERIOD_VACATION | BAB_PERIOD_CALEVENT | BAB_PERIOD_TSKMGR);
 
 			foreach($events as $event) {
 				$arr[] = $event;
