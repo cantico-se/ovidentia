@@ -127,7 +127,7 @@ class bab_fmFile {
 
 
 /** 
- * Move uploaded file into the file manager
+ * Import a file into the file manager
  * if the file exists, the file is updated or a new version of the file is created
  * @param 	object	$fmFile			bab_fmFile instance
  * @param	int		$id_owner
@@ -136,7 +136,7 @@ class bab_fmFile {
  *
  * @return 	boolean	id_file
  */
-function bab_moveUploadedFile($fmFile, $id_owner, $path, $bgroup) {
+function bab_importFmFile($fmFile, $id_owner, $path, $bgroup) {
 	
 	global $babDB;
 	include_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
@@ -151,10 +151,10 @@ function bab_moveUploadedFile($fmFile, $id_owner, $path, $bgroup) {
 		SELECT 
 			id, description, keywords 
 		FROM '.BAB_FILES_TBL.' 
-			WHERE path='.$babDB->quote($path).' 
-			AND name='.$babDB->quote($fmFile->filename).' 
+			WHERE path	='.$babDB->quote($path).' 
+			AND name	='.$babDB->quote($fmFile->filename).' 
 			AND id_owner='.$babDB->quote($id_owner).' 
-			AND bgroup='.$babDB->quote($gr)
+			AND bgroup	='.$babDB->quote($gr)
 		);
 		
 		$arr = $babDB->db_fetch_assoc($res);
