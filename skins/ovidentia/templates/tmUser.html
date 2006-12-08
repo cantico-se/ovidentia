@@ -752,6 +752,22 @@ function check_all(strCtrlName, checked)
 				</tr>
 			<!--#endif m_datas[isLinkable] -->
 	
+			<!--#if m_datas[isResourceAvailable] -->
+				<tr id="oTrTaskResponsible">
+					<td>
+						<label for="iIdTaskResponsible">{ m_captions[sTaskResponsible] }</label>
+					</td>
+					<td>
+						<select id="iIdTaskResponsible" { m_datas[sReadOnlyTaskResponsible] } name="iIdTaskResponsible">
+							<option value="{ m_datas[iNone] }">{ m_captions[sNone] }</option>
+							<!--#in getNextTaskResponsible -->
+							<option { m_datas[sSlectedTaskResponsible] } value="{ m_datas[iIdTaskResponsible] }">{ m_datas[sTaskResponsibleName] }</option>
+							<!--#endin getNextTaskResponsible -->
+						</select>
+					</td>
+				</tr>
+			<!--#endif m_datas[isResourceAvailable] -->
+
 			<!--#if m_datas[isProposable] -->
 				<tr id="oTrProposable" class="">
 					<td>
@@ -845,21 +861,6 @@ function check_all(strCtrlName, checked)
 					</td>
 				</tr>
 			<!--#endif m_datas[isAnswerEnable] -->
-			<!--#if m_datas[isResourceAvailable] -->
-				<tr id="oTrTaskResponsible">
-					<td>
-						<label for="iIdTaskResponsible">{ m_captions[sTaskResponsible] }</label>
-					</td>
-					<td>
-						<select id="iIdTaskResponsible" { m_datas[sReadOnlyTaskResponsible] } name="iIdTaskResponsible">
-							<option value="{ m_datas[iNone] }">{ m_captions[sNone] }</option>
-							<!--#in getNextTaskResponsible -->
-							<option { m_datas[sSlectedTaskResponsible] } value="{ m_datas[iIdTaskResponsible] }">{ m_datas[sTaskResponsibleName] }</option>
-							<!--#endin getNextTaskResponsible -->
-						</select>
-					</td>
-				</tr>
-			<!--#endif m_datas[isResourceAvailable] -->
 			</table>
 		</div>
 		
@@ -979,13 +980,17 @@ function check_all(strCtrlName, checked)
 		
 		<br />
 		<div align="center">
-			<!--#if m_iIdTask "== 0" -->
-				<input type="submit" value="{ m_captions[sAdd] }" onclick="on_btn_clicked('{ m_datas[iAddIdx] }', '{ m_datas[iAddAction] }')" />
-			<!--#else m_iIdTask -->
-				<input type="submit" value="{ m_captions[sModify] }" onclick="on_btn_clicked('{ m_datas[iModifyIdx] }', '{ m_datas[iModifyAction] }')" />
-				<!--#if m_datas[isDeletable] -->
-					<input type="submit" value="{ m_captions[sDelete] }" onclick="on_btn_clicked('{ m_datas[iDeleteIdx] }', '{ m_datas[iDeleteAction] }')" />
-				<!--#endif m_datas[isDeletable] -->
+		<!--#if m_iIdTask "== 0" -->
+			<input type="submit" value="{ m_captions[sAdd] }" onclick="on_btn_clicked('{ m_datas[iAddIdx] }', '{ m_datas[iAddAction] }')" />
+		<!--#else m_iIdTask -->
+				
+			<!--#if m_datas[isModifiable] -->
+			<input type="submit" value="{ m_captions[sModify] }" onclick="on_btn_clicked('{ m_datas[iModifyIdx] }', '{ m_datas[iModifyAction] }')" />
+			<!--#endif m_datas[isModifiable] -->
+				
+			<!--#if m_datas[isDeletable] -->
+			<input type="submit" value="{ m_captions[sDelete] }" onclick="on_btn_clicked('{ m_datas[iDeleteIdx] }', '{ m_datas[iDeleteAction] }')" />
+			<!--#endif m_datas[isDeletable] -->
 			<!--#endif m_iIdTask -->
 		</div>
 	</div>
@@ -1253,7 +1258,7 @@ onload="tmInit('ganttTask')"
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 	<head>
-		<title>Gantt Chart</title>
+		<title>{ m_sTitle }</title>
 		<link rel="stylesheet" type="text/css" href="{ babInstallPath }styles/gantt.css" />
 		<script type="text/javascript" src="{ babInstallPath }scripts/ovidentia.js"></script>
 		<script type="text/javascript" src="{ babInstallPath }scripts/prototype/prototype.js"></script>
@@ -1348,7 +1353,7 @@ onload="tmInit('ganttTask')"
 <!--#end gantt -->
 
 <!--#begin ganttView -->
-<a href="javascript:bab_popup('{ m_sGanttViewUrl }');" title="{ m_captions[ganttView] }">
+<a href="javascript:bab_popup('{ m_sGanttViewUrl }', 150, 1);" title="{ m_captions[ganttView] }">
 	<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/ganttView.png" alt="{ m_captions[ganttView] }" />
 </a>
 <br />
