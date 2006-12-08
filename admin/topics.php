@@ -589,6 +589,20 @@ function saveCategory($category, $description, $cat, $sacom, $saart, $saupd, $bn
 
 	$db = &$GLOBALS['babDB'];
 
+	if( $busetags == 'Y' )
+		{
+		list($count) = $db->db_fetch_array($db->db_query("select count(id) from ".BAB_TAGS_TBL.""));
+		if( $count == 0 )
+			{
+			$babBody->msgerror = bab_translate("ERROR: You can't use tags. List tags is empty");
+			return false;
+			}
+		}
+	else
+		{
+		$busetags = 'N';
+		}
+
 
 	bab_editor_record($content);
 	$category = $db->db_escape_string($category);
