@@ -2921,6 +2921,7 @@ function bab_tskmgr_setPeriods(&$oUserWorkingHours, $aIdUsers, $oStartDate, $oEn
 		
 		$query = bab_selectTaskQuery($aFilters);	
 		
+		global $babDB;
 		$result = $babDB->db_query($query);
 		
 		if(false != $result && $babDB->db_num_rows($result) > 0)

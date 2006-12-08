@@ -173,8 +173,9 @@ function displayProjectsSpacesList()
                		{
                			$sGanttViewUrl = $this->getUrl(BAB_TM_IDX_DISPLAY_GANTT_CHART, $iIdProjectSpace, $datas['id']);
 						$oProjectElement->addAction('GanttView',
-			               bab_toHtml(bab_translate("Gantt view")), $GLOBALS['babSkinPath'] . 'images/Puces/schedule.png', 
-			               'javascript:bab_popup(\'' . $sGanttViewUrl . '\')' , '');
+			               bab_toHtml(bab_translate("Display the gantt View")), $GLOBALS['babSkinPath'] . 'images/Puces/schedule.png', 
+			               'javascript:bab_popup(\'' . $sGanttViewUrl . '\', 150, 1)' , '');
+//			               $sGanttViewUrl, 'Paul !!!', 'bab_popup(this.href, 150, 1);return false;');
 						$oProjectElement->addAction('Configuration',
 			               bab_toHtml(bab_translate("Project properties")), $GLOBALS['babSkinPath'] . 'images/Puces/package_settings.png', 
 			               $this->getUrl(BAB_TM_IDX_DISPLAY_PROJECT_PROPERTIES_FORM, $iIdProjectSpace, $datas['id']), '');
@@ -221,8 +222,8 @@ function displayProjectsSpacesList()
 				
        			$sGanttViewUrl = $this->getUrl(BAB_TM_IDX_DISPLAY_GANTT_CHART, 0, 0);
 				$oPersTaskElement->addAction('GanttView',
-	               bab_toHtml(bab_translate("Gantt view")), $GLOBALS['babSkinPath'] . 'images/Puces/schedule.png', 
-	               'javascript:bab_popup(\'' . $sGanttViewUrl . '\')' , '');
+	               bab_toHtml(bab_translate("Display the gantt View")), $GLOBALS['babSkinPath'] . 'images/Puces/schedule.png', 
+	               'javascript:bab_popup(\'' . $sGanttViewUrl . '\', 150, 1)' , '');
 				$oPersTaskElement->addAction('Configuration',
 	               bab_toHtml(bab_translate("Configuration")), $GLOBALS['babSkinPath'] . 'images/Puces/package_settings.png', 
 	               $this->getUrl(BAB_TM_IDX_DISPLAY_PERSONNAL_TASK_CONFIGURATION_FORM, 0, 0), '');
@@ -1039,7 +1040,7 @@ function displayTaskList()
 	$aFilters['bIsManger'] = ($iUserProfil === BAB_TM_PROJECT_MANAGER);
 	
 	$oTaskFilterForm->m_sGanttViewUrl = bab_toHtml($sGanttViewUrl);
-	
+
 	require_once($GLOBALS['babInstallPath'] . 'utilit/multipage.php');
 	
 	class BAB_TaskDS extends BAB_MySqlDataSource
@@ -1183,7 +1184,7 @@ function displayTaskForm()
 		$oTaskForm = & new BAB_TaskForm();
 		
 		$oTaskForm->raw_2_html(BAB_RAW_2_HTML_CAPTION);
-		$oTaskForm->raw_2_html(BAB_RAW_2_HTML_DATA);
+//		$oTaskForm->raw_2_html(BAB_RAW_2_HTML_DATA);
 		$babBody->babecho(bab_printTemplate($oTaskForm, 'tmUser.html', 'taskForm'));
 	}
 	else 
@@ -1231,7 +1232,7 @@ function displayDeleteTaskForm()
 
 		$bf->set_caption('warning', bab_translate("This action will delete the task and all references"));
 		$bf->set_caption('message', bab_translate("Continue ?"));
-		$bf->set_caption('title', bab_translate("Task number = ") . $oTask->m_aTask['sShortDescription']);
+		$bf->set_caption('title', bab_translate("Short description") . " = " . $oTask->m_aTask['sShortDescription']);
 	}
 	else 
 	{

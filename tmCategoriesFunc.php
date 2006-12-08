@@ -345,9 +345,9 @@ function addModifyCategory()
 		$iIdCategory = (int) bab_rp('iIdCategory', 0);
 		
 		$isValid = isNameUsedInProjectAndProjectSpace(BAB_TSKMGR_CATEGORIES_TBL, $iIdProjectSpace, $iIdProject, $iIdCategory, $sCategoryName);
-		$sCategoryName = mysql_escape_string($sCategoryName);
+		$sCategoryName = $sCategoryName;
 
-		$sCategoryDescription = mysql_escape_string(trim(bab_rp('sCategoryDescription', '')));
+		$sCategoryDescription = trim(bab_rp('sCategoryDescription', ''));
 		
 		if($isValid)
 		{

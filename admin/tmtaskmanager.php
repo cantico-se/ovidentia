@@ -609,6 +609,11 @@ require_once($babInstallPath . 'utilit\upgradeincl.php');
 upgrade582to583();
 //*/
 
+require_once($babInstallPath . 'utilit/dirincl.php');
+
+bab_debug(getUserDirectories());
+
+
 /* main */
 $action = isset($_POST['action']) ? $_POST['action'] : 
 	(isset($_GET['action']) ? $_GET['action'] :  
