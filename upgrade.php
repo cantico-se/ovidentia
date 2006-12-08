@@ -7569,10 +7569,13 @@ function upgrade606to610()
 		$babDB->db_query("ALTER TABLE `".BAB_USERS_TBL."` ADD INDEX ( `cookie_id` )");
 	} 
 	
-	$res = $babDB->db_query("SELECT * FROM ".BAB_MIME_TYPES." WHERE ext='odt'");
+	$res = $babDB->db_query("SELECT * FROM ".BAB_MIME_TYPES_TBL." WHERE ext='odt'");
 	if (0 == $babDB->db_num_rows($res)) {
 	
-		$babDB->db_query("INSERT INTO `bab_mime_types` (`ext`, `mimetype`) VALUES 
+		$babDB->db_query("
+		INSERT INTO `".BAB_MIME_TYPES_TBL."` 
+			(`ext`, `mimetype`) 
+		VALUES 
 			('odt', 'application/vnd.oasis.opendocument.text'),
 			('ods', 'application/vnd.oasis.opendocument.spreadsheet'),
 			('odp', 'application/vnd.oasis.opendocument.presentation'),

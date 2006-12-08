@@ -1516,4 +1516,44 @@ function bab_printOvmlTemplate( $file, $args=array())
 	return $tpl->printout(implode("", file($filepath)));
 	}
 
+/**
+ * Abbreviate text with 2 types
+ * BAB_ABBR_FULL_WORDS 	: the text is trucated if too long without cuting the words
+ * BAB_ABBR_INITIAL 	: First letter of each word uppercase with dot
+ * 
+ * Additional dots are not included in the $max_length parameter
+ *
+ * @param	string	$text
+ * @param	int		$type
+ * @param	int		$max_length
+ * 
+ * @return 	string
+ */
+function bab_abbr($text, $type, $max_length) {
+	$len = strlen($text);
+	if ($len < $max_length) {
+		return $text;
+	}
+	
+	$mots = preg_split('/[\s,]+/', $text, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_OFFSET_CAPTURE);
+
+	if (BAB_ABBR_FULL_WORDS === $type) {
+		for ($i = count($mots)-1; $i >= 0; $i--) {
+			if ($mots[$i][1] < $max_length) {
+				return substr($text,0,$mots[$i][1]).'...';
+			}
+		}
+	}
+	
+	if (BAB_ABBR_INITIAL === $type) {
+		$n = ceil($max_length/count($mots));
+		if ($max_length < $n) {
+			return bab_abbr($text, BAB_ABBR_FULL_WORDS, $max_length);
+		} else {
+			array_walk($mots, create_function('&$v,$k','$v = strtoupper(substr($v[0],0,1)).".";'));
+			return implode('',$mots);
+		}
+	}
+}
+
 ?>
