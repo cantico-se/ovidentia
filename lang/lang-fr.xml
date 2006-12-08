@@ -1995,7 +1995,7 @@
 <string id="Edition of a project space">Edition d'un espace de projets</string>
 <string id="Project space = ">Espace projet = </string>
 <string id="This action will delete the project space and all references">Cette action supprime l'espace projets et tout ses composants.</string>
-<string id="Continue ?">Voulez vous continuez ?</string>
+<string id="Continue ?">Voulez-vous continuez ?</string>
 <string id="You cannot delete this project space before is not empty">Vous ne pouvez pas supprimer cet espace projets tant qu'il n'est pas vide</string>
 <string id="Cannot retreive project space information">Impossible d'accéder aux information de l'espace projets</string>
 <string id="Delete project space">Supprimer un espace projets</string>
@@ -2249,7 +2249,7 @@
 <string id="Unknown duration type">Type de durée inconnue</string>
 <string id="The task number is invalid">Le numéro de tâche est invalide</string>
 <string id="The end date is greater than the limit date">La date de fin dépasse la date butoir de fin</string>
-<string id="The choosen task responsible is invalid">Le réponsable de tâche choisi est invalide</string>
+<string id="The choosen task responsible is invalid">Le responsable de tâche choisi est invalide</string>
 <string id="The end date is lower than the start date">La date de fin est avant la date de début</string>
 <string id="Personnals tasks configuration">Configuration des tâches personnelles</string>
 <string id="Task type">Type de tâche</string>
@@ -2364,7 +2364,6 @@
 <string id="Second period">Seconde période</string>
 <string id="Use vacation requests witch overlap the test period">Pour les congés qui chevauchent la période de test, prendre en compte le nombre de jours inclu dans la période de test en tenant compte du type du congé</string>
 <string id="Project right">Droit du projet</string>
-
 <string id="Connections Log">Connections Log</string>
 <string id="Tags">Mots clés</string>
 <string id="Who can manage tags?">Qui peut gérer les mots clés?</string>
@@ -2385,7 +2384,8 @@
 <string id="Legend">Légende</string>
 <string id="Delete categories">Supprimer les catégories</string>
 <string id="Delete specifics fields">Supprimer les champs spécifiques</string>
-<string id="Display the gantt View">Afficher la vue gantt</string>
+<string id="Display the gantt View">Afficher le planning de Gantt</string>
+<string id="Gantt view">Planning de Gantt</string>
 <string id="Access denied to the calendar">Accès refusé à l'agenda</string>
 <string id="There is no additional informations for this event">Il n'y a pas d'informations complémentaires pour cet événement</string>
 <string id="To order files, drag and drop here">Pour ordonner les fichiers, glisser et déposez ici</string>
@@ -2400,7 +2400,6 @@
 <string id="The file is not on the server">Le fichier n'est pas sur le serveur</string>
 <string id="The directory is writable but this is not the full pathname">Le répertoire est accessible en écriture, mais ce n'est pas le chemin complet</string>
 <string id="The addons directory is not writable">Le répertoire addons n'est pas accessible en écriture</string>
-<string id="Gantt view">Vue gantt</string>
 <string id="Loading...">En cours de chargement...</string>
 <string id="Fit width">Ajuster à la largeur de la page</string>
 <string id="Visible levels">Niveaux visibles</string>
