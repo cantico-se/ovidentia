@@ -466,7 +466,7 @@ function listWaitingVacations()
 				{
 				$this->altbg = !$this->altbg;
 				$arr = $babDB->db_fetch_array($this->res);
-				$this->url = $GLOBALS['babUrlScript']."?tg=approb&idx=confvac&idvac=".$arr['id'];
+				$this->url = bab_toHtml($GLOBALS['babUrlScript']."?tg=approb&idx=confvac&idvac=".$arr['id']);
 				list($this->total) = $babDB->db_fetch_row($babDB->db_query("select sum(quantity) from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry =".$babDB->quote($arr['id']).""));
 				$this->urlname = bab_getUserName($arr['id_user']);
 				$this->dateb = bab_vac_shortDate(bab_mktime($arr['date_begin']));

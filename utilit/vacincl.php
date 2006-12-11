@@ -298,12 +298,26 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 					
 					case 1: // Dans la période de la règle
 						if ($period_start <= $beginp && $period_end >= $endp) {
+								bab_debug(
+									"Disponibilité en fonction de la période de congés demandée\n".
+									"Dans l'intervale\n".
+									$arr['description']."\n".
+									bab_shortDate($period_start).' <= '.bab_shortDate($beginp). 
+									' && '.bab_shortDate($period_end).' >= '.bab_shortDate($endp)
+									);
 								$access = true;
 								}
 						break;
 					
 					case 2: // En dehors de la période de la règle
 						if ($period_end <= $beginp || $period_start >= $endp) {
+								bab_debug(
+									"Disponibilité en fonction de la période de congés demandée\n".
+									"En dehors de l'intervale\n".
+									$arr['description']."\n".
+									bab_shortDate($period_end).' <= '.bab_shortDate($beginp). 
+									' && '.bab_shortDate($period_start).' >= '.bab_shortDate($endp)
+									);
 								$access = true;
 								}
 						break;
@@ -312,6 +326,8 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 						
 						if ($period_start < $endp && $period_end > $beginp ) {
 								bab_debug(
+									"Disponibilité en fonction de la période de congés demandée\n".
+									"Dans l'intervale mais peut dépasser à l'exterieur\n".
 									$arr['description']."\n".
 									bab_shortDate($period_start).' < '.bab_shortDate($endp). 
 									' && '.bab_shortDate($period_end).' > '.bab_shortDate($beginp)
@@ -322,6 +338,13 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 
 					case 12: // En dehors de la période de la règle mais peut dépasser à l'intérieur
 						if ($period_start > $beginp || $period_end < $endp) {
+								bab_debug(
+									"acces sur la période, en fonction de la période de la demande\n".
+									"En dehors de l'intervale mais peut dépasser à l'intérieur\n".
+									$arr['description']."\n".
+									bab_shortDate($period_start).' < '.bab_shortDate($endp). 
+									' && '.bab_shortDate($period_end).' > '.bab_shortDate($beginp)
+									);
 								$access = true;
 								}
 						break;
@@ -333,6 +356,8 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 			
 			// Attribution du droit en fonction des jours demandés et validés
 			if ( $access ) {
+
+				
 
 				$p1 = '';
 				$p2 = '';
@@ -353,12 +378,14 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 				}
 
 
-				if ($req) { // une requete valide a pu être crée a partir des périodes
+				if ($req) { // une requete valide a pu être crée a partir des période
+
+					
 				
 					if (!empty($arr['trigger_type']))
 						{
 						$table = ", ".BAB_VAC_RIGHTS_TBL." r ";
-						$where = " AND el.id_right=r.id AND r.id_type='".$arr['trigger_type']."' ";
+						$where = " AND el.id_right=r.id AND r.id_type=".$db->quote($arr['trigger_type'])." ";
 						}
 					else
 						{
@@ -421,17 +448,21 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 								$nbdays += $entry['total'];
 							}
 						}
-					
-						if ($nbdays > 0) {
-							bab_debug($arr['description']." - nb de jours pris:".$nbdays." min:".$arr['trigger_nbdays_min']." max:".$arr['trigger_nbdays_max']);
-						}
-
-						$access = false;
-						if ( '' !== $arr['trigger_nbdays_min'] && '' !== $arr['trigger_nbdays_max'] && $arr['trigger_nbdays_min'] <= $nbdays && $nbdays <= $arr['trigger_nbdays_max'] ) {
-							$access = true;
-						}
 					}
-					
+
+
+
+					$access = false;
+					if ( '' !== $arr['trigger_nbdays_min'] && '' !== $arr['trigger_nbdays_max'] && $arr['trigger_nbdays_min'] <= $nbdays && $nbdays <= $arr['trigger_nbdays_max'] ) {
+
+						bab_debug(
+							"Attribution du droit en fonction des jours demandés et validés\n".
+							"Le droit est accordé si l'utilisateur a pris entre ".$arr['trigger_nbdays_min']." et ".$arr['trigger_nbdays_max']." jours\n".
+							$arr['description']."\n".
+							"nb de jours pris : ".$nbdays
+						);
+						$access = true;
+					} 
 					
 				} // endif ($req)	
 			} // endif ($access)

@@ -699,7 +699,7 @@ function addNewVacation()
 		{
 		$babDB->db_query("DELETE FROM ".BAB_VAC_ENTRIES_ELEM_TBL." WHERE id_entry='".$id_request."'");
 
-		list($idfai) = $babDB->db_fetch_array($babDB->db_query("SELECT idfai FROM ".BAB_VAC_ENTRIES_TBL." WHERE id='".$id_request."'"));
+		list($idfai) = $babDB->db_fetch_array($babDB->db_query("SELECT idfai FROM ".BAB_VAC_ENTRIES_TBL." WHERE id='".$babDB->db_escape_string($id_request)."'"));
 		
 		if ($idfai > 0)
 			deleteFlowInstance($idfai);

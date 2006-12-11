@@ -832,28 +832,24 @@ function deleteVacationType($vtid)
 	global $babBody, $babDB;
 	$bdel = true;
 
-	list($total) = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_VAC_COLL_TYPES_TBL." where id_type='".$this->db->db_escape_string($vtid)."'"));
+	list($total) = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_VAC_COLL_TYPES_TBL." where id_type='".$babDB->db_escape_string($vtid)."'"));
 	if( $total > 0 )
 		{
 		$bdel = false;	
 		}
 	else 
 		{
-		list($total) = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_type='".$this->db->db_escape_string($vtid)."'"));
+		
+		list($total) = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_VAC_RIGHTS_TBL." where id_type='".$babDB->db_escape_string($vtid)."'"));
 		if( $total > 0 )
 			$bdel = false;
-		else
-			{
-			list($total) = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_VAC_RIGHTS_TBL." where id_type='".$this->db->db_escape_string($vtid)."'"));
-			if( $total > 0 )
-				$bdel = false;
-			}
+			
 		}
 
 	if( $bdel )
 		{
-		$babDB->db_query("delete from ".BAB_VAC_TYPES_TBL." where id='".$this->db->db_escape_string($vtid)."'");
-		$babDB->db_query("delete from ".BAB_VAC_COLL_TYPES_TBL." where id_type='".$this->db->db_escape_string($vtid)."'");
+		$babDB->db_query("delete from ".BAB_VAC_TYPES_TBL." where id='".$babDB->db_escape_string($vtid)."'");
+		$babDB->db_query("delete from ".BAB_VAC_COLL_TYPES_TBL." where id_type='".$babDB->db_escape_string($vtid)."'");
 		}
 	else
 		$babBody->msgerror = bab_translate("This vacation type is used and can't be deleted") ." !";
