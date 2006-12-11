@@ -1,12 +1,15 @@
 
 
+/**
+ * Checks wether the array contains the value 'val'.
+ * @param {Object} val
+ */
 Array.prototype.contains = function(val) {
 	for (var i in this)
 		if (this[i] == val)
 			return true;
 	return false;
 }
-
 
 function hasClass(element, className) {
 	if (element.className == undefined)
@@ -137,12 +140,24 @@ function bab_translate(text)
 	return text;
 }
 
+
+function bab_showActions()
+{
+	this.actions.style.display = '';
+}
+
+function bab_hideActions()
+{
+	this.actions.style.display = 'none';
+}
+
+
 function bab_initTrees()
 {
-	divs = document.getElementsByTagName('DIV');
+	var divs = document.getElementsByTagName('DIV');
 	var nbDivs = divs.length
-	for (i = 0; i < nbDivs; i++) {
-		div = divs[i];
+	for (var i = 0; i < nbDivs; i++) {
+		var div = divs[i];
 		if (!div.initialized && hasClass(div, 'bab_tree')) {
 			var tree = new bab_Tree(div);
 			tree.loadState();
@@ -175,6 +190,30 @@ function bab_initTrees()
 			toolbar.appendChild(search);
 			window.bab_searchContext = new bab_SearchContext(tree, search);
 
+/*
+			var actionsList = div.getElementsByTagName('SPAN');
+			var nbActions = actionsList.length
+			for (var i = 0; i < nbActions; i++) {
+				var actions = actionsList[i];
+				if (hasClass(actions, 'actions')) {
+					var node = actions.parentNode.parentNode.parentNode;
+					var d = actions.parentNode.parentNode;
+					var rightElements = actions.parentNode;
+					var menu = document.createElement('SPAN');
+					menu.appendChild(document.createTextNode('Menu'));
+					rightElements.appendChild(menu);
+					menu.actions = actions;
+					menu.onclick = bab_showActions;
+//					menu.onmouseout = bab_hideActions;
+					actions.style.position = 'absolute';
+					actions.style.left = '0px';
+					actions.style.top = '0px';
+					actions.style.display = 'none';
+					actions.controlledElement = node;
+					node.appendChild(actions);
+				}
+			}
+*/
 			div.initialized = true;
 		}
 	}
