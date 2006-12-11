@@ -1753,7 +1753,7 @@ class bab_FileTreeView extends bab_TreeView
 		
 		$files = $this->_db->db_query($sql);
 		while ($file = $this->_db->db_fetch_array($files)) {
-			$node =& $this->_rootNode->getNodeById('f' . BAB_TREE_VIEW_ID_SEPARATOR . $file['id']);
+			$node =& $this->_rootNode->getNodeById('g' . BAB_TREE_VIEW_ID_SEPARATOR . $file['id']);
 			if (!is_null($node)) {
 				$element =& $node->getData();
 				$element->setInfo($file['hits']);
