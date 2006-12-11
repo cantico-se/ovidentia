@@ -2397,7 +2397,12 @@
 <string id="The directory is writable but this is not the full pathname">Le répertoire est accessible en écriture, mais ce n'est pas le chemin complet</string>
 <string id="The addons directory is not writable">Le répertoire addons n'est pas accessible en écriture</string>
 <string id="Loading...">En cours de chargement...</string>
-<string id="Fit width">Ajuster à la largeur de la page</string>
+<string id="Fit width">Ajuster à la largeur de la fenêtre</string>
 <string id="Visible levels">Niveaux visibles</string>
+<string id="Only show n first levels of the org chart">Affiche seulement les n premiers niveaux</string>
+<string id="Zoom in">Agrandir</string>
+<string id="Zoom out">Rétrécir</string>
+<string id="Default view">Affichage par défault</string>
+<string id="Help">Aide en ligne</string>
 <string id="ERROR: You can't use tags. List tags is empty">ERREUR: Vous ne pouvez pas utiliser les mots clés. La liste des mots clés est vide</string>
 </fr>
