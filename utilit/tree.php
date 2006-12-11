@@ -1200,6 +1200,16 @@ class bab_OrgChart extends bab_TreeView
 		$this->_openNodes = array();
 		$this->_openMembers = array();
 		$this->_zoomFactor = 1.0;
+
+		$this->t_fit_width = bab_translate('Fit width');
+		$this->t_visible_levels = bab_translate('Visible levels');
+		$this->t_visible_levels_tip = bab_translate('Only show n first levels of the org chart');
+		$this->t_zoom_in = bab_translate('Zoom in');
+		$this->t_zoom_out = bab_translate('Zoom out');
+		$this->t_default_view = bab_translate('Default view');
+		$this->t_save_default_view = bab_translate('Save default view');
+		$this->t_print = bab_translate('Print');
+		$this->t_help = bab_translate('Help');
 	}
 
 	/**
