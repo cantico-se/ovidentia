@@ -46,6 +46,7 @@ function displayAttendees($evtid, $idcal)
 			if( bab_isCalendarAccessValid($idcal))
 				{
 				$this->access = true;
+					$this->idcal = $idcal;
 				$this->fullnametxt = bab_translate("Attendee");
 				$this->statusdef = array(BAB_CAL_STATUS_ACCEPTED => bab_translate("Accepted"), BAB_CAL_STATUS_NONE => "", BAB_CAL_STATUS_DECLINED => bab_translate("Declined"));
 				$this->statustxt = bab_translate("Response");
@@ -236,6 +237,7 @@ function displayEventDetail($evtid, $idcal)
 				if( $res && $babDB->db_num_rows($res) == 1)
 					{
 					$this->access = true;
+					$this->idcal = $idcal;
 					$arr = $babDB->db_fetch_array($res);
 					$iarr = $babBody->icalendars->getCalendarInfo($idcal);
 					$this->begindatetxt = bab_translate("Begin date");
@@ -303,6 +305,8 @@ function displayEventNotes($evtid, $idcal)
 			if( bab_isCalendarAccessValid($idcal))
 				{
 				$this->access = true;
+				$this->idcal = $idcal;
+				$this->evtid = $evtid;
 				$this->notetxt = bab_translate("Personal notes");
 				$this->updatetxt = bab_translate("Update");
 				$res = $babDB->db_query("select note from ".BAB_CAL_EVENTS_NOTES_TBL." where id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and id_event='".$babDB->db_escape_string($evtid)."'");
@@ -348,6 +352,8 @@ function displayEventAlert($evtid, $idcal)
 			if( bab_isCalendarAccessValid($idcal))
 				{
 				$this->access = true;
+				$this->idcal = $idcal;
+				$this->evtid = $evtid;
 				$this->alerttxt = bab_translate("Reminder");
 				$this->updatetxt = bab_translate("Update");
 				$res = $babDB->db_query("select * from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_user='".$GLOBALS['BAB_SESS_USERID']."' and id_event='".$babDB->db_escape_string($evtid)."'");
