@@ -387,14 +387,17 @@ function bab_initOrgChart(orgChartDiv)
 		var zoomFit = createButton('', 'bab_zoomFit');
 		zoomFit.onclick = bab_zoomFit;
 		zoomFit.zoomText = zoomText;
+		zoomFit.title = window.bab_Translations['fit_width'];
 		
 		var zoomIn = createButton('', 'bab_zoomIn');
 		zoomIn.onclick = bab_zoomIn;
 		zoomIn.zoomText = zoomText;
+		zoomIn.title = window.bab_Translations['zoom_in'];
 				
 		var zoomOut = createButton('', 'bab_zoomOut');
 		zoomOut.onclick = bab_zoomOut;
 		zoomOut.zoomText = zoomText;
+		zoomOut.title = window.bab_Translations['zoom_out'];
 	
 		zoomWidget.appendChild(zoomFit);
 		zoomWidget.appendChild(zoomOut);
@@ -409,8 +412,9 @@ function bab_initOrgChart(orgChartDiv)
 		orgChartDiv.setZoom(orgChartDiv.zoomFactor);
 
 		var levelWidget = document.createElement('SPAN');
-		levelWidget.appendChild(document.createTextNode('Niveaux visibles '));
+		levelWidget.appendChild(document.createTextNode(window.bab_Translations['visible_levels'] + ' '));
 		levelWidget.className = 'bab_toolbarGroup';
+		levelWidget.title = window.bab_Translations['visible_levels_tip'];
 
 		var levelSelect = document.createElement('SELECT');
 		levelSelect.controlledElement = orgChartDiv;
@@ -440,14 +444,18 @@ function bab_initOrgChart(orgChartDiv)
 
 		var restore = createButton('', 'bab_restore');
 		restore.onclick = bab_restoreState;
+		restore.title = window.bab_Translations['default_view'];
+		
 		toolbar.appendChild(restore);
 
 		var print = createButton('', 'bab_print');
 		print.onclick = bab_print;
+		print.title = window.bab_Translations['print'];
 		toolbar.appendChild(print);
 		
 		var help = createButton('', 'bab_help');
 		help.onclick = bab_help;
+		help.title = window.bab_Translations['help'];
 		toolbar.appendChild(help);
 	}
 
