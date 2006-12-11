@@ -21,6 +21,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
+/**
+* @internal SEC1 NA 08/12/2006 FULL
+*/
 include 'base.php';
 include_once $babInstallPath.'utilit/uiutil.php';
 include_once $babInstallPath.'utilit/mailincl.php';
@@ -69,8 +72,8 @@ function listDrafts()
 			$this->submittxt = bab_translate("Submit");
 			$this->t_modify = bab_translate("Modify");
 			$this->js_confirm_submit = bab_translate("Do you really want to submit")."?";
-			$this->urladd = $GLOBALS['babUrlScript']."?tg=artedit&idx=s0";
-			$this->urlmod = $GLOBALS['babUrlScript']."?tg=artedit&idx=s00";
+			$this->urladd = bab_toHTML($GLOBALS['babUrlScript']."?tg=artedit&idx=s0");
+			$this->urlmod = bab_toHTML($GLOBALS['babUrlScript']."?tg=artedit&idx=s00");
 			$req = "select adt.*, count(adft.id) as total from ".BAB_ART_DRAFTS_TBL." adt left join ".BAB_ART_DRAFTS_FILES_TBL." adft on adft.id_draft=adt.id where id_author='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and adt.trash !='Y' and adt.idfai='0' and adt.result='".BAB_ART_STATUS_DRAFT."' GROUP BY adt.id order by date_modification desc";
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
@@ -83,10 +86,10 @@ function listDrafts()
 			if( $i < $this->count)
 				{
 				$arr = $babDB->db_fetch_array($this->res);
-				$this->urlname = $GLOBALS['babUrlScript']."?tg=artedit&idx=s1&idart=".$arr['id'];
-				$this->propurl = $GLOBALS['babUrlScript']."?tg=artedit&idx=s3&idart=".$arr['id'];
-				$this->deleteurl = $GLOBALS['babUrlScript']."?tg=artedit&idx=movet&idart=".$arr['id'];
-				$this->previewurl = $GLOBALS['babUrlScript']."?tg=artedit&idx=preview&idart=".$arr['id'];
+				$this->urlname = bab_toHTML($GLOBALS['babUrlScript']."?tg=artedit&idx=s1&idart=".$arr['id']);
+				$this->propurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=artedit&idx=s3&idart=".$arr['id']);
+				$this->deleteurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=artedit&idx=movet&idart=".$arr['id']);
+				$this->previewurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=artedit&idx=preview&idart=".$arr['id']);
 				$this->name = bab_toHTML($arr['title']);
 				$this->datesub = $arr['date_submission'] == "0000-00-00 00:00:00"? "":bab_shortDate(bab_mktime($arr['date_submission']), true);
 				$this->datesub = bab_toHTML($this->datesub);
@@ -105,7 +108,7 @@ function listDrafts()
 				if( $arr['id_topic'] != 0 && !empty($arr['title']) && !empty($arr['head']))
 					{
 					$this->bsubmit = true;
-					$this->bsubmiturl = $GLOBALS['babUrlScript']."?tg=artedit&idx=sub&idart=".$arr['id']."";
+					$this->bsubmiturl = bab_toHTML($GLOBALS['babUrlScript']."?tg=artedit&idx=sub&idart=".$arr['id']."");
 					}
 				else
 					{
@@ -170,7 +173,7 @@ function listSubmitedArticles()
 			$this->restoretxt = bab_translate("Restore");
 			$this->attachmenttxt = bab_translate("Attachments");
 			$this->notestxt = bab_translate("Notes");
-			$this->urladd = $GLOBALS['babUrlScript']."?tg=artedit&idx=new";
+			$this->urladd = bab_toHTML($GLOBALS['babUrlScript']."?tg=artedit&idx=new");
 			$req = "select adt.*, count(adft.id) as totalf, count(adnt.id) as totaln from ".BAB_ART_DRAFTS_TBL." adt left join ".BAB_ART_DRAFTS_FILES_TBL." adft on adft.id_draft=adt.id  left join ".BAB_ART_DRAFTS_NOTES_TBL." adnt on adnt.id_draft=adt.id where adt.id_author='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and adt.trash !='Y' and adt.result!='".BAB_ART_STATUS_DRAFT."' GROUP BY adt.id order by date_submission desc";
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
@@ -183,11 +186,11 @@ function listSubmitedArticles()
 			if( $i < $this->count)
 				{
 				$arr = $babDB->db_fetch_array($this->res);
-				$this->urlname = $GLOBALS['babUrlScript']."?tg=artedit&idx=propa&idart=".$arr['id'];
-				$this->propurl = $GLOBALS['babUrlScript']."?tg=artedit&idx=prop&idart=".$arr['id'];
-				$this->deleteurl = $GLOBALS['babUrlScript']."?tg=artedit&idx=delt&idart=".$arr['id'];
-				$this->previewurl = $GLOBALS['babUrlScript']."?tg=artedit&idx=preview&idart=".$arr['id'];
-				$this->restoreurl = $GLOBALS['babUrlScript']."?tg=artedit&idx=rests&idart=".$arr['id'];
+				$this->urlname = bab_toHTML($GLOBALS['babUrlScript']."?tg=artedit&idx=propa&idart=".$arr['id']);
+				$this->propurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=artedit&idx=prop&idart=".$arr['id']);
+				$this->deleteurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=artedit&idx=delt&idart=".$arr['id']);
+				$this->previewurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=artedit&idx=preview&idart=".$arr['id']);
+				$this->restoreurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=artedit&idx=rests&idart=".$arr['id']);
 				$this->name = bab_toHTML($arr['title']);
 				$this->datesub = $arr['date_submission'] == "0000-00-00 00:00:00"? "":bab_shortDate(bab_mktime($arr['date_submission']), true);
 				$this->datesub = bab_toHTML($this->datesub);
@@ -272,7 +275,7 @@ function listDraftsInTrash()
 			$this->restoretxt = bab_translate("Restore");
 			$this->previewtxt = bab_translate("Preview");
 			$this->addtxt = bab_translate("Empty");
-			$this->urladd = $GLOBALS['babUrlScript']."?tg=artedit&idx=empty";
+			$this->urladd = bab_toHTML($GLOBALS['babUrlScript']."?tg=artedit&idx=empty");
 			$req = "select * from ".BAB_ART_DRAFTS_TBL." where id_author='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and trash !='N' order by date_modification desc";
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
@@ -285,9 +288,9 @@ function listDraftsInTrash()
 			if( $i < $this->count)
 				{
 				$arr = $babDB->db_fetch_array($this->res);
-				$this->urlname = $GLOBALS['babUrlScript']."?tg=artedit&idx=view&idart=".$arr['id'];
-				$this->restoreurl = $GLOBALS['babUrlScript']."?tg=artedit&idx=restore&idart=".$arr['id'];
-				$this->previewurl = $GLOBALS['babUrlScript']."?tg=artedit&idx=preview&idart=".$arr['id'];
+				$this->urlname = bab_toHTML($GLOBALS['babUrlScript']."?tg=artedit&idx=view&idart=".$arr['id']);
+				$this->restoreurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=artedit&idx=restore&idart=".$arr['id']);
+				$this->previewurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=artedit&idx=preview&idart=".$arr['id']);
 				$this->name = bab_toHTML($arr['title']);
 				$this->datecreate = bab_toHTML(bab_shortDate(bab_mktime($arr['date_creation']), true));
 				$this->datemodify = bab_toHTML(bab_shortDate(bab_mktime($arr['date_modification']), true));
@@ -320,7 +323,7 @@ function propertiesArticle($idart)
 			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
 				$arr = $babDB->db_fetch_array($res);
-				$this->idart = $idart;
+				$this->idart = bab_toHTML($idart);
 				$this->arttxt = bab_translate("Article");
 				$this->pathtxt = bab_translate("Path");
 				$this->authortxt = bab_translate("Author");
@@ -596,12 +599,13 @@ function showTopicTree($actionType, $selectedTopicId)
 
 		function Template(&$tree, $nextIdx, $actionType, $selectedTopicId)
 		{
+			global $rfurl;
 			$this->tree =& $tree;
 			$this->treeIterator =& new bab_TreeIterator($tree);
 			$this->treeIterator->getNextId(); // We don't want to display the root node.
 			$this->level = $this->treeIterator->getLevel();
 			$this->previousLevel = $this->level - 1;
-			$this->next_idx = $nextIdx;
+			$this->next_idx = bab_toHTML($nextIdx);
 			$this->t_expand_all = bab_translate('Expand all');
 			$this->t_collapse_all = bab_translate('Collapse all');
 			if ($actionType == BAB_TOPIC_SUBMIT)
@@ -609,6 +613,7 @@ function showTopicTree($actionType, $selectedTopicId)
 			else
 				$this->t_no_topic = bab_translate('');
 			$this->selectedNodeId = 'topic' . $selectedTopicId;
+			$this->rfurl = bab_toHTML($rfurl);
 		}
 
 		function getNextNode()
@@ -627,10 +632,11 @@ function showTopicTree($actionType, $selectedTopicId)
 			if (!is_null($this->node_id))
 			{
 				$this->data =& $this->tree->nodes[$this->node_id]->data;
-				$this->data['title'] = bab_toHTML($this->data['title']);
-				$this->data['description'] = bab_toHTML(strip_tags($this->data['description']));
-				$this->data['description'] = preg_replace("/\r?\n|\r/", '', $this->data['description']);
-				$this->data['description'] = substr($this->data['description'], 0, 400);
+				$this->data_title = bab_toHTML($this->data['title']);
+				$this->data_description = bab_toHTML(strip_tags($this->data['description']));
+				$this->data_description = preg_replace("/\r?\n|\r/", '', $this->data_description);
+				$this->data_description = substr($this->data_description, 0, 400);
+				$this->data_topic_id = bab_toHTML($this->data['topic_id']);
 				return true;
 			}
 			return false;
@@ -714,98 +720,6 @@ function showTopicTree($actionType, $selectedTopicId)
 	$babBodyPopup->babecho(bab_printTemplate($template, 'artedit.html', 'topictree'));
 }
 
-
-
-function showArticleList($topicId)
-{
-	global $babBodyPopup;
-
-	class Template
-	{
-		function Template($topicid)
-		{
-			global $babDB, $babBody;
-
-			$sql = "SELECT * FROM " . BAB_TOPICS_TBL . " WHERE id='" . $babDB->db_escape_string($topicid) . "'";
-			$res = $babDB->db_query($sql);
-			if ($res && $babDB->db_num_rows($res) > 0)
-			{
-				$arr = $babDB->db_fetch_array($res);
-				if (($babBody->topmod && isset($babBody->topmod[$topicid]))
-					|| ($arr['allow_manupdate'] != '0' && $babBody->topman && isset($babBody->topman[$topicid])) )
-				{
-					$req = "SELECT at.id, at.title, adt.id_author, adt.id as id_draft ".
-						   " FROM " . BAB_ARTICLES_TBL . " at ".
-								" LEFT JOIN " . BAB_ART_DRAFTS_TBL . " adt ON at.id=adt.id_article " . 
-						   " WHERE at.id_topic='" . $babDB->db_escape_string($topicid) . "' AND at.archive='N' " .
-						   " ORDER BY at.ordering ASC";
-				}
-				elseif ($arr['allow_update'] && $babBody->topsub && isset($babBody->topsub[$topicid]))
-				{
-					$req = "SELECT at.id, at.title, adt.id_author, adt.id as id_draft ".
-						   " FROM " . BAB_ARTICLES_TBL . " at ".
-								" LEFT JOIN " . BAB_ART_DRAFTS_TBL . " adt ON at.id=adt.id_article " . 
-						   " WHERE at.id_topic='" . $babDB->db_escape_string($topicid) . "' " . 
-								" AND at.archive='N' " .
-								" AND at.id_author='" . $babDB->db_escape_string($GLOBALS['BAB_SESS_USERID']) . "'" .
-						   " ORDER BY at.ordering ASC";
-				}
-				else
-					$req = '';
-
-				if ($req != '')
-				{
-					$this->res = $babDB->db_query($req);
-					$this->count = $babDB->db_num_rows($this->res);
-					$this->rfurl = $rfurl;
-					$this->topicid = $topicid;
-					$babBodyPopup->title = bab_translate("Choose the article");
-					$this->steptitle = viewCategoriesHierarchy_txt($topicid);
-					$this->nexttxt = bab_translate("Next");
-					$this->canceltxt = bab_translate("Cancel");
-					$this->previoustxt = bab_translate("Previous");
-				}
-			}		
-		}
-
-		function getNextArticle()
-		{
-			global $babDB;
-			if ($this->res && $arr = $babDB->db_fetch_array($this->res))
-			{
-				$this->articleid = bab_toHTML($arr['id']);
-				$this->articletitle = bab_toHTML($arr['title']);
-				if (!isset($arr['id_author']) || empty($arr['id_author']))
-				{
-					$this->modifybytxt = '';
-					$this->modifauthor = '';
-					$this->bmodify = true;
-				}
-				else
-				{
-					$this->modifybytxt = bab_translate('In modification by');
-					$this->modifauthor = bab_getUserName($arr['id_author']);
-					$this->bmodify = false;
-					if ($arr['id_author'] == $GLOBALS['BAB_SESS_USERID'])
-					{
-						$this->editdrafttxt = bab_translate('Edit');
-						$this->editdrafturl = $GLOBALS['babUrlScript']."?tg=artedit&idx=s1&idart=".$arr['id_draft']."&rfurl=".urlencode($this->rfurl);
-						$this->bauthor = true;
-					}
-					else
-						$this->bauthor = false;
-				}
-				return true;
-			}
-			return false;
-		}
-	}
-
-	$template = new Template($topicId);
-	$babBodyPopup->babecho(bab_printTemplate($template, 'artedit.html', 'articlelist'));
-}
-
-
 function showChoiceArticleModify($topicid)
 {
 	global $babBodyPopup;
@@ -854,7 +768,7 @@ function showChoiceArticleModify($topicid)
 					{
 					$this->res = $babDB->db_query($req);
 					$this->count = $babDB->db_num_rows($this->res);
-					$this->rfurl = $rfurl;
+					$this->rfurl = bab_toHTML($rfurl);
 					$this->topicid = bab_toHTML($topicid);
 					$babBodyPopup->title = bab_translate("Choose the article");
 					$this->steptitle = viewCategoriesHierarchy_txt($topicid);
@@ -903,7 +817,7 @@ function showChoiceArticleModify($topicid)
 					if( $arr['id_author'] == $GLOBALS['BAB_SESS_USERID'] )
 						{
 						$this->editdrafttxt = bab_translate("Edit");
-						$this->editdrafturl = $GLOBALS['babUrlScript']."?tg=artedit&idx=s1&idart=".$arr['id_draft']."&rfurl=".urlencode($this->rfurl);
+						$this->editdrafturl = bab_toHTML($GLOBALS['babUrlScript']."?tg=artedit&idx=s1&idart=".$arr['id_draft']."&rfurl=".urlencode($this->rfurl));
 						$this->bauthor = true;
 						}
 					else
@@ -934,17 +848,17 @@ function showEditArticle()
 
 		function temp()
 			{
-			global $babBodyPopup, $babBody, $babDB, $idart, $topicid, $articleid, $title, $headtext, $bodytext, $lang, $rfurl;
-			if(!isset($idart)) { $idart = 0;}
-			if(!isset($topicid)) { $topicid = 0;}
-			if(!isset($articleid)) { $articleid = 0;}
-			$this->rfurl = $rfurl;
+			global $babBodyPopup, $babBody, $babDB, $rfurl;
+			$idart = bab_rp('idart', 0);
+			$topicid = bab_rp('topicid', 0);
+			$articleid = bab_rp('articleid', 0);
+			$this->rfurl = bab_toHTML($rfurl);
 			$this->access = false;
 			$this->bprev = false;
 			$this->warnmessage = '';
-			if( isset($title) || isset($headtext) || isset($bodytext) || isset($lang) )
+			if( isset($_POST['title']) || isset($_POST['headtext']) || isset($_POST['bodytext']) || isset($_POST['lang']) )
 				{
-				$this->content = bab_editArticle($title, $headtext, $bodytext, $lang, '');
+				$this->content = bab_editArticle($_POST['title'], $_POST['headtext'], $_POST['bodytext'], $_POST['lang'], '');
 				}
 			else
 				{
@@ -1030,10 +944,10 @@ function showEditArticle()
 				$this->canceltxt = bab_translate("Cancel");
 				$this->confirmsubmit = bab_translate("Are you sure you want to submit this article?");
 				$this->confirmcancel = bab_translate("Are you sure you want to remove this draft?");
-				$this->idart = $idart;
-				$this->idtopic = $topicid;
-				$this->idarticle = $articleid;
-				if( $this->idarticle )
+				$this->idart = bab_toHTML($idart);
+				$this->idtopic = bab_toHTML($topicid);
+				$this->idarticle = bab_toHTML($articleid);
+				if( $articleid )
 					{
 					$this->bprev = false;
 					}
@@ -1041,10 +955,10 @@ function showEditArticle()
 					{
 					$this->bprev = true;
 					}
-				if( $this->idtopic != 0 )
+				if( $topicid != 0 )
 					{
 					$this->bsubmit = true;
-					$this->steptitle = viewCategoriesHierarchy_txt($this->idtopic);
+					$this->steptitle = viewCategoriesHierarchy_txt($topicid);
 					}
 				else
 					{
@@ -1054,11 +968,11 @@ function showEditArticle()
 
 				$this->bupprobchoice = false;
 
-				if( $this->idarticle != 0 || $this->idtopic != 0 )
+				if( $articleid != 0 || $topicid != 0 )
 					{
-					if( $this->idarticle != 0 )
+					if( $articleid != 0 )
 						{
-						$res = $babDB->db_query("select at.id_topic, at.id_author, tt.allow_update, tt.allow_manupdate, tt.idsa_update as saupdate, adt.approbation from ".BAB_ARTICLES_TBL." at left join ".BAB_TOPICS_TBL." tt on at.id_topic=tt.id left join ".BAB_ART_DRAFTS_TBL." adt on at.id=adt.id_article where at.id='".$babDB->db_escape_string($this->idarticle)."'");
+						$res = $babDB->db_query("select at.id_topic, at.id_author, tt.allow_update, tt.allow_manupdate, tt.idsa_update as saupdate, adt.approbation from ".BAB_ARTICLES_TBL." at left join ".BAB_TOPICS_TBL." tt on at.id_topic=tt.id left join ".BAB_ART_DRAFTS_TBL." adt on at.id=adt.id_article where at.id='".$babDB->db_escape_string($articleid)."'");
 						$arr = $babDB->db_fetch_array($res);
 						if( $arr['saupdate'] != 0 && ( $arr['allow_update'] == '2' && $arr['id_author'] == $GLOBALS['BAB_SESS_USERID']) || ( $arr['allow_manupdate'] == '2' && bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $arr['id_topic'])))
 							{
@@ -1084,7 +998,7 @@ function showEditArticle()
 						}
 					else
 						{
-						$res = $babDB->db_query("select tt.idsaart as saupdate from ".BAB_TOPICS_TBL." tt where tt.id='".$babDB->db_escape_string($this->idtopic)."'");
+						$res = $babDB->db_query("select tt.idsaart as saupdate from ".BAB_TOPICS_TBL." tt where tt.id='".$babDB->db_escape_string($topicid)."'");
 						$arr = $babDB->db_fetch_array($res);
 						}
 
@@ -2208,7 +2122,7 @@ function updatePropertiesArticleDraft(&$message)
 
 		if( empty($tags) || count($otags) == 0 )
 		{
-			$message = bab_translate("You must sepcify at least one tag");
+			$message = bab_translate("You must specify at least one tag");
 			return false;
 		}
 	}
@@ -2296,7 +2210,7 @@ function updatePropertiesArticleDraft(&$message)
 }
 
 
-function submitArticleDraft( $idart, $message, $force=false)
+function submitArticleDraft( $idart, &$message, $force=false)
 {
 	global $babBody, $babDB;
 	$res = $babDB->db_query("select id_article,id_topic, date_submission from ".BAB_ART_DRAFTS_TBL." where id='".$babDB->db_escape_string($idart)."'");
@@ -2334,6 +2248,26 @@ function submitArticleDraft( $idart, $message, $force=false)
 				$message = bab_translate("You don't have rights to submit articles in this topic");
 				return false;
 				}			
+			}
+
+		if( $arr['id_topic'] != 0 )
+		{
+		list($busetags) = $babDB->db_fetch_array($babDB->db_query("select busetags from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($arr['id_topic'])."'"));
+		}
+		else
+		{
+			$busetags = 'N';
+		}
+
+		if( $busetags == 'Y' )
+			{
+			list($nbtags) = $babDB->db_fetch_array($babDB->db_query("select count(id_tag) from ".BAB_ART_DRAFTS_TAGS_TBL." where id_draft='".$babDB->db_escape_string($idart)."'"));
+
+			if( !$nbtags )
+				{
+				$message = bab_translate("You must specify at least one tag in article properties page");
+				return false;
+				}
 			}
 
 		if( !$force && $arr['date_submission'] != "0000-00-00 00:00:00" && bab_mktime($arr['date_submission']) > mktime())
@@ -2391,37 +2325,33 @@ if( count($babBody->topsub) == 0  && count($babBody->topmod) == 0)
 {
 	$idx = 'denied';
 }
-else {
-if(!isset($idx))
-	{
-	$idx = "list";
-	}
-
-if(!isset($rfurl))
-	{
-	$rfurl = $GLOBALS['babUrlScript']."?tg=artedit&idx=list";
-	}
-
-if( isset($updstep01))
+else 
 {
+$idx = bab_rp('idx', 'list');
+
+$rfurl = bab_rp('rfurl', $GLOBALS['babUrlScript']."?tg=artedit&idx=list");
+
+if( $updstep01 = bab_rp('updstep01'))
+{
+
 	if( $updstep01 == 'cancel')
 	{
 		$idx='unload';
 		$refreshurl = $rfurl;
-		$popupmessage = "";
+		$popupmessage = '';
 	}
 	elseif( $updstep01 == 'next')
 	{
 		$idx = 's01';
 	}
 }
-elseif( isset($updstep02))
+elseif( $updstep02 = bab_rp('updstep02') )
 {
 	if( $updstep02 == 'cancel' )
 	{
 		$idx='unload';
 		$refreshurl = $rfurl;
-		$popupmessage = "";
+		$popupmessage = '';
 	}
 	elseif( $updstep02 == 'prev' )
 	{
@@ -2429,53 +2359,61 @@ elseif( isset($updstep02))
 	}
 	elseif( $updstep02 == 'next' )
 	{
+		$topicid = bab_pp('topicid', 0);
+		$articleid = bab_pp('articleid', 0);
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$topicid."&article=".$articleid."&rfurl=".urlencode($GLOBALS['babUrlScript']."?tg=artedit&idx=list"));
 		exit;
 	}
 }
-elseif( isset($updstep0))
+elseif( $updstep0 = bab_rp('updstep0') )
 {
 	if( $updstep0 == 'cancel' )
 	{
-		if( isset($idart) && $idart != 0 )
+		if( isset($_POST['idart']) && $_POST['idart'] != 0 )
 			{
-			deleteDraft($idart);
-			unset($idart);
+			deleteDraft($_POST['idart']);
+			unset($_POST['idart']);
 			}
 		$idx='unload';
 		$refreshurl = $rfurl;
-		$popupmessage = "";
+		$popupmessage = '';
 	}
 }
-elseif( isset($updstep1))
+elseif( $updstep1 = bab_rp('updstep1') )
 {
 	if( $updstep1 == 'cancel' )
 	{
-		if( isset($idart) && $idart != 0 )
+		if( isset($_POST['idart']) && $_POST['idart'] != 0 )
 			{
-			deleteDraft($idart);
-			unset($idart);
+			deleteDraft($_POST['idart']);
+			unset($_POST['idart']);
 			}
 		$idx='unload';
 		$refreshurl = $rfurl;
-		$popupmessage = "";
+		$popupmessage = '';
 	}
 	elseif( $updstep1 == 'save' )
 	{
-		if( !isset($idart) || $idart == 0 )
+		if( !isset($_POST['idart']) || $_POST['idart'] == 0 )
 			{
 			$idart = bab_newArticleDraft($topicid, $articleid);
 			}
-		if( !isset($approbid)) { $approbid =0;}
+		else
+			{
+			$idart = bab_pp('idart', 0);
+			}
+
+		$approbid = bab_pp('approbid', 0);
 		$message = '';
 		if( $idart == 0 )
 		{
 			$message = bab_translate("Draft creation failed");
 			$idx = 's0';
-		}elseif(!updateArticleDraft($idart, $title, $headtext, $bodytext, $lang, $approbid, $message))
+		}elseif(!updateArticleDraft($idart, bab_pp('title'), bab_pp('headtext'), bab_pp('bodytext'), bab_pp('lang'), $approbid, $message))
 		{
 			deleteDraft($idart);
 			unset($idart);
+			unset($_POST['idart']);
 			$idx = 's1';
 		}
 		else
@@ -2491,10 +2429,15 @@ elseif( isset($updstep1))
 	}
 	elseif( $updstep1 == 'submit' )
 	{
-		if( !isset($idart) || $idart == 0 )
+		if( !isset($_POST['idart']) || $_POST['idart'] == 0 )
 			{
 			$idart = bab_newArticleDraft($topicid, $articleid);
 			}
+		else
+			{
+			$idart = bab_pp('idart', 0);
+			}
+
 		if( !isset($approbid)) { $approbid =0;}
 		$message = '';
 		if( $idart == 0 )
@@ -2505,6 +2448,7 @@ elseif( isset($updstep1))
 		{
 			deleteDraft($idart);
 			unset($idart);
+			unset($_POST['idart']);
 			$idx = 's1';
 		}
 		else
@@ -2524,20 +2468,27 @@ elseif( isset($updstep1))
 	}
 	elseif( $updstep1 == 'next' )
 	{
-		if( !isset($idart) || $idart == 0 )
+		if( !isset($_POST['idart']) || $_POST['idart'] == 0 )
 			{
 			$idart = bab_newArticleDraft($topicid, $articleid);
 			}
-		if( !isset($approbid)) { $approbid =0;}
+		else
+			{
+			$idart = bab_pp('idart', 0);
+			}
+		
+		$approbid = bab_pp('approbid', 0);
+
 		$message = '';
 		if( $idart == 0 )
 		{
 			$message = bab_translate("Draft creation failed");
 			$idx = 's0';
-		}elseif(!updateArticleDraft($idart, $title, $headtext, $bodytext, $lang, $approbid, $message))
+		}elseif(!updateArticleDraft($idart, bab_pp('title'), bab_pp('headtext'), bab_pp('bodytext'), bab_pp('lang'), $approbid, $message))
 		{
 			deleteDraft($idart);
 			unset($idart);
+			unset($_POST['idart']);
 			$idx = 's1';
 		}
 		else
@@ -2546,25 +2497,26 @@ elseif( isset($updstep1))
 		}
 	}
 }
-elseif( isset($updstep2))
+elseif( $updstep2 = bab_rp('updstep2') )
 {
 	if( $updstep2 == 'cancel' )
 	{
-		if( isset($idart) && $idart != 0 )
+		if( isset($_POST['idart']) && $_POST['idart'] != 0 )
 			{
-			deleteDraft($idart);
+			deleteDraft($_POST['idart']);
 			unset($idart);
+			unset($_POST['idart']);
 			}
 		$idx='unload';
 		$refreshurl = $rfurl;
-		$popupmessage = "";
+		$popupmessage = '';
 	}
 	elseif( $updstep2 == 'save' )
 	{
 		$idx='unload';
-		if( isset($approbid)) 
+		if( isset($_POST['approbid'])) 
 			{ 
-			savePreviewDraft($idart, $approbid);
+			savePreviewDraft($_POST['idart'], $_POST['approbid']);
 			}
 		$popupmessage = bab_translate("Update done");
 		$refreshurl = $rfurl;
@@ -2572,11 +2524,12 @@ elseif( isset($updstep2))
 	elseif( $updstep2 == 'submit' )
 	{
 		$message = '';
-		if( isset($approbid)) 
+		if( isset($_POST['approbid'])) 
 			{ 
-			savePreviewDraft($idart, $approbid);
+			savePreviewDraft($_POST['idart'], $_POST['approbid']);
 			}
-		if( !submitArticleDraft( $idart, $message) )
+
+		if( !submitArticleDraft( $_POST['idart'], $message) )
 			{
 			$idx = 's2';
 			}
@@ -2589,9 +2542,9 @@ elseif( isset($updstep2))
 	}
 	elseif( $updstep2 == 'next' )
 	{
-		if( isset($approbid)) 
+		if( isset($_POST['approbid'])) 
 			{
-			savePreviewDraft($idart, $approbid);
+			savePreviewDraft($_POST['idart'], $_POST['approbid']);
 			}
 		$idx = 's3';
 	}
@@ -2600,27 +2553,28 @@ elseif( isset($updstep2))
 		$idx = 's1';
 	}
 }
-elseif( isset($updstep3))
+elseif( $updstep3 = bab_rp('updstep3') )
 {
 	if( $updstep3 == 'cancel' )
 	{
-		if( isset($idart) && $idart != 0 )
+		if( isset($_POST['idart']) && $_POST['idart'] != 0 )
 			{
-			deleteDraft($idart);
+			deleteDraft($_POST['idart']);
 			unset($idart);
+			unset($_POST['idart']);
 			}
 		$idx='unload';
 		$refreshurl = $rfurl;
-		$popupmessage = "";
+		$popupmessage = '';
 	}
 	elseif( $updstep3 == 'fadd')
 	{
-		if( isset($idart) && $idart != 0 )
+		if( isset($_POST['idart']) && $_POST['idart'] != 0 )
 		{
 		$message = '';
-		if( addDocumentArticleDraft($idart, $message) )
+		if( addDocumentArticleDraft($_POST['idart'], $message) )
 			{
-			Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=s3&idart=".$idart);
+			Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=s3&idart=".$_POST['idart']);
 			exit;
 			}
 		else
@@ -2632,10 +2586,10 @@ elseif( isset($updstep3))
 	}
 	elseif( $updstep3 == 'delf')
 	{
-		if( isset($idart) && $idart != 0 )
+		if( isset($_GET['idart']) && $_GET['idart'] != 0 )
 		{
-		delDocumentArticleDraft( $idart, $idf );
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=s3&idart=".$idart);
+		delDocumentArticleDraft( $_GET['idart'], $_GET['idf'] );
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=s3&idart=".$_GET['idart']);
 		}
 		$idx='s3';
 	}
@@ -2667,7 +2621,7 @@ elseif( isset($updstep3))
 		else
 		{
 		$message = '';
-		if( !submitArticleDraft( $idart, $message) )
+		if( !submitArticleDraft( $_POST['idart'], $message) )
 			{
 			$idx = 's3';
 			}
@@ -2688,12 +2642,17 @@ elseif( isset($updstep3))
 
 if($idx == 'movet')
 {
+	$idart = bab_gp('idart', 0);
+	if( $idart )
+	{
 	moveArticleDraftToTrash($idart);
+	}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=list");
 	exit;
 }elseif( $idx == 'restore')
 {
-	if( !restoreArticleDraft($idart))
+	$idart = bab_gp('idart', 0);
+	if( $idart && !restoreArticleDraft($idart))
 	{
 		$idx = 'ltrash';
 	}
@@ -2709,19 +2668,24 @@ if($idx == 'movet')
 	exit;
 }elseif( $idx == 'delt')
 {
+	$idart = bab_gp('idart', 0);
+	if( $idart )
+	{
 	deleteDraft($idart);
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=lsub");
+	}
+	Header('Location: '. $GLOBALS['babUrlScript'].'?tg=artedit&idx=lsub');
 	exit;
 }elseif( $idx == 'rests')
 {
-	if(!restoreRefusedArticleDraft($idart))
+	$idart = bab_gp('idart', 0);
+	if($idart && !restoreRefusedArticleDraft($idart))
 		{
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=lsub");
+		Header('Location: '. $GLOBALS['babUrlScript'].'?tg=artedit&idx=lsub');
 		exit;
 		}
 	else
 		{
-		$idx = "lsub";
+		$idx = 'lsub';
 		}
 }
 }
@@ -2730,13 +2694,12 @@ if($idx == 'movet')
 
 switch($idx)
 	{
-	case "denied":
+	case 'denied':
 		$babBody->msgerror = bab_translate("Access denied");
 		break;
 
 	case "s00": // Selection of a topic for the modification of an article.
-		if (!isset($topicid))
-			$topicid = '';
+		$topicid = bab_rp('topicid');
 		$babBodyPopup = new babBodyPopup();
 		$babBodyPopup->title = bab_translate("Choose the topic");
 		showTopicTree(BAB_TOPIC_MODIFY, $topicid);
@@ -2747,19 +2710,17 @@ switch($idx)
 	case "s01":
 		$babBodyPopup = new babBodyPopup();
 		$babBodyPopup->title = bab_translate("Choose the article");
+		$topicid = bab_rp('topicid');
 		showChoiceArticleModify($topicid);
-//		showArticleList($topicid);
 		printBabBodyPopup();
 		exit;
 		break;
 
 	case "s0": // Selection of a topic for the publication of an article.
-		if (!isset($topicid))
-			$topicid = '';
+		$topicid = bab_rp('topicid');
 		$babBodyPopup = new babBodyPopup();
 		$babBodyPopup->title = bab_translate("Choose the topic");
 		showTopicTree(BAB_TOPIC_SUBMIT, $topicid);
-//		showChoiceTopic();
 		printBabBodyPopup();
 		exit;
 		break;
@@ -2788,6 +2749,7 @@ switch($idx)
 		$babBodyPopup = new babBodyPopup();
 		$babBodyPopup->msgerror = $message;
 		$babBodyPopup->title = bab_translate("Set article properties");
+		$idart = bab_rp('idart', 0);
 		showSetArticleProperties($idart);
 		printBabBodyPopup();
 		exit;
@@ -2799,28 +2761,43 @@ switch($idx)
 		popupUnload($popupmessage, $refreshurl);
 		exit;
 	case "getf":
+		$idart = bab_rp('idart', 0);
+		$idf = bab_rp('idf', 0);
 		getDocumentArticleDraft( $idart, $idf );
 		exit;
 		break;
 	case "propa":
+		$idart = bab_rp('idart', 0);
 		propertiesArticle( $idart);
 		exit;
 		break;
 	case "preview":
+		$idart = bab_gp('idart', 0);
 		previewArticleDraft($idart);
 		exit;
 		break;
 	case "edit":
 		if( !isset($message)) { $message = '';}
-		if( !isset($title)) { $title = '';}
-		if( !isset($headtext)) { $headtext = '';}
-		if( !isset($bodytext)) { $bodytext = '';}
-		if( !isset($lang)) { $lang = '';}
 		$babBodyPopup = new babBodyPopup();
-		$babBodyPopup->title = bab_translate("Article edition");
-		editArticleDraft($idart, $title, $headtext, $bodytext, $lang, $message);
-		printBabBodyPopup();
-		exit;
+		$idart = bab_rp('idart', 0);
+		if( $idart )
+		{
+			$title = bab_gp('title');
+			$headtext = bab_gp('headtext');
+			$bodytext = bab_gp('bodytext');
+			$lang = bab_gp('lang');
+			$babBodyPopup->title = bab_translate("Article edition");
+			editArticleDraft($idart, $title, $headtext, $bodytext, $lang, $message);
+			printBabBodyPopup();
+			exit;
+		}
+		else
+		{
+			$babBodyPopup->title = bab_translate("Article edition");
+			$babBodyPopup->msgerror = bab_translate("Acess denied");
+			printBabBodyPopup();
+			exit;
+		}
 		break;
 	case "ltrash":
 		$arrinit = artedit_init();
@@ -2855,7 +2832,8 @@ switch($idx)
 		$babBody->addItemMenu("lsub", bab_translate("My Articles"), $GLOBALS['babUrlScript']."?tg=artedit&idx=lsub");
 		break;
 	case "sub":
-		if( submitArticleDraft( $idart, $babBody->msgerror, true) )
+		$idart = bab_rp('idart', 0);
+		if( $idart && submitArticleDraft( $idart, $babBody->msgerror, true) )
 			{
 			//Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=list");
 			//exit;

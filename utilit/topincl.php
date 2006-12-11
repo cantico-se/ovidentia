@@ -21,7 +21,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
+/**
+* @internal SEC1 NA 08/12/2006 FULL
+*/
+include_once 'base.php';
 
 class categoriesHierarchy
 {
@@ -40,7 +43,7 @@ class categoriesHierarchy
 
 		if( $topics != 0 )
 			{
-			$res = $babDB->db_query("select id_cat, category from ".BAB_TOPICS_TBL." where id='".$topics."'");
+			$res = $babDB->db_query("select id_cat, category from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($topics)."'");
 			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
 				$arr = $babDB->db_fetch_array($res);
@@ -96,7 +99,7 @@ class categoriesHierarchy
 				{
 				$this->burl = true;
 				$this->parenturl = bab_toHtml($this->link."&cat=".$this->arrparents[$i][0]);
-					}
+				}
 			$this->parentname = bab_toHtml($this->arrparents[$i][1]);
 			$i++;
 			return true;
@@ -147,12 +150,12 @@ function viewCategoriesHierarchy_txt($topics)
 
 function bab_getCategoryTitle($id)
 	{
-	$db = $GLOBALS['babDB'];
-	$query = "select category from ".BAB_TOPICS_TBL." where id='$id'";
-	$res = $db->db_query($query);
-	if( $res && $db->db_num_rows($res) > 0)
+	global $babDB;
+	$query = "select category from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($id)."'";
+	$res = $babDB->db_query($query);
+	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-		$arr = $db->db_fetch_array($res);
+		$arr = $babDB->db_fetch_array($res);
 		return $arr['category'];
 		}
 	else
@@ -163,12 +166,12 @@ function bab_getCategoryTitle($id)
 
 function bab_getCategoryDescription($id)
 	{
-	$db = $GLOBALS['babDB'];
-	$query = "select description from ".BAB_TOPICS_TBL." where id='$id'";
-	$res = $db->db_query($query);
-	if( $res && $db->db_num_rows($res) > 0)
+	global $babDB;
+	$query = "select description from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($id)."'";
+	$res = $babDB->db_query($query);
+	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-		$arr = $db->db_fetch_array($res);
+		$arr = $babDB->db_fetch_array($res);
 		return $arr['description'];
 		}
 	else
@@ -179,12 +182,12 @@ function bab_getCategoryDescription($id)
 
 function bab_getTopicCategoryTitle($id)
 	{
-	$db = $GLOBALS['babDB'];
-	$query = "select title from ".BAB_TOPICS_CATEGORIES_TBL." where id='$id'";
-	$res = $db->db_query($query);
-	if( $res && $db->db_num_rows($res) > 0)
+	global $babDB;
+	$query = "select title from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$babDB->db_escape_string($id)."'";
+	$res = $babDB->db_query($query);
+	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-		$arr = $db->db_fetch_array($res);
+		$arr = $babDB->db_fetch_array($res);
 		return $arr['title'];
 		}
 	else
@@ -195,12 +198,12 @@ function bab_getTopicCategoryTitle($id)
 
 function bab_getTopicCategoryDescription($id)
 	{
-	$db = $GLOBALS['babDB'];
-	$query = "select description from ".BAB_TOPICS_CATEGORIES_TBL." where id='$id'";
-	$res = $db->db_query($query);
-	if( $res && $db->db_num_rows($res) > 0)
+	global $babDB;
+	$query = "select description from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$babDB->db_escape_string($id)."'";
+	$res = $babDB->db_query($query);
+	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-		$arr = $db->db_fetch_array($res);
+		$arr = $babDB->db_fetch_array($res);
 		return $arr['description'];
 		}
 	else
@@ -211,12 +214,12 @@ function bab_getTopicCategoryDescription($id)
 
 function bab_getArticleTitle($article)
 	{
-	$db = $GLOBALS['babDB'];
-	$query = "select title from ".BAB_ARTICLES_TBL." where id='$article'";
-	$res = $db->db_query($query);
-	if( $res && $db->db_num_rows($res) > 0)
+	global $babDB;
+	$query = "select title from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($article)."'";
+	$res = $babDB->db_query($query);
+	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-		$arr = $db->db_fetch_array($res);
+		$arr = $babDB->db_fetch_array($res);
 		return $arr['title'];
 		}
 	else
@@ -228,12 +231,12 @@ function bab_getArticleTitle($article)
 // used in add-ons since 4.09
 function bab_getArticleArray($article,$fullpath = false)
 	{
-	$db = $GLOBALS['babDB'];
-	$query = "select a.*,t.category topic from ".BAB_ARTICLES_TBL." a,".BAB_TOPICS_TBL." t where a.id='".$article."' AND t.id=a.id_topic";
-	$res = $db->db_query($query);
-	if( $res && $db->db_num_rows($res) > 0)
+	global $babDB;
+	$query = "select a.*,t.category topic from ".BAB_ARTICLES_TBL." a,".BAB_TOPICS_TBL." t where a.id='".$babDB->db_escape_string($article)."' AND t.id=a.id_topic";
+	$res = $babDB->db_query($query);
+	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-		$arr = $db->db_fetch_array($res);
+		$arr = $babDB->db_fetch_array($res);
 		if ($fullpath) $arr['CategoriesHierarchy'] = viewCategoriesHierarchy_txt($arr['id_topic']);
 		return $arr;
 		}
@@ -245,12 +248,12 @@ function bab_getArticleArray($article,$fullpath = false)
 
 function bab_getArticleDate($article)
 	{
-	$db = $GLOBALS['babDB'];
-	$query = "select date from ".BAB_ARTICLES_TBL." where id='$article'";
-	$res = $db->db_query($query);
-	if( $res && $db->db_num_rows($res) > 0)
+	global $babDB;
+	$query = "select date from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($article)."'";
+	$res = $babDB->db_query($query);
+	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-		$arr = $db->db_fetch_array($res);
+		$arr = $babDB->db_fetch_array($res);
 		return bab_strftime(bab_mktime($arr['date']));
 		}
 	else
@@ -261,17 +264,17 @@ function bab_getArticleDate($article)
 
 function bab_getArticleAuthor($article)
 	{
-	$db = $GLOBALS['babDB'];
-	$query = "select id_author from ".BAB_ARTICLES_TBL." where id='$article'";
-	$res = $db->db_query($query);
-	if( $res && $db->db_num_rows($res) > 0)
+	global $babDB;
+	$query = "select id_author from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($article)."'";
+	$res = $babDB->db_query($query);
+	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-		$arr = $db->db_fetch_array($res);
-		$query = "select firstname, lastname from ".BAB_USERS_TBL." where id='".$arr['id_author']."'";
-		$res = $db->db_query($query);
-		if( $res && $db->db_num_rows($res) > 0)
+		$arr = $babDB->db_fetch_array($res);
+		$query = "select firstname, lastname from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($arr['id_author'])."'";
+		$res = $babDB->db_query($query);
+		if( $res && $babDB->db_num_rows($res) > 0)
 			{
-			$arr = $db->db_fetch_array($res);
+			$arr = $babDB->db_fetch_array($res);
 			return bab_composeUserName($arr['firstname'], $arr['lastname']);
 			}
 		else
@@ -285,12 +288,12 @@ function bab_getArticleAuthor($article)
 
 function bab_getCommentTitle($com)
 	{
-	$db = $GLOBALS['babDB'];
-	$query = "select subject from ".BAB_COMMENTS_TBL." where id='$com'";
-	$res = $db->db_query($query);
-	if( $res && $db->db_num_rows($res) > 0)
+	global $babDB;
+	$query = "select subject from ".BAB_COMMENTS_TBL." where id='".$babDB->db_escape_string($com)."'";
+	$res = $babDB->db_query($query);
+	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-		$arr = $db->db_fetch_array($res);
+		$arr = $babDB->db_fetch_array($res);
 		return $arr['subject'];
 		}
 	else

@@ -21,6 +21,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
+/**
+* @internal SEC1 NA 08/12/2006 FULL
+*/
 include_once 'base.php';
 include_once $babInstallPath.'utilit/uiutil.php';
 include_once $babInstallPath.'utilit/mailincl.php';
@@ -133,9 +136,13 @@ function addComment($topics, $article, $subject, $message, $com="")
 
 			$arr = $babDB->db_fetch_array($babDB->db_query("select idsacom from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($topics)."'"));
 			if( $arr['idsacom'] != 0 )
+				{
 				$this->notcom = bab_translate("Note: for this topic, comments are moderate");
+				}
 			else
+				{
 				$this->notcom = '';
+				}
 			}
 		}
 
@@ -226,16 +233,20 @@ function saveComment($topics, $article, $subject, $message, $com, &$msgerror)
 	}
 
 /* main */
+$topics = bab_rp('topics', 0);
+$article = bab_rp('article', 0);
+$msgerror = '';
+$popupmessage = '';
+
 if( count($babBody->topview) == 0 || !isset($babBody->topview[$topics]))
 {
 	$idx = 'denied';
 }
-
-
-if(isset($addcomment) && bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $topics))
+else
+{
+if(isset($_POST['addcomment']) && bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $topics))
 	{
-	$msgerror = '';
-	if( !saveComment($topics, $article, $subject, $message, $com, $msgerror))
+	if( !saveComment($topics, $article, bab_pp('subject'), bab_pp('message'), bab_pp('com'), $msgerror))
 		{
 		$idx = "List";
 		}
@@ -245,6 +256,7 @@ if(isset($addcomment) && bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $topics))
 		$idx = "unload";
 		}
 	}
+}
 
 switch($idx)
 	{
@@ -257,8 +269,7 @@ switch($idx)
 
 	case "unload":
 		include_once $babInstallPath."utilit/uiutil.php";
-		if( !isset($popupmessage)) { $popupmessage ='';}
-		if( !isset($refreshurl)) { $refreshurl ='';}
+		$refreshurl = bab_rp('refreshurl');
 		popupUnload($popupmessage, $refreshurl, true);
 		exit;
 		break;
@@ -268,14 +279,11 @@ switch($idx)
 
 	default:
 	case "List":
-		if( !isset($msgerror)) { $msgerror = '';}
 		$babBodyPopup = new babBodyPopup();
 		$babBodyPopup->title = bab_translate("List of comments");
 		$babBodyPopup->msgerror = $msgerror;
 		listComments($topics, $article);
-		if(!isset($subject)){ $subject = "";}
-		if(!isset($message)){ $message = "";}
-		addComment($topics, $article, $subject, $message, "");
+		addComment($topics, $article, bab_pp('subject'), bab_pp('message'), '');
 		printBabBodyPopup();
 		exit;
 		break;

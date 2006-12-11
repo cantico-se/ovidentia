@@ -1,11 +1,13 @@
+
 <!--#begin draftslist -->
 <script type="text/javascript">
 <!--
 function confirm_submit(url)
 	{
-	//{}
 	if (confirm('{ js_confirm_submit }'))
+		{
 		document.location.href=url;
+		}
 	}
 //-->
 </script>
@@ -214,75 +216,6 @@ window.focus();
 <!--#end propertiesarticles -->
 
 
-<!--#begin modtopicchoicestep -->
-<!--#if count "> 0" -->
-<script type="text/javascript">
-<!--
-function stepSubmitForm(cmd, fmname) 
-{ 
-if( typeof document.forms[fmname] != "object" ) return;
-document.forms[fmname].updstep01.value = cmd;
-}
-//-->
-</script>
-<form name="step01form" method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="artedit">
-<input type="hidden" name="idx" value="s01">
-<input type="hidden" name="rfurl" value="{ rfurl }">
-<input type="hidden" name="updstep01" value="">
-<br>
-<table width="95%" cellpadding="0" cellspacing="0" align="center">
-<tr> 
-<td> 
-<span style="background-color:#D1D1D9">&nbsp;{ steptitle }&nbsp;</span>
-</td>
-</tr>
-</table>
-<table style="border:2px #D1D1D9 solid" width="95%" cellpadding="0" cellspacing="0" align="center">
-<tr> 
-<td><br>
-<!--#in getnexttopic -->
-<table width="97%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr>
-<td class="BabLoginCadreBackground">
-<table class="BabSiteAdminFontBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
-<tr> 
-<td width="97%" align="left" valign="top" nowrap class="BabTopicsAdminListTitle"><strong>{ topicpath }</strong></td>
-<td width="1%" align="right" valign="top" nowrap class="BabTopicsAdminListTitle"><input type="radio" name="topicid" value="{ idtopic }" { topicchecked }>
-</td>
-</tr>
-</table>
-<table class="BabSiteAdminFontBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
-<tr> 
-<td colspan="4">{ description } </td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
-<br>
-<!--#endin getnexttopic -->
-<table width="97%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr>
-<td class="BabLoginCadreBackground">
-<table class="BabSiteAdminFontBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
-<tr> 
-<td colspan="4" align="right"><input type="submit" name="bcancel" value="{ canceltxt }" onclick="javascript:stepSubmitForm('cancel','step01form');">&nbsp;&nbsp;<input type="submit" name="bnext" value="{ nexttxt }" onclick="javascript:stepSubmitForm('next','step01form');"></td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
-
-<br>
-</td>
-</tr>
-</table>
-</form>
-<!--#endif count -->
-<!--#end modtopicchoicestep -->
-
-
 <!--#begin modarticlechoicestep -->
 <script type="text/javascript">
 <!--
@@ -354,7 +287,6 @@ document.forms[fmname].updstep02.value = cmd;
 
 </form>
 <!--#end modarticlechoicestep -->
-
 
 
 <!--#begin topictree -->
@@ -433,14 +365,14 @@ function searchTree(textInput)
 	  <!--#endif levelVariation -->
 	  <!--#if levelVariation ">= -1" -->
 	    <li id="{ node_id }">
-	      <div title="{ data[description] }">
+	      <div title="{ data_description }">
 		    <!--#if data[type] "== category" -->
 	        <img src="{ babSkinPath }images/Puces/category.gif" />
-			<b id="content{ node_id }">{ data[title] }</b>
+			<b id="content{ node_id }">{ data_title }</b>
 			<!--#endif data[type] -->
 		    <!--#if data[type] "== topic" -->
 	        <img src="{ babSkinPath }images/Puces/topic.gif" />
-			<a id="content{ node_id }" href="javascript:selectTopic({ data[topic_id] });">{ data[title] }</a>
+			<a id="content{ node_id }" href="javascript:selectTopic({ data_topic_id });">{ data_title }</a>
 			<!--#endif data[type] -->
 	      </div>
 	  <!--#endif levelVariation -->
@@ -459,82 +391,6 @@ if (!tree.highlightItem('{ selectedNodeId }'))
 <!--#end topictree -->
 
 
-
-
-
-<!--#begin topicchoicestep -->
-<script type="text/javascript">
-<!--
-function stepSubmitForm(cmd, fmname) 
-{ 
-if( typeof document.forms[fmname] != "object" ) return;
-document.forms[fmname].updstep0.value = cmd;
-}
-//-->
-</script>
-<form name="step0form" method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="artedit">
-<input type="hidden" name="idx" value="s1">
-<input type="hidden" name="idart" value="{ idart }">
-<!--#if bcontent -->
-<input type="hidden" name="title" value="{ title }">
-<input type="hidden" name="headtext" value="{ headtext }">
-<input type="hidden" name="bodytext" value="{ bodytext }">
-<input type="hidden" name="lang" value="{ lang }">
-<!--#endif bcontent -->
-<input type="hidden" name="rfurl" value="{ rfurl }">
-<input type="hidden" name="updstep0" value="">
-<br>
-<table width="95%" cellpadding="0" cellspacing="0" align="center">
-<tr> 
-<td> 
-<span style="background-color:#D1D1D9">&nbsp;{ steptitle }&nbsp;</span>
-</td>
-</tr>
-</table>
-<table style="border:2px #D1D1D9 solid" width="95%" cellpadding="0" cellspacing="0" align="center">
-<tr> 
-<td><br>
-<!--#in getnexttopic -->
-<table width="97%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr>
-<td class="BabLoginCadreBackground">
-<table class="BabSiteAdminFontBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
-<tr> 
-<td width="97%" align="left" valign="top" nowrap class="BabTopicsAdminListTitle"><strong>{ topicpath }</strong></td>
-<td width="1%" align="right" valign="top" nowrap class="BabTopicsAdminListTitle"><input type="radio" name="topicid" value="{ idtopic }" { topicchecked }>
-</td>
-</tr>
-</table>
-<table class="BabSiteAdminFontBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
-<tr> 
-<td colspan="4">{ description } </td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
-<br>
-<!--#endin getnexttopic -->
-<table width="97%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr>
-<td class="BabLoginCadreBackground">
-<table class="BabSiteAdminFontBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
-<tr> 
-<td colspan="4" align="right"><input type="submit" name="bcancel" value="{ canceltxt }" onclick="javascript:stepSubmitForm('cancel','step0form');">&nbsp;&nbsp;<input type="submit" name="bnext" value="{ nexttxt }" onclick="javascript:stepSubmitForm('next','step0form');"></td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
-
-<br>
-</td>
-</tr>
-</table>
-</form>
-<!--#end topicchoicestep -->
-
 <!--#begin editarticlestep -->
 <!--#if access -->
 <script type="text/javascript">
@@ -548,16 +404,17 @@ return true;
 
 function confirmForm(fmname) 
 {
+
 if(document.forms[fmname].updstep1.value == "submit" )
 {
-	//{ confirmsubmit }
+	/*{ confirmsubmit }*/
 	if( !window.confirm('{ confirmsubmit }'))
 		return false;
 }
 
 if( document.forms[fmname].updstep1.value == "cancel" )
 {
-	//{ confirmcancel }
+	/*{ confirmcancel }*/
 	if( !window.confirm('{ confirmcancel }'))
 		return false;
 }
@@ -633,14 +490,14 @@ function confirmForm(fmname)
 {
 if(document.forms[fmname].updstep2.value == "submit" )
 {
-	//{ confirmsubmit }
+	/*{ confirmsubmit }*/
 	if( !window.confirm('{ confirmsubmit }'))
 		return false;
 }
 
 if( document.forms[fmname].updstep2.value == "cancel" )
 {
-	//{ confirmcancel }
+	/*{ confirmcancel }*/
 	if( !window.confirm('{ confirmcancel }'))
 		return false;
 }
@@ -694,6 +551,7 @@ document.forms[fmname].updstep2.value = cmd;
 <!--#endif access -->
 <!--#end previewarticlestep -->
 
+
 <!--#begin propertiesarticlestep -->
 <!--#if access -->
 <script type="text/javascript">
@@ -702,14 +560,14 @@ function confirmForm(fmname)
 {
 if(document.forms[fmname].updstep3.value == "submit" )
 {
-	//{ confirmsubmit }
+	/*{ confirmsubmit }*/
 	if( !window.confirm('{ confirmsubmit }'))
 		return false;
 }
 
 if( document.forms[fmname].updstep3.value == "cancel" )
 {
-	//{ confirmcancel }
+	/*{ confirmcancel }*/
 	if( !window.confirm('{ confirmcancel }'))
 		return false;
 }

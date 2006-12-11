@@ -21,6 +21,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
+/**
+* @internal SEC1 NA 08/12/2006 FULL
+*/
 include_once 'base.php';
 include_once $babInstallPath.'utilit/topincl.php';
 
@@ -64,7 +67,7 @@ function listTopicCategory($cat)
 			$this->articlestxt = bab_translate("Article") ."(s)";
 			$this->waitingtxt = bab_translate("Waiting");
 			$this->submittxt = bab_translate("Submit");
-			$this->idcat = $cat; /* don't change variable name */
+			$this->idcat = bab_toHTML($cat); /* don't change variable name */
 
 			$arrtopcat = array();
 			$arrtop = array();
@@ -161,21 +164,21 @@ function listTopicCategory($cat)
 				$this->childdescription = trim($this->arrid[$i]['description']);
 				if( $this->arrid[$i][1] == 1 )
 					{
-					$this->childurl = $GLOBALS['babUrlScript']."?tg=topusr&cat=".$this->arrid[$i][0];
+					$this->childurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=topusr&cat=".$this->arrid[$i][0]);
 					$this->istopcat = true;
-					$this->idtopiccategory = $this->arrid[$i][0]; /* don't change variable name */
+					$this->idtopiccategory = bab_toHTML($this->arrid[$i][0]); /* don't change variable name */
 					$this->idtopic = ''; /* don't change variable name */
 					}
 				else
 					{
 					$this->idtopiccategory = '';
-					$this->idtopic = $this->arrid[$i][0];
+					$this->idtopic = bab_toHTML($this->arrid[$i][0]);
 					$this->istopcat = false;
 					if( $this->arrid[$i]['confirmed'] == 0 )
-						$this->submiturl = $GLOBALS['babUrlScript']."?tg=articles&idx=Submit&topics=".$this->arrid[$i][0];
+						$this->submiturl = bab_toHTML($GLOBALS['babUrlScript']."?tg=articles&idx=Submit&topics=".$this->arrid[$i][0]);
 					$this->waitingarticlescount = 0;
 					$this->waitingcommentscount = 0;
-					$this->articlesurl = $GLOBALS['babUrlScript']."?tg=articles&topics=".$this->arrid[$i][0]."&new=".$this->waitingarticlescount."&newc=".$this->waitingcommentscount;
+					$this->articlesurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=articles&topics=".$this->arrid[$i][0]."&new=".$this->waitingarticlescount."&newc=".$this->waitingcommentscount);
 					$this->childurl = $this->articlesurl;
 					}
 
@@ -197,9 +200,9 @@ function listTopicCategory($cat)
 				}
 				else {
 					$topcats = $babBody->get_topcats();
-					$this->parentname = $topcats[$this->arrparents[$i]]['title'];
+					$this->parentname = bab_toHTML($topcats[$this->arrparents[$i]]['title']);
 				}
-				$this->parenturl = $GLOBALS['babUrlScript']."?tg=topusr&cat=".$this->arrparents[$i];
+				$this->parenturl = bab_toHTML($GLOBALS['babUrlScript']."?tg=topusr&cat=".$this->arrparents[$i]);
 				if( $i == $this->parentscount - 1 )
 					$this->burl = false;
 				else
@@ -233,22 +236,15 @@ function listTopicCategory($cat)
 	}
 
 /* main */
-if(!isset($idx))
-	{
-	$idx = "list";
-	}
-
-if(!isset($cat))
-	{
-	$cat = 0;
-	}
+$idx = bab_rp('idx', 'list');
+$cat = bab_rp('cat', 0);
 
 switch($idx)
 	{
 	default:
-	case "list":
+	case 'list':
 		$babLevelTwo = bab_getTopicCategoryTitle($cat);
-		$babBody->title = "";
+		$babBody->title = '';
 		listTopicCategory($cat);
 		break;
 	}

@@ -21,7 +21,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
+/**
+* @internal SEC1 NA 08/12/2006 FULL
+*/
+include_once 'base.php';
 
 function bab_deleteDraftFiles($idart)
 {
@@ -114,7 +117,6 @@ function notifyArticleDraftApprovers($id, $users)
 			function tempa($id)
 				{
 				global $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babSiteName;
-				$db = $GLOBALS['babDB'];
 				$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_ART_DRAFTS_TBL." where id='".$babDB->db_escape_string($id)."'"));
 				$this->articletitle = $arr['title'];
 				$this->articleurl = $GLOBALS['babUrlScript']."?tg=login&cmd=detect&referer=".urlencode($GLOBALS['babUrlScript']."?tg=approb&idx=all");
@@ -296,7 +298,6 @@ function notifyArticleHomePage($top, $title, $homepage0, $homepage1)
 	if( $mail == false )
 		return;
 
-	$db = $GLOBALS['babDB'];
 	$sql = "select email, firstname, lastname from ".BAB_USERS_TBL." ut LEFT JOIN ".BAB_USERS_GROUPS_TBL." ugt on ut.id=ugt.id_object where id_group='3'";
 	$result=$babDB->db_query($sql);
 	while( $arr = $babDB->db_fetch_array($result))
@@ -837,7 +838,7 @@ function bab_previewArticleDraft($idart, $echo=0)
 			if( $i < $this->countf)
 				{
 				$arr = $babDB->db_fetch_array($this->resf);
-				$this->urlfile = $GLOBALS['babUrlScript']."?tg=artedit&idx=getf&idart=".$this->idart."&idf=".$arr['id'];
+				$this->urlfile = bab_toHTML($GLOBALS['babUrlScript']."?tg=artedit&idx=getf&idart=".$this->idart."&idf=".$arr['id']);
 				$this->filename = bab_toHTML($arr['name']);
 				$i++;
 				return true;
@@ -886,7 +887,6 @@ function bab_previewComment($com)
 	
 		var $content;
 		var $arr = array();
-		var $db;
 		var $count;
 		var $res;
 		var $close;
@@ -900,7 +900,7 @@ function bab_previewComment($com)
 			$req = "select * from ".BAB_COMMENTS_TBL." where id='".$babDB->db_escape_string($com)."'";
 			$this->res = $babDB->db_query($req);
 			$this->arr = $babDB->db_fetch_array($this->res);
-			$this->title = bab_replace($this->arr['subject']);
+			$this->title = bab_toHTML(bab_replace($this->arr['subject']));
 			$this->content = bab_replace($this->arr['message']);
 			}
 		}
