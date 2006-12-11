@@ -1207,6 +1207,7 @@ class bab_OrgChart extends bab_TreeView
 		$this->t_zoom_in = bab_translate('Zoom in');
 		$this->t_zoom_out = bab_translate('Zoom out');
 		$this->t_default_view = bab_translate('Default view');
+		$this->t_save_default_view = bab_translate('Save default view');
 		$this->t_print = bab_translate('Print');
 		$this->t_help = bab_translate('Help');
 	}

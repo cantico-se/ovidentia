@@ -2403,6 +2403,7 @@
 <string id="Zoom in">Agrandir</string>
 <string id="Zoom out">Rétrécir</string>
 <string id="Default view">Affichage par défault</string>
+<string id="Save default view">Enregistrer affichage par défault</string>
 <string id="Help">Aide en ligne</string>
 <string id="ERROR: You can't use tags. List tags is empty">ERREUR: Vous ne pouvez pas utiliser les mots clés. La liste des mots clés est vide</string>
 </fr>

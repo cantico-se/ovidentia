@@ -439,6 +439,7 @@ function bab_initOrgChart(orgChartDiv)
 		if (orgChartDiv.adminMode) {
 			var save = createButton('', 'bab_save');
 			save.onclick = bab_saveState;
+			save.title = window.bab_Translations['save_default_view'];
 			toolbar.appendChild(save);
 		}
 
