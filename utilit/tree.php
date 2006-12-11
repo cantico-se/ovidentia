@@ -1748,8 +1748,9 @@ class bab_FileTreeView extends bab_TreeView
 		// Init stats at 0
 		$iterator = $this->_rootNode->createNodeIterator($this->_rootNode);
 		$iterator->nextNode();
-		while ($node = $iterator->nextNode())
+		while ($node = $iterator->nextNode()) {
 			(!is_null($node)) && $node->_data->setInfo('0');
+		}
 
 		$sql = 'SELECT st_fmfile_id AS id, SUM(st_hits) AS hits FROM ' . BAB_STATS_FMFILES_TBL;
 		if ($start || $end) {
@@ -1763,7 +1764,7 @@ class bab_FileTreeView extends bab_TreeView
 		
 		$files = $this->_db->db_query($sql);
 		while ($file = $this->_db->db_fetch_array($files)) {
-			$node =& $this->_rootNode->getNodeById('f' . BAB_TREE_VIEW_ID_SEPARATOR . $file['id']);
+			$node =& $this->_rootNode->getNodeById('g' . BAB_TREE_VIEW_ID_SEPARATOR . $file['id']);
 			if (!is_null($node)) {
 				$element =& $node->getData();
 				$element->setInfo($file['hits']);
@@ -1917,8 +1918,9 @@ class bab_ForumTreeView extends bab_TreeView
 		// Init stats at 0
 		$iterator = $this->_rootNode->createNodeIterator($this->_rootNode);
 		$iterator->nextNode();
-		while ($node = $iterator->nextNode())
+		while ($node = $iterator->nextNode()) {
 			(!is_null($node)) && $node->_data->setInfo('0');
+		}
 
 		$sql = 'SELECT st_post_id AS id, SUM(st_hits) AS hits FROM ' . BAB_STATS_POSTS_TBL;
 		if ($start || $end) {
