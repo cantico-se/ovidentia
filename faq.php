@@ -21,6 +21,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
+/**
+* @internal SEC1 NA 11/12/2006 FULL
+*/
 include_once 'base.php';
 include_once $babInstallPath.'utilit/topincl.php';
 include_once $babInstallPath.'utilit/treeincl.php';
@@ -29,7 +32,7 @@ include_once $babInstallPath.'utilit/imgincl.php';
 function isUserManager()
 	{
 	global $faqinfo;
-	if( bab_isAccessValid(BAB_FAQMANAGERS_GROUPS_TBL,$faqinfo['id']))
+	if( isset($faqinfo['id']) && bab_isAccessValid(BAB_FAQMANAGERS_GROUPS_TBL,$faqinfo['id']))
 		{
 		return true;
 		}
@@ -69,9 +72,9 @@ function listCategories()
 				if( $res && $babDB->db_num_rows($res) > 0)
 					{
 					$this->arr = $babDB->db_fetch_array($res);
-					$this->arr['description'] = $this->arr['description'];
-					$this->urlcategory = $GLOBALS['babUrlScript']."?tg=faq&idx=Print&item=".$this->arr['id'];
-					$this->namecategory = $this->arr['category'];
+					$this->description = bab_toHTML($this->arr['description']);
+					$this->urlcategory = bab_toHTML($GLOBALS['babUrlScript']."?tg=faq&idx=Print&item=".$this->arr['id']);
+					$this->namecategory = bab_toHTML($this->arr['category']);
 					}
 				$i++;
 				return true;
@@ -158,7 +161,7 @@ function FaqTableOfContents($idcat)
 				$this->update = false;
 				}
 
-			$this->res = $babDB->db_query("select fst.* from ".BAB_FAQ_SUBCAT_TBL." fst LEFT JOIN ".BAB_FAQ_TREES_TBL." ftt on ftt.id=fst.id_node where id_cat='".$babDB->db_escape_string($this->idcat)."' and ftt.id_user='".$this->idcat."' order by ftt.lf asc");
+			$this->res = $babDB->db_query("select fst.* from ".BAB_FAQ_SUBCAT_TBL." fst LEFT JOIN ".BAB_FAQ_TREES_TBL." ftt on ftt.id=fst.id_node where id_cat='".$babDB->db_escape_string($idcat)."' and ftt.id_user='".$idcat."' order by ftt.lf asc");
 			$this->count = $babDB->db_num_rows($this->res);
 			}
 
@@ -193,7 +196,7 @@ function FaqTableOfContents($idcat)
 					}
 				else
 					{
-					$this->subcatname = $row['name'];
+					$this->subcatname = bab_toHTML($row['name']);
 					$this->burl = true;
 					}
 
@@ -229,8 +232,8 @@ function FaqTableOfContents($idcat)
 						$this->leaf = 0;
 						}
 					}
-				$this->subcaturl = $GLOBALS['babUrlScript']."?tg=faq&idx=listq&item=".$this->idcat."&idscat=".$row['id'];
-				$this->modifycurl = $GLOBALS['babUrlScript']."?tg=faq&idx=ModifyC&item=".$this->idcat."&ids=".$row['id'];
+				$this->subcaturl = bab_toHTML($GLOBALS['babUrlScript']."?tg=faq&idx=listq&item=".$this->idcat."&idscat=".$row['id']);
+				$this->modifycurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=faq&idx=ModifyC&item=".$this->idcat."&ids=".$row['id']);
 				$this->resq = $babDB->db_query("select * from ".BAB_FAQQR_TBL." where idcat='".$babDB->db_escape_string($this->idcat)."' and id_subcat='".$babDB->db_escape_string($row['id'])."'");
 				$this->countq = $babDB->db_num_rows($this->resq);
 				$i++;
@@ -247,10 +250,10 @@ function FaqTableOfContents($idcat)
 			if( $i < $this->countq)
 				{
 				$row = $babDB->db_fetch_array($this->resq);
-				$this->idq = $row['id'];
-				$this->questionname = $row['question'];
-				$this->modifyqurl = $GLOBALS['babUrlScript']."?tg=faq&idx=ModifyQ&item=".$this->idcat."&idscat=".$row['id_subcat']."&idq=".$row['id'];
-				$this->questionurl = $GLOBALS['babUrlScript']."?tg=faq&idx=listq&item=".$this->idcat."&idscat=".$row['id_subcat']."&idq=".$row['id'];
+				$this->idq = bab_toHTML($row['id']);
+				$this->questionname = bab_toHTML($row['question']);
+				$this->modifyqurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=faq&idx=ModifyQ&item=".$this->idcat."&idscat=".$row['id_subcat']."&idq=".$row['id']);
+				$this->questionurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=faq&idx=listq&item=".$this->idcat."&idscat=".$row['id_subcat']."&idq=".$row['id']);
 				$i++;
 				return true;
 				}
@@ -280,7 +283,8 @@ function FaqPrintContents($idcat)
 			{
 			global $babDB, $faqinfo;
 			$this->idcat = $idcat;
-			$this->faqname = $faqinfo['category'];
+			$this->item = bab_toHTML($idcat);
+			$this->faqname = bab_toHTML($faqinfo['category']);
 			$this->contentsname = bab_translate("CONTENTS");
 			$this->t_print = bab_translate("Print Friendly");
 			$this->return = bab_translate("Go to Top");
@@ -347,7 +351,7 @@ function FaqPrintContents($idcat)
 					}
 				else
 					{
-					$this->subcatname = $row['name'];
+					$this->subcatname = bab_toHTML($row['name']);
 					}
 
 				if ( count($this->padarr) > 0 )
@@ -404,13 +408,13 @@ function FaqPrintContents($idcat)
 			if( $i < $this->countq)
 				{
 				$row = $babDB->db_fetch_array($this->resq);
-				$this->idq = $row['id'];
-				$this->questionname = $row['question'];
+				$this->idq = bab_toHTML($row['id']);
+				$this->questionname = bab_toHTML($row['question']);
 				if( $this->bresponse )
 					{
 					$this->response = bab_replace($row['response']);
 					}
-				$this->questionurl = $GLOBALS['babUrlScript']."?tg=faq&idx=listq&item=".$this->idcat."&idscat=".$row['id_subcat']."&idq=".$row['id'];
+				$this->questionurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=faq&idx=listq&item=".$this->idcat."&idscat=".$row['id_subcat']."&idq=".$row['id']);
 				$i++;
 				return true;
 				}
@@ -460,8 +464,9 @@ function listSubCategoryQuestions($idcat, $idscat)
 			{
 			global $babDB, $faqinfo;
 			$this->return = bab_translate("Go to Top");
-			$this->faqname = $faqinfo['category'];
+			$this->faqname = bab_toHTML($faqinfo['category']);
 			list($this->subcatname) = $babDB->db_fetch_row($babDB->db_query("select name from ".BAB_FAQ_SUBCAT_TBL." where id='".$babDB->db_escape_string($idscat)."'"));
+			$this->subcatname = bab_toHTML($this->subcatname);
 			$req = "select * from ".BAB_FAQQR_TBL." where idcat='".$babDB->db_escape_string($idcat)."' and id_subcat='".$babDB->db_escape_string($idscat)."'";
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
@@ -474,8 +479,8 @@ function listSubCategoryQuestions($idcat, $idscat)
 			if( $i < $this->count)
 				{
 				$arr = $babDB->db_fetch_array($this->res);
-				$this->question = $arr['question'];
-				$this->idq = $arr['id'];
+				$this->question = bab_toHTML($arr['question']);
+				$this->idq = bab_toHTML($arr['id']);
 				$GLOBALS['babWebStat']->addFaqsQuestion($arr['id']);
 				$i++;
 				$this->index++;
@@ -499,9 +504,9 @@ function listSubCategoryQuestions($idcat, $idscat)
 			if( $i < $this->count)
 				{
 				$arr = $babDB->db_fetch_array($this->res);
-				$this->question = $arr['question'];
+				$this->question = bab_toHTML($arr['question']);
 				$this->response = bab_replace($arr['response']);
-				$this->idq = $arr['id'];
+				$this->idq = bab_toHTML($arr['id']);
 				$i++;
 				$this->index++;
 				return true;
@@ -535,7 +540,7 @@ function viewQuestion($idcat, $idscat, $id)
 			$this->res = $babDB->db_query($req);
 			$this->arr = $babDB->db_fetch_array($this->res);
 			$this->arr['response'] = bab_replace($this->arr['response']);
-			$this->returnurl = $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$idcat."&idscat=".$idscat;
+			$this->returnurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$idcat."&idscat=".$idscat);
 			$this->return = bab_translate("Return to Questions");
 			}
 
@@ -687,14 +692,14 @@ function addQuestion($idcat, $idscat)
 			$this->question = bab_translate("Question");
 			$this->response = bab_translate("Response");
 			$this->add = bab_translate("Add");
-			$this->idcat = $idcat;
+			$this->idcat = bab_toHTML($idcat);
 			$this->idscat = $idscat;
 			$this->images = bab_translate("Images");
-			$this->urlimages = $GLOBALS['babUrlScript']."?tg=images";
+			$this->urlimages = bab_toHTML($GLOBALS['babUrlScript']."?tg=images");
 			$this->files = bab_translate("Files");
-			$this->urlfiles = $GLOBALS['babUrlScript']."?tg=fileman&idx=brow";
+			$this->urlfiles = bab_toHTML($GLOBALS['babUrlScript']."?tg=fileman&idx=brow");
 			$this->editor = bab_editor('', 'response', 'qcreate',400,1);
-			$this->res = $babDB->db_query("select * from ".BAB_FAQ_SUBCAT_TBL." where id_cat='".$babDB->db_escape_string($this->idcat)."'");
+			$this->res = $babDB->db_query("select * from ".BAB_FAQ_SUBCAT_TBL." where id_cat='".$babDB->db_escape_string($idcat)."'");
 			$this->count = $babDB->db_num_rows($this->res);
 			}
 
@@ -705,13 +710,15 @@ function addQuestion($idcat, $idscat)
 			if( $i < $this->count)
 				{
 				$arr = $babDB->db_fetch_array($this->res);
-				$this->idsubcat = $arr['id'];
+				$this->idsubcat = bab_toHTML($arr['id']);
 				$this->subcatname = $arr['name'];
 				if( empty($this->subcatname))
 					{
 					$this->subcatname = $faqinfo['category'];
 					}
-				if( $this->idsubcat == $this->idscat)
+
+				$this->subcatname = bab_toHTML($this->subcatname);
+				if( $arr['id'] == $this->idscat)
 					{
 					$this->selected = "selected";
 					}
@@ -746,9 +753,9 @@ function addSubCategory($idcat, $idscat)
 			global $babDB;
 			$this->subcat = bab_translate("Sub category");
 			$this->add = bab_translate("Add");
-			$this->idcat = $idcat;
-			$this->idscat = $idscat;
-			$this->res = $babDB->db_query("select * from ".BAB_FAQ_SUBCAT_TBL." where id_cat='".$babDB->db_escape_string($this->idcat)."'");
+			$this->idcat = bab_toHTML($idcat);
+			$this->idscat = bab_toHTML($idscat);
+			$this->res = $babDB->db_query("select * from ".BAB_FAQ_SUBCAT_TBL." where id_cat='".$babDB->db_escape_string($idcat)."'");
 			$this->count = $babDB->db_num_rows($this->res);
 			}
 
@@ -759,12 +766,13 @@ function addSubCategory($idcat, $idscat)
 			if( $i < $this->count)
 				{
 				$arr = $babDB->db_fetch_array($this->res);
-				$this->idsubcat = $arr['id'];
+				$this->idsubcat = bab_toHTML($arr['id']);
 				$this->subcatname = $arr['name'];
 				if( empty($this->subcatname))
 					{
 					$this->subcatname = $faqinfo['category'];
 					}
+				$this->subcatname = bab_toHTML($this->subcatname);
 				if( $this->idsubcat == $this->idscat)
 					{
 					$this->selected = "selected";
@@ -813,21 +821,21 @@ function modifyQuestion($item, $idscat, $idq)
 			$this->responsetxt = bab_translate("Response");
 			$this->subcattxt = bab_translate("Sub category");
 			$this->add = bab_translate("Update Question");
-			$this->idcat = $idcat;
-			$this->idscat = $idscat;
-			$this->idq = $idq;
+			$this->idcat = bab_toHTML($idcat);
+			$this->idscat = bab_toHTML($idscat);
+			$this->idq = bab_toHTML($idq);
 			$req = "select * from ".BAB_FAQQR_TBL." where id='".$babDB->db_escape_string($idq)."'";
 			$res = $babDB->db_query($req);
 			$arr = $babDB->db_fetch_array($res);
-			$this->question = htmlentities($arr['question']);
+			$this->question = bab_toHTML($arr['question']);
 
 			$this->images = bab_translate("Images");
-			$this->urlimages = $GLOBALS['babUrlScript']."?tg=images";
+			$this->urlimages = bab_toHTML($GLOBALS['babUrlScript']."?tg=images");
 			$this->files = bab_translate("Files");
-			$this->urlfiles = $GLOBALS['babUrlScript']."?tg=fileman&idx=brow";
+			$this->urlfiles = bab_toHTML($GLOBALS['babUrlScript']."?tg=fileman&idx=brow");
 			$this->editor = bab_editor($arr['response'], 'response', 'qmod',400,1);
 
-			$this->res = $babDB->db_query("select * from ".BAB_FAQ_SUBCAT_TBL." where id_cat='".$babDB->db_escape_string($this->idcat)."'");
+			$this->res = $babDB->db_query("select * from ".BAB_FAQ_SUBCAT_TBL." where id_cat='".$babDB->db_escape_string($idcat)."'");
 			$this->count = $babDB->db_num_rows($this->res);
 			}
 
@@ -839,13 +847,15 @@ function modifyQuestion($item, $idscat, $idq)
 			if( $i < $this->count)
 				{
 				$arr = $babDB->db_fetch_array($this->res);
-				$this->idsubcat = $arr['id'];
+				$this->idsubcat = bab_toHTML($arr['id']);
 				$this->subcatname = $arr['name'];
 				if( empty($this->subcatname))
 					{
 					$this->subcatname = $faqinfo['category'];
 					}
-				if( $this->idsubcat == $this->idscat )
+				$this->subcatname = bab_toHTML($this->subcatname);
+
+				if( $arr['id'] == $this->idscat )
 					{
 					$this->selected = "selected";
 					}
@@ -885,9 +895,9 @@ function deleteQuestion($item, $idq)
 			$this->message = bab_translate("Are you sure you want to delete this question");
 			$this->title = "";
 			$this->warning = bab_translate("WARNING: This operation will delete question and its response"). "!";
-			$this->urlyes = $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item."&idq=".$idq."&action=Yes";
+			$this->urlyes = bab_toHTML($GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item."&idq=".$idq."&action=Yes");
 			$this->yes = bab_translate("Yes");
-			$this->urlno = $GLOBALS['babUrlScript']."?tg=faq&idx=ModifyQ&item=".$item."&idq=".$idq;
+			$this->urlno = bab_toHTML($GLOBALS['babUrlScript']."?tg=faq&idx=ModifyQ&item=".$item."&idq=".$idq);
 			$this->no = bab_translate("No");
 			}
 		}
@@ -912,11 +922,11 @@ function modifySubCategory($idcat, $idscat, $ids)
 			global $babDB;
 			$this->subcat = bab_translate("Sub category");
 			$this->add = bab_translate("Modify");
-			$this->idcat = $idcat;
-			$this->idscat = $idscat;
-			$this->ids = $ids;
+			$this->idcat = bab_toHTML($idcat);
+			$this->idscat = bab_toHTML($idscat);
+			$this->ids = bab_toHTML($ids);
 			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FAQ_SUBCAT_TBL." where id='".$babDB->db_escape_string($ids)."'"));
-			$this->subcatval = $arr['name'];
+			$this->subcatval = bab_toHTML($arr['name']);
 			$this->bdelete = false;
 			list($countq) = $babDB->db_fetch_row($babDB->db_query("select count(id) from ".BAB_FAQQR_TBL." where idcat='".$babDB->db_escape_string($idcat)."' and id_subcat='".$babDB->db_escape_string($ids)."'"));
 			if( !$countq )
@@ -1050,48 +1060,47 @@ function confirmDeleteQuestion($item, $idq)
 
 
 /* main */
-if(isset($item))
+$idx = bab_rp('idx', 'Categories');
+$item = bab_rp('item');
+$idscat = bab_rp('idscat', 0);
+if($item)
 	{
 	$faqinfo = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FAQCAT_TBL." where id='".$babDB->db_escape_string($item)."'"));
 	}
-if(!isset($idx))
+else
 	{
-	$idx = "Categories";
+	$faqinfo = array();
 	}
 
-if(!isset($idscat))
-	{
-	$idscat = 0;
-	}
 
 if( isUserManager() )
 {
-if( isset($addquestion))
+if( 'addquestion' == bab_pp('addquestion'))
 	{
-	saveQuestion($item, $newidscat, $question, $response);
+	saveQuestion($item, bab_pp('newidscat'),  bab_pp('question'),  bab_pp('response'));
 	}
-else if( isset($updatequestion))
+else if( 'updatequestion' == bab_pp('updatequestion'))
 	{
-	updateQuestion($idq, $newidscat, $question, $response);
+	updateQuestion(bab_pp('idq'), bab_pp('newidscat'), bab_pp('question'), bab_pp('response'));
 	}
-else if( isset($action) && $action == "Yes")
+else if( 'Yes' == bab_gp('action'))
 	{
-	confirmDeleteQuestion($item, $idq);
+	confirmDeleteQuestion($item, bab_gp('idq'));
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item);
 	}
-else if( isset($addsc) && $addsc == "addscat")
+else if( 'addscat' == bab_pp('addsc'))
 	{
-	saveSubCategory($item, $newidscat, $subcat);
+	saveSubCategory($item, bab_pp('newidscat'), bab_pp('subcat'));
 	}
-else if( isset($modsc) && $modsc == "modscat")
+else if( 'modscat' == bab_pp('modsc'))
 	{
-	if( isset($bdel))
+	if( isset($_POST['bdel']))
 		{
-		deleteSubCategory($item, $idscat, $ids);
+		deleteSubCategory($item, $idscat, bab_pp('ids'));
 		}
 	else
 		{
-		updateSubCategory($item, $idscat, $ids, $subcat);
+		updateSubCategory($item, $idscat, bab_pp('ids'), bab_pp('subcat'));
 		}
 	}
 }
@@ -1135,13 +1144,14 @@ switch($idx)
 		break;
 
 	case "viewpq":
-		viewPopupQuestion($idq);
+		viewPopupQuestion(bab_gp('idq'));
 		exit;
 
 	case "viewq":
 		$babBody->title = $faqinfo['category'];
 		if( bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $item))
 			{
+			$idq = bab_rp('idq');
 			viewQuestion($item, $idscat, $idq);
 			$babBody->addItemMenu("Categories", bab_translate("Categories"),$GLOBALS['babUrlScript']."?tg=faq&idx=Categories");
 			$babBody->addItemMenu("questions", bab_translate("Contents"),$GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item."&idscat=".$idscat);
@@ -1156,6 +1166,7 @@ switch($idx)
 		$babBody->title = bab_translate("Delete question");
 		if( isUserManager())
 			{
+			$idq = bab_rp('idq');
 			deleteQuestion($item, $idq);
 			$babBody->addItemMenu("Delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=faq&idx=Delete&item=$item&idq=$idq");
 			}
@@ -1165,7 +1176,6 @@ switch($idx)
 		$babBody->title = bab_translate("Add question");
 		if( isUserManager())
 			{
-			if( !isset($idscat)) { $idscat=0;}
 			addQuestion($item, $idscat);
 			$babBody->addItemMenu("questions", bab_translate("Contents"), $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item);
 			$babBody->addItemMenu("addq", bab_translate("Add Question"), $GLOBALS['babUrlScript']."?tg=faq&idx=addq&item=".$item);
@@ -1177,7 +1187,6 @@ switch($idx)
 		$babBody->title = bab_translate("Add sub category");
 		if( isUserManager())
 			{
-			if( !isset($idscat)) { $idscat=0;}
 			addSubCategory($item, $idscat);
 			$babBody->addItemMenu("questions", bab_translate("Contents"), $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item);
 			$babBody->addItemMenu("addq", bab_translate("Add Question"), $GLOBALS['babUrlScript']."?tg=faq&idx=addq&item=".$item);
@@ -1189,9 +1198,10 @@ switch($idx)
 		$babBody->title = bab_translate("Modify question");
 		if( isUserManager())
 			{
+			$idq = bab_rp('idq');
 			modifyQuestion($item, $idscat, $idq);
 			$babBody->addItemMenu("questions", bab_translate("Contents"), $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item."&idscat=".$idscat);
-			$babBody->addItemMenu("Delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=faq&idx=Delete&item=$item"."&idscat=".$idscat."&idq=".$idq);
+			$babBody->addItemMenu("Delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=faq&idx=Delete&item=".$item."&idscat=".$idscat."&idq=".$idq);
 			}
 		break;
 
@@ -1199,9 +1209,9 @@ switch($idx)
 		$babBody->title = bab_translate("Modify subcategory");
 		if( isUserManager())
 			{
-			modifySubCategory($item, $idscat, $ids);
+			modifySubCategory($item, $idscat, bab_rp('ids'));
 			$babBody->addItemMenu("questions", bab_translate("Contents"), $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item."&idscat=".$idscat);
-			$babBody->addItemMenu("ModifyC", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=faq&idx=ModifyC&item=$item"."&idscat=".$idscat);
+			$babBody->addItemMenu("ModifyC", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=faq&idx=ModifyC&item=".$item."&idscat=".$idscat);
 			}
 		break;
 

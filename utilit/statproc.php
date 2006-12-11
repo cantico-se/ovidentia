@@ -21,7 +21,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
+/**
+* @internal SEC1 NA 11/12/2006 FULL
+*/
+include_once 'base.php';
 define("OVSTAT_DEBUG", 1);
 define("OVSTAT_LIMIT", 300);
 define("OVSTAT_ROWS",  30000);
@@ -89,7 +92,7 @@ class bab_stats_pages extends bab_stats_base
 			{
 				if(!isset($this->results[$datas['date']][$datas['hour']][$key]))
 					{
-					$res = $babDB->db_query("select * from ".BAB_STATS_PAGES_TBL." where st_date='".$datas['date']."' and st_hour='".$datas['hour']."' and st_page_id='".$key."'");
+					$res = $babDB->db_query("select * from ".BAB_STATS_PAGES_TBL." where st_date='".$babDB->db_escape_string($datas['date'])."' and st_hour='".$babDB->db_escape_string($datas['hour'])."' and st_page_id='".$babDB->db_escape_string($key)."'");
 					if( $res && $babDB->db_num_rows($res) > 0 )
 						{
 						$arr = $babDB->db_fetch_array($res);
@@ -97,7 +100,7 @@ class bab_stats_pages extends bab_stats_base
 						}
 					else
 						{
-						$babDB->db_query("insert into ".BAB_STATS_PAGES_TBL." (st_date, st_hour, st_hits, st_page_id) values ('".$datas['date']."','".$datas['hour']."', '0', '".$key."')");
+						$babDB->db_query("insert into ".BAB_STATS_PAGES_TBL." (st_date, st_hour, st_hits, st_page_id) values ('".$babDB->db_escape_string($datas['date'])."','".$babDB->db_escape_string($datas['hour'])."', '0', '".$babDB->db_escape_string($key)."')");
 						$this->results[$datas['date']][$datas['hour']][$key] = 0;
 						}				
 					}
@@ -120,7 +123,7 @@ class bab_stats_pages extends bab_stats_base
 				reset($r2[1]);
 				while( $r3 = each($r2[1]) ) 
 				{
-					$babDB->db_query("update ".BAB_STATS_PAGES_TBL." set st_hits='".$r3[1]."' where st_date='".$r1[0]."' and  st_hour = '".$r2[0]."' and st_page_id= '".$r3[0]."'");
+					$babDB->db_query("update ".BAB_STATS_PAGES_TBL." set st_hits='".$babDB->db_escape_string($r3[1])."' where st_date='".$babDB->db_escape_string($r1[0])."' and  st_hour = '".$babDB->db_escape_string($r2[0])."' and st_page_id= '".$babDB->db_escape_string($r3[0])."'");
 				}
 			}
 		}
@@ -353,7 +356,7 @@ class bab_stats_modules extends bab_stats_base
 
 		if(!isset($this->results[$datas['date']][$datas['hour']][$id]))
 			{
-			$res = $babDB->db_query("select * from ".BAB_STATS_MODULES_TBL." where st_date='".$datas['date']."' and st_hour='".$datas['hour']."' and st_module_id='".$id."'");
+			$res = $babDB->db_query("select * from ".BAB_STATS_MODULES_TBL." where st_date='".$babDB->db_escape_string($datas['date'])."' and st_hour='".$babDB->db_escape_string($datas['hour'])."' and st_module_id='".$babDB->db_escape_string($id)."'");
 			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
 				$arr = $babDB->db_fetch_array($res);
@@ -361,7 +364,7 @@ class bab_stats_modules extends bab_stats_base
 				}
 			else
 				{
-				$babDB->db_query("insert into ".BAB_STATS_MODULES_TBL." (st_date, st_hour, st_hits, st_module_id) values ('".$datas['date']."','".$datas['hour']."', '0', '".$id."')");
+				$babDB->db_query("insert into ".BAB_STATS_MODULES_TBL." (st_date, st_hour, st_hits, st_module_id) values ('".$babDB->db_escape_string($datas['date'])."','".$babDB->db_escape_string($datas['hour'])."', '0', '".$babDB->db_escape_string($id)."')");
 				$this->results[$datas['date']][$datas['hour']][$id] = 0;
 				}				
 			}
@@ -383,7 +386,7 @@ class bab_stats_modules extends bab_stats_base
 				reset($r2[1]);
 				while( $r3 = each($r2[1]) ) 
 					{
-					$babDB->db_query("update ".BAB_STATS_MODULES_TBL." set st_hits='".$r3[1]."' where st_date='".$r1[0]."' and  st_hour = '".$r2[0]."' and st_module_id= '".$r3[0]."'");
+					$babDB->db_query("update ".BAB_STATS_MODULES_TBL." set st_hits='".$babDB->db_escape_string($r3[1])."' where st_date='".$babDB->db_escape_string($r1[0])."' and  st_hour = '".$babDB->db_escape_string($r2[0])."' and st_module_id= '".$babDB->db_escape_string($r3[0])."'");
 					}
 				}
 			}
@@ -416,7 +419,7 @@ class bab_stats_articles extends bab_stats_base
 			{
 			if(!isset($this->results[$datas['date']][$datas['hour']][$datas['info']['bab_articles'][$i]]))
 				{
-				$res = $babDB->db_query("select * from ".BAB_STATS_ARTICLES_TBL." where st_date='".$datas['date']."' and st_hour='".$datas['hour']."' and st_article_id='".$datas['info']['bab_articles'][$i]."'");
+				$res = $babDB->db_query("select * from ".BAB_STATS_ARTICLES_TBL." where st_date='".$babDB->db_escape_string($datas['date'])."' and st_hour='".$babDB->db_escape_string($datas['hour'])."' and st_article_id='".$babDB->db_escape_string($datas['info']['bab_articles'][$i])."'");
 				if( $res && $babDB->db_num_rows($res) > 0 )
 					{
 					$arr = $babDB->db_fetch_array($res);
@@ -424,7 +427,7 @@ class bab_stats_articles extends bab_stats_base
 					}
 				else
 					{
-					$babDB->db_query("insert into ".BAB_STATS_ARTICLES_TBL." (st_date, st_hour, st_hits, st_article_id) values ('".$datas['date']."','".$datas['hour']."', '0', '".$datas['info']['bab_articles'][$i]."')");
+					$babDB->db_query("insert into ".BAB_STATS_ARTICLES_TBL." (st_date, st_hour, st_hits, st_article_id) values ('".$babDB->db_escape_string($datas['date'])."','".$babDB->db_escape_string($datas['hour'])."', '0', '".$babDB->db_escape_string($datas['info']['bab_articles'][$i])."')");
 					$this->results[$datas['date']][$datas['hour']][$datas['info']['bab_articles'][$i]] = 0;
 					}				
 				}
@@ -434,7 +437,7 @@ class bab_stats_articles extends bab_stats_base
 				{
 				if( !isset($this->referents[$datas['info']['bab_articles'][$i]][$babStatRefs[$datas['session_id']]]))
 					{
-					$res = $babDB->db_query("select * from ".BAB_STATS_ARTICLES_REF_TBL." where st_article_id='".$datas['info']['bab_articles'][$i]."' and st_module_id='".$babStatRefs[$datas['session_id']]."'");
+					$res = $babDB->db_query("select * from ".BAB_STATS_ARTICLES_REF_TBL." where st_article_id='".$babDB->db_escape_string($datas['info']['bab_articles'][$i])."' and st_module_id='".$babDB->db_escape_string($babStatRefs[$datas['session_id']])."'");
 					if( $res && $babDB->db_num_rows($res) > 0 )
 						{
 						$arr = $babDB->db_fetch_array($res);
@@ -442,7 +445,7 @@ class bab_stats_articles extends bab_stats_base
 						}
 					else
 						{
-						$babDB->db_query("insert into ".BAB_STATS_ARTICLES_REF_TBL." (st_article_id, st_module_id, st_hits) values ('".$datas['info']['bab_articles'][$i]."','".$babStatRefs[$datas['session_id']]."', '0')");
+						$babDB->db_query("insert into ".BAB_STATS_ARTICLES_REF_TBL." (st_article_id, st_module_id, st_hits) values ('".$babDB->db_escape_string($datas['info']['bab_articles'][$i])."','".$babDB->db_escape_string($babStatRefs[$datas['session_id']])."', '0')");
 						$this->referents[$datas['info']['bab_articles'][$i]][$babStatRefs[$datas['session_id']]] = 0;
 						}				
 					}
@@ -467,7 +470,7 @@ class bab_stats_articles extends bab_stats_base
 				reset($r2[1]);
 				while( $r3 = each($r2[1]) ) 
 				{
-					$babDB->db_query("update ".BAB_STATS_ARTICLES_TBL." set st_hits='".$r3[1]."' where st_date='".$r1[0]."' and  st_hour = '".$r2[0]."' and st_article_id= '".$r3[0]."'");
+					$babDB->db_query("update ".BAB_STATS_ARTICLES_TBL." set st_hits='".$babDB->db_escape_string($r3[1])."' where st_date='".$babDB->db_escape_string($r1[0])."' and  st_hour = '".$babDB->db_escape_string($r2[0])."' and st_article_id= '".$babDB->db_escape_string($r3[0])."'");
 				}
 			}	
 		}
@@ -478,7 +481,7 @@ class bab_stats_articles extends bab_stats_base
 			reset($r1[1]);
 			while( $r2 = each($r1[1]) ) 
 			{
-				$babDB->db_query("update ".BAB_STATS_ARTICLES_REF_TBL." set st_hits='".$r2[1]."' where st_article_id='".$r1[0]."' and st_module_id= '".$r2[0]."'");
+				$babDB->db_query("update ".BAB_STATS_ARTICLES_REF_TBL." set st_hits='".$babDB->db_escape_string($r2[1])."' where st_article_id='".$babDB->db_escape_string($r1[0])."' and st_module_id= '".$babDB->db_escape_string($r2[0])."'");
 			}
 		}
 	
@@ -506,7 +509,7 @@ class bab_stats_forums extends bab_stats_base
 		global $babDB;
 		if(!isset($this->forums[$date][$hour][$idforum]))
 			{
-			$res = $babDB->db_query("select * from ".BAB_STATS_FORUMS_TBL." where st_date='".$date."' and st_hour='".$hour."' and st_forum_id='".$idforum."'");
+			$res = $babDB->db_query("select * from ".BAB_STATS_FORUMS_TBL." where st_date='".$babDB->db_escape_string($date)."' and st_hour='".$babDB->db_escape_string($hour)."' and st_forum_id='".$babDB->db_escape_string($idforum)."'");
 			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
 				$arr = $babDB->db_fetch_array($res);
@@ -514,7 +517,7 @@ class bab_stats_forums extends bab_stats_base
 				}
 			else
 				{
-				$babDB->db_query("insert into ".BAB_STATS_FORUMS_TBL." (st_date, st_hour, st_hits, st_forum_id) values ('".$date."','".$hour."', '0', '".$idforum."')");
+				$babDB->db_query("insert into ".BAB_STATS_FORUMS_TBL." (st_date, st_hour, st_hits, st_forum_id) values ('".$babDB->db_escape_string($date)."','".$babDB->db_escape_string($hour)."', '0', '".$babDB->db_escape_string($idforum)."')");
 				$this->forums[$date][$hour][$idforum] = 0;
 				}				
 			}
@@ -526,7 +529,7 @@ class bab_stats_forums extends bab_stats_base
 		global $babDB;
 		if(!isset($this->threads[$date][$hour][$idthread]))
 			{
-			$res = $babDB->db_query("select * from ".BAB_STATS_THREADS_TBL." where st_date='".$date."' and st_hour='".$hour."' and st_thread_id='".$idthread."'");
+			$res = $babDB->db_query("select * from ".BAB_STATS_THREADS_TBL." where st_date='".$babDB->db_escape_string($date)."' and st_hour='".$babDB->db_escape_string($hour)."' and st_thread_id='".$babDB->db_escape_string($idthread)."'");
 			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
 				$arr = $babDB->db_fetch_array($res);
@@ -534,7 +537,7 @@ class bab_stats_forums extends bab_stats_base
 				}
 			else
 				{
-				$babDB->db_query("insert into ".BAB_STATS_THREADS_TBL." (st_date, st_hour, st_hits, st_thread_id) values ('".$date."','".$hour."', '0', '".$idthread."')");
+				$babDB->db_query("insert into ".BAB_STATS_THREADS_TBL." (st_date, st_hour, st_hits, st_thread_id) values ('".$babDB->db_escape_string($date)."','".$babDB->db_escape_string($hour)."', '0', '".$babDB->db_escape_string($idthread)."')");
 				$this->threads[$date][$hour][$idthread] = 0;
 				}				
 			}
@@ -546,7 +549,7 @@ class bab_stats_forums extends bab_stats_base
 		global $babDB;
 		if(!isset($this->posts[$date][$hour][$idpost]))
 			{
-			$res = $babDB->db_query("select * from ".BAB_STATS_POSTS_TBL." where st_date='".$date."' and st_hour='".$hour."' and st_post_id='".$idpost."'");
+			$res = $babDB->db_query("select * from ".BAB_STATS_POSTS_TBL." where st_date='".$babDB->db_escape_string($date)."' and st_hour='".$babDB->db_escape_string($hour)."' and st_post_id='".$babDB->db_escape_string($idpost)."'");
 			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
 				$arr = $babDB->db_fetch_array($res);
@@ -554,7 +557,7 @@ class bab_stats_forums extends bab_stats_base
 				}
 			else
 				{
-				$babDB->db_query("insert into ".BAB_STATS_POSTS_TBL." (st_date, st_hour, st_hits, st_post_id) values ('".$date."','".$hour."', '0', '".$idpost."')");
+				$babDB->db_query("insert into ".BAB_STATS_POSTS_TBL." (st_date, st_hour, st_hits, st_post_id) values ('".$babDB->db_escape_string($date)."','".$babDB->db_escape_string($hour)."', '0', '".$babDB->db_escape_string($idpost)."')");
 				$this->posts[$date][$hour][$idpost] = 0;
 				}				
 			}
@@ -585,7 +588,7 @@ class bab_stats_forums extends bab_stats_base
 		$arru = array_unique($arrt);
 		if( count($arru) > 0 )
 			{
-			$res = $babDB->db_query("select distinct forum from ".BAB_THREADS_TBL." where id in ('".implode("','", $arru)."')");
+			$res = $babDB->db_query("select distinct forum from ".BAB_THREADS_TBL." where id in (".$babDB->quote($arru).")");
 			while( $row = $babDB->db_fetch_array($res))
 				{
 				$this->addForum($datas['date'], $datas['hour'], $row['forum']);
@@ -605,7 +608,7 @@ class bab_stats_forums extends bab_stats_base
 		$arru = array_unique($arrp);
 		if( count($arru) > 0 )
 			{
-			$res = $babDB->db_query("select tt.forum, tt.id from ".BAB_THREADS_TBL." tt left join ".BAB_POSTS_TBL." pt on pt.id_thread=tt.id where pt.id in (".implode(',', $arru).")");
+			$res = $babDB->db_query("select tt.forum, tt.id from ".BAB_THREADS_TBL." tt left join ".BAB_POSTS_TBL." pt on pt.id_thread=tt.id where pt.id in (".$babDB->quote($arru).")");
 			while( $row = $babDB->db_fetch_array($res))
 				{
 				$this->addForum($datas['date'], $datas['hour'], $row['forum']);
@@ -629,7 +632,7 @@ class bab_stats_forums extends bab_stats_base
 				reset($r2[1]);
 				while( $r3 = each($r2[1]) ) 
 				{
-					$babDB->db_query("update ".BAB_STATS_FORUMS_TBL." set st_hits='".$r3[1]."' where st_date='".$r1[0]."' and  st_hour = '".$r2[0]."' and st_forum_id= '".$r3[0]."'");
+					$babDB->db_query("update ".BAB_STATS_FORUMS_TBL." set st_hits='".$babDB->db_escape_string($r3[1])."' where st_date='".$babDB->db_escape_string($r1[0])."' and  st_hour = '".$babDB->db_escape_string($r2[0])."' and st_forum_id= '".$babDB->db_escape_string($r3[0])."'");
 				}
 			}
 		}
@@ -642,7 +645,7 @@ class bab_stats_forums extends bab_stats_base
 				reset($r2[1]);
 				while( $r3 = each($r2[1]) ) 
 				{
-					$babDB->db_query("update ".BAB_STATS_THREADS_TBL." set st_hits='".$r3[1]."' where st_date='".$r1[0]."' and  st_hour = '".$r2[0]."' and st_thread_id= '".$r3[0]."'");
+					$babDB->db_query("update ".BAB_STATS_THREADS_TBL." set st_hits='".$babDB->db_escape_string($r3[1])."' where st_date='".$babDB->db_escape_string($r1[0])."' and  st_hour = '".$babDB->db_escape_string($r2[0])."' and st_thread_id= '".$babDB->db_escape_string($r3[0])."'");
 				}
 			}
 		}
@@ -656,7 +659,7 @@ class bab_stats_forums extends bab_stats_base
 				reset($r2[1]);
 				while( $r3 = each($r2[1]) ) 
 				{
-					$babDB->db_query("update ".BAB_STATS_POSTS_TBL." set st_hits='".$r3[1]."' where st_date='".$r1[0]."' and  st_hour = '".$r2[0]."' and st_post_id= '".$r3[0]."'");
+					$babDB->db_query("update ".BAB_STATS_POSTS_TBL." set st_hits='".$babDB->db_escape_string($r3[1])."' where st_date='".$babDB->db_escape_string($r1[0])."' and  st_hour = '".$babDB->db_escape_string($r2[0])."' and st_post_id= '".$babDB->db_escape_string($r3[0])."'");
 				}
 			}
 		}
@@ -689,7 +692,7 @@ class bab_stats_xlinks extends bab_stats_base
 			{
 			if(!isset($this->results[$datas['date']][$datas['hour']][$datas['info']['bab_xlinks'][$i]]))
 				{
-				$res = $babDB->db_query("select * from ".BAB_STATS_XLINKS_TBL." where st_date='".$datas['date']."' and st_hour='".$datas['hour']."' and st_xlink_url='".$datas['info']['bab_xlinks'][$i]."'");
+				$res = $babDB->db_query("select * from ".BAB_STATS_XLINKS_TBL." where st_date='".$babDB->db_escape_string($datas['date'])."' and st_hour='".$babDB->db_escape_string($datas['hour'])."' and st_xlink_url='".$babDB->db_escape_string($datas['info']['bab_xlinks'][$i])."'");
 				if( $res && $babDB->db_num_rows($res) > 0 )
 					{
 					$arr = $babDB->db_fetch_array($res);
@@ -697,7 +700,7 @@ class bab_stats_xlinks extends bab_stats_base
 					}
 				else
 					{
-					$babDB->db_query("insert into ".BAB_STATS_XLINKS_TBL." (st_date, st_hour, st_hits, st_xlink_url) values ('".$datas['date']."','".$datas['hour']."', '0', '".$datas['info']['bab_xlinks'][$i]."')");
+					$babDB->db_query("insert into ".BAB_STATS_XLINKS_TBL." (st_date, st_hour, st_hits, st_xlink_url) values ('".$babDB->db_escape_string($datas['date'])."','".$babDB->db_escape_string($datas['hour'])."', '0', '".$babDB->db_escape_string($datas['info']['bab_xlinks'][$i])."')");
 					$this->results[$datas['date']][$datas['hour']][$datas['info']['bab_xlinks'][$i]] = 0;
 					}				
 				}
@@ -721,7 +724,7 @@ class bab_stats_xlinks extends bab_stats_base
 				reset($r2[1]);
 				while( $r3 = each($r2[1]) ) 
 				{
-					$babDB->db_query("update ".BAB_STATS_XLINKS_TBL." set st_hits='".$r3[1]."' where st_date='".$r1[0]."' and  st_hour = '".$r2[0]."' and st_xlink_url= '".$r3[0]."'");
+					$babDB->db_query("update ".BAB_STATS_XLINKS_TBL." set st_hits='".$babDB->db_escape_string($r3[1])."' where st_date='".$babDB->db_escape_string($r1[0])."' and  st_hour = '".$babDB->db_escape_string($r2[0])."' and st_xlink_url= '".$babDB->db_escape_string($r3[0])."'");
 				}
 			}
 		}
@@ -754,7 +757,7 @@ class bab_stats_search extends bab_stats_base
 			$word = strtolower($datas['info']['bab_searchword'][$i]);
 			if(!isset($this->results[$datas['date']][$datas['hour']][$word]))
 				{
-				$res = $babDB->db_query("select * from ".BAB_STATS_SEARCH_TBL." where st_date='".$datas['date']."' and st_hour='".$datas['hour']."' and st_word='".addslashes($word)."'");
+				$res = $babDB->db_query("select * from ".BAB_STATS_SEARCH_TBL." where st_date='".$babDB->db_escape_string($datas['date'])."' and st_hour='".$babDB->db_escape_string($datas['hour'])."' and st_word='".$babDB->db_escape_string($word)."'");
 				if( $res && $babDB->db_num_rows($res) > 0 )
 					{
 					$arr = $babDB->db_fetch_array($res);
@@ -762,7 +765,7 @@ class bab_stats_search extends bab_stats_base
 					}
 				else
 					{
-					$babDB->db_query("insert into ".BAB_STATS_SEARCH_TBL." (st_date, st_hour, st_hits, st_word) values ('".$datas['date']."','".$datas['hour']."', '0', '".addslashes($word)."')");
+					$babDB->db_query("insert into ".BAB_STATS_SEARCH_TBL." (st_date, st_hour, st_hits, st_word) values ('".$babDB->db_escape_string($datas['date'])."','".$babDB->db_escape_string($datas['hour'])."', '0', '".$babDB->db_escape_string($word)."')");
 					$this->results[$datas['date']][$datas['hour']][$word] = 0;
 					}				
 				}
@@ -786,7 +789,7 @@ class bab_stats_search extends bab_stats_base
 				reset($r2[1]);
 				while( $r3 = each($r2[1]) ) 
 				{
-					$babDB->db_query("update ".BAB_STATS_SEARCH_TBL." set st_hits='".$r3[1]."' where st_date='".$r1[0]."' and  st_hour = '".$r2[0]."' and st_word= '".addslashes($r3[0])."'");
+					$babDB->db_query("update ".BAB_STATS_SEARCH_TBL." set st_hits='".$babDB->db_escape_string($r3[1])."' where st_date='".$babDB->db_escape_string($r1[0])."' and  st_hour = '".$babDB->db_escape_string($r2[0])."' and st_word= '".$babDB->db_escape_string($r3[0])."'");
 				}
 			}
 		}
@@ -815,7 +818,7 @@ class bab_stats_faqs extends bab_stats_base
 		global $babDB;
 		if(!isset($this->faqs[$date][$hour][$idfaq]))
 			{
-			$res = $babDB->db_query("select * from ".BAB_STATS_FAQS_TBL." where st_date='".$date."' and st_hour='".$hour."' and st_faq_id='".$idfaq."'");
+			$res = $babDB->db_query("select * from ".BAB_STATS_FAQS_TBL." where st_date='".$babDB->db_escape_string($date)."' and st_hour='".$babDB->db_escape_string($hour)."' and st_faq_id='".$babDB->db_escape_string($idfaq)."'");
 			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
 				$arr = $babDB->db_fetch_array($res);
@@ -823,7 +826,7 @@ class bab_stats_faqs extends bab_stats_base
 				}
 			else
 				{
-				$babDB->db_query("insert into ".BAB_STATS_FAQS_TBL." (st_date, st_hour, st_hits, st_faq_id) values ('".$date."','".$hour."', '0', '".$idfaq."')");
+				$babDB->db_query("insert into ".BAB_STATS_FAQS_TBL." (st_date, st_hour, st_hits, st_faq_id) values ('".$babDB->db_escape_string($date)."','".$babDB->db_escape_string($hour)."', '0', '".$babDB->db_escape_string($idfaq)."')");
 				$this->faqs[$date][$hour][$idfaq] = 0;
 				}				
 			}
@@ -835,7 +838,7 @@ class bab_stats_faqs extends bab_stats_base
 		global $babDB;
 		if(!isset($this->faqqrs[$date][$hour][$idfaqqr]))
 			{
-			$res = $babDB->db_query("select * from ".BAB_STATS_FAQQRS_TBL." where st_date='".$date."' and st_hour='".$hour."' and st_faqqr_id='".$idfaqqr."'");
+			$res = $babDB->db_query("select * from ".BAB_STATS_FAQQRS_TBL." where st_date='".$babDB->db_escape_string($date)."' and st_hour='".$babDB->db_escape_string($hour)."' and st_faqqr_id='".$babDB->db_escape_string($idfaqqr)."'");
 			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
 				$arr = $babDB->db_fetch_array($res);
@@ -843,7 +846,7 @@ class bab_stats_faqs extends bab_stats_base
 				}
 			else
 				{
-				$babDB->db_query("insert into ".BAB_STATS_FAQQRS_TBL." (st_date, st_hour, st_hits, st_faqqr_id) values ('".$date."','".$hour."', '0', '".$idfaqqr."')");
+				$babDB->db_query("insert into ".BAB_STATS_FAQQRS_TBL." (st_date, st_hour, st_hits, st_faqqr_id) values ('".$babDB->db_escape_string($date)."','".$babDB->db_escape_string($hour)."', '0', '".$babDB->db_escape_string($idfaqqr)."')");
 				$this->faqqrs[$date][$hour][$idfaqqr] = 0;
 				}				
 			}
@@ -874,7 +877,7 @@ class bab_stats_faqs extends bab_stats_base
 		$arru = array_unique($arrt);
 		if( count($arru) > 0 )
 			{
-			$res = $babDB->db_query("select distinct idcat from ".BAB_FAQQR_TBL." where id in (".implode(',', $arru).")");
+			$res = $babDB->db_query("select distinct idcat from ".BAB_FAQQR_TBL." where id in (".$babDB->quote($arru).")");
 			while( $row = $babDB->db_fetch_array($res))
 				{
 				$this->addFaq($datas['date'], $datas['hour'], $row['idcat']);
@@ -897,7 +900,7 @@ class bab_stats_faqs extends bab_stats_base
 				reset($r2[1]);
 				while( $r3 = each($r2[1]) ) 
 				{
-					$babDB->db_query("update ".BAB_STATS_FAQS_TBL." set st_hits='".$r3[1]."' where st_date='".$r1[0]."' and  st_hour = '".$r2[0]."' and st_faq_id= '".$r3[0]."'");
+					$babDB->db_query("update ".BAB_STATS_FAQS_TBL." set st_hits='".$babDB->db_escape_string($r3[1])."' where st_date='".$babDB->db_escape_string($r1[0])."' and  st_hour = '".$babDB->db_escape_string($r2[0])."' and st_faq_id= '".$babDB->db_escape_string($r3[0])."'");
 				}
 			}
 		}
@@ -910,7 +913,7 @@ class bab_stats_faqs extends bab_stats_base
 				reset($r2[1]);
 				while( $r3 = each($r2[1]) ) 
 				{
-					$babDB->db_query("update ".BAB_STATS_FAQQRS_TBL." set st_hits='".$r3[1]."' where st_date='".$r1[0]."' and  st_hour = '".$r2[0]."' and st_faqqr_id= '".$r3[0]."'");
+					$babDB->db_query("update ".BAB_STATS_FAQQRS_TBL." set st_hits='".$babDB->db_escape_string($r3[1])."' where st_date='".$babDB->db_escape_string($r1[0])."' and  st_hour = '".$babDB->db_escape_string($r2[0])."' and st_faqqr_id= '".$babDB->db_escape_string($r3[0])."'");
 				}
 			}
 		}
@@ -943,7 +946,7 @@ class bab_stats_fmfolders extends bab_stats_base
 			{
 			if(!isset($this->results[$datas['date']][$datas['hour']][$datas['info']['bab_fmfolders'][$i]]))
 				{
-				$res = $babDB->db_query("select * from ".BAB_STATS_FMFOLDERS_TBL." where st_date='".$datas['date']."' and st_hour='".$datas['hour']."' and st_folder_id='".$datas['info']['bab_fmfolders'][$i]."'");
+				$res = $babDB->db_query("select * from ".BAB_STATS_FMFOLDERS_TBL." where st_date='".$babDB->db_escape_string($datas['date'])."' and st_hour='".$babDB->db_escape_string($datas['hour'])."' and st_folder_id='".$babDB->db_escape_string($datas['info']['bab_fmfolders'][$i])."'");
 				if( $res && $babDB->db_num_rows($res) > 0 )
 					{
 					$arr = $babDB->db_fetch_array($res);
@@ -951,7 +954,7 @@ class bab_stats_fmfolders extends bab_stats_base
 					}
 				else
 					{
-					$babDB->db_query("insert into ".BAB_STATS_FMFOLDERS_TBL." (st_date, st_hour, st_hits, st_folder_id) values ('".$datas['date']."','".$datas['hour']."', '0', '".$datas['info']['bab_fmfolders'][$i]."')");
+					$babDB->db_query("insert into ".BAB_STATS_FMFOLDERS_TBL." (st_date, st_hour, st_hits, st_folder_id) values ('".$babDB->db_escape_string($datas['date'])."','".$babDB->db_escape_string($datas['hour'])."', '0', '".$babDB->db_escape_string($datas['info']['bab_fmfolders'][$i])."')");
 					$this->results[$datas['date']][$datas['hour']][$datas['info']['bab_fmfolders'][$i]] = 0;
 					}				
 				}
@@ -975,7 +978,7 @@ class bab_stats_fmfolders extends bab_stats_base
 				reset($r2[1]);
 				while( $r3 = each($r2[1]) ) 
 				{
-					$babDB->db_query("update ".BAB_STATS_FMFOLDERS_TBL." set st_hits='".$r3[1]."' where st_date='".$r1[0]."' and  st_hour = '".$r2[0]."' and st_folder_id= '".$r3[0]."'");
+					$babDB->db_query("update ".BAB_STATS_FMFOLDERS_TBL." set st_hits='".$babDB->db_escape_string($r3[1])."' where st_date='".$babDB->db_escape_string($r1[0])."' and  st_hour = '".$babDB->db_escape_string($r2[0])."' and st_folder_id= '".$babDB->db_escape_string($r3[0])."'");
 				}
 			}
 		}
@@ -1007,7 +1010,7 @@ class bab_stats_fmfiles extends bab_stats_base
 			{
 			if(!isset($this->results[$datas['date']][$datas['hour']][$datas['info']['bab_fmfiles'][$i]]))
 				{
-				$res = $babDB->db_query("select * from ".BAB_STATS_FMFILES_TBL." where st_date='".$datas['date']."' and st_hour='".$datas['hour']."' and st_fmfile_id='".$datas['info']['bab_fmfiles'][$i]."'");
+				$res = $babDB->db_query("select * from ".BAB_STATS_FMFILES_TBL." where st_date='".$babDB->db_escape_string($datas['date'])."' and st_hour='".$babDB->db_escape_string($datas['hour'])."' and st_fmfile_id='".$babDB->db_escape_string($datas['info']['bab_fmfiles'][$i])."'");
 				if( $res && $babDB->db_num_rows($res) > 0 )
 					{
 					$arr = $babDB->db_fetch_array($res);
@@ -1015,7 +1018,7 @@ class bab_stats_fmfiles extends bab_stats_base
 					}
 				else
 					{
-					$babDB->db_query("insert into ".BAB_STATS_FMFILES_TBL." (st_date, st_hour, st_hits, st_fmfile_id) values ('".$datas['date']."','".$datas['hour']."', '0', '".$datas['info']['bab_fmfiles'][$i]."')");
+					$babDB->db_query("insert into ".BAB_STATS_FMFILES_TBL." (st_date, st_hour, st_hits, st_fmfile_id) values ('".$babDB->db_escape_string($datas['date'])."','".$babDB->db_escape_string($datas['hour'])."', '0', '".$babDB->db_escape_string($datas['info']['bab_fmfiles'][$i])."')");
 					$this->results[$datas['date']][$datas['hour']][$datas['info']['bab_fmfiles'][$i]] = 0;
 					}				
 				}
@@ -1039,7 +1042,7 @@ class bab_stats_fmfiles extends bab_stats_base
 				reset($r2[1]);
 				while( $r3 = each($r2[1]) ) 
 				{
-					$babDB->db_query("update ".BAB_STATS_FMFILES_TBL." set st_hits='".$r3[1]."' where st_date='".$r1[0]."' and  st_hour = '".$r2[0]."' and st_fmfile_id= '".$r3[0]."'");
+					$babDB->db_query("update ".BAB_STATS_FMFILES_TBL." set st_hits='".$babDB->db_escape_string($r3[1])."' where st_date='".$babDB->db_escape_string($r1[0])."' and  st_hour = '".$babDB->db_escape_string($r2[0])."' and st_fmfile_id= '".$babDB->db_escape_string($r3[0])."'");
 				}
 			}
 		}
@@ -1071,7 +1074,7 @@ class bab_stats_ovmlfiles extends bab_stats_base
 			{
 			if(!isset($this->results[$datas['date']][$datas['hour']][$datas['info']['bab_ovml'][$i]]))
 				{
-				$res = $babDB->db_query("select * from ".BAB_STATS_OVML_TBL." where st_date='".$datas['date']."' and st_hour='".$datas['hour']."' and st_ovml_file='".addslashes($datas['info']['bab_ovml'][$i])."'");
+				$res = $babDB->db_query("select * from ".BAB_STATS_OVML_TBL." where st_date='".$babDB->db_escape_string($datas['date'])."' and st_hour='".$babDB->db_escape_string($datas['hour'])."' and st_ovml_file='".$babDB->db_escape_string($datas['info']['bab_ovml'][$i])."'");
 				if( $res && $babDB->db_num_rows($res) > 0 )
 					{
 					$arr = $babDB->db_fetch_array($res);
@@ -1079,7 +1082,7 @@ class bab_stats_ovmlfiles extends bab_stats_base
 					}
 				else
 					{
-					$babDB->db_query("insert into ".BAB_STATS_OVML_TBL." (st_date, st_hour, st_hits, st_ovml_file) values ('".$datas['date']."','".$datas['hour']."', '0', '".addslashes($datas['info']['bab_ovml'][$i])."')");
+					$babDB->db_query("insert into ".BAB_STATS_OVML_TBL." (st_date, st_hour, st_hits, st_ovml_file) values ('".$babDB->db_escape_string($datas['date'])."','".$babDB->db_escape_string($datas['hour'])."', '0', '".$babDB->db_escape_string($datas['info']['bab_ovml'][$i])."')");
 					$this->results[$datas['date']][$datas['hour']][$datas['info']['bab_ovml'][$i]] = 0;
 					}				
 				}
@@ -1103,7 +1106,7 @@ class bab_stats_ovmlfiles extends bab_stats_base
 				reset($r2[1]);
 				while( $r3 = each($r2[1]) ) 
 				{
-					$babDB->db_query("update ".BAB_STATS_OVML_TBL." set st_hits='".$r3[1]."' where st_date='".$r1[0]."' and  st_hour = '".$r2[0]."' and st_ovml_file= '".addslashes($r3[0])."'");
+					$babDB->db_query("update ".BAB_STATS_OVML_TBL." set st_hits='".$babDB->db_escape_string($r3[1])."' where st_date='".$babDB->db_escape_string($r1[0])."' and  st_hour = '".$babDB->db_escape_string($r2[0])."' and st_ovml_file= '".$babDB->db_escape_string($r3[0])."'");
 				}
 			}
 		}
@@ -1135,7 +1138,7 @@ class bab_stats_addons extends bab_stats_base
 			{
 			if(!isset($this->results[$datas['date']][$datas['hour']][$datas['info']['bab_addon'][$i]]))
 				{
-				$res = $babDB->db_query("select * from ".BAB_STATS_ADDONS_TBL." where st_date='".$datas['date']."' and st_hour='".$datas['hour']."' and st_addon='".addslashes($datas['info']['bab_addon'][$i])."'");
+				$res = $babDB->db_query("select * from ".BAB_STATS_ADDONS_TBL." where st_date='".$babDB->db_escape_string($datas['date'])."' and st_hour='".$babDB->db_escape_string($datas['hour'])."' and st_addon='".$babDB->db_escape_string($datas['info']['bab_addon'][$i])."'");
 				if( $res && $babDB->db_num_rows($res) > 0 )
 					{
 					$arr = $babDB->db_fetch_array($res);
@@ -1143,7 +1146,7 @@ class bab_stats_addons extends bab_stats_base
 					}
 				else
 					{
-					$babDB->db_query("insert into ".BAB_STATS_ADDONS_TBL." (st_date, st_hour, st_hits, st_addon) values ('".$datas['date']."','".$datas['hour']."', '0', '".addslashes($datas['info']['bab_addon'][$i])."')");
+					$babDB->db_query("insert into ".BAB_STATS_ADDONS_TBL." (st_date, st_hour, st_hits, st_addon) values ('".$babDB->db_escape_string($datas['date'])."','".$babDB->db_escape_string($datas['hour'])."', '0', '".$babDB->db_escape_string($datas['info']['bab_addon'][$i])."')");
 					$this->results[$datas['date']][$datas['hour']][$datas['info']['bab_addon'][$i]] = 0;
 					}				
 				}
@@ -1167,7 +1170,7 @@ class bab_stats_addons extends bab_stats_base
 				reset($r2[1]);
 				while( $r3 = each($r2[1]) ) 
 				{
-					$babDB->db_query("update ".BAB_STATS_ADDONS_TBL." set st_hits='".$r3[1]."' where st_date='".$r1[0]."' and  st_hour = '".$r2[0]."' and st_addon= '".addslashes($r3[0])."'");
+					$babDB->db_query("update ".BAB_STATS_ADDONS_TBL." set st_hits='".$babDB->db_escape_string($r3[1])."' where st_date='".$babDB->db_escape_string($r1[0])."' and  st_hour = '".$babDB->db_escape_string($r2[0])."' and st_addon= '".$babDB->db_escape_string($r3[0])."'");
 				}
 			}
 		}
@@ -1224,7 +1227,7 @@ class bab_stats_handler
 
 		list($total) = $babDB->db_fetch_row($babDB->db_query("select count(id) from ".BAB_STATS_EVENTS_TBL.""));
 		$count = 0;
-		$req = "select * from ".BAB_STATS_EVENTS_TBL." order by id asc limit 0, ".$this->statlimit;
+		$req = "select * from ".BAB_STATS_EVENTS_TBL." order by id asc limit 0, ".$babDB->db_escape_string($this->statlimit);
 		$res = $babDB->db_query($req);
 		while( $res && $babDB->db_num_rows($res) > 0)
 			{
@@ -1258,7 +1261,7 @@ class bab_stats_handler
 				}
 			if( $maxid )
 				{
-				$babDB->db_query("delete from ".BAB_STATS_EVENTS_TBL." where id <= '".$maxid."'");
+				$babDB->db_query("delete from ".BAB_STATS_EVENTS_TBL." where id <= '".$babDB->db_escape_string($maxid)."'");
 				}
 
 			if( $this->statrows != 0 && $count >= $this->statrows )
@@ -1296,9 +1299,9 @@ class bab_stats_handler
 }
 
 /* main */
-if( !isset($idx)) {	$idx = ''; }
-if( !isset($statlimit)) {	$statlimit = OVSTAT_LIMIT; }
-if( !isset($statrows)) {	$statrows = OVSTAT_ROWS; }
+$idx = bab_rp('idx');
+$statlimit = bab_rp('statlimit', OVSTAT_LIMIT);
+$statrows = bab_rp('statrows', OVSTAT_ROWS);
 
 $babStatRefs = array();
 
