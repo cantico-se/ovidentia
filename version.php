@@ -183,7 +183,7 @@ switch($idx)
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
 <HEAD>
-<TITLE> New Document </TITLE>
+<TITLE>Ovidentia</TITLE>
 <META NAME="Generator" CONTENT="Ovidentia">
 <META NAME="Author" CONTENT="Cantico">
 <META NAME="Keywords" CONTENT="">
@@ -196,7 +196,7 @@ echo $babSiteName . "<br>";
 echo bab_toHtml($str, BAB_HTML_ALL);
 ?>
 <br>
-<P class="copyright">&copy; 2001, <a href="http://www.cantico.fr/">CANTICO</a> All rights reserved.</P></center>
+<p class="copyright">&copy; 2001, <a href="http://www.cantico.fr/">CANTICO</a> All rights reserved.</p></center>
 </BODY>
 </HTML>
 

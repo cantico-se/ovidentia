@@ -264,6 +264,7 @@ function bab_editor($content, $editname, $formname, $heightpx=300, $what=3)
 
 function bab_editor_record(&$str)
 	{
+	
 	global $babDB;
 	$str = eregi_replace("((href|src)=['\"]?)".$GLOBALS['babUrl'], "\\1", $str);
 

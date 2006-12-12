@@ -21,6 +21,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
+
+/**
+* @internal SEC1 PR 2006-12-12 FULL
+*/
+
+
 include_once "base.php";
 class bab_database
 {
@@ -35,31 +41,29 @@ function bab_database($die = false, $dbtype = "mysql")
 
 function db_print_error($text)
     {
-    
-	
-	if (isset($_COOKIE['bab_debug'])) {
+	if (function_exists('bab_isUserAdministrator') && bab_isUserAdministrator()) {
 		include_once 'devtools.php';
 		bab_debug_print_backtrace(true);
-	}
 
-	
-	$str = "<h2>" . $text . "</h2>\n";
-    $str .= "<p><b>Database Error: ";
-	switch($this->db_type )
-		{
-		case "mysql":
-		default:
-			$str .= mysql_error();
-			break;
+		$str = "<h2>" . $text . "</h2>\n";
+		$str .= "<p><b>Database Error: ";
+		switch($this->db_type )
+			{
+			case "mysql":
+			default:
+				$str .= mysql_error();
+				break;
+			}
+		$str .= "</b></p>\n";
+		if ($this->db_die_on_fail)
+			{
+			echo $str;
+			echo "<p>This script cannot continue, terminating.";
+			die();
+			}
+		return $str;
 		}
-	$str .= "</b></p>\n";
-	if ($this->db_die_on_fail)
-        {
-		echo $str;
-		echo "<p>This script cannot continue, terminating.";
-		die();
-	    }
-	return $str;
+	return '';
     }
 
 function db_connect($host, $login, $password, $dbname)

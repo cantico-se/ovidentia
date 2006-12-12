@@ -21,6 +21,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
+
+/**
+* @internal SEC1 PR 2006-12-12 FULL
+*/
+
 include_once "base.php";
 
 define("BAB_ART_STATUS_DRAFT", 0);
@@ -967,7 +972,7 @@ function bab_replace_ref( &$txt, $remove = '')
 								}
 							if (!$title_topic)
 								{
-								$res = $babDB->db_query("select id,id_topic,title,restriction from ".BAB_ARTICLES_TBL." where title LIKE '%".$babDB->db_escape_string($title_object)."%'");
+								$res = $babDB->db_query("select id,id_topic,title,restriction from ".BAB_ARTICLES_TBL." where title LIKE '%".$babDB->db_escape_like($title_object)."%'");
 								if( $res && $babDB->db_num_rows($res) > 0)
 									$arr = $babDB->db_fetch_array($res);
 								}
@@ -1022,7 +1027,7 @@ function bab_replace_ref( &$txt, $remove = '')
 
 						case 'CONTACT':
 							$title_object = $param[0].' '.$param[1];
-							$res = $babDB->db_query("select * from ".BAB_CONTACTS_TBL." where  owner='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and firstname LIKE '%".$babDB->db_escape_string($param[0])."%' and lastname LIKE '%".$babDB->db_escape_string($param[1])."%'");
+							$res = $babDB->db_query("select * from ".BAB_CONTACTS_TBL." where  owner='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and firstname LIKE '%".$babDB->db_escape_string($param[0])."%' and lastname LIKE '%".$babDB->db_escape_like($param[1])."%'");
 							if( $res && $babDB->db_num_rows($res) > 0)
 								{
 								$arr = $babDB->db_fetch_array($res);

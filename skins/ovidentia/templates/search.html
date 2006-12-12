@@ -275,11 +275,9 @@ else
 			<optgroup class="usr" label="{ topiccategorytitle }">
 		  <!--#in getnexttopic -->
 			<!--#if selected -->
-				<!--#if fields[a_topic] "== topicid" -->
-					<option selected value="{ topicid }">{ topictitle }</option>
-				<!--#else fields[a_topic] -->
-					<option value="{ topicid }">{ topictitle }</option>
-				<!--#endif fields[a_topic] -->
+				<option value="{ topicid }" selected="selected">{ topictitle }</option>
+			<!--#else selected -->
+				<option value="{ topicid }">{ topictitle }</option>
 			<!--#endif selected -->
 		  <!--#endin getnexttopic -->
 		  <!--#endin getnexttopiccategory -->
@@ -349,11 +347,11 @@ else
 	<td valign="top" align="right"><select name="g_directory" onchange="setselects(this)">
 		<option value="">{ all }</option>
 	  <!--#in getnextdir -->
-			<!--#if fields[g_directory] "== topicid" -->
-				<option selected value="{ topicid }">{ topictitle }</option>
-			<!--#else fields[g_directory] -->
+			<!--#if selected -->
+				<option value="{ topicid }" selected="selected">{ topictitle }</option>
+			<!--#else selected -->
 				<option value="{ topicid }">{ topictitle }</option>
-			<!--#endif fields[g_directory] -->
+			<!--#endif selected -->
 	  <!--#endin getnextdir -->
 	</select></td>
 	</tr>
@@ -365,7 +363,7 @@ else
 		<option { selected } value="{ name }">{ description }</option>
 	<!--#endin selectname -->
 	</select>
-	</td><td align="left"><input type="text" name="dirfield_{ fieldcounter }" value="{ fields[dirfield_{ fieldcounter }] }"></td>
+	</td><td align="left"><input type="text" name="dirfield_{ fieldcounter }" value="{ value }" /></td>
 	</tr>
  <!--#endin getnextfieldtosearch -->
 </table>
@@ -385,11 +383,11 @@ setselects(document.forms.searchForm.g_directory);
 	<select name="h_calendar">
 	<option value="">{ all }</option>
   <!--#in getnextcal -->
-		<!--#if fields[h_calendar] "== calendarid" -->
+		<!--#if selected -->
 			<option selected value="{ calendarid }">{ caltitle }</option>
-		<!--#else fields[h_calendar] -->
+		<!--#else selected -->
 			<option value="{ calendarid }">{ caltitle }</option>
-		<!--#endif fields[h_calendar] -->
+		<!--#endif selected -->
   <!--#endin getnextcal -->
 </select>
 </td>

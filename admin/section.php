@@ -228,7 +228,7 @@ function sectionDelete($id)
 
 function sectionUpdate($id, $title, $desc, $content, $script, $template, $lang, $opt)
 	{
-	global $babBody;
+	global $babBody, $babDB;
 
 	if( empty($title))
 		{
@@ -240,22 +240,28 @@ function sectionUpdate($id, $title, $desc, $content, $script, $template, $lang, 
 		$php = "Y";
 	else
 		$php = "N";
-	$db = $GLOBALS['babDB'];
-	$query = "select * from ".BAB_SECTIONS_TBL." where id='".$id."'";
-	$res = $db->db_query($query);
-	$arr = $db->db_fetch_array($res);
+
+	$query = "select * from ".BAB_SECTIONS_TBL." where id='".$babDB->db_escape_string($id)."'";
+	$res = $babDB->db_query($query);
+	$arr = $babDB->db_fetch_array($res);
 
 
 	bab_editor_record($content);
 
-	$desc = $db->db_escape_string($desc);
-	$content = $db->db_escape_string($content);
-	$title = $db->db_escape_string($title);
-	$template = $db->db_escape_string($template);
 
-
-	$query = "update ".BAB_SECTIONS_TBL." set title='".$title."', description='".$desc."', content='".$content."', script='".$php."', template='".$template."', lang='".$lang."', optional='".$opt."' where id='".$id."'";
-	$db->db_query($query);
+	$query = "update ".BAB_SECTIONS_TBL." 
+	set 
+		title='".$babDB->db_escape_string($title)."', 
+		description='".$babDB->db_escape_string($desc)."', 
+		content='".$babDB->db_escape_string($content)."', 
+		script='".$babDB->db_escape_string($php)."', 
+		template='".$babDB->db_escape_string($template)."', 
+		lang='".$babDB->db_escape_string($lang)."', 
+		optional='".$babDB->db_escape_string($opt)."' 
+	where 
+		id='".$babDB->db_escape_string($i)."'
+		";
+	$babDB->db_query($query);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sections&idx=List");
 	}
 

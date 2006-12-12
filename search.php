@@ -403,7 +403,7 @@ function searchKeyword($item , $option = "OR")
 				{
 				$this->topicid = $this->arrtopics[$this->id_cat][$i]['id'];
 				$this->topictitle = put_text($this->arrtopics[$this->id_cat][$i]['category'],30);
-				$this->selected = true;
+				$this->selected = isset($this->fields['a_topic']) ? $this->topicid == $this->fields['a_topic'] : '';
 				$i++;
 				return true;
 				}
@@ -440,6 +440,7 @@ function searchKeyword($item , $option = "OR")
                 $arr = $this->dirarr[$l];
 				
 				$this->topicid = $arr['id'];
+				$this->selected = isset($this->fields['g_directory']) && $this->fields['g_directory'] == $arr['id'];
 
 				$this->topictitle = put_text($arr['name'],30);
 
@@ -535,6 +536,8 @@ function searchKeyword($item , $option = "OR")
 			if( $j < FIELDS_TO_SEARCH)
 				{
 				$this->fieldcounter = $j;
+				
+				$this->value = isset($this->fields['dirfield_'.$j]) ? $this->fields['dirfield_'.$j] : '';
 				$this->j = $j;
 				$j++;
 				return true;
@@ -552,6 +555,7 @@ function searchKeyword($item , $option = "OR")
 				{
 				$this->calendarid = $this->rescal[$i]['idcal'];
 				$this->caltitle = put_text($this->rescal[$i]['name'],30);
+				$this->selected = isset($this->fields['h_calendar']) && $this->rescal[$i]['idcal'] == $this->fields['h_calendar'];
 				$i++;
 				return true;
 				}
@@ -1491,7 +1495,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$this->nbresult += $nbrows;
 			// --------------------------------------------- DIRECTORIES
 			$arrview = bab_getUserIdObjects(BAB_DBDIRVIEW_GROUPS_TBL);
-			bab_debug($arrview);
+			
 			if( count($arrview) && (empty($item) || $item == "g"))
 				{
 				$id_directory = isset($this->fields['g_directory']) ? $this->fields['g_directory'] : '';
@@ -1723,6 +1727,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					{
 					$select_idcal = " and ceo.id_cal = '".$babDB->db_escape_string($this->fields['h_calendar'])."'";
 					}
+
 
 				$req = "create temporary table ageresults 
 				select 
@@ -2187,6 +2192,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					$this->dir['babdirf'.$arr['id_fieldx']] = $arr['field_value'];
 					}
 
+				
 				$i++;
 				return true;
 				}

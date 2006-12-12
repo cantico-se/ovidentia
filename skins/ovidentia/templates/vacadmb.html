@@ -441,61 +441,6 @@ window.focus();
 </HTML>
 <!--#end ventrydetail -->
 
-<!--#begin vpersonnellist -->
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE>{ babSiteName }</TITLE>
-{ babMeta }
-{ babCss }
-<script type="text/javascript" src="{ babOvidentiaJs }">
-<!--
-window.focus();
-//-->
-</script>
-<script type="text/javascript">
-<!--
-//-->
-</script>
-</HEAD>
-<BODY class="BabBackground">
-<table border="0" width="95%" cellpadding="1" cellspacing="0" align="center">
-<tr> 
-<td class="BabMailBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td colspan="2" nowrap class="BabLetterlists">
-<!--#if allselected "== 1" -->
-{ allname }&nbsp;&nbsp;
-<!--#else allselected -->
-<a class="BabAlphabetLink" href="{ allurl }">{ allname }</a>&nbsp;&nbsp;
-<!--#endif allselected -->
-<!--#in getnextselect -->
-<!--#if selected "== 1" -->
-{ selectname }&nbsp;&nbsp;
-<!--#else selected -->
-<a class="BabAlphabetLink" href="{ selecturl }">{ selectname }</a>&nbsp;&nbsp;
-<!--#endif selected -->
-<!--#endin getnextselect -->
-</td>
-</tr>
-<tr>         
-<td class="BabSiteAdminSmall" valign="middle" nowrap><a class="BabNameEmailLink" href="{ fullnameurl }">{ fullname }</a></td>
-<td class="BabSiteAdminSmall" valign="middle" nowrap>&nbsp;</td>
-</tr>
-<!--#in getnext -->
-<tr> 
-<td valign="middle" width="20%" nowrap><a class="BabNameEmailLink" href="#" onclick="self.opener.{ cb }({ userid }, '{ firstlast }')">{ urlname }</a></td>
-<td valign="middle" nowrap>&nbsp;</td>
-</tr> 
-<!--#endin getnext -->
-</table>
-</td>
-</tr>
-</table>
-</BODY>
-</HTML>
-<!--#end vpersonnellist -->
 
 <!--#begin reqexport -->
 <script type="text/javascript">

@@ -21,6 +21,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
+
+/**
+* @internal SEC1 PR 2006-12-12 FULL
+*/
+
+
 include_once 'base.php';
 include_once $babInstallPath.'admin/register.php';
 

@@ -605,7 +605,7 @@ function saveCategory($category, $description, $cat, $sacom, $saart, $saupd, $bn
 		$busetags = 'N';
 		}
 
-	bab_editor_record($content);
+	bab_editor_record($description);
 	$category = $babDB->db_escape_string($category);
 	$description = $babDB->db_escape_string($description);
 	

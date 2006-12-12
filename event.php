@@ -44,9 +44,9 @@ function bab_getCalendarEventTitle($evtid)
 }
 
 
-class bab_event
+class bab_cal_event
 	{
-	function bab_event()
+	function bab_cal_event()
 
 		{
 		global $babBody, $babDB;
@@ -146,7 +146,7 @@ class bab_event
 function newEvent()
 	{
 	global $babBodyPopup;
-	class temp extends bab_event
+	class temp extends bab_cal_event
 		{
 		var $arrresname = array();
 		var $arrresid = array();
@@ -155,7 +155,7 @@ function newEvent()
 			{
 			global $babBody;
 
-			$this->bab_event();
+			$this->bab_cal_event();
 
 			global $babBodyPopup;
 
@@ -867,7 +867,7 @@ function deleteEvent()
 	{
 	global $babBody,$babBodyPopup;
 	
-	class deleteEventCls extends bab_event
+	class deleteEventCls extends bab_cal_event
 		{
 		var $warning;
 		var $message;

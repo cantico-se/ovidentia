@@ -812,7 +812,7 @@ function updateCategory($id, $category, $description, $cat, $saart, $sacom, $sau
 	$db = &$GLOBALS['babDB'];
 
 
-	bab_editor_record($content);
+	bab_editor_record($description);
 	$category = $db->db_escape_string($category);
 	$description = $db->db_escape_string($description);
 
