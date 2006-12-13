@@ -798,8 +798,8 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 							}
 							if( count($tags))
 								{
-								$res = $this->db->db_query("select id_art, tag_name from ".BAB_ART_TAGS_TBL." att left join ".BAB_TAGS_TBL." tt on tt.id = att.id_tag WHERE tag_name = ".implode(' or tag_name = ', $tags));
-								while( $rr = $this->db->db_fetch_array($res))
+								$res = $babDB->db_query("select id_art, tag_name from ".BAB_ART_TAGS_TBL." att left join ".BAB_TAGS_TBL." tt on tt.id = att.id_tag WHERE tag_name = ".implode(' or tag_name = ', $tags));
+								while( $rr = $babDB->db_fetch_array($res))
 									{
 									$maptags[$rr['tag_name']][] = $rr['id_art'];
 									$arrids[] = $rr['id_art'];
