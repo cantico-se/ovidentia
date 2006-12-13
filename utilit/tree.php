@@ -1200,7 +1200,7 @@ class bab_OrgChart extends bab_TreeView
 		$this->_openNodes = array();
 		$this->_openMembers = array();
 		$this->_zoomFactor = 1.0;
-		
+
 		$this->t_fit_width = bab_translate('Fit width');
 		$this->t_visible_levels = bab_translate('Visible levels');
 		$this->t_visible_levels_tip = bab_translate('Only show n first levels of the org chart');

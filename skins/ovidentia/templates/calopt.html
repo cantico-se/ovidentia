@@ -403,7 +403,7 @@
 <input type="hidden" name="idcal" value="{ calid }">
 <input type="hidden" name="urla" value="{ urla }">
 <input type="hidden" name="update" value="access">
-<table  width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
+<table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
 	<table  width="100%" border="0" cellspacing="0" cellpadding="5">
@@ -411,18 +411,24 @@
 	<td>{ fullname }</td>
 	<td>{ access0txt }</td>
 	<td>{ access1txt }</td>
+	<td>{ access11txt }</td>
 	<td>{ access2txt }</td>
+	<td>{ access22txt }</td>
+	<td>{ deletetxt }</td>
 	</tr>
 	<!--#in getnext -->
 	<tr class="BabSiteAdminFontBackground" align="center"> 
 	<td align="left">{ fullnameval }</td>
 	<td><input type="radio" name="acc_{ userid }" value="0" { cheched0 } /></td>
 	<td><input type="radio" name="acc_{ userid }" value="1" { cheched1 } /></td>
+	<td><input type="radio" name="acc_{ userid }" value="3" { cheched11 } /></td>
 	<td><input type="radio" name="acc_{ userid }" value="2" { cheched2 } /></td>
+	<td><input type="radio" name="acc_{ userid }" value="4" { cheched21 } /></td>
+	<td><input type="checkbox" name="users[]" value="{ userid }" /></td>
 	</tr>
 	<!--#endin getnext -->
 	<tr> 
-	<td class="BabSiteAdminTitleFontBackground" colspan="4">&nbsp;</td>
+	<td class="BabSiteAdminTitleFontBackground" colspan="7">&nbsp;</td>
 	</tr>
 	</table>
 </td>
