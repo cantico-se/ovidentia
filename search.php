@@ -229,9 +229,11 @@ function searchKeyword($item , $option = "OR")
 			$this->t_index_priority = bab_translate("Give priority to file content for order");
 			$this->tags_txt = bab_translate("Tags");
 			
-			$this->pat = bab_rp('pat');
+			$this->pat = bab_toHtml(bab_rp('pat'));
 			$this->field = bab_rp('field');
 			$this->order = bab_rp('order');
+			$this->atleastone_txt = bab_translate("At least one");
+			$this->all_txt = bab_translate("All");
 
 			$this->index = bab_searchEngineInfos();
 			$this->search_files_only = isset($_POST['search_files_only']);
@@ -778,9 +780,11 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					$restrictedart = '';
 					if( isset($this->fields['tagsname']) && !empty($this->fields['tagsname']))
 						{
+						$incom = ''; /* don't display comments in search result */
 						$this->fields['tagsname'] = trim($this->fields['tagsname']);
 						if( !empty($this->fields['tagsname']))
 							{
+							$maptags = array();
 							$tags = array();
 							$atags = explode(',', $this->fields['tagsname']);
 							for( $k = 0; $k < count($atags); $k++ )
@@ -790,16 +794,26 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 									{
 									$tags[] = "'".$babDB->db_escape_string($atags[$k])."'";
 									}
+
 							}
 							if( count($tags))
 								{
-								$res = $babDB->db_query("select id_art from ".BAB_ART_TAGS_TBL." att left join ".BAB_TAGS_TBL." tt on tt.id = att.id_tag WHERE tag_name like ".implode(' or tag_name = ', $tags));
-								while( $rr = $babDB->db_fetch_array($res))
+								$res = $this->db->db_query("select id_art, tag_name from ".BAB_ART_TAGS_TBL." att left join ".BAB_TAGS_TBL." tt on tt.id = att.id_tag WHERE tag_name = ".implode(' or tag_name = ', $tags));
+								while( $rr = $this->db->db_fetch_array($res))
 									{
+									$maptags[$rr['tag_name']][] = $rr['id_art'];
 									$arrids[] = $rr['id_art'];
 									}
+								$optags = intval(bab_pp('optags', 1));
+								if( $optags == 0 && count($maptags))
+									{
+									list(,$arrids) = each($maptags);
+									while( list(,$t) = each($maptags) )
+										{
+										$arrids = array_intersect($arrids, $t);
+										}
+									}
 								}
-
 
 							if( $arrids )
 								{
