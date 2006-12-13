@@ -605,9 +605,24 @@ function saveCategory($category, $description, $cat, $sacom, $saart, $saupd, $bn
 		$busetags = 'N';
 		}
 
-	bab_editor_record($description);
-	$category = $babDB->db_escape_string($category);
-	$description = $babDB->db_escape_string($description);
+	if( $busetags == 'Y' )
+		{
+		list($count) = $db->db_fetch_array($db->db_query("select count(id) from ".BAB_TAGS_TBL.""));
+		if( $count == 0 )
+			{
+			$babBody->msgerror = bab_translate("ERROR: You can't use tags. List tags is empty");
+			return false;
+			}
+		}
+	else
+		{
+		$busetags = 'N';
+		}
+
+
+	bab_editor_record($content);
+	$category = $db->db_escape_string($category);
+	$description = $db->db_escape_string($description);
 	
 	$query = "select id from ".BAB_TOPICS_TBL." where category='".$category."' and id_cat='".$cat."'";	
 	$res = $babDB->db_query($query);
