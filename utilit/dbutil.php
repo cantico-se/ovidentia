@@ -63,6 +63,10 @@ function db_print_error($text)
 			}
 		return $str;
 		}
+		
+	if ($this->db_die_on_fail) {
+		die('ERROR');
+	}
 	return '';
     }
 
