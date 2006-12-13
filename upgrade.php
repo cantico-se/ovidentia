@@ -7536,14 +7536,30 @@ function upgrade604to605()
 	return $ret;
 }
 
+
 function upgrade605to606()
 {
 	$ret = "";
 	global $babDB;
-
-	$babDB->db_query("TRUNCATE bab_vac_calendar");
 	
-	 
+	$babDB->db_query("TRUNCATE bab_vac_calendar");
+	$res = $babDB->db_query("SELECT id FROM ".BAB_INDEX_FILES_TBL."");
+	$ids = array();
+	while ($arr = $babDB->db_fetch_assoc($res)) {
+		$ids[$arr['id']] = 1;
+	}
+	
+	if (!isset($ids[1])) {
+		$babDB->db_query("INSERT INTO bab_index_files VALUES (1, 'File manager', 'bab_files', 1, 0)");
+	}
+	
+	if (!isset($ids[2])) {
+		$babDB->db_query("INSERT INTO bab_index_files VALUES (2, 'Articles files', 'bab_art_files', 1, 0)");
+	}
+	
+	if (!isset($ids[3])) {
+		$babDB->db_query("INSERT INTO bab_index_files VALUES (3, 'Forum post files', 'bab_forumsfiles', 0, 0)");
+	}
 
 	return $ret;
 }
@@ -7594,7 +7610,6 @@ function upgrade606to610()
 	
 	return $ret;
 }
-
 
 
 ?>
