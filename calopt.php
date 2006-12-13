@@ -39,7 +39,9 @@ function accessCalendar($calid, $urla)
 			$this->fullname = bab_translate("Fullname");
 			$this->access0txt = bab_translate("Consultation");
 			$this->access1txt = bab_translate("Creation and modification");
+			$this->access11txt = bab_translate("Shared creation and modification");
 			$this->access2txt = bab_translate("Full access");
+			$this->access22txt = bab_translate("Shared full access");
 			$this->deletetxt = bab_translate("Delete");
 			$this->upduserstxt = bab_translate("Update access");
 			$this->usertxt = bab_translate("Add user");
@@ -75,22 +77,27 @@ function accessCalendar($calid, $urla)
 				{
 				$this->fullnameval = bab_toHtml($this->arrusers[$k]['user']);
 				$this->userid = $this->arrusers[$k]['id'];
+				$this->cheched0 = '';
+				$this->cheched1 = '';
+				$this->cheched11 = '';
+				$this->cheched2 = '';
+				$this->cheched21 = '';
 				switch( $this->arrusers[$k]['access'])
 					{
 					case 1:
-						$this->cheched0 = "";
-						$this->cheched1 = "checked";
-						$this->cheched2 = "";
+						$this->cheched1 = 'checked';
 						break;
 					case 2:
-						$this->cheched0 = "";
-						$this->cheched1 = "";
-						$this->cheched2 = "checked";
+						$this->cheched2 = 'checked';
+						break;
+					case 3:
+						$this->cheched11 = 'checked';
+						break;
+					case 4:
+						$this->cheched21 = 'checked';
 						break;
 					default:
-						$this->cheched0 = "checked";
-						$this->cheched1 = "";
-						$this->cheched2 = "";
+						$this->cheched0 = 'checked';
 						break;
 					}
 				$k++;

@@ -286,10 +286,19 @@ else
 <!--#if busetags -->
 	<tr>
 	<td align="right">{ tags_txt }</td>
-	<td>
+	<td nowrap="nowrap">
 	<input type="text" id="idtags" name="tagsname" size="30" maxlength="255" value="{ fields[tagsname] }" />
 	<div align="left" id="tags-ac" class="auto_complete">
-	</div>
+	</div>&nbsp;&nbsp;
+	<select name="optags">
+	<!--#if fields[optags] "== 0" -->
+	<option value="1">{ atleastone_txt }</option>
+	<option value="0" selected="selected">{ all_txt }</option>
+	<!--#else fields[optags] -->
+	<option value="1" selected="selected">{ atleastone_txt }</option>
+	<option value="0">{ all_txt }</option>
+	<!--#endif fields[optags] -->
+	</select>
 	</td>
 	</tr>
 <!--#endif busetags -->
@@ -471,6 +480,7 @@ setselects(document.forms.searchForm.g_directory);
   );
   
 //}
+
 //-->
 </script>
 <!--#endif busetags -->

@@ -67,12 +67,12 @@ function createEvent($idcals,$id_owner, $title, $description, $location, $startd
 					$add = true;
 					$ustatus = BAB_CAL_STATUS_ACCEPTED;
 					}
-				elseif( $arr['access'] == BAB_CAL_ACCESS_UPDATE )
+				elseif( $arr['access'] == BAB_CAL_ACCESS_UPDATE || $arr['access'] == BAB_CAL_ACCESS_SHARED_UPDATE)
 					{
 					$add = true;
 					$ustatus = BAB_CAL_STATUS_NONE;
 					}
-				elseif( $arr['access'] == BAB_CAL_ACCESS_FULL )
+				elseif( $arr['access'] == BAB_CAL_ACCESS_FULL || $arr['access'] == BAB_CAL_ACCESS_SHARED_FULL)
 					{
 					$add = true;
 					$ustatus = BAB_CAL_STATUS_ACCEPTED;
@@ -444,7 +444,7 @@ function confirmEvent($evtid, $idcal, $bconfirm, $comment, $bupdrec)
 	switch($arr['type'])
 	{
 		case BAB_CAL_USER_TYPE:
-			if( count($arrevtids) > 0 && $arr['access'] == BAB_CAL_ACCESS_FULL)
+			if( count($arrevtids) > 0 && ($arr['access'] == BAB_CAL_ACCESS_FULL || $arr['access'] == BAB_CAL_ACCESS_SHARED_FULL))
 				{
 				$babDB->db_query("update ".BAB_CAL_EVENTS_OWNERS_TBL." set status='".$babDB->db_escape_string($bconfirm)."' where id_event IN (".$babDB->quote($arrevtids).") and id_cal=".$babDB->quote($idcal));
 				notifyEventApprobation($evtid, $bconfirm, $comment, bab_translate("Personal calendar"));
@@ -478,7 +478,14 @@ function confirmEvent($evtid, $idcal, $bconfirm, $comment, $bupdrec)
 								notifyEventApprobation($evtid, $bconfirm, $comment, $arr['name']);
 						
 								$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($row['id_event'])."'"));
-								notifyResourceEvent($rr['title'], $rr['description'], bab_longDate(bab_mktime($rr['start_date'])), bab_longDate(bab_mktime($rr['end_date'])), array($idcal));
+								
+								if (BAB_CAL_RES_TYPE == $arr['type']) {
+									notifyResourceEvent($rr['title'], $rr['description'], bab_longDate(bab_mktime($rr['start_date'])), bab_longDate(bab_mktime($rr['end_date'])), array($idcal));
+								} else {
+									notifyPublicEvent($rr['title'], $rr['description'], bab_longDate(bab_mktime($rr['start_date'])), bab_longDate(bab_mktime($rr['end_date'])), array($idcal));
+								}
+								
+								
 								break;
 							default:
 								$nfusers = getWaitingApproversFlowInstance($row['idfai'], true);
@@ -654,58 +661,84 @@ function notifyPublicEvent($title, $description, $startdate, $enddate, $idcals)
 			$message = bab_printTemplate($tempc,"mailinfo.html", "neweventtxt");
 			$mail->mailAltBody($message);
 
-			$res = $babDB->db_query("select id_group from ".BAB_CAL_PUB_GRP_GROUPS_TBL." where  id_object='".$babDB->db_escape_string($idcals[$i])."'");
-			if( $res && $babDB->db_num_rows($res) > 0 )
+			$arrusers = cal_usersToNotiy($idcals[$i], BAB_CAL_PUB_TYPE, 0);
+			
+
+			if( $arrusers )
 				{
-				while( $row = $babDB->db_fetch_array($res))
+				$count = 0;
+				while(list(,$arr) = each($arrusers))
 					{
-					switch($row['id_group'])
-						{
-						case 0:
-						case 1:
-							$res2 = $babDB->db_query("select id, email, firstname, lastname from ".BAB_USERS_TBL." where is_confirmed='1' and disabled='0'");
-							break;
-						case 2:
-							return;
-						default:
-							$res2 = $babDB->db_query("select ".BAB_USERS_TBL.".id, ".BAB_USERS_TBL.".email, ".BAB_USERS_TBL.".firstname, ".BAB_USERS_TBL.".lastname from ".BAB_USERS_TBL." join ".BAB_USERS_GROUPS_TBL." where is_confirmed='1' and disabled='0' and ".BAB_USERS_GROUPS_TBL.".id_group='".$babDB->db_escape_string($row['id_group'])."' and ".BAB_USERS_GROUPS_TBL.".id_object=".BAB_USERS_TBL.".id");
-							break;
-						}
+					$mail->mailBcc($arr['email'], $arr['name']);
+					$count++;
 
-					if( $res2 && $babDB->db_num_rows($res2) > 0 )
+					if( $count > 25 )
 						{
+						$mail->send();
+						$mail->clearBcc();
+						$mail->clearTo();
 						$count = 0;
-						while(($arr = $babDB->db_fetch_array($res2)))
-							{
-							if( count($arrusers) == 0 || !in_array($arr['id'], $arrusers))
-								{
-								$arrusers[] = $arr['id'];
-								$mail->mailBcc($arr['email'], bab_composeUserName($arr['firstname'],$arr['lastname']));
-								$count++;
-								}
-
-							if( $count > 25 )
-								{
-								$mail->send();
-								$mail->clearBcc();
-								$mail->clearTo();
-								$count = 0;
-								}
-							}
-
-						if( $count > 0 )
-							{
-							$mail->send();
-							$mail->clearBcc();
-							$mail->clearTo();
-							$count = 0;
-							}
-						}	
+						}
 					}
-				}	
+
+				if( $count > 0 )
+					{
+					$mail->send();
+					$mail->clearBcc();
+					$mail->clearTo();
+					$count = 0;
+					}
+				}		
 			}
 		}
 	}
+
+
+
+
+
+	
+function cal_usersToNotiy($id_cal, $cal_type, $id_owner) {
+
+	include_once $GLOBALS['babInstallPath']."admin/acl.php";
+
+	global $babDB;
+	$arrusers = array();
+	
+	switch($cal_type)
+		{
+		case BAB_CAL_USER_TYPE:
+			if( !isset($arrusers[$id_owner]))
+				{
+				$arrusers[$id_owner] = array(
+						'name' => bab_getUserName($id_owner),
+						'email' => bab_getUserEmail($id_owner)
+					);
+				}
+			break;
+			
+		case BAB_CAL_PUB_TYPE:
+			$arr = aclGetAccessUsers(BAB_CAL_PUB_GRP_GROUPS_TBL, $id_cal);
+			$arrusers = array_merge($arrusers, $arr);
+			break;
+			
+		case BAB_CAL_RES_TYPE:
+			$arr = aclGetAccessUsers(BAB_CAL_RES_GRP_GROUPS_TBL, $id_cal);
+			$arrusers = array_merge($arrusers, $arr);
+			break;
+		}
+		
+	if (isset($GLOBALS['BAB_SESS_USERID'])) {
+		unset($arrusers[$GLOBALS['BAB_SESS_USERID']]);
+	}
+	
+	return $arrusers;
+}
+
+
+
+
+
 
 
 function notifyResourceEvent($title, $description, $startdate, $enddate, $idcals)
@@ -761,7 +794,7 @@ function notifyResourceEvent($title, $description, $startdate, $enddate, $idcals
 			}
 		$tempc = new clsNotifyResourceEvent($title, $description, $startdate, $enddate);
 		
-		$arrusers = array();
+
 		for( $i = 0; $i < count($idcals); $i++ )
 			{
 			$tempc->calendar = bab_getCalendarOwnerName($idcals[$i], BAB_CAL_RES_TYPE);
@@ -772,56 +805,36 @@ function notifyResourceEvent($title, $description, $startdate, $enddate, $idcals
 			$message = bab_printTemplate($tempc,"mailinfo.html", "neweventtxt");
 			$mail->mailAltBody($message);
 
-			$res = $babDB->db_query("select id_group from ".BAB_CAL_RES_GRP_GROUPS_TBL." where  id_object='".$babDB->db_escape_string($idcals[$i])."'");
-			if( $res && $babDB->db_num_rows($res) > 0 )
+			
+			$arrusers = cal_usersToNotiy($idcals[$i], BAB_CAL_RES_TYPE, 0);
+			
+
+			if( $arrusers )
 				{
-				while( $row = $babDB->db_fetch_array($res))
+				$count = 0;
+				while(list(,$arr) = each($arrusers))
 					{
-					switch($row['id_group'])
-						{
-						case 0:
-						case 1:
-							$res2 = $babDB->db_query("select id, email, firstname, lastname from ".BAB_USERS_TBL." where is_confirmed='1' and disabled='0'");
-							break;
-						case 2:
-							return;
-						default:
-							$res2 = $babDB->db_query("select ".BAB_USERS_TBL.".id, ".BAB_USERS_TBL.".email, ".BAB_USERS_TBL.".firstname, ".BAB_USERS_TBL.".lastname from ".BAB_USERS_TBL." join ".BAB_USERS_GROUPS_TBL." where is_confirmed='1' and disabled='0' and ".BAB_USERS_GROUPS_TBL.".id_group='".$babDB->db_escape_string($row['id_group'])."' and ".BAB_USERS_GROUPS_TBL.".id_object=".BAB_USERS_TBL.".id");
-							break;
-						}
+					$mail->mailBcc($arr['email'], $arr['name']);
+					$count++;
 
-					if( $res2 && $babDB->db_num_rows($res2) > 0 )
+					if( $count > 25 )
 						{
+						$mail->send();
+						$mail->clearBcc();
+						$mail->clearTo();
 						$count = 0;
-						while(($arr = $babDB->db_fetch_array($res2)))
-							{
-							if( count($arrusers) == 0 || !in_array($arr['id'], $arrusers))
-								{
-								$arrusers[] = $arr['id'];
-								$mail->mailBcc($arr['email'], bab_composeUserName($arr['firstname'],$arr['lastname']));
-								$count++;
-								}
+						}
+					}
 
-							if( $count > 25 )
-								{
-								$mail->send();
-								$mail->clearBcc();
-								$mail->clearTo();
-								$count = 0;
-								}
-							}
-
-						if( $count > 0 )
-							{
-							$mail->send();
-							$mail->clearBcc();
-							$mail->clearTo();
-							$count = 0;
-							}
-						}	
+				if( $count > 0 )
+					{
+					$mail->send();
+					$mail->clearBcc();
+					$mail->clearTo();
+					$count = 0;
 					}
 				}	
-			}
+			}		
 		}
 	}
 
@@ -893,6 +906,13 @@ function notifyEventApprobation($evtid, $bconfirm, $raison, $calname)
 	$mail->mailAltBody($message);
 	$mail->send();
 	}
+	
+	
+	
+	
+	
+	
+	
 
 function notifyEventUpdate($evtid, $bdelete)
 	{
@@ -958,89 +978,10 @@ function notifyEventUpdate($evtid, $bdelete)
 	$res = $babDB->db_query("select ceot.*, ct.type, ct.owner from ".BAB_CAL_EVENTS_OWNERS_TBL." ceot left join ".BAB_CALENDAR_TBL." ct on ct.id=ceot.id_cal where ceot.id_event='".$babDB->db_escape_string($evtid)."'");
 	while( $arr = $babDB->db_fetch_array($res) )
 		{
-		$arrusers = array();
-		$arrgroups = array();
-		$all = false;
+		$arrusers = cal_usersToNotiy($arr['id_cal'], $arr['type'], $arr['owner']);
 
-		switch($arr['type'])
-			{
-			case BAB_CAL_USER_TYPE:
-				if( !isset($arrusers[$arr['owner']]))
-					{
-					$arrusers[$arr['owner']] = 1;
-					}
-				break;
-			case BAB_CAL_PUB_TYPE:
-				$res2 = $babDB->db_query("select id_group from ".BAB_CAL_PUB_GRP_GROUPS_TBL." where id_object='".$babDB->db_escape_string($arr['id_cal'])."'");
-				while( ($row = $babDB->db_fetch_array($res2)) && !$all)
-					{
-					switch($row['id_group'])
-						{
-						case 0:
-						case 1:
-							$all = true;
-							break;
-						case 2:
-							break;
-						default:
-							if( !isset($arrgroups[$row['id_group']]))
-								{
-								$arrgroups[$row['id_group']] = 1;
-								}
-							break;
-						}
-					}
 
-				break;
-			case BAB_CAL_RES_TYPE:
-				$res2 = $babDB->db_query("select id_group from ".BAB_CAL_RES_GRP_GROUPS_TBL." where id_object='".$babDB->db_escape_string($arr['id_cal'])."'");
-				while( ($row = $babDB->db_fetch_array($res2)) && !$all)
-					{
-					switch($row['id_group'])
-						{
-						case 0:
-						case 1:
-							$all = true;
-							break;
-						case 2:
-							break;
-						default:
-							if( !isset($arrgroups[$row['id_group']]))
-								{
-								$arrgroups[$row['id_group']] = 1;
-								}
-							break;
-						}
-					}
-				break;
-			}
-
-		$res2 = false;
-		if( $all )
-			{
-			$res2 = $babDB->db_query("select id, email, firstname, lastname from ".BAB_USERS_TBL." where is_confirmed='1' and disabled='0'");
-			}
-		else
-			{
-			if( count($arrgroups) > 0 )
-				{
-				$res2 = $babDB->db_query("select id_object from ".BAB_USERS_GROUPS_TBL." where id_group in (".$babDB->quote( array_keys($arrgroups)).")");
-				while( $row = $babDB->db_fetch_array($res2))
-					{
-					if( !isset($arrusers[$row['id_object']]))
-						{
-						$arrusers[$row['id_object']] = 1;
-						}
-					}
-				}
-
-			if( count($arrusers) > 0 )
-				{
-				$res2 = $babDB->db_query("select id, email, firstname, lastname from ".BAB_USERS_TBL." WHERE is_confirmed='1' and disabled='0' and id in (".$babDB->quote( array_keys($arrusers)).") AND id <> '".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
-				}
-			}
-
-		if( $res2 )
+		if($arrusers)
 			{
 			$calinfo = $babBody->icalendars->getCalendarInfo($arr['id_cal']);
 			$tempc->calendar = $calinfo['name'];
@@ -1051,9 +992,9 @@ function notifyEventUpdate($evtid, $bdelete)
 			$mail->mailAltBody($message);
 			
 			$count = 0;
-			while(($row = $babDB->db_fetch_array($res2)))
+			while(list(,$row) = each($arrusers))
 				{
-				$mail->mailBcc($row['email']); // , bab_composeUserName($row['firstname'],$row['lastname'])
+				$mail->mailBcc($row['email'], $row['name']);
 				$count++;
 
 				if( $count > 25 )

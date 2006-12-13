@@ -2391,6 +2391,10 @@
 <string id="To order files, drag and drop here">Pour ordonner les fichiers, glisser et déposez ici</string>
 <string id="To order files, drag and drop and don't forget to save">Pour ordonner les fichiers, glisser et déposez et n'oubliez pas de sauvegarder</string>
 <string id="Some tags doesn't exist">Certains mots clés n'existent pas</string>
+<string id="You must specify at least one tag">Vous devez spécifier au moins un mot clé</string>
+<string id="Shared creation and modification">Création et modification mutualisées</string>
+<string id="Shared full access">Accès total mutualisé</string>
+<string id="You must specify at least one tag in article properties page">Vous devez spécifier au moins un mot clé dans la page des propriétés de l'article</string>
 <string id="You must sepcify at least one tag">Vous devez spécifier au moins un mot clé</string>
 <string id="Add selected users">Ajouter les utilisateurs sélectionnés</string>
 <string id="The file is not on the server">Le fichier n'est pas sur le serveur</string>

@@ -521,7 +521,7 @@ function newEvent()
 
 function modifyEvent($idcal, $evtid, $cci, $view, $date)
 	{
-	global $babBody,$babBodyPopup;
+	global $babBody,$babDB, $babBodyPopup;
 	class temp
 		{
 		var $datebegin;
@@ -556,7 +556,7 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 		var $thisone;
 		var $updaterec;
 
-		function temp($idcal, $evtid, $cci, $view, $date)
+		function temp($idcal, $evtid, $cci, $view, $date, $res)
 			{
 			global $babBody, $babDB, $BAB_SESS_USERID, $babBodyPopup;
 
@@ -575,7 +575,6 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 			$this->ccids = $cci;
 			$this->curview = $view;
 			$this->curdate = $date;
-			$res = $babDB->db_query("select * from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($evtid)."'");
 			$this->evtarr = $babDB->db_fetch_array($res);
 			
 			$iarr = $babBody->icalendars->getCalendarInfo($this->calid);
@@ -858,7 +857,14 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 
 		}
 
-	$temp = new temp($idcal, $evtid, $cci, $view, $date);
+	$res = $babDB->db_query("select * from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($evtid)."'");
+	if( !$res || $babDB->db_num_rows($res) == 0 )
+		{
+		$babBodyPopup->msgerror = bab_translate("Access denied");
+		return false;
+		}
+	
+	$temp = new temp($idcal, $evtid, $cci, $view, $date, $res);
 	$babBodyPopup->babecho(	bab_printTemplate($temp,"event.html", "scripts"));
 	$babBodyPopup->babecho(	bab_printTemplate($temp,"event.html", "modifyevent"));
 	}

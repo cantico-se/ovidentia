@@ -68,7 +68,7 @@ function displayAttendees($evtid, $idcal)
 							switch($icalinfo['type'])
 								{
 								case BAB_CAL_USER_TYPE:
-									if( $icalinfo['access'] == BAB_CAL_ACCESS_FULL)
+									if( $icalinfo['access'] == BAB_CAL_ACCESS_FULL || $icalinfo['access'] == BAB_CAL_ACCESS_SHARED_FULL)
 							{
 							$this->idcal = $arr['id_cal'];
 							switch($arr['status'] )

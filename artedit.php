@@ -2249,6 +2249,26 @@ function submitArticleDraft( $idart, &$message, $force=false)
 				return false;
 				}			
 			}
+		
+		if( $arr['id_topic'] != 0 )
+		{
+		list($busetags) = $babDB->db_fetch_array($babDB->db_query("select busetags from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($arr['id_topic'])."'"));
+		}
+		else
+		{
+			$busetags = 'N';
+		}
+
+		if( $busetags == 'Y' )
+			{
+			list($nbtags) = $babDB->db_fetch_array($babDB->db_query("select count(id_tag) from ".BAB_ART_DRAFTS_TAGS_TBL." where id_draft='".$babDB->db_escape_string($idart)."'"));
+
+			if( !$nbtags )
+				{
+				$message = bab_translate("You must specify at least one tag in article properties page");
+				return false;
+				}
+			}
 
 		if( $arr['id_topic'] != 0 )
 		{
