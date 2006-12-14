@@ -1940,7 +1940,7 @@ function processImportDbFile( $pfile, $id, $separ )
 									}
 								}
 
-							$babDB->db_query("update ".BAB_USERS_TBL." set nickname='".$babDB->db_escape_string($arr[$GLOBALS['nickname']])."', firstname='".$babDB->db_escape_string($arr[$GLOBALS['givenname']])."', lastname='".$babDB->db_escape_string($arr[$GLOBALS['sn']])."', email='".$babDB->db_escape_string($arr[$GLOBALS['email']])."', hashname='".$babDB->db_escape_string($hashname)."', password='".$babDB->db_escape_string($password1)."' where id='".$babDB->db_escape_string($rrr['id'])."'");
+							$babDB->db_query("update ".BAB_USERS_TBL." set nickname='".$babDB->db_escape_string($arr[$GLOBALS['nickname']])."', firstname='".$babDB->db_escape_string($arr[$GLOBALS['givenname']])."', lastname='".$babDB->db_escape_string($arr[$GLOBALS['sn']])."', email='".$babDB->db_escape_string($arr[$GLOBALS['email']])."', hashname='".$babDB->db_escape_string($hashname)."' where id='".$babDB->db_escape_string($rrr['id'])."'");
 							if( $bupdate )
 								{
 								$babDB->db_query("update ".BAB_DBDIR_ENTRIES_TBL." set date_modification=now(), id_modifiedby='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' where id_directory='0' and id_user='".$babDB->db_escape_string($rrr['id'])."'");
