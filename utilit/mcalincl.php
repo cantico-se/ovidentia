@@ -433,9 +433,15 @@ class cal_wmdbaseCls
 		$this->currentdate = $date;
 		$this->idcals = explode(",", $calids);
 		$rr = explode(',', $date);
-		$this->year = $rr[0];
-		$this->month = $rr[1];
-		$this->day = $rr[2];
+		if (3 === count($rr)) {
+			$this->year = (int) $rr[0];
+			$this->month = (int) $rr[1];
+			$this->day = (int) $rr[2];
+		} else {
+			$this->year = (int) date('Y');
+			$this->month = (int) date('n');
+			$this->day = (int) date('j');
+		}
 		$this->print = isset($_GET['print']) && $_GET['print'] == 1;
 		$this->multical = count($this->idcals) > 1;
 
