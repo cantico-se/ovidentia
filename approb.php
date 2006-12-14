@@ -21,6 +21,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
+/**
+* @internal SEC1 NA 14/12/2006 FULL
+*/
 include 'base.php';
 include_once $babInstallPath.'utilit/mailincl.php';
 include_once $babInstallPath.'utilit/afincl.php';
@@ -161,12 +164,12 @@ function listWaitingArticles()
 					{
 					$this->bnotes = false;
 					}
-				$this->artdate = $arr['date_submission'] == "0000-00-00 00:00:00"? "":bab_shortDate(bab_mktime($arr['date_submission']), true);
+				$this->artdate = $arr['date_submission'] == '0000-00-00 00:00:00'? '':bab_toHtml(bab_shortDate(bab_mktime($arr['date_submission']), true));
 				$this->artpath = viewCategoriesHierarchy_txt($arr['id_topic']);
-				$this->arttitle = $arr['title'];
-				$this->author = bab_getUserName($arr['id_author']);
-				$this->confirmurl = $GLOBALS['babUrlScript']."?tg=approb&idx=confart&idart=".$arr['id'];
-				$this->artviewurl = $GLOBALS['babUrlScript']."?tg=approb&idx=viewart&idart=".$arr['id'];
+				$this->arttitle = bab_toHtml($arr['title']);
+				$this->author = bab_toHtml(bab_getUserName($arr['id_author']));
+				$this->confirmurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=approb&idx=confart&idart=".$arr['id']);
+				$this->artviewurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=approb&idx=viewart&idart=".$arr['id']);
 				$this->altbg = !$this->altbg;
 				$i++;
 				return true;
@@ -228,19 +231,19 @@ function listWaitingComments()
 			if( $i < $this->wcomcount)
 				{
 				$arr = $babDB->db_fetch_array($this->wcomres);
-				$this->comdate = $arr['date'] == "0000-00-00 00:00:00"? "":bab_shortDate(bab_mktime($arr['date']), true);
+				$this->comdate = $arr['date'] == '0000-00-00 00:00:00'? '':bab_toHtml(bab_shortDate(bab_mktime($arr['date']), true));
 				$this->compath = viewCategoriesHierarchy_txt($arr['id_topic']);
-				$this->comtitle = $arr['subject'];
+				$this->comtitle = bab_toHtml($arr['subject']);
 				if( $arr['id_author'] )
 					{
-					$this->author = bab_getUserName($arr['id_author']);
+					$this->author = bab_toHtml(bab_getUserName($arr['id_author']));
 					}
 				else
 					{
-					$this->author = $arr['name'];
+					$this->author = bab_toHtml($arr['name']);
 					}
-				$this->confirmurl = $GLOBALS['babUrlScript']."?tg=approb&idx=confcom&idcom=".$arr['id'];
-				$this->comviewurl = $GLOBALS['babUrlScript']."?tg=approb&idx=viewcom&idcom=".$arr['id'];
+				$this->confirmurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=approb&idx=confcom&idcom=".$arr['id']);
+				$this->comviewurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=approb&idx=viewcom&idcom=".$arr['id']);
 				$this->altbg = !$this->altbg;
 				$i++;
 				return true;
@@ -306,11 +309,11 @@ function listWaitingFiles()
 				{
 				$arr = $babDB->db_fetch_array($this->wfilesres);
 
-				$this->filedate = $arr['created'] == "0000-00-00 00:00:00"? "":bab_shortDate(bab_mktime($arr['created']), true);
-				$this->filepath = $arr['path'];
-				$this->filetitle = $arr['name'];
-				$this->author = bab_getUserName($arr['author']);
-				$this->fileviewurl = $GLOBALS['babUrlScript']."?tg=fileman&idx=viewfile&idf=".$arr['id']."&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path'])."&file=".urlencode($arr['name']);
+				$this->filedate = $arr['created'] == '0000-00-00 00:00:00'? '':bab_toHtml(bab_shortDate(bab_mktime($arr['created']), true));
+				$this->filepath = bab_toHtml($arr['path']);
+				$this->filetitle = bab_toHtml($arr['name']);
+				$this->author = bab_toHtml(bab_getUserName($arr['author']));
+				$this->fileviewurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=viewfile&idf=".$arr['id']."&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path'])."&file=".urlencode($arr['name']));
 				$this->altbg = !$this->altbg;
 				$i++;
 				return true;
@@ -385,12 +388,12 @@ function listWaitingPosts()
 			if( $i < $this->wpostscount)
 				{
 				$arr = $babDB->db_fetch_array($this->wpostsres);
-				$this->postdate = $arr['date'] == "0000-00-00 00:00:00"? "":bab_shortDate(bab_mktime($arr['date']), true);
-				$this->postpath = $arr['forumname']." / ".$arr['threadtitle'];
-				$this->posttitle = $arr['subject'];
-				$this->author = $arr['author'];
-				$this->confirmurl = $GLOBALS['babUrlScript']."?tg=approb&idx=confpost&idpost=".$arr['id']."&thread=".$arr['threadid'];
-				$this->postviewurl = $GLOBALS['babUrlScript']."?tg=posts&idx=viewp&forum=".$arr['forumid']."&thread=".$arr['threadid']."&post=".$arr['id'];
+				$this->postdate = $arr['date'] == '0000-00-00 00:00:00'? '':bab_toHtml(bab_shortDate(bab_mktime($arr['date']), true));
+				$this->postpath = bab_toHtml($arr['forumname'].' / '.$arr['threadtitle']);
+				$this->posttitle = bab_toHtml($arr['subject']);
+				$this->author = bab_toHtml($arr['author']);
+				$this->confirmurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=approb&idx=confpost&idpost=".$arr['id']."&thread=".$arr['threadid']);
+				$this->postviewurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=posts&idx=viewp&forum=".$arr['forumid']."&thread=".$arr['threadid']."&post=".$arr['id']);
 				$this->altbg = !$this->altbg;
 				$i++;
 				return true;
@@ -468,10 +471,11 @@ function listWaitingVacations()
 				$arr = $babDB->db_fetch_array($this->res);
 				$this->url = bab_toHtml($GLOBALS['babUrlScript']."?tg=approb&idx=confvac&idvac=".$arr['id']);
 				list($this->total) = $babDB->db_fetch_row($babDB->db_query("select sum(quantity) from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry =".$babDB->quote($arr['id']).""));
-				$this->urlname = bab_getUserName($arr['id_user']);
-				$this->dateb = bab_vac_shortDate(bab_mktime($arr['date_begin']));
-				$this->datee = bab_vac_shortDate(bab_mktime($arr['date_end']));
-				$this->entryid = $arr['id'];
+				$this->total = bab_toHtml($this->total);
+				$this->urlname = bab_toHtml(bab_getUserName($arr['id_user']));
+				$this->dateb = bab_toHtml(bab_vac_shortDate(bab_mktime($arr['date_begin'])));
+				$this->datee = bab_toHtml(bab_vac_shortDate(bab_mktime($arr['date_end'])));
+				$this->entryid = bab_toHtml($arr['id']);
 				$i++;
 				return true;
 				}
@@ -548,12 +552,12 @@ function listWaitingEvents()
 			static $i = 0;
 			if( $i < $this->weventscount)
 				{
-				$this->eventdate = $this->arrevts[$i]['startdate'];
-				$this->eventdescription = $this->arrevts[$i]['description'];
-				$this->eventtitle = $this->arrevts[$i]['title'];
-				$this->eventauthor = $this->arrevts[$i]['author'];
-				$this->eventcalendar = $this->arrevts[$i]['calendar'];
-				$this->confirmurl = $GLOBALS['babUrlScript']."?tg=approb&idx=confevt&idevent=".$this->arrevts[$i]['idevent']."&idcal=".$this->arrevts[$i]['idcal'];
+				$this->eventdate = bab_toHtml($this->arrevts[$i]['startdate']);
+				$this->eventdescription = bab_replace($this->arrevts[$i]['description']);
+				$this->eventtitle = bab_toHtml($this->arrevts[$i]['title']);
+				$this->eventauthor = bab_toHtml($this->arrevts[$i]['author']);
+				$this->eventcalendar = bab_toHtml($this->arrevts[$i]['calendar']);
+				$this->confirmurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=approb&idx=confevt&idevent=".$this->arrevts[$i]['idevent']."&idcal=".$this->arrevts[$i]['idcal']);
 				$this->altbg = !$this->altbg;
 				$i++;
 				return true;
@@ -626,7 +630,7 @@ function listWaitingAddons()
 				{
 				$this->_setGlobals($this->addonId,$title);
 				call_user_func_array($this->call, array(&$this->addonTitle, &$this->arr));
-
+				$this->addonTitle = bab_toHtml($this->addonTitle);
 				if (count($this->arr) == 0)
 					$skip = 1;
 				
@@ -641,11 +645,11 @@ function listWaitingAddons()
 			
 			if (list( , $arr) = each($this->arr))
 				{
-				$this->text = $arr['text'];
-				$this->description = $arr['description'];
-				$this->url = $arr['url'];
+				$this->text = bab_toHtml($arr['text']);
+				$this->description = bab_toHtml($arr['description']);
+				$this->url = bab_toHtml($arr['url']);
 				$this->popup = $arr['popup'];
-				$this->idschi = $arr['idschi'];
+				$this->idschi = bab_toHtml($arr['idschi']);
 
 				return true;
 				}
@@ -722,10 +726,10 @@ function confirmWaitingVacation($id)
 			$row = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
 			$this->begin = bab_mktime($row['date_begin']);
 			$this->end = bab_mktime($row['date_end']);
-			$this->datebegin	= bab_vac_longDate($this->begin);
-			$this->dateend		= bab_vac_longDate($this->end);
+			$this->datebegin	= bab_toHtml(bab_vac_longDate($this->begin));
+			$this->dateend		= bab_toHtml(bab_vac_longDate($this->end));
 			$this->id_user		= $row['id_user'];
-			$this->fullname		= bab_getUserName($row['id_user']);
+			$this->fullname		= bab_toHtml(bab_getUserName($row['id_user']));
 			$this->remark = bab_toHtml($row['comment'], BAB_HTML_ALL);
 
 			$rights = bab_getRightsOnPeriod($row['date_begin'], $row['date_end'], $row['id_user']);
@@ -741,7 +745,7 @@ function confirmWaitingVacation($id)
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
 			$this->totalval = 0;
-			$this->veid = $id;
+			$this->veid = bab_toHtml($id);
 			$this->nomatch = false;
 			}
 
@@ -753,10 +757,12 @@ function confirmWaitingVacation($id)
 				{
 				$arr = $babDB->db_fetch_array($this->res);
 				list($this->typename) = $babDB->db_fetch_row($babDB->db_query("select description from ".BAB_VAC_RIGHTS_TBL." where id =".$babDB->quote($arr['id_right']).""));
-				$this->nbdays = $arr['quantity'];
+				$this->typename = bab_toHtml($this->typename);
+				$this->nbdays = bab_toHtml($arr['quantity']);
 				$this->alert = isset($this->negative[$arr['id_right']]) ? $this->negative[$arr['id_right']] : false;
 
 				$this->totalval += $this->nbdays;
+				$this->totalval = bab_toHtml($this->totalval);
 				$i++;
 				return true;
 				}
@@ -794,7 +800,7 @@ function confirmWaitingArticle($idart)
 				$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
 				if( count($arrschi) > 0  && in_array($arr['idfai'], $arrschi) )
 					{
-					$this->idart = $idart;
+					$this->idart = bab_toHtml($idart);
 					$this->arttxt = bab_translate("Article");
 					$this->pathtxt = bab_translate("Path");
 					$this->authortxt = bab_translate("Author");
@@ -804,9 +810,9 @@ function confirmWaitingArticle($idart)
 					$this->no = bab_translate("No");
 					$this->updatetxt = bab_translate("Update");
 
-					$this->arttitle = $arr['title'];
+					$this->arttitle = bab_toHtml($arr['title']);
 					$this->pathname = viewCategoriesHierarchy_txt($arr['id_topic']);
-					$this->author = bab_getUserName($arr['id_author']);				
+					$this->author = bab_toHtml(bab_getUserName($arr['id_author']));				
 					}
 				else
 					{
@@ -843,17 +849,17 @@ function confirmWaitingPost($thread, $post)
 		function confirmWaitingPostCls($thread, $post)
 			{
 			global $babDB;
-			$this->idpost = $post;
-			$this->thread = $thread;
+			$this->idpost = bab_toHtml($post);
+			$this->thread = bab_toHtml($thread);
 
 			$req = "select pt.*, ft.name as forumname from ".BAB_POSTS_TBL." pt left join ".BAB_THREADS_TBL." tt on tt.id=pt.id_thread left join ".BAB_FORUMS_TBL." ft on ft.id=tt.forum where pt.id='".$babDB->db_escape_string($post)."'";
 			
 			$arr = $babDB->db_fetch_array($babDB->db_query($req));
 			
 			$GLOBALS['babBody']->title = $arr['forumname'];
-			$this->postdate = bab_strftime(bab_mktime($arr['date']));
-			$this->postauthor = $arr['author'];
-			$this->postsubject = bab_replace($arr['subject']);
+			$this->postdate = bab_toHtml(bab_strftime(bab_mktime($arr['date'])));
+			$this->postauthor = bab_toHtml($arr['author']);
+			$this->postsubject = bab_toHtml($arr['subject']);
 			$this->postmessage = bab_replace($arr['message']);
 			$this->close = bab_translate("Close");
 			$this->action = bab_translate("Action");
@@ -892,7 +898,7 @@ function confirmWaitingComment($idcom)
 			if( $this->count > 0)
 				{
 				$arr = $babDB->db_fetch_array($res);
-				$this->idcom = $idcom;
+				$this->idcom = bab_toHtml($idcom);
 				$this->name = bab_translate("Submiter");
 				$this->modify = bab_translate("Update");
 				$this->action = bab_translate("Action");
@@ -900,7 +906,7 @@ function confirmWaitingComment($idcom)
 				$this->refuse = bab_translate("Refuse");
 				$this->what = bab_translate("Send an email to author");
 				$this->message = bab_translate("Message");
-				$this->confval = "comment";
+				$this->confval = 'comment';
 				}
 			else
 				{
@@ -932,14 +938,14 @@ function confirmWaitingEvent($idevent, $idcal)
 			$this->confirm = bab_translate("Accept");
 			$this->refuse = bab_translate("Decline");
 			$this->commenttxt = bab_translate("Raison");
-			$this->idevent = $idevent;
-			$this->idcal = $idcal;
+			$this->idevent = bab_toHTML($idevent);
+			$this->idcal = bab_toHTML($idcal);
 			$res = $babDB->db_query("select cet.*, ceot.id_cal from ".BAB_CAL_EVENTS_TBL." cet left join ".BAB_CAL_EVENTS_OWNERS_TBL." ceot on cet.id=ceot.id_event where ceot.id_cal='".$babDB->db_escape_string($idcal)."' and ceot.id_event='".$babDB->db_escape_string($idevent)."'");
 			$arr = $babDB->db_fetch_array($res);
 			$GLOBALS['babBody']->title = $arr['title'];
-			$this->eventstartdate = bab_shortDate(bab_mktime($arr['start_date']), true);
-			$this->eventenddate = bab_shortDate(bab_mktime($arr['end_date']), true);
-			$this->eventdescription = $arr['description'];
+			$this->eventstartdate = bab_toHTML(bab_shortDate(bab_mktime($arr['start_date']), true));
+			$this->eventenddate = bab_toHTML(bab_shortDate(bab_mktime($arr['end_date']), true));
+			$this->eventdescription = bab_replace($arr['description']);
 
 			if( !empty($arr['hash']) &&  $arr['hash'][0] == 'R' )
 				{
@@ -962,7 +968,7 @@ function confirmWaitingEvent($idevent, $idcal)
 			if( $i < $this->count)
 				{
 				$arr = $babDB->db_fetch_array($this->resatt);
-				$this->eventattendee = bab_getCalendarOwnerName($arr['id_cal']);
+				$this->eventattendee = bab_toHTML(bab_getCalendarOwnerName($arr['id_cal']));
 				$i++;
 				return true;
 				}
@@ -1120,22 +1126,27 @@ function updateConfirmationWaitingPost($thread, $post)
 	{
 	global $babBody, $babDB;
 
-	$babDB->db_query("update ".BAB_THREADS_TBL." set lastpost='".$babDB->db_escape_string($post)."' where id='".$babDB->db_escape_string($thread)."'");
-	$babDB->db_query("update ".BAB_POSTS_TBL." set confirmed='Y', date_confirm=now() where id='".$babDB->db_escape_string($post)."'");
-
-	$res = $babDB->db_query("select tt.forum, tt.starter, tt.notify, pt.subject from ".BAB_THREADS_TBL." tt left join ".BAB_POSTS_TBL." pt on tt.post=pt.id where tt.id='".$babDB->db_escape_string($thread)."'");
-	$arrf = $babDB->db_fetch_array($res);
-	$arrpost = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_POSTS_TBL." where id='".$babDB->db_escape_string($post)."'"));
-	include_once $GLOBALS['babInstallPath']."utilit/forumincl.php";
-	if( $arrf['notify'] == "Y" && $arrf['starter'] != 0)
+	$thread = intval($thread);
+	$post = intval($post);
+	if( $thread && $post )
 		{
-		$res = $babDB->db_query("select email from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($arrf['starter'])."'");
-		$arr = $babDB->db_fetch_array($res);
-		$email = $arr['email'];
-		notifyThreadAuthor($arrf['subject'], $email, $arrpost['author']);
+		$babDB->db_query("update ".BAB_THREADS_TBL." set lastpost='".$babDB->db_escape_string($post)."' where id='".$babDB->db_escape_string($thread)."'");
+		$babDB->db_query("update ".BAB_POSTS_TBL." set confirmed='Y', date_confirm=now() where id='".$babDB->db_escape_string($post)."'");
+
+		$res = $babDB->db_query("select tt.forum, tt.starter, tt.notify, pt.subject from ".BAB_THREADS_TBL." tt left join ".BAB_POSTS_TBL." pt on tt.post=pt.id where tt.id='".$babDB->db_escape_string($thread)."'");
+		$arrf = $babDB->db_fetch_array($res);
+		$arrpost = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_POSTS_TBL." where id='".$babDB->db_escape_string($post)."'"));
+		include_once $GLOBALS['babInstallPath']."utilit/forumincl.php";
+		if( $arrf['notify'] == "Y" && $arrf['starter'] != 0)
+			{
+			$res = $babDB->db_query("select email from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($arrf['starter'])."'");
+			$arr = $babDB->db_fetch_array($res);
+			$email = $arr['email'];
+			notifyThreadAuthor($arrf['subject'], $email, $arrpost['author']);
+			}
+		$url = $GLOBALS['babUrlScript'] ."?tg=posts&idx=List&forum=".$arrf['forum']."&thread=".$thread."&flat=1&views=1";
+		notifyForumGroups($arrf['forum'], $arrpost['subject'], $arrpost['author'], bab_getForumName($arrf['forum']), array(BAB_FORUMSNOTIFY_GROUPS_TBL), $url);
 		}
-	$url = $GLOBALS['babUrlScript'] ."?tg=posts&idx=List&forum=".$arrf['forum']."&thread=".$thread."&flat=1&views=1";
-	notifyForumGroups($arrf['forum'], $arrpost['subject'], $arrpost['author'], bab_getForumName($arrf['forum']), array(BAB_FORUMSNOTIFY_GROUPS_TBL), $url);
 	}
 
 function confirmVacationRequest($veid, $remarks, $action)
@@ -1192,51 +1203,47 @@ function approb_init()
 
 /* main */
 $approbinit = approb_init();
-if(!isset($idx))
-	{
-	$idx = "all";
-	}
+$idx = bab_rp('idx', 'all');
 
-if( isset($conf))
+if( '' != ($conf = bab_pp('conf')))
 {
 	if( $conf == 'art')
 	{
-		if( !isset($bconfirm)) { $bconfirm = 'N';}
-		updateConfirmationWaitingArticle($idart, $bconfirm, $comment);
+		$bconfirm = bab_pp('bconfirm', 'N');
+		updateConfirmationWaitingArticle(bab_gp('idart'), $bconfirm, bab_gp('comment'));
 		$idx = 'unload';
 	}
 	elseif( $conf == 'com' )
 	{
-		if( !isset($send)) { $send = '';}
-		updateConfirmationWaitingComment($idcom, $action, $send, $message);
+		updateConfirmationWaitingComment(bab_pp('idcom'), bab_pp('action'), bab_pp('send'), bab_pp('message'));
 		$idx = 'unload';
 	}
 	elseif( $conf == 'post' )
 	{
-		updateConfirmationWaitingPost($thread, $idpost);
+		updateConfirmationWaitingPost(bab_pp('thread'), bab_pp('idpost'));
 		$idx = 'unload';
 	}
 	elseif( $conf == 'vac' )
 	{
-		if( isset($confirm))
+		if( isset($_POST['confirm']))
 			{
-			confirmVacationRequest($veid, $remarks, true);
+			confirmVacationRequest(bab_pp('veid'), bab_pp('remarks'), true);
 			}
-		elseif( isset($refuse))
+		elseif( isset($_POST['refuse']))
 		{
-			confirmVacationRequest($veid, $remarks, false);
+			confirmVacationRequest(bab_pp('veid'), bab_pp('remarks'), false);
 		}
 		$idx = 'unload';
 	}
 	elseif( $conf == 'evt' )
 	{
-		if( isset($confirm))
+		if( isset($_POST['confirm']))
 			{
-			confirmEvent($idevent, $idcal, 'Y', $remarks, 1);
+			confirmEvent(bab_pp('idevent'), bab_pp('idcal'), 'Y', bab_pp('remarks'), 1);
 			}
-		elseif( isset($refuse))
+		elseif( isset($_POST['refuse']))
 		{
-			confirmEvent($idevent, $idcal, 'N', $remarks, 1);
+			confirmEvent(bab_pp('idevent'), bab_pp('idcal'), 'N', bab_pp('remarks'), 1);
 		}
 		$idx = 'unload';
 	}
@@ -1249,38 +1256,38 @@ switch($idx)
 		popupUnload(bab_translate("Update done"), $GLOBALS['babUrlScript']."?tg=approb&idx=all");
 		exit;
 	case "confevt":
-		confirmWaitingEvent($idevent, $idcal);
+		confirmWaitingEvent(bab_gp('idevent'), bab_gp('idcal'));
 		exit;
 		break;
 
 	case "confart":
-		confirmWaitingArticle($idart);
+		confirmWaitingArticle(bab_gp('idart'));
 		exit;
 		break;
 
 	case "confcom":
-		confirmWaitingComment($idcom);
+		confirmWaitingComment(bab_gp('idcom'));
 		exit;
 		break;
 
 	case "confpost":
-		confirmWaitingPost($thread, $idpost);
+		confirmWaitingPost(bab_gp('thread'), bab_gp('idpost'));
 		exit;
 		break;
 
 	case "viewart":
-		previewWaitingArticle($idart);
+		previewWaitingArticle(bab_gp('idart'));
 		exit;
 		break;
 
 	case "viewcom":
-		previewWaitingComment($idcom);
+		previewWaitingComment(bab_gp('idcom'));
 		exit;
 		break;
 
 	case "confvac":
 		include_once $GLOBALS['babInstallPath']."utilit/vacincl.php";
-		confirmWaitingVacation($idvac);
+		confirmWaitingVacation(bab_gp('idvac'));
 		exit;
 		break;
 

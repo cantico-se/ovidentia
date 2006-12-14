@@ -1,6 +1,6 @@
 <!--#begin waitingarticles --> 
 <!--#if wartcount -->
-<br>
+<br />
 <table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
@@ -38,7 +38,7 @@
 <tr class="BabForumBackground1">
 <!--#endif altbg -->
 <td>&nbsp;</td>
-<td align="left"><a class="BabSummaryLinkColor" href="javascript: Start('{ artviewurl }', 'OviArtView', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ arttitle }</a>
+<td align="left"><a class="BabSummaryLinkColor" href="{ artviewurl }" onclick="bab_popup(this.href);return false;">{ arttitle }</a>
 &nbsp;<!--#if battachment -->
 <img valign="absmiddle" src="{ babSkinPath }images/Puces/PuceTrombonne.gif" alt="{ attachmenttxt }" border="0">
 <!--#endif battachment -->
@@ -47,7 +47,7 @@
 <!--#endif bnotes -->
 </td>
 <td>{ author }</td>
-<td align="right"><a href="javascript: Start('{ confirmurl }', 'OviArtConf', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');""><img src="{ babSkinPath }images/Puces/confirm.gif" border="0" alt=""></a></td>
+<td align="right"><a href="{ confirmurl }" onclick="bab_popup(this.href);return false;"><img src="{ babSkinPath }images/Puces/confirm.gif" border="0" alt=""></a></td>
 </tr>
 <!--#endin getnextarticle -->
 </table>
@@ -59,7 +59,7 @@
 
 <!--#begin waitingcomments --> 
 <!--#if wcomcount -->
-<br>
+<br />
 <table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
@@ -97,10 +97,10 @@
 <tr class="BabForumBackground1">
 <!--#endif altbg -->
 <td>&nbsp;</td>
-<td align="left"><a class="BabSummaryLinkColor" href="javascript: Start('{ comviewurl }', 'OviComView', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ comtitle }</a>
+<td align="left"><a class="BabSummaryLinkColor" href="{ comviewurl }" onclick="bab_popup(this.href);return false;">{ comtitle }</a>
 </td>
 <td>{ author }</td>
-<td align="right"><a href="javascript: Start('{ confirmurl }', 'OviArtConf', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');""><img src="{ babSkinPath }images/Puces/confirm.gif" border="0" alt=""></a></td>
+<td align="right"><a href="{ confirmurl }" onclick="bab_popup(this.href);return false;"><img src="{ babSkinPath }images/Puces/confirm.gif" border="0" alt=""></a></td>
 </tr>
 <!--#endin getnextcomment -->
 </table>
@@ -112,13 +112,13 @@
 
 <!--#begin confirmarticle -->
 
-<br>
+<br />
 <form method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="approb">
 <input type="hidden" name="idx" value="unload">
 <input type="hidden" name="conf" value="art">
 <input type="hidden" name="idart" value="{ idart }">
-<br>
+<br />
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
 <td class="BabLoginCadreBackground"> 
@@ -161,7 +161,7 @@
 <input type="hidden" name="idx" value="unload">
 <input type="hidden" name="conf" value="com">
 <input type="hidden" name="idcom" value="{ idcom }">
-<br>
+<br />
 <table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
@@ -191,14 +191,14 @@
 	<td>&nbsp;</td>
 	<td> 
 		<input type="submit" name="submit" value="{ modify }">
-	<br>
+	<br />
 	</td>
 	</tr>
 	</table>
 </td>
 </tr>
 </table>
-<br>
+<br />
 </form>
 <!--#end confirmcomment -->
 
@@ -223,7 +223,7 @@ window.focus();
 
 <!--#begin waitingfiles --> 
 <!--#if wfilescount -->
-<br>
+<br />
 <table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
@@ -261,11 +261,11 @@ window.focus();
 <tr class="BabForumBackground1">
 <!--#endif altbg -->
 <td>&nbsp;</td>
-<td align="left"><a class="BabSummaryLinkColor" href="javascript: Start('{ fileviewurl }', 'OviFileView', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ filetitle }</a>
+<td align="left"><a class="BabSummaryLinkColor" href="{ fileviewurl }" onclick="bab_popup(this.href);return false;">{ filetitle }</a>
 &nbsp;
 </td>
 <td>{ author }</td>
-<td align="right"><a href="javascript: Start('{ fileviewurl }', 'OviFileView', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');""><img src="{ babSkinPath }images/Puces/confirm.gif" border="0" alt=""></a></td>
+<td align="right"><a href="{ fileviewurl }" onclick="bab_popup(this.href);return false;"><img src="{ babSkinPath }images/Puces/confirm.gif" border="0" alt=""></a></td>
 </tr>
 <!--#endin getnextfile -->
 </table>
@@ -277,7 +277,7 @@ window.focus();
 
 <!--#begin waitingposts --> 
 <!--#if wpostscount -->
-<br>
+<br />
 <table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
@@ -315,11 +315,11 @@ window.focus();
 <tr class="BabForumBackground1">
 <!--#endif altbg -->
 <td>&nbsp;</td>
-<td align="left"><a class="BabSummaryLinkColor" href="javascript: Start('{ postviewurl }', 'OviPostView', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ posttitle }</a>
+<td align="left"><a class="BabSummaryLinkColor" href="{ postviewurl }" onclick="bab_popup(this.href);return false;">{ posttitle }</a>
 &nbsp;
 </td>
 <td>{ author }</td>
-<td align="right"><a href="javascript: Start('{ confirmurl }', 'OviPostConf', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');""><img src="{ babSkinPath }images/Puces/confirm.gif" border="0" alt=""></a></td>
+<td align="right"><a href="{ confirmurl }" onclick="bab_popup(this.href);return false;"><img src="{ babSkinPath }images/Puces/confirm.gif" border="0" alt=""></a></td>
 </tr>
 <!--#endin getnextpost -->
 </table>
@@ -332,7 +332,7 @@ window.focus();
 
 <!--#begin waitingvacations --> 
 <!--#if wvacationscount -->
-<br>
+<br />
 <table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
@@ -494,7 +494,7 @@ window.focus();
 		<td width="100%" colspan="2">{ postsubject }</td>
 		</tr>
 		<tr> 
-		<td colspan="2"><br>{ postmessage }<br>
+		<td colspan="2"><br />{ postmessage }<br />
 		</td>
 		</tr>
 		<tr> 
@@ -502,11 +502,11 @@ window.focus();
 		<td width="40%" align="right">{ postauthor }</td>
 		</tr>
 		</table>
-	<br>
+	<br />
 	</td>
 	</tr>
 </table>
-<br>
+<br />
 
 <form method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="approb">
@@ -514,7 +514,7 @@ window.focus();
 <input type="hidden" name="conf" value="post">
 <input type="hidden" name="thread" value="{ thread }">
 <input type="hidden" name="idpost" value="{ idpost }">
-<br>
+<br />
 	<table  width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
 	<tr> 
 	<td class="BabLoginCadreBackground"> 
@@ -532,7 +532,7 @@ window.focus();
 		<td>&nbsp;</td>
 		<td> 
 		<input type="submit" name="submit" value="{ modify }">
-		<br>
+		<br />
 		</td>
 		</tr>
 		</table>
@@ -544,7 +544,7 @@ window.focus();
 
 <!--#begin waitingevents --> 
 <!--#if weventscount -->
-<br>
+<br />
 <table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
@@ -588,7 +588,7 @@ window.focus();
 <td align="left" colspan="3">{ eventdescription }
 &nbsp;
 </td>
-<td align="right"><a href="javascript: Start('{ confirmurl }', 'OviPostConf', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');""><img src="{ babSkinPath }images/Puces/confirm.gif" border="0" alt=""></a></td>
+<td align="right"><a href="{ confirmurl }" onclick="bab_popup(this.href);return false;"><img src="{ babSkinPath }images/Puces/confirm.gif" border="0" alt=""></a></td>
 </tr>
 <!--#endin getnextevent -->
 </table>
