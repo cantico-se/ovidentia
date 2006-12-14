@@ -237,7 +237,7 @@ class zip
   while ($pos < $size)
   {
     $byte = @fread($zip, 1); $bytes=($bytes << 8) | Ord($byte);
-    if ($bytes == 0x504b0506){ $pos++; break; } $pos++;
+    if (($bytes & 0xFFFFFFFF) == 0x504b0506){ $pos++; break; } $pos++;
   }
 
  $data=unpack('vdisk/vdisk_start/vdisk_entries/ventries/Vsize/Voffset/vcomment_size',
