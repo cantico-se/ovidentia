@@ -1929,6 +1929,10 @@ function restoreFiles($items)
 	
 /* main */
 
+$idx = bab_rp('idx','list');
+$path = bab_rp('path');
+$gr = bab_rp('gr', 'N');
+$editor = bab_rp('editor','none');
 
 $upload = false;
 $bmanager = false;
@@ -1942,13 +1946,6 @@ if((!isset($babBody->aclfm['id']) || count($babBody->aclfm['id']) == 0) && !$bab
 	return;
 }
 
-
-$idx = bab_rp('idx','list');
-$path = bab_rp('path');
-$gr = bab_rp('gr', 'N');
-$editor = bab_rp('editor','none');
-
-	
 
 if( strstr($path, ".."))
 	{
