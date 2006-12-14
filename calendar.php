@@ -625,7 +625,15 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 					$evt['end_date'] = bab_toHtml(bab_longDate($ts));
 					$evt['categoryname'] = !empty($this->mcals->categories[$arr['id_cat']]) ? bab_toHtml($this->mcals->categories[$arr['id_cat']]['name']) : '';
 					$evt['categorydescription'] = !empty($this->mcals->categories[$arr['id_cat']]) ? bab_toHtml($this->mcals->categories[$arr['id_cat']]['description']) : '';
-					$evt['color'] = !empty($this->mcals->categories[$arr['id_cat']]) ? bab_toHtml($this->mcals->categories[$arr['id_cat']]['bgcolor']) : bab_toHtml($arr['color']);
+					
+					if (!empty($this->mcals->categories[$arr['id_cat']])) {
+						$evt['color'] = bab_toHtml($this->mcals->categories[$arr['id_cat']]['bgcolor']);
+					} elseif (!empty($arr['color'])) {
+						$evt['color'] = bab_toHtml($arr['color']);
+					} else {
+						$evt['color'] = '#fff';
+					}
+					
 					$evt['creator'] = $arr['id_creator'] != $GLOBALS['BAB_SESS_USERID'] ? bab_toHtml(bab_getUserName($arr['id_creator'])) : '';
 					$evt['private'] = $arr['id_creator'] != $GLOBALS['BAB_SESS_USERID'] && 'PUBLIC' !== $calPeriod->getProperty('CLASS');
 					$evt['nbowners'] = $arr['nbowners']+1;
