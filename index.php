@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-
+include_once "base.php";
 
 function bab_unset(&$arr)
 {
@@ -138,7 +138,6 @@ $babSiteName = substr($babSiteName, 0, 30);
 if( !isset($tg))
 	$tg = '';
 
-include_once "base.php";
 include_once $babInstallPath."utilit/defines.php";
 include_once $babInstallPath."utilit/dbutil.php";
 $babDB = new babDatabase();
