@@ -21,16 +21,16 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
+include_once 'base.php';
 
 function bab_getCalendarType($idcal)
 {
-	$db = $GLOBALS['babDB'];
-	$query = "select type from ".BAB_CALENDAR_TBL." where id=".$db->quote($idcal);
-	$res = $db->db_query($query);
-	if( $res && $db->db_num_rows($res) > 0)
+	global $babDB;
+	$query = "select type from ".BAB_CALENDAR_TBL." where id=".$babDB->quote($idcal);
+	$res = $babDB->db_query($query);
+	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-		$arr = $db->db_fetch_array($res);
+		$arr = $babDB->db_fetch_array($res);
 		return $arr['type'];
 		}
 	else
@@ -41,12 +41,12 @@ function bab_getCalendarType($idcal)
 
 function bab_getCalendarOwner($idcal)
 {
-	$db = $GLOBALS['babDB'];
-	$query = "select owner from ".BAB_CALENDAR_TBL." where id=".$db->quote($idcal);
-	$res = $db->db_query($query);
-	if( $res && $db->db_num_rows($res) > 0)
+	global $babDB;
+	$query = "select owner from ".BAB_CALENDAR_TBL." where id=".$babDB->quote($idcal);
+	$res = $babDB->db_query($query);
+	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-		$arr = $db->db_fetch_array($res);
+		$arr = $babDB->db_fetch_array($res);
 		return $arr['owner'];
 		}
 	else
@@ -57,25 +57,25 @@ function bab_getCalendarOwner($idcal)
 
 function bab_getCalendarOwnerName($idcal, $type='')
 {
+	global $babDB;
 	$ret = "";
-	$db = $GLOBALS['babDB'];
 
-	$res = $db->db_query("select type, owner from ".BAB_CALENDAR_TBL." where id=".$db->quote($idcal));
-	if( $res && $db->db_num_rows($res) > 0)
+	$res = $babDB->db_query("select type, owner from ".BAB_CALENDAR_TBL." where id=".$babDB->quote($idcal));
+	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-		$arr = $db->db_fetch_array($res);
+		$arr = $babDB->db_fetch_array($res);
 		if( $arr['type'] == BAB_CAL_USER_TYPE)
 			{
 			return bab_getUserName( $arr['owner']);
 			}
 		else if( $arr['type'] == BAB_CAL_PUB_TYPE)
 			{
-			$arr = $db->db_fetch_array($db->db_query("select name from ".BAB_CAL_PUBLIC_TBL." where id=".$db->quote($arr['owner'])));
+			$arr = $babDB->db_fetch_array($babDB->db_query("select name from ".BAB_CAL_PUBLIC_TBL." where id=".$babDB->quote($arr['owner'])));
 			return $arr['name'];
 			}
 		else if( $arr['type'] == BAB_CAL_RES_TYPE)
 			{
-			$arr = $db->db_fetch_array($db->db_query("select name from ".BAB_CAL_RESOURCES_TBL." where id=".$db->quote($arr['owner'])));
+			$arr = $babDB->db_fetch_array($babDB->db_query("select name from ".BAB_CAL_RESOURCES_TBL." where id=".$babDB->quote($arr['owner'])));
 			return $arr['name'];
 			}
 		}
@@ -85,8 +85,7 @@ function bab_getCalendarOwnerName($idcal, $type='')
 
 function bab_isCalendarAccessValid($calid)
 	{
-	global $babBody;
-	$db = $GLOBALS['babDB'];
+	global $babBody, $babDB;
 	$ret = array();
 	$babBody->icalendars->initializeCalendars();
 
