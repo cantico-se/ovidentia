@@ -4831,16 +4831,26 @@ function handle_tag( $handler, $txt, $args, $fprint = 'printout' )
 		$this->push_ctx($ctx);
 
 		foreach( $args as $key => $val )
-				{
+			{
 			$this->curctx->push($key, $val);
 			}
-		$cls = new $handler($this);
+		$cls =& new $handler($this);
+		if( $fprint == 'object' )
+			{
+			return $cls;
+			}
 		$out = $cls->$fprint($txt);
 		$this->pop_ctx();
 		return $out;
 		}
 	else
+		{
+		if( $fprint == 'object' )
+			{
+			return null;
+			}
 		return $txt;
+		}
 	}
 
 function format_output($val, $matches)
@@ -4858,22 +4868,22 @@ function format_output($val, $matches)
 		$ghtmlentities = intval($ghtmlentities);
 		}
 
-	for( $j = 0; $j< count($matches[1]); $j++)
+	foreach( $matches as $p => $v)
 		{
-		switch(strtolower(trim($matches[1][$j])))
+		switch(strtolower(trim($p)))
 			{
 			case 'strlen':
-				$arr = explode(',', $matches[3][$j] );
+				$arr = explode(',', $v );
 				if( strlen($val) > $arr[0] )
 					{
-					$val = substr($val, 0, $matches[3][$j]).$arr[1];
+					$val = substr($val, 0, $v).$arr[1];
 					$this->gctx->push('substr', 1);
 					}
 				else
 					$this->gctx->push('substr', 0);
 				break;
 			case 'striptags':
-				switch($matches[3][$j])
+				switch($v)
 					{
 					case '1':
 						$val = strip_tags($val);
@@ -4886,7 +4896,7 @@ function format_output($val, $matches)
 					}
 				break;
 			case 'htmlentities':
-				switch($matches[3][$j])
+				switch($v)
 					{
 					case '0':
 						$lhtmlentities = true; break;
@@ -4906,22 +4916,22 @@ function format_output($val, $matches)
 					}
 				break;
 			case 'stripslashes':
-				if( $matches[3][$j] == '1')
+				if( $v == '1')
 					$val = stripslashes($val);
 				break;
 			case 'urlencode':
-				if( $matches[3][$j] == '1')
+				if( $v == '1')
 					$val = urlencode($val);
 				break;
 			case 'jsencode':
-				if( $matches[3][$j] == '1')
+				if( $v == '1')
 					{
 					$val = str_replace("'", "\'", $val);
 					$val = str_replace('"', "'+String.fromCharCode(34)+'",$val);
 					}
 				break;
 			case 'strcase':
-				switch($matches[3][$j])
+				switch($v)
 					{
 					case 'upper':
 						$val = strtoupper($val); break;
@@ -4930,11 +4940,11 @@ function format_output($val, $matches)
 					}
 				break;
 			case 'nlremove':
-				if( $matches[3][$j] == '1')
+				if( $v == '1')
 					$val = preg_replace("(\r\n|\n|\r)", "", $val);
 				break;
 			case 'trim':
-				switch($matches[3][$j])
+				switch($v)
 					{
 					case 'left':
 						$val = ltrim($val); break;
@@ -4945,29 +4955,29 @@ function format_output($val, $matches)
 					}
 				break;
 			case 'nl2br':
-				if( $matches[3][$j] == '1')
+				if( $v == '1')
 					$val = nl2br($val);
 				break;
 			case 'sprintf':
-				$val = sprintf($matches[3][$j], $val);
+				$val = sprintf($v, $val);
 				break;
 			case 'date':
-				$val = bab_formatDate($matches[3][$j], $val);
+				$val = bab_formatDate($v, $val);
 				break;
 			case 'author':
-				$val = bab_formatAuthor($matches[3][$j], $val);
+				$val = bab_formatAuthor($v, $val);
 				break;
 			case 'saveas':
-				$varname = $matches[3][$j];
+				$varname = $v;
 				$saveas = true;
 				break;
 			case 'strtr':
-				if( !empty($matches[3][$j]))
+				if( !empty($v))
 				{
 				$trans = array();
-				for( $i =0; $i < strlen($matches[3][$j]); $i +=2 )
+				for( $i =0; $i < strlen($v); $i +=2 )
 					{
-					$trans[substr($matches[3][$j], $i, 1)] = substr($matches[3][$j], $i+1, 1);
+					$trans[substr($v, $i, 1)] = substr($v, $i+1, 1);
 					}
 				if( count($trans)> 0 )
 					{
@@ -5005,7 +5015,19 @@ function vars_replace($txt)
 				{
 				case BAB_TAG_FUNCTION:
 					$handler = "bab_".$m[2][$i];
-					$val = $this->$handler($this->vars_replace(trim($m[3][$i])));
+					$params = array();
+					if($this->match_args($this->vars_replace(trim($m[3][$i])), $mm))
+						{
+						for( $j = 0; $j< count($mm[1]); $j++)
+							{
+							$p = trim($mm[1][$j]);
+							if( !empty($p))
+								{
+								$params[$p] = $mm[3][$j];
+								}
+							}
+						}
+					$val = $this->$handler($params);
 					$txt = preg_replace("/".preg_quote($m[0][$i], "/")."/", preg_replace("/\\$[0-9]/", "\\\\$0", $val), $txt);
 					break;
 				case BAB_TAG_VARIABLE:
@@ -5033,8 +5055,19 @@ function vars_replace($txt)
 					$args = $this->vars_replace(trim($m[3][$i]));
 					if( $val !== false )
 						{
-						preg_match_all("/(\w+)\s*=\s*([\"'])(.*?)\\2/", $args, $mm);
-						$val = $this->format_output($val, $mm);
+						$params = array();
+						if($this->match_args($args, $mm))
+							{
+							for( $j = 0; $j< count($mm[1]); $j++)
+								{
+								$p = trim($mm[1][$j]);
+								if( !empty($p))
+									{
+									$params[$p] = $mm[3][$j];
+									}
+								}
+							}
+						$val = $this->format_output($val, $params);
 						$txt = preg_replace("/".preg_quote($m[0][$i], "/")."/", preg_replace("/\\$[0-9]/", "\\\\$0", $val), $txt);
 						}
 					break;
@@ -5075,21 +5108,21 @@ function bab_Translate($args)
 	{
 	$lang = "";
 
-	if($this->match_args($args, $mm))
+	if(count($args))
 		{
-		for( $j = 0; $j< count($mm[1]); $j++)
+		foreach( $args as $p => $v)
 			{
-			switch(strtolower(trim($mm[1][$j])))
+			switch(strtolower(trim($p)))
 				{
 				case 'text':
-					$text = $mm[3][$j];
+					$text = $v;
 					break;
 				case 'lang':
-					$lang = $mm[3][$j];
+					$lang = $v;
 					break;
 				}
 			}					
-		return $this->format_output(bab_translate($text, "", $lang), $mm);
+		return $this->format_output(bab_translate($text, "", $lang), $args);
 		}
 	return '';
 	}
@@ -5097,19 +5130,19 @@ function bab_Translate($args)
 /* Web statistic */
 function bab_WebStat($args)
 	{
-	if($this->match_args($args, $mm))
+	if(count($args))
 		{
 		$name = '';
 		$value = '';
-		for( $j = 0; $j< count($mm[1]); $j++)
+		foreach( $args as $p => $v)
 			{
-			switch(strtolower(trim($mm[1][$j])))
+			switch(strtolower(trim($p)))
 				{
 				case 'name':
-					$name = $mm[3][$j];
+					$name = $v;
 					break;
 				case 'value':
-					$value = $mm[3][$j];
+					$value = $v;
 					break;
 				}
 			}
@@ -5138,20 +5171,20 @@ function bab_SetCookie($args)
 	$name = "";
 	$value = "";
 
-	if($this->match_args($args, $mm))
+	if(count($args))
 		{
-		for( $j = 0; $j< count($mm[1]); $j++)
+		foreach( $args as $p => $v)
 			{
-			switch(strtolower(trim($mm[1][$j])))
+			switch(strtolower(trim($p)))
 				{
 				case 'name':
-					$name = $mm[3][$j];
+					$name = $v;
 					break;
 				case 'value':
-					$value = $mm[3][$j];
+					$value = $v;
 					break;
 				case 'expire': // seconds
-					$expire = time() + $mm[3][$j];
+					$expire = time() + $v;
 					break;
 				}
 			}
@@ -5175,14 +5208,14 @@ function bab_GetCookie($args)
 	global $babBody;
 	$name = "";
 
-	if($this->match_args($args, $mm))
+	if(count($args))
 		{
-		for( $j = 0; $j< count($mm[1]); $j++)
+		foreach( $args as $p => $v)
 			{
-			switch(strtolower(trim($mm[1][$j])))
+			switch(strtolower(trim($p)))
 				{
 				case 'name':
-					$name = $mm[3][$j];
+					$name = $v;
 					break;
 				}
 			}					
@@ -5202,18 +5235,18 @@ function bab_PutVar($args)
 	$value = "";
 	$global = true;
 
-	if($this->match_args($args, $mm))
+	if(count($args))
 		{
-		for( $j = 0; $j< count($mm[1]); $j++)
+		foreach( $args as $p => $v)
 			{
-			switch(strtolower(trim($mm[1][$j])))
+			switch(strtolower(trim($p)))
 				{
 				case 'name':
-					$name = $mm[3][$j];
+					$name = $v;
 					$global = true;
 					break;
 				case 'value':
-					$value = $mm[3][$j];
+					$value = $v;
 					$global = false;
 					switch($name)
 					{
@@ -5240,17 +5273,16 @@ function bab_PutVar($args)
 function bab_GetVar($args)
 	{
 	global $babBody;
-	$name = "";
+	$name = '';
 
-	if($this->match_args($args, $mm))
+	if(count($args))
 		{
-		for( $j = 0; $j< count($mm[1]); $j++)
+		foreach( $args as $p => $v)
 			{
-			switch(strtolower(trim($mm[1][$j])))
+			switch(strtolower(trim($p)))
 				{
 				case 'name':
-					$name = $mm[3][$j];
-					$global = true;
+					$name = $v;
 					break;
 				}
 			}					
@@ -5259,7 +5291,9 @@ function bab_GetVar($args)
 			{
 			$value = $this->get_value($name);
 			if( $value !== false )
+				{
 				return $value;
+				}
 			}
 		}
 	}
@@ -5270,17 +5304,17 @@ function bab_IfNotIsSet($args)
 	$name = "";
 	$value = "";
 
-	if($this->match_args($args, $mm))
+	if(count($args))
 		{
-		for( $j = 0; $j< count($mm[1]); $j++)
+		foreach( $args as $p => $v)
 			{
-			switch(strtolower(trim($mm[1][$j])))
+			switch(strtolower(trim($p)))
 				{
 				case 'name':
-					$name = $mm[3][$j];
+					$name = $v;
 					break;
 				case 'value':
-					$value = $mm[3][$j];
+					$value = $v;
 					break;
 				}
 			}
@@ -5298,17 +5332,17 @@ function bab_PutArray($args)
 	{
 	$name = "";
 	$arr = array();
-	if($this->match_args($args, $mm))
+	if(count($args))
 		{
-		for( $j = 0; $j< count($mm[1]); $j++)
+		foreach( $args as $p => $v)
 			{
-			switch(strtolower(trim($mm[1][$j])))
+			switch(strtolower(trim($p)))
 				{
 				case 'name':
-					$name = trim($mm[3][$j]);
+					$name = trim($v);
 					break;
 				default:
-					$arr[trim($mm[1][$j])] = $this->cast(trim($mm[3][$j]));
+					$arr[trim($p)] = $this->cast(trim($v));
 					break;
 			}
 		}
@@ -5322,17 +5356,17 @@ function bab_PutSoapArray($args)
 	{
 	$name = "";
 	$arr = array();
-	if($this->match_args($args, $mm))
+	if(count($args))
 		{
-		for( $j = 0; $j< count($mm[1]); $j++)
+		foreach( $args as $p => $v)
 			{
-			switch(strtolower(trim($mm[1][$j])))
+			switch(strtolower(trim($p)))
 				{
 				case 'name':
-					$name = trim($mm[3][$j]);
+					$name = trim($v);
 					break;
 				default:
-					$arr[] = array('name'=> trim($mm[1][$j]), 'value'=>$this->cast(trim($mm[3][$j])));
+					$arr[] = array('name'=> trim($p), 'value'=>$this->cast(trim($v)));
 					break;
 			}
 		}
@@ -5365,30 +5399,30 @@ function bab_Ajax($args)
 
 
 
-	if($this->match_args($args, $mm))
+	if(count($args))
 		{
 		$babBody->addJavascriptFile($GLOBALS['babScriptPath']."prototype/prototype.js");
 		$babBody->addJavascriptFile($GLOBALS['babScriptPath']."babajax.js");
 
-		for( $j = 0; $j< count($mm[1]); $j++)
+		foreach( $args as $p => $v)
 			{
-			$p = trim($mm[1][$j]);
+			$p = trim($p);
 			switch(strtolower($p))
 				{
 				case 'url':
-					$url = $mm[3][$j];
+					$url = $v;
 					break;
 				case 'output':
-					$output = $mm[3][$j];
+					$output = $v;
 					break;
 				case 'action':
-					$action = $mm[3][$j];
+					$action = $v;
 					break;
 				case 'indicator':
-					$indicator = $mm[3][$j];
+					$indicator = $v;
 					break;
 				default:
-					$params[] = $p.'='.$mm[3][$j];
+					$params[] = $p.'='.$v;
 					break;
 				}
 			}					
@@ -5432,21 +5466,21 @@ function bab_ArithmeticOperator($args, $ope)
 	$expr2 = "";
 	$saveas = true;
 
-	if($this->match_args($args, $mm))
+	if(count($args))
 		{
-		for( $j = 0; $j< count($mm[1]); $j++)
+		foreach( $args as $p => $v)
 			{
-			switch(strtolower(trim($mm[1][$j])))
+			switch(strtolower(trim($p)))
 				{
 				case 'expr1':
-					$expr1 = $this->cast($mm[3][$j]);
+					$expr1 = $this->cast($v);
 					break;
 				case 'expr2':
-					$expr2 = $this->cast($mm[3][$j]);
+					$expr2 = $this->cast($v);
 					break;
 				case 'saveas':
 					$saveas = true;
-					$varname = $mm[3][$j];
+					$varname = $v;
 					break;
 				}
 			}
@@ -5470,33 +5504,33 @@ function bab_ArithmeticOperator($args, $ope)
 function bab_UrlContent($args)
 	{
 	$url = "";
-	if($this->match_args($args, $mm))
+	if(count($args))
 		{
-		for( $j = 0; $j< count($mm[1]); $j++)
+		foreach( $args as $p => $v)
 			{
-			switch(strtolower(trim($mm[1][$j])))
+			switch(strtolower(trim($p)))
 				{
 				case 'url':
-					$url = $mm[3][$j];
+					$url = $v;
 					$purl = parse_url($url);
 					break;
 				}
 			}
-		return $this->format_output(preg_replace("/(src=|background=|href=)(['\"])([^'\">]*)(['\"])/e", '"\1\"".bab_rel2abs("\3", $purl)."\""', implode('', file($url))), $mm);
+		return $this->format_output(preg_replace("/(src=|background=|href=)(['\"])([^'\">]*)(['\"])/e", '"\1\"".bab_rel2abs("\3", $purl)."\""', implode('', file($url))), $args);
 		}
 	}
 
 function bab_Header($args)
 	{
 	$value = '';
-	if($this->match_args($args, $mm))
+	if(count($args))
 		{
-		for( $j = 0; $j< count($mm[1]); $j++)
+		foreach( $args as $p => $v)
 			{
-			switch(strtolower(trim($mm[1][$j])))
+			switch(strtolower(trim($p)))
 				{
 				case 'value':
-					$value = $mm[3][$j];
+					$value = $v;
 					break;
 				}
 			}
@@ -5515,17 +5549,17 @@ function bab_Addon($args)
 	{
 	global $babBody;
 	$output = '';
-	if($this->match_args($args, $mm))
+	if(count($args))
 		{
 		$function_args = array();
-		for( $j = 0; $j< count($mm[1]); $j++)
+		foreach( $args as $p => $v)
 			{
-			switch(strtolower(trim($mm[1][$j])))
+			switch(strtolower(trim($p)))
 				{
 				case 'name':
 					foreach ($babBody->babaddons as $value)
 						{
-						if ($value['title'] == $mm[3][$j])
+						if ($value['title'] == $v)
 							{
 							$addonid = $value['id'];
 							break;
@@ -5534,10 +5568,10 @@ function bab_Addon($args)
 					break;
 				
 				case 'function':
-					$function = $mm[3][$j];
+					$function = $v;
 					break;
 				default:
-					$function_args[] = $mm[3][$j];
+					$function_args[] = $v;
 					break;
 				}
 			}
