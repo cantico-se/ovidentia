@@ -21,6 +21,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
+/**
+* @internal SEC1 NA 15/12/2006 FULL
+*/
 include_once 'base.php';
 
 function contactCreate($id, $firstname, $lastname, $email, $compagny, $hometel, $mobiletel, $businesstel, $businessfax, $jobtitle, $baddress, $haddress, $bliste)
@@ -58,8 +61,8 @@ function contactCreate($id, $firstname, $lastname, $email, $compagny, $hometel, 
 		function temp($id, $firstname, $lastname, $email, $compagny, $hometel, $mobiletel, $businesstel, $businessfax, $jobtitle, $baddress, $haddress, $bliste)
 			{
 			global $msgerror;
-			$this->id = $id;
-			$this->bliste = $bliste;
+			$this->id = bab_toHtml($id);
+			$this->bliste = bab_toHtml($bliste);
 			$this->firstname = bab_translate("First Name");
 			$this->lastname = bab_translate("Last Name");
 			$this->email = bab_translate("Email");
@@ -72,31 +75,30 @@ function contactCreate($id, $firstname, $lastname, $email, $compagny, $hometel, 
 			$this->businessaddress = bab_translate("Business Address");
 			$this->homeaddress = bab_translate("Home Address");
 			$this->cancel = bab_translate("Cancel");
-			$this->msgerror = $msgerror;
-			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
+			$this->msgerror = bab_toHtml($msgerror);
 			if( empty($id))
 				{
 				$this->addcontact = bab_translate("Add Contact");
-				$this->what = "add";
-				$this->id = "";
+				$this->what = 'add';
+				$this->id = '';
 				}
 			else
 				{
 				$this->addcontact = bab_translate("Update Contact");
-				$this->what = "update";
+				$this->what = 'update';
 				}
 
-			$this->firstnameval = $firstname != ""? $firstname: "";
-			$this->lastnameval = $lastname != ""? $lastname: "";
-			$this->emailval = $email != ""? $email: "";
-			$this->compagnyval = $compagny != ""? $compagny: "";
-			$this->hometelval = $hometel != ""? $hometel: "";
-			$this->mobiletelval = $mobiletel != ""? $mobiletel: "";
-			$this->businesstelval = $businesstel != ""? $businesstel: "";
-			$this->businessfaxval = $businessfax != ""? $businessfax: "";
-			$this->jobtitleval = $jobtitle != ""? $jobtitle: "";
-			$this->businessaddressval = $baddress != ""? $baddress: "";
-			$this->homeaddressval = $haddress != ""? $haddress: "";
+			$this->firstnameval = $firstname != ""? bab_toHtml($firstname): "";
+			$this->lastnameval = $lastname != ""? bab_toHtml($lastname): "";
+			$this->emailval = $email != ""? bab_toHtml($email): "";
+			$this->compagnyval = $compagny != ""? bab_toHtml($compagny): "";
+			$this->hometelval = $hometel != ""? bab_toHtml($hometel): "";
+			$this->mobiletelval = $mobiletel != ""? bab_toHtml($mobiletel): "";
+			$this->businesstelval = $businesstel != ""? bab_toHtml($businesstel): "";
+			$this->businessfaxval = $businessfax != ""? bab_toHtml($businessfax): "";
+			$this->jobtitleval = $jobtitle != ""? bab_toHtml($jobtitle): "";
+			$this->businessaddressval = $baddress != ""? bab_toHtml($baddress): "";
+			$this->homeaddressval = $haddress != ""? bab_toHtml($haddress): "";
 			}
 		}
 
@@ -116,11 +118,10 @@ function contactUnload($pos, $bliste)
 
 		function temp($pos, $bliste)
 			{
-			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
 			$this->message = bab_translate("Your contacts list has been updated");
 			$this->close = bab_translate("Close");
-			$this->url = $GLOBALS['babUrlScript']."?tg=contacts&idx=list&pos=".$pos;
-			$this->bliste = $bliste;
+			$this->url = bab_toHtml($GLOBALS['babUrlScript']."?tg=contacts&idx=list&pos=".$pos);
+			$this->bliste = bab_toHtml($bliste);
 			}
 		}
 
@@ -199,31 +200,63 @@ function updateContact( $id, $firstname, $lastname, $email, $compagny, $hometel,
 }
 
 /* main */
-if( !isset($idx))
-	$idx = "create";
-$msgerror = "";
+if( !$BAB_SESS_LOGGED || !bab_contactsAccess())
+{
+	$babBody->msgerror = bab_translate("Access denied");
+	return;
+}
+$idx = bab_rp('idx', 'create');
+
+$msgerror = '';
 
 if( $BAB_SESS_USERID != '' )
 {
-if( isset($addcontact))
+if( '' != ($addcontact = bab_pp('addcontact')))
 	{
-	if( $addcontact == "add")
+	if( $addcontact == 'add')
 		{
+		$firstname = bab_pp('firstname');
+		$lastname = bab_pp('lastname');
+		$email = bab_pp('email');
+		$compagny = bab_pp('compagny');
+		$hometel = bab_pp('hometel');
+		$mobiletel = bab_pp('mobiletel');
+		$businesstel = bab_pp('businesstel');
+		$businessfax = bab_pp('businessfax');
+		$jobtitle = bab_pp('jobtitle');
+		$baddress = bab_pp('baddress');
+		$haddress = bab_pp('haddress');
 		if(!addContact($firstname, $lastname, $email, $compagny, $hometel, $mobiletel, $businesstel, $businessfax, $jobtitle, $baddress, $haddress))
-			$idx = "create";
+			{
+			$idx = 'create';
+			}
 		else
 			{
-			$idx = "unload";
+			$idx = 'unload';
 			$pos = strtoupper(substr($firstname, 0, 1));
 			}
 		}
-	else if ($addcontact == "update")
+	else if ($addcontact == 'update')
 		{
+		$id = bab_pp('id');
+		$firstname = bab_pp('firstname');
+		$lastname = bab_pp('lastname');
+		$email = bab_pp('email');
+		$compagny = bab_pp('compagny');
+		$hometel = bab_pp('hometel');
+		$mobiletel = bab_pp('mobiletel');
+		$businesstel = bab_pp('businesstel');
+		$businessfax = bab_pp('businessfax');
+		$jobtitle = bab_pp('jobtitle');
+		$baddress = bab_pp('baddress');
+		$haddress = bab_pp('haddress');
 		if(!updateContact($id, $firstname, $lastname, $email, $compagny, $hometel, $mobiletel, $businesstel, $businessfax, $jobtitle, $baddress, $haddress))
-			$idx = "create";
+			{
+			$idx = 'create';
+			}
 		else
 			{
-			$idx = "unload";
+			$idx = 'unload';
 			$pos = strtoupper(substr($firstname, 0, 1));
 			}
 		}
@@ -238,11 +271,10 @@ else
 switch($idx)
 	{
 	case "unload":
-		contactUnload($pos, $bliste);
+		contactUnload(bab_rp('pos'), bab_rp('bliste'));
 		break;
 	case "modify":
-		//$msgerror = bab_translate("Modify contact");
-		contactUpdate($item);
+		contactUpdate(bab_rp('item'));
 		break;
 	case "create":
 	default:

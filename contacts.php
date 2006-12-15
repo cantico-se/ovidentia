@@ -21,6 +21,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
+/**
+* @internal SEC1 NA 15/12/2006 FULL
+*/
+
 include_once 'base.php';
 
 function listContacts($pos)
@@ -50,23 +54,23 @@ function listContacts($pos)
 			global $BAB_SESS_USERID,$babBody, $babDB;
 
 			switch ($babBody->nameorder[0]) {
-			case "L":
-				$this->namesearch = "lastname";
-				$this->namesearch2 = "firstname";
+			case 'L':
+				$this->namesearch = 'lastname';
+				$this->namesearch2 = 'firstname';
 			break; 
-			case "F":
+			case 'F':
 			default:
-				$this->namesearch = "firstname";
-				$this->namesearch2 = "lastname";
+				$this->namesearch = 'firstname';
+				$this->namesearch2 = 'lastname';
 			break;}
 
-			if( substr($pos,0,1) == "-" )
+			if( substr($pos,0,1) == '-' )
 				{
 				$this->pos = '-';
 				$this->ord = substr($pos,1);
 				$req = "select * from ".BAB_CONTACTS_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."' and ".$this->namesearch2." like '".$babDB->db_escape_like($this->pos)."%' order by ".$babDB->db_escape_string($this->namesearch2).", ".$babDB->db_escape_string($this->namesearch)." asc";
 				$this->fullname = bab_composeUserName(bab_translate("Lastname"),bab_translate("Firstname"));
-				$this->urlfullname = $GLOBALS['babUrlScript']."?tg=contacts&idx=chg&pos=".$pos;
+				$this->urlfullname = bab_toHtml($GLOBALS['babUrlScript']."?tg=contacts&idx=chg&pos=".$pos);
 				}
 			else
 				{
@@ -74,8 +78,9 @@ function listContacts($pos)
 				$this->ord = "";
 				$req = "select * from ".BAB_CONTACTS_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."' and ".$babDB->db_escape_string($this->namesearch)." like '".$babDB->db_escape_like($this->pos)."%' order by ".$babDB->db_escape_string($this->namesearch).", ".$babDB->db_escape_string($this->namesearch2)." asc";
 				$this->fullname = bab_composeUserName(bab_translate("Firstname"), bab_translate("Lastname"));
-				$this->urlfullname = $GLOBALS['babUrlScript']."?tg=contacts&idx=chg&pos=".$pos;
+				$this->urlfullname = bab_toHtml($GLOBALS['babUrlScript']."?tg=contacts&idx=chg&pos=".$pos);
 				}
+			$this->pos = bab_toHtml($this->pos);
 			$this->email = bab_translate("Email");
 			$this->compagny = bab_translate("Compagny");
 			$this->htel = bab_translate("Home Tel");
@@ -96,8 +101,8 @@ function listContacts($pos)
 				$this->allselected = 1;
 			else
 				$this->allselected = 0;
-			$this->allurl = $GLOBALS['babUrlScript']."?tg=contacts&idx=list&pos=";
-			$this->addurl = $GLOBALS['babUrlScript']."?tg=contact&idx=create&bliste=1";
+			$this->allurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=contacts&idx=list&pos=");
+			$this->addurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=contact&idx=create&bliste=1");
 
 			/* find prefered mail account */
 			$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."' and prefered='Y'";
@@ -125,12 +130,18 @@ function listContacts($pos)
 				{
 				$this->altbg = !$this->altbg;
 				$this->arr = $babDB->db_fetch_array($this->res);
-				$this->url =$GLOBALS['babUrlScript']."?tg=contact&idx=modify&item=".$this->arr['id']."&bliste=1";
-				$this->urlmail =$GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".$this->accid."&to=".$this->arr['email'];
+				$this->arr_id = bab_toHtml($this->arr['id']);
+				$this->arr_email = bab_toHtml($this->arr['email']);
+				$this->arr_compagny = bab_toHtml($this->arr['compagny']);
+				$this->arr_businesstel = bab_toHtml($this->arr['businesstel']);
+				$this->arr_mobiletel = bab_toHtml($this->arr['mobiletel']);
+
+				$this->url = bab_toHtml($GLOBALS['babUrlScript']."?tg=contact&idx=modify&item=".$this->arr['id']."&bliste=1");
+				$this->urlmail = bab_toHtml($GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".$this->accid."&to=".$this->arr['email']);
 				if( $this->ord == "-" )
-					$this->urlname = bab_composeUserName( $this->arr['lastname'], $this->arr['firstname']);
+					$this->urlname = bab_toHtml(bab_composeUserName( $this->arr['lastname'], $this->arr['firstname']));
 				else
-					$this->urlname = bab_composeUserName( $this->arr['firstname'], $this->arr['lastname']);
+					$this->urlname = bab_toHtml(bab_composeUserName( $this->arr['firstname'], $this->arr['lastname']));
 				$i++;
 				return true;
 				}
@@ -145,7 +156,7 @@ function listContacts($pos)
 			static $t = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 			if( $k < 26)
 				{
-				$this->selectname = substr($t, $k, 1);
+				$this->selectname = bab_toHtml(substr($t, $k, 1));
 				$this->selecturl = $GLOBALS['babUrlScript']."?tg=contacts&idx=list&pos=".$this->ord.$this->selectname;
 
 				if( $this->pos == $this->selectname)
@@ -246,32 +257,39 @@ function confirmDeleteContacts($items)
 }
 
 /* main */
-if( !isset($pos))
-	$pos = "";
+if( !$BAB_SESS_LOGGED || !bab_contactsAccess())
+{
+	$babBody->msgerror = bab_translate("Access denied");
+	return;
+}
 
-if( !isset($idx))
-	$idx = "list";
+$idx = bab_rp('idx', 'list');
+$pos = bab_rp('pos', '');
 
-if( isset($action) && $action == "Yes")
+if( 'Yes' == bab_gp('action'))
 	{
-	confirmDeleteContacts($items);
+	confirmDeleteContacts(bab_gp('items'));
 	}
 
 switch($idx)
 	{
-	case "delete":
+	case 'delete':
 		$babBody->title = bab_translate("Delete contact");
-		contactsDelete($item, $pos);
+		contactsDelete(bab_pp('item'), $pos);
 		$babBody->addItemMenu("list", bab_translate("Contacts"),$GLOBALS['babUrlScript']."?tg=contacts&idx=list");
 		break;
 
-	case "chg":
-		if( $pos[0] == "-")
+	case 'chg':
+		if( !empty($pos) && $pos[0] == '-')
+			{
 			$pos = $pos[1];
+			}
 		else
-			$pos = "-" .$pos;
+			{
+			$pos = '-' .$pos;
+			}
 		/* no break */
-	case "list":
+	case 'list':
 	default:
 		$babBody->title = bab_translate("Contacts list");
 		$count = listContacts($pos);

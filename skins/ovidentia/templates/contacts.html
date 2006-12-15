@@ -22,7 +22,7 @@
 <!--#endif selected -->
 <!--#endin getnextselect -->
 </td>
-<td align="right" class="BabLetterlists"><a href="javascript: Start('{ addurl }', 'OviAdContact', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ addcontact }</a></td>
+<td align="right" class="BabLetterlists"><a href="{ addurl }" onclick="bab_popup(this.href);return false;">{ addcontact }</a></td>
 </tr>
 
 <tr class="BabSiteAdminTitleFontBackground">         
@@ -36,18 +36,17 @@
 <!--#in getnext -->
 <!--#if altbg --><tr valign="middle" class="BabSiteAdminFontBackground"><!--#else altbg --><tr valign="middle" class="BabForumBackground1"><!--#endif altbg -->
 <td width="1%"> 
-<input type="checkbox" name="item[]" value="{ arr[id] }">
+<input type="checkbox" name="item[]" value="{ arr_id }">
 </td>
-<td><a href="javascript: Start('{ url }', 'OviVContact', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ 
-urlname }</a></td>
+<td><a href="javascript: Start('{ url }', 'OviVContact', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ urlname }</a></td>
 <!--#if accid "!= 0" -->
-<td><a href="javascript: Start('{ urlmail }', 'OviMail', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ arr[email] }</a></td>
+<td><a href="javascript: Start('{ urlmail }', 'OviMail', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ arr_email }</a></td>
 <!--#else accid -->
-<td><a href="mailto:{ arr[email] }">{ arr[email] }</a></td>
+<td><a href="mailto:{ arr_email }">{ arr_email }</a></td>
 <!--#endif accid -->
-<td>{ arr[compagny] }</td>
-<td>{ arr[businesstel] }</td>
-<td>{ arr[mobiletel] }</td>
+<td>{ arr_compagny }</td>
+<td>{ arr_businesstel }</td>
+<td>{ arr_mobiletel }</td>
 </tr> 
 <!--#endin getnext -->
 <tr class="BabSiteAdminTitleFontBackground"> 
