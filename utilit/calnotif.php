@@ -21,6 +21,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
+/**
+* @internal SEC1 NA 12/12/2006 FULL
+*/
 include_once 'base.php';
 
 function sendReminders()
@@ -148,6 +151,9 @@ function dismissEvent($evtid)
 	global $babDB;
 	$babDB->db_query("update ".BAB_CAL_EVENTS_REMINDERS_TBL." set processed='Y' where id_event='".$babDB->db_escape_string($evtid)."' and id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
 }
+
+/* main */
+$idx = bab_rp('idx');
 
 if( $idx == 'dismiss')
 {
