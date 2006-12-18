@@ -7581,7 +7581,7 @@ function upgrade606to610()
 	}
 	
 	if (!bab_isTableField(BAB_USERS_TBL, 'cookie_validity')) {
-		$babDB->db_query("ALTER TABLE `".BAB_USERS_TBL."` ADD `cookie_validity` DATETIME NOT NULL , ADD `cookie_id` VARCHAR( 255 ) NOT NULL");
+		$babDB->db_query("ALTER TABLE `".BAB_USERS_TBL."` ADD `cookie_validity` DATETIME NOT NULL  default '0000-00-00 00:00:00', ADD `cookie_id` VARCHAR( 255 ) NOT NULL");
 		$babDB->db_query("ALTER TABLE `".BAB_USERS_TBL."` ADD INDEX ( `cookie_id` )");
 	} 
 	
