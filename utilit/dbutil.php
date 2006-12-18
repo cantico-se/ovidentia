@@ -57,7 +57,8 @@ function db_print_error($text)
 		$str .= "</b></p>\n";
 		if ($this->db_die_on_fail)
 			{
-			echo $str;
+			trigger_error($str, E_USER_ERROR);
+
 			echo "<p>This script cannot continue, terminating.";
 			die();
 			}
@@ -153,6 +154,7 @@ function db_query($id, $query)
 		{
 		case "mysql":
 		default:
+		
 			$res = mysql_query($query, $id);
 			if (!$res)
 				{

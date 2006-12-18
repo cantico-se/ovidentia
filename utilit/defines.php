@@ -149,6 +149,7 @@ define("BAB_DBDIR_OPTIONS_TBL", "bab_dbdir_options");
 define("BAB_DG_GROUPS_TBL", "bab_dg_groups");
 define("BAB_DG_USERS_GROUPS_TBL", "bab_dg_users_groups");
 define("BAB_DG_ADMIN_TBL", "bab_dg_admin");
+define("BAB_EVENT_LISTENERS_TBL", "bab_event_listeners");
 define("BAB_FAQ_TREES_TBL", "bab_faq_trees");
 define("BAB_FAQCAT_TBL", "bab_faqcat");
 define("BAB_FAQMANAGERS_GROUPS_TBL", "bab_faqmanagers_groups");

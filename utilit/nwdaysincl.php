@@ -211,7 +211,7 @@ function bab_emptyNonWorkingDays($id_site = false)
  * instance of BAB_DateTime
  * @param object $dateObj
  * @return string|false
- */
+ 
 function bab_getNonWorkingDayLabel($dateObj) {
 	static $year = array();
 	if (!isset($year[$dateObj->getYear()])) {
@@ -223,6 +223,29 @@ function bab_getNonWorkingDayLabel($dateObj) {
 	}
 
 	return false;
+}
+*/
+
+
+/**
+ * @param	object	$obj
+ */
+function bab_NWD_onCreatePeriods($obj) {
+	$begin = $obj->periods->begin->getIsoDate();
+	$end = $obj->periods->end->getIsoDate();
+
+	$arr = bab_getNonWorkingDaysBetween($begin, $end);
+	foreach($arr as $nw_day => $nw_type) {
+		$beginDate	= BAB_DateTime::fromIsoDateTime($nw_day.' 00:00:00');
+		$endDate	= $beginDate->cloneDate();
+		$endDate->add(1, BAB_DATETIME_DAY);
+		
+		$p = & $obj->periods->setUserPeriod(false, $beginDate, $endDate, BAB_PERIOD_NWDAY);
+		$p->setProperty('SUMMARY'		,bab_translate('Non-working day2'));
+		$p->setProperty('DESCRIPTION'	,$nw_type);
+		$p->setProperty('DTSTART'		,$beginDate->getIsoDateTime());
+		$p->setProperty('DTEND'			,$endDate->getIsoDateTime());
+	}
 }
 
 ?>

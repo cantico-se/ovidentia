@@ -7607,6 +7607,24 @@ function upgrade606to610()
 		");
 	}
 	
+	if (!bab_isTable(BAB_EVENT_LISTENERS_TBL)) {
+	
+		$babDB->db_query("
+		CREATE TABLE `".BAB_EVENT_LISTENERS_TBL."` (
+			`id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
+			`event_class_name` VARCHAR( 255 ) NOT NULL ,
+			`function_name` VARCHAR( 255 ) NOT NULL ,
+			`require_file` VARCHAR( 255 ) NOT NULL ,
+			`addon_name` VARCHAR( 255 ) NOT NULL ,
+			PRIMARY KEY  (`id`),
+			UNIQUE KEY `event` (`event_class_name`,`function_name`,`require_file`)
+			)"
+		);
+		
+		
+		$babDB->db_query("INSERT INTO `".BAB_EVENT_LISTENERS_TBL."` (`id`, `event_class_name`, `function_name`, `require_file`, `addon_name`) VALUES (1, 'bab_eventCreatePeriods', 'bab_NWD_onCreatePeriods', 'utilit/nwdaysincl.php', 'core')");
+
+	}
 	
 	return $ret;
 }

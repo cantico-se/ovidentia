@@ -3607,3 +3607,18 @@ CREATE TABLE bab_art_tags (
   KEY id_art (id_art),
   KEY id_tag (id_tag)
 );
+
+
+CREATE TABLE `bab_event_listeners` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `event_class_name` varchar(255) NOT NULL,
+  `function_name` varchar(255) NOT NULL,
+  `require_file` varchar(255) NOT NULL,
+  `addon_name` varchar(255) NOT NULL,
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `event` (`event_class_name`,`function_name`,`require_file`)
+);
+
+
+INSERT INTO `bab_event_listeners` (`id`, `event_class_name`, `function_name`, `require_file`, `addon_name`) VALUES (1, 'bab_eventCreatePeriods', 'bab_NWD_onCreatePeriods', 'utilit/nwdaysincl.php', 'core');
+

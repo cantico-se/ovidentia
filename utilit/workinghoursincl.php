@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include "base.php";
-
+require_once $GLOBALS['babInstallPath'].'utilit/eventincl.php';
 
 
 
@@ -299,6 +299,18 @@ class bab_calendarPeriod {
 }
 
 
+class bab_eventCreatePeriods extends bab_event {
+	
+	/**
+ 	 * @public
+	 */
+	var $periods;
+
+	function bab_eventCreatePeriods($obj) {
+		$this->periods = & $obj;
+	}
+}
+
 
 
 /**
@@ -360,10 +372,6 @@ class bab_userWorkingHours {
 	function createPeriods($options) {
 		$this->options = $options;
 
-		if (BAB_PERIOD_NWDAY === ($this->options & BAB_PERIOD_NWDAY) && $this->id_users) {
-			include_once $GLOBALS['babInstallPath']."utilit/nwdaysincl.php";
-		}
-
 		if (BAB_PERIOD_VACATION === ($this->options & BAB_PERIOD_VACATION) && $this->id_users) {
 			include_once $GLOBALS['babInstallPath']."utilit/vacincl.php";
 			bab_vac_setVacationPeriods($this, $this->id_users, $this->begin, $this->end);
@@ -380,33 +388,21 @@ class bab_userWorkingHours {
 			bab_tskmgr_setPeriods($this, $this->id_users, $this->begin, $this->end);
 		}
 
+		require_once $GLOBALS['babInstallPath'].'utilit/devtools.php';
+		$event = new bab_eventCreatePeriods($this);
+		bab_fireEvent($event);
+
 		$loop = $this->begin->cloneDate();
 		$endts = $this->end->getTimeStamp();
 		$begints = $this->begin->getTimeStamp();
 		$nworking = (BAB_PERIOD_NONWORKING === ($this->options & BAB_PERIOD_NONWORKING));
 		$previous_end = NULL;
 
-
+		
 		
 
 		while ($loop->getTimeStamp() < $endts) {
-			
-			if (BAB_PERIOD_NWDAY === ($this->options & BAB_PERIOD_NWDAY) && $this->id_users) {
-				
-				$nwLabel = bab_getNonWorkingDayLabel($loop);
-				if (false !== $nwLabel) {
-					$beginDate	= BAB_DateTime::fromIsoDateTime($loop->getIsoDate().' 00:00:00');
-					$endDate	= $beginDate->cloneDate();
-					$endDate->add(1, BAB_DATETIME_DAY);
 
-					$p = & $this->setUserPeriod(false, $beginDate, $endDate, BAB_PERIOD_NWDAY);
-					$p->setProperty('SUMMARY'		,bab_translate('Non-working day2'));
-					$p->setProperty('DESCRIPTION'	,$nwLabel);
-					$p->setProperty('DTSTART'		,$beginDate->getIsoDateTime());
-					$p->setProperty('DTEND'			,$endDate->getIsoDateTime());
-				}
-			}
-			
 
 			if (BAB_PERIOD_WORKING === ($this->options & BAB_PERIOD_WORKING) && $this->id_users) {
 
