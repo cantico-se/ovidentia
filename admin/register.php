@@ -210,6 +210,12 @@ function registerUser( $firstname, $lastname, $middlename, $email, $nickname, $p
 		return false;
 		}
 
+	if ( strlen($password1) < 6 )
+		{
+		$babBody->msgerror = bab_translate("Password must be at least 6 characters !!");
+		return false;
+		}
+
 	if( $badmin )
 		$isconfirmed = 1;
 	else
