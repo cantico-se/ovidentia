@@ -21,6 +21,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
+/**
+* @internal SEC1 NA 18/12/2006 FULL
+*/
 include 'base.php';
 include_once $babInstallPath.'utilit/dirincl.php';
 include_once $babInstallPath.'utilit/ldap.php';
