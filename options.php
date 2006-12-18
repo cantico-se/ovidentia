@@ -21,6 +21,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
+/**
+* @internal SEC1 NA 18/12/2006 FULL
+*/
 include_once 'base.php';
 include_once $babInstallPath.'admin/register.php';
 
@@ -112,11 +115,11 @@ function changeUserInfo($firstname, $middlename, $lastname, $nickname, $email)
 
 		function temp($firstname, $middlename, $lastname, $nickname, $email)
 			{
-			$this->firstnameval = $firstname != ""? $firstname: "";
-			$this->lastnameval = $lastname != ""? $lastname: "";
-			$this->nicknameval = $nickname != ""? $nickname: "";
-			$this->middlenameval = $middlename != ""? $middlename: "";
-			$this->emailval = $email != ""? $email: "";
+			$this->firstnameval = $firstname != ""? bab_toHtml($firstname): "";
+			$this->lastnameval = $lastname != ""? bab_toHtml($lastname): "";
+			$this->nicknameval = $nickname != ""? bab_toHtml($nickname): "";
+			$this->middlenameval = $middlename != ""? bab_toHtml($middlename): "";
+			$this->emailval = $email != ""? bab_toHtml($email): "";
 			$this->firstname = bab_translate("First Name");
 			$this->lastname = bab_translate("Last Name");
 			$this->nickname = bab_translate("Nickname");
@@ -185,8 +188,7 @@ function changeNickname($nickname)
 				{
 				$this->changepassword = false;
 				}
-			//$this->changepassword = $babBody->babsite['change_password'] == 'Y'? ($arr['changepwd'] == 1 ? bab_translate("Update Password") : false): false;
-			$this->urlchangepassword = $GLOBALS['babUrlScript']."?tg=options&idx=changePassword";
+			$this->urlchangepassword = bab_toHTML($GLOBALS['babUrlScript']."?tg=options&idx=changePassword");
 			$this->nicknameval = $nickname != ""? $nickname: "";
 			$this->nickname = bab_translate("Nickname");
 			$this->password = bab_translate("Password");
@@ -225,54 +227,54 @@ function changeRegionalSettings()
 			$arr = $babDB->db_fetch_array($res);
 			if( empty($arr['date_shortformat']))
 				{
-				$this->date_sformat_val = $babBody->babsite['date_shortformat'];
+				$this->date_sformat_val = bab_toHtml($babBody->babsite['date_shortformat']);
 				}
 			else
 				{
-				$this->date_sformat_val = $arr['date_shortformat'];
+				$this->date_sformat_val = bab_toHtml($arr['date_shortformat']);
 				}
 			if( empty($arr['date_longformat']))
 				{
-				$this->date_lformat_val = $babBody->babsite['date_longformat'];
+				$this->date_lformat_val = bab_toHtml($babBody->babsite['date_longformat']);
 				}
 			else
 				{
-				$this->date_lformat_val = $arr['date_longformat'];
+				$this->date_lformat_val = bab_toHtml($arr['date_longformat']);
 				}
 			if( empty($arr['time_format']))
 				{
-				$this->time_format_val = $babBody->babsite['time_format'];
+				$this->time_format_val = bab_toHtml($babBody->babsite['time_format']);
 				}
 			else
 				{
-				$this->time_format_val = $arr['time_format'];
+				$this->time_format_val = bab_toHtml($arr['time_format']);
 				}
 
 			$this->update = bab_translate("Update");
 
 			$this->arrlfdate = array();
-			$this->arrlfdate[] = "dd MMMM yyyy";
-			$this->arrlfdate[] = "MMMM dd, yyyy";
-			$this->arrlfdate[] = "dddd, MMMM dd, yyyy";
-			$this->arrlfdate[] = "dddd, dd MMMM, yyyy";
-			$this->arrlfdate[] = "dd MMMM, yyyy";
+			$this->arrlfdate[] = 'dd MMMM yyyy';
+			$this->arrlfdate[] = 'MMMM dd, yyyy';
+			$this->arrlfdate[] = 'dddd, MMMM dd, yyyy';
+			$this->arrlfdate[] = 'dddd, dd MMMM, yyyy';
+			$this->arrlfdate[] = 'dd MMMM, yyyy';
 
 			$this->arrsfdate = array();
-			$this->arrsfdate[] = "M/d/yyyy";
-			$this->arrsfdate[] = "M/d/yy";
-			$this->arrsfdate[] = "MM/dd/yy";
-			$this->arrsfdate[] = "yy/MM/dd";
-			$this->arrsfdate[] = "yyyy-MM-dd";
-			$this->arrsfdate[] = "dd-MMM-yy";
+			$this->arrsfdate[] = 'M/d/yyyy';
+			$this->arrsfdate[] = 'M/d/yy';
+			$this->arrsfdate[] = 'MM/dd/yy';
+			$this->arrsfdate[] = 'yy/MM/dd';
+			$this->arrsfdate[] = 'yyyy-MM-dd';
+			$this->arrsfdate[] = 'dd-MMM-yy';
 			
 			$this->arrtime = array();
-			$this->arrtime[] = "HH:mm";
-			$this->arrtime[] = "HH:mm tt";
-			$this->arrtime[] = "HH:mm TT";
-			$this->arrtime[] = "HH:mm:ss tt";
-			$this->arrtime[] = "h:mm:ss tt";
-			$this->arrtime[] = "hh:mm:ss tt";
-			$this->arrtime[] = "HH:mm:ss";
+			$this->arrtime[] = 'HH:mm';
+			$this->arrtime[] = 'HH:mm tt';
+			$this->arrtime[] = 'HH:mm TT';
+			$this->arrtime[] = 'HH:mm:ss tt';
+			$this->arrtime[] = 'h:mm:ss tt';
+			$this->arrtime[] = 'hh:mm:ss tt';
+			$this->arrtime[] = 'HH:mm:ss';
 			}
 
 		function getnextlongdate()
@@ -321,7 +323,7 @@ function changeRegionalSettings()
 		}
 
 	$temp = new changeRegionalSettingsCls();
-	$babBody->babecho(bab_printTemplate($temp,"options.html", "regionalsettings"));
+	$babBody->babecho(bab_printTemplate($temp,'options.html', 'regionalsettings'));
 	}
 
 function changeLanguage()
@@ -351,19 +353,22 @@ function changeLanguage()
 			$this->update = bab_translate("Update Language");
             $this->count = 0;
 
-            $db = $GLOBALS['babDB'];
             $req = "select * from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
             $res = $babDB->db_query($req);
             if( $res && $babDB->db_num_rows($res) > 0 )
                 {
     			$arr = $babDB->db_fetch_array($res);
-                $this->userlang = $arr['lang'];
+                $this->userlang = bab_toHtml($arr['lang']);
                 }
             else
-                $this->userlang = "";
+				{
+                $this->userlang = '';
+				}
            
-            if( $this->userlang == "")
-                $this->userlang = $GLOBALS['babLanguage'];
+            if( $this->userlang == '')
+				{
+                $this->userlang = bab_toHtml($GLOBALS['babLanguage']);
+				}
 
             $this->title .= " : ".$this->userlang;
 
@@ -380,12 +385,16 @@ function changeLanguage()
 			static $i = 0;
 			if( $i < $this->count)
 				{
-                $this->langname = $this->arrfiles[$i];
-                $this->langval = $this->arrfiles[$i];
+                $this->langname = bab_toHtml($this->arrfiles[$i]);
+                $this->langval = bab_toHtml($this->arrfiles[$i]);
                 if( $this->userlang == $this->langname )
-                    $this->langselected = "selected";
+					{
+                    $this->langselected = 'selected';
+					}
                 else
-                    $this->langselected = "";
+					{
+                    $this->langselected = '';
+					}
 				$i++;
 				return true;
 				}
@@ -399,7 +408,7 @@ function changeLanguage()
 			if($i < $GLOBALS['babLangFilter']->countFilters())
 			{
 				$this->langfilterval = 
-					$GLOBALS['babLangFilter']->getFilterStr($i);
+					bab_toHtml($GLOBALS['babLangFilter']->getFilterStr($i));
 				if($this->userlangfilter == $i)
 					{$this->langfilterselected = 'selected';}
 				else
@@ -449,7 +458,6 @@ function changeSkin($skin)
             $this->cntskins = 0;
             $this->cntstyles = 0;
 
-			$db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
 			$res = $babDB->db_query($req);
 			if( $res && $babDB->db_num_rows($res) > 0 )
@@ -460,23 +468,31 @@ function changeSkin($skin)
 				}
 			else
 				{
-				$this->userskin = "";
-				$this->userstyle = "";
+				$this->userskin = '';
+				$this->userstyle = '';
 				}
 		   
-			if( $this->userskin == "")
+			if( $this->userskin == '')
+				{
 				$this->userskin = $GLOBALS['babSkin'];
+				}
 
-			if( $this->userstyle == "")
+			if( $this->userstyle == '')
+				{
 				$this->userstyle = $GLOBALS['babStyle'];
+				}
 
-			$this->title .= " : ".$this->userskin;
-			$this->title_style .= " : ".substr($this->userstyle,0,strrpos($this->userstyle, "."));
+			$this->title .= ' : '.bab_toHtml($this->userskin);
+			$this->title_style .= " : ".bab_toHtml(substr($this->userstyle,0,strrpos($this->userstyle, ".")));
 
 			if(!isset($skin) || empty($skin))
+				{
 				$this->skin = $this->userskin;
+				}
 			else
+				{
 				$this->skin = $skin;
+				}
 
 			if( is_dir("skins/"))
 				{
@@ -505,27 +521,29 @@ function changeSkin($skin)
 			if( $i < $this->cntskins)
 				{
 				$this->iindex = $i;
-                $this->skinname = $this->arrskins[$i];
-                $this->skinval = $this->arrskins[$i];
+                $this->skinname = bab_toHtml($this->arrskins[$i]);
+                $this->skinval = bab_toHtml($this->arrskins[$i]);
                 if( $this->skinname == $this->skin )
 					{
 	                $this->skselectedindex = $i;
-                    $this->skinselected = "selected";
+                    $this->skinselected = 'selected';
 					}
                 else
-                    $this->skinselected = "";
+					{
+                    $this->skinselected = '';
+					}
 
 				$this->arrstyles = array();
-				if( is_dir("skins/".$this->skinname."/styles/"))
+				if( is_dir('skins/'.$this->skinname.'/styles/'))
 					{
-					$h = opendir("skins/".$this->skinname."/styles/"); 
+					$h = opendir('skins/'.$this->skinname.'/styles/'); 
 					while ( $file = readdir($h))
 						{ 
-						if ($file != "." && $file != "..")
+						if ($file != '.' && $file != '..')
 							{
-							if( is_file("skins/".$this->skinname."/styles/".$file))
+							if( is_file('skins/'.$this->skinname.'/styles/'.$file))
 								{
-									if( strtolower(substr(strrchr($file, "."), 1)) == "css" )
+									if( strtolower(substr(strrchr($file, '.'), 1)) == 'css' )
 										{
 										$this->arrstyles[] = $file;
 										}
@@ -535,16 +553,16 @@ function changeSkin($skin)
 					closedir($h);
 					}
 
-				if( is_dir($GLOBALS['babInstallPath']."skins/".$this->skinname."/styles/"))
+				if( is_dir($GLOBALS['babInstallPath'].'skins/'.$this->skinname.'/styles/'))
 					{
-					$h = opendir($GLOBALS['babInstallPath']."skins/".$this->skinname."/styles/"); 
+					$h = opendir($GLOBALS['babInstallPath'].'skins/'.$this->skinname.'/styles/'); 
 					while ( $file = readdir($h))
 						{ 
-						if ($file != "." && $file != "..")
+						if ($file != '.' && $file != '..')
 							{
-							if( is_file($GLOBALS['babInstallPath']."skins/".$this->skinname."/styles/".$file))
+							if( is_file($GLOBALS['babInstallPath'].'skins/'.$this->skinname.'/styles/'.$file))
 								{
-									if( strtolower(substr(strrchr($file, "."), 1)) == "css" )
+									if( strtolower(substr(strrchr($file, '.'), 1)) == 'css' )
 										{
 										if( count($this->arrstyles) == 0 || !in_array($file, $this->arrstyles) )
 											$this->arrstyles[] = $file;
@@ -570,10 +588,12 @@ function changeSkin($skin)
 			static $j = 0;
 			if( $j < $this->cntstyles)
 				{
-                $this->stylename = $this->arrstyles[$j];
-                $this->styleval = $this->arrstyles[$j];
+                $this->stylename = bab_toHtml($this->arrstyles[$j]);
+                $this->styleval = bab_toHtml($this->arrstyles[$j]);
                 if( $this->skinname == $this->skin && $this->userstyle == $this->styleval)
+					{
 					$this->stselectedindex = $j;
+					}
 				$j++;
 				return true;
 				}
@@ -620,9 +640,9 @@ function changeProfiles()
 				if( bab_IsAccessValid(BAB_PROFILES_GROUPS_TBL, $arr['id']))
 					{
 					$this->profileaccess = true;
-					$this->pname = $arr['name'];
-					$this->pdesc = $arr['description'];
-					$this->idprofile = $arr['id'];
+					$this->pname = bab_toHtml($arr['name']);
+					$this->pdesc = bab_toHtml($arr['description']);
+					$this->idprofile = bab_toHtml($arr['id']);
 					$this->resgrp = $babDB->db_query("select gt.* from ".BAB_PROFILES_GROUPSSET_TBL." pgt left join ".BAB_GROUPS_TBL." gt on pgt.id_group=gt.id where pgt.id_object ='".$babDB->db_escape_string($arr['id'])."'");
 					$this->countgrp = $babDB->db_num_rows($this->resgrp);
 					if( $arr['multiplicity'] == 'Y' )
@@ -665,9 +685,10 @@ function changeProfiles()
 				{
 				$arr = $babDB->db_fetch_array($this->resgrp);
 				$this->altbg = !$this->altbg;
-				$this->grpid = $arr['id'];
-				$this->grpname = $arr['name'];
+				$this->grpid = bab_toHtml($arr['id']);
+				$this->grpname = bab_toHtml($arr['name']);
 				$this->grpdesc = empty($arr['description'])? $arr['name']: $arr['description'];
+				$this->grpdesc = bab_toHtml($this->grpdesc);
 				if( (isset($GLOBALS["grpids".$this->idprofile]) && count($GLOBALS["grpids".$this->idprofile]) > 0 && in_array($arr['id'] , $GLOBALS["grpids".$this->idprofile])) || (count($babBody->usergroups) > 0  && in_array( $arr['id'],$babBody->usergroups)))
 					{
 					if( $this->bmultiplicity == true )
@@ -721,11 +742,11 @@ function showUnavailability($iduser, $fromdate, $todate, $id_substitute)
 			$this->usertxt = bab_translate("Substitute");
 			$this->deletetxt = bab_translate("Delete");
 			$this->update = bab_translate("Update");
-			$this->browseurl = $GLOBALS['babUrlScript']."?tg=lusers&idx=brow&cb=onUser";
+			$this->browseurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=lusers&idx=brow&cb=onUser");
 			$this->urlfromdate = bab_calendarPopup("fdcb");
 			$this->urltodate = bab_calendarPopup("tdcb");
 
-			$this->iduser = $iduser;
+			$this->iduser = bab_toHtml($iduser);
 
 			$res = $babDB->db_query("select * from ".BAB_USERS_UNAVAILABILITY_TBL." where id_user='".$babDB->db_escape_string($iduser)."'");
 			if( $res && $babDB->db_num_rows($res) > 0 )
@@ -733,7 +754,7 @@ function showUnavailability($iduser, $fromdate, $todate, $id_substitute)
 				$arr = $babDB->db_fetch_array($res);
 			
 				$rr = explode('-', $arr['end_date']);
-				$this->enddate_val = sprintf("%02s/%02s/%04s", $rr[2], $rr[1], $rr[0]);
+				$this->enddate_val = bab_toHtml(sprintf("%02s/%02s/%04s", $rr[2], $rr[1], $rr[0]));
 				}
 			else
 				{
@@ -751,12 +772,12 @@ function showUnavailability($iduser, $fromdate, $todate, $id_substitute)
 				else
 					{
 					$rr = explode('-', $arr['start_date']);
-					$this->fromdate_val = sprintf("%02s/%02s/%04s", $rr[2], $rr[1], $rr[0]);
+					$this->fromdate_val = bab_toHtml(sprintf("%02s/%02s/%04s", $rr[2], $rr[1], $rr[0]));
 					}
 				}
 			else
 				{
-				$this->fromdate_val = $fromdate;
+				$this->fromdate_val = bab_toHtml($fromdate);
 				}
 
 			if( empty($todate))
@@ -768,12 +789,12 @@ function showUnavailability($iduser, $fromdate, $todate, $id_substitute)
 				else
 					{
 					$rr = explode('-', $arr['end_date']);
-					$this->todate_val = sprintf("%02s/%02s/%04s", $rr[2], $rr[1], $rr[0]);
+					$this->todate_val = bab_toHtml(sprintf("%02s/%02s/%04s", $rr[2], $rr[1], $rr[0]));
 					}
 				}
 			else
 				{
-				$this->todate_val = $todate;
+				$this->todate_val = bab_toHtml($todate);
 				}
 
 			if( empty($id_substitute))
@@ -785,14 +806,14 @@ function showUnavailability($iduser, $fromdate, $todate, $id_substitute)
 					}
 				else
 					{
-					$this->id_substitute_val = $arr['id_substitute'];
-					$this->user_disp_val = bab_getUserName($arr['id_substitute']);
+					$this->id_substitute_val = bab_toHtml($arr['id_substitute']);
+					$this->user_disp_val = bab_toHtml(bab_getUserName($arr['id_substitute']));
 					}
 				}
 			else
 				{
-				$this->id_substitute_val = $id_substitute;
-				$this->user_disp_val = bab_getUserName($id_substitute);
+				$this->id_substitute_val = bab_toHtml($id_substitute);
+				$this->user_disp_val = bab_toHtml(bab_getUserName($id_substitute));
 				}
 			}
 		}
@@ -1160,9 +1181,9 @@ function updateProfiles()
 	{
 	if( bab_IsAccessValid(BAB_PROFILES_GROUPS_TBL, $arr['id']))
 		{
-		if( isset($GLOBALS["grpids".$arr['id']]))
+		if( isset($_POST["grpids".$arr['id']]))
 			{
-			$grpvar = $GLOBALS["grpids".$arr['id']];
+			$grpvar = $_POST["grpids".$arr['id']];
 			}
 		else
 			{
@@ -1291,27 +1312,23 @@ function deleteUnavailability($iduser)
 
 
 /* main */
-if(!isset($idx))
-	{
-	$idx = "global";
-	}
+if( !isset($BAB_SESS_LOGGED) || !$BAB_SESS_LOGGED)
+{
+	$babBody->addError(bab_translate("Access denied"));
+	return;
+}
 
-if(!isset($skin))
-	{
-	$skin = "";
-	}
+$idx = bab_rp('idx', 'global');
+$skin = bab_rp('skin');
 
-if(!isset($msgerror))
-	$msgerror = '';
+$babBody->msgerror = '';
 
-$babBody->msgerror = "";
-
-if( isset($update))
+if( '' != ($update = bab_pp('update')))
 	{
     switch ($update)
         {
-        case "password":
-			$msgerror = updatePassword($oldpwd, $newpwd1, $newpwd2);
+        case 'password':
+			$msgerror = updatePassword(bab_pp('oldpwd'), bab_pp('newpwd1'), bab_pp('newpwd2'));
         	if ($msgerror)
 			{
 				changePasswordUnload(bab_translate("Your password has been modified"));
@@ -1319,23 +1336,33 @@ if( isset($update))
 			}
 			else
 			{
-				$idx = "changePassword";
+				$idx = 'changePassword';
 			}
             break;
-        case "lang":
+        case 'lang':
+			$lang = bab_pp('lang');
+			$langfilter = bab_pp('langfilter');
         	updateLanguage($lang, $babLangFilter->convertFilterToInt($langfilter));
             break;
-        case "skin":
-        	updateSkin($skin, $style);
+        case 'skin':
+        	updateSkin(bab_pp('skin'), bab_pp('style'));
             break;
-        case "nickname":
+        case 'nickname':
+			$password = bab_pp('password');
+			$nickname = bab_pp('nickname');
         	if(updateNickname($password, $nickname))
 				{
 				unset($nickname);
 				}
             break;
-        case "userinfo":
-        	if(updateUserInfo($password, $firstname, $middlename, $lastname, $nickname, $email))
+        case 'userinfo':
+ 			$password = bab_pp('password');
+			$firstname = bab_pp('firstname');
+			$middlename = bab_pp('middlename');
+			$lastname = bab_pp('lastname');
+			$nickname = bab_pp('nickname');
+			$email = bab_pp('email');
+       		if(updateUserInfo($password, $firstname, $middlename, $lastname, $nickname, $email))
 				{
 				unset($firstname);
 				unset($lastname);
@@ -1344,21 +1371,23 @@ if( isset($update))
 				unset($email);
 				}
             break;
-        case "profiles":
-        	if(!updateProfiles())
-				{
-				$idx = 'global';
-				}
+        case 'profiles':
+        	updateProfiles();
+			$idx = 'global';
             break;
-         case "regsettings":
+         case 'regsettings':
+			$datelformat = bab_pp('datelformat');
+			$datesformat = bab_pp('datesformat');
+			$timeformat = bab_pp('timeformat');
         	if(!updateRegionalSettings($datelformat, $datesformat, $timeformat))
 				{
 				$idx = 'global';
 				}
             break;
-         case "unavailability":
-			if( isset($bdelete))
+         case 'unavailability':
+			if( isset($_POST['bdelete']))
 			{
+				$iduser = bab_pp('iduser');
 				deleteUnavailability($iduser);
 				$fromdate ='';
 				$todate ='';
@@ -1367,14 +1396,16 @@ if( isset($update))
 
 			}else
 				{
+				$iduser = bab_pp('iduser');
+				$fromdate = bab_pp('fromdate');
+				$todate = bab_pp('todate');
+				$id_substitute = bab_pp('id_substitute');
 				updateUnavailability($iduser, $fromdate, $todate, $id_substitute);				
 				$idx = 'unav';
 				}
             break;
        }
 	}
-
-
 
 if( !isset($firstname) &&  !isset($middlename) &&  !isset($lastname) && !isset($nickname) && !isset($email) && $BAB_SESS_USERID != '')
 	{
@@ -1393,16 +1424,17 @@ if( !isset($firstname) &&  !isset($middlename) &&  !isset($lastname) && !isset($
 
 switch($idx)
 	{
-	case "unav":
+	case 'unav':
+		$iduser = bab_rp('iduser');
 		$babBody->title = bab_getUserName($iduser);
-		if( !isset($fromdate)) { $fromdate ='';}
-		if( !isset($todate)) { $todate ='';}
-		if( !isset($id_substitute)) { $id_substitute ='';}
-		$babBody->addItemMenu("global", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=options&idx=global");
+		$fromdate = bab_pp('fromdate');
+		$todate = bab_pp('todate');
+		$id_substitute = bab_pp('id_substitute');
+		$babBody->addItemMenu('global', bab_translate("Options"), $GLOBALS['babUrlScript'].'?tg=options&idx=global');
 		if( ('Y' == $babBody->babsite['change_unavailability'] && $iduser == $GLOBALS['BAB_SESS_USERID']) || bab_isUserAdministrator() || $babBody->currentDGGroup['users'] == 'Y')
 			{
 			showUnavailability($iduser, $fromdate, $todate, $id_substitute);
-			$babBody->addItemMenu("unav", bab_translate("Unavailability"), $GLOBALS['babUrlScript']."?tg=options&idx=unav&iduser=".$iduser);
+			$babBody->addItemMenu('unav', bab_translate("Unavailability"), $GLOBALS['babUrlScript'].'?tg=options&idx=unav&iduser='.$iduser);
 			}
 		else
 			{
@@ -1410,46 +1442,54 @@ switch($idx)
 			}
 		break;
 
-	case "cb":
-		updateStateSection($s, $w, "Y");
+	case 'cb':
+		updateStateSection(bab_gp('s'), bab_gp('w'), 'Y');
 		break;
 
-	case "ob":
-		updateStateSection($s, $w, "N");
+	case 'ob':
+		updateStateSection(bab_gp('s'), bab_gp('w'), 'N');
 		break;
 
-	case "changePassword":
+	case 'changePassword':
 		changePassword();
 		break;
-	case "changePasswordUnload":
-		changePasswordUnload($msg);
+	case 'changePasswordUnload':
+		changePasswordUnload(bab_rp('msg'));
 		break;
 
-	case "global":
+	case 'global':
 	default:
 		$babBody->title = bab_translate("Options");
-		if( !isset($nickname)) { $nickname = ""; }
+		if( !isset($nickname)) { $nickname = ''; }
 		changeNickname($nickname);
 		if ('Y' == $babBody->babsite['change_skin'])
+			{
 			changeSkin($skin);
+			}
 		if ('Y' == $babBody->babsite['change_lang'])
+			{
 			changeLanguage();
+			}
 		if ('Y' == $babBody->babsite['change_date'])
+			{
 			changeRegionalSettings();
+			}
 		changeProfiles();
-		$babBody->addItemMenu("global", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=options&idx=global");
+		$babBody->addItemMenu('global', bab_translate("Options"), $GLOBALS['babUrlScript'].'?tg=options&idx=global');
 		if( $babBody->icalendars->calendarAccess())
 			{
-			$babBody->addItemMenu("calendar", bab_translate("Calendar Options"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options");
+			$babBody->addItemMenu('calendar', bab_translate("Calendar Options"), $GLOBALS['babUrlScript'].'?tg=calopt&idx=options');
 			}
 		if( bab_mailAccessLevel())
 			{
-			$babBody->addItemMenu("options", bab_translate("Mail"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=listacc");
+			$babBody->addItemMenu('options', bab_translate("Mail"), $GLOBALS['babUrlScript'].'?tg=mailopt&idx=listacc');
 			}
 		$iduser = isset($iduser)? $iduser: $BAB_SESS_USERID;
-		$babBody->addItemMenu("list", bab_translate("Sections"), $GLOBALS['babUrlScript']."?tg=sectopt&idx=list");
+		$babBody->addItemMenu('list', bab_translate("Sections"), $GLOBALS['babUrlScript'].'?tg=sectopt&idx=list');
 		if( ('Y' == $babBody->babsite['change_unavailability'] && $iduser == $GLOBALS['BAB_SESS_USERID']) || bab_isUserAdministrator() || $babBody->currentDGGroup['users'] == 'Y')
-			$babBody->addItemMenu("unav", bab_translate("Unavailability"), $GLOBALS['babUrlScript']."?tg=options&idx=unav&iduser=".$iduser);
+			{
+			$babBody->addItemMenu('unav', bab_translate("Unavailability"), $GLOBALS['babUrlScript'].'?tg=options&idx=unav&iduser='.$iduser);
+			}
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);
