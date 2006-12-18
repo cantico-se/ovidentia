@@ -21,7 +21,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
+/**
+* @internal SEC1 NA 18/12/2006 FULL
+*/
 include_once 'base.php';
+
 function browseSa($cb)
 	{
 	global $babBody;
@@ -36,9 +40,13 @@ function browseSa($cb)
 
 			$this->sares = $babDB->db_query("select id, name, description from ".BAB_FLOW_APPROVERS_TBL." order by name asc");
 			if( !$this->sares )
+				{
 				$this->sacount = 0;
+				}
 			else
+				{
 				$this->sacount = $babDB->db_num_rows($this->sares);
+				}
 			}
 
 		function getnext()
@@ -48,11 +56,10 @@ function browseSa($cb)
 			if( $i < $this->sacount)
 				{
 				$arr = $babDB->db_fetch_array($this->sares);
-				$this->sanameval = $arr['name'];
-				$this->descval = $arr['description'];
-				$this->saname = str_replace("'", "\'", $arr['name']);
-				$this->saname = str_replace('"', "'+String.fromCharCode(34)+'",$this->saname);
-				$this->said = $arr['id'];
+				$this->sanameval = bab_toHtml($arr['name']);
+				$this->descval = bab_toHtml($arr['description']);
+				$this->saname = bab_toHtml($arr['name'], BAB_HTML_JS);
+				$this->said = bab_toHtml($arr['id']);
 				$i++;
 				return true;
 				}
@@ -69,8 +76,8 @@ function browseSa($cb)
 	}
 
 /* main */
-if( !isset($idx)) { $idx = 0; }
-if( !isset($cb)) { $cb = ''; }
+$idx = bab_rp('idx');
+$cb = bab_rp('cb');
 switch($idx)
 	{
 	default:
