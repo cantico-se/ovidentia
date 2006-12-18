@@ -21,7 +21,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
+/**
+* @internal SEC1 NA 18/12/2006 FULL
+*/
+include_once 'base.php';
 
 function sectionsList()
 	{
@@ -57,7 +60,7 @@ function sectionsList()
 
 		function temp()
 			{
-			global $babBody;
+			global $babBody, $babDB;
 			$this->title = bab_translate("Title");
 			$this->description = bab_translate("Description");
 			$this->enabled = bab_translate("Enabled");
@@ -67,17 +70,16 @@ function sectionsList()
 			$this->access = bab_translate("Access");
 			$this->groups = bab_translate("View");
 			$this->maxallowedsectxt = bab_translate("The maximum number of authorized optional sections was reached");
-			$this->db = $GLOBALS['babDB'];
-			$req = "select distinct s.* from ".BAB_SECTIONS_TBL." s, ".BAB_USERS_GROUPS_TBL." ug, ".BAB_SECTIONS_GROUPS_TBL." sg where s.enabled='Y' AND s.optional='Y' and s.id=sg.id_object and ( (ug.id_group=sg.id_group and ug.id_object='".$GLOBALS['BAB_SESS_USERID']."') or sg.id_group='0' or sg.id_group='1')";
-			$this->res = $this->db->db_query($req);
-			$this->count = $this->db->db_num_rows($this->res);
+			$req = "select distinct s.* from ".BAB_SECTIONS_TBL." s, ".BAB_USERS_GROUPS_TBL." ug, ".BAB_SECTIONS_GROUPS_TBL." sg where s.enabled='Y' AND s.optional='Y' and s.id=sg.id_object and ( (ug.id_group=sg.id_group and ug.id_object='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."') or sg.id_group='0' or sg.id_group='1')";
+			$this->res = $babDB->db_query($req);
+			$this->count = $babDB->db_num_rows($this->res);
 
 			// don't get Administrator section and User's section
-			$this->resa = $this->db->db_query("select * from ".BAB_PRIVATE_SECTIONS_TBL." where enabled='Y' AND optional='Y' and id !='1' and id!='5'");
-			$this->counta = $this->db->db_num_rows($this->resa);
+			$this->resa = $babDB->db_query("select * from ".BAB_PRIVATE_SECTIONS_TBL." where enabled='Y' AND optional='Y' and id !='1' and id!='5'");
+			$this->counta = $babDB->db_num_rows($this->resa);
 
-			$res = $this->db->db_query("select ".BAB_TOPICS_TBL.".id,".BAB_TOPICS_TBL.".id_cat  from ".BAB_TOPICS_TBL." join ".BAB_TOPICS_CATEGORIES_TBL." c where ".BAB_TOPICS_TBL.".id_cat=c.id and c.optional='Y' AND c.enabled='Y'");
-			while( $row = $this->db->db_fetch_array($res))
+			$res = $babDB->db_query("select ".BAB_TOPICS_TBL.".id,".BAB_TOPICS_TBL.".id_cat  from ".BAB_TOPICS_TBL." join ".BAB_TOPICS_CATEGORIES_TBL." c where ".BAB_TOPICS_TBL.".id_cat=c.id and c.optional='Y' AND c.enabled='Y'");
+			while( $row = $babDB->db_fetch_array($res))
 				{
 				if( isset($babBody->topview[$row['id']]) )
 					{
@@ -92,19 +94,24 @@ function sectionsList()
 
 		function getnextp()
 			{
+			global $babDB;
 			static $i = 0;
 			if( $i < $this->counta)
 				{
 				$this->altbg = $this->altbg ? false : true;
-				$this->arr = $this->db->db_fetch_array($this->resa);
-				$this->titleval = bab_translate($this->arr['title']);
-				$this->descval = bab_translate($this->arr['description']);
-				$this->idvalue = $this->arr['id']."-1";
-				list($hidden) = $this->db->db_fetch_row($this->db->db_query("select hidden from ".BAB_SECTIONS_STATES_TBL." where type='1' and id_section='".$this->arr['id']."' and  id_user='".$GLOBALS['BAB_SESS_USERID']."'"));
-				if( !isset($hidden) || $hidden == "Y")
-					$this->secchecked = "";
+				$this->arr = $babDB->db_fetch_array($this->resa);
+				$this->titleval = bab_toHtml(bab_translate($this->arr['title']));
+				$this->descval = bab_toHtml(bab_translate($this->arr['description']));
+				$this->idvalue = bab_toHtml($this->arr['id'])."-1";
+				list($hidden) = $babDB->db_fetch_row($babDB->db_query("select hidden from ".BAB_SECTIONS_STATES_TBL." where type='1' and id_section='".$babDB->db_escape_string($this->arr['id'])."' and  id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'"));
+				if( !isset($hidden) || $hidden == 'Y')
+					{
+					$this->secchecked = '';
+					}
 				else
-					$this->secchecked = "checked";
+					{
+					$this->secchecked = 'checked';
+					}
 				$i++;
 				return true;
 				}
@@ -115,15 +122,16 @@ function sectionsList()
 
 		function getnextcat()
 			{
+			global $babDB;
 			static $i = 0;
 			if( $i < $this->countcat)
 				{
 				$this->altbg = $this->altbg ? false : true;
-				$this->arr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$this->arrcatid[$i]."'"));
-				$this->titleval = $this->arr['title'];
-				$this->descval = $this->arr['description'];
-				$this->idvalue = $this->arr['id']."-3";
-				list($hidden) = $this->db->db_fetch_row($this->db->db_query("select hidden from ".BAB_SECTIONS_STATES_TBL." where type='3' and id_section='".$this->arr['id']."' and  id_user='".$GLOBALS['BAB_SESS_USERID']."'"));
+				$this->arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$babDB->db_escape_string($this->arrcatid[$i])."'"));
+				$this->titleval = bab_toHtml($this->arr['title']);
+				$this->descval = bab_toHtml($this->arr['description']);
+				$this->idvalue = bab_toHtml($this->arr['id'])."-3";
+				list($hidden) = $babDB->db_fetch_row($babDB->db_query("select hidden from ".BAB_SECTIONS_STATES_TBL." where type='3' and id_section='".$babDB->db_escape_string($this->arr['id'])."' and  id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'"));
 				if( !isset($hidden) || $hidden == "Y")
 					$this->secchecked = "";
 				else
@@ -138,17 +146,18 @@ function sectionsList()
 
 		function getnext()
 			{
+			global $babDB;
 			static $i = 0;
 			if( $i < $this->count)
 				{
 				$this->altbg = $this->altbg ? false : true;
-				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->titleval = $this->arr['title'];
-				$this->descval = $this->arr['description'];
-				$this->url = $GLOBALS['babUrlScript']."?tg=section&idx=Modify&item=".$this->arr['id'];
-				$this->accessurl = $GLOBALS['babUrlScript']."?tg=section&idx=Groups&item=".$this->arr['id'];
-				$this->idvalue = $this->arr['id']."-2";
-				list($hidden) = $this->db->db_fetch_row($this->db->db_query("select hidden from ".BAB_SECTIONS_STATES_TBL." where type='2' and id_section='".$this->arr['id']."' and  id_user='".$GLOBALS['BAB_SESS_USERID']."'"));
+				$this->arr = $babDB->db_fetch_array($this->res);
+				$this->titleval = bab_toHtml($this->arr['title']);
+				$this->descval = bab_toHtml($this->arr['description']);
+				$this->url = bab_toHtml($GLOBALS['babUrlScript']."?tg=section&idx=Modify&item=".$this->arr['id']);
+				$this->accessurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=section&idx=Groups&item=".$this->arr['id']);
+				$this->idvalue = bab_toHtml($this->arr['id'])."-2";
+				list($hidden) = $babDB->db_fetch_row($babDB->db_query("select hidden from ".BAB_SECTIONS_STATES_TBL." where type='2' and id_section='".$babDB->db_escape_string($this->arr['id'])."' and  id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'"));
 				if( !isset($hidden) || $hidden == "Y")
 					$this->secchecked = "";
 				else
@@ -170,16 +179,14 @@ function sectionsList()
 
 function enableOptionalSections($sections)
 	{
-	global $babBody;
+	global $babBody, $babDB;
 
 	if( !empty($GLOBALS['BAB_SESS_USERID']))
 		{
-		$db = $GLOBALS['babDB'];
-
 		$req = "select distinct s.id, s.optional from ".BAB_SECTIONS_TBL." s, ".BAB_USERS_GROUPS_TBL." ug, ".BAB_SECTIONS_GROUPS_TBL." sg where s.id=sg.id_object and ( (ug.id_group=sg.id_group and ug.id_object='".$GLOBALS['BAB_SESS_USERID']."') or sg.id_group='0' or sg.id_group='1')";
-		$res = $db->db_query($req);
+		$res = $babDB->db_query($req);
 
-		while( $row = $db->db_fetch_array($res))
+		while( $row = $babDB->db_fetch_array($res))
 			{
 			if( count($sections) > 0 && in_array($row['id']."-2", $sections))
 				$hidden = "N";
@@ -188,18 +195,18 @@ function enableOptionalSections($sections)
 			else
 				$hidden = "N";
 
-			$req = "select id from ".BAB_SECTIONS_STATES_TBL." where type='2' and id_section='".$row['id']."' and  id_user='".$GLOBALS['BAB_SESS_USERID']."'";
-			$res2 = $db->db_query($req);
-			if( $res2 && $db->db_num_rows($res2) > 0 )
-				$db->db_query("update ".BAB_SECTIONS_STATES_TBL." set hidden='".$hidden."' where type='2' and id_section='".$row['id']."' and  id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+			$req = "select id from ".BAB_SECTIONS_STATES_TBL." where type='2' and id_section='".$babDB->db_escape_string($row['id'])."' and  id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'";
+			$res2 = $babDB->db_query($req);
+			if( $res2 && $babDB->db_num_rows($res2) > 0 )
+				$babDB->db_query("update ".BAB_SECTIONS_STATES_TBL." set hidden='".$babDB->db_escape_string($hidden)."' where type='2' and id_section='".$babDB->db_escape_string($row['id'])."' and  id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
 			else
-				$db->db_query("insert into ".BAB_SECTIONS_STATES_TBL." (id_section, type, id_user, hidden) values ('".$row['id']."', '2', '".$GLOBALS['BAB_SESS_USERID']."', '".$hidden."')");
+				$babDB->db_query("insert into ".BAB_SECTIONS_STATES_TBL." (id_section, type, id_user, hidden) values ('".$babDB->db_escape_string($row['id'])."', '2', '".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', '".$babDB->db_escape_string($hidden)."')");
 
 			}
 
 		$req = "select * from ".BAB_PRIVATE_SECTIONS_TBL." where id !='1' and id!='5'";
-		$res = $db->db_query($req);
-		while( $row = $db->db_fetch_array($res))
+		$res = $babDB->db_query($req);
+		while( $row = $babDB->db_fetch_array($res))
 			{
 			if( count($sections) > 0 && in_array($row['id']."-1", $sections))
 				$hidden = "N";
@@ -208,17 +215,17 @@ function enableOptionalSections($sections)
 			else
 				$hidden = "N";
 
-			$req = "select id from ".BAB_SECTIONS_STATES_TBL." where type='1' and id_section='".$row['id']."' and  id_user='".$GLOBALS['BAB_SESS_USERID']."'";
-			$res2 = $db->db_query($req);
-			if( $res2 && $db->db_num_rows($res2) > 0 )
-				$db->db_query("update ".BAB_SECTIONS_STATES_TBL." set hidden='".$hidden."' where type='1' and id_section='".$row['id']."' and  id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+			$req = "select id from ".BAB_SECTIONS_STATES_TBL." where type='1' and id_section='".$babDB->db_escape_string($row['id'])."' and  id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'";
+			$res2 = $babDB->db_query($req);
+			if( $res2 && $babDB->db_num_rows($res2) > 0 )
+				$babDB->db_query("update ".BAB_SECTIONS_STATES_TBL." set hidden='".$babDB->db_escape_string($hidden)."' where type='1' and id_section='".$babDB->db_escape_string($row['id'])."' and  id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
 			else
-				$db->db_query("insert into ".BAB_SECTIONS_STATES_TBL." (id_section, type, id_user, hidden) values ('".$row['id']."', '1', '".$GLOBALS['BAB_SESS_USERID']."', '".$hidden."')");
+				$babDB->db_query("insert into ".BAB_SECTIONS_STATES_TBL." (id_section, type, id_user, hidden) values ('".$babDB->db_escape_string($row['id'])."', '1', '".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', '".$babDB->db_escape_string($hidden)."')");
 			}
 
 		$arrcatid = array();
-		$res = $db->db_query("select ".BAB_TOPICS_TBL.".id,".BAB_TOPICS_TBL.".id_cat  from ".BAB_TOPICS_TBL." join ".BAB_TOPICS_CATEGORIES_TBL." where ".BAB_TOPICS_TBL.".id_cat=".BAB_TOPICS_CATEGORIES_TBL.".id");
-		while( $row = $db->db_fetch_array($res))
+		$res = $babDB->db_query("select ".BAB_TOPICS_TBL.".id,".BAB_TOPICS_TBL.".id_cat  from ".BAB_TOPICS_TBL." join ".BAB_TOPICS_CATEGORIES_TBL." where ".BAB_TOPICS_TBL.".id_cat=".BAB_TOPICS_CATEGORIES_TBL.".id");
+		while( $row = $babDB->db_fetch_array($res))
 			{
 			if( isset($babBody->topview[$row['id']]) )
 				{
@@ -229,7 +236,7 @@ function enableOptionalSections($sections)
 
 		for( $i = 0; $i < count($arrcatid); $i++ )
 			{
-			list($optional) = $db->db_fetch_row($db->db_query("select optional from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$arrcatid[$i]."'"));
+			list($optional) = $babDB->db_fetch_row($babDB->db_query("select optional from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$babDB->db_escape_string($arrcatid[$i])."'"));
 			if( count($sections) > 0 && in_array($arrcatid[$i]."-3", $sections))
 				$hidden = "N";
 			else if( $optional == 'Y' )
@@ -237,33 +244,31 @@ function enableOptionalSections($sections)
 			else
 				$hidden = "N";
 
-			$req = "select id from ".BAB_SECTIONS_STATES_TBL." where type='3' and id_section='".$arrcatid[$i]."' and  id_user='".$GLOBALS['BAB_SESS_USERID']."'";
-			$res2 = $db->db_query($req);
-			if( $res2 && $db->db_num_rows($res2) > 0 )
-				$db->db_query("update ".BAB_SECTIONS_STATES_TBL." set hidden='".$hidden."' where type='3' and id_section='".$arrcatid[$i]."' and  id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+			$req = "select id from ".BAB_SECTIONS_STATES_TBL." where type='3' and id_section='".$babDB->db_escape_string($arrcatid[$i])."' and  id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'";
+			$res2 = $babDB->db_query($req);
+			if( $res2 && $babDB->db_num_rows($res2) > 0 )
+				$babDB->db_query("update ".BAB_SECTIONS_STATES_TBL." set hidden='".$babDB->db_escape_string($hidden)."' where type='3' and id_section='".$babDB->db_escape_string($arrcatid[$i])."' and  id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
 			else
-				$db->db_query("insert into ".BAB_SECTIONS_STATES_TBL." (id_section, type, id_user, hidden) values ('".$arrcatid[$i]."', '3', '".$GLOBALS['BAB_SESS_USERID']."', '".$hidden."')");
+				$babDB->db_query("insert into ".BAB_SECTIONS_STATES_TBL." (id_section, type, id_user, hidden) values ('".$babDB->db_escape_string($arrcatid[$i])."', '3', '".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', '".$babDB->db_escape_string($hidden)."')");
 			}
 
 		}
 	}
 
 /* main */
-if( isset($update))
+$idx = bab_rp('idx', 'list');
+if( '' != ($update = bab_pp('update')))
 	{
-	if( $update == "enable")
+	if( $update == 'enable')
 		{
-		if( !isset($sections)) { $sections = array(); }
+		$sections = bab_pp('sections', array());
 		enableOptionalSections($sections);
 		}
 	}
 
-if( !isset($idx))
-	$idx = "list";
-
 switch($idx)
 	{
-	case "list":
+	case 'list':
 	default:
 		$babBody->title = bab_translate("Optional sections list");
 		if( sectionsList() == 0 )
@@ -271,8 +276,8 @@ switch($idx)
 			$babBody->title = bab_translate("There is no section");
 			}
 
-		$babBody->addItemMenu("global", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=options&idx=global");
-		$babBody->addItemMenu("list", bab_translate("Sections"),$GLOBALS['babUrlScript']."?tg=sectopt&idx=list");
+		$babBody->addItemMenu('global', bab_translate("Options"), $GLOBALS['babUrlScript'].'?tg=options&idx=global');
+		$babBody->addItemMenu('list', bab_translate("Sections"),$GLOBALS['babUrlScript'].'?tg=sectopt&idx=list');
 		break;
 	}
 
