@@ -196,7 +196,7 @@ function browse($topics,$cat,$cb)
 					$tmp = str_replace('\n',' ',substr(strip_tags(bab_replace($arr['head'])), 0, 400).' -- '.$this->author);
 					$this->content = str_replace("\r"," ",$tmp);
 					$this->content = str_replace("\"","'",$this->content);
-					$this->titledisp = bab_toHTML($arr['title']);
+					$this->titledisp = bab_toHtml($arr['title']);
 					$tmp = str_replace("\""," ",$arr['title']);
 					$this->title = addslashes($tmp);
 					$this->articleid = $arr['id'];

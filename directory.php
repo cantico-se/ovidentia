@@ -95,7 +95,7 @@ function listUserAds()
 				$this->altbg = !$this->altbg;
 				$arr = $babDB->db_fetch_array($babDB->db_query("select name, description from ".BAB_LDAP_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($this->ldapid[$i])."'"));
 				$this->description = bab_toHtml($arr['description']);
-				$this->url = bab_toHTML($GLOBALS['babUrlScript']."?tg=directory&idx=sldap&id=".$this->ldapid[$i]);
+				$this->url = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=sldap&id=".$this->ldapid[$i]);
 				$this->urlname = bab_toHtml($arr['name']);
 				$i++;
 				return true;
@@ -113,8 +113,8 @@ function listUserAds()
 				$this->altbg = !$this->altbg;
 				$arr = $babDB->db_fetch_array($babDB->db_query("select name, description, id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($this->dbid[$i])."'"));
 				$this->description = bab_toHtml($arr['description']);
-				$this->adminurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=directory&idx=sdb&id=".$this->dbid[$i]);
-				$this->url = bab_toHTML($GLOBALS['babUrlScript']."?tg=directory&idx=sdbovml&directoryid=".$this->dbid[$i]);
+				$this->adminurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=sdb&id=".$this->dbid[$i]);
+				$this->url = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=sdbovml&directoryid=".$this->dbid[$i]);
 				$this->urlname = bab_toHtml($arr['name']);
 				$this->badd = bab_isAccessValid(BAB_DBDIRADD_GROUPS_TBL, $this->dbid[$i]);
 				$this->baddmod = $this->badd || bab_isAccessValid(BAB_DBDIRUPDATE_GROUPS_TBL, $this->dbid[$i]);
@@ -183,7 +183,7 @@ function browseLdapDirectory($id, $pos)
 				$this->allselected = 1;
 			else
 				$this->allselected = 0;
-			$this->allurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=directory&idx=sldap&id=".$id."&pos=");
+			$this->allurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=sldap&id=".$id."&pos=");
 			$this->count = 0;
 			$res = $babDB->db_query("select * , DECODE(password, \"".$babDB->db_escape_string($GLOBALS['BAB_HASH_VAR'])."\") as adpass from ".BAB_LDAP_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'");
 			if( $res && $babDB->db_num_rows($res) > 0)
@@ -241,11 +241,11 @@ function browseLdapDirectory($id, $pos)
 				$this->email = "";
 				$this->sn = bab_toHtml(bab_ldapDecode($this->entries[$o]['sn'][0], $this->ldapdecodetype));
 				$this->givenname = bab_toHtml(bab_ldapDecode($this->entries[$o]['givenname'][0], $this->ldapdecodetype));
-				$this->url = bab_toHTML($GLOBALS['babUrlScript']."?tg=directory&idx=dldap&id=".$this->id."&cn=".urlencode(quoted_printable_decode($this->entries[$o]['cn'][0]))."&pos=".$this->pos);
+				$this->url = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=dldap&id=".$this->id."&cn=".urlencode(quoted_printable_decode($this->entries[$o]['cn'][0]))."&pos=".$this->pos);
 				$this->btel = isset($this->entries[$o]['telephonenumber'][0])?bab_toHtml(bab_ldapDecode($this->entries[$o]['telephonenumber'][0], $this->ldapdecodetype)):"";
 				$this->htel = isset($this->entries[$o]['homephone'][0])?bab_toHtml(bab_ldapDecode($this->entries[$o]['homephone'][0], $this->ldapdecodetype)):"";
 				$this->email = isset($this->entries[$o]['mail'][0])?bab_toHtml(bab_ldapDecode($this->entries[$o]['mail'][0], $this->ldapdecodetype)):"";
-				$this->urlmail = bab_toHTML($GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".$this->accid."&to=".urlencode($this->email));
+				$this->urlmail = bab_toHtml($GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".$this->accid."&to=".urlencode($this->email));
 				$i++;
 				return true;
 				}
@@ -263,7 +263,7 @@ function browseLdapDirectory($id, $pos)
 			if( $k < 26)
 				{
 				$this->selectname = substr($t, $k, 1);
-				$this->selecturl = bab_toHTML($GLOBALS['babUrlScript']."?tg=directory&idx=sldap&id=".$this->id."&pos=".$this->selectname);
+				$this->selecturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=sldap&id=".$this->id."&pos=".$this->selectname);
 				if( $this->pos == $this->selectname)
 					$this->selected = 1;
 				else
@@ -316,13 +316,13 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 				$this->allselected = 0;
 			if ($_GET['idx'] == 'sdbovml')
 				{
-				$this->allurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=directory&idx=sdbovml&directoryid=".$id."&pos=".urlencode(($this->ord == "-"? "":$this->ord))."&xf=".urlencode($this->xf));
+				$this->allurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=sdbovml&directoryid=".$id."&pos=".urlencode(($this->ord == "-"? "":$this->ord))."&xf=".urlencode($this->xf));
 				}
 			else
 				{
-				$this->allurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=directory&idx=sdb&id=".$id."&pos=".urlencode(($this->ord == "-"? "":$this->ord))."&xf=".urlencode($this->xf));
+				$this->allurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=sdb&id=".$id."&pos=".urlencode(($this->ord == "-"? "":$this->ord))."&xf=".urlencode($this->xf));
 				}
-			$this->addurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=directory&idx=adbc&id=".urlencode($id));
+			$this->addurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=adbc&id=".urlencode($id));
 			$this->count = 0;
 			$arr = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
 			$this->idgroup = $arr['id_group'];
@@ -343,7 +343,7 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 			if( bab_isAccessValid(BAB_DBDIRBIND_GROUPS_TBL, $id) && $arr['id_group'] && $arr['id_group'] != BAB_REGISTERED_GROUP )
 				{
 				$this->bassign = true;
-				$this->assignurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=directory&idx=assign&id=".urlencode($id));
+				$this->assignurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=assign&id=".urlencode($id));
 				}
 			$this->bgroup = $arr['id_group'] > 0;
 
@@ -397,11 +397,11 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 
 				if ($_GET['idx'] == 'sdbovml')
 					{
-					$this->colurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=directory&idx=sdbovml&directoryid=".urlencode($this->id)."&pos=".urlencode($this->ord.$this->pos)."&xf=".urlencode($filedname));
+					$this->colurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=sdbovml&directoryid=".urlencode($this->id)."&pos=".urlencode($this->ord.$this->pos)."&xf=".urlencode($filedname));
 					}
 				else
 					{
-					$this->colurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=directory&idx=sdb&id=".$this->id."&pos=".urlencode($this->ord.$this->pos)."&xf=".urlencode($filedname));
+					$this->colurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=sdb&id=".$this->id."&pos=".urlencode($this->ord.$this->pos)."&xf=".urlencode($filedname));
 					}
 				$i++;
 				return true;
@@ -486,18 +486,18 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 				{
 				$this->altbg = !$this->altbg;
 				$this->arrf = $babDB->db_fetch_array($this->res);
-				$this->urlmail = bab_toHTML($GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".urlencode($this->accid)."&to=".urlencode($this->arrf['email']));
+				$this->urlmail = bab_toHtml($GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".urlencode($this->accid)."&to=".urlencode($this->arrf['email']));
 				$this->email = $this->arrf['email'];
 				
 				if ($_GET['idx'] == 'sdbovml')
 					{
-					$this->url = bab_toHTML($GLOBALS['babUrlScript']."?tg=directory&idx=ddbovml&directoryid=".$this->id."&userid=".$this->arrf['id']."&pos=".urlencode($this->ord.$this->pos)."&xf=".urlencode($this->xf));
+					$this->url = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=ddbovml&directoryid=".$this->id."&userid=".$this->arrf['id']."&pos=".urlencode($this->ord.$this->pos)."&xf=".urlencode($this->xf));
 					}
 				else
 					{
-					$this->url = bab_toHTML($GLOBALS['babUrlScript']."?tg=directory&idx=ddb&id=".urlencode($this->id)."&idu=".urlencode($this->arrf['id']));
+					$this->url = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=ddb&id=".urlencode($this->id)."&idu=".urlencode($this->arrf['id']));
 					}
-				$this->urledir = bab_toHTML($GLOBALS['babUrlScript']."?tg=directory&idx=ddbed&id=".urlencode($this->id)."&idu=".urlencode($this->arrf['id']));
+				$this->urledir = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=ddbed&id=".urlencode($this->id)."&idu=".urlencode($this->arrf['id']));
 				$i++;
 				return true;
 				}
@@ -533,11 +533,11 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 				$this->selectname = substr($t, $k, 1);
 				if ($_GET['idx'] == 'sdbovml')
 					{
-					$this->selecturl = bab_toHTML($GLOBALS['babUrlScript']."?tg=directory&idx=sdbovml&directoryid=".urlencode($this->id)."&pos=".urlencode(($this->ord == "-"? "":$this->ord)).$this->selectname."&xf=".urlencode($this->xf));
+					$this->selecturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=sdbovml&directoryid=".urlencode($this->id)."&pos=".urlencode(($this->ord == "-"? "":$this->ord)).$this->selectname."&xf=".urlencode($this->xf));
 					}
 				else
 					{
-					$this->selecturl = bab_toHTML($GLOBALS['babUrlScript']."?tg=directory&idx=sdb&id=".urlencode($this->id)."&pos=".urlencode(($this->ord == "-"? "":$this->ord)).$this->selectname."&xf=".urlencode($this->xf));
+					$this->selecturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=sdb&id=".urlencode($this->id)."&pos=".urlencode(($this->ord == "-"? "":$this->ord)).$this->selectname."&xf=".urlencode($this->xf));
 					}
 				if( $this->pos == $this->selectname)
 					$this->selected = 1;
@@ -571,7 +571,7 @@ function browseDbDirectoryWithOvml($badd)
 		if( !empty($arr['ovml_list']))
 			{
 			$GLOBALS['babWebStat']->addDatabaseDirectory($args['directoryid']);
-			$args['DirectoryUrl'] = bab_toHTML($GLOBALS['babUrlScript']."?tg=directory&idx=sdbovml");
+			$args['DirectoryUrl'] = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=sdbovml");
 			if( !isset($args['order'])) { $args['order'] = 'asc'; }
 			if( !isset($args['orderby'])) { $args['orderby'] = ''; }
 			if( !isset($args['like'])) { $args['like'] = 'A'; }
@@ -615,8 +615,8 @@ function summaryLdapContact($id, $cn)
 				$this->ldap->bind($arr['userdn'], $arr['adpass']);
 				$this->entries = $this->ldap->search($arr['basedn'],"(|(cn=".bab_ldapEncode(ldap_escapefilter($cn), $this->ldapdecodetype)."))");
 				$this->ldap->close();
-				$this->name = bab_toHTML(bab_ldapDecode($this->entries[0]['cn'][0], $this->ldapdecodetype));
-				$this->urlimg = bab_toHTML($GLOBALS['babUrlScript']."?tg=directory&idx=getimgl&id=".$id."&cn=".urlencode($cn));
+				$this->name = bab_toHtml(bab_ldapDecode($this->entries[0]['cn'][0], $this->ldapdecodetype));
+				$this->urlimg = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=getimgl&id=".$id."&cn=".urlencode($cn));
 				}
 			$this->bfieldv = true;
 			$this->showph = true;
@@ -629,8 +629,8 @@ function summaryLdapContact($id, $cn)
 			if( $i < $this->count)
 				{
 				$arr = $babDB->db_fetch_array($this->res);
-				$this->fieldn = bab_toHTML(translateDirectoryField($arr['description']));
-				$this->fieldv = isset($this->entries[0][$arr['x_name']][0]) ? bab_toHTML(bab_ldapDecode($this->entries[0][$arr['x_name']][0], $this->ldapdecodetype)) : '';
+				$this->fieldn = bab_toHtml(translateDirectoryField($arr['description']));
+				$this->fieldv = isset($this->entries[0][$arr['x_name']][0]) ? bab_toHtml(bab_ldapDecode($this->entries[0][$arr['x_name']][0], $this->ldapdecodetype)) : '';
 				$i++;
 				return true;
 				}
@@ -716,7 +716,7 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 				if( $this->arr['plen'] > 0 )
 					{
 					$this->showph = true;
-					$this->urlimg = bab_toHTML($GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$id."&idu=".$idu);
+					$this->urlimg = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$id."&idu=".$idu);
 					$this->delete = bab_translate("Delete this picture");
 					}
 				
@@ -934,7 +934,7 @@ function addDbContact($id, $fields)
 				}
 
 			$this->name = '';
-			$this->urlimg = bab_toHTML($GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$id."&idu=");
+			$this->urlimg = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$id."&idu=");
 			$this->name = bab_translate("Add new contact");
 
 
@@ -1116,7 +1116,7 @@ function importDbFile($id)
 
 		function temp($id)
 			{
-			$this->id = bab_toHTML($id);
+			$this->id = bab_toHtml($id);
 			$this->import = bab_translate("Import");
 			$this->name = bab_translate("File");
 			$this->separator = bab_translate("Separator");
@@ -1434,9 +1434,9 @@ function emptyDb($id)
 			$this->message = bab_translate("Are you sure you want to empty this directory");
 			$this->title = getDirectoryName($id, BAB_DB_DIRECTORIES_TBL);
 			$this->warning = bab_translate("WARNING: This operation will delete all entries"). "!";
-			$this->urlyes = bab_toHTML($GLOBALS['babUrlScript']."?tg=directory&idx=list&id=".$id."&action=Yes");
+			$this->urlyes = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=list&id=".$id."&action=Yes");
 			$this->yes = bab_translate("Yes");
-			$this->urlno = bab_toHTML($GLOBALS['babUrlScript']."?tg=directory&idx=list");
+			$this->urlno = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=list");
 			$this->no = bab_translate("No");
 			}
 		}
@@ -1621,7 +1621,7 @@ function assignList($id, $pos)
 
 					$this->fullname = bab_translate("Lastname"). " " . bab_translate("Firstname");
 
-					$this->fullnameurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=vacadma&idx=lvrp&chg=&pos=".$this->ord.$this->pos."&idvr=".$this->idvr);
+					$this->fullnameurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=vacadma&idx=lvrp&chg=&pos=".$this->ord.$this->pos."&idvr=".$this->idvr);
 					}
 				else
 					{
@@ -1637,7 +1637,7 @@ function assignList($id, $pos)
 						}
 
 					$this->fullname = bab_translate("Firstname"). " " . bab_translate("Lastname");
-					$this->fullnameurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=directory&idx=assign&chg=&pos=".$this->ord.$this->pos."&id=".$id);
+					$this->fullnameurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=assign&chg=&pos=".$this->ord.$this->pos."&id=".$id);
 					}
 				$this->res = $babDB->db_query($req);
 				$this->count = $babDB->db_num_rows($this->res);
@@ -1650,7 +1650,7 @@ function assignList($id, $pos)
 					{
 					$this->allselected = 0;
 					}
-				$this->allurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=directory&idx=assign&pos=&id=".$id);
+				$this->allurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=assign&pos=&id=".$id);
 
 				list($idgroup) = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
 				$res = $babDB->db_query("select id_object from ".BAB_USERS_GROUPS_TBL." where id_group='".$babDB->db_escape_string($idgroup)."'");
@@ -1683,7 +1683,7 @@ function assignList($id, $pos)
 					$this->altbg = !$this->altbg;
 
 					
-					$this->url = bab_toHTML($GLOBALS['babUrlScript']."?tg=directory&idx=assign&id=".$this->id."&pos=".$this->ord.$this->pos);
+					$this->url = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=assign&id=".$this->id."&pos=".$this->ord.$this->pos);
 					if( $this->ord == '-' )
 						{
 						$this->urlname = bab_toHtml(bab_composeUserName($this->arr['lastname'],$this->arr['firstname']));
@@ -1693,7 +1693,7 @@ function assignList($id, $pos)
 						$this->urlname = bab_toHtml(bab_composeUserName($this->arr['firstname'],$this->arr['lastname']));
 						}
 
-					$this->userid = bab_toHTML($this->arr['id']);
+					$this->userid = bab_toHtml($this->arr['id']);
 					}
 				else
 					{
@@ -1716,7 +1716,7 @@ function assignList($id, $pos)
 				$this->selectname = $t[$k];
 				if( $this->count )
 					{
-					$this->selecturl = bab_toHTML($GLOBALS['babUrlScript']."?tg=directory&idx=assign&pos=".$this->ord.$this->selectname."&id=".$this->id);
+					$this->selecturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=assign&pos=".$this->ord.$this->selectname."&id=".$this->id);
 					if( $this->pos == $this->selectname)
 						{
 						$this->selected = 1;
@@ -1775,7 +1775,7 @@ function confirmAssignEntry($id, $fields, $idauser, $idatype)
 			$this->fields =& $fields;
 			$arr = $babDB->db_fetch_array($babDB->db_query("select ut.nickname,det.sn, det.givenname, det.mn from ".BAB_DBDIR_ENTRIES_TBL." det left join ".BAB_USERS_TBL." ut on ut.id = det.id_user where id_user='".$babDB->db_escape_string($idauser)."' and id_directory='0'"));
 			list($this->directoryname) = $babDB->db_fetch_row($babDB->db_query("select name from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
-			$this->directoryname = bab_toHTML($this->directoryname);
+			$this->directoryname = bab_toHtml($this->directoryname);
 			$this->fullnametxt = bab_translate("Fullname");
 			$this->nicknametxt = bab_translate("Nickname");
 			$this->usernickname = bab_toHtml($arr['nickname']);

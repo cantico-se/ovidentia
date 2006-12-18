@@ -56,7 +56,7 @@ function listUserBaskets()
 			if( $i < $this->count)
 				{
 				$this->altbg = !$this->altbg;
-				$this->itemname = bab_toHTML($this->arrbaskets[$i]['name']);
+				$this->itemname = bab_toHtml($this->arrbaskets[$i]['name']);
 				$this->itemurl = '?tg=stat&idx=basket&idbasket=' . $this->arrbaskets[$i]['id'];
 				$i++;
 				return true;

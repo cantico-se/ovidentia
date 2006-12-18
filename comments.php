@@ -78,7 +78,7 @@ function listComments($topics, $article)
 					}
 
 				
-				$this->commenttitle = bab_toHTML($arr['subject']);
+				$this->commenttitle = bab_toHtml($arr['subject']);
 				$this->commentbody = bab_replace($arr['message']);
 				$i++;
 				return true;
@@ -127,11 +127,11 @@ function addComment($topics, $article, $subject, $message, $com="")
 			$this->topics = bab_toHtml($topics);
 			$this->subjectval = bab_toHtml($subject);
 
-			$this->com = bab_toHTML($com);
+			$this->com = bab_toHtml($com);
 			$req = "select title from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($article)."'";
 			$res = $babDB->db_query($req);
 			$arr = $babDB->db_fetch_array($res);
-			$this->titleval = bab_toHTML($arr['title']);
+			$this->titleval = bab_toHtml($arr['title']);
 			$this->editor = bab_editor($message, 'message', 'comcreate');
 
 			$arr = $babDB->db_fetch_array($babDB->db_query("select idsacom from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($topics)."'"));

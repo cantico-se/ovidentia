@@ -101,7 +101,7 @@ function listThreads($forum, $active, $pos)
 			$this->active = $active;
 			$this->altbg = true;
 
-			$this->search_url = bab_toHTML($GLOBALS['babUrlScript'].'?tg=forumsuser&idx=search&forum='.$forum);
+			$this->search_url = bab_toHtml($GLOBALS['babUrlScript'].'?tg=forumsuser&idx=search&forum='.$forum);
 
 			$this->forums = $babBody->get_forums();
 
@@ -155,23 +155,23 @@ function listThreads($forum, $active, $pos)
 				{
 				$this->altbg = !$this->altbg;
 				$this->arrthread = $babDB->db_fetch_array($this->res);
-				$this->thread_views = bab_toHTML($this->arrthread['views']);
+				$this->thread_views = bab_toHtml($this->arrthread['views']);
 				$res = $babDB->db_query("select * from ".BAB_POSTS_TBL." where id='".$babDB->db_escape_string($this->arrthread['post'])."'");
 				$ar = $babDB->db_fetch_array($res);
 
 				
-				$this->subjecturl = bab_toHTML($GLOBALS['babUrlScript'].'?tg=posts&idx=List&flat='.$this->flat.'&forum='.$this->forum.'&thread='.$this->arrthread['id'].'&views=1');
-				$this->subjectname = bab_toHTML($ar['subject']);
+				$this->subjecturl = bab_toHtml($GLOBALS['babUrlScript'].'?tg=posts&idx=List&flat='.$this->flat.'&forum='.$this->forum.'&thread='.$this->arrthread['id'].'&views=1');
+				$this->subjectname = bab_toHtml($ar['subject']);
 				$this->subjecturlflat  = $this->subjecturl.'&flat='.$this->flat;
 
-				$this->threadauthor = bab_toHTML(bab_getUserName($this->arrthread['starter']));
+				$this->threadauthor = bab_toHtml(bab_getUserName($this->arrthread['starter']));
 
 				$this->threadauthordetailsurl = '';
 				if( $this->arrthread['starter'] != 0 && $this->bdisplayauhtordetails == 'Y')
 					{
 					if( bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $this->iddir))
 						{
-						$this->threadauthordetailsurl = bab_toHTML($GLOBALS['babUrlScript'].'?tg=directory&idx=ddbovml&directoryid='.$this->iddir.'&userid='.$this->arrthread['starter']);	
+						$this->threadauthordetailsurl = bab_toHtml($GLOBALS['babUrlScript'].'?tg=directory&idx=ddbovml&directoryid='.$this->iddir.'&userid='.$this->arrthread['starter']);	
 						}
 					}
 
@@ -186,7 +186,7 @@ function listThreads($forum, $active, $pos)
 						if( $res && $babDB->db_num_rows($res) > 0 )
 							{
 							$rr = $babDB->db_fetch_array($res);
-							$this->threadauthoremail = bab_toHTML($rr['email']);
+							$this->threadauthoremail = bab_toHtml($rr['email']);
 							}
 						}
 					}
@@ -194,7 +194,7 @@ function listThreads($forum, $active, $pos)
 				$req = "select count(*) as total from ".BAB_POSTS_TBL." where id_thread='".$babDB->db_escape_string($this->arrthread['id'])."' and confirmed='Y'";
 				$res = $babDB->db_query($req);
 				$row = $babDB->db_fetch_array($res);
-				$this->replies = bab_toHTML(($row['total'] > 0 ? ($row['total'] -1): 0));
+				$this->replies = bab_toHtml(($row['total'] > 0 ? ($row['total'] -1): 0));
 				if( $row['total'] == 0 && $this->moderator == false && ($this->bupdateauthor == 'N' || ($BAB_SESS_USERID && $BAB_SESS_USERID != $this->arrthread['starter']) )  )
 					{
 					$this->disabled = 1;
@@ -250,14 +250,14 @@ function listThreads($forum, $active, $pos)
 				
 				
 
-				$this->lastpostdate = bab_toHTML(bab_shortDate(bab_mktime($this->arrthread['lastpostdate']), true));
+				$this->lastpostdate = bab_toHtml(bab_shortDate(bab_mktime($this->arrthread['lastpostdate']), true));
 
 				$this->lastpostauthordetailsurl = '';
 				if( $this->arrthread['id_author'] != 0 && $this->bdisplayauhtordetails == 'Y')
 					{
 					if( bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $this->iddir))
 						{
-						$this->lastpostauthordetailsurl = bab_toHTML($GLOBALS['babUrlScript'].'?tg=directory&idx=ddbovml&directoryid='.$this->iddir.'&userid='.$this->arrthread['id_author']);	
+						$this->lastpostauthordetailsurl = bab_toHtml($GLOBALS['babUrlScript'].'?tg=directory&idx=ddbovml&directoryid='.$this->iddir.'&userid='.$this->arrthread['id_author']);	
 						}
 					}
 
@@ -272,7 +272,7 @@ function listThreads($forum, $active, $pos)
 						if( $res && $babDB->db_num_rows($res) > 0 )
 							{
 							$rr = $babDB->db_fetch_array($res);
-							$this->lastpostauthoremail = bab_toHTML($rr['email']);
+							$this->lastpostauthoremail = bab_toHtml($rr['email']);
 							}
 						}
 					}
@@ -285,8 +285,8 @@ function listThreads($forum, $active, $pos)
 					{
 					$this->lastpostauthor = $this->arrthread['author'];
 					}
-				$this->lastpostauthor = bab_toHTML($this->lastpostauthor);
-				$this->lastposturl = bab_toHTML($GLOBALS['babUrlScript'].'?tg=posts&flat='.$this->flat.'&forum='.$this->forum.'&thread='.$this->arrthread['id'].'&pos='.$postpos.'#p'.$this->arrthread['lastpost']);
+				$this->lastpostauthor = bab_toHtml($this->lastpostauthor);
+				$this->lastposturl = bab_toHtml($GLOBALS['babUrlScript'].'?tg=posts&flat='.$this->flat.'&forum='.$this->forum.'&thread='.$this->arrthread['id'].'&pos='.$postpos.'#p'.$this->arrthread['lastpost']);
 
 				$this->brecent = false;
 				if( mktime() - bab_mktime($this->arrthread['lastpostdate']) <= DELTA_TIME )
@@ -312,9 +312,9 @@ function listThreads($forum, $active, $pos)
 			static $i = 0;
 			if( $i < $this->countgotothreadpages)
 				{
-				$this->page = bab_toHTML($this->gotothreadpages[$i][0]);
+				$this->page = bab_toHtml($this->gotothreadpages[$i][0]);
 				$this->bpageurl = $this->gotothreadpages[$i][2];
-				$this->pageurl = bab_toHTML($this->gotothreadurl.$this->gotothreadpages[$i][1]);
+				$this->pageurl = bab_toHtml($this->gotothreadurl.$this->gotothreadpages[$i][1]);
 				$i++;
 				return true;
 				}
@@ -330,9 +330,9 @@ function listThreads($forum, $active, $pos)
 			static $i = 0;
 			if( $i < $this->countpages)
 				{
-				$this->page = bab_toHTML($this->gotopages[$i]['page']);
+				$this->page = bab_toHtml($this->gotopages[$i]['page']);
 				$this->bpageurl = $this->gotopages[$i]['url'];
-				$this->pageurl = bab_toHTML($this->gotourl.$this->gotopages[$i]['pagepos']);
+				$this->pageurl = bab_toHtml($this->gotourl.$this->gotopages[$i]['pagepos']);
 				$i++;
 				return true;
 				}
@@ -347,8 +347,8 @@ function listThreads($forum, $active, $pos)
 			static $i = 0;
 			if( list($key, $val) = each($this->forums))
 				{
-				$this->forumid = bab_toHTML($key);
-				$this->forumname = bab_toHTML($val['name']);
+				$this->forumid = bab_toHtml($key);
+				$this->forumname = bab_toHtml($val['name']);
 				$i++;
 				return true;
 				}
@@ -394,8 +394,8 @@ function newThread($forum)
 			$this->t_files = bab_translate("Dependent files");
 			$this->t_add_field = bab_translate("Add field");
 			$this->t_remove_field = bab_translate("Remove field");
-			$this->forum = bab_toHTML($forum);
-			$this->flat = bab_toHTML(bab_rp('flat', 1));
+			$this->forum = bab_toHtml($forum);
+			$this->flat = bab_toHtml(bab_rp('flat', 1));
 
 			if( !isset($_POST['subject']))
 				{
@@ -403,7 +403,7 @@ function newThread($forum)
 				}
 			else
 				{
-				$this->subjectval = bab_toHTML(bab_pp('subject', ''));
+				$this->subjectval = bab_toHtml(bab_pp('subject', ''));
 				}
 
 			if( empty($BAB_SESS_USER))
@@ -413,12 +413,12 @@ function newThread($forum)
 			else
 				{
 				$this->anonyme = 0;
-				$this->username = bab_toHTML($BAB_SESS_USER);
+				$this->username = bab_toHtml($BAB_SESS_USER);
 				}
 			$message = isset($_POST['message']) ? $_POST['message'] : '';
 			$this->editor = bab_editor($message, 'message', 'threadcr');
 			$this->allow_post_files = bab_isAccessValid(BAB_FORUMSFILES_GROUPS_TBL,$forum);
-			$this->maxfilesize = bab_toHTML($babBody->babsite['maxfilesize']);
+			$this->maxfilesize = bab_toHtml($babBody->babsite['maxfilesize']);
 
 			if( bab_isForumModerated($forum))
 				$this->noteforum = bab_translate("Note: Posts are moderate and consequently your post will not be visible immediately");

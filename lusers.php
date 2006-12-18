@@ -127,9 +127,9 @@ function browseUsers($pos, $cb)
 					{
 					$this->urlname = $this->arr['firstname'].' '.$this->arr['lastname'];
 					}
-				$this->urlname = bab_toHTML($this->urlname);
+				$this->urlname = bab_toHtml($this->urlname);
 				$this->userid = bab_toHtml($this->arr['id']);
-				$this->nicknameval = bab_toHTML($this->arr['nickname']);
+				$this->nicknameval = bab_toHtml($this->arr['nickname']);
 				$this->altbg = !$this->altbg;
 				$i++;
 				return true;

@@ -808,11 +808,11 @@ function bab_previewArticleDraft($idart, $echo=0)
 			$res = $babDB->db_query("select adt.* from ".BAB_ART_DRAFTS_TBL." adt where adt.id='".$babDB->db_escape_string($idart)."'");
 			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
-				$this->idart = bab_toHTML($idart);
+				$this->idart = bab_toHtml($idart);
 				$this->filesval = bab_translate("Associated documents");
 				$this->notesval = bab_translate("Associated comments");
 				$arr = $babDB->db_fetch_array($res);
-				$this->titleval = bab_toHTML(bab_replace($arr['title']));
+				$this->titleval = bab_toHtml(bab_replace($arr['title']));
 				$this->headval = bab_replace($arr['head']);
 				$this->bodyval = bab_replace($arr['body']);
 				
@@ -838,8 +838,8 @@ function bab_previewArticleDraft($idart, $echo=0)
 			if( $i < $this->countf)
 				{
 				$arr = $babDB->db_fetch_array($this->resf);
-				$this->urlfile = bab_toHTML($GLOBALS['babUrlScript']."?tg=artedit&idx=getf&idart=".$this->idart."&idf=".$arr['id']);
-				$this->filename = bab_toHTML($arr['name']);
+				$this->urlfile = bab_toHtml($GLOBALS['babUrlScript']."?tg=artedit&idx=getf&idart=".$this->idart."&idf=".$arr['id']);
+				$this->filename = bab_toHtml($arr['name']);
 				$i++;
 				return true;
 				}
@@ -854,9 +854,9 @@ function bab_previewArticleDraft($idart, $echo=0)
 			if( $i < $this->countn)
 				{
 				$arr = $babDB->db_fetch_array($this->resn);
-				$this->note = str_replace("\n", "<br>", bab_toHTML($arr['content']));
-				$this->author = bab_toHTML(bab_getUserName($arr['id_author']));
-				$this->date = bab_toHTML(bab_strftime(bab_mktime($arr['date_note'])));
+				$this->note = str_replace("\n", "<br>", bab_toHtml($arr['content']));
+				$this->author = bab_toHtml(bab_getUserName($arr['id_author']));
+				$this->date = bab_toHtml(bab_strftime(bab_mktime($arr['date_note'])));
 				$this->altbg = !$this->altbg;
 				$i++;
 				return true;
@@ -900,7 +900,7 @@ function bab_previewComment($com)
 			$req = "select * from ".BAB_COMMENTS_TBL." where id='".$babDB->db_escape_string($com)."'";
 			$this->res = $babDB->db_query($req);
 			$this->arr = $babDB->db_fetch_array($this->res);
-			$this->title = bab_toHTML(bab_replace($this->arr['subject']));
+			$this->title = bab_toHtml(bab_replace($this->arr['subject']));
 			$this->content = bab_replace($this->arr['message']);
 			}
 		}

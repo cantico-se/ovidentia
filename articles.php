@@ -171,7 +171,7 @@ function listArticles($topics)
 			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $this->topics))
 				{
 				$this->submittxt = bab_translate("Submit");
-				$this->bsubmiturl = bab_toHTML($GLOBALS['babUrlScript']."?tg=articles&idx=Submit&topics=".$this->topics);
+				$this->bsubmiturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=Submit&topics=".$this->topics);
 				$this->bsubmit = true;
 				}
 			else
@@ -180,7 +180,7 @@ function listArticles($topics)
 				}
 
 			/* template variables */
-			$this->babtpl_topicid = bab_toHTML($this->topics);
+			$this->babtpl_topicid = bab_toHtml($this->topics);
 			}
 
 		function getnext(&$skip)
@@ -196,7 +196,7 @@ function listArticles($topics)
 					$i++;
 					return true;
 					}
-				$this->articleid = bab_toHTML($this->arr['id']);
+				$this->articleid = bab_toHtml($this->arr['id']);
 				if( $this->arr['id_author'] != 0 && (($author = bab_getUserName($this->arr['id_author'])) != ""))
 					{
 					$this->articleauthor = bab_toHtml($author);
@@ -216,17 +216,17 @@ function listArticles($topics)
 						$this->bmodifyurl = false;
 						$this->modifybytxt = bab_translate("In modification by");
 						$this->modifyauthor	= bab_toHtml(bab_getUserName($rr['id_author']));
-						$this->modifyurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=articles&idx=log&topics=".$this->topics."&article=".$this->arr['id']);
+						$this->modifyurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=log&topics=".$this->topics."&article=".$this->arr['id']);
 						if( $rr['id_author'] == $GLOBALS['BAB_SESS_USERID'] )
 							{
 							$this->modifydrafttxt = bab_translate("Edit draft");
-							$this->modifydrafturl = bab_toHTML($GLOBALS['babUrlScript']."?tg=artedit&idx=s1&idart=".$rr['id']."&rfurl=".urlencode($GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$this->topics));
+							$this->modifydrafturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=artedit&idx=s1&idart=".$rr['id']."&rfurl=".urlencode($GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$this->topics));
 							}
 						}
 					else
 						{
 						$this->bmodifyurl = true;
-						$this->modifyurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$this->topics."&article=".$this->arr['id']);
+						$this->modifyurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$this->topics."&article=".$this->arr['id']);
 						}
 					}
 				else
@@ -237,22 +237,22 @@ function listArticles($topics)
 
 				if( $this->bmanager )
 					{
-					$this->delurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=articles&idx=Delete&topics=".$this->topics."&article=".$this->arr['id']);
+					$this->delurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=Delete&topics=".$this->topics."&article=".$this->arr['id']);
 					}
 
 				/* template variables */
-				$this->babtpl_authorid = bab_toHTML($this->arr['id_author']);
+				$this->babtpl_authorid = bab_toHtml($this->arr['id_author']);
 
 				$this->articledate = bab_toHtml(bab_strftime(bab_mktime($this->arr['date_modification'])));
 				$this->author = bab_translate("by") . " ". bab_toHtml($this->articleauthor). " - ". $this->articledate;
 				$this->content = bab_replace($this->arr['head']);
 				$this->title = bab_toHtml(stripslashes($this->arr['title']));
-				$this->topictitle = bab_toHTML(bab_getCategoryTitle($this->arr['id_topic']));
-				$this->printurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=articles&idx=Print&topics=".$this->topics."&article=".$this->arr['id']);
+				$this->topictitle = bab_toHtml(bab_getCategoryTitle($this->arr['id_topic']));
+				$this->printurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=Print&topics=".$this->topics."&article=".$this->arr['id']);
 				$this->bbody = $this->arr['blen'];
 				if( $this->bbody > 0 )
 					{
-					$this->moreurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$this->topics."&article=".$this->arr['id']);
+					$this->moreurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$this->topics."&article=".$this->arr['id']);
 					}
 				else
 					{
@@ -263,7 +263,7 @@ function listArticles($topics)
 
 				if( $totalc > 0 || $this->bcomment)
 					{
-					$this->commentsurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$this->topics."&article=".$this->arr['id']);
+					$this->commentsurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$this->topics."&article=".$this->arr['id']);
 					if( $totalc > 0 )
 						{
 						$this->commentstxt = bab_translate("Comments")."&nbsp;(".$totalc.")";
@@ -304,7 +304,7 @@ function listArticles($topics)
 			if( $i < $this->countf)
 				{
 				$arr = $babDB->db_fetch_array($this->resf);
-				$this->docurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=articles&idx=getf&topics=".$this->topics."&idf=".$arr['id']);
+				$this->docurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=getf&topics=".$this->topics."&idf=".$arr['id']);
 				$this->docname = bab_toHtml($arr['name']);
 				$this->docdesc = bab_toHtml($arr['description']);
 				$i++;
@@ -797,7 +797,7 @@ function articlePrint($topics, $article)
 				$this->arr = $babDB->db_fetch_array($this->res);
 				$this->head = bab_replace($this->arr['head']);
 				$this->content = bab_replace($this->arr['body']);
-				$this->title = bab_toHTML($this->arr['title']);
+				$this->title = bab_toHtml($this->arr['title']);
 				$this->url = "<a href=\"".$GLOBALS['babUrl']."\">".$GLOBALS['babSiteName']."</a>";
 				}
 			$this->print_head = bab_translate('With/without introduction');
@@ -844,11 +844,11 @@ function modifyArticle($topics, $article)
 
 			if(!isset($rfurl))
 				{
-				$this->rfurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=articles&idx=articles&topics=".urlencode($topics));
+				$this->rfurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=articles&topics=".urlencode($topics));
 				}
 			else
 				{
-				$this->rfurl = bab_toHTML($rfurl);
+				$this->rfurl = bab_toHtml($rfurl);
 				}
 				
 			if( $access )
@@ -860,11 +860,11 @@ function modifyArticle($topics, $article)
 				if( $access && $res && $babDB->db_num_rows($res) > 0 )
 					{
 					$arr = $babDB->db_fetch_array($res);
-					$this->article = bab_toHTML($article);
-					$this->topics = bab_toHTML($topics);
+					$this->article = bab_toHtml($article);
+					$this->topics = bab_toHtml($topics);
 					$this->arttxt = bab_translate("Article");
 					$this->pathtxt = bab_translate("Path");
-					$this->arttitle = bab_toHTML($arr['title']);
+					$this->arttitle = bab_toHtml($arr['title']);
 					$this->pathname = viewCategoriesHierarchy_txt($arr['id_topic']);
 					if( !isset($arr['id_modifier']) || empty($arr['id_modifier']) )
 						{
@@ -941,7 +941,7 @@ function viewArticleLog($topics, $article, $pos)
 					{
 					$this->editdrafttxt = bab_translate("Edit");
 					$rfurl = !empty($rfurl) ? urlencode($rfurl) : urlencode($GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics);
-					$this->editdrafturl = bab_toHTML($GLOBALS['babUrlScript']."?tg=artedit&idx=s1&idart=".$arr['id']."&rfurl=".$rfurl);
+					$this->editdrafturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=artedit&idx=s1&idart=".$arr['id']."&rfurl=".$rfurl);
 					}
 				else
 					{
@@ -964,21 +964,21 @@ function viewArticleLog($topics, $article, $pos)
 				{
 				if( $pos > 0)
 					{
-					$this->topurl = bab_toHTML($url."&pos=0");
+					$this->topurl = bab_toHtml($url."&pos=0");
 					$this->topname = "&lt;&lt;";
 					}
 
 				$next = $pos - BAB_ART_MAXLOGS;
 				if( $next >= 0)
 					{
-					$this->prevurl = bab_toHTML($url."&pos=".$next);
+					$this->prevurl = bab_toHtml($url."&pos=".$next);
 					$this->prevname = "&lt;";
 					}
 
 				$next = $pos + BAB_ART_MAXLOGS;
 				if( $next < $total)
 					{
-					$this->nexturl = bab_toHTML($url."&pos=".$next);
+					$this->nexturl = bab_toHtml($url."&pos=".$next);
 					$this->nextname = "&gt;";
 					if( $next + BAB_ART_MAXLOGS < $total)
 						{
@@ -988,7 +988,7 @@ function viewArticleLog($topics, $article, $pos)
 						{
 						$bottom = $next;
 						}
-					$this->bottomurl = bab_toHTML($url."&pos=".$bottom);
+					$this->bottomurl = bab_toHtml($url."&pos=".$bottom);
 					$this->bottomname = "&gt;&gt;";
 					}
 				}
@@ -1001,7 +1001,7 @@ function viewArticleLog($topics, $article, $pos)
 
 			$this->artpath = viewCategoriesHierarchy_txt($topics);
 			list($this->arttitle) = $babDB->db_fetch_row($babDB->db_query("select title from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($article)."'"));
-			$this->arttitle = bab_toHTML($this->arttitle);
+			$this->arttitle = bab_toHtml($this->arttitle);
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
 			}
@@ -1014,8 +1014,8 @@ function viewArticleLog($topics, $article, $pos)
 				{
 				global $babDB;
 				$arr = $babDB->db_fetch_array($this->res);
-				$this->datelock = bab_toHTML(bab_strftime(bab_mktime($arr['date_log']), true));
-				$this->author = bab_toHTML(bab_getUserName($arr['id_author']));
+				$this->datelock = bab_toHtml(bab_strftime(bab_mktime($arr['date_log']), true));
+				$this->author = bab_toHtml(bab_getUserName($arr['id_author']));
 				switch($arr['action_log'])
 					{
 					case 'lock': $this->action = bab_translate("Lock"); break;
@@ -1025,7 +1025,7 @@ function viewArticleLog($topics, $article, $pos)
 					case 'accepted': $this->action = bab_translate("Accepted"); break;
 					default: $this->action = ""; break;
 					}
-				$this->comment = str_replace("\n", "<br>", bab_toHTML($arr['art_log']));
+				$this->comment = str_replace("\n", "<br>", bab_toHtml($arr['art_log']));
 				$i++;
 				return true;
 				}
@@ -1073,7 +1073,7 @@ function viewArticle($article)
 			$req = "select * from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($article)."'";
 			$this->res = $babDB->db_query($req);
 			$this->arr = $babDB->db_fetch_array($this->res);
-			$this->article_title = bab_toHTML($this->arr['title']);
+			$this->article_title = bab_toHtml($this->arr['title']);
 			$this->countf = 0;
 			$this->countcom = 0;
 			if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $this->arr['id_topic']) && bab_articleAccessByRestriction($this->arr['restriction']))
@@ -1111,8 +1111,8 @@ function viewArticle($article)
 			if( $i < $this->countf)
 				{
 				$arr = $babDB->db_fetch_array($this->resf);
-				$this->docurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=articles&idx=getf&topics=".$this->arr['id_topic']."&article=".$this->arr['id']."&idf=".$arr['id']);
-				$this->docname = bab_toHTML($arr['name']);
+				$this->docurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=getf&topics=".$this->arr['id_topic']."&article=".$this->arr['id']."&idf=".$arr['id']);
+				$this->docname = bab_toHtml($arr['name']);
 				$i++;
 				return true;
 				}
@@ -1131,7 +1131,7 @@ function viewArticle($article)
 				{
 				$arr = $babDB->db_fetch_array($this->rescom);
 				$this->altbg = !$this->altbg;
-				$this->commentdate = bab_toHTML(bab_strftime(bab_mktime($arr['date'])));
+				$this->commentdate = bab_toHtml(bab_strftime(bab_mktime($arr['date'])));
 				if( $arr['id_author'] )
 					{
 					$this->authorname = bab_getUserName($arr['id_author']);
@@ -1140,8 +1140,8 @@ function viewArticle($article)
 					{
 					$this->authorname = $arr['name'];
 					}
-				$this->authorname = bab_toHTML($this->authorname);
-				$this->commenttitle = bab_toHTML($arr['subject']);
+				$this->authorname = bab_toHtml($this->authorname);
+				$this->commenttitle = bab_toHtml($arr['subject']);
 				$this->commentbody = bab_replace($arr['message']);
 				$i++;
 				return true;
@@ -1250,7 +1250,7 @@ function outPutTagsToJson()
 	$ret = array();
 	while( $arr = $babDB->db_fetch_array($res))
 	{
-		$ret[] = '{"id": "'.$arr['id'].'", "tagname": "'.bab_toHTML($arr['tag_name']).'"}';		
+		$ret[] = '{"id": "'.$arr['id'].'", "tagname": "'.bab_toHtml($arr['tag_name']).'"}';		
 	}
 
 	print '['.join(',', $ret).']';

@@ -96,7 +96,7 @@ function notesList($id)
 				$this->editurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=note&idx=Modify&item=".$this->arr['id']);
 				$this->delurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=note&idx=Delete&item=".$this->arr['id']);
 				$this->note_content = bab_replace($this->arr['content']);
-				$this->note_date = bab_toHTML(bab_strftime(bab_mktime($this->arr['date'])));
+				$this->note_date = bab_toHtml(bab_strftime(bab_mktime($this->arr['date'])));
 				$i++;
 				return true;
 				}

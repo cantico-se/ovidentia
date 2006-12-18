@@ -125,9 +125,9 @@ function browseUsers($pos, $cb)
 					$this->urlname = bab_composeUserName($this->arr['lastname'],$this->arr['firstname']);
 				else
 					$this->urlname = bab_composeUserName($this->arr['firstname'],$this->arr['lastname']);
-				$this->urlname = bab_toHTML($this->urlname);
+				$this->urlname = bab_toHtml($this->urlname);
 				$this->userid = $this->arr['id'];
-				$this->nicknameval = bab_toHTML($this->arr['nickname']);
+				$this->nicknameval = bab_toHtml($this->arr['nickname']);
 				$this->altbg = !$this->altbg;
 				$i++;
 				return true;
@@ -243,9 +243,9 @@ function browseArticlesAuthors($pos, $cb)
 				else
 					$this->urlname = bab_composeUserName($this->arr['firstname'],$this->arr['lastname']);
 
-				$this->urlname = bab_toHTML($this->urlname);
+				$this->urlname = bab_toHtml($this->urlname);
 				$this->userid = $this->arr['id'];
-				$this->nicknameval = bab_toHTML($this->arr['nickname']);
+				$this->nicknameval = bab_toHtml($this->arr['nickname']);
 				$this->altbg = !$this->altbg;
 				$i++;
 				return true;

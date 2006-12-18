@@ -223,7 +223,7 @@ function displayStatisticPanel($idx)
 				if( isset($this->itemarray[$this->row][$i]))
 					{
 					$item =& $this->itemarray[$this->row][$i];
-					$this->itemurltxt = bab_toHTML($item['item']);
+					$this->itemurltxt = bab_toHtml($item['item']);
 					$this->itemurl = $item['url'];
 					$this->itemtreeviewurl = isset($item['treeviewurl']) ? $item['treeviewurl'] : '';
 					$this->popup = isset($item['popup']);

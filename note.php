@@ -50,7 +50,7 @@ function notesModify($id)
 			$this->modify = bab_translate("Update Note");
 			$res = $babDB->db_query("select * from ".BAB_NOTES_TBL." where id='".$babDB->db_escape_string($id)."' and id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."'");
 			$arr = $babDB->db_fetch_array($res);
-			$this->note_id = bab_toHTML($arr['id']);
+			$this->note_id = bab_toHtml($arr['id']);
 			$this->editor = bab_editor($arr['content'], 'content', 'notemod');	
 			}
 		}

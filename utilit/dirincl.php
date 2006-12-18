@@ -87,7 +87,7 @@ function UBrowseDbDirectory($id, $pos, $xf, $cb)
 				$this->allselected = 1;
 			else
 				$this->allselected = 0;
-			$this->allurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=directory&idx=usdb&id=".$id."&pos=".($this->ord == "-"? "":$this->ord)."&xf=".$this->xf."&cb=".urlencode($cb));
+			$this->allurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=usdb&id=".$id."&pos=".($this->ord == "-"? "":$this->ord)."&xf=".$this->xf."&cb=".urlencode($cb));
 			$this->count = 0;
 			$arr = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
 			if(bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $id))
@@ -133,7 +133,7 @@ function UBrowseDbDirectory($id, $pos, $xf, $cb)
 					$this->select[] = "lj".$arr['id'].'.field_value '."babdirf".$arr['id']."";
 					}
 
-				$this->colurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=directory&idx=usdb&id=".$this->id."&pos=".$this->ord.$this->pos."&xf=".$filedname."&cb=".urlencode($this->cb));
+				$this->colurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=usdb&id=".$this->id."&pos=".$this->ord.$this->pos."&xf=".$filedname."&cb=".urlencode($this->cb));
 				$i++;
 				return true;
 				}
@@ -203,7 +203,7 @@ function UBrowseDbDirectory($id, $pos, $xf, $cb)
 				{
 				$this->altbg = $this->altbg ? false : true;
 				$this->arrf = $babDB->db_fetch_array($this->res);
-				$this->userid = bab_toHTML($this->arrf['id']);
+				$this->userid = bab_toHtml($this->arrf['id']);
 				$this->firstlast = bab_composeUserName(bab_toHtml($this->arrf['givenname']),bab_toHtml($this->arrf['sn']));
 				$this->firstlast = str_replace("'", "\'", $this->firstlast);
 				$this->firstlast = str_replace('"', "'+String.fromCharCode(34)+'",$this->firstlast);
@@ -239,7 +239,7 @@ function UBrowseDbDirectory($id, $pos, $xf, $cb)
 			if( $k < 26)
 				{
 				$this->selectname = substr($t, $k, 1);
-				$this->selecturl = bab_toHTML($GLOBALS['babUrlScript']."?tg=directory&idx=usdb&id=".$this->id."&pos=".($this->ord == "-"? "":$this->ord).$this->selectname."&xf=".$this->xf."&cb=".urlencode($this->cb));
+				$this->selecturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=usdb&id=".$this->id."&pos=".($this->ord == "-"? "":$this->ord).$this->selectname."&xf=".$this->xf."&cb=".urlencode($this->cb));
 				if( $this->pos == $this->selectname)
 					{
 					$this->selected = 1;
@@ -318,7 +318,7 @@ function bab_viewDirectoryUser($id)
 				}
 
 
-			$this->urlimg = bab_toHTML($GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$arr['id_directory']."&idu=".$id);
+			$this->urlimg = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$arr['id_directory']."&idu=".$id);
 
 			$res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$babDB->db_escape_string($arr['id_directory'])."' order by list_ordering asc");
 			while( $row = $babDB->db_fetch_array($res))
@@ -406,7 +406,7 @@ function summaryDbContact($id, $idu, $update=true)
 					}
 
 				
-				$this->urlimg = bab_toHTML($GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$id."&idu=".$idu);
+				$this->urlimg = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$id."&idu=".$idu);
 
 				$this->unassign = bab_isAccessValid(BAB_DBDIRUNBIND_GROUPS_TBL, $id);
 				$this->del = bab_isAccessValid(BAB_DBDIRDEL_GROUPS_TBL, $id);
@@ -425,19 +425,19 @@ function summaryDbContact($id, $idu, $update=true)
 				if( $this->modify )
 					{
 					$this->modifytxt = bab_translate("Modify");
-					$this->modifyurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=directory&idx=dbmod&id=".$id."&idu=".$idu);
+					$this->modifyurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=dbmod&id=".$id."&idu=".$idu);
 					}
 
 				if( $this->del )
 					{
 					$this->deltxt = bab_translate("Delete");
-					$this->delurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=directory&idx=deldbc&id=".$id."&idu=".$idu);
+					$this->delurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=deldbc&id=".$id."&idu=".$idu);
 					}
 
 				if( $this->unassign && $idgroup && $idgroup != BAB_REGISTERED_GROUP)
 					{ 
 					$this->unassigntxt = bab_translate("Unassign");
-					$this->unassignurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=directory&idx=unassign&id=".$id."&idu=".$idu);
+					$this->unassignurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=unassign&id=".$id."&idu=".$idu);
 					$this->t_unassignconf = bab_translate("Do you really want to unassign this contact from the directory?");
 					}
 				else
@@ -469,7 +469,7 @@ function summaryDbContact($id, $idu, $update=true)
 				if( $this->orgcount > 0 )
 					{
 					$this->vieworg = bab_translate("View this organizational chart");
-					$this->vieworgurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=chart&ocid=");
+					$this->vieworgurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=chart&ocid=");
 					}
 				}
 			else
@@ -542,8 +542,8 @@ function summaryDbContact($id, $idu, $update=true)
 			static $i = 0;
 			if( $i < $this->orgcount)
 				{
-				$this->orgid = bab_toHTML($this->arrorgid[$i][0]);
-				$this->orgn = bab_toHTML($this->arrorgid[$i][1]);
+				$this->orgid = bab_toHtml($this->arrorgid[$i][0]);
+				$this->orgn = bab_toHtml($this->arrorgid[$i][1]);
 				$res = $babDB->db_query("SELECT  ocrt.id_entity FROM ".BAB_OC_ROLES_TBL." ocrt LEFT JOIN ".BAB_OC_ROLES_USERS_TBL." ocrut ON ocrt.id = ocrut.id_role WHERE ocrut.id_user='".$babDB->db_escape_string($this->idu)."' and ocrt.id_oc='".$babDB->db_escape_string($this->orgid)."' and ocrut.isprimary='Y' ");
 				if( $res && $babDB->db_num_rows($res) > 0 )
 					{

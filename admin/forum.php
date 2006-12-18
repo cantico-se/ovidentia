@@ -71,11 +71,11 @@ function modifyForum($id)
 			$req = "select * from ".BAB_FORUMS_TBL." where id='".$babDB->db_escape_string($id)."'";
 			$this->res = $babDB->db_query($req);
 			$this->arr = $babDB->db_fetch_array($this->res);
-			$this->arr['id'] = bab_toHTML($this->arr['id']);
-			$this->arr['name'] = bab_toHTML($this->arr['name']);
-			$this->arr['description'] = bab_toHTML($this->arr['description']);
-			$this->arr['display'] = bab_toHTML($this->arr['display']);
-			$this->arr['nb_recipients'] = bab_toHTML($this->arr['nb_recipients']);
+			$this->arr['id'] = bab_toHtml($this->arr['id']);
+			$this->arr['name'] = bab_toHtml($this->arr['name']);
+			$this->arr['description'] = bab_toHtml($this->arr['description']);
+			$this->arr['display'] = bab_toHtml($this->arr['display']);
+			$this->arr['nb_recipients'] = bab_toHtml($this->arr['nb_recipients']);
 			}
 		}
 
@@ -102,7 +102,7 @@ function deleteForum($id)
 		function temp($id)
 			{
 			$this->message = bab_translate("Are you sure you want to delete this forum");
-			$this->title = bab_toHTML(bab_getForumName($id));
+			$this->title = bab_toHtml(bab_getForumName($id));
 			$this->warning = bab_translate("WARNING: This operation will delete the forum and all posts"). "!";
 			$this->urlyes = $GLOBALS['babUrlScript']."?tg=forum&idx=Delete&category=".$id."&action=Yes";
 			$this->yes = bab_translate("Yes");

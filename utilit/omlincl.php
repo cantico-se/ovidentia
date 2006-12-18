@@ -4995,7 +4995,7 @@ function format_output($val, $matches)
 
 	if( !$lhtmlentities && $ghtmlentities ) 
 		{
-		return bab_toHTML($val);
+		return bab_toHtml($val);
 		}
 	return $val;
 	}

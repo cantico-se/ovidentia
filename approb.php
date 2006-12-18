@@ -938,13 +938,13 @@ function confirmWaitingEvent($idevent, $idcal)
 			$this->confirm = bab_translate("Accept");
 			$this->refuse = bab_translate("Decline");
 			$this->commenttxt = bab_translate("Raison");
-			$this->idevent = bab_toHTML($idevent);
-			$this->idcal = bab_toHTML($idcal);
+			$this->idevent = bab_toHtml($idevent);
+			$this->idcal = bab_toHtml($idcal);
 			$res = $babDB->db_query("select cet.*, ceot.id_cal from ".BAB_CAL_EVENTS_TBL." cet left join ".BAB_CAL_EVENTS_OWNERS_TBL." ceot on cet.id=ceot.id_event where ceot.id_cal='".$babDB->db_escape_string($idcal)."' and ceot.id_event='".$babDB->db_escape_string($idevent)."'");
 			$arr = $babDB->db_fetch_array($res);
 			$GLOBALS['babBody']->title = $arr['title'];
-			$this->eventstartdate = bab_toHTML(bab_shortDate(bab_mktime($arr['start_date']), true));
-			$this->eventenddate = bab_toHTML(bab_shortDate(bab_mktime($arr['end_date']), true));
+			$this->eventstartdate = bab_toHtml(bab_shortDate(bab_mktime($arr['start_date']), true));
+			$this->eventenddate = bab_toHtml(bab_shortDate(bab_mktime($arr['end_date']), true));
 			$this->eventdescription = bab_replace($arr['description']);
 
 			if( !empty($arr['hash']) &&  $arr['hash'][0] == 'R' )
@@ -968,7 +968,7 @@ function confirmWaitingEvent($idevent, $idcal)
 			if( $i < $this->count)
 				{
 				$arr = $babDB->db_fetch_array($this->resatt);
-				$this->eventattendee = bab_toHTML(bab_getCalendarOwnerName($arr['id_cal']));
+				$this->eventattendee = bab_toHtml(bab_getCalendarOwnerName($arr['id_cal']));
 				$i++;
 				return true;
 				}

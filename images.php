@@ -131,7 +131,7 @@ function listImages($editor,$path='')
 				{
 				$this->maxsizetxt = '';
 				}
-			$this->msgerror = bab_toHTML($GLOBALS['msgerror']);
+			$this->msgerror = bab_toHtml($GLOBALS['msgerror']);
 			$this->maximagessize *= 1000 ;
 			$this->file = bab_translate("File");
 			$this->add = bab_translate("Add");
@@ -216,7 +216,7 @@ function iframe($editor,$path="")
 			global $babBody, $babDB;
 
 			$this->maximagessize = $babBody->babsite['imgsize'];
-			$this->msgerror = bab_toHTML($GLOBALS['msgerror']);
+			$this->msgerror = bab_toHtml($GLOBALS['msgerror']);
 
 			$this->del = bab_translate("Delete");
 			$this->editor = $editor;

@@ -75,7 +75,7 @@ function listPosts($forum, $thread, $post)
 			$this->thread = $thread;
 			$this->alternate = 0;
 			$this->more = "";
-			$this->search_url = bab_toHTML($GLOBALS['babUrlScript']."?tg=forumsuser&idx=search&forum=".urlencode($forum));
+			$this->search_url = bab_toHtml($GLOBALS['babUrlScript']."?tg=forumsuser&idx=search&forum=".urlencode($forum));
 
 			if( $views == "1")
 				{
@@ -135,10 +135,10 @@ function listPosts($forum, $thread, $post)
 				$res = $babDB->db_query($req);
 				$arr = $babDB->db_fetch_array($res);
 				$GLOBALS['babWebStat']->addForumPost($this->postid);
-				$this->postdate = bab_toHTML(bab_strftime(bab_mktime($arr['date'])));
+				$this->postdate = bab_toHtml(bab_strftime(bab_mktime($arr['date'])));
 				$this->postauthor = $arr['id_author']? bab_getUserName($arr['id_author']):$arr['author'];
-				$this->postauthor = bab_toHTML($this->postauthor);
-				$this->postsubject = bab_toHTML($arr['subject']);
+				$this->postauthor = bab_toHtml($this->postauthor);
+				$this->postsubject = bab_toHtml($arr['subject']);
 				$this->postmessage = bab_replace($arr['message']);
 				$dateupdate = bab_mktime($arr['dateupdate']);
 				$this->confirmurl = '';
@@ -159,16 +159,16 @@ function listPosts($forum, $thread, $post)
 					}
 				else if( $arr['confirmed']  == "N" )
 					{
-					$this->confirmurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=posts&idx=Confirm&forum=".urlencode($this->forum)."&thread=".urlencode($this->thread)."&post=".urlencode($arr['id'])."&flat=".urlencode($flat));
+					$this->confirmurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=posts&idx=Confirm&forum=".urlencode($this->forum)."&thread=".urlencode($this->thread)."&post=".urlencode($arr['id'])."&flat=".urlencode($flat));
 					$this->confirmname = bab_translate("Confirm");
-					$this->deleteurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=posts&idx=DeleteP&forum=".urlencode($this->forum)."&thread=".urlencode($this->thread)."&post=".urlencode($this->postid)."&flat=".urlencode($flat));
+					$this->deleteurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=posts&idx=DeleteP&forum=".urlencode($this->forum)."&thread=".urlencode($this->thread)."&post=".urlencode($this->postid)."&flat=".urlencode($flat));
 					$this->deletename = bab_translate("Refuse");
 					}
 
 				$this->forums = $babBody->get_forums();
 				if( ($moderator && $this->forums[$this->forum]['bupdatemoderator'] == 'Y') || ($GLOBALS['BAB_SESS_USERID'] && $this->forums[$this->forum]['bupdateauthor'] == 'Y' && $GLOBALS['BAB_SESS_USERID'] == $arr['id_author']))
 					{
-					$this->moreurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=posts&idx=Modify&forum=".urlencode($this->forum)."&thread=".urlencode($this->thread)."&post=".urlencode($arr['id'])."&flat=".urlencode($flat));
+					$this->moreurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=posts&idx=Modify&forum=".urlencode($this->forum)."&thread=".urlencode($this->thread)."&post=".urlencode($arr['id'])."&flat=".urlencode($flat));
 					$this->morename = bab_translate("Edit");
 					}
 				else
@@ -182,7 +182,7 @@ function listPosts($forum, $thread, $post)
 
 				if( $arr['confirmed']  == "Y" && $GLOBALS['open'] && bab_isAccessValid(BAB_FORUMSREPLY_GROUPS_TBL, $forum) )
 					{
-					$this->replyurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=posts&idx=reply&forum=".urlencode($forum)."&thread=".urlencode($thread)."&post=".urlencode($post)."&flat=".urlencode($flat));
+					$this->replyurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=posts&idx=reply&forum=".urlencode($forum)."&thread=".urlencode($thread)."&post=".urlencode($post)."&flat=".urlencode($flat));
 					}
 
 				$this->postauthordetailsurl = '';
@@ -191,7 +191,7 @@ function listPosts($forum, $thread, $post)
 					list($this->iddir) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group='".BAB_REGISTERED_GROUP."'"));
 					if( bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $this->iddir))
 						{
-						$this->postauthordetailsurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=directory&idx=ddbovml&directoryid=".urlencode($this->iddir)."&userid=".urlencode($arr['id_author']));	
+						$this->postauthordetailsurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=ddbovml&directoryid=".urlencode($this->iddir)."&userid=".urlencode($arr['id_author']));	
 						}
 					}
 
@@ -206,7 +206,7 @@ function listPosts($forum, $thread, $post)
 						if( $res && $babDB->db_num_rows($res) > 0 )
 							{
 							$rr = $babDB->db_fetch_array($res);
-							$this->postauthoremail = bab_toHTML($rr['email']);
+							$this->postauthoremail = bab_toHtml($rr['email']);
 							}
 						}
 					}
@@ -216,8 +216,8 @@ function listPosts($forum, $thread, $post)
 			$this->arrresult = array();
 			$this->getChild($firstpost, 0, -1, 0);
 			$this->count = count($this->arrresult['id']);
-			$this->flaturl = bab_toHTML($GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".urlencode($this->forum)."&thread=".urlencode($this->thread)."&flat=1");
-			$this->noflaturl = bab_toHTML($GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".urlencode($this->forum)."&thread=".urlencode($this->thread)."&post=".urlencode($this->postid)."&flat=0");
+			$this->flaturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".urlencode($this->forum)."&thread=".urlencode($this->thread)."&flat=1");
+			$this->noflaturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".urlencode($this->forum)."&thread=".urlencode($this->thread)."&post=".urlencode($this->postid)."&flat=0");
 			}
 
 		function getChild($id, $delta, $iparent, $leaf)
@@ -312,10 +312,10 @@ function listPosts($forum, $thread, $post)
 				$req = "select * from ".BAB_POSTS_TBL." where id='".$babDB->db_escape_string($this->arrresult['id'][$i])."'";
 				$res = $babDB->db_query($req);
 				$arr = $babDB->db_fetch_array($res);
-				$this->replydate = bab_toHTML(bab_shortDate(bab_mktime($arr['date']), true));
+				$this->replydate = bab_toHtml(bab_shortDate(bab_mktime($arr['date']), true));
 				$this->replyauthor = $arr['id_author']? bab_getUserName($arr['id_author']):$arr['author'];
-				$this->replyauthor = bab_toHTML($this->replyauthor);
-				$this->replysubject = bab_toHTML($arr['subject']);
+				$this->replyauthor = bab_toHtml($this->replyauthor);
+				$this->replysubject = bab_toHtml($arr['subject']);
 
 				$idauthor = $arr['id_author'] != 0? $arr['id_author']: bab_getUserId( $arr['author']);
 
@@ -376,7 +376,7 @@ function listPosts($forum, $thread, $post)
 					$this->current = 1;
 				else
 					$this->current = 0;
-				$this->replysubjecturl = bab_toHTML($GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".urlencode($this->forum)."&thread=".urlencode($this->thread)."&post=".urlencode($this->arrresult['id'][$i])."&flat=".urlencode($flat));
+				$this->replysubjecturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".urlencode($this->forum)."&thread=".urlencode($this->thread)."&post=".urlencode($this->arrresult['id'][$i])."&flat=".urlencode($flat));
 				$i++;
 				return true;
 				}
@@ -408,10 +408,10 @@ function listPosts($forum, $thread, $post)
 			{
 			if ($this->file = current($this->files))
 				{
-				$this->file_url = bab_toHTML($this->file['url']);
-				$this->file_name = bab_toHTML($this->file['name']);
-				$this->file_size = bab_toHTML($this->file['size']);
-				$this->file_index_label = bab_toHTML($this->file['index_label']);
+				$this->file_url = bab_toHtml($this->file['url']);
+				$this->file_name = bab_toHtml($this->file['name']);
+				$this->file_size = bab_toHtml($this->file['size']);
+				$this->file_index_label = bab_toHtml($this->file['index_label']);
 				next($this->files);
 				return true;
 				}
@@ -485,10 +485,10 @@ function listPostsFlat($forum, $thread, $open, $pos)
 			$this->posted_txt = bab_translate("Posted");
 			$this->forum = $forum;
 			$this->thread = $thread;
-			$this->idx = bab_toHTML($idx);
+			$this->idx = bab_toHtml($idx);
 			$this->alternate = 0;
 			$this->more = "";
-			$this->search_url = bab_toHTML($GLOBALS['babUrlScript']."?tg=forumsuser&idx=search&forum=".urlencode($forum));
+			$this->search_url = bab_toHtml($GLOBALS['babUrlScript']."?tg=forumsuser&idx=search&forum=".urlencode($forum));
 			$this->altbg = true;
 
 			if( $views == "1")
@@ -540,8 +540,8 @@ function listPostsFlat($forum, $thread, $open, $pos)
 
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
-			$this->flaturl = bab_toHTML($GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".urlencode($this->forum)."&thread=".urlencode($this->thread)."&flat=1");
-			$this->noflaturl = bab_toHTML($GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".urlencode($this->forum)."&thread=".urlencode($this->thread)."&flat=0");
+			$this->flaturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".urlencode($this->forum)."&thread=".urlencode($this->thread)."&flat=1");
+			$this->noflaturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".urlencode($this->forum)."&thread=".urlencode($this->thread)."&flat=0");
 			if( $open && bab_isAccessValid(BAB_FORUMSREPLY_GROUPS_TBL, $forum) )
 				$this->breply = true;
 			else
@@ -568,7 +568,7 @@ function listPostsFlat($forum, $thread, $open, $pos)
 				$this->ismanager = bab_isAccessValid(BAB_FORUMSMAN_GROUPS_TBL, $this->forum);
 				$this->displayIndex = bab_isUserAdministrator();
 				$this->what = $arr['confirmed'];
-				$this->postdate = bab_toHTML(bab_strftime(bab_mktime($arr['date'])));
+				$this->postdate = bab_toHtml(bab_strftime(bab_mktime($arr['date'])));
 				if( $arr['id_author'] )
 					{
 					$this->postauthor = bab_getUserName($arr['id_author']);
@@ -577,11 +577,11 @@ function listPostsFlat($forum, $thread, $open, $pos)
 					{
 					$this->postauthor = $arr['author'];
 					}
-				$this->postauthor = bab_toHTML($this->postauthor);
-				$this->postsubject = bab_toHTML($arr['subject']);
+				$this->postauthor = bab_toHtml($this->postauthor);
+				$this->postsubject = bab_toHtml($arr['subject']);
 				$this->postmessage = bab_replace($arr['message']);
 				$this->more = "";
-				$this->postid = bab_toHTML($arr['id']);
+				$this->postid = bab_toHtml($arr['id']);
 
 				$this->brecent = false;
 				if( mktime() - bab_mktime($arr['date']) <= DELTA_TIME )
@@ -595,7 +595,7 @@ function listPostsFlat($forum, $thread, $open, $pos)
 				$dateupdate = bab_mktime($arr['dateupdate']);
 				if(  $dateupdate > 0)
 					{
-					$this->more = bab_translate("Modified")." ".bab_toHTML(bab_strftime($dateupdate));
+					$this->more = bab_translate("Modified")." ".bab_toHtml(bab_strftime($dateupdate));
 					}
 				else
 					{
@@ -609,15 +609,15 @@ function listPostsFlat($forum, $thread, $open, $pos)
 					}
 				else if( $arr['confirmed']  == "N" )
 					{
-					$this->confirmurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=posts&idx=Confirm&forum=".urlencode($this->forum)."&thread=".urlencode($this->thread)."&post=".urlencode($arr['id'])."&flat=".urlencode($flat));
+					$this->confirmurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=posts&idx=Confirm&forum=".urlencode($this->forum)."&thread=".urlencode($this->thread)."&post=".urlencode($arr['id'])."&flat=".urlencode($flat));
 					$this->confirmname = bab_translate("Confirm");
-					$this->deleteurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=posts&idx=DeleteP&forum=".urlencode($this->forum)."&thread=".urlencode($this->thread)."&post=".urlencode($this->postid)."&flat=".urlencode($flat));
+					$this->deleteurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=posts&idx=DeleteP&forum=".urlencode($this->forum)."&thread=".urlencode($this->thread)."&post=".urlencode($this->postid)."&flat=".urlencode($flat));
 					$this->deletename = bab_translate("Refuse");
 					}
 
 				if( ($moderator && $this->arrforum['bupdatemoderator'] == 'Y') || ($BAB_SESS_USERID && $this->arrforum['bupdateauthor'] == 'Y' && $BAB_SESS_USERID == $arr['id_author']))
 					{
-					$this->moreurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=posts&idx=Modify&forum=".urlencode($this->forum)."&thread=".urlencode($this->thread)."&post=".urlencode($arr['id'])."&flat=".urlencode($flat));
+					$this->moreurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=posts&idx=Modify&forum=".urlencode($this->forum)."&thread=".urlencode($this->thread)."&post=".urlencode($arr['id'])."&flat=".urlencode($flat));
 					$this->morename = bab_translate("Edit");
 					}
 				else
@@ -631,7 +631,7 @@ function listPostsFlat($forum, $thread, $open, $pos)
 					{
 					if( bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $this->iddir))
 						{
-						$this->postauthordetailsurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=directory&idx=ddbovml&directoryid=".urlencode($this->iddir)."&userid=".urlencode($arr['id_author']));	
+						$this->postauthordetailsurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=ddbovml&directoryid=".urlencode($this->iddir)."&userid=".urlencode($arr['id_author']));	
 						}
 					}
 
@@ -646,7 +646,7 @@ function listPostsFlat($forum, $thread, $open, $pos)
 						if( $res && $babDB->db_num_rows($res) > 0 )
 							{
 							$rr = $babDB->db_fetch_array($res);
-							$this->postauthoremail = bab_toHTML($rr['email']);
+							$this->postauthoremail = bab_toHtml($rr['email']);
 							}
 						}
 					}
@@ -661,8 +661,8 @@ function listPostsFlat($forum, $thread, $open, $pos)
 					$this->alternate = 1;
 				else
 					$this->alternate = 0;
-				$this->replysubjecturl = bab_toHTML($GLOBALS['babUrlScript']."?tg=posts&idx=reply&forum=".urlencode($this->forum)."&thread=".urlencode($this->thread)."&post=".urlencode($arr['id'])."&flat=".urlencode($flat));
-				$this->noflaturl = bab_toHTML($GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".urlencode($this->forum)."&thread=".urlencode($this->thread)."&post=".urlencode($arr['id'])."&flat=0");
+				$this->replysubjecturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=posts&idx=reply&forum=".urlencode($this->forum)."&thread=".urlencode($this->thread)."&post=".urlencode($arr['id'])."&flat=".urlencode($flat));
+				$this->noflaturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".urlencode($this->forum)."&thread=".urlencode($this->thread)."&post=".urlencode($arr['id'])."&flat=0");
 				$i++;
 				return true;
 				}
@@ -674,10 +674,10 @@ function listPostsFlat($forum, $thread, $open, $pos)
 			{
 			if ($this->file = current($this->files))
 				{
-				$this->file_url = bab_toHTML($this->file['url']);
-				$this->file_name = bab_toHTML($this->file['name']);
-				$this->file_size = bab_toHTML($this->file['size']);
-				$this->file_index_label = bab_toHTML($this->file['index_label']);
+				$this->file_url = bab_toHtml($this->file['url']);
+				$this->file_name = bab_toHtml($this->file['name']);
+				$this->file_size = bab_toHtml($this->file['size']);
+				$this->file_index_label = bab_toHtml($this->file['index_label']);
 				next($this->files);
 				return true;
 				}
@@ -692,7 +692,7 @@ function listPostsFlat($forum, $thread, $open, $pos)
 				{
 				$this->page = $this->gotopages[$i]['page'];
 				$this->bpageurl = $this->gotopages[$i]['url'];
-				$this->pageurl = bab_toHTML($this->gotourl.$this->gotopages[$i]['pagepos']);
+				$this->pageurl = bab_toHtml($this->gotourl.$this->gotopages[$i]['pagepos']);
 				$i++;
 				return true;
 				}
@@ -707,8 +707,8 @@ function listPostsFlat($forum, $thread, $open, $pos)
 			static $i = 0;
 			if( list($key, $val) = each($this->forums))
 				{
-				$this->forumid = bab_toHTML($key);
-				$this->forumname = bab_toHTML($val['name']);
+				$this->forumid = bab_toHtml($key);
+				$this->forumname = bab_toHtml($val['name']);
 				$i++;
 				return true;
 				}
@@ -756,21 +756,21 @@ function newReply($forum, $thread, $post)
 			$this->t_files = bab_translate("Dependent files");
 			$this->t_add_field = bab_translate("Add field");
 			$this->t_remove_field = bab_translate("Remove field");
-			$this->forum = bab_toHTML($forum);
-			$this->thread = bab_toHTML($thread);
-			$this->postid = bab_toHTML($post);
-			$this->flat = bab_toHTML($flat);
+			$this->forum = bab_toHtml($forum);
+			$this->thread = bab_toHtml($thread);
+			$this->postid = bab_toHtml($post);
+			$this->flat = bab_toHtml($flat);
 
 			$req = "select * from ".BAB_POSTS_TBL." where id='".$babDB->db_escape_string($post)."'";
 			$res = $babDB->db_query($req);
 			$arr = $babDB->db_fetch_array($res);
 			if( substr($arr['subject'], 0, 3) == "RE:")
 				{
-				$this->subjectval = bab_toHTML($arr['subject']);
+				$this->subjectval = bab_toHtml($arr['subject']);
 				}
 			else
 				{
-				$this->subjectval = "RE:".bab_toHTML($arr['subject']);
+				$this->subjectval = "RE:".bab_toHtml($arr['subject']);
 				}
 
 			if( empty($BAB_SESS_USER))
@@ -783,13 +783,13 @@ function newReply($forum, $thread, $post)
 				$this->username = $BAB_SESS_USER;
 				}
 
-			$this->username = bab_toHTML($this->username);
+			$this->username = bab_toHtml($this->username);
 
 			$this->editor = bab_editor('', 'message', 'postcr');
 
-			$this->postdate = bab_toHTML(bab_strftime(bab_mktime($arr['date'])));
-			$this->postauthor = bab_toHTML($arr['author']);
-			$this->postsubject = bab_toHTML($arr['subject']);
+			$this->postdate = bab_toHtml(bab_strftime(bab_mktime($arr['date'])));
+			$this->postauthor = bab_toHtml($arr['author']);
+			$this->postsubject = bab_toHtml($arr['subject']);
 			$this->postmessage = bab_replace($arr['message']);
 			if( bab_isForumModerated($forum))
 				{
@@ -803,7 +803,7 @@ function newReply($forum, $thread, $post)
 			$this->ismanager = bab_isAccessValid(BAB_FORUMSMAN_GROUPS_TBL, $forum );
 			$this->displayIndex = bab_isUserAdministrator();
 
-			$this->maxfilesize = bab_toHTML($babBody->babsite['maxfilesize']);
+			$this->maxfilesize = bab_toHtml($babBody->babsite['maxfilesize']);
 			$this->files = bab_getPostFiles($this->forum,$post);
 			$this->allow_post_files = bab_isAccessValid(BAB_FORUMSFILES_GROUPS_TBL,$forum);
 			}
@@ -812,10 +812,10 @@ function newReply($forum, $thread, $post)
 			{
 			if ($this->file = current($this->files))
 				{
-				$this->file_url = bab_toHTML($this->file['url']);
-				$this->file_name = bab_toHTML($this->file['name']);
-				$this->file_size = bab_toHTML($this->file['size']);
-				$this->file_index_label = bab_toHTML($this->file['index_label']);
+				$this->file_url = bab_toHtml($this->file['url']);
+				$this->file_name = bab_toHtml($this->file['name']);
+				$this->file_size = bab_toHtml($this->file['size']);
+				$this->file_index_label = bab_toHtml($this->file['index_label']);
 				next($this->files);
 				return true;
 				}
@@ -857,14 +857,14 @@ function editPost($forum, $thread, $post)
 				$this->name = bab_translate("Name");
 				$this->message = bab_translate("Message");
 				$this->update = bab_translate("Update reply");
-				$this->forum = bab_toHTML($forum);
-				$this->thread = bab_toHTML($thread);
-				$this->post = bab_toHTML($post);
-				$this->flat = bab_toHTML($flat);
+				$this->forum = bab_toHtml($forum);
+				$this->thread = bab_toHtml($thread);
+				$this->post = bab_toHtml($post);
+				$this->flat = bab_toHtml($flat);
 				$this->editor = bab_editor($this->arr['message'], 'message', 'posted');
 				$this->access = 1;
-				$this->author = bab_toHTML($this->arr['author']);
-				$this->subjectval = bab_toHTML($this->arr['subject']);
+				$this->author = bab_toHtml($this->arr['author']);
+				$this->subjectval = bab_toHtml($this->arr['subject']);
 				}
 			else
 				{
@@ -904,9 +904,9 @@ function deleteThread($forum, $thread)
 			$this->message = bab_translate("Are you sure you want to delete this thread");
 			$this->title = bab_getForumThreadTitle($thread);
 			$this->warning = bab_translate("WARNING: This operation will delete the thread and all references"). "!";
-			$this->urlyes = bab_toHTML($GLOBALS['babUrlScript']."?tg=posts&idx=DeleteT&forum=".$forum."&thread=".$thread."&action=Yes&flat=".$flat);
+			$this->urlyes = bab_toHtml($GLOBALS['babUrlScript']."?tg=posts&idx=DeleteT&forum=".$forum."&thread=".$thread."&action=Yes&flat=".$flat);
 			$this->yes = bab_translate("Yes");
-			$this->urlno = bab_toHTML($GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$forum."&thread=".$thread."&flat=".$flat);
+			$this->urlno = bab_toHtml($GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$forum."&thread=".$thread."&flat=".$flat);
 			$this->no = bab_translate("No");
 			}
 		}
@@ -935,12 +935,12 @@ function viewPost($thread, $post)
 			global $babDB;
 			$req = "select forum from ".BAB_THREADS_TBL." where id='".$babDB->db_escape_string($thread)."'";
 			$arr = $babDB->db_fetch_array($babDB->db_query($req));
-			$this->title = bab_toHTML(bab_getForumName($arr['forum']));
+			$this->title = bab_toHtml(bab_getForumName($arr['forum']));
 			$req = "select * from ".BAB_POSTS_TBL." where id='".$babDB->db_escape_string($post)."'";
 			$arr = $babDB->db_fetch_array($babDB->db_query($req));
-			$this->postdate = bab_toHTML(bab_strftime(bab_mktime($arr['date'])));
-			$this->postauthor = bab_toHTML($arr['author']);
-			$this->postsubject = bab_toHTML(bab_replace($arr['subject']));
+			$this->postdate = bab_toHtml(bab_strftime(bab_mktime($arr['date'])));
+			$this->postauthor = bab_toHtml($arr['author']);
+			$this->postsubject = bab_toHtml(bab_replace($arr['subject']));
 			$this->postmessage = bab_replace($arr['message']);
 			$this->close = bab_translate("Close");
 			$GLOBALS['babWebStat']->addForumPost($post);

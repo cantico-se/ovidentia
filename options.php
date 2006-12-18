@@ -188,7 +188,7 @@ function changeNickname($nickname)
 				{
 				$this->changepassword = false;
 				}
-			$this->urlchangepassword = bab_toHTML($GLOBALS['babUrlScript']."?tg=options&idx=changePassword");
+			$this->urlchangepassword = bab_toHtml($GLOBALS['babUrlScript']."?tg=options&idx=changePassword");
 			$this->nicknameval = $nickname != ""? $nickname: "";
 			$this->nickname = bab_translate("Nickname");
 			$this->password = bab_translate("Password");

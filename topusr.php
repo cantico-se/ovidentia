@@ -67,7 +67,7 @@ function listTopicCategory($cat)
 			$this->articlestxt = bab_translate("Article") ."(s)";
 			$this->waitingtxt = bab_translate("Waiting");
 			$this->submittxt = bab_translate("Submit");
-			$this->idcat = bab_toHTML($cat); /* don't change variable name */
+			$this->idcat = bab_toHtml($cat); /* don't change variable name */
 
 			$arrtopcat = array();
 			$arrtop = array();
@@ -164,21 +164,21 @@ function listTopicCategory($cat)
 				$this->childdescription = trim($this->arrid[$i]['description']);
 				if( $this->arrid[$i][1] == 1 )
 					{
-					$this->childurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=topusr&cat=".$this->arrid[$i][0]);
+					$this->childurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=topusr&cat=".$this->arrid[$i][0]);
 					$this->istopcat = true;
-					$this->idtopiccategory = bab_toHTML($this->arrid[$i][0]); /* don't change variable name */
+					$this->idtopiccategory = bab_toHtml($this->arrid[$i][0]); /* don't change variable name */
 					$this->idtopic = ''; /* don't change variable name */
 					}
 				else
 					{
 					$this->idtopiccategory = '';
-					$this->idtopic = bab_toHTML($this->arrid[$i][0]);
+					$this->idtopic = bab_toHtml($this->arrid[$i][0]);
 					$this->istopcat = false;
 					if( $this->arrid[$i]['confirmed'] == 0 )
-						$this->submiturl = bab_toHTML($GLOBALS['babUrlScript']."?tg=articles&idx=Submit&topics=".$this->arrid[$i][0]);
+						$this->submiturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=Submit&topics=".$this->arrid[$i][0]);
 					$this->waitingarticlescount = 0;
 					$this->waitingcommentscount = 0;
-					$this->articlesurl = bab_toHTML($GLOBALS['babUrlScript']."?tg=articles&topics=".$this->arrid[$i][0]."&new=".$this->waitingarticlescount."&newc=".$this->waitingcommentscount);
+					$this->articlesurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&topics=".$this->arrid[$i][0]."&new=".$this->waitingarticlescount."&newc=".$this->waitingcommentscount);
 					$this->childurl = $this->articlesurl;
 					}
 
@@ -200,9 +200,9 @@ function listTopicCategory($cat)
 				}
 				else {
 					$topcats = $babBody->get_topcats();
-					$this->parentname = bab_toHTML($topcats[$this->arrparents[$i]]['title']);
+					$this->parentname = bab_toHtml($topcats[$this->arrparents[$i]]['title']);
 				}
-				$this->parenturl = bab_toHTML($GLOBALS['babUrlScript']."?tg=topusr&cat=".$this->arrparents[$i]);
+				$this->parenturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=topusr&cat=".$this->arrparents[$i]);
 				if( $i == $this->parentscount - 1 )
 					$this->burl = false;
 				else

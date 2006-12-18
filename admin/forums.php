@@ -59,9 +59,9 @@ function addForum($nameval, $descriptionval, $nbmsgdisplayval)
 			$this->no = bab_translate("No");
 			$this->add = bab_translate("Add");
 			$this->active = bab_translate("Active");
-			$this->nameval = $nameval == ""? "": bab_toHTML($nameval);
-			$this->descriptionval = $descriptionval == ""? "": bab_toHTML($descriptionval);
-			$this->nbmsgdisplayval = $nbmsgdisplayval == ""? "": bab_toHTML($nbmsgdisplayval);
+			$this->nameval = $nameval == ""? "": bab_toHtml($nameval);
+			$this->descriptionval = $descriptionval == ""? "": bab_toHtml($descriptionval);
+			$this->nbmsgdisplayval = $nbmsgdisplayval == ""? "": bab_toHtml($nbmsgdisplayval);
 			}
 		}
 
@@ -109,8 +109,8 @@ function listForums()
 				$this->arr = $babDB->db_fetch_array($this->res);
 				$this->url = $GLOBALS['babUrlScript']."?tg=forum&idx=Modify&item=".urlencode($this->arr['id']);
 				$this->rightsurl = $GLOBALS['babUrlScript']."?tg=forum&idx=rights&item=".urlencode($this->arr['id']);
-				$this->urlname = bab_toHTML($this->arr['name']);
-				$this->descval = bab_toHTML($this->arr['description']);
+				$this->urlname = bab_toHtml($this->arr['name']);
+				$this->descval = bab_toHtml($this->arr['description']);
 				$i++;
 				return true;
 				}
@@ -189,7 +189,7 @@ function orderForum()
 					$this->forumval = bab_getForumName($this->arrid[$i]);
 					}
 
-				$this->forumval = bab_toHTML($this->forumval);
+				$this->forumval = bab_toHtml($this->forumval);
 				$this->forumid = $this->arrid[$i];
 				$i++;
 				return true;
