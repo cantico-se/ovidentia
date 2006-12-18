@@ -21,6 +21,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
+/**
+* @internal SEC1 NA 18/12/2006 FULL
+*/
 include_once 'base.php';
 
 function notesCreate()
@@ -90,8 +93,8 @@ function notesList($id)
 			if( $i < $this->count)
 				{
 				$this->arr = $babDB->db_fetch_array($this->res);
-				$this->editurl = $GLOBALS['babUrlScript']."?tg=note&idx=Modify&item=".$this->arr['id'];
-				$this->delurl = $GLOBALS['babUrlScript']."?tg=note&idx=Delete&item=".$this->arr['id'];
+				$this->editurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=note&idx=Modify&item=".$this->arr['id']);
+				$this->delurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=note&idx=Delete&item=".$this->arr['id']);
 				$this->note_content = bab_replace($this->arr['content']);
 				$this->note_date = bab_toHTML(bab_strftime(bab_mktime($this->arr['date'])));
 				$i++;

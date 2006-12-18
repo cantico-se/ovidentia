@@ -21,7 +21,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
+/**
+* @internal SEC1 NA 18/12/2006 FULL
+*/
 include_once 'base.php';
+
 function browseUsers($pos, $cb)
 	{
 	global $babBody;
@@ -81,7 +85,7 @@ function browseUsers($pos, $cb)
 				$this->ord = $pos[0];
 				$reqa .= " and lastname like '".$babDB->db_escape_like($this->pos)."%' order by lastname, firstname asc";
 				$this->fullname = bab_composeUserName(bab_translate("Lastname"), bab_translate("Firstname"));
-				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=lusers&idx=brow&pos=".$this->pos."&cb=".$this->cb;
+				$this->fullnameurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=lusers&idx=brow&pos=".$this->pos."&cb=".$cb);
 				}
 			else
 				{
@@ -89,16 +93,20 @@ function browseUsers($pos, $cb)
 				$this->ord = "";
 				$reqa .= " and firstname like '".$babDB->db_escape_like($this->pos)."%' order by firstname, lastname asc";
 				$this->fullname = bab_composeUserName(bab_translate("Firstname"),bab_translate("Lastname"));
-				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=lusers&idx=brow&pos=-".$this->pos."&cb=".$this->cb;
+				$this->fullnameurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=lusers&idx=brow&pos=-".$this->pos."&cb=".$cb);
 				}
 			$this->res = $babDB->db_query($reqa);
 			$this->count = $babDB->db_num_rows($this->res);
 
 			if( empty($this->pos))
+				{
 				$this->allselected = 1;
+				}
 			else
+				{
 				$this->allselected = 0;
-			$this->allurl = $GLOBALS['babUrlScript']."?tg=lusers&idx=brow&pos=&cb=".$this->cb;
+				}
+			$this->allurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=lusers&idx=brow&pos=&cb=".$cb);
 			}
 
 		function getnext()
@@ -108,16 +116,19 @@ function browseUsers($pos, $cb)
 			if( $i < $this->count)
 				{
 				$this->arr = $babDB->db_fetch_array($this->res);
-				$this->url = $GLOBALS['babUrlScript']."?tg=user&idx=Modify&item=".$this->arr['id']."&pos=".$this->ord.$this->pos."&cb=".$this->cb;
+				$this->url = bab_toHtml($GLOBALS['babUrlScript']."?tg=user&idx=Modify&item=".$this->arr['id']."&pos=".$this->ord.$this->pos."&cb=").$this->cb;
 				$this->firstlast = bab_composeUserName($this->arr['firstname'],$this->arr['lastname']);
-				$this->firstlast = str_replace("'", "\'", $this->firstlast);
-				$this->firstlast = str_replace('"', "'+String.fromCharCode(34)+'",$this->firstlast);
+				$this->firstlast = bab_toHtml($this->firstlast, BAB_HTML_JS);
 				if( $this->ord == "-" )
+					{
 					$this->urlname = $this->arr['lastname'].' '.$this->arr['firstname'];
+					}
 				else
+					{
 					$this->urlname = $this->arr['firstname'].' '.$this->arr['lastname'];
+					}
 				$this->urlname = bab_toHTML($this->urlname);
-				$this->userid = $this->arr['id'];
+				$this->userid = bab_toHtml($this->arr['id']);
 				$this->nicknameval = bab_toHTML($this->arr['nickname']);
 				$this->altbg = !$this->altbg;
 				$i++;
@@ -136,21 +147,31 @@ function browseUsers($pos, $cb)
 			if( $k < 26)
 				{
 				$this->selectname = substr($t, $k, 1);
-				$this->selecturl = $GLOBALS['babUrlScript']."?tg=lusers&idx=brow&pos=".$this->ord.$this->selectname."&cb=".$this->cb;
+				$this->selecturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=lusers&idx=brow&pos=".$this->ord.$this->selectname."&cb=").$this->cb;
 
 				if( $this->pos == $this->selectname)
+					{
 					$this->selected = 1;
+					}
 				else 
 					{
 					if( $this->ord == "-" )
+						{
 						$req = "select * from ".BAB_USERS_TBL." where lastname like '".$babDB->db_escape_like($this->selectname)."%'";
+						}
 					else
+						{
 						$req = "select * from ".BAB_USERS_TBL." where firstname like '".$babDB->db_escape_like($this->selectname)."%'";
+						}
 					$res = $babDB->db_query($req);
 					if( $babDB->db_num_rows($res) > 0 )
+						{
 						$this->selected = 0;
+						}
 					else
+						{
 						$this->selected = 1;
+						}
 					}
 				$k++;
 				return true;
@@ -175,9 +196,9 @@ function browseUsers($pos, $cb)
 
 switch($idx)
 	{	
-	case "brow":
-		if( !isset($pos)) { $pos = '';}
-		if( !isset($cb)) { $cb = '';}
+	case 'brow':
+		$pos = bab_gp('pos');
+		$cb = bab_gp('cb');
 		browseUsers($pos, $cb);
 		exit;
 		break;
