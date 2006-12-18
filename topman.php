@@ -1864,7 +1864,7 @@ switch($idx)
 		}
 		if( bab_isAccessValid(BAB_TAGSMAN_GROUPS_TBL, 1) )
 		{
-			$babBody->addItemMenu("tagsman", bab_translate("Tags"), $GLOBALS['babUrlScript']."?tg=topman&idx=tagsman");
+			$babBody->addItemMenu("tagsman", bab_translate("Thesaurus"), $GLOBALS['babUrlScript']."?tg=topman&idx=tagsman");
 			$babBody->addItemMenu("tagsimp", bab_translate("Import"), $GLOBALS['babUrlScript']."?tg=topman&idx=tagsimp");
 			importTagsFile();
 		}
@@ -1879,7 +1879,7 @@ switch($idx)
 		}
 		if( bab_isAccessValid(BAB_TAGSMAN_GROUPS_TBL, 1) )
 		{
-			$babBody->addItemMenu("tagsman", bab_translate("Tags"), $GLOBALS['babUrlScript']."?tg=topman&idx=tagsman");
+			$babBody->addItemMenu("tagsman", bab_translate("Thesaurus"), $GLOBALS['babUrlScript']."?tg=topman&idx=tagsman");
 			$babBody->addItemMenu("impmap", bab_translate("Import"), $GLOBALS['babUrlScript']."?tg=topman&idx=tagsimp");
 			mapTagsImportFile($uploadf_name, $uploadf, $wsepar, $separ);
 		}
@@ -1894,7 +1894,7 @@ switch($idx)
 		}
 		if( bab_isAccessValid(BAB_TAGSMAN_GROUPS_TBL, 1) )
 		{
-			$babBody->addItemMenu("tagsman", bab_translate("Tags"), $GLOBALS['babUrlScript']."?tg=topman&idx=tagsman");
+			$babBody->addItemMenu("tagsman", bab_translate("Thesaurus"), $GLOBALS['babUrlScript']."?tg=topman&idx=tagsman");
 			$babBody->addItemMenu("tagsimp", bab_translate("Import"), $GLOBALS['babUrlScript']."?tg=topman&idx=tagsimp");
 			displayTags();
 		}
@@ -1914,7 +1914,7 @@ switch($idx)
 		}
 		if( bab_isAccessValid(BAB_TAGSMAN_GROUPS_TBL, 1) )
 		{
-			$babBody->addItemMenu("tagsman", bab_translate("Tags"), $GLOBALS['babUrlScript']."?tg=topman&idx=tagsman");
+			$babBody->addItemMenu("tagsman", bab_translate("Thesaurus"), $GLOBALS['babUrlScript']."?tg=topman&idx=tagsman");
 		}
 		break;
 	}

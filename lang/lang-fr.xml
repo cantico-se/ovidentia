@@ -413,7 +413,8 @@
 <string id="July">Juillet</string>
 <string id="June">Juin</string>
 <string id="Kb">Ko</string>
-<string id="Keywords">Mots clés</string>
+<string id="Keywords">Mots-clés</string>
+<string id="Keywords of the thesaurus">Mots-clés du thésaurus</string>
 <string id="Lang">Langue</string>
 <string id="Language filter">Filtre de la langue</string>
 <string id="Last Post">Dernière contribution</string>
@@ -1208,7 +1209,7 @@
 <string id="WARNING!: If you delete this folder, the articles containing the a picture from this folder will be corrupted. Do really whant to delete this directory">ATTENTION : si vous effacez ce répertoire, les articles contenant une image issue de ce répertoire seront corrompus. Voulez-vous vraiment effacer</string>
 <string id="WARNING!: If you rename this file, the articles containing the picture will be corrupted. Do really whant to rename this file">ATTENTION : si vous renommez ce fichier, les articles contenant cette image seront corrompus. Voulez-vous vraiment renommer</string>
 <string id="WARNING!: If you rename this folder, the articles containing the a picture from this folder will be corrupted. Do really whant to rename this directory">ATTENTION : si vous renommez ce répertoire, les articles contenant une image issue de ce répertoire seront corrompus. Voulez-vous vraiment renommer</string>
-<string id="Keywords (separated by spaces)">Mots clés (séparés par des espaces)</string>
+<string id="Keywords (separated by spaces)">mots-clés (séparés par des espaces)</string>
 <string id="Update personnal informations">Mise à jour des informations personnelles</string>
 <string id="Your password has been modified">Votre mot de passe a été modifié</string>
 <string id="Server must have imap functions on">Les fonctions imap doivent être activées sur le serveur</string>
@@ -2364,17 +2365,17 @@
 <string id="Second period">Seconde période</string>
 <string id="Use vacation requests witch overlap the test period">Pour les congés qui chevauchent la période de test, prendre en compte le nombre de jours inclu dans la période de test en tenant compte du type du congé</string>
 <string id="Project right">Droit du projet</string>
-<string id="Connections Log">Connections Log</string>
-<string id="Tags">Mots clés</string>
-<string id="Who can manage tags?">Qui peut gérer les mots clés?</string>
-<string id="Use tags">Utiliser les mots clés</string>
-<string id="Tags to add ( Comma separated: tag1, tag2, etc )">Mots clés à ajouter ( Séparés par des virgules: tag1, tag2, etc )</string>
-<string id="Tag to update ( empty = delete )">Mot clé à mettre à jour ( vide = supprimer )</string>
+<string id="Connections Log">Log des connexions</string>
+<string id="Tags">Mots-clés</string>
+<string id="Who can manage thesaurus?">Qui peut gérer les mots-clés du thésaurus?</string>
+<string id="Use tags">Utiliser les mots-clés du thésaurus</string>
+<string id="Tags to add ( Comma separated: tag1, tag2, etc )">Mots-clés à ajouter ( Séparés par des virgules: tag1, tag2, etc )</string>
+<string id="Tag to update ( empty = delete )">mot-clé à mettre à jour ( vide = supprimer )</string>
 <string id="Choose the column">Choisissez la colonne</string>
 <string id="Column">Colonne</string>
-<string id="Some tags are malformed">Des mots clés sont mal formés</string>
-<string id="Tags import">Import des mots clés</string>
-<string id="Tags management">Gestion des mots clés</string>
+<string id="Some tags are malformed">Des mots-clés sont mal formés</string>
+<string id="Tags import">Import des mots-clés dans le thésaurus</string>
+<string id="Tags management">Gestion des mots-clés du thésaurus</string>
 <string id="Show from here">Afficher à partir d'ici</string>
 <string id="Retention period">Disponibilité en fonction de la date de saisie de la demande de congés</string>
 <string id="Delete vacation right">Supprimer le droit de congés</string>
@@ -2390,12 +2391,12 @@
 <string id="There is no additional informations for this event">Il n'y a pas d'informations complémentaires pour cet événement</string>
 <string id="To order files, drag and drop here">Pour ordonner les fichiers, glisser et déposez ici</string>
 <string id="To order files, drag and drop and don't forget to save">Pour ordonner les fichiers, glisser et déposez et n'oubliez pas de sauvegarder</string>
-<string id="Some tags doesn't exist">Certains mots clés n'existent pas</string>
-<string id="You must specify at least one tag">Vous devez spécifier au moins un mot clé</string>
+<string id="Some tags doesn't exist">Certains mots-clés n'existent pas</string>
+<string id="You must specify at least one tag">Vous devez spécifier au moins un mot-clé</string>
 <string id="Shared creation and modification">Création et modification mutualisées</string>
 <string id="Shared full access">Accès total mutualisé</string>
-<string id="You must specify at least one tag in article properties page">Vous devez spécifier au moins un mot clé dans la page des propriétés de l'article</string>
-<string id="You must sepcify at least one tag">Vous devez spécifier au moins un mot clé</string>
+<string id="You must specify at least one tag in article properties page">Vous devez spécifier au moins un mot-clé dans la page des propriétés de l'article</string>
+<string id="You must sepcify at least one tag">Vous devez spécifier au moins un mot-clé</string>
 <string id="Add selected users">Ajouter les utilisateurs sélectionnés</string>
 <string id="The file is not on the server">Le fichier n'est pas sur le serveur</string>
 <string id="The directory is writable but this is not the full pathname">Le répertoire est accessible en écriture, mais ce n'est pas le chemin complet</string>
@@ -2409,5 +2410,6 @@
 <string id="Default view">Affichage par défault</string>
 <string id="Save default view">Enregistrer affichage par défault</string>
 <string id="Help">Aide en ligne</string>
-<string id="ERROR: You can't use tags. List tags is empty">ERREUR: Vous ne pouvez pas utiliser les mots clés. La liste des mots clés est vide</string>
+<string id="ERROR: You can't use tags. List tags is empty">ERREUR: Vous ne pouvez pas utiliser les mots-clés. La liste des mots-clés du thésaurus est vide</string>
+<string id="Thesaurus">Thésaurus</string>
 </fr>

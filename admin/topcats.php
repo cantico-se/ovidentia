@@ -467,9 +467,9 @@ elseif( isset($update))
 switch($idx)
 	{
 	case 'tags':
-		$babBody->title = bab_translate("Tags");
+		$babBody->title = bab_translate("Thesaurus");
 		$macl = new macl("topcats", "List", 1, "tagsman");
-        $macl->addtable( BAB_TAGSMAN_GROUPS_TBL,bab_translate("Who can manage tags?"));
+        $macl->addtable( BAB_TAGSMAN_GROUPS_TBL,bab_translate("Who can manage thesaurus?"));
 		$macl->filter(0,0,1,1,1);
         $macl->babecho();
 		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List&idp=".$idp);
@@ -478,7 +478,7 @@ switch($idx)
 			$babBody->addItemMenu("Order", bab_translate("Order"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Order&idp=".$idp);
 			}
 		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Create&idp=".$idp);
-		$babBody->addItemMenu("tags", bab_translate("Tags"), $GLOBALS['babUrlScript']."?tg=topcats&idx=tags");
+		$babBody->addItemMenu("tags", bab_translate("Thesaurus"), $GLOBALS['babUrlScript']."?tg=topcats&idx=tags");
 		break;
 	case "Order":
 		orderTopcat($idp);
@@ -489,7 +489,7 @@ switch($idx)
 			$babBody->addItemMenu("Order", bab_translate("Order"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Order&idp=".$idp);
 			}
 		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Create&idp=".$idp);
-		$babBody->addItemMenu("tags", bab_translate("Tags"), $GLOBALS['babUrlScript']."?tg=topcats&idx=tags&idp=".$idp);
+		$babBody->addItemMenu("tags", bab_translate("Thesaurus"), $GLOBALS['babUrlScript']."?tg=topcats&idx=tags&idp=".$idp);
 		break;
 	case "Create":
 		topcatCreate($idp);
@@ -500,7 +500,7 @@ switch($idx)
 			$babBody->addItemMenu("Order", bab_translate("Order"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Order&idp=".$idp);
 			}
 		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Create&idp=".$idp);
-		$babBody->addItemMenu("tags", bab_translate("Tags"), $GLOBALS['babUrlScript']."?tg=topcats&idx=tags&idp=".$idp);
+		$babBody->addItemMenu("tags", bab_translate("Thesaurus"), $GLOBALS['babUrlScript']."?tg=topcats&idx=tags&idp=".$idp);
 		break;
 	case "List":
 	default:
@@ -512,7 +512,7 @@ switch($idx)
 			$babBody->addItemMenu("Order", bab_translate("Order"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Order&idp=".$idp);
 			}
 		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Create&idp=".$idp);
-		$babBody->addItemMenu("tags", bab_translate("Tags"), $GLOBALS['babUrlScript']."?tg=topcats&idx=tags&idp=".$idp);
+		$babBody->addItemMenu("tags", bab_translate("Thesaurus"), $GLOBALS['babUrlScript']."?tg=topcats&idx=tags&idp=".$idp);
 		break;
 	}
 

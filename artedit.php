@@ -1273,7 +1273,7 @@ function showSetArticleProperties($idart)
 						{
 						$this->tagsvalue = bab_pp('tagsname', '');
 						$this->busetags = true;
-						$this->tagstxt = bab_translate("Tags");
+						$this->tagstxt = bab_translate("Keywords of the thesaurus");
 						$babBody->addJavascriptFile($GLOBALS['babScriptPath']."prototype/prototype.js");
 						$babBody->addJavascriptFile($GLOBALS['babScriptPath']."scriptaculous/scriptaculous.js");
 						$babBodyPopup->addStyleSheet('ajax.css');

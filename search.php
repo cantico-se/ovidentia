@@ -227,7 +227,7 @@ function searchKeyword($item , $option = "OR")
 			$this->after = bab_translate("after date");
 			$this->t_search_files_only = bab_translate("Search attached files only");
 			$this->t_index_priority = bab_translate("Give priority to file content for order");
-			$this->tags_txt = bab_translate("Tags");
+			$this->tags_txt = bab_translate("Keywords of the thesaurus");
 			
 			$this->pat = bab_toHtml(bab_rp('pat'));
 			$this->field = bab_rp('field');
@@ -2344,7 +2344,7 @@ function viewArticle($article,$w)
 			$this->t_name = bab_translate("Name");
 			$this->t_description = bab_translate("Description");
 			$this->t_index = bab_translate("Result in file");
-			$this->tags_txt = bab_translate("Tags");
+			$this->tags_txt = bab_translate("Keywords of the thesaurus");
 			$req = "select * from ".BAB_ARTICLES_TBL." where id=".$babDB->quote($article);
 			$this->res = $babDB->db_query($req);
 			$this->arr = $babDB->db_fetch_array($this->res);
