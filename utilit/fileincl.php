@@ -742,9 +742,13 @@ function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonl
 	{
 	global $babBody, $babDB, $BAB_SESS_USERID;
 	
-	$uploadf_name = $fmFile->filename; 
-	$uploadf_size = $fmFile->size;
-	
+	if ($fmFile) {
+		$uploadf_name = $fmFile->filename; 
+		$uploadf_size = $fmFile->size;
+	} else {
+		$uploadf_name = ''; 
+		$uploadf_size = '';
+	}
 
 	$res = $babDB->db_query("select * from ".BAB_FILES_TBL." where id='".$babDB->db_escape_string($idf)."'");
 	if( $res && $babDB->db_num_rows($res))

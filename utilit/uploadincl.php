@@ -65,6 +65,9 @@ class bab_fmFile {
 	 * @param	string	$fieldname
 	 */
 	function upload($fieldname) {
+		if (!isset($_FILES[$fieldname])) {
+			return false;
+		}
 		$obj = new bab_fmFile(BAB_FMFILE_UPLOAD, $_FILES[$fieldname]['tmp_name']);
 		$obj->filename 	= $_FILES[$fieldname]['name'];
 		$obj->size	 	= $_FILES[$fieldname]['size'];
