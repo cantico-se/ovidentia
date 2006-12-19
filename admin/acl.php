@@ -66,6 +66,8 @@ class macl
 			{
 			$this->countsets = 0;
 			}
+			
+		$_SESSION['bab_acl_tablelist'] = array();
 		}
 		
 	function addtable($table,$name = '')
@@ -319,7 +321,7 @@ function maclGroups()
 	
 	$s_table = $_SESSION['bab_acl_tablelist'];
 	unset($_SESSION['bab_acl_tablelist']);
-
+	
 	if (isset($_POST['group']) && count($_POST['group']) > 0) {
 		foreach($_POST['group'] as $table => $groups)
 			{
