@@ -606,6 +606,7 @@ function showTopicTree($actionType, $selectedTopicId)
 			$this->level = $this->treeIterator->getLevel();
 			$this->previousLevel = $this->level - 1;
 			$this->next_idx = bab_toHtml($nextIdx);
+			$this->idart = bab_rp('idart');
 			$this->t_expand_all = bab_translate('Expand all');
 			$this->t_collapse_all = bab_translate('Collapse all');
 			if ($actionType == BAB_TOPIC_SUBMIT)
@@ -849,6 +850,7 @@ function showEditArticle()
 		function temp()
 			{
 			global $babBodyPopup, $babBody, $babDB, $rfurl;
+
 			$idart = bab_rp('idart', 0);
 			$topicid = bab_rp('topicid', 0);
 			$articleid = bab_rp('articleid', 0);
