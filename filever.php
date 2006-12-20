@@ -562,9 +562,15 @@ function fileUnload($idf)
 			$fm_file = fm_getFileAccess($idf);
 			$arrfile = $fm_file['arrfile'];
 			
+			if ($arrfile) {
+				$url = $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$arrfile['id_owner']."&gr=".$arrfile['bgroup']."&path=".urlencode($arrfile['path']);
+			} else {
+				$url = $GLOBALS['babUrlScript'].'?tg=fileman');
+			}
+			
 			$this->message = bab_translate("Your file list has been updated");
 			$this->close = bab_translate("Close");
-			$this->redirecturl = bab_toHtml( $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$arrfile['id_owner']."&gr=".$arrfile['bgroup']."&path=".urlencode($arrfile['path']));
+			$this->redirecturl = bab_toHtml($url);
 			}
 		}
 
@@ -690,25 +696,27 @@ if( isset($_REQUEST['idf']) )
 				break;
 				
 			case 'commit':
-				fm_commitFile(
+				if (false === fm_commitFile(
 					$idf, 
 					$_POST['comment'], 
 					$_POST['vermajor'], 
 					$_FILES['uploadf']['name'], 
 					$_FILES['uploadf']['size'], 
 					$_FILES['uploadf']['tmp_name'] 
-					);
+					)) {
+						$idx = 'commit';
+					}
 				break;
 				 
 			case 'delv':
 				if(bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $fm_file['arrfold']['id'])) {
-					deleteFileVersions($idf, $versions); 
+					deleteFileVersions($idf, bab_pp('versions', array())); 
 				}
 				break;
 				
 			case 'cleanlog':
 				if(bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $fm_file['arrfold']['id'])) {
-					cleanFileLog($idf, $date);
+					cleanFileLog($idf, bab_pp('date'));
 				}
 		}
 

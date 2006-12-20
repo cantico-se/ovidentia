@@ -1003,7 +1003,7 @@ function fm_getFileAccess($idf) {
 
 	static $result = array();
 	
-	if (!$result[$idf]) {
+	if (!isset($result[$idf])) {
 	
 		$bupdate = false;
 		$bdownload = false;
@@ -1163,8 +1163,13 @@ function fm_commitFile($idf, $comment, $vermajor, $fmFile)
 {
 	global $babBody, $babDB;
 	
-	$filename = $fmFile->filename;
-	$size = $fmFile->size;
+	if ($fmFile) {
+		$filename = $fmFile->filename;
+		$size = $fmFile->size;
+	} else {
+		$filename = '';
+		$size = 0;
+	}
 	
 	$fm_file = fm_getFileAccess($idf);
 	$arrfile = $fm_file['arrfile'];
