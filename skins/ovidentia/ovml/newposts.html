@@ -1,3 +1,5 @@
+<OFPutVar name="babHtmlEntities" value="1">
+
 <div id="bab_summary_newposts" style="display:none">
 <br />
 <OFIfNotIsSet name="nbdays" value="7">
@@ -31,9 +33,9 @@
 		<OFAOModulus expr1="<OVCIndex>" expr2="2" saveas="modulo">
 		<tr class="<OCIfEqual expr1="<OVmodulo>" expr2="0">BabSiteAdminFontBackground</OCIfEqual><OCIfNotEqual expr1="<OVmodulo>" expr2="0">BabForumBackground1</OCIfNotEqual>">
 			<td width="120"><OVPostDate date="%S %T"></td>
-			<td align="right"><span style="font-Size:9"><OCForum forumid="<OVPostForumId>"><OVForumName striptags="1" strlen="20,..."> / </OCForum><OCPost postid="<OVPostThreadId>"><OVPostTitle striptags="1" strlen="20,..."> / </OCPost></span></td>
-			<td align="left"><a class="BabSummaryLinkColor" href="<OVPostUrl>"><OVPostTitle striptags="1" strlen="100,..." htmlentities="1"></a></td>
-			<td width="130"><OVPostAuthor htmlentities="1"></td>
+			<td align="right"><span style="font-Size:9"><OCForum forumid="<OVPostForumId>"><OVForumName strlen="20,..."> / </OCForum><OCPost postid="<OVPostThreadId>"><OVPostTitle strlen="20,..."> / </OCPost></span></td>
+			<td align="left"><a class="BabSummaryLinkColor" href="<OVPostUrl>"><OVPostTitle strlen="100,..."></a></td>
+			<td width="130"><OVPostAuthor></td>
 		</tr>
 	</OCRecentPosts>
 	</table>

@@ -1,3 +1,5 @@
+<OFPutVar name="babHtmlEntities" value="1">
+
 <div id="bab_summary_newcomments" style="display:none">
 <OFIfNotIsSet name="nbdays" value="7">
 <br>
@@ -30,12 +32,12 @@
 		<OFAOModulus expr1="<OVCIndex>" expr2="2" saveas="modulo">
 		<tr class="<OCIfEqual expr1="<OVmodulo>" expr2="0">BabSiteAdminFontBackground</OCIfEqual><OCIfNotEqual expr1="<OVmodulo>" expr2="0">BabForumBackground1</OCIfNotEqual>">
 			<td width="120"><OVCommentDate date="%S %T"></td>
-			<td align="left"><span style="font-Size:9"><OCArticleTopic topicid="<OVCommentTopicId>"><OCParentsArticleCategory categoryid="<OVTopicCategoryId>"><OVCategoryName strlen="50,..."> /</OCParentsArticleCategory><OCArticleCategory categoryid="<OVTopicCategoryId>"><OVCategoryName strlen="50,..."> /</OCArticleCategory><OCArticleTopic topicid="<OVCommentTopicId>"><OVTopicName strlen="50,..."> /</OCArticleTopic></OCArticleTopic><OCArticle articleid="<OVCommentArticleId>"><a class="BabSummaryLinkColor" href="javascript: Start('<OVArticlePopupUrl>', 'OviArt', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');"><OVArticleTitle striptags="1" strlen="50,..." htmlentities="1" ></a></OCArticle></span></td>
+			<td align="left"><span style="font-Size:9"><OCArticleTopic topicid="<OVCommentTopicId>"><OCParentsArticleCategory categoryid="<OVTopicCategoryId>"><OVCategoryName strlen="50,..."> /</OCParentsArticleCategory><OCArticleCategory categoryid="<OVTopicCategoryId>"><OVCategoryName strlen="50,..."> /</OCArticleCategory><OCArticleTopic topicid="<OVCommentTopicId>"><OVTopicName strlen="50,..."> /</OCArticleTopic></OCArticleTopic><OCArticle articleid="<OVCommentArticleId>"><a href="javascript: Start('<OVArticlePopupUrl>', 'OviArt', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');"><OVArticleTitle strlen="50,..." ></a></OCArticle></span></td>
 			<td>&nbsp;</td>
 		<tr class="<OCIfEqual expr1="<OVmodulo>" expr2="0">BabSiteAdminFontBackground</OCIfEqual><OCIfNotEqual expr1="<OVmodulo>" expr2="0">BabForumBackground1</OCIfNotEqual>">
 			<td>&nbsp;</td>
-			<td><a class="BabSummaryLinkColor" href="<OVCommentUrl>"><OVCommentTitle striptags="1" strlen="100,..." htmlentities="1" ></a></td>
-			<td width="130"><OVCommentAuthor htmlentities="1">&nbsp;</td>
+			<td><a class="BabSummaryLinkColor" href="<OVCommentUrl>"><OVCommentTitle strlen="100,..."></a></td>
+			<td width="130"><OVCommentAuthor>&nbsp;</td>
 		</tr>
 	</OCRecentComments>
 	</table>
