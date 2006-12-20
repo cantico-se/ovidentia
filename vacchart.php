@@ -152,6 +152,7 @@ function entity_members($ide, $template)
 				$this->superior_id = $superior['id_user'];
 				$this->superior_name = bab_composeUserName($superior['firstname'], $superior['lastname']);
 				}
+			$this->b_rights = $this->superior_id != $GLOBALS['BAB_SESS_USERID'];
 			$this->t_name = bab_translate('Name');
 			$this->t_calendar = bab_translate('Planning');
 			$this->t_rights = bab_translate('Rights');
