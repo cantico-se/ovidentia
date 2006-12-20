@@ -607,7 +607,7 @@ function saveCategory($category, $description, $cat, $sacom, $saart, $saupd, $bn
 
 	if( $busetags == 'Y' )
 		{
-		list($count) = $db->db_fetch_array($db->db_query("select count(id) from ".BAB_TAGS_TBL.""));
+		list($count) = $babDB->db_fetch_array($babDB->db_query("select count(id) from ".BAB_TAGS_TBL.""));
 		if( $count == 0 )
 			{
 			$babBody->msgerror = bab_translate("ERROR: You can't use tags. List tags is empty");
@@ -620,11 +620,9 @@ function saveCategory($category, $description, $cat, $sacom, $saart, $saupd, $bn
 		}
 
 
-	bab_editor_record($content);
-	$category = $db->db_escape_string($category);
-	$description = $db->db_escape_string($description);
 	
-	$query = "select id from ".BAB_TOPICS_TBL." where category='".$category."' and id_cat='".$cat."'";	
+	
+	$query = "select id from ".BAB_TOPICS_TBL." where category='".$babDB->db_escape_string($category)."' and id_cat='".$babDB->db_escape_string($cat)."'";	
 	$res = $babDB->db_query($query);
 	if( $babDB->db_num_rows($res) > 0)
 		{
@@ -636,8 +634,32 @@ function saveCategory($category, $description, $cat, $sacom, $saart, $saupd, $bn
 		{
 		$maxarts = 10;
 		}
+		
+	bab_editor_record($description);
 
-	$query = "insert into ".BAB_TOPICS_TBL." ( category, description, id_cat, idsaart, idsacom, idsa_update, notify, lang, article_tmpl, display_tmpl, restrict_access, allow_hpages, allow_pubdates, allow_attachments, allow_update, allow_manupdate, max_articles, auto_approbation, busetags) values ('".$category. "', '" . $description. "', '" . $babDB->db_escape_string($cat). "', '" . $babDB->db_escape_string($saart). "', '" . $babDB->db_escape_string($sacom). "', '" . $babDB->db_escape_string($saupd). "', '" . $babDB->db_escape_string($bnotif). "', '" .$babDB->db_escape_string($lang). "', '" .$babDB->db_escape_string($atid). "', '" .$babDB->db_escape_string($disptid). "', '" .$babDB->db_escape_string($restrict). "', '" .$babDB->db_escape_string($bhpages). "', '" .$babDB->db_escape_string($bpubdates). "', '" .$babDB->db_escape_string($battachment). "', '" .$babDB->db_escape_string($bartupdate). "', '" .$babDB->db_escape_string($bmanmod). "', '".$babDB->db_escape_string($maxarts). "', '".$babDB->db_escape_string($bautoapp). "', '".$babDB->db_escape_string($busetags)."')";
+	$query = "insert into ".BAB_TOPICS_TBL." ( category, description, id_cat, idsaart, idsacom, idsa_update, notify, lang, article_tmpl, display_tmpl, restrict_access, allow_hpages, allow_pubdates, allow_attachments, allow_update, allow_manupdate, max_articles, auto_approbation, busetags) 
+	
+	values (
+		'".$babDB->db_escape_string($category). "', 
+		'" .$babDB->db_escape_string($description). "', 
+		'" .$babDB->db_escape_string($cat). "', 
+		'" .$babDB->db_escape_string($saart). "', 
+		'" .$babDB->db_escape_string($sacom). "', 
+		'" .$babDB->db_escape_string($saupd). "', 
+		'" .$babDB->db_escape_string($bnotif). "', 
+		'" .$babDB->db_escape_string($lang). "', 
+		'" .$babDB->db_escape_string($atid). "', 
+		'" .$babDB->db_escape_string($disptid). "', 
+		'" .$babDB->db_escape_string($restrict). "', 
+		'" .$babDB->db_escape_string($bhpages). "', 
+		'" .$babDB->db_escape_string($bpubdates). "', 
+		'" .$babDB->db_escape_string($battachment). "', 
+		'" .$babDB->db_escape_string($bartupdate). "', 
+		'" .$babDB->db_escape_string($bmanmod). "', 
+		'".$babDB->db_escape_string($maxarts). "', 
+		'".$babDB->db_escape_string($bautoapp). "', 
+		'".$babDB->db_escape_string($busetags)."'
+	)";
 	$babDB->db_query($query);
 	$id = $babDB->db_insert_id();
 
@@ -647,7 +669,7 @@ function saveCategory($category, $description, $cat, $sacom, $saart, $saupd, $bn
 		$ord = $arr[0] + 1;
 	else
 		$ord = 1;
-	$babDB->db_query("insert into ".BAB_TOPCAT_ORDER_TBL." (id_topcat, type, ordering, id_parent) VALUES ('" .$id. "', '2', '" . $ord. "', '".$babDB->db_escape_string($cat)."')");
+	$babDB->db_query("insert into ".BAB_TOPCAT_ORDER_TBL." (id_topcat, type, ordering, id_parent) VALUES ('" .$babDB->db_escape_string($id). "', '2', '" . $babDB->db_escape_string($ord). "', '".$babDB->db_escape_string($cat)."')");
 	
 	return true;
 	}
