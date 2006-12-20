@@ -7626,6 +7626,18 @@ function upgrade606to610()
 
 	}
 	
+	if (!bab_isTable(BAB_INDEX_SPOOLER_TBL)) {
+		$babDB->db_query("
+			CREATE TABLE `".BAB_INDEX_SPOOLER_TBL."` (
+			`object` VARCHAR( 255 ) NOT NULL ,
+			`require_once` VARCHAR( 255 ) NOT NULL ,
+			`function` VARCHAR( 255 ) NOT NULL ,
+			`function_parameter` LONGTEXT NOT NULL ,
+			PRIMARY KEY ( `object` )
+			)"
+		);
+	}
+	
 	return $ret;
 }
 

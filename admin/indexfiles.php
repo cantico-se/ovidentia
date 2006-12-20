@@ -85,10 +85,9 @@ function listIndexFiles()
 			$this->res = $babDB->db_query("SELECT * FROM ".BAB_INDEX_FILES_TBL."");			
 			
 			$this->allowed_ip = $this->reg->getValue('allowed_ip', '127.0.0.1');
-			$this->reg->changeDirectory('/bab/indexfiles/lock/');
-
+			
 			if (isset($_GET['unlock']) && isset($_GET['obj'])) {
-				$this->reg->removeKey($_GET['obj']);
+				$babDB->db_query('DELETE FROM '.BAB_INDEX_SPOOLER_TBL.' WHERE object='.$babDB->quote($_GET['obj']));
 			}
 		}
 

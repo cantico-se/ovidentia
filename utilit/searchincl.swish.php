@@ -202,11 +202,17 @@ class bab_indexFilesCls extends swishCls
 		 * @return object bab_indexReturn
 		 */
 		function checkTimeout() {
+			global $babDB;
+		
 			$r = new bab_indexReturn;
-			$reg = bab_getRegistryInstance();
-			$reg->changeDirectory('/bab/indexfiles/lock/');
-			$object = $reg->getValue($this->object);
-			if (NULL !== $object) {
+
+			$res = $babDB->db_query('SELECT * FROM '.BAB_INDEX_SPOOLER_TBL.' WHERE object='.$babDB->quote($this->object));
+
+			if (0 < $babDB->db_num_rows($res)) {
+			
+				$object = $babDB->db_fetch_assoc($res);
+				$object['function_parameter'] = unserialize($object['function_parameter']);
+			
 				if (!file_exists($this->indexLog)) {
 					// locked but not launched yet
 					$r->result = BAB_INDEX_PENDING;
@@ -225,11 +231,11 @@ class bab_indexFilesCls extends swishCls
 							require_once($object['require_once']);
 							if (call_user_func($object['function'], $object['function_parameter'])) {
 								// free object
-								$reg->removeKey($this->object);
+								$babDB->db_query('DELETE FROM '.BAB_INDEX_SPOOLER_TBL.' WHERE object='.$babDB->quote($this->object));
 								unlink($this->tmpCfgFile);
 								unlink($this->indexLog);
 								unlink($this->batchFile);
-								@unlink($this->errorLog);
+								unlink($this->errorLog);
 
 								$r->result = BAB_INDEX_FREE;
 								$r->addDebug(sprintf(bab_translate("The lock has been removed from %s"),$this->object));
@@ -264,26 +270,25 @@ class bab_indexFilesCls extends swishCls
 		 */
 		function prepareIndex($require_once, $function, $function_parameter) {
 
-			$r = $this->checkTimeout();
+			global $babDB;
 			
+			$r = $this->checkTimeout();
 			$r->result = BAB_INDEX_FREE === $r->result;
-
 			$r->merge($this->setTempConfigFile($this->mainIndex));
 
 			if (false === $r->result) {
 				return $r;
 			}
 
-			
-
-			$reg = bab_getRegistryInstance();
-			$reg->changeDirectory('/bab/indexfiles/lock/');
-			$reg->setKeyValue($this->object, array(
-						'require_once'			=> $require_once,
-						'function'				=> $function,
-						'function_parameter'	=> $function_parameter
-					)
-				);
+			$babDB->db_query('
+				INSERT INTO '.BAB_INDEX_SPOOLER_TBL.' (object, require_once, function, function_parameter) 
+				VALUES (
+					'.$babDB->quote($this->object).',
+					'.$babDB->quote($require_once).',
+					'.$babDB->quote($function).',
+					'.$babDB->quote(serialize($function_parameter)).'
+				)
+			');
 
 			static $addEOF = NULL;
 

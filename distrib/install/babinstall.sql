@@ -2834,6 +2834,14 @@ CREATE TABLE bab_index_access (
 );
 
 
+CREATE TABLE `bab_index_spooler` (
+`object` VARCHAR( 255 ) NOT NULL ,
+`require_once` VARCHAR( 255 ) NOT NULL ,
+`function` VARCHAR( 255 ) NOT NULL ,
+`function_parameter` LONGTEXT NOT NULL ,
+PRIMARY KEY ( `object` )
+);
+
 CREATE TABLE `bab_registry` (
   `dirkey` varchar(255) NOT NULL default '',
   `value` text NOT NULL,

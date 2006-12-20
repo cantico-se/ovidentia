@@ -34,7 +34,7 @@ function bab_indexJobs($idx, $object) {
 
 	$reg->changeDirectory('/bab/indexfiles/');
 	$allowed_ip	= $reg->getValue('allowed_ip','127.0.0.1');
-	
+	$allowed_ip = explode(',',$allowed_ip);
 
 
 	if (BAB_INDEX_WAITING == $idx) {
@@ -45,7 +45,7 @@ function bab_indexJobs($idx, $object) {
 
 	$job = '';
 
-	if ($allowed_ip === $_SERVER['REMOTE_ADDR']) {
+	if (in_array($_SERVER['REMOTE_ADDR'], $allowed_ip)) {
 
 		$prepare = isset($_GET['prepare']);
 
