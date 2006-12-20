@@ -200,6 +200,16 @@ class bab_inifile_requirements {
 		);
 	}
 	
+	
+	function require_register_globals($value) {
+	
+		return array(
+			'description'	=> 'register_globals (php.ini)',
+			'current'		=> $value,
+			'result'		=> !ini_get('register_globals')
+		);
+	}
+	
 
 	function require_mod_imap($value) {
 		

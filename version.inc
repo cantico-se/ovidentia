@@ -39,6 +39,7 @@ mysql_version="3.23"
 mod_zlib="Available"
 
 [recommendations]
+register_globals="Off"
 lang_directory="Available" 
 upload_directory="Available"
 images_directory="Available" 
