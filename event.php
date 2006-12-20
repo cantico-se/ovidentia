@@ -170,18 +170,33 @@ function newEvent()
 			$this->repeat_dateend = $this->urlDate('repeat_dateend',$this->curmonth,$this->curyear);
 			$this->yearmin = $this->curyear - $this->ymin;
 			
-			$date0 = (int) bab_rp('date0', time());
-			$date1 = (int) bab_rp('date1', time());
+			
+			
+			if (isset($_REQUEST['date0']) && isset($_REQUEST['date1'])) {
+				$date0 = (int) bab_rp('date0', time());
+				$date1 = (int) bab_rp('date1', time());
 
+			} else {
+			
+				$date = $this->curyear.'-'.$this->curmonth.'-'.$this->curday;
+			
+				$date0 = bab_mktime($date.' '.$babBody->icalendars->starttime);
+				$endtime = $babBody->icalendars->endtime > $babBody->icalendars->starttime ? $babBody->icalendars->endtime : '23:00:00';
+				$date1 = bab_mktime($date.' '.$endtime);
+			} 
+			
+			
 			$this->yearbegin = date("Y", $date0);
 			$this->monthbegin = date("m", $date0);
 			$this->daybegin = date("d", $date0);
-			$this->timebegin = !isset($_REQUEST['date0'])? substr($babBody->icalendars->starttime, 0, 5): date("H:i", (int) $_REQUEST['date0']);
-
+			
 			$this->yearend = date("Y", $date1);
 			$this->monthend = date("m", $date1);
 			$this->dayend = date("d", $date1);
-			$this->timeend = !isset($_REQUEST['date1'])? substr($babBody->icalendars->endtime, 0, 5): date("H:i", (int) $_REQUEST['date1']);
+			
+			$this->timebegin = date("H:i", $date0);
+			$this->timeend = date("H:i", $date1);
+			
 
 			$this->repeat_yearend 	= !isset($_REQUEST['repeat_yearend']) 	? $this->curyear	: $_REQUEST['repeat_yearend'];
 			$this->repeat_monthend 	= !isset($_REQUEST['repeat_monthend']) 	? $this->curmonth	: $_REQUEST['repeat_monthend'];
@@ -957,7 +972,11 @@ function addEvent(&$message)
 	$args['startdate']['year'] = $_POST['yearbegin'];
 	$args['startdate']['month'] = $_POST['monthbegin'];
 	$args['startdate']['day'] = $_POST['daybegin'];
-	$timebegin = isset($_POST['timebegin']) ? $_POST['timebegin'] : $babBody->icalendars->starttime;
+	if (isset($_POST['timebegin'])) {
+		$timebegin = $_POST['timebegin'];
+	} else {
+		$timebegin = $babBody->icalendars->starttime;
+	}
 	$tb = explode(':',$timebegin);
 	$args['startdate']['hours'] = $tb[0];
 	$args['startdate']['minutes'] = $tb[1];
@@ -965,7 +984,16 @@ function addEvent(&$message)
 	$args['enddate']['year'] = $_POST['yearend'];
 	$args['enddate']['month'] = $_POST['monthend'];
 	$args['enddate']['day'] = $_POST['dayend'];
-	$timeend = isset($_POST['timeend']) ? $_POST['timeend'] : $babBody->icalendars->endtime;
+	if (isset($_POST['timeend'])) {
+		$timeend = $_POST['timeend'];
+	} else {
+		if ($babBody->icalendars->endtime > $timebegin) {
+			$timeend = $babBody->icalendars->endtime;
+		} else {
+			$timeend = '23:59:59';
+		}
+	}
+	
 	$tb = explode(':',$timeend);
 	$args['enddate']['hours'] = $tb[0];
 	$args['enddate']['minutes'] = $tb[1];
@@ -1068,8 +1096,8 @@ function addEvent(&$message)
 			}
 
 		}
-
-	return bab_createEvent(explode(',', $GLOBALS['calid']), $args, $message);
+		
+	return bab_createEvent($_POST['selected_calendars'], $args, $message);
 	}
 
 
@@ -1383,13 +1411,13 @@ switch($idx)
 		switch($view)
 		{
 			case 'viewd':
-				$refreshurl = $GLOBALS['babUrlScript']."?tg=calday&calid=".$curcalids."&date=".$date;
+				$refreshurl = $GLOBALS['babUrlScript']."?tg=calday&calid=".bab_rp('curcalids')."&date=".bab_rp('date');
 				break;
 			case 'viewq':
-				$refreshurl = $GLOBALS['babUrlScript']."?tg=calweek&calid=".$curcalids."&date=".$date;
+				$refreshurl = $GLOBALS['babUrlScript']."?tg=calweek&calid=".bab_rp('curcalids')."&date=".bab_rp('date');
 				break;
 			case 'viewm':
-				$refreshurl = $GLOBALS['babUrlScript']."?tg=calmonth&calid=".$curcalids."&date=".$date;
+				$refreshurl = $GLOBALS['babUrlScript']."?tg=calmonth&calid=".bab_rp('curcalids')."&date=".bab_rp('date');
 				break;
 			default:
 				$popupmessage = "";

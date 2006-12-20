@@ -220,7 +220,7 @@ function newEmails()
 				if( $res2 && $babDB->db_num_rows($res2) > 0 )
 					{
 					$arr2 = $babDB->db_fetch_array($res2);
-					$this->domain = $arr2['name'];
+					$this->domain = bab_toHtml($arr2['name']);
 					$protocol = '';
 					if( isset($GLOBALS['babImapProtocol']) && count($GLOBALS['babImapProtocol'])) 
 						{
@@ -231,14 +231,14 @@ function newEmails()
 					$mbox = @imap_open($cnxstring, $arr['login'], $arr['accpass']);
 					if($mbox)
 						{
-						$this->domainurl = $GLOBALS['babUrlScript']."?tg=inbox&&accid=".$arr['id'];
+						$this->domainurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=inbox&&accid=".$arr['id']);
 						$nbmsg = imap_num_recent($mbox); 
-						$this->nbemails = "( ". $nbmsg. " )";
+						$this->nbemails = bab_toHtml("( ". $nbmsg. " )");
 						imap_close($mbox);
 						}
 					else
 						{
-						$this->nbemails = "( ". imap_last_error(). " )";
+						$this->nbemails = bab_toHtml("( ". imap_last_error(). " )");
 						}
 					}
 				$i++;

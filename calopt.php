@@ -54,9 +54,9 @@ function accessCalendar($calid, $urla)
 			while( $arr = $babDB->db_fetch_array($res))
 				{
 					$this->arrusers[] = array(
-						'user'=>bab_composeUserName($arr['firstname'], $arr['lastname']), 
-						'id'=>$arr['id_user'], 
-						'access'=>$arr['bwrite']
+						'user'		=> bab_composeUserName($arr['firstname'], $arr['lastname']), 
+						'id'		=> $arr['id_user'], 
+						'access'	=> $arr['bwrite']
 					);
 					
 					$users->addUser($arr['id_user']);
@@ -131,7 +131,8 @@ function addAccessUsers( $userids, $params)
 	global $babDB;
 		
 	if (isset($userids[$GLOBALS['BAB_SESS_USERID']])) {
-		unset($userids[$GLOBALS['BAB_SESS_USERID']]);
+		$GLOBALS['babBody']->addError(sprintf(bab_translate('%s is your personal calendar'),bab_getUserName($GLOBALS['BAB_SESS_USERID'])));
+		return false;
 	}
 		
 	$req = "
@@ -166,7 +167,7 @@ function addAccessUsers( $userids, $params)
 		$babDB->db_query("DELETE FROM ".BAB_CALACCESS_USERS_TBL." WHERE id_cal='".$babDB->db_escape_string($params['calid'])."'");
 	}
 	
-	Header("Location:".$GLOBALS['babUrlScript']."?tg=calopt&idx=access&urla=".urlencode($params['urla']));
+	Header("Location:".$GLOBALS['babUrlScript'].'?tg=calopt&idx=access&urla='.urlencode($params['urla']));
 	exit;
 }
 
@@ -696,6 +697,12 @@ switch($idx)
 		break;
 
 	case "unload":
+	
+		if (!bab_isUserLogged()) {
+			$babBody->addError('Access denied');
+			break;
+		}
+	
 		record_calendarchoice();
 		include_once $babInstallPath."utilit/uiutil.php";
 		$babBodyPopup = new babBodyPopup();
@@ -705,12 +712,21 @@ switch($idx)
 		break;
 
 	case "access":
+	
+		if (!bab_isUserLogged()) {
+			$babBody->addError('Access denied');
+			break;
+		}
+		
 		$babBody->title = bab_translate("Calendar Options");
 		if( $babBody->icalendars->id_percal != 0 )
 		{
 			accessCalendar($babBody->icalendars->id_percal, bab_rp('urla'));
+			
 			$babBody->addItemMenu("options", bab_translate("Calendar Options"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options&urla=".urlencode($urla));
-			$babBody->addItemMenu("access", bab_translate("Calendar access"), $GLOBALS['babUrlScript']."?tg=options&idx=access&idcal=".$idcal);
+			
+			$babBody->addItemMenu("access", bab_translate("Calendar access"), $GLOBALS['babUrlScript']."?tg=options&idx=access&idcal=".$babBody->icalendars->id_percal);
+			
 			if( isset($urla) && !empty($urla) )
 				{
 				$babBody->addItemMenu("cal", bab_translate("Calendar"), urldecode($urla));
@@ -721,6 +737,12 @@ switch($idx)
 		break;
 	default:
 	case "options":
+	
+		if (!bab_isUserLogged()) {
+			$babBody->addError('Access denied');
+			break;
+		}
+	
 		$babBody->title = bab_translate("Calendar and Vacations Options");
 		$idcal = $babBody->icalendars->id_percal;
 
