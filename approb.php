@@ -1210,7 +1210,7 @@ if( '' != ($conf = bab_pp('conf')))
 	if( $conf == 'art')
 	{
 		$bconfirm = bab_pp('bconfirm', 'N');
-		updateConfirmationWaitingArticle(bab_gp('idart'), $bconfirm, bab_gp('comment'));
+		updateConfirmationWaitingArticle(bab_pp('idart'), $bconfirm, bab_pp('comment'));
 		$idx = 'unload';
 	}
 	elseif( $conf == 'com' )
