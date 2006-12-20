@@ -729,7 +729,7 @@ if('login' === bab_pp('login'))
 	else
 		{
 		$url = bab_rp('referer');
-		if (substr_count($url,$GLOBALS['babUrlScript']) == 1 && substr_count($url,'tg=login&cmd=') == 0) {
+		if (substr_count($url,'tg=login&cmd=') == 0) {
 			loginRedirect($url);
 			}
 		else {
@@ -759,8 +759,6 @@ else if( 'send' === bab_pp('sendpassword'))
 	sendPassword(bab_pp('nickname'));
 	}
 
-
-
 switch($cmd)
 	{
 	case 'signoff':
@@ -777,17 +775,19 @@ switch($cmd)
 		$babBody->addItemMenu("signon", bab_translate("Login"), $GLOBALS['babUrlScript']."?tg=login&cmd=signon");
 		if( $babBody->babsite['registration'] == 'Y') {
 			$babBody->addItemMenu("register", bab_translate("Register"), $GLOBALS['babUrlScript']."?tg=login&cmd=register");
+			
+			include_once $babInstallPath."utilit/dirincl.php";
+			displayRegistration(
+					bab_pp('nickname'), 
+					bab_rp('fields', array()), 
+					bab_pp('cagree')
+				);
 		}
 		if ($GLOBALS['babEmailPassword'] ) {
 			$babBody->addItemMenu("emailpwd", bab_translate("Lost Password"), $GLOBALS['babUrlScript']."?tg=login&cmd=emailpwd");
 		}
 
-		include_once $babInstallPath."utilit/dirincl.php";
-		displayRegistration(
-				bab_pp('nickname'), 
-				bab_rp('fields', array()), 
-				bab_pp('cagree')
-			);
+		
 		break;
 
 	case "emailpwd":
