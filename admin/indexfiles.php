@@ -25,7 +25,6 @@ include_once "base.php";
 include_once $GLOBALS['babInstallPath'].'utilit/indexincl.php';
 
 
-
 /**
  * List index files for administrators
  */
@@ -190,7 +189,6 @@ function record_status() {
 
 // main
 
-
 if( !isset($BAB_SESS_LOGGED) || empty($BAB_SESS_LOGGED) ||  !$babBody->isSuperAdmin)
 {
 	$babBody->msgerror = bab_translate("Access denied");
@@ -210,6 +208,7 @@ if (isset($_POST['action'])) {
 			break;
 	}
 }
+
 
 
 
