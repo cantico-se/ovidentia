@@ -5768,6 +5768,10 @@ function upgrade581to582()
 $ret = "";
 $db = & $GLOBALS['babDB'];
 
+$res = $db->db_query("SELECT uploadpath FROM ".BAB_SITES_TBL." WHERE name=".$db->quote($GLOBALS['babSiteName']));
+$arr = $db->db_fetch_assoc($res);
+$GLOBALS['babUploadPath'] = $arr['uploadpath'];
+
 if (!bab_isTable(BAB_FORUMSFILES_TBL)) {
 	
 	$db->db_query("
@@ -5784,6 +5788,7 @@ if (!bab_isTable(BAB_FORUMSFILES_TBL)) {
 
 	// create existing files
 
+
 	include_once $GLOBALS['babInstallPath']."utilit/forumincl.php";
 
 	$res = $db->db_query("SELECT p.id, t.forum FROM ".BAB_POSTS_TBL." p, ".BAB_THREADS_TBL." t WHERE t.id = p.id_thread");
@@ -5795,7 +5800,7 @@ if (!bab_isTable(BAB_FORUMSFILES_TBL)) {
 			$db->db_query("INSERT INTO ".BAB_FORUMSFILES_TBL." 
 				(id_post, name) 
 			VALUES 
-				('".$arr['id']."','".$name."')
+				('".$db->db_escape_string($arr['id'])."','".$db->db_escape_string($name)."')
 			");
 		}
 	}
