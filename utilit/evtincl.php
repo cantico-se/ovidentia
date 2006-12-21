@@ -975,7 +975,18 @@ function notifyEventUpdate($evtid, $bdelete)
 	$subject .= $GLOBALS['BAB_SESS_USER'];
 	$mail->mailSubject($subject);
 
-	$res = $babDB->db_query("select ceot.*, ct.type, ct.owner from ".BAB_CAL_EVENTS_OWNERS_TBL." ceot left join ".BAB_CALENDAR_TBL." ct on ct.id=ceot.id_cal where ceot.id_event='".$babDB->db_escape_string($evtid)."'");
+	$res = $babDB->db_query("
+		SELECT 
+			ceot.*, 
+			ct.type, 
+			ct.owner 
+		FROM 
+			".BAB_CAL_EVENTS_OWNERS_TBL." ceot 
+			left join ".BAB_CALENDAR_TBL." ct on ct.id=ceot.id_cal 
+		WHERE 
+			ceot.id_event='".$babDB->db_escape_string($evtid)."' 
+			AND status IN('".BAB_CAL_STATUS_ACCEPTED."', '".BAB_CAL_STATUS_NONE."')
+		");
 	while( $arr = $babDB->db_fetch_array($res) )
 		{
 		$arrusers = cal_usersToNotiy($arr['id_cal'], $arr['type'], $arr['owner']);
