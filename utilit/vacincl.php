@@ -2130,7 +2130,7 @@ function bab_vac_updateCalendar($id_user, $year, $month) {
 	$db = $GLOBALS['babDB'];
 	include_once $GLOBALS['babInstallPath']."utilit/workinghoursincl.php";
 
-	$db->db_query("DELETE FROM ".BAB_VAC_CALENDAR_TBL." WHERE monthkey=".$db->quote($month.$year));
+	$db->db_query("DELETE FROM ".BAB_VAC_CALENDAR_TBL." WHERE monthkey=".$db->quote($month.$year).' AND id_user='.$db->quote($id_user));
 
 	$dateb = new BAB_dateTime($year, $month, 1); 
 	$datee = $dateb->cloneDate();
