@@ -1783,7 +1783,7 @@
 <string id="Tables">Tableaux</string>
 <string id="Scripts and plugins">Scripts et plugins</string>
 <string id="Images">Images</string>
-<string id="Frames (open external url into document body)">Cadres (ouvre des adresses externe dans le corps du document)</string>
+<string id="Frames (open external url into document body)">Cadres (ouvre des adresses externes dans le corps du document)</string>
 <string id="Forms">Formulaires</string>
 <string id="Targets on links (open links in new windows)">Cible sur les liens (ouvrir les liens dans des nouvelles fenêtres)</string>
 <string id="In this configuration, some html tags may be removed for security reasons">Dans cette configuration, certaines balises html pourront être supprimées lors de l'enregistrement pour des raisons de sécurité</string>
@@ -2180,7 +2180,7 @@
 <string id="Dashboard from %s to %s">Tableau de bord du %s au %s</string>
 <string id="Decoding type">Type de décodage</string>
 <string id="Mail server error">Erreur du serveur de messagerie</string>
-<string id="Undelivered mails">mails non distribués</string>
+<string id="Undelivered mails">Mails non distribués</string>
 <string id="The database is not up-to-date">La base de données n'est pas à jour</string>
 <string id="The database has not been updated since version %s">La base de données n'a pas été mise à jour depuis la version %s</string>
 <string id="Update database">Mettre à jour la base de données</string>
