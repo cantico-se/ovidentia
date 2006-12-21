@@ -238,20 +238,28 @@ function zipupgrade($message)
 			}
 
 			include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
-			$this->basedir = dirname($_SERVER['SCRIPT_FILENAME']).'/';
-			$this->dh = opendir($this->basedir);
+			$basedir = dirname($_SERVER['SCRIPT_FILENAME']).'/';
+			$dh = opendir($basedir);
+			
+			$this->dirs = array();
+			
+			while (($file = readdir($dh)) !== false) {
+				if (is_dir($basedir.$file) && file_exists($basedir.$file.'/version.inc')) {
+					$this->dirs[] = $file;
+				} 
 			}
+			
+			natcasesort($this->dirs);
+		}
 
 
-			function getnextdir(&$skip) {
-				if (($file = readdir($this->dh)) !== false) {
-					if (is_dir($this->basedir.$file) && file_exists($this->basedir.$file.'/version.inc')) {
-						$this->altbg = !$this->altbg;
-						$this->name = $file;
-						$this->current_core = $file.'/' === $GLOBALS['babInstallPath'];
-					} else {
-						$skip = true;
-					}
+			function getnextdir() {
+				if (list(,$file) = each($this->dirs)) {
+					
+					$this->altbg = !$this->altbg;
+					$this->name = $file;
+					$this->current_core = $file.'/' === $GLOBALS['babInstallPath'];
+					
 					return true;
 				}
 				return false;
