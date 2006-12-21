@@ -1213,7 +1213,7 @@ else if ($idx == 'save_state')
 	$idx = 'list';
 }
 
-$sess = ;
+
 if (isset($disp))
 {
 	$_SESSION["BAB_SESS_CHARTDISP-".$ocid] = $disp;
