@@ -374,17 +374,17 @@ class bab_indexFilesCls extends swishCls
 			$r->merge($this->execCmd($this->swishCmd.' -M '.escapeshellarg($this->mainIndex).' '.escapeshellarg($this->mergeIndex).' '.escapeshellarg($this->tempIndex)));
 
 			
-			unlink($this->tmpCfgFile);
+			@unlink($this->tmpCfgFile);
 
-			unlink($this->mergeIndex);
-			unlink($this->mergeIndex.'.prop');
+			@unlink($this->mergeIndex);
+			@unlink($this->mergeIndex.'.prop');
 			
 			if (is_file($this->tempIndex)) {
-				unlink($this->mainIndex);
-				unlink($this->mainIndex.'.prop');
+				@unlink($this->mainIndex);
+				@unlink($this->mainIndex.'.prop');
 
-				rename($this->tempIndex, $this->mainIndex);
-				rename($this->tempIndex.'.prop', $this->mainIndex.'.prop');
+				@rename($this->tempIndex, $this->mainIndex);
+				@rename($this->tempIndex.'.prop', $this->mainIndex.'.prop');
 
 				$r->result = true;
 			} else {
