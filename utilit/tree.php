@@ -1597,7 +1597,15 @@ class bab_FileTreeView extends bab_TreeView
 	{
 		global $babBody;
 
-		if (!is_array($babBody->aclfm)) {
+		$element =& $this->createElement('cd',
+										 'foldercategory',
+										 bab_translate("Collective folders"),
+										 '',
+										 '');
+		$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/collective_folder.png');
+		$this->appendElement($element, null);
+		
+		if (!isset($babBody->aclfm['id']) || !is_array($babBody->aclfm['id'])) {
 			return;
 		}
 		$aclFlip = array_flip($babBody->aclfm['id']);
@@ -1611,11 +1619,14 @@ class bab_FileTreeView extends bab_TreeView
 			$directoriesManageAcl[$directoryId] = $babBody->aclfm['ma'][$aclFlip[$directoryId]];
 		}
 
-		$sql = 'SELECT folder.id, folder.folder FROM ' . BAB_FM_FOLDERS_TBL. ' folder';
+		$sql = 'SELECT folder.id, folder.folder FROM ' . BAB_FM_FOLDERS_TBL. ' folder ';
+		$where = array();
+		$where[] = "active='Y'";
+		$where[] = "bhide='N'";
 		if ($babBody->currentAdmGroup != 0)	{
-			$sql .= ' WHERE folder.id_dgowner=\''.$babBody->currentAdmGroup.'\'';
+			$where[] = ' folder.id_dgowner=\''.$babBody->currentAdmGroup.'\'';
 		}
-		$sql .= ' ORDER BY folder.folder';
+		$sql .= 'WHERE '.implode(' AND ',$where).' ORDER BY folder.folder';
 
 		$elementType = 'folder';
 		if ($this->_attributes & BAB_FILE_TREE_VIEW_SELECTABLE_COLLECTIVE_DIRECTORIES) {
@@ -1623,13 +1634,7 @@ class bab_FileTreeView extends bab_TreeView
 		}
 		$folders = $this->_db->db_query($sql);
 		
-		$element =& $this->createElement('cd',
-										 'foldercategory',
-										 bab_translate("Collective folders"),
-										 '',
-										 '');
-		$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/collective_folder.png');
-		$this->appendElement($element, null);
+		
 		
 		while ($folder = $this->_db->db_fetch_array($folders)) {
 			if ($this->_adminView
@@ -1661,7 +1666,7 @@ class bab_FileTreeView extends bab_TreeView
 
 		$sql = 'SELECT file.id, file.path, file.name, file.id_owner, file.bgroup FROM ' . BAB_FILES_TBL.' file';
 		if ($babBody->currentAdmGroup != 0) {
-			$sql .= ' LEFT JOIN '.BAB_FM_FOLDERS_TBL.' folder ON file.id_owner=folder.id';
+			$sql .= ' LEFT JOIN '.BAB_FM_FOLDERS_TBL.' folder ON file.id_owner=folder.id ';
 			$sql .= ' WHERE file.bgroup=\'Y\' AND folder.id_dgowner=\''.$babBody->currentAdmGroup.'\'';
 		} elseif ($this->_attributes & BAB_FILE_TREE_VIEW_SHOW_PERSONAL_DIRECTORIES) {
 			$sql .= ' WHERE (file.bgroup=\'Y\' OR (file.bgroup=\'N\' AND file.id_owner=\'' . $GLOBALS['BAB_SESS_USERID'] . '\'))';
