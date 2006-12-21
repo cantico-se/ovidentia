@@ -115,7 +115,7 @@ function addonsList($upgradeall)
 			$this->uncheckall = bab_translate("Uncheck all");
 			$this->checkall = bab_translate("Check all");
 			$this->update = bab_translate("Update");
-			$this->view = bab_translate("View");
+			$this->view = bab_translate("Rights");
 			$this->versiontxt = bab_translate("Version");
 			$this->t_delete = bab_translate("Delete");
 			$this->t_historic = bab_translate("Historic");
