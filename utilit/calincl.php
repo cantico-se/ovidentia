@@ -256,12 +256,12 @@ class bab_icalendars
 		global $babBody, $babDB;
 
 		$pcalendar = false;
-		$this->allday = 'Y';
-		$this->usebgcolor = 'Y';
-		$this->elapstime = 60;
-		$this->defaultview = BAB_CAL_VIEW_MONTH;
-		$this->starttime = "00:00:00";
-		$this->endtime = "23:59:59";
+		$this->allday = $babBody->babsite['allday'];
+		$this->usebgcolor = $babBody->babsite['usebgcolor'];
+		$this->elapstime = $babBody->babsite['elapstime'];
+		$this->defaultview = $babBody->babsite['defaultview'];
+		$this->starttime = $babBody->babsite['start_time'];
+		$this->endtime = $babBody->babsite['end_time'];
 		$this->dispdays = $babBody->babsite['dispdays'];
 		$this->startday = $babBody->babsite['startday'];
 		$this->user_calendarids = '';

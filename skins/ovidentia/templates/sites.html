@@ -764,12 +764,78 @@ function changetype(obj)
 				<!--#endin getnextdispday -->
 			</dl>
 			<dl>
-				<dt><h5>{ t_startdaytxt }</h5><dt>
-				<select name="startday" style="width:100%">
+			<table border="1" cellspacing="0" cellpadding="5" >
+				<tr align="center">
+				<td nowrap><h5>{ t_startdaytxt }</h5></td>
+				<td nowrap><h5>{ t_starttimetxt }</h5></td>
+				<td nowrap><h5>{ t_endtimetxt }</h5></td>
+				</tr>
+				<tr align="center">
+				<td>
+				<select name="startday">
 				<!--#in getnextstartday -->
-				<option value="{ dayid }"  { checked } />{ shortday }</option>
+				<option value="{ dayid }" { checked } />{ shortday }</option>
 				<!--#endin getnextstartday -->
 				</select>
+				</td>
+				<td>
+				<select name="starttime">
+				<!--#in getnexttime -->
+				<option value="{ timeid }" { checked } />{ timeval }</option>
+				<!--#endin getnexttime -->
+				</select>
+				</td>
+				<td>
+				<select name="endtime">
+				<!--#in getnexttime -->
+				<option value="{ timeid }" { checked } />{ timeval }</option>
+				<!--#endin getnexttime -->
+				</select>
+				</td>
+				</tr>
+			</table>
+			</dl>
+			<dl>
+	<table  width="100%" border="0" cellspacing="0" cellpadding="5" class="BabLoginMenuBackground">
+	<tr> 
+		<td align="right">{ allday }</td>
+		<td> 
+			<select name="allday">
+				<option value="Y" { yallday }>{ yes }</option>
+				<option value="N" { nallday }>{ no }</option>
+			</select>
+		</td>
+	</tr>
+	<tr> 
+		<td align="right">{ usebgcolor }</td>
+		<td> 
+			<select name="usebgcolor">
+				<option value="Y" { yusebgcolor }>{ yes }</option>
+				<option value="N" { nusebgcolor }>{ no }</option>
+			</select>
+		</td>
+	</tr>
+	<tr> 
+		<td align="right">{ elapstime }</td>
+		<td> 
+			<select name="elapstime">
+			<!--#in getnextet -->
+			<option value="{ etval }" { etselected }>{ etval }&nbsp;{ minutes }</option>
+			<!--#endin getnextet -->
+			</select>
+		</td>
+	</tr>
+	<tr> 
+		<td align="right" valign="middle">{ defaultview }</td>
+		<td> 
+			<select name="defaultview">
+			<!--#in getnextdv -->
+			<option value="{ dvvalid }" { dvselected }>{ dvval }</option>
+			<!--#endin getnextdv -->
+			</select>
+		</td>
+	</tr>
+	</table>
 			</dl>
 			</td>
 

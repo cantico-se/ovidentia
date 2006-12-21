@@ -865,6 +865,12 @@ CREATE TABLE `bab_sites` (
   `dispdays` varchar(20) NOT NULL default '',
   `startday` tinyint(4) NOT NULL default '1',
   `user_workdays` enum('Y','N') NOT NULL default 'Y',
+  elapstime tinyint(2) unsigned NOT NULL default '30',
+  defaultview tinyint(3) NOT NULL default '0',
+  start_time time NOT NULL default '08:00:00',
+  end_time time NOT NULL default '18:00:00',
+  allday enum('Y','N') NOT NULL default 'Y',
+  usebgcolor enum('Y','N') NOT NULL default 'Y',
   `stat_log` enum('Y','N') NOT NULL default 'N',
   PRIMARY KEY  (`id`),
   KEY `name` (`name`)

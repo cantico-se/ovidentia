@@ -7637,7 +7637,27 @@ function upgrade606to610()
 			)"
 		);
 	}
-	
+
+
+	if (!bab_isTableField(BAB_SITES_TBL, 'elapstime')) {
+		$babDB->db_query("ALTER TABLE ".BAB_SITES_TBL." ADD elapstime TINYINT(2) UNSIGNED DEFAULT '30' NOT NULL");
+	}
+	if (!bab_isTableField(BAB_SITES_TBL, 'defaultview')) {
+		$babDB->db_query("ALTER TABLE ".BAB_SITES_TBL." ADD defaultview tinyint(3) UNSIGNED DEFAULT '0' NOT NULL");
+	}
+	if (!bab_isTableField(BAB_SITES_TBL, 'start_time')) {
+		$babDB->db_query("ALTER TABLE ".BAB_SITES_TBL." ADD start_time time NOT NULL DEFAULT '08:00:00'");
+	}
+	if (!bab_isTableField(BAB_SITES_TBL, 'end_time')) {
+		$babDB->db_query("ALTER TABLE ".BAB_SITES_TBL." ADD end_time time NOT NULL DEFAULT '18:00:00'");
+	}
+	if (!bab_isTableField(BAB_SITES_TBL, 'allday')) {
+		$babDB->db_query("ALTER TABLE ".BAB_SITES_TBL." ADD allday enum('Y','N') NOT NULL default 'Y'");
+	}
+	if (!bab_isTableField(BAB_SITES_TBL, 'usebgcolor')) {
+		$babDB->db_query("ALTER TABLE ".BAB_SITES_TBL." ADD usebgcolor enum('Y','N') NOT NULL default 'Y'");
+	}
+
 	return $ret;
 }
 

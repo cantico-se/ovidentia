@@ -21,27 +21,27 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
-include_once $babInstallPath."admin/acl.php";
-include_once $babInstallPath."utilit/dirincl.php";
-include_once $babInstallPath."utilit/nwdaysincl.php";
+include_once 'base.php';
+include_once $babInstallPath.'admin/acl.php';
+include_once $babInstallPath.'utilit/dirincl.php';
+include_once $babInstallPath.'utilit/nwdaysincl.php';
 
 $bab_ldapAttributes = array('uid', 'cn', 'sn', 'givenname', 'mail', 'telephonenumber', 'mobile', 'homephone', 'facsimiletelephonenumber', 'title', 'o', 'street', 'l', 'postalcode', 'st', 'homepostaladdress', 'jpegphoto', 'departmentnumber');
 
 
 function getSiteName($id)
 	{
-	$db = $GLOBALS['babDB'];
-	$query = "select * from ".BAB_SITES_TBL." where id='$id'";
-	$res = $db->db_query($query);
-	if( $res && $db->db_num_rows($res) > 0)
+	global $babDB;
+	$query = "select * from ".BAB_SITES_TBL." where id='".$babDB->db_escape_string($id)."'";
+	$res = $babDB->db_query($query);
+	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-		$arr = $db->db_fetch_array($res);
+		$arr = $babDB->db_fetch_array($res);
 		return $arr['name'];
 		}
 	else
 		{
-		return "";
+		return '';
 		}
 	}
 
@@ -52,12 +52,12 @@ class site_configuration_cls
 	
 	function site_configuration_cls($id_site = false)
 	{
+	global $babDB;
 	$this->t_record = bab_translate("Record");
 	$this->yes = bab_translate("Yes");
 	$this->no = bab_translate("No");
 
 	$this->item = $id_site;
-	$this->db = &$GLOBALS['babDB'];
 
 	$this->menu = array(
 			1 => bab_translate('Site configuration'),
@@ -80,8 +80,8 @@ class site_configuration_cls
 
 	if (false !== $id_site)
 		{
-		$res = $this->db->db_query("SELECT *, DECODE(smtppassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as smtppass FROM ".BAB_SITES_TBL." WHERE id='".$this->db->db_escape_string($id_site)."'");
-		$this->row = $this->db->db_fetch_assoc($res);
+		$res = $babDB->db_query("SELECT *, DECODE(smtppassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as smtppass FROM ".BAB_SITES_TBL." WHERE id='".$babDB->db_escape_string($id_site)."'");
+		$this->row = $babDB->db_fetch_assoc($res);
 
 		$this->arr = array();
 		foreach($this->row as $k => $val)
@@ -515,6 +515,7 @@ function site_menu6($id)
 
 		function temp($id)
 			{
+			global $babDB;
 			$this->t_workdays = bab_translate("Working days (for all sites)");
 			$this->t_dispdays = bab_translate("Days to display");
 			$this->t_nonworking = bab_translate("Non-working days");
@@ -527,6 +528,14 @@ function site_menu6($id)
 			$this->t_text = bab_translate("Name");
 			$this->t_type_date = bab_translate("Date type");
 			$this->t_type = bab_getNonWorkingDayTypes(true);
+			$this->t_starttimetxt = bab_translate("Start time");
+			$this->t_endtimetxt = bab_translate("End time");
+			$this->allday = bab_translate("On create new event, check")." ". bab_translate("All day");
+			$this->usebgcolor = bab_translate("Use background color for events");
+			$this->weeknumberstxt = bab_translate("Show week numbers");
+			$this->elapstime = bab_translate("Time scale");
+			$this->defaultview = bab_translate("Calendar default view");
+			$this->minutes = bab_translate("Minutes");
 			
 			$this->site_configuration_cls($id);
 
@@ -537,8 +546,30 @@ function site_menu6($id)
 			$this->workdays = array_flip(explode(',',$sWorkingDays));
 			$this->dispdays = array_flip(explode(',',$GLOBALS['babBody']->babsite['dispdays']));
 			$this->startday = $GLOBALS['babBody']->babsite['startday'];
-			$this->resnw = $this->db->db_query("SELECT * FROM ".BAB_SITES_NONWORKING_CONFIG_TBL." WHERE id_site='".$id."'");
+			$this->sttime = $GLOBALS['babBody']->babsite['start_time'];
+			$this->resnw = $babDB->db_query("SELECT * FROM ".BAB_SITES_NONWORKING_CONFIG_TBL." WHERE id_site='".$babDB->db_escape_string($id)."'");
+			$this->arrdv = array(bab_translate("Month"), bab_translate("Week"),bab_translate("Day"));
+			if( $GLOBALS['babBody']->babsite['allday'] ==  'Y')
+				{
+				$this->yallday = 'selected';
+				$this->nallday = '';
+				}
+			else
+				{
+				$this->nallday = 'selected';
+				$this->yallday = '';
+				}
 
+			if( $GLOBALS['babBody']->babsite['usebgcolor'] ==  'Y')
+				{
+				$this->yusebgcolor = 'selected';
+				$this->nusebgcolor = '';
+				}
+			else
+				{
+				$this->nusebgcolor = 'selected';
+				$this->yusebgcolor = '';
+				}
 			}
 
 		function getnextworkday()
@@ -619,6 +650,33 @@ function site_menu6($id)
 				}
 			}
 
+		function getnexttime()
+			{
+			static $i = 0;
+			if( $i < 24 )
+				{
+				$this->timeid = sprintf("%02s:00:00", $i);
+				$this->timeval = substr($this->timeid, 0, 2);
+				if( $this->timeid == $this->sttime)
+					{
+					$this->checked = "selected";
+					}
+				else
+					{
+					$this->checked = "";
+					}
+				$i++;
+				return true;
+				}
+			else
+				{
+				$this->sttime = $GLOBALS['babBody']->babsite['end_time'];
+				$i = 0;
+				return false;
+				}
+
+			}
+
 		function getnextnonworking_type()
 			{
 			static $i = 1;
@@ -639,7 +697,8 @@ function site_menu6($id)
 
 		function getnextnonworking()
 			{
-			if ($arr = $this->db->db_fetch_array($this->resnw))
+			global $babDB;
+			if ($arr = $babDB->db_fetch_array($this->resnw))
 				{
 				$this->value = $arr['nw_text'].'#';
 				$this->value .= $arr['nw_type'];
@@ -661,6 +720,66 @@ function site_menu6($id)
 				return false;
 			}
 
+		function getnextet()
+			{
+			static $i = 0;
+			if( $i < 5 )
+				{
+				switch($i)
+					{
+					case 0:
+						$this->etval = 5;
+						break;
+					case 1:
+						$this->etval = 10;
+						break;
+					case 2:
+						$this->etval = 15;
+						break;
+					case 3:
+						$this->etval = 30;
+						break;
+					case 4:
+						$this->etval = 60;
+						break;
+					}
+
+				if( $this->etval == $GLOBALS['babBody']->babsite['elapstime'])
+					$this->etselected = 'selected';
+				else
+					$this->etselected = '';
+				$i++;
+				return true;
+				}
+			else
+				{
+				$i = 0;
+				return false;
+				}
+
+			}
+
+		function getnextdv()
+			{
+			static $i = 0;
+			if( $i < count($this->arrdv) )
+				{
+				if( $i == $GLOBALS['babBody']->babsite['defaultview'])
+					$this->dvselected = 'selected';
+				else
+					$this->dvselected = '';
+				$this->dvvalid = $i;
+				$this->dvval = $this->arrdv[$i];		
+				$i++;
+				return true;
+				}
+			else
+				{
+				$i = 0;
+				return false;
+				}
+
+			}
 
 		} // class temp
 
@@ -679,15 +798,14 @@ function siteAuthentification($id)
 
 		function clsSiteAuthentification($id)
 			{
-			global $bab_ldapAttributes, $babLdapEncodingTypes;
-			$this->db = $GLOBALS['babDB'];
+			global $babDB, $bab_ldapAttributes, $babLdapEncodingTypes;
 			$this->id = $id;
-			$req = "select *, DECODE(smtppassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as smtppass, DECODE(ldap_adminpassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as ldapadminpwd from ".BAB_SITES_TBL." where id='$id'";
-			$this->res = $this->db->db_query($req);
-			if( $this->db->db_num_rows($this->res) > 0 )
+			$req = "select *, DECODE(smtppassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as smtppass, DECODE(ldap_adminpassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as ldapadminpwd from ".BAB_SITES_TBL." where id='".$babDB->db_escape_string($id)."'";
+			$this->res = $babDB->db_query($req);
+			if( $babDB->db_num_rows($this->res) > 0 )
 				{
 				$this->showform = true;
-				$arr = $this->db->db_fetch_array($this->res);
+				$arr = $babDB->db_fetch_array($this->res);
 				$this->modify = bab_translate("Modify");
 				$this->authsite = $arr['authentification'];
 				$this->ldaphost = $arr['ldap_host'];
@@ -737,10 +855,10 @@ function siteAuthentification($id)
 					$this->ldpachkcnxchecked = '';
 					}
 
-				$this->resf = $this->db->db_query("select * from ".BAB_LDAP_SITES_FIELDS_TBL." where id_site='".$id."'");
-				if( $this->resf && $this->db->db_num_rows($this->resf) > 0)
+				$this->resf = $babDB->db_query("select * from ".BAB_LDAP_SITES_FIELDS_TBL." where id_site='".$babDB->db_escape_string($id)."'");
+				if( $this->resf && $babDB->db_num_rows($this->resf) > 0)
 					{
-					$this->countf = $this->db->db_num_rows($this->resf);
+					$this->countf = $babDB->db_num_rows($this->resf);
 					$this->countf++;
 					}
 				else
@@ -782,7 +900,7 @@ function siteAuthentification($id)
 
 		function getnextfield()
 			{
-			global $bab_ldapAttributes;
+			global $babDB, $bab_ldapAttributes;
 			static $i = 0;
 			if( $i < $this->countf)
 				{
@@ -804,10 +922,10 @@ function siteAuthentification($id)
 				else
 					{
 					$this->required = false;
-					$arr = $this->db->db_fetch_array($this->resf);
+					$arr = $babDB->db_fetch_array($this->resf);
 					if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
 						{
-						$rr = $this->db->db_fetch_array($this->db->db_query("select name, description from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
+						$rr = $babDB->db_fetch_array($babDB->db_query("select name, description from ".BAB_DBDIR_FIELDS_TBL." where id='".$babDB->db_escape_string($arr['id_field'])."'"));
 						$this->ofieldname = translateDirectoryField($rr['description']);
 						$filedname = $rr['name'];
 
@@ -816,7 +934,7 @@ function siteAuthentification($id)
 						}
 					else
 						{
-						$rr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+						$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string(($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
 						$this->ofieldname = translateDirectoryField($rr['name']);
 						$filedname = "babdirf".$arr['id_field'];
 						}
@@ -843,7 +961,7 @@ function siteAuthentification($id)
 				$i = 0;
 				if( $this->countf > 0 )
 					{
-					$this->db->db_data_seek($this->resf, 0);
+					$babDB->db_data_seek($this->resf, 0);
 					}
 				return false;
 				}
@@ -981,7 +1099,7 @@ function siteRegistration($id)
 		{
 		function temp($id)
 			{
-			global $babBody;
+			global $babDB, $babBody;
 			$this->item = $id;
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
@@ -997,11 +1115,10 @@ function siteRegistration($id)
 			$this->confirmationstxt = array(bab_translate("Confirm account by validating address email"), bab_translate("Manual confirmation by administrators"), bab_translate("Confirm account without address email validation"));
 			$this->none = bab_translate("None");
 			$this->add = bab_translate("Modify");
-			$this->db = $GLOBALS['babDB'];
-			$this->res = $this->db->db_query("select * from ".BAB_SITES_FIELDS_REGISTRATION_TBL." where id_site='".$id."'");
-			if( $this->res && $this->db->db_num_rows($this->res) > 0)
+			$this->res = $babDB->db_query("select * from ".BAB_SITES_FIELDS_REGISTRATION_TBL." where id_site='".$babDB->db_escape_string($id)."'");
+			if( $this->res && $babDB->db_num_rows($this->res) > 0)
 				{
-				$this->count = $this->db->db_num_rows($this->res);
+				$this->count = $babDB->db_num_rows($this->res);
 				}
 			else
 				{
@@ -1017,7 +1134,7 @@ function siteRegistration($id)
 			$this->groups = $tree->getGroups(BAB_REGISTERED_GROUP, '%s &nbsp; &nbsp; &nbsp; ');
 			unset($this->groups[BAB_ADMINISTRATOR_GROUP]);
 
-			$this->arrsite = $this->db->db_fetch_array($this->db->db_query("select registration, email_confirm, display_disclaimer, idgroup from ".BAB_SITES_TBL." where id='".$id."'"));
+			$this->arrsite = $babDB->db_fetch_array($babDB->db_query("select registration, email_confirm, display_disclaimer, idgroup from ".BAB_SITES_TBL." where id='".$babDB->db_escape_string($id)."'"));
 			if( $this->arrsite['display_disclaimer'] == "Y")
 				{
 				$this->dpchecked = "checked";
@@ -1030,10 +1147,11 @@ function siteRegistration($id)
 
 		function getnextfield()
 			{
+			global $babDB;
 			static $i = 0;
 			if( $i < $this->count)
 				{
-				$arr = $this->db->db_fetch_array($this->res);
+				$arr = $babDB->db_fetch_array($this->res);
 				$this->fieldid = $arr['id'];
 				$this->altbg = !$this->altbg;
 
@@ -1074,14 +1192,14 @@ function siteRegistration($id)
 
 				if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
 					{
-					$res = $this->db->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'");
-					$rr = $this->db->db_fetch_array($res);
+					$res = $babDB->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$babDB->db_escape_string($arr['id_field'])."'");
+					$rr = $babDB->db_fetch_array($res);
 					$this->fieldn = translateDirectoryField($rr['description']);
 					$this->fieldv = $rr['name'];
 					}
 				else
 					{
-					$rr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+					$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string(($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
 					$this->fieldn = translateDirectoryField($rr['name']);
 					$this->fieldv = "babdirf".$arr['id'];
 					}
@@ -1164,16 +1282,16 @@ function editDisclaimerPrivacy($id, $content)
 
 		function temp($id, $content)
 			{
+			global $babDB;
 			$this->disclaimertxt = bab_translate("Disclaimer/Privacy Statement");
 			$this->modify = bab_translate("Update");
-			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_SITES_DISCLAIMERS_TBL." where id_site='".$id."'";
-			$res = $this->db->db_query($req);
+			$req = "select * from ".BAB_SITES_DISCLAIMERS_TBL." where id_site='".$babDB->db_escape_string($id)."'";
+			$res = $babDB->db_query($req);
 			if( empty($content))
 				{
-				if( $res && $this->db->db_num_rows($res) > 0 )
+				if( $res && $babDB->db_num_rows($res) > 0 )
 					{
-					$arr = $this->db->db_fetch_array($res);
+					$arr = $babDB->db_fetch_array($res);
 					$this->disclaimerval = $arr['disclaimer_text'];
 					}
 				else
@@ -1212,8 +1330,8 @@ function editor_configuration($id_site)
 		{
 		function temp($id_site)
 			{
+			global $babDB;
 			$this->id_site = $id_site;
-			$this->db = &$GLOBALS['babDB'];
 
 			$this->t_use_editor = bab_translate("Use WYSIWYG editor");
 			$this->t_filter_html = bab_translate("Filter and remove HTML elements");
@@ -1228,9 +1346,9 @@ function editor_configuration($id_site)
 			$this->t_target = bab_translate("Targets on links (open links in new windows)");
 			$this->t_submit = bab_translate("Submit");
 
-			$res = $this->db->db_query("SELECT use_editor, filter_html, bitstring FROM ".BAB_SITES_EDITOR_TBL." WHERE id_site='".$id_site."'");
+			$res = $babDB->db_query("SELECT use_editor, filter_html, bitstring FROM ".BAB_SITES_EDITOR_TBL." WHERE id_site='".$babDB->db_escape_string($id_site)."'");
 
-			$this->arr = $this->db->db_fetch_assoc($res);
+			$this->arr = $babDB->db_fetch_assoc($res);
 				
 			if (!$this->arr)
 				{
@@ -1299,7 +1417,7 @@ function call_site_menu11($item) {
 
 function record_editor_configuration($id_site)
 {
-	$db = &$GLOBALS['babDB'];
+	global $babDB;
 
 	$bitstring = array();
 	for ($i = 0; $i < $_POST['bitstring_len']; $i++)
@@ -1347,33 +1465,33 @@ function record_editor_configuration($id_site)
 		$i++;
 		}
 
-	$res = $db->db_query("SELECT id FROM ".BAB_SITES_EDITOR_TBL." WHERE id_site='".$id_site."'");
-	if ($db->db_num_rows($res) > 0)
+	$res = $babDB->db_query("SELECT id FROM ".BAB_SITES_EDITOR_TBL." WHERE id_site='".$babDB->db_escape_string($id_site)."'");
+	if ($babDB->db_num_rows($res) > 0)
 		{
-		$db->db_query("UPDATE ".BAB_SITES_EDITOR_TBL." 
+		$babDB->db_query("UPDATE ".BAB_SITES_EDITOR_TBL." 
 						SET 
-							use_editor='".$use_editor."', 
-							filter_html='".$filter_html."', 
-							tags='".trim($tags)."', 
-							attributes='".trim($attributes)."', 
-							verify_href='".$verify_href."', 
-							bitstring='".implode('',$bitstring)."' 
+							use_editor='".$babDB->db_escape_string($use_editor)."', 
+							filter_html='".$babDB->db_escape_string($filter_html)."', 
+							tags='".$babDB->db_escape_string(trim($tags))."', 
+							attributes='".$babDB->db_escape_string(trim($attributes))."', 
+							verify_href='".$babDB->db_escape_string($verify_href)."', 
+							bitstring='".$babDB->db_escape_string(implode('',$bitstring))."' 
 						WHERE 
-							id_site='".$id_site."'
+							id_site='".$babDB->db_escape_string($id_site)."'
 						");
 		}
 	else
 		{
-		$db->db_query("INSERT INTO ".BAB_SITES_EDITOR_TBL." 
+		$babDB->db_query("INSERT INTO ".BAB_SITES_EDITOR_TBL." 
 						(use_editor, filter_html, tags, attributes, verify_href, bitstring, id_site)
 						VALUES
-							('".$use_editor."', 
-							'".$filter_html."', 
-							'".trim($tags)."', 
-							'".trim($attributes)."', 
-							'".$verify_href."', 
-							'".implode('',$bitstring)."',
-							'".$id_site."')
+							('".$babDB->db_escape_string($use_editor)."', 
+							'".$babDB->db_escape_string($filter_html)."', 
+							'".$babDB->db_escape_string(trim($tags))."', 
+							'".$babDB->db_escape_string(trim($attributes))."', 
+							'".$babDB->db_escape_string($verify_href)."', 
+							'".$babDB->db_escape_string(implode('',$bitstring))."',
+							'".$babDB->db_escape_string($id_site)."')
 						");
 		}
 }
@@ -1383,32 +1501,30 @@ function record_editor_configuration($id_site)
 
 function siteSave($name, $description,$babslogan, $lang, $siteemail, $skin, $style, $langfilter, $adminname, $name_order, $statlog)
 	{
-	global $babBody;
-	$db = &$GLOBALS['babDB'];
+	global $babBody, $babDB;
 
-	$query = "insert into ".BAB_SITES_TBL." (name, description, lang, adminemail, adminname, skin, style, stat_log,  langfilter, babslogan, name_order) VALUES ('" .$name. "', '" . $description. "', '" . $lang. "', '" . $siteemail. "', '" . $adminname. "', '" . $skin. "', '" . $style. "', '" . $statlog. "','".$langfilter."','". $babslogan."','". $name_order."')";
-	$db->db_query($query);
-	$idsite = $db->db_insert_id();
+	$query = "insert into ".BAB_SITES_TBL." (name, description, lang, adminemail, adminname, skin, style, stat_log,  langfilter, babslogan, name_order) VALUES ('" .$babDB->db_escape_string($name). "', '" . $babDB->db_escape_string($description). "', '" . $babDB->db_escape_string($lang). "', '" . $babDB->db_escape_string($siteemail). "', '" . $babDB->db_escape_string($adminname). "', '" . $babDB->db_escape_string($skin). "', '" . $babDB->db_escape_string($style). "', '" . $babDB->db_escape_string($statlog). "','".$babDB->db_escape_string($langfilter)."','". $babDB->db_escape_string($babslogan)."','". $babDB->db_escape_string($name_order)."')";
+	$babDB->db_query($query);
+	$idsite = $babDB->db_insert_id();
 
-	$db->db_query("insert into ".BAB_SITES_DISCLAIMERS_TBL." (id_site, disclaimer_text) values ('".$idsite."','')");
+	$babDB->db_query("insert into ".BAB_SITES_DISCLAIMERS_TBL." (id_site, disclaimer_text) values ('".$babDB->db_escape_string($idsite)."','')");
 
-	$resf = $db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='0'");
-	while( $row = $db->db_fetch_array($resf))
+	$resf = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='0'");
+	while( $row = $babDB->db_fetch_array($resf))
 		{
-		$db->db_query("insert into ".BAB_LDAP_SITES_FIELDS_TBL." (id_field, x_name, id_site) values ('".$row['id_field']."','','".$idsite."')");
-		$db->db_query("insert into ".BAB_SITES_FIELDS_REGISTRATION_TBL." (id_site, id_field, registration, required, multilignes) values ('".$idsite."', '".$row['id_field']."','N','N', 'N')");
+		$babDB->db_query("insert into ".BAB_LDAP_SITES_FIELDS_TBL." (id_field, x_name, id_site) values ('".$babDB->db_escape_string($row['id_field'])."','','".$babDB->db_escape_string($idsite)."')");
+		$babDB->db_query("insert into ".BAB_SITES_FIELDS_REGISTRATION_TBL." (id_site, id_field, registration, required, multilignes) values ('".$babDB->db_escape_string($idsite)."', '".$babDB->db_escape_string($row['id_field'])."','N','N', 'N')");
 		}
 
-	$db->db_query("update ".BAB_SITES_FIELDS_REGISTRATION_TBL." set registration='Y', required='Y' where id_site='".$idsite."' and id_field IN ('2', '4', '6')");	
-	$db->db_query("update ".BAB_SITES_FIELDS_REGISTRATION_TBL." set registration='Y' where id_site='".$idsite."' and id_field='3'");	
+	$babDB->db_query("update ".BAB_SITES_FIELDS_REGISTRATION_TBL." set registration='Y', required='Y' where id_site='".$babDB->db_escape_string($idsite)."' and id_field IN ('2', '4', '6')");	
+	$babDB->db_query("update ".BAB_SITES_FIELDS_REGISTRATION_TBL." set registration='Y' where id_site='".$babDB->db_escape_string($idsite)."' and id_field='3'");	
 
 	return $idsite;
 	}
 
 function siteUpdate_menu1()
 {
-	$db = &$GLOBALS['babDB'];
-	global $babBody, $babLangFilter;
+	global $babBody, $babDB, $babLangFilter;
 
 	$name			= &$_POST['name'];
 	$description	= &$_POST['description'];
@@ -1430,36 +1546,30 @@ function siteUpdate_menu1()
 		}
 
 
-	$description = $db->db_escape_string($description);
-	$namev = $db->db_escape_string($name);
-	$adminname = $db->db_escape_string($adminname);
-	$babslogan = $db->db_escape_string($babslogan);
-
-
 	if (empty($_POST['item']))
 		{
 		// create
 
-		$query = "select * from ".BAB_SITES_TBL." where name='$namev'";	
-		$res = $db->db_query($query);
-		if( $db->db_num_rows($res) > 0)
+		$query = "select * from ".BAB_SITES_TBL." where name='".$babDB->db_escape_string($name)."'";	
+		$res = $babDB->db_query($query);
+		if( $babDB->db_num_rows($res) > 0)
 			{
 			$babBody->msgerror = bab_translate("ERROR: This site already exists");
 			return false;
 			}
 
-		return siteSave($namev, $description,$babslogan, $lang, $siteemail, $skin, $style, $langfilter, $adminname, $name_order, $statlog);
+		return siteSave($name, $description,$babslogan, $lang, $siteemail, $skin, $style, $langfilter, $adminname, $name_order, $statlog);
 		}
 	
-	$query = "select * from ".BAB_SITES_TBL." where name='$namev' AND id<>'".$_POST['item']."'";	
-	$res = $db->db_query($query);
-	if( $db->db_num_rows($res) > 0)
+	$query = "select * from ".BAB_SITES_TBL." where name='".$babDB->db_escape_string($name)."' AND id<>'".$babDB->db_escape_string($_POST['item'])."'";	
+	$res = $babDB->db_query($query);
+	if( $babDB->db_num_rows($res) > 0)
 		{
 		$babBody->msgerror = bab_translate("ERROR: This site already exists");
 		return false;
 		}
 
-	list($oldname) = $db->db_fetch_row($db->db_query("select name from ".BAB_SITES_TBL." where id='".$_POST['item']."'"));
+	list($oldname) = $babDB->db_fetch_row($babDB->db_query("select name from ".BAB_SITES_TBL." where id='".$babDB->db_escape_string($_POST['item'])."'"));
 
 	if( $oldname != $name && $GLOBALS['babSiteName'] == $oldname)
 		{
@@ -1479,21 +1589,21 @@ function siteUpdate_menu1()
 
 	$req = "UPDATE ".BAB_SITES_TBL." SET 
 
-			name='".$namev."', 
-			description='".$description."', 
-			lang='".$lang."', 
-			adminemail='".$siteemail."', 
-			adminname='".$adminname."', 
-			skin='".$skin."', 
-			style='".$style."', 
-			stat_log='".$statlog."', 
-			langfilter='" .$langfilter. "', 
-			name_order='".$name_order."', 
-			babslogan='".$babslogan."' 
+			name='".$babDB->db_escape_string($name)."', 
+			description='".$babDB->db_escape_string($description)."', 
+			lang='".$babDB->db_escape_string($lang)."', 
+			adminemail='".$babDB->db_escape_string($siteemail)."', 
+			adminname='".$babDB->db_escape_string($adminname)."', 
+			skin='".$babDB->db_escape_string($skin)."', 
+			style='".$babDB->db_escape_string($style)."', 
+			stat_log='".$babDB->db_escape_string($statlog)."', 
+			langfilter='" .$babDB->db_escape_string($langfilter). "', 
+			name_order='".$babDB->db_escape_string($name_order)."', 
+			babslogan='".$babDB->db_escape_string($babslogan)."' 
 			
-		where id='".$_POST['item']."'";
+		where id='".$babDB->db_escape_string($_POST['item'])."'";
 
-	$db->db_query($req);
+	$babDB->db_query($req);
 
 	return $_POST['item'];
 }
@@ -1501,8 +1611,7 @@ function siteUpdate_menu1()
 
 function siteUpdate_menu2()
 {
-	global $babBody;
-	$db = &$GLOBALS['babDB'];
+	global $babBody, $babDB;
 
 	if( $_POST['mailfunc'] == "smtp" && empty($_POST['smtpserver']))
 		{
@@ -1527,14 +1636,14 @@ function siteUpdate_menu2()
 
 
 	$req = "UPDATE ".BAB_SITES_TBL." SET 
-			mailfunc = '".$db->db_escape_string($_POST['mailfunc'])."', 
-			smtpserver = '".$db->db_escape_string($_POST['smtpserver'])."', 
-			smtpport = '".$db->db_escape_string($_POST['smtpport'])."', 
-			smtpuser = '".$db->db_escape_string($_POST['smtpuser'])."', 
-			smtppassword=ENCODE(\"".$db->db_escape_string($_POST['smtppass'])."\",\"".$db->db_escape_string($GLOBALS['BAB_HASH_VAR'])."\") 
-		where id='".$db->db_escape_string($_POST['item'])."'";
+			mailfunc = '".$babDB->db_escape_string($_POST['mailfunc'])."', 
+			smtpserver = '".$babDB->db_escape_string($_POST['smtpserver'])."', 
+			smtpport = '".$babDB->db_escape_string($_POST['smtpport'])."', 
+			smtpuser = '".$babDB->db_escape_string($_POST['smtpuser'])."', 
+			smtppassword=ENCODE(\"".$babDB->db_escape_string($_POST['smtppass'])."\",\"".$babDB->db_escape_string($GLOBALS['BAB_HASH_VAR'])."\") 
+		where id='".$babDB->db_escape_string($_POST['item'])."'";
 
-	$db->db_query($req);
+	$babDB->db_query($req);
 
 	return true;
 }
@@ -1542,22 +1651,22 @@ function siteUpdate_menu2()
 
 function siteUpdate_menu3()
 {
-	$db = &$GLOBALS['babDB'];
+	global $babDB;
 
 	$req = "UPDATE ".BAB_SITES_TBL." SET 
-			change_nickname='".$_POST['change_nickname']."',
-			change_password='".$_POST['change_password']."',
-			change_lang='".$_POST['change_lang']."', 
-			change_skin='".$_POST['change_skin']."', 
-			change_date='".$_POST['change_date']."',
-			change_unavailability='".$_POST['change_unavailability']."',
-			user_workdays='".$_POST['user_workdays']."', 
-			remember_login='".$_POST['remember_login']."', 
-			email_password='".$_POST['email_password']."',
-			browse_users='".$_POST['browse_users']."' 
-		WHERE id='".$_POST['item']."'";
+			change_nickname='".$babDB->db_escape_string($_POST['change_nickname'])."',
+			change_password='".$babDB->db_escape_string($_POST['change_password'])."',
+			change_lang='".$babDB->db_escape_string($_POST['change_lang'])."', 
+			change_skin='".$babDB->db_escape_string($_POST['change_skin'])."', 
+			change_date='".$babDB->db_escape_string($_POST['change_date'])."',
+			change_unavailability='".$babDB->db_escape_string($_POST['change_unavailability'])."',
+			user_workdays='".$babDB->db_escape_string($_POST['user_workdays'])."', 
+			remember_login='".$babDB->db_escape_string($_POST['remember_login'])."', 
+			email_password='".$babDB->db_escape_string($_POST['email_password'])."',
+			browse_users='".$babDB->db_escape_string($_POST['browse_users'])."' 
+		WHERE id='".$babDB->db_escape_string($_POST['item'])."'";
 
-	$db->db_query($req);
+	$babDB->db_query($req);
 
 	return true;
 }
@@ -1565,6 +1674,7 @@ function siteUpdate_menu3()
 
 function siteUpdate_menu4()
 {
+	global $babDB;
 	if( !is_numeric($_POST['maxfilesize']) || !is_numeric($_POST['folder_diskspace']) || !is_numeric($_POST['user_diskspace']) || !is_numeric($_POST['total_diskspace']))
 		{
 		$babBody->msgerror = bab_translate("ERROR: You must provide all file manager size limits !!");
@@ -1574,17 +1684,15 @@ function siteUpdate_menu4()
 	if( !is_numeric($_POST['imgsize']))
 		$_POST['imgsize'] = 25;
 
-	$db = &$GLOBALS['babDB'];
-
 	$req = "UPDATE ".BAB_SITES_TBL." set 
-		imgsize='".$db->db_escape_string($_POST['imgsize'])."', 
-		uploadpath='".$db->db_escape_string($_POST['uploadpath'])."', 
-		maxfilesize='".$db->db_escape_string($_POST['maxfilesize'])."', 
-		folder_diskspace='".$db->db_escape_string($_POST['folder_diskspace'])."', 
-		user_diskspace='".$db->db_escape_string($_POST['user_diskspace'])."', 
-		total_diskspace='".$db->db_escape_string($_POST['total_diskspace'])."'  
-	where id='".$db->db_escape_string($_POST['item'])."'";
-	$db->db_query($req);
+		imgsize='".$babDB->db_escape_string($_POST['imgsize'])."', 
+		uploadpath='".$babDB->db_escape_string($_POST['uploadpath'])."', 
+		maxfilesize='".$babDB->db_escape_string($_POST['maxfilesize'])."', 
+		folder_diskspace='".$babDB->db_escape_string($_POST['folder_diskspace'])."', 
+		user_diskspace='".$babDB->db_escape_string($_POST['user_diskspace'])."', 
+		total_diskspace='".$babDB->db_escape_string($_POST['total_diskspace'])."'  
+	where id='".$babDB->db_escape_string($_POST['item'])."'";
+	$babDB->db_query($req);
 
 	return true;
 }
@@ -1592,19 +1700,17 @@ function siteUpdate_menu4()
 
 function siteUpdate_menu5($item,$datelformat, $datesformat, $timeformat)
 	{
-	global $babBody;
+	global $babBody, $babDB;
 
-	$db = &$GLOBALS['babDB'];
-
-	$req = "update ".BAB_SITES_TBL." set date_longformat='".$db->db_escape_string($datelformat)."', date_shortformat='".$db->db_escape_string($datesformat)."', time_format='".$db->db_escape_string($timeformat)."' where id='".$db->db_escape_string($item)."'";
-	$db->db_query($req);
+	$req = "update ".BAB_SITES_TBL." set date_longformat='".$babDB->db_escape_string($datelformat)."', date_shortformat='".$babDB->db_escape_string($datesformat)."', time_format='".$babDB->db_escape_string($timeformat)."' where id='".$babDB->db_escape_string($item)."'";
+	$babDB->db_query($req);
 
 	return true;
 	}
 
 function siteUpdate_menu6($item)
 	{
-	$db = & $GLOBALS['babDB'];
+	global $babDB;
 
 	include_once $GLOBALS['babInstallPath']."utilit/workinghoursincl.php";
 	bab_deleteAllWorkingHours(0);
@@ -1624,14 +1730,44 @@ function siteUpdate_menu6($item)
 
 	if (isset($_POST['dispdays']) && count($_POST['dispdays']))
 		{
-		$reqarr[] = "dispdays='".implode(',',$_POST['dispdays'])."'";
+		$reqarr[] = "dispdays='".$babDB->db_escape_string(implode(',',$_POST['dispdays']))."'";
 		}
 
-	$db->db_query("update ".BAB_SITES_TBL." set ".implode(',',$reqarr)." where id='".$item."'");
+	if (isset($_POST['starttime']) )
+		{
+		$reqarr[] = "start_time='".$babDB->db_escape_string($_POST['starttime'])."'";
+		}
+
+	if (isset($_POST['endtime']) )
+		{
+		$reqarr[] = "end_time='".$babDB->db_escape_string($_POST['endtime'])."'";
+		}
+
+	if (isset($_POST['allday']) )
+		{
+		$reqarr[] = "allday='".$babDB->db_escape_string($_POST['allday'])."'";
+		}
+
+	if (isset($_POST['usebgcolor']) )
+		{
+		$reqarr[] = "usebgcolor='".$babDB->db_escape_string($_POST['usebgcolor'])."'";
+		}
+
+	if (isset($_POST['elapstime']) )
+		{
+		$reqarr[] = "elapstime='".$babDB->db_escape_string($_POST['elapstime'])."'";
+		}
+
+	if (isset($_POST['defaultview']) )
+		{
+		$reqarr[] = "defaultview='".$babDB->db_escape_string($_POST['defaultview'])."'";
+		}
+
+	$babDB->db_query("update ".BAB_SITES_TBL." set ".implode(',',$reqarr)." where id='".$babDB->db_escape_string($item)."'");
 
 	if (isset($_POST['nonworking']) && count($_POST['nonworking']))
 		{
-		$db->db_query("DELETE FROM ".BAB_SITES_NONWORKING_CONFIG_TBL."  where id_site='".$item."'");
+		$babDB->db_query("DELETE FROM ".BAB_SITES_NONWORKING_CONFIG_TBL."  where id_site='".$babDB->db_escape_string($item)."'");
 		foreach($_POST['nonworking'] as $value)
 			{
 			$tmp = explode('#',$value);
@@ -1649,12 +1785,12 @@ function siteUpdate_menu6($item)
 			$type = $arr[0];
 			$nw = isset($arr[1]) ? $arr[1] : '';
 
-			$db->db_query("INSERT INTO ".BAB_SITES_NONWORKING_CONFIG_TBL." (id_site, nw_type, nw_day, nw_text) 
+			$babDB->db_query("INSERT INTO ".BAB_SITES_NONWORKING_CONFIG_TBL." (id_site, nw_type, nw_day, nw_text) 
 			VALUES (
-				'".$db->db_escape_string($item)."', 
-				'".$db->db_escape_string($type)."', 
-				'".$db->db_escape_string($nw)."',
-				'".$db->db_escape_string($text)."')");
+				'".$babDB->db_escape_string($item)."', 
+				'".$babDB->db_escape_string($type)."', 
+				'".$babDB->db_escape_string($nw)."',
+				'".$babDB->db_escape_string($text)."')");
 			}
 
 		}
@@ -1664,9 +1800,8 @@ function siteUpdate_menu6($item)
 
 function siteUpdate_authentification($id, $authtype, $host, $hostname, $ldpapchkcnx, $searchdn)
 	{
-	global $babBody, $bab_ldapAttributes, $nickname, $i_nickname, $crypttype, $ldapfilter,$admindn, $adminpwd1, $adminpwd2, $decodetype;
+	global $babBody, $babDB, $bab_ldapAttributes, $nickname, $i_nickname, $crypttype, $ldapfilter,$admindn, $adminpwd1, $adminpwd2, $decodetype;
 
-	$db = $GLOBALS['babDB'];
 	if( $authtype != BAB_AUTHENTIFICATION_OVIDENTIA )
 		{
 		if (!function_exists('ldap_connect'))
@@ -1731,27 +1866,27 @@ function siteUpdate_authentification($id, $authtype, $host, $hostname, $ldpapchk
 				}
 			}
 
-		$req = "update ".BAB_SITES_TBL." set authentification='".$authtype."'";
-		$req .= ", ldap_host='".$host."', ldap_domainname='".$hostname."', ldap_allowadmincnx='".$ldpapchkcnx."', ldap_searchdn='".$searchdn."', ldap_attribute='".$ldapattr."', ldap_encryptiontype='".$crypttype."', ldap_decoding_type='".$decodetype."', ldap_filter='".$ldapfilter."', ldap_admindn='".$admindn."'";
+		$req = "update ".BAB_SITES_TBL." set authentification='".$babDB->db_escape_string($authtype)."'";
+		$req .= ", ldap_host='".$babDB->db_escape_string($host)."', ldap_domainname='".$babDB->db_escape_string($hostname)."', ldap_allowadmincnx='".$babDB->db_escape_string($ldpapchkcnx)."', ldap_searchdn='".$babDB->db_escape_string($searchdn)."', ldap_attribute='".$babDB->db_escape_string($ldapattr)."', ldap_encryptiontype='".$babDB->db_escape_string($crypttype)."', ldap_decoding_type='".$babDB->db_escape_string($decodetype)."', ldap_filter='".$babDB->db_escape_string($ldapfilter)."', ldap_admindn='".$babDB->db_escape_string($admindn)."'";
 		if( !empty($adminpwd1))
 			{
-			$req .= ", ldap_adminpassword=ENCODE(\"".$adminpwd1."\",\"".$GLOBALS['BAB_HASH_VAR']."\")";
+			$req .= ", ldap_adminpassword=ENCODE(\"".$babDB->db_escape_string($adminpwd1)."\",\"".$babDB->db_escape_string($GLOBALS['BAB_HASH_VAR'])."\")";
 			}
-		$req .= " where id='".$id."'";
-		$db->db_query($req);
+		$req .= " where id='".$babDB->db_escape_string($id)."'";
+		$babDB->db_query($req);
 
-		$res = $db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='0'");
-		while( $arr = $db->db_fetch_array($res))
+		$res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='0'");
+		while( $arr = $babDB->db_fetch_array($res))
 			{
 			$val = '';
 			if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
 				{
-				$rr = $db->db_fetch_array($db->db_query("select name, description from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
+				$rr = $babDB->db_fetch_array($babDB->db_query("select name, description from ".BAB_DBDIR_FIELDS_TBL." where id='".$babDB->db_escape_string($arr['id_field'])."'"));
 				$fieldname = $rr['name'];
 				}
 			else
 				{
-				$rr = $db->db_fetch_array($db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+				$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string(($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
 				$fieldname = "babdirf".$arr['id_field'];
 				}
 
@@ -1767,12 +1902,12 @@ function siteUpdate_authentification($id, $authtype, $host, $hostname, $ldpapchk
 					$val = $GLOBALS[$var];
 					}
 				}
-			$db->db_query("update ".BAB_LDAP_SITES_FIELDS_TBL." set x_name='".$val."' where id_field='".$arr['id_field']."' and id_site='".$id."'");
+			$babDB->db_query("update ".BAB_LDAP_SITES_FIELDS_TBL." set x_name='".$babDB->db_escape_string($val)."' where id_field='".$babDB->db_escape_string($arr['id_field'])."' and id_site='".$babDB->db_escape_string($id)."'");
 			}
 		}
 	else
 		{
-		$db->db_query("update ".BAB_SITES_TBL." set authentification='".$authtype."' where id='".$id."'");
+		$babDB->db_query("update ".BAB_SITES_TBL." set authentification='".$babDB->db_escape_string($authtype)."' where id='".$babDB->db_escape_string($id)."'");
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
 	}
@@ -1781,8 +1916,8 @@ function siteUpdateRegistration($item, $rw, $rq, $ml, $cdp, $cen, $group)
 {
 	global $babBody, $babDB;
 
-	$babDB->db_query("update ".BAB_SITES_TBL." set registration='".$_POST['register']."',display_disclaimer='".$cdp."', email_confirm='".$cen."', idgroup='".$group."' where id='".$item."'");
-	$res = $babDB->db_query("select id from ".BAB_SITES_FIELDS_REGISTRATION_TBL." where id_site='".$item."'");
+	$babDB->db_query("update ".BAB_SITES_TBL." set registration='".$babDB->db_escape_string($_POST['register'])."',display_disclaimer='".$babDB->db_escape_string($cdp)."', email_confirm='".$babDB->db_escape_string($cen)."', idgroup='".$babDB->db_escape_string($group)."' where id='".$babDB->db_escape_string($item)."'");
+	$res = $babDB->db_query("select id from ".BAB_SITES_FIELDS_REGISTRATION_TBL." where id_site='".$babDB->db_escape_string($item)."'");
 	while( $arr = $babDB->db_fetch_array($res))
 		{
 		if( count($rw) > 0 && in_array($arr['id'], $rw))
@@ -1809,24 +1944,24 @@ function siteUpdateRegistration($item, $rw, $rq, $ml, $cdp, $cen, $group)
 			{
 			$multilignes = "N";
 			}
-		$req = "update ".BAB_SITES_FIELDS_REGISTRATION_TBL." set registration='".$registration."', required='".$required."', multilignes='".$multilignes."' where id='".$arr['id']."'";
+		$req = "update ".BAB_SITES_FIELDS_REGISTRATION_TBL." set registration='".$babDB->db_escape_string($registration)."', required='".$babDB->db_escape_string($required)."', multilignes='".$babDB->db_escape_string($multilignes)."' where id='".$babDB->db_escape_string($arr['id'])."'";
 		$babDB->db_query($req);
 		}
 }
 
 function confirmDeleteSite($id)
 	{
-	$db = $GLOBALS['babDB'];
+	global $babDB;
 	// delete homepages
-	$db->db_query("delete from ".BAB_HOMEPAGES_TBL." where id_site='".$id."'");
+	$babDB->db_query("delete from ".BAB_HOMEPAGES_TBL." where id_site='".$babDB->db_escape_string($id)."'");
 	// delete ldap settings
-	$db->db_query("delete from ".BAB_LDAP_SITES_FIELDS_TBL." where id_site='".$id."'");
+	$babDB->db_query("delete from ".BAB_LDAP_SITES_FIELDS_TBL." where id_site='".$babDB->db_escape_string($id)."'");
 	// delete registration settings
-	$db->db_query("delete from ".BAB_SITES_FIELDS_REGISTRATION_TBL." where id_site='".$id."'");
-	$db->db_query("delete from ".BAB_LDAP_SITES_FIELDS_TBL." where id_site='".$id."'");
-	$db->db_query("delete from ".BAB_SITES_DISCLAIMERS_TBL." where id_site='".$id."'");
+	$babDB->db_query("delete from ".BAB_SITES_FIELDS_REGISTRATION_TBL." where id_site='".$babDB->db_escape_string($id)."'");
+	$babDB->db_query("delete from ".BAB_LDAP_SITES_FIELDS_TBL." where id_site='".$babDB->db_escape_string($id)."'");
+	$babDB->db_query("delete from ".BAB_SITES_DISCLAIMERS_TBL." where id_site='".$babDB->db_escape_string($id)."'");
 	// delete site
-	$db->db_query("delete from ".BAB_SITES_TBL." where id='".$id."'");
+	$babDB->db_query("delete from ".BAB_SITES_TBL." where id='".$babDB->db_escape_string($id)."'");
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
 	}
 
@@ -1838,7 +1973,7 @@ function siteUpdateDisclaimer($item, $content)
 
 	$db = &$GLOBALS['babDB'];
 
-	$babDB->db_query("update ".BAB_SITES_DISCLAIMERS_TBL." set disclaimer_text='".$db->db_escape_string($content)."' where id_site='".$db->db_escape_string($item)."'");
+	$babDB->db_query("update ".BAB_SITES_DISCLAIMERS_TBL." set disclaimer_text='".$babDB->db_escape_string($content)."' where id_site='".$babDB->db_escape_string($item)."'");
 	return true;
 	}
 
