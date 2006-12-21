@@ -1715,7 +1715,7 @@
 <string id="Non-used days">Jours non utilisés</string>
 <string id="Allow rule with type">Autoriser la condition avec le type</string>
 <string id="Enable statistics recording">Activer les statistiques</string>
-<string id="Are you sure you want to clean statistics logs">Êtes-vous sûr de vouloir vider le log des statistiques</string>
+<string id="Are you sure you want to clean statistics logs">Êtes-vous sûr de vouloir vider le log des statistiques </string>
 <string id="WARNING: This operation will delete all statistics records">Attention ! Cette opération supprime tous les logs des statistiques</string>
 <string id="Clean statistics logs">Vider les logs des statistiques</string>
 <string id="Login / Registration">Connexion/Deconnexion et enregistrement</string>
