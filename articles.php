@@ -383,7 +383,7 @@ function listArchiveArticles($topics, $pos)
 				$this->bnavigation = false;
 
 
-			$req = "select id, id_topic, id_author, date, title, head, LENGTH(body) as blen, restriction from ".BAB_ARTICLES_TBL." where id_topic='$topics' and archive='Y' order by date desc";
+			$req = "select id, id_topic, id_author, date, title, head, LENGTH(body) as blen, restriction from ".BAB_ARTICLES_TBL." where id_topic='".$babDB->db_escape_string($topics)."' and archive='Y' order by date desc";
 			if( $total > $maxarticles)
 				{
 				$req .= " limit ".$babDB->db_escape_string($pos).",".$maxarticles;
