@@ -400,7 +400,7 @@ function EditorOnInsertFiles(files)
 	var insertedItems = new Array();
 	for (var i = 0; i < files.length; i++) {
 		var file = files[i];
-		if (file.type != 'directory') {
+		if (file.type != 'folder') {
 			insertedItems.push('$FILE(' + file.id + ',' + file.content + ')');
 		} else {
 			var path = file.id.split(':');
