@@ -485,6 +485,9 @@ function dateEnd(day, month, year)
 		<!--#if evt[creator] -->
 		<h6>{ t_from } : { evt[creator] }</h6>
 		<!--#endif evt[creator] -->
+		<!--#if evt[location] -->
+		<h6>{ t_location } : { evt[location] }</h6>
+		<!--#endif evt[location] -->
 		<!--#if evt[description] -->
 		<p>{ evt[description] }</p>
 		<!--#endif evt[description] -->
