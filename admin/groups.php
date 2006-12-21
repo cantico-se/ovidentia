@@ -440,7 +440,7 @@ function addModGroup()
 
 	// move group ?
 
-	if (!isset($_POST['moveoption']))
+	if (!isset($_POST['moveoption']) && $_POST['grpid'] > BAB_UNREGISTERED_GROUP)
 		{
 		$res = $db->db_query("select id_parent, (lr-lf) groups from ".BAB_GROUPS_TBL." where id='".$db->db_escape_string($_POST['grpid'])."'");
 		$arr = $db->db_fetch_assoc($res);
@@ -454,7 +454,7 @@ function addModGroup()
 		}
 	else
 		{
-		$moveoption = $_POST['moveoption'];
+		$moveoption = isset($_POST['moveoption']) ? $_POST['moveoption'] : 1;
 		}
 	
 
@@ -524,9 +524,16 @@ function saveGroupsOptions($mailgrpids, $notgrpids, $congrpids, $pdsgrpids, $dir
 
 /* main */
 
-$idx = isset($_REQUEST['idx']) ? $_REQUEST['idx'] : "List";
+if (!$babBody->isSuperAdmin && $babBody->currentDGGroup['groups'] != 'Y' ) {
+	$babBody->addError('Access denied');
+	return;
+}
 
-if( isset($_POST['add']) && ($babBody->isSuperAdmin || $babBody->currentDGGroup['groups'] == 'Y'))
+
+
+$idx = bab_rp('idx','List');
+
+if( isset($_POST['add']))
 	{
 	if (isset($_POST['deleteg']))
 		{
@@ -539,7 +546,7 @@ if( isset($_POST['add']) && ($babBody->isSuperAdmin || $babBody->currentDGGroup[
 		}
 	}
 
-if( isset($update) && $update == "options" && ($babBody->isSuperAdmin || $babBody->currentDGGroup['groups'] == 'Y'))
+if( isset($update) && $update == "options")
 	{
 	if (!isset($mailgrpids)) $mailgrpids = array();
 	if (!isset($notgrpids)) $notgrpids = array();
@@ -560,18 +567,15 @@ if ($idx != "brow")
 		$babBody->addItemMenu("plist", bab_translate("Profiles"), $GLOBALS['babUrlScript']."?tg=profiles&idx=plist");
 		}
 
-	if( !$babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 /*$babBody->currentDGGroup['groups'] != 'Y'*/)
-		{
-		$babBody->msgerror = bab_translate("Access denied");
-		return;
-		}
 	}
 
 switch($idx)
 	{
-	case "brow": // Used by add-ons 
+	case "brow": 
+		// Used by add-ons and deprecated after 6.1.0 for security reasons
+		// user must be admin
 		include_once $babInstallPath."utilit/grpincl.php";
-		browseGroups($cb);
+		browseGroups(bab_gp('cb'));
 		exit;
 		break;
 	case "options":
@@ -612,8 +616,7 @@ switch($idx)
 	case "List":
 	default:
 		groupList();
-		if( $babBody->isSuperAdmin || $GLOBALS['babBody']->currentDGGroup['groups'] == 'Y' )
-			groupCreateMod();
+		groupCreateMod();
 		$babBody->title = bab_translate("Groups list");
 		break;
 	}
