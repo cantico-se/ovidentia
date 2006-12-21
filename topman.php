@@ -440,7 +440,6 @@ function viewArticle($article)
 				$this->content = "";
 				$this->head = bab_translate("Access denied");
 				}
-
 			$this->resf = $babDB->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$babDB->db_escape_string($article)."' order by ordering asc");
 			$this->countf = $babDB->db_num_rows($this->resf);
 
@@ -1341,12 +1340,11 @@ function archiveArticles($item, $aart)
 function unarchiveArticles($item, $aart)
 {
 	global $babDB, $idx;
-
 	$idx = "Articles";
 	$cnt = count($aart);
 	for($i = 0; $i < $cnt; $i++)
 		{
-		$babDB->db_query("update ".BAB_ARTICLES_TBL." set archive='N' where id='".$babDB->db_escape_string($aart[$i])."'");
+		$babDB->db_query("update ".BAB_ARTICLES_TBL." set archive='N', date_archiving='0000-00-00 00:00' where id='".$babDB->db_escape_string($aart[$i])."'");
 		}
 }
 
