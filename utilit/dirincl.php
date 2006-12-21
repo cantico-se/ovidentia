@@ -320,7 +320,7 @@ function bab_viewDirectoryUser($id)
 
 			$this->urlimg = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$arr['id_directory']."&idu=".$id);
 
-			$res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$babDB->db_escape_string($arr['id_directory'])."' order by list_ordering asc");
+			$res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$babDB->db_escape_string($arr['id_directory'])."' AND disabled='N' order by list_ordering asc");
 			while( $row = $babDB->db_fetch_array($res))
 				{
 				if( $row['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
