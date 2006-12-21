@@ -448,11 +448,6 @@ switch($tg)
 		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && ($babBody->isSuperAdmin || $babBody->currentAdmGroup != 0))
 			$incl = "admin/section";
 		break;
-	case "register":
-		$babLevelOne = bab_translate("Home");
-		$babLevelTwo = bab_translate("Login");
-		$incl = "admin/register";
-		break;
 	case "users":
 		$babLevelOne = bab_translate("Administration");
 		$babLevelTwo = bab_translate("Users");
