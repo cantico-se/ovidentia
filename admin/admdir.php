@@ -76,7 +76,7 @@ function listAds()
 			$this->ldaptitle = bab_translate("Ldap Directories list");
 			$this->databasetitle = bab_translate("Databases Directories list");
 			$this->add = bab_translate("Add");
-			$this->gview = bab_translate("View");
+			$this->gview = bab_translate("Rights");
 			$this->grights = bab_translate("Rights");
 			$this->urladdldap = $GLOBALS['babUrlScript'].'?tg=admdir&idx=ldap';
 			$this->urladddb = $GLOBALS['babUrlScript'].'?tg=admdir&idx=db';
