@@ -114,8 +114,7 @@ class listFiles
 		include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 		$this->fullpath = bab_getUploadFullPath($gr, $id);
 		$this->path = $path;
-		$this->jpath = str_replace("'", "\'", $path);
-		$this->jpath = str_replace('"', "'+String.fromCharCode(34)+'",$this->jpath);
+		$this->jpath = bab_toHtml($path, BAB_HTML_JS);
 		$this->id = $id;
 		$this->gr = $gr;
 		$this->countmgrp = 0;
@@ -529,128 +528,6 @@ function showDiskSpace($id, $gr, $path)
 	exit;
 	}
 
-function browseFiles($id, $gr, $path, $bmanager, $editor)
-	{
-	global $babBody;
-
-	class temp extends listFiles
-		{
-		var $arrext = array();
-		var $upfolderimg;
-		var $usrfolderimg;
-		var $grpfolderimg;
-		var $editor;
-		var $desctxt;
-		var $root;
-		var $refresh;
-		var $manfolderimg;
-		var $rootpath;
-		var $rooturl;
-		var $refreshurl;
-		var $name;
-		var $url;
-		var $jname;
-		var $description;
-		var $idf;
-		var $close;
-		var $altbg = true;
-
-		function temp($id, $gr, $path, $bmanager, $editor)
-			{
-			global $BAB_SESS_USERID;
-			$this->editor = $editor;
-			$this->desctxt = bab_translate("Description");
-			$this->root = bab_translate("Home folder");
-			$this->refresh = bab_translate("Refresh");
-			$this->nametxt = bab_translate("Name");
-			$this->close = bab_translate("Close");
-			$this->listFiles($id, $gr, $path, $bmanager, "brow");
-
-			if( $gr == "Y")
-				$this->rootpath = bab_toHtml(bab_getFolderName($id));
-			else
-				$this->rootpath = "";
-			$this->rooturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=brow&id=".$BAB_SESS_USERID."&gr=N&path=&editor=".urlencode($this->editor));
-			$this->refreshurl = bab_toHtml( $GLOBALS['babUrlScript']."?tg=fileman&idx=brow&id=".$id."&gr=".$gr."&path=".urlencode($path)."&editor=".urlencode($this->editor));
-			$this->id = $id;
-			}
-
-		function getnextdir()
-			{
-			static $i = 0;
-			if( $i < count($this->arrdir))
-				{
-				$this->altbg = !$this->altbg;
-				$this->name = bab_toHtml($this->arrdir[$i]);
-				$this->url = bab_toHtml($this->arrudir[$i]."&editor=".urlencode($this->editor));
-				$this->folderpath = empty($this->path) ? bab_toHtml(urlencode($this->name)) : bab_toHtml(urlencode($this->path.'/'.$this->name));
-				$this->folderid = $this->id;
-				$i++;
-				return true;
-				}
-			else
-				return false;
-			}
-
-		function getnextgrpdir()
-			{
-			static $m = 0;
-			if( $m < $this->countgrp)
-				{
-				$this->altbg = !$this->altbg;
-				$this->name = bab_toHtml($this->arrgrp['folder'][$m]);
-				$this->folderid = $this->arrgrp['id'][$m];
-				$this->folderpath = '';
-				$this->url = bab_toHtml( $GLOBALS['babUrlScript']."?tg=fileman&idx=brow&id=".$this->arrgrp['id'][$m]."&gr=Y&path=&editor=".$this->editor);
-				$this->ma = $this->arrgrp['ma'][$m];
-				$m++;
-				return true;
-				}
-			else
-				{
-				$this->folderid = false;
-				return false;
-				}
-			}
-
-		function getnextfile()
-			{
-			global $babDB;
-			static $i = 0;
-			if( $i < $this->count)
-				{
-				$this->altbg = !$this->altbg;
-				$arr = $babDB->db_fetch_array($this->res);
-				$ext = strtolower(substr(strrchr($arr['name'], "."), 1));
-				if( !empty($ext) && empty($this->arrext[$ext]))
-					{
-					$this->arrext[$ext] = bab_printTemplate($this, "config.html", ".".$ext);
-					if( empty($this->arrext[$ext]))
-						$this->arrext[$ext] = bab_printTemplate($this, "config.html", ".unknown");						
-					$this->fileimage = $this->arrext[$ext];
-					}
-				else if( empty($ext))
-					{
-					$this->fileimage = bab_printTemplate($this, "config.html", ".unknown");				
-					}
-				else
-					$this->fileimage = $this->arrext[$ext];
-				$this->name = bab_toHtml($arr['name']);
-				$this->jname = str_replace("'", "\'", $arr['name']);
-				$this->jname = bab_toHtml(str_replace('"', "'+String.fromCharCode(34)+'",$this->jname));
-				$this->description = bab_toHtml($arr['description']);
-				$this->idf = $arr['id'];
-				$i++;
-				return true;
-				}
-			else
-				return false;
-			}
-		}
-
-	$temp = new temp($id, $gr, $path, $bmanager, $editor);
-	echo bab_printTemplate($temp,"fileman.html", "browsefiles");
-	}
 
 function listFiles($id, $gr, $path, $bmanager)
 	{
@@ -2095,10 +1972,6 @@ if( 'update' === bab_rp('cdel') )
 
 switch($idx)
 	{
-	case "brow":
-		browseFiles($id, $gr, $path, $bmanager, $editor);
-		exit;
-		break;
 
 	case "unload":
 		fileUnload($id, $gr, $path);

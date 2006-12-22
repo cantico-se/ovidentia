@@ -694,10 +694,6 @@ function addQuestion($idcat, $idscat)
 			$this->add = bab_translate("Add");
 			$this->idcat = bab_toHtml($idcat);
 			$this->idscat = $idscat;
-			$this->images = bab_translate("Images");
-			$this->urlimages = bab_toHtml($GLOBALS['babUrlScript']."?tg=images");
-			$this->files = bab_translate("Files");
-			$this->urlfiles = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=brow");
 			$this->editor = bab_editor('', 'response', 'qcreate',400,1);
 			$this->res = $babDB->db_query("select * from ".BAB_FAQ_SUBCAT_TBL." where id_cat='".$babDB->db_escape_string($idcat)."'");
 			$this->count = $babDB->db_num_rows($this->res);
@@ -829,10 +825,6 @@ function modifyQuestion($item, $idscat, $idq)
 			$arr = $babDB->db_fetch_array($res);
 			$this->question = bab_toHtml($arr['question']);
 
-			$this->images = bab_translate("Images");
-			$this->urlimages = bab_toHtml($GLOBALS['babUrlScript']."?tg=images");
-			$this->files = bab_translate("Files");
-			$this->urlfiles = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=brow");
 			$this->editor = bab_editor($arr['response'], 'response', 'qmod',400,1);
 
 			$this->res = $babDB->db_query("select * from ".BAB_FAQ_SUBCAT_TBL." where id_cat='".$babDB->db_escape_string($idcat)."'");
