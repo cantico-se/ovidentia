@@ -1855,10 +1855,8 @@ function rightcopy() {
 					r.id,
 					r.description 
 				FROM 
-					".BAB_VAC_RIGHTS_TBL." r,
-					".BAB_VAC_USERS_RIGHTS_TBL." u 
+					".BAB_VAC_RIGHTS_TBL." r 
 				WHERE 
-					u.id_right = r.id 
 					AND YEAR(r.date_begin) = ".$this->db->quote($selected_year)." 
 				GROUP BY r.id 
 				");
