@@ -139,7 +139,7 @@ class bab_dumpToDb
 				$query = $m[1][$k];
 				if (!$this->db_query($query))
 					{
-					$this->error = $this->trans->str('There is an error into sql dump file at query : ').'<p>'.nl2br($query).'</p>';
+					$this->error = $this->trans->str('There is an error into sql dump file at query : ').'<p>'.nl2br($query).'</p><br />'.'<p>'.mysql_error().'</p>';
 					return false;
 					}
 				
