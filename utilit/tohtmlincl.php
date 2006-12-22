@@ -38,6 +38,15 @@ function bab_f_toHtml($pee, $opt) {
 			$opt = $opt & ~BAB_HTML_P;
 		}
 	}
+	
+	/**
+	 * the original javascript string must be into simple quotes
+	 */
+	if (BAB_HTML_JS === ($opt & BAB_HTML_JS)) {
+		$pee = str_replace('\\', '\\\\', $pee);
+		$pee = str_replace("'", "\'", $pee);
+		$pee = str_replace('"', "'+String.fromCharCode(34)+'",$pee);
+	}
 
 	if (BAB_HTML_ENTITIES === ($opt & BAB_HTML_ENTITIES))
 		$pee = htmlentities($pee);
@@ -55,11 +64,6 @@ function bab_f_toHtml($pee, $opt) {
 
 	if (BAB_HTML_BR === ($opt & BAB_HTML_BR)) {
 		$pee = nl2br($pee);
-	}
-
-	if (BAB_HTML_JS === ($opt & BAB_HTML_JS)) {
-		$pee = str_replace("'", "\'", $pee);
-		$pee = str_replace('"', "'+String.fromCharCode(34)+'",$pee);
 	}
 
 	if (BAB_HTML_REPLACE === ($opt & BAB_HTML_REPLACE)) {
