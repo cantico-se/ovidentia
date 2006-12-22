@@ -1748,9 +1748,8 @@ function fileUnload($id, $gr, $path)
 			{
 			$this->message = bab_translate("Your file list has been updated");
 			$this->close = bab_translate("Close");
-			$path = str_replace("'", "\'", $path);
-			$path = str_replace('"', "'+String.fromCharCode(34)+'",$path);
-			$this->redirecturl = $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".urlencode($path);
+			$url = $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".urlencode($path);
+			$this->redirecturl = bab_toHtml($url, BAB_HTML_JS | BAB_HTML_ENTITIES);
 			}
 		}
 

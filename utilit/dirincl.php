@@ -204,9 +204,9 @@ function UBrowseDbDirectory($id, $pos, $xf, $cb)
 				$this->altbg = $this->altbg ? false : true;
 				$this->arrf = $babDB->db_fetch_array($this->res);
 				$this->userid = bab_toHtml($this->arrf['id']);
-				$this->firstlast = bab_composeUserName(bab_toHtml($this->arrf['givenname']),bab_toHtml($this->arrf['sn']));
-				$this->firstlast = str_replace("'", "\'", $this->firstlast);
-				$this->firstlast = str_replace('"', "'+String.fromCharCode(34)+'",$this->firstlast);
+				$this->firstlast = bab_composeUserName($this->arrf['givenname'], $this->arrf['sn']);
+				$this->firstlast = bab_toHtml($this->firstlast, BAB_HTML_JS | BAB_HTML_ENTITIES);
+
 				$i++;
 				return true;
 				}
