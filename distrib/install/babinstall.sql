@@ -564,6 +564,8 @@ CREATE TABLE bab_users (
    date_shortformat varchar(255) NOT NULL default '',
    time_format varchar(255) NOT NULL default '',
    db_authentification enum('N','Y') DEFAULT 'N' NOT NULL,
+   cookie_validity datetime DEFAULT '0000-00-00 00:00:00',
+   cookie_id varchar(255),
    PRIMARY KEY (id),
    KEY nickname (nickname),
    KEY firstname (firstname),
@@ -571,7 +573,7 @@ CREATE TABLE bab_users (
    KEY hashname (hashname)
 );
 
-INSERT INTO bab_users VALUES ( '1', 'admin@admin.bab', 'Administrator', '', '200ceb26807d6bf99fd6f4f0d1ca54d4', 'admin@admin.bab', '2001-04-03 00:00:00', '22975d8a5ed1b91445f6c55ac121505b', '1', '', '0da8f2a37b9e7926e08196a6bd1baa29', '1', '0', '', '', '', '0000-00-00 00:00:00', '0000-00-00 00:00:00', '0', '', '', '','N');
+INSERT INTO bab_users VALUES ( '1', 'admin@admin.bab', 'Administrator', '', '200ceb26807d6bf99fd6f4f0d1ca54d4', 'admin@admin.bab', '2001-04-03 00:00:00', '22975d8a5ed1b91445f6c55ac121505b', '1', '', '0da8f2a37b9e7926e08196a6bd1baa29', '1', '0', '', '', '', '0000-00-00 00:00:00', '0000-00-00 00:00:00', '0', '', '', '','N','0000-00-00 00:00:00','');
 
 # --------------------------------------------------------
 #
