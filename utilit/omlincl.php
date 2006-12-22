@@ -4926,8 +4926,7 @@ function format_output($val, $matches)
 			case 'jsencode':
 				if( $v == '1')
 					{
-					$val = str_replace("'", "\'", $val);
-					$val = str_replace('"', "'+String.fromCharCode(34)+'",$val);
+					$val = bab_toHtml($val, BAB_HTML_JS);
 					}
 				break;
 			case 'strcase':
