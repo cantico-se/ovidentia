@@ -1229,9 +1229,8 @@ function showSetArticleProperties($idart)
 				$this->datesubtitle = bab_translate("Date of submission");
 				$this->datesuburl = $GLOBALS['babUrlScript']."?tg=month&callback=dateSub&ymin=0&ymax=2";
 				$this->datesubtxt = bab_translate("Submission date");
-				$this->invaliddate = bab_translate("ERROR: End date must be older");
-				$this->invaliddate = str_replace("'", "\'", $this->invaliddate);
-				$this->invaliddate = str_replace('"', "'+String.fromCharCode(34)+'",$this->invaliddate);
+				$this->invaliddate = bab_toHtml(bab_translate("ERROR: End date must be older"),BAB_HTML_JS);
+				
 				$this->cdateecheck = '';
 				if( $arr['date_submission'] != '0000-00-00 00:00:00' )
 					{
