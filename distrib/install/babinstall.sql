@@ -3627,8 +3627,8 @@ CREATE TABLE bab_art_tags (
 
 CREATE TABLE `bab_event_listeners` (
   `id` int(10) unsigned NOT NULL auto_increment,
-  `event_class_name` varchar(255) NOT NULL,
-  `function_name` varchar(255) NOT NULL,
+  `event_class_name` varchar(100) NOT NULL,
+  `function_name` varchar(100) NOT NULL,
   `require_file` varchar(255) NOT NULL,
   `addon_name` varchar(255) NOT NULL,
   PRIMARY KEY  (`id`),

@@ -7617,8 +7617,8 @@ function upgrade606to610()
 		$babDB->db_query("
 		CREATE TABLE `".BAB_EVENT_LISTENERS_TBL."` (
 			`id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
-			`event_class_name` VARCHAR( 255 ) NOT NULL ,
-			`function_name` VARCHAR( 255 ) NOT NULL ,
+			`event_class_name` VARCHAR( 100 ) NOT NULL ,
+			`function_name` VARCHAR( 100 ) NOT NULL ,
 			`require_file` VARCHAR( 255 ) NOT NULL ,
 			`addon_name` VARCHAR( 255 ) NOT NULL ,
 			PRIMARY KEY  (`id`),
