@@ -53,8 +53,8 @@ function getGlobalVariable($var)
 		case 'babLanguage': return bab_toHtml($GLOBALS['babLanguage']);
 		case 'babStyle': return bab_toHtml($GLOBALS['babStyle']);
 		case 'babSkin': return bab_toHtml($GLOBALS['babSkin']);
-		case 'babSiteName': return bab_toHtml($GLOBALS['babSkin']);
-		case 'BAB_SESS_USERID': return bab_toHtml($GLOBALS['babSiteName']);
+		case 'babSiteName': return bab_toHtml($GLOBALS['babSiteName']);
+		case 'BAB_SESS_USERID': return bab_toHtml($GLOBALS['BAB_SESS_USERID']);
 		case 'BAB_SESS_NICKNAME': return bab_toHtml($GLOBALS['BAB_SESS_NICKNAME']);
 		case 'BAB_SESS_USER': return bab_toHtml($GLOBALS['BAB_SESS_USER']);
 		case 'BAB_SESS_FIRSTNAME': return bab_toHtml($GLOBALS['BAB_SESS_FIRSTNAME']);
