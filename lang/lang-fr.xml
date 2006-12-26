@@ -2413,4 +2413,6 @@
 <string id="ERROR: You can't use tags. List tags is empty">ERREUR: Vous ne pouvez pas utiliser les mots-clés. La liste des mots-clés du thésaurus est vide</string>
 <string id="Thesaurus">Thésaurus</string>
 <string id="%s is your personal calendar">%s est votre agenda personnel</string>
+<string id="Mail subject">Sujet du mail</string>
+
 </fr>

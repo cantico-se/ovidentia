@@ -36,6 +36,8 @@ function mailspool() {
 			$this->t_mail_date = bab_translate("Date");
 			$this->t_send = bab_translate("Send");
 			$this->t_delete = bab_translate("Delete");
+			$this->checkall = bab_translate("Check all");
+			$this->uncheckall = bab_translate("Uncheck all");
 
 			$this->db = $GLOBALS['babDB'];
 			
