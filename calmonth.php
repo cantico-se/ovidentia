@@ -130,7 +130,7 @@ class cal_monthCls extends cal_wmdbaseCls
 			$dday = date("j", $mktime);
 			$this->week = bab_toHtml(bab_translate("Week").' '.date('W', $mktime));
 			$this->cdate = sprintf("%04s-%02s-%02s", date("Y", $mktime), date("n", $mktime), date("j", $mktime));
-			if( $dday == date("j") && $this->month == date("n") && $this->year ==  date("Y"))
+			if( date("j", $mktime) == date("j") && date("n", $mktime) == date("n") && date("Y", $mktime) ==  date("Y"))
 				{
 				$this->currentday = 1;
 				}
