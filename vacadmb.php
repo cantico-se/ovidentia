@@ -233,8 +233,8 @@ function listVacationRequestsb($idstatus, $userid, $dateb, $datee, $vpos)
 				$this->altbg = !$this->altbg;
 				$arr = $babDB->db_fetch_array($this->res);
 				$this->url = bab_toHtml($GLOBALS['babUrlScript']."?tg=vacadmb&idx=morvw&id=".$arr['id']);
-				$this->editurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=vacadmb&amp;idx=edvr&amp;id=".$arr['id']);
-				$this->urldelete = bab_toHtml($GLOBALS['babUrlScript']."?tg=vacuser&amp;idx=delete&amp;id_entry=".$arr['id']);
+				$this->editurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=vacadmb&idx=edvr&id=".$arr['id']);
+				$this->urldelete = bab_toHtml($GLOBALS['babUrlScript']."?tg=vacuser&idx=delete&id_entry=".$arr['id']);
 				list($this->quantity) = $babDB->db_fetch_row($babDB->db_query("select sum(quantity) from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry =".$babDB->quote($arr['id'])));
 				$this->urlname		= bab_toHtml(bab_getUserName($arr['id_user']));
 				$this->begindate	= bab_toHtml(bab_vac_shortDate(bab_mktime($arr['date_begin'])));

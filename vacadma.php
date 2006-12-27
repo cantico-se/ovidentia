@@ -1857,7 +1857,7 @@ function rightcopy() {
 				FROM 
 					".BAB_VAC_RIGHTS_TBL." r 
 				WHERE 
-					AND YEAR(r.date_begin) = ".$this->db->quote($selected_year)." 
+					 YEAR(r.date_begin) = ".$this->db->quote($selected_year)." 
 				GROUP BY r.id 
 				");
 
