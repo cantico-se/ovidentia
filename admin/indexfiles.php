@@ -189,7 +189,7 @@ function record_status() {
 
 // main
 
-if( !isset($BAB_SESS_LOGGED) || empty($BAB_SESS_LOGGED) ||  !$babBody->isSuperAdmin)
+if( !isset($BAB_SESS_LOGGED) || empty($BAB_SESS_LOGGED) ||  !$babBody->isSuperAdmin || false === bab_searchEngineInfos())
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;
