@@ -1524,6 +1524,8 @@ function bab_printOvmlTemplate( $file, $args=array())
  * 
  * Additional dots are not included in the $max_length parameter
  *
+ * @since	6.1.0
+ *
  * @param	string	$text
  * @param	int		$type
  * @param	int		$max_length
