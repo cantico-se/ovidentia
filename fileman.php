@@ -26,44 +26,6 @@ include_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
 include_once $GLOBALS['babInstallPath'].'utilit/uploadincl.php';
 include_once $GLOBALS['babInstallPath'].'utilit/indexincl.php';
 
-function notifyApprovers($id, $fid)
-	{
-	global $babBody, $babDB;
-
-	$arr = $babDB->db_fetch_array($babDB->db_query("select idsa, auto_approbation from ".BAB_FM_FOLDERS_TBL." where id='".$babDB->db_escape_string($fid)."'"));
-
-	if( $arr['idsa'] !=  0 )
-		{
-		include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
-		if( $arr['auto_approbation'] == 'Y' )
-			{
-			$idfai = makeFlowInstance($arr['idsa'], "fil-".$id, $GLOBALS['BAB_SESS_USERID']);
-			}
-		else
-			{
-			$idfai = makeFlowInstance($arr['idsa'], "fil-".$id);
-			}
-		}
-
-	if( $arr['idsa'] ==  0 || $idfai === true)
-		{
-		$babDB->db_query("update ".BAB_FILES_TBL." set confirmed='Y' where id='".$babDB->db_escape_string($id)."'");
-		$GLOBALS['babWebStat']->addNewFile($babBody->currentAdmGroup);
-		return true;
-		}
-	elseif(!empty($idfai))
-		{
-		$babDB->db_query("update ".BAB_FILES_TBL." set idfai='".$babDB->db_escape_string($idfai)."' where id='".$babDB->db_escape_string($id)."'");
-		$nfusers = getWaitingApproversFlowInstance($idfai, true);
-		if( count($nfusers))
-			{
-			notifyFileApprovers($id, $nfusers, bab_translate("A new file is waiting for you"));
-			}
-		$babBody->msgerror = bab_translate("Your file is waiting for approval");
-		}
-	
-	return false;
-	}
 
 function deleteFile($idf, $name, $path)
 	{

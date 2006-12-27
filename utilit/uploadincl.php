@@ -144,9 +144,9 @@ function bab_importFmFile($fmFile, $id_owner, $path, $bgroup) {
 	global $babDB;
 	include_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
 
-	$filename = $_FILES[$field_name]['name'];
-	$pathx = bab_getUploadFullPath($arr['bgroup'], $arr['id_owner'], $path);
 	$gr = $bgroup ? 'Y' : 'N';
+	$pathx = bab_getUploadFullPath($gr, $id_owner, $path);
+	
 
 	if( file_exists($pathx.$fmFile->filename)) {
 
@@ -177,19 +177,21 @@ function bab_importFmFile($fmFile, $id_owner, $path, $bgroup) {
 		// update a file
 		return saveUpdateFile(
 			$arr['id'], 
-			$fmFile->filename, 
-			$_FILES[$field_name]['size'],
-			$_FILES[$field_name]['tmp_name'], 
+			$fmFile, 
 			$fmFile->filename, 
 			$arr['description'], 
 			$arr['keywords'], 
-			$arr['readonly'], 'Y', false, false, false
+			$arr['readonly'], 
+			'Y', 
+			false, 
+			false, 
+			false
 		);
 			
 	} else {
 		// create new file
 		return saveFile(
-			array($field_name => $_FILES[$field_name]),
+			array($fmFile),
 			$id_owner, 
 			$gr, 
 			$path, '', '', 'N'
