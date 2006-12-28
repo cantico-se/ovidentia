@@ -1043,6 +1043,10 @@ function bab_getFileMimeType($file)
 
 /* API Directories */
 
+/**
+ * Deprecated
+ * @see bab_getDirEntry
+ */
 function bab_getUserDirFields($id = false)
 	{
 	global $babDB;
@@ -1057,13 +1061,19 @@ function bab_getUserDirFields($id = false)
 	}
 
 
-/*
-
-BAB_DIR_ENTRY_ID_USER		: $id est un id utilisateur
-BAB_DIR_ENTRY_ID			: $id est un id de fiche d'annuaire
-BAB_DIR_ENTRY_ID_DIRECTORY	: liste des champs de l'annuaire
-BAB_DIR_ENTRY_ID_GROUP		: liste des champs de l'annuaire de groupe
-*/
+/** 
+ * Get a directory entry or a list of entries
+ *
+ * BAB_DIR_ENTRY_ID_USER		: $id est un id utilisateur
+ * BAB_DIR_ENTRY_ID				: $id est un id de fiche d'annuaire
+ * BAB_DIR_ENTRY_ID_DIRECTORY	: liste des champs de l'annuaire
+ * BAB_DIR_ENTRY_ID_GROUP		: liste des champs de l'annuaire de groupe
+ *
+ * @param	false|int	$id
+ * @param	int			$type
+ * @param	NULL|int	$id_directory
+ * @return array
+ */
 
 function bab_getDirEntry($id = false, $type = BAB_DIR_ENTRY_ID_USER, $id_directory = NULL ) {
 	include_once $GLOBALS['babInstallPath']."utilit/dirincl.php";
