@@ -387,6 +387,11 @@ class bab_Template
 		if (@isset($templateObject->{$propertyName}[$index])) {
 			return $templateObject->{$propertyName}[$index];
 		}
+		
+		if (NULL === $templateObject->{$propertyName}[$index]) {
+			return '';
+		}
+		
 		$calls = debug_backtrace();
 		$call = reset($calls); // $call will contain debug info about the line in the script where this function was called.
 		bab_Template::addError($templateObject, 'Unknown property (' . $propertyName . '[' . $index . '])', $call['line']);
@@ -402,11 +407,17 @@ class bab_Template
 		if (@isset($templateObject->{$propertyName})) {
 			return $templateObject->{$propertyName};
 		}
+
 		$tr = getGlobalVariable($propertyName);
 		if($tr !== NULL)
 			{
 			return $tr;
 			}
+			
+		if (NULL === $templateObject->{$propertyName}) {
+			return '';
+		}
+		
 		$call = reset(debug_backtrace()); // $call will contain debug info about the line in the script where this function was called.
 		bab_Template::addError($templateObject, 'Unknown property or global variable (' . $propertyName . ')', $call['line']);
 		return '{ ' . $propertyName . ' }';
