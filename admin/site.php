@@ -2134,37 +2134,37 @@ switch($idx)
 		else
 			{
 			$babBody->addItemMenu("menusite", bab_translate("Menu"),$GLOBALS['babUrlScript']."?tg=site&item=".$_REQUEST['item']);
-			$babBody->addItemMenu("menu1", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=site&idx=menu1&item=".$_REQUEST['item']);
+			$babBody->addItemMenu("menu1", bab_translate("Modify"), '');
 			}
 		break;
 
 	case "menu2":
 		$babBody->addItemMenu("menusite", bab_translate("Menu"),$GLOBALS['babUrlScript']."?tg=site&item=".$_REQUEST['item']);
-		$babBody->addItemMenu("menu2", bab_translate("Modify"),$GLOBALS['babUrlScript']."?tg=site&idx=menu2&item=".$_REQUEST['item']);
+		$babBody->addItemMenu("menu2", bab_translate("Modify"),'');
 		site_menu2($_REQUEST['item']);
 		break;
 
 	case "menu3":
 		$babBody->addItemMenu("menusite", bab_translate("Menu"),$GLOBALS['babUrlScript']."?tg=site&item=".$_REQUEST['item']);
-		$babBody->addItemMenu("menu3", bab_translate("Modify"),$GLOBALS['babUrlScript']."?tg=site&idx=menu3&item=".$_REQUEST['item']);
+		$babBody->addItemMenu("menu3", bab_translate("Modify"),'');
 		site_menu3($_REQUEST['item']);
 		break;
 
 	case "menu4":
 		$babBody->addItemMenu("menusite", bab_translate("Menu"),$GLOBALS['babUrlScript']."?tg=site&item=".$_REQUEST['item']);
-		$babBody->addItemMenu("menu4", bab_translate("Modify"),$GLOBALS['babUrlScript']."?tg=site&idx=menu4&item=".$_REQUEST['item']);
+		$babBody->addItemMenu("menu4", bab_translate("Modify"),'');
 		site_menu4($_REQUEST['item']);
 		break;
 
 	case "menu5":
 		$babBody->addItemMenu("menusite", bab_translate("Menu"),$GLOBALS['babUrlScript']."?tg=site&item=".$_REQUEST['item']);
-		$babBody->addItemMenu("menu5", bab_translate("Modify"),$GLOBALS['babUrlScript']."?tg=site&idx=menu5&item=".$_REQUEST['item']);
+		$babBody->addItemMenu("menu5", bab_translate("Modify"),'');
 		site_menu5($_REQUEST['item']);
 		break;
 
 	case "menu6":
 		$babBody->addItemMenu("menusite", bab_translate("Menu"),$GLOBALS['babUrlScript']."?tg=site&item=".$_REQUEST['item']);
-		$babBody->addItemMenu("menu6", bab_translate("Modify"),$GLOBALS['babUrlScript']."?tg=site&idx=menu6&item=".$_REQUEST['item']);
+		$babBody->addItemMenu("menu6", bab_translate("Modify"),'');
 		site_menu6($_REQUEST['item']);
 		break;
 
@@ -2176,14 +2176,14 @@ switch($idx)
 		$macl->filter(0,0,1,1,1);
         $macl->babecho();
 		$babBody->addItemMenu("menusite", bab_translate("Menu"),$GLOBALS['babUrlScript']."?tg=site&item=".$_REQUEST['item']);
-		$babBody->addItemMenu("menu7", bab_translate("Managers"),$GLOBALS['babUrlScript']."?tg=site&idx=hman&item=".$_REQUEST['item']);
+		$babBody->addItemMenu("menu7", bab_translate("Managers"),'');
 		break;
 
 	case "menu8":
 		$babBody->title = bab_translate("Authentification").": ".getSiteName($_REQUEST['item']);
 		siteAuthentification($_REQUEST['item']);
 		$babBody->addItemMenu("menusite", bab_translate("Menu"),$GLOBALS['babUrlScript']."?tg=site&item=".$_REQUEST['item']);
-		$babBody->addItemMenu("menu8", bab_translate("Authentification"),$GLOBALS['babUrlScript']."?tg=site&idx=auth&item=".$_REQUEST['item']);
+		$babBody->addItemMenu("menu8", bab_translate("Authentification"),'');
 		break;
 
 	case "menu9":
@@ -2191,20 +2191,20 @@ switch($idx)
 		include_once $babInstallPath."utilit/dirincl.php";
 		siteRegistration($_REQUEST['item']);
 		$babBody->addItemMenu("menusite", bab_translate("Menu"),$GLOBALS['babUrlScript']."?tg=site&item=".$_REQUEST['item']);
-		$babBody->addItemMenu("menu9", bab_translate("Registration"),$GLOBALS['babUrlScript']."?tg=site&idx=cnx&item=".$_REQUEST['item']);
+		$babBody->addItemMenu("menu9", bab_translate("Registration"),'');
 		break;
 
 	case "menu10":
 		$babBody->title = bab_translate("Editor").": ".getSiteName($_REQUEST['item']);
 		editor_configuration($_REQUEST['item']);
 		$babBody->addItemMenu("menusite", bab_translate("Menu"),$GLOBALS['babUrlScript']."?tg=site&item=".$_REQUEST['item']);
-		$babBody->addItemMenu("menu10", bab_translate("Editor"),$GLOBALS['babUrlScript']."?tg=site&idx=editor&item=".$_REQUEST['item']);
+		$babBody->addItemMenu("menu10", bab_translate("Editor"),'');
 		break;
 
 	case "menu11":
 		$babBody->title = bab_translate("Search engine");
 		$babBody->addItemMenu("menusite", bab_translate("Menu"),$GLOBALS['babUrlScript']."?tg=site&item=".$_REQUEST['item']);
-		$babBody->addItemMenu("menu11", bab_translate("Search2"),$GLOBALS['babUrlScript']."?tg=site&idx=editor&item=".$_REQUEST['item']);
+		$babBody->addItemMenu("menu11", bab_translate("Search2"),'');
 
 		call_site_menu11($_REQUEST['item']);
 
@@ -2218,7 +2218,7 @@ switch($idx)
         $macl->addtable( BAB_SITES_WSFILES_GROUPS_TBL,bab_translate("Who can use OVML files").'?');
         $macl->babecho();
 		$babBody->addItemMenu("menusite", bab_translate("Menu"),$GLOBALS['babUrlScript']."?tg=site&item=".$_REQUEST['item']);
-		$babBody->addItemMenu("menu7", bab_translate("Web services"),$GLOBALS['babUrlScript']."?tg=site&idx=hman&item=".$_REQUEST['item']);
+		$babBody->addItemMenu("menu12", bab_translate("Web services"),'');
 		break;
 
 	default:
