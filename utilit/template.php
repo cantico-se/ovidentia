@@ -388,7 +388,7 @@ class bab_Template
 			return $templateObject->{$propertyName}[$index];
 		}
 		
-		if (NULL === $templateObject->{$propertyName}[$index]) {
+		if (NULL === @$templateObject->{$propertyName}[$index]) {
 			return '';
 		}
 		
@@ -414,7 +414,7 @@ class bab_Template
 			return $tr;
 			}
 			
-		if (NULL === $templateObject->{$propertyName}) {
+		if (NULL === @$templateObject->{$propertyName}) {
 			return '';
 		}
 		
