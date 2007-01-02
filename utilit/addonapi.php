@@ -1421,6 +1421,8 @@ function bab_searchEngineInfos() {
  * $instance->getValue($key)
  * $instance->getValueEx($key)
  * $instance->deleteDirectory()
+ * $instance->fetchChildDir()
+ * $instance->fetchChildKey()
  *
  * @see bab_registry
  */

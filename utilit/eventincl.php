@@ -35,14 +35,30 @@ class bab_event {
  * Once the listener is added, the function $function_name will be fired if bab_fireEvent is called with an event
  * inherited or instancied from the class $event_class_name
  *
+ * The function return false if the event listener is allready created
+ *
  * @param	string	$event_class_name
  * @param	string	$function_name		
  * @param	string	$require_file			file path relative to ovidentia core, the file where $function_name is declared
  * @param	string	[$addon_name]
+ *
+ * @return boolean
  */
 function bab_addEventListener($event_class_name, $function_name, $require_file, $addon_name = BAB_ADDON_CORE_NAME) {
 
 	global $babDB;
+	
+	$res = $babDB->db_query('SELECT * FROM 
+		'.BAB_EVENT_LISTENERS_TBL.' 
+	WHERE
+		event_class_name='.$babDB->quote($event_class_name).' 
+		AND function_name='.$babDB->quote($function_name).' 
+		AND require_file='.$babDB->quote($require_file).'
+	');
+	
+	if (0 < $babDB->db_num_rows($res)) {
+		return false;
+	}
 	
 	$babDB->db_query('
 		INSERT INTO '.BAB_EVENT_LISTENERS_TBL.' 
@@ -60,6 +76,8 @@ function bab_addEventListener($event_class_name, $function_name, $require_file, 
 			'.$babDB->quote($addon_name).' 
 			)
 	');
+	
+	return true;
 }
 
 
@@ -125,7 +143,7 @@ class bab_fireEvent_Obj {
  */
 function bab_fireEvent($event_obj) {
 
-	global $babDB;
+	global $babDB, $babBody;
 	
 	$obj = new bab_fireEvent_Obj;
 	$obj->push_obj($event_obj);
@@ -146,9 +164,21 @@ function bab_fireEvent($event_obj) {
 		);
 		
 		while ($arr = $babDB->db_fetch_assoc($res)) {
-			$obj->setAddonCtx($arr['id_addon'], $arr['addon_name']);
-			require_once $GLOBALS['babInstallPath'].$arr['require_file'];
-			call_user_func($arr['function_name'], $event_obj);
+		
+			$id_addon = $arr['id_addon'];
+		
+			if (BAB_ADDON_CORE_NAME === $arr['addon_name'] || 
+			(isset($babBody->babaddons[$id_addon]) && bab_isAccessValid(BAB_ADDONS_GROUPS_TBL, $id_addon))) {
+				
+				$obj->setAddonCtx($id_addon, $arr['addon_name']);
+				require_once $GLOBALS['babInstallPath'].$arr['require_file'];
+				call_user_func($arr['function_name'], $event_obj);
+			}
+			
+			if (NULL === $id_addon && BAB_ADDON_CORE_NAME !== $arr['addon_name']) {
+				bab_debug('Missing addon : '.$arr['addon_name'].
+				"\nFor registered event : ".$arr['event_class_name']);
+			}
 		}
 	}
 }
