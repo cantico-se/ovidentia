@@ -388,7 +388,6 @@ class bab_userWorkingHours {
 			bab_tskmgr_setPeriods($this, $this->id_users, $this->begin, $this->end);
 		}
 
-		require_once $GLOBALS['babInstallPath'].'utilit/devtools.php';
 		$event = new bab_eventCreatePeriods($this);
 		bab_fireEvent($event);
 
