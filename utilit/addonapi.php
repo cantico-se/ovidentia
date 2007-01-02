@@ -1569,4 +1569,57 @@ function bab_abbr($text, $type, $max_length) {
 	}
 }
 
+
+/**
+ * Define and get the locale
+ * @see		setLocale 
+ * @return 	false|string
+ */
+function bab_locale() {
+	
+	static $locale = NULL;
+
+	if (NULL !== $locale) {
+		return $locale;
+		
+	} else {
+		global $babLanguage;
+		$languageCode = strtolower($babLanguage).'_'.strtoupper($babLanguage);
+		
+		/*
+	     * Some systems only require LANG, others (like Mandrake) seem to require
+	     * LANGUAGE also.
+	     */
+		putenv("LANG=${languageCode}");
+	    putenv("LANGUAGE=${languageCode}");
+	    
+		$locale = setLocale(LC_ALL, $languageCode);
+		
+		if (false === $locale) {
+			$locale = setLocale(LC_ALL, $babLanguage);
+		}
+		
+		/*
+		 * Try appending some character set names; some systems (like FreeBSD) need this.
+		 * Some require a format with hyphen (e.g. gentoo) and others without (e.g. FreeBSD).
+		 */
+		if (false === $locale) {
+			foreach (array('utf8', 'UTF-8', 'UTF8', 
+					   'ISO8859-1', 'ISO8859-2', 'ISO8859-5', 'ISO8859-7', 'ISO8859-9',
+					   'ISO-8859-1', 'ISO-8859-2', 'ISO-8859-5', 'ISO-8859-7', 'ISO-8859-9',
+					   'EUC', 'Big5') as $charset) {
+				if (($locale = setlocale(LC_ALL, $languageCode . '.' . $charset)) !== false) {
+					break;
+				}
+			}
+		}
+		
+		if (false === $locale) {
+			bab_debug("No locale found for : $languageCode");
+		}
+		
+		return $locale;
+	}
+}
+
 ?>
