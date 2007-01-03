@@ -1681,12 +1681,12 @@ function siteUpdate_menu4()
 		return false;
 		}
 
-	if( !is_numeric($_POST['imgsize']))
-		$_POST['imgsize'] = 25;
+	$imgsize = is_numeric($_POST['imgsize']) ? $_POST['imgsize'] : 25;
+	$uploadpath = rtrim($_POST['uploadpath'],'/\\ ');
 
 	$req = "UPDATE ".BAB_SITES_TBL." set 
-		imgsize='".$babDB->db_escape_string($_POST['imgsize'])."', 
-		uploadpath='".$babDB->db_escape_string($_POST['uploadpath'])."', 
+		imgsize='".$babDB->db_escape_string($imgsize)."', 
+		uploadpath='".$babDB->db_escape_string($uploadpath)."', 
 		maxfilesize='".$babDB->db_escape_string($_POST['maxfilesize'])."', 
 		folder_diskspace='".$babDB->db_escape_string($_POST['folder_diskspace'])."', 
 		user_diskspace='".$babDB->db_escape_string($_POST['user_diskspace'])."', 
