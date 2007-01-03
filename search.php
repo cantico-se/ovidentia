@@ -2271,7 +2271,8 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				else
 					$addon_searchresults = $this->addons->callSearchFunction($this->addon_id);
 					
-				$this->text = isset($addon_searchresults[0]) ? bab_toHtml($addon_searchresults[0])  : '';
+				// this text is given by the addon as a html string.
+				$this->text = isset($addon_searchresults[0]) ? $addon_searchresults[0]  : '';
 				
 				list( $this->url, $this->urltxt ) = isset($addon_searchresults[2]) && is_array($addon_searchresults[2]) && !empty($addon_searchresults[2][0]) && !empty($addon_searchresults[2][1]) ? $addon_searchresults[2] : array(false,false);
 				
