@@ -780,10 +780,10 @@ if( !isset($_SESSION['bab_groupAccess']['acltables'][$table]))
 			{
 			$row['id_group'] -= BAB_ACL_GROUP_TREE;
 			if (bab_isMemberOfTree($row['id_group']))
-				$_SESSION['bab_groupAccess']['acltables'][$table][$row['id_object']] = 1;
+				$_SESSION['bab_groupAccess']['acltables'][$table][$row['id_object']] = $row['id_object'];
 			}
 		else
-			$_SESSION['bab_groupAccess']['acltables'][$table][$row['id_object']] = 1;
+			$_SESSION['bab_groupAccess']['acltables'][$table][$row['id_object']] = $row['id_object'];
 		}
 	}
 
