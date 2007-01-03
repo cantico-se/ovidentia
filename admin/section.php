@@ -259,7 +259,7 @@ function sectionUpdate($id, $title, $desc, $content, $script, $template, $lang, 
 		lang='".$babDB->db_escape_string($lang)."', 
 		optional='".$babDB->db_escape_string($opt)."' 
 	where 
-		id='".$babDB->db_escape_string($i)."'
+		id='".$babDB->db_escape_string($id)."'
 		";
 	$babDB->db_query($query);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sections&idx=List");
