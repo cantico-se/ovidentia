@@ -156,6 +156,9 @@ class bab_selectusers {
 			$searchtext = &$_POST['searchtext'];
 			$query = "SELECT id, firstname, lastname FROM ".BAB_USERS_TBL." 
 				WHERE 
+					disabled='0' 
+					AND is_confirmed='1' 
+					AND 
 					(	nickname	LIKE '%".$this->db->db_escape_like($searchtext)."%' 
 					OR	firstname	LIKE '%".$this->db->db_escape_like($searchtext)."%' 
 					OR	lastname	LIKE '%".$this->db->db_escape_like($searchtext)."%' 
