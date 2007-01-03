@@ -1663,6 +1663,8 @@ class bab_FileTreeView extends bab_TreeView
 	function _addFiles()
 	{
 		global $babBody;
+		
+		if( !$babBody->ustorage ) return;
 
 		$sql = 'SELECT file.id, file.path, file.name, file.id_owner, file.bgroup FROM ' . BAB_FILES_TBL.' file';
 		if ($babBody->currentAdmGroup != 0) {
