@@ -278,7 +278,11 @@ function bab_resizeOrgChartContainer() {
 	var toolbar = document.getElementsByClassName('bab_treeToolbar', orgChartContainer)[0];
 	
 	var toolbarDimensions = Element.getDimensions(toolbar);
-	var bodyDimensions = Element.getDimensions(document.body);
+	
+	var ieBody = (document.documentElement ? document.documentElement : document.body)
+	
+		
+	var bodyDimensions = Element.getDimensions(ieBody);
 	
 	orgChartContainer.style.width = (bodyDimensions.width - 4) + "px";
 	orgChartContainer.style.height = (bodyDimensions.height - 4) + "px";
