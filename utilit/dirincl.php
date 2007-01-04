@@ -469,7 +469,7 @@ function summaryDbContact($id, $idu, $update=true)
 				if( $this->orgcount > 0 )
 					{
 					$this->vieworg = bab_translate("View this organizational chart");
-					$this->vieworgurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=chart&ocid=");
+					$this->vieworgurl = $GLOBALS['babUrlScript']."?tg=chart&ocid=";
 					}
 				}
 			else
