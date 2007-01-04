@@ -46,6 +46,7 @@ class bab_fmFile {
 	 */
 	var $filename;
 	var $size;
+	var $error;
 	/**#@-*/
 	
 	/**
@@ -56,6 +57,7 @@ class bab_fmFile {
 	function bab_fmFile($type, $source) {
 		$this->type = $type;
 		$this->source = $source;
+		$this->error = false;
 	}
 	
 	/**
@@ -68,9 +70,54 @@ class bab_fmFile {
 		if (!isset($_FILES[$fieldname])) {
 			return false;
 		}
+		
+		$tmp_error = false;
+		
+		if (isset($_FILES[$fieldname]['error'])) {
+		
+			/**
+			 * ['error'] is defined since php 4.2.0
+			 * constants are defined since php 4.3.0
+			 */
+		
+			switch($_FILES[$fieldname]['error']) {
+				case 0 : // UPLOAD_ERR_OK
+					break;
+					
+				case 1 : // UPLOAD_ERR_INI_SIZE
+					$tmp_error = bab_translate('The uploaded file exceeds the upload_max_filesize directive.');
+					break;
+					
+				case 2 : // UPLOAD_ERR_FORM_SIZE
+					$tmp_error = bab_translate('The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form.');
+					break;
+					
+				case 3 : // UPLOAD_ERR_PARTIAL
+					$tmp_error = bab_translate('The uploaded file was only partially uploaded.');
+					break;
+					
+				case 4 : // UPLOAD_ERR_NO_FILE
+					$tmp_error = bab_translate('No file was uploaded.');
+					break;	
+						
+				case 6 : // UPLOAD_ERR_NO_TMP_DIR since PHP 4.3.10 and PHP 5.0.3
+					$tmp_error = bab_translate('Missing a temporary folder.');
+					break;	
+					
+				case 7 : // UPLOAD_ERR_CANT_WRITE since php 5.1.0
+					$tmp_error = bab_translate('Failed to write file to disk.');
+					break;
+					
+				default :
+					$tmp_error = bab_translate('Unknown File Error.');
+					break;
+			}
+		}
+		
 		$obj = new bab_fmFile(BAB_FMFILE_UPLOAD, $_FILES[$fieldname]['tmp_name']);
 		$obj->filename 	= $_FILES[$fieldname]['name'];
 		$obj->size	 	= $_FILES[$fieldname]['size'];
+		$obj->error		= $tmp_error;
 		return $obj;
 	}
 	

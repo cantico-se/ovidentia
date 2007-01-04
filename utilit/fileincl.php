@@ -547,6 +547,14 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 				$errfiles[] = array('error' => bab_translate("There is not enough free space"), 'file'=>$file['name']);
 				continue;
 			}
+			
+		if (false !== $fmFile->error) {
+			$errfiles[] = array(
+				'error' => $fmFile->error, 
+				'file' => $fmFile->filename
+			);
+			continue;
+		}
 
 		$osfname = $file['name'];
 
