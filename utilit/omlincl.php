@@ -4105,7 +4105,7 @@ class bab_CalendarEvents extends bab_handler
 
 			$id_event = isset($arr['id']) ? $arr['id'] : 0;
 
-			if (0 < $arr['nbowners']) {
+			if (isset($arr['nbowners']) && (0 < $arr['nbowners'])) {
 				$arr['id_cal'] = implode(',',$this->whObj->id_calendars);
 			}
 
