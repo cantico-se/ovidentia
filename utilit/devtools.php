@@ -42,7 +42,7 @@ function addElement($type)
 		}
 	else 
 		{
-		trigger_error("Parameter of addElement fuction must be part of : ".implode(',',$this->elements_types), E_USER_ERROR);
+		trigger_error("Parameter of addElement function must be part of : ".implode(',',$this->elements_types), E_USER_ERROR);
 		return false;
 		}
 	}
