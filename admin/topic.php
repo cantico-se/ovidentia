@@ -234,7 +234,7 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 			{
 			global $babBody;
 			$this->topcat = bab_translate("Topic category");
-			$this->title = bab_translate("Topic");
+			$this->title = bab_translate("Topic name");
 			$this->desctitle = bab_translate("Description");
 			$this->modcom = bab_translate("Approbation schema for comments");
 			$this->modart = bab_translate("Approbation schema for articles");

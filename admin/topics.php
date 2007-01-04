@@ -81,7 +81,7 @@ function addCategory($cat, $ncat, $category, $description, $saart, $sacom, $saup
 			{
 			global $babBody, $babDB;
 			$this->topcat = bab_translate("Topic category");
-			$this->title = bab_translate("Topic");
+			$this->title = bab_translate("Topic name");
 			$this->desctitle = bab_translate("Description");
 			$this->approver = bab_translate("Topic manager");
 			$this->modcom = bab_translate("Approbation schema for comments");
