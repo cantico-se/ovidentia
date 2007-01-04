@@ -565,7 +565,7 @@ function fileUnload($idf)
 			if ($arrfile) {
 				$url = $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$arrfile['id_owner']."&gr=".$arrfile['bgroup']."&path=".urlencode($arrfile['path']);
 			} else {
-				$url = $GLOBALS['babUrlScript'].'?tg=fileman');
+				$url = $GLOBALS['babUrlScript'].'?tg=fileman';
 			}
 			
 			$this->message = bab_translate("Your file list has been updated");
