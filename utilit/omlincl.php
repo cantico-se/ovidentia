@@ -1929,6 +1929,20 @@ class bab_SubFolders extends bab_handler
 						}
 					closedir($h);
 					$this->count = count($this->IdEntries);
+					$order = $ctx->get_value('order');
+					if( $order === false || $order === '' )
+						{
+						$order = 'asc';
+						}
+					switch(strtolower($order))
+					{
+						case 'desc':
+							rsort($this->IdEntries);
+							break;
+						default:
+							asort($this->IdEntries);
+							break;
+					}
 				}
 			}
 
