@@ -402,47 +402,47 @@ function bab_deleteDbDirectory($id)
 
 function bab_deleteGroupAclTables($id)
 {
-	global $babDB;
-	$babDB->db_query("delete from ".BAB_TOPICSVIEW_GROUPS_TBL." where id_group='".$babDB->db_escape_string($id)."'");	
-	$babDB->db_query("delete from ".BAB_TOPICSCOM_GROUPS_TBL." where id_group='".$babDB->db_escape_string($id)."'");	
-	$babDB->db_query("delete from ".BAB_TOPICSSUB_GROUPS_TBL." where id_group='".$babDB->db_escape_string($id)."'");	
-	$babDB->db_query("delete from ".BAB_TOPICSMOD_GROUPS_TBL." where id_group='".$babDB->db_escape_string($id)."'");	
-	$babDB->db_query("delete from ".BAB_TOPICSMAN_GROUPS_TBL." where id_group='".$babDB->db_escape_string($id)."'");	
-	$babDB->db_query("delete from ".BAB_SECTIONS_GROUPS_TBL." where id_group='".$babDB->db_escape_string($id)."'");	
-	$babDB->db_query("delete from ".BAB_FAQCAT_GROUPS_TBL." where id_group='".$babDB->db_escape_string($id)."'");	
-	$babDB->db_query("delete from ".BAB_USERS_GROUPS_TBL." where id_group='".$babDB->db_escape_string($id)."'");	
-	$babDB->db_query("delete from ".BAB_FMDOWNLOAD_GROUPS_TBL." where id_group='".$babDB->db_escape_string($id)."'");	
-	$babDB->db_query("delete from ".BAB_FMUPDATE_GROUPS_TBL." where id_group='".$babDB->db_escape_string($id)."'");	
-	$babDB->db_query("delete from ".BAB_FMUPLOAD_GROUPS_TBL." where id_group='".$babDB->db_escape_string($id)."'");	
-	$babDB->db_query("delete from ".BAB_FMMANAGERS_GROUPS_TBL." where id_group='".$babDB->db_escape_string($id)."'");
 
-	$babDB->db_query("delete from ".BAB_OCVIEW_GROUPS_TBL." where id_group='".$babDB->db_escape_string($id)."'");	
-	$babDB->db_query("delete from ".BAB_OCUPDATE_GROUPS_TBL." where id_group='".$babDB->db_escape_string($id)."'");	
+	aclDeleteGroup(BAB_TOPICSVIEW_GROUPS_TBL, $id);
+	aclDeleteGroup(BAB_TOPICSCOM_GROUPS_TBL, $id);
+	aclDeleteGroup(BAB_TOPICSSUB_GROUPS_TBL, $id);
+	aclDeleteGroup(BAB_TOPICSVIEW_GROUPS_TBL, $id);
+	aclDeleteGroup(BAB_TOPICSMOD_GROUPS_TBL, $id);
+	aclDeleteGroup(BAB_TOPICSMAN_GROUPS_TBL, $id);
+	aclDeleteGroup(BAB_SECTIONS_GROUPS_TBL, $id);
+	aclDeleteGroup(BAB_FAQCAT_GROUPS_TBL, $id);
+	aclDeleteGroup(BAB_USERS_GROUPS_TBL, $id);
+	aclDeleteGroup(BAB_FMDOWNLOAD_GROUPS_TBL, $id);
+	aclDeleteGroup(BAB_FMUPDATE_GROUPS_TBL, $id);
+	aclDeleteGroup(BAB_FMUPLOAD_GROUPS_TBL, $id);
+	aclDeleteGroup(BAB_FMMANAGERS_GROUPS_TBL, $id);
 
-	$babDB->db_query("delete from ".BAB_CAL_PUB_GRP_GROUPS_TBL." where id_group='".$babDB->db_escape_string($id)."'");	
-	$babDB->db_query("delete from ".BAB_CAL_PUB_MAN_GROUPS_TBL." where id_group='".$babDB->db_escape_string($id)."'");	
-	$babDB->db_query("delete from ".BAB_CAL_PUB_VIEW_GROUPS_TBL." where id_group='".$babDB->db_escape_string($id)."'");	
+	aclDeleteGroup(BAB_OCVIEW_GROUPS_TBL, $id);
+	aclDeleteGroup(BAB_OCUPDATE_GROUPS_TBL, $id);
+	
+	aclDeleteGroup(BAB_CAL_PUB_GRP_GROUPS_TBL, $id);
+	aclDeleteGroup(BAB_CAL_PUB_MAN_GROUPS_TBL, $id);
+	aclDeleteGroup(BAB_CAL_PUB_VIEW_GROUPS_TBL, $id);
 
-	$babDB->db_query("delete from ".BAB_CAL_RES_GRP_GROUPS_TBL." where id_group='".$babDB->db_escape_string($id)."'");	
-	$babDB->db_query("delete from ".BAB_CAL_RES_MAN_GROUPS_TBL." where id_group='".$babDB->db_escape_string($id)."'");	
-	$babDB->db_query("delete from ".BAB_CAL_RES_VIEW_GROUPS_TBL." where id_group='".$babDB->db_escape_string($id)."'");	
+	aclDeleteGroup(BAB_CAL_RES_GRP_GROUPS_TBL, $id);
+	aclDeleteGroup(BAB_CAL_RES_MAN_GROUPS_TBL, $id);
+	aclDeleteGroup(BAB_CAL_RES_VIEW_GROUPS_TBL, $id);
 
-	$babDB->db_query("delete from ".BAB_FORUMSVIEW_GROUPS_TBL." where id_group='".$babDB->db_escape_string($id)."'");
-	$babDB->db_query("delete from ".BAB_FORUMSPOST_GROUPS_TBL." where id_group='".$babDB->db_escape_string($id)."'");
-	$babDB->db_query("delete from ".BAB_FORUMSREPLY_GROUPS_TBL." where id_group='".$babDB->db_escape_string($id)."'");
-	$babDB->db_query("delete from ".BAB_FORUMSMAN_GROUPS_TBL." where id_group='".$babDB->db_escape_string($id)."'");
-	$babDB->db_query("delete from ".BAB_FORUMSNOTIFY_GROUPS_TBL." where id_group='".$babDB->db_escape_string($id)."'");
+	aclDeleteGroup(BAB_FORUMSVIEW_GROUPS_TBL, $id);
+	aclDeleteGroup(BAB_FORUMSPOST_GROUPS_TBL, $id);
+	aclDeleteGroup(BAB_FORUMSREPLY_GROUPS_TBL, $id);
+	aclDeleteGroup(BAB_FORUMSMAN_GROUPS_TBL, $id);
+	aclDeleteGroup(BAB_FORUMSNOTIFY_GROUPS_TBL, $id);
 
-	$babDB->db_query("delete from ".BAB_DBDIRVIEW_GROUPS_TBL." where id_group='".$babDB->db_escape_string($id)."'");
-	$babDB->db_query("delete from ".BAB_DBDIRADD_GROUPS_TBL." where id_group='".$babDB->db_escape_string($id)."'");
-	$babDB->db_query("delete from ".BAB_DBDIRUPDATE_GROUPS_TBL." where id_group='".$babDB->db_escape_string($id)."'");
-	$babDB->db_query("delete from ".BAB_DBDIRDEL_GROUPS_TBL." where id_group='".$babDB->db_escape_string($id)."'");
-	$babDB->db_query("delete from ".BAB_DBDIREXPORT_GROUPS_TBL." where id_group='".$babDB->db_escape_string($id)."'");
-	$babDB->db_query("delete from ".BAB_DBDIRIMPORT_GROUPS_TBL." where id_group='".$babDB->db_escape_string($id)."'");
-	$babDB->db_query("delete from ".BAB_DBDIRBIND_GROUPS_TBL." where id_group='".$babDB->db_escape_string($id)."'");
-	$babDB->db_query("delete from ".BAB_DBDIRUNBIND_GROUPS_TBL." where id_group='".$babDB->db_escape_string($id)."'");
-	$babDB->db_query("delete from ".BAB_DBDIREMPTY_GROUPS_TBL." where id_group='".$babDB->db_escape_string($id)."'");
-
+	aclDeleteGroup(BAB_DBDIRVIEW_GROUPS_TBL, $id);
+	aclDeleteGroup(BAB_DBDIRADD_GROUPS_TBL, $id);
+	aclDeleteGroup(BAB_DBDIRUPDATE_GROUPS_TBL, $id);
+	aclDeleteGroup(BAB_DBDIRDEL_GROUPS_TBL, $id);
+	aclDeleteGroup(BAB_DBDIREXPORT_GROUPS_TBL, $id);
+	aclDeleteGroup(BAB_DBDIRIMPORT_GROUPS_TBL, $id);
+	aclDeleteGroup(BAB_DBDIRBIND_GROUPS_TBL, $id);
+	aclDeleteGroup(BAB_DBDIRUNBIND_GROUPS_TBL, $id);
+	aclDeleteGroup(BAB_DBDIREMPTY_GROUPS_TBL, $id);
 }
 
 

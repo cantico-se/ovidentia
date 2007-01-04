@@ -412,6 +412,16 @@ function aclDelete($table, $id_object)
 	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 	}
 
+/**
+ * @since	6.1.0
+ * 
+ * @param	string	$table
+ * @param	int		$id_group
+ */
+function aclDeleteGroup($table, $id_group) {
+	global $babDB;
+	$babDB->db_query("DELETE FROM ".$table." WHERE id_group='".$babDB->db_escape_string($id_group)."' OR id_group='".$babDB->db_escape_string($id_group + BAB_ACL_GROUP_TREE)."'");
+}
 
 function aclSetGroups_all($table, $id_object)
 	{
