@@ -21,7 +21,7 @@ body {
 */
 	position: absolute;
 	left: 0;
-	top: 20;
+	top: 20px;
 	right: 0;
 	bottom: 0;
 	overflow: auto;
