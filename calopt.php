@@ -267,38 +267,38 @@ function calendarOptions($calid, $urla)
 			$this->arrdvw = array(bab_translate("Columns"), bab_translate("Rows"));
 			if( empty($this->arr['start_time']))
 				{
-				$this->arr['start_time'] = "08:00:00";
+				$this->arr['start_time'] = $babBody->babsite['start_time'];
 				}
 			if( empty($this->arr['end_time']))
 				{
-				$this->arr['end_time'] = "18:00:00";
+				$this->arr['end_time'] = $babBody->babsite['end_time'];
 				}
 			if( !isset($this->arr['startday']))
 				{
-				$this->arr['startday'] = 1;
+				$this->arr['startday'] = $babBody->babsite['startday'];
 				}
 			if( empty($this->arr['defaultview']))
 				{
-				$this->arr['defaultview'] = BAB_CAL_VIEW_MONTH;
+				$this->arr['defaultview'] = $babBody->babsite['defaultview'];
 				}
 			if( empty($this->arr['elapstime']))
 				{
-				$this->arr['elapstime'] = 60;
+				$this->arr['elapstime'] = $babBody->babsite['elapstime'];
 				}
 
 			if( empty($this->arr['dispdays']))
 				{
-				$this->arr['dispdays'] = "1,2,3,4,5";
+				$this->arr['dispdays'] = $babBody->babsite['dispdays'];
 				}
 				
 			if( !isset($this->arr['bgcolor']))
 				{
-				$this->arr['bgcolor'] = "Y";
+				$this->arr['bgcolor'] = $babBody->babsite['usebgcolor'];
 				}
 				
 			if( !isset($this->arr['allday']))
 				{
-				$this->arr['allday'] = "Y";
+				$this->arr['allday'] = $babBody->babsite['allday'];
 				}
 
 			$this->dispdays = explode(',', $this->arr['dispdays']);
