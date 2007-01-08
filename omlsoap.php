@@ -177,17 +177,19 @@ function login($nickname, $password)
 	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
 		list($iduser) = $babDB->db_fetch_row($res);
-		if( bab_isAccessValidByUser(BAB_SITES_WS_GROUPS_TBL, $babBody->babsite['id'], $iduser))
+		$access = bab_isAccessValidByUser(BAB_SITES_WS_GROUPS_TBL, $babBody->babsite['id'], $iduser);
+		}
+	else
+		{
+		$access = bab_isAccessValid(BAB_SITES_WS_GROUPS_TBL, $babBody->babsite['id']);
+		}
+
+	if( $access )
+		{
+		if( signOn($nickname, $password, 0))
 			{
-			if( signOn($nickname, $password, 0))
-				{
-				$_SESSION['BAB_SESS_WSUSER'] = true;
-				return array('id'=>session_id(), 'error'=>$error);	
-				}
-			}
-		else
-			{
-			$babBody->msgerror = bab_translate("Access denied");
+			$_SESSION['BAB_SESS_WSUSER'] = true;
+			return array('id'=>session_id(), 'error'=>$error);	
 			}
 		}
 	else
