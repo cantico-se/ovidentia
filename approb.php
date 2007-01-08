@@ -33,6 +33,35 @@ include_once $babInstallPath.'utilit/vacincl.php';
 include_once $babInstallPath.'utilit/evtincl.php';
 include_once $babInstallPath.'utilit/calincl.php';
 
+include_once $babInstallPath.'utilit/eventincl.php';
+
+
+/**
+ * Event fired when the approbation page is displayed
+ * @package events
+ */
+class bab_eventWaitingItems extends bab_event {
+
+	/**
+	 * @public
+	 */
+	var $objects = array();
+	
+	function addObject(&$title,&$arr) {
+		static $i = 0;
+		$key = strtolower(substr($title,0,3));
+		$this->objects[$key.$i] = array(
+			'title' => $title,
+			'arr'	=> $arr
+		);
+		
+		$i++;
+	}
+	
+}
+
+
+
 function notifyVacationAuthor($id, $subject)
 	{
 	global $babBody, $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail;
@@ -581,7 +610,7 @@ function listWaitingAddons()
 	class listWaitingAddonsCls
 		{
 		var $altbg = true;
-		var $arrAddons = array();
+		var $arrObjects = array();
 		var $firstcall = false;
 
 		var $addonTitle;
@@ -591,7 +620,17 @@ function listWaitingAddons()
 
 		function listWaitingAddonsCls()
 			{
-			$babBody = & $GLOBALS['babBody'];
+			global $babBody;
+			
+			$event = new bab_eventWaitingItems();
+			bab_fireEvent($event);
+			$this->arrObjects = &$event->objects;
+			
+			
+			/**
+			 * @deprecated
+			 * Addons should not use this method since 6.1.1
+			 */
 			foreach( $babBody->babaddons as $key => $row)
 				{
 				$addonpath = $GLOBALS['babAddonsPath'].$row['title'];
@@ -602,10 +641,25 @@ function listWaitingAddons()
 					
 					if( function_exists($this->call) )
 						{
-						$this->arrAddons[$row['id']] = $row['title'];
+						
+						bab_debug('The callback '.$this->call.' is deprecated, please use bab_addEventListener() instead');
+						
+						$title = $row['title'];
+						$arr = array();
+						call_user_func_array($this->call, array($title, $arr));
+						if (count($arr) > 0) {
+								$key = strtolower(substr($title,0,3));
+								$this->arrObjects[$key.$row['id']] = array(
+									'title' => $title,
+									'arr'	=> $arr
+								);
+							}
 						}
 					}
 				}
+				
+			ksort($this->arrObjects);
+			
 			}
 
 		function _setGlobals($id,$title)
@@ -620,20 +674,15 @@ function listWaitingAddons()
 			$this->call = $title."_getWaitingItems";
 			}
 
-		function getnextaddon(&$skip)
+		function getnextaddon()
 			{
 			$this->addonTitle = '';
 			$this->arr = array();
-			
 
-			if (list($this->addonId, $title) = each($this->arrAddons))
+			if (list(, $arr) = each($this->arrObjects))
 				{
-				$this->_setGlobals($this->addonId,$title);
-				call_user_func_array($this->call, array(&$this->addonTitle, &$this->arr));
-				$this->addonTitle = bab_toHtml($this->addonTitle);
-				if (count($this->arr) == 0)
-					$skip = 1;
-				
+				$this->addonTitle = bab_toHtml($arr['title']);
+				$this->arr = $arr['arr'];
 				return true;
 				}
 			return false;
@@ -645,11 +694,11 @@ function listWaitingAddons()
 			
 			if (list( , $arr) = each($this->arr))
 				{
-				$this->text = bab_toHtml($arr['text']);
-				$this->description = bab_toHtml($arr['description']);
-				$this->url = bab_toHtml($arr['url']);
-				$this->popup = $arr['popup'];
-				$this->idschi = bab_toHtml($arr['idschi']);
+				$this->text 			= bab_toHtml($arr['text']);
+				$this->description 		= bab_toHtml($arr['description']);
+				$this->url 				= bab_toHtml($arr['url']);
+				$this->popup 			= $arr['popup'];
+				$this->idschi 			= bab_toHtml($arr['idschi']);
 
 				return true;
 				}
@@ -1302,9 +1351,11 @@ switch($idx)
 		listWaitingFiles();
 		listWaitingPosts();
 		listWaitingVacations();
-		listWaitingEvents();
-		listWaitingAddons();		
+		listWaitingEvents();	
 		}
+		
+		listWaitingAddons();	
+		
 		$babBody->addItemMenu("all", bab_translate("Approbations"), $GLOBALS['babUrlScript']."?tg=approb&idx=all");
 		break;
 	}
