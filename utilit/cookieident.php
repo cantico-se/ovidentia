@@ -28,8 +28,9 @@ if (isset($_COOKIE['c_password'])) {
 	
 	if (!empty($token) && !$GLOBALS['BAB_SESS_USERID'])
 		{
+		$error = '';
 		include_once $babInstallPath.'admin/register.php';
-		if (!userLogin('','', $token)) {
+		if (!userLogin('','', $error, $token)) {
 			destroyAuthCookie();
 		}
 	}

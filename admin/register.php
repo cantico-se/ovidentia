@@ -392,8 +392,9 @@ function signOn( $nickname, $password,$lifetime)
 		return false;
 		}
 
-	if( !userLogin($nickname, $password))
+	if( !userLogin($nickname, $password, $babBody->msgerror ,false)) {
 		return false;
+	}
 
 	// Here we log the connection.
 	if ($GLOBALS['babStatOnOff'] == 'Y') {
@@ -555,12 +556,13 @@ function sendPassword ($nickname)
 
 /**
  * Authentication
- * @param 	string 	$nickname
- * @param 	string 	$password (clear)
- * @param	string	[$cookie_id] if cookie_id is defined, authentication type is BAB_AUTHENTIFICATION_OVIDENTIA
+ * @param 	string 			$nickname
+ * @param 	string 			$password (clear)
+ * @param	string			&$error
+ * @param	string|false	[$cookie_id] if cookie_id is defined, authentication type is BAB_AUTHENTIFICATION_OVIDENTIA
  * @return 	boolean
  */
-function userLogin($nickname,$password, $cookie_id = false)
+function userLogin($nickname,$password, &$msgerror, $cookie_id = false)
 	{
 	global $babBody, $babDB;
 	$iduser = 0;
@@ -575,7 +577,7 @@ function userLogin($nickname,$password, $cookie_id = false)
 	list($cnx_try) = $babDB->db_fetch_array($babDB->db_query("SELECT cnx_try FROM ".BAB_USERS_LOG_TBL." WHERE sessid='".session_id()."'"));
 	if( $cnx_try > 5)
 		{
-		$babBody->msgerror = bab_translate("Maximum connexion attempts has been reached");
+		$msgerror = bab_translate("Maximum connexion attempts has been reached");
 		return false;
 		}
 
@@ -605,7 +607,7 @@ function userLogin($nickname,$password, $cookie_id = false)
 		$ret = $ldap->connect();
 		if( $ret === false )
 			{
-			$babBody->msgerror = bab_translate("LDAP connection failed. Please contact your administrator");
+			$msgerror = bab_translate("LDAP connection failed. Please contact your administrator");
 			$logok = false;
 			}
 
@@ -672,7 +674,7 @@ function userLogin($nickname,$password, $cookie_id = false)
 					$ret = $ldap->bind($nickname."@".$babBody->babsite['ldap_domainname'], $password);
 					if( !$ret )
 						{
-						$babBody->msgerror = bab_translate("LDAP bind failed. Please contact your administrator");
+						$msgerror = bab_translate("LDAP bind failed. Please contact your administrator");
 						$logok = false;
 						}
 					else
@@ -705,7 +707,7 @@ function userLogin($nickname,$password, $cookie_id = false)
 						$ret = $ldap->bind($entries[0]['dn'], $password);
 						if( !$ret )
 							{
-							$babBody->msgerror = bab_translate("LDAP bind failed. Please contact your administrator");
+							$msgerror = bab_translate("LDAP bind failed. Please contact your administrator");
 							$logok = false;
 							}
 						}
@@ -718,7 +720,7 @@ function userLogin($nickname,$password, $cookie_id = false)
 
 			if( !isset($entries) || $entries === false )
 				{
-				$babBody->msgerror = bab_translate("LDAP authentification failed. Please verify your nickname and your password");
+				$msgerror = bab_translate("LDAP authentification failed. Please verify your nickname and your password");
 				$logok = false;
 				}
 
@@ -732,7 +734,7 @@ function userLogin($nickname,$password, $cookie_id = false)
 					$iduser = $arruser['id'];
 					if( $arruser['disabled'] == '1')
 						{
-						$babBody->msgerror = bab_translate("Sorry, your account is disabled. Please contact your administrator");
+						$msgerror = bab_translate("Sorry, your account is disabled. Please contact your administrator");
 						return false;
 						}
 					}
@@ -848,21 +850,21 @@ function userLogin($nickname,$password, $cookie_id = false)
 				$res = $babDB->db_query("select id from ".BAB_USERS_GROUPS_TBL." where id_object='".$babDB->db_escape_string($iduser)."' and id_group='3'");
 				if( $babDB->db_num_rows($res) == 0)
 					{
-					$babBody->msgerror = bab_translate("LDAP authentification failed. Please verify your nickname and your password");
+					$msgerror = bab_translate("LDAP authentification failed. Please verify your nickname and your password");
 					return false;
 					}
 				}
 
 			if( $arruser['disabled'] == '1')
 				{
-				$babBody->msgerror = bab_translate("Sorry, your account is disabled. Please contact your administrator");
+				$msgerror = bab_translate("Sorry, your account is disabled. Please contact your administrator");
 				return false;
 				}
 			$logok = true;
 			}
 		else
 			{
-			$babBody->msgerror = bab_translate("User not found or password incorrect");
+			$msgerror = bab_translate("User not found or password incorrect");
 			return false;
 			}
 		}
@@ -872,7 +874,7 @@ function userLogin($nickname,$password, $cookie_id = false)
 		return false;
 		}
 
-	$babBody->msgerror = "";
+	$msgerror = "";
 	if ($arruser['is_confirmed'] == '1')
 		{
 		
@@ -899,7 +901,7 @@ function userLogin($nickname,$password, $cookie_id = false)
 		}
 	else
 		{
-		$babBody->msgerror =  bab_translate("Sorry - You haven't Confirmed Your Account Yet");
+		$msgerror =  bab_translate("Sorry - You haven't Confirmed Your Account Yet");
 		return false;
 		}
 	}
