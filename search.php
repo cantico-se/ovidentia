@@ -2561,7 +2561,7 @@ function viewPost($thread, $post, $w)
 				
 				
 				next($this->files);
-				$this->in_index = isset($this->found_in_index['forums/'.basename($this->file['path'])]);
+				$this->in_index = isset($this->found_in_index['forums/'.basename($file['path'])]);
 				return true;
 				}
 			else
