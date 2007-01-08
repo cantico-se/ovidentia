@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include "base.php";
-require_once $GLOBALS['babInstallPath'].'utilit/eventincl.php';
+
 
 
 
@@ -299,19 +299,6 @@ class bab_calendarPeriod {
 }
 
 
-class bab_eventCreatePeriods extends bab_event {
-	
-	/**
- 	 * @public
-	 */
-	var $periods;
-
-	function bab_eventCreatePeriods($obj) {
-		$this->periods = & $obj;
-	}
-}
-
-
 
 /**
  * Manage working and non-working hours
@@ -388,6 +375,7 @@ class bab_userWorkingHours {
 			bab_tskmgr_setPeriods($this, $this->id_users, $this->begin, $this->end);
 		}
 
+		require_once $GLOBALS['babInstallPath'].'utilit/eventperiod.php';
 		$event = new bab_eventCreatePeriods($this);
 		bab_fireEvent($event);
 

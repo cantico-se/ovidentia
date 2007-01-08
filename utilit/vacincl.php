@@ -2101,17 +2101,52 @@ function bab_vac_updateEventCalendar($id_entry) {
 		WHERE 
 			id=".$db->quote($id_entry)
 	);
-	$event = $db->db_fetch_assoc($res);
+	$arr = $db->db_fetch_assoc($res);
+	
+	$date_begin = bab_mktime($arr['date_begin']);
+	$date_end	= bab_mktime($arr['date_end']);
+	
+	include_once $GLOBALS['babInstallPath']."utilit/eventperiod.php";
+	$event = new bab_eventModifyPeriod($date_begin, $date_end, $arr['id_user']);
+	$event->types = BAB_PERIOD_VACATION;
+	bab_fireEvent($event);
+}
+
+/**
+ * Refresh calendar if modified
+ * @param	bab_eventModifyPeriod	$event
+ */
+function bab_vac_onModifyPeriod($event) {
+	global $babDB;
+
+	$vacation 	= (BAB_PERIOD_VACATION 	=== ($event->types & BAB_PERIOD_VACATION));
+	$nwday		= (BAB_PERIOD_NWDAY 	=== ($event->types & BAB_PERIOD_NWDAY));
+	$working	= (BAB_PERIOD_WORKING	=== ($event->types & BAB_PERIOD_WORKING));
+
+	if (!$vacation && !$nwday && !$working) {
+		return;
+	}
+
+	if (false === $event->id_user) {
+		$babDB->db_query("TRUNCATE bab_vac_calendar");
+		return;
+	}
+
+	if (false === $event->begin || false === $event->end) {
+		bab_vac_clearUserCalendar($event->id_user);
+		return;
+	}
+
 	include_once $GLOBALS['babInstallPath']."utilit/dateTime.php";
 
-	$date_begin = BAB_DateTime::fromIsoDateTime($event['date_begin']);
-	$date_end	= BAB_DateTime::fromIsoDateTime($event['date_end']);
+	$date_begin = BAB_DateTime::fromTimeStamp($event->begin);
+	$date_end	= BAB_DateTime::fromTimeStamp($event->end);
 	$date_end->add(1, BAB_DATETIME_MONTH);
 
 	while ($date_begin->getTimeStamp() <= $date_end->getTimeStamp()) {
 		$month	= $date_begin->getMonth();
 		$year	= $date_begin->getYear();
-		bab_vac_updateCalendar($event['id_user'], $year, $month);
+		bab_vac_updateCalendar($event->id_user, $year, $month);
 		$date_begin->add(1, BAB_DATETIME_MONTH);
 	}
 }

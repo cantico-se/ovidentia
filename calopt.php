@@ -650,14 +650,15 @@ function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor,
 		}
 	}
 
+	if ($change) {
+		include_once $GLOBALS['babInstallPath'].'utilit/eventperiod.php';
+		
+		$event = new bab_eventModifyPeriod(false, false, $GLOBALS['BAB_SESS_USERID']);
+		$event->types = BAB_PERIOD_WORKING;
+		bab_fireEvent($event);
+	}
 	
-	include_once $GLOBALS['babInstallPath'].'utilit/vacincl.php';
-	bab_vac_clearUserCalendar();
-	
-
-
-	header('location:'.$GLOBALS['babUrlScript']."?tg=calopt&idx=options");
-	exit;
+	bab_debug($GLOBALS['BAB_SESS_USERID']);
 }
 
 /* main */

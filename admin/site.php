@@ -1714,9 +1714,6 @@ function siteUpdate_menu6($item)
 
 	include_once $GLOBALS['babInstallPath']."utilit/workinghoursincl.php";
 	bab_deleteAllWorkingHours(0);
-	include_once $GLOBALS['babInstallPath']."utilit/vacincl.php";
-	bab_vac_clearCalendars();
-
 
 	if (isset($_POST['workdays']) && count($_POST['workdays']))
 		{
@@ -1724,6 +1721,12 @@ function siteUpdate_menu6($item)
 			bab_insertWorkingHours(0, $day, '00:00:00', '24:00:00');
 		}
 	}
+	
+	require_once $GLOBALS['babInstallPath'].'utilit/eventperiod.php';
+				
+	$event = new bab_eventModifyPeriod(false, false, false);
+	$event->types = BAB_PERIOD_NWDAY;
+	bab_fireEvent($event);
 
 
 	$reqarr = array("startday='".$_POST['startday']."'");

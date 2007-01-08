@@ -1151,6 +1151,8 @@ function updateEvent(&$message)
 				}
 
 			$arrupdate[$arr['id']] = array('start'=>$startdate, 'end' => $enddate);
+			$min = $startdate;
+			$max = $enddate;
 		}
 
 	}
@@ -1167,7 +1169,8 @@ function updateEvent(&$message)
 			}
 
 		$arrupdate[$_POST['evtid']] = array('start'=>$startdate, 'end' => $enddate);
-
+		$min = $startdate;
+		$max = $enddate;
 	}
 
 	reset($arrupdate);
@@ -1182,10 +1185,21 @@ function updateEvent(&$message)
 		block			=".$babDB->quote($_POST['block']).", 
 		bfree			=".$babDB->quote($_POST['bfree'])."
 	";
+	
+	
+	
 	foreach($arrupdate as $key => $val)
 	{
 		$babDB->db_query($req.", start_date=".$babDB->quote($val['start']).", end_date=".$babDB->quote($val['end'])." where id=".$babDB->quote($key)."" );
+		
+		$min = $val['start'] < $min ? $val['start'] : $min;
+		$max = $val['end']	 > $max ? $val['end'] 	: $max;
 	}
+	
+	include_once $GLOBALS['babInstallPath'].'utilit/eventperiod.php';
+	$event = new bab_eventModifyPeriod(bab_mktime($min), bab_mktime($max), false);
+	$event->types = BAB_PERIOD_CALEVENT;
+	bab_fireEvent($event);
 
 	notifyEventUpdate($_POST['evtid'], false);
 	return true;
@@ -1195,16 +1209,24 @@ function confirmDeleteEvent()
 {
 	global $babDB;
 	include_once $GLOBALS['babInstallPath'].'utilit/afincl.php';
-	global $babDB;
+	
+	
+	
 	if( $GLOBALS['bupdrec'] == "1" )
 		{
+		$date_min = '9999-99-99 99:99:99';
+		$date_max = '0000-00-00 00:00:00';
+	
 		$res = $babDB->db_query("select hash from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($GLOBALS['evtid'])."'");
 		$arr = $babDB->db_fetch_array($res);
 		if( $arr['hash'] != "" && $arr['hash'][0] == 'R')
 			{
-			$res = $babDB->db_query("select id from ".BAB_CAL_EVENTS_TBL." where hash='".$babDB->db_escape_string($arr['hash'])."'");
+			$res = $babDB->db_query("select id, start_date, end_date from ".BAB_CAL_EVENTS_TBL." where hash='".$babDB->db_escape_string($arr['hash'])."'");
 			while( $arr = $babDB->db_fetch_array($res) )
 				{
+				$date_min = $arr['start_date'] < $date_min 	? $arr['start_date'] 	: $date_min;
+				$date_max = $arr['end_date'] > $date_max	? $arr['end_date'] 		: $date_max;
+				
 				$babDB->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($arr['id'])."'");
 				$res2 = $babDB->db_query("select idfai from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event='".$babDB->db_escape_string($arr['id'])."'");
 				while( $rr = $babDB->db_fetch_array($res2) )
@@ -1222,6 +1244,12 @@ function confirmDeleteEvent()
 		}
 	else
 		{
+		$res = $babDB->db_query("select start_date, end_date from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($GLOBALS['evtid'])."'");
+		$arr = $babDB->db_fetch_array($res);
+		
+		$date_min = $arr['start_date'];
+		$date_max = $arr['end_date'];
+		
 		$babDB->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($GLOBALS['evtid'])."'");
 		$res2 = $babDB->db_query("select idfai from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event='".$babDB->db_escape_string($GLOBALS['evtid'])."'");
 		while( $rr = $babDB->db_fetch_array($res2) )
@@ -1235,6 +1263,11 @@ function confirmDeleteEvent()
 		$babDB->db_query("delete from ".BAB_CAL_EVENTS_NOTES_TBL." where id_event='".$babDB->db_escape_string($GLOBALS['evtid'])."'");
 		$babDB->db_query("delete from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_event='".$babDB->db_escape_string($GLOBALS['evtid'])."'");
 		}
+		
+	include_once $GLOBALS['babInstallPath'].'utilit/eventperiod.php';
+	$event = new bab_eventModifyPeriod(bab_mktime($date_min), bab_mktime($date_max), false);
+	$event->types = BAB_PERIOD_CALEVENT;
+	bab_fireEvent($event);
 }
 
 

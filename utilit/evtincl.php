@@ -352,7 +352,16 @@ function bab_createEvent($idcals, $args, &$msgerror)
 	else
 		{
 		$arrnotify = createEvent($idcals, $args['owner'], $args['title'], $args['description'], $args['location'], $begin, $end, $args['category'], $args['color'], $args['private'], $args['lock'], $args['free'], '', $args['alert']);
+		
+		
 		}
+		
+		
+	include_once $GLOBALS['babInstallPath'].'utilit/eventperiod.php';
+	$endperiod = isset($repeatdate) ? $repeatdate : $end;
+	$event = new bab_eventModifyPeriod($begin, $endperiod, false);
+	$event->types = BAB_PERIOD_CALEVENT;
+	bab_fireEvent($event);
 
 
 	if( count($arrnotify) > 0 )
@@ -386,7 +395,7 @@ function bab_createEvent($idcals, $args, &$msgerror)
 					break;
 				}
 			}
-
+		
 		$startdate = bab_longDate($begin);
 		$enddate = bab_longDate($end);
 		if( count($arrusr) > 0 )
@@ -402,6 +411,7 @@ function bab_createEvent($idcals, $args, &$msgerror)
 			notifyPublicEvent($args['title'], $args['description'], $startdate, $enddate, $arrpub);
 			}
 		}
+		
 	return true;	
 	}
 

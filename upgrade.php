@@ -7667,4 +7667,17 @@ function upgrade606to610()
 }
 
 
+
+
+function upgrade610to611()
+{
+	global $babDB;
+	$ret = "";
+	
+	include_once $GLOBALS['babInstallPath']."utilit/eventincl.php";
+	bab_addEventListener('bab_eventModifyPeriod', 'bab_vac_onModifyPeriod', 'utilit/vacincl.php');
+
+	return $ret;
+}
+
 ?>
