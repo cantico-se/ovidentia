@@ -74,20 +74,20 @@ function ListArticles($idgroup)
 					{
 					$GLOBALS['babWebStat']->addArticle($arr['id']);
 					}
-				$this->title = $arr['title'];
+				$this->title = bab_toHtml($arr['title']);
 				$this->content = bab_replace($arr['head']);
 				if( $arr['id_author'] != 0 && (($author = bab_getUserName($arr['id_author'])) != ""))
 					{
-					$this->articleauthor = $author;
+					$this->articleauthor = bab_toHtml($author);
 					}
 				else
 					{
 					$this->articleauthor = bab_translate("Anonymous");
 					}
-				$this->articledate = bab_strftime(bab_mktime($arr['date_modification']));
+				$this->articledate = bab_toHtml(bab_strftime(bab_mktime($arr['date_modification'])));
 				$this->author = bab_translate("by") . " ". $this->articleauthor. " - ". $this->articledate;
-				$this->moreurl = $GLOBALS['babUrlScript']."?tg=entry&idx=more&article=".$arr['id']."&idg=".$this->idgroup;
-				$this->printurl = $GLOBALS['babUrlScript']."?tg=entry&idx=print&topics=".$arr['id_topic']."&article=".$arr['id'];
+				$this->moreurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=entry&idx=more&article=".$arr['id']."&idg=".$this->idgroup);
+				$this->printurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=entry&idx=print&topics=".$arr['id_topic']."&article=".$arr['id']);
 
 				$this->resf = $babDB->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$babDB->db_escape_string($arr['id'])."' order by ordering asc");
 				$this->countf = $babDB->db_num_rows($this->resf);
@@ -114,9 +114,9 @@ function ListArticles($idgroup)
 			if( $i < $this->countf)
 				{
 				$arr = $babDB->db_fetch_array($this->resf);
-				$this->docurl = $GLOBALS['babUrlScript']."?tg=entry&idx=getf&idf=".$arr['id']."&article=".$arr['id_article']."&idg=".$this->idgroup;
-				$this->docname = $arr['name'];
-				$this->docdesc = $arr['description'];
+				$this->docurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=entry&idx=getf&idf=".$arr['id']."&article=".$arr['id_article']."&idg=".$this->idgroup);
+				$this->docname = bab_toHtml($arr['name']);
+				$this->docdesc = bab_toHtml($arr['description']);
 				$i++;
 				return true;
 				}
@@ -155,16 +155,16 @@ function readMore($article, $idg)
 			$this->res = $babDB->db_query($req);
 			$arr = $babDB->db_fetch_array($this->res);
 			$this->content = bab_replace($arr['body']);
-			$this->title = $arr['title'];
+			$this->title = bab_toHtml($arr['title']);
 			if( $arr['id_author'] != 0 && (($author = bab_getUserName($arr['id_author'])) != ""))
 				{
-				$this->articleauthor = $author;
+				$this->articleauthor = bab_toHtml($author);
 				}
 			else
 				{
-				$this->articleauthor = bab_translate("Anonymous");
+				$this->articleauthor = bab_toHtml(bab_translate("Anonymous"));
 				}
-			$this->articledate = bab_strftime(bab_mktime($arr['date']));
+			$this->articledate = bab_toHtml(bab_strftime(bab_mktime($arr['date'])));
 			$this->author = bab_translate("by") . " ". $this->articleauthor. " - ". $this->articledate;
 
 			$this->resf = $babDB->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$babDB->db_escape_string($article)."' order by ordering asc");
@@ -189,9 +189,9 @@ function readMore($article, $idg)
 			if( $i < $this->countf)
 				{
 				$arr = $babDB->db_fetch_array($this->resf);
-				$this->docurl = $GLOBALS['babUrlScript']."?tg=entry&idx=getf&idf=".$arr['id']."&article=".$arr['id_article']."&idg=".$this->idgroup;
-				$this->docname = $arr['name'];
-				$this->docdesc = $arr['description'];
+				$this->docurl = bab_toHtml( $GLOBALS['babUrlScript']."?tg=entry&idx=getf&idf=".$arr['id']."&article=".$arr['id_article']."&idg=".$this->idgroup);
+				$this->docname = bab_toHtml($arr['name']);
+				$this->docdesc = bab_toHtml($arr['description']);
 				$i++;
 				return true;
 				}
@@ -233,8 +233,8 @@ function articlePrint($topics, $article)
 				$this->arr = $babDB->db_fetch_array($this->res);
 				$this->head = bab_replace($this->arr['head']);
 				$this->content = bab_replace($this->arr['body']);
-				$this->title = $this->arr['title'];
-				$this->url = "<a href=\"".$GLOBALS['babUrl']."\">".$GLOBALS['babSiteName']."</a>";
+				$this->title = bab_toHtml($this->arr['title']);
+				$this->url = "<a href=\"".bab_toHtml($GLOBALS['babUrl'])."\">".bab_toHtml($GLOBALS['babSiteName'])."</a>";
 				}
 			}
 		}
