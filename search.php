@@ -232,8 +232,8 @@ function searchKeyword($item , $option = "OR")
 			$this->pat = bab_toHtml(bab_rp('pat'));
 			$this->field = bab_rp('field');
 			$this->order = bab_rp('order');
-			$this->atleastone_txt = bab_translate("At least one");
-			$this->all_txt = bab_translate("All");
+			$this->atleastone_txt = bab_translate("Or");
+			$this->all_txt = bab_translate("And");
 
 			$this->index = bab_searchEngineInfos();
 			$this->search_files_only = isset($_POST['search_files_only']);
