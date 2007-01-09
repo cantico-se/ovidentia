@@ -69,6 +69,10 @@ function bab_f_toHtml($pee, $opt) {
 	if (BAB_HTML_REPLACE === ($opt & BAB_HTML_REPLACE)) {
 		bab_replace_ref($pee);
 	}
+	
+	if (BAB_HTML_TAB === ($opt & BAB_HTML_TAB)) {
+		$pee = preg_replace("/\t/", "&nbsp; &nbsp; &nbsp; ", $pee);
+	}
 
 	return $pee;
 	}

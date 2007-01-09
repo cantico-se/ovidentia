@@ -57,7 +57,6 @@ class bab_eventWaitingItems extends bab_event {
 		
 		$i++;
 	}
-	
 }
 
 
