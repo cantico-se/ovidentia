@@ -761,13 +761,13 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 				if (isset($this->fields['after']) && trim($this->fields['after']) != "")
 					{
-					$crit_art .= " and a.date >= ".$babDB->quote($this->fields['after'])."";
-					$crit_com .= " and C.date >= ".$babDB->quote($this->fields['after'])."";
+					$crit_art .= " and a.date >= '".$babDB->db_escape_string($this->fields['after'])." 00:00:00'";
+					$crit_com .= " and C.date >= '".$babDB->db_escape_string($this->fields['after'])." 00:00:00'";
 					}
 				if (isset($this->fields['before']) && trim($this->fields['before']) != "")
 					{
-					$crit_art .= " and a.date <= ".$babDB->quote($this->fields['before'])."";
-					$crit_com .= " and C.date <= ".$babDB->quote($this->fields['before'])."";
+					$crit_art .= " and a.date <= '".$babDB->db_escape_string($this->fields['before'])." 23:59:59'";
+					$crit_com .= " and C.date <= '".$babDB->db_escape_string($this->fields['before'])." 23:59:59'";
 					}
 
 				$inart = (is_array($babBody->topview) && count($babBody->topview) > 0 ) ? "and id_topic in (".$babDB->quote(array_keys($babBody->topview)).")" : "and id_topic ='0'";
