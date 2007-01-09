@@ -171,7 +171,8 @@ function listThreads($forum, $active, $pos)
 					{
 					if( bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $this->iddir))
 						{
-						$this->threadauthordetailsurl = bab_toHtml($GLOBALS['babUrlScript'].'?tg=directory&idx=ddbovml&directoryid='.$this->iddir.'&userid='.$this->arrthread['starter']);	
+						list($iddbuser) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_TBL." where id_user='".$babDB->db_escape_string($this->arrthread['starter'])."' and id_directory='0'"));
+						$this->threadauthordetailsurl = bab_toHtml($GLOBALS['babUrlScript'].'?tg=directory&idx=ddbovml&directoryid='.$this->iddir.'&userid='.$iddbuser);	
 						}
 					}
 
@@ -257,7 +258,8 @@ function listThreads($forum, $active, $pos)
 					{
 					if( bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $this->iddir))
 						{
-						$this->lastpostauthordetailsurl = bab_toHtml($GLOBALS['babUrlScript'].'?tg=directory&idx=ddbovml&directoryid='.$this->iddir.'&userid='.$this->arrthread['id_author']);	
+						list($iddbuser) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_TBL." where id_user='".$babDB->db_escape_string($this->arrthread['id_author'])."' and id_directory='0'"));
+						$this->lastpostauthordetailsurl = bab_toHtml($GLOBALS['babUrlScript'].'?tg=directory&idx=ddbovml&directoryid='.$this->iddir.'&userid='.$iddbuser);	
 						}
 					}
 
