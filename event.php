@@ -1197,7 +1197,7 @@ function updateEvent(&$message)
 	}
 	
 	include_once $GLOBALS['babInstallPath'].'utilit/eventperiod.php';
-	$event = new bab_eventModifyPeriod(bab_mktime($min), bab_mktime($max), false);
+	$event = new bab_eventPeriodModified(bab_mktime($min), bab_mktime($max), false);
 	$event->types = BAB_PERIOD_CALEVENT;
 	bab_fireEvent($event);
 
@@ -1265,7 +1265,7 @@ function confirmDeleteEvent()
 		}
 		
 	include_once $GLOBALS['babInstallPath'].'utilit/eventperiod.php';
-	$event = new bab_eventModifyPeriod(bab_mktime($date_min), bab_mktime($date_max), false);
+	$event = new bab_eventPeriodModified(bab_mktime($date_min), bab_mktime($date_max), false);
 	$event->types = BAB_PERIOD_CALEVENT;
 	bab_fireEvent($event);
 }

@@ -25,9 +25,12 @@ include_once 'base.php';
 require_once $GLOBALS['babInstallPath'].'utilit/eventincl.php';
 
 /**
+ * Event fired when a calendar is displayed
+ * use it to display periods into the calendar
+ * @since 6.1.0
  * @package events
  */
-class bab_eventCreatePeriods extends bab_event {
+class bab_eventBeforePeriodsCreated extends bab_event {
 	
 	/**
  	 * @public
@@ -38,7 +41,7 @@ class bab_eventCreatePeriods extends bab_event {
 	/**
  	 * @param 	bab_userWorkingHours 	$obj
 	 */
-	function bab_eventCreatePeriods($obj) {
+	function bab_eventBeforePeriodsCreated($obj) {
 		$this->periods = & $obj;
 	}
 }
@@ -47,9 +50,10 @@ class bab_eventCreatePeriods extends bab_event {
 
 /**
  * Event fired when a period is modified
+ * @since 6.1.0
  * @package events
  */
-class bab_eventModifyPeriod extends bab_event {
+class bab_eventPeriodModified extends bab_event {
 
 	/**
  	 * @public
@@ -65,7 +69,7 @@ class bab_eventModifyPeriod extends bab_event {
 	 * @param	int|false	$end		timestamp
 	 * @param	int|false	$id_user
 	 */
-	function bab_eventModifyPeriod($begin, $end, $id_user) {
+	function bab_eventPeriodModified($begin, $end, $id_user) {
 		$this->begin 	= $begin;
 		$this->end 		= $end;
 		$this->id_user	= $id_user;

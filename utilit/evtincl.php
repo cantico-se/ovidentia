@@ -359,7 +359,7 @@ function bab_createEvent($idcals, $args, &$msgerror)
 		
 	include_once $GLOBALS['babInstallPath'].'utilit/eventperiod.php';
 	$endperiod = isset($repeatdate) ? $repeatdate : $end;
-	$event = new bab_eventModifyPeriod($begin, $endperiod, false);
+	$event = new bab_eventPeriodModified($begin, $endperiod, false);
 	$event->types = BAB_PERIOD_CALEVENT;
 	bab_fireEvent($event);
 

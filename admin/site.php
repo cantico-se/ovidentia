@@ -1724,7 +1724,7 @@ function siteUpdate_menu6($item)
 	
 	require_once $GLOBALS['babInstallPath'].'utilit/eventperiod.php';
 				
-	$event = new bab_eventModifyPeriod(false, false, false);
+	$event = new bab_eventPeriodModified(false, false, false);
 	$event->types = BAB_PERIOD_NWDAY;
 	bab_fireEvent($event);
 

@@ -1077,7 +1077,7 @@ function bab_getUserDirFields($id = false)
 
 function bab_getDirEntry($id = false, $type = BAB_DIR_ENTRY_ID_USER, $id_directory = NULL ) {
 	include_once $GLOBALS['babInstallPath']."utilit/dirincl.php";
-	return getDirEntry($id, $type, $id_directory);
+	return getDirEntry($id, $type, $id_directory, true);
 	}
 
 function bab_getUserDirectories() {
@@ -1438,9 +1438,10 @@ function bab_getRegistryInstance() {
 
 /**
  * Request param
+ * @since 6.0.6
  * @param string $name
  * @param mixed	$default
- * @return string
+ * @return mixed
  */
 function bab_rp($name, $default = '') {
 	if (isset($_GET[$name])) {
@@ -1454,9 +1455,10 @@ function bab_rp($name, $default = '') {
 
 /**
  * Post param
+ * @since 6.0.6
  * @param string $name
  * @param mixed	$default
- * @return string
+ * @return mixed
  */
 function bab_pp($name, $default = '') {
 	if (isset($_POST[$name])) {
@@ -1467,9 +1469,10 @@ function bab_pp($name, $default = '') {
 
 /**
  * Get param
+ * @since 6.0.6
  * @param string $name
  * @param mixed	$default
- * @return string
+ * @return mixed
  */
 function bab_gp($name, $default = '') {
 	if (isset($_GET[$name])) {
@@ -1480,6 +1483,7 @@ function bab_gp($name, $default = '') {
 
 /**
  * Return the current file content disposition ( attchement, inline, undefined )
+ * @since 6.0.6
  * @return mixed ('': undefined, 1: inline, 2: attachment )
  */
 function bab_getFileContentDisposition() {
@@ -1575,6 +1579,7 @@ function bab_abbr($text, $type, $max_length) {
 /**
  * Define and get the locale
  * @see		setLocale 
+ * @since 	6.1.1
  * @return 	false|string
  */
 function bab_locale() {

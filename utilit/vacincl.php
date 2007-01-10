@@ -2107,14 +2107,14 @@ function bab_vac_updateEventCalendar($id_entry) {
 	$date_end	= bab_mktime($arr['date_end']);
 	
 	include_once $GLOBALS['babInstallPath']."utilit/eventperiod.php";
-	$event = new bab_eventModifyPeriod($date_begin, $date_end, $arr['id_user']);
+	$event = new bab_eventPeriodModified($date_begin, $date_end, $arr['id_user']);
 	$event->types = BAB_PERIOD_VACATION;
 	bab_fireEvent($event);
 }
 
 /**
  * Refresh calendar if modified
- * @param	bab_eventModifyPeriod	$event
+ * @param	bab_eventPeriodModified	$event
  */
 function bab_vac_onModifyPeriod($event) {
 	global $babDB;

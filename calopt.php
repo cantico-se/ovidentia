@@ -653,7 +653,7 @@ function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor,
 	if ($change) {
 		include_once $GLOBALS['babInstallPath'].'utilit/eventperiod.php';
 		
-		$event = new bab_eventModifyPeriod(false, false, $GLOBALS['BAB_SESS_USERID']);
+		$event = new bab_eventPeriodModified(false, false, $GLOBALS['BAB_SESS_USERID']);
 		$event->types = BAB_PERIOD_WORKING;
 		bab_fireEvent($event);
 	}

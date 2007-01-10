@@ -38,6 +38,7 @@ include_once $babInstallPath.'utilit/eventincl.php';
 
 /**
  * Event fired when the approbation page is displayed
+ * @since 6.1.1
  * @package events
  */
 class bab_eventWaitingItems extends bab_event {
