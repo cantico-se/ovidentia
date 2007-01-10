@@ -888,6 +888,14 @@ function bab_addUser( $firstname, $lastname, $middlename, $email, $nickname, $pa
 			{
 			bab_addUserToGroup($id, $babBody->babsite['idgroup']);
 			}
+			
+		include_once $GLOBALS['babInstallPath']."utilit/eventdirectory.php";
+		$event = new bab_eventUserCreated($id);
+		bab_fireEvent($event);
+			
+		/**
+		 * @deprecated
+		 */
 		bab_callAddonsFunction('onUserCreate', $id);
 		return $id;
 		}

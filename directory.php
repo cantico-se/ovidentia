@@ -2540,6 +2540,11 @@ function confirmAddDbContact($id, $fields, $file, $tmp_file, $password1, $passwo
 		id_modifiedby='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' 
 		WHERE id='".$babDB->db_escape_string($iddbu)."'
 	");
+	
+	
+	include_once $GLOBALS['babInstallPath']."utilit/eventdirectory.php";
+	$event = new bab_eventDirectoryEntryCreated($iddbu);
+	bab_fireEvent($event);
 
 	return 1;
 	}
@@ -2585,6 +2590,10 @@ function deleteDbContact($id, $idu)
 		}
 	$babDB->db_query("delete from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_entry='".$babDB->db_escape_string($idu)."'");
 	$babDB->db_query("delete from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".$babDB->db_escape_string($id)."' and id='".$babDB->db_escape_string($idu)."'");
+	
+	include_once $GLOBALS['babInstallPath']."utilit/eventdirectory.php";
+	$event = new bab_eventDirectoryEntryDeleted($idu);
+	bab_fireEvent($event);
 	}
 
 function unassignDbContact($id, $idu)

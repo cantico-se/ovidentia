@@ -581,7 +581,18 @@ function bab_deleteUser($id)
 	
 	// delete user
 	$res = $babDB->db_query("delete from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($id)."'");
+	
+	
+	include_once $GLOBALS['babInstallPath']."utilit/eventdirectory.php";
+	$event = new bab_eventUserDeleted($id);
+	bab_fireEvent($event);
+	
+	/**
+	 * @deprecated
+	 */
 	bab_callAddonsFunction('onUserDelete', $id);
+	
+	
 	}
 
 function bab_deleteOrgChart($id)
