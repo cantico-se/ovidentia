@@ -1591,38 +1591,52 @@ function bab_locale() {
 		
 	} else {
 		global $babLanguage;
-		$languageCode = strtolower($babLanguage).'_'.strtoupper($babLanguage);
 		
-		/*
-	     * Some systems only require LANG, others (like Mandrake) seem to require
-	     * LANGUAGE also.
-	     */
-		putenv("LANG=${languageCode}");
-	    putenv("LANGUAGE=${languageCode}");
-	    
-		$locale = setLocale(LC_ALL, $languageCode);
 		
-		if (false === $locale) {
-			$locale = setLocale(LC_ALL, $babLanguage);
+		switch(strtolower($babLanguage)) {
+			case 'fr':
+				$arrLoc = array('fr_FR', 'fr');
+				break;
+			case 'en':
+				$arrLoc = array('en_GB', 'en_US', 'en');
+				break;
+			default:
+				$arrLoc = array(strtolower($babLanguage).'_'.strtoupper($babLanguage), strtolower($babLanguage));
+				break;
 		}
 		
-		/*
-		 * Try appending some character set names; some systems (like FreeBSD) need this.
-		 * Some require a format with hyphen (e.g. gentoo) and others without (e.g. FreeBSD).
-		 */
-		if (false === $locale) {
-			foreach (array('utf8', 'UTF-8', 'UTF8', 
-					   'ISO8859-1', 'ISO8859-2', 'ISO8859-5', 'ISO8859-7', 'ISO8859-9',
-					   'ISO-8859-1', 'ISO-8859-2', 'ISO-8859-5', 'ISO-8859-7', 'ISO-8859-9',
-					   'EUC', 'Big5') as $charset) {
-				if (($locale = setlocale(LC_ALL, $languageCode . '.' . $charset)) !== false) {
-					break;
+		foreach($arrLoc as $languageCode) {
+			
+			/*
+			 * Some systems only require LANG, others (like Mandrake) seem to require
+			 * LANGUAGE also.
+			 */
+			putenv("LANG=${languageCode}");
+			putenv("LANGUAGE=${languageCode}");
+			
+			if ($locale = setLocale(LC_ALL, $languageCode)) {
+				return $locale;
+			}
+
+			/*
+			 * Try appending some character set names; some systems (like FreeBSD) need this.
+			 * Some require a format with hyphen (e.g. gentoo) and others without (e.g. FreeBSD).
+			 */
+			if (false === $locale) {
+				foreach (array('utf8', 'UTF-8', 'UTF8', 
+						   'ISO8859-1', 'ISO8859-2', 'ISO8859-5', 'ISO8859-7', 'ISO8859-9',
+						   'ISO-8859-1', 'ISO-8859-2', 'ISO-8859-5', 'ISO-8859-7', 'ISO-8859-9',
+						   'EUC', 'Big5') as $charset) {
+					if (($locale = setlocale(LC_ALL, $languageCode . '.' . $charset)) !== false) {
+						return $locale;
+					}
 				}
 			}
 		}
 		
 		if (false === $locale) {
 			bab_debug("No locale found for : $languageCode");
+			return false;
 		}
 		
 		return $locale;
