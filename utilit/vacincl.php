@@ -471,7 +471,7 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 		
 
 		if ( $access )
-			$return[] = array(
+			$return[$arr['id']] = array(
 						'id'				=> $arr['id'],
 						'date_begin'		=> $arr['date_begin'],
 						'date_end'			=> $arr['date_end'],

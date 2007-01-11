@@ -655,10 +655,26 @@ function addNewVacation()
 		foreach($_POST['rgroup_right'] as $id_rgroup => $id_right) {
 			if (isset($rgroups[$id_right]) && $rgroups[$id_right] == $id_rgroup) {
 				$nbd = $_POST['rgroup_value'][$id_rgroup];
+				
+				if( !is_numeric($nbd) || $nbd < 0 ) {
+					$babBody->msgerror = bab_translate("You must specify a correct number days") ." !";
+					return false;
+				}
+				
+				$arr = $rights[$id_right];
+				
+				$arr['waiting'] -= isset($current[$arr['id']]) ? $current[$arr['id']] : 0;
 
-				$nbdays['id'][] = $id_right;
-				$nbdays['val'][] = $nbd;
-				$ntotal += $nbd;
+				if (!empty($nbd) && $arr['cbalance'] != 'Y' && ($arr['quantitydays'] - $arr['waiting'] - $nbd) < 0) {
+					$babBody->addError(bab_translate("You can't take more than").' '.($arr['quantitydays']- $arr['waiting']).' '.bab_translate("days on the right").' '.$arr['description']);
+					return false;
+				}
+
+				if( $nbd > 0 ) {
+					$nbdays['id'][] = $id_right;
+					$nbdays['val'][] = $nbd;
+					$ntotal += $nbd;
+				}
 			}
 		}
 	}
@@ -697,7 +713,7 @@ function addNewVacation()
 		}
 	else
 		{
-		$babDB->db_query("DELETE FROM ".BAB_VAC_ENTRIES_ELEM_TBL." WHERE id_entry='".$id_request."'");
+		$babDB->db_query("DELETE FROM ".BAB_VAC_ENTRIES_ELEM_TBL." WHERE id_entry='".$babDB->db_escape_string($id_request)."'");
 
 		list($idfai) = $babDB->db_fetch_array($babDB->db_query("SELECT idfai FROM ".BAB_VAC_ENTRIES_TBL." WHERE id='".$babDB->db_escape_string($id_request)."'"));
 		
@@ -737,7 +753,7 @@ function addNewVacation()
 	if ($id_user == $GLOBALS['BAB_SESS_USERID'] || $rfrom == 1)
 		{
 		$idfai = makeFlowInstance($row['id_sa'], "vac-".$id);
-		$babDB->db_query("update ".BAB_VAC_ENTRIES_TBL." set idfai='".$idfai."', status='' where id='".$id."'");
+		$babDB->db_query("update ".BAB_VAC_ENTRIES_TBL." set idfai=".$babDB->quote($idfai).", status='' where id=".$babDB->quote($id));
 		$nfusers = getWaitingApproversFlowInstance($idfai, true);
 		notifyVacationApprovers($id, $nfusers, !empty($id_request));
 		}
