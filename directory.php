@@ -2286,10 +2286,17 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 		if( $bupdate )
 			{
 			$babDB->db_query("update ".BAB_DBDIR_ENTRIES_TBL." set date_modification=now(), id_modifiedby='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' where id='".$babDB->db_escape_string($idu)."'");
+			
+			include_once $GLOBALS['babInstallPath']."utilit/eventdirectory.php";
+			
 			if( $iduser )
 				{
-				bab_callAddonsFunction('onUserUpdateInformations', $iduser);
+				$event = new bab_eventUserModified($iduser);
+				bab_fireEvent($event);
 				}
+
+			$event = new bab_eventDirectoryEntryModified($idu);
+			bab_fireEvent($event);
 			}
 		}
 
@@ -2604,6 +2611,7 @@ function unassignDbContact($id, $idu)
 		{
 		list($iddu) = $babDB->db_fetch_array($babDB->db_query("select id_user from ".BAB_DBDIR_ENTRIES_TBL." where id='".$babDB->db_escape_string($idu)."'"));	
 		bab_removeUserFromGroup($iddu, $idgroup);
+		
 		return;
 		}
 	}

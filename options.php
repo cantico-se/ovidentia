@@ -985,9 +985,16 @@ function userChangePassword($oldpwd, $newpwd)
 		}
 	else
 		{
+		include_once $GLOBALS['babInstallPath']."utilit/eventdirectory.php";
+		$event = new bab_eventUserModified($BAB_SESS_USERID);
+		bab_fireEvent($event);
+		
+		
 		$babBody->msgerror = bab_translate("Password Changed");
 		$error = '';
+		
 		bab_callAddonsFunctionArray('onUserChangePassword', array('id'=>$BAB_SESS_USERID, 'nickname'=>$GLOBALS['BAB_SESS_NICKNAME'], 'password'=>$newpwd, 'error'=>&$error));
+		
 		if( !empty($error))
 			{
 			$babBody->msgerror = $error;
@@ -1033,6 +1040,7 @@ function updateLanguage($lang, $langfilter)
 		{
 		$req = "update ".BAB_USERS_TBL." set lang='".$babDB->db_escape_string($lang)."', langfilter='" .$babDB->db_escape_string($langfilter). "' where id='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
         $res = $babDB->db_query($req);
+
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=options&idx=global");
 	}
@@ -1047,6 +1055,8 @@ function updateSkin($skin, $style)
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=options&idx=global");
 	}
+
+/*
 
 function updateUserInfo($password, $firstname, $middlename, $lastname, $nickname, $email)
 	{
@@ -1113,7 +1123,7 @@ function updateUserInfo($password, $firstname, $middlename, $lastname, $nickname
 		return true;
 		}
 	}
-
+*/
 
 function updateNickname($password, $nickname)
 	{
@@ -1154,6 +1164,13 @@ function updateNickname($password, $nickname)
 		$hash=md5($nickname.$BAB_HASH_VAR);
 		$req = "update ".BAB_USERS_TBL." set nickname='".$babDB->db_escape_string($nickname)."', hashname='".$hash."', confirm_hash='".$hash."' where id='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
 		$res = $babDB->db_query($req);
+		
+		if( $babDB->db_num_rows($res) > 0)
+			{
+			include_once $GLOBALS['babInstallPath']."utilit/eventdirectory.php";
+			$event = new bab_eventUserModified($BAB_SESS_USERID);
+			bab_fireEvent($event);
+			}
 
 		$BAB_SESS_NICKNAME = $nickname;
 		$BAB_SESS_HASHID = $hash;
@@ -1164,7 +1181,8 @@ function updateNickname($password, $nickname)
 function updateRegionalSettings($datelformat, $datesformat, $timeformat)
 {
 	global $babBody, $BAB_SESS_USERID, $babDB;
-	$babDB->db_query("update ".BAB_USERS_TBL." set date_shortformat='".$babDB->db_escape_string($datesformat)."', date_longformat='".$babDB->db_escape_string($datelformat)."', time_format='".$babDB->db_escape_string($timeformat)."' where id='".$babDB->db_escape_string($BAB_SESS_USERID)."'");
+	$res = $babDB->db_query("update ".BAB_USERS_TBL." set date_shortformat='".$babDB->db_escape_string($datesformat)."', date_longformat='".$babDB->db_escape_string($datelformat)."', time_format='".$babDB->db_escape_string($timeformat)."' where id='".$babDB->db_escape_string($BAB_SESS_USERID)."'");
+		
 	return true;
 }
 
@@ -1355,6 +1373,8 @@ if( '' != ($update = bab_pp('update')))
 				unset($nickname);
 				}
             break;
+            
+        /*
         case 'userinfo':
  			$password = bab_pp('password');
 			$firstname = bab_pp('firstname');
@@ -1371,6 +1391,8 @@ if( '' != ($update = bab_pp('update')))
 				unset($email);
 				}
             break;
+        */
+            
         case 'profiles':
         	updateProfiles();
 			$idx = 'global';

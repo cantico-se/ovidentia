@@ -104,7 +104,7 @@ class bab_eventUserCreated extends bab_eventDirectory {
  * @since 6.1.1
  */
 class bab_eventUserModified extends bab_eventDirectory {
-
+	
 	function bab_eventModifyUser($id_user) {
 		$this->id_user = $id_user;
 	}

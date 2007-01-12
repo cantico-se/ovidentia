@@ -112,7 +112,7 @@
 <string id="Are you sure you want to remove the requests which finish before the following date ">Êtes-vous certain de vouloir supprimer les demandes dont la date de fin est avant la date suivante </string>
 <string id="Are you sure you want to remove this request">Êtes-vous certain de vouloir supprimer cette demande de congé</string>
 <string id="Are you sure you want to remove those users">Êtes-vous certain de vouloir supprimer ces utilisateurs</string>
-<string id="Are you sure you want to delete this add-on">Êtes-vous certain de vouloir supprimer ce module</string>
+<string id="Are you sure you want to delete this add-on ?">Êtes-vous certain de vouloir supprimer ce module ?</string>
 <string id="Article">Article</string>
 <string id="Article(s)">Article(s)</string>
 <string id="Articles">Articles</string>
@@ -2415,4 +2415,5 @@
 <string id="%s is your personal calendar">%s est votre agenda personnel</string>
 <string id="Mail subject">Sujet du mail</string>
 <string id="Topic name">Nom du thème</string>
+<string id="The addon files are not deleteable">Les fichiers du module ne sont pas supprimables</string>
 </fr>

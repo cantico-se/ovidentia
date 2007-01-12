@@ -492,6 +492,11 @@ function confirmUser($hash, $nickname)
 					bab_addUserToGroup($arr['id'], $babBody->babsite['idgroup']);
 					}
 				}
+				
+			include_once $GLOBALS['babInstallPath']."utilit/eventdirectory.php";
+			$event = new bab_eventUserModified($arr['id']);
+			bab_fireEvent($event);
+				
 			return true;
 			}
 		}

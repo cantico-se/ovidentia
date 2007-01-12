@@ -120,7 +120,7 @@ function addonsList($upgradeall)
 			$this->t_delete = bab_translate("Delete");
 			$this->t_historic = bab_translate("Historic");
 			$this->t_download = bab_translate("Download");
-			$this->confirmdelete = bab_translate("Are you sure you want to delete this add-on").' ?';
+			$this->confirmdelete = bab_toHtml(bab_translate("Are you sure you want to delete this add-on ?"), BAB_HTML_JS);
 			$this->db = $GLOBALS['babDB'];
 			$this->upgradeall = $upgradeall;
 			$this->upgradeallurl = $GLOBALS['babUrlScript']."?tg=addons&idx=list&upgradeall=1";
@@ -426,8 +426,9 @@ function export($id)
 	
 function del($id)
 	{
+	global $babBody;
 	$db = $GLOBALS['babDB'];
-	$res = $db->db_query("select * from ".BAB_ADDONS_TBL." where id='".$id."'");
+	$res = $db->db_query("select * from ".BAB_ADDONS_TBL." where id='".$db->db_escape_string($id)."'");
 	$row = $db->db_fetch_array($res);
 
 	if (!callSingleAddonFunction($row['id'], $row['title'], 'onDeleteAddon'))
@@ -444,7 +445,7 @@ function del($id)
 			$tbllist = array();
 			if (!empty($arr_ini['db_prefix']) && strlen($arr_ini['db_prefix']) >= 3 && substr($arr_ini['db_prefix'],0,3) != 'bab')
 				{
-				$res = $db->db_query("SHOW TABLES LIKE '".$arr_ini['db_prefix']."%'");
+				$res = $db->db_query("SHOW TABLES LIKE '".$db->db_escape_like($arr_ini['db_prefix'])."%'");
 				while(list($tbl) = $db->db_fetch_array($res))
 					$tbllist[] = $tbl;
 				}
@@ -454,20 +455,31 @@ function del($id)
 				  $current_dir = opendir($dir);
 				  while($entryname = readdir($current_dir)){
 					 if(is_dir("$dir/$entryname") and ($entryname != "." and $entryname!="..")){
-					   deldir($dir.'/'.$entryname);
+					   if (false === deldir($dir.'/'.$entryname)) {
+							return false;
+						}
 					 }elseif($entryname != "." and $entryname!=".."){
-					   unlink($dir.'/'.$entryname);
+					   if (false === unlink($dir.'/'.$entryname)) {
+							return false;
+						}
 					 }
 				  }
 				  closedir($current_dir);
 				  rmdir($dir);
+					return true;
 				}
 			
 			$loc_in = $GLOBALS['addons_files_location']['loc_in'];	
 			
 			foreach ($loc_in as $path)
 				{
-				if (is_dir($GLOBALS['babInstallPath'].$path.'/'.$row['title'])) deldir($GLOBALS['babInstallPath'].$path.'/'.$row['title']);
+				if (is_dir($GLOBALS['babInstallPath'].$path.'/'.$row['title'])) {
+					if (false === deldir($GLOBALS['babInstallPath'].$path.'/'.$row['title'])) {
+
+						$babBody->addError(bab_translate('The addon files are not deleteable'));
+						return false;
+						}
+					}
 				}
 				
 			if (count($tbllist) > 0)
