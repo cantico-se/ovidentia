@@ -217,7 +217,7 @@ function bab_importFmFile($fmFile, $id_owner, $path, $bgroup) {
 		if ($bgroup && 'Y' == $fm_file['arrfold']['version']) {
 			// add a version
 			fm_lockFile($arr['id'], ''); 
-			return fm_commitFile($arr['id'], '', 'N', $fmFile->filename, $_FILES[$field_name]['size'], $_FILES[$field_name]['tmp_name']);
+			return fm_commitFile($arr['id'], '', 'N', $fmFile);
 		}
 
 	

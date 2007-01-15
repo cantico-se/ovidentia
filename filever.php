@@ -23,6 +23,7 @@
 ************************************************************************/
 include_once 'base.php';
 include_once $babInstallPath.'utilit/fileincl.php';
+include_once $babInstallPath."utilit/uploadincl.php";
 
 define('BAB_FM_MAXLOGS'	, 10);
 
@@ -700,9 +701,7 @@ if( isset($_REQUEST['idf']) )
 					$idf, 
 					$_POST['comment'], 
 					$_POST['vermajor'], 
-					$_FILES['uploadf']['name'], 
-					$_FILES['uploadf']['size'], 
-					$_FILES['uploadf']['tmp_name'] 
+					bab_fmFile::upload('uploadf')
 					)) {
 						$idx = 'commit';
 					}
