@@ -281,7 +281,7 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 			// rules 
 
 			$period_start = bab_mktime($arr['period_start']);
-			$period_end = bab_mktime($arr['period_end']);
+			$period_end = 86400 + bab_mktime($arr['period_end']);
 			
 			if ($period_start != -1 && $period_end != -1) {
 				// acces sur la période, en fonction de la période de la demande
