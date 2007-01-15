@@ -757,9 +757,7 @@ function loadSections()
 								if( $arr2['enabled'] == 'Y' )
 									{
 										$sec = new babUserSection($arrsectioninfo['close']);
-										if (0 < count($sec->array_urls)) {
-											$arrsections[$objectid] = $sec;
-										}
+										$arrsections[$objectid] = $sec;
 									}
 								break;
 						}
