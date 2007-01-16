@@ -256,6 +256,7 @@ bab_dialog.selectfile = function(action, attributes) {
 
 /**
  * A groups dialog.
+ * @param action  function receiving an associative array with keys "id", "type" and "content" as parameter. 
  */
 bab_dialog.selectgroups = function(action) {
 	var useparam = {
@@ -265,4 +266,45 @@ bab_dialog.selectgroups = function(action) {
 	url = '?tg=selector&idx=groups';
 
 	bab_dialog(url, useparam, action);
+}
+
+
+/** 
+ * Create a selector from a input field
+ * @since	6.1.1
+ *
+ * @param	object|string	field
+ * @param	string			label
+ * @param	function		onclickEvt		
+ */
+bab_dialog.field = function(field, label, onclickEvt) {
+
+	if (typeof field == 'string') {
+		field = document.getElementById(field);
+	}
+	oldwidth = field.offsetWidth;
+	oldheight = field.offsetHeight;
+	field.type = 'hidden';
+	
+	contener = document.createElement('div');
+	contener.style.width = oldwidth+'px';
+	contener.style.height = oldheight+'px';
+	contener.style.cursor = 'pointer';
+
+	if ('' == field.className) {
+		contener.style.border = '#000 1px solid';
+		contener.style.background = '#fff';
+		contener.style.color = '#000';
+		contener.className = 'bab_dialog_field';
+	} else {
+		contener.className = field.className;
+	}
+
+	
+	field.parentNode.insertBefore(contener, field);
+	contener.innerHTML = label;
+	
+	contener.onclick = function() {
+		onclickEvt(contener);
+	}
 }
