@@ -1011,6 +1011,8 @@ function get_topcatview() {
 
 		global $babDB;
 
+		$topcatview = array();
+
 		$topview = bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL);
 
 		$res = $babDB->db_query("select id_cat from ".BAB_TOPICS_TBL." where id in(".$babDB->quote(array_keys($topview)).")");
