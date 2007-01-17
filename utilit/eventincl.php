@@ -117,7 +117,7 @@ class bab_fireEvent_Obj {
 	}
 	
 	function pop_className() {
-		return array_pop($this->stack);
+		return array_shift($this->stack);
 	}
 	
 	function setAddonCtx($addon_id, $addon_name) {
@@ -149,7 +149,10 @@ function bab_fireEvent($event_obj) {
 	$obj->push_obj($event_obj);
 
 	
+	
 	while($class_name = $obj->pop_className()) {
+	
+		
 	
 		$res = $babDB->db_query('
 			SELECT 
@@ -164,7 +167,7 @@ function bab_fireEvent($event_obj) {
 		);
 		
 		while ($arr = $babDB->db_fetch_assoc($res)) {
-		
+
 			$id_addon = $arr['id_addon'];
 		
 			if (BAB_ADDON_CORE_NAME === $arr['addon_name'] || 

@@ -183,3 +183,18 @@ function bab_tooltipPosition(e)
 	obj.style.visibility="visible";
 	return true;
 	}
+	
+	
+function bab_getInstallPath() {
+	scripts = document.getElementsByTagName('script');
+	for(var i =0; i < scripts.length; i++) {
+		if (-1 != scripts[i].src.indexOf('ovidentia.js')) {
+			arr = scripts[i].src.split('/');
+			for (var j in arr) {
+				if ('scripts' == arr[j]) {
+					return arr[j-1]+'/';
+				}
+			}
+		}
+	}
+}

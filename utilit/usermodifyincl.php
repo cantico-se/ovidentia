@@ -1,0 +1,341 @@
+<?php
+/************************************************************************
+ * OVIDENTIA http://www.ovidentia.org                                   *
+ ************************************************************************
+ * Copyright (c) 2003 by CANTICO ( http://www.cantico.fr )              *
+ *                                                                      *
+ * This file is part of Ovidentia.                                      *
+ *                                                                      *
+ * Ovidentia is free software; you can redistribute it and/or modify    *
+ * it under the terms of the GNU General Public License as published by *
+ * the Free Software Foundation; either version 2, or (at your option)  *
+ * any later version.													*
+ *																		*
+ * This program is distributed in the hope that it will be useful, but  *
+ * WITHOUT ANY WARRANTY; without even the implied warranty of			*
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.					*
+ * See the  GNU General Public License for more details.				*
+ *																		*
+ * You should have received a copy of the GNU General Public License	*
+ * along with this program; if not, write to the Free Software			*
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
+ * USA.																	*
+************************************************************************/
+include_once 'base.php';
+/**
+ * This file is included only if a user is added or modified
+ * @package users
+ */
+class bab_userModify {
+
+	/**
+	 * @static
+	 */
+	function addUser($firstname, $lastname, $middlename, $email, $nickname, $password1, $password2, $isconfirmed, &$error, $bgroup) {
+		
+		global $BAB_HASH_VAR, $babBody, $babLanguage, $babDB;
+
+		if( empty($firstname) )
+			{
+			$error = bab_translate("Firstname is required");
+			return false;
+			}
+	
+		if( empty($firstname) && empty($lastname))
+			{
+			$error = bab_translate("Lastname is required");
+			return false;
+			}
+	
+	
+		if( empty($nickname) )
+			{
+			$error = bab_translate( "Nickname is required");
+			return false;
+			}
+	
+		if( empty($password1) || empty($password2))
+			{
+			$error = bab_translate( "Passwords not match !!");
+			return false;
+			}
+	
+		if( $password1 != $password2)
+			{
+			$error = bab_translate("Passwords not match !!");
+			return false;
+			}
+	
+		$query = "select id from ".BAB_USERS_TBL." where nickname='".$babDB->db_escape_string($nickname)."'";	
+		$res = $babDB->db_query($query);
+		if( $babDB->db_num_rows($res) > 0)
+			{
+			$error = bab_translate("This nickname already exists !!");
+			return false;
+			}
+		
+	
+		$replace = array( " " => "", "-" => "");
+	
+		$hashname = md5(strtolower(strtr($firstname.$middlename.$lastname, $replace)));
+		$query = "select id from ".BAB_USERS_TBL." where hashname='".$babDB->db_escape_string($hashname)."'";	
+		$res = $babDB->db_query($query);
+		if( $babDB->db_num_rows($res) > 0)
+			{
+			$error = bab_translate("Firstname and Lastname already exists !!");
+			return false;
+			}
+	
+		$password1=strtolower($password1);
+		$hash=md5($nickname.$BAB_HASH_VAR);
+		if( $isconfirmed )
+			{
+			$isconfirmed = 1;
+			}
+		else
+			{
+			$isconfirmed = 0;
+			}
+	
+		$sql="insert into ".BAB_USERS_TBL." (nickname, firstname, lastname, hashname, password,email,date,confirm_hash,is_confirmed,changepwd,lang, langfilter, datelog, lastlog) ".
+			"values (
+			'". $babDB->db_escape_string($nickname)."',
+			'".$babDB->db_escape_string($firstname)."',
+			'".$babDB->db_escape_string($lastname)."',
+			'".$babDB->db_escape_string($hashname)."',
+			'". md5($password1) ."',
+			'".$babDB->db_escape_string($email)."',
+			 now(),
+			 '".$babDB->db_escape_string($hash)."',
+			 '".$babDB->db_escape_string($isconfirmed)."',
+			 '1',
+			 '".$babDB->db_escape_string($babLanguage)."',
+			 '".$babDB->db_escape_string($GLOBALS['babLangFilter']->getFilterAsInt())."',
+			  now(), 
+			  now()
+			  )";
+			  
+		$result=$babDB->db_query($sql);
+		if ($result)
+			{
+			$id = $babDB->db_insert_id();
+			$babDB->db_query("insert into ".BAB_CALENDAR_TBL." (owner, type) values ('".$babDB->db_escape_string($id)."', '1')");
+			$babDB->db_query("insert into ".BAB_DBDIR_ENTRIES_TBL." 
+				(givenname, mn, sn, email, id_directory, id_user) 
+				values 
+				('".$babDB->db_escape_string($firstname)."', 
+				'".$babDB->db_escape_string($middlename)."', 
+				'".$babDB->db_escape_string($lastname)."', 
+				'".$babDB->db_escape_string($email)."',
+				'0',
+				'".$id."'
+				)");
+	
+			if( $bgroup && isset($babBody->babsite['idgroup']) && $babBody->babsite['idgroup'] != 0)
+				{
+				bab_addUserToGroup($id, $babBody->babsite['idgroup']);
+				}
+			else
+				{	
+				$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
+				}
+			
+			include_once $GLOBALS['babInstallPath']."utilit/eventdirectory.php";
+			$event = new bab_eventUserCreated($id);
+			bab_fireEvent($event);
+			
+			// notifiy the user into registered users
+			$event = new bab_eventUserAttachedToGroup($id, BAB_REGISTERED_GROUP);
+			bab_fireEvent($event);
+				
+			/**
+			 * @deprecated
+			 */
+			bab_callAddonsFunction('onUserCreate', $id);
+			return $id;
+			}
+		else
+			return false;
+	}
+	
+	
+	
+	/**
+	 * @static
+	 * Update a user
+	 * @param	int		$id
+	 * @param	array	$info
+	 * @param	string	&$error
+	 * @return 	boolean
+	 */
+	function updateUserById($id, $info, &$error) {
+	
+		global $babDB;
+		$res = $babDB->db_query('select u.*, det.mn, det.id as id_entry from '.BAB_USERS_TBL.' u left join '.BAB_DBDIR_ENTRIES_TBL.' det on det.id_user=u.id where u.id=\''.$babDB->db_escape_string($id).'\'');
+		$arruq = array();
+		$arrdq = array();
+	
+		if( $res && $babDB->db_num_rows($res) > 0 )
+		{
+			$arruinfo = $babDB->db_fetch_array($res);
+	
+			if( is_array($info) && count($info) /*&& isset($info['disabled'])*/)
+			{
+	
+				if( isset($info['password']) && empty($info['password']) )
+				{
+					$error = bab_translate("Empty password");
+					return false;
+				}
+	
+				if( isset($info['password']) )
+				{
+					$arruq[] = 'password=\''.$babDB->db_escape_string(md5(strtolower($info['password']))).'\'';
+				}
+				
+				if( isset($info['disabled']))
+				{
+					if($info['disabled'])
+					{
+						$arruq[] =  'disabled=1';
+					}
+					else
+					{
+						$arruq[] =  'disabled=0';
+					}
+				}
+				
+				
+				if( isset($info['is_confirmed']))
+				{
+					if($info['is_confirmed'])
+					{
+						$arruq[] =  'is_confirmed=1';
+					}
+					else
+					{
+						$arruq[] =  'is_confirmed=0';
+					}
+				}
+	
+				if( isset($info['email']))
+				{
+					$arruq[] =  'email=\''.$babDB->db_escape_string($info['email']).'\'';
+				}
+	
+				if( isset($info['sn']) || isset($info['givenname']) || isset($info['mn']))
+				{
+					if( isset($info['sn']) && empty($info['sn']))
+					{
+						$error = bab_translate( "Lastname is required");
+						return false;
+					}
+					else
+					{
+						$lastname = $arruinfo['lastname'];
+					}
+	
+					if( isset($info['givenname']) && empty($info['givenname']))
+					{
+						$error = bab_translate( "Firstname is required");
+						return false;
+					}
+					else
+					{
+						$firstname = $arruinfo['firstname'];
+					}
+	
+					if( isset($info['mn']))
+					{
+						$mn = $info['mn'];
+					}
+					else
+					{
+						$mn = $arruinfo['mn'];
+					}
+	
+					$replace = array( " " => "", "-" => "");
+					$hashname = md5(strtolower(strtr($firstname.$mn.$lastname, $replace)));
+					$arruq[] =  'firstname=\''.$babDB->db_escape_string($firstname).'\'';
+					$arruq[] =  'lastname=\''.$babDB->db_escape_string($lastname).'\'';
+					$arruq[] =  'hashname=\''.$babDB->db_escape_string($hashname).'\'';
+	
+					$arrdq[] =  'givenname=\''.$babDB->db_escape_string($firstname).'\'';
+					$arrdq[] =  'sn=\''.$babDB->db_escape_string($lastname).'\'';
+					$arrdq[] =  'mn=\''.$babDB->db_escape_string($mn).'\'';
+	
+				}
+	
+				if( count($arruq))
+				{
+					$babDB->db_query('update '.BAB_USERS_TBL.' set '.implode(',', $arruq).' where id=\''.$babDB->db_escape_string($id).'\'');
+				}
+	
+				$res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='0'");
+				while( $arr = $babDB->db_fetch_array($res))
+					{
+					if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
+						{
+						$rr = $babDB->db_fetch_array($babDB->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$babDB->db_escape_string($arr['id_field'])."'"));
+						$fieldname = $rr['name'];
+							switch( $fieldname )
+							{
+								case 'sn':
+								case 'givenname':
+								case 'mn':
+									break;
+								default:
+									if( isset($info[$fieldname]))
+									{
+									$arrdq[] =  $fieldname.'=\''.$babDB->db_escape_string($info[$fieldname]).'\'';
+									}
+									break;
+							}
+	
+						}
+					else
+						{
+						$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string(($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
+						$fieldname = "babdirf".$arr['id'];
+						if( isset($info[$fieldname]))
+							{
+							$res2 = $babDB->db_query("select * from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$babDB->db_escape_string($arr['id'])."' and id_entry='".$babDB->db_escape_string($arruinfo['id_entry'])."'");
+							if( $res2 && $babDB->db_num_rows($res2) > 0 )
+								{
+								$arr2 = $babDB->db_fetch_array($res2);
+								$babDB->db_query("update ".BAB_DBDIR_ENTRIES_EXTRA_TBL." set field_value='".$babDB->db_escape_string($info[$fieldname])."' where id='".$babDB->db_escape_string($arr2['id'])."'");
+								}
+							else
+								{
+								$babDB->db_query("insert into ".BAB_DBDIR_ENTRIES_EXTRA_TBL." (id_fieldx, id_entry, field_value) values('".$babDB->db_escape_string($arr['id'])."','".$babDB->db_escape_string($arruinfo['id_entry'])."','".$babDB->db_escape_string($info[$fieldname])."')");
+								}
+							}
+						}
+					}
+	
+				if( count($arrdq))
+				{
+					$babDB->db_query('update '.BAB_DBDIR_ENTRIES_TBL.' set '.implode(',', $arrdq).' where id=\''.$babDB->db_escape_string($arruinfo['id_entry']).'\'');
+				}
+				
+				require_once($GLOBALS['babInstallPath']."utilit/eventdirectory.php");
+				$event = new bab_eventUserModified($id);
+				bab_fireEvent($event);
+				
+				return true;
+			}
+			else
+			{
+				$error = bab_translate("Nothing Changed");
+				return false;
+			}
+		}
+		else
+		{
+			$error = bab_translate("Unknown user");
+			return false;
+		}
+	}
+}
+
+?>

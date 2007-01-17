@@ -122,5 +122,42 @@ class bab_eventUserDeleted extends bab_eventDirectory {
 	}
 }
 
+/**
+ * a user has been attached to a group
+ * @package events
+ * @since 6.1.1
+ */
+class bab_eventUserAttachedToGroup extends bab_eventDirectory {
+
+	/**
+	 * @public
+	 */
+	var $id_group;
+
+	function bab_eventUserAttachedToGroup($id_user, $id_group) {
+		$this->id_user = $id_user;
+		$this->id_group = $id_group;
+	}
+}
+
+
+/**
+ * a user has been detached from a group
+ * @package events
+ * @since 6.1.1
+ */
+class bab_eventUserDetachedFromGroup extends bab_eventDirectory {
+
+	/**
+	 * @public
+	 */
+	var $id_group;
+
+	function bab_eventUserDetachedFromGroup($id_user, $id_group) {
+		$this->id_user = $id_user;
+		$this->id_group = $id_group;
+	}
+}
+
 
 ?>

@@ -756,6 +756,14 @@ function bab_addUserToGroup($iduser, $idgroup, $oc = true)
 		}
 
 	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
+	
+	require_once($GLOBALS['babInstallPath']."utilit/eventdirectory.php");
+	$event = new bab_eventUserAttachedToGroup($iduser, $idgroup);
+	bab_fireEvent($event);
+	
+	/**
+	 * @deprecated
+	 */
 	bab_callAddonsFunction('onUserAssignedToGroup', $iduser, $idgroup);
 }
 
@@ -781,126 +789,21 @@ function bab_removeUserFromGroup($iduser, $idgroup)
 		}
 
 	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
+	
+	require_once($GLOBALS['babInstallPath']."utilit/eventdirectory.php");
+	$event = new bab_eventUserDetachedFromGroup($iduser, $idgroup);
+	bab_fireEvent($event);
+	
+	/**
+	 * @deprecated
+	 */
 	bab_callAddonsFunction('onUserUnassignedFromGroup', $iduser, $idgroup);
 }
 
 function bab_addUser( $firstname, $lastname, $middlename, $email, $nickname, $password1, $password2, $isconfirmed, &$error, $bgroup = true)
 	{
-	global $BAB_HASH_VAR, $babBody, $babLanguage, $babDB;
-
-	if( empty($firstname) )
-		{
-		$error = bab_translate( "Firstname is required");
-		return false;
-		}
-
-	if( empty($firstname) && empty($lastname))
-		{
-		$error = bab_translate( "Lastname is required");
-		return false;
-		}
-
-
-	if( empty($nickname) )
-		{
-		$error = bab_translate( "Nickname is required");
-		return false;
-		}
-
-	if( empty($password1) || empty($password2))
-		{
-		$error = bab_translate( "Passwords not match !!");
-		return false;
-		}
-
-	if( $password1 != $password2)
-		{
-		$error = bab_translate("Passwords not match !!");
-		return false;
-		}
-
-	$query = "select id from ".BAB_USERS_TBL." where nickname='".$babDB->db_escape_string($nickname)."'";	
-	$res = $babDB->db_query($query);
-	if( $babDB->db_num_rows($res) > 0)
-		{
-		$error = bab_translate("This nickname already exists !!");
-		return false;
-		}
-	
-
-	$replace = array( " " => "", "-" => "");
-
-	$hashname = md5(strtolower(strtr($firstname.$middlename.$lastname, $replace)));
-	$query = "select id from ".BAB_USERS_TBL." where hashname='".$babDB->db_escape_string($hashname)."'";	
-	$res = $babDB->db_query($query);
-	if( $babDB->db_num_rows($res) > 0)
-		{
-		$error = bab_translate("Firstname and Lastname already exists !!");
-		return false;
-		}
-
-	$password1=strtolower($password1);
-	$hash=md5($nickname.$BAB_HASH_VAR);
-	if( $isconfirmed )
-		{
-		$isconfirmed = 1;
-		}
-	else
-		{
-		$isconfirmed = 0;
-		}
-
-	$sql="insert into ".BAB_USERS_TBL." (nickname, firstname, lastname, hashname, password,email,date,confirm_hash,is_confirmed,changepwd,lang, langfilter, datelog, lastlog) ".
-		"values (
-		'". $babDB->db_escape_string($nickname)."',
-		'".$babDB->db_escape_string($firstname)."',
-		'".$babDB->db_escape_string($lastname)."',
-		'".$babDB->db_escape_string($hashname)."',
-		'". md5($password1) ."',
-		'".$babDB->db_escape_string($email)."',
-		 now(),
-		 '".$babDB->db_escape_string($hash)."',
-		 '".$babDB->db_escape_string($isconfirmed)."',
-		 '1',
-		 '".$babDB->db_escape_string($babLanguage)."',
-		 '".$babDB->db_escape_string($GLOBALS['babLangFilter']->getFilterAsInt())."',
-		  now(), 
-		  now()
-		  )";
-		  
-	$result=$babDB->db_query($sql);
-	if ($result)
-		{
-		$id = $babDB->db_insert_id();
-		$babDB->db_query("insert into ".BAB_CALENDAR_TBL." (owner, type) values ('".$babDB->db_escape_string($id)."', '1')");
-		$babDB->db_query("insert into ".BAB_DBDIR_ENTRIES_TBL." 
-			(givenname, mn, sn, email, id_directory, id_user) 
-			values 
-			('".$babDB->db_escape_string($firstname)."', 
-			'".$babDB->db_escape_string($middlename)."', 
-			'".$babDB->db_escape_string($lastname)."', 
-			'".$babDB->db_escape_string($email)."',
-			'0',
-			'".$id."'
-			)");
-
-		if( $bgroup && isset($babBody->babsite['idgroup']) && $babBody->babsite['idgroup'] != 0)
-			{
-			bab_addUserToGroup($id, $babBody->babsite['idgroup']);
-			}
-			
-		include_once $GLOBALS['babInstallPath']."utilit/eventdirectory.php";
-		$event = new bab_eventUserCreated($id);
-		bab_fireEvent($event);
-			
-		/**
-		 * @deprecated
-		 */
-		bab_callAddonsFunction('onUserCreate', $id);
-		return $id;
-		}
-	else
-		return false;
+	require_once($GLOBALS['babInstallPath']."utilit/usermodifiyincl.php");
+	return bab_userModify::addUser( $firstname, $lastname, $middlename, $email, $nickname, $password1, $password2, $isconfirmed, $error, $bgroup);
 	}
 
 function bab_replace_var(&$txt,$var,$new)

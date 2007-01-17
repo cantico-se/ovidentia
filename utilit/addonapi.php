@@ -708,7 +708,10 @@ function bab_composeUserName( $F, $L)
 		return trim(sprintf("%s %s", $F, $L));
 	}
 
-/* for current user */
+/**
+ * Connexion status for current user 
+ * @return boolean
+ */
 function bab_userIsloggedin()
 	{
 	global $BAB_SESS_NICKNAME, $BAB_HASH_VAR, $BAB_SESS_HASHID,$BAB_SESS_LOGGED;
@@ -1023,7 +1026,9 @@ function bab_getActiveSessions()
 	return $output;
 }
 
-
+/**
+ * Get mime type by filename extention
+ */
 function bab_getFileMimeType($file)
 {
 	global $babDB;
@@ -1044,11 +1049,13 @@ function bab_getFileMimeType($file)
 /* API Directories */
 
 /**
- * Deprecated
+ * @deprecated
  * @see bab_getDirEntry
  */
 function bab_getUserDirFields($id = false)
 	{
+	trigger_error('This function is deprecated, please use bab_getDirEntry()');
+	
 	global $babDB;
 	if (false == $id) $id = &$GLOBALS['BAB_SESS_USERID'];
 	$query = "select * from ".BAB_DBDIR_ENTRIES_TBL." where id_user='".$babDB->db_escape_string($id)."'";
@@ -1064,8 +1071,8 @@ function bab_getUserDirFields($id = false)
 /** 
  * Get a directory entry or a list of entries
  *
- * BAB_DIR_ENTRY_ID_USER		: $id est un id utilisateur
- * BAB_DIR_ENTRY_ID				: $id est un id de fiche d'annuaire
+ * BAB_DIR_ENTRY_ID_USER		: $id is a user id
+ * BAB_DIR_ENTRY_ID				: $id is a directory entry
  * BAB_DIR_ENTRY_ID_DIRECTORY	: liste des champs de l'annuaire
  * BAB_DIR_ENTRY_ID_GROUP		: liste des champs de l'annuaire de groupe
  *
@@ -1080,11 +1087,21 @@ function bab_getDirEntry($id = false, $type = BAB_DIR_ENTRY_ID_USER, $id_directo
 	return getDirEntry($id, $type, $id_directory, true);
 	}
 
+/**
+ * List of viewables directories for the user
+ */ 
 function bab_getUserDirectories() {
 	include_once $GLOBALS['babInstallPath']."utilit/dirincl.php";
 	return getUserDirectories();
 	}
 
+/**
+ * return a link to the popup of the directory entry
+ * @param	int		[$id]				id_user or id_entry
+ * @param	int		[$type]				the type of the $id parameter BAB_DIR_ENTRY_ID_USER | BAB_DIR_ENTRY_ID
+ * @param	int		[$id_directory]		if $id is a directory entry
+ * @return 	string
+ */
 function bab_getUserDirEntryLink($id = false, $type = BAB_DIR_ENTRY_ID_USER, $id_directory = false) {
 	include_once $GLOBALS['babInstallPath']."utilit/dirincl.php";
 	return getUserDirEntryLink($id, $type, $id_directory);
@@ -1142,9 +1159,16 @@ function bab_removeGroup($id)
 
 
 /* API Users */
+
+
+/**
+ * Register a user
+ * @param	boolean	$bgroup
+ */
 function bab_registerUser( $firstname, $lastname, $middlename, $email, $nickname, $password1, $password2, $confirmed, &$error, $bgroup = true)
 {
-	return bab_addUser( $firstname, $lastname, $middlename, $email, $nickname, $password1, $password2, $confirmed, $error, $bgroup);
+	require_once($GLOBALS['babInstallPath']."utilit/usermodifiyincl.php");
+	return bab_userModify::addUser( $firstname, $lastname, $middlename, $email, $nickname, $password1, $password2, $confirmed, $error, $bgroup);
 }
 
 function bab_attachUserToGroup($iduser, $idgroup)
@@ -1157,176 +1181,77 @@ function bab_detachUserFromGroup($iduser, $idgroup)
 	bab_removeUserFromGroup($iduser, $idgroup);
 }
 
-function bab_uppdateUserById($id, $info, &$error)
-{
-	global $babDB;
-	$res = $babDB->db_query('select u.*, det.mn, det.id as id_entry from '.BAB_USERS_TBL.' u left join '.BAB_DBDIR_ENTRIES_TBL.' det on det.id_user=u.id where u.id=\''.$babDB->db_escape_string($id).'\'');
-	$arruq = array();
-	$arrdq = array();
 
-	if( $res && $babDB->db_num_rows($res) > 0 )
-	{
-		$arruinfo = $babDB->db_fetch_array($res);
-
-		if( is_array($info) && count($info) /*&& isset($info['disabled'])*/)
-		{
-
-			if( isset($info['password']) && empty($info['password']) )
-			{
-				$error = bab_translate("Empty password");
-				return false;
-			}
-
-			if( isset($info['password']) )
-			{
-				$arruq[] = 'password=\''.$babDB->db_escape_string(md5(strtolower($info['password']))).'\'';
-			}
-			
-			if( isset($info['disabled']))
-			{
-				if($info['disabled'])
-				{
-					$arruq[] =  'disabled=1';
-				}
-				else
-				{
-					$arruq[] =  'disabled=0';
-				}
-			}
-
-			if( isset($info['email']))
-			{
-				$arruq[] =  'email=\''.$babDB->db_escape_string($info['email']).'\'';
-			}
-
-			if( isset($info['sn']) || isset($info['givenname']) || isset($info['mn']))
-			{
-				if( isset($info['sn']) && empty($info['sn']))
-				{
-					$error = bab_translate( "Lastname is required");
-					return false;
-				}
-				else
-				{
-					$lastname = $arruinfo['lastname'];
-				}
-
-				if( isset($info['givenname']) && empty($info['givenname']))
-				{
-					$error = bab_translate( "Firstname is required");
-					return false;
-				}
-				else
-				{
-					$firstname = $arruinfo['firstname'];
-				}
-
-				if( isset($info['mn']))
-				{
-					$mn = $info['mn'];
-				}
-				else
-				{
-					$mn = $arruinfo['mn'];
-				}
-
-				$replace = array( " " => "", "-" => "");
-				$hashname = md5(strtolower(strtr($firstname.$mn.$lastname, $replace)));
-				$arruq[] =  'firstname=\''.$babDB->db_escape_string($firstname).'\'';
-				$arruq[] =  'lastname=\''.$babDB->db_escape_string($lastname).'\'';
-				$arruq[] =  'hashname=\''.$babDB->db_escape_string($hashname).'\'';
-
-				$arrdq[] =  'givenname=\''.$babDB->db_escape_string($firstname).'\'';
-				$arrdq[] =  'sn=\''.$babDB->db_escape_string($lastname).'\'';
-				$arrdq[] =  'mn=\''.$babDB->db_escape_string($mn).'\'';
-
-			}
-
-			if( count($arruq))
-			{
-				$babDB->db_query('update '.BAB_USERS_TBL.' set '.implode(',', $arruq).' where id=\''.$babDB->db_escape_string($id).'\'');
-			}
-
-			$res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='0'");
-			while( $arr = $babDB->db_fetch_array($res))
-				{
-				if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
-					{
-					$rr = $babDB->db_fetch_array($babDB->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$babDB->db_escape_string($arr['id_field'])."'"));
-					$fieldname = $rr['name'];
-						switch( $fieldname )
-						{
-							case 'sn':
-							case 'givenname':
-							case 'mn':
-								break;
-							default:
-								if( isset($info[$fieldname]))
-								{
-								$arrdq[] =  $fieldname.'=\''.$babDB->db_escape_string($info[$fieldname]).'\'';
-								}
-								break;
-						}
-
-					}
-				else
-					{
-					$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string(($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
-					$fieldname = "babdirf".$arr['id'];
-					if( isset($info[$fieldname]))
-						{
-						$res2 = $babDB->db_query("select * from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$babDB->db_escape_string($arr['id'])."' and id_entry='".$babDB->db_escape_string($arruinfo['id_entry'])."'");
-						if( $res2 && $babDB->db_num_rows($res2) > 0 )
-							{
-							$arr2 = $babDB->db_fetch_array($res2);
-							$babDB->db_query("update ".BAB_DBDIR_ENTRIES_EXTRA_TBL." set field_value='".$babDB->db_escape_string($info[$fieldname])."' where id='".$babDB->db_escape_string($arr2['id'])."'");
-							}
-						else
-							{
-							$babDB->db_query("insert into ".BAB_DBDIR_ENTRIES_EXTRA_TBL." (id_fieldx, id_entry, field_value) values('".$babDB->db_escape_string($arr['id'])."','".$babDB->db_escape_string($arruinfo['id_entry'])."','".$babDB->db_escape_string($info[$fieldname])."')");
-							}
-						}
-					}
-				}
-
-			if( count($arrdq))
-			{
-				$babDB->db_query('update '.BAB_DBDIR_ENTRIES_TBL.' set '.implode(',', $arrdq).' where id=\''.$babDB->db_escape_string($arruinfo['id_entry']).'\'');
-			}
-			return true;
-		}
-		else
-		{
-			$error = bab_translate("Nothing Changed");
-			return false;
-		}
-	}
-	else
-	{
-		$error = bab_translate("Unknown user");
+/**
+ * Get user infos from directory and additionnal parameters specific to registered users
+ * return all infos necessary to use bab_uppdateUserById()
+ * warning, password is not returned, $info['password_md5'] is returned instead
+ *
+ * 'changepwd', 'jpegphoto' are not modifiable
+ *
+ * @param	int		$id_user
+ * @return 	false|array
+ */
+function bab_getUserInfos($id_user) {
+	include_once $GLOBALS['babInstallPath']."utilit/dirincl.php";
+	$directory = getDirEntry($id_user, BAB_DIR_ENTRY_ID_USER, NULL, false);
+	
+	if (!$directory) {
 		return false;
 	}
+	
+	global $babDB;
+	$res = $babDB->db_query('
+	SELECT 
+		disabled, 
+		password password_md5, 
+		changepwd,
+		is_confirmed  
+		
+	FROM '.BAB_USERS_TBL.' WHERE id='.$babDB->quote($id_user));
+	$infos = $babDB->db_fetch_assoc($res);
+	
+	foreach($directory as $field => $arr) {
+		$infos[$field] = $arr['value'];
+	}
+	
+	return $infos;
 }
 
+
+/**
+ * Update a user
+ * @see bab_getUserInfos()
+ * 'changepwd', 'jpegphoto' are not modifiable
+ *
+ * @param	int		$id
+ * @param	array	$info		: Array returned by bab_getUserInfos()
+ * @param	string	&$error
+ * @return 	boolean
+ */
+function bab_uppdateUserById($id, $info, &$error)
+{
+	require_once($GLOBALS['babInstallPath']."utilit/usermodifiyincl.php");
+	bab_userModify::addUser($id, $info, $error);
+}
+
+
+/**
+ * Update a user by nickname
+ */
 function bab_uppdateUserByNickname($nickname, $info, &$error)
 {
-	global $babDB;
-	$res = $babDB->db_query('select id from '.BAB_USERS_TBL.' where nickname=\''.$babDB->db_escape_string($nickname).'\'');
-	if( $res && $babDB->db_num_rows($res) > 0 )
-	{
-		$arr = $babDB->db_fetch_array($res);
-		return bab_uppdateUserById($arr['id'], $info, $error);
-	}
-	else
-	{
+	$id_user = bab_getUserIdByNickname($nickname);
+	if (0 === $id_user) {
 		$error = bab_translate("Unknown user");
 		return false;
 	}
+	return bab_uppdateUserById($id_user, $info, $error);
 }
 
 /**
  * push some content into the debug console
- * @param string|array|object
+ * @param int|string|array|object
  */
 function bab_debug($str)
 {

@@ -481,6 +481,28 @@ function bab_deleteGroup($id)
 	$tree = & new bab_grptree();
 	$tree->remove($id);
 
+	include_once $GLOBALS['babInstallPath']."utilit/eventincl.php";
+	
+	if (!class_exists('bab_eventGroupDeleted')) {
+		class bab_eventGroupDeleted extends bab_events {
+			/**
+			 * @public
+			 */
+			var $id_group;
+			
+			
+			function  bab_eventGroupDeleted($id_group) {
+				$this->id_group = $id_group;
+			}
+		}
+	}
+	
+	$event = new bab_eventGroupDeleted($id);
+	bab_fireEvent($event);
+	
+	/**
+	 * @deprecated
+	 */
 	bab_callAddonsFunction('onGroupDelete', $id);
 }
 

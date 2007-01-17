@@ -41,14 +41,14 @@ include_once $babInstallPath.'utilit/eventincl.php';
  * @since 6.1.1
  * @package events
  */
-class bab_eventWaitingItems extends bab_event {
+class bab_eventBeforeWaitingItemsDisplayed extends bab_event {
 
 	/**
 	 * @public
 	 */
 	var $objects = array();
 	
-	function addObject(&$title,&$arr) {
+	function addObject($title,$arr) {
 		static $i = 0;
 		$key = strtolower(substr($title,0,3));
 		$this->objects[$key.$i] = array(
@@ -622,11 +622,10 @@ function listWaitingAddons()
 			{
 			global $babBody;
 			
-			$event = new bab_eventWaitingItems();
+			$event = new bab_eventBeforeWaitingItemsDisplayed();
 			bab_fireEvent($event);
 			$this->arrObjects = &$event->objects;
-			
-			
+		
 			/**
 			 * @deprecated
 			 * Addons should not use this method since 6.1.1
@@ -1351,10 +1350,10 @@ switch($idx)
 		listWaitingFiles();
 		listWaitingPosts();
 		listWaitingVacations();
-		listWaitingEvents();	
+		listWaitingEvents();
+		listWaitingAddons();		
 		}
-		
-		listWaitingAddons();	
+
 		
 		$babBody->addItemMenu("all", bab_translate("Approbations"), $GLOBALS['babUrlScript']."?tg=approb&idx=all");
 		break;

@@ -271,31 +271,39 @@ bab_dialog.selectgroups = function(action) {
 
 /** 
  * Create a selector from a input field
+ * icon can be set only by the function if there is no classname on the field
  * @since	6.1.1
  *
  * @param	object|string	field
  * @param	string			label
- * @param	function		onclickEvt		
+ * @param	function		onclickEvt
+ * @param	string			[icon]		icon path from the "images" directory of the skin
  */
-bab_dialog.field = function(field, label, onclickEvt) {
+bab_dialog.field = function(field, label, onclickEvt, icon) {
 
 	if (typeof field == 'string') {
 		field = document.getElementById(field);
 	}
 	oldwidth = field.offsetWidth;
 	oldheight = field.offsetHeight;
-	field.type = 'hidden';
+	field.style.display = 'none';
 	
 	contener = document.createElement('div');
-	contener.style.width = oldwidth+'px';
-	contener.style.height = oldheight+'px';
-	contener.style.cursor = 'pointer';
+	
 
 	if ('' == field.className) {
-		contener.style.border = '#000 1px solid';
-		contener.style.background = '#fff';
-		contener.style.color = '#000';
-		contener.className = 'bab_dialog_field';
+	
+		if (null == icon) {
+			icon = 'Puces/reload.png';
+		}
+	
+		contener.style.width 		= oldwidth+'px';
+		contener.style.cursor 		= 'pointer';
+		contener.style.border 		= '#000 1px solid';
+		contener.style.background 	= '#fff url('+bab_getInstallPath()+'skins/ovidentia/images/'+icon+') no-repeat 99% 50%';
+		contener.style.color 		= '#444';
+		contener.style.padding 		= '.3em .6em';
+		
 	} else {
 		contener.className = field.className;
 	}
