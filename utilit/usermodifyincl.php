@@ -22,19 +22,25 @@
  * USA.																	*
 ************************************************************************/
 include_once 'base.php';
+
+/**
+* @internal SEC1 PR 18/01/2007 FULL
+*/
+
 /**
  * This file is included only if a user is added or modified
  * @package users
  */
 class bab_userModify {
 
+
 	/**
 	 * @static
 	 */
-	function addUser($firstname, $lastname, $middlename, $email, $nickname, $password1, $password2, $isconfirmed, &$error, $bgroup) {
+	function testBeforeCreate($firstname, $lastname, $middlename, $email, $nickname, $password1, $password2,  &$error) {
 		
-		global $BAB_HASH_VAR, $babBody, $babLanguage, $babDB;
-
+		global $babDB;
+		
 		if( empty($firstname) )
 			{
 			$error = bab_translate("Firstname is required");
@@ -85,6 +91,21 @@ class bab_userModify {
 			$error = bab_translate("Firstname and Lastname already exists !!");
 			return false;
 			}
+			
+		return true;
+	}
+
+
+	/**
+	 * @static
+	 */
+	function addUser($firstname, $lastname, $middlename, $email, $nickname, $password1, $password2, $isconfirmed, &$error, $bgroup) {
+		
+		global $BAB_HASH_VAR, $babBody, $babLanguage, $babDB;
+
+		if (!bab_userModify::testBeforeCreate($firstname, $lastname, $middlename, $email, $nickname, $password1, $password2, $error)) {
+			return false;
+		}
 	
 		$password1=strtolower($password1);
 		$hash=md5($nickname.$BAB_HASH_VAR);
@@ -96,6 +117,9 @@ class bab_userModify {
 			{
 			$isconfirmed = 0;
 			}
+			
+		$replace = array( " " => "", "-" => "");
+		$hashname = md5(strtolower(strtr($firstname.$middlename.$lastname, $replace)));
 	
 		$sql="insert into ".BAB_USERS_TBL." (nickname, firstname, lastname, hashname, password,email,date,confirm_hash,is_confirmed,changepwd,lang, langfilter, datelog, lastlog) ".
 			"values (

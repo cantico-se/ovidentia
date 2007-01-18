@@ -23,6 +23,9 @@
 ************************************************************************/
 include_once 'base.php';
 
+/**
+* @internal SEC1 PR 18/01/2007 FULL
+*/
 
 /**
  * Returns a string containing the time formatted according to the user's preferences
@@ -594,30 +597,58 @@ function bab_getGroupsMembers($ids)
 		return false;
 	}
 
-function bab_isMemberOfGroup($groupname, $userid="")
+
+/**
+ * Test if the user is member of a group
+ * This function accept a group id since 6.1.1
+ * Before 6.1.1 the function return 0 if the user is not member
+ * After 6.1.1 if the current user is logged out the function can return BAB_ALLUSERS_GROUP or BAB_UNREGISTERED_GROUP or false
+ * @since 	6.1.1
+ * @param	int|string	$group		group id or group name
+ * @return 	false|int				group id or false if the user is not a member
+ */
+function bab_isMemberOfGroup($group, $userid="")
 {
 	global $BAB_SESS_USERID, $babDB;
-	if( !empty($groupname))
-		{
-		if( $userid == "")
-			$userid = $BAB_SESS_USERID;
+	if(empty($group)) {
+		return false;
+	}
+		
+	if( $userid == "")
+		$userid = $BAB_SESS_USERID;
+		
+	if (is_numeric($group)) {
+		$id_group = $group;
+	} else {
 		$req = "select id from ".BAB_GROUPS_TBL." where name='".$babDB->db_escape_string($groupname)."'";
 		$res = $babDB->db_query($req);
 		if( $res && $babDB->db_num_rows($res) > 0)
 			{
 			$arr = $babDB->db_fetch_array($res);
-			$req = "select id from ".BAB_USERS_GROUPS_TBL." where id_object='$userid' and id_group='".$babDB->db_escape_string($arr['id'])."'";
+			$id_group = $arr['id'];
+		} else {
+			return false;	
+		}
+	}
+	
+	switch($id_group) {
+		case BAB_ALLUSERS_GROUP:
+			return BAB_ALLUSERS_GROUP;
+			
+		case BAB_REGISTERED_GROUP:
+			return $userid ? BAB_REGISTERED_GROUP : false;
+			
+		case BAB_UNREGISTERED_GROUP:
+			return $userid ? false : BAB_UNREGISTERED_GROUP;
+			
+		default:
+			$req = "select id from ".BAB_USERS_GROUPS_TBL." where id_object='".$babDB->db_escape_string($userid)."' and id_group='".$babDB->db_escape_string($id_group)."'";
 			$res = $babDB->db_query($req);
 			if( $res && $babDB->db_num_rows($res) > 0)
-				return $arr['id'];
+				return $id_group;
 			else
-				return 0;
-			}
-		else
-			return 0;
-		}
-	else
-		return 0;
+				return false;
+	}
 }
 
 function bab_getUserIdByEmail($email)
@@ -1164,10 +1195,11 @@ function bab_removeGroup($id)
 /**
  * Register a user
  * @param	boolean	$bgroup
+ * @return 	int|false
  */
 function bab_registerUser( $firstname, $lastname, $middlename, $email, $nickname, $password1, $password2, $confirmed, &$error, $bgroup = true)
 {
-	require_once($GLOBALS['babInstallPath']."utilit/usermodifiyincl.php");
+	require_once($GLOBALS['babInstallPath']."utilit/usermodifyincl.php");
 	return bab_userModify::addUser( $firstname, $lastname, $middlename, $email, $nickname, $password1, $password2, $confirmed, $error, $bgroup);
 }
 

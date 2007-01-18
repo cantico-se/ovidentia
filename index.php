@@ -23,6 +23,10 @@
 ************************************************************************/
 include_once "base.php";
 
+/**
+* @internal SEC1 PR 18/01/2007 FULL
+*/
+
 function bab_unset(&$arr)
 {
 	unset($arr['babInstallPath'], $arr['babDBHost'], $arr['babDBLogin'], $arr['babDBPasswd'], $arr['babDBName']);

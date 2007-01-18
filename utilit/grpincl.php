@@ -23,6 +23,10 @@
 ************************************************************************/
 include_once "base.php";
 
+/**
+* @internal SEC1 PR 18/01/2007 FULL
+*/
+
 function browseGroups($cb)
 	{
 	global $babBody;
@@ -61,10 +65,9 @@ function browseGroups($cb)
 			{
 			if (list(,$arr) = each($this->groups))
 				{
-				$this->groupid = $arr['id'];
-				$this->groupname = $arr['name'];
-				$this->jgroupname = str_replace("'", "\'", $this->groupname);
-				$this->jgroupname = str_replace('"', "'+String.fromCharCode(34)+'",$this->jgroupname);
+				$this->groupid = bab_toHtml($arr['id']);
+				$this->groupname = bab_toHtml($arr['name']);
+				$this->jgroupname = bab_toHtml($this->groupname, BAB_HTML_JS);
 				return true;
 				}
 			else
@@ -76,21 +79,19 @@ function browseGroups($cb)
 
 	$temp = new temp($cb);
 
-	include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
-	$GLOBALS['babBodyPopup'] = new babBodyPopup();
-	$GLOBALS['babBodyPopup']->title = bab_translate("Group");
-	$GLOBALS['babBodyPopup']->babecho(bab_printTemplate($temp, "groups.html", "browsegroups"));
-	printBabBodyPopup();
-	die();
+	$babBody->babPopup(bab_printTemplate($temp, "groups.html", "browsegroups"));
 	}
 
-// used in add-ons from v4.08
+// used in add-ons from v4.0.8
 function getGroupsMembers($id_grp)
 	{
-	if (is_array($id_grp))
-		$id_grp = implode(",",$id_grp);
-	$db = $GLOBALS['babDB'];
-	$res = $db->db_query("SELECT u.* FROM ".BAB_USERS_GROUPS_TBL." g, ".BAB_USERS_TBL." u WHERE g.id_group IN (".$id_grp.") AND g.id_object=u.id");
+	if (!is_array($id_grp))
+		$id_grp = array($id_grp);
+	
+	global $babDB;
+	
+	$res = $babDB->db_query("SELECT u.* FROM ".BAB_USERS_GROUPS_TBL." g, ".BAB_USERS_TBL." u WHERE g.id_group IN (".$babDB->quote($id_grp).") AND g.id_object=u.id");
+	
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$i = 0;
@@ -111,17 +112,17 @@ function getGroupsMembers($id_grp)
 function bab_updateGroupInfo($id, $name, $description, $managerid, $grpdg = 0)
 	{
 
-	$db = &$GLOBALS['babDB'];
+	global $babDB;
 
-	$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
+	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 
-	$db->db_query("UPDATE ".BAB_GROUPS_TBL." 
+	$babDB->db_query("UPDATE ".BAB_GROUPS_TBL." 
 			SET 
-				name='".$name."', 
-				description = '".$description."',
-				manager = '".$managerid."'
+				name='".$babDB->db_escape_string($name)."', 
+				description = '".$babDB->db_escape_string($description)."',
+				manager = '".$babDB->db_escape_string($managerid)."'
 			WHERE
-				id='".$id."'
+				id='".$babDB->db_escape_string($id)."'
 			");
 
 	return true;
@@ -135,9 +136,9 @@ function bab_moveGroup($id, $id_parent, $moveoption, $groupname)
 	$tree = & new bab_grptree();
 	$node = $tree->getNodeInfo($id);
 
-	$db = &$GLOBALS['babDB'];
+	global $babDB;
 
-	$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
+	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 
 	switch($id)
 		{
@@ -164,37 +165,37 @@ function bab_moveGroup($id, $id_parent, $moveoption, $groupname)
 function bab_addGroup($name, $description, $managerid, $grpdg, $parent = 1)
 	{
 	
-	global $babBody;
+	global $babBody, $babDB;
+	
 	if( empty($name))
 		{
 		$babBody->msgerror = bab_translate("ERROR: You must provide a name !!");
 		return 0;
 		}
 
-	$db = &$GLOBALS['babDB'];
 
 
-	$req = "select * from ".BAB_GROUPS_TBL." where name='".$db->db_escape_string($name)."' AND id_parent='".$db->db_escape_string($parent)."'";	
-	$res = $db->db_query($req);
-	if( $db->db_num_rows($res) > 0)
+	$req = "select * from ".BAB_GROUPS_TBL." where name='".$babDB->db_escape_string($name)."' AND id_parent='".$babDB->db_escape_string($parent)."'";	
+	$res = $babDB->db_query($req);
+	if( $babDB->db_num_rows($res) > 0)
 		{
 		$babBody->msgerror = bab_translate("This group already exists");
 		return 0;
 		}
 	else
 		{
-		$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
+		$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 		include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
 
 		$tree = & new bab_grptree();
 		$id = $tree->addAlpha($parent, $name);
 		unset($tree);
 
-		$db->db_query("UPDATE ".BAB_GROUPS_TBL." 
+		$babDB->db_query("UPDATE ".BAB_GROUPS_TBL." 
 			SET 
-				name='".$db->db_escape_string($name)."', 
-				description = '".$db->db_escape_string($description)."',
-				manager = '".$db->db_escape_string($managerid)."',
+				name='".$babDB->db_escape_string($name)."', 
+				description = '".$babDB->db_escape_string($description)."',
+				manager = '".$babDB->db_escape_string($managerid)."',
 				nb_set = '0', 	
 				mail = 'N', 
 				ustorage = 'N', 
@@ -203,7 +204,7 @@ function bab_addGroup($name, $description, $managerid, $grpdg, $parent = 1)
 				directory = 'N', 
 				pcalendar = 'N'
 			WHERE
-				id='".$db->db_escape_string($id)."'
+				id='".$babDB->db_escape_string($id)."'
 			");
 
 		bab_callAddonsFunction('onGroupCreate', $id);
@@ -212,24 +213,15 @@ function bab_addGroup($name, $description, $managerid, $grpdg, $parent = 1)
 	}
 
 
-function confirmDeleteAdmGroup($id, $action)
-	{
-	global $babDB;
-
-	if( $id <= 3)
-		return;
-
-	
-	}
 
 
 function getNextAvariableId()
 {
-	$db = &$GLOBALS['babDB'];
+	global $babDB;
 
-	$res = $db->db_query("SELECT id FROM ".BAB_GROUPS_TBL." ORDER BY id");
+	$res = $babDB->db_query("SELECT id FROM ".BAB_GROUPS_TBL." ORDER BY id");
 	$ids = array();
-	while ($arr = $db->db_fetch_assoc($res))
+	while ($arr = $babDB->db_fetch_assoc($res))
 		{
 		$ids[$arr['id']] = 1;
 		}
