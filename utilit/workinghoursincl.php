@@ -587,13 +587,14 @@ class bab_userWorkingHours {
 		static $events = NULL;
 
 		if (NULL === $events) {
-			$events = & $this->getEventsBetween($this->begin->getTimeStamp(), $this->end->getTimeStamp(), $filter);
+			$events = $this->getEventsBetween($this->begin->getTimeStamp(), $this->end->getTimeStamp(), $filter);
 		}
 
 		if (list(,$event) = each($events)) {
 			return $event;
 		}
-		$events = NULL;
+
+		reset($events);
 		return false;
 	}
 
