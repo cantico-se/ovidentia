@@ -369,7 +369,7 @@ function bab_export_tables($tables, $file = false)
 	{
 	include_once $GLOBALS['babInstallPath']."utilit/sqlincl.php";
 
-	$bab_sqlExport = & new bab_sqlExport($tables);
+	$bab_sqlExport =  new bab_sqlExport($tables);
 	$dump = $bab_sqlExport->exportString();
 
 	if (!$file) return $dump;
@@ -480,6 +480,12 @@ function bab_debug_print_backtrace($echo = false)
 				if ($nbParam > 0)
 					$params .= ', ';
 				$spanId = 'peParam_' . $uniqueId . '_' . $i . '_' . $nbParam;
+
+				if(is_object($param))
+				{
+					$param = get_class($param);
+				}
+
 				$params .= '<span title="' . htmlEntities('[' . $param . ']') . '" style="cursor: pointer" onclick="s=document.getElementById(\'' . $spanId . '\'); s.style.display==\'none\'?s.style.display=\'\':s.style.display=\'none\'">[+]</span>'
 						.  '<div style="display: none; background-color: #EEEECC" id="' . $spanId . '">' . htmlEntities('[' . $param_str . ']') . '</div>';
 				$nbParam++;
