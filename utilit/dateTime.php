@@ -41,6 +41,16 @@ class BAB_DateTime
 	var $_aDate		= null;
 	
 	
+	/**
+	 * @param int $iYear
+	 * @param int $iMonth
+	 * @param int $iDay
+	 * @param int $iHours
+	 * @param int $iMinutes
+	 * @param int $iSeconds
+	 * @return BAB_DateTime
+     * @access public
+	 */
 	function BAB_DateTime($iYear, $iMonth, $iDay, $iHours = 0, $iMinutes = 0, $iSeconds = 0)
 	{
 		$this->init($iYear, $iMonth, $iDay, $iHours, $iMinutes, $iSeconds);
@@ -58,6 +68,13 @@ class BAB_DateTime
 		$this->_iSeconds	= $this->_aDate['seconds'];		
 	}
 	
+	/**
+	 * Creates a new BAB_DateTime from a unix timespamp.
+	 *
+	 * @param int $iTimeStamp	A unix timestamp
+	 * @return BAB_DateTime
+     * @access public
+	 */
 	function fromTimeStamp($iTimeStamp)
 	{
 		$aDate = getdate($iTimeStamp);
@@ -66,6 +83,13 @@ class BAB_DateTime
 			$aDate['hours'], $aDate['minutes'], $aDate['seconds']);
 	}
 	
+	/**
+	 * Creates a new BAB_DateTime from an iso-formatted datetime string.
+	 *
+	 * @param string $sIsoDateTime	Iso-formatted datetime string (eg. '2006-12-25 17:35:17')
+	 * @return BAB_DateTime
+     * @access public
+	 */
 	function fromIsoDateTime($sIsoDateTime)
 	{
 		$aDate = getdate(strtotime($sIsoDateTime));
@@ -74,58 +98,108 @@ class BAB_DateTime
 			$aDate['hours'], $aDate['minutes'], $aDate['seconds']);
 	}
 	
+	/**
+	 * Returns a new BAB_DateTime corresponding to the present date and time.
+	 *
+	 * @return BAB_DateTime
+     * @access public
+	 */
 	function now()
 	{
 		return BAB_DateTime::fromIsoDateTime(date("Y-m-d H:i:s"));
 	}
 	
+	/**
+	 * Returns an iso-formatted datetime string (YYYY-MM-DD HH:MM:SS) corresponding to the BAB_DateTime.
+	 *
+	 * @return string
+     * @access public
+	 */
 	function getIsoDateTime()
 	{
 		return date("Y-m-d H:i:s", mktime($this->_iHours, $this->_iMinutes, 
 			$this->_iSeconds, $this->_iMonth, $this->_iDay, $this->_iYear));
 	}
 	
+	/**
+	 * Returns an iso-formatted date string (YYYY-MM-DD) corresponding to the BAB_DateTime.
+	 *
+	 * @return string
+     * @access public
+	 */
 	function getIsoDate()
 	{
 		return date("Y-m-d", mktime($this->_iHours, $this->_iMinutes, 
 			$this->_iSeconds, $this->_iMonth, $this->_iDay, $this->_iYear));
 	}
 	
+	/**
+	 * @return int
+     * @access public
+	 */
 	function getYear()
 	{
 		return $this->_iYear;
 	}
 	
+	/**
+	 * @return int
+     * @access public
+	 */
 	function getMonth()
 	{
 		return $this->_iMonth;
 	}
 	
+	/**
+	 * @return int
+     * @access public
+	 */
 	function getDayOfMonth()
 	{
 		return $this->_aDate['mday'];
 	}
 	
+	/**
+	 * @return int
+     * @access public
+	 */
 	function getDayOfYear()
 	{
 		return $this->_aDate['yday'];
 	}
 
+	/**
+	 * @return int
+     * @access public
+	 */
 	function getDayOfWeek()
 	{
 		return $this->_aDate['wday'];
 	}
 
+	/**
+	 * @return int
+     * @access public
+	 */
 	function getHour() 
 	{
 		return $this->_iHours;
 	}
 
+	/**
+	 * @return int
+     * @access public
+	 */
 	function getMinute() 
 	{
 		return $this->_iMinutes;
 	}
 
+	/**
+	 * @return int
+     * @access public
+	 */
 	function getSecond() 
 	{
 		return $this->_iSeconds;
@@ -134,15 +208,22 @@ class BAB_DateTime
 	/**
 	 * Elapsed time in the current day
 	 * @return int (seconds)
+     * @access public
 	 */
 	function getDayTime()
 	{
 		return $this->_iSeconds + (60*$this->_iMinutes) + (3600*$this->_iHours);
 	}
     
+	/**
+	 * Returns a unix timestamp corresponding to the BAB_DateTime.
+	 *
+	 * @return int
+     * @access public
+	 */
 	function getTimeStamp()  
 	{
-		if(!is_null($this->_aDate) && isset($this->_aDate[0])) {
+		if (!is_null($this->_aDate) && isset($this->_aDate[0])) {
 			return $this->_aDate[0];
 		}
 		return 0;
@@ -205,13 +286,13 @@ class BAB_DateTime
 	/**
      * Compares two dates
      *
-     * Compares two dates.  Suitable for use
-     * in sorting functions.
+     * Compares two dates.  Suitable for use in sorting functions.
      *
      * @access public
      * @param object BAB_DateTime $d1 the first date
      * @param object BAB_DateTime $d2 the second date
      * @return int 0 if the dates are equal, -1 if d1 is before d2, 1 if d1 is after d2
+     * @static
      */
     function compare($d1, $d2)
     {
@@ -230,7 +311,7 @@ class BAB_DateTime
 
     
     /**
-     * Returns number of days between two given dates
+     * Returns the number of days between two given dates
      *
      * @param int    $day1    the day of the month
      * @param int    $month1  the month
@@ -321,7 +402,7 @@ class BAB_DateTime
                 floor((153 * $iMonth + 2) / 5 ) +
                 $iDay + 1721119);
     }
-    
+
     /**
      * Converts from Gregorian Year-Month-Day to ISO Year-WeekNumber-WeekDay
      *
@@ -493,7 +574,8 @@ class BAB_DateTime
     
 
 	/**
-	 * intersection of two periods
+	 * Intersection of two periods
+	 * 
 	 * All attributes must be ISO date OR ISO datetime
 	 * 
 	 * @param	string		$p1_begin
@@ -528,7 +610,9 @@ class BAB_DateTime
 
 
 	/**
-	 * Create a copy
+	 * Creates a copy
+	 * 
+	 * @return BAB_DateTime
 	 */
 	function cloneDate() {
 
