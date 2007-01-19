@@ -193,6 +193,7 @@ class bab_userModify {
 	 * @return 	boolean
 	 */
 	function updateUserById($id, $info, &$error) {
+
 	
 		global $babDB;
 		$res = $babDB->db_query('select u.*, det.mn, det.id as id_entry from '.BAB_USERS_TBL.' u left join '.BAB_DBDIR_ENTRIES_TBL.' det on det.id_user=u.id where u.id=\''.$babDB->db_escape_string($id).'\'');
