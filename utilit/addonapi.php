@@ -1261,17 +1261,17 @@ function bab_getUserInfos($id_user) {
  * @param	string	&$error
  * @return 	boolean
  */
-function bab_uppdateUserById($id, $info, &$error)
+function bab_updateUserById($id, $info, &$error)
 {
-	require_once($GLOBALS['babInstallPath']."utilit/usermodifiyincl.php");
-	bab_userModify::addUser($id, $info, $error);
+	require_once($GLOBALS['babInstallPath']."utilit/usermodifyincl.php");
+	return bab_userModify::updateUserById($id, $info, $error);
 }
 
 
 /**
  * Update a user by nickname
  */
-function bab_uppdateUserByNickname($nickname, $info, &$error)
+function bab_updateUserByNickname($nickname, $info, &$error)
 {
 	$id_user = bab_getUserIdByNickname($nickname);
 	if (0 === $id_user) {

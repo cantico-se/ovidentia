@@ -770,19 +770,12 @@ function getDirEntry($id, $type, $id_directory, $accessCtrl)
 
 		foreach($return[$arr['id_user']] as $name => $field) {
 			
-			 if (isset($arr[$name])) {
-				$return[$arr['id_user']][$name]['value'] = $arr[$name];
-				}
-			 elseif ('jpegphoto' == $name && $arr['photo_data'] > 0) {
-				$return[$arr['id_user']][$name]['value'] = $GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=0&idu=".$arr['id'];
-				}
+		if (isset($arr[$name])) {
+			$return[$arr['id_user']][$name]['value'] = $arr[$name];
 			}
-			
-		if (!$accessCtrl) {
-			$return[$arr['id_user']]['disabled'] = array(
-					'name' 	=> bab_translate('Disabled') , 
-					'value' => 1 == $arr['disabled'] 
-				);
+		elseif ('jpegphoto' == $name && $arr['photo_data'] > 0) {
+			$return[$arr['id_user']][$name]['value'] = $GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=0&idu=".$arr['id'];
+			}
 		}
 	}
 
@@ -797,7 +790,12 @@ function getUserDirectories($accessCtrl = true)
 
 	if (0 == count($return)) {
 		$res = $babDB->db_query("
-			SELECT d.id, d.name, d.description, d.id_group FROM ".BAB_DB_DIRECTORIES_TBL." d 
+			SELECT 
+				d.id, 
+				d.name, 
+				d.description, 
+				d.id_group 
+			FROM ".BAB_DB_DIRECTORIES_TBL." d 
 				LEFT JOIN ".BAB_GROUPS_TBL." g ON g.id=d.id_group AND g.directory='Y' 
 				WHERE (d.id_group='0' OR g.id>'0') ORDER BY name
 			");
