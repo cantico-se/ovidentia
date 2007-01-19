@@ -451,7 +451,7 @@ function bab_logUserActionTime($userId, $sessionId)
 
 /**
  * Delete connection logs for which 'login_time' is prior to $before.
- * @param string before  A datetime.
+ * @param string before  A SQL formatted datetime.
  */
 function bab_deleteConnectionLog($before)
 {
