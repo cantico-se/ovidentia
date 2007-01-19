@@ -95,7 +95,8 @@ function displayStatisticPanel($idx)
 
 			$this->updatetxt = bab_translate('Last update time');
 			$this->updatettime = bab_shortDate(bab_mktime($babBody->babsite['stat_update_time']));
-			$this->exporttxt = bab_translate("Export");
+			// There is no export for statistics baskets.
+			$this->exporttxt = ($idx == 'baskets' ? '' : bab_translate("Export"));
 			$this->current = $idx;
 
 			if( $babBody->currentAdmGroup == 0 )
@@ -283,7 +284,7 @@ class displayTimeIntervalCls
 		$this->submittxt = bab_translate("Ok");
 		$this->fromtxt = bab_translate("From");
 		$this->totxt = bab_translate("to");
-		$this->dateformattxt =bab_translate("dd/mm/yyyy");
+		$this->dateformattxt = bab_translate("dd-mm-yyyy");
 		$this->timeintervaltxt = bab_translate("Time interval");
 		$this->itemarray[STAT_IT_TOTAL] = bab_translate("Total");
 		$this->itemarray[STAT_IT_TODAY] = bab_translate("Today");
@@ -426,28 +427,58 @@ function displayTimeInterval($iwhat, $sd, $ed, $idx, $params)
 
 function displayTimeIntervalInPopup($iwhat, $sd, $ed, $idx, &$body, $idbasket = null)
 {
-//	global $babBody;
-	$temp = new displayTimeIntervalCls($iwhat, $sd, $ed, $idx, array('idbasket' => $idbasket)); //$idbasket);
+	$temp = new displayTimeIntervalCls($iwhat, $sd, $ed, $idx, array('idbasket' => $idbasket));
 	$body->babecho(bab_printTemplate($temp, "stat.html", "timeinterval"));
 }
 
-/* main */
-if( !bab_isAccessValid(BAB_STATSMAN_GROUPS_TBL, 1) && $babBody->currentAdmGroup == 0)
+
+/**
+ * Returns the date in iso format or an empty string if the input date is not valid.
+ * 
+ * @param string $inputDate The date in format 'dd-mm-yyyy'.
+ * @return string The date in iso format 'yyyy-mm-dd' or en empty string.
+ */
+function validateDate($inputDate)
+{
+	$date = preg_split('/[^0-9]+/', $inputDate);
+	if (count($date) == 3 && checkDate($date[1], $date[0], $date[2]))
 	{
+		return $date[2] . '-' . $date[1] . '-' . $date[0];
+	}
+	return '';
+}
+
+
+/* main */
+if (!bab_isAccessValid(BAB_STATSMAN_GROUPS_TBL, 1) && $babBody->currentAdmGroup == 0)
+{
 	$babBody->msgerror = bab_translate("Access denied");
 	return;
-	}
+}
 
-if( !isset($idx)) { $idx = '';}
+$idx = bab_rp('idx', '');
+
+// Start date
+$sd = bab_rp('sd', '');
+$sd = validateDate($sd);
+
+// End date
+$ed = bab_rp('ed', '');
+$ed = validateDate($ed);
+
+
+
 displayStatisticPanel($idx);
 updateStatPreferences();
 
-isset($reqvars) && parse_str($reqvars, $stat_params);
-displayTimeInterval($itwhat, $sd, $ed, $idx, isset($stat_params) ? $stat_params : bab_rp('stat_params', null));
-
-if( isset($reqvars))
+if ($idx != 'connection')
 {
-	parse_str($reqvars);
+	isset($reqvars) && parse_str($reqvars, $stat_params);
+	displayTimeInterval($itwhat, $sd, $ed, $idx, isset($stat_params) ? $stat_params : bab_rp('stat_params', null));
+	if (isset($reqvars))
+	{
+		parse_str($reqvars);
+	}
 }
 
 switch($idx)
@@ -465,6 +496,9 @@ switch($idx)
 		if (!isset($order)) $order = 'asc';
 		if (!isset($pos)) $pos = 0;
 		if (!isset($item)) $item = bab_rp('item');
+		$stat_params = array();
+		if (isset($reqvars)) parse_str($reqvars, $stat_params);
+		displayTimeInterval($itwhat, $sd, $ed, $idx, $stat_params + array('item' => $item));
 		detailConnections($col, $order, $pos, $sd, $ed, $item);
 		break;
 	case "xlink":
@@ -760,6 +794,7 @@ switch($idx)
 		include_once $babInstallPath."utilit/uiutil.php";
 		include_once $babInstallPath."statdashboard.php";
 		$GLOBALS['babBodyPopup'] = new babBodyPopup();
+		$idbasket = bab_rp('idbasket');
 		displayTimeIntervalInPopup($itwhat, $sd, $ed, $idx, $GLOBALS['babBodyPopup'], $idbasket);
 		showBasket($idbasket, $sd, $ed);
 		printBabBodyPopup();

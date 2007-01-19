@@ -1,5 +1,5 @@
 <!--#begin statisticpanel -->
-<table width="95%" border="1" cellspacing="0" cellpadding="2" align="center">
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
 <table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
@@ -37,36 +37,61 @@
 <!--#end statisticpanel -->
 
 <!--#begin timeinterval -->
+
+<script type="text/javascript" src="{ babInstallPath }scripts/bab_dialog.js"></script>
+
 <script type="text/javascript">
 <!--
 function beginJs(day, month, year)
-	{
+{
 	var f = document.forms.statinttime;
-	eval("f.sd.value='"+year+"-"+month+"-"+day+"'");
-	eval("f.sd_disp.value='"+day+"/"+month+"/"+year+"'");
-	}
+	eval("f.sd.value='" + year + "-" + month + "-" + day + "'");
+	eval("f.sd_disp.value='" + day + "/" + month + "/" + year + "'");
+}
+
 function endJs(day, month, year)
-	{
+{
 	var f = document.forms.statinttime;
-	eval("f.ed.value='"+year+"-"+month+"-"+day+"'");
-	eval("f.ed_disp.value='"+day+"/"+month+"/"+year+"'");
-	}
+	eval("f.ed.value='" + year + "-" + month + "-"+day + "'");
+	eval("f.ed_disp.value='" + day + "/" + month + "/" + year + "'");
+}
+
 function wr_mm()
 {
-  if( document.forms.statinttime.itwhat.options[9].selected == true )
-	return;
-  document.forms.statinttime.submit();
+	if (document.forms.statinttime.itwhat.options[9].selected == true)
+		return;
+	document.forms.statinttime.submit();
 }
 
 function FormModules(reqvar)
 {
-  document.forms.statinttime.reqvars.value=reqvar;
-  document.forms.statinttime.submit();
-  document.forms.statinttime.reqvars.value='';
+	document.forms.statinttime.reqvars.value = reqvar;
+	document.forms.statinttime.submit();
+	document.forms.statinttime.reqvars.value = '';
 }
 
+function setStartDateValue(date)
+{
+	var form = document.forms.statinttime;
+	form['sd'].value =  date['day'] + '-' + date['month'] + '-' + date['year'];
+	setIntervalToOther();
+}
+
+function setEndDateValue(date)
+{
+	var form = document.forms.statinttime;
+	form['ed'].value =  date['day'] + '-' + date['month'] + '-' + date['year'];
+	setIntervalToOther();
+}
+
+function setIntervalToOther()
+{
+	var form = document.forms.statinttime;
+	form['itwhat'].value = 9;
+}
 //-->
 </script>
+
 <form name="statinttime" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="stat" />
 <input type="hidden" name="idx" value="{ idx }" />
@@ -75,24 +100,30 @@ function FormModules(reqvar)
 <input type="hidden" name="{ param_name }" value="{ param_value }" />
 <!--#endin getNextHiddenParameter -->
 
-<!--#if idbasket  -->
-<input type="hidden" name="idbasket" value="{ idbasket }" />
-<!--#endif idbasket  -->
 
 <!--#if showform -->
-<table width="95%" border="1" cellspacing="0" cellpadding="2" align="center">
+<table width="95%" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
 <table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr class="BabSiteAdminFontBackground">
-<td>{ timeintervaltxt }&nbsp;&nbsp;
-<select name="itwhat" onchange="wr_mm()">
-<!--#in getnextitime -->
-<option value="{ itval }" { selected }>{ itvaltxt }</option>
-<!--#endin getnextitime -->
-</select>
-&nbsp;&nbsp;<a class="BabAlphabetLink" href="javascript: Start('{ begin_url }','CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ fromtxt }</a>&nbsp;({ dateformattxt })&nbsp;<input type="text" name="sd_disp" value="{ sd_disp }" size="11" disabled><input type="hidden" name="sd" value="{ sd }">
-&nbsp;&nbsp;<a class="BabAlphabetLink" href="javascript: Start('{ end_url }','CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ totxt }</a>&nbsp;({ dateformattxt })&nbsp;<input type="text" name="ed_disp" value="{ ed_disp }" size="11" disabled><input type="hidden" name="ed" value="{ ed }">&nbsp;&nbsp;<input type="submit" value="{ submittxt }">
+<tr class="BabLoginMenuBackground">
+<td>
+<label for="itwhat">{ timeintervaltxt }
+ <select id="itwhat" name="itwhat" onchange="wr_mm()">
+ <!--#in getnextitime -->
+  <option value="{ itval }" { selected }>{ itvaltxt }</option>
+ <!--#endin getnextitime -->
+ </select>
+</label>
+<label for="sd" style="margin-left: 1em">{ fromtxt }
+ <input onchange="setIntervalToOther();" title="{ dateformattxt }" type="text" size="11" id="sd" name="sd" value="{ sd_disp }" style="text-align: right" />
+ <img src="{ babSkinPath }images/Puces/PuceNewEvent.png" onclick="bab_dialog.selectdate(setStartDateValue);" alt="" style="cursor: pointer; vertical-align: middle" />
+</label>
+<label for="ed" style="margin-left: 1em">{ totxt }
+ <input onchange="setIntervalToOther();" title="{ dateformattxt }" type="text" size="11" id="ed" name="ed" value="{ ed_disp }" style="text-align: right" />
+ <img src="{ babSkinPath }images/Puces/PuceNewEvent.png" onclick="bab_dialog.selectdate(setEndDateValue);" alt="" style="cursor: pointer; vertical-align: middle" />
+</label>
+<input type="submit" value="{ submittxt }" style="margin-left: 2em">
 </td>
 </tr>
 </table>
