@@ -151,7 +151,7 @@ function summaryConnections($col, $order, $pos, $startday, $endday)
 			$this->user_name = $this->arrinfo[$i]['user'];
 			$this->nb_connections = $this->arrinfo[$i]['connections'];
 			$this->nb_connectionspc = $this->totalconnections > 0 ? round(($this->nb_connections * 100) / $this->totalconnections, 2) : 0;
-			$this->urldetail = $GLOBALS['babUrlScript'] . '?tg=stat&idx=connection&item=' . $this->arrinfo[$i]['id_user'] . '&sd=' . $this->startday . '&ed=' . $this->endday;
+			$this->urldetail = $GLOBALS['babUrlScript'] . '?tg=stat&idx=connection&item=' . $this->arrinfo[$i]['id_user'] . '&sd=' . $this->startday . '&ed=' . $this->endday . '&reqvars=item=' . $this->arrinfo[$i]['id_user'];
 			$i++;
 			return true;
 		}
