@@ -42,7 +42,7 @@ function cleanStatsTables()
 			{
 			$this->message = bab_translate("Are you sure you want to clean statistics logs");
 			$this->title = '';
-			$this->warning = bab_translate("WARNING: This operation will delete all statistics records"). "!";
+			$this->warning = bab_translate("WARNING: This operation will delete all statistics records!");
 			$this->urlyes = $GLOBALS['babUrlScript']."?tg=admstats&idx=delete&action=yes";
 			$this->yes = bab_translate("Yes");
 			$this->urlno = $GLOBALS['babUrlScript']."?tg=admstats&idx=man";
