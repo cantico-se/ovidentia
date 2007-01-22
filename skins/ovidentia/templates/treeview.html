@@ -9,7 +9,7 @@
 		<!--#if t_levelVariation "== 0" --></li><!--#endif t_levelVariation -->
 		<!--#if t_levelVariation ">= -1" -->
 		<li id="li{ t_id }" class="bab_ul_tree_leaf">
-		<div class="line">
+		<div class="line" <!--#if t_highlighted -->style="background-color: #EEEEEE"<!--#endif t_highlighted --> >
 			<img class="bullet" src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="20" height="16" alt="" />
 			<!--#if t_nodeIcon --><img src="{ t_nodeIcon }" alt="" /> <!--#else t_nodeIcon --><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" /> <!--#endif t_nodeIcon -->
 			<!--#if t_link  -->
