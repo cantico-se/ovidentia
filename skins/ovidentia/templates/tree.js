@@ -244,12 +244,16 @@ bab_Tree.prototype.nodeLineHoverClass = 'line hover';
 
 function bab_onItemMouseOver()
 {
-	this.className = bab_Tree.prototype.nodeLineHoverClass;
+	try {
+		this.className = bab_Tree.prototype.nodeLineHoverClass;
+	} catch(e) {}
 }
 
 function bab_onItemMouseOut()
 {
-	this.className = bab_Tree.prototype.nodeLineClass;
+	try {
+		this.className = bab_Tree.prototype.nodeLineClass;
+	} catch(e) {}
 }
 
 function bab_onNodeClick()
