@@ -1540,6 +1540,10 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					{
 					// un seul annuaire
 					$row = $babDB->db_fetch_array($babDB->db_query("SELECT * FROM ".BAB_DB_DIRECTORIES_TBL." WHERE id=".$babDB->quote($id_directory).""));
+					
+					if (BAB_REGISTERED_GROUP === (int) $row['id_group']) {
+						$registered_directory = 1;
+					}
 
 					$rescol = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($row['id_group'] != 0? 0: $row['id'])."' and ordering!='0' order by ordering asc");
 					while( $row3 = $babDB->db_fetch_array($rescol))
@@ -1576,11 +1580,12 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 						if (0 === strpos($dirselect, 'babdirf'))
 							{
 							// champ supplémentaire
-							$crit_fields_add[] = "t.id_fieldx = '".substr($dirselect,7)."' AND t.field_value LIKE '%".$dirfield."%'";
+							$crit_fields_add[] = "t.id_fieldx = '".$babDB->db_escape_string(substr($dirselect,7))."' AND t.field_value LIKE '%".$babDB->db_escape_like($dirfield)."%'";
 							}
 						else
 							{
-							$crit_fields_reg[] = "e.".$dirselect." LIKE '%".$dirfield."%'";//finder($dirfield, 'e.'.$dirselect);
+							$crit_fields_reg[] = "e.".$babDB->db_escape_string($dirselect)." LIKE '%".$babDB->db_escape_like($dirfield)."%'";
+							//finder($dirfield, 'e.'.$dirselect);
 							}
 						}
 					}
@@ -1670,6 +1675,10 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					{
 					$db_arr_dir = '';
 					}
+					
+					
+				// $registered_directory
+				
 
 				$req = "SELECT 
 					e.id 
@@ -1677,7 +1686,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				LEFT JOIN 
 						".BAB_DBDIR_ENTRIES_EXTRA_TBL." t 
 						ON t.id_entry = e.id";
-				if( count($arr_grp) && in_array(BAB_REGISTERED_GROUP, $arr_grp) && ( empty($id_directory) || BAB_REGISTERED_GROUP == $chosen_dir['id']))
+				if( count($arr_grp) && in_array(BAB_REGISTERED_GROUP, $arr_grp) && ( empty($id_directory) || isset($registered_directory)))
 					{
 					$req .= " LEFT JOIN ".BAB_USERS_TBL." dis ON dis.id = e.id_user AND dis.disabled='0' ";
 					}
