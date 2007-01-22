@@ -289,11 +289,9 @@ document.forms[fmname].updstep02.value = cmd;
 <!--#end modarticlechoicestep -->
 
 
-<!--#begin topictree -->
-<script type="text/javascript" src="{ babScriptPath }ul_tree.js"></script>
-<script type="text/javascript">
+<!--#begin topictreeform -->
 
-var timeoutId;
+<script type="text/javascript">
 
 function selectTopic(topicId)
 {
@@ -301,30 +299,8 @@ function selectTopic(topicId)
 	document.getElementById('step0form').submit();
 }
 
-function searchTree(textInput)
-{
-	if (textInput.value.length >= 2)
-		nbMatches = tree.searchItem(textInput.value);
-	else
-		nbMatches = tree.searchItem('');
-	if (nbMatches == 0 && textInput.value.length >= 2)
-	{
-		textInput.style.backgroundColor = 'red';
-		textInput.style.color = 'white';
-	}
-	else if (nbMatches == 1)
-	{
-		textInput.style.backgroundColor = 'lightgreen';
-		textInput.style.color = '';
-	}
-	else
-	{
-		textInput.style.backgroundColor = '';
-		textInput.style.color = '';
-	}
-}
-
 </script>
+
 <form id="step0form" name="step0form" method="post" action="{ babPhpSelf }">
  <input type="hidden" name="tg" value="artedit">
  <input type="hidden" name="idx" value="{ next_idx }">
@@ -340,55 +316,11 @@ function searchTree(textInput)
  <input id="topicid" type="hidden" name="topicid" value="">
 </form>
 
-<div id="bab_groups_tree" class="BabLoginCadreBackground">
-  <p class="BabSiteAdminTitleFontBackground">
-	<a href="javascript:tree.expand();" class="expand">{ t_expand_all }</a>
-	<a href="javascript:tree.collapse();" class="collapse">{ t_collapse_all }</a>
-<img style="vertical-align: middle; margin-right: 4px" src="{ babSkinPath }images/Puces/search.gif"><input id="theme_search" type="text" onkeyup="window.clearTimeout(timeoutId); timeoutId = window.setTimeout('searchTree(document.getElementById(\'theme_search\'));', 200);">
-  </p>
+<!--#if t_no_topic -->
+<p style="padding-left: 20px"><a href="javascript:selectTopic('');">{ t_no_topic }</a></p>
+<!--#endif t_no_topic -->
 
-
-	<div class="tree">
-	<!--#if t_no_topic -->
-	<p style="padding-left: 20px"><a href="javascript:selectTopic('');">{ t_no_topic }</a></p>
-	<!--#endif t_no_topic -->
-	<!--#in getNextNode -->
-	  <!--#if levelVariation "== 1" -->
-	  <ul>
-	  <!--#endif levelVariation -->
-	  <!--#if levelVariation "<= -1" -->
-	  </li>
-	  </ul>
-	  <!--#endif levelVariation -->
-	  <!--#if levelVariation "== 0" -->
-	  </li>
-	  <!--#endif levelVariation -->
-	  <!--#if levelVariation ">= -1" -->
-	    <li id="{ node_id }">
-	      <div title="{ data_description }">
-		    <!--#if data[type] "== category" -->
-	        <img src="{ babSkinPath }images/Puces/category.gif" />
-			<b id="content{ node_id }">{ data_title }</b>
-			<!--#endif data[type] -->
-		    <!--#if data[type] "== topic" -->
-	        <img src="{ babSkinPath }images/Puces/topic.gif" />
-			<a id="content{ node_id }" href="javascript:selectTopic({ data_topic_id });">{ data_title }</a>
-			<!--#endif data[type] -->
-	      </div>
-	  <!--#endif levelVariation -->
-	<!--#endin getNextNode -->
-	</div>
-</div>
-
-<script type="text/javascript">
-<!--
-var tree = new bab_ul_tree('bab_groups_tree');
-tree.processList();
-if (!tree.highlightItem('{ selectedNodeId }'))
-	tree.expand();
--->
-</script>
-<!--#end topictree -->
+<!--#end topictreeform -->
 
 
 <!--#begin editarticlestep -->
