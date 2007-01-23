@@ -519,7 +519,7 @@ function aclGetAccessUsers($table, $id_object) {
 	
 	$res = $babDB->db_query('SELECT id_group FROM '.$srcTable.' WHERE id_object='.$babDB->quote($srcIdObject));
 	while ($arr = $babDB->db_fetch_assoc($res)) {
-		$babDB->db_query('INSERT INTO ' . $trgTable . ' (`id` , `id_object` , `id_group`) VALUES (\'\', ' . $babDB->quote($srcIdObject) . ', ' . $babDB->quote($arr['id_group']) . ')');
+		$babDB->db_query('INSERT INTO ' . $trgTable . ' (`id` , `id_object` , `id_group`) VALUES (\'\', ' . $babDB->quote($trgIdObject) . ', ' . $babDB->quote($arr['id_group']) . ')');
 	}
 	
 	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
