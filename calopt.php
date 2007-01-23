@@ -137,8 +137,8 @@ function addAccessUsers( $userids, $params)
 		
 	$req = "
 		SELECT u.id, a.id_user inserted FROM ".BAB_USERS_TBL." u 
-			LEFT JOIN ".BAB_CALACCESS_USERS_TBL." a ON a.id_user=u.id 
-			WHERE u.id IN(".$babDB->quote($userids).") 
+			LEFT JOIN ".BAB_CALACCESS_USERS_TBL." a ON a.id_user=u.id and a.id_cal='".$babDB->db_escape_string($params['calid'])."' 
+			WHERE u.id IN(".$babDB->quote($userids).") and u.disabled='0' 
 		";
 
 	$res = $babDB->db_query($req);
