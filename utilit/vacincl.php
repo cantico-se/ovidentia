@@ -2539,31 +2539,43 @@ function bab_vac_getFreeDaysBetween($id_user, $begin, $end) {
 
 	include_once $GLOBALS['babInstallPath']."utilit/workinghoursincl.php";
 	
+	$whours = array();
+
 	for ($i = $begin; $i <= $end ; $i = mktime(0, 0, 0, date("m",$i) , date("d",$i) + 1, date("Y",$i)) )
 		{
-		$arr = bab_getWHours($id_user, date('w',$i ));
-		$am = false;
-		$pm = false;
-		foreach($arr as $wh_period) {
-			if ($wh_period['startHour'] < '12:00:00') {
-				$am = true;
-			}
-
-			if ($wh_period['endHour'] > '12:00:00') {
-				$pm = true;
-			}
-		}
-
-		if (!$am) {
-			$calcul -= 0.5;
-		}
-
-		if (!$pm) {
-			$calcul -= 0.5;
-		}
 
 		if (isset($nonWorkingDays[date('Y-m-d',$i )])) {
 			$calcul--;
+		}
+		else
+		{
+			$day = date('w',$i );
+
+			if( !isset($whours[$day]))
+			{
+				$whours[$day] = bab_getWHours($id_user, $day);
+			}
+
+			$arr = $whours[$day];
+			$am = false;
+			$pm = false;
+			foreach($arr as $wh_period) {
+				if ($wh_period['startHour'] < '12:00:00') {
+					$am = true;
+				}
+
+				if ($wh_period['endHour'] > '12:00:00') {
+					$pm = true;
+				}
+			}
+
+			if (!$am) {
+				$calcul -= 0.5;
+			}
+
+			if (!$pm) {
+				$calcul -= 0.5;
+			}
 		}
 	}
 
