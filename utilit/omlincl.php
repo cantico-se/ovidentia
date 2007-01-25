@@ -4259,7 +4259,7 @@ class bab_IfUserMemberOfGroups extends bab_handler
 				{
 				include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
 				$rr = $groupid;
-				$tree = & new bab_grptree();
+				$tree = new bab_grptree();
 				for( $k=0; $k < count($rr); $k++ )
 					{
 					$groups = $tree->getChilds($rr[$k]);
@@ -4691,7 +4691,8 @@ function babOvTemplate($args = array())
 		{
 		$this->gctx->push("babUserName", 0);
 		}
-	$this->gctx->push("babCurrentDate", mktime());
+//	$this->gctx->push("babCurrentDate", mktime());
+	$this->gctx->push("babCurrentDate", time());
 
 	foreach($args as $variable => $contents)
 		{
@@ -4848,7 +4849,7 @@ function handle_tag( $handler, $txt, $args, $fprint = 'printout' )
 			{
 			$this->curctx->push($key, $val);
 			}
-		$cls =& new $handler($this);
+		$cls = new $handler($this);
 		if( $fprint == 'object' )
 			{
 			return $cls;
