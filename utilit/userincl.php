@@ -802,7 +802,7 @@ function bab_removeUserFromGroup($iduser, $idgroup)
 
 function bab_addUser( $firstname, $lastname, $middlename, $email, $nickname, $password1, $password2, $isconfirmed, &$error, $bgroup = true)
 	{
-	require_once($GLOBALS['babInstallPath']."utilit/usermodifiyincl.php");
+	require_once($GLOBALS['babInstallPath']."utilit/usermodifyincl.php");
 	return bab_userModify::addUser( $firstname, $lastname, $middlename, $email, $nickname, $password1, $password2, $isconfirmed, $error, $bgroup);
 	}
 
