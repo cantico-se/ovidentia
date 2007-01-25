@@ -71,7 +71,7 @@ class bab_ovmlAPI
 
 	function bab_ovmlAPI($args = array())
 	{
-		$this->_ovmlEngine =& new babOvTemplate($args);
+		$this->_ovmlEngine = new babOvTemplate($args);
 	}
 
 	/**
