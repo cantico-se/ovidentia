@@ -36,7 +36,10 @@ function deleteFile($idf, $name, $path)
 		$res = $babDB->db_query("select * from ".BAB_FM_FILESVER_TBL." where id_file='".$babDB->db_escape_string($idf)."'");
 		while($arr = $babDB->db_fetch_array($res))
 			{
-			unlink($path.BAB_FVERSION_FOLDER."/".$arr['ver_major'].",".$arr['ver_minor'].",".$name);
+			if( file_exists($path.BAB_FVERSION_FOLDER."/".$arr['ver_major'].",".$arr['ver_minor'].",".$name))
+				{
+				unlink($path.BAB_FVERSION_FOLDER."/".$arr['ver_major'].",".$arr['ver_minor'].",".$name);
+				}
 			}
 		}
 	$babDB->db_query("delete from ".BAB_FM_FILESVER_TBL." where id_file='".$babDB->db_escape_string($idf)."'");
@@ -927,6 +930,20 @@ function addFile($id, $gr, $path, $description, $keywords)
 function createDirectory($dirname, $id, $gr, $path)
 	{
 	global $babBody, $BAB_SESS_USERID;
+
+	if( empty($dirname))
+		{
+		$babBody->msgerror = bab_translate("Please give a valid directory name");
+		return false;
+		}
+
+	$dirname = trim($dirname);
+
+	if( false !== strstr($dirname, '..'))
+		{
+		$babBody->msgerror = bab_translate("Access denied");
+		return false;
+		}
 	
 	$bOk = false;
 	switch($gr)
@@ -953,13 +970,6 @@ function createDirectory($dirname, $id, $gr, $path)
 		return false;
 		}
 
-	if( empty($dirname))
-		{
-		$babBody->msgerror = bab_translate("Please give a valid directory name");
-		return false;
-		}
-
-	$dirname = trim($dirname);
 
 
 	if( isset($GLOBALS['babFileNameTranslation']))
@@ -987,6 +997,12 @@ function renameDirectory($dirname, $id, $gr, $path)
 	if( empty($dirname))
 		{
 		$babBody->msgerror = bab_translate("Please give a valid directory name");
+		return false;
+		}
+
+	if( false !== strstr($dirname, '..'))
+		{
+		$babBody->msgerror = bab_translate("Access denied");
 		return false;
 		}
 
@@ -1731,12 +1747,9 @@ function deleteFiles($items, $gr, $id)
 			$arr = $babDB->db_fetch_array($res);
 			if( file_exists($pathx.$arr['path']."/".$arr['name']))
 				{
-				if( unlink($pathx.$arr['path']."/".$arr['name']))
-					{
-					deleteFile($items[$i], $arr['name'], $pathx.$arr['path']."/");
-					}
-
+				unlink($pathx.$arr['path']."/".$arr['name']))
 				}
+			deleteFile($items[$i], $arr['name'], $pathx.$arr['path']."/");
 			}
 		}
 	}
@@ -1785,13 +1798,11 @@ if((!isset($babBody->aclfm['id']) || count($babBody->aclfm['id']) == 0) && !$bab
 }
 
 
-if( strstr($path, ".."))
+if( false !== strstr($path, '..'))
 	{
 	$babBody->msgerror = bab_translate("Access denied");
 	return;
 	}
-
-
 
 if( !empty($BAB_SESS_USERID) && $babBody->ustorage)
 	{

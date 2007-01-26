@@ -1468,7 +1468,7 @@ function bab_getFileContentDisposition() {
 function bab_printOvmlTemplate( $file, $args=array())
 	{
 	global $babInstallPath, $babSkinPath, $babOvmlPath;
-	if( strstr($file, "..") || strtolower(substr($file, 0, 4)) == 'http' )
+	if( (false !== strstr($file, "..")) || strtolower(substr($file, 0, 4)) == 'http' )
 		return "<!-- ERROR filename: ".$file." -->";
 
 	$filepath = $babOvmlPath.$file;

@@ -21,6 +21,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
+/**
+* @internal SEC1 NA 26/01/2007 FULL
+*/
 include_once 'base.php';
 include_once $babInstallPath.'utilit/tempfile.php';
 include_once $babInstallPath.'utilit/imgincl.php';
@@ -414,13 +417,51 @@ function rename_popup($old_name,$path)
 
 
 
-$msgerror = "";
+$msgerror = '';
 function saveImage($file, $size, $tmpfile, $share,$path="")
 	{
 	global $babDB;
-	if ($path != "") $path.="/";
-	$nf = "";
-	if( !strstr($file, '..') && is_uploaded_file($tmpfile))
+	$nf = '';
+	$bOk = true;
+
+	if( false !== strstr($path, '..') || false !== strstr($file, '..'))
+		{
+		$bOk = false;
+		}
+
+	if ($ext = strrchr($file,"."))
+		{
+		$ext = strtolower(substr($ext,1));
+		switch($ext)
+			{
+			case 'jpg':
+			case 'jpeg':
+			case 'png':
+			case 'gif':
+				break;
+			default:
+				$bOk = false;
+				break;
+			}
+		}
+	else
+		{
+		$bOk = false;
+		}
+
+	if( !$bOk )
+		{
+		$GLOBALS['msgerror'] = bab_translate("Cannot upload file");
+		return $nf;
+		}
+
+	
+	if ($path != "") 
+		{
+		$path.="/";
+		}
+
+	if( is_uploaded_file($tmpfile) )
 		{
 		$tf = new babTempFiles(BAB_IUD_TMP, BAB_FILE_TIMEOUT);
 		if( !empty($share) && $share == 'Y' && bab_isUserAdministrator())
@@ -453,6 +494,12 @@ function saveImage($file, $size, $tmpfile, $share,$path="")
 function delImage($com, $f)
 	{
 	global $babDB;
+
+	if( false !== strstr($f, '..'))
+		{
+		return;
+		}
+
 	switch($com)
 		{
 		case 1:
@@ -485,18 +532,25 @@ function deldir($dir){
 
 
 /* main */
-if( !isset($idx))
-	$idx = "list";
+$idx = bab_rp('idx', 'list');
+$editor = bab_rp('editor', 'none');
+$path = bab_rp('path', '');
 
-if( !isset($editor))
-	$editor = "none";
-
-if( isset($addf) && $addf == "add")
+if( false !== strstr($path, '..'))
 	{
-	saveImage($_FILES['uploadf']['name'], $_FILES['uploadf']['size'],$_FILES['uploadf']['tmp_name'], $share,$path);
+	$path = '';
 	}
 
-if ( isset($directory) && $directory != "" && bab_isUserAdministrator() )
+
+if( '' != ($addf = bab_pp('addf')))
+{
+if( $addf == 'add')
+	{
+	saveImage($_FILES['uploadf']['name'], $_FILES['uploadf']['size'],$_FILES['uploadf']['tmp_name'], bab_pp('share'),bab_pp('path'));
+	}
+}
+
+if ( '' != ($directory = bab_pp('directory')) && bab_isUserAdministrator() )
 	{
 	if ( substr($path, -1) != "/" ) $p = $path."/";
 	else $p = $path;
@@ -506,7 +560,17 @@ if ( isset($directory) && $directory != "" && bab_isUserAdministrator() )
 		$GLOBALS['msgerror'] = bab_translate("A folder with the same name already exists");
 	}
 
-if ( isset($old_name) && $old_name != "" && isset($new_name) && $new_name != "" && $old_name!=$new_name && bab_isUserAdministrator() )
+$old_name = bab_rp('old_name', '');
+$new_name = bab_rp('new_name', '');
+if( false !== strstr($old_name, '..'))
+	{
+	$old_name = '';
+	}
+if( false !== strstr($new_name, '..'))
+	{
+	$new_name = '';
+	}
+if ( $old_name != '' && $new_name != '' && $old_name!=$new_name && bab_isUserAdministrator() )
 	{
 	if ( substr($path, -1) != "/" ) $p = $path."/";
 	else $p = $path;
@@ -529,31 +593,43 @@ if ( isset($old_name) && $old_name != "" && isset($new_name) && $new_name != "" 
 if (!isset($GLOBALS['msgerror']))
 	$GLOBALS['msgerror'] = '';
 
-if (!isset($path))
-	$path = '';
 
 switch($idx)
 	{
-	case "get":
-		$w = '';
-		if (empty($h)) $h = 50;
-		getResizedImage($f, $w, $h, $com);
+	case 'get':
+		$w = bab_gp('w');
+		$h = bab_gp('h', 50);
+		getResizedImage(bab_gp('f'), $w, $h, bab_gp('com'));
 		break;
-	case "rename_popup":
-		rename_popup($old_name,$path);
+	case 'rename_popup':
+		rename_popup(bab_gp('old_name'),bab_gp('path'));
 		break;
-	case "deltree":
-		if ($path != "" && bab_isUserAdministrator() ) deldir(BAB_IUD_COMMON.$path);
+	case 'deltree':
+		if ($path != '' && bab_isUserAdministrator() ) 
+		{
+			deldir(BAB_IUD_COMMON.$path);
+		}
 		$path = substr( $path,0, strpos($path,"/") );
-	case "del":
-		if ($com != 0 ) $p = $path;
-		else $p = "";
-		if (isset($f)) delImage($com, $p.$f);
+	case 'del':
+		$com = bab_gp('com', 0);
+		if ($com != 0 ) 
+			{
+			$p = $path;
+			}
+		else 
+			{
+			$p = '';
+			}
+		$f = bab_gp('f');
+		if (!empty($f)) 
+			{
+			delImage($com, $p.$f);
+			}
 		/* no break */
-	case "iframe";
+	case 'iframe';
 		iframe($editor,$path);
 		break;
-	case "list":
+	case 'list':
 	default:
 		listImages($editor,$path);
 		break;
