@@ -290,7 +290,7 @@
 <string id="ERROR: You must complete all required fields !!">ERREUR : vous devez renseigner tous les champs obligatoires !</string>
 <string id="ERROR: You must provide a FAQ !!">ERREUR : vous devez donnez une FAQ !</string>
 <string id="ERROR: You must provide a FAQ name !!">ERREUR : vous devez donner un intitulé à la FAQ !</string>
-<string id="ERROR: You must provide a category !!">ERREUR : vous devez donner une catégorie valide !</string>
+<string id="ERROR: You must provide a topic name !!">ERREUR : vous devez donner un nom au thème !</string>
 <string id="ERROR: You must provide a content for your message">ERREUR : vous devez saisir un contenu dans votre message</string>
 <string id="ERROR: You must provide a file name">ERREUR : vous devez fournir un nom de fichier</string>
 <string id="ERROR: You must provide a first name">ERREUR : vous devez donner un nom</string>

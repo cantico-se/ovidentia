@@ -587,7 +587,7 @@ function saveCategory($category, $description, $cat, $sacom, $saart, $saupd, $bn
 	global $babBody, $babDB;
 	if( empty($category))
 		{
-		$babBody->msgerror = bab_translate("ERROR: You must provide a category !!");
+		$babBody->msgerror = bab_translate("ERROR: You must provide a topic name !!");
 		return false;
 		}
 

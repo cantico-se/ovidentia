@@ -805,7 +805,7 @@ function updateCategory($id, $category, $description, $cat, $saart, $sacom, $sau
 	global $babBody;
 	if( empty($category))
 		{
-		$babBody->msgerror = bab_translate("ERROR: You must provide a category !!");
+		$babBody->msgerror = bab_translate("ERROR: You must provide a topic name !!");
 		return false;
 		}
 
