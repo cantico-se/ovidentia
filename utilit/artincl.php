@@ -298,13 +298,6 @@ function notifyArticleHomePage($top, $title, $homepage0, $homepage1)
 	if( $mail == false )
 		return;
 
-	$sql = "select email, firstname, lastname from ".BAB_USERS_TBL." ut LEFT JOIN ".BAB_USERS_GROUPS_TBL." ugt on ut.id=ugt.id_object where id_group='3'";
-	$result=$babDB->db_query($sql);
-	while( $arr = $babDB->db_fetch_array($result))
-		{
-		$mail->mailBcc($arr['email'], bab_composeUserName($arr['firstname'] , $arr['lastname']));
-		}
-
 	$mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
 	$mail->mailSubject(bab_translate("New article for home page"));
 
@@ -315,7 +308,35 @@ function notifyArticleHomePage($top, $title, $homepage0, $homepage1)
 	$message = bab_printTemplate($tempa,"mailinfo.html", "articlehomepagetxt");
 	$mail->mailAltBody($message);
 
-	$mail->send();
+
+	include_once $GLOBALS['babInstallPath'].'admin/acl.php';
+	$arrusers = aclGetAccessUsers(BAB_SITES_HPMAN_GROUPS_TBL, $babBody->babsite['id']);
+			
+	if( $arrusers )
+		{
+		$count = 0;
+		while(list(,$arr) = each($arrusers))
+			{
+			$mail->mailBcc($arr['email'], $arr['name']);
+			$count++;
+
+			if( $count > 25 )
+				{
+				$mail->send();
+				$mail->clearBcc();
+				$mail->clearTo();
+				$count = 0;
+				}
+			}
+
+		if( $count > 0 )
+			{
+			$mail->send();
+			$mail->clearBcc();
+			$mail->clearTo();
+			$count = 0;
+			}
+		}	
 	}
 
 
