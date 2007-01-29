@@ -1747,7 +1747,7 @@ function deleteFiles($items, $gr, $id)
 			$arr = $babDB->db_fetch_array($res);
 			if( file_exists($pathx.$arr['path']."/".$arr['name']))
 				{
-				unlink($pathx.$arr['path']."/".$arr['name']))
+				unlink($pathx.$arr['path']."/".$arr['name']);
 				}
 			deleteFile($items[$i], $arr['name'], $pathx.$arr['path']."/");
 			}
