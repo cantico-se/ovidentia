@@ -667,9 +667,9 @@ function processTemplate(&$class, $str)
 			$args = array();
 			if( ($cnt = count($param)) > 1 )
 				{
-					for( $i=1; $i < $cnt; $i++)
+					for( $w=1; $w < $cnt; $w++)
 					{
-						$tmp = explode('=', $param[$i]);
+						$tmp = explode('=', $param[$w]);
 						if( is_array($tmp) && count($tmp) == 2 )
 							{
 							$var = trim($tmp[1], '"');
