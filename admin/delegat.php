@@ -298,6 +298,7 @@ function deleteDelegatGroup($id)
 			$this->t_set_to_admin = bab_translate("Attach objects to all site");
 
 			$this->t_confirm = bab_translate("Confirm");
+			$this->id = $id;
 			}
 		}
 
@@ -441,81 +442,100 @@ function deleteDelegatMembers()
 function confirmDeleteDelegatGroup($id)
 {
 	global $babDB;
+
+	$idsafe = $babDB->db_escape_string($id);
 	
 	if( 0 == $_POST['doaction'] )
 		{
 		include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
-		$res = $babDB->db_query("select id from ".BAB_SECTIONS_TBL." where id_dgowner='".$id."'");
+		include_once $GLOBALS['babInstallPath']."utilit/calincl.php";
+		$res = $babDB->db_query("select id from ".BAB_SECTIONS_TBL." where id_dgowner='".$idsafe."'");
 		while($arr = $babDB->db_fetch_array($res))
 			{
 			bab_deleteSection($arr['id']);
 			}
 
-		$res = $babDB->db_query("select id from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$id."'");
+		$res = $babDB->db_query("select id from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$idsafe."'");
 		while($arr = $babDB->db_fetch_array($res))
 			{
 			bab_deleteTopicCategory($arr['id']);
 			}
 
-		$res = $babDB->db_query("select id from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$id."'");
+		$res = $babDB->db_query("select id from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$idsafe."'");
 		while($arr = $babDB->db_fetch_array($res))
 			{
 			bab_deleteApprobationSchema($arr['id']);
 			}
 
-		$res = $babDB->db_query("select id from ".BAB_FORUMS_TBL." where id_dgowner='".$id."'");
+		$res = $babDB->db_query("select id from ".BAB_FORUMS_TBL." where id_dgowner='".$idsafe."'");
 		while($arr = $babDB->db_fetch_array($res))
 			{
 			bab_deleteForum($arr['id']);
 			}
 
-		$res = $babDB->db_query("select id from ".BAB_FAQCAT_TBL." where id_dgowner='".$id."'");
+		$res = $babDB->db_query("select id from ".BAB_FAQCAT_TBL." where id_dgowner='".$idsafe."'");
 		while($arr = $babDB->db_fetch_array($res))
 			{
 			bab_deleteFaq($arr['id']);
 			}
 
-		$res = $babDB->db_query("select id from ".BAB_FM_FOLDERS_TBL." where id_dgowner='".$id."'");
+		$res = $babDB->db_query("select id from ".BAB_FM_FOLDERS_TBL." where id_dgowner='".$idsafe."'");
 		while($arr = $babDB->db_fetch_array($res))
 			{
 			bab_deleteFolder($arr['id']);
 			}
 
-		$res = $babDB->db_query("select id from ".BAB_LDAP_DIRECTORIES_TBL." where id_dgowner='".$id."'");
+		$res = $babDB->db_query("select id from ".BAB_LDAP_DIRECTORIES_TBL." where id_dgowner='".$idsafe."'");
 		while($arr = $babDB->db_fetch_array($res))
 			{
 			bab_deleteLdapDirectory($arr['id']);
 			}
 
-		$res = $babDB->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_dgowner='".$id."'");
+		$res = $babDB->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_dgowner='".$idsafe."'");
 		while($arr = $babDB->db_fetch_array($res))
 			{
 			bab_deleteDbDirectory($arr['id']);
 			}
 
-		$res = $babDB->db_query("select id from ".BAB_ORG_CHARTS_TBL." where id_dgowner='".$id."'");
+		$res = $babDB->db_query("select id from ".BAB_ORG_CHARTS_TBL." where id_dgowner='".$idsafe."'");
 		while($arr = $babDB->db_fetch_array($res))
 			{
 			bab_deleteOrgChart($arr['id']);
 			}
+
+		$res = $babDB->db_query("select crt.id, ct.id as idcal from ".BAB_CAL_PUBLIC_TBL." crt left join ".BAB_CALENDAR_TBL." ct on ct.owner=crt.id and ct.type='".BAB_CAL_PUB_TYPE."' where crt.id_dgowner='".$idsafe."'");
+		while($arr = $babDB->db_fetch_array($res))
+			{
+			bab_deleteCalendar($arr['idcal']);
+			$babDB->db_query("delete from ".BAB_CAL_PUBLIC_TBL." where id='".$arr['id']."'");	
+			}
+
+		$res = $babDB->db_query("select crt.id, ct.id as idcal from ".BAB_CAL_RESOURCES_TBL." crt left join ".BAB_CALENDAR_TBL." ct on ct.owner=crt.id and ct.type='".BAB_CAL_RES_TYPE."' where crt.id_dgowner='".$idsafe."'");
+		while($arr = $babDB->db_fetch_array($res))
+			{
+			bab_deleteCalendar($arr['idcal']);
+			$babDB->db_query("delete from ".BAB_CAL_RESOURCES_TBL." where id='".$arr['id']."'");	
+			}
 		}
 	else
 		{
-		$babDB->db_query("update ".BAB_SECTIONS_TBL." set id_dgowner='0' where id_dgowner='".$id."'");	
-		$babDB->db_query("update ".BAB_TOPICS_CATEGORIES_TBL." set id_dgowner='0' where id_dgowner='".$id."'");	
-		$babDB->db_query("update ".BAB_FLOW_APPROVERS_TBL." set id_dgowner='0' where id_dgowner='".$id."'");	
-		$babDB->db_query("update ".BAB_FORUMS_TBL." set id_dgowner='0' where id_dgowner='".$id."'");	
-		$babDB->db_query("update ".BAB_FAQCAT_TBL." set id_dgowner='0' where id_dgowner='".$id."'");	
-		$babDB->db_query("update ".BAB_FM_FOLDERS_TBL." set id_dgowner='0' where id_dgowner='".$id."'");	
-		$babDB->db_query("update ".BAB_LDAP_DIRECTORIES_TBL." set id_dgowner='0' where id_dgowner='".$id."'");	
-		$babDB->db_query("update ".BAB_DB_DIRECTORIES_TBL." set id_dgowner='0' where id_dgowner='".$id."'");	
-		$babDB->db_query("update ".BAB_ORG_CHARTS_TBL." set id_dgowner='0' where id_dgowner='".$id."'");	
+		$babDB->db_query("update ".BAB_SECTIONS_TBL." set id_dgowner='0' where id_dgowner='".$idsafe."'");	
+		$babDB->db_query("update ".BAB_TOPICS_CATEGORIES_TBL." set id_dgowner='0' where id_dgowner='".$idsafe."'");	
+		$babDB->db_query("update ".BAB_FLOW_APPROVERS_TBL." set id_dgowner='0' where id_dgowner='".$idsafe."'");	
+		$babDB->db_query("update ".BAB_FORUMS_TBL." set id_dgowner='0' where id_dgowner='".$idsafe."'");	
+		$babDB->db_query("update ".BAB_FAQCAT_TBL." set id_dgowner='0' where id_dgowner='".$idsafe."'");	
+		$babDB->db_query("update ".BAB_FM_FOLDERS_TBL." set id_dgowner='0' where id_dgowner='".$idsafe."'");	
+		$babDB->db_query("update ".BAB_LDAP_DIRECTORIES_TBL." set id_dgowner='0' where id_dgowner='".$idsafe."'");	
+		$babDB->db_query("update ".BAB_DB_DIRECTORIES_TBL." set id_dgowner='0' where id_dgowner='".$idsafe."'");	
+		$babDB->db_query("update ".BAB_ORG_CHARTS_TBL." set id_dgowner='0' where id_dgowner='".$idsafe."'");	
+		$babDB->db_query("update ".BAB_CAL_RESOURCES_TBL." set id_dgowner='0' where id_dgowner='".$idsafe."'");	
+		$babDB->db_query("update ".BAB_CAL_PUBLIC_TBL." set id_dgowner='0' where id_dgowner='".$idsafe."'");	
 		}
 
 
 
-	$babDB->db_query("delete from ".BAB_DG_ADMIN_TBL." where id_dg='".$id."'");
-	$babDB->db_query("delete from ".BAB_DG_GROUPS_TBL." where id='".$id."'");
+	$babDB->db_query("delete from ".BAB_DG_ADMIN_TBL." where id_dg='".$idsafe."'");
+	$babDB->db_query("delete from ".BAB_DG_GROUPS_TBL." where id='".$idsafe."'");
 }
 
 /* main */

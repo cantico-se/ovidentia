@@ -640,6 +640,7 @@ function bab_deleteOrgChart($id)
 		$babDB->db_query("delete from ".BAB_OC_ROLES_USERS_TBL." where id_role IN (".$babDB->quote($ru).")");
 	}
 
+	$entities = array();
 	$res = 	$babDB->db_query("select id from ".BAB_OC_ENTITIES_TBL." where id_oc='".$babDB->db_escape_string($id)."'");
 	while( $arr = $babDB->db_fetch_array($res))
 	{
