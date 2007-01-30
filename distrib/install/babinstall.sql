@@ -884,7 +884,7 @@ INSERT INTO bab_sites (id, name, description, lang, adminemail,  adminname, skin
 
 # --------------------------------------------------------
 #
-# Structure de la table 'bab_topicscom_groups'
+# Structure de la table 'bab_sites_hpman_groups'
 #
 
 CREATE TABLE bab_sites_hpman_groups (
