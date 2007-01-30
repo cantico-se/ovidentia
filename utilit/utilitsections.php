@@ -586,22 +586,22 @@ function getnextnew()
 			{
 			case 0:
 				$this->newcount = $babBody->get_newarticles();
-				$this->newtext = bab_translate("Articles");
+				$this->newtext = bab_translate("Article(s)");
 				$this->newurl = $GLOBALS['babUrlScript']."?tg=oml&amp;file=newarticles.html&amp;nbdays=0";
 				break;
 			case 1:
 				$this->newcount = $babBody->get_newcomments();
-				$this->newtext = bab_translate("Comments");
+				$this->newtext = bab_translate("Comment(s)");
 				$this->newurl = $GLOBALS['babUrlScript']."?tg=oml&amp;file=newcomments.html&amp;nbdays=0";
 				break;
 			case 2:
 				$this->newcount = $babBody->get_newposts();
-				$this->newtext = bab_translate("Replies");
+				$this->newtext = bab_translate("Reply(ies)");
 				$this->newurl = $GLOBALS['babUrlScript']."?tg=oml&amp;file=newposts.html&amp;nbdays=0";
 				break;
 			case 3:
 				$this->newcount = $babBody->get_newfiles();
-				$this->newtext = bab_translate("Files");
+				$this->newtext = bab_translate("File(s)");
 				$this->newurl = $GLOBALS['babUrlScript']."?tg=oml&amp;file=newfiles.html&amp;nbdays=0";
 				break;
 			}
