@@ -461,7 +461,11 @@ function bab_debug_print_backtrace($echo = false)
     // Iterate backtrace
     $calls = array();
     foreach ($backtrace as $i => $call) {
-        $location = $call['file'] . ':' . $call['line'];
+    	if (isset($call['file']) && isset($call['line'])) {
+        	$location = $call['file'] . ':' . $call['line'];
+        } else {
+        	$location = '';
+        }
         $function = (isset($call['class'])) ?
             '<b>' . $call['class'] . '</b>.<b>' . $call['function'] . '</b>':
             '<b>' . $call['function'] . '</b>';
@@ -479,7 +483,7 @@ function bab_debug_print_backtrace($echo = false)
 
 				if ($nbParam > 0)
 					$params .= ', ';
-				$spanId = 'peParam_' . $uniqueId . '_' . $i . '_' . $nbParam;
+				$spanId = 'babParam_' . $uniqueId . '_' . $i . '_' . $nbParam;
 
 				if(is_object($param))
 				{
