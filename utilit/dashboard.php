@@ -45,6 +45,7 @@ class bab_Dashboard
 		$this->t_not_first_filter = false;
 		$this->t_export = bab_translate("Export");
 		$this->t_export_url = '';
+		$this->t_global_filter = bab_translate("Global filter");
 	}
 	
 	function setTitle($title)

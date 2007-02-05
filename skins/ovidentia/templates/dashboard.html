@@ -38,6 +38,7 @@
 	padding: 4px;
 	font-family: tahoma;
 	font-weight: bold;
+	right: 0;
 }
 
 .dashboard_filter {
@@ -81,6 +82,7 @@ td.dashboard_column_header:hover {
 }
 .dashboard_container table {
 	font-size: inherit;
+	width: 100%;
 }
 .dashboard_container tbody td {
 	border: 1px solid #CCCCCC;
@@ -139,9 +141,33 @@ function filterColumns()
 	div = chkbox.dashboardContainer;
 
 	for (var c = 0; c < div.dashboardColumnHeaders.length; c++) {
-		td = div.dashboardColumnHeaders[c];
+		var td = div.dashboardColumnHeaders[c];
 		if (hasClass(td, chkbox.dashboardFilter)) {
 			showColumn(td, show);
+		}
+	}
+}
+
+function filterAllColumns()
+{
+	chkbox = this;
+	show = chkbox.checked;
+	divs = window.dashboardContainers;
+
+	for (var i = 0; i < divs.length; i++) {
+		var div = divs[i];
+		var filterSpan = div.filterSpan;
+		var checkBoxes = filterSpan.getElementsByTagName('INPUT');
+		for (var c = 0; c < div.dashboardColumnHeaders.length; c++) {
+			var td = div.dashboardColumnHeaders[c];
+			if (hasClass(td, chkbox.dashboardFilter)) {
+				showColumn(td, show);
+			}
+		}
+		for (var c = 0; c < checkBoxes.length; c++) {
+			if (checkBoxes[c].dashboardFilter == chkbox.dashboardFilter) {
+				checkBoxes[c].checked = show;
+			}
 		}
 	}
 }
@@ -199,6 +225,32 @@ function toggleDashboard()
 function dashboardInit()
 {
 	window.dashboardContainers = new Array();
+
+	// Global filter is added to the top panel.
+	var globalFilterSpan = document.createElement('span');
+	globalFilterSpan.className = 'dashboard_filter';
+	var nbFilters = 0;
+	for (var filterType in bab_dashboard_filters) {
+		nbFilters++;
+		var chkbox = document.createElement('input');
+		chkbox.type = 'checkbox';
+		chkbox.dashboardFilter = filterType;
+		chkbox.onclick = filterAllColumns;
+		chkbox.style.margin = '0px 8px 0px 16px';
+		globalFilterSpan.appendChild(chkbox);
+		chkbox.defaultChecked = chkbox.checked = true;
+		var txt = document.createTextNode(bab_dashboard_filters[filterType]);
+		globalFilterSpan.appendChild(txt);
+	}
+	if (nbFilters > 0) {
+		// td is the first cell of the top panel
+		var td = document.getElementsByTagName('TABLE')[0].rows[0].cells[0].getElementsByTagName('TABLE')[0].rows[0].cells[0];
+		td.appendChild(document.createElement('br'));
+		td.appendChild(document.createElement('br'));
+		td.appendChild(document.createTextNode('{ t_global_filter }'));
+		td.appendChild(globalFilterSpan);
+	}
+
 
 	divs = document.getElementsByTagName('div');
 	for (var i = 0; i < divs.length; i++) {
@@ -265,8 +317,6 @@ function dashboardInit()
 						filterSpan.appendChild(txt);
 					}
 
-
-
 					div.filterSpan = filterSpan;
 					header.appendChild(filterSpan);
 					
@@ -290,6 +340,11 @@ function textsize(param)
 		body.style.fontSize = '0.7em';
 	else
 		body.style.fontSize = newfs + 'em';
+	var tables = document.getElementsByTagName('TD');
+	var nbTables = tables.length;
+	for (var i = 0; i < nbTables; i++) {
+		tables[i].style.fontSize = '1em';
+	}
 }
 
 function dashboardExport(url)
@@ -336,8 +391,8 @@ var bab_dashboard_filters = {
 <div class="foot">
 	<span>
 	<img onclick="window.print()" src="{ babSkinPath }images/Dashboard/print.gif" border="0" />&nbsp;
-	<a href="#" onclick="textsize(1.05); return false">A+</a>&nbsp;
-	<a href="#" onclick="textsize(0.95); return false">A-</a>
+	<a href="#" onclick="textsize(1.10); return false">A+</a>&nbsp;
+	<a href="#" onclick="textsize(0.90); return false">A-</a>
 	<!--#if t_export_url -->
 	<a href="{ t_export_url }" onclick="return dashboardExport();">{ t_export }</a>
 	<!--#endif t_export_url -->
@@ -405,7 +460,11 @@ var bab_dashboard_filters = {
 </thead>
 <tbody>
 <!--#in getNextRow -->
-<tr style="background-color: <!--#if t_odd_row --> #DFDFDF <!--#else t_odd_row --> #FFFFFF <!--#endif t_odd_row -->">
+<!--#if t_odd_row -->
+<tr style="background-color: #DFDFDF">
+<!--#else t_odd_row -->
+<tr style="background-color: #FFFFFF">
+<!--#endif t_odd_row -->
 <!--#in getNextColumn -->
 <!--#if t_column_number "== 1" -->
 <td style="font-family: Tahoma; font-weight: bold; font-size: 10px; text-align: right">{ t_column_content }</td>
