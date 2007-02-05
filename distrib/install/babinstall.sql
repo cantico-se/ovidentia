@@ -863,7 +863,6 @@ CREATE TABLE `bab_sites` (
   `date_shortformat` varchar(255) NOT NULL default '',
   `time_format` varchar(255) NOT NULL default '',
   `stat_update_time` datetime NOT NULL default '0000-00-00 00:00:00',
-  `workdays` varchar(20) NOT NULL default '',
   `dispdays` varchar(20) NOT NULL default '',
   `startday` tinyint(4) NOT NULL default '1',
   `user_workdays` enum('Y','N') NOT NULL default 'Y',
@@ -879,7 +878,7 @@ CREATE TABLE `bab_sites` (
 );
 
 
-INSERT INTO bab_sites (id, name, description, lang, adminemail,  adminname, skin, style, workdays, dispdays, startday ) values ('1', 'Ovidentia', 'Ovidentia site', 'en', 'admin@your-domain.com', 'Ovidentia Administrator', 'ovidentia_sw', 'ovidentia.css', '1,2,3,4,5', '1,2,3,4,5','1');
+INSERT INTO bab_sites (id, name, description, lang, adminemail,  adminname, skin, style, dispdays, startday ) values ('1', 'Ovidentia', 'Ovidentia site', 'en', 'admin@your-domain.com', 'Ovidentia Administrator', 'ovidentia_sw', 'ovidentia.css', '1,2,3,4,5','1');
 
 
 # --------------------------------------------------------
@@ -1049,7 +1048,7 @@ CREATE TABLE bab_ini (
 
 INSERT INTO bab_ini VALUES ('ver_major', '6');
 INSERT INTO bab_ini VALUES ('ver_minor', '1');
-INSERT INTO bab_ini VALUES ('ver_build', '0');
+INSERT INTO bab_ini VALUES ('ver_build', '1');
 INSERT INTO bab_ini VALUES ('ver_prod', 'E');
 
 #
@@ -2313,7 +2312,6 @@ CREATE TABLE bab_cal_user_options (
   usebgcolor enum('Y','N') NOT NULL default 'Y',
   elapstime tinyint(2) unsigned NOT NULL default '30',
   defaultview tinyint(3) NOT NULL default '0',
-  workdays varchar(20) NOT NULL default '',
   dispdays varchar(20) NOT NULL default '',
   start_time time default NULL,
   end_time time default NULL,
