@@ -1340,13 +1340,13 @@ function showDashboard($startDate, $endDate)
 
 	$nbDays = (int)round(($end - $start) / 86400.0);
 	if ($nbDays <= 31) {
+		$dashboard->addFilter('D', 'day6');
 		$dashboard->addFilter('L', 'day0');
 		$dashboard->addFilter('M', 'day1');
 		$dashboard->addFilter('M', 'day2');
 		$dashboard->addFilter('J', 'day3');
 		$dashboard->addFilter('V', 'day4');
 		$dashboard->addFilter('S', 'day5');
-		$dashboard->addFilter('D', 'day6');
 	}
 
 	$dashboard->addElement(createGlobalActivityDashboard($start, $end)); // 0.07
