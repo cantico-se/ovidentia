@@ -380,6 +380,9 @@ var bab_dashboard_filters = {
 
 
 <!--#begin dashboard_csv -->
+<style type="text/css">
+<!-- .dashboard_column_header{ mso-number-format: "\@"; } -->
+</style>
 <body style="background-color: #FFFFFF; font-size: 8px;">
 <p style="font-family: Tahoma; font-size: 14px; font-weight: bold">{ t_title }</p>
 <!--#in getNextElementCsv -->
@@ -396,7 +399,7 @@ var bab_dashboard_filters = {
 <thead>
 <tr>
 <!--#in getNextColumnHeader -->
-<th style="font-family: Tahoma; font-size: 10px; background-color: #000000; color: #FFFFFF"><b>{ t_column_header }</b></th>
+<th class="dashboard_column_header" style="font-family: Tahoma; font-size: 10px; background-color: #000000; color: #FFFFFF"><b>{ t_column_header }</b></th>
 <!--#endin getNextColumnHeader -->
 </tr>
 </thead>
