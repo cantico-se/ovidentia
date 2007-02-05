@@ -7677,7 +7677,7 @@ function upgrade610to611()
 	include_once $GLOBALS['babInstallPath']."utilit/eventincl.php";
 	bab_addEventListener('bab_eventPeriodModified', 'bab_vac_onModifyPeriod', 'utilit/vacincl.php');
 	
-	$babDB->db_query("UPDATE ".BAB_EVENT_LISTENERS_TBL." event_class_name='bab_eventBeforePeriodsCreated' WHERE event_class_name='bab_eventCreatePeriods'");
+	$babDB->db_query("UPDATE ".BAB_EVENT_LISTENERS_TBL." set event_class_name='bab_eventBeforePeriodsCreated' WHERE event_class_name='bab_eventCreatePeriods'");
 
 	return $ret;
 }
