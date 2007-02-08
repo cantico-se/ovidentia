@@ -2697,8 +2697,8 @@ function exportDbDirectory($id, $wsepar, $separ, $listfd)
 
 	if( $idgroup > 1 )
 		{
-		$req = " ".BAB_DBDIR_ENTRIES_TBL." e,
-				".BAB_USERS_GROUPS_TBL." u ".implode(' ',$leftjoin)." 
+		$req = " ".BAB_USERS_GROUPS_TBL." u,
+				".BAB_DBDIR_ENTRIES_TBL." e ".implode(' ',$leftjoin)." 
 					WHERE u.id_group='".$idgroup."' 
 					AND u.id_object=e.id_user 
 					AND e.id_directory='0'";
