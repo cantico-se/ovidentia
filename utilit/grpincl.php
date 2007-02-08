@@ -92,10 +92,10 @@ function getGroupsMembers($id_grp)
 	
 	$res = $babDB->db_query("SELECT u.* FROM ".BAB_USERS_GROUPS_TBL." g, ".BAB_USERS_TBL." u WHERE g.id_group IN (".$babDB->quote($id_grp).") AND g.id_object=u.id");
 	
-	if( $res && $db->db_num_rows($res) > 0)
+	if( $res && $babDB->db_num_rows($res) > 0)
 		{
 		$i = 0;
-		while ($arr = $db->db_fetch_array($res))
+		while ($arr = $babDB->db_fetch_array($res))
 			{
 			$user[$i]['id'] = $arr['id'];
 			$user[$i]['name'] = bab_composeUserName($arr['firstname'],$arr['lastname']);
