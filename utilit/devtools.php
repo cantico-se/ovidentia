@@ -447,9 +447,20 @@ function bab_f_getDebug() {
 }
 
 
-
+/**
+ * Print a backtrace
+ * Need error_reporting set with E_NOTICE
+ * @param	boolean		[$echo]		display or send to bab_debug
+ */
 function bab_debug_print_backtrace($echo = false)
 {
+    
+    $error_reporting = (int) ini_get('error_reporting');
+    
+    if (E_NOTICE !== (E_NOTICE | $error_reporting)) {
+    	return;
+    }
+    
     // Get backtrace
     static $uniqueId = 0;
 	$uniqueId++;

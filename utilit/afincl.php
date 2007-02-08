@@ -81,6 +81,13 @@ function updateSchemaInstance($idschi)
 
 }
 
+
+/**
+ * Create workflow instance
+ * @param	int		$idsch	approbation scheme
+ * @param	string	$extra	instance identification string
+ * @param	int		[$user]	Owner for the auto-approbation, 0 = no auto-approbation
+ */
 function makeFlowInstance($idsch, $extra, $user = 0)
 {
 	global $babDB;
@@ -125,6 +132,21 @@ function makeFlowInstance($idsch, $extra, $user = 0)
 		}
 	return 0;
 }
+
+
+/**
+ * @param	int		$idschi
+ * @param	int		$id_user
+ */
+function setFlowInstanceOwner($idschi, $id_user) {
+	global $babDB;
+	
+	$babDB->db_query('UPDATE '.BAB_FA_INSTANCES_TBL.' 
+		SET iduser='.$babDB->quote($id_user).' 
+		WHERE idsch='.$babDB->quote($idschi));
+}
+
+
 
 function evalFlowInstance($idschi)
 {

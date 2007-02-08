@@ -39,37 +39,35 @@ function bab_database($die = false, $dbtype = "mysql")
 	$this->db_type = $dbtype;
 	}
 
-function db_print_error($text)
-    {
+function db_print_error($text) {
 	if (function_exists('bab_isUserAdministrator') && bab_isUserAdministrator()) {
 		include_once 'devtools.php';
 		bab_debug_print_backtrace(true);
-
-		$str = "<h2>" . $text . "</h2>\n";
-		$str .= "<p><b>Database Error: ";
-		switch($this->db_type )
-			{
-			case "mysql":
-			default:
-				$str .= mysql_error();
-				break;
-			}
-		$str .= "</b></p>\n";
-		if ($this->db_die_on_fail)
-			{
-			trigger_error($str, E_USER_ERROR);
-
-			echo "<p>This script cannot continue, terminating.";
-			die();
-			}
-		return $str;
-		}
-		
-	if ($this->db_die_on_fail) {
-		die('ERROR');
 	}
-	return '';
-    }
+	
+	
+	$str = "<h2>" . $text . "</h2>\n";
+	$str .= "<p><b>Database Error: ";
+	switch($this->db_type )
+		{
+		case "mysql":
+		default:
+			$str .= mysql_error();
+			break;
+		}
+	$str .= "</b></p>\n";
+	
+	if ($this->db_die_on_fail)
+		{
+		trigger_error($str, E_USER_ERROR);
+
+		echo "<p>This script cannot continue, terminating.";
+		die();
+		}
+	else
+		return $str;
+	}
+
 
 function db_connect($host, $login, $password, $dbname)
     {
