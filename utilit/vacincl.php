@@ -808,6 +808,8 @@ function viewVacationCalendar($users, $period = false )
 					$this->am_text = '';
 					$this->pm_text = '';
 
+					
+
 					$period_am = $this->previous_period;
 					
 					
@@ -824,7 +826,7 @@ function viewVacationCalendar($users, $period = false )
 					}
 
 
-					// pm
+					// am
 
 					if (BAB_PERIOD_NWDAY == $period_am['period_type']) {
 						$this->day_classname = 'nonworking';
@@ -871,6 +873,9 @@ function viewVacationCalendar($users, $period = false )
 							$this->pm_color = $period_pm['color'];
 						}
 					}
+
+
+					
 
 
 
@@ -2408,13 +2413,13 @@ class bab_vacationRequestDetail
 		$this->remarktxt = bab_translate("Comment");
 		$this->t_approb = bab_translate("Approver");
 		$this->db = $GLOBALS['babDB'];
-		$row = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where id='".$id."'"));
-		$this->datebegin = bab_vac_longDate(bab_mktime($row['date_begin']));
-		$this->dateend = bab_vac_longDate(bab_mktime($row['date_end']));
-		$this->fullname = bab_getUserName($row['id_user']);
+		$row = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where id=".$this->db->quote($id)));
+		$this->datebegin = bab_toHtml(bab_vac_longDate(bab_mktime($row['date_begin'])));
+		$this->dateend = bab_toHtml(bab_vac_longDate(bab_mktime($row['date_end'])));
+		$this->owner = bab_toHtml(bab_getUserName($row['id_user']));
 		$this->statarr = array(bab_translate("Waiting to be valiadte by"), bab_translate("Accepted"), bab_translate("Refused"));
-		$this->comment = nl2br($row['comment']);
-		$this->remark = nl2br($row['comment2']);
+		$this->comment = bab_toHtml($row['comment'], BAB_HTML_ALL);
+		$this->remark = bab_toHtml($row['comment2'], BAB_HTML_ALL);
 		switch($row['status'])
 			{
 			case 'Y':
