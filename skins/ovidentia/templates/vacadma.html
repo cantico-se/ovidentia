@@ -168,14 +168,12 @@ var tb_fixed = document.getElementById('vac_right_fixed');
 
 function calwin(callback)
 {
-    window['bab_vac_cal_callback'] = callback;
-	Start('{ babUrlScript }?tg=month&ymin=0&ymax=3&callback=setDate' , 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');
+	bab_dialog.selectdate(function(arr) {
+		document.forms['rightsedit'].elements[callback].value = arr['day']+'-'+arr['month']+'-'+arr['year'];
+	});
 }
 
 
-function setDate(day, month, year) {
-	document.forms['rightsedit'].elements[window['bab_vac_cal_callback']].value = day+'-'+month+'-'+year;
-}
 
 
 function validateForm(fr)
