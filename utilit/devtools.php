@@ -457,7 +457,7 @@ function bab_debug_print_backtrace($echo = false)
     
     $error_reporting = (int) ini_get('error_reporting');
     
-    if (E_NOTICE !== (E_NOTICE | $error_reporting)) {
+    if (E_NOTICE !== ($error_reporting & E_NOTICE)) {
     	return;
     }
     

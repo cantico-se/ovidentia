@@ -56,10 +56,13 @@ function db_print_error($text) {
 			break;
 		}
 	$str .= "</b></p>\n";
+
 	
 	if ($this->db_die_on_fail)
 		{
-		trigger_error($str, E_USER_ERROR);
+		if (E_USER_ERROR !== ($error_reporting & E_USER_ERROR)) {
+			echo $str;
+		}
 
 		echo "<p>This script cannot continue, terminating.";
 		die();
