@@ -298,11 +298,12 @@ bab_dialog.field = function(field, label, onclickEvt, icon) {
 		}
 	
 		contener.style.width 		= oldwidth+'px';
+		contener.style.height 		= oldheight+'px';
 		contener.style.cursor 		= 'pointer';
 		contener.style.border 		= '#000 1px solid';
 		contener.style.background 	= '#fff url('+bab_getInstallPath()+'skins/ovidentia/images/'+icon+') no-repeat 99% 50%';
 		contener.style.color 		= '#444';
-		contener.style.padding 		= '.3em .6em';
+		contener.style.padding 		= '.2em 1em 0 .6em';
 		
 	} else {
 		contener.className = field.className;
