@@ -61,7 +61,7 @@ function db_print_error($text) {
 	if ($this->db_die_on_fail)
 		{
 		$error_reporting = (int) ini_get('error_reporting');
-		if (E_USER_ERROR !== ($error_reporting & E_USER_ERROR)) {
+		if (E_USER_ERROR === ($error_reporting & E_USER_ERROR)) {
 			echo $str;
 		}
 
