@@ -1053,7 +1053,7 @@
 <string id="Edit file">Verrouiller</string>
 <string id="Unedit file">Déverrouiller</string>
 <string id="Commit file">Déposer une nouvelle version</string>
-<string id="Versioning">Versionnage</string>
+<string id="Versioning">Gestion des versions</string>
 <string id="Field">Champ</string>
 <string id="Delete fields">Supprimer les champs</string>
 <string id="Field name">Libellé du champ</string>
