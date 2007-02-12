@@ -691,6 +691,10 @@ function listWaitingAddons()
 			{
 			$this->altbg = !$this->altbg;
 			
+			if (!isset($this->arr)) {
+				return false;
+			}
+			
 			if (list( , $arr) = each($this->arr))
 				{
 				$this->text 			= bab_toHtml($arr['text']);
