@@ -95,7 +95,7 @@ function bab_calGetEvents(&$params)
 		
 		if (isset($params['id_category'])) {
 			if (is_array($params['id_category'])) {
-				if (!in_array($data['id_cal'], $params['id_category'])) {
+				if (!in_array($data['id_cat'], $params['id_category'])) {
 					continue;
 				}
 			} elseif (((int) $data['id_cat']) !== ((int) $params['id_category'])) {
