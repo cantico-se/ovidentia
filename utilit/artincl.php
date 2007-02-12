@@ -760,6 +760,20 @@ function bab_editArticle($title, $head, $body, $lang, $template)
 			// do not load script for ie < 5.5 to avoid javascript parsing errors
 			preg_match("/MSIE\s+([\d|\.]*?);/", $_SERVER['HTTP_USER_AGENT'], $matches);
 			$this->loadscripts = !isset($matches[1]) || ($matches[1] >= 5.5);
+			
+			if ($this->loadscripts) {
+			
+				$res = $babDB->db_query("
+				SELECT use_editor, filter_html 
+				FROM ".BAB_SITES_EDITOR_TBL." 
+				WHERE id_site='".$babDB->db_escape_string($GLOBALS['babBody']->babsite['id'])."'");
+				
+				if ($arr = $babDB->db_fetch_array($res)) {
+					if (0 == $arr['use_editor']) {
+						$this->loadscripts = false;
+					}
+				}
+			}
 
 			if( $template != '' && $this->headval == '' && $this->bodyval == '')
 				{
