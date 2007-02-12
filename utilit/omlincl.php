@@ -5555,7 +5555,7 @@ function bab_Header($args)
 
 function bab_Recurse($args) {
 	$handler = substr($this->curctx->getname(), 4);
-	return $this->handle_tag($handler, $this->curctx->getcontent(), $this->getArgs($args));	
+	return $this->handle_tag($handler, $this->curctx->getcontent(), $args);	
 }
 
 
