@@ -476,6 +476,10 @@ class cal_wmdbaseCls
 
 
 		$this->commonurl = $GLOBALS['babUrlScript']."?tg=".$tg."&idx=".$idx."&calid=".$this->currentidcals;
+		
+		if (false !== bab_rp('print',false)) {
+			$this->commonurl .= '&print=1';
+		}
 
 		$time = mktime( 0,0,0, $this->month-1, $this->day, $this->year);
 		$tmp = mktime( 0,0,0, $this->month-1, 1, $this->year);
