@@ -802,7 +802,8 @@ function bab_cal_setEventsPeriods(&$obj, $id_calendars, $begin, $end, $category 
 		SELECT 
 			ceo.*, 
 			ce.*,
-			ca.name category, 
+			ca.name category,
+			ca.description category_description, 
 			ca.bgcolor 
 		FROM 
 			".BAB_CAL_EVENTS_OWNERS_TBL." ceo 

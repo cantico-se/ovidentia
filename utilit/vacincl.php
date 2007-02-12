@@ -1474,16 +1474,17 @@ function updateVacationUser($userid, $idsa)
 {
 	global $babDB;
 
-	$res = $babDB->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where id_user='".$userid."' and status=''");
-	while( $row = $babDB->db_fetch_array($res))
-		{
-		if( $row['idfai'] != 0 )
+	$res = $babDB->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where id_user=".$babDB->quote($userid)." and status=''");
+	while( $row = $babDB->db_fetch_array($res)) {
+		if( $row['idfai'] != 0 ) {
 			deleteFlowInstance($row['idfai']);
+		}
 		$idfai = makeFlowInstance($idsa, "vac-".$row['id']);
-		$babDB->db_query("update ".BAB_VAC_ENTRIES_TBL." set idfai='".$idfai."' where id='".$row['id']."'");
+		setFlowInstanceOwner($idfai, $row['id_user']);
+		$babDB->db_query("UPDATE ".BAB_VAC_ENTRIES_TBL." SET idfai=".$babDB->quote($idfai)." where id=".$babDB->quote($row['id'])."");
 		$nfusers = getWaitingApproversFlowInstance($idfai, true);
 		notifyVacationApprovers($row['id'], $nfusers);
-		}
+	}
 }
 
 function updateUserColl()
@@ -1975,10 +1976,6 @@ function bab_vac_setVacationPeriods(&$obj, $id_users, $begin, $end) {
 
 	while( $row = $db->db_fetch_array($res)) {
 
-		if ('N' === $row['status']) {
-			continue;
-		}
-
 		$colors = array();
 		$types	= array();
 
@@ -2049,7 +2046,8 @@ function bab_vac_setVacationPeriods(&$obj, $id_users, $begin, $end) {
 
 		$data = array(
 			'id' 		=> $row['id'],
-			'id_cat'	=> $id_cat
+			'id_cat'	=> $id_cat,
+			'confirmed'	=> $row['status'] === 'Y'
 		);
 		$p->setData($data);
 

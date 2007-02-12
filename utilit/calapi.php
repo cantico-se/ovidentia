@@ -56,18 +56,82 @@ function bab_getPersonalCalendar($iduser)
 /* params: id_cal, begindate, enddate, id_category, order=asc/desc */ 
 function bab_calGetEvents(&$params)
 {
-	global $babDB;
+	global $babBody;
 
 	$events = array();
 
-	if( is_array($params['id_cal']) )
-		{
-		$cals = count($params['id_cal']) > 0 ? implode(',', $params['id_cal']): '';
+	include_once $GLOBALS['babInstallPath']."utilit/workinghoursincl.php";
+	include_once $GLOBALS['babInstallPath']."utilit/dateTime.php";
+	
+	$whObj = new bab_userWorkingHours(
+		BAB_dateTime::fromIsoDateTime($params['begindate']), 
+		BAB_dateTime::fromIsoDateTime($params['enddate'])
+	);
+	
+
+	if( is_array($params['id_cal']) ) {
+	
+		if (empty($params['id_cal'])) {
+			return array();
 		}
-	else
-		{
-		$cals = $params['id_cal'];
+	
+		foreach($params['id_cal'] as $id_cal) {
+			$whObj->addCalendar($id_cal);
+			$infos = $babBody->icalendars->getCalendarInfo($id_cal);
+			$whObj->addIdUser($infos['idowner']);
 		}
+	} else {
+		$whObj->addCalendar($params['id_cal']);
+		$infos = $babBody->icalendars->getCalendarInfo($params['id_cal']);
+		$whObj->addIdUser($infos['idowner']);
+	}
+	
+	$whObj->createPeriods(BAB_PERIOD_VACATION | BAB_PERIOD_CALEVENT);
+	$whObj->orderBoundaries();
+	
+	while ($event = $whObj->getNextEvent(BAB_PERIOD_VACATION | BAB_PERIOD_CALEVENT)) {
+	
+		$data = $event->getData();
+		
+		if (isset($params['id_category'])) {
+			if (is_array($params['id_category'])) {
+				if (!in_array($data['id_cal'], $params['id_category'])) {
+					continue;
+				}
+			} elseif (((int) $data['id_cat']) !== ((int) $params['id_category'])) {
+				continue;
+			}
+		}
+		
+		if (isset($data['confirmed']) && false === $data['confirmed']) {
+			continue;
+		}
+		
+		$events[] = array(
+			'id_event' 				=> isset($data['id_event']) ? $data['id_event'] : NULL,		// $event->getProperty('UID')
+			'title'					=> $event->getProperty('SUMMARY'),
+			'description'			=> $event->getProperty('DESCRIPTION'),
+			'location'				=> $event->getProperty('LOCATION'),
+			'begindate'				=> $event->getProperty('DTSTART'),
+			'enddate'				=> $event->getProperty('DTEND'),
+			'quantity'				=> isset($data['quantity']) ? $data['quantity'] : NULL,
+			'id_category'			=> isset($data['id_cat']) 	? $data['id_cat'] 	: NULL,
+			'name_category' 		=> $event->getProperty('CATEGORIES'),
+			'description_category'	=> isset($data['category_description']) ? $data['category_description'] : NULL,
+			'id_creator'			=> isset($data['id_creator']) ? $data['id_creator'] : NULL,
+			'backgroundcolor'		=> $event->color,
+			'private'				=> 'PRIVATE' === $event->getProperty('CLASS'),
+			'lock'					=> isset($data['block']) && 'Y' === $data['block'],
+			'free'					=> isset($data['bfree']) && 'Y' === $data['bfree'],
+			'status'				=> isset($data['status']) ? $data['status'] : NULL,
+			'id_calendar'			=> isset($data['id_cal']) ? $data['id_cal'] : NULL
+		);
+	}
+	
+	return $events;
+	
+		
+	/*
 
 	if( empty($cals))
 		{
@@ -127,6 +191,7 @@ function bab_calGetEvents(&$params)
 	}
 
 	return $events;
+	*/
 }
 
 

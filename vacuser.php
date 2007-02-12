@@ -178,6 +178,7 @@ function requestVacation($begin,$end, $halfdaybegin, $halfdayend, $id)
 				
 				$this->rights[$id] = $right;
 			}
+			
 
 			if (!empty($this->id))
 				{
@@ -241,20 +242,20 @@ function requestVacation($begin,$end, $halfdaybegin, $halfdayend, $id)
 				$this->right['description'] = bab_toHtml($this->right['description']);
 				$this->right['waiting'] -= isset($this->current[$id]) ? $this->current[$id] : 0;
 				$this->right['quantitydays'] = $this->right['quantitydays'] - $this->right['waiting'];
+				
 
 				if (isset($_POST['nbdays'][$id]))
 					{
 					$this->nbdays = $_POST['nbdays'][$id];
 					}
-				elseif( count($this->recorded) > 0)
-					{
+				elseif( count($this->recorded) > 0) {
 					if (isset($this->recorded[$id])) {
 						$this->nbdays = $this->recorded[$id];
 					}
 					else {
 						$this->nbdays = 0;
 					}
-					}
+				}
 				elseif (0 == $this->right['no_distribution'] && $this->period_nbdays2 > 0 && $this->right['quantitydays'] > 0)
 					{
 					
@@ -272,7 +273,10 @@ function requestVacation($begin,$end, $halfdaybegin, $halfdayend, $id)
 				else
 					{
 					$this->nbdays = 0;
+					
 					}
+					
+				
 				$this->totalval += $this->nbdays;
 				return true;
 				}
@@ -752,7 +756,8 @@ function addNewVacation()
 
 	if ($id_user == $GLOBALS['BAB_SESS_USERID'] || $rfrom == 1)
 		{
-		$idfai = makeFlowInstance($row['id_sa'], "vac-".$id);
+		$idfai = makeFlowInstance($row['id_sa'], "vac-".$id );
+		setFlowInstanceOwner($idfai, $id_user);
 		$babDB->db_query("update ".BAB_VAC_ENTRIES_TBL." set idfai=".$babDB->quote($idfai).", status='' where id=".$babDB->quote($id));
 		$nfusers = getWaitingApproversFlowInstance($idfai, true);
 		notifyVacationApprovers($id, $nfusers, !empty($id_request));
