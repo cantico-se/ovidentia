@@ -940,6 +940,11 @@ function showSetArticleProperties($idart)
 				$this->datesuburl = $GLOBALS['babUrlScript']."?tg=month&callback=dateSub&ymin=0&ymax=2";
 				$this->datesubtxt = bab_translate("Submission date");
 				$this->invaliddate = bab_toHtml(bab_translate("ERROR: End date must be older"),BAB_HTML_JS);
+
+				if( isset($_POST['cdates'])) 
+					{
+					$arr['date_submission'] = sprintf("%04d-%02d-%02d %s:00", date("Y") + $_POST['yearsub'] - 1, $_POST['monthsub'], $_POST['daysub'], $_POST['timesub']);
+					}
 				
 				$this->cdateecheck = '';
 				if( $arr['date_submission'] != '0000-00-00 00:00:00' )
@@ -1100,6 +1105,15 @@ function showSetArticleProperties($idart)
 						$this->datebegintxt = bab_translate("Publication date");
 						$this->dateendurl = $GLOBALS['babUrlScript']."?tg=month&callback=dateEnd&ymin=0&ymax=2";
 						$this->dateendtxt = bab_translate("Archiving date");
+
+						if( isset($_POST['cdateb'])) 
+							{
+							$arr['date_publication'] = sprintf("%04d-%02d-%02d %s:00", date("Y") + $_POST['yearbegin'] - 1, $_POST['monthbegin'], $_POST['daybegin'], $_POST['timebegin']);
+							}
+						if( isset($_POST['cdatee'])) 
+							{ 
+							$arr['date_archiving'] = sprintf("%04d-%02d-%02d %s:00", date("Y") + $_POST['yearend'] - 1, $_POST['monthend'], $_POST['dayend'], $_POST['timeend']);
+							}
 						if( $arr['date_publication'] != '0000-00-00 00:00:00' )
 							{
 							$this->cdatebcheck = 'checked';
@@ -2305,8 +2319,9 @@ elseif( $updstep3 = bab_rp('updstep3') )
 		$message = '';
 		if( addDocumentArticleDraft($_POST['idart'], $message) )
 			{
-			Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=s3&idart=".$_POST['idart']);
-			exit;
+			//Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=s3&idart=".$_POST['idart']);
+			//exit;
+			$idx='s3';
 			}
 		else
 			{
