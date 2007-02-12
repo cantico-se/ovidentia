@@ -67,7 +67,7 @@ class cal_weekCls extends cal_wmdbaseCls
 		$this->cdate = sprintf("%04s-%02s-%02s", date("Y", $time1), date("n", $time1), date("j", $time1));
 		$this->urldate = sprintf("%d,%d,%d", date("Y", $time1), date("n", $time1), date("j", $time1));
 
-		$this->iso_time1 = sprintf("%s-%02s-%02s 00:00:00", date("Y", $time1), date("n", $time1), date("j", $time1));
+		$this->iso_time1 = sprintf("%04s-%02s-%02s 00:00:00", date("Y", $time1), date("n", $time1), date("j", $time1));
 		$this->iso_time2 = sprintf("%04s-%02s-%02s 23:59:59", date("Y", $time2), date("n", $time2), date("j", $time2));
 
 		$this->eventlisturl = bab_toHtml( $GLOBALS['babUrlScript']."?tg=calendar&idx=eventlist&calid=".$this->currentidcals."&from=".date('Y,n,j',$time1)."&to=".date('Y,n,j',$time2)."");
@@ -213,6 +213,7 @@ class cal_weekCls extends cal_wmdbaseCls
 			$this->hcols[0] = 0;
 			for( $i = 0; $i < count($this->idcals); $i++ )
 				{
+				
 				$this->mcals->getHtmlArea($this->idcals[$i], $this->cdate." 00:00:00", $this->cdate." 23:59:59", $this->harray[$i]);
 				if (!isset($this->hcols[$i])) $this->hcols[$i] = 0;
 				foreach($this->harray[$i] as $arr)

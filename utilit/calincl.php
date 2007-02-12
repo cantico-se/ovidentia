@@ -789,7 +789,7 @@ function bab_getCalendarTitle($calid) {
 function bab_cal_setEventsPeriods(&$obj, $id_calendars, $begin, $end, $category = NULL) {
 
 	global $babDB;
-	
+
 	$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
 	
 	$query_category = '';	
@@ -899,7 +899,7 @@ function bab_cal_setEventsPeriods(&$obj, $id_calendars, $begin, $end, $category 
 			}
 
 		$events[$arr['id']]->setData($arr);
-
+		
 		$obj->addPeriod($events[$arr['id']]);
 		}
 

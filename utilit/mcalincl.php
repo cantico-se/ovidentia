@@ -281,12 +281,16 @@ class bab_icalendar
 
 		$babBody->icalendars->initializeCalendars();
 
+		
+
 		$this->cal_type = $babBody->icalendars->getCalendarType($calid);
 
 		$this->whObj = new bab_userWorkingHours(
 			BAB_dateTime::fromIsoDateTime($startdate), 
 			BAB_dateTime::fromIsoDateTime($enddate)
 		);
+		
+		
 
 		if( $this->cal_type !== false )
 			{
@@ -332,10 +336,13 @@ class bab_icalendar
 					}
 				}
 			}
+			
+		
 		
 //		$this->whObj->createPeriods(BAB_PERIOD_NWDAY | BAB_PERIOD_WORKING | BAB_PERIOD_VACATION | BAB_PERIOD_CALEVENT | BAB_PERIOD_TSKMGR);
 		$this->whObj->createPeriods(BAB_PERIOD_NWDAY | BAB_PERIOD_WORKING | BAB_PERIOD_VACATION | BAB_PERIOD_CALEVENT);
 		$this->whObj->orderBoundaries();
+		
 		}
 
 	/**
@@ -346,17 +353,24 @@ class bab_icalendar
 	 */
 	function getNextEvent($startdate, $enddate, &$calPeriod)
 		{
-//		while( $p = $this->whObj->getNextEvent(BAB_PERIOD_NWDAY | BAB_PERIOD_VACATION | BAB_PERIOD_CALEVENT | BAB_PERIOD_TSKMGR) )
+//		while( $p = & $this->whObj->getNextEvent(BAB_PERIOD_NWDAY | BAB_PERIOD_VACATION | BAB_PERIOD_CALEVENT | BAB_PERIOD_TSKMGR) )
 		while( $p = & $this->whObj->getNextEvent(BAB_PERIOD_NWDAY | BAB_PERIOD_VACATION | BAB_PERIOD_CALEVENT) )
 			{
+			bab_debug(bab_longDate($p->ts_begin));
+			bab_debug(bab_longDate($p->ts_end));
 			
+			bab_debug($startdate);
+			bab_debug($enddate);
+			
+			bab_debug($p);
 			if (bab_mktime($startdate) < $p->ts_end && bab_mktime($enddate) > $p->ts_begin )
 				{
 				$calPeriod = $p;
 				return true;
 				}
 			}
-
+			
+		
 		return false;
 		}
 	
@@ -381,14 +395,24 @@ class bab_icalendar
 		}
 
 
-
+	/**
+	 * 
+	 *
+	 * @param	string	$startdate	ISO date time
+	 * @param	string	$enddate	ISO date time
+	 * @param	array	&$harray
+	 *
+	 * @return int
+	 */
 	function getHtmlArea($startdate, $enddate, &$harray)
 		{
 		
 		$calPeriod = NULL;
 		$harray = array();
+		
 		while( $this->getNextEvent($startdate, $enddate, $calPeriod))
 			{
+			
 			$done = false;
 			for( $k = 0; $k < count($harray); $k++ )
 				{
@@ -418,7 +442,6 @@ class bab_icalendar
 				}
 			}
 
-		
 		return count($harray);
 		}
 }

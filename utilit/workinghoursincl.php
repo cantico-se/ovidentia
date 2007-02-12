@@ -316,6 +316,11 @@ class bab_userWorkingHours {
 	var $id_calendars;
 
 	/**
+	 * @private
+	 */
+	var $gn_events = NULL;
+
+	/**
 	 * category filter for calendar events
 	 * @public
 	 * array|int|NULL
@@ -358,6 +363,8 @@ class bab_userWorkingHours {
 
 	function createPeriods($options) {
 		$this->options = $options;
+
+		
 
 		if (BAB_PERIOD_VACATION === ($this->options & BAB_PERIOD_VACATION) && $this->id_users) {
 			include_once $GLOBALS['babInstallPath']."utilit/vacincl.php";
@@ -584,17 +591,17 @@ class bab_userWorkingHours {
 	 * @return	object
 	 */
 	function getNextEvent($filter) {
-		static $events = NULL;
 
-		if (NULL === $events) {
-			$events = $this->getEventsBetween($this->begin->getTimeStamp(), $this->end->getTimeStamp(), $filter);
+		if (NULL === $this->gn_events) {
+			$this->gn_events = $this->getEventsBetween($this->begin->getTimeStamp(), $this->end->getTimeStamp(), $filter);
+			
 		}
 
-		if (list(,$event) = each($events)) {
+		if (list(,$event) = each($this->gn_events)) {
 			return $event;
 		}
 
-		reset($events);
+		reset($this->gn_events);
 		return false;
 	}
 

@@ -68,6 +68,8 @@ class cal_dayCls extends cal_wmdbaseCls
 				{
 				$this->mcals->getHtmlArea($this->idcals[$i], $this->cdate." 00:00:00", $this->cdate." 23:59:59", $this->harray[$i]);
 				}
+				
+			
 		}
 
 		function prepare_free_events() {
@@ -132,7 +134,6 @@ class cal_dayCls extends cal_wmdbaseCls
 			$this->fullnameten = $this->calstr($calname,BAB_CAL_NAME_LENGTH);
 			$this->cols = count($this->harray[$this->cindex]);
 			$this->cindex++;
-			
 			$this->icols = 0;
 			return true;
 			}
