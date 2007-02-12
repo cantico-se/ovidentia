@@ -484,7 +484,7 @@ function bab_deleteGroup($id)
 	include_once $GLOBALS['babInstallPath']."utilit/eventincl.php";
 	
 	if (!class_exists('bab_eventGroupDeleted')) {
-		class bab_eventGroupDeleted extends bab_events {
+		class bab_eventGroupDeleted extends bab_event {
 			/**
 			 * @public
 			 */
