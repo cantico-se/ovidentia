@@ -25,7 +25,7 @@ include_once 'base.php';
 
 $args = array_merge($_GET, $_POST);
 
-if( isset($_GET['echo']) && $_GET['echo'] == 1)
+if( isset($args['echo']) && $args['echo'] == 1)
 	{
 	echo bab_printOvmlTemplate($file, $args);
 	exit;
