@@ -1422,7 +1422,7 @@ function record_editor_configuration($id_site)
 	$bitstring = array();
 	for ($i = 0; $i < $_POST['bitstring_len']; $i++)
 		{
-		$bitstring[$i] = in_array($i,$_POST['bitstring']) ? 1 : 0;
+		$bitstring[$i] = isset($_POST['bitstring']) && in_array($i,$_POST['bitstring']) ? 1 : 0;
 		}
 
 
