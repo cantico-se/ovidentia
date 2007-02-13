@@ -25,7 +25,7 @@
 name="ovidentia"
 description="Ovidentia"
 db_prefix="bab_"
-version="6.1.1"
+version="6.1.2"
 
 ; available since 5.8.1
 

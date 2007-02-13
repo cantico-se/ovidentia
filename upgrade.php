@@ -7682,4 +7682,12 @@ function upgrade610to611()
 	return $ret;
 }
 
+function upgrade611to612()
+{
+	global $babDB;
+	$ret = "";
+	
+	return $ret;
+}
+
 ?>
