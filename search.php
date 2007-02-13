@@ -41,6 +41,8 @@ function highlightWord( $w, $text)
 
 function put_text($txt, $limit = 60, $limitmot = 30 )
 	{
+	bab_replace_ref($txt);
+	
 	if (strlen($txt) > $limit)
 		$out = substr(strip_tags($txt),0,$limit)."...";
 	else
@@ -49,8 +51,7 @@ function put_text($txt, $limit = 60, $limitmot = 30 )
 	foreach($arr as $key => $mot)
 		$arr[$key] = substr($mot,0,$limitmot);
 	$txt = implode(" ",$arr);
-	bab_replace_ref($txt);
-	return $txt;
+	return bab_toHtml($txt);
 	}
 
 
