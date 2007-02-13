@@ -973,7 +973,7 @@ class calendarchoice
 			$this->name = bab_toHtml($this->respub[$this->id]['name']);
 			$this->selected = in_array($this->id,$this->selectedCalendars) ? 'selected' : '';
 			if (!empty($this->respub[$this->id]['idsa'])) {
-				$this->approb[] = $this->name;
+				$this->approb[] = $this->respub[$this->id]['name'];
 				}
 			}
 		return $out;
@@ -987,7 +987,7 @@ class calendarchoice
 			$this->name = bab_toHtml($this->resres[$this->id]['name']);
 			$this->selected = in_array($this->id,$this->selectedCalendars) ? 'selected' : '';
 			if (!empty($this->resres[$this->id]['idsa'])) {
-				$this->approb[] = $this->name;
+				$this->approb[] = $this->resres[$this->id]['name'];
 				}
 			}
 		return $out;

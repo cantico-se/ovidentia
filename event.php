@@ -210,7 +210,7 @@ function newEvent()
 
 			$this->daytypechecked = $this->icalendar->allday == 'Y' ? "checked"  :'';
 			$this->elapstime = $this->icalendar->elapstime;
-			$this->ampm = $GLOBALS['babBody']->ampm == 'Y' ? true : false;
+			$this->ampm = 'Y' == $GLOBALS['babBody']->ampm;
 			$this->calendars = calendarchoice('vacform');
 			$this->totaldays = date("t", mktime(0,0,0,$this->curmonth,$this->curday,$this->curyear));
 
@@ -312,7 +312,7 @@ function newEvent()
 				$i = 1;
 				if( $k == 0 )
 					{
-					$this->daysel = isset($this->arr['dayend']) ? $this->arr['dayend'] : $this->daysel;
+					$this->daysel = $this->dayend;
 					$k++;
 					}
 				else
