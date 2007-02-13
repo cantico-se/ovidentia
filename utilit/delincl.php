@@ -443,6 +443,8 @@ function bab_deleteGroupAclTables($id)
 	aclDeleteGroup(BAB_DBDIRBIND_GROUPS_TBL, $id);
 	aclDeleteGroup(BAB_DBDIRUNBIND_GROUPS_TBL, $id);
 	aclDeleteGroup(BAB_DBDIREMPTY_GROUPS_TBL, $id);
+	
+	aclDeleteGroup(BAB_PROFILES_GROUPS_TBL, $id);
 }
 
 
@@ -472,7 +474,10 @@ function bab_deleteGroup($id)
 	$babDB->db_query("delete from ".BAB_GROUPS_SET_ASSOC_TBL." where id_group='".$babDB->db_escape_string($id)."'");
 
 	$babDB->db_query("update ".BAB_OC_ENTITIES_TBL." set id_group='0' where id_group='".$babDB->db_escape_string($id)."'");
-	$babDB->db_query("update ".BAB_DG_GROUPS_TBL." set id_group=NULL where id_group='".$babDB->db_escape_string($id)."'");	
+	$babDB->db_query("update ".BAB_DG_GROUPS_TBL." set id_group=NULL where id_group='".$babDB->db_escape_string($id)."'");
+		
+	$babDB->db_query("DELETE FROM ".BAB_PROFILES_GROUPSSET_TBL." WHERE id_group=".$babDB->quote($id));
+	
 	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 
 	// delete group
