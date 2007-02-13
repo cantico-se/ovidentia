@@ -1039,7 +1039,7 @@ function addEvent(&$message)
 	$end = mktime( $args['enddate']['hours'],$args['enddate']['minutes'],0,$args['enddate']['month'], $args['enddate']['day'], $args['enddate']['year'] );
 	$repeatdate = mktime( 23,59,59,$_POST['repeat_monthend'], $_POST['repeat_dayend'], $_POST['repeat_yearend'] );
 
-	if( $begin > $end)
+	if( $begin >= $end)
 		{
 		$message = bab_translate("End date must be older")." !";
 		return false;
