@@ -536,39 +536,83 @@ function confirmEvent($evtid, $idcal, $bconfirm, $comment, $bupdrec)
 
 }
 
+
+
+
+
+class clsNotifyEvent {
+
+	/**
+	 * @private
+	 */
+	var $vars = array();
+	
+	/**
+	 * @public
+	 */
+	var $title;
+	var $description;
+	var $startdate;
+	var $enddate;
+	var $descriptiontxt;
+	var $titletxt;
+	var $startdatetxt;
+	var $enddatetxt;
+
+	function asText() {
+		$this->title = $this->vars['title'];
+		$this->description = strip_tags(bab_toHtml($this->vars['description'], BAB_HTML_REPLACE_MAIL));
+		$this->startdate = $this->vars['startdate'];
+		$this->enddate = $this->vars['enddate'];
+		
+		$this->descriptiontxt = bab_translate("Description");
+		$this->titletxt = bab_translate("Title");
+		$this->startdatetxt = bab_translate("Begin date");
+		$this->enddatetxt = bab_translate("End date");
+		$this->calendartxt = bab_translate("Calendar");
+	}
+
+	function asHtml() {
+		$this->title = bab_toHtml($this->vars['title']);
+		$this->description = bab_toHtml($this->vars['description'], BAB_HTML_REPLACE_MAIL);
+		$this->startdate = bab_toHtml($this->vars['startdate']);
+		$this->enddate = bab_toHtml($this->vars['enddate']);
+		
+		$this->descriptiontxt = bab_translate("Description");
+		$this->titletxt = bab_translate("Title");
+		$this->startdatetxt = bab_translate("Begin date");
+		$this->enddatetxt = bab_translate("End date");
+		$this->calendartxt = bab_translate("Calendar");
+	}
+}
+
+
+
+
 function notifyPersonalEvent($title, $description, $startdate, $enddate, $idcals)
 	{
 	global $babBody, $babDB, $babAdminEmail;
 
 	if(!class_exists("clsNotifyAttendees"))
 		{
-		class clsNotifyAttendees
+		class clsNotifyAttendees extends clsNotifyEvent
 			{
-			var $title;
 			var $message;
-			var $description;
-			var $startdate;
-			var $enddate;
-			var $descriptiontxt;
-			var $titletxt;
-			var $startdatetxt;
-			var $enddatetxt;
+			var $calendar;
 
 			function clsNotifyAttendees($title, $description, $startdate, $enddate)
 				{
-				$this->title = $title;
+				
 				$this->message = bab_translate("New appointement");
-
-				$this->description = $description;
-				$this->startdate = $startdate;
-				$this->enddate = $enddate;
-				$this->descriptiontxt = bab_translate("Description");
-				$this->titletxt = bab_translate("Title");
-				$this->startdatetxt = bab_translate("Begin date");
-				$this->enddatetxt = bab_translate("End date");
-				$this->calendartxt = bab_translate("Calendar");
 				$this->calendar = bab_translate("Personal calendar");
+
+				$this->vars['title'] 		= $title;
+				$this->vars['description'] 	= $description;
+				$this->vars['startdate'] 	= $startdate;
+				$this->vars['enddate'] 		= $enddate;
+
 				}
+				
 			}
 		}
 	
@@ -596,10 +640,12 @@ function notifyPersonalEvent($title, $description, $startdate, $enddate, $idcals
 			}
 
 		$tempc = new clsNotifyAttendees($title, $description, $startdate, $enddate);
+		$tempc->asHtml();
 		$message = $mail->mailTemplate(bab_printTemplate($tempc,"mailinfo.html", "newevent"));
 		$mail->mailSubject(bab_translate("New appointement"));
 		$mail->mailBody($message, "html");
 
+		$tempc->asText();
 		$message = bab_printTemplate($tempc,"mailinfo.html", "neweventtxt");
 		$mail->mailAltBody($message);
 		$mail->send();
@@ -613,7 +659,7 @@ function notifyPublicEvent($title, $description, $startdate, $enddate, $idcals)
 
 	if(!class_exists("clsNotifyPublicEvent"))
 		{
-		class clsNotifyPublicEvent
+		class clsNotifyPublicEvent extends clsNotifyEvent
 			{
 			var $title;
 			var $message;
@@ -627,18 +673,13 @@ function notifyPublicEvent($title, $description, $startdate, $enddate, $idcals)
 
 			function clsNotifyPublicEvent($title, $description, $startdate, $enddate)
 				{
-				$this->title = $title;
 				$this->message = bab_translate("New appointement");
-
-				$this->description = $description;
-				$this->startdate = $startdate;
-				$this->enddate = $enddate;
-				$this->descriptiontxt = bab_translate("Description");
-				$this->titletxt = bab_translate("Title");
-				$this->startdatetxt = bab_translate("Begin date");
-				$this->enddatetxt = bab_translate("End date");
-				$this->calendartxt = bab_translate("Calendar");
 				$this->calendar = "";
+				
+				$this->vars['title'] 		= $title;
+				$this->vars['description'] 	= $description;
+				$this->vars['startdate'] 	= $startdate;
+				$this->vars['enddate'] 		= $enddate;
 				}
 			}
 		}
@@ -664,10 +705,15 @@ function notifyPublicEvent($title, $description, $startdate, $enddate, $idcals)
 		for( $i = 0; $i < count($idcals); $i++ )
 			{
 			$tempc->calendar = bab_getCalendarOwnerName($idcals, BAB_CAL_PUB_TYPE);
-			$message = $mail->mailTemplate(bab_printTemplate($tempc,"mailinfo.html", "newevent"));
 			$mail->mailSubject(bab_translate("New appointement"));
+			
+			
+			
+			$tempc->asHtml();
+			$message = $mail->mailTemplate(bab_printTemplate($tempc,"mailinfo.html", "newevent"));
 			$mail->mailBody($message, "html");
-
+			
+			$tempc->asText();
 			$message = bab_printTemplate($tempc,"mailinfo.html", "neweventtxt");
 			$mail->mailAltBody($message);
 
@@ -757,32 +803,21 @@ function notifyResourceEvent($title, $description, $startdate, $enddate, $idcals
 
 	if(!class_exists("clsNotifyResourceEvent"))
 		{
-		class clsNotifyResourceEvent
+		class clsNotifyResourceEvent extends clsNotifyEvent
 			{
-			var $title;
+
 			var $message;
-			var $description;
-			var $startdate;
-			var $enddate;
-			var $descriptiontxt;
-			var $titletxt;
-			var $startdatetxt;
-			var $enddatetxt;
+			var $calendar;
 
 			function clsNotifyResourceEvent($title, $description, $startdate, $enddate)
 				{
-				$this->title = $title;
 				$this->message = bab_translate("New appointement");
-
-				$this->description = $description;
-				$this->startdate = $startdate;
-				$this->enddate = $enddate;
-				$this->descriptiontxt = bab_translate("Description");
-				$this->titletxt = bab_translate("Title");
-				$this->startdatetxt = bab_translate("Begin date");
-				$this->enddatetxt = bab_translate("End date");
-				$this->calendartxt = bab_translate("Calendar");
 				$this->calendar = "";
+				
+				$this->vars['title'] 		= $title;
+				$this->vars['description'] 	= $description;
+				$this->vars['startdate'] 	= $startdate;
+				$this->vars['enddate'] 		= $enddate;
 				}
 			}
 		}
@@ -808,13 +843,15 @@ function notifyResourceEvent($title, $description, $startdate, $enddate, $idcals
 		for( $i = 0; $i < count($idcals); $i++ )
 			{
 			$tempc->calendar = bab_getCalendarOwnerName($idcals[$i], BAB_CAL_RES_TYPE);
-			$message = $mail->mailTemplate(bab_printTemplate($tempc,"mailinfo.html", "newevent"));
 			$mail->mailSubject(bab_translate("New appointement"));
+			
+			$tempc->asHtml();
+			$message = $mail->mailTemplate(bab_printTemplate($tempc,"mailinfo.html", "newevent"));
 			$mail->mailBody($message, "html");
-
+			
+			$tempc->asText();
 			$message = bab_printTemplate($tempc,"mailinfo.html", "neweventtxt");
 			$mail->mailAltBody($message);
-
 			
 			$arrusers = cal_usersToNotiy($idcals[$i], BAB_CAL_RES_TYPE, 0);
 			
@@ -855,32 +892,20 @@ function notifyEventApprobation($evtid, $bconfirm, $raison, $calname)
 
 	if(!class_exists("clsNotifyEventApprobation"))
 		{
-		class clsNotifyEventApprobation
+		class clsNotifyEventApprobation extends clsNotifyEvent
 			{
-			var $title;
 			var $message;
-			var $description;
-			var $startdate;
-			var $enddate;
-			var $descriptiontxt;
-			var $titletxt;
-			var $startdatetxt;
-			var $enddatetxt;
+			var $calendar;
 
 			function clsNotifyEventApprobation(&$evtinfo, $raison, $calname)
 				{
-				$this->title = $evtinfo['title'];
 				$this->message = $raison;
-
-				$this->description = $evtinfo['description'];
-				$this->startdate = bab_longDate(bab_mktime($evtinfo['start_date']));
-				$this->enddate = bab_longDate(bab_mktime($evtinfo['end_date']));
-				$this->descriptiontxt = bab_translate("Description");
-				$this->titletxt = bab_translate("Title");
-				$this->startdatetxt = bab_translate("Begin date");
-				$this->enddatetxt = bab_translate("End date");
-				$this->calendartxt = bab_translate("Calendar");
 				$this->calendar = $calname;
+				
+				$this->vars['title'] 		= $evtinfo['title'];
+				$this->vars['description'] 	= $evtinfo['description'];
+				$this->vars['startdate'] 	= bab_longDate(bab_mktime($evtinfo['start_date']));
+				$this->vars['enddate'] 		= bab_longDate(bab_mktime($evtinfo['end_date']));
 				}
 			}
 		}
@@ -897,7 +922,7 @@ function notifyEventApprobation($evtid, $bconfirm, $raison, $calname)
 	$mail->mailFrom($GLOBALS['BAB_SESS_EMAIL'], $GLOBALS['BAB_SESS_USER']);
 
 	$tempc = new clsNotifyEventApprobation($evtinfo, $raison, $calname);
-	$message = $mail->mailTemplate(bab_printTemplate($tempc,"mailinfo.html", "newevent"));
+	
 
 	if( $bconfirm == BAB_CAL_STATUS_ACCEPTED)
 		{
@@ -910,10 +935,15 @@ function notifyEventApprobation($evtid, $bconfirm, $raison, $calname)
 
 	$subject .= $GLOBALS['BAB_SESS_USER'];
 	$mail->mailSubject($subject);
+	
+	$tempc->asHtml();
+	$message = $mail->mailTemplate(bab_printTemplate($tempc,"mailinfo.html", "newevent"));
 	$mail->mailBody($message, "html");
-
+	
+	$tempc->asText();
 	$message = bab_printTemplate($tempc,"mailinfo.html", "neweventtxt");
 	$mail->mailAltBody($message);
+
 	$mail->send();
 	}
 	
@@ -930,32 +960,20 @@ function notifyEventUpdate($evtid, $bdelete)
 
 	if(!class_exists("clsnotifyEventUpdate"))
 		{
-		class clsnotifyEventUpdate
+		class clsnotifyEventUpdate extends clsNotifyEvent
 			{
-			var $title;
 			var $message;
-			var $description;
-			var $startdate;
-			var $enddate;
-			var $descriptiontxt;
-			var $titletxt;
-			var $startdatetxt;
-			var $enddatetxt;
+			var $calendar;
 
 			function clsnotifyEventUpdate(&$evtinfo)
 				{
-				$this->title = $evtinfo['title'];
 				$this->message = '';
-
-				$this->description = $evtinfo['description'];
-				$this->startdate = bab_longDate(bab_mktime($evtinfo['start_date']));
-				$this->enddate = bab_longDate(bab_mktime($evtinfo['end_date']));
-				$this->descriptiontxt = bab_translate("Description");
-				$this->titletxt = bab_translate("Title");
-				$this->startdatetxt = bab_translate("Begin date");
-				$this->enddatetxt = bab_translate("End date");
-				$this->calendartxt = bab_translate("Calendar");
 				$this->calendar = '';
+				
+				$this->vars['title'] 		= $evtinfo['title'];
+				$this->vars['description'] 	= $evtinfo['description'];
+				$this->vars['startdate'] 	= bab_longDate(bab_mktime($evtinfo['start_date']));
+				$this->vars['enddate'] 		= bab_longDate(bab_mktime($evtinfo['end_date']));
 				}
 			}
 		}
@@ -1006,9 +1024,11 @@ function notifyEventUpdate($evtid, $bdelete)
 			{
 			$calinfo = $babBody->icalendars->getCalendarInfo($arr['id_cal']);
 			$tempc->calendar = $calinfo['name'];
+			$tempc->asHtml();
 			$message = $mail->mailTemplate(bab_printTemplate($tempc,"mailinfo.html", "newevent"));
 			$mail->mailBody($message, "html");
 
+			$tempc->asText();
 			$message = bab_printTemplate($tempc,"mailinfo.html", "neweventtxt");
 			$mail->mailAltBody($message);
 			
@@ -1049,7 +1069,7 @@ function notifyEventApprovers($id_event, $users, $calinfo)
 
 	if(!class_exists("notifyEventApproversCls"))
 		{
-		class notifyEventApproversCls
+		class notifyEventApproversCls 
 			{
 			var $articletitle;
 			var $message;
@@ -1062,6 +1082,10 @@ function notifyEventApprovers($id_event, $users, $calinfo)
 			var $sitename;
 			var $date;
 			var $dateval;
+			
+			var $tmp_title;
+			var $tmp_desc;
+			var $tmp_calendar;
 
 
 			function notifyEventApproversCls($id_event, $calinfo)
@@ -1071,19 +1095,33 @@ function notifyEventApprovers($id_event, $users, $calinfo)
 				$this->message = bab_translate("A new event has been scheduled");
 				$evtinfo = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($id_event)."'"));
 
-				$this->description = $evtinfo['description'];
+				$this->tmp_desc = $evtinfo['description'];
 				$this->descriptiontxt = bab_translate("Description");
 				$this->startdate = bab_longDate(bab_mktime($evtinfo['start_date']));
 				$this->startdatetxt = bab_translate("Begin date");
 				$this->enddate = bab_longDate(bab_mktime($evtinfo['end_date']));
 				$this->enddatetxt = bab_translate("End date");
 				$this->titletxt = bab_translate("Title");
-				$this->title = $evtinfo['title'];
+				$this->tmp_title = $evtinfo['title'];
 				if( $calinfo['type'] == BAB_CAL_PUB_TYPE )
 					$this->calendartxt = bab_translate("Public calendar");
 				else
 					$this->calendartxt = bab_translate("Resource calendar");
-				$this->calendar = $calinfo['name'];
+					
+				
+				$this->tmp_calendar = $calinfo['name'];
+				}
+				
+			function asHtml() {
+				$this->title = bab_toHtml($this->tmp_title);
+				$this->description = bab_toHtml($this->tmp_desc, BAB_HTML_REPLACE_MAIL);
+				$this->calendar = bab_toHtml($this->tmp_calendar);
+				}
+				
+			function asText() {
+				$this->title = $this->tmp_title;
+				$this->description = strip_tags(bab_toHtml($this->tmp_desc, BAB_HTML_REPLACE_MAIL));
+				$this->calendar = $this->tmp_calendar;
 				}
 			}
 		}
@@ -1105,9 +1143,11 @@ function notifyEventApprovers($id_event, $users, $calinfo)
 	$mail->mailSubject(bab_translate("New waiting event"));
 
 	$tempa = new notifyEventApproversCls($id_event, $calinfo);
+	$tempa->asHtml();
 	$message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "eventwait"));
 	$mail->mailBody($message, "html");
 
+	$tempa->asText();
 	$message = bab_printTemplate($tempa,"mailinfo.html", "eventwaittxt");
 	$mail->mailAltBody($message);
 

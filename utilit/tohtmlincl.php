@@ -70,6 +70,14 @@ function bab_f_toHtml($pee, $opt) {
 		bab_replace_ref($pee);
 	}
 	
+	if (BAB_HTML_REPLACE_MAIL === ($opt & BAB_HTML_REPLACE_MAIL)) {
+		$GLOBALS['bab_replace_ext_url'] = 1;
+		bab_replace_ref($pee);
+		unset($GLOBALS['bab_replace_ext_url']);
+	}
+	
+	
+	
 	if (BAB_HTML_TAB === ($opt & BAB_HTML_TAB)) {
 		$pee = preg_replace("/\t/", "&nbsp; &nbsp; &nbsp; ", $pee);
 	}
