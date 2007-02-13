@@ -482,7 +482,7 @@
 <string id="Modify Status">Modifier un statut</string>
 <string id="Modify a forum">Modifier un forum</string>
 <string id="Modify a note">Modifier une note</string>
-<string id="Modify a topic">Modifier un thème d'article</string>
+<string id="Modify a topic">Modifier un thème d'articles</string>
 <string id="Modify a user">Modifier un utilisateur</string>
 <string id="Modify account">Modifier un compte</string>
 <string id="Modify contact">Modifier le contact</string>
@@ -787,7 +787,7 @@
 <string id="Update Password">Modifier le mot de passe</string>
 <string id="Update Question">Mettre à jour la question</string>
 <string id="Update Skin">Mise à jour du skin</string>
-<string id="Update Topic">Mettre à jour un thème d'article</string>
+<string id="Update Topic">Mettre à jour un thème d'articles</string>
 <string id="Update access">Modifier l'accès</string>
 <string id="Update failed">La mise à jour a échoué</string>
 <string id="Update reply">Modifier la réponse</string>
@@ -1334,7 +1334,7 @@
 <string id="Finish">Soumettre</string>
 <string id="Are you sure you want to submit this article?">Êtes-vous sûr de vouloir soumettre cet article ?</string>
 <string id="Are you sure you want to remove this draft?">Êtes-vous sûr de vouloir supprimer ce brouillon ?</string>
-<string id="No topic">Pas de thème d'article</string>
+<string id="No topic">Pas de thème d'articles</string>
 <string id="With approbation">Avec approbation</string>
 <string id="Without approbation">Sans approbation</string>
 <string id="Preview article">Prévisualiser l'article</string>
@@ -1345,7 +1345,7 @@
 <string id="Associated documents">Documents associés</string>
 <string id="Warning! If you change topic, you can lost associated documents">Attention ! Si vous changez de thème d\'articles, vous pouvez perdre les documents associés</string>
 <string id="Can't create directory">Impossible de créer le répertoire</string>
-<string id="You must specify a topic">Vous devez spécifier un thème d'article</string>
+<string id="You must specify a topic">Vous devez spécifier un thème d'articles</string>
 <string id="You don't have rights to submit articles in this topic">Vous n'avez pas les droits pour soumettre dans ce thème</string>
 <string id="Draft creation failed">La création du brouillon a échoué</string>
 <string id="Write article">Rédaction de l'article</string>
