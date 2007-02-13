@@ -1507,7 +1507,7 @@
 <string id="Personal calendars List">Liste des groupes ayant des agendas personnels</string>
 <string id="Resources calendars List">Liste des agendas de ressources</string>
 <string id="Public calendars List">Liste des agendas collectifs</string>
-<string id="Who can view statistics?">Qui peut consulter les statistiques ?</string>
+<string id="Who can manage statistics?">Qui peut gérer les statistiques ?</string>
 <string id="Ovidentia database dump">Exporter la base de données d'Ovidentia (sql)</string>
 <string id="New appointement">Nouvel événement</string>
 <string id="Appointement accepted by ">Rendez-vous accepté par </string>

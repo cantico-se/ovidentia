@@ -201,7 +201,7 @@ switch($idx)
 	case 'man':
 		$babBody->title = bab_translate("Groups List");
 		$macl = new macl("admstats", "groups", 1, "aclman");
-        $macl->addtable( BAB_STATSMAN_GROUPS_TBL,bab_translate("Who can view statistics?"));
+        $macl->addtable( BAB_STATSMAN_GROUPS_TBL,bab_translate("Who can manage statistics?"));
 		$macl->filter(0,0,1,1,1);
         $macl->babecho();
 		$babBody->addItemMenu("man", bab_translate("Managers"), $GLOBALS['babUrlScript']."?tg=admstats&idx=man");
