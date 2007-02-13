@@ -111,6 +111,9 @@ function sectionsList()
 				$this->arr['title'] = bab_translate($this->arr['title']);
 				$this->arr['description'] = bab_translate($this->arr['description']);
 				$this->idvalue = $this->arr['id']."-1";
+				
+				$this->opt = 5 != $this->arr['id'];
+				
 				if( $this->arr['enabled'] == "N")
 					$this->secchecked = "checked";
 				else
@@ -158,11 +161,12 @@ function sectionsList()
 			static $i = 0;
 			if( $i < $this->count)
 				{
-				$this->altbg = $this->altbg ? false : true;
+				$this->altbg = !$this->altbg;
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->url = $GLOBALS['babUrlScript']."?tg=section&idx=Modify&item=".$this->arr['id'];
 				$this->accessurl = $GLOBALS['babUrlScript']."?tg=section&idx=Groups&item=".$this->arr['id'];
 				$this->idvalue = $this->arr['id']."-2";
+				
 				if( $this->arr['enabled'] == "N")
 					$this->secchecked = "checked";
 				else

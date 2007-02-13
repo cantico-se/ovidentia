@@ -80,53 +80,61 @@
 
 <!--#begin sectionslist --> 
 <form method="post" action="{ babPhpSelf }" name="listform">
-<input type="hidden" name="tg" value="sections">
-<input type="hidden" name="idx" value="List">
-<input type="hidden" name="update" value="disable">
+<input type="hidden" name="tg" value="sections" />
+<input type="hidden" name="idx" value="List" />
+<input type="hidden" name="update" value="disable" />
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
-        <table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+        <table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
           <tr class="BabSiteAdminTitleFontBackground"> 
 			<td>{ title }</td>
 			<td>{ description }</td>
 			<td>{ access }</td>
-			<td>{ disabled }</td>
-			<td>{ opttxt }</td>
+			<td align="center">{ disabled }</td>
+			<td align="center">{ opttxt }</td>
 			</tr><!--#in getnextp -->
 			<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
 			<td nowrap valign="middle">{ arr[title] }</td>
 			<td valign="middle">{ arr[description] }</td>
-			<td valign="middle" width="0%" align="center" nowrap><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
-			<td valign="middle" width="0%" align="center" nowrap><input type="checkbox" name="sections[]" { secchecked } value="{ idvalue }"></td>
-			<td valign="middle" width="0%" align="center" nowrap><input type="checkbox" name="sectopt[]" { optchecked } value="{ idvalue }"></td>
-			</tr><!--#endin getnextp --><!--#in getnextcat -->
+			<td>&nbsp;</td>
+			<td align="center"><input type="checkbox" name="sections[]" { secchecked } value="{ idvalue }" /></td>
+			<td align="center">
+				<!--#if opt -->
+				<input type="checkbox" name="sectopt[]" { optchecked } value="{ idvalue }" />
+				<!--#else opt -->
+				&nbsp;
+				<!--#endif opt -->
+			</td>
+			</tr><!--#endin getnextp -->
+			<!--#in getnextcat -->
 			<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
 			<td nowrap valign="middle">{ arr[title] }</td>
 			<td valign="middle">{ arr[description]  }</td>
-			<td valign="middle" width="0%" align="center" nowrap><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
-			<td valign="middle" width="0%" align="center" nowrap><input type="checkbox" name="sections[]" { secchecked } value="{ idvalue }"></td>
-			<td valign="middle" width="0%" align="center" nowrap><input type="checkbox" name="sectopt[]" { optchecked } value="{ idvalue }"></td>
-			</tr><!--#endin getnextcat --><!--#in getnext -->
+			<td><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+			<td align="center"><input type="checkbox" name="sections[]" { secchecked } value="{ idvalue }" /></td>
+			<td align="center"><input type="checkbox" name="sectopt[]" { optchecked } value="{ idvalue }" /></td>
+			</tr><!--#endin getnextcat -->
+			<!--#in getnext -->
 			<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
-			<td nowrap valign="middle"><a class="BabSiteAdminListLink" href="{ url }">{ arr[title] }</a></td>
-			<td valign="middle">{ arr[description] }</td>
-			<td valign="middle" width="0%" align="center" nowrap><a class="BabSiteAdminListLink" href="{ accessurl }">{ access }</a></td>
-			<td valign="middle" width="0%" align="center" nowrap><input type="checkbox" name="sections[]" { secchecked } value="{ idvalue }"></td>
-			<td valign="middle" width="0%" align="center" nowrap><input type="checkbox" name="sectopt[]" { optchecked } value="{ idvalue }"></td>
+			<td><a href="{ url }">{ arr[title] }</a></td>
+			<td>{ arr[description] }</td>
+			<td><a href="{ accessurl }">{ access }</a></td>
+			<td align="center"><input type="checkbox" name="sections[]" { secchecked } value="{ idvalue }" /></td>
+			<td align="center"><input type="checkbox" name="sectopt[]" { optchecked } value="{ idvalue }" /></td>
 			</tr><!--#endin getnext -->
 			<tr class="BabSiteAdminTitleFontBackground"> 
 			<td colspan="2">&nbsp;</td>
 			<td width="1%" align="center" nowrap><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
-			<td width="1%" align="center" nowrap><a href="javascript:onCheckAll('sections', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('sections', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
-			<td class="BabSiteAdminTitleFontBackground" width="1%" align="center" nowrap><a href="javascript:onCheckAll('sectopt', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('sectopt', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
+			<td width="1%" align="center" nowrap><a href="javascript:onCheckAll('sections', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0" /></a><a href="javascript:onCheckAll('sections', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0" /></a></td>
+			<td class="BabSiteAdminTitleFontBackground" width="1%" align="center" nowrap><a href="javascript:onCheckAll('sectopt', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('sectopt', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0" /></a></td>
 		</tr>
 	</table>
 </td>
 </tr>
 </table>
 <br>
-<div align="center"><input type="submit" name="submit" value="{ update }"></div>
+<div align="center"><input type="submit" name="submit" value="{ update }" /></div>
 <br>
 </form>
 <!--#end sectionslist -->
