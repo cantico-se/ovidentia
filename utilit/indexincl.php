@@ -100,12 +100,17 @@ class bab_indexReturn {
 
 class bab_indexObject {
 
-	var $enabled;
+	var $disabled;
 	var $engineName;
 
 	function bab_indexObject($object) {
 
 		$arr = bab_searchEngineInfos();
+
+		if (false === $arr) {
+			$this->disabled = true;
+			return;
+		}
 
 		$this->disabled = $arr['indexes'][$object]['index_disabled'];
 		$this->onload = $arr['indexes'][$object]['index_onload'];
