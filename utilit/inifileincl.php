@@ -205,7 +205,7 @@ class bab_inifile_requirements {
 	
 		return array(
 			'description'	=> 'register_globals (php.ini)',
-			'current'		=> $value,
+			'current'		=> ini_get('register_globals') ? 'On' : 'Off',
 			'result'		=> !ini_get('register_globals')
 		);
 	}
