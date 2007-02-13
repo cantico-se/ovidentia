@@ -570,67 +570,76 @@ function searchKeyword($item , $option = "OR")
 	}
 
 class temp_nav
+	{
+	function temp_nav($babLimit,$nbrows,$navitem,$navpos)
 		{
-		function temp_nav($babLimit,$nbrows,$navitem,$navpos)
-			{
-			global $navbaritems;
-			$this->navbaritems = $navbaritems;
-			$this->babLimit = $babLimit;
-			$this->nbrows = $nbrows;
-			$this->navitem = $navitem;
-			$this->navpos = $navpos;
-			if (($navpos+$babLimit) > $nbrows ) $this->navposend = $navpos+($nbrows - $navpos);
-			else $this->navposend = $navpos+$babLimit;
-			$this->results = bab_translate("Results");
-			$this->pages = bab_translate("Pages");
-			$this->to = bab_translate("To");
-			$this->from = bab_translate("From");
-			$this->countpages = ceil($nbrows/$babLimit);
-			
-			
-			if ( $navpos <= 0 ) $this->previous = false;
-			else 
-				{ 
-				$this->previous = bab_translate("Previous");
-				$this->urlprev ="javascript:navsearch(".($this->navpos - $this->babLimit).",'".$this->navitem."')"; 
-				}
-
-			if ( $navpos + $babLimit >= $nbrows ) $this->next = false;
-			else 
-				{
-				$this->next = bab_translate("Next");
-				$this->urlnext = "javascript:navsearch(".($this->navpos + $this->babLimit).",'".$this->navitem."')"; 
-				}
-			
-			$this->count = ceil($nbrows/$babLimit);
-			if ( $this->count > $this->navbaritems )
-				$this->count = $this->navbaritems;
-
-			if ((ceil($this->navpos/$babLimit) - ($this->navbaritems/2)) < 0 ) $this->start = 0;
-			else $this->start = ceil($this->navpos/$babLimit) - ($this->navbaritems/2);
-			$this->page = $this->start + 1;
+		global $navbaritems;
+		$this->navbaritems = $navbaritems;
+		$this->babLimit = $babLimit;
+		$this->nbrows = $nbrows;
+		$this->navitem = $navitem;
+		$this->navpos = $navpos;
+		if (($navpos+$babLimit) > $nbrows ) $this->navposend = $navpos+($nbrows - $navpos);
+		else $this->navposend = $navpos+$babLimit;
+		$this->results = bab_translate("Results");
+		$this->pages = bab_translate("Pages");
+		$this->to = bab_translate("To");
+		$this->from = bab_translate("From");
+		$this->countpages = ceil($nbrows/$babLimit);
+		
+		if (1 === $this->countpages) {
+			$this->pages = bab_translate("Page");
+		}
+		
+		
+		if ( $navpos <= 0 ) $this->previous = false;
+		else 
+			{ 
+			$this->previous = bab_translate("Previous");
+			$this->urlprev ="javascript:navsearch(".($this->navpos - $this->babLimit).",'".$this->navitem."')"; 
 			}
-		function getnext()
+
+		if ( $navpos + $babLimit >= $nbrows ) $this->next = false;
+		else 
 			{
-			static $i = 0;
-			if( $i < $this->count && $this->page < $this->countpages)
-				{
-				$this->page = $this->start + $i + 1;
-				$this->urlpage = "javascript:navsearch(".$this->babLimit*($this->start+$i).",'".$this->navitem."')"; 
-				if ( (ceil($this->navpos/$this->babLimit) == $this->start + $i) ) 
-	 				$this->selected = true;
-				else
-					$this->selected = false;
-				$i++;
-				return true;
-				}
+			$this->next = bab_translate("Next");
+			$this->urlnext = "javascript:navsearch(".($this->navpos + $this->babLimit).",'".$this->navitem."')"; 
+			}
+		
+		$this->count = ceil($nbrows/$babLimit);
+		if ( $this->count > $this->navbaritems )
+			$this->count = $this->navbaritems;
+			
+		if (1 === $this->count) {
+			$this->results = bab_translate("Result");
+		}
+
+		if ((ceil($this->navpos/$babLimit) - ($this->navbaritems/2)) < 0 ) $this->start = 0;
+		else $this->start = ceil($this->navpos/$babLimit) - ($this->navbaritems/2);
+		$this->page = $this->start + 1;
+		}
+		
+	function getnext()
+		{
+		static $i = 0;
+		if( $i < $this->count && $this->page < $this->countpages)
+			{
+			$this->page = $this->start + $i + 1;
+			$this->urlpage = "javascript:navsearch(".$this->babLimit*($this->start+$i).",'".$this->navitem."')"; 
+			if ( (ceil($this->navpos/$this->babLimit) == $this->start + $i) ) 
+				$this->selected = true;
 			else
-				{
-				$i = 0;
-				return false;
-				}
+				$this->selected = false;
+			$i++;
+			return true;
+			}
+		else
+			{
+			$i = 0;
+			return false;
 			}
 		}
+	}
 
 function navbar($babLimit,$nbrows,$navitem,$navpos)
 	{

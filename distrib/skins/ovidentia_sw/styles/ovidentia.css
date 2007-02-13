@@ -584,6 +584,10 @@ body.page.articles .bab_repeat {
 	}
 
 
+body.page.articles .bab_buttons .bab_title {
+	font-weight:bold;
+	}
+
 /* PUBLIC CORE CSS */
 
 
