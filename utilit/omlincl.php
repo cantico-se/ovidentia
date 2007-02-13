@@ -1940,7 +1940,7 @@ class bab_SubFolders extends bab_handler
 							rsort($this->IdEntries);
 							break;
 						default:
-							asort($this->IdEntries);
+							sort($this->IdEntries);
 							break;
 					}
 				}
