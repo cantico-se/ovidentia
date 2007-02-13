@@ -130,11 +130,12 @@ class listFiles
 		if(!$this->bdownload )
 			$this->bdownload = $bmanager? true: false;
 
+		$this->countgrp = 0;
 		if( $gr == "Y" || ($gr == "N" && !empty($path)))
 			{
 			$this->countgrp = 0;
 			}
-		else 
+		else if( isset($this->arrgrp['id']))
 			{
 			$this->countgrp = count($this->arrgrp['id']);
 			}

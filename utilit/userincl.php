@@ -562,6 +562,14 @@ function bab_fileManagerAccessLevel()
 	
 	$res = $babDB->db_query("select id, idsa, folder, bhide from ".BAB_FM_FOLDERS_TBL." where active='Y' ORDER BY folder");
 	$babBody->aclfm['bshowfm'] = false;
+	$babBody->aclfm['id'] = array();
+	$babBody->aclfm['folder'] = array();
+	$babBody->aclfm['down'] = array();
+	$babBody->aclfm['uplo'] = array();
+	$babBody->aclfm['upda'] = array();
+	$babBody->aclfm['idsa'] = array();
+	$babBody->aclfm['ma'] = array();
+	$babBody->aclfm['hide'] = array();
 	while($row = $babDB->db_fetch_array($res))
 		{
 		$uplo = bab_isAccessValid(BAB_FMUPLOAD_GROUPS_TBL, $row['id']);
