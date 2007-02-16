@@ -56,7 +56,7 @@ class bab_eventDirectory extends bab_event {
  */
 class bab_eventDirectoryEntryCreated extends bab_eventDirectory {
 
-	function bab_eventCreateDirectoryEntry($id_entry) {
+	function bab_eventDirectoryEntryCreated($id_entry) {
 		$this->id_entry = $id_entry;
 	}
 }
@@ -68,7 +68,7 @@ class bab_eventDirectoryEntryCreated extends bab_eventDirectory {
  */
 class bab_eventDirectoryEntryModified extends bab_eventDirectory {
 
-	function bab_eventModifyDirectoryEntry($id_entry) {
+	function bab_eventDirectoryEntryModified($id_entry) {
 		$this->id_entry = $id_entry;
 	}
 }
@@ -80,7 +80,7 @@ class bab_eventDirectoryEntryModified extends bab_eventDirectory {
  */
 class bab_eventDirectoryEntryDeleted extends bab_eventDirectory {
 
-	function bab_eventDeleteDirectoryEntry($id_entry) {
+	function bab_eventDirectoryEntryDeleted($id_entry) {
 		$this->id_entry = $id_entry;
 	}
 }
@@ -93,7 +93,7 @@ class bab_eventDirectoryEntryDeleted extends bab_eventDirectory {
  */
 class bab_eventUserCreated extends bab_eventDirectory {
 
-	function bab_eventCreateUser($id_user) {
+	function bab_eventUserCreated($id_user) {
 		$this->id_user = $id_user;
 	}
 }
@@ -105,7 +105,7 @@ class bab_eventUserCreated extends bab_eventDirectory {
  */
 class bab_eventUserModified extends bab_eventDirectory {
 	
-	function bab_eventModifyUser($id_user) {
+	function bab_eventUserModified($id_user) {
 		$this->id_user = $id_user;
 	}
 }
@@ -117,7 +117,7 @@ class bab_eventUserModified extends bab_eventDirectory {
  */
 class bab_eventUserDeleted extends bab_eventDirectory {
 
-	function bab_eventDeleteUser($id_user) {
+	function bab_eventUserDeleted($id_user) {
 		$this->id_user = $id_user;
 	}
 }
