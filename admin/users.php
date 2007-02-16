@@ -21,6 +21,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
+
+/**
+* @internal SEC1 PR 16/02/2007 FULL
+*/
+
 include_once "base.php";
 include_once $babInstallPath."admin/register.php";
 include_once $babInstallPath."utilit/lusersincl.php";
@@ -40,7 +45,6 @@ function listUsers($pos, $grp)
 		var $emailval;
 
 		var $arr = array();
-		var $db;
 		var $count;
 		var $res;
 
@@ -65,6 +69,8 @@ function listUsers($pos, $grp)
 		function temp($pos, $grp)
 			{
 			global $babBody;
+			global $babDB;
+			
 			$this->email = bab_translate("Email");
 			$this->allname = bab_translate("All");
 			$this->update = bab_translate("Update");
@@ -78,8 +84,8 @@ function listUsers($pos, $grp)
 			$this->checkall = bab_translate("Check all");
 			$this->uncheckall = bab_translate("Uncheck all");
 
-			$this->db = &$GLOBALS['babDB'];
-			$this->group = bab_getGroupName($grp);
+			
+			$this->group = bab_toHtml(bab_getGroupName($grp));
 			$this->grp = $grp;
 
 			switch ($babBody->nameorder[0]) {
@@ -95,16 +101,16 @@ function listUsers($pos, $grp)
 
 			// group members
 			$this->group_members = array();
-			$res = $this->db->db_query("SELECT id_object FROM ".BAB_USERS_GROUPS_TBL." WHERE id_group='".$this->grp."'");
-			while (list($id_user) = $this->db->db_fetch_array($res))
+			$res = $babDB->db_query("SELECT id_object FROM ".BAB_USERS_GROUPS_TBL." WHERE id_group='".$babDB->db_escape_string($this->grp)."'");
+			while (list($id_user) = $babDB->db_fetch_array($res))
 				{
 				$this->group_members[$id_user] = $id_user;
 				}
 
 			// User login status
 			$this->users_logged = array();
-			$res = $this->db->db_query("SELECT id_user FROM ".BAB_USERS_LOG_TBL."");
-			while (list($id_user) = $this->db->db_fetch_array($res))
+			$res = $babDB->db_query("SELECT id_user FROM ".BAB_USERS_LOG_TBL."");
+			while (list($id_user) = $babDB->db_fetch_array($res))
 				{
 				$this->users_logged[$id_user] = $id_user;
 				}
@@ -120,41 +126,41 @@ function listUsers($pos, $grp)
 				$this->ord = $pos[0];
 				if( $babBody->currentAdmGroup == 0 || ($this->bupdate && $babBody->currentDGGroup['battach'] == 'Y' && $this->grp == $babBody->currentDGGroup['id_group']))
 					{
-					$req .= " where ".$this->namesearch2." like '".$this->pos."%' order by ".$this->namesearch2.", ".$this->namesearch." asc";
+					$req .= " where ".$this->namesearch2." like '".$babDB->db_escape_string($this->pos)."%' order by ".$babDB->db_escape_string($this->namesearch2).", ".$babDB->db_escape_string($this->namesearch)." asc";
 					}
 				else
 					{
-					$req .= ", ".BAB_USERS_GROUPS_TBL." ug, ".BAB_GROUPS_TBL." g where u.disabled != '1' and ug.id_object=u.id and ug.id_group=g.id AND g.lf>='".$babBody->currentDGGroup['lf']."' AND g.lr<='".$babBody->currentDGGroup['lr']."' and u.".$this->namesearch2." like '".$this->pos."%' order by u.".$this->namesearch2.", u.".$this->namesearch." asc";
+					$req .= ", ".BAB_USERS_GROUPS_TBL." ug, ".BAB_GROUPS_TBL." g where u.disabled != '1' and ug.id_object=u.id and ug.id_group=g.id AND g.lf>='".$babDB->db_escape_string($babBody->currentDGGroup['lf'])."' AND g.lr<='".$babDB->db_escape_string($babBody->currentDGGroup['lr'])."' and u.".$babDB->db_escape_string($this->namesearch2)." like '".$babDB->db_escape_string($this->pos)."%' order by u.".$babDB->db_escape_string($this->namesearch2).", u.".$babDB->db_escape_string($this->namesearch)." asc";
 					}
 
-				$this->fullname = bab_composeUserName(bab_translate("Lastname"),bab_translate("Firstname"));
-				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=users&idx=chg&pos=".$this->ord.$this->pos."&grp=".$this->grp;
+				$this->fullname = bab_toHtml(bab_composeUserName(bab_translate("Lastname"),bab_translate("Firstname")));
+				$this->fullnameurl = bab_toHtml( $GLOBALS['babUrlScript']."?tg=users&idx=chg&pos=".urlencode($this->ord.$this->pos)."&grp=".urlencode($this->grp));
 				}
 			else
 				{
 				$this->pos = $pos;
 				$this->ord = "";
 				if( $babBody->currentAdmGroup == 0 || ($this->bupdate && $babBody->currentDGGroup['battach'] == 'Y' && $this->grp == $babBody->currentDGGroup['id_group']))
-					$req .= " where ".$this->namesearch." like '".$this->pos."%' order by ".$this->namesearch.", ".$this->namesearch2." asc";
+					$req .= " where ".$babDB->db_escape_string($this->namesearch)." like '".$babDB->db_escape_string($this->pos)."%' order by ".$babDB->db_escape_string($this->namesearch).", ".$babDB->db_escape_string($this->namesearch2)." asc";
 				else
-					$req .= ", ".BAB_USERS_GROUPS_TBL." ug, ".BAB_GROUPS_TBL." g where u.disabled != '1' and ug.id_object=u.id and ug.id_group=g.id AND g.lf>='".$babBody->currentDGGroup['lf']."' AND g.lr<='".$babBody->currentDGGroup['lr']."' and u.".$this->namesearch." like '".$this->pos."%' order by u.".$this->namesearch.", u.".$this->namesearch2." asc";
-				$this->fullname = bab_composeUserName(bab_translate("Firstname"),bab_translate("Lastname"));
-				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=users&idx=chg&pos=".$this->ord.$this->pos."&grp=".$this->grp;
+					$req .= ", ".BAB_USERS_GROUPS_TBL." ug, ".BAB_GROUPS_TBL." g where u.disabled != '1' and ug.id_object=u.id and ug.id_group=g.id AND g.lf>='".$babDB->db_escape_string($babBody->currentDGGroup['lf'])."' AND g.lr<='".$babDB->db_escape_string($babBody->currentDGGroup['lr'])."' and u.".$babDB->db_escape_string($this->namesearch)." like '".$babDB->db_escape_string($this->pos)."%' order by u.".$babDB->db_escape_string($this->namesearch).", u.".$babDB->db_escape_string($this->namesearch2)." asc";
+				$this->fullname = bab_toHtml(bab_composeUserName(bab_translate("Firstname"),bab_translate("Lastname")));
+				$this->fullnameurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=users&idx=chg&pos=".urlencode($this->ord.$this->pos)."&grp=".urlencode($this->grp));
 				}
 				
 			bab_debug($req);
 
-			$this->res = $this->db->db_query($req);
-			$this->count = $this->db->db_num_rows($this->res);
+			$this->res = $babDB->db_query($req);
+			$this->count = $babDB->db_num_rows($this->res);
 
 			if( empty($this->pos))
 				$this->allselected = 1;
 			else
 				$this->allselected = 0;
-			$this->allurl = $GLOBALS['babUrlScript']."?tg=users&idx=List&pos=&grp=".$this->grp."&bupd=".$this->bupdate;
-			$this->groupurl = $GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$this->grp;
+			$this->allurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=users&idx=List&pos=&grp=".$this->grp."&bupd=".$this->bupdate);
+			$this->groupurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$this->grp);
 			
-			list($iddir) = $this->db->db_fetch_row($this->db->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group='1'"));
+			list($iddir) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group='1'"));
 			$this->set_directory = $babBody->currentAdmGroup == 0 && bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL,$iddir);
 			
 			if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['users'] == 'Y' )
@@ -182,14 +188,15 @@ function listUsers($pos, $grp)
 			if( $i < $this->count)
 				{
 				$this->altbg = !$this->altbg;
-				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->url = $GLOBALS['babUrlScript']."?tg=user&idx=Modify&item=".$this->arr['id']."&pos=".$this->ord.$this->pos."&grp=".$this->grp;
+				global $babDB;
+				$this->arr = $babDB->db_fetch_array($this->res);
+				$this->url = bab_toHtml( $GLOBALS['babUrlScript']."?tg=user&idx=Modify&item=".urlencode($this->arr['id'])."&pos=".urlencode($this->ord.$this->pos)."&grp=".urlencode($this->grp));
 				if( $this->ord == "-" )
-					$this->urlname = bab_composeUserName($this->arr['lastname'],$this->arr['firstname']);
+					$this->urlname = bab_toHtml(bab_composeUserName($this->arr['lastname'],$this->arr['firstname']));
 				else
-					$this->urlname = bab_composeUserName($this->arr['firstname'],$this->arr['lastname']);
+					$this->urlname = bab_toHtml(bab_composeUserName($this->arr['firstname'],$this->arr['lastname']));
 
-				$this->userid = $this->arr['id'];
+				$this->userid = bab_toHtml($this->arr['id']);
 
 				if( isset($this->users_logged[$this->userid]))
 					$this->status ="*";
@@ -211,7 +218,7 @@ function listUsers($pos, $grp)
 
 				//$this->dirdetailurl = $GLOBALS['babUrlScript']."?tg=directory&idx=ddb&id=".$this->iddir."&idu=".$this->arr['idu']."&pos=&xf=";
 
-				$this->dirdetailurl = $GLOBALS['babUrlScript']."?tg=users&idx=dirv&id_user=".$this->userid;
+				$this->dirdetailurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=users&idx=dirv&id_user=".urlencode($this->userid));
 				$i++;
 				return true;
 				}
@@ -228,7 +235,7 @@ function listUsers($pos, $grp)
 			if( $k < 26)
 				{
 				$this->selectname = substr($t, $k, 1);
-				$this->selecturl = $GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$this->ord.$this->selectname."&grp=".$this->grp."&bupd=".$this->bupdate;
+				$this->selecturl = bab_toHtml( $GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".urlencode($this->ord.$this->selectname)."&grp=".urlencode($this->grp)."&bupd=".urlencode($this->bupdate));
 				$this->selected = 0;
 				
 				if( $this->pos == $this->selectname)
@@ -248,7 +255,7 @@ function listUsers($pos, $grp)
 	return $temp->count;
 	}
 
-function userCreate($firstname, $middlename, $lastname, $nickname, $email)
+function userCreate()
 	{
 	global $babBody;
 	class temp
@@ -269,13 +276,13 @@ function userCreate($firstname, $middlename, $lastname, $nickname, $email)
 		var $yes;
 		var $no;
 
-		function temp($firstname, $middlename, $lastname, $nickname, $email)
+		function temp()
 			{
-			$this->firstnameval = $firstname != ""? $firstname: "";
-			$this->middlenameval = $middlename != ""? $middlename: "";
-			$this->lastnameval = $lastname != ""? $lastname: "";
-			$this->nicknameval = $nickname != ""? $nickname: "";
-			$this->emailval = $email != ""? $email: "";
+			$this->firstnameval 	= bab_toHtml(bab_pp('firstname'));
+			$this->middlenameval 	= bab_toHtml(bab_pp('middlename'));
+			$this->lastnameval 		= bab_toHtml(bab_pp('lastname'));
+			$this->nicknameval 		= bab_toHtml(bab_pp('nickname'));
+			$this->emailval 		= bab_toHtml(bab_pp('email'));
 			$this->firstname = bab_translate("First Name");
 			$this->lastname = bab_translate("Last Name");
 			$this->middlename = bab_translate("Middle Name");
@@ -291,7 +298,7 @@ function userCreate($firstname, $middlename, $lastname, $nickname, $email)
 			}
 		}
 
-	$temp = new temp($firstname, $middlename, $lastname, $nickname, $email);
+	$temp = new temp();
 	$babBody->babecho(	bab_printTemplate($temp,"users.html", "usercreate"));
 	}
 
@@ -304,7 +311,7 @@ function utilit()
 
 		function temp()
 			{
-			$this->db = $GLOBALS['babDB'];
+			global $babDB;
 			$this->t_nb_total_users = bab_translate('Total users');
 			$this->t_nb_unconfirmed_users = bab_translate('Unconfirmed users');
 			$this->t_delete_unconfirmed = bab_translate('Delete unconfirmed users from');
@@ -312,9 +319,9 @@ function utilit()
 			$this->t_ok = bab_translate('Ok');
 			$this->js_alert = bab_translate('Day number must be 1 at least');
 			
-			list($this->arr['nb_total_users']) = $this->db->db_fetch_array($this->db->db_query("SELECT COUNT(*) FROM ".BAB_USERS_TBL.""));
+			list($this->arr['nb_total_users']) = $babDB->db_fetch_array($babDB->db_query("SELECT COUNT(*) FROM ".BAB_USERS_TBL.""));
 
-			list($this->arr['nb_unconfirmed_users']) = $this->db->db_fetch_array($this->db->db_query("SELECT COUNT(*) FROM ".BAB_USERS_TBL." WHERE is_confirmed='0'"));
+			list($this->arr['nb_unconfirmed_users']) = $babDB->db_fetch_array($babDB->db_query("SELECT COUNT(*) FROM ".BAB_USERS_TBL." WHERE is_confirmed='0'"));
 			}
 		}
 
@@ -325,15 +332,14 @@ function utilit()
 function delete_unconfirmed()
 	{
 	include $GLOBALS['babInstallPath']."utilit/delincl.php";
-	$db = $GLOBALS['babDB'];
-	$res = $db->db_query("SELECT id FROM ".BAB_USERS_TBL." WHERE is_confirmed='0' AND (DATE_ADD(datelog, INTERVAL ".$_POST['nb_days']." DAY) < NOW() OR datelog = '0000-00-00 00:00:00')");
-	while (list($id) = $db->db_fetch_array($res))
+	global $babDB;
+	$res = $babDB->db_query("SELECT id FROM ".BAB_USERS_TBL." WHERE is_confirmed='0' AND (DATE_ADD(datelog, INTERVAL ".$babDB->db_escape_string($_POST['nb_days'])." DAY) < NOW() OR datelog = '0000-00-00 00:00:00')");
+	while (list($id) = $babDB->db_fetch_array($res))
 		bab_deleteUser($id);
 	}
 
 function updateGroup( $grp, $users, $userst)
 {
-	$db = $GLOBALS['babDB'];
 
 	if( !empty($userst))
 		$tab = explode(",", $userst);
@@ -360,11 +366,11 @@ function updateGroup( $grp, $users, $userst)
 
 function dir_view($id_user)
 {
-$db = &$GLOBALS['babDB'];
+global $babDB;
 
-$arr = $db->db_fetch_array($db->db_query("SELECT dbt.id FROM ".BAB_DBDIR_ENTRIES_TBL." dbt WHERE '".$id_user."'=dbt.id_user and dbt.id_directory='0'"));
+$arr = $babDB->db_fetch_array($babDB->db_query("SELECT dbt.id FROM ".BAB_DBDIR_ENTRIES_TBL." dbt WHERE '".$babDB->db_escape_string($id_user)."'=dbt.id_user and dbt.id_directory='0'"));
 
-list($iddir) = $db->db_fetch_row($db->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group='1'"));
+list($iddir) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group='1'"));
 
 Header("Location: ". $GLOBALS['babUrlScript']."?tg=directory&idx=ddb&id=".$iddir."&idu=".$arr['id']."&pos=&xf=");
 
@@ -372,8 +378,10 @@ Header("Location: ". $GLOBALS['babUrlScript']."?tg=directory&idx=ddb&id=".$iddir
 
 
 /* main */
-if( !isset($pos))
-	$pos = "A";
+
+$pos = bab_rp('pos','A');
+$grp = bab_rp('grp');
+$idx = bab_rp('idx');
 
 if( !isset($grp) || empty($grp))
 	{
@@ -385,8 +393,7 @@ if( !isset($grp) || empty($grp))
 		}
 	}
 
-if( !isset($idx))
-	$idx = "List";
+
 
 if( isset($adduser) && ($babBody->isSuperAdmin || $babBody->currentDGGroup['users'] == 'Y'))
 {
@@ -412,9 +419,6 @@ if( isset($adduser) && ($babBody->isSuperAdmin || $babBody->currentDGGroup['user
 		$idx = "List";
 		if( $notifyuser == "Y" )
 			{
-
-			$firstname = addslashes($firstname);
-			$lastname = addslashes($lastname);
 
 			notifyAdminUserRegistration(bab_composeUserName($firstname , $lastname), $email, $nickname, $sendpwd == "Y"? $password1: "" );
 			}
@@ -453,7 +457,7 @@ switch($idx)
 		exit;
 		break;
 
-	case "brow": // Used by add-ons
+	case "brow": // Used by add-ons but deprecated
 		if( $babBody->isSuperAdmin || $babBody->currentAdmGroup != 0 )
 			{
 			browseUsers($pos, $cb);
@@ -466,21 +470,17 @@ switch($idx)
 		break;
 	case "Create":
 		$babBody->title = bab_translate("Create a user");
-		if (!isset($firstname)) $firstname = '';
-		if (!isset($middlename)) $middlename = '';
-		if (!isset($lastname)) $lastname = '';
-		if (!isset($nickname)) $nickname = '';
-		if (!isset($email)) $email = '';
-		userCreate($firstname, $middlename, $lastname, $nickname, $email);
+
+		userCreate();
 		$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp);
 		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=users&idx=Create&pos=".$pos);
 		break;
 	case "List":
 		if( $babBody->isSuperAdmin || $babBody->currentAdmGroup != 0 )
 			{
-			$babBody->title = bab_translate("Users list");
+			$babBody->setTitle(bab_translate("Users list"));
 			$cnt = listUsers($pos, $grp);
-			//if ($grp != 3 && $grp != $babBody->currentAdmGroup) $babBody->addItemMenu("cancel", bab_translate("Group's members"),$GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$grp);
+
 			$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List");
 			if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['users'] == 'Y')
 				{
@@ -508,7 +508,7 @@ switch($idx)
 				
 			$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp);
 			$babBody->addItemMenu("utilit", bab_translate("Utilities"), $GLOBALS['babUrlScript']."?tg=users&idx=utilit");
-			$babBody->title = bab_translate("Utilities");
+			$babBody->setTitle(bab_translate("Utilities"));
 			utilit();
 			}
 		break;
