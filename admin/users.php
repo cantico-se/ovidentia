@@ -381,7 +381,7 @@ Header("Location: ". $GLOBALS['babUrlScript']."?tg=directory&idx=ddb&id=".$iddir
 
 $pos = bab_rp('pos','A');
 $grp = bab_rp('grp');
-$idx = bab_rp('idx');
+$idx = bab_rp('idx','List');
 
 if( !isset($grp) || empty($grp))
 	{
