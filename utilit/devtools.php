@@ -21,6 +21,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
+
+/**
+* @internal SEC1 PR 16/02/2007 FULL
+*/
+
+
 include_once "base.php";
 
 // Used in addons from 5.4.1
@@ -111,12 +117,12 @@ return false;
 // Used in addons from 5.4.2
 function bab_tableAutoRecord($table)
 {
-$db = &$GLOBALS['babDB'];
-$res = $db->db_query("DESCRIBE ".$table);
+global $babDB;
+$res = $babDB->db_query("DESCRIBE ".$babDB->db_escape_string($table));
 $update = false;
 $cols = array();
 $values = array();
-while ( $arr = $db->db_fetch_array($res))
+while ( $arr = $babDB->db_fetch_array($res))
 	{
 	if ($arr['Extra'] == 'auto_increment' && !empty($_POST[$arr['Field']]))
 		{
@@ -139,16 +145,16 @@ if (count($cols) > 0)
 		$ud = array();
 		foreach ($cols as $k => $col)
 			{
-			$ud[] = $col."='".$values[$k]."'";
+			$ud[] = $col."='".$babDB->db_escape_string($values[$k])."'";
 			}
 
-		$db->db_query("UPDATE ".$table." SET ".implode(',',$ud)." WHERE ".$indexcol."='".$_POST[$indexcol]."'");
+		$babDB->db_query("UPDATE ".$babDB->db_escape_string($table)." SET ".implode(',',$ud)." WHERE ".$babDB->db_escape_string($indexcol)."='".$babDB->db_escape_string($_POST[$indexcol])."'");
 		return $_POST[$indexcol];
 		}
 	else
 		{
-		$db->db_query("INSERT INTO ".$table." (".implode(',',$cols).") VALUES ('".implode('\',\'',$values)."')");
-		return $db->db_insert_id();
+		$babDB->db_query("INSERT INTO ".$babDB->db_escape_string($table)." (".implode(',',$cols).") VALUES (".$babDB->quote($values).")");
+		return $babDB->db_insert_id();
 		}
 	}
 return false;
@@ -264,7 +270,7 @@ class bab_synchronizeSql
 		while (list($table) = $this->db->db_fetch_array($res))
 			{
 			$this->tables[$table] = array();
-			$res2 = $this->db->db_query("SHOW COLUMNS FROM ".$table);
+			$res2 = $this->db->db_query("SHOW COLUMNS FROM ".$this->db->db_escape_string($table));
 			while ($arr = $this->db->db_fetch_assoc($res2))
 				{
 				$this->tables[$table][$arr['Field']] = $arr;
@@ -307,7 +313,7 @@ class bab_synchronizeSql
 				}
 			else
 				{
-				$this->db->db_query("ALTER TABLE `".$table."` ADD `".$field."` ".$options);
+				$this->db->db_query("ALTER TABLE `".$this->db->db_escape_string($table)."` ADD `".$this->db->db_escape_string($field)."` ".$this->db->db_escape_string($options));
 				$return = true;
 				}
 			}
@@ -316,7 +322,7 @@ class bab_synchronizeSql
 			{
 			if (!isset($this->create[$table]['fields'][$field]))
 				{
-				$this->db->db_query("ALTER TABLE `".$table."` DROP `".$field."`");
+				$this->db->db_query("ALTER TABLE `".$this->db->db_escape_string($table)."` DROP `".$this->db->db_escape_string($field)."`");
 				$return = true;
 				}
 			}
@@ -335,7 +341,7 @@ class bab_synchronizeSql
 		
 		if (strtolower($option_file) !== strtolower($option_table))
 			{
-			$this->db->db_query("ALTER TABLE `".$table."` CHANGE `".$field."` `".$field."` ".$option_file);
+			$this->db->db_query("ALTER TABLE `".$this->db->db_escape_string($table)."` CHANGE `".$this->db->db_escape_string($field)."` `".$this->db->db_escape_string($field)."` ".$option_file);
 			return true;
 			}
 

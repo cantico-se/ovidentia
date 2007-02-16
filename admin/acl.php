@@ -21,6 +21,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
+
+
+/**
+* @internal SEC1 PR 16/02/2007 FULL
+*/
+
+
 include_once "base.php";
 include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
 
@@ -74,7 +81,7 @@ class macl
 		{
 		global $babDB;
 		$checked = array();
-		$res = $babDB->db_query("SELECT id_group FROM ".$table." WHERE id_object='".$babDB->db_escape_string($this->id_object)."'");
+		$res = $babDB->db_query("SELECT id_group FROM ".$babDB->db_escape_string($table)." WHERE id_object='".$babDB->db_escape_string($this->id_object)."'");
 		while ($arr = $babDB->db_fetch_assoc($res))
 			{
 			$checked[$arr['id_group']] = 1;
@@ -134,8 +141,8 @@ class macl
 		if( $i < count($this->tables))
 			{
 			$this->tablenum = $i +1;
-			$this->table = $this->tables[$i]['table'];
-			$this->title = $this->tables[$i]['title'];
+			$this->table = bab_toHtml($this->tables[$i]['table']);
+			$this->title = bab_toHtml($this->tables[$i]['title']);
 			$this->disabled = true;
 			$this->checked = false;
 			$this->treechecked = false;
@@ -184,8 +191,8 @@ class macl
 			{
 			$this->arr = $this->tree->getNodeInfo($this->tree->firstnode);
 			$this->id_group = $this->arr['id'];
-			$this->arr['name'] = bab_translate($this->arr['name']);
-			$this->arr['description'] = htmlentities(bab_translate($this->arr['description']));
+			$this->arr['name'] = bab_toHtml(bab_translate($this->arr['name']));
+			$this->arr['description'] = bab_toHtml(bab_translate($this->arr['description']));
 
 			$this->tpl_tree = acl_grp_node_html($this, $this->tree->firstnode);
 			return true;
@@ -233,8 +240,8 @@ class macl
 			$data = each($this->aHiddenFields);
 			if(false != $data)
 			{
-				$this->sHiddenFieldName = $data['key'];
-				$this->sHiddenFieldValue = $data['value'];
+				$this->sHiddenFieldName = bab_toHtml($data['key']);
+				$this->sHiddenFieldValue = bab_toHtml($data['value']);
 				return true;
 			}
 			else
@@ -274,8 +281,9 @@ class acl_grp_node extends macl
 
 		//$this->arr['name'] = '['.$this->arr['lf'].','.$this->arr['lr'].'] '.$this->arr['name'];
 
-		$this->arr['description'] = htmlentities($this->arr['description']);
-		$this->id_group = $this->arr['id'];
+		$this->arr['name'] = bab_toHtml($this->arr['name']);
+		$this->arr['description'] = bab_toHtml($this->arr['description']);
+		$this->id_group = bab_toHtml($this->arr['id']);
 		$this->subtree = acl_grp_node_html($this->acl, $this->id_group);
 		return true;
 		}
@@ -326,11 +334,11 @@ function maclGroups()
 		foreach($_POST['group'] as $table => $groups)
 			{
 			if (isset($s_table[$table])) {
-				$babDB->db_query("DELETE FROM ".$table." WHERE id_object='".$babDB->db_escape_string($id_object)."' AND id_group NOT IN(".$babDB->quote($groups).") AND id_group < '".BAB_ACL_GROUP_TREE."'");
+				$babDB->db_query("DELETE FROM ".$babDB->db_escape_string($table)." WHERE id_object='".$babDB->db_escape_string($id_object)."' AND id_group NOT IN(".$babDB->quote($groups).") AND id_group < '".BAB_ACL_GROUP_TREE."'");
 	
 				$groups = array_flip($groups);
 	
-				$res = $babDB->db_query("SELECT id_group FROM ".$table." WHERE id_object='".$babDB->db_escape_string($id_object)."' AND id_group < '".BAB_ACL_GROUP_TREE."'");
+				$res = $babDB->db_query("SELECT id_group FROM ".$babDB->db_escape_string($table)." WHERE id_object='".$babDB->db_escape_string($id_object)."' AND id_group < '".BAB_ACL_GROUP_TREE."'");
 				while ($arr = $babDB->db_fetch_assoc($res))
 					{
 					if (isset($groups[$arr['id_group']])) {
@@ -340,7 +348,7 @@ function maclGroups()
 	
 				foreach ($groups as $id => $value)
 					{
-					$babDB->db_query("INSERT INTO ".$table." (id_object, id_group) VALUES ('".$babDB->db_escape_string($id_object)."', '".$babDB->db_escape_string($id)."')");
+					$babDB->db_query("INSERT INTO ".$babDB->db_escape_string($table)." (id_object, id_group) VALUES ('".$babDB->db_escape_string($id_object)."', '".$babDB->db_escape_string($id)."')");
 					}
 				}
 			}
@@ -350,7 +358,7 @@ function maclGroups()
 		foreach($s_table as $table)
 			{
 			if (!isset($_POST['group'][$table])) {
-				$babDB->db_query("DELETE FROM ".$table." WHERE id_object='".$babDB->db_escape_string($id_object)."' AND id_group < '".BAB_ACL_GROUP_TREE."'");
+				$babDB->db_query("DELETE FROM ".$babDB->db_escape_string($table)." WHERE id_object='".$babDB->db_escape_string($id_object)."' AND id_group < '".BAB_ACL_GROUP_TREE."'");
 			}
 		}
 	}
@@ -362,11 +370,11 @@ function maclGroups()
 			if (isset($s_table[$table])) {
 				array_walk($groups, create_function('&$v,$k','$v += BAB_ACL_GROUP_TREE;'));
 				
-				$babDB->db_query("DELETE FROM ".$table." WHERE id_object='".$babDB->db_escape_string($id_object)."' AND id_group NOT IN(".$babDB->quote($groups).") AND id_group >= '".BAB_ACL_GROUP_TREE."'");
+				$babDB->db_query("DELETE FROM ".$babDB->db_escape_string($table)." WHERE id_object='".$babDB->db_escape_string($id_object)."' AND id_group NOT IN(".$babDB->quote($groups).") AND id_group >= '".BAB_ACL_GROUP_TREE."'");
 	
 				$groups = array_flip($groups);
 	
-				$res = $babDB->db_query("SELECT id_group FROM ".$table." WHERE id_object='".$babDB->db_escape_string($id_object)."' AND id_group > '".BAB_ACL_GROUP_TREE."'");
+				$res = $babDB->db_query("SELECT id_group FROM ".$babDB->db_escape_string($table)." WHERE id_object='".$babDB->db_escape_string($id_object)."' AND id_group > '".BAB_ACL_GROUP_TREE."'");
 				while ($arr = $babDB->db_fetch_assoc($res))
 					{
 					if (isset($groups[$arr['id_group']])) {
@@ -376,7 +384,7 @@ function maclGroups()
 	
 				foreach ($groups as $id => $value)
 					{
-					$babDB->db_query("INSERT INTO ".$table."  (id_object, id_group) VALUES ('".$babDB->db_escape_string($id_object)."', '".$babDB->db_escape_string($id)."')");
+					$babDB->db_query("INSERT INTO ".$babDB->db_escape_string($table)."  (id_object, id_group) VALUES ('".$babDB->db_escape_string($id_object)."', '".$babDB->db_escape_string($id)."')");
 					}
 				}
 			}
@@ -386,7 +394,7 @@ function maclGroups()
 	if (isset($s_table)) { 
 		foreach($s_table as $table) {
 			if (!isset($_POST['tree'][$table])) {
-				$babDB->db_query("DELETE FROM ".$table." WHERE id_object='".$babDB->db_escape_string($id_object)."' AND id_group >= '".BAB_ACL_GROUP_TREE."'");
+				$babDB->db_query("DELETE FROM ".$babDB->db_escape_string($table)." WHERE id_object='".$babDB->db_escape_string($id_object)."' AND id_group >= '".BAB_ACL_GROUP_TREE."'");
 			}
 		}
 	}
@@ -408,7 +416,7 @@ function aclUpdate($table, $id, $groups, $what)
 function aclDelete($table, $id_object)
 	{
 	global $babDB;
-	$babDB->db_query("DELETE FROM ".$table." WHERE id_object='".$babDB->db_escape_string($id_object)."'");
+	$babDB->db_query("DELETE FROM ".$babDB->db_escape_string($table)." WHERE id_object='".$babDB->db_escape_string($id_object)."'");
 	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 	}
 
@@ -420,27 +428,27 @@ function aclDelete($table, $id_object)
  */
 function aclDeleteGroup($table, $id_group) {
 	global $babDB;
-	$babDB->db_query("DELETE FROM ".$table." WHERE id_group='".$babDB->db_escape_string($id_group)."' OR id_group='".$babDB->db_escape_string($id_group + BAB_ACL_GROUP_TREE)."'");
+	$babDB->db_query("DELETE FROM ".$babDB->db_escape_string($table)." WHERE id_group='".$babDB->db_escape_string($id_group)."' OR id_group='".$babDB->db_escape_string($id_group + BAB_ACL_GROUP_TREE)."'");
 }
 
 function aclSetGroups_all($table, $id_object)
 	{
 	global $babDB;
-	$babDB->db_query("INSERT INTO ".$table."  (id_object, id_group) VALUES ('".$babDB->db_escape_string($id_object)."', '".BAB_ALLUSERS_GROUP."')");
+	$babDB->db_query("INSERT INTO ".$babDB->db_escape_string($table)."  (id_object, id_group) VALUES ('".$babDB->db_escape_string($id_object)."', '".BAB_ALLUSERS_GROUP."')");
 	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 	}
 
 function aclSetGroups_registered($table, $id_object)
 	{
 	global $babDB;
-	$babDB->db_query("INSERT INTO ".$table."  (id_object, id_group) VALUES ('".$babDB->db_escape_string($id_object)."', '".BAB_REGISTERED_GROUP."')");
+	$babDB->db_query("INSERT INTO ".$babDB->db_escape_string($table)."  (id_object, id_group) VALUES ('".$babDB->db_escape_string($id_object)."', '".BAB_REGISTERED_GROUP."')");
 	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 	}
 
 function aclSetGroups_unregistered($table, $id_object)
 	{
 	global $babDB;
-	$babDB->db_query("INSERT INTO ".$table."  (id_object, id_group) VALUES ('".$babDB->db_escape_string($id_object)."', '".BAB_UNREGISTERED_GROUP."')");
+	$babDB->db_query("INSERT INTO ".$babDB->db_escape_string($table)."  (id_object, id_group) VALUES ('".$babDB->db_escape_string($id_object)."', '".BAB_UNREGISTERED_GROUP."')");
 	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 	}
 
@@ -451,7 +459,7 @@ function aclGetAccessUsers($table, $id_object) {
 	$tree = & new bab_grptree();
 	$groups = array();
 	
-	$res = $babDB->db_query("SELECT id_group FROM ".$table." WHERE id_object='".$babDB->db_escape_string($id_object)."'");
+	$res = $babDB->db_query("SELECT id_group FROM ".$babDB->db_escape_string($table)." WHERE id_object='".$babDB->db_escape_string($id_object)."'");
 	while ($arr = $babDB->db_fetch_assoc($res)) {
 		if ($arr['id_group'] >= BAB_ACL_GROUP_TREE )
 			{
@@ -517,9 +525,9 @@ function aclGetAccessUsers($table, $id_object) {
 	$tree = & new bab_grptree();
 	$groups = array();
 	
-	$res = $babDB->db_query('SELECT id_group FROM '.$srcTable.' WHERE id_object='.$babDB->quote($srcIdObject));
+	$res = $babDB->db_query('SELECT id_group FROM '.$babDB->db_escape_string($srcTable).' WHERE id_object='.$babDB->quote($srcIdObject));
 	while ($arr = $babDB->db_fetch_assoc($res)) {
-		$babDB->db_query('INSERT INTO ' . $trgTable . ' (`id` , `id_object` , `id_group`) VALUES (\'\', ' . $babDB->quote($trgIdObject) . ', ' . $babDB->quote($arr['id_group']) . ')');
+		$babDB->db_query('INSERT INTO ' . $babDB->db_escape_string($trgTable) . ' (`id` , `id_object` , `id_group`) VALUES (\'\', ' . $babDB->quote($trgIdObject) . ', ' . $babDB->quote($arr['id_group']) . ')');
 	}
 	
 	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
