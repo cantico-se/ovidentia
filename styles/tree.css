@@ -92,6 +92,18 @@
 	background: url(../skins/ovidentia/images/Puces/plus.gif) center left no-repeat; 
 }
 
+.bab_ul_tree_not_loaded .bullet {
+	cursor: pointer;
+	vertical-align: middle;
+	background: url(../skins/ovidentia/images/Puces/greyed_plus.gif) center left no-repeat; 
+}
+
+.bab_ul_tree_loading .bullet {
+	cursor: pointer;
+	vertical-align: middle;
+	background: url(../skins/ovidentia/images/indicator.gif) center left no-repeat; 
+}
+
 .bab_ul_tree_leaf .bullet { 
 	cursor: default; 
 	vertical-align: middle;
@@ -106,6 +118,9 @@
 	display: none;
 }
 
+.bab_ul_tree_leaf ul {
+	display: none;
+}
 
 .bab_treeToolbar {
 	padding: 2px 4px;

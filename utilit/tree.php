@@ -1,7 +1,7 @@
 <?php
 //-------------------------------------------------------------------------
 // OVIDENTIA http://www.ovidentia.org
-//"admin/admfaq.php"
+//
 // Ovidentia is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2, or (at your option)
@@ -741,6 +741,7 @@ class bab_TreeViewElement extends bab_Widget
 	var $_rank;
 	
 	var $_subTree;
+	var $_fetchContentScript;
 	/**#@-*/
 
 
@@ -764,6 +765,12 @@ class bab_TreeViewElement extends bab_Widget
 		$this->_info = '';
 		$this->_rank = 0;
 		$this->_subTree = '';
+		$this->setFetchContentScript(false);
+	}
+
+	function setFetchContentScript($url)
+	{
+		$this->_fetchContentScript = $url;
 	}
 
 	/**
@@ -786,10 +793,11 @@ class bab_TreeViewElement extends bab_Widget
 	/**
 	 * Adds a checkbox to the treeview element.
 	 * @param string $name
-	 */
-	function addCheckBox($name)
+	 * @param string $script
+	 * 	 */
+	function addCheckBox($name, $check = false, $script = '')
 	{
-		$this->_checkBoxes[] = array('name' => $name);
+		$this->_checkBoxes[] = array('name' => $name, 'checked' => $check, 'script' => $script);
 	}
 
 	/**
@@ -864,10 +872,11 @@ class bab_TreeViewElement extends bab_Widget
 
 define('BAB_TREE_VIEW_ID_SEPARATOR',	'__');
 
-define('BAB_TREE_VIEW_COLLAPSED',		1);
-define('BAB_TREE_VIEW_EXPANDED',		2);
+define('BAB_TREE_VIEW_COLLAPSED',			1);
+define('BAB_TREE_VIEW_EXPANDED',			2);
 
-define('BAB_TREE_VIEW_MULTISELECT',		1024);
+define('BAB_TREE_VIEW_MULTISELECT',			1024);
+define('BAB_TREE_VIEW_MEMORIZE_OPEN_NODES',	2048);
 
 /**
  * A TreeView widget used to display hierarchical data.
@@ -924,7 +933,10 @@ class bab_TreeView extends bab_Widget
 	var $t_id_separator;
 
 	var $t_isMultiSelect;
+	var $t_memorizeOpenNodes;
 	
+	var $t_subtree;
+
 	var $_currentElement;
 
 	var $_templateFile;
@@ -966,8 +978,13 @@ class bab_TreeView extends bab_Widget
 		$this->_templateCache = null;
 		
 		$this->t_id_separator = BAB_TREE_VIEW_ID_SEPARATOR;
+		
+		$this->t_subtree = null;
 
 		$this->_upToDate = false;
+		
+		$this->t_memorizeOpenNodes = true;
+		$this->t_isMultiSelect = false;
 	}
 
 
@@ -979,9 +996,39 @@ class bab_TreeView extends bab_Widget
 	{
 		$this->_attributes = $attributes;
 		$this->_invalidateCache();
-		$this->t_isMultiSelect = $attributes & BAB_TREE_VIEW_MULTISELECT;
+		$this->t_isMultiSelect = (($attributes & BAB_TREE_VIEW_MULTISELECT) !== 0);
+		$this->t_memorizeOpenNodes = (($attributes & BAB_TREE_VIEW_MEMORIZE_OPEN_NODES) !== 0);
 	}
 
+	/**
+	 * Returns the attributes of the treeview.
+	 * @return int
+	 */
+	function getAttributes()
+	{
+		return $this->_attributes;
+	}
+	
+	/**
+	 * Adds attributes to the treeview.
+	 * @param int $attributes
+	 */
+	function addAttributes($attributes)
+	{		
+		$this->setAttributes($this->getAttributes() | $attributes);
+	}
+
+	/**
+	 * Adds attributes to the treeview.
+	 * @param int $attributes
+	 */
+	function removeAttributes($attributes)
+	{		
+		$this->setAttributes($this->getAttributes() & ~$attributes);
+	}
+
+	
+	
 	/**
 	 * @param string $id			A unique element id in the treeview.
 	 * @param string $type			Will be used as a css class to style the element.
@@ -1057,6 +1104,7 @@ class bab_TreeView extends bab_Widget
 				
 			$this->t_level = $this->_iterator->level();
 			$element =& $node->getData();
+			$this->t_fetchContentScript = $element->_fetchContentScript;
 			$this->t_highlighted = isset($this->_highlightedElements[$element->_id]);
 			$this->t_previousId = $this->t_id;
 			$this->t_id = $this->_id . '.' . $element->_id;
@@ -1100,6 +1148,8 @@ class bab_TreeView extends bab_Widget
 	{
 		if (list(,$checkBox) = each($this->_currentElement->_checkBoxes)) {
 			$this->checkbox_name = $checkBox['name'];
+			$this->checkbox_script = $checkBox['script'];
+			$this->checkbox_checked = $checkBox['checked'];
 			return true;
 		}
 		reset($this->_currentElement->_checkBoxes);
@@ -1130,12 +1180,26 @@ class bab_TreeView extends bab_Widget
 	function printTemplate()
 	{
 		if (is_null($this->_templateCache)) {
-			if (!$this->_upToDate)
+			if (!$this->_upToDate) {
 				$this->_updateTree();
+			}
+			$this->t_subtree = bab_printTemplate($this, $this->_templateFile, 'subtree');
 			$this->_templateCache = bab_printTemplate($this, $this->_templateFile, $this->_templateCss);
 			$this->_templateCache .= bab_printTemplate($this, $this->_templateFile, $this->_templateSection);
 			$this->_templateCache .= bab_printTemplate($this, $this->_templateFile, $this->_templateScripts);
 		}
+		return $this->_templateCache;
+	}
+
+	/**
+	 * 
+	 * @return string
+	 */
+	function printSubTree()
+	{
+		if (!$this->_upToDate)
+			$this->_updateTree();
+		$this->_templateCache .= bab_printTemplate($this, $this->_templateFile, 'subtree');
 		return $this->_templateCache;
 	}
 }
@@ -1527,7 +1591,8 @@ class bab_ArticleTreeView extends bab_TreeView
 		if ($sql !== '')
 		{
 			$elementType = 'topic';
-			if ($this->_attributes & BAB_ARTICLE_TREE_VIEW_SELECTABLE_TOPICS) {
+			if (!($this->_attributes & BAB_TREE_VIEW_MULTISELECT)
+					&& $this->_attributes & BAB_ARTICLE_TREE_VIEW_SELECTABLE_TOPICS) {
 				$elementType .= ' clickable';
 			}
 			$topics = $babDB->db_query($sql);
@@ -1565,7 +1630,8 @@ class bab_ArticleTreeView extends bab_TreeView
 			$sql .= ' WHERE id_dgowner=' . $babDB->quote($babBody->currentAdmGroup);
 		}
 		$elementType = 'category';
-		if ($this->_attributes & BAB_ARTICLE_TREE_VIEW_SELECTABLE_CATEGORIES) {
+		if (!($this->_attributes & BAB_TREE_VIEW_MULTISELECT)
+					&& $this->_attributes & BAB_ARTICLE_TREE_VIEW_SELECTABLE_CATEGORIES) {
 			$elementType .= ' clickable';
 		}
 		$categories = $babDB->db_query($sql);
@@ -1599,7 +1665,8 @@ class bab_ArticleTreeView extends bab_TreeView
 			$sql .= ' WHERE id_dgowner=' . $babDB->quote($babBody->currentAdmGroup);
 		}
 		$elementType = 'article';
-		if ($this->_attributes & BAB_ARTICLE_TREE_VIEW_SELECTABLE_ARTICLES) {
+		if (!($this->_attributes & BAB_TREE_VIEW_MULTISELECT)
+					&& $this->_attributes & BAB_ARTICLE_TREE_VIEW_SELECTABLE_ARTICLES) {
 			$elementType .= ' clickable';
 		}
 		$rs = $babDB->db_query($sql);
@@ -1616,15 +1683,16 @@ class bab_ArticleTreeView extends bab_TreeView
 
 	
 	/**
-	 * Orders the treeview as specified in the articles/topics/categories administration.
+	 * Attributes ranks to each element of the treeview as specified
+	 * in the articles/topics/categories administration.
 	 */
 	function order()
 	{
 		global $babDB;
-	
+
 		$this->_updateTree();
 		$sql = 'SELECT id_topcat, type, ordering FROM ' . BAB_TOPCAT_ORDER_TBL;
-	
+
 		$orders = $babDB->db_query($sql);
 		while ($order = $babDB->db_fetch_array($orders)) {
 			if ($order['type'] == 2) {
@@ -1639,7 +1707,7 @@ class bab_ArticleTreeView extends bab_TreeView
 		}
 	}
 
-	
+
 	function addStatistics($start, $end)
 	{
 		global $babDB;
@@ -1682,6 +1750,7 @@ class bab_ArticleTreeView extends bab_TreeView
 		}
 	}
 
+
 	/**
 	 * @access private
 	 */
@@ -1701,11 +1770,10 @@ class bab_ArticleTreeView extends bab_TreeView
 			do {
 				$iterator =& $this->_rootNode->createNodeIterator($this->_rootNode);
 				$deadBranches = array();
-				$i = 0;
 				while ($node =& $iterator->nextNode()) {
 					$element =& $node->getData();
 					if (!$node->hasChildNodes() && strstr($element->_type, 'category'))
-						$deadBranches[$i++] =& $node;
+						$deadBranches[] =& $node;
 				}
 				$modified = (count($deadBranches) > 0);
 				reset($deadBranches);
@@ -1747,10 +1815,13 @@ class bab_FileTreeView extends bab_TreeView
 	 */	
 	var $_db;
 	var $_babBody;
-//	var $_attributes;
 	var $_gr;
 	
 	var $_adminView;
+	
+	var $_startFolderId;
+	var $_startPath;
+	var $_updateBaseUrl;
 	/**#@-*/
 
 
@@ -1758,22 +1829,39 @@ class bab_FileTreeView extends bab_TreeView
 	{
 		require_once $GLOBALS['babInstallPath'] . 'utilit/fileincl.php';
 		parent::bab_TreeView($id);
-		
+
 		$this->_db =& $GLOBALS['babDB'];
 		$this->_babBody =& $GLOBALS['babBody'];
 
 		$this->_attributes = BAB_FILE_TREE_VIEW_SHOW_FILES;
-		
+
 		$this->_adminView = $adminView;
+
+		$this->setStartPath(null, '');
+		$this->setUpdateBaseUrl('');
+	}
+
+	
+	function setStartPath($folderId, $path)
+	{
+		$this->_startFolderId = $folderId;
+		$this->_startPath = $path;
+	}
+
+
+	function setUpdateBaseUrl($url)
+	{
+		$this->_updateBaseUrl = $url;
 	}
 
 	/**
-	 * Add collective directories.
+	 * Add collective folders.
 	 * @access private
 	 */
-	function _addCollectiveDirectories()
+	function _addCollectiveDirectories($folderId = null)
 	{
 		global $babBody;
+		global $babDB;
 
 		$element =& $this->createElement('cd',
 										 'foldercategory',
@@ -1801,19 +1889,22 @@ class bab_FileTreeView extends bab_TreeView
 		$where = array();
 		$where[] = "active='Y'";
 		$where[] = "bhide='N'";
+		if (!is_null($folderId)) {
+			$where[] = ' folder.id=' . $babDB->quote($folderId);
+		}
 		if ($babBody->currentAdmGroup != 0)	{
 			$where[] = ' folder.id_dgowner=\''.$babBody->currentAdmGroup.'\'';
 		}
 		$sql .= 'WHERE '.implode(' AND ',$where).' ORDER BY folder.folder';
 
 		$elementType = 'folder';
-		if ($this->_attributes & BAB_FILE_TREE_VIEW_SELECTABLE_COLLECTIVE_DIRECTORIES) {
+		if (!($this->_attributes & BAB_TREE_VIEW_MULTISELECT)
+					&& $this->_attributes & BAB_FILE_TREE_VIEW_SELECTABLE_COLLECTIVE_DIRECTORIES) {
 			$elementType .= ' clickable';
 		}
 		$folders = $this->_db->db_query($sql);
 		
-		
-		
+
 		while ($folder = $this->_db->db_fetch_array($folders)) {
 			if ($this->_adminView
 				|| isset($directoriesDownloadAcl[$folder['id']]) && $directoriesDownloadAcl[$folder['id']]
@@ -1823,9 +1914,10 @@ class bab_FileTreeView extends bab_TreeView
 												 bab_toHtml($folder['folder']),
 												 '',
 												 '');
+				$element->setFetchContentScript(bab_toHtml("bab_loadSubTree(document.getElementById('li" . $this->_id . '.' . $element->_id .  "'), '" . $this->_updateBaseUrl . "&start=" . $folder['id'] . "')"));
 				$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
 				if (($this->_attributes & BAB_FILE_TREE_VIEW_SELECTABLE_COLLECTIVE_DIRECTORIES)
-					&& ($this->_attributes & BAB_TREE_VIEW_MULTISELECT)) {
+				&& ($this->_attributes & BAB_TREE_VIEW_MULTISELECT)) {
 					$element->addCheckBox('select');
 				}
 				$this->appendElement($element, 'cd');
@@ -1838,40 +1930,147 @@ class bab_FileTreeView extends bab_TreeView
 	 * Add files and subdirectories.
 	 * @access private
 	 */
-	function _addFiles()
+//	function _addFilesOld()
+//	{
+//		global $babBody;
+//		
+//		if( !$babBody->ustorage )
+//			return;
+//
+//		$sql = 'SELECT file.id, file.path, file.name, file.id_owner, file.bgroup FROM ' . BAB_FILES_TBL.' file';
+//		if ($babBody->currentAdmGroup != 0) {
+//			$sql .= ' LEFT JOIN '.BAB_FM_FOLDERS_TBL.' folder ON file.id_owner=folder.id ';
+//			$sql .= ' WHERE file.bgroup=\'Y\' AND folder.id_dgowner=\''.$babBody->currentAdmGroup.'\'';
+//		} elseif ($this->_attributes & BAB_FILE_TREE_VIEW_SHOW_PERSONAL_DIRECTORIES) {
+//			$sql .= ' WHERE (file.bgroup=\'Y\' OR (file.bgroup=\'N\' AND file.id_owner=\'' . $GLOBALS['BAB_SESS_USERID'] . '\'))';
+//		} else {
+//			$sql .= ' WHERE file.bgroup=\'Y\'';
+//		}
+//		$sql .= ' AND file.state<>\'D\'';
+//		$sql .= ' ORDER BY file.name';
+//				
+//		$directoryType = 'folder';
+//		if (!($this->_attributes & BAB_TREE_VIEW_MULTISELECT)
+//					&& $this->_attributes & BAB_FILE_TREE_VIEW_SELECTABLE_SUB_DIRECTORIES) {
+//			$directoryType .= ' clickable';
+//		}
+//		$personalFileType = 'pfile';
+//		$groupFileType = 'gfile';
+//		if (!($this->_attributes & BAB_TREE_VIEW_MULTISELECT)
+//					&& $this->_attributes & BAB_FILE_TREE_VIEW_SELECTABLE_FILES) {
+//			$personalFileType .= ' clickable';
+//			$groupFileType .= ' clickable';
+//		}
+//		$files = $this->_db->db_query($sql);
+//		while ($file = $this->_db->db_fetch_array($files)) {
+//			
+////			$fullpath = bab_getUploadFullPath($file['bgroup'], $file['id_owner'], $file['path']) . $file['name'];
+////			if (!is_file($fullpath))
+////				continue;
+//
+//			$subdirs = explode('/', $file['path']);
+//			if ($file['bgroup'] == 'Y') {
+//				$fileId = 'g' . BAB_TREE_VIEW_ID_SEPARATOR . $file['id'];
+//				$parentId = 'd' . BAB_TREE_VIEW_ID_SEPARATOR . $file['id_owner'];
+//				$fileType =& $groupFileType;
+//			} else {
+//				$fileId = 'p' . BAB_TREE_VIEW_ID_SEPARATOR . $file['id'];
+//				$fileType =& $personalFileType;
+//				$parentId = 'pd' . BAB_TREE_VIEW_ID_SEPARATOR . $file['id_owner'];
+//				if (is_null($this->_rootNode->getNodeById($parentId))) {
+//					$element =& $this->createElement($parentId,
+//													 'foldercategory',
+//													 bab_translate("Personal folders"),
+//													 '',
+//													 '');
+//					$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/personal_folder.png');
+//					$this->appendElement($element, null);
+//				}
+//			}
+//
+//			foreach ($subdirs as $subdir) {
+//				if (trim($subdir) !== '') {
+//					if (is_null($this->_rootNode->getNodeById($parentId . ':' . $subdir))) {
+//						$element =& $this->createElement($parentId . ':' . $subdir,
+//														 $directoryType,
+//														 $subdir,
+//														 '',
+//														 '');
+//						$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
+//						if (($this->_attributes & BAB_FILE_TREE_VIEW_SELECTABLE_SUB_DIRECTORIES)
+//							&& ($this->_attributes & BAB_TREE_VIEW_MULTISELECT)) {
+//							$element->addCheckBox('select');
+//						}
+//						$this->appendElement($element, $parentId);
+//					}
+//					$parentId .= ':' . $subdir;
+//				}
+//			}
+//			if ($this->_attributes & BAB_FILE_TREE_VIEW_SHOW_FILES) {
+//				$element =& $this->createElement($fileId,
+//												 $fileType,
+//												 $file['name'],
+//												 '',
+//												 '');
+//				$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/file.png');
+//				if (($this->_attributes & BAB_FILE_TREE_VIEW_SELECTABLE_FILES)
+//					&& ($this->_attributes & BAB_TREE_VIEW_MULTISELECT)) {
+//					$element->addCheckBox('select');
+//				}
+//				$this->appendElement($element, $parentId);
+//			}
+//		}
+//	}
+
+	
+	/**
+	 * Add files and subdirectories for a specific collective folder.
+	 * @access private
+	 */
+	function _addFiles($folderId = null, $path = '')
 	{
 		global $babBody;
+		global $babDB;
 		
-		if( !$babBody->ustorage ) return;
-
-		$sql = 'SELECT file.id, file.path, file.name, file.id_owner, file.bgroup FROM ' . BAB_FILES_TBL.' file';
+		$sql = 'SELECT file.id, file.path, file.name, file.id_owner, file.bgroup FROM ' . BAB_FILES_TBL . ' file';
 		if ($babBody->currentAdmGroup != 0) {
-			$sql .= ' LEFT JOIN '.BAB_FM_FOLDERS_TBL.' folder ON file.id_owner=folder.id ';
+			$sql .= ' LEFT JOIN ' . BAB_FM_FOLDERS_TBL . ' folder ON file.id_owner=folder.id ';
 			$sql .= ' WHERE file.bgroup=\'Y\' AND folder.id_dgowner=\''.$babBody->currentAdmGroup.'\'';
 		} elseif ($this->_attributes & BAB_FILE_TREE_VIEW_SHOW_PERSONAL_DIRECTORIES) {
 			$sql .= ' WHERE (file.bgroup=\'Y\' OR (file.bgroup=\'N\' AND file.id_owner=\'' . $GLOBALS['BAB_SESS_USERID'] . '\'))';
 		} else {
 			$sql .= ' WHERE file.bgroup=\'Y\'';
 		}
+		if ($path !== '') {
+			$sql .= ' AND file.path LIKE ' . $babDB->quote($path . '%');
+		}
+		if ($folderId !== null) {
+			$sql .= ' AND file.id_owner=' . $babDB->quote($folderId);
+		}
 		$sql .= ' AND file.state<>\'D\'';
 		$sql .= ' ORDER BY file.name';
-				
+
 		$directoryType = 'folder';
-		if ($this->_attributes & BAB_FILE_TREE_VIEW_SELECTABLE_SUB_DIRECTORIES) {
+		if (!($this->_attributes & BAB_TREE_VIEW_MULTISELECT)
+					&& $this->_attributes & BAB_FILE_TREE_VIEW_SELECTABLE_SUB_DIRECTORIES) {
 			$directoryType .= ' clickable';
 		}
 		$personalFileType = 'pfile';
 		$groupFileType = 'gfile';
-		if ($this->_attributes & BAB_FILE_TREE_VIEW_SELECTABLE_FILES) {
+		if (!($this->_attributes & BAB_TREE_VIEW_MULTISELECT)
+					&& $this->_attributes & BAB_FILE_TREE_VIEW_SELECTABLE_FILES) {
 			$personalFileType .= ' clickable';
 			$groupFileType .= ' clickable';
 		}
 		$files = $this->_db->db_query($sql);
 		while ($file = $this->_db->db_fetch_array($files)) {
 			
-			$fullpath = bab_getUploadFullPath($file['bgroup'], $file['id_owner'], $file['path']) . $file['name'];
-			if (!is_file($fullpath))
-				continue;
+// REMOVED FOR TEST
+//			$fullpath = bab_getUploadFullPath($file['bgroup'], $file['id_owner'], $file['path']) . $file['name'];
+//			if (!is_file($fullpath))
+//				continue;
+// END REMOVED FOR TEST
+			
 
 			$subdirs = explode('/', $file['path']);
 			if ($file['bgroup'] == 'Y') {
@@ -1893,6 +2092,10 @@ class bab_FileTreeView extends bab_TreeView
 				}
 			}
 
+//			$pathElements = explode('/', $path);
+//			$maxDepth = count($pathElements);
+//			for ($i = 0; $i < $maxDepth; $i++) {
+//				$subdir = $subdirs[$i];
 			foreach ($subdirs as $subdir) {
 				if (trim($subdir) !== '') {
 					if (is_null($this->_rootNode->getNodeById($parentId . ':' . $subdir))) {
@@ -1901,6 +2104,7 @@ class bab_FileTreeView extends bab_TreeView
 														 $subdir,
 														 '',
 														 '');
+//						$element->setFetchContentScript('bab_loadSubTree(this, \'' . $this->_updateBaseUrl . '&start=' . $file['id_owner'] . ':' . $subdir . '\')');
 						$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
 						if (($this->_attributes & BAB_FILE_TREE_VIEW_SELECTABLE_SUB_DIRECTORIES)
 							&& ($this->_attributes & BAB_TREE_VIEW_MULTISELECT)) {
@@ -1926,6 +2130,8 @@ class bab_FileTreeView extends bab_TreeView
 			}
 		}
 	}
+
+
 
 	function addStatistics($start, $end)
 	{
@@ -1972,15 +2178,37 @@ class bab_FileTreeView extends bab_TreeView
 	 */
 	function _updateTree()
 	{
-		if ($this->_upToDate)
+		if ($this->_upToDate) {
 			return;
-		$this->_addCollectiveDirectories();
+		}
+
+		$this->_addCollectiveDirectories($this->_startFolderId);
 		if ($this->_attributes & BAB_FILE_TREE_VIEW_SHOW_FILES
 			|| $this->_attributes & BAB_FILE_TREE_VIEW_SHOW_SUB_DIRECTORIES) {
-			$this->_addFiles();
+			$this->_addFiles($this->_startFolderId, $this->_startPath);
+		}
+			
+		if (!is_null($this->_startFolderId))
+		{
+			$this->_iterator = $this->_rootNode->createNodeIterator($this->_rootNode);
+			
+			if ($this->_startPath !== '') {
+				$subdirs = explode('/', $this->_startPath);
+				$nbSubDirs = count($subdirs) + 1;
+			} else {
+				$nbSubDirs = 1;
+			}
+			while ($nbSubDirs-- >= 0)
+			{
+				$this->_iterator->nextNode();
+			}
+			$this->_iterator->nextNode();
+			$this->t_level = $this->_iterator->level();
+			$this->t_previousLevel = $this->t_level - 1;
 		}
 		parent::_updateTree();
 	}
+	
 }
 
 
@@ -2001,7 +2229,6 @@ class bab_ForumTreeView extends bab_TreeView
 	 */	
 	var $_db;
 	var $_babBody;
-//	var $_attributes;
 	/**#@-*/
 	
 
@@ -2030,7 +2257,8 @@ class bab_ForumTreeView extends bab_TreeView
 		$sql .= ' ORDER BY ordering';
 		
 		$forumType = 'forum';
-		if ($this->_attributes & BAB_FORUM_TREE_VIEW_SELECTABLE_FORUMS) {
+		if (!($this->_attributes & BAB_TREE_VIEW_MULTISELECT)
+					&& $this->_attributes & BAB_FORUM_TREE_VIEW_SELECTABLE_FORUMS) {
 			$forumType .= ' clickable';
 		}
 		$rs = $this->_db->db_query($sql);
@@ -2061,11 +2289,13 @@ class bab_ForumTreeView extends bab_TreeView
 		$sql .= ' ORDER BY tt.date';
 		
 		$threadType = 'thread';
-		if ($this->_attributes & BAB_FORUM_TREE_VIEW_SELECTABLE_THREADS) {
+		if (!($this->_attributes & BAB_TREE_VIEW_MULTISELECT)
+					&& $this->_attributes & BAB_FORUM_TREE_VIEW_SELECTABLE_THREADS) {
 			$threadType .= ' clickable';
 		}
 		$postType = 'post';
-		if ($this->_attributes & BAB_FORUM_TREE_VIEW_SELECTABLE_POSTS) {
+		if (!($this->_attributes & BAB_TREE_VIEW_MULTISELECT)
+					&& $this->_attributes & BAB_FORUM_TREE_VIEW_SELECTABLE_POSTS) {
 			$postType .= ' clickable';
 		}
 		$threads = $this->_db->db_query($sql);
@@ -2227,7 +2457,8 @@ class bab_FaqTreeView extends bab_TreeView
 		}
 
 		$faqcategoryType = 'faqcategory';
-		if ($this->_attributes & BAB_FAQ_TREE_VIEW_SELECTABLE_CATEGORIES) {
+		if (!($this->_attributes & BAB_TREE_VIEW_MULTISELECT)
+					&& $this->_attributes & BAB_FAQ_TREE_VIEW_SELECTABLE_CATEGORIES) {
 			$faqcategoryType .= ' clickable';
 		}		
 		$categories = $this->_db->db_query($sql);
@@ -2273,7 +2504,8 @@ class bab_FaqTreeView extends bab_TreeView
 		$sql .= ' ORDER BY ftt.id';
 		
 		$faqsubcategoryType = 'faqsubcategory';
-		if ($this->_attributes & BAB_FAQ_TREE_VIEW_SELECTABLE_SUB_CATEGORIES) {
+		if (!($this->_attributes & BAB_TREE_VIEW_MULTISELECT)
+					&& $this->_attributes & BAB_FAQ_TREE_VIEW_SELECTABLE_SUB_CATEGORIES) {
 			$faqsubcategoryType .= ' clickable';
 		}		
 		$subCategories = $this->_db->db_query($sql);
@@ -2305,7 +2537,8 @@ class bab_FaqTreeView extends bab_TreeView
 		}
 
 		$questionType = 'faqquestion';
-		if ($this->_attributes & BAB_FAQ_TREE_VIEW_SELECTABLE_QUESTIONS) {
+		if (!($this->_attributes & BAB_TREE_VIEW_MULTISELECT)
+					&& $this->_attributes & BAB_FAQ_TREE_VIEW_SELECTABLE_QUESTIONS) {
 			$questionType .= ' clickable';
 		}
 		$questions = $this->_db->db_query($sql);
@@ -2411,6 +2644,12 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
 		$this->_adminMode = $this->t_adminMode = $adminMode;
 	}
 
+	/**
+	 * Returns a record set containing the child entities of $startEntityId, $startEntityId included. 
+	 *
+	 * @param int $startEntityId
+	 * @access private
+	 */
 	function _selectEntities($startEntityId)
 	{
 		$where = array('trees.id_user = ' . $this->_db->quote($this->_orgChartId));
@@ -2439,11 +2678,19 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
 		return $entities;
 	}
 
+	/**
+	 * Returns a record set containing the members of the entity $entityId.
+	 * 
+	 * @param int $entityId
+	 * @access private
+	 */
 	function _selectMembers($entityId)
 	{
-		$sql = 'SELECT users.id_user AS id_dir_entry, roles.type AS role_type, roles.name AS role_name';
+		$sql = 'SELECT users.id_user AS id_dir_entry, roles.type AS role_type, roles.name AS role_name, babusers.disabled AS user_disabled, babusers.is_confirmed AS user_confirmed';
 		$sql .= ' FROM ' . BAB_OC_ROLES_USERS_TBL . ' AS users';
 		$sql .= ' LEFT JOIN ' . BAB_OC_ROLES_TBL . ' AS roles ON users.id_role = roles.id';
+		$sql .= ' LEFT JOIN ' . BAB_DBDIR_ENTRIES_TBL . ' AS dir_entries ON users.id_user = dir_entries.id';
+		$sql .= ' LEFT JOIN ' . BAB_USERS_TBL . ' AS babusers ON dir_entries.id_user = babusers.id';
 		$sql .= ' WHERE roles.id_entity = ' . $this->_db->quote($entityId);
 		$sql .= ' AND roles.id_oc = ' . $this->_db->quote($this->_orgChartId);
 		$sql .= ' ORDER BY (roles.type - 1 % 4) ASC'; // We want role types to appear in the order 1,2,3,0
@@ -2453,13 +2700,19 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
 		return $members;
 	}
 
-	function _addEntities($startNode)
+	/**
+	 * Adds entities starting at entity id $startNode in the orgchart.
+	 * The entity with id $startNode will be the root of the orgchart. 
+	 * 
+	 * @param int $entityId
+	 * @access private
+	 */
+	function _addEntities($startEntityId)
 	{
 		$entityType = 'entity';
-//		$elementIdPrefix = 'entity' . BAB_TREE_VIEW_ID_SEPARATOR;
 		$elementIdPrefix = 'ENT';
 		
-		$entities = $this->_selectEntities($startNode);
+		$entities = $this->_selectEntities($startEntityId);
 		while ($entity = $this->_db->db_fetch_array($entities)) {
 			$element =& $this->createElement($elementIdPrefix . $entity['id'],
 											 $entityType,
@@ -2468,22 +2721,23 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
 											 '');
 			$members = $this->_selectMembers($entity['id']);
 			while ($member = $this->_db->db_fetch_array($members)) {
-				$memberDirectoryEntryId = $member['id_dir_entry'];
-				$dirEntry = bab_getDirEntry($member['id_dir_entry'], BAB_DIR_ENTRY_ID/*, $member['id_directory']*/);
-				
-				$memberName = $dirEntry['givenname']['value'] . ' ' . $dirEntry['sn']['value'];
-				if ($member['role_type'] == 1) {
-					if (isset($dirEntry['jpegphoto'])) {
-						$element->setIcon($dirEntry['jpegphoto']['value']);
+				if ($member['user_disabled'] !== '1' && $member['user_confirmed'] !== '0') { // We don't display disabled and unconfirmed users
+					$memberDirectoryEntryId = $member['id_dir_entry'];
+					$dirEntry = bab_getDirEntry($member['id_dir_entry'], BAB_DIR_ENTRY_ID);
+					$memberName = $dirEntry['givenname']['value'] . ' ' . $dirEntry['sn']['value'];
+					if ($member['role_type'] == 1) {
+						if (isset($dirEntry['jpegphoto'])) {
+							$element->setIcon($dirEntry['jpegphoto']['value']);
+						}
+						$element->setInfo($memberName);
+						$element->setLink("javascript:flbhref('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&idx=detr&ocid=" . $this->_orgChartId . "&oeid=" . $entity['id'] . "&iduser=" . $memberDirectoryEntryId . "');changestyle('ENT" . $entity['id'] . "','BabLoginMenuBackground','BabTopicsButtonBackground');updateFltFrame('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&rf=0&ocid=" . $this->_orgChartId . "&oeid=" . $entity['id'] . "&idx=listr');");
 					}
-					$element->setInfo($memberName);
-					$element->setLink("javascript:flbhref('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&idx=detr&ocid=" . $this->_orgChartId . "&oeid=" . $entity['id'] . "&iduser=" . $memberDirectoryEntryId . "');changestyle('ENT" . $entity['id'] . "','BabLoginMenuBackground','BabTopicsButtonBackground');updateFltFrame('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&rf=0&ocid=" . $this->_orgChartId . "&oeid=" . $entity['id'] . "&idx=listr');");
+					$element->addMember($memberName, $member['role_name']);
 				}
-				$element->addMember($memberName, $member['role_name']);
 			}
 			$element->setLinkEntity("javascript:updateFlbFrame('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&rf=0&ocid=" . $this->_orgChartId . "&oeid=" . $entity['id'] . "&idx=detr');updateFltFrame('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&rf=0&ocid=" . $this->_orgChartId . "&oeid=" . $entity['id'] . "&idx=listr');changestyle('ENT" . $entity['id'] . "','BabLoginMenuBackground','BabTopicsButtonBackground');");
 
-			if ($entity['id'] != $startNode) {
+			if ($entity['id'] != $startEntityId) {
 				$element->addAction('show_from_here', bab_translate("Show from here"), $GLOBALS['babSkinPath'] . 'images/Puces/bottom.png', $GLOBALS['babUrlScript'] . '?tg=' . bab_rp('tg') . '&idx' . bab_rp('idx') . '&ocid=' . $this->_orgChartId . '&oeid=' . $entity['id'] . '&disp=disp3', '');
 			} else if ($entity['id_parent'] != 0) {
 				$element->addAction('show_from_parent', bab_translate("Show from parent"), $GLOBALS['babSkinPath'] . 'images/Puces/parent.gif', $GLOBALS['babUrlScript'] . '?tg=' . bab_rp('tg') . '&idx' . bab_rp('idx') . '&ocid=' . $this->_orgChartId . '&oeid=' . $entity['id_parent'] . '&disp=disp3', '');
@@ -2523,6 +2777,7 @@ class bab_GroupTreeView extends bab_TreeView
 	 * @access private
 	 */	
 	var $_db;
+	var $_selectedGroups;
 
 	/**#@-*/
 
@@ -2531,6 +2786,16 @@ class bab_GroupTreeView extends bab_TreeView
 		parent::bab_TreeView($id);
 		$this->t_isMultiSelect = true;
 		$this->_db =& $GLOBALS['babDB'];
+	}
+
+	/**
+	 * Preselect groups in the treeview.
+	 *
+	 * @param array $groups An array indexed by group ids (group ids are in the key)
+	 */
+	function selectGroups($groups)
+	{
+		$this->_selectedGroups = $groups;
 	}
 
 	/**
@@ -2550,7 +2815,7 @@ class bab_GroupTreeView extends bab_TreeView
 											 bab_toHtml(bab_translate($group['name'])),
 											 '',
 											 '');
-			$element->addCheckBox('select');
+			$element->addCheckBox('select[' . $group['id'] . ']', isset($this->_selectedGroups[$group['id']]));
 
 			$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
 			$parentId = (BAB_REGISTERED_GROUP === (int) $group['id'] ? NULL : 'group' . BAB_TREE_VIEW_ID_SEPARATOR . $group['id_parent']);

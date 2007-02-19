@@ -1,45 +1,47 @@
 <?php
-/************************************************************************
- * OVIDENTIA http://www.ovidentia.org                                   *
- ************************************************************************
- * Copyright (c) 2003 by CANTICO ( http://www.cantico.fr )              *
- *                                                                      *
- * This file is part of Ovidentia.                                      *
- *                                                                      *
- * Ovidentia is free software; you can redistribute it and/or modify    *
- * it under the terms of the GNU General Public License as published by *
- * the Free Software Foundation; either version 2, or (at your option)  *
- * any later version.													*
- *																		*
- * This program is distributed in the hope that it will be useful, but  *
- * WITHOUT ANY WARRANTY; without even the implied warranty of			*
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.					*
- * See the  GNU General Public License for more details.				*
- *																		*
- * You should have received a copy of the GNU General Public License	*
- * along with this program; if not, write to the Free Software			*
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
- * USA.																	*
- ************************************************************************/
+//-------------------------------------------------------------------------
+// OVIDENTIA http://www.ovidentia.org
+//
+// Ovidentia is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2, or (at your option)
+// any later version.
+// 
+// This program is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+// USA.
+//-------------------------------------------------------------------------
+/**
+ * @license http://opensource.org/licenses/gpl-license.php GNU General Public License (GPL)
+ * @copyright Copyright (c) 2006 by CANTICO ({@link http://www.cantico.fr})
+ */
 include_once "base.php";
 
 require_once $GLOBALS['babInstallPath'] . 'utilit/uiutil.php';
 require_once $GLOBALS['babInstallPath'] . 'utilit/tree.php';
 
+
+
 function selectArticles()
 {
 	$attributes = 0;
-	if (isset($_REQUEST['show_categories']))
+	if (bab_rp('show_categories', false))
 		$attributes |= BAB_ARTICLE_TREE_VIEW_SHOW_CATEGORIES;
-	if (isset($_REQUEST['show_topics']))
+	if (bab_rp('show_topics', false))
 		$attributes |= BAB_ARTICLE_TREE_VIEW_SHOW_TOPICS;
-	if (isset($_REQUEST['show_articles']))
+	if (bab_rp('show_articles', false))
 		$attributes |= BAB_ARTICLE_TREE_VIEW_SHOW_ARTICLES;
-	if (isset($_REQUEST['selectable_categories']))
+	if (bab_rp('selectable_categories', false))
 		$attributes |= BAB_ARTICLE_TREE_VIEW_SELECTABLE_CATEGORIES;
-	if (isset($_REQUEST['selectable_topics']))
+	if (bab_rp('selectable_topics', false))
 		$attributes |= BAB_ARTICLE_TREE_VIEW_SELECTABLE_TOPICS;
-	if (isset($_REQUEST['selectable_articles']))
+	if (bab_rp('selectable_articles', false))
 		$attributes |= BAB_ARTICLE_TREE_VIEW_SELECTABLE_ARTICLES;
 
 	$GLOBALS['babBodyPopup'] = new babBodyPopup();
@@ -48,27 +50,30 @@ function selectArticles()
 
 	$treeView = new bab_ArticleTreeView('bab_tv_article');
 	$treeView->setAttributes($attributes);
-
+	$treeView->order();
+	$treeView->sort();
+	
 	$GLOBALS['babBodyPopup']->babecho($treeView->printTemplate());
 	printBabBodyPopup();
 	die();
 }
 
+
 function selectFaqs()
 {
 	$attributes = 0;
-	if (isset($_REQUEST['show_categories']))
+	if (bab_rp('show_categories', false))
 		$attributes |= BAB_FAQ_TREE_VIEW_SHOW_CATEGORIES;
-	if (isset($_REQUEST['show_sub_categories']))
+	if (bab_rp('show_sub_categories', false))
 		$attributes |= BAB_FAQ_TREE_VIEW_SHOW_SUB_CATEGORIES;
-	if (isset($_REQUEST['show_questions']))
+	if (bab_rp('show_questions', false))
 		$attributes |= BAB_FAQ_TREE_VIEW_SHOW_QUESTIONS;
 
-	if (isset($_REQUEST['selectable_categories']))
+	if (bab_rp('selectable_categories', false))
 		$attributes |= BAB_FAQ_TREE_VIEW_SELECTABLE_CATEGORIES;
-	if (isset($_REQUEST['selectable_sub_categories']))
+	if (bab_rp('selectable_sub_categories', false))
 		$attributes |= BAB_FAQ_TREE_VIEW_SELECTABLE_SUB_CATEGORIES;
-	if (isset($_REQUEST['selectable_questions']))
+	if (bab_rp('selectable_questions', false))
 		$attributes |= BAB_FAQ_TREE_VIEW_SELECTABLE_QUESTIONS;
 
 	$GLOBALS['babBodyPopup'] = new babBodyPopup();
@@ -83,23 +88,23 @@ function selectFaqs()
 	die();
 }
 
+
 function selectForums()
 {
 	$attributes = 0;
-	if (isset($_REQUEST['show_forums']))
+	if (bab_rp('show_forums', false))
 		$attributes |= BAB_FORUM_TREE_VIEW_SHOW_FORUMS;
-	if (isset($_REQUEST['show_threads']))
+	if (bab_rp('show_threads', false))
 		$attributes |= BAB_FORUM_TREE_VIEW_SHOW_THREADS;
-	if (isset($_REQUEST['show_posts']))
+	if (bab_rp('show_posts', false))
 		$attributes |= BAB_FORUM_TREE_VIEW_SHOW_POSTS;
 
-	if (isset($_REQUEST['selectable_forums']))
+	if (bab_rp('selectable_forums', false))
 		$attributes |= BAB_FORUM_TREE_VIEW_SELECTABLE_FORUMS;
-	if (isset($_REQUEST['selectable_threads']))
+	if (bab_rp('selectable_threads', false))
 		$attributes |= BAB_FORUM_TREE_VIEW_SELECTABLE_THREADS;
-	if (isset($_REQUEST['selectable_posts']))
+	if (bab_rp('selectable_posts', false))
 		$attributes |= BAB_FORUM_TREE_VIEW_SELECTABLE_POSTS;
-	
 	
 	$GLOBALS['babBodyPopup'] = new babBodyPopup();
 	$GLOBALS['babBodyPopup']->title = & $GLOBALS['babBody']->title;
@@ -114,35 +119,60 @@ function selectForums()
 }
 
 
-function selectFiles()
+function selectFiles($folderId = null, $path = '')
 {
 	$attributes = 0;
-	if (isset($_REQUEST['show_collective_directories']))
+	$urlAttributes = '';
+	if (bab_rp('show_collective_directories', false)) {
+		$urlAttributes .= '&show_collective_directories=1';
 		$attributes |= BAB_FILE_TREE_VIEW_SHOW_COLLECTIVE_DIRECTORIES;
-	if (isset($_REQUEST['show_personal_directories']))
+	}
+	if (bab_rp('show_personal_directories', false)) {
+		$urlAttributes .= '&show_personal_directories=1';
 		$attributes |= BAB_FILE_TREE_VIEW_SHOW_PERSONAL_DIRECTORIES;
-		if (isset($_REQUEST['show_sub_directories']))
+	}
+	if (bab_rp('show_sub_directories', false)) {
+		$urlAttributes .= '&show_sub_directories=1';
 		$attributes |= BAB_FILE_TREE_VIEW_SHOW_SUB_DIRECTORIES;
-	if (isset($_REQUEST['show_files']))
+	}
+	if (bab_rp('show_files', false)) {
+		$urlAttributes .= '&show_files=1';
 		$attributes |= BAB_FILE_TREE_VIEW_SHOW_FILES;
-
-	if (isset($_REQUEST['selectable_collective_directories']))
+	}
+	if (bab_rp('selectable_collective_directories', false)) {
+		$urlAttributes .= '&selectable_collective_directories=1';
 		$attributes |= BAB_FILE_TREE_VIEW_SELECTABLE_COLLECTIVE_DIRECTORIES;
-	if (isset($_REQUEST['selectable_sub_directories']))
+	}
+	if (bab_rp('selectable_sub_directories', false)) {
+		$urlAttributes .= '&selectable_sub_directories=1';
 		$attributes |= BAB_FILE_TREE_VIEW_SELECTABLE_SUB_DIRECTORIES;
-	if (isset($_REQUEST['selectable_files']))
+	}
+	if (bab_rp('selectable_files', false)) {
+		$urlAttributes .= '&selectable_files=1';
 		$attributes |= BAB_FILE_TREE_VIEW_SELECTABLE_FILES;
+	}
 	
-	if (isset($_REQUEST['multi']))
+	if (bab_rp('multi', false)) {
+		$urlAttributes .= '&multi=1';
 		$attributes |= BAB_TREE_VIEW_MULTISELECT;
+	}
 
 	$GLOBALS['babBodyPopup'] = new babBodyPopup();
 	$GLOBALS['babBodyPopup']->title = & $GLOBALS['babBody']->title;
 	$GLOBALS['babBodyPopup']->msgerror = & $GLOBALS['babBody']->msgerror;
 	
 	$treeView = new bab_FileTreeView('bab_tv_file', $GLOBALS['babBody']->isSuperAdmin);
-	$treeView->setAttributes($attributes);
 
+	$treeView->setUpdateBaseUrl('?tg=selector&idx=files' . $urlAttributes);
+	
+	if (!is_null($folderId)) {
+		$treeView->setStartPath($folderId, $path);
+		$treeView->setAttributes($attributes);
+		echo($treeView->printSubTree());
+		die();
+	}
+	$attributes &= ~(BAB_FILE_TREE_VIEW_SHOW_SUB_DIRECTORIES|BAB_FILE_TREE_VIEW_SHOW_FILES);
+	$treeView->setAttributes($attributes);
 	$GLOBALS['babBodyPopup']->babecho($treeView->printTemplate());
 	printBabBodyPopup();
 	die();
@@ -150,8 +180,8 @@ function selectFiles()
 
 
 
-function selectGroups() {
-	
+function selectGroups()
+{
 	$treeView = new bab_GroupTreeView('bab_tv_groups');
 	$treeView->sort();
 	$GLOBALS['babBody']->babpopup($treeView->printTemplate());
@@ -159,7 +189,7 @@ function selectGroups() {
 
 
 
-$idx = isset($_REQUEST['idx']) ? $_REQUEST['idx'] : '';
+$idx = bab_rp('idx', '');
 
 
 switch ($idx) {
@@ -176,7 +206,16 @@ switch ($idx) {
 		break;
 		
 	case 'files':
-		selectFiles();
+		$start = bab_rp('start', null);
+		if (!is_null($start)) {
+			$startElements = explode(':', $start);
+			$folderId = $startElements[0];
+			unset($startElements[0]);
+			$path = implode('/', $startElements);
+			selectFiles($folderId, $path);
+		} else {
+			selectFiles();
+		}
 		break;
 
 	case 'groups':
