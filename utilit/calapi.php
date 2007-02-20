@@ -21,7 +21,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
+
+/**
+* @internal SEC1 PR 20/02/2007 FULL
+*/
+
 include_once "base.php";
+
 
 function bab_calGetCategories()
 {
@@ -131,67 +137,7 @@ function bab_calGetEvents(&$params)
 	return $events;
 	
 		
-	/*
-
-	if( empty($cals))
-		{
-		return $events;
-		}
-
-	$req = "select ce.*, cc.name as cat_name, cc.description as cat_desc, cc.bgcolor as cat_color, ceo.status as status, ceo.id_cal as id_calendar from ".BAB_CAL_EVENTS_TBL." ce left join ".BAB_CAL_EVENTS_OWNERS_TBL." ceo on ceo.id_event=ce.id left join ".BAB_CAL_CATEGORIES_TBL." cc on cc.id=ce.id_cat where ceo.id_cal='".$babDB->db_escape_string($cals)."' and ceo.status != '".BAB_CAL_STATUS_DECLINED."' and ce.start_date < '".$babDB->db_escape_string($params['enddate'])."' and  ce.end_date > '".$babDB->db_escape_string($params['begindate'])."'";
-
-	if( isset($params['id_category']))
-		{
-		if( is_array($params['id_category']) && count($params['id_category']) > 0 )
-			{
-			$req.= " and ce.id_cat in (".$babDB->quote($params['id_category']).")";
-			}
-		else
-			{
-			$req.= " and ce.id_cat='".$babDB->db_escape_string($params['id_category'])."'";
-			}
-		}
-
-	$req .= " order by ce.start_date ".$babDB->db_escape_string($params['order']);
-
-	$res = $babDB->db_query($req);
-	while( $arr = $babDB->db_fetch_array($res))
-	{
-		if( !empty($arr['hash']) && $arr['hash'][0] == 'V' )
-			{
-			list($quantity) = $babDB->db_fetch_row($babDB->db_query("select sum(quantity) from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry ='".$babDB->db_escape_string(substr($arr['hash'], 2))."'"));
-			}
-		else
-			{
-			$quantity = 0;
-			}
-
-		$tmp = array();
-		$tmp['id_event'] = $arr['id'];
-		$tmp['title'] = $arr['title'];
-		$tmp['description'] = $arr['description'];
-		$tmp['location'] = $arr['location'];
-		$tmp['begindate'] = $arr['start_date'];
-		$tmp['enddate'] = $arr['end_date'];
-		if( $quantity)
-			{
-			$tmp['quantity'] = $quantity;
-			}
-		$tmp['id_category'] = $arr['id_cat'];
-		$tmp['name_category'] = $arr['cat_name'];
-		$tmp['description_category'] = $arr['cat_desc'];
-		$tmp['id_creator'] = $arr['id_creator'];
-		$tmp['backgroundcolor'] = $arr['color'] != '' ? $arr['color']: $arr['cat_color'];
-		$tmp['private'] = $arr['bprivate'] ==  'Y'? true: false;
-		$tmp['lock'] = $arr['block'] ==  'Y'? true: false;
-		$tmp['free'] = $arr['bfree'] ==  'Y'? true: false;
-		$tmp['status'] = $arr['status'];
-		$tmp['id_calendar'] = $arr['id_calendar'];
-		$events[] = $tmp;
-	}
-
-	return $events;
-	*/
+	
 }
 
 

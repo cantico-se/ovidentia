@@ -21,6 +21,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
+
+/**
+* @internal SEC1 PR 20/02/2007 FULL
+*/
+
 include_once 'base.php';
 
 define('BAB_CAL_NAME_LENGTH', 18);
@@ -894,9 +899,8 @@ class calendarchoice
 
 	function calendarchoice($formname)
 		{
-		global $babBody;
+		global $babBody, $babDB;
 		$this->formname = $formname;
-		$this->db = $GLOBALS['babDB'];
 		$icalendars = $babBody->icalendars;
 		$icalendars->initializeCalendars();
 		if (isset($_POST['selected_calendars']))

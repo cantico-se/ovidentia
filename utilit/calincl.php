@@ -21,6 +21,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
+
+/**
+* @internal SEC1 PR 20/02/2007 FULL
+*/
+
 include_once 'base.php';
 
 function bab_getCalendarType($idcal)

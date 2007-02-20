@@ -23,6 +23,10 @@
 ************************************************************************/
 include_once "base.php";
 
+/**
+* @internal SEC1 PR 20/02/2007 FULL
+*/
+
 function createEvent($idcals,$id_owner, $title, $description, $location, $startdate, $enddate, $category, $color, $private, $lock, $free, $hash, $arralert)
 {
 

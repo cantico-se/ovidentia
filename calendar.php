@@ -21,6 +21,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
+
+/**
+* @internal SEC1 PR 20/02/2007 FULL
+*/
+
 include_once 'base.php';
 include_once $babInstallPath.'utilit/calincl.php';
 include_once $babInstallPath.'utilit/evtincl.php';
@@ -313,7 +318,7 @@ function displayEventNotes($evtid, $idcal)
 				if( $res && $babDB->db_num_rows($res) > 0 )
 					{
 					$arr = $babDB->db_fetch_array($res);
-					$this->noteval = htmlentities($arr['note']);
+					$this->noteval = bab_toHtml($arr['note']);
 					}
 				else
 					{
@@ -707,7 +712,7 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 		function printout()
 			{
 			$GLOBALS['babBodyPopup'] = new babBodyPopup();
-			$GLOBALS['babBodyPopup']->title = bab_translate("Detailed sight");
+			$GLOBALS['babBodyPopup']->seTitle(bab_translate("Detailed sight"));
 			$GLOBALS['babBodyPopup']->babecho(bab_printTemplate($this, "calendar.html", "eventlist"));
 			printBabBodyPopup();
 			die();
@@ -768,8 +773,17 @@ function updateEventNotes($evtid, $note, $bupdrec)
 	}
 }
 
-function updateEventAlert($evtid, $creminder, $day, $hour, $minute, $remail, $bupdrec)
+function updateEventAlert()
 {
+
+	$evtid = bab_rp('evtid');
+	$bupdrec = bab_rp('bupdrec', 2);
+	$creminder = bab_rp('creminder', 'N');
+	$day = bab_rp('day');
+	$hour = bab_rp('hour');
+	$minute = bab_rp('minute');
+	$remail = bab_rp('remail');
+
 	global $babDB;
 	if( !empty($GLOBALS['BAB_SESS_USERID']) )
 	{
@@ -794,29 +808,35 @@ function updateEventAlert($evtid, $creminder, $day, $hour, $minute, $remail, $bu
 
 
 /* main */
-if( isset($conf) )
+
+$idx = bab_rp('idx');
+if( isset($_REQUEST['conf']) )
 {
+	$conf = $_REQUEST['conf'];
+	
 	if( $conf == "event" )
 		{
-		if( !isset($bupdrec)) { $bupdrec = 2; }
-		confirmEvent($evtid, $idcal, $bconfirm, $comment, $bupdrec);
+		confirmEvent(
+			bab_rp('evtid'), 
+			bab_rp('idcal'), 
+			bab_rp('bconfirm'), 
+			bab_rp('comment'), 
+			bab_rp('bupdrec', 2)
+		);
 		$reload = true;
 		}
 	elseif( $conf == "note" )
 		{
-		if( !isset($bupdrec)) { $bupdrec = 2;}
-		updateEventNotes($evtid, $note, $bupdrec);
+		updateEventNotes(
+			bab_rp('evtid'), 
+			bab_rp('note'), 
+			bab_rp('bupdrec', 2)
+		);
 		$reload = true;
 		}
 	elseif( $conf == "alert" )
 		{
-		if( !isset($bupdrec)) { $bupdrec = 2;}
-		if( !isset($creminder)) { $creminder = 'N';}
-		if( !isset($day)) { $day = '';}
-		if( !isset($hour)) { $hour = '';}
-		if( !isset($minute)) { $minute = '';}
-		if( !isset($remail)) { $remail = 'N';}
-		updateEventAlert($evtid, $creminder, $day, $hour, $minute, $remail, $bupdrec);
+		updateEventAlert();
 		$reload = true;
 		}
 }
@@ -835,10 +855,16 @@ switch($idx)
 		include_once $babInstallPath."utilit/uiutil.php";
 		$babBodyPopup = new babBodyPopup();
 		$babBodyPopup->title = bab_translate("Personal notes");
-		displayEventDetail($evtid, $idcal);
+		displayEventDetail(
+			bab_rp'evtid'),
+			bab_rp('idcal')
+		);
 		if (!empty($GLOBALS['BAB_SESS_USERID']))
 		{
-			displayEventNotes($evtid, $idcal);
+			displayEventNotes(
+				bab_rp('evtid'),
+				bab_rp('idcal')
+			);
 		}
 		printBabBodyPopup();
 		exit;
@@ -859,16 +885,28 @@ switch($idx)
 		include_once $babInstallPath."utilit/uiutil.php";
 		$babBodyPopup = new babBodyPopup();
 		$babBodyPopup->title = bab_translate("Event Detail");
-		displayEventDetail($evtid, $idcal);
+		displayEventDetail(
+			bab_rp('evtid'),
+			bab_rp('idcal')
+		);
 		if ($idx == "attendees")
 			{
 			$babBodyPopup->title = bab_translate("Attendees");
-			displayAttendees($evtid, $idcal);
+			displayAttendees(
+				bab_rp('evtid'),
+				bab_rp('idcal')
+			);
 			}
 		if ($idx == "veventupd" && !empty($GLOBALS['BAB_SESS_USERID']))
 			{
-			displayEventNotes($evtid, $idcal);
-			displayEventAlert($evtid, $idcal);
+			displayEventNotes(
+				bab_rp('evtid'), 
+				bab_rp('idcal')
+			);
+			displayEventAlert(
+				bab_rp('evtid'), 
+				bab_rp('idcal')
+			);
 			}
 		printBabBodyPopup();
 		exit;

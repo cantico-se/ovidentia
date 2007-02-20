@@ -21,6 +21,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
+
+/**
+* @internal SEC1 PR 20/02/2007 FULL
+*/
+
+
 include_once 'base.php';
 include_once $babInstallPath.'utilit/calincl.php';
 include_once $babInstallPath.'utilit/mcalincl.php';
@@ -203,7 +209,7 @@ function newEvent()
 			$this->repeat_dayend 	= !isset($_REQUEST['repeat_dayend']) 	? $this->curday		: $_REQUEST['repeat_dayend'];
 
 
-			$this->colorvalue = isset($_REQUEST['color']) ? $_REQUEST['color'] : '' ;
+			$this->colorvalue = isset($_REQUEST['color']) ? bab_toHtml($_REQUEST['color']) : '' ;
 
 			$descriptionval = isset($_REQUEST['evtdesc'])? $_REQUEST['evtdesc'] : "";
 			$this->editor = bab_editor($descriptionval, 'evtdesc', 'vacform',150);
@@ -246,8 +252,8 @@ function newEvent()
 					$this->arr[$k] = post_string2($k);
 					}
 
-				$this->arr['title'] = htmlentities($this->arr['title']);
-				$this->arr['location'] = htmlentities($this->arr['location']);
+				$this->arr['title'] = bab_toHtml($this->arr['title']);
+				$this->arr['location'] = bab_toHtml($this->arr['location']);
 
 				$this->daytypechecked = isset($this->arr['daytype']) ? 'checked' : '';
 				$this->daysel = $this->arr['daybegin'];
@@ -551,7 +557,6 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 
 		var $yearbegin;
 
-		var $db;
 		var $res;
 		var $count;
 

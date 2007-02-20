@@ -21,6 +21,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
+
+/**
+* @internal SEC1 PR 20/02/2007 FULL
+*/
+
 include_once 'base.php';
 include_once $babInstallPath.'utilit/topincl.php';
 include_once $babInstallPath.'utilit/forumincl.php';
@@ -49,8 +54,6 @@ function upComingEvents()
 
 	class temp
 		{
-
-		var $db;
 		var $arrevent = array();
 		var $resevent;
 		var $countevent;
@@ -187,8 +190,6 @@ function newEmails()
 
 	class temp4
 		{
-
-		var $db;
 		var $count;
 		var $res;
 		var $newmails;
@@ -263,8 +264,6 @@ function newFiles($nbdays)
 
 	class temp6
 		{
-
-		var $db;
 		var $count;
 		var $res;
 
