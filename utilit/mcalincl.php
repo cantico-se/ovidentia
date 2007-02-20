@@ -576,7 +576,7 @@ class cal_wmdbaseCls
 		$this->calendarchoiceurl = bab_toHtml( $GLOBALS['babUrlScript']."?tg=calopt&idx=pop_calendarchoice&calid=".$this->currentidcals."&date=".$date."&backurl=".urlencode($backurl));
 		$this->searcheventurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=".$tg."&idx=rfree&date=".$date."&calid=".$this->currentidcals);
 		$this->calnotifierurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calnotif&idx=popup");
-		$this->printurl = bab_toHtml($this->commonurl.'&print=1');
+		$this->printurl = bab_toHtml($this->commonurl.'&date='.$date.'&print=1');
 	}
 
 
