@@ -558,10 +558,10 @@ function getWaitingApprobations($iduser, $update=false)
 {
 	global $babBody, $babDB;
 
-	//if( isset($_SESSION['bab_waitingApprobations'][$iduser]) && !$update )
-	//{
-	//	return $_SESSION['bab_waitingApprobations'][$iduser];
-	//}
+	if( isset($_SESSION['bab_waitingApprobations'][$iduser]) && !$update )
+	{
+		return $_SESSION['bab_waitingApprobations'][$iduser];
+	}
 
 	$res = $babDB->db_query("select frit.*, fit.idsch, fat.satype, fat.id_oc, fit.iduser as fit_iduser from ".BAB_FAR_INSTANCES_TBL." frit left join ".BAB_FA_INSTANCES_TBL." fit on frit.idschi=fit.id left join ".BAB_FLOW_APPROVERS_TBL." fat on fit.idsch=fat.id where frit.result='' and frit.notified='Y'");
 	$result['idsch'] = array();
