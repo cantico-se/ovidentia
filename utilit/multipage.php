@@ -140,7 +140,9 @@ class BAB_MultiPageBase
 	var $sTg = '';
 	var $sIdx = '';
 	
+	var $aActionsExcludeFilter = array();
 	var $aActions = array();
+	var $aFilteredActions = array();
 	var $aActionItems = array();
 	
 	var $m_iDummy = 0;
@@ -270,14 +272,45 @@ class BAB_MultiPageBase
 		}
 	}
 	
+	function processActionsExcludeFilter()
+	{
+		$aActions = $this->aActions;
+
+		foreach($this->aActionsExcludeFilter as $key => $value)
+		{
+			if(isset($aActions[$value['sActionId']]))
+			{
+				if(isset($this->aRow[$value['sDataSourceFieldName']]))
+				{
+					if($this->aRow[$value['sDataSourceFieldName']] != $value['sDataSourceFieldValue'])
+					{
+						unset($aActions[$value['sActionId']]);
+					}
+				}
+			}
+		}
+		$this->aFilteredActions = $aActions;
+		return false; //for the template
+/*
+		array('sActionId' => $sActionId, 'sDataSourceFieldName' => $sDataSourceFieldName, 
+			'sDataSourceFieldValue' => $sDataSourceFieldValue);
+*/		
+	}
+	
+	function addActionExcludeFilter($sActionId, $sDataSourceFieldName, $sDataSourceFieldValue)
+	{
+		$this->aActionsExcludeFilter[] = array('sActionId' => $sActionId, 'sDataSourceFieldName' => $sDataSourceFieldName, 
+			'sDataSourceFieldValue' => $sDataSourceFieldValue);
+	}
+	
 	function addAction($sId, $sText, $sIcon, $sLink, $aDataSourceFields)
 	{
-		$this->aActions[] = array('sId' => $sId, 'sText' => $sText, 'sIcon' => $sIcon, 'sLink' => $sLink, 'aDataSourceFields' => $aDataSourceFields);
+		$this->aActions[$sId] = array('sId' => $sId, 'sText' => $sText, 'sIcon' => $sIcon, 'sLink' => $sLink, 'aDataSourceFields' => $aDataSourceFields);
 	}
 
 	function getNextAction()
 	{
-		$datas = each($this->aActions);
+		$datas = each($this->aFilteredActions);
 		if(false != $datas)
 		{
 			$this->aActionItems = $datas['value'];
