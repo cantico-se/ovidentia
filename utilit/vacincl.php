@@ -21,6 +21,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
+
+/**
+* @internal SEC1 PR 27/02/2007 FULL
+*/
+
 include_once "base.php";
 include_once $GLOBALS['babInstallPath']."utilit/ocapi.php";
 
@@ -53,11 +58,11 @@ class vac_notifyVacationApprovers
 		$this->until = bab_translate("until");
 		$this->quantitytxt = bab_translate("Quantity");
 		$this->commenttxt = bab_translate("Comment");
-		$this->username = bab_getUserName($row['id_user']);
+		$this->username = bab_toHtml(bab_getUserName($row['id_user']));
 		$this->begindate = bab_longDate(bab_mktime($row['date_begin']));
 		$this->enddate = bab_longDate(bab_mktime($row['date_end']));
-		list($this->quantity) = $babDB->db_fetch_row($babDB->db_query("select sum(quantity) from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry ='".$row['id']."'"));
-		$this->comment = htmlentities($row['comment']);
+		list($this->quantity) = $babDB->db_fetch_row($babDB->db_query("select sum(quantity) from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry ='".$babDB->db_escape_string($row['id'])."'"));
+		$this->comment = bab_toHtml($row['comment']);
 		}
 	}
 
@@ -65,7 +70,7 @@ function notifyVacationApprovers($id, $users, $modify = false)
 	{
 	global $babBody, $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail;
 
-	$row = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where id='".$id."'"));
+	$row = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
 
 	$mail = bab_mail();
 	if( $mail == false )
@@ -99,7 +104,7 @@ function notifyOnRequestChange($id, $delete = false)
 	{
 	global $babBody, $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL;
 
-	$row = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where id='".$id."'"));
+	$row = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
 
 	// no mail if vacation is elapsed
 	if ($row['date_end'] < date('Y-m-d H:i:s')) {
@@ -118,11 +123,11 @@ function notifyOnRequestChange($id, $delete = false)
 			$this->until = bab_translate("until");
 			$this->quantitytxt = bab_translate("Quantity");
 			$this->commenttxt = bab_translate("Comment");
-			$this->username = bab_getUserName($row['id_user']);
+			$this->username = bab_toHtml(bab_getUserName($row['id_user']));
 			$this->begindate = bab_longDate(bab_mktime($row['date_begin']));
 			$this->enddate = bab_longDate(bab_mktime($row['date_end']));
 			list($this->quantity) = $babDB->db_fetch_row($babDB->db_query("select sum(quantity) from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry =".$babDB->quote($row['id'])));
-			$this->comment = htmlentities($row['comment']);
+			$this->comment = bab_toHtml($row['comment']);
 			}
 		}
 	}
@@ -175,7 +180,7 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 
 	if (!$id_user) $id_user = $GLOBALS['BAB_SESS_USERID'];
 
-	$db = & $GLOBALS['babDB'];
+	global $babDB;
 
 	$req = "SELECT 
 				rules.*, 
@@ -196,7 +201,7 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 					ON rg.id = r.id_rgroup 
 				WHERE t.id = c.id_type 
 					AND c.id_coll=p.id_coll 
-					AND p.id_user=".$db->quote($id_user)." 
+					AND p.id_user=".$babDB->quote($id_user)." 
 				";
 	
 	if( $rfrom == 1 )
@@ -219,14 +224,14 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 		$access_on_period = false;
 		}
 
-	$req .= " AND ur.id_user=".$db->quote($id_user)." AND ur.id_right=r.id 	AND r.id_type=t.id 	GROUP BY r.id ORDER BY r.description";
+	$req .= " AND ur.id_user=".$babDB->quote($id_user)." AND ur.id_right=r.id 	AND r.id_type=t.id 	GROUP BY r.id ORDER BY r.description";
 	
 	
 	
-	$res = $db->db_query($req);
+	$res = $babDB->db_query($req);
 
 	
-	while ( $arr = $db->db_fetch_assoc($res) )
+	while ( $arr = $babDB->db_fetch_assoc($res) )
 		{
 
 		
@@ -258,13 +263,13 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 			$endp += 86400;
 			}
 		
-		$req = "select sum(el.quantity) total from ".BAB_VAC_ENTRIES_ELEM_TBL." el, ".BAB_VAC_ENTRIES_TBL." e where e.id_user=".$db->quote($id_user)." and e.status='Y' and el.id_right=".$db->quote($arr['id'])." and el.id_entry=e.id";
-		$row = $db->db_fetch_array($db->db_query($req));
+		$req = "select sum(el.quantity) total from ".BAB_VAC_ENTRIES_ELEM_TBL." el, ".BAB_VAC_ENTRIES_TBL." e where e.id_user=".$babDB->quote($id_user)." and e.status='Y' and el.id_right=".$babDB->quote($arr['id'])." and el.id_entry=e.id";
+		$row = $babDB->db_fetch_array($babDB->db_query($req));
 				
 		$qdp = isset($row['total'])? $row['total'] : 0;
 
-		$req = "select sum(el.quantity) total from ".BAB_VAC_ENTRIES_ELEM_TBL." el, ".BAB_VAC_ENTRIES_TBL." e where e.id_user=".$db->quote($id_user)." and e.status='' and el.id_right=".$db->quote($arr['id'])." and el.id_entry=e.id";
-		$row = $db->db_fetch_array($db->db_query($req));
+		$req = "select sum(el.quantity) total from ".BAB_VAC_ENTRIES_ELEM_TBL." el, ".BAB_VAC_ENTRIES_TBL." e where e.id_user=".$babDB->quote($id_user)." and e.status='' and el.id_right=".$babDB->quote($arr['id'])." and el.id_entry=e.id";
+		$row = $babDB->db_fetch_array($babDB->db_query($req));
 
 		$waiting = isset($row['total'])? $row['total'] : 0;
 
@@ -364,11 +369,11 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 				$req = '';
 
 				if ('0000-00-00' != $arr['trigger_p1_begin'] && '0000-00-00' != $arr['trigger_p1_end']) {
-					$p1 = "(e.date_begin < ".$db->quote($arr['trigger_p1_end'])." AND e.date_end > ".$db->quote($arr['trigger_p1_begin']).')';
+					$p1 = "(e.date_begin < ".$babDB->quote($arr['trigger_p1_end'])." AND e.date_end > ".$babDB->quote($arr['trigger_p1_begin']).')';
 				}
 
 				if ('0000-00-00' != $arr['trigger_p2_begin'] && '0000-00-00' != $arr['trigger_p2_end']) {
-					$p2 = "(e.date_begin < ".$db->quote($arr['trigger_p2_end'])." AND e.date_end > ".$db->quote($arr['trigger_p2_begin']).')';
+					$p2 = "(e.date_begin < ".$babDB->quote($arr['trigger_p2_end'])." AND e.date_end > ".$babDB->quote($arr['trigger_p2_begin']).')';
 				}
 
 				if ($p1 && $p2) {
@@ -385,7 +390,7 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 					if (!empty($arr['trigger_type']))
 						{
 						$table = ", ".BAB_VAC_RIGHTS_TBL." r ";
-						$where = " AND el.id_right=r.id AND r.id_type=".$db->quote($arr['trigger_type'])." ";
+						$where = " AND el.id_right=r.id AND r.id_type=".$babDB->quote($arr['trigger_type'])." ";
 						}
 					else
 						{
@@ -402,15 +407,15 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 							".BAB_VAC_ENTRIES_TBL." e 
 							".$table." 
 						WHERE  
-							e.id_user=".$db->quote($id_user)." 
+							e.id_user=".$babDB->quote($id_user)." 
 							and e.status='Y' 
 							and el.id_entry=e.id 
 							".$req.$where."
 						GROUP BY e.id";
 
 					$nbdays = 0;
-					$res_entry = $db->db_query($req);
-					while ($entry = $db->db_fetch_assoc($res_entry)) {
+					$res_entry = $babDB->db_query($req);
+					while ($entry = $babDB->db_fetch_assoc($res_entry)) {
 
 						list($entry_date_begin) = explode(' ',$entry['date_begin']);
 						list($entry_date_end) = explode(' ',$entry['date_end']);
@@ -553,8 +558,7 @@ function viewVacationCalendar($users, $period = false )
 			$month = isset($_REQUEST['month']) ? $_REQUEST['month'] : Date("n");
 			$year = isset($_REQUEST['year']) ? $_REQUEST['year'] : Date("Y");
 
-			global $babMonths;
-			$this->db = &$GLOBALS['babDB'];
+			global $babDB,$babMonths;
 			$this->month = $month;
 			$this->year = $year;
 
@@ -652,26 +656,26 @@ function viewVacationCalendar($users, $period = false )
 
 			// find computed months
 
-			$res = $this->db->db_query("
+			$res = $babDB->db_query("
 				SELECT 
 					id_user, 
 					monthkey 
 				FROM ".BAB_VAC_CALENDAR_TBL." 
 				WHERE 
-					id_user IN(".$this->db->quote($this->idusers).") 
-					AND cal_date BETWEEN ".$this->db->quote($dateb->getIsoDate())." 
-					AND ".$this->db->quote($datee->getIsoDate())."  
+					id_user IN(".$babDB->quote($this->idusers).") 
+					AND cal_date BETWEEN ".$babDB->quote($dateb->getIsoDate())." 
+					AND ".$babDB->quote($datee->getIsoDate())."  
 				GROUP BY id_user, monthkey 
 			");
 
-			while($arr = $this->db->db_fetch_assoc($res)) {
-				$this->db_month[$arr['monthkey']][$arr['id_user']] = 1;
+			while($arr = $babDB->db_fetch_assoc($res)) {
+				$babDB_month[$arr['monthkey']][$arr['id_user']] = 1;
 			}
 
 			
 
 
-			$this->restypes = $this->db->db_query("
+			$this->restypes = $babDB->db_query("
 			
 					SELECT 
 						t.* 
@@ -680,7 +684,7 @@ function viewVacationCalendar($users, $period = false )
 						".BAB_VAC_COLL_TYPES_TBL." ct, 
 						".BAB_VAC_PERSONNEL_TBL." p 
 					WHERE 
-						p.id_user IN(".$this->db->quote($this->idusers).") 
+						p.id_user IN(".$babDB->quote($this->idusers).") 
 						AND p.id_coll=ct.id_coll 
 						AND ct.id_type=t.id 
 					GROUP BY 
@@ -721,14 +725,16 @@ function viewVacationCalendar($users, $period = false )
 				{
 				$this->first = $i == 0 ;
 				$this->id_user = $this->idusers[$i];
-				$this->username = $this->userNameArr[$this->id_user];
+				$this->username = bab_toHtml($this->userNameArr[$this->id_user]);
 					
 
 				$key = $this->curmonth.$this->curyear;
 
-				if (!isset($this->db_month[$key][$this->id_user])) {
+				if (!isset($babDB_month[$key][$this->id_user])) {
 					bab_vac_updateCalendar($this->id_user, $this->curyear, $this->curmonth);
 				}
+
+				global $babDB;
 				
 				$req = "
 					SELECT 
@@ -740,14 +746,14 @@ function viewVacationCalendar($users, $period = false )
 						LEFT JOIN ".BAB_VAC_ENTRIES_TBL." e 
 							ON e.id = c.id_entry 
 						LEFT JOIN ".BAB_SITES_NONWORKING_DAYS_TBL." d 
-							ON d.nw_day = c.cal_date AND id_site=".$this->db->quote($GLOBALS['babBody']->babsite['id'])."
-					WHERE monthkey=".$this->db->quote($key)." AND c.id_user=".$this->db->quote($this->id_user)." 
+							ON d.nw_day = c.cal_date AND id_site=".$babDB->quote($GLOBALS['babBody']->babsite['id'])."
+					WHERE monthkey=".$babDB->quote($key)." AND c.id_user=".$babDB->quote($this->id_user)." 
 						ORDER BY cal_date 
 				";
-				$res = $this->db->db_query($req);
+				$res = $babDB->db_query($req);
 
 				$this->periodIndex = array();
-				while ($arr = $this->db->db_fetch_assoc($res)) {
+				while ($arr = $babDB->db_fetch_assoc($res)) {
 					$key = $arr['cal_date'];
 					$key .= $arr['ampm'] ? 'pm' : 'am';
 					$this->periodIndex[$key] = $arr;
@@ -777,7 +783,7 @@ function viewVacationCalendar($users, $period = false )
 
 				$this->curyear = $dateb->getYear();
 				$this->curmonth = $dateb->getMonth();
-				$this->monthname = $GLOBALS['babShortMonths'][$this->curmonth];
+				$this->monthname = bab_toHtml($GLOBALS['babShortMonths'][$this->curmonth]);
 				$this->totaldays = date("t", $dateb->getTimeStamp());
 				$this->previous_period = NULL;
 				$i++;
@@ -901,7 +907,7 @@ function viewVacationCalendar($users, $period = false )
 
 		function getnexttype()
 			{
-			if ($this->arr = $this->db->db_fetch_array($this->restypes))
+			if ($this->arr = $babDB->db_fetch_array($this->restypes))
 				{
 				return true;
 				}
@@ -960,7 +966,7 @@ function listVacationRequests($id_user)
 		var $status;
 				
 		var $arr = array();
-		var $db;
+		var $babDB;
 		var $count;
 		var $res;
 
@@ -984,7 +990,7 @@ function listVacationRequests($id_user)
 
 		function temp($id_user)
 			{
-
+			global $babDB;
 			$this->uncheckall = bab_translate("Uncheck all");
 			$this->checkall = bab_translate("Check all");
 			$this->nametxt = bab_translate("Fullname");
@@ -1009,23 +1015,24 @@ function listVacationRequests($id_user)
 
 			$this->t_position = '';
 
-			if (is_array($id_user))
-				$id_user = implode(',',$id_user);
+			if (!is_array($id_user))
+				$uarr = array($id_user);
+			else
+				$uarr = $id_user;
 
 			$this->calurl = $GLOBALS['babUrlScript']."?tg=vacuser&idx=cal&idu=".$id_user."&popup=1";
 			$this->personal = $id_user == $GLOBALS['BAB_SESS_USERID'];
 			$this->pos = isset($_REQUEST['pos']) ? $_REQUEST['pos'] : 0;
-			$this->db = $GLOBALS['babDB'];
 
-			$req = "".BAB_VAC_ENTRIES_TBL." where id_user IN(".$id_user.")";
+			$req = "".BAB_VAC_ENTRIES_TBL." where id_user IN(".$babDB->quote($uarr).")";
 
-			list($total) = $this->db->db_fetch_row($this->db->db_query("select count(*) as total from ".$req));
+			list($total) = $babDB->db_fetch_row($babDB->db_query("select count(*) as total from ".$req));
 			if( $total > VAC_MAX_REQUESTS_LIST )
 				{
 				$idx = isset($_REQUEST['idx']) ? $_REQUEST['idx'] : '';
 				$ide = isset($_REQUEST['ide']) ? $_REQUEST['ide'] : '';
 				$id_user = isset($_REQUEST['id_user']) ? $_REQUEST['id_user'] : '';
-				$tmpurl = $GLOBALS['babUrlScript']."?tg=".$_REQUEST['tg']."&idx=".$idx."&ide=".$ide."&id_user=".$id_user."&pos=";
+				$tmpurl = $GLOBALS['babUrlScript']."?tg=".urlencode($_REQUEST['tg'])."&idx=".urlencode($idx)."&ide=".$ide."&id_user=".$id_user."&pos=";
 
 				
 				$page_number = 1 + ($this->pos / VAC_MAX_REQUESTS_LIST);
@@ -1060,10 +1067,10 @@ function listVacationRequests($id_user)
 			$req .= " order by date desc";
 			if( $total > VAC_MAX_REQUESTS_LIST)
 				{
-				$req .= " limit ".$this->pos.",".VAC_MAX_REQUESTS_LIST;
+				$req .= " limit ".$babDB->db_escape_string($this->pos).",".VAC_MAX_REQUESTS_LIST;
 				}
-			$this->res = $this->db->db_query("select * from ".$req);
-			$this->count = $this->db->db_num_rows($this->res);
+			$this->res = $babDB->db_query("select * from ".$req);
+			$this->count = $babDB->db_num_rows($this->res);
 			$this->statarr = array(bab_translate("Waiting"), bab_translate("Accepted"), bab_translate("Refused"));
 			}
 
@@ -1073,10 +1080,11 @@ function listVacationRequests($id_user)
 			static $i = 0;
 			if( $i < $this->count)
 				{
+				global $babDB;
 				$this->altbg = !$this->altbg;
-				$arr = $this->db->db_fetch_array($this->res);
+				$arr = $babDB->db_fetch_array($this->res);
 				$this->url = $GLOBALS['babUrlScript']."?tg=vacuser&idx=morve&id=".$arr['id'];
-				list($this->quantity) = $this->db->db_fetch_row($this->db->db_query("select sum(quantity) from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry ='".$arr['id']."'"));
+				list($this->quantity) = $babDB->db_fetch_row($babDB->db_query("select sum(quantity) from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry ='".$babDB->db_escape_string($arr['id'])."'"));
 				$this->urlname = bab_getUserName($arr['id_user']);
 
 				$begin_ts = bab_mktime($arr['date_begin']);
@@ -1143,7 +1151,7 @@ function listRightsByUser($id)
 		var $titletxt;
 				
 		var $arr = array();
-		var $db;
+		var $babDB;
 		var $count;
 		var $res;
 
@@ -1158,6 +1166,7 @@ function listRightsByUser($id)
 
 		function temp($id)
 			{
+			global $babDB;
 			$this->iduser = $id;
 			$this->updatetxt = bab_translate("Update");
 			$this->desctxt = bab_translate("Description");
@@ -1167,17 +1176,15 @@ function listRightsByUser($id)
 			$this->dateetxt = bab_translate("End date");
 			$this->quantitytxt = bab_translate("Quantity");
 			$this->datetxt = bab_translate("Entry date");
-			$this->invalidentry = bab_translate("Invalid entry!  Only numbers are accepted or . !");
-			$this->invalidentry = str_replace("'", "\'", $this->invalidentry);
-			$this->invalidentry = str_replace('"', "'+String.fromCharCode(34)+'",$this->invalidentry);
+			$this->invalidentry = bab_toHtml(bab_translate("Invalid entry!  Only numbers are accepted or . !"), BAB_HTML_JS);
 			$this->invalidentry1 = bab_translate("Invalid entry");
 			$this->invalidentry2 = bab_translate("Days must be multiple of 0.5");
 			$GLOBALS['babBody']->title = bab_translate("Vacation rights of:").' '.bab_getUserName($id);
 
 			$this->tg = $_REQUEST['tg'];
 
-			$this->db = & $GLOBALS['babDB'];
-			$this->res = $this->db->db_query("
+
+			$this->res = $babDB->db_query("
 				SELECT 
 					u.id_user,
 					u.id_right,
@@ -1198,14 +1205,14 @@ function listRightsByUser($id)
 						".BAB_VAC_RGROUPS_TBL." rg ON rg.id = r.id_rgroup 
 					, 
 					".BAB_VAC_TYPES_TBL." t 
-				WHERE id_user=".$this->db->quote($id)." 
+				WHERE id_user=".$babDB->quote($id)." 
 					AND r.id = u.id_right 
 					AND t.id = r.id_type 
 					ORDER BY year DESC, label ASC
 			");
 
-			$this->count = $this->db->db_num_rows($this->res);
-			list($this->idcoll) = $this->db->db_fetch_row($this->db->db_query("select id_coll from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$id."'"));
+			$this->count = $babDB->db_num_rows($this->res);
+			list($this->idcoll) = $babDB->db_fetch_row($babDB->db_query("select id_coll from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$babDB->db_escape_string($id)."'"));
 			}
 
 		function getnextright()
@@ -1215,10 +1222,11 @@ function listRightsByUser($id)
 			static $i = 0;
 			if( $i < $this->count)
 				{
-				$arr = $this->db->db_fetch_array($this->res);
-				$res = $this->db->db_query("SELECT id from ".BAB_VAC_COLL_TYPES_TBL." WHERE id_coll='".$this->idcoll."' and id_type='".$arr['id_type']."'");
+				global $babDB;
+				$arr = $babDB->db_fetch_array($this->res);
+				$res = $babDB->db_query("SELECT id from ".BAB_VAC_COLL_TYPES_TBL." WHERE id_coll='".$babDB->db_escape_string($this->idcoll)."' and id_type='".$babDB->db_escape_string($arr['id_type'])."'");
 				$this->bview = false;
-				if( $res && $this->db->db_num_rows($res) > 0 )
+				if( $res && $babDB->db_num_rows($res) > 0 )
 					{
 					$this->idright = $arr['id_right'];
 					$this->description = bab_toHtml($arr['description']);
@@ -1238,15 +1246,15 @@ function listRightsByUser($id)
 
 					$this->dateb = bab_shortDate(bab_mktime($arr['date_begin']), false);
 					$this->datee = bab_shortDate(bab_mktime($arr['date_end']), false);
-					$arr = $this->db->db_fetch_array($this->db->db_query(
+					$arr = $babDB->db_fetch_array($babDB->db_query(
 						"SELECT sum(quantity) as total 
 						FROM 
 							".BAB_VAC_ENTRIES_ELEM_TBL." ee, 
 							".BAB_VAC_ENTRIES_TBL." e
 						WHERE 
-								e.id_user = ".$this->db->quote($this->iduser)." 
+								e.id_user = ".$babDB->quote($this->iduser)." 
 							AND e.status = 'Y' 
-							AND ee.id_right = ".$this->db->quote($this->idright)." 
+							AND ee.id_right = ".$babDB->quote($this->idright)." 
 							AND ee.id_entry = e.id
 						"));
 					$this->consumed = isset($arr['total'])? $arr['total'] : 0;
@@ -1270,13 +1278,13 @@ function updateVacationRightByUser($userid, $quantities, $idrights)
 	global $babDB;
 	for($i = 0; $i < count($idrights); $i++)
 		{
-		list($quantity) = $babDB->db_fetch_array($babDB->db_query("select quantity from ".BAB_VAC_RIGHTS_TBL." where id='".$idrights[$i]."'"));
+		list($quantity) = $babDB->db_fetch_array($babDB->db_query("select quantity from ".BAB_VAC_RIGHTS_TBL." where id='".$babDB->db_escape_string($idrights[$i])."'"));
 		if( $quantity != $quantities[$i] )
 			$quant = $quantities[$i];
 		else
 			$quant = '';
 
-		$babDB->db_query("update ".BAB_VAC_USERS_RIGHTS_TBL." set quantity='".$quant."' where id_user='".$userid."' and id_right='".$idrights[$i]."'");
+		$babDB->db_query("update ".BAB_VAC_USERS_RIGHTS_TBL." set quantity='".$babDB->db_escape_string($quant)."' where id_user='".$babDB->db_escape_string($userid)."' and id_right='".$babDB->db_escape_string($idrights[$i])."'");
 		}
 }
 
@@ -1323,7 +1331,7 @@ function addVacationPersonnel($idp = false)
 		var $delete;
 		var $groupsbrowurl;
 		var $usersbrowurl;
-		var $db;
+		var $babDB;
 		var $orand;
 		var $reset;
 
@@ -1337,11 +1345,11 @@ function addVacationPersonnel($idp = false)
 			$this->tg = $_REQUEST['tg'];
 			$this->ide = isset($_REQUEST['ide']) ? $_REQUEST['ide'] : false;
 
-			$this->db = & $GLOBALS['babDB'];
+			global $babDB;
 
 			$this->idp = $idp;
 
-			list($n) = $this->db->db_fetch_array($this->db->db_query("SELECT COUNT(*) FROM ".BAB_VAC_ENTRIES_TBL." WHERE id_user='".$this->idp."' AND status=''"));
+			list($n) = $babDB->db_fetch_array($babDB->db_query("SELECT COUNT(*) FROM ".BAB_VAC_ENTRIES_TBL." WHERE id_user='".$babDB->db_escape_string($this->idp)."' AND status=''"));
 
 			if ($n > 0)
 				$this->whaiting = bab_translate('Modification are disabled, the user have').' '.$n.' '.bab_translate('whaiting request(s)').'.';
@@ -1357,7 +1365,7 @@ function addVacationPersonnel($idp = false)
 			if( !empty($this->idp))
 				{
 				$this->add = bab_translate("Modify");
-				$arr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$this->idp."'"));
+				$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$babDB->db_escape_string($this->idp)."'"));
 				$this->userid = $arr['id_user'];
 				$this->userval = bab_getUserName($this->idp);
 				$this->idcol = $arr['id_coll'];
@@ -1375,14 +1383,14 @@ function addVacationPersonnel($idp = false)
 			$this->groupval = "";
 			$this->groupid = "";
 
-			$this->sares = $this->db->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." order by name asc");
+			$this->sares = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." order by name asc");
 			if( !$this->sares )
 				$this->countsa = 0;
 			else
-				$this->countsa = $this->db->db_num_rows($this->sares);
+				$this->countsa = $babDB->db_num_rows($this->sares);
 
-			$this->colres = $this->db->db_query("select * from ".BAB_VAC_COLLECTIONS_TBL." order by name asc");
-			$this->countcol = $this->db->db_num_rows($this->colres);
+			$this->colres = $babDB->db_query("select * from ".BAB_VAC_COLLECTIONS_TBL." order by name asc");
+			$this->countcol = $babDB->db_num_rows($this->colres);
 			}
 		
 		function getnextsa()
@@ -1390,7 +1398,7 @@ function addVacationPersonnel($idp = false)
 			static $j= 0;
 			if( $j < $this->countsa )
 				{
-				$arr = $this->db->db_fetch_array($this->sares);
+				$arr = $babDB->db_fetch_array($this->sares);
 				$this->saname = $arr['name'];
 				$this->idsapp = $arr['id'];
 				$this->idsapp = $arr['id'];
@@ -1405,7 +1413,7 @@ function addVacationPersonnel($idp = false)
 				{
 				$j = 0;
 				if ($this->countsa > 0)
-					$this->db->db_data_seek($this->sares,0);
+					$babDB->db_data_seek($this->sares,0);
 				return false;
 				}
 			}
@@ -1415,7 +1423,7 @@ function addVacationPersonnel($idp = false)
 			static $j= 0;
 			if( $j < $this->countcol )
 				{
-				$arr = $this->db->db_fetch_array($this->colres);
+				$arr = $babDB->db_fetch_array($this->colres);
 				$this->collname = $arr['name'];
 				$this->idcollection = $arr['id'];
 				if( $this->idcol == $this->idcollection )
@@ -1489,7 +1497,7 @@ function updateVacationUser($userid, $idsa)
 
 function updateUserColl()
 {
-	$db = & $GLOBALS['babDB'];
+	global $babDB;
 
 	if (empty($_POST['idp']))
 		{
@@ -1499,8 +1507,8 @@ function updateUserColl()
 	$users_rights = array();
 	$worked_ids = array();
 
-	$res = $db->db_query("SELECT id,id_right FROM ".BAB_VAC_USERS_RIGHTS_TBL." WHERE id_user='".$_POST['idp']."'");
-	while($arr = $db->db_fetch_array($res))
+	$res = $babDB->db_query("SELECT id,id_right FROM ".BAB_VAC_USERS_RIGHTS_TBL." WHERE id_user='".$babDB->db_escape_string($_POST['idp'])."'");
+	while($arr = $babDB->db_fetch_array($res))
 		{
 		$users_rights[$arr['id_right']] = $arr['id'];
 		}
@@ -1531,11 +1539,11 @@ function updateUserColl()
 
 			if ($value < 0)
 				{
-				list($name,$cbalance) = $db->db_fetch_array($db->db_query("SELECT description,cbalance FROM ".BAB_VAC_RIGHTS_TBL." WHERE id='".$id_right."'"));
+				list($name,$cbalance) = $babDB->db_fetch_array($babDB->db_query("SELECT description,cbalance FROM ".BAB_VAC_RIGHTS_TBL." WHERE id='".$babDB->db_escape_string($id_right)."'"));
 				
 				if ($cbalance == 'N')
 					{
-					$GLOBALS['babBody']->msgerror = bab_translate("Negative balance are not alowed on right").' '.$name;
+					$GLOBALS['babBody']->addError(bab_translate("Negative balance are not alowed on right").' '.$name);
 					return false;
 
 					}
@@ -1549,22 +1557,22 @@ function updateUserColl()
 		{
 		if (isset($users_rights[$id_right]))
 			{
-			$db->db_query("UPDATE ".BAB_VAC_USERS_RIGHTS_TBL." SET quantity='".$value."' WHERE id='".$users_rights[$id_right]."'");
+			$babDB->db_query("UPDATE ".BAB_VAC_USERS_RIGHTS_TBL." SET quantity='".$babDB->db_escape_string($value)."' WHERE id='".$babDB->db_escape_string($users_rights[$id_right])."'");
 			$worked_ids[] = $users_rights[$id_right];
 			}
 		else
 			{
-			$db->db_query("INSERT INTO ".BAB_VAC_USERS_RIGHTS_TBL." (id_user,id_right,quantity) VALUES ('".$_POST['idp']."','".$id_right."','".$value."')");
-			$worked_ids[] = $db->db_insert_id();
+			$babDB->db_query("INSERT INTO ".BAB_VAC_USERS_RIGHTS_TBL." (id_user,id_right,quantity) VALUES ('".$babDB->db_escape_string($_POST['idp'])."', '".$babDB->db_escape_string($id_right)."', '".$babDB->db_escape_string($value)."')");
+			$worked_ids[] = $babDB->db_insert_id();
 			}
 		}
 
 	if (count($worked_ids) > 0)
 		{
-		$db->db_query("DELETE FROM ".BAB_VAC_USERS_RIGHTS_TBL." WHERE id NOT IN(".implode(',',$worked_ids).") AND id_user= '".$_POST['idp']."'");
+		$babDB->db_query("DELETE FROM ".BAB_VAC_USERS_RIGHTS_TBL." WHERE id NOT IN(".$babDB->quote($worked_ids).") AND id_user= '".$babDB->db_escape_string($_POST['idp'])."'");
 		}
 
-	$db->db_query("UPDATE ".BAB_VAC_PERSONNEL_TBL." SET id_coll='".$_POST['idcol']."' WHERE id_user='".$_POST['idp']."'");
+	$babDB->db_query("UPDATE ".BAB_VAC_PERSONNEL_TBL." SET id_coll='".$babDB->db_escape_string($_POST['idcol'])."' WHERE id_user='".$babDB->db_escape_string($_POST['idp'])."'");
 
 	return true;
 }
@@ -1588,7 +1596,7 @@ function changeucol($id_user,$newcol)
 			$this->t_right = bab_translate("Rights");
 			$this->t_balance = bab_translate("Balance");
 
-			$this->db = & $GLOBALS['babDB'];
+			global $babDB;
 			$this->tg = $_REQUEST['tg'];
 
 
@@ -1611,20 +1619,20 @@ function changeucol($id_user,$newcol)
 						".BAB_VAC_COLLECTIONS_TBL." c 
 					
 					WHERE 
-						p.id_user='".$id_user."' AND c.id='".$newcol."'
+						p.id_user='".$babDB->db_escape_string($id_user)."' AND c.id='".$babDB->db_escape_string($newcol)."'
 					";
 
-			$arr = $this->db->db_fetch_array($this->db->db_query($req));
+			$arr = $babDB->db_fetch_array($babDB->db_query($req));
 
 
 			$this->oldcol = $arr['old'];
 			$this->newcol = $arr['new'];
 
-			$req = "SELECT r.* FROM ".BAB_VAC_RIGHTS_TBL." r, ".BAB_VAC_COLL_TYPES_TBL." t WHERE t.id_type = r.id_type AND t.id_coll='".$newcol."' ORDER BY r.description";
-			$res = $this->db->db_query($req);
+			$req = "SELECT r.* FROM ".BAB_VAC_RIGHTS_TBL." r, ".BAB_VAC_COLL_TYPES_TBL." t WHERE t.id_type = r.id_type AND t.id_coll='".$babDB->db_escape_string($newcol)."' ORDER BY r.description";
+			$res = $babDB->db_query($req);
 			
 			$new_rights = array();
-			while ($arr = $this->db->db_fetch_array($res))
+			while ($arr = $babDB->db_fetch_array($res))
 				{
 				$new_rights[] = array(
 							'id' =>			$arr['id'],
@@ -1704,13 +1712,13 @@ function updateVacationPersonnel($iduser, $idsa)
 
 	if( !empty($iduser))
 		{
-		$res = $babDB->db_query("select id, id_sa,id_user from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$iduser."'");
+		$res = $babDB->db_query("select id, id_sa,id_user from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$babDB->db_escape_string($iduser)."'");
 
 		if( $res && $babDB->db_num_rows($res) > 0 )
 			{
 			$arr = $babDB->db_fetch_array($res);
 
-			$babDB->db_query("UPDATE ".BAB_VAC_PERSONNEL_TBL." SET id_sa='".$idsa."' where id='".$arr['id']."'");
+			$babDB->db_query("UPDATE ".BAB_VAC_PERSONNEL_TBL." SET id_sa='".$babDB->db_escape_string($idsa)."' where id='".$babDB->db_escape_string($arr['id'])."'");
 
 			if( $arr['id_sa'] != $idsa )
 				{
@@ -1720,7 +1728,7 @@ function updateVacationPersonnel($iduser, $idsa)
 			}
 		else
 			{
-			$babDB->db_query("INSERT INTO ".BAB_VAC_PERSONNEL_TBL." ( id_user,id_sa ) VALUES ('".$iduser."', '".$idsa."' )");
+			$babDB->db_query("INSERT INTO ".BAB_VAC_PERSONNEL_TBL." ( id_user,id_sa ) VALUES ('".$babDB->db_escape_string($iduser)."', '".$babDB->db_escape_string($idsa)."' )");
 			}
 		}
 
@@ -1750,24 +1758,24 @@ function saveVacationPersonnel($userid,  $idcol, $idsa)
 		}
 
 
-	$res = $babDB->db_query("select id from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$userid."'");
+	$res = $babDB->db_query("select id from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$babDB->db_escape_string($userid)."'");
 	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
 		$babBody->msgerror = bab_translate("This user already exist in personnel list") ." !";
 		return false;
 		}
 
-	$babDB->db_query("insert into ".BAB_VAC_PERSONNEL_TBL." ( id_user, id_coll, id_sa) values ('".$userid."','".$idcol."','".$idsa."')");
+	$babDB->db_query("insert into ".BAB_VAC_PERSONNEL_TBL." ( id_user, id_coll, id_sa) values ('".$babDB->db_escape_string($userid)."','".$babDB->db_escape_string($idcol)."','".$babDB->db_escape_string($idsa)."')");
 
 	// create default user rights
 
-	$babDB->db_query("DELETE FROM ".BAB_VAC_USERS_RIGHTS_TBL." WHERE id_user='".$userid."'");
+	$babDB->db_query("DELETE FROM ".BAB_VAC_USERS_RIGHTS_TBL." WHERE id_user='".$babDB->db_escape_string($userid)."'");
 
-	$res = $babDB->db_query("SELECT r.id FROM ".BAB_VAC_RIGHTS_TBL." r, ".BAB_VAC_COLL_TYPES_TBL." t WHERE r.id_type=t.id_type AND t.id_coll='".$idcol."'");
+	$res = $babDB->db_query("SELECT r.id FROM ".BAB_VAC_RIGHTS_TBL." r, ".BAB_VAC_COLL_TYPES_TBL." t WHERE r.id_type=t.id_type AND t.id_coll='".$babDB->db_escape_string($idcol)."'");
 
 	while($r = $babDB->db_fetch_array($res))
 		{
-		$babDB->db_query("INSERT INTO ".BAB_VAC_USERS_RIGHTS_TBL." ( id_user,  id_right ) VALUES ('".$userid."','".$r['id']."')");
+		$babDB->db_query("INSERT INTO ".BAB_VAC_USERS_RIGHTS_TBL." ( id_user,  id_right ) VALUES ('".$babDB->db_escape_string($userid)."','".$babDB->db_escape_string($r['id'])."')");
 		}
 	
 	return true;
@@ -1908,14 +1916,14 @@ function bab_isPlanningAccessValid()
 
 
 function bab_getVacationOption($field) {
-	$db = &$GLOBALS['babDB'];
+	global $babDB;
 
 	static $arr = null;
 
 	if (null == $arr) {
-		$res = $db->db_query("SELECT * FROM ".BAB_VAC_OPTIONS_TBL);
-		if (0 < $db->db_num_rows($res)) {
-			$arr = $db->db_fetch_assoc($res);
+		$res = $babDB->db_query("SELECT * FROM ".BAB_VAC_OPTIONS_TBL);
+		if (0 < $babDB->db_num_rows($res)) {
+			$arr = $babDB->db_fetch_assoc($res);
 		} else {
 			$arr = array(
 				'chart_superiors_create_request' => 0	
@@ -1962,19 +1970,19 @@ function bab_vac_typeColorStack($id_entry, $push = false) {
  * @param object	$end
  */
 function bab_vac_setVacationPeriods(&$obj, $id_users, $begin, $end) {
-	$db = $GLOBALS['babDB'];
+	global $babDB;
 
-	$res = $db->db_query("
+	$res = $babDB->db_query("
 	SELECT * from ".BAB_VAC_ENTRIES_TBL." 
 		WHERE 
-		id_user IN(".$db->quote($id_users).")   
+		id_user IN(".$babDB->quote($id_users).")   
 		AND status!='N' 
-		AND date_end > ".$db->quote($begin->getIsoDateTime())." 
-		AND date_begin < ".$db->quote($end->getIsoDateTime())."");
+		AND date_end > ".$babDB->quote($begin->getIsoDateTime())." 
+		AND date_begin < ".$babDB->quote($end->getIsoDateTime())."");
 
 	
 
-	while( $row = $db->db_fetch_array($res)) {
+	while( $row = $babDB->db_fetch_array($res)) {
 
 		$colors = array();
 		$types	= array();
@@ -1990,19 +1998,19 @@ function bab_vac_setVacationPeriods(&$obj, $id_users, $begin, $end) {
 				".BAB_VAC_RIGHTS_TBL." r,
 				".BAB_VAC_TYPES_TBL." t 
 			WHERE 
-				e.id_entry=".$db->quote($row['id'])." 
+				e.id_entry=".$babDB->quote($row['id'])." 
 				AND r.id=e.id_right 
 				AND t.id=r.id_type";
 
-		$res2 = $db->db_query($req);
+		$res2 = $babDB->db_query($req);
 
-		$count = $db->db_num_rows($res2);
+		$count = $babDB->db_num_rows($res2);
 
 		$type_day		= $date_begin->cloneDate();
 		$type_day_end	= $date_begin->cloneDate();
 
 		
-		while ($arr = $db->db_fetch_array($res2))
+		while ($arr = $babDB->db_fetch_array($res2))
 			{
 			$type_day_end->add(($arr['quantity']*86400), BAB_DATETIME_SECOND);
 
@@ -2026,7 +2034,7 @@ function bab_vac_setVacationPeriods(&$obj, $id_users, $begin, $end) {
 
 		$p = & $obj->setUserPeriod($row['id_user'], $date_begin, $date_end, BAB_PERIOD_VACATION);
 
-		list($id_cat, $category, $color) = $db->db_fetch_row($db->db_query("
+		list($id_cat, $category, $color) = $babDB->db_fetch_row($babDB->db_query("
 		
 			SELECT 
 				cat.id,
@@ -2040,7 +2048,7 @@ function bab_vac_setVacationPeriods(&$obj, $id_users, $begin, $end) {
 			WHERE 
 				vpt.id_coll=vct.id 
 				AND vet.id_user=vpt.id_user 
-				AND vet.id=".$db->quote($row['id'])." 
+				AND vet.id=".$babDB->quote($row['id'])." 
 				AND cat.id = vct.id_cat 
 		"));
 
@@ -2072,8 +2080,8 @@ function bab_vac_setVacationPeriods(&$obj, $id_users, $begin, $end) {
  * On working hours changes by admin
  */
 function bab_vac_clearCalendars() {
-	$db = $GLOBALS['babDB'];
-	$db->db_query("DELETE FROM ".BAB_VAC_CALENDAR_TBL."");
+	global $babDB;
+	$babDB->db_query("DELETE FROM ".BAB_VAC_CALENDAR_TBL."");
 }
 
 
@@ -2084,8 +2092,8 @@ function bab_vac_clearUserCalendar($id_user = NULL) {
 	if (NULL === $id_user) {
 		$id_user = $GLOBALS['BAB_SESS_USERID'];
 	}
-	$db = $GLOBALS['babDB'];
-	$db->db_query("DELETE FROM ".BAB_VAC_CALENDAR_TBL." WHERE id_user=".$db->quote($id_user));
+	global $babDB;
+	$babDB->db_query("DELETE FROM ".BAB_VAC_CALENDAR_TBL." WHERE id_user=".$babDB->quote($id_user));
 }
 
 /**
@@ -2093,8 +2101,8 @@ function bab_vac_clearUserCalendar($id_user = NULL) {
  * @param int $id_event
  */
 function bab_vac_updateEventCalendar($id_entry) {
-	$db = $GLOBALS['babDB'];
-	$res = $db->db_query("
+	global $babDB;
+	$res = $babDB->db_query("
 		SELECT 
 			id_user,
 			date_begin, 
@@ -2102,9 +2110,9 @@ function bab_vac_updateEventCalendar($id_entry) {
 		FROM 
 			".BAB_VAC_ENTRIES_TBL." 
 		WHERE 
-			id=".$db->quote($id_entry)
+			id=".$babDB->quote($id_entry)
 	);
-	$arr = $db->db_fetch_assoc($res);
+	$arr = $babDB->db_fetch_assoc($res);
 	
 	$date_begin = bab_mktime($arr['date_begin']);
 	$date_end	= bab_mktime($arr['date_end']);
@@ -2165,10 +2173,10 @@ function bab_vac_onModifyPeriod($event) {
  */
 function bab_vac_updateCalendar($id_user, $year, $month) {
 
-	$db = $GLOBALS['babDB'];
+	global $babDB;
 	include_once $GLOBALS['babInstallPath']."utilit/workinghoursincl.php";
 
-	$db->db_query("DELETE FROM ".BAB_VAC_CALENDAR_TBL." WHERE monthkey=".$db->quote($month.$year).' AND id_user='.$db->quote($id_user));
+	$babDB->db_query("DELETE FROM ".BAB_VAC_CALENDAR_TBL." WHERE monthkey=".$babDB->quote($month.$year).' AND id_user='.$babDB->quote($id_user));
 
 	$dateb = new BAB_dateTime($year, $month, 1); 
 	$datee = $dateb->cloneDate();
@@ -2285,13 +2293,13 @@ function bab_vac_updateCalendar($id_user, $year, $month) {
 
 			$previous = $key;
 			bab_vac_group_insert("(
-				".$db->quote($id_user).",
-				".$db->quote($month.$year).",
-				".$db->quote(date('Y-m-d',$p->ts_begin)).",
-				".$db->quote($ampm).",
-				".$db->quote($type).",
-				".$db->quote($id_entry).",
-				".$db->quote($color)."
+				".$babDB->quote($id_user).",
+				".$babDB->quote($month.$year).",
+				".$babDB->quote(date('Y-m-d',$p->ts_begin)).",
+				".$babDB->quote($ampm).",
+				".$babDB->quote($type).",
+				".$babDB->quote($id_entry).",
+				".$babDB->quote($color)."
 				)");
 
 		}
@@ -2335,18 +2343,18 @@ function bab_vac_delete_request($id_request)
 {
 	notifyOnRequestChange($id_request, true);
 
-	$db = &$GLOBALS['babDB'];
+	global $babDB;
 	
-	$arr = $db->db_fetch_assoc($db->db_query("
+	$arr = $babDB->db_fetch_assoc($babDB->db_query("
 		SELECT idfai, id_user, date_begin, date_end  
 			FROM ".BAB_VAC_ENTRIES_TBL." 
-			WHERE id=".$db->quote($id_request)));
+			WHERE id=".$babDB->quote($id_request)));
 
 	if ($arr['idfai'] > 0)
 		deleteFlowInstance($arr['idfai']);
 
-	$db->db_query("DELETE FROM ".BAB_VAC_ENTRIES_ELEM_TBL." WHERE id_entry=".$db->quote($id_request)."");
-	$db->db_query("DELETE FROM ".BAB_VAC_ENTRIES_TBL." WHERE id=".$db->quote($id_request));
+	$babDB->db_query("DELETE FROM ".BAB_VAC_ENTRIES_ELEM_TBL." WHERE id_entry=".$babDB->quote($id_request)."");
+	$babDB->db_query("DELETE FROM ".BAB_VAC_ENTRIES_TBL." WHERE id=".$babDB->quote($id_request));
 
 	include_once $GLOBALS['babInstallPath']."utilit/dateTime.php";
 
@@ -2390,7 +2398,7 @@ class bab_vacationRequestDetail
 	var $remark;
 			
 	var $arr = array();
-	var $db;
+	var $babDB;
 	var $count;
 	var $res;
 	var $veid;
@@ -2410,8 +2418,8 @@ class bab_vacationRequestDetail
 		$this->commenttxt = bab_translate("Description");
 		$this->remarktxt = bab_translate("Comment");
 		$this->t_approb = bab_translate("Approver");
-		$this->db = $GLOBALS['babDB'];
-		$row = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where id=".$this->db->quote($id)));
+		global $babDB;
+		$row = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where id=".$babDB->quote($id)));
 		$this->datebegin = bab_toHtml(bab_vac_longDate(bab_mktime($row['date_begin'])));
 		$this->dateend = bab_toHtml(bab_vac_longDate(bab_mktime($row['date_end'])));
 		$this->owner = bab_toHtml(bab_getUserName($row['id_user']));
@@ -2434,9 +2442,9 @@ class bab_vacationRequestDetail
 		
 		$this->approb = bab_getUserName($row['id_approver']);
 
-		$req = "select * from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry=".$this->db->quote($id);
-		$this->res = $this->db->db_query($req);
-		$this->count = $this->db->db_num_rows($this->res);
+		$req = "select * from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry=".$babDB->quote($id);
+		$this->res = $babDB->db_query($req);
+		$this->count = $babDB->db_num_rows($this->res);
 		$this->totalval = 0;
 		$this->veid = $id;
 		}
@@ -2446,8 +2454,9 @@ class bab_vacationRequestDetail
 		static $i = 0;
 		if( $i < $this->count)
 			{
-			$arr = $this->db->db_fetch_array($this->res);
-			list($this->typename) = $this->db->db_fetch_row($this->db->db_query("select description from ".BAB_VAC_RIGHTS_TBL." where id ='".$arr['id_right']."'"));
+			global $babDB;
+			$arr = $babDB->db_fetch_array($this->res);
+			list($this->typename) = $babDB->db_fetch_row($babDB->db_query("select description from ".BAB_VAC_RIGHTS_TBL." where id ='".$babDB->db_escape_string($arr['id_right'])."'"));
 			$this->nbdays = $arr['quantity'];
 			$this->totalval += $this->nbdays;
 			$i++;
@@ -2486,10 +2495,10 @@ function bab_viewVacationRequestDetail($id) {
 
 
 function bab_addCoManagerEntities(&$entities, $id_user) {
-	$db = &$GLOBALS['babDB'];
-	$res = $db->db_query("SELECT id_entity FROM ".BAB_VAC_COMANAGER_TBL." WHERE id_user=".$db->quote($id_user));
+	global $babDB;
+	$res = $babDB->db_query("SELECT id_entity FROM ".BAB_VAC_COMANAGER_TBL." WHERE id_user=".$babDB->quote($id_user));
 
-	if (0 == $db->db_num_rows($res)) {
+	if (0 == $babDB->db_num_rows($res)) {
 		return;
 	}
 
@@ -2508,7 +2517,7 @@ function bab_addCoManagerEntities(&$entities, $id_user) {
 		}
 	}
 
-	while ($arr = $db->db_fetch_assoc($res)) {
+	while ($arr = $babDB->db_fetch_assoc($res)) {
 		$e = bab_OCGetEntity($arr['id_entity']);
 		$e['id'] = $arr['id_entity'];
 		$e['comanager'] = 1;
