@@ -370,7 +370,7 @@ function bab_mail()
 			$mail->mail->Port = $babBody->babsite['smtpport'];
 			if( $babBody->babsite['smtpuser'] != "" ||  $babBody->babsite['smtppass'] != "")
 				{
-				$mail->mail->SMTPAuth = true;;
+				$mail->mail->SMTPAuth = true;
 				$mail->mail->Username = $babBody->babsite['smtpuser'];
 				$mail->mail->Password = $babBody->babsite['smtppass'];
 				}
