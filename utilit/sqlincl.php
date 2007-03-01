@@ -185,7 +185,9 @@ class bab_sqlExport
 				{
 				$collumn['Default'] = str_replace('\\','\\\\',$collumn['Default']);
 				$collumn['Default'] = str_replace("'","''",$collumn['Default']);
-				$str .= ' DEFAULT \''.$collumn['Default'].'\'';
+					if ('CURRENT_TIMESTAMP' != $collumn['Default']) {
+					$str .= ' DEFAULT \''.$collumn['Default'].'\'';
+					}
 				}
 			if ($collumn['Null'] != 'YES')
 				$str .= ' NOT NULL';
@@ -298,7 +300,7 @@ class bab_sqlExport
 				}
 			}
 
-		$this->dumpPush( 'INSERT INTO '.$table.' ('.implode(',',$this->table_collumn).') VALUES ('.implode(',',$value).');');
+		$this->dumpPush( 'INSERT INTO `'.$table.'` (`'.implode('`,`',$this->table_collumn).'`) VALUES ('.implode(',',$value).');');
 		}
 
 	function str_output($str)

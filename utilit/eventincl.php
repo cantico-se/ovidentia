@@ -171,7 +171,7 @@ function bab_fireEvent($event_obj) {
 			$id_addon = $arr['id_addon'];
 		
 			if (BAB_ADDON_CORE_NAME === $arr['addon_name'] || 
-			(isset($babBody->babaddons[$id_addon]) && bab_isAccessValid(BAB_ADDONS_GROUPS_TBL, $id_addon))) {
+			(isset($babBody->babaddons[$id_addon]) && bab_isAccessValid(BAB_ADDONS_GROUPS_TBL, $id_addon) && is_file($GLOBALS['babInstallPath'].$arr['require_file']))) {
 				
 				$obj->setAddonCtx($id_addon, $arr['addon_name']);
 				require_once $GLOBALS['babInstallPath'].$arr['require_file'];
