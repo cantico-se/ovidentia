@@ -21,6 +21,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
+
+/**
+* @internal SEC1 PR 27/02/2007 FULL
+*/
+
 include_once "base.php";
 include_once $babInstallPath."utilit/vacincl.php";
 
@@ -93,8 +98,10 @@ global $babBody;
 			{
 			if (list(,$this->arr) = each($this->entities))
 				{
-				$this->manager = !isset($this->arr['comanager']);
-				$this->altbg = !$this->altbg;
+				$this->manager 				= !isset($this->arr['comanager']);
+				$this->altbg 				= !$this->altbg;
+				$this->arr['name'] 			= bab_toHtml($this->arr['name']);
+				$this->arr['description'] 	= bab_toHtml($this->arr['description']);
 				return true;
 				}
 			else
@@ -107,10 +114,10 @@ global $babBody;
 	switch ($template)
 	{
 	case 'planning':
-		$db = & $GLOBALS['babDB'];
-		$res =$db->db_query("SELECT id_entity FROM ".BAB_VAC_PLANNING_TBL." WHERE id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+		global $babDB;
+		$res =$babDB->db_query("SELECT id_entity FROM ".BAB_VAC_PLANNING_TBL." WHERE id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
 		$entities = array();
-		while ($arr = $db->db_fetch_assoc($res))
+		while ($arr = $babDB->db_fetch_assoc($res))
 			{
 			$ent = bab_OCGetEntity($arr['id_entity']);
 			$entities[] = array(
@@ -150,7 +157,7 @@ function entity_members($ide, $template)
 			if ($superior !== 0 )
 				{
 				$this->superior_id = $superior['id_user'];
-				$this->superior_name = bab_composeUserName($superior['firstname'], $superior['lastname']);
+				$this->superior_name = bab_toHtml(bab_composeUserName($superior['firstname'], $superior['lastname']));
 				}
 			$this->b_rights = $this->superior_id != $GLOBALS['BAB_SESS_USERID'];
 			$this->t_name = bab_translate('Name');
@@ -194,10 +201,10 @@ function entity_members($ide, $template)
 				{
 				$this->more = array();
 
-				$db = & $GLOBALS['babDB'];
-				$req = "SELECT p.id_user,c.name coll,f.name sa FROM ".BAB_VAC_PERSONNEL_TBL." p LEFT JOIN ".BAB_VAC_COLLECTIONS_TBL." c ON c.id=p.id_coll LEFT JOIN ".BAB_FLOW_APPROVERS_TBL." f ON f.id=p.id_sa WHERE p.id_user IN(".implode(',',$tmp).")";
-				$res = $db->db_query($req);
-				while ($arr = $db->db_fetch_array($res))
+				global $babDB;
+				$req = "SELECT p.id_user,c.name coll,f.name sa FROM ".BAB_VAC_PERSONNEL_TBL." p LEFT JOIN ".BAB_VAC_COLLECTIONS_TBL." c ON c.id=p.id_coll LEFT JOIN ".BAB_FLOW_APPROVERS_TBL." f ON f.id=p.id_sa WHERE p.id_user IN(".$babDB->quote($tmp).")";
+				$res = $babDB->db_query($req);
+				while ($arr = $babDB->db_fetch_array($res))
 					{
 					$this->more[$arr['id_user']] = array( $arr['coll'], $arr['sa'] );
 					}
@@ -208,6 +215,8 @@ function entity_members($ide, $template)
 			if ($superior !== 0 && isset($this->more[$this->superior_id]))
 				{
 				list($this->s_collection, $this->s_schema ) = $this->more[$this->superior_id] ;
+				$this->s_collection = bab_toHtml($this->s_collection);
+				$this->s_schema = bab_toHtml($this->s_schema);
 				}
 			}
 
@@ -217,8 +226,9 @@ function entity_members($ide, $template)
 				{
 				$this->altbg = !$this->altbg;
 				$this->b_rights = $this->id_user != $GLOBALS['BAB_SESS_USERID'];
-				$this->collection = isset($this->more[$this->id_user][0]) ? $this->more[$this->id_user][0] : '';
-				$this->schema = isset($this->more[$this->id_user][1]) ? $this->more[$this->id_user][1] : '';
+				$this->collection = isset($this->more[$this->id_user][0]) ? bab_toHtml($this->more[$this->id_user][0]) : '';
+				$this->schema = isset($this->more[$this->id_user][1]) ? bab_toHtml($this->more[$this->id_user][1]) : '';
+				$this->name = bab_toHtml($this->name);
 				
 				return true;
 				}
@@ -279,15 +289,14 @@ function entity_requests($ide )
 function entity_planning($ide)
 {
 	$e =  bab_OCGetEntity($ide);
-	$GLOBALS['babBody']->title = bab_translate("Planning acces").' : '.$e['name'];
+	$GLOBALS['babBody']->setTitle(bab_translate("Planning acces").' : '.$e['name']);
 
 	include_once $GLOBALS['babInstallPath'].'utilit/selectusers.php';
-	global $babBody;
-	$db = &$GLOBALS['babDB'];
+	global $babBody, $babDB;
 	$obj = new bab_selectusers();
 	$obj->addVar('ide', $ide);
-	$res = $db->db_query("SELECT id_user FROM ".BAB_VAC_PLANNING_TBL." WHERE id_entity=".$db->quote($ide));
-	while (list($id) = $db->db_fetch_array($res))
+	$res = $babDB->db_query("SELECT id_user FROM ".BAB_VAC_PLANNING_TBL." WHERE id_entity=".$babDB->quote($ide));
+	while (list($id) = $babDB->db_fetch_array($res))
 		{
 		$obj->addUser($id);
 		}
@@ -298,15 +307,14 @@ function entity_planning($ide)
 
 function entity_comanager($ide) {
 	$e =  bab_OCGetEntity($ide);
-	$GLOBALS['babBody']->title = bab_translate("Co-managers").' : '.$e['name'];
+	$GLOBALS['babBody']->setTitle(bab_translate("Co-managers").' : '.$e['name']);
 
 	include_once $GLOBALS['babInstallPath'].'utilit/selectusers.php';
-	global $babBody;
-	$db = &$GLOBALS['babDB'];
+	global $babBody, $babDB;
 	$obj = new bab_selectusers();
 	$obj->addVar('ide', $ide);
-	$res = $db->db_query("SELECT id_user FROM ".BAB_VAC_COMANAGER_TBL." WHERE id_entity=".$db->quote($ide));
-	while (list($id) = $db->db_fetch_array($res))
+	$res = $babDB->db_query("SELECT id_user FROM ".BAB_VAC_COMANAGER_TBL." WHERE id_entity=".$babDB->quote($ide));
+	while (list($id) = $babDB->db_fetch_array($res))
 		{
 		$obj->addUser($id);
 		}
@@ -334,11 +342,11 @@ function viewVacUserDetails($ide, $id_user) {
 			$this->collection	= '';
 			$this->schema		= '';
 
-			$db = & $GLOBALS['babDB'];
-			$req = "SELECT c.name coll,f.name sa FROM ".BAB_VAC_PERSONNEL_TBL." p LEFT JOIN ".BAB_VAC_COLLECTIONS_TBL." c ON c.id=p.id_coll LEFT JOIN ".BAB_FLOW_APPROVERS_TBL." f ON f.id=p.id_sa WHERE p.id_user=".$db->quote($this->id_user);
+			global $babDB;
+			$req = "SELECT c.name coll,f.name sa FROM ".BAB_VAC_PERSONNEL_TBL." p LEFT JOIN ".BAB_VAC_COLLECTIONS_TBL." c ON c.id=p.id_coll LEFT JOIN ".BAB_FLOW_APPROVERS_TBL." f ON f.id=p.id_sa WHERE p.id_user=".$babDB->quote($this->id_user);
 
-			$res = $db->db_query($req);
-			$arr = $db->db_fetch_assoc($res);
+			$res = $babDB->db_query($req);
+			$arr = $babDB->db_fetch_assoc($res);
 
 			$this->collection	= bab_toHtml($arr['coll']);
 			$this->schema		= bab_toHtml($arr['sa']);
@@ -357,12 +365,12 @@ function viewVacUserDetails($ide, $id_user) {
 function savePlanning($userids, $params)
 {
 	$ide = $params['ide'];
-	$db = &$GLOBALS['babDB'];
-	$db->db_query("DELETE FROM ".BAB_VAC_PLANNING_TBL." WHERE id_entity = ".$db->quote($ide));
+	global $babDB;
+	$babDB->db_query("DELETE FROM ".BAB_VAC_PLANNING_TBL." WHERE id_entity = ".$babDB->quote($ide));
 
 	foreach ($userids as $uid)
 	{
-		$db->db_query("INSERT INTO ".BAB_VAC_PLANNING_TBL." (id_user, id_entity) VALUES ('".$db->db_escape_string($uid)."','".$db->db_escape_string($ide)."')");
+		$babDB->db_query("INSERT INTO ".BAB_VAC_PLANNING_TBL." (id_user, id_entity) VALUES ('".$babDB->db_escape_string($uid)."','".$babDB->db_escape_string($ide)."')");
 	}
 	
 	header('location:'.$GLOBALS['babUrlScript']."?tg=vacchart&idx=entities");
@@ -373,12 +381,12 @@ function savePlanning($userids, $params)
 function saveCoManager($userids, $params) {
 
 	$ide = $params['ide'];
-	$db = &$GLOBALS['babDB'];
-	$db->db_query("DELETE FROM ".BAB_VAC_COMANAGER_TBL." WHERE id_entity = ".$db->quote($ide));
+	global $babDB;
+	$babDB->db_query("DELETE FROM ".BAB_VAC_COMANAGER_TBL." WHERE id_entity = ".$babDB->quote($ide));
 
 	foreach ($userids as $uid)
 	{
-		$db->db_query("INSERT INTO ".BAB_VAC_COMANAGER_TBL." (id_user, id_entity) VALUES ('".$db->db_escape_string($uid)."','".$db->db_escape_string($ide)."')");
+		$babDB->db_query("INSERT INTO ".BAB_VAC_COMANAGER_TBL." (id_user, id_entity) VALUES ('".$babDB->db_escape_string($uid)."','".$babDB->db_escape_string($ide)."')");
 	}
 	
 	header('location:'.$GLOBALS['babUrlScript']."?tg=vacchart&idx=entities");

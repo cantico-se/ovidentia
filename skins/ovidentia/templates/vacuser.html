@@ -527,8 +527,8 @@ close }</a> </td>
 		<td class="{ day_classname }" <!--#if tdtext --> title="{ tdtext }"<!--#endif tdtext -->>
 		
 			<!--#if halfday -->
-			<div id="{ date }.0" class="{ am_classname }" <!--#if am_color --> style="background-color:#{ am_color }"<!--#endif am_color -->  title="{ am_text }" <!--#if am_classname "== free" --> onclick="setPeriod(this)"<!--#endif am_classname -->></div>
-			<div id="{ date }.1" class="{ pm_classname }" <!--#if pm_color --> style="background-color:#{ pm_color }"<!--#endif pm_color -->  title="{ pm_text }" <!--#if pm_classname "== free" --> onclick="setPeriod(this)"<!--#endif pm_classname -->></div>
+			<div id="d.{ date }.0" class="{ am_classname }" <!--#if am_color --> style="background-color:#{ am_color }"<!--#endif am_color -->  title="{ am_text }" <!--#if am_classname "== free" --> onclick="setPeriod(this)"<!--#endif am_classname -->></div>
+			<div id="d.{ date }.1" class="{ pm_classname }" <!--#if pm_color --> style="background-color:#{ pm_color }"<!--#endif pm_color -->  title="{ pm_text }" <!--#if pm_classname "== free" --> onclick="setPeriod(this)"<!--#endif pm_classname -->></div>
 			<!--#endif halfday -->
 		</td> 
 		<!--#endin getday -->
@@ -618,12 +618,12 @@ var firstclick = false;
 
 function decompose_date(str) {
 	tmp = str.split('.');
-	arr = tmp[0].split('-');
+	arr = tmp[1].split('-');
 	var r = new Array();
 	r['year']	= arr[0];
 	r['month']	= arr[1];
 	r['day']	= arr[2];
-	r['half']	= tmp[1];
+	r['half']	= tmp[2];
 
 	return r;
 }

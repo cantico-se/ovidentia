@@ -132,7 +132,6 @@ function browsePersonnelByType($pos, $cb, $idtype)
 		var $emailval;
 
 		var $arr = array();
-		var $db;
 		var $count;
 		var $res;
 
@@ -146,7 +145,7 @@ function browsePersonnelByType($pos, $cb, $idtype)
 			{
 			$this->allname = bab_translate("All");
 			$this->nickname = bab_translate("Nickname");
-			$this->db = $GLOBALS['babDB'];
+			global $babDB;
 			$this->cb = $cb;
 			$this->idtype = $idtype;
 
@@ -154,7 +153,7 @@ function browsePersonnelByType($pos, $cb, $idtype)
 				{
 				$this->pos = strlen($pos)>1? $pos[1]: '';
 				$this->ord = $pos[0];
-				$req = "select * from ".BAB_USERS_TBL." where lastname like '".$this->db->db_escape_string($this->pos)."%' order by lastname, firstname asc";
+				$req = "select * from ".BAB_USERS_TBL." where lastname like '".$babDB->db_escape_string($this->pos)."%' order by lastname, firstname asc";
 				$this->fullname = bab_translate("Lastname"). " " . bab_translate("Firstname");
 				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=vacadma&idx=browt&chg=&pos=".$this->pos."&idtype=".$this->idtype."&cb=".$this->cb;
 				}
@@ -162,12 +161,12 @@ function browsePersonnelByType($pos, $cb, $idtype)
 				{
 				$this->pos = $pos;
 				$this->ord = "";
-				$req = "select * from ".BAB_USERS_TBL." where firstname like '".$this->db->db_escape_string($this->pos)."%' order by firstname, lastname asc";
+				$req = "select * from ".BAB_USERS_TBL." where firstname like '".$babDB->db_escape_string($this->pos)."%' order by firstname, lastname asc";
 				$this->fullname = bab_translate("Firstname"). " " . bab_translate("Lastname");
 				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=vacadma&idx=browt&chg=&pos=-".$this->pos."&idtype=".$this->idtype."&cb=".$this->cb;
 				}
-			$this->res = $this->db->db_query($req);
-			$this->count = $this->db->db_num_rows($this->res);
+			$this->res = $babDB->db_query($req);
+			$this->count = $babDB->db_num_rows($this->res);
 
 			if( empty($this->pos))
 				$this->allselected = 1;
@@ -181,33 +180,33 @@ function browsePersonnelByType($pos, $cb, $idtype)
 			static $i = 0;
 			if( $i < $this->count)
 				{
-				$this->arr = $this->db->db_fetch_array($this->res);
+				global $babDB;
+				$this->arr = $babDB->db_fetch_array($this->res);
 				$this->bview = false;
-				$res = $this->db->db_query("select id_coll from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$this->db->db_escape_string($this->arr['id'])."'");
+				$res = $babDB->db_query("select id_coll from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$babDB->db_escape_string($this->arr['id'])."'");
 				if( $this->idtype != "" )
 					{
-					while( $arr = $this->db->db_fetch_array($res))
+					while( $arr = $babDB->db_fetch_array($res))
 						{
-						$res2 = $this->db->db_query("select id from ".BAB_VAC_COLL_TYPES_TBL." where id_type='".$this->db->db_escape_string($this->idtype)."' and id_coll ='".$arr['id_coll']."'");
-						if( $res2 && $this->db->db_num_rows($res2) > 0 )
+						$res2 = $babDB->db_query("select id from ".BAB_VAC_COLL_TYPES_TBL." where id_type='".$babDB->db_escape_string($this->idtype)."' and id_coll ='".$babDB->db_escape_string($arr['id_coll'])."'");
+						if( $res2 && $babDB->db_num_rows($res2) > 0 )
 							{
 							$this->bview = true;
 							break;
 							}
 						}
 					}
-				else if( $res && $this->db->db_num_rows($res) > 0 )
+				else if( $res && $babDB->db_num_rows($res) > 0 )
 					$this->bview = true;
 
 				if( $this->bview )
 					{
 					$this->firstlast = bab_composeUserName($this->arr['firstname'],$this->arr['lastname']);
-					$this->firstlast = str_replace("'", "\'", $this->firstlast);
-					$this->firstlast = str_replace('"', "'+String.fromCharCode(34)+'",$this->firstlast);
+					$this->firstlast = bab_toHtml($this->firstlast, BAB_HTML_JS);
 					if( $this->ord == "-" )
-						$this->urlname = bab_composeUserName($this->arr['lastname'],$this->arr['firstname']);
+						$this->urlname = bab_toHtml(bab_composeUserName($this->arr['lastname'],$this->arr['firstname']));
 					else
-						$this->urlname = bab_composeUserName($this->arr['firstname'],$this->arr['lastname']);
+						$this->urlname = bab_toHtml(bab_composeUserName($this->arr['firstname'],$this->arr['lastname']));
 					$this->userid = $this->arr['id'];
 					}
 				$i++;
@@ -220,7 +219,7 @@ function browsePersonnelByType($pos, $cb, $idtype)
 
 		function getnextselect()
 			{
-			global $BAB_SESS_USERID;
+			global $BAB_SESS_USERID, $babDB;
 			static $k = 0;
 			static $t = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 			if( $k < 26)
@@ -233,11 +232,11 @@ function browsePersonnelByType($pos, $cb, $idtype)
 				else 
 					{
 					if( $this->ord == "-" )
-						$req = "select ".BAB_USERS_TBL.".id from ".BAB_USERS_TBL." join ".BAB_VAC_PERSONNEL_TBL." where lastname like '".$this->selectname."%' and ".BAB_USERS_TBL.".id = ".BAB_VAC_PERSONNEL_TBL.".id_user";
+						$req = "select ".BAB_USERS_TBL.".id from ".BAB_USERS_TBL." join ".BAB_VAC_PERSONNEL_TBL." where lastname like '".$babDB->db_escape_string($this->selectname)."%' and ".BAB_USERS_TBL.".id = ".BAB_VAC_PERSONNEL_TBL.".id_user";
 					else
-						$req = "select ".BAB_USERS_TBL.".id from ".BAB_USERS_TBL." join ".BAB_VAC_PERSONNEL_TBL." where firstname like '".$this->selectname."%' and ".BAB_USERS_TBL.".id = ".BAB_VAC_PERSONNEL_TBL.".id_user";
-					$res = $this->db->db_query($req);
-					if( $this->db->db_num_rows($res) > 0 )
+						$req = "select ".BAB_USERS_TBL.".id from ".BAB_USERS_TBL." join ".BAB_VAC_PERSONNEL_TBL." where firstname like '".$babDB->db_escape_string($this->selectname)."%' and ".BAB_USERS_TBL.".id = ".BAB_VAC_PERSONNEL_TBL.".id_user";
+					$res = $babDB->db_query($req);
+					if( $babDB->db_num_rows($res) > 0 )
 						$this->selected = 0;
 					else
 						$this->selected = 1;
@@ -301,7 +300,6 @@ function listVacationRigths($idtype, $idcreditor, $dateb, $datee, $active, $pos)
 		var $endtxt;
 
 		var $arr = array();
-		var $db;
 		var $count;
 		var $res;
 		var $topurl;
@@ -353,7 +351,7 @@ function listVacationRigths($idtype, $idcreditor, $dateb, $datee, $active, $pos)
 			$this->yselected = "";
 			$this->nselected = "";
 			$this->t_position = '';
-			$this->db = $GLOBALS['babDB'];
+			global $babDB;
 				
 			$this->dateb = $dateb;
 			$this->datee = $datee;
@@ -372,14 +370,14 @@ function listVacationRigths($idtype, $idcreditor, $dateb, $datee, $active, $pos)
 				$req .= " where ";
 
 				if( $idtype != "")
-					$aaareq[] = "r.id_type='".$this->db->db_escape_string($idtype)."'";
+					$aaareq[] = "r.id_type='".$babDB->db_escape_string($idtype)."'";
 
 				if( $active != "")
-					$aaareq[] = "r.active='".$this->db->db_escape_string($active)."'";
+					$aaareq[] = "r.active='".$babDB->db_escape_string($active)."'";
 
 				if( $idcreditor != "")
 					{
-					$aaareq[] = "r.id_creditor='".$this->db->db_escape_string($idcreditor)."'";
+					$aaareq[] = "r.id_creditor='".$babDB->db_escape_string($idcreditor)."'";
 					}
 
 				if( $dateb != "" )
@@ -396,15 +394,15 @@ function listVacationRigths($idtype, $idcreditor, $dateb, $datee, $active, $pos)
 
 				if( $dateb != "" && $datee != "")
 					{
-					$aaareq[] = "( r.date_entry between '".$this->db->db_escape_string($dateb)."' and '".$this->db->db_escape_string($datee)."')";
+					$aaareq[] = "( r.date_entry between '".$babDB->db_escape_string($dateb)."' and '".$babDB->db_escape_string($datee)."')";
 					}
 				else if( $dateb == "" && $datee != "" )
 					{
-					$aaareq[] = "r.date_entry <= '".$this->db->db_escape_string($datee)."'";
+					$aaareq[] = "r.date_entry <= '".$babDB->db_escape_string($datee)."'";
 					}
 				else if ($dateb != "" )
 					{
-					$aaareq[] = "r.date_entry >= '".$this->db->db_escape_string($dateb)."'";
+					$aaareq[] = "r.date_entry >= '".$babDB->db_escape_string($dateb)."'";
 					}
 				}
 
@@ -417,7 +415,7 @@ function listVacationRigths($idtype, $idcreditor, $dateb, $datee, $active, $pos)
 				}
 			$req .= " order by r.date_entry desc";
 
-			list($total) = $this->db->db_fetch_row($this->db->db_query("select count(*) as total from ".$req));
+			list($total) = $babDB->db_fetch_row($babDB->db_query("select count(*) as total from ".$req));
 
 			if( $total > VAC_MAX_RIGHTS_LIST )
 				{
@@ -458,15 +456,15 @@ function listVacationRigths($idtype, $idcreditor, $dateb, $datee, $active, $pos)
 				{
 				$req .= " limit ".$pos.",".VAC_MAX_RIGHTS_LIST;
 				}
-			$this->res = $this->db->db_query("select r.*, t.name type from ".$req);
-			$this->count = $this->db->db_num_rows($this->res);
+			$this->res = $babDB->db_query("select r.*, t.name type from ".$req);
+			$this->count = $babDB->db_num_rows($this->res);
 			$this->addurl = $GLOBALS['babUrlScript']."?tg=vacadma&idx=addvr";
 
-			$this->restype = $this->db->db_query("select * from ".BAB_VAC_TYPES_TBL." order by name asc");
-			$this->counttype = $this->db->db_num_rows($this->restype);
+			$this->restype = $babDB->db_query("select * from ".BAB_VAC_TYPES_TBL." order by name asc");
+			$this->counttype = $babDB->db_num_rows($this->restype);
 
-			$this->resc= $this->db->db_query("select distinct id_creditor from ".BAB_VAC_RIGHTS_TBL."");
-			$this->countc = $this->db->db_num_rows($this->resc);
+			$this->resc= $babDB->db_query("select distinct id_creditor from ".BAB_VAC_RIGHTS_TBL."");
+			$this->countc = $babDB->db_num_rows($this->resc);
 
 			$this->dateburl = $GLOBALS['babUrlScript']."?tg=month&callback=dateBegin&ymin=0&ymax=3";
 			$this->dateeurl = $GLOBALS['babUrlScript']."?tg=month&callback=dateEnd&ymin=0&ymax=3";
@@ -478,16 +476,17 @@ function listVacationRigths($idtype, $idcreditor, $dateb, $datee, $active, $pos)
 			static $i = 0;
 			if( $i < $this->count)
 				{
+				global $babDB;
 				$this->altbg = !$this->altbg;
-				$arr = $this->db->db_fetch_array($this->res);
+				$arr = $babDB->db_fetch_array($this->res);
 				
-				$this->vrurl		= $GLOBALS['babUrlScript']."?tg=vacadma&idx=modvr&idvr=".$arr['id'];
-				$this->vrviewurl	= $GLOBALS['babUrlScript']."?tg=vacadma&idx=viewvr&idvr=".$arr['id'];
+				$this->vrurl		= bab_toHtml($GLOBALS['babUrlScript']."?tg=vacadma&idx=modvr&idvr=".$arr['id']);
+				$this->vrviewurl	= bab_toHtml($GLOBALS['babUrlScript']."?tg=vacadma&idx=viewvr&idvr=".$arr['id']);
 				$this->typename		= bab_toHtml($arr['type']);
 				$this->description	= bab_toHtml($arr['description']);
-				$this->quantity		= $arr['quantity'];
-				$this->creditor		= bab_getUserName($arr['id_creditor']);
-				$this->date			= bab_shortDate(bab_mktime($arr['date_entry']), false);
+				$this->quantity		= bab_toHtml($arr['quantity']);
+				$this->creditor		= bab_toHtml(bab_getUserName($arr['id_creditor']));
+				$this->date			= bab_toHtml(bab_shortDate(bab_mktime($arr['date_entry']), false));
 				$this->bclose		= $arr['active'] == "N";
 
 				$available = true;
@@ -519,9 +518,10 @@ function listVacationRigths($idtype, $idcreditor, $dateb, $datee, $active, $pos)
 			static $i = 0;
 			if( $i < $this->counttype)
 				{
-				$arr = $this->db->db_fetch_array($this->restype);
-				$this->typename = $arr['name'];
-				$this->typeid = $arr['id'];
+				global $babDB;
+				$arr = $babDB->db_fetch_array($this->restype);
+				$this->typename = bab_toHtml($arr['name']);
+				$this->typeid = bab_toHtml($arr['id']);
 				if( $this->idtype == $this->typeid )
 					$this->selected = "selected";
 				else
@@ -541,9 +541,10 @@ function listVacationRigths($idtype, $idcreditor, $dateb, $datee, $active, $pos)
 			static $i = 0;
 			if( $i < $this->countc)
 				{
-				$arr = $this->db->db_fetch_array($this->resc);
-				$this->creditorname = bab_getUserName($arr['id_creditor']);
-				$this->creditorid = $arr['id_creditor'];
+				global $babDB;
+				$arr = $babDB->db_fetch_array($this->resc);
+				$this->creditorname = bab_toHtml(bab_getUserName($arr['id_creditor']));
+				$this->creditorid = bab_toHtml($arr['id_creditor']);
 				if( $this->idcreditor == $this->creditorid )
 					$this->selected = "selected";
 				else
@@ -642,16 +643,12 @@ function addModifyVacationRigths($id = false)
 			$this->t_id_rgroup = bab_translate("Right group");
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
-			$this->invalidentry1 = bab_translate("Invalid entry!  Only numbers are accepted or . !");
-			$this->invalidentry1 = str_replace("'", "\'", $this->invalidentry1);
-			$this->invalidentry1 = str_replace('"', "'+String.fromCharCode(34)+'",$this->invalidentry1);
-			$this->invalidtotal = bab_translate("Total days does'nt fit between dates");
-			$this->invalidtotal = str_replace("'", "\'", $this->invalidtotal);
-			$this->invalidtotal = str_replace('"', "'+String.fromCharCode(34)+'",$this->invalidtotal);
+			$this->invalidentry1 = bab_toHtml(bab_translate("Invalid entry!  Only numbers are accepted or . !"),BAB_HTML_JS);
+			$this->invalidtotal = bab_toHtml(bab_translate("Total days does'nt fit between dates"),BAB_HTML_JS);
 
 
-			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=vacadma&idx=browt";
-			$this->db = & $GLOBALS['babDB'];
+			$this->usersbrowurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=vacadma&idx=browt");
+			global $babDB;
 			$el_to_init = array('idvr', 'id_creditor', 'date_begin', 'date_end', 'quantity', 'id_type', 'description', 'active', 'cbalance','period_start', 'period_end', 'trigger_nbdays_min', 'trigger_nbdays_max', 'trigger_p1_begin', 'trigger_p1_end', 'trigger_p2_begin', 'trigger_p2_end', 'right_inperiod', 'righttype', 'trigger_type', 'date_begin_valid', 'date_end_valid', 'validoverlap', 'id_rgroup');
 
 			$dates_to_init = array('date_begin', 'date_end', 'period_start','period_end', 'date_begin_valid', 'date_end_valid', 'trigger_p1_begin', 'trigger_p1_end', 'trigger_p2_begin', 'trigger_p2_end');
@@ -664,7 +661,7 @@ function addModifyVacationRigths($id = false)
 				}
 			elseif ($id)
 				{
-				$this->arr = $this->db->db_fetch_array($this->db->db_query(
+				$this->arr = $babDB->db_fetch_array($babDB->db_query(
 					"SELECT 
 						t1.*,
 						t2.id righttype,
@@ -689,7 +686,7 @@ function addModifyVacationRigths($id = false)
 					LEFT JOIN 
 						".BAB_VAC_TYPES_TBL." t3 
 					ON t3.id = t1.id_type 
-					WHERE t1.id='".$this->db->db_escape_string($id)."'"));
+					WHERE t1.id='".$babDB->db_escape_string($id)."'"));
 
 				$this->collid = "";
 
@@ -730,9 +727,11 @@ function addModifyVacationRigths($id = false)
 				if ( !isset($this->arr[$field]) )
 					$this->arr[$field] = isset($default[$field]) ? $default[$field] : '';
 				}
+				
+			$this->arr['type'] = isset($this->arr['type']) ? bab_toHtml($this->arr['type']) : '';
 			
 			if( $this->arr['id_creditor'] != "" )
-				$this->arr['id_creditorDisplay'] = bab_getUserName($this->arr['id_creditor']);
+				$this->arr['id_creditorDisplay'] = bab_toHtml(bab_getUserName($this->arr['id_creditor']));
 			else
 				$this->arr['id_creditorDisplay'] = "";
 			$this->bdel = false;
@@ -748,8 +747,8 @@ function addModifyVacationRigths($id = false)
 
 			$this->tpsel = 0;
 			
-			$this->restype = $this->db->db_query("select * from ".BAB_VAC_TYPES_TBL." order by name asc");
-			$this->counttype = $this->db->db_num_rows($this->restype);
+			$this->restype = $babDB->db_query("select * from ".BAB_VAC_TYPES_TBL." order by name asc");
+			$this->counttype = $babDB->db_num_rows($this->restype);
 
 
 			$this->year = isset($_POST['year']) ? $_POST['year'] : date('Y');
@@ -804,7 +803,7 @@ function addModifyVacationRigths($id = false)
 
 			$this->dayType = array(0 => bab_translate("Morning"), 1 => bab_translate("Afternoon"));
 
-			$this->res_rgroup = $this->db->db_query("SELECT * FROM ".BAB_VAC_RGROUPS_TBL."");
+			$this->res_rgroup = $babDB->db_query("SELECT * FROM ".BAB_VAC_RGROUPS_TBL."");
 
 			}
 
@@ -812,8 +811,8 @@ function addModifyVacationRigths($id = false)
 			{
 			if (list($valid,$valname) = each($this->rightypes))
 				{
-				$this->righttypeid = $valid;
-				$this->righttypeval = $valname;
+				$this->righttypeid = bab_toHtml($valid);
+				$this->righttypeval = bab_toHtml($valname);
 				if( $this->righttypeid == $this->arr['righttype'])
     				{
 				    $this->selected = 'selected';
@@ -835,10 +834,11 @@ function addModifyVacationRigths($id = false)
 			static $j= 0;
 			if( $j < $this->countcol )
 				{
-				$arr = $this->db->db_fetch_array($this->colres);
-				$this->collval = str_replace("'", "\'", $arr['name']);
-				$this->collval = str_replace('"', "'+String.fromCharCode(34)+'",$this->collval);
-				$this->idcollection = $arr['id'];
+				global $babDB;
+				
+				$arr = $babDB->db_fetch_array($this->colres);
+				$this->collval 		= bab_toHtml($arr['name'], BAB_HTML_JS);
+				$this->idcollection = bab_toHtml($arr['id']);
 				if( isset($this->arr['collid']) && $this->arr['collid'] == $this->idcollection)
 					$this->colsel = $j+1;
 				$j++;
@@ -853,13 +853,14 @@ function addModifyVacationRigths($id = false)
 
 		function getnexttype()
 			{
+			global $babDB;
 			static $i = 0;
 			if( $i < $this->counttype)
 				{
 				$this->iindex = $i;
-				$arr = $this->db->db_fetch_array($this->restype);
-				$this->typename = $arr['name'];
-				$this->typeid = $arr['id'];
+				$arr = $babDB->db_fetch_array($this->restype);
+				$this->typename = bab_toHtml($arr['name']);
+				$this->typeid = bab_toHtml($arr['id']);
 				if( $arr['cbalance'] == 'Y' )
 					{
 					$this->tcbalance = 0;
@@ -868,8 +869,11 @@ function addModifyVacationRigths($id = false)
 					{
 					$this->tcbalance = 1;
 					}
-				$this->colres = $this->db->db_query("select ".BAB_VAC_COLLECTIONS_TBL.".* from ".BAB_VAC_COLLECTIONS_TBL." join ".BAB_VAC_COLL_TYPES_TBL." where ".BAB_VAC_COLL_TYPES_TBL.".id_type='".$this->db->db_escape_string($this->typeid)."' and ".BAB_VAC_COLLECTIONS_TBL.".id=".BAB_VAC_COLL_TYPES_TBL.".id_coll");
-				$this->countcol = $this->db->db_num_rows($this->colres);
+				$this->colres = $babDB->db_query("
+				select ".BAB_VAC_COLLECTIONS_TBL.".* from ".BAB_VAC_COLLECTIONS_TBL." join ".BAB_VAC_COLL_TYPES_TBL." where ".BAB_VAC_COLL_TYPES_TBL.".id_type='".$babDB->db_escape_string($this->typeid)."' and ".BAB_VAC_COLLECTIONS_TBL.".id=".BAB_VAC_COLL_TYPES_TBL.".id_coll
+				");
+				
+				$this->countcol = $babDB->db_num_rows($this->colres);
 
 				if( $this->arr['id_type'] == $this->typeid )
 					{
@@ -884,7 +888,7 @@ function addModifyVacationRigths($id = false)
 			else
 				{
 				if( $this->counttype > 0 )
-					$this->db->db_data_seek($this->restype, 0 );
+					$babDB->db_data_seek($this->restype, 0 );
 				$i = 0;
 				return false;
 				}
@@ -921,7 +925,7 @@ function addModifyVacationRigths($id = false)
 			if( $i < 13)
 				{
 				$this->monthid = $i;
-				$this->t_monthname = $babMonths[$i];
+				$this->t_monthname = bab_toHtml($babMonths[$i]);
 				if( (int)($this->monthsel) == $this->monthid )
 					$this->selected = "selected";
 				else
@@ -967,7 +971,7 @@ function addModifyVacationRigths($id = false)
 
 			if( $i < 2)
 				{
-				$this->t_halfname = $this->dayType[$i];
+				$this->t_halfname = bab_toHtml($this->dayType[$i]);
 				$this->halfid = $i;
 				if( $this->halfdaysel == $this->halfid )
 					$this->selected = "selected";
@@ -987,7 +991,9 @@ function addModifyVacationRigths($id = false)
 
 
 		function getnextrgroup() {
-				if ($arr = $this->db->db_fetch_assoc($this->res_rgroup)) {
+				global $babDB;
+			
+				if ($arr = $babDB->db_fetch_assoc($this->res_rgroup)) {
 					$this->rg_id	= bab_toHtml($arr['id']);
 					$this->rg_name	= bab_toHtml($arr['name']);
 					$this->selected	= $arr['id'] == $this->arr['id_rgroup'];
@@ -1015,7 +1021,6 @@ function listVacationRightPersonnel($pos, $idvr)
 		var $fullnameval;
 
 		var $arr = array();
-		var $db;
 		var $count;
 		var $res;
 		var $idvr;
@@ -1045,29 +1050,29 @@ function listVacationRightPersonnel($pos, $idvr)
 			$this->t_used = bab_translate("Used");
 			$this->t_close = bab_translate("Close");
 
-			$this->db = $GLOBALS['babDB'];
+			global $babDB;
 			$this->idvr = $idvr;
-			list($this->idtype) = $this->db->db_fetch_row($this->db->db_query("select id_type from ".BAB_VAC_RIGHTS_TBL." where id='".$this->db->db_escape_string($idvr)."'")); 
+			list($this->idtype) = $babDB->db_fetch_row($babDB->db_query("select id_type from ".BAB_VAC_RIGHTS_TBL." where id='".$babDB->db_escape_string($idvr)."'")); 
 
 			if( isset($pos[0]) && $pos[0] == "-" )
 				{
 				$this->pos = $pos[1];
 				$this->ord = $pos[0];
-				$req = "select ".BAB_USERS_TBL.".*, ".BAB_VAC_PERSONNEL_TBL.".id_coll from ".BAB_USERS_TBL." join ".BAB_VAC_PERSONNEL_TBL." where ".BAB_USERS_TBL.".id = ".BAB_VAC_PERSONNEL_TBL.".id_user and lastname like '".$this->db->db_escape_string($this->pos)."%' order by lastname, firstname asc";
-				$this->fullname = bab_translate("Lastname"). " " . bab_translate("Firstname");
+				$req = "select ".BAB_USERS_TBL.".*, ".BAB_VAC_PERSONNEL_TBL.".id_coll from ".BAB_USERS_TBL." join ".BAB_VAC_PERSONNEL_TBL." where ".BAB_USERS_TBL.".id = ".BAB_VAC_PERSONNEL_TBL.".id_user and lastname like '".$babDB->db_escape_string($this->pos)."%' order by lastname, firstname asc";
+				$this->fullname = bab_toHtml(bab_translate("Lastname"). " " . bab_translate("Firstname"));
 
-				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=vacadma&idx=lvrp&chg=&pos=".$this->ord.$this->pos."&idvr=".$this->idvr;
+				$this->fullnameurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=vacadma&idx=lvrp&chg=&pos=".$this->ord.$this->pos."&idvr=".$this->idvr);
 				}
 			else
 				{
 				$this->pos = $pos;
 				$this->ord = "";
-				$req = "select ".BAB_USERS_TBL.".*, ".BAB_VAC_PERSONNEL_TBL.".id_coll from ".BAB_USERS_TBL." join ".BAB_VAC_PERSONNEL_TBL." where ".BAB_USERS_TBL.".id = ".BAB_VAC_PERSONNEL_TBL.".id_user and firstname like '".$this->db->db_escape_string($this->pos)."%' order by firstname, firstname asc";
-				$this->fullname = bab_translate("Firstname"). " " . bab_translate("Lastname");
-				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=vacadma&idx=lvrp&chg=&pos=".$this->ord.$this->pos."&idvr=".$this->idvr;
+				$req = "select ".BAB_USERS_TBL.".*, ".BAB_VAC_PERSONNEL_TBL.".id_coll from ".BAB_USERS_TBL." join ".BAB_VAC_PERSONNEL_TBL." where ".BAB_USERS_TBL.".id = ".BAB_VAC_PERSONNEL_TBL.".id_user and firstname like '".$babDB->db_escape_string($this->pos)."%' order by firstname, firstname asc";
+				$this->fullname = bab_toHtml(bab_translate("Firstname"). " " . bab_translate("Lastname"));
+				$this->fullnameurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=vacadma&idx=lvrp&chg=&pos=".$this->ord.$this->pos."&idvr=".$this->idvr);
 				}
-			$this->res = $this->db->db_query($req);
-			$this->count = $this->db->db_num_rows($this->res);
+			$this->res = $babDB->db_query($req);
+			$this->count = $babDB->db_num_rows($this->res);
 
 			if( empty($this->pos))
 				$this->allselected = 1;
@@ -1081,7 +1086,8 @@ function listVacationRightPersonnel($pos, $idvr)
 			static $i = 0;
 			if( $i < $this->count)
 				{
-				$this->arr = $this->db->db_fetch_array($this->res);
+				global $babDB;
+				$this->arr = $babDB->db_fetch_array($this->res);
 				$this->bview = false;
 				$this->used = 0;
 				$this->selected = "";
@@ -1089,31 +1095,31 @@ function listVacationRightPersonnel($pos, $idvr)
 				$this->bview = true;
 				$this->altbg = !$this->altbg;
 
-				$res2 = $this->db->db_query("select id, quantity from ".BAB_VAC_USERS_RIGHTS_TBL." where id_user='".$this->db->db_escape_string($this->arr['id'])."' AND id_right ='".$this->db->db_escape_string($this->idvr)."'");
-				if( $res2 && $this->db->db_num_rows($res2) > 0 )
+				$res2 = $babDB->db_query("select id, quantity from ".BAB_VAC_USERS_RIGHTS_TBL." where id_user='".$babDB->db_escape_string($this->arr['id'])."' AND id_right ='".$babDB->db_escape_string($this->idvr)."'");
+				if( $res2 && $babDB->db_num_rows($res2) > 0 )
 					{
-					$arr = $this->db->db_fetch_array($res2);
+					$arr = $babDB->db_fetch_array($res2);
 					$this->selected = "checked";
 					$this->nuserid = $this->arr['id'];
 
-					$res3 = $this->db->db_query("select SUM(e2.quantity) used from ".BAB_VAC_ENTRIES_ELEM_TBL." e2, ".BAB_VAC_ENTRIES_TBL." e1 WHERE  e2.id_right='".$this->db->db_escape_string($this->idvr)."' AND e2.id_entry = e1.id AND e1.id_user='".$this->db->db_escape_string($this->arr['id'])."' AND e1.status='Y'");
+					$res3 = $babDB->db_query("select SUM(e2.quantity) used from ".BAB_VAC_ENTRIES_ELEM_TBL." e2, ".BAB_VAC_ENTRIES_TBL." e1 WHERE  e2.id_right='".$babDB->db_escape_string($this->idvr)."' AND e2.id_entry = e1.id AND e1.id_user='".$babDB->db_escape_string($this->arr['id'])."' AND e1.status='Y'");
 
-					$arr3 = $this->db->db_fetch_array($res3);
+					$arr3 = $babDB->db_fetch_array($res3);
 					if (isset($arr3['used']))
 						$this->used = $arr3['used'];
 					}
 				
-				$this->url = $GLOBALS['babUrlScript']."?tg=vacadma&idx=modp&idp=".$this->arr['id']."&pos=".$this->ord.$this->pos."&idvr=".$this->idvr;
+				$this->url = bab_toHtml($GLOBALS['babUrlScript']."?tg=vacadma&idx=modp&idp=".$this->arr['id']."&pos=".$this->ord.$this->pos."&idvr=".$this->idvr);
 				if( $this->ord == "-" )
-					$this->urlname = bab_composeUserName($this->arr['lastname'],$this->arr['firstname']);
+					$this->urlname = bab_toHtml(bab_composeUserName($this->arr['lastname'],$this->arr['firstname']));
 				else
-					$this->urlname = bab_composeUserName($this->arr['firstname'],$this->arr['lastname']);
+					$this->urlname = bab_toHtml(bab_composeUserName($this->arr['firstname'],$this->arr['lastname']));
 
 				if( isset($arr['quantity']) && $arr['quantity'] != '' )
 					$this->quantity = $arr['quantity'];
 				else
 				{
-					list($this->quantity) = $this->db->db_fetch_row($this->db->db_query("select quantity from ".BAB_VAC_RIGHTS_TBL." where id='".$this->db->db_escape_string($this->idvr)."'"));
+					list($this->quantity) = $babDB->db_fetch_row($babDB->db_query("select quantity from ".BAB_VAC_RIGHTS_TBL." where id='".$babDB->db_escape_string($this->idvr)."'"));
 				}
 	
 				$this->userid = $this->arr['id'];
@@ -1134,8 +1140,9 @@ function listVacationRightPersonnel($pos, $idvr)
 			static $t = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 			if( $k < 26)
 				{
+				global $babDB;
 				$this->selectname = substr($t, $k, 1);
-				$this->selecturl = $GLOBALS['babUrlScript']."?tg=vacadma&idx=lvrp&pos=".$this->ord.$this->selectname."&idvr=".$this->idvr;
+				$this->selecturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=vacadma&idx=lvrp&pos=".$this->ord.$this->selectname."&idvr=".$this->idvr);
 
 				if( $this->pos == $this->selectname)
 					$this->selected = 1;
@@ -1143,14 +1150,14 @@ function listVacationRightPersonnel($pos, $idvr)
 					{
 					if( $this->ord == "-" )
 						{
-						$req = "select ".BAB_USERS_TBL.".id from ".BAB_USERS_TBL." join ".BAB_VAC_PERSONNEL_TBL." where ".BAB_USERS_TBL.".id=".BAB_VAC_PERSONNEL_TBL.".id_user and ".BAB_USERS_TBL.".lastname like '".$this->db->db_escape_string($this->selectname)."%' ";
+						$req = "select ".BAB_USERS_TBL.".id from ".BAB_USERS_TBL." join ".BAB_VAC_PERSONNEL_TBL." where ".BAB_USERS_TBL.".id=".BAB_VAC_PERSONNEL_TBL.".id_user and ".BAB_USERS_TBL.".lastname like '".$babDB->db_escape_string($this->selectname)."%' ";
 						}
 					else
 						{
-						$req = "select ".BAB_USERS_TBL.".id from ".BAB_USERS_TBL." join ".BAB_VAC_PERSONNEL_TBL." where ".BAB_USERS_TBL.".id=".BAB_VAC_PERSONNEL_TBL.".id_user and ".BAB_USERS_TBL.".firstname like '".$this->db->db_escape_string($this->selectname)."%' ";
+						$req = "select ".BAB_USERS_TBL.".id from ".BAB_USERS_TBL." join ".BAB_VAC_PERSONNEL_TBL." where ".BAB_USERS_TBL.".id=".BAB_VAC_PERSONNEL_TBL.".id_user and ".BAB_USERS_TBL.".firstname like '".$babDB->db_escape_string($this->selectname)."%' ";
 						}
-					$res = $this->db->db_query($req);
-					if( $this->db->db_num_rows($res) > 0 )
+					$res = $babDB->db_query($req);
+					if( $babDB->db_num_rows($res) > 0 )
 						$this->selected = 0;
 					else
 						$this->selected = 1;
@@ -1208,9 +1215,9 @@ function viewVacationRightPersonnel($idvr)
 			$this->validperiodtxt = bab_translate("Retention period");
 			$this->t_from = bab_translate("date_from");
 			$this->t_to = bab_translate("date_to");
-			$this->db = &$GLOBALS['babDB'];
+			global $babDB;
 
-			$row = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_VAC_RIGHTS_TBL." where id='".$this->db->db_escape_string($idvr)."'"));
+			$row = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_VAC_RIGHTS_TBL." where id='".$babDB->db_escape_string($idvr)."'"));
 			$this->datebegin = bab_strftime(bab_mktime($row['date_begin']." 00:00:00"), false);
 			$this->dateend = bab_strftime(bab_mktime($row['date_end']." 00:00:00"), false);
 			$this->dateentry = bab_strftime(bab_mktime($row['date_entry']." 00:00:00"), false);
@@ -1228,7 +1235,7 @@ function viewVacationRightPersonnel($idvr)
 			$this->creditor = bab_getUserName($row['id_creditor']);
 			$this->quantity = $row['quantity'];
 			$this->status = $row['active'] == "Y"? bab_translate("Right opened"): bab_translate("Right closed");
-			list($this->type) = $this->db->db_fetch_row($this->db->db_query("select name from ".BAB_VAC_TYPES_TBL." where id='".$this->db->db_escape_string($row['id_type'])."'"));
+			list($this->type) = $babDB->db_fetch_row($babDB->db_query("select name from ".BAB_VAC_TYPES_TBL." where id='".$babDB->db_escape_string($row['id_type'])."'"));
 			}
 
 		}
@@ -1251,19 +1258,20 @@ function rgrouplist() {
 			$this->t_name = bab_translate('Name');
 			$this->t_edit = bab_translate('Edit');
 			$this->t_rights = bab_translate('Rights');
-			$this->db = &$GLOBALS['babDB'];
-			$this->res = $this->db->db_query("SELECT * FROM ".BAB_VAC_RGROUPS_TBL."");
+			global $babDB;
+			$this->res = $babDB->db_query("SELECT * FROM ".BAB_VAC_RGROUPS_TBL."");
 			}
 
 		function getnext()
 			{
-			if ($arr = $this->db->db_fetch_assoc($this->res)) {
+			global $babDB;
+			if ($arr = $babDB->db_fetch_assoc($this->res)) {
 				$this->altbg		= !$this->altbg;
 				$this->name			= bab_toHtml($arr['name']);
 				$this->id_rgroup	= bab_toHtml($arr['id']);
 
 
-				$this->rgroup = $this->db->db_query("SELECT description FROM ".BAB_VAC_RIGHTS_TBL." WHERE id_rgroup=".$this->db->quote($arr['id']));
+				$this->rgroup = $babDB->db_query("SELECT description FROM ".BAB_VAC_RIGHTS_TBL." WHERE id_rgroup=".$babDB->quote($arr['id']));
 				
 				return true;
 			}
@@ -1271,7 +1279,8 @@ function rgrouplist() {
 		}
 
 		function getnextright() {
-			if ($arr = $this->db->db_fetch_assoc($this->rgroup)) {
+			global $babDB;
+			if ($arr = $babDB->db_fetch_assoc($this->rgroup)) {
 				$this->description = bab_toHtml($arr['description']);
 				return true;
 			}
@@ -1296,11 +1305,11 @@ function rgroupmod() {
 			$this->t_name = bab_translate('Name');
 			$this->t_record = bab_translate('Record');
 			$this->t_delete = bab_translate('Delete');
-			$this->db = &$GLOBALS['babDB'];
+			global $babDB;
 			$this->id_rgroup = bab_rp('id_rgroup');
 			if ($this->id_rgroup) {
-				$res = $this->db->db_query("SELECT * FROM ".BAB_VAC_RGROUPS_TBL." WHERE id=".$this->db->quote($this->id_rgroup));
-				$arr = $this->db->db_fetch_assoc($res);
+				$res = $babDB->db_query("SELECT * FROM ".BAB_VAC_RGROUPS_TBL." WHERE id=".$babDB->quote($this->id_rgroup));
+				$arr = $babDB->db_fetch_assoc($res);
 				$this->name = bab_toHtml($arr['name']);
 			} else {
 				$this->name = '';
@@ -1778,22 +1787,22 @@ function deleteVacationRightConf($idvr) {
 			$this->t_request = bab_translate("Last request with this right");
 			$this->t_confirm = bab_translate("Confirm");
 
-			$this->db = &$GLOBALS['babDB'];
-			$this->res = $this->db->db_query(
+			global $babDB;
+			$this->res = $babDB->db_query(
 				"SELECT 
 					UNIX_TIMESTAMP(e.date_begin) date_begin 
 				FROM 
 					".BAB_VAC_ENTRIES_ELEM_TBL." ee, 
 					".BAB_VAC_ENTRIES_TBL." e 
 				WHERE 
-					ee.id_right=".$this->db->quote($idvr)." 
+					ee.id_right=".$babDB->quote($idvr)." 
 					AND e.id = ee.id_entry 
 						
 				ORDER BY e.date_begin DESC" 
 				);
 
-			$arr = $this->db->db_fetch_assoc($this->res);
-			$nb_requests = $this->db->db_num_rows($this->res);
+			$arr = $babDB->db_fetch_assoc($this->res);
+			$nb_requests = $babDB->db_num_rows($this->res);
 			$this->request = bab_toHtml(bab_vac_longDate($arr['date_begin']));
 			if (1 == $nb_requests) {
 				$this->t_nb_requests = bab_toHtml(bab_translate("one request will be deleted"));
@@ -1825,15 +1834,16 @@ function rightcopy() {
 			$this->t_year_to = bab_translate("Create rights for year");
 			$this->t_record = bab_translate("Record");
 
-			$this->db = &$GLOBALS['babDB'];
+			global $babDB;
 
-			$this->resyear = $this->db->db_query("SELECT YEAR(date_begin) year FROM ".BAB_VAC_RIGHTS_TBL." GROUP BY year ORDER BY year DESC");
+			$this->resyear = $babDB->db_query("SELECT YEAR(date_begin) year FROM ".BAB_VAC_RIGHTS_TBL." GROUP BY year ORDER BY year DESC");
 
 			$this->year_to = isset($_POST['year_to']) ? $_POST['year_to'] : '';
 		}
 
 		function getnextyear() {
-			if ($arr = $this->db->db_fetch_assoc($this->resyear)) {
+			global $babDB;
+			if ($arr = $babDB->db_fetch_assoc($this->resyear)) {
 				$this->year = bab_toHtml($arr['year']);
 				if (empty($this->year_to)) {
 					$this->year_to = $this->year;
@@ -1849,15 +1859,16 @@ function rightcopy() {
 			if (!isset($_POST['year_to'])) {
 				$this->year_to++;
 			}
+			global $babDB;
 
-			$this->resrights = $this->db->db_query("
+			$this->resrights = $babDB->db_query("
 				SELECT 
 					r.id,
 					r.description 
 				FROM 
 					".BAB_VAC_RIGHTS_TBL." r 
 				WHERE 
-					 YEAR(r.date_begin) = ".$this->db->quote($selected_year)." 
+					 YEAR(r.date_begin) = ".$babDB->quote($selected_year)." 
 				GROUP BY r.id 
 				");
 
@@ -1865,7 +1876,8 @@ function rightcopy() {
 		}
 
 		function getnextright() {
-			if ($arr = $this->db->db_fetch_assoc($this->resrights)) {
+			global $babDB;
+			if ($arr = $babDB->db_fetch_assoc($this->resrights)) {
 				$this->right_description	= bab_toHtml($arr['description']);
 				$this->id_right				= bab_toHtml($arr['id']);
 				$this->checked				= (isset($_POST['rights']) && isset($_POST['rights'][$arr['id']])) || empty($_POST);
@@ -1885,7 +1897,7 @@ function rightcopy() {
 
 			include_once $GLOBALS['babInstallPath']."utilit/dateTime.php";
 
-			$this->db = &$GLOBALS['babDB'];
+			global $babDB;
 			$this->increment = ((int) $_POST['year_to']) - ((int) $_POST['year_from']);
 
 			$this->nb_right_insert = 0;
@@ -1917,8 +1929,9 @@ function rightcopy() {
 
 
 		function get_row($id_right) {
-			$res = $this->db->db_query("SELECT * FROM ".BAB_VAC_RIGHTS_TBL." WHERE id=".$this->db->quote($id_right));
-			return $this->db->db_fetch_assoc($res);
+			global $babDB;
+			$res = $babDB->db_query("SELECT * FROM ".BAB_VAC_RIGHTS_TBL." WHERE id=".$babDB->quote($id_right));
+			return $babDB->db_fetch_assoc($res);
 		}
 
 
@@ -1933,6 +1946,8 @@ function rightcopy() {
 
 
 		function transform_row(&$row) {
+		
+			global $babDB;
 
 			$row['id_creditor']			= $GLOBALS['BAB_SESS_USERID'];
 
@@ -1953,15 +1968,15 @@ function rightcopy() {
 				$row['description'] 
 			);
 
-			$res = $this->db->db_query("
+			$res = $babDB->db_query("
 			SELECT COUNT(*) FROM ".BAB_VAC_RIGHTS_TBL." 
 			WHERE 
-				description=".$this->db->quote($row['description'])." 
-				AND date_begin=".$this->db->quote($row['date_begin'])." 
-				AND date_end=".$this->db->quote($row['date_end'])." 
+				description=".$babDB->quote($row['description'])." 
+				AND date_begin=".$babDB->quote($row['date_begin'])." 
+				AND date_end=".$babDB->quote($row['date_end'])." 
 			");
 
-			list($n) = $this->db->db_fetch_array($res);
+			list($n) = $babDB->db_fetch_array($res);
 
 			if ($n > 0) {
 				$this->addMessage(sprintf(bab_translate("The right %s allready exist"), $row['description']));
@@ -1974,24 +1989,26 @@ function rightcopy() {
 
 
 		function insert_row($row) {
+		
+			global $babDB;
 
 			$old_id_right = $row['id'];
 
 			unset($row['id']);
 
 			foreach($row as $key => $value) {
-				$row[$key] = $this->db->db_escape_string($value);
+				$row[$key] = $babDB->db_escape_string($value);
 			}
 			
-			$this->db->db_query("INSERT INTO ".BAB_VAC_RIGHTS_TBL." (".implode(',',array_keys($row)).") VALUES ('".implode("','",$row)."')");
+			$babDB->db_query("INSERT INTO ".BAB_VAC_RIGHTS_TBL." (".implode(',',array_keys($row)).") VALUES (".$babDB->quote($row).")");
 
 			$this->nb_right_insert++;
 
-			$new_id_right = $this->db->db_insert_id();
+			$new_id_right = $babDB->db_insert_id();
 
 
-			$res = $this->db->db_query("SELECT * FROM ".BAB_VAC_RIGHTS_RULES_TBL." WHERE id_right=".$this->db->quote($old_id_right));
-			if ($rule = $this->db->db_fetch_assoc($res)) {
+			$res = $babDB->db_query("SELECT * FROM ".BAB_VAC_RIGHTS_RULES_TBL." WHERE id_right=".$babDB->quote($old_id_right));
+			if ($rule = $babDB->db_fetch_assoc($res)) {
 				unset($rule['id']);
 				$rule['id_right'] = $new_id_right;
 				$rule['period_start']		= $this->increment_ISO($rule['period_start']);
@@ -2003,19 +2020,19 @@ function rightcopy() {
 				$rule['trigger_p2_begin']	= $this->increment_ISO($rule['trigger_p2_begin']);
 				$rule['trigger_p2_end']		= $this->increment_ISO($rule['trigger_p2_end']);
 				
-				$this->db->db_query("INSERT INTO ".BAB_VAC_RIGHTS_RULES_TBL." (".implode(',',array_keys($rule)).") VALUES (".$this->db->quote($rule).")");
+				$babDB->db_query("INSERT INTO ".BAB_VAC_RIGHTS_RULES_TBL." (".implode(',',array_keys($rule)).") VALUES (".$babDB->quote($rule).")");
 			}
 
 
-			$res = $this->db->db_query("SELECT 
+			$res = $babDB->db_query("SELECT 
 				t2.id_user, 
 				t2.quantity 
 			FROM 
 					".BAB_VAC_USERS_RIGHTS_TBL." t2 
-					WHERE t2.id_right=".$this->db->quote($old_id_right));
+					WHERE t2.id_right=".$babDB->quote($old_id_right));
 					
-			while ($arr = $this->db->db_fetch_assoc($res)) {
-				$this->db->db_query("INSERT INTO ".BAB_VAC_USERS_RIGHTS_TBL." (id_user, id_right) VALUES (".$this->db->quote($arr['id_user']).",".$this->db->quote($new_id_right).")");
+			while ($arr = $babDB->db_fetch_assoc($res)) {
+				$babDB->db_query("INSERT INTO ".BAB_VAC_USERS_RIGHTS_TBL." (id_user, id_right) VALUES (".$babDB->quote($arr['id_user']).",".$babDB->quote($new_id_right).")");
 			}
 
 		}
@@ -2059,14 +2076,16 @@ function deleteVacationRight($idvr)
 
 function modRgroup() {
 
+	global $babDB;
+
 	$name = bab_rp('name');
 	if (!empty($name)) {
-		$db = $GLOBALS['babDB'];
+		global $babDB;
 		$id = bab_rp('id_rgroup');
 		if (empty($id)) {
-			$db->db_query("INSERT INTO ".BAB_VAC_RGROUPS_TBL." (name) VALUES (".$db->quote($name).")");
+			$babDB->db_query("INSERT INTO ".BAB_VAC_RGROUPS_TBL." (name) VALUES (".$babDB->quote($name).")");
 		} else {
-			$db->db_query("UPDATE ".BAB_VAC_RGROUPS_TBL." SET name=".$db->quote($name)." WHERE id=".$db->quote($id));
+			$babDB->db_query("UPDATE ".BAB_VAC_RGROUPS_TBL." SET name=".$babDB->quote($name)." WHERE id=".$babDB->quote($id));
 		}
 		return true;
 	}
@@ -2075,10 +2094,10 @@ function modRgroup() {
 
 
 function deleteRgroup() {
-	$db = $GLOBALS['babDB'];
+	global $babDB;
 	$id = bab_rp('id_rgroup');
 	if (!empty($id)) {
-		$db->db_query("DELETE FROM ".BAB_VAC_RGROUPS_TBL." WHERE id=".$db->quote($id));
+		$babDB->db_query("DELETE FROM ".BAB_VAC_RGROUPS_TBL." WHERE id=".$babDB->quote($id));
 	}
 }
 

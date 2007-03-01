@@ -534,7 +534,11 @@ function bab_getRightsByGroupOnPeriod($id_user, $rfrom = 0) {
 }
 
 
-
+/**
+ * Display a vacation calendar
+ * @param	array		$users		array of id_user to display
+ * @param	boolean		$period		allow period selection, first step of vacation request
+ */
 function viewVacationCalendar($users, $period = false )
 	{
 	global $babBody;
@@ -552,6 +556,8 @@ function viewVacationCalendar($users, $period = false )
 
 		function temp($users, $period)
 			{
+			global $babBody;
+
 			include_once $GLOBALS['babInstallPath']."utilit/dateTime.php";
 
 
@@ -565,14 +571,18 @@ function viewVacationCalendar($users, $period = false )
 			$this->userNameArr = array();
 			foreach ($users as $uid)
 				{
+				$uid = (int) $uid;
+
+				
+
 				$this->userNameArr[$uid] = bab_getUserName($uid);
 				}
 
 			natcasesort($this->userNameArr);
 
-			$this->idusers = array_keys($this->userNameArr);
-			$this->nbusers = count($this->idusers);
-			$this->firstuser = current($this->userNameArr);
+			$this->idusers 		= array_keys($this->userNameArr);
+			$this->nbusers 		= count($this->idusers);
+			$this->firstuser 	= bab_toHtml(current($this->userNameArr));
 			
 			$this->period = $period;
 			$this->vacwaitingtxt = bab_translate("Waiting vacation request");
@@ -630,15 +640,15 @@ function viewVacationCalendar($users, $period = false )
 			$urltmp .= '&amp;nbmonth='.$this->nbmonth;
 
 
-			$this->previousmonth	= $urltmp."&month=".date("n", mktime( 0,0,0, $month-1, 1, $year));
-			$this->previousmonth	.= "&year=".date("Y", mktime( 0,0,0, $month-1, 1, $year));
-			$this->nextmonth		= $urltmp."&month=". date("n", mktime( 0,0,0, $month+1, 1, $year));
-			$this->nextmonth		.= "&year=". date("Y", mktime( 0,0,0, $month+1, 1, $year));
+			$this->previousmonth	= $urltmp."&amp;month=".date("n", mktime( 0,0,0, $month-1, 1, $year));
+			$this->previousmonth	.= "&amp;year=".date("Y", mktime( 0,0,0, $month-1, 1, $year));
+			$this->nextmonth		= $urltmp."&amp;month=". date("n", mktime( 0,0,0, $month+1, 1, $year));
+			$this->nextmonth		.= "&amp;year=". date("Y", mktime( 0,0,0, $month+1, 1, $year));
 
-			$this->previousyear		= $urltmp."&month=".date("n", mktime( 0,0,0, $month, 1, $year-1));
-			$this->previousyear		.= "&year=".date("Y", mktime( 0,0,0, $month, 1, $year-1));
-			$this->nextyear			= $urltmp."&month=". date("n", mktime( 0,0,0, $month, 1, $year+1));
-			$this->nextyear			.= "&year=". date("Y", mktime( 0,0,0, $month, 1, $year+1));
+			$this->previousyear		= $urltmp."&amp;month=".date("n", mktime( 0,0,0, $month, 1, $year-1));
+			$this->previousyear		.= "&amp;year=".date("Y", mktime( 0,0,0, $month, 1, $year-1));
+			$this->nextyear			= $urltmp."&amp;month=". date("n", mktime( 0,0,0, $month, 1, $year+1));
+			$this->nextyear			.= "&amp;year=". date("Y", mktime( 0,0,0, $month, 1, $year+1));
 
 			if( $month != 1 )
 				{
@@ -907,8 +917,11 @@ function viewVacationCalendar($users, $period = false )
 
 		function getnexttype()
 			{
+			global $babDB;
 			if ($this->arr = $babDB->db_fetch_array($this->restypes))
 				{
+				$this->arr['name'] 			= bab_toHtml($this->arr['name']);
+				$this->arr['description'] 	= bab_toHtml($this->arr['description']);
 				return true;
 				}
 			else
@@ -940,6 +953,13 @@ function viewVacationCalendar($users, $period = false )
 		$GLOBALS['babBody']->msgerror = bab_translate("ERROR: No members");
 		temp::printhtml(false);
 		}
+	
+	foreach($users as $uid) {
+		if (!bab_IsUserUnderSuperior($uid)) {
+			$babBody->addError(bab_translate('Access denied'));
+			return false;
+		}
+	}
 
 	$temp = & new temp($users, $period);
 	$temp->printhtml();
@@ -1020,7 +1040,7 @@ function listVacationRequests($id_user)
 			else
 				$uarr = $id_user;
 
-			$this->calurl = $GLOBALS['babUrlScript']."?tg=vacuser&idx=cal&idu=".$id_user."&popup=1";
+			$this->calurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=vacuser&idx=cal&idu=".$id_user."&popup=1");
 			$this->personal = $id_user == $GLOBALS['BAB_SESS_USERID'];
 			$this->pos = isset($_REQUEST['pos']) ? $_REQUEST['pos'] : 0;
 
@@ -1083,9 +1103,9 @@ function listVacationRequests($id_user)
 				global $babDB;
 				$this->altbg = !$this->altbg;
 				$arr = $babDB->db_fetch_array($this->res);
-				$this->url = $GLOBALS['babUrlScript']."?tg=vacuser&idx=morve&id=".$arr['id'];
+				$this->url = bab_toHtml($GLOBALS['babUrlScript']."?tg=vacuser&idx=morve&id=".$arr['id']);
 				list($this->quantity) = $babDB->db_fetch_row($babDB->db_query("select sum(quantity) from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry ='".$babDB->db_escape_string($arr['id'])."'"));
-				$this->urlname = bab_getUserName($arr['id_user']);
+				$this->urlname = bab_toHtml(bab_getUserName($arr['id_user']));
 
 				$begin_ts = bab_mktime($arr['date_begin']);
 				$end_ts = bab_mktime($arr['date_end']);
@@ -1398,6 +1418,7 @@ function addVacationPersonnel($idp = false)
 			static $j= 0;
 			if( $j < $this->countsa )
 				{
+				global $babDB;
 				$arr = $babDB->db_fetch_array($this->sares);
 				$this->saname = $arr['name'];
 				$this->idsapp = $arr['id'];
@@ -1423,6 +1444,7 @@ function addVacationPersonnel($idp = false)
 			static $j= 0;
 			if( $j < $this->countcol )
 				{
+				global $babDB;
 				$arr = $babDB->db_fetch_array($this->colres);
 				$this->collname = $arr['name'];
 				$this->idcollection = $arr['id'];
@@ -2420,6 +2442,18 @@ class bab_vacationRequestDetail
 		$this->t_approb = bab_translate("Approver");
 		global $babDB;
 		$row = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where id=".$babDB->quote($id)));
+
+		$acclevel = bab_vacationsAccess();
+		if( !isset($acclevel['manager']) || $acclevel['manager'] != true)
+		{
+			if (!bab_IsUserUnderSuperior($row['id_user'])) {
+				global $babBody;
+				$babBody->addError(bab_translate('Access denied'));
+				return false;
+			}
+		}
+
+
 		$this->datebegin = bab_toHtml(bab_vac_longDate(bab_mktime($row['date_begin'])));
 		$this->dateend = bab_toHtml(bab_vac_longDate(bab_mktime($row['date_end'])));
 		$this->owner = bab_toHtml(bab_getUserName($row['id_user']));
@@ -2440,7 +2474,7 @@ class bab_vacationRequestDetail
 				break;
 			}
 		
-		$this->approb = bab_getUserName($row['id_approver']);
+		$this->approb = bab_toHtml(bab_getUserName($row['id_approver']));
 
 		$req = "select * from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry=".$babDB->quote($id);
 		$this->res = $babDB->db_query($req);
@@ -2459,6 +2493,7 @@ class bab_vacationRequestDetail
 			list($this->typename) = $babDB->db_fetch_row($babDB->db_query("select description from ".BAB_VAC_RIGHTS_TBL." where id ='".$babDB->db_escape_string($arr['id_right'])."'"));
 			$this->nbdays = $arr['quantity'];
 			$this->totalval += $this->nbdays;
+			$this->typename = bab_toHtml($this->typename);
 			$i++;
 			return true;
 			}
@@ -2472,7 +2507,7 @@ class bab_vacationRequestDetail
 		static $i = 0;
 		if( $i < count($this->wusers))
 			{
-			$this->fullname = bab_getUserName($this->wusers[$i]);
+			$this->fullname = bab_toHtml(bab_getUserName($this->wusers[$i]));
 			$i++;
 			return true;
 			}

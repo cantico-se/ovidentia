@@ -21,6 +21,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
+
+/**
+* @internal SEC1 PR 27/02/2007 FULL
+*/
+
 include_once "base.php";
 include_once $babInstallPath."utilit/afincl.php";
 include_once $babInstallPath."utilit/mailincl.php";
@@ -56,7 +61,7 @@ function addVacationType($vtid, $what, $tname, $description, $quantity, $tcolor,
 			$this->balancetxt = bab_translate("Accept negative balance");
 			$this->yestxt = bab_translate("Yes");
 			$this->notxt = bab_translate("No");
-			$this->selctorurl = $GLOBALS['babUrlScript']."?tg=selectcolor&idx=popup&callback=setColor";
+			$this->selctorurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=selectcolor&idx=popup&callback=setColor");
 			$this->tcolor = $tcolor;
 
 			$this->invalidentry1 = bab_translate("Invalid entry!  Only numbers are accepted and . !");
@@ -64,10 +69,10 @@ function addVacationType($vtid, $what, $tname, $description, $quantity, $tcolor,
 			if( $what == "modvt" && empty($tname))
 				{
 				$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_VAC_TYPES_TBL." where id=".$babDB->quote($vtid)));
-				$this->tnameval = $arr['name'];
-				$this->descriptionval = $arr['description'];
-				$this->quantityval = $arr['quantity'];
-				$this->tcolorval = $arr['color'];
+				$this->tnameval = bab_toHtml($arr['name']);
+				$this->descriptionval = bab_toHtml($arr['description']);
+				$this->quantityval = bab_toHtml($arr['quantity']);
+				$this->tcolorval = bab_toHtml($arr['color']);
 				if( $arr['cbalance'] == 'Y')
 					{
 					$this->yselected = 'selected';
@@ -81,10 +86,10 @@ function addVacationType($vtid, $what, $tname, $description, $quantity, $tcolor,
 				}
 			else
 				{
-				$this->tnameval = $tname;
-				$this->descriptionval = $description;
-				$this->quantityval = $quantity;
-				$this->tcolorval = $tcolor;
+				$this->tnameval = bab_toHtml($tname);
+				$this->descriptionval = bab_toHtml($description);
+				$this->quantityval = bab_toHtml($quantity);
+				$this->tcolorval = bab_toHtml($tcolor);
 				if( $cbalance == 'N')
 					{
 					$this->nselected = 'selected';
@@ -130,7 +135,6 @@ function listVacationCollections()
 		var $description;
 				
 		var $arr = array();
-		var $db;
 		var $count;
 		var $res;
 
@@ -138,10 +142,10 @@ function listVacationCollections()
 			{
 			$this->nametxt = bab_translate("Name");
 			$this->descriptiontxt = bab_translate("Description");
-			$this->db = $GLOBALS['babDB'];
+			$babDB = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_VAC_COLLECTIONS_TBL." order by name asc";
-			$this->res = $this->db->db_query($req);
-			$this->count = $this->db->db_num_rows($this->res);
+			$this->res = $babDB->db_query($req);
+			$this->count = $babDB->db_num_rows($this->res);
 			}
 
 		function getnext()
@@ -149,10 +153,11 @@ function listVacationCollections()
 			static $i = 0;
 			if( $i < $this->count)
 				{
-				$arr = $this->db->db_fetch_array($this->res);
+				global $babDB;
+				$arr = $babDB->db_fetch_array($this->res);
 				$this->url = $GLOBALS['babUrlScript']."?tg=vacadm&idx=modvc&id=".$arr['id'];
-				$this->urlname = $arr['name'];
-				$this->description = $arr['description'];
+				$this->urlname = bab_toHtml($arr['name']);
+				$this->description = bab_toHtml($arr['description']);
 				$i++;
 				return true;
 				}
@@ -184,7 +189,6 @@ function listVacationTypes()
 		var $altaddvr;
 				
 		var $arr = array();
-		var $db;
 		var $count;
 		var $res;
 
@@ -195,10 +199,10 @@ function listVacationTypes()
 			$this->quantitytxt = bab_translate("Quantity");
 			$this->colortxt = bab_translate("Color");
 			$this->altaddvr = bab_translate("Allocate vacation rights");
-			$this->db = $GLOBALS['babDB'];
+			$babDB = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_VAC_TYPES_TBL." order by name asc";
-			$this->res = $this->db->db_query($req);
-			$this->count = $this->db->db_num_rows($this->res);
+			$this->res = $babDB->db_query($req);
+			$this->count = $babDB->db_num_rows($this->res);
 			}
 
 		function getnext()
@@ -206,13 +210,14 @@ function listVacationTypes()
 			static $i = 0;
 			if( $i < $this->count)
 				{
-				$arr = $this->db->db_fetch_array($this->res);
-				$this->url = $GLOBALS['babUrlScript']."?tg=vacadm&idx=modvt&id=".$arr['id'];
-				$this->urlname = $arr['name'];
-				$this->description = $arr['description'];
-				$this->quantity = $arr['quantity'];
-				$this->tcolor = $arr['color'];
-				$this->addurl = $GLOBALS['babUrlScript']."?tg=vacadma&idx=addvr&idtype=".$arr['id'];
+				global $babDB;
+				$arr = $babDB->db_fetch_array($this->res);
+				$this->url = bab_toHtml($GLOBALS['babUrlScript']."?tg=vacadm&idx=modvt&id=".$arr['id']);
+				$this->urlname = bab_toHtml($arr['name']);
+				$this->description = bab_toHtml($arr['description']);
+				$this->quantity = bab_toHtml($arr['quantity']);
+				$this->tcolor = bab_toHtml($arr['color']);
+				$this->addurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=vacadma&idx=addvr&idtype=".$arr['id']);
 				$i++;
 				return true;
 				}
@@ -245,7 +250,6 @@ function addVacationCollection($vcid, $what, $tname, $description, $vtypeids, $c
 		var $vtids = array();
 
 		var $arr = array();
-		var $db;
 		var $count;
 		var $res;
 		function temp($vcid, $what, $tname, $description, $vtypeids, $category)
@@ -273,9 +277,9 @@ function addVacationCollection($vcid, $what, $tname, $description, $vtypeids, $c
 			if( $what == "modvc" && empty($tname))
 				{
 				$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_VAC_COLLECTIONS_TBL." where id=".$babDB->quote($vcid)));
-				$this->tnameval = $arr['name'];
-				$this->descriptionval = $arr['description'];
-				$this->categoryval = $arr['id_cat'];
+				$this->tnameval = bab_toHtml($arr['name']);
+				$this->descriptionval = bab_toHtml($arr['description']);
+				$this->categoryval = bab_toHtml($arr['id_cat']);
 				$res = $babDB->db_query("select * from ".BAB_VAC_COLL_TYPES_TBL." where id_coll=".$babDB->quote($vcid));
 				while( $arr = $babDB->db_fetch_array($res))
 					$this->vtids[] = $arr['id_type'];
@@ -283,15 +287,15 @@ function addVacationCollection($vcid, $what, $tname, $description, $vtypeids, $c
 			else
 				{
 				$this->vtids = $vtypeids;
-				$this->tnameval = $tname;
-				$this->descriptionval = $description;
-				$this->categoryval = $category;
+				$this->tnameval = bab_toHtml($tname);
+				$this->descriptionval = bab_toHtml($description);
+				$this->categoryval = bab_toHtml($category);
 				}
 
-			$this->db = $GLOBALS['babDB'];
+			$babDB = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_VAC_TYPES_TBL." order by name asc";
-			$this->res = $this->db->db_query($req);
-			$this->count = $this->db->db_num_rows($this->res);
+			$this->res = $babDB->db_query($req);
+			$this->count = $babDB->db_num_rows($this->res);
 
 			include_once $GLOBALS['babInstallPath']."utilit/calapi.php";
 			$this->categs = bab_calGetCategories();
@@ -304,8 +308,9 @@ function addVacationCollection($vcid, $what, $tname, $description, $vtypeids, $c
 			static $i = 0;
 			if( $i < $this->count)
 				{
-				$arr = $this->db->db_fetch_array($this->res);
-				$this->vtypename = $arr['name'];
+				global $babDB;
+				$arr = $babDB->db_fetch_array($this->res);
+				$this->vtypename = bab_toHtml($arr['name']);
 				$this->vtid = $arr['id'];
 				if( count($this->vtids) > 0  && in_array($arr['id'], $this->vtids))
 					$this->vtcheck = "checked";
@@ -325,7 +330,7 @@ function addVacationCollection($vcid, $what, $tname, $description, $vtypeids, $c
 			if( $i < $this->catcount)
 				{
 				$this->categid = $this->categs[$i]['id'];
-				$this->categname = $this->categs[$i]['name'];
+				$this->categname = bab_toHtml($this->categs[$i]['name']);
 				if( $this->categid == $this->categoryval )
 					{
 					$this->selected = 'selected';
@@ -360,7 +365,6 @@ function listVacationPersonnel($pos, $idcol, $idsa)
 		var $fullnameval;
 
 		var $arr = array();
-		var $db;
 		var $count;
 		var $res;
 
@@ -409,7 +413,7 @@ function listVacationPersonnel($pos, $idcol, $idsa)
 			$this->t_lastname = bab_translate("Lastname");
 			$this->t_firstname = bab_translate("Firstname");
 
-			$this->db = & $GLOBALS['babDB'];
+			$babDB = & $GLOBALS['babDB'];
 
 			$this->idcol = $idcol;
 			$this->idsa = $idsa;
@@ -427,15 +431,15 @@ function listVacationPersonnel($pos, $idcol, $idsa)
 					join ".BAB_VAC_PERSONNEL_TBL." p 
 				WHERE 
 					u.id=p.id_user and 
-					u.lastname like '".$this->db->db_escape_string($this->pos)."%' 
+					u.lastname like '".$babDB->db_escape_string($this->pos)."%' 
 				";
 
 
 			if( !empty($idcol))
-				$req .= " and p.id_coll='".$this->db->db_escape_string($idcol)."' ";
+				$req .= " and p.id_coll='".$babDB->db_escape_string($idcol)."' ";
 
 			if( !empty($idsa))
-				$req .= " and p.id_sa='".$this->db->db_escape_string($idsa)."' ";
+				$req .= " and p.id_sa='".$babDB->db_escape_string($idsa)."' ";
 
 
 			$req .= "order by u.lastname, u.firstname asc";
@@ -443,8 +447,8 @@ function listVacationPersonnel($pos, $idcol, $idsa)
 			$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper&chg=&pos=".$this->pos."&idcol=".$this->idcol."&idsa=".$this->idsa;
 			
 
-			$this->res = $this->db->db_query($req);
-			$this->count = $this->db->db_num_rows($this->res);
+			$this->res = $babDB->db_query($req);
+			$this->count = $babDB->db_num_rows($this->res);
 
 			if( empty($this->pos))
 				$this->allselected = 1;
@@ -452,14 +456,14 @@ function listVacationPersonnel($pos, $idcol, $idsa)
 				$this->allselected = 0;
 			$this->allurl = $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper&pos=&idcol=".$this->idcol."&idsa=".$this->idsa;
 
-			$this->sares = $this->db->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." order by name asc");
+			$this->sares = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." order by name asc");
 			if( !$this->sares )
 				$this->countsa = 0;
 			else
-				$this->countsa = $this->db->db_num_rows($this->sares);
+				$this->countsa = $babDB->db_num_rows($this->sares);
 
-			$this->colres = $this->db->db_query("select * from ".BAB_VAC_COLLECTIONS_TBL." order by name asc");
-			$this->countcol = $this->db->db_num_rows($this->colres);
+			$this->colres = $babDB->db_query("select * from ".BAB_VAC_COLLECTIONS_TBL." order by name asc");
+			$this->countcol = $babDB->db_num_rows($this->colres);
 			}
 
 		function getnext()
@@ -467,8 +471,9 @@ function listVacationPersonnel($pos, $idcol, $idsa)
 			static $i = 0;
 			if( $i < $this->count)
 				{
+				global $babDB;
 				$this->altbg = !$this->altbg;
-				$this->arr = $this->db->db_fetch_array($this->res);
+				$this->arr = $babDB->db_fetch_array($this->res);
 				$this->url = $GLOBALS['babUrlScript']."?tg=vacadm&idx=modp&idp=".$this->arr['id']."&pos=".$this->pos;
 				
 				$this->firstname = bab_toHtml($this->arr['firstname']);
@@ -476,13 +481,13 @@ function listVacationPersonnel($pos, $idcol, $idsa)
 				
 					
 				$this->userid = $this->arr['id'];
-				$this->lrbuurl = $GLOBALS['babUrlScript']."?tg=vacadm&idx=lrbu&idu=".$this->userid;
-				$this->calurl = $GLOBALS['babUrlScript']."?tg=vacuser&idx=cal&idu=".$this->userid;
-				$this->vunewurl = $GLOBALS['babUrlScript']."?tg=vacuser&idx=period&rfrom=1&id_user=".$this->userid;
-				$arr = $this->db->db_fetch_array($this->db->db_query("select name from ".BAB_VAC_COLLECTIONS_TBL." where id='".$this->db->db_escape_string($this->arr['id_coll'])."'"));
-				$this->collname = $arr['name'];
-				$arr = $this->db->db_fetch_array($this->db->db_query("select name from ".BAB_FLOW_APPROVERS_TBL." where id='".$this->db->db_escape_string($this->arr['id_sa'])."'"));
-				$this->saname = $arr['name'];
+				$this->lrbuurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=vacadm&idx=lrbu&idu=".$this->userid);
+				$this->calurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=vacuser&idx=cal&idu=".$this->userid);
+				$this->vunewurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=vacuser&idx=period&rfrom=1&id_user=".$this->userid);
+				$arr = $babDB->db_fetch_array($babDB->db_query("select name from ".BAB_VAC_COLLECTIONS_TBL." where id='".$babDB->db_escape_string($this->arr['id_coll'])."'"));
+				$this->collname = bab_toHtml($arr['name']);
+				$arr = $babDB->db_fetch_array($babDB->db_query("select name from ".BAB_FLOW_APPROVERS_TBL." where id='".$babDB->db_escape_string($this->arr['id_sa'])."'"));
+				$this->saname = bab_toHtml($arr['name']);
 				$i++;
 				return true;
 				}
@@ -505,15 +510,15 @@ function listVacationPersonnel($pos, $idcol, $idsa)
 				else 
 					{
 
-					$req = "select u.id from ".BAB_USERS_TBL." u join ".BAB_VAC_PERSONNEL_TBL." p where u.id=p.id_user and u.lastname like '".$this->selectname."%'";
+					$req = "select u.id from ".BAB_USERS_TBL." u join ".BAB_VAC_PERSONNEL_TBL." p where u.id=p.id_user and u.lastname like '".$babDB->db_escape_string($this->selectname)."%'";
 
 					if( !empty($this->idcol))
-						$req .= " and p.id_coll='".$this->db->db_escape_string($this->idcol)."'";
+						$req .= " and p.id_coll='".$babDB->db_escape_string($this->idcol)."'";
 					if( !empty($this->idsa))
-						$req .= " and p.id_sa='".$this->db->db_escape_string($this->idsa)."'";
+						$req .= " and p.id_sa='".$babDB->db_escape_string($this->idsa)."'";
 
-					$res = $this->db->db_query($req);
-					if( $this->db->db_num_rows($res) > 0 )
+					$res = $babDB->db_query($req);
+					if( $babDB->db_num_rows($res) > 0 )
 						$this->selected = 0;
 					else
 						$this->selected = 1;
@@ -532,9 +537,10 @@ function listVacationPersonnel($pos, $idcol, $idsa)
 			static $j= 0;
 			if( $j < $this->countsa )
 				{
-				$arr = $this->db->db_fetch_array($this->sares);
-				$this->saname = $arr['name'];
-				$this->idsapp = $arr['id'];
+				global $babDB;
+				$arr = $babDB->db_fetch_array($this->sares);
+				$this->saname = bab_toHtml($arr['name']);
+				$this->idsapp = bab_toHtml($arr['id']);
 				if( $this->idsa == $this->idsapp )
 					$this->selected = "selected";
 				else
@@ -551,9 +557,10 @@ function listVacationPersonnel($pos, $idcol, $idsa)
 			static $j= 0;
 			if( $j < $this->countcol )
 				{
-				$arr = $this->db->db_fetch_array($this->colres);
-				$this->collname = $arr['name'];
-				$this->idcollection = $arr['id'];
+				global $babDB;
+				$arr = $babDB->db_fetch_array($this->colres);
+				$this->collname = bab_toHtml($arr['name']);
+				$this->idcollection = bab_toHtml($arr['id']);
 				if( $this->idcol == $this->idcollection )
 					$this->selected = "selected";
 				else
@@ -592,7 +599,7 @@ function addGroupVacationPersonnel()
 			$this->t_add_modify = bab_translate("Add or modify users by group");
 			$this->t_modify_alert = bab_translate("Users with waiting requests will not be modified");
 
-			$this->db = & $GLOBALS['babDB'];
+			$babDB = & $GLOBALS['babDB'];
 
 			$this->idsa = $_REQUEST['idsa'];
 			$this->idcol = isset($_REQUEST['idcol']) ? $_REQUEST['idcol'] : '';
@@ -601,14 +608,14 @@ function addGroupVacationPersonnel()
 			$this->groupval = "";
 			$this->groupid = "";
 
-			$this->sares = $this->db->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." order by name asc");
+			$this->sares = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." order by name asc");
 			if( !$this->sares )
 				$this->countsa = 0;
 			else
-				$this->countsa = $this->db->db_num_rows($this->sares);
+				$this->countsa = $babDB->db_num_rows($this->sares);
 
-			$this->colres = $this->db->db_query("select * from ".BAB_VAC_COLLECTIONS_TBL." order by name asc");
-			$this->countcol = $this->db->db_num_rows($this->colres);
+			$this->colres = $babDB->db_query("select * from ".BAB_VAC_COLLECTIONS_TBL." order by name asc");
+			$this->countcol = $babDB->db_num_rows($this->colres);
 			}
 		
 		function getnextsa()
@@ -616,10 +623,10 @@ function addGroupVacationPersonnel()
 			static $j= 0;
 			if( $j < $this->countsa )
 				{
-				$arr = $this->db->db_fetch_array($this->sares);
-				$this->saname = $arr['name'];
-				$this->idsapp = $arr['id'];
-				$this->idsapp = $arr['id'];
+				global $babDB;
+				$arr = $babDB->db_fetch_array($this->sares);
+				$this->saname = bab_toHtml($arr['name']);
+				$this->idsapp = bab_toHtml($arr['id']);
 				if( $this->idsa == $this->idsapp )
 					$this->selected = "selected";
 				else
@@ -631,7 +638,7 @@ function addGroupVacationPersonnel()
 				{
 				$j = 0;
 				if ($this->countsa > 0)
-					$this->db->db_data_seek($this->sares,0);
+					$babDB->db_data_seek($this->sares,0);
 				return false;
 				}
 			}
@@ -641,9 +648,10 @@ function addGroupVacationPersonnel()
 			static $j= 0;
 			if( $j < $this->countcol )
 				{
-				$arr = $this->db->db_fetch_array($this->colres);
-				$this->collname = $arr['name'];
-				$this->idcollection = $arr['id'];
+				global $babDB;
+				$arr = $babDB->db_fetch_array($this->colres);
+				$this->collname = bab_toHtml($arr['name']);
+				$this->idcollection = bab_toHtml($arr['id']);
 				if( $this->idcol == $this->idcollection )
 					$this->selected = "selected";
 				else
@@ -767,11 +775,11 @@ function saveVacationType($tname, $description, $quantity, $tcolor, $cbalance, $
 		return false;
 		}
 
-	$db = $GLOBALS['babDB'];
+	$babDB = $GLOBALS['babDB'];
 
-	$req = "select id from ".BAB_VAC_TYPES_TBL." where name='".$db->db_escape_string($tname)."'";
-	$res = $db->db_query($req);
-	if( $res && $db->db_num_rows($res) > 0 )
+	$req = "select id from ".BAB_VAC_TYPES_TBL." where name='".$babDB->db_escape_string($tname)."'";
+	$res = $babDB->db_query($req);
+	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
 		$babBody->msgerror = bab_translate("This vacation type already exists") ." !";
 		return false;
@@ -779,16 +787,16 @@ function saveVacationType($tname, $description, $quantity, $tcolor, $cbalance, $
 	
 	$req = "insert into ".BAB_VAC_TYPES_TBL." ( name, description, quantity, maxdays, mindays, defaultdays, color, cbalance)";
 	$req .= " values (
-	'".$db->db_escape_string($tname)."', 
-	'" .$db->db_escape_string($description). "', 
-		'" .$db->db_escape_string($quantity). "',
-		'" .$db->db_escape_string($maxdays). "',
-		'" .$db->db_escape_string($mindays). "',
-		'" .$db->db_escape_string($default). "',
-		'" .$db->db_escape_string($tcolor). "',
-		'" .$db->db_escape_string($cbalance). "'
+	'".$babDB->db_escape_string($tname)."', 
+	'" .$babDB->db_escape_string($description). "', 
+		'" .$babDB->db_escape_string($quantity). "',
+		'" .$babDB->db_escape_string($maxdays). "',
+		'" .$babDB->db_escape_string($mindays). "',
+		'" .$babDB->db_escape_string($default). "',
+		'" .$babDB->db_escape_string($tcolor). "',
+		'" .$babDB->db_escape_string($cbalance). "'
 	)";
-	$res = $db->db_query($req);
+	$res = $babDB->db_query($req);
 	return true;
 	}
 
@@ -801,11 +809,11 @@ function updateVacationType($vtid, $tname, $description, $quantity, $tcolor, $cb
 		return false;
 		}
 
-	$db = $GLOBALS['babDB'];
+	$babDB = $GLOBALS['babDB'];
 
-	$req = "SELECT id from ".BAB_VAC_TYPES_TBL." WHERE name='".$db->db_escape_string($tname)."' AND id!='".$db->db_escape_string($vtid)."'";
-	$res = $db->db_query($req);
-	if( $res && $db->db_num_rows($res) > 0 )
+	$req = "SELECT id from ".BAB_VAC_TYPES_TBL." WHERE name='".$babDB->db_escape_string($tname)."' AND id!='".$babDB->db_escape_string($vtid)."'";
+	$res = $babDB->db_query($req);
+	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
 		$babBody->msgerror = bab_translate("This vacation type already exists") ." !";
 		return false;
@@ -813,17 +821,17 @@ function updateVacationType($vtid, $tname, $description, $quantity, $tcolor, $cb
 	
 	$req = "UPDATE ".BAB_VAC_TYPES_TBL." 
 		SET 
-			name='".$db->db_escape_string($tname)."', 
-			description='".$db->db_escape_string($description)."', 
-			quantity='".$db->db_escape_string($quantity)."', 
-			maxdays='".$db->db_escape_string($maxdays)."', 
-			mindays='".$db->db_escape_string($mindays)."', 
-			defaultdays='".$db->db_escape_string($default)."', 
-			color='".$db->db_escape_string($tcolor)."', 
-			cbalance='".$db->db_escape_string($cbalance)."' 
+			name='".$babDB->db_escape_string($tname)."', 
+			description='".$babDB->db_escape_string($description)."', 
+			quantity='".$babDB->db_escape_string($quantity)."', 
+			maxdays='".$babDB->db_escape_string($maxdays)."', 
+			mindays='".$babDB->db_escape_string($mindays)."', 
+			defaultdays='".$babDB->db_escape_string($default)."', 
+			color='".$babDB->db_escape_string($tcolor)."', 
+			cbalance='".$babDB->db_escape_string($cbalance)."' 
 		WHERE  
-			id='".$db->db_escape_string($vtid)."'";
-	$res = $db->db_query($req);
+			id='".$babDB->db_escape_string($vtid)."'";
+	$res = $babDB->db_query($req);
 	return true;
 	}
 
@@ -870,23 +878,23 @@ function saveVacationCollection($tname, $description, $vtypeids, $category)
 		return false;
 		}
 
-	$db = $GLOBALS['babDB'];
+	$babDB = $GLOBALS['babDB'];
 
-	$req = "select id from ".BAB_VAC_COLLECTIONS_TBL." where name='".$db->db_escape_string($tname)."'";
-	$res = $db->db_query($req);
-	if( $res && $db->db_num_rows($res) > 0 )
+	$req = "select id from ".BAB_VAC_COLLECTIONS_TBL." where name='".$babDB->db_escape_string($tname)."'";
+	$res = $babDB->db_query($req);
+	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
 		$babBody->msgerror = bab_translate("This collection already exists") ." !";
 		return false;
 		}
 	
 	$req = "insert into ".BAB_VAC_COLLECTIONS_TBL." ( name, description, id_cat )";
-	$req .= " values ('".$db->db_escape_string($tname)."', '" .$db->db_escape_string($description)."', '" .$db->db_escape_string($category). "')";
-	$res = $db->db_query($req);
-	$id = $db->db_insert_id();
+	$req .= " values ('".$babDB->db_escape_string($tname)."', '" .$babDB->db_escape_string($description)."', '" .$babDB->db_escape_string($category). "')";
+	$res = $babDB->db_query($req);
+	$id = $babDB->db_insert_id();
 	for( $i=0; $i < count($vtypeids); $i++)
 		{
-		$db->db_query("insert into ".BAB_VAC_COLL_TYPES_TBL." (id_coll, id_type) values ('".$db->db_escape_string($id)."', '".$db->db_escape_string($vtypeids[$i])."')");
+		$babDB->db_query("insert into ".BAB_VAC_COLL_TYPES_TBL." (id_coll, id_type) values ('".$babDB->db_escape_string($id)."', '".$babDB->db_escape_string($vtypeids[$i])."')");
 		}
 	return true;
 	}
