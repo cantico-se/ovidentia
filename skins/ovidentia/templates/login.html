@@ -258,8 +258,8 @@
 		<td><!--#if brequired --><font color="red">*</font><!--#endif brequired -->&nbsp;{ pdesc } </td>
 		</tr>
 		
-		<!--#in getnextgrp -->
 		<!--#if bmultiplicity -->
+		<!--#in getnextgrp -->
 		<!--#if altbg -->
 		<tr class="BabSiteAdminFontBackground">
 		<!--#else altbg -->
@@ -270,6 +270,7 @@
 		</td>
 		<td valign="middle">{ grpdesc }</td>
 		</tr>
+		<!--#endin getnextgrp -->
 		<!--#else bmultiplicity -->
 		<tr class="BabSiteAdminTitleFontBackground">
 		<td width="1%">&nbsp;</td>
@@ -284,7 +285,6 @@
 		</tr>
 		<!--#endif bmultiplicity -->
 		</tr>        
-		<!--#endin getnextgrp -->
 		</table>
 	</td>
 	</tr>
