@@ -598,6 +598,10 @@ function getDirEntry($id, $type, $id_directory, $accessCtrl)
 	if (BAB_DIR_ENTRY_ID_USER === $type && false === $id) {
 		$id = &$GLOBALS['BAB_SESS_USERID'];
 		}
+		
+	if (empty($id)) {
+		return false;
+		}
 
 	if (NULL !== $id_directory) {
 		$test_on_directory = '';

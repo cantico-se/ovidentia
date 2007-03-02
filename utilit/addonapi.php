@@ -901,6 +901,10 @@ function bab_mkdir($path, $mode='')
 		$mode = $GLOBALS['babMkdirMode'];
 	}
 	$res = mkdir($path, $mode);
+	if (!$res) {
+		include_once 'devtools.php';
+		bab_debug_print_backtrace();
+	}
 	umask($umask);
 	return $res;
 }
