@@ -1271,6 +1271,14 @@ function bab_updateUserById($id, $info, &$error)
 	return bab_userModify::updateUserById($id, $info, $error);
 }
 
+/*
+* Because of a typing error, we must keep compatibility
+*/
+function bab_uppdateUserById($id, $info, &$error)
+{
+	return bab_updateUserById($id, $info, $error);
+}
+
 
 /**
  * Update a user by nickname
