@@ -257,7 +257,7 @@ class bab_userModify {
 					}
 					else
 					{
-						$lastname = $arruinfo['lastname'];
+						$lastname = $info['sn'];
 					}
 	
 					if( isset($info['givenname']) && empty($info['givenname']))
@@ -267,7 +267,7 @@ class bab_userModify {
 					}
 					else
 					{
-						$firstname = $arruinfo['firstname'];
+						$firstname = $info['givenname'];
 					}
 	
 					if( isset($info['mn']))
