@@ -230,7 +230,7 @@ function bab_getNonWorkingDayLabel($dateObj) {
 /**
  * @param	object	$obj
  */
-function bab_NWD_onCreatePeriods($obj) {
+function bab_NWD_onCreatePeriods(&$obj) {
 	$begin = $obj->periods->begin->getIsoDate();
 	$end = $obj->periods->end->getIsoDate();
 
