@@ -318,7 +318,7 @@ function newEvent()
 				$i = 1;
 				if( $k == 0 )
 					{
-					$this->daysel = $this->dayend;
+					$this->daysel = $this->arr['dayend'];
 					$k++;
 					}
 				else
