@@ -1340,6 +1340,12 @@ function updateVacationRight()
 		$babBody->msgerror = bab_translate("You must specify a correct number days");
 		return false;
 		}
+		
+	if( 0 !== ($post['quantity']*10) %5)
+		{
+		$babBody->msgerror = bab_translate("You must specify a correct number days");
+		return false;
+		}
 
 
 	if (isset($post['id_type']))
