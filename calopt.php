@@ -36,7 +36,7 @@ function accessCalendar($calid, $urla)
 	
 	class temp
 		{
-		function temp($calid, $urla, $users)
+		function temp($calid, $urla, &$users)
 			{
 			global $babDB;
 			$this->calid = $calid;
