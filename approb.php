@@ -698,7 +698,7 @@ function listWaitingAddons()
 			if (list( , $arr) = each($this->arr))
 				{
 				$this->text 			= bab_toHtml($arr['text']);
-				$this->description 		= bab_toHtml($arr['description']);
+				$this->description 		= $arr['description'];
 				$this->url 				= bab_toHtml($arr['url']);
 				$this->popup 			= $arr['popup'];
 				$this->idschi 			= bab_toHtml($arr['idschi']);
