@@ -141,7 +141,7 @@ class bab_fireEvent_Obj {
  * @see	bab_addEventListener
  * @param	object	$event_obj (inherited object of bab_event)
  */
-function bab_fireEvent($event_obj) {
+function bab_fireEvent(&$event_obj) {
 
 	global $babDB, $babBody;
 	
@@ -179,7 +179,9 @@ function bab_fireEvent($event_obj) {
 					require_once $GLOBALS['babInstallPath'].$arr['require_file'];
 					if (function_exists($arr['function_name'])) {
 						
-						call_user_func($arr['function_name'], $event_obj);
+						call_user_func_array($arr['function_name'], array(&$event_obj));
+						
+						bab_debug($event_obj);
 					} else {
 						bab_debug('
 						Function unreachable

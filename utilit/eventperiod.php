@@ -39,10 +39,10 @@ class bab_eventBeforePeriodsCreated extends bab_event {
 
 
 	/**
- 	 * @param 	bab_userWorkingHours 	$obj
+ 	 * 
 	 */
-	function bab_eventBeforePeriodsCreated($obj) {
-		$this->periods = & $obj;
+	function bab_eventBeforePeriodsCreated() {
+		
 	}
 }
 
