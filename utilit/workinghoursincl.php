@@ -383,7 +383,8 @@ class bab_userWorkingHours {
 		}
 
 		require_once $GLOBALS['babInstallPath'].'utilit/eventperiod.php';
-		$event = new bab_eventBeforePeriodsCreated($this);
+		$event = new bab_eventBeforePeriodsCreated();
+		$event->periods = & $this;
 		bab_fireEvent($event);
 
 		$loop = $this->begin->cloneDate();
