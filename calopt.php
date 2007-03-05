@@ -583,15 +583,18 @@ function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor,
 
 	function setUserPeriod($day, $ampm, $startHour, $endHour, $insert) {
 		global $babDB;
-		$op = 'am' == $ampm ? 'startHour <=' : 'endHour >';
-		$babDB->db_query("
-
+		$op = 'am' == $ampm ? 'endHour <=' : 'endHour >';
+		$req = "
 			DELETE FROM ".BAB_WORKING_HOURS_TBL." 
 			WHERE 
 				idUser=".$babDB->quote($GLOBALS['BAB_SESS_USERID'])." AND 
 				weekDay=".$babDB->quote($day)." AND 
 				".$op." '12:00:00' 
-		");
+		";
+		
+		bab_debug($req);
+		
+		$babDB->db_query($req);
 
 
 		if ($insert) {
@@ -638,6 +641,8 @@ function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor,
 
 	$change = false; 
 	
+	
+	
 	for ($i = 0 ; $i < 7 ; $i++) {
 		$arr = cal_half_working_days($i);
 		
@@ -656,6 +661,7 @@ function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor,
 	}
 
 	if ($change) {
+		bab_debug('modification');
 		include_once $GLOBALS['babInstallPath'].'utilit/eventperiod.php';
 		
 		$event = new bab_eventPeriodModified(false, false, $GLOBALS['BAB_SESS_USERID']);
@@ -663,7 +669,8 @@ function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor,
 		bab_fireEvent($event);
 	}
 	
-	bab_debug($GLOBALS['BAB_SESS_USERID']);
+	header('location:'.$GLOBALS['babUrlScript'].'?tg=calopt&idx=options');
+	exit;
 }
 
 /* main */
