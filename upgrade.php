@@ -7690,4 +7690,14 @@ function upgrade611to612()
 	return $ret;
 }
 
+function upgrade612to620()
+{
+	global $babDB;
+	$ret = "";
+	
+	$babDB->db_query("UPDATE ".BAB_EVENT_LISTENERS_TBL." set event_class_name='bab_eventBeforePeriodsCreated' WHERE event_class_name='bab_eventCreatePeriods'");
+	
+	return $ret;
+}
+
 ?>
