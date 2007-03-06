@@ -502,6 +502,8 @@ function listVacationPersonnel($pos, $idcol, $idsa)
 			static $t = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 			if( $k < 26)
 				{
+				global $babDB;
+				
 				$this->selectname = substr($t, $k, 1);
 				$this->selecturl = $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper&pos=".$this->selectname."&idcol=".$this->idcol."&idsa=".$this->idsa;
 

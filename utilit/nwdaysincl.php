@@ -235,6 +235,7 @@ function bab_NWD_onCreatePeriods(&$obj) {
 	$end = $obj->periods->end->getIsoDate();
 
 	$arr = bab_getNonWorkingDaysBetween($begin, $end);
+	
 	foreach($arr as $nw_day => $nw_type) {
 		$beginDate	= BAB_DateTime::fromIsoDateTime($nw_day.' 00:00:00');
 		$endDate	= $beginDate->cloneDate();
@@ -245,6 +246,7 @@ function bab_NWD_onCreatePeriods(&$obj) {
 		$p->setProperty('DESCRIPTION'	,$nw_type);
 		$p->setProperty('DTSTART'		,$beginDate->getIsoDateTime());
 		$p->setProperty('DTEND'			,$endDate->getIsoDateTime());
+		
 	}
 }
 

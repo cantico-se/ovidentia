@@ -552,6 +552,7 @@ function viewVacationCalendar($users, $period = false )
 		var $print;
 		var $close;
 		var $emptylines = true;
+		var $db_month;
 
 
 		function temp($users, $period)
@@ -679,7 +680,7 @@ function viewVacationCalendar($users, $period = false )
 			");
 
 			while($arr = $babDB->db_fetch_assoc($res)) {
-				$babDB_month[$arr['monthkey']][$arr['id_user']] = 1;
+				$this->db_month[$arr['monthkey']][$arr['id_user']] = 1;
 			}
 
 			
@@ -740,7 +741,7 @@ function viewVacationCalendar($users, $period = false )
 
 				$key = $this->curmonth.$this->curyear;
 
-				if (!isset($babDB_month[$key][$this->id_user])) {
+				if (!isset($this->db_month[$key][$this->id_user])) {
 					bab_vac_updateCalendar($this->id_user, $this->curyear, $this->curmonth);
 				}
 
@@ -953,9 +954,11 @@ function viewVacationCalendar($users, $period = false )
 		$GLOBALS['babBody']->msgerror = bab_translate("ERROR: No members");
 		temp::printhtml(false);
 		}
+
+	$acclevel = bab_vacationsAccess();
 	
 	foreach($users as $uid) {
-		if (!bab_IsUserUnderSuperior($uid)) {
+		if (!$acclevel['manager'] && !bab_IsUserUnderSuperior($uid)) {
 			$babBody->addError(bab_translate('Access denied'));
 			return false;
 		}
@@ -2185,24 +2188,14 @@ function bab_vac_onModifyPeriod($event) {
 }
 
 
-
 /**
- * Update planning for the given user
- * and the given period
- * @param int		$id_user
- * @param int		$year
- * @param int		$month
+ * @param	int				$id_user
+ * @param	BAB_dateTime	$begin
+ * @param	BAB_dateTime	$end
  */
-function bab_vac_updateCalendar($id_user, $year, $month) {
+function bab_vac_getHalfDaysIndex($id_user, $dateb, $datee) {
 
-	global $babDB;
 	include_once $GLOBALS['babInstallPath']."utilit/workinghoursincl.php";
-
-	$babDB->db_query("DELETE FROM ".BAB_VAC_CALENDAR_TBL." WHERE monthkey=".$babDB->quote($month.$year).' AND id_user='.$babDB->quote($id_user));
-
-	$dateb = new BAB_dateTime($year, $month, 1); 
-	$datee = $dateb->cloneDate();
-	$datee->add(1, BAB_DATETIME_MONTH);
 
 	$obj = new bab_userWorkingHours( 
 			$dateb, 
@@ -2213,7 +2206,10 @@ function bab_vac_updateCalendar($id_user, $year, $month) {
 	$obj->createPeriods(BAB_PERIOD_NWDAY | BAB_PERIOD_NONWORKING | BAB_PERIOD_WORKING | BAB_PERIOD_VACATION);
 	$obj->orderBoundaries();
 
+
+
 	if (!function_exists('bab_vac_compare')) {
+		
 		/**
 		 * si type2 est prioritaire, return true
 		 */
@@ -2237,6 +2233,7 @@ function bab_vac_updateCalendar($id_user, $year, $month) {
 		}
 
 		function bab_vac_is_free($p) {
+			
 			switch($p->type) {
 				case BAB_PERIOD_WORKING:
 				case BAB_PERIOD_CALEVENT:
@@ -2249,12 +2246,77 @@ function bab_vac_updateCalendar($id_user, $year, $month) {
 					return false;
 			}
 		}
+	}
+	
 
+	$index = array();
+	$is_free = array();
+	
+	while (false !== $arr = $obj->getNextPeriod()) {
+		
+		foreach($arr as $pe) {
+			$group = $pe->split(12*3600);
+			foreach($group as $p) {
+				
+				if ($p->ts_begin < $datee->getTimeStamp() && $p->ts_end > $dateb->getTimeStamp()) {
+					$key = date('Ymda',$p->ts_begin);
+
+					
+
+					if (!isset($index[$key]) || bab_vac_compare($index[$key]->type, $p->type)) {
+
+					
+
+						$index[$key] = $p;
+
+						if (bab_vac_is_free($p)) {
+							$is_free[$key] = 1;
+						}
+
+						/*
+						bab_debug(
+							bab_shortDate($p->ts_begin).'
+'.bab_shortDate($p->ts_end).'
+'.$p->getProperty('SUMMARY'));*/
+					}
+				}
+			}
+		}
+	}
+
+
+	return array($index, $is_free);
+}
+
+
+
+/**
+ * Update planning for the given user
+ * and the given period
+ * @param int		$id_user
+ * @param int		$year
+ * @param int		$month
+ */
+function bab_vac_updateCalendar($id_user, $year, $month) {
+
+	global $babDB;
+	include_once $GLOBALS['babInstallPath']."utilit/workinghoursincl.php";
+
+	$babDB->db_query("DELETE FROM ".BAB_VAC_CALENDAR_TBL." WHERE monthkey=".$babDB->quote($month.$year).' AND id_user='.$babDB->quote($id_user));
+
+	$dateb = new BAB_dateTime($year, $month, 1); 
+	$datee = $dateb->cloneDate();
+	$datee->add(1, BAB_DATETIME_MONTH);
+
+	list($index, $is_free) = bab_vac_getHalfDaysIndex($id_user, $dateb, $datee);
+
+	if (!function_exists('bab_vac_group_insert')) {
 		function bab_vac_group_insert($query, $exec = false) {
 			static $values = array();
 			if ($query) {
 				$values[] = $query;
 			}
+			
 			if (300 <= count($values) || (0 < count($values) && $exec)) {
 
 				$GLOBALS['babDB']->db_query("
@@ -2268,26 +2330,6 @@ function bab_vac_updateCalendar($id_user, $year, $month) {
 		}
 	}
 	
-
-	$index = array();
-	$is_free = array();
-	while (false !== $arr = $obj->getNextPeriod()) {
-		foreach($arr as $p) {
-			$group = $p->split(12*3600);
-			foreach($group as $p) {
-				$key = date('Ymda',$p->ts_begin);
-				if (bab_vac_is_free($p)) {
-					$is_free[$key] = 1;
-				}
-
-				if (!isset($index[$key]) || bab_vac_compare($index[$key]->type, $p->type)) {
-					$index[$key] = $p;
-				}
-			}
-		}
-	}
-
-	
 	$previous = NULL;
 
 	foreach($index as $key => $p) {
@@ -2298,15 +2340,12 @@ function bab_vac_updateCalendar($id_user, $year, $month) {
 		$color		= '';
 		$type		= $p->type;
 
-		if (isset($is_free[$key])) {
-			if (BAB_PERIOD_VACATION === $p->type) { 
-				$id_entry = $data['id']; 
-				$arr = bab_vac_typeColorStack($id_entry);
-				$color = $arr['color'];
-			}
-		} elseif (BAB_PERIOD_VACATION === $p->type) {
-			$type = BAB_PERIOD_NONWORKING;
-		} 
+
+		if (BAB_PERIOD_VACATION === $p->type) { 
+			$id_entry = $data['id']; 
+			$arr = bab_vac_typeColorStack($id_entry);
+			$color = $arr['color'];
+		}
 
 
 		$key = $id_user.$month.$year.$id_entry.$color.$type;
@@ -2372,7 +2411,7 @@ function bab_vac_delete_request($id_request)
 			FROM ".BAB_VAC_ENTRIES_TBL." 
 			WHERE id=".$babDB->quote($id_request)));
 
-	if ($arr['idfai'] > 0)
+	if ($arr['idfai'] > 0) 
 		deleteFlowInstance($arr['idfai']);
 
 	$babDB->db_query("DELETE FROM ".BAB_VAC_ENTRIES_ELEM_TBL." WHERE id_entry=".$babDB->quote($id_request)."");
@@ -2565,67 +2604,37 @@ function bab_addCoManagerEntities(&$entities, $id_user) {
 
 /**
  * Number of free days between two dates
+ * by half days
  * @param	int	$id_user	
  * @param	int	$begin		timestamp
  * @param	int	$end		timestamp
  * @return	int
  */
 function bab_vac_getFreeDaysBetween($id_user, $begin, $end) {
-	$calcul = round(($end - $begin)/86400, 1);
 
-	include_once $GLOBALS['babInstallPath']."utilit/nwdaysincl.php";
-	$beginY = date('Y',$begin);
-	$endY = date('Y',$end);
+	$calcul = 0;
 
-	if ($beginY != $endY) {
-		$nonWorkingDays = array_merge(bab_getNonWorkingDays($beginY), bab_getNonWorkingDays($endY));
-		}
-	else {
-		$nonWorkingDays = bab_getNonWorkingDays($beginY);
-		}
+	include_once $GLOBALS['babInstallPath']."utilit/dateTime.php";
 
-	include_once $GLOBALS['babInstallPath']."utilit/workinghoursincl.php";
-	
-	$whours = array();
+	bab_debug(bab_shortDate($begin).' 
+'.bab_shortDate($end));
 
-	for ($i = $begin; $i <= $end ; $i = mktime(0, 0, 0, date("m",$i) , date("d",$i) + 1, date("Y",$i)) )
-		{
+	list($index, $is_free) = bab_vac_getHalfDaysIndex(
+		$id_user, 
+		BAB_DateTime::fromTimeStamp($begin), 
+		BAB_DateTime::fromTimeStamp($end)
+	);
 
-		if (isset($nonWorkingDays[date('Y-m-d',$i )])) {
-			$calcul--;
-		}
-		else
-		{
-			$day = date('w',$i );
 
-			if( !isset($whours[$day]))
-			{
-				$whours[$day] = bab_getWHours($id_user, $day);
-			}
+	foreach($index as $key => $p) {
 
-			$arr = $whours[$day];
-			$am = false;
-			$pm = false;
-			foreach($arr as $wh_period) {
-				if ($wh_period['startHour'] < '12:00:00') {
-					$am = true;
-				}
-
-				if ($wh_period['endHour'] > '12:00:00') {
-					$pm = true;
-				}
-			}
-
-			if (!$am) {
-				$calcul -= 0.5;
-			}
-
-			if (!$pm) {
-				$calcul -= 0.5;
-			}
+		if (isset($is_free[$key])) {
+			//bab_debug($p);
+			$calcul += 0.5;
 		}
 	}
 
+	
 	return $calcul;
 }
 

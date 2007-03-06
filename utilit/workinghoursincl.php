@@ -247,8 +247,6 @@ class bab_calendarPeriod {
 		$start = bab_mktime(date('Y-m-d',$this->ts_begin));
 
 
-
-
 		// ignore periods before begin date
 		while ($start < ($this->ts_begin - $duration)) {
 			$this->add($start, $duration);
@@ -261,26 +259,26 @@ class bab_calendarPeriod {
 			$endDate = $start;
 		} else {
 			$endDate = $this->ts_end;
+			if ($this->ts_begin < $endDate) {
+				$p = new bab_calendarPeriod($this->ts_begin, $endDate, $this->type);
+				$p->properties = $this->properties;
+				$p->setData($this->data);
+				$return[] = $p;
+			}
+			return $return; // 1 period 
+		}
+
+		if ($this->ts_begin < $endDate) {
 			$p = new bab_calendarPeriod($this->ts_begin, $endDate, $this->type);
 			$p->properties = $this->properties;
 			$p->setData($this->data);
 			$return[] = $p;
-
-			return $return; // 1 period 
 		}
-
-
-		$p = new bab_calendarPeriod($this->ts_begin, $endDate, $this->type);
-		$p->properties = $this->properties;
-		$p->setData($this->data);
-		$return[] = $p;
-		
 
 		while ($start < ($this->ts_end - $duration)) {
 			
 			$beginDate = $start;
 			$this->add($start, $duration);
-
 			$p = new bab_calendarPeriod($beginDate, $start, $this->type);
 			$p->properties = $this->properties;
 			$p->setData($this->data);
@@ -288,10 +286,12 @@ class bab_calendarPeriod {
 		}
 
 		// add last period
-		$p = new bab_calendarPeriod($start, $this->ts_end, $this->type);
-		$p->properties = $this->properties;
-		$p->setData($this->data);
-		$return[] = $p;
+		if ($start < $this->ts_end) {
+			$p = new bab_calendarPeriod($start, $this->ts_end, $this->type);
+			$p->properties = $this->properties;
+			$p->setData($this->data);
+			$return[] = $p;
+		}
 
 		return $return;
 	}
@@ -387,25 +387,18 @@ class bab_userWorkingHours {
 		$event->periods = & $this;
 		bab_fireEvent($event);
 
+
 		$loop = $this->begin->cloneDate();
-		$endts = $this->end->getTimeStamp();
+		$endts = $this->end->getTimeStamp() + 86400;
 		$begints = $this->begin->getTimeStamp();
 		$nworking = (BAB_PERIOD_NONWORKING === ($this->options & BAB_PERIOD_NONWORKING));
 		$previous_end = NULL;
 
-		
-		
-
 		while ($loop->getTimeStamp() < $endts) {
-
-
+			
 			if (BAB_PERIOD_WORKING === ($this->options & BAB_PERIOD_WORKING) && $this->id_users) {
-
-				
 				foreach($this->id_users as $id_user) {
-
 					$arr = bab_getWHours($id_user, $loop->getDayOfWeek());
-					
 	
 					foreach($arr as $h) {
 						$startHour	= explode(':', $h['startHour']);
