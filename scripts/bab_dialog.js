@@ -311,7 +311,7 @@ bab_dialog.field = function(field, label, onclickEvt, icon) {
 
 	
 	field.parentNode.insertBefore(contener, field);
-	contener.innerHTML = label;
+	contener.appendChild(document.createTextNode(label));
 	
 	contener.onclick = function() {
 		onclickEvt(contener);
