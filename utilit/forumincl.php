@@ -473,7 +473,7 @@ function indexAllForumFiles_end($param) {
 	
 		UPDATE ".BAB_FORUMSFILES_TBL." SET index_status='".BAB_INDEX_STATUS_INDEXED."'
 		WHERE 
-			index_status IN(".$babDB->db_escape_string($param['status']).")
+			index_status IN(".$babDB->quote($param['status']).")
 	");
 
 	$obj = new bab_indexObject('bab_forumsfiles');
