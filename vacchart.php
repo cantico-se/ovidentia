@@ -160,6 +160,21 @@ function entity_members($ide, $template)
 				$this->superior_name = bab_toHtml(bab_composeUserName($superior['firstname'], $superior['lastname']));
 				}
 			$this->b_rights = $this->superior_id != $GLOBALS['BAB_SESS_USERID'];
+			
+			// si co-gestionnaire de cette entité, pas de droit sur le suppérieur
+			global $babDB;
+			
+			list($n) = $babDB->db_fetch_array($babDB->db_query('
+				SELECT COUNT(*) FROM '.BAB_VAC_COMANAGER_TBL.' 
+				WHERE 
+					id_user='.$babDB->quote($GLOBALS['BAB_SESS_USERID']).' 
+					AND id_entity='.$babDB->quote($this->ide).'
+			'));
+			
+			if ($n > 0) {
+				$this->b_rights = false;
+			}
+			
 			$this->t_name = bab_translate('Name');
 			$this->t_calendar = bab_translate('Planning');
 			$this->t_rights = bab_translate('Rights');

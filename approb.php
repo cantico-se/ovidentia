@@ -783,6 +783,9 @@ function confirmWaitingVacation($id)
 			$this->id_user		= $row['id_user'];
 			$this->fullname		= bab_toHtml(bab_getUserName($row['id_user']));
 			$this->remark = bab_toHtml($row['comment'], BAB_HTML_ALL);
+			
+			$tmp = (($this->end - $this->begin) / 86400) * 2;
+			$this->totaldates = round($tmp) / 2;
 
 			$rights = bab_getRightsOnPeriod($row['date_begin'], $row['date_end'], $row['id_user']);
 			$this->negative = array();
@@ -793,7 +796,12 @@ function confirmWaitingVacation($id)
 					$this->negative[$r['id']] = $after;
 				}
 
-			$req = "select * from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry=".$babDB->quote($id);
+			$req = "
+				SELECT e.*, r.description FROM 
+					".BAB_VAC_ENTRIES_ELEM_TBL." e 
+					LEFT JOIN ".BAB_VAC_RIGHTS_TBL." r ON r.id=e.id_right
+				WHERE e.id_entry=".$babDB->quote($id);
+				
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
 			$this->totalval = 0;
@@ -808,8 +816,7 @@ function confirmWaitingVacation($id)
 			if( $i < $this->count)
 				{
 				$arr = $babDB->db_fetch_array($this->res);
-				list($this->typename) = $babDB->db_fetch_row($babDB->db_query("select description from ".BAB_VAC_RIGHTS_TBL." where id =".$babDB->quote($arr['id_right']).""));
-				$this->typename = bab_toHtml($this->typename);
+				$this->typename = bab_toHtml($arr['description']);
 				$this->nbdays = bab_toHtml($arr['quantity']);
 				$this->alert = isset($this->negative[$arr['id_right']]) ? $this->negative[$arr['id_right']] : false;
 
@@ -824,8 +831,7 @@ function confirmWaitingVacation($id)
 			}
 
 		function getmatch() {
-			$n = bab_vac_getFreeDaysBetween($this->id_user, $this->begin, $this->end);
-			$this->nomatch = $this->totalval != $n;
+			$this->nomatch = 43200 < abs($this->totalval*86400 - ($this->end - $this->begin));
 			return false;
 			}
 		}

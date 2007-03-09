@@ -1418,10 +1418,11 @@ function addVacationPersonnel($idp = false)
 		
 		function getnextsa()
 			{
+			global $babDB;
 			static $j= 0;
 			if( $j < $this->countsa )
 				{
-				global $babDB;
+				
 				$arr = $babDB->db_fetch_array($this->sares);
 				$this->saname = $arr['name'];
 				$this->idsapp = $arr['id'];
@@ -2251,6 +2252,7 @@ function bab_vac_getHalfDaysIndex($id_user, $dateb, $datee) {
 
 	$index = array();
 	$is_free = array();
+	$stack = array();
 	
 	while (false !== $arr = $obj->getNextPeriod()) {
 		
@@ -2261,23 +2263,17 @@ function bab_vac_getHalfDaysIndex($id_user, $dateb, $datee) {
 				if ($p->ts_begin < $datee->getTimeStamp() && $p->ts_end > $dateb->getTimeStamp()) {
 					$key = date('Ymda',$p->ts_begin);
 
-					
+					$stack[$key][$p->type] = $p;
 
 					if (!isset($index[$key]) || bab_vac_compare($index[$key]->type, $p->type)) {
-
-					
 
 						$index[$key] = $p;
 
 						if (bab_vac_is_free($p)) {
 							$is_free[$key] = 1;
+						} elseif (isset($is_free[$key])) {
+							unset($is_free[$key]);
 						}
-
-						/*
-						bab_debug(
-							bab_shortDate($p->ts_begin).'
-'.bab_shortDate($p->ts_end).'
-'.$p->getProperty('SUMMARY'));*/
 					}
 				}
 			}
@@ -2285,7 +2281,7 @@ function bab_vac_getHalfDaysIndex($id_user, $dateb, $datee) {
 	}
 
 
-	return array($index, $is_free);
+	return array($index, $is_free, $stack);
 }
 
 
@@ -2308,7 +2304,7 @@ function bab_vac_updateCalendar($id_user, $year, $month) {
 	$datee = $dateb->cloneDate();
 	$datee->add(1, BAB_DATETIME_MONTH);
 
-	list($index, $is_free) = bab_vac_getHalfDaysIndex($id_user, $dateb, $datee);
+	list($index, $is_free, $stack) = bab_vac_getHalfDaysIndex($id_user, $dateb, $datee);
 
 	if (!function_exists('bab_vac_group_insert')) {
 		function bab_vac_group_insert($query, $exec = false) {
@@ -2342,9 +2338,13 @@ function bab_vac_updateCalendar($id_user, $year, $month) {
 
 
 		if (BAB_PERIOD_VACATION === $p->type) { 
-			$id_entry = $data['id']; 
-			$arr = bab_vac_typeColorStack($id_entry);
-			$color = $arr['color'];
+			if (isset($stack[$key][BAB_PERIOD_WORKING])) {
+				$id_entry = $data['id']; 
+				$arr = bab_vac_typeColorStack($id_entry);
+				$color = $arr['color'];
+			} else {
+				$type = BAB_PERIOD_NONWORKING;
+			}
 		}
 
 
