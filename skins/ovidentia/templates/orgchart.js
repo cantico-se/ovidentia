@@ -262,7 +262,9 @@ function bab_zoomFit()
 function bab_toggleMembers(action) {
 	var entity = action.parentNode.parentNode;
 	var members = entity.members;
-	members.style.display = (members.style.display == 'none' ? '' : 'none');
+	if( typeof(members) != 'undefined' ) {
+		members.style.display = (members.style.display == 'none' ? '' : 'none');
+	}
 //	entity.orgChart.saveStateInCookie();
 	return false;
 }
