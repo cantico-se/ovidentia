@@ -1,5 +1,5 @@
 
-function bab_dialog(url, parameters, action, init) {
+function bab_dialog(url, parameters, action, init, obj) {
 	if (typeof init == "undefined") {
 		init = window;	// pass this window object by default
 	}
@@ -36,7 +36,7 @@ function bab_dialog(url, parameters, action, init) {
 
 	useparam = tmp.join(',');
 
-	bab_dialog._openModal(url, useparam, action, init);
+	bab_dialog._openModal(url, useparam, action, init, obj);
 
 };
 
@@ -69,24 +69,32 @@ bab_dialog._arguments = null;
 
 
 bab_dialog._addEvent = function(el, evname, func) {
-	if (document.all) {
-		el.attachEvent("on" + evname, func);
-	} else {
-		el.addEventListener(evname, func, true);
+	try {
+		if (document.all) {
+			el.attachEvent("on" + evname, func);
+		} else {
+			el.addEventListener(evname, func, true);
+		}
+	} catch(e)
+	{
 	}
 };
 
 
 bab_dialog._removeEvent = function(el, evname, func) {
-	if (document.all) {
-		el.detachEvent("on" + evname, func);
-	} else {
-		el.removeEventListener(evname, func, true);
+	try {
+		if (document.all) {
+			el.detachEvent("on" + evname, func);
+		} else {
+			el.removeEventListener(evname, func, true);
+		}
+	} catch(e)
+	{
 	}
 };
 
 
-bab_dialog._openModal = function(url, parameters, action, init) {
+bab_dialog._openModal = function(url, parameters, action, init, obj) {
 	var dlg = window.open(url, "bab_dialog", parameters );
 	bab_dialog._modal = dlg;
 	bab_dialog._arguments = init;
@@ -109,7 +117,11 @@ bab_dialog._openModal = function(url, parameters, action, init) {
 	// make up a function to be called when the Dialog ends.
 	bab_dialog._return = function(val) {
 		if (val && action) {
-			action(val);
+			if (obj) {
+				obj[action](val);
+			} else {
+				action(val);
+			}
 		}
 		relwin(window);
 		// capture other frames
