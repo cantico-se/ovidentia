@@ -603,6 +603,47 @@ function bab_fileManagerAccessLevel()
 		}
 	}
 
+
+
+function bab_statisticsAccess()
+	{
+	global $babDB, $babBody, $BAB_SESS_USERID;
+	if( isset($babBody->stataccess))
+		{
+		return $babBody->stataccess;
+		}
+
+	$babBody->stataccess = -1;
+	if (bab_isAccessValid(BAB_STATSMAN_GROUPS_TBL, 1) )
+		{
+		$babBody->stataccess = BAB_STAT_ACCESS_MANAGER; // stat manager
+		}
+	elseif( $babBody->currentAdmGroup != 0 )
+		{
+		$babBody->stataccess = BAB_STAT_ACCESS_DELEGATION; // stat delegation
+		}
+	else
+		{
+		$bbasket = false;
+
+		$res = $babDB->db_query("select id from ".BAB_STATS_BASKETS_TBL."");
+		while( $arr = $babDB->db_fetch_array($res))
+			{
+			if( bab_isAccessValid(BAB_STATSBASKETS_GROUPS_TBL,$arr['id']))
+				{
+				$bbasket = true;
+				break;
+				}
+			}
+		if( $bbasket )
+			{
+			$babBody->stataccess = BAB_STAT_ACCESS_USER; // stat user
+			}
+		}
+	return $babBody->stataccess;
+	}
+
+
 function bab_getGroupEmails($id)
 {
 	global $babDB;

@@ -96,6 +96,9 @@ define("BAB_CAL_RECUR_WEEKLY",	2);
 define("BAB_CAL_RECUR_MONTHLY",	3);
 define("BAB_CAL_RECUR_YEARLY",	4);
 
+define("BAB_STAT_ACCESS_MANAGER",	0);
+define("BAB_STAT_ACCESS_DELEGATION",	1);
+define("BAB_STAT_ACCESS_USER",	2);
 
 define("BAB_ADDONS_GROUPS_TBL", "bab_addons_groups");
 define("BAB_ADDONS_TBL", "bab_addons");

@@ -499,7 +499,7 @@ function babUserSection($close)
 		$this->array_urls[bab_translate("Charts")] = $GLOBALS['babUrlScript']."?tg=charts";
 		}
 
-	if( bab_isAccessValid(BAB_STATSMAN_GROUPS_TBL, 1) || $babBody->currentAdmGroup != 0)
+	if ( bab_statisticsAccess() != -1 )
 		{
 		$this->array_urls[bab_translate("Statistics")] = $GLOBALS['babUrlScript']."?tg=stat";
 		}

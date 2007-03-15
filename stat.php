@@ -99,7 +99,7 @@ function displayStatisticPanel($idx)
 			$this->exporttxt = ($idx == 'baskets' ? '' : bab_translate("Export"));
 			$this->current = $idx;
 
-			if( $babBody->currentAdmGroup == 0 )
+			if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER )
 				{
 				$this->itemarray[] = array( array('idx' => 'users', 'item' => bab_translate("Users"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=users")
 				, array('idx' => 'sections', 'item' => bab_translate("Optional sections"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=sections")
@@ -108,26 +108,37 @@ function displayStatisticPanel($idx)
 				}
 
 			$tmparr = array();
-			if( $babBody->currentAdmGroup == 0 )
+			if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER )
 				{
 				$tmparr[] = array('idx' => 'mod', 'item' => bab_translate("Ovidentia functions"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=mod");
 				}
-			$tmparr[] = array('idx' => 'page', 'item' => bab_translate("Pages"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=page");
-			if( $babBody->currentAdmGroup == 0 )
+
+
+			if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER || $babBody->stataccess == BAB_STAT_ACCESS_DELEGATION)
+				{
+				$tmparr[] = array('idx' => 'page', 'item' => bab_translate("Pages"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=page");
+				}
+
+			if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER )
 				{
 				$tmparr[] = array('idx' => 'search', 'item' => bab_translate("Search keywords"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=search");
 				}
-			$this->itemarray[] = $tmparr;
-			if( empty($this->current)) { $this->current = 'page'; }
 
-			if( $babBody->currentAdmGroup == 0 || $babBody->currentDGGroup['filemanager'] == 'Y' )
+			if( count($tmparr))
+				{
+				$this->itemarray[] = $tmparr;
+
+				if( empty($this->current)) { $this->current = 'page'; }
+				}
+
+			if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER || ($babBody->stataccess == BAB_STAT_ACCESS_DELEGATION && isset($babBody->currentDGGroup['filemanager']) && $babBody->currentDGGroup['filemanager'] == 'Y') )
 				{
 				$this->itemarray[] = array( array('idx' => 'fm', 'item' => bab_translate("File manager"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=fm",	'treeviewurl' => $GLOBALS['babUrlScript']."?tg=stat&idx=fmtree"), array('idx' => 'fmfold', 'item' => bab_translate("Folders"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=fmfold"), array('idx' => 'fmdown', 'item' => bab_translate("Downloads"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=fmdown"));
 				if( empty($this->current)) { $this->current = 'fm'; }
 				}
 
 
-			if( $babBody->currentAdmGroup == 0 || $babBody->currentDGGroup['articles'] == 'Y' )
+			if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER || ($babBody->stataccess == BAB_STAT_ACCESS_DELEGATION && isset($babBody->currentDGGroup['articles']) && $babBody->currentDGGroup['articles'] == 'Y' ))
 				{
 				$this->itemarray[] = array( array('idx' => 'art', 'item' => bab_translate("Articles"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=art", 		'treeviewurl' => $GLOBALS['babUrlScript']."?tg=stat&idx=arttree")
 				, array('idx' => 'topart', 'item' => bab_translate("Topics"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=topart")
@@ -135,7 +146,7 @@ function displayStatisticPanel($idx)
 				if( empty($this->current)) { $this->current = 'art'; }
 				}
 
-			if( $babBody->currentAdmGroup == 0 || $babBody->currentDGGroup['forums'] == 'Y' )
+			if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER || ($babBody->stataccess == BAB_STAT_ACCESS_DELEGATION && isset($babBody->currentDGGroup['forums']) && $babBody->currentDGGroup['forums'] == 'Y') )
 				{
 				$this->itemarray[] = array( array('idx' => 'for', 'item' => bab_translate("Forums"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=for", 		'treeviewurl' => $GLOBALS['babUrlScript']."?tg=stat&idx=fortree")
 				, array('idx' => 'forth', 'item' => bab_translate("Threads"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=forth")
@@ -143,7 +154,7 @@ function displayStatisticPanel($idx)
 				if( empty($this->current)) { $this->current = 'for'; }
 				}
 
-			if( $babBody->currentAdmGroup == 0 || $babBody->currentDGGroup['faqs'] == 'Y' )
+			if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER || ($babBody->stataccess == BAB_STAT_ACCESS_DELEGATION && isset($babBody->currentDGGroup['faqs']) && $babBody->currentDGGroup['faqs'] == 'Y') )
 				{
 				$this->itemarray[] = array( array('idx' => 'faq', 'item' => bab_translate("Faqs"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=faq", 'treeviewurl' => $GLOBALS['babUrlScript']."?tg=stat&idx=faqtree")
 					, array('idx' => 'faqqr', 'item' => bab_translate("Faq questions"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=faqqr") );
@@ -151,37 +162,36 @@ function displayStatisticPanel($idx)
 				}
 
 
-			if( $babBody->currentAdmGroup == 0 )
+			if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER )
 				{
 				$this->itemarray[] = array( array('idx' => 'ovml', 'item' => bab_translate("Ovml Files"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=ovml"), array('idx' => 'addon', 'item' => bab_translate("Add-ons"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=addon"), array('idx' => 'xlink', 'item' => bab_translate("External links"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=xlink"));
 				}
 
 			$tmparr = array();
-			$tmparr[] = array('idx' => 'dashboard', 'item' => bab_translate("Dashboard"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=dashboard", 'popup' => true);
-			
-			$bbasket = false;
-			$res = $babDB->db_query("select id from ".BAB_STATS_BASKETS_TBL."");
-			while( $arr = $babDB->db_fetch_array($res))
-				{
-				if( bab_isAccessValid(BAB_STATSBASKETS_GROUPS_TBL,$arr['id']))
-					{
-					$bbasket = true;
-					break;
-					}
-				}
 
-			if( $bbasket )
+			if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER || $babBody->stataccess == BAB_STAT_ACCESS_DELEGATION )
+				{
+				$tmparr[] = array('idx' => 'dashboard', 'item' => bab_translate("Dashboard"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=dashboard", 'popup' => true);
+				}
+			
+			if( $babBody->stataccess == BAB_STAT_ACCESS_USER || $babBody->stataccess == BAB_STAT_ACCESS_MANAGER || $babBody->stataccess == BAB_STAT_ACCESS_DELEGATION)
 				{
 				$tmparr[] = array('idx' => 'baskets', 'item' => bab_translate("Baskets"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=baskets");
 				}
 
-			$tmparr[] = array('idx' => 'connections', 'item' => bab_translate("Connections"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=connections");
+			if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER || $babBody->stataccess == BAB_STAT_ACCESS_DELEGATION )
+				{
+				$tmparr[] = array('idx' => 'connections', 'item' => bab_translate("Connections"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=connections");
+				}
 			
-			$this->itemarray[] = $tmparr;
-			if( empty($this->current)) { $this->current = 'dashboard'; }
+			if( count($tmparr))
+				{
+				$this->itemarray[] = $tmparr;
+				if( empty($this->current)) { $this->current = $this->itemarray[0][0]['idx']; }
+				}
 
 			
-			$this->maxcols = 1;
+			$this->maxcols = 2;
 			$this->count = count($this->itemarray);
 			for( $i = 0; $i < $this->count; $i++ )
 				{
@@ -450,7 +460,7 @@ function validateDate($inputDate)
 
 
 /* main */
-if (!bab_isAccessValid(BAB_STATSMAN_GROUPS_TBL, 1) && $babBody->currentAdmGroup == 0)
+if ( bab_statisticsAccess() == -1 )
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;
@@ -484,204 +494,291 @@ if ($idx != 'connection')
 switch($idx)
 	{
 	case 'connections':
-		include_once $babInstallPath . 'statconnections.php';
-		if (!isset($col)) $col = 'connections';
-		if (!isset($order)) $order = 'asc';
-		if (!isset($pos)) $pos = 0;
-		summaryConnections($col, $order, $pos, $sd, $ed);
+		if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER || $babBody->stataccess == BAB_STAT_ACCESS_DELEGATION)
+		{
+			include_once $babInstallPath . 'statconnections.php';
+			if (!isset($col)) $col = 'connections';
+			if (!isset($order)) $order = 'asc';
+			if (!isset($pos)) $pos = 0;
+			summaryConnections($col, $order, $pos, $sd, $ed);
+		}
 		break;
 	case 'connection':
-		include_once $babInstallPath . 'statconnections.php';
-		if (!isset($col)) $col = 'connection';
-		if (!isset($order)) $order = 'asc';
-		if (!isset($pos)) $pos = 0;
-		if (!isset($item)) $item = bab_rp('item');
-		$stat_params = array();
-		if (isset($reqvars)) parse_str($reqvars, $stat_params);
-		displayTimeInterval($itwhat, $sd, $ed, $idx, $stat_params + array('item' => $item));
-		detailConnections($col, $order, $pos, $sd, $ed, $item);
+		if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER || $babBody->stataccess == BAB_STAT_ACCESS_DELEGATION)
+			{
+			include_once $babInstallPath . 'statconnections.php';
+			if (!isset($col)) $col = 'connection';
+			if (!isset($order)) $order = 'asc';
+			if (!isset($pos)) $pos = 0;
+			if (!isset($item)) $item = bab_rp('item');
+			$stat_params = array();
+			if (isset($reqvars)) parse_str($reqvars, $stat_params);
+			displayTimeInterval($itwhat, $sd, $ed, $idx, $stat_params + array('item' => $item));
+			detailConnections($col, $order, $pos, $sd, $ed, $item);
+			}
 		break;
 	case "xlink":
-		include_once $babInstallPath."statxlink.php";
-		if( !isset($col)) { $col = 'hits';}
-		if( !isset($order)) { $order = 'asc';}
-		summaryXlinks($col, $order, $sd, $ed);
+		if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER )
+			{
+			include_once $babInstallPath."statxlink.php";
+			if( !isset($col)) { $col = 'hits';}
+			if( !isset($order)) { $order = 'asc';}
+			summaryXlinks($col, $order, $sd, $ed);
+			}
 		break;
 	case "arttree":
-		include_once $babInstallPath."statart.php";
-		displayArticleTree($sd, $ed);
+		if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER || ($babBody->stataccess == BAB_STAT_ACCESS_DELEGATION && isset($babBody->currentDGGroup['articles']) && $babBody->currentDGGroup['articles'] == 'Y' ))
+			{
+			include_once $babInstallPath."statart.php";
+			displayArticleTree($sd, $ed);
+			}
 		break;
 	case "art":
-		include_once $babInstallPath."statart.php";
-		if( !isset($col)) { $col = 'hits';}
-		if( !isset($order)) { $order = 'asc';}
-		if( !isset($pos)) { $pos = 0;}
-		summaryArticles($col, $order, $pos, $sd, $ed);
+		if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER || ($babBody->stataccess == BAB_STAT_ACCESS_DELEGATION && isset($babBody->currentDGGroup['articles']) && $babBody->currentDGGroup['articles'] == 'Y' ))
+			{
+			include_once $babInstallPath."statart.php";
+			if( !isset($col)) { $col = 'hits';}
+			if( !isset($order)) { $order = 'asc';}
+			if( !isset($pos)) { $pos = 0;}
+			summaryArticles($col, $order, $pos, $sd, $ed);
+			}
 		break;
 	case "sart":
-		include_once $babInstallPath."statart.php";
-		$babBodyPopup = new babBodyPopup();
-		showStatArticle($item, $date);
-		$babBodyPopup->addItemMenu("sart", bab_translate("Statistic"), $GLOBALS['babUrlScript']."?tg=stat&idx=sart&item=".$item."&date=".$date);
-		$babBodyPopup->addItemMenu("refart", bab_translate("Referents"), $GLOBALS['babUrlScript']."?tg=stat&idx=refart&item=".$item."&date=".$date);
-		$babBodyPopup->setCurrentItemMenu($idx);
-		printBabBodyPopup();
-		exit;
+		if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER || ($babBody->stataccess == BAB_STAT_ACCESS_DELEGATION && isset($babBody->currentDGGroup['articles']) && $babBody->currentDGGroup['articles'] == 'Y' ))
+			{
+			include_once $babInstallPath."statart.php";
+			$babBodyPopup = new babBodyPopup();
+			showStatArticle($item, $date);
+			$babBodyPopup->addItemMenu("sart", bab_translate("Statistic"), $GLOBALS['babUrlScript']."?tg=stat&idx=sart&item=".$item."&date=".$date);
+			$babBodyPopup->addItemMenu("refart", bab_translate("Referents"), $GLOBALS['babUrlScript']."?tg=stat&idx=refart&item=".$item."&date=".$date);
+			$babBodyPopup->setCurrentItemMenu($idx);
+			printBabBodyPopup();
+			exit;
+			}
 		break;
 	case "refart":
-		include_once $babInstallPath."statart.php";
-		$babBodyPopup = new babBodyPopup();
-		if( !isset($col)) { $col = 'hits';}
-		if( !isset($order)) { $order = 'asc';}
-		if( !isset($pos)) { $pos = 0;}
-		showReferentsArticle($col, $order, $pos, $item, $date);
-		$babBodyPopup->addItemMenu("sart", bab_translate("Statistic"), $GLOBALS['babUrlScript']."?tg=stat&idx=sart&item=".$item."&date=".$date);
-		$babBodyPopup->addItemMenu("refart", bab_translate("Referents"), $GLOBALS['babUrlScript']."?tg=stat&idx=refart&item=".$item."&date=".$date);
-		$babBodyPopup->setCurrentItemMenu($idx);
-		printBabBodyPopup();
-		exit;
+		if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER || ($babBody->stataccess == BAB_STAT_ACCESS_DELEGATION && isset($babBody->currentDGGroup['articles']) && $babBody->currentDGGroup['articles'] == 'Y' ))
+			{
+			include_once $babInstallPath."statart.php";
+			$babBodyPopup = new babBodyPopup();
+			if( !isset($col)) { $col = 'hits';}
+			if( !isset($order)) { $order = 'asc';}
+			if( !isset($pos)) { $pos = 0;}
+			showReferentsArticle($col, $order, $pos, $item, $date);
+			$babBodyPopup->addItemMenu("sart", bab_translate("Statistic"), $GLOBALS['babUrlScript']."?tg=stat&idx=sart&item=".$item."&date=".$date);
+			$babBodyPopup->addItemMenu("refart", bab_translate("Referents"), $GLOBALS['babUrlScript']."?tg=stat&idx=refart&item=".$item."&date=".$date);
+			$babBodyPopup->setCurrentItemMenu($idx);
+			printBabBodyPopup();
+			exit;
+			}
 		break;
 	case "topart":
-		include_once $babInstallPath."statart.php";
-		if( !isset($col)) { $col = 'hits';}
-		if( !isset($order)) { $order = 'asc';}
-		if( !isset($pos)) { $pos = 0;}
-		summaryTopicsArticles($col, $order, $pos, $sd, $ed);
+		if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER || ($babBody->stataccess == BAB_STAT_ACCESS_DELEGATION && isset($babBody->currentDGGroup['articles']) && $babBody->currentDGGroup['articles'] == 'Y' ))
+			{
+			include_once $babInstallPath."statart.php";
+			if( !isset($col)) { $col = 'hits';}
+			if( !isset($order)) { $order = 'asc';}
+			if( !isset($pos)) { $pos = 0;}
+			summaryTopicsArticles($col, $order, $pos, $sd, $ed);
+			}
 		break;
 	case "stop":
-		include_once $babInstallPath."statart.php";
-		$babBodyPopup = new babBodyPopup();
-		showStatTopic($item, $date);
-		printBabBodyPopup();
-		exit;
+		if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER || ($babBody->stataccess == BAB_STAT_ACCESS_DELEGATION && isset($babBody->currentDGGroup['articles']) && $babBody->currentDGGroup['articles'] == 'Y' ))
+			{
+			include_once $babInstallPath."statart.php";
+			$babBodyPopup = new babBodyPopup();
+			showStatTopic($item, $date);
+			printBabBodyPopup();
+			exit;
+			}
 		break;
 	case "topcat":
-		include_once $babInstallPath."statart.php";
-		if( !isset($col)) { $col = 'hits';}
-		if( !isset($order)) { $order = 'asc';}
-		if( !isset($pos)) { $pos = 0;}
-		summaryTopicCategoryArticles($col, $order, $pos, $sd, $ed);
+		if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER || ($babBody->stataccess == BAB_STAT_ACCESS_DELEGATION && isset($babBody->currentDGGroup['articles']) && $babBody->currentDGGroup['articles'] == 'Y' ))
+			{
+			include_once $babInstallPath."statart.php";
+			if( !isset($col)) { $col = 'hits';}
+			if( !isset($order)) { $order = 'asc';}
+			if( !isset($pos)) { $pos = 0;}
+			summaryTopicCategoryArticles($col, $order, $pos, $sd, $ed);
+			}
 		break;
 	case "scat":
-		include_once $babInstallPath."statart.php";
-		$babBodyPopup = new babBodyPopup();
-		showStatTopicCategory($item, $date);
-		printBabBodyPopup();
-		exit;
+		if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER || ($babBody->stataccess == BAB_STAT_ACCESS_DELEGATION && isset($babBody->currentDGGroup['articles']) && $babBody->currentDGGroup['articles'] == 'Y' ))
+			{
+			include_once $babInstallPath."statart.php";
+			$babBodyPopup = new babBodyPopup();
+			showStatTopicCategory($item, $date);
+			printBabBodyPopup();
+			exit;
+			}
 		break;
 	case "fortree":
-		include_once $babInstallPath."statfor.php";
-		displayForumTree($sd, $ed);
+		if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER || ($babBody->stataccess == BAB_STAT_ACCESS_DELEGATION && isset($babBody->currentDGGroup['forums']) && $babBody->currentDGGroup['forums'] == 'Y') )
+			{
+			include_once $babInstallPath."statfor.php";
+			displayForumTree($sd, $ed);
+			}
 		break;
 	case "for":
-		include_once $babInstallPath."statfor.php";
-		if( !isset($col)) { $col = 'hits';}
-		if( !isset($order)) { $order = 'asc';}
-		if( !isset($pos)) { $pos = 0;}
-		summaryForums($col, $order, $pos, $sd, $ed);
+		if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER || ($babBody->stataccess == BAB_STAT_ACCESS_DELEGATION && isset($babBody->currentDGGroup['forums']) && $babBody->currentDGGroup['forums'] == 'Y') )
+			{
+			include_once $babInstallPath."statfor.php";
+			if( !isset($col)) { $col = 'hits';}
+			if( !isset($order)) { $order = 'asc';}
+			if( !isset($pos)) { $pos = 0;}
+			summaryForums($col, $order, $pos, $sd, $ed);
+			}
 		break;
 	case "sfor":
-		include_once $babInstallPath."statfor.php";
-		$babBodyPopup = new babBodyPopup();
-		showStatForum($item, $date);
-		printBabBodyPopup();
-		exit;
+		if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER || ($babBody->stataccess == BAB_STAT_ACCESS_DELEGATION && isset($babBody->currentDGGroup['forums']) && $babBody->currentDGGroup['forums'] == 'Y') )
+			{
+			include_once $babInstallPath."statfor.php";
+			$babBodyPopup = new babBodyPopup();
+			showStatForum($item, $date);
+			printBabBodyPopup();
+			exit;
+			}
 		break;
 	case "forth":
-		include_once $babInstallPath."statfor.php";
-		if( !isset($col)) { $col = 'hits';}
-		if( !isset($order)) { $order = 'asc';}
-		if( !isset($pos)) { $pos = 0;}
-		summaryThreads($col, $order, $pos, $sd, $ed);
+		if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER || ($babBody->stataccess == BAB_STAT_ACCESS_DELEGATION && isset($babBody->currentDGGroup['forums']) && $babBody->currentDGGroup['forums'] == 'Y') )
+			{
+			include_once $babInstallPath."statfor.php";
+			if( !isset($col)) { $col = 'hits';}
+			if( !isset($order)) { $order = 'asc';}
+			if( !isset($pos)) { $pos = 0;}
+			summaryThreads($col, $order, $pos, $sd, $ed);
+			}
 		break;
 	case "sforth":
-		include_once $babInstallPath."statfor.php";
-		$babBodyPopup = new babBodyPopup();
-		showStatThread($item, $date);
-		printBabBodyPopup();
-		exit;
+		if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER || ($babBody->stataccess == BAB_STAT_ACCESS_DELEGATION && isset($babBody->currentDGGroup['forums']) && $babBody->currentDGGroup['forums'] == 'Y') )
+			{
+			include_once $babInstallPath."statfor.php";
+			$babBodyPopup = new babBodyPopup();
+			showStatThread($item, $date);
+			printBabBodyPopup();
+			exit;
+			}
 		break;
 	case "forpo":
-		include_once $babInstallPath."statfor.php";
-		if( !isset($col)) { $col = 'hits';}
-		if( !isset($order)) { $order = 'asc';}
-		if( !isset($pos)) { $pos = 0;}
-		summaryPosts($col, $order, $pos, $sd, $ed);
+		if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER || ($babBody->stataccess == BAB_STAT_ACCESS_DELEGATION && isset($babBody->currentDGGroup['forums']) && $babBody->currentDGGroup['forums'] == 'Y') )
+			{
+			include_once $babInstallPath."statfor.php";
+			if( !isset($col)) { $col = 'hits';}
+			if( !isset($order)) { $order = 'asc';}
+			if( !isset($pos)) { $pos = 0;}
+			summaryPosts($col, $order, $pos, $sd, $ed);
+			}
 		break;
 	case "sforpo":
-		include_once $babInstallPath."statfor.php";
-		$babBodyPopup = new babBodyPopup();
-		showStatPost($item, $date);
-		printBabBodyPopup();
-		exit;
+		if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER || ($babBody->stataccess == BAB_STAT_ACCESS_DELEGATION && isset($babBody->currentDGGroup['forums']) && $babBody->currentDGGroup['forums'] == 'Y') )
+			{
+			include_once $babInstallPath."statfor.php";
+			$babBodyPopup = new babBodyPopup();
+			showStatPost($item, $date);
+			printBabBodyPopup();
+			exit;
+			}
 		break;
 	case "faqtree":
-		include_once $babInstallPath."statfaq.php";
-		displayFaqTree($sd, $ed);
+		if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER || ($babBody->stataccess == BAB_STAT_ACCESS_DELEGATION && isset($babBody->currentDGGroup['faqs']) && $babBody->currentDGGroup['faqs'] == 'Y') )
+			{
+			include_once $babInstallPath."statfaq.php";
+			displayFaqTree($sd, $ed);
+			}
 		break;
 	case "faq":
-		include_once $babInstallPath."statfaq.php";
-		if( !isset($col)) { $col = 'hits';}
-		if( !isset($order)) { $order = 'asc';}
-		if( !isset($pos)) { $pos = 0;}
-		summaryFaqs($col, $order, $pos, $sd, $ed);
+		if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER || ($babBody->stataccess == BAB_STAT_ACCESS_DELEGATION && isset($babBody->currentDGGroup['faqs']) && $babBody->currentDGGroup['faqs'] == 'Y') )
+			{
+			include_once $babInstallPath."statfaq.php";
+			if( !isset($col)) { $col = 'hits';}
+			if( !isset($order)) { $order = 'asc';}
+			if( !isset($pos)) { $pos = 0;}
+			summaryFaqs($col, $order, $pos, $sd, $ed);
+			}
 		break;
 	case "sfaq":
-		include_once $babInstallPath."statfaq.php";
-		$babBodyPopup = new babBodyPopup();
-		showStatFaq($item, $date);
-		printBabBodyPopup();
-		exit;
+		if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER || ($babBody->stataccess == BAB_STAT_ACCESS_DELEGATION && isset($babBody->currentDGGroup['faqs']) && $babBody->currentDGGroup['faqs'] == 'Y') )
+			{
+			include_once $babInstallPath."statfaq.php";
+			$babBodyPopup = new babBodyPopup();
+			showStatFaq($item, $date);
+			printBabBodyPopup();
+			exit;
+			}
 		break;
 	case "faqqr":
-		include_once $babInstallPath."statfaq.php";
-		if( !isset($col)) { $col = 'hits';}
-		if( !isset($order)) { $order = 'asc';}
-		if( !isset($pos)) { $pos = 0;}
-		summaryQuestionsFaqs($col, $order, $pos, $sd, $ed);
+		if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER || ($babBody->stataccess == BAB_STAT_ACCESS_DELEGATION && isset($babBody->currentDGGroup['faqs']) && $babBody->currentDGGroup['faqs'] == 'Y') )
+			{
+			include_once $babInstallPath."statfaq.php";
+			if( !isset($col)) { $col = 'hits';}
+			if( !isset($order)) { $order = 'asc';}
+			if( !isset($pos)) { $pos = 0;}
+			summaryQuestionsFaqs($col, $order, $pos, $sd, $ed);
+			}
 		break;
 	case "sfaqqr":
-		include_once $babInstallPath."statfaq.php";
-		$babBodyPopup = new babBodyPopup();
-		showStatFaqQuestion($item, $date);
-		printBabBodyPopup();
-		exit;
+		if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER || ($babBody->stataccess == BAB_STAT_ACCESS_DELEGATION && isset($babBody->currentDGGroup['faqs']) && $babBody->currentDGGroup['faqs'] == 'Y') )
+			{
+			include_once $babInstallPath."statfaq.php";
+			$babBodyPopup = new babBodyPopup();
+			showStatFaqQuestion($item, $date);
+			printBabBodyPopup();
+			exit;
+			}
 		break;
 	case "search":
+		if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER )
+		{
 		include_once $babInstallPath."statword.php";
 		if( !isset($col)) { $col = 'hits';}
 		if( !isset($order)) { $order = 'asc';}
 		if( !isset($pos)) { $pos = 0;}
 		summarySearchKeyWords($col, $order, $pos, $sd, $ed);
+		}
 		break;
 	case "mod":
+		if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER )
+		{
 		include_once $babInstallPath."statmod.php";
 		if( !isset($col)) { $col = 'hits';}
 		if( !isset($order)) { $order = 'asc';}
 		summaryModules($col, $order, $sd, $ed);
+		}
 		break;
 	case "page":
+		if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER || $babBody->stataccess == BAB_STAT_ACCESS_DELEGATION)
+		{
 		include_once $babInstallPath."statpages.php";
 		if( !isset($col)) { $col = 'hits';}
 		if( !isset($order)) { $order = 'asc';}
 		summaryPages($col, $order, $sd, $ed);
+		}
 		break;
 	case "users":
+		if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER )
+		{
 		include_once $babInstallPath."statboard.php";
 		summaryUsers();
+		}
 		break;
 	case "sections":
+		if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER )
+		{
 		if( !isset($col)) { $col = 'usage';}
 		if( !isset($order)) { $order = 'desc';}
 		include_once $babInstallPath."statboard.php";
 		summarySections($col, $order);
+		}
 		break;
 
 	case "delegat":
+		if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER )
+		{
 		if( !isset($col)) { $col = 'dgname';}
 		if( !isset($order)) { $order = 'desc';}
 		include_once $babInstallPath."statboard.php";
 		summaryDelegatList($col, $order);
+		}
 		break;
 	case "sumdp":
 		include_once $babInstallPath."utilit/fileincl.php";
@@ -696,99 +793,135 @@ switch($idx)
 		exit;
 		break;
 	case "fmtree":
+		if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER || ($babBody->stataccess == BAB_STAT_ACCESS_DELEGATION && isset($babBody->currentDGGroup['filemanager']) && $babBody->currentDGGroup['filemanager'] == 'Y') )
+		{
 		include_once $babInstallPath."statfile.php";
 		displayFileTree($sd, $ed);
+		}
 		break;
 	case "fm":
+		if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER || ($babBody->stataccess == BAB_STAT_ACCESS_DELEGATION && isset($babBody->currentDGGroup['filemanager']) && $babBody->currentDGGroup['filemanager'] == 'Y') )
+		{
 		include_once $babInstallPath."utilit/fileincl.php";
 		include_once $babInstallPath."statfile.php";
 		if( !isset($col)) { $col = 'diskspace';}
 		if( !isset($order)) { $order = 'asc';}
 		summaryFileManager($col, $order);
+		}
 		break;
 	case "fmfold":
+		if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER || ($babBody->stataccess == BAB_STAT_ACCESS_DELEGATION && isset($babBody->currentDGGroup['filemanager']) && $babBody->currentDGGroup['filemanager'] == 'Y') )
+		{
 		include_once $babInstallPath."utilit/fileincl.php";
 		include_once $babInstallPath."statfile.php";
 		if( !isset($col)) { $col = 'hits';}
 		if( !isset($order)) { $order = 'asc';}
 		if( !isset($pos)) { $pos = 0;}
 		summaryFmFolders($col, $order, $pos, $sd, $ed);
+		}
 		break;
 	case "sfmfold":
+		if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER || ($babBody->stataccess == BAB_STAT_ACCESS_DELEGATION && isset($babBody->currentDGGroup['filemanager']) && $babBody->currentDGGroup['filemanager'] == 'Y') )
+		{
 		include_once $babInstallPath."statfile.php";
 		$babBodyPopup = new babBodyPopup();
 		showStatFmFolder($item, $date);
 		printBabBodyPopup();
 		exit;
+		}
 		break;
 	case "fmdown":
+		if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER || ($babBody->stataccess == BAB_STAT_ACCESS_DELEGATION && isset($babBody->currentDGGroup['filemanager']) && $babBody->currentDGGroup['filemanager'] == 'Y') )
+		{
 		include_once $babInstallPath."utilit/fileincl.php";
 		include_once $babInstallPath."statfile.php";
 		if( !isset($col)) { $col = 'hits';}
 		if( !isset($order)) { $order = 'asc';}
 		if( !isset($pos)) { $pos = 0;}
 		summaryFmDownloads($col, $order, $pos, $sd, $ed);
+		}
 		break;
 	case "sfmdown":
+		if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER || ($babBody->stataccess == BAB_STAT_ACCESS_DELEGATION && isset($babBody->currentDGGroup['filemanager']) && $babBody->currentDGGroup['filemanager'] == 'Y') )
+		{
 		include_once $babInstallPath."statfile.php";
 		$babBodyPopup = new babBodyPopup();
 		showStatFmDownloads($item, $date);
 		printBabBodyPopup();
 		exit;
+		}
 		break;
 	case "ovml":
-		include_once $babInstallPath."statovml.php";
-		if( !isset($col)) { $col = 'hits';}
-		if( !isset($order)) { $order = 'asc';}
-		if( !isset($pos)) { $pos = 0;}
-		summaryOvmlFiles($col, $order, $pos, $sd, $ed);
+		if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER )
+			{
+			include_once $babInstallPath."statovml.php";
+			if( !isset($col)) { $col = 'hits';}
+			if( !isset($order)) { $order = 'asc';}
+			if( !isset($pos)) { $pos = 0;}
+			summaryOvmlFiles($col, $order, $pos, $sd, $ed);
+			}
 		break;
 	case "addon":
-		include_once $babInstallPath."stataddons.php";
-		if( !isset($col)) { $col = 'hits';}
-		if( !isset($order)) { $order = 'asc';}
-		if( !isset($pos)) { $pos = 0;}
-		summaryAddons($col, $order, $pos, $sd, $ed);
+		if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER )
+			{
+			include_once $babInstallPath."stataddons.php";
+			if( !isset($col)) { $col = 'hits';}
+			if( !isset($order)) { $order = 'asc';}
+			if( !isset($pos)) { $pos = 0;}
+			summaryAddons($col, $order, $pos, $sd, $ed);
+			}
 		break;
 	case "saddon":
-		include_once $babInstallPath."stataddons.php";
-		$babBodyPopup = new babBodyPopup();
-		showStatAddon($item, $date);
-		printBabBodyPopup();
-		exit;
+		if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER )
+			{
+			include_once $babInstallPath."stataddons.php";
+			$babBodyPopup = new babBodyPopup();
+			showStatAddon($item, $date);
+			printBabBodyPopup();
+			exit;
+			}
 		break;
 	case "baskets":
 		include_once $babInstallPath."statbaskets.php";
 		listUserBaskets();
 		break;
 	case "dashboard":
-		include_once $babInstallPath."utilit/uiutil.php";
-		include_once $babInstallPath."statdashboard.php";
-		$GLOBALS['babBodyPopup'] = new babBodyPopup();
-		displayTimeIntervalInPopup($itwhat, $sd, $ed, $idx, $GLOBALS['babBodyPopup']);
-		showDashboard($sd, $ed);
-		printBabBodyPopup();
-		exit;
+		if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER || $babBody->stataccess == BAB_STAT_ACCESS_DELEGATION )
+			{
+			include_once $babInstallPath."utilit/uiutil.php";
+			include_once $babInstallPath."statdashboard.php";
+			$GLOBALS['babBodyPopup'] = new babBodyPopup();
+			displayTimeIntervalInPopup($itwhat, $sd, $ed, $idx, $GLOBALS['babBodyPopup']);
+			showDashboard($sd, $ed);
+			printBabBodyPopup();
+			exit;
+			}
 		break;
 	case "dashboardexport":
-		include_once $babInstallPath."utilit/uiutil.php";
-		include_once $babInstallPath."statdashboard.php";
-//		$GLOBALS['babBodyPopup'] = new babBodyPopup();
-//		displayTimeIntervalInPopup($itwhat, $sd, $ed, $idx, $GLOBALS['babBodyPopup']);
-		exportDashboard($sd, $ed);
-//		printBabBodyPopup();
-		exit;
+		if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER || $babBody->stataccess == BAB_STAT_ACCESS_DELEGATION )
+			{
+			include_once $babInstallPath."utilit/uiutil.php";
+			include_once $babInstallPath."statdashboard.php";
+	//		$GLOBALS['babBodyPopup'] = new babBodyPopup();
+	//		displayTimeIntervalInPopup($itwhat, $sd, $ed, $idx, $GLOBALS['babBodyPopup']);
+			exportDashboard($sd, $ed);
+	//		printBabBodyPopup();
+			exit;
+			}
 		break;
 	case "delegation":
-//		include_once $babInstallPath."statboard.php";
-//		summaryDelegatList($col, $order);
-		include_once $babInstallPath."utilit/uiutil.php";
-		include_once $babInstallPath."statdashboard.php";
-		$GLOBALS['babBodyPopup'] = new babBodyPopup();
-		displayTimeIntervalInPopup($itwhat, $sd, $ed, $idx, $GLOBALS['babBodyPopup']);
-		showDelegationDashboard($sd, $ed);
-		printBabBodyPopup();
-		exit;
+		if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER )
+			{
+	//		include_once $babInstallPath."statboard.php";
+	//		summaryDelegatList($col, $order);
+			include_once $babInstallPath."utilit/uiutil.php";
+			include_once $babInstallPath."statdashboard.php";
+			$GLOBALS['babBodyPopup'] = new babBodyPopup();
+			displayTimeIntervalInPopup($itwhat, $sd, $ed, $idx, $GLOBALS['babBodyPopup']);
+			showDelegationDashboard($sd, $ed);
+			printBabBodyPopup();
+			exit;
+			}
 		break;
 	case "basket":
 		include_once $babInstallPath."utilit/uiutil.php";
@@ -806,11 +939,14 @@ switch($idx)
 	}
 
 $babBody->title = bab_translate("Statistics");
+if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER )
+{
 $babBody->addItemMenu("stat", bab_translate("Statistics"), $GLOBALS['babUrlScript']."?tg=stat&idx=stat");
 $babBody->addItemMenu("pages", bab_translate("Pages"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pages");
 $babBody->addItemMenu("pref", bab_translate("Preferences"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pref");
 $babBody->addItemMenu("bask", bab_translate("Baskets"), $GLOBALS['babUrlScript']."?tg=statconf&idx=bask");
-if( $babBody->currentAdmGroup == 0 )
+}
+if( $babBody->stataccess == BAB_STAT_ACCESS_DELEGATION )
 {
 $babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
 }
