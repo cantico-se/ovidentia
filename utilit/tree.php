@@ -2655,20 +2655,22 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
 		$where = array('trees.id_user = ' . $this->_db->quote($this->_orgChartId));
 		
 		if ($this->_startEntityId != 0) {
-			$sql = 'SELECT trees.lf, trees.lr ';
+			$sql = 'SELECT trees.id, trees.lf, trees.lr ';
 			$sql .= ' FROM ' . BAB_OC_TREES_TBL . ' AS trees';
+			$sql .= ' LEFT JOIN ' . BAB_OC_ENTITIES_TBL . ' AS entities on entities.id_node=trees.id';
 			$sql .= ' WHERE trees.id_user = ' . $this->_db->quote($this->_orgChartId);
-			$sql .= ' AND trees.id = ' . $this->_db->quote($startEntityId);
+			$sql .= ' AND entities.id = ' . $this->_db->quote($startEntityId);
 			$trees = $this->_db->db_query($sql);
 			$tree = $this->_db->db_fetch_array($trees);
 
-			$where[] = '(trees.id = ' . $this->_db->quote($this->_startEntityId) . ' OR (trees.lf > ' . $tree['lf'] . ' AND trees.lr < '  . $tree['lr'] . '))';
+			$where[] = '(trees.id = ' . $tree['id'] . ' OR (trees.lf > ' . $tree['lf'] . ' AND trees.lr < '  . $tree['lr'] . '))';
 		}
 
 		
-		$sql = 'SELECT * ';
+		$sql = 'SELECT entities.*, entities2.id as id_parent ';
 		$sql .= ' FROM ' . BAB_OC_TREES_TBL . ' AS trees';
 		$sql .= ' LEFT JOIN ' . BAB_OC_ENTITIES_TBL . ' AS entities ON entities.id_node = trees.id';
+		$sql .= ' LEFT JOIN ' . BAB_OC_ENTITIES_TBL . ' AS entities2 ON entities2.id_node = trees.id_parent';
 
 		$sql .= ' WHERE ' . implode(' AND ', $where);
 		$sql .= ' ORDER BY trees.lf ASC';
