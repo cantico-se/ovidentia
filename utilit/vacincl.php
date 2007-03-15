@@ -1988,12 +1988,11 @@ function bab_vac_typeColorStack($id_entry, $push = false) {
 
 
 /**
- * set vacation events into object
- * @see bab_userWorkingHours 
- * @param object	$obj bab_userWorkingHours instance
- * @param array		$id_users
- * @param object	$begin
- * @param object	$end
+ * set vacation events into object  
+ * @param bab_userWorkingHours	$obj
+ * @param array					$id_users
+ * @param BAB_DateTime			$begin
+ * @param BAB_DateTime			$end
  */
 function bab_vac_setVacationPeriods(&$obj, $id_users, $begin, $end) {
 	global $babDB;
@@ -2006,9 +2005,16 @@ function bab_vac_setVacationPeriods(&$obj, $id_users, $begin, $end) {
 		AND date_end > ".$babDB->quote($begin->getIsoDateTime())." 
 		AND date_begin < ".$babDB->quote($end->getIsoDateTime())."");
 
-	
 
 	while( $row = $babDB->db_fetch_array($res)) {
+
+		static $events = array();
+
+		if (!isset($events[$row['id']])) {
+			$events[$row['id']] = 1;
+		} else {
+			$events[$row['id']]++;
+		}
 
 		$colors = array();
 		$types	= array();
@@ -2016,47 +2022,45 @@ function bab_vac_setVacationPeriods(&$obj, $id_users, $begin, $end) {
 		$date_begin = BAB_DateTime::fromIsoDateTime($row['date_begin']);
 		$date_end	= BAB_DateTime::fromIsoDateTime($row['date_end']);
 
-		$req = "SELECT 
-				e.quantity, 
-				t.name type, 
-				t.color 
-			FROM ".BAB_VAC_ENTRIES_ELEM_TBL." e,
-				".BAB_VAC_RIGHTS_TBL." r,
-				".BAB_VAC_TYPES_TBL." t 
-			WHERE 
-				e.id_entry=".$babDB->quote($row['id'])." 
-				AND r.id=e.id_right 
-				AND t.id=r.id_type";
+		if (1 === $events[$row['id']]) {
 
-		$res2 = $babDB->db_query($req);
-
-		$count = $babDB->db_num_rows($res2);
-
-		$type_day		= $date_begin->cloneDate();
-		$type_day_end	= $date_begin->cloneDate();
-
-		
-		while ($arr = $babDB->db_fetch_array($res2))
-			{
-			$type_day_end->add(($arr['quantity']*86400), BAB_DATETIME_SECOND);
-
-			while ($type_day->getTimeStamp() < $type_day_end->getTimeStamp() ) {
-
-				if ($type_day->getTimeStamp() >= $begin->getTimeStamp()) {
-
-					bab_vac_typeColorStack(
-						$row['id'], 
-						array(
-							'id_type'	=> $arr['type'], 
-							'color'		=> $arr['color']
-						)
-					);
-				}
-
-				$type_day->add(12, BAB_DATETIME_HOUR);
+			$req = "SELECT 
+					e.quantity, 
+					t.name type, 
+					t.color 
+				FROM ".BAB_VAC_ENTRIES_ELEM_TBL." e,
+					".BAB_VAC_RIGHTS_TBL." r,
+					".BAB_VAC_TYPES_TBL." t 
+				WHERE 
+					e.id_entry=".$babDB->quote($row['id'])." 
+					AND r.id=e.id_right 
+					AND t.id=r.id_type";
+	
+			$res2 = $babDB->db_query($req);
+	
+			$count = $babDB->db_num_rows($res2);
+	
+			$type_day		= $date_begin->cloneDate();
+			$type_day_end	= $date_begin->cloneDate();
+	
+			
+			while ($arr = $babDB->db_fetch_array($res2))
+				{
+				$type_day_end->add(($arr['quantity']*86400), BAB_DATETIME_SECOND);
+				while ($type_day->getTimeStamp() < $type_day_end->getTimeStamp() ) {
+					if ($type_day->getTimeStamp() >= $begin->getTimeStamp()) {
+						bab_vac_typeColorStack(
+							$row['id'], 
+							array(
+								'id_type'	=> $arr['type'], 
+								'color'		=> $arr['color']
+							)
+						);
+					}
+					$type_day->add(12, BAB_DATETIME_HOUR);
 				}
 			}
-
+		}
 
 		$p = & $obj->setUserPeriod($row['id_user'], $date_begin, $date_end, BAB_PERIOD_VACATION);
 
