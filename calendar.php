@@ -856,7 +856,7 @@ switch($idx)
 		$babBodyPopup = new babBodyPopup();
 		$babBodyPopup->title = bab_translate("Personal notes");
 		displayEventDetail(
-			bab_rp'evtid'),
+			bab_rp('evtid'),
 			bab_rp('idcal')
 		);
 		if (!empty($GLOBALS['BAB_SESS_USERID']))
