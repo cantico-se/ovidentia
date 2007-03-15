@@ -190,6 +190,7 @@ function newEvent()
 				$endtime = $babBody->icalendars->endtime > $babBody->icalendars->starttime ? $babBody->icalendars->endtime : '23:00:00';
 				$date1 = bab_mktime($date.' '.$endtime);
 			} 
+		
 			
 			
 			$this->yearbegin = date("Y", $date0);
@@ -318,7 +319,7 @@ function newEvent()
 				$i = 1;
 				if( $k == 0 )
 					{
-					$this->daysel = $this->arr['dayend'];
+					$this->daysel = $this->dayend;
 					$k++;
 					}
 				else
