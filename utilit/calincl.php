@@ -914,9 +914,11 @@ function bab_cal_setEventsPeriods(&$obj, $id_calendars, $begin, $end, $category 
 		{
 		$res = $babDB->db_query("SELECT * from ".BAB_CAL_EVENTS_NOTES_TBL." where id_event in (".$babDB->quote($idevtarr).") and id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
 		while( $arr = $babDB->db_fetch_array($res)) {
-
+			
 			$data = & $events[$arr['id_event']]->getData();
-			$data['note'] = $arr['note'];
+			if ($GLOBALS['babBody']->icalendars->id_percal == $data['id_cal']) {
+				$data['note'] = $arr['note'];
+			}
 		}
 
 		$res = $babDB->db_query("SELECT id_event from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_event in (".$babDB->quote( $idevtarr).") and id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
