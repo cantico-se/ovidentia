@@ -829,13 +829,13 @@ function bab_replace_make_link($url,$text,$popup = 0,$url_popup = false)
 	$url = ($popup == 1 || $popup == true) && $url_popup != false ? $url_popup : $url;
 	if ($popup == 1 || $popup === true)
 		{
-		return '<a href="'.bab_toHtml($url).'" onclick="bab_popup(this.href);return false;">'.bab_toHtml($text).'</a>';
+		return '<a href="'.bab_toHtml($url).'" onclick="bab_popup(this.href);return false;">'.$text.'</a>';
 		}
 	elseif ($popup == 2) {
-		return '<a target="_blank" href="'.bab_toHtml($url).'">'.bab_toHtml($text).'</a>';
+		return '<a target="_blank" href="'.bab_toHtml($url).'">'.$text.'</a>';
 		}
 	else {
-		return '<a href="'.bab_toHtml($url).'">'.bab_toHtml($text).'</a>';
+		return '<a href="'.bab_toHtml($url).'">'.$text.'</a>';
 		}
 	}
 	
