@@ -86,6 +86,24 @@ function addRecipient(&$mail, $type, $arr) {
 }
 
 
+function deleteEmail($arr) {
+	
+	global $babDB;
+	
+	$data = unserialize($arr['mail_data']);
+		
+	foreach($data['files'] as $file) {
+		if (is_file($file[0]) && is_writable($file[0])) {
+			unlink($file[0]);
+		}
+	}
+	
+	$babDB->db_query('
+		DELETE FROM '.BAB_MAIL_SPOOLER_TBL.' WHERE id='.$babDB->quote($arr['id']).'
+	');
+}
+
+
 function send_checked_mail() {
 
 	include_once $GLOBALS['babInstallPath']."utilit/mailincl.php";
@@ -135,9 +153,7 @@ function send_checked_mail() {
 			}
 
 			if ($mail_obj->send()) {
-				foreach($data['files'] as $file) {
-					unlink($file[0]);
-				}
+				deleteEmail($arr);
 			} else {
 				$GLOBALS['babBody']->msgerror = bab_translate("Mail server error");
 			}
@@ -148,14 +164,20 @@ function send_checked_mail() {
 
 
 function delete_checked_mail() {
-	$db = $GLOBALS['babDB'];
+	global $babDB;
 
 	$mail = bab_rp('mail', false);
 	if ($mail) {
+	
+		$res = $babDB->db_query('
+			SELECT * FROM '.BAB_MAIL_SPOOLER_TBL.' WHERE id IN('.$babDB->quote($mail).')
+		');
+		
+		while ($arr = $babDB->db_fetch_assoc($res)) {
+			deleteEmail($arr);
+		}
 
-		$db->db_query("
-			DELETE FROM ".BAB_MAIL_SPOOLER_TBL." WHERE id IN('".implode("','",$mail)."')
-		");
+		
 	}
 }
 
