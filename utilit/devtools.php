@@ -313,7 +313,7 @@ class bab_synchronizeSql
 				}
 			else
 				{
-				$this->db->db_query("ALTER TABLE `".$this->db->db_escape_string($table)."` ADD `".$this->db->db_escape_string($field)."` ".$this->db->db_escape_string($options));
+				$this->db->db_query("ALTER TABLE `".$this->db->db_escape_string($table)."` ADD `".$this->db->db_escape_string($field)."` ".$options);
 				$return = true;
 				}
 			}
