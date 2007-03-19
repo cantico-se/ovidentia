@@ -808,11 +808,11 @@ function updateStatBasketContentItem()
 }
 
 /* main */
-if( !bab_isAccessValid(BAB_STATSMAN_GROUPS_TBL, 1) && $babBody->currentAdmGroup == 0)
-	{
+if ( bab_statisticsAccess() == -1 )
+{
 	$babBody->msgerror = bab_translate("Access denied");
 	return;
-	}
+}
 
 if( !isset($idx)) { $idx = "conf"; }
 
@@ -1012,7 +1012,8 @@ switch($idx)
 		if( $babBody->currentAdmGroup == 0 )
 			{
 			$babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
-			}		if( !isset($url)) { $url = ""; }
+			}		
+		if( !isset($url)) { $url = ""; }
 		if( !isset($desc)) { $desc = ""; }
 		statPages($url, $desc);
 		break;

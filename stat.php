@@ -939,14 +939,14 @@ switch($idx)
 	}
 
 $babBody->title = bab_translate("Statistics");
-if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER )
+if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER || $babBody->stataccess == BAB_STAT_ACCESS_DELEGATION )
 {
 $babBody->addItemMenu("stat", bab_translate("Statistics"), $GLOBALS['babUrlScript']."?tg=stat&idx=stat");
 $babBody->addItemMenu("pages", bab_translate("Pages"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pages");
 $babBody->addItemMenu("pref", bab_translate("Preferences"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pref");
 $babBody->addItemMenu("bask", bab_translate("Baskets"), $GLOBALS['babUrlScript']."?tg=statconf&idx=bask");
 }
-if( $babBody->stataccess == BAB_STAT_ACCESS_DELEGATION )
+if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER )
 {
 $babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
 }
