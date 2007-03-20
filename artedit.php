@@ -395,6 +395,12 @@ function showTopicTree($actionType, $selectedTopicId)
 		var $next_idx;
 		var $t_no_topic;
 
+		var $bcontent;
+		var $title;
+		var $headtext;
+		var $bodytext;
+		var $lang;
+
 		function FormTemplate($actionType)
 		{
 			$this->idart = bab_rp('idart');
@@ -406,6 +412,12 @@ function showTopicTree($actionType, $selectedTopicId)
 				$this->next_idx = bab_toHtml('s01');
 			}
 			$this->rfurl = bab_toHtml($GLOBALS['rfurl']);
+
+			$this->bcontent = true;
+			$this->title = bab_pp('title', '');
+			$this->headtext = bab_pp('headtext', '');
+			$this->bodytext = bab_pp('bodytext', '');
+			$this->lang = bab_pp('lang', '');
 		}
 	};
 
