@@ -24,6 +24,7 @@ class bab_selectusers {
 		$this->t_searchsubmit	= bab_translate("Search");
 		$this->searchtext		= '';
 		$this->selected			= array();
+		$this->res				= false;
 
 
 		if ($tg = bab_rp('tg')) {
