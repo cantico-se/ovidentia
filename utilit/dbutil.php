@@ -41,7 +41,7 @@ function bab_database($die = false, $dbtype = "mysql")
 
 function db_print_error($text) {
 	if (function_exists('bab_isUserAdministrator') && bab_isUserAdministrator()) {
-		include_once 'devtools.php';
+		include_once $GLOBALS['babInstallPath'].'utilit/devtools.php';
 		bab_debug_print_backtrace(true);
 	}
 	
