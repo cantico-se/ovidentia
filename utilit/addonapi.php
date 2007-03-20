@@ -654,7 +654,7 @@ function bab_isMemberOfGroup($group, $userid="")
 function bab_getUserIdByEmail($email)
 	{
 	global $babDB;
-	$query = "select id from ".BAB_USERS_TBL." where email='".$babDB->db_escape_string($email)."'";
+	$query = "select id from ".BAB_USERS_TBL." where email LIKE '".$babDB->db_escape_string($email)."'";
 	$res = $babDB->db_query($query);
 	if( $res && $babDB->db_num_rows($res) > 0)
 		{
