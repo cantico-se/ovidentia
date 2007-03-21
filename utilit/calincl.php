@@ -883,7 +883,8 @@ function bab_cal_setEventsPeriods(&$obj, $id_calendars, $begin, $end, $category 
 
 		$arr['nbowners'] = count($arr['idcal_owners']);
 		if( 
-			$arr['nbowners'] == 0 
+			false !== $iarr 
+			&& $arr['nbowners'] == 0 
 			&& $arr['id_creator'] != 0 
 			&& $arr['id_creator'] != $GLOBALS['BAB_SESS_USERID'] 
 			&& ( $iarr['access'] == BAB_CAL_ACCESS_FULL || $iarr['access'] == BAB_CAL_ACCESS_SHARED_FULL )
