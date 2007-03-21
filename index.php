@@ -61,6 +61,14 @@ function bab_cleanGpc() {
 		bab_slashes($_POST);
 		bab_slashes($_COOKIES);
 		bab_slashes($_REQUEST);
+		if (!empty($_FILES))
+			{
+			foreach($_FILES as $userfile => $fileinfo) 
+				{
+				bab_slashes($_FILES[$userfile]['name']);
+				}
+			}
+
 	}
 	}
 
