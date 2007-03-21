@@ -107,6 +107,8 @@ class bab_inifile_requirements {
 	}
 
 	function require_upload_max_file_size($value) {
+	
+		global $babDB;
 
 		$upload_max_filesize = $this->return_bytes(ini_get('upload_max_filesize'));
 		$post_max_size = $this->return_bytes(ini_get('post_max_size'));
@@ -114,9 +116,13 @@ class bab_inifile_requirements {
 		$current = $post_max_size > $upload_max_filesize ? $upload_max_filesize : $post_max_size;
 		$current_display = sprintf("%dM",$current/1024/1024);
 		$result = $current >= $this->return_bytes($value);
+		
+		$req = "SELECT maxfilesize from ".BAB_SITES_TBL." WHERE name='".$babDB->db_escape_string($GLOBALS['babSiteName'])."'";
+		$res = $babDB->db_query($req);
+		$babsite = $babDB->db_fetch_assoc($res);
 
-		if (isset($GLOBALS['babBody']->babsite['maxfilesize'])) {
-			$ov_upload = $GLOBALS['babBody']->babsite['maxfilesize']*1024*1024;
+		if (isset($babsite['maxfilesize'])) {
+			$ov_upload = ((int) $babsite['maxfilesize'])*1024*1024;
 
 			if ($current < $ov_upload) {
 				$current_display = sprintf(bab_translate("You must configure ovidentia with a limit smaller or equal to the server limit : %s"),$current_display);
@@ -169,27 +175,35 @@ class bab_inifile_requirements {
 	
 	function require_upload_directory($value) {
 	
+		global $babDB;
+	
 		$current =  bab_translate("Unavailable");
 		$status = false;
 		
-		$ul = $GLOBALS['babBody']->babsite['uploadpath'];
+		// $babBody->babsite not available in upgrade
+		// $ul = $GLOBALS['babBody']->babsite['uploadpath'];
+		
+		$req = "SELECT uploadpath from ".BAB_SITES_TBL." WHERE name='".$babDB->db_escape_string($GLOBALS['babSiteName'])."'";
+		$res = $babDB->db_query($req);
+		$babsite = $babDB->db_fetch_assoc($res);
+		$ul = $babsite['uploadpath'];
+		
 
 		if (is_writable($ul)) {
 			$current = bab_translate("The directory is writable but this is not the full pathname");
 
 			if (preg_match('/^(\/|[a-zA-Z]{1}\:\\\\)/', $ul)) {
 				$current = bab_translate("The addons directory is not writable");
-			}
-			
-			
-			$addons = $ul.'/addons';
-			if (!is_dir($addons)) {
-				bab_mkdir($addons);
-			}
-			
-			if (is_writable($addons)) {
-				$current = bab_translate("Available");
-				$status = true;
+				
+				$addons = $ul.'/addons';
+				if (!is_dir($addons)) {
+					bab_mkdir($addons);
+				}
+				
+				if (is_writable($addons)) {
+					$current = bab_translate("Available");
+					$status = true;
+				}
 			}
 		}
 
