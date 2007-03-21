@@ -712,7 +712,7 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 		function printout()
 			{
 			$GLOBALS['babBodyPopup'] = new babBodyPopup();
-			$GLOBALS['babBodyPopup']->seTitle(bab_translate("Detailed sight"));
+			$GLOBALS['babBodyPopup']->title = bab_translate("Detailed sight");
 			$GLOBALS['babBodyPopup']->babecho(bab_printTemplate($this, "calendar.html", "eventlist"));
 			printBabBodyPopup();
 			die();
