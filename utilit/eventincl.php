@@ -23,7 +23,7 @@
 ************************************************************************/
 include_once 'base.php';
 
-define('BAB_ADDON_CORE_NAME', 'core');
+
 
 class bab_event {
 	

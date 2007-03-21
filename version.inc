@@ -1,4 +1,4 @@
-; <?php DO NOT REMOVE THIS LINE
+; <?php 
 ;/************************************************************************
 ; * OVIDENTIA http://www.ovidentia.org                                   *
 ; ************************************************************************
@@ -20,7 +20,9 @@
 ; * along with this program; if not, write to the Free Software		 *
 ; * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
 ; * USA.								 *
-;************************************************************************/
+;***********************************************************************
+
+
 [general]
 name="ovidentia"
 description="Ovidentia"
@@ -29,7 +31,7 @@ version="6.2.0"
 
 ; available since 5.8.1
 
-; ov_version="0.0.0"
+ov_version="5.5.3"
 php_version="4.1.2"
 
 ; available since 5.8.7
@@ -56,4 +58,5 @@ mod_gettext="Available"
 ; mod_curl="Available"
 upload_max_file_size=30M
 
-; DO NOT REMOVE THIS LINE ?>
+
+;*/?>

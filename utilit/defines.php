@@ -59,6 +59,8 @@ define('BAB_HTML_REPLACE_MAIL'	,BAB_HTML_ENTITIES << 7);
 define('BAB_HTML_TAB'			,BAB_HTML_ENTITIES << 8);
 define('BAB_HTML_ALL'			,BAB_HTML_ENTITIES | BAB_HTML_P | BAB_HTML_BR | BAB_HTML_LINKS | BAB_HTML_TAB);
 
+define('BAB_ADDON_CORE_NAME', 'core');
+
 
 define('BAB_ABBR_FULL_WORDS'	, 1);
 define('BAB_ABBR_INITIAL'		, 2);
@@ -268,6 +270,7 @@ define("BAB_USERS_TBL", "bab_users");
 define("BAB_USERS_GROUPS_TBL", "bab_users_groups");
 define("BAB_USERS_LOG_TBL", "bab_users_log");
 define("BAB_USERS_UNAVAILABILITY_TBL", "bab_users_unavailability");
+define("BAB_UPGRADE_MESSAGES_TBL", "bab_upgrade_messages");
 define("BAB_VACATIONS_TBL", "bab_vacations");
 define("BAB_VACATIONS_STATES_TBL", "bab_vacations_states");
 define("BAB_VACATIONS_TYPES_TBL", "bab_vacations_types");

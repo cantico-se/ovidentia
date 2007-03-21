@@ -29,16 +29,19 @@ function bab_cpaddons($from, $to, &$message)
          if ($handle = opendir($wh)) {
              while (false !== ($file = readdir($handle))) {
 				if ($file != "." && $file != ".." ) {
-						if(!isset($files)) $files="$file";
-						else $files="$file\n$files";
+						if(!isset($files)) {
+							$files="$file";
+						} else {
+							$files="$file\n$files";
+						}
 				   }
               }
                closedir($handle);
          }
 		 if (!isset($files))
-			 return array();
+			return array();
         $arr=explode("\n",$files);
-         return $arr;
+        return $arr;
      }
 	function cp($wf, $wto){ 
 		  if (!is_dir($wto)) { 
@@ -173,8 +176,8 @@ function bab_writeConfig($replace)
 
 function bab_upgrade($core_dir, &$ret)
 {
-
-	$bab_versions = array("310", "320", "330", "331", "332", "333", "340", "341", "342", "343", "400", "401", "402", "403", "404", "405", "406", "407", "408","409","410","500","501","502","503","510","520","530","531","540","541","542","543", "544", "545", "546", "550", "551","552","553","554","555","556","557","558","559", "560","561","562","563","564","565","566","570", "571","572","573", "574","575", "576","577","578","579","580","581","582", "583","584","585","586","587","588", "589","600","601","602","603","604","605","606", "610", "611", "612", "620");
+	global $babBody;
+	$db = $GLOBALS['babDB'];
 
 	function putVersion($version)
 	{
@@ -198,25 +201,17 @@ function bab_upgrade($core_dir, &$ret)
 		return false;
 	}
 
-	$db = &$GLOBALS['babDB'];
+	
 
-	$res = $db->db_query("show tables like '".BAB_INI_TBL."'");
-	if( !$res || $db->db_num_rows($res) < 1)
-		{
-		$dbver = explode(".", $GLOBALS['babVersion']);
-		$dbver[2] = "0";
-		}
-	else
-		{
-		$rr = $db->db_fetch_array($db->db_query("select fvalue from ".BAB_INI_TBL." where foption='ver_major'"));
-		$dbver[] = $rr['fvalue'];
-		$rr = $db->db_fetch_array($db->db_query("select fvalue from ".BAB_INI_TBL." where foption='ver_minor'"));
-		$dbver[] = $rr['fvalue'];
-		$rr = $db->db_fetch_array($db->db_query("select fvalue from ".BAB_INI_TBL." where foption='ver_build'"));
-		$dbver[] = $rr['fvalue'];
-		}
 
-	$ver_from = $dbver[0].$dbver[1].$dbver[2];
+	$rr = $db->db_fetch_array($db->db_query("select fvalue from ".BAB_INI_TBL." where foption='ver_major'"));
+	$dbver[] = $rr['fvalue'];
+	$rr = $db->db_fetch_array($db->db_query("select fvalue from ".BAB_INI_TBL." where foption='ver_minor'"));
+	$dbver[] = $rr['fvalue'];
+	$rr = $db->db_fetch_array($db->db_query("select fvalue from ".BAB_INI_TBL." where foption='ver_build'"));
+	$dbver[] = $rr['fvalue'];
+
+	$ver_from = $dbver[0].'.'.$dbver[1].'.'.$dbver[2];
 
 	$ini = new bab_inifile();
 	$ini->inifile($core_dir.'version.inc');
@@ -232,65 +227,49 @@ function bab_upgrade($core_dir, &$ret)
 	}
 
 	list($bab_ver_major, $bab_ver_minor, $bab_ver_build) = explode('.',$ini->getVersion());
-	$ver_to = $bab_ver_major.$bab_ver_minor.$bab_ver_build;
-
-
-	if( $ver_from == $ver_to )
+	
+	if( $ver_from == $ini->getVersion() )
 		{
-		include_once $core_dir."upgrade.php";
-		$func = "upgrade".$ver_from."betas";
-		$beta = "";
-		if( function_exists($func))
-			{
-			$ret = $func($beta);
-			if( !empty($ret))
-				return false;
-			}
-
-		if( !empty($beta)) {
-			$ret = bab_translate("You site has been updated") .": ".$dbver[0].".".$dbver[1].".".$dbver[2].$beta;
-			return true;
-			}
-		else {
 			$ret = bab_translate("You site is already up to date");
 			return false;
-			}
 		}
-
-	$i_from = bab_array_search($ver_from, $bab_versions);
-	$i_to = bab_array_search($ver_to, $bab_versions);
 
 	include_once $core_dir."upgrade.php";
-	for( $i = $i_from; $i < $i_to; $i++)
-		{
-		$func = "upgrade".$bab_versions[$i]."to".$bab_versions[$i+1];
-		if( function_exists($func))
-			{
-			$ret = $func();
-			if( !empty($ret))
-				return false;
-			}
-		else
-			{
-			$ret .= bab_translate("Call to undefined function").' : '.$func."()\n";
-			return false;
-			}
-		}
-
-	$db->db_query("update ".BAB_INI_TBL." set fvalue='".$db->db_escape_string($bab_ver_major)."' where foption='ver_major'");
-	$db->db_query("update ".BAB_INI_TBL." set fvalue='".$db->db_escape_string($bab_ver_minor)."' where foption='ver_minor'");
-	$db->db_query("update ".BAB_INI_TBL." set fvalue='".$db->db_escape_string($bab_ver_build)."' where foption='ver_build'");
-
-	putVersion($bab_ver_major.".".$bab_ver_minor);
-	$ret .= bab_translate("You site has been updated")." \n";
-	$ret .= bab_translate("From").' '. $dbver[0].'.'.$dbver[1].'.'.$dbver[2]. ' ';
-	$ret .= bab_translate("to").' '. $bab_ver_major.'.'.$bab_ver_minor.'.'.$bab_ver_build;
-	return true;
+	if (true === ovidentia_upgrade($ver_from, $ini->getVersion())) {
+	
+		$db->db_query("update ".BAB_INI_TBL." set fvalue='".$db->db_escape_string($bab_ver_major)."' where foption='ver_major'");
+		$db->db_query("update ".BAB_INI_TBL." set fvalue='".$db->db_escape_string($bab_ver_minor)."' where foption='ver_minor'");
+		$db->db_query("update ".BAB_INI_TBL." set fvalue='".$db->db_escape_string($bab_ver_build)."' where foption='ver_build'");
+	
+		putVersion($bab_ver_major.".".$bab_ver_minor);
+		$ret .= bab_translate("You site has been updated")." \n";
+		$ret .= bab_translate("From").' '. $dbver[0].'.'.$dbver[1].'.'.$dbver[2]. ' ';
+		$ret .= bab_translate("to").' '. $bab_ver_major.'.'.$bab_ver_minor.'.'.$bab_ver_build;
+		
+		bab_setUpgradeLogMsg(BAB_ADDON_CORE_NAME, $ret);
+		
+		return true;
+	}
+	
+	foreach($babBody->errors as $error) {
+		$ret .= bab_toHtml($error)."\n\n";
+	}
+	
+	if (!$babBody->errors) {
+		$ret .= bab_translate('Error on upgrade');
+	}
+	
+	return false;
 }
 
 
 
-
+/** 
+ * Test if table exists
+ * @param	string	$table
+ * @since	5.8.2
+ * @return 	boolean
+ */
 function bab_isTable($table) {
 	$db = &$GLOBALS['babDB'];
 
@@ -299,11 +278,85 @@ function bab_isTable($table) {
 }
 
 
+/** 
+ * Test if field exists
+ * @param	string	$table
+ * @param	string	$field
+ * @since	5.8.2
+ * @return 	boolean
+ */
 function bab_isTableField($table, $field) {
 	$db = &$GLOBALS['babDB'];
 
 	$arr = $db->db_fetch_array($db->db_query("DESCRIBE ".$table." ".$field));
 	return ($arr[0] == $field);
 }
+
+
+/** 
+ * Insert informations into message log
+ * If the $uid is given, it must be unique for each $addon_name, the function will return false if the uid is allready inserted
+ * @since	6.3.0
+ * @param	string	$addon_name
+ * @param	string	$message
+ * @param	string	[$uid]
+ * @return 	boolean
+ */
+function bab_setUpgradeLogMsg($addon_name, $message, $uid = '') {
+
+	global $babDB;
+	
+	if ('' !== $uid) {
+		$res = $babDB->db_query('
+			SELECT COUNT(*) FROM '.BAB_UPGRADE_MESSAGES_TBL.' 
+			WHERE addon_name='.$babDB->quote($addon_name).' AND uid='.$babDB->quote($uid).'
+		');
+		
+		list($n) = $babDB->db_fetch_array($res);
+		
+		if (0 !== (int) $n) {
+			return false;
+		}
+	}
+	
+	$babDB->db_query('
+		INSERT INTO '.BAB_UPGRADE_MESSAGES_TBL.' 
+			(addon_name, dt_insert, uid, message) 
+		VALUES 
+			('.$babDB->quote($addon_name).', NOW(), '.$babDB->quote($uid).', '.$babDB->quote($message).')
+	');
+	
+}
+
+/**
+ * Get a log message by unique ID
+ * Return an array with 2 keys, message as string and dt_insert as iso datetime
+ * @since	6.3.0
+ * @param	string	$addon_name
+ * @param	string	$uid
+ * @return false|array
+ */
+function bab_getUpgradeLogMsg($addon_name, $uid) {
+
+	global $babDB;
+	
+	$res = $babDB->db_query('
+		SELECT 
+			message, 
+			dt_insert 
+		FROM 
+			'.BAB_UPGRADE_MESSAGES_TBL.' 
+		WHERE 
+			addon_name='.$babDB->quote($addon_name).'
+			AND uid='.$babDB->quote($uid)
+	);
+	
+	if ($arr = $babDB->db_fetch_assoc($res)) {
+		return $arr;
+	}
+	
+	return false;
+}
+
 
 ?>

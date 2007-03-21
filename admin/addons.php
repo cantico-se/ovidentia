@@ -255,11 +255,14 @@ function disableAddons($addons)
 	exit;
 	}
 
+
+
+
 function upgrade($id)
 	{
-	$db = &$GLOBALS['babDB'];
-	$res = $db->db_query("select * from ".BAB_ADDONS_TBL." where id='".$id."'");
-	$row = $db->db_fetch_array($res);
+	global $babDB;
+	$res = $babDB->db_query("select * from ".BAB_ADDONS_TBL." where id='".$babDB->db_escape_string($id)."'");
+	$row = $babDB->db_fetch_array($res);
 
 	if (is_dir($GLOBALS['babAddonsPath'].$row['title']) && is_file($GLOBALS['babAddonsPath'].$row['title']."/init.php") && is_file($GLOBALS['babAddonsPath'].$row['title']."/addonini.php"))
 		{
@@ -274,6 +277,11 @@ function upgrade($id)
 			bab_isTableField($table, $field)
 
 		usable in addons since 5.8.2
+
+			bab_setUpgradeLogMsg($addon_name, $message, $uid = '')
+			bab_getUpgradeLogMsg($addon_name, $uid)
+
+		usable in addons since 6.3.0
 
 		*/
 
@@ -301,13 +309,19 @@ function upgrade($id)
 				require_once( $GLOBALS['babAddonsPath'].$row['title']."/init.php" );
 				if ((function_exists($func_name) && $func_name($row['version'],$ini_version)) || !function_exists($func_name))
 					{
-					$db->db_query("UPDATE ".BAB_ADDONS_TBL." set version='".$ini_version."',installed='Y' where id='".$id."'");
+					$babDB->db_query("UPDATE ".BAB_ADDONS_TBL." set version='".$babDB->db_escape_string($ini_version)."',installed='Y' where id='".$babDB->db_escape_string($id)."'");
+
+					if (empty($row['version'])) {
+						$from_version = '0.0';
+					}
+					bab_setUpgradeLogMsg($row['title'], sprintf('The addon has been updated from %s to %s', $from_version, $ini_version));
+
 					return true;
 					}
 				}
 			else 
 				{
-				$db->db_query("UPDATE ".BAB_ADDONS_TBL." set version='".$ini_version."',installed='Y' where id='".$id."'");
+				$babDB->db_query("UPDATE ".BAB_ADDONS_TBL." set version='".$babDB->db_escape_string($ini_version)."',installed='Y' where id='".$babDB->db_escape_string($id)."'");
 				return true;
 				}
 			}

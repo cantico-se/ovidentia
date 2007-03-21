@@ -471,9 +471,28 @@ class babBody
 {
 var $sections = array();
 var $menu;
+
+/**
+ * error message as html
+ * @public
+ */
 var $msgerror;
+
+/**
+ * List of errors as text
+ * @see babBody::addError()
+ * @public
+ */
+var $errors = array();
+
 var $content;
+
+/**
+ * Page title
+ * @public
+ */
 var $title;
+
 var $message;
 var $script;
 var $lastlog; /* date of user last log */
@@ -630,6 +649,7 @@ function setTitle($title) {
  * @param	string $title
  */
 function addError($error) {
+	$this->errors[] = $error;
 	if (empty($this->msgerror)) {
 		$this->msgerror = bab_toHtml($error);
 	} else {

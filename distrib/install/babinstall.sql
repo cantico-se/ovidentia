@@ -3636,3 +3636,14 @@ CREATE TABLE `bab_event_listeners` (
 
 INSERT INTO `bab_event_listeners` (`id`, `event_class_name`, `function_name`, `require_file`, `addon_name`) VALUES (1, 'bab_eventBeforePeriodsCreated', 'bab_NWD_onCreatePeriods', 'utilit/nwdaysincl.php', 'core');
 
+
+CREATE TABLE `bab_upgrade_messages` (
+  `id` int(11) NOT NULL auto_increment,
+  `addon_name` varchar(255) NOT NULL,
+  `dt_insert` datetime NOT NULL,
+  `uid` varchar(255) NOT NULL,
+  `message` text NOT NULL,
+  PRIMARY KEY  (`id`),
+  KEY `uid` (`uid`)
+);
+

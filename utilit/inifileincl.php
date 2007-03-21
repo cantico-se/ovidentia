@@ -59,7 +59,7 @@ class bab_inifile_requirements {
 		}
 
 		return array(
-			'description'	=> bab_translate("Ovidentia version"),
+			'description'	=> bab_translate("Ovidentia version for upgrade"),
 			'current'		=> $ovidentia,
 			'result'		=> version_compare($value, $ovidentia, '<=')
 		);
