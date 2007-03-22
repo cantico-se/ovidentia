@@ -27,36 +27,33 @@ include_once "base.php";
 * @internal SEC1 PR 20/02/2007 FULL
 */
 
-function createEvent($idcals,$id_owner, $title, $description, $location, $startdate, $enddate, $category, $color, $private, $lock, $free, $hash, $arralert)
-{
+
+
+
+/**
+ * Update selected calendars for event
+ * Creation and modification
+ *
+ * @param	int		$id_event
+ * @param	array	$idcals
+ * 
+ * @return	array	calendar id were the event has been inserted
+ */
+function bab_updateSelectedCalendars($id_event, $idcals) {
 
 	global $babBody, $babDB;
-
-	bab_editor_record($description);
-
-
-	$babDB->db_query("insert into ".BAB_CAL_EVENTS_TBL." 
-	( title, description, location, start_date, end_date, id_cat, id_creator, color, bprivate, block, bfree, hash) 
-	
-	values (
-		".$babDB->quote($title).", 
-		".$babDB->quote($description).", 
-		".$babDB->quote($location).", 
-		".$babDB->quote(date('Y-m-d H:i:s',$startdate)).", 
-		".$babDB->quote(date('Y-m-d H:i:s',$enddate)).", 
-		".$babDB->quote($category).", 
-		".$babDB->quote($id_owner).", 
-		".$babDB->quote($color).", 
-		".$babDB->quote($private).", 
-		".$babDB->quote($lock).", 
-		".$babDB->quote($free).", 
-		".$babDB->quote($hash)."
-	)
-		");
-	
-	$id_event = $babDB->db_insert_id();
-
 	$arrcals = array();
+	
+	$res = $babDB->db_query('
+		SELECT id_cal FROM '.BAB_CAL_EVENTS_OWNERS_TBL.' WHERE id_event='.$babDB->quote($id_event).'
+	');
+	
+	$associated = array();
+	while ($arr = $babDB->db_fetch_assoc($res)) {
+		$associated[$arr['id_cal']] = $arr['id_cal'];
+	}
+	
+	
 
 	foreach($idcals as $id_cal)
 		{
@@ -116,30 +113,156 @@ function createEvent($idcals,$id_owner, $title, $description, $location, $startd
 
 		if( $add )
 			{
-			$arrcals[] = $id_cal;
-			$babDB->db_query("INSERT INTO ".BAB_CAL_EVENTS_OWNERS_TBL." (id_event,id_cal, status) VALUES ('".$babDB->db_escape_string($id_event)."','".$babDB->db_escape_string($id_cal)."', '".$babDB->db_escape_string($ustatus)."')");
-			if( ($arr['type'] == BAB_CAL_PUB_TYPE ||  $arr['type'] == BAB_CAL_RES_TYPE) && ($arr['idsa'] != 0) )
-				{
-				include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
-				$idfai = makeFlowInstance($arr['idsa'], "cal-".$id_cal."-".$id_event);
-				$babDB->db_query("update ".BAB_CAL_EVENTS_OWNERS_TBL." set idfai='".$babDB->db_escape_string($idfai)."' where id_event='".$babDB->db_escape_string($id_event)."' and id_cal='".$babDB->db_escape_string($id_cal)."'");
-				$nfusers = getWaitingApproversFlowInstance($idfai, true);
-				notifyEventApprovers($id_event, $nfusers, $arr);
+
+			if (!isset($associated[$id_cal])) {
+			
+				// add owner
+
+				$babDB->db_query("
+					INSERT INTO ".BAB_CAL_EVENTS_OWNERS_TBL." 
+						(
+							id_event,
+							id_cal, 
+							status
+						) 
+					VALUES 
+						(
+							'".$babDB->db_escape_string($id_event)."',
+							'".$babDB->db_escape_string($id_cal)."', 
+							'".$babDB->db_escape_string($ustatus)."'
+						)
+					");
+					
+				if( ($arr['type'] == BAB_CAL_PUB_TYPE ||  $arr['type'] == BAB_CAL_RES_TYPE) && ($arr['idsa'] != 0) )
+					{
+					include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
+					$idfai = makeFlowInstance($arr['idsa'], "cal-".$id_cal."-".$id_event);
+					$babDB->db_query("
+						UPDATE ".BAB_CAL_EVENTS_OWNERS_TBL." 
+						SET 
+							idfai='".$babDB->db_escape_string($idfai)."' 
+						where 
+							id_event='".$babDB->db_escape_string($id_event)."' 
+							AND id_cal='".$babDB->db_escape_string($id_cal)."'
+						");
+						
+					$nfusers = getWaitingApproversFlowInstance($idfai, true);
+					notifyEventApprovers($id_event, $nfusers, $arr);
+					}
 				}
+				
+			$arrcals[] = $id_cal;
+			unset($associated[$id_cal]);
 			}
+		}
+		
+	foreach($associated as $id_cal) {
+		// remove owner
+		
+		//$arr = $babBody->icalendars->getCalendarInfo($id_cal);
+		
+
+		$babDB->db_query("
+			DELETE FROM ".BAB_CAL_EVENTS_OWNERS_TBL." 
+				WHERE id_event='".$babDB->db_escape_string($id_event)."' 
+				AND id_cal='".$babDB->db_escape_string($id_cal)."'
+			");
+		
 		}
 
 	if( count($arrcals) == 0 )
 		{
 		$babDB->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($id_event)."'");
 		}
-	elseif( !empty($GLOBALS['BAB_SESS_USERID']) && $arralert !== false )
-		{
-		$babDB->db_query("insert into ".BAB_CAL_EVENTS_REMINDERS_TBL." (id_event, id_user, day, hour, minute, bemail) values ('".$babDB->db_escape_string($id_event)."', '".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', '".$babDB->db_escape_string($arralert['day'])."', '".$babDB->db_escape_string($arralert['hour'])."', '".$babDB->db_escape_string($arralert['minute'])."', '".$babDB->db_escape_string($arralert['email'])."')");
+		
+	return $arrcals;
+	
+}
 
+
+
+/**
+ * Create calendar event
+ *
+ * @param	array	$idcals
+ * @param	int		$id_owner
+ * @param	string	$title			(text)
+ * @param	string	$description	(html)
+ * @param	string	$location		(text)
+ * @param	int		$startdate		(timestamp)
+ * @param	int		$enddate		(timestamp)
+ * @param	int		$category
+ * @param	string	$color
+ * @param	string	$private		(Y|N)
+ * @param	string	$lock			(Y|N)
+ * @param	string	$free			(Y|N)
+ * @param	string	$hash
+ * @param	array	$arralert
+ *
+ * @return	array	calendar id were the event has been inserted
+ *
+ */
+function createEvent($idcals,$id_owner, $title, $description, $location, $startdate, $enddate, $category, $color, $private, $lock, $free, $hash, $arralert)
+{
+
+	global $babBody, $babDB;
+
+	bab_editor_record($description);
+
+
+	$babDB->db_query("insert into ".BAB_CAL_EVENTS_TBL." 
+	( title, description, location, start_date, end_date, id_cat, id_creator, color, bprivate, block, bfree, hash) 
+	
+	values (
+		".$babDB->quote($title).", 
+		".$babDB->quote($description).", 
+		".$babDB->quote($location).", 
+		".$babDB->quote(date('Y-m-d H:i:s',$startdate)).", 
+		".$babDB->quote(date('Y-m-d H:i:s',$enddate)).", 
+		".$babDB->quote($category).", 
+		".$babDB->quote($id_owner).", 
+		".$babDB->quote($color).", 
+		".$babDB->quote($private).", 
+		".$babDB->quote($lock).", 
+		".$babDB->quote($free).", 
+		".$babDB->quote($hash)."
+	)
+		");
+	
+	$id_event = $babDB->db_insert_id();
+	$arrcals = bab_updateSelectedCalendars($id_event, $idcals);
+	
+
+	if(0 !== count($arrcals) && !empty($GLOBALS['BAB_SESS_USERID']) && $arralert !== false )
+		{
+		$babDB->db_query("
+			INSERT INTO ".BAB_CAL_EVENTS_REMINDERS_TBL." 
+				(
+					id_event, 
+					id_user, 
+					day, 
+					hour, 
+					minute, 
+					bemail 
+				) 
+			VALUES 
+				(
+					'".$babDB->db_escape_string($id_event)."', 
+					'".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', 
+					'".$babDB->db_escape_string($arralert['day'])."', 
+					'".$babDB->db_escape_string($arralert['hour'])."', 
+					'".$babDB->db_escape_string($arralert['minute'])."', 
+					'".$babDB->db_escape_string($arralert['email'])."'
+				)
+			");
 		}
+	
 	return $arrcals;
 }
+
+
+
+
 
 /**
  *	$args['startdate'] 	: array('month', 'day', 'year', 'hours', 'minutes')

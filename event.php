@@ -250,7 +250,7 @@ function newEvent()
 				{
 				foreach($_POST as $k => $v)
 					{
-					$this->arr[$k] = post_string2($k);
+					$this->arr[$k] = bab_pp($k);
 					}
 
 				$this->arr['title'] = bab_toHtml($this->arr['title']);
@@ -590,12 +590,25 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 			$this->t_no = bab_translate("No");
 			$this->t_modify = bab_translate("Modify the event");
 			$this->t_test_conflicts = bab_translate("Test conflicts");
+			$this->t_event_owner = bab_translate("Event owner");
 			$this->calid = $idcal;
 			$this->evtid = $evtid;
 			$this->bmodif = false;
 			$this->ccids = $cci;
 			$this->curview = $view;
 			$this->curdate = $date;
+			
+			$resown = $babDB->db_query('
+				SELECT id_cal FROM '.BAB_CAL_EVENTS_OWNERS_TBL.' WHERE id_event='.$babDB->quote($this->evtid).'
+			');
+			
+			$selected_calendars = array();
+			while ($arr = $babDB->db_fetch_assoc($resown)) {
+				$selected_calendars[] = $arr['id_cal'];
+			}
+			
+			$this->calendars = calendarchoice('vacform', $selected_calendars);
+			
 			$this->evtarr = $babDB->db_fetch_array($res);
 			
 			$iarr = $babBody->icalendars->getCalendarInfo($this->calid);
@@ -640,7 +653,7 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 				{
 				foreach($_POST as $k => $v)
 					{
-					$this->evtarr[$k] = post_string2($k);
+					$this->evtarr[$k] = bab_pp($k);
 					}
 				$this->evtarr['id_cat'] = $_POST['category'];
 				$this->evtarr['description'] = $_POST['evtdesc'];
@@ -931,16 +944,11 @@ function deleteEvent()
 	$temp = new deleteEventCls();
 	$babBodyPopup->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
+	
+	
+	
 
-function post_string($key)
-{
-	return $_POST[$key];
-}
 
-function post_string2($key)
-{
-	return $_POST[$key];
-}
 
 function addEvent(&$message)
 	{
@@ -968,9 +976,9 @@ function addEvent(&$message)
 		$args['alert']['email'] = isset($_POST['remail'])? $_POST['remail']: 'N';
 		}
 
-	$args['description'] = post_string2('evtdesc');
-	$args['title'] = post_string2('title');
-	$args['location'] = post_string2('location');
+	$args['description'] = bab_pp('evtdesc');
+	$args['title'] = bab_pp('title');
+	$args['location'] = bab_pp('location');
 		
 	$args['category'] = empty($_POST['category']) ? '0' : $_POST['category'];
 	$args['color'] = empty($_POST['color']) ? '' : $_POST['color'];
@@ -1119,11 +1127,11 @@ function updateEvent(&$message)
 		}
 
 	
-	$title = post_string('title');
-	$location = post_string('location');
+	$title = bab_pp('title');
+	$location = bab_pp('location');
 		
 
-	$description = post_string2('evtdesc');
+	$description = bab_pp('evtdesc');
 	bab_editor_record($description);
 
 	if( empty($_POST['category']))
@@ -1202,12 +1210,19 @@ function updateEvent(&$message)
 		$max = $val['end']	 > $max ? $val['end'] 	: $max;
 	}
 	
+	
+	bab_updateSelectedCalendars(
+		bab_pp('evtid'), 
+		bab_pp('selected_calendars')
+	);
+	
+	
 	include_once $GLOBALS['babInstallPath'].'utilit/eventperiod.php';
 	$event = new bab_eventPeriodModified(bab_mktime($min), bab_mktime($max), false);
 	$event->types = BAB_PERIOD_CALEVENT;
 	bab_fireEvent($event);
 
-	notifyEventUpdate($_POST['evtid'], false);
+	notifyEventUpdate(bab_pp('evtid'), false);
 	return true;
 }
 

@@ -904,14 +904,19 @@ class cal_wmdbaseCls
 		}
 }
 
-
-function calendarchoice($formname)
+/**
+ * Calendar selection interface
+ * @param	string	$formname
+ * @param	array	[$selected_calendars]
+ * @return 	string
+ */
+function calendarchoice($formname, $selected_calendars = NULL)
 {
 class calendarchoice
 	{
 	var $approb = array();
 
-	function calendarchoice($formname)
+	function calendarchoice($formname, $selected_calendars)
 		{
 		global $babBody, $babDB;
 		$this->formname = $formname;
@@ -920,6 +925,10 @@ class calendarchoice
 		if (isset($_POST['selected_calendars']))
 			{
 			$this->selectedCalendars = $_POST['selected_calendars'];
+			}
+		elseif (NULL !== $selected_calendars) 
+			{
+			$this->selectedCalendars = $selected_calendars;
 			}
 		else
 			{
@@ -1035,7 +1044,7 @@ class calendarchoice
 		}
 	}
 
-$temp = new calendarchoice($formname);
+$temp = new calendarchoice($formname, $selected_calendars);
 return $temp->printhtml();
 }
 

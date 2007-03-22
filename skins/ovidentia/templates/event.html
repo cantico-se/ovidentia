@@ -347,7 +347,7 @@ ed();
 
 
 <!--#begin modifyevent -->
-<form name="vacform" method="post" action="{ babPhpSelf }" >
+<form name="vacform" method="post" action="{ babPhpSelf }" onsubmit="return(submitCtrl(this,'vacform'))">
 <input type="hidden" name="tg" value="event" />
 <input type="hidden" name="idx" value="unload" />
 <input type="hidden" name="date" value="{ curdate }" />
@@ -369,7 +369,7 @@ ed();
 	<tr> 
 		<td align="right">&nbsp;</td>
 		<td colspan="2">
-			<script type="">
+			<script type="text/javascript">
 			<!--
 			function bupdrec_onchange(obj)
 				{
@@ -537,6 +537,24 @@ ed();
 	<tr> 
 		<td colspan="2">&nbsp;</td>
 	</tr>
+	<tr id="event_owner">
+		<td align="right">{ t_event_owner }</td>
+		<td>
+			<!--#if evtarr[id_creator] -->
+			<input type="hidden" name="event_owner_post" value="{ evtarr[id_creator] }" />
+			<!--#endif evtarr[id_creator] -->
+			<select name="event_owner">
+				<option value=""></option>
+			</select>
+		</td>
+	</tr>
+	<tr> 
+		<td colspan="2">{ calendars }</td>
+	</tr>
+	<tr> 
+		<td colspan="2">&nbsp;</td>
+	</tr>
+	
 	</tbody>
 	<tr id="avariability_check">
 		<td colspan="2">{ avariability_message }<br />
@@ -614,7 +632,7 @@ window.focus();
 <!--#end eventunload -->
 
 <!--#begin scripts -->
-<SCRIPT language="JavaScript">
+<script language="JavaScript">
 <!--
 function repeat_switch(grp)
 	{
@@ -776,5 +794,5 @@ function cal_movecalendar(action,text,value,classname)
 
 
 //-->
-</SCRIPT>
+</script>
 <!--#end scripts -->
