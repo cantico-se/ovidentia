@@ -582,7 +582,7 @@ class cal_wmdbaseCls
 
 	function updateAccessCalendar(&$calPeriod, &$calinfo, &$result)
 	{
-
+		global $babBody;
 		$view = 1;
 		$modify = 0;
 		$viewtitle = 0;
@@ -629,9 +629,14 @@ class cal_wmdbaseCls
 							}
 						}
 					}
+
+					if( $modify && 'PUBLIC' !== $calPeriod->getProperty('CLASS'))
+					{
+						$modify = 0;
+					}
 				}
 
-				if( 'PUBLIC' !== $calPeriod->getProperty('CLASS') && $GLOBALS['BAB_SESS_USERID'] != $calinfo['idowner'] )
+				if( 'PUBLIC' !== $calPeriod->getProperty('CLASS') && ($GLOBALS['BAB_SESS_USERID'] != $calinfo['idowner'] && ( count($evtarr['idcal_owners']) == 0 || !in_array($babBody->icalendars->id_percal, $evtarr['idcal_owners']))))
 					{
 					$viewtitle = 0;
 					}
