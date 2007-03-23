@@ -3171,13 +3171,6 @@ function upgrade612to620()
 
 
 
-function upgradeTo_6_3_0() {
-	
-	
-	
-}
-
-
 
 /**
  * Upgrade function
@@ -3255,17 +3248,12 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	}
 	
 	
-	if (false === bab_getUpgradeLogMsg(BAB_ADDON_CORE_NAME, BAB_UPGRADE_MESSAGES_TBL)) {
-	
-		echo 'do it once';
-	
-		bab_setUpgradeLogMsg(BAB_ADDON_CORE_NAME, 'table created', BAB_UPGRADE_MESSAGES_TBL);
-	
-	}
+
 	
 	
 	return true;
 	
 }
+
 
 ?>
