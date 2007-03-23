@@ -27,6 +27,8 @@ include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
 
 class mgroups
 {
+	var $expand_checked = false;
+
 	function mgroups($tg, $idx, $id_parent = false)
 	{
 	$this->t_expand_all = bab_translate("Expand all");
@@ -39,7 +41,11 @@ class mgroups
 	$this->idxval = &$idx;
 	$this->options = array();
 	$this->fields = array();
-	$this->id_expand_to = isset($_REQUEST['expand_to']) ? $_REQUEST['expand_to'] : 3;
+	$this->id_expand_to = isset($_REQUEST['expand_to']) ? $_REQUEST['expand_to'] : BAB_ADMINISTRATOR_GROUP;
+	}
+	
+	function setExpandChecked() {
+		$this->expand_checked = true;
 	}
 
 	function setField($name, $value)

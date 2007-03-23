@@ -259,6 +259,63 @@ function changePassword($item, $pos, $grp)
 	$tempb = new changePasswordCls($item, $pos, $grp);
 	$babBody->babecho(	bab_printTemplate($tempb,"users.html", "changepassword"));
 	}
+	
+	
+	
+function viewgroups() {
+	
+		global $babBody,$BAB_SESS_USERID;
+		class temp
+			{
+			
+			var $altbg = true;
+
+			function temp()
+				{
+				global $babDB;
+				$this->t_name = bab_translate("Name");
+				$this->t_description = bab_translate("Description");
+				
+				$id_user = (int) bab_rp('id_user');
+
+				$req = '
+					SELECT 
+						g.name,
+						g.description  
+					FROM 
+						'.BAB_USERS_GROUPS_TBL.' u, 
+						'.BAB_GROUPS_TBL.' g 
+					WHERE 
+						u.id_object='.$babDB->quote($id_user).'
+						AND g.id=u.id_group
+				';
+				bab_debug($req);
+				$this->res = $babDB->db_query($req);
+				}
+				
+			function getnextgroup() {
+					global $babDB;
+					if ($arr = $babDB->db_fetch_assoc($this->res)) {
+						$this->altbg = !$this->altbg;
+						$this->name = bab_toHtml($arr['name']);
+						$this->description = bab_toHtml($arr['description']);
+						return true;
+					}
+					
+					return false;
+				}
+			}
+	
+		$tempb = new temp();
+		$html = bab_printTemplate($tempb,"users.html", "viewgroups");
+		if (false === bab_rp('popup', false)) {
+			$babBody->babecho($html);
+		} else {
+			$babBody->babpopup($html);
+		}
+	}
+	
+	
 
 function notifyUserconfirmation($name, $email)
 	{
@@ -527,8 +584,10 @@ if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['users'] != 'Y' )
 	return;
 }
 
-if( !isset($idx))
-	$idx = "Modify";
+$idx = bab_rp('idx','Modify');
+$pos = bab_rp('pos');
+$grp = bab_rp('grp');
+
 
 if( isset($modify))
 	{
@@ -597,6 +656,7 @@ switch($idx)
 		include_once $babInstallPath."admin/mgroup.php";
 
 		$mgroups = new mgroups('user','Groups',BAB_REGISTERED_GROUP);
+		$mgroups->setExpandChecked();
 		$mgroups->setField('action', 'updategroups');
 		$mgroups->setField('item', $_REQUEST['item']);
 		$pos = isset($_REQUEST['pos']) ? $_REQUEST['pos'] : 0;
@@ -615,6 +675,18 @@ switch($idx)
 		$babBody->addItemMenu("Modify", bab_translate("User"),$GLOBALS['babUrlScript']."?tg=user&idx=Modify&item=".$item."&pos=".$pos."&grp=".$grp);
 		$babBody->addItemMenu("Groups", bab_translate("Groups"),$GLOBALS['babUrlScript']."?tg=user&idx=Groups&item=".$item."&pos=".$pos."&grp=".$grp);
 		$babBody->addItemMenu("unav", bab_translate("Unavailability"), $GLOBALS['babUrlScript']."?tg=options&idx=unav&iduser=".$item );	
+		
+		break;
+		
+		
+	case 'viewgroups':
+		if (false === bab_rp('popup', false)) {
+			$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp);
+			$babBody->addItemMenu("viewgroups", bab_translate("Groups"),$GLOBALS['babUrlScript']."?tg=users&idx=viewgroups&pos=".$pos."&grp=".$grp);
+		}
+		
+		$babBody->setTitle(bab_translate("The user's groups"));
+		viewgroups();
 		
 		break;
 

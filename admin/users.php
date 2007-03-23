@@ -80,6 +80,7 @@ function listUsers($pos, $grp)
 			$this->t_unconfirmed = bab_translate("Unconfirmed");
 			$this->t_disabled = bab_translate("Disabled");
 			$this->t_dirdetail = bab_translate("Detail");
+			$this->t_groups = bab_translate("Groups");
 			
 			$this->checkall = bab_translate("Check all");
 			$this->uncheckall = bab_translate("Uncheck all");
@@ -219,6 +220,7 @@ function listUsers($pos, $grp)
 				//$this->dirdetailurl = $GLOBALS['babUrlScript']."?tg=directory&idx=ddb&id=".$this->iddir."&idu=".$this->arr['idu']."&pos=&xf=";
 
 				$this->dirdetailurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=users&idx=dirv&id_user=".urlencode($this->userid));
+				$this->groupsurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=user&idx=viewgroups&id_user=".urlencode($this->userid).'&grp='.urlencode($this->grp).'&pos='.urlencode($this->ord.$this->pos));
 				$i++;
 				return true;
 				}

@@ -2424,5 +2424,6 @@
 <string id="Error on upgrade">Erreur lors de la mise à jour</string>
 <string id="The calendar %s has been removed from an appointement">L'agenda %s à été retiré d'un événement</string>
 <string id="An appointement has been removed">Un événement à été supprimé</string>
+<string id="The user's groups">Les groupes de l'utilisateur</string>
 
 </fr>

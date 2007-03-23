@@ -39,7 +39,11 @@
 <script type="text/javascript">
 var tree = new bab_ul_tree('bab_groups_tree');
 tree.processList();
+<!--#if expand_checked -->
+tree.expandChecked();
+<!--#else expand_checked -->
 tree.expandToItem('bab_ovgroup_{ id_expand_to }');
+<!--#endif expand_checked -->
 </script>
 
 <a name="bab_groups_tree_end"></a>
