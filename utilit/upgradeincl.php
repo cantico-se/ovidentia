@@ -176,8 +176,10 @@ function bab_writeConfig($replace)
 
 function bab_upgrade($core_dir, &$ret)
 {
+
 	global $babBody;
 	$db = $GLOBALS['babDB'];
+
 
 	function putVersion($version)
 	{
