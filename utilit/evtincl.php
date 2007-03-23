@@ -44,6 +44,13 @@ function bab_updateSelectedCalendars($id_event, $idcals) {
 	global $babBody, $babDB;
 	$arrcals = array();
 	
+	$res = $babDB->db_query('SELECT * FROM '.BAB_CAL_EVENTS_TBL.' WHERE id='.$babDB->quote($id_event));
+	$event = $babDB->db_fetch_assoc($res);
+	
+	
+	$startdate = bab_longDate(bab_mktime($event['start_date']));
+	$enddate = bab_longDate(bab_mktime($event['end_date']));
+	
 	$res = $babDB->db_query('
 		SELECT id_cal FROM '.BAB_CAL_EVENTS_OWNERS_TBL.' WHERE id_event='.$babDB->quote($id_event).'
 	');
@@ -116,7 +123,7 @@ function bab_updateSelectedCalendars($id_event, $idcals) {
 
 			if (!isset($associated[$id_cal])) {
 			
-				// add owner
+				// add calendar to event
 
 				$babDB->db_query("
 					INSERT INTO ".BAB_CAL_EVENTS_OWNERS_TBL." 
@@ -133,21 +140,36 @@ function bab_updateSelectedCalendars($id_event, $idcals) {
 						)
 					");
 					
+
+					
 				if( ($arr['type'] == BAB_CAL_PUB_TYPE ||  $arr['type'] == BAB_CAL_RES_TYPE) && ($arr['idsa'] != 0) )
 					{
-					include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
-					$idfai = makeFlowInstance($arr['idsa'], "cal-".$id_cal."-".$id_event);
-					$babDB->db_query("
-						UPDATE ".BAB_CAL_EVENTS_OWNERS_TBL." 
-						SET 
-							idfai='".$babDB->db_escape_string($idfai)."' 
-						where 
-							id_event='".$babDB->db_escape_string($id_event)."' 
-							AND id_cal='".$babDB->db_escape_string($id_cal)."'
-						");
-						
-					$nfusers = getWaitingApproversFlowInstance($idfai, true);
-					notifyEventApprovers($id_event, $nfusers, $arr);
+						include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
+						$idfai = makeFlowInstance($arr['idsa'], "cal-".$id_cal."-".$id_event);
+						$babDB->db_query("
+							UPDATE ".BAB_CAL_EVENTS_OWNERS_TBL." 
+							SET 
+								idfai='".$babDB->db_escape_string($idfai)."' 
+							where 
+								id_event='".$babDB->db_escape_string($id_event)."' 
+								AND id_cal='".$babDB->db_escape_string($id_cal)."'
+							");
+							
+						$nfusers = getWaitingApproversFlowInstance($idfai, true);
+						notifyEventApprovers($id_event, $nfusers, $arr);
+					}
+				else 
+					{
+						cal_notify(
+							$event['title'], 
+							$event['description'], 
+							$startdate, 
+							$enddate, 
+							$id_cal, 
+							$arr['type'], 
+							$arr['idowner'],
+							bab_translate("New appointement")
+						);
 					}
 				}
 				
@@ -157,16 +179,28 @@ function bab_updateSelectedCalendars($id_event, $idcals) {
 		}
 		
 	foreach($associated as $id_cal) {
-		// remove owner
-		
-		//$arr = $babBody->icalendars->getCalendarInfo($id_cal);
-		
+		// remove calendar from event
 
 		$babDB->db_query("
 			DELETE FROM ".BAB_CAL_EVENTS_OWNERS_TBL." 
 				WHERE id_event='".$babDB->db_escape_string($id_event)."' 
 				AND id_cal='".$babDB->db_escape_string($id_cal)."'
 			");
+			
+		$arr = $babBody->icalendars->getCalendarInfo($id_cal);
+		cal_notify(
+			$event['title'], 
+			$event['description'], 
+			$startdate, 
+			$enddate, 
+			$id_cal, 
+			$arr['type'], 
+			$arr['idowner'],
+			sprintf(
+				bab_translate("The calendar %s has been removed from an appointement"), 
+				$arr['name']
+				)
+			);
 		
 		}
 
@@ -178,6 +212,71 @@ function bab_updateSelectedCalendars($id_event, $idcals) {
 	return $arrcals;
 	
 }
+
+
+
+/**
+ * Send a generic notification for create/delete event
+ * or add a calendar to event
+ * or remove calendar from event
+ *
+ * @param	string	$title				event title
+ * @param	string	$description		event description
+ * @param	string	$startdate			internationalized string
+ * @param	string	$enddate			internationalized string
+ * @param	int		$id_cal
+ * @param	int		$calendar_type
+ * @param	int		$calendar_idowner	
+ * @param	string	$message			used as mail subject and in mail body
+ */
+function cal_notify($title, $description, $startdate, $enddate, $id_cal, $calendar_type, $calendar_idowner, $message) {
+
+
+	switch($calendar_type)
+	{
+	case BAB_CAL_USER_TYPE:
+		if( $calendar_idowner != $GLOBALS['BAB_SESS_USERID'] )
+			{
+			notifyPersonalEvent(
+				$title, 
+				$description, 
+				$startdate, 
+				$enddate, 
+				array($id_cal),
+				$message
+				);
+			}
+		break;
+		
+	case BAB_CAL_PUB_TYPE:
+
+		notifyPublicEvent(
+			$title, 
+			$description, 
+			$startdate, 
+			$enddate, 
+			array($id_cal),
+			$message
+			);
+
+		break;
+		
+	case BAB_CAL_RES_TYPE:
+
+		notifyResourceEvent(
+			$title, 
+			$description, 
+			$startdate, 
+			$enddate, 
+			array($id_cal),
+			$message
+			);
+
+		break;
+	}
+
+}
+
 
 
 
@@ -491,53 +590,7 @@ function bab_createEvent($idcals, $args, &$msgerror)
 	bab_fireEvent($event);
 
 
-	if( count($arrnotify) > 0 )
-		{
-		$arrusr = array();
-		$arrres = array();
-		$arrpub = array();
-		for( $i = 0; $i < count($arrnotify); $i++ )
-			{
-			$arr = $babBody->icalendars->getCalendarInfo($arrnotify[$i]);
-
-			switch($arr['type'])
-				{
-				case BAB_CAL_USER_TYPE:
-					if( $arr['idowner'] != $GLOBALS['BAB_SESS_USERID'] )
-						{
-						$arrusr[] = $arrnotify[$i];
-						}
-					break;
-				case BAB_CAL_PUB_TYPE:
-					if( $arr['idsa'] == 0 )
-						{
-						$arrpub[] = $arrnotify[$i];
-						}
-					break;
-				case BAB_CAL_RES_TYPE:
-					if( $arr['idsa'] == 0 )
-						{
-						$arrres[] = $arrnotify[$i];
-						}
-					break;
-				}
-			}
-		
-		$startdate = bab_longDate($begin);
-		$enddate = bab_longDate($end);
-		if( count($arrusr) > 0 )
-			{
-			notifyPersonalEvent($args['title'], $args['description'], $startdate, $enddate, $arrusr);
-			}
-		if( count($arrres) > 0 )
-			{
-			notifyResourceEvent($args['title'], $args['description'], $startdate, $enddate, $arrres);
-			}
-		if( count($arrpub) > 0 )
-			{
-			notifyPublicEvent($args['title'], $args['description'], $startdate, $enddate, $arrpub);
-			}
-		}
+	
 		
 	return true;	
 	}
@@ -617,9 +670,21 @@ function confirmEvent($evtid, $idcal, $bconfirm, $comment, $bupdrec)
 								$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($row['id_event'])."'"));
 								
 								if (BAB_CAL_RES_TYPE == $arr['type']) {
-									notifyResourceEvent($rr['title'], $rr['description'], bab_longDate(bab_mktime($rr['start_date'])), bab_longDate(bab_mktime($rr['end_date'])), array($idcal));
+									notifyResourceEvent(
+										$rr['title'], 
+										$rr['description'], 
+										bab_longDate(bab_mktime($rr['start_date'])), 
+										bab_longDate(bab_mktime($rr['end_date'])), 
+										array($idcal)
+									);
 								} else {
-									notifyPublicEvent($rr['title'], $rr['description'], bab_longDate(bab_mktime($rr['start_date'])), bab_longDate(bab_mktime($rr['end_date'])), array($idcal));
+									notifyPublicEvent(
+										$rr['title'], 
+										$rr['description'], 
+										bab_longDate(bab_mktime($rr['start_date'])), 
+										bab_longDate(bab_mktime($rr['end_date'])), 
+										array($idcal)
+									);
 								}
 								
 								
@@ -685,12 +750,14 @@ class clsNotifyEvent {
 	var $titletxt;
 	var $startdatetxt;
 	var $enddatetxt;
+	var $message;
 
 	function asText() {
 		$this->title = $this->vars['title'];
 		$this->description = strip_tags(bab_toHtml($this->vars['description'], BAB_HTML_REPLACE_MAIL));
 		$this->startdate = $this->vars['startdate'];
 		$this->enddate = $this->vars['enddate'];
+		$this->message = $this->vars['message'];
 		
 		$this->descriptiontxt = bab_translate("Description");
 		$this->titletxt = bab_translate("Title");
@@ -704,6 +771,7 @@ class clsNotifyEvent {
 		$this->description = bab_toHtml($this->vars['description'], BAB_HTML_REPLACE_MAIL);
 		$this->startdate = bab_toHtml($this->vars['startdate']);
 		$this->enddate = bab_toHtml($this->vars['enddate']);
+		$this->message = bab_toHtml($this->vars['message']);
 		
 		$this->descriptiontxt = bab_translate("Description");
 		$this->titletxt = bab_translate("Title");
@@ -716,7 +784,7 @@ class clsNotifyEvent {
 
 
 
-function notifyPersonalEvent($title, $description, $startdate, $enddate, $idcals)
+function notifyPersonalEvent($title, $description, $startdate, $enddate, $idcals, $message)
 	{
 	global $babBody, $babDB, $babAdminEmail;
 
@@ -724,20 +792,19 @@ function notifyPersonalEvent($title, $description, $startdate, $enddate, $idcals
 		{
 		class clsNotifyAttendees extends clsNotifyEvent
 			{
-			var $message;
 			var $calendar;
 
-			function clsNotifyAttendees($title, $description, $startdate, $enddate)
+			function clsNotifyAttendees($title, $description, $startdate, $enddate, $message)
 				{
 				
-				$this->message = bab_translate("New appointement");
+				$this->message = $message;
 				$this->calendar = bab_translate("Personal calendar");
 
 				$this->vars['title'] 		= $title;
 				$this->vars['description'] 	= $description;
 				$this->vars['startdate'] 	= $startdate;
 				$this->vars['enddate'] 		= $enddate;
-
+				$this->vars['message'] 		= $message;
 				}
 				
 			}
@@ -766,10 +833,12 @@ function notifyPersonalEvent($title, $description, $startdate, $enddate, $idcals
 			$mail->mailFrom($GLOBALS['BAB_SESS_EMAIL'], $GLOBALS['BAB_SESS_USER']);
 			}
 
-		$tempc = new clsNotifyAttendees($title, $description, $startdate, $enddate);
+		$mail->mailSubject($message);
+
+		$tempc = new clsNotifyAttendees($title, $description, $startdate, $enddate, $message);
 		$tempc->asHtml();
 		$message = $mail->mailTemplate(bab_printTemplate($tempc,"mailinfo.html", "newevent"));
-		$mail->mailSubject(bab_translate("New appointement"));
+		
 		$mail->mailBody($message, "html");
 
 		$tempc->asText();
@@ -780,7 +849,7 @@ function notifyPersonalEvent($title, $description, $startdate, $enddate, $idcals
 	}
 
 
-function notifyPublicEvent($title, $description, $startdate, $enddate, $idcals)
+function notifyPublicEvent($title, $description, $startdate, $enddate, $idcals, $message)
 	{
 	global $babBody, $babDB, $babAdminEmail;
 
@@ -788,25 +857,19 @@ function notifyPublicEvent($title, $description, $startdate, $enddate, $idcals)
 		{
 		class clsNotifyPublicEvent extends clsNotifyEvent
 			{
-			var $title;
-			var $message;
-			var $description;
-			var $startdate;
-			var $enddate;
-			var $descriptiontxt;
-			var $titletxt;
-			var $startdatetxt;
-			var $enddatetxt;
+			var $calendar;
 
-			function clsNotifyPublicEvent($title, $description, $startdate, $enddate)
+
+			function clsNotifyPublicEvent($title, $description, $startdate, $enddate, $message)
 				{
-				$this->message = bab_translate("New appointement");
+				$this->message = $message;
 				$this->calendar = "";
 				
 				$this->vars['title'] 		= $title;
 				$this->vars['description'] 	= $description;
 				$this->vars['startdate'] 	= $startdate;
 				$this->vars['enddate'] 		= $enddate;
+				$this->vars['message'] 		= $message;
 				}
 			}
 		}
@@ -826,13 +889,13 @@ function notifyPublicEvent($title, $description, $startdate, $enddate, $idcals)
 			{
 			$mail->mailFrom($GLOBALS['BAB_SESS_EMAIL'], $GLOBALS['BAB_SESS_USER']);
 			}
-		$tempc = new clsNotifyPublicEvent($title, $description, $startdate, $enddate);
+		$tempc = new clsNotifyPublicEvent($title, $description, $startdate, $enddate, $message);
 
 		$arrusers = array();
 		for( $i = 0; $i < count($idcals); $i++ )
 			{
 			$tempc->calendar = bab_getCalendarOwnerName($idcals, BAB_CAL_PUB_TYPE);
-			$mail->mailSubject(bab_translate("New appointement"));
+			$mail->mailSubject($message);
 			
 			
 			
@@ -880,7 +943,13 @@ function notifyPublicEvent($title, $description, $startdate, $enddate, $idcals)
 
 
 
-	
+/**
+ * Get users to notify for a calendar, do not notify a person twice in the same refresh
+ * @param	int		$id_cal
+ * @param	int		$cal_type
+ * @param 	int 	$id_owner
+ * @return 	array
+ */
 function cal_usersToNotiy($id_cal, $cal_type, $id_owner) {
 
 	include_once $GLOBALS['babInstallPath']."admin/acl.php";
@@ -915,6 +984,17 @@ function cal_usersToNotiy($id_cal, $cal_type, $id_owner) {
 		unset($arrusers[$GLOBALS['BAB_SESS_USERID']]);
 	}
 	
+	static $sent = NULL;
+	
+	if (NULL === $sent) {
+		$sent = $arrusers;
+	} else {
+		$tmp = array_intersect_key($arrusers, $sent );
+		foreach($tmp as $id_user => $arr) {
+			unset($arrusers[$id_user]);
+		}
+	}
+	
 	return $arrusers;
 }
 
@@ -924,7 +1004,7 @@ function cal_usersToNotiy($id_cal, $cal_type, $id_owner) {
 
 
 
-function notifyResourceEvent($title, $description, $startdate, $enddate, $idcals)
+function notifyResourceEvent($title, $description, $startdate, $enddate, $idcals, $message)
 	{
 	global $babBody, $babDB, $babAdminEmail;
 
@@ -933,18 +1013,17 @@ function notifyResourceEvent($title, $description, $startdate, $enddate, $idcals
 		class clsNotifyResourceEvent extends clsNotifyEvent
 			{
 
-			var $message;
 			var $calendar;
 
-			function clsNotifyResourceEvent($title, $description, $startdate, $enddate)
+			function clsNotifyResourceEvent($title, $description, $startdate, $enddate, $message)
 				{
-				$this->message = bab_translate("New appointement");
 				$this->calendar = "";
 				
 				$this->vars['title'] 		= $title;
 				$this->vars['description'] 	= $description;
 				$this->vars['startdate'] 	= $startdate;
 				$this->vars['enddate'] 		= $enddate;
+				$this->vars['message'] 		= $message;
 				}
 			}
 		}
@@ -964,13 +1043,13 @@ function notifyResourceEvent($title, $description, $startdate, $enddate, $idcals
 			{
 			$mail->mailFrom($GLOBALS['BAB_SESS_EMAIL'], $GLOBALS['BAB_SESS_USER']);
 			}
-		$tempc = new clsNotifyResourceEvent($title, $description, $startdate, $enddate);
+		$tempc = new clsNotifyResourceEvent($title, $description, $startdate, $enddate, $message);
 		
 
 		for( $i = 0; $i < count($idcals); $i++ )
 			{
 			$tempc->calendar = bab_getCalendarOwnerName($idcals[$i], BAB_CAL_RES_TYPE);
-			$mail->mailSubject(bab_translate("New appointement"));
+			$mail->mailSubject($message);
 			
 			$tempc->asHtml();
 			$message = $mail->mailTemplate(bab_printTemplate($tempc,"mailinfo.html", "newevent"));
@@ -1021,18 +1100,17 @@ function notifyEventApprobation($evtid, $bconfirm, $raison, $calname)
 		{
 		class clsNotifyEventApprobation extends clsNotifyEvent
 			{
-			var $message;
 			var $calendar;
 
 			function clsNotifyEventApprobation(&$evtinfo, $raison, $calname)
 				{
-				$this->message = $raison;
 				$this->calendar = $calname;
 				
 				$this->vars['title'] 		= $evtinfo['title'];
 				$this->vars['description'] 	= $evtinfo['description'];
 				$this->vars['startdate'] 	= bab_longDate(bab_mktime($evtinfo['start_date']));
 				$this->vars['enddate'] 		= bab_longDate(bab_mktime($evtinfo['end_date']));
+				$this->vars['message'] 		= $raison;
 				}
 			}
 		}
@@ -1089,18 +1167,17 @@ function notifyEventUpdate($evtid, $bdelete)
 		{
 		class clsnotifyEventUpdate extends clsNotifyEvent
 			{
-			var $message;
 			var $calendar;
 
 			function clsnotifyEventUpdate(&$evtinfo)
 				{
-				$this->message = '';
 				$this->calendar = '';
 				
 				$this->vars['title'] 		= $evtinfo['title'];
 				$this->vars['description'] 	= $evtinfo['description'];
 				$this->vars['startdate'] 	= bab_longDate(bab_mktime($evtinfo['start_date']));
 				$this->vars['enddate'] 		= bab_longDate(bab_mktime($evtinfo['end_date']));
+				$this->vars['message'] 		= '';
 				}
 			}
 		}

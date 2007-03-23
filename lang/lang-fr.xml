@@ -2422,5 +2422,7 @@
 <string id="File(s)">Fichier(s)</string>
 <string id="Writable upload directory, absolute path">Répertoire des fichiers accessible en écriture, avec un chemin absolu</string>
 <string id="Error on upgrade">Erreur lors de la mise à jour</string>
+<string id="The calendar %s has been removed from an appointement">L'agenda %s à été retiré d'un événement</string>
+<string id="An appointement has been removed">Un événement à été supprimé</string>
 
 </fr>

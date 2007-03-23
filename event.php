@@ -1228,19 +1228,26 @@ function updateEvent(&$message)
 
 function confirmDeleteEvent()
 {
-	global $babDB;
+	global $babBody, $babDB;
 	include_once $GLOBALS['babInstallPath'].'utilit/afincl.php';
 	
+	$res = $babDB->db_query("select * from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($GLOBALS['evtid'])."'");
+	$event = $babDB->db_fetch_array($res);
 	
+	$calendars = array();
+	
+	$res = $babDB->db_query('SELECT * FROM '.BAB_CAL_EVENTS_OWNERS_TBL.' WHERE id_event='.$babDB->quote($GLOBALS['evtid']));
+	while ($row = $babDB->db_fetch_assoc($res)) {
+		$calendars[$row['id_cal']] = $row['id_cal'];
+	}
 	
 	if( $GLOBALS['bupdrec'] == "1" )
 		{
 		$date_min = '9999-99-99 99:99:99';
 		$date_max = '0000-00-00 00:00:00';
 	
-		$res = $babDB->db_query("select hash from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($GLOBALS['evtid'])."'");
-		$arr = $babDB->db_fetch_array($res);
-		if( $arr['hash'] != "" && $arr['hash'][0] == 'R')
+		
+		if( $event['hash'] != "" && $event['hash'][0] == 'R')
 			{
 			$res = $babDB->db_query("select id, start_date, end_date from ".BAB_CAL_EVENTS_TBL." where hash='".$babDB->db_escape_string($arr['hash'])."'");
 			while( $arr = $babDB->db_fetch_array($res) )
@@ -1265,11 +1272,8 @@ function confirmDeleteEvent()
 		}
 	else
 		{
-		$res = $babDB->db_query("select start_date, end_date from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($GLOBALS['evtid'])."'");
-		$arr = $babDB->db_fetch_array($res);
-		
-		$date_min = $arr['start_date'];
-		$date_max = $arr['end_date'];
+		$date_min = $event['start_date'];
+		$date_max = $event['end_date'];
 		
 		$babDB->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($GLOBALS['evtid'])."'");
 		$res2 = $babDB->db_query("select idfai from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event='".$babDB->db_escape_string($GLOBALS['evtid'])."'");
@@ -1284,6 +1288,22 @@ function confirmDeleteEvent()
 		$babDB->db_query("delete from ".BAB_CAL_EVENTS_NOTES_TBL." where id_event='".$babDB->db_escape_string($GLOBALS['evtid'])."'");
 		$babDB->db_query("delete from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_event='".$babDB->db_escape_string($GLOBALS['evtid'])."'");
 		}
+		
+		
+	foreach($calendars as $id_cal) {
+		$cal = $babBody->icalendars->getCalendarInfo($id_cal);
+			
+		cal_notify(
+			$event['title'], 
+			$event['description'], 
+			$startdate = bab_longDate(bab_mktime($event['start_date'])),
+			$enddate = bab_longDate(bab_mktime($event['end_date'])),
+			$id_cal, 
+			$cal['type'], 
+			$cal['idowner'],
+			bab_translate("An appointement has been removed")
+			);
+	}
 		
 	include_once $GLOBALS['babInstallPath'].'utilit/eventperiod.php';
 	$event = new bab_eventPeriodModified(bab_mktime($date_min), bab_mktime($date_max), false);
