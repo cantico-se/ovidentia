@@ -313,6 +313,8 @@ function upgrade($id)
 
 					if (empty($row['version'])) {
 						$from_version = '0.0';
+					} else {
+						$from_version = $row['version'];
 					}
 					bab_setUpgradeLogMsg($row['title'], sprintf('The addon has been updated from %s to %s', $from_version, $ini_version));
 
