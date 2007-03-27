@@ -2786,19 +2786,20 @@ function upgrade601to602()
 	// working days
 	
 	
+	function setUserWd($id_user, $WDStr) {
+		$awd = explode(',',$WDStr);
+
+		$db = &$GLOBALS['babDB'];
+		foreach($awd as $d) {
+			$db->db_query("INSERT INTO ".BAB_WORKING_HOURS_TBL."( weekDay, idUser,  startHour, endHour) VALUES (".$db->quote($d).','.$db->quote($id_user).", '00:00:00', '24:00:00')");
+		}
+	}
+	
+	
 	if (bab_isTableField(BAB_SITES_TBL, 'workdays')) {
 	
 		$db->db_query("DELETE FROM ".BAB_WORKING_HOURS_TBL." WHERE idUser='0'");
-	
-		function setUserWd($id_user, $WDStr) {
-			$awd = explode(',',$WDStr);
-	
-			$db = &$GLOBALS['babDB'];
-			foreach($awd as $d) {
-				$db->db_query("INSERT INTO ".BAB_WORKING_HOURS_TBL."( weekDay, idUser,  startHour, endHour) VALUES (".$db->quote($d).','.$db->quote($id_user).", '00:00:00', '24:00:00')");
-			}
-		}
-	
+
 		$res = $db->db_query("SELECT workdays FROM ".BAB_SITES_TBL." WHERE name=".$db->quote($GLOBALS['babSiteName']));
 		$arr = $db->db_fetch_assoc($res);
 		setUserWd(0, $arr['workdays']);
