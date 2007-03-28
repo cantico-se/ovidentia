@@ -447,14 +447,13 @@
 			$this->m_aAvailableTaskResponsible = array();
 			$this->getTaskInfo();
 
-			$this->m_bIsManager = ($this->m_iUserProfil == BAB_TM_PERSONNAL_TASK_OWNER || $this->m_iUserProfil == BAB_TM_PROJECT_MANAGER);
+			$this->m_bIsManager = ($this->m_iUserProfil == BAB_TM_PERSONNAL_TASK_OWNER || 
+				$this->m_iUserProfil == BAB_TM_PROJECT_MANAGER);
 			
 			$this->m_aRelation = array(BAB_TM_NONE => bab_translate("None"), BAB_TM_END_TO_START => bab_translate("End to start"), BAB_TM_START_TO_START => bab_translate("Start to start"));
 
-			if($this->m_bIsManager ||  (is_array($this->m_aCfg) && BAB_TM_YES === (int) $this->m_aCfg['tskUpdateByMgr']))
-			{
-				$this->set_data('isModifiable', ($this->m_bIsManager || $this->m_iUserProfil == BAB_TM_PROJECT_MANAGER));
-			}
+			$bIsModifiable = ($this->m_bIsManager ||  (is_array($this->m_aCfg) && BAB_TM_YES === (int) $this->m_aCfg['tskUpdateByMgr']));
+			$this->set_data('isModifiable', $bIsModifiable);
 			
 			$this->set_data('isDeletable', ($this->m_bIsManager));
 			
