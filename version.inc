@@ -28,6 +28,7 @@ name="ovidentia"
 description="Ovidentia"
 db_prefix="bab_"
 version="6.3.0"
+; forbidden_upgrades="6.3.0,6.3.1"
 
 ; available since 5.8.1
 
@@ -39,6 +40,7 @@ php_version="4.1.2"
 mod_mysql="Available"
 mysql_version="3.23" 
 mod_zlib="Available"
+
 
 [recommendations]
 register_globals="Off"

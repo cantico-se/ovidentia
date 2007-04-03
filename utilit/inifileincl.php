@@ -418,6 +418,25 @@ class bab_inifile {
 		}
 		return '';
 	}
+	
+	/**
+	 * @param	string	$version (x.y.z)
+	 * @return boolean
+	 */
+	function is_upgrade_allowed($version) {
+		if (!isset($this->inifile['forbidden_upgrades'])) {
+			return true;
+		}
+		
+		$forbidden = explode(',',$this->inifile['forbidden_upgrades']);
+		foreach($forbidden as $fn) {
+			if ($version === trim($fn)) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
 
 	/**
 	 * The list of requirements specified in the ini file

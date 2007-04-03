@@ -435,6 +435,13 @@ function unzipcore()
 				$babBody->msgerror = bab_translate("The installed version is newer than the package");
 				return false;
 			}
+			
+			
+			if (false === $current_version_ini->is_upgrade_allowed($zipversion)) {
+				$babBody->msgerror = bab_translate("The installed version is not compliant with this package, the upgrade within theses two versions has been disabled");
+				return false;
+			}
+			
 
 			if (!$ini->isValid()) {
 				$requirements = $ini->getRequirements();
