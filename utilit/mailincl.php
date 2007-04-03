@@ -274,7 +274,7 @@ class babMail
 			}
 
 			foreach($this->attachements as $k => $arr) {
-				$newname = $dir.uniqid($arr[0].time());
+				$newname = $dir.md5(uniqid(rand(), true));
 				if (is_file($arr[0])) {
 					copy($arr[0], $newname);
 					$this->attachements[$k][0] = $newname;
