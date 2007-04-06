@@ -1605,9 +1605,9 @@ class bab_ArticleTreeView extends bab_TreeView
 				$element =& $this->createElement('topic' . BAB_TREE_VIEW_ID_SEPARATOR . $topic['id'],
 												 $elementType,
 												 bab_toHtml($topic['category']),
-												 $topic['description'],
+												 ''/*$topic['description']*/,
 												 $link);
-				$element->setInfo($topic['description']);
+				$element->setInfo(''/*$topic['description']*/);
 				$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/topic.png');
 				$parentId = ($topic['id_cat'] === '0' ? null :
 													'category' . BAB_TREE_VIEW_ID_SEPARATOR . $topic['id_cat']);
@@ -1639,9 +1639,9 @@ class bab_ArticleTreeView extends bab_TreeView
 			$element =& $this->createElement('category' . BAB_TREE_VIEW_ID_SEPARATOR . $category['id'],
 											 $elementType,
 											 bab_toHtml($category['title']),
-											 $category['description'],
+											 ''/*$category['description']*/,
 											 '');
-			$element->setInfo($category['description']);
+			$element->setInfo(''/*$category['description']*/);
 			$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/category.png');
 			$parentId = ($category['id_parent'] === '0' ? null :
 											'category' . BAB_TREE_VIEW_ID_SEPARATOR . $category['id_parent']);
