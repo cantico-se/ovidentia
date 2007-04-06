@@ -2426,5 +2426,6 @@
 <string id="An appointement has been removed">Un événement à été supprimé</string>
 <string id="The user's groups">Les groupes de l'utilisateur</string>
 <string id="The installed version is not compliant with this package, the upgrade within theses two versions has been disabled">La version installée n'est pas compatible avec cette archive, la mise à jour entre ces deux versions à été désactivée</string>
+<string id="Approbation schemas instances list">Liste des instances des schémas d'approbation</string>
 
 </fr>
