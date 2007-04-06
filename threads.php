@@ -147,7 +147,7 @@ function listThreads($forum, $active, $pos)
 			list($this->iddir) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group='".$babDB->db_escape_string(BAB_REGISTERED_GROUP)."'"));
 			}
 
-		function getnext()
+		function getnext(&$skip)
 			{
 			global $babBody, $babDB, $BAB_SESS_USERID;
 			static $i = 0;
@@ -199,6 +199,9 @@ function listThreads($forum, $active, $pos)
 				if( $row['total'] == 0 && $this->moderator == false && ($this->bupdateauthor == 'N' || ($BAB_SESS_USERID && $BAB_SESS_USERID != $this->arrthread['starter']) )  )
 					{
 					$this->disabled = 1;
+					$skip = true;
+					$i++;
+					return true;
 					}
 				else
 					{
@@ -209,9 +212,13 @@ function listThreads($forum, $active, $pos)
 				$res = $babDB->db_query("select count(*) as total from ".BAB_POSTS_TBL." where id_thread='".$babDB->db_escape_string($this->arrthread['id'])."' and confirmed='N'");
 				$ar = $babDB->db_fetch_array($res);
 				if( $this->arrthread['active'] != 'N' && $ar['total'] > 0)
+					{
 					$this->status = '*';
+					}
 				else
+					{
 					$this->status = '';
+					}
 
 				$this->gotothreadpages = array();
 				if( ($row['total'] ) > $this->maxrows)
