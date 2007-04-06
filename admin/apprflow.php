@@ -31,6 +31,122 @@ include_once $babInstallPath.'utilit/afincl.php';
 
 //define("BAB_DEBUG_FA", 1);
 
+function listSchemasInstances()
+{
+	global $babBody;
+	class listSchemasInstancesCls
+		{
+		var $title;
+		var $urltxt;
+		var $url;
+		var $description;
+		var $altbg = true;
+
+		function listSchemasInstancesCls()
+			{
+			global $babBody, $babDB;
+			$this->schnametxt = bab_translate("Name");
+			$this->schdesctxt = bab_translate("Description");
+			$this->schtypetxt = bab_translate("Type");
+			$this->roles = bab_translate("Roles");
+			$this->nominative = bab_translate("Nominative");
+			$this->groups = bab_translate("Groups");
+			$this->orgnametxt = bab_translate("Charts");
+			$this->none = bab_translate("None");
+			$this->instancetxt = bab_translate("Instance");
+			$this->updatetxt = bab_translate("Update");
+			$req = "select fai.id as instnbr, fai.iduser, fai.extra, fa.*, oc.name as orgname from ".BAB_FA_INSTANCES_TBL." fai left join  ".BAB_FLOW_APPROVERS_TBL." fa on fa.id=fai.idsch left join ".BAB_ORG_CHARTS_TBL." oc on oc.id=fa.id_oc where fa.id_dgowner='".$babDB->db_escape_string($babBody->currentAdmGroup)."' order by fa.name asc";
+			$this->res = $babDB->db_query($req);
+
+			$this->count = $babDB->db_num_rows($this->res);
+
+			$req = "select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babBody->currentAdmGroup."' order by name asc";
+			$this->sares = $babDB->db_query($req);
+			if( !$this->sares )
+				{
+				$this->sacount = 0;
+				}
+			else
+				{
+				$this->sacount = $babDB->db_num_rows($this->sares);
+				}
+			}
+
+		function getnext()
+			{
+			global $babDB;
+			static $i = 0;
+			if( $i < $this->count)
+				{
+				$this->altbg = $this->altbg ? false : true;
+				$arr = $babDB->db_fetch_array($this->res);
+				$this->urltxt = $arr['instnbr'].'('.$arr['extra'].')';
+				$this->currentsa = $arr['id'];
+				$this->idschi = $arr['instnbr'];
+				switch($arr['satype'])
+					{
+					case 1:
+						$this->schtypeval = $this->roles;
+						break;
+					case 2:
+						$this->schtypeval = $this->groups;
+						break;
+					default:
+						$this->schtypeval = $this->nominative;
+						break;
+					}
+
+				$this->schdescval = $arr['name'];
+				if( $arr['orgname'] )
+					{
+					$this->orgnameval = $arr['orgname'];
+					}
+				else
+					{
+					$this->orgnameval = '';
+					}
+
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+
+		function getnextschapp(&$skip)
+			{
+			global $babDB;
+			static $i = 0;
+			if( $i < $this->sacount)
+				{
+				$arr = $babDB->db_fetch_array($this->sares);
+				$this->saname = $arr['name'];
+				$this->said = $arr['id'];
+				if( $this->said == $this->currentsa )
+					{
+					$skip = true;
+					}
+				$i++;
+				return true;
+				}
+			else
+				{
+				if( $this->sacount > 0 )
+					{
+					$babDB->db_data_seek($this->sares, 0);
+					}
+				$i = 0;
+				return false;
+				}
+			}
+		}
+
+	$temp = new listSchemasInstancesCls();
+	$babBody->babecho(bab_printTemplate($temp, "apprflow.html", "schemasinstanceslist"));
+}
+
+
+
 function getApprovalSchemaName($id)
 {
 	global $babDB;
@@ -574,6 +690,42 @@ function confirmDeleteSchema($id)
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=apprflow&idx=list");
 	}
 
+function updateSchemaInstances($instances)
+{
+	global $babDB, $babBody;
+
+	for( $k = 0; $k < count($instances); $k++ )
+	{
+		if( !empty($instances[$k]))
+		{
+			$tt = explode('-', $instances[$k]);
+			if( count($tt) == 2 )
+			{
+				$newsch = intval($tt[0]);
+				$inst = intval($tt[1]);
+				if( !empty($newsch) && !empty($inst))
+				{
+					$res = $babDB->db_query("select * from ".BAB_FA_INSTANCES_TBL." where id ='".$babDB->db_escape_string($inst)."'");
+					if( $res && $babDB->db_num_rows($res) )
+					{
+					$arinst = $babDB->db_fetch_array($res);
+					$idschi = makeFlowInstance($newsch, $arinst['extra']);
+					if( $idschi )
+						{
+						deleteFlowInstance($arinst['id']);
+						$babDB->db_query("update ".BAB_FA_INSTANCES_TBL." set id='".$arinst['id']."' where id='".$idschi."'" );
+						$babDB->db_query("update ".BAB_FAR_INSTANCES_TBL." set idschi='".$arinst['id']."' where idschi='".$idschi."'" );
+						$nfusers = getWaitingApproversFlowInstance($arinst['id'], true);
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+
+
 /* main */
 if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['approbations'] != 'Y')
 {
@@ -624,6 +776,11 @@ if( isset($_POST['add']))
 		$idx = "delsc";
 		}
 	}
+elseif( isset($_POST['updsch']) && $_POST['updsch'] == 'updsch')
+	{
+		updateSchemaInstances(isset($_POST['newidsch'])? $_POST['newidsch']: array());
+		$idx = 'linst';
+	}
 
 if( 'Yes' == bab_rp('action'))
 	{
@@ -640,6 +797,10 @@ switch($idx)
 		$babBody->addItemMenu("newc", bab_translate("Group schema"), $GLOBALS['babUrlScript']."?tg=apprflow&idx=newc&type=2");
 		$babBody->addItemMenu("delsc", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=apprflow&idx=delsc");
 		schemaDelete($idsch);
+		if( isset($GLOBALS['babShowApprobationInstances']) && $GLOBALS['babShowApprobationInstances'] === true)
+		{
+		$babBody->addItemMenu("linst", bab_translate("Instances"), $GLOBALS['babUrlScript']."?tg=apprflow&idx=linst");
+		}
 		break;
 
 	case "mod":
@@ -650,6 +811,10 @@ switch($idx)
 		$babBody->addItemMenu("newa", bab_translate("Nominative schema"), $GLOBALS['babUrlScript']."?tg=apprflow&idx=newa&type=0");
 		$babBody->addItemMenu("newb", bab_translate("Staff schema"), $GLOBALS['babUrlScript']."?tg=apprflow&idx=newb&type=1");
 		$babBody->addItemMenu("newc", bab_translate("Group schema"), $GLOBALS['babUrlScript']."?tg=apprflow&idx=newc&type=2");
+		if( isset($GLOBALS['babShowApprobationInstances']) && $GLOBALS['babShowApprobationInstances'] === true)
+		{
+		$babBody->addItemMenu("linst", bab_translate("Instances"), $GLOBALS['babUrlScript']."?tg=apprflow&idx=linst");
+		}
 		break;
 	case "newb":
 		if( !isset($_POST['ocid']) || empty($_POST['ocid']))
@@ -660,6 +825,10 @@ switch($idx)
 		$babBody->addItemMenu("newa", bab_translate("Nominative schema"), $GLOBALS['babUrlScript']."?tg=apprflow&idx=newa&type=0");
 		$babBody->addItemMenu("newb", bab_translate("Staff schema"), $GLOBALS['babUrlScript']."?tg=apprflow&idx=newb&type=1");
 		$babBody->addItemMenu("newc", bab_translate("Group schema"), $GLOBALS['babUrlScript']."?tg=apprflow&idx=newc&type=2");
+		if( isset($GLOBALS['babShowApprobationInstances']) && $GLOBALS['babShowApprobationInstances'] === true)
+		{
+		$babBody->addItemMenu("linst", bab_translate("Instances"), $GLOBALS['babUrlScript']."?tg=apprflow&idx=linst");
+		}
 		break;
 		}
 		/* no break; */
@@ -677,6 +846,10 @@ switch($idx)
 		$babBody->addItemMenu("newa", bab_translate("Nominative schema"), $GLOBALS['babUrlScript']."?tg=apprflow&idx=newa&type=0");
 		$babBody->addItemMenu("newb", bab_translate("Staff schema"), $GLOBALS['babUrlScript']."?tg=apprflow&idx=newb&type=1");
 		$babBody->addItemMenu("newc", bab_translate("Group schema"), $GLOBALS['babUrlScript']."?tg=apprflow&idx=newc&type=2");
+		if( isset($GLOBALS['babShowApprobationInstances']) && $GLOBALS['babShowApprobationInstances'] === true)
+		{
+		$babBody->addItemMenu("linst", bab_translate("Instances"), $GLOBALS['babUrlScript']."?tg=apprflow&idx=linst");
+		}
 		break;
 	case "test":
 		if( defined("BAB_DEBUG_FA"))
@@ -699,6 +872,22 @@ switch($idx)
 		$babBody->addItemMenu("newa", bab_translate("Nominative schema"), $GLOBALS['babUrlScript']."?tg=apprflow&idx=newa&type=0");
 		$babBody->addItemMenu("newb", bab_translate("Staff schema"), $GLOBALS['babUrlScript']."?tg=apprflow&idx=newb&type=1");
 		$babBody->addItemMenu("newc", bab_translate("Group schema"), $GLOBALS['babUrlScript']."?tg=apprflow&idx=newc&type=2");
+		if( isset($GLOBALS['babShowApprobationInstances']) && $GLOBALS['babShowApprobationInstances'] === true)
+		{
+		$babBody->addItemMenu("linst", bab_translate("Instances"), $GLOBALS['babUrlScript']."?tg=apprflow&idx=linst");
+		}
+		break;
+	case "linst":
+		if( isset($GLOBALS['babShowApprobationInstances']) && $GLOBALS['babShowApprobationInstances'] === true)
+		{
+		$babBody->title = bab_translate("Approbation schemas instances list");
+		listSchemasInstances();
+		$babBody->addItemMenu("list", bab_translate("Schemas"),$GLOBALS['babUrlScript']."?tg=apprflow&idx=list");
+		$babBody->addItemMenu("newa", bab_translate("Nominative schema"), $GLOBALS['babUrlScript']."?tg=apprflow&idx=newa&type=0");
+		$babBody->addItemMenu("newb", bab_translate("Staff schema"), $GLOBALS['babUrlScript']."?tg=apprflow&idx=newb&type=1");
+		$babBody->addItemMenu("newc", bab_translate("Group schema"), $GLOBALS['babUrlScript']."?tg=apprflow&idx=newc&type=2");
+		$babBody->addItemMenu("linst", bab_translate("Instances"), $GLOBALS['babUrlScript']."?tg=apprflow&idx=linst");
+		}
 		break;
 	default:
 		break;

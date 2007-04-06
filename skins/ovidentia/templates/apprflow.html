@@ -226,3 +226,47 @@ function closepop()
 <br>
 </form>
 <!--#end orgchartslist -->
+
+<!--#begin schemasinstanceslist -->
+<form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="apprflow">
+<input type="hidden" name="updsch" value="updsch">
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+	<table width="100%" border="0" cellspacing="0" cellpadding="5">
+	<tr class="BabSiteAdminTitleFontBackground"> 
+		<td>{ instancetxt }</td>
+		<td>{ schnametxt }</td>
+		<td>{ schtypetxt }</td>
+		<td>{ orgnametxt }</td>
+		<td>&nbsp;</td>
+	</tr>
+	<!--#in getnext -->
+	<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+		<td>{ urltxt }</td>
+		<td>{ schdescval }</td>
+		<td>{ schtypeval }</td>
+		<td>{ orgnameval }</td>
+		<td>
+		<select name="newidsch[]">
+          <option value=""></option>
+		  <!--#in getnextschapp -->
+		  <option value="{ said }-{ idschi }">{ saname }</option>
+		  <!--#endin getnextschapp -->
+		</select>
+		</td>
+	</tr>
+	<!--#endin getnext -->
+	</table>
+</td>
+</tr>
+<tr> 
+<td align="center"> 
+<br>
+<input type="submit" name="submit" value="{ updatetxt }" />
+</td>
+</tr>
+</table>
+</form>
+<!--#end schemasinstanceslist -->
