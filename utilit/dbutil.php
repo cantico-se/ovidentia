@@ -377,10 +377,14 @@ class babDatabase extends bab_database
 		return parent::db_escape_string($str);
 		}
 
+	
 	function quote($param) 
 		{
 			if (is_array($param)) {
-				array_walk($param, create_function('&$v,$k', '$v = $GLOBALS[\'babDB\']->db_escape_string($v);'));
+				foreach($param as $key => $value) {
+					$param[$key] = $this->db_escape_string($value);
+				}
+				
 				return "'".implode("','",$param)."'";
 			} else {
 				return "'".parent::db_escape_string($param)."'";
