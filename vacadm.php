@@ -622,10 +622,11 @@ function addGroupVacationPersonnel()
 		
 		function getnextsa()
 			{
+			global $babDB;
 			static $j= 0;
 			if( $j < $this->countsa )
 				{
-				global $babDB;
+				
 				$arr = $babDB->db_fetch_array($this->sares);
 				$this->saname = bab_toHtml($arr['name']);
 				$this->idsapp = bab_toHtml($arr['id']);
