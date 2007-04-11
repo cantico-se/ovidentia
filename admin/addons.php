@@ -251,6 +251,9 @@ function disableAddons($addons)
 		$req = "update ".BAB_ADDONS_TBL." set enabled='".$enabled."' where id='".$row['id']."'";
 		$db->db_query($req);
 		}
+		
+	$db->db_query("TRUNCATE bab_vac_calendar");
+
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=addons&idx=list");
 	exit;
 	}
@@ -796,6 +799,7 @@ if( isset($update))
 if( isset($acladd))
 	{
 	maclGroups();
+	$babDB->db_query("TRUNCATE bab_vac_calendar");
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=addons&idx=list&errormsg=".urlencode($babBody->msgerror));
 	}
 
