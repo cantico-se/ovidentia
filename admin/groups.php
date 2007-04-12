@@ -86,7 +86,7 @@ function groupCreateMod()
 			else
 				$id_parent = $tree->firstnode_info['id'];
 			
-			$this->groups = $tree->getGroups($id_parent, '%s &nbsp; &nbsp; &nbsp; ');
+			$this->groups = $tree->getGroups($id_parent, '%s '.chr(160).' '.chr(160).' ');
 
 			if (isset($this->groups[BAB_UNREGISTERED_GROUP]))
 				{
@@ -149,7 +149,7 @@ function groupCreateMod()
 			{
 			if (list($this->id, $arr) = each($this->groups))
 				{
-				$this->name = $arr['name'];
+				$this->name = bab_toHtml($arr['name']);
 				$this->selected = $this->id == $this->arr['id_parent'];
 				return true;
 				}

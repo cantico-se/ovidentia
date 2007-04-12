@@ -210,8 +210,8 @@ function setColor(color)
 
 <!--#begin personalcalendars -->
 <form method="post" action="{ babPhpSelf }" name="listform">
-<input type="hidden" name="tg" value="admcals">
-<input type="hidden" name="idx" value="user">
+<input type="hidden" name="tg" value="admcals" />
+<input type="hidden" name="idx" value="user" />
 <table border="0" width="70%" cellpadding="2" cellspacing="0" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
@@ -226,7 +226,7 @@ function setColor(color)
 { urlname } 
 </td>
 <td valign="middle" width="0%" align="center"> 
-<input type="checkbox" name="calperids[]" { pcalcheck } value="{ grpid }">
+<input type="checkbox" name="calperids[]" <!--#if pcalcheck --> checked="checked"<!--#endif pcalcheck --> value="{ grpid }" />
 </td>
 </tr>        
 <!--#endin getnext -->

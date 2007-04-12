@@ -1131,7 +1131,7 @@ function siteRegistration($id)
 			include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
 
 			$tree = new bab_grptree();
-			$this->groups = $tree->getGroups(BAB_REGISTERED_GROUP, '%s &nbsp; &nbsp; &nbsp; ');
+			$this->groups = $tree->getGroups(BAB_REGISTERED_GROUP, '%s '.chr(160).' '.chr(160).' ');
 			unset($this->groups[BAB_ADMINISTRATOR_GROUP]);
 
 			$this->arrsite = $babDB->db_fetch_array($babDB->db_query("select registration, email_confirm, display_disclaimer, idgroup from ".BAB_SITES_TBL." where id='".$babDB->db_escape_string($id)."'"));
@@ -1215,7 +1215,7 @@ function siteRegistration($id)
 
 			if( list(,$arr) = each($this->groups) )
 				{
-                $this->grpname = $arr['name'];
+                $this->grpname = bab_toHtml($arr['name']);
                 $this->grpid = $arr['id'];
 				if( $this->arrsite['idgroup'] == $this->grpid )
 					{

@@ -21,11 +21,16 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
+
+/**
+* @internal SEC1 PR 12/04/2007 FULL
+*/
+
 include_once "base.php";
 include_once $babInstallPath."utilit/evtincl.php";
 include_once $babInstallPath."utilit/calincl.php";
 
-function modifyCalendarCategory($idcat, $catname, $catdesc, $bgcolor)
+function modifyCalendarCategory()
 	{
 	global $babBody;
 	class modifyCalendarCategoryCls
@@ -37,11 +42,10 @@ function modifyCalendarCategory($idcat, $catname, $catdesc, $bgcolor)
 		var $idgrp;
 		var $count;
 		var $add;
-		var $db;
 		var $arrgroups = array();
 		var $userid;
 
-		function modifyCalendarCategoryCls($idcat, $catname, $catdesc, $bgcolor)
+		function modifyCalendarCategoryCls()
 			{
 			global $babDB;
 
@@ -49,40 +53,45 @@ function modifyCalendarCategory($idcat, $catname, $catdesc, $bgcolor)
 			$this->desctxt = bab_translate("Description");
 			$this->bgcolortxt = bab_translate("Color");
 			$this->addtxt = bab_translate("Update");
-			$this->idcat = $idcat;
+			
+			$this->idcat = $idcat = bab_rp('idcat');
+			$catname = bab_rp('catname');
+			$catdesc = bab_rp('catdesc');
+			$bgcolor = bab_rp('bgcolor');
+			
 			$this->add = 'updcat';
 			$this->tgval = 'admcal';
-			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_CAL_CATEGORIES_TBL." where id=".$babDB->quote($idcat)));
+			$arr = $babDB->db_fetch_array($babDB->db_query("SELECT * FROM ".BAB_CAL_CATEGORIES_TBL." WHERE id=".$babDB->quote($idcat)));
 			if( !empty($catname))
 				{
-				$this->name = $catname;
+				$this->name = bab_toHtml($catname);
 				}
 			else
 				{
-				$this->name = $arr['name'];
+				$this->name = bab_toHtml($arr['name']);
 				}
 			if( !empty($catdesc))
 				{
-				$this->desc = $catdesc;
+				$this->desc = bab_toHtml($catdesc);
 				}
 			else
 				{
-				$this->desc = $arr['description'];
+				$this->desc = bab_toHtml($arr['description']);
 				}
 
 			if( !empty($bgcolor))
 				{
-				$this->bgcolor = $bgcolor;
+				$this->bgcolor = bab_toHtml($bgcolor);
 				}
 			else
 				{
-				$this->bgcolor = $arr['bgcolor'];
+				$this->bgcolor = bab_toHtml($arr['bgcolor']);
 				}
-			$this->selctorurl = $GLOBALS['babUrlScript']."?tg=selectcolor&idx=popup&callback=setColor";
+			$this->selctorurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=selectcolor&idx=popup&callback=setColor");
 			}
 		}
 
-	$temp = new modifyCalendarCategoryCls($idcat, $catname, $catdesc, $bgcolor);
+	$temp = new modifyCalendarCategoryCls();
 	$babBody->babecho( bab_printTemplate($temp,"admcals.html", "categorycreate"));
 	}
 
@@ -102,30 +111,30 @@ function modifyCalendarResource($idcal, $name, $desc, $idsa)
 			$this->addtxt = bab_translate("Modify");
 			$this->approbationtxt = bab_translate("Approbation schema");
 			$this->nonetxt = bab_translate("None");
-			$arr = $babDB->db_fetch_array($babDB->db_query("select cpt.* from ".BAB_CAL_RESOURCES_TBL." cpt left join ".BAB_CALENDAR_TBL." ct on ct.owner=cpt.id where ct.id=".$babDB->quote($idcal)));
+			$arr = $babDB->db_fetch_array($babDB->db_query("SELECT cpt.* from ".BAB_CAL_RESOURCES_TBL." cpt left join ".BAB_CALENDAR_TBL." ct on ct.owner=cpt.id where ct.id=".$babDB->quote($idcal)));
 			if( !empty($name))
 				{
-				$this->calname = $name;
+				$this->calname = bab_toHtml($name);
 				}
 			else
 				{
-				$this->calname = $arr['name'];
+				$this->calname = bab_toHtml($arr['name']);
 				}
 			if( !empty($desc))
 				{
-				$this->caldesc = $desc;
+				$this->caldesc = bab_toHtml($desc);
 				}
 			else
 				{
-				$this->caldesc = $arr['description'];
+				$this->caldesc = bab_toHtml($arr['description']);
 				}
 			if( !empty($idsa))
 				{
-				$this->calidsa = $idsa;
+				$this->calidsa = bab_toHtml($idsa);
 				}
 			else
 				{
-				$this->calidsa = $arr['idsa'];
+				$this->calidsa = bab_toHtml($arr['idsa']);
 				}
 			$this->add = "modr";
 			$this->idcal = $arr['id'];
@@ -144,8 +153,8 @@ function modifyCalendarResource($idcal, $name, $desc, $idsa)
 			if( $i < $this->sacount)
 				{
 				$arr = $babDB->db_fetch_array($this->sares);
-				$this->saname = $arr['name'];
-				$this->said = $arr['id'];
+				$this->saname = bab_toHtml($arr['name']);
+				$this->said = bab_toHtml($arr['id']);
 				if( $this->said == $this->calidsa )
 					{
 					$this->selected = 'selected';
@@ -186,27 +195,27 @@ function modifyCalendarPublic($idcal, $name, $desc, $idsa)
 			$arr = $babDB->db_fetch_array($babDB->db_query("select cpt.* from ".BAB_CAL_PUBLIC_TBL." cpt left join ".BAB_CALENDAR_TBL." ct on ct.owner=cpt.id where ct.id=".$babDB->quote($idcal)));
 			if( !empty($name))
 				{
-				$this->calname = $name;
+				$this->calname = bab_toHtml($name);
 				}
 			else
 				{
-				$this->calname = $arr['name'];
+				$this->calname = bab_toHtml($arr['name']);
 				}
 			if( !empty($desc))
 				{
-				$this->caldesc = $desc;
+				$this->caldesc = bab_toHtml($desc);
 				}
 			else
 				{
-				$this->caldesc = $arr['description'];
+				$this->caldesc = bab_toHtml($arr['description']);
 				}
 			if( !empty($idsa))
 				{
-				$this->calidsa = $idsa;
+				$this->calidsa = bab_toHtml($idsa);
 				}
 			else
 				{
-				$this->calidsa = $arr['idsa'];
+				$this->calidsa = bab_toHtml($arr['idsa']);
 				}
 			$this->add = "modp";
 			$this->idcal = $arr['id'];
@@ -225,8 +234,8 @@ function modifyCalendarPublic($idcal, $name, $desc, $idsa)
 			if( $i < $this->sacount)
 				{
 				$arr = $babDB->db_fetch_array($this->sares);
-				$this->saname = $arr['name'];
-				$this->said = $arr['id'];
+				$this->saname = bab_toHtml($arr['name']);
+				$this->said = bab_toHtml($arr['id']);
 				if( $this->said == $this->calidsa )
 					{
 					$this->selected = 'selected';
@@ -357,11 +366,13 @@ if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['calendars'] != 'Y')
 	return;
 }
 
+$idx = bab_rp('idx', 'modp');
+
 if( isset($addc))
 {
-	if( $addc == "modp" )
+	if( "modp" == bab_rp('addc') )
 	{
-		if( updatePublicCalendar($idcal, $calname, $caldesc, $calidsa))
+		if( updatePublicCalendar(bab_rp('idcal'), bab_rp('calname'), bab_rp('caldesc'), bab_rp('calidsa')))
 		{
 			$idx = "pub";
 		}
@@ -369,9 +380,9 @@ if( isset($addc))
 		{
 			$idx = "modp";
 		}
-	}elseif( $addc == "modr" )
+	}elseif( "modr" == bab_rp('addc') )
 	{
-		if( updateResourceCalendar($idcal, $calname, $caldesc, $calidsa))
+		if( updateResourceCalendar(bab_rp('idcal'), bab_rp('calname'), bab_rp('caldesc'), bab_rp('calidsa')))
 		{
 			$idx = "res";
 		}
@@ -381,7 +392,7 @@ if( isset($addc))
 		}
 	}
 }
-elseif( isset($add) && $add == "updcat"  && $babBody->isSuperAdmin)
+elseif("updcat" == bab_rp('add')  && $babBody->isSuperAdmin)
 {
 	updateCalendarCategory($idcat, $catname, $catdesc, $bgcolor);
 
@@ -403,7 +414,7 @@ switch($idx)
 	{
 	case "rigthsr":
 		include_once $babInstallPath."admin/acl.php";
-		$babBody->title = bab_translate("Rights for resource calendar").": ".bab_getCalendarOwnerName($idcal, BAB_CAL_RES_TYPE);
+		$babBody->setTitle(bab_translate("Rights for resource calendar").": ".bab_getCalendarOwnerName($idcal, BAB_CAL_RES_TYPE));
 		$macl = new macl("admcal", "rightsp", $idcal, "aclres");
         $macl->addtable( BAB_CAL_RES_VIEW_GROUPS_TBL,bab_translate("Who can view this calendar"));
 		$macl->addtable( BAB_CAL_RES_ADD_GROUPS_TBL,bab_translate("Who can add events to this calendar"));
@@ -424,7 +435,7 @@ switch($idx)
 		break;
 	case "rigthsp":
 		include_once $babInstallPath."admin/acl.php";
-		$babBody->title = bab_translate("Rights for public calendar").": ".bab_getCalendarOwnerName($idcal, BAB_CAL_PUB_TYPE);
+		$babBody->setTitle(bab_translate("Rights for public calendar").": ".bab_getCalendarOwnerName($idcal, BAB_CAL_PUB_TYPE));
 		$macl = new macl("admcal", "rightsp", $idcal, "aclpub");
         $macl->addtable( BAB_CAL_PUB_VIEW_GROUPS_TBL,bab_translate("Who can view this calendar"));
 		$macl->addtable( BAB_CAL_PUB_MAN_GROUPS_TBL,bab_translate("Who can manage this calendar"));
@@ -440,10 +451,7 @@ switch($idx)
 		$babBody->addItemMenu("cats", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=admcals&idx=cats");
 		break;
 	case "modc":
-		if( !isset($catname)) {	$catname = ""; }
-		if( !isset($catdesc)) {	$catdesc = ""; }
-		if( !isset($bgcolor)) {	$bgcolor = ""; }
-		modifyCalendarCategory($idcat, $catname, $catdesc, $bgcolor);
+		modifyCalendarCategory();
 		$babBody->title = bab_translate("Modify event category");
 		$babBody->addItemMenu("pub", bab_translate("PublicCalendar"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
 		$babBody->addItemMenu("res", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
@@ -452,11 +460,12 @@ switch($idx)
 		$babBody->addItemMenu("modc", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admcals&idx=modc");
 		break;
 	case "modr":
-		if( !isset($calname)) {	$calname = ""; }
-		if( !isset($caldesc)) {	$caldesc = ""; }
-		if( !isset($calidsa)) {	$calidsa = ""; }
+		$idcal = bab_rp('idcal');
+		$calname = bab_rp('calname');
+		$caldesc = bab_rp('caldesc');
+		$calidsa = bab_rp('calidsa');
 		modifyCalendarResource($idcal, $calname, $caldesc, $calidsa);
-		$babBody->title = bab_translate("Resource calendar").": ".bab_getCalendarOwnerName($idcal, BAB_CAL_RES_TYPE);
+		$babBody->setTitle(bab_translate("Resource calendar").": ".bab_getCalendarOwnerName($idcal, BAB_CAL_RES_TYPE));
 		$babBody->addItemMenu("pub", bab_translate("PublicCalendar"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
 		$babBody->addItemMenu("res", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
 		$babBody->addItemMenu("user", bab_translate("Personal"), $GLOBALS['babUrlScript']."?tg=admcals&idx=user");
@@ -464,11 +473,12 @@ switch($idx)
 		break;
 	case "modp":
 	default:
-		if( !isset($calname)) {	$calname = ""; }
-		if( !isset($caldesc)) {	$caldesc = ""; }
-		if( !isset($calidsa)) {	$calidsa = ""; }
+		$idcal = bab_rp('idcal');
+		$calname = bab_rp('calname');
+		$caldesc = bab_rp('caldesc');
+		$calidsa = bab_rp('caldesc');
 		modifyCalendarPublic($idcal, $calname, $caldesc, $calidsa);
-		$babBody->title = bab_translate("Public calendar").": ".bab_getCalendarOwnerName($idcal, BAB_CAL_PUB_TYPE);
+		$babBody->setTitle(bab_translate("Public calendar").": ".bab_getCalendarOwnerName($idcal, BAB_CAL_PUB_TYPE));
 		$babBody->addItemMenu("pub", bab_translate("PublicCalendar"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
 		$babBody->addItemMenu("modp", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admcal&idx=modp");
 		$babBody->addItemMenu("res", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=admcals&idx=res");

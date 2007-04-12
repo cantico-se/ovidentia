@@ -197,7 +197,7 @@ function groupDelegatModify($gname, $description, $id = '')
 
 
 			$tree = new bab_grptree();
-			$this->groups = $tree->getGroups(NULL, '%s &nbsp; &nbsp; &nbsp; ');
+			$this->groups = $tree->getGroups(NULL, '%s '.chr(160).' '.chr(160).' ');
 			unset($this->groups[BAB_UNREGISTERED_GROUP]);
 			$this->count2 = count($this->groups);
 
@@ -232,7 +232,7 @@ function groupDelegatModify($gname, $description, $id = '')
 						$this->delegitemdesc = bab_translate("Manage groups");
 						break;
 					default:
-						$this->delegitemdesc = $babDG[$i][1];
+						$this->delegitemdesc = bab_toHtml($babDG[$i][1]);
 						break;
 					}
 				if( $this->arr[$babDG[$i][0]] == 'Y')

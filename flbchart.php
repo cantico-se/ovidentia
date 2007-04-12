@@ -66,7 +66,7 @@ function addOrgChartEntity($ocid, $oeid, $nameval, $descriptionval)
 				include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
 
 				$tree = new bab_grptree();
-				$this->allgroups = $tree->getGroups(BAB_REGISTERED_GROUP, '%s &nbsp; &nbsp; ');
+				$this->allgroups = $tree->getGroups(BAB_REGISTERED_GROUP, '%s '.chr(160).' '.chr(160).' ');
 				}
 			}
 
@@ -75,8 +75,8 @@ function addOrgChartEntity($ocid, $oeid, $nameval, $descriptionval)
 			global $babDB;
 			if( list(,$this->arr) = each($this->allgroups))
 				{
-				$this->groupname = $this->arr['name'];
-				$this->grpid = $this->arr['id'];
+				$this->groupname = bab_toHtml($this->arr['name']);
+				$this->grpid = bab_toHtml($this->arr['id']);
 				return true;
 				}
 			else
