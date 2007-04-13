@@ -67,7 +67,7 @@ class bab_grptree extends bab_dbtree
 		}
 	}
 
-	function getGroups($id_parent, $format = '%2$s &gt; ')
+	function getGroups($id_parent, $format = '%2$s > ')
 	{
 	$grp = array();
 	$prefix = array();
