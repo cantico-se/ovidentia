@@ -26,7 +26,6 @@ $babDBLogin = ""; /* MySql database login */
 $babDBPasswd = ""; /* MySql database password */
 $babDBName ="ovidentia"; /* MySql database name */
 $babInstallPath = "ovidentia/"; /* relatif path to ovidentia distribution */
-$babSlogan = "Ovidentia: enterprise portal"; /* your slogan */
 $babSiteName = "Ovidentia"; /* your site name */
 $babUrl = "http://yourdomain/"; /* url to access to your site */
 $babVersion = "6.0"; /* current version */
