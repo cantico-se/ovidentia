@@ -2340,7 +2340,7 @@ function confirmAddDbContact($id, $fields, $file, $tmp_file, $password1, $passwo
 					}
 				}
 			}
-
+		
 		if( empty($nickname))
 			{
 			$babBody->msgerror = bab_translate("You must complete required fields");
@@ -2422,19 +2422,27 @@ function confirmAddDbContact($id, $fields, $file, $tmp_file, $password1, $passwo
 			return 0;
 			}
 		}
+		
 
-	$res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDS_TBL."");
+	$res = $babDB->db_query("select f.name, e.id, e.id_field, e.required 
+	from ".BAB_DBDIR_FIELDSEXTRA_TBL." e 
+		LEFT JOIN ".BAB_DBDIR_FIELDS_TBL." f ON f.id=e.id_field
+	where id_directory='".($idgroup !=0 ? 0: $babDB->db_escape_string($id))."'");
 	$req = '';
 	while( $arr = $babDB->db_fetch_array($res))
 		{
-		$rr = $babDB->db_fetch_array($babDB->db_query("select required from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup !=0 ? 0: $babDB->db_escape_string($id))."' and id_field='".$babDB->db_escape_string($arr['id'])."'"));
-		if( $arr['name'] != 'jpegphoto' && $rr['required'] == "Y" && empty($fields[$arr['name']]))
+		
+		if (empty($arr['name'])) {
+			$arr['name'] = 'babdirf'.$arr['id'];
+		}
+
+		if( $arr['name'] != 'jpegphoto' && $arr['required'] == "Y" && empty($fields[$arr['name']]))
 			{
 			$babBody->msgerror = bab_translate("You must complete required fields");
 			return 0;
 			}
 
-		if ( $arr['name'] == 'jpegphoto' && $rr['required'] == "Y" && (empty($file) || $file == "none"))
+		if ( $arr['name'] == 'jpegphoto' && $arr['required'] == "Y" && (empty($file) || $file == "none"))
 			{
 			$tmp = $babDB->db_fetch_assoc($babDB->db_query("select photo_data from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".($idgroup !=0 ? 0: $babDB->db_escape_string($id))."' and id='".$babDB->db_escape_string($idu)."'"));
 
@@ -2445,7 +2453,7 @@ function confirmAddDbContact($id, $fields, $file, $tmp_file, $password1, $passwo
 				}
 			}
 
-		if( isset($fields[$arr['name']]) && $arr['name'] != 'jpegphoto')
+		if( isset($fields[$arr['name']]) && $arr['name'] != 'jpegphoto' && $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS)
 			{
 			if( $idgroup > 0 )
 				$req .= $arr['name']."='".$babDB->db_escape_string($fields[$arr['name']])."',";
@@ -2453,7 +2461,6 @@ function confirmAddDbContact($id, $fields, $file, $tmp_file, $password1, $passwo
 				$req .= $arr['name'].",";
 			}
 		}
-
 
 	if( $idgroup > 0 )
 		{
@@ -2791,6 +2798,7 @@ if( '' != ($modify = bab_pp('modify')))
 			}
 		else if( $modify == 'dbac'  && bab_isAccessValid(BAB_DBDIRADD_GROUPS_TBL, $id))
 			{
+			
 			$photo_name = isset( $_FILES['photof']['name'] )?  $_FILES['photof']['name']: '';
 			$photof = isset( $_FILES['photof']['tmp_name'] )?  $_FILES['photof']['tmp_name']: '';
 			$ret = confirmAddDbContact($id, bab_pp('fields', array()), $photo_name,$photof, bab_pp('password1'), bab_pp('password2'), bab_pp('nickname'), bab_pp('$notifyuser'), bab_pp('$sendpwd'));
