@@ -34,6 +34,17 @@ function bab_unset(&$arr)
 	unset($GLOBALS['babTmp']);
 }
 
+
+function bab_getBabUrl() {
+	$babWebRoot = trim(dirname($_SERVER['SCRIPT_NAME']),'/');
+	if (!empty($babWebRoot)) {
+		$babWebRoot .= '/';
+	}
+	$babHost = isset($_SERVER["HTTP_X_FORWARDED_HOST"]) ? $_SERVER["HTTP_X_FORWARDED_HOST"] : $_SERVER["HTTP_HOST"];
+	$babProtocol = isset($_SERVER["HTTPS"]) ? 'https://' : 'http://';
+	return $babProtocol . $babHost . '/' . $babWebRoot ;
+}
+
 /** 
  * Remove escapes if magic quotes is on
  */ 
@@ -70,9 +81,14 @@ function bab_cleanGpc() {
 			}
 
 	}
-	}
+}
 
 bab_cleanGpc();
+
+if (!isset($babUrl)) {
+	$babUrl = bab_getBabUrl();
+}
+
 
 if( isset($_REQUEST['WSSESSIONID']))
 {
@@ -117,6 +133,7 @@ unset($babTmp);
 bab_unset($_REQUEST);
 bab_unset($_SERVER);
 bab_unset($_COOKIE);
+
 
 
 	
