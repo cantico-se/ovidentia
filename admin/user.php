@@ -287,7 +287,8 @@ function viewgroups() {
 						'.BAB_GROUPS_TBL.' g 
 					WHERE 
 						u.id_object='.$babDB->quote($id_user).'
-						AND g.id=u.id_group
+						AND g.id=u.id_group 
+					ORDER BY g.name 
 				';
 				bab_debug($req);
 				$this->res = $babDB->db_query($req);
