@@ -114,7 +114,12 @@ function listTopicCategory($cat)
 						if( $this->arrid[$i][1] == 2 && $this->arrid[$i][0]== $arr['id'])
 							{
 							$this->arrid[$i]['title'] = $arr['category'];
-							$this->arrid[$i]['description'] = bab_replace($arr['description']);
+							
+							include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+							$editor = new bab_contentEditor('bab_topic');
+							$editor->setContent($arr['description']);
+							$this->arrid[$i]['description'] = $editor->getHtml();
+							
 							$this->arrid[$i]['confirmed'] = 0;
 							}
 						}

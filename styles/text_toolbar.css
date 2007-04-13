@@ -1,7 +1,7 @@
 .bab_text_toolbar {
   cursor: default;
   background: ButtonFace;
-  padding: 3px;
+  padding: 5px;
   border: 1px solid;
   border-color: ButtonHighlight ButtonShadow ButtonShadow ButtonHighlight;
 }
@@ -11,13 +11,44 @@
 }
 
 .bab_text_toolbar a {
-	background: ButtonFace;
-	  color: ButtonText;
-	  border: 1px solid ButtonFace;
-	  padding: 1px;
-	  margin: 0px;
+	background: ButtonFace url(../scripts/htmlarea/images/ed_bab_contdir.gif) no-repeat 1px 1px;
+	color: ButtonText;
+	border: 1px solid ButtonFace;
+	padding: 2px 6px 2px 25px;
+	margin: 0px;
+	text-decoration:none;
+	font-weight:normal;
 }
 
 .bab_text_toolbar a:hover {
 	border-color: ButtonHighlight ButtonShadow ButtonShadow ButtonHighlight;
+	text-decoration:none;
+	font-weight:normal;
+	color: ButtonText;
+}
+
+
+#bab_editor_functions {
+	list-style-type:none;
+	margin:0;
+	padding:0;
+}
+
+#bab_editor_functions li {
+	margin:2px 0 0 0;
+	padding:0;
+	border-bottom:#ccc 1px dashed;
+}
+
+#bab_editor_functions li a {
+	margin:0 0 2px 0;
+	text-decoration:none;
+	display:block;
+	padding:.5em;
+	color:#000;
+}
+
+#bab_editor_functions li a:hover {
+	text-decoration:none;
+	background:#eee;
 }

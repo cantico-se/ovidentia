@@ -3629,12 +3629,20 @@ CREATE TABLE `bab_event_listeners` (
   `function_name` varchar(100) NOT NULL,
   `require_file` varchar(255) NOT NULL,
   `addon_name` varchar(255) NOT NULL,
+  `priority` int(11) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `event` (`event_class_name`,`function_name`,`require_file`)
 );
 
 
-INSERT INTO `bab_event_listeners` (`id`, `event_class_name`, `function_name`, `require_file`, `addon_name`) VALUES (1, 'bab_eventBeforePeriodsCreated', 'bab_NWD_onCreatePeriods', 'utilit/nwdaysincl.php', 'core');
+INSERT INTO `bab_event_listeners` (`id`, `event_class_name`, `function_name`, `require_file`, `addon_name`, `priority`) VALUES 
+(1, 'bab_eventBeforePeriodsCreated', 'bab_NWD_onCreatePeriods', 'utilit/nwdaysincl.php', 'core', 0),
+(2, 'bab_eventPeriodModified', 'bab_vac_onModifyPeriod', 'utilit/vacincl.php', 'core', 0),
+(3, 'bab_eventEditors', 'bab_onEventEditors', 'utilit/editorincl.php', 'core', 0),
+(4, 'bab_eventEditorFunctions', 'bab_onEditorFunctions', 'utilit/editorincl.php', 'core', 0),
+(5, 'bab_eventEditorContentToEditor', 'htmlarea_onContentToEditor', 'utilit/htmlareaincl.php', 'core', 100),
+(6, 'bab_eventEditorRequestToContent', 'htmlarea_onRequestToContent', 'utilit/htmlareaincl.php', 'core', 100),
+(7, 'bab_eventEditorContentToHtml', 'htmlarea_onContentToHtml', 'utilit/htmlareaincl.php', 'core', 100);
 
 
 CREATE TABLE `bab_upgrade_messages` (

@@ -446,22 +446,16 @@ function displayRegistration($nickname, $fields, $cagree)
 
 function displayDisclaimer()
 {
-	global $babBody;
-	class temp
-		{
-		function temp()
-			{
-			global $babBody, $babDB;
-			$this->title = bab_translate("Disclaimer/Privacy statement");
-			$res = $babDB->db_query("select * from ".BAB_SITES_DISCLAIMERS_TBL." where id_site='".$babDB->db_escape_string($babBody->babsite['id'])."'");
-			$arr = $babDB->db_fetch_array($res);
-			$this->content = bab_replace($arr['disclaimer_text']);
-			}
+	global $babBody, $babDB;
+	$babBody->setTitle(bab_translate("Disclaimer/Privacy statement"));
+	$res = $babDB->db_query("select * from ".BAB_SITES_DISCLAIMERS_TBL." where id_site='".$babDB->db_escape_string($babBody->babsite['id'])."'");
+	$arr = $babDB->db_fetch_array($res);
+	
+	include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+	$editor = new bab_contentEditor('bab_disclaimer');
+	$editor->setContent($arr['disclaimer_text']);
 
-		}
-
-	$temp = new temp();
-	$babBody->babpopup( bab_printTemplate($temp, "login.html", "displaydisclaimer"));
+	$babBody->babpopup($editor->getHtml());
 }
 
 

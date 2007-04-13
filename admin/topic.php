@@ -530,7 +530,12 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 
 			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&cb=";
 
-			$this->editor = bab_editor($this->description, 'topdesc', 'catcr', 150);
+			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			$editor = new bab_contentEditor('bab_topic');
+			$editor->setContent($this->description);
+			$editor->setFormat('html');
+			$editor->setParameters(array('height' => 150));
+			$this->editor = $editor->getEditor();
 
 			$file = "articlestemplate.html";
 			$filepath = "skins/".$GLOBALS['babSkin']."/templates/". $file;
@@ -758,8 +763,17 @@ function viewArticle($article)
 			$req = "select * from ".BAB_ARTICLES_TBL." where id='$article'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
-			$this->content = bab_replace($this->arr['body']);
-			$this->head = bab_replace($this->arr['head']);
+			
+			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			
+			$editor = new bab_contentEditor('bab_article_body');
+			$editor->setContent($this->arr['body']);
+			$this->content = $editor->getHtml();
+			
+			$editor = new bab_contentEditor('bab_article_head');
+			$editor->setContent($this->arr['head']);
+			$this->head = $editor->getHtml();
+
 			}
 		}
 	
@@ -799,7 +813,7 @@ function warnRestrictionArticle($topics)
 	$babBody->babecho( bab_printTemplate($temp,"topics.html", "articlewarning"));
 	}
 
-function updateCategory($id, $category, $description, $cat, $saart, $sacom, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates,$battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags)
+function updateCategory($id, $category, $cat, $saart, $sacom, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates,$battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags)
 	{
 	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 	global $babBody;
@@ -824,11 +838,12 @@ function updateCategory($id, $category, $description, $cat, $saart, $sacom, $sau
 		{
 		$busetags = 'N';
 		}
+		
+		
+	include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+	$editor = new bab_contentEditor('bab_topic');
+	$description = $editor->getContent();
 
-
-	bab_editor_record($description);
-	$category = $db->db_escape_string($category);
-	$description = $db->db_escape_string($description);
 
 	if( empty($maxarts))
 		{
@@ -960,7 +975,28 @@ function updateCategory($id, $category, $description, $cat, $saart, $sacom, $sau
 		$db->db_query($query);
 	}
 
-	$query = "update ".BAB_TOPICS_TBL." set category='".$category."', description='".$description."', id_cat='".$db->db_escape_string($cat)."', idsaart='".$db->db_escape_string($saart)."', idsacom='".$db->db_escape_string($sacom)."', idsa_update='".$db->db_escape_string($saupd)."', notify='".$db->db_escape_string($bnotif)."', lang='".$db->db_escape_string($lang)."', article_tmpl='".$db->db_escape_string($atid)."', display_tmpl='".$db->db_escape_string($disptid)."', restrict_access='".$db->db_escape_string($restrict)."', allow_hpages='".$db->db_escape_string($bhpages)."', allow_pubdates='".$db->db_escape_string($bpubdates)."', allow_attachments='".$db->db_escape_string($battachment)."', allow_update='".$db->db_escape_string($bartupdate)."', allow_manupdate='".$db->db_escape_string($bmanmod)."', max_articles='".$db->db_escape_string($maxarts)."', auto_approbation='".$db->db_escape_string($bautoapp)."', busetags='".$db->db_escape_string($busetags)."' where id = '".$id."'";
+	$query = "UPDATE ".BAB_TOPICS_TBL." SET 
+		category='".$db->db_escape_string($category)."', 
+		description='".$db->db_escape_string($description)."', 
+		id_cat='".$db->db_escape_string($cat)."', 
+		idsaart='".$db->db_escape_string($saart)."', 
+		idsacom='".$db->db_escape_string($sacom)."', 
+		idsa_update='".$db->db_escape_string($saupd)."', 
+		notify='".$db->db_escape_string($bnotif)."', 
+		lang='".$db->db_escape_string($lang)."', 
+		article_tmpl='".$db->db_escape_string($atid)."', 
+		display_tmpl='".$db->db_escape_string($disptid)."', 
+		restrict_access='".$db->db_escape_string($restrict)."', 
+		allow_hpages='".$db->db_escape_string($bhpages)."', 
+		allow_pubdates='".$db->db_escape_string($bpubdates)."', 
+		allow_attachments='".$db->db_escape_string($battachment)."', 
+		allow_update='".$db->db_escape_string($bartupdate)."', 
+		allow_manupdate='".$db->db_escape_string($bmanmod)."', 
+		max_articles='".$db->db_escape_string($maxarts)."', 
+		auto_approbation='".$db->db_escape_string($bautoapp)."', 
+		busetags='".$db->db_escape_string($busetags)."' 
+	WHERE 
+		id = '".$id."'";
 	$db->db_query($query);
 
 	if( $arr['id_cat'] != $cat )
@@ -1034,7 +1070,7 @@ if( isset($add) )
 	{
 	if( isset($submit))
 		{
-		if(!updateCategory($item, $category, $topdesc, $ncat, $saart, $sacom, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates,$battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags))
+		if(!updateCategory($item, $category, $ncat, $saart, $sacom, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates,$battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags))
 			$idx = "Modify";
 		}
 	else if( isset($topdel))

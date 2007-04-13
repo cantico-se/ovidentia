@@ -1285,6 +1285,7 @@ function editDisclaimerPrivacy($id, $content)
 			global $babDB;
 			$this->disclaimertxt = bab_translate("Disclaimer/Privacy Statement");
 			$this->modify = bab_translate("Update");
+			$this->item = $id;
 			$req = "select * from ".BAB_SITES_DISCLAIMERS_TBL." where id_site='".$babDB->db_escape_string($id)."'";
 			$res = $babDB->db_query($req);
 			if( empty($content))
@@ -1304,7 +1305,11 @@ function editDisclaimerPrivacy($id, $content)
 				$this->disclaimerval = $content;
 				}
 
-			$this->editor = bab_editor($this->disclaimerval, 'content', 'discmod');
+			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			$editor = new bab_contentEditor('bab_disclaimer');
+			$editor->setContent($this->disclaimerval);
+			$editor->setFormat('html');
+			$this->editor = $editor->getEditor();
 
 			}
 		}
@@ -1968,11 +1973,13 @@ function confirmDeleteSite($id)
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
 	}
 
-function siteUpdateDisclaimer($item, $content)
+function siteUpdateDisclaimer($item)
 	{
 	global $babDB;
-
-	bab_editor_record($content);
+	
+	include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+	$editor = new bab_contentEditor('bab_disclaimer');
+	$content = $editor->getContent();
 
 	$db = &$GLOBALS['babDB'];
 
@@ -2089,7 +2096,7 @@ switch ($_POST['action'])
 		break;
 
 	case 'updisc':
-		siteUpdateDisclaimer($_POST['item'], $_POST['content']);
+		siteUpdateDisclaimer($_POST['item']);
 		$popupmessage = bab_translate("Update done");
 		break;
 	}

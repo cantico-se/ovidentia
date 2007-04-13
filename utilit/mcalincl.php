@@ -855,8 +855,8 @@ class cal_wmdbaseCls
 			{
 			$this->title		= bab_toHtml($calPeriod->getProperty('SUMMARY'));
 			$this->titleten		= $this->calstr($calPeriod->getProperty('SUMMARY'));
-			$this->description	= bab_replace($calPeriod->getProperty('DESCRIPTION'));
 			$this->location		= bab_toHtml($calPeriod->getProperty('LOCATION'));
+			$this->description	= $calPeriod->getProperty('DESCRIPTION');
 			}
 
 		if( $this->allow_modify )

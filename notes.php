@@ -38,7 +38,10 @@ function notesCreate()
 			{
 			$this->create = bab_translate("Create");
 			$this->notes = bab_translate("Content");
-			$this->editor = bab_editor('', 'content', 'notcreate');
+			
+			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			$editor = new bab_contentEditor('bab_note');
+			$this->editor = $editor->getEditor();
 			}
 		}
 
@@ -84,6 +87,9 @@ function notesList($id)
 			$req = "select * from ".BAB_NOTES_TBL." where id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."'".$reqid." order by date desc";
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
+			
+			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			
 			}
 
 		function getnext()
@@ -95,7 +101,11 @@ function notesList($id)
 				$this->arr = $babDB->db_fetch_array($this->res);
 				$this->editurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=note&idx=Modify&item=".$this->arr['id']);
 				$this->delurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=note&idx=Delete&item=".$this->arr['id']);
-				$this->note_content = bab_replace($this->arr['content']);
+				
+				$editor = new bab_contentEditor('bab_note');
+				$editor->setContent($this->arr['content']);
+				$this->note_content = $editor->getHtml();
+				
 				$this->note_date = bab_toHtml(bab_strftime(bab_mktime($this->arr['date'])));
 				$i++;
 				return true;
@@ -111,20 +121,37 @@ function notesList($id)
 	}
 
 
-function saveNotes($content)
+function saveNotes()
 	{
 	global $babDB, $BAB_SESS_USERID;
+	
+	
+	include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+	$editor = new bab_contentEditor('bab_note');
+	$content = $editor->getContent();
+	$format = $editor->getFormat();
+	
+	bab_debug('content received from bab_contentEditor as format : '.$format);
 
 	if( empty($content) || empty($BAB_SESS_USERID))
 		{
-		return;
+		return false;
 		}
 
-	bab_editor_record($content);
-	$content = $babDB->db_escape_string($content);
-
+	$query = "insert into ".BAB_NOTES_TBL." 
+		(
+			id_user, 
+			date, 
+			content
+		) 
+	VALUES 
+		(
+			'". $babDB->db_escape_string($BAB_SESS_USERID). "',
+			now(), 
+			'" . $babDB->db_escape_string($content). "'
+		)
+	";
 	
-	$query = "insert into ".BAB_NOTES_TBL." (id_user, date, content) VALUES ('". $babDB->db_escape_string($BAB_SESS_USERID). "',now(), '" . $content. "')";
 	$babDB->db_query($query);
 	}
 
@@ -141,7 +168,7 @@ $id = bab_rp('id', '');
 
 if( isset($_POST['create']))
 {
-	saveNotes(bab_pp('content'));
+	saveNotes();
 }
 
 switch($idx)

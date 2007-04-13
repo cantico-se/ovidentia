@@ -266,7 +266,11 @@ function displayEventDetail($evtid, $idcal)
 					else
 						{
 						$this->title= bab_toHtml($arr['title']);
-						$this->description = bab_replace($arr['description']);
+						include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+						$editor = new bab_contentEditor('bab_calendar_event');
+						$editor->setContent($arr['description']);
+						$this->description = $editor->getHtml();
+				
 						$this->location= bab_toHtml($arr['location']);
 						}
 					if( $arr['id_cat'] != 0 )

@@ -69,6 +69,8 @@ function modifyCategory($id)
 
 		function temp($id)
 			{
+			global $babDB;
+			
 			$this->category = bab_translate("FAQ Name");
 			$this->description = bab_translate("Description");
 			$this->add = bab_translate("Update FAQ");
@@ -77,16 +79,23 @@ function modifyCategory($id)
 			$this->langFiles = $GLOBALS['babLangFilter']->getLangFiles();
 			$this->countLangFiles = count($this->langFiles);
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_FAQCAT_TBL." where id='$id'";
+			$req = "select * from ".BAB_FAQCAT_TBL." where id=".$babDB->quote($id);
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
-			$this->arr['category'] = htmlentities($this->arr['category']);
+			$this->arr['category'] = bab_toHtml($this->arr['category']);
 
-			$this->editor = bab_editor($this->arr['description'], 'faqdesc', 'catcreate',150);
+			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			$editor = new bab_contentEditor('bab_faq');
+			$editor->setContent($this->arr['description']);
+			$editor->setFormat('html');
+			$editor->setParameters(array('height' => 150));
+			$this->editor = $editor->getEditor();
+			
+			
 			$this->item = $id;
 			$this->bdel = true;
 			$this->tgval = "admfaq";
-			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&cb=";
+			$this->usersbrowurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=users&idx=brow&cb=");
 			$this->faqname = $this->arr['category'];
 
 			} // function temp
@@ -147,7 +156,7 @@ function deleteCategory($id)
 	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
 
-function updateCategory($id, $category, $description, $lang)
+function updateCategory($id, $category, $lang)
 	{
 	global $babBody, $babDB;
 	if( empty($category))
@@ -155,8 +164,19 @@ function updateCategory($id, $category, $description, $lang)
 		$babBody->msgerror = bab_translate("ERROR: You must provide a FAQ name !!");
 		return false;
 		}
+		
+	include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+	$editor = new bab_contentEditor('bab_faq');
+	$description = $editor->getContent();
 
-	$query = "update ".BAB_FAQCAT_TBL." set category='".$babDB->db_escape_string($category)."', description='".$babDB->db_escape_string($description)."', lang='".$babDB->db_escape_string($lang)."' where id = '".$babDB->db_escape_string($id)."'";
+	$query = "
+	UPDATE ".BAB_FAQCAT_TBL." 
+	SET 
+		category='".$babDB->db_escape_string($category)."', 
+		description='".$babDB->db_escape_string($description)."', 
+		lang='".$babDB->db_escape_string($lang)."' 
+	WHERE 
+		id = '".$babDB->db_escape_string($id)."'";
 	$babDB->db_query($query);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admfaqs&idx=Categories");
 
@@ -185,7 +205,7 @@ if( isset($add))
 	{
 	if( isset($submit))
 		{
-		if(!updateCategory($item, $category, $faqdesc, $lang))
+		if(!updateCategory($item, $category, $lang))
 			$idx = "Modify";
 		}
 	else if( isset($faqdel))

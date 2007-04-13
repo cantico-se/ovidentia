@@ -275,69 +275,65 @@ href="{ delurl }">{ delname }</a> </td>
 <br><br><br><br>
 
 <!--#begin signaturecreate -->
-<!--#if bhtml "== 1" -->
+
 <script language="JavaScript">
 <!--
 function mm()
 {
   document.forms.sigform.addsig.value = "";
   document.forms.sigform.idx.value = "addsig";
-  document.forms.sigform.submit.click();
+  document.forms.sigform.submit();
 }
 //-->
 </script>
-<!--#endif bhtml -->
+
 
 <form name="sigform" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="mailopt">
 <input type="hidden" name="idx" value="listsig">
 <input type="hidden" name="addsig" value="add">
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-	<td width="30%" align="right">{ name }</td>
-	<td align="left"> 
-		<input type="text" name="signame" size="30" maxlength="100" value="{ nameval }" />
-	</td>
-</tr>
-
-<tr> 
-<td colspan="2" align="center">{ signature }</td>
-</tr>
-<tr> 
-<td align="right">{ html }:</td>
-<td align="left"> 
-	<select name="html" 
-	<!--#if bhtml "== 1" -->
-	onChange="mm()" 
-	<!--#endif bhtml -->
-	> 
-	<option value="N" { textselected }>{ no }</option> 
-	<option value="Y" { htmlselected }>{ yes }</option> 
-	</select> 
-</td>
-</tr>
-<tr> 
-<td colspan="2" align="center"> 
-<!--#if textselected -->
-	<textarea name="signature" style="width:100%;" rows="20">{ signatureval }</textarea>
-<!--#else textselected -->
-{ editor }
-<!--#endif textselected -->
-</td>
-</tr>
-
-<tr> 
-<td>&nbsp;</td>
-<td> 
-<input type="submit" name="submit" value="{ add }" />
-</td>
-</tr>
-</table>
-</td>
-</tr>
+	<tr> 
+		<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+			<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+			<tr> 
+				<td width="30%" align="right">{ name }</td>
+				<td align="left"> 
+					<input type="text" name="signame" size="30" maxlength="100" value="{ nameval }" />
+				</td>
+			</tr>
+			
+			<tr> 
+			<td colspan="2" align="center">{ signature }</td>
+			</tr>
+			<tr> 
+			<td align="right">{ html }:</td>
+			<td align="left"> 
+				<select name="html" onChange="mm()"> 
+				<option value="N" { textselected }>{ no }</option> 
+				<option value="Y" { htmlselected }>{ yes }</option> 
+				</select> 
+			</td>
+			</tr>
+			<tr> 
+			<td colspan="2" align="center"> 
+			<!--#if textselected -->
+				<textarea name="signature" style="width:100%;" rows="20">{ signatureval }</textarea>
+			<!--#else textselected -->
+			{ editor }
+			<!--#endif textselected -->
+			</td>
+			</tr>
+			
+			<tr> 
+			<td>&nbsp;</td>
+			<td> 
+			<input type="submit" value="{ add }" />
+			</td>
+			</tr>
+			</table>
+		</td>
+	</tr>
 </table>
 </form>
 <br>
@@ -346,7 +342,6 @@ function mm()
 
 
 <!--#begin signaturemodify -->
-<!--#if bhtml "== 1" -->
 <script language="JavaScript">
 <!--
 function mm()
@@ -357,7 +352,7 @@ function mm()
 }
 //-->
 </script>
-<!--#endif bhtml -->
+
 <form method="post" name="sigform" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="mailopt" />
 <input type="hidden" name="idx" value="listsig" />
@@ -382,13 +377,9 @@ function mm()
 	<tr> 
 	<td align="right" nowrap valign="middle">{ html }:</td>
 		<td valign="middle"> 
-			<select name="html"
-			<!--#if bhtml "== 1" -->
-			onChange="mm()"
-			<!--#endif bhtml -->
-			> 
-			<option value="N" { noselected }>{ no }</option> 
-			<option value="Y" { yesselected }>{ yes }</option> 
+			<select name="html" onChange="mm()"> 
+				<option value="N" { noselected }>{ no }</option> 
+				<option value="Y" { yesselected }>{ yes }</option> 
 			</select> 
 		</td>
 	</tr>

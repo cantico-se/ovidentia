@@ -41,10 +41,11 @@ class bab_event {
  * @param	string	$function_name		
  * @param	string	$require_file			file path relative to ovidentia core, the file where $function_name is declared
  * @param	string	[$addon_name]
+ * @param	int		[$priority]
  *
  * @return boolean
  */
-function bab_addEventListener($event_class_name, $function_name, $require_file, $addon_name = BAB_ADDON_CORE_NAME) {
+function bab_addEventListener($event_class_name, $function_name, $require_file, $addon_name = BAB_ADDON_CORE_NAME, $priority = 0) {
 
 	global $babDB;
 	
@@ -66,14 +67,16 @@ function bab_addEventListener($event_class_name, $function_name, $require_file, 
 			event_class_name, 
 			function_name, 
 			require_file,
-			addon_name
+			addon_name,
+			priority 
 			) 
 		VALUES 
 			(
 			'.$babDB->quote($event_class_name).',
 			'.$babDB->quote($function_name).',
 			'.$babDB->quote($require_file).', 
-			'.$babDB->quote($addon_name).' 
+			'.$babDB->quote($addon_name).', 
+			'.$babDB->quote($priority).'
 			)
 	');
 	
@@ -147,63 +150,80 @@ function bab_fireEvent(&$event_obj) {
 	
 	$obj = new bab_fireEvent_Obj;
 	$obj->push_obj($event_obj);
+	$classkey = get_class($event_obj);
 
+	static $calls = array();
+	static $unused = array();
 	
-	
-	while($class_name = $obj->pop_className()) {
-	
+	if (!isset($calls[$classkey])) {
+		$calls[$classkey] = array();
+
+		while($class_name = $obj->pop_className()) {
 		
-	
-		$res = $babDB->db_query('
-			SELECT 
-				l.* , 
-				a.id id_addon 
-			FROM 
-				'.BAB_EVENT_LISTENERS_TBL.' l 
-				LEFT JOIN '.BAB_ADDONS_TBL.' a ON a.title = l.addon_name 
-			WHERE 
-				l.event_class_name ='.$babDB->quote($class_name).' 
-			ORDER BY l.addon_name'
-		);
-		
-		while ($arr = $babDB->db_fetch_assoc($res)) {
-
-			$id_addon = $arr['id_addon'];
-		
-			if (BAB_ADDON_CORE_NAME === $arr['addon_name'] || 
-			(isset($babBody->babaddons[$id_addon]) && bab_isAccessValid(BAB_ADDONS_GROUPS_TBL, $id_addon))) {
-
-				if (is_file($GLOBALS['babInstallPath'].$arr['require_file'])) {
-				
-					$obj->setAddonCtx($id_addon, $arr['addon_name']);
-					require_once $GLOBALS['babInstallPath'].$arr['require_file'];
-					if (function_exists($arr['function_name'])) {
-						
-						call_user_func_array($arr['function_name'], array(&$event_obj));
-						
-
-					} else {
-						bab_debug('
-						Function unreachable
-						event : '.get_class($event_obj).'
-						file : '.$arr['require_file'].'
-						function : '.$arr['function_name'].'
-						');
-					}
-				} else {
-					bab_debug('
-					file unreachable
-					event : '.get_class($event_obj).'
-					file : '.$arr['require_file'].'
-					');
-				}
+			if (isset($unused[$class_name])) {
+				continue;
 			}
+
+			$res = $babDB->db_query('
+				SELECT 
+					l.* , 
+					a.id id_addon 
+				FROM 
+					'.BAB_EVENT_LISTENERS_TBL.' l 
+					LEFT JOIN '.BAB_ADDONS_TBL.' a ON a.title = l.addon_name 
+				WHERE 
+					l.event_class_name ='.$babDB->quote($class_name).' 
+				ORDER BY l.priority DESC'
+			);
+
 			
-			if (NULL === $id_addon && BAB_ADDON_CORE_NAME !== $arr['addon_name']) {
-				bab_debug('Missing addon : '.$arr['addon_name'].
-				"\nFor registered event : ".$arr['event_class_name']);
+			if (0 < $babDB->db_num_rows($res)) {
+				while ($arr = $babDB->db_fetch_assoc($res)) {
+	
+					$id_addon = $arr['id_addon'];
+				
+					if (BAB_ADDON_CORE_NAME === $arr['addon_name'] || 
+					(isset($babBody->babaddons[$id_addon]) && bab_isAccessValid(BAB_ADDONS_GROUPS_TBL, $id_addon))) {
+		
+						if (is_file($GLOBALS['babInstallPath'].$arr['require_file'])) {
+						
+							$obj->setAddonCtx($id_addon, $arr['addon_name']);
+							require_once $GLOBALS['babInstallPath'].$arr['require_file'];
+							if (function_exists($arr['function_name'])) {
+							
+								$calls[$classkey][] = $arr['function_name'];
+	
+							} else {
+								bab_debug('
+								Function unreachable
+								event : '.get_class($event_obj).'
+								file : '.$arr['require_file'].'
+								function : '.$arr['function_name'].'
+								');
+							}
+						} else {
+							bab_debug('
+							file unreachable
+							event : '.get_class($event_obj).'
+							file : '.$arr['require_file'].'
+							');
+						}
+					}
+					
+					if (NULL === $id_addon && BAB_ADDON_CORE_NAME !== $arr['addon_name']) {
+						bab_debug('Missing addon : '.$arr['addon_name'].
+						"\nFor registered event : ".$arr['event_class_name']);
+					}
+				}
+			} else {
+			
+				$unused[$class_name] = 1;
 			}
 		}
+	}
+			
+	foreach($calls[$classkey] as $function) {
+		call_user_func_array($function, array(&$event_obj));
 	}
 }
 

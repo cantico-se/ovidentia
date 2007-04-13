@@ -306,8 +306,6 @@ function createEvent($idcals,$id_owner, $title, $description, $location, $startd
 
 	global $babBody, $babDB;
 
-	bab_editor_record($description);
-
 
 	$babDB->db_query("insert into ".BAB_CAL_EVENTS_TBL." 
 	( title, description, location, start_date, end_date, id_cat, id_creator, color, bprivate, block, bfree, hash) 

@@ -1,65 +1,35 @@
 <!--#begin editorovml -->
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE>{ babSiteName }</TITLE>
-{ babMeta }
-{ babCss }
+
 <script type="text/javascript">
 <!--
-window.focus();
+
 
 function func(txt)
 	{
-	//{ cb }
-	window.opener.{ cb }(txt);
+	opener.bab_dialog._return({
+		'callback' 	: 'editorInsertText',
+		'param'		: '$OVML('+txt+')'
+	});
+	
 	window.close();
-	}
+}
 //-->
 </script>
-</HEAD>
-<BODY>
-<table border="0" width="100%" cellpadding="10" cellspacing="0" align="left" >
-<tr><td>
-<table border="0" width="100%" cellpadding="1" cellspacing="0" align="left" >
-<tr class="BabContentBackground">
-<td class="BabCategTitleNavigation">OVML</td>
-<td>&nbsp;</td>
-</tr>
+<ul id="bab_editor_functions">
 <!--#if backlink -->
-<tr>
-<td>
-<a href="{ backlink }">. . </a>
-</td>
-</tr>
+<li>
+	<a href="{ backlink }"><img src="{ babSkinPath }images/Puces/folder.gif" alt="" align="absmiddle" /> . . </a>
+</li>
 <!--#endif backlink -->
 <!--#in getnext_dir -->
-	<tr>
-	<td align="left">
-		<!--#if displink -->
-		<a href="{ upurl }" nowrap>{ title }</a>
-		<!--#else displink -->
-		{ title }
-		<!--#endif displink -->
-	</td>
-	<td>
-	&nbsp;
-	</td>
-	</tr>
+	<li>
+		<a href="{ upurl }"><img src="{ babSkinPath }images/Puces/folder.gif" alt="" align="absmiddle" /> { title }</a>
+	</li>
 <!--#endin getnext_dir -->
 <!--#in getnext_file -->
-	<tr >
-	<td align="left" style="border-bottom:1px #DDDDDD solid">
-	{ file }
-	</td>
-	<td align="right" style="border-bottom:1px #DDDDDD solid">
-	<a href="#" onclick="func('{ urlfile }')"><img border="0" src="{ babSkinPath }images/Puces/PuceArrowRight.gif"></a>
-	</td>
-	</tr>
+	<li>
+	<a href="javascript:func('{ urlfile }')"><img src="{ babSkinPath }images/Puces/defaut.gif" alt="" align="absmiddle" /> { file }</a>
+	</li>
 <!--#endin getnext_file -->
-</table>
-</td></tr>
-</table>
-</BODY>
-</HTML>
+</ul>
 <!--#end editorovml -->

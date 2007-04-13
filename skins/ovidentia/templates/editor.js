@@ -21,14 +21,7 @@ var global_editor = null;
 	  
 	 ["copy", "cut", "paste", "space", "undo", "redo", "separator",
 	  "bold", "italic", "underline", "separator",
-	  "strikethrough", "subscript", "superscript", "separator",
-		 <!--#if mode "== 1" -->
-	     "bab_image", "bab_file", "bab_article", "bab_faq", "bab_ovml", "bab_contdir"
-		 <!--#endif mode -->
-
-		<!--#if mode "== 3" -->
-	      "bab_file", "bab_article", "bab_faq", "bab_ovml", "bab_contdir"
-		 <!--#endif mode -->
+	  "strikethrough", "subscript", "superscript", "separator", "bab_functions"
 		]
 	];
 
@@ -84,82 +77,17 @@ var global_editor = null;
 	config.pageStyle = '{ css_styles }';
 
 	config.registerButton({
-	  id        : "bab_image",
-	  tooltip   : "{ t_bab_image }",
-	  image     : _editor_url + 'images/ed_bab_image.gif',
-	  textMode  : false,
-	  action    : function(editor, id) {
-					//}
-					global_editor = editor;
-					window.open('{ babUrlScript }?tg=images&editor=0&callback=EditorOnCreateImage','bab_image','toolbar=no,menubar=no,personalbar=no,width=500,height=480,scrollbars=yes,resizable=yes');
-				  }
-	});
-
-
-	config.registerButton({
-	  id        : "bab_file",
-	  tooltip   : "{ t_bab_file }",
-	  image     : _editor_url + 'images/ed_bab_file.gif',
-	  textMode  : false,
-	  action    : function(editor, id) {
-					//}
-					global_editor = editor;
-					bab_dialog.selectfile(EditorOnInsertFiles, 'show_personal_directories=1&show_files=1&selectable_files=1&selectable_collective_directories=1&selectable_sub_directories=1&multi=1');
-//					window.open('{ babUrlScript }?tg=fileman&idx=brow&callback=EditorOnCreateFile&editor=1','bab_file','toolbar=no,menubar=no,personalbar=no,width=400,height=470,scrollbars=yes,resizable=yes');
-				  }
-	});
-
-
-	config.registerButton({
-	  id        : "bab_article",
-	  tooltip   : "{ t_bab_article }",
-	  image     : _editor_url + 'images/ed_bab_articleid.gif',
-	  textMode  : false,
-	  action    : function(editor, id) {
-					//}
-					global_editor = editor;
-					window.open('{ babUrlScript }?tg=editorarticle&idx=brow&cb=EditorOnInsertArticle','bab_article','toolbar=no,menubar=no,personalbar=no,width=400,height=470,scrollbars=yes,resizable=yes');
-				  }
-	});
-
-
-	config.registerButton({
-	  id        : "bab_faq",
-	  tooltip   : "{ t_bab_faq }",
-	  image     : _editor_url + 'images/ed_bab_faqid.gif',
-	  textMode  : false,
-	  action    : function(editor, id) {
-					//}
-					global_editor = editor;
-					window.open('{ babUrlScript }?tg=editorfaq','bab_faq','toolbar=no,menubar=no,personalbar=no,width=350,height=470,scrollbars=yes,resizable=yes');
-				  }
-	});
-
-
-	config.registerButton({
-	  id        : "bab_ovml",
-	  tooltip   : "{ t_bab_ovml }",
-	  image     : _editor_url + 'images/ed_bab_ovml.gif',
-	  textMode  : false,
-	  action    : function(editor, id) {
-					//}
-					global_editor = editor;
-					window.open('{ babUrlScript }?tg=editorovml','bab_ovml','toolbar=no,menubar=no,personalbar=no,width=350,height=470,scrollbars=yes,resizable=yes');
-				  }
-	});
-
-	config.registerButton({
-	  id        : "bab_contdir",
-	  tooltip   : "{ t_bab_contdir }",
+	  id        : "bab_functions",
+	  tooltip   : "{ t_bab_functions }",
 	  image     : _editor_url + 'images/ed_bab_contdir.gif',
 	  textMode  : false,
 	  action    : function(editor, id) {
 					//}
 					global_editor = editor;
-					window.open('{ babUrlScript }?tg=editorcontdir','bab_contdir','toolbar=no,menubar=no,personalbar=no,width=450,height=470,scrollbars=yes,resizable=yes');
-				  }
+					global_uid = '{ uid }';
+					insert_ovidentia();
+				}
 	});
-
 
 	config.registerButton({
 	  id        : "bab_unlink",
@@ -283,11 +211,7 @@ var global_editor = null;
 };
 
 	
-
-
-
-
-
+	
 function EditorOnCreateImage_WYSIWYG(param)
 {
 	var editor = global_editor;
@@ -332,84 +256,8 @@ function EditorOnCreateImage_WYSIWYG(param)
 			break;
 		}
 	}
-}
-
-function EditorOnInsertFile(id, idf, txt)
-{
-var editor = global_editor;
-var html = getSelection();
-if (html != '')
-	{
-	txt = html;
-	}
-
-editor.insertHTML('$FILE('+idf+','+txt+')');
-}
+}	
+	
 
 
-function EditorOnInsertArticle(id, txt, target)
-{
-var html = getSelection();
-if (html != '')
-	{
-	txt = html;
-	}
-
-global_editor.insertHTML('$ARTICLEID('+id+','+txt+','+target+')');
-}
-
-
-function EditorOnInsertFaq(id, txt, target)
-{
-var html = getSelection();
-if (html != '')
-	{
-	txt = html;
-	}
-
-global_editor.insertHTML('$FAQID('+id+','+txt+','+target+')');
-}
-
-function EditorOnInsertOvml(txt)
-{
-global_editor.insertHTML('$OVML('+txt+')');
-}
-
-function EditorOnInsertCont(id,txt)
-{
-global_editor.insertHTML('$CONTACTID('+id+','+txt+')');
-}
-
-function EditorOnInsertDir(id,txt,iddir)
-{
-editorInsertText('$DIRECTORYID('+id+','+txt+','+iddir+')');
-}
-
-function EditorOnInsertFolder(id,path,txt)
-{
-global_editor.insertHTML('$FOLDER('+id+','+path+','+txt+')');
-}
-
-function EditorOnInsertFiles(files)
-{
-	var editor = global_editor;
-	var html = getSelection();
-	if (html != '') {
-		txt = html;
-	}
-	var insertedItems = new Array();
-	for (var i = 0; i < files.length; i++) {
-		var file = files[i];
-		if (file.type != 'folder') {
-			insertedItems.push('$FILE(' + file.id + ',' + file.content + ')');
-		} else {
-			var path = file.id.split(':');
-			var id = path[0];
-			insertedItems.push('$FOLDER(' + id + ',' + path.slice(1).join('/') + ',' + file.content + ')');
-		}
-	}
-	if (insertedItems.length > 0) {
-		editor.insertHTML(insertedItems.join(','));
-	}
-}
 

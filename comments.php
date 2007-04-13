@@ -79,7 +79,13 @@ function listComments($topics, $article)
 
 				
 				$this->commenttitle = bab_toHtml($arr['subject']);
-				$this->commentbody = bab_replace($arr['message']);
+				
+				
+				include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+				$editor = new bab_contentEditor('bab_article_comment');
+				$editor->setContent($arr['message']);
+				$this->commentbody = $editor->getHtml();
+						
 				$i++;
 				return true;
 				}
@@ -132,7 +138,13 @@ function addComment($topics, $article, $subject, $message, $com="")
 			$res = $babDB->db_query($req);
 			$arr = $babDB->db_fetch_array($res);
 			$this->titleval = bab_toHtml($arr['title']);
-			$this->editor = bab_editor($message, 'message', 'comcreate');
+			
+			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			
+			$editor = new bab_contentEditor('bab_article_comment');
+			$editor->setContent($message);
+			$editor->setFormat('html');
+			$this->editor = $editor->getEditor();
 
 			$arr = $babDB->db_fetch_array($babDB->db_query("select idsacom from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($topics)."'"));
 			if( $arr['idsacom'] != 0 )
@@ -150,7 +162,7 @@ function addComment($topics, $article, $subject, $message, $com="")
 	$babBodyPopup->babecho(	bab_printTemplate($temp,"comments.html", "commentcreate"));
 	}
 
-function saveComment($topics, $article, $subject, $message, $com, &$msgerror)
+function saveComment($topics, $article, $subject, $com, &$msgerror)
 	{
 	global $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL, $BAB_SESS_USERID;
 
@@ -159,6 +171,12 @@ function saveComment($topics, $article, $subject, $message, $com, &$msgerror)
 		$msgerror = bab_translate("comments - ERROR: You must provide a title");
 		return false;
 		}
+		
+	include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			
+	$editor = new bab_contentEditor('bab_article_comment');
+	$message = $editor->getContent();
+	
 
 	if( empty($message))
 		{
@@ -220,11 +238,11 @@ function saveComment($topics, $article, $subject, $message, $com, &$msgerror)
 
 		if( $arr['idsacom'] == 0 || $idfai === true)
 			{
-			$babDB->db_query("update ".BAB_COMMENTS_TBL." set confirmed='Y' where id='".$id."'");
+			$babDB->db_query("update ".BAB_COMMENTS_TBL." set confirmed='Y' where id='".$babDB->db_escape_string($id)."'");
 			}
 		elseif(!empty($idfai))
 			{
-			$babDB->db_query("update ".BAB_COMMENTS_TBL." set idfai='".$idfai."' where id='".$id."'");
+			$babDB->db_query("update ".BAB_COMMENTS_TBL." set idfai='".$babDB->db_escape_string($idfai)."' where id='".$babDB->db_escape_string($id)."'");
 			$nfusers = getWaitingApproversFlowInstance($idfai, true);
 			notifyCommentApprovers($id, $nfusers);
 			}
@@ -246,7 +264,7 @@ else
 {
 if(isset($_POST['addcomment']) && bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $topics))
 	{
-	if( !saveComment($topics, $article, bab_pp('subject'), bab_pp('message'), bab_pp('com'), $msgerror))
+	if( !saveComment($topics, $article, bab_pp('subject'), bab_pp('com'), $msgerror))
 		{
 		$idx = "List";
 		}

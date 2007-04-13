@@ -573,6 +573,8 @@ function listWaitingEvents()
 				$this->eventcalendartxt = bab_translate("Calendar");
 				}
 			$this->altbg = true;
+			
+			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 			}
 
 		function getnextevent()
@@ -582,7 +584,11 @@ function listWaitingEvents()
 			if( $i < $this->weventscount)
 				{
 				$this->eventdate = bab_toHtml($this->arrevts[$i]['startdate']);
-				$this->eventdescription = bab_replace($this->arrevts[$i]['description']);
+				
+				$editor = new bab_contentEditor('bab_calendar_event');
+				$editor->setContent($this->arrevts[$i]['description']);
+				$this->eventdescription = $editor->getHtml();
+				
 				$this->eventtitle = bab_toHtml($this->arrevts[$i]['title']);
 				$this->eventauthor = bab_toHtml($this->arrevts[$i]['author']);
 				$this->eventcalendar = bab_toHtml($this->arrevts[$i]['calendar']);
@@ -918,7 +924,12 @@ function confirmWaitingPost($thread, $post)
 			$this->postdate = bab_toHtml(bab_strftime(bab_mktime($arr['date'])));
 			$this->postauthor = bab_toHtml($arr['author']);
 			$this->postsubject = bab_toHtml($arr['subject']);
-			$this->postmessage = bab_replace($arr['message']);
+			
+			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			$editor = new bab_contentEditor('bab_forum_post');
+			$editor->setContent($arr['message']);
+			$this->postmessage = $editor->getHtml();
+			
 			$this->close = bab_translate("Close");
 			$this->action = bab_translate("Action");
 			$this->confirm = bab_translate("Confirm");
@@ -1003,7 +1014,11 @@ function confirmWaitingEvent($idevent, $idcal)
 			$GLOBALS['babBody']->title = $arr['title'];
 			$this->eventstartdate = bab_toHtml(bab_shortDate(bab_mktime($arr['start_date']), true));
 			$this->eventenddate = bab_toHtml(bab_shortDate(bab_mktime($arr['end_date']), true));
-			$this->eventdescription = bab_replace($arr['description']);
+			
+			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			$editor = new bab_contentEditor('bab_calendar_event');
+			$editor->setContent($arr['description']);
+			$this->eventdescription = $editor->getHtml();
 
 			if( !empty($arr['hash']) &&  $arr['hash'][0] == 'R' )
 				{

@@ -697,8 +697,7 @@ function bab_editArticle($title, $head, $body, $lang, $template)
 			$this->t_bab_ovml = bab_translate("Insert OVML file");
 			$this->t_bab_contdir = bab_translate("Insert contact link");
 
-			$this->text_toolbar_head = bab_editor_text_toolbar('headtext',1);
-			$this->text_toolbar_body = bab_editor_text_toolbar('bodytext',1);
+		
 
 
 			if( empty($title))
@@ -707,7 +706,7 @@ function bab_editArticle($title, $head, $body, $lang, $template)
 				}
 			else
 				{
-				$this->titleval = htmlentities($title);
+				$this->titleval = bab_toHtml($title);
 				}
 
 			if( empty($head))
@@ -716,7 +715,7 @@ function bab_editArticle($title, $head, $body, $lang, $template)
 				}
 			else
 				{
-				$this->headval = htmlentities($head);
+				$this->headval = $head;
 				}
 			if( empty($body))
 				{
@@ -724,7 +723,7 @@ function bab_editArticle($title, $head, $body, $lang, $template)
 				}
 			else
 				{
-				$this->bodyval = htmlentities($body);
+				$this->bodyval = $body;
 				}
 
 			if( empty($lang))
@@ -742,9 +741,7 @@ function bab_editArticle($title, $head, $body, $lang, $template)
 			$this->title = bab_translate("Title");
 			$this->ok = bab_translate("Ok");
 			
-			$this->images = bab_translate("Images");
-			$this->urlimages = $GLOBALS['babUrlScript']."?tg=images";
-			$this->files = bab_translate("Files");
+			
 			$this->langLabel = bab_translate("Language");
 			$this->langFiles = $GLOBALS['babLangFilter']->getLangFiles();
 			if(isset($GLOBALS['babApplyLanguageFilter']) && $GLOBALS['babApplyLanguageFilter'] == 'loose')
@@ -757,23 +754,7 @@ function bab_editArticle($title, $head, $body, $lang, $template)
 			}
 			$this->countLangFiles = count($this->langFiles);
 
-			// do not load script for ie < 5.5 to avoid javascript parsing errors
-			preg_match("/MSIE\s+([\d|\.]*?);/", $_SERVER['HTTP_USER_AGENT'], $matches);
-			$this->loadscripts = !isset($matches[1]) || ($matches[1] >= 5.5);
 			
-			if ($this->loadscripts) {
-			
-				$res = $babDB->db_query("
-				SELECT use_editor, filter_html 
-				FROM ".BAB_SITES_EDITOR_TBL." 
-				WHERE id_site='".$babDB->db_escape_string($GLOBALS['babBody']->babsite['id'])."'");
-				
-				if ($arr = $babDB->db_fetch_array($res)) {
-					if (0 == $arr['use_editor']) {
-						$this->loadscripts = false;
-					}
-				}
-			}
 
 			if( $template != '' && $this->headval == '' && $this->bodyval == '')
 				{
@@ -794,6 +775,19 @@ function bab_editArticle($title, $head, $body, $lang, $template)
 					$this->bodyval = $tp->printTemplate($this, $filepath, "body_".$template);
 					}
 				}
+				
+			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+				// l'ordre des appels est important
+			$editorhead = new bab_contentEditor('bab_article_head');
+			$editorhead->setContent($this->headval);
+			$editorhead->setFormat('html');
+			
+			$editorbody = new bab_contentEditor('bab_article_body');
+			$editorbody->setContent($this->bodyval);
+			$editorbody->setFormat('html');
+			
+			$this->editorhead = $editorhead->getEditor();
+			$this->editorbody = $editorbody->getEditor();
 
 			}
 			
@@ -847,9 +841,17 @@ function bab_previewArticleDraft($idart, $echo=0)
 				$this->filesval = bab_translate("Associated documents");
 				$this->notesval = bab_translate("Associated comments");
 				$arr = $babDB->db_fetch_array($res);
-				$this->titleval = bab_toHtml(bab_replace($arr['title']));
-				$this->headval = bab_replace($arr['head']);
-				$this->bodyval = bab_replace($arr['body']);
+				$this->titleval = bab_toHtml($arr['title']);
+
+				include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			
+				$editor = new bab_contentEditor('bab_article_body');
+				$editor->setContent($arr['body']);
+				$this->bodyval = $editor->getHtml();
+				
+				$editor = new bab_contentEditor('bab_article_head');
+				$editor->setContent($arr['head']);
+				$this->headval = $editor->getHtml();
 				
 				$this->resf = $babDB->db_query("select * from ".BAB_ART_DRAFTS_FILES_TBL." where id_draft='".$babDB->db_escape_string($idart)."' order by ordering asc");
 				$this->countf =  $babDB->db_num_rows($this->resf);
@@ -935,8 +937,13 @@ function bab_previewComment($com)
 			$req = "select * from ".BAB_COMMENTS_TBL." where id='".$babDB->db_escape_string($com)."'";
 			$this->res = $babDB->db_query($req);
 			$this->arr = $babDB->db_fetch_array($this->res);
-			$this->title = bab_toHtml(bab_replace($this->arr['subject']));
-			$this->content = bab_replace($this->arr['message']);
+			$this->title = bab_toHtml($this->arr['subject']);
+
+			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			
+			$editor = new bab_contentEditor('bab_article_comment');
+			$editor->setContent($this->arr['message']);
+			$this->content = $editor->getHtml();
 			}
 		}
 	

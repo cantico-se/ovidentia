@@ -24,7 +24,7 @@
 include_once 'base.php';
 include_once $babInstallPath.'utilit/topincl.php';
 
-function browse($cat,$cb)
+function browse($cat)
 	{
 	global $babBody, $babDB;
 
@@ -35,10 +35,9 @@ function browse($cat,$cb)
 		var $count;
 		var $res;
 
-		function temp($cat,$cb)
+		function temp($cat)
 			{
 			global $babDB;
-			$this->cb = "".$cb;
 			
 			if ($cat != 0 )
 				{
@@ -53,6 +52,7 @@ function browse($cat,$cb)
 			$this->res = $babDB->db_query($req);	
 			$this->count = $babDB->db_num_rows($this->res);
 			$this->target_txt = bab_translate("popup");
+			$this->backlink = bab_toHtml($GLOBALS['babUrlScript']."?tg=editorfaq&idx=browse");
 			}
 
 		function getnext()
@@ -67,13 +67,11 @@ function browse($cat,$cb)
 					{
 					if(bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $arr['idcat']))
 						{
-						$this->title = addslashes(str_replace("\""," ",strip_tags($arr['question'])));
-						$this->titledisp = strip_tags($arr['question']);
-						$tmp = str_replace("\n"," ",substr(strip_tags(bab_replace($arr['response']))."...", 0, 600));
-						$tmp = stripslashes(str_replace("\""," ",$tmp));
-						$this->resp = str_replace("\r"," ",$tmp);
+						$this->title = bab_toHtml($arr['question'], BAB_HTML_JS);
+						$this->titledisp = bab_toHtml($arr['question']);
+						$this->resp = '';
 						$this->faqid = $arr['id'];
-						$this->backlink = $GLOBALS['babUrlScript']."?tg=editorfaq&idx=browse";
+						
 						}
 					else
 						$this->display = false;
@@ -82,16 +80,9 @@ function browse($cat,$cb)
 					{
 					if(bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $arr['id']))
 						{
-						$this->displink = false;
-						$test = $babDB->db_query("select id from ".BAB_FAQQR_TBL." where idcat='".$babDB->db_escape_string($arr['id'])."'");
-						$n = $babDB->db_num_rows($test);
-						if ($n > 0)
-							$this->displink = true;
-						$this->title = $arr['category'];
-						$tmp = str_replace("\n"," ",addslashes(substr(strip_tags(bab_replace($arr['description']))."...", 0, 400)));
-						$tmp = stripslashes(str_replace("\""," ",$tmp));
-						$this->desc = str_replace("\r"," ",$tmp);
-						$this->url = $GLOBALS['babUrlScript']."?tg=editorfaq&idx=browse&cat=".$arr['id'];
+						$this->title = bab_toHtml($arr['category']);
+						$this->desc = '';
+						$this->url = bab_toHtml($GLOBALS['babUrlScript']."?tg=editorfaq&idx=browse&cat=".$arr['id']);
 						}
 					else
 						$this->display = false;
@@ -105,9 +96,14 @@ function browse($cat,$cb)
 			}
 
 		}
+		
+	global $babBody;
 	
-	$temp = new temp($cat,$cb);
-	echo bab_printTemplate($temp,"editorfaq.html", "editorfaq");
+	$babBody->setTitle(bab_translate('Faqs'));
+	$babBody->addStyleSheet('text_toolbar.css');
+	
+	$temp = new temp($cat);
+	$babBody->babPopup(bab_printTemplate($temp,"editorfaq.html", "editorfaq"));
 	}
 
 if(!isset($cat))
@@ -115,21 +111,17 @@ if(!isset($cat))
 	$cat = 0;
 	}
 
-if(!isset($cb))
-	{
-	$cb = "EditorOnInsertFaq";
-	}
 
-if(!isset($idx))
-	{
-	$idx = "browse";
-	}
+
+
+$cat = 	bab_rp('cat', 0);
+$idx = bab_rp('idx', 'browse');
 
 switch($idx)
 	{
 	default:
 	case "browse":
-		browse($cat,$cb);
+		browse($cat);
 		exit;
 	}
 ?>

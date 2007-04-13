@@ -210,10 +210,17 @@ function newEvent()
 			$this->repeat_dayend 	= !isset($_REQUEST['repeat_dayend']) 	? $this->curday		: $_REQUEST['repeat_dayend'];
 
 
-			$this->colorvalue = isset($_REQUEST['color']) ? bab_toHtml($_REQUEST['color']) : '' ;
+			$this->colorvalue = bab_rp('color');
 
-			$descriptionval = isset($_REQUEST['evtdesc'])? $_REQUEST['evtdesc'] : "";
-			$this->editor = bab_editor($descriptionval, 'evtdesc', 'vacform',150);
+			
+			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			
+			$editor = new bab_contentEditor('bab_calendar_event');
+			$editor->setContent(bab_rp('evtdesc'));
+			$editor->setFormat('html');
+			$editor->setParameters(array('height' => 150));
+			$this->editor = $editor->getEditor();
+
 
 			$this->daytypechecked = $this->icalendar->allday == 'Y' ? "checked"  :'';
 			$this->elapstime = $this->icalendar->elapstime;
@@ -646,7 +653,13 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 				{
 				$this->brecevt = false;
 				}
-			$this->evtarr['description'] = bab_replace($this->evtarr['description']);
+				
+			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+
+			$editor = new bab_contentEditor('bab_calendar_event');
+			$editor->setContent($this->evtarr['description']);
+			$this->evtarr['description'] = $editor->getHtml();
+
 			$this->ymin = 2;
 			$this->ymax = 5;
 			if (isset($_POST) && count($_POST) > 0)
@@ -707,9 +720,14 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 			$this->category = bab_translate("Category");
 			$this->descurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=event&idx=updesc&calid=".$this->calid."&evtid=".$evtid);
 
+			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 			
+			$editor = new bab_contentEditor('bab_calendar_event');
+			$editor->setContent($this->evtarr['description']);
+			$editor->setFormat('html');
+			$editor->setParameters(array('height' => 150));
+			$this->editor = $editor->getEditor();
 
-			$this->editor = bab_editor($this->evtarr['description'], 'evtdesc', 'vacform',150);
 			$this->elapstime = $babBody->icalendars->elapstime;
 			$this->ampm = $babBody->ampm;
 			$this->colorvalue = isset($_POST['color']) ? $_POST['color'] : $this->evtarr['color'] ;
@@ -975,8 +993,12 @@ function addEvent(&$message)
 		$args['alert']['minute'] = $_POST['rminute'];
 		$args['alert']['email'] = isset($_POST['remail'])? $_POST['remail']: 'N';
 		}
-
-	$args['description'] = bab_pp('evtdesc');
+	
+	include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			
+	$editor = new bab_contentEditor('bab_calendar_event');
+	$args['description'] = $editor->getContent();
+	
 	$args['title'] = bab_pp('title');
 	$args['location'] = bab_pp('location');
 		
@@ -1129,10 +1151,12 @@ function updateEvent(&$message)
 	
 	$title = bab_pp('title');
 	$location = bab_pp('location');
-		
-
-	$description = bab_pp('evtdesc');
-	bab_editor_record($description);
+	
+	
+	include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			
+	$editor = new bab_contentEditor('bab_calendar_event');
+	$description = $editor->getContent();
 
 	if( empty($_POST['category']))
 		$catid = 0;

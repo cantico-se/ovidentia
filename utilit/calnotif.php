@@ -73,6 +73,7 @@ function sendReminders()
 			}
 
 		$mail->mailFrom($GLOBALS['babAdminEmail'], $GLOBALS['babAdminName']);
+		include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 
 		while( $arr = $babDB->db_fetch_array($res))
 		{
@@ -80,9 +81,18 @@ function sendReminders()
 			$email = bab_getUserEmail($arr['id_user']);
 			$name = bab_getUserName($arr['id_user']);
 			$mail->mailTo($email, $name);
-			echo $name.' : '.$email.'<br />';
 
-			$tempc = new clsCalEventReminder($arr['title'], bab_replace_ext($arr['description']), bab_longDate(bab_mktime($arr['start_date'])), bab_longDate(bab_mktime($arr['end_date'])));
+			$editor = new bab_contentEditor('bab_calendar_event');
+			$editor->setParameters(array('email' => true));
+			$editor->setContent($arr['description']);
+
+			$tempc = new clsCalEventReminder(
+				$arr['title'], 
+				$editor->getHtml(), 
+				bab_longDate(bab_mktime($arr['start_date'])), 
+				bab_longDate(bab_mktime($arr['end_date']))
+			);
+			
 			$message = $mail->mailTemplate(bab_printTemplate($tempc,"mailinfo.html", "eventreminder"));
 			$mail->mailSubject(bab_translate("Event reminder"));
 			$mail->mailBody($message, "html");
@@ -126,12 +136,17 @@ function updatePopupNotifier()
 				$this->altbg = !$this->altbg;
 				$arr = $babDB->db_fetch_array($this->resevent);
 				$this->eventurl = '';
-				$this->eventtitle = $arr['title'];
-				$this->eventdesc = bab_replace($arr['description']);
+				$this->eventtitle = bab_toHtml($arr['title']);
+
+				include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+				$editor = new bab_contentEditor('bab_calendar_event');
+				$editor->setContent($arr['description']);
+				$this->eventdesc = $editor->getHtml();
+				
 				$time = bab_mktime($arr['start_date']);
 				$this->startdate = bab_shortDate($time, false);
 				$this->starttime = bab_time($time);
-				$this->dismissurl = $GLOBALS['babUrlScript']."?tg=calnotif&idx=dismiss&evtid=".$arr['id'];
+				$this->dismissurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calnotif&idx=dismiss&evtid=".$arr['id']);
 				$i++;
 				return true;
 				}

@@ -1006,6 +1006,10 @@ switch($tg)
 		include $babInstallPath."editorcontdir.php";
 		exit;
 		break;
+	case 'editorfunctions':
+		include $babInstallPath."editorfunctions.php";
+		exit;
+		break;
 	case "selectcolor":
 		include $babInstallPath."selectcolor.php";
 		exit;

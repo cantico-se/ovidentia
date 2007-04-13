@@ -67,13 +67,13 @@ function bab_f_toHtml($pee, $opt) {
 	}
 
 	if (BAB_HTML_REPLACE === ($opt & BAB_HTML_REPLACE)) {
-		bab_replace_ref($pee);
+		$replace = bab_replace_get();
+		$replace->ref($pee);
 	}
 	
 	if (BAB_HTML_REPLACE_MAIL === ($opt & BAB_HTML_REPLACE_MAIL)) {
-		$GLOBALS['bab_replace_ext_url'] = 1;
-		bab_replace_ref($pee);
-		unset($GLOBALS['bab_replace_ext_url']);
+		$replace = bab_replace_get();
+		$replace->email($pee);
 	}
 	
 	

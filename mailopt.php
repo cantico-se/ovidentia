@@ -523,16 +523,10 @@ function signatureAdd($signature, $name, $html)
 			$this->signatureval = $signature != ""? $signature: "";
 			$this->nameval = $name != ""? $name: "";
 			$this->onchange = "";
-			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
-				{
-				if( empty($html))
-					$html = "Y";
-				$this->bhtml = 1;
-				}
-			else
-				{
-				$this->bhtml = 0;
-				}
+			if( empty($html)) {
+				$html = "Y";	
+			}
+			
 			if( $html == "Y")
 				{
 				$this->htmlselected = "selected";
@@ -546,7 +540,13 @@ function signatureAdd($signature, $name, $html)
 				$this->textselected = "selected";
 				}
 
-			$this->editor = bab_editor($this->signatureval, 'signature', 'sigform');
+			
+			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			
+			$editor = new bab_contentEditor('bab_mail_signature');
+			$editor->setContent($this->signatureval);
+			$editor->setFormat('html');
+			$this->editor = $editor->getEditor();
 			}
 		}
 
@@ -606,7 +606,13 @@ function signatureModify($sigid, $signature, $name, $html)
 				$this->bhtml = 0;
 				}
 
-			$this->editor = bab_editor($this->signatureval, 'signature', 'sigform');
+			
+			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			
+			$editor = new bab_contentEditor('bab_mail_signature');
+			$editor->setContent($this->signatureval);
+			$editor->setFormat('html');
+			$this->editor = $editor->getEditor();
 
             if( $html == "Y")
                 {
@@ -753,9 +759,20 @@ function confirmDeleteAccount($item)
 
 }
 
-function addSignature($name, $signature, $html)
+function addSignature($name, $html)
 {
 	global $babBody, $babDB, $BAB_SESS_USERID;
+	
+	include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			
+	if ('Y' === $html) {
+		$editor = new bab_contentEditor('bab_mail_signature');
+		$signature = $editor->getContent();
+	} else {
+		$signature = bab_pp('signature');
+	}
+	
+	
 	if( empty($signature))
 		{
 		$babBody->msgerror = bab_translate("ERROR: You must provide signature !!");
@@ -772,9 +789,16 @@ function addSignature($name, $signature, $html)
 		}
 }
 
-function modifySignature($name, $signature, $html, $sigid)
+function modifySignature($name,  $html, $sigid)
 {
 	global $babBody, $babDB, $BAB_SESS_USERID;
+	
+	include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			
+	$editor = new bab_contentEditor('bab_mail_signature');
+	$signature = $editor->getContent();
+	
+	
 	if( empty($signature))
 		{
 		$babBody->msgerror = bab_translate("ERROR: You must provide signature !!");
@@ -819,12 +843,12 @@ if( isset($action) && $action == "Yes" && $BAB_SESS_USERID != '')
 
 if( isset($addsig) && $addsig == "add" && $BAB_SESS_USERID != '')
 	{
-	addSignature($signame, $signature, $html);
+	addSignature($signame, $html);
 	}
 
 if( isset($modsig) && $modsig == "modify" && $BAB_SESS_USERID != '')
 	{
-	modifySignature($signame, $signature, $html, $sigid);
+	modifySignature($signame, $html, $sigid);
 	}
 
 switch($idx)

@@ -79,7 +79,7 @@ var $template;
 function babSection($title = "Section", $content="<br>This is a sample of content<br>")
 {
 	$this->title = $title;
-	$this->content = bab_replace($content);
+	$this->content = $content;
 	$this->hiddenz = false;
 	$this->position = 0;
 	$this->close = 0;
@@ -689,7 +689,7 @@ function babTopicsSection($cat, $close)
 	$r = $babDB->db_fetch_array($babDB->db_query("select description, title, template from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$babDB->db_escape_string($cat)."'"));
 	$this->setTemplate($r['template']);
 	$this->title = bab_toHtml($r['title']);
-	$this->head = bab_replace($r['description']);
+	$this->head = bab_toHtml($r['description']);
 
 	$req = "select top.id topid, type, top.id_topcat id, lang, idsaart, idsacom from ".BAB_TOPCAT_ORDER_TBL." top LEFT JOIN ".BAB_TOPICS_TBL." t ON top.id_topcat=t.id and top.type=2 LEFT JOIN ".BAB_TOPICS_CATEGORIES_TBL." tc ON top.id_topcat=tc.id and top.type=1 where top.id_parent='".$babDB->db_escape_string($cat)."' order by top.ordering asc";
 	$res = $babDB->db_query($req);

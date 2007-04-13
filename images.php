@@ -39,7 +39,7 @@ function put_text($txt,$limit=12,$limitmot=15)
 		{
 		$arr[$key] = substr($mot,0,$limitmot);
 		}
-return bab_replace(implode(' ',$arr));
+return implode(' ',$arr);
 }
 
 function getResizedImage($img, $w, $h, $com)
@@ -177,7 +177,7 @@ function listImages($editor,$path='')
 				{
 				if ($f != "." and $f != "..") 
 					{
-					if (is_file(BAB_IUD_COMMON.$f))
+					if (is_file(BAB_IUD_COMMON.$f) && @getimagesize(BAB_IUD_COMMON.$f))
 						{
 						$this->arrcfile[] = BAB_IUD_COMMON.$f;
 						}
@@ -251,7 +251,7 @@ function iframe($editor,$path="")
 				{
 				if ($f != "." and $f != "..") 
 					{
-					if (is_file(BAB_IUD_COMMON.$path.$f))
+					if (is_file(BAB_IUD_COMMON.$path.$f) && @getimagesize(BAB_IUD_COMMON.$path.$f))
 						{
 						$this->arrcfile[] = BAB_IUD_COMMON.$path.$f;
 						}

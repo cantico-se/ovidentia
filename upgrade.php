@@ -3249,7 +3249,27 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	}
 	
 	
-
+	/**
+	 * Upgrade to 6.4.0
+	 */
+	 
+	 
+	if (!bab_isTableField(BAB_EVENT_LISTENERS_TBL, 'priority')) {
+		$babDB->db_query("ALTER TABLE ".BAB_EVENT_LISTENERS_TBL." ADD priority INT( 11 )  UNSIGNED DEFAULT '0' NOT NULL");
+	}
+	
+	// event registration for htmlarea editor
+	include_once $GLOBALS['babInstallPath']."utilit/eventincl.php";
+	bab_addEventListener('bab_eventEditorContentToEditor'	, 'htmlarea_onContentToEditor'	, 'utilit/htmlareaincl.php'	, BAB_ADDON_CORE_NAME, 100);
+	bab_addEventListener('bab_eventEditorRequestToContent'	, 'htmlarea_onRequestToContent'	, 'utilit/htmlareaincl.php'	, BAB_ADDON_CORE_NAME, 100);
+	bab_addEventListener('bab_eventEditorContentToHtml'		, 'htmlarea_onContentToHtml'	, 'utilit/htmlareaincl.php'	, BAB_ADDON_CORE_NAME, 100);
+	
+	// event registration for editor core implementations
+	bab_addEventListener('bab_eventEditors'					, 'bab_onEventEditors'			, 'utilit/editorincl.php');
+	
+	// event registration for editor core functionalities
+	bab_addEventListener('bab_eventEditorFunctions'			, 'bab_onEditorFunctions'		, 'utilit/editorincl.php');
+	
 	
 	
 	return true;

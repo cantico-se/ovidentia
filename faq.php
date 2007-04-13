@@ -412,7 +412,12 @@ function FaqPrintContents($idcat)
 				$this->questionname = bab_toHtml($row['question']);
 				if( $this->bresponse )
 					{
-					$this->response = bab_replace($row['response']);
+					include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+
+					$editor = new bab_contentEditor('bab_faq_response');
+					$editor->setContent($row['response']);
+					$this->response = $editor->getHtml();
+
 					}
 				$this->questionurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=faq&idx=listq&item=".$this->idcat."&idscat=".$row['id_subcat']."&idq=".$row['id']);
 				$i++;
@@ -470,6 +475,8 @@ function listSubCategoryQuestions($idcat, $idscat)
 			$req = "select * from ".BAB_FAQQR_TBL." where idcat='".$babDB->db_escape_string($idcat)."' and id_subcat='".$babDB->db_escape_string($idscat)."'";
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
+			
+			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 			}
 
 		function getnext()
@@ -505,7 +512,11 @@ function listSubCategoryQuestions($idcat, $idscat)
 				{
 				$arr = $babDB->db_fetch_array($this->res);
 				$this->question = bab_toHtml($arr['question']);
-				$this->response = bab_replace($arr['response']);
+
+				$editor = new bab_contentEditor('bab_faq_response');
+				$editor->setContent($arr['response']);
+				$this->response = $editor->getHtml();
+					
 				$this->idq = bab_toHtml($arr['id']);
 				$i++;
 				$this->index++;
@@ -539,7 +550,13 @@ function viewQuestion($idcat, $idscat, $id)
 			$req = "select * from ".BAB_FAQQR_TBL." where id='".$babDB->db_escape_string($id)."'";
 			$this->res = $babDB->db_query($req);
 			$this->arr = $babDB->db_fetch_array($this->res);
-			$this->arr['response'] = bab_replace($this->arr['response']);
+			
+			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			
+			$editor = new bab_contentEditor('bab_faq_response');
+			$editor->setContent($this->arr['response']);
+			$this->arr['response'] = $editor->getHtml();
+			
 			$this->returnurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$idcat."&idscat=".$idscat);
 			$this->return = bab_translate("Return to Questions");
 			}
@@ -575,12 +592,17 @@ function viewPopupQuestion($id)
 			if( bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $this->arr['idcat']) || isUserManager())
 				{
 				$GLOBALS['babWebStat']->addFaqsQuestion($id);
-				$this->arr['response'] = bab_replace($this->arr['response']);
+				
+				include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			
+				$editor = new bab_contentEditor('bab_faq_response');
+				$editor->setContent($this->arr['response']);
+				$this->arr['response'] = $editor->getHtml();
 				}
 			else
 				{
 				$this->arr['question'] = '';
-				$this->arr['response'] = bab_replace("Access denied");
+				$this->arr['response'] = bab_translate("Access denied");
 				}
 			}
 		}
@@ -624,6 +646,8 @@ function faqPrint($idcat, $idscat)
 			$req = "select * from ".BAB_FAQQR_TBL." where idcat='".$babDB->db_escape_string($idcat)."' and id_subcat='".$babDB->db_escape_string($idscat)."'";
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
+			
+			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 			}
 
 		function getnext()
@@ -660,7 +684,11 @@ function faqPrint($idcat, $idscat)
 				$arr = $babDB->db_fetch_array($this->res);
 				$this->idq = $arr['id'];
 				$this->question = $arr['question'];
-				$this->response = bab_replace($arr['response']);
+					
+				$editor = new bab_contentEditor('bab_faq_response');
+				$editor->setContent($arr['response']);
+				$this->response = $editor->getHtml();
+				
 				$i++;
 				$this->index++;
 				return true;
@@ -694,7 +722,13 @@ function addQuestion($idcat, $idscat)
 			$this->add = bab_translate("Add");
 			$this->idcat = bab_toHtml($idcat);
 			$this->idscat = $idscat;
-			$this->editor = bab_editor('', 'response', 'qcreate',400,1);
+			
+			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			
+			$editor = new bab_contentEditor('bab_faq_response');
+			$editor->setParameters(array('height' => 400));
+			$this->editor = $editor->getEditor();
+			
 			$this->res = $babDB->db_query("select * from ".BAB_FAQ_SUBCAT_TBL." where id_cat='".$babDB->db_escape_string($idcat)."'");
 			$this->count = $babDB->db_num_rows($this->res);
 			}
@@ -825,7 +859,13 @@ function modifyQuestion($item, $idscat, $idq)
 			$arr = $babDB->db_fetch_array($res);
 			$this->question = bab_toHtml($arr['question']);
 
-			$this->editor = bab_editor($arr['response'], 'response', 'qmod',400,1);
+			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			
+			$editor = new bab_contentEditor('bab_faq_response');
+			$editor->setContent($arr['response']);
+			$editor->setFormat('html');
+			$editor->setParameters(array('height' => 400));
+			$this->editor = $editor->getEditor();
 
 			$this->res = $babDB->db_query("select * from ".BAB_FAQ_SUBCAT_TBL." where id_cat='".$babDB->db_escape_string($idcat)."'");
 			$this->count = $babDB->db_num_rows($this->res);
@@ -938,9 +978,16 @@ function modifySubCategory($idcat, $idscat, $ids)
 	}
 
 
-function saveQuestion($item, $idscat, $question, $response)
+function saveQuestion($item, $idscat, $question)
 	{
 	global $babDB, $faqinfo;
+	
+	
+	include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			
+	$editor = new bab_contentEditor('bab_faq_response');
+	$response = $editor->getContent();
+	
 
 	if( empty($question) || empty($response))
 		{
@@ -960,9 +1007,11 @@ function saveQuestion($item, $idscat, $question, $response)
 	$id = $babDB->db_insert_id();
 
 	$ar = array();
-	$response = imagesReplace($response, $id."_faq_", $ar);
+	
 
-	bab_editor_record($response);
+	
+	
+	$response = imagesReplace($response, $id."_faq_", $ar);
 
 	$query = "update ".BAB_FAQQR_TBL." set response='".$babDB->db_escape_string($response)."' where id='".$babDB->db_escape_string($id)."'";
 	$babDB->db_query($query);
@@ -1022,7 +1071,7 @@ function deleteSubCategory($item, $idscat, $ids)
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item."&idscat=".$idscat);
 	}
 
-function updateQuestion($idq, $newidscat, $question, $response)
+function updateQuestion($idq, $newidscat, $question)
 	{
 	global $babDB;
 	if( empty($question) || empty($response))
@@ -1032,9 +1081,14 @@ function updateQuestion($idq, $newidscat, $question, $response)
 		}
 
 	$ar = array();
+	
+	include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			
+	$editor = new bab_contentEditor('bab_faq_response');
+	$response = $editor->getContent();
+	
 	$response = imagesReplace($response, $idq."_faq_", $ar);
 
-	bab_editor_record($response);
 
 	$query = "update ".BAB_FAQQR_TBL." set question='".$babDB->db_escape_string($question)."', response='".$babDB->db_escape_string($response)."', id_subcat='".$babDB->db_escape_string($newidscat)."' where id = '".$babDB->db_escape_string($idq)."'";
 	$babDB->db_query($query);
@@ -1069,11 +1123,11 @@ if( isUserManager() )
 {
 if( 'addquestion' == bab_pp('addquestion'))
 	{
-	saveQuestion($item, bab_pp('newidscat'),  bab_pp('question'),  bab_pp('response'));
+	saveQuestion($item, bab_pp('newidscat'),  bab_pp('question'));
 	}
 else if( 'updatequestion' == bab_pp('updatequestion'))
 	{
-	updateQuestion(bab_pp('idq'), bab_pp('newidscat'), bab_pp('question'), bab_pp('response'));
+	updateQuestion(bab_pp('idq'), bab_pp('newidscat'), bab_pp('question'));
 	}
 else if( 'Yes' == bab_gp('action'))
 	{

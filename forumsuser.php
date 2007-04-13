@@ -468,7 +468,12 @@ function viewSearchResultForums()
 							$this->postauthor = bab_toHtml($arr['author']);
 							}
 						$this->postsubject = bab_toHtml($arr['subject']);
-						$this->postmessage = bab_replace($arr['message']);
+						
+						include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+
+						$editor = new bab_contentEditor('bab_forum_post');
+						$editor->setContent($arr['message']);
+						$this->postmessage = $editor->getHtml();
 
 						list($this->iddir) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group='".$babDB->db_escape_string(BAB_REGISTERED_GROUP)."'"));
 						$this->postauthordetailsurl = '';

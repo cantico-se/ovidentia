@@ -1,13 +1,7 @@
 <!--#begin editorfaq -->
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE>{ babSiteName }</TITLE>
-{ babMeta }
-{ babCss }
+
 <script type="text/javascript">
 <!--
-window.focus();
 
 function func(faqid,title)
 	{
@@ -15,49 +9,38 @@ function func(faqid,title)
 	var checkb = document.getElementById('tg');
 	if (checkb.checked) target = 1;
 	else target = 0;
-	window.opener.{ cb }(faqid,title,target);
+	
+	var html = opener.getSelection();
+	if (html != '')
+		{
+		title = html;
+		}
+	
+	opener.bab_dialog._return({
+		'callback' 	: 'editorInsertText',
+		'param'		: '$FAQID('+faqid+','+title+','+target+')'
+	});
+	
 	window.close();
 	}
 //-->
 </script>
-</HEAD>
-<BODY>
-<table border="0" width="100%" cellpadding="10" cellspacing="0" align="left" >
-<tr><td>
-<table border="0" width="100%" cellpadding="1" cellspacing="0" align="left" >
-<tr class="BabContentBackground">
-<td class="BabCategTitleNavigation">FAQS</td>
-<td>&nbsp;</td>
-</tr>
+
+<ul id="bab_editor_functions">
 <!--#if q -->
-<tr>
-<td>
-<a href="{ backlink }">. . </a>
-</td>
-</tr>
+<li>
+	<a href="{ backlink }"><img src="{ babSkinPath }images/Puces/folder.gif" alt="" align="absmiddle" /> . . </a>
+</li>
 <!--#endif q -->
 	<!--#in getnext -->
 	<!--#if display -->
-	<tr >
+	<li>
 	<!--#if q -->
-	<td align="left" style="border-bottom:1px #DDDDDD solid">
-	{ titledisp }
-	</td>
-	<td align="right">
-	<a href="#" title="{ resp }" onclick="func({ faqid },'{ title }')"><img border="0" src="{ babSkinPath }images/Puces/PuceArrowRight.gif"></a>
+	<a href="#" title="{ resp }" onclick="func({ faqid },'{ title }')"><img src="{ babSkinPath }images/Puces/defaut.gif" alt="" align="absmiddle" /> { titledisp }</a>
 	<!--#else q -->
-	<td align="left">
-		<!--#if displink -->
-		<a title="{ desc }" href="{ url }" nowrap>{ title }</a>
-		<!--#else displink -->
-		{ title }
-		<!--#endif displink -->
-	</td>
-	<td>
-	&nbsp;
+	<a title="{ desc }" href="{ url }"><img src="{ babSkinPath }images/Puces/folder.gif" alt="" align="absmiddle" /> { title }</a>
 	<!--#endif q -->
-	</td>
-	</tr>
+	</li>
 	<!--#endif display -->
 	<!--#endin getnext -->
 <!--#if q -->
@@ -70,6 +53,5 @@ function func(faqid,title)
 </table>
 </td></tr>
 </table>
-</BODY>
-</HTML>
+
 <!--#end editorfaq -->

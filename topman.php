@@ -432,8 +432,15 @@ function viewArticle($article)
 			$this->arr = $babDB->db_fetch_array($this->res);
 			if( bab_isUserTopicManager($this->arr['id_topic']))
 				{
-				$this->content = bab_replace($this->arr['body']);
-				$this->head = bab_replace($this->arr['head']);
+				include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+				$editor = new bab_contentEditor('bab_article_body');
+				$editor->setContent($this->arr['body']);
+				$this->content = $editor->getHtml();
+				
+				$editor = new bab_contentEditor('bab_article_head');
+				$editor->setContent($this->arr['head']);
+				$this->head = $editor->getHtml();
+				
 				}
 			else
 				{
@@ -494,7 +501,11 @@ function viewArticle($article)
 					$this->authorname = $arr['name'];
 					}
 				$this->commenttitle = $arr['subject'];
-				$this->commentbody = bab_replace($arr['message']);
+				
+				$editor = new bab_contentEditor('bab_article_comment');
+				$editor->setContent($arr['message']);
+				$this->commentbody = $editor->getHtml();
+				
 				$this->delcomurl = $GLOBALS['babUrlScript']."?tg=topman&idx=viewa&delc=com&item=".$this->arr['id_topic']."&art=".$this->arr['id']."&idc=".$arr['id'];
 				$i++;
 				return true;

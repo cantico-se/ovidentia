@@ -125,8 +125,15 @@ function sectionModify($id)
 					$this->yselected = "";
 					}
 				}
-			if ($this->arr['jscript'] == 'N')
-				$this->editor = bab_editor($this->arr['content'], 'content', 'secmod');
+			if ($this->arr['jscript'] == 'N') {
+				
+				include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+				$editor = new bab_contentEditor('bab_section');
+				$editor->setContent($this->arr['content']);
+				$editor->setFormat('html');
+				$this->editor = $editor->getEditor();
+				
+				}
 			else
 				$this->editor = false;
 
@@ -226,7 +233,7 @@ function sectionDelete($id)
 	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
 
-function sectionUpdate($id, $title, $desc, $content, $script, $template, $lang, $opt)
+function sectionUpdate($id, $title, $desc, $template, $lang, $opt)
 	{
 	global $babBody, $babDB;
 
@@ -236,17 +243,26 @@ function sectionUpdate($id, $title, $desc, $content, $script, $template, $lang, 
 		return false;
 		}
 
-	if( $script == "Y")
-		$php = "Y";
-	else
-		$php = "N";
 
+	$php = "N";
+	
+	
 	$query = "select * from ".BAB_SECTIONS_TBL." where id='".$babDB->db_escape_string($id)."'";
 	$res = $babDB->db_query($query);
 	$arr = $babDB->db_fetch_array($res);
 
 
-	bab_editor_record($content);
+	if (1 == $arr['jscript']) {
+		$content = bab_rp('content');
+	} else {
+	
+		include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+		$editor = new bab_contentEditor('bab_section');
+		$content = $editor->getContent();
+
+	}
+	
+
 
 
 	$query = "update ".BAB_SECTIONS_TBL." 
@@ -284,8 +300,7 @@ if( isset($modify))
 	{
 	if( isset($submit))
 		{
-		if( !isset($script)) { $script = '';}
-		sectionUpdate($item, $title, $description, $content, $script, $template, $lang, $opt);
+		sectionUpdate($item, $title, $description, $template, $lang, $opt);
 		}
 	else if(isset($secdel))
 		$idx = "Delete";

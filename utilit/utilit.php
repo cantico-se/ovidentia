@@ -876,6 +876,13 @@ function loadSections()
 											{
 												eval("\$arr2['content'] = \"".$arr2['content']."\";");
 											}
+										else 
+											{
+												include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+												$editor = new bab_contentEditor('bab_section');
+												$editor->setContent($arr2['content']);
+												$arr2['content'] = $editor->getHtml();
+											}
 										$sec = new babSection($arr2['title'], $arr2['content']);
 										}
 									else

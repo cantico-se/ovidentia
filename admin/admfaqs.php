@@ -65,7 +65,11 @@ function addCategory()
 			$this->langFiles = $GLOBALS['babLangFilter']->getLangFiles();
 			$this->countLangFiles = count($this->langFiles);
 
-			$this->editor = bab_editor('', 'faqdesc', 'catcreate',150);
+			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			$editor = new bab_contentEditor('bab_faq');
+			$editor->setParameters(array('height' => 150));
+			$this->editor = $editor->getEditor();
+			
 			$this->item = "";
 			$this->managerval = "";
 			$this->managerid = "";
@@ -178,7 +182,7 @@ function listCategories()
 	}
 
 
-function saveCategory($category, $description, $lang)
+function saveCategory($category, $lang)
 	{
 	global $babBody;
 	if( empty($category))
@@ -186,6 +190,10 @@ function saveCategory($category, $description, $lang)
 		$babBody->msgerror = bab_translate("ERROR: You must provide a FAQ !!");
 		return;
 		}
+		
+	include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+	$editor = new bab_contentEditor('bab_faq');
+	$description = $editor->getContent();
 
 	$db = $GLOBALS['babDB'];
 	$query = "select * from ".BAB_FAQCAT_TBL." where category='".$db->db_escape_string($category)."'";	
@@ -221,7 +229,7 @@ if(!isset($idx))
 
 if( isset($add))
 	{
-	saveCategory($category, $faqdesc, $lang);
+	saveCategory($category, $lang);
 	}
 
 switch($idx)

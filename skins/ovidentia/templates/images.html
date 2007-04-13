@@ -10,10 +10,6 @@
 <!--
 var prevpath = '';
 
-function onInsertImage(url)
-	{
-	opener.onInsertImage(url);
-	}
 function onOK(id, url) {
 	var alt = document.getElementById('f_alt');
 	var ali = document.getElementById('align');
@@ -30,7 +26,12 @@ function onOK(id, url) {
 	param['f_horiz'] = horiz.value;
 	param['f_vert'] = vert.value;
 
-	self.opener.EditorOnCreateImage(param);
+
+	opener.bab_dialog._return({
+		'callback' 	: 'EditorOnCreateImage',
+		'param'		: param
+	});
+	
 	window.close();
     return false;
 };
@@ -295,18 +296,11 @@ function rename_popup(url,msg)
 <tr align="center">
 <td valign="middle" class="BabTopicsAuthorBackground">
 <!--#if gd -->
-<!--#if editor "== none" -->
-<a class="BabSiteAdminListLink" href="javascript:parent.onInsertImage('{ imgurl }')">
-<!--#else editor -->
 <a class="BabSiteAdminListLink" href="#" onclick="return parent.onOK('{ editor }', '{ imgurl }');">
-<!--#endif editor -->
 <img src="{ srcurl }" border="0" alt="{ imgname } - { imgalt }"></a>
 <!--#else gd -->
-<!--#if editor "== none" -->
-<a class="BabSiteAdminListLink" href="javascript:parent.onInsertImage('{ imgurl }')">
-<!--#else editor -->
+
 <a class="BabSiteAdminListLink" href="#" onclick="return parent.onOK('{ editor }', '{ imgurl }');">
-<!--#endif editor -->
 <img src="{ srcurl }" width="{ imgwidth }" height="{ imgheight }" border="0" alt="{ imgname } - { imgalt }"></a>
 <!--#endif gd -->
 </td>
@@ -361,18 +355,10 @@ function rename_popup(url,msg)
 <tr align="center">
 <td valign="middle" class="BabLoginMenuBackground">
 <!--#if gd -->
-<!--#if editor "== none" -->
-<a class="BabSiteAdminListLink" href="javascript:parent.onInsertImage('{ imgurl }')">
-<!--#else editor -->
 <a class="BabSiteAdminListLink" href="#" onclick="return parent.onOK('{ editor }', '{ imgurl }');">
-<!--#endif editor -->
 <img src="{ srcurl }" border="0" alt="{ imgname } - { imgalt }"></a>
 <!--#else gd -->
-<!--#if editor "== none" -->
-<a class="BabSiteAdminListLink" href="javascript:parent.onInsertImage('{ imgurl }')">
-<!--#else editor -->
 <a class="BabSiteAdminListLink" href="#" onclick="return parent.onOK('{ editor }', '{ imgurl }');">
-<!--#endif editor -->
 <img src="{ srcurl }" width="{ imgwidth }" height="{ imgheight }" border="0" alt="{ imgname } - { imgalt }"></a>
 <!--#endif gd -->
 </td>

@@ -109,6 +109,8 @@ treeview.onSubmitTree = function()
 					'content': element.firstChild.nodeValue
 				}
 				returnParameters.push(returnParameter);
+				returnParameters['param'] = returnParameters;
+				returnParameters['callback'] = 'EditorOnInsertFiles';
 //				window.opener.EditorOnInsertFile && window.opener.EditorOnInsertFile('', returnParameter.id, returnParameter.content);
 			}
 		}

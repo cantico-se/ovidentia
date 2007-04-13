@@ -1,188 +1,115 @@
 <!--#begin editorcont -->
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE>{ babSiteName }</TITLE>
-{ babMeta }
-{ babCss }
+
 <script type="text/javascript">
 <!--
-window.focus();
 
 function func(contid,txt)
 	{
-	window.opener.EditorOnInsertCont(contid,txt);
+	var html = opener.getSelection();
+	if (html != '')
+		{
+		txt = html;
+		}
+	
+	opener.bab_dialog._return({
+		'callback' 	: 'editorInsertText',
+		'param'		: '$CONTACTID('+contid+','+txt+')'
+	});
+	
+	
 	window.close();
 	}
 //-->
 </script>
-</HEAD>
-<BODY>
-<table border="0" width="100%" cellpadding="10" cellspacing="0" align="left" >
-<tr><td>
-<table border="0" width="100%" cellpadding="1" cellspacing="0" align="left" >
-<tr class="BabContentBackground">
-<td class="BabCategTitleNavigation">
-<table border="0" width="100%" cellpadding="1" cellspacing="0" align="left" >
-	<tr>
-	<!--#if contactif -->
-	<td class="BabMenuActiveBackground" width="50%">{ conttitle }</td>
-	<td class="BabLoginMenuBackground" width="50%"><a href="{ dirurl }">{ dirtitle }</a></td>
-	<!--#else contactif -->
-	<td class="BabLoginMenuBackground" width="50%"><a href="{ conturl }">{ conttitle }</a></td>
-	<td class="BabMenuActiveBackground" width="50%">{ dirtitle }</td>
-	<!--#endif contactif -->
-	</tr>
-</table>
-</td>
-</tr>
-	<td>&nbsp;</td>
-<tr>
-</tr>
+
+
+<ul id="bab_editor_functions">
 <!--#in getnext -->
-<tr>
-<td align="left">
-<a href="javascript: func({ contid },'{ js_title }');">{ title }</a>
-</td>
-</tr>
+	<li>
+		<a href="javascript: func({ contid },'{ js_title }');"><img src="{ babSkinPath }images/Puces/defaut.gif" alt="" align="absmiddle" /> { title }</a>
+	</li>
 <!--#endin getnext -->
-</table>
-</td></tr>
-</table>
-</BODY>
-</HTML>
+</ul>
+
 <!--#end editorcont -->
 
 <!--#begin dirlist -->
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE>{ babSiteName }</TITLE>
-{ babMeta }
-{ babCss }
-<script type="text/javascript">
-<!--
-window.focus();
-//-->
-</script>
-</HEAD>
-<BODY>
-<table border="0" width="100%" cellpadding="10" cellspacing="0" align="left" >
-<tr><td>
-<table border="0" width="100%" cellpadding="1" cellspacing="0" align="left" >
-<tr class="BabContentBackground">
-<td class="BabCategTitleNavigation">
-<table border="0" width="100%" cellpadding="1" cellspacing="0" align="left" >
-	<tr>
-	<!--#if contactif -->
-	<td class="BabMenuActiveBackground" width="50%">{ conttitle }</td>
-	<td class="BabLoginMenuBackground" width="50%"><a href="{ dirurl }">{ dirtitle }</a></td>
-	<!--#else contactif -->
-	<td class="BabLoginMenuBackground" width="50%"><a href="{ conturl }">{ conttitle }</a></td>
-	<td class="BabMenuActiveBackground" width="50%">{ dirtitle }</td>
-	<!--#endif contactif -->
-	</tr>
-</table>
-</td>
-</tr>
-</tr>
-	<td>&nbsp;</td>
-<tr>
+<ul id="bab_editor_functions">
 <!--#in getnext -->
-<tr>
-<td align="left">
-<a alt="{ description }" href="{ dirurl }">{ title }</a>
-</td>
-</tr>
+	<li>
+		<a title="{ description }" href="{ dirurl }"><img src="{ babSkinPath }images/Puces/defaut.gif" alt="" align="absmiddle" /> { title }</a>
+	</li>
 <!--#endin getnext -->
-</table>
-</td></tr>
-</table>
-</BODY>
-</HTML>
-
+</ul>
 <!--#end dirlist -->
 
 <!--#begin editordir -->
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE>{ babSiteName }</TITLE>
-{ babMeta }
-{ babCss }
+
 <script type="text/javascript">
 <!--
-window.focus();
 
 function func(uid,txt,iddir)
 	{
-	window.opener.EditorOnInsertDir(uid,txt,iddir);
+	
+	var html = opener.getSelection();
+	if (html != '')
+		{
+		txt = html;
+		}
+	
+	opener.bab_dialog._return({
+		'callback' 	: 'editorInsertText',
+		'param'		: '$DIRECTORYID('+uid+','+txt+','+iddir+')'
+	});
+	
 	window.close();
 	}
 
 //-->
 </script>
-</HEAD>
-<BODY>
 
 
-	<table border="0" width="100%" cellpadding="1" cellspacing="0" align="left" >
-		<tr>
-		<!--#if contactif -->
-		<td class="BabMenuActiveBackground" width="50%">{ conttitle }</td>
-		<td class="BabLoginMenuBackground" width="50%"><a href="{ dirurl }">{ dirtitle }</a></td>
-		<!--#else contactif -->
-		<td class="BabLoginMenuBackground" width="50%"><a href="{ conturl }">{ conttitle }</a></td>
-		<td class="BabMenuActiveBackground" width="50%">{ dirtitle }</td>
-		<!--#endif contactif -->
-		</tr>
-	</table>
-<br />
-<br />
-	<table width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
+<table width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+	<td class="BabLoginCadreBackground"> 
+	<table width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
 		<tr> 
-		<td class="BabLoginCadreBackground"> 
-		<table width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
-			<tr> 
-				<td class="BabLetterlists"> 
-				<!--#if allselected "== 1" -->
-				{ allname } &nbsp;
-				<!--#else allselected -->
-				<a class="BabAlphabetLink" href="{ allurl }">{ allname }</a> &nbsp;
-				<!--#endif allselected -->
-				<!--#in getnextselect -->
-				<!--#if selected "== 1" -->
-				{ selectname } &nbsp;
-				<!--#else selected -->
-				<a class="BabAlphabetLink" href="{ selecturl }">{ selectname }</a> &nbsp; 
-				<!--#endif selected -->
-				<!--#endin getnextselect -->
-				</td>
-			</tr>
-		</table>
-		<tr>
-		<td class="BabLoginCadreBackground"> 
-		<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
-			<tr class="BabSiteAdminTitleFontBackground"> 
-			  <td width="1%">&nbsp;</td>
-			  <!--#in getnextcol -->
-			  <td><a href="{ colurl }">{ coltxt }</a></td>
-			  <!--#endin getnextcol -->
-			</tr>
-			<!--#in getnext -->
-			<tr class="BabSiteAdminFontBackground"> 
-			  <td width="1%"><a href="javascript: func({ js_id },'{ js_name }', {  js_iddir });"><img src="{ babSkinPath }images/Puces/contact.png" border="0"></a></td>
-			  <!--#in getnextcolval -->
-			  <td align="left">{ coltxt }</td>
-			  <!--#endin getnextcolval -->
-			</tr>
-			<!--#endin getnext -->
-		</table>
-		</td>
+			<td class="BabLetterlists"> 
+			<!--#if allselected "== 1" -->
+			{ allname } &nbsp;
+			<!--#else allselected -->
+			<a class="BabAlphabetLink" href="{ allurl }">{ allname }</a> &nbsp;
+			<!--#endif allselected -->
+			<!--#in getnextselect -->
+			<!--#if selected "== 1" -->
+			{ selectname } &nbsp;
+			<!--#else selected -->
+			<a class="BabAlphabetLink" href="{ selecturl }">{ selectname }</a> &nbsp; 
+			<!--#endif selected -->
+			<!--#endin getnextselect -->
+			</td>
 		</tr>
 	</table>
+	<tr>
+	<td class="BabLoginCadreBackground"> 
+	<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+		<tr class="BabSiteAdminTitleFontBackground"> 
+		  <td width="1%">&nbsp;</td>
+		  <!--#in getnextcol -->
+		  <td><a href="{ colurl }">{ coltxt }</a></td>
+		  <!--#endin getnextcol -->
+		</tr>
+		<!--#in getnext -->
+		<tr class="BabSiteAdminFontBackground"> 
+		  <td width="1%"><a href="javascript: func({ js_id },'{ js_name }', {  js_iddir });"><img src="{ babSkinPath }images/Puces/contact.png" border="0"></a></td>
+		  <!--#in getnextcolval -->
+		  <td align="left">{ coltxt }</td>
+		  <!--#endin getnextcolval -->
+		</tr>
+		<!--#endin getnext -->
+	</table>
+	</td>
+	</tr>
+</table>
 
-
-</BODY>
-</HTML>
 <!--#end editordir -->

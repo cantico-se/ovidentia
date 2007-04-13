@@ -425,7 +425,13 @@ function newThread($forum)
 				$this->username = bab_toHtml($BAB_SESS_USER);
 				}
 			$message = isset($_POST['message']) ? $_POST['message'] : '';
-			$this->editor = bab_editor($message, 'message', 'threadcr');
+			
+			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			$editor = new bab_contentEditor('bab_forum_post');
+			$editor->setContent($message);
+			$editor->setFormat('html');
+			$this->editor = $editor->getEditor();
+
 			$this->allow_post_files = bab_isAccessValid(BAB_FORUMSFILES_GROUPS_TBL,$forum);
 			$this->maxfilesize = bab_toHtml($babBody->babsite['maxfilesize']);
 
@@ -446,9 +452,11 @@ function saveThread()
 
 	$forum = intval(bab_pp('forum', 0));
 	$subject = strval(bab_pp('subject', ''));
-	$message = strval(bab_pp('message', ''));
 	$notifyme = bab_pp('notifyme', 'N');
 	$name = strval(bab_pp('uname', ''));
+	
+	$editor = new bab_contentEditor('bab_forum_post');
+	$message = $editor->getContent();
 
 	if(!bab_isAccessValid(BAB_FORUMSPOST_GROUPS_TBL, $forum))
 		{
@@ -503,7 +511,6 @@ function saveThread()
 		$confirmed = 'Y';
 		}
 
-	bab_editor_record($message);
 
 	$req = "insert into ".BAB_POSTS_TBL." (id_thread, date, subject, message, id_author, author, confirmed, date_confirm) values ";
 	$req .= "('" .$babDB->db_escape_string($idthread). "', now(), '";

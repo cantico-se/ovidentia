@@ -580,9 +580,18 @@ function showEditArticle()
 			$this->access = false;
 			$this->bprev = false;
 			$this->warnmessage = '';
-			if( isset($_POST['title']) || isset($_POST['headtext']) || isset($_POST['bodytext']) || isset($_POST['lang']) )
+			if( isset($_POST['title'])|| isset($_POST['lang']) )
 				{
-				$this->content = bab_editArticle($_POST['title'], $_POST['headtext'], $_POST['bodytext'], $_POST['lang'], '');
+				include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+
+				$editorhead = new bab_contentEditor('bab_article_head');
+				$headtext = $editorhead->getContent();
+				
+				
+				$editorbody = new bab_contentEditor('bab_article_body');
+				$bodytext = $editorbody->getContent();
+				
+				$this->content = bab_editArticle(bab_pp('title'), $headtext, $bodytext, bab_pp('lang'), '');
 				}
 			else
 				{
@@ -1592,7 +1601,7 @@ function restoreRefusedArticleDraft($idart)
 	}
 
 
-function editArticleDraft($idart, $title, $headtext, $bodytext, $lang, $message)
+function editArticleDraft($idart, $title, $lang, $message)
 	{
 	global $babBodyPopup;
 	class temp
@@ -1600,7 +1609,7 @@ function editArticleDraft($idart, $title, $headtext, $bodytext, $lang, $message)
 		var $content;
 		var $idart;
 
-		function temp($idart, $title, $headtext, $bodytext, $lang, $message)
+		function temp($idart, $title, $lang, $message)
 			{
 			global $babDB, $babBodyPopup, $BAB_SESS_USERID;
 			$this->idart = bab_toHtml($idart);
@@ -1616,8 +1625,17 @@ function editArticleDraft($idart, $title, $headtext, $bodytext, $lang, $message)
 			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
 				$this->updatetxt = bab_translate("Update");
-				if( !empty($title) || !empty($headtext) || !empty($bodytext) || !empty($lang) )
+				if( !empty($title) || !empty($lang) )
 					{
+					include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+
+					$editorhead = new bab_contentEditor('bab_article_head');
+					$headtext = $editorhead->getContent();
+					
+					
+					$editorbody = new bab_contentEditor('bab_article_body');
+					$bodytext = $editorbody->getContent();
+					
 					$this->content = bab_editArticle($title, $headtext, $bodytext, $lang, '');
 					}
 				else
@@ -1634,7 +1652,7 @@ function editArticleDraft($idart, $title, $headtext, $bodytext, $lang, $message)
 
 		}
 
-	$temp = new temp($idart, $title, $headtext, $bodytext, $lang, $message);
+	$temp = new temp($idart, $title, $lang, $message);
 	$babBodyPopup->babecho(bab_printTemplate($temp, "artedit.html", "editdraft"));
 	}
 
@@ -1665,10 +1683,17 @@ function previewArticleDraft($idart)
 	}
 
 
-function updateArticleDraft($idart, $title, $headtext, $bodytext, $lang, $approbid, &$message)
+function updateArticleDraft($idart, $title,  $lang, $approbid, &$message)
 {
 	global $babDB, $BAB_SESS_USERID, $babBody ;
 	include_once $GLOBALS['babInstallPath']."utilit/imgincl.php";
+	include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+	
+	$headeditor = new bab_contentEditor('bab_article_head');
+	$headtext = $headeditor->getContent();
+	
+	$bodyeditor = new bab_contentEditor('bab_article_body');
+	$bodytext = $bodyeditor->getContent();
 
 	$title = trim($title);
 	$bodytext = trim($bodytext);
@@ -1698,11 +1723,20 @@ function updateArticleDraft($idart, $title, $headtext, $bodytext, $lang, $approb
 	$headtext = imagesReplace($headtext, $idart."_draft_", $ar);
 	$bodytext = imagesReplace($bodytext, $idart."_draft_", $ar);
 
-	bab_editor_record($headtext);
-
-	bab_editor_record($bodytext);
-
-	$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set title='".$babDB->db_escape_string($title)."', head='".$babDB->db_escape_string($headtext)."', body='".$babDB->db_escape_string($bodytext)."', date_modification=now(), lang='" .$babDB->db_escape_string($lang). "', approbation='".$babDB->db_escape_string($approbid)."' where id='".$babDB->db_escape_string($idart)."'");
+	$babDB->db_query("
+	
+	UPDATE ".BAB_ART_DRAFTS_TBL." 
+	SET 
+		title='".$babDB->db_escape_string($title)."', 
+		head='".$babDB->db_escape_string($headtext)."', 
+		body='".$babDB->db_escape_string($bodytext)."', 
+		date_modification=now(), 
+		lang='".$babDB->db_escape_string($lang)."', 
+		approbation='".$babDB->db_escape_string($approbid)."' 
+	WHERE 
+		id='".$babDB->db_escape_string($idart)."'
+	");
+	
 	return true;
 }
 
@@ -2166,7 +2200,7 @@ elseif( $updstep1 = bab_rp('updstep1') )
 		{
 			$message = bab_translate("Draft creation failed");
 			$idx = 's0';
-		}elseif(!updateArticleDraft($idart, bab_pp('title'), bab_pp('headtext'), bab_pp('bodytext'), bab_pp('lang'), $approbid, $message))
+		}elseif(!updateArticleDraft($idart, bab_pp('title'), bab_pp('lang'), $approbid, $message))
 		{
 			deleteDraft($idart);
 			unset($idart);
@@ -2201,7 +2235,7 @@ elseif( $updstep1 = bab_rp('updstep1') )
 		{
 			$message = bab_translate("Draft creation failed");
 			$idx = 's0';
-		}elseif(!updateArticleDraft($idart, $title, $headtext, $bodytext, $lang, $approbid, $message))
+		}elseif(!updateArticleDraft($idart, $title, $lang, $approbid, $message))
 		{
 			deleteDraft($idart);
 			unset($idart);
@@ -2241,7 +2275,7 @@ elseif( $updstep1 = bab_rp('updstep1') )
 		{
 			$message = bab_translate("Draft creation failed");
 			$idx = 's0';
-		}elseif(!updateArticleDraft($idart, bab_pp('title'), bab_pp('headtext'), bab_pp('bodytext'), bab_pp('lang'), $approbid, $message))
+		}elseif(!updateArticleDraft($idart, bab_pp('title'), bab_pp('lang'), $approbid, $message))
 		{
 			deleteDraft($idart);
 			unset($idart);
@@ -2543,11 +2577,9 @@ switch($idx)
 		if( $idart )
 		{
 			$title = bab_gp('title');
-			$headtext = bab_gp('headtext');
-			$bodytext = bab_gp('bodytext');
 			$lang = bab_gp('lang');
 			$babBodyPopup->title = bab_translate("Article edition");
-			editArticleDraft($idart, $title, $headtext, $bodytext, $lang, $message);
+			editArticleDraft($idart, $title, $lang, $message);
 			printBabBodyPopup();
 			exit;
 		}

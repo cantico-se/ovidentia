@@ -1,8 +1,6 @@
-var global_textarea_id = null;
-if (typeof global_editor == 'undefined')
-	{
-		global_editor = null;
-	}
+var global_uid = null;
+var global_editor = null;
+
 
 function getSelection()
 {
@@ -28,100 +26,95 @@ return html;
 }
 
 
+/**
+ * Launch ovidentia functionalities list
+ * each function can return datas by the bab_dialog interface
+ * the return format for the bab_dialog parameter is an object with this format
+ * 	'callback' => function_name (ex : 'editorInsertText')
+ *  'param'	=> callback_parameter (mixed)
+ *
+ * 
+ */
+function insert_ovidentia() {
 
-function bab_tt_popup(textarea_id, url)
-{
-	global_textarea_id = textarea_id;
-	window.open(url,'text_toolbar','toolbar=no,menubar=no,personalbar=no,width=500,height=480,scrollbars=yes,resizable=yes');
+	var path = document.location.href.split('?')[0];
+	
+	var useparam = {
+		'width'		: 700,
+		'height'	: 500
+	};
+
+	bab_dialog(path+'?tg=editorfunctions&uid='+global_uid, useparam, function(arr) {
+		eval(arr['callback']+'(arr[\'param\']);');
+	});
 }
 
 
-function editorInsertText(text)
-{
+/**
+ * Callback for external function
+ * Html insertion
+ * @param	string 	text
+ */
+function editorInsertText(text) {
+	
 	if (global_editor != null)
 	{
 		global_editor.insertHTML(text);
 	}
-	else
+	else if (global_uid != null)
 	{
-		var ta = document.getElementById(global_textarea_id);
+		var ta = document.getElementById(global_uid);
 
 		text = ' ' + text + ' ';
 		if (ta.caretPos) {
 			ta.caretPos.text += text;
 			} 
 		else {
-			ta.value  += text;
-			}
-
+			ta.value += text;
+		}
+	} else {
+		alert('global_editor or global_uid must be set before editorInsertText(text)');
 	}
 }
 
 
+/**
+ * Callback for external function
+ * Image insertion
+ * @param	array 	param
+ */
 function EditorOnCreateImage(param)
 {
-	if (global_editor != null)
+	if (global_editor != null && typeof EditorOnCreateImage_WYSIWYG == 'function')
 	{
 		EditorOnCreateImage_WYSIWYG(param)
 	}
 	else
 	{
-	editorInsertText('<img src="'+param['f_url']+'" alt="'+param['f_alt']+'" border="'+param['f_border']+'" align="'+param['f_align']+'" />');
+		editorInsertText('<img src="'+param['f_url']+'" alt="'+param['f_alt']+'" border="'+param['f_border']+'" align="'+param['f_align']+'" />');
 	}
 }
 
-function EditorOnInsertFile(id, idf, txt)
+
+
+function EditorOnInsertFiles(files)
 {
-var editor = global_editor;
-var html = getSelection();
-if (html != '')
-	{
-	txt = html;
+	var html = getSelection();
+	if (html != '') {
+		txt = html;
 	}
-
-editorInsertText('$FILE('+idf+','+txt+')');
-}
-
-
-function EditorOnInsertArticle(id, txt, target)
-{
-var html = getSelection();
-if (html != '')
-	{
-	txt = html;
+	var insertedItems = new Array();
+	for (var i = 0; i < files.length; i++) {
+		var file = files[i];
+		if (file.type != 'folder') {
+			insertedItems.push('$FILE(' + file.id + ',' + file.content + ')');
+		} else {
+			var path = file.id.split(':');
+			var id = path[0];
+			insertedItems.push('$FOLDER(' + id + ',' + path.slice(1).join('/') + ',' + file.content + ')');
+		}
 	}
-
-editorInsertText('$ARTICLEID('+id+','+txt+','+target+')');
-}
-
-
-function EditorOnInsertFaq(id, txt, target)
-{
-var html = getSelection();
-if (html != '')
-	{
-	txt = html;
+	if (insertedItems.length > 0) {
+		editorInsertText(insertedItems.join(','));
 	}
-
-editorInsertText('$FAQID('+id+','+txt+','+target+')');
-}
-
-function EditorOnInsertOvml(txt)
-{
-editorInsertText('$OVML('+txt+')');
-}
-
-function EditorOnInsertCont(id,txt)
-{
-editorInsertText('$CONTACTID('+id+','+txt+')');
-}
-
-function EditorOnInsertDir(id,txt,iddir)
-{
-editorInsertText('$DIRECTORYID('+id+','+txt+','+iddir+')');
-}
-
-function EditorOnInsertFolder(id,path,txt)
-{
-editorInsertText('$FOLDER('+id+','+path+','+txt+')');
 }

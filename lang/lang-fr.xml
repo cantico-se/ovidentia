@@ -2427,5 +2427,14 @@
 <string id="The user's groups">Les groupes de l'utilisateur</string>
 <string id="The installed version is not compliant with this package, the upgrade within theses two versions has been disabled">La version installée n'est pas compatible avec cette archive, la mise à jour entre ces deux versions à été désactivée</string>
 <string id="Approbation schemas instances list">Liste des instances des schémas d'approbation</string>
+<string id="Insert content links">Insérer du contenu dynamique</string>
+<string id="There is no directory available">Il n'y a pas d'annuaire disponible</string>
+<string id="Insert files or folders from ovidentia files manager">Insérer des fichiers ou des répertoires du gestionnaire de fichiers</string>
+<string id="Insert a dynamic link to an article from ovidentia">Insérer un lien dynamique vers un article</string>
+<string id="Insert a link to question/response from ovidentia FAQ">Insérer un lien vers une question/réponse d'une FAQ</string>
+<string id="Insert an ovml file">Insérer un fichier ovml</string>
+<string id="Insert a link to a personnal contact">Insérer un lien vers un contact personnel</string>
+<string id="Insert link to a directory entry">Insérer un lien vers une fiche d'annuaire</string>
+<string id="Insert image from ovidentia content image manager">Insérer une image</string>
 
 </fr>

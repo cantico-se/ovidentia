@@ -467,7 +467,9 @@ function sectionCreate($jscript)
 			$this->jscript = $jscript;
 			if( $jscript == 0)
 				{
-				$this->editor = bab_editor('', 'content', 'secmod');
+				include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+				$editor = new bab_contentEditor('bab_section');
+				$this->editor = $editor->getEditor();
 				}
 			else
 				$this->editor = false;
@@ -534,7 +536,7 @@ function sectionCreate($jscript)
 
 
 
-function sectionSave($title, $pos, $desc, $content, $script, $js, $template, $lang, $opt)
+function sectionSave($title, $pos, $desc, $script, $js, $template, $lang, $opt)
 	{
 	global $babBody;
 	if( empty($title))
@@ -543,7 +545,13 @@ function sectionSave($title, $pos, $desc, $content, $script, $js, $template, $la
 		return;
 		}
 
-	bab_editor_record($content);
+	if( $js == 1) {
+		$content = bab_rp('content');
+	} else {
+		include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+		$editor = new bab_contentEditor('bab_section');
+		$content = $editor->getContent();
+	}
 
 	$db = &$GLOBALS['babDB'];
 
@@ -562,11 +570,7 @@ function sectionSave($title, $pos, $desc, $content, $script, $js, $template, $la
 		}
 	else
 		{
-		
-		if( $script == "Y")
-			$php = "Y";
-		else
-			$php = "N";
+		$php = "N";
 
 		if( $js == 1)
 			$js = "Y";
@@ -771,7 +775,7 @@ if( isset($create))
 	{
 	if (!isset($script))
 		$script = '';
-	sectionSave($title, $position, $description, $content, $script, $js, $template, $lang, $opt);
+	sectionSave($title, $position, $description, $script, $js, $template, $lang, $opt);
 	}
 
 if( isset($update))

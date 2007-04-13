@@ -85,7 +85,7 @@ class categoriesHierarchyPopup
 
 
 
-function browse($topics,$cat,$cb)
+function browse($topics,$cat)
 	{
 	global $babBody, $babDB;
 
@@ -96,14 +96,13 @@ function browse($topics,$cat,$cb)
 		var $count;
 		var $res;
 
-		function temp($topics,$cat,$cb)
+		function temp($topics,$cat)
 			{
 			global $babDB;
-			$this->categoriesHierarchyPopup($topics,$cat,$GLOBALS['babUrlScript'].'?tg=editorarticle&cb='.$cb);
+			$this->categoriesHierarchyPopup($topics,$cat,$GLOBALS['babUrlScript'].'?tg=editorarticle');
 
 			$this->cat = $cat;
 			$this->topics = $topics;
-			$this->cb = ''.$cb;
 
 			$reqcat = "select id from ".BAB_TOPICS_CATEGORIES_TBL." where id_parent='".$babDB->db_escape_string($cat)."'";
 			$this->rescat = $babDB->db_query($reqcat);
@@ -131,8 +130,8 @@ function browse($topics,$cat,$cb)
 				if (isset($topcatview[$arr['id']]))
 					{
 					$this->displaycat = true;
-					$this->title = bab_getTopicCategoryTitle($arr['id']);
-					$this->url = $GLOBALS['babUrlScript'].'?tg=editorarticle&idx=browse&cat='.$arr['id'].'&cb='.$this->cb;
+					$this->title = bab_toHtml(bab_getTopicCategoryTitle($arr['id']));
+					$this->url = bab_toHtml($GLOBALS['babUrlScript'].'?tg=editorarticle&idx=browse&cat='.$arr['id']);
 					}
 				else
 					{
@@ -155,8 +154,8 @@ function browse($topics,$cat,$cb)
 				if (isset($babBody->topview[$arr['id']]) && $this->topics == 0 )
 					{
 					$this->displaytop = true;
-					$this->title = strip_tags($arr['category']);
-					$this->url = $GLOBALS['babUrlScript'].'?tg=editorarticle&idx=browse&topics='.$arr['id'].'&cat='.$this->cat.'&cb='.$this->cb;
+					$this->title = bab_toHtml($arr['category']);
+					$this->url = bab_toHtml($GLOBALS['babUrlScript'].'?tg=editorarticle&idx=browse&topics='.$arr['id'].'&cat='.$this->cat);
 					}
 				else
 					{
@@ -192,13 +191,9 @@ function browse($topics,$cat,$cb)
 						$this->articleauthor = bab_translate("Anonymous");
 					$this->articledate = bab_strftime(bab_mktime($arr['date']));
 					$this->author = bab_translate("by") . ' '. $this->articleauthor. ' - '. $this->articledate;
-
-					$tmp = str_replace('\n',' ',substr(strip_tags(bab_replace($arr['head'])), 0, 400).' -- '.$this->author);
-					$this->content = str_replace("\r"," ",$tmp);
-					$this->content = str_replace("\"","'",$this->content);
+					$this->content = '';
 					$this->titledisp = bab_toHtml($arr['title']);
-					$tmp = str_replace("\""," ",$arr['title']);
-					$this->title = addslashes($tmp);
+					$this->title = bab_toHtml($arr['title'], BAB_HTML_JS);
 					$this->articleid = $arr['id'];
 					}
 				else
@@ -212,9 +207,12 @@ function browse($topics,$cat,$cb)
 				return false;
 			}
 		}
+		
+	$babBody->setTitle(bab_translate('Article'));
+	$babBody->addStyleSheet('text_toolbar.css');
 	
-	$temp = new temp($topics,$cat,$cb);
-	echo bab_printTemplate($temp,'editorarticle.html', 'editorarticle');
+	$temp = new temp($topics,$cat);
+	$babBody->babPopup(bab_printTemplate($temp,'editorarticle.html', 'editorarticle'));
 	}
 
 if(!isset($idx))
@@ -232,16 +230,13 @@ if(!isset($topics))
 	$topics = 0;
 	}
 
-if(!isset($cb))
-	{
-	$cb = 'EditorOnInsertArticle';
-	}
+
 
 switch($idx)
 	{
 	default:
 	case 'browse':
-		browse($topics,$cat,$cb);
+		browse($topics,$cat);
 		exit;
 	}
 ?>

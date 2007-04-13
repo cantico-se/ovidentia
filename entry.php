@@ -75,7 +75,13 @@ function ListArticles($idgroup)
 					$GLOBALS['babWebStat']->addArticle($arr['id']);
 					}
 				$this->title = bab_toHtml($arr['title']);
-				$this->content = bab_replace($arr['head']);
+				
+				include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+				
+				$editor = new bab_contentEditor('bab_article_head');
+				$editor->setContent($arr['head']);
+				$this->content = $editor->getHtml();
+				
 				if( $arr['id_author'] != 0 && (($author = bab_getUserName($arr['id_author'])) != ""))
 					{
 					$this->articleauthor = bab_toHtml($author);
@@ -154,7 +160,13 @@ function readMore($article, $idg)
 			$req = "select * from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($article)."'";
 			$this->res = $babDB->db_query($req);
 			$arr = $babDB->db_fetch_array($this->res);
-			$this->content = bab_replace($arr['body']);
+			
+			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+				
+			$editor = new bab_contentEditor('bab_article_body');
+			$editor->setContent($arr['body']);
+			$this->content = $editor->getHtml();
+			
 			$this->title = bab_toHtml($arr['title']);
 			if( $arr['id_author'] != 0 && (($author = bab_getUserName($arr['id_author'])) != ""))
 				{
@@ -231,8 +243,18 @@ function articlePrint($topics, $article)
 				{
 				$GLOBALS['babWebStat']->addArticle($article);
 				$this->arr = $babDB->db_fetch_array($this->res);
-				$this->head = bab_replace($this->arr['head']);
-				$this->content = bab_replace($this->arr['body']);
+				
+				
+				include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+					
+				$editor = new bab_contentEditor('bab_article_head');
+				$editor->setContent($this->arr['head']);
+				$this->head = $editor->getHtml();
+				
+				$editor = new bab_contentEditor('bab_article_body');
+				$editor->setContent($this->arr['body']);
+				$this->content = $editor->getHtml();
+				
 				$this->title = bab_toHtml($this->arr['title']);
 				$this->url = "<a href=\"".bab_toHtml($GLOBALS['babUrl'])."\">".bab_toHtml($GLOBALS['babSiteName'])."</a>";
 				}

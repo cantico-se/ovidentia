@@ -51,7 +51,12 @@ function notesModify($id)
 			$res = $babDB->db_query("select * from ".BAB_NOTES_TBL." where id='".$babDB->db_escape_string($id)."' and id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."'");
 			$arr = $babDB->db_fetch_array($res);
 			$this->note_id = bab_toHtml($arr['id']);
-			$this->editor = bab_editor($arr['content'], 'content', 'notemod');	
+				
+			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			$editor = new bab_contentEditor('bab_note');
+			$editor->setContent($arr['content']);
+			$editor->setFormat('html');
+			$this->editor = $editor->getEditor();
 			}
 		}
 
@@ -71,10 +76,18 @@ function updateNotes($id, $content)
 	{
 	global $babDB, $BAB_SESS_USERID;
 
-	bab_editor_record($content);
-	$content = $babDB->db_escape_string($content);
-
-	$query = "update ".BAB_NOTES_TBL." set content='".$content."' where id = '".$babDB->db_escape_string($id)."' and id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
+	include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+	$editor = new bab_contentEditor('bab_note');
+	$content = $editor->getContent();
+	$format = $editor->getFormat();
+	
+	$query = "
+	UPDATE ".BAB_NOTES_TBL." SET 
+		content='".$babDB->db_escape_string($content)."' 
+	WHERE 
+		id='".$babDB->db_escape_string($id)."' 
+		AND id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."' 
+	";
 	$babDB->db_query($query);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=notes&idx=List");
 	}

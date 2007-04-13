@@ -122,16 +122,16 @@ close }</a> </td>
 
 <!--#begin babeditortemplate -->
 <!--#if loadscripts -->
+<!--#if first -->
 <script type="text/javascript">
       _editor_url = "{ babUrl }{ babScriptPath }htmlarea/";
       _editor_lang = "{ babLanguage }";
 
-	  textarea_id = new Array("{ editname }");
+	  textarea_id = new Array({ listeditname });
 
 </script>
-
+<!--#endif first -->
 <!--#endif loadscripts -->
-<script type="text/javascript" src="{ babUrl }{ babScriptPath }text_toolbar.js"></script>
 
 <div align="left">
 	{ text_toolbar }
@@ -140,9 +140,10 @@ close }</a> </td>
 </div>
 
 <!--#if loadscripts -->
-<script type="text/javascript" src="{ babInstallPath }scripts/bab_dialog.js"></script>
+<!--#if last -->
 <script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/htmlarea.js"></script>
-<script type="text/javascript" src="{ babUrlScript }?tg=htmlarea&amp;idx=js&amp;mode={ what }"></script>
+<script type="text/javascript" src="{ babUrlScript }?tg=htmlarea&amp;idx=js&amp;uid={ uid }"></script>
+<!--#endif last -->
 <!--#endif loadscripts -->
 
 <!--#if filter_html -->
@@ -155,21 +156,8 @@ close }</a> </td>
 
 
 <!--#begin babtexttoolbartemplate -->
-<style type='text/css'>@import url('{ babInstallPath }styles/text_toolbar.css');</style>
-
 <div id="{ editname }_text_toolbar" class="bab_text_toolbar">
-	 <!--#if mode "== 1" -->
-	  <a href="javascript:bab_tt_popup('{ editname }', '{ babUrlScript }?tg=images&editor=0&callback=EditorOnCreateImage')" title="{ t_bab_image }"><img src="{ babScriptPath }htmlarea/images/ed_bab_image.gif" alt="{ t_bab_image }" /></a>
-	<!--#endif mode -->
-	  <a href="javascript:bab_tt_popup('{ editname }', '{ babUrlScript }?tg=fileman&idx=brow&callback=EditorOnCreateFile&editor=1')" title="{ t_bab_file }"><img src="{ babScriptPath }htmlarea/images/ed_bab_file.gif" alt="{ t_bab_file }" /></a>
-
-	  <a href="javascript:bab_tt_popup('{ editname }', '{ babUrlScript }?tg=editorarticle&idx=brow&cb=EditorOnInsertArticle')" title="{ t_bab_article }"><img src="{ babScriptPath }htmlarea/images/ed_bab_articleid.gif" alt="{ t_bab_article }" /></a>
-
-	  <a href="javascript:bab_tt_popup('{ editname }', '{ babUrlScript }?tg=editorfaq')" title="{ t_bab_faq }"><img src="{ babScriptPath }htmlarea/images/ed_bab_faqid.gif" alt="{ t_bab_faq }" /></a>
-
-	   <a href="javascript:bab_tt_popup('{ editname }', '{ babUrlScript }?tg=editorovml')" title="{ t_bab_ovml }"><img src="{ babScriptPath }htmlarea/images/ed_bab_ovml.gif" alt="{ t_bab_ovml }" /></a>
-
-		<a href="javascript:bab_tt_popup('{ editname }', '{ babUrlScript }?tg=editorcontdir')" title="{ t_bab_contdir }"><img src="{ babScriptPath }htmlarea/images/ed_bab_contdir.gif" alt="{ t_bab_contdir }" /></a>
+	<a href="#" onclick="global_textarea_id = '{ uid }';insert_ovidentia();return false;">{ t_insert_ovidentia }</a>
 </div>
 <input type="hidden" id="{ editname }_textmode" name="bab_editor_textmode[]" value="{ editname }" />
 <!--#end babtexttoolbartemplate -->

@@ -837,7 +837,10 @@ function bab_cal_setEventsPeriods(&$obj, $id_calendars, $begin, $end, $category 
 		$uid = & $events[$arr['id']]->getProperty('UID');
 		$uid .= '.'.$arr['id'];
 		
-		
+		include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+		$editor = new bab_contentEditor('bab_calendar_event');
+		$editor->setContent($arr['description']);
+		$arr['description']	= $editor->getHtml();
 
 		$events[$arr['id']]->setProperty('DTSTART'		, $arr['start_date']);
 		$events[$arr['id']]->setProperty('DTEND'		, $arr['end_date']);
@@ -846,7 +849,8 @@ function bab_cal_setEventsPeriods(&$obj, $id_calendars, $begin, $end, $category 
 		$events[$arr['id']]->setProperty('LOCATION'		, $arr['location']);
 		$events[$arr['id']]->setProperty('CATEGORIES'	, $arr['category']);
 		$events[$arr['id']]->color = isset($arr['bgcolor']) ? $arr['bgcolor'] : $arr['color'];
-
+		
+		
 		if ('Y' == $arr['bprivate']) {
 			$events[$arr['id']]->setProperty('CLASS'	, 'PRIVATE');
 		}

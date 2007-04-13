@@ -243,7 +243,7 @@ function bab_NWD_onCreatePeriods(&$obj) {
 		
 		$p = & $obj->periods->setUserPeriod(false, $beginDate, $endDate, BAB_PERIOD_NWDAY);
 		$p->setProperty('SUMMARY'		,bab_translate('Non-working day2'));
-		$p->setProperty('DESCRIPTION'	,$nw_type);
+		$p->setProperty('DESCRIPTION'	,bab_toHtml($nw_type));
 		$p->setProperty('DTSTART'		,$beginDate->getIsoDateTime());
 		$p->setProperty('DTEND'			,$endDate->getIsoDateTime());
 		

@@ -209,7 +209,12 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
 				$this->bhtml = 0;
 				}
 
-			$this->editor = bab_editor($this->messageval, 'message', 'composef');
+			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			
+			$editor = new bab_contentEditor('bab_mail_message');
+			$editor->setContent($this->messageval);
+			$editor->setFormat('html');
+			$this->editor = $editor->getEditor();
 
 			$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."' and id='".$babDB->db_escape_string($accid)."'";
 			$res = $babDB->db_query($req);
@@ -279,7 +284,7 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
 	echo bab_printTemplate($temp,"mail.html", "mailcompose");
 	}
 
-function createMail($accid, $to, $cc, $bcc, $subject, $message, $files, $files_name, $files_type,$criteria, $reverse, $format, $sigid)
+function createMail($accid, $to, $cc, $bcc, $subject, $files, $files_name, $files_type,$criteria, $reverse, $format, $sigid)
 	{
 	global $babBody, $babDB, $BAB_SESS_USERID;
 	if( empty($to))
@@ -292,6 +297,17 @@ function createMail($accid, $to, $cc, $bcc, $subject, $message, $files, $files_n
 		$babBody->msgerror = bab_translate("You must fill subject field !!");
 		return false;
 		}
+		
+		
+		
+	include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			
+	$editor = new bab_contentEditor('bab_mail_message');
+	$message = $editor->getContent();	
+		
+		
+		
+		
 	if( empty($message))
 		{
 		$babBody->msgerror = bab_translate("You must fill message field !!");

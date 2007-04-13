@@ -41,7 +41,8 @@ function highlightWord( $w, $text)
 
 function put_text($txt, $limit = 60, $limitmot = 30 )
 	{
-	bab_replace_ref($txt);
+	$obj = bab_replace_get();
+	$obj->ref($txt);
 	
 	if (strlen($txt) > $limit)
 		$out = substr(strip_tags($txt),0,$limit)."...";
@@ -2375,8 +2376,18 @@ function viewArticle($article,$w)
 			if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $this->arr['id_topic']) && bab_articleAccessByRestriction($this->arr['restriction']))
 				{
 				$GLOBALS['babWebStat']->addArticle($this->arr['id']);
-				$this->content = highlightWord($w,bab_replace($this->arr['body']));
-				$this->head = highlightWord($w,bab_replace($this->arr['head']));
+				
+				include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+				
+				$editor = new bab_contentEditor('bab_article_head');
+				$editor->setContent($this->arr['body']);
+				
+				$this->content = highlightWord($w, $editor->getHtml());
+				
+				$editor = new bab_contentEditor('bab_article_body');
+				$editor->setContent($this->arr['head']);
+				
+				$this->head = highlightWord($w, $editor->getHtml());
 
 				$this->resf = $babDB->db_query("
 					
@@ -2454,7 +2465,11 @@ function viewArticle($article,$w)
 				$this->commentdate = bab_toHtml(bab_strftime(bab_mktime($arr['date'])));
 				$this->authorname = highlightWord($this->w,bab_toHtml($arr['name']));
 				$this->commenttitle = highlightWord($this->w,bab_toHtml($arr['subject']));
-				$this->commentbody = highlightWord($this->w,bab_replace($arr['message']));
+				
+				$editor = new bab_contentEditor('bab_article_comment');
+				$editor->setContent($arr['message']);
+				$this->commentbody = highlightWord($this->w,$editor->getHtml());
+				
 				$i++;
 				return true;
 				}
@@ -2517,7 +2532,11 @@ function viewComment($topics, $article, $com, $w)
 			$this->arr = $babDB->db_fetch_array($res);
 			$this->arr['date'] = bab_toHtml(bab_strftime(bab_mktime($this->arr['date'])));
 			$this->arr['subject'] = highlightWord( $w, bab_toHtml($this->arr['subject']));
-			$this->arr['message'] = highlightWord( $w, bab_replace($this->arr['message']));
+
+			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			$editor = new bab_contentEditor('bab_article_comment');
+			$editor->setContent($this->arr['message']);
+			$this->arr['message'] = highlightWord( $w, $editor->getHtml());
 			}
 		}
 
@@ -2558,7 +2577,11 @@ function viewPost($thread, $post, $w)
 			$this->postdate = bab_toHtml(bab_strftime(bab_mktime($arr['date'])));
 			$this->postauthor = bab_toHtml($arr['author']);
 			$this->postsubject = highlightWord( $w, bab_toHtml($arr['subject']));
-			$this->postmessage = highlightWord( $w, bab_replace($arr['message']));
+			
+			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			$editor = new bab_contentEditor('bab_forum_post');
+			$editor->setContent($this->arr['message']);
+			$this->postmessage = highlightWord( $w, $editor->getHtml());
 
 			if ($this->files && bab_searchEngineInfos()) {
 				$found_files = bab_searchIndexedFiles($w, false, false, 'bab_forumsfiles');
@@ -2609,7 +2632,12 @@ function viewQuestion($idcat, $id, $w)
 			$this->res = $babDB->db_query($req);
 			$this->arr = $babDB->db_fetch_array($this->res);
 			$this->arr['question'] = highlightWord( $w, bab_toHtml($this->arr['question']));
-			$this->arr['response'] = highlightWord( $w, bab_replace($this->arr['response']));
+			
+			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			$editor = new bab_contentEditor('bab_faq_response');
+			$editor->setContent($this->arr['response']);
+			$this->arr['response'] = highlightWord( $w, $editor->getHtml());
+			
 			$req = "select category from ".BAB_FAQCAT_TBL." where id=".$babDB->quote($idcat);
 			$a = $babDB->db_fetch_array($babDB->db_query($req));
 			$this->title = highlightWord( $w,  bab_toHtml($a['category']));

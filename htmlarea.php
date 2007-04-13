@@ -22,13 +22,19 @@
  * USA.																	*
 ************************************************************************/
 include "base.php";
-function editor_js($mode)
+
+
+
+/**
+ * HTMLarea javascript file
+ */
+function editor_js($uid)
 	{
 	class temp
 		{
-		function temp($mode)
+		function temp($uid)
 			{
-			$this->mode = $mode;
+			$this->uid = $uid;
 
 			$this->t_css = bab_translate("CSS styles");
 			$this->t_bab_image = bab_translate("Insert image");
@@ -114,12 +120,15 @@ function editor_js($mode)
 
 	header("Content-type: application/x-javascript");
 	
-	$temp = & new temp($mode);
+	$temp = & new temp($uid);
 	die(bab_printTemplate($temp, 'editor.js'));
 
 	}
 
 
+/**
+ * HTMLarea css file
+ */
 function get_css_style_list()
 	{
 	if ($GLOBALS['babSkin'] == "ovidentia")
@@ -160,7 +169,7 @@ function get_css_style_list()
 switch($idx)
 	{
 	case "js":
-		editor_js($_GET['mode']);
+		editor_js($_GET['uid']);
 		break;
 	case "css":
 		get_css_style_list();

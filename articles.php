@@ -181,6 +181,8 @@ function listArticles($topics)
 
 			/* template variables */
 			$this->babtpl_topicid = bab_toHtml($this->topics);
+			
+			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 			}
 
 		function getnext(&$skip)
@@ -245,7 +247,12 @@ function listArticles($topics)
 
 				$this->articledate = bab_toHtml(bab_strftime(bab_mktime($this->arr['date_modification'])));
 				$this->author = bab_translate("by") . " ". bab_toHtml($this->articleauthor). " - ". $this->articledate;
-				$this->content = bab_replace($this->arr['head']);
+				
+				
+				$editor = new bab_contentEditor('bab_article_head');
+				$editor->setContent($this->arr['head']);
+				$this->content = $editor->getHtml();
+				
 				$this->title = bab_toHtml(stripslashes($this->arr['title']));
 				$this->topictitle = bab_toHtml(bab_getCategoryTitle($this->arr['id_topic']));
 				$this->printurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=Print&topics=".$this->topics."&article=".$this->arr['id']);
@@ -390,6 +397,8 @@ function listArchiveArticles($topics, $pos)
 				}
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
+			
+			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 			}
 
 		function getnext(&$skip)
@@ -412,7 +421,11 @@ function listArchiveArticles($topics, $pos)
 					$this->articleauthor = bab_translate("Anonymous");
 				$this->articledate = bab_toHtml(bab_strftime(bab_mktime($this->arr['date'])));
 				$this->author = bab_translate("by") . " ". $this->articleauthor. " - ". $this->articledate;
-				$this->content = bab_replace($this->arr['head']);
+				
+				$editor = new bab_contentEditor('bab_article_head');
+				$editor->setContent($this->arr['head']);
+				$this->content = $editor->getHtml();
+				
 				$this->title = bab_toHtml(stripslashes($this->arr['title']));
 				$this->bbody = $this->arr['blen'];
 				if( $this->bbody == 0 )
@@ -600,6 +613,8 @@ function readMore($topics, $article)
 				{
 				$this->battachments = false;
 				}
+				
+			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 			}
 
 		function getnext(&$skip)
@@ -615,15 +630,22 @@ function readMore($topics, $article)
 					return true;
 					}
 				$GLOBALS['babWebStat']->addArticle($this->arr['id']);
-				$this->title = bab_toHtml(bab_replace($this->arr['title']));
+				$this->title = bab_toHtml($this->arr['title']);
 				if( !empty($this->arr['body']))
 					{
-					$this->head = bab_replace($this->arr['head']);
-					$this->content = bab_replace($this->arr['body']);
+					$editor = new bab_contentEditor('bab_article_head');
+					$editor->setContent($this->arr['head']);
+					$this->head = $editor->getHtml();
+					
+					$editor = new bab_contentEditor('bab_article_body');
+					$editor->setContent($this->arr['body']);
+					$this->content = $editor->getHtml();
 					}
 				else
 					{
-					$this->content = bab_replace($this->arr['head']);
+					$editor = new bab_contentEditor('bab_article_head');
+					$editor->setContent($this->arr['head']);
+					$this->content = $editor->getHtml();
 					}
 				if( $this->arr['id_author'] != 0 && (($author = bab_getUserName($this->arr['id_author'])) != ""))
 					{
@@ -691,9 +713,13 @@ function readMore($topics, $article)
 					$this->authorname = $arr['name'];
 					}
 				$this->authorname = bab_toHtml($arr['name']);
-				
+
 				$this->commenttitle = bab_toHtml($arr['subject']);
-				$this->commentbody = bab_replace($arr['message']);
+				
+				$editor = new bab_contentEditor('bab_article_comment');
+				$editor->setContent($arr['message']);
+				$this->commentbody = $editor->getHtml();
+			
 				$i++;
 				return true;
 				}
@@ -795,8 +821,17 @@ function articlePrint($topics, $article)
 				{
 				$GLOBALS['babWebStat']->addArticle($article);
 				$this->arr = $babDB->db_fetch_array($this->res);
-				$this->head = bab_replace($this->arr['head']);
-				$this->content = bab_replace($this->arr['body']);
+				
+				include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+				
+				$editor = new bab_contentEditor('bab_article_head');
+				$editor->setContent($this->arr['head']);
+				$this->head = $editor->getHtml();
+				
+				$editor = new bab_contentEditor('bab_article_body');
+				$editor->setContent($this->arr['body']);
+				$this->content = $editor->getHtml();
+				
 				$this->title = bab_toHtml($this->arr['title']);
 				$this->url = "<a href=\"".$GLOBALS['babUrl']."\">".$GLOBALS['babSiteName']."</a>";
 				}
@@ -1078,8 +1113,15 @@ function viewArticle($article)
 			$this->countcom = 0;
 			if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $this->arr['id_topic']) && bab_articleAccessByRestriction($this->arr['restriction']))
 				{
-				$this->content = bab_replace($this->arr['body']);
-				$this->head = bab_replace($this->arr['head']);
+				include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+				
+				$editor = new bab_contentEditor('bab_article_head');
+				$editor->setContent($this->arr['head']);
+				$this->head = $editor->getHtml();
+				
+				$editor = new bab_contentEditor('bab_article_body');
+				$editor->setContent($this->arr['body']);
+				$this->content = $editor->getHtml();
 
 				$this->resf = $babDB->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$babDB->db_escape_string($article)."' order by ordering asc");
 				$this->countf = $babDB->db_num_rows($this->resf);
@@ -1142,7 +1184,11 @@ function viewArticle($article)
 					}
 				$this->authorname = bab_toHtml($this->authorname);
 				$this->commenttitle = bab_toHtml($arr['subject']);
-				$this->commentbody = bab_replace($arr['message']);
+				
+				$editor = new bab_contentEditor('bab_article_comment');
+				$editor->setContent($arr['message']);
+				$this->commentbody = $editor->getHtml();
+				
 				$i++;
 				return true;
 				}

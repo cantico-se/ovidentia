@@ -213,58 +213,17 @@ function bab_strftime($time, $hour=true)
 	return bab_longDate($time, $hour);
 	}
 
-
+/**
+ * @deprecated
+ */
 function bab_editor($content, $editname, $formname, $heightpx=300, $what=3)
 	{
-
-	if( !class_exists('babEditorCls'))
-		{
-		class babEditorCls
-			{
-			var $editname;
-			var $formname;
-			var $contentval;
-
-			function babEditorCls($content, $editname, $formname, $heightpx,$what)
-				{
-				global $babDB;
-				$this->editname = $editname;
-				$this->formname = $formname;
-				$this->heightpx = $heightpx;
-				$this->what = $what;
-				if (!list($use_editor,$this->filter_html) = $babDB->db_fetch_array($babDB->db_query("SELECT use_editor, filter_html FROM ".BAB_SITES_EDITOR_TBL." WHERE id_site='".$babDB->db_escape_string($GLOBALS['babBody']->babsite['id'])."'")))
-					{
-					$use_editor = 1;
-					$this->filter_html = 0;
-					}
-
-				$this->t_filter_html = bab_translate("In this configuration, some html tags may be removed for security reasons");
-
-				$this->text_toolbar = bab_editor_text_toolbar($editname,$this->what);
-
-				// do not load script for ie < 5.5 to avoid javascript parsing errors
-
-				preg_match("/MSIE\s+([\d|\.]*?);/", $_SERVER['HTTP_USER_AGENT'], $matches);
-				$this->loadscripts = $use_editor && (!isset($matches[1]) || ($matches[1] >= 5.5));
-
-				if( empty($content))
-					{
-					$this->contentval = "";
-					}
-				else
-					{
-					$this->contentval = htmlentities($content);
-					}
-
-
-				}	
-			}
-		}
-	$temp = new babEditorCls($content, $editname, $formname, $heightpx,$what);
-	return bab_printTemplate($temp,"uiutil.html", "babeditortemplate");
+	return '<textarea name="'.bab_toHtml($editname).'" cols="50" rows="10">'.bab_toHtml($content).'</textarea>';
 	}
 
-
+/**
+ * @deprecated
+ */
 function bab_editor_record(&$str)
 	{
 	

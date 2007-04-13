@@ -139,7 +139,12 @@ function listPosts($forum, $thread, $post)
 				$this->postauthor = $arr['id_author']? bab_getUserName($arr['id_author']):$arr['author'];
 				$this->postauthor = bab_toHtml($this->postauthor);
 				$this->postsubject = bab_toHtml($arr['subject']);
-				$this->postmessage = bab_replace($arr['message']);
+				
+				include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+				$editor = new bab_contentEditor('bab_forum_post');
+				$editor->setContent($arr['message']);
+				$this->postmessage = $editor->getHtml();
+				
 				$dateupdate = bab_mktime($arr['dateupdate']);
 				$this->confirmurl = '';
 				$this->confirmname = '';
@@ -553,6 +558,8 @@ function listPostsFlat($forum, $thread, $open, $pos)
 			unset($this->forums[$this->forum]);
 			$this->countforums = count($this->forums);
 			list($this->iddir) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group='".BAB_REGISTERED_GROUP."'"));
+			
+			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 			}
 
 
@@ -580,7 +587,12 @@ function listPostsFlat($forum, $thread, $open, $pos)
 					}
 				$this->postauthor = bab_toHtml($this->postauthor);
 				$this->postsubject = bab_toHtml($arr['subject']);
-				$this->postmessage = bab_replace($arr['message']);
+
+				
+				$editor = new bab_contentEditor('bab_forum_post');
+				$editor->setContent($arr['message']);
+				$this->postmessage = $editor->getHtml();
+				
 				$this->more = "";
 				$this->postid = bab_toHtml($arr['id']);
 
@@ -787,12 +799,18 @@ function newReply($forum, $thread, $post)
 
 			$this->username = bab_toHtml($this->username);
 
-			$this->editor = bab_editor('', 'message', 'postcr');
+
+			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			$editor = new bab_contentEditor('bab_forum_post');
+			$this->editor = $editor->getEditor();
 
 			$this->postdate = bab_toHtml(bab_strftime(bab_mktime($arr['date'])));
 			$this->postauthor = bab_toHtml($arr['author']);
 			$this->postsubject = bab_toHtml($arr['subject']);
-			$this->postmessage = bab_replace($arr['message']);
+
+			$editor->setContent($arr['message']);
+			$this->postmessage = $editor->getHtml();
+			
 			if( bab_isForumModerated($forum))
 				{
 				$this->noteforum = bab_translate("Note: Posts are moderate and consequently your post will not be visible immediately");
@@ -863,7 +881,13 @@ function editPost($forum, $thread, $post)
 				$this->thread = bab_toHtml($thread);
 				$this->post = bab_toHtml($post);
 				$this->flat = bab_toHtml($flat);
-				$this->editor = bab_editor($this->arr['message'], 'message', 'posted');
+
+				include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+				$editor = new bab_contentEditor('bab_forum_post');
+				$editor->setContent($this->arr['message']);
+				$editor->setFormat('html');
+				$this->editor = $editor->getEditor();
+				
 				$this->access = 1;
 				$this->author = bab_toHtml($this->arr['author']);
 				$this->subjectval = bab_toHtml($this->arr['subject']);
@@ -942,8 +966,12 @@ function viewPost($thread, $post)
 			$arr = $babDB->db_fetch_array($babDB->db_query($req));
 			$this->postdate = bab_toHtml(bab_strftime(bab_mktime($arr['date'])));
 			$this->postauthor = bab_toHtml($arr['author']);
-			$this->postsubject = bab_toHtml(bab_replace($arr['subject']));
-			$this->postmessage = bab_replace($arr['message']);
+			$this->postsubject = bab_toHtml($arr['subject']);
+			
+			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			$editor = new bab_contentEditor('bab_forum_post');
+			$editor->setContent($arr['message']);
+			$this->postmessage = $editor->getHtml();
 			$this->close = bab_translate("Close");
 			$GLOBALS['babWebStat']->addForumPost($post);
 			}
@@ -954,9 +982,15 @@ function viewPost($thread, $post)
 	}
 
 
-function saveReply($forum, $thread, $post, $name, $subject, $message)
+function saveReply($forum, $thread, $post, $name, $subject)
 	{
 	global $babDB, $BAB_SESS_USER, $BAB_SESS_USERID, $babBody;
+	
+	
+	include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			
+	$editor = new bab_contentEditor('bab_forum_post');
+	$message = $editor->getContent();
 
 	if( empty($message))
 		{
@@ -989,9 +1023,6 @@ function saveReply($forum, $thread, $post, $name, $subject, $message)
 		$confirmed = 'N';
 	else
 		$confirmed = 'Y';
-
-
-	bab_editor_record($message);
 
 
 	$req = "insert into ".BAB_POSTS_TBL." (id_thread, date, subject, message, id_author, author, confirmed, id_parent) values ";
@@ -1068,10 +1099,13 @@ function confirm($forum, $thread, $post)
 	notifyForumGroups($forum, $arrpost['subject'], $arrpost['author'], bab_getForumName($forum), array(BAB_FORUMSNOTIFY_GROUPS_TBL), $url);
 	}
 
-function updateReply($forum, $thread, $subject, $message, $post)
+function updateReply($forum, $thread, $subject, $post)
 	{
 	global $babBody, $babDB, $moderator, $BAB_SESS_USERID;
 
+	$editor = new bab_contentEditor('bab_forum_post');
+	$message = $editor->getContent();
+	
 	if( empty($message))
 		{
 		$babBody->msgerror = bab_translate("ERROR: You must provide a content for your message")." !";
@@ -1084,11 +1118,7 @@ function updateReply($forum, $thread, $subject, $message, $post)
 	$arr = $babDB->db_fetch_array($res);
 	if( ($moderator && $forums[$forum]['bupdatemoderator'] == 'Y' )|| ( $forums[$forum]['bupdateauthor'] == 'Y' && $BAB_SESS_USERID && $BAB_SESS_USERID == $arr['id_author']  ))
 		{
-
-		bab_editor_record($message);
-
-		$req = "update ".BAB_POSTS_TBL." set message='".$babDB->db_escape_string($message)."', subject='".$babDB->db_escape_string($subject)."', dateupdate=now() where id='$post'";
-
+		$req = "UPDATE ".BAB_POSTS_TBL." set message='".$babDB->db_escape_string($message)."', subject='".$babDB->db_escape_string($subject)."', dateupdate=now() where id='".$babDB->db_escape_string($post)."'";
 
 		$res = $babDB->db_query($req);
 		}
@@ -1217,15 +1247,14 @@ if( isset($add) && $add == 'addreply' && bab_isAccessValid(BAB_FORUMSREPLY_GROUP
 	{
 	$author = bab_pp('author', '');
 	$subject = bab_pp('subject', '');
-	$message = bab_pp('message', '');
 	$postid = bab_pp('postid', 0);
-	saveReply($forum, $thread, $postid, $author, $subject, $message);
+	saveReply($forum, $thread, $postid, $author, $subject);
 	$post = $postid;
 	}
 
 if( isset($update) && $update == 'updatereply' )
 	{
-	updateReply($forum, $thread, $subject, $message, $post);
+	updateReply($forum, $thread, $subject, $post);
 	}
 
 if( $idx == 'Close' && $moderator)

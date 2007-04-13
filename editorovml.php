@@ -43,9 +43,10 @@ function dire_ext($rep,$ext )
 
 function dire_dir($rep )
 {
-	if (!is_dir($rep)) return false;
+	if (!is_dir($rep)) return array();
 	$reper = opendir($rep);
 	$i = 0;
+	$fichier = array();
 	while($dir = readdir($reper))
 		{
 		if (($dir != ".") && ($dir != "..") && is_dir($rep."/".$dir) ) 
@@ -55,14 +56,12 @@ function dire_dir($rep )
 			}
 		
 		}
-	if (isset($fichier))
-		return $fichier;
-	else
-		return false;
+
+	return $fichier;
 }
 
 
-function browse($url,$cb)
+function browse($url)
 	{
 	global $babBody, $babDB;
 
@@ -72,21 +71,21 @@ function browse($url,$cb)
 		var $db;
 		var $count;
 
-		function temp($url,$cb)
+		function temp($url)
 			{
 			if ( $url != "" ) 
 				{
 				$this->backlink = true;
 				$upperpath = substr($url,0,strrpos($url,"/"));
-				$this->backlink = $GLOBALS['babUrlScript']."?tg=editorovml&url=".$upperpath."&cb=".$cb;
+				$this->backlink = bab_toHtml($GLOBALS['babUrlScript']."?tg=editorovml&url=".$upperpath);
 				}
 			$this->path = is_dir($GLOBALS['babOvmlPath'].'editor') ? 'editor/' : '';
 			$this->url = $url;
-			$this->cb = "".$cb;
 			$this->ext = array (".ovml", ".html", ".htm", ".oml",".ovm");
 			$this->tablo_dir = dire_dir($GLOBALS['babOvmlPath'].$this->path.$this->url);
 			$this->tablo_files = dire_ext($GLOBALS['babOvmlPath'].$this->path.$this->url,$this->ext);
 			$this->count_dir = count($this->tablo_dir);
+		
 			if (is_array($this->tablo_files))
 				$this->count_files = count($this->tablo_files);
 			else
@@ -100,16 +99,8 @@ function browse($url,$cb)
 			static $i = 0;
 			if( $i < $this->count_dir)
 				{
-				$subfiles = dire_ext($GLOBALS['babOvmlPath'].$this->path.$this->tablo_dir[$i],$this->ext);
-				if (count($subfiles)>0)
-					{
-					$this->displink = true;
-					$this->upurl = $GLOBALS['babUrlScript']."?tg=editorovml&cb=".$this->cb."&url=".$this->tablo_dir[$i];
-					}
-				else
-					$this->displink = false;
-				
-				$this->title = urlencode($this->tablo_dir[$i]);
+				$this->upurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=editorovml&url=".$this->tablo_dir[$i]);
+				$this->title = bab_toHtml($this->tablo_dir[$i]);
 				$i++;
 				return true;
 				}
@@ -139,9 +130,14 @@ function browse($url,$cb)
 				return false;
 			}
 		}
+		
+	global $babBody;
+		
+	$babBody->setTitle(bab_translate('Ovml'));
+	$babBody->addStyleSheet('text_toolbar.css');
 	
-	$temp = new temp($url,$cb);
-	echo bab_printTemplate($temp,"editorovml.html", "editorovml");
+	$temp = new temp($url);
+	$babBody->babPopup(bab_printTemplate($temp,"editorovml.html", "editorovml"));
 	}
 
 if(!isset($url))
@@ -161,7 +157,7 @@ switch($idx)
 	{
 	default:
 	case "browse":
-		browse($url,$cb);
+		browse($url);
 		exit;
 	}
 ?>

@@ -328,7 +328,12 @@ function addCategory($cat, $ncat, $category, $description, $saart, $sacom, $saup
 				}
 
 			$this->bdel = false;
-			$this->editor = bab_editor($this->description, 'topdesc', 'catcr', 150);
+			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			$editor = new bab_contentEditor('bab_topic');
+			$editor->setContent($this->description);
+			$editor->setFormat('html');
+			$editor->setParameters(array('height' => 150));
+			$this->editor = $editor->getEditor();
 
 			$this->idcat = $cat;
 
@@ -559,8 +564,13 @@ function listCategories($cat)
 					$this->select = "";
 				$arr = $babDB->db_fetch_array($this->res);
 					
-				$this->arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_TOPICS_TBL." where id='".$arr['id_topcat']."'"));
-				$this->description = bab_replace($this->arr['description']);
+				$this->arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_TOPICS_TBL." where id=".$babDB->quote($arr['id_topcat'])));
+				
+				include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+				$editor = new bab_contentEditor('bab_topic');
+				$editor->setContent($this->arr['description']);
+				$this->description = $editor->getHtml();
+				
 				$this->urlrights = $GLOBALS['babUrlScript']."?tg=topic&idx=rights&item=".$this->arr['id']."&cat=".$this->idcat;
 				$this->arr['description'] = $this->arr['description'];;
 				$this->urlcategory = $GLOBALS['babUrlScript']."?tg=topic&idx=Modify&item=".$this->arr['id']."&cat=".$this->idcat;
@@ -582,7 +592,7 @@ function listCategories($cat)
 	return $temp->count;
 	}
 
-function saveCategory($category, $description, $cat, $sacom, $saart, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags)
+function saveCategory($category, $cat, $sacom, $saart, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags)
 	{
 	global $babBody, $babDB;
 	if( empty($category))
@@ -635,7 +645,9 @@ function saveCategory($category, $description, $cat, $sacom, $saart, $saupd, $bn
 		$maxarts = 10;
 		}
 		
-	bab_editor_record($description);
+	include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+	$editor = new bab_contentEditor('bab_topic');
+	$description = $editor->getContent();
 
 	$query = "insert into ".BAB_TOPICS_TBL." ( category, description, id_cat, idsaart, idsacom, idsa_update, notify, lang, article_tmpl, display_tmpl, restrict_access, allow_hpages, allow_pubdates, allow_attachments, allow_update, allow_manupdate, max_articles, auto_approbation, busetags) 
 	
@@ -686,7 +698,7 @@ $cat = intval(bab_rp('cat', 0));
 
 if( isset($_POST['add']) )
 	{
-	if(!saveCategory($category, $topdesc, $ncat, $sacom, $saart, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags))
+	if(!saveCategory($category, $ncat, $sacom, $saart, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags))
 		{
 		$idx = 'addtopic';
 		}

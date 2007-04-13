@@ -86,9 +86,19 @@ function dirlist()
 
 
 		}
+		
+		
+	$babBody->setTitle(bab_translate('Directories'));
+	$babBody->addStyleSheet('text_toolbar.css');
 	
 	$temp = new temp();
-	echo bab_printTemplate($temp, "editorcontdir.html", "dirlist");
+	
+	if (!$temp->count) {
+		$babBody->addError(bab_translate("There is no directory available"));
+	}
+	
+	
+	$babBody->babPopup(bab_printTemplate($temp, "editorcontdir.html", "dirlist"));
 	}
 
 
@@ -309,9 +319,15 @@ function directory($id, $pos, $xf, $badd)
 
 			}
 		}
+		
+		
+	global $babBody;
+	
+	$babBody->setTitle(bab_translate('Directories'));
+	$babBody->addStyleSheet('text_toolbar.css');
 
 	$temp = new temp($id, $pos, $xf, $badd);
-	echo bab_printTemplate($temp, "editorcontdir.html", "editordir");
+	$babBody->babPopup(bab_printTemplate($temp, "editorcontdir.html", "editordir"));
 }
 
 
@@ -363,9 +379,14 @@ function editorcont()
 
 
 		}
+		
+	global $babBody;
+	
+	$babBody->setTitle(bab_translate('Contacts'));
+	$babBody->addStyleSheet('text_toolbar.css');
 
 	$temp = new temp();
-	echo bab_printTemplate($temp, "editorcontdir.html", "editorcont");
+	$babBody->babPopup(bab_printTemplate($temp, "editorcontdir.html", "editorcont"));
 	}
 
 
