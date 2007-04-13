@@ -989,9 +989,10 @@ function cal_usersToNotiy($id_cal, $cal_type, $id_owner) {
 	if (NULL === $sent) {
 		$sent = $arrusers;
 	} else {
-		$tmp = array_intersect_key($arrusers, $sent );
-		foreach($tmp as $id_user => $arr) {
-			unset($arrusers[$id_user]);
+		foreach($arrusers as $id_user => $arr) {
+			if (isset($sent[$id_user])) {
+				unset($arrusers[$id_user]);
+			}
 		}
 	}
 	
