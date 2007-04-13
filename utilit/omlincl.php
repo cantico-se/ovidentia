@@ -4702,7 +4702,7 @@ function babOvTemplate($args = array())
 	global $babBody;
 	$this->gctx = new bab_context('bab_main');
 	$this->gctx->push("babSiteName", $GLOBALS['babSiteName']);
-	$this->gctx->push("babSiteSlogan", $GLOBALS['babSlogan']);
+	$this->gctx->push("babSiteSlogan", $babBody->babsite['babslogan']);
 	if( $GLOBALS['BAB_SESS_USERID'] != "" )
 		{
 		$this->gctx->push("babUserName", $GLOBALS['BAB_SESS_USER']);
