@@ -3183,6 +3183,9 @@ function upgrade612to620()
  * @return 	boolean
  */
 function ovidentia_upgrade($version_base,$version_ini) {
+
+	global $babBody, $babDB;
+
 	
 	/**
 	 * Old upgrades
@@ -3222,11 +3225,17 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	upgrade604to605();
 	upgrade605to606();
 	upgrade606to610();
+	
+	
+	if (!bab_isTableField(BAB_EVENT_LISTENERS_TBL, 'priority')) {
+		$babDB->db_query("ALTER TABLE ".BAB_EVENT_LISTENERS_TBL." ADD priority INT( 11 )  UNSIGNED DEFAULT '0' NOT NULL");
+	}
+	
 	upgrade610to611();
 	upgrade612to620();
 	
 	
-	global $babBody, $babDB;
+	
 	
 	/**
 	 * Upgrade to 6.3.0
@@ -3254,9 +3263,7 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	 */
 	 
 	 
-	if (!bab_isTableField(BAB_EVENT_LISTENERS_TBL, 'priority')) {
-		$babDB->db_query("ALTER TABLE ".BAB_EVENT_LISTENERS_TBL." ADD priority INT( 11 )  UNSIGNED DEFAULT '0' NOT NULL");
-	}
+	
 	
 	// event registration for htmlarea editor
 	include_once $GLOBALS['babInstallPath']."utilit/eventincl.php";
