@@ -292,6 +292,7 @@ class bab_stats_modules extends bab_stats_base
 			case "selectcolor":
 			case "editorfaq":
 			case "editorarticle":
+			case "editorfunctions":
 				$id = 22; /* Editor  */
 				break;
 			case "oml":
