@@ -955,15 +955,6 @@ function viewVacationCalendar($users, $period = false )
 		temp::printhtml(false);
 		}
 
-	$acclevel = bab_vacationsAccess();
-	
-	foreach($users as $uid) {
-		if (empty($acclevel['manager']) && !bab_IsUserUnderSuperior($uid)) {
-			$babBody->addError(bab_translate('Access denied'));
-			return false;
-		}
-	}
-
 	$temp = & new temp($users, $period);
 	$temp->printhtml();
 	}

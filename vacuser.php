@@ -874,6 +874,28 @@ return test_period2($id_entry, $_POST['id_user'], $begin->getTimeStamp(), $end->
 }
 
 
+/**
+ * Display a vacation calendar
+ * test access rights
+ * @param	array		$users		array of id_user to display
+ * @param	boolean		$period		allow period selection, first step of vacation request
+ */
+function user_viewVacationCalendar($users, $period = false) {
+
+	global $babBody;
+	$acclevel = bab_vacationsAccess();
+	
+	foreach($users as $uid) {
+			if (empty($acclevel['manager']) && !bab_IsUserUnderSuperior($uid)) {
+				$babBody->addError(bab_translate('Access denied'));
+				return;
+			}
+		}
+		
+	viewVacationCalendar($users, $period);
+}
+
+
 
 
 /* main */
@@ -952,7 +974,8 @@ $countt = $babDB->db_num_rows($res);
 switch($idx)
 	{
 	case "cal":
-		viewVacationCalendar( explode(',',$_REQUEST['idu']));
+		$users = explode(',',$_REQUEST['idu']);
+		user_viewVacationCalendar($users);
 		break;
 
 	case "unload":
@@ -982,7 +1005,7 @@ switch($idx)
 				}
 			else
 				{
-				viewVacationCalendar(array($id_user), true);
+				user_viewVacationCalendar(array($id_user), true);
 				period($id_user, $_REQUEST['id']);
 				}
 			}
@@ -995,7 +1018,7 @@ switch($idx)
 				$id_user = !isset($_REQUEST['id_user']) ? $GLOBALS['BAB_SESS_USERID'] : $_REQUEST['id_user'];
 
 			if (bab_vacRequestCreate($id_user)) {
-				viewVacationCalendar(array($id_user), true);
+				user_viewVacationCalendar(array($id_user), true);
 				period($id_user);
 				}
 			}

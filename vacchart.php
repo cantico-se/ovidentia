@@ -260,6 +260,22 @@ function entity_members($ide, $template)
 
 function entity_cal($ide )
 {
+	
+	global $babDB, $babBody;
+	$res = $babDB->db_query("SELECT id_entity 
+	FROM ".BAB_VAC_PLANNING_TBL." 
+	WHERE 
+		id_user=".$babDB->quote($GLOBALS['BAB_SESS_USERID']).' 
+		AND id_entity='.$babDB->quote($ide).'
+		');
+	$n = $babDB->db_num_rows($res);
+
+	if (0 === $n) {
+		$babBody->addError(bab_translate('Access denied'));
+		return false;
+	}
+
+	
 	$users = bab_OCGetCollaborators($ide);
 	$superior = bab_OCGetSuperior($ide);
 
@@ -492,7 +508,7 @@ switch($idx)
 
 	case 'entity_cal':
 		$babBody->addItemMenu("entities", bab_translate("Delegate management"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entities");
-		if ($entities_access > 0 || bab_isPlanningAccessValid())
+		if ($entities_access > 0 || bab_isPlanningAccessValid($_REQUEST['ide']))
 			entity_cal($_REQUEST['ide']);
 		else
 			{
