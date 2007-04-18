@@ -23,13 +23,19 @@
 ************************************************************************/
 include_once "base.php";
 
+
+/**
+* @internal SEC1 PR 18/04/2007 FULL
+*/
+
+
 function listVacationManagers()
 {
 	include_once $GLOBALS['babInstallPath'].'utilit/selectusers.php';
-	$db = $GLOBALS['babDB'];
+	global $babDB;
 	$obj = new bab_selectusers();
-	$res = $db->db_query("select id_user from ".BAB_VAC_MANAGERS_TBL);
-	while (list($id) = $db->db_fetch_array($res))
+	$res = $babDB->db_query("select id_user from ".BAB_VAC_MANAGERS_TBL);
+	while (list($id) = $babDB->db_fetch_array($res))
 		{
 		$obj->addUser($id);
 		}
@@ -50,14 +56,14 @@ function vacationOptions()
 
 		function temp()
 			{
-			$this->db = &$GLOBALS['babDB'];
+			global $babDB;
 
 			$this->t_yes = bab_translate("Yes");
 			$this->t_no = bab_translate("No");
 			$this->t_chart_superiors_create_request = bab_translate("Allow managers to create vacation requests for users in chart");
 
 			$req = "SELECT * FROM ".BAB_VAC_OPTIONS_TBL."";
-			$this->arr = $this->db->db_fetch_assoc($this->db->db_query($req));
+			$this->arr = $babDB->db_fetch_assoc($babDB->db_query($req));
 
 			$this->t_record = bab_translate("Record");
 			}
@@ -74,24 +80,24 @@ function vacationOptions()
 function recordVacationManager($userids, $params)
 {
 	
-	$db = $GLOBALS['babDB'];
-	$db->db_query("DELETE FROM ".BAB_VAC_MANAGERS_TBL."");
+	global $babDB;
+	$babDB->db_query("DELETE FROM ".BAB_VAC_MANAGERS_TBL."");
 	foreach($userids as $id) {
-		$db->db_query("INSERT into ".BAB_VAC_MANAGERS_TBL." (id_user) values (".$db->quote($id).")");
+		$babDB->db_query("INSERT into ".BAB_VAC_MANAGERS_TBL." (id_user) values (".$babDB->quote($id).")");
 	}
 }
 
 
 
 function record_options() {
-	$db = &$GLOBALS['babDB'];
+	global $babDB;
 
-	list($n) = $db->db_fetch_array($db->db_query("SELECT COUNT(*) FROM ".BAB_VAC_OPTIONS_TBL.""));
+	list($n) = $babDB->db_fetch_array($babDB->db_query("SELECT COUNT(*) FROM ".BAB_VAC_OPTIONS_TBL.""));
 	if ($n > 0) {
 
-		$db->db_query("UPDATE ".BAB_VAC_OPTIONS_TBL." SET chart_superiors_create_request='".$_POST['chart_superiors_create_request']."'");
+		$babDB->db_query("UPDATE ".BAB_VAC_OPTIONS_TBL." SET chart_superiors_create_request=".$babDB->quote($_POST['chart_superiors_create_request'])."");
 	} else {
-		$db->db_query("INSERT INTO ".BAB_VAC_OPTIONS_TBL." ( chart_superiors_create_request) VALUES ('".$_POST['chart_superiors_create_request']."')");
+		$babDB->db_query("INSERT INTO ".BAB_VAC_OPTIONS_TBL." ( chart_superiors_create_request) VALUES (".$babDB->quote($_POST['chart_superiors_create_request']).")");
 	}
 }
 
@@ -103,22 +109,21 @@ if( !$babBody->isSuperAdmin )
 	exit;
 	}
 
-if(!isset($idx))
+
+$idx = bab_rp('idx', 'list');
+
+
+if( bab_pp('add') == 'addm' )
 	{
-	$idx = "list";
+	addVacationManager(bab_pp('managerid'));
+	}
+else if( bab_pp('del') == 'delm' )
+	{
+	delVacationManagers(bab_pp('managers'));
 	}
 
-if( isset($add) && $add == 'addm' )
-	{
-	addVacationManager($managerid);
-	}
-else if( isset($del) && $del == 'delm' )
-	{
-	delVacationManagers($managers);
-	}
-
-if (isset($_POST['action'])) {
-	switch($_POST['action']) {
+if (bab_pp('action')) {
+	switch(bab_pp('action')) {
 		case 'options':
 			record_options();
 			break;

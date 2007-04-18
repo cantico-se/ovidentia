@@ -22,6 +22,13 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
+
+/**
+* @internal SEC1 PR 18/04/2007 FULL
+*/
+
+/*
+
 include_once $babInstallPath."admin/acl.php";
 include_once $babInstallPath."utilit/vacincl.php";
 
@@ -43,7 +50,6 @@ function modifyVacation($id)
 		var $maxdaysauthorized;
 		var $update;
 
-		var $db;
 		var $arr = array();
 		var $arr2 = array();
 		var $res;
@@ -59,15 +65,15 @@ function modifyVacation($id)
 			$this->update = bab_translate("Update");
 			$this->delete = bab_translate("Delete");
 
-			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_VACATIONS_TYPES_TBL." where id='$id'";
-			$this->res = $this->db->db_query($req);
-			$this->arr = $this->db->db_fetch_array($this->res);
+			global $babDB;
+			$req = "select * from ".BAB_VACATIONS_TYPES_TBL." where id=".$babDB->quote($id);
+			$this->res = $babDB->db_query($req);
+			$this->arr = $babDB->db_fetch_array($this->res);
 			}
 		}
 
 	$temp = new temp($id);
-	$babBody->babecho(	bab_printTemplate($temp,"admvacs.html", "vacationmodify"));
+	$babBody->babecho(bab_printTemplate($temp,"admvacs.html", "vacationmodify"));
 	}
 
 function deleteVacation($id)
@@ -91,9 +97,9 @@ function deleteVacation($id)
 			$this->message = bab_translate("Are you sure you want to delete this vacation");
 			$this->title = bab_getVacationName($id);
 			$this->warning = bab_translate("WARNING: This operation will delete the vacation and all references"). "!";
-			$this->urlyes = $GLOBALS['babUrlScript']."?tg=admvac&idx=delete&vacation=".$id."&action=Yes";
+			$this->urlyes = bab_toHtml($GLOBALS['babUrlScript']."?tg=admvac&idx=delete&vacation=".$id."&action=Yes");
 			$this->yes = bab_translate("Yes");
-			$this->urlno = $GLOBALS['babUrlScript']."?tg=admvac&idx=modify&item=".$id;
+			$this->urlno = bab_toHtml($GLOBALS['babUrlScript']."?tg=admvac&idx=modify&item=".$id);
 			$this->no = bab_translate("No");
 			}
 		}
@@ -257,7 +263,7 @@ function updateStatus($id, $name, $description)
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admvacs&idx=liststatus");
 	}
 
-/* main */
+// main 
 if(!isset($idx))
 	{
 	$idx = "modify";
@@ -322,5 +328,5 @@ switch($idx)
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);
-
+*/
 ?>
