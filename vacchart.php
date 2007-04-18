@@ -262,20 +262,7 @@ function entity_cal($ide )
 {
 	
 	global $babDB, $babBody;
-	$res = $babDB->db_query("SELECT id_entity 
-	FROM ".BAB_VAC_PLANNING_TBL." 
-	WHERE 
-		id_user=".$babDB->quote($GLOBALS['BAB_SESS_USERID']).' 
-		AND id_entity='.$babDB->quote($ide).'
-		');
-	$n = $babDB->db_num_rows($res);
 
-	if (0 === $n) {
-		$babBody->addError(bab_translate('Access denied'));
-		return false;
-	}
-
-	
 	$users = bab_OCGetCollaborators($ide);
 	$superior = bab_OCGetSuperior($ide);
 
