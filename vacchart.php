@@ -260,6 +260,9 @@ function entity_members($ide, $template)
 
 function entity_cal($ide )
 {
+	
+	global $babDB, $babBody;
+
 	$users = bab_OCGetCollaborators($ide);
 	$superior = bab_OCGetSuperior($ide);
 
@@ -492,7 +495,7 @@ switch($idx)
 
 	case 'entity_cal':
 		$babBody->addItemMenu("entities", bab_translate("Delegate management"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entities");
-		if ($entities_access > 0 || bab_isPlanningAccessValid())
+		if ($entities_access > 0 || bab_isPlanningAccessValid($_REQUEST['ide']))
 			entity_cal($_REQUEST['ide']);
 		else
 			{

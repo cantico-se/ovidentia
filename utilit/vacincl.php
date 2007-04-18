@@ -955,15 +955,6 @@ function viewVacationCalendar($users, $period = false )
 		temp::printhtml(false);
 		}
 
-	$acclevel = bab_vacationsAccess();
-	
-	foreach($users as $uid) {
-		if (!$acclevel['manager'] && !bab_IsUserUnderSuperior($uid)) {
-			$babBody->addError(bab_translate('Access denied'));
-			return false;
-		}
-	}
-
 	$temp = & new temp($users, $period);
 	$temp->printhtml();
 	}
@@ -2197,8 +2188,10 @@ function bab_vac_onModifyPeriod($event) {
  * @param	int				$id_user
  * @param	BAB_dateTime	$begin
  * @param	BAB_dateTime	$end
+ * @param	boolean			$vacation_is_free
+ * @return array
  */
-function bab_vac_getHalfDaysIndex($id_user, $dateb, $datee) {
+function bab_vac_getHalfDaysIndex($id_user, $dateb, $datee, $vacation_is_free = false) {
 
 	include_once $GLOBALS['babInstallPath']."utilit/workinghoursincl.php";
 
@@ -2218,8 +2211,21 @@ function bab_vac_getHalfDaysIndex($id_user, $dateb, $datee) {
 		/**
 		 * si type2 est prioritaire, return true
 		 */
-		function bab_vac_compare($type1, $type2) {
-
+		function bab_vac_compare($type1, $type2, $vacation_is_free) {
+			
+			if ($vacation_is_free) {
+			
+			$order = array(
+				BAB_PERIOD_VACATION			=> 1,
+				BAB_PERIOD_NONWORKING		=> 2,
+				BAB_PERIOD_WORKING 			=> 3,
+				BAB_PERIOD_CALEVENT			=> 4,
+				BAB_PERIOD_TSKMGR			=> 5,
+				BAB_PERIOD_NWDAY			=> 6
+			);
+			
+			} else {
+			
 			$order = array(
 
 				BAB_PERIOD_NONWORKING		=> 1,
@@ -2229,6 +2235,9 @@ function bab_vac_getHalfDaysIndex($id_user, $dateb, $datee) {
 				BAB_PERIOD_VACATION			=> 5,
 				BAB_PERIOD_NWDAY			=> 6
 			);
+			
+			}
+
 
 			if ($order[$type2] > $order[$type1]) {
 				return true;
@@ -2249,6 +2258,9 @@ function bab_vac_getHalfDaysIndex($id_user, $dateb, $datee) {
 				case BAB_PERIOD_NONWORKING:
 				case BAB_PERIOD_NWDAY:
 					return false;
+					
+				
+					//return $vacation_is_free;
 			}
 		}
 	}
@@ -2269,7 +2281,7 @@ function bab_vac_getHalfDaysIndex($id_user, $dateb, $datee) {
 
 					$stack[$key][$p->type] = $p;
 
-					if (!isset($index[$key]) || bab_vac_compare($index[$key]->type, $p->type)) {
+					if (!isset($index[$key]) || bab_vac_compare($index[$key]->type, $p->type, $vacation_is_free)) {
 
 						$index[$key] = $p;
 
@@ -2609,12 +2621,13 @@ function bab_addCoManagerEntities(&$entities, $id_user) {
 /**
  * Number of free days between two dates
  * by half days
- * @param	int	$id_user	
- * @param	int	$begin		timestamp
- * @param	int	$end		timestamp
+ * @param	int		$id_user	
+ * @param	int		$begin				timestamp
+ * @param	int		$end				timestamp
+ * @param	boolean	$vacation_is_free
  * @return	int
  */
-function bab_vac_getFreeDaysBetween($id_user, $begin, $end) {
+function bab_vac_getFreeDaysBetween($id_user, $begin, $end, $vacation_is_free = false) {
 
 	$calcul = 0;
 
@@ -2626,14 +2639,14 @@ function bab_vac_getFreeDaysBetween($id_user, $begin, $end) {
 	list($index, $is_free) = bab_vac_getHalfDaysIndex(
 		$id_user, 
 		BAB_DateTime::fromTimeStamp($begin), 
-		BAB_DateTime::fromTimeStamp($end)
+		BAB_DateTime::fromTimeStamp($end),
+		$vacation_is_free
 	);
 
 
 	foreach($index as $key => $p) {
 
 		if (isset($is_free[$key])) {
-			//bab_debug($p);
 			$calcul += 0.5;
 		}
 	}
