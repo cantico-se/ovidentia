@@ -119,7 +119,7 @@ function listUsers($pos, $grp)
 
 			$this->bupdate = isset($_REQUEST['bupd'])? $_REQUEST['bupd']: 0;
 
-			$req = "SELECT u.* from ".BAB_USERS_TBL." u";
+			$req = "SELECT distinct u.* from ".BAB_USERS_TBL." u";
 
 			if( isset($pos) &&  strlen($pos) > 0 && $pos[0] == "-" )
 				{
