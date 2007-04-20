@@ -302,7 +302,7 @@ function newEvent()
 				$this->repeat_wd_checked[$i] = isset($this->arr['repeat_wd']) && in_array($i,$this->arr['repeat_wd']) ? 'checked' : '';
 				}
 
-	
+			
 			}
 
 		function getnextday()
@@ -326,7 +326,7 @@ function newEvent()
 				$i = 1;
 				if( $k == 0 )
 					{
-					$this->daysel = $this->dayend;
+					$this->daysel =bab_pp('dayend');
 					$k++;
 					}
 				else
@@ -458,6 +458,7 @@ function newEvent()
 					}
 				if( isset($this->arralert['day']) && $this->dval == $this->arralert['day'])
 					{
+					
 					$this->dselected = 'selected';
 					}
 				else
