@@ -1445,7 +1445,7 @@ function viewFile( $idf)
 					}
 
 				$this->confirm = bab_translate("Confirm");
-				if( $arr['confirmed'] == "Y")
+				if( $arr['confirmed'] == "N")
 					{
 					$this->confirmyes = "selected";
 					$this->confirmno = "";
