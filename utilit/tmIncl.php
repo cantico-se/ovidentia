@@ -1717,7 +1717,7 @@ function bab_isTaskNumberUsed($iIdProject, $iIdTask, $sTaskNumber)
 		'WHERE ' . 
 			'idProject = \'' . $babDB->db_escape_string($iIdProject) . '\' AND ' .
 			'taskNumber LIKE \'' . $babDB->db_escape_like($sTaskNumber) . '\'' .
-			$babDB->db_escape_string($sIdTask);
+			$sIdTask;
 		
 	//bab_debug($query);
 	
