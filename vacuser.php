@@ -583,7 +583,7 @@ function addNewVacation()
 	$halfdayend		= $_POST['halfdayend'];
 	$remarks		= $_POST['remarks'];
 	$total			= $_POST['total'];
-	$rfrom			= $_POST['rfrom'];
+	$rfrom			= bab_pp('rfrom',0);
 
 
 	$date_begin = getDateFromHalfDay($begin,	$halfdaybegin,	false);
@@ -757,7 +757,15 @@ function addNewVacation()
 		{
 		$idfai = makeFlowInstance($row['id_sa'], "vac-".$id );
 		setFlowInstanceOwner($idfai, $id_user);
-		$babDB->db_query("update ".BAB_VAC_ENTRIES_TBL." set idfai=".$babDB->quote($idfai).", status='' where id=".$babDB->quote($id));
+		$babDB->db_query("
+			UPDATE 
+				".BAB_VAC_ENTRIES_TBL." 
+			SET 
+				idfai=".$babDB->quote($idfai).", 
+				status='' 
+			WHERE 
+				id=".$babDB->quote($id)
+		);
 		$nfusers = getWaitingApproversFlowInstance($idfai, true);
 		notifyVacationApprovers($id, $nfusers, !empty($id_request));
 		}
@@ -925,7 +933,6 @@ switch ($_POST['action'])
 	case 'vacation_request':
 		if (bab_isRequestEditable($_POST['id']))
 		{
-		if( !isset($rfrom) ) { $rfrom = 0; }
 		if(!addNewVacation()) {
 			$idx = "vunew";
 			}
