@@ -421,11 +421,11 @@ function addModGroup()
 		}
 
 
-	$description = $db->db_escape_string($_POST['description']);
-	$name = $db->db_escape_string($_POST['name']);
+	$description = $_POST['description'];
+	$name = $_POST['name'];
 
 
-	$req = "select * from ".BAB_GROUPS_TBL." where name='".$name."' AND id_parent='".$db->db_escape_string($id_parent)."'";
+	$req = "select * from ".BAB_GROUPS_TBL." where name='".$db->db_escape_string($name)."' AND id_parent='".$db->db_escape_string($id_parent)."'";
 	if (is_numeric($_POST['grpid']) )
 		{
 		$req .= " AND id != '".$db->db_escape_string($_POST['grpid'])."'";
@@ -460,7 +460,7 @@ function addModGroup()
 
 	$idgrp = &$_POST['grpid'];
 	bab_updateGroupInfo($idgrp, $name, $description, $_POST['manager'], $grpdg );
-	bab_moveGroup($idgrp, $id_parent, $moveoption, stripslashes($name));
+	bab_moveGroup($idgrp, $id_parent, $moveoption, $name);
 
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=groups&idx=List&expand_to=".$idgrp);
 	return $_POST['idx'];
