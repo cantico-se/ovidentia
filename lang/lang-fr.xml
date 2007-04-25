@@ -2227,7 +2227,7 @@
 <string id="Create a new user">Créer un nouvel utilisateur</string>
 <string id="Manage groups">Gérer les groupes</string>
 <string id="Mail subject">Mail subject</string>
-<string id="Mail is not configured">Mail is not configured</string>
+<string id="Mail is not configured">La messagerie n'est pas configurée</string>
 <string id="Mails">Mails</string>
 <string id="Space(s)">Espace(s)</string>
 <string id="Default project supervisors">Superviseurs de projets par défaut</string>
