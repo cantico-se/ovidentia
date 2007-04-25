@@ -1142,7 +1142,7 @@ if( isset($_POST['add']) )
 				}
 			else
 				{
-				if(!saveVacationPersonnel($_POST['userid'], $_POST['idcol'], $idsa))
+				if(!saveVacationPersonnel(bab_pp('userid'), bab_pp('idcol'), $idsa))
 					{
 					$idx ='addp';
 					}
