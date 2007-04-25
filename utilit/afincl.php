@@ -143,7 +143,8 @@ function setFlowInstanceOwner($idschi, $id_user) {
 	
 	$babDB->db_query('UPDATE '.BAB_FA_INSTANCES_TBL.' 
 		SET iduser='.$babDB->quote($id_user).' 
-		WHERE idsch='.$babDB->quote($idschi));
+		WHERE id='.$babDB->quote($idschi)
+	);
 }
 
 
