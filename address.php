@@ -238,7 +238,7 @@ function listAddress($pos)
 $idx = bab_rp('idx', 'list');
 $pos = bab_rp('pos', 'A');
 
-if( !isset($pos))
+
 switch($idx)
 	{
 	case 'list':
