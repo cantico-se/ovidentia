@@ -130,7 +130,7 @@ class cal_dayCls extends cal_wmdbaseCls
 			}
 
 
-	function getnextcal()
+	function getnextcal(&$skip)
 		{
 		if( $this->cindex < count($this->idcals))
 			{
@@ -138,6 +138,11 @@ class cal_dayCls extends cal_wmdbaseCls
 			$this->fullname = bab_toHtml($calname);
 			$this->fullnameten = $this->calstr($calname,BAB_CAL_NAME_LENGTH);
 			$this->cols = count($this->harray[$this->cindex]);
+			
+			if (0 === $this->cols) {
+				$skip = true;
+			}
+			
 			$this->cindex++;
 			$this->icols = 0;
 			return true;

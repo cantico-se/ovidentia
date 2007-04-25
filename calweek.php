@@ -236,7 +236,7 @@ class cal_weekCls extends cal_wmdbaseCls
 			}
 		}
 
-	function getnextcal()
+	function getnextcal(&$skip)
 		{
 		if( $this->cindex < count($this->idcals))
 			{
@@ -245,6 +245,11 @@ class cal_weekCls extends cal_wmdbaseCls
 			$this->abbrev = $this->calstr($calname,BAB_CAL_NAME_LENGTH);
 			$this->cols = count($this->harray[$this->cindex]);
 			$this->nbCalEvents = isset($this->harray[$this->cindex][0]) ? count($this->harray[$this->cindex][0]) : 0;
+			
+			if (0 === $this->cols) {
+				$skip = true;
+			}
+			
 			$this->cindex++;
 			$this->icols = 0;
 			return true;
