@@ -181,7 +181,7 @@ function requestVacation($begin,$end, $halfdaybegin, $halfdayend, $id)
 
 			if (!empty($this->id))
 				{
-				$res = $babDB->db_query("SELECT id_right, quantity FROM ".BAB_VAC_ENTRIES_ELEM_TBL." WHERE id_entry='".$babDB->db_query($this->id)."'");
+				$res = $babDB->db_query("SELECT id_right, quantity FROM ".BAB_VAC_ENTRIES_ELEM_TBL." WHERE id_entry='".$babDB->db_escape_string($this->id)."'");
 				while ($arr = $babDB->db_fetch_array($res))
 					{
 					$this->current['r'.$arr['id_right']] = $arr['quantity'];
@@ -277,6 +277,7 @@ function requestVacation($begin,$end, $halfdaybegin, $halfdayend, $id)
 					
 				
 				$this->totalval += $this->nbdays;
+				
 				return true;
 				}
 			else
