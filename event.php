@@ -326,7 +326,7 @@ function newEvent()
 				$i = 1;
 				if( $k == 0 )
 					{
-					$this->daysel =bab_pp('dayend');
+					$this->daysel =bab_pp('dayend', $this->dayend);
 					$k++;
 					}
 				else
