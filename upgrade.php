@@ -2670,7 +2670,7 @@ function upgrade601to602()
 	}
 
 
-	if (bab_isTable('bab_tskmgr_week_days')) {
+	if (bab_isTable('bab_tskmgr_week_days') && !bab_isTable(BAB_WEEK_DAYS_TBL)) {
 
 		$db->db_query("ALTER TABLE `bab_tskmgr_week_days` RENAME `".BAB_WEEK_DAYS_TBL."` ");
 
@@ -2701,7 +2701,7 @@ function upgrade601to602()
 		$db->db_query("insert into " . BAB_WEEK_DAYS_TBL . " (`id`, `weekDay`, `position`) VALUES ('7', '6', '5')");
 	}
 
-	if (bab_isTable('bab_tskmgr_working_hours')) {
+	if (bab_isTable('bab_tskmgr_working_hours') && !bab_isTable(BAB_WORKING_HOURS_TBL)) {
 		$db->db_query("ALTER TABLE `bab_tskmgr_working_hours` RENAME `".BAB_WORKING_HOURS_TBL."` ");
 		$db->db_query("ALTER TABLE `bab_sites_nonworking_days` ADD INDEX ( `nw_day` )");
 	}
