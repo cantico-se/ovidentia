@@ -258,6 +258,19 @@ class BAB_DateTime
         return $week_number;
     }
 
+    /**
+     * Adds a number of units to the datetime.
+     * 
+     * @param int $iNbUnits		The number of units to add
+     * @param int $iUnitType	The type of units to add, can be one of:
+     * 							- BAB_DATETIME_YEAR
+     * 							- BAB_DATETIME_MONTH
+     * 							- BAB_DATETIME_DAY
+     * 							- BAB_DATETIME_HOUR
+     * 							- BAB_DATETIME_MINUTE
+     * 							- BAB_DATETIME_SECOND
+     * @access public
+     */
     function add($iNbUnits, $iUnitType = BAB_DATETIME_DAY)
 	{
 		switch($iUnitType)
@@ -538,9 +551,10 @@ class BAB_DateTime
 	 * 
 	 * The extraction tries to guess the position of the day, month and year value in the
 	 * string according to the short date output format of the function bab_shortDate.
-	 * @static
 	 * @param string $value
 	 * @return BAB_DateTime
+	 * @access public
+	 * @static
 	 */
 	function fromDateStr($value)
 	{
@@ -613,6 +627,7 @@ class BAB_DateTime
 	 * Creates a copy
 	 * 
 	 * @return BAB_DateTime
+	 * @access public
 	 */
 	function cloneDate() {
 
