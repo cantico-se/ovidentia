@@ -933,54 +933,6 @@ function user_viewVacationCalendar($users, $period = false) {
 
 
 
-/**
- * Display a vacation calendar
- * test access rights
- * @param	array		$users		array of id_user to display
- * @param	boolean		$period		allow period selection, first step of vacation request
- */
-function user_viewVacationCalendar($users, $period = false) {
-
-	global $babBody, $babDB;
-	$acclevel = bab_vacationsAccess();
-	
-	if (empty($acclevel['manager'])) {
-	
-		$calendar_entities = array();
-		$res = $babDB->db_query("SELECT id_entity FROM ".BAB_VAC_PLANNING_TBL." WHERE id_user=".$babDB->quote($GLOBALS['BAB_SESS_USERID']));
-		while ($arr = $babDB->db_fetch_assoc($res)) {
-			$calendar_entities[$arr['id_entity']] = $arr['id_entity'];
-			$tmp = & bab_OCGetChildsEntities($arr['id_entity']);
-			
-			foreach($tmp as $entity) {
-				$calendar_entities[$entity['id']] = $entity['id'];
-			}
-		}
-		
-		foreach($users as $uid) {
-			if (!bab_IsUserUnderSuperior($uid)) {
-			
-				// trouver les entités du user et vérifier si au moins une est autorisée pour l'affichage du planning
-				$arr = & bab_OCGetUserEntities($uid);
-				$user_entities = array_merge($arr['superior'], $arr['temporary'], $arr['members']);
-				$allowed = false;
-				foreach($user_entities as $entity) {
-					if (isset($calendar_entities[$entity['id']])) {
-						$allowed = true;
-					}
-				}
-			
-				if (!$allowed) {
-					$babBody->addError(bab_translate('Access denied'));
-					return;
-				}
-			}
-		}
-	}
-		
-	viewVacationCalendar($users, $period);
-}
-
 
 
 /* main */
