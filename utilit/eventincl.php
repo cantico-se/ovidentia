@@ -102,6 +102,19 @@ function bab_removeEventListener($event_class_name, $function_name, $require_fil
 }
 
 
+
+
+function bab_fireEvent_addonCtxStack($arr = null) {
+	static $stack = array();
+	if (null === $arr) {
+		return array_pop($stack);
+	}
+	
+	array_push($stack, $arr);
+}
+
+
+
 class bab_fireEvent_Obj {
 
 	var $stack = array();
@@ -124,10 +137,19 @@ class bab_fireEvent_Obj {
 	}
 	
 	function setAddonCtx($addon_id, $addon_name) {
+	
 		if ((isset($GLOBALS['babAddonFolder']) && $GLOBALS['babAddonFolder'] == $addon_name) 
 			|| BAB_ADDON_CORE_NAME == $addon_name) {
+			bab_fireEvent_addonCtxStack(array(false, BAB_ADDON_CORE_NAME));
 			return;
 		}
+		
+		$arr = array();
+		$arr[1] = $GLOBALS['babAddonFolder'];
+		$tmp = explode('/',$GLOBALS['babAddonTarget']);
+		$arr[0] = $tmp[1];
+		
+		bab_fireEvent_addonCtxStack($arr);
 		
 		$GLOBALS['babAddonFolder'] = $addon_name;
 		$GLOBALS['babAddonTarget'] = "addon/".$addon_id;
@@ -135,6 +157,19 @@ class bab_fireEvent_Obj {
 		$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$addon_name."/";
 		$GLOBALS['babAddonHtmlPath'] = "addons/".$addon_name."/";
 		$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath']."/addons/".$addon_name."/";
+		
+		
+	}
+	
+	
+	function restoreAddonCtx() {
+	
+		list($old_addon_id, $old_addon_name) = bab_fireEvent_addonCtxStack();
+	
+		$this->setAddonCtx(
+			$old_addon_id, 
+			$old_addon_name
+		);
 	}
 }
 
@@ -186,21 +221,14 @@ function bab_fireEvent(&$event_obj) {
 					(isset($babBody->babaddons[$id_addon]) && bab_isAccessValid(BAB_ADDONS_GROUPS_TBL, $id_addon))) {
 		
 						if (is_file($GLOBALS['babInstallPath'].$arr['require_file'])) {
-						
-							$obj->setAddonCtx($id_addon, $arr['addon_name']);
-							require_once $GLOBALS['babInstallPath'].$arr['require_file'];
-							if (function_exists($arr['function_name'])) {
-							
-								$calls[$classkey][] = $arr['function_name'];
-	
-							} else {
-								bab_debug('
-								Function unreachable
-								event : '.get_class($event_obj).'
-								file : '.$arr['require_file'].'
-								function : '.$arr['function_name'].'
-								');
-							}
+
+							$calls[$classkey][] = array(
+								'require_file' => $arr['require_file'],
+								'function_name' => $arr['function_name'],
+								'addon_name' => $arr['addon_name'],
+								'addon_id' => $id_addon
+							);
+
 						} else {
 							bab_debug('
 							file unreachable
@@ -221,9 +249,30 @@ function bab_fireEvent(&$event_obj) {
 			}
 		}
 	}
+	
+	
+	
 			
-	foreach($calls[$classkey] as $function) {
-		call_user_func_array($function, array(&$event_obj));
+	foreach($calls[$classkey] as $arr) {
+
+		require_once $GLOBALS['babInstallPath'].$arr['require_file'];
+		
+		
+		
+		if (function_exists($arr['function_name'])) {
+		
+			$obj->setAddonCtx($arr['addon_id'], $arr['addon_name']);
+			call_user_func_array($arr['function_name'], array(&$event_obj));
+			$obj->restoreAddonCtx();
+			
+		} else {
+			bab_debug('
+			Function unreachable
+			event : '.get_class($event_obj).'
+			file : '.$arr['require_file'].'
+			function : '.$arr['function_name'].'
+			');
+		} 
 	}
 }
 
