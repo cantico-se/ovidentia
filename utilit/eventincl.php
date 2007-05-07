@@ -138,8 +138,7 @@ class bab_fireEvent_Obj {
 	
 	function setAddonCtx($addon_id, $addon_name) {
 	
-		if ((isset($GLOBALS['babAddonFolder']) && $GLOBALS['babAddonFolder'] == $addon_name) 
-			|| BAB_ADDON_CORE_NAME == $addon_name) {
+		if (empty($GLOBALS['babAddonFolder']) || BAB_ADDON_CORE_NAME == $addon_name) {
 			bab_fireEvent_addonCtxStack(array(false, BAB_ADDON_CORE_NAME));
 			return;
 		}
