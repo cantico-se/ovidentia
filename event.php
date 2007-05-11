@@ -1274,7 +1274,7 @@ function confirmDeleteEvent()
 		
 		if( $event['hash'] != "" && $event['hash'][0] == 'R')
 			{
-			$res = $babDB->db_query("select id, start_date, end_date from ".BAB_CAL_EVENTS_TBL." where hash='".$babDB->db_escape_string($arr['hash'])."'");
+			$res = $babDB->db_query("select id, start_date, end_date from ".BAB_CAL_EVENTS_TBL." where hash='".$babDB->db_escape_string($event['hash'])."'");
 			while( $arr = $babDB->db_fetch_array($res) )
 				{
 				$date_min = $arr['start_date'] < $date_min 	? $arr['start_date'] 	: $date_min;
