@@ -283,7 +283,7 @@ function groupsOptions()
 		var $mail;
 		var $notes;
 		var $contacts;
-		var $directory;
+		var $pcalendar;
 		var $url;
 		var $urlname;
 		var $group;
@@ -299,7 +299,6 @@ function groupsOptions()
 		var $bpcalendar;
 		var $bdgnotes;
 		var $bdgcontacts;
-		var $bdgdirectories;
 		var $bdgpds;
 		var $altbg = true;
 
@@ -311,7 +310,7 @@ function groupsOptions()
 			$this->notes = bab_translate("Notes");
 			$this->contacts = bab_translate("Contacts");
 			$this->persdiskspace = bab_translate("Personal disk space");
-			$this->directory = bab_translate("Site directory");
+			$this->pcalendar = bab_translate("Personal calendar");
 			$this->modify = bab_translate("Update");
 			$this->uncheckall = bab_translate("Uncheck all");
 			$this->checkall = bab_translate("Check all");
@@ -321,7 +320,7 @@ function groupsOptions()
 				$this->bdgmail = true;
 				$this->bdgnotes = true;
 				$this->bdgcontacts = true;
-				$this->bdgdirectories = true;
+				$this->bpcalendar = true;
 				$this->bdgpds = true;
 				}
 			else
@@ -334,10 +333,7 @@ function groupsOptions()
 				$this->bdgnotes = true;
 				$this->bdgcontacts = true;
 
-				if( $babBody->currentDGGroup['directories'] == 'Y' )
-					$this->bdgdirectories = true;
-				else
-					$this->bdgdirectories = false;
+				$this->bpcalendar = false;
 
 				if( $babBody->currentDGGroup['filemanager'] == 'Y' )
 					$this->bdgpds = true;
@@ -375,10 +371,10 @@ function groupsOptions()
 				else
 					$this->pdscheck = "";
 
-				if( $this->arr['directory'] == "Y")
-					$this->dircheck = "checked";
+				if( $this->arr['pcalendar'] == "Y")
+					$this->pcalcheck = "checked";
 				else
-					$this->dircheck = "";
+					$this->pcalcheck = "";
 
 				$this->urlname = $this->arr['name'];
 				return true;
@@ -466,7 +462,7 @@ function addModGroup()
 	return $_POST['idx'];
 	}
 
-function saveGroupsOptions($mailgrpids, $notgrpids, $congrpids, $pdsgrpids, $dirgrpids)
+function saveGroupsOptions($mailgrpids, $notgrpids, $congrpids, $pdsgrpids, $pcalgrpids)
 {
 
 	global $babBody;
@@ -478,11 +474,11 @@ function saveGroupsOptions($mailgrpids, $notgrpids, $congrpids, $pdsgrpids, $dir
 	if ($babBody->currentAdmGroup > 0)
 		{
 		return false;
-		$db->db_query("update ".BAB_GROUPS_TBL." set mail='N', notes='N', contacts='N', ustorage='N', directory='N' where  lf>'".$babBody->currentDGGroup['lf']."' AND lr<'".$babBody->currentDGGroup['lr']."'");
+		$db->db_query("update ".BAB_GROUPS_TBL." set mail='N', notes='N', contacts='N', ustorage='N', pcalendar='N' where  lf>'".$babBody->currentDGGroup['lf']."' AND lr<'".$babBody->currentDGGroup['lr']."'");
 		}
 	else
 		{
-		$db->db_query("update ".BAB_GROUPS_TBL." set mail='N', notes='N', contacts='N', ustorage='N', directory='N'");
+		$db->db_query("update ".BAB_GROUPS_TBL." set mail='N', notes='N', contacts='N', ustorage='N', pcalendar='N'");
 		}
 
 	for( $i=0; $i < count($mailgrpids); $i++)
@@ -505,19 +501,11 @@ function saveGroupsOptions($mailgrpids, $notgrpids, $congrpids, $pdsgrpids, $dir
 		$db->db_query("update ".BAB_GROUPS_TBL." set ustorage='Y' where id='".$pdsgrpids[$i]."'"); 
 	}
 
-
-	for( $i=0; $i < count($dirgrpids); $i++)
+	for( $i=0; $i < count($pcalgrpids); $i++)
 	{
-		$db->db_query("update ".BAB_GROUPS_TBL." set directory='Y' where id='".$dirgrpids[$i]."'");
-
-		$res = $db->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group='".$dirgrpids[$i]."'");
-		if( !$res || $db->db_num_rows($res) == 0 )
-		{
-			$db->db_query("insert into ".BAB_DB_DIRECTORIES_TBL." (name, description, id_group, id_dgowner) values ('".$db->db_escape_string(bab_getGroupName($dirgrpids[$i], false))."','','".$dirgrpids[$i]."', '".$babBody->currentAdmGroup."')");
-		}
-		
+		$db->db_query("update ".BAB_GROUPS_TBL." set pcalendar='Y' where id='".$pcalgrpids[$i]."'"); 
 	}
-	
+
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=groups&idx=options");
 	exit;
 }
@@ -552,9 +540,9 @@ if( isset($update) && $update == "options")
 	if (!isset($notgrpids)) $notgrpids = array();
 	if (!isset($congrpids)) $congrpids = array();
 	if (!isset($pdsgrpids)) $pdsgrpids = array();
-	if (!isset($dirgrpids)) $dirgrpids = array();
+	if (!isset($pcalgrpids)) $pcalgrpids = array();
 	if (!isset($calperids)) $calperids = array();
-	saveGroupsOptions($mailgrpids, $notgrpids, $congrpids, $pdsgrpids, $dirgrpids);
+	saveGroupsOptions($mailgrpids, $notgrpids, $congrpids, $pdsgrpids, $pcalgrpids);
 	}
 
 if ($idx != "brow")

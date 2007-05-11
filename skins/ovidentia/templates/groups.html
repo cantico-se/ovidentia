@@ -166,9 +166,9 @@ else
 <!--#if bdgcontacts -->
 <td valign="middle" align="center">{ contacts } </td>
 <!--#endif bdgcontacts -->
-<!--#if bdgdirectories -->
-<td valign="middle" align="center">{ directory } </td>
-<!--#endif bdgdirectories -->
+<!--#if bpcalendar -->
+<td valign="middle" align="center">{ pcalendar } </td>
+<!--#endif bpcalendar -->
 <!--#if bdgpds -->
 <td valign="middle" align="center">{ persdiskspace } </td>
 <!--#endif bdgpds -->
@@ -193,11 +193,11 @@ else
 <input type="checkbox" name="congrpids[]" { concheck } value="{ grpid }">
 </td>
 <!--#endif bdgcontacts -->
-<!--#if bdgdirectories -->
+<!--#if bpcalendar -->
 <td valign="middle" width="0%" align="center"> 
-<input type="checkbox" name="dirgrpids[]" { dircheck } value="{ grpid }">
+<input type="checkbox" name="pcalgrpids[]" { pcalcheck } value="{ grpid }">
 </td>
-<!--#endif bdgdirectories -->
+<!--#endif bpcalendar -->
 <!--#if bdgpds -->
 <td valign="middle" width="0%" align="center"> 
 <input type="checkbox" name="pdsgrpids[]" { pdscheck } value="{ grpid }">
@@ -216,9 +216,9 @@ else
 <!--#if bdgcontacts -->
 <td width="1%" align="center"><a href="javascript:onCheckAll('congrpids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('congrpids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
 <!--#endif bdgcontacts -->
-<!--#if bdgdirectories -->
-<td width="1%" align="center"><a href="javascript:onCheckAll('dirgrpids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('dirgrpids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
-<!--#endif bdgdirectories -->
+<!--#if bpcalendar -->
+<td width="1%" align="center"><a href="javascript:onCheckAll('pcalgrpids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('pcalgrpids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
+<!--#endif bpcalendar -->
 <!--#if bdgpds -->
 <td width="1%" align="center"><a href="javascript:onCheckAll('pdsgrpids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('pdsgrpids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
 <!--#endif bdgpds -->

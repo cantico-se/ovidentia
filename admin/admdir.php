@@ -142,6 +142,73 @@ function listAds()
 	$babBody->babecho(	bab_printTemplate($temp, 'admdir.html', 'adlist'));
 }
 
+function dirGroups() // liste des annuaires de groupes
+	{
+	global $babBody;
+	class dirGroupsCls
+		{
+
+		var $altbg = true;
+
+		function dirGroupsCls()
+			{
+			global $babBody;
+			$this->fullname = bab_translate("Groups");
+			$this->directory = bab_translate("Site directory");
+			$this->modify = bab_translate("Update");
+			$this->uncheckall = bab_translate("Uncheck all");
+			$this->checkall = bab_translate("Check all");
+			include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
+			$tree = new bab_grptree();
+			$this->groups = $tree->getGroups(BAB_ALLUSERS_GROUP);
+			unset($this->groups[BAB_UNREGISTERED_GROUP]);
+			$this->altbg=false;
+			if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
+				{
+				$this->bdgdirectories = true;
+				}
+			else
+				{
+				if( $babBody->currentDGGroup['directories'] == 'Y' )
+					{
+					$this->bdgdirectories = true;
+					}
+				else
+					{
+					$this->bdgdirectories = false;
+					}
+				}
+			
+			}
+
+		function getnext()
+			{
+			if (list(,$this->arr) = each($this->groups))
+				{
+				$this->altbg = !$this->altbg;
+				$this->grpid = $this->arr['id'];
+				$this->urlname = $this->arr['name'];
+
+				if( $this->arr['directory'] == "Y")
+					{
+					$this->dircheck = "checked";
+					}
+				else
+					{
+					$this->dircheck = "";
+					}
+
+				return true;
+				}
+			else
+				return false;
+
+			}
+		}
+
+	$temp = new dirGroupsCls();
+	$babBody->babecho(	bab_printTemplate($temp, "admdir.html", "dirgroups"));
+	}
 
 
 function search_options()
@@ -1462,6 +1529,42 @@ function record_search_options()
 	return true;
 }
 
+function updateDirGroups($dirgrpids) // enregistrement des modifications aux annuaires de groupes
+{
+
+	global $babBody, $babDB;
+
+	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
+
+	if ($babBody->currentAdmGroup > 0)
+		{
+		$babDB->db_query("update ".BAB_GROUPS_TBL." set directory='N' where  lf>='".$babBody->currentDGGroup['lf']."' AND lr<='".$babBody->currentDGGroup['lr']."'");
+		}
+	else
+		{
+		$babDB->db_query("update ".BAB_GROUPS_TBL." set directory='N'");
+		}
+
+	for( $i=0; $i < count($dirgrpids); $i++)
+	{
+		$babDB->db_query("update ".BAB_GROUPS_TBL." set directory='Y' where id='".$babDB->db_escape_string($dirgrpids[$i])."'");
+
+		$res = $babDB->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group='".$dirgrpids[$i]."'");
+		if( !$res || $babDB->db_num_rows($res) == 0 )
+		{
+			$babDB->db_query("insert into ".BAB_DB_DIRECTORIES_TBL." (name, description, id_group, id_dgowner) values ('".$babDB->db_escape_string(bab_getGroupName($dirgrpids[$i], false))."','','".$babDB->db_escape_string($dirgrpids[$i])."', '".$babBody->currentAdmGroup."')");
+		}
+		else
+		{
+			$babDB->db_query("update ".BAB_DB_DIRECTORIES_TBL." set id_dgowner=".$babBody->currentAdmGroup." where id_group='".$babDB->db_escape_string($dirgrpids[$i])."'");
+		}
+		
+	}
+	
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admdir");
+	exit;
+}
+
 
 /* main */
 if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['directories'] != 'Y')
@@ -1610,6 +1713,12 @@ if( isset($update) )
 			{
 			$idx = 'search';
 			}
+		}
+	elseif( $update == 'gdirs')
+		{
+		if (!isset($dirgrpids)) { $dirgrpids = array(); }
+		updateDirGroups($dirgrpids);
+		$idx = 'list';
 		}
 	}
 
@@ -1776,6 +1885,7 @@ switch($idx)
 		$babBody->title = bab_translate("Fields to display for a search in all directories");
 		search_options();
 		$babBody->addItemMenu('list', bab_translate("Directories"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=list');
+		$babBody->addItemMenu("ldg", bab_translate("Groups directories"), $GLOBALS['babUrlScript']."?tg=admdir&idx=ldg");
 		$babBody->addItemMenu('search', bab_translate("Search options"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=search');
 		}
 		else
@@ -1783,12 +1893,23 @@ switch($idx)
 			$babBody->msgerror = bab_translate("Access denied");
 		}
 		break;
+	case 'ldg':
+		$babBody->title = bab_translate("Groups directories");
+		dirGroups();
+		$babBody->addItemMenu("list", bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=admdir&idx=list");
+		$babBody->addItemMenu("ldg", bab_translate("Groups directories"), $GLOBALS['babUrlScript']."?tg=admdir&idx=ldg");
+		if( $babBody->isSuperAdmin )
+		{
+		$babBody->addItemMenu("search", bab_translate("Search options"), $GLOBALS['babUrlScript']."?tg=admdir&idx=search");
+		}
+	break;
 
 	case 'list':
 	default:
 		$babBody->title = bab_translate("Directories");
 		listAds();
 		$babBody->addItemMenu('list', bab_translate("Directories"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=list');
+		$babBody->addItemMenu("ldg", bab_translate("Groups directories"), $GLOBALS['babUrlScript']."?tg=admdir&idx=ldg");
 		if( $babBody->isSuperAdmin )
 		{
 		$babBody->addItemMenu('search', bab_translate("Search options"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=search');

@@ -935,3 +935,41 @@ onclick="selectAll(document.ordform.elements[4]); document.ordform.submit()">
 </table>
 </form>
 <!--#end search -->
+
+<!--#begin dirgroups -->
+<form method="post" action="{ babPhpSelf }" name="listform">
+<input type="hidden" name="tg" value="admdir">
+<input type="hidden" name="idx" value="groupdirs">
+<input type="hidden" name="update" value="gdirs">
+<table border="0" width="90%" cellpadding="2" cellspacing="0" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+<table class="BabMailBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
+<tr class="BabSiteAdminTitleFontBackground">
+<td valign="middle">{ fullname } </td>
+<td valign="middle" align="center">{ directory } </td>
+</tr>
+<!--#in getnext -->
+<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg --> 
+<td valign="middle"> 
+{ urlname } 
+</td>
+<td valign="middle" width="0%" align="center"> 
+<input type="checkbox" name="dirgrpids[]" { dircheck } value="{ grpid }">
+</td>
+</tr>        
+<!--#endin getnext -->
+<tr class="BabSiteAdminTitleFontBackground"> 
+<td valign="middle">&nbsp;</td>
+<td width="1%" align="center"><a href="javascript:onCheckAll('dirgrpids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('dirgrpids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<br>
+<div align="center">
+<input type="submit" name="submit" value="{ modify }"></div>
+<br>
+</form>
+<!--#end dirgroups -->
