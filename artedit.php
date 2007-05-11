@@ -413,7 +413,7 @@ function showTopicTree($actionType, $selectedTopicId)
 			}
 			$this->rfurl = bab_toHtml($GLOBALS['rfurl']);
 
-			$this->bcontent = true;
+			$this->bcontent = false;
 			$this->title = bab_pp('title', '');
 			$this->headtext = bab_pp('headtext', '');
 			$this->bodytext = bab_pp('bodytext', '');
