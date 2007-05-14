@@ -129,9 +129,8 @@ function bab_setOpenMembers(memberIds)
 	});
 	for (var i = 0; i < memberIds.length; i++) {
 		var entity = document.getElementById(memberIds[i]);
-		if (entity) {
-			var members = entity.members;
-			members.style.display = '';
+		if (entity && entity.members) {
+			entity.members.style.display = '';
 		}
 	}
 }
