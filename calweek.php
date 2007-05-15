@@ -236,22 +236,26 @@ class cal_weekCls extends cal_wmdbaseCls
 			}
 		}
 
-	function getnextcal(&$skip)
+	function getnextcal()
 		{
+		
 		if( $this->cindex < count($this->idcals))
 			{
 			$calname = $this->mcals->getCalendarName($this->idcals[$this->cindex]);
 			$this->fullname = bab_toHtml($calname);
 			$this->abbrev = $this->calstr($calname,BAB_CAL_NAME_LENGTH);
-			$this->cols = count($this->harray[$this->cindex]);
 			$this->nbCalEvents = isset($this->harray[$this->cindex][0]) ? count($this->harray[$this->cindex][0]) : 0;
+			$this->cols = count($this->harray[$this->cindex]);
 			
-			if (0 === $this->cols) {
-				$skip = true;
+			if (0 == $this->cols) {
+				$this->cols = 1;
 			}
 			
 			$this->cindex++;
 			$this->icols = 0;
+			
+			
+			
 			return true;
 			}
 		else
@@ -264,9 +268,10 @@ class cal_weekCls extends cal_wmdbaseCls
 	function getnexteventcol()
 		{
 		global $babBody;
-		if( $this->icols < $this->cols  || ($this->cols == 0 && $this->icols == 0))
+		if( $this->icols < $this->cols)
 			{
 			$i = 0;
+			
 			$this->bevent = false;
 			
 			if (isset($this->harray[$this->cindex-1][$this->icols]))
@@ -280,10 +285,10 @@ class cal_weekCls extends cal_wmdbaseCls
 						$calPeriod->getProperty('DTSTART') < $this->enddt )
 						{
 						$this->createCommonEventVars($calPeriod);
-						if( !isset($this->bfirstevents[$this->cindex-1][$this->idevent]) )
+						if( !isset($this->bfirstevents[$this->cindex][$calPeriod->getProperty('UID')]) )
 							{
 							$this->first=1;
-							$this->bfirstevents[$this->cindex-1][$this->idevent] = 1;
+							$this->bfirstevents[$this->cindex][$calPeriod->getProperty('UID')] = 1;
 							}
 						else
 							{
@@ -291,12 +296,11 @@ class cal_weekCls extends cal_wmdbaseCls
 							}
 						$this->bevent = true;
 						
-
 						}
 					$i++;
 					}
 				}
-			
+				
 			$this->md5 = 'm'.md5($this->cindex.$this->dayname.$this->currday.$this->h_start.$this->icols);
 			$this->icols++;
 			return true;

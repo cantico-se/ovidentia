@@ -130,7 +130,7 @@ class cal_dayCls extends cal_wmdbaseCls
 			}
 
 
-	function getnextcal(&$skip)
+	function getnextcal()
 		{
 		if( $this->cindex < count($this->idcals))
 			{
@@ -139,8 +139,8 @@ class cal_dayCls extends cal_wmdbaseCls
 			$this->fullnameten = $this->calstr($calname,BAB_CAL_NAME_LENGTH);
 			$this->cols = count($this->harray[$this->cindex]);
 			
-			if (0 === $this->cols) {
-				$skip = true;
+			if (0 == $this->cols) {
+				$this->cols = 1;
 			}
 			
 			$this->cindex++;
@@ -157,7 +157,7 @@ class cal_dayCls extends cal_wmdbaseCls
 	function getnexteventcol()
 		{
 		global $babBody;
-		if( $this->icols < $this->cols || ($this->cols == 0 && $this->icols == 0))
+		if( $this->icols < $this->cols)
 			{
 			$i = 0;
 			$this->bevent = false;
