@@ -455,6 +455,7 @@ function saveThread()
 	$notifyme = bab_pp('notifyme', 'N');
 	$name = strval(bab_pp('uname', ''));
 	
+	include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 	$editor = new bab_contentEditor('bab_forum_post');
 	$message = $editor->getContent();
 
