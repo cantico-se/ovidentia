@@ -361,13 +361,6 @@ class bab_icalendar
 //		while( $p = & $this->whObj->getNextEvent(BAB_PERIOD_NWDAY | BAB_PERIOD_VACATION | BAB_PERIOD_CALEVENT | BAB_PERIOD_TSKMGR) )
 		while( $p = & $this->whObj->getNextEvent(BAB_PERIOD_NWDAY | BAB_PERIOD_VACATION | BAB_PERIOD_CALEVENT) )
 			{
-			bab_debug(bab_longDate($p->ts_begin));
-			bab_debug(bab_longDate($p->ts_end));
-			
-			bab_debug($startdate);
-			bab_debug($enddate);
-			
-			bab_debug($p);
 			if (bab_mktime($startdate) < $p->ts_end && bab_mktime($enddate) > $p->ts_begin )
 				{
 				$calPeriod = $p;
@@ -834,7 +827,9 @@ class cal_wmdbaseCls
 			$this->bgcolor = $calPeriod->color;
 		}
 
-
+		
+		
+		
 		$time = bab_mktime($calPeriod->getProperty('DTSTART'));
 		$this->starttime = bab_toHtml(bab_time($time));
 		$this->startdate = bab_toHtml(bab_shortDate($time, false));
