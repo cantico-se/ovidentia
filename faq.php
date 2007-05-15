@@ -1074,6 +1074,12 @@ function deleteSubCategory($item, $idscat, $ids)
 function updateQuestion($idq, $newidscat, $question)
 	{
 	global $babDB;
+	
+	include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			
+	$editor = new bab_contentEditor('bab_faq_response');
+	$response = $editor->getContent();
+
 	if( empty($question) || empty($response))
 		{
 		$babBody->msgerror = bab_translate("ERROR: You must provide question and response !!");
@@ -1081,11 +1087,6 @@ function updateQuestion($idq, $newidscat, $question)
 		}
 
 	$ar = array();
-	
-	include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
-			
-	$editor = new bab_contentEditor('bab_faq_response');
-	$response = $editor->getContent();
 	
 	$response = imagesReplace($response, $idq."_faq_", $ar);
 
