@@ -258,7 +258,7 @@ class listFiles
 								'".$babDB->db_escape_string($dir_file)."',
 								'".$babDB->db_escape_string($this->path)."',
 								'".$babDB->db_escape_string($this->id)."',
-								'Y',
+								".$babDB->quote($this->gr).",
 								NOW(),
 								'".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."',
 								NOW(),
