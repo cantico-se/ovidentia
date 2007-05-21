@@ -1260,7 +1260,7 @@ function showSetArticleProperties($idart)
 				{
 				$arr = $babDB->db_fetch_array($this->resgrp);
 				$this->grpid = $arr['id_group'];
-				$this->grpname = bab_getGroupName($arr['id_group']);
+				$this->grpname = bab_getGroupName($arr['id_group'], false);
 				if( in_array($this->grpid, $this->arrrest))
 					$this->grpcheck = 'checked';
 				else
