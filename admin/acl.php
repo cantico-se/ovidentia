@@ -41,7 +41,7 @@ class macl
 	var $sHiddenFieldName = '';
 	var $sHiddenFieldValue = '';
 		
-	function macl($target, $index,$id_object, $return)
+	function macl($target, $index,$id_object, $return, $tableref='')
 		{
 		global $babBody, $babDB;
 		$this->target = &$target;
@@ -55,36 +55,119 @@ class macl
 		$this->t_group = bab_translate("Group");
 		$this->t_record = bab_translate("Record");
 		$this->t_sets_of_groups = bab_translate("Sets of groups");
+		$this->t_broken = bab_translate("ACL broken. Please resubmit the form");
+		$this->firstnode = BAB_ALLUSERS_GROUP;
 
-		$this->tree = & new bab_grptree();
-
-		$res = $babDB->db_query("SELECT * FROM ".BAB_GROUPS_TBL."");
+		$this->df_groups = array();
+		$res = $babDB->db_query("SELECT id, lf, lr FROM ".BAB_GROUPS_TBL."");
 		while ($arr = $babDB->db_fetch_assoc($res))
 			{
 			$this->df_groups[$arr['id']] = 1;
+			$this->ov_groups[$arr['id']] = $arr;
 			}
 
-		if ($babBody->currentAdmGroup == 0)
+		$this->tree = & new bab_arraytree(BAB_GROUPS_TBL, null);
+		if ($babBody->currentAdmGroup > 0)
+			{
+			$this->aclgroups = array();
+			$res = $babDB->db_query("select id_group from ".BAB_DG_ACL_GROUPS_TBL." where id_object='".$babBody->currentAdmGroup."'");
+			while( $arr = $babDB->db_fetch_array($res))
+				{
+				$this->aclgroups[$arr['id_group']] = true;
+				}
+
+			if( count($this->aclgroups) == 0 )
+				{
+				$this->aclgroups[$babBody->currentDGGroup['id_group']+BAB_ACL_GROUP_TREE] = true;
+				}
+			if ( !isset($this->aclgroups[BAB_UNREGISTERED_GROUP]))
+				{
+				unset($this->df_groups[BAB_UNREGISTERED_GROUP]);
+				}
+
+			if (!isset($this->aclgroups[BAB_ALLUSERS_GROUP]) && !isset($this->aclgroups[BAB_REGISTERED_GROUP]))
+				{
+				unset($this->df_groups[BAB_ALLUSERS_GROUP]);
+				unset($this->df_groups[BAB_REGISTERED_GROUP]);
+				$childs = $this->tree->getChilds(BAB_REGISTERED_GROUP);
+				for( $k = 0; $k < count($childs); $k++ )
+					{
+					if( $childs[$k] > BAB_UNREGISTERED_GROUP )
+						{
+						if( isset($this->aclgroups[$childs[$k]+BAB_ACL_GROUP_TREE]) )
+							{
+							$ch = $this->tree->getChilds($childs[$k]);
+							$k += count($ch);
+							}
+						elseif( !isset($this->aclgroups[$childs[$k]]))
+							{
+							$this->tree->removeNode($childs[$k]);
+							unset($this->df_groups[$childs[$k]]);
+							}
+						}
+					}
+				}
+
+			$this->countsets = 0;
+			
+			}
+		else
 			{
 			$this->resset = $babDB->db_query("SELECT * FROM ".BAB_GROUPS_TBL." WHERE nb_groups>='0'");
 			$this->countsets = $babDB->db_num_rows($this->resset);
 			}
-		else
-			{
-			$this->countsets = 0;
-			}
 			
 		$_SESSION['bab_acl_tablelist'] = array();
 		}
-		
+
+	function issetAclGroup($a)
+		{
+		if( isset($this->aclgroups[$a]))
+			return true;
+
+		if( $a > BAB_ACL_GROUP_TREE )
+			{
+			$a -= BAB_ACL_GROUP_TREE;
+			}
+
+		foreach( $this->aclgroups as $key => $val )
+			{
+			if( $key > BAB_ACL_GROUP_TREE )
+				{
+				$b = $key - BAB_ACL_GROUP_TREE;
+
+				if( $this->ov_groups[$b]['lf'] <= $this->ov_groups[$a]['lf'] && $this->ov_groups[$b]['lr'] >= $this->ov_groups[$a]['lr'] )
+					{
+					return true;
+					}
+				}
+
+			}
+
+		return false;
+		}
+
 	function addtable($table,$name = '')
 		{
 		global $babDB;
 		$checked = array();
+		$checked_table = array();
 		$res = $babDB->db_query("SELECT id_group FROM ".$babDB->db_escape_string($table)." WHERE id_object='".$babDB->db_escape_string($this->id_object)."'");
 		while ($arr = $babDB->db_fetch_assoc($res))
 			{
 			$checked[$arr['id_group']] = 1;
+			if( isset($this->aclgroups) && !$this->issetAclGroup($arr['id_group']))
+				{
+				$checked_table[] = $arr['id_group'];
+				}
+			}
+		if( isset($this->aclgroups) && !isset($this->aclgroups[BAB_ALLUSERS_GROUP]) && !isset($this->aclgroups[BAB_REGISTERED_GROUP]) && count($checked_table) > 0 )
+			{
+			$acldiff = true;
+			}
+		else
+			{
+			$acldiff = false;
 			}
 
 		$tblindex = count($this->tables);
@@ -92,7 +175,8 @@ class macl
 				'table'		=> $table,
 				'title'		=> empty($name) ? bab_translate("Access rights") : $name,
 				'groups'	=> $this->df_groups,
-				'checked'	=> $checked
+				'checked'	=> $checked,
+				'msgerror'	=> $acldiff
 			);
 			
 		$_SESSION['bab_acl_tablelist'][$table] = $table;
@@ -114,15 +198,15 @@ class macl
 			trigger_error('You can\'t filter on disabled, this function has been deprecated');
 			}
 */
-		if ($everybody) {
+		if ($everybody && isset($this->tables[$tblindex]['groups'][BAB_ALLUSERS_GROUP])) {
 			unset($this->tables[$tblindex]['groups'][BAB_ALLUSERS_GROUP]);
 			}
 
-		if ($users) {
+		if ($users && isset($this->tables[$tblindex]['groups'][BAB_REGISTERED_GROUP])) {
 			unset($this->tables[$tblindex]['groups'][BAB_REGISTERED_GROUP]);
 			}
 
-		if ($guest) {
+		if ($guest && isset($this->tables[$tblindex]['groups'][BAB_UNREGISTERED_GROUP])) {
 			unset($this->tables[$tblindex]['groups'][BAB_UNREGISTERED_GROUP]);
 			}
 
@@ -130,7 +214,9 @@ class macl
 			foreach($groups as $grp)
 				{
 				if (isset($this->tables[$tblindex]['groups'][$grp]))
+					{
 					unset($this->tables[$tblindex]['groups'][$grp]);
+					}
 				}
 			}
 		}
@@ -143,6 +229,7 @@ class macl
 			$this->tablenum = $i +1;
 			$this->table = bab_toHtml($this->tables[$i]['table']);
 			$this->title = bab_toHtml($this->tables[$i]['title']);
+			$this->msgerror = bab_toHtml($this->tables[$i]['msgerror']);
 			$this->disabled = true;
 			$this->checked = false;
 			$this->treechecked = false;
@@ -189,12 +276,12 @@ class macl
 		{
 		if (!isset($this->id_group))
 			{
-			$this->arr = $this->tree->getNodeInfo($this->tree->firstnode);
+			$this->arr = $this->tree->getNodeInfo($this->firstnode);
 			$this->id_group = $this->arr['id'];
 			$this->arr['name'] = bab_toHtml(bab_translate($this->arr['name']));
 			$this->arr['description'] = bab_toHtml(bab_translate($this->arr['description']));
 
-			$this->tpl_tree = acl_grp_node_html($this, $this->tree->firstnode);
+			$this->tpl_tree = acl_grp_node_html($this, $this->firstnode);
 			return true;
 			}
 
@@ -264,23 +351,22 @@ class acl_grp_node extends macl
 	$this->acl = &$acl;
 	$this->tree = &$acl->tree;
 	$this->tables = &$acl->tables;
-	$this->childs = $this->tree->getChilds($id_group);
-	
+	$this->childs = $this->tree->getChilds($id_group, false);	
 	$this->t_group = bab_translate("Group");
 	}
 
 	function getnextgroup()
 	{
-	if ($this->childs && list(,$this->arr) = each($this->childs))
+	if ($this->childs && list(,$nodeid) = each($this->childs))
 		{
-		if ($this->arr['id'] <= BAB_ADMINISTRATOR_GROUP)
+		$this->arr = $this->tree->getNodeInfo($nodeid);
+		if ($nodeid <= BAB_ADMINISTRATOR_GROUP)
 			{
 			$this->arr['name'] = bab_translate($this->arr['name']);
 			$this->arr['description'] = bab_translate($this->arr['description']);
 			}
 
 		//$this->arr['name'] = '['.$this->arr['lf'].','.$this->arr['lr'].'] '.$this->arr['name'];
-
 		$this->arr['name'] = bab_toHtml($this->arr['name']);
 		$this->arr['description'] = bab_toHtml($this->arr['description']);
 		$this->id_group = bab_toHtml($this->arr['id']);

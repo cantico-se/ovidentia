@@ -445,6 +445,8 @@ function bab_deleteGroupAclTables($id)
 	aclDeleteGroup(BAB_DBDIREMPTY_GROUPS_TBL, $id);
 	
 	aclDeleteGroup(BAB_PROFILES_GROUPS_TBL, $id);
+
+	aclDeleteGroup(BAB_DG_ACL_GROUPS_TBL, $id);
 }
 
 

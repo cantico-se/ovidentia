@@ -2436,5 +2436,8 @@
 <string id="Insert a link to a personnal contact">Insérer un lien vers un contact personnel</string>
 <string id="Insert link to a directory entry">Insérer un lien vers une fiche d'annuaire</string>
 <string id="Insert image from ovidentia content image manager">Insérer une image</string>
-
+<string id="This topic category can't be deleted">Cette catégorie d'articles ne peut pas être supprimée</string>
+<string id="ACL delegation">Les droits ACL de la délégation</string>
+<string id="ACL to use with this delegation">Groupes à utiliser pour les droits ACL</string>
+<string id="ACL broken. Please resubmit the form">Droits non compatibles avec les ACL. Soumettez le formulaire de nouveau.</string>
 </fr>

@@ -99,11 +99,14 @@ function hideNonMultipleTable()
 <div id="bab_groups_acl" class="BabLoginCadreBackground">
 <ul class="BabLoginMenuBackground">
 	<!--#in getnexttable -->
-	<li id="macl_link_table_{ table }" onclick="macl_switch_view_on('{ table }',{ tablenum })">{ title }</li>
+	<li id="macl_link_table_{ table }" onclick="macl_switch_view_on('{ table }',{ tablenum })">{ title }
+	<!--#if msgerror -->
+	&nbsp;<img src="{ babSkinPath }images/Puces/broken.png" alt="{ t_broken }" title="{ t_broken }" />
+	<!--#endif msgerror -->
+	</li>
 	<!--#endin getnexttable -->
 </ul>
 </div>
-
 
 
 
