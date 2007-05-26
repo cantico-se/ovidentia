@@ -24,6 +24,7 @@
 include_once "base.php";		
 include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
 include_once $GLOBALS['babInstallPath']."utilit/delegincl.php";
+include_once $GLOBALS['babInstallPath']."utilit/topincl.php";
 
 
 
@@ -350,8 +351,13 @@ function addDelegatGroup($name, $description, $color, $battach, $delegitems)
 		$req2 .= ", ".$group." )";
 		$babDB->db_query("insert into ".BAB_DG_GROUPS_TBL." ".$req1." VALUES ".$req2);
 		$id = $babDB->db_insert_id();
-		}
 
+		if( !bab_addTopicsCategory($name, $description, 'Y', '', '', 0, $id ))
+			{
+			return false;
+			}
+
+		}
 	
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=delegat&idx=mem&id=".$id);
 	exit;
@@ -536,6 +542,7 @@ function confirmDeleteDelegatGroup($id)
 
 	$babDB->db_query("delete from ".BAB_DG_ADMIN_TBL." where id_dg='".$idsafe."'");
 	$babDB->db_query("delete from ".BAB_DG_GROUPS_TBL." where id='".$idsafe."'");
+	$babDB->db_query("delete from ".BAB_DG_ACL_GROUPS_TBL." where id_object='".$idsafe."'");
 }
 
 /* main */
@@ -602,12 +609,32 @@ if( $idx == 'list' )
 		$idx = 'new';
 }
 
+if( isset($aclupdate))
+	{
+	include_once $babInstallPath.'admin/acl.php';
+	maclGroups();
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=delegat&idx=list");
+	}
+
 
 switch($idx)
 	{
 	case "bg":
 		browseGroups_dg($cb);
 		exit;
+		break;
+	case "acl":
+		include_once $babInstallPath.'admin/acl.php';
+		$babBody->title = bab_translate("ACL delegation");
+		$macl = new macl("delegat", "Modify", $id, "aclupdate");
+        $macl->addtable( BAB_DG_ACL_GROUPS_TBL,bab_translate("ACL to use with this delegation"));
+        $macl->babecho();
+		$babBody->addItemMenu("list", bab_translate("Delegations"), $GLOBALS['babUrlScript']."?tg=delegat&idx=list");
+		$babBody->addItemMenu("mod", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=delegat&idx=mod&id=".$id);
+		$babBody->addItemMenu("gdel", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=delegat&idx=gdel&id=".$id);
+		$babBody->addItemMenu("mem", bab_translate("Managing administrators"), $GLOBALS['babUrlScript']."?tg=delegat&idx=mem&id=".$id);
+		$babBody->addItemMenu("acl", bab_translate("ACL"), $GLOBALS['babUrlScript']."?tg=delegat&idx=acl&id=".$id);
+		$babBody->addItemMenu("new", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=delegat&idx=new");
 		break;
 	case "gdel":
 		deleteDelegatGroup($id);
@@ -616,6 +643,7 @@ switch($idx)
 		$babBody->addItemMenu("mod", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=delegat&idx=mod&id=".$id);
 		$babBody->addItemMenu("gdel", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=delegat&idx=gdel&id=".$id);
 		$babBody->addItemMenu("mem", bab_translate("Managing administrators"), $GLOBALS['babUrlScript']."?tg=delegat&idx=mem&id=".$id);
+		$babBody->addItemMenu("acl", bab_translate("ACL"), $GLOBALS['babUrlScript']."?tg=delegat&idx=acl&id=".$id);
 		$babBody->addItemMenu("new", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=delegat&idx=new");
 		break;
 	case "mem":
@@ -624,6 +652,7 @@ switch($idx)
 		$babBody->addItemMenu("list", bab_translate("Delegations"), $GLOBALS['babUrlScript']."?tg=delegat&idx=list");
 		$babBody->addItemMenu("mod", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=delegat&idx=mod&id=".$_REQUEST['id']);
 		$babBody->addItemMenu("mem", bab_translate("Managing administrators"), $GLOBALS['babUrlScript']."?tg=delegat&idx=mem&id=".$_REQUEST['id']);
+		$babBody->addItemMenu("acl", bab_translate("ACL"), $GLOBALS['babUrlScript']."?tg=delegat&idx=acl&id=".$id);
 		$babBody->addItemMenu("new", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=delegat&idx=new");
 		break;
 	case "mod":
@@ -634,6 +663,7 @@ switch($idx)
 		$babBody->addItemMenu("list", bab_translate("Delegations"), $GLOBALS['babUrlScript']."?tg=delegat&idx=list");
 		$babBody->addItemMenu("mod", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=delegat&idx=mod&id=".$id);
 		$babBody->addItemMenu("mem", bab_translate("Managing administrators"), $GLOBALS['babUrlScript']."?tg=delegat&idx=mem&id=".$id);
+		$babBody->addItemMenu("acl", bab_translate("ACL"), $GLOBALS['babUrlScript']."?tg=delegat&idx=acl&id=".$id);
 		$babBody->addItemMenu("new", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=delegat&idx=new");
 		break;
 	case "new":
