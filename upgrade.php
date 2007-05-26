@@ -3280,8 +3280,67 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	// event registration for editor core functionalities
 	bab_addEventListener('bab_eventEditorFunctions'			, 'bab_onEditorFunctions'		, 'utilit/editorincl.php');
 	
+	/**
+	 * Upgrade to 6.5.0
+	 */
 	
+	if (!bab_isTable(BAB_DG_ACL_GROUPS_TBL)) 
+		{
+
+		$babDB->db_query("
+		
+				CREATE TABLE ".BAB_DG_ACL_GROUPS_TBL." (
+				  id int(11) unsigned NOT NULL auto_increment,
+				  id_object int(11) unsigned NOT NULL default '0',
+				  id_group int(11) unsigned NOT NULL default '0',
+				  PRIMARY KEY  (id),
+				  KEY id_object (id_object),
+				  KEY id_group (id_group)
+				)
+			
+		");
+
 	
+		$resdg = $babDB->db_query("select id, name, description from ".BAB_DG_GROUPS_TBL);
+
+		while( $arrdg = $babDB->db_fetch_array($resdg))
+		{
+			$babDB->db_query("insert into ".BAB_TOPICS_CATEGORIES_TBL." (title, description, enabled, template, id_dgowner, id_parent, display_tmpl) VALUES ( '" .$babDB->db_escape_string($arrdg['name']). "','" . $babDB->db_escape_string($arrdg['description']). "','Y', '','" . $arrdg['id']. "', 0, '')");
+			$idtopcat = $babDB->db_insert_id();
+
+			$res = $babDB->db_query("select max(ordering) from ".BAB_SECTIONS_ORDER_TBL." so, ".BAB_TOPICS_CATEGORIES_TBL." tc where so.position='0' and so.type='3' and tc.id=so.id_section and tc.id_dgowner='".$arrdg['id']."'");
+			$arr = $babDB->db_fetch_array($res);
+			if( empty($arr[0]))
+				{
+				$res = $babDB->db_query("select max(ordering) from ".BAB_SECTIONS_ORDER_TBL." so where so.position='0'");
+				$arr = $babDB->db_fetch_array($res);
+				if( empty($arr[0]))
+					$arr[0] = 0;
+				}
+
+			$babDB->db_query("update ".BAB_SECTIONS_ORDER_TBL." set ordering=ordering+1 where position='0' and ordering > '".$babDB->db_escape_string($arr[0])."'");
+			$babDB->db_query("insert into ".BAB_SECTIONS_ORDER_TBL." (id_section, position, type, ordering) VALUES ('" .$babDB->db_escape_string($idtopcat). "', '0', '3', '" . $babDB->db_escape_string(($arr[0]+1)). "')");
+
+			$restc = $babDB->db_query("select id from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$arrdg['id']."' and id!='".$idtopcat."' and id_parent='0'");
+			$ord = 1;
+			while( $arrtc = $babDB->db_fetch_array($restc))
+			{
+				$babDB->db_query("delete from ".BAB_TOPCAT_ORDER_TBL." where id_topcat='".$arrtc['id']."' and type='1' and id_parent='0'");
+				$babDB->db_query("insert into ".BAB_TOPCAT_ORDER_TBL." (id_topcat, type, ordering, id_parent) VALUES ('" .$babDB->db_escape_string($arrtc['id']). "', '1', '" . $ord. "', '".$babDB->db_escape_string($idtopcat)."')");
+				$ord++;
+			}
+			$babDB->db_query("update ".BAB_TOPICS_CATEGORIES_TBL." set id_parent='".$idtopcat."' where id_dgowner='".$arrdg['id']."' and id!='".$idtopcat."' and id_parent='0'");
+
+			$res = $babDB->db_query("select max(ordering) from ".BAB_TOPCAT_ORDER_TBL." where id_parent='0'");
+			$arr = $babDB->db_fetch_array($res);
+			if( isset($arr[0]))
+				$ord = $arr[0] + 1;
+			else
+				$ord = 1;
+			$babDB->db_query("insert into ".BAB_TOPCAT_ORDER_TBL." (id_topcat, type, ordering, id_parent) VALUES ('" .$babDB->db_escape_string($idtopcat). "', '1', '" . $babDB->db_escape_string($ord). "', '0')");
+
+		}
+	}
 	return true;
 	
 }
