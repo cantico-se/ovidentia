@@ -79,6 +79,7 @@ function topcatModify($id)
 			$this->arr = $this->db->db_fetch_array($this->res);
 			$this->arr['title'] = htmlentities($this->arr['title']);
 			$this->arr['description'] = htmlentities($this->arr['description']);
+			$this->idp = $this->arr['id_parent'];
 			if( $this->arr['enabled'] == "Y")
 				{
 				$this->noselected = "";
@@ -126,8 +127,18 @@ function topcatModify($id)
 
 			$arr_exclude = $this->arr_child($id);
 
-			$this->res = $babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."' and id NOT IN(".implode(',',$arr_exclude).") order by title asc");
-			$this->count = $babDB->db_num_rows($this->res);
+			$res = $babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."' and id NOT IN(".implode(',',$arr_exclude).") order by title asc");
+
+			$this->arrtopcats = array();
+			if( $this->idp == 0 || ($this->idp != 0 && $babBody->isSuperAdmin))
+				{
+				$this->arrtopcats[] = array( 'id'=> 0, 'title' => $this->nonetxt);
+				}
+			while( $arr = $babDB->db_fetch_array($res ))
+				{
+				$this->arrtopcats[] = array( 'id'=> $arr['id'], 'title' => $arr['title']);
+				}
+			$this->topcatscount = count($this->arrtopcats);
 
 			}
 
@@ -183,9 +194,9 @@ function topcatModify($id)
 			{
 			global $babDB;
 			static $i = 0;
-			if( $i < $this->count)
+			if( $i < $this->topcatscount)
 				{
-				$arr = $babDB->db_fetch_array($this->res);
+				$arr = $this->arrtopcats[$i];
 				$this->topcatid = $arr['id'];
 				$this->topcatval = $arr['title'];
 				if( $this->topcatid == $this->arr['id_parent'])
@@ -230,6 +241,12 @@ function topcatDelete($id, $idp)
 			$this->urlno = $GLOBALS['babUrlScript']."?tg=topcat&idx=Modify&item=".$id."&idp=".$idp;
 			$this->no = bab_translate("No");
 			}
+		}
+
+	if( $idp == 0 )
+		{
+		$babBody->msgerror = bab_translate("This topic category can't be deleted");
+		return false;
 		}
 
 	$db = $GLOBALS['babDB'];
@@ -300,6 +317,15 @@ function modifyTopcat($oldname, $name, $description, $benabled, $id, $template, 
 
 function confirmDeleteTopcat($id)
 	{
+	global $babDB;
+
+	list($idparent) = $babDB->db_fetch_array($babDB->db_query("select id_parent from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
+	if( !$idparent )
+		{
+		$babBody->msgerror = bab_translate("This topic category can't be deleted");
+		return false;
+		}
+
 	include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
 	$idp = bab_deleteTopicCategory($id);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats&idx=List&idp=".$idp);

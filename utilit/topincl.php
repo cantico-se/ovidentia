@@ -301,4 +301,62 @@ function bab_getCommentTitle($com)
 		return "";
 		}
 	}
+
+
+function bab_addTopicsCategory($name, $description, $benabled, $template, $disptmpl, $topcatid, $dgowner=0)
+	{
+	global $babBody, $babDB;
+	if( empty($name))
+		{
+		$babBody->msgerror = bab_translate("ERROR: You must provide a name !!");
+		return false;
+		}
+
+	$res = $babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where title='".$babDB->db_escape_string($name)."' and id_parent='".$babDB->db_escape_string($topcatid)."' and id_dgowner='".$babDB->db_escape_string($dgowner)."'");
+	if( $babDB->db_num_rows($res) > 0)
+		{
+		$babBody->msgerror = bab_translate("This topic category already exists");
+		return false;
+		}
+	else
+		{
+		$req = "insert into ".BAB_TOPICS_CATEGORIES_TBL." (title, description, enabled, template, id_dgowner, id_parent, display_tmpl) VALUES (
+		'" .$babDB->db_escape_string($name). "',
+		'" . $babDB->db_escape_string($description). "',
+		'" . $babDB->db_escape_string($benabled). "', 
+		'" . $babDB->db_escape_string($template). "',
+		'" . $babDB->db_escape_string($dgowner). "', 
+		'" . $babDB->db_escape_string($topcatid). "', 
+		'" . $babDB->db_escape_string($disptmpl). "'
+		)";
+		$babDB->db_query($req);
+
+		$id = $babDB->db_insert_id();
+		$req = "select max(ordering) from ".BAB_SECTIONS_ORDER_TBL." so, ".BAB_TOPICS_CATEGORIES_TBL." tc where so.position='0' and so.type='3' and tc.id=so.id_section and tc.id_dgowner='".$babDB->db_escape_string($dgowner)."'";
+		$res = $babDB->db_query($req);
+		$arr = $babDB->db_fetch_array($res);
+		if( empty($arr[0]))
+			{
+			$req = "select max(ordering) from ".BAB_SECTIONS_ORDER_TBL." so where so.position='0'";
+			$res = $babDB->db_query($req);
+			$arr = $babDB->db_fetch_array($res);
+			if( empty($arr[0]))
+				$arr[0] = 0;
+			}
+		$babDB->db_query("update ".BAB_SECTIONS_ORDER_TBL." set ordering=ordering+1 where position='0' and ordering > '".$babDB->db_escape_string($arr[0])."'");
+		$req = "insert into ".BAB_SECTIONS_ORDER_TBL." (id_section, position, type, ordering) VALUES ('" .$babDB->db_escape_string($id). "', '0', '3', '" . $babDB->db_escape_string(($arr[0]+1)). "')";
+		$babDB->db_query($req);
+
+		$res = $babDB->db_query("select max(ordering) from ".BAB_TOPCAT_ORDER_TBL." where id_parent='".$babDB->db_escape_string($topcatid)."'");
+		$arr = $babDB->db_fetch_array($res);
+		if( isset($arr[0]))
+			$ord = $arr[0] + 1;
+		else
+			$ord = 1;
+		$babDB->db_query("insert into ".BAB_TOPCAT_ORDER_TBL." (id_topcat, type, ordering, id_parent) VALUES ('" .$babDB->db_escape_string($id). "', '1', '" . $babDB->db_escape_string($ord). "', '".$babDB->db_escape_string($topcatid)."')");
+
+		return $id;
+		}
+	}
+
 ?>

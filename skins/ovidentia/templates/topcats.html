@@ -50,17 +50,18 @@
 	</select>
 	</td>
 	</tr>
+	<!--#if topcatscount -->
 	<tr> 
 	<td align="right">{ topcattxt }:</td>
 	<td> 
 	<select name="topcatid">
-	<option value="0">{ nonetxt }</option>
 	<!--#in getnexttopcat -->
 	<option value="{ topcatid }" { selected }>{ topcatval }</option>
 	<!--#endin getnexttopcat -->
 	</select>
 	</td>
 	</tr>
+	<!--#endif topcatscount -->
 	<tr> 
 	<td>&nbsp;</td>
 	<td> 
@@ -212,7 +213,6 @@ valign="middle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" 
 <td align="right">{ topcattxt }:</td>
 <td> 
 <select name="topcatid">
-<option value="0">{ nonetxt }</option>
 <!--#in getnexttopcat -->
 <option value="{ topcatid }" { tmplselected }>{ topcatval }</option>
 <!--#endin getnexttopcat -->
@@ -222,7 +222,10 @@ valign="middle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" 
 <tr> 
 <td >&nbsp;</td>
 <td> 
-<input type="submit" name="submit" value="{ modify }">&nbsp;&nbsp;<input type="submit" name="catdel" value="{ delete }">
+<input type="submit" name="submit" value="{ modify }">&nbsp;&nbsp;
+<!--#if idp -->
+<input type="submit" name="catdel" value="{ delete }">
+<!--#endif idp -->
 <br>
 </td>
 </tr>

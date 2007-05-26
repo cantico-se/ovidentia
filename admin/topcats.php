@@ -100,8 +100,18 @@ function topcatCreate($idp)
 				}
 			$this->countdisptmpl = count($this->arrdisptmpl);
 
-			$this->res = $babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."'");
-			$this->count = $babDB->db_num_rows($this->res);
+			$res = $babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."'");
+
+			$this->arrtopcats = array();
+			if( $babBody->isSuperAdmin)
+				{
+				$this->arrtopcats[] = array( 'id'=> 0, 'title' => $this->nonetxt);
+				}
+			while( $arr = $babDB->db_fetch_array($res ))
+				{
+				$this->arrtopcats[] = array( 'id'=> $arr['id'], 'title' => $arr['title']);
+				}
+			$this->topcatscount = count($this->arrtopcats);
 
 			}
 
@@ -135,11 +145,11 @@ function topcatCreate($idp)
 			{
 			global $babDB;
 			static $i = 0;
-			if( $i < $this->count)
+			if( $i < $this->topcatscount)
 				{
-				$this->arr = $babDB->db_fetch_array($this->res);
-				$this->topcatid = $this->arr['id'];
-				$this->topcatval = $this->arr['title'];
+				$arr = $this->arrtopcats[$i];
+				$this->topcatid = $arr['id'];
+				$this->topcatval = $arr['title'];
 				if( $this->idp == $this->topcatid)
 					$this->selected = "selected";
 				else
@@ -347,69 +357,30 @@ function orderTopcat($idp)
 	return $temp->count;
 	}
 
-
 function addTopCat($name, $description, $benabled, $template, $disptmpl, $topcatid)
 	{
 	global $babBody;
 	if( empty($name))
 		{
 		$babBody->msgerror = bab_translate("ERROR: You must provide a name !!");
-		return;
+		return false;
 		}
 
-	$db = $GLOBALS['babDB'];
-
-	$res = $db->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where title='".$db->db_escape_string($name)."' and id_parent='".$db->db_escape_string($topcatid)."' and id_dgowner='".$db->db_escape_string($babBody->currentAdmGroup)."'");
-	if( $db->db_num_rows($res) > 0)
+	if( $babBody->currentAdmGroup && $topcatid == 0 )
 		{
-		$babBody->msgerror = bab_translate("This topic category already exists");
+		$babBody->msgerror = bab_translate("Access denied");
+		return false;
 		}
-	else
-		{
-		$req = "insert into ".BAB_TOPICS_CATEGORIES_TBL." (title, description, enabled, template, id_dgowner, id_parent, display_tmpl) VALUES (
-		'" .$db->db_escape_string($name). "',
-		'" . $db->db_escape_string($description). "',
-		'" . $db->db_escape_string($benabled). "', 
-		'" . $db->db_escape_string($template). "',
-		'" . $db->db_escape_string($babBody->currentAdmGroup). "', 
-		'" . $db->db_escape_string($topcatid). "', 
-		'" . $db->db_escape_string($disptmpl). "'
-		)";
-		$db->db_query($req);
+	return bab_addTopicsCategory($name, $description, $benabled, $template, $disptmpl, $topcatid, $babBody->currentAdmGroup);
 
-		$id = $db->db_insert_id();
-		$req = "select max(ordering) from ".BAB_SECTIONS_ORDER_TBL." so, ".BAB_TOPICS_CATEGORIES_TBL." tc where so.position='0' and so.type='3' and tc.id=so.id_section and tc.id_dgowner='".$db->db_escape_string($babBody->currentAdmGroup)."'";
-		$res = $db->db_query($req);
-		$arr = $db->db_fetch_array($res);
-		if( empty($arr[0]))
-			{
-			$req = "select max(ordering) from ".BAB_SECTIONS_ORDER_TBL." so where so.position='0'";
-			$res = $db->db_query($req);
-			$arr = $db->db_fetch_array($res);
-			if( empty($arr[0]))
-				$arr[0] = 0;
-			}
-		$db->db_query("update ".BAB_SECTIONS_ORDER_TBL." set ordering=ordering+1 where position='0' and ordering > '".$db->db_escape_string($arr[0])."'");
-		$req = "insert into ".BAB_SECTIONS_ORDER_TBL." (id_section, position, type, ordering) VALUES ('" .$db->db_escape_string($id). "', '0', '3', '" . $db->db_escape_string(($arr[0]+1)). "')";
-		$db->db_query($req);
-
-		$res = $db->db_query("select max(ordering) from ".BAB_TOPCAT_ORDER_TBL." where id_parent='".$db->db_escape_string($topcatid)."'");
-		$arr = $db->db_fetch_array($res);
-		if( isset($arr[0]))
-			$ord = $arr[0] + 1;
-		else
-			$ord = 1;
-		$db->db_query("insert into ".BAB_TOPCAT_ORDER_TBL." (id_topcat, type, ordering, id_parent) VALUES ('" .$db->db_escape_string($id). "', '1', '" . $db->db_escape_string($ord). "', '".$db->db_escape_string($topcatid)."')");
-		}
 	}
 
 function disableTopcats($topcats, $idp)
 	{
-	global $babBody;
-	$db = $GLOBALS['babDB'];
+	global $babBody, $babDB;
 	$req = "select id from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."' and id_parent='".$idp."'";
-	$res = $db->db_query($req);
-	while( $row = $db->db_fetch_array($res))
+	$res = $babDB->db_query($req);
+	while( $row = $babDB->db_fetch_array($res))
 		{
 		if( count($topcats) > 0 && in_array($row['id'], $topcats))
 			$enabled = "N";
@@ -417,18 +388,17 @@ function disableTopcats($topcats, $idp)
 			$enabled = "Y";
 
 		$req = "update ".BAB_TOPICS_CATEGORIES_TBL." set enabled='".$enabled."' where id='".$row['id']."'";
-		$db->db_query($req);
+		$babDB->db_query($req);
 		}
 	}
 
 function saveOrderTopcats($idp, $listtopcats)
 	{
-	global $babBody;
-	$db = $GLOBALS['babDB'];
+	global $babBody, $babDB;
 	
 	for($i=0; $i < count($listtopcats); $i++)
 		{
-		$db->db_query("update ".BAB_TOPCAT_ORDER_TBL." set ordering='".($i+1)."' where id='".$listtopcats[$i]."'");
+		$babDB->db_query("update ".BAB_TOPCAT_ORDER_TBL." set ordering='".($i+1)."' where id='".$listtopcats[$i]."'");
 		}
 	}
 
@@ -476,8 +446,8 @@ switch($idx)
 		if( $idp != 0 || ( $idp == 0 && $babBody->isSuperAdmin ))
 			{
 			$babBody->addItemMenu("Order", bab_translate("Order"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Order&idp=".$idp);
+			$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Create&idp=".$idp);
 			}
-		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Create&idp=".$idp);
 		$babBody->addItemMenu("tags", bab_translate("Thesaurus"), $GLOBALS['babUrlScript']."?tg=topcats&idx=tags");
 		break;
 	case "Order":
@@ -487,8 +457,8 @@ switch($idx)
 		if( $idp != 0 || ( $idp == 0 && $babBody->isSuperAdmin ))
 			{
 			$babBody->addItemMenu("Order", bab_translate("Order"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Order&idp=".$idp);
+			$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Create&idp=".$idp);
 			}
-		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Create&idp=".$idp);
 		$babBody->addItemMenu("tags", bab_translate("Thesaurus"), $GLOBALS['babUrlScript']."?tg=topcats&idx=tags&idp=".$idp);
 		break;
 	case "Create":
@@ -498,8 +468,8 @@ switch($idx)
 		if( $idp != 0 || ( $idp == 0 && $babBody->isSuperAdmin ))
 			{
 			$babBody->addItemMenu("Order", bab_translate("Order"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Order&idp=".$idp);
+			$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Create&idp=".$idp);
 			}
-		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Create&idp=".$idp);
 		$babBody->addItemMenu("tags", bab_translate("Thesaurus"), $GLOBALS['babUrlScript']."?tg=topcats&idx=tags&idp=".$idp);
 		break;
 	case "List":
@@ -510,8 +480,8 @@ switch($idx)
 		if( $idp != 0 || ( $idp == 0 && $babBody->isSuperAdmin ))
 			{
 			$babBody->addItemMenu("Order", bab_translate("Order"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Order&idp=".$idp);
+			$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Create&idp=".$idp);
 			}
-		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Create&idp=".$idp);
 		$babBody->addItemMenu("tags", bab_translate("Thesaurus"), $GLOBALS['babUrlScript']."?tg=topcats&idx=tags&idp=".$idp);
 		break;
 	}
