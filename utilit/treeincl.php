@@ -657,26 +657,50 @@ class bab_arraytree
 		$this->table = $table;
 		$this->iduser = $id;
 
+		if( $id )
+		{
 		$this->where = "id_user='".$id."'";
+		}
+		else
+		{
+		$this->where = '';
+		}
 		if( !empty($userinfo))
-			$this->where .= " and info_user='".$userinfo."'";
+		{
+			if( $this->where )
+				$this->where .= " and";
+			
+			$this->where .= " info_user='".$userinfo."'";
+		}
 
 		if( $rootid )
 		{
-		$res = $babDB->db_query("select * from ".$this->table." where ".$this->where." and id='".$rootid."'");
+		if( $this->where )
+			$res = $babDB->db_query("select * from ".$this->table." where ".$this->where." and id='".$rootid."'");
+		else
+			$res = $babDB->db_query("select * from ".$this->table." where id='".$rootid."'");
 		if( $res && $babDB->db_num_rows($res) > 0)
 			{
 			$arr = $babDB->db_fetch_array($res);
-			$req = "select * from ".$this->table." where ".$this->where." and lf between ".$arr['lf']." and ".$arr['lr']." order by lf asc";
+			if( $this->where )
+				$req = "select * from ".$this->table." where ".$this->where." and lf between ".$arr['lf']." and ".$arr['lr']." order by lf asc";
+			else
+				$req = "select * from ".$this->table." where lf between ".$arr['lf']." and ".$arr['lr']." order by lf asc";
 			}
 		else
 			{
-			$req = "select * from ".$this->table." where ".$this->where." order by lf asc";
+			if( $this->where )
+				$req = "select * from ".$this->table." where ".$this->where." order by lf asc";
+			else
+				$req = "select * from ".$this->table." order by lf asc";
 			}
 		}
 		else
 		{
-			$req = "select * from ".$this->table." where ".$this->where." order by lf asc";
+			if( $this->where )
+				$req = "select * from ".$this->table." where ".$this->where." order by lf asc";
+			else
+				$req = "select * from ".$this->table." order by lf asc";
 		}
 		$res = $babDB->db_query($req);
 		$parents = array();
@@ -697,6 +721,7 @@ class bab_arraytree
 			$row['nextSibling'] = 0;
 			$row['firstChild']= 0;
 			$row['lastChild']= 0;
+			$row['nodeinfo']= $arr;
 			if( count($parents) > 0 )
 				{
 				while(  count($parents)> 0 && ($arr['lr'] > $this->nodes[$parents[count($parents)-1]]['lr']))
@@ -716,6 +741,21 @@ class bab_arraytree
 	
 	}
 
+	function getRootId()
+	{
+		global $babDB;
+		return $this->rootid;
+	}
+	
+	function getNodeInfo($id)
+	{
+		global $babDB;
+		if( isset($this->nodes[$id]))
+			return $this->nodes[$id]['nodeinfo'];
+		else
+			return false;
+	}
+	
 	function appendChild($parentid, $child)
 	{
 		if( isset( $this->nodes[$parentid]) && isset( $this->nodes[$child]))
@@ -798,7 +838,7 @@ class bab_arraytree
 		return $this->nodes[$id]['previousSibling'];
 	}
 
-	function getChilds($id)
+	function getChilds($id, $all = true)
 	{
 		if( !isset($this->nodes[$id] ))
 		{
@@ -808,16 +848,120 @@ class bab_arraytree
 		$lf = $this->nodes[$id]['lf'];
 		$lr = $this->nodes[$id]['lr'];
 
+
 		reset($this->nodes);
 		$arr = array();
 		while( $row=each($this->nodes) ) 
 			{
 			if( $row[1]['lf'] > $lf && $row[1]['lf'] < $lr )
 				{
-				$arr[] = $row[1]['id'];
+				if( $all )
+					{
+					$arr[] = $row[1]['id'];
+					}
+				elseif( $id == $row[1]['id_parent'] )
+					{
+					$arr[] = $row[1]['id'];
+					}
 				}
 			}
 		return $arr;
+	}
+
+	function removeNode($id)
+	{
+		if( !isset($this->nodes[$id] ))
+		{
+			return false;
+		}
+
+		if( $this->nodes[$id]['id_parent'] == 0 &&  ($this->nodes[$id]['lr'] - $this->nodes[$id]['lf']) > 1 )
+			return false;
+
+		$lf = $this->nodes[$id]['lf'];
+		$lr = $this->nodes[$id]['lr'];
+
+		if(  $lr - $lf > 1 )
+		{
+			reset($this->nodes);
+			while( $row=each($this->nodes) ) 
+				{
+				if( $row[1]['lf'] > $lf && $row[1]['lr'] < $lr )
+					{
+					$this->nodes[$row[1]['id']]['lf'] -= 1;
+					$this->nodes[$row[1]['id']]['lr'] -= 1;
+					$this->nodes[$row[1]['id']]['level'] -= 1;
+
+					if( $this->nodes[$row[1]['id']]['id_parent'] == $id )
+						{
+						$this->nodes[$row[1]['id']]['id_parent'] = $this->nodes[$id]['id_parent'];
+						}
+					}
+				}
+		}
+
+		if( $this->nodes[$id]['firstChild'] )
+			{
+			$this->nodes[$this->nodes[$id]['firstChild']]['previousSibling'] = $this->nodes[$id]['previousSibling'];
+			if( $this->nodes[$id]['previousSibling'] )
+				{
+				$this->nodes[$this->nodes[$id]['previousSibling']]['nextSibling'] = $this->nodes[$id]['firstChild'];
+				}
+			else
+				{
+				$this->nodes[$this->nodes[$id]['id_parent']]['firstChild'] = $this->nodes[$id]['firstChild'];
+				}
+
+			if( $this->nodes[$id]['lastChild'] )
+				{
+				$this->nodes[$this->nodes[$id]['lastChild']]['nextSibling'] = $this->nodes[$id]['nextSibling'];
+				if( $this->nodes[$id]['nextSibling'] )
+					{
+					$this->nodes[$this->nodes[$id]['nextSibling']]['previousSibling'] = $this->nodes[$id]['lastChild'];
+					}
+				else
+					{
+					$this->nodes[$this->nodes[$id]['id_parent']]['lastChild'] = $this->nodes[$id]['lastChild'];
+					}
+				}
+
+			}
+		else
+			{
+			if( $this->nodes[$id]['previousSibling'] )
+				{
+				$this->nodes[$this->nodes[$id]['previousSibling']]['nextSibling'] = $this->nodes[$id]['nextSibling'];
+				}
+			else
+				{
+				$this->nodes[$this->nodes[$id]['id_parent']]['firstChild'] = $this->nodes[$id]['nextSibling'];
+				}
+			
+			if( $this->nodes[$id]['nextSibling'] )
+				{
+				$this->nodes[$this->nodes[$id]['nextSibling']]['previousSibling'] = $this->nodes[$id]['previousSibling'];
+				}
+			else
+				{
+				$this->nodes[$this->nodes[$id]['id_parent']]['firstChild'] = $this->nodes[$id]['previousSibling'];
+				}
+
+			}
+
+		reset($this->nodes);
+		while( $row=each($this->nodes) ) 
+			{
+			if( $row[1]['lr'] > $lr  )
+				{
+				$this->nodes[$row[1]['id']]['lr'] -= 2;
+				}
+			if( $row[1]['lf'] > $lr  )
+				{
+				$this->nodes[$row[1]['id']]['lf'] -= 2;
+				}
+			}
+
+		unset($this->nodes[$id]);
 	}
 
 	function removeChilds($id)
@@ -865,8 +1009,24 @@ class bab_arraytree
 			}
 			$this->nodes[$id]['firstChild'] = 0;
 			$this->nodes[$id]['lastChild'] = 0;
-
 		}
+
+	}
+
+	function removeTree($id)
+	{
+		if( !isset($this->nodes[$id] ))
+		{
+			return false;
+		}
+
+		$this->removeChilds($id);
+
+		if( $this->nodes[$id]['id_parent'] != 0 )
+		{
+			$this->removeNode($id);
+		}
+
 	}
 }
 ?>
