@@ -232,6 +232,9 @@ function EditorOnCreateImage_WYSIWYG(param)
 		}
 	} else {
 		img = range.startContainer.previousSibling;
+		if (!img) {
+			img = range.startContainer.nextSibling;
+		}
 	}
 	for (field in param) {
 		var value = param[field];
