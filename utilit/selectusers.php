@@ -13,6 +13,14 @@ class bab_selectusers {
 	var $auto_include_file;
 	var $selected;
 
+ 	/**
+	 * Identifier of the group in which the users will be searched
+	 * 
+	 * @access private 
+	 * @var integer
+	 */
+	var $iIdGroup = null;
+
 	function bab_selectusers() {
 		$this->db = & $GLOBALS['babDB'];
 
@@ -107,7 +115,16 @@ class bab_selectusers {
 	function setRecordLabel($label) {
 		$this->t_record = bab_toHtml($label);
 	}
-	
+
+
+	/**
+	 * Set the identifier of the group in which the users will be searched
+	 * @public
+	 * @param int $iIdGroup
+	 */
+	function setGroupId($iIdGroup) {
+		$this->iIdGroup = $iIdGroup;
+	}
 
 	/**
 	 * get html for the form
@@ -152,23 +169,46 @@ class bab_selectusers {
 				break;
 		}
 
-
-		if (!empty($_POST['searchtext'])) {
+		if(!empty($_POST['searchtext'])) 
+		{
 			$searchtext = &$_POST['searchtext'];
-			$query = "SELECT id, firstname, lastname FROM ".BAB_USERS_TBL." 
-				WHERE 
-					disabled='0' 
-					AND is_confirmed='1' 
-					AND 
-					(	nickname	LIKE '%".$this->db->db_escape_like($searchtext)."%' 
-					OR	firstname	LIKE '%".$this->db->db_escape_like($searchtext)."%' 
-					OR	lastname	LIKE '%".$this->db->db_escape_like($searchtext)."%' 
-					)
-				";
-			if (0 < count($_SESSION['bab_selectusers'])) {
-				$query .= " AND id NOT IN(".$this->db->quote($_SESSION['bab_selectusers']).")";
+
+			$sUsrGrpInnerJoin = ' ';
+			$sUsrGrpWhereClause = ' ';
+			$sUsrGrpGroupBy = ' ';
+			if(!is_null($this->iIdGroup))
+			{
+				$sUsrGrpInnerJoin = 
+					',' . BAB_USERS_GROUPS_TBL . ' usrGrp';
+				$sUsrGrpWhereClause = 
+					' AND usrGrp.id_group = \'' . $this->iIdGroup . '\' AND usrGrp.id_object = usr.id';
+				$sUsrGrpGroupBy = 
+					'GROUP BY usr.id';
 			}
+
+			$query = 
+				'SELECT ' .
+					'usr.id, ' .
+					'usr.firstname, ' .
+					'usr.lastname ' .
+				'FROM ' . 
+					BAB_USERS_TBL . ' usr ' . 
+				$sUsrGrpInnerJoin . ' ' .
+				'WHERE ' .
+					'disabled=\'0\' AND ' .
+					'is_confirmed=\'1\' AND ' . 
+					'(	' .
+						'nickname	LIKE \'%' . $this->db->db_escape_like($searchtext) . '%\' OR '  .
+						'firstname	LIKE \'%' . $this->db->db_escape_like($searchtext) . '%\' OR '  .
+						'lastname	LIKE \'%' . $this->db->db_escape_like($searchtext) . '%\' ' . 
+					') ' .
+					$sUsrGrpWhereClause . ' ';
+			if (0 < count($_SESSION['bab_selectusers'])) {
+				$query .= " AND usr.id NOT IN(".$this->db->quote($_SESSION['bab_selectusers']).")";
+			}
+			$query .= $sUsrGrpGroupBy;
 			$query .= " ORDER BY lastname,firstname";
+			//bab_debug($query);
 			$this->res = $this->db->db_query($query);
 			
 			$this->searchtext = bab_toHtml($searchtext);
