@@ -2736,8 +2736,6 @@ class bab_GroupTreeView extends bab_TreeView
 											 bab_toHtml(bab_translate($group['name'])),
 											 '',
 											 '');
-			$element->addCheckBox('select[' . $group['id'] . ']', isset($this->_selectedGroups[$group['id']]));
-
 			$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
 			$parentId = (BAB_REGISTERED_GROUP === (int) $group['id'] ? NULL : 'group' . BAB_TREE_VIEW_ID_SEPARATOR . $group['id_parent']);
 			$this->appendElement($element, $parentId);
@@ -2745,6 +2743,18 @@ class bab_GroupTreeView extends bab_TreeView
 
 	}
 
+
+	function onElementAppended(&$element)
+	{
+		static $iIdGrpIdx = 1;
+
+		$aExploded = explode(BAB_TREE_VIEW_ID_SEPARATOR, $element->_id);
+		if(count($aExploded) == 2)
+		{
+			$iIdGroup = $aExploded[$iIdGrpIdx];
+			$element->addCheckBox('select[' . $iIdGroup . ']', isset($this->_selectedGroups[$iIdGroup]));
+		}
+	}
 
 	/**
 	 * @access private
