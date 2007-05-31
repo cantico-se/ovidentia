@@ -31,7 +31,7 @@ function bab_editor_push(&$obj) {
 	if (NULL === $obj) {
 		return $arr;
 	}
-	$arr[] = $obj;
+	$arr[$obj->uid] = $obj;
 }
 
 
