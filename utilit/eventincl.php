@@ -255,16 +255,11 @@ function bab_fireEvent(&$event_obj) {
 			
 	foreach($calls[$classkey] as $arr) {
 
+		$obj->setAddonCtx($arr['addon_id'], $arr['addon_name']);
+		
 		require_once $GLOBALS['babInstallPath'].$arr['require_file'];
-		
-		
-		
 		if (function_exists($arr['function_name'])) {
-		
-			$obj->setAddonCtx($arr['addon_id'], $arr['addon_name']);
 			call_user_func_array($arr['function_name'], array(&$event_obj));
-			$obj->restoreAddonCtx();
-			
 		} else {
 			bab_debug('
 			Function unreachable
@@ -272,7 +267,9 @@ function bab_fireEvent(&$event_obj) {
 			file : '.$arr['require_file'].'
 			function : '.$arr['function_name'].'
 			');
-		} 
+		}
+		
+		$obj->restoreAddonCtx();
 	}
 }
 
