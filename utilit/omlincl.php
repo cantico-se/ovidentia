@@ -4491,6 +4491,43 @@ class bab_OvmlSoap extends bab_handler
 				$debug = false;
 				}
 
+			if( isset($vars['proxyhost']))
+				{
+				$proxyhost = $vars['proxyhost']; 
+				unset($vars['proxyhost']);
+				if( isset($vars['proxyport']))
+					{
+					$proxyport = $vars['proxyport']; 
+					unset($vars['proxyport']);
+					}
+				else
+					{
+					$proxyport = false;
+					}
+				if( isset($vars['proxyusername']))
+					{
+					$proxyusername = $vars['proxyusername']; 
+					unset($vars['proxyusername']);
+					}
+				else
+					{
+					$proxyusername = false;
+					}
+				if( isset($vars['proxypassword']))
+					{
+					$proxypassword = $vars['proxypassword']; 
+					unset($vars['proxypassword']);
+					}
+				else
+					{
+					$proxypassword = false;
+					}
+				}
+			else
+				{
+				$proxyhost = false;
+				}
+
 			$args['args'] = array();
 			foreach($vars as $key => $val )
 				{
@@ -4500,7 +4537,14 @@ class bab_OvmlSoap extends bab_handler
 			
 			include_once $GLOBALS['babInstallPath']."utilit/nusoap/nusoap.php";
 
+			if( !empty($proxyhost))
+				{
+				$soapclient = new soapclient_b($apiserver, false, $proxyhost, $proxyport, $proxyusername, $proxypassword);
+				}
+			else
+				{
 			$soapclient = new soapclient_b($apiserver);
+				}
 			$this->IdEntries = $soapclient->call('babSoapOvml', $args, '');
 			$err = $soapclient->getError();
 			if( $debug )
@@ -4582,6 +4626,44 @@ class bab_Soap extends bab_handler
 				$apinamespace = '';
 				}
 
+			if( isset($vars['proxyhost']))
+				{
+				$proxyhost = $vars['proxyhost']; 
+				unset($vars['proxyhost']);
+				if( isset($vars['proxyport']))
+					{
+					$proxyport = $vars['proxyport']; 
+					unset($vars['proxyport']);
+					}
+				else
+					{
+					$proxyport = false;
+					}
+				if( isset($vars['proxyusername']))
+					{
+					$proxyusername = $vars['proxyusername']; 
+					unset($vars['proxyusername']);
+					}
+				else
+					{
+					$proxyusername = false;
+					}
+				if( isset($vars['proxypassword']))
+					{
+					$proxypassword = $vars['proxypassword']; 
+					unset($vars['proxypassword']);
+					}
+				else
+					{
+					$proxypassword = false;
+					}
+				}
+			else
+				{
+				$proxyhost = false;
+				}
+
+
 			$args = array();
 			foreach($vars as $key => $val )
 				{
@@ -4589,7 +4671,14 @@ class bab_Soap extends bab_handler
 				}
 
 			include_once $GLOBALS['babInstallPath']."utilit/nusoap/nusoap.php";
+			if( !empty($proxyhost))
+				{
+				$soapclient = new soapclient_b($apiserver, false, $proxyhost, $proxyport, $proxyusername, $proxypassword);
+				}
+			else
+				{
 			$soapclient = new soapclient_b($apiserver);
+				}
 			$this->IdEntries = $soapclient->call($apicall, $args, $apinamespace);
 			$err = $soapclient->getError();
 			if( $debug )
