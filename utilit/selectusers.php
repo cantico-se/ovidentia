@@ -21,6 +21,15 @@ class bab_selectusers {
 	 */
 	var $iIdGroup = null;
 
+ 	/**
+	 * Array of user id that will be excluded from the search
+	 * 
+	 * @access private 
+	 * @var integer
+	 */
+	var $aExcludedIdUser = null;
+
+	
 	function bab_selectusers() {
 		$this->db = & $GLOBALS['babDB'];
 
@@ -126,6 +135,17 @@ class bab_selectusers {
 		$this->iIdGroup = $iIdGroup;
 	}
 
+
+	/**
+	 * Set user identifier that will be excluded in the search
+	 * @public
+	 * @param Array $aExcludesIdUser
+	 */
+	function setExcludedUserId($aExcludedIdUser) {
+		if(is_array($aExcludedIdUser) && count($aExcludedIdUser) > 0)
+		$this->aExcludedIdUser = $aExcludedIdUser;
+	}
+
 	/**
 	 * get html for the form
 	 * @public
@@ -186,6 +206,8 @@ class bab_selectusers {
 					'GROUP BY usr.id';
 			}
 
+			$sExcludedUserIdWhereClause = $this->processEcludedUserId();
+
 			$query = 
 				'SELECT ' .
 					'usr.id, ' .
@@ -202,10 +224,8 @@ class bab_selectusers {
 						'firstname	LIKE \'%' . $this->db->db_escape_like($searchtext) . '%\' OR '  .
 						'lastname	LIKE \'%' . $this->db->db_escape_like($searchtext) . '%\' ' . 
 					') ' .
-					$sUsrGrpWhereClause . ' ';
-			if (0 < count($_SESSION['bab_selectusers'])) {
-				$query .= " AND usr.id NOT IN(".$this->db->quote($_SESSION['bab_selectusers']).")";
-			}
+					$sUsrGrpWhereClause . $sExcludedUserIdWhereClause;
+
 			$query .= $sUsrGrpGroupBy;
 			$query .= " ORDER BY lastname,firstname";
 			//bab_debug($query);
@@ -228,6 +248,36 @@ class bab_selectusers {
 	function setRecordCallback($callback, $auto_include_file = '') {
 		$this->callback = $callback;
 		$this->auto_include_file = $auto_include_file;
+	}
+
+	/**
+	 * Return the string that will be added in the where clause
+	 *
+	 * @param string The excluded user id
+	 */
+	function processEcludedUserId()
+	{
+		$sExcludedIdUser = '';
+
+		if(!is_null($this->aExcludedIdUser))
+		{
+			$sExcludedIdUser = $this->db->quote($this->aExcludedIdUser);
+		}
+
+		if(0 < count($_SESSION['bab_selectusers']))
+		{
+			if(strlen($sExcludedIdUser) > 0)
+			{
+				$sExcludedIdUser .= ', ';
+			}
+			$sExcludedIdUser .= $this->db->quote($_SESSION['bab_selectusers']);
+		}
+
+		if(strlen($sExcludedIdUser) > 0)
+		{
+			return sprintf(' AND usr.id NOT IN(%s)', $sExcludedIdUser);
+		}
+		return $sExcludedIdUser;
 	}
 }
 
