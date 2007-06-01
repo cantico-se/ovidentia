@@ -918,6 +918,7 @@ class bab_ArticleTopic extends bab_handler
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
 		$this->topicid = $ctx->get_value('topicid');
+		$this->topicname = $ctx->get_value('topicname');
 
 		if( $this->topicid === false || $this->topicid === '' )
 			$this->IdEntries = array_keys($babBody->topview);
@@ -927,7 +928,16 @@ class bab_ArticleTopic extends bab_handler
 
 		if( $this->count > 0 )
 			{
-			$this->res = $babDB->db_query("select * from ".BAB_TOPICS_TBL." where id IN (".$babDB->quote($this->IdEntries).")");
+			if( $this->topicname === false || $this->topicname === '' )
+				{
+				$req = "select * from ".BAB_TOPICS_TBL." where id IN (".$babDB->quote($this->IdEntries).")";
+				}
+			else
+				{
+				$req = "select * from ".BAB_TOPICS_TBL." where id IN (".$babDB->quote($this->IdEntries).") and category like '".$babDB->db_escape_string($this->topicname)."'";
+				}
+
+			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
 			}
 		$this->ctx->curctx->push('CCount', $this->count);
@@ -5350,6 +5360,58 @@ function bab_GetCookie($args)
 		}
 	}
 	
+function bab_SetSessionVar($args)
+	{
+	global $babBody;
+	$name = '';
+	$value = '';
+
+	if(count($args))
+		{
+		foreach( $args as $p => $v)
+			{
+			switch(strtolower(trim($p)))
+				{
+				case 'name':
+					$name = $v;
+					break;
+				case 'value':
+					$value = $v;
+					break;
+				}
+			}
+		if( $name !== '')
+			{
+			$_SESSION[$name] = $value;
+			$this->gctx->push($name, $value);
+			}
+		}
+	}
+
+
+function bab_GetSessionVar($args)
+	{
+	global $babBody;
+	$name = '';
+	$value = '';
+
+	if(count($args))
+		{
+		foreach( $args as $p => $v)
+			{
+			switch(strtolower(trim($p)))
+				{
+				case 'name':
+					$name = $v;
+					break;
+				}
+			}
+		if( $name !== '' && isset($_SESSION[$name]))
+			{
+			$this->gctx->push($name, $_SESSION[$name]);
+			}
+		}
+	}
 /* save a variable to global space */
 function bab_PutVar($args)
 	{
