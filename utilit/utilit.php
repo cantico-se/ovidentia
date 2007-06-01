@@ -676,7 +676,7 @@ function loadSections()
 	include $GLOBALS['babInstallPath'].'utilit/utilitsections.php';
 	
 	global $babDB, $babBody, $BAB_SESS_LOGGED, $BAB_SESS_USERID;
-
+	$babSectionsType = isset($_SESSION['babSectionsType'])? $_SESSION['babSectionsType']:BAB_SECTIONS_ALL;
 	$req = "SELECT ".BAB_SECTIONS_ORDER_TBL.".*, ".BAB_SECTIONS_STATES_TBL.".closed, ".BAB_SECTIONS_STATES_TBL.".hidden, ".BAB_SECTIONS_STATES_TBL.".id_section AS states_id_section FROM ".BAB_SECTIONS_ORDER_TBL." LEFT JOIN ".BAB_SECTIONS_STATES_TBL." ON ".BAB_SECTIONS_STATES_TBL.".id_section=".BAB_SECTIONS_ORDER_TBL.".id_section AND ".BAB_SECTIONS_STATES_TBL.".type=".BAB_SECTIONS_ORDER_TBL.".type AND ".BAB_SECTIONS_STATES_TBL.".id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."' ORDER BY ".BAB_SECTIONS_ORDER_TBL.".ordering ASC";
 	$res = $babDB->db_query($req);
 	$arrsections = array();
@@ -725,7 +725,7 @@ function loadSections()
 	// BAB_PRIVATE_SECTIONS_TBL
 
 	$type = 1;
-	if(!empty($arrsectionsbytype[$type]))
+	if(!empty($arrsectionsbytype[$type]) && ($babSectionsType & BAB_SECTIONS_CORE) )
 		{
 			$res2 = $babDB->db_query("select * from ".BAB_PRIVATE_SECTIONS_TBL." where id IN(".$babDB->quote(array_keys($arrsectionsbytype[$type])).")");
 			while($arr2 = $babDB->db_fetch_array($res2))
@@ -786,9 +786,17 @@ function loadSections()
 
 	// BAB_TOPICS_CATEGORIES_TBL sections
 	$type = '3';
-	if(!empty($arrsectionsbytype[$type]))
+	if(!empty($arrsectionsbytype[$type]) && ($babSectionsType & BAB_SECTIONS_ARTICLES))
 		{
-			$res2 = $babDB->db_query("select id, enabled, optional from ".BAB_TOPICS_CATEGORIES_TBL." where id IN(".$babDB->quote(array_keys($arrsectionsbytype[$type])).")");
+			if( isset($_SESSION['babCurrentDelegation']) && $_SESSION['babCurrentDelegation'] !== '' )
+			{
+				$req = "select id, enabled, optional from ".BAB_TOPICS_CATEGORIES_TBL." where id IN(".$babDB->quote(array_keys($arrsectionsbytype[$type])).") and id_dgowner='".$babDB->db_escape_string($_SESSION['babCurrentDelegation'])."'";
+			}
+			else
+			{
+				$req = "select id, enabled, optional from ".BAB_TOPICS_CATEGORIES_TBL." where id IN(".$babDB->quote(array_keys($arrsectionsbytype[$type])).")";
+			}
+			$res2 = $babDB->db_query($req);
 			while($arr2 = $babDB->db_fetch_array($res2))
 				{
 					$sectionid = $arr2['id'];
@@ -806,7 +814,7 @@ function loadSections()
 
 	// BAB_ADDONS_TBL sections
 	$type = '4';
-	if(!empty($arrsectionsbytype[$type]))
+	if(!empty($arrsectionsbytype[$type]) && ($babSectionsType & BAB_SECTIONS_ADDONS))
 		{
 		$at = array_keys($arrsectionsbytype[$type]);
 		for($i=0; $i < count($at); $i++)
@@ -853,7 +861,7 @@ function loadSections()
 
 	// user's sections
 	$type = 'users';
-	if(!empty($arrsectionsbytype[$type]))
+	if(!empty($arrsectionsbytype[$type]) && ($babSectionsType & BAB_SECTIONS_SITE))
 		{
 			$langFilterValues = $GLOBALS['babLangFilter']->getLangValues();
 			$req = "SELECT * FROM ".BAB_SECTIONS_TBL." WHERE id IN(".$babDB->quote(array_keys($arrsectionsbytype[$type])).") and enabled='Y'";
@@ -861,6 +869,10 @@ function loadSections()
 				{
 					$req .= " AND SUBSTRING(lang, 1, 2 ) IN (".$babDB->quote($langFilterValues).")";
 				}
+			if( isset($_SESSION['babCurrentDelegation']) && $_SESSION['babCurrentDelegation'] !== '')
+			{
+				$req .=" and id_dgowner='".$babDB->db_escape_string($_SESSION['babCurrentDelegation'])."'";
+			}
 			$res2 = $babDB->db_query($req);
 			while($arr2 = $babDB->db_fetch_array($res2))
 				{

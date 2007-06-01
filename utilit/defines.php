@@ -102,6 +102,14 @@ define("BAB_STAT_ACCESS_MANAGER",	0);
 define("BAB_STAT_ACCESS_DELEGATION",	1);
 define("BAB_STAT_ACCESS_USER",	2);
 
+/* sections type */
+define('BAB_SECTIONS_CORE'		,1);
+define('BAB_SECTIONS_ARTICLES'	,BAB_SECTIONS_CORE << 1);
+define('BAB_SECTIONS_SITE'		,BAB_SECTIONS_CORE << 2);
+define('BAB_SECTIONS_ADDONS'	,BAB_SECTIONS_CORE << 3);
+define('BAB_SECTIONS_ALL'		,BAB_SECTIONS_CORE | BAB_SECTIONS_ARTICLES | BAB_SECTIONS_SITE | BAB_SECTIONS_ADDONS);
+
+
 define("BAB_ADDONS_GROUPS_TBL", "bab_addons_groups");
 define("BAB_ADDONS_TBL", "bab_addons");
 define("BAB_ARTICLES_TBL", "bab_articles");
