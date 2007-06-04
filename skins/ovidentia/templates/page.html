@@ -1,95 +1,82 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE>{ babSiteName }</TITLE>
-{ babMeta }
-{ babCss }
-<script type="text/javascript" src="{ babOvidentiaJs }"></script>
-<script type="text/javascript">
-<!--
-{ script }
-//-->
-</script>
-</HEAD>
-<BODY>
-<table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
-<tr class="BabHeaderBackground"> 
-<td align="center" valign="middle"> { babLogoLT } </td>
-<td align="center" valign="middle"> { babBanner } </td>
-<td align="center" valign="middle"> { babLogoRT } </td>
-</tr>
-<tr class="BabMenuActiveBackground"> 
-<td align="left"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><!--#if bsearch "== 1" --><a class="BabCnxLink" href="{ searchurl }">{ search }</a><!--#endif bsearch --></td>
-<td class="BabSloganFont" valign="middle">{ babSlogan }</td>
-<td align="right" valign="bottom"><a class="BabCnxLink" href="{ homeurl }">{ home }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"><a class="BabCnxLink" href="{ logurl }">{ login }</a></td>
-</tr>
-<tr class="BabSiteAdminFontBackground"> 
-<td colspan="3"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="10" border="0"></td>
-</tr>
-<tr class="BabSiteAdminFontBackground"> 
-<td><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
-<td> 
-<table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
-<tr> 
-<td align="center" valign="middle"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
-<tr> 
-<!--#in getNextMenu -->
-<!--#if enabled "== 0" -->
-<td align="center" valign="middle" nowrap width="20%" class="BabMenuActiveBackground"> 
-<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0">{ menutext }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"></td>
-<!--#else enabled -->
-<td width="20%" align="center" valign="middle" nowrap class="BabLoginMenuBackground"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"><a class="BabMenuLink" href="{ menuurl }" { menuattribute }>{ 
- menutext }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"></td>
-<!--#endif enabled -->
-<!--#endin getNextMenu -->
-<td><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
-</td>
-<td><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
-</tr>
-<tr> 
-<td class="BabTopicsBackground" valign="top"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="5">
-<tr>
-<td valign="top"><!--#in getNextSectionLeft -->{ sectionleft }<!--#endin getNextSectionLeft --></td>
-</tr>
-</table>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="{ babLanguage }" lang="{ babLanguage }">
+	<head>
+	{ babMeta }	
+	<title>{ babSiteName } <!--#if title --> : { title }<!--#endif title --></title>
+	<link rel="stylesheet" type="text/css" href="{ babCssPath }" media="screen" title="Default" />
+	<link rel="stylesheet" type="text/css" href="{ babSkinPath }print.css" media="print" title="Default" />
+	<link rel="shortcut icon" href="{ babSkinPath }images/Puces/favicon.ico" />
 
-</td>
-<td valign="top" width="80%"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="2" class="BabContentBackground">
-<tr>
-<td valign="top">{ message } { content } <br>
-</td>
-</tr>
-</table>
-</td>
-<td class="BabTopicsBackground" align="right" valign="top"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="5">
-<tr>
-<td>
-<!--#in getNextSectionRight -->
-{ sectionright } 
-<!--#endin getNextSectionRight -->
-</td>
-</tr>
-</table>
+	<script type="text/javascript" src="{ babOvidentiaJs }"></script>
+	<!--#if script -->
+	<script type="text/javascript"><!--	{ script }	--></script>
+	<!--#endif script -->
+	</head>
 
-</td>
-</tr>
-<tr> 
-<td class="BabTopicsBackground" align="center" valign="middle"> { babLogoLB } </td>
-<td class="BabTopicsBackground" align="center" valign="bottom">
-	<address><a href="mailto:{ babAdminEmail }">Webmaster</a>&nbsp;-&nbsp;Powered by <a href="http://www.ovidentia.org/" target="_Blank">Ovidentia - { version }</a><br />Ovidentia&trade; is a registered trademark of <a href="http://www.cantico.fr" target="_blank">Cantico</a>. </address>
-</td>
-<td class="BabTopicsBackground" align="center" valign="middle"> { babLogoRB } 
-</td>
-</tr>
-</table>
-<br>
-</BODY></HTML>
+	<body  class="page <!--#if tg --> { tg }<!--#else tg --> home<!--#endif tg --> <!--#if BAB_SESS_LOGGED --> logged_1<!--#else BAB_SESS_LOGGED --> logged_0<!--#endif BAB_SESS_LOGGED -->" >
+		<div id="ovfx_head">
+			<h1><img src="{ babSkinPath }images/page/logo.gif" alt="Logo { babSiteName }" /></h1>
+			
+			<!--#if BAB_SESS_LOGGED -->
+			<p>{ BAB_SESS_USER } &nbsp;-&nbsp; <a href="{ logurl }">{ login }</a></p>
+			<!--#endif BAB_SESS_LOGGED -->
+
+			<form name="searchFormHome" method="post" action="index.php">
+			<input type="hidden" name="tg" value="search" />
+			<input type="hidden" name="pat" value="abcdefgh" />
+			<input type="hidden" name="idx" value="find" />
+			<input type="hidden" name="order" value=" ASC" />
+			<input type="hidden" name="advenced" value="" />
+			<input type="text" class="text" name="what" value="{ search }" onfocus="this.value='';" />
+		
+			<input type="submit" class="submit" value="ok" />
+
+			</form>
+
+			<ul id="ovfx_menu">
+				<li><a href="{ homeurl }"><span>{ home }</span></a></li>
+				<li><a href="{ loginurl }"><span>{ login }</span></a></li>
+			</ul>
+		</div>
+
+		<div id="centercontent">
+			<!--#if menuitems "> 0" -->
+			<ul id="ctx_menu">
+				<!--#in getNextMenu -->
+				<!--#if enabled "== 0" -->
+				<li><span>{ menutext }</span></li>
+				<!--#else enabled -->
+				<li><a href="{ menuurl }">{ menutext }</a></li>
+				<!--#endif enabled -->
+				<!--#endin getNextMenu -->
+			</ul>
+			<!--#endif menuitems -->
+			
+			<div id="ovfx_page">
+				<!--#if title -->
+				<h2 class="title">{ title }</h2>
+				<!--#endif title -->
+				<!--#if msgerror -->
+				<h2 class="msgerror">{ msgerror }</h2>
+				<!--#endif msgerror -->
+
+				
+				<div class="bab_content">
+					{ content }
+				</div>
+
+				<address class="bottom">
+					<a href="mailto:{ babAdminEmail }">Webmaster</a> - Powered by <a href="http://www.ovidentia.org/">Ovidentia</a><br />
+					Ovidentia&trade; est une marque déposée par <a href="http://www.cantico.fr">Cantico</a>. 
+				</address>
+
+			</div>
+		</div>
+		<!--#if nbsectleft -->
+		<div id="leftcontent">
+			<!--#in getNextSectionLeft -->{  sectionleft }<!--#endin getNextSectionLeft -->
+			<!--#in getNextSectionRight -->{ sectionright }<!--#endin getNextSectionRight -->
+		</div>
+		<!--#endif nbsectleft -->
+	</body>
+</html>
