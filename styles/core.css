@@ -2,7 +2,7 @@ body {
 	margin:0px 0px 0px 0px;
 	padding:0px;
 	background-color:#fff;
-	font-family:Verdana, Arial;
+	font-family: Verdana, Arial;
 	font-size:11px;
 	}
 
@@ -352,7 +352,7 @@ address.bottom a:link, address.bottom a:visited {
 	color:#191A72;
 	text-decoration:none;
 	display:block;
-	padding:.2em .1em .3em .8em;
+	padding:.15em .1em .2em .8em;
 	border-bottom:#8DD0F0 1px solid;
 	}
 
