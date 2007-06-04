@@ -9,7 +9,7 @@ body {
 
 
 body.page {
-	background:transparent url('../skins/ovidentia/images/page/leftbg.gif') repeat-y 0px 0px;
+	background:#fff url('../skins/ovidentia/images/page/leftbg.gif') repeat-y 0px 0px;
 	}
 
 textarea, select {
