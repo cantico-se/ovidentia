@@ -418,6 +418,11 @@ class bab_searchFilesCls extends swishCls
 
 	function searchFiles()
 		{
+		if (empty($this->swishCmd)) {
+			return array();
+		}
+		
+		
 		$r = $this->execCmd($this->swishCmd.' -f '.escapeshellarg($this->mainIndex).' -w '.escapeshellarg($this->query));
 		$str = $r->debuginfos[1];
 
