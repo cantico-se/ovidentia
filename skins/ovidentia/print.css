@@ -1,0 +1,32 @@
+@import url('styles/ovidentia.css');
+
+#leftcontent, 
+#ovfx_menu, 
+#ctx_menu, 
+#ovfx_head, 
+address.bottom {
+	display:none;
+	}
+
+#centercontent {
+	margin:0;
+	}
+
+#ovfx_page {
+	border:none;
+	margin:0;
+	padding:0;
+	}
+
+body.page {
+	background:#fff;
+	}
+	
+	
+#centercontent {
+   position: absolute;
+   top:0px;
+   left: 0px;
+   right:0px;
+   background:#fff;
+   }
