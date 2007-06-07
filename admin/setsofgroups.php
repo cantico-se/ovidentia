@@ -91,6 +91,7 @@ function glist()
 			$this->t_update = bab_translate("Update");
 			$this->confirmdelete = bab_translate("Do you really want to delete the selected items ?");
 			
+			$this->sid = bab_rp('sid');
 			
 			$this->res = $this->db->db_query("SELECT g.* FROM ".BAB_GROUPS_SET_ASSOC_TBL." a, ".BAB_GROUPS_TBL." g WHERE a.id_set='".$_REQUEST['sid']."' AND g.id=a.id_group");
 
