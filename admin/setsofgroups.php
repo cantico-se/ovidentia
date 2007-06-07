@@ -27,7 +27,7 @@ include_once $babInstallPath."admin/mgroup.php";
 function setOfGroupsName($sid)
 {
 	$db = &$GLOBALS['babDB'];
-	$req = "SELECT name FROM ".BAB_GROUPS_TBL." WHERE id='".$sid."' AND nb_groups>='0'";
+	$req = "SELECT name FROM ".BAB_GROUPS_TBL." WHERE id='".$db->db_escape_string($sid)."' AND nb_groups>='0'";
 	$arr = $db->db_fetch_assoc($db->db_query($req));
 	return $arr['name'];
 }
@@ -90,9 +90,9 @@ function glist()
 			$this->t_update = bab_translate("Delete");
 			$this->t_update = bab_translate("Update");
 			$this->confirmdelete = bab_translate("Do you really want to delete the selected items ?");
+			$this->sid = bab_rp('sid');
 			
-			
-			$this->res = $this->db->db_query("SELECT g.* FROM ".BAB_GROUPS_SET_ASSOC_TBL." a, ".BAB_GROUPS_TBL." g WHERE a.id_set='".$_REQUEST['sid']."' AND g.id=a.id_group");
+			$this->res = $this->db->db_query("SELECT g.* FROM ".BAB_GROUPS_SET_ASSOC_TBL." a, ".BAB_GROUPS_TBL." g WHERE a.id_set='".$this->db->db_escape_string($_REQUEST['sid'])."' AND g.id=a.id_group");
 
 			}
 
@@ -135,7 +135,7 @@ function sedit()
 
 			if (isset($_REQUEST['sid']))
 				{
-				$this->arr = $this->db->db_fetch_array($this->db->db_query("SELECT * FROM ".BAB_GROUPS_TBL." WHERE id='".$_REQUEST['sid']."' AND nb_groups>='0'"));
+				$this->arr = $this->db->db_fetch_array($this->db->db_query("SELECT * FROM ".BAB_GROUPS_TBL." WHERE id='".$this->db->db_escape_string($_REQUEST['sid'])."' AND nb_groups>='0'"));
 				$this->bdel = true;
 				}
 			
@@ -160,7 +160,7 @@ function getGroupsFromSet($ids)
 {
 	$db = &$GLOBALS['babDB'];
 	$groups = array();
-	$res = $db->db_query("SELECT id_group FROM ".BAB_GROUPS_SET_ASSOC_TBL." WHERE id_set='".$ids."'");
+	$res = $db->db_query("SELECT id_group FROM ".BAB_GROUPS_SET_ASSOC_TBL." WHERE id_set='".$db->db_escape_string($ids)."'");
 	while ($arr = $db->db_fetch_assoc($res))
 		{
 		$groups[$arr['id_group']] = $arr['id_group'];
@@ -222,18 +222,18 @@ function record_setOfGroups($arr)
 		{
 		if (!isset($current[$idgroup]))
 			{
-			$db->db_query("INSERT INTO ".BAB_GROUPS_SET_ASSOC_TBL." (id_group, id_set) VALUES ('".$idgroup."','".$_POST['sid']."')");
-			$db->db_query("UPDATE ".BAB_GROUPS_TBL." SET nb_set=nb_set+'1' WHERE id='".$idgroup."'");
+			$db->db_query("INSERT INTO ".BAB_GROUPS_SET_ASSOC_TBL." (id_group, id_set) VALUES ('".$db->db_escape_string($idgroup)."','".$db->db_escape_string($_POST['sid'])."')");
+			$db->db_query("UPDATE ".BAB_GROUPS_TBL." SET nb_set=nb_set+'1' WHERE id='".$db->db_escape_string($idgroup)."'");
 			}
 		unset($current[$idgroup]);
 		}
 
-	$db->db_query("UPDATE ".BAB_GROUPS_TBL." SET nb_groups='".count($arr)."' WHERE id='".$_POST['sid']."' AND nb_groups>= '0'");
+	$db->db_query("UPDATE ".BAB_GROUPS_TBL." SET nb_groups='".$db->db_escape_string(count($arr))."' WHERE id='".$db->db_escape_string($_POST['sid'])."' AND nb_groups>= '0'");
 
 	if (count($current) > 0)
 		{
-		$db->db_query("DELETE FROM ".BAB_GROUPS_SET_ASSOC_TBL." WHERE id_set='".$_POST['sid']."' AND id_group IN('".implode("','",$current)."')");
-		$db->db_query("UPDATE ".BAB_GROUPS_TBL." SET nb_set=nb_set-'1' WHERE id IN('".implode("','",$current)."')");
+		$db->db_query("DELETE FROM ".BAB_GROUPS_SET_ASSOC_TBL." WHERE id_set='".$db->db_escape_string($_POST['sid'])."' AND id_group IN(".$db->quote($current).")");
+		$db->db_query("UPDATE ".BAB_GROUPS_TBL." SET nb_set=nb_set-'1' WHERE id IN(".$db->quote($current).")");
 		}
 }
 
@@ -244,10 +244,10 @@ function delete_glist()
 		{
 		$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 
-		$db->db_query("DELETE FROM ".BAB_GROUPS_SET_ASSOC_TBL." WHERE id_set='".$_POST['sid']."' AND id_group IN('".implode("','",$_POST['groups'])."')");
+		$db->db_query("DELETE FROM ".BAB_GROUPS_SET_ASSOC_TBL." WHERE id_set='".$db->db_escape_strin($_POST['sid'])."' AND id_group IN('".implode("','",$_POST['groups'])."')");
 
-		$db->db_query("UPDATE ".BAB_GROUPS_TBL." SET nb_set=nb_set-'1' WHERE id IN('".implode("','",$_POST['groups'])."')");
-		$db->db_query("UPDATE ".BAB_GROUPS_TBL." SET nb_groups=nb_groups-'".count($_POST['groups'])."' WHERE id='".$_POST['sid']."' AND nb_groups>='0'");
+		$db->db_query("UPDATE ".BAB_GROUPS_TBL." SET nb_set=nb_set-'1' WHERE id IN(".$db->quote($_POST['groups']).")");
+		$db->db_query("UPDATE ".BAB_GROUPS_TBL." SET nb_groups=nb_groups-'".$db->db_escape_string($_POST['groups'])."' WHERE id='".$db->db_escape_string($_POST['sid'])."' AND nb_groups>='0'");
 		}
 
 	
