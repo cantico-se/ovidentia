@@ -404,7 +404,11 @@ if( isset($adduser) && ($babBody->isSuperAdmin || $babBody->currentDGGroup['user
 		$idx = "Create";
 	else
 		{
-		if( $babBody->currentAdmGroup != 0 && $babBody->currentDGGroup['users'] == 'Y')
+		if( $babBody->currentAdmGroup != 0 &&
+			$babBody->currentDGGroup['id_group'] != BAB_ALLUSERS_GROUP &&
+			$babBody->currentDGGroup['id_group'] != BAB_REGISTERED_GROUP &&
+			$babBody->currentDGGroup['id_group'] != BAB_UNREGISTERED_GROUP &&
+			$babBody->currentDGGroup['users'] == 'Y')
 			{
 			bab_addUserToGroup($iduser, $babBody->currentDGGroup['id_group']);
 			}
