@@ -904,7 +904,7 @@ function bab_printTemplate( &$class, $file, $section="")
 	global $babInstallPath, $babSkinPath;
 	$tplfound = false;
 	
-	if( !isset($GLOBALS['babUseNewTemplateParser']) || $GLOBALS['babUseNewTemplateParser'] == false)
+	if( isset($GLOBALS['babUseNewTemplateParser']) && $GLOBALS['babUseNewTemplateParser'] === false)
 		{
 		$tpl = new babTemplate(); /* old template parser */
 		}
