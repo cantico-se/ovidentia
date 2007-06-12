@@ -62,7 +62,7 @@ function summaryConnections($col, $order, $pos, $startday, $endday)
 			$this->endday = $endday;
 
 			$req = 'SELECT users.id AS id_user, users.firstname, users.lastname, COUNT(*) AS nb_connections';
-			$req .= ' FROM ' . BAB_STATS_CONNECTIONS_TBL . ' AS connections LEFT JOIN ' . BAB_USERS_TBL . ' AS users ON users.id=connections.id_user';
+			$req .= ' FROM ' . BAB_STATS_CONNECTIONS_TBL . ' AS connections INNER JOIN ' . BAB_USERS_TBL . ' AS users ON users.id=connections.id_user';
 			$where = array();
 			if (!empty($startday)) {
 				$where[] = 'connections.login_time >= ' . $babDB->quote($startday);
