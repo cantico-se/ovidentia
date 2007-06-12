@@ -192,11 +192,8 @@ switch($idx)
 			$babBody->addItemMenu("connections", bab_translate("Connections"), $GLOBALS['babUrlScript']."?tg=admstats&idx=connections");
 			break;
 		}
-		else
-		{
-			$idx = 'man';
-		}
 	/* !!! no break !!! */
+
 	default:
 	case 'man':
 		$babBody->title = bab_translate("Groups List");
@@ -207,6 +204,7 @@ switch($idx)
 		$babBody->addItemMenu("man", bab_translate("Managers"), $GLOBALS['babUrlScript']."?tg=admstats&idx=man");
 		$babBody->addItemMenu("empty", bab_translate("Empty"), $GLOBALS['babUrlScript']."?tg=admstats&idx=empty");
 		$babBody->addItemMenu("connections", bab_translate("Connections"), $GLOBALS['babUrlScript']."?tg=admstats&idx=connections");
+		$idx = 'man';
 		break;
 }
 
