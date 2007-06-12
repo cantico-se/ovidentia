@@ -1275,6 +1275,7 @@ switch($idx)
 		viewOrgChartRoleUpdate($ocid, $oeid, $iduser);
 		break;
 	case "delocf":
+		$ocfid = bab_rp('ocfid', array());
 		delOrgChartRoles($ocid, $oeid, $ocfid);
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=flbchart&idx=listr&ocid=".$ocid."&oeid=".$oeid."&ltf=1");
 		break;
