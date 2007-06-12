@@ -1098,13 +1098,12 @@ class bab_TreeView extends bab_Widget
 			$this->t_isLastChild = $node->isLastChild();
 			$this->t_isMiddleChild = (!$node->isFirstChild() && !$node->isLastChild());
 			$this->t_isSingleChild = ($node->isFirstChild() && $node->isLastChild());
-			
-				
+
 			$this->t_level = $this->_iterator->level();
 			$element =& $node->getData();
 			$this->t_fetchContentScript = $element->_fetchContentScript;
 			$this->t_highlighted = isset($this->_highlightedElements[$element->_id]);
-			$this->t_previousId = $this->t_id;
+			$this->t_previousId = isset($this->t_id) ? $this->t_id : '';
 			$this->t_id = $this->_id . '.' . $element->_id;
 			$this->t_type =& $element->_type;
 			$this->t_title =& $element->_title;
@@ -1514,6 +1513,8 @@ class bab_ArticleTreeView extends bab_TreeView
 		$this->_templateSection = 'treeview';
 		$this->_templateCache = null;
 
+		$this->setLink('');
+
 		$this->setAttributes(BAB_ARTICLE_TREE_VIEW_SHOW_ARTICLES | BAB_ARTICLE_TREE_VIEW_READ_ARTICLES);
 		$this->setAction(BAB_ARTICLE_TREE_VIEW_READ_ARTICLES);
 	}
@@ -1541,7 +1542,7 @@ class bab_ArticleTreeView extends bab_TreeView
 
 	/**
 	 * Defines the script that will be called 
-	 * @param int $action
+	 * @param int $link
 	 * @access public
 	 */
 	function setLink($link)
