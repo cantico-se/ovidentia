@@ -59,6 +59,7 @@ function listCategories()
 			global $babDB;
 			$this->count = count($arrid);
 			$this->arrid = $arrid;
+			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 			}
 
 		function getnext()
@@ -72,7 +73,9 @@ function listCategories()
 				if( $res && $babDB->db_num_rows($res) > 0)
 					{
 					$this->arr = $babDB->db_fetch_array($res);
-					$this->description = bab_toHtml($this->arr['description']);
+					$editor = new bab_contentEditor('bab_faq');
+					$editor->setContent($this->arr['description']);
+					$this->description = $editor->getHtml();
 					$this->urlcategory = bab_toHtml($GLOBALS['babUrlScript']."?tg=faq&idx=Print&item=".$this->arr['id']);
 					$this->namecategory = bab_toHtml($this->arr['category']);
 					}
