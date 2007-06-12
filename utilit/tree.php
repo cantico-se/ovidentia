@@ -1786,7 +1786,7 @@ class bab_ArticleTreeView extends bab_TreeView
 				$deadBranches = array();
 				while ($node =& $iterator->nextNode()) {
 					$element =& $node->getData();
-					if (!$node->hasChildNodes() && strstr($element->_type, 'category'))
+					if (!$node->hasChildNodes() && isset($element->_type) && strstr($element->_type, 'category'))
 						$deadBranches[] =& $node;
 				}
 				$modified = (count($deadBranches) > 0);

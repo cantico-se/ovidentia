@@ -205,6 +205,10 @@ function bab_hideActions()
 
 function bab_initTree(div)
 {
+	if (div.getElementsByTagName('UL').length == 0) {
+		return null;
+	}
+	
 	var tree = new bab_Tree(div);
 //	tree.initSearch();		
 	window.setTimeout('document.getElementById("' + div.id + '").tree.initSearch();', 800);
