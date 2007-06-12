@@ -232,7 +232,7 @@ switch($idx)
 
 		$macl = new macl("admfaq", "Modify", $item, "aclfaq");
 		$macl->addtable( BAB_FAQCAT_GROUPS_TBL,bab_translate("View"));
-		$macl->addtable( BAB_FAQMANAGERS_GROUPS_TBL,bab_translate("Manage"));
+		$macl->addtable( BAB_FAQMANAGERS_GROUPS_TBL,bab_translate("View and manage"));
 		$macl->filter(0,0,1,1,1);
 		$macl->babecho();
 

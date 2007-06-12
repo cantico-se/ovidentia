@@ -110,7 +110,7 @@ function listCategories()
 
 	while( $row = $babDB->db_fetch_array($res))
 		{
-		if(bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $row['id']))
+		if(bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $row['id']) || bab_isAccessValid(BAB_FAQMANAGERS_GROUPS_TBL, $row['id']))
 			{
 			array_push($arrid, $row['id']);
 			}
