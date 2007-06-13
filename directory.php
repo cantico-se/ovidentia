@@ -2268,8 +2268,6 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 				{
 				$tmp = substr($key, strlen("babdirf"));
 
-				$value = $babDB->db_escape_string($value);
-
 				$bupdate = true;
 				$rs = $babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$babDB->db_escape_string($tmp)."' and  id_entry='".$babDB->db_escape_string($idu)."'");
 				if( $rs && $babDB->db_num_rows($rs) > 0 )
