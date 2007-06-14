@@ -1159,7 +1159,7 @@ switch($idx)
 	{
 	case "questions":
 		$babBody->title = bab_translate("Contents");
-		if( bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $item))
+		if( bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $item) || bab_isAccessValid(BAB_FAQMANAGERS_GROUPS_TBL, $item))
 			{
 			$GLOBALS['babWebStat']->addFaq($item);
 			FaqTableOfContents($item);
@@ -1176,7 +1176,7 @@ switch($idx)
 
 	case "listq":
 		$babBody->title = $faqinfo['category'];
-		if( bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $item))
+		if( bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $item) || bab_isAccessValid(BAB_FAQMANAGERS_GROUPS_TBL, $item))
 			{
 			$GLOBALS['babWebStat']->addFaq($item);
 			listSubCategoryQuestions($item, $idscat);
@@ -1199,7 +1199,7 @@ switch($idx)
 
 	case "viewq":
 		$babBody->title = $faqinfo['category'];
-		if( bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $item))
+		if( bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $item) || bab_isAccessValid(BAB_FAQMANAGERS_GROUPS_TBL, $item))
 			{
 			$idq = bab_rp('idq');
 			viewQuestion($item, $idscat, $idq);
@@ -1266,7 +1266,7 @@ switch($idx)
 		break;
 
 	case "Print":
-		if( bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $item))
+		if( bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $item) || bab_isAccessValid(BAB_FAQMANAGERS_GROUPS_TBL, $item))
 		{
 
 			FaqPrintContents($item);
