@@ -296,6 +296,33 @@ class BAB_DateTime
 		}
 	}
 
+
+	function less($iNbUnits, $iUnitType = BAB_DATETIME_DAY)
+	{
+		switch($iUnitType)
+		{
+			case BAB_DATETIME_YEAR:
+				$this->init(($this->_iYear - $iNbUnits), $this->_iMonth, $this->_iDay, $this->_iHours, $this->_iMinutes, $this->_iSeconds);
+				break;
+			case BAB_DATETIME_MONTH:
+				$this->init($this->_iYear, ($this->_iMonth - $iNbUnits), $this->_iDay, $this->_iHours, $this->_iMinutes, $this->_iSeconds);
+				break;
+			case BAB_DATETIME_DAY:
+				$this->init($this->_iYear, $this->_iMonth, ($this->_iDay - $iNbUnits), $this->_iHours, $this->_iMinutes, $this->_iSeconds);
+				break;
+			case BAB_DATETIME_HOUR:
+				$this->init($this->_iYear, $this->_iMonth, $this->_iDay, ($iNbUnits - $this->_iHours), $this->_iMinutes, $this->_iSeconds);
+				break;
+			case BAB_DATETIME_MINUTE:
+				$this->init($this->_iYear, $this->_iMonth, $this->_iDay, $this->_iHours, ($iNbUnits - $this->_iMinutes), $this->_iSeconds);
+				break;
+			case BAB_DATETIME_SECOND:
+				$this->init($this->_iYear, $this->_iMonth, $this->_iDay, $this->_iHours, $this->_iMinutes, ($iNbUnits - $this->_iSeconds));
+				break;
+		}
+	}
+
+
 	/**
      * Compares two dates
      *
@@ -640,6 +667,100 @@ class BAB_DateTime
 			$this->_iSeconds
 			);	
 	}
+}
 
+
+
+
+class BAB_DateTimeUtil
+{
+	function BAB_DateTimeUtil()
+	{
+
+	}
+
+	function getNumberOfWorkingDays($sStartIsoDate, $sEndIsoDate)
+	{
+		$iNWorkingDays = 0;
+
+		$oStartDate = BAB_DateTime::fromIsoDateTime($sStartIsoDate);
+		$oEndDate = BAB_DateTime::fromIsoDateTime($sEndIsoDate);
+
+		{
+			$iNWorkingDays = BAB_DateTimeUtil::getNoWorkingDaysBetween($sStartIsoDate, $sEndIsoDate);
+
+			$iNbDays = BAB_DateTime::dateDiff($oStartDate->_iDay, $oStartDate->_iMonth, $oStartDate->_iYear, 
+				$oEndDate->_iDay, $oEndDate->_iMonth, $oEndDate->_iYear);
+
+			$iNbNoWDaysInWeekend = 2;
+			$iNbDaysInWeek = 7;
+
+			$iNbOfWeek = (int) ($iNbDays / $iNbDaysInWeek);
+			$iRemainDays = $iNbDays % $iNbDaysInWeek;
+
+			$iNWorkingDays += $iNbOfWeek * $iNbNoWDaysInWeekend;
+
+			if($iRemainDays > 0)
+			{
+				$oEndDate->less($iRemainDays);
+				$iWDay = $oEndDate->_aDate['wday'];
+
+				$iSunday = 0;
+				$iSaturday = 6;
+				$iNbWeekendDays = 0;
+				$iIdx = 0;
+
+				while($iIdx < $iRemainDays)
+				{
+					if((int) $iWDay == $iSunday || (int) $iWDay == $iSaturday)
+					{
+						$iNWorkingDays++;
+					}
+
+					//$iSaturday is the last week day
+					if($iWDay == $iSaturday)
+					{
+						$iWDay = $iSunday;
+					}
+					else
+					{
+						$iWDay++;
+					}
+					$iIdx++;
+				}
+			}
+			return ($iNbDays - $iNWorkingDays); 
+		}
+		return $iNWorkingDays;
+	}
+
+	function getNoWorkingDaysBetween($sStartIsoDate, $sEndIsoDate)
+	{
+		require_once $GLOBALS['babInstallPath'] . 'utilit/nwdaysincl.php';
+		
+		$aNoWorkingDays = bab_getNonWorkingDaysBetween($sStartIsoDate, $sEndIsoDate);
+		if(is_array($aNoWorkingDays))
+		{
+			$iSize = count($aNoWorkingDays);
+
+			$iSunday = 0;
+			$iSaturday = 6;
+			$iNbWeekendDays = 0;
+
+			foreach($aNoWorkingDays as $sIsoDateTime => $Label)
+			{
+				//bab_debug($sIsoDateTime);
+				$aDate = getdate(strtotime($sIsoDateTime));
+				if((int) $aDate['wday'] == $iSunday || (int) $aDate['wday'] == $iSaturday)
+				{
+					$iNbWeekendDays++;
+				}
+			}
+
+			assert('$iSize > $iNbWeekendDays');
+			return ($iSize - $iNbWeekendDays);
+		}
+		return 0;
+	}
 }
 ?>
