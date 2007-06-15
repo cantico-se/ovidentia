@@ -122,11 +122,13 @@ treeview.onSubmitTree = function()
 
 var tree = bab_initTree(document.getElementById("{ t_treeViewId }"));
 
-<!--#if t_memorizeOpenNodes -->
-tree && tree.memorizeOpenNodes = true;
-<!--#endif t_memorizeOpenNodes -->
+if (tree) {
+	<!--#if t_memorizeOpenNodes -->
+	tree.memorizeOpenNodes = true;
+	<!--#endif t_memorizeOpenNodes -->
+	tree.loadState();
+}
 
-tree && tree.loadState();
 
 //]]>
 </script>
