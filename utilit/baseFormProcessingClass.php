@@ -36,7 +36,11 @@
 
 		function transform(& $value, $key, $option)
 		{
-			if(false === is_numeric($value))
+			if(is_array($value))
+			{
+				array_walk($value, array('BAB_RawToHtml', 'transform'), $option);
+			}
+			else if(false === is_numeric($value))
 			{
 				$value = bab_toHtml($value, $option);
 			}
