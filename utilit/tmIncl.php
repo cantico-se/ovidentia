@@ -1692,7 +1692,6 @@ function bab_getTaskCommentary($iIdCommentary, &$sCommentary)
 	if(false != ($datas = $babDB->db_fetch_assoc($result)))
 	{
 		$sCommentary = $datas['commentary'];
-		$iIndex++;
 		return true;
 	}
 	return false;

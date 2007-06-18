@@ -746,7 +746,7 @@ function displayCommentaryForm()
 		$oBf->set_data('commentary', '');
 		if(false != $success)
 		{
-			$oBf->set_data('commentary', htmlentities($sCommentary, ENT_QUOTES));
+			$oBf->set_data('commentary', $sCommentary);
 		}
 		
 		$oBf->raw_2_html(BAB_RAW_2_HTML_CAPTION);
