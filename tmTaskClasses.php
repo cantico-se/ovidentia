@@ -852,7 +852,9 @@
 					$this->get_data('iSelectedPredecessor', $iSelectedPredecessor);
 					$this->set_data('sSelectedPredecessor', ($datas['id'] == $iSelectedPredecessor) ? 'checked="checked"' : '');
 					$this->set_data('iIdPredecessor', $datas['id']);
-					$this->set_data('sPredecessorNumber', $datas['shortDescription']);
+
+					$sPredecessor = (strlen(trim($datas['shortDescription']) > 0)) ? $datas['shortDescription'] : $datas['taskNumber'];
+					$this->set_data('sPredecessorNumber', $sPredecessor);
 					$this->set_data('iIsStarted', $datas['isStarted']);
 					return true;
 				}
