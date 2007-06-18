@@ -144,7 +144,11 @@
 		<!--
 			if(window.opener != null)
 			{
-				opener.location.reload(true);
+				if(typeof opener.onMenuSelected != 'undefined')
+				{
+					opener.onMenuSelected('oLiCommentaries');
+					opener.location.href = opener.location.href + '&selectedMenu=' + 'oLiCommentaries';
+				}
 				window.close();
 			}
 		//-->
