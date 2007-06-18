@@ -396,8 +396,8 @@ function displayProjectsConfigurationForm()
 					$datas = each($this->m_aTaskNumerotation);
 					if(false != $datas)
 					{
-						$this->set_data('tmCode', bab_toHtml($datas['key']));
-						$this->set_data('tmValue', bab_toHtml($datas['value']));
+						$this->set_data('tmCode', $datas['key']);
+						$this->set_data('tmValue', $datas['value']);
 						
 						if($taskNumerotation == $datas['key'])
 						{
