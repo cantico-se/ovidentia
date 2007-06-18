@@ -933,6 +933,14 @@ switch($idx)
 		printBabBodyPopup();
 		exit;
 		break;
+	case "basketexport":
+		include_once $babInstallPath."utilit/uiutil.php";
+		include_once $babInstallPath."statdashboard.php";
+		$idbasket = bab_rp('idbasket');
+		exportBasket($idbasket, $sd, $ed);
+		exit;
+		break;
+		
 		
 	default:
 		break;

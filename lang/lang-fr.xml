@@ -2181,6 +2181,7 @@
 <string id="Add basket content">Ajouter du contenu au dossier</string>
 <string id="Basket content">Contenu du dossier</string>
 <string id="Dashboard from %s to %s">Tableau de bord du %s au %s</string>
+<string id="From %s to %s">Du %s au %s</string>
 <string id="Decoding type">Type de décodage</string>
 <string id="Mail server error">Erreur du serveur de messagerie</string>
 <string id="Undelivered mails">Mails non distribués</string>
