@@ -574,11 +574,11 @@ class bab_NodeIterator
 	function &nextNode()
 	{
 		$node =& $this->_currentNode;
-		
+
 		if (!is_null($node)) {
 			if ($node->hasChildNodes()) {
 				$sibling =& $node->nextSibling();
-				if (!is_null($sibling)) {
+				if (!is_null($sibling) /* && $this->_level !== 0 */) {
 					$this->_nodeStack[] =& $sibling;
 					array_push($this->_levelStack, $this->_level);
 				}
@@ -1617,7 +1617,7 @@ class bab_ArticleTreeView extends bab_TreeView
 				} else {
 					$link = '';
 				}
-				$element =& $this->createElement('topic' . BAB_TREE_VIEW_ID_SEPARATOR . $topic['id'],
+				$element =& $this->createElement('t' . BAB_TREE_VIEW_ID_SEPARATOR . $topic['id'],
 												 $elementType,
 												 bab_toHtml($topic['category']),
 												 ''/*$topic['description']*/,
@@ -1625,7 +1625,7 @@ class bab_ArticleTreeView extends bab_TreeView
 				$element->setInfo(''/*$topic['description']*/);
 				$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/topic.png');
 				$parentId = ($topic['id_cat'] === '0' ? null :
-													'category' . BAB_TREE_VIEW_ID_SEPARATOR . $topic['id_cat']);
+													'c' . BAB_TREE_VIEW_ID_SEPARATOR . $topic['id_cat']);
 				$this->appendElement($element, $parentId);
 			}
 		}
@@ -1651,15 +1651,15 @@ class bab_ArticleTreeView extends bab_TreeView
 		}
 		$categories = $babDB->db_query($sql);
 		while ($category = $babDB->db_fetch_array($categories)) {
-			$element =& $this->createElement('category' . BAB_TREE_VIEW_ID_SEPARATOR . $category['id'],
+			$element =& $this->createElement('c' . BAB_TREE_VIEW_ID_SEPARATOR . $category['id'],
 											 $elementType,
 											 bab_toHtml($category['title']),
-											 ''/*$category['description']*/,
+											 '',
 											 '');
-			$element->setInfo(''/*$category['description']*/);
+			$element->setInfo('');
 			$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/category.png');
 			$parentId = ($category['id_parent'] === '0' ? null :
-											'category' . BAB_TREE_VIEW_ID_SEPARATOR . $category['id_parent']);
+											'c' . BAB_TREE_VIEW_ID_SEPARATOR . $category['id_parent']);
 			$this->appendElement($element, $parentId);
 		}
 	}
@@ -1686,13 +1686,13 @@ class bab_ArticleTreeView extends bab_TreeView
 		}
 		$rs = $babDB->db_query($sql);
 		while ($article = $babDB->db_fetch_array($rs)) {
-			$element =& $this->createElement('article' . BAB_TREE_VIEW_ID_SEPARATOR . $article['id'],
+			$element =& $this->createElement('a' . BAB_TREE_VIEW_ID_SEPARATOR . $article['id'],
 											 $elementType,
 											 bab_toHtml($article['title']),
 											 '',
 											 '');
 			$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/article.png');
-			$this->appendElement($element, 'topic' . BAB_TREE_VIEW_ID_SEPARATOR . $article['id_topic']);
+			$this->appendElement($element, 't' . BAB_TREE_VIEW_ID_SEPARATOR . $article['id_topic']);
 		}
 	}
 
@@ -1711,9 +1711,9 @@ class bab_ArticleTreeView extends bab_TreeView
 		$orders = $babDB->db_query($sql);
 		while ($order = $babDB->db_fetch_array($orders)) {
 			if ($order['type'] == 2) {
-				$node =& $this->_rootNode->getNodeById('topic' . BAB_TREE_VIEW_ID_SEPARATOR . $order['id_topcat']);
+				$node =& $this->_rootNode->getNodeById('t' . BAB_TREE_VIEW_ID_SEPARATOR . $order['id_topcat']);
 			} else {
-				$node =& $this->_rootNode->getNodeById('category' . BAB_TREE_VIEW_ID_SEPARATOR . $order['id_topcat']);
+				$node =& $this->_rootNode->getNodeById('c' . BAB_TREE_VIEW_ID_SEPARATOR . $order['id_topcat']);
 			}
 			if (!is_null($node)) {
 				$element =& $node->getData();
@@ -1747,7 +1747,7 @@ class bab_ArticleTreeView extends bab_TreeView
 		
 		$articles = $babDB->db_query($sql);
 		while ($article = $babDB->db_fetch_array($articles)) {
-			$node =& $this->_rootNode->getNodeById('article' . BAB_TREE_VIEW_ID_SEPARATOR . $article['id']);
+			$node =& $this->_rootNode->getNodeById('a' . BAB_TREE_VIEW_ID_SEPARATOR . $article['id']);
 			if (!is_null($node)) {
 				$element =& $node->getData();
 				$element->setInfo($article['hits']);
@@ -1778,7 +1778,6 @@ class bab_ArticleTreeView extends bab_TreeView
 			$this->_addTopics();
 
 		$this->_addCategories();
-
 
 		if ($this->_attributes & BAB_ARTICLE_TREE_VIEW_HIDE_EMPTY_TOPICS_AND_CATEGORIES) {
 			// Here we remove empty categories
@@ -2150,7 +2149,7 @@ class bab_ForumTreeView extends bab_TreeView
 	var $_db;
 	var $_babBody;
 	/**#@-*/
-	
+
 
 	function bab_ForumTreeView($id)
 	{
@@ -2271,7 +2270,7 @@ class bab_ForumTreeView extends bab_TreeView
 			$sql .= implode(' AND ', $where);
 		}
 		$sql .= ' GROUP BY id';
-		
+
 		$posts = $this->_db->db_query($sql);
 		while ($post = $this->_db->db_fetch_array($posts)) {
 			$node =& $this->_rootNode->getNodeById('post' . BAB_TREE_VIEW_ID_SEPARATOR . $post['id']);
@@ -2287,7 +2286,7 @@ class bab_ForumTreeView extends bab_TreeView
 		// We loop over the forum nodes (ie. the siblings of the root node's first child).		
 		for ($forumNode =& $this->_rootNode->firstChild(); !is_null($forumNode); $forumNode =& $forumNode->nextSibling()) {
 			$total = 0;
-			$iterator = $this->_rootNode->createNodeIterator($forumNode);
+			$iterator = $this->_rootNode->createNodeIterator($forumNode->_firstChild);
 			// We iterate all the nodes under the current forum node and calculate the total hits.
 			while ($node =& $iterator->nextNode()) {
 				if (!is_null($node)) {
@@ -2744,16 +2743,31 @@ class bab_GroupTreeView extends bab_TreeView
 
 	}
 
+	/**
+	 * Returns the group id associated with a treeview element.
+	 *
+	 * @param bab_TreeViewElement $element
+	 * @return string		The group id or an emtpy string
+	 */
+	function getGroupId($element)
+	{
+		$explodedId = explode(BAB_TREE_VIEW_ID_SEPARATOR, $element->_id);
+		if (count($explodedId) === 2) {
+			return $explodedId[1];
+		}
+		return '';
+	}
 
+	/**
+	 * Overloaded bab_TreeView method called when an element is appended in the treeview.
+	 *
+	 * @param bab_TreeViewElement $element
+	 */
 	function onElementAppended(&$element)
 	{
-		static $iIdGrpIdx = 1;
-
-		$aExploded = explode(BAB_TREE_VIEW_ID_SEPARATOR, $element->_id);
-		if(count($aExploded) == 2)
-		{
-			$iIdGroup = $aExploded[$iIdGrpIdx];
-			$element->addCheckBox('select[' . $iIdGroup . ']', isset($this->_selectedGroups[$iIdGroup]));
+		$groupId = bab_GroupTreeView::getGroupId($element);
+		if ($groupId !== '') {
+			$element->addCheckBox('select[' . $groupId . ']', isset($this->_selectedGroups[$groupId]));
 		}
 	}
 
@@ -2762,12 +2776,12 @@ class bab_GroupTreeView extends bab_TreeView
 	 */
 	function _updateTree()
 	{
-		if ($this->_upToDate)
+		if ($this->_upToDate) {
 			return;
+		}
 		$this->_categories = array();
 		$this->_addGroups();
-		
-		
+
 		parent::_updateTree();
 	}
 }
