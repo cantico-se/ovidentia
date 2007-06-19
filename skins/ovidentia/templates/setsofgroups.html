@@ -99,14 +99,23 @@ function load_clear()
 <!--#begin glist -->
 <script type="text/javascript">
 <!--
-function submitCtrl()
-	{
+function submitCtrl(form)
+{
 	//}
-	return confirm('{ confirmdelete }');
+	var message = '{ confirmdelete }';
+	var checkboxes = form.getElementsByTagName('INPUT');
+	var nbCheckboxes = checkboxes.length;
+	for (var i = 0; i < nbCheckboxes; i++) {
+		var checkbox = checkboxes[i];
+		if (checkbox.type == 'checkbox' && checkbox.checked) {
+			return confirm(message);
+		}
 	}
+	return true;
+}
 //-->
 </script>
-<form method="post" action="{ babPhpSelf }" name="listform" onSubmit="return submitCtrl();">
+<form method="post" action="{ babPhpSelf }" name="listform" onSubmit="return submitCtrl(this);">
 <input type="hidden" name="tg" value="setsofgroups" />
 <input type="hidden" name="idx" value="glist" />
 <input type="hidden" name="action" value="glist" />
