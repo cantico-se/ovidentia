@@ -474,11 +474,13 @@ bab_Tree.prototype.unhighlightAll = function()
 	}
 }
 
+
 bab_Tree.prototype.saveState = function()
 {
 	if (!this.memorizeOpenNodes) {
 		return;
 	}
+	var MAX_COOKIE_SIZE = 2 * 1024;
 	var expiryDate = new Date;
 	expiryDate.setMonth(expiryDate.getMonth() + 6);
 //	var cookiePath = document.location.href.replace(new RegExp('^[a-z]+://' + document.location.host), '');
@@ -493,7 +495,11 @@ bab_Tree.prototype.saveState = function()
 		}
 	}
 	
-	document.cookie = 'bab_Tree.' + this.id + '=' + escape(nodes.join('/'))
+	cookieString = nodes.join('/');
+	if (cookieString.length > MAX_COOKIE_SIZE) {
+		cookieString = cookieString.substr(0, MAX_COOKIE_SIZE);	
+	}
+	document.cookie = 'bab_Tree.' + this.id + '=' + escape(cookieString)
 						+ '; expires=' + expiryDate.toGMTString()
 						+ '; path=' + cookiePath;
 }
