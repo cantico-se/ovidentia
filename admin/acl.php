@@ -41,7 +41,7 @@ class macl
 	var $sHiddenFieldName = '';
 	var $sHiddenFieldValue = '';
 		
-	function macl($target, $index,$id_object, $return, $tableref='')
+	function macl($target, $index,$id_object, $return, $bsetofgroups='')
 		{
 		global $babBody, $babDB;
 		$this->target = &$target;
@@ -80,15 +80,18 @@ class macl
 				{
 				$this->aclgroups[$babBody->currentDGGroup['id_group']+BAB_ACL_GROUP_TREE] = true;
 				}
-			if ( !isset($this->aclgroups[BAB_UNREGISTERED_GROUP]))
+			
+			if ( !isset($this->aclgroups[BAB_ALLUSERS_GROUP]) && !isset($this->aclgroups[BAB_UNREGISTERED_GROUP]))
 				{
 				unset($this->df_groups[BAB_UNREGISTERED_GROUP]);
+				unset($this->df_groups[BAB_ALLUSERS_GROUP]);
 				}
 
 			if (!isset($this->aclgroups[BAB_ALLUSERS_GROUP]) && !isset($this->aclgroups[BAB_REGISTERED_GROUP]))
 				{
-				unset($this->df_groups[BAB_ALLUSERS_GROUP]);
-				unset($this->df_groups[BAB_REGISTERED_GROUP]);
+				$this->aclgroups[BAB_UNREGISTERED_GROUP] = true;
+				$this->aclgroups[BAB_ALLUSERS_GROUP] = true;
+				$this->aclgroups[BAB_REGISTERED_GROUP] = true;
 				$childs = $this->tree->getChilds(BAB_REGISTERED_GROUP);
 				for( $k = 0; $k < count($childs); $k++ )
 					{
@@ -108,10 +111,11 @@ class macl
 					}
 				}
 
+
 			$this->countsets = 0;
 			
 			}
-		else
+		elseif( $bsetofgroups)
 			{
 			$this->resset = $babDB->db_query("SELECT * FROM ".BAB_GROUPS_TBL." WHERE nb_groups>='0'");
 			$this->countsets = $babDB->db_num_rows($this->resset);
