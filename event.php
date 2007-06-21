@@ -1090,6 +1090,7 @@ function addEvent(&$message)
 		$message = bab_translate("End date must be older")." !";
 		return false;
 		}
+	
 
 
 	if( isset($_POST['repeat_cb']) && $_POST['repeat_cb'] != 0)
@@ -1405,7 +1406,7 @@ function eventAvariabilityCheck(&$avariability_message)
 	// working hours test
 	$free_events = cal_getFreeEvents($calid, $sdate, $edate, 0);
 	if (1 !== count($free_events)) {
-		$message = bab_translate("The event is in conflict with a calendar");
+		$avariability_message = bab_translate("The event is in conflict with a calendar");
 	}
 
 
@@ -1438,9 +1439,8 @@ function eventAvariabilityCheck(&$avariability_message)
 
 	
 
-	if (is_array($GLOBALS['avariability']) && count($GLOBALS['avariability']) > 0 )
+	if ($avariability_message || (is_array($GLOBALS['avariability']) && count($GLOBALS['avariability']) > 0 ))
 		{
-		$avariability_message = isset($message) ? $message : '';
 		return false;
 		}
 	else
