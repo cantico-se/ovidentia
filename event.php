@@ -216,7 +216,7 @@ function newEvent()
 			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 			
 			$editor = new bab_contentEditor('bab_calendar_event');
-			$editor->setContent(bab_rp('evtdesc'));
+			$editor->setContent($editor->getContent());
 			$editor->setFormat('html');
 			$editor->setParameters(array('height' => 150));
 			$this->editor = $editor->getEditor();
@@ -670,7 +670,6 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 					$this->evtarr[$k] = bab_pp($k);
 					}
 				$this->evtarr['id_cat'] = $_POST['category'];
-				$this->evtarr['description'] = $_POST['evtdesc'];
 
 				$this->yearbegin = $this->evtarr['yearbegin'];
 				$this->daybegin =$this->evtarr['daybegin'];
@@ -723,8 +722,18 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 
 			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 			
+			
+			
 			$editor = new bab_contentEditor('bab_calendar_event');
-			$editor->setContent($this->evtarr['description']);
+			
+			$tmp = $editor->getContent();
+			if (!empty($tmp)) {
+				$editor->setContent($tmp);
+			} else {
+				$editor->setContent($this->evtarr['description']);
+			}
+			
+			
 			$editor->setFormat('html');
 			$editor->setParameters(array('height' => 150));
 			$this->editor = $editor->getEditor();
