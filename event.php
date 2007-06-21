@@ -1336,6 +1336,7 @@ function confirmDeleteEvent()
 		cal_notify(
 			$event['title'], 
 			$event['description'], 
+			$event['location'], 
 			$startdate = bab_longDate(bab_mktime($event['start_date'])),
 			$enddate = bab_longDate(bab_mktime($event['end_date'])),
 			$id_cal, 
