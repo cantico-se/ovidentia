@@ -757,7 +757,7 @@ class BAB_DateTimeUtil
 				}
 			}
 
-			assert('$iSize > $iNbWeekendDays');
+			assert('$iSize >= $iNbWeekendDays');
 			return ($iSize - $iNbWeekendDays);
 		}
 		return 0;
