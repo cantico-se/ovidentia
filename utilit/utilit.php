@@ -1579,6 +1579,10 @@ function bab_updateSiteSettings()
 		{
 		$GLOBALS['babSlogan'] = $arr['babslogan'];
 		}
+	else
+		{
+			$GLOBALS['babSlogan'] = '';
+		}
 	if( $arr['name_order'] != '')
 		{
 		$GLOBALS['babBody']->nameorder = explode(' ',$arr['name_order']);
