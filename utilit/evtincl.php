@@ -163,6 +163,7 @@ function bab_updateSelectedCalendars($id_event, $idcals) {
 						cal_notify(
 							$event['title'], 
 							$event['description'], 
+							$event['location'], 
 							$startdate, 
 							$enddate, 
 							$id_cal, 
@@ -191,6 +192,7 @@ function bab_updateSelectedCalendars($id_event, $idcals) {
 		cal_notify(
 			$event['title'], 
 			$event['description'], 
+			$event['location'], 
 			$startdate, 
 			$enddate, 
 			$id_cal, 
@@ -229,7 +231,7 @@ function bab_updateSelectedCalendars($id_event, $idcals) {
  * @param	int		$calendar_idowner	
  * @param	string	$message			used as mail subject and in mail body
  */
-function cal_notify($title, $description, $startdate, $enddate, $id_cal, $calendar_type, $calendar_idowner, $message) {
+function cal_notify($title, $description, $location, $startdate, $enddate, $id_cal, $calendar_type, $calendar_idowner, $message) {
 
 
 	switch($calendar_type)
@@ -240,6 +242,7 @@ function cal_notify($title, $description, $startdate, $enddate, $id_cal, $calend
 			notifyPersonalEvent(
 				$title, 
 				$description, 
+				$location, 
 				$startdate, 
 				$enddate, 
 				array($id_cal),
@@ -253,6 +256,7 @@ function cal_notify($title, $description, $startdate, $enddate, $id_cal, $calend
 		notifyPublicEvent(
 			$title, 
 			$description, 
+			$location, 
 			$startdate, 
 			$enddate, 
 			array($id_cal),
@@ -266,6 +270,7 @@ function cal_notify($title, $description, $startdate, $enddate, $id_cal, $calend
 		notifyResourceEvent(
 			$title, 
 			$description, 
+			$location, 
 			$startdate, 
 			$enddate, 
 			array($id_cal),
@@ -671,6 +676,7 @@ function confirmEvent($evtid, $idcal, $bconfirm, $comment, $bupdrec)
 									notifyResourceEvent(
 										$rr['title'], 
 										$rr['description'], 
+										$rr['location'], 
 										bab_longDate(bab_mktime($rr['start_date'])), 
 										bab_longDate(bab_mktime($rr['end_date'])), 
 										array($idcal)
@@ -679,6 +685,7 @@ function confirmEvent($evtid, $idcal, $bconfirm, $comment, $bupdrec)
 									notifyPublicEvent(
 										$rr['title'], 
 										$rr['description'], 
+										$rr['location'], 
 										bab_longDate(bab_mktime($rr['start_date'])), 
 										bab_longDate(bab_mktime($rr['end_date'])), 
 										array($idcal)
@@ -742,9 +749,11 @@ class clsNotifyEvent {
 	 */
 	var $title;
 	var $description;
+	var $location;
 	var $startdate;
 	var $enddate;
 	var $descriptiontxt;
+	var $locationtxt;
 	var $titletxt;
 	var $startdatetxt;
 	var $enddatetxt;
@@ -756,12 +765,14 @@ class clsNotifyEvent {
 		$this->startdate = $this->vars['startdate'];
 		$this->enddate = $this->vars['enddate'];
 		$this->message = $this->vars['message'];
+		$this->location = strip_tags(bab_toHtml($this->vars['location'], BAB_HTML_REPLACE_MAIL));
 		
 		$this->descriptiontxt = bab_translate("Description");
 		$this->titletxt = bab_translate("Title");
 		$this->startdatetxt = bab_translate("Begin date");
 		$this->enddatetxt = bab_translate("End date");
 		$this->calendartxt = bab_translate("Calendar");
+		$this->locationtxt = bab_translate("Location");
 	}
 
 	function asHtml() {
@@ -770,19 +781,21 @@ class clsNotifyEvent {
 		$this->startdate = bab_toHtml($this->vars['startdate']);
 		$this->enddate = bab_toHtml($this->vars['enddate']);
 		$this->message = bab_toHtml($this->vars['message']);
+		$this->location = bab_toHtml($this->vars['location'], BAB_HTML_REPLACE_MAIL);
 		
 		$this->descriptiontxt = bab_translate("Description");
 		$this->titletxt = bab_translate("Title");
 		$this->startdatetxt = bab_translate("Begin date");
 		$this->enddatetxt = bab_translate("End date");
 		$this->calendartxt = bab_translate("Calendar");
+		$this->locationtxt = bab_translate("Location");
 	}
 }
 
 
 
 
-function notifyPersonalEvent($title, $description, $startdate, $enddate, $idcals, $message)
+function notifyPersonalEvent($title, $description, $location, $startdate, $enddate, $idcals, $message)
 	{
 	global $babBody, $babDB, $babAdminEmail;
 
@@ -792,7 +805,7 @@ function notifyPersonalEvent($title, $description, $startdate, $enddate, $idcals
 			{
 			var $calendar;
 
-			function clsNotifyAttendees($title, $description, $startdate, $enddate, $message)
+			function clsNotifyAttendees($title, $description, $location, $startdate, $enddate, $message)
 				{
 				
 				$this->message = $message;
@@ -803,6 +816,7 @@ function notifyPersonalEvent($title, $description, $startdate, $enddate, $idcals
 				$this->vars['startdate'] 	= $startdate;
 				$this->vars['enddate'] 		= $enddate;
 				$this->vars['message'] 		= $message;
+				$this->vars['location'] 	= $location;
 				}
 				
 			}
@@ -833,7 +847,7 @@ function notifyPersonalEvent($title, $description, $startdate, $enddate, $idcals
 
 		$mail->mailSubject($message);
 
-		$tempc = new clsNotifyAttendees($title, $description, $startdate, $enddate, $message);
+		$tempc = new clsNotifyAttendees($title, $description, $location, $startdate, $enddate, $message);
 		$tempc->asHtml();
 		$message = $mail->mailTemplate(bab_printTemplate($tempc,"mailinfo.html", "newevent"));
 		
@@ -847,7 +861,7 @@ function notifyPersonalEvent($title, $description, $startdate, $enddate, $idcals
 	}
 
 
-function notifyPublicEvent($title, $description, $startdate, $enddate, $idcals, $message)
+function notifyPublicEvent($title, $description, $location, $startdate, $enddate, $idcals, $message)
 	{
 	global $babBody, $babDB, $babAdminEmail;
 
@@ -858,7 +872,7 @@ function notifyPublicEvent($title, $description, $startdate, $enddate, $idcals, 
 			var $calendar;
 
 
-			function clsNotifyPublicEvent($title, $description, $startdate, $enddate, $message)
+			function clsNotifyPublicEvent($title, $description, $location, $startdate, $enddate, $message)
 				{
 				$this->message = $message;
 				$this->calendar = "";
@@ -868,6 +882,7 @@ function notifyPublicEvent($title, $description, $startdate, $enddate, $idcals, 
 				$this->vars['startdate'] 	= $startdate;
 				$this->vars['enddate'] 		= $enddate;
 				$this->vars['message'] 		= $message;
+				$this->vars['location'] 	= $location;
 				}
 			}
 		}
@@ -887,7 +902,7 @@ function notifyPublicEvent($title, $description, $startdate, $enddate, $idcals, 
 			{
 			$mail->mailFrom($GLOBALS['BAB_SESS_EMAIL'], $GLOBALS['BAB_SESS_USER']);
 			}
-		$tempc = new clsNotifyPublicEvent($title, $description, $startdate, $enddate, $message);
+		$tempc = new clsNotifyPublicEvent($title, $description, $location, $startdate, $enddate, $message);
 
 		$arrusers = array();
 		for( $i = 0; $i < count($idcals); $i++ )
@@ -1002,7 +1017,7 @@ function cal_usersToNotiy($id_cal, $cal_type, $id_owner) {
 
 
 
-function notifyResourceEvent($title, $description, $startdate, $enddate, $idcals, $message)
+function notifyResourceEvent($title, $description, $location, $startdate, $enddate, $idcals, $message)
 	{
 	global $babBody, $babDB, $babAdminEmail;
 
@@ -1013,7 +1028,7 @@ function notifyResourceEvent($title, $description, $startdate, $enddate, $idcals
 
 			var $calendar;
 
-			function clsNotifyResourceEvent($title, $description, $startdate, $enddate, $message)
+			function clsNotifyResourceEvent($title, $description, $location, $startdate, $enddate, $message)
 				{
 				$this->calendar = "";
 				
@@ -1022,6 +1037,7 @@ function notifyResourceEvent($title, $description, $startdate, $enddate, $idcals
 				$this->vars['startdate'] 	= $startdate;
 				$this->vars['enddate'] 		= $enddate;
 				$this->vars['message'] 		= $message;
+				$this->vars['location'] 	= $location;
 				}
 			}
 		}
@@ -1041,7 +1057,7 @@ function notifyResourceEvent($title, $description, $startdate, $enddate, $idcals
 			{
 			$mail->mailFrom($GLOBALS['BAB_SESS_EMAIL'], $GLOBALS['BAB_SESS_USER']);
 			}
-		$tempc = new clsNotifyResourceEvent($title, $description, $startdate, $enddate, $message);
+		$tempc = new clsNotifyResourceEvent($title, $description, $location, $startdate, $enddate, $message);
 		
 
 		for( $i = 0; $i < count($idcals); $i++ )
@@ -1109,6 +1125,7 @@ function notifyEventApprobation($evtid, $bconfirm, $raison, $calname)
 				$this->vars['startdate'] 	= bab_longDate(bab_mktime($evtinfo['start_date']));
 				$this->vars['enddate'] 		= bab_longDate(bab_mktime($evtinfo['end_date']));
 				$this->vars['message'] 		= $raison;
+				$this->vars['location'] 	= $evtinfo['location'];
 				}
 			}
 		}
@@ -1176,6 +1193,7 @@ function notifyEventUpdate($evtid, $bdelete)
 				$this->vars['startdate'] 	= bab_longDate(bab_mktime($evtinfo['start_date']));
 				$this->vars['enddate'] 		= bab_longDate(bab_mktime($evtinfo['end_date']));
 				$this->vars['message'] 		= '';
+				$this->vars['location'] 	= $evtinfo['location'];
 				}
 			}
 		}
@@ -1299,12 +1317,14 @@ function notifyEventApprovers($id_event, $users, $calinfo)
 
 				$this->tmp_desc = $evtinfo['description'];
 				$this->descriptiontxt = bab_translate("Description");
+				$this->locationtxt = bab_translate("Location");
 				$this->startdate = bab_longDate(bab_mktime($evtinfo['start_date']));
 				$this->startdatetxt = bab_translate("Begin date");
 				$this->enddate = bab_longDate(bab_mktime($evtinfo['end_date']));
 				$this->enddatetxt = bab_translate("End date");
 				$this->titletxt = bab_translate("Title");
 				$this->tmp_title = $evtinfo['title'];
+				$this->tmp_location = $evtinfo['location'];
 				if( $calinfo['type'] == BAB_CAL_PUB_TYPE )
 					$this->calendartxt = bab_translate("Public calendar");
 				else
@@ -1316,12 +1336,14 @@ function notifyEventApprovers($id_event, $users, $calinfo)
 				
 			function asHtml() {
 				$this->title = bab_toHtml($this->tmp_title);
+				$this->location = bab_toHtml($this->tmp_location);
 				$this->description = bab_toHtml($this->tmp_desc, BAB_HTML_REPLACE_MAIL);
 				$this->calendar = bab_toHtml($this->tmp_calendar);
 				}
 				
 			function asText() {
 				$this->title = $this->tmp_title;
+				$this->location = $this->tmp_location;
 				$this->description = strip_tags(bab_toHtml($this->tmp_desc, BAB_HTML_REPLACE_MAIL));
 				$this->calendar = $this->tmp_calendar;
 				}
