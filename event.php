@@ -1081,6 +1081,12 @@ function addEvent(&$message)
 		$message = bab_translate("End date must be older")." !";
 		return false;
 		}
+		
+	if( $repeatdate < $end)
+		{
+		$message = bab_translate("Repeat date must be older than end date");
+		return false;
+		}
 
 	if( isset($_POST['repeat_cb']) && $_POST['repeat_cb'] != 0)
 		{

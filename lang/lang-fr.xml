@@ -2437,4 +2437,7 @@
 <string id="Insert link to a directory entry">Insérer un lien vers une fiche d'annuaire</string>
 <string id="Insert image from ovidentia content image manager">Insérer une image</string>
 
+<string id="Repeat date must be older than end date">La date de fin de période doit être postérieure à la date de fin de l'événement</string>
+
+
 </fr>
