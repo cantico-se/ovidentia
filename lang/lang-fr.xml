@@ -2442,4 +2442,6 @@
 <string id="ACL delegation">Les droits ACL de la délégation</string>
 <string id="ACL to use with this delegation">Groupes à utiliser pour les droits ACL</string>
 <string id="ACL broken. Please resubmit the form">Droits non compatibles avec les ACL. Soumettez le formulaire de nouveau.</string>
+<string id="Repeat date must be older than end date">La date de fin de période doit être postérieure à la date de fin de l'événement</string>
+
 </fr>
