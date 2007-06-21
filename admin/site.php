@@ -1722,8 +1722,10 @@ function siteUpdate_menu6($item)
 
 	if (isset($_POST['workdays']) && count($_POST['workdays']))
 		{
+		$endtime = '00:00:00' == $_POST['endtime'] ? '24:00:00' : $_POST['endtime'];
+		
 		foreach($_POST['workdays'] as $day) {
-			bab_insertWorkingHours(0, $day, '00:00:00', '24:00:00');
+			bab_insertWorkingHours(0, $day, $_POST['starttime'], $endtime);
 		}
 	}
 	
