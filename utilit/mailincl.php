@@ -237,10 +237,30 @@ class babMail
 
 	function send()
 	{
-		$this->sent_status = $this->mail->Send();
-		if (!$this->sent_status) {
+		static $send_immediately = NULL;
+		
+		if (NULL === $send_immediately) {
+		
+			$reg = bab_getRegistryInstance();
+			$reg->changeDirectory('/bab/mail_spooler/');
+			$send_immediately = $reg->getValue('send_immediately');
+			if (NULL === $send_immediately) {
+				$reg->setKeyValue('send_immediately', true);
+				$send_immediately = true;
+			}
+		}
+		
+		
+		if (true === $send_immediately) {
+			$this->sent_status = $this->mail->Send();
+			if (!$this->sent_status) {
+				$this->recordMail();
+			}
+		} else {
+			$this->sent_status = false;
 			$this->recordMail();
 		}
+		
 		return $this->sent_status; 
 	}
 
