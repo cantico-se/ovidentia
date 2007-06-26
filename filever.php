@@ -791,7 +791,7 @@ switch($idx)
 
 	case 'conf':
 		include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
-		if( isUserApproverFlow($arrfold['idsa'], $BAB_SESS_USERID) )
+		if( isUserApproverFlow($fm_file['arrfold']['idsa'], $BAB_SESS_USERID) )
 		{
 			showConfirmFile(bab_rp('idf'));
 			exit;
