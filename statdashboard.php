@@ -1426,13 +1426,16 @@ function showDelegationDashboard($startDate, $endDate)
 	$GLOBALS['babBodyPopup']->babecho($dashboard->printTemplate());
 }
 
+
+
 function showBasket($basketId, $startDate, $endDate)
 {
 	$start = ($startDate ? bab_mktime($startDate) : bab_mktime('2000-01-01'));
 	$end = ($endDate ? bab_mktime($endDate) : time());
 
 	$dashboard = new bab_Dashboard();
-
+	$dashboard->setExportUrl($GLOBALS['babUrlScript'] . '?tg=stat&idx=basketexport&idbasket=' . $basketId);
+	
 	$nbDays = (int)round(($end - $start) / 86400.0);
 	if ($nbDays <= 31) {
 		$dashboard->addFilter('D', 'day6');
@@ -1447,6 +1450,24 @@ function showBasket($basketId, $startDate, $endDate)
 	$dashboard->addElement(createBasketDashboard($basketId, $start, $end));
 
 	$GLOBALS['babBodyPopup']->babecho($dashboard->printTemplate());
+}
+
+
+function exportBasket($basketId, $startDate, $endDate)
+{
+	$start = ($startDate ? bab_mktime($startDate) : bab_mktime('2000-01-01'));
+	$end = ($endDate ? bab_mktime($endDate) : time());
+
+	$dashboard = new bab_Dashboard();
+	$dashboard->setTitle(sprintf(bab_translate("From %s to %s"), bab_shortDate($start, false), bab_shortDate($end, false)));
+	$dashboard->addElement(createBasketDashboard($basketId, $start, $end));
+
+	header('Cache-Control: public');
+	header('Content-type: application/vnd.ms-excel');
+	header('Content-Disposition: attachement; filename="export.xls"');
+
+	print $dashboard->printTemplateCsv();
+	die();	
 }
 
 ?>
