@@ -433,6 +433,7 @@ class bab_userWorkingHours {
 							$p->setProperty('SUMMARY'		, bab_translate('Non-working period'));
 							$p->setProperty('DTSTART'		, $previous_end->getIsoDateTime());
 							$p->setProperty('DTEND'			, $beginDate->getIsoDateTime());
+							$p->setData(array('id_user' => $id_user));
 						}
 	
 						$p = & $this->setUserPeriod(false, $beginDate, $endDate, BAB_PERIOD_WORKING);
@@ -440,6 +441,7 @@ class bab_userWorkingHours {
 						$p->setProperty('SUMMARY'		, bab_translate('Working period'));
 						$p->setProperty('DTSTART'		, $beginDate->getIsoDateTime());
 						$p->setProperty('DTEND'			, $endDate->getIsoDateTime());
+						$p->setData(array('id_user' => $id_user));
 	
 						$previous_end = $endDate; // the begin date of the non-working period will be a reference to the enddate of the working period
 					}
@@ -455,6 +457,7 @@ class bab_userWorkingHours {
 			$p->setProperty('SUMMARY'		, bab_translate('Non-working period'));
 			$p->setProperty('DTSTART'		, $previous_end->getIsoDateTime());
 			$p->setProperty('DTEND'			, $this->end->getIsoDateTime());
+			$p->setData(array('id_user' => $id_user));
 		}
 	}
 
@@ -635,31 +638,36 @@ class bab_userWorkingHours {
 		reset($this->boundaries);
 		$previous = NULL;
 		$periods = array();
+		
 
 		foreach($this->boundaries as $ts => $events) {
 
 			$current = NULL;
+			$users_non_available = $this->id_users;
+			
 			
 			foreach($events as $event) {
 				if ($event->type === ($available & $event->type) && 0 !== $current) {
 					$current = 1;
+					$data = $event->getData();
+					unset($users_non_available[$data['id_user']]);
 				}
 
 				if ($event->type === ($nonavailable & $event->type)) {
 					$current = 0;
 				}
 			}
-
 			
+			//bab_debug($ts.' -- '.bab_shortDate($ts).' --> '.$current.' -- count users_non_available : '.count($users_non_available));
 
-			if (1 !== $current && NULL !== $previous) {
+			if (0 < count($users_non_available) && NULL !== $previous) {
 				if (!isset($periods[$previous.'.'.$ts])) {
 					$periods[$previous.'.'.$ts] = new bab_calendarPeriod($previous, $ts, BAB_PERIOD_NONWORKING);
 				}
 				$previous = NULL;
 			}
 
-			if (1 === $current && NULL === $previous) {
+			if (0 === count($users_non_available) && NULL === $previous) {
 				$previous = $ts;
 			}
 		}
