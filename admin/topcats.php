@@ -447,7 +447,14 @@ class bab_AdmArticleTreeView extends bab_ArticleTreeView
 
 	function onElementAppended(&$oElement, $sIdParent)
 	{
-		if('category' == $oElement->_type)
+		if('categoryroot' == $oElement->_type)
+		{
+			$sAddCategUrl = $GLOBALS['babUrlScript'] . '?tg=topcats&idx=Create&idp=0';
+			$oElement->addAction(
+				'addCateg', bab_toHtml(bab_translate("Create a topic category")), 
+				$GLOBALS['babSkinPath'] . 'images/Puces/edit_add.png', $sAddCategUrl, '');
+		}
+		else if('category' == $oElement->_type)
 		{
 			$iIdParent = $this->getId($sIdParent);
 			$iId = $this->getId($oElement->_id);
@@ -546,7 +553,7 @@ switch($idx)
 		$babBody->addItemMenu("tags", bab_translate("Thesaurus"), $GLOBALS['babUrlScript']."?tg=topcats&idx=tags&idp=".$idp);
 		
 		$oArtTV = new bab_AdmArticleTreeView('oArtTV');
-		$oArtTV->setAttributes(BAB_ARTICLE_TREE_VIEW_SHOW_CATEGORIES | BAB_ARTICLE_TREE_VIEW_SHOW_TOPICS | BAB_TREE_VIEW_MEMORIZE_OPEN_NODES);
+		$oArtTV->setAttributes(BAB_ARTICLE_TREE_VIEW_SHOW_CATEGORIES | BAB_ARTICLE_TREE_VIEW_SHOW_TOPICS | BAB_TREE_VIEW_MEMORIZE_OPEN_NODES | BAB_ARTICLE_TREE_VIEW_SHOW_ROOT_NODE);
 		$oArtTV->setAction(BAB_ARTICLE_TREE_VIEW_MANAGE_TOPIC);
 		$oArtTV->order();
 		$oArtTV->sort();
