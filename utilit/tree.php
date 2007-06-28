@@ -1051,7 +1051,7 @@ class bab_TreeView extends bab_Widget
 		$node =& $this->_rootNode->createNode($element, $element->_id);
 		$this->_rootNode->appendChild($node, $parentId);
 		$this->_upToDate = false;
-		$this->onElementAppended($element);
+		$this->onElementAppended($element, $parentId);
 	}
 		
 	function sort($comparisonFunctionName = 'treeViewNodeComparison')
@@ -1208,8 +1208,9 @@ class bab_TreeView extends bab_Widget
 	 * This method is called after the bab_TreeViewElement $element has been appended to the treeview. 
 	 *
 	 * @param bab_TreeViewElement $element
+	 * @param string $parentId
 	 */
-	function onElementAppended(&$element)
+	function onElementAppended(&$element, $parentId)
 	{	
 	}
 	
