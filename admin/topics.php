@@ -700,7 +700,8 @@ if( isset($_POST['add']) )
 	{
 	if(!saveCategory($category, $ncat, $sacom, $saart, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags))
 		{
-		$idx = 'addtopic';
+//		$idx = 'addtopic';
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats");
 		}
 	$cat = $ncat;
 	}
@@ -740,26 +741,12 @@ switch($idx)
 		$busetags = bab_pp('busetags', 'N');
 		addCategory($cat, $ncat, $category, $topdesc, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags);
 		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List&idp=".$idp);
-		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 		$babBody->addItemMenu("addtopic", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topics&idx=addtopic&cat=".$cat);
 		break;
 
 	case "list":
 	default:
-		$catname = bab_getTopicCategoryTitle($cat);
-		$babBody->title = bab_translate("List of all topics"). " [ " . $catname . " ]";
-		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List&idp=".$idp);
-		if( listCategories($cat) > 0 )
-			{
-			$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
-			}
-		else
-			{
-			Header("Location: ". $GLOBALS['babUrlScript']."?tg=topics&idx=addtopic&cat=".$cat);
-			exit;
-			}
-
-		$babBody->addItemMenu("addtopic", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topics&idx=addtopic&cat=".$cat);
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats");
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);

@@ -24,6 +24,8 @@
 include_once "base.php";
 include_once $babInstallPath."admin/acl.php";
 include_once $babInstallPath."utilit/topincl.php";
+require_once $babInstallPath . 'utilit/tree.php';
+
 
 function topcatCreate($idp)
 	{
@@ -434,6 +436,83 @@ elseif( isset($update))
 		}
 	}
 
+	
+
+class bab_AdmArticleTreeView extends bab_ArticleTreeView
+{
+	function bab_AdmArticleTreeView($sId)
+	{
+		parent::bab_ArticleTreeView($sId);
+	}
+
+	function onElementAppended(&$oElement, $sIdParent)
+	{
+		if('category' == $oElement->_type)
+		{
+			$iIdParent = $this->getId($sIdParent);
+			$iId = $this->getId($oElement->_id);
+			
+			$sAddCategUrl = $GLOBALS['babUrlScript'] . '?tg=topcats&idx=Create&idp=' . $iId;
+			$oElement->addAction(
+				'addCateg', bab_toHtml(bab_translate("Create a topic category")), 
+				$GLOBALS['babSkinPath'] . 'images/Puces/edit_add.png', $sAddCategUrl, '');
+			
+			$sDelCategUrl = $GLOBALS['babUrlScript'] . '?tg=topcat&idx=Delete&catdel=dummy&item=' . $iId . '&idp=' . $iIdParent;
+			$oElement->addAction(
+				'delCateg', bab_toHtml(bab_translate("Delete topic category")), 
+				$GLOBALS['babSkinPath'] . 'images/Puces/edit_remove.png', $sDelCategUrl, '');
+				
+			$sAddTopicUrl = $GLOBALS['babUrlScript'] . '?tg=topics&idx=addtopic&cat=' . $iId;
+			$oElement->addAction(
+				'addTopic', bab_toHtml(bab_translate("Create new topic")), 
+				$GLOBALS['babSkinPath'] . 'images/Puces/zoomIn.png', $sAddTopicUrl, '');
+				
+			$sOrderUrl = $GLOBALS['babUrlScript'] . '?tg=topcats&idx=Order&idp=' . $iId;
+			$oElement->addAction(
+				'order', bab_toHtml(bab_translate("Order")), 
+				$GLOBALS['babSkinPath'] . 'images/Puces/z-a.gif', $sOrderUrl, '');
+				
+			$oElement->setLink($GLOBALS['babUrlScript'] . '?tg=topcat&idx=Modify&item=' . $iId . '&idp=' . $iIdParent);
+		}
+		else if('topic' == $oElement->_type)
+		{
+			$iIdParent = $this->getId($sIdParent);
+			$iId = $this->getId($oElement->_id);
+			
+			$sDelTopicUrl = $GLOBALS['babUrlScript'] . '?tg=topic&idx=Delete&topdel=dummy&item=' . $iId . '&cat=' . $iIdParent;
+			$oElement->addAction(
+				'delCateg', bab_toHtml(bab_translate("Delete topic category")), 
+				$GLOBALS['babSkinPath'] . 'images/Puces/edit_remove.png', $sDelTopicUrl, '');
+			
+			$sRightUrl = $GLOBALS['babUrlScript'] . '?tg=topic&idx=rights&item=' . $iId . '&cat=' . $iIdParent;
+			$oElement->addAction(
+				'right', bab_toHtml(bab_translate("Rights")), 
+				$GLOBALS['babSkinPath'] . 'images/Puces/agent.png', $sRightUrl, '');
+
+			$oElement->setLink($GLOBALS['babUrlScript'] . '?tg=topic&idx=Modify&item=' . $iId . '&cat=' . $iIdParent);
+		}
+
+	}
+	
+	function getId($sId)
+	{
+		static $iIdIdx = 1;
+		if(!is_null($sId))
+		{
+			$aExploded = explode(BAB_TREE_VIEW_ID_SEPARATOR, $sId);
+			if(count($aExploded) == 2)
+			{
+				return $aExploded[$iIdIdx];
+			}
+		}
+		return 0;
+	}
+	
+}
+	
+
+
+
 switch($idx)
 	{
 	case 'tags':
@@ -443,46 +522,35 @@ switch($idx)
 		$macl->filter(0,0,1,1,1);
         $macl->babecho();
 		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List&idp=".$idp);
-		if( $idp != 0 || ( $idp == 0 && $babBody->isSuperAdmin ))
-			{
-			$babBody->addItemMenu("Order", bab_translate("Order"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Order&idp=".$idp);
-			$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Create&idp=".$idp);
-			}
 		$babBody->addItemMenu("tags", bab_translate("Thesaurus"), $GLOBALS['babUrlScript']."?tg=topcats&idx=tags");
 		break;
 	case "Order":
 		orderTopcat($idp);
 		$babBody->title = bab_translate("Order a topic category");
-		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List&idp=".$idp);
-		if( $idp != 0 || ( $idp == 0 && $babBody->isSuperAdmin ))
-			{
-			$babBody->addItemMenu("Order", bab_translate("Order"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Order&idp=".$idp);
-			$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Create&idp=".$idp);
-			}
-		$babBody->addItemMenu("tags", bab_translate("Thesaurus"), $GLOBALS['babUrlScript']."?tg=topcats&idx=tags&idp=".$idp);
+		
+		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats");
+		$babBody->addItemMenu("Order", bab_translate("Order"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Order&idp=".$idp);
 		break;
 	case "Create":
 		topcatCreate($idp);
 		$babBody->title = bab_translate("Create a topic category");
-		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List&idp=".$idp);
-		if( $idp != 0 || ( $idp == 0 && $babBody->isSuperAdmin ))
-			{
-			$babBody->addItemMenu("Order", bab_translate("Order"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Order&idp=".$idp);
-			$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Create&idp=".$idp);
-			}
-		$babBody->addItemMenu("tags", bab_translate("Thesaurus"), $GLOBALS['babUrlScript']."?tg=topcats&idx=tags&idp=".$idp);
+		
+		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats");
+		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Create&idp=".$idp);
 		break;
 	case "List":
 	default:
-		topcatsList($idp);
-		$babBody->title = bab_translate("topics categories list");
+		$babBody->title = bab_translate("Categories and topics");
+		
 		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List&idp=".$idp);
-		if( $idp != 0 || ( $idp == 0 && $babBody->isSuperAdmin ))
-			{
-			$babBody->addItemMenu("Order", bab_translate("Order"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Order&idp=".$idp);
-			$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Create&idp=".$idp);
-			}
 		$babBody->addItemMenu("tags", bab_translate("Thesaurus"), $GLOBALS['babUrlScript']."?tg=topcats&idx=tags&idp=".$idp);
+		
+		$oArtTV = new bab_AdmArticleTreeView('oArtTV');
+		$oArtTV->setAttributes(BAB_ARTICLE_TREE_VIEW_SHOW_CATEGORIES | BAB_ARTICLE_TREE_VIEW_SHOW_TOPICS | BAB_TREE_VIEW_MEMORIZE_OPEN_NODES);
+		$oArtTV->setAction(BAB_ARTICLE_TREE_VIEW_MANAGE_TOPIC);
+		$oArtTV->order();
+		$oArtTV->sort();
+		$babBody->babecho($oArtTV->printTemplate());
 		break;
 	}
 

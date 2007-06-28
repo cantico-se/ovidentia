@@ -159,6 +159,7 @@ function deleteArticles($art, $item)
 			$this->yes = bab_translate("Yes");
 			$this->urlno = $GLOBALS['babUrlScript']."?tg=topic&idx=Articles&item=".$item;
 			$this->no = bab_translate("No");
+bab_debug('JoeBoo');
 			}
 		}
 
@@ -727,7 +728,8 @@ function deleteCategory($id, $cat)
 			$this->warning = bab_translate("WARNING: This operation will delete the topic, articles and comments"). "!";
 			$this->urlyes = $GLOBALS['babUrlScript']."?tg=topic&idx=Delete&category=".$id."&action=Yes&cat=".$cat;
 			$this->yes = bab_translate("Yes");
-			$this->urlno = $GLOBALS['babUrlScript']."?tg=topic&idx=Modify&item=".$id;
+//			$this->urlno = $GLOBALS['babUrlScript']."?tg=topic&idx=Modify&item=".$id;
+			$this->urlno = $GLOBALS['babUrlScript'] . '?tg=topcats';
 			$this->no = bab_translate("No");
 			}
 		}
@@ -1009,7 +1011,7 @@ function updateCategory($id, $category, $cat, $saart, $sacom, $saupd, $bnotif, $
 			$ord = 1;
 		$db->db_query("update ".BAB_TOPCAT_ORDER_TBL." set id_parent='".$db->db_escape_string($cat)."', ordering='".$ord."' where id_topcat='".$db->db_escape_string($id)."' and type='2'");
 		}
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
+	Header("Location: ". $GLOBALS['babUrlScript'] . '?tg=topcats');
 	}
 
 
@@ -1058,7 +1060,8 @@ if(!isset($idx))
 	{
 	$idx = "Modify";
 	}
-
+	
+	
 if(!isset($cat))
 	{
 	$db = $GLOBALS['babDB'];
@@ -1069,10 +1072,10 @@ if(!isset($cat))
 if( isset($add) )
 	{
 	if( isset($submit))
-		{
+	{
 		if(!updateCategory($item, $category, $ncat, $saart, $sacom, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates,$battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags))
 			$idx = "Modify";
-		}
+	}
 	else if( isset($topdel))
 		$idx = "Delete";
 	}
@@ -1080,7 +1083,7 @@ if( isset($add) )
 if( isset($aclview) )
 	{
 	maclGroups();
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats");
 	}
 
 if( isset($upart) && $upart == "articles")
@@ -1096,19 +1099,20 @@ if( isset($upart) && $upart == "articles")
 		}
 	}
 
+	
 if( isset($action) && $action == "Yes")
 	{
 	if( $idx == "Delete" )
 		{
 		include_once $babInstallPath."utilit/delincl.php";
 		bab_confirmDeleteTopic($category);
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats");
 		}
 	else if( $idx == "Deletea")
 		{
 		include_once $babInstallPath."utilit/delincl.php";
 		bab_confirmDeleteArticles($items);
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=topic&idx=Articles&item=".$item);
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats");
 		}
 	}
 
@@ -1117,13 +1121,6 @@ switch($idx)
 	case "viewa":
 		viewArticle($item);
 		exit;
-	case "deletea":
-		$babBody->title = bab_translate("Delete articles");
-		deleteArticles($art, $item);
-		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list");
-		$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=topic&idx=Articles&item=".$item."&userid=".$userid);
-		$babBody->addItemMenu("deletea", bab_translate("Delete"), "");
-		break;
 
 	case "Articles":
 		$babBody->title = bab_translate("List of articles").": ".bab_getCategoryTitle($item);
@@ -1143,20 +1140,15 @@ switch($idx)
         $macl->addtable( BAB_TOPICSMAN_GROUPS_TBL,bab_translate("Who can manage this topic?"));
 		$macl->filter(0,0,1,1,1);
         $macl->babecho();
-		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
-		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=topic&idx=Modify&item=".$item);
+		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats");
 		$babBody->addItemMenu("rights", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=topic&idx=rights&item=".$item);
-		$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=topic&idx=Articles&item=".$item);
 		break;
 
 	case "Delete":
 		$babBody->title = bab_translate("Delete a topic");
 		deleteCategory($item, $cat);
-		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
-		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=topic&idx=Modify&item=".$item);
-		$babBody->addItemMenu("rights", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=topic&idx=rights&item=".$item);
+		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats");
 		$babBody->addItemMenu("Delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=topic&idx=Delete&item=".$item);
-		$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=topic&idx=Articles&item=".$item);
 		break;
 
 	default:
@@ -1181,10 +1173,8 @@ switch($idx)
 		if( !isset($maxarts)) { $maxarts='';}
 		if( !isset($busetags)) { $busetags='';}
 		modifyCategory($item, $ncat, $category, $topdesc, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags);
-		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
+		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats");
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=topic&idx=Modify&item=".$item);
-		$babBody->addItemMenu("rights", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=topic&idx=rights&item=".$item);
-		$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=topic&idx=Articles&item=".$item);
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);

@@ -238,7 +238,7 @@ function topcatDelete($id, $idp)
 			$this->warning = bab_translate("WARNING: This operation will delete the topic category with all references"). "!";
 			$this->urlyes = $GLOBALS['babUrlScript']."?tg=topcat&idx=Delete&group=".$id."&action=Yes"."&idp=".$idp;
 			$this->yes = bab_translate("Yes");
-			$this->urlno = $GLOBALS['babUrlScript']."?tg=topcat&idx=Modify&item=".$id."&idp=".$idp;
+			$this->urlno = $GLOBALS['babUrlScript']."?tg=topcats";
 			$this->no = bab_translate("No");
 			}
 		}
@@ -328,7 +328,7 @@ function confirmDeleteTopcat($id)
 
 	include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
 	$idp = bab_deleteTopicCategory($id);
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats&idx=List&idp=".$idp);
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats");
 	}
 
 /* main */
@@ -338,13 +338,17 @@ if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['articles'] != 'Y')
 	return;
 }
 
+
 if( !isset($idx))
 	$idx = "Modify";
 
 if( isset($modify))
 	{
 	if( isset($submit))
+	{
 		modifyTopcat($oldname, $title, $description, $benabled, $item, $template, $disptmpl, $topcatid);
+		Header("Location: ". $GLOBALS['babUrlScript'] . '?tg=topcats');
+	}
 	else if( isset($catdel))
 		$idx = "Delete";
 	}
@@ -364,9 +368,7 @@ switch($idx)
 			{
 			$babBody->title = bab_translate("Delete topic category");
 			$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List&idp=".$idp);
-			$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=topcat&idx=Modify&item=".$item."&idp=".$idp);
 			$babBody->addItemMenu("Delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=topcat&idx=Delete&item=".$item);
-			$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$item);
 			break;
 			}
 		/* no break; */
@@ -377,8 +379,6 @@ switch($idx)
 		$babBody->title = bab_translate("Modify topic category");
 		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List&idp=".$idp);
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=topcat&idx=Modify&item=".$item."&idp=".$idp);
-		$babBody->addItemMenu("Order", bab_translate("Order"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Order&idp=".$item);
-		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$item);
 		break;
 	}
 
