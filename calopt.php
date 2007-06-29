@@ -241,11 +241,14 @@ function calendarOptions($calid, $urla)
 		{
 		function temp($calid, $urla)
 			{
+			include_once $GLOBALS['babInstallPath']."utilit/workinghoursincl.php";
 			global $babBody, $babDB, $BAB_SESS_USERID;
 			$this->calid = $calid;
 			$this->urla = $urla;
 			$this->calweekdisptxt = bab_translate("Days to display");
 			$this->calweekworktxt = bab_translate("Working days");
+			$this->t_working_hours = bab_translate("Define working hours");
+			$this->t_define_working_halfdays = bab_translate("Working half-days interface");
 			$this->caloptionstxt = bab_translate("Calendar options");
 			$this->startdaytxt = bab_translate("First day of week");
 			$this->starttimetxt = bab_translate("Start time");
@@ -261,10 +264,14 @@ function calendarOptions($calid, $urla)
 			$this->elapstime = bab_translate("Time scale");
 			$this->minutes = bab_translate("Minutes");
 			$this->defaultview = bab_translate("Calendar default view");
+			$this->t_dispday = bab_translate("Display this day in the calendar");
 			$this->calweekwork = 'Y' == $GLOBALS['babBody']->babsite['user_workdays'];
 			$req = "select * from ".BAB_CAL_USER_OPTIONS_TBL." where id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
 			$res = $babDB->db_query($req);
 			$this->arr = $babDB->db_fetch_array($res);
+			
+			
+			$this->halfday = bab_rp('halfday',1);
 			
 			
 			
@@ -319,13 +326,30 @@ function calendarOptions($calid, $urla)
 			if( $i < 7 )
 				{
 				$this->disp_selected = in_array($i, $this->dispdays) ? "checked" : "";
-
-				$arr = cal_half_working_days($i);
-				$this->work_am = $arr['am'];
-				$this->work_pm = $arr['pm'];
-
 				$this->dayid = $i;
-				$this->shortday = $babDays[$i];
+
+				if ($this->halfday) {
+				
+					$arr = cal_half_working_days($i);
+					$this->work_am = $arr['am'];
+					$this->work_pm = $arr['pm'];
+					
+				
+				} else {
+
+					
+					$this->shortday = $babDays[$i];
+					
+					$arr = bab_getWHours($GLOBALS['BAB_SESS_USERID'], $i);
+					$tmp = array();
+					foreach($arr as $p) {
+						unset($p['weekDay']);
+						$tmp[] = implode('-',$p);
+					}
+					$this->workinghours = implode(',',$tmp);
+				
+				}
+				
 				$i++;
 				return true;
 				}
@@ -473,10 +497,14 @@ function calendarOptions($calid, $urla)
 		}
 
 	$temp = new temp($calid, $urla);
-	$babBody->babecho(	bab_printTemplate($temp, "calopt.html", "caloptions"));
-
-	//$babBody->addStyleSheet('calopt.css');
-	//$babBody->babecho(bab_printTemplate($temp, "calopt.html", "caloptions2"));
+	
+		if ($temp->halfday) {
+			$babBody->babecho(	bab_printTemplate($temp, "calopt.html", "caloptions"));
+		} else {
+	
+			$babBody->addStyleSheet('calopt.css');
+			$babBody->babecho(bab_printTemplate($temp, "calopt.html", "caloptions2"));
+		}
 	}
 
 
@@ -610,53 +638,101 @@ function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor,
 				");
 		}
 	}
-
-
-
-	$am_startHour	= '00:00:00';
-	$am_endHour		= '12:00:00';
-
-	$pm_startHour	= '12:00:00';
-	$pm_endHour		= '24:00:00';
-
-
-	list($tmp) = explode(':', $starttime);
-	if ($tmp < 12) {
-		$am_startHour = $starttime;
-	}
-
-	list($tmp) = explode(':', $endtime);
-	if ($tmp > 12) {
-		$pm_endHour = $endtime;
-	}
-	
-
-	$res = $babDB->db_query("
-				SELECT COUNT(*) FROM ".BAB_WORKING_HOURS_TBL." 
-					WHERE idUser=".$babDB->quote($GLOBALS['BAB_SESS_USERID'])." 
-				");
-
-	list($user_nb_rows) = $babDB->db_fetch_array($res);
-
-
-	$change = false; 
 	
 	
-	
-	for ($i = 0 ; $i < 7 ; $i++) {
-		$arr = cal_half_working_days($i);
+	function setHourFormat($hours) {
+		$arr = explode(':',$hours);
+		$h = $arr[0];
+		$m = isset($arr[1]) ? $arr[1] : 0;
+		$s = isset($arr[2]) ? $arr[2] : 0;
 		
-		$am = isset($_POST['work'][$i]['am']);
-		$pm = isset($_POST['work'][$i]['pm']);
+		return sprintf('%02d:%02d:%02d',$h,$m,$s);
+	}
+	
 
-		if ($arr['am'] != $am || 0 == $user_nb_rows) {
-			setUserPeriod($i, 'am', $am_startHour, $am_endHour, $am);
-			$change = true;
+	if (1 == bab_rp('halfday')) {
+
+		$am_startHour	= '00:00:00';
+		$am_endHour		= '12:00:00';
+	
+		$pm_startHour	= '12:00:00';
+		$pm_endHour		= '24:00:00';
+	
+	
+		list($tmp) = explode(':', $starttime);
+		if ($tmp < 12) {
+			$am_startHour = $starttime;
 		}
-
-		if ($arr['pm'] != $pm || 0 == $user_nb_rows) {
-			setUserPeriod($i, 'pm', $pm_startHour, $pm_endHour, $pm);
-			$change = true;
+	
+		list($tmp) = explode(':', $endtime);
+		if ($tmp > 12) {
+			$pm_endHour = $endtime;
+		}
+		
+	
+		$res = $babDB->db_query("
+					SELECT COUNT(*) FROM ".BAB_WORKING_HOURS_TBL." 
+						WHERE idUser=".$babDB->quote($GLOBALS['BAB_SESS_USERID'])." 
+					");
+	
+		list($user_nb_rows) = $babDB->db_fetch_array($res);
+	
+	
+		$change = false; 
+		
+		
+		
+		for ($i = 0 ; $i < 7 ; $i++) {
+			$arr = cal_half_working_days($i);
+			
+			$am = isset($_POST['work'][$i]['am']);
+			$pm = isset($_POST['work'][$i]['pm']);
+	
+			if ($arr['am'] != $am || 0 == $user_nb_rows) {
+				setUserPeriod($i, 'am', $am_startHour, $am_endHour, $am);
+				$change = true;
+			}
+	
+			if ($arr['pm'] != $pm || 0 == $user_nb_rows) {
+				setUserPeriod($i, 'pm', $pm_startHour, $pm_endHour, $pm);
+				$change = true;
+			}
+		}
+	} else {
+	
+		$change = true;
+	
+		$req = "
+			DELETE FROM ".BAB_WORKING_HOURS_TBL." 
+			WHERE 
+				idUser=".$babDB->quote($GLOBALS['BAB_SESS_USERID'])."
+		";
+		$babDB->db_query($req);
+		
+		$workinghours = bab_pp('workinghours');
+		foreach($workinghours as $weekDay => $periods) {
+			if (!empty($periods)) {
+			$arr = explode(',',$periods); 
+			
+			foreach($arr as $period) {
+			
+				$tmp = explode('-',$period);
+				
+				$begin = setHourFormat($tmp[0]);
+				$end = setHourFormat($tmp[1]);
+			
+			
+				$babDB->db_query("
+					INSERT INTO ".BAB_WORKING_HOURS_TBL." 
+						(weekDay, idUser, startHour, endHour) 
+					VALUES 
+						(".$babDB->quote($weekDay).",
+						".$babDB->quote($GLOBALS['BAB_SESS_USERID']).",
+						".$babDB->quote($begin).", 
+						".$babDB->quote($end).") 
+					");
+				}
+			}
 		}
 	}
 
@@ -669,7 +745,10 @@ function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor,
 		bab_fireEvent($event);
 	}
 	
-	header('location:'.$GLOBALS['babUrlScript'].'?tg=calopt&idx=options');
+	$url = $GLOBALS['babUrlScript'].'?tg=calopt&idx=options&halfday='.bab_rp('halfday');
+	
+	
+	header('location:'.$url);
 	exit;
 }
 

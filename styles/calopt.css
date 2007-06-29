@@ -1,0 +1,41 @@
+#bab_calopt_days table {
+	background:#fff;
+	border-collapse:collapse;
+	margin:12px auto .2em auto;
+}
+
+#bab_calopt_days td {
+	border:#000 1px solid;
+	
+}
+
+#bab_calopt_days .workinghours {
+	display:none;
+}
+
+#bab_calopt_days td span {
+	position:relative;
+	left:-9px;
+	top:-14px;
+	font-size:9px;
+}
+
+
+#bab_calopt_days .waiting {
+	background:yellow;
+	
+}
+
+
+#bab_calopt_days .selected {
+	background:blue;
+}
+
+
+.bab_calopt_day {
+	background:#eee;
+	margin:.8em auto;
+	padding:.5em;
+	border:#ccc 1px solid;
+	text-align:center;
+}
