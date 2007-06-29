@@ -326,20 +326,18 @@ function calendarOptions($calid, $urla)
 			if( $i < 7 )
 				{
 				$this->disp_selected = in_array($i, $this->dispdays) ? "checked" : "";
+
 				$this->dayid = $i;
+				$this->shortday = bab_toHtml($babDays[$i]);
+
 
 				if ($this->halfday) {
 				
 					$arr = cal_half_working_days($i);
 					$this->work_am = $arr['am'];
 					$this->work_pm = $arr['pm'];
-					
-				
-				} else {
 
-					
-					$this->shortday = $babDays[$i];
-					
+				} else {
 					$arr = bab_getWHours($GLOBALS['BAB_SESS_USERID'], $i);
 					$tmp = array();
 					foreach($arr as $p) {
@@ -347,9 +345,8 @@ function calendarOptions($calid, $urla)
 						$tmp[] = implode('-',$p);
 					}
 					$this->workinghours = implode(',',$tmp);
-				
 				}
-				
+
 				$i++;
 				return true;
 				}
