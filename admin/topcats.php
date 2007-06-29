@@ -453,6 +453,11 @@ class bab_AdmArticleTreeView extends bab_ArticleTreeView
 			$oElement->addAction(
 				'addCateg', bab_toHtml(bab_translate("Create a topic category")), 
 				$GLOBALS['babSkinPath'] . 'images/Puces/edit_add.png', $sAddCategUrl, '');
+				
+			$sOrderUrl = $GLOBALS['babUrlScript'] . '?tg=topcats&idx=Order&idp=0';
+			$oElement->addAction(
+				'order', bab_toHtml(bab_translate("Order")), 
+				$GLOBALS['babSkinPath'] . 'images/Puces/z-a.gif', $sOrderUrl, '');
 		}
 		else if('category' == $oElement->_type)
 		{
