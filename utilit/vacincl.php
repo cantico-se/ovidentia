@@ -639,6 +639,10 @@ function viewVacationCalendar($users, $period = false )
 			}
 
 			$urltmp .= '&amp;nbmonth='.$this->nbmonth;
+			
+			if (1 == bab_rp('rfrom', 0)) {
+				$urltmp .= '&amp;rfrom='.bab_rp('rfrom');
+			}
 
 
 			$this->previousmonth	= $urltmp."&amp;month=".date("n", mktime( 0,0,0, $month-1, 1, $year));
