@@ -1507,6 +1507,16 @@ class bab_ArticleTreeView extends bab_TreeView
 	 */	
 	var $_action;
 	var $_link;
+	
+	/**
+	 * Datas on which the appendElement work
+	 * After the function call the $_datas is
+	 * invalid
+	 * 
+	 * @access private 
+	 * @var mixed
+	 */
+	var $_datas;
 	/**#@-*/
 
 
@@ -1630,7 +1640,9 @@ class bab_ArticleTreeView extends bab_TreeView
 				$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/topic.png');
 				$parentId = ($topic['id_cat'] === '0' ? null :
 													'c' . BAB_TREE_VIEW_ID_SEPARATOR . $topic['id_cat']);
+				$this->_datas = $topic;
 				$this->appendElement($element, $parentId);
+				$this->_datas = null;
 			}
 		}
 	}
@@ -1662,7 +1674,7 @@ class bab_ArticleTreeView extends bab_TreeView
 			$this->appendElement($element, null);
 		}
 		
-		$sql = 'SELECT id, title, description, id_parent FROM ' . BAB_TOPICS_CATEGORIES_TBL;
+		$sql = 'SELECT id, title, description, id_parent, enabled FROM ' . BAB_TOPICS_CATEGORIES_TBL;
 		if ($babBody->currentAdmGroup != 0) {
 			$sql .= ' WHERE id_dgowner=' . $babDB->quote($babBody->currentAdmGroup);
 		}
@@ -1685,7 +1697,9 @@ class bab_ArticleTreeView extends bab_TreeView
 			} else {
 				$parentId = 'c' . BAB_TREE_VIEW_ID_SEPARATOR . $category['id_parent'];
 			}
+			$this->_datas = $category;
 			$this->appendElement($element, $parentId);
+			$this->_datas = null;
 		}
 	}
 
@@ -1716,7 +1730,9 @@ class bab_ArticleTreeView extends bab_TreeView
 											 '',
 											 '');
 			$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/article.png');
+			$this->_datas = $article;
 			$this->appendElement($element, 't' . BAB_TREE_VIEW_ID_SEPARATOR . $article['id_topic']);
+			$this->_datas = null;
 		}
 	}
 

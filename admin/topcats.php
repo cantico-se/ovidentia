@@ -394,6 +394,17 @@ function disableTopcats($topcats, $idp)
 		}
 	}
 
+function disableEnableTopcat($iIdTopCat, $sEnable)
+{
+	global $babBody, $babDB;
+
+	if('Y' == $sEnable || 'N' == $sEnable)
+	{
+		$sQuery = 'update ' . BAB_TOPICS_CATEGORIES_TBL . ' set enabled = ' . $babDB->quote($sEnable) . ' where id = ' . $babDB->quote($iIdTopCat);
+		$babDB->db_query($sQuery);
+	}
+}
+
 function saveOrderTopcats($idp, $listtopcats)
 	{
 	global $babBody, $babDB;
@@ -428,15 +439,15 @@ elseif( isset($tagsman) )
 }
 elseif( isset($update))
 	{
-	if( $update == "disable" )
-		disableTopcats($topcats, $idp);
+	if( $update == 'disable' || $update == 'enable' )
+	{
+		disableEnableTopcat($iIdTopCat, (($update == 'enable') ? 'Y' : 'N'));
+	}
 	if( $update == "order" )
 		{
 		saveOrderTopcats($idp, $listtopcats);
 		}
 	}
-
-	
 
 class bab_AdmArticleTreeView extends bab_ArticleTreeView
 {
@@ -452,7 +463,7 @@ class bab_AdmArticleTreeView extends bab_ArticleTreeView
 			$sAddCategUrl = $GLOBALS['babUrlScript'] . '?tg=topcats&idx=Create&idp=0';
 			$oElement->addAction(
 				'addCateg', bab_toHtml(bab_translate("Create a topic category")), 
-				$GLOBALS['babSkinPath'] . 'images/Puces/edit_add.png', $sAddCategUrl, '');
+				$GLOBALS['babSkinPath'] . 'images/Puces/add_category.png', $sAddCategUrl, '');
 				
 			$sOrderUrl = $GLOBALS['babUrlScript'] . '?tg=topcats&idx=Order&idp=0';
 			$oElement->addAction(
@@ -467,7 +478,7 @@ class bab_AdmArticleTreeView extends bab_ArticleTreeView
 			$sAddCategUrl = $GLOBALS['babUrlScript'] . '?tg=topcats&idx=Create&idp=' . $iId;
 			$oElement->addAction(
 				'addCateg', bab_toHtml(bab_translate("Create a topic category")), 
-				$GLOBALS['babSkinPath'] . 'images/Puces/edit_add.png', $sAddCategUrl, '');
+				$GLOBALS['babSkinPath'] . 'images/Puces/add_category.png', $sAddCategUrl, '');
 			
 			$sDelCategUrl = $GLOBALS['babUrlScript'] . '?tg=topcat&idx=Delete&catdel=dummy&item=' . $iId . '&idp=' . $iIdParent;
 			$oElement->addAction(
@@ -477,13 +488,30 @@ class bab_AdmArticleTreeView extends bab_ArticleTreeView
 			$sAddTopicUrl = $GLOBALS['babUrlScript'] . '?tg=topics&idx=addtopic&cat=' . $iId;
 			$oElement->addAction(
 				'addTopic', bab_toHtml(bab_translate("Create new topic")), 
-				$GLOBALS['babSkinPath'] . 'images/Puces/zoomIn.png', $sAddTopicUrl, '');
+				$GLOBALS['babSkinPath'] . 'images/Puces/add_topic.png', $sAddTopicUrl, '');
 				
 			$sOrderUrl = $GLOBALS['babUrlScript'] . '?tg=topcats&idx=Order&idp=' . $iId;
 			$oElement->addAction(
 				'order', bab_toHtml(bab_translate("Order")), 
 				$GLOBALS['babSkinPath'] . 'images/Puces/z-a.gif', $sOrderUrl, '');
-				
+
+
+			if('N' == $this->_datas['enabled'])
+			{
+				$sEnableDisableUrl = $GLOBALS['babUrlScript'] . '?tg=topcats&update=enable&iIdTopCat=' . $iId;
+				$oElement->addAction(
+					'enableDisable', bab_toHtml(bab_translate("Activate the section")), 
+					$GLOBALS['babSkinPath'] . 'images/Puces/action_success.gif', $sEnableDisableUrl, '');
+			}
+			else 
+			{
+				$sEnableDisableUrl = $GLOBALS['babUrlScript'] . '?tg=topcats&update=disable&iIdTopCat=' . $iId;
+				$oElement->addAction(
+					'enableDisable', bab_toHtml(bab_translate("Desactivate the section")), 
+					$GLOBALS['babSkinPath'] . 'images/Puces/action_fail.gif', $sEnableDisableUrl, '');
+			}
+
+
 			$oElement->setLink($GLOBALS['babUrlScript'] . '?tg=topcat&idx=Modify&item=' . $iId . '&idp=' . $iIdParent);
 		}
 		else if('topic' == $oElement->_type)
@@ -499,7 +527,7 @@ class bab_AdmArticleTreeView extends bab_ArticleTreeView
 			$sRightUrl = $GLOBALS['babUrlScript'] . '?tg=topic&idx=rights&item=' . $iId . '&cat=' . $iIdParent;
 			$oElement->addAction(
 				'right', bab_toHtml(bab_translate("Rights")), 
-				$GLOBALS['babSkinPath'] . 'images/Puces/agent.png', $sRightUrl, '');
+				$GLOBALS['babSkinPath'] . 'images/Puces/access.png', $sRightUrl, '');
 
 			$oElement->setLink($GLOBALS['babUrlScript'] . '?tg=topic&idx=Modify&item=' . $iId . '&cat=' . $iIdParent);
 		}
@@ -519,7 +547,6 @@ class bab_AdmArticleTreeView extends bab_ArticleTreeView
 		}
 		return 0;
 	}
-	
 }
 	
 
