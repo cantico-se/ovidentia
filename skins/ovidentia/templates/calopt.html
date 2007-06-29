@@ -6,6 +6,7 @@
 <input type="hidden" name="urla" value="{ urla }" />
 <input type="hidden" name="calid" value="{ calid }" />
 <input type="hidden" name="modify" value="options" />
+<input type="hidden" name="halfday" value="{ halfday }" />
 <center>
 <table  width="80%"  border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
@@ -15,6 +16,8 @@
 	<tr valign="top"> 
 		<td>
 		<!--#if calweekwork -->
+		
+		<p><a href="{ babUrlScript }?tg=calopt&amp;idx=options&amp;halfday=0">{ t_working_hours }</a></p>
 		
 		<table border="0" cellspacing="0" cellpadding="4" width="80%">
 			<thead>
@@ -164,6 +167,7 @@
 <input type="hidden" name="urla" value="{ urla }" />
 <input type="hidden" name="calid" value="{ calid }" />
 <input type="hidden" name="modify" value="options" />
+<input type="hidden" name="halfday" value="{ halfday }" />
 
 <table  width="80%"  border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
@@ -174,37 +178,46 @@
 		<td>
 		<!--#if calweekwork -->
 			<div id="bab_calopt_days">
+			
+				<h4>{ t_working_hours }</h4>
+				<p><a href="{ babUrlScript }?tg=calopt&amp;idx=options&amp;halfday=1">{ t_define_working_halfdays }</a></p>
+				
 				<!--#in getnextshortday -->
 				<div class="bab_calopt_day">
 					<h5>{ shortday }</h5>
 					<table id="bab_calopt_day_{ dayid }">
 						<tr>
-							<td>00</td>
-							<td>01</td>
-							<td>02</td>
-							<td>03</td>
-							<td>04</td>
-							<td>05</td>
-							<td>06</td>
-							<td>07</td>
-							<td>08</td>
-							<td>09</td>
-							<td>10</td>
-							<td>11</td>
-							<td>12</td>
-							<td>13</td>
-							<td>14</td>
-							<td>15</td>
-							<td>16</td>
-							<td>17</td>
-							<td>18</td>
-							<td>19</td>
-							<td>20</td>
-							<td>21</td>
-							<td>22</td>
-							<td>23</td>
+							<td><span>00</span></td>
+							<td><span>01</span></td>
+							<td><span>02</span></td>
+							<td><span>03</span></td>
+							<td><span>04</span></td>
+							<td><span>05</span></td>
+							<td><span>06</span></td>
+							<td><span>07</span></td>
+							<td><span>08</span></td>
+							<td><span>09</span></td>
+							<td><span>10</span></td>
+							<td><span>11</span></td>
+							<td><span>12</span></td>
+							<td><span>13</span></td>
+							<td><span>14</span></td>
+							<td><span>15</span></td>
+							<td><span>16</span></td>
+							<td><span>17</span></td>
+							<td><span>18</span></td>
+							<td><span>19</span></td>
+							<td><span>20</span></td>
+							<td><span>21</span></td>
+							<td><span>22</span></td>
+							<td><span>23</span></td>
 						</tr>
 					</table>
+					
+					<input type="text" class="workinghours" id="workinghours_{ dayid }" name="workinghours[{ dayid }]" value="{ workinghours }" />
+					
+					<label for="dispdays_{ dayid }">{ t_dispday }</label> : 
+					<input  type="checkbox" name="dispdays[]" id="dispdays_{ dayid }" value="{ dayid }"  { disp_selected } />
 				</div>
 				<!--#endin getnextshortday -->
 
@@ -234,6 +247,106 @@
 						td = td.nextSibling;
 					}
 				}
+				
+				function bab_calopt_hourToInt(str) {
+					if ('0' == str.substring(0,1)) {
+						str = str.substring(1,2);
+					}
+					return parseInt(str);
+				}
+				
+				/**
+				 * @return int
+				 */
+				function bab_calopt_tdVal(td) {
+					span = td.childNodes[0];
+					while (span.nodeType != 1) {
+						span = span.nextSibling;
+					}
+					return bab_calopt_hourToInt(span.innerHTML);
+				}
+				
+				
+				function bab_calopt_tableToText(table) {
+				
+					var tds = table.getElementsByTagName('td');
+					var currentval = null;
+					var currentstart = null;
+					var periods = new Array();
+					for(var i = 0; i < tds.length; i++) {
+
+						val = bab_calopt_tdVal(tds[i]);
+						
+						
+						if (null == currentval && 'selected' == tds[i].className) {
+							//start period
+							currentval = val;
+							currentstart = val;
+							
+						} else if (currentval+1 == val && 'selected' == tds[i].className) {
+							currentval = val;
+							
+						} else if (null != currentstart) {
+							// add period
+							periods[periods.length] = currentstart+'-'+val;
+							currentstart = null;
+							currentval = null;
+						} 
+					}
+					
+					
+					
+					var wday = table.id.substring(table.id.length-1,table.id.length);
+					var field = document.getElementById('workinghours_'+wday);
+					field.value = periods.join(',');
+				}
+				
+				
+				function bab_calopt_click_td(td) {
+				
+					table = td;
+					while (table && table.nodeName != 'TABLE') {
+						table = table.parentNode;
+					}
+
+
+					if ('selected' == td.className) {
+						bab_calopt_clearclass(td);
+						bab_calopt_tableToText(table);
+						return;
+					}
+
+					wtd = window['bab_calopt_lastclick_td'];
+
+					if (window['bab_calopt_lastclick_table'] == table && 
+						bab_calopt_tdVal(wtd) <= bab_calopt_tdVal(td)) {
+
+
+						bab_calopt_browse(function(table, td) {
+							if ('waiting' == td.className) {
+								td.className = '';
+							}
+						});
+						
+
+
+						while (td != wtd) {
+							wtd.className = 'selected';
+							wtd = wtd.nextSibling;
+						}
+						
+						wtd.className = 'selected';
+						
+						window['bab_calopt_lastclick_table'] = null;
+						window['bab_calopt_lastclick_td'] = null;
+					} else {
+						window['bab_calopt_lastclick_table'] = table;
+						window['bab_calopt_lastclick_td'] = td;
+						td.className = 'waiting';
+					}
+					
+					bab_calopt_tableToText(table);
+				}
 
 
 				function bab_calopt_init() {
@@ -243,43 +356,34 @@
 
 					bab_calopt_browse(function(table, td) {
 						td.onclick=function() {
-
-							table = this.parentNode.parentNode;
-							td = this;
-
-							if ('selected' == td.className) {
-								bab_calopt_clearclass(td);
-								return;
-							}
-
-							wtd = window['bab_calopt_lastclick_td'];
-
-							if (window['bab_calopt_lastclick_table'] == table && 
-								wtd.innerHTML < td.innerHTML) {
-
-
-								bab_calopt_browse(function(table, td) {
-									if ('waiting' == td.className) {
-										td.className = '';
-									}
-								});
-
-								while (td != wtd) {
-									wtd.className = 'selected';
-									wtd = wtd.nextSibling;
-								}
-								wtd.className = 'selected';
-								
-								window['bab_calopt_lastclick_table'] = null;
-								window['bab_calopt_lastclick_td'] = null;
-							} else {
-								window['bab_calopt_lastclick_table'] = table;
-								window['bab_calopt_lastclick_td'] = td;
-								td.className = 'waiting';
-							}
+							bab_calopt_click_td(this);
 						};
 					}
-					)
+					);
+					
+					for (var i = 0 ; i < 6; i++) {
+					
+						var field = document.getElementById('workinghours_'+i).value;
+						
+						if (field) {
+							var periods = field.split(',');
+							var table = document.getElementById('bab_calopt_day_'+i);
+							var tds = table.getElementsByTagName('td');
+							
+							for(var j = 0; j < periods.length; j++) {
+								var hours = periods[j].split('-');
+	
+								var begin = hours[0].split(':');
+								var end = hours[1].split(':');
+								
+								begin = bab_calopt_hourToInt(begin[0]);
+								end = bab_calopt_hourToInt(end[0])-1;
+								
+								bab_calopt_click_td(tds[begin]);
+								bab_calopt_click_td(tds[end]);
+							}
+						}
+					}
 				}
 
 
@@ -290,6 +394,23 @@
 		</td>
 	</tr>
 
+	
+	</table>
+</td>
+</tr>
+</table>
+
+<br>
+<table  width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+	<table  width="100%" border="0" cellspacing="0" cellpadding="5" class="BabLoginMenuBackground">
+	<tr align="center" > 
+	<td  colspan="2">
+		<h5>{ caloptionstxt }</h5>
+		
+	</td>
+	</tr>
 	<tr align="center"> 
 		<td colspan="2">
 			<table border="1" cellspacing="0" cellpadding="5" >
@@ -323,19 +444,6 @@
 				</tr>
 			</table>
 		</td>
-	</tr>
-	</table>
-</td>
-</tr>
-</table>
-
-<br>
-<table  width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground" align="center" valign="middle"> 
-	<table  width="100%" border="0" cellspacing="0" cellpadding="5" class="BabLoginMenuBackground">
-	<tr align="center" > 
-	<td  colspan="2" nowrap><h5>{ caloptionstxt }</h5></td>
 	</tr>
 	<tr> 
 		<td align="right">{ allday }</td>
@@ -380,8 +488,9 @@
 </tr>
 </table>
 <br>
-<input type="submit" name="submit" value="{ modify }" />
-
+<div align="center">
+	<input type="submit" name="submit" value="{ modify }" />
+</div>
 </form>
 <!--#end caloptions2 -->
 
