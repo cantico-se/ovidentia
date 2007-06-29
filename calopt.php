@@ -327,6 +327,7 @@ function calendarOptions($calid, $urla)
 				{
 				$this->disp_selected = in_array($i, $this->dispdays) ? "checked" : "";
 				$this->dayid = $i;
+				$this->shortday = bab_toHtml($babDays[$i]);
 
 				if ($this->halfday) {
 				
@@ -338,7 +339,7 @@ function calendarOptions($calid, $urla)
 				} else {
 
 					
-					$this->shortday = $babDays[$i];
+					
 					
 					$arr = bab_getWHours($GLOBALS['BAB_SESS_USERID'], $i);
 					$tmp = array();
