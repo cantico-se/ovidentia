@@ -6,7 +6,7 @@
 
 #bab_calopt_days td {
 	border:#000 1px solid;
-	
+	cursor:pointer;
 }
 
 #bab_calopt_days .workinghours {
@@ -29,6 +29,7 @@
 
 #bab_calopt_days .selected {
 	background:blue;
+	cursor:crosshair;
 }
 
 
