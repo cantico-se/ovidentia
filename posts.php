@@ -1103,6 +1103,7 @@ function updateReply($forum, $thread, $subject, $post)
 	{
 	global $babBody, $babDB, $moderator, $BAB_SESS_USERID;
 
+	include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 	$editor = new bab_contentEditor('bab_forum_post');
 	$message = $editor->getContent();
 	
