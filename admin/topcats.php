@@ -521,7 +521,7 @@ class bab_AdmArticleTreeView extends bab_ArticleTreeView
 			
 			$sDelTopicUrl = $GLOBALS['babUrlScript'] . '?tg=topic&idx=Delete&topdel=dummy&item=' . $iId . '&cat=' . $iIdParent;
 			$oElement->addAction(
-				'delCateg', bab_toHtml(bab_translate("Delete topic category")), 
+				'delCateg', bab_toHtml(bab_translate("Delete the topic")), 
 				$GLOBALS['babSkinPath'] . 'images/Puces/edit_remove.png', $sDelTopicUrl, '');
 			
 			$sRightUrl = $GLOBALS['babUrlScript'] . '?tg=topic&idx=rights&item=' . $iId . '&cat=' . $iIdParent;
