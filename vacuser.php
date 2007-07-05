@@ -361,12 +361,12 @@ function period($id_user, $id = 0)
 				$date_end			= BAB_DateTime::fromIsoDateTime($arr['date_end']);
 
 				$this->yearbegin	= $date_begin->getYear();
-				$this->monthbegin	= sprintf('%02d',$date_begin->getMonth());
-				$this->daybegin		= sprintf('%02d',$date_begin->getDayOfMonth());
+				$this->monthbegin	= $date_begin->getMonth();
+				$this->daybegin		= $date_begin->getDayOfMonth();
 
 				$this->yearend		= $date_end->getYear();
-				$this->monthend		= sprintf('%02d',$date_end->getMonth());
-				$this->dayend		= sprintf('%02d',$date_end->getDayOfMonth());
+				$this->monthend		= $date_end->getMonth();
+				$this->dayend		= $date_end->getDayOfMonth();
 
 				$this->halfdaybegin = 'am' === date('a', $date_begin->getTimeStamp())	? 0 : 1;
 				$this->halfdayend	= 'am' === date('a', $date_end->getTimeStamp())		? 0 : 1;

@@ -758,8 +758,6 @@ function updateVacationRequest($daybegin, $monthbegin, $yearbegin,$dayend, $mont
 	global $babBody, $babDB;
 	$nbdays = array();
 
-	$row = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'"));
-
 	$res = $babDB->db_query("select * from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry='".$babDB->db_escape_string($vrid)."'");
 
 	$ntotal = 0;
@@ -817,6 +815,21 @@ function updateVacationRequest($daybegin, $monthbegin, $yearbegin,$dayend, $mont
 		$babBody->msgerror = bab_translate("ERROR: End date must be older")." !";
 		return false;
 	}
+	
+	$res = $babDB->db_query("
+		SELECT 
+			date_begin,
+			date_end,
+			id_user 
+		FROM ".BAB_VAC_ENTRIES_TBL." 
+		WHERE 
+			id='".$babDB->db_escape_string($vrid)."'
+		");
+		
+	$old = $babDB->db_fetch_assoc($res);
+	
+	$old_begin = bab_mktime($old['date_begin']);
+	$old_end = bab_mktime($old['date_end']);
 
 
 	$b = date('Y-m-d H:i:s', $begin);
@@ -841,8 +854,16 @@ function updateVacationRequest($daybegin, $monthbegin, $yearbegin,$dayend, $mont
 			$babDB->db_query("delete from ".BAB_VAC_ENTRIES_ELEM_TBL." where id='".$babDB->db_escape_string($nbdays['id'][$i])."'");
 		}
 	}
+	
+	
+	$period_begin	= $old_begin 	< $begin 	? $old_begin 	: $begin;
+	$period_end 	= $old_end 		> $end 		? $old_end 		: $end;
+	
 
-	bab_vac_updateEventCalendar($vrid);
+	include_once $GLOBALS['babInstallPath']."utilit/eventperiod.php";
+	$event = new bab_eventPeriodModified($period_begin, $period_end, $old['id_user']);
+	$event->types = BAB_PERIOD_VACATION;
+	bab_fireEvent($event);
 	
 	return true;
 }
