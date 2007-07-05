@@ -2123,7 +2123,7 @@ function bab_vac_clearUserCalendar($id_user = NULL) {
 
 /**
  * Update calendar data overlapped with event
- * @param int $id_event
+ * @param 	int 	$id_event
  */
 function bab_vac_updateEventCalendar($id_entry) {
 	global $babDB;
