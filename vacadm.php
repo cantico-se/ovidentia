@@ -835,6 +835,11 @@ function updateVacationType($vtid, $tname, $description, $quantity, $tcolor, $cb
 		WHERE  
 			id='".$babDB->db_escape_string($vtid)."'";
 	$res = $babDB->db_query($req);
+	
+	
+	// clear planning cache
+	$babDB->db_query("DELETE FROM ".BAB_VAC_CALENDAR_TBL."");
+	
 	return true;
 	}
 
