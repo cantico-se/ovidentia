@@ -790,8 +790,7 @@ function confirmWaitingVacation($id)
 			$this->fullname		= bab_toHtml(bab_getUserName($row['id_user']));
 			$this->remark = bab_toHtml($row['comment'], BAB_HTML_ALL);
 			
-			$tmp = (($this->end - $this->begin) / 86400) * 2;
-			$this->totaldates = round($tmp) / 2;
+			 $this->totaldates = bab_vac_getFreeDaysBetween($this->id_user, $this->begin, $this->end, true);
 
 			$rights = bab_getRightsOnPeriod($row['date_begin'], $row['date_end'], $row['id_user']);
 			$this->negative = array();
@@ -822,12 +821,12 @@ function confirmWaitingVacation($id)
 			if( $i < $this->count)
 				{
 				$arr = $babDB->db_fetch_array($this->res);
-				$this->typename = bab_toHtml($arr['description']);
-				$this->nbdays = bab_toHtml($arr['quantity']);
+				
+				$this->nbdays = $arr['quantity'];
 				$this->alert = isset($this->negative[$arr['id_right']]) ? $this->negative[$arr['id_right']] : false;
 
 				$this->totalval += $this->nbdays;
-				$this->totalval = bab_toHtml($this->totalval);
+				$this->typename = bab_toHtml($arr['description']);
 				$i++;
 				return true;
 				}
@@ -837,8 +836,8 @@ function confirmWaitingVacation($id)
 			}
 
 		function getmatch() {
-			$this->nomatch = 43200 < abs($this->totalval*86400 - ($this->end - $this->begin));
-			return false;
+			$this->nomatch = $this->totalval !== $this->totaldates;
+            return false;
 			}
 		}
 
