@@ -800,7 +800,7 @@ function deleteVacationRequest($id)
 
 				$this->t_deleteconfirm = bab_translate("Do you really want to delete the vacation request ?");
 
-				$this->url = $_SERVER['HTTP_REFERER'];
+				$this->url = isset($_REQUEST['from']) ? $_REQUEST['from'] : $_SERVER['HTTP_REFERER'];
 				$this->t_delete = bab_translate("Delete");
 			}
 
