@@ -1493,6 +1493,7 @@ define('BAB_ARTICLE_TREE_VIEW_SELECTABLE_CATEGORIES',				 8);
 define('BAB_ARTICLE_TREE_VIEW_SELECTABLE_TOPICS',					16);
 define('BAB_ARTICLE_TREE_VIEW_SELECTABLE_ARTICLES',					32);
 define('BAB_ARTICLE_TREE_VIEW_SHOW_ROOT_NODE',						64);
+define('BAB_ARTICLE_TREE_VIEW_HIDE_DELEGATIONS',					128);
 
 define('BAB_ARTICLE_TREE_VIEW_READ_ARTICLES',						 1);
 define('BAB_ARTICLE_TREE_VIEW_SUBMIT_ARTICLES',						 2);
@@ -1596,7 +1597,7 @@ class bab_ArticleTreeView extends bab_TreeView
 				$where = array();
 				$sql = 'SELECT topics.id, topics.id_cat, topics.description, topics.category';
 				$sql .= ' FROM ' . BAB_TOPICS_TBL . ' topics';
-				if ($babBody->currentAdmGroup != 0) {
+				if ($this->_attributes & BAB_ARTICLE_TREE_VIEW_HIDE_DELEGATIONS) {
 					$sql .= ' LEFT JOIN ' . BAB_TOPICS_CATEGORIES_TBL . ' AS categories ON topics.id_cat=categories.id';
 					$where[] = 'categories.id_dgowner=' . $babDB->quote($babBody->currentAdmGroup);
 				}
@@ -1610,7 +1611,7 @@ class bab_ArticleTreeView extends bab_TreeView
 			default:
 				$sql = 'SELECT topics.id, topics.id_cat, topics.description, topics.category'
 				    . ' FROM ' . BAB_TOPICS_TBL . ' AS topics';
-				if ($babBody->currentAdmGroup != 0) {
+				if ($this->_attributes & BAB_ARTICLE_TREE_VIEW_HIDE_DELEGATIONS) {
 					$sql .= ' LEFT JOIN ' . BAB_TOPICS_CATEGORIES_TBL . ' AS categories ON topics.id_cat=categories.id';
 					$sql .= ' WHERE categories.id_dgowner=' . $babDB->quote($babBody->currentAdmGroup);
 				}
@@ -1675,7 +1676,7 @@ class bab_ArticleTreeView extends bab_TreeView
 		}
 		
 		$sql = 'SELECT id, title, description, id_parent, enabled FROM ' . BAB_TOPICS_CATEGORIES_TBL;
-		if ($babBody->currentAdmGroup != 0) {
+		if ($this->_attributes & BAB_ARTICLE_TREE_VIEW_HIDE_DELEGATIONS) {
 			$sql .= ' WHERE id_dgowner=' . $babDB->quote($babBody->currentAdmGroup);
 		}
 		$elementType = 'category';
