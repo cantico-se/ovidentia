@@ -80,6 +80,16 @@ function topcatModify($id)
 			$this->arr['title'] = htmlentities($this->arr['title']);
 			$this->arr['description'] = htmlentities($this->arr['description']);
 			$this->idp = $this->arr['id_parent'];
+
+			if( $this->idp == 0 && $babBody->currentAdmGroup )
+				{
+				$this->bdelete = false;
+				}
+			else
+				{
+				$this->bdelete = true;
+				}
+
 			if( $this->arr['enabled'] == "Y")
 				{
 				$this->noselected = "";
@@ -243,7 +253,7 @@ function topcatDelete($id, $idp)
 			}
 		}
 
-	if( $idp == 0 )
+	if( $idp == 0 && $babBody->currentAdmGroup)
 		{
 		$babBody->msgerror = bab_translate("This topic category can't be deleted");
 		return false;
@@ -317,10 +327,10 @@ function modifyTopcat($oldname, $name, $description, $benabled, $id, $template, 
 
 function confirmDeleteTopcat($id)
 	{
-	global $babDB;
+	global $babBody, $babDB;
 
 	list($idparent) = $babDB->db_fetch_array($babDB->db_query("select id_parent from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
-	if( !$idparent )
+	if( !$idparent && $babBody->currentAdmGroup)
 		{
 		$babBody->msgerror = bab_translate("This topic category can't be deleted");
 		return false;

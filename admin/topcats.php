@@ -27,6 +27,112 @@ include_once $babInstallPath."utilit/topincl.php";
 require_once $babInstallPath . 'utilit/tree.php';
 
 
+class bab_AdmArticleTreeView extends bab_ArticleTreeView
+{
+	function bab_AdmArticleTreeView($sId)
+	{
+		parent::bab_ArticleTreeView($sId);
+	}
+
+	function onElementAppended(&$oElement, $sIdParent)
+	{
+		global $babBody;
+
+		if('categoryroot' == $oElement->_type)
+		{
+			if( !$babBody->currentAdmGroup )
+			{
+			$sAddCategUrl = $GLOBALS['babUrlScript'] . '?tg=topcats&idx=Create&idp=0';
+			$oElement->addAction(
+				'addCateg', bab_toHtml(bab_translate("Create a topic category")), 
+				$GLOBALS['babSkinPath'] . 'images/Puces/add_category.png', $sAddCategUrl, '');
+			}
+				
+			$sOrderUrl = $GLOBALS['babUrlScript'] . '?tg=topcats&idx=Order&idp=0';
+			$oElement->addAction(
+				'order', bab_toHtml(bab_translate("Order")), 
+				$GLOBALS['babSkinPath'] . 'images/Puces/z-a.gif', $sOrderUrl, '');
+		}
+		else if('category' == $oElement->_type)
+		{
+			$iIdParent = $this->getId($sIdParent);
+			$iId = $this->getId($oElement->_id);
+			
+			$sAddCategUrl = $GLOBALS['babUrlScript'] . '?tg=topcats&idx=Create&idp=' . $iId;
+			$oElement->addAction(
+				'addCateg', bab_toHtml(bab_translate("Create a topic category")), 
+				$GLOBALS['babSkinPath'] . 'images/Puces/add_category.png', $sAddCategUrl, '');
+			
+			$sDelCategUrl = $GLOBALS['babUrlScript'] . '?tg=topcat&idx=Delete&catdel=dummy&item=' . $iId . '&idp=' . $iIdParent;
+			$oElement->addAction(
+				'delCateg', bab_toHtml(bab_translate("Delete topic category")), 
+				$GLOBALS['babSkinPath'] . 'images/Puces/edit_remove.png', $sDelCategUrl, '');
+				
+			$sAddTopicUrl = $GLOBALS['babUrlScript'] . '?tg=topics&idx=addtopic&cat=' . $iId;
+			$oElement->addAction(
+				'addTopic', bab_toHtml(bab_translate("Create new topic")), 
+				$GLOBALS['babSkinPath'] . 'images/Puces/add_topic.png', $sAddTopicUrl, '');
+				
+			$sOrderUrl = $GLOBALS['babUrlScript'] . '?tg=topcats&idx=Order&idp=' . $iId;
+			$oElement->addAction(
+				'order', bab_toHtml(bab_translate("Order")), 
+				$GLOBALS['babSkinPath'] . 'images/Puces/z-a.gif', $sOrderUrl, '');
+
+
+			if('N' == $this->_datas['enabled'])
+			{
+				$sEnableDisableUrl = $GLOBALS['babUrlScript'] . '?tg=topcats&update=enable&iIdTopCat=' . $iId;
+				$oElement->addAction(
+					'enableDisable', bab_toHtml(bab_translate("Activate the section")), 
+					$GLOBALS['babSkinPath'] . 'images/Puces/action_success.gif', $sEnableDisableUrl, '');
+			}
+			else 
+			{
+				$sEnableDisableUrl = $GLOBALS['babUrlScript'] . '?tg=topcats&update=disable&iIdTopCat=' . $iId;
+				$oElement->addAction(
+					'enableDisable', bab_toHtml(bab_translate("Desactivate the section")), 
+					$GLOBALS['babSkinPath'] . 'images/Puces/action_fail.gif', $sEnableDisableUrl, '');
+			}
+
+
+			$oElement->setLink($GLOBALS['babUrlScript'] . '?tg=topcat&idx=Modify&item=' . $iId . '&idp=' . $iIdParent);
+		}
+		else if('topic' == $oElement->_type)
+		{
+			$iIdParent = $this->getId($sIdParent);
+			$iId = $this->getId($oElement->_id);
+			
+			$sDelTopicUrl = $GLOBALS['babUrlScript'] . '?tg=topic&idx=Delete&topdel=dummy&item=' . $iId . '&cat=' . $iIdParent;
+			$oElement->addAction(
+				'delCateg', bab_toHtml(bab_translate("Delete the topic")), 
+				$GLOBALS['babSkinPath'] . 'images/Puces/edit_remove.png', $sDelTopicUrl, '');
+			
+			$sRightUrl = $GLOBALS['babUrlScript'] . '?tg=topic&idx=rights&item=' . $iId . '&cat=' . $iIdParent;
+			$oElement->addAction(
+				'right', bab_toHtml(bab_translate("Rights")), 
+				$GLOBALS['babSkinPath'] . 'images/Puces/access.png', $sRightUrl, '');
+
+			$oElement->setLink($GLOBALS['babUrlScript'] . '?tg=topic&idx=Modify&item=' . $iId . '&cat=' . $iIdParent);
+		}
+
+	}
+	
+	function getId($sId)
+	{
+		static $iIdIdx = 1;
+		if(!is_null($sId))
+		{
+			$aExploded = explode(BAB_TREE_VIEW_ID_SEPARATOR, $sId);
+			if(count($aExploded) == 2)
+			{
+				return $aExploded[$iIdIdx];
+			}
+		}
+		return 0;
+	}
+}
+	
+
 function topcatCreate($idp)
 	{
 	global $babBody;
@@ -448,109 +554,6 @@ elseif( isset($update))
 		saveOrderTopcats($idp, $listtopcats);
 		}
 	}
-
-class bab_AdmArticleTreeView extends bab_ArticleTreeView
-{
-	function bab_AdmArticleTreeView($sId)
-	{
-		parent::bab_ArticleTreeView($sId);
-	}
-
-	function onElementAppended(&$oElement, $sIdParent)
-	{
-		if('categoryroot' == $oElement->_type)
-		{
-			$sAddCategUrl = $GLOBALS['babUrlScript'] . '?tg=topcats&idx=Create&idp=0';
-			$oElement->addAction(
-				'addCateg', bab_toHtml(bab_translate("Create a topic category")), 
-				$GLOBALS['babSkinPath'] . 'images/Puces/add_category.png', $sAddCategUrl, '');
-				
-			$sOrderUrl = $GLOBALS['babUrlScript'] . '?tg=topcats&idx=Order&idp=0';
-			$oElement->addAction(
-				'order', bab_toHtml(bab_translate("Order")), 
-				$GLOBALS['babSkinPath'] . 'images/Puces/z-a.gif', $sOrderUrl, '');
-		}
-		else if('category' == $oElement->_type)
-		{
-			$iIdParent = $this->getId($sIdParent);
-			$iId = $this->getId($oElement->_id);
-			
-			$sAddCategUrl = $GLOBALS['babUrlScript'] . '?tg=topcats&idx=Create&idp=' . $iId;
-			$oElement->addAction(
-				'addCateg', bab_toHtml(bab_translate("Create a topic category")), 
-				$GLOBALS['babSkinPath'] . 'images/Puces/add_category.png', $sAddCategUrl, '');
-			
-			$sDelCategUrl = $GLOBALS['babUrlScript'] . '?tg=topcat&idx=Delete&catdel=dummy&item=' . $iId . '&idp=' . $iIdParent;
-			$oElement->addAction(
-				'delCateg', bab_toHtml(bab_translate("Delete topic category")), 
-				$GLOBALS['babSkinPath'] . 'images/Puces/edit_remove.png', $sDelCategUrl, '');
-				
-			$sAddTopicUrl = $GLOBALS['babUrlScript'] . '?tg=topics&idx=addtopic&cat=' . $iId;
-			$oElement->addAction(
-				'addTopic', bab_toHtml(bab_translate("Create new topic")), 
-				$GLOBALS['babSkinPath'] . 'images/Puces/add_topic.png', $sAddTopicUrl, '');
-				
-			$sOrderUrl = $GLOBALS['babUrlScript'] . '?tg=topcats&idx=Order&idp=' . $iId;
-			$oElement->addAction(
-				'order', bab_toHtml(bab_translate("Order")), 
-				$GLOBALS['babSkinPath'] . 'images/Puces/z-a.gif', $sOrderUrl, '');
-
-
-			if('N' == $this->_datas['enabled'])
-			{
-				$sEnableDisableUrl = $GLOBALS['babUrlScript'] . '?tg=topcats&update=enable&iIdTopCat=' . $iId;
-				$oElement->addAction(
-					'enableDisable', bab_toHtml(bab_translate("Activate the section")), 
-					$GLOBALS['babSkinPath'] . 'images/Puces/action_success.gif', $sEnableDisableUrl, '');
-			}
-			else 
-			{
-				$sEnableDisableUrl = $GLOBALS['babUrlScript'] . '?tg=topcats&update=disable&iIdTopCat=' . $iId;
-				$oElement->addAction(
-					'enableDisable', bab_toHtml(bab_translate("Desactivate the section")), 
-					$GLOBALS['babSkinPath'] . 'images/Puces/action_fail.gif', $sEnableDisableUrl, '');
-			}
-
-
-			$oElement->setLink($GLOBALS['babUrlScript'] . '?tg=topcat&idx=Modify&item=' . $iId . '&idp=' . $iIdParent);
-		}
-		else if('topic' == $oElement->_type)
-		{
-			$iIdParent = $this->getId($sIdParent);
-			$iId = $this->getId($oElement->_id);
-			
-			$sDelTopicUrl = $GLOBALS['babUrlScript'] . '?tg=topic&idx=Delete&topdel=dummy&item=' . $iId . '&cat=' . $iIdParent;
-			$oElement->addAction(
-				'delCateg', bab_toHtml(bab_translate("Delete the topic")), 
-				$GLOBALS['babSkinPath'] . 'images/Puces/edit_remove.png', $sDelTopicUrl, '');
-			
-			$sRightUrl = $GLOBALS['babUrlScript'] . '?tg=topic&idx=rights&item=' . $iId . '&cat=' . $iIdParent;
-			$oElement->addAction(
-				'right', bab_toHtml(bab_translate("Rights")), 
-				$GLOBALS['babSkinPath'] . 'images/Puces/access.png', $sRightUrl, '');
-
-			$oElement->setLink($GLOBALS['babUrlScript'] . '?tg=topic&idx=Modify&item=' . $iId . '&cat=' . $iIdParent);
-		}
-
-	}
-	
-	function getId($sId)
-	{
-		static $iIdIdx = 1;
-		if(!is_null($sId))
-		{
-			$aExploded = explode(BAB_TREE_VIEW_ID_SEPARATOR, $sId);
-			if(count($aExploded) == 2)
-			{
-				return $aExploded[$iIdIdx];
-			}
-		}
-		return 0;
-	}
-}
-	
-
-
 
 switch($idx)
 	{
