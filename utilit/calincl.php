@@ -434,7 +434,7 @@ class bab_icalendars
 		global $babDB;
 		$this->busercal = true;
 
-		$res = $babDB->db_query("select cut.*, ct.owner from ".BAB_CALACCESS_USERS_TBL." cut left join ".BAB_CALENDAR_TBL." ct on ct.id=cut.id_cal where id_user='".$babDB->db_escape_string($this->iduser)."' and ct.actif='Y'");
+		$res = $babDB->db_query("select cut.*, ct.owner from ".BAB_CALACCESS_USERS_TBL." cut left join ".BAB_CALENDAR_TBL." ct on ct.id=cut.id_cal left join ".BAB_USERS_TBL." u on u.id=ct.owner where id_user='".$babDB->db_escape_string($this->iduser)."' and ct.actif='Y' and disabled='0'");
 
 		while( $arr = $babDB->db_fetch_array($res))
 		{
