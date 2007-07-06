@@ -2444,7 +2444,7 @@
 <string id="This topic category can't be deleted">Cette catégorie d'articles ne peut pas être supprimée</string>
 <string id="ACL delegation">Les droits ACL de la délégation</string>
 <string id="ACL to use with this delegation">Groupes à utiliser pour les droits ACL</string>
-<string id="ACL broken. Please resubmit the form">Droits non compatibles avec les ACL. Soumettez le formulaire de nouveau.</string>
+<string id="ACL broken. Please resubmit the form">Attention : les droits d'accès ne sont pas conformes à ceux définis par l'administrateur. Veuillez les réenregistrer afin de prendre en compte les nouveaux changements.</string>
 <string id="Repeat date must be older than end date">La date de fin de période doit être postérieure à la date de fin de l'événement</string>
 <string id="Activate the section">Activer la section</string>
 <string id="Desactivate the section">Désactiver la section</string>
