@@ -1048,7 +1048,7 @@ CREATE TABLE bab_ini (
 
 INSERT INTO bab_ini VALUES ('ver_major', '6');
 INSERT INTO bab_ini VALUES ('ver_minor', '4');
-INSERT INTO bab_ini VALUES ('ver_build', '90');
+INSERT INTO bab_ini VALUES ('ver_build', '91');
 INSERT INTO bab_ini VALUES ('ver_prod', 'E');
 
 #
@@ -1105,6 +1105,7 @@ CREATE TABLE bab_far_instances (
   iduser int(11) NOT NULL default '0',
   result char(1) NOT NULL default '',
   notified enum('N','Y') NOT NULL default 'N',
+  far_order int(11) unsigned NOT NULL default '0',
   PRIMARY KEY  (id)
 );
 
