@@ -829,7 +829,8 @@ function viewVacationCalendar($users, $period = false )
 					$this->am_text = '';
 					$this->pm_text = '';
 
-					
+					$this->am_clickable = false;
+					$this->pm_clickable = false;
 
 					$period_am = $this->previous_period;
 					
@@ -858,10 +859,12 @@ function viewVacationCalendar($users, $period = false )
 
 					} elseif (BAB_PERIOD_WORKING == $period_am['period_type']) {
 						$this->am_classname = $this->period ? 'free' : 'default';
+						$this->am_clickable = true;
 
 					} elseif (BAB_PERIOD_VACATION == $period_am['period_type']) {
 
 						if ($period_am['id_entry'] == $this->id_request) {
+							$this->am_clickable = true;
 							$this->am_classname = 'period';
 						} else {
 							if ('' == $period_am['status']) {
@@ -879,10 +882,12 @@ function viewVacationCalendar($users, $period = false )
 
 					if (BAB_PERIOD_WORKING == $period_pm['period_type']) {
 						$this->pm_classname = $this->period ? 'free' : 'default';
+						$this->pm_clickable = true;
 
 					} elseif (BAB_PERIOD_VACATION == $period_pm['period_type']) {
 						
 						if ($period_pm['id_entry'] == $this->id_request) {
+							$this->pm_clickable = true;
 							$this->pm_classname = 'period';
 						} else {
 							if ('' == $period_pm['status']) {

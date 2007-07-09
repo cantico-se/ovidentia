@@ -527,8 +527,8 @@ close }</a> </td>
 		<td class="{ day_classname }" <!--#if tdtext --> title="{ tdtext }"<!--#endif tdtext -->>
 		
 			<!--#if halfday -->
-			<div id="d.{ date }.0" class="{ am_classname }" <!--#if am_color --> style="background-color:#{ am_color }"<!--#endif am_color -->  title="{ am_text }" <!--#if am_classname "== free" --> onclick="setPeriod(this)"<!--#endif am_classname -->></div>
-			<div id="d.{ date }.1" class="{ pm_classname }" <!--#if pm_color --> style="background-color:#{ pm_color }"<!--#endif pm_color -->  title="{ pm_text }" <!--#if pm_classname "== free" --> onclick="setPeriod(this)"<!--#endif pm_classname -->></div>
+			<div id="d.{ date }.0" class="{ am_classname }" <!--#if am_color --> style="background-color:#{ am_color }"<!--#endif am_color -->  title="{ am_text }" <!--#if am_clickable --> onclick="setPeriod(this)"<!--#endif am_clickable -->></div>
+			<div id="d.{ date }.1" class="{ pm_classname }" <!--#if pm_color --> style="background-color:#{ pm_color }"<!--#endif pm_color -->  title="{ pm_text }" <!--#if pm_clickable --> onclick="setPeriod(this)"<!--#endif pm_clickable -->></div>
 			<!--#endif halfday -->
 		</td> 
 		<!--#endin getday -->
