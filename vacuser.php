@@ -141,7 +141,7 @@ function requestVacation($begin,$end, $halfdaybegin, $halfdayend, $id)
 			$begin	= $date_begin->getTimeStamp();
 			$end	= $date_end->getTimeStamp();
 
-			$this->period_nbdays = bab_vac_getFreeDaysBetween($this->id_user, $begin, $end);
+			$this->period_nbdays = bab_vac_getFreeDaysBetween($this->id_user, $begin, $end, true);
 
 			$this->t_days = bab_translate("Day(s)");
 
