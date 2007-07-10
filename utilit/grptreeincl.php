@@ -67,31 +67,17 @@ class bab_grptree extends bab_dbtree
 		}
 	}
 
-	function getGroups($id_parent, $format = '%2$s > ')
+	function getGroups($id_parent, $format = '%2$s > ', $all = true)
 	{
 	$grp = array();
 	$prefix = array();
 
-	$groups = $this->getChilds($id_parent, 1);
-
-
-	if (!$groups)
-		{
-		$id_parent = $this->firstnode;
-		$groups = $this->getChilds($this->firstnode, 1);
-		if (!$groups)
-			$groups = array();
-
-		array_unshift ($groups, $this->getNodeInfo($id_parent));
-		}
-
+	$groups = $this->getChilds($id_parent, $all);
 
 	if ($id_parent === $this->firstnode_parent)
 		{
 		array_unshift ($groups, $this->getNodeInfo($id_parent));
 		}
-
-	
 
 	foreach ($groups as $arr)
 		{
