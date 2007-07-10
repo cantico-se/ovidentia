@@ -1116,12 +1116,12 @@ function bab_getGroupName($id, $fpn=true)
 		}
 	}
 
-function bab_getGroups()
+function bab_getGroups($parent=BAB_REGISTERED_GROUP, $all=true)
 	{
 	include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
 
 	$tree = new bab_grptree();
-	$groups = $tree->getGroups(BAB_REGISTERED_GROUP);
+	$groups = $tree->getGroups($parent, '%2$s > ', $all);
 	$arr = array();
 	foreach ($groups as $row)
 		{
