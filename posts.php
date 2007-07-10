@@ -1310,7 +1310,7 @@ $babLevelTwo = bab_getForumName($forum);
 switch($idx)
 	{
 	case 'viewp':
-		if( $moderator )
+		if( $moderator || bab_isAccessValid(BAB_FORUMSVIEW_GROUPS_TBL, $forum))
 			{
 			viewPost($thread, $post);
 			exit;
