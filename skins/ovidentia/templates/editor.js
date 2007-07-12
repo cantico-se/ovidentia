@@ -79,7 +79,7 @@ var global_editor = null;
 	config.registerButton({
 	  id        : "bab_functions",
 	  tooltip   : "{ t_bab_functions }",
-	  image     : _editor_url + 'images/ed_bab_contdir.gif',
+	  image     : _editor_url + 'images/ovidentia.gif',
 	  textMode  : false,
 	  action    : function(editor, id) {
 					//}
