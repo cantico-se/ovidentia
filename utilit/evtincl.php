@@ -679,7 +679,8 @@ function confirmEvent($evtid, $idcal, $bconfirm, $comment, $bupdrec)
 										$rr['location'], 
 										bab_longDate(bab_mktime($rr['start_date'])), 
 										bab_longDate(bab_mktime($rr['end_date'])), 
-										array($idcal)
+										array($idcal),
+										bab_translate('The following appointment has been validated')
 									);
 								} else {
 									notifyPublicEvent(
@@ -688,7 +689,8 @@ function confirmEvent($evtid, $idcal, $bconfirm, $comment, $bupdrec)
 										$rr['location'], 
 										bab_longDate(bab_mktime($rr['start_date'])), 
 										bab_longDate(bab_mktime($rr['end_date'])), 
-										array($idcal)
+										array($idcal),
+										bab_translate('The following appointment has been validated')
 									);
 								}
 								
