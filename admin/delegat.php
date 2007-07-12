@@ -177,7 +177,7 @@ function groupDelegatModify($gname, $description, $id = '')
 				$this->idGrp = &$this->arr['id_group'];
 				$this->bdel = true;
 				$this->colorvalue = isset($_POST['color']) ? $_POST['color'] : $this->arr['color'] ;
-				$battach = isset($_POST['battach']) ? $_POST['color'] : $this->arr['battach'] ;
+				$battach = isset($_POST['battach']) ? $_POST['battach'] : $this->arr['battach'] ;
 				}
 			else
 				{
