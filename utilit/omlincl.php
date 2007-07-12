@@ -4162,6 +4162,7 @@ class bab_CalendarEvents extends bab_handler
 			$this->ctx->curctx->push('EventCalendarUrl'			, $GLOBALS['babUrlScript']."?tg=calmonth".$calid_param."&date=".$date);
 			$this->ctx->curctx->push('EventCategoriesPopupUrl'	, $GLOBALS['babUrlScript']."?tg=calendar&idx=viewc".$calid_param);
 			$this->ctx->curctx->push('EventCategoryName'		, $p->getProperty('CATEGORIES'));
+			$this->ctx->curctx->push('EventOwner'				, bab_getCalendarOwner($arr['id_cal']));
 				
 			$this->idx++;
 			$this->index = $this->idx;
