@@ -1497,7 +1497,7 @@
 <string id="Personal">Personnel</string>
 <string id="Rights for public calendar">Droits pour un agenda collectif</string>
 <string id="Users groups">Groupes d'utilisateurs</string>
-<string id="Modify event category">Modifer une catégorie d'événement</string>
+<string id="Modify event category">Modifier une catégorie d'événement</string>
 <string id="Resource calendar">Agenda de ressources</string>
 <string id="Public calendar">Agenda Collectif</string>
 <string id="Are you sure you want to delete this calendar">Êtes-vous sûr de vouloir supprimer cet agenda</string>
@@ -1665,7 +1665,7 @@
 <string id="Week-end">Week-end</string>
 <string id="Add/Modify by group">Ajouter/modifier par groupe</string>
 <string id="View calendars">Voir les plannings</string>
-<string id="Add or modify users by group">Ajouter ou modifer les utilisateurs par groupe</string>
+<string id="Add or modify users by group">Ajouter ou modifier les utilisateurs par groupe</string>
 <string id="Old collection">Ancien régime</string>
 <string id="New collection">Nouveau régime</string>
 <string id="You must specify a user">Vous devez spécifier un utilisateur</string>
@@ -2455,6 +2455,12 @@
 <string id="Define working hours">Définir les heures travaillées</string>
 <string id="Working half-days interface">interface des demi-journée travaillées</string>
 
+
+<string id="Repeat date must be older than end date">La date de fin de période doit être postérieure à la date de fin de l'événement</string>
+<string id="Display this day in the calendar">Afficher ce jour dans l'agenda</string>
+<string id="Define working hours">Définir les heures travaillées</string>
+<string id="Working half-days interface">interface des demi-journée travaillées</string>
+<string id="Ovidentia functions">Fonctionalités d'Ovidentia</string>
 
 <string id="Repeat date must be older than end date">La date de fin de période doit être postérieure à la date de fin de l'événement</string>
 <string id="Display this day in the calendar">Afficher ce jour dans l'agenda</string>
