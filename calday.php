@@ -79,7 +79,7 @@ class cal_dayCls extends cal_wmdbaseCls
 
 		function prepare_free_events() {
 			$this->prepare_events();
-			$this->whObj = bab_mcalendars::create_free_events($this->iso_time1, $this->iso_time2, $this->idcals);
+			$this->whObj = bab_mcalendars::create_events($this->iso_time1, $this->iso_time2, $this->idcals);
 		}
 
 		function getnexthour()

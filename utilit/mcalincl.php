@@ -188,14 +188,14 @@ class bab_mcalendars
 		}
 
 	/**
-	 * Create free events
+	 * Create events object
 	 * for all calendars
 	 * @static
 	 * @param	string	$startdate	ISO datetime
 	 * @param	string	$enddate	ISO datetime
-	 * @return	object
+	 * @return	bab_userWorkingHours
 	 */
-	function create_free_events($startdate, $enddate, $idcals) {
+	function create_events($startdate, $enddate, $idcals) {
 		include_once $GLOBALS['babInstallPath']."utilit/workinghoursincl.php";
 		include_once $GLOBALS['babInstallPath']."utilit/dateTime.php";
 
@@ -450,6 +450,7 @@ class cal_wmdbaseCls
 	{
 		global $babBody;
 
+		$this->currentview = 'viewm';
 		$this->currentidcals = $calids;
 		$this->currentdate = $date;
 		$this->idcals = explode(",", $calids);
@@ -517,16 +518,19 @@ class cal_wmdbaseCls
 				$this->monthurl = "";
 				$this->dayurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calday&idx=".$idx."&calid=".$this->currentidcals."&date=".$date);
 				$this->weekurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calweek&idx=".$idx."&calid=".$this->currentidcals."&date=".$date);
+				$this->currentview = 'viewm';
 				break;
 			case "calday":
 				$this->monthurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calmonth&idx=".$idx."&calid=".$this->currentidcals."&date=".$date);
 				$this->dayurl = "";
 				$this->weekurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calweek&idx=".$idx."&calid=".$this->currentidcals."&date=".$date);
+				$this->currentview = 'viewd';
 				break;
 			case "calweek":
 				$this->monthurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calmonth&idx=".$idx."&calid=".$this->currentidcals."&date=".$date);
 				$this->dayurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calday&idx=".$idx."&calid=".$this->currentidcals."&date=".$date);
 				$this->weekurl = "";
+				$this->currentview = 'viewq';
 				break;
 		}
 
@@ -857,7 +861,7 @@ class cal_wmdbaseCls
 		if( $this->allow_modify )
 			{
 			$this->popup		= true;
-			$this->titletenurl	= bab_toHtml($GLOBALS['babUrlScript']."?tg=event&idx=modevent&evtid=".$this->idevent	."&calid=".$this->idcal."&cci=".$this->currentidcals."&view=viewm&date=".$this->currentdate);
+			$this->titletenurl	= bab_toHtml($GLOBALS['babUrlScript']."?tg=event&idx=modevent&evtid=".$this->idevent	."&calid=".$this->idcal."&cci=".$this->currentidcals."&view=".$this->currentview."&date=".$this->currentdate);
 			}
 		elseif( $this->allow_view )
 			{
@@ -1094,7 +1098,7 @@ function cal_getFreeEvents($idcals, $date0, $date1, $gap, $bopt = 0)
 	$sdate = 10 === strlen($date0) ? $date0.' 00:00:00' : $date0;
 	$edate = 10 === strlen($date0) ? $date1.' 23:59:59' : $date1;
 
-	$whObj = bab_mcalendars::create_free_events($sdate, $edate, $idcals);
+	$whObj = bab_mcalendars::create_events($sdate, $edate, $idcals);
 
 	
 	while(  bab_mcalendars::getNextFreeEvent($whObj, $sdate, $edate, $arr, $gap)) {

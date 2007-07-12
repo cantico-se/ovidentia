@@ -1090,7 +1090,6 @@ function addEvent(&$message)
 		$message = bab_translate("End date must be older")." !";
 		return false;
 		}
-	
 
 
 	if( isset($_POST['repeat_cb']) && $_POST['repeat_cb'] != 0)
@@ -1404,10 +1403,25 @@ function eventAvariabilityCheck(&$avariability_message)
 
 
 	// working hours test
-	$free_events = cal_getFreeEvents($calid, $sdate, $edate, 0);
-	if (1 !== count($free_events)) {
+
+	$whObj = bab_mcalendars::create_events($sdate, $edate, $calid);
+	while ($event = $whObj->getNextEvent(BAB_PERIOD_CALEVENT)) {
+		$data = $event->getData();
+		if ((int) $data['id_event'] === (int) $_POST['evtid']) {
+			// considérer l'evenement modifie comme disponible
+			$event->available = true;
+		}
+	}
+
+	$availability = NULL;
+	$whObj->getAvailability($availability);
+	
+	if (false === $availability) {
 		$avariability_message = bab_translate("The event is in conflict with a calendar");
 	}
+	
+	
+	
 
 
 	// events tests
