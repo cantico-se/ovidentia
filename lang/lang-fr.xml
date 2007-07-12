@@ -2455,4 +2455,10 @@
 <string id="Working half-days interface">interface des demi-journée travaillées</string>
 
 
+<string id="Repeat date must be older than end date">La date de fin de période doit être postérieure à la date de fin de l'événement</string>
+<string id="Display this day in the calendar">Afficher ce jour dans l'agenda</string>
+<string id="Define working hours">Définir les heures travaillées</string>
+<string id="Working half-days interface">interface des demi-journée travaillées</string>
+<string id="Ovidentia functions">Fonctionalités d'Ovidentia</string>
+
 </fr>
