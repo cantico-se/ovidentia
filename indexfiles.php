@@ -73,13 +73,14 @@ function bab_indexJobs($idx, $object) {
 				break;
 		}
 
-
-		while ($msg = $r->getNextInfo()) {
-			$job .= $msg."\n";
-		}
-
-		while ($msg = $r->getNextError()) {
-			$GLOBALS['babBodyPopup']->msgerror .= bab_toHtml($msg." \n", BAB_HTML_ALL);
+		if (isset($r)) {
+			while ($msg = $r->getNextInfo()) {
+				$job .= $msg."\n";
+			}
+	
+			while ($msg = $r->getNextError()) {
+				$GLOBALS['babBodyPopup']->msgerror .= bab_toHtml($msg." \n", BAB_HTML_ALL);
+			}
 		}
 		
 	} else {
