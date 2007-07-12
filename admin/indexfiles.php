@@ -81,12 +81,18 @@ function listIndexFiles()
 				$this->reg->setKeyValue('allowed_ip', $_POST['allowed_ip']);
 			}
 
-			$this->res = $babDB->db_query("SELECT * FROM ".BAB_INDEX_FILES_TBL."");			
+			$this->res = $babDB->db_query("
+				SELECT f.*, s.object spool FROM 
+					".BAB_INDEX_FILES_TBL." f 
+					LEFT JOIN ".BAB_INDEX_SPOOLER_TBL." s ON s.object=f.object 
+			");			
 			
 			$this->allowed_ip = $this->reg->getValue('allowed_ip', '127.0.0.1');
 			
 			if (isset($_GET['unlock']) && isset($_GET['obj'])) {
 				$babDB->db_query('DELETE FROM '.BAB_INDEX_SPOOLER_TBL.' WHERE object='.$babDB->quote($_GET['obj']));
+				header('location:'.$GLOBALS['babUrlScript']."?tg=admindex&idx=files");
+				exit;
 			}
 		}
 
@@ -100,8 +106,7 @@ function listIndexFiles()
 				$this->onload		= 1 == $arr['index_onload'];
 				$this->disabled		= 1 == $arr['index_disabled'];
 				$this->object		= bab_toHtml(urlencode($arr['object']));
-				$lock				= $this->reg->getValue($arr['object']);
-				$this->locked		= NULL !== $lock;
+				$this->locked		= NULL !== $arr['spool'];
 				return true;
 			}
 			return false;
