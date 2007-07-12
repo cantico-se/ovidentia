@@ -160,8 +160,11 @@ function groupCreateMod()
 			}
 		}
 
-	$temp = new CreateMod();
-	$babBody->babecho(	bab_printTemplate($temp,"groups.html", "groupscreate"));
+	if( $GLOBALS['babBody']->isSuperAdmin || $GLOBALS['babBody']->currentDGGroup['groups'] == 'Y')
+		{
+		$temp = new CreateMod();
+		$babBody->babecho(	bab_printTemplate($temp,"groups.html", "groupscreate"));
+		}
 	}
 
 
@@ -512,7 +515,7 @@ function saveGroupsOptions($mailgrpids, $notgrpids, $congrpids, $pdsgrpids, $pca
 
 /* main */
 
-if (!$babBody->isSuperAdmin && $babBody->currentDGGroup['groups'] != 'Y' ) {
+if (!$babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 ) {
 	$babBody->addError('Access denied');
 	return;
 }
