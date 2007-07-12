@@ -53,6 +53,7 @@ function editor_js($uid)
 			$this->t_paragraph = bab_translate("Paragraph");
 			$this->t_address = bab_translate("Address");
 			$this->t_formated = bab_translate("Formated");
+			$this->t_bab_functions = bab_translate("Ovidentia functions");
 	
 			$this->linebreak = "\n";
 			if ($GLOBALS['babSkin'] == "ovidentia")
