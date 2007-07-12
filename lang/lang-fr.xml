@@ -1704,6 +1704,7 @@
 <string id="The following appointment has been canceled">L'événement suivant a été refusé</string>
 <string id="Appointment modifed by ">Evénement modifié par </string>
 <string id="The following appointment has been modified">L'événement suivant a été modifié</string>
+<string id="The following appointment has been validated">L'événement suivant a été approuvé</string>
 <string id="Selected period">Période sélectionnée</string>
 <string id="Vacations management">Gestion des congés</string>
 <string id="Delegate management">Gestion déléguée</string>
@@ -2454,6 +2455,12 @@
 <string id="Define working hours">Définir les heures travaillées</string>
 <string id="Working half-days interface">interface des demi-journée travaillées</string>
 
+
+<string id="Repeat date must be older than end date">La date de fin de période doit être postérieure à la date de fin de l'événement</string>
+<string id="Display this day in the calendar">Afficher ce jour dans l'agenda</string>
+<string id="Define working hours">Définir les heures travaillées</string>
+<string id="Working half-days interface">interface des demi-journée travaillées</string>
+<string id="Ovidentia functions">Fonctionalités d'Ovidentia</string>
 
 <string id="Repeat date must be older than end date">La date de fin de période doit être postérieure à la date de fin de l'événement</string>
 <string id="Display this day in the calendar">Afficher ce jour dans l'agenda</string>
