@@ -131,8 +131,10 @@ class bab_calendarPeriod {
 	var $ts_begin;		// public
 	var $ts_end;		// public
 	var $type;			// public
+	var	$available;		// public
 	var $data;			// private
 	var $properties;	// private
+	
 
 	/**
      * $color is not defined in ical interface
@@ -294,6 +296,20 @@ class bab_calendarPeriod {
 		}
 
 		return $return;
+	}
+	
+	
+	/**
+	 * @return boolean
+	 */
+	function isAvailable() {
+
+	
+		if (isset($this->available)) {
+			return $this->available;
+		}
+	
+		return $this->type === (BAB_PERIOD_WORKING & $this->type);
 	}
 
 }
@@ -631,14 +647,14 @@ class bab_userWorkingHours {
 	}
 
 	/**
-	 * @param	int		$available		: available events types
-	 * @param	int		$nonavailable	: non-available events types
+	 * @param	boolean		$period_availability
+	 * @return 	array
 	 */
-	function getAvailability($available, $nonavailable) {
+	function getAvailability(&$period_availability) {
 		reset($this->boundaries);
 		$previous = NULL;
 		$periods = array();
-		
+		$period_availability = true;
 
 		foreach($this->boundaries as $ts => $events) {
 
@@ -647,13 +663,14 @@ class bab_userWorkingHours {
 			
 			
 			foreach($events as $event) {
-				if ($event->type === ($available & $event->type) && 0 !== $current) {
+				if ($event->isAvailable() && 0 !== $current) {
 					$current = 1;
 					$data = $event->getData();
-					unset($users_non_available[$data['id_user']]);
-				}
-
-				if ($event->type === ($nonavailable & $event->type)) {
+					if (isset($data['id_user'])) {
+						unset($users_non_available[$data['id_user']]);
+					}
+				} else {
+					$period_availability = false;
 					$current = 0;
 				}
 			}
@@ -680,13 +697,14 @@ class bab_userWorkingHours {
 	 * @param	int		$start	timestamp
 	 * @param	int		$end	timestamp
 	 * @param	int		$gap	minimum event duration in seconds
+	 * @return 	array
 	 */
 	function getAvailabilityBetween($start, $end, $gap) {
 		static $availability = NULL;
 
 		if (NULL === $availability) {
-			$availability = $this->getAvailability(BAB_PERIOD_WORKING, 
-				BAB_PERIOD_NWDAY | BAB_PERIOD_VACATION | BAB_PERIOD_CALEVENT);
+			$period_availability = NULL;
+			$availability = $this->getAvailability($period_availability);
 			
 		} else {
 			reset($availability);
