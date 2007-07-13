@@ -808,7 +808,7 @@ switch($idx)
 			$babBody->addItemMenu("Order", bab_translate("Order"),$GLOBALS['babUrlScript']."?tg=sections&idx=Order");
 
 		$babBody->addItemMenu("ch", bab_translate("Create")."(html)",$GLOBALS['babUrlScript']."?tg=sections&idx=ch");
-		$babBody->addItemMenu("cj", bab_translate("Create")."(script)",$GLOBALS['babUrlScript']."?tg=sections&idx=cj");
+		$babBody->addItemMenu("cj", bab_translate("Create")."(javascript)",$GLOBALS['babUrlScript']."?tg=sections&idx=cj");
 		break;
 
 	case "ch":
@@ -818,7 +818,7 @@ switch($idx)
 		$babBody->addItemMenu("Order", bab_translate("Order"),$GLOBALS['babUrlScript']."?tg=sections&idx=Order");
 		
 		$babBody->addItemMenu("ch", bab_translate("Create")."(html)",$GLOBALS['babUrlScript']."?tg=sections&idx=ch");
-		$babBody->addItemMenu("cj", bab_translate("Create")."(script)",$GLOBALS['babUrlScript']."?tg=sections&idx=cj");
+		$babBody->addItemMenu("cj", bab_translate("Create")."(javascript)",$GLOBALS['babUrlScript']."?tg=sections&idx=cj");
 		break;
 
 	case "cj":
@@ -828,7 +828,7 @@ switch($idx)
 		$babBody->addItemMenu("Order", bab_translate("Order"),$GLOBALS['babUrlScript']."?tg=sections&idx=Order");
 		
 		$babBody->addItemMenu("ch", bab_translate("Create")."(html)",$GLOBALS['babUrlScript']."?tg=sections&idx=ch");
-		$babBody->addItemMenu("cj", bab_translate("Create")."(script)",$GLOBALS['babUrlScript']."?tg=sections&idx=cj");
+		$babBody->addItemMenu("cj", bab_translate("Create")."(javascript)",$GLOBALS['babUrlScript']."?tg=sections&idx=cj");
 		break;
 
 	case "List":
@@ -841,7 +841,7 @@ switch($idx)
 		$babBody->addItemMenu("Order", bab_translate("Order"),$GLOBALS['babUrlScript']."?tg=sections&idx=Order");
 
 		$babBody->addItemMenu("ch", bab_translate("Create")."(html)",$GLOBALS['babUrlScript']."?tg=sections&idx=ch");
-		$babBody->addItemMenu("cj", bab_translate("Create")."(script)",$GLOBALS['babUrlScript']."?tg=sections&idx=cj");
+		$babBody->addItemMenu("cj", bab_translate("Create")."(javascript)",$GLOBALS['babUrlScript']."?tg=sections&idx=cj");
 		break;
 	}
 
