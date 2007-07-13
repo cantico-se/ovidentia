@@ -1790,7 +1790,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				
 				if ($this->like || $this->like2)
 					{
-					$reqsup = "(".
+					$reqsup = "(ceo.id_cal=".$babDB->quote($GLOBALS['BAB_SESS_USERID'])." OR ce.bprivate='N') AND (".
 						finder($this->like,"ce.title",$option,$this->like2)." or ".
 						finder($this->like,"ce.description",$option,$this->like2)." or ".
 						finder($this->like,"cct.description",$option,$this->like2)." or ".
