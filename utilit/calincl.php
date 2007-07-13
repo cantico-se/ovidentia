@@ -867,8 +867,6 @@ function bab_cal_setEventsPeriods(&$obj, $id_calendars, $begin, $end, $category 
 
 		$iarr = $GLOBALS['babBody']->icalendars->getCalendarInfo($arr['id_cal']);
 
-
-
 		$arr['alert'] = false;
 		$arr['idcal_owners'] = array(); /* id calendars that ownes this event */
 		$resco = $babDB->db_query("
@@ -891,7 +889,7 @@ function bab_cal_setEventsPeriods(&$obj, $id_calendars, $begin, $end, $category 
 			&& $arr['nbowners'] == 0 
 			&& $arr['id_creator'] != 0 
 			&& $arr['id_creator'] != $GLOBALS['BAB_SESS_USERID'] 
-			&& ( $iarr['access'] == BAB_CAL_ACCESS_FULL || $iarr['access'] == BAB_CAL_ACCESS_SHARED_FULL )
+			&& (isset($iarr['access']) && ($iarr['access'] == BAB_CAL_ACCESS_FULL || $iarr['access'] == BAB_CAL_ACCESS_SHARED_FULL ))
 			&& ('PUBLIC' == $events[$arr['id']]->getProperty('CLASS'))
 			) {
 				$arr['nbowners'] = 1;
