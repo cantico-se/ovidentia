@@ -56,7 +56,7 @@ class bab_sqlExport
 		$this->commentPush("babUrl : ".$GLOBALS['babUrl'],true);
 		
 		$version = array();
-		$res = $this->db->db_query("SELECT fvalue FROM ".BAB_INI_TBL."");
+		$res = $this->db->db_query("SELECT fvalue FROM ".BAB_INI_TBL." where foption IN ('ver_major','ver_minor','ver_build')");
 		while (list($v) = $this->db->db_fetch_array($res))
 			{
 			$version[] = $v;

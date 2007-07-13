@@ -34,22 +34,17 @@ function getVersion()
 	$str = "Sources Version ". $ini->getVersion()."\n";
 	$db = &$GLOBALS['babDB'];
 
-	$res = $db->db_query("show tables like '".BAB_INI_TBL."'");
-	if( !$res || $db->db_num_rows($res) < 1)
-		{
-		$dbver = explode(".", $GLOBALS['babVersion']);
-		$dbver[2] = "0";
+	$dbver = array();
+	$res = $db->db_query("select foption, fvalue from ".BAB_INI_TBL." where foption IN('ver_major', 'ver_minor', 'ver_build')");
+	if (3 === $db->db_num_rows($res)) {
+		while ($rr = $db->db_fetch_array($res)) {
+			$dbver[$rr['foption']] = $rr['fvalue'];
 		}
-	else
-		{
-		$rr = $db->db_fetch_array($db->db_query("select fvalue from ".BAB_INI_TBL." where foption='ver_major'"));
-		$dbver[] = $rr['fvalue'];
-		$rr = $db->db_fetch_array($db->db_query("select fvalue from ".BAB_INI_TBL." where foption='ver_minor'"));
-		$dbver[] = $rr['fvalue'];
-		$rr = $db->db_fetch_array($db->db_query("select fvalue from ".BAB_INI_TBL." where foption='ver_build'"));
-		$dbver[] = $rr['fvalue'];
-		}
-	$str .= "Database Version ". $dbver[0].".".$dbver[1].".".$dbver[2] ."\n";
+		
+		$str .= "Database Version ". $dbver['ver_major'].".".$dbver['ver_minor'].".".$dbver['ver_build'] ."\n";
+	} else {
+		$str .= "No Database Version (installation is not complete)\n";
+	}
 	return $str;
 }
 

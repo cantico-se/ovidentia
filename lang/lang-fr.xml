@@ -922,6 +922,7 @@
 <string id="You must specify a vacation description">Vous devez spécifiez une description</string>
 <string id="You must specify approbation schema">Vous devez spécifier un schéma d'approbation</string>
 <string id="You site has been updated">Votre site a été mis à jour</string>
+<string id="You site has been completly installed in version %s">Votre site a été installé en version %s</string>
 <string id="You site is already up to date">Votre site est déjà à jour</string>
 <string id="You will receive an email which let you confirm your registration.">Vous allez recevoir un email qui vous permettra de confirmer votre inscription.</string>
 <string id="Your Name">Votre Nom</string>

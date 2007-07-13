@@ -202,18 +202,44 @@ function bab_upgrade($core_dir, &$ret)
 		}
 		return false;
 	}
+	
+	
+	function putIniDbKey($key, $value) {
+		global $babDB;
+
+		$res = $babDB->db_query("SELECT COUNT(*) FROM ".BAB_INI_TBL." WHERE foption=".$babDB->quote($key));
+		list($n) = $babDB->db_fetch_array($res);
+		
+
+		if (0 === (int) $n) {
+		
+			$babDB->db_query("INSERT INTO ".BAB_INI_TBL." 
+					(foption, fvalue) 
+				VALUES 
+					(
+						'".$babDB->db_escape_string($key)."', 
+						'".$babDB->db_escape_string($value)."' 
+					)
+			");
+		} else {
+			$babDB->db_query("update ".BAB_INI_TBL." set 
+				fvalue='".$babDB->db_escape_string($value)."' 
+			WHERE foption='".$babDB->db_escape_string($key)."'");
+		}
+	}
 
 	
-
-
-	$rr = $db->db_fetch_array($db->db_query("select fvalue from ".BAB_INI_TBL." where foption='ver_major'"));
-	$dbver[] = $rr['fvalue'];
-	$rr = $db->db_fetch_array($db->db_query("select fvalue from ".BAB_INI_TBL." where foption='ver_minor'"));
-	$dbver[] = $rr['fvalue'];
-	$rr = $db->db_fetch_array($db->db_query("select fvalue from ".BAB_INI_TBL." where foption='ver_build'"));
-	$dbver[] = $rr['fvalue'];
-
-	$ver_from = $dbver[0].'.'.$dbver[1].'.'.$dbver[2];
+	$dbver = array();
+	$res = $db->db_query("select foption, fvalue from ".BAB_INI_TBL." where foption IN('ver_major', 'ver_minor', 'ver_build')");
+	if (3 === $db->db_num_rows($res)) {
+		while ($rr = $db->db_fetch_array($res)) {
+			$dbver[$rr['foption']] = $rr['fvalue'];
+		}
+		
+		$ver_from = $dbver['ver_major'].".".$dbver['ver_minor'].".".$dbver['ver_build'];
+	} else {
+		$ver_from = false;
+	}
 
 	$ini = new bab_inifile();
 	$ini->inifile($core_dir.'version.inc');
@@ -239,14 +265,24 @@ function bab_upgrade($core_dir, &$ret)
 	include_once $core_dir."upgrade.php";
 	if (true === ovidentia_upgrade($ver_from, $ini->getVersion())) {
 	
-		$db->db_query("update ".BAB_INI_TBL." set fvalue='".$db->db_escape_string($bab_ver_major)."' where foption='ver_major'");
-		$db->db_query("update ".BAB_INI_TBL." set fvalue='".$db->db_escape_string($bab_ver_minor)."' where foption='ver_minor'");
-		$db->db_query("update ".BAB_INI_TBL." set fvalue='".$db->db_escape_string($bab_ver_build)."' where foption='ver_build'");
+		putIniDbKey('ver_major', $bab_ver_major);
+		putIniDbKey('ver_minor', $bab_ver_minor);
+		putIniDbKey('ver_build', $bab_ver_build);
 	
 		putVersion($bab_ver_major.".".$bab_ver_minor);
-		$ret .= bab_translate("You site has been updated")." \n";
-		$ret .= bab_translate("From").' '. $dbver[0].'.'.$dbver[1].'.'.$dbver[2]. ' ';
-		$ret .= bab_translate("to").' '. $bab_ver_major.'.'.$bab_ver_minor.'.'.$bab_ver_build;
+		
+		if (false == $ver_from) {
+			$ret .= sprintf(
+				bab_translate("You site has been completly installed in version %s"), 
+				$bab_ver_major.'.'.$bab_ver_minor.'.'.$bab_ver_build
+			)." \n";
+
+		} else {
+			$ret .= bab_translate("You site has been updated")." \n";
+			$ret .= bab_translate("From").' '. $ver_from. ' ';
+			$ret .= bab_translate("to").' '. $bab_ver_major.'.'.$bab_ver_minor.'.'.$bab_ver_build;
+			
+		}
 		
 		bab_setUpgradeLogMsg(BAB_ADDON_CORE_NAME, $ret);
 		

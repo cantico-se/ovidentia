@@ -34,6 +34,10 @@ include_once "base.php";
  */
 class bab_inifile_requirements {
 	
+	/**
+	 * Required ovidentia version from database or files if not available in database
+	 * there is no version in database for new install
+	 */
 	function require_ov_version($value) {
 
 		$db = &$GLOBALS['babDB'];
@@ -56,6 +60,11 @@ class bab_inifile_requirements {
 
 		if (count($coreversion) == 3) {
 			$ovidentia = $coreversion[0].'.'.$coreversion[1].'.'.$coreversion[2];
+		} else {
+			include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
+			$ini = new bab_inifile();
+			$ini->inifile($GLOBALS['babInstallPath'].'version.inc');
+			$ovidentia = $ini->getVersion();
 		}
 
 		return array(
