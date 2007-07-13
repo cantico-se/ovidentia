@@ -135,7 +135,7 @@ document.onmousemove = bab_tooltipPosition;
 					<!--#if allow_modify -->
 					<a href="javascript:bab_popup('{ titletenurl }')" title="{ t_modify_event }"><img src="{ babSkinPath }images/Puces/entryview.gif" alt="{ t_modify_event }" /></a>
 					<!--#endif allow_modify -->
-					{ starttime }&nbsp; { titleten }
+					<!--#if firstday -->{ starttime }&nbsp; <!--#endif firstday -->{ titleten }
 					<!--#if nbowners -->
 					<a href="javascript:bab_popup('{ attendeesurl }')" title="{ attendeestxt }"><img src="{ babSkinPath }images/Puces/head.gif" alt="{ attendeestxt }" /></a>&nbsp;
 					<!--#endif nbowners -->

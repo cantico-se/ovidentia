@@ -185,6 +185,21 @@ class cal_monthCls extends cal_wmdbaseCls
 			{
 			$this->evtidx++;
 			$this->createCommonEventVars($this->evtarr[$i]);
+			
+			
+			$eventstart = bab_mktime($this->evtarr[$i]->getProperty('DTSTART'));
+			
+			if( date("j", $eventstart) == $this->mday 
+			&& date("n", $eventstart) == $this->month 
+			&& date("Y", $eventstart) == $this->year)
+				{
+				$this->firstday = true;
+				}
+			else
+				{
+				$this->firstday = false;
+				}
+			
 			$i++;
 			return true;
 			}
