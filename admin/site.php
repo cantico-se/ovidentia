@@ -810,6 +810,7 @@ function siteAuthentification($id)
 				$this->authsite = $arr['authentification'];
 				$this->ldaphost = $arr['ldap_host'];
 				$this->ldaphostname = $arr['ldap_domainname'];
+				$this->ldapuserdn = $arr['ldap_userdn'];
 				$this->ldapsearchdnsite = $arr['ldap_searchdn'];
 				$this->ldapattributesite = $arr['ldap_attribute'];
 				$this->ldapencryptiontype = $arr['ldap_encryptiontype'];
@@ -825,6 +826,7 @@ function siteAuthentification($id)
 
 				$this->fieldrequiredtxt = bab_translate("Those fields are required");
 				$this->domainnametxt = bab_translate("Domain name");
+				$this->userdntxt = bab_translate("User DN");
 				$this->hosttxt = bab_translate("Host");
 				$this->searchbasetxt = bab_translate("Search base");
 				$this->attributetxt = bab_translate("Attribute");
@@ -1810,7 +1812,17 @@ function siteUpdate_menu6($item)
 
 function siteUpdate_authentification($id, $authtype, $host, $hostname, $ldpapchkcnx, $searchdn)
 	{
-	global $babBody, $babDB, $bab_ldapAttributes, $nickname, $i_nickname, $crypttype, $ldapfilter,$admindn, $adminpwd1, $adminpwd2, $decodetype;
+	global $babBody, $babDB, $bab_ldapAttributes;
+	
+	$nickname = bab_pp('nickname', '');
+	$i_nickname = bab_pp('i_nickname', '');
+	$crypttype = bab_pp('crypttype', '');
+	$ldapfilter = bab_pp('ldapfilter', '');
+	$admindn = bab_pp('admindn', '');
+	$adminpwd1 = bab_pp('adminpwd1', '');
+	$adminpwd2 = bab_pp('adminpwd2', '');
+	$decodetype = bab_pp('decodetype', '0');
+	$userdn = bab_pp('userdn', '');
 
 	if( $authtype != BAB_AUTHENTIFICATION_OVIDENTIA )
 		{
@@ -1877,7 +1889,7 @@ function siteUpdate_authentification($id, $authtype, $host, $hostname, $ldpapchk
 			}
 
 		$req = "update ".BAB_SITES_TBL." set authentification='".$babDB->db_escape_string($authtype)."'";
-		$req .= ", ldap_host='".$babDB->db_escape_string($host)."', ldap_domainname='".$babDB->db_escape_string($hostname)."', ldap_allowadmincnx='".$babDB->db_escape_string($ldpapchkcnx)."', ldap_searchdn='".$babDB->db_escape_string($searchdn)."', ldap_attribute='".$babDB->db_escape_string($ldapattr)."', ldap_encryptiontype='".$babDB->db_escape_string($crypttype)."', ldap_decoding_type='".$babDB->db_escape_string($decodetype)."', ldap_filter='".$babDB->db_escape_string($ldapfilter)."', ldap_admindn='".$babDB->db_escape_string($admindn)."'";
+		$req .= ", ldap_host='".$babDB->db_escape_string($host)."', ldap_domainname='".$babDB->db_escape_string($hostname)."', ldap_userdn='".$babDB->db_escape_string($userdn)."', ldap_allowadmincnx='".$babDB->db_escape_string($ldpapchkcnx)."', ldap_searchdn='".$babDB->db_escape_string($searchdn)."', ldap_attribute='".$babDB->db_escape_string($ldapattr)."', ldap_encryptiontype='".$babDB->db_escape_string($crypttype)."', ldap_decoding_type='".$babDB->db_escape_string($decodetype)."', ldap_filter='".$babDB->db_escape_string($ldapfilter)."', ldap_admindn='".$babDB->db_escape_string($admindn)."'";
 		if( !empty($adminpwd1))
 			{
 			$req .= ", ldap_adminpassword=ENCODE(\"".$babDB->db_escape_string($adminpwd1)."\",\"".$babDB->db_escape_string($GLOBALS['BAB_HASH_VAR'])."\")";

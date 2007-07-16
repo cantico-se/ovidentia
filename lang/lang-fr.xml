@@ -802,7 +802,7 @@
 <string id="Use email">Fonction messagerie</string>
 <string id="Used">Utilisé</string>
 <string id="User Account Updated - You can now log to our site">Votre inscription est confirmée, vous pouvez maintenant vous connecter sur notre site</string>
-<string id="User DN">User DN</string>
+<string id="User DN">DN de l'utilisateur</string>
 <string id="User Name">Nom d'utilisateur</string>
 <string id="User Not Found">Utilisateur inconnu</string>
 <string id="User does'nt exist">L'utilisateur n'existe pas</string>
@@ -1951,7 +1951,7 @@
 <string id="Index all files from all indexes">Indexer tous les fichiers</string>
 <string id="Index waiting files from all indexes">Indexer tous les fichiers en attente</string>
 <string id="Search indexes">Indexation</string>
-<string id="Admin DN">Admin DN</string>
+<string id="Admin DN">DN de l'administrateur</string>
 <string id="Admin password">Admin password</string>
 <string id="Re-type admin password">Re-type admin password</string>
 <string id="Ovidentia">Ovidentia</string>

@@ -929,33 +929,61 @@ function userChangePassword($oldpwd, $newpwd)
 					$babBody->msgerror = bab_translate("LDAP connection failed. Please contact your administrator");
 					return false;
 					}
-				if( isset($babBody->babsite['ldap_filter']) && !empty($babBody->babsite['ldap_filter']))
+
+				if( isset($babBody->babsite['ldap_userdn']) && !empty($babBody->babsite['ldap_userdn']))
+				{
+				$userdn = str_replace('%UID', ldap_escapefilter($babBody->babsite['ldap_attribute']), $babBody->babsite['ldap_userdn']);
+				$userdn = str_replace('%NICKNAME', ldap_escapefilter($nickname), $userdn);
+				$ret = $ldap->bind($userdn, $password);
+				if( !$ret )
 					{
-					$filter = str_replace('%UID', ldap_escapefilter($babBody->babsite['ldap_attribute']), $babBody->babsite['ldap_filter']);
-					$filter = str_replace('%NICKNAME', ldap_escapefilter($GLOBALS['BAB_SESS_NICKNAME']), $filter);
+					$msgerror = bab_translate("LDAP authentification failed. Please verify your nickname and your password");
+					$ldap->close();
+					return false;
 					}
 				else
 					{
-					$filter = "(|(".ldap_escapefilter($babBody->babsite['ldap_attribute'])."=".ldap_escapefilter($GLOBALS['BAB_SESS_NICKNAME'])."))";
-					}
+					$entries = $ldap->search($userdn, '(objectclass=*)', $attributes);
 
-				$attributes = array("dn", $babBody->babsite['ldap_attribute'], "cn");
-				$entries = $ldap->search($babBody->babsite['ldap_searchdn'], $filter, $attributes);
-
-				if( $entries === false || $entries['count'] == 0 || !isset($entries[0]['dn']) || empty($entries[0]['dn']))
-					{
-					$ldap->close();
-					$babBody->msgerror = bab_translate("LDAP authentification failed. Please verify your nickname and your password");
-					return false;
+					if( $entries !== false && $entries['count'] > 0 )
+						{
+						$babBody->msgerror = bab_translate("LDAP search failed");
+						$ldap->close();
+						return false;
+						}
 					}
+				}
+				else
+				{
 
-				$ret = $ldap->bind($entries[0]['dn'], $oldpwd);
-				if( !$ret )
-					{
-					$ldap->close();
-					$babBody->msgerror = bab_translate("LDAP bind failed. Please contact your administrator");
-					return  false;
-					}
+					if( isset($babBody->babsite['ldap_filter']) && !empty($babBody->babsite['ldap_filter']))
+						{
+						$filter = str_replace('%UID', ldap_escapefilter($babBody->babsite['ldap_attribute']), $babBody->babsite['ldap_filter']);
+						$filter = str_replace('%NICKNAME', ldap_escapefilter($GLOBALS['BAB_SESS_NICKNAME']), $filter);
+						}
+					else
+						{
+						$filter = "(|(".ldap_escapefilter($babBody->babsite['ldap_attribute'])."=".ldap_escapefilter($GLOBALS['BAB_SESS_NICKNAME'])."))";
+						}
+
+					$attributes = array("dn", $babBody->babsite['ldap_attribute'], "cn");
+					$entries = $ldap->search($babBody->babsite['ldap_searchdn'], $filter, $attributes);
+
+					if( $entries === false || $entries['count'] == 0 || !isset($entries[0]['dn']) || empty($entries[0]['dn']))
+						{
+						$ldap->close();
+						$babBody->msgerror = bab_translate("LDAP authentification failed. Please verify your nickname and your password");
+						return false;
+						}
+
+					$ret = $ldap->bind($entries[0]['dn'], $oldpwd);
+					if( !$ret )
+						{
+						$ldap->close();
+						$babBody->msgerror = bab_translate("LDAP bind failed. Please contact your administrator");
+						return  false;
+						}
+				}
 
 				$ldappw = ldap_encrypt($newpwd, $babBody->babsite['ldap_encryptiontype']);
 				$ret = $ldap->modify($entries[0]['dn'], array('userPassword'=>$ldappw));

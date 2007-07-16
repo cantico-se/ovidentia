@@ -1131,6 +1131,7 @@ function hideShowCnx()
 	var obj4 = document.getElementById('tdfieldid0');
 	var obj5 = document.getElementById('ldapadminpwd1id');
 	var obj6 = document.getElementById('ldapadminpwd2id');
+	var obj7 = document.getElementById('ldpapuserdnid');
 
 	if( sf.authtype[sf.authtype.selectedIndex].value == 0 )
 	{
@@ -1145,6 +1146,7 @@ function hideShowCnx()
 	if (obj4.style.display == 'none') obj4.style.display = '';
 	if (obj5.style.display == 'none') obj5.style.display = '';
 	if (obj6.style.display == 'none') obj6.style.display = '';
+	if (obj7.style.display == 'none') obj7.style.display = '';
 	}
 	else
 	{
@@ -1155,6 +1157,7 @@ function hideShowCnx()
 	if (obj4.style.display == '') obj4.style.display = 'none';
 	if (obj5.style.display == '') obj5.style.display = 'none';
 	if (obj6.style.display == '') obj6.style.display = 'none';
+	if (obj7.style.display == '') obj7.style.display = 'none';
 	}
 	}
 //-->
@@ -1254,6 +1257,12 @@ function hideShowCnx()
 		<td align="right">{ adminpwd2txt }</td>
 		<td>
 		<input type="password" name="adminpwd2" size="50" value="{ ldapadminpwd2 }" />
+		</td>
+	</tr>
+	<tr id="ldpapuserdnid"> 
+		<td align="right" nowrap>{ userdntxt }&nbsp;</td>
+		<td>
+		<input type="text" name="userdn" size="50" value="{ ldapuserdn }" />
 		</td>
 	</tr>
 	<!--#in getnextfield -->

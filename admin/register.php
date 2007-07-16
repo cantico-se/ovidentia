@@ -691,6 +691,29 @@ function userLogin($nickname,$password, &$msgerror, $cookie_id = false)
 						}
 					break;
 				default:
+					if( isset($babBody->babsite['ldap_userdn']) && !empty($babBody->babsite['ldap_userdn']))
+					{
+					$userdn = str_replace('%UID', ldap_escapefilter($babBody->babsite['ldap_attribute']), $babBody->babsite['ldap_userdn']);
+					$userdn = str_replace('%NICKNAME', ldap_escapefilter($nickname), $userdn);
+					$ret = $ldap->bind($userdn, $password);
+					if( !$ret )
+						{
+						$msgerror = bab_translate("LDAP bind failed. Please contact your administrator");
+						$logok = false;
+						}
+					else
+						{
+						$entries = $ldap->search($userdn, '(objectclass=*)', $attributes);
+
+						if( $entries !== false && $entries['count'] > 0 )
+							{
+							$babBody->msgerror = bab_translate("LDAP search failed");
+							$logok = false;
+							}
+						}
+					}
+					else
+					{
 						if( isset($babBody->babsite['ldap_filter']) && !empty($babBody->babsite['ldap_filter']))
 							{
 							$filter = str_replace('%UID', ldap_escapefilter($babBody->babsite['ldap_attribute']), $babBody->babsite['ldap_filter']);
@@ -700,21 +723,22 @@ function userLogin($nickname,$password, &$msgerror, $cookie_id = false)
 							{
 							$filter = "(|(".ldap_escapefilter($babBody->babsite['ldap_attribute'])."=".ldap_escapefilter($nickname)."))";
 							}
-					$entries = $ldap->search($babBody->babsite['ldap_searchdn'], $filter, $attributes);
+						$entries = $ldap->search($babBody->babsite['ldap_searchdn'], $filter, $attributes);
 
-					if( $entries !== false && $entries['count'] > 0 && isset($entries[0]['dn']) )
-						{
-						$ret = $ldap->bind($entries[0]['dn'], $password);
-						if( !$ret )
+						if( $entries !== false && $entries['count'] > 0 && isset($entries[0]['dn']) )
 							{
-							$msgerror = bab_translate("LDAP bind failed. Please contact your administrator");
+							$ret = $ldap->bind($entries[0]['dn'], $password);
+							if( !$ret )
+								{
+								$msgerror = bab_translate("LDAP bind failed. Please contact your administrator");
+								$logok = false;
+								}
+							}
+						else
+							{
 							$logok = false;
 							}
-						}
-					else
-						{
-						$logok = false;
-						}
+					}
 					break;
 				}
 
