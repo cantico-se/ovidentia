@@ -647,6 +647,7 @@ class bab_userWorkingHours {
 	}
 
 	/**
+	 * Find available periods
 	 * @param	boolean		$period_availability
 	 * @return 	array
 	 */
@@ -654,7 +655,7 @@ class bab_userWorkingHours {
 		reset($this->boundaries);
 		$previous = NULL;
 		$periods = array();
-		$period_availability = true;
+		$period_availability = NULL;
 
 		foreach($this->boundaries as $ts => $events) {
 
@@ -663,21 +664,27 @@ class bab_userWorkingHours {
 			
 			
 			foreach($events as $event) {
-				if ($event->isAvailable() && 0 !== $current) {
-					$current = 1;
-					$data = $event->getData();
-					if (isset($data['id_user'])) {
-						unset($users_non_available[$data['id_user']]);
+				
+			
+				if ($event->ts_end > $this->begin->getTimeStamp() && $event->ts_begin < $this->end->getTimeStamp()) {
+					
+					if ($event->isAvailable() && 0 !== $current) {
+						$current = 1;
+						$data = $event->getData();
+						if (isset($data['id_user'])) {
+							unset($users_non_available[$data['id_user']]);
+						}
+					} else {
+						$period_availability = false;
+						$current = 0;
 					}
-				} else {
-					$period_availability = false;
-					$current = 0;
 				}
 			}
 			
 			//bab_debug($ts.' -- '.bab_shortDate($ts).' --> '.$current.' -- count users_non_available : '.count($users_non_available));
 
 			if (0 < count($users_non_available) && NULL !== $previous) {
+				bab_debug('test');
 				if (!isset($periods[$previous.'.'.$ts])) {
 					$periods[$previous.'.'.$ts] = new bab_calendarPeriod($previous, $ts, BAB_PERIOD_NONWORKING);
 				}
@@ -687,6 +694,17 @@ class bab_userWorkingHours {
 			if (0 === count($users_non_available) && NULL === $previous) {
 				$previous = $ts;
 			}
+		}
+		
+		if (NULL === $period_availability && 0 === count($periods)) {
+			$period_availability = false;
+			$periods[$this->begin->getTimeStamp().'.'.$this->end->getTimeStamp()] = new bab_calendarPeriod(
+				$this->begin->getTimeStamp(), 
+				$this->end->getTimeStamp(), 
+				BAB_PERIOD_NONWORKING
+			);
+		} elseif (0 === count($periods)) {
+			$period_availability = true;
 		}
 
 		return $periods;
