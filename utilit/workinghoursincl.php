@@ -684,7 +684,6 @@ class bab_userWorkingHours {
 			//bab_debug($ts.' -- '.bab_shortDate($ts).' --> '.$current.' -- count users_non_available : '.count($users_non_available));
 
 			if (0 < count($users_non_available) && NULL !== $previous) {
-				bab_debug('test');
 				if (!isset($periods[$previous.'.'.$ts])) {
 					$periods[$previous.'.'.$ts] = new bab_calendarPeriod($previous, $ts, BAB_PERIOD_NONWORKING);
 				}

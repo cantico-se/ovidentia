@@ -1408,9 +1408,12 @@ function eventAvariabilityCheck(&$avariability_message)
 	$whObj = bab_mcalendars::create_events($sdate, $edate, $calid);
 	while ($event = $whObj->getNextEvent(BAB_PERIOD_CALEVENT)) {
 		$data = $event->getData();
-		if ((int) $data['id_event'] === (int) $_POST['evtid']) {
-			// considérer l'evenement modifie comme disponible
-			$event->available = true;
+		
+		if (isset($_POST['evtid'])) {
+			if ((int) $data['id_event'] === (int) $_POST['evtid']) {
+				// considérer l'evenement modifie comme disponible
+				$event->available = true;
+			}
 		}
 	}
 
@@ -1440,7 +1443,12 @@ function eventAvariabilityCheck(&$avariability_message)
 				{
 				global $babBody;
 				$title = bab_translate("Private");
-				if( ('PUBLIC' !== $calPeriod->getProperty('CLASS') && $event['id_cal'] == $babBody->icalendars->id_percal) || 'PUBLIC' === $calPeriod->getProperty('CLASS'))
+				if( 
+					(
+						'PUBLIC' !== $calPeriod->getProperty('CLASS') 
+						&& $event['id_cal'] == $babBody->icalendars->id_percal
+					) 
+					|| 'PUBLIC' === $calPeriod->getProperty('CLASS'))
 				{
 					$title = $calPeriod->getProperty('SUMMARY');
 				}
