@@ -223,10 +223,22 @@ class listFiles
 		 * if there is file not presents in database, add and recreate $this->res
 		 */
 		function autoadd_files() {
+			
+			global $babDB;
+
+			if( !isset($GLOBALS['babAutoAddFilesAuthorId']) || empty($GLOBALS['babAutoAddFilesAuthorId']))
+				{
+				return;
+				}
 		
+			$res = $babDB->db_query('select id from '.BAB_USERS_TBL.' where id='.$babDB->quote($GLOBALS['babAutoAddFilesAuthorId']));
+			if( 0 == $babDB->db_num_rows($res) )
+				{
+					return;
+				}
+
 			if ($this->count < count($this->files_from_dir)) {
 			
-				global $babDB;
 				bab_debug($this->files_from_dir);
 				
 				foreach($this->files_from_dir as $dir_file) {
@@ -260,9 +272,9 @@ class listFiles
 								'".$babDB->db_escape_string($this->id)."',
 								".$babDB->quote($this->gr).",
 								NOW(),
-								'".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."',
+								'".$babDB->db_escape_string($GLOBALS['babAutoAddFilesAuthorId'])."',
 								NOW(),
-								'".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."',
+								'".$babDB->db_escape_string($GLOBALS['babAutoAddFilesAuthorId'])."',
 								'Y'
 							)
 						");	
