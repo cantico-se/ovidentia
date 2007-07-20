@@ -358,7 +358,25 @@ function printBody()
 				$this->babSlogan = $GLOBALS['babMarquee'];
 			$this->menukeys = array_keys($babBody->menu->items);
 			$this->menuvals = array_values($babBody->menu->items);
-			$this->menuitems = count($this->menukeys);
+
+			if( isset($GLOBALS['babHideMenu'])) 
+				{
+				$tg = bab_rp('tg', '');
+				$idx = bab_rp('idx', '');
+
+				if( $tg && isset($GLOBALS['babHideMenu'][$tg]) && (count($GLOBALS['babHideMenu'][$tg]) == 0  || in_array($idx, $GLOBALS['babHideMenu'][$tg])))
+					{
+					$this->menuitems = 0;
+					}
+				else
+					{
+					$this->menuitems = count($this->menukeys);
+					}
+				}
+			else
+				{
+				$this->menuitems = count($this->menukeys);
+				}
 
 			$this->nbsectleft = 0;
 			$this->nbsectright = 0;

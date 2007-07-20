@@ -142,7 +142,7 @@ function listArticles($topics)
 			$babDB = $GLOBALS['babDB'];
 			$this->bmanager = bab_isUserTopicManager($this->topics);
 
-			$req = "select at.id, at.id_topic, at.id_author, at.date, at.date_modification, at.title, at.head, LENGTH(at.body) as blen, at.restriction from ".BAB_ARTICLES_TBL." at where at.id_topic='".$babDB->db_escape_string($topics)."' and at.archive='N' and (date_publication='0000-00-00 00:00:00' or date_publication <= now())";
+			$req = "select at.id, at.id_topic, at.id_author, at.date, at.date_modification, at.title, at.head, at.body, LENGTH(at.body) as blen, at.restriction from ".BAB_ARTICLES_TBL." at where at.id_topic='".$babDB->db_escape_string($topics)."' and at.archive='N' and (date_publication='0000-00-00 00:00:00' or date_publication <= now())";
 			$langFilterValue = $GLOBALS['babLangFilter']->getFilterAsInt();
 			switch($langFilterValue)
 				{
@@ -242,8 +242,6 @@ function listArticles($topics)
 					$this->delurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=Delete&topics=".$this->topics."&article=".$this->arr['id']);
 					}
 
-				/* template variables */
-				$this->babtpl_authorid = bab_toHtml($this->arr['id_author']);
 
 				$this->articledate = bab_toHtml(bab_strftime(bab_mktime($this->arr['date_modification'])));
 				$this->author = bab_translate("by") . " ". bab_toHtml($this->articleauthor). " - ". $this->articledate;
@@ -253,6 +251,14 @@ function listArticles($topics)
 				$editor->setContent($this->arr['head']);
 				$this->content = $editor->getHtml();
 				
+				/* template variables */
+				$this->babtpl_authorid = bab_toHtml($this->arr['id_author']);
+				$this->babtpl_articleid = $this->arr['id'];
+				$this->babtpl_topicidid = $this->arr['id_topic'];
+				$this->babtpl_head = $this->content;
+				$editor->setContent($this->arr['body']);
+				$this->babtpl_body = $editor->getHtml();
+
 				$this->title = bab_toHtml(stripslashes($this->arr['title']));
 				$this->topictitle = bab_toHtml(bab_getCategoryTitle($this->arr['id_topic']));
 				$this->printurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=Print&topics=".$this->topics."&article=".$this->arr['id']);
@@ -532,6 +538,9 @@ function readMore($topics, $article)
 			global $babDB, $arrtop;
 			/* template variables */
 			$this->babtpl_topicid = $topics;
+			$this->babtpl_articleid = $article;
+			$this->babtpl_articlesurl = $GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics;
+			$this->babtpl_archiveurl = $GLOBALS['babUrlScript']."?tg=articles&idx=larch&topics=".$topics;
 
 			$this->categoriesHierarchy($topics, -1, $GLOBALS['babUrlScript']."?tg=topusr");
 			$this->printtxt = bab_translate("Print Friendly");
