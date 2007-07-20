@@ -4030,6 +4030,7 @@ class bab_CalendarEvents extends bab_handler
 		);
 
 		$this->count = count($this->events);
+		$this->ctx->curctx->push('CCount', $this->count);
 	}
 
 
