@@ -256,6 +256,8 @@ function listArticles($topics)
 				$this->babtpl_articleid = $this->arr['id'];
 				$this->babtpl_topicidid = $this->arr['id_topic'];
 				$this->babtpl_head = $this->content;
+				
+				$editor = new bab_contentEditor('bab_article_body');
 				$editor->setContent($this->arr['body']);
 				$this->babtpl_body = $editor->getHtml();
 
@@ -656,6 +658,11 @@ function readMore($topics, $article)
 					$editor->setContent($this->arr['head']);
 					$this->content = $editor->getHtml();
 					}
+				
+				/* template variables */
+				$this->babtpl_head =& $this->head;
+				$this->babtpl_body =& $this->content;
+
 				if( $this->arr['id_author'] != 0 && (($author = bab_getUserName($this->arr['id_author'])) != ""))
 					{
 					$this->articleauthor = bab_toHtml($author);
