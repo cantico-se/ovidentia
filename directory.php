@@ -803,7 +803,7 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 				$this->foriginalvalue = $this->fvalue;
 				$this->fvalue = bab_toHtml($this->fvalue);
 
-				$this->resfxv = $babDB->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." where id_fieldextra='".$babDB->db_escape_string($arr['id'])."'");
+				$this->resfxv = $babDB->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." where id_fieldextra='".$babDB->db_escape_string($arr['id'])."' ORDER BY field_value");
 				$this->countfxv = $babDB->db_num_rows($this->resfxv); 
 
 				$this->required = $arr['required'];
