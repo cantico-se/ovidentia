@@ -399,9 +399,10 @@ function bab_export_tables($tables, $file = false)
 
 /**
  * Exec sql file with semi-columns separated queries
+ * Used by addons
  * @param	string	$file
- * @return boolean
- * @since	6.4.93
+ * @return 	boolean
+ * @since	6.4.94
  */
 function bab_execSqlFile($file) {
 	
