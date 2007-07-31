@@ -409,7 +409,7 @@ function bab_execSqlFile($file) {
 	global $babDB;
 	$content = '';
 	
-	$fp=fopen($fullpath,"rb");
+	$fp=fopen($file,"rb");
 	if ($fp) {
 		while (!feof($fp)) {
 			$content .= fread($fp, 8192);
