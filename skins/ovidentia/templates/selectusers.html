@@ -1,5 +1,7 @@
 <!--#begin select -->
 
+
+
 <form method="post" action="{ babPhpSelf }">
 <!--#in _getnexthidden -->
 <input type="hidden" name="{ name }" value="{ value }" />
@@ -32,9 +34,12 @@
 			<td valign="top">
 				<select name="searchresult[]" multiple="multiple" size="10" style="width:100%">
 					<!--#in _getnextsearchresult -->
-					<option value="{ id_user }">{ username }</option>
+					<option value="{ id_user }" onclick="searchresult_select_click('{ entry_url }', this)">{ username }</option>
 					<!--#endin _getnextsearchresult -->
 				</select>
+				<p>
+				{ t_view_directory_entry_for } <a id="bab_searchresult_entrylink" href="" onclick="bab_popup(this.href);return false;"></a>
+				</p>
 			</td>
 
 			<td valign="middle">
@@ -53,7 +58,6 @@
 		<tr>
 			<td colspan="3" align="center">
 				<br />
-				<br />
 				<input name="act[record]" type="submit" value="{ t_record }" />
 				<br />
 				<br />
@@ -64,5 +68,32 @@
 	</tr>
 	</table>
 </form>
+
+<script>
+
+function searchresult_select_click(entry_url, obj) {
+	
+	var a = document.getElementById('bab_searchresult_entrylink');
+	
+	if ('' != entry_url) {
+	
+		a.parentNode.style.visibility = 'visible';
+	
+		if (a.lastChild) {
+			a.removeChild(a.lastChild);
+		}
+		a.appendChild(document.createTextNode(obj.innerHTML));
+		a.href = entry_url;
+		
+	} else {
+		a.parentNode.style.visibility = 'hidden';
+		
+	}
+}
+
+
+searchresult_select_click('', false);
+
+</script>
 
 <!--#end select -->

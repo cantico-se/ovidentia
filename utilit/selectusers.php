@@ -39,6 +39,7 @@ class bab_selectusers {
 		$this->t_record			= bab_translate("Record");
 		$this->t_selected_users	= bab_translate("Selected users");
 		$this->t_searchsubmit	= bab_translate("Search");
+		$this->t_view_directory_entry_for = bab_translate("View directory entry for");
 		$this->searchtext		= '';
 		$this->selected			= array();
 		$this->res				= false;
@@ -60,6 +61,8 @@ class bab_selectusers {
 		if ($this->res && $arr = $this->db->db_fetch_assoc($this->res)) {
 			$this->id_user	= bab_toHtml($arr['id']);
 			$this->username = bab_toHtml(bab_composeUserName($arr['firstname'], $arr['lastname']));
+			$url = bab_getUserDirEntryLink($arr['id']);
+			$this->entry_url = $url ? bab_toHtml($url, BAB_HTML_JS) : '';
 			return true;
 		}
 		return false;
