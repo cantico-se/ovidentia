@@ -287,7 +287,6 @@ class bab_icalendar
 		$babBody->icalendars->initializeCalendars();
 
 		
-
 		$this->cal_type = $babBody->icalendars->getCalendarType($calid);
 
 		$this->whObj = new bab_userWorkingHours(
@@ -386,7 +385,8 @@ class bab_icalendar
 		$events = $this->whObj->getEventsBetween(bab_mktime($startdate), bab_mktime($enddate), BAB_PERIOD_NWDAY | BAB_PERIOD_VACATION | BAB_PERIOD_CALEVENT);
 
 			foreach($events as $event) {
-				$arr[] = $event;
+				if ($this->idcalendar == $event->data['id_cal'] || empty($event->data['id_cal']))
+					$arr[] = $event;
 			}
 
 		return count($arr);
@@ -567,7 +567,7 @@ class cal_wmdbaseCls
 		$this->t_location = bab_translate("Location");
 		$this->t_alert = bab_translate("Reminder");
 		$this->t_notifier = bab_translate("Open notifier");
-		
+
 
 		$backurl = $GLOBALS['babUrlScript']."?tg=".$tg."&date=".$date."&calid=";
 		$this->calendarchoiceurl = bab_toHtml( $GLOBALS['babUrlScript']."?tg=calopt&idx=pop_calendarchoice&calid=".$this->currentidcals."&date=".$date."&backurl=".urlencode($backurl));
@@ -816,6 +816,8 @@ class cal_wmdbaseCls
 		$this->nbowners		= isset($arr['nbowners'])	? $arr['nbowners'] : 0;
 		$this->idevent		= isset($arr['id'])			? $arr['id'] : 0;
 		$this->bgcolor		= 'fff';
+		
+		$this->viewurl		= isset($arr['viewurl'])	? $arr['viewurl'] : null;
 
 		if( $this->id_creator != 0 )
 			{
@@ -840,7 +842,7 @@ class cal_wmdbaseCls
 		$time = bab_mktime($calPeriod->getProperty('DTEND'));
 		$this->endtime = bab_toHtml(bab_time($time));
 		$this->enddate =  bab_toHtml(bab_shortDate($time, false));
-
+		
 		
 		
 		if( !$this->allow_viewtitle  )
@@ -874,7 +876,9 @@ class cal_wmdbaseCls
 			$this->titletenurl	= "";
 			}
 		$this->attendeesurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=attendees&evtid=".$this->idevent ."&idcal=".$this->idcal);
-		$this->vieweventurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=veventupd&evtid=".$this->idevent ."&idcal=".$this->idcal);
+		//$this->vieweventurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=veventupd&evtid=".$this->idevent ."&idcal=".$this->idcal);
+		$this->vieweventurl = isset($arr['viewurl']) ? bab_toHtml($arr['viewurl']) : bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=veventupd&evtid=".$this->idevent ."&idcal=".$this->idcal);
+		$this->link = $arr['viewinsamewindow'];
 		$this->bnote = false;
 		if( isset($arr['note']) && !empty($arr['note']))
 			{
