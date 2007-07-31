@@ -370,7 +370,12 @@ class bab_synchronizeSql
 		}
 	}
 
-
+/**
+ * Get sql file
+ * @param	array			$tables
+ * @param	false|string	[$file]
+ * @return 	boolean|string
+ */
 function bab_export_tables($tables, $file = false)
 	{
 	include_once $GLOBALS['babInstallPath']."utilit/sqlincl.php";
@@ -389,6 +394,51 @@ function bab_export_tables($tables, $file = false)
 
 	return false;
 	}
+
+
+
+/**
+ * Exec sql file with semi-columns separated queries
+ * @param	string	$file
+ * @return boolean
+ * @since	6.4.93
+ */
+function bab_execSqlFile($file) {
+	
+	global $babDB;
+	$content = '';
+	
+	$fp=fopen($fullpath,"rb");
+	if ($fp) {
+		while (!feof($fp)) {
+			$content .= fread($fp, 8192);
+		}
+		
+		fclose($fp);
+		exit;
+	}
+	
+	
+	if (!$content) {
+		return false;
+	}
+	
+	$reg = "/((INSERT|CREATE|UPDATE|DELETE|DROP|ALTER|TRUNCATE).*?)\;/s";
+	if (preg_match_all($reg, $content, $m)) {
+		for ($k = 0; $k < count($m[1]); $k++ ) {
+			$query = trim($m[1][$k]);
+			if (!empty($query)) {
+				if (!$babDB->db_query($query)) {
+					return false;
+				}
+			}
+		}	
+		return true;
+	}
+	return false;
+}
+
+
 
 
 function bab_f_getDebug() {
