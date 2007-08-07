@@ -33,20 +33,21 @@ include_once "base.php";
  */
 class bab_dbdata {
 
-	var $row;
+	var $row = array();
+	var $tablename;
 	var $primaryautoincremented;
 	
 	/**
 	 * @param array
 	 */
-	function setDbData($row) {
+	function setRow($row) {
 		$this->row = $row;
 	}
 
 	/**
 	 * @return array
 	 */
-	function getDbData() {
+	function getRow() {
 		return $this->row;
 	}
 	
@@ -69,7 +70,55 @@ class bab_dbdata {
 		return $this->row[$key];
 	}
 	
+	/**
+	 * Get the row from table with autoincremented value as reference
+	 * @return	array|false
+	 */
+	function getDbRow() {
+		global $babDB;
+
+		$id = $this->getPrimaryAutoIncremented();
+		
+		if ($id) {
+			$res = $babDB->db_query('
+				SELECT * FROM '.$babDB->db_escape_string($this->tablename).' 
+				WHERE '.$babDB->db_escape_string($this->primaryautoincremented).' = '.$babDB->quote($id).'
+			');
+			
+			return $babDB->db_fetch_assoc($res);
+		}
+		
+		return false;
+	}
 	
+	/**
+	 * Get the value from table with autoincremented value as reference
+	 * @param	string	$key
+	 * @return	string
+	 */
+	function getDbValue($key) {
+		$arr = $this->getDbRow();
+		return $arr[$key];
+	}
+	
+	/**
+	 * Set the name of the table
+	 * @param	string	$key
+	 */
+	function setTableName($tablename) {
+		$this->tablename = $tablename;
+	}
+	
+	/**
+	 * Get the table name
+	 * @return 	false|string
+	 */
+	function getTableName() {
+		if (!isset($this->tablename)) {
+			return false;
+		}
+		return $this->tablename;
+	}
 	
 	/**
 	 * Set the name of the primary key
@@ -94,10 +143,9 @@ class bab_dbdata {
 	
 	/**
 	 * Insert Row into table
-	 * @param	string	$table
 	 * @return boolean
 	 */
-	function insertInto($table) {
+	function insertDbRow() {
 		
 		global $babDB;
 		
@@ -115,7 +163,7 @@ class bab_dbdata {
 			}
 			
 			$babDB->db_query('
-				INSERT INTO '.$babDB->db_escape_string($table).' 
+				INSERT INTO '.$babDB->db_escape_string($this->tablename).' 
 				('.implode(', ',$keys).') 
 				VALUES 
 				('.$babDB->quote($row).') 
@@ -130,10 +178,9 @@ class bab_dbdata {
 	/**
 	 * Update row into table
 	 * 
-	 * @param	string	$table
 	 * @return boolean
 	 */
-	function updateInto($table) {
+	function updateDbRow() {
 	
 		global $babDB;
 		
@@ -153,12 +200,38 @@ class bab_dbdata {
 		
 		if ($id) {
 			$babDB->db_query('
-				UPDATE '.$babDB->db_escape_string($table).' 
+				UPDATE '.$babDB->db_escape_string($this->tablename).' 
 				SET '.implode(',',$keys).' 
 				WHERE '.$babDB->db_escape_string($this->primaryautoincremented).' = '.$babDB->quote($id).'
 			');
 			
 			return true;
+		}
+		
+		return false;
+	}
+	
+	
+	/**
+	 * Count rows into table with same values as $this->row
+	 * @return 	int
+	 */
+	function countDbRows() {
+		global $babDB;
+		
+
+		$keys = $array();
+		foreach($this->row as $key => $value) {
+			$keys[] = $babDB->db_escape_string($key).' = '.$babDB->quote($value);
+		}
+		
+		$res = $babDB->db_query('
+			SELECT COUNT(*) FROM '.$babDB->db_escape_string($this->tablename).' 
+			WHERE '.implode(',',$keys).' 
+		');
+		
+		if ($res) {
+			return $babDB->db_num_rows($res);
 		}
 		
 		return false;
