@@ -48,13 +48,7 @@ function db_print_error($text) {
 	
 	$str = "<h2>" . $text . "</h2>\n";
 	$str .= "<p><b>Database Error: ";
-	switch($this->db_type )
-		{
-		case "mysql":
-		default:
-			$str .= mysql_error();
-			break;
-		}
+	$str .= $this->db_error();
 	$str .= "</b></p>\n";
 
 	
@@ -70,6 +64,18 @@ function db_print_error($text) {
 		}
 	else
 		return $str;
+	}
+	
+	
+function db_error() {
+		switch($this->db_type)
+		{
+		case "mysql":
+		default:
+			$error = mysql_error();
+			return empty($error) ? false : $error;
+			break;
+		}
 	}
 
 
@@ -148,7 +154,7 @@ function db_drop_db($dbname, $id)
 	return $res;
     }
 
-function db_query($id, $query)
+function db_query($id, $query, $errorManager = true)
     {
 	$res = false;
 
@@ -158,7 +164,7 @@ function db_query($id, $query)
 		default:
 		
 			$res = mysql_query($query, $id);
-			if (!$res)
+			if ($errorManager && !$res)
 				{
 				$this->db_print_error("Can't execute query : <br><pre>" . htmlspecialchars($query) . "</pre>");
 				}
@@ -315,9 +321,14 @@ class babDatabase extends bab_database
 		return parent::db_drop_db($dbname, $this->db_connect());
 		}
 
+	/**
+	 * sends an unique query (multiple queries are not supported)
+	 * @param	string	$query
+	 * @return	resource|false
+	 */
 	function db_query($query)
 		{
-		return parent::db_query($this->db_connect(), $query);
+		return parent::db_query($this->db_connect(), $query, true);
 		}
 
 	function db_num_rows($result)
@@ -377,7 +388,11 @@ class babDatabase extends bab_database
 		return parent::db_escape_string($str);
 		}
 
-	
+	/**
+	 * Encode array or string for query and add quotes
+	 * @param	array|string	$param
+	 * @return	string
+	 */
 	function quote($param) 
 		{
 			if (is_array($param)) {
@@ -395,6 +410,44 @@ class babDatabase extends bab_database
 		{
 		return parent::db_free_result($result);
 		}
+		
+		
+	/**
+	 * Get error info
+	 * return false if no error on the last query
+	 * return the error string if error on the last query
+	 * @since	6.4.95
+	 * @return 	false|string
+	 */
+	function db_error()
+		{
+		return parent::db_error();
+		}
+		
+		
+	/**
+	 * Get error manager status and enable or disable error manager
+	 * @since	6.4.95
+	 * @param	boolean	[$status]
+	 * @return 	boolean
+	 */
+	function errorManager($status = NULL) {
+		if (NULL === $status) {
+			return $this->db_die_on_fail;
+		}
+		$this->db_die_on_fail = $status;
+		return $status;
+	}
+	
+	/**
+	 * Query without error manager
+	 * @since	6.4.95
+	 * @param	string	$query
+	 * @return	resource|false
+	 */
+	function db_queryWem($query) {
+		return parent::db_query($this->db_connect(), $query, false);
+	}
 }
 
 
