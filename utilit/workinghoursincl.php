@@ -656,6 +656,9 @@ class bab_userWorkingHours {
 		$previous = NULL;
 		$periods = array();
 		$period_availability = NULL;
+		
+		$test_begin = $this->begin->getTimeStamp();
+		$test_end = $this->end->getTimeStamp();
 
 		foreach($this->boundaries as $ts => $events) {
 
@@ -666,7 +669,7 @@ class bab_userWorkingHours {
 			foreach($events as $event) {
 				
 			
-				if ($event->ts_end > $this->begin->getTimeStamp() && $event->ts_begin < $this->end->getTimeStamp()) {
+				if ($event->ts_end > $test_begin && $event->ts_begin < $test_end) {
 					
 					if ($event->isAvailable() && 0 !== $current) {
 						$current = 1;
@@ -675,17 +678,20 @@ class bab_userWorkingHours {
 							unset($users_non_available[$data['id_user']]);
 						}
 					} else {
-						$period_availability = false;
 						$current = 0;
 					}
 				}
 			}
 			
-			//bab_debug($ts.' -- '.bab_shortDate($ts).' --> '.$current.' -- count users_non_available : '.count($users_non_available));
+			// bab_debug($ts.' -- '.bab_shortDate($ts).' --> '.$current.' -- count users_non_available : '.count($users_non_available));
 
-			if (0 < count($users_non_available) && NULL !== $previous) {
-				if (!isset($periods[$previous.'.'.$ts])) {
-					$periods[$previous.'.'.$ts] = new bab_calendarPeriod($previous, $ts, BAB_PERIOD_NONWORKING);
+			if (NULL !== $current && 0 < count($users_non_available) && NULL !== $previous) {
+			
+				$tmp_begin 	= $previous < $test_begin ? $test_begin : $previous; 
+				$tmp_end 	= $ts > $test_end ? $test_end : $ts; 
+			
+				if (!isset($periods[$tmp_begin.'.'.$tmp_end]) && $tmp_begin != $tmp_end) {
+					$periods[$tmp_begin.'.'.$tmp_end] = new bab_calendarPeriod($tmp_begin, $tmp_end, BAB_PERIOD_NONWORKING);
 				}
 				$previous = NULL;
 			}
@@ -694,18 +700,22 @@ class bab_userWorkingHours {
 				$previous = $ts;
 			}
 		}
-		
-		if (NULL === $period_availability && 0 === count($periods)) {
-			$period_availability = false;
-			$periods[$this->begin->getTimeStamp().'.'.$this->end->getTimeStamp()] = new bab_calendarPeriod(
-				$this->begin->getTimeStamp(), 
-				$this->end->getTimeStamp(), 
+
+		if (0 === count($periods)) {
+			$periods[$test_begin.'.'.$test_end] = new bab_calendarPeriod(
+				$test_begin, 
+				$test_end, 
 				BAB_PERIOD_NONWORKING
 			);
-		} elseif (0 === count($periods)) {
+			
+		} 
+		
+		if (1 === count($periods) && isset($periods[$test_begin.'.'.$test_end])) {
 			$period_availability = true;
+		} else {
+			$period_availability = false;
 		}
-
+		
 		return $periods;
 	}
 
