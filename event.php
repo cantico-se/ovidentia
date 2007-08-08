@@ -1090,7 +1090,6 @@ function addEvent(&$message)
 		$message = bab_translate("End date must be older")." !";
 		return false;
 		}
-	
 
 
 	if( isset($_POST['repeat_cb']) && $_POST['repeat_cb'] != 0)
@@ -1405,6 +1404,9 @@ function eventAvariabilityCheck(&$avariability_message)
 
 	// working hours test
 
+
+	bab_debug("periode teste : $sdate, $edate");
+	
 	$whObj = bab_mcalendars::create_events($sdate, $edate, $calid);
 	while ($event = $whObj->getNextEvent(BAB_PERIOD_CALEVENT)) {
 		$data = $event->getData();
@@ -1417,16 +1419,19 @@ function eventAvariabilityCheck(&$avariability_message)
 		}
 	}
 
+
 	$availability = NULL;
-	$whObj->getAvailability($availability);
+	$arr = $whObj->getAvailability($availability);
+	
+	// debug
+	foreach($arr as $obj) {
+		bab_debug('periode dispo : '.bab_shortDate($obj->ts_begin).' '.bab_shortDate($obj->ts_end));
+	}
 	
 	if (false === $availability) {
 		$avariability_message = bab_translate("The event is in conflict with a calendar");
-	}
+	} 
 	
-	
-	
-
 
 	// events tests
 	$mcals = & new bab_mcalendars($sdate, $edate, $calid);
