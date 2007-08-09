@@ -391,6 +391,20 @@ class babDatabase extends bab_database
 			}
 		}
 
+	/**
+	 * Adds backticks (`) to an SQL identifier (database, table or column name). 
+	 * @see http://dev.mysql.com/doc/refman/4.1/en/identifiers.html
+	 * @param	string	$identifier
+	 * @return	string	The backticked identifier.
+	 */
+	function backTick($identifier) 
+		{
+			// Backticks are allowed in an identifier but should be backticked.
+			$identifier = '`' . str_replace('`', '``', $identifier) . '`';
+
+			return $identifier;
+		}
+
 	function db_free_result($result)
 		{
 		return parent::db_free_result($result);
