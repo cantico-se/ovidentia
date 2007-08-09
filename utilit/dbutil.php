@@ -410,6 +410,7 @@ class babDatabase extends bab_database
 	/**
 	 * Adds backticks (`) to an SQL identifier (database, table or column name). 
 	 * @see http://dev.mysql.com/doc/refman/4.1/en/identifiers.html
+	 * @since	6.4.95
 	 * @param	string	$identifier
 	 * @return	string	The backticked identifier.
 	 */
