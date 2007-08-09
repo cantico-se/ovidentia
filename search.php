@@ -215,8 +215,8 @@ function searchKeyword($item , $option = "OR")
 			if (!isset($this->fields['what'])) $this->fields['what'] = '';
 			if (!isset($this->fields['what2'])) $this->fields['what2'] = '';
 			$this->what = stripslashes($this->fields['what']);
-			$this->fields['what'] = stripslashes($this->fields['what']);
-			$this->fields['what2'] = stripslashes($this->fields['what2']);
+			$this->fields['what'] = bab_toHtml(stripslashes($this->fields['what']));
+			$this->fields['what2'] = bab_toHtml(stripslashes($this->fields['what2']));
 			$this->reset = bab_translate("Reset");
 			$this->Topic = bab_translate("Topic");
 			$this->Author = bab_translate("Author");
@@ -3035,16 +3035,30 @@ switch($idx)
 
 	case "find":
 		$babBody->title = bab_translate("Search");
-		searchKeyword( $item , $option);
-		$order = str_replace (","," ".$order." ,",$field)." ".$order;
+		searchKeyword($item, $option);
+		$order = strtoupper(bab_rp($order, 'ASC'));
+		if ($order !== 'ASC' && $order !== 'DESC')
+		{
+			$order = 'ASC';
+		}
+
+		// $fields contains a string of comma separated column identifiers
+		// that should be used to order the list of results.
+		$orderedFieldNames = explode(',', $field);
+		for ($i = 0; $i < count($orderedFieldNames); $i++)
+		{
+			$orderedFieldNames[$i] = $babDB->backTick(trim($orderedFieldNames[$i])) . ' ' . $order;
+		}
+		$order = implode(', ', $orderedFieldNames);
+		
 		if( !isset($navitem)) { $navitem = '';}
 		$GLOBALS['babWebStat']->addSearchWord($what);
-		startSearch( $item, $what, $order, $option,$navitem,$navpos);
+		startSearch($item, $what, $order, $option, $navitem, $navpos);
 		break;
 
 	default:
 		$babBody->title = bab_translate("Search");
-		searchKeyword( $item ,$option);
+		searchKeyword($item, $option);
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);
