@@ -1440,7 +1440,7 @@ function bab_printOvmlTemplate( $file, $args=array())
 	{
 	global $babInstallPath, $babSkinPath, $babOvmlPath;
 	if( (false !== strstr($file, "..")) || strtolower(substr($file, 0, 4)) == 'http' )
-		return "<!-- ERROR filename: ".$file." -->";
+		return "<!-- ERROR filename: ".bab_toHtml($file)." -->";
 
 	$filepath = $babOvmlPath.$file;
 	if( !file_exists( $filepath ) )
@@ -1453,7 +1453,7 @@ function bab_printOvmlTemplate( $file, $args=array())
 		}
 
 	if( !file_exists( $filepath ) )
-		return "<!-- ERROR filename: ".$filepath." -->";
+		return "<!-- ERROR filename: ".bab_toHtml($filepath)." -->";
 
 	$GLOBALS['babWebStat']->addOvmlFile($filepath);
 	include_once $GLOBALS['babInstallPath']."utilit/omlincl.php";
