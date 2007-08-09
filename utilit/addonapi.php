@@ -1437,29 +1437,32 @@ function bab_getFileContentDisposition() {
  * @return	string	html
  */
 function bab_printOvmlTemplate( $file, $args=array())
-	{
+{
 	global $babInstallPath, $babSkinPath, $babOvmlPath;
-	if( (false !== strstr($file, "..")) || strtolower(substr($file, 0, 4)) == 'http' )
-		return "<!-- ERROR filename: ".$file." -->";
-
+	if ((false !== strstr($file, '..')) || strtolower(substr($file, 0, 4)) == 'http')
+	{
+		return '<!-- ERROR filename: '.bab_toHtml($file).' -->';
+	}
 	$filepath = $babOvmlPath.$file;
-	if( !file_exists( $filepath ) )
+	if (!file_exists($filepath))
+	{
+		$filepath = $babSkinPath.'ovml/'. $file;
+		if (!file_exists($filepath))
 		{
-		$filepath = $babSkinPath."ovml/". $file;
-		if( !file_exists( $filepath ) )
-			{
-			$filepath = $babInstallPath."skins/ovidentia/ovml/". $file;
-			}
+			$filepath = $babInstallPath.'skins/ovidentia/ovml/'.$file;
 		}
+	}
 
-	if( !file_exists( $filepath ) )
-		return "<!-- ERROR filename: ".$filepath." -->";
+	if (!file_exists($filepath))
+	{
+		return '<!-- ERROR filename: '.bab_toHtml($filepath).' -->';
+	}
 
 	$GLOBALS['babWebStat']->addOvmlFile($filepath);
-	include_once $GLOBALS['babInstallPath']."utilit/omlincl.php";
+	include_once $babInstallPath.'utilit/omlincl.php';
 	$tpl = new babOvTemplate($args);
-	return $tpl->printout(implode("", file($filepath)));
-	}
+	return $tpl->printout(implode('', file($filepath)));
+}
 
 /**
  * Abbreviate text with 2 types
