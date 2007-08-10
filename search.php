@@ -37,21 +37,36 @@ function highlightWord( $w, $text)
 	{
 	return bab_highlightWord( $w, $text);
 	}
-
-
+	
+	
+function unhtmlentities($string)
+{
+    // replace numeric entities
+    $string = preg_replace('~&#x([0-9a-f]+);~ei', 'chr(hexdec("\\1"))', $string);
+    $string = preg_replace('~&#([0-9]+);~e', 'chr("\\1")', $string);
+    // replace literal entities
+    $trans_tbl = get_html_translation_table(HTML_ENTITIES);
+    $trans_tbl = array_flip($trans_tbl);
+    return strtr($string, $trans_tbl);
+}
+	
+/**
+ * text from WYSIWYG
+ */
 function put_text($txt, $limit = 60, $limitmot = 30 )
 	{
 	$obj = bab_replace_get();
 	$obj->ref($txt);
 	
 	if (strlen($txt) > $limit)
-		$out = substr(strip_tags($txt),0,$limit)."...";
+		$out = substr(unhtmlentities(strip_tags($txt)),0,$limit)."...";
 	else
-		$out = strip_tags($txt);
+		$out = unhtmlentities(strip_tags($txt));
 	$arr = explode(" ",$out);
 	foreach($arr as $key => $mot)
 		$arr[$key] = substr($mot,0,$limitmot);
 	$txt = implode(" ",$arr);
+	
 	return bab_toHtml($txt);
 	}
 
@@ -406,7 +421,7 @@ function searchKeyword($item , $option = "OR")
 			if( $i < $this->counttopics)
 				{
 				$this->topicid = $this->arrtopics[$this->id_cat][$i]['id'];
-				$this->topictitle = put_text($this->arrtopics[$this->id_cat][$i]['category'],30);
+				$this->topictitle = bab_toHtml($this->arrtopics[$this->id_cat][$i]['category']);
 				$this->selected = isset($this->fields['a_topic']) ? $this->topicid == $this->fields['a_topic'] : '';
 				$i++;
 				return true;
@@ -423,7 +438,7 @@ function searchKeyword($item , $option = "OR")
 			static $i = 0;
 			if (list($this->id_cat, $title) = each($this->arrtopicscategories))
 				{
-				$this->topiccategorytitle = put_text($title,30);
+				$this->topiccategorytitle = bab_toHtml($title);
 				$this->counttopics = count($this->arrtopics[$this->id_cat]);
 				$i++;
 				return true;
@@ -446,7 +461,7 @@ function searchKeyword($item , $option = "OR")
 				$this->topicid = $arr['id'];
 				$this->selected = isset($this->fields['g_directory']) && $this->fields['g_directory'] == $arr['id'];
 
-				$this->topictitle = put_text($arr['name'],30);
+				$this->topictitle = bab_toHtml($arr['name']);
 
 				$req = "select df.id, dfd.name from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." dfd left join ".BAB_DBDIR_FIELDSEXTRA_TBL." df ON df.id_directory=dfd.id_directory and df.id_field = ( ".BAB_DBDIR_MAX_COMMON_FIELDS." + dfd.id ) where df.id_directory='".(($arr['id_group']==0) ? $arr['id'] : 0)."'";
 				$res = $babDB->db_query($req);
@@ -558,7 +573,7 @@ function searchKeyword($item , $option = "OR")
 			if( $i < $this->countcal)
 				{
 				$this->calendarid = $this->rescal[$i]['idcal'];
-				$this->caltitle = put_text($this->rescal[$i]['name'],30);
+				$this->caltitle = bab_toHtml($this->rescal[$i]['name']);
 				$this->selected = isset($this->fields['h_calendar']) && $this->rescal[$i]['idcal'] == $this->fields['h_calendar'];
 				$i++;
 				return true;
@@ -2003,9 +2018,9 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					$this->authormail = bab_toHtml($arr['email']);
 					}
 				$this->arttopic = returnCategoriesHierarchy($arr['id_topic']);
-				$this->article = put_text($arr['arttitle']);
+				$this->article = bab_toHtml($arr['arttitle']);
 				$this->arttopicid = $arr['id_topic'];
-				$this->com = put_text($arr['subject']);
+				$this->com = bab_toHtml($arr['subject']);
 				if (strlen(trim(stripslashes($arr['body']))) > 0)
 					$this->urlok = true;
 				else
@@ -2033,10 +2048,10 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			if( $i < $this->countfor)
 				{
 				$arr = $babDB->db_fetch_array($this->resfor);
-				$this->post = put_text($arr['title']);
+				$this->post = bab_toHtml($arr['title']);
 				$this->postauthor = bab_toHtml($arr['author']);
 				$this->postdate = bab_toHtml(bab_shortDate($arr['date'], true));
-				$this->forum = put_text($arr['topic']);
+				$this->forum = bab_toHtml($arr['topic']);
 				$this->forumurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=threads&forum=".$arr['id_topic']);
 				$this->intro = put_text($arr['message'],300);
 				$this->posturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$arr['id_topic']."&thread=".$arr['id_thread']."&post=".$arr['id']."&flat=0");
@@ -2058,8 +2073,8 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			if( $i < $this->countfaq)
 				{
 				$arr = $babDB->db_fetch_array($this->resfaq);
-				$this->question = put_text($arr['title']);
-				$this->faqtopic = put_text($arr['topic']);
+				$this->question = bab_toHtml($arr['title']);
+				$this->faqtopic = bab_toHtml($arr['topic']);
 				$this->faqtopicid = $arr['idcat'];
 				$this->topicurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$arr['idcat']);
 				$this->questionurlpop = bab_toHtml($GLOBALS['babUrlScript']."?tg=search&idx=c&idc=".$arr['idcat']."&idq=".$arr['id']."&w=".urlencode($this->what));
@@ -2084,11 +2099,11 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				{
 				$this->altbg = !$this->altbg;
 				$arr = $babDB->db_fetch_array($this->resfil);
-				$this->file = put_text($arr['title']);
+				$this->file = bab_toHtml($arr['title']);
 				$this->update = bab_toHtml(bab_shortDate($arr['datem'], true));
 				$this->created = bab_toHtml(bab_shortDate($arr['datec'], true));
                 $this->artauthor = bab_toHtml($arr['author']);
-				$this->filedesc = put_text($arr['description']);
+				$this->filedesc = bab_toHtml($arr['description']);
 				$this->path = bab_toHtml($arr['path']);
 				
 				if ($arr['bgroup'] == 'N')
@@ -2129,7 +2144,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$arr['lastname'] = isset($arr['lastname']) ? $arr['lastname']: '';
 				$this->fullname = bab_toHtml(bab_composeUserName( $arr['firstname'], $arr['lastname']));
 				$this->confirstname = bab_toHtml($arr['firstname']);
-				$this->conlastname = put_text($arr['title']);
+				$this->conlastname = bab_toHtml($arr['title']);
 				$this->conemail = bab_toHtml($arr['email']);
 				$this->concompany = bab_toHtml($arr['compagny']);
 				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=search&idx=f&id=".$arr['id']."&w=".$this->what;
@@ -2243,7 +2258,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			if( $i < $this->countage)
 				{
 				$arr = $babDB->db_fetch_array($this->resage);
-				$this->agetitle = put_text($arr['title']);
+				$this->agetitle = bab_toHtml($arr['title']);
 				$this->agedescription = put_text($arr['description'],400);
 				$this->agestart_date = $this->dateformat(bab_mktime($arr['start_date']));
 				$this->ageend_date = $this->dateformat(bab_mktime($arr['end_date']));
@@ -2261,7 +2276,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 						break;
 					}
 				$this->agecat = bab_toHtml($arr['categorie']);
-				$this->agecatdesc = put_text($arr['catdesc'],200);
+				$this->agecatdesc = bab_toHtml($arr['catdesc']);
 				$this->ageurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$arr['id']."&idcal=".$arr['id_cal']);
 				$i++;
 				return true;
