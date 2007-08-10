@@ -59,7 +59,7 @@ function addCategory($cat, $ncat, $category, $description, $saart, $sacom, $saup
 		var $arttmplselected;
 		var $arttmpl;
 		var $atid;
-		var $arrarttmpl;
+		var $arrarttmpl = array();
 		var $countarttmpl;
 		var $disptmpltxt;
 		var $disptmplval;
@@ -67,7 +67,7 @@ function addCategory($cat, $ncat, $category, $description, $saart, $sacom, $saup
 		var $disptmplselected;
 		var $disptmpl;
 		var $disptid;
-		var $arrdisptmpl;
+		var $arrdisptmpl = array();
 		var $countdisptmpl;
 		var $restrictysel;
 		var $restrictnsel;
