@@ -67,7 +67,10 @@ function displayAttendees($evtid, $idcal)
 					if( bab_isCalendarAccessValid($arr['id_cal']))
 						{
 						$icalinfo = $babBody->icalendars->getCalendarInfo($arr['id_cal']);
-						$this->arrinfo[] = array('name' => $icalinfo['name'],'idcal' => $arr['id_cal'], 'idowner' => $icalinfo['idowner'],'status' => $arr['status']);
+						
+						$key = strtolower($icalinfo['name'].$arr['id_cal']);
+						
+						$this->arrinfo[$key] = array('name' => $icalinfo['name'],'idcal' => $arr['id_cal'], 'idowner' => $icalinfo['idowner'],'status' => $arr['status']);
 						if( $idcal == $arr['id_cal'] )
 							{
 							switch($icalinfo['type'])
@@ -122,6 +125,9 @@ function displayAttendees($evtid, $idcal)
 						$this->brepetitive = false;
 						}
 					}
+					
+				ksort($this->arrinfo);
+					
 				}
 			else
 				{
@@ -133,16 +139,16 @@ function displayAttendees($evtid, $idcal)
 			{
 			global $babBody;
 			static $i = 0;
-			if( $i < $this->count)
+			if( list(,$arr) = each($this->arrinfo))
 				{
 				$this->altbg = $this->altbg ? false : true;
-				$this->fullname = $this->arrinfo[$i]['name'];
+				$this->fullname = $arr['name'];
 				$this->bcreator = false;
-				if( $this->arrinfo[$i]['idowner'] ==  $this->idcreator )
+				if( $arr['idowner'] ==  $this->idcreator )
 					{
 					$this->bcreator = true;
 					}
-				$this->status = $this->statusdef[$this->arrinfo[$i]['status']];
+				$this->status = $this->statusdef[$arr['status']];
 				$i++;
 				return true;
 				}
