@@ -213,7 +213,7 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 		var $arttmplselected;
 		var $arttmpl;
 		var $atid;
-		var $arrarttmpl;
+		var $arrarttmpl = array();
 		var $countarttmpl;
 
 		var $disptmpltxt;
@@ -222,7 +222,7 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 		var $disptmplselected;
 		var $disptmpl;
 		var $disptid;
-		var $arrdisptmpl;
+		var $arrdisptmpl = array();
 		var $countdisptmpl;
 		var $restrictysel;
 		var $restrictnsel;
