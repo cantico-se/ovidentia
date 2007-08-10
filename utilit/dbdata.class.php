@@ -67,11 +67,12 @@ class bab_dbdata {
 	 * @return	mixed
 	 */
 	function getValue($key) {
-		return $this->row[$key];
+		return isset($this->row[$key]) : $this->row[$key] : '';
 	}
 	
 	/**
-	 * Get the row from table with autoincremented value as reference
+	 * Get the DbRow from table with autoincremented value as reference
+	 * set as row for other access
 	 * @return	array|false
 	 */
 	function getDbRow() {
@@ -81,11 +82,13 @@ class bab_dbdata {
 		
 		if ($id) {
 			$res = $babDB->db_query('
-				SELECT * FROM '.$babDB->db_escape_string($this->tablename).' 
-				WHERE '.$babDB->db_escape_string($this->primaryautoincremented).' = '.$babDB->quote($id).'
+				SELECT * FROM '.$babDB->backTick($this->tablename).' 
+				WHERE '.$babDB->backTick($this->primaryautoincremented).' = '.$babDB->quote($id).'
 			');
 			
-			return $babDB->db_fetch_assoc($res);
+			$row = $babDB->db_fetch_assoc($res);
+			$this->setRow($row);
+			return $row;
 		}
 		
 		return false;
@@ -143,7 +146,7 @@ class bab_dbdata {
 	
 	/**
 	 * Insert Row into table
-	 * @return boolean
+	 * @return boolean|int
 	 */
 	function insertDbRow() {
 		
@@ -159,17 +162,21 @@ class bab_dbdata {
 			
 			$keys = $array();
 			foreach($row as $key => $value) {
-				$keys[] = $babDB->db_escape_string($key);
+				$keys[] = $babDB->backTick($key);
 			}
 			
 			$babDB->db_query('
-				INSERT INTO '.$babDB->db_escape_string($this->tablename).' 
+				INSERT INTO '.$babDB->backTick($this->tablename).' 
 				('.implode(', ',$keys).') 
 				VALUES 
 				('.$babDB->quote($row).') 
 			');
 			
-			return true;
+			if (isset($this->primaryautoincremented)) {
+				return $babDB->db_insert_id();
+			} else {
+				return true;
+			}
 		}
 		
 		return false;
@@ -193,16 +200,16 @@ class bab_dbdata {
 		
 		$keys = $array();
 		foreach($row as $key => $value) {
-			$keys[] = $babDB->db_escape_string($key).' = '.$babDB->quote($value);
+			$keys[] = $babDB->backTick($key).' = '.$babDB->quote($value);
 		}
 		
 		$id = $this->getPrimaryAutoIncremented();
 		
 		if ($id) {
 			$babDB->db_query('
-				UPDATE '.$babDB->db_escape_string($this->tablename).' 
+				UPDATE '.$babDB->backTick($this->tablename).' 
 				SET '.implode(',',$keys).' 
-				WHERE '.$babDB->db_escape_string($this->primaryautoincremented).' = '.$babDB->quote($id).'
+				WHERE '.$babDB->backTick($this->primaryautoincremented).' = '.$babDB->quote($id).'
 			');
 			
 			return true;
@@ -222,11 +229,11 @@ class bab_dbdata {
 
 		$keys = $array();
 		foreach($this->row as $key => $value) {
-			$keys[] = $babDB->db_escape_string($key).' = '.$babDB->quote($value);
+			$keys[] = $babDB->backTick($key).' = '.$babDB->quote($value);
 		}
 		
 		$res = $babDB->db_query('
-			SELECT COUNT(*) FROM '.$babDB->db_escape_string($this->tablename).' 
+			SELECT COUNT(*) FROM '.$babDB->backTick($this->tablename).' 
 			WHERE '.implode(',',$keys).' 
 		');
 		
@@ -235,6 +242,23 @@ class bab_dbdata {
 		}
 		
 		return false;
+	}
+	
+	
+	/**
+	 * Create row with defaut table data
+	 */
+	function setRowDefault() {
+		global $babDB;
+		
+		$this->row = array();
+
+		$res = $babDB->db_query('DESCRIBE '.$babDB->backTick($this->tablename));
+		while ($arr = $babDB->db_fetch_assoc($res)) {
+			$this->row[$arr['Field']] = $arr['Default'];
+		}
+		
+		return $this->row;
 	}
 }
 
