@@ -2423,7 +2423,7 @@
 <string id="File(s)">Fichier(s)</string>
 <string id="Writable upload directory, absolute path">Répertoire des fichiers accessible en écriture, avec un chemin absolu</string>
 <string id="Error on upgrade">Erreur lors de la mise à jour</string>
-<string id="The calendar %s has been removed from an appointement">L'agenda %s à été retiré d'un événement</string>
+<string id="The calendar %s has been removed from an appointement">L'agenda %s a été retiré d'un événement</string>
 <string id="An appointement has been removed">Un événement a été supprimé</string>
 <string id="The user's groups">Les groupes de l'utilisateur</string>
 <string id="The installed version is not compliant with this package, the upgrade within theses two versions has been disabled">La version installée n'est pas compatible avec cette archive, la mise à jour entre ces deux versions à été désactivée</string>
