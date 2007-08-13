@@ -869,18 +869,26 @@ function bab_cal_setEventsPeriods(&$obj, $id_calendars, $begin, $end, $category 
 
 		$arr['alert'] = false;
 		$arr['idcal_owners'] = array(); /* id calendars that ownes this event */
+		$arr['iduser_owners'] = array();
 		$resco = $babDB->db_query("
 		
-			SELECT ceo.id_cal 
-			FROM ".BAB_CAL_EVENTS_OWNERS_TBL." ceo 
-				WHERE 
-					ceo.id_event ='".$babDB->db_escape_string($arr['id'])."' AND 
-					ceo.id_cal != '".$babDB->db_escape_string($arr['id_cal'])."' 
-
+			SELECT o.id_cal, c.type, c.owner  
+			FROM 
+				".BAB_CAL_EVENTS_OWNERS_TBL." o, 
+				".BAB_CALENDAR_TBL." c  
+			WHERE 
+				o.id_event ='".$babDB->db_escape_string($arr['id'])."' 
+				AND c.id = o.id_cal 
 			");
 
 		while( $arr2 = $babDB->db_fetch_array($resco)) {
-			$arr['idcal_owners'][] = $arr2['id_cal'];
+			if ($arr2['id_cal'] != $arr['id_cal']) {
+				$arr['idcal_owners'][] = $arr2['id_cal'];
+			}
+			
+			if (BAB_CAL_USER_TYPE === (int) $arr2['type']) {
+				$arr['iduser_owners'][$arr2['owner']] = $arr2['owner'];
+			}
 		}
 
 		$arr['nbowners'] = count($arr['idcal_owners']);
@@ -906,6 +914,10 @@ function bab_cal_setEventsPeriods(&$obj, $id_calendars, $begin, $end, $category 
 			{
 			$idevtarr[] = $arr['id'];
 			}
+			
+		if ('Y' === $arr['bfree']) {
+			$events[$arr['id']]->available = true;
+		}
 
 		$events[$arr['id']]->setData($arr);
 		

@@ -660,71 +660,83 @@ class bab_userWorkingHours {
 		$test_begin = $this->begin->getTimeStamp();
 		$test_end = $this->end->getTimeStamp();
 
-
 		foreach($this->boundaries as $ts => $events) {
 
-			$current = NULL;
+			// toutes les personnes disponibles
 			$users_non_available = $this->id_users;
+			$working_period = false;
+
 			
-			
+			// supprimer les utilisateurs pas dispo de la liste pour le boundary
 			foreach($events as $event) {
 
-				
-			
 				if ($event->ts_end > $test_begin && $event->ts_begin < $test_end) {
 					
-					if ($event->isAvailable() && 0 !== $current) {
-						$current = 1;
-						$data = $event->getData();
-						if (isset($data['id_user'])) {
-							unset($users_non_available[$data['id_user']]);
-						}
+					$data = $event->getData();
+					
+					if (isset($data['id_user'])) {
+						// periode de dispo utilisateur
+						$id_users = array($data['id_user']);
+						$working_period = true;
+					} elseif (isset($data['iduser_owners'])) {
+						// evenement, liste des utilisateurs associés
+						$id_users = $data['iduser_owners'];
 					} else {
-						$current = 0;
+						// autres, ex jours feriés, considérer l'utilisateur courrant comme associé à l'evenement
+						$id_users = array($GLOBALS['BAB_SESS_USERID']);
+					}
+					
+					if ($event->isAvailable()) {
+						// l'evenement est dispo, retirer les utilisateurs de l'evenement de la liste des utilisateurs non dispo du boundary
+						foreach($id_users as $id_user) {
+							if (isset($users_non_available[$id_user]) 
+							&& true !== $users_non_available[$id_user]) {
+							
+								unset($users_non_available[$id_user]);
+							}
+						}
+						
+					} else {
+						// l'evenement n'est pas dispo, ajouter les utilisateurs de l'evenement dans la liste des utilisateurs non dispo du boundary
+						
+						foreach($id_users as $id_user) {
+							$users_non_available[$id_user] = true;
+						}
 					}
 				}
 			}
-
 			
+			$boundary_free_for_all = 0 === count($users_non_available) && $working_period;
+			
+
+
 			// bab_debug($ts.' -- '.bab_shortDate($ts).' --> '.$current.' -- count users_non_available : '.count($users_non_available));
 
-			if (NULL !== $current && 0 < count($users_non_available) && NULL !== $previous) {
+
+			if (!$boundary_free_for_all && NULL !== $previous) {
+			
+				// au moins 1 evenement pas dispo dans le boundary, fermer la periode de dispo
 			
 				$tmp_begin 	= $previous < $test_begin ? $test_begin : $previous; 
 				$tmp_end 	= $ts > $test_end ? $test_end : $ts; 
-
 			
 				if (!isset($periods[$tmp_begin.'.'.$tmp_end]) && $tmp_begin != $tmp_end) {
 					$periods[$tmp_begin.'.'.$tmp_end] = new bab_calendarPeriod($tmp_begin, $tmp_end, BAB_PERIOD_NONWORKING);
 				}
 				$previous = NULL;
+				//bab_debug('non-free '.bab_shortDate($ts));
 			}
 
-			if (0 === count($users_non_available) && NULL === $previous) {
-				$previous = $ts;
-			}
-		}
-		
-		if (NULL === $period_availability && 0 === count($periods)) {
-			$period_availability = false;
-			$periods[$this->begin->getTimeStamp().'.'.$this->end->getTimeStamp()] = new bab_calendarPeriod(
-				$this->begin->getTimeStamp(), 
-				$this->end->getTimeStamp(), 
-				BAB_PERIOD_NONWORKING
-			);
-		} elseif (0 === count($periods)) {
-			$period_availability = true;
-		}
 
-		if (0 === count($periods)) {
-			$periods[$test_begin.'.'.$test_end] = new bab_calendarPeriod(
-				$test_begin, 
-				$test_end, 
-				BAB_PERIOD_NONWORKING
-			);
+			if ($boundary_free_for_all && NULL === $previous) {
+				// tout les utilisateurs sont dispo sur tout les evenements du boundary, démarrer la periode de dispo
+				$previous = $ts; 
+				//bab_debug('free '.bab_shortDate($ts));
 			
-		} 
-		
+			}
+		}
+
+
 		if (1 === count($periods) && isset($periods[$test_begin.'.'.$test_end])) {
 			$period_availability = true;
 		} else {

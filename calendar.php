@@ -213,11 +213,11 @@ function getPropertiesStringObj(&$calPeriod, &$t_option)
 
 		$arr = $calPeriod->getData();
 
-		if ('Y' == $arr['block']) {
+		if (isset($arr['block']) && 'Y' == $arr['block']) {
 			$el[] = bab_translate('Locked');
 		}
 
-		if ('Y' == $arr['bfree']) {
+		if (isset($arr['bfree']) && 'Y' == $arr['bfree']) {
 			$el[] = bab_translate('Free');
 		}
 
@@ -598,16 +598,18 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 				while ($this->mcals->getNextEvent($idcal, $this->from, $this->to, $calPeriod))
 					{
 					$arr = $calPeriod->getData();
-					if (!isset($this->resevent[$arr['id_event']]))
+					$uid = $calPeriod->getProperty('UID');
+					
+					if (!isset($this->resevent[$uid]))
 						{
-						$this->resevent[$arr['id_event']] = array();
-						$this->resevent[$arr['id_event']]['cals'] = array();
+						$this->resevent[$uid] = array();
+						$this->resevent[$uid]['cals'] = array();
 						}
 
-					$evt = & $this->resevent[$arr['id_event']];
+					$evt = & $this->resevent[$uid];
 					
 
-					if ($arr['id_cal']) {
+					if (isset($arr['id_cal'])) {
 						$evt['cals'][$arr['id_cal']] = array(
 							'name' => $this->mcals->getCalendarName($arr['id_cal']), 
 							'type' => $this->getTypeLabel($this->mcals->getCalendarType($arr['id_cal']))
@@ -615,7 +617,7 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 					}
 
 					
-					if ($arr['idcal_owners']) {
+					if (isset($arr['idcal_owners'])) {
 						foreach($arr['idcal_owners'] as $id_cal) {	
 							$type = bab_getCalendarType($id_cal);
 							$evt['cals'][$id_cal] = array(
@@ -634,7 +636,7 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 					if ($ts <= time() && $last_ts < $ts)
 						{
 						$last_ts = $ts;
-						$this->last_id = $arr['id_event'];
+						$this->last_id = $uid;
 						}
 					$evt['start_date'] = bab_toHtml(bab_longDate(bab_mktime($calPeriod->getProperty('DTSTART'))));
 					$evt['end_date'] = bab_toHtml(bab_longDate($ts));
@@ -649,16 +651,16 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 						$evt['color'] = '#fff';
 					}
 					
-					$evt['creator'] = $arr['id_creator'] != $GLOBALS['BAB_SESS_USERID'] ? bab_toHtml(bab_getUserName($arr['id_creator'])) : '';
-					$evt['private'] = $arr['id_creator'] != $GLOBALS['BAB_SESS_USERID'] && 'PUBLIC' !== $calPeriod->getProperty('CLASS');
-					$evt['nbowners'] = $arr['nbowners']+1;
+					$evt['creator'] = isset($arr['id_creator']) && $arr['id_creator'] != $GLOBALS['BAB_SESS_USERID'] ? bab_toHtml(bab_getUserName($arr['id_creator'])) : '';
+					$evt['private'] = isset($arr['id_creator']) && $arr['id_creator'] != $GLOBALS['BAB_SESS_USERID'] && 'PUBLIC' !== $calPeriod->getProperty('CLASS');
+					$evt['nbowners'] = isset($arr['nbowners']) ? $arr['nbowners']+1 : 1;
 					$evt['t_option'] = ''; 
 					$evt['properties'] = bab_toHtml(getPropertiesStringObj($calPeriod, $evt['t_option']));
 
 
 					$evt['location']=bab_toHtml($calPeriod->getProperty('LOCATION'));
 					global $babDB;
-					$res_note = $babDB->db_query("select note from ".BAB_CAL_EVENTS_NOTES_TBL." where id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and id_event='".$babDB->db_escape_string($arr['id_event'])."'");
+					$res_note = $babDB->db_query("select note from ".BAB_CAL_EVENTS_NOTES_TBL." where id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and id_event='".$babDB->db_escape_string($arr['id'])."'");
 					if( $res_note && $babDB->db_num_rows($res_note) > 0 )
 						{
 						$arr_notes = $babDB->db_fetch_array($res_note);
@@ -669,7 +671,7 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 						$evt['notes'] = '';
 						}
 
-					$sortvalue[$arr['id_event']] = $calPeriod->getProperty('DTSTART');
+					$sortvalue[$uid] = $calPeriod->getProperty('DTSTART');
 					}
 				}
 			
