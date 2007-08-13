@@ -361,6 +361,19 @@ ed();
 <tr>
 <td>
 	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="3">
+	
+	
+	<tr id="avariability_check">
+		<td colspan="2">{ avariability_message }<br />
+		<ol>
+			<!--#in getnextavariability -->
+			<li>{ conflict }</li>
+			<!--#endin getnextavariability -->
+		</ol>
+		<input type="submit" value="{ t_test_conflicts }" name="test_conflicts" /><br /><br />
+		</td>
+	</tr>
+	
 	<tbody id="main_form">
 	<!--#if brecevt -->
 	<tr> 
@@ -556,16 +569,7 @@ ed();
 	</tr>
 	
 	</tbody>
-	<tr id="avariability_check">
-		<td colspan="2">{ avariability_message }<br />
-		<ol>
-			<!--#in getnextavariability -->
-			<li>{ conflict }</li>
-			<!--#endin getnextavariability -->
-		</ol>
-		<input type="submit" value="{ t_test_conflicts }" name="test_conflicts" /><br /><br />
-		</td>
-	</tr>
+	
 	<tr> 
 		<td>&nbsp;</td>
 		<td> 
