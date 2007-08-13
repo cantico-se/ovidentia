@@ -1090,6 +1090,7 @@ function addEvent(&$message)
 		$message = bab_translate("End date must be older")." !";
 		return false;
 		}
+	
 
 
 	if( isset($_POST['repeat_cb']) && $_POST['repeat_cb'] != 0)
@@ -1414,10 +1415,24 @@ function eventAvariabilityCheck(&$avariability_message)
 		if (isset($_POST['evtid'])) {
 			if ((int) $data['id_event'] === (int) $_POST['evtid']) {
 				// considérer l'evenement modifie comme disponible
-				$event->available = true;
+				$whObj->setAvailability($event, true);
 			}
 		}
 	}
+
+	$availability = NULL;
+	$arr = $whObj->getAvailability($availability);
+	
+	// debug
+	foreach($arr as $obj) {
+		bab_debug('periode dispo : '.bab_shortDate($obj->ts_begin).' '.bab_shortDate($obj->ts_end));
+	}
+	
+	if (false === $availability) {
+		$avariability_message = bab_translate("The event is in conflict with a calendar");
+	} 
+	
+	
 
 
 	$availability = NULL;
