@@ -3386,6 +3386,27 @@ function ovidentia_upgrade($version_base,$version_ini) {
 
 		$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET schi_change='1'");
 		}
+
+	if (!bab_isTableField(BAB_SITES_TBL, 'ldap_userdn')) 
+		{
+		$babDB->db_query("ALTER TABLE ".BAB_SITES_TBL." ADD ldap_userdn TEXT NOT NULL");
+		}
+
+	if (bab_isTableField(BAB_SITES_TBL, 'ldap_password')) 
+		{
+		$babDB->db_query("ALTER TABLE ".BAB_SITES_TBL." DROP ldap_password");
+		}
+
+	if (bab_isTableField(BAB_SITES_TBL, 'ldap_passwordtype')) 
+		{
+		$babDB->db_query("ALTER TABLE ".BAB_SITES_TBL." DROP ldap_passwordtype");
+		}
+
+	if (bab_isTableField(BAB_SITES_TBL, 'ldap_basedn')) 
+		{
+		$babDB->db_query("ALTER TABLE ".BAB_SITES_TBL." DROP ldap_basedn");
+		}
+
 	return true;
 	
 }
