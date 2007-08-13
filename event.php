@@ -1413,7 +1413,7 @@ function eventAvariabilityCheck(&$avariability_message)
 		if (isset($_POST['evtid'])) {
 			if ((int) $data['id_event'] === (int) $_POST['evtid']) {
 				// considérer l'evenement modifie comme disponible
-				$event->available = true;
+				$whObj->setAvailability($event, true);
 			}
 		}
 	}

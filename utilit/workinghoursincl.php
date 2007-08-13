@@ -617,6 +617,23 @@ class bab_userWorkingHours {
 		reset($this->gn_events);
 		return false;
 	}
+	
+	
+	
+	/**
+	 * set availability status for one event
+	 *
+	 * @param	bab_calendarPeriod		$event
+	 * @param	boolean					$available
+	 */
+	function setAvailability($event, $available) {
+		$boundary = $this->boundaries[$event->ts_begin];
+		foreach($boundary as $key => $tmp_evt) {
+			if ($tmp_evt->getProperty('UID') === $event->getProperty('UID')) {
+				$this->boundaries[$event->ts_begin][$key]->available = $available;
+			}
+		}
+	}
 
 
 	/**
