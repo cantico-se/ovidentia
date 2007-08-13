@@ -83,6 +83,24 @@ class bab_url {
 		}
 		return $url;
 	}
+	
+	
+	/**
+	 * Create url from the previous request
+	 * All keys found in get and post
+	 * @static
+	 * @return string url
+	 */
+	function request_gp() {
+		$arr = isset($_GET) && is_array($_GET) ? array_keys($_GET) : array();
+		$arr += isset($_POST) && is_array($_POST) ? array_keys($_POST) : array();
+		
+		$url = $_SERVER['PHP_SELF'];
+		foreach($arr as $param) {
+			$url = bab_url::mod($url, $param, bab_rp($param));
+		}
+		return $url;
+	}
 
 }
 
