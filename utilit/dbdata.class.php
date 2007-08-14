@@ -57,7 +57,7 @@ class bab_dbdata {
 	 * @param	mixed	$value
 	 */
 	function setValue($key, $value) {
-		$this->row[$key];
+		$this->row[$key] = $value;
 	}
 	
 	
@@ -67,7 +67,7 @@ class bab_dbdata {
 	 * @return	mixed
 	 */
 	function getValue($key) {
-		return isset($this->row[$key]) : $this->row[$key] : '';
+		return array_key_exists($key, $this->row) : $this->row[$key] : '';
 	}
 	
 	/**
