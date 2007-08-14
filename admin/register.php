@@ -705,7 +705,7 @@ function userLogin($nickname,$password, &$msgerror, $cookie_id = false)
 						{
 						$entries = $ldap->search($userdn, '(objectclass=*)', $attributes);
 
-						if( $entries !== false && $entries['count'] > 0 )
+						if( $entries === false || $entries['count'] == 0 )
 							{
 							$babBody->msgerror = bab_translate("LDAP search failed");
 							$logok = false;
