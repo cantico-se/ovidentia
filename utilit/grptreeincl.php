@@ -79,25 +79,28 @@ class bab_grptree extends bab_dbtree
 		array_unshift ($groups, $this->getNodeInfo($id_parent));
 		}
 
-	foreach ($groups as $arr)
+	if (is_array($groups))
 		{
-		if ($arr['id'] < 4)
+		foreach ($groups as $arr)
 			{
-			$arr['name'] = bab_translate($arr['name']);
+			if ($arr['id'] < 4)
+				{
+				$arr['name'] = bab_translate($arr['name']);
+				}
+	
+			if (isset($prefix[$arr['id_parent']]))
+				{
+				$prefix[$arr['id']] = sprintf($format, $prefix[$arr['id_parent']], $grp[$arr['id_parent']]['name']);
+				}
+			else
+				{
+				$prefix[$arr['id']] = '';
+				}
+	
+			$arr['name'] = $prefix[$arr['id']].$arr['name'];
+			
+			$grp[$arr['id']] = $arr;
 			}
-
-		if (isset($prefix[$arr['id_parent']]))
-			{
-			$prefix[$arr['id']] = sprintf($format, $prefix[$arr['id_parent']], $grp[$arr['id_parent']]['name']);
-			}
-		else
-			{
-			$prefix[$arr['id']] = '';
-			}
-
-		$arr['name'] = $prefix[$arr['id']].$arr['name'];
-		
-		$grp[$arr['id']] = $arr;
 		}
 	return $grp;
 	}
