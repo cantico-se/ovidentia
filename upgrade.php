@@ -3171,6 +3171,21 @@ function upgrade612to620()
 
 
 
+function upgradeXXX()
+{
+	global $babDB;
+	$ret = "";
+
+	if (!bab_isTableField(BAB_FM_FOLDERS_TBL, 'sPathName')) 
+	{
+		$babDB->db_query("ALTER TABLE ".BAB_FM_FOLDERS_TBL." ADD `sPathName` TEXT NOT NULL AFTER `iIdParent`");
+	}
+	
+	return $ret;
+}
+
+
+
 
 
 /**

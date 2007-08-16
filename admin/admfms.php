@@ -22,6 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
+include_once $babInstallPath."utilit/fileincl.php";
 
 function addFolder()
 	{
@@ -90,18 +91,16 @@ function addFolder()
 	}
 
 function listFolders()
-	{
+{
 	global $babBody;
 	class temp
-		{
+	{
 		var $fullname;
 		var $notify;
 		var $access;
 		var $modify;
 		var $uncheckall;
 		var $checkall;
-		var $res;
-		var $count;
 		var $fnotify;
 		var $factive;
 		var $fversion;
@@ -117,9 +116,11 @@ function listFolders()
 		var $urlupdaname;
 		var $version;
 		var $altbg = true;
+		
+		var $oFmFolderSet = null;
 
 		function temp()
-			{
+		{
 			global $babBody, $babDB;
 			$this->fullname = bab_translate("Folders");
 			$this->notify = bab_translate("Notify");
@@ -132,120 +133,151 @@ function listFolders()
 			$this->urlrightsname = bab_translate("Rights");
 			$this->uncheckall = bab_translate("Uncheck all");
 			$this->checkall = bab_translate("Check all");
-			$this->res = $babDB->db_query("select * from ".BAB_FM_FOLDERS_TBL." where id_dgowner='".$babBody->currentAdmGroup."' order by folder asc");
-			$this->count = $babDB->db_num_rows($this->res);
-			}
+
+			$aCriterion = array();
+			$aCriterion[] = new BAB_InCriterion('iIdParent', 0);
+			$aCriterion[] = new BAB_InCriterion('iIdDgOwner', $babBody->currentAdmGroup);
+			$this->oFmFolderSet = BAB_FmFolderSet::select($aCriterion);
+		}
 
 		function getnext()
+		{
+			$this->fnotify = '';
+			$this->factive = '';
+			$this->fversion = '';
+			$this->fbhide = '';
+			
+			if(!is_null($this->oFmFolderSet))
 			{
-			global $babDB;
-			static $i = 0;
-			if( $i < $this->count)
+				$oFmFolder = $this->oFmFolderSet->next();
+				if(!is_null($oFmFolder))
 				{
-				$this->altbg = $this->altbg ? false : true;
-				$arr = $babDB->db_fetch_array($this->res);
-				if( $arr['filenotify'] == "Y")
-					$this->fnotify = "checked";
-				else
-					$this->fnotify = "";
-
-				if( $arr['active'] == "Y")
-					$this->factive = "checked";
-				else
-					$this->factive = "";
-
-				if( $arr['version'] == "Y")
-					$this->fversion = "checked";
-				else
-					$this->fversion = "";
-
-				if( $arr['bhide'] == "Y")
-					$this->fbhide = "checked";
-				else
-					$this->fbhide = "";
-
-				$this->fid = $arr['id'];
-				$this->url = $GLOBALS['babUrlScript']."?tg=admfm&idx=modify&fid=".$arr['id'];
-				$this->urlname = $arr['folder'];
-				$this->urlrights = $GLOBALS['babUrlScript']."?tg=admfm&idx=rights&fid=".$arr['id'];
-				
-				$this->access = bab_translate("Access");
-
-				$i++;
-				return true;
+					if('Y' === $oFmFolder->getFileNotify())
+					{
+						$this->fnotify = 'checked';
+					}
+					
+					if('Y' === $oFmFolder->getActive())
+					{
+						$this->factive = 'checked';
+					}
+					
+					if('Y' === $oFmFolder->getVersioning())
+					{
+						$this->fversion = 'checked';
+					}
+					
+					if('Y' === $oFmFolder->getHide())
+					{
+						$this->fbhide = 'checked';
+					}
+					
+					$this->fid = $oFmFolder->getId();
+					$this->url = $GLOBALS['babUrlScript'] . '?tg=admfm&idx=modify&fid=' . $this->fid;
+					$this->urlname = $oFmFolder->getName();
+					$this->urlrights = $GLOBALS['babUrlScript'] . '?tg=admfm&idx=rights&fid=' . $this->fid;
+					$this->access = bab_translate("Access");
+					return true;
 				}
-			else
-				return false;
-
 			}
+			return false;
 		}
+		
+		function count()
+		{
+			if(!is_null($this->oFmFolderSet))
+			{
+				return $this->oFmFolderSet->count();
+			}
+			return 0;			
+		}
+	}
 
 	$temp = new temp();
 	$babBody->babecho(	bab_printTemplate($temp, "admfms.html", "folderlist"));
-	return $temp->count;
-	}
+	return $temp->count();
+}
 
 function saveFolder($fname, $active, $said, $notification, $version, $bhide, $bautoapp)
 {
 	global $babBody, $babDB;
-	if( empty($fname))
-		{
+	if(empty($fname))
+	{
 		$babBody->msgerror = bab_translate("ERROR: You must provide a name !!");
 		return false;
-		}
+	}
 
-	$res = $babDB->db_query("select id from ".BAB_FM_FOLDERS_TBL." where folder='".$babDB->db_escape_string($fname)."' and id_dgowner='".$babDB->db_escape_string($babBody->currentAdmGroup)."'");
-	if( $babDB->db_num_rows($res) > 0)
+	$aCriterion = array();
+	$aCriterion[] = new BAB_InCriterion('sName', $fname);
+	$aCriterion[] = new BAB_InCriterion('iIdDgOwner', $babBody->currentAdmGroup);
+	$oFmFolder = BAB_FmFolderSet::get($aCriterion);
+	if(is_null($oFmFolder))
+	{
+		if(empty($said))
 		{
+			$said = 0;
+		}
+		$oFmFolder = new BAB_FmFolder();
+		$oFmFolder->setApprobationSchemeId($said);
+		$oFmFolder->setName($fname);
+		$oFmFolder->setPathName($fname);
+		$oFmFolder->setFileNotify($notification);
+		$oFmFolder->setActive($active);
+		$oFmFolder->setVersioning($version);
+		$oFmFolder->setHide($bhide);
+		$oFmFolder->setAutoApprobation($bautoapp);
+		return $oFmFolder->save();
+	}
+	else 
+	{
 		$babBody->msgerror = bab_translate("This folder already exists");
 		return false;
-		}
-	else
-		{
-		if( empty($said))
-			$said = 0;
-		$babDB->db_query("insert into ".BAB_FM_FOLDERS_TBL." (folder, idsa, filenotify, active, version, id_dgowner, bhide, auto_approbation) VALUES (
-			'" . $babDB->db_escape_string($fname). "',
-			'" . $babDB->db_escape_string($said). "', 
-			'" . $babDB->db_escape_string($notification). "', 
-			'" . $babDB->db_escape_string($active). "', 
-			'" . $babDB->db_escape_string($version). "', 
-			'" . $babDB->db_escape_string($babBody->currentAdmGroup). "', 
-			'" . $babDB->db_escape_string($bhide). "', 
-			'" . $babDB->db_escape_string($bautoapp). "'
-		)");
-		return true;
-		}
+	}
 }
 
 function updateFolders($notifies, $actives, $versions, $bhides)
 {
-	global $babBody, $babDB;
-	$res = $babDB->db_query("select id from ".BAB_FM_FOLDERS_TBL." where id_dgowner='".$babBody->currentAdmGroup."'");
-	while( $row = $babDB->db_fetch_array($res))
+	global $babBody;
+	$oFmFolderSet = BAB_FmFolderSet::select(array(new BAB_InCriterion('iIdDgOwner', $babBody->currentAdmGroup)));
+	while(null !== ($oFmFolder = $oFmFolderSet->next()))
+	{
+		if(is_array($notifies) && count($notifies) > 0 && in_array($oFmFolder->getId(), $notifies))
 		{
-		if( count($notifies) > 0 && in_array($row['id'], $notifies))
-			$not = "Y";
-		else
-			$not = "N";
-
-		if( count($actives) > 0 && in_array($row['id'], $actives))
-			$act = "Y";
-		else
-			$act = "N";
-
-		if( count($versions) > 0 && in_array($row['id'], $versions))
-			$ver = "Y";
-		else
-			$ver = "N";
-
-		if( count($bhides) > 0 && in_array($row['id'], $bhides))
-			$bhide = "Y";
-		else
-			$bhide = "N";
-
-		$babDB->db_query("update ".BAB_FM_FOLDERS_TBL." set filenotify='".$not."', active='".$act."', version='".$ver."', bhide='".$bhide."' where id='".$row['id']."'");
+			$oFmFolder->setFileNotify('Y');	
 		}
+		else 
+		{
+			$oFmFolder->setFileNotify('N');	
+		}
+		
+		if(is_array($actives) && count($actives) > 0 && in_array($oFmFolder->getId(), $actives))
+		{
+			$oFmFolder->setActive('Y');	
+		}
+		else 
+		{
+			$oFmFolder->setActive('N');	
+		}
+		
+		if(is_array($versions) && count($versions) > 0 && in_array($oFmFolder->getId(), $versions))
+		{
+			$oFmFolder->setVersioning('Y');	
+		}
+		else 
+		{
+			$oFmFolder->setVersioning('N');	
+		}
+		
+		if(is_array($bhides) && count($bhides) > 0 && in_array($oFmFolder->getId(), $bhides))
+		{
+			$oFmFolder->setHide('Y');	
+		}
+		else 
+		{
+			$oFmFolder->setHide('N');	
+		}
+		$oFmFolder->save();
+	}
 }
 
 
@@ -255,6 +287,9 @@ if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['filemanager'] != 'Y')
 	$babBody->msgerror = bab_translate("Access denied");
 	return;
 }
+
+//bab_debug(__FILE__);
+//bab_debug($_POST);
 
 if( !isset($idx))
 	$idx = "list";

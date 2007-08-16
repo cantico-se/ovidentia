@@ -2453,5 +2453,11 @@
 <string id="Display this day in the calendar">Afficher ce jour dans l'agenda</string>
 <string id="Define working hours">Définir les heures travaillées</string>
 <string id="Working half-days interface">interface des demi-journée travaillées</string>
+<<<<<<< lang-fr.xml
+<string id="Ovidentia functions">Fonctionalités d'Ovidentia</string>
+<string id="Create a folder">Créer un répertoire</string>
+
+=======
 <string id="Ovidentia functions">Fonctions complémentaires</string>
+>>>>>>> 1.396
 </fr>

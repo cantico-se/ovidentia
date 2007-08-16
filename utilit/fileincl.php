@@ -22,6 +22,8 @@
  * USA.																	*
 ************************************************************************/
 include_once 'base.php';
+require_once $GLOBALS['babInstallPath'] . 'utilit/criteria.class.php';
+
 
 define('BAB_FVERSION_FOLDER', 'OVF');
 
@@ -54,22 +56,6 @@ function getDirSize( $dir )
 	return $size;
 	}
 
-
-function bab_getFolderName($id)
-	{
-	global $babDB;
-	$res = $babDB->db_query("select folder from ".BAB_FM_FOLDERS_TBL." where id='".$babDB->db_escape_string($id)."'");
-	if( $res && $babDB->db_num_rows($res) > 0)
-		{
-		$arr = $babDB->db_fetch_array($res);
-		return $arr['folder'];
-		}
-	else
-		{
-		return "";
-		}
-	}
-
 /**
  * @param	Y|N		$gr
  * @param	int		$id
@@ -95,10 +81,19 @@ function bab_getUploadFullPath($gr, $id, $path = '')
 
 function bab_getUploadFmPath($gr, $id)
 {
-	if( $gr == "Y")
-		return "G".$id."/";
+	if($gr == "Y")
+	{
+//		return "G".$id."/";
+		$oFmFolder = BAB_FmFolderSet::get(array(new BAB_InCriterion('iId', $id)));
+		if(!is_null($oFmFolder))
+		{
+			return $oFmFolder->getName() . '/';
+		}
+	}
 	else
+	{
 		return "U".$id."/";
+	}
 }
 
 function bab_formatSizeFile($size, $roundoff = true)
@@ -200,7 +195,12 @@ function notifyFileApprovers($id, $users, $msg)
 				$this->file = bab_translate("File");
 				$this->group = bab_translate("Folder");
 				$this->pathname = $arr['path'] == ""? "/": $arr['path'];
-				$this->groupname = bab_getFolderName($arr['id_owner']);
+				$this->groupname = '';
+				$oFmFolder = BAB_FmFolderSet::get(array(new BAB_InCriterion('iId', $arr['id_owner'])));
+				if(!is_null($oFmFolder))
+				{
+					$this->groupname = $oFmFolder->getName();
+				}
 				$this->site = bab_translate("Web site");
 				$this->date = bab_translate("Date");
 				$this->dateval = bab_strftime(mktime());
@@ -274,7 +274,12 @@ function fileNotifyMembers($file, $path, $idgrp, $msg, $bnew = true)
 				$this->file = bab_translate("File");
 				$this->group = bab_translate("Folder");
 				$this->pathname = $path == ""? "/": $path;
-				$this->groupname = bab_getFolderName($idgrp);
+				$this->groupname = '';
+				$oFmFolder = BAB_FmFolderSet::get(array(new BAB_InCriterion('iId', $idgrp)));
+				if(!is_null($oFmFolder))
+				{
+					$this->groupname = $oFmFolder->getName();
+				}
 				$this->site = bab_translate("Web site");
 				$this->date = bab_translate("Date");
 				$this->dateval = bab_strftime(mktime());
@@ -1490,5 +1495,308 @@ function notifyApprovers($id, $fid)
 	
 	return false;
 	}
+
+	
+	
+class BAB_FmFolder
+{
+	var $iId = null;
+	var $sName = null;
+	var $sPathName = null;
+	var $iIdApprobationScheme = null;
+	var $sFileNotify = null;
+	var $sActive = null;
+	var $sVersioning = null;
+	var $iIdDgOwner = null;
+	var $sHide = null;
+	var $sAutoApprobation = null;
+	
+	function BAB_FmFolder()
+	{
+		
+	}
+	
+	function setId($iId)
+	{
+		$this->iId = $iId;
+	}
+	
+	function getId()
+	{
+		return $this->iId;
+	}
+	
+	function setName($sName)
+	{
+		$this->sName = $sName;
+	}
+	
+	function getName()
+	{
+		return $this->sName;
+	}
+	
+	function setPathName($sPathName)
+	{
+		$this->sPathName = $sPathName;
+	}
+	
+	function getPathName()
+	{
+		return $this->sPathName;
+	}
+	
+	function setApprobationSchemeId($iId)
+	{
+		$this->iIdApprobationScheme = $iId;
+	}
+	
+	function getApprobationSchemeId()
+	{
+		return $this->iIdApprobationScheme;
+	}
+	
+	function setFileNotify($sFileNotify)
+	{
+		$this->sFileNotify = $sFileNotify;
+	}
+	
+	function getFileNotify()
+	{
+		return $this->sFileNotify;
+	}
+	
+	function setActive($sActive)
+	{
+		$this->sActive = $sActive;
+	}
+	
+	function getActive()
+	{
+		return $this->sActive;
+	}
+	
+	function setVersioning($sVersioning)
+	{
+		$this->sVersioning = $sVersioning;
+	}
+	
+	function getVersioning()
+	{
+		return $this->sVersioning;
+	}
+	
+	function setDelegationOwnerId($iId)
+	{
+		$this->iIdDgOwner = $iId;
+	}
+	
+	function getDelegationOwnerId()
+	{
+		return $this->iIdDgOwner;
+	}
+	
+	function setHide($sHide)
+	{
+		$this->sHide = $sHide;
+	}
+	
+	function getHide()
+	{
+		return $this->sHide;
+	}
+	
+	function setAutoApprobation($sAutoApprobation)
+	{
+		$this->sAutoApprobation = $sAutoApprobation;
+	}
+	
+	function getAutoApprobation()
+	{
+		return $this->sAutoApprobation;
+	}
+	
+	function save()
+	{
+		return BAB_FmFolderSet::save($this);
+	}
+}
+	
+
+class BAB_FmFolderSet extends BAB_MySqlResultIterator 
+{
+	function BAB_FmFolderSet()
+	{
+		parent::BAB_MySqlResultIterator();
+	}
+
+	/**
+     * Return the where clause depending on the filter 
+     *
+     * @param array filter
+     * @return string The where clause
+     */
+	function processWhereClause($aCriterion)
+	{
+		$aToProcess = array('iId' => array('`id` '), 'sName' => array('`folder` '), 
+			'sPathName' => array('`sPathName` '), 'iIdApprobationScheme' => array('`idsa` '), 
+			'sFileNotify' => array('`filenotify` '), 'sActive' => array('`active` '), 
+			'sVersioning' => array('`version` '), 'iIdDgOwner' => array('`id_dgowner` '), 
+			'sHide' => array('`bhide` '), 'sAutoApprobation' => array('`auto_approbation` '));
+			
+		$oCriteria = new BAB_Criteria($aToProcess, $aCriterion);
+		return $oCriteria->processCriterion();
+	}
+
+	
+	function save($oFmFolder)
+	{
+		global $babDB;
+		$sQuery = 
+			'INSERT INTO ' . BAB_FM_FOLDERS_TBL . ' ' .
+				'(' .
+					'`id`, `folder`, `sPathName`, `idsa`, `filenotify`, `active`, ' .
+					'`version`, `id_dgowner`, `bhide`, `auto_approbation` ' .
+				') ' .
+			'VALUES ' . 
+				'(' . ((is_null($oFmFolder->getId())) ? '\'\'' : '\'' . $oFmFolder->getId() . '\'') . ', \'' . 
+					$babDB->db_escape_string($oFmFolder->getName()) . '\', \'' . 
+					$babDB->db_escape_string($oFmFolder->getPathName()) . '\', \'' . 
+					$babDB->db_escape_string($oFmFolder->getApprobationSchemeId()) . '\', \'' . 
+					$babDB->db_escape_string($oFmFolder->getFileNotify()) . '\', \'' . 
+					$babDB->db_escape_string($oFmFolder->getActive()) . '\', \'' . 
+					$babDB->db_escape_string($oFmFolder->getVersioning()) . '\', \'' . 
+					$babDB->db_escape_string($oFmFolder->getDelegationOwnerId()) . '\', \'' . 
+					$babDB->db_escape_string($oFmFolder->getHide()) . '\', \'' . 
+					$babDB->db_escape_string($oFmFolder->getAutoApprobation()) .
+				'\') ' .
+			'ON DUPLICATE KEY UPDATE ' .
+					'`folder` = \'' . $babDB->db_escape_string($oFmFolder->getName()) . '\', ' .
+					'`sPathName` = \'' . $babDB->db_escape_string($oFmFolder->getPathName()) . '\', ' .
+					'`idsa` = \'' . $babDB->db_escape_string($oFmFolder->getApprobationSchemeId()) . '\', ' .
+					'`filenotify` = \'' . $babDB->db_escape_string($oFmFolder->getFileNotify()) . '\', ' .
+					'`active` = \'' . $babDB->db_escape_string($oFmFolder->getActive()) . '\', ' .
+					'`version` = \'' . $babDB->db_escape_string($oFmFolder->getVersioning()) . '\', ' .
+					'`id_dgowner` = \'' . $babDB->db_escape_string($oFmFolder->getDelegationOwnerId()) . '\', ' .
+					'`bhide` = \'' . $babDB->db_escape_string($oFmFolder->getHide()) . '\', ' .
+					'`auto_approbation` = \'' . $babDB->db_escape_string($oFmFolder->getAutoApprobation()) . '\'';
+	
+//		bab_debug($sQuery);
+		$oResult = $babDB->db_query($sQuery);
+		if(false !== $oResult)
+		{
+			if(is_null($oFmFolder->getId()))
+			{
+				$oFmFolder->setId($babDB->db_insert_id());
+			}
+			return true;
+		}
+		return false;
+	}
+
+
+	function updateSubFolderPathName($sOldPattern, $sNewPattern)
+	{
+		$aCriterion = array();
+		$aCriterion[] = new BAB_LikeCriterion('sPathName', $sOldPattern, 1);
+		$aCriterion[] = new BAB_NotInCriterion('sPathName', $sOldPattern);
+		$oFmFolderSet = BAB_FmFolderSet::select($aCriterion);
+		while(null !== ($oFmFolder = $oFmFolderSet->next()))
+		{
+			$sPathName = $sNewPattern . substr($oFmFolder->getPathName(), strlen($sOldPattern));
+			$oFmFolder->setPathName($sPathName);
+			$oFmFolder->save();
+		}
+	}
+	
+	function remove($aCriterion)
+	{
+		$sWhereClause = BAB_FmFolderSet::processWhereClause($aCriterion);
+		if(strlen($sWhereClause) > 0)
+		{
+			global $babDB;
+			$sQuery = 'DELETE FROM ' . BAB_FM_FOLDERS_TBL . ' ' . $sWhereClause;
+//			bab_debug($sQuery);
+			return $babDB->db_query($sQuery);
+		}
+		return false;
+	}
+	
+	
+	/**
+     * Get The query string depending on the filters
+     *
+     * @param array filter
+     * @return string The query string
+     */
+	public function getSelectQuery($aCriterion = null)
+	{
+		$sWhereClause = BAB_FmFolderSet::processWhereClause($aCriterion);
+
+		$sQuery = 
+			'SELECT ' .
+				'`id` iId, ' .
+				'`folder` sName, ' .
+				'`sPathName` sPathName, ' .
+				'`idsa` iIdApprobationScheme, ' .
+				'`filenotify` sFileNotify, ' .
+				'`active` sActive, ' .
+				'`version` sVersioning, ' .
+				'`id_dgowner` iIdDgOwner, ' .
+				'`bhide` sHide, ' .
+				'`auto_approbation` sAutoApprobation ' .
+			'FROM ' .
+				BAB_FM_FOLDERS_TBL . ' ' .
+			$sWhereClause . ' ORDER BY `folder` ASC';
+				
+		bab_debug($sQuery);	
+		return $sQuery;
+	}
+	
+	function get($aCriterion = null)
+	{
+		$sQuery = BAB_FmFolderSet::getSelectQuery($aCriterion);
+
+		global $babDB;	
+
+		$oResult = $babDB->db_query($sQuery);
+		$iNumRows = $babDB->db_num_rows($oResult);
+		$iIndex = 0;
+		
+		if($iIndex < $iNumRows)
+		{
+			$oFmFolderSet = new BAB_FmFolderSet();
+			$oFmFolderSet->setMySqlResult($oResult);
+			return $oFmFolderSet->next();
+		}
+		return null;
+	}	
+	
+	function select($aCriterion = null)
+	{
+		$sQuery = BAB_FmFolderSet::getSelectQuery($aCriterion);
+		global $babDB;	
+		$oResult = $babDB->db_query($sQuery);
+		$oFmFolderSet = new BAB_FmFolderSet();
+		$oFmFolderSet->setMySqlResult($oResult);
+		return $oFmFolderSet;
+	}	
+	
+	function getObject($aDatas)
+	{
+		$oFmFolder = new BAB_FmFolder();
+		$oFmFolder->setId((int) $aDatas['iId']);
+		$oFmFolder->setName($aDatas['sName']);
+		$oFmFolder->setPathName($aDatas['sPathName']);
+		$oFmFolder->setApprobationSchemeId((int) $aDatas['iIdApprobationScheme']);
+		$oFmFolder->setFileNotify($aDatas['sFileNotify']);
+		$oFmFolder->setActive($aDatas['sActive']);
+		$oFmFolder->setVersioning($aDatas['sVersioning']);
+		$oFmFolder->setDelegationOwnerId((int) $aDatas['iIdDgOwner']);
+		$oFmFolder->setHide($aDatas['sHide']);
+		$oFmFolder->setAutoApprobation($aDatas['sAutoApprobation']);
+		return $oFmFolder;
+	}
+}
 
 ?>

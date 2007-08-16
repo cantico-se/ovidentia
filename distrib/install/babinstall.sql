@@ -1114,6 +1114,7 @@ CREATE TABLE bab_far_instances (
 CREATE TABLE bab_fm_folders (
   id int(11) unsigned NOT NULL auto_increment,
   folder char(255) NOT NULL default '',
+  sPathName text NOT NULL,
   manager int(11) unsigned NOT NULL default '0',
   idsa int(11) unsigned NOT NULL default '0',
   filenotify enum('N','Y') NOT NULL default 'N',

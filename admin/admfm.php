@@ -56,7 +56,7 @@ function modifyFolder($fid)
 		var $nversel;
 
 		function temp($fid)
-			{
+		{
 			global $babDB;
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
@@ -71,80 +71,70 @@ function modifyFolder($fid)
 			$this->display = bab_translate("Visible in file manager?");
 			$this->autoapprobationtxt = bab_translate("Automatically approve author if he belongs to approbation schema");
 			$this->fid = $fid;
-			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FM_FOLDERS_TBL." where id ='".$fid."'"));
-			$this->folderval = $arr['folder'];
-			$this->said = $arr['idsa'];
 			$this->none = bab_translate("None");
-			if( $arr['active'] == "Y" )
-				{
-				$this->yactsel = "selected";
-				$this->nactsel = "";
-				}
-			else
-				{
-				$this->nactsel = "selected";
-				$this->yactsel = "";
-				}
+			
+			$oFmFolder = BAB_FmFolderSet::get(array(new BAB_InCriterion('iId', $this->fid)));
+			if(!is_null($oFmFolder))
+			{
+				$this->folderval = $oFmFolder->getName();
+				$this->said = $oFmFolder->getDelegationOwnerId();
 
-			if( $arr['filenotify'] == "Y" )
+				$this->yactsel = '';
+				$this->nactsel = 'selected';
+				if('Y' === $oFmFolder->getActive())
 				{
-				$this->ynfsel = "selected";
-				$this->nnfsel = "";
+					$this->yactsel = 'selected';
+					$this->nactsel = '';
 				}
-			else
+				
+				$this->ynfsel = '';
+				$this->nnfsel = 'selected';
+				if('Y' === $oFmFolder->getFileNotify())
 				{
-				$this->nnfsel = "selected";
-				$this->ynfsel = "";
+					$this->ynfsel = 'selected';
+					$this->nnfsel = '';
 				}
-
-			if( $arr['version'] == "Y" )
+				
+				$this->yversel = '';
+				$this->nversel = 'selected';
+				if('Y' === $oFmFolder->getVersioning())
 				{
-				$this->yversel = "selected";
-				$this->nversel = "";
+					$this->yversel = 'selected';
+					$this->nversel = '';
 				}
-			else
+				
+				$this->nhidesel = '';
+				$this->yhidesel = 'selected';
+				if('Y' === $oFmFolder->getHide())
 				{
-				$this->nversel = "selected";
-				$this->yversel = "";
+					$this->nhidesel = 'selected';
+					$this->yhidesel = '';
 				}
-
-			if( $arr['bhide'] == "Y" )
+				
+				$this->autoappysel = '';
+				$this->autoappnsel = 'selected';
+				if('Y' === $oFmFolder->getAutoApprobation())
 				{
-				$this->yhidesel = "";
-				$this->nhidesel = "selected";
+					$this->autoappysel = 'selected';
+					$this->autoappnsel = '';
 				}
-			else
-				{
-				$this->nhidesel = "";
-				$this->yhidesel = "selected";
-				}
-
-			if( $arr['auto_approbation'] == "Y" )
-				{
-				$this->autoappysel = "selected";
-				$this->autoappnsel = "";
-				}
-			else
-				{
-				$this->autoappnsel = "selected";
-				$this->autoappysel = "";
-				}
-
-			$this->safm = $arr['idsa'];
-
-			list($n) = $babDB->db_fetch_array($babDB->db_query("select COUNT(i.id) from ".BAB_FA_INSTANCES_TBL." i, ".BAB_FILES_TBL." f where i.idsch='".$this->safm."' AND i.id=f.idfai"));
-			if ($n > 0)
-				{
-				$this->js_appflowlock = bab_translate("Approbation can't be disabled").', '.$n.' '.bab_translate("file(s) must be accepted or refused before");
-				$this->js_appflowlock = str_replace("'", "\'", $this->js_appflowlock );
-				$this->js_appflowlock = str_replace('"', "'+String.fromCharCode(34)+'",$this->js_appflowlock );
-				}
-			$this->sares = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." order by name asc");
-			if( !$this->sares )
-				$this->sacount = 0;
-			else
-				$this->sacount = $babDB->db_num_rows($this->sares);
+				
+				$this->safm = $oFmFolder->getDelegationOwnerId();
+				
+				list($n) = $babDB->db_fetch_array($babDB->db_query("select COUNT(i.id) from ".BAB_FA_INSTANCES_TBL." i, ".BAB_FILES_TBL." f where i.idsch='".$this->safm."' AND i.id=f.idfai"));
+				if ($n > 0)
+					{
+					$this->js_appflowlock = bab_translate("Approbation can't be disabled").', '.$n.' '.bab_translate("file(s) must be accepted or refused before");
+					$this->js_appflowlock = str_replace("'", "\'", $this->js_appflowlock );
+					$this->js_appflowlock = str_replace('"', "'+String.fromCharCode(34)+'",$this->js_appflowlock );
+					}
+				$this->sares = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." order by name asc");
+				if( !$this->sares )
+					$this->sacount = 0;
+				else
+					$this->sacount = $babDB->db_num_rows($this->sares);
 			}
+		}
 
 		function getnextschapp()
 			{
@@ -327,7 +317,14 @@ function deleteFolder($fid)
 		function temp($fid)
 			{
 			$this->message = bab_translate("Are you sure you want to delete this folder");
-			$this->title = bab_getFolderName($fid);
+			
+			$this->title = '';
+			$oFmFolder = BAB_FmFolderSet::get(array(new BAB_InCriterion('iId', $fid)));
+			if(!is_null($oFmFolder))
+			{
+				$this->title = $oFmFolder->getName();
+			}
+
 			$this->warning = bab_translate("WARNING: This operation will delete the folder with all files"). "!";
 			$this->urlyes = $GLOBALS['babUrlScript']."?tg=admfm&idx=list&fid=".$fid."&action=fyes";
 			$this->yes = bab_translate("Yes");
@@ -360,7 +357,14 @@ function deleteFieldsFolder($fid, $fields)
 		function temp($fid, $fields)
 			{
 			$this->message = bab_translate("Are you sure you want to delete selected fields");
-			$this->title = bab_getFolderName($fid);
+			
+			$this->title = '';
+			$oFmFolder = BAB_FmFolderSet::get(array(new BAB_InCriterion('iId', $fid)));
+			if(!is_null($oFmFolder))
+			{
+				$this->title = $oFmFolder->getName();
+			}
+			
 			$this->warning = bab_translate("WARNING: This operation will delete those fields with their values"). "!";
 			$this->urlyes = $GLOBALS['babUrlScript']."?tg=admfm&idx=fields&fid=".$fid."&action=ffyes&fields=".implode(',', $fields);
 			$this->yes = bab_translate("Yes");
@@ -377,112 +381,149 @@ function deleteFieldsFolder($fid, $fields)
 function updateFolder($fid, $fname, $active, $said, $notification, $version, $bhide, $bautoapp)
 {
 	global $babBody, $babDB;
-	if( empty($fname))
-		{
+	if(empty($fname))
+	{
 		$babBody->msgerror = bab_translate("ERROR: You must provide a name !!");
 		return;
-		}
-
-
-	$res = $babDB->db_query("select id from ".BAB_FM_FOLDERS_TBL." where folder='".$babDB->db_escape_string($fname)."' and id!='".$babDB->db_escape_string($fid)."' and id_dgowner='".$babDB->db_escape_string($babBody->currentAdmGroup)."'");
-	if( $babDB->db_num_rows($res) > 0)
+	}
+	
+	$aCriterion = array();
+	$aCriterion[] = new BAB_InCriterion('sName', $fname);
+	$aCriterion[] = new BAB_NotInCriterion('iId', $fid);
+	$aCriterion[] = new BAB_InCriterion('iIdDgOwner', $babBody->currentAdmGroup);
+	$oFmFolder = BAB_FmFolderSet::get($aCriterion);
+	if(is_null($oFmFolder))
+	{
+		$oFmFolder = BAB_FmFolderSet::get(array(new BAB_InCriterion('iId', $fid)));
+		if(!is_null($oFmFolder))
 		{
-		$babBody->msgerror = bab_translate("This folder already exists");
-		}
-	else
-		{
-		if( empty($said))
-			$said = 0;
-
-		list($idsafolder, $bnotify) = $babDB->db_fetch_row($babDB->db_query("select idsa, filenotify from ".BAB_FM_FOLDERS_TBL." where id='".$babDB->db_escape_string($fid)."'"));
-		if( $idsafolder != $said )
+			$idsafolder = $oFmFolder->getApprobationSchemeId();
+			$bnotify = $oFmFolder->getFileNotify();
+			if($idsafolder != $said)
 			{
-			include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
-			$res = $babDB->db_query("select * from ".BAB_FILES_TBL." where id_owner='".$babDB->db_escape_string($fid)."' and bgroup='Y' and confirmed='N'");
-			while( $row = $babDB->db_fetch_array($res))
+				include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
+				$res = $babDB->db_query("select * from ".BAB_FILES_TBL." where id_owner='".$babDB->db_escape_string($fid)."' and bgroup='Y' and confirmed='N'");
+				while($row = $babDB->db_fetch_array($res))
 				{
-				if( $row['idfai'] != 0 )
+					if($row['idfai'] != 0)
 					{
-					deleteFlowInstance($row['idfai']);
+						deleteFlowInstance($row['idfai']);
 					}
-
-
-				if( $said != 0 )
+	
+	
+					if($said != 0)
 					{
-					if( $bautoapp == 'Y' )
+						if($bautoapp == 'Y')
 						{
-						$idfai = makeFlowInstance($said, "fil-".$row['id'], $GLOBALS['BAB_SESS_USERID']);
+							$idfai = makeFlowInstance($said, "fil-".$row['id'], $GLOBALS['BAB_SESS_USERID']);
 						}
-					else
-						{
-						$idfai = makeFlowInstance($said, "fil-".$row['id']);
-						}
-					}
-
-				if( $said == 0 || $idfai === true)
-					{
-					$babDB->db_query("update ".BAB_FILES_TBL." set idfai='0', confirmed = 'Y' where id='".$babDB->db_escape_string($row['id'])."'");
-					}
-				elseif(!empty($idfai))
-					{
-					$babDB->db_query("update ".BAB_FILES_TBL." set idfai='".$babDB->db_escape_string($idfai)."' where id='".$babDB->db_escape_string($row['id'])."'");
-					$nfusers = getWaitingApproversFlowInstance($idfai, true);
-					if( count($nfusers) > 0 )
-						notifyFileApprovers($row['id'], $nfusers, bab_translate("A new file is waiting for you"));
-					}
-
-
-				$res2 = $babDB->db_query("select * from ".BAB_FM_FILESVER_TBL." where id_file='".$row['id']."' and confirmed='N'");
-				while( $rrr = $babDB->db_fetch_array($res2))
-					{
-					if( $rrr['idfai'] != 0 )
-						deleteFlowInstance($rrr['idfai']);
-
-
-					if( $said != 0 )
-						{
-						if( $bautoapp == 'Y' )
-							{
-							$idfai = makeFlowInstance($said, "filv-".$rrr['id'], $GLOBALS['BAB_SESS_USERID']);
-							}
 						else
+						{
+							$idfai = makeFlowInstance($said, "fil-".$row['id']);
+						}
+					}
+
+					if($said == 0 || $idfai === true)
+					{
+						$babDB->db_query("update ".BAB_FILES_TBL." set idfai='0', confirmed = 'Y' where id='".$babDB->db_escape_string($row['id'])."'");
+					}
+					else if(!empty($idfai))
+					{
+						$babDB->db_query("update ".BAB_FILES_TBL." set idfai='".$babDB->db_escape_string($idfai)."' where id='".$babDB->db_escape_string($row['id'])."'");
+						$nfusers = getWaitingApproversFlowInstance($idfai, true);
+						if(count($nfusers) > 0)
+						{
+							notifyFileApprovers($row['id'], $nfusers, bab_translate("A new file is waiting for you"));
+						}
+					}
+
+
+					$res2 = $babDB->db_query("select * from ".BAB_FM_FILESVER_TBL." where id_file='".$row['id']."' and confirmed='N'");
+					while( $rrr = $babDB->db_fetch_array($res2))
+					{
+						if($rrr['idfai'] != 0)
+						{
+							deleteFlowInstance($rrr['idfai']);
+						}
+
+
+						if($said != 0)
+						{
+							if($bautoapp == 'Y')
 							{
-							$idfai = makeFlowInstance($said, "filv-".$rrr['id']);
+								$idfai = makeFlowInstance($said, "filv-".$rrr['id'], $GLOBALS['BAB_SESS_USERID']);
+							}
+							else
+							{
+								$idfai = makeFlowInstance($said, "filv-".$rrr['id']);
 							}
 						}
 
-					if( $said == 0 || $idfai === true)
+						if($said == 0 || $idfai === true)
 						{
-						acceptFileVersion($row, $rrr, $bnotify);
+							acceptFileVersion($row, $rrr, $bnotify);
 						}
-					elseif(!empty($idfai))
+						else if(!empty($idfai))
 						{
-						$babDB->db_query("update ".BAB_FM_FILESVER_TBL." set idfai='".$babDB->db_escape_string($idfai)."' where id='".$babDB->db_escape_string($rrr['id'])."'");
-						$nfusers = getWaitingApproversFlowInstance($idfai, true);
-						if( count($nfusers) > 0 )
-							notifyFileApprovers($row['id'], $nfusers, bab_translate("A new version file is waiting for you"));
+							$babDB->db_query("update ".BAB_FM_FILESVER_TBL." set idfai='".$babDB->db_escape_string($idfai)."' where id='".$babDB->db_escape_string($rrr['id'])."'");
+							$nfusers = getWaitingApproversFlowInstance($idfai, true);
+							if(count($nfusers) > 0)
+							{
+								notifyFileApprovers($row['id'], $nfusers, bab_translate("A new version file is waiting for you"));
+							}
 						}
 
 					}
 
 				}
 			}
-
-		
-		$babDB->db_query("update ".BAB_FM_FOLDERS_TBL." set 
-			folder='".$babDB->db_escape_string($fname)."', 
-			idsa='".$babDB->db_escape_string($said)."', 
-			filenotify='".$babDB->db_escape_string($notification)."', 
-			active='".$babDB->db_escape_string($active)."', 
-			version='".$babDB->db_escape_string($version)."', 
-			bhide='".$babDB->db_escape_string($bhide)."', 
-			auto_approbation='".$babDB->db_escape_string($bautoapp)."' 
-		where 
-			id ='".$babDB->db_escape_string($fid)."'");
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
-		exit;
+			
+			$iLength = strlen(trim($GLOBALS['babUploadPath']));
+			if($iLength > 0)			
+			{
+				$sUploadPathname = $GLOBALS['babUploadPath'];
+				if('/' === $sUploadPathname{$iLength - 1} || '\\' === $sUploadPathname{$iLength - 1})
+				{
+					$sUploadPathname{$iLength - 1} = '';
+				}
+			
+				$sOldName = $oFmFolder->getName();
+				$sOldPathname = $sUploadPathname . '/' . $sOldName;
+				$sNewPathname = $sUploadPathname . '/' . $fname;
+				
+				$bSuccess = true;
+				if($sOldPathname !== $sNewPathname)
+				{
+					if(true === rename($sOldPathname, $sNewPathname))
+					{
+						BAB_FmFolderSet::updateSubFolderPathName($sOldName, $fname);
+					}
+					else 
+					{
+						$bSuccess = false;
+					}
+				}
+				
+				$oFmFolder->setName($fname);
+				$oFmFolder->setPathName($fname);
+				$oFmFolder->setApprobationSchemeId((int) $said);
+				$oFmFolder->setFileNotify($notification);
+				$oFmFolder->setActive($active);
+				$oFmFolder->setVersioning($version);
+				$oFmFolder->setHide($bhide);
+				$oFmFolder->setAutoApprobation($bautoapp);
+				$oFmFolder->save();
+			}		
+			Header("Location: ". $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
+			exit;
 		}
+	}
+	else 
+	{
+		$babBody->msgerror = bab_translate("This folder already exists");
+	}
 }
+
 
 function confirmDeleteFolder($fid)
 {
@@ -545,6 +586,9 @@ if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['filemanager'] != 'Y')
 	return;
 }
 
+//bab_debug(__FILE__);
+//bab_debug($_POST);
+
 if( isset($mod) && $mod == "modfolder")
 {
 	if( isset($bupdate))
@@ -582,7 +626,15 @@ else if( isset($aclview))
 switch($idx)
 	{
 	case "rights":
-		$babBody->title = bab_translate("Rights of directory").' '.bab_getFolderName($fid);
+		
+		$sFolderName = '';
+		$oFmFolder = BAB_FmFolderSet::get(array(new BAB_InCriterion('iId', $fid)));
+		if(!is_null($oFmFolder))
+		{
+			$sFolderName = $oFmFolder->getName();
+		}
+			
+		$babBody->title = bab_translate("Rights of directory").' '.$sFolderName;
 		$macl = new macl("admfm", "modify", $fid, "aclview");
 		$macl->addtable( BAB_FMUPLOAD_GROUPS_TBL,bab_translate("Upload"));
 		$macl->addtable( BAB_FMDOWNLOAD_GROUPS_TBL,bab_translate("Download"));
@@ -598,14 +650,30 @@ switch($idx)
 		break;
 
 	case "delf":
-		$babBody->title = bab_getFolderName($fid) . ": ".bab_translate("Delete folder");
+		
+		$sFolderName = '';
+		$oFmFolder = BAB_FmFolderSet::get(array(new BAB_InCriterion('iId', $fid)));
+		if(!is_null($oFmFolder))
+		{
+			$sFolderName = $oFmFolder->getName();
+		}
+			
+		$babBody->title = $sFolderName . ": ".bab_translate("Delete folder");
 		$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
 		$babBody->addItemMenu("addf", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admfms&idx=addf");
 		deleteFolder($fid);
 		break;
 
 	case "mfield":
-		$babBody->title = bab_getFolderName($fid) . ": ".bab_translate("Modify folder's field");
+		
+		$sFolderName = '';
+		$oFmFolder = BAB_FmFolderSet::get(array(new BAB_InCriterion('iId', $fid)));
+		if(!is_null($oFmFolder))
+		{
+			$sFolderName = $oFmFolder->getName();
+		}
+			
+		$babBody->title = $sFolderName . ": ".bab_translate("Modify folder's field");
 		if( !isset($ffname)) $ffname = '';
 		if( !isset($defval)) $defval = '';
 		modifyFieldFolder($fid, $ffid, $ffname, $defval);
@@ -616,7 +684,15 @@ switch($idx)
 		break;
 
 	case "afield":
-		$babBody->title = bab_getFolderName($fid) . ": ".bab_translate("Add folder's field");
+		
+		$sFolderName = '';
+		$oFmFolder = BAB_FmFolderSet::get(array(new BAB_InCriterion('iId', $fid)));
+		if(!is_null($oFmFolder))
+		{
+			$sFolderName = $oFmFolder->getName();
+		}
+			
+		$babBody->title = $sFolderName . ": ".bab_translate("Add folder's field");
 		if( !isset($ffname)) $ffname = '';
 		if( !isset($defval)) $defval = '';
 		addFieldFolder($fid, $ffname, $defval);
@@ -629,7 +705,15 @@ switch($idx)
 	case "delff":
 		if( count($fields) > 0)
 		{
-			$babBody->title = bab_getFolderName($fid) . ": ".bab_translate("Delete folder's fields");
+			
+			$sFolderName = '';
+			$oFmFolder = BAB_FmFolderSet::get(array(new BAB_InCriterion('iId', $fid)));
+			if(!is_null($oFmFolder))
+			{
+				$sFolderName = $oFmFolder->getName();
+			}
+				
+			$babBody->title = $sFolderName . ": ".bab_translate("Delete folder's fields");
 			deleteFieldsFolder($fid, $fields);
 			$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
 			$babBody->addItemMenu("modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admfm&idx=modify&fid=".$fid);
@@ -639,7 +723,15 @@ switch($idx)
 		}
 		/* no break ; */
 	case "fields":
-		$babBody->title = bab_getFolderName($fid) . ": ".bab_translate("Folder's fields");
+		
+		$sFolderName = '';
+		$oFmFolder = BAB_FmFolderSet::get(array(new BAB_InCriterion('iId', $fid)));
+		if(!is_null($oFmFolder))
+		{
+			$sFolderName = $oFmFolder->getName();
+		}
+			
+		$babBody->title = $sFolderName . ": ".bab_translate("Folder's fields");
 		fieldsFolder($fid);
 		$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
 		$babBody->addItemMenu("modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admfm&idx=modify&fid=".$fid);
@@ -649,7 +741,15 @@ switch($idx)
 
 	default:
 	case "modify":
-		$babBody->title = bab_getFolderName($fid) . ": ".bab_translate("Modify folder");
+		
+		$sFolderName = '';
+		$oFmFolder = BAB_FmFolderSet::get(array(new BAB_InCriterion('iId', $fid)));
+		if(!is_null($oFmFolder))
+		{
+			$sFolderName = $oFmFolder->getName();
+		}
+			
+		$babBody->title = $sFolderName . ": ".bab_translate("Modify folder");
 		modifyFolder($fid);
 		$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
 		$babBody->addItemMenu("addf", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admfms&idx=addf");

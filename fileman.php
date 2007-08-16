@@ -194,7 +194,9 @@ class listFiles
 			$this->autoadd_files();
 			}
 		else
+			{
 			$this->count = 0;
+			}
 			
 		
 		}
@@ -473,7 +475,13 @@ function showDiskSpace($id, $gr, $path)
 				$this->diskspace = bab_toHtml(bab_formatSizeFile($size).$this->kilooctet);
 				$this->allowedspace =  bab_toHtml(bab_formatSizeFile($GLOBALS['babMaxGroupSize']).$this->kilooctet);
 				$this->remainingspace =  bab_toHtml(bab_formatSizeFile($GLOBALS['babMaxGroupSize'] - $size).$this->kilooctet);
-				$this->groupname = bab_getFolderName($this->arrgrp[$i]);
+				$this->groupname = '';
+				$oFmFolder = BAB_FmFolderSet::get(array(new BAB_InCriterion('iId', $this->arrgrp[$i])));
+				if(!is_null($oFmFolder))
+				{
+					$this->groupname = $oFmFolder->getName();
+				}
+					
 				$i++;
 				return true;
 				}
@@ -486,7 +494,13 @@ function showDiskSpace($id, $gr, $path)
 			static $i = 0;
 			if( $i < $this->countmgrp)
 				{
-				$this->groupname = bab_getFolderName($this->arrmgrp[$i]);
+				$this->groupname = '';
+				$oFmFolder = BAB_FmFolderSet::get(array(new BAB_InCriterion('iId', $this->arrmgrp[$i])));
+				if(!is_null($oFmFolder))
+				{
+					$this->groupname = $oFmFolder->getName();
+				}
+					
 				$pathx = bab_getUploadFullPath("Y", $this->arrmgrp[$i]);
 				$size = getDirSize($pathx);
 				$this->diskspace = bab_toHtml(bab_formatSizeFile($size).$this->kilooctet);
@@ -507,7 +521,7 @@ function showDiskSpace($id, $gr, $path)
 	}
 
 
-function listFiles($id, $gr, $path, $bmanager)
+function listFiles($id, $gr, $path, $bmanager, $upload)
 	{
 	global $babBody;
 
@@ -552,6 +566,11 @@ function listFiles($id, $gr, $path, $bmanager)
 		var $ovfcommiturl;
 		var $bfvwait;
 
+		var $sFolderFormAdd;
+		var $sFolderFormEdit;
+		var $sFolderFormUrl;
+		var $bFolderUrl;
+		
 		var $altfilelog;
 		var $altfilelock;
 		var $altfileunlock;
@@ -582,11 +601,17 @@ function listFiles($id, $gr, $path, $bmanager)
 			$this->diskspace = bab_translate("Show disk space usage");
 			$this->hitstxt = bab_translate("Hits");
             $this->altreadonly =  bab_translate("Read only");
+            $this->sFolderFormAdd = bab_translate("Create a folder"); 
+            $this->sFolderFormEdit = bab_translate("Edit folder"); 
 
 			$this->rooturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=list");
 			$this->refreshurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".urlencode($path));
 			$this->urldiskspace = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=disk&id=".$id."&gr=".$gr."&path=".urlencode($path));
+			
+			$this->sFolderFormUrl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=displayFolderForm&sAction=createFolder&id=".$id."&gr=".$gr."&path=".urlencode($path));
 
+			
+			
 			$this->upfolderimg = bab_printTemplate($this, "config.html", "parentfolder");
 			$this->usrfolderimg = bab_printTemplate($this, "config.html", "userfolder");
 			$this->grpfolderimg = bab_printTemplate($this, "config.html", "groupfolder");
@@ -594,8 +619,13 @@ function listFiles($id, $gr, $path, $bmanager)
 
 			if( $gr == "Y")
 				{
-				list($version) = $babDB->db_fetch_array($babDB->db_query("select version from ".BAB_FM_FOLDERS_TBL." where id='".$babDB->db_escape_string($id)."'"));
-				$this->rootpath = bab_toHtml(bab_getFolderName($id));
+				$this->rootpath = '';
+				$oFmFolder = BAB_FmFolderSet::get(array(new BAB_InCriterion('iId', $id)));
+				if(!is_null($oFmFolder))
+				{
+					$version = $oFmFolder->getVersioning();
+					$this->rootpath = bab_toHtml($oFmFolder->getName());
+				}
 				$this->bupdate = bab_isAccessValid(BAB_FMUPDATE_GROUPS_TBL, $id);
 				if( !$this->bupdate )
 					$this->bupdate = $bmanager;
@@ -638,6 +668,18 @@ function listFiles($id, $gr, $path, $bmanager)
 				{
 				$this->altbg = !$this->altbg;
 				$this->name = bab_toHtml($this->arrdir[$i]);
+				$this->bFolderFormUrl = false;
+				static $aExcludedDir = array('.', '..', '. .');
+				if(!in_array($this->name, $aExcludedDir))	
+				{	
+					
+//bab_debug('sPathName ==> ' . $this->path . '/' . $this->name);
+
+					$this->sFolderFormUrl = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&idx=displayFolderForm&sAction=editFolder&id=' . $this->id . 
+						'&gr=' . $this->gr . '&path=' . urlencode($this->path) . '&sDirName=' . urlencode($this->name));
+					$this->bFolderFormUrl = true;
+				}
+
 				$this->url = bab_toHtml($this->arrudir[$i]);
 				$i++;
 				return true;
@@ -820,6 +862,24 @@ function listFiles($id, $gr, $path, $bmanager)
 			}
 	}
 
+
+
+	$babBody->title = bab_translate("File manager");
+	$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".urlencode($path));
+	if($upload) 
+	{
+		$babBody->addItemMenu("add", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=fileman&idx=add&id=".$id."&gr=".$gr."&path=".urlencode($path));
+	}
+	if($bmanager) 
+	{
+		$babBody->addItemMenu("trash", bab_translate("Trash"), $GLOBALS['babUrlScript']."?tg=fileman&idx=trash&id=".$id."&gr=".$gr."&path=".urlencode($path));
+	}
+
+	if(!empty($id) && $gr == "Y")
+	{
+		$GLOBALS['babWebStat']->addFolder($id);
+	}
+
 	$temp = new temp($id, $gr, $path, $bmanager);
 	$babBody->babecho(	bab_printTemplate($temp,"fileman.html", "fileslist"));
 	return $temp->count;
@@ -999,6 +1059,7 @@ function createDirectory($dirname, $id, $gr, $path)
 		{
 		bab_mkdir($pathx, $GLOBALS['babMkdirMode']);
 		}
+		return $bOk;
 	}
 
 function renameDirectory($dirname, $id, $gr, $path)
@@ -1789,8 +1850,199 @@ function restoreFiles($items)
 		}
 	}
 
-
 	
+function displayFolderForm($bManager, $bCollective, $sPath, $iId)
+{
+	global $babBody;
+	
+	if(true === $bManager)
+	{
+		$sGr = (($bCollective) ? 'Y' : 'N');
+		//Si 
+		$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$iId."&gr=".$sGr."&path=".urlencode($sPath));
+		$babBody->addItemMenu('displayFolderForm', bab_translate("Create a folder"), $GLOBALS['babUrlScript']."?tg=fileman&idx=displayFolderForm&id=".$iId."&gr=".$sGr."&path=".urlencode($sPath));
+
+//		bab_debug($_GET);
+
+		$sAction 			= bab_gp('sAction', '');
+		$sDirName			= bab_gp('sDirName', '');
+		$sFileNotify		= '';
+		$sActive			= '';
+		$sVersioning		= '';
+		$sAutoApprobation	= '';
+		
+		if('createFolder' === $sAction)
+		{
+			if('' !== $sPath)
+			{
+			}
+			else 
+			{
+			}
+		}
+		else if('editFolder' === $sAction)
+		{
+			$aCriterion = array();
+			
+			$sPathName = bab_getUploadFullPath($sGr, $iId, $sPath) . $sDirName;
+bab_debug($sPathName);
+			$aCriterion[] = new BAB_LikeCriterion('sName', $sPathName, 0);
+			$oFmFolder = BAB_FmFolderSet::get($aCriterion);
+			if(!is_null($oFmFolder))
+			{
+//				bab_debug($oFmFolder);
+//				$aPath = preg_split('#[/\\\\]#', $oFmFolder->getName());
+//				bab_debug($aPath);
+			}
+			else 
+			{
+				//Error
+			}
+		}
+		else
+		{
+			//Error
+		}
+		
+		
+		require_once $GLOBALS['babInstallPath'].'utilit/baseFormProcessingClass.php';
+
+		$oBFP = new BAB_BaseFormProcessing();
+		
+		$oBFP->set_caption('sType', bab_translate("Type") . ': ');
+		$oBFP->set_caption('sDirName', bab_translate("Name") . ': ');
+		$oBFP->set_caption('sActive', bab_translate("Actif") . ': ');
+		$oBFP->set_caption('sApprobationScheme', bab_translate("Approbation schema") . ': ');
+		$oBFP->set_caption('sAutoApprobation', bab_translate("Automatically approve author if he belongs to approbation schema") . ': ');
+		$oBFP->set_caption('sNotification', bab_translate("Notification") . ': ');
+		$oBFP->set_caption('sVersioning', bab_translate("Versioning") . ': ');
+		$oBFP->set_caption('sDisplay', bab_translate("Visible in file manager?") . ': ');
+		$oBFP->set_caption('sSimple', bab_translate("Simple"));
+		$oBFP->set_caption('sCollective', bab_translate("Collectif"));
+		$oBFP->set_caption('sYes', bab_translate("Yes"));
+		$oBFP->set_caption('sNo', bab_translate("No"));
+		$oBFP->set_caption('sNone', bab_translate("None"));
+		$oBFP->set_caption('sAdd', bab_translate("Add"));
+		$oBFP->set_caption('sSubmit', bab_translate("Submit"));
+		
+		$oBFP->set_data('sIdx', 'createEditFolder');
+		$oBFP->set_data('sAction', $sAction);
+		$oBFP->set_data('sTg', 'fileman');
+		
+		$oBFP->set_data('iId', $iId);
+		$oBFP->set_data('sPath', $sPath);
+		$oBFP->set_data('sGr', $sGr);
+		
+		$oBFP->set_data('sDirName', $sDirName);
+		
+		$oBFP->set_data('sSimple', 'simple');
+		$oBFP->set_data('sCollective', 'collective');
+		$oBFP->set_data('sYes', 'Y');
+		$oBFP->set_data('sNo', 'N');
+		$oBFP->set_data('iNone', 0);
+		
+		$oBFP->raw_2_html(BAB_RAW_2_HTML_CAPTION);
+		$oBFP->raw_2_html(BAB_RAW_2_HTML_DATA);
+		
+		$babBody->addJavascriptFile($GLOBALS['babScriptPath']."prototype/prototype.js");
+		$babBody->babecho(bab_printTemplate($oBFP, 'fileman.html', 'displayFolderForm'));
+	}
+	else 
+	{
+		$babBody->msgerror = bab_translate("Access denied");
+	}
+}
+
+
+function createEditFolder($bManager, $bUpload, $bCollective, $sPath, $id, &$sIdx)
+{
+	global $babBody;
+	
+	if(true === $bManager)
+	{
+		$sAction				= bab_pp('sAction', '');
+		$sType					= bab_pp('sType', '');
+		$sDirName				= bab_pp('sDirName', '');
+		$sActive				= bab_pp('sActive', 'Y');
+		$iIdApprobationScheme	= (int) bab_pp('iIdApprobationScheme', 0);
+		$sAutoApprobation		= bab_pp('sAutoApprobation', 'N');
+		$sNotification			= bab_pp('sNotification', 'N');
+		$sVersioning			= bab_pp('sVersioning', 'N');
+		$sDisplay				= bab_pp('sDisplay', 'N');
+		$sPathName				= '';
+		
+		$sGr = (($bCollective) ? 'Y' : 'N');
+
+		
+		$oFmFolder = BAB_FmFolderSet::get(array(new BAB_InCriterion('iId', $id)));
+		if(!is_null($oFmFolder))
+		{
+			$sRelativePath = $oFmFolder->getName();
+			if(strlen(trim($sPath)) > 0)
+			{
+				$sRelativePath .=  '/' . $sPath;
+			}
+			
+			bab_debug('sPathName ==> ' . $sRelativePath . '/' . $sDirName);
+		}
+		
+		
+		
+		if('createFolder' === $sAction)
+		{
+			if(strlen(trim($sDirName)) > 0)
+			{
+				$oFmFolder = BAB_FmFolderSet::get(array(new BAB_InCriterion('iId', $iIdParent)));
+				if(!is_null($oFmFolder))
+				{
+/*					
+					if(createDirectory($sDirName, $id, $sGr, $sPath))
+					{
+						if('collective' === $sType)
+						{
+							$sPathName = $oFmFolder->getName() . '/' . $sDirName;
+							
+							$oFmFolder = new BAB_FmFolder();
+							$oFmFolder->setActive($sActive);
+							$oFmFolder->setApprobationSchemeId($iIdApprobationScheme);
+							$oFmFolder->setAutoApprobation($sAutoApprobation);
+							$oFmFolder->setDelegationOwnerId((int) $babBody->currentAdmGroup);
+							$oFmFolder->setFileNotify($sNotification);
+							$oFmFolder->setHide($sDisplay);
+							$oFmFolder->setName($sDirName);
+							$oFmFolder->setPathName($sPathName);
+							$oFmFolder->setVersioning($sVersioning);
+							$oFmFolder->setAutoApprobation($sAutoApprobation);
+							if(false === $oFmFolder->save())
+							{
+								rmdir($sPathName);
+							}
+						}
+					}
+//*/
+				}
+			}
+		}
+		else if('editFolder' === $sAction)
+		{
+			bab_debug($sAction);
+		}
+		else 
+		{
+			bab_debug(__FUNCTION__ . ' ERROR invalid sAction');
+		}
+//		bab_debug($_POST);
+		
+		$sIdx = 'list';
+//		$sGr = (($bCollective) ? 'Y' : 'N');
+		listFiles($id, $sGr, $sPath, $bManager, $bUpload);
+	}	
+	else 
+	{
+		$babBody->msgerror = bab_translate("Access denied");
+	}
+}
+
 /* main */
 
 $idx = bab_rp('idx','list');
@@ -1957,6 +2209,13 @@ if( 'update' === bab_rp('cdel') )
 
 switch($idx)
 	{
+	case 'displayFolderForm':
+		displayFolderForm($bmanager, (($gr == 'N') ? false : true), $path, $id);
+		break;
+		
+	case 'createEditFolder':
+		createEditFolder($bmanager, $upload, (($gr == 'N') ? false : true), $path, $id, $idx);
+		break;
 
 	case "unload":
 		fileUnload($id, $gr, $path);
@@ -1987,9 +2246,13 @@ switch($idx)
 	case "add":
 		$babBody->title = bab_translate("Upload file to")." ";
 		if( $gr == 'Y' )
+		{
+			$oFmFolder = BAB_FmFolderSet::get(array(new BAB_InCriterion('iId', $id)));
+			if(!is_null($oFmFolder))
 			{
-			$babBody->title .= bab_getFolderName($id);
+				$babBody->title .= $oFmFolder->getName();
 			}
+		}
 		$babBody->title .= "/".$path;
 
 		addFile($id, $gr, $path, bab_pp('description'), bab_pp('keywords'));
@@ -2019,19 +2282,19 @@ switch($idx)
 		/* no break */
 	default:
 	case "list":
-		$babBody->title = bab_translate("File manager");
-		$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".urlencode($path));
-		if( $upload) {
-			$babBody->addItemMenu("add", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=fileman&idx=add&id=".$id."&gr=".$gr."&path=".urlencode($path));
-			}
-		if( $bmanager) {
-			$babBody->addItemMenu("trash", bab_translate("Trash"), $GLOBALS['babUrlScript']."?tg=fileman&idx=trash&id=".$id."&gr=".$gr."&path=".urlencode($path));
-			}
-		listFiles($id, $gr, $path, $bmanager);
-		if( !empty($id) && $gr == "Y")
-			{
-			$GLOBALS['babWebStat']->addFolder($id);
-			}
+//		$babBody->title = bab_translate("File manager");
+//		$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".urlencode($path));
+//		if( $upload) {
+//			$babBody->addItemMenu("add", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=fileman&idx=add&id=".$id."&gr=".$gr."&path=".urlencode($path));
+//			}
+//		if( $bmanager) {
+//			$babBody->addItemMenu("trash", bab_translate("Trash"), $GLOBALS['babUrlScript']."?tg=fileman&idx=trash&id=".$id."&gr=".$gr."&path=".urlencode($path));
+//			}
+		listFiles($id, $gr, $path, $bmanager, $upload);
+//		if( !empty($id) && $gr == "Y")
+//			{
+//			$GLOBALS['babWebStat']->addFolder($id);
+//			}
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);
