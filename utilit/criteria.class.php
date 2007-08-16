@@ -84,7 +84,7 @@ class BAB_NotInCriterion
 }
 
 
-class BAB_LikeCriterion
+class BAB_LikeCriterionBase
 {
 	var $sName = null;
 	var $sValue = null;
@@ -96,7 +96,9 @@ class BAB_LikeCriterion
 	// 3 ==> %sValue%
 	var $iMode = null;
 	
-	function BAB_LikeCriterion($sName, $sValue, $iMode)
+	var $sLike = null;
+	
+	function BAB_LikeCriterionBase($sName, $sValue, $iMode)
 	{
 		$this->sName = $sName;
 		$this->sValue = $sValue;
@@ -110,19 +112,40 @@ class BAB_LikeCriterion
 		{
 			// 0 ==> XXX
 			case 0:
-				return $this->sName . ' LIKE \'' .  $babDB->db_escape_like($this->sValue) . '\' ';
+				return $this->sName . ' ' . $this->sLike . ' \'' .  $babDB->db_escape_like($this->sValue) . '\' ';
+			// 1 ==> XXX%
 			case 1:
-				return $this->sName . ' LIKE \'' .  $babDB->db_escape_like($this->sValue) . '%\' ';
+				return $this->sName . ' ' . $this->sLike . ' \'' .  $babDB->db_escape_like($this->sValue) . '%\' ';
 			// 2 ==> %XXX
 			case 2:
-				return $this->sName . ' LIKE \'%' .  $babDB->db_escape_like($this->sValue) . '\' ';
+				return $this->sName . ' ' . $this->sLike . ' \'%' .  $babDB->db_escape_like($this->sValue) . '\' ';
 			// 3 ==> %XXX%
 			case 3:
-				return $this->sName . ' LIKE \'%' .  $babDB->db_escape_like($this->sValue) . '%\' ';
+				return $this->sName . ' ' . $this->sLike . ' \'%' .  $babDB->db_escape_like($this->sValue) . '%\' ';
 		}
 		return '';
 	}
 }
+
+
+class BAB_LikeCriterion extends BAB_LikeCriterionBase
+{
+	function BAB_LikeCriterion($sName, $sValue, $iMode)
+	{
+		parent::BAB_LikeCriterionBase($sName, $sValue, $iMode);
+		$this->sLike = 'LIKE';
+	}
+}
+
+class BAB_NotLikeCriterion extends BAB_LikeCriterionBase
+{
+	function BAB_NotLikeCriterion($sName, $sValue, $iMode)
+	{
+		parent::BAB_LikeCriterionBase($sName, $sValue, $iMode);
+		$this->sLike = 'NOT LIKE';
+	}
+}
+
 
 
 class BAB_Criteria

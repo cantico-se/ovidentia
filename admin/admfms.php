@@ -135,7 +135,7 @@ function listFolders()
 			$this->checkall = bab_translate("Check all");
 
 			$aCriterion = array();
-			$aCriterion[] = new BAB_InCriterion('iIdParent', 0);
+			$aCriterion[] = new BAB_NotLikeCriterion('sPathname', '/', 3);
 			$aCriterion[] = new BAB_InCriterion('iIdDgOwner', $babBody->currentAdmGroup);
 			$this->oFmFolderSet = BAB_FmFolderSet::select($aCriterion);
 		}
