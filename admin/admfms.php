@@ -320,12 +320,20 @@ switch($idx)
 	case "list":
 						
 bab_debug(basename(__FILE__) . ' ' . __LINE__ . ' Il faudra mettre à jour la table bab_fm_files (updateFolder du fichier admfm.php)');
+$oAnd = new BAB_And();
+
+$oAnd->_and(new BAB_InCriterion('iId', 12), new BAB_InCriterion('iId', 14), new BAB_InCriterion('iId', 16))->
+_and()->_and(new BAB_NotLikeCriterion('sPathname', '/', 3))->_and(new BAB_NotLikeCriterion('sPathname', 'TOTO', 3));
+//$oAnd->_and(new BAB_InCriterion('iId', 12), new BAB_InCriterion('iId', 14), new BAB_InCriterion('iId', 16));
+bab_debug($oAnd->toString());
+
+
 
 		$babBody->title = bab_translate("File manager");
-		if( listFolders() > 0 )
-			{
-			$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
-			}
+//		if( listFolders() > 0 )
+//			{
+//			$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
+//			}
 
 		$babBody->addItemMenu("addf", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admfms&idx=addf");
 		break;
