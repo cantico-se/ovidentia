@@ -324,7 +324,6 @@ $oAnd = new BAB_And();
 
 $oAnd->_and(new BAB_InCriterion('iId', 12), new BAB_InCriterion('iId', 14), new BAB_InCriterion('iId', 16))->
 _and()->_and(new BAB_NotLikeCriterion('sPathname', '/', 3))->_and(new BAB_NotLikeCriterion('sPathname', 'TOTO', 3));
-//$oAnd->_and(new BAB_InCriterion('iId', 12), new BAB_InCriterion('iId', 14), new BAB_InCriterion('iId', 16));
 bab_debug($oAnd->toString());
 
 

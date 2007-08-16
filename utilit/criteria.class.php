@@ -24,6 +24,34 @@ require_once 'base.php';
 require_once $GLOBALS['babInstallPath'] . 'utilit/iterator/iterator.php';
 
 
+class BAB_Field
+{
+	var $sName = null;
+	var $sAlias = null;
+	
+	function BAB_Field($sName, $sAlias = null)
+	{
+		$this->sName = $sName;
+		$this->sAlias = $sAlias;
+	}
+}
+
+class BAB_IntField extends BAB_Field
+{
+	function BAB_IntField($sName, $sAlias = null)
+	{
+		parent::BAB_Field($sName, $sAlias);
+	}
+}
+
+class BAB_StringField extends BAB_Field
+{
+	function BAB_IntField($sName, $sAlias = null)
+	{
+		parent::BAB_Field($sName, $sAlias);
+	}
+}
+
 
 class BAB_SimpleCriterion
 {
@@ -147,6 +175,73 @@ class BAB_NotLikeCriterion extends BAB_LikeCriterionBase
 }
 
 
+class BinaryCriterion
+{
+	var $aCriterion = array();
+	
+	function BinaryCriterion()
+	{
+		
+	}
+}
+
+class BAB_And extends BinaryCriterion
+{
+	var $sOperator = 'AND';
+	
+	function BAB_And()
+	{
+		
+	}
+
+	function _and()
+	{
+		$aArgList = func_get_args();
+		if(is_array($aArgList))
+		{
+			$iCount = count($aArgList);
+			if($iCount > 1)
+			{
+				$this->aCriterion[] = $aArgList;
+			}
+			else if($iCount === 1)
+			{
+				$this->aCriterion[] = $aArgList[0];
+			}
+		}
+		return $this;
+	}
+	
+	function processCriterion($aCriterion)
+	{
+		$sString = '';
+		if(count($aCriterion) > 0)
+		{
+			$aCrit = array();
+			foreach($aCriterion as $value)
+			{
+				if(is_array($value))
+				{
+					if(count($value) > 0)
+					{
+						$aCrit[] = '(' . $this->processCriterion($value) . ')';
+					}
+				}
+				else 
+				{
+					$aCrit[] = $value->toString();
+				}
+			}
+			$sString = implode(' ' . $this->sOperator . ' ', $aCrit);
+		}
+		return $sString;
+	}
+	
+	function toString()
+	{
+		return $this->processCriterion($this->aCriterion);
+	}
+}
 
 class BAB_Criteria
 {
