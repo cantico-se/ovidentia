@@ -1255,9 +1255,11 @@ function updateEvent(&$message)
 	}
 	
 	
+	$exclude = array();
 	bab_updateSelectedCalendars(
 		bab_pp('evtid'), 
-		bab_pp('selected_calendars')
+		bab_pp('selected_calendars'),
+		$exclude
 	);
 	
 	
@@ -1266,7 +1268,7 @@ function updateEvent(&$message)
 	$event->types = BAB_PERIOD_CALEVENT;
 	bab_fireEvent($event);
 
-	notifyEventUpdate(bab_pp('evtid'), false);
+	notifyEventUpdate(bab_pp('evtid'), false, $exclude);
 	return true;
 }
 
