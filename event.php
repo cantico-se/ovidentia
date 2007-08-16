@@ -1253,19 +1253,19 @@ function updateEvent(&$message)
 		$max = $val['end']	 > $max ? $val['end'] 	: $max;
 	}
 	
-	
+	$exclude = array();
 	bab_updateSelectedCalendars(
 		bab_pp('evtid'), 
-		bab_pp('selected_calendars')
+		bab_pp('selected_calendars'),
+		$exclude
 	);
-	
 	
 	include_once $GLOBALS['babInstallPath'].'utilit/eventperiod.php';
 	$event = new bab_eventPeriodModified(bab_mktime($min), bab_mktime($max), false);
 	$event->types = BAB_PERIOD_CALEVENT;
 	bab_fireEvent($event);
 
-	notifyEventUpdate(bab_pp('evtid'), false);
+	notifyEventUpdate(bab_pp('evtid'), false, $exclude);
 	return true;
 }
 

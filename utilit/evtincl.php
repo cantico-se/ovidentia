@@ -36,13 +36,15 @@ include_once "base.php";
  *
  * @param	int		$id_event
  * @param	array	$idcals
+ * @param	array	$exclude
  * 
  * @return	array	calendar id were the event has been inserted
  */
-function bab_updateSelectedCalendars($id_event, $idcals) {
+function bab_updateSelectedCalendars($id_event, $idcals, &$exclude) {
 
 	global $babBody, $babDB;
 	$arrcals = array();
+	$exclude = array();
 	
 	$res = $babDB->db_query('SELECT * FROM '.BAB_CAL_EVENTS_TBL.' WHERE id='.$babDB->quote($id_event));
 	$event = $babDB->db_fetch_assoc($res);
@@ -141,7 +143,6 @@ function bab_updateSelectedCalendars($id_event, $idcals) {
 					");
 					
 
-					
 				if( ($arr['type'] == BAB_CAL_PUB_TYPE ||  $arr['type'] == BAB_CAL_RES_TYPE) && ($arr['idsa'] != 0) )
 					{
 						include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
@@ -160,6 +161,7 @@ function bab_updateSelectedCalendars($id_event, $idcals) {
 					}
 				else 
 					{
+						$exclude[] = $id_cal;
 						cal_notify(
 							$event['title'], 
 							$event['description'], 
@@ -189,6 +191,7 @@ function bab_updateSelectedCalendars($id_event, $idcals) {
 			");
 			
 		$arr = $babBody->icalendars->getCalendarInfo($id_cal);
+		$exclude[] = $id_cal;
 		cal_notify(
 			$event['title'], 
 			$event['description'], 
@@ -332,7 +335,8 @@ function createEvent($idcals,$id_owner, $title, $description, $location, $startd
 		");
 	
 	$id_event = $babDB->db_insert_id();
-	$arrcals = bab_updateSelectedCalendars($id_event, $idcals);
+	$exclude = array();
+	$arrcals = bab_updateSelectedCalendars($id_event, $idcals, $exclude);
 	
 
 	if(0 !== count($arrcals) && !empty($GLOBALS['BAB_SESS_USERID']) && $arralert !== false )
@@ -928,6 +932,7 @@ function notifyPublicEvent($title, $description, $location, $startdate, $enddate
 			if( $arrusers )
 				{
 				$count = 0;
+				reset($arrusers);
 				while(list(,$arr) = each($arrusers))
 					{
 					$mail->mailBcc($arr['email'], $arr['name']);
@@ -1085,6 +1090,7 @@ function notifyResourceEvent($title, $description, $location, $startdate, $endda
 			if( $arrusers )
 				{
 				$count = 0;
+				reset($arrusers);
 				while(list(,$arr) = each($arrusers))
 					{
 					$mail->mailBcc($arr['email'], $arr['name']);
@@ -1180,7 +1186,7 @@ function notifyEventApprobation($evtid, $bconfirm, $raison, $calname)
 	
 	
 
-function notifyEventUpdate($evtid, $bdelete)
+function notifyEventUpdate($evtid, $bdelete, $exclude)
 	{
 	global $babBody, $babDB, $babAdminEmail;
 
@@ -1241,12 +1247,11 @@ function notifyEventUpdate($evtid, $bdelete)
 			ceot.id_event='".$babDB->db_escape_string($evtid)."' 
 			AND status IN('".BAB_CAL_STATUS_ACCEPTED."', '".BAB_CAL_STATUS_NONE."')
 		");
+
 	while( $arr = $babDB->db_fetch_array($res) )
 		{
 		$arrusers = cal_usersToNotiy($arr['id_cal'], $arr['type'], $arr['owner']);
-
-
-		if($arrusers)
+		if($arrusers && !in_array($arr['id_cal'], $exclude))
 			{
 			$calinfo = $babBody->icalendars->getCalendarInfo($arr['id_cal']);
 			$tempc->calendar = $calinfo['name'];
@@ -1259,6 +1264,7 @@ function notifyEventUpdate($evtid, $bdelete)
 			$mail->mailAltBody($message);
 			
 			$count = 0;
+			reset($arrusers);
 			while(list(,$row) = each($arrusers))
 				{
 				$mail->mailBcc($row['email'], $row['name']);
@@ -1285,7 +1291,6 @@ function notifyEventUpdate($evtid, $bdelete)
 
 
 		}
-
 	}
 
 
