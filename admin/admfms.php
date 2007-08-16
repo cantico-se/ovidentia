@@ -318,6 +318,9 @@ switch($idx)
 
 	default:
 	case "list":
+						
+bab_debug(basename(__FILE__) . ' ' . __LINE__ . ' Il faudra mettre à jour la table bab_fm_files (updateFolder du fichier admfm.php)');
+
 		$babBody->title = bab_translate("File manager");
 		if( listFolders() > 0 )
 			{
