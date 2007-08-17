@@ -1693,7 +1693,7 @@
 <string id="Waiting days">Jours en attente d'approbation</string>
 <string id="ERROR: No members">ERREUR : aucun membre</string>
 <string id="Entries with the same e-mail address are duplicates">Les entrées avec la même adresse email qu'une entrée de l'annuaire sont des doublons</string>
-<string id="Entries with the same nickname are duplicates">Les entrées avec le même identifiant qu'une entrée de l'annuaire sont des doublons</string>
+<string id="Entries with the same nickname or the same firstname/lastname are duplicates">Les entrées avec le même identifiant ou les mêmes nom et prénoms qu'une entrée de l'annuaire sont des doublons</string>
 <string id="Period days">Jours dans la période sélectionnée</string>
 <string id="Negative balance are not allowed with this vacation type">Les soldes négatifs ne sont pas permis avec ce type de congé</string>
 <string id="Waiting appointments">Evénements en attente</string>
