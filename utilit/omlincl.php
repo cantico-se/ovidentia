@@ -1049,6 +1049,12 @@ class bab_Articles extends bab_handler
 
 		if( count($topicid) > 0)
 		{
+			$this->excludetopicid = $ctx->get_value('excludetopicid');
+			if ( $this->excludetopicid !== false && $this->excludetopicid !== '' )
+				{
+				$topicid = array_diff($topicid, explode(',', $this->excludetopicid));
+				}
+
 			$archive = $ctx->get_value('archive');
 			if( $archive === false || $archive === '')
 				$archive = "no";
@@ -2274,6 +2280,12 @@ class bab_RecentArticles extends bab_handler
 
 		if( count($this->topicid) > 0 )
 			{
+			$this->excludetopicid = $ctx->get_value('excludetopicid');
+			if ( $this->excludetopicid !== false && $this->excludetopicid !== '' )
+				{
+				$this->topicid = array_diff($this->topicid, explode(',', $this->excludetopicid));
+				}
+
 			$archive = $ctx->get_value('archive');
 			if( $archive === false || $archive === '')
 				$archive = "no";
