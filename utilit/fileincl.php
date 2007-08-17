@@ -1693,21 +1693,6 @@ class BAB_FmFolderSet extends BAB_MySqlResultIterator
 		}
 		return false;
 	}
-
-
-	function updateSubFolderPathName($sOldPattern, $sNewPattern)
-	{
-		$aCriterion = array();
-		$aCriterion[] = new BAB_LikeCriterion('sPathName', $sOldPattern, 1);
-		$aCriterion[] = new BAB_NotInCriterion('sPathName', $sOldPattern);
-		$oFmFolderSet = BAB_FmFolderSet::select($aCriterion);
-		while(null !== ($oFmFolder = $oFmFolderSet->next()))
-		{
-			$sPathName = $sNewPattern . substr($oFmFolder->getPathName(), strlen($sOldPattern));
-			$oFmFolder->setPathName($sPathName);
-			$oFmFolder->save();
-		}
-	}
 	
 	function remove($aCriterion)
 	{
@@ -1749,7 +1734,7 @@ class BAB_FmFolderSet extends BAB_MySqlResultIterator
 				BAB_FM_FOLDERS_TBL . ' ' .
 			$sWhereClause . ' ORDER BY `folder` ASC';
 				
-		bab_debug($sQuery);	
+//		bab_debug($sQuery);	
 		return $sQuery;
 	}
 	
@@ -1799,4 +1784,108 @@ class BAB_FmFolderSet extends BAB_MySqlResultIterator
 	}
 }
 
+class BAB_FmFolderHelper
+{
+	function BAB_FmFolderHelper()
+	{
+		
+	}
+	
+	function getFirstCollectiveFolder($sPathname)
+	{
+		$aPath		= explode('/', $sPathname);
+		$bStop		= false;
+		$iLength	= count($aPath); 
+		$iIndex		= $iLength - 1;
+		$bFinded	= false;
+		
+		do 
+		{
+			$sPathName	= implode('/', $aPath);
+			
+			$oFmFolder	= BAB_FmFolderSet::get(array(new BAB_LikeCriterion('sPathName', $sPathName, 0)));
+			if(!is_null($oFmFolder))
+			{
+//				$bFinded = true;
+//				$bStop = true;
+				return $oFmFolder;
+			}
+			
+			if($iIndex > 0)
+			{
+				unset($aPath[$iIndex]);
+				$iIndex--;
+			}
+			else 
+			{
+				$bStop = true;			
+			}
+		}
+		while(false === $bStop);
+		
+		return null;
+	}
+
+	function getUploadPath()
+	{
+		$iLength = strlen(trim($GLOBALS['babUploadPath']));
+		if($iLength > 0)			
+		{
+			$sUploadPathname = $GLOBALS['babUploadPath'];
+			if('/' === $sUploadPathname{$iLength - 1} || '\\' === $sUploadPathname{$iLength - 1})
+			{
+				$sUploadPathname{$iLength - 1} = '';
+				return $sUploadPathname;
+			}
+		}
+		return $GLOBALS['babUploadPath'];
+	}
+
+	
+	function accessValid($sGr, $iId)
+	{
+		global $babBody, $BAB_SESS_USERID, $aclfm;
+		
+		if('N' === $sGr)
+		{
+			return ($BAB_SESS_USERID == $iId && $babBody->ustorage);
+		}
+		else if('Y' === $sGr)
+		{
+			$iCount = count($babBody->aclfm['id']);
+			for($i = 0; $i < $iCount; $i++)
+			{
+				if($babBody->aclfm['id'][$i] == $iId && $babBody->aclfm['ma'][$i] == 1)
+				{
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	
+	function updateSubFolderPathName($sFullOldPathName, $sFullNewPathName, $sOldPathName, $sNewPathName)
+	{
+		if($sFullOldPathName !== $sFullNewPathName)
+		{
+			if(is_dir($sFullOldPathName) && !is_dir($sFullNewPathName))
+			{
+				if(true === rename($sFullOldPathName, $sFullNewPathName))
+				{
+					$aCriterion = array();
+					$aCriterion[] = new BAB_LikeCriterion('sPathName', $sOldPathName, 1);
+					$aCriterion[] = new BAB_NotInCriterion('sPathName', $sOldPathName);
+					$oFmFolderSet = BAB_FmFolderSet::select($aCriterion);
+					while(null !== ($oFmFolder = $oFmFolderSet->next()))
+					{
+						$sPathName = $sNewPathName . substr($oFmFolder->getPathName(), strlen($sOldPathName));
+						$oFmFolder->setPathName($sPathName);
+						$oFmFolder->save();
+					}
+				}
+			}
+		}
+	}
+}
 ?>
