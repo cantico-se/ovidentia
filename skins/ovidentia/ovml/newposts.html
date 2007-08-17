@@ -33,7 +33,11 @@
 		<OFAOModulus expr1="<OVCIndex>" expr2="2" saveas="modulo">
 		<tr class="<OCIfEqual expr1="<OVmodulo>" expr2="0">BabSiteAdminFontBackground</OCIfEqual><OCIfNotEqual expr1="<OVmodulo>" expr2="0">BabForumBackground1</OCIfNotEqual>">
 			<td width="120"><OVPostDate date="%S %T"></td>
-			<td align="right"><span style="font-Size:9"><OCForum forumid="<OVPostForumId>"><OVForumName strlen="20,..."> / </OCForum><OCPost postid="<OVPostThreadId>"><OVPostTitle strlen="20,..."> / </OCPost></span></td>
+			<td align="right"><span style="font-Size:9"><OCForum forumid="<OVPostForumId>"><OVForumName strlen="20,..."> / </OCForum>
+			<OCThread threadid="<OVPostThreadId>">
+			<OCPost postid="<OVThreadPostId>"><OVPostTitle strlen="20,..."> / </OCPost>
+			</OCThread>
+			</span></td>
 			<td align="left"><a class="BabSummaryLinkColor" href="<OVPostUrl>"><OVPostTitle strlen="100,..."></a></td>
 			<td width="130"><OVPostAuthor></td>
 		</tr>
