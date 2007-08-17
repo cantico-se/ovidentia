@@ -231,28 +231,41 @@ function bab_deleteApprobationSchema($id)
 	$res = $babDB->db_query($req);
 }
 
+function bab_deletePostFiles($idforum, $idpost)
+{
+	$files = bab_getPostFiles($idforum,$idpost);
+	foreach($files as $f)
+		{
+		@unlink($f['path']);
+		}
+}
+
+function bab_deleteThread($idforum, $idthread)
+{
+	global $babDB;
+
+	/* delete all posts owned by this thread */
+	$respost = $babDB->db_query("SELECT id from ".BAB_POSTS_TBL." where id_thread='".$babDB->db_escape_string($idthread)."'");
+	while (list($id_post) = $babDB->db_fetch_array($respost))
+		{
+		bab_deletePostFiles($idforum, $id_post);
+		}
+	$babDB->db_query("delete from ".BAB_POSTS_TBL." where id_thread='".$babDB->db_escape_string($idthread)."'");
+
+	// delete this thread
+	$babDB->db_query("delete from ".BAB_THREADS_TBL." where id='".$babDB->db_escape_string($idthread)."'");
+}
+
 function bab_deleteForum($id)
 {
-	
-
 	global $babDB;
-	// delete all posts
+	// delete all threads
 	$res = $babDB->db_query("select id from ".BAB_THREADS_TBL." where forum='".$babDB->db_escape_string($id)."'");
 	while( $arr = $babDB->db_fetch_array($res))
 		{
-		$respost = $babDB->db_query("SELECT id from ".BAB_POSTS_TBL." where id_thread='".$babDB->db_escape_string($arr['id'])."'");
-		while (list($id_post) = $babDB->db_fetch_array($respost))
-			{
-			$files = bab_getPostFiles($id,$id_post);
-			foreach($files as $f)
-				{
-				@unlink($f['path']);
-				}
-			}
-		$babDB->db_query("delete from ".BAB_POSTS_TBL." where id_thread='".$babDB->db_escape_string($arr['id'])."'");
+		bab_deleteThread($id, $arr['id']);
 		}
 
-	$babDB->db_query("delete from ".BAB_THREADS_TBL." where forum='".$babDB->db_escape_string($id)."'");
 
 	aclDelete(BAB_FORUMSVIEW_GROUPS_TBL, $id);
 	aclDelete(BAB_FORUMSPOST_GROUPS_TBL, $id);

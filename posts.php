@@ -1145,6 +1145,7 @@ function deletePost($forum, $post)
 	{
 	global $babDB;
 
+	include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
 	$req = "select * from ".BAB_POSTS_TBL." where id='".$babDB->db_escape_string($post)."'";
 	$res = $babDB->db_query($req);
 	$arr = $babDB->db_fetch_array($res);
@@ -1153,23 +1154,21 @@ function deletePost($forum, $post)
 	if( $arr['id_parent'] == 0)
 		{
 		/* if it's the only post in the thread, delete the thread also */
-		$req = "delete from ".BAB_POSTS_TBL." where id_thread = '".$babDB->db_escape_string($arr['id_thread'])."'";
-		$res = $babDB->db_query($req);
-		$req = "delete from ".BAB_THREADS_TBL." where id = '".$babDB->db_escape_string($arr['id_thread'])."'";
-		$res = $babDB->db_query($req);
+		bab_deleteThread($forum, $arr['id_thread']);
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=threads&forum=".$forum);
 		}
 	else
 		{
+		bab_deletePostFiles($forum, $post);
 		$req = "delete from ".BAB_POSTS_TBL." where id = '".$babDB->db_escape_string($post)."'";
 		$res = $babDB->db_query($req);
 
-		$req = "select * from ".BAB_THREADS_TBL." where id='".$babDB->db_escape_string($arr['id_thread'])."'";
+		$req = "select lastpost from ".BAB_THREADS_TBL." where id='".$babDB->db_escape_string($arr['id_thread'])."'";
 		$res = $babDB->db_query($req);
 		$arr2 = $babDB->db_fetch_array($res);
 		if( $arr2['lastpost'] == $post ) // it's the lastpost
 			{
-			$req = "select * from ".BAB_POSTS_TBL." where id_thread='".$babDB->db_escape_string($arr['id_thread'])."' order by date desc";
+			$req = "select id from ".BAB_POSTS_TBL." where id_thread='".$babDB->db_escape_string($arr['id_thread'])."' order by date desc";
 			$res = $babDB->db_query($req);
 			$arr2 = $babDB->db_fetch_array($res);
 			$req = "update ".BAB_THREADS_TBL." set lastpost='".$babDB->db_escape_string($arr2['id'])."' where id='".$babDB->db_escape_string($arr['id_thread'])."'";
@@ -1182,14 +1181,8 @@ function deletePost($forum, $post)
 
 function confirmDeleteThread($forum, $thread)
 	{
-	// delete posts owned by this thread
-	global $babDB;
-	$req = "delete from ".BAB_POSTS_TBL." where id_thread = '".$babDB->db_escape_string($thread)."'";
-	$res = $babDB->db_query($req);
-
-	// delete thread
-	$req = "delete from ".BAB_THREADS_TBL." where id = '".$babDB->db_escape_string($thread)."'";
-	$res = $babDB->db_query($req);
+	include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
+	bab_deleteThread($forum, $thread);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=threads&forum=".$forum);
 	}
 
