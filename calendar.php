@@ -64,44 +64,48 @@ function displayAttendees($evtid, $idcal)
 				$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
 				while( $arr = $babDB->db_fetch_array($res))
 					{
-					if( bab_isCalendarAccessValid($arr['id_cal']))
+					$icalinfo = $babBody->icalendars->getCalendarInfo($arr['id_cal']);
+					if( $icalinfo === false)
+					{
+						$icalinfo['type'] = bab_getCalendarType($arr['id_cal']);
+						$icalinfo['name'] = bab_getCalendarOwnerName($arr['id_cal']);
+						$icalinfo['idowner'] = bab_getCalendarOwner($arr['id_cal']);
+						$icalinfo['access'] = '';
+					}
+					
+					$key = strtolower($icalinfo['name'].$arr['id_cal']);
+					
+					$this->arrinfo[$key] = array('name' => $icalinfo['name'],'idcal' => $arr['id_cal'], 'idowner' => $icalinfo['idowner'],'status' => $arr['status']);
+					if( $idcal == $arr['id_cal'] )
 						{
-						$icalinfo = $babBody->icalendars->getCalendarInfo($arr['id_cal']);
-						
-						$key = strtolower($icalinfo['name'].$arr['id_cal']);
-						
-						$this->arrinfo[$key] = array('name' => $icalinfo['name'],'idcal' => $arr['id_cal'], 'idowner' => $icalinfo['idowner'],'status' => $arr['status']);
-						if( $idcal == $arr['id_cal'] )
+						switch($icalinfo['type'])
 							{
-							switch($icalinfo['type'])
-								{
-								case BAB_CAL_USER_TYPE:
-									if( $icalinfo['access'] == BAB_CAL_ACCESS_FULL || $icalinfo['access'] == BAB_CAL_ACCESS_SHARED_FULL)
-							{
-							$this->idcal = $arr['id_cal'];
-							switch($arr['status'] )
-								{
-								case BAB_CAL_STATUS_NONE:
-									$this->statusarray = array(BAB_CAL_STATUS_ACCEPTED,BAB_CAL_STATUS_DECLINED);
-									break;
-								case BAB_CAL_STATUS_ACCEPTED:
-									$this->statusarray = array(BAB_CAL_STATUS_DECLINED);
-									break;
-								case BAB_CAL_STATUS_DECLINED:
-									$this->statusarray = array(BAB_CAL_STATUS_ACCEPTED);
-									break;
-								}
-							}
-									break;
-								case BAB_CAL_PUB_TYPE:
-								case BAB_CAL_RES_TYPE:
-									if( $arr['status'] == BAB_CAL_STATUS_NONE && $arr['idfai'] != 0 && count($arrschi) > 0 && in_array($arr['idfai'], $arrschi))
+							case BAB_CAL_USER_TYPE:
+								if( $icalinfo['access'] == BAB_CAL_ACCESS_FULL || $icalinfo['access'] == BAB_CAL_ACCESS_SHARED_FULL)
+									{
+									$this->idcal = $arr['id_cal'];
+									switch($arr['status'] )
+										{
+										case BAB_CAL_STATUS_NONE:
+											$this->statusarray = array(BAB_CAL_STATUS_ACCEPTED,BAB_CAL_STATUS_DECLINED);
+											break;
+										case BAB_CAL_STATUS_ACCEPTED:
+											$this->statusarray = array(BAB_CAL_STATUS_DECLINED);
+											break;
+										case BAB_CAL_STATUS_DECLINED:
+											$this->statusarray = array(BAB_CAL_STATUS_ACCEPTED);
+											break;
+										}
+									}
+								break;
+							case BAB_CAL_PUB_TYPE:
+							case BAB_CAL_RES_TYPE:
+								if( $arr['status'] == BAB_CAL_STATUS_NONE && $arr['idfai'] != 0 && count($arrschi) > 0 && in_array($arr['idfai'], $arrschi))
 									{
 									$this->statusarray = array(BAB_CAL_STATUS_ACCEPTED,BAB_CAL_STATUS_DECLINED);
 									}
-									break;
-						}
-					}
+								break;
+							}
 						}
 					}
 				$this->count = count($this->arrinfo);
