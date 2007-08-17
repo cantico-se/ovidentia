@@ -44,9 +44,11 @@ class BAB_IntField extends BAB_Field
 	}
 }
 
-class BAB_StringField extends BAB_Field
+class BAB_VarCharField extends BAB_Field
 {
-	function BAB_IntField($sName, $sAlias = null)
+	var $iLength = 255;
+	
+	function BAB_VarCharField($sName, $sAlias = null)
 	{
 		parent::BAB_Field($sName, $sAlias);
 	}
@@ -111,6 +113,22 @@ class BAB_NotInCriterion
 	}
 }
 
+/*
+class BAB_Not
+{
+	var $oCriterion = null;
+	
+	function BAB_Not($oCriterion)
+	{
+		$this->oCriterion = $oCriterion;	
+	}
+	
+	function toString()
+	{
+		return $this->oCriterion->sName . ' NOT ' .
+	}
+}
+//*/
 
 class BAB_LikeCriterionBase
 {

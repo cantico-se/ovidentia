@@ -1851,101 +1851,158 @@ function restoreFiles($items)
 	}
 
 	
-function displayFolderForm($bManager, $bCollective, $sPath, $iId)
+function displayFolderForm($bCollective, $sPath, $iId)
 {
 	global $babBody;
+	$sGr = (($bCollective) ? 'Y' : 'N');
 	
-	if(true === $bManager)
+	if(true === BAB_FmFolderHelper::accessValid($sGr, $iId))
 	{
-		$sGr = (($bCollective) ? 'Y' : 'N');
+		require_once $GLOBALS['babInstallPath'].'utilit/baseFormProcessingClass.php';
+
+		//*
+		class DisplayFolderForm extends BAB_BaseFormProcessing 
+		{
+			function DisplayFolderForm($sGr, $sPath, $iId)
+			{
+				parent::BAB_BaseFormProcessing();
+				
+				$sAction 	= bab_gp('sAction', '');
+				$sDirName	= bab_gp('sDirName', '');
+				
+				$this->setCaption();
+				
+				$this->set_data('sIdx', 'createEditFolder');
+				$this->set_data('sAction', $sAction);
+				$this->set_data('sTg', 'fileman');
+				
+				$this->set_data('iId', $iId);
+				$this->set_data('sPath', $sPath);
+				$this->set_data('sGr', $sGr);
+				
+				$this->set_data('sDirName', $sDirName);
+				$this->set_data('sOldDirName', '');
+				$this->set_data('iIdFolder', 0);
+				
+				$this->set_data('sSimple', 'simple');
+				$this->set_data('sCollective', 'collective');
+				$this->set_data('sYes', 'Y');
+				$this->set_data('sNo', 'N');
+				$this->set_data('iNone', 0);
+				
+				$this->set_data('isColletive', false);
+				$this->set_data('isActive', true);
+				$this->set_data('isAutoApprobation', false);
+				$this->set_data('isFileNotify', false);
+				$this->set_data('isVersioning', false);
+				$this->set_data('isShow', true);
+				
+				if('createFolder' === $sAction)
+				{
+					$this->handleCreation();
+				}
+				else if('editFolder' === $sAction)
+				{
+					$this->handleEdition();
+				}
+			}
+			
+			function setCaption()
+			{
+				$this->set_caption('sType', bab_translate("Type") . ': ');
+				$this->set_caption('sDirName', bab_translate("Name") . ': ');
+				$this->set_caption('sActive', bab_translate("Actif") . ': ');
+				$this->set_caption('sApprobationScheme', bab_translate("Approbation schema") . ': ');
+				$this->set_caption('sAutoApprobation', bab_translate("Automatically approve author if he belongs to approbation schema") . ': ');
+				$this->set_caption('sNotification', bab_translate("Notification") . ': ');
+				$this->set_caption('sVersioning', bab_translate("Versioning") . ': ');
+				$this->set_caption('sDisplay', bab_translate("Visible in file manager?") . ': ');
+				$this->set_caption('sSimple', bab_translate("Simple"));
+				$this->set_caption('sCollective', bab_translate("Collectif"));
+				$this->set_caption('sYes', bab_translate("Yes"));
+				$this->set_caption('sNo', bab_translate("No"));
+				$this->set_caption('sNone', bab_translate("None"));
+				$this->set_caption('sAdd', bab_translate("Add"));
+				$this->set_caption('sSubmit', bab_translate("Submit"));
+			}
+			
+			function handleCreation()
+			{
+				
+			}
+			
+			function handleEdition()
+			{
+				$this->get_data('iId', $iId);
+				$this->get_data('sGr', $sGr);
+				$this->get_data('sPath', $sPath);
+				$this->get_data('sDirName', $sDirName);
+
+//				$this->set_data('iIdFolder', 0);
+				$this->set_data('sOldDirName', $sDirName);
+
+				if('Y' === $sGr)
+				{
+//					$this->set_data('isActive', true);
+//					$this->set_data('isColletive', false);
+//					$this->set_data('isAutoApprobation', false);
+//					$this->set_data('isFileNotify', false);
+//					$this->set_data('isVersioning', false);
+//					$this->set_data('isShow', true);
+					
+					$sRelativePath = '';
+					$oFmFolder = BAB_FmFolderSet::get(array(new BAB_InCriterion('iId', $iId)));
+					if(!is_null($oFmFolder))
+					{
+						$sRelativePath = $oFmFolder->getPathName();
+						if(strlen(trim($sPath)) > 0)
+						{
+							$sRelativePath .=  '/' . $sPath;
+						}
+					}
+					
+					$sPathName = $sRelativePath . '/' . $sDirName;
+		
+					$aCriterion[] = new BAB_LikeCriterion('sPathName', $sPathName, 0);
+					$oFmFolder = BAB_FmFolderSet::get($aCriterion);
+					if(!is_null($oFmFolder))
+					{
+						$this->set_data('isColletive', true);
+						$this->set_data('isActive', ('Y' === $oFmFolder->getActive()) ? true : false);
+						$this->set_data('isAutoApprobation', ('Y' === $oFmFolder->getAutoApprobation()) ? true : false);
+						$this->set_data('isFileNotify', ('Y' === $oFmFolder->getFileNotify()) ? true : false);
+						$this->set_data('isVersioning', ('Y' === $oFmFolder->getVersioning()) ? true : false);
+						$this->set_data('isShow', ('Y' === $oFmFolder->getHide()) ? false : true);
+						$this->set_data('iIdFolder', $oFmFolder->getId());
+						$this->set_data('sOldDirName', $oFmFolder->getName());
+					}
+				}
+			}
+			
+			function printTemplate()
+			{
+				global $babBody;
+				
+				$this->get_data('sGr', $sGr);
+				$sTemplateName = (('Y' === $sGr) ? 'collectiveDir' : 'userDir');
+				
+				$this->set_data('sHtmlTable', bab_printTemplate($this, 'fileman.html', $sTemplateName));
+				
+				$this->raw_2_html(BAB_RAW_2_HTML_CAPTION);
+//				$this->raw_2_html(BAB_RAW_2_HTML_DATA);
+				
+				$babBody->addJavascriptFile($GLOBALS['babScriptPath']."prototype/prototype.js");
+				return bab_printTemplate($this, 'fileman.html', 'displayFolderForm');
+			}
+		}
+		//*/
+		
 		//Si 
 		$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$iId."&gr=".$sGr."&path=".urlencode($sPath));
 		$babBody->addItemMenu('displayFolderForm', bab_translate("Create a folder"), $GLOBALS['babUrlScript']."?tg=fileman&idx=displayFolderForm&id=".$iId."&gr=".$sGr."&path=".urlencode($sPath));
-
-//		bab_debug($_GET);
-
-		$sAction 			= bab_gp('sAction', '');
-		$sDirName			= bab_gp('sDirName', '');
-		$sFileNotify		= '';
-		$sActive			= '';
-		$sVersioning		= '';
-		$sAutoApprobation	= '';
 		
-		if('createFolder' === $sAction)
-		{
-			if('' !== $sPath)
-			{
-			}
-			else 
-			{
-			}
-		}
-		else if('editFolder' === $sAction)
-		{
-			$aCriterion = array();
-			
-			$sPathName = bab_getUploadFullPath($sGr, $iId, $sPath) . $sDirName;
-bab_debug($sPathName);
-			$aCriterion[] = new BAB_LikeCriterion('sName', $sPathName, 0);
-			$oFmFolder = BAB_FmFolderSet::get($aCriterion);
-			if(!is_null($oFmFolder))
-			{
-//				bab_debug($oFmFolder);
-//				$aPath = preg_split('#[/\\\\]#', $oFmFolder->getName());
-//				bab_debug($aPath);
-			}
-			else 
-			{
-				//Error
-			}
-		}
-		else
-		{
-			//Error
-		}
-		
-		
-		require_once $GLOBALS['babInstallPath'].'utilit/baseFormProcessingClass.php';
-
-		$oBFP = new BAB_BaseFormProcessing();
-		
-		$oBFP->set_caption('sType', bab_translate("Type") . ': ');
-		$oBFP->set_caption('sDirName', bab_translate("Name") . ': ');
-		$oBFP->set_caption('sActive', bab_translate("Actif") . ': ');
-		$oBFP->set_caption('sApprobationScheme', bab_translate("Approbation schema") . ': ');
-		$oBFP->set_caption('sAutoApprobation', bab_translate("Automatically approve author if he belongs to approbation schema") . ': ');
-		$oBFP->set_caption('sNotification', bab_translate("Notification") . ': ');
-		$oBFP->set_caption('sVersioning', bab_translate("Versioning") . ': ');
-		$oBFP->set_caption('sDisplay', bab_translate("Visible in file manager?") . ': ');
-		$oBFP->set_caption('sSimple', bab_translate("Simple"));
-		$oBFP->set_caption('sCollective', bab_translate("Collectif"));
-		$oBFP->set_caption('sYes', bab_translate("Yes"));
-		$oBFP->set_caption('sNo', bab_translate("No"));
-		$oBFP->set_caption('sNone', bab_translate("None"));
-		$oBFP->set_caption('sAdd', bab_translate("Add"));
-		$oBFP->set_caption('sSubmit', bab_translate("Submit"));
-		
-		$oBFP->set_data('sIdx', 'createEditFolder');
-		$oBFP->set_data('sAction', $sAction);
-		$oBFP->set_data('sTg', 'fileman');
-		
-		$oBFP->set_data('iId', $iId);
-		$oBFP->set_data('sPath', $sPath);
-		$oBFP->set_data('sGr', $sGr);
-		
-		$oBFP->set_data('sDirName', $sDirName);
-		
-		$oBFP->set_data('sSimple', 'simple');
-		$oBFP->set_data('sCollective', 'collective');
-		$oBFP->set_data('sYes', 'Y');
-		$oBFP->set_data('sNo', 'N');
-		$oBFP->set_data('iNone', 0);
-		
-		$oBFP->raw_2_html(BAB_RAW_2_HTML_CAPTION);
-		$oBFP->raw_2_html(BAB_RAW_2_HTML_DATA);
-		
-		$babBody->addJavascriptFile($GLOBALS['babScriptPath']."prototype/prototype.js");
-		$babBody->babecho(bab_printTemplate($oBFP, 'fileman.html', 'displayFolderForm'));
+		$oDspFldForm = new DisplayFolderForm($sGr, $sPath, $iId);
+		$babBody->babecho($oDspFldForm->printTemplate());
 	}
 	else 
 	{
@@ -1954,12 +2011,13 @@ bab_debug($sPathName);
 }
 
 
-function createEditFolder($bManager, $bUpload, $bCollective, $sPath, $id, &$sIdx)
+function createEditFolder($bUpload, $bCollective, $sPath, $id, &$sIdx)
 {
 	global $babBody;
-	
-	if(true === $bManager)
+
+	if(true === BAB_FmFolderHelper::accessValid($sGr, $iId))
 	{
+	/*/
 		$sAction				= bab_pp('sAction', '');
 		$sType					= bab_pp('sType', '');
 		$sDirName				= bab_pp('sDirName', '');
@@ -1970,10 +2028,10 @@ function createEditFolder($bManager, $bUpload, $bCollective, $sPath, $id, &$sIdx
 		$sVersioning			= bab_pp('sVersioning', 'N');
 		$sDisplay				= bab_pp('sDisplay', 'N');
 		$sPathName				= '';
-		
+
 		$sGr = (($bCollective) ? 'Y' : 'N');
 
-		
+		$sRelativePath = '';
 		$oFmFolder = BAB_FmFolderSet::get(array(new BAB_InCriterion('iId', $id)));
 		if(!is_null($oFmFolder))
 		{
@@ -1983,24 +2041,15 @@ function createEditFolder($bManager, $bUpload, $bCollective, $sPath, $id, &$sIdx
 				$sRelativePath .=  '/' . $sPath;
 			}
 			
-			bab_debug('sPathName ==> ' . $sRelativePath . '/' . $sDirName);
-		}
-		
-		
-		
-		if('createFolder' === $sAction)
-		{
 			if(strlen(trim($sDirName)) > 0)
 			{
-				$oFmFolder = BAB_FmFolderSet::get(array(new BAB_InCriterion('iId', $iIdParent)));
-				if(!is_null($oFmFolder))
+				if('createFolder' === $sAction)
 				{
-/*					
 					if(createDirectory($sDirName, $id, $sGr, $sPath))
 					{
 						if('collective' === $sType)
 						{
-							$sPathName = $oFmFolder->getName() . '/' . $sDirName;
+							$sPathName = $sRelativePath . '/' . $sDirName;
 							
 							$oFmFolder = new BAB_FmFolder();
 							$oFmFolder->setActive($sActive);
@@ -2019,22 +2068,81 @@ function createEditFolder($bManager, $bUpload, $bCollective, $sPath, $id, &$sIdx
 							}
 						}
 					}
-//*/
+				}
+				else if('editFolder' === $sAction)
+				{
+					$iIdFolder					= (int) bab_pp('iIdFolder', 0); 
+					$bRename					= false;
+					$bWasCollective				= false;
+					$bChangeIdOwnerOfChildFiles	= false; 			
+					
+					$oFmFolder = BAB_FmFolderSet::get(array(new BAB_InCriterion('iId', $iIdFolder)));
+					if(!is_null($oFmFolder))
+					{
+						$bRename		= ($sDirName !== $oFmFolder->getName()) ? true : false;
+						$sOldDirName	= $oFmFolder->getName();
+						$bWasCollective = true;
+					}
+					else 
+					{
+						$sOldDirName	= (string) bab_pp('sOldDirName', '');
+						$bRename		= ($sDirName !== $sOldDirName) ? true : false;
+					}
+		
+					$sUploadPathname = BAB_FmFolderHelper::getUploadPath();
+					
+					if($bRename)
+					{
+						if(BAB_FmFolderHelper::haveUpdateRight($sGr, $id))
+						{
+							if(strlen(trim($sOldDirName)) > 0)
+							{
+								$sOldPathName = $sRelativePath . '/' . $sOldDirName;
+								$sNewPathName = $sRelativePath . '/' . $sDirName;
+								$sFullOldPathName = $sUploadPathname . '/' . $sOldPathName;
+								$sFullNewPathName = $sUploadPathname . '/' . $sNewPathName;
+								
+//								bab_debug('sOldPathName ==> ' . $sOldPathName);
+//								bab_debug('sNewPathName ==> ' . $sNewPathName);
+//								bab_debug('sFullOldPathName ==> ' . $sFullOldPathName);
+//								bab_debug('sFullNewPathName ==> ' . $sFullNewPathName);
+								
+								BAB_FmFolderHelper::updateSubFolderPathName($sFullOldPathName, $sFullNewPathName, $sOldPathName, $sNewPathName);
+								
+								bab_debug('Ne pas oublier les fichiers');
+							}
+							else 
+							{
+								bab_debug(__FUNCTION__ . ' ERROR invalid sOldDirName');
+							}
+						}
+						else 
+						{
+							$babBody->addError(bab_translate("You don't have permission to rename directory"));
+						}
+					}
+		
+		
+					//Pour les fichiers
+					$oParentFolder = BAB_FmFolderHelper::getFirstCollectiveFolder($sRelativePath);
+					if(!is_null($oParentFolder))
+					{
+						bab_debug('Nuclear launch detected');		
+						bab_debug($oParentFolder);		
+					}
+				}
+				else 
+				{
+					bab_debug(__FUNCTION__ . ' ERROR invalid sAction');
 				}
 			}
+			else 
+			{
+				bab_debug(__FUNCTION__ . ' ERROR invalid sDirName');
+			}
 		}
-		else if('editFolder' === $sAction)
-		{
-			bab_debug($sAction);
-		}
-		else 
-		{
-			bab_debug(__FUNCTION__ . ' ERROR invalid sAction');
-		}
-//		bab_debug($_POST);
-		
+		//*/		
 		$sIdx = 'list';
-//		$sGr = (($bCollective) ? 'Y' : 'N');
 		listFiles($id, $sGr, $sPath, $bManager, $bUpload);
 	}	
 	else 
@@ -2042,6 +2150,50 @@ function createEditFolder($bManager, $bUpload, $bCollective, $sPath, $id, &$sIdx
 		$babBody->msgerror = bab_translate("Access denied");
 	}
 }
+
+
+function createEditFolderForUserDir($iIdUser, $sGr, $sPath)
+{
+	global $babBody;
+	
+	$sAction		= (string) bab_pp('sAction', '');
+	$sType			= (string) bab_pp('sType', '');
+	$sDirName		= (string) bab_pp('sDirName', '');
+	$sOldDirName	= (string) bab_pp('sOldDirName', '');
+	
+	if(BAB_FmFolderHelper::accessValid($sGr, $iIdUser))
+	{
+		if('createFolder' === $sAction)
+		{
+			
+		}
+		else if('editFolder' === $sAction)
+		{
+			
+		}
+		else 
+		{
+			$babBody->addError(bab_translate("Unhandled action"));
+		}
+	}
+	else 
+	{
+		if('createFolder' === $sAction)
+		{
+			$babBody->addError(bab_translate("You don't have permission to create directory"));
+		}
+		else 
+		{
+			$babBody->addError(bab_translate("You don't have permission to rename directory"));
+		}
+	}
+}
+
+function createEditFolderForCollectiveDir($id, $sGr, $sPath)
+{
+//	if('N')
+}
+
 
 /* main */
 
@@ -2210,11 +2362,11 @@ if( 'update' === bab_rp('cdel') )
 switch($idx)
 	{
 	case 'displayFolderForm':
-		displayFolderForm($bmanager, (($gr == 'N') ? false : true), $path, $id);
+		displayFolderForm((($gr == 'N') ? false : true), $path, $id);
 		break;
 		
 	case 'createEditFolder':
-		createEditFolder($bmanager, $upload, (($gr == 'N') ? false : true), $path, $id, $idx);
+		createEditFolder($upload, (($gr == 'N') ? false : true), $path, $id, $idx);
 		break;
 
 	case "unload":

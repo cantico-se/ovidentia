@@ -1826,19 +1826,22 @@ class BAB_FmFolderHelper
 		return null;
 	}
 
-	function getUploadPath()
+	function getUploadPath($sGr)
 	{
-		$iLength = strlen(trim($GLOBALS['babUploadPath']));
-		if($iLength > 0)			
+		if()
 		{
-			$sUploadPathname = $GLOBALS['babUploadPath'];
-			if('/' === $sUploadPathname{$iLength - 1} || '\\' === $sUploadPathname{$iLength - 1})
+			$iLength = strlen(trim($GLOBALS['babUploadPath']));
+			if($iLength > 0)			
 			{
-				$sUploadPathname{$iLength - 1} = '';
-				return $sUploadPathname;
+				$sUploadPathname = $GLOBALS['babUploadPath'];
+				if('/' === $sUploadPathname{$iLength - 1} || '\\' === $sUploadPathname{$iLength - 1})
+				{
+					$sUploadPathname{$iLength - 1} = '';
+					return $sUploadPathname;
+				}
 			}
+			return $GLOBALS['babUploadPath'];
 		}
-		return $GLOBALS['babUploadPath'];
 	}
 
 	

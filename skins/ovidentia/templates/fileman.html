@@ -123,7 +123,7 @@ function remove_field()
 		<td align="left" valign="middle" class="BabsiteFileCurentFolder" >
 		<img src="{ babSkinPath }images/Puces/folder.gif" alt="" border="0" /> 
                   : { rootpath }/{ path }&nbsp;<a href="{ rooturl }"><img src="{ babSkinPath }images/Puces/root.gif" border="0" alt="{ root }"  /></a>&nbsp;<a href="{ refreshurl }"><img src="{ babSkinPath }images/Puces/refresh.gif" alt="{ 
-            refresh }" border="0" /></a>
+            refresh }" border="0" /></a><!--#if bmanager -->&nbsp;<a href="{ sFolderFormUrl }" title="{ sFolderFormAdd }"><img src="{ babSkinPath }images/Puces/folder_add.png" border="0" alt="{ sFolderFormAdd }"  /></a><!--#endif bmanager -->
        	</td>
 	</tr>
 </table>
@@ -131,7 +131,7 @@ function remove_field()
 <table  width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
           <td class="BabLoginCadreBackground" align="center"> 
-		  <table  width="100%" border="0" cellspacing="0" cellpadding="3" align="center">
+		  <table  width="100%" border="1" cellspacing="0" cellpadding="3" align="center">
               <tr class="BabSiteAdminTitleFontBackground"> 
                 <td colspan="2" align="center">{ nametxt }</td>
                 <td>&nbsp;</td>
@@ -166,7 +166,13 @@ function remove_field()
                   <!--#endif name -->
                 </td>
                 <td><a href="{ url }">{ name }</a></td>
-                <td colspan="6">&nbsp;</td>
+                <td colspan="4">&nbsp;</td>
+			<!--#if bFolderFormUrl -->
+                <td><a href="{ sFolderFormUrl }" title="{ sFolderFormEdit }"><img src="{ babSkinPath }images/Puces/edit.png" border="0" alt="{ sFolderFormEdit }"  /></a></td>
+            <!--#else bFolderFormUrl -->
+                <td>&nbsp;</td>
+            <!--#endif bFolderUrl -->
+                <td>&nbsp;</td>
                </tr>
               <!--#endin getnextdir -->
               
@@ -711,3 +717,239 @@ close }</a> </td>
 <!--#end fileunload -->
 
 
+<!--#begin displayFolderForm -->
+<script type="text/javascript">
+//<![CDATA[
+function showHide()
+{
+	var oForm = document.forms.displayFolderForm;
+
+	var oType = document.getElementById('sType');
+	if(null != oType)
+	{
+		var sSimple = '{ m_datas[sSimple] }';
+		var sCollective = '{ m_datas[sCollective] }';
+		
+		if(sSimple == oType.value)
+		{
+			hide();
+		}
+		else if(sCollective == oType.value)
+		{
+			show();
+		}
+	}
+}
+
+function show(aNode)
+{
+	var aNodes = document.getElementsByClassName("showHide");
+	var iLength = aNodes.length;
+	
+	for(i = 0; i < iLength; i++) 
+	{
+	    aNodes[i].show();
+	}	
+}
+
+function hide(aNode)
+{
+	var aNodes = document.getElementsByClassName("showHide");
+	var iLength = aNodes.length;
+	
+	for(i = 0; i < iLength; i++) 
+	{
+	    aNodes[i].hide();
+	}	
+}
+//]]>
+</script>
+
+<form name="displayFolderForm" method="post" action="{ babPhpSelf }">
+	<input type="hidden" name="tg" value="{ m_datas[sTg] }" />
+	<input type="hidden" name="idx" value="{ m_datas[sIdx] }" />
+	<input type="hidden" name="sAction" value="{ m_datas[sAction] }" />
+	
+	<input type="hidden" name="iIdFolder" value="{ m_datas[iIdFolder] }" />
+	<input type="hidden" name="sOldDirName" value="{ m_datas[sOldDirName] }" />
+	<input type="hidden" name="id" value="{ m_datas[iId] }" />
+	<input type="hidden" name="path" value="{ m_datas[sPath] }" />
+	<input type="hidden" name="gr" value="{ m_datas[sGr] }" />
+
+	{ m_datas[sHtmlTable] }
+	
+</form>
+<script type="text/javascript">
+//<![CDATA[
+	var oForm = document.forms.displayFolderForm;
+	if('Y' == oForm['gr'].value)
+	{
+		showHide();
+	}
+//]]>
+</script>
+<!--#end displayFolderForm -->
+
+<!--#begin collectiveDir -->
+<table border="0" width="50%" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+		<td class="BabLoginCadreBackground">
+			<table width="100%" border="0" cellspacing="2" cellpadding="5" align="center" class="BabLoginMenuBackground">
+				<tr> 
+					<td align="right">
+						{ m_captions[sType] }
+					</td>
+					<td>
+						<select name="sType" id="sType" onchange="showHide()"> 
+						<!--#if m_datas[isColletive] -->
+							<option value="{ m_datas[sSimple] }">{ m_captions[sSimple] }</option>
+							<option value="{ m_datas[sCollective] }" selected="selected">{ m_captions[sCollective] }</option>
+						<!--#else m_datas[isColletive] -->
+							<option value="{ m_datas[sSimple] }" selected="selected">{ m_captions[sSimple] }</option>
+							<option value="{ m_datas[sCollective] }">{ m_captions[sCollective] }</option>
+						<!--#endif m_datas[isColletive] -->
+						</select>
+					</td>
+				</tr>
+				<tr> 
+					<td align="right">
+						{ m_captions[sDirName] }
+					</td>
+					<td>
+						<input type="text" name="sDirName" size="25" maxlength="255" value="{ m_datas[sDirName] }" />
+					</td>
+				</tr>
+				<tr class="showHide"> 
+					<td align="right">
+						{ m_captions[sActive] }
+					</td>
+					<td>
+						<select name="sActive"> 
+						<!--#if m_datas[isActive] -->
+							<option value="{ m_datas[sYes] }" selected="selected">{ m_captions[sYes] }</option>
+							<option value="{ m_datas[sNo] }">{ m_captions[sNo] }</option>
+						<!--#else m_datas[isActive] -->
+							<option value="{ m_datas[sYes] }">{ m_captions[sYes] }</option>
+							<option value="{ m_datas[sNo] }" selected="selected">{ m_captions[sNo] }</option>
+						<!--#endif m_datas[isActive] -->
+						</select>
+					</td>
+				</tr>
+				<tr class="showHide"> 
+					<td align="right">
+						{ m_captions[sApprobationScheme] }
+					</td>
+					<td>
+						<select name="iIdApprobationScheme"> 
+							<option value="{ m_datas[iNone] }" selected="selected">{ m_captions[sNone] }</option>
+						</select>
+					</td>
+				</tr>
+				<tr class="showHide"> 
+					<td align="right">
+						{ m_captions[sAutoApprobation] }
+					</td>
+					<td>
+						<select name="sAutoApprobation"> 
+						<!--#if m_datas[isAutoApprobation] -->
+							<option value="{ m_datas[sYes] }" selected="selected">{ m_captions[sYes] }</option>
+							<option value="{ m_datas[sNo] }">{ m_captions[sNo] }</option>
+						<!--#else m_datas[isAutoApprobation] -->
+							<option value="{ m_datas[sYes] }">{ m_captions[sYes] }</option>
+							<option value="{ m_datas[sNo] }" selected="selected">{ m_captions[sNo] }</option>
+						<!--#endif m_datas[isAutoApprobation] -->
+						</select>
+					</td>
+				</tr>
+				<tr class="showHide"> 
+					<td align="right">
+						{ m_captions[sNotification] }
+					</td>
+					<td>
+						<select name="sNotification"> 
+						<!--#if m_datas[isFileNotify] -->
+							<option value="{ m_datas[sYes] }" selected="selected">{ m_captions[sYes] }</option>
+							<option value="{ m_datas[sNo] }">{ m_captions[sNo] }</option>
+						<!--#else m_datas[isFileNotify] -->
+							<option value="{ m_datas[sYes] }">{ m_captions[sYes] }</option>
+							<option value="{ m_datas[sNo] }" selected="selected">{ m_captions[sNo] }</option>
+						<!--#endif m_datas[isFileNotify] -->
+						</select>
+					</td>
+				</tr>
+				<tr class="showHide"> 
+					<td align="right">
+						{ m_captions[sVersioning] }
+					</td>
+					<td>
+						<select name="sVersioning"> 
+						<!--#if m_datas[isVersioning] -->
+							<option value="{ m_datas[sYes] }" selected="selected">{ m_captions[sYes] }</option>
+							<option value="{ m_datas[sNo] }">{ m_captions[sNo] }</option>
+						<!--#else m_datas[isVersioning] -->
+							<option value="{ m_datas[sYes] }">{ m_captions[sYes] }</option>
+							<option value="{ m_datas[sNo] }" selected="selected">{ m_captions[sNo] }</option>
+						<!--#endif m_datas[isVersioning] -->
+						</select>
+					</td>
+				</tr>
+				<tr class="showHide"> 
+					<td align="right">
+						{ m_captions[sDisplay] }
+					</td>
+					<td>
+						<select name="sDisplay"> 
+						<!--#if m_datas[isShow] -->
+							<option value="{ m_datas[sNo] }" selected="selected">{ m_captions[sYes] }</option>
+							<option value="{ m_datas[sYes] }">{ m_captions[sNo] }</option>
+						<!--#else m_datas[isShow] -->
+							<option value="{ m_datas[sYes] }">{ m_captions[sYes] }</option>
+							<option value="{ m_datas[sNo] }" selected="selected">{ m_captions[sNo] }</option>
+						<!--#endif m_datas[isShow] -->
+						</select>
+					</td>
+				</tr>
+				<tr> 
+					<td colspan="2">
+						<br />
+					</td>
+				</tr>
+				<tr align="center"> 
+					<td colspan="2">
+						<input type="submit" value="{ m_captions[sSubmit] }">
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>	
+<!--#end collectiveDir -->
+
+<!--#begin userDir -->
+<table border="0" width="50%" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+		<td class="BabLoginCadreBackground">
+			<table width="100%" border="0" cellspacing="2" cellpadding="5" align="center" class="BabLoginMenuBackground">
+				<tr> 
+					<td align="right">
+						{ m_captions[sDirName] }
+					</td>
+					<td>
+						<input type="text" name="sDirName" size="25" maxlength="255" value="{ m_datas[sDirName] }" />
+					</td>
+				</tr>
+				<tr> 
+					<td colspan="2">
+						<br />
+					</td>
+				</tr>
+				<tr align="center"> 
+					<td colspan="2">
+						<input type="submit" value="{ m_captions[sSubmit] }">
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>	
+<!--#end userDir -->

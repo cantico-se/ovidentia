@@ -478,45 +478,27 @@ function updateFolder($fid, $fname, $active, $said, $notification, $version, $bh
 				}
 			}
 			
-			$iLength = strlen(trim($GLOBALS['babUploadPath']));
-			if($iLength > 0)			
-			{
-				$sUploadPathname = $GLOBALS['babUploadPath'];
-				if('/' === $sUploadPathname{$iLength - 1} || '\\' === $sUploadPathname{$iLength - 1})
-				{
-					$sUploadPathname{$iLength - 1} = '';
-				}
+			$sUploadPathname = BAB_FmFolderHelper::getUploadPath();
 			
-				$sOldName = $oFmFolder->getName();
-				$sOldPathname = $sUploadPathname . '/' . $sOldName;
-				$sNewPathname = $sUploadPathname . '/' . $fname;
-				
-				$bSuccess = true;
-				if($sOldPathname !== $sNewPathname)
-				{
-					if(true === rename($sOldPathname, $sNewPathname))
-					{
-						BAB_FmFolderSet::updateSubFolderPathName($sOldName, $fname);
-					}
-					else 
-					{
-						$bSuccess = false;
-					}
-				}
-				
-				$oFmFolder->setName($fname);
-				$oFmFolder->setPathName($fname);
-				$oFmFolder->setApprobationSchemeId((int) $said);
-				$oFmFolder->setFileNotify($notification);
-				$oFmFolder->setActive($active);
-				$oFmFolder->setVersioning($version);
-				$oFmFolder->setHide($bhide);
-				$oFmFolder->setAutoApprobation($bautoapp);
-				$oFmFolder->save();
-			}		
-			Header("Location: ". $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
-			exit;
-		}
+			$sOldPathName = $oFmFolder->getPathName();
+			$sFullOldPathName = $sUploadPathname . '/' . $sOldName;
+			$sFullNewPathName = $sUploadPathname . '/' . $fname;
+			$sNewPathName = $fname;
+			
+			BAB_FmFolderHelper::updateSubFolderPathName($sFullOldPathName, $sFullNewPathName, $sOldPathName, $sNewPathName);
+			
+			$oFmFolder->setName($fname);
+			$oFmFolder->setPathName($fname);
+			$oFmFolder->setApprobationSchemeId((int) $said);
+			$oFmFolder->setFileNotify($notification);
+			$oFmFolder->setActive($active);
+			$oFmFolder->setVersioning($version);
+			$oFmFolder->setHide($bhide);
+			$oFmFolder->setAutoApprobation($bautoapp);
+			$oFmFolder->save();
+		}		
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
+		exit;
 	}
 	else 
 	{
