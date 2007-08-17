@@ -159,6 +159,7 @@
 		<td colspan="2">
 			{ editor }
 		</td>
+	</tr>
 	<tr>
 		<td colspan="2" align="center">
 			<input type="submit" name="submit" value="{ update }" />
@@ -573,3 +574,43 @@ class="BabForumTopicsNavContribution" href="{ deleteurl }">{ deletename }</a><im
 <!--#endif countforums -->
 </table>
 <!--#end postslistflat -->
+
+<!--#begin movethread -->
+<!--#if countforums -->
+<form name="movet" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="posts">
+<input type="hidden" name="idx" value="List">
+<input type="hidden" name="forum" value="{ forum }">
+<input type="hidden" name="thread" value="{ idthread }">
+<input type="hidden" name="flat" value="{ flat }">
+<input type="hidden" name="move" value="movet">
+<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+	<tr> 
+	<td width="30%" align="right" nowrap valign="middle">{ thread_txt }:</td>
+	<td width="70%" valign="middle"><b>{ thread }</b></td>
+	</tr>
+	<tr> 
+		<td align="right">{ move_txt }</td>
+		<td> 
+		<select class="BabForumBackground" name="newforum">
+		<!--#in getnextforum -->
+		<option value="{ forumid }">{ forumname }</option>
+		<!--#endin getnextforum -->
+		</select>		
+		</td>
+	</tr>
+	<tr>
+		<td colspan="2" align="center">
+			<input type="submit" name="submit" value="{ update_txt }" />
+		</td>
+	</tr>
+	</table>
+</td>
+</tr>
+</table>
+</form>
+<!--#endif countforums -->
+<!--#end movethread -->

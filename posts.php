@@ -941,6 +941,52 @@ function deleteThread($forum, $thread)
 	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
 
+function moveThread($forum, $thread)
+	{
+	global $babBody;
+
+	class moveThreadCls
+		{
+
+		function moveThreadCls($forum, $thread)
+			{
+			global $babBody, $flat;
+			$this->flat = bab_toHTML($flat);
+			$this->forum = bab_toHTML($forum);
+			$this->idthread = bab_toHTML($thread);
+			$this->thread = bab_toHTML(bab_getForumThreadTitle($thread));
+			$this->thread_txt = bab_translate("Thread");
+			$this->move_txt = bab_translate("Move to");
+			$this->update_txt = bab_translate("Update");
+
+			$this->forums = $babBody->get_forums();
+			$this->arrforum = $this->forums[$this->forum];
+			unset($this->forums[$this->forum]);
+			$this->countforums = count($this->forums);
+			}
+
+		function getnextforum()
+			{
+			static $i = 0;
+			if( list($key, $val) = each($this->forums))
+				{
+				$this->forumid = bab_toHtml($key);
+				$this->forumname = bab_toHtml($val['name']);
+				$i++;
+				return true;
+				}
+			else
+				{
+				reset($this->forums);
+				$i=0;
+				return false;
+				}
+			}
+		}
+
+	$temp = new moveThreadCls($forum, $thread);
+	$babBody->babecho(	bab_printTemplate($temp,"posts.html", "movethread"));
+	}
 
 function viewPost($thread, $post)
 	{
@@ -1186,6 +1232,16 @@ function confirmDeleteThread($forum, $thread)
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=threads&forum=".$forum);
 	}
 
+function confirmMoveThread($forum, $thread, $newforum, $flat)
+	{
+	global $babDB;
+	if( $newforum && $thread )
+		{
+		$req = "update ".BAB_THREADS_TBL." set forum='".$babDB->db_escape_string($newforum)."' where id = '".$babDB->db_escape_string($thread)."'";
+		$res = $babDB->db_query($req);
+		}
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=threads&flat=".$flat."&forum=".$forum);
+	}
 
 function dlfile($forum,$post,$name)
 	{
@@ -1222,10 +1278,9 @@ function dlfile($forum,$post,$name)
 	}
 
 /* main */
-if(!isset($idx)) {$idx = 'List';}
-if( !isset($pos)) { $pos = 0; }
-if( !isset($flat)) {$flat = 0;}
-
+$idx = bab_rp('idx', 'List');
+$pos = bab_rp('pos', 0);
+$flat = bab_rp('flat', 0);
 $forum = bab_rp('forum', 0);
 
 if( isset($forum) && bab_isAccessValid(BAB_FORUMSMAN_GROUPS_TBL, $forum))
@@ -1246,9 +1301,18 @@ if( isset($add) && $add == 'addreply' && bab_isAccessValid(BAB_FORUMSREPLY_GROUP
 	$post = $postid;
 	}
 
-if( isset($update) && $update == 'updatereply' )
+$update = bab_rp('update', '');
+if( $update == 'updatereply' )
 	{
 	updateReply($forum, $thread, $subject, $post);
+	}
+
+$move = bab_rp('move', '');
+if( $move == 'movet' )
+	{
+	$thread = bab_pp('thread', 0);
+	$newforum = bab_pp('newforum', 0);
+	confirmMoveThread($forum, $thread, $newforum, $flat);
 	}
 
 if( $idx == 'Close' && $moderator)
@@ -1377,6 +1441,19 @@ switch($idx)
 			}
 		break;
 
+	case 'MoveT':
+		if( $moderator)
+			{
+			moveThread($forum, $thread);
+			if( bab_isAccessValid(BAB_FORUMSVIEW_GROUPS_TBL, $forum))
+				{
+				$babBody->title = bab_getForumName($forum);
+				$babBody->addItemMenu('List', bab_translate("List"), $GLOBALS['babUrlScript'].'?tg=posts&idx=List&forum='.$forum.'&thread='.$thread.'&post='.$post.'&flat='.$flat);
+				$babBody->addItemMenu('MoveT', bab_translate("Move thread"), $GLOBALS['babUrlScript'].'?tg=posts&idx=MoveT&forum='.$forum.'&thread='.$thread.'&flat='.$flat);
+				}		
+			}
+		break;
+
 	case 'Confirm':
 		confirm($forum, $thread, $post);
 		Header('Location: '. $GLOBALS['babUrlScript'].'?tg=threads&idx=List&forum='.$forum);
@@ -1420,6 +1497,11 @@ switch($idx)
 					$babBody->addItemMenu('Open', bab_translate("Open thread"), $GLOBALS['babUrlScript'].'?tg=posts&idx=Open&forum='.$forum.'&thread='.$thread.'&flat='.$flat);
 					}
 				$babBody->addItemMenu('DeleteT', bab_translate("Delete thread"), $GLOBALS['babUrlScript'].'?tg=posts&idx=DeleteT&forum='.$forum.'&thread='.$thread.'&flat='.$flat);
+				$forums = $babBody->get_forums();
+				if( count($forums) > 1 )
+					{
+					$babBody->addItemMenu('MoveT', bab_translate("Move thread"), $GLOBALS['babUrlScript'].'?tg=posts&idx=MoveT&forum='.$forum.'&thread='.$thread.'&flat='.$flat);
+					}
 				}
 			}
 		break;
