@@ -37,6 +37,7 @@ class bab_dbdata {
 	var $tablename;
 	var $primaryautoincremented;
 	
+	
 	/**
 	 * @param array
 	 */
@@ -67,7 +68,7 @@ class bab_dbdata {
 	 * @return	mixed
 	 */
 	function getValue($key) {
-		return array_key_exists($key, $this->row) : $this->row[$key] : '';
+		return array_key_exists($key, $this->row) ? $this->row[$key] : '';
 	}
 	
 	/**
@@ -160,7 +161,7 @@ class bab_dbdata {
 				unset($row[$this->primaryautoincremented]);
 			}
 			
-			$keys = $array();
+			$keys = array();
 			foreach($row as $key => $value) {
 				$keys[] = $babDB->backTick($key);
 			}
@@ -198,7 +199,7 @@ class bab_dbdata {
 			unset($row[$this->primaryautoincremented]);
 		}
 		
-		$keys = $array();
+		$keys = array();
 		foreach($row as $key => $value) {
 			$keys[] = $babDB->backTick($key).' = '.$babDB->quote($value);
 		}
@@ -259,6 +260,19 @@ class bab_dbdata {
 		}
 		
 		return $this->row;
+	}
+	
+	/**
+	 * set row and verify with database structure
+	 * @param	array	$row
+	 */
+	function setAndValidateRow($row) {
+		$default = $this->setRowDefault();
+		foreach($default as $key => $value) {
+			if (isset($row[$key])) {
+				$this->setValue($key, $row[$key]);
+			}
+		}
 	}
 }
 
