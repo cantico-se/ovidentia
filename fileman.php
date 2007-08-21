@@ -424,7 +424,8 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 		$this->set_data('sOldDirName', $sDirName);
 
 		$sRelativePath = '';
-		$oFmFolder = BAB_FmFolderSet::get(array(new BAB_InCriterion('iId', $iId)));
+		$oFmFolderSet = new BAB_FmFolderSet();
+		$oFmFolder = $oFmFolderSet->get(array(new BAB_InCriterion('iId', $iId)));
 		if(!is_null($oFmFolder))
 		{
 			$sRelativePath = $oFmFolder->getPathName();
@@ -437,7 +438,8 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 		$sPathName = $sRelativePath . '/' . $sDirName;
 
 		$aCriterion[] = new BAB_LikeCriterion('sPathName', $sPathName, 0);
-		$oFmFolder = BAB_FmFolderSet::get($aCriterion);
+		$oFmFolderSet = new BAB_FmFolderSet();
+		$oFmFolder = $oFmFolderSet->get($aCriterion);
 		if(!is_null($oFmFolder))
 		{
 			$this->set_data('isColletive', true);
@@ -649,7 +651,8 @@ function showDiskSpace($id, $gr, $path)
 				$this->allowedspace =  bab_toHtml(bab_formatSizeFile($GLOBALS['babMaxGroupSize']).$this->kilooctet);
 				$this->remainingspace =  bab_toHtml(bab_formatSizeFile($GLOBALS['babMaxGroupSize'] - $size).$this->kilooctet);
 				$this->groupname = '';
-				$oFmFolder = BAB_FmFolderSet::get(array(new BAB_InCriterion('iId', $this->arrgrp[$i])));
+				$oFmFolderSet = new BAB_FmFolderSet();
+				$oFmFolder = $oFmFolderSet->get(array(new BAB_InCriterion('iId', $this->arrgrp[$i])));
 				if(!is_null($oFmFolder))
 				{
 					$this->groupname = $oFmFolder->getName();
@@ -668,7 +671,8 @@ function showDiskSpace($id, $gr, $path)
 			if( $i < $this->countmgrp)
 				{
 				$this->groupname = '';
-				$oFmFolder = BAB_FmFolderSet::get(array(new BAB_InCriterion('iId', $this->arrmgrp[$i])));
+				$oFmFolderSet = new BAB_FmFolderSet();
+				$oFmFolder = $oFmFolderSet->get(array(new BAB_InCriterion('iId', $this->arrmgrp[$i])));
 				if(!is_null($oFmFolder))
 				{
 					$this->groupname = $oFmFolder->getName();
@@ -783,8 +787,7 @@ function listFiles($id, $gr, $path, $bmanager, $upload)
 			
 			$this->sFolderFormUrl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=displayFolderForm&sAction=createFolder&id=".$id."&gr=".$gr."&path=".urlencode($path));
 
-			
-			
+
 			$this->upfolderimg = bab_printTemplate($this, "config.html", "parentfolder");
 			$this->usrfolderimg = bab_printTemplate($this, "config.html", "userfolder");
 			$this->grpfolderimg = bab_printTemplate($this, "config.html", "groupfolder");
@@ -793,7 +796,8 @@ function listFiles($id, $gr, $path, $bmanager, $upload)
 			if( $gr == "Y")
 				{
 				$this->rootpath = '';
-				$oFmFolder = BAB_FmFolderSet::get(array(new BAB_InCriterion('iId', $id)));
+				$oFmFolderSet = new BAB_FmFolderSet();
+				$oFmFolder = $oFmFolderSet->get(array(new BAB_InCriterion('iId', $id)), array('sName' => 'ASC'));
 				if(!is_null($oFmFolder))
 				{
 					$version = $oFmFolder->getVersioning();
@@ -2156,11 +2160,13 @@ function createEditFolderForCollectiveDir($iIdFolder, $sPath)
 		$sDisplay				= (string) bab_pp('sDisplay', 'N');
 		$sPathName				= (string) '';
 		
-		$oFile = BAB_FileSet::get(array(new BAB_InCriterion('iId', 5)));
+		$oFileSet = new BAB_FileSet();
+		$oFile = $oFileSet->get(array(new BAB_InCriterion('iId', 5)));
 		bab_debug($oFile);
 		
 		$sRelativePath = '';
-		$oFmFolder = BAB_FmFolderSet::get(array(new BAB_InCriterion('iId', $iIdFolder)));
+		$oFmFolderSet = new BAB_FmFolderSet();
+		$oFmFolder = $oFmFolderSet->get(array(new BAB_InCriterion('iId', $iIdFolder)));
 		if(!is_null($oFmFolder))
 		{
 			$sRelativePath = $oFmFolder->getPathName();
@@ -2211,7 +2217,8 @@ function createEditFolderForCollectiveDir($iIdFolder, $sPath)
 					$bWasCollective				= false;
 					$bChangeIdOwnerOfChildFiles	= false; 			
 					
-					$oFmFolder = BAB_FmFolderSet::get(array(new BAB_InCriterion('iId', $iIdFolder)));
+					$oFmFolderSet = new BAB_FmFolderSet();
+					$oFmFolder = $oFmFolderSet->get(array(new BAB_InCriterion('iId', $iIdFolder)));
 					if(!is_null($oFmFolder))
 					{
 						$bRename		= ($sDirName !== $oFmFolder->getName()) ? true : false;
@@ -2468,7 +2475,8 @@ switch($idx)
 		$babBody->title = bab_translate("Upload file to")." ";
 		if( $gr == 'Y' )
 		{
-			$oFmFolder = BAB_FmFolderSet::get(array(new BAB_InCriterion('iId', $id)));
+			$oFmFolderSet = new BAB_FmFolderSet();
+			$oFmFolder = $oFmFolderSet->get(array(new BAB_InCriterion('iId', $id)));
 			if(!is_null($oFmFolder))
 			{
 				$babBody->title .= $oFmFolder->getName();

@@ -24,33 +24,165 @@ require_once 'base.php';
 require_once $GLOBALS['babInstallPath'] . 'utilit/iterator/iterator.php';
 
 
-class BAB_Field
+class BAB_Criteriaa
+{
+	var $sOperator = null;
+	var $aCriterion = array();
+	
+	function BAB_Criteriaa($oCriterion)
+	{
+		$this->aCriterion[] = $oCriterion;
+	}
+	
+	function _and()
+	{
+		$sOperator = 'AND';
+		$aArgList = func_get_args();
+		return $this->processOperator($sOperator, $aArgList);
+	}
+	
+	function _or()
+	{
+		$sOperator = 'OR';
+		$aArgList = func_get_args();
+		return $this->processOperator($sOperator, $aArgList);
+	}
+	
+	function processOperator($sOperator, $aArgList)
+	{
+		if(!is_null($this->sOperator) && $sOperator !== $this->sOperator)
+		{
+			$oCriteria = new BAB_Criteriaa($this);
+			return $oCriteria->_or($aArgList);
+		}
+		else 
+		{
+			if(count($this->aCriterion) >= 1)
+			{
+				$this->sOperator = $sOperator;
+			}
+			return $this->processCriterion($aArgList);
+		}
+	}
+
+	function processCriterion()
+	{
+		$aArgList = func_get_args();
+		if(is_array($aArgList))
+		{
+			$iCount = count($aArgList);
+			if($iCount > 1)
+			{
+				$this->aCriterion[] = $aArgList;
+			}
+			else if($iCount === 1)
+			{
+				$this->aCriterion[] = $aArgList[0];
+			}
+		}
+		return $this;
+	}
+	
+	function criterionToString($aCriterion)
+	{
+		$sString = '';
+		if(count($aCriterion) > 0)
+		{
+			$aCrit = array();
+			foreach($aCriterion as $value)
+			{
+				if(is_array($value))
+				{
+					if(count($value) > 0)
+					{
+						bab_debug($value);
+						$aCrit[] = '(' . $this->criterionToString($value) . ')';
+					}
+				}
+				else 
+				{
+					$aCrit[] = $value->toString();
+				}
+			}
+			
+			if(count($aCrit) > 1)
+			{
+				$sString = implode(' ' . $this->sOperator . ' ', $aCrit);
+			}
+			else 
+			{
+				$sString = $aCrit[0];
+			}
+		}
+		return $sString;
+	}
+	
+	function toString()
+	{
+		return $this->criterionToString($this->aCriterion);
+	}
+}
+
+
+class BAB_Criterion
+{
+	var $oField = null;
+	
+	function BAB_Criterion($oField)
+	{
+		$this->oField = $oField;
+	}
+	
+	function in()
+	{
+		$aArgList = func_get_args();
+		if(is_array($aArgList) && count($aArgList) > 0)
+		{
+			return new BAB_Criteriaa(new BAB_InCriterion($this->oField->getName(), $aArgList));
+		}		
+	}
+	
+	function like()
+	{
+		$aArgList = func_get_args();
+		if(is_array($aArgList) && count($aArgList) == 1)
+		{
+			return new BAB_Criteriaa(new BAB_LikeCriterion($oField->getName(), $babDB->db_escape_like($aArgList[0]), 0));
+		}		
+	}
+}
+
+//($users->age->greaterThan(20))->and($users->manager->name->in('Laurent', 'Samuel')))
+
+class BAB_Field extends BAB_Criterion
 {
 	var $sName = null;
-	var $sAlias = null;
 	
-	function BAB_Field($sName, $sAlias = null)
+	function BAB_Field($sName)
 	{
+		parent::BAB_Criterion($this);
 		$this->sName = $sName;
-		$this->sAlias = $sAlias;
+	}
+	
+	function getName()
+	{
+		return $this->sName;
 	}
 }
 
 class BAB_IntField extends BAB_Field
 {
-	function BAB_IntField($sName, $sAlias = null)
+	function BAB_IntField($sName)
 	{
-		parent::BAB_Field($sName, $sAlias);
+		parent::BAB_Field($sName);
 	}
 }
 
-class BAB_VarCharField extends BAB_Field
+class BAB_StringField extends BAB_Field
 {
-	var $iLength = 255;
-	
-	function BAB_VarCharField($sName, $sAlias = null)
+	function BAB_VarCharField($sName)
 	{
-		parent::BAB_Field($sName, $sAlias);
+		parent::BAB_Field($sName);
 	}
 }
 
@@ -113,22 +245,6 @@ class BAB_NotInCriterion
 	}
 }
 
-/*
-class BAB_Not
-{
-	var $oCriterion = null;
-	
-	function BAB_Not($oCriterion)
-	{
-		$this->oCriterion = $oCriterion;	
-	}
-	
-	function toString()
-	{
-		return $this->oCriterion->sName . ' NOT ' .
-	}
-}
-//*/
 
 class BAB_LikeCriterionBase
 {
@@ -278,10 +394,8 @@ class BAB_Criteria
 		
 		foreach($this->aCriterion as $oCriterion)
 		{
-			if(array_key_exists($oCriterion->sName, $this->aColumnMap))
-			{
-				$oCriterion->sName = $this->aColumnMap[$oCriterion->sName][0];
-			}
+			
+			$oCriterion->sName = $this->aColumnMap[$oCriterion->sName]->getName();
 			
 			$aWhereClause[] = $oCriterion->toString();
 		}

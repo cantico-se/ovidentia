@@ -72,8 +72,8 @@ function modifyFolder($fid)
 			$this->autoapprobationtxt = bab_translate("Automatically approve author if he belongs to approbation schema");
 			$this->fid = $fid;
 			$this->none = bab_translate("None");
-			
-			$oFmFolder = BAB_FmFolderSet::get(array(new BAB_InCriterion('iId', $this->fid)));
+			$oFmFolderSet = new BAB_FmFolderSet();
+			$oFmFolder = $oFmFolderSet->get(array(new BAB_InCriterion('iId', $this->fid)));
 			if(!is_null($oFmFolder))
 			{
 				$this->folderval = $oFmFolder->getName();
@@ -319,7 +319,8 @@ function deleteFolder($fid)
 			$this->message = bab_translate("Are you sure you want to delete this folder");
 			
 			$this->title = '';
-			$oFmFolder = BAB_FmFolderSet::get(array(new BAB_InCriterion('iId', $fid)));
+			$oFmFolderSet = new BAB_FmFolderSet();
+			$oFmFolder = $oFmFolderSet->get(array(new BAB_InCriterion('iId', $fid)));
 			if(!is_null($oFmFolder))
 			{
 				$this->title = $oFmFolder->getName();
@@ -359,7 +360,8 @@ function deleteFieldsFolder($fid, $fields)
 			$this->message = bab_translate("Are you sure you want to delete selected fields");
 			
 			$this->title = '';
-			$oFmFolder = BAB_FmFolderSet::get(array(new BAB_InCriterion('iId', $fid)));
+			$oFmFolderSet = new BAB_FmFolderSet();
+			$oFmFolder = $oFmFolderSet->get(array(new BAB_InCriterion('iId', $fid)));
 			if(!is_null($oFmFolder))
 			{
 				$this->title = $oFmFolder->getName();
@@ -391,10 +393,11 @@ function updateFolder($fid, $fname, $active, $said, $notification, $version, $bh
 	$aCriterion[] = new BAB_InCriterion('sName', $fname);
 	$aCriterion[] = new BAB_NotInCriterion('iId', $fid);
 	$aCriterion[] = new BAB_InCriterion('iIdDgOwner', $babBody->currentAdmGroup);
-	$oFmFolder = BAB_FmFolderSet::get($aCriterion);
+	$oFmFolderSet = new BAB_FmFolderSet();
+	$oFmFolder = $oFmFolderSet->get($aCriterion);
 	if(is_null($oFmFolder))
 	{
-		$oFmFolder = BAB_FmFolderSet::get(array(new BAB_InCriterion('iId', $fid)));
+		$oFmFolder = $oFmFolderSet->get(array(new BAB_InCriterion('iId', $fid)));
 		if(!is_null($oFmFolder))
 		{
 			$idsafolder = $oFmFolder->getApprobationSchemeId();
@@ -610,7 +613,8 @@ switch($idx)
 	case "rights":
 		
 		$sFolderName = '';
-		$oFmFolder = BAB_FmFolderSet::get(array(new BAB_InCriterion('iId', $fid)));
+		$oFmFolderSet = new BAB_FmFolderSet();
+		$oFmFolder = $oFmFolderSet->get(array(new BAB_InCriterion('iId', $fid)));
 		if(!is_null($oFmFolder))
 		{
 			$sFolderName = $oFmFolder->getName();
@@ -634,7 +638,8 @@ switch($idx)
 	case "delf":
 		
 		$sFolderName = '';
-		$oFmFolder = BAB_FmFolderSet::get(array(new BAB_InCriterion('iId', $fid)));
+		$oFmFolderSet = new BAB_FmFolderSet();
+		$oFmFolder = $oFmFolderSet->get(array(new BAB_InCriterion('iId', $fid)));
 		if(!is_null($oFmFolder))
 		{
 			$sFolderName = $oFmFolder->getName();
@@ -649,7 +654,8 @@ switch($idx)
 	case "mfield":
 		
 		$sFolderName = '';
-		$oFmFolder = BAB_FmFolderSet::get(array(new BAB_InCriterion('iId', $fid)));
+		$oFmFolderSet = new BAB_FmFolderSet();
+		$oFmFolder = $oFmFolderSet->get(array(new BAB_InCriterion('iId', $fid)));
 		if(!is_null($oFmFolder))
 		{
 			$sFolderName = $oFmFolder->getName();
@@ -668,7 +674,8 @@ switch($idx)
 	case "afield":
 		
 		$sFolderName = '';
-		$oFmFolder = BAB_FmFolderSet::get(array(new BAB_InCriterion('iId', $fid)));
+		$oFmFolderSet = new BAB_FmFolderSet();
+		$oFmFolder = $oFmFolderSet->get(array(new BAB_InCriterion('iId', $fid)));
 		if(!is_null($oFmFolder))
 		{
 			$sFolderName = $oFmFolder->getName();
@@ -689,7 +696,8 @@ switch($idx)
 		{
 			
 			$sFolderName = '';
-			$oFmFolder = BAB_FmFolderSet::get(array(new BAB_InCriterion('iId', $fid)));
+			$oFmFolderSet = new BAB_FmFolderSet();
+			$oFmFolder = $oFmFolderSet->get(array(new BAB_InCriterion('iId', $fid)));
 			if(!is_null($oFmFolder))
 			{
 				$sFolderName = $oFmFolder->getName();
@@ -707,7 +715,8 @@ switch($idx)
 	case "fields":
 		
 		$sFolderName = '';
-		$oFmFolder = BAB_FmFolderSet::get(array(new BAB_InCriterion('iId', $fid)));
+		$oFmFolderSet = new BAB_FmFolderSet();
+		$oFmFolder = $oFmFolderSet->get(array(new BAB_InCriterion('iId', $fid)));
 		if(!is_null($oFmFolder))
 		{
 			$sFolderName = $oFmFolder->getName();
@@ -725,7 +734,8 @@ switch($idx)
 	case "modify":
 		
 		$sFolderName = '';
-		$oFmFolder = BAB_FmFolderSet::get(array(new BAB_InCriterion('iId', $fid)));
+		$oFmFolderSet = new BAB_FmFolderSet();
+		$oFmFolder = $oFmFolderSet->get(array(new BAB_InCriterion('iId', $fid)));
 		if(!is_null($oFmFolder))
 		{
 			$sFolderName = $oFmFolder->getName();

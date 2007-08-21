@@ -135,9 +135,10 @@ function listFolders()
 			$this->checkall = bab_translate("Check all");
 
 			$aCriterion = array();
-			$aCriterion[] = new BAB_NotLikeCriterion('sPathname', '/', 3);
+			$aCriterion[] = new BAB_NotLikeCriterion('sPathName', '/', 3);
 			$aCriterion[] = new BAB_InCriterion('iIdDgOwner', $babBody->currentAdmGroup);
-			$this->oFmFolderSet = BAB_FmFolderSet::select($aCriterion);
+			$this->oFmFolderSet = new BAB_FmFolderSet();
+			$this->oFmFolderSet = $this->oFmFolderSet->select($aCriterion);
 		}
 
 		function getnext()
@@ -210,7 +211,8 @@ function saveFolder($fname, $active, $said, $notification, $version, $bhide, $ba
 	$aCriterion = array();
 	$aCriterion[] = new BAB_InCriterion('sName', $fname);
 	$aCriterion[] = new BAB_InCriterion('iIdDgOwner', $babBody->currentAdmGroup);
-	$oFmFolder = BAB_FmFolderSet::get($aCriterion);
+	$oFmFolderSet = new BAB_FmFolderSet();
+	$oFmFolder = $oFmFolderSet->get($aCriterion);
 	if(is_null($oFmFolder))
 	{
 		if(empty($said))
@@ -238,7 +240,8 @@ function saveFolder($fname, $active, $said, $notification, $version, $bhide, $ba
 function updateFolders($notifies, $actives, $versions, $bhides)
 {
 	global $babBody;
-	$oFmFolderSet = BAB_FmFolderSet::select(array(new BAB_InCriterion('iIdDgOwner', $babBody->currentAdmGroup)));
+	$oFmFolderSet = new BAB_FmFolderSet();
+	$oFmFolderSet = $oFmFolderSet->select(array(new BAB_InCriterion('iIdDgOwner', $babBody->currentAdmGroup)));
 	while(null !== ($oFmFolder = $oFmFolderSet->next()))
 	{
 		if(is_array($notifies) && count($notifies) > 0 && in_array($oFmFolder->getId(), $notifies))
@@ -319,12 +322,15 @@ switch($idx)
 	default:
 	case "list":
 						
-//bab_debug(basename(__FILE__) . ' ' . __LINE__ . ' Il faudra mettre à jour la table bab_fm_files (updateFolder du fichier admfm.php)');
+bab_debug(basename(__FILE__) . ' ' . __LINE__ . ' Il faudra mettre à jour la table bab_fm_files (updateFolder du fichier admfm.php)');
 //$oAnd = new BAB_And();
 //$oAnd->_and(new BAB_InCriterion('iId', 12), new BAB_InCriterion('iId', 14), new BAB_InCriterion('iId', 16))->
 //_and()->_and(new BAB_NotLikeCriterion('sPathname', '/', 3))->_and(new BAB_NotLikeCriterion('sPathname', 'TOTO', 3));
 //bab_debug($oAnd->toString());
-
+$oFmFolderSet = new BAB_FmFolderSet();
+$oObject = $oFmFolderSet->aField['iId']->in('12', 28)->_and($oFmFolderSet->aField['iId']->in('12', 28))->_or($oFmFolderSet->aField['iId']->in('12', 28));
+//bab_debug($oObject);
+bab_debug($oObject->toString());
 
 
 		$babBody->title = bab_translate("File manager");
