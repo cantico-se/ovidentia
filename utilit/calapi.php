@@ -29,6 +29,18 @@
 include_once "base.php";
 
 
+/**
+ * Get information about calendar categories.
+ * Returns information for each calendar category in a multi-dimensional array.
+ * Each first-level element of the result array is an array with the following structure :
+ * - 'id' : category identifier.
+ * - 'name' : name of the category.
+ * - 'description' : description of the category.
+ * - 'color' : background color of the category in hex format (eg. "FF0000").
+ * 
+ * @return array
+ * @access public
+ */
 function bab_calGetCategories()
 {
 	global $babDB;
@@ -45,6 +57,13 @@ function bab_calGetCategories()
 }
 
 
+/**
+ * Returns the id of the specified user's personal calendar or 0 on error.
+ *
+ * @param int $iduser	The user id
+ * @return int
+ * @access public
+ */
 function bab_getPersonalCalendar($iduser)
 {
 	global $babDB;
@@ -59,7 +78,19 @@ function bab_getPersonalCalendar($iduser)
 }
 
 
-/* params: id_cal, begindate, enddate, id_category, order=asc/desc */ 
+/**
+ * Get all events for a specific calendar and specified dates.
+ * Returns detailed information about calendar events in a multi-dimensional array.
+ * - 'id_cal' : id of the calendar for which you want to get events. Can be an array of ids.
+ * - 'begindate' : start date in ISO format (YYYY-MM-DD)
+ * - 'enddate' : end date in ISO format (YYYY-MM-DD)
+ * - 'id_category' : (optional) id of a category if you want to fetch only events of this category
+ * - 'order' : "asc" for ascending and "desc" for descending.
+ *
+ * @param array $params
+ * @return array
+ * @access public
+ */
 function bab_calGetEvents(&$params)
 {
 	global $babBody;
@@ -140,7 +171,18 @@ function bab_calGetEvents(&$params)
 	
 }
 
-
+/**
+ * Returns information for each resource calendar in a multi-dimensional array.
+ * Each first-level element of the result array is an array with the following structure:
+ * - ['id']             the calendar identifier.
+ * - ['name']           name of the calendar.
+ * - ['description']    description of the calendar.
+ * - ['rights']['view']	true if the current user is allowed to view this calendar.
+ * - ['rights']['add']  true if the current user is allowed to add events to this calendar.
+ * 
+ * @return array
+ * @access public
+ */
 function bab_getResourceCalendars()
 {
 	global $babBody, $babDB;
@@ -175,6 +217,19 @@ function bab_getResourceCalendars()
 	return $rescals;
 }
 
+
+/**
+ * Returns information for each public calendar in a multi-dimensional array.
+ * Each first-level element of the result array is an array with the following structure:
+ * - ['id']             the calendar identifier.
+ * - ['name']           name of the calendar.
+ * - ['description']    description of the calendar.
+ * - ['rights']['view']	true if the current user is allowed to view this calendar.
+ * - ['rights']['add']  true if the current user is allowed to add events to this calendar.
+ * 
+ * @return array
+ * @access public
+ */
 function bab_getPublicCalendars()
 {
 	global $babBody, $babDB;
