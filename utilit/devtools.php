@@ -416,7 +416,6 @@ function bab_execSqlFile($file) {
 		}
 		
 		fclose($fp);
-		exit;
 	}
 	
 	
