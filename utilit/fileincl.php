@@ -84,8 +84,10 @@ function bab_getUploadFmPath($gr, $id)
 	if($gr == "Y")
 	{
 //		return "G".$id."/";
+
 		$oFmFolderSet = new BAB_FmFolderSet();
-		$oFmFolder = $oFmFolderSet->get(array(new BAB_InCriterion('iId', $id)));
+		$oId =& $oFmFolderSet->aField['iId']; 
+		$oFmFolder = $oFmFolderSet->get($oId->in($id));
 		if(!is_null($oFmFolder))
 		{
 			return $oFmFolder->getName() . '/';
@@ -197,8 +199,11 @@ function notifyFileApprovers($id, $users, $msg)
 				$this->group = bab_translate("Folder");
 				$this->pathname = $arr['path'] == ""? "/": $arr['path'];
 				$this->groupname = '';
+
+			
 				$oFmFolderSet = new BAB_FmFolderSet();
-				$oFmFolder = $oFmFolderSet->get(array(new BAB_InCriterion('iId', $arr['id_owner'])));
+				$oId =& $oFmFolderSet->aField['iId']; 
+				$oFmFolder = $oFmFolderSet->get($oId->in($arr['id_owner']));
 				if(!is_null($oFmFolder))
 				{
 					$this->groupname = $oFmFolder->getName();
@@ -278,7 +283,8 @@ function fileNotifyMembers($file, $path, $idgrp, $msg, $bnew = true)
 				$this->pathname = $path == ""? "/": $path;
 				$this->groupname = '';
 				$oFmFolderSet = new BAB_FmFolderSet();
-				$oFmFolder = $oFmFolderSet->get(array(new BAB_InCriterion('iId', $idgrp)));
+				$oId =& $oFmFolderSet->aField['iId']; 
+				$oFmFolder = $oFmFolderSet->get($oId->in($idgrp));
 				if(!is_null($oFmFolder))
 				{
 					$this->groupname = $oFmFolder->getName();
@@ -1564,7 +1570,7 @@ class BAB_FmFolder extends BAB_DbRecord
 	
 	function setName($sName)
 	{
-		$this->_set('sName', $iId);
+		$this->_set('sName', $sName);
 	}
 	
 	function getName()
@@ -1675,10 +1681,17 @@ class BAB_BaseSet extends BAB_MySqlResultIterator
 		$this->sTableName = $sTableName;
 	}
 
-	function processWhereClause($aCriterion)
+	function processWhereClause($oCriteria)
 	{
-		$oCriteria = new BAB_Criteria($this->aField, $aCriterion);
-		return $oCriteria->processCriterion();
+//		require_once $GLOBALS['babInstallPath'] . 'utilit/devtools.php';
+//		bab_debug_print_backtrace();
+		
+		$sWhereClause = $oCriteria->toString();
+		if(strlen(trim($sWhereClause)) > 0)
+		{
+			return 'WHERE ' . $sWhereClause;
+		}
+		return '';
 	}
 	
 	function processOrder($aOrder)
@@ -1790,9 +1803,9 @@ class BAB_BaseSet extends BAB_MySqlResultIterator
 		return $sQuery;
 	}
 	
-	function get($aCriterion = array(), $aOrder = array())
+	function get($aCriterion = array())
 	{
-		$sQuery = $this->getSelectQuery($aCriterion, $aOrder);
+		$sQuery = $this->getSelectQuery($aCriterion);
 		
 		global $babDB;	
 		$oResult = $babDB->db_query($sQuery);
@@ -1859,6 +1872,13 @@ class BAB_FmFolderHelper
 		
 	}
 	
+	function getFmFolderById($iId)
+	{
+		$oFmFolderSet = new BAB_FmFolderSet();
+		$oId =& $oFmFolderSet->aField['iId']; 
+		return $oFmFolderSet->get($oId->in($iId));
+	}
+	
 	function getFirstCollectiveFolder($sPathname)
 	{
 		$aPath		= explode('/', $sPathname);
@@ -1866,12 +1886,16 @@ class BAB_FmFolderHelper
 		$iLength	= count($aPath); 
 		$iIndex		= $iLength - 1;
 		$bFinded	= false;
+		global $babDB;
 		
 		do 
 		{
 			$sPathName	= implode('/', $aPath);
+
 			$oFmFolderSet = new BAB_FmFolderSet();
-			$oFmFolder	= $oFmFolderSet->get(array(new BAB_LikeCriterion('sPathName', $sPathName, 0)));
+			$oPathName =& $oFmFolderSet->aField['sPathName']; 
+			$oFmFolder = $oFmFolderSet->get($oPathName->like($babDB->db_escape_like($sPathname)));
+			
 			if(!is_null($oFmFolder))
 			{
 				return $oFmFolder;
@@ -1936,7 +1960,8 @@ class BAB_FmFolderHelper
 	function getRelativePathForCollectiveFolder($iIdFolder, $sPath)
 	{
 		$oFmFolderSet = new BAB_FmFolderSet();
-		$oFmFolder = $oFmFolderSet->get(array(new BAB_InCriterion('iId', $iIdFolder)));
+		$oId =& $oFmFolderSet->aField['iId']; 
+		$oFmFolder = $oFmFolderSet->get($oId->in($iIdFolder));
 		if(!is_null($oFmFolder))
 		{
 			$sRelativePath = $oFmFolder->getPathName();
@@ -1991,16 +2016,32 @@ class BAB_FmFolderHelper
 		
 		if($bOldNameValid && $bNewNameValid)
 		{
-			$sUplaodPath	= realpath($sUplaodPath);
-			$sPathName		= realpath($sPathName);
-			$sOldPathName	= realpath($sPathName . '/' . $sOldName);
-			$sNewPathName	= $sPathName . '/' . $sNewName;
+			$sOldPathName = '';
+			$sNewPathName = '';
 			
-//			bab_debug('sUplaodPath ==> ' . $sUplaodPath);
-//			bab_debug('sPathName ==> ' . $sPathName);
-//			bab_debug('sOldPathName ==> ' . $sOldPathName);
-//			bab_debug('sNewPathName ==> ' . $sNewPathName);
+			//$sPathName est vide si c'est un repertoire à la racine
+			$sUplaodPath = realpath($sUplaodPath);
+			if(strlen(trim($sPathName)) > 0)
+			{
+				$sPathName		= realpath($sUplaodPath . '/' . $sPathName);
+				
+				//A revoir car pas bon
+				bab_debug('?? ==> ' . $sPathName . '/' . $sOldName);
+				
+				$sOldPathName	= realpath($sPathName . '/' . $sOldName);
+				$sNewPathName	= $sPathName . '/' . $sNewName;
+			}
+			else 
+			{
+				$sOldPathName	= realpath($sUplaodPath . '/' . $sOldName);
+				$sNewPathName	= $sUplaodPath . '/' . $sNewName;
+			}
 			
+			bab_debug('sUplaodPath ==> ' . $sUplaodPath);
+			bab_debug('sPathName ==> ' . $sPathName);
+			bab_debug('sOldPathName ==> ' . $sOldPathName);
+			bab_debug('sNewPathName ==> ' . $sNewPathName);
+
 			$bOldPathNameValid = (substr($sOldPathName, 0, strlen($sUplaodPath)) === $sUplaodPath);
 	
 			if($bOldPathNameValid)
@@ -2013,44 +2054,64 @@ class BAB_FmFolderHelper
 					}
 					else 
 					{
-						$babBody->msgerror = bab_translate("This folder already exists");
+						$babBody->msgerror = bab_translate("This folder already exists 4");
 						$bSuccess = false;
 					}
 				}
 				else 
 				{
-					$babBody->msgerror = bab_translate("This folder does not exists");
+					$babBody->msgerror = bab_translate("This folder does not exists 3");
 					$bSuccess = false;
 				}
 			}
 			else 
 			{
-				$babBody->msgerror = bab_translate("Access denied");
+				$babBody->msgerror = bab_translate("Access denied 2");
 				$bSuccess = false;
 			}
 		}
 		else 
 		{
-			$babBody->msgerror = bab_translate("Access denied");
+			$babBody->msgerror = bab_translate("Access denied 1");
 			$bSuccess = false;
 		}
 		return $bSuccess;
 	}
 	
 	
-	function updateSubFolderPathName($sUplaodPath, $sPathName, $sOldName, $sNewName)
+	function updateSubFolderPathName($sUploadPath, $sPathName, $sOldName, $sNewName)
 	{
-		if(BAB_FmFolderHelper::renameDirectory($sUplaodPath, $sPathName, $sOldName, $sNewName))
+		bab_debug(__FUNCTION__);
+		bab_debug('sUploadPath ==> ' . $sUploadPath);
+		bab_debug('sPathName ==> ' . $sPathName);
+		bab_debug('sOldName ==> ' . $sOldName);
+		bab_debug('sNewName ==> ' . $sNewName);
+		
+		if(BAB_FmFolderHelper::renameDirectory($sUploadPath, $sPathName, $sOldName, $sNewName))
 		{
-			$sRelativePath = substr($sPathName, strlen($sUplaodPath . '/'));
-			$sOldRelativePathName = $sRelativePath . '/' . $sOldName;
-			$sNewRelativePathName = $sRelativePath . '/' . $sNewName;
+			$sRelativePath = '';
+			$sOldRelativePathName = '';
+			$sNewRelativePathName = '';
 			
-			$aCriterion = array();
-			$aCriterion[] = new BAB_LikeCriterion('sPathName', $sOldRelativePathName, 1);
-//			$aCriterion[] = new BAB_NotInCriterion('sPathName', $sOldRelativePathName);
+			if(strlen(trim($sPathName)) > 0)
+			{
+				$sRelativePath = substr($sPathName, strlen($sUploadPath . '/'));
+				$sOldRelativePathName = $sRelativePath . '/' . $sOldName;
+				$sNewRelativePathName = $sRelativePath . '/' . $sNewName;
+			}
+			else
+			{
+				$sOldRelativePathName = $sOldName;
+				$sNewRelativePathName = $sNewName;
+			}
+			
+//			bab_debug('sOldRelativePathName ==> ' . $sOldRelativePathName);
+//			bab_debug('sNewRelativePathName ==> ' . $sNewRelativePathName);
+			
+			global $babDB;
 			$oFmFolderSet = new BAB_FmFolderSet();
-			$oFmFolderSet = $oFmFolderSet->select($aCriterion);
+			$oPathName =& $oFmFolderSet->aField['sPathName']; 
+			$oFmFolderSet = $oFmFolderSet->select($oPathName->like($babDB->db_escape_like($sOldRelativePathName) . '%'));
 			while(null !== ($oFmFolder = $oFmFolderSet->next()))
 			{
 				$sPathName = $sNewRelativePathName . substr($oFmFolder->getPathName(), strlen($sOldRelativePathName));
@@ -2065,14 +2126,30 @@ class BAB_FmFolderHelper
 					$oFmFolder->save();
 				}
 			}
+			
+			if(strlen(trim($sPathName)) > 0)
+			{
+				bab_debug('Il faut être plus précis');
+				
+				$oFmFileSet = new BAB_FolderFileSet();
+				$oPathName =& $oFmFolderSet->aField['sPathName']; 
+				$oFmFileSet->select($oPathName->like($babDB->db_escape_like($sPathName) . '%'));
+				while(null !== ($oFile = $oFmFileSet->next()))
+				{
+					bab_debug($oFile);
+				}
+			}
+			
+			
 		}
+		
 	}
 }
 
 
-class BAB_File extends BAB_DbRecord 
+class BAB_FolderFile extends BAB_DbRecord 
 {
-	function BAB_File()
+	function BAB_FolderFile()
 	{
 		parent::BAB_DbRecord();		
 	}
@@ -2304,11 +2381,9 @@ class BAB_File extends BAB_DbRecord
 
 
 
-class BAB_FileSet extends BAB_BaseSet 
+class BAB_FolderFileSet extends BAB_BaseSet 
 {
-	var $aField = null;
-	
-	function BAB_FileSet()
+	function BAB_FolderFileSet()
 	{
 		parent::BAB_BaseSet(BAB_FILES_TBL);
 

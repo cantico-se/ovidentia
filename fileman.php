@@ -424,8 +424,7 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 		$this->set_data('sOldDirName', $sDirName);
 
 		$sRelativePath = '';
-		$oFmFolderSet = new BAB_FmFolderSet();
-		$oFmFolder = $oFmFolderSet->get(array(new BAB_InCriterion('iId', $iId)));
+		$oFmFolder = BAB_FmFolderHelper::getFmFolderById($iId);
 		if(!is_null($oFmFolder))
 		{
 			$sRelativePath = $oFmFolder->getPathName();
@@ -437,9 +436,10 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 		
 		$sPathName = $sRelativePath . '/' . $sDirName;
 
-		$aCriterion[] = new BAB_LikeCriterion('sPathName', $sPathName, 0);
+		global $babDB;
 		$oFmFolderSet = new BAB_FmFolderSet();
-		$oFmFolder = $oFmFolderSet->get($aCriterion);
+		$oPathName =& $oFmFolderSet->aField['sPathName']; 
+		$oFmFolder = $oFmFolderSet->get($oPathName->Like($babDB->db_escape_like($sPathName)));
 		if(!is_null($oFmFolder))
 		{
 			$this->set_data('isColletive', true);
@@ -651,8 +651,7 @@ function showDiskSpace($id, $gr, $path)
 				$this->allowedspace =  bab_toHtml(bab_formatSizeFile($GLOBALS['babMaxGroupSize']).$this->kilooctet);
 				$this->remainingspace =  bab_toHtml(bab_formatSizeFile($GLOBALS['babMaxGroupSize'] - $size).$this->kilooctet);
 				$this->groupname = '';
-				$oFmFolderSet = new BAB_FmFolderSet();
-				$oFmFolder = $oFmFolderSet->get(array(new BAB_InCriterion('iId', $this->arrgrp[$i])));
+				$oFmFolder = BAB_FmFolderHelper::getFmFolderById($this->arrgrp[$i]);
 				if(!is_null($oFmFolder))
 				{
 					$this->groupname = $oFmFolder->getName();
@@ -671,8 +670,7 @@ function showDiskSpace($id, $gr, $path)
 			if( $i < $this->countmgrp)
 				{
 				$this->groupname = '';
-				$oFmFolderSet = new BAB_FmFolderSet();
-				$oFmFolder = $oFmFolderSet->get(array(new BAB_InCriterion('iId', $this->arrmgrp[$i])));
+				$oFmFolder = BAB_FmFolderHelper::getFmFolderById($this->arrmgrp[$i]);
 				if(!is_null($oFmFolder))
 				{
 					$this->groupname = $oFmFolder->getName();
@@ -796,8 +794,7 @@ function listFiles($id, $gr, $path, $bmanager, $upload)
 			if( $gr == "Y")
 				{
 				$this->rootpath = '';
-				$oFmFolderSet = new BAB_FmFolderSet();
-				$oFmFolder = $oFmFolderSet->get(array(new BAB_InCriterion('iId', $id)), array('sName' => 'ASC'));
+				$oFmFolder = BAB_FmFolderHelper::getFmFolderById($id);
 				if(!is_null($oFmFolder))
 				{
 					$version = $oFmFolder->getVersioning();
@@ -2160,13 +2157,8 @@ function createEditFolderForCollectiveDir($iIdFolder, $sPath)
 		$sDisplay				= (string) bab_pp('sDisplay', 'N');
 		$sPathName				= (string) '';
 		
-		$oFileSet = new BAB_FileSet();
-		$oFile = $oFileSet->get(array(new BAB_InCriterion('iId', 5)));
-		bab_debug($oFile);
-		
 		$sRelativePath = '';
-		$oFmFolderSet = new BAB_FmFolderSet();
-		$oFmFolder = $oFmFolderSet->get(array(new BAB_InCriterion('iId', $iIdFolder)));
+		$oFmFolder = BAB_FmFolderHelper::getFmFolderById($iIdFolder);
 		if(!is_null($oFmFolder))
 		{
 			$sRelativePath = $oFmFolder->getPathName();
@@ -2212,30 +2204,31 @@ function createEditFolderForCollectiveDir($iIdFolder, $sPath)
 				}
 				else if('editFolder' === $sAction)
 				{
-					$iIdFolder					= (int) bab_pp('iIdFolder', 0); 
+					$iIdFld						= (int) bab_pp('iIdFolder', 0); 
 					$bRename					= false;
 					$bWasCollective				= false;
-					$bChangeIdOwnerOfChildFiles	= false; 			
+					$bChangeIdOwnerOfChildFiles	= false; 
+					$sPathName					= '';			
 					
-					$oFmFolderSet = new BAB_FmFolderSet();
-					$oFmFolder = $oFmFolderSet->get(array(new BAB_InCriterion('iId', $iIdFolder)));
+					$oFmFolder = BAB_FmFolderHelper::getFmFolderById($iIdFld);
 					if(!is_null($oFmFolder))
 					{
 						$bRename		= ($sDirName !== $oFmFolder->getName()) ? true : false;
 						$sOldDirName	= $oFmFolder->getName();
+						$sPathName		= $oFmFolder->getPathName();
 						$bWasCollective = true;
 					}
 					else 
 					{
 						$sOldDirName	= (string) bab_pp('sOldDirName', '');
 						$bRename		= ($sDirName !== $sOldDirName) ? true : false;
+						$sPathName		= $sPath;
 					}
 					
 					if($bRename)
 					{
 						if(strlen(trim($sOldDirName)) > 0)
 						{
-							$sPathName = $sUploadPath . '/' . $sRelativePath;
 							BAB_FmFolderHelper::updateSubFolderPathName($sUploadPath, $sPathName, $sOldDirName, $sDirName);
 							bab_debug('Ne pas oublier les fichiers');
 						}
@@ -2475,8 +2468,7 @@ switch($idx)
 		$babBody->title = bab_translate("Upload file to")." ";
 		if( $gr == 'Y' )
 		{
-			$oFmFolderSet = new BAB_FmFolderSet();
-			$oFmFolder = $oFmFolderSet->get(array(new BAB_InCriterion('iId', $id)));
+			$oFmFolder = BAB_FmFolderHelper::getFmFolderById($id);
 			if(!is_null($oFmFolder))
 			{
 				$babBody->title .= $oFmFolder->getName();
@@ -2511,19 +2503,7 @@ switch($idx)
 		/* no break */
 	default:
 	case "list":
-//		$babBody->title = bab_translate("File manager");
-//		$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".urlencode($path));
-//		if( $upload) {
-//			$babBody->addItemMenu("add", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=fileman&idx=add&id=".$id."&gr=".$gr."&path=".urlencode($path));
-//			}
-//		if( $bmanager) {
-//			$babBody->addItemMenu("trash", bab_translate("Trash"), $GLOBALS['babUrlScript']."?tg=fileman&idx=trash&id=".$id."&gr=".$gr."&path=".urlencode($path));
-//			}
 		listFiles($id, $gr, $path, $bmanager, $upload);
-//		if( !empty($id) && $gr == "Y")
-//			{
-//			$GLOBALS['babWebStat']->addFolder($id);
-//			}
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);

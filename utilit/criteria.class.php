@@ -24,149 +24,231 @@ require_once 'base.php';
 require_once $GLOBALS['babInstallPath'] . 'utilit/iterator/iterator.php';
 
 
-class BAB_Criteriaa
+class BAB_Criteria
 {
-	var $sOperator = null;
-	var $aCriterion = array();
-	
-	function BAB_Criteriaa($oCriterion)
+	function BAB_Criteria()
 	{
-		$this->aCriterion[] = $oCriterion;
-	}
-	
-	function _and()
-	{
-		$sOperator = 'AND';
-		$aArgList = func_get_args();
-		return $this->processOperator($sOperator, $aArgList);
+		
 	}
 	
 	function _or()
 	{
-		$sOperator = 'OR';
+//		$iFuncArgCount = func_num_args();
 		$aArgList = func_get_args();
-		return $this->processOperator($sOperator, $aArgList);
+		return $this->createCriteria('BAB_Or', $aArgList[0]);
 	}
 	
-	function processOperator($sOperator, $aArgList)
+	function _and()
 	{
-		if(!is_null($this->sOperator) && $sOperator !== $this->sOperator)
-		{
-			$oCriteria = new BAB_Criteriaa($this);
-			return $oCriteria->_or($aArgList);
-		}
-		else 
-		{
-			if(count($this->aCriterion) >= 1)
-			{
-				$this->sOperator = $sOperator;
-			}
-			return $this->processCriterion($aArgList);
-		}
-	}
-
-	function processCriterion()
-	{
+//		$iFuncArgCount = func_num_args();
 		$aArgList = func_get_args();
-		if(is_array($aArgList))
-		{
-			$iCount = count($aArgList);
-			if($iCount > 1)
-			{
-				$this->aCriterion[] = $aArgList;
-			}
-			else if($iCount === 1)
-			{
-				$this->aCriterion[] = $aArgList[0];
-			}
-		}
-		return $this;
+		return $this->createCriteria('BAB_And', $aArgList[0]);
 	}
 	
-	function criterionToString($aCriterion)
+	function createCriteria($sClassName, $oRightCriteria)
 	{
-		$sString = '';
-		if(count($aCriterion) > 0)
-		{
-			$aCrit = array();
-			foreach($aCriterion as $value)
-			{
-				if(is_array($value))
-				{
-					if(count($value) > 0)
-					{
-						bab_debug($value);
-						$aCrit[] = '(' . $this->criterionToString($value) . ')';
-					}
-				}
-				else 
-				{
-					$aCrit[] = $value->toString();
-				}
-			}
-			
-			if(count($aCrit) > 1)
-			{
-				$sString = implode(' ' . $this->sOperator . ' ', $aCrit);
-			}
-			else 
-			{
-				$sString = $aCrit[0];
-			}
-		}
-		return $sString;
+		$oCriteria = new $sClassName();
+		$oCriteria->set($this, $oRightCriteria);
+		return $oCriteria;
 	}
 	
 	function toString()
 	{
-		return $this->criterionToString($this->aCriterion);
+		return '';
 	}
 }
 
 
-class BAB_Criterion
+class BAB_BinaryCriteria extends BAB_Criteria
+{
+	var $oLeftCriteria = null;
+	var $oRightCriteria = null;
+	var $sOperator = null;
+	
+	function BAB_BinaryCriteria($sOperator)
+	{
+		parent::BAB_Criteria();
+		$this->sOperator = $sOperator;
+	}
+	
+	function set($oLeftCriteria, $oRightCriteria)
+	{
+		$this->oLeftCriteria = $oLeftCriteria;
+		$this->oRightCriteria = $oRightCriteria;
+	}
+	
+	function toString()
+	{
+		return '(' . $this->oLeftCriteria->toString() . ' ' . $this->sOperator . ' ' . $this->oRightCriteria->toString() . ')';
+	}
+}
+
+
+class BAB_And extends BAB_BinaryCriteria
+{
+	function BAB_And()
+	{
+		parent::BAB_BinaryCriteria('AND');
+	}
+}
+
+
+class BAB_Or extends BAB_BinaryCriteria
+{
+	function BAB_Or()
+	{
+		parent::BAB_BinaryCriteria('OR');
+	}
+}
+
+
+
+class BAB_Criterion extends BAB_Criteria
 {
 	var $oField = null;
 	
 	function BAB_Criterion($oField)
 	{
+		parent::BAB_Criteria();
 		$this->oField = $oField;
 	}
 	
 	function in()
 	{
 		$aArgList = func_get_args();
-		if(is_array($aArgList) && count($aArgList) > 0)
-		{
-			return new BAB_Criteriaa(new BAB_InCriterion($this->oField->getName(), $aArgList));
-		}		
+		return new BAB_InCriterion($aArgList[0], $aArgList[1]);
+	}
+	
+	function notIn()
+	{
+		$aArgList = func_get_args();
+		return new BAB_NotInCriterion($aArgList[0], $aArgList[1]);
 	}
 	
 	function like()
 	{
 		$aArgList = func_get_args();
-		if(is_array($aArgList) && count($aArgList) == 1)
-		{
-			return new BAB_Criteriaa(new BAB_LikeCriterion($oField->getName(), $babDB->db_escape_like($aArgList[0]), 0));
-		}		
+		return new BAB_LikeCriterion($aArgList[0], $aArgList[1]);
+	}
+	
+	function notLike()
+	{
+		$aArgList = func_get_args();
+		return new BAB_NotLikeCriterion($aArgList[0], $aArgList[1]);
 	}
 }
 
-//($users->age->greaterThan(20))->and($users->manager->name->in('Laurent', 'Samuel')))
 
-class BAB_Field extends BAB_Criterion
+class BAB_InCriterion extends BAB_Criterion
+{
+	var $aValue = null;
+	
+	function BAB_InCriterion($oField, $aValue)
+	{
+		parent::BAB_Criterion($oField);
+		
+		$this->aValue = $aValue;
+	}
+	
+	function toString()
+	{
+		global $babDB;
+		return sprintf('%s IN(%s)', $this->oField->getName(), $babDB->quote($this->aValue));
+	}
+}
+
+class BAB_NotInCriterion extends BAB_Criterion
+{
+	var $aValue = null;
+	
+	function BAB_NotInCriterion($oField, $aValue)
+	{
+		parent::BAB_Criterion($oField);
+		
+		$this->aValue = $aValue;
+	}
+	
+	function toString()
+	{
+		global $babDB;
+		return sprintf('%s NOT IN(%s)', $this->oField->getName(), $babDB->quote($this->aValue));
+	}
+}
+
+
+class BAB_LikeCriterionBase extends BAB_Criterion
+{
+	var $sValue = null;
+	var $sLike = null;
+	
+	function BAB_LikeCriterionBase($oField, $sValue)
+	{
+		parent::BAB_Criterion($oField);
+		$this->sValue = $sValue;
+	}
+	
+	function toString()
+	{
+		return $this->oField->getName() . ' ' . $this->sLike . ' \'' .  $this->sValue . '\' ';
+	}
+}
+
+
+class BAB_LikeCriterion extends BAB_LikeCriterionBase
+{
+	function BAB_LikeCriterion($oField, $sValue)
+	{
+		parent::BAB_LikeCriterionBase($oField, $sValue);
+		$this->sLike = 'LIKE';
+	}
+}
+
+class BAB_NotLikeCriterion extends BAB_LikeCriterionBase
+{
+	function BAB_NotLikeCriterion($oField, $sValue)
+	{
+		parent::BAB_LikeCriterionBase($oField, $sValue);
+		$this->sLike = 'NOT LIKE';
+	}
+}
+
+
+class BAB_Field
 {
 	var $sName = null;
 	
 	function BAB_Field($sName)
 	{
-		parent::BAB_Criterion($this);
 		$this->sName = $sName;
 	}
 	
 	function getName()
 	{
 		return $this->sName;
+	}
+	
+	function in()
+	{
+		$aArgList = func_get_args();
+		return call_user_func_array(array('BAB_Criterion', 'in'), array($this, $aArgList));
+	}
+	
+	function notIn()
+	{
+		$aArgList = func_get_args();
+		return call_user_func_array(array('BAB_NotInCriterion', 'notIn'), array($this, $aArgList));
+	}
+	
+	function like()
+	{
+		$aArgList = func_get_args();
+		return call_user_func_array(array('BAB_LikeCriterion', 'like'), array($this, $aArgList[0]));
+	}
+	
+	function notLike()
+	{
+		$aArgList = func_get_args();
+		return call_user_func_array(array('BAB_NotLikeCriterion', 'notLike'), array($this, $aArgList[0]));
 	}
 }
 
@@ -180,233 +262,9 @@ class BAB_IntField extends BAB_Field
 
 class BAB_StringField extends BAB_Field
 {
-	function BAB_VarCharField($sName)
+	function BAB_StringField($sName)
 	{
 		parent::BAB_Field($sName);
-	}
-}
-
-
-class BAB_SimpleCriterion
-{
-	var $sSqlOperator = null;
-	var $sName = null;
-	var $sValue = null;
-	
-	function BAB_SimpleCriterion($sName, $sSqlOperator, $sValue)
-	{
-		$this->sSqlOperator = $sSqlOperator;
-		$this->sName = $sName;
-		$this->sValue = $sValue;
-	}
-	
-	function toString()
-	{
-		global $babDB;
-		return $this->sName . ' ' . $this->sSqlOperator . ' ' . $babDB->quote($this->sValue);
-	}
-}
-
-
-class BAB_InCriterion
-{
-	var $sName = null;
-	var $aValue = null;
-	
-	function BAB_InCriterion($sName, $aValue)
-	{
-		$this->sName = $sName;
-		$this->aValue = $aValue;
-	}
-	
-	function toString()
-	{
-		global $babDB;
-		return sprintf('%s IN(%s)', $this->sName, $babDB->quote($this->aValue));
-	}
-}
-
-
-class BAB_NotInCriterion
-{
-	var $sName = null;
-	var $aValue = null;
-	
-	function BAB_NotInCriterion($sName, $aValue)
-	{
-		$this->sName = $sName;
-		$this->aValue = $aValue;
-	}
-	
-	function toString()
-	{
-		global $babDB;
-		return sprintf('%s NOT IN(%s)', $this->sName, $babDB->quote($this->aValue));
-	}
-}
-
-
-class BAB_LikeCriterionBase
-{
-	var $sName = null;
-	var $sValue = null;
-	
-	//mode
-	// 0 ==> sValue
-	// 1 ==> sValue%
-	// 2 ==> %sValue
-	// 3 ==> %sValue%
-	var $iMode = null;
-	
-	var $sLike = null;
-	
-	function BAB_LikeCriterionBase($sName, $sValue, $iMode)
-	{
-		$this->sName = $sName;
-		$this->sValue = $sValue;
-		$this->iMode = $iMode;
-	}
-	
-	function toString()
-	{
-		global $babDB;
-		switch($this->iMode)
-		{
-			// 0 ==> XXX
-			case 0:
-				return $this->sName . ' ' . $this->sLike . ' \'' .  $babDB->db_escape_like($this->sValue) . '\' ';
-			// 1 ==> XXX%
-			case 1:
-				return $this->sName . ' ' . $this->sLike . ' \'' .  $babDB->db_escape_like($this->sValue) . '%\' ';
-			// 2 ==> %XXX
-			case 2:
-				return $this->sName . ' ' . $this->sLike . ' \'%' .  $babDB->db_escape_like($this->sValue) . '\' ';
-			// 3 ==> %XXX%
-			case 3:
-				return $this->sName . ' ' . $this->sLike . ' \'%' .  $babDB->db_escape_like($this->sValue) . '%\' ';
-		}
-		return '';
-	}
-}
-
-
-class BAB_LikeCriterion extends BAB_LikeCriterionBase
-{
-	function BAB_LikeCriterion($sName, $sValue, $iMode)
-	{
-		parent::BAB_LikeCriterionBase($sName, $sValue, $iMode);
-		$this->sLike = 'LIKE';
-	}
-}
-
-class BAB_NotLikeCriterion extends BAB_LikeCriterionBase
-{
-	function BAB_NotLikeCriterion($sName, $sValue, $iMode)
-	{
-		parent::BAB_LikeCriterionBase($sName, $sValue, $iMode);
-		$this->sLike = 'NOT LIKE';
-	}
-}
-
-
-class BinaryCriterion
-{
-	var $aCriterion = array();
-	
-	function BinaryCriterion()
-	{
-		
-	}
-}
-
-class BAB_And extends BinaryCriterion
-{
-	var $sOperator = 'AND';
-	
-	function BAB_And()
-	{
-		
-	}
-
-	function _and()
-	{
-		$aArgList = func_get_args();
-		if(is_array($aArgList))
-		{
-			$iCount = count($aArgList);
-			if($iCount > 1)
-			{
-				$this->aCriterion[] = $aArgList;
-			}
-			else if($iCount === 1)
-			{
-				$this->aCriterion[] = $aArgList[0];
-			}
-		}
-		return $this;
-	}
-	
-	function processCriterion($aCriterion)
-	{
-		$sString = '';
-		if(count($aCriterion) > 0)
-		{
-			$aCrit = array();
-			foreach($aCriterion as $value)
-			{
-				if(is_array($value))
-				{
-					if(count($value) > 0)
-					{
-						$aCrit[] = '(' . $this->processCriterion($value) . ')';
-					}
-				}
-				else 
-				{
-					$aCrit[] = $value->toString();
-				}
-			}
-			$sString = implode(' ' . $this->sOperator . ' ', $aCrit);
-		}
-		return $sString;
-	}
-	
-	function toString()
-	{
-		return $this->processCriterion($this->aCriterion);
-	}
-}
-
-class BAB_Criteria
-{
-	var $aColumnMap = array();
-	var $aCriterion = array();
-
-	function BAB_Criteria(&$aColumnMap, &$aCriterion)
-	{
-		$this->aColumnMap =& $aColumnMap;
-		$this->aCriterion =& $aCriterion;
-	}
-	
-	function processCriterion()
-	{
-		$aWhereClause = array();
-		
-		foreach($this->aCriterion as $oCriterion)
-		{
-			
-			$oCriterion->sName = $this->aColumnMap[$oCriterion->sName]->getName();
-			
-			$aWhereClause[] = $oCriterion->toString();
-		}
-		
-		$sWhereClause = '';
-		if(count($aWhereClause) > 0)
-		{
-			$sWhereClause = ' WHERE ' . implode(' AND ', $aWhereClause);
-		}
-		
-		return $sWhereClause;
 	}
 }
 ?>
