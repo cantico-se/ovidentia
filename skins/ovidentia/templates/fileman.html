@@ -802,13 +802,13 @@ function hide(aNode)
 					</td>
 					<td>
 						<select name="sType" id="sType" onchange="showHide()"> 
-						<!--#if m_datas[isColletive] -->
+						<!--#if m_datas[isCollective] -->
 							<option value="{ m_datas[sSimple] }">{ m_captions[sSimple] }</option>
 							<option value="{ m_datas[sCollective] }" selected="selected">{ m_captions[sCollective] }</option>
-						<!--#else m_datas[isColletive] -->
+						<!--#else m_datas[isCollective] -->
 							<option value="{ m_datas[sSimple] }" selected="selected">{ m_captions[sSimple] }</option>
 							<option value="{ m_datas[sCollective] }">{ m_captions[sCollective] }</option>
-						<!--#endif m_datas[isColletive] -->
+						<!--#endif m_datas[isCollective] -->
 						</select>
 					</td>
 				</tr>

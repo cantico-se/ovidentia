@@ -400,7 +400,7 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 	
 	function handleCreation()
 	{
-		$this->set_data('isColletive', false);
+		$this->set_data('isCollective', false);
 		$this->set_data('isActive', true);
 		$this->set_data('isAutoApprobation', false);
 		$this->set_data('isFileNotify', false);
@@ -410,7 +410,7 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 	
 	function handleEdition()
 	{
-		$this->set_data('isColletive', false);
+		$this->set_data('isCollective', false);
 		$this->set_data('isActive', true);
 		$this->set_data('isAutoApprobation', false);
 		$this->set_data('isFileNotify', false);
@@ -427,22 +427,23 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 		$oFmFolder = BAB_FmFolderHelper::getFmFolderById($iId);
 		if(!is_null($oFmFolder))
 		{
-			$sRelativePath = $oFmFolder->getPathName();
+			$sRelativePath = $oFmFolder->getName() . '/';
 			if(strlen(trim($sPath)) > 0)
 			{
-				$sRelativePath .=  '/' . $sPath;
+				$sRelativePath .=  $sPath . '/';
 			}
 		}
-		
-		$sPathName = $sRelativePath . '/' . $sDirName;
 
 		global $babDB;
 		$oFmFolderSet = new BAB_FmFolderSet();
-		$oPathName =& $oFmFolderSet->aField['sPathName']; 
-		$oFmFolder = $oFmFolderSet->get($oPathName->Like($babDB->db_escape_like($sPathName)));
+		$oRelativePath =& $oFmFolderSet->aField['sRelativePath']; 
+		$oName =& $oFmFolderSet->aField['sName']; 
+		$oCriteria = $oRelativePath->in($babDB->db_escape_like($sRelativePath));
+		$oCriteria = $oCriteria->_and($oName->in($sDirName));
+		$oFmFolder = $oFmFolderSet->get($oCriteria);
 		if(!is_null($oFmFolder))
 		{
-			$this->set_data('isColletive', true);
+			$this->set_data('isCollective', true);
 			$this->set_data('isActive', ('Y' === $oFmFolder->getActive()) ? true : false);
 			$this->set_data('isAutoApprobation', ('Y' === $oFmFolder->getAutoApprobation()) ? true : false);
 			$this->set_data('isFileNotify', ('Y' === $oFmFolder->getFileNotify()) ? true : false);
@@ -846,8 +847,6 @@ function listFiles($id, $gr, $path, $bmanager, $upload)
 				static $aExcludedDir = array('.', '..', '. .');
 				if(!in_array($this->name, $aExcludedDir))	
 				{	
-					
-//bab_debug('sPathName ==> ' . $this->path . '/' . $this->name);
 
 					$this->sFolderFormUrl = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&idx=displayFolderForm&sAction=editFolder&id=' . $this->id . 
 						'&gr=' . $this->gr . '&path=' . urlencode($this->path) . '&sDirName=' . urlencode($this->name));
@@ -1059,12 +1058,13 @@ function listFiles($id, $gr, $path, $bmanager, $upload)
 	return $temp->count;
 	}
 
+
 function addFile($id, $gr, $path, $description, $keywords)
-	{
+{
 	global $babBody, $BAB_SESS_USERID;
 
 	class temp
-		{
+	{
 		var $name;
 		var $description;
 		var $keywords;
@@ -1085,7 +1085,7 @@ function addFile($id, $gr, $path, $description, $keywords)
 		var $res;
 
 		function temp($id, $gr, $path, $description, $keywords)
-			{
+		{
 			global $babDB;
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
@@ -1097,80 +1097,82 @@ function addFile($id, $gr, $path, $description, $keywords)
 			$this->t_warnmaxsize = bab_translate("File size must not exceed");
 			$this->t_add_field = bab_translate("Attach another file");
 			$this->t_remove_field = bab_translate("Remove");
-			if( $GLOBALS['babMaxFileSize'] < 1000000 )
-				{
+			if($GLOBALS['babMaxFileSize'] < 1000000)
+			{
 				$this->maxsize =  bab_formatSizeFile($GLOBALS['babMaxFileSize'])." ".bab_translate("Kb");
-				}
+			}
 			else
-				{
+			{
 				$this->maxsize =  floor($GLOBALS['babMaxFileSize'] / 1000000 )." ".bab_translate("Mb");
-				}
+			}
 			$this->id = $id;
 			$this->path = bab_toHtml($path);
 			$this->gr = $gr;
 			$this->maxfilesize = $GLOBALS['babMaxFileSize'];
 			$this->descval = isset($description) ? bab_toHtml($description) : "";
 			$this->keysval = isset($keywords) ? bab_toHtml($keywords) : "";
-			if( $gr == 'Y' )
-				{
+			if($gr == 'Y')
+			{
 				$this->res = $babDB->db_query("select * from ".BAB_FM_FIELDS_TBL." where id_folder='".$babDB->db_escape_string($id)."'");
 				$this->count = $babDB->db_num_rows($this->res);
-				}
+			}
 			else
+			{
 				$this->count = 0;
 			}
+		}
 		
 
 		function getnextfield()
-			{
+		{
 			global $babDB;
 			static $i = 0;
-			if( $i < $this->count)
-				{
+			if($i < $this->count)
+			{
 				$arr = $babDB->db_fetch_array($this->res);
 				$this->fieldname = bab_translate($arr['name']);
 				$this->field = 'field'.$arr['id'];
 				$this->fieldval = bab_toHtml($arr['defaultval']);
 				$i++;
 				return true;
-				}
+			}
 			else
+			{
 				return false;
 			}
-
-
 		}
+	}
 
 	$access = false;
-	if( $gr == "N" && !empty($BAB_SESS_USERID))
+	if($gr == "N" && !empty($BAB_SESS_USERID))
+	{
+		if($babBody->ustorage) 
 		{
-		if( $babBody->ustorage ) 
-			{
 			$access = true;
-			}
 		}
+	}
 
-	if( $gr == "Y" && !empty($BAB_SESS_USERID))
+	if($gr == "Y" && !empty($BAB_SESS_USERID))
+	{
+		for($i = 0; $i < count($babBody->aclfm['id']); $i++)
 		{
-		for( $i = 0; $i < count($babBody->aclfm['id']); $i++)
+			if($babBody->aclfm['id'][$i] == $id && ($babBody->aclfm['uplo'][$i] || $babBody->aclfm['ma'][$i] == 1))
 			{
-			if( $babBody->aclfm['id'][$i] == $id && ($babBody->aclfm['uplo'][$i] || $babBody->aclfm['ma'][$i] == 1))
-				{
 				$access = true;
 				break;
-				}
 			}
 		}
+	}
 
-	if( !$access )
-		{
+	if(!$access)
+	{
 		$babBody->msgerror = bab_translate("Access denied");
 		return;
-		}
+	}
 
 	$temp = new temp($id, $gr, $path, $description, $keywords);
 	$babBody->babecho(	bab_printTemplate($temp,"fileman.html", "addfile"));
-	}
+}
 
 
 
@@ -2087,33 +2089,37 @@ function createEditFolderForUserDir($iIdUser, $sPath)
 
 		if(strlen(trim($sDirName)) > 0)
 		{
-			$sUplaodPath = BAB_FmFolderHelper::getUploadPath() . '/' . BAB_FmFolderHelper::getUserDirUploadPath($iIdUser);
+			$sUplaodPath = BAB_FmFolderHelper::getUploadPath();
+			$sUserDirPath = BAB_FmFolderHelper::getUserDirUploadPath($iIdUser);
 			
 			if('createFolder' === $sAction)
 			{
-				$sPathName = '';
+				$sFullPathName = $sUplaodPath . $sUserDirPath;
 				if(strlen(trim($sPath)) === 0)
 				{
-					$sPathName = $sUplaodPath . '/' . $sDirName;
+					$sFullPathName .= $sDirName;
 				}
 				else 
 				{
-					$sPathName = $sUplaodPath . '/' . $sPath . '/' . $sDirName;
+					$sFullPathName .= $sPath . '/' . $sDirName;
 				}
-				BAB_FmFolderHelper::createDirectory($sUplaodPath, $sPathName);
+				
+				BAB_FmFolderHelper::createDirectory($sUplaodPath, $sFullPathName);
 			}
 			else if('editFolder' === $sAction)
 			{
-				$sPathName = '';
-				if(strlen(trim($sPath)) === 0)
+				$sRelativePath = $sUserDirPath;
+				if(strlen(trim($sPath)) > 0)
 				{
-					$sPathName = $sUplaodPath;
+					$sRelativePath .= $sPath;
 				}
-				else 
-				{
-					$sPathName = $sUplaodPath . '/' . $sPath;
-				}
-				BAB_FmFolderHelper::renameDirectory($sUplaodPath, $sPathName, $sOldDirName, $sDirName);
+								
+//				bab_debug('sUplaodPath ==> ' . $sUplaodPath);
+//				bab_debug('sRelativePath ==> ' . $sRelativePath);
+//				bab_debug('sOldDirName ==> ' . $sOldDirName);
+//				bab_debug('sDirName ==> ' . $sDirName);
+
+				BAB_FmFolderHelper::renameDirectory($sUplaodPath, $sRelativePath, $sOldDirName, $sDirName);
 				
 				bab_debug('Ne pas oublier de mettre à jour la table BAB_FMFILES');
 			}
@@ -2161,10 +2167,10 @@ function createEditFolderForCollectiveDir($iIdFolder, $sPath)
 		$oFmFolder = BAB_FmFolderHelper::getFmFolderById($iIdFolder);
 		if(!is_null($oFmFolder))
 		{
-			$sRelativePath = $oFmFolder->getPathName();
+			$sRelativePath = $oFmFolder->getName() . '/';
 			if(strlen(trim($sPath)) > 0)
 			{
-				$sRelativePath .=  '/' . $sPath;
+				$sRelativePath =  $sRelativePath . $sPath . '/';
 			}
 			
 			if(strlen(trim($sDirName)) > 0)
@@ -2173,17 +2179,16 @@ function createEditFolderForCollectiveDir($iIdFolder, $sPath)
 				
 				if('createFolder' === $sAction)
 				{
-					$sFullPathName = $sUplaodPath . '/' . $sRelativePath . '/' . $sDirName;
+					$sFullPathName = $sUploadPath . $sRelativePath . $sDirName;
 					
-//					bab_debug('sUplaodPath ==> ' . $sUplaodPath);
+//					bab_debug('sUploadPath ==> ' . $sUploadPath);
 //					bab_debug('sFullPathName ==> ' .  $sFullPathName);
-					
-					if(BAB_FmFolderHelper::createDirectory($sUplaodPath, $sFullPathName))
+//					bab_debug('sRelativePath ==> ' . $sRelativePath);
+
+					if(BAB_FmFolderHelper::createDirectory($sUploadPath, $sFullPathName))
 					{
 						if('collective' === $sType)
 						{
-							$sPathName = $sRelativePath . '/' . $sDirName;
-							
 							$oFmFolder = new BAB_FmFolder();
 							$oFmFolder->setActive($sActive);
 							$oFmFolder->setApprobationSchemeId($iIdApprobationScheme);
@@ -2192,12 +2197,12 @@ function createEditFolderForCollectiveDir($iIdFolder, $sPath)
 							$oFmFolder->setFileNotify($sNotification);
 							$oFmFolder->setHide($sDisplay);
 							$oFmFolder->setName($sDirName);
-							$oFmFolder->setPathName($sPathName);
+							$oFmFolder->setRelativePath($sRelativePath);
 							$oFmFolder->setVersioning($sVersioning);
 							$oFmFolder->setAutoApprobation($sAutoApprobation);
 							if(false === $oFmFolder->save())
 							{
-								rmdir($sPathName);
+								rmdir($sFullPathName);
 							}
 						}
 					}
@@ -2215,22 +2220,46 @@ function createEditFolderForCollectiveDir($iIdFolder, $sPath)
 					{
 						$bRename		= ($sDirName !== $oFmFolder->getName()) ? true : false;
 						$sOldDirName	= $oFmFolder->getName();
-						$sPathName		= $oFmFolder->getPathName();
+						$sRelativePath	= $oFmFolder->getRelativePath();
 						$bWasCollective = true;
 					}
 					else 
 					{
 						$sOldDirName	= (string) bab_pp('sOldDirName', '');
 						$bRename		= ($sDirName !== $sOldDirName) ? true : false;
-						$sPathName		= $sPath;
+						$sRelativePath	= $sPath . '/';
 					}
-					
+
+//					bab_debug('sUploadPath ==> ' . $sUploadPath);
+//					bab_debug('sRelativePath ==> ' . $sRelativePath);
+//					bab_debug('sOldDirName ==> ' . $sOldDirName);
+//					bab_debug('sDirName ==> ' . $sDirName);
+
 					if($bRename)
 					{
 						if(strlen(trim($sOldDirName)) > 0)
 						{
-							BAB_FmFolderHelper::updateSubFolderPathName($sUploadPath, $sPathName, $sOldDirName, $sDirName);
+							$oFmFolder->setName($sDirName);
+							$oFmFolder->save();
+							
+							BAB_FmFolderHelper::updateSubFolderPathName($sUploadPath, $sRelativePath, $sOldDirName, $sDirName);
 							bab_debug('Ne pas oublier les fichiers');
+							
+/*
+if(strlen(trim($sRelativePath)) > 0)
+{
+	bab_debug('Il faut être plus précis');
+	
+	$oFmFileSet = new BAB_FolderFileSet();
+	$oPathName =& $oFmFolderSet->aField['sPathName']; 
+	$oFmFileSet->select($oPathName->like($babDB->db_escape_like($sPathName) . '%'));
+	while(null !== ($oFile = $oFmFileSet->next()))
+	{
+		bab_debug($oFile);
+	}
+}
+//*/
+							
 						}
 						else 
 						{
@@ -2240,12 +2269,12 @@ function createEditFolderForCollectiveDir($iIdFolder, $sPath)
 		
 		
 					//Pour les fichiers
-					$oParentFolder = BAB_FmFolderHelper::getFirstCollectiveFolder($sRelativePath);
-					if(!is_null($oParentFolder))
-					{
-						bab_debug('Nuclear launch detected');		
-						bab_debug($oParentFolder);		
-					}
+//					$oParentFolder = BAB_FmFolderHelper::getFirstCollectiveFolder($sRelativePath);
+//					if(!is_null($oParentFolder))
+//					{
+//						bab_debug('Nuclear launch detected');		
+//						bab_debug($oParentFolder);		
+//					}
 				}
 			}
 		}

@@ -3176,11 +3176,10 @@ function upgradeXXX()
 	global $babDB;
 	$ret = "";
 
-	if (!bab_isTableField(BAB_FM_FOLDERS_TBL, 'sPathName')) 
+	if(!bab_isTableField(BAB_FM_FOLDERS_TBL, 'sRelativePath')) 
 	{
-		$babDB->db_query("ALTER TABLE ".BAB_FM_FOLDERS_TBL." ADD `sPathName` TEXT NOT NULL AFTER `iIdParent`");
+		$babDB->db_query("ALTER TABLE ".BAB_FM_FOLDERS_TBL." ADD `sRelativePath` TEXT NOT NULL AFTER `iIdParent`");
 	}
-	
 	return $ret;
 }
 

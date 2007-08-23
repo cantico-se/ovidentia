@@ -384,6 +384,7 @@ class babDatabase extends bab_database
 	 */
 	function db_escape_like($str)
 		{
+		$str = str_replace('\\','\\\\',$str);
 		$str = str_replace('%','\%',$str);
 		$str = str_replace('?','\?',$str);
 		return parent::db_escape_string($str);

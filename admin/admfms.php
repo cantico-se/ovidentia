@@ -137,10 +137,10 @@ function listFolders()
 			
 			$this->oFmFolderSet = new BAB_FmFolderSet();
 			
-			$oPathName =& $this->oFmFolderSet->aField['sPathName']; 
+			$oRelativePath =& $this->oFmFolderSet->aField['sRelativePath']; 
 			$oIdDgOwner =& $this->oFmFolderSet->aField['iIdDgOwner']; 
 			
-			$oCriteria = $oPathName->notLike('%' . $babDB->db_escape_like('/') . '%');
+			$oCriteria = $oRelativePath->in($babDB->db_escape_like(''));
 			$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
 			$this->oFmFolderSet->select($oCriteria);
 		}

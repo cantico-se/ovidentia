@@ -570,18 +570,19 @@ function updateFolder($fid, $fname, $active, $said, $notification, $version, $bh
 			}
 			
 			$sUploadPath = BAB_FmFolderHelper::getUploadPath();
-			$sPathName = '';
-			BAB_FmFolderHelper::updateSubFolderPathName($sUploadPath, $sPathName, $oFmFolder->getName(), $fname);
-			
-			$oFmFolder->setName($fname);
-			$oFmFolder->setPathName($fname);
-			$oFmFolder->setApprobationSchemeId((int) $said);
-			$oFmFolder->setFileNotify($notification);
-			$oFmFolder->setActive($active);
-			$oFmFolder->setVersioning($version);
-			$oFmFolder->setHide($bhide);
-			$oFmFolder->setAutoApprobation($bautoapp);
-			$oFmFolder->save();
+			$sRelativePath = '';
+			if(BAB_FmFolderHelper::updateSubFolderPathName($sUploadPath, $sRelativePath, $oFmFolder->getName(), $fname))
+			{
+				$oFmFolder->setName($fname);
+				$oFmFolder->setRelativePath('');
+				$oFmFolder->setApprobationSchemeId((int) $said);
+				$oFmFolder->setFileNotify($notification);
+				$oFmFolder->setActive($active);
+				$oFmFolder->setVersioning($version);
+				$oFmFolder->setHide($bhide);
+				$oFmFolder->setAutoApprobation($bautoapp);
+				$oFmFolder->save();
+			}
 		}		
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
 		exit;
