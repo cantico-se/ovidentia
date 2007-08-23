@@ -87,13 +87,41 @@ class bab_dbdata {
 				WHERE '.$babDB->backTick($this->primaryautoincremented).' = '.$babDB->quote($id).'
 			');
 			
-			$row = $babDB->db_fetch_assoc($res);
-			$this->setRow($row);
+			if ($row = $babDB->db_fetch_assoc($res)) {
+				$this->setRow($row);
+			} else {
+				$this->setRow(array());
+			}
 			return $row;
 		}
 		
 		return false;
 	}
+	
+	/**
+	 * Get the DbRow from table with a specified keys as reference
+	 * @param	array	$keys
+	 */
+	function getDbRowByKeys($keys) {
+		global $babDB;
+		$where = array();
+		foreach($keys as $key) {
+			$where[] = $babDB->backTick($key).' = '.$babDB->quote($this->getValue($key));
+		}
+
+		$res = $babDB->db_query('
+			SELECT * FROM '.$babDB->backTick($this->tablename).' 
+			WHERE '.implode(' AND ',$where).'
+		');
+		
+		if ($row = $babDB->db_fetch_assoc($res)) {
+			$this->setRow($row);
+		} else {
+			$this->setRow(array());
+		}
+		return $row;
+	}
+	
 	
 	/**
 	 * Get the value from table with autoincremented value as reference
@@ -193,19 +221,18 @@ class bab_dbdata {
 		global $babDB;
 		
 		$row = $this->row;
-		
 		// remove auto incremented collums
 		if (isset($this->primaryautoincremented)) {
 			unset($row[$this->primaryautoincremented]);
 		}
 		
+		$id = $this->getPrimaryAutoIncremented();
+		
 		$keys = array();
 		foreach($row as $key => $value) {
 			$keys[] = $babDB->backTick($key).' = '.$babDB->quote($value);
 		}
-		
-		$id = $this->getPrimaryAutoIncremented();
-		
+
 		if ($id) {
 			$babDB->db_query('
 				UPDATE '.$babDB->backTick($this->tablename).' 
@@ -221,16 +248,53 @@ class bab_dbdata {
 	
 	
 	/**
+	 * Update row into table
+	 * 
+	 * @return boolean
+	 */
+	function updateDbRowByKey($ikey) {
+	
+		global $babDB;
+		
+		$row = $this->row;
+		unset($row[$ikey]);
+		$id = $this->getValue($ikey);
+
+		$keys = array();
+		foreach($row as $key => $value) {
+			$keys[] = $babDB->backTick($key).' = '.$babDB->quote($value);
+		}
+
+		if ($id) {
+			$babDB->db_query('
+				UPDATE '.$babDB->backTick($this->tablename).' 
+				SET '.implode(',',$keys).' 
+				WHERE '.$babDB->backTick($ikey).' = '.$babDB->quote($id).'
+			');
+			
+			return true;
+		}
+		
+		return false;
+	}
+	
+	
+	/**
 	 * Count rows into table with same values as $this->row
+	 * if the filter parameter is used, only keys defined as key in the filter array will be used in were clause
+	 * @param	array|false		[$filter]
 	 * @return 	int
 	 */
-	function countDbRows() {
+	function countDbRows($filter = false) {
 		global $babDB;
 		
 
-		$keys = $array();
+		$keys = array();
 		foreach($this->row as $key => $value) {
-			$keys[] = $babDB->backTick($key).' = '.$babDB->quote($value);
+			
+			if (false === $filter || isset($filter[$key])) {
+				$keys[] = $babDB->backTick($key).' = '.$babDB->quote($value);
+			}
 		}
 		
 		$res = $babDB->db_query('
@@ -239,10 +303,11 @@ class bab_dbdata {
 		');
 		
 		if ($res) {
-			return $babDB->db_num_rows($res);
+			$arr = $babDB->db_fetch_array($res);
+			return (int) $arr[0];
 		}
 		
-		return false;
+		return 0;
 	}
 	
 	
