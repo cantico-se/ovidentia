@@ -336,6 +336,8 @@ class bab_dbdata {
 		foreach($default as $key => $value) {
 			if (isset($row[$key])) {
 				$this->setValue($key, $row[$key]);
+			} else {
+				unset($this->row[$key]);
 			}
 		}
 	}
