@@ -248,7 +248,10 @@ function updateFolders($notifies, $actives, $versions, $bhides)
 {
 	global $babBody;
 	$oFmFolderSet = new BAB_FmFolderSet();
-	$oFmFolderSet = $oFmFolderSet->select(array(new BAB_InCriterion('iIdDgOwner', $babBody->currentAdmGroup)));
+	
+	$oIdDgOwner =& $oFmFolderSet->aField['iIdDgOwner']; 
+	
+	$oFmFolderSet = $oFmFolderSet->select($oIdDgOwner->in($babBody->currentAdmGroup));
 	while(null !== ($oFmFolder = $oFmFolderSet->next()))
 	{
 		if(is_array($notifies) && count($notifies) > 0 && in_array($oFmFolder->getId(), $notifies))
@@ -328,7 +331,6 @@ switch($idx)
 
 	default:
 	case "list":
-bab_debug(basename(__FILE__) . ' ' . __LINE__ . ' Il faudra mettre à jour la table bab_fm_files (updateFolder du fichier admfm.php)');
 		$babBody->title = bab_translate("File manager");
 		if( listFolders() > 0 )
 			{

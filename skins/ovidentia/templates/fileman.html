@@ -843,6 +843,9 @@ function hide(aNode)
 					<td>
 						<select name="iIdApprobationScheme"> 
 							<option value="{ m_datas[iNone] }" selected="selected">{ m_captions[sNone] }</option>
+							<!--#in getNextApprobationScheme -->
+							<option value="{ m_datas[iAppSchemeId] }" { m_datas[sAppSchemeNameSelected] }>{ m_datas[iAppSchemeName] }</option>
+							<!--#endin getNextApprobationScheme -->
 						</select>
 					</td>
 				</tr>

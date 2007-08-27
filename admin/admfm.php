@@ -120,7 +120,7 @@ function modifyFolder($fid)
 					$this->autoappnsel = '';
 				}
 				
-				$this->safm = $oFmFolder->getDelegationOwnerId();
+				$this->safm = $oFmFolder->getApprobationSchemeId();
 				
 				list($n) = $babDB->db_fetch_array($babDB->db_query("select COUNT(i.id) from ".BAB_FA_INSTANCES_TBL." i, ".BAB_FILES_TBL." f where i.idsch='".$this->safm."' AND i.id=f.idfai"));
 				if ($n > 0)
@@ -571,18 +571,18 @@ function updateFolder($fid, $fname, $active, $said, $notification, $version, $bh
 			
 			$sUploadPath = BAB_FmFolderHelper::getUploadPath();
 			$sRelativePath = '';
-			if(BAB_FmFolderHelper::updateSubFolderPathName($sUploadPath, $sRelativePath, $oFmFolder->getName(), $fname))
-			{
-				$oFmFolder->setName($fname);
-				$oFmFolder->setRelativePath('');
-				$oFmFolder->setApprobationSchemeId((int) $said);
-				$oFmFolder->setFileNotify($notification);
-				$oFmFolder->setActive($active);
-				$oFmFolder->setVersioning($version);
-				$oFmFolder->setHide($bhide);
-				$oFmFolder->setAutoApprobation($bautoapp);
-				$oFmFolder->save();
-			}
+			BAB_FmFolderHelper::updateSubFolderPathName($sUploadPath, $sRelativePath, $oFmFolder->getName(), $fname);
+			BAB_FolderFileHelper::renamePath($oFmFolder->getName() . '/', $fname);
+			
+			$oFmFolder->setName($fname);
+			$oFmFolder->setRelativePath('');
+			$oFmFolder->setApprobationSchemeId((int) $said);
+			$oFmFolder->setFileNotify($notification);
+			$oFmFolder->setActive($active);
+			$oFmFolder->setVersioning($version);
+			$oFmFolder->setHide($bhide);
+			$oFmFolder->setAutoApprobation($bautoapp);
+			$oFmFolder->save();
 		}		
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
 		exit;

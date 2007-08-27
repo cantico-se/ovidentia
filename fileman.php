@@ -370,6 +370,9 @@ class DisplayUserFolderForm extends DisplayFolderFormBase
 
 class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 {
+	var $iApprobationSchemeId = null;
+	var $oAppSchemeRes = false;
+	
 	function DisplayCollectiveFolderForm($sGr, $sPath, $iId)
 	{
 		parent::DisplayFolderFormBase($sGr, $sPath, $iId);
@@ -378,6 +381,13 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 		$this->set_data('sYes', 'Y');
 		$this->set_data('sNo', 'N');
 		$this->set_data('iNone', 0);
+		
+		$this->set_data('iAppSchemeId', 0);
+		$this->set_data('iAppSchemeName', '');
+		$this->set_data('sAppSchemeNameSelected', '');
+		
+		global $babDB;
+		$this->oAppSchemeRes = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." order by name asc");
 	}
 	
 	function setCaption()
@@ -396,6 +406,7 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 		$this->set_caption('sNo', bab_translate("No"));
 		$this->set_caption('sNone', bab_translate("None"));
 		$this->set_caption('sAdd', bab_translate("Add"));
+		
 	}
 	
 	function handleCreation()
@@ -443,6 +454,7 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 		$oFmFolder = $oFmFolderSet->get($oCriteria);
 		if(!is_null($oFmFolder))
 		{
+			$this->iApprobationSchemeId = $oFmFolder->getApprobationSchemeId();
 			$this->set_data('isCollective', true);
 			$this->set_data('isActive', ('Y' === $oFmFolder->getActive()) ? true : false);
 			$this->set_data('isAutoApprobation', ('Y' === $oFmFolder->getAutoApprobation()) ? true : false);
@@ -452,6 +464,29 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 			$this->set_data('iIdFolder', $oFmFolder->getId());
 			$this->set_data('sOldDirName', $oFmFolder->getName());
 		}
+	}
+	
+	function getNextApprobationScheme()
+	{
+		if(false !== $this->oAppSchemeRes)
+		{
+			global $babDB;
+			$aDatas = $babDB->db_fetch_array($this->oAppSchemeRes);
+			if(false !== $aDatas)
+			{
+				$this->set_data('iAppSchemeId', $aDatas['id']);
+				$this->set_data('iAppSchemeName', $aDatas['name']);
+				$this->set_data('sAppSchemeNameSelected', '');
+				
+				if($this->iApprobationSchemeId == $aDatas['id'])
+				{
+					$this->set_data('sAppSchemeNameSelected', 'selected="selected"');
+				}
+				
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	function printTemplate()
@@ -2180,7 +2215,7 @@ function createEditFolderForCollectiveDir($iIdFolder, $sPath)
 				if('createFolder' === $sAction)
 				{
 					$sFullPathName = $sUploadPath . $sRelativePath . $sDirName;
-					
+
 //					bab_debug('sUploadPath ==> ' . $sUploadPath);
 //					bab_debug('sFullPathName ==> ' .  $sFullPathName);
 //					bab_debug('sRelativePath ==> ' . $sRelativePath);
@@ -2227,7 +2262,6 @@ function createEditFolderForCollectiveDir($iIdFolder, $sPath)
 					{
 						$sOldDirName	= (string) bab_pp('sOldDirName', '');
 						$bRename		= ($sDirName !== $sOldDirName) ? true : false;
-						$sRelativePath	= $sPath . '/';
 					}
 
 //					bab_debug('sUploadPath ==> ' . $sUploadPath);
@@ -2239,11 +2273,13 @@ function createEditFolderForCollectiveDir($iIdFolder, $sPath)
 					{
 						if(strlen(trim($sOldDirName)) > 0)
 						{
-							$oFmFolder->setName($sDirName);
-							$oFmFolder->save();
+if(!is_null($oFmFolder))
+{
+	$oFmFolder->setName($sDirName);
+}
 							
 							BAB_FmFolderHelper::updateSubFolderPathName($sUploadPath, $sRelativePath, $sOldDirName, $sDirName);
-							bab_debug('Ne pas oublier les fichiers');
+							BAB_FolderFileHelper::renamePath($sRelativePath . $sOldDirName . '/', $sDirName);
 							
 /*
 if(strlen(trim($sRelativePath)) > 0)
@@ -2267,7 +2303,21 @@ if(strlen(trim($sRelativePath)) > 0)
 						}
 					}
 		
-		
+if(!is_null($oFmFolder))
+{
+	$oFmFolder->setActive($sActive);
+	$oFmFolder->setApprobationSchemeId($iIdApprobationScheme);
+	$oFmFolder->setAutoApprobation($sAutoApprobation);
+	$oFmFolder->setDelegationOwnerId((int) $babBody->currentAdmGroup);
+	$oFmFolder->setFileNotify($sNotification);
+	$oFmFolder->setHide($sDisplay);
+	$oFmFolder->setName($sDirName);
+	$oFmFolder->setRelativePath($sRelativePath);
+	$oFmFolder->setVersioning($sVersioning);
+	$oFmFolder->setAutoApprobation($sAutoApprobation);
+	$oFmFolder->save();
+}
+
 					//Pour les fichiers
 //					$oParentFolder = BAB_FmFolderHelper::getFirstCollectiveFolder($sRelativePath);
 //					if(!is_null($oParentFolder))
