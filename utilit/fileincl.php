@@ -1544,6 +1544,7 @@ class BAB_BaseSet extends BAB_MySqlResultIterator
 {
 	var $aField = array();
 	var $sTableName = '';
+	var $bUseAlias = true;
 	
 	function BAB_BaseSet($sTableName)
 	{
@@ -1599,7 +1600,7 @@ class BAB_BaseSet extends BAB_MySqlResultIterator
 				$aInto[] = $aItem['value']->getName();
 				
 				$oObject->_get($aItem['key'], $iId);
-				$aValue[] = (is_null($iId)) ? '' : '\'' . $babDB->db_escape_string($iId) . '\'';
+				$aValue[] = (is_null($iId)) ? '\'\'' : '\'' . $babDB->db_escape_string($iId) . '\'';
 			}
 			
 			while(false !== ($aItem = each($this->aField)))
@@ -1659,9 +1660,20 @@ class BAB_BaseSet extends BAB_MySqlResultIterator
 		$sOrder = $this->processOrder($aOrder);
 		
 		$aField = array();
-		foreach($this->aField as $sKey => $oField)
+
+		if(true === $this->bUseAlias)
 		{
-			$aField[] = $oField->getName() . ' ' . $sKey;
+			foreach($this->aField as $sKey => $oField)
+			{
+				$aField[] = $oField->getName() . ' ' . $sKey;
+			}
+		}
+		else 
+		{
+			foreach($this->aField as $sKey => $oField)
+			{
+				$aField[] = $oField->getName() . ' ';
+			}
 		}
 
 		$sQuery = 
@@ -1671,7 +1683,7 @@ class BAB_BaseSet extends BAB_MySqlResultIterator
 				$this->sTableName . ' ' .
 			$sWhereClause . ' ' . $sOrder;
 				
-//		bab_debug($sQuery);	
+		bab_debug($sQuery);	
 		return $sQuery;
 	}
 	
@@ -2064,12 +2076,12 @@ class BAB_FolderFile extends BAB_DbRecord
 		return $this->_sGet('sState');
 	}
 	
-	function setCreation($sCreation)
+	function setCreationDate($sCreation)
 	{
 		$this->_set('sCreation', $sCreation);
 	}
 	
-	function getCreation()
+	function getCreationDate()
 	{
 		return $this->_sGet('sCreation');
 	}
@@ -2084,12 +2096,12 @@ class BAB_FolderFile extends BAB_DbRecord
 		return $this->_iGet('iIdAuthor');
 	}
 	
-	function setModified($sModified)
+	function setModifiedDate($sModified)
 	{
 		$this->_set('sModified', $sModified);
 	}
 	
-	function getModified()
+	function getModifiedDate()
 	{
 		return $this->_sGet('sModified');
 	}

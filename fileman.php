@@ -69,6 +69,10 @@ class listFiles
 	var $arrdir = array();
 	var $buaf;
 	
+	var $sPathName = '';
+	var $iIdOwner = 0;
+	var $oFolderFileSet = null;
+	
 	/**
 	 * Files extracted by readdir
 	 */
@@ -79,6 +83,10 @@ class listFiles
 		global $babBody, $babDB, $BAB_SESS_USERID;
 		include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 		$this->fullpath = bab_getUploadFullPath($gr, $id);
+		
+		$this->initEnv($gr, $id, $path);
+		$this->oFolderFileSet = new BAB_FolderFileSet();
+
 		$this->path = $path;
 		$this->jpath = bab_toHtml($path, BAB_HTML_JS);
 		$this->id = $id;
@@ -102,28 +110,7 @@ class listFiles
 
 				if( $what == "list" && $gr == "Y" && $babBody->aclfm['idsa'][$i] != 0 && ($this->buaf = isUserApproverFlow($babBody->aclfm['idsa'][$i], $BAB_SESS_USERID)) )
 					{
-					$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
-					if( count($arrschi) > 0 )
-						{
-						$req = "
-						SELECT 
-							f.* 
-						FROM 
-							".BAB_FILES_TBL." f 
-						WHERE 
-							id_owner='".$babDB->db_escape_string($id)."' 
-							AND bgroup='".$babDB->db_escape_string($gr)."' 
-							AND state='' and path='".$babDB->db_escape_string($path)."' 
-							AND confirmed='N' 
-							AND f.idfai IN (".$babDB->quote($arrschi).")
-						";
-						$this->reswf = $babDB->db_query($req);
-						$this->countwf = $babDB->db_num_rows($this->reswf);
-						}
-					else
-						{
-						$this->countwf = 0;
-						}
+						$this->selectWaitingFile();
 					}
 				}
 			}
@@ -201,89 +188,143 @@ class listFiles
 			
 		
 		}
+
+		function initEnv($sGr, $iId, $sPath)
+		{
+			$this->iIdOwner = $iId;
+			
+			$sEndSlash = '';
+			if(strlen(trim($sPath)) > 0)
+			{
+				$sEndSlash = '/';
+			}
+			
+			if('Y' === $sGr)
+			{
+				BAB_FmFolderHelper::getFileInfoForCollectiveDir($iId, $sPath, $this->iIdOwner, $this->sPathName);
+			}
+			else 
+			{
+				$this->sPathName = 'U' . $iId . '/' . $sPath . $sEndSlash;
+			}
+		}
 		
+		function selectWaitingFile()
+		{
+			$aWaitingAppInstanceId = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
+			if(count($aWaitingAppInstanceId) > 0)
+			{
+				$this->oFolderFileSet->bUseAlias = false;
+				$oIdOwner = $this->oFolderFileSet->aField['iIdOwner'];
+				$oGroup = $this->oFolderFileSet->aField['sGroup'];
+				$oState = $this->oFolderFileSet->aField['sState'];
+				$oPathName = $this->oFolderFileSet->aField['sPathName'];
+				$oConfirmed = $this->oFolderFileSet->aField['sConfirmed'];
+				$oIdApprobationInstance = $this->oFolderFileSet->aField['iIdApprobationInstance'];
+				
+				$oCriteria = $oIdOwner->in($this->iIdOwner);
+				$oCriteria = $oCriteria->_and($oGroup->in($this->gr));
+				$oCriteria = $oCriteria->_and($oState->in(''));
+				$oCriteria = $oCriteria->_and($oPathName->in($this->sPathName));
+				$oCriteria = $oCriteria->_and($oConfirmed->in('N'));
+				$oCriteria = $oCriteria->_and($oIdApprobationInstance->in($aWaitingAppInstanceId));
+				
+				$this->oFolderFileSet->select($oCriteria);
+				$this->reswf = $this->oFolderFileSet->_oResult;
+				$this->countwf = $this->oFolderFileSet->count();
+				$this->oFolderFileSet->bUseAlias = true;
+			}
+			else
+			{
+				$this->countwf = 0;
+			}
+		}
 		
 		function prepare() {
-			global $babDB;
-		
-			$req = " 
-			SELECT * FROM 
-				".BAB_FILES_TBL." 
-			WHERE 
-				id_owner='".$babDB->db_escape_string($this->id)."' 
-				AND bgroup='".$babDB->db_escape_string($this->gr)."' 
-				AND state='' 
-				AND path='".$babDB->db_escape_string($this->path)."' 
-				AND confirmed='Y'
-			";
-			$req .= ' ORDER BY name asc';
-			$this->res = $babDB->db_query($req);
-			$this->count = $babDB->db_num_rows($this->res);
+			$this->oFolderFileSet->bUseAlias = false;
+			$oIdOwner = $this->oFolderFileSet->aField['iIdOwner'];
+			$oGroup = $this->oFolderFileSet->aField['sGroup'];
+			$oState = $this->oFolderFileSet->aField['sState'];
+			$oPathName = $this->oFolderFileSet->aField['sPathName'];
+			$oConfirmed = $this->oFolderFileSet->aField['sConfirmed'];
+			
+			$oCriteria = $oIdOwner->in($this->iIdOwner);
+			$oCriteria = $oCriteria->_and($oGroup->in($this->gr));
+			$oCriteria = $oCriteria->_and($oState->in(''));
+			$oCriteria = $oCriteria->_and($oPathName->in($this->sPathName));
+			$oCriteria = $oCriteria->_and($oConfirmed->in('Y'));
+			
+			$this->oFolderFileSet->select($oCriteria);
+			$this->res = $this->oFolderFileSet->_oResult;
+			$this->count = $this->oFolderFileSet->count();
+			$this->oFolderFileSet->bUseAlias = true;
 		}
 
 
 		/** 
 		 * if there is file not presents in database, add and recreate $this->res
 		 */
-		function autoadd_files() {
-			
+		function autoadd_files() 
+		{
 			global $babDB;
 
-			if( !isset($GLOBALS['babAutoAddFilesAuthorId']) || empty($GLOBALS['babAutoAddFilesAuthorId']))
-				{
+			if(!isset($GLOBALS['babAutoAddFilesAuthorId']) || empty($GLOBALS['babAutoAddFilesAuthorId']))
+			{
 				return;
-				}
+			}
 		
 			$res = $babDB->db_query('select id from '.BAB_USERS_TBL.' where id='.$babDB->quote($GLOBALS['babAutoAddFilesAuthorId']));
-			if( 0 == $babDB->db_num_rows($res) )
-				{
-					return;
-				}
+			if(0 == $babDB->db_num_rows($res))
+			{
+				return;
+			}
 
-			if ($this->count < count($this->files_from_dir)) {
+			if($this->count < count($this->files_from_dir)) 
+			{
+				$oIdOwner = $this->oFolderFileSet->aField['iIdOwner'];
+				$oGroup = $this->oFolderFileSet->aField['sGroup'];
+				$oPathName = $this->oFolderFileSet->aField['sPathName'];
+				$oName = $this->oFolderFileSet->aField['sName'];
+				
+				$oFolderFile = new BAB_FolderFile();
+				foreach($this->files_from_dir as $dir_file) 
+				{
+					$oCriteria = $oIdOwner->in($this->iIdOwner);
+					$oCriteria = $oCriteria->_and($oPathName->in($this->sPathName));
+					$oCriteria = $oCriteria->_and($oGroup->in($this->gr));
+					$oCriteria = $oCriteria->_and($oName->in($dir_file));
 			
-				bab_debug($this->files_from_dir);
-				
-				foreach($this->files_from_dir as $dir_file) {
-				
-					$res = $babDB->db_query('
-						SELECT id FROM '.BAB_FILES_TBL.' 
-						WHERE 
-							id_owner = '.$babDB->quote($this->id).' 
-							AND path = '.$babDB->quote($this->path).' 
-							AND bgroup = '.$babDB->quote($this->gr).' 
-							AND name = '.$babDB->quote($dir_file).'
-					');
+					$this->oFolderFileSet->select($oCriteria);
 					
-					if (0 == $babDB->db_num_rows($res)) {
-						$babDB->db_query("
-							INSERT INTO ".BAB_FILES_TBL." 
-								(
-								name, 
-								path, 
-								id_owner, 
-								bgroup, 
-								created, 
-								author, 
-								modified, 
-								modifiedby, 
-								confirmed
-							) 
-							VALUES (
-								'".$babDB->db_escape_string($dir_file)."',
-								'".$babDB->db_escape_string($this->path)."',
-								'".$babDB->db_escape_string($this->id)."',
-								".$babDB->quote($this->gr).",
-								NOW(),
-								'".$babDB->db_escape_string($GLOBALS['babAutoAddFilesAuthorId'])."',
-								NOW(),
-								'".$babDB->db_escape_string($GLOBALS['babAutoAddFilesAuthorId'])."',
-								'Y'
-							)
-						");	
+					if(0 === $this->oFolderFileSet->count())
+					{
+						$oFolderFile->setName($dir_file);
+						$oFolderFile->setPathName($this->sPathName);
+						$oFolderFile->setOwnerId($this->iIdOwner);
+						$oFolderFile->setGroup($this->gr);
+						$oFolderFile->setCreationDate(date("Y-m-d H:i:s"));
+						$oFolderFile->setAuthorId($GLOBALS['babAutoAddFilesAuthorId']);
+						$oFolderFile->setModifiedDate(date("Y-m-d H:i:s"));
+						$oFolderFile->setModifierId($GLOBALS['babAutoAddFilesAuthorId']);
+						$oFolderFile->setConfirmed('Y');
+						
+						$oFolderFile->setDescription('');
+						$oFolderFile->setKeywords('');
+						$oFolderFile->setLinkId(0);
+						$oFolderFile->setReadOnly('N');
+						$oFolderFile->setState('');
+						$oFolderFile->setHits(0);
+						$oFolderFile->setApprobationInstanceId(0);
+						$oFolderFile->setUserEditId(0);
+						$oFolderFile->setMajorVer(1);
+						$oFolderFile->setMinorVer(0);
+						$oFolderFile->setCommentVer('');
+						$oFolderFile->setStatusIndex(0);
+						
+						$oFolderFile->save();
+						$oFolderFile->setId(null);
 					}
 				}
-				
 				$this->prepare();
 			}
 		}
@@ -938,9 +979,10 @@ function listFiles($id, $gr, $path, $bmanager, $upload)
 				$this->fileimage = $this->arrext[$ext];
 			$this->name = $arr['name'];
 			
-			if( file_exists($this->fullpath.$arr['path']."/".$arr['name']))
+			$sFullPathName = BAB_FmFolderHelper::getUploadPath() . $this->sPathName . $arr['name'];
+			if( file_exists($sFullPathName))
 				{
-				$fstat = stat($this->fullpath.$arr['path']."/".$arr['name']);
+				$fstat = stat($sFullPathName);
 				$this->sizef = bab_toHtml(bab_formatSizeFile($fstat[7])." ".bab_translate("Kb"));
 				}
 			else
@@ -1439,27 +1481,35 @@ function getFile( $file, $id, $gr, $path)
 		$inl = bab_getFileContentDisposition() == 1? 1: '';
 	}
 
-	if( $gr == "N" && $babBody->ustorage)
-		{
+	$iIdOwner = $id;
+	$sPathName = $path;
+	
+	if($gr == "N" && $babBody->ustorage)
+	{
 		$access = true;
-		}
-
-	if( $gr == "Y" )
+		$sPathName = BAB_FmFolderHelper::getUserDirUploadPath($id) . $path . '/';
+	}
+	else if($gr == "Y")
+	{
+		for($i = 0; $i < count($babBody->aclfm['id']); $i++)
 		{
-		for( $i = 0; $i < count($babBody->aclfm['id']); $i++)
+			if($babBody->aclfm['id'][$i] == $id && ($babBody->aclfm['down'][$i] || $babBody->aclfm['ma'][$i]))
 			{
-			if( $babBody->aclfm['id'][$i] == $id && ($babBody->aclfm['down'][$i] || $babBody->aclfm['ma'][$i]))
-				{
 				$access = true;
 				break;
-				}	
-			}
+			}	
 		}
+			
+		if(true === $access)
+		{
+			$access = BAB_FmFolderHelper::getFileInfoForCollectiveDir($id, $path, $iIdOwner, $sPathName);
+		}
+	}
 
 	if( $access )
 		{
 		$file = stripslashes($file);
-		$req = "select * from ".BAB_FILES_TBL." where id_owner='".$babDB->db_escape_string($id)."' and bgroup='".$babDB->db_escape_string($gr)."' and path='".$babDB->db_escape_string($path)."' and name='".$babDB->db_escape_string($file)."'";
+		$req = "select * from ".BAB_FILES_TBL." where id_owner='".$babDB->db_escape_string($iIdOwner)."' and bgroup='".$babDB->db_escape_string($gr)."' and path='".$babDB->db_escape_string($sPathName)."' and name='".$babDB->db_escape_string($file)."'";
 		$res = $babDB->db_query($req);
 		if( $res && $babDB->db_num_rows($res) > 0 )
 			{
@@ -2245,41 +2295,78 @@ function createEditFolderForCollectiveDir($iIdFolder, $sPath)
 				else if('editFolder' === $sAction)
 				{
 					$iIdFld						= (int) bab_pp('iIdFolder', 0); 
-					$bRename					= false;
-					$bWasCollective				= false;
-					$bChangeIdOwnerOfChildFiles	= false; 
 					$sPathName					= '';			
+					
+					$oCommandProcessor			= new BAB_CommandProcessor();
+					
+					$bFolderRenamed				= false;
+					$bIsCollectiveFolder		= false;
+					
+					//Peut être faudrait-il un objet context
 					
 					$oFmFolder = BAB_FmFolderHelper::getFmFolderById($iIdFld);
 					if(!is_null($oFmFolder))
 					{
-						$bRename		= ($sDirName !== $oFmFolder->getName()) ? true : false;
-						$sOldDirName	= $oFmFolder->getName();
-						$sRelativePath	= $oFmFolder->getRelativePath();
-						$bWasCollective = true;
+						$bIsFolderRenamed		= ($sDirName !== $oFmFolder->getName()) ? true : false;
+						$sOldDirName			= $oFmFolder->getName();
+						$sRelativePath			= $oFmFolder->getRelativePath();
+						
+						$bIsCollectiveFolder	= true;
+						
+						
+						//collectiveToSimple
+						if('simple' === $sType)
+						{
+							//changer les iIdOwner
+							//supprimer les droits
+							//supprimer les versions de fichiers
+							//supprimer les instances de schémas d'approbations
+							
+							$sParentPath = $sRelativePath;
+							BAB_FolderFileHelper::setIdOwnerToFirstCollective($sParentPath, $iIdFld);
+							
+							aclDeleteGroup(BAB_FMUPLOAD_GROUPS_TBL, $iIdFld);
+							aclDeleteGroup(BAB_FMDOWNLOAD_GROUPS_TBL, $iIdFld);
+							aclDeleteGroup(BAB_FMUPDATE_GROUPS_TBL, $iIdFld);
+							aclDeleteGroup(BAB_FMMANAGERS_GROUPS_TBL, $iIdFld);
+						}
 					}
 					else 
 					{
 						$sOldDirName	= (string) bab_pp('sOldDirName', '');
-						$bRename		= ($sDirName !== $sOldDirName) ? true : false;
+						$bFolderRenamed	= ($sDirName !== $sOldDirName) ? true : false;
+						
+						//simpleToCollective
+						if('collective' === $sType)
+						{
+							//changer les iIdOwner
+						}
 					}
 
+					
+					
 //					bab_debug('sUploadPath ==> ' . $sUploadPath);
 //					bab_debug('sRelativePath ==> ' . $sRelativePath);
 //					bab_debug('sOldDirName ==> ' . $sOldDirName);
 //					bab_debug('sDirName ==> ' . $sDirName);
 
+return;
 					if($bRename)
 					{
 						if(strlen(trim($sOldDirName)) > 0)
 						{
-if(!is_null($oFmFolder))
-{
-	$oFmFolder->setName($sDirName);
-}
-							
-							BAB_FmFolderHelper::updateSubFolderPathName($sUploadPath, $sRelativePath, $sOldDirName, $sDirName);
-							BAB_FolderFileHelper::renamePath($sRelativePath . $sOldDirName . '/', $sDirName);
+							/*
+							$oCommandProcessor->add(
+								new BAB_RenameFolderCommand(
+									new BAB_RenameFolderContext($sUploadPath, $sRelativePath, $sOldDirName, $sDirName)));
+									
+							$oCommandProcessor->add(
+								new BAB_RenameFilePathCommand(
+									new BAB_RenameFilePathContext($sRelativePath . $sOldDirName . '/', $sDirName)));
+							//*/
+									
+//							BAB_FmFolderHelper::updateSubFolderPathName($sUploadPath, $sRelativePath, $sOldDirName, $sDirName);
+//							BAB_FolderFileHelper::renamePath($sRelativePath . $sOldDirName . '/', $sDirName);
 							
 /*
 if(strlen(trim($sRelativePath)) > 0)
@@ -2303,8 +2390,13 @@ if(strlen(trim($sRelativePath)) > 0)
 						}
 					}
 		
+					/*
+					$oCommandProcessor->execute();
+					//*/
+					
 if(!is_null($oFmFolder))
 {
+	$oFmFolder->setName($sDirName);
 	$oFmFolder->setActive($sActive);
 	$oFmFolder->setApprobationSchemeId($iIdApprobationScheme);
 	$oFmFolder->setAutoApprobation($sAutoApprobation);
