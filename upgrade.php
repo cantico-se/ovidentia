@@ -3171,20 +3171,6 @@ function upgrade612to620()
 
 
 
-function upgradeXXX()
-{
-	global $babDB;
-	$ret = "";
-
-	if(!bab_isTableField(BAB_FM_FOLDERS_TBL, 'sRelativePath')) 
-	{
-		$babDB->db_query("ALTER TABLE ".BAB_FM_FOLDERS_TBL." ADD `sRelativePath` TEXT NOT NULL AFTER `id`");
-	}
-	return $ret;
-}
-
-
-
 
 
 /**
@@ -3420,6 +3406,11 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		{
 		$babDB->db_query("ALTER TABLE ".BAB_SITES_TBL." DROP ldap_basedn");
 		}
+
+	if(!bab_isTableField(BAB_FM_FOLDERS_TBL, 'sRelativePath')) 
+	{
+		$babDB->db_query("ALTER TABLE ".BAB_FM_FOLDERS_TBL." ADD `sRelativePath` TEXT NOT NULL AFTER `id`");
+	}
 
 	return true;
 	
