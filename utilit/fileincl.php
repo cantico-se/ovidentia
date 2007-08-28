@@ -1531,164 +1531,13 @@ function notifyApprovers($id, $fid)
 	
 	
 	
-class BAB_DbRecord
-{
-	var $aDatas = null;
-	
-	function BAB_DbRecord()
-	{
-		
-	}
-	
-	function _iGet($sName)
-	{
-		$iValue = 0;
-		$this->_get($sName, $iValue);
-		return (int) $iValue;
-	}
-	
-	function _sGet($sName)
-	{
-		$sValue = '';
-		$this->_get($sName, $sValue);
-		return (string) $sValue;
-	}
-	
-	function _get($sName, &$sValue)
-	{
-		if(array_key_exists($sName, $this->aDatas))
-		{
-			$sValue = $this->aDatas[$sName];
-			return true;
-		}
-		return false;
-	}
-	
-	function _set($sName, $sValue)
-	{
-		$this->aDatas[$sName] = $sValue;
-		return true;
-	}
-}
 
-	
-class BAB_FmFolder extends BAB_DbRecord
-{
-	function BAB_FmFolder()
-	{
-		parent::BAB_DbRecord();
-	}
-	
-	function setId($iId)
-	{
-		$this->_set('iId', $iId);
-	}
-	
-	function getId()
-	{
-		return $this->_iGet('iId');
-	}
-	
-	function setName($sName)
-	{
-		$this->_set('sName', $sName);
-	}
-	
-	function getName()
-	{
-		return $this->_sGet('sName');
-	}
-	
-	function setRelativePath($sRelativePath)
-	{
-		if(isset($GLOBALS['babFileNameTranslation']))
-		{
-			$sRelativePath = strtr($sRelativePath, $GLOBALS['babFileNameTranslation']);
-		}
-		$this->_set('sRelativePath', $sRelativePath);
-	}
-	
-	function getRelativePath()
-	{
-		return $this->_sGet('sRelativePath');
-	}
-	
-	function setApprobationSchemeId($iId)
-	{
-		$this->_set('iIdApprobationScheme', $iId);
-	}
-	
-	function getApprobationSchemeId()
-	{
-		return $this->_iGet('iIdApprobationScheme');
-	}
-	
-	function setFileNotify($sFileNotify)
-	{
-		$this->_set('sFileNotify', $sFileNotify);
-	}
-	
-	function getFileNotify()
-	{
-		return $this->_sGet('sFileNotify');
-	}
-	
-	function setActive($sActive)
-	{
-		$this->_set('sActive', $sActive);
-	}
-	
-	function getActive()
-	{
-		return $this->_sGet('sActive');
-	}
-	
-	function setVersioning($sVersioning)
-	{
-		$this->_set('sVersioning', $sVersioning);
-	}
-	
-	function getVersioning()
-	{
-		return $this->_sGet('sVersioning');
-	}
-	
-	function setDelegationOwnerId($iId)
-	{
-		$this->_set('iIdDgOwner', $iId);
-	}
-	
-	function getDelegationOwnerId()
-	{
-		return $this->_iGet('iIdDgOwner');
-	}
-	
-	function setHide($sHide)
-	{
-		$this->_set('sHide', $sHide);
-	}
-	
-	function getHide()
-	{
-		return $this->_sGet('sHide');
-	}
-	
-	function setAutoApprobation($sAutoApprobation)
-	{
-		$this->_set('sAutoApprobation', $sAutoApprobation);
-	}
-	
-	function getAutoApprobation()
-	{
-		return $this->_sGet('sAutoApprobation');
-	}
-	
-	function save()
-	{
-		$oFmFolderSet = new BAB_FmFolderSet(BAB_FM_FOLDERS_TBL);
-		return $oFmFolderSet->save($this);
-	}
-}
+
+
+
+
+
+
 
 
 class BAB_BaseSet extends BAB_MySqlResultIterator 
@@ -1888,280 +1737,218 @@ class BAB_FmFolderSet extends BAB_BaseSet
 }
 
 
-class BAB_FmFolderHelper
+class BAB_FolderFileSet extends BAB_BaseSet 
 {
-	function BAB_FmFolderHelper()
+	function BAB_FolderFileSet()
 	{
-		
-	}
-	
-	function getFmFolderById($iId)
-	{
-		$oFmFolderSet = new BAB_FmFolderSet();
-		$oId =& $oFmFolderSet->aField['iId']; 
-		return $oFmFolderSet->get($oId->in($iId));
-	}
-	
-	function getFirstCollectiveFolder($sRelativePath)
-	{
-//		bab_debug(__FUNCTION__ . ' sRelativePath ==> ' . $sRelativePath);
-		$aPath = explode('/', $sRelativePath);
-		if(is_array($aPath))
-		{
-			$iLength = count($aPath); 
-			if($iLength >= 1)
-			{
-				$bStop		= false;
-				$iIndex		= $iLength - 1;
-				$bFinded	= false;
-				global $babDB;
-				
-//				bab_debug($aPath);
-				
-				$oFmFolderSet = new BAB_FmFolderSet();
-				$oRelativePath =& $oFmFolderSet->aField['sRelativePath']; 
-				$oName =& $oFmFolderSet->aField['sName']; 
-				
-				do 
-				{
-					$sFolderName = $aPath[$iIndex];
-					unset($aPath[$iIndex]);
-					$sRelativePath	= implode('/', $aPath);
-					
-					$oCriteria = $oRelativePath->like($babDB->db_escape_like($sRelativePath . '/'));
-					$oCriteria = $oCriteria->_and($oName->in($sFolderName));
-					$oFmFolder = $oFmFolderSet->get($oCriteria);
-					
-					if(!is_null($oFmFolder))
-					{
-						return $oFmFolder;
-					}
-					
-					if($iIndex > 0)
-					{
-						$iIndex--;
-					}
-					else 
-					{
-						$bStop = true;			
-					}
-				}
-				while(false === $bStop);
-			}
-		}
-		return null;		
-	}
-	
-	function getFileInfoForCollectiveDir($iIdFolder, $sPath, &$iIdOwner, &$sRelativePath)
-	{
-		$bSuccess = true;
-		
-		$oFmFolder = BAB_FmFolderHelper::getFmFolderById($iIdFolder);
-		if(!is_null($oFmFolder))
-		{
-			//If the method getRelativePath return an empty string so this is a root folder
-			$iIdOwner = $oFmFolder->getId();
-			$sRelativePath = (strlen(trim($oFmFolder->getRelativePath())) === 0) ? $oFmFolder->getName() . '/' : '';
-			
-			if(strlen(trim($sPath)) > 0)
-			{
-				$sRelativePath .= $oFmFolder->getRelativePath() . $sPath . '/';
-				
-				$oFmFolder = BAB_FmFolderHelper::getFirstCollectiveFolder($sRelativePath);
-				if(!is_null($oFmFolder))
-				{
-					$iIdOwner = $oFmFolder->getId();
-				}
-				else 
-				{
-					$bSuccess = false;
-				}
-			}
-		}
-		else 
-		{
-			$bSuccess = false;
-		}
-		
-		return $bSuccess;
-	}
-	
-	function getUploadPath()
-	{
-		$iLength = strlen(trim($GLOBALS['babUploadPath']));
-		if($iLength > 0)			
-		{
-			$sUploadPath = $GLOBALS['babUploadPath'];
-			if('/' !== $sUploadPath{$iLength - 1})
-			{
-				$sUploadPath .= '/';
-				return $sUploadPath;
-			}
-		}
-		return $GLOBALS['babUploadPath'];
-	}
+		parent::BAB_BaseSet(BAB_FILES_TBL);
 
-	function getUserDirUploadPath($iIdUser)
-	{
-		return "U" . $iIdUser . '/';
+		$this->aField = array(
+			'iId' => new BAB_IntField('`id`'),
+			'sName' => new BAB_StringField('`name`'),
+			'sDescription' => new BAB_StringField('`description`'),
+			'sKeywords' => new BAB_StringField('`keywords`'),
+			'sPathName' => new BAB_StringField('`path`'),
+			'iIdOwner' => new BAB_IntField('`id_owner`'),
+			'sGroup' => new BAB_StringField('`bgroup`'),
+			'iIdLink' => new BAB_IntField('`link`'),
+			'sReadOnly' => new BAB_StringField('`readonly`'),
+			'sState' => new BAB_StringField('`state`'),
+			'sCreation' => new BAB_StringField('`created`'),
+			'iIdAuthor' => new BAB_IntField('`author`'),
+			'sModified' => new BAB_StringField('`modified`'),
+			'iIdModifier' => new BAB_IntField('`modifiedby`'),
+			'sConfirmed' => new BAB_StringField('`confirmed`'),
+			'iHits' => new BAB_IntField('`hits`'),
+			'iIdApprobationInstance' => new BAB_IntField('`idfai`'),
+			'iIdUserEdit' => new BAB_IntField('`edit`'),
+			'iVerMajor' => new BAB_IntField('`ver_major`'),
+			'iVerMinor' => new BAB_IntField('`ver_minor`'),
+			'sVerComment' => new BAB_StringField('`ver_comment`'),
+			'iIndexStatus' => new BAB_IntField('`index_status`')
+			);
 	}
-	
-	function accessValidForUserDir($iIdUser)
-	{
-		global $babBody, $BAB_SESS_USERID;
-		return ($BAB_SESS_USERID == $iIdUser && $babBody->ustorage);
-	}
-	
-	function accessValidForCollectiveDir($iIdFolder)
-	{
-		global $babBody, $BAB_SESS_USERID, $aclfm;
-		
-		$iCount = count($babBody->aclfm['id']);
-		for($i = 0; $i < $iCount; $i++)
-		{
-			if($babBody->aclfm['id'][$i] == $iIdFolder && $babBody->aclfm['ma'][$i] == 1)
-			{
-				return true;
-			}
-		}
-		return false;
-	}
+}
 
-	function createDirectory($sUplaodPath, $sFullPathName)
-	{
-		global $babBody;
-		$bSuccess = true;
-			
-		$sUplaodPath = realpath($sUplaodPath);
-		
-		if(strlen(trim($sFullPathName)) > 0 && false === strstr($sFullPathName, '..'))
-		{
-			if(isset($GLOBALS['babFileNameTranslation']))
-			{
-				$sFullPathName = strtr($sFullPathName, $GLOBALS['babFileNameTranslation']);
-			}
-		
-			if(!is_dir($sFullPathName))
-			{
-				$bSuccess = bab_mkdir($sFullPathName, $GLOBALS['babMkdirMode']);
-			}
-			else
-			{
-				$babBody->msgerror = bab_translate("This folder already exists");
-				$bSuccess = false;
-			}
-		}
-		else 
-		{
-			$babBody->msgerror = bab_translate("Please give a valid directory name");
-			$bSuccess = false;
-		}
-		return $bSuccess;
-	}	
-	
-	function renameDirectory($sUploadPath, $sRelativePath, $sOldName, $sNewName)
-	{
-		global $babBody;
-		$bSuccess = true;
-		
-		$bOldNameValid = (strlen(trim($sOldName)) > 0);
-		$bNewNameValid = (strlen(trim($sNewName)) > 0 && false === strstr($sNewName, '..'));
-		
-		if($bOldNameValid && $bNewNameValid)
-		{
-			$sOldPathName = '';
-			$sNewPathName = '';
-			
-			//$sRelativePath est vide si c'est un repertoire à la racine du répertoire d'upload
-			
-			$sUploadPath = realpath($sUploadPath);
-			if(strlen(trim($sRelativePath)) > 0)
-			{
-				$sPathName		= realpath($sUploadPath . '/' . $sRelativePath);
-				$sOldPathName	= realpath($sPathName . '/' . $sOldName);
-//				bab_debug('*** sUploadPath ==> ' . $sUploadPath);
-//				bab_debug('*** sRelativePath ==> ' . $sRelativePath);
-//				bab_debug('*** sPathName ==> ' . $sPathName);
-				$sNewPathName	= $sPathName . '/' . $sNewName;
-			}
-			else 
-			{
-				$sOldPathName	= realpath($sUploadPath . '/' . $sOldName);
-				$sNewPathName	= $sUploadPath . '/' . $sNewName;
-			}
-			
-//			bab_debug('sUploadPath ==> ' . $sUploadPath);
-//			bab_debug('sRelativePath ==> ' . $sRelativePath);
-//			bab_debug('sOldPathName ==> ' . $sOldPathName);
-//			bab_debug('sNewPathName ==> ' . $sNewPathName);
 
-			$bOldPathNameValid = (substr($sOldPathName, 0, strlen($sUploadPath)) === $sUploadPath);
+class BAB_FolderFileVersionSet extends BAB_BaseSet 
+{
+	function BAB_FolderFileSet()
+	{
+		parent::BAB_BaseSet(BAB_FM_FILESVER_TBL);
+
+		$this->aField = array(
+			'iId' => new BAB_IntField('`id`'),
+			'iIdFile' => new BAB_IntField('`id_file`'),
+			'sCreationDate' => new BAB_StringField('`date`'),
+			'iIdAuthor' => new BAB_IntField('`author`'),
+			'iVerMajor' => new BAB_IntField('`ver_major`'),
+			'iVerMinor' => new BAB_IntField('`ver_minor`'),
+			'sComment' => new BAB_StringField('`comment`'),
+			'iIdFlowApprobationInstance' => new BAB_IntField('`idfai`'),
+			'sConfirmed' => new BAB_StringField('`confirmed`'),
+			'iIndexStatus' => new BAB_IntField('`index_status`')
+			);
+	}
+}
+
+
+class BAB_DbRecord
+{
+	var $aDatas = null;
 	
-			if($bOldPathNameValid)
-			{
-				if(is_writable($sOldPathName))
-				{
-					if(!is_dir($sNewPathName))
-					{
-						$bSuccess = rename($sOldPathName, $sNewPathName);
-					}
-					else 
-					{
-						$babBody->msgerror = bab_translate("This folder already exists");
-						$bSuccess = false;
-					}
-				}
-				else 
-				{
-					$babBody->msgerror = bab_translate("This folder does not exists");
-					$bSuccess = false;
-				}
-			}
-			else 
-			{
-				$babBody->msgerror = bab_translate("Access denied 3");
-				$bSuccess = false;
-			}
-		}
-		else 
-		{
-			$babBody->msgerror = bab_translate("Access denied 6");
-			$bSuccess = false;
-		}
-		return $bSuccess;
+	function BAB_DbRecord()
+	{
+		
 	}
 	
-	
-	function updateSubFolderPathName($sUploadPath, $sRelativePath, $sOldName, $sNewName)
+	function _iGet($sName)
 	{
-//		bab_debug(__FUNCTION__);
-//		bab_debug('sUploadPath ==> ' . $sUploadPath);
-//		bab_debug('sRelativePath ==> ' . $sRelativePath);
-//		bab_debug('sOldName ==> ' . $sOldName);
-//		bab_debug('sNewName ==> ' . $sNewName);
-		
-		if(BAB_FmFolderHelper::renameDirectory($sUploadPath, $sRelativePath, $sOldName, $sNewName))
+		$iValue = 0;
+		$this->_get($sName, $iValue);
+		return (int) $iValue;
+	}
+	
+	function _sGet($sName)
+	{
+		$sValue = '';
+		$this->_get($sName, $sValue);
+		return (string) $sValue;
+	}
+	
+	function _get($sName, &$sValue)
+	{
+		if(array_key_exists($sName, $this->aDatas))
 		{
-			$sOldRelativePath = $sRelativePath . $sOldName . '/';
-			$sNewRelativePath = $sRelativePath . $sNewName . '/';
-			
-//			bab_debug('sOldRelativePath ==> ' . $sOldRelativePath);
-//			bab_debug('sNewRelativePath ==> ' . $sNewRelativePath);
-			
-			global $babDB;
-			$oFmFolderSet = new BAB_FmFolderSet();
-			$oRelativePath =& $oFmFolderSet->aField['sRelativePath']; 
-			$oFmFolderSet = $oFmFolderSet->select($oRelativePath->like($babDB->db_escape_like($sOldRelativePath) . '%'));
-			while(null !== ($oFmFolder = $oFmFolderSet->next()))
-			{
-				$sRelPath = $sNewRelativePath . substr($oFmFolder->getRelativePath(), strlen($sOldRelativePath));
-//				bab_debug('sRelPath ==> ' . $sRelPath);
-				$oFmFolder->setRelativePath($sRelPath);
-				$oFmFolder->save();
-			}
+			$sValue = $this->aDatas[$sName];
 			return true;
 		}
 		return false;
+	}
+	
+	function _set($sName, $sValue)
+	{
+		$this->aDatas[$sName] = $sValue;
+		return true;
+	}
+}
+
+	
+class BAB_FmFolder extends BAB_DbRecord
+{
+	function BAB_FmFolder()
+	{
+		parent::BAB_DbRecord();
+	}
+	
+	function setId($iId)
+	{
+		$this->_set('iId', $iId);
+	}
+	
+	function getId()
+	{
+		return $this->_iGet('iId');
+	}
+	
+	function setName($sName)
+	{
+		$this->_set('sName', $sName);
+	}
+	
+	function getName()
+	{
+		return $this->_sGet('sName');
+	}
+	
+	function setRelativePath($sRelativePath)
+	{
+		if(isset($GLOBALS['babFileNameTranslation']))
+		{
+			$sRelativePath = strtr($sRelativePath, $GLOBALS['babFileNameTranslation']);
+		}
+		$this->_set('sRelativePath', $sRelativePath);
+	}
+	
+	function getRelativePath()
+	{
+		return $this->_sGet('sRelativePath');
+	}
+	
+	function setApprobationSchemeId($iId)
+	{
+		$this->_set('iIdApprobationScheme', $iId);
+	}
+	
+	function getApprobationSchemeId()
+	{
+		return $this->_iGet('iIdApprobationScheme');
+	}
+	
+	function setFileNotify($sFileNotify)
+	{
+		$this->_set('sFileNotify', $sFileNotify);
+	}
+	
+	function getFileNotify()
+	{
+		return $this->_sGet('sFileNotify');
+	}
+	
+	function setActive($sActive)
+	{
+		$this->_set('sActive', $sActive);
+	}
+	
+	function getActive()
+	{
+		return $this->_sGet('sActive');
+	}
+	
+	function setVersioning($sVersioning)
+	{
+		$this->_set('sVersioning', $sVersioning);
+	}
+	
+	function getVersioning()
+	{
+		return $this->_sGet('sVersioning');
+	}
+	
+	function setDelegationOwnerId($iId)
+	{
+		$this->_set('iIdDgOwner', $iId);
+	}
+	
+	function getDelegationOwnerId()
+	{
+		return $this->_iGet('iIdDgOwner');
+	}
+	
+	function setHide($sHide)
+	{
+		$this->_set('sHide', $sHide);
+	}
+	
+	function getHide()
+	{
+		return $this->_sGet('sHide');
+	}
+	
+	function setAutoApprobation($sAutoApprobation)
+	{
+		$this->_set('sAutoApprobation', $sAutoApprobation);
+	}
+	
+	function getAutoApprobation()
+	{
+		return $this->_sGet('sAutoApprobation');
+	}
+	
+	function save()
+	{
+		$oFmFolderSet = new BAB_FmFolderSet(BAB_FM_FOLDERS_TBL);
+		return $oFmFolderSet->save($this);
 	}
 }
 
@@ -2405,6 +2192,409 @@ class BAB_FolderFile extends BAB_DbRecord
 }
 
 
+class BAB_FmFolderFileVersion extends BAB_DbRecord
+{
+	function BAB_FmFolderFileVersion()
+	{
+		parent::BAB_DbRecord();
+	}
+	
+	function setId($iId)
+	{
+		$this->_set('iId', $iId);
+	}
+	
+	function getId()
+	{
+		return $this->_iGet('iId');
+	}
+	
+	function setIdFile($iId)
+	{
+		$this->_set('iIdFile', $iId);
+	}
+	
+	function getIdFile()
+	{
+		return $this->_iGet('iIdFile');
+	}
+	
+	function setCreationDate($sDate)
+	{
+		$this->_set('sCreationDate', $sDate);
+	}
+	
+	function getCreationDate()
+	{
+		return $this->_sGet('sCreationDate');
+	}
+	
+	function setAuthorId($iIdAuthor)
+	{
+		$this->_set('iIdAuthor', $iIdAuthor);
+	}
+	
+	function getAuthorId()
+	{
+		return $this->_iGet('iIdAuthor');
+	}
+	
+	function setMajorVer($iVerMajor)
+	{
+		$this->_set('iVerMajor', $iVerMajor);
+	}
+	
+	function getMajorVer()
+	{
+		return $this->_iGet('iVerMajor');
+	}
+	
+	function setMinorVer($iVerMinor)
+	{
+		$this->_set('iVerMinor', $iVerMinor);
+	}
+	
+	function getMinorVer()
+	{
+		return $this->_iGet('iVerMinor');
+	}
+	
+	function setComment($sComment)
+	{
+		$this->_set('sComment', $sComment);
+	}
+	
+	function getCommentVer()
+	{
+		return $this->_sGet('iVerMinor');
+	}
+	
+	function setFlowApprobationInstanceId($iIdFlowApprobationInstance)
+	{
+		$this->_set('iIdFlowApprobationInstance', $iIdFlowApprobationInstance);
+	}
+	
+	function getFlowApprobationInstanceId()
+	{
+		return $this->_iGet('iIdFlowApprobationInstance');
+	}
+	
+	function setConfirmed($sConfirmed)
+	{
+		$this->_set('sConfirmed', $sConfirmed);
+	}
+	
+	function getConfirmed()
+	{
+		return $this->_sGet('sConfirmed');
+	}
+		
+	function setStatusIndex($iIndexStatus)
+	{
+		$this->_set('iIndexStatus', $iIndexStatus);
+	}
+	
+	function getStatusIndex()
+	{
+		return $this->_iGet('iIndexStatus');
+	}
+	
+	function save()
+	{
+		$oFolderFileVersionSet = new BAB_FolderFileVersionSet();
+		$oFolderFileVersionSet->save($this);
+	}
+}
+
+
+
+//Il faudra couper cette classe en deux faire une classe de base
+//et deux classe dérivées. Une pour les repertoire simple et une
+//pour les repertoire collectif
+class BAB_FmFolderHelper
+{
+	function BAB_FmFolderHelper()
+	{
+		
+	}
+	
+	function getFmFolderById($iId)
+	{
+		$oFmFolderSet = new BAB_FmFolderSet();
+		$oId =& $oFmFolderSet->aField['iId']; 
+		return $oFmFolderSet->get($oId->in($iId));
+	}
+	
+	function getFirstCollectiveFolder($sRelativePath)
+	{
+//		bab_debug(__FUNCTION__ . ' sRelativePath ==> ' . $sRelativePath);
+		$aPath = explode('/', $sRelativePath);
+		if(is_array($aPath))
+		{
+			$iLength = count($aPath); 
+			if($iLength >= 1)
+			{
+				$bStop		= false;
+				$iIndex		= $iLength - 1;
+				$bFinded	= false;
+				global $babDB;
+				
+//				bab_debug($aPath);
+				
+				$oFmFolderSet = new BAB_FmFolderSet();
+				$oRelativePath =& $oFmFolderSet->aField['sRelativePath']; 
+				$oName =& $oFmFolderSet->aField['sName']; 
+				
+				do 
+				{
+					$sFolderName = $aPath[$iIndex];
+					unset($aPath[$iIndex]);
+					$sRelativePath	= implode('/', $aPath);
+					
+					if('' !== $sRelativePath)
+					{
+						$sRelativePath .= '/';
+					}
+					
+					$oCriteria = $oRelativePath->like($babDB->db_escape_like($sRelativePath));
+					$oCriteria = $oCriteria->_and($oName->in($sFolderName));
+					$oFmFolder = $oFmFolderSet->get($oCriteria);
+					
+					if(!is_null($oFmFolder))
+					{
+						return $oFmFolder;
+					}
+					
+					if($iIndex > 0)
+					{
+						$iIndex--;
+					}
+					else 
+					{
+						$bStop = true;			
+					}
+				}
+				while(false === $bStop);
+			}
+		}
+		return null;		
+	}
+	
+	function getFileInfoForCollectiveDir($iIdFolder, $sPath, &$iIdOwner, &$sRelativePath)
+	{
+		$bSuccess = true;
+		
+		$oFmFolder = BAB_FmFolderHelper::getFmFolderById($iIdFolder);
+		if(!is_null($oFmFolder))
+		{
+			//If the method getRelativePath return an empty string so this is a root folder
+			$iIdOwner = $oFmFolder->getId();
+			$sRelativePath = (strlen(trim($oFmFolder->getRelativePath())) === 0) ? $oFmFolder->getName() . '/' : '';
+			
+			if(strlen(trim($sPath)) > 0)
+			{
+				$sRelativePath .= $oFmFolder->getRelativePath() . $sPath . '/';
+				
+				$oFmFolder = BAB_FmFolderHelper::getFirstCollectiveFolder($sRelativePath);
+				if(!is_null($oFmFolder))
+				{
+					$iIdOwner = $oFmFolder->getId();
+				}
+				else 
+				{
+					$bSuccess = false;
+				}
+			}
+		}
+		else 
+		{
+			$bSuccess = false;
+		}
+		
+		return $bSuccess;
+	}
+	
+	function getUploadPath()
+	{
+		$iLength = strlen(trim($GLOBALS['babUploadPath']));
+		if($iLength > 0)			
+		{
+			$sUploadPath = $GLOBALS['babUploadPath'];
+			if('/' !== $sUploadPath{$iLength - 1})
+			{
+				$sUploadPath .= '/';
+				return $sUploadPath;
+			}
+		}
+		return $GLOBALS['babUploadPath'];
+	}
+
+	function getUserDirUploadPath($iIdUser)
+	{
+		return "U" . $iIdUser . '/';
+	}
+	
+	function accessValidForUserDir($iIdUser)
+	{
+		global $babBody, $BAB_SESS_USERID;
+		return ($BAB_SESS_USERID == $iIdUser && $babBody->ustorage);
+	}
+	
+	function accessValidForCollectiveDir($iIdFolder)
+	{
+		global $babBody, $BAB_SESS_USERID, $aclfm;
+		
+		$iCount = count($babBody->aclfm['id']);
+		for($i = 0; $i < $iCount; $i++)
+		{
+			if($babBody->aclfm['id'][$i] == $iIdFolder && $babBody->aclfm['ma'][$i] == 1)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	function createDirectory($sUplaodPath, $sFullPathName)
+	{
+		global $babBody;
+		$bSuccess = true;
+			
+		$sUplaodPath = realpath($sUplaodPath);
+		
+		if(strlen(trim($sFullPathName)) > 0 && false === strstr($sFullPathName, '..'))
+		{
+			if(isset($GLOBALS['babFileNameTranslation']))
+			{
+				$sFullPathName = strtr($sFullPathName, $GLOBALS['babFileNameTranslation']);
+			}
+		
+			if(!is_dir($sFullPathName))
+			{
+				$bSuccess = bab_mkdir($sFullPathName, $GLOBALS['babMkdirMode']);
+			}
+			else
+			{
+				$babBody->msgerror = bab_translate("This folder already exists");
+				$bSuccess = false;
+			}
+		}
+		else 
+		{
+			$babBody->msgerror = bab_translate("Please give a valid directory name");
+			$bSuccess = false;
+		}
+		return $bSuccess;
+	}	
+	
+	function renameDirectory($sUploadPath, $sRelativePath, $sOldName, $sNewName)
+	{
+		global $babBody;
+		$bSuccess = true;
+		
+		$bOldNameValid = (strlen(trim($sOldName)) > 0);
+		$bNewNameValid = (strlen(trim($sNewName)) > 0 && false === strstr($sNewName, '..'));
+		
+		if($bOldNameValid && $bNewNameValid)
+		{
+			$sOldPathName = '';
+			$sNewPathName = '';
+			
+			//$sRelativePath est vide si c'est un repertoire à la racine du répertoire d'upload
+			
+			$sUploadPath = realpath($sUploadPath);
+			if(strlen(trim($sRelativePath)) > 0)
+			{
+				$sPathName		= realpath($sUploadPath . '/' . $sRelativePath);
+				$sOldPathName	= realpath($sPathName . '/' . $sOldName);
+//				bab_debug('*** sUploadPath ==> ' . $sUploadPath);
+//				bab_debug('*** sRelativePath ==> ' . $sRelativePath);
+//				bab_debug('*** sPathName ==> ' . $sPathName);
+				$sNewPathName	= $sPathName . '/' . $sNewName;
+			}
+			else 
+			{
+				$sOldPathName	= realpath($sUploadPath . '/' . $sOldName);
+				$sNewPathName	= $sUploadPath . '/' . $sNewName;
+			}
+			
+//			bab_debug('sUploadPath ==> ' . $sUploadPath);
+//			bab_debug('sRelativePath ==> ' . $sRelativePath);
+//			bab_debug('sOldPathName ==> ' . $sOldPathName);
+//			bab_debug('sNewPathName ==> ' . $sNewPathName);
+
+			$bOldPathNameValid = (substr($sOldPathName, 0, strlen($sUploadPath)) === $sUploadPath);
+	
+			if($bOldPathNameValid)
+			{
+				if(is_writable($sOldPathName))
+				{
+					if(!is_dir($sNewPathName))
+					{
+						$bSuccess = rename($sOldPathName, $sNewPathName);
+					}
+					else 
+					{
+						$babBody->msgerror = bab_translate("This folder already exists");
+						$bSuccess = false;
+					}
+				}
+				else 
+				{
+					$babBody->msgerror = bab_translate("This folder does not exists");
+					$bSuccess = false;
+				}
+			}
+			else 
+			{
+				$babBody->msgerror = bab_translate("Access denied 3");
+				$bSuccess = false;
+			}
+		}
+		else 
+		{
+			$babBody->msgerror = bab_translate("Access denied 6");
+			$bSuccess = false;
+		}
+		return $bSuccess;
+	}
+	
+	
+	function updateSubFolderPathName($sUploadPath, $sRelativePath, $sOldName, $sNewName)
+	{
+//		bab_debug(__FUNCTION__);
+//		bab_debug('sUploadPath ==> ' . $sUploadPath);
+//		bab_debug('sRelativePath ==> ' . $sRelativePath);
+//		bab_debug('sOldName ==> ' . $sOldName);
+//		bab_debug('sNewName ==> ' . $sNewName);
+		
+		if(BAB_FmFolderHelper::renameDirectory($sUploadPath, $sRelativePath, $sOldName, $sNewName))
+		{
+			$sOldRelativePath = $sRelativePath . $sOldName . '/';
+			$sNewRelativePath = $sRelativePath . $sNewName . '/';
+			
+//			bab_debug('sOldRelativePath ==> ' . $sOldRelativePath);
+//			bab_debug('sNewRelativePath ==> ' . $sNewRelativePath);
+			
+			global $babDB;
+			$oFmFolderSet = new BAB_FmFolderSet();
+			$oRelativePath =& $oFmFolderSet->aField['sRelativePath']; 
+			$oFmFolderSet = $oFmFolderSet->select($oRelativePath->like($babDB->db_escape_like($sOldRelativePath) . '%'));
+			while(null !== ($oFmFolder = $oFmFolderSet->next()))
+			{
+				$sRelPath = $sNewRelativePath . substr($oFmFolder->getRelativePath(), strlen($sOldRelativePath));
+//				bab_debug('sRelPath ==> ' . $sRelPath);
+				$oFmFolder->setRelativePath($sRelPath);
+				$oFmFolder->save();
+			}
+			return true;
+		}
+		return false;
+	}
+}
+
+
+
 class BAB_FolderFileHelper
 {
 	function BAB_FolderFileHelper()
@@ -2449,39 +2639,167 @@ class BAB_FolderFileHelper
 		}
 	}
 	
+	function setIdOwnerToFirstCollective($sPathName, $iIdOwner)
+	{
+		$oFmFolder = BAB_FmFolderHelper::getFirstCollectiveFolder($sPathName);
+		
+		if(!is_null($oFmFolder))
+		{
+//			bab_debug('iIdOwner ==> ' . $oFmFolder->getId() . ' sPathName ==> ' . $sPathName);
+			BAB_FolderFileHelper::changeIdOwner($sPathName, $iIdOwner, $oFmFolder->getId());
+		}
+		else 
+		{
+//			bab_debug('NOT FOUND FOR sPathName ==> ' . $sPathName);
+		}
+	}
+	
+	function changeIdOwner($sPathName, $iOldIdOwner, $iNewIdOwner)
+	{
+		$oFolderFileSet = new BAB_FolderFileSet();
+		$oPathName =& $oFolderFileSet->aField['sPathName'];
+		$oIdOwner =& $oFolderFileSet->aField['iIdOwner'];
+		
+		global $babDB;
+		$oCriteria = $oPathName->like($babDB->db_escape_like($sPathName) . '%');
+		$oCriteria = $oCriteria->_and($oIdOwner->in($iOldIdOwner));
+		$oFolderFileSet->select($oCriteria);
+
+		while(null !== ($oFolderFile = $oFolderFileSet->next()))
+		{
+			bab_debug('sFileName ==> ' . $oFolderFile->getName() . ' sPath ==> ' . $oFolderFile->getPathName() . 
+				' iOldIdOwner ==> ' . $oFolderFile->getOwnerId() . ' iNewIdOwner ==> ' . $iNewIdOwner);
+			
+			$oFolderFile->setOwnerId($iNewIdOwner);
+//			$oFolderFile->save();
+		}		
+	}
+	
+	
 }
 
-
-class BAB_FolderFileSet extends BAB_BaseSet 
+//---------------------
+/*
+class BAB_ContextBase
 {
-	function BAB_FolderFileSet()
+	var $aDatas = array();
+	
+	function BAB_ContextBase()
 	{
-		parent::BAB_BaseSet(BAB_FILES_TBL);
-
-		$this->aField = array(
-			'iId' => new BAB_IntField('`id`'),
-			'sName' => new BAB_StringField('`name`'),
-			'sDescription' => new BAB_StringField('`description`'),
-			'sKeywords' => new BAB_StringField('`keywords`'),
-			'sPathName' => new BAB_StringField('`path`'),
-			'iIdOwner' => new BAB_IntField('`id_owner`'),
-			'sGroup' => new BAB_StringField('`bgroup`'),
-			'iIdLink' => new BAB_IntField('`link`'),
-			'sReadOnly' => new BAB_StringField('`readonly`'),
-			'sState' => new BAB_StringField('`state`'),
-			'sCreation' => new BAB_StringField('`created`'),
-			'iIdAuthor' => new BAB_IntField('`author`'),
-			'sModified' => new BAB_StringField('`modified`'),
-			'iIdModifier' => new BAB_IntField('`modifiedby`'),
-			'sConfirmed' => new BAB_StringField('`confirmed`'),
-			'iHits' => new BAB_IntField('`hits`'),
-			'iIdApprobationInstance' => new BAB_IntField('`idfai`'),
-			'iIdUserEdit' => new BAB_IntField('`edit`'),
-			'iVerMajor' => new BAB_IntField('`ver_major`'),
-			'iVerMinor' => new BAB_IntField('`ver_minor`'),
-			'sVerComment' => new BAB_StringField('`ver_comment`'),
-			'iIndexStatus' => new BAB_IntField('`index_status`')
-			);
+		
+	}
+	
+	function get($sName)
+	{
+		if(array_key_exists($sName, $this->aDatas))
+		{
+			return $this->aDatas[$sName];
+		}
+		return '';
+	}
+	
+	function set($sName, $sValue)
+	{
+		$this->aDatas[$sName] = $sValue;
 	}
 }
+
+
+class BAB_RenameFolderContext extends BAB_ContextBase
+{
+	function BAB_RenameFolderContext($sUploadPath, $sRelativePath, $sOldName, $sNewName)
+	{
+		parent::BAB_ContextBase();
+		
+		$this->set('sUploadPath', $sUploadPath);
+		$this->set('sRelativePath', $sRelativePath);
+		$this->set('sOldName', $sOldName);
+		$this->set('sNewName', $sNewName);
+	}
+}
+
+
+class BAB_RenameFilePathContext extends BAB_ContextBase
+{
+	function BAB_RenameFilePathContext($sPathName, $sNewName)
+	{
+		parent::BAB_ContextBase();
+		
+		$this->set('sPathName', $sPathName);
+		$this->set('sNewName', $sNewName);
+	}
+}
+
+class BAB_CommandBase
+{
+	var $oContext = null;
+	
+	function BAB_CommandBase($oContext)
+	{
+		$this->oContext = $oContext;
+	}
+	
+	function execute()
+	{
+		
+	}
+}
+
+class BAB_RenameFolderCommand extends BAB_CommandBase
+{
+	function BAB_RenameFolderCommand($oContext)
+	{
+		parent::BAB_CommandBase($oContext);
+	}
+	
+	function execute()
+	{
+		BAB_FmFolderHelper::updateSubFolderPathName($this->oContext->get('sUploadPath'), 
+			$this->oContext->get('sRelativePath'), $this->oContext->get('sOldName'), 
+			$this->oContext->get('sNewName'));
+	}
+}
+
+
+class BAB_RenameFilePathCommand extends BAB_CommandBase
+{
+	function BAB_RenameFilePathCommand($oContext)
+	{
+		parent::BAB_CommandBase($oContext);
+		
+		$this->set('sPathName', $sPathName);
+		$this->set('sNewName', $sNewName);
+	}
+	
+	function execute()
+	{
+		BAB_FolderFileHelper::renamePath($this->oContext->get('sPathName'), 
+			$this->oContext->get('sNewName'));
+	}
+}
+
+
+class BAB_CommandProcessor
+{
+	var $aCommand = array();
+	
+	function BAB_CommandProcessor()
+	{
+		
+	}
+	
+	function add($oCommand)
+	{
+		$this->aCommand[] = $oCommand;
+	}
+	
+	function execute()
+	{
+		foreach($this->aCommand as $oCommand)
+		{
+			$oCommand->execute();
+		}
+	}
+}
+//*/
 ?>

@@ -1114,7 +1114,7 @@ CREATE TABLE bab_far_instances (
 CREATE TABLE bab_fm_folders (
   id int(11) unsigned NOT NULL auto_increment,
   folder char(255) NOT NULL default '',
-  sPathName text NOT NULL,
+  sRelativePath text NOT NULL,
   manager int(11) unsigned NOT NULL default '0',
   idsa int(11) unsigned NOT NULL default '0',
   filenotify enum('N','Y') NOT NULL default 'N',
@@ -1124,6 +1124,7 @@ CREATE TABLE bab_fm_folders (
   bhide enum('N','Y') NOT NULL default 'N',
   auto_approbation enum('N','Y') NOT NULL default 'N',
   PRIMARY KEY  (id),
+  KEY iIdParent (iIdParent),
   KEY folder (folder),
   KEY id_dgowner (id_dgowner)
 );

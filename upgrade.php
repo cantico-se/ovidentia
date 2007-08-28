@@ -3178,7 +3178,7 @@ function upgradeXXX()
 
 	if(!bab_isTableField(BAB_FM_FOLDERS_TBL, 'sRelativePath')) 
 	{
-		$babDB->db_query("ALTER TABLE ".BAB_FM_FOLDERS_TBL." ADD `sRelativePath` TEXT NOT NULL AFTER `iIdParent`");
+		$babDB->db_query("ALTER TABLE ".BAB_FM_FOLDERS_TBL." ADD `sRelativePath` TEXT NOT NULL AFTER `id`");
 	}
 	return $ret;
 }
