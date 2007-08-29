@@ -45,9 +45,13 @@ class bab_ovmlContainer
 		}
 	}
 
-	function getnext($obj=null)
+	function getnext(&$obj)
 	{
-		$obj = $obj? $obj: $this;
+		if( !isset($obj) )
+			{
+			$obj =& $this;
+			}
+
 		if( $this->handler->getnext())
 		{
 			foreach($this->oapi->_ovmlEngine->get_variables($this->oapi->_ovmlEngine->get_currentContextname()) as $key => $val )
