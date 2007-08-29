@@ -1042,18 +1042,88 @@ function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonl
  * Get file array and access rights on the file
  * For versionning
  */
-function fm_getFileAccess($idf) {
-
+function fm_getFileAccess($idf) 
+{
 	static $result = array();
 	
-	if (!isset($result[$idf])) {
-	
+	if(!isset($result[$idf])) 
+	{
 		$bupdate = false;
 		$bdownload = false;
-		$arrfold =  array();
-		$arrfile = array();
+//		$arrfold =  array();
+//		$arrfile = array();
 		$lockauthor = 0;
+
+		$oFmFolder = null;
+		$oFolderFile = null;
 		
+		$oFolderFileSet = new BAB_FolderFileSet();
+		
+		$oId =& $oFolderFileSet->aField['iId'];
+		$oState =& $oFolderFileSet->aField['sState'];
+				
+		$oCriteria = $oId->in($idf);
+		$oCriteria = $oCriteria->_and($oState->in(''));
+		$oFolderFile = $oFolderFileSet->get($oCriteria);
+		
+		if(!is_null($oFolderFile))
+		{
+			if('Y' === $oFolderFile->getGroup() && 'Y' === $oFolderFile->getConfirmed())			
+			{
+				$oFmFolderSet = new BAB_FmFolderSet();
+				
+				$oId =& $oFmFolderSet->aField['iId'];
+				$oFmFolder = $oFmFolderSet->get($oId->in($oFolderFile->getOwnerId()));
+				if(!is_null($oFmFolder))
+				{
+					if('Y' === $oFmFolder->getVersioning())					
+					{
+						if(bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oFmFolder->getId()) || bab_isAccessValid(BAB_FMUPDATE_GROUPS_TBL, $oFmFolder->getId()))
+						{
+							$bupdate = true;
+							if(0 !== $oFolderFile->getUserEditId()) 
+							{
+								$oFolderFileVersionSet = new BAB_FolderFileVersionSet();
+				
+								$oId =& $oFmFolderSet->aField['iId'];
+								$oFolderFileVersion = $oFolderFileVersionSet->get($oId->in($oFolderFile->getUserEditId()));
+								if(!is_null($oFolderFileVersion))
+								{
+									$lockauthor = $oFolderFileVersion->getAuthorId();
+								}
+							}
+						}
+		
+						if(bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $oFmFolder->getId())) 
+						{
+							$bdownload = true;
+						}
+					}
+				}
+			}
+			else if('N' === $oFolderFile->getGroup()) 
+			{
+				if($GLOBALS['babBody']->ustorage && !empty($BAB_SESS_USERID) && $BAB_SESS_USERID == $oFmFolder->getId()) 
+				{
+					$bupdate = true;
+					$bdownload = true;
+				}
+			}
+		}
+		
+		$result[$idf] = array(
+			'oFolderFile' => $oFolderFile,
+			'oFmFolder' => $oFmFolder,
+			'bupdate' => $bupdate,
+			'bdownload' => $bdownload,
+			'lockauthor' => $lockauthor
+		);
+	}
+	
+	return $result[$idf];
+		
+		
+/*		
 		global $babDB;
 	
 		$res = $babDB->db_query("select * from ".BAB_FILES_TBL." where id='".$babDB->db_escape_string($idf)."' and state=''");
@@ -1100,6 +1170,7 @@ function fm_getFileAccess($idf) {
 	}
 	
 	return $result[$idf];
+//*/
 }
 
 
@@ -1115,34 +1186,38 @@ function fm_lockFile($idf, $comment)
 	global $babBody, $babDB;
 	
 	$fm_file = fm_getFileAccess($idf);
-	$arrfile = $fm_file['arrfile'];
+	$oFolderFile =& $fm_file['oFolderFile'];
 
-	if( $arrfile['edit'] == 0 && $GLOBALS['BAB_SESS_USERID'] != '' )
+	if(!is_null($oFolderFile))
+	{
+		if(0 === $oFolderFile->getUserEditId() && $GLOBALS['BAB_SESS_USERID'] != '')
 		{
-		$babDB->db_query("insert into ".BAB_FM_FILESLOG_TBL." 
-		( id_file, date, author, action, comment, version) 
-		values (
-			'".$babDB->db_escape_string($idf)."',
-			 now(), 
-			 '".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', 
-			 '".BAB_FACTION_EDIT."', 
-			 '".$babDB->db_escape_string($comment)."', 
-			 '".$arrfile['ver_major'].".".$babDB->db_escape_string($arrfile['ver_minor'])."'
-		)");
+			$oFolderFileLog = new BAB_FolderFileLog();
+			$oFolderFileLog->setIdFile($idf);
+			$oFolderFileLog->setCreationDate(date("Y-m-d H:i:s"));
+			$oFolderFileLog->setAuthorId($GLOBALS['BAB_SESS_USERID']);
+			$oFolderFileLog->setAction(BAB_FACTION_EDIT);
+			$oFolderFileLog->setComment($comment);
+			$oFolderFileLog->setVersion($oFolderFile->getMajorVer() . '.' . $oFolderFile->getMinorVer());
+			$oFolderFileLog->save();
 
-		$babDB->db_query("insert into ".BAB_FM_FILESVER_TBL." 
-		( id_file, date, author, ver_major, ver_minor, idfai ) 
-		values (
-			'".$babDB->db_escape_string($idf)."',
-			now(),
-			'".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', 
-			'".$babDB->db_escape_string($arrfile['ver_major'])."', 
-			'".$babDB->db_escape_string($arrfile['ver_minor'])."', 
-			'0'
-		)");
-		$idfver = $babDB->db_insert_id(); 
-		
-		$babDB->db_query("update ".BAB_FILES_TBL." set edit='".$babDB->db_escape_string($idfver)."' WHERE id='".$babDB->db_escape_string($idf)."'");
+			$oFolderFileVersion = new BAB_FolderFileVersion();
+			$oFolderFileVersion->setIdFile($idf);
+			$oFolderFileVersion->setCreationDate(date("Y-m-d H:i:s"));
+			$oFolderFileVersion->setAuthorId($GLOBALS['BAB_SESS_USERID']);
+			$oFolderFileVersion->setMajorVer($oFolderFile->getMajorVer());
+			$oFolderFileVersion->setMinorVer($oFolderFile->getMinorVer());
+			$oFolderFileVersion->setConfirmed('');
+			$oFolderFileVersion->setFlowApprobationInstanceId(0);
+			$oFolderFileVersion->setConfirmed('N');
+			$oFolderFileVersion->setStatusIndex(0);
+			$oFolderFileVersion->save();
+			
+			bab_debug('Version ==> ' . $oFolderFileVersion->getId());
+
+			$oFolderFile->setUserEditId($oFolderFileVersion->getId());
+			$oFolderFile->save();
+		}
 	}
 }
 
@@ -1247,6 +1322,8 @@ function fm_commitFile($idf, $comment, $vermajor, $fmFile)
 	$pathx = bab_getUploadFullPath($arrfile['bgroup'], $arrfile['id_owner']);
 	$pathy = bab_getUploadFmPath($arrfile['bgroup'], $arrfile['id_owner']);
 
+return;	
+	
 	$totalsize = getDirSize($pathx);
 	if( $size + $totalsize > $GLOBALS['babMaxGroupSize'] )
 		{
@@ -1582,6 +1659,24 @@ class BAB_BaseSet extends BAB_MySqlResultIterator
 		return $sOrder;
 	}
 	
+	function processLimit($aLimit)
+	{
+		$sLimit = '';
+		$iCount = count($aLimit);
+		if($iCount >= 1 && $iCount <= 2)
+		{
+			global $babDB;
+			
+			$aValue = array();
+			foreach($aLimit as $sValue)
+			{
+				$aValue[] = $babDB->db_escape_string($sValue);
+			}
+			$sLimit = 'LIMIT ' . implode(', ', $aValue);
+		}
+		return $sLimit;
+	}
+	
 	function save($oObject)
 	{
 		if(count($this->aField) > 0)
@@ -1625,7 +1720,7 @@ class BAB_BaseSet extends BAB_MySqlResultIterator
 				'ON DUPLICATE KEY UPDATE ' .
 					implode(',', $aOnDuplicateKey);
 					
-//			bab_debug($sQuery);
+			bab_debug($sQuery);
 			$oResult = $babDB->db_query($sQuery);
 			if(false !== $oResult)
 			{
@@ -1654,10 +1749,11 @@ class BAB_BaseSet extends BAB_MySqlResultIterator
 	}
 
 	
-	public function getSelectQuery($oCriteria = null, $aOrder = array())
+	public function getSelectQuery($oCriteria = null, $aOrder = array(), $aLimit = array())
 	{
 		$sWhereClause = $this->processWhereClause($oCriteria);
 		$sOrder = $this->processOrder($aOrder);
+		$sLimit = $this->processLimit($aLimit);
 		
 		$aField = array();
 
@@ -1681,7 +1777,7 @@ class BAB_BaseSet extends BAB_MySqlResultIterator
 				implode(', ', $aField) . ' ' .
 			'FROM ' .
 				$this->sTableName . ' ' .
-			$sWhereClause . ' ' . $sOrder;
+			$sWhereClause . ' ' . $sOrder . ' ' . $sLimit;
 				
 		bab_debug($sQuery);	
 		return $sQuery;
@@ -1689,6 +1785,9 @@ class BAB_BaseSet extends BAB_MySqlResultIterator
 	
 	function get($oCriteria = null)
 	{
+//		require_once $GLOBALS['babInstallPath'] . 'utilit/devtools.php';
+//		bab_debug_print_backtrace();
+
 		$sQuery = $this->getSelectQuery($oCriteria);
 		
 		global $babDB;	
@@ -1704,9 +1803,9 @@ class BAB_BaseSet extends BAB_MySqlResultIterator
 		return null;
 	}	
 	
-	function select($oCriteria = null, $aOrder = array())
+	function select($oCriteria = null, $aOrder = array(), $aLimit = array())
 	{
-		$sQuery = $this->getSelectQuery($oCriteria, $aOrder);
+		$sQuery = $this->getSelectQuery($oCriteria, $aOrder, $aLimit);
 		global $babDB;	
 		$oResult = $babDB->db_query($sQuery);
 		$this->setMySqlResult($oResult);
@@ -1785,7 +1884,7 @@ class BAB_FolderFileSet extends BAB_BaseSet
 
 class BAB_FolderFileVersionSet extends BAB_BaseSet 
 {
-	function BAB_FolderFileSet()
+	function BAB_FolderFileVersionSet()
 	{
 		parent::BAB_BaseSet(BAB_FM_FILESVER_TBL);
 
@@ -1800,6 +1899,24 @@ class BAB_FolderFileVersionSet extends BAB_BaseSet
 			'iIdFlowApprobationInstance' => new BAB_IntField('`idfai`'),
 			'sConfirmed' => new BAB_StringField('`confirmed`'),
 			'iIndexStatus' => new BAB_IntField('`index_status`')
+			);
+	}
+}
+
+class BAB_FolderFileLogSet extends BAB_BaseSet 
+{
+	function BAB_FolderFileLogSet()
+	{
+		parent::BAB_BaseSet(BAB_FM_FILESLOG_TBL);
+
+		$this->aField = array(
+			'iId' => new BAB_IntField('`id`'),
+			'iIdFile' => new BAB_IntField('`id_file`'),
+			'sCreationDate' => new BAB_StringField('`date`'),
+			'iIdAuthor' => new BAB_IntField('`author`'),
+			'iAction' => new BAB_IntField('`action`'),
+			'sComment' => new BAB_StringField('`comment`'),
+			'sVersion' => new BAB_StringField('`version`')
 			);
 	}
 }
@@ -1959,7 +2076,7 @@ class BAB_FmFolder extends BAB_DbRecord
 	
 	function save()
 	{
-		$oFmFolderSet = new BAB_FmFolderSet(BAB_FM_FOLDERS_TBL);
+		$oFmFolderSet = new BAB_FmFolderSet();
 		return $oFmFolderSet->save($this);
 	}
 }
@@ -2204,9 +2321,9 @@ class BAB_FolderFile extends BAB_DbRecord
 }
 
 
-class BAB_FmFolderFileVersion extends BAB_DbRecord
+class BAB_FolderFileVersion extends BAB_DbRecord
 {
-	function BAB_FmFolderFileVersion()
+	function BAB_FolderFileVersion()
 	{
 		parent::BAB_DbRecord();
 	}
@@ -2315,6 +2432,91 @@ class BAB_FmFolderFileVersion extends BAB_DbRecord
 	{
 		$oFolderFileVersionSet = new BAB_FolderFileVersionSet();
 		$oFolderFileVersionSet->save($this);
+	}
+}
+
+
+class BAB_FolderFileLog extends BAB_DbRecord
+{
+	function BAB_FolderFileLog()
+	{
+		parent::BAB_DbRecord();
+	}
+	
+	function setId($iId)
+	{
+		$this->_set('iId', $iId);
+	}
+	
+	function getId()
+	{
+		return $this->_iGet('iId');
+	}
+	
+	function setIdFile($iId)
+	{
+		$this->_set('iIdFile', $iId);
+	}
+	
+	function getIdFile()
+	{
+		return $this->_iGet('iIdFile');
+	}
+	
+	function setCreationDate($sDate)
+	{
+		$this->_set('sCreationDate', $sDate);
+	}
+	
+	function getCreationDate()
+	{
+		return $this->_sGet('sCreationDate');
+	}
+	
+	function setAuthorId($iIdAuthor)
+	{
+		$this->_set('iIdAuthor', $iIdAuthor);
+	}
+	
+	function getAuthorId()
+	{
+		return $this->_iGet('iIdAuthor');
+	}
+	
+	function setAction($iAction)
+	{
+		$this->_set('iAction', $iAction);
+	}
+	
+	function getAction()
+	{
+		return $this->_iGet('iAction');
+	}
+	
+	function setComment($sComment)
+	{
+		$this->_set('sComment', $sComment);
+	}
+	
+	function getComment()
+	{
+		return $this->_sGet('sComment');
+	}
+	
+	function setVersion($sVersion)
+	{
+		$this->_set('sVersion', $sVersion);
+	}
+	
+	function getVersion()
+	{
+		return $this->_sGet('sVersion');
+	}
+	
+	function save()
+	{
+		$oFolderFileLogSet = new BAB_FolderFileLogSet();
+		$oFolderFileLogSet->save($this);
 	}
 }
 

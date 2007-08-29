@@ -2297,7 +2297,7 @@ function createEditFolderForCollectiveDir($iIdFolder, $sPath)
 					$iIdFld						= (int) bab_pp('iIdFolder', 0); 
 					$sPathName					= '';			
 					
-					$oCommandProcessor			= new BAB_CommandProcessor();
+//					$oCommandProcessor			= new BAB_CommandProcessor();
 					
 					$bFolderRenamed				= false;
 					$bIsCollectiveFolder		= false;
@@ -2324,11 +2324,14 @@ function createEditFolderForCollectiveDir($iIdFolder, $sPath)
 							
 							$sParentPath = $sRelativePath;
 							BAB_FolderFileHelper::setIdOwnerToFirstCollective($sParentPath, $iIdFld);
-							
-							aclDeleteGroup(BAB_FMUPLOAD_GROUPS_TBL, $iIdFld);
-							aclDeleteGroup(BAB_FMDOWNLOAD_GROUPS_TBL, $iIdFld);
-							aclDeleteGroup(BAB_FMUPDATE_GROUPS_TBL, $iIdFld);
-							aclDeleteGroup(BAB_FMMANAGERS_GROUPS_TBL, $iIdFld);
+
+
+//							aclDeleteGroup(BAB_FMUPLOAD_GROUPS_TBL, $iIdFld);
+//							aclDeleteGroup(BAB_FMDOWNLOAD_GROUPS_TBL, $iIdFld);
+//							aclDeleteGroup(BAB_FMUPDATE_GROUPS_TBL, $iIdFld);
+//							aclDeleteGroup(BAB_FMMANAGERS_GROUPS_TBL, $iIdFld);
+
+
 						}
 					}
 					else 

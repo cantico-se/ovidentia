@@ -229,7 +229,7 @@ function saveFolder($fname, $active, $said, $notification, $version, $bhide, $ba
 		$oFmFolder = new BAB_FmFolder();
 		$oFmFolder->setApprobationSchemeId($said);
 		$oFmFolder->setName($fname);
-		$oFmFolder->setPathName($fname);
+		$oFmFolder->setRelativePath('');
 		$oFmFolder->setFileNotify($notification);
 		$oFmFolder->setActive($active);
 		$oFmFolder->setVersioning($version);

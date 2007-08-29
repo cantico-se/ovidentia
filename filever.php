@@ -32,7 +32,7 @@ function showLockUnlockFile($idf, $idx)
 	global $babBody;
 
 	class temp
-		{
+	{
 		var $filename;
 		var $foldertxt;
 		var $foldername;
@@ -46,63 +46,76 @@ function showLockUnlockFile($idf, $idx)
 		var $close;
 
 		function temp($idf, $idx)
-			{
+		{
 			global $babDB, $babBody;
 			
 			$fm_file = fm_getFileAccess($idf);
-			$arrfile = $fm_file['arrfile'];
-			$arrfold = $fm_file['arrfold'];
-
+			$oFolderFile =& $fm_file['oFolderFile'];
+			$oFmFolder =& $fm_file['oFmFolder'];
+			
 			$this->idf = $idf;
 			$this->what = $idx;
 			$this->warningmsg = '';
 			$this->bwarning = false;
 			$this->bunlocklock = false;
-			if( $arrfile['edit'] != 0 && $idx == 'lock' )
+			
+			if(!is_null($oFolderFile) && !is_null($oFmFolder))
+			{
+				if(0 !== $oFolderFile->getUserEditId() && $idx == 'lock')
 				{
-				$this->bunlocklock = true;
-				$this->close = bab_translate("Close");
-				$this->warningmsg = bab_translate("This file is already locked");
-				return;
+					$this->bunlocklock = true;
+					$this->close = bab_translate("Close");
+					$this->warningmsg = bab_translate("This file is already locked");
+					return;
 				}
-
-			if( $arrfile['edit'] == 0 && $idx == 'unlock' )
+	
+				if(0 === $oFolderFile->getUserEditId() && $idx == 'unlock')
 				{
-				$this->bunlocklock = true;
-				$this->close = bab_translate("Close");
-				$this->warningmsg = bab_translate("This file is not locked");
-				return;
+					$this->bunlocklock = true;
+					$this->close = bab_translate("Close");
+					$this->warningmsg = bab_translate("This file is not locked");
+					return;
 				}
-
-			if( $idx == 'lock')
+	
+				if($idx == 'lock')
 				{
-				$this->lock = bab_translate("Edit file");
+					$this->lock = bab_translate("Edit file");
 				}
-			else
+				else
 				{
-				$this->lock = bab_translate("Unedit file");
-				list($idfai) = $babDB->db_fetch_array($babDB->db_query("select idfai from ".BAB_FM_FILESVER_TBL." where id='".$babDB->db_escape_string($arrfile['edit'])."'"));
-
-				if( $idfai != 0 )
+					$this->lock = bab_translate("Unedit file");
+					
+					$oFolderFileVersionSet = new BAB_FolderFileVersionSet();
+	
+					$oId =& $oFmFolderSet->aField['iId'];
+					$oFolderFileVersion = $oFolderFileVersionSet->get($oId->in($oFolderFile->getUserEditId()));
+					if(!is_null($oFolderFileVersion))
 					{
-					$this->bwarning = true;
-					$this->warningmsg = bab_translate("Warning! A new version of this file is waiting to be validate. If you unlock this file, this version will be deleted!");
+						if(0 !== $oFolderFileVersion->getFlowApprobationInstanceId())
+						{
+							$this->bwarning = true;
+							$this->warningmsg = bab_translate("Warning! A new version of this file is waiting to be validate. If you unlock this file, this version will be deleted!");
+						}
 					}
 				}
-
-			$this->foldertxt = bab_translate("Folder");
-			$this->pathtxt = bab_translate("Path");
-			$this->commenttxt = bab_translate("Comment");
-
-			$babBody->setTitle($arrfile['name']);
-			$this->pathname = bab_toHtml("/".$arrfile['path']);
-			if( $arrfile['bgroup'] == 'Y')
-				$this->foldername = bab_toHtml($arrfold['folder']);
-			else
-				$this->foldername = '';
+	
+				$this->foldertxt = bab_translate("Folder");
+				$this->pathtxt = bab_translate("Path");
+				$this->commenttxt = bab_translate("Comment");
+	
+				$babBody->setTitle($oFolderFile->getName());
+				$this->pathname = bab_toHtml("/".$oFolderFile->getPathName());
+				if('Y' === $oFolderFile->getGroup())
+				{
+					$this->foldername = bab_toHtml($oFmFolder->getName());
+				}
+				else
+				{
+					$this->foldername = '';
+				}
 			}
-
 		}
+	}
 
 	$temp = new temp($idf, $idx);
 	$babBody->babpopup(bab_printTemplate($temp, "filever.html", "lockfile"));
@@ -113,7 +126,7 @@ function showCommitFile($idf)
 	global $babBody;
 
 	class temp
-		{
+	{
 		var $filename;
 		var $filetxt;
 		var $commenttxt;
@@ -128,32 +141,34 @@ function showCommitFile($idf)
 		var $warningmsg;
 
 		function temp($idf)
-			{
+		{
 			global $babBody, $babDB;
 			
 			$fm_file = fm_getFileAccess($idf);
-			$arrfile = $fm_file['arrfile'];
-			$arrfold = $fm_file['arrfold'];
+			$oFolderFile =& $fm_file['oFolderFile'];
 
-			if( $arrfile['edit'] == 0 || $fm_file['lockauthor'] != $GLOBALS['BAB_SESS_USERID'])
+			if(!is_null($oFolderFile))
+			{
+				if(0 === $oFolderFile->getUserEditId() || $fm_file['lockauthor'] != $GLOBALS['BAB_SESS_USERID'])
 				{
-				$this->bunlocklock = true;
-				$this->close = bab_translate("Close");
-				$this->warningmsg = bab_translate("This file is not locked");
-				return;
+					$this->bunlocklock = true;
+					$this->close = bab_translate("Close");
+					$this->warningmsg = bab_translate("This file is not locked");
+					return;
 				}
-			$this->filetxt = bab_translate("File");
-			$this->commenttxt = bab_translate("Comment");
-			$this->commit = bab_translate("Commit file");
-			$this->versiontxt = bab_translate("New major version?");
-			$this->no = bab_translate("No");
-			$this->yes = bab_translate("Yes");
-
-			$this->idf = bab_toHtml($idf);
-			$babBody->setTitle($arrfile['name'].' '.$arrfile['ver_major'].".".$arrfile['ver_minor']);
+				
+				$this->filetxt = bab_translate("File");
+				$this->commenttxt = bab_translate("Comment");
+				$this->commit = bab_translate("Commit file");
+				$this->versiontxt = bab_translate("New major version?");
+				$this->no = bab_translate("No");
+				$this->yes = bab_translate("Yes");
+	
+				$this->idf = bab_toHtml($idf);
+				$babBody->setTitle($oFolderFile->getName() . ' ' . $oFolderFile->getMajorVer() . '.' . $oFolderFile->getMinorVer());
 			}
-
 		}
+	}
 
 	$temp = new temp($idf);
 	$babBody->babpopup(bab_printTemplate($temp, "filever.html", "commitfile"));
@@ -164,7 +179,7 @@ function showConfirmFile($idf)
 	global $babBody;
 
 	class temp
-		{
+	{
 		var $filename;
 		var $fileversion;
 		var $commenttxt;
@@ -177,28 +192,34 @@ function showConfirmFile($idf)
 		var $urlget;
 
 		function temp($idf)
-			{
+		{
 			global $babDB,$babBody;
 			
 			$fm_file = fm_getFileAccess($idf);
-			$arrfile = $fm_file['arrfile'];
-			$arrfold = $fm_file['arrfold'];
-			
-			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FM_FILESVER_TBL." where id='".$babDB->db_escape_string($arrfile['edit'])."'"));
+			$oFolderFile =& $fm_file['oFolderFile'];
 
-			$this->commenttxt = bab_translate("Comment");
-			$this->confirm = bab_translate("Confirm file");
-			$this->confirmtxt = bab_translate("Confirm");
-			$this->no = bab_translate("No");
-			$this->yes = bab_translate("Yes");
-
-			$this->idf = bab_toHtml($idf);
-			$babBody->setTitle($arrfile['name'].' '.$arr['ver_major'].".".$arr['ver_minor']);
-			$this->comment = bab_toHtml($arr['comment']);
-			$this->urlget = bab_toHtml($GLOBALS['babUrlScript']."?tg=filever&idx=get&idf=".$idf."&vmaj=".$arr['ver_major']."&vmin=".$arr['ver_minor']);
+			if(!is_null($oFolderFile))
+			{
+				$oFolderFileVersionSet = new BAB_FolderFileVersionSet();
+				$oId =& $oFmFolderSet->aField['iId'];
+				$oFolderFileVersion = $oFolderFileVersionSet->get($oId->in($oFolderFile->getUserEditId()));
+				if(!is_null($oFolderFileVersion))
+				{
+					$this->commenttxt = bab_translate("Comment");
+					$this->confirm = bab_translate("Confirm file");
+					$this->confirmtxt = bab_translate("Confirm");
+					$this->no = bab_translate("No");
+					$this->yes = bab_translate("Yes");
+		
+					$this->idf = bab_toHtml($idf);
+					$babBody->setTitle($oFolderFile->getName() . ' ' . $oFolderFileVersion->getMajorVer() . "." . $oFolderFileVersion->getMinorVer());
+					$this->comment = bab_toHtml($arr['comment']);
+					$this->urlget = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=filever&idx=get&idf=' . 
+						$idf . '&vmaj=' . $oFolderFileVersion->getMajorVer() . '&vmin=' . $oFolderFileVersion->getMinorVer());
+				}
 			}
-
 		}
+	}
 
 	$temp = new temp($idf);
 	$babBody->babpopup(bab_printTemplate($temp, "filever.html", "confirmfile"));
@@ -210,7 +231,7 @@ function showHistoricFile($idf, $pos)
 	global $babBody;
 
 	class temp
-		{
+	{
 		var $filename;
 		var $titletxt;
 		var $datetxt;
@@ -240,11 +261,11 @@ function showHistoricFile($idf, $pos)
 		var $altbg = true;
 
 		function temp($idf, $pos)
-			{
+		{
 			global $babDB;
 			
 			$fm_file = fm_getFileAccess($idf);
-
+			$oFolderFile =& $fm_file['oFolderFile'];
 
 			$this->topurl = "";
 			$this->bottomurl = "";
@@ -263,64 +284,76 @@ function showHistoricFile($idf, $pos)
 			$this->versiontxt = bab_translate("Version");
 			$this->idf = $idf;
 			
-
-			if(bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $fm_file['arrfold']['id']))
+			if(!is_null($oFolderFile))
+			{
+				if(bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oFolderFile->getId()))
 				{
-				$this->bmanager = true;
-				$this->cleantxt = bab_translate("Clean log");
-				$this->datetxt2 = bab_translate("Date")." ( ".bab_translate("dd-mm-yyyy")." )";
-				$this->cleanmsg = bab_translate("Clean all log entries before a given date");
+					$this->bmanager = true;
+					$this->cleantxt = bab_translate("Clean log");
+					$this->datetxt2 = bab_translate("Date")." ( ".bab_translate("dd-mm-yyyy")." )";
+					$this->cleanmsg = bab_translate("Clean all log entries before a given date");
 				}
-			else
-				$this->bmanager = false;
-
-			$res = $babDB->db_query("select count(*) as total from ".BAB_FM_FILESLOG_TBL." WHERE id_file='".$babDB->db_escape_string($idf)."'");
-			$row = $babDB->db_fetch_array($res);
-			$total = $row["total"];
-
-			if( $total > BAB_FM_MAXLOGS)
+				else
 				{
-				if( $pos > 0)
+					$this->bmanager = false;
+				}
+	
+				$oFolderFileLogSet = new BAB_FolderFileLogSet();
+				$oIdFile =& $oFolderFileLogSet->aField['iIdFile'];
+				$oFolderFileLogSet->select($oIdFile->in($idf));
+				$iCount = $oFolderFileLogSet->count();
+				
+				if($iCount > BAB_FM_MAXLOGS)
+				{
+					if($pos > 0)
 					{
-					$this->topurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=filever&idx=hist&idf=".$idf."&pos=0");
-					$this->topname = "&lt;&lt;";
+						$this->topurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=filever&idx=hist&idf=".$idf."&pos=0");
+						$this->topname = "&lt;&lt;";
 					}
-
-				$next = $pos - BAB_FM_MAXLOGS;
-				if( $next >= 0)
+	
+					$next = $pos - BAB_FM_MAXLOGS;
+					if($next >= 0)
 					{
-					$this->prevurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=filever&idx=hist&idf=".$idf."&pos=".$next);
-					$this->prevname = "&lt;";
+						$this->prevurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=filever&idx=hist&idf=".$idf."&pos=".$next);
+						$this->prevname = "&lt;";
 					}
-
-				$next = $pos + BAB_FM_MAXLOGS;
-				if( $next < $total)
+	
+					$next = $pos + BAB_FM_MAXLOGS;
+					if($next < $total)
 					{
-					$this->nexturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=filever&idx=hist&idf=".$idf."&pos=".$next);
-					$this->nextname = "&gt;";
-					if( $next + BAB_FM_MAXLOGS < $total)
+						$this->nexturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=filever&idx=hist&idf=".$idf."&pos=".$next);
+						$this->nextname = "&gt;";
+						if($next + BAB_FM_MAXLOGS < $total)
 						{
-						$bottom = $total - BAB_FM_MAXLOGS;
+							$bottom = $total - BAB_FM_MAXLOGS;
 						}
-					else
-						$bottom = $next;
-					$this->bottomurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=filever&idx=hist&idf=".$idf."&pos=".$bottom);
-					$this->bottomname = "&gt;&gt;";
+						else
+						{
+							$bottom = $next;
+						}
+						$this->bottomurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=filever&idx=hist&idf=".$idf."&pos=".$bottom);
+						$this->bottomname = "&gt;&gt;";
 					}
 				}
-
-			$req = "select * FROM ".BAB_FM_FILESLOG_TBL." WHERE id_file='".$babDB->db_escape_string($idf)."' order by date desc";
-			if( $total > BAB_FM_MAXLOGS)
+				
+				$aLimit = array();
+				if($iCount > BAB_FM_MAXLOGS)
 				{
-				$req .= " limit ".$babDB->db_escape_string($pos).",".BAB_FM_MAXLOGS;
+					$aLimit = array($pos, BAB_FM_MAXLOGS);
 				}
-			$GLOBALS['babBody']->setTitle($fm_file['arrfile']['name']);
-			$this->res = $babDB->db_query($req);
-			$this->count = $babDB->db_num_rows($this->res);
+				
+				$oIdFile =& $oFolderFileLogSet->aField['iIdFile'];
+				
+				$oFolderFileLogSet->bUseAlias = false;
+				$oFolderFileLogSet->select($oIdFile->in($idf), array('sCreationDate' => 'DESC'), $aLimit);
 
-
-			
+				$this->res = $oFolderFileLogSet->_oResult;
+				$this->count = $oFolderFileLogSet->count();
+				$oFolderFileLogSet->bUseAlias = true;
+				
+				$GLOBALS['babBody']->setTitle($oFolderFile->getName());
 			}
+		}
 
 		function getnextlog()
 			{
@@ -763,9 +796,7 @@ switch($idx)
 		break;
 
 	case "unload":
-		fileUnload(
-			bab_rp('idf')
-			);
+		fileUnload(bab_rp('idf'));
 		exit;
 		break;
 
