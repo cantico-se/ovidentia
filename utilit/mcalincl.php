@@ -878,7 +878,7 @@ class cal_wmdbaseCls
 		$this->attendeesurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=attendees&evtid=".$this->idevent ."&idcal=".$this->idcal);
 		//$this->vieweventurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=veventupd&evtid=".$this->idevent ."&idcal=".$this->idcal);
 		$this->vieweventurl = isset($arr['viewurl']) ? bab_toHtml($arr['viewurl']) : bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=veventupd&evtid=".$this->idevent ."&idcal=".$this->idcal);
-		$this->link = $arr['viewinsamewindow'];
+		$this->link = isset($arr['viewinsamewindow'])? $arr['viewinsamewindow']: false;
 		$this->bnote = false;
 		if( isset($arr['note']) && !empty($arr['note']))
 			{
