@@ -61,7 +61,7 @@ function showLockUnlockFile($idf, $idx)
 			
 			if(!is_null($oFolderFile) && !is_null($oFmFolder))
 			{
-				if(0 !== $oFolderFile->getUserEditId() && $idx == 'lock')
+				if(0 !== $oFolderFile->getFolderFileVersionId() && $idx == 'lock')
 				{
 					$this->bunlocklock = true;
 					$this->close = bab_translate("Close");
@@ -69,7 +69,7 @@ function showLockUnlockFile($idf, $idx)
 					return;
 				}
 	
-				if(0 === $oFolderFile->getUserEditId() && $idx == 'unlock')
+				if(0 === $oFolderFile->getFolderFileVersionId() && $idx == 'unlock')
 				{
 					$this->bunlocklock = true;
 					$this->close = bab_translate("Close");
@@ -88,7 +88,7 @@ function showLockUnlockFile($idf, $idx)
 					$oFolderFileVersionSet = new BAB_FolderFileVersionSet();
 	
 					$oId =& $oFolderFileVersionSet->aField['iId'];
-					$oFolderFileVersion = $oFolderFileVersionSet->get($oId->in($oFolderFile->getUserEditId()));
+					$oFolderFileVersion = $oFolderFileVersionSet->get($oId->in($oFolderFile->getFolderFileVersionId()));
 					if(!is_null($oFolderFileVersion))
 					{
 						if(0 !== $oFolderFileVersion->getFlowApprobationInstanceId())
@@ -149,7 +149,7 @@ function showCommitFile($idf)
 
 			if(!is_null($oFolderFile))
 			{
-				if(0 === $oFolderFile->getUserEditId() || $fm_file['lockauthor'] != $GLOBALS['BAB_SESS_USERID'])
+				if(0 === $oFolderFile->getFolderFileVersionId() || $fm_file['lockauthor'] != $GLOBALS['BAB_SESS_USERID'])
 				{
 					$this->bunlocklock = true;
 					$this->close = bab_translate("Close");
@@ -201,8 +201,8 @@ function showConfirmFile($idf)
 			if(!is_null($oFolderFile))
 			{
 				$oFolderFileVersionSet = new BAB_FolderFileVersionSet();
-				$oId =& $oFmFolderSet->aField['iId'];
-				$oFolderFileVersion = $oFolderFileVersionSet->get($oId->in($oFolderFile->getUserEditId()));
+				$oId =& $oFolderFileVersionSet->aField['iId'];
+				$oFolderFileVersion = $oFolderFileVersionSet->get($oId->in($oFolderFile->getFolderFileVersionId()));
 				if(!is_null($oFolderFileVersion))
 				{
 					$this->commenttxt = bab_translate("Comment");
@@ -213,7 +213,7 @@ function showConfirmFile($idf)
 		
 					$this->idf = bab_toHtml($idf);
 					$babBody->setTitle($oFolderFile->getName() . ' ' . $oFolderFileVersion->getMajorVer() . "." . $oFolderFileVersion->getMinorVer());
-					$this->comment = bab_toHtml($arr['comment']);
+					$this->comment = bab_toHtml($oFolderFileVersion->getComment());
 					$this->urlget = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=filever&idx=get&idf=' . 
 						$idf . '&vmaj=' . $oFolderFileVersion->getMajorVer() . '&vmin=' . $oFolderFileVersion->getMinorVer());
 				}
@@ -319,13 +319,13 @@ function showHistoricFile($idf, $pos)
 					}
 	
 					$next = $pos + BAB_FM_MAXLOGS;
-					if($next < $total)
+					if($next < $iCount)
 					{
 						$this->nexturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=filever&idx=hist&idf=".$idf."&pos=".$next);
 						$this->nextname = "&gt;";
-						if($next + BAB_FM_MAXLOGS < $total)
+						if($next + BAB_FM_MAXLOGS < $iCount)
 						{
-							$bottom = $total - BAB_FM_MAXLOGS;
+							$bottom = $iCount - BAB_FM_MAXLOGS;
 						}
 						else
 						{
@@ -460,9 +460,9 @@ function showVersionHistoricFile($idf, $pos)
 				
 				$this->idf = $idf;
 				$oFolderFileVersionSet = new BAB_FolderFileVersionSet();
-				$oIdFile =& $oFmFolderSet->aField['iIdFile'];
-				$oIdFlowApprobationInstance =& $oFmFolderSet->aField['iIdFlowApprobationInstance'];
-				$oConfirmed =& $oFmFolderSet->aField['sConfirmed'];
+				$oIdFile =& $oFolderFileVersionSet->aField['iIdFile'];
+				$oIdFlowApprobationInstance =& $oFolderFileVersionSet->aField['iIdFlowApprobationInstance'];
+				$oConfirmed =& $oFolderFileVersionSet->aField['sConfirmed'];
 				
 				$oCriteria = $oIdFile->in($idf);
 				$oCriteria = $oCriteria->_and($oIdFlowApprobationInstance->in(0));
@@ -572,10 +572,10 @@ function getFile( $idf, $vmajor, $vminor )
 			$inl = bab_getFileContentDisposition() == 1? 1: ''; 
 		}
 	
-		$mime = bab_getFileMimeType($arrfile['name']);
+		$mime = bab_getFileMimeType($oFolderFile->getName());
 	
-		$fullpath = bab_getUploadFullPath($oFolderFile->getGroup(), $oFolderFile->getOwnerId(), $oFolderFile->getPathName());
-	
+		$fullpath = BAB_FmFolderHelper::getUploadPath()	. $oFolderFile->getPathName();
+		
 		$fullpath .= BAB_FVERSION_FOLDER."/".$vmajor.",".$vminor.",".$oFolderFile->getName();
 		$fsize = filesize($fullpath);
 		if(strtolower(bab_browserAgent()) == "msie")
@@ -666,7 +666,7 @@ function confirmFile($idf, $bconfirm )
 
 		$oFolderFileVersionSet = new BAB_FolderFileVersionSet();
 		$oId =& $oFolderFileVersionSet->aField['iId'];
-		$oFolderFileVersion = $oFolderFileVersionSet->get($oId->in($oFolderFile->getUserEditId()));
+		$oFolderFileVersion = $oFolderFileVersionSet->get($oId->in($oFolderFile->getFolderFileVersionId()));
 		
 		if(!is_null($oFolderFileVersion))
 		{
@@ -684,11 +684,11 @@ function confirmFile($idf, $bconfirm )
 							
 						unlink($sFullPathName);
 				
-						$oFolderFile->setUserEditId(0);
+						$oFolderFile->setFolderFileVersionId(0);
 						$oFolderFile->save();
 						
 						$oId =& $oFolderFileVersionSet->aField['iId'];
-						$oFolderFileVersionSet->remove($oId->in($oFolderFile->getUserEditId()));
+						$oFolderFileVersionSet->remove($oId->in($oFolderFile->getFolderFileVersionId()));
 						
 						$oFolderFileLog = new BAB_FolderFileLog();
 						$oFolderFileLog->setIdFile($idf);
@@ -708,7 +708,7 @@ function confirmFile($idf, $bconfirm )
 						break;
 					case 1:
 						deleteFlowInstance($oFolderFileVersion->getFlowApprobationInstanceId());
-						acceptFileVersion($arrfile, $arr, $arrfold['filenotify']);
+						acceptFileVersion($oFolderFile, $oFolderFileVersion, $oFmFolder->getFileNotify());
 						break;
 					default:
 						$nfusers = getWaitingApproversFlowInstance($oFolderFileVersion->getFlowApprobationInstanceId(), true);

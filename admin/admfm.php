@@ -493,12 +493,23 @@ function updateFolder($fid, $fname, $active, $said, $notification, $version, $bh
 			if($idsafolder != $said)
 			{
 				include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
-				$res = $babDB->db_query("select * from ".BAB_FILES_TBL." where id_owner='".$babDB->db_escape_string($fid)."' and bgroup='Y' and confirmed='N'");
-				while($row = $babDB->db_fetch_array($res))
+				
+				$oFolderFileSet = new BAB_FolderFileSet();
+				$oIdOwner =& $oFolderFileSet->aField['iIdOwner'];
+				$oGroup =& $oFolderFileSet->aField['sGroup'];
+				$oConfirmed =& $oFolderFileSet->aField['sConfirmed'];
+				
+				$oCriteria = $oIdOwner->in($fid);
+				$oCriteria = $oCriteria->_and($oGroup->in('Y'));
+				$oCriteria = $oCriteria->_and($oConfirmed->in('N'));
+				
+				$oFolderFileSet->select($oCriteria);
+				
+				while(null !== ($oFolderFile = $oFolderFileSet->next()))
 				{
-					if($row['idfai'] != 0)
+					if(0 !== $oFolderFile->getApprobationInstanceId())
 					{
-						deleteFlowInstance($row['idfai']);
+						deleteFlowInstance($oFolderFile->getApprobationInstanceId());
 					}
 	
 	
@@ -506,35 +517,47 @@ function updateFolder($fid, $fname, $active, $said, $notification, $version, $bh
 					{
 						if($bautoapp == 'Y')
 						{
-							$idfai = makeFlowInstance($said, "fil-".$row['id'], $GLOBALS['BAB_SESS_USERID']);
+							$idfai = makeFlowInstance($said, 'fil-'.$oFolderFile->getId(), $GLOBALS['BAB_SESS_USERID']);
 						}
 						else
 						{
-							$idfai = makeFlowInstance($said, "fil-".$row['id']);
+							$idfai = makeFlowInstance($said, 'fil-'.$oFolderFile->getId());
 						}
 					}
 
 					if($said == 0 || $idfai === true)
 					{
-						$babDB->db_query("update ".BAB_FILES_TBL." set idfai='0', confirmed = 'Y' where id='".$babDB->db_escape_string($row['id'])."'");
+						$oFolderFile->setApprobationInstanceId(0);
+						$oFolderFile->setConfirmed('Y');
+						$oFolderFile->save();
 					}
 					else if(!empty($idfai))
 					{
-						$babDB->db_query("update ".BAB_FILES_TBL." set idfai='".$babDB->db_escape_string($idfai)."' where id='".$babDB->db_escape_string($row['id'])."'");
+						$oFolderFile->setApprobationInstanceId($idfai);
+						$oFolderFile->save();
+
 						$nfusers = getWaitingApproversFlowInstance($idfai, true);
 						if(count($nfusers) > 0)
 						{
-							notifyFileApprovers($row['id'], $nfusers, bab_translate("A new file is waiting for you"));
+							notifyFileApprovers($oFolderFile->getId(), $nfusers, bab_translate("A new file is waiting for you"));
 						}
 					}
 
+				
+					$oFolderFileVersionSet = new BAB_FolderFileVersionSet();
+					$oIdFile =& $oFolderFileVersionSet->aField['iIdFile'];
+					$oConfirmed =& $oFolderFileVersionSet->aField['sConfirmed'];
+					
+					$oCriteria = $oIdFile->in($oFolderFile->getId());
+					$oCriteria = $oCriteria->_and($oConfirmed->in('N'));
+					
+					$oFolderFileVersionSet->select($oCriteria);
 
-					$res2 = $babDB->db_query("select * from ".BAB_FM_FILESVER_TBL." where id_file='".$row['id']."' and confirmed='N'");
-					while( $rrr = $babDB->db_fetch_array($res2))
+					while(null !== ($oFolderFileVersion = $oFolderFileVersionSet->next()))
 					{
-						if($rrr['idfai'] != 0)
+						if(0 !== $oFolderFileVersion->getFlowApprobationInstanceId())
 						{
-							deleteFlowInstance($rrr['idfai']);
+							deleteFlowInstance($oFolderFileVersion->getFlowApprobationInstanceId());
 						}
 
 
@@ -542,30 +565,30 @@ function updateFolder($fid, $fname, $active, $said, $notification, $version, $bh
 						{
 							if($bautoapp == 'Y')
 							{
-								$idfai = makeFlowInstance($said, "filv-".$rrr['id'], $GLOBALS['BAB_SESS_USERID']);
+								$idfai = makeFlowInstance($said, 'filv-'.$oFolderFileVersion->getId(), $GLOBALS['BAB_SESS_USERID']);
 							}
 							else
 							{
-								$idfai = makeFlowInstance($said, "filv-".$rrr['id']);
+								$idfai = makeFlowInstance($said, 'filv-'.$oFolderFileVersion->getId());
 							}
 						}
 
 						if($said == 0 || $idfai === true)
 						{
-							acceptFileVersion($row, $rrr, $bnotify);
+							acceptFileVersion($oFolderFile, $oFolderFileVersion, $bnotify);
 						}
 						else if(!empty($idfai))
 						{
-							$babDB->db_query("update ".BAB_FM_FILESVER_TBL." set idfai='".$babDB->db_escape_string($idfai)."' where id='".$babDB->db_escape_string($rrr['id'])."'");
+							$oFolderFileVersion->setFlowApprobationInstanceId($idfai);
+							$oFolderFileVersion->save();
 							$nfusers = getWaitingApproversFlowInstance($idfai, true);
 							if(count($nfusers) > 0)
 							{
-								notifyFileApprovers($row['id'], $nfusers, bab_translate("A new version file is waiting for you"));
+								notifyFileApprovers($oFolderFile->getId(), $nfusers, bab_translate("A new version file is waiting for you"));
 							}
 						}
 
 					}
-
 				}
 			}
 			

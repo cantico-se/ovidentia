@@ -230,13 +230,13 @@ class BAB_Field
 	function in()
 	{
 		$aArgList = func_get_args();
-		return call_user_func_array(array('BAB_Criterion', 'in'), array($this, $aArgList));
+		return call_user_func_array(array('BAB_Criterion', 'in'), array($this, $aArgList[0]));
 	}
 	
 	function notIn()
 	{
 		$aArgList = func_get_args();
-		return call_user_func_array(array('BAB_NotInCriterion', 'notIn'), array($this, $aArgList));
+		return call_user_func_array(array('BAB_NotInCriterion', 'notIn'), array($this, $aArgList[0]));
 	}
 	
 	function like()

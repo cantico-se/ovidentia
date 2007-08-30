@@ -242,24 +242,13 @@ function bab_importFmFile($fmFile, $id_owner, $path, $bgroup)
 				fm_lockFile($oFolderFile->getId(), ''); 
 				return fm_commitFile($oFolderFile->getId(), '', 'N', $fmFile);
 			}
-	
 		
 			// update a file
-			return saveUpdateFile(
-				$arr['id'], 
-				$fmFile, 
-				$fmFile->filename, 
-				$oFolderFile->getDescription(), 
-				$oFolderFile->getKeywords(), 
-				$oFolderFile->getReadOnly(), 
-				'Y', 
-				false, 
-				false, 
-				false
-			);
+			return saveUpdateFile($oFolderFile->getId(), $fmFile, $fmFile->filename, 
+				$oFolderFile->getDescription(), $oFolderFile->getKeywords(), 
+				$oFolderFile->getReadOnly(), 'Y', false, false, false);
 		}
 		return false;
-			
 	}
 	else 
 	{

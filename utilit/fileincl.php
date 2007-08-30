@@ -345,73 +345,61 @@ function fileNotifyMembers($file, $path, $idgrp, $msg, $bnew = true)
 		}
 	}
 
-function acceptFileVersion($arrfile, $arrvf, $bnotify)
+function acceptFileVersion($oFolderFile, $oFolderFileVersion, $bnotify)
 {
-	global $babDB;
+	$sUploadPath = BAB_FmFolderHelper::getUploadPath();
 
-	$pathx = bab_getUploadFullPath($arrfile['bgroup'], $arrfile['id_owner'], $arrfile['path']);
+	$sSrcFile = $sUploadPath . $oFolderFile->getPathName() . $oFolderFile->getName();
+	$sTrgFile = $sUploadPath . $oFolderFile->getPathName() . BAB_FVERSION_FOLDER . '/' . 
+		$oFolderFile->getMajorVer() . '.' . $oFolderFile->getMinorVer() . ',' . $oFolderFile->getName();	
+	copy($sSrcFile, $sTrgFile);
 	
-
-	copy($pathx.$arrfile['name'], $pathx.BAB_FVERSION_FOLDER."/".$arrfile['ver_major'].",".$arrfile['ver_minor'].",".$arrfile['name']);
-	copy($pathx.BAB_FVERSION_FOLDER."/".$arrvf['ver_major'].",".$arrvf['ver_minor'].",".$arrfile['name'], $pathx.$arrfile['name']);
-	unlink($pathx.BAB_FVERSION_FOLDER."/".$arrvf['ver_major'].",".$arrvf['ver_minor'].",".$arrfile['name']);
-	$babDB->db_query("
+	$sSrcFile = $sUploadPath . $oFolderFile->getPathName() . BAB_FVERSION_FOLDER . '/' . 
+		$oFolderFileVersion->getMajorVer() . '.' . $oFolderFileVersion->getMinorVer() . ',' . $oFolderFile->getName();
+	$sTrgFile = $sUploadPath . $oFolderFile->getPathName() . $oFolderFile->getName();	
+	copy($sTrgFile, $sSrcFile);
 	
-	update ".BAB_FILES_TBL." 
-	set 
-		edit='0', 
-		modified='".$babDB->db_escape_string($arrvf['date'])."', 
-		modifiedby='".$babDB->db_escape_string($arrvf['author'])."', 
-		ver_major='".$babDB->db_escape_string($arrvf['ver_major'])."', 
-		ver_minor='".$babDB->db_escape_string($arrvf['ver_minor'])."', 
-		ver_comment='".$babDB->db_escape_string($arrvf['comment'])."' 
-	where 
-		id='".$babDB->db_escape_string($arrfile['id'])."'
-	");
-
-	$babDB->db_query("
+	unlink($sSrcFile);
 	
-	insert into ".BAB_FM_FILESLOG_TBL." 
-		( 
-			id_file, 
-			date, 
-			author, 
-			action, 
-			comment, 
-			version
-		) 
-	values 
-		(
-			'".$babDB->db_escape_string($arrfile['id'])."', 
-			now(), 
-			'".$babDB->db_escape_string($arrvf['author'])."', 
-			'".BAB_FACTION_COMMIT."', 
-			'".$babDB->db_escape_string($arrvf['comment'])."', 
-			'".$babDB->db_escape_string($arrvf['ver_major']).".".$babDB->db_escape_string($arrvf['ver_minor'])."'
-		)
-	");
+	$iOldMajorVer = $oFolderFile->getMajorVer();
+	$iOldMinorVer = $oFolderFile->getMinorVer();
+	$sVerComment = $oFolderFile->getCommentVer();
 	
+	$oFolderFile->setFolderFileVersionId(0);
+	$oFolderFile->setModifiedDate($oFolderFileVersion->getCreationDate());
+	$oFolderFile->setModifierId($oFolderFileVersion->getAuthorId());
+	$oFolderFile->setMajorVer($oFolderFileVersion->getMajorVer());
+	$oFolderFile->setMinorVer($oFolderFileVersion->getMinorVer());
+	$oFolderFile->setCommentVer($oFolderFileVersion->getComment());
+	$oFolderFile->save();
 	
-	$babDB->db_query("
+	$oFolderFileLog = new BAB_FolderFileLog();
+	$oFolderFileLog->setIdFile($oFolderFile->getId());
+	$oFolderFileLog->setCreationDate(date("Y-m-d H:i:s"));
+	$oFolderFileLog->setAuthorId($oFolderFileVersion->getAuthorId());
+	$oFolderFileLog->setAction(BAB_FACTION_COMMIT);
+	$oFolderFileLog->setComment($oFolderFileVersion->getComment());
+	$oFolderFileLog->setVersion($oFolderFileVersion->getMajorVer() . '.' . $oFolderFileVersion->getMinorVer());
+	$oFolderFileLog->save();
 	
-	update ".BAB_FM_FILESVER_TBL." 
-	set 
-		idfai='0', 
-		confirmed='Y', 
-		ver_major='".$babDB->db_escape_string($arrfile['ver_major'])."', 
-		ver_minor='".$babDB->db_escape_string($arrfile['ver_minor'])."', 
-		author='".($arrfile['modifiedby']==0 ? $babDB->db_escape_string($arrfile['author']): $babDB->db_escape_string($arrfile['modifiedby']))."',
-		comment='".$babDB->db_escape_string($arrfile['ver_comment'])."' 
-	where 
-		id='".$babDB->db_escape_string($arrfile['edit'])."'
-	");
+	$iIdAuthor = (0 === $oFolderFile->getModifierId() ? $oFolderFile->getAuthorId() : $oFolderFile->getModifierId());
 	
-	notifyFileAuthor(bab_translate("Your new file version has been accepted"), $arrvf['ver_major'].".".$arrvf['ver_minor'], $arrvf['author'], $arrfile['name']);
+	$oFolderFileVersion->setFlowApprobationInstanceId(0);
+	$oFolderFileVersion->setConfirmed('Y');
+	$oFolderFileVersion->setMajorVer($iOldMajorVer);
+	$oFolderFileVersion->setMinorVer($iOldMinorVer);
+	$oFolderFileVersion->setAuthorId($iIdAuthor);
+	$oFolderFileVersion->setComment($sVerComment);
+	$oFolderFileVersion->save();
 	
-	if( $bnotify == "Y")
-		{
-		fileNotifyMembers($arrfile['name'], $arrfile['path'], $arrfile['id_owner'], bab_translate("A new version file has been uploaded"));
-		}
+	notifyFileAuthor(bab_translate("Your new file version has been accepted"), 
+		$oFolderFile->getMajorVer() . '.' . $oFolderFile->getMinorVer(), $iIdAuthor, $oFolderFile->getName());
+	
+	if($bnotify == "Y")
+	{
+		fileNotifyMembers($oFolderFile->getName(), $oFolderFile->getPathName(), 
+			$oFolderFile->getOwnerId(), bab_translate("A new version file has been uploaded"));
+	}
 }
 
 function notifyFileAuthor($subject, $version, $author, $filename)
@@ -1079,12 +1067,12 @@ function fm_getFileAccess($idf)
 						if(bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oFmFolder->getId()) || bab_isAccessValid(BAB_FMUPDATE_GROUPS_TBL, $oFmFolder->getId()))
 						{
 							$bupdate = true;
-							if(0 !== $oFolderFile->getUserEditId()) 
+							if(0 !== $oFolderFile->getFolderFileVersionId()) 
 							{
 								$oFolderFileVersionSet = new BAB_FolderFileVersionSet();
 				
 								$oId =& $oFmFolderSet->aField['iId'];
-								$oFolderFileVersion = $oFolderFileVersionSet->get($oId->in($oFolderFile->getUserEditId()));
+								$oFolderFileVersion = $oFolderFileVersionSet->get($oId->in($oFolderFile->getFolderFileVersionId()));
 								if(!is_null($oFolderFileVersion))
 								{
 									$lockauthor = $oFolderFileVersion->getAuthorId();
@@ -1188,7 +1176,7 @@ function fm_lockFile($idf, $comment)
 
 	if(!is_null($oFolderFile))
 	{
-		if(0 === $oFolderFile->getUserEditId() && $GLOBALS['BAB_SESS_USERID'] != '')
+		if(0 === $oFolderFile->getFolderFileVersionId() && $GLOBALS['BAB_SESS_USERID'] != '')
 		{
 			$oFolderFileLog = new BAB_FolderFileLog();
 			$oFolderFileLog->setIdFile($idf);
@@ -1211,9 +1199,9 @@ function fm_lockFile($idf, $comment)
 			$oFolderFileVersion->setStatusIndex(0);
 			$oFolderFileVersion->save();
 			
-			bab_debug('Version ==> ' . $oFolderFileVersion->getId());
+//			bab_debug('Version ==> ' . $oFolderFileVersion->getId());
 
-			$oFolderFile->setUserEditId($oFolderFileVersion->getId());
+			$oFolderFile->setFolderFileVersionId($oFolderFileVersion->getId());
 			$oFolderFile->save();
 		}
 	}
@@ -1238,7 +1226,7 @@ function fm_unlockFile($idf, $comment )
 
 	if(!is_null($oFmFolder) && !is_null($oFolderFile))
 	{
-		if(0 !== $oFolderFile->getUserEditId() && $GLOBALS['BAB_SESS_USERID'] != '')
+		if(0 !== $oFolderFile->getFolderFileVersionId() && $GLOBALS['BAB_SESS_USERID'] != '')
 		{
 			if($lockauthor == $GLOBALS['BAB_SESS_USERID'] || bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oFmFolder->getId()))
 			{
@@ -1253,7 +1241,7 @@ function fm_unlockFile($idf, $comment )
 				
 				$oFolderFileVersionSet = new BAB_FolderFileVersionSet();
 				$oId =& $oFolderFileVersionSet->aField['iId'];
-				$oFolderFileVersion = $oFolderFileVersionSet->get($oId->in($oFolderFile->getUserEditId()));
+				$oFolderFileVersion = $oFolderFileVersionSet->get($oId->in($oFolderFile->getFolderFileVersionId()));
 
 				if(!is_null($oFolderFileVersion) && 0 !== $oFolderFileVersion->getFlowApprobationInstanceId())
 				{
@@ -1262,15 +1250,15 @@ function fm_unlockFile($idf, $comment )
 					
 					$sUploadPath = BAB_FmFolderHelper::getUploadPath();
 					
-					$sFullPathName = $sUploadPath . BAB_FVERSION_FOLDER . '/' . 
+					$sFullPathName = $sUploadPath . $oFolderFile->getPathName() . BAB_FVERSION_FOLDER . '/' . 
 						$oFolderFileVersion->getMajorVer() . '.' . $oFolderFileVersion->getMinorVer() . ',' . $oFolderFile->getName();	
 						
 					unlink($sFullPathName);
 				}
 	
-				$oFolderFileVersionSet->remove($oId->in($oFolderFile->getUserEditId()));
+				$oFolderFileVersionSet->remove($oId->in($oFolderFile->getFolderFileVersionId()));
 				
-				$oFolderFile->setUserEditId(0);
+				$oFolderFile->setFolderFileVersionId(0);
 				$oFolderFile->save();
 			}
 		}
@@ -1293,139 +1281,196 @@ function fm_commitFile($idf, $comment, $vermajor, $fmFile)
 {
 	global $babBody, $babDB;
 	
-	if ($fmFile) {
+	if($fmFile) 
+	{
 		$filename = $fmFile->filename;
 		$size = $fmFile->size;
-	} else {
+	}
+	else
+	{
 		$filename = '';
 		$size = 0;
 	}
 	
 	$fm_file = fm_getFileAccess($idf);
-	$arrfile = $fm_file['arrfile'];
-	$arrfold = $fm_file['arrfold'];
+	$oFmFolder =& $fm_file['oFmFolder'];
+	$oFolderFile =& $fm_file['oFolderFile'];
 	$lockauthor = $fm_file['lockauthor'];
-
-	if( $lockauthor != $GLOBALS['BAB_SESS_USERID'])
-		{
-		$babBody->msgerror = bab_translate("Access denied");
-		return false;
-		}
-
-	if( empty($filename) || $filename == "none")
-		{
-		$babBody->msgerror = bab_translate("Please select a file to upload");
-		return false;
-		}
-
-	if( $size > $GLOBALS['babMaxFileSize'])
-		{
-		$babBody->msgerror = bab_translate("The file was greater than the maximum allowed") ." :". $GLOBALS['babMaxFileSize'];
-		return false;
-		}
-
-	$totalsize = getDirSize($GLOBALS['babUploadPath']);
-	if( $size + $totalsize > $GLOBALS['babMaxTotalSize'])
-		{
-		$babBody->msgerror = bab_translate("There is not enough free space");
-		return false;
-		}
-
-	$pathx = bab_getUploadFullPath($arrfile['bgroup'], $arrfile['id_owner']);
-	$pathy = bab_getUploadFmPath($arrfile['bgroup'], $arrfile['id_owner']);
-
-return;	
 	
-	$totalsize = getDirSize($pathx);
-	if( $size + $totalsize > $GLOBALS['babMaxGroupSize'] )
+	if(!is_null($oFolderFile) && !is_null($oFmFolder))
+	{
+		if($lockauthor != $GLOBALS['BAB_SESS_USERID'])
 		{
-		$babBody->msgerror = bab_translate("There is not enough free space");
-		return false;
+			$babBody->msgerror = bab_translate("Access denied");
+			return false;
 		}
-
-	if( substr($arrfile['path'], -1) == "/")
-		$pathx .= substr($arrfile['path'], 0 , -1);
-	else if( !empty($arrfile['path']))
-		$pathx .= $arrfile['path']."/";
-
-	if( !is_dir($pathx.BAB_FVERSION_FOLDER))
-		bab_mkdir($pathx.BAB_FVERSION_FOLDER, $GLOBALS['babMkdirMode']);
-
-	if( $vermajor == 'Y' )
+	
+		if(empty($filename) || $filename == "none")
 		{
-		$vmajor = ($arrfile['ver_major'] + 1);
-		$vminor = 0;
+			$babBody->msgerror = bab_translate("Please select a file to upload");
+			return false;
 		}
-	else
+	
+		if($size > $GLOBALS['babMaxFileSize'])
 		{
-		$vmajor = $arrfile['ver_major'];
-		$vminor = ($arrfile['ver_minor'] + 1);
+			$babBody->msgerror = bab_translate("The file was greater than the maximum allowed") ." :". $GLOBALS['babMaxFileSize'];
+			return false;
 		}
-
-
-	if( !$fmFile->import($pathx.BAB_FVERSION_FOLDER."/".$vmajor.",".$vminor.",".$arrfile['name']))
+	
+		$totalsize = getDirSize($GLOBALS['babUploadPath']);
+		if($size + $totalsize > $GLOBALS['babMaxTotalSize'])
 		{
-		$babBody->msgerror = bab_translate("The file could not be uploaded");
-		return false;
+			$babBody->msgerror = bab_translate("There is not enough free space");
+			return false;
 		}
-
-	if( $arrfold['idsa'] != 0 )
+	
+		$sFullPathName = bab_getUploadFullPath($oFolderFile->getGroup(), $oFolderFile->getOwnerId());
+		$pathy = bab_getUploadFmPath($oFolderFile->getGroup(), $oFolderFile->getOwnerId());
+		
+		$totalsize = getDirSize($sFullPathName);
+		if($size + $totalsize > $GLOBALS['babMaxGroupSize'] )
 		{
-		include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
-		if( $arrfold['auto_approbation'] == 'Y' )
-			{
-			$idfai = makeFlowInstance($arrfold['idsa'], "filv-".$arrfile['edit'], $GLOBALS['BAB_SESS_USERID']);
-			}
+			$babBody->msgerror = bab_translate("There is not enough free space");
+			return false;
+		}
+	
+		if(!is_dir($sFullPathName . BAB_FVERSION_FOLDER))
+		{
+			bab_mkdir($sFullPathName . BAB_FVERSION_FOLDER, $GLOBALS['babMkdirMode']);
+		}
+	
+		if($vermajor == 'Y')
+		{
+			$vmajor = ($oFolderFile->getMajorVer() + 1);
+			$vminor = 0;
+		}
 		else
+		{
+			$vmajor = $oFolderFile->getMajorVer();
+			$vminor = ($oFolderFile->getMinorVer() + 1);
+		}
+	
+	
+		if(!$fmFile->import($sFullPathName . BAB_FVERSION_FOLDER . '/' . $vmajor . ',' . $vminor . ',' . $oFolderFile->getName()))
+		{
+			$babBody->msgerror = bab_translate("The file could not be uploaded");
+			return false;
+		}
+	
+		if(0 !== $oFmFolder->getApprobationSchemeId())
+		{
+			include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
+			if('Y' === $oFmFolder->getAutoApprobation())
 			{
-			$idfai = makeFlowInstance($arrfold['idsa'], "filv-".$arrfile['edit']);
+				$idfai = makeFlowInstance($oFmFolder->getApprobationSchemeId(), 'filv-'.$oFolderFile->getApprobationInstanceId(), $GLOBALS['BAB_SESS_USERID']);
+			}
+			else
+			{
+				$idfai = makeFlowInstance($oFmFolder->getApprobationSchemeId(), 'filv-'.$oFolderFile->getApprobationInstanceId());
 			}
 		}
-
-	if( $arrfold['idsa'] == 0 || $idfai === true)
+	
+		if(0 === $oFmFolder->getApprobationSchemeId() || $idfai === true)
 		{
-		$babDB->db_query("insert into ".BAB_FM_FILESLOG_TBL." ( id_file, date, author, action, comment, version) values ('".$babDB->db_escape_string($idf)."', now(), '".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', '".BAB_FACTION_COMMIT."', '".$babDB->db_escape_string($comment)."', '".$babDB->db_escape_string($vmajor).".".$babDB->db_escape_string($vminor)."')");
+			$oFolderFileLog = new BAB_FolderFileLog();
+			$oFolderFileLog->setIdFile($idf);
+			$oFolderFileLog->setCreationDate(date("Y-m-d H:i:s"));
+			$oFolderFileLog->setAuthorId($GLOBALS['BAB_SESS_USERID']);
+			$oFolderFileLog->setAction(BAB_FACTION_COMMIT);
+			$oFolderFileLog->setComment($comment);
+			$oFolderFileLog->setVersion($vmajor . '.' . $vminor);
+			$oFolderFileLog->save();
 
-		copy($pathx.$arrfile['name'], $pathx.BAB_FVERSION_FOLDER."/".$arrfile['ver_major'].",".$arrfile['ver_minor'].",".$arrfile['name']);
-		copy($pathx.BAB_FVERSION_FOLDER."/".$vmajor.",".$vminor.",".$arrfile['name'], $pathx.$arrfile['name']);
-		unlink($pathx.BAB_FVERSION_FOLDER."/".$vmajor.",".$vminor.",".$arrfile['name']);
+			$sSrc = $sFullPathName . $oFolderFile->getName();
+			$sTrg = $sFullPathName . BAB_FVERSION_FOLDER . '/'. $oFolderFile->getMajorVer() . 
+				',' . $oFolderFile->getMinorVer() . ',' . $oFolderFile->getName();
+			copy($sSrc, $sTrg);
+			
+			$sSrc = $sFullPathName . BAB_FVERSION_FOLDER . '/'. $vmajor . ',' . $vminor . 
+				',' . $oFolderFile->getName();
+			$sTrg = $sFullPathName . $oFolderFile->getName();
+			copy($sSrc, $sTrg);
+			
+			unlink($sSrc);
+	
+			// index
+			include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
+			$index_status = bab_indexOnLoadFiles(
+				array($sFullPathName . $oFolderFile->getName(),  
+					$sFullPathName . BAB_FVERSION_FOLDER . '/'. $oFolderFile->getMajorVer() . 
+						',' . $oFolderFile->getMinorVer() . ',' . $oFolderFile->getName()),
+				'bab_files'
+			);
+	
 
-		// index
-
-		include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
-		$index_status = bab_indexOnLoadFiles(
-			array($pathx.$arrfile['name'],  $pathx.BAB_FVERSION_FOLDER."/".$arrfile['ver_major'].",".$arrfile['ver_minor'].",".$arrfile['name']),
-			'bab_files'
-		);
-
-		$babDB->db_query("update ".BAB_FILES_TBL." set edit='0', modified=now(), modifiedby='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', ver_major='".$babDB->db_escape_string($vmajor)."', ver_minor='".$babDB->db_escape_string($vminor)."', ver_comment='".$babDB->db_escape_string($comment)."', index_status='".$babDB->db_escape_string($index_status)."' where id='".$babDB->db_escape_string($idf)."'");
-
-		
-
-		$babDB->db_query("update ".BAB_FM_FILESVER_TBL." set ver_major='".$babDB->db_escape_string($arrfile['ver_major'])."', ver_minor='".$babDB->db_escape_string($arrfile['ver_minor'])."', comment='".$babDB->db_escape_string($arrfile['ver_comment'])."', idfai='0', confirmed='Y', index_status='".$babDB->db_escape_string($index_status)."' where id='".$babDB->db_escape_string($arrfile['edit'])."'");
-
-		if (BAB_INDEX_STATUS_INDEXED === $index_status) {
-			$obj = new bab_indexObject('bab_files');
-			$obj->setIdObjectFile($pathy.$arrfile['name'], $idf, $arrfile['id_owner']);
-		
-			$obj->setIdObjectFile($pathy.BAB_FVERSION_FOLDER."/".$arrfile['ver_major'].",".$arrfile['ver_minor'].",".$arrfile['name'], $idf, $arrfile['id_owner']);
+			$oFolderFileVersionSet = new BAB_FolderFileVersionSet();
+			$oId =& $oFolderFileVersionSet->aField['iId'];
+			$oFolderFileVersion = $oFolderFileVersionSet->get($oId->in($oFolderFile->getFolderFileVersionId()));
+			if(!is_null($oFolderFileVersion))
+			{
+				$oFolderFileVersion->setMajorVer($oFolderFile->getMajorVer());
+				$oFolderFileVersion->setMinorVer($oFolderFile->getMinorVer());
+				$oFolderFileVersion->setComment($oFolderFile->getCommentVer());
+				$oFolderFileVersion->setFlowApprobationInstanceId(0);
+				$oFolderFileVersion->setConfirmed('Y');
+				$oFolderFileVersion->setStatusIndex($index_status);
+				$oFolderFileVersion->save();
+			}
+	
+			if(BAB_INDEX_STATUS_INDEXED === $index_status) 
+			{
+				$obj = new bab_indexObject('bab_files');
+				$obj->setIdObjectFile($oFolderFile->getPathName() . $oFolderFile->getName(), $idf, $oFolderFile->getOwnerId());
+				$obj->setIdObjectFile($oFolderFile->getPathName() . BAB_FVERSION_FOLDER . '/' . 
+					$oFolderFile->getMajorVer() . ',' . $oFolderFile->getMinorVer() . ',' . 
+					$oFolderFile->getName(), $idf, $oFolderFile->getOwnerId());
+			}
+	
+			if('Y' === $oFmFolder->getFileNotify())
+			{
+				fileNotifyMembers($filename, $oFolderFile->getPathName(), $oFolderFile->getOwnerId(), 
+					bab_translate("A new version file has been uploaded"));
+			}
+	
+			$oFolderFile->setFolderFileVersionId(0);
+			$oFolderFile->setModifiedDate(date("Y-m-d H:i:s"));
+			$oFolderFile->setModifierId($GLOBALS['BAB_SESS_USERID']);
+			$oFolderFile->setMajorVer($vmajor);
+			$oFolderFile->setMinorVer($vminor);
+			$oFolderFile->setCommentVer($comment);
+			$oFolderFile->setStatusIndex($index_status);
+			$oFolderFile->save();
 		}
-
-		if( $arrfold['filenotify'] == 'Y' )
-			fileNotifyMembers($filename, $arrfile['path'], $arrfile['id_owner'], bab_translate("A new version file has been uploaded"));
-		}
-	elseif(!empty($idfai))
+		else if(!empty($idfai))
 		{
-		$babDB->db_query("insert into ".BAB_FM_FILESLOG_TBL." ( id_file, date, author, action, comment, version) values ('".$babDB->db_escape_string($idf)."', now(), '".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', '".BAB_FACTION_COMMIT."', '".$babDB->db_escape_string(bab_translate("Waiting to be validate"))."', '".$babDB->db_escape_string($vmajor).".".$babDB->db_escape_string($vminor)."')");
-
-		$babDB->db_query("update ".BAB_FM_FILESVER_TBL." set ver_major='".$babDB->db_escape_string($vmajor)."', ver_minor='".$babDB->db_escape_string($vminor)."', comment='".$babDB->db_escape_string($comment)."', idfai='0' where id='".$babDB->db_escape_string($arrfile['edit'])."'");
-
-		$babDB->db_query("update ".BAB_FM_FILESVER_TBL." set idfai='".$babDB->db_escape_string($idfai)."' where id='".$babDB->db_escape_string($arrfile['edit'])."'");
-		$nfusers = getWaitingApproversFlowInstance($idfai, true);
-		notifyFileApprovers($arrfile['id'], $nfusers, bab_translate("A new version file is waiting for you"));
+			$oFolderFileLog = new BAB_FolderFileLog();
+			$oFolderFileLog->setIdFile($idf);
+			$oFolderFileLog->setCreationDate(date("Y-m-d H:i:s"));
+			$oFolderFileLog->setAuthorId($GLOBALS['BAB_SESS_USERID']);
+			$oFolderFileLog->setAction(BAB_FACTION_COMMIT);
+			$oFolderFileLog->setComment(bab_translate("Waiting to be validate"));
+			$oFolderFileLog->setVersion($vmajor . '.' . $vminor);
+			$oFolderFileLog->save();
+			
+			$oFolderFileVersionSet = new BAB_FolderFileVersionSet();
+			$oId =& $oFolderFileVersionSet->aField['iId'];
+			$oFolderFileVersion = $oFolderFileVersionSet->get($oId->in($oFolderFile->getFolderFileVersionId()));
+			if(!is_null($oFolderFileVersion))
+			{
+				$oFolderFileVersion->setMajorVer($vmajor);
+				$oFolderFileVersion->setMinorVer($vminor);
+				$oFolderFileVersion->setComment($comment);
+				$oFolderFileVersion->setFlowApprobationInstanceId($idfai);
+				$oFolderFileVersion->save();
+			}
+			
+			$nfusers = getWaitingApproversFlowInstance($idfai, true);
+			notifyFileApprovers($oFolderFile->getId(), $nfusers, bab_translate("A new version file is waiting for you"));
 		}
-		
-	return true;
+			
+		return true;
+	}
+	return false;
 }
 
 
@@ -1884,7 +1929,7 @@ class BAB_FolderFileSet extends BAB_BaseSet
 			'sConfirmed' => new BAB_StringField('`confirmed`'),
 			'iHits' => new BAB_IntField('`hits`'),
 			'iIdApprobationInstance' => new BAB_IntField('`idfai`'),
-			'iIdUserEdit' => new BAB_IntField('`edit`'),
+			'iIdFolderFileVersion' => new BAB_IntField('`edit`'),
 			'iVerMajor' => new BAB_IntField('`ver_major`'),
 			'iVerMinor' => new BAB_IntField('`ver_minor`'),
 			'sVerComment' => new BAB_StringField('`ver_comment`'),
@@ -2275,14 +2320,14 @@ class BAB_FolderFile extends BAB_DbRecord
 		return $this->_iGet('iIdApprobationInstance');
 	}
 	
-	function setUserEditId($iIdUserEdit)
+	function setFolderFileVersionId($iIdFolderFileVersion)
 	{
-		$this->_set('iIdUserEdit', $iIdUserEdit);
+		$this->_set('iIdFolderFileVersion', $iIdFolderFileVersion);
 	}
 	
-	function getUserEditId()
+	function getFolderFileVersionId()
 	{
-		return $this->_iGet('iIdUserEdit');
+		return $this->_iGet('iIdFolderFileVersion');
 	}
 	
 	function setMajorVer($iVerMajor)
@@ -2405,9 +2450,9 @@ class BAB_FolderFileVersion extends BAB_DbRecord
 		$this->_set('sComment', $sComment);
 	}
 	
-	function getCommentVer()
+	function getComment()
 	{
-		return $this->_sGet('iVerMinor');
+		return $this->_sGet('sComment');
 	}
 	
 	function setFlowApprobationInstanceId($iIdFlowApprobationInstance)

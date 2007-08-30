@@ -227,6 +227,7 @@ class listFiles
 				$oCriteria = $oCriteria->_and($oState->in(''));
 				$oCriteria = $oCriteria->_and($oPathName->in($this->sPathName));
 				$oCriteria = $oCriteria->_and($oConfirmed->in('N'));
+				
 				$oCriteria = $oCriteria->_and($oIdApprobationInstance->in($aWaitingAppInstanceId));
 				
 				$this->oFolderFileSet->select($oCriteria);
@@ -315,7 +316,7 @@ class listFiles
 						$oFolderFile->setState('');
 						$oFolderFile->setHits(0);
 						$oFolderFile->setApprobationInstanceId(0);
-						$oFolderFile->setUserEditId(0);
+						$oFolderFile->setFolderFileVersionId(0);
 						$oFolderFile->setMajorVer(1);
 						$oFolderFile->setMinorVer(0);
 						$oFolderFile->setCommentVer('');
