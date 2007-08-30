@@ -29,7 +29,7 @@ include_once $GLOBALS['babInstallPath'].'utilit/indexincl.php';
  * @param string $idx
  */
 function bab_indexJobs($idx, $object) {
-
+	
 	$reg = bab_getRegistryInstance();
 
 	$reg->changeDirectory('/bab/indexfiles/');
@@ -67,8 +67,8 @@ function bab_indexJobs($idx, $object) {
 				break;
 
 			default:	// Addon
-				$addon_jobs = array();
-				bab_callAddonsFunction('onIndexObject', $object, $idx, $addon_jobs);
+				/*$addon_jobs = array();*/
+				bab_callAddonsFunction('onIndexObject', $object, $idx/*, $addon_jobs*/);
 				//$job = implode("\n", $addon_jobs);
 				break;
 		}
@@ -96,7 +96,7 @@ function bab_indexJobs($idx, $object) {
 function indexEOF() {
 
 	include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
-		
+
 
 	$engine = bab_searchEngineInfos();
 	foreach($engine['indexes'] as $object => $index) {
