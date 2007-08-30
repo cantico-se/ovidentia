@@ -186,63 +186,85 @@ class bab_fmFile {
  *
  * @return 	boolean	id_file
  */
-function bab_importFmFile($fmFile, $id_owner, $path, $bgroup) {
-	
+function bab_importFmFile($fmFile, $id_owner, $path, $bgroup) 
+{
 	global $babDB;
-	include_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
+	include_once $GLOBALS['babInstallPath'] . 'utilit/fileincl.php';
 
 	$gr = $bgroup ? 'Y' : 'N';
-	$pathx = bab_getUploadFullPath($gr, $id_owner, $path);
 	
-
-	if( file_exists($pathx.$fmFile->filename)) {
-
-		$res = $babDB->db_query('
-		SELECT 
-			id, description, keywords 
-		FROM '.BAB_FILES_TBL.' 
-			WHERE path	='.$babDB->quote($path).' 
-			AND name	='.$babDB->quote($fmFile->filename).' 
-			AND id_owner='.$babDB->quote($id_owner).' 
-			AND bgroup	='.$babDB->quote($gr)
-		);
-		
-		$arr = $babDB->db_fetch_assoc($res);
-		$fm_file = fm_getFileAccess($arr['id']);
-		
-		if (!$fm_file['bupdate']) {
-			return false;
-		}
-
-		if ($bgroup && 'Y' == $fm_file['arrfold']['version']) {
-			// add a version
-			fm_lockFile($arr['id'], ''); 
-			return fm_commitFile($arr['id'], '', 'N', $fmFile);
-		}
-
+	$sEndSlash = '';
+	if(strlen(trim($path)) > 0)
+	{
+		$sEndSlash = '/';
+	}
 	
-		// update a file
-		return saveUpdateFile(
-			$arr['id'], 
-			$fmFile, 
-			$fmFile->filename, 
-			$arr['description'], 
-			$arr['keywords'], 
-			$arr['readonly'], 
-			'Y', 
-			false, 
-			false, 
-			false
-		);
+	$sPathName = '';
+	if('Y' === $gr)
+	{
+		BAB_FmFolderHelper::getFileInfoForCollectiveDir($id_owner, $path, $id_owner, $sPathName);
+	}
+	else 
+	{
+		$sPathName = 'U' . $id_owner . '/' . $path . $sEndSlash;
+	}
+	
+	$sFullPathNane = BAB_FmFolderHelper::getUploadPath() . $sPathName . $fmFile->filename;
+	
+	if(file_exists($sFullPathNane)) 
+	{
+		$oFolderFileSet = new BAB_FolderFileSet();
+		
+		$oPathName =& $oFolderFileSet->aField['sPathName'];
+		$oName =& $oFolderFileSet->aField['sName'];
+		$oIdOwner =& $oFolderFileSet->aField['iIdOwner'];
+		$oGroup =& $oFolderFileSet->aField['sGroup'];
+				
+		$oCriteria = $oPathName->in($sPathName);
+		$oCriteria = $oCriteria->_and($oName->in($fmFile->filename));
+		$oCriteria = $oCriteria->_and($oIdOwner->in($id_owner));
+		$oCriteria = $oCriteria->_and($oGroup->in($gr));
+		$oFolderFile = $oFolderFileSet->get($oCriteria);
+		
+		if(!is_null($oFolderFile))
+		{
+			$fm_file = fm_getFileAccess($oFolderFile->getId());
+			$oFmFolder =& $fm_file['oFmFolder'];
 			
-	} else {
+			if(!$fm_file['bupdate']) 
+			{
+				return false;
+			}
+	
+			if($bgroup && 'Y' == $oFmFolder->getVersioning())
+			{
+				// add a version
+				fm_lockFile($oFolderFile->getId(), ''); 
+				return fm_commitFile($oFolderFile->getId(), '', 'N', $fmFile);
+			}
+	
+		
+			// update a file
+			return saveUpdateFile(
+				$arr['id'], 
+				$fmFile, 
+				$fmFile->filename, 
+				$oFolderFile->getDescription(), 
+				$oFolderFile->getKeywords(), 
+				$oFolderFile->getReadOnly(), 
+				'Y', 
+				false, 
+				false, 
+				false
+			);
+		}
+		return false;
+			
+	}
+	else 
+	{
 		// create new file
-		return saveFile(
-			array($fmFile),
-			$id_owner, 
-			$gr, 
-			$path, '', '', 'N'
-		);
+		return saveFile(array($fmFile), $id_owner, $gr, $sPathName, '', '', 'N');
 	}
 }
 
