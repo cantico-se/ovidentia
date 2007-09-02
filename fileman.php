@@ -314,12 +314,10 @@ class listFiles
 					$oCriteria = $oCriteria->_and($oPathName->in($this->sPathName));
 					$oCriteria = $oCriteria->_and($oGroup->in($this->gr));
 					$oCriteria = $oCriteria->_and($oName->in($dir_file));
-bab_debug('JoeBoo');
 					$this->oFolderFileSet->select($oCriteria);
 					
 					if(0 === $this->oFolderFileSet->count())
 					{
-bab_debug('Le fichier n\'est pas présent');						
 						$oFolderFile->setName($dir_file);
 						$oFolderFile->setPathName($this->sPathName);
 						$oFolderFile->setOwnerId($this->iIdOwner);
@@ -891,6 +889,10 @@ function listFiles($id, $gr, $path, $bmanager, $upload)
 		var $sFolderFormUrl;
 		var $bFolderUrl;
 		
+		var $sRight;
+		var $sRightUrl;
+		var $bRightUrl;
+		
 		var $altfilelog;
 		var $altfilelock;
 		var $altfileunlock;
@@ -923,6 +925,7 @@ function listFiles($id, $gr, $path, $bmanager, $upload)
             $this->altreadonly =  bab_translate("Read only");
             $this->sFolderFormAdd = bab_translate("Create a folder"); 
             $this->sFolderFormEdit = bab_translate("Edit folder"); 
+            $this->sRight = bab_translate("Right"); 
 
 			$this->rooturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=list");
 			$this->refreshurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".urlencode($path));
@@ -991,30 +994,55 @@ function listFiles($id, $gr, $path, $bmanager, $upload)
 			}
 
 		function getnextdir()
-			{
+		{
 			static $i = 0;
-			if( $i < count($this->arrdir))
-				{
+			if($i < count($this->arrdir))
+			{
 				$this->altbg = !$this->altbg;
 				$this->name = bab_toHtml($this->arrdir[$i]);
 				$this->bFolderFormUrl = false;
+
+				$this->sRightUrl = '#';
+				$this->bRightUrl = false;
+
 				static $aExcludedDir = array('.', '..', '. .');
 				if(!in_array($this->name, $aExcludedDir))	
 				{	
-
 					$this->sFolderFormUrl = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&idx=displayFolderForm&sAction=editFolder&id=' . $this->id . 
 						'&gr=' . $this->gr . '&path=' . urlencode($this->path) . '&sDirName=' . urlencode($this->name));
 					$this->bFolderFormUrl = true;
+					
+					$oFmFolder = null;
+					if($this->isCollective($this->name, $this->sPathName, $oFmFolder))
+					{
+						$this->bRightUrl = true;
+						$this->sRightUrl = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&idx=displayRightForm&id=' . $this->id . 
+							'&gr=' . $this->gr . '&path=' . urlencode($this->path) . '&iIdFolder=' . $oFmFolder->getId());
+					}
 				}
-
 				$this->url = bab_toHtml($this->arrudir[$i]);
 				$i++;
 				return true;
-				}
+			}
 			else
+			{
 				return false;
 			}
+		}
 
+		function isCollective($sFolderName, $sRelativePath, &$oFmFolder)
+		{
+			$oFmFolderSet = new BAB_FmFolderSet();
+			$oName =& $oFmFolderSet->aField['sName']; 
+			$oRelativePath =& $oFmFolderSet->aField['sRelativePath']; 
+			
+			$oCriteria = $oName->in($sFolderName);
+			$oCriteria = $oCriteria->_and($oRelativePath->in($sRelativePath));
+			
+			$oFmFolder = $oFmFolderSet->get($oCriteria);
+			return (null !== $oFmFolder);
+		}
+		
 		function getnextgrpdir(&$skip)
 			{
 			static $m = 0;
@@ -1934,7 +1962,7 @@ function viewFile($idf, $id, $path)
 
 				$this->id = $oFolderFile->getOwnerId();
 				$this->gr = $oFolderFile->getGroup();
-				$this->path = bab_toHtml($oFolderFile->getPathName());
+				$this->path = bab_toHtml($oFmFolder->getRelativePath());
 				$this->file = bab_toHtml($oFolderFile->getName());
 				$GLOBALS['babBody']->setTitle($oFolderFile->getName() .( ($bversion == 'Y') ? ' (' . $oFolderFile->getMajorVer() . '.' . $oFolderFile->getMinorVer() . ')' : '' ));
 				$this->descval = $oFolderFile->getDescription();
@@ -2276,6 +2304,60 @@ function viewFile($idf, $id, $path)
 
 	$temp = new temp($oFmFolder, $oFolderFile, $id, $path, $bmanager, $access, $bconfirm, $bupdate, $bdownload,$bversion);
 	$babBody->babpopup(bab_printTemplate($temp,"fileman.html", "viewfile"));
+}
+
+function displayRightForm($bmanager, $upload, $path, $id, $gr)
+{
+	global $babBody;
+	
+	$iIdFolder = (int) bab_gp('iIdFolder', 0);
+	
+	$sFolderName = '';
+	$oFmFolder = BAB_FmFolderHelper::getFmFolderById($iIdFolder);
+	if(!is_null($oFmFolder))
+	{
+		$sFolderName = $oFmFolder->getName();
+	}
+
+	require_once $GLOBALS['babInstallPath'] . 'admin/acl.php';
+	
+	$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".urlencode($path));
+	if($upload) 
+	{
+		$babBody->addItemMenu("add", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=fileman&idx=add&id=".$id."&gr=".$gr."&path=".urlencode($path));
+	}
+	if($bmanager) 
+	{
+		$babBody->addItemMenu("trash", bab_translate("Trash"), $GLOBALS['babUrlScript']."?tg=fileman&idx=trash&id=".$id."&gr=".$gr."&path=".urlencode($path));
+	}
+	$babBody->addItemMenu("displayRightForm", bab_translate("Right"), $GLOBALS['babUrlScript']."?tg=fileman&idx=displayRightForm&id=".$id."&gr=".$gr."&path=".urlencode($path) . 
+		'&iIdFolder=' . $iIdFolder);
+	
+	$babBody->title = bab_translate("Rights of directory") . ' ' . $sFolderName;
+	$macl = new macl("fileman", "setRight", $iIdFolder, "aclview");
+	
+	$macl->set_hidden_field('path', $path);
+	$macl->set_hidden_field('id', $id);
+	$macl->set_hidden_field('gr', $gr);
+	$macl->set_hidden_field('iIdFolder', $iIdFolder);
+	
+	$macl->addtable( BAB_FMUPLOAD_GROUPS_TBL,bab_translate("Upload"));
+	$macl->addtable( BAB_FMDOWNLOAD_GROUPS_TBL,bab_translate("Download"));
+	$macl->addtable( BAB_FMUPDATE_GROUPS_TBL,bab_translate("Update"));
+	$macl->addtable( BAB_FMMANAGERS_GROUPS_TBL,bab_translate("Manage"));
+	$macl->filter(0,0,1,1,1);
+	$macl->babecho();
+	
+}
+
+
+function setRight($bmanager, $upload, $id, $gr, $path, &$idx)
+{
+	require_once $GLOBALS['babInstallPath'] . 'admin/acl.php';
+	maclGroups();
+	
+	$idx = 'list';
+	listFiles($id, $gr, $path, $bmanager, $upload);
 }
 
 function fileUnload($id, $gr, $path)
@@ -2863,6 +2945,14 @@ switch($idx)
 		exit;
 		break;
 
+	case 'displayRightForm':
+		displayRightForm($bmanager, $upload, $path, $id, $gr);
+		break;
+
+	case 'setRight':
+		setRight($bmanager, $upload, $id, $gr, $path, $idx);
+		break;
+		
 	case "get":
 		getFile($file, $id, $gr, $path);
 		break;

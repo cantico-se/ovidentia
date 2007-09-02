@@ -167,11 +167,21 @@ function remove_field()
                 </td>
                 <td><a href="{ url }">{ name }</a></td>
                 <td colspan="4">&nbsp;</td>
-			<!--#if bFolderFormUrl -->
-                <td><a href="{ sFolderFormUrl }" title="{ sFolderFormEdit }"><img src="{ babSkinPath }images/Puces/edit.png" border="0" alt="{ sFolderFormEdit }"  /></a></td>
-            <!--#else bFolderFormUrl -->
-                <td>&nbsp;</td>
-            <!--#endif bFolderUrl -->
+			
+                <td>
+                <!--#if bFolderFormUrl -->
+                	<a href="{ sFolderFormUrl }" title="{ sFolderFormEdit }"><img src="{ babSkinPath }images/Puces/edit.png" border="0" alt="{ sFolderFormEdit }"  /></a>
+                <!--#else bFolderFormUrl -->
+                	&nbsp;
+                <!--#endif bFolderUrl -->
+                
+				<!--#if bRightUrl -->
+                	<a href="{ sRightUrl }" title="{ sRight }"><img src="{ babSkinPath }images/Puces/access.png" border="0" alt="{ sRight }"  /></a>
+            	<!--#else bRightUrl -->
+                	&nbsp;
+                <!--#endif bRightUrl -->
+                </td>
+            
                 <td>&nbsp;</td>
                </tr>
               <!--#endin getnextdir -->
