@@ -68,11 +68,15 @@ class listFiles
 	var $reswf;
 	var $arrdir = array();
 	var $buaf;
+	var $arrgrp = array();
 	
 	var $sPathName = '';
 	var $iIdOwner = 0;
 	var $oFolderFileSet = null;
 	var $sRootFolderPath = '';
+	var $sEndSlash = '';
+	
+	var $aCollectiveDirPath = array();
 	
 	/**
 	 * Files extracted by readdir
@@ -80,7 +84,7 @@ class listFiles
 	var $files_from_dir = array();
 
 	function listFiles($id, $gr, $path, $bmanager, $what ="list")
-		{
+	{
 		global $babBody, $babDB, $BAB_SESS_USERID;
 		include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 		$this->fullpath = bab_getUploadFullPath($gr, $id);
@@ -88,143 +92,167 @@ class listFiles
 		$this->initEnv($gr, $id, $path);
 		$this->oFolderFileSet = new BAB_FolderFileSet();
 
-
-		if('N' === $gr)
-		{
-			$this->sRootFolderPath = 'U' . $id . '/';
-		}
-		else 
-		{
-			$oFmFolderSet = new BAB_FmFolderSet();
-			$oId =& $oFmFolderSet->aField['iId'];
-			
-			$oFmFolder = $oFmFolderSet->get($oId->in($id));
-			if(!is_null($oFmFolder))
-			{
-				$this->sRootFolderPath = $oFmFolder->getName() . '/';
-			}
-		}
-
-
 		$this->path = $path;
 		$this->jpath = bab_toHtml($path, BAB_HTML_JS);
 		$this->id = $id;
 		$this->gr = $gr;
 		$this->countmgrp = 0;
-		$this->countgrp = 0;
 		$this->buaf = false;
 
 		$this->bmanager = $bmanager;
 		$this->countwf = 0;
 		$this->bdownload = false;
-		for( $i = 0; $i < count($babBody->aclfm['id']); $i++)
-			{
-			$this->arrgrp['id'][] = $babBody->aclfm['id'][$i];
-			$this->arrgrp['ma'][] = $babBody->aclfm['ma'][$i];
-			$this->arrgrp['folder'][] = $babBody->aclfm['folder'][$i];
-			$this->arrgrp['hide'][] = $babBody->aclfm['hide'][$i];
-			if( $babBody->aclfm['id'][$i] == $id )
-				{
-				$this->bdownload = $babBody->aclfm['down'][$i];
+		
+		$this->selectCollectiveFolder($this->path, $what);
 
-				if( $what == "list" && $gr == "Y" && $babBody->aclfm['idsa'][$i] != 0 && ($this->buaf = isUserApproverFlow($babBody->aclfm['idsa'][$i], $BAB_SESS_USERID)) )
-					{
-						$this->selectWaitingFile();
-					}
-				}
-			}
-
-		if(!$this->bdownload )
+		if(!$this->bdownload)
+		{
 			$this->bdownload = $bmanager? true: false;
-
-		$this->countgrp = 0;
-		if( $gr == "Y" || ($gr == "N" && !empty($path)))
-			{
-			$this->countgrp = 0;
-			}
-		else if( isset($this->arrgrp['id']))
-			{
-			$this->countgrp = count($this->arrgrp['id']);
-			}
-
-		if( $id != 0  && is_dir($this->fullpath.$path."/"))
-			{
-			$h = opendir($this->fullpath.$path."/");
+		}
+		
+		if($id != 0  && is_dir($this->fullpath.$path.$this->sEndSlash))
+		{
+			$h = opendir($this->fullpath.$path.$this->sEndSlash);
 			while (($f = readdir($h)) != false)
+			{
+				if($f != "." and $f != ".." and $f != BAB_FVERSION_FOLDER) 
 				{
-				if ($f != "." and $f != ".." and $f != BAB_FVERSION_FOLDER) 
+					$sFullPathName = $this->fullpath.$path.$this->sEndSlash.$f;
+					if(is_dir($sFullPathName)) 
 					{
-					if (is_dir($this->fullpath.$path."/".$f)) {
+						//if is not a collective folder
+						if(!array_key_exists($sFullPathName, $this->aCollectiveDirPath))
+						{
 							$this->arrdir[] = $f;
-						} else {
-							$this->files_from_dir[] = $f;
 						}
+					} 
+					else 
+					{
+						$this->files_from_dir[] = $f;
 					}
 				}
+			}
 			closedir($h);
 
-			if (!isset($this->arrudir))
+			if(!isset($this->arrudir))
+			{
 				$this->arrudir = array();
+			}
 
-			if (is_array($this->arrdir))
-				{
+			if(is_array($this->arrdir))
+			{
 				natcasesort($this->arrdir);
 				$this->arrdir = array_values($this->arrdir);
-				reset ($this->arrdir);
+				reset($this->arrdir);
 				
-				foreach ( $this->arrdir as $f )
-					{
-					$this->arrudir[] = $GLOBALS['babUrlScript']."?tg=fileman&idx=".urlencode($what)."&id=".$id."&gr=".$gr."&path=".urlencode($path.($path ==""?"":"/").$f);
-					}
-				}
-
-			if( !empty($path))
+				foreach($this->arrdir as $f)
 				{
+					$this->arrudir[] = $GLOBALS['babUrlScript']."?tg=fileman&idx=".urlencode($what)."&id=".$id."&gr=".$gr."&path=".urlencode($path.($path ==""?"":"/").$f);
+				}
+			}
+
+			if(!empty($path))
+			{
 				$i = strrpos($path, "/");
-				if( !$i )
+				if(!$i)
+				{
 					$p = "";
+				}
 				else
+				{
 					$p = substr( $path, 0, $i);
-				if (isset($this->arrudir) && is_array($this->arrudir))
-					{
+				}
+				if(isset($this->arrudir) && is_array($this->arrudir))
+				{
 					array_unshift ($this->arrdir,". .");
 					array_unshift ($this->arrudir, $GLOBALS['babUrlScript']."?tg=fileman&idx=".urlencode($what)."&id=".$id."&gr=".$gr."&path=".urlencode($p));
-					}
+				}
 				else
-					{
+				{
 					$this->arrdir[] = ". .";
 					$this->arrudir[] = $GLOBALS['babUrlScript']."?tg=fileman&idx=".urlencode($what)."&id=".$id."&gr=".$gr."&path=".urlencode($p);
-					}
 				}
+			}
 			
 			$this->prepare();
 			$this->autoadd_files();
-			}
-		else
-			{
-			$this->count = 0;
-			}
-			
-		
 		}
+		else
+		{
+			$this->count = 0;
+		}
+	}
 
 		function initEnv($sGr, $iId, $sPath)
 		{
 			$this->iIdOwner = $iId;
 			
-			$sEndSlash = '';
+			$this->sEndSlash = '';
 			if(strlen(trim($sPath)) > 0)
 			{
-				$sEndSlash = '/';
-			}
-			
+				$this->sEndSlash = '/';
+			}	
+					
 			if('Y' === $sGr)
 			{
 				BAB_FmFolderHelper::getFileInfoForCollectiveDir($iId, $sPath, $this->iIdOwner, $this->sPathName);
+				
+				$oFmFolderSet = new BAB_FmFolderSet();
+				$oId =& $oFmFolderSet->aField['iId'];
+				
+				$oFmFolder = $oFmFolderSet->get($oId->in($iId));
+				if(!is_null($oFmFolder))
+				{
+					$this->sRootFolderPath = $oFmFolder->getName() . '/';
+				}
 			}
-			else 
+			else if('N' === $sGr)
 			{
-				$this->sPathName = 'U' . $iId . '/' . $sPath . $sEndSlash;
+				$this->sRootFolderPath = 'U' . $iId . '/';
+				$this->sPathName = 'U' . $iId . '/' . $sPath . $this->sEndSlash;
+			}
+		}
+		
+		function selectCollectiveFolder($sPath, $sWhat)
+		{
+			$bSearch = false;
+			if('N' === $this->gr && strlen(trim($sRelativePath)) === 0)
+			{
+				$sRelativePath = '';
+				$bSearch = true;
+			}
+			else if('Y' === $this->gr)
+			{
+				$sRelativePath = $this->sPathName;
+				$bSearch = true;
+			}
+
+			if($bSearch)
+			{
+				$oFmFolderSet = new BAB_FmFolderSet();
+				$oPathName =& $oFmFolderSet->aField['sRelativePath'];
+				$oFmFolderSet->select($oPathName->in($sRelativePath));
+				
+				while(null !== ($oFmFolder = $oFmFolderSet->next()))
+				{
+					$sFullPathName = BAB_FmFolderHelper::getUploadPath() . $sRelativePath . $oFmFolder->getName();
+					$this->aCollectiveDirPath[$sFullPathName] = $sFullPathName;
+					
+					$this->arrgrp['id'][] = $oFmFolder->getId();
+					$this->arrgrp['ma'][] = bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oFmFolder->getId()) ? 1 : 0;
+					$this->arrgrp['folder'][] = $oFmFolder->getName();
+					$this->arrgrp['hide'][] = ('Y' === $oFmFolder->getHide()) ? true :  false;
+					$this->bdownload = bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $oFmFolder->getId());
+	
+					if('list' === $sWhat && 'Y' === $this->gr)
+					{
+						if(0 !== $oFmFolder->getApprobationSchemeId()  && ($this->buaf = isUserApproverFlow($oFmFolder->getApprobationSchemeId(), $BAB_SESS_USERID)))
+						{
+							$this->selectWaitingFile();
+						}
+					}
+				}
+				$this->countgrp = count($this->arrgrp['id']);
 			}
 		}
 		
@@ -234,11 +262,11 @@ class listFiles
 			if(count($aWaitingAppInstanceId) > 0)
 			{
 				$this->oFolderFileSet->bUseAlias = false;
-				$oIdOwner = $this->oFolderFileSet->aField['iIdOwner'];
-				$oGroup = $this->oFolderFileSet->aField['sGroup'];
-				$oState = $this->oFolderFileSet->aField['sState'];
-				$oPathName = $this->oFolderFileSet->aField['sPathName'];
-				$oConfirmed = $this->oFolderFileSet->aField['sConfirmed'];
+				$oIdOwner =& $this->oFolderFileSet->aField['iIdOwner'];
+				$oGroup =& $this->oFolderFileSet->aField['sGroup'];
+				$oState =& $this->oFolderFileSet->aField['sState'];
+				$oPathName =& $this->oFolderFileSet->aField['sPathName'];
+				$oConfirmed =& $this->oFolderFileSet->aField['sConfirmed'];
 				$oIdApprobationInstance = $this->oFolderFileSet->aField['iIdApprobationInstance'];
 				
 				$oCriteria = $oIdOwner->in($this->iIdOwner);
@@ -286,7 +314,6 @@ class listFiles
 		 */
 		function autoadd_files() 
 		{
-//			return;
 			global $babDB;
 
 			if(!isset($GLOBALS['babAutoAddFilesAuthorId']) || empty($GLOBALS['babAutoAddFilesAuthorId']))
@@ -891,7 +918,6 @@ function listFiles($id, $gr, $path, $bmanager, $upload)
 		
 		var $sRight;
 		var $sRightUrl;
-		var $bRightUrl;
 		
 		var $altfilelog;
 		var $altfilelock;
@@ -1001,24 +1027,12 @@ function listFiles($id, $gr, $path, $bmanager, $upload)
 				$this->altbg = !$this->altbg;
 				$this->name = bab_toHtml($this->arrdir[$i]);
 				$this->bFolderFormUrl = false;
-
-				$this->sRightUrl = '#';
-				$this->bRightUrl = false;
-
 				static $aExcludedDir = array('.', '..', '. .');
 				if(!in_array($this->name, $aExcludedDir))	
 				{	
 					$this->sFolderFormUrl = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&idx=displayFolderForm&sAction=editFolder&id=' . $this->id . 
 						'&gr=' . $this->gr . '&path=' . urlencode($this->path) . '&sDirName=' . urlencode($this->name));
 					$this->bFolderFormUrl = true;
-					
-					$oFmFolder = null;
-					if($this->isCollective($this->name, $this->sPathName, $oFmFolder))
-					{
-						$this->bRightUrl = true;
-						$this->sRightUrl = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&idx=displayRightForm&id=' . $this->id . 
-							'&gr=' . $this->gr . '&path=' . urlencode($this->path) . '&iIdFolder=' . $oFmFolder->getId());
-					}
 				}
 				$this->url = bab_toHtml($this->arrudir[$i]);
 				$i++;
@@ -1029,31 +1043,24 @@ function listFiles($id, $gr, $path, $bmanager, $upload)
 				return false;
 			}
 		}
-
-		function isCollective($sFolderName, $sRelativePath, &$oFmFolder)
-		{
-			$oFmFolderSet = new BAB_FmFolderSet();
-			$oName =& $oFmFolderSet->aField['sName']; 
-			$oRelativePath =& $oFmFolderSet->aField['sRelativePath']; 
-			
-			$oCriteria = $oName->in($sFolderName);
-			$oCriteria = $oCriteria->_and($oRelativePath->in($sRelativePath));
-			
-			$oFmFolder = $oFmFolderSet->get($oCriteria);
-			return (null !== $oFmFolder);
-		}
 		
 		function getnextgrpdir(&$skip)
-			{
+		{
 			static $m = 0;
-			if( $m < $this->countgrp)
+			if($m < $this->countgrp)
+			{
+				if($this->arrgrp['hide'][$m])
 				{
-				if( $this->arrgrp['hide'][$m] )
-					{
 					$skip = true;
 					$m++;
 					return true;
-					}
+				}
+
+				$this->sRightUrl = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&idx=displayRightForm&id=' . $this->id . 
+					'&gr=' . $this->gr . '&path=' . urlencode($this->path) . '&iIdFolder=' . $this->arrgrp['id'][$m]);
+					
+				$this->sFolderFormUrl = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&idx=displayFolderForm&sAction=editFolder&id=' . $this->id . 
+					'&gr=' . $this->gr . '&path=' . urlencode($this->path) . '&sDirName=' . urlencode($this->arrgrp['folder'][$m]));
 					
 				$this->altbg = !$this->altbg;
 				$this->name = bab_toHtml($this->arrgrp['folder'][$m]);
@@ -1061,10 +1068,12 @@ function listFiles($id, $gr, $path, $bmanager, $upload)
 				$this->ma = $this->arrgrp['ma'][$m];
 				$m++;
 				return true;
-				}
+			}
 			else
+			{
 				return false;
 			}
+		}
 
 
 		function updateFileInfo($arr)
