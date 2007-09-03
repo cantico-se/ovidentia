@@ -803,7 +803,7 @@ function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonl
 					else
 					{
 						$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
-						if(count($arrschi) > 0 && in_array($oFolderFile->getApprobationInstanceId(), $arrschi))
+						if(count($arrschi) > 0 && in_array($oFolderFile->getFlowApprobationInstanceId(), $arrschi))
 						{
 							break;
 						}
@@ -1031,16 +1031,15 @@ function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonl
 			if('N' === $oFolderFile->getConfirmed())
 			{
 				include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
-				$res = updateFlowInstance($oFolderFile->getApprobationInstanceId(), $GLOBALS['BAB_SESS_USERID'], $confirm == "Y"? true: false);
+				$res = updateFlowInstance($oFolderFile->getFlowApprobationInstanceId(), $GLOBALS['BAB_SESS_USERID'], $confirm == "Y"? true: false);
 				switch($res)
 				{
 					case 0:
-						deleteFile($oFolderFile->getId(), $oFolderFile->getName(), $sUploadPath . $oFolderFile->getPathName());
-						unlink($sFullPathName);
+						deleteFile($oFolderFile->getId());
 						notifyFileAuthor(bab_translate("Your file has been refused"),"", $oFolderFile->getAuthorId(), $oFolderFile->getName());
 						break;
 					case 1:
-						deleteFlowInstance($oFolderFile->getApprobationInstanceId());
+						deleteFlowInstance($oFolderFile->getFlowApprobationInstanceId());
 						$babDB->db_query("update ".BAB_FILES_TBL." set confirmed='Y', idfai='0' where id = '".$babDB->db_escape_string($oFolderFile->getId())."'");
 						$GLOBALS['babWebStat']->addNewFile($rr['id_dgowner']);
 						notifyFileAuthor(bab_translate("Your file has been accepted"),"", $oFolderFile->getAuthorId(), $oFolderFile->getName());
@@ -1050,7 +1049,7 @@ function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonl
 						}
 						break;
 					default:
-						$nfusers = getWaitingApproversFlowInstance($oFolderFile->getApprobationInstanceId(), true);
+						$nfusers = getWaitingApproversFlowInstance($oFolderFile->getFlowApprobationInstanceId(), true);
 						if(count($nfusers) > 0)
 						{
 							notifyFileApprovers($oFolderFile->getId(), $nfusers, bab_translate("A new file is waiting for you"));
@@ -1079,9 +1078,6 @@ function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonl
  */
 function fm_getFileAccess($idf) 
 {
-	static $result = array();
-	
-	if(!isset($result[$idf])) 
 	{
 		$bupdate = false;
 		$bdownload = false;
@@ -1371,8 +1367,8 @@ function fm_commitFile($idf, $comment, $vermajor, $fmFile)
 			return false;
 		}
 	
-		$sFullPathName = bab_getUploadFullPath($oFolderFile->getGroup(), $oFolderFile->getOwnerId());
-		$pathy = bab_getUploadFmPath($oFolderFile->getGroup(), $oFolderFile->getOwnerId());
+		$sUploadPath = BAB_FmFolderHelper::getUploadPath();
+		$sFullPathName = $sUploadPath . $oFolderFile->getPathName();
 		
 		$totalsize = getDirSize($sFullPathName);
 		if($size + $totalsize > $GLOBALS['babMaxGroupSize'] )
@@ -1396,24 +1392,22 @@ function fm_commitFile($idf, $comment, $vermajor, $fmFile)
 			$vmajor = $oFolderFile->getMajorVer();
 			$vminor = ($oFolderFile->getMinorVer() + 1);
 		}
-	
-	
-		if(!$fmFile->import($sFullPathName . BAB_FVERSION_FOLDER . '/' . $vmajor . ',' . $vminor . ',' . $oFolderFile->getName()))
+		if(!$fmFile->import($sFullPathName . BAB_FVERSION_FOLDER . '/' . $vmajor . '.' . $vminor . ',' . $oFolderFile->getName()))
 		{
 			$babBody->msgerror = bab_translate("The file could not be uploaded");
 			return false;
 		}
-	
+
 		if(0 !== $oFmFolder->getApprobationSchemeId())
 		{
 			include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 			if('Y' === $oFmFolder->getAutoApprobation())
 			{
-				$idfai = makeFlowInstance($oFmFolder->getApprobationSchemeId(), 'filv-'.$oFolderFile->getApprobationInstanceId(), $GLOBALS['BAB_SESS_USERID']);
+				$idfai = makeFlowInstance($oFmFolder->getApprobationSchemeId(), 'filv-'.$oFolderFile->getFlowApprobationInstanceId(), $GLOBALS['BAB_SESS_USERID']);
 			}
 			else
 			{
-				$idfai = makeFlowInstance($oFmFolder->getApprobationSchemeId(), 'filv-'.$oFolderFile->getApprobationInstanceId());
+				$idfai = makeFlowInstance($oFmFolder->getApprobationSchemeId(), 'filv-'.$oFolderFile->getFlowApprobationInstanceId());
 			}
 		}
 	
@@ -1430,10 +1424,10 @@ function fm_commitFile($idf, $comment, $vermajor, $fmFile)
 
 			$sSrc = $sFullPathName . $oFolderFile->getName();
 			$sTrg = $sFullPathName . BAB_FVERSION_FOLDER . '/'. $oFolderFile->getMajorVer() . 
-				',' . $oFolderFile->getMinorVer() . ',' . $oFolderFile->getName();
+				'.' . $oFolderFile->getMinorVer() . ',' . $oFolderFile->getName();
 			copy($sSrc, $sTrg);
 			
-			$sSrc = $sFullPathName . BAB_FVERSION_FOLDER . '/'. $vmajor . ',' . $vminor . 
+			$sSrc = $sFullPathName . BAB_FVERSION_FOLDER . '/'. $vmajor . '.' . $vminor . 
 				',' . $oFolderFile->getName();
 			$sTrg = $sFullPathName . $oFolderFile->getName();
 			copy($sSrc, $sTrg);
@@ -1445,7 +1439,7 @@ function fm_commitFile($idf, $comment, $vermajor, $fmFile)
 			$index_status = bab_indexOnLoadFiles(
 				array($sFullPathName . $oFolderFile->getName(),  
 					$sFullPathName . BAB_FVERSION_FOLDER . '/'. $oFolderFile->getMajorVer() . 
-						',' . $oFolderFile->getMinorVer() . ',' . $oFolderFile->getName()),
+						'.' . $oFolderFile->getMinorVer() . ',' . $oFolderFile->getName()),
 				'bab_files'
 			);
 	
@@ -1469,7 +1463,7 @@ function fm_commitFile($idf, $comment, $vermajor, $fmFile)
 				$obj = new bab_indexObject('bab_files');
 				$obj->setIdObjectFile($oFolderFile->getPathName() . $oFolderFile->getName(), $idf, $oFolderFile->getOwnerId());
 				$obj->setIdObjectFile($oFolderFile->getPathName() . BAB_FVERSION_FOLDER . '/' . 
-					$oFolderFile->getMajorVer() . ',' . $oFolderFile->getMinorVer() . ',' . 
+					$oFolderFile->getMajorVer() . '.' . $oFolderFile->getMinorVer() . ',' . 
 					$oFolderFile->getName(), $idf, $oFolderFile->getOwnerId());
 			}
 	
@@ -1978,13 +1972,58 @@ class BAB_FolderFileSet extends BAB_BaseSet
 			'iIdModifier' => new BAB_IntField('`modifiedby`'),
 			'sConfirmed' => new BAB_StringField('`confirmed`'),
 			'iHits' => new BAB_IntField('`hits`'),
-			'iIdApprobationInstance' => new BAB_IntField('`idfai`'),
+			'iIdFlowApprobationInstance' => new BAB_IntField('`idfai`'),
 			'iIdFolderFileVersion' => new BAB_IntField('`edit`'),
 			'iVerMajor' => new BAB_IntField('`ver_major`'),
 			'iVerMinor' => new BAB_IntField('`ver_minor`'),
 			'sVerComment' => new BAB_StringField('`ver_comment`'),
 			'iIndexStatus' => new BAB_IntField('`index_status`')
 			);
+	}
+	
+	function remove($oCriteria)
+	{
+//		bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__);
+		
+		$sUploadPath = BAB_FmFolderHelper::getUploadPath();
+		
+		$this->select($oCriteria);
+		
+		$aIdFile = array();
+		
+		$oFolderFileVersionSet = new BAB_FolderFileVersionSet();
+		$oId =& $oFolderFileVersionSet->aField['iIdFile'];
+		
+		while(null !== ($oFolderFile = $this->next()))
+		{
+			$sFullPathName = $sUploadPath . $oFolderFile->getPathName() . $oFolderFile->getName();
+			if(file_exists($sFullPathName))
+			{
+//				bab_debug('unlink ==> ' . $sFullPathName);
+				
+				unlink($sFullPathName);	
+			}
+			
+			$oFolderFileVersionSet->remove($oId->in($oFolderFile->getId()), 
+				$sUploadPath . $oFolderFile->getPathName(), $oFolderFile->getName());
+			
+			if(0 !== $oFolderFile->getFlowApprobationInstanceId())
+			{
+				deleteFlowInstance($oFolderFile->getFlowApprobationInstanceId());
+			}
+				
+			$aIdFile[] = $oFolderFile->getId();
+		}
+		
+		$oFolderFileLogSet = new BAB_FolderFileLogSet();
+		$oId =& $oFolderFileLogSet->aField['iIdFile'];
+		$oFolderFileLogSet->remove($oId->in($aIdFile));
+		
+		$oFolderFileFieldValueSet = new BAB_FolderFileFieldValueSet();
+		$oId =& $oFolderFileFieldValueSet->aField['iIdFile'];
+		$oFolderFileFieldValueSet->remove($oId->in($aIdFile));
+		
+		parent::remove($oCriteria);
 	}
 }
 
@@ -2007,6 +2046,37 @@ class BAB_FolderFileVersionSet extends BAB_BaseSet
 			'sConfirmed' => new BAB_StringField('`confirmed`'),
 			'iIndexStatus' => new BAB_IntField('`index_status`')
 			);
+	}
+	
+	function remove($oCriteria, $sPathName, $sFileName)
+	{
+//		bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__);
+
+		$this->select($oCriteria);
+		
+		while(null !== ($oFolderFileVersion = $this->next()))
+		{
+			$sFullPathName = $sPathName . BAB_FVERSION_FOLDER . '/' . $oFolderFileVersion->getMajorVer() . 
+				'.' . $oFolderFileVersion->getMinorVer() . ',' . $sFileName;
+			
+			if(file_exists($sFullPathName))
+			{
+//				bab_debug('unlink ==> ' . $sFullPathName);
+
+				unlink($sFullPathName);
+			}
+			else 
+			{
+				bab_debug('ERROR ==> ' . $sFullPathName);
+			}
+			
+			if(0 !== $oFolderFileVersion->getFlowApprobationInstanceId())
+			{
+				deleteFlowInstance($oFolderFileVersion->getFlowApprobationInstanceId());
+			}
+		}
+		
+		parent::remove($oCriteria);
 	}
 }
 
@@ -2375,14 +2445,14 @@ class BAB_FolderFile extends BAB_DbRecord
 		return $this->_iGet('iHits');
 	}
 	
-	function setApprobationInstanceId($iIdApprobationInstance)
+	function setFlowApprobationInstanceId($iIdFlowApprobationInstance)
 	{
-		$this->_set('iIdApprobationInstance', $iIdApprobationInstance);
+		$this->_set('iIdFlowApprobationInstance', $iIdFlowApprobationInstance);
 	}
 	
-	function getApprobationInstanceId()
+	function getFlowApprobationInstanceId()
 	{
-		return $this->_iGet('iIdApprobationInstance');
+		return $this->_iGet('iIdFlowApprobationInstance');
 	}
 	
 	function setFolderFileVersionId($iIdFolderFileVersion)
@@ -3030,6 +3100,64 @@ class BAB_FolderFileHelper
 			}
 		}
 	}
+
+	
+	function deleteFilesVersions($sPathName)
+	{
+		bab_debug(__FUNCTION__);
+		
+		$oFolderFileSet = new BAB_FolderFileSet();
+		$oPathName =& $oFolderFileSet->aField['sPathName'];
+
+		$oFolderFileSet->select($oPathName->in($sPathName));
+			
+		while(null !== ($oFolderFile = $oFolderFileSet->next()))
+		{
+			$oFolderFileVersionSet = new BAB_FolderFileVersionSet();
+			$oIdFile =& $oFolderFileVersionSet->aField['iIdFile'];
+			$oVerMajor =& $oFolderFileVersionSet->aField['iVerMajor'];
+			$oVerMinor =& $oFolderFileVersionSet->aField['iVerMinor'];
+			$oId =& $oFolderFileVersionSet->aField['iId'];
+
+			//select last version
+			{
+				$oCriteria = $oIdFile->in($oFolderFile->getId());
+				$oCriteria = $oCriteria->_and($oVerMajor->in($oFolderFile->getMajorVer()));
+				$oCriteria = $oCriteria->_and($oVerMinor->in($oFolderFile->getMinorVer()));
+				
+				$oFolderFileVersion = $oFolderFileVersionSet->get($oCriteria);
+				
+				$oCriteria = $oIdFile->in($oFolderFile->getId());
+				if(!is_null($oFolderFileVersion))
+				{
+					$oCriteria = $oCriteria->_and($oId->notIn($oFolderFileVersion->getId()));
+				}
+			}
+			
+			$aVersion = array();
+			$oFolderFileVersionSet->select($oCriteria);
+			while(null !== ($oFolderFileVersion = $oFolderFileVersionSet->next()))
+			{
+				$sMsg = 'sFileName ==> ' . $oFolderFile->getName() . ' iVerMajor ==> ' . 
+					$oFolderFileVersion->getMajorVer() . ' iVerMinor ==> ' . $oFolderFileVersion->getMinorVer();
+				
+				$aVersion[] = $oFolderFileVersion->getMajorVer() . '.' . $oFolderFileVersion->getMinorVer();
+						
+				bab_debug($sMsg);
+			}
+		}
+		
+		$oFolderFileLogSet = new BAB_FolderFileLogSet();
+		$oVersion = $oFolderFileLogSet->aField['sVersion'];
+		
+		$oFolderFileLogSet->select($oVersion->in($aVersion));
+		
+		while(null !== ($oFolderFileLog = $oFolderFileLogSet->next()))
+		{
+			bab_debug('sVersion ==> ' . $oFolderFileLog->getVersion());
+		}
+	}
+	
 	
 	function setIdOwnerToFirstCollective($sPathName, $iIdOwner)
 	{
@@ -3059,139 +3187,35 @@ class BAB_FolderFileHelper
 
 		while(null !== ($oFolderFile = $oFolderFileSet->next()))
 		{
-			bab_debug('sFileName ==> ' . $oFolderFile->getName() . ' sPath ==> ' . $oFolderFile->getPathName() . 
-				' iOldIdOwner ==> ' . $oFolderFile->getOwnerId() . ' iNewIdOwner ==> ' . $iNewIdOwner);
+//			bab_debug('sFileName ==> ' . $oFolderFile->getName() . ' sPath ==> ' . $oFolderFile->getPathName() . 
+//				' iOldIdOwner ==> ' . $oFolderFile->getOwnerId() . ' iNewIdOwner ==> ' . $iNewIdOwner);
 			
 			$oFolderFile->setOwnerId($iNewIdOwner);
-//			$oFolderFile->save();
+			$oFolderFile->save();
 		}		
 	}
 	
 	
 }
 
-//---------------------
-/*
-class BAB_ContextBase
+function getUrlPath($sRelativePath)
 {
-	var $aDatas = array();
-	
-	function BAB_ContextBase()
+	$sPathName = '';				
+	$aPath = explode('/', $sRelativePath);
+	if(is_array($aPath))
 	{
-		
-	}
-	
-	function get($sName)
-	{
-		if(array_key_exists($sName, $this->aDatas))
+		$iCount = count($aPath);
+		if($iCount >= 2)
 		{
-			return $this->aDatas[$sName];
-		}
-		return '';
-	}
-	
-	function set($sName, $sValue)
-	{
-		$this->aDatas[$sName] = $sValue;
-	}
-}
-
-
-class BAB_RenameFolderContext extends BAB_ContextBase
-{
-	function BAB_RenameFolderContext($sUploadPath, $sRelativePath, $sOldName, $sNewName)
-	{
-		parent::BAB_ContextBase();
-		
-		$this->set('sUploadPath', $sUploadPath);
-		$this->set('sRelativePath', $sRelativePath);
-		$this->set('sOldName', $sOldName);
-		$this->set('sNewName', $sNewName);
-	}
-}
-
-
-class BAB_RenameFilePathContext extends BAB_ContextBase
-{
-	function BAB_RenameFilePathContext($sPathName, $sNewName)
-	{
-		parent::BAB_ContextBase();
-		
-		$this->set('sPathName', $sPathName);
-		$this->set('sNewName', $sNewName);
-	}
-}
-
-class BAB_CommandBase
-{
-	var $oContext = null;
-	
-	function BAB_CommandBase($oContext)
-	{
-		$this->oContext = $oContext;
-	}
-	
-	function execute()
-	{
-		
-	}
-}
-
-class BAB_RenameFolderCommand extends BAB_CommandBase
-{
-	function BAB_RenameFolderCommand($oContext)
-	{
-		parent::BAB_CommandBase($oContext);
-	}
-	
-	function execute()
-	{
-		BAB_FmFolderHelper::updateSubFolderPathName($this->oContext->get('sUploadPath'), 
-			$this->oContext->get('sRelativePath'), $this->oContext->get('sOldName'), 
-			$this->oContext->get('sNewName'));
-	}
-}
-
-
-class BAB_RenameFilePathCommand extends BAB_CommandBase
-{
-	function BAB_RenameFilePathCommand($oContext)
-	{
-		parent::BAB_CommandBase($oContext);
-		
-		$this->set('sPathName', $sPathName);
-		$this->set('sNewName', $sNewName);
-	}
-	
-	function execute()
-	{
-		BAB_FolderFileHelper::renamePath($this->oContext->get('sPathName'), 
-			$this->oContext->get('sNewName'));
-	}
-}
-
-
-class BAB_CommandProcessor
-{
-	var $aCommand = array();
-	
-	function BAB_CommandProcessor()
-	{
-		
-	}
-	
-	function add($oCommand)
-	{
-		$this->aCommand[] = $oCommand;
-	}
-	
-	function execute()
-	{
-		foreach($this->aCommand as $oCommand)
-		{
-			$oCommand->execute();
+			unset($aPath[0]);
+			
+			if(count($aPath) > 0)
+			{
+				$sPathName = implode('/', $aPath);
+				$sPathName = substr($sPathName, 0, -1);
+			}
 		}
 	}
+	return $sPathName;
 }
-//*/
 ?>

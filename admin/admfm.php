@@ -507,9 +507,9 @@ function updateFolder($fid, $fname, $active, $said, $notification, $version, $bh
 				
 				while(null !== ($oFolderFile = $oFolderFileSet->next()))
 				{
-					if(0 !== $oFolderFile->getApprobationInstanceId())
+					if(0 !== $oFolderFile->getFlowApprobationInstanceId())
 					{
-						deleteFlowInstance($oFolderFile->getApprobationInstanceId());
+						deleteFlowInstance($oFolderFile->getFlowApprobationInstanceId());
 					}
 	
 	
@@ -527,13 +527,13 @@ function updateFolder($fid, $fname, $active, $said, $notification, $version, $bh
 
 					if($said == 0 || $idfai === true)
 					{
-						$oFolderFile->setApprobationInstanceId(0);
+						$oFolderFile->setFlowApprobationInstanceId(0);
 						$oFolderFile->setConfirmed('Y');
 						$oFolderFile->save();
 					}
 					else if(!empty($idfai))
 					{
-						$oFolderFile->setApprobationInstanceId($idfai);
+						$oFolderFile->setFlowApprobationInstanceId($idfai);
 						$oFolderFile->save();
 
 						$nfusers = getWaitingApproversFlowInstance($idfai, true);

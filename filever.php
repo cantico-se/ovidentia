@@ -625,14 +625,20 @@ function fileUnload($idf)
 			
 			if(!is_null($oFolderFile) && !is_null($oFmFolder))
 			{
-				$sPathName = $oFolderFile->getPathName();
-				$sFolderPath = $oFmFolder->getName() . '/';
+				$sPathName = getUrlPath($oFolderFile->getPathName());	
+				$iIdUrl = $oFmFolder->getId();
+				if(strlen($oFmFolder->getRelativePath()) > 0)
+				{
+					$oRootFmFolder = BAB_FmFolderHelper::getFirstCollectiveFolder($oFmFolder->getRelativePath());
+					if(!is_null($oRootFmFolder))
+					{
+						$iIdUrl = $oRootFmFolder->getId();
+					}
+				}
+							
+				$url = $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$iIdUrl."&gr=".$oFolderFile->getGroup()."&path=".urlencode($sPathName);
 				
-				$sPathName = (string) substr($sPathName, strlen($sFolderPath));
-				
-//				echo 'sPathName ==> ' . $sPathName;
-				
-				$url = $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$oFolderFile->getOwnerId()."&gr=".$oFolderFile->getGroup()."&path=".urlencode($sPathName);
+//				echo 'sUrl ==> ' . $url;
 			}
 			else 
 			{
@@ -651,7 +657,7 @@ function fileUnload($idf)
 
 
 
-function confirmFile($idf, $bconfirm )
+function confirmFile($idf, $bconfirm)
 {
 	global $babBody, $babDB;
 
@@ -813,6 +819,10 @@ if(isset($_REQUEST['idf']))
 	$oFmFolder =& $fm_file['oFmFolder'];
 	$oFolderFile =& $fm_file['oFolderFile'];
 
+//bab_debug($fm_file);
+//bab_debug($oFmFolder);
+//bab_debug($oFolderFile);
+	
 	if(!is_null($oFolderFile) && !is_null($oFmFolder))
 	{
 		if(isset($_POST['afile']) && $fm_file['bupdate'] == true)
