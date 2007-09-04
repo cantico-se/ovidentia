@@ -576,7 +576,7 @@ function getFile( $idf, $vmajor, $vminor )
 	
 		$fullpath = BAB_FmFolderHelper::getUploadPath()	. $oFolderFile->getPathName();
 		
-		$fullpath .= BAB_FVERSION_FOLDER."/".$vmajor.",".$vminor.",".$oFolderFile->getName();
+		$fullpath .= BAB_FVERSION_FOLDER."/".$vmajor.".".$vminor.",".$oFolderFile->getName();
 		$fsize = filesize($fullpath);
 		if(strtolower(bab_browserAgent()) == "msie")
 		{
@@ -629,7 +629,7 @@ function fileUnload($idf)
 				$iIdUrl = $oFmFolder->getId();
 				if(strlen($oFmFolder->getRelativePath()) > 0)
 				{
-					$oRootFmFolder = BAB_FmFolderHelper::getFirstCollectiveFolder($oFmFolder->getRelativePath());
+					$oRootFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($oFmFolder->getRelativePath());
 					if(!is_null($oRootFmFolder))
 					{
 						$iIdUrl = $oRootFmFolder->getId();

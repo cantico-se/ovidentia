@@ -595,7 +595,9 @@ function updateFolder($fid, $fname, $active, $said, $notification, $version, $bh
 			$sUploadPath = BAB_FmFolderHelper::getUploadPath();
 			$sRelativePath = '';
 			BAB_FmFolderHelper::updateSubFolderPathName($sUploadPath, $sRelativePath, $oFmFolder->getName(), $fname);
-			BAB_FolderFileHelper::renamePath($oFmFolder->getName() . '/', $fname);
+			
+			$bCollective = true;
+			BAB_FolderFileSet::setPathName($oFmFolder->getName() . '/', $fname, $bCollective);
 			
 			$oFmFolder->setName($fname);
 			$oFmFolder->setRelativePath('');
