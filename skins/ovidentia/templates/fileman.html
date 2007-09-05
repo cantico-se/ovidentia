@@ -131,7 +131,7 @@ function remove_field()
 <table  width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
           <td class="BabLoginCadreBackground" align="center"> 
-		  <table  width="100%" border="1" cellspacing="0" cellpadding="3" align="center">
+		  <table  width="100%" border="0" cellspacing="0" cellpadding="3" align="center">
               <tr class="BabSiteAdminTitleFontBackground"> 
                 <td colspan="2" align="center">{ nametxt }</td>
                 <td>&nbsp;</td>
@@ -155,8 +155,12 @@ function remove_field()
                 <td align="left"><a href="{ url }">{ name }</a></td>
                 <td colspan="4">&nbsp;</td>
                 <td>
+                <!--#if bFolderFormUrl -->
                 	<a href="{ sFolderFormUrl }" title="{ sFolderFormEdit }"><img src="{ babSkinPath }images/Puces/edit.png" border="0" alt="{ sFolderFormEdit }"  /></a>
+                <!--#endif bFolderFormUrl -->
+                <!--#if bRightUrl -->
                 	<a href="{ sRightUrl }" title="{ sRight }"><img src="{ babSkinPath }images/Puces/access.png" border="0" alt="{ sRight }"  /></a>
+                <!--#endif bRightUrl -->&nbsp;
                 </td>
                 <td>&nbsp;</td>
               </tr>
@@ -330,24 +334,6 @@ function remove_field()
 </tr>
 </table>
 <!--#if bmanager -->
-<form method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="fileman" />
-<input type="hidden" name="idx" value="list" />
-<input type="hidden" name="mkdir" value="mkdir" />
-<input type="hidden" name="id" value="{ id }" />
-<input type="hidden" name="gr" value="{ gr }" />
-<input type="hidden" name="path" value="{ path }" />
-
-<table class="BabLoginMenuBackground" border="0" cellspacing="0" cellpadding="2" align="center">
-	<tr>
-		<td align="right">{ directory }</td>
-		<td><input type="text" name="dirname" size="35" value="" /></td>
-		<td><input type="submit" name="create" value="{ mkdir }" /> <input type="submit" name="rename" value="{ rename }" /><!--#if bdel --> <input type="submit" name="bdel" value="{ delete }" /><!--#endif bdel -->
-		</td>
-	</tr>
- </table>
-</form>
-
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
     <tr>
 		<td align="right" valign="middle">
@@ -355,9 +341,7 @@ function remove_field()
 		</td>
     </tr>
 </table>
-        
 <!--#endif bmanager -->
-
 </td>
 </tr>
 </table>
@@ -929,7 +913,10 @@ function hide(aNode)
 				</tr>
 				<tr align="center"> 
 					<td colspan="2">
-						<input type="submit" value="{ m_captions[sSubmit] }">
+						<input type="submit"  name="sCreateEditFolder" value="{ m_captions[sSubmit] }">
+					<!--#if m_datas[bDelete] -->				
+						<input type="submit" name="sDeleteFolder" value="{ m_captions[sDelete] }">
+					<!--#endif m_datas[bDelete] -->
 					</td>
 				</tr>
 			</table>
@@ -958,7 +945,10 @@ function hide(aNode)
 				</tr>
 				<tr align="center"> 
 					<td colspan="2">
-						<input type="submit" value="{ m_captions[sSubmit] }">
+						<input type="submit" name="sCreateEditFolder" value="{ m_captions[sSubmit] }">
+					<!--#if m_datas[bDelete] -->				
+						<input type="submit" name="sDeleteFolder" value="{ m_captions[sDelete] }">
+					<!--#endif m_datas[bDelete] -->
 					</td>
 				</tr>
 			</table>

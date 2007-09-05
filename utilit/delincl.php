@@ -320,44 +320,60 @@ function bab_deleteUploadUserFiles($gr, $id)
 
 function bab_deleteFolder($fid)
 {
-	global $babDB;
-	// delete files owned by this group
-	$res = $babDB->db_query("select id, idfai from ".BAB_FILES_TBL." where id_owner='".$babDB->db_escape_string($fid)."' and bgroup='Y'");
-	while( $arr = $babDB->db_fetch_array($res))
-	{
-		$res2 = $babDB->db_query("select idfai from ".BAB_FM_FILESVER_TBL." where id_file='".$babDB->db_escape_string($arr['id'])."'");
-		while( $row = $babDB->db_fetch_array($res2))
-		{
-		if( $row['idfai'] != 0 )
-			{
-			deleteFlowInstance($row['idfai']);
-			}
-		}
-	$babDB->db_query("delete from ".BAB_FM_FILESVER_TBL." where id_file='".$babDB->db_escape_string($arr['id'])."'");
-	$babDB->db_query("delete from ".BAB_FM_FILESLOG_TBL." where id_file='".$babDB->db_escape_string($arr['id'])."'");
-	if( $arr['idfai'] != 0 )
-		{
-		deleteFlowInstance($arr['idfai']);
-		}
-	}
+//	global $babDB;
+//	// delete files owned by this group
+//	$res = $babDB->db_query("select id, idfai from ".BAB_FILES_TBL." where id_owner='".$babDB->db_escape_string($fid)."' and bgroup='Y'");
+//	while( $arr = $babDB->db_fetch_array($res))
+//	{
+//		$res2 = $babDB->db_query("select idfai from ".BAB_FM_FILESVER_TBL." where id_file='".$babDB->db_escape_string($arr['id'])."'");
+//		while( $row = $babDB->db_fetch_array($res2))
+//		{
+//		if( $row['idfai'] != 0 )
+//			{
+//			deleteFlowInstance($row['idfai']);
+//			}
+//		}
+//	$babDB->db_query("delete from ".BAB_FM_FILESVER_TBL." where id_file='".$babDB->db_escape_string($arr['id'])."'");
+//	$babDB->db_query("delete from ".BAB_FM_FILESLOG_TBL." where id_file='".$babDB->db_escape_string($arr['id'])."'");
+//	if( $arr['idfai'] != 0 )
+//		{
+//		deleteFlowInstance($arr['idfai']);
+//		}
+//	}
+//	
+//	bab_deleteUploadUserFiles("Y", $fid);
+//
+//	$res = $babDB->db_query("select id from ".BAB_FM_FIELDS_TBL." where id_folder='".$babDB->db_escape_string($fid)."'");
+//	while( $arr = $babDB->db_fetch_array($res))
+//		{
+//		$babDB->db_query("delete from ".BAB_FM_FIELDSVAL_TBL." where id_field='".$babDB->db_escape_string($arr['id'])."'");
+//		}
+//
+//	$babDB->db_query("delete from ".BAB_FM_FIELDS_TBL." where id_folder='".$babDB->db_escape_string($fid)."'");
+//
+//	aclDelete(BAB_FMUPLOAD_GROUPS_TBL, $fid);
+//	aclDelete(BAB_FMUPDATE_GROUPS_TBL, $fid);
+//	aclDelete(BAB_FMDOWNLOAD_GROUPS_TBL, $fid);
+//	aclDelete(BAB_FMMANAGERS_GROUPS_TBL, $fid);
+//
+//	// delete folder
+//	$babDB->db_query("delete from ".BAB_FM_FOLDERS_TBL." where id='".$babDB->db_escape_string($fid)."'");
 	
-	bab_deleteUploadUserFiles("Y", $fid);
-
-	$res = $babDB->db_query("select id from ".BAB_FM_FIELDS_TBL." where id_folder='".$babDB->db_escape_string($fid)."'");
-	while( $arr = $babDB->db_fetch_array($res))
-		{
-		$babDB->db_query("delete from ".BAB_FM_FIELDSVAL_TBL." where id_field='".$babDB->db_escape_string($arr['id'])."'");
-		}
-
-	$babDB->db_query("delete from ".BAB_FM_FIELDS_TBL." where id_folder='".$babDB->db_escape_string($fid)."'");
-
-	aclDelete(BAB_FMUPLOAD_GROUPS_TBL, $fid);
-	aclDelete(BAB_FMUPDATE_GROUPS_TBL, $fid);
-	aclDelete(BAB_FMDOWNLOAD_GROUPS_TBL, $fid);
-	aclDelete(BAB_FMMANAGERS_GROUPS_TBL, $fid);
-
-	// delete folder
-	$babDB->db_query("delete from ".BAB_FM_FOLDERS_TBL." where id='".$babDB->db_escape_string($fid)."'");
+	global $babDB;
+	
+	$bDbRecordOnly = false;
+	$oFmFolderSet = new BAB_FmFolderSet();
+	$oId =& $oFmFolderSet->aField['iId'];
+	$oRelativePath =& $oFmFolderSet->aField['sRelativePath'];
+	
+	$oFmFolder = $oFmFolderSet->get($oId->in($fid));
+	if(!is_null($oFmFolder))
+	{
+//		bab_debug($oFmFolder);
+		$oCriteria = $oId->in($fid);
+		$oCriteria = $oCriteria->_or($oRelativePath->like($babDB->db_escape_like($oFmFolder->getRelativePath() . $oFmFolder->getName() . '/') . '%'));
+		$oFmFolderSet->remove($oCriteria, $bDbRecordOnly);
+	}
 }
 
 function bab_deleteLdapDirectory($id)

@@ -1,25 +1,25 @@
 <?php
 /************************************************************************
- * OVIDENTIA http://www.ovidentia.org                                   *
- ************************************************************************
- * Copyright (c) 2003 by CANTICO ( http://www.cantico.fr )              *
- *                                                                      *
- * This file is part of Ovidentia.                                      *
- *                                                                      *
- * Ovidentia is free software; you can redistribute it and/or modify    *
- * it under the terms of the GNU General Public License as published by *
- * the Free Software Foundation; either version 2, or (at your option)  *
- * any later version.													*
- *																		*
- * This program is distributed in the hope that it will be useful, but  *
- * WITHOUT ANY WARRANTY; without even the implied warranty of			*
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.					*
- * See the  GNU General Public License for more details.				*
- *																		*
- * You should have received a copy of the GNU General Public License	*
- * along with this program; if not, write to the Free Software			*
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
- * USA.																	*
+* OVIDENTIA http://www.ovidentia.org                                   *
+************************************************************************
+* Copyright (c) 2003 by CANTICO ( http://www.cantico.fr )              *
+*                                                                      *
+* This file is part of Ovidentia.                                      *
+*                                                                      *
+* Ovidentia is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU General Public License as published by *
+* the Free Software Foundation; either version 2, or (at your option)  *
+* any later version.													*
+*																		*
+* This program is distributed in the hope that it will be useful, but  *
+* WITHOUT ANY WARRANTY; without even the implied warranty of			*
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.					*
+* See the  GNU General Public License for more details.				*
+*																		*
+* You should have received a copy of the GNU General Public License	*
+* along with this program; if not, write to the Free Software			*
+* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
+* USA.																	*
 ************************************************************************/
 include_once 'base.php';
 require_once $GLOBALS['babInstallPath'] . 'utilit/criteria.class.php';
@@ -33,28 +33,28 @@ define('BAB_FACTION_EDIT'	, 1);
 define('BAB_FACTION_UNEDIT'	, 2);
 define('BAB_FACTION_COMMIT'	, 3);
 $babFileActions = array(bab_translate("Other"), bab_translate("Edit file"),
-				bab_translate("Unedit file"), bab_translate("Commit file"));
+bab_translate("Unedit file"), bab_translate("Commit file"));
 
 function getDirSize( $dir )
-	{
+{
 	if( !is_dir($dir))
-		return 0;
+	return 0;
 	$h = opendir($dir);
 	$size = 0;
 	while (($f = readdir($h)) != false)
+	{
+		if ($f != "." and $f != "..")
 		{
-		if ($f != "." and $f != "..") 
-			{
 			$path = $dir."/".$f;
 			if (is_dir($path))
-				$size += getDirSize($path."/");
+			$size += getDirSize($path."/");
 			elseif (is_file($path))
-				$size += filesize($path);
-			}
+			$size += filesize($path);
 		}
+	}
 	closedir($h);
 	return $size;
-	}
+}
 
 /**
  * @param	Y|N		$gr
@@ -65,17 +65,17 @@ function getDirSize( $dir )
 function bab_getUploadFullPath($gr, $id, $path = '')
 {
 	if( substr($GLOBALS['babUploadPath'], -1) == "/" )
-		$root = $GLOBALS['babUploadPath'];
+	$root = $GLOBALS['babUploadPath'];
 	else
-		$root = $GLOBALS['babUploadPath']."/";
-		
+	$root = $GLOBALS['babUploadPath']."/";
+
 	// clear path security
 	$path = trim(str_replace('..','',$path),' /');
-	
+
 	if (!empty($path)) {
 		$path .= '/';
 	}
-		
+
 	return $root.bab_getUploadFmPath($gr, $id).$path;
 }
 
@@ -83,10 +83,10 @@ function bab_getUploadFmPath($gr, $id)
 {
 	if($gr == "Y")
 	{
-//		return "G".$id."/";
+		//		return "G".$id."/";
 
 		$oFmFolderSet = new BAB_FmFolderSet();
-		$oId =& $oFmFolderSet->aField['iId']; 
+		$oId =& $oFmFolderSet->aField['iId'];
 		$oFmFolder = $oFmFolderSet->get($oId->in($id));
 		if(!is_null($oFmFolder))
 		{
@@ -102,77 +102,77 @@ function bab_getUploadFmPath($gr, $id)
 function bab_formatSizeFile($size, $roundoff = true)
 {
 	if( $size <= 0 )
-		return 0;
+	return 0;
 
 	if( $size <= 1024 )
-		return 1;
+	return 1;
 	else
-		{
+	{
 		if( $roundoff)
-			$size = floor($size / 1024);
+		$size = floor($size / 1024);
 		if( ($l = strlen($size)) > 3)
-			{
+		{
 			if( $l % 3 > 0 )
-				{
+			{
 				$txt = substr( $size, 0, $l % 3);
-				}
+			}
 			else $txt = '';
 			for( $i = 0; $i < ($l / 3); $i++)
-				{
+			{
 				$txt .= " ". substr($size, $l%3 + $i*3, 3);
-				}
 			}
-		else
-			$txt = $size;
-		return $txt;
 		}
-		
+		else
+		$txt = $size;
+		return $txt;
+	}
+
 }
 
 function bab_isAccessFileValid($gr, $id)
-	{
+{
 	global $babBody, $babDB;
 	$access = false;
 	if( $gr == "Y")
-		{
+	{
 		$res = $babDB->db_query("select id from ".BAB_FM_FOLDERS_TBL." where id ='".$babDB->db_escape_string($id)."' and active='Y'");
 		if( $res && $babDB->db_num_rows($res) > 0 )
-			{
+		{
 			$arr = $babDB->db_fetch_array($res);
 			if( bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $id) || bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $id))
-				$access = true;
-			}
-		}
-	else if( !empty($GLOBALS['BAB_SESS_USERID']) && $id == $GLOBALS['BAB_SESS_USERID'])
-		{
-		if( $babBody->ovgroups[1]['ustorage'] == 'Y')
-			{
 			$access = true;
-			}
+		}
+	}
+	else if( !empty($GLOBALS['BAB_SESS_USERID']) && $id == $GLOBALS['BAB_SESS_USERID'])
+	{
+		if( $babBody->ovgroups[1]['ustorage'] == 'Y')
+		{
+			$access = true;
+		}
 		else
-			{
+		{
 			foreach( $babBody->usergroups as $grpid)
-				{
+			{
 				if( $babBody->ovgroups[$grpid]['ustorage'] == 'Y')
-					{
+				{
 					$access = true;
 					break;
-					}
 				}
 			}
 		}
-	return $access;
 	}
+	return $access;
+}
 
 function notifyFileApprovers($id, $users, $msg)
-	{
+{
 	global $babDB, $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
-    include_once $babInstallPath."utilit/mailincl.php";
+	include_once $babInstallPath."utilit/mailincl.php";
 
 	if(!class_exists("notifyFileApproversCls"))
-		{
+	{
 		class notifyFileApproversCls
-			{
+		{
 			var $filename;
 			var $message;
 			var $from;
@@ -188,7 +188,7 @@ function notifyFileApprovers($id, $users, $msg)
 
 
 			function notifyFileApproversCls($id, $msg)
-				{
+			{
 				global $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL;
 				$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FILES_TBL." where id='".$babDB->db_escape_string($id)."'"));
 				$this->filename = $arr['name'];
@@ -200,9 +200,9 @@ function notifyFileApprovers($id, $users, $msg)
 				$this->pathname = $arr['path'] == ""? "/": $arr['path'];
 				$this->groupname = '';
 
-			
+
 				$oFmFolderSet = new BAB_FmFolderSet();
-				$oId =& $oFmFolderSet->aField['iId']; 
+				$oId =& $oFmFolderSet->aField['iId'];
 				$oFmFolder = $oFmFolderSet->get($oId->in($arr['id_owner']));
 				if(!is_null($oFmFolder))
 				{
@@ -212,55 +212,55 @@ function notifyFileApprovers($id, $users, $msg)
 				$this->date = bab_translate("Date");
 				$this->dateval = bab_strftime(mktime());
 				if( !empty($arr['author']))
-					{
+				{
 					$this->author = bab_getUserName($arr['author']);
 					$this->authoremail = bab_getUserEmail($arr['author']);
-					}
+				}
 				else
-					{
+				{
 					$this->author = bab_translate("Unknown user");
 					$this->authoremail = "";
-					}
 				}
 			}
 		}
-    $mail = bab_mail();
+	}
+	$mail = bab_mail();
 	if( $mail == false )
-		return;
-	
+	return;
+
 	if( count($users) > 0 )
-		{
+	{
 		$sql = "select email, firstname, lastname from ".BAB_USERS_TBL." where id IN (".$babDB->quote($users).")";
 		$result=$babDB->db_query($sql);
 		while( $arr = $babDB->db_fetch_array($result))
-			{
+		{
 			$mail->mailBcc($arr['email'], bab_composeUserName($arr['firstname'],$arr['lastname']));
-			}
 		}
-    $mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
-    $mail->mailSubject(bab_translate("New waiting file"));
+	}
+	$mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
+	$mail->mailSubject(bab_translate("New waiting file"));
 
 	$tempa = new notifyFileApproversCls($id, $msg);
 	$message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "filewait"));
-    $mail->mailBody($message, "html");
+	$mail->mailBody($message, "html");
 
 	$message = bab_printTemplate($tempa,"mailinfo.html", "filewaittxt");
-    $mail->mailAltBody($message);
+	$mail->mailAltBody($message);
 
 	$mail->send();
-	}
+}
 
 
 function fileNotifyMembers($file, $path, $idgrp, $msg, $bnew = true)
-	{
+{
 	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
-    include_once $babInstallPath."utilit/mailincl.php";
+	include_once $babInstallPath."utilit/mailincl.php";
 	include_once $babInstallPath."admin/acl.php";
 
 	if(!class_exists("fileNotifyMembersCls"))
-		{
+	{
 		class fileNotifyMembersCls
-			{
+		{
 			var $filename;
 			var $message;
 			var $author;
@@ -274,7 +274,7 @@ function fileNotifyMembers($file, $path, $idgrp, $msg, $bnew = true)
 			var $groupname;
 
 			function fileNotifyMembersCls($file, $path, $idgrp, $msg)
-				{
+			{
 				$this->filename = $file;
 				$this->message = $msg;
 				$this->path = bab_translate("Path");
@@ -283,7 +283,7 @@ function fileNotifyMembers($file, $path, $idgrp, $msg, $bnew = true)
 				$this->pathname = $path == ""? "/": $path;
 				$this->groupname = '';
 				$oFmFolderSet = new BAB_FmFolderSet();
-				$oId =& $oFmFolderSet->aField['iId']; 
+				$oId =& $oFmFolderSet->aField['iId'];
 				$oFmFolder = $oFmFolderSet->get($oId->in($idgrp));
 				if(!is_null($oFmFolder))
 				{
@@ -292,20 +292,20 @@ function fileNotifyMembers($file, $path, $idgrp, $msg, $bnew = true)
 				$this->site = bab_translate("Web site");
 				$this->date = bab_translate("Date");
 				$this->dateval = bab_strftime(mktime());
-				}
 			}
 		}
+	}
 
 	$mail = bab_mail();
 	if( $mail == false )
-		return;
+	return;
 
 	$mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
 
 	if( $bnew )
-		$mail->mailSubject(bab_translate("New file"));
+	$mail->mailSubject(bab_translate("New file"));
 	else
-		$mail->mailSubject(bab_translate("File has been updated"));
+	$mail->mailSubject(bab_translate("File has been updated"));
 
 	$tempa = new fileNotifyMembersCls($file, $path, $idgrp, $msg);
 	$message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "fileuploaded"));
@@ -319,52 +319,52 @@ function fileNotifyMembers($file, $path, $idgrp, $msg, $bnew = true)
 	$arrusers = array();
 	$count = 0;
 	foreach($users as $id => $arr)
-		{
+	{
 		if( count($arrusers) == 0 || !isset($arrusers[$id]))
-			{
+		{
 			$arrusers[$id] = $id;
 			$mail->mailBcc($arr['email'], $arr['name']);
 			$count++;
-			}
+		}
 
 		if( $count == 25 )
-			{
+		{
 			$mail->send();
 			$mail->clearBcc();
 			$mail->clearTo();
 			$count = 0;
-			}
 		}
+	}
 
 	if( $count > 0 )
-		{
+	{
 		$mail->send();
 		$mail->clearBcc();
 		$mail->clearTo();
 		$count = 0;
-		}
 	}
+}
 
 function acceptFileVersion($oFolderFile, $oFolderFileVersion, $bnotify)
 {
 	$sUploadPath = BAB_FmFolderHelper::getUploadPath();
 
 	$sSrcFile = $sUploadPath . $oFolderFile->getPathName() . $oFolderFile->getName();
-	$sTrgFile = $sUploadPath . $oFolderFile->getPathName() . BAB_FVERSION_FOLDER . '/' . 
-		$oFolderFile->getMajorVer() . '.' . $oFolderFile->getMinorVer() . ',' . $oFolderFile->getName();	
+	$sTrgFile = $sUploadPath . $oFolderFile->getPathName() . BAB_FVERSION_FOLDER . '/' .
+	$oFolderFile->getMajorVer() . '.' . $oFolderFile->getMinorVer() . ',' . $oFolderFile->getName();
 	copy($sSrcFile, $sTrgFile);
-	
-	$sSrcFile = $sUploadPath . $oFolderFile->getPathName() . BAB_FVERSION_FOLDER . '/' . 
-		$oFolderFileVersion->getMajorVer() . '.' . $oFolderFileVersion->getMinorVer() . ',' . $oFolderFile->getName();
-	$sTrgFile = $sUploadPath . $oFolderFile->getPathName() . $oFolderFile->getName();	
+
+	$sSrcFile = $sUploadPath . $oFolderFile->getPathName() . BAB_FVERSION_FOLDER . '/' .
+	$oFolderFileVersion->getMajorVer() . '.' . $oFolderFileVersion->getMinorVer() . ',' . $oFolderFile->getName();
+	$sTrgFile = $sUploadPath . $oFolderFile->getPathName() . $oFolderFile->getName();
 	copy($sTrgFile, $sSrcFile);
-	
+
 	unlink($sSrcFile);
-	
+
 	$iOldMajorVer = $oFolderFile->getMajorVer();
 	$iOldMinorVer = $oFolderFile->getMinorVer();
 	$sVerComment = $oFolderFile->getCommentVer();
-	
+
 	$oFolderFile->setFolderFileVersionId(0);
 	$oFolderFile->setModifiedDate($oFolderFileVersion->getCreationDate());
 	$oFolderFile->setModifierId($oFolderFileVersion->getAuthorId());
@@ -372,7 +372,7 @@ function acceptFileVersion($oFolderFile, $oFolderFileVersion, $bnotify)
 	$oFolderFile->setMinorVer($oFolderFileVersion->getMinorVer());
 	$oFolderFile->setCommentVer($oFolderFileVersion->getComment());
 	$oFolderFile->save();
-	
+
 	$oFolderFileLog = new BAB_FolderFileLog();
 	$oFolderFileLog->setIdFile($oFolderFile->getId());
 	$oFolderFileLog->setCreationDate(date("Y-m-d H:i:s"));
@@ -381,9 +381,9 @@ function acceptFileVersion($oFolderFile, $oFolderFileVersion, $bnotify)
 	$oFolderFileLog->setComment($oFolderFileVersion->getComment());
 	$oFolderFileLog->setVersion($oFolderFileVersion->getMajorVer() . '.' . $oFolderFileVersion->getMinorVer());
 	$oFolderFileLog->save();
-	
+
 	$iIdAuthor = (0 === $oFolderFile->getModifierId() ? $oFolderFile->getAuthorId() : $oFolderFile->getModifierId());
-	
+
 	$oFolderFileVersion->setFlowApprobationInstanceId(0);
 	$oFolderFileVersion->setConfirmed('Y');
 	$oFolderFileVersion->setMajorVer($iOldMajorVer);
@@ -391,70 +391,70 @@ function acceptFileVersion($oFolderFile, $oFolderFileVersion, $bnotify)
 	$oFolderFileVersion->setAuthorId($iIdAuthor);
 	$oFolderFileVersion->setComment($sVerComment);
 	$oFolderFileVersion->save();
-	
-	notifyFileAuthor(bab_translate("Your new file version has been accepted"), 
-		$oFolderFile->getMajorVer() . '.' . $oFolderFile->getMinorVer(), $iIdAuthor, $oFolderFile->getName());
-	
+
+	notifyFileAuthor(bab_translate("Your new file version has been accepted"),
+	$oFolderFile->getMajorVer() . '.' . $oFolderFile->getMinorVer(), $iIdAuthor, $oFolderFile->getName());
+
 	if($bnotify == "Y")
 	{
-		fileNotifyMembers($oFolderFile->getName(), $oFolderFile->getPathName(), 
-			$oFolderFile->getOwnerId(), bab_translate("A new version file has been uploaded"));
+		fileNotifyMembers($oFolderFile->getName(), $oFolderFile->getPathName(),
+		$oFolderFile->getOwnerId(), bab_translate("A new version file has been uploaded"));
 	}
 }
 
 function notifyFileAuthor($subject, $version, $author, $filename)
-	{
+{
 	global $babBody, $babAdminEmail, $babInstallPath;
 	include_once $babInstallPath."utilit/mailincl.php";
 
 	class tempc
-		{
+	{
 		var $message;
-        var $from;
-        var $author;
-        var $about;
-        var $title;
-        var $titlename;
-        var $site;
-        var $sitename;
-        var $date;
-        var $dateval;
+		var $from;
+		var $author;
+		var $about;
+		var $title;
+		var $titlename;
+		var $site;
+		var $sitename;
+		var $date;
+		var $dateval;
 
 
 		function tempc($version, $filename)
-			{
-            global $babSiteName;
-            $this->about = bab_translate("About your file");
-            $this->title = bab_translate("Name");
-            $this->titlename = $filename;
+		{
+			global $babSiteName;
+			$this->about = bab_translate("About your file");
+			$this->title = bab_translate("Name");
+			$this->titlename = $filename;
 			if(!empty($version))
-				{
+			{
 				$this->titlename .= " (".$version.")";
-				}
-            $this->site = bab_translate("Web site");
-            $this->sitename = $babSiteName;
-            $this->date = bab_translate("Date");
-            $this->dateval = bab_strftime(mktime());
-            $this->message = '';
 			}
+			$this->site = bab_translate("Web site");
+			$this->sitename = $babSiteName;
+			$this->date = bab_translate("Date");
+			$this->dateval = bab_strftime(mktime());
+			$this->message = '';
 		}
-	
-    $mail = bab_mail();
-	if( $mail == false )
-		return;
+	}
 
-    $mail->mailTo(bab_getUserEmail($author), bab_getUserName($author));
-    $mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
-    $mail->mailSubject($subject);
+	$mail = bab_mail();
+	if( $mail == false )
+	return;
+
+	$mail->mailTo(bab_getUserEmail($author), bab_getUserName($author));
+	$mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
+	$mail->mailSubject($subject);
 
 	$tempc = new tempc($version, $filename);
 	$message = $mail->mailTemplate(bab_printTemplate($tempc,"mailinfo.html", "confirmfileversion"));
-    $mail->mailBody($message, "html");
+	$mail->mailBody($message, "html");
 
 	$message = bab_printTemplate($tempc,"mailinfo.html", "confirmfileversiontxt");
-    $mail->mailAltBody($message);
+	$mail->mailAltBody($message);
 	$mail->send();
-	}
+}
 
 
 
@@ -487,11 +487,11 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 	{
 		if('N' === $gr)
 		{
-			if($babBody->ustorage) 
+			if($babBody->ustorage)
 			{
 				$access = true;
 				$confirmed = "Y";
-				
+
 				$sRelativePath = BAB_FmFolderHelper::getUserDirUploadPath($id) . $path . '/';
 				$sFullUploadPath = BAB_FmFolderHelper::getUploadPath() . $sRelativePath;
 			}
@@ -506,7 +506,7 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 					break;
 				}
 			}
-			
+
 			if(true === $access)
 			{
 				$access = BAB_FmFolderHelper::getFileInfoForCollectiveDir($id, $path, $iIdOwner, $sRelativePath);
@@ -514,25 +514,25 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 			}
 		}
 	}
-	
-//bab_debug('iIdOwner ==> ' . $iIdOwner . ' sRelativePath ==> ' . $sRelativePath . ' sUploadPath ==> ' . $sUploadPath);
-	
+
+	//bab_debug('iIdOwner ==> ' . $iIdOwner . ' sRelativePath ==> ' . $sRelativePath . ' sUploadPath ==> ' . $sUploadPath);
+
 	if(!$access)
 	{
 		$babBody->msgerror = bab_translate("Access denied");
 		return false;
 	}
 
-	
+
 	$pathx = $sFullUploadPath;
 	$okfiles = array();
 	$errfiles = array();
 
-	foreach($fmFiles as $fmFile) 
+	foreach($fmFiles as $fmFile)
 	{
 		$file = array(
-			'name' => trim($fmFile->filename),
-			'size' => $fmFile->size
+		'name' => trim($fmFile->filename),
+		'size' => $fmFile->size
 		);
 
 		if(empty($file['name']) || $file['name'] == 'none')
@@ -542,40 +542,40 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 
 		if($file['size'] > $GLOBALS['babMaxFileSize'])
 		{
-				$errfiles[] = array('error' => bab_translate("The file was greater than the maximum allowed") ." : ". $GLOBALS['babMaxFileSize'], 'file' => $file['name']);
-				continue;
+			$errfiles[] = array('error' => bab_translate("The file was greater than the maximum allowed") ." : ". $GLOBALS['babMaxFileSize'], 'file' => $file['name']);
+			continue;
 		}
 
 		$totalsize = getDirSize($GLOBALS['babUploadPath']);
 		if($file['size'] + $totalsize > $GLOBALS['babMaxTotalSize'])
 		{
-				$errfiles[] = array('error' => bab_translate("There is not enough free space"), 'file'=>$file['name']);
-				continue;
+			$errfiles[] = array('error' => bab_translate("There is not enough free space"), 'file'=>$file['name']);
+			continue;
 		}
 
 		$totalsize = getDirSize($pathx);
 		if($file['size'] + $totalsize > ($gr == "Y"? $GLOBALS['babMaxGroupSize']: $GLOBALS['babMaxUserSize']))
 		{
-				$errfiles[] = array('error' => bab_translate("There is not enough free space"), 'file'=>$file['name']);
-				continue;
+			$errfiles[] = array('error' => bab_translate("There is not enough free space"), 'file'=>$file['name']);
+			continue;
 		}
-			
-		if(false !== $fmFile->error) 
+
+		if(false !== $fmFile->error)
 		{
 			$errfiles[] = array(
-				'error' => $fmFile->error, 
-				'file' => $fmFile->filename
+			'error' => $fmFile->error,
+			'file' => $fmFile->filename
 			);
 			continue;
 		}
 
 		$osfname = $file['name'];
 
-		if(isset($GLOBALS['babFileNameTranslation'])) 
+		if(isset($GLOBALS['babFileNameTranslation']))
 		{
 			$osfname = strtr($osfname, $GLOBALS['babFileNameTranslation']);
 		}
-	
+
 		$name = $osfname;
 
 		$bexist = false;
@@ -589,7 +589,7 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 					AND name=	'".$babDB->db_escape_string($name)."' 
 					AND path=	'".$babDB->db_escape_string($sRelativePath)."'
 				");
-			
+
 			if($res && $babDB->db_num_rows($res) > 0)
 			{
 				$arr = $babDB->db_fetch_array($res);
@@ -598,7 +598,7 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 					$bexist = true;
 				}
 			}
-	
+
 			if($bexist == false)
 			{
 				$errfiles[] = array('error'=> bab_translate("A file with the same name already exists"), 'file' => $file['name']);
@@ -606,18 +606,18 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 			}
 		}
 
-		if(!get_cfg_var('safe_mode')) 
+		if(!get_cfg_var('safe_mode'))
 		{
 			set_time_limit(0);
 		}
-			
+
 		if(!$fmFile->import($pathx.$osfname))
 		{
 			$errfiles[] = array('error'=> bab_translate("The file could not be uploaded"), 'file' => $file['name']);
 			continue;
 		}
-	
-	
+
+
 		if(empty($BAB_SESS_USERID))
 		{
 			$idcreator = 0;
@@ -626,7 +626,7 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 		{
 			$idcreator = $BAB_SESS_USERID;
 		}
-	
+
 		$bnotify = false;
 		if($gr == "Y")
 		{
@@ -635,7 +635,7 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 			{
 				$bnotify = true;
 			}
-	
+
 			if($bexist)
 			{
 				if(is_dir($pathx.BAB_FVERSION_FOLDER."/"))
@@ -650,7 +650,7 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 				$babDB->db_query("delete from ".BAB_FM_FILESLOG_TBL." where id_file='".$babDB->db_escape_string($arr['id'])."'");
 				$babDB->db_query("delete from ".BAB_FM_FIELDSVAL_TBL." where id_file='".$babDB->db_escape_string($arr['id'])."'");
 			}
-			
+
 		}
 
 		include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
@@ -660,7 +660,7 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 		{
 			$readonly = 'N';
 		}
-	
+
 		if($bexist)
 		{
 			$req = "
@@ -681,16 +681,16 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 		}
 		else
 		{
-			$req = "insert into ".BAB_FILES_TBL." 
+			$req = "insert into ".BAB_FILES_TBL."
 			(name, description, keywords, path, id_owner, bgroup, link, readonly, state, created, author, modified, modifiedby, confirmed, index_status) values ";
 			$req .= "('" .$babDB->db_escape_string($name). "', '" . $babDB->db_escape_string($description). "', '" . $babDB->db_escape_string($keywords). "', '" .$babDB->db_escape_string($sRelativePath). "', '" . $babDB->db_escape_string($iIdOwner). "', '" . $babDB->db_escape_string($gr). "', '0', '" . $babDB->db_escape_string($readonly). "', '', now(), '" . $babDB->db_escape_string($idcreator). "', now(), '" . $babDB->db_escape_string($idcreator). "', '". $babDB->db_escape_string($confirmed)."', '".$babDB->db_escape_string($index_status)."')";
 			$babDB->db_query($req);
-			$idf = $babDB->db_insert_id(); 
+			$idf = $babDB->db_insert_id();
 		}
 
 		$okfiles[] = $idf;
 
-		if(BAB_INDEX_STATUS_INDEXED === $index_status) 
+		if(BAB_INDEX_STATUS_INDEXED === $index_status)
 		{
 			$obj = new bab_indexObject('bab_files');
 			$obj->setIdObjectFile($pathx.$osfname, $idf, $iIdOwner);
@@ -702,7 +702,7 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 			{
 				$GLOBALS['babWebStat']->addNewFile($babBody->currentAdmGroup);
 			}
-	
+
 			$res = $babDB->db_query("select id from ".BAB_FM_FIELDS_TBL." where id_folder='".$babDB->db_escape_string($id)."'");
 			while($arr = $babDB->db_fetch_array($res))
 			{
@@ -710,7 +710,7 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 				if(isset($GLOBALS[$fd]))
 				{
 					$fval = $babDB->db_escape_string($GLOBALS[$fd]);
-	
+
 					$res2 = $babDB->db_query("select id from ".BAB_FM_FIELDSVAL_TBL." where id_file='".$babDB->db_escape_string($idf)."' and id_field='".$babDB->db_escape_string($arr['id'])."'");
 					if($res2 && $babDB->db_num_rows($res2) > 0)
 					{
@@ -742,20 +742,20 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 		}
 		return false;
 	}
-	
+
 	if(!count($okfiles))
 	{
 		$babBody->msgerror = bab_translate("Please select a file to upload");
 		return false;
 	}
-		
+
 	return true;
 }
-	
-	
-	
 
-	
+
+
+
+
 /**
  * Modify a file
  * @param	int			$idf
@@ -772,15 +772,15 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonly, $confirm, $bnotify, $newfolder, $descup)
 {
 	global $babBody, $babDB, $BAB_SESS_USERID;
-	
+
 	if($fmFile)
 	{
-		$uploadf_name = $fmFile->filename; 
+		$uploadf_name = $fmFile->filename;
 		$uploadf_size = $fmFile->size;
 	}
 	else
 	{
-		$uploadf_name = ''; 
+		$uploadf_name = '';
 		$uploadf_size = '';
 	}
 
@@ -848,7 +848,7 @@ function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonl
 				return false;
 			}
 
-			if(isset($GLOBALS['babFileNameTranslation'])) 
+			if(isset($GLOBALS['babFileNameTranslation']))
 			{
 				$uploadf_name = strtr($uploadf_name, $GLOBALS['babFileNameTranslation']);
 			}
@@ -871,7 +871,7 @@ function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonl
 			{
 				$osfname = strtr($osfname, $GLOBALS['babFileNameTranslation']);
 			}
-			
+
 			if(rename($sFullPathName, $sUploadPath . $oFolderFile->getPathName() . $osfname))
 			{
 				$frename = true;
@@ -880,17 +880,17 @@ function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonl
 					$oFolderFileVersionSet = new BAB_FolderFileVersionSet();
 					$oIdFile =& $oFolderFileVersionSet->aField['iIdFile'];
 					$oFolderFileVersionSet->select($oIdFile->in($idf));
-					
+
 					while(null !== ($oFolderFileVersion = $oFolderFileVersionSet->next()))
 					{
 						$sSrc = $sUploadPath . $oFolderFile->getPathName() . BAB_FVERSION_FOLDER . '/' .
-							$oFolderFileVersion->getMajorVer() . '.' . $oFolderFileVersion->getMinorVer() . 
-							',' . $oFolderFile->getName();
-							
+						$oFolderFileVersion->getMajorVer() . '.' . $oFolderFileVersion->getMinorVer() .
+						',' . $oFolderFile->getName();
+
 						$sTrg = $sUploadPath . $oFolderFile->getPathName() . BAB_FVERSION_FOLDER . '/' .
-							$oFolderFileVersion->getMajorVer() . '.' . $oFolderFileVersion->getMinorVer() . 
-							',' . $osfname;
-							
+						$oFolderFileVersion->getMajorVer() . '.' . $oFolderFileVersion->getMinorVer() .
+						',' . $osfname;
+
 						rename($sSrc, $sTrg);
 					}
 				}
@@ -907,7 +907,7 @@ function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonl
 		{
 			$idcreator = $BAB_SESS_USERID;
 		}
-	
+
 		$tmp = array();
 		if($descup)
 		{
@@ -930,60 +930,60 @@ function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonl
 
 		if(!empty($readonly))
 		{
-			if($readonly != 'Y' ) 
+			if($readonly != 'Y' )
 			{
 				$readonly = 'N';
 			}
 			$tmp[] = "readonly='".$babDB->db_escape_string($readonly)."'";
 		}
 
-		
+
 		if(!empty($newfolder))
 		{
 			$oFmFolderSet = new BAB_FmFolderSet();
 			$oId =& $oFmFolderSet->aField['iId'];
-			
+
 			$oFmFolder = $oFmFolderSet->get($oId->in($newfolder));
 			if(!is_null($oFmFolder))
 			{
 				$sRelativePath = (strlen(trim($oFmFolder->getRelativePath())) === 0) ? $oFmFolder->getName() . '/' :
-					$oFmFolder->getRelativePath();
-				
+				$oFmFolder->getRelativePath();
+
 				$sNewPathName = $sUploadPath . $sRelativePath;
 				if(!is_dir($sNewPathName))
 				{
 					bab_mkdir($sNewPathName, $GLOBALS['babMkdirMode']);
 				}
-	
+
 				if(rename($sFullPathName, $sNewPathName . $osfname))
 				{
 					$oFolderFileFieldValueSet = new BAB_FolderFileFieldValueSet();
 					$oIdFile =& $oFolderFileFieldValueSet->aField['iIdFile'];
 					$oFolderFileFieldValueSet->remove($oIdFile->in($idf));
-					
+
 					$tmp[] = "id_owner='".$babDB->db_escape_string($newfolder)."'";
 					$tmp[] = "path=''";
 					$arr['id_owner'] = $newfolder;
-	
+
 					if(is_dir($sUploadPath . $oFolderFile->getPathName() . BAB_FVERSION_FOLDER . '/'))
 					{
 						if(!is_dir($sNewPathName . BAB_FVERSION_FOLDER . '/'))
 						{
 							bab_mkdir($sNewPathName . BAB_FVERSION_FOLDER, $GLOBALS['babMkdirMode']);
 						}
-	
+
 						$oFolderFileVersionSet = new BAB_FolderFileVersionSet();
 						$oIdFile =& $oFolderFileVersionSet->aField['iIdFile'];
 						$oFolderFileVersionSet->select($oIdFile->in($idf));
-						
+
 						while(null !== ($oFolderFileVersion = $oFolderFileVersionSet->next()))
 						{
 							$sFileName = $oFolderFileVersion->getMajorVer() . '.' . $oFolderFileVersion->getMinorVer() . ',' . $osfname;
-							
+
 							$sSrc = $sUploadPath . $oFolderFile->getPathName() . BAB_FVERSION_FOLDER . '/' . $sFileName;
-								
+
 							$sTrg = $sUploadPath . $sNewPathName . BAB_FVERSION_FOLDER . '/' . $sFileName;
-								
+
 							rename($sSrc, $sTrg);
 						}
 					}
@@ -1057,14 +1057,14 @@ function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonl
 						break;
 				}
 			}
-			else if($bnotify == "Y" && $bmodified) 
+			else if($bnotify == "Y" && $bmodified)
 			{
 				fileNotifyMembers($oFolderFile->getName(), $oFolderFile->getPathName(), $oFolderFile->getOwnerId(), bab_translate("File has been updated"));
 			}
 		}
 		return true;
 	}
-		
+
 	// the file does not exists
 	return false;
 }
@@ -1076,7 +1076,7 @@ function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonl
  * Get file array and access rights on the file
  * For versionning
  */
-function fm_getFileAccess($idf) 
+function fm_getFileAccess($idf)
 {
 	{
 		$bupdate = false;
@@ -1085,35 +1085,35 @@ function fm_getFileAccess($idf)
 
 		$oFmFolder = null;
 		$oFolderFile = null;
-		
+
 		$oFolderFileSet = new BAB_FolderFileSet();
-		
+
 		$oId =& $oFolderFileSet->aField['iId'];
 		$oState =& $oFolderFileSet->aField['sState'];
-				
+
 		$oCriteria = $oId->in($idf);
 		$oCriteria = $oCriteria->_and($oState->in(''));
 		$oFolderFile = $oFolderFileSet->get($oCriteria);
-		
+
 		if(!is_null($oFolderFile))
 		{
-			if('Y' === $oFolderFile->getGroup() && 'Y' === $oFolderFile->getConfirmed())			
+			if('Y' === $oFolderFile->getGroup() && 'Y' === $oFolderFile->getConfirmed())
 			{
 				$oFmFolderSet = new BAB_FmFolderSet();
-				
+
 				$oId =& $oFmFolderSet->aField['iId'];
 				$oFmFolder = $oFmFolderSet->get($oId->in($oFolderFile->getOwnerId()));
 				if(!is_null($oFmFolder))
 				{
-					if('Y' === $oFmFolder->getVersioning())					
+					if('Y' === $oFmFolder->getVersioning())
 					{
 						if(bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oFmFolder->getId()) || bab_isAccessValid(BAB_FMUPDATE_GROUPS_TBL, $oFmFolder->getId()))
 						{
 							$bupdate = true;
-							if(0 !== $oFolderFile->getFolderFileVersionId()) 
+							if(0 !== $oFolderFile->getFolderFileVersionId())
 							{
 								$oFolderFileVersionSet = new BAB_FolderFileVersionSet();
-				
+
 								$oId =& $oFmFolderSet->aField['iId'];
 								$oFolderFileVersion = $oFolderFileVersionSet->get($oId->in($oFolderFile->getFolderFileVersionId()));
 								if(!is_null($oFolderFileVersion))
@@ -1122,84 +1122,84 @@ function fm_getFileAccess($idf)
 								}
 							}
 						}
-		
-						if(bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $oFmFolder->getId())) 
+
+						if(bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $oFmFolder->getId()))
 						{
 							$bdownload = true;
 						}
 					}
 				}
 			}
-			else if('N' === $oFolderFile->getGroup()) 
+			else if('N' === $oFolderFile->getGroup())
 			{
-				if($GLOBALS['babBody']->ustorage && !empty($BAB_SESS_USERID) && $BAB_SESS_USERID == $oFmFolder->getId()) 
+				if($GLOBALS['babBody']->ustorage && !empty($BAB_SESS_USERID) && $BAB_SESS_USERID == $oFmFolder->getId())
 				{
 					$bupdate = true;
 					$bdownload = true;
 				}
 			}
 		}
-		
+
 		$result[$idf] = array(
-			'oFolderFile' => $oFolderFile,
-			'oFmFolder' => $oFmFolder,
-			'bupdate' => $bupdate,
-			'bdownload' => $bdownload,
-			'lockauthor' => $lockauthor
+		'oFolderFile' => $oFolderFile,
+		'oFmFolder' => $oFmFolder,
+		'bupdate' => $bupdate,
+		'bdownload' => $bdownload,
+		'lockauthor' => $lockauthor
 		);
 	}
-	
+
 	return $result[$idf];
-		
-		
-/*		
-		global $babDB;
-	
-		$res = $babDB->db_query("select * from ".BAB_FILES_TBL." where id='".$babDB->db_escape_string($idf)."' and state=''");
-		if( $res && $babDB->db_num_rows($res) > 0 )
-		{
-			$arrfile = $babDB->db_fetch_assoc($res);
-			if( $arrfile['bgroup'] == 'Y' && $arrfile['confirmed'] == 'Y')
-			{
-				$res = $babDB->db_query("select * from ".BAB_FM_FOLDERS_TBL." where id='".$babDB->db_escape_string($arrfile['id_owner'])."'");
-				$arrfold = $babDB->db_fetch_array($res);
-	
-				if( $arrfold['version'] ==  'Y' )
-				{
-					if(bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $arrfold['id']) || bab_isAccessValid(BAB_FMUPDATE_GROUPS_TBL, $arrfile['id_owner']))
-					{
-						$bupdate = true;
-						if( $arrfile['edit'] != 0 ) {
-							list($lockauthor) = $babDB->db_fetch_array($babDB->db_query("select author from ".BAB_FM_FILESVER_TBL." where id='".$babDB->db_escape_string($arrfile['edit'])."'"));
-							}
-					}
-	
-					if(bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $arrfile['id_owner'])) {
-						$bdownload = true;
-					}
-				}
-			} elseif ('N' == $arrfile['bgroup']) {
-			
-				
-				
-				if( $GLOBALS['babBody']->ustorage && !empty($BAB_SESS_USERID) && $BAB_SESS_USERID == $arrfile['id_owner'] ) {
-					$bupdate = true;
-					$bdownload = true;
-				}
-			}
-		}
-		
-		$result[$idf] = array(
-			'arrfile' => $arrfile,
-			'arrfold' => $arrfold,
-			'bupdate' => $bupdate,
-			'bdownload' => $bdownload,
-			'lockauthor' => $lockauthor
-		);
+
+
+	/*
+	global $babDB;
+
+	$res = $babDB->db_query("select * from ".BAB_FILES_TBL." where id='".$babDB->db_escape_string($idf)."' and state=''");
+	if( $res && $babDB->db_num_rows($res) > 0 )
+	{
+	$arrfile = $babDB->db_fetch_assoc($res);
+	if( $arrfile['bgroup'] == 'Y' && $arrfile['confirmed'] == 'Y')
+	{
+	$res = $babDB->db_query("select * from ".BAB_FM_FOLDERS_TBL." where id='".$babDB->db_escape_string($arrfile['id_owner'])."'");
+	$arrfold = $babDB->db_fetch_array($res);
+
+	if( $arrfold['version'] ==  'Y' )
+	{
+	if(bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $arrfold['id']) || bab_isAccessValid(BAB_FMUPDATE_GROUPS_TBL, $arrfile['id_owner']))
+	{
+	$bupdate = true;
+	if( $arrfile['edit'] != 0 ) {
+	list($lockauthor) = $babDB->db_fetch_array($babDB->db_query("select author from ".BAB_FM_FILESVER_TBL." where id='".$babDB->db_escape_string($arrfile['edit'])."'"));
 	}
-	
+	}
+
+	if(bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $arrfile['id_owner'])) {
+	$bdownload = true;
+	}
+	}
+	} elseif ('N' == $arrfile['bgroup']) {
+
+
+
+	if( $GLOBALS['babBody']->ustorage && !empty($BAB_SESS_USERID) && $BAB_SESS_USERID == $arrfile['id_owner'] ) {
+	$bupdate = true;
+	$bdownload = true;
+	}
+	}
+	}
+
+	$result[$idf] = array(
+	'arrfile' => $arrfile,
+	'arrfold' => $arrfold,
+	'bupdate' => $bupdate,
+	'bdownload' => $bdownload,
+	'lockauthor' => $lockauthor
+	);
+	}
+
 	return $result[$idf];
-//*/
+	//*/
 }
 
 
@@ -1213,7 +1213,7 @@ function fm_getFileAccess($idf)
 function fm_lockFile($idf, $comment)
 {
 	global $babBody, $babDB;
-	
+
 	$fm_file = fm_getFileAccess($idf);
 	$oFolderFile =& $fm_file['oFolderFile'];
 
@@ -1241,8 +1241,8 @@ function fm_lockFile($idf, $comment)
 			$oFolderFileVersion->setConfirmed('N');
 			$oFolderFileVersion->setStatusIndex(0);
 			$oFolderFileVersion->save();
-			
-//			bab_debug('Version ==> ' . $oFolderFileVersion->getId());
+
+			//			bab_debug('Version ==> ' . $oFolderFileVersion->getId());
 
 			$oFolderFile->setFolderFileVersionId($oFolderFileVersion->getId());
 			$oFolderFile->save();
@@ -1261,7 +1261,7 @@ function fm_lockFile($idf, $comment)
 function fm_unlockFile($idf, $comment )
 {
 	global $babBody, $babDB;
-	
+
 	$fm_file = fm_getFileAccess($idf);
 	$oFolderFile =& $fm_file['oFolderFile'];
 	$oFmFolder =& $fm_file['oFmFolder'];
@@ -1281,27 +1281,27 @@ function fm_unlockFile($idf, $comment )
 				$oFolderFileLog->setComment($comment);
 				$oFolderFileLog->setVersion($oFolderFile->getMajorVer() . '.' . $oFolderFile->getMinorVer());
 				$oFolderFileLog->save();
-				
+
 				$oFolderFileVersionSet = new BAB_FolderFileVersionSet();
 				$oId =& $oFolderFileVersionSet->aField['iId'];
 				$oFolderFileVersion = $oFolderFileVersionSet->get($oId->in($oFolderFile->getFolderFileVersionId()));
-				
+
 				$sUploadPath = BAB_FmFolderHelper::getUploadPath();
 
 				if(!is_null($oFolderFileVersion) && 0 !== $oFolderFileVersion->getFlowApprobationInstanceId())
 				{
 					include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 					deleteFlowInstance($oFolderFileVersion->getFlowApprobationInstanceId());
-					
-					$sFullPathName = $sUploadPath . $oFolderFile->getPathName() . BAB_FVERSION_FOLDER . '/' . 
-						$oFolderFileVersion->getMajorVer() . '.' . $oFolderFileVersion->getMinorVer() . ',' . $oFolderFile->getName();	
-						
+
+					$sFullPathName = $sUploadPath . $oFolderFile->getPathName() . BAB_FVERSION_FOLDER . '/' .
+					$oFolderFileVersion->getMajorVer() . '.' . $oFolderFileVersion->getMinorVer() . ',' . $oFolderFile->getName();
+
 					unlink($sFullPathName);
 				}
-	
-				$oFolderFileVersionSet->remove($oId->in($oFolderFile->getFolderFileVersionId()), 
-					$sUploadPath . $oFolderFile->getPathName(), $oFolderFile->getName());
-				
+
+				$oFolderFileVersionSet->remove($oId->in($oFolderFile->getFolderFileVersionId()),
+				$sUploadPath . $oFolderFile->getPathName(), $oFolderFile->getName());
+
 				$oFolderFile->setFolderFileVersionId(0);
 				$oFolderFile->save();
 			}
@@ -1324,8 +1324,8 @@ function fm_unlockFile($idf, $comment )
 function fm_commitFile($idf, $comment, $vermajor, $fmFile)
 {
 	global $babBody, $babDB;
-	
-	if($fmFile) 
+
+	if($fmFile)
 	{
 		$filename = $fmFile->filename;
 		$size = $fmFile->size;
@@ -1335,12 +1335,12 @@ function fm_commitFile($idf, $comment, $vermajor, $fmFile)
 		$filename = '';
 		$size = 0;
 	}
-	
+
 	$fm_file = fm_getFileAccess($idf);
 	$oFmFolder =& $fm_file['oFmFolder'];
 	$oFolderFile =& $fm_file['oFolderFile'];
 	$lockauthor = $fm_file['lockauthor'];
-	
+
 	if(!is_null($oFolderFile) && !is_null($oFmFolder))
 	{
 		if($lockauthor != $GLOBALS['BAB_SESS_USERID'])
@@ -1348,41 +1348,41 @@ function fm_commitFile($idf, $comment, $vermajor, $fmFile)
 			$babBody->msgerror = bab_translate("Access denied");
 			return false;
 		}
-	
+
 		if(empty($filename) || $filename == "none")
 		{
 			$babBody->msgerror = bab_translate("Please select a file to upload");
 			return false;
 		}
-	
+
 		if($size > $GLOBALS['babMaxFileSize'])
 		{
 			$babBody->msgerror = bab_translate("The file was greater than the maximum allowed") ." :". $GLOBALS['babMaxFileSize'];
 			return false;
 		}
-	
+
 		$totalsize = getDirSize($GLOBALS['babUploadPath']);
 		if($size + $totalsize > $GLOBALS['babMaxTotalSize'])
 		{
 			$babBody->msgerror = bab_translate("There is not enough free space");
 			return false;
 		}
-	
+
 		$sUploadPath = BAB_FmFolderHelper::getUploadPath();
 		$sFullPathName = $sUploadPath . $oFolderFile->getPathName();
-		
+
 		$totalsize = getDirSize($sFullPathName);
 		if($size + $totalsize > $GLOBALS['babMaxGroupSize'] )
 		{
 			$babBody->msgerror = bab_translate("There is not enough free space");
 			return false;
 		}
-	
+
 		if(!is_dir($sFullPathName . BAB_FVERSION_FOLDER))
 		{
 			bab_mkdir($sFullPathName . BAB_FVERSION_FOLDER, $GLOBALS['babMkdirMode']);
 		}
-	
+
 		if($vermajor == 'Y')
 		{
 			$vmajor = ($oFolderFile->getMajorVer() + 1);
@@ -1411,7 +1411,7 @@ function fm_commitFile($idf, $comment, $vermajor, $fmFile)
 				$idfai = makeFlowInstance($oFmFolder->getApprobationSchemeId(), 'filv-'.$oFolderFile->getFlowApprobationInstanceId());
 			}
 		}
-	
+
 		if(0 === $oFmFolder->getApprobationSchemeId() || $idfai === true)
 		{
 			$oFolderFileLog = new BAB_FolderFileLog();
@@ -1424,26 +1424,26 @@ function fm_commitFile($idf, $comment, $vermajor, $fmFile)
 			$oFolderFileLog->save();
 
 			$sSrc = $sFullPathName . $oFolderFile->getName();
-			$sTrg = $sFullPathName . BAB_FVERSION_FOLDER . '/'. $oFolderFile->getMajorVer() . 
-				'.' . $oFolderFile->getMinorVer() . ',' . $oFolderFile->getName();
+			$sTrg = $sFullPathName . BAB_FVERSION_FOLDER . '/'. $oFolderFile->getMajorVer() .
+			'.' . $oFolderFile->getMinorVer() . ',' . $oFolderFile->getName();
 			copy($sSrc, $sTrg);
-			
-			$sSrc = $sFullPathName . BAB_FVERSION_FOLDER . '/'. $vmajor . '.' . $vminor . 
-				',' . $oFolderFile->getName();
+
+			$sSrc = $sFullPathName . BAB_FVERSION_FOLDER . '/'. $vmajor . '.' . $vminor .
+			',' . $oFolderFile->getName();
 			$sTrg = $sFullPathName . $oFolderFile->getName();
 			copy($sSrc, $sTrg);
-			
+
 			unlink($sSrc);
-	
+
 			// index
 			include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
 			$index_status = bab_indexOnLoadFiles(
-				array($sFullPathName . $oFolderFile->getName(),  
-					$sFullPathName . BAB_FVERSION_FOLDER . '/'. $oFolderFile->getMajorVer() . 
-						'.' . $oFolderFile->getMinorVer() . ',' . $oFolderFile->getName()),
-				'bab_files'
+			array($sFullPathName . $oFolderFile->getName(),
+			$sFullPathName . BAB_FVERSION_FOLDER . '/'. $oFolderFile->getMajorVer() .
+			'.' . $oFolderFile->getMinorVer() . ',' . $oFolderFile->getName()),
+			'bab_files'
 			);
-	
+
 
 			$oFolderFileVersionSet = new BAB_FolderFileVersionSet();
 			$oId =& $oFolderFileVersionSet->aField['iId'];
@@ -1458,22 +1458,22 @@ function fm_commitFile($idf, $comment, $vermajor, $fmFile)
 				$oFolderFileVersion->setStatusIndex($index_status);
 				$oFolderFileVersion->save();
 			}
-	
-			if(BAB_INDEX_STATUS_INDEXED === $index_status) 
+
+			if(BAB_INDEX_STATUS_INDEXED === $index_status)
 			{
 				$obj = new bab_indexObject('bab_files');
 				$obj->setIdObjectFile($oFolderFile->getPathName() . $oFolderFile->getName(), $idf, $oFolderFile->getOwnerId());
-				$obj->setIdObjectFile($oFolderFile->getPathName() . BAB_FVERSION_FOLDER . '/' . 
-					$oFolderFile->getMajorVer() . '.' . $oFolderFile->getMinorVer() . ',' . 
-					$oFolderFile->getName(), $idf, $oFolderFile->getOwnerId());
+				$obj->setIdObjectFile($oFolderFile->getPathName() . BAB_FVERSION_FOLDER . '/' .
+				$oFolderFile->getMajorVer() . '.' . $oFolderFile->getMinorVer() . ',' .
+				$oFolderFile->getName(), $idf, $oFolderFile->getOwnerId());
 			}
-	
+
 			if('Y' === $oFmFolder->getFileNotify())
 			{
-				fileNotifyMembers($filename, $oFolderFile->getPathName(), $oFolderFile->getOwnerId(), 
-					bab_translate("A new version file has been uploaded"));
+				fileNotifyMembers($filename, $oFolderFile->getPathName(), $oFolderFile->getOwnerId(),
+				bab_translate("A new version file has been uploaded"));
 			}
-	
+
 			$oFolderFile->setFolderFileVersionId(0);
 			$oFolderFile->setModifiedDate(date("Y-m-d H:i:s"));
 			$oFolderFile->setModifierId($GLOBALS['BAB_SESS_USERID']);
@@ -1493,7 +1493,7 @@ function fm_commitFile($idf, $comment, $vermajor, $fmFile)
 			$oFolderFileLog->setComment(bab_translate("Waiting to be validate"));
 			$oFolderFileLog->setVersion($vmajor . '.' . $vminor);
 			$oFolderFileLog->save();
-			
+
 			$oFolderFileVersionSet = new BAB_FolderFileVersionSet();
 			$oId =& $oFolderFileVersionSet->aField['iId'];
 			$oFolderFileVersion = $oFolderFileVersionSet->get($oId->in($oFolderFile->getFolderFileVersionId()));
@@ -1505,11 +1505,11 @@ function fm_commitFile($idf, $comment, $vermajor, $fmFile)
 				$oFolderFileVersion->setFlowApprobationInstanceId($idfai);
 				$oFolderFileVersion->save();
 			}
-			
+
 			$nfusers = getWaitingApproversFlowInstance($idfai, true);
 			notifyFileApprovers($oFolderFile->getId(), $nfusers, bab_translate("A new version file is waiting for you"));
 		}
-			
+
 		return true;
 	}
 	return false;
@@ -1527,7 +1527,7 @@ function fm_commitFile($idf, $comment, $vermajor, $fmFile)
  * @param 	boolean $prepare
  */
 function indexAllFmFiles($status, $prepare) {
-	
+
 	global $babDB;
 
 	$res = $babDB->db_query("
@@ -1548,7 +1548,7 @@ function indexAllFmFiles($status, $prepare) {
 		
 	");
 
-	
+
 	$files = array();
 	$rights = array();
 
@@ -1563,9 +1563,9 @@ function indexAllFmFiles($status, $prepare) {
 
 		$files[] = $pathx.$arr['name'];
 		$rights[$pathy.$arr['path'].$arr['name']] = array(
-			'id' => $arr['id'],
-			'id_owner' => $arr['id_owner']
-			);
+		'id' => $arr['id'],
+		'id_owner' => $arr['id_owner']
+		);
 
 		if (null != $arr['version']) {
 			$resv = $babDB->db_query("
@@ -1585,9 +1585,9 @@ function indexAllFmFiles($status, $prepare) {
 					$file = BAB_FVERSION_FOLDER."/".$arrv['ver_major'].",".$arrv['ver_minor'].",".$arr['name'];
 					$files[] = $pathx.$file;
 					$rights[$pathy.$file] = array(
-						'id' => $arrv['id'],
-						'id_owner' => $arr['id_owner']
-						);
+					'id' => $arrv['id'],
+					'id_owner' => $arr['id_owner']
+					);
 				}
 			}
 		}
@@ -1605,16 +1605,16 @@ function indexAllFmFiles($status, $prepare) {
 
 
 
-	
+
 	$obj = new bab_indexObject('bab_files');
 
-	
+
 
 	$param = array(
-			'status' => $status,
-			'rights' => $rights
-		);
-	
+	'status' => $status,
+	'rights' => $rights
+	);
+
 	if (in_array(BAB_INDEX_STATUS_INDEXED, $status)) {
 		if ($prepare) {
 			return $obj->prepareIndex($files, $GLOBALS['babInstallPath'].'utilit/fileincl.php', 'indexAllFmFiles_end', $param );
@@ -1664,49 +1664,43 @@ function indexAllFmFiles_end($param) {
 
 
 function notifyApprovers($id, $fid)
-	{
+{
 	global $babBody, $babDB;
 
 	$arr = $babDB->db_fetch_array($babDB->db_query("select idsa, auto_approbation from ".BAB_FM_FOLDERS_TBL." where id='".$babDB->db_escape_string($fid)."'"));
 
 	if( $arr['idsa'] !=  0 )
-		{
+	{
 		include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 		if( $arr['auto_approbation'] == 'Y' )
-			{
+		{
 			$idfai = makeFlowInstance($arr['idsa'], "fil-".$id, $GLOBALS['BAB_SESS_USERID']);
-			}
-		else
-			{
-			$idfai = makeFlowInstance($arr['idsa'], "fil-".$id);
-			}
 		}
+		else
+		{
+			$idfai = makeFlowInstance($arr['idsa'], "fil-".$id);
+		}
+	}
 
 	if( $arr['idsa'] ==  0 || $idfai === true)
-		{
+	{
 		$babDB->db_query("update ".BAB_FILES_TBL." set confirmed='Y' where id='".$babDB->db_escape_string($id)."'");
 		$GLOBALS['babWebStat']->addNewFile($babBody->currentAdmGroup);
 		return true;
-		}
+	}
 	elseif(!empty($idfai))
-		{
+	{
 		$babDB->db_query("update ".BAB_FILES_TBL." set idfai='".$babDB->db_escape_string($idfai)."' where id='".$babDB->db_escape_string($id)."'");
 		$nfusers = getWaitingApproversFlowInstance($idfai, true);
 		if( count($nfusers))
-			{
+		{
 			notifyFileApprovers($id, $nfusers, bab_translate("A new file is waiting for you"));
-			}
-		$babBody->msgerror = bab_translate("Your file is waiting for approval");
 		}
-	
-	return false;
+		$babBody->msgerror = bab_translate("Your file is waiting for approval");
 	}
 
-	
-	
-	
-	
-	
+	return false;
+}
 
 
 
@@ -1716,12 +1710,18 @@ function notifyApprovers($id, $fid)
 
 
 
-class BAB_BaseSet extends BAB_MySqlResultIterator 
+
+
+
+
+
+
+class BAB_BaseSet extends BAB_MySqlResultIterator
 {
 	var $aField = array();
 	var $sTableName = '';
 	var $bUseAlias = true;
-	
+
 	function BAB_BaseSet($sTableName)
 	{
 		parent::BAB_MySqlResultIterator();
@@ -1730,8 +1730,8 @@ class BAB_BaseSet extends BAB_MySqlResultIterator
 
 	function processWhereClause($oCriteria)
 	{
-//		require_once $GLOBALS['babInstallPath'] . 'utilit/devtools.php';
-//		bab_debug_print_backtrace();
+		//		require_once $GLOBALS['babInstallPath'] . 'utilit/devtools.php';
+		//		bab_debug_print_backtrace();
 		if(!is_null($oCriteria))
 		{
 			$sWhereClause = $oCriteria->toString();
@@ -1742,7 +1742,7 @@ class BAB_BaseSet extends BAB_MySqlResultIterator
 		}
 		return '';
 	}
-	
+
 	function processOrder($aOrder)
 	{
 		$sOrder = '';
@@ -1757,7 +1757,7 @@ class BAB_BaseSet extends BAB_MySqlResultIterator
 		}
 		return $sOrder;
 	}
-	
+
 	function processLimit($aLimit)
 	{
 		$sLimit = '';
@@ -1765,7 +1765,7 @@ class BAB_BaseSet extends BAB_MySqlResultIterator
 		if($iCount >= 1 && $iCount <= 2)
 		{
 			global $babDB;
-			
+
 			$aValue = array();
 			foreach($aLimit as $sValue)
 			{
@@ -1775,50 +1775,50 @@ class BAB_BaseSet extends BAB_MySqlResultIterator
 		}
 		return $sLimit;
 	}
-	
+
 	function save($oObject)
 	{
 		if(count($this->aField) > 0)
 		{
 			global $babDB;
-			
+
 			$aInto = array();
 			$aValue = array();
 			$aOnDuplicateKey = array();
-	
+
 			reset($this->aField);
 			//Primary key processing
 			$aItem = each($this->aField);
 			if(false !== $aItem)
 			{
 				$aInto[] = $aItem['value']->getName();
-				
+
 				$oObject->_get($aItem['key'], $iId);
 				$aValue[] = (is_null($iId)) ? '\'\'' : '\'' . $babDB->db_escape_string($iId) . '\'';
 			}
-			
+
 			while(false !== ($aItem = each($this->aField)))
 			{
 				$sColName = $aItem['value']->getName();
 				$aInto[] = $sColName;
-				
+
 				$sKey = $aItem['key'];
 				$oObject->_get($sKey, $sValue);
-				
+
 				$sValue = '\'' . $babDB->db_escape_string($sValue) . '\'';
 				$aValue[] = $sValue;
 				$aOnDuplicateKey[] = $sColName . '= ' . $sValue;
 			}
 			reset($this->aField);
-			
-			$sQuery = 
-				'INSERT INTO ' . $this->sTableName . ' ' .
-					'(' . implode(',', $aInto) . ') ' .
-				'VALUES ' . 
-					'(' . implode(',', $aValue) . ') ' .
-				'ON DUPLICATE KEY UPDATE ' .
-					implode(',', $aOnDuplicateKey);
-					
+
+			$sQuery =
+			'INSERT INTO ' . $this->sTableName . ' ' .
+			'(' . implode(',', $aInto) . ') ' .
+			'VALUES ' .
+			'(' . implode(',', $aValue) . ') ' .
+			'ON DUPLICATE KEY UPDATE ' .
+			implode(',', $aOnDuplicateKey);
+
 			bab_debug($sQuery);
 			$oResult = $babDB->db_query($sQuery);
 			if(false !== $oResult)
@@ -1833,7 +1833,7 @@ class BAB_BaseSet extends BAB_MySqlResultIterator
 			return false;
 		}
 	}
-	
+
 	function remove($oCriteria)
 	{
 		$sWhereClause = $this->processWhereClause($oCriteria);
@@ -1841,19 +1841,19 @@ class BAB_BaseSet extends BAB_MySqlResultIterator
 		{
 			global $babDB;
 			$sQuery = 'DELETE FROM ' . $this->sTableName . ' ' . $sWhereClause;
-//			bab_debug($sQuery);
+			//			bab_debug($sQuery);
 			return $babDB->db_query($sQuery);
 		}
 		return false;
 	}
 
-	
+
 	public function getSelectQuery($oCriteria = null, $aOrder = array(), $aLimit = array())
 	{
 		$sWhereClause = $this->processWhereClause($oCriteria);
 		$sOrder = $this->processOrder($aOrder);
 		$sLimit = $this->processLimit($aLimit);
-		
+
 		$aField = array();
 
 		if(true === $this->bUseAlias)
@@ -1863,7 +1863,7 @@ class BAB_BaseSet extends BAB_MySqlResultIterator
 				$aField[] = $oField->getName() . ' ' . $sKey;
 			}
 		}
-		else 
+		else
 		{
 			foreach($this->aField as $sKey => $oField)
 			{
@@ -1871,54 +1871,54 @@ class BAB_BaseSet extends BAB_MySqlResultIterator
 			}
 		}
 
-		$sQuery = 
-			'SELECT ' .
-				implode(', ', $aField) . ' ' .
-			'FROM ' .
-				$this->sTableName . ' ' .
-			$sWhereClause . ' ' . $sOrder . ' ' . $sLimit;
-				
-		bab_debug($sQuery);	
+		$sQuery =
+		'SELECT ' .
+		implode(', ', $aField) . ' ' .
+		'FROM ' .
+		$this->sTableName . ' ' .
+		$sWhereClause . ' ' . $sOrder . ' ' . $sLimit;
+
+		bab_debug($sQuery);
 		return $sQuery;
 	}
-	
+
 	function get($oCriteria = null)
 	{
-//		require_once $GLOBALS['babInstallPath'] . 'utilit/devtools.php';
-//		bab_debug_print_backtrace();
+		//		require_once $GLOBALS['babInstallPath'] . 'utilit/devtools.php';
+		//		bab_debug_print_backtrace();
 
 		$sQuery = $this->getSelectQuery($oCriteria);
-		
-		global $babDB;	
+
+		global $babDB;
 		$oResult = $babDB->db_query($sQuery);
 		$iNumRows = $babDB->db_num_rows($oResult);
 		$iIndex = 0;
-		
+
 		if($iIndex < $iNumRows)
 		{
 			$this->setMySqlResult($oResult);
 			return $this->next();
 		}
 		return null;
-	}	
-	
+	}
+
 	function select($oCriteria = null, $aOrder = array(), $aLimit = array())
 	{
-//		require_once $GLOBALS['babInstallPath'] . 'utilit/devtools.php';
-//		bab_debug_print_backtrace();
+		//		require_once $GLOBALS['babInstallPath'] . 'utilit/devtools.php';
+		//		bab_debug_print_backtrace();
 
 		$sQuery = $this->getSelectQuery($oCriteria, $aOrder, $aLimit);
-		global $babDB;	
+		global $babDB;
 		$oResult = $babDB->db_query($sQuery);
 		$this->setMySqlResult($oResult);
 		return $this;
-	}	
-	
+	}
+
 	function getObject($aDatas)
 	{
 		$sClass = substr(get_class($this), 0, -3);
 		$oOBject = new $sClass();
-		
+
 		foreach($aDatas as $sKey => $sValue)
 		{
 			$oOBject->_set($sKey, $sValue);
@@ -1935,252 +1935,296 @@ class BAB_FmFolderSet extends BAB_BaseSet
 		parent::BAB_BaseSet(BAB_FM_FOLDERS_TBL);
 
 		$this->aField = array(
-			'iId' => new BAB_IntField('`id`'),
-			'sName' => new BAB_StringField('`folder`'),
-			'sRelativePath' => new BAB_StringField('`sRelativePath`'),
-			'iIdApprobationScheme' => new BAB_IntField('`idsa`'),
-			'sFileNotify' => new BAB_StringField('`filenotify`'),
-			'sActive' => new BAB_IntField('`active`'),
-			'sVersioning' => new BAB_StringField('`version`'),
-			'iIdDgOwner' => new BAB_IntField('`id_dgowner`'),
-			'sHide' => new BAB_StringField('`bhide`'),
-			'sAutoApprobation' => new BAB_StringField('`auto_approbation`')
-			);
+		'iId' => new BAB_IntField('`id`'),
+		'sName' => new BAB_StringField('`folder`'),
+		'sRelativePath' => new BAB_StringField('`sRelativePath`'),
+		'iIdApprobationScheme' => new BAB_IntField('`idsa`'),
+		'sFileNotify' => new BAB_StringField('`filenotify`'),
+		'sActive' => new BAB_IntField('`active`'),
+		'sVersioning' => new BAB_StringField('`version`'),
+		'iIdDgOwner' => new BAB_IntField('`id_dgowner`'),
+		'sHide' => new BAB_StringField('`bhide`'),
+		'sAutoApprobation' => new BAB_StringField('`auto_approbation`')
+		);
 	}
-	
+
 	function remove($oCriteria, $bDbRecordOnly)
 	{
 		$this->select($oCriteria);
-		
+
 		while(null !== ($oFmFolder = $this->next()))
 		{
 			$this->delete($oFmFolder, $bDbRecordOnly);
 		}
 	}
-	
+
 	function delete($oFmFolder, $bDbRecordOnly)
 	{
 		if(is_a($oFmFolder, 'BAB_FmFolder'))
 		{
-			$oFirstFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($oFmFolder->getRelativePath());
 			$oFolderFileSet = new BAB_FolderFileSet();
-			$sPathName = $oFmFolder->getRelativePath() . $oFmFolder->getName() . '/';
-			$oFolderFileSet->setOwnerId($sPathName, $oFmFolder->getId(), $oFirstFmFolder->getId());
 			
+			if(strlen(trim($oFmFolder->getRelativePath())) > 0 && true === $bDbRecordOnly)
+			{
+				$oFirstFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($oFmFolder->getRelativePath());
+				$sPathName = $oFmFolder->getRelativePath() . $oFmFolder->getName() . '/';
+				$oFolderFileSet->setOwnerId($sPathName, $oFmFolder->getId(), $oFirstFmFolder->getId());
+			}
+
 			require_once $GLOBALS['babInstallPath'].'admin/acl.php';
 			aclDeleteGroup(BAB_FMUPLOAD_GROUPS_TBL, $oFmFolder->getId());
 			aclDeleteGroup(BAB_FMDOWNLOAD_GROUPS_TBL, $oFmFolder->getId());
 			aclDeleteGroup(BAB_FMUPDATE_GROUPS_TBL, $oFmFolder->getId());
 			aclDeleteGroup(BAB_FMMANAGERS_GROUPS_TBL, $oFmFolder->getId());
-			
+
 			if(false === $bDbRecordOnly)
 			{
+				global $babDB;
 				$oPathName =& $oFolderFileSet->aField['sPathName'];
-				$oFolderFileSet->remove($oPathName->in($oFmFolder->getRelativePath() . $oFmFolder->getName() . '/'));
+				$oFolderFileSet->remove($oPathName->like($babDB->db_escape_like($oFmFolder->getRelativePath() . $oFmFolder->getName() . '/') . '%'));
 			}
-			else 
+			else
 			{
-bab_debug('Il faut auto confirmer tous les fichiers qui ne sont pas confirmés');				
-bab_debug('Supprimer les instances de schémas d\'approbations');		
-								
-				$oId =& $oFolderFileSet->aField['iId'];
+				$sUploadPath = BAB_FmFolderHelper::getUploadPath();
+
+				$oIdOwner =& $oFolderFileSet->aField['iIdOwner'];
 				$oPathName =& $oFolderFileSet->aField['sPathName'];
-				$oCriteria = $oId->in($oFmFolder->getId());
+				$oCriteria = $oIdOwner->in($oFirstFmFolder->getId());
 				$oCriteria = $oCriteria->_and($oPathName->in($oFmFolder->getRelativePath() . $oFmFolder->getName() . '/'));
-				
+
 				$oFolderFileSet->select($oCriteria);
-				
+
+				$oFolderFileVersionSet = new BAB_FolderFileVersionSet();
 				while(null !== ($oFolderFile = $oFolderFileSet->next()))
 				{
+					$oIdFile =& $oFolderFileVersionSet->aField['iIdFile'];
+					$oFolderFileVersionSet->remove($oIdFile->in($oFolderFile->getId()),
+					$sUploadPath . $oFolderFile->getPathName(), $oFolderFile->getName());
+
+					require_once $GLOBALS['babInstallPath'].'utilit/afincl.php';
 					deleteFlowInstance($oFolderFile->getFlowApprobationInstanceId());
+					$oFolderFile->setMajorVer(1);
+					$oFolderFile->setMinorVer(0);
 					$oFolderFile->setFlowApprobationInstanceId(0);
 					$oFolderFile->setConfirmed('Y');
 					$oFolderFile->save();
 				}
-
 			}
 			
+			if(false === $bDbRecordOnly)
+			{
+				$sFullPathNane = BAB_FmFolderHelper::getUploadPath() . $oFmFolder->getRelativePath() . $oFmFolder->getName();
+				$this->remodeDir($sFullPathNane);
+			}
+
 			$oId =& $this->aField['iId'];
 			return parent::remove($oId->in($oFmFolder->getId()));
 		}
 	}
-	
+
 	function save($oFmFolder)
 	{
 		if(is_a($oFmFolder, 'BAB_FmFolder'))
 		{
 			return parent::save($oFmFolder);
-		}		
+		}
 	}
-	
-	
+
+
 	//--------------------------------------
 	function getFirstCollectiveFolder($sRelativePath)
 	{
-//		bab_debug(__FUNCTION__ . ' sRelativePath ==> ' . $sRelativePath);
+		//		bab_debug(__FUNCTION__ . ' sRelativePath ==> ' . $sRelativePath);
 		$aPath = explode('/', $sRelativePath);
 		if(is_array($aPath))
 		{
-			$iLength = count($aPath); 
+			$iLength = count($aPath);
 			if($iLength >= 1)
 			{
 				$bStop		= false;
 				$iIndex		= $iLength - 1;
 				$bFinded	= false;
 				global $babDB;
-				
-//				bab_debug($aPath);
+
+				//				bab_debug($aPath);
 				$oFmFolderSet = new BAB_FmFolderSet();
-				$oRelativePath =& $oFmFolderSet->aField['sRelativePath']; 
-				$oName =& $oFmFolderSet->aField['sName']; 
-				
-				do 
+				$oRelativePath =& $oFmFolderSet->aField['sRelativePath'];
+				$oName =& $oFmFolderSet->aField['sName'];
+
+				do
 				{
 					$sFolderName = $aPath[$iIndex];
 					unset($aPath[$iIndex]);
 					$sRelativePath	= implode('/', $aPath);
-					
+
 					if('' !== $sRelativePath)
 					{
 						$sRelativePath .= '/';
 					}
-					
+
 					$oCriteria = $oRelativePath->like($babDB->db_escape_like($sRelativePath));
 					$oCriteria = $oCriteria->_and($oName->in($sFolderName));
 					$oFmFolder = $oFmFolderSet->get($oCriteria);
-					
+
 					if(!is_null($oFmFolder))
 					{
 						return $oFmFolder;
 					}
-					
+
 					if($iIndex > 0)
 					{
 						$iIndex--;
 					}
-					else 
+					else
 					{
-						$bStop = true;			
+						$bStop = true;
 					}
 				}
 				while(false === $bStop);
 			}
 		}
-		return null;		
+		return null;
 	}
-	
+
 	function getRootCollectiveFolder($sRelativePath)
 	{
 		$aPath = explode('/', $sRelativePath);
 		if(is_array($aPath))
 		{
-			$iLength = count($aPath); 
+			$iLength = count($aPath);
 			if($iLength >= 1)
 			{
 				$sFolderName = $aPath[0];
-				
+
 				$oFmFolderSet = new BAB_FmFolderSet();
-				$oRelativePath =& $oFmFolderSet->aField['sRelativePath']; 
-				$oName =& $oFmFolderSet->aField['sName']; 
-				
+				$oRelativePath =& $oFmFolderSet->aField['sRelativePath'];
+				$oName =& $oFmFolderSet->aField['sName'];
+
 				global $babDB;
 				$oCriteria = $oRelativePath->like($babDB->db_escape_like(''));
 				$oCriteria = $oCriteria->_and($oName->in($sFolderName));
 				$oFmFolder = $oFmFolderSet->get($oCriteria);
-				
+
 				if(!is_null($oFmFolder))
 				{
 					return $oFmFolder;
 				}
 				return null;
-			}			
-		}		
+			}
+		}
+	}
+
+	function remodeDir($sFullPathName)
+	{
+		if(is_dir($sFullPathName))
+		{
+			$oHandle = opendir($sFullPathName);
+			if(false !== $oHandle)
+			{
+				while($sName = readdir($oHandle))
+				{
+					if('.' !== $sName && '..' !== $sName)
+					{
+						if(is_dir($sFullPathName . '/' . $sName))
+						{
+							$this->remodeDir($sFullPathName . '/' . $sName);
+						}
+						else if(file_exists($sFullPathName . '/' . $sName))
+						{
+							@unlink($sFullPathName . '/' . $sName);
+						}
+					}
+				}
+				closedir($oHandle);
+				@rmdir($sFullPathName);
+			}
+		}
 	}
 }
 
 
-class BAB_FolderFileSet extends BAB_BaseSet 
+class BAB_FolderFileSet extends BAB_BaseSet
 {
 	function BAB_FolderFileSet()
 	{
 		parent::BAB_BaseSet(BAB_FILES_TBL);
 
 		$this->aField = array(
-			'iId' => new BAB_IntField('`id`'),
-			'sName' => new BAB_StringField('`name`'),
-			'sDescription' => new BAB_StringField('`description`'),
-			'sKeywords' => new BAB_StringField('`keywords`'),
-			'sPathName' => new BAB_StringField('`path`'),
-			'iIdOwner' => new BAB_IntField('`id_owner`'),
-			'sGroup' => new BAB_StringField('`bgroup`'),
-			'iIdLink' => new BAB_IntField('`link`'),
-			'sReadOnly' => new BAB_StringField('`readonly`'),
-			'sState' => new BAB_StringField('`state`'),
-			'sCreation' => new BAB_StringField('`created`'),
-			'iIdAuthor' => new BAB_IntField('`author`'),
-			'sModified' => new BAB_StringField('`modified`'),
-			'iIdModifier' => new BAB_IntField('`modifiedby`'),
-			'sConfirmed' => new BAB_StringField('`confirmed`'),
-			'iHits' => new BAB_IntField('`hits`'),
-			'iIdFlowApprobationInstance' => new BAB_IntField('`idfai`'),
-			'iIdFolderFileVersion' => new BAB_IntField('`edit`'),
-			'iVerMajor' => new BAB_IntField('`ver_major`'),
-			'iVerMinor' => new BAB_IntField('`ver_minor`'),
-			'sVerComment' => new BAB_StringField('`ver_comment`'),
-			'iIndexStatus' => new BAB_IntField('`index_status`')
-			);
+		'iId' => new BAB_IntField('`id`'),
+		'sName' => new BAB_StringField('`name`'),
+		'sDescription' => new BAB_StringField('`description`'),
+		'sKeywords' => new BAB_StringField('`keywords`'),
+		'sPathName' => new BAB_StringField('`path`'),
+		'iIdOwner' => new BAB_IntField('`id_owner`'),
+		'sGroup' => new BAB_StringField('`bgroup`'),
+		'iIdLink' => new BAB_IntField('`link`'),
+		'sReadOnly' => new BAB_StringField('`readonly`'),
+		'sState' => new BAB_StringField('`state`'),
+		'sCreation' => new BAB_StringField('`created`'),
+		'iIdAuthor' => new BAB_IntField('`author`'),
+		'sModified' => new BAB_StringField('`modified`'),
+		'iIdModifier' => new BAB_IntField('`modifiedby`'),
+		'sConfirmed' => new BAB_StringField('`confirmed`'),
+		'iHits' => new BAB_IntField('`hits`'),
+		'iIdFlowApprobationInstance' => new BAB_IntField('`idfai`'),
+		'iIdFolderFileVersion' => new BAB_IntField('`edit`'),
+		'iVerMajor' => new BAB_IntField('`ver_major`'),
+		'iVerMinor' => new BAB_IntField('`ver_minor`'),
+		'sVerComment' => new BAB_StringField('`ver_comment`'),
+		'iIndexStatus' => new BAB_IntField('`index_status`')
+		);
 	}
-	
+
 	function remove($oCriteria)
 	{
-//		bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__);
-		
+		//		bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__);
+
 		$sUploadPath = BAB_FmFolderHelper::getUploadPath();
-		
+
 		$this->select($oCriteria);
-		
+
 		$aIdFile = array();
-		
+
 		$oFolderFileVersionSet = new BAB_FolderFileVersionSet();
 		$oId =& $oFolderFileVersionSet->aField['iIdFile'];
-		
+
 		while(null !== ($oFolderFile = $this->next()))
 		{
 			$sFullPathName = $sUploadPath . $oFolderFile->getPathName() . $oFolderFile->getName();
 			if(file_exists($sFullPathName))
 			{
-//				bab_debug('unlink ==> ' . $sFullPathName);
-				
-				unlink($sFullPathName);	
+				//				bab_debug('unlink ==> ' . $sFullPathName);
+
+				unlink($sFullPathName);
 			}
-			
-			$oFolderFileVersionSet->remove($oId->in($oFolderFile->getId()), 
-				$sUploadPath . $oFolderFile->getPathName(), $oFolderFile->getName());
-			
+
+			$oFolderFileVersionSet->remove($oId->in($oFolderFile->getId()),
+			$sUploadPath . $oFolderFile->getPathName(), $oFolderFile->getName());
+
 			if(0 !== $oFolderFile->getFlowApprobationInstanceId())
 			{
 				deleteFlowInstance($oFolderFile->getFlowApprobationInstanceId());
 			}
-				
+
 			$aIdFile[] = $oFolderFile->getId();
 		}
-		
+
 		$oFolderFileLogSet = new BAB_FolderFileLogSet();
 		$oId =& $oFolderFileLogSet->aField['iIdFile'];
 		$oFolderFileLogSet->remove($oId->in($aIdFile));
-		
+
 		$oFolderFileFieldValueSet = new BAB_FolderFileFieldValueSet();
 		$oId =& $oFolderFileFieldValueSet->aField['iIdFile'];
 		$oFolderFileFieldValueSet->remove($oId->in($aIdFile));
-		
+
 		parent::remove($oCriteria);
 	}
-	
+
 	function setOwnerId($sPathName, $iOldIdOwner, $iNewIdOwner)
 	{
 		$oPathName =& $this->aField['sPathName'];
 		$oIdOwner =& $this->aField['iIdOwner'];
-		
+
 		global $babDB;
 		$oCriteria = $oPathName->like($babDB->db_escape_like($sPathName) . '%');
 		$oCriteria = $oCriteria->_and($oIdOwner->in($iOldIdOwner));
@@ -2188,26 +2232,26 @@ class BAB_FolderFileSet extends BAB_BaseSet
 
 		while(null !== ($oFolderFile = $this->next()))
 		{
-//			bab_debug('sFileName ==> ' . $oFolderFile->getName() . ' sPath ==> ' . $oFolderFile->getPathName() . 
-//				' iOldIdOwner ==> ' . $oFolderFile->getOwnerId() . ' iNewIdOwner ==> ' . $iNewIdOwner);
-			
+			//			bab_debug('sFileName ==> ' . $oFolderFile->getName() . ' sPath ==> ' . $oFolderFile->getPathName() .
+			//				' iOldIdOwner ==> ' . $oFolderFile->getOwnerId() . ' iNewIdOwner ==> ' . $iNewIdOwner);
+
 			$oFolderFile->setOwnerId($iNewIdOwner);
 			$oFolderFile->save();
-		}		
+		}
 	}
-	
+
 	function setPathName($sRelativePath, $sNewName, $bCollective)
 	{
-//		bab_debug(__FUNCTION__ . ' sRelativePath ==> ' . $sRelativePath . ' sNewName ==> ' . $sNewName);
+		//		bab_debug(__FUNCTION__ . ' sRelativePath ==> ' . $sRelativePath . ' sNewName ==> ' . $sNewName);
 
 		$iOffset = ($bCollective) ? 2 : 1;
 
 		$oFolderFileSet = new BAB_FolderFileSet();
 		$oPathName =& $oFolderFileSet->aField['sPathName'];
-		
+
 		global $babDB;
 		$oFolderFileSet->select($oPathName->like($babDB->db_escape_like($sRelativePath) . '%'));
-		
+
 		while(null !== ($oFolderFile = $oFolderFileSet->next()))
 		{
 			$sBegin = substr($oFolderFile->getPathName(), 0, strlen($sRelativePath));
@@ -2217,20 +2261,20 @@ class BAB_FolderFileSet extends BAB_BaseSet
 			if(is_array($aPath))
 			{
 				$sNewPathName = '';
-				
+
 				$iCount = count($aPath);
 				if($iCount >= $iOffset)
 				{
-//					bab_debug($aPath);
-					
+					//					bab_debug($aPath);
+
 					//sRelativePath is always xxx/xxx/
 					//at the minimum is xxx/ and count of explode of that is $iOffset
 					$aPath[$iCount - $iOffset] = $sNewName;
 					$sNewPathName = implode('/', $aPath) . $sEnd;
 				}
-				
-//				bab_debug('sBegin ==> ' . $sBegin . ' sEnd ==> ' . $sEnd . ' sNewPathName ==> ' . $sNewPathName);
-//				bab_debug('sFullPathName ==> ' . $sNewPathName . $oFolderFile->getName());
+
+				//				bab_debug('sBegin ==> ' . $sBegin . ' sEnd ==> ' . $sEnd . ' sNewPathName ==> ' . $sNewPathName);
+				//				bab_debug('sFullPathName ==> ' . $sNewPathName . $oFolderFile->getName());
 				$oFolderFile->setPathName($sNewPathName);
 				$oFolderFile->save();
 			}
@@ -2239,88 +2283,88 @@ class BAB_FolderFileSet extends BAB_BaseSet
 }
 
 
-class BAB_FolderFileVersionSet extends BAB_BaseSet 
+class BAB_FolderFileVersionSet extends BAB_BaseSet
 {
 	function BAB_FolderFileVersionSet()
 	{
 		parent::BAB_BaseSet(BAB_FM_FILESVER_TBL);
 
 		$this->aField = array(
-			'iId' => new BAB_IntField('`id`'),
-			'iIdFile' => new BAB_IntField('`id_file`'),
-			'sCreationDate' => new BAB_StringField('`date`'),
-			'iIdAuthor' => new BAB_IntField('`author`'),
-			'iVerMajor' => new BAB_IntField('`ver_major`'),
-			'iVerMinor' => new BAB_IntField('`ver_minor`'),
-			'sComment' => new BAB_StringField('`comment`'),
-			'iIdFlowApprobationInstance' => new BAB_IntField('`idfai`'),
-			'sConfirmed' => new BAB_StringField('`confirmed`'),
-			'iIndexStatus' => new BAB_IntField('`index_status`')
-			);
+		'iId' => new BAB_IntField('`id`'),
+		'iIdFile' => new BAB_IntField('`id_file`'),
+		'sCreationDate' => new BAB_StringField('`date`'),
+		'iIdAuthor' => new BAB_IntField('`author`'),
+		'iVerMajor' => new BAB_IntField('`ver_major`'),
+		'iVerMinor' => new BAB_IntField('`ver_minor`'),
+		'sComment' => new BAB_StringField('`comment`'),
+		'iIdFlowApprobationInstance' => new BAB_IntField('`idfai`'),
+		'sConfirmed' => new BAB_StringField('`confirmed`'),
+		'iIndexStatus' => new BAB_IntField('`index_status`')
+		);
 	}
-	
+
 	function remove($oCriteria, $sPathName, $sFileName)
 	{
-//		bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__);
+		//		bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__);
 
 		$this->select($oCriteria);
-		
+
 		while(null !== ($oFolderFileVersion = $this->next()))
 		{
-			$sFullPathName = $sPathName . BAB_FVERSION_FOLDER . '/' . $oFolderFileVersion->getMajorVer() . 
-				'.' . $oFolderFileVersion->getMinorVer() . ',' . $sFileName;
-			
+			$sFullPathName = $sPathName . BAB_FVERSION_FOLDER . '/' . $oFolderFileVersion->getMajorVer() .
+			'.' . $oFolderFileVersion->getMinorVer() . ',' . $sFileName;
+
 			if(file_exists($sFullPathName))
 			{
-//				bab_debug('unlink ==> ' . $sFullPathName);
+				//				bab_debug('unlink ==> ' . $sFullPathName);
 
 				unlink($sFullPathName);
 			}
-			else 
+			else
 			{
 				bab_debug('ERROR ==> ' . $sFullPathName);
 			}
-			
+
 			if(0 !== $oFolderFileVersion->getFlowApprobationInstanceId())
 			{
 				deleteFlowInstance($oFolderFileVersion->getFlowApprobationInstanceId());
 			}
 		}
-		
+
 		parent::remove($oCriteria);
 	}
 }
 
-class BAB_FolderFileLogSet extends BAB_BaseSet 
+class BAB_FolderFileLogSet extends BAB_BaseSet
 {
 	function BAB_FolderFileLogSet()
 	{
 		parent::BAB_BaseSet(BAB_FM_FILESLOG_TBL);
 
 		$this->aField = array(
-			'iId' => new BAB_IntField('`id`'),
-			'iIdFile' => new BAB_IntField('`id_file`'),
-			'sCreationDate' => new BAB_StringField('`date`'),
-			'iIdAuthor' => new BAB_IntField('`author`'),
-			'iAction' => new BAB_IntField('`action`'),
-			'sComment' => new BAB_StringField('`comment`'),
-			'sVersion' => new BAB_StringField('`version`')
-			);
+		'iId' => new BAB_IntField('`id`'),
+		'iIdFile' => new BAB_IntField('`id_file`'),
+		'sCreationDate' => new BAB_StringField('`date`'),
+		'iIdAuthor' => new BAB_IntField('`author`'),
+		'iAction' => new BAB_IntField('`action`'),
+		'sComment' => new BAB_StringField('`comment`'),
+		'sVersion' => new BAB_StringField('`version`')
+		);
 	}
 }
 
-class BAB_FolderFileFieldValueSet extends BAB_BaseSet 
+class BAB_FolderFileFieldValueSet extends BAB_BaseSet
 {
 	function BAB_FolderFileFieldValueSet()
 	{
 		parent::BAB_BaseSet(BAB_FM_FIELDSVAL_TBL);
 
 		$this->aField = array(
-			'iId' => new BAB_IntField('`id`'),
-			'iIdField' => new BAB_IntField('`id_field`'),
-			'iIdFile' => new BAB_IntField('`id_file`'),
-			'sValue' => new BAB_StringField('`fvalue`')
-			);
+		'iId' => new BAB_IntField('`id`'),
+		'iIdField' => new BAB_IntField('`id_field`'),
+		'iIdFile' => new BAB_IntField('`id_file`'),
+		'sValue' => new BAB_StringField('`fvalue`')
+		);
 	}
 }
 
@@ -2328,26 +2372,26 @@ class BAB_FolderFileFieldValueSet extends BAB_BaseSet
 class BAB_DbRecord
 {
 	var $aDatas = null;
-	
+
 	function BAB_DbRecord()
 	{
-		
+
 	}
-	
+
 	function _iGet($sName)
 	{
 		$iValue = 0;
 		$this->_get($sName, $iValue);
 		return (int) $iValue;
 	}
-	
+
 	function _sGet($sName)
 	{
 		$sValue = '';
 		$this->_get($sName, $sValue);
 		return (string) $sValue;
 	}
-	
+
 	function _get($sName, &$sValue)
 	{
 		if(array_key_exists($sName, $this->aDatas))
@@ -2357,7 +2401,7 @@ class BAB_DbRecord
 		}
 		return false;
 	}
-	
+
 	function _set($sName, $sValue)
 	{
 		$this->aDatas[$sName] = $sValue;
@@ -2365,34 +2409,34 @@ class BAB_DbRecord
 	}
 }
 
-	
+
 class BAB_FmFolder extends BAB_DbRecord
 {
 	function BAB_FmFolder()
 	{
 		parent::BAB_DbRecord();
 	}
-	
+
 	function setId($iId)
 	{
 		$this->_set('iId', $iId);
 	}
-	
+
 	function getId()
 	{
 		return $this->_iGet('iId');
 	}
-	
+
 	function setName($sName)
 	{
 		$this->_set('sName', $sName);
 	}
-	
+
 	function getName()
 	{
 		return $this->_sGet('sName');
 	}
-	
+
 	function setRelativePath($sRelativePath)
 	{
 		if(isset($GLOBALS['babFileNameTranslation']))
@@ -2401,82 +2445,82 @@ class BAB_FmFolder extends BAB_DbRecord
 		}
 		$this->_set('sRelativePath', $sRelativePath);
 	}
-	
+
 	function getRelativePath()
 	{
 		return $this->_sGet('sRelativePath');
 	}
-	
+
 	function setApprobationSchemeId($iId)
 	{
 		$this->_set('iIdApprobationScheme', $iId);
 	}
-	
+
 	function getApprobationSchemeId()
 	{
 		return $this->_iGet('iIdApprobationScheme');
 	}
-	
+
 	function setFileNotify($sFileNotify)
 	{
 		$this->_set('sFileNotify', $sFileNotify);
 	}
-	
+
 	function getFileNotify()
 	{
 		return $this->_sGet('sFileNotify');
 	}
-	
+
 	function setActive($sActive)
 	{
 		$this->_set('sActive', $sActive);
 	}
-	
+
 	function getActive()
 	{
 		return $this->_sGet('sActive');
 	}
-	
+
 	function setVersioning($sVersioning)
 	{
 		$this->_set('sVersioning', $sVersioning);
 	}
-	
+
 	function getVersioning()
 	{
 		return $this->_sGet('sVersioning');
 	}
-	
+
 	function setDelegationOwnerId($iId)
 	{
 		$this->_set('iIdDgOwner', $iId);
 	}
-	
+
 	function getDelegationOwnerId()
 	{
 		return $this->_iGet('iIdDgOwner');
 	}
-	
+
 	function setHide($sHide)
 	{
 		$this->_set('sHide', $sHide);
 	}
-	
+
 	function getHide()
 	{
 		return $this->_sGet('sHide');
 	}
-	
+
 	function setAutoApprobation($sAutoApprobation)
 	{
 		$this->_set('sAutoApprobation', $sAutoApprobation);
 	}
-	
+
 	function getAutoApprobation()
 	{
 		return $this->_sGet('sAutoApprobation');
 	}
-	
+
 	function save()
 	{
 		$oFmFolderSet = new BAB_FmFolderSet();
@@ -2485,18 +2529,18 @@ class BAB_FmFolder extends BAB_DbRecord
 }
 
 
-class BAB_FolderFile extends BAB_DbRecord 
+class BAB_FolderFile extends BAB_DbRecord
 {
 	function BAB_FolderFile()
 	{
-		parent::BAB_DbRecord();		
+		parent::BAB_DbRecord();
 	}
-	
+
 	function setId($iId)
 	{
 		$this->_set('iId', $iId);
 	}
-	
+
 	function getId()
 	{
 		return $this->_iGet('iId');
@@ -2506,7 +2550,7 @@ class BAB_FolderFile extends BAB_DbRecord
 	{
 		$this->_set('sName', $sName);
 	}
-	
+
 	function getName()
 	{
 		return $this->_sGet('sName');
@@ -2516,7 +2560,7 @@ class BAB_FolderFile extends BAB_DbRecord
 	{
 		$this->_set('sDescription', $sDescription);
 	}
-	
+
 	function getDescription()
 	{
 		return $this->_sGet('sDescription');
@@ -2526,12 +2570,12 @@ class BAB_FolderFile extends BAB_DbRecord
 	{
 		$this->_set('sKeywords', $sKeywords);
 	}
-	
+
 	function getKeywords()
 	{
 		return $this->_sGet('sKeywords');
 	}
-	
+
 	function setPathName($sPathName)
 	{
 		if(isset($GLOBALS['babFileNameTranslation']))
@@ -2540,182 +2584,182 @@ class BAB_FolderFile extends BAB_DbRecord
 		}
 		$this->_set('sPathName', $sPathName);
 	}
-	
+
 	function getPathName()
 	{
 		return $this->_sGet('sPathName');
 	}
-	
+
 	function setOwnerId($iIdOwner)
 	{
 		$this->_set('iIdOwner', $iIdOwner);
 	}
-	
+
 	function getOwnerId()
 	{
 		return $this->_iGet('iIdOwner');
 	}
-	
+
 	function setGroup($sGroup)
 	{
 		$this->_set('sGroup', $sGroup);
 	}
-	
+
 	function getGroup()
 	{
 		return $this->_sGet('sGroup');
 	}
-	
+
 	function setLinkId($iIdLink)
 	{
 		$this->_set('iIdLink', $iIdLink);
 	}
-	
+
 	function getLinkId()
 	{
 		return $this->_iGet('iIdLink');
 	}
-	
+
 	function setReadOnly($sReadOnly)
 	{
 		$this->_set('sReadOnly', $sReadOnly);
 	}
-	
+
 	function getReadOnly()
 	{
 		return $this->_sGet('sReadOnly');
 	}
-	
+
 	function setState($sState)
 	{
 		$this->_set('sState', $sState);
 	}
-	
+
 	function getState()
 	{
 		return $this->_sGet('sState');
 	}
-	
+
 	function setCreationDate($sCreation)
 	{
 		$this->_set('sCreation', $sCreation);
 	}
-	
+
 	function getCreationDate()
 	{
 		return $this->_sGet('sCreation');
 	}
-	
+
 	function setAuthorId($iIdAuthor)
 	{
 		$this->_set('iIdAuthor', $iIdAuthor);
 	}
-	
+
 	function getAuthorId()
 	{
 		return $this->_iGet('iIdAuthor');
 	}
-	
+
 	function setModifiedDate($sModified)
 	{
 		$this->_set('sModified', $sModified);
 	}
-	
+
 	function getModifiedDate()
 	{
 		return $this->_sGet('sModified');
 	}
-	
+
 	function setModifierId($iIdModifier)
 	{
 		$this->_set('iIdModifier', $iIdModifier);
 	}
-	
+
 	function getModifierId()
 	{
 		return $this->_iGet('iIdModifier');
 	}
-	
+
 	function setConfirmed($sConfirmed)
 	{
 		$this->_set('sConfirmed', $sConfirmed);
 	}
-	
+
 	function getConfirmed()
 	{
 		return $this->_sGet('sConfirmed');
 	}
-	
+
 	function setHits($iHits)
 	{
 		$this->_set('iHits', $iHits);
 	}
-	
+
 	function getHits()
 	{
 		return $this->_iGet('iHits');
 	}
-	
+
 	function setFlowApprobationInstanceId($iIdFlowApprobationInstance)
 	{
 		$this->_set('iIdFlowApprobationInstance', $iIdFlowApprobationInstance);
 	}
-	
+
 	function getFlowApprobationInstanceId()
 	{
 		return $this->_iGet('iIdFlowApprobationInstance');
 	}
-	
+
 	function setFolderFileVersionId($iIdFolderFileVersion)
 	{
 		$this->_set('iIdFolderFileVersion', $iIdFolderFileVersion);
 	}
-	
+
 	function getFolderFileVersionId()
 	{
 		return $this->_iGet('iIdFolderFileVersion');
 	}
-	
+
 	function setMajorVer($iVerMajor)
 	{
 		$this->_set('iVerMajor', $iVerMajor);
 	}
-	
+
 	function getMajorVer()
 	{
 		return $this->_iGet('iVerMajor');
 	}
-	
+
 	function setMinorVer($iVerMinor)
 	{
 		$this->_set('iVerMinor', $iVerMinor);
 	}
-	
+
 	function getMinorVer()
 	{
 		return $this->_iGet('iVerMinor');
 	}
-	
+
 	function setCommentVer($sVerComment)
 	{
 		$this->_set('sVerComment', $sVerComment);
 	}
-	
+
 	function getCommentVer()
 	{
 		return $this->_sGet('iVerMinor');
 	}
-	
+
 	function setStatusIndex($iIndexStatus)
 	{
 		$this->_set('iIndexStatus', $iIndexStatus);
 	}
-	
+
 	function getStatusIndex()
 	{
 		return $this->_iGet('iIndexStatus');
 	}
-	
+
 	function save()
 	{
 		$oFolderFileSet = new BAB_FolderFileSet();
@@ -2730,107 +2774,107 @@ class BAB_FolderFileVersion extends BAB_DbRecord
 	{
 		parent::BAB_DbRecord();
 	}
-	
+
 	function setId($iId)
 	{
 		$this->_set('iId', $iId);
 	}
-	
+
 	function getId()
 	{
 		return $this->_iGet('iId');
 	}
-	
+
 	function setIdFile($iId)
 	{
 		$this->_set('iIdFile', $iId);
 	}
-	
+
 	function getIdFile()
 	{
 		return $this->_iGet('iIdFile');
 	}
-	
+
 	function setCreationDate($sDate)
 	{
 		$this->_set('sCreationDate', $sDate);
 	}
-	
+
 	function getCreationDate()
 	{
 		return $this->_sGet('sCreationDate');
 	}
-	
+
 	function setAuthorId($iIdAuthor)
 	{
 		$this->_set('iIdAuthor', $iIdAuthor);
 	}
-	
+
 	function getAuthorId()
 	{
 		return $this->_iGet('iIdAuthor');
 	}
-	
+
 	function setMajorVer($iVerMajor)
 	{
 		$this->_set('iVerMajor', $iVerMajor);
 	}
-	
+
 	function getMajorVer()
 	{
 		return $this->_iGet('iVerMajor');
 	}
-	
+
 	function setMinorVer($iVerMinor)
 	{
 		$this->_set('iVerMinor', $iVerMinor);
 	}
-	
+
 	function getMinorVer()
 	{
 		return $this->_iGet('iVerMinor');
 	}
-	
+
 	function setComment($sComment)
 	{
 		$this->_set('sComment', $sComment);
 	}
-	
+
 	function getComment()
 	{
 		return $this->_sGet('sComment');
 	}
-	
+
 	function setFlowApprobationInstanceId($iIdFlowApprobationInstance)
 	{
 		$this->_set('iIdFlowApprobationInstance', $iIdFlowApprobationInstance);
 	}
-	
+
 	function getFlowApprobationInstanceId()
 	{
 		return $this->_iGet('iIdFlowApprobationInstance');
 	}
-	
+
 	function setConfirmed($sConfirmed)
 	{
 		$this->_set('sConfirmed', $sConfirmed);
 	}
-	
+
 	function getConfirmed()
 	{
 		return $this->_sGet('sConfirmed');
 	}
-		
+
 	function setStatusIndex($iIndexStatus)
 	{
 		$this->_set('iIndexStatus', $iIndexStatus);
 	}
-	
+
 	function getStatusIndex()
 	{
 		return $this->_iGet('iIndexStatus');
 	}
-	
+
 	function save()
 	{
 		$oFolderFileVersionSet = new BAB_FolderFileVersionSet();
@@ -2845,77 +2889,77 @@ class BAB_FolderFileLog extends BAB_DbRecord
 	{
 		parent::BAB_DbRecord();
 	}
-	
+
 	function setId($iId)
 	{
 		$this->_set('iId', $iId);
 	}
-	
+
 	function getId()
 	{
 		return $this->_iGet('iId');
 	}
-	
+
 	function setIdFile($iId)
 	{
 		$this->_set('iIdFile', $iId);
 	}
-	
+
 	function getIdFile()
 	{
 		return $this->_iGet('iIdFile');
 	}
-	
+
 	function setCreationDate($sDate)
 	{
 		$this->_set('sCreationDate', $sDate);
 	}
-	
+
 	function getCreationDate()
 	{
 		return $this->_sGet('sCreationDate');
 	}
-	
+
 	function setAuthorId($iIdAuthor)
 	{
 		$this->_set('iIdAuthor', $iIdAuthor);
 	}
-	
+
 	function getAuthorId()
 	{
 		return $this->_iGet('iIdAuthor');
 	}
-	
+
 	function setAction($iAction)
 	{
 		$this->_set('iAction', $iAction);
 	}
-	
+
 	function getAction()
 	{
 		return $this->_iGet('iAction');
 	}
-	
+
 	function setComment($sComment)
 	{
 		$this->_set('sComment', $sComment);
 	}
-	
+
 	function getComment()
 	{
 		return $this->_sGet('sComment');
 	}
-	
+
 	function setVersion($sVersion)
 	{
 		$this->_set('sVersion', $sVersion);
 	}
-	
+
 	function getVersion()
 	{
 		return $this->_sGet('sVersion');
 	}
-	
+
 	function save()
 	{
 		$oFolderFileLogSet = new BAB_FolderFileLogSet();
@@ -2930,47 +2974,47 @@ class BAB_FolderFileFieldValue extends BAB_DbRecord
 	{
 		parent::BAB_DbRecord();
 	}
-	
+
 	function setId($iId)
 	{
 		$this->_set('iId', $iId);
 	}
-	
+
 	function getId()
 	{
 		return $this->_iGet('iId');
 	}
-	
+
 	function setIdFile($iId)
 	{
 		$this->_set('iIdFile', $iId);
 	}
-	
+
 	function getIdFile()
 	{
 		return $this->_iGet('iIdFile');
 	}
-	
+
 	function setIdField($iIdField)
 	{
 		$this->_set('iIdField', $iIdField);
 	}
-	
+
 	function getIdField()
 	{
 		return $this->_iGet('iIdField');
 	}
-	
+
 	function setValue($sValue)
 	{
 		$this->_set('sValue', $sValue);
 	}
-	
+
 	function getValue()
 	{
 		return $this->_sGet('sValue');
 	}
-	
+
 	function save()
 	{
 		$oFolderFileFieldValueSet = new BAB_FolderFileFieldValueSet();
@@ -2987,55 +3031,55 @@ class BAB_FmFolderHelper
 {
 	function BAB_FmFolderHelper()
 	{
-		
+
 	}
-	
+
 	function getFmFolderById($iId)
 	{
 		$oFmFolderSet = new BAB_FmFolderSet();
-		$oId =& $oFmFolderSet->aField['iId']; 
+		$oId =& $oFmFolderSet->aField['iId'];
 		return $oFmFolderSet->get($oId->in($iId));
 	}
-	
+
 	function getFileInfoForCollectiveDir($iIdFolder, $sPath, &$iIdOwner, &$sRelativePath)
 	{
 		$bSuccess = true;
-		
+
 		$oFmFolder = BAB_FmFolderHelper::getFmFolderById($iIdFolder);
 		if(!is_null($oFmFolder))
 		{
 			//If the method getRelativePath return an empty string so this is a root folder
 			$iIdOwner = $oFmFolder->getId();
 			$sRelativePath = (strlen(trim($oFmFolder->getRelativePath())) === 0) ? $oFmFolder->getName() . '/' : '';
-			
+
 			$iLength = strlen(trim($sPath));
 			if($iLength > 0)
 			{
 				$sRelativePath .= $oFmFolder->getRelativePath() . $sPath . (($sPath{$iLength - 1} !== '/') ? '/' : '');
-				
+
 				$oFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($sRelativePath);
 				if(!is_null($oFmFolder))
 				{
 					$iIdOwner = $oFmFolder->getId();
 				}
-				else 
+				else
 				{
 					$bSuccess = false;
 				}
 			}
 		}
-		else 
+		else
 		{
 			$bSuccess = false;
 		}
-		
+
 		return $bSuccess;
 	}
-	
+
 	function getUploadPath()
 	{
 		$iLength = strlen(trim($GLOBALS['babUploadPath']));
-		if($iLength > 0)			
+		if($iLength > 0)
 		{
 			$sUploadPath = $GLOBALS['babUploadPath'];
 			if('/' !== $sUploadPath{$iLength - 1})
@@ -3051,17 +3095,17 @@ class BAB_FmFolderHelper
 	{
 		return "U" . $iIdUser . '/';
 	}
-	
+
 	function accessValidForUserDir($iIdUser)
 	{
 		global $babBody, $BAB_SESS_USERID;
 		return ($BAB_SESS_USERID == $iIdUser && $babBody->ustorage);
 	}
-	
+
 	function accessValidForCollectiveDir($iIdFolder)
 	{
 		global $babBody, $BAB_SESS_USERID, $aclfm;
-		
+
 		$iCount = count($babBody->aclfm['id']);
 		for($i = 0; $i < $iCount; $i++)
 		{
@@ -3077,16 +3121,16 @@ class BAB_FmFolderHelper
 	{
 		global $babBody;
 		$bSuccess = true;
-			
+
 		$sUplaodPath = realpath($sUplaodPath);
-		
+
 		if(strlen(trim($sFullPathName)) > 0 && false === strstr($sFullPathName, '..'))
 		{
 			if(isset($GLOBALS['babFileNameTranslation']))
 			{
 				$sFullPathName = strtr($sFullPathName, $GLOBALS['babFileNameTranslation']);
 			}
-		
+
 			if(!is_dir($sFullPathName))
 			{
 				$bSuccess = bab_mkdir($sFullPathName, $GLOBALS['babMkdirMode']);
@@ -3097,52 +3141,52 @@ class BAB_FmFolderHelper
 				$bSuccess = false;
 			}
 		}
-		else 
+		else
 		{
 			$babBody->msgerror = bab_translate("Please give a valid directory name");
 			$bSuccess = false;
 		}
 		return $bSuccess;
-	}	
-	
+	}
+
 	function renameDirectory($sUploadPath, $sRelativePath, $sOldName, $sNewName)
 	{
 		global $babBody;
 		$bSuccess = true;
-		
+
 		$bOldNameValid = (strlen(trim($sOldName)) > 0);
 		$bNewNameValid = (strlen(trim($sNewName)) > 0 && false === strstr($sNewName, '..'));
-		
+
 		if($bOldNameValid && $bNewNameValid)
 		{
 			$sOldPathName = '';
 			$sNewPathName = '';
-			
+
 			//$sRelativePath est vide si c'est un repertoire à la racine du répertoire d'upload
-			
+
 			$sUploadPath = realpath($sUploadPath);
 			if(strlen(trim($sRelativePath)) > 0)
 			{
 				$sPathName		= realpath($sUploadPath . '/' . $sRelativePath);
 				$sOldPathName	= realpath($sPathName . '/' . $sOldName);
-//				bab_debug('*** sUploadPath ==> ' . $sUploadPath);
-//				bab_debug('*** sRelativePath ==> ' . $sRelativePath);
-//				bab_debug('*** sPathName ==> ' . $sPathName);
+				//				bab_debug('*** sUploadPath ==> ' . $sUploadPath);
+				//				bab_debug('*** sRelativePath ==> ' . $sRelativePath);
+				//				bab_debug('*** sPathName ==> ' . $sPathName);
 				$sNewPathName	= $sPathName . '/' . $sNewName;
 			}
-			else 
+			else
 			{
 				$sOldPathName	= realpath($sUploadPath . '/' . $sOldName);
 				$sNewPathName	= $sUploadPath . '/' . $sNewName;
 			}
-			
-//			bab_debug('sUploadPath ==> ' . $sUploadPath);
-//			bab_debug('sRelativePath ==> ' . $sRelativePath);
-//			bab_debug('sOldPathName ==> ' . $sOldPathName);
-//			bab_debug('sNewPathName ==> ' . $sNewPathName);
+
+			//			bab_debug('sUploadPath ==> ' . $sUploadPath);
+			//			bab_debug('sRelativePath ==> ' . $sRelativePath);
+			//			bab_debug('sOldPathName ==> ' . $sOldPathName);
+			//			bab_debug('sNewPathName ==> ' . $sNewPathName);
 
 			$bOldPathNameValid = (substr($sOldPathName, 0, strlen($sUploadPath)) === $sUploadPath);
-	
+
 			if($bOldPathNameValid)
 			{
 				if(is_writable($sOldPathName))
@@ -3151,57 +3195,57 @@ class BAB_FmFolderHelper
 					{
 						$bSuccess = rename($sOldPathName, $sNewPathName);
 					}
-					else 
+					else
 					{
 						$babBody->msgerror = bab_translate("This folder already exists");
 						$bSuccess = false;
 					}
 				}
-				else 
+				else
 				{
 					$babBody->msgerror = bab_translate("This folder does not exists");
 					$bSuccess = false;
 				}
 			}
-			else 
+			else
 			{
 				$babBody->msgerror = bab_translate("Access denied 3");
 				$bSuccess = false;
 			}
 		}
-		else 
+		else
 		{
 			$babBody->msgerror = bab_translate("Access denied 6");
 			$bSuccess = false;
 		}
 		return $bSuccess;
 	}
-	
-	
+
+
 	function updateSubFolderPathName($sUploadPath, $sRelativePath, $sOldName, $sNewName)
 	{
-//		bab_debug(__FUNCTION__);
-//		bab_debug('sUploadPath ==> ' . $sUploadPath);
-//		bab_debug('sRelativePath ==> ' . $sRelativePath);
-//		bab_debug('sOldName ==> ' . $sOldName);
-//		bab_debug('sNewName ==> ' . $sNewName);
-		
+		//		bab_debug(__FUNCTION__);
+		//		bab_debug('sUploadPath ==> ' . $sUploadPath);
+		//		bab_debug('sRelativePath ==> ' . $sRelativePath);
+		//		bab_debug('sOldName ==> ' . $sOldName);
+		//		bab_debug('sNewName ==> ' . $sNewName);
+
 		if(BAB_FmFolderHelper::renameDirectory($sUploadPath, $sRelativePath, $sOldName, $sNewName))
 		{
 			$sOldRelativePath = $sRelativePath . $sOldName . '/';
 			$sNewRelativePath = $sRelativePath . $sNewName . '/';
-			
-//			bab_debug('sOldRelativePath ==> ' . $sOldRelativePath);
-//			bab_debug('sNewRelativePath ==> ' . $sNewRelativePath);
-			
+
+			//			bab_debug('sOldRelativePath ==> ' . $sOldRelativePath);
+			//			bab_debug('sNewRelativePath ==> ' . $sNewRelativePath);
+
 			global $babDB;
 			$oFmFolderSet = new BAB_FmFolderSet();
-			$oRelativePath =& $oFmFolderSet->aField['sRelativePath']; 
+			$oRelativePath =& $oFmFolderSet->aField['sRelativePath'];
 			$oFmFolderSet = $oFmFolderSet->select($oRelativePath->like($babDB->db_escape_like($sOldRelativePath) . '%'));
 			while(null !== ($oFmFolder = $oFmFolderSet->next()))
 			{
 				$sRelPath = $sNewRelativePath . substr($oFmFolder->getRelativePath(), strlen($sOldRelativePath));
-//				bab_debug('sRelPath ==> ' . $sRelPath);
+				//				bab_debug('sRelPath ==> ' . $sRelPath);
 				$oFmFolder->setRelativePath($sRelPath);
 				$oFmFolder->save();
 			}
@@ -3214,7 +3258,7 @@ class BAB_FmFolderHelper
 
 function getUrlPath($sRelativePath)
 {
-	$sPathName = '';				
+	$sPathName = '';
 	$aPath = explode('/', $sRelativePath);
 	if(is_array($aPath))
 	{
@@ -3222,7 +3266,7 @@ function getUrlPath($sRelativePath)
 		if($iCount >= 2)
 		{
 			unset($aPath[0]);
-			
+
 			if(count($aPath) > 0)
 			{
 				$sPathName = implode('/', $aPath);
