@@ -1962,29 +1962,23 @@ class BAB_FmFolderSet extends BAB_BaseSet
 	{
 		if(is_a($oFmFolder, 'BAB_FmFolder'))
 		{
-			$oFolderFileSet = new BAB_FolderFileSet();
-			
-			if(strlen(trim($oFmFolder->getRelativePath())) > 0 && true === $bDbRecordOnly)
-			{
-				$oFirstFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($oFmFolder->getRelativePath());
-				$sPathName = $oFmFolder->getRelativePath() . $oFmFolder->getName() . '/';
-				$oFolderFileSet->setOwnerId($sPathName, $oFmFolder->getId(), $oFirstFmFolder->getId());
-			}
-
 			require_once $GLOBALS['babInstallPath'].'admin/acl.php';
 			aclDeleteGroup(BAB_FMUPLOAD_GROUPS_TBL, $oFmFolder->getId());
 			aclDeleteGroup(BAB_FMDOWNLOAD_GROUPS_TBL, $oFmFolder->getId());
 			aclDeleteGroup(BAB_FMUPDATE_GROUPS_TBL, $oFmFolder->getId());
 			aclDeleteGroup(BAB_FMMANAGERS_GROUPS_TBL, $oFmFolder->getId());
 
-			if(false === $bDbRecordOnly)
+			if(true === $bDbRecordOnly)
 			{
-				global $babDB;
-				$oPathName =& $oFolderFileSet->aField['sPathName'];
-				$oFolderFileSet->remove($oPathName->like($babDB->db_escape_like($oFmFolder->getRelativePath() . $oFmFolder->getName() . '/') . '%'));
-			}
-			else
-			{
+				$oFolderFileSet = new BAB_FolderFileSet();
+				
+				if(strlen(trim($oFmFolder->getRelativePath())) > 0)
+				{
+					$oFirstFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($oFmFolder->getRelativePath());
+					$sPathName = $oFmFolder->getRelativePath() . $oFmFolder->getName() . '/';
+					$oFolderFileSet->setOwnerId($sPathName, $oFmFolder->getId(), $oFirstFmFolder->getId());
+				}
+				
 				$sUploadPath = BAB_FmFolderHelper::getUploadPath();
 
 				$oIdOwner =& $oFolderFileSet->aField['iIdOwner'];
@@ -2010,9 +2004,12 @@ class BAB_FmFolderSet extends BAB_BaseSet
 					$oFolderFile->save();
 				}
 			}
-			
-			if(false === $bDbRecordOnly)
+			else if(false === $bDbRecordOnly)
 			{
+				global $babDB;
+				$oPathName =& $oFolderFileSet->aField['sPathName'];
+				$oFolderFileSet->remove($oPathName->like($babDB->db_escape_like($oFmFolder->getRelativePath() . $oFmFolder->getName() . '/') . '%'));
+				
 				$sFullPathNane = BAB_FmFolderHelper::getUploadPath() . $oFmFolder->getRelativePath() . $oFmFolder->getName();
 				$this->remodeDir($sFullPathNane);
 			}
