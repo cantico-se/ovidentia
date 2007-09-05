@@ -365,6 +365,8 @@ class listFiles
 				$oCriteria = $oCriteria->_and($oGroup->in($this->gr));
 				$oCriteria = $oCriteria->_and($oName->in($dir_file));
 				
+//				bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__);
+				
 				$this->oFolderFileSet->select($oCriteria);
 				
 				if(0 === $this->oFolderFileSet->count())
@@ -781,9 +783,9 @@ function showDiskSpace($id, $gr, $path)
 		var $allowedspacetxt;
 		var $remainingspacetxt;
 
-
 		function temp($id, $gr, $path)
 			{
+				
 			global $babBody;
 			$this->id = $id;
 			$this->gr = $gr;
@@ -859,6 +861,7 @@ function showDiskSpace($id, $gr, $path)
 				{
 				$pathx = bab_getUploadFullPath("Y", $this->arrgrp[$i]);
 				$size = getDirSize($pathx);
+				
 				$this->diskspace = bab_toHtml(bab_formatSizeFile($size).$this->kilooctet);
 				$this->allowedspace =  bab_toHtml(bab_formatSizeFile($GLOBALS['babMaxGroupSize']).$this->kilooctet);
 				$this->remainingspace =  bab_toHtml(bab_formatSizeFile($GLOBALS['babMaxGroupSize'] - $size).$this->kilooctet);

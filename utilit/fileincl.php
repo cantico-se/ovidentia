@@ -3177,10 +3177,10 @@ class BAB_FmFolderHelper
 				$sNewPathName	= $sUploadPath . '/' . $sNewName;
 			}
 
-			//			bab_debug('sUploadPath ==> ' . $sUploadPath);
-			//			bab_debug('sRelativePath ==> ' . $sRelativePath);
-			//			bab_debug('sOldPathName ==> ' . $sOldPathName);
-			//			bab_debug('sNewPathName ==> ' . $sNewPathName);
+//						bab_debug('sUploadPath ==> ' . $sUploadPath);
+//						bab_debug('sRelativePath ==> ' . $sRelativePath);
+//						bab_debug('sOldPathName ==> ' . $sOldPathName);
+//						bab_debug('sNewPathName ==> ' . $sNewPathName);
 
 			$bOldPathNameValid = (substr($sOldPathName, 0, strlen($sUploadPath)) === $sUploadPath);
 
@@ -3290,5 +3290,193 @@ if(!function_exists('is_a'))
 		return is_subclass_of($object, $class);
 	}
 }
+
+
+class BAB_Directory
+{
+	var $sUploadPath = null;
+	var $aError = array();
+	
+	function BAB_Directory($sUploadPath = null)
+	{
+		$this->sUploadPath = $sUploadPath;
+	}
+	
+	function isValidPath($sPathname)
+	{
+		if(!is_null($this->sUploadPath))
+		{
+			$sPathname = realpath($sPathname);
+			
+			if(substr($sPathname, 0, strlen($this->sUploadPath)) == $this->sUploadPath)
+			{
+				return true;
+			}
+			else 
+			{
+				$this->aError[] = 'The base path is invalide ' . $sPathname;
+				bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __METHOD__ . ' the base path is invalide ' . $sPathname);
+			}
+			return false;
+		}
+		return true;
+	}
+	
+	function isDir($sPath)
+	{
+		return is_dir($sPath);
+	}
+	
+	function isReadable($sPath)
+	{
+		return is_readable($sPath);
+	}
+	
+	function delete($sDirName)
+	{
+		if($this->isDir($sDirName))
+		{
+			// Loop through the folder
+			$oDir = dir($sDirName);
+			while(false !== $sEntry = $oDir->read()) 
+			{
+				// Skip pointers
+				if($sEntry == '.' || $sEntry == '..') 
+				{
+					continue;
+				}
+				unlink($sDirName . '/' . $sEntry);
+			}
+		 
+			// Clean up
+			$oDir->close();
+			return rmdir($sDirName);
+		}
+	}
+	
+	function moveFile($sFpnSrc, $FpnTrg)
+	{
+		//bab_debug(__CLASS__.'::'.__FUNCTION__.' trying to move ' . $sFpnSrc . ' to ' . $FpnTrg);
+		
+		$sSrcPathname = substr($sFpnSrc, 0, (strlen($sFpnSrc) - strlen(basename($sFpnSrc))));
+		$sTrgPathname = substr($FpnTrg, 0, (strlen($FpnTrg) - strlen(basename($FpnTrg))));
+		
+		//bab_debug($sSrcPathname . ' ' . $sTrgPathname . ' ' . basename($sFpnSrc) . ' strlen ' . strlen(basename($sFpnSrc)));
+		
+		if($this->isValidPath($sSrcPathname))
+		{
+			if($this->isValidPath($sTrgPathname))
+			{
+				if($this->isDir($sSrcPathname))
+				{
+					if($this->isDir($sTrgPathname))
+					{
+						if($this->fileExist($sFpnSrc))
+						{
+							if(!$this->fileExist($FpnTrg))
+							{
+								return rename($sFpnSrc, $FpnTrg);
+							}
+							else 
+							{
+								$this->aError[] = 'The file ' . $FpnTrg . ' already exit';
+								bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __METHOD__ . ' The file ' . $FpnTrg . ' already exist');
+							}
+						}
+						else 
+						{
+							$this->aError[] = 'The file ' . $sFpnSrc . ' does not exist';
+							bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __METHOD__ . ' The file ' . $sFpnSrc . ' does not exist');
+						}
+					}
+					else 
+					{
+						$this->aError[] = 'The path ' . $sTrgPathname . ' is not valid';
+						bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __METHOD__ . ' The path ' . $sTrgPathname . ' is not valid');
+					}
+				}
+				else 
+				{
+					$this->aError[] = 'The path ' . $sTrgPathname . ' is not valid';
+					bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __METHOD__ . ' The path ' . $sTrgPathname . ' is not valid');
+				}
+			}
+		}
+		return false;
+	}
+	
+	function copyFile($sFpnSrc, $FpnTrg)
+	{
+		//bab_debug(__CLASS__.'::'.__FUNCTION__.' trying to copy ' . $sFpnSrc . ' to ' . $FpnTrg);
+		if($this->isValidPath($sFpnSrc))
+		{
+			if($this->isValidPath($FpnTrg))
+			{
+				if(!$this->fileExist($FpnTrg))
+				{
+					return copy($sFpnSrc, $FpnTrg);
+				}
+			}
+		}
+		return false;
+	}
+	
+	function deleteFile($sFullPathname)
+	{
+		if(file_exists($sFullPathname))
+		{
+			unlink($sFullPathname);
+		}
+	}
+	
+	function fileExist($sFullPathname)
+	{
+		return file_exists($sFullPathname);
+	}
+		
+	function encodeString($sString)
+	{
+		if(isset($GLOBALS['babFileNameTranslation']))
+		{
+			return strtr($sString, $GLOBALS['babFileNameTranslation']);
+		}
+		else
+		{
+			return $sString;
+		}
+	}
+	
+	function getDirSize($sPathName)
+	{
+		$iSize = 0;
+		
+		if($this->isDir($sPathName))
+		{
+			$oDir = dir($sPathName);
+			while(false !== $sEntry = $oDir->read()) 
+			{
+				// Skip pointers
+				if($sEntry == '.' || $sEntry == '..') 
+				{
+					continue;
+				}
+				
+				if($this->isDir($sPathName . '/' . $sEntry))
+				{
+					$iSize += $this->getDirSize($sPathName . '/' . $sEntry); 
+				}
+				else if(is_file($sPathName . '/' . $sEntry))
+				{
+					$iSize += filesize($sPathName . '/' . $sEntry); 
+				}
+			}
+			$oDir->close();
+			return $iSize;
+		}
+		return $iSize;
+	}
+}
+
+
 
 ?>
