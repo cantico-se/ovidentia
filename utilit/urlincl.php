@@ -39,7 +39,7 @@ class bab_url {
 	 */
 	function mod($url, $param, $value) {
 		$n = 0;
-		$url = preg_replace('/(&|\?)'.preg_quote($param, '/').'=[^&]+/','\\1'.$param.'='.urlencode($value),$url,1, $n);
+		$url = preg_replace('/(&|\?)'.preg_quote($param, '/').'=[^&]*/','\\1'.$param.'='.urlencode($value),$url,1, $n);
 		if (1 == $n) {
 			return $url;
 		} elseif (false === strpos($url,'?')) {
@@ -97,7 +97,7 @@ class bab_url {
 		
 		$url = $_SERVER['PHP_SELF'];
 		foreach($arr as $param) {
-			$url = bab_url::mod($url, $param, bab_rp($param));
+			$url = bab_url::mod($url, $param, (string) bab_rp($param));
 		}
 		return $url;
 	}
