@@ -188,10 +188,11 @@ class cal_monthCls extends cal_wmdbaseCls
 			
 			
 			$eventstart = bab_mktime($this->evtarr[$i]->getProperty('DTSTART'));
+			$mktime = mktime(0,0,0,$this->month, $this->mday,$this->year);
 			
-			if( date("j", $eventstart) == $this->mday 
-			&& date("n", $eventstart) == $this->month 
-			&& date("Y", $eventstart) == $this->year)
+			if( date("j", $eventstart) == date("j", $mktime) 
+			&& date("n", $eventstart) == date("n", $mktime) 
+			&& date("Y", $eventstart) == date("Y", $mktime))
 				{
 				$this->firstday = true;
 				}
