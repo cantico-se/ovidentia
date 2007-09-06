@@ -2421,6 +2421,17 @@ function confirmAddDbContact($id, $fields, $file, $tmp_file, $password1, $passwo
 			}
 		}
 
+	$res = $babDB->db_query("select id, required from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup !=0 ? 0: $babDB->db_escape_string($id))."' and id_field>'".BAB_DBDIR_MAX_COMMON_FIELDS."'");
+	while( $arr = $babDB->db_fetch_array($res))
+		{
+		$ixfield = 'babdirf'.$arr['id'];
+		if( $arr['required'] == "Y" && (!isset($fields[$ixfield]) || empty($fields[$ixfield])))
+			{
+			$babBody->msgerror = bab_translate("You must complete required fields");
+			return 0;
+			}
+		}
+	
 	$res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDS_TBL."");
 	$req = '';
 	while( $arr = $babDB->db_fetch_array($res))
