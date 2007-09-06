@@ -1804,6 +1804,10 @@ function siteUpdate_menu6($item)
 			}
 
 		}
+	else
+		{
+		$babDB->db_query("DELETE FROM ".BAB_SITES_NONWORKING_CONFIG_TBL."  where id_site='".$babDB->db_escape_string($item)."'");
+		}
 
 	bab_emptyNonWorkingDays($item);
 	}
