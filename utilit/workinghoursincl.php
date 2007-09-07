@@ -141,6 +141,11 @@ class bab_calendarPeriod {
 	 */
 	var $color;
 
+	function getColor()
+	{
+		return $this->color;
+	}
+
 	/**
 	 * @param int		$begin		timestamp
 	 * @param int		$end		timestamp

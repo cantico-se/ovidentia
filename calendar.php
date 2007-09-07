@@ -602,6 +602,8 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 				while ($this->mcals->getNextEvent($idcal, $this->from, $this->to, $calPeriod))
 					{
 					$arr = $calPeriod->getData();
+					$arr['color'] = $calPeriod->getColor();
+
 					$uid = $calPeriod->getProperty('UID');
 					
 					if (!isset($this->resevent[$uid]))
@@ -652,7 +654,7 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 					} elseif (!empty($arr['color'])) {
 						$evt['color'] = bab_toHtml($arr['color']);
 					} else {
-						$evt['color'] = '#fff';
+						$evt['color'] = 'fff';
 					}
 					
 					$evt['creator'] = isset($arr['id_creator']) && $arr['id_creator'] != $GLOBALS['BAB_SESS_USERID'] ? bab_toHtml(bab_getUserName($arr['id_creator'])) : '';
