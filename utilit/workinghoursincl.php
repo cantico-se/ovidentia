@@ -141,6 +141,11 @@ class bab_calendarPeriod {
 	 */
 	var $color;
 
+	function getColor()
+	{
+		return $this->color;
+	}
+
 	/**
 	 * @param int		$begin		timestamp
 	 * @param int		$end		timestamp
@@ -678,7 +683,6 @@ class bab_userWorkingHours {
 		$test_end = $this->end->getTimeStamp();
 		
 		
-
 		foreach($this->boundaries as $ts => $events) {
 
 			// toutes les personnes disponibles
@@ -686,8 +690,11 @@ class bab_userWorkingHours {
 			$working_period = false;
 			
 			
+
 			// supprimer les utilisateurs pas dispo de la liste pour le boundary
+
 			foreach($events as $event) {
+
 				if ($event->ts_end > $test_begin && $event->ts_begin < $test_end) {
 					
 					$data = $event->getData();
@@ -727,9 +734,13 @@ class bab_userWorkingHours {
 			$boundary_free_for_all = 0 === count($users_non_available) && $working_period;
 			
 
+
 			// bab_debug($ts.' -- '.bab_shortDate($ts).' --> '.$current.' -- count users_non_available : '.count($users_non_available));
 
+
+
 			if (!$boundary_free_for_all && NULL !== $previous) {
+			
 			
 				// au moins 1 evenement pas dispo dans le boundary, fermer la periode de dispo
 			
@@ -743,18 +754,16 @@ class bab_userWorkingHours {
 				//bab_debug('non-free '.bab_shortDate($ts));
 			}
 
+
 			if ($boundary_free_for_all && NULL === $previous) {
 				// tout les utilisateurs sont dispo sur tout les evenements du boundary, démarrer la periode de dispo
 				$previous = $ts; 
 				//bab_debug('free '.bab_shortDate($ts));
-				
 			}
 		}
 		
 		
 
-	
-		
 		if (1 === count($periods) && isset($periods[$test_begin.'.'.$test_end])) {
 			$period_availability = true;
 		} else {
