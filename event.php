@@ -1452,9 +1452,9 @@ function eventAvariabilityCheck(&$avariability_message)
 
 	// events tests
 	$mcals = & new bab_mcalendars($sdate, $edate, $calid);
+	$GLOBALS['avariability'] = array();
 	while ($cal = current($mcals->objcals)) 
 		{
-		$GLOBALS['avariability'] = array();
 		$arr = array();
 		$cal->getEvents($sdate, $edate, $arr);
 		foreach ($arr as $calPeriod)
