@@ -1330,7 +1330,7 @@ if( !$topics && count($babBody->topview) > 0)
 	$topics = $rr[0];
 	}
 
-if( $topics === false || !isset($babBody->topview[$topics]) )
+if( $topics === false || (!isset($babBody->topview[$topics]) && !isset($babBody->topmod[$topics])))
 	{
 	$babBody->msgerror = bab_translate("Access denied");
 	$idx = 'denied';
