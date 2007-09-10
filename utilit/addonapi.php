@@ -579,7 +579,7 @@ function bab_isMemberOfGroup($group, $userid="")
 	if (is_numeric($group)) {
 		$id_group = $group;
 	} else {
-		$req = "select id from ".BAB_GROUPS_TBL." where name='".$babDB->db_escape_string($groupname)."'";
+		$req = "select id from ".BAB_GROUPS_TBL." where name='".$babDB->db_escape_string($group)."'";
 		$res = $babDB->db_query($req);
 		if( $res && $babDB->db_num_rows($res) > 0)
 			{
