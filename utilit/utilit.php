@@ -1378,6 +1378,7 @@ function bab_updateUserSettings()
 		$res = $babDB->db_query("select id_user, id_substitute from ".BAB_USERS_UNAVAILABILITY_TBL." where curdate() between start_date and end_date");
 		if( $res && $babDB->db_num_rows($res) > 0 )
 			{
+			unset($_SESSION['bab_waitingApprobations'][$BAB_SESS_USERID]);
 			include_once $GLOBALS['babInstallPath'].'utilit/ocapi.php';
 			$superiors = array();
 			$entities = bab_OCGetUserEntities($BAB_SESS_USERID);
