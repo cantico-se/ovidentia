@@ -1242,7 +1242,7 @@ function createBasketDashboard($basketId, $start, $end)
 				$sql .= ' GROUP BY article.id';
 				$articles = $babDB->db_query($sql);
 				$article = $babDB->db_fetch_array($articles);
-				$dashboard->addRow(getArticleTopicsDashboardRow($article, $start, $end, $sqlDateFormat));
+				$dashboard->addRow(getArticlesDashboardRow($article, $start, $end, $sqlDateFormat));
 				break;
 
 			case BAB_STAT_BCT_FOLDER:	// Collective folders
