@@ -637,11 +637,11 @@ function getWaitingApprobations($iduser, $update=false)
 				$add = false;
 
 				list($type) = $babDB->db_fetch_row($babDB->db_query("select satype from ".BAB_FLOW_APPROVERS_TBL." where id='".$babDB->db_escape_string($rr['idsch'][$k])."'"));
-				if( $type != 1 && in_array($arrsub[$i], $babBody->substitutes[0]))
+				if( $type == 1 && in_array($arrsub[$i], $babBody->substitutes[1]))
 				{
 					$add = true;
 				}
-				elseif( in_array($arrsub[$i], $babBody->substitutes[1]) )
+				elseif( in_array($arrsub[$i], $babBody->substitutes[0]) )
 				{
 					$add = true;
 				}
