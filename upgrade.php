@@ -2190,8 +2190,33 @@ function upgrade583to584()
 			return $res;
 		}
 		
-		require_once($GLOBALS['babInstallPath'] . 'utilit/workinghoursincl.php');
-		bab_createDefaultWorkingHours(0);
+		//require_once($GLOBALS['babInstallPath'] . 'utilit/workinghoursincl.php');
+		//bab_createDefaultWorkingHours(0);
+
+		// sites
+		$res = $db->db_query("select workdays from ".BAB_SITES_TBL." WHERE name=".$db->quote($GLOBALS['babSiteName']));
+		while( $arr = $db->db_fetch_array($res))
+		{
+			$awd = explode(',',$arr['workdays']);
+			foreach($awd as $d) 
+				{
+				$db->db_query("INSERT INTO ".BAB_WORKING_HOURS_TBL."( weekDay, idUser,  startHour, endHour) VALUES (".$db->quote($d).",'0', '00:00:00', '24:00:00')");
+				}
+			
+		}
+
+		// users 
+		$res = $db->db_query("select id_user, workdays, start_time, end_time from ".BAB_CAL_USER_OPTIONS_TBL."");
+		while( $arr = $db->db_fetch_array($res))
+		{
+			$awd = explode(',',$arr['workdays']);
+			foreach($awd as $d) 
+				{
+				$db->db_query("INSERT INTO ".BAB_WORKING_HOURS_TBL."( weekDay, idUser,  startHour, endHour) VALUES (".$db->quote($d).",'".$arr['id_user']."', '".$arr['start_time']."', '".$arr['end_time']."')");
+				}
+			
+		}
+
 	}
 	
 	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_NOTICE_TBL . '\''));
@@ -2786,12 +2811,12 @@ function upgrade601to602()
 	// working days
 	
 	
-	function setUserWd($id_user, $WDStr) {
+	function setUserWd($id_user, $WDStr, $starttime, $endtime) {
 		$awd = explode(',',$WDStr);
 
 		$db = &$GLOBALS['babDB'];
 		foreach($awd as $d) {
-			$db->db_query("INSERT INTO ".BAB_WORKING_HOURS_TBL."( weekDay, idUser,  startHour, endHour) VALUES (".$db->quote($d).','.$db->quote($id_user).", '00:00:00', '24:00:00')");
+			$db->db_query("INSERT INTO ".BAB_WORKING_HOURS_TBL."( weekDay, idUser,  startHour, endHour) VALUES (".$db->quote($d).','.$db->quote($id_user).", '".$starttime."', '".$endtime."')");
 		}
 	}
 	
@@ -2802,23 +2827,24 @@ function upgrade601to602()
 
 		$res = $db->db_query("SELECT workdays FROM ".BAB_SITES_TBL." WHERE name=".$db->quote($GLOBALS['babSiteName']));
 		$arr = $db->db_fetch_assoc($res);
-		setUserWd(0, $arr['workdays']);
+		setUserWd(0, $arr['workdays'], '00:00:00', '24:00:00');
 	}
 	
 	if (bab_isTableField(BAB_CAL_USER_OPTIONS_TBL, 'workdays')) {
 		$db->db_query("DELETE FROM ".BAB_WORKING_HOURS_TBL." WHERE idUser>'0'");
 		
-		$res = $db->db_query("SELECT id_user, workdays FROM ".BAB_CAL_USER_OPTIONS_TBL." WHERE workdays<>".$db->quote($arr['workdays']."  AND workdays<>''"));
+		$res = $db->db_query("SELECT id_user, workdays, start_time, end_time FROM ".BAB_CAL_USER_OPTIONS_TBL." WHERE workdays<>".$db->quote($arr['workdays']."  AND workdays<>''"));
 		while($arr = $db->db_fetch_assoc($res)) {
-			setUserWd($arr['id_user'], $arr['workdays']);
+			setUserWd($arr['id_user'], $arr['workdays'], $arr['start_time'],$arr['end_time']);
 		}
 	
-		if (!bab_isTableField(BAB_COMMENTS_TBL, 'id_author')) {
-	
-			$db->db_query("ALTER TABLE ".BAB_COMMENTS_TBL." ADD `id_author` INT( 11 )  UNSIGNED DEFAULT '0' NOT NULL AFTER `id_topic`");
-		}
 	}
 	
+	if (!bab_isTableField(BAB_COMMENTS_TBL, 'id_author')) {
+
+		$db->db_query("ALTER TABLE ".BAB_COMMENTS_TBL." ADD `id_author` INT( 11 )  UNSIGNED DEFAULT '0' NOT NULL AFTER `id_topic`");
+	}
+
 	return $ret;
 }
 
@@ -3280,7 +3306,28 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	// event registration for editor core functionalities
 	bab_addEventListener('bab_eventEditorFunctions'			, 'bab_onEditorFunctions'		, 'utilit/editorincl.php');
 	
-	
+	$res = $babDB->db_query("SELECT  distinct weekDay FROM ".BAB_WORKING_HOURS_TBL." WHERE idUser ='0'");
+	$wdays = array();
+
+	while( $arr = $babDB->db_fetch_array($res))
+	{
+		$wdays[] = $arr['weekDay'];
+	}
+
+	// users 
+	$res = $babDB->db_query("select id_user, start_time, end_time from ".BAB_CAL_USER_OPTIONS_TBL."");
+	while( $arr = $babDB->db_fetch_array($res))
+	{
+		$rs = $babDB->db_query("select id from ".BAB_WORKING_HOURS_TBL." where idUser='".$arr['id_user']."'");
+		if( !$rs || $babDB->db_num_rows($rs) == 0 )
+		{
+			for( $k=0; $k < count($wdays); $k++ )
+			{
+				$babDB->db_query("INSERT INTO ".BAB_WORKING_HOURS_TBL."( weekDay, idUser,  startHour, endHour) VALUES ('".$wdays[$k]."','".$arr['id_user']."', '".$arr['start_time']."', '".$arr['end_time']."')");
+			}
+		}
+	}
+
 	
 	return true;
 	
