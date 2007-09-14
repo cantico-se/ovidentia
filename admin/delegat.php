@@ -626,7 +626,7 @@ switch($idx)
 	case "acl":
 		include_once $babInstallPath.'admin/acl.php';
 		$babBody->title = bab_translate("ACL delegation");
-		$macl = new macl("delegat", "Modify", $id, "aclupdate");
+		$macl = new macl("delegat", "Modify", $id, "aclupdate", false);
         $macl->addtable( BAB_DG_ACL_GROUPS_TBL,bab_translate("ACL to use with this delegation"));
         $macl->babecho();
 		$babBody->addItemMenu("list", bab_translate("Delegations"), $GLOBALS['babUrlScript']."?tg=delegat&idx=list");

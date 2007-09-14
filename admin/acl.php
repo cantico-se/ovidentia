@@ -41,7 +41,7 @@ class macl
 	var $sHiddenFieldName = '';
 	var $sHiddenFieldValue = '';
 		
-	function macl($target, $index,$id_object, $return, $bsetofgroups='')
+	function macl($target, $index,$id_object, $return, $bsetofgroups=true)
 		{
 		global $babBody, $babDB;
 		$this->target = &$target;
