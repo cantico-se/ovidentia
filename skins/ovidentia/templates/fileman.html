@@ -118,221 +118,261 @@ function remove_field()
 <table width="98%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
 <td align="center" valign="top" class="BabSiteAdminFontBackground"> 
-<table border="0" width="100%" cellpadding="4" cellspacing="0" align="center">
-	<tr>
-		<td align="left" valign="middle" class="BabsiteFileCurentFolder" >
-		<img src="{ babSkinPath }images/Puces/folder.gif" alt="" border="0" /> 
-                  : { rootpath }/{ path }&nbsp;<a href="{ rooturl }"><img src="{ babSkinPath }images/Puces/root.gif" border="0" alt="{ root }"  /></a>&nbsp;<a href="{ refreshurl }"><img src="{ babSkinPath }images/Puces/refresh.gif" alt="{ 
-            refresh }" border="0" /></a>
-       	</td>
-	</tr>
-</table>
+	<table border="0" width="100%" cellpadding="4" cellspacing="0" align="center">
+		<tr>
+			<td align="left" valign="middle" class="BabsiteFileCurentFolder" >
+				<img src="{ babSkinPath }images/Puces/folder.gif" alt="" border="0" /> 
+	                  : { sRootFolderPath }{ path }&nbsp;<a href="{ rooturl }"><img src="{ babSkinPath }images/Puces/root.gif" border="0" alt="{ root }"  /></a>&nbsp;<a href="{ refreshurl }"><img src="{ babSkinPath }images/Puces/refresh.gif" alt="{ 
+	            refresh }" border="0" /></a><!--#if bmanager -->&nbsp;<a href="{ sFolderFormUrl }" title="{ sFolderFormAdd }"><img src="{ babSkinPath }images/Puces/folder_add.png" border="0" alt="{ sFolderFormAdd }"  /></a><!--#endif bmanager -->
+	       	</td>
+		</tr>
+	</table>
 
-<table  width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-          <td class="BabLoginCadreBackground" align="center"> 
-		  <table  width="100%" border="0" cellspacing="0" cellpadding="3" align="center">
-              <tr class="BabSiteAdminTitleFontBackground"> 
-                <td colspan="2" align="center">{ nametxt }</td>
-                <td>&nbsp;</td>
-                <td>{ sizetxt }</td>
-                <td align="center">{ modifiedtxt }</td>
-                <td align="center">{ postedtxt }</td>
-                <td width="1%">&nbsp;</td>
-                 <!--#if bmanager -->
-                <td width="1%">{ hitstxt }</td>
-                <!--#endif bmanager -->
-              </tr>
-            <!--#in getnextgrpdir -->
-            <!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
-              <td width="1%" align="center"> 
-                  <!--#if ma -->
-				  { manfolderimg }
-				   <!--#else ma -->
-				  { grpfolderimg }
-				   <!--#endif ma -->
-				  </td>
-                <td align="left"><a href="{ url }">{ name }</a></td>
-                <td colspan="6">&nbsp;</td>
-              </tr>
-              <!--#endin getnextgrpdir -->
-			  <!--#in getnextdir -->
-              <tr class="BabSiteAdminFontBackground"> 
-                <td width="1%" align="center"> 
-                  <!--#if name "== . ." -->
-                  { upfolderimg }
-                  <!--#else name -->
-                  { usrfolderimg }
-                  <!--#endif name -->
-                </td>
-                <td><a href="{ url }">{ name }</a></td>
-                <td colspan="6">&nbsp;</td>
-               </tr>
-              <!--#endin getnextdir -->
-              
-              
-            <!--#in getnextfile -->
-            <!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
-                <td width="1%" align="center">{ fileimage }</td>
-                <td><a href="{ viewurl }" onclick="bab_popup(this.href,4);return false;">{ name }</a>
-                  <!--#if bmanager -->
-                  <!--#if bconfirmed "== 1" -->
-                  <a href="{ viewurl }" onclick="bab_popup(this.href,4);return false;"><img src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" border="0" align="middle"></a> 
-                  <!--#endif bconfirmed -->
-                  <!--#endif bmanager -->
-                </td>
-                <td>
-                  <!--#if readonly -->
-                  <img src="{ babSkinPath }images/Puces/readonly.gif" alt="{ altreadonly }" border="0" align="middle" />
-				  <!--#else readonly -->
-                  <!--#if bversion -->
-				<!--#if bdownload -->
-					<a href="{ ovfversurl }" onclick="bab_popup(this.href,4);return false;">{ lastversion }</a>
-				<!--#endif bdownload -->
-				<!--#if bupdate -->
-				  <a href="{ ovfhisturl }" onclick="bab_popup(this.href,4);return false;" title="{ altfilelog }">
-				  <img src="{ babSkinPath }images/Puces/FileLog.gif" alt="{ altfilelog }" border="0" align="middle" />
-				  </a>
-                  <!--#if block -->
-                  <!--#if blockauth -->
-				  <a href="{ ovfurl }" onclick="bab_popup(this.href,4);return false;" title="{ altfileunlock }">
-				  <img src="{ babSkinPath }images/Puces/FileLock.gif" alt="{ altfileunlock }" border="0" align="middle" />
-				  </a>
-                  <!--#else blockauth -->
-                  <!--#if bmanager -->
-				  <a href="{ ovfurl }" onclick="bab_popup(this.href,4);return false;" title="{ altfileunlock }">
-				  <img src="{ babSkinPath }images/Puces/FileLock.gif" alt="{ altfileunlock }" border="0" align="middle" />
-                  <!--#else bmanager -->
-				  <img src="{ babSkinPath }images/Puces/FileLock.gif" alt="{ altfilelock }" border="0" align="middle" />
-                  <!--#endif bmanager -->
-                  <!--#endif blockauth -->
-                  <!--#else block -->
-				  <a href="{ ovfurl }" onclick="bab_popup(this.href,4);return false;" title="{ altfilelock }">
-				  <img src="{ babSkinPath }images/Puces/FileUnlock.gif" alt="{ altfilelock }" border="0" align="middle" />
-				  </a>
-                  <!--#endif block -->				  	
-                  <!--#if bfvwait -->
-				  <a href="{ ovfcommiturl }" onclick="bab_popup(this.href,4);return false;" title="{ altfilewrite }">
-				  <img src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" alt="{ altfilewrite }" border="0" align="middle" />
-				  </a>
-                  <!--#else bfvwait -->
-                  <!--#if blockauth -->
-				  <a href="{ ovfcommiturl }" onclick="bab_popup(this.href,4);return false;" title="{ altfilewrite }">
-				  <img src="{ babSkinPath }images/Puces/FileWrite.gif" alt="{ altfilewrite }" border="0" align="middle" />
-				  </a>
-                  <!--#endif blockauth -->
-                  <!--#endif bfvwait -->
-					<!--#endif bupdate -->
-				  <!--#endif bversion -->
-                  <!--#endif readonly -->
-                </td>
-                <td>{ sizef }</td>
-                <td align="center">{ modified }</td>
-                <td align="center">{ postedby }</td>
-                <td align="left" nowrap="nowrap">
-				<!--#if bdownload --><a href="{ urlget }" title="{ download }"><img src="{ babSkinPath }images/Puces/download.gif" alt="{ download }" border="0" align="middle" /></a>&nbsp;<!--#endif bdownload -->
-				<!--#if bmanager --><a href="{ cuturl }" title="{ cuttxt }"><img src="{ babSkinPath }images/Puces/cut.gif" alt="{ cuttxt }" border="0" align="middle" /></a>&nbsp;<a href="{ delurl }" title="{ deltxt }"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deltxt }" border="0" align="middle" /></a><!--#endif bmanager -->
-				</td><!--#if bmanager --><td align="center">{ hits }</td><!--#endif bmanager -->
-            </tr>
-            <!--#endin getnextfile -->
-              
-			<!--#in getnextwfile -->
-			<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
-				<td width="1%">{ fileimage }</td>
-				<td>
-					<a href="{ viewurl }" onclick="bab_popup(this.href,4);return false;">{ name }</a>
-					<!--#if bconfirmed "== 1" --> 
-					<a href="{ viewurl }" onclick="bab_popup(this.href,4);return false;"><img src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" border="0" align="middle"></a>
-					<!--#endif bconfirmed -->
-				</td>
-				<td>
+	<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+		<tr> 
+			<td class="BabLoginCadreBackground" align="center"> 
+				<table  width="100%" border="0" cellspacing="0" cellpadding="3" align="center">
+					<tr class="BabSiteAdminTitleFontBackground"> 
+						<td colspan="2" align="center">{ nametxt }</td>
+						<td>&nbsp;</td>
+						<td>{ sizetxt }</td>
+						<td align="center">{ modifiedtxt }</td>
+						<td align="center">{ postedtxt }</td>
+						<td width="1%">&nbsp;</td>
+						<td width="1%">
+						<!--#if bManager -->
+							{ hitstxt }
+						<!--#endif bManager -->&nbsp;
+						</td>
+					</tr>
+					
+				<!--#if bParentUrl -->
+					<tr class="BabSiteAdminFontBackground">
+						<td width="1%" align="center">{ upfolderimg }</td>
+						<td><a href="{ sParentUrl }">{ sParent }</a></td>
+						<td colspan="4">&nbsp;</td>
+						<td width="10%">&nbsp;</td>
+						<td>&nbsp;</td>
+					</tr>
+				<!--#endif bParentUrl -->
+					
+					<!--#in getnextgrpdir -->
+				<!--#if altbg -->
+					<tr class="BabSiteAdminFontBackground">
+				<!--#else altbg -->
+					<tr class="BabForumBackground1">
+				<!--#endif altbg -->
+						<td width="1%" align="center">
+					<!--#if ma -->
+						{ manfolderimg }
+					<!--#else ma -->
+						{ grpfolderimg }
+					<!--#endif ma -->
+						</td>
+						<td align="left"><a href="{ url }">{ name }</a></td>
+						<td colspan="4">&nbsp;</td>
+						<td width="10%">
+					<!--#if bFolderFormUrl -->
+						<a href="{ sFolderFormUrl }" title="{ sFolderFormEdit }"><img src="{ babSkinPath }images/Puces/edit.png" border="0" alt="{ sFolderFormEdit }"  /></a>
+					<!--#endif bFolderFormUrl -->
+					<!--#if bRightUrl -->
+						<a href="{ sRightUrl }" title="{ sRight }"><img src="{ babSkinPath }images/Puces/access.png" border="0" alt="{ sRight }"  /></a>
+					<!--#endif bRightUrl -->
+					<!--#if bCutFolderUrl -->
+						<a href="{ sCutFolderUrl }" title="{ sCutFolder }"><img src="{ babSkinPath }images/Puces/cut.gif" alt="{ sCutFolder }" border="0" align="middle" /></a>
+					<!--#endif bCutFolderUrl -->&nbsp;
+						</td>
+						<td>&nbsp;</td>
+					</tr>
+					<!--#endin getnextgrpdir -->
+					
+					
+					<!--#in getnextdir -->
+					<tr class="BabSiteAdminFontBackground"> 
+						<td width="1%" align="center">{ usrfolderimg }</td>
+						<td><a href="{ url }">{ name }</a></td>
+						<td colspan="4">&nbsp;</td>
+						<td width="10%">
+					<!--#if bFolderFormUrl -->
+						<a href="{ sFolderFormUrl }" title="{ sFolderFormEdit }"><img src="{ babSkinPath }images/Puces/edit.png" border="0" alt="{ sFolderFormEdit }"  /></a>
+					<!--#endif bFolderUrl -->
+					<!--#if bCutFolderUrl -->
+						<a href="{ sCutFolderUrl }" title="{ sCutFolder }"><img src="{ babSkinPath }images/Puces/cut.gif" alt="{ sCutFolder }" border="0" align="middle" /></a>
+					<!--#endif bCutFolderUrl -->&nbsp;
+						</td>
+						<td>&nbsp;</td>
+					</tr>
+					<!--#endin getnextdir -->
+						
+					<!--#in getNextCuttedFolder -->
+					<tr class="BabSiteAdminFontBackground"> 
+						<td width="1%" align="center"> 
+					<!--#if bCollectiveFolder -->
+						<!--#if ma -->
+							{ manfolderimg }
+						<!--#else ma -->
+							{ grpfolderimg }
+						<!--#endif ma -->
+					<!--#else bCollectiveFolder -->
+						{ usrfolderimg }
+					<!--#endif bCollectiveFolder -->
+						</td>
+						<td><a href="{ url }">{ name }</a></td>
+						<td colspan="4">&nbsp;</td>
+						
+						<td width="10%">
+					<!--#if bRightUrl -->
+						<a href="{ sRightUrl }" title="{ sRight }"><img src="{ babSkinPath }images/Puces/access.png" border="0" alt="{ sRight }"  /></a>
+					<!--#endif bRightUrl -->
+					<!--#if bFolderFormUrl -->
+						<a href="{ sFolderFormUrl }" title="{ sFolderFormEdit }"><img src="{ babSkinPath }images/Puces/edit.png" border="0" alt="{ sFolderFormEdit }"  /></a>
+					<!--#endif bFolderUrl -->
+						<a href="{ pasteurl }"><img src="{ babSkinPath }images/Puces/paste.gif" alt="{ paste }" border="0" /></a>
+						</td>
+						<td>&nbsp;</td>
+					</tr>
+					<!--#endin getNextCuttedFolder -->
+					
+					<!--#in getnextfile -->
+				<!--#if altbg -->
+					<tr class="BabSiteAdminFontBackground">
+				<!--#else altbg -->
+					<tr class="BabForumBackground1">
+				<!--#endif altbg -->
+						<td width="1%" align="center">{ fileimage }</td>
+						<td><a href="{ viewurl }" onclick="bab_popup(this.href,4);return false;">{ name }</a>
+					<!--#if bManager -->
+						<!--#if bconfirmed "== 1" -->
+						<a href="{ viewurl }" onclick="bab_popup(this.href,4);return false;"><img src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" border="0" align="middle"></a> 
+						<!--#endif bconfirmed -->
+					<!--#endif bManager -->
+						</td>
+						<td>
+						
 					<!--#if readonly -->
-					<img src="{ babSkinPath }images/Puces/readonly.gif" alt="{ altreadonly }" border="0" align="middle" />
+						<img src="{ babSkinPath }images/Puces/readonly.gif" alt="{ altreadonly }" border="0" align="middle" />
+					<!--#else readonly -->
+						<!--#if bVersion -->
+							<!--#if bDownload -->
+						<a href="{ ovfversurl }" onclick="bab_popup(this.href,4);return false;">{ lastversion }</a>
+							<!--#endif bDownload -->
+							<!--#if bUpdate -->
+						<a href="{ ovfhisturl }" onclick="bab_popup(this.href,4);return false;" title="{ altfilelog }">
+						<img src="{ babSkinPath }images/Puces/FileLog.gif" alt="{ altfilelog }" border="0" align="middle" />
+						</a>
+								<!--#if block -->
+									<!--#if blockauth -->
+						<a href="{ ovfurl }" onclick="bab_popup(this.href,4);return false;" title="{ altfileunlock }">
+						<img src="{ babSkinPath }images/Puces/FileLock.gif" alt="{ altfileunlock }" border="0" align="middle" />
+						</a>
+									<!--#else blockauth -->
+										<!--#if bManager -->
+						<a href="{ ovfurl }" onclick="bab_popup(this.href,4);return false;" title="{ altfileunlock }">
+						<img src="{ babSkinPath }images/Puces/FileLock.gif" alt="{ altfileunlock }" border="0" align="middle" />
+										<!--#else bManager -->
+						<img src="{ babSkinPath }images/Puces/FileLock.gif" alt="{ altfilelock }" border="0" align="middle" />
+										<!--#endif bManager -->
+									<!--#endif blockauth -->
+								<!--#else block -->
+						<a href="{ ovfurl }" onclick="bab_popup(this.href,4);return false;" title="{ altfilelock }">
+						<img src="{ babSkinPath }images/Puces/FileUnlock.gif" alt="{ altfilelock }" border="0" align="middle" />
+						</a>
+								<!--#endif block -->				  	
+								<!--#if bfvwait -->
+						<a href="{ ovfcommiturl }" onclick="bab_popup(this.href,4);return false;" title="{ altfilewrite }">
+						<img src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" alt="{ altfilewrite }" border="0" align="middle" />
+						</a>
+								<!--#else bfvwait -->
+									<!--#if blockauth -->
+						<a href="{ ovfcommiturl }" onclick="bab_popup(this.href,4);return false;" title="{ altfilewrite }">
+						<img src="{ babSkinPath }images/Puces/FileWrite.gif" alt="{ altfilewrite }" border="0" align="middle" />
+						</a>
+									<!--#endif blockauth -->
+								<!--#endif bfvwait -->
+							<!--#endif bUpdate -->
+						<!--#endif bVersion -->
 					<!--#endif readonly -->
-				</td>
-				<td>
-					{ sizef } 
-				</td>
-				<td>
-					{ modified }
-				</td>
-				<td>
-					{ postedby }
-				</td>
-				<td>
-					<a href="{ urlget }"><img src="{ babSkinPath }images/Puces/download.gif" alt="{ download }" border="0" /></a>
-					<!--#if bmanager -->
-					<a href="{ cuturl }"><img src="{ babSkinPath }images/Puces/cut.gif" alt="{ cuttxt }" border="0" /></a>
-					<a href="{ delurl }"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deltxt }" border="0" /></a>
-					<!--#endif bmanager -->
-				</td>
-				<!--#if bmanager -->
-				<td>{ hits }</td>
-				<!--#endif bmanager -->
-			</tr>
-			<!--#endin getnextwfile -->	
-		  
-			<!--#in getnextxfile -->
-			<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
-              <td width="1%">{ fileimage }</td>
-              	<td>
-					<!--#if bmanager -->
-					  { name }
-					<!--#if bconfirmed "== 1" -->
-					  <a href="{ url }"><img src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" border="0" /></a> 
-					<!--#endif bconfirmed -->
-					<!--#else bmanager -->
-					  { name } 
-					<!--#endif bmanager -->
-              	</td>
-                <td>
-                </td>
-                <td>
-                	{ sizef }
-                </td>
-                <td>
-                	{ modified }
-                </td>
-                <td>
-                	{ postedby }
-                </td>
-                <td nowrap="nowrap">
-                	<!--#if bdownload -->
-                	<a href="{ urlget }"><img src="{ babSkinPath }images/Puces/download.gif" alt="{ download }" border="0" /></a>
-                	<!--#endif bdownload -->
-                	<!--#if bmanager -->
-                	<a href="{ pasteurl }"><img src="{ babSkinPath }images/Puces/paste.gif" alt="{ paste }" border="0" /></a>
-                	<!--#endif bmanager -->
-                </td>
-                <!--#if bmanager -->
-                <td>
-                </td>
-                <!--#endif bmanager -->
-              </tr>
-              <!--#endin getnextxfile -->
-            </table>
-        </td>
-</tr>
-</table>
-<!--#if bmanager -->
-<form method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="fileman" />
-<input type="hidden" name="idx" value="list" />
-<input type="hidden" name="mkdir" value="mkdir" />
-<input type="hidden" name="id" value="{ id }" />
-<input type="hidden" name="gr" value="{ gr }" />
-<input type="hidden" name="path" value="{ path }" />
-
-<table class="BabLoginMenuBackground" border="0" cellspacing="0" cellpadding="2" align="center">
-	<tr>
-		<td align="right">{ directory }</td>
-		<td><input type="text" name="dirname" size="35" value="" /></td>
-		<td><input type="submit" name="create" value="{ mkdir }" /> <input type="submit" name="rename" value="{ rename }" /><!--#if bdel --> <input type="submit" name="bdel" value="{ delete }" /><!--#endif bdel -->
-		</td>
-	</tr>
- </table>
-</form>
-
+						</td>
+						<td>{ sizef }</td>
+						<td align="center">{ modified }</td>
+						<td align="center">{ postedby }</td>
+						<td align="left" nowrap="nowrap">
+						<!--#if bDownload --><a href="{ urlget }" title="{ download }"><img src="{ babSkinPath }images/Puces/download.gif" alt="{ download }" border="0" align="middle" /></a>&nbsp;<!--#endif bDownload -->
+						<!--#if bManager --><a href="{ cuturl }" title="{ cuttxt }"><img src="{ babSkinPath }images/Puces/cut.gif" alt="{ cuttxt }" border="0" align="middle" /></a>&nbsp;<a href="{ delurl }" title="{ deltxt }"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deltxt }" border="0" align="middle" /></a><!--#endif bManager -->
+						</td>
+						<td align="center"><!--#if bManager -->{ hits }<!--#endif bManager -->&nbsp;</td>
+					</tr>
+					<!--#endin getnextfile -->
+					
+					<!--#in getnextwfile -->
+				<!--#if altbg -->
+					<tr class="BabSiteAdminFontBackground">
+				<!--#else altbg -->
+					<tr class="BabForumBackground1">
+				<!--#endif altbg -->
+						<td width="1%">{ fileimage }</td>
+						<td>
+							<a href="{ viewurl }" onclick="bab_popup(this.href,4);return false;">{ name }</a>
+						<!--#if bconfirmed "== 1" --> 
+							<a href="{ viewurl }" onclick="bab_popup(this.href,4);return false;"><img src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" border="0" align="middle"></a>
+						<!--#endif bconfirmed -->
+						</td>
+						<td>
+						<!--#if readonly -->
+							<img src="{ babSkinPath }images/Puces/readonly.gif" alt="{ altreadonly }" border="0" align="middle" />
+						<!--#endif readonly -->
+						</td>
+						<td>{ sizef }</td>
+						<td>{ modified }</td>
+						<td>{ postedby }</td>
+						<td>
+							<a href="{ urlget }"><img src="{ babSkinPath }images/Puces/download.gif" alt="{ download }" border="0" /></a>
+						<!--#if bManager -->
+							<a href="{ cuturl }"><img src="{ babSkinPath }images/Puces/cut.gif" alt="{ cuttxt }" border="0" /></a>
+							<a href="{ delurl }"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deltxt }" border="0" /></a>
+						<!--#endif bManager -->
+						</td>
+						<td>
+						<!--#if bManager -->{ hits }<!--#endif bManager -->&nbsp;
+						</td>
+					</tr>
+					<!--#endin getnextwfile -->	
+						
+					<!--#in getnextxfile -->
+					<!--#if altbg -->
+					<tr class="BabSiteAdminFontBackground">
+					<!--#else altbg -->
+					<tr class="BabForumBackground1">
+					<!--#endif altbg -->
+						<td width="1%">{ fileimage }</td>
+						<td>
+					<!--#if bManager -->
+						{ name }
+						<!--#if bconfirmed "== 1" --><a href="{ url }"><img src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" border="0" /></a><!--#endif bconfirmed -->
+					<!--#else bManager -->
+						{ name } 
+					<!--#endif bManager -->
+						</td>
+						<td>&nbsp;</td>
+						<td>{ sizef }</td>
+						<td>{ modified }</td>
+						<td>{ postedby }</td>
+						<td nowrap="nowrap">
+						<!--#if bDownload -->
+						<a href="{ urlget }"><img src="{ babSkinPath }images/Puces/download.gif" alt="{ download }" border="0" /></a>
+						<!--#endif bDownload -->
+						<!--#if bManager -->
+						<a href="{ pasteurl }"><img src="{ babSkinPath }images/Puces/paste.gif" alt="{ paste }" border="0" /></a>
+						<!--#endif bManager -->
+						</td>
+						<td><!--#if bManager --><!--#endif bManager -->&nbsp;</td>
+					</tr>
+					<!--#endin getnextxfile -->
+				</table>
+			</td>
+		</tr>
+	</table>
+<!--#if bManager -->
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
     <tr>
 		<td align="right" valign="middle">
@@ -340,9 +380,7 @@ function remove_field()
 		</td>
     </tr>
 </table>
-        
-<!--#endif bmanager -->
-
+<!--#endif bManager -->
 </td>
 </tr>
 </table>
@@ -711,3 +749,249 @@ close }</a> </td>
 <!--#end fileunload -->
 
 
+<!--#begin displayFolderForm -->
+<script type="text/javascript">
+//<![CDATA[
+function showHide()
+{
+	var oForm = document.forms.displayFolderForm;
+
+	var oType = document.getElementById('sType');
+	if(null != oType)
+	{
+		var sSimple = '{ m_datas[sSimple] }';
+		var sCollective = '{ m_datas[sCollective] }';
+		
+		if(sSimple == oType.value)
+		{
+			hide();
+		}
+		else if(sCollective == oType.value)
+		{
+			show();
+		}
+	}
+}
+
+function show(aNode)
+{
+	var aNodes = document.getElementsByClassName("showHide");
+	var iLength = aNodes.length;
+	
+	for(i = 0; i < iLength; i++) 
+	{
+	    aNodes[i].show();
+	}	
+}
+
+function hide(aNode)
+{
+	var aNodes = document.getElementsByClassName("showHide");
+	var iLength = aNodes.length;
+	
+	for(i = 0; i < iLength; i++) 
+	{
+	    aNodes[i].hide();
+	}	
+}
+//]]>
+</script>
+
+<form name="displayFolderForm" method="post" action="{ babPhpSelf }">
+	<input type="hidden" name="tg" value="{ m_datas[sTg] }" />
+	<input type="hidden" name="idx" value="{ m_datas[sIdx] }" />
+	<input type="hidden" name="sAction" value="{ m_datas[sAction] }" />
+	
+	<input type="hidden" name="iIdFolder" value="{ m_datas[iIdFolder] }" />
+	<input type="hidden" name="sOldDirName" value="{ m_datas[sOldDirName] }" />
+	<input type="hidden" name="id" value="{ m_datas[iId] }" />
+	<input type="hidden" name="path" value="{ m_datas[sPath] }" />
+	<input type="hidden" name="gr" value="{ m_datas[sGr] }" />
+
+	{ m_datas[sHtmlTable] }
+	
+</form>
+<script type="text/javascript">
+//<![CDATA[
+	var oForm = document.forms.displayFolderForm;
+	if('Y' == oForm['gr'].value)
+	{
+		showHide();
+	}
+	
+//]]>
+</script>
+<!--#end displayFolderForm -->
+
+<!--#begin collectiveDir -->
+<table border="0" width="50%" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+		<td class="BabLoginCadreBackground">
+			<table width="100%" border="0" cellspacing="2" cellpadding="5" align="center" class="BabLoginMenuBackground">
+				<tr> 
+					<td align="right">
+						{ m_captions[sType] }
+					</td>
+					<td>
+						<select name="sType" id="sType" onchange="showHide()"> 
+						<!--#if m_datas[isCollective] -->
+							<option value="{ m_datas[sSimple] }">{ m_captions[sSimple] }</option>
+							<option value="{ m_datas[sCollective] }" selected="selected">{ m_captions[sCollective] }</option>
+						<!--#else m_datas[isCollective] -->
+							<option value="{ m_datas[sSimple] }" selected="selected">{ m_captions[sSimple] }</option>
+							<option value="{ m_datas[sCollective] }">{ m_captions[sCollective] }</option>
+						<!--#endif m_datas[isCollective] -->
+						</select>
+					</td>
+				</tr>
+				<tr> 
+					<td align="right">
+						{ m_captions[sDirName] }
+					</td>
+					<td>
+						<input type="text" name="sDirName" size="25" maxlength="255" value="{ m_datas[sDirName] }" />
+					</td>
+				</tr>
+				<tr class="showHide"> 
+					<td align="right">
+						{ m_captions[sActive] }
+					</td>
+					<td>
+						<select name="sActive"> 
+						<!--#if m_datas[isActive] -->
+							<option value="{ m_datas[sYes] }" selected="selected">{ m_captions[sYes] }</option>
+							<option value="{ m_datas[sNo] }">{ m_captions[sNo] }</option>
+						<!--#else m_datas[isActive] -->
+							<option value="{ m_datas[sYes] }">{ m_captions[sYes] }</option>
+							<option value="{ m_datas[sNo] }" selected="selected">{ m_captions[sNo] }</option>
+						<!--#endif m_datas[isActive] -->
+						</select>
+					</td>
+				</tr>
+				<tr class="showHide"> 
+					<td align="right">
+						{ m_captions[sApprobationScheme] }
+					</td>
+					<td>
+						<select name="iIdApprobationScheme"> 
+							<option value="{ m_datas[iNone] }" selected="selected">{ m_captions[sNone] }</option>
+							<!--#in getNextApprobationScheme -->
+							<option value="{ m_datas[iAppSchemeId] }" { m_datas[sAppSchemeNameSelected] }>{ m_datas[iAppSchemeName] }</option>
+							<!--#endin getNextApprobationScheme -->
+						</select>
+					</td>
+				</tr>
+				<tr class="showHide"> 
+					<td align="right">
+						{ m_captions[sAutoApprobation] }
+					</td>
+					<td>
+						<select name="sAutoApprobation"> 
+						<!--#if m_datas[isAutoApprobation] -->
+							<option value="{ m_datas[sYes] }" selected="selected">{ m_captions[sYes] }</option>
+							<option value="{ m_datas[sNo] }">{ m_captions[sNo] }</option>
+						<!--#else m_datas[isAutoApprobation] -->
+							<option value="{ m_datas[sYes] }">{ m_captions[sYes] }</option>
+							<option value="{ m_datas[sNo] }" selected="selected">{ m_captions[sNo] }</option>
+						<!--#endif m_datas[isAutoApprobation] -->
+						</select>
+					</td>
+				</tr>
+				<tr class="showHide"> 
+					<td align="right">
+						{ m_captions[sNotification] }
+					</td>
+					<td>
+						<select name="sNotification"> 
+						<!--#if m_datas[isFileNotify] -->
+							<option value="{ m_datas[sYes] }" selected="selected">{ m_captions[sYes] }</option>
+							<option value="{ m_datas[sNo] }">{ m_captions[sNo] }</option>
+						<!--#else m_datas[isFileNotify] -->
+							<option value="{ m_datas[sYes] }">{ m_captions[sYes] }</option>
+							<option value="{ m_datas[sNo] }" selected="selected">{ m_captions[sNo] }</option>
+						<!--#endif m_datas[isFileNotify] -->
+						</select>
+					</td>
+				</tr>
+				<tr class="showHide"> 
+					<td align="right">
+						{ m_captions[sVersioning] }
+					</td>
+					<td>
+						<select name="sVersioning"> 
+						<!--#if m_datas[isVersioning] -->
+							<option value="{ m_datas[sYes] }" selected="selected">{ m_captions[sYes] }</option>
+							<option value="{ m_datas[sNo] }">{ m_captions[sNo] }</option>
+						<!--#else m_datas[isVersioning] -->
+							<option value="{ m_datas[sYes] }">{ m_captions[sYes] }</option>
+							<option value="{ m_datas[sNo] }" selected="selected">{ m_captions[sNo] }</option>
+						<!--#endif m_datas[isVersioning] -->
+						</select>
+					</td>
+				</tr>
+				<tr class="showHide"> 
+					<td align="right">
+						{ m_captions[sDisplay] }
+					</td>
+					<td>
+						<select name="sDisplay"> 
+						<!--#if m_datas[isShow] -->
+							<option value="{ m_datas[sNo] }" selected="selected">{ m_captions[sYes] }</option>
+							<option value="{ m_datas[sYes] }">{ m_captions[sNo] }</option>
+						<!--#else m_datas[isShow] -->
+							<option value="{ m_datas[sYes] }">{ m_captions[sYes] }</option>
+							<option value="{ m_datas[sNo] }" selected="selected">{ m_captions[sNo] }</option>
+						<!--#endif m_datas[isShow] -->
+						</select>
+					</td>
+				</tr>
+				<tr> 
+					<td colspan="2">
+						<br />
+					</td>
+				</tr>
+				<tr align="center"> 
+					<td colspan="2">
+						<input type="submit"  name="sCreateEditFolder" value="{ m_captions[sSubmit] }">
+					<!--#if m_datas[bDelete] -->				
+						<input type="submit" name="sDeleteFolder" value="{ m_captions[sDelete] }">
+					<!--#endif m_datas[bDelete] -->
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>	
+<!--#end collectiveDir -->
+
+<!--#begin userDir -->
+<table border="0" width="50%" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+		<td class="BabLoginCadreBackground">
+			<table width="100%" border="0" cellspacing="2" cellpadding="5" align="center" class="BabLoginMenuBackground">
+				<tr> 
+					<td align="right">
+						{ m_captions[sDirName] }
+					</td>
+					<td>
+						<input type="text" name="sDirName" size="25" maxlength="255" value="{ m_datas[sDirName] }" />
+					</td>
+				</tr>
+				<tr> 
+					<td colspan="2">
+						<br />
+					</td>
+				</tr>
+				<tr align="center"> 
+					<td colspan="2">
+						<input type="submit" name="sCreateEditFolder" value="{ m_captions[sSubmit] }">
+					<!--#if m_datas[bDelete] -->				
+						<input type="submit" name="sDeleteFolder" value="{ m_captions[sDelete] }">
+					<!--#endif m_datas[bDelete] -->
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>	
+<!--#end userDir -->

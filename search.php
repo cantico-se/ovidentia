@@ -2726,7 +2726,13 @@ function viewFile($id, $w)
 					$fstat = stat($GLOBALS['babUploadPath']."/U".$this->arr['id_owner']."/".$this->arr['path']."/".$this->arr['name']);
 				$this->size = bab_formatSizeFile($fstat[7])." ".bab_translate("Kb");
 				if( $this->arr['bgroup'] == "Y") {
-					$this->rootpath = bab_getFolderName($this->arr['id_owner']);
+					
+					$this->rootpath = '';
+					$oFmFolder = BAB_FmFolderSet::get(array(new BAB_InCriterion('iId', $this->arr['id_owner'])));
+					if(!is_null($oFmFolder))
+					{
+						$this->rootpath = $oFmFolder->getName();
+					}
 
 					$this->resff = $babDB->db_query("select * from ".BAB_FM_FIELDS_TBL." where id_folder=".$babDB->quote($this->arr['id_owner']));
 					$this->countff = $babDB->db_num_rows($this->resff);

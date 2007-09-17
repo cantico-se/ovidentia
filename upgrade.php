@@ -3455,9 +3455,103 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$babDB->db_query("ALTER TABLE ".BAB_SITES_TBL." DROP ldap_basedn");
 		}
 
-	return true;
+	if(!bab_isTableField(BAB_FM_FOLDERS_TBL, 'sRelativePath')) 
+	{
+		$babDB->db_query("ALTER TABLE ".BAB_FM_FOLDERS_TBL." ADD `sRelativePath` TEXT NOT NULL AFTER `id`");
+	}
+
+	if(!bab_isTableField(BAB_FM_FOLDERS_TBL, 'sState')) 
+	{
+		$babDB->db_query("ALTER TABLE ".BAB_FM_FOLDERS_TBL." ADD `sState` CHAR( 1 ) NOT NULL AFTER `active`");
+	}
 	
+	fileManagerUpgrade();
+	
+	return true;
 }
 
+
+
+
+function fileManagerUpgrade()
+{
+	require_once $GLOBALS['babInstallPath'] . 'utilit/fileincl.php';
+	
+	global $babDB;
+	
+	$sUploadPath = BAB_FmFolderHelper::getUploadPath();
+	
+	$oFolderFileSet = new BAB_FolderFileSet();
+	$oIdOwner =& $oFolderFileSet->aField['iIdOwner'];
+	$oGroup =& $oFolderFileSet->aField['sGroup'];
+	
+	$oFmFolderSet = new BAB_FmFolderSet();
+	$oRelativePath =& $oFmFolderSet->aField['sRelativePath'];
+	$oFmFolderSet->select($oRelativePath->in(''));
+	while(null !== ($oFmFolder = $oFmFolderSet->next()))
+	{
+		$sDirName = processDirName($sUploadPath, $oFmFolder->getName());
+		
+		$sSrc = $sUploadPath . 'G' . $oFmFolder->getId();
+		$sTrg = $sUploadPath . $sDirName;
+		
+		if(true === is_dir($sSrc))
+		{
+			$oFmFolder->setName($sDirName);
+			$oFmFolder->save();
+			
+			if(true === rename($sSrc, $sTrg))
+			{
+				$oCriteria = $oIdOwner->in($oFmFolder->getId());
+				$oCriteria = $oCriteria->_and($oGroup->in('Y'));
+				
+				$oFolderFileSet->select($oCriteria);
+				while(null !== ($oFolderFile = $oFolderFileSet->next()))
+				{
+					$sPathName = $sDirName . '/' . $oFolderFile->getPathName();
+					if(strlen(trim($oFolderFile->getPathName())) > 0)
+					{
+						$sPathName .= '/';
+					}
+					$oFolderFile->setPathName($sPathName);
+					$oFolderFile->save();
+				}
+			}
+		}
+	}
+	
+	
+	$oFolderFileSet = new BAB_FolderFileSet();
+	$oGroup =& $oFolderFileSet->aField['sGroup'];
+	$oFolderFileSet->select($oGroup->in('N'));
+	while(null !== ($oFolderFile = $oFolderFileSet->next()))
+	{
+		$sPathName = 'U' . $oFolderFile->getOwnerId() . '/' . $oFolderFile->getPathName();
+		if(strlen(trim($oFolderFile->getPathName())) > 0)
+		{
+			$sPathName .= '/';
+		}
+		$oFolderFile->setPathName($sPathName);
+		$oFolderFile->save();
+	}
+}
+
+function processDirName($sUploadPath, $sDirName)
+{
+	if(isset($GLOBALS['babFileNameTranslation']))
+	{
+		$sDirName = strtr($sDirName, $GLOBALS['babFileNameTranslation']);
+	}
+
+	$iIdx = 0;
+	
+	$sTempDirName = $sDirName;
+	while(is_dir($sUploadPath . $sTempDirName))
+	{
+		$sTempDirName = $sDirName . ((string) $iIdx);
+		$iIdx++;
+	}
+	return $sTempDirName;
+}
 
 ?>
