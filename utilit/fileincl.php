@@ -1864,8 +1864,8 @@ class BAB_BaseSet extends BAB_MySqlResultIterator
 				return true;
 			}
 			return false;
-		}
 		//*/
+		}
 	}
 
 	function remove($oCriteria)
