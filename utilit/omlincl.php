@@ -1764,110 +1764,119 @@ class bab_Thread extends bab_handler
 
 class bab_Folders extends bab_handler
 {
-	var $index;
-	var $count;
+	var $index = 0;
+	var $count = 0;
 	var $IdEntries = array();
-	var $res;
-
-	function bab_Folders( &$ctx)
+	var $oFmFolderSet = null;
+	
+	function bab_Folders(&$ctx)
 	{
 		global $babDB;
 		$this->bab_handler($ctx);
 		$folderid = $ctx->get_value('folderid');
-		$delegationid = (int) $ctx->get_value('delegationid');
+		$iIdDelegation = (int) $ctx->get_value('delegationid');
+		
+		require_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
+		$this->oFmFolderSet = new BAB_FmFolderSet();
+		$oIdDgOwner = $this->oFmFolderSet->aField['iIdDgOwner'];
+		$oActive = $this->oFmFolderSet->aField['sActive'];
+		$oId = $this->oFmFolderSet->aField['iId'];
 
-		$sDelegation = ' ';	
-		if(0 != $delegationid)	
+		$oCriteria = $oActive->in('Y');
+		if(0 !== $iIdDelegation)
 		{
-			$sDelegation = ' AND id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
+			$oCriteria = $oCriteria->_and($oIdDgOwner->in($iIdDelegation));
 		}
 
-		if( $folderid === false || $folderid === '' )
-			{
-			$res = $babDB->db_query("select id from ".BAB_FM_FOLDERS_TBL." where active='Y' " . $sDelegation . " order by folder asc");
-			}
-		else
-			{
-			$folderid = explode(',', $folderid);
-			$res = $babDB->db_query("select id from ".BAB_FM_FOLDERS_TBL." where active='Y' " . $sDelegation . " and id IN (".$babDB->quote($folderid).") order by folder asc");
-			}
+		if(false !== $folderid && '' !== $folderid)
+		{
+			$oCriteria = $oCriteria->_and($oId->in(explode(',', $folderid)));
+		}
 
-		while( $row = $babDB->db_fetch_array($res))
+		$this->oFmFolderSet->select($oCriteria);
+		
+		while(null !== ($oFmFolder = $this->oFmFolderSet->next()))
+		{
+			if(bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $oFmFolder->getId()))
 			{
-			if(bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $row['id']))
-				{
-				array_push($this->IdEntries, $row['id']);
-				}
+				array_push($this->IdEntries, $oFmFolder->getId());
 			}
-		$this->count = count($this->IdEntries);
-		if( $this->count > 0 )
-			{
-			$this->res = $babDB->db_query("select * from ".BAB_FM_FOLDERS_TBL." where id IN (".$babDB->quote($this->IdEntries).") order by folder asc");
-			$this->count = $babDB->db_num_rows($this->res);
-			}
-		$this->ctx->curctx->push('CCount', $this->count);
-
+		}
+		$this->oFmFolderSet->select($oId->in($this->IdEntries));
+		$this->count = $this->oFmFolderSet->count();
+		$this->ctx->curctx->push('CCount', $this->oFmFolderSet->count());
 	}
 
 	function getnext()
 	{
-		global $babDB;
-
-		if( $this->idx < $this->count)
+		static $iIndex = 0;
+		
+		if(null !== ($oFmFolder = $this->oFmFolderSet->next()))
 		{
-			$arr = $babDB->db_fetch_array($this->res);
-			$this->ctx->curctx->push('CIndex', $this->idx);
-			$this->ctx->curctx->push('FolderName', $arr['folder']);
-			$this->ctx->curctx->push('FolderId', $arr['id']);
-			$this->idx++;
-			$this->index = $this->idx;
+			$this->ctx->curctx->push('CIndex', $iIndex);
+			$this->ctx->curctx->push('FolderName', $oFmFolder->getName());
+			$this->ctx->curctx->push('FolderId', $oFmFolder->getId());
+			$iIndex++;
+			$this->index = $iIndex;
 			return true;
 		}
 		else
 		{
-			$this->idx=0;
+			$this->oFmFolderSet->reset();
+			$this->index = $iIndex = 0;
 			return false;
 		}
 	}
 }
 
+
+
+
 class bab_Folder extends bab_handler
 {
 	var $index;
 	var $count;
-	var $res;
+	var $oFmFolderSet = null;
 
 	function bab_Folder( &$ctx)
 	{
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
-		$folderid = $ctx->get_value('folderid');
+		$folderid = (int) $ctx->get_value('folderid');
 		$this->count = 0;
-		if($folderid !== false && $folderid !== '' && bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $folderid))
+		
+		require_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
+		$this->oFmFolderSet = new BAB_FmFolderSet();
+		$oId = $this->oFmFolderSet->aField['iId'];
+		
+		if(0 !== $folderid && bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $folderid))
 		{
-		$this->res = $babDB->db_query("select * from ".BAB_FM_FOLDERS_TBL." where id='".$babDB->db_escape_string($folderid)."'");
-		if( $this->res && $babDB->db_num_rows($this->res) == 1 )
-			$this->count = 1;
+			$this->oFmFolderSet->select($oId->in(/*$folderid*/12));
+			$this->count = $this->oFmFolderSet->count();
+			$this->ctx->curctx->push('CCount', $this->count);
 		}
-		$this->ctx->curctx->push('CCount', $this->count);
+		else 
+		{
+			$this->ctx->curctx->push('CCount', 0);
+		}
 	}
 
 	function getnext()
 	{
-		global $babDB;
-		if( $this->idx < $this->count)
+		static $iIndex = 0;
+		
+		if(0 != $this->oFmFolderSet->count() && null !== ($oFmFolder = $this->oFmFolderSet->next()))
 		{
-			$arr = $babDB->db_fetch_array($this->res);
-			$this->ctx->curctx->push('CIndex', $this->idx);
-			$this->ctx->curctx->push('FolderName', $arr['folder']);
-			$this->ctx->curctx->push('FolderId', $arr['id']);
-			$this->idx++;
-			$this->index = $this->idx;
+			$this->ctx->curctx->push('CIndex', $iIndex);
+			$this->ctx->curctx->push('FolderName', $oFmFolder->getName());
+			$this->ctx->curctx->push('FolderId', $oFmFolder->getId());
+			$iIndex++;
+			$this->index = $iIndex;
 			return true;
 		}
 		else
 		{
-			$this->idx=0;
+			$iIndex = 0;
 			return false;
 		}
 	}
@@ -1880,6 +1889,7 @@ class bab_FolderPrevious extends bab_Folder
 	function bab_FolderPrevious( &$ctx)
 	{
 		$this->handler = $ctx->get_handler('bab_Folders');
+		
 		if( $this->handler !== false && $this->handler !== '' )
 			{
 			if( $this->handler->index > 1)
@@ -1924,15 +1934,41 @@ class bab_SubFolders extends bab_handler
 	var $count;
 	var $res;
 
-	function bab_SubFolders( &$ctx)
+	function bab_SubFolders(&$ctx)
 	{
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
-		$folderid = $ctx->get_value('folderid');
+		$folderid = (int) $ctx->get_value('folderid');
 		$this->count = 0;
+
+
+		$sPath = (string) $path = $ctx->get_value('path');
+
+
+		require_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
+		$this->oFmFolderSet = new BAB_FmFolderSet();
+		$oId = $this->oFmFolderSet->aField['iId'];
+
 		
-		if($folderid !== false && $folderid !== '' && bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $folderid))
+		$oCriteria = null;
+		if(0 !== $folderid)
 		{
+			$oId->in($folderid);
+			$oFmFolder = $this->oFmFolderSet->get($oId);
+			if(!is_null($oFmFolder))
+			{
+				
+			}
+		}
+		
+		
+		
+		if(bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $folderid))
+		{
+			$this->oFmFolderSet->select($oId);
+		}
+			
+			
 		$res = $babDB->db_query("select * from ".BAB_FM_FOLDERS_TBL." where id='".$babDB->db_escape_string($folderid)."'");
 		if( $res && $babDB->db_num_rows($res) == 1 )
 			{

@@ -532,6 +532,8 @@ class listFiles
 				
 				$this->oFolderFileSet->select($oCriteria);
 				
+//				bab_debug('iCount ==> ' . $this->oFolderFileSet->count());
+				
 				if(0 === $this->oFolderFileSet->count())
 				{
 //					bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__);
