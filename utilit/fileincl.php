@@ -1793,7 +1793,6 @@ class BAB_BaseSet extends BAB_MySqlResultIterator
 			if(false !== $aItem)
 			{
 				$aInto[] = $aItem['value']->getName();
-
 				$oObject->_get($aItem['key'], $iId);
 				$aValue[] = (is_null($iId)) ? '\'\'' : '\'' . $babDB->db_escape_string($iId) . '\'';
 			}
@@ -1816,10 +1815,43 @@ class BAB_BaseSet extends BAB_MySqlResultIterator
 			'INSERT INTO ' . $this->sTableName . ' ' .
 			'(' . implode(',', $aInto) . ') ' .
 			'VALUES ' .
+			'(' . implode(',', $aValue) . ') ';
+			
+//			bab_debug($sQuery);
+			$oResult = $babDB->db_queryWem($sQuery);
+			if(false !== $oResult)
+			{
+				$oObject->_get('iId', $iId);
+				if(is_null($iId))
+				{
+					$oObject->_set('iId', $babDB->db_insert_id());
+				}
+				return true;
+			}
+			else 
+			{
+				$sQuery = 
+					'UPDATE ' . 
+						$this->sTableName . ' ' .
+					'SET ' .
+						implode(',', $aOnDuplicateKey) .
+					'WHERE ' . $this->aField['iId']->getName() . ' =\'' . $iId . '\'';
+			
+//				bab_debug($sQuery);
+				$oResult = $babDB->db_queryWem($sQuery);
+				return (false !== $oResult);
+			}
+			
+			//En MySql 3.23 cela ne marche pas
+			/*
+			$sQuery =
+			'INSERT INTO ' . $this->sTableName . ' ' .
+			'(' . implode(',', $aInto) . ') ' .
+			'VALUES ' .
 			'(' . implode(',', $aValue) . ') ' .
 			'ON DUPLICATE KEY UPDATE ' .
 			implode(',', $aOnDuplicateKey);
-
+			
 //			bab_debug($sQuery);
 			$oResult = $babDB->db_query($sQuery);
 			if(false !== $oResult)
@@ -1833,6 +1865,7 @@ class BAB_BaseSet extends BAB_MySqlResultIterator
 			}
 			return false;
 		}
+		//*/
 	}
 
 	function remove($oCriteria)
@@ -1879,7 +1912,7 @@ class BAB_BaseSet extends BAB_MySqlResultIterator
 		$this->sTableName . ' ' .
 		$sWhereClause . ' ' . $sOrder . ' ' . $sLimit;
 
-//		bab_debug($sQuery);
+		bab_debug($sQuery);
 		return $sQuery;
 	}
 
@@ -1905,8 +1938,8 @@ class BAB_BaseSet extends BAB_MySqlResultIterator
 
 	function select($oCriteria = null, $aOrder = array(), $aLimit = array())
 	{
-		//		require_once $GLOBALS['babInstallPath'] . 'utilit/devtools.php';
-		//		bab_debug_print_backtrace();
+//		require_once $GLOBALS['babInstallPath'] . 'utilit/devtools.php';
+//		bab_debug_print_backtrace();
 
 		$sQuery = $this->getSelectQuery($oCriteria, $aOrder, $aLimit);
 		global $babDB;
