@@ -249,7 +249,7 @@ class bab_dbdata {
 	
 	/**
 	 * Update row into table
-	 * 
+	 * @param	string	$ikey
 	 * @return boolean
 	 */
 	function updateDbRowByKey($ikey) {
@@ -340,6 +340,40 @@ class bab_dbdata {
 				unset($this->row[$key]);
 			}
 		}
+	}
+	
+	
+	/**
+	 * Delete row with autoincremented column
+	 */
+	function deleteDbRow() {
+		global $babDB;
+		
+		$id = $this->getPrimaryAutoIncremented();
+		
+		if ($id) {
+			$res = $babDB->db_query('DELETE FROM '.$babDB->backTick($this->tablename).' WHERE '.$babDB->backTick($this->primaryautoincremented).' = '.$babDB->quote($id).'');
+			
+			return 1 === $babDB->db_affected_rows($res);
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * @param	string	$ikey
+	 */
+	function deleteDbRowByKey($ikey) {
+		global $babDB;
+		
+		$id = $this->getValue($ikey);
+		if ($id) {
+			$res = $babDB->db_query('DELETE FROM '.$babDB->backTick($this->tablename).' WHERE '.$babDB->backTick($ikey).' = '.$babDB->quote($id).'');
+			
+			return 1 === $babDB->db_affected_rows($res);
+		}
+		
+		return false;
 	}
 }
 
