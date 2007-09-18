@@ -315,9 +315,9 @@ class bab_icalendars
 				$this->defaultview = $arr['defaultview'];
 				$this->starttime = $arr['start_time'];
 				$this->endtime = $arr['end_time'];
-				if( $this->endtime == '00:00:00' || $this->endtime == '23:00:00')
+				if( $this->endtime == '00:00:00')
 					{
-					$this->endtime = '23:59:59';
+					$this->endtime = '23:00:00';
 					}
 
 				if (!empty($arr['dispdays']))
