@@ -3459,11 +3459,6 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	{
 		$babDB->db_query("ALTER TABLE ".BAB_FM_FOLDERS_TBL." ADD `sRelativePath` TEXT NOT NULL AFTER `id`");
 	}
-
-	if(!bab_isTableField(BAB_FM_FOLDERS_TBL, 'sState')) 
-	{
-		$babDB->db_query("ALTER TABLE ".BAB_FM_FOLDERS_TBL." ADD `sState` CHAR( 1 ) NOT NULL AFTER `active`");
-	}
 	
 	fileManagerUpgrade();
 	

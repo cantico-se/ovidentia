@@ -2068,7 +2068,9 @@ class bab_Files extends bab_handler
 	var $oFmFolderSet = null;
 	var $oFolderFileSet = null;
 	var $iIdRootFolder = 0;
-
+	var $sPath = '';
+	var $sEncodedPath = '';
+	
 	function bab_Files(&$ctx)
 	{
 		global $babBody, $babDB;
@@ -2076,8 +2078,16 @@ class bab_Files extends bab_handler
 		$this->bab_handler($ctx);
 		$this->count	= 0;
 		$folderid		= (int) $ctx->get_value('folderid');
-		$sPath			= (string) $ctx->get_value('path');
+		$this->sPath	= (string) $ctx->get_value('path');
+		$iLength		= strlen(trim($this->sPath));
+		
+		if('/' === $this->sPath{$iLength - 1})
+		{
+			$this->sPath = substr($sEncodedPath, 0, -1); 
+		}
 
+		$this->sEncodedPath = urlencode($this->sPath);
+		
 		require_once $GLOBALS['babInstallPath'] . 'utilit/fileincl.php';
 
 		$this->oFolderFileSet = new BAB_FolderFileSet();
@@ -2097,21 +2107,19 @@ class bab_Files extends bab_handler
 //					' sRootFolderName ==> ' . getFirstPath($sRelativePath));
 	
 				$sRootFolderName = getFirstPath($sRelativePath);
-				$sRelativePath = $sRootFolderName . '/' . $sPath . '/';
+				$sRelativePath = $sRootFolderName . '/' . $this->sPath . '/';
 				
 				$this->initRootFolderId($sRootFolderName);
 				
 				$rows	= (int) $ctx->get_value('rows');
 				$offset	= (int) $ctx->get_value('offset');
 				
-				$oIdOwner	= $this->oFolderFileSet->aField['iIdOwner'];
 				$oGroup		= $this->oFolderFileSet->aField['sGroup'];
 				$oState		= $this->oFolderFileSet->aField['sState'];
 				$oPathName	= $this->oFolderFileSet->aField['sPathName'];
 				$oConfirmed	= $this->oFolderFileSet->aField['sConfirmed'];
 				
-				$oCriteria = $oIdOwner->in($folderid);
-				$oCriteria = $oCriteria->_and($oGroup->in('Y'));
+				$oCriteria = $oGroup->in('Y');
 				$oCriteria = $oCriteria->_and($oState->in(''));
 				$oCriteria = $oCriteria->_and($oPathName->in($sRelativePath));
 				$oCriteria = $oCriteria->_and($oConfirmed->in('Y'));
@@ -2128,7 +2136,7 @@ class bab_Files extends bab_handler
 				{
 					$this->IdEntries[] = $oFolderFile->getId();
 				}
-				$this->oFolderFileSet->reset();
+				$this->oFolderFileSet->rewind() ;
 				$this->count = count($this->IdEntries);
 			}
 		}
@@ -2165,25 +2173,18 @@ class bab_Files extends bab_handler
 				$this->ctx->curctx->push('FileId', $oFolderFile->getId());
 				$this->ctx->curctx->push('FileFolderId', $oFolderFile->getOwnerId());
 				$this->ctx->curctx->push('FileDate', bab_mktime($oFolderFile->getModifiedDate()));
-				$this->ctx->curctx->push('FileAuthor', $oFolderFile->getAuthorId());
+				$this->ctx->curctx->push('FileAuthor', bab_getUserName($oFolderFile->getAuthorId()));
 				
-				$sGroup			= $oFolderFile->getGroup();
-				$sEncodedPath	= realpath($oFolderFile->getPathName());
-				$iLength		= strlen(trim($sEncodedPath));
-				if(0 < $iLength && '/' === $sEncodedPath{$iLength - 1})
-				{
-					$sEncodedPath = substr($sEncodedPath, 0, -1); 
-				}
-				$sEncodedPath = urlencode($sEncodedPath);
+				$sGroup	= $oFolderFile->getGroup();
 				
 				$this->ctx->curctx->push('FileUrl', $GLOBALS['babUrlScript'] .'?tg=fileman&idx=list&id=' . $this->iIdRootFolder . '&gr=' . 
-					$sGroup . '&path=' . $sEncodedPath);
+					$sGroup . '&path=' . $this->sEncodedPath);
 				
 				$this->ctx->curctx->push('FilePopupUrl', $GLOBALS['babUrlScript'] . '?tg=fileman&idx=viewfile&idf=' . $oFolderFile->getId() . 
-					'&id=' . $this->iIdRootFolder . '&gr=' . $sGroup . '&path=' . $sEncodedPath . '&file=' . urlencode($oFolderFile->getName()));
+					'&id=' . $this->iIdRootFolder . '&gr=' . $sGroup . '&path=' . $this->sEncodedPath . '&file=' . urlencode($oFolderFile->getName()));
 					
-				$this->ctx->curctx->push('FileUrlGet', $GLOBALS['babUrlScript'] . '?tg=fileman&idx=get&id=' . $this->iIdRootFolder . '&gr=' . 
-					$sGroup . '&path=' . $sEncodedPath . '&file=' . urlencode($oFolderFile->getName()));
+				$this->ctx->curctx->push('FileUrlGet', $GLOBALS['babUrlScript'] . '?tg=fileman&idx=get&id=' . $oFolderFile->getOwnerId() . '&gr=' . 
+					$sGroup . '&path=' . $this->sEncodedPath . '&file=' . urlencode($oFolderFile->getName()));
 					
 				$sUploadPath = BAB_FmFolderHelper::getUploadPath();
 				

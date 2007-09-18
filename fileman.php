@@ -1629,9 +1629,8 @@ function addFile($id, $gr, $path, $description, $keywords)
 
 
 function getFile($file, $id, $gr, $path)
-	{
+{
 	global $babBody, $babDB, $BAB_SESS_USERID;
-	$access = false;
 	
 	$inl = bab_rp('inl', false);
 	if(false === $inl) 
@@ -1639,97 +1638,79 @@ function getFile($file, $id, $gr, $path)
 		$inl = bab_getFileContentDisposition() == 1 ? 1 : '';
 	}
 
-	$iIdOwner = $id;
-	$sPathName = $path;
+	$oFileManagerEnv =& getEnvObject();
 	
-	if($gr == "N" && $babBody->ustorage)
+	if($oFileManagerEnv->oAclFm->haveDownloadRight())
 	{
-		$access = true;
-		$sPathName = BAB_FmFolderHelper::getUserDirUploadPath($id) . $path . '/';
-	}
-	else if($gr == "Y")
-	{
-		for($i = 0; $i < count($babBody->aclfm['id']); $i++)
+		$sName = stripslashes($file);
+		
+		$oFolderFileSet = new BAB_FolderFileSet();
+				
+		$oGroup		= $oFolderFileSet->aField['sGroup'];
+		$oIdOwner	= $oFolderFileSet->aField['iIdOwner'];
+		$oPathName	= $oFolderFileSet->aField['sPathName'];
+		$oName		= $oFolderFileSet->aField['sName'];
+		
+		$oCriteria = $oGroup->in($oFileManagerEnv->sGr);
+		$oCriteria = $oCriteria->_and($oPathName->in($oFileManagerEnv->sRelativePath));
+		$oCriteria = $oCriteria->_and($oName->in($sName));
+		$oCriteria = $oCriteria->_and($oIdOwner->in($oFileManagerEnv->iIdObject));
+		
+		$oFolderFile = $oFolderFileSet->get($oCriteria);
+		if(!is_null($oFolderFile))
 		{
-			if($babBody->aclfm['id'][$i] == $id && ($babBody->aclfm['down'][$i] || $babBody->aclfm['ma'][$i]))
-			{
-				$access = true;
-				break;
-			}	
-		}
+			$oFolderFile->setHits($oFolderFile->getHits() + 1);
+			$oFolderFile->save();
+
+			$GLOBALS['babWebStat']->addFilesManagerFile($oFolderFile->getId());
 			
-		if(true === $access)
-		{
-			$oFmFolder = null;
-			$access = BAB_FmFolderHelper::getFileInfoForCollectiveDir($id, $path, $iIdOwner, $sPathName, $oFmFolder);
-		}
-	}
-
-	
-	if( $access )
-		{
-		$file = stripslashes($file);
-		$req = "select * from ".BAB_FILES_TBL." where id_owner='".$babDB->db_escape_string($iIdOwner)."' and bgroup='".$babDB->db_escape_string($gr)."' and path='".$babDB->db_escape_string($sPathName)."' and name='".$babDB->db_escape_string($file)."'";
-		$res = $babDB->db_query($req);
-		if( $res && $babDB->db_num_rows($res) > 0 )
+			$sUploadPath = BAB_FmFolderHelper::getUploadPath();
+			$sFullPathName = $sUploadPath . $oFolderFile->getPathName() . $oFolderFile->getName();
+			$mime = bab_getFileMimeType($sFullPathName);
+			
+			if(file_exists($sFullPathName))
 			{
-			$arr = $babDB->db_fetch_array($res);
-			if( $arr['state'] == '')
+				$fsize = filesize($sFullPathName);
+				if(strtolower(bab_browserAgent()) == "msie")
 				{
-				$babDB->db_query("update ".BAB_FILES_TBL." set hits='".$babDB->db_escape_string(($arr['hits'] + 1))."' where id='".$babDB->db_escape_string($arr['id'])."'");
-				$access = true;
+					header('Cache-Control: public');
 				}
+				
+				if($inl == "1")
+				{
+					header("Content-Disposition: inline; filename=\"$file\""."\n");
+				}
+				else
+				{
+					header("Content-Disposition: attachment; filename=\"$file\""."\n");
+				}
+				
+				header("Content-Type: $mime"."\n");
+				header("Content-Length: ". $fsize."\n");
+				header("Content-transfert-encoding: binary"."\n");
+				$fp=fopen($sFullPathName, "rb");
+				if($fp) 
+				{
+					while(!feof($fp)) 
+					{
+						print fread($fp, 8192);
+					}
+					fclose($fp);
+					exit;
+				}
+			}
 			else
-				{
-//echo 'iIdOwner ==> ' . $iIdOwner . ' sPathName ==> ' . $sPathName;
-				$access = false;
-				}
-			}
-		else
 			{
-			$access = false;
+				$babBody->msgerror = bab_translate("The file is not on the server");
 			}
-		}
-
-	if( !$access )
-		{
-		echo bab_translate("Access denied");
-		return;
-		}
-
-	$GLOBALS['babWebStat']->addFilesManagerFile($arr['id']);
-	$mime = bab_getFileMimeType($file);
-	$fullpath = bab_getUploadFullPath($gr, $id);
-	if( !empty($path))
-		$fullpath .= $path."/";
-
-	$fullpath .= $file;
-	
-	if (file_exists($fullpath)) {
-	
-		$fsize = filesize($fullpath);
-		if( strtolower(bab_browserAgent()) == "msie")
-			header('Cache-Control: public');
-		if( $inl == "1" )
-			header("Content-Disposition: inline; filename=\"$file\""."\n");
-		else
-			header("Content-Disposition: attachment; filename=\"$file\""."\n");
-		header("Content-Type: $mime"."\n");
-		header("Content-Length: ". $fsize."\n");
-		header("Content-transfert-encoding: binary"."\n");
-		$fp=fopen($fullpath,"rb");
-		if ($fp) {
-			while (!feof($fp)) {
-				print fread($fp, 8192);
-				}
-			fclose($fp);
-			exit;
-			}
-		}
-		else {
-			$babBody->msgerror = bab_translate("The file is not on the server");
 		}
 	}
+	else 
+	{
+		echo bab_translate("Access denied 666");
+		return;
+	}
+}
 
 
 function cutFile($file, $id, $gr, $path, $bmanager)
