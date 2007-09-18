@@ -1243,7 +1243,7 @@ function fm_lockFile($idf, $comment)
 			$oFolderFileVersion->setStatusIndex(0);
 			$oFolderFileVersion->save();
 
-			//			bab_debug('Version ==> ' . $oFolderFileVersion->getId());
+			//bab_debug('Version ==> ' . $oFolderFileVersion->getId());
 
 			$oFolderFile->setFolderFileVersionId($oFolderFileVersion->getId());
 			$oFolderFile->save();
@@ -1777,7 +1777,7 @@ class BAB_BaseSet extends BAB_MySqlResultIterator
 		return $sLimit;
 	}
 
-	function save($oObject)
+	function save(&$oObject)
 	{
 		if(count($this->aField) > 0)
 		{

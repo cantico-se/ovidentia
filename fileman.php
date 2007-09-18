@@ -1707,7 +1707,7 @@ function getFile($file, $id, $gr, $path)
 	}
 	else 
 	{
-		echo bab_translate("Access denied 666");
+		echo bab_translate("Access denied");
 		return;
 	}
 }
