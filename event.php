@@ -1372,7 +1372,7 @@ function calendarquerystring()
 
 function eventAvariabilityCheck(&$avariability_message)
 	{
-	global $babDB;
+	global $babDB, $babBody;
 	if( !isset($_POST['monthbegin']))
 		{
 		return true; /* to rmove php warnings. This function must be rewrited */
@@ -1390,9 +1390,9 @@ function eventAvariabilityCheck(&$avariability_message)
 
 	$bfree = isset($_POST['bfree']) ? $_POST['bfree'] : 'N';
 
-	$timebegin = isset($_POST['timebegin']) ? $_POST['timebegin'] : '00:00';
-	$timeend = isset($_POST['timeend']) ? $_POST['timeend'] : '23:59';
-
+	$timebegin = isset($_POST['timebegin']) ? $_POST['timebegin'] : $babBody->icalendars->starttime;
+	$timeend = isset($_POST['timeend']) ? $_POST['timeend'] : $babBody->icalendars->endtime;
+	
 	$tb = explode(':',$timebegin);
 	$te = explode(':',$timeend);
 
