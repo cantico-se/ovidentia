@@ -299,12 +299,17 @@ function createMail($accid, $to, $cc, $bcc, $subject, $files, $files_name, $file
 		}
 		
 		
-		
+	if( $format == 'html' )
+		{
 	include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 			
 	$editor = new bab_contentEditor('bab_mail_message');
 	$message = $editor->getContent();	
-		
+		}
+	else
+		{
+		$message = bab_pp('message', '');
+		}
 		
 		
 		
@@ -358,9 +363,14 @@ function createMail($accid, $to, $cc, $bcc, $subject, $files, $files_name, $file
 		$mail->mailBody($message, $format);
 		$mail->mailSubject($subject);
 
-		for($i=0; $i < count($files); $i++)
-			if( !empty($files_name[$i]))
-				$mail->mailFileAttach($files[$i], $files_name[$i], $files_type[$i]);
+		for($i=0; $i < count($_FILES['files']['name']); $i++)
+			{
+			if( !empty($_FILES['files']['name'][$i]) && $_FILES['files']['name'][$i] !== 'none' )
+				{
+				$mail->mailFileAttach($_FILES['files']['tmp_name'][$i], $_FILES['files']['name'][$i], $_FILES['files']['type'][$i]);
+				}
+			}
+
 		$nto = count($adarr['to']);
 		$ncc = count($adarr['cc']);
 		$nbcc = count($adarr['bcc']);
@@ -581,37 +591,29 @@ function mailUnload()
 	}
 
 /* main */
-if(!isset($idx))
-	{
-	$idx = "compose";
-	}
+$idx = bab_pp('idx', 'compose');
 
-if( !isset( $to ))
-	$to = "";
+$to = bab_pp('to', '');
 
-if( !isset( $cc ))
-	$cc = "";
+$cc = bab_pp('cc', '');
 
-if( !isset( $bcc ))
-	$bcc = "";
+$bcc = bab_pp('bcc', '');
 
-if( !isset( $subject ))
-	$subject = "";
+$subject = bab_pp('subject', '');
 
-if( !isset( $format ))
-	$format = "";
+$format = bab_pp('format', '');
 
-if( !isset( $message ))
-	$message = "";
+$message = bab_pp('message', '');
 
-if( !isset( $sigid ))
-	$sigid = "";
+$sigid = bab_pp('sigid', '');
 
-if( !isset( $criteria ))
-	$criteria = "";
+$criteria = bab_pp('criteria', '');
 
-if( !isset( $reverse ))
-	$reverse = "";
+$reverse = bab_pp('reverse', '');
+
+$files = bab_pp('files', array());
+$files_name = bab_pp('files_name', array());
+$files_type = bab_pp('files_type', array());
 
 if( isset($compose) && $compose == "message")
 	{
