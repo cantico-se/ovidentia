@@ -398,31 +398,36 @@ class bab_Template
 		return '';
 	}
 
+
 	/**
+	 * This method is used during template execution.
+	 * 
 	 * @access private
 	 * @static
 	 */
 	function getValue(&$templateObject, $propertyName)
 	{
+		// We check if the property exists in the template object. 
 		if (@isset($templateObject->{$propertyName})) {
+			if (is_null($templateObject->{$propertyName})) {
+				return '';
+			}
 			return $templateObject->{$propertyName};
 		}
 
+		// The property is not defined in the template object,
+		// so we check if it is a white-listed global variable.
 		$tr = getGlobalVariable($propertyName);
-		if($tr !== NULL)
-			{
+		if (!is_null($tr)) {
+			$templateObject->{$propertyName} = $tr;
 			return $tr;
-			}
-			
-		if (NULL === @$templateObject->{$propertyName}) {
-			return '';
 		}
-		
+
 		$call = reset(debug_backtrace()); // $call will contain debug info about the line in the script where this function was called.
 		bab_Template::addError($templateObject, 'Unknown property or global variable (' . $propertyName . ')', $call['line']);
 		return '{ ' . $propertyName . ' }';
 	}
-
+	
 	/**
 	 * @access private
 	 * @static
