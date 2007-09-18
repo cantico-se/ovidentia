@@ -539,10 +539,6 @@ if( isset($add))
 	addTopCat($name, $description, $benabled, $template, $disptmpl, $topcatid);
 	$idp = $topcatid;
 	}
-elseif( isset($tagsman) )
-{
-	maclGroups();
-}
 elseif( isset($update))
 	{
 	if( $update == 'disable' || $update == 'enable' )
@@ -557,15 +553,6 @@ elseif( isset($update))
 
 switch($idx)
 	{
-	case 'tags':
-		$babBody->title = bab_translate("Thesaurus");
-		$macl = new macl("topcats", "List", 1, "tagsman");
-        $macl->addtable( BAB_TAGSMAN_GROUPS_TBL,bab_translate("Who can manage thesaurus?"));
-		$macl->filter(0,0,1,1,1);
-        $macl->babecho();
-		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List&idp=".$idp);
-		$babBody->addItemMenu("tags", bab_translate("Thesaurus"), $GLOBALS['babUrlScript']."?tg=topcats&idx=tags");
-		break;
 	case "Order":
 		orderTopcat($idp);
 		$babBody->title = bab_translate("Order a topic category");
@@ -585,8 +572,6 @@ switch($idx)
 		$babBody->title = bab_translate("Categories and topics");
 		
 		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List&idp=".$idp);
-		$babBody->addItemMenu("tags", bab_translate("Thesaurus"), $GLOBALS['babUrlScript']."?tg=topcats&idx=tags&idp=".$idp);
-		
 		$oArtTV = new bab_AdmArticleTreeView('oArtTV');
 		$oArtTV->setAttributes(BAB_ARTICLE_TREE_VIEW_SHOW_CATEGORIES | BAB_ARTICLE_TREE_VIEW_SHOW_TOPICS | 
 			BAB_TREE_VIEW_MEMORIZE_OPEN_NODES | BAB_ARTICLE_TREE_VIEW_SHOW_ROOT_NODE | BAB_ARTICLE_TREE_VIEW_HIDE_DELEGATIONS);

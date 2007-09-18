@@ -1487,85 +1487,6 @@ function topman_init($item)
 	return $arrinit;
 }
 
-
-function updateTags()
-{
-	global $babBody, $babDB;
-	$GLOBALS['tagsvalue'] = '';
-	$GLOBALS['tagvalue'] = '';
-	$GLOBALS['tagidvalue'] = 0;
-
-	$tags = trim(bab_rp('tagsname', ''));
-	if( !empty($tags))
-	{
-		$arr = explode(',', $tags);
-		for( $k = 0; $k < count($arr); $k++ )
-		{
-			$tag = trim($arr[$k]);
-			if( !empty($tag) )
-			{
-				$res = $babDB->db_query("select * from ".BAB_TAGS_TBL." where tag_name='".$babDB->db_escape_string($tag)."'");
-				if( !$res || $babDB->db_num_rows($res) == 0 )
-				{
-					$babDB->db_query("insert into ".BAB_TAGS_TBL." (tag_name) values ('".$babDB->db_escape_string($tag)."')");
-					$GLOBALS['lasttags'][] = $babDB->db_insert_id();
-				}
-			}
-		}
-	}
-
-	$tag = trim(bab_rp('tagname', ''));
-	$tagid = trim(bab_rp('tagid', 0));
-
-	if( !empty($tag) && $tagid )
-	{
-		$res = $babDB->db_query("select * from ".BAB_TAGS_TBL." where id !='".$babDB->db_escape_string($tagid)."' and tag_name='".$babDB->db_escape_string($tag)."'");
-		if( !$res || $babDB->db_num_rows($res) == 0 )
-		{
-			$babDB->db_query("update ".BAB_TAGS_TBL." set tag_name='".$babDB->db_escape_string($tag)."' where id='".$babDB->db_escape_string($tagid)."'");
-			$GLOBALS['lasttags'][] = $tagid;
-		}
-	}
-	elseif( $tagid )
-	{
-		$babDB->db_query("delete from ".BAB_TAGS_TBL." where id='".$babDB->db_escape_string($tagid)."'");
-	}
-	else
-	{
-		$GLOBALS['tagvalue'] = $tag;
-		$GLOBALS['tagidvalue'] = $tagid;
-	}
-}
-
-
-function processImportTagsFile()
-{
-	global $babBody, $babDB;
-
-	$pfile = bab_rp('pfile', '');
-	$separ = bab_rp('separ', ';');
-	$tagcol = bab_rp('tagcol', '');
-	$fd = fopen($pfile, "r");
-	if( $fd )
-		{
-		$arr = fgetcsv($fd, 4096, $separ);
-
-		while ($arr = fgetcsv($fd, 4096, $separ))
-			{
-				$tag = trim($arr[$tagcol]);
-				if( !empty($tag) )
-				{
-					$res = $babDB->db_query("select * from ".BAB_TAGS_TBL." where tag_name='".$babDB->db_escape_string($tag)."'");
-					if( !$res || $babDB->db_num_rows($res) == 0 )
-					{
-						$babDB->db_query("insert into ".BAB_TAGS_TBL." (tag_name) values ('".$babDB->db_escape_string($tag)."')");
-						$GLOBALS['lasttags'][] = $babDB->db_insert_id();
-					}
-				}
-			}
-		}
-}
-
 /* main */
 if(!isset($idx))
 	{
@@ -1661,18 +1582,6 @@ elseif( isset($updateh)  && bab_isAccessValid(BAB_SITES_HPMAN_GROUPS_TBL, $babBo
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topman&idx=list");
 	}
-elseif( isset($updtags) )
-	{
-		if( $updtags == 'updtags' )
-		{
-		updateTags();
-		}
-		elseif( $updtags == 'imptags' )
-		{
-			processImportTagsFile();
-		}
-	}
-
 
 switch($idx)
 	{
@@ -1864,51 +1773,6 @@ switch($idx)
 		}
 		break;
 
-	case "tagsimp":
-		$babBody->title = bab_translate("Tags import");
-		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topman");
-		if( bab_isAccessValid(BAB_SITES_HPMAN_GROUPS_TBL, $babBody->babsite['id']) )
-		{
-			$babBody->addItemMenu("hman", bab_translate("Home pages"), $GLOBALS['babUrlScript']."?tg=topman&idx=hpriv&ids=".$babBody->babsite['id']);
-		}
-		if( bab_isAccessValid(BAB_TAGSMAN_GROUPS_TBL, 1) )
-		{
-			$babBody->addItemMenu("tagsman", bab_translate("Thesaurus"), $GLOBALS['babUrlScript']."?tg=topman&idx=tagsman");
-			$babBody->addItemMenu("tagsimp", bab_translate("Import"), $GLOBALS['babUrlScript']."?tg=topman&idx=tagsimp");
-			importTagsFile();
-		}
-		break;
-
-	case "impmap":
-		$babBody->title = bab_translate("Tags import");
-		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topman");
-		if( bab_isAccessValid(BAB_SITES_HPMAN_GROUPS_TBL, $babBody->babsite['id']) )
-		{
-			$babBody->addItemMenu("hman", bab_translate("Home pages"), $GLOBALS['babUrlScript']."?tg=topman&idx=hpriv&ids=".$babBody->babsite['id']);
-		}
-		if( bab_isAccessValid(BAB_TAGSMAN_GROUPS_TBL, 1) )
-		{
-			$babBody->addItemMenu("tagsman", bab_translate("Thesaurus"), $GLOBALS['babUrlScript']."?tg=topman&idx=tagsman");
-			$babBody->addItemMenu("impmap", bab_translate("Import"), $GLOBALS['babUrlScript']."?tg=topman&idx=tagsimp");
-			mapTagsImportFile($uploadf_name, $uploadf, $wsepar, $separ);
-		}
-		break;
-
-	case "tagsman":
-		$babBody->title = bab_translate("Tags management");
-		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topman");
-		if( bab_isAccessValid(BAB_SITES_HPMAN_GROUPS_TBL, $babBody->babsite['id']) )
-		{
-			$babBody->addItemMenu("hman", bab_translate("Home pages"), $GLOBALS['babUrlScript']."?tg=topman&idx=hpriv&ids=".$babBody->babsite['id']);
-		}
-		if( bab_isAccessValid(BAB_TAGSMAN_GROUPS_TBL, 1) )
-		{
-			$babBody->addItemMenu("tagsman", bab_translate("Thesaurus"), $GLOBALS['babUrlScript']."?tg=topman&idx=tagsman");
-			$babBody->addItemMenu("tagsimp", bab_translate("Import"), $GLOBALS['babUrlScript']."?tg=topman&idx=tagsimp");
-			displayTags();
-		}
-		break;
-
 	default:
 	case "list":
 		$babBody->title = bab_translate("List of managed topics");
@@ -1920,10 +1784,6 @@ switch($idx)
 		if( bab_isAccessValid(BAB_SITES_HPMAN_GROUPS_TBL, $babBody->babsite['id']) )
 		{
 			$babBody->addItemMenu("hman", bab_translate("Home pages"), $GLOBALS['babUrlScript']."?tg=topman&idx=hpriv&ids=".$babBody->babsite['id']);
-		}
-		if( bab_isAccessValid(BAB_TAGSMAN_GROUPS_TBL, 1) )
-		{
-			$babBody->addItemMenu("tagsman", bab_translate("Thesaurus"), $GLOBALS['babUrlScript']."?tg=topman&idx=tagsman");
 		}
 		break;
 	}

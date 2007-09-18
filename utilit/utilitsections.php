@@ -248,6 +248,8 @@ function babAdminSection($close)
 		$this->array_urls[bab_translate("Add-ons")] = $GLOBALS['babUrlScript']."?tg=addons";
 	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
 		$this->array_urls[bab_translate("Statistics")] = $GLOBALS['babUrlScript']."?tg=admstats";
+	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
+		$this->array_urls[bab_translate("Thesaurus")] = $GLOBALS['babUrlScript']."?tg=admthesaurus";
 
 	$engine = bab_searchEngineInfos();
 
@@ -406,7 +408,7 @@ function babUserSection($close)
 			}
 		}
 
-	if( count($babBody->topman) > 0 || bab_isAccessValid(BAB_SITES_HPMAN_GROUPS_TBL, $babBody->babsite['id'])|| bab_isAccessValid(BAB_TAGSMAN_GROUPS_TBL, 1))
+	if( count($babBody->topman) > 0 || bab_isAccessValid(BAB_SITES_HPMAN_GROUPS_TBL, $babBody->babsite['id']))
 		{
 		$this->array_urls[bab_translate("Articles management")] = $GLOBALS['babUrlScript']."?tg=topman";
 		}
@@ -522,6 +524,11 @@ function babUserSection($close)
 	if(count($forums))
 		{
 		$this->array_urls[bab_translate("Forums")] = $GLOBALS['babUrlScript'].'?tg=forumsuser';
+		}
+
+	if( bab_isAccessValid(BAB_TAGSMAN_GROUPS_TBL, 1) )
+		{
+		$this->array_urls[bab_translate("Thesaurus")] = $GLOBALS['babUrlScript'].'?tg=thesaurus';
 		}
 
 	foreach( $babBody->babaddons as $row ) 

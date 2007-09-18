@@ -698,6 +698,12 @@ switch($tg)
 		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && $babBody->isSuperAdmin)
 			$incl = "admin/admstats";
 		break;
+	case "admthesaurus":
+		$babLevelOne = bab_translate("Administration");
+		$babLevelTwo = bab_translate("Thesaurus");
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && $babBody->isSuperAdmin)
+			$incl = "admin/admthesaurus";
+		break;
 	case "aclug":
 		$babLevelOne = bab_translate("Administration");
 		$babLevelTwo = "";
@@ -880,6 +886,10 @@ switch($tg)
 	case "statconf":
 		$babLevelOne = bab_translate("Statistics");
 		$incl = "statconf";
+		break;
+	case "thesaurus":
+		$babLevelOne = bab_translate("Thesaurus");
+		$incl = "thesaurus";
 		break;
 	case "forumsuser":
 		$babLevelOne = bab_translate("Forums");

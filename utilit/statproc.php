@@ -259,6 +259,8 @@ class bab_stats_modules extends bab_stats_base
 			case "stat":
 			case "admindex":
 			case 'mailspool':
+			case 'thesaurus':
+			case 'admthesaurus':
 				$id = 15; /* Administration */
 				break;
 			case "vacuser":
