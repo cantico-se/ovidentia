@@ -1932,7 +1932,8 @@ class bab_SubFolders extends bab_handler
 	var $IdEntries = array();
 	var $index;
 	var $count;
-	var $res;
+	
+	var $oFmFolderSet = null;
 
 	function bab_SubFolders(&$ctx)
 	{
@@ -1941,71 +1942,42 @@ class bab_SubFolders extends bab_handler
 		$folderid = (int) $ctx->get_value('folderid');
 		$this->count = 0;
 
+		require_once $GLOBALS['babInstallPath'] . 'utilit/fileincl.php';
 
 		$sPath = (string) $path = $ctx->get_value('path');
 
-
-		require_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
 		$this->oFmFolderSet = new BAB_FmFolderSet();
 		$oId = $this->oFmFolderSet->aField['iId'];
 
-		
-		$oCriteria = null;
 		if(0 !== $folderid)
 		{
-			$oId->in($folderid);
-			$oFmFolder = $this->oFmFolderSet->get($oId);
+			$oFmFolder = $this->oFmFolderSet->get($oId->in($folderid));
 			if(!is_null($oFmFolder))
 			{
+				$iRelativePathLength = strlen($oFmFolder->getRelativePath());
+				$sRelativePath = ($iRelativePathLength === 0) ? $oFmFolder->getName() : $oFmFolder->getRelativePath();
 				
-			}
-		}
-		
-		
-		
-		if(bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $folderid))
-		{
-			$this->oFmFolderSet->select($oId);
-		}
-			
-			
-		$res = $babDB->db_query("select * from ".BAB_FM_FOLDERS_TBL." where id='".$babDB->db_escape_string($folderid)."'");
-		if( $res && $babDB->db_num_rows($res) == 1 )
-			{
-			$arr = $babDB->db_fetch_array($res);
-			$path = $ctx->get_value('path');
-			if( $path === false || $path === '' )
-				$path = '';
-
-			if( substr($GLOBALS['babUploadPath'], -1) == "/" )
-				$fullpath = $GLOBALS['babUploadPath'];
-			else
-				$fullpath = $GLOBALS['babUploadPath']."/";
-
-			if( $path != "" )
-				$fullpath = $fullpath."G".$folderid."/".$path."/";
-			else
-				$fullpath = $fullpath."G".$folderid."/";
-			if( is_dir($fullpath))
-				{
-					$h = opendir($fullpath);
-					while (($f = readdir($h)) != false)
-						{
-						if ($f != "." and $f != ".." and $f != "OVF") 
-							{
-							if (is_dir($fullpath."/".$f))
-								{
-								$this->IdEntries[] = $f;
-								}
-							}
-						}
-					closedir($h);
+//				bab_debug('sRelativePath ==> ' . $sRelativePath . 
+//					' sRootFolderName ==> ' . getFirstPath($sRelativePath));
+	
+				$sRootFolderName = getFirstPath($sRelativePath);
+				if($this->accessValid($sRootFolderName, $sPath))
+				{				
+					$sRelativePath = $sRootFolderName . '/' . $sPath . '/';
+					
+					$sUploadPath = BAB_FmFolderHelper::getUploadPath();
+					
+					$sFullPathName = realpath($sUploadPath . $sRelativePath);
+					
+					$this->walkDirectory($sFullPathName);
+					
 					$this->count = count($this->IdEntries);
 					$order = $ctx->get_value('order');
-					if( $order === false || $order === '' )
-						{
+					if($order === false || $order === '')
+					{
 						$order = 'asc';
-						}
+					}
+					
 					switch(strtolower($order))
 					{
 						case 'desc':
@@ -2017,7 +1989,6 @@ class bab_SubFolders extends bab_handler
 					}
 				}
 			}
-
 		}
 		$this->ctx->curctx->push('CCount', $this->count);
 	}
@@ -2039,6 +2010,52 @@ class bab_SubFolders extends bab_handler
 			return false;
 		}
 	}
+	
+	function accessValid($sName, $sPath)
+	{
+		$oName = $this->oFmFolderSet->aField['sName'];
+		$oRelativePath = $this->oFmFolderSet->aField['sRelativePath'];
+		
+		$oCriteria = $oName->in($sName);
+		$oCriteria = $oCriteria->_and($oRelativePath->in(''));
+		
+		//Get the root folder
+		$oFmFolder = $this->oFmFolderSet->get($oCriteria);
+		if(!is_null($oFmFolder))
+		{
+			$iIdOwner = 0;
+			$sRelativePath = '';
+			
+			BAB_FmFolderHelper::getFileInfoForCollectiveDir($oFmFolder->getId(), $sPath, 
+				$iIdOwner, $sRelativePath, $oFmFolder);		
+				
+			return 	bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $iIdOwner);
+		}
+		return false;
+	}
+	
+	function walkDirectory($sFullPathName)
+	{
+//		bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sPathName ==> ' . $sPathName);
+		if(is_dir($sFullPathName))
+		{
+			$oDir = dir($sFullPathName);
+			while(false !== $sEntry = $oDir->read()) 
+			{
+				// Skip pointers
+				if($sEntry == '.' || $sEntry == '..' || $sEntry == BAB_FVERSION_FOLDER) 
+				{
+					continue;
+				}
+				
+				if(is_dir($sFullPathName . '/' . $sEntry))
+				{
+					$this->IdEntries[] = $sEntry;
+				}
+			}
+			$oDir->close();
+		}
+	}
 }
 
 class bab_Files extends bab_handler
@@ -2048,76 +2065,148 @@ class bab_Files extends bab_handler
 	var $index;
 	var $count;
 
-	function bab_Files( &$ctx)
+	var $oFmFolderSet = null;
+	var $oFolderFileSet = null;
+	var $iIdRootFolder = 0;
+
+	function bab_Files(&$ctx)
 	{
 		global $babBody, $babDB;
-		include_once $GLOBALS['babInstallPath']."utilit/fileincl.php";
+		include_once $GLOBALS['babInstallPath'] . 'utilit/fileincl.php';
 		$this->bab_handler($ctx);
-		$this->count = 0;
-		$folderid = $ctx->get_value('folderid');
-		$path = $ctx->get_value('path');
-		if( $path === false || $path === '' )
-			$path = '';
-		if($folderid !== false && $folderid !== '' && bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $folderid))
+		$this->count	= 0;
+		$folderid		= (int) $ctx->get_value('folderid');
+		$sPath			= (string) $ctx->get_value('path');
+
+		require_once $GLOBALS['babInstallPath'] . 'utilit/fileincl.php';
+
+		$this->oFolderFileSet = new BAB_FolderFileSet();
+
+		$this->oFmFolderSet = new BAB_FmFolderSet();
+		$oId = $this->oFmFolderSet->aField['iId'];
+
+		if(0 !== $folderid)
 		{
-			$rows = $ctx->get_value('rows');
-			$offset = $ctx->get_value('offset');
-			if( $rows === false || $rows === '')
-				$rows = "-1";
-
-			if( $offset === false || $offset === '')
-				$offset = "0";
-			$req = "select id from ".BAB_FILES_TBL." where id_owner='".$babDB->db_escape_string($folderid)."' and bgroup='Y' and state='' and path='".$babDB->db_escape_string($path)."' and confirmed='Y' order by name asc";
-			if ($rows != "-1")
-				$req .= " limit ".$babDB->db_escape_string($offset).", ".$babDB->db_escape_string($rows);
-
-			$this->res = $babDB->db_query($req);
-			while($arr = $babDB->db_fetch_array($this->res))
+			$oFmFolder = $this->oFmFolderSet->get($oId->in($folderid));
+			if(!is_null($oFmFolder))
 			{
-				$this->IdEntries[] = $arr['id'];
-			}
-
-			$this->count =  count($this->IdEntries);
-			if( $this->count > 0 )
+				$iRelativePathLength = strlen($oFmFolder->getRelativePath());
+				$sRelativePath = ($iRelativePathLength === 0) ? $oFmFolder->getName() : $oFmFolder->getRelativePath();
+				
+//				bab_debug('sRelativePath ==> ' . $sRelativePath . 
+//					' sRootFolderName ==> ' . getFirstPath($sRelativePath));
+	
+				$sRootFolderName = getFirstPath($sRelativePath);
+				$sRelativePath = $sRootFolderName . '/' . $sPath . '/';
+				
+				$this->initRootFolderId($sRootFolderName);
+				
+				$rows	= (int) $ctx->get_value('rows');
+				$offset	= (int) $ctx->get_value('offset');
+				
+				$oIdOwner	= $this->oFolderFileSet->aField['iIdOwner'];
+				$oGroup		= $this->oFolderFileSet->aField['sGroup'];
+				$oState		= $this->oFolderFileSet->aField['sState'];
+				$oPathName	= $this->oFolderFileSet->aField['sPathName'];
+				$oConfirmed	= $this->oFolderFileSet->aField['sConfirmed'];
+				
+				$oCriteria = $oIdOwner->in($folderid);
+				$oCriteria = $oCriteria->_and($oGroup->in('Y'));
+				$oCriteria = $oCriteria->_and($oState->in(''));
+				$oCriteria = $oCriteria->_and($oPathName->in($sRelativePath));
+				$oCriteria = $oCriteria->_and($oConfirmed->in('Y'));
+				
+				$aLimit = array();
+				if(0 !== $rows)
 				{
-				$this->res = $babDB->db_query("select * from ".BAB_FILES_TBL." where id IN (".$babDB->quote($this->IdEntries).") order by name asc");
-				$this->count = $babDB->db_num_rows($this->res);
+					$aLimit = array($offset, $rows);
 				}
+				
+				$this->oFolderFileSet->select($oCriteria, array('sName' => 'ASC'), $aLimit);
+				
+				while(null !== ($oFolderFile = $this->oFolderFileSet->next()))
+				{
+					$this->IdEntries[] = $oFolderFile->getId();
+				}
+				$this->oFolderFileSet->reset();
+				$this->count = count($this->IdEntries);
+			}
 		}
 		$this->ctx->curctx->push('CCount', $this->count);
 	}
 
+	function initRootFolderId($sRootFolderName)
+	{
+		$oName = $this->oFmFolderSet->aField['sName'];
+		$oRelativePath = $this->oFmFolderSet->aField['sRelativePath'];
+		
+		$oCriteria = $oName->in($sRootFolderName);
+		$oCriteria = $oCriteria->_and($oRelativePath->in(''));
+		
+		//Get the root folder
+		$oFmFolder = $this->oFmFolderSet->get($oCriteria);
+		if(!is_null($oFmFolder))
+		{
+			$this->iIdRootFolder = $oFmFolder->getId();
+		}
+	}
+	
 	function getnext()
 	{
 		global $babDB;
-		if( $this->idx < $this->count)
+		if(0 !== $this->oFolderFileSet->count())
 		{
-			$arr = $babDB->db_fetch_array($this->res);
-			$this->ctx->curctx->push('CIndex', $this->idx);
-			$this->ctx->curctx->push('FileName', $arr['name']);
-			$this->ctx->curctx->push('FileDescription', $arr['description']);
-			$this->ctx->curctx->push('FileKeywords', $arr['keywords']);
-			$this->ctx->curctx->push('FileId', $arr['id']);
-			$this->ctx->curctx->push('FileFolderId', $arr['id_owner']);
-			$this->ctx->curctx->push('FileDate', bab_mktime($arr['modified']));
-			$this->ctx->curctx->push('FileAuthor', $arr['author']);
-			$this->ctx->curctx->push('FileUrl', $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path']));
-			$this->ctx->curctx->push('FilePopupUrl', $GLOBALS['babUrlScript']."?tg=fileman&idx=viewfile&idf=".$arr['id']."&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path'])."&file=".urlencode($arr['name']));
-			$this->ctx->curctx->push('FileUrlGet', $GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path'])."&file=".urlencode($arr['name']));
-			$fullpath = bab_getUploadFullPath($arr['bgroup'], $arr['id_owner']);
-			if (file_exists($fullpath.$arr['path']."/".$arr['name']) )
-				$this->ctx->curctx->push('FileSize',bab_formatSizeFile(filesize($fullpath.$arr['path']."/".$arr['name'])) );
+			if(null !== ($oFolderFile = $this->oFolderFileSet->next()))
+			{
+				$this->ctx->curctx->push('CIndex', $this->idx);
+				$this->ctx->curctx->push('FileName', $oFolderFile->getName());
+				$this->ctx->curctx->push('FileDescription', $oFolderFile->getDescription());
+				$this->ctx->curctx->push('FileKeywords', $oFolderFile->getKeywords());
+				$this->ctx->curctx->push('FileId', $oFolderFile->getId());
+				$this->ctx->curctx->push('FileFolderId', $oFolderFile->getOwnerId());
+				$this->ctx->curctx->push('FileDate', bab_mktime($oFolderFile->getModifiedDate()));
+				$this->ctx->curctx->push('FileAuthor', $oFolderFile->getAuthorId());
+				
+				$sGroup			= $oFolderFile->getGroup();
+				$sEncodedPath	= realpath($oFolderFile->getPathName());
+				$iLength		= strlen(trim($sEncodedPath));
+				if(0 < $iLength && '/' === $sEncodedPath{$iLength - 1})
+				{
+					$sEncodedPath = substr($sEncodedPath, 0, -1); 
+				}
+				$sEncodedPath = urlencode($sEncodedPath);
+				
+				$this->ctx->curctx->push('FileUrl', $GLOBALS['babUrlScript'] .'?tg=fileman&idx=list&id=' . $this->iIdRootFolder . '&gr=' . 
+					$sGroup . '&path=' . $sEncodedPath);
+				
+				$this->ctx->curctx->push('FilePopupUrl', $GLOBALS['babUrlScript'] . '?tg=fileman&idx=viewfile&idf=' . $oFolderFile->getId() . 
+					'&id=' . $this->iIdRootFolder . '&gr=' . $sGroup . '&path=' . $sEncodedPath . '&file=' . urlencode($oFolderFile->getName()));
+					
+				$this->ctx->curctx->push('FileUrlGet', $GLOBALS['babUrlScript'] . '?tg=fileman&idx=get&id=' . $this->iIdRootFolder . '&gr=' . 
+					$sGroup . '&path=' . $sEncodedPath . '&file=' . urlencode($oFolderFile->getName()));
+					
+				$sUploadPath = BAB_FmFolderHelper::getUploadPath();
+				
+				$sFullPathName = $sUploadPath . $oFolderFile->getPathName() . $oFolderFile->getName();
+				if(file_exists($sFullPathName))
+				{
+					$this->ctx->curctx->push('FileSize', bab_formatSizeFile(filesize($sFullPathName)));
+				}
+				else
+				{
+					$this->ctx->curctx->push('FileSize', '???');
+				}
+				$this->idx++;
+				$this->index = $this->idx;
+				return true;
+			}
 			else
-				$this->ctx->curctx->push('FileSize', '???');
-			$this->idx++;
-			$this->index = $this->idx;
-			return true;
+			{
+				return false;
+			}
 		}
-		else
-		{
-			$this->idx=0;
-			return false;
-		}
+		$this->idx=0;
+		return false;
 	}
 }
 
