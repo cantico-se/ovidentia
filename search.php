@@ -2719,21 +2719,24 @@ function viewFile($id, $w)
 				$this->created = bab_toHtml(bab_shortDate(bab_mktime($this->arr['created']), true));
 				$this->postedby = bab_toHtml(bab_getUserName($this->arr['author']));
 				$this->modifiedby = bab_toHtml(bab_getUserName($this->arr['modifiedby']));
-				$this->geturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$this->arr['id_owner']."&gr=".$this->arr['bgroup']."&path=".urlencode($this->arr['path'])."&file=".urlencode($this->arr['name']));
-				if( $this->arr['bgroup'] == "Y")
-					$fstat = stat($GLOBALS['babUploadPath']."/G".$this->arr['id_owner']."/".$this->arr['path']."/".$this->arr['name']);
+				
+				$sPath = removeFirstPath($this->arr['path']);
+				$iLength = strlen(trim($sPath));
+				if('/' === $sPath{$iLength - 1})
+				{
+					$sPath = substr($sPath, 0, -1);
+				}
+				
+				$this->geturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$this->arr['id_owner']."&gr=".$this->arr['bgroup']."&path=".urlencode($sPath)."&file=".urlencode($this->arr['name']));
+				
+				$sUploadPath = BAB_FmFolderHelper::getUploadPath();
+				if($this->arr['bgroup'] == "Y")
+					$fstat = stat($sUploadPath . $this->arr['path'] . $this->arr['name']);
 				else
-					$fstat = stat($GLOBALS['babUploadPath']."/U".$this->arr['id_owner']."/".$this->arr['path']."/".$this->arr['name']);
+					$fstat = stat($sUploadPath . $this->arr['path'] . $this->arr['name']);
 				$this->size = bab_formatSizeFile($fstat[7])." ".bab_translate("Kb");
 				if( $this->arr['bgroup'] == "Y") {
-					
 					$this->rootpath = '';
-					$oFmFolder = BAB_FmFolderSet::get(array(new BAB_InCriterion('iId', $this->arr['id_owner'])));
-					if(!is_null($oFmFolder))
-					{
-						$this->rootpath = $oFmFolder->getName();
-					}
-
 					$this->resff = $babDB->db_query("select * from ".BAB_FM_FIELDS_TBL." where id_folder=".$babDB->quote($this->arr['id_owner']));
 					$this->countff = $babDB->db_num_rows($this->resff);
 					}
