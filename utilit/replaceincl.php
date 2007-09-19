@@ -305,7 +305,15 @@ function ref(&$txt)
 										$inl ='';
 										}
 
-									$title_object = $this->_make_link($GLOBALS['babUrlScript']."?tg=fileman&idx=get".$inl."&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path'])."&file=".urlencode($arr['name']),$title_object,2);
+				
+										$sPath = removeFirstPath($arr['path']);
+										$iLength = strlen(trim($sPath));
+										if('/' === $sPath{$iLength - 1})
+										{
+											$sPath = substr($sPath, 0, -1);
+										}
+										
+										$title_object = $this->_make_link($GLOBALS['babUrlScript']."?tg=fileman&idx=get".$inl."&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($sPath)."&file=".urlencode($arr['name']),$title_object,2);
 									}
 								}
 							bab_replace::_var($txt,$var,$title_object);

@@ -1286,7 +1286,7 @@ function listFiles()
 					'&gr=Y&path=' . $sEncodedPath . '&sDirName=' . $sEncodedName);
 
 				$this->altbg = !$this->altbg;
-				$this->name = $sEncodedName;
+				$this->name = $aItem['folder'];
 				
 				$this->url = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&idx=list&id=' . $iIdRootFolder . '&gr=Y&path=' . $sUrlEncodedPath);
 				
