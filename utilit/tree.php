@@ -30,10 +30,12 @@ if (!function_exists('is_a'))
 {
     function is_a($object, $class)
     {
-        if (!is_object($object))
+        if (!is_object($object)) {
             return false;
-        if (strtolower(get_class($object)) === strtolower($class))
+        }
+        if (strtolower(get_class($object)) === strtolower($class)) {
             return true;
+        }
         return is_subclass_of($object, $class);
     }
 }
@@ -412,7 +414,7 @@ class bab_Node
 	 * 
 	 * @see bab_Node::sortSubTree()
 	 */
-	function sortChildNodes(/*$comparisonFunction = 'bab_Node_defaultNodeComparison'*/)
+	function sortChildNodes()
 	{
 		$nodes = array();
 		$node =& $this->firstChild();
@@ -705,23 +707,11 @@ class bab_OrphanRootNode extends bab_RootNode
 
 
 /**
- * Base class for all widgets
- * @package Utilities
- * @subpackage Widgets
- */
-class bab_Widget
-{
-	
-}
-
-
-/**
  * An element (node) of a bab_TreeView.
+ * 
  * @see bab_TreeView::createElement()
- * @package Utilities
- * @subpackage Widgets
  */
-class bab_TreeViewElement extends bab_Widget
+class bab_TreeViewElement
 {
 	/**#@+
 	 * @access private
@@ -735,6 +725,7 @@ class bab_TreeViewElement extends bab_Widget
 	var $_icon;
 
 	var $_actions;
+	var $_menus;
 	var $_checkBoxes;
 
 	var $_info;
@@ -760,6 +751,7 @@ class bab_TreeViewElement extends bab_Widget
 		$this->_description = $description;
 		$this->_link = $link;
 		$this->_actions = array();
+		$this->_menus = array();
 		$this->_checkBoxes = array();
 		$this->_icon= '';
 		$this->_info = '';
@@ -768,18 +760,29 @@ class bab_TreeViewElement extends bab_Widget
 		$this->setFetchContentScript(false);
 	}
 
+
+	/**
+	 * Defines the url that will be called when dynamically fetching
+	 * the subtree of an element.
+	 *
+	 * @param string $url
+	 * @access public
+	 */
 	function setFetchContentScript($url)
 	{
 		$this->_fetchContentScript = $url;
 	}
 
+
 	/**
 	 * Adds an action icon for the treeview element.
+	 * 
 	 * @param string $name
 	 * @param string $caption
 	 * @param string $icon
 	 * @param string $link
 	 * @param string $script
+	 * @access public 
 	 */
 	function addAction($name, $caption, $icon, $link, $script)
 	{
@@ -790,11 +793,64 @@ class bab_TreeViewElement extends bab_Widget
 								  'script' => $script);
 	}
 
+
+	/**
+	 * Adds a menu to the treeview element.
+	 * 
+	 * @param string $name
+	 * @param string $caption
+	 * @param string $icon
+	 * @access public 
+	 */
+	function addMenu($name, $caption, $icon)
+	{
+		$this->_menus[$name] = array('name' => $name,
+									 'caption' => $caption,
+									 'icon' => $icon,
+									 'actions' => array());
+	}
+
+
+	/**
+	 * Adds an item to the specified menu.
+	 *
+	 * @param string $menuName
+	 * @param string $actionName
+	 * @param string $caption
+	 * @param string $icon
+	 * @param string $link
+	 * @param string $script
+	 * @access public
+	 */
+	function addMenuAction($menuName, $actionName, $caption, $icon, $link, $script)
+	{
+		$this->_menus[$menuName]['actions'][] = array('name' => $actionName,
+													  'caption' => $caption,
+													  'icon' => $icon,
+													  'link' => $link,
+													  'script' => $script);
+	}
+
+
+	/**
+	 * Adds a separator (typically an horizontal line) in the specified menu.
+	 *
+	 * @param string $menuName
+	 * @access public
+	 */
+	function addMenuSeparator($menuName)
+	{
+		$this->_menus[$menuName]['actions'][] = array('name' => '-');
+	}
+
 	/**
 	 * Adds a checkbox to the treeview element.
+	 * 
 	 * @param string $name
-	 * @param string $script
-	 * 	 */
+	 * @param boolean $check		True to check the box.
+	 * @param string $script		The script to execute on click.
+	 * @access public
+	 */
 	function addCheckBox($name, $check = false, $script = '')
 	{
 		$this->_checkBoxes[] = array('name' => $name, 'checked' => $check, 'script' => $script);
@@ -802,7 +858,9 @@ class bab_TreeViewElement extends bab_Widget
 
 	/**
 	 * Defines an info text that will appear on the right of the treeview element title.
+	 * 
 	 * @param string $text
+	 * @access public
 	 */
 	function setInfo($text)
 	{
@@ -811,7 +869,9 @@ class bab_TreeViewElement extends bab_Widget
 
 	/**
 	 * Defines the rank of the treeview element (that can be used by the compare and sort methods).
+	 * 
 	 * @param int $rank
+	 * @access public
 	 */
 	function setRank($rank)
 	{
@@ -820,7 +880,9 @@ class bab_TreeViewElement extends bab_Widget
 
 	/**
 	 * Defines the url link when the element is clicked.
+	 * 
 	 * @param string $url
+	 * @access public
 	 */
 	function setLink($url)
 	{
@@ -829,7 +891,9 @@ class bab_TreeViewElement extends bab_Widget
 
 	/**
 	 * Defines the url of the treeview element icon.
+	 * 
 	 * @param string $url
+	 * @access public
 	 */
 	function setIcon($url)
 	{
@@ -839,7 +903,9 @@ class bab_TreeViewElement extends bab_Widget
 	/**
 	 * Defines the url of the subTree (the url should provide the content of the subTree to be inserted).
 	 * The url will be called when the TreeViewElement is expanded.
+	 * 
 	 * @param string $url
+	 * @access public
 	 */
 	function setSubTree($url)
 	{
@@ -847,23 +913,24 @@ class bab_TreeViewElement extends bab_Widget
 	}
 
 
+	/**
+	 * Compare two bab_TreeViewElements
+	 *
+	 * The result of $a->compare($b) will be :
+	 * 	< 0 if $a is less than $b;
+	 *  > 0 if $a is greater than $b,
+	 *  = 0 if they are equal.
+	 * 
+	 * @param bab_TreeViewElement $element
+	 * @return int
+	 */
 	function compare(&$element)
 	{
-//		if ((int)$this->_info > (int)$element->_info)
-//			return -1;
-//		if ((int)$this->_info < (int)$element->_info)
-//			return 1;
-//	
-		if ((int)$this->_rank > (int)$element->_rank)
-			return -1;
-		if ((int)$this->_rank < (int)$element->_rank)
-			return 1;
-	
-		if (strtoupper($this->_title) > strtoupper($element->_title))
-			return 1;
-		if (strtoupper($this->_title) < strtoupper($element->_title))
-			return -1;
-		return 0;
+		$diff = (int)$element->_rank - (int)$this->_rank;
+		if ($diff === 0) {
+			return strcasecmp($this->_title, $element->_title);
+		}
+		return $diff;
 	}
 
 }
@@ -880,17 +947,15 @@ define('BAB_TREE_VIEW_MEMORIZE_OPEN_NODES',	2048);
 
 /**
  * A TreeView widget used to display hierarchical data.
- * @package Utilities
- * @subpackage Widgets
  */
-class bab_TreeView extends bab_Widget
+class bab_TreeView
 {
 	/**#@+
 	 * @access private
 	 */
 	var $_id;
 	/**
-	 * @var bab_OrphanRootNode $_rootNode
+	 * @var bab_OrphanRootNode
 	 */
 	var $_rootNode;
 	var $_iterator;
@@ -947,7 +1012,9 @@ class bab_TreeView extends bab_Widget
 	
 	/**
 	 * @param string $id A unique treeview id in the page. Must begin with a letter ([A-Za-z]) and may be followed by any number of letters, digits ([0-9]), hyphens ("-"), underscores ("_"), colons (":"), and periods (".").
+	 * 
 	 * @return bab_TreeView
+	 * @access public
 	 */
 	function bab_TreeView($id)
 	{
@@ -987,7 +1054,9 @@ class bab_TreeView extends bab_Widget
 
 	/**
 	 * Defines the attributes of the treeview.
+	 * 
 	 * @param int $attributes
+	 * @access public
 	 */
 	function setAttributes($attributes)
 	{
@@ -999,7 +1068,9 @@ class bab_TreeView extends bab_Widget
 
 	/**
 	 * Returns the attributes of the treeview.
+	 * 
 	 * @return int
+	 * @access public
 	 */
 	function getAttributes()
 	{
@@ -1008,7 +1079,9 @@ class bab_TreeView extends bab_Widget
 	
 	/**
 	 * Adds attributes to the treeview.
+	 * 
 	 * @param int $attributes
+	 * @access public
 	 */
 	function addAttributes($attributes)
 	{		
@@ -1017,22 +1090,25 @@ class bab_TreeView extends bab_Widget
 
 	/**
 	 * Adds attributes to the treeview.
+	 * 
 	 * @param int $attributes
+	 * @access public
 	 */
 	function removeAttributes($attributes)
 	{		
 		$this->setAttributes($this->getAttributes() & ~$attributes);
 	}
 
-	
-	
+
 	/**
 	 * @param string $id			A unique element id in the treeview.
 	 * @param string $type			Will be used as a css class to style the element.
 	 * @param string $title			The title (label) of the node.
 	 * @param string $description	An additional description that will appear as a tooltip.
 	 * @param string $link			A link when clicking the node title.
+	 * 
 	 * @return bab_TreeViewElement
+	 * @access public
 	 */
 	function &createElement($id, $type, $title, $description, $link)
 	{
@@ -1040,11 +1116,14 @@ class bab_TreeView extends bab_Widget
 		return $element;
 	}
 
+
 	/**
 	 * Appends $element as the last child of the element with the id $parentId.
 	 * If $parentId is null, the element will appear as a first level node.
-	 * @param bab_TreeViewElement &$element An element created by the method createElement.
-	 * @param string $parentId The id of the parent element.
+	 * 
+	 * @param bab_TreeViewElement	$element	An element created by the method createElement.
+	 * @param string 				$parentId	The id of the parent element.
+	 * @access public
 	 */
 	function appendElement(&$element, $parentId)
 	{
@@ -1053,12 +1132,20 @@ class bab_TreeView extends bab_Widget
 		$this->_upToDate = false;
 		$this->onElementAppended($element, $parentId);
 	}
-		
-	function sort($comparisonFunctionName = 'treeViewNodeComparison')
+
+	/**
+	 * Sorts the TreeView.
+	 * 
+	 * Siblings of the same branch are ordered.
+	 * Ordering is performed using the bab_TreeViewElement::compare() method.
+	 *
+	 * @access public
+	 */
+	function sort()
 	{
 //		$this->_updateTree();
 		$this->_invalidateCache();
-		$this->_rootNode->sortSubTree($comparisonFunctionName);
+		$this->_rootNode->sortSubTree();
 	}
 
 	
@@ -1116,6 +1203,7 @@ class bab_TreeView extends bab_Widget
 
 			$this->t_showRightElements = ($element->_info != '')
 							|| (count($this->_currentElement->_actions) > 0)
+							|| (count($this->_currentElement->_menus) > 0)
 							|| (count($this->_currentElement->_checkBoxes) > 0);
 			return true;
 		}
@@ -1138,6 +1226,35 @@ class bab_TreeView extends bab_Widget
 			return true;
 		}
 		reset($this->_currentElement->_actions);
+		return false;
+	}
+
+	function getNextMenu()
+	{
+		if (list(,$menu) = each($this->_currentElement->_menus)) {
+			$this->menuActions = $menu['actions'];
+			$this->menu_name = $menu['name'];
+			$this->menu_caption = $menu['caption'];
+			$this->menu_icon = $menu['icon'];
+			return true;
+		}
+		reset($this->_currentElement->_menus);
+		return false;
+	}
+
+	function getNextMenuAction()
+	{
+		if (list(,$action) = each($this->menuActions)) {
+			$this->action_name = $action['name'];
+			if ($this->action_name != '-') {
+				$this->action_caption = $action['caption'];
+				$this->action_icon = $action['icon'];
+				$this->action_url = $action['link'];
+				$this->action_script = $action['script'];
+			}
+			return true;
+		}
+		reset($this->menuActions);
 		return false;
 	}
 
@@ -1296,11 +1413,13 @@ class bab_OrgChart extends bab_TreeView
 	
 	
 	/**
-	 * @param string $id	A unique treeview id in the page.
-	 * 						Must begin with a letter ([A-Za-z]) and may be followed
-	 * 						by any number of letters, digits ([0-9]), hyphens ("-"),
-	 * 						underscores ("_"), colons (":"), and periods (".").
+	 * @param string 	$id		A unique treeview id in the page.
+	 * 							Must begin with a letter ([A-Za-z]) and may be followed
+	 * 							by any number of letters, digits ([0-9]), hyphens ("-"),
+	 * 							underscores ("_"), colons (":"), and periods (".").
+	 * @param int		$startLevel
 	 * @return bab_OrgChart
+	 * @access public
 	 */
 	function bab_OrgChart($id, $startLevel = 0)
 	{
@@ -1739,8 +1858,11 @@ class bab_ArticleTreeView extends bab_TreeView
 
 	
 	/**
-	 * Attributes ranks to each element of the treeview as specified
-	 * in the articles/topics/categories administration.
+	 * Gives a rank to each element of the treeview as specified in the
+	 * articles/topics/categories administration.
+	 * 
+	 * A call to this method does not actually reorder the tree. It should be
+	 * followed by a call to {@link sort} in order to do so.
 	 * 
 	 * @access public
 	 */
@@ -1916,6 +2038,7 @@ class bab_FileTreeView extends bab_TreeView
 	 */
 	function _addCollectiveDirectories($folderId = null)
 	{
+		require_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
 		global $babDB, $babBody;
 
 		$element =& $this->createElement('cd',
@@ -1940,36 +2063,41 @@ class bab_FileTreeView extends bab_TreeView
 			$directoriesManageAcl[$directoryId] = $babBody->aclfm['ma'][$aclFlip[$directoryId]];
 		}
 
-		$sql = 'SELECT folder.id, folder.folder FROM ' . BAB_FM_FOLDERS_TBL. ' folder ';
-		$where = array();
-		$where[] = "active='Y'";
-		$where[] = "bhide='N'";
+		$folders = new BAB_FmFolderSet();
+		
+		$oRelativePath =& $folders->aField['sRelativePath']; 
+		$oIdDgOwner =& $folders->aField['iIdDgOwner']; 
+		$oActive =& $folders->aField['sActive']; 
+		$oHide =& $folders->aField['sHide']; 
+		$oId =& $folders->aField['iId']; 
+				
+		$oCriteria = $oRelativePath->in($babDB->db_escape_like(''));
+		$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
+		$oCriteria = $oCriteria->_and($oActive->in('Y'));
+		$oCriteria = $oCriteria->_and($oHide->in('N'));
 		if (!is_null($folderId)) {
-			$where[] = ' folder.id=' . $babDB->quote($folderId);
+			$oCriteria = $oCriteria->_and($oId->in($folderId));
 		}
-		if ($babBody->currentAdmGroup != 0)	{
-			$where[] = ' folder.id_dgowner=' . $babDB->quote($babBody->currentAdmGroup);
-		}
-		$sql .= 'WHERE ' . implode(' AND ', $where) . ' ORDER BY folder.folder';
+		$folders->select($oCriteria);
+
+
 
 		$elementType = 'folder';
 		if (!($this->_attributes & BAB_TREE_VIEW_MULTISELECT)
 					&& $this->_attributes & BAB_FILE_TREE_VIEW_SELECTABLE_COLLECTIVE_DIRECTORIES) {
 			$elementType .= ' clickable';
 		}
-		$folders = $babDB->db_query($sql);
-		
 
-		while ($folder = $babDB->db_fetch_array($folders)) {
+		while (null !== ($folder = $folders->next())) {
 			if ($this->_adminView
-				|| isset($directoriesDownloadAcl[$folder['id']]) && $directoriesDownloadAcl[$folder['id']]
-				|| isset($directoriesManageAcl[$folder['id']]) && $directoriesManageAcl[$folder['id']]) {
-				$element =& $this->createElement('d' . BAB_TREE_VIEW_ID_SEPARATOR . $folder['id'],
+				|| isset($directoriesDownloadAcl[$folder->getId()]) && $directoriesDownloadAcl[$folder->getId()]
+				|| isset($directoriesManageAcl[$folder->getId()]) && $directoriesManageAcl[$folder->getId()]) {
+				$element =& $this->createElement('d' . BAB_TREE_VIEW_ID_SEPARATOR . $folder->getId(),
 												 $elementType,
-												 bab_toHtml($folder['folder']),
+												 bab_toHtml($folder->getName()),
 												 '',
 												 '');
-				$element->setFetchContentScript(bab_toHtml("bab_loadSubTree(document.getElementById('li" . $this->_id . '.' . $element->_id .  "'), '" . $this->_updateBaseUrl . "&start=" . $folder['id'] . "')"));
+				$element->setFetchContentScript(bab_toHtml("bab_loadSubTree(document.getElementById('li" . $this->_id . '.' . $element->_id .  "'), '" . $this->_updateBaseUrl . "&start=" . $folder->getId() . "')"));
 				$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
 				if (($this->_attributes & BAB_FILE_TREE_VIEW_SELECTABLE_COLLECTIVE_DIRECTORIES)
 				&& ($this->_attributes & BAB_TREE_VIEW_MULTISELECT)) {
@@ -1989,7 +2117,24 @@ class bab_FileTreeView extends bab_TreeView
 	 */
 	function _addFiles($folderId = null, $path = '')
 	{
+		require_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
 		global $babDB, $babBody;
+
+		$sEndSlash = (strlen(trim($path)) > 0 ) ? '/' : '' ;
+		
+		$rootPath = '';
+
+		if ($folderId !== null) {
+			$folders = new BAB_FmFolderSet();
+
+			$oId =& $folders->aField['iId'];
+				
+			$oFolder = $folders->get($oId->in($folderId));
+			if (is_a($oFolder, 'BAB_FmFolder')) {
+				$rootPath .= $oFolder->getName() . '/';
+			}
+		}
+		
 		
 		$sql = 'SELECT file.id, file.path, file.name, file.id_owner, file.bgroup FROM ' . BAB_FILES_TBL . ' file';
 		if ($babBody->currentAdmGroup != 0) {
@@ -1997,17 +2142,16 @@ class bab_FileTreeView extends bab_TreeView
 			$sql .= ' WHERE file.bgroup=\'Y\' AND folder.id_dgowner = ' . $babDB->quote($babBody->currentAdmGroup);
 		} elseif ($this->_attributes & BAB_FILE_TREE_VIEW_SHOW_PERSONAL_DIRECTORIES) {
 			$sql .= ' WHERE (file.bgroup=\'Y\' OR (file.bgroup=\'N\' AND file.id_owner=' . $babDB->quote($GLOBALS['BAB_SESS_USERID']) . '))';
-		} else {
+ 		} else {
 			$sql .= ' WHERE file.bgroup=\'Y\'';
 		}
-		if ($path !== '') {
-			$sql .= ' AND file.path LIKE ' . $babDB->quote($path . '%');
+		if ($rootPath . $path . $sEndSlash !== '') {
+			$sql .= ' AND file.path LIKE ' . $babDB->quote($rootPath . $path . $sEndSlash . '%');
 		}
-		if ($folderId !== null) {
-			$sql .= ' AND file.id_owner=' . $babDB->quote($folderId);
-		}
+
 		$sql .= ' AND file.state<>\'D\'';
 		$sql .= ' ORDER BY file.name';
+
 
 		$directoryType = 'folder';
 		if (!($this->_attributes & BAB_TREE_VIEW_MULTISELECT)
@@ -2023,15 +2167,13 @@ class bab_FileTreeView extends bab_TreeView
 		}
 		$files = $babDB->db_query($sql);
 		while ($file = $babDB->db_fetch_array($files)) {
-			
-// REMOVED FOR TEST
-//			$fullpath = bab_getUploadFullPath($file['bgroup'], $file['id_owner'], $file['path']) . $file['name'];
-//			if (!is_file($fullpath))
-//				continue;
-// END REMOVED FOR TEST
-			
 
-			$subdirs = explode('/', $file['path']);
+
+
+			$filePath = removeFirstPath($file['path']);
+
+			$subdirs = explode('/', $filePath);
+
 			if ($file['bgroup'] == 'Y') {
 				$fileId = 'g' . BAB_TREE_VIEW_ID_SEPARATOR . $file['id'];
 				$rootId = 'd' . BAB_TREE_VIEW_ID_SEPARATOR . $file['id_owner'];
@@ -2052,14 +2194,10 @@ class bab_FileTreeView extends bab_TreeView
 					$this->appendElement($element, null);
 				}
 			}
-			
+
 			$parentId = '';
 			$subdirMd5Id = '';
 
-//			$pathElements = explode('/', $path);
-//			$maxDepth = count($pathElements);
-//			for ($i = 0; $i < $maxDepth; $i++) {
-//				$subdir = $subdirs[$i];
 			foreach ($subdirs as $subdir) {
 				if (trim($subdir) !== '') {
 					$previousMd5Id = $subdirMd5Id;
@@ -2736,13 +2874,53 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
 
 
 
+
+class bab_GroupTreeViewElement extends bab_TreeViewElement
+{
+	/**#@+
+	 * @access private
+	 */	
+	var $_groupId;
+	/**#@-*/
+	
+	/**
+	 * @param string $groupId		The group id.
+	 * @param string $type			Will be used as a css class to style the element.
+	 * @param string $title			The title (label) of the node.
+	 * @param string $description	An additional description that will appear as a tooltip.
+	 * @param string $link			A link when clicking the node title.
+	 * @return bab_GroupTreeViewElement
+	 */
+	function bab_GroupTreeViewElement($groupId, $type, $title, $description, $link)
+	{
+		parent::bab_TreeViewElement('group' . BAB_TREE_VIEW_ID_SEPARATOR . $id,  $type, $title, $description, $link);
+		$this->_groupId = $groupId;
+	}
+
+	/**
+	 * Returns the group id of the element.
+	 *
+	 * @return string		The group id of the element.
+	 * @access public
+	 */
+	function getGroupId()
+	{
+		return $this->_groupId;
+	}
+	
+}
+
+
+/**
+ * Enter description here...
+ *
+ */
 class bab_GroupTreeView extends bab_TreeView
 {
 	/**#@+
 	 * @access private
 	 */	
 	var $_selectedGroups;
-
 	/**#@-*/
 
 	function bab_GroupTreeView($id)
@@ -2752,9 +2930,49 @@ class bab_GroupTreeView extends bab_TreeView
 	}
 
 	/**
+	 * Overloaded from bab_TreeView.
+	 * 
+	 * @param string $id			A unique element id in the treeview.
+	 * @param string $type			Will be used as a css class to style the element.
+	 * @param string $title			The title (label) of the node.
+	 * @param string $description	An additional description that will appear as a tooltip.
+	 * @param string $link			A link when clicking the node title.
+	 * 
+	 * @return bab_GroupTreeViewElement
+	 * @access public
+	 */
+	function &createElement($id, $type, $title, $description, $link)
+	{
+		$element =& new bab_GroupTreeViewElement($id, $type, $title, $description, $link);
+		return $element;
+	}
+
+
+	/**
+	 * Overloaded from bab_TreeView.
+	 * 
+	 * Appends $element as the last child of the element with the id $parentId.
+	 * If $parentId is null, the element will appear as a first level node.
+	 * 
+	 * @param bab_TreeViewElement	$element	An element created by the method createElement.
+	 * @param string 				$parentId	The id of the parent element.
+	 * @access public
+	 */
+	function appendElement(&$element, $parentId)
+	{
+		parent::appendElement($element, $parentId);
+		$groupId = $element->getGroupId();
+		if ($groupId !== '') {
+			$element->addCheckBox('select[' . $groupId . ']', isset($this->_selectedGroups[$groupId]));
+		}
+	}
+
+
+	
+	/**
 	 * Preselect groups in the treeview.
 	 *
-	 * @param array $groups An array indexed by group ids (group ids are in the key)
+	 * @param array $groups		An array indexed by group ids (group ids are in the key)
 	 */
 	function selectGroups($groups)
 	{
@@ -2785,34 +3003,6 @@ class bab_GroupTreeView extends bab_TreeView
 	}
 
 	/**
-	 * Returns the group id associated with a treeview element.
-	 *
-	 * @param bab_TreeViewElement $element
-	 * @return string		The group id or an emtpy string
-	 */
-	function getGroupId($element)
-	{
-		$explodedId = explode(BAB_TREE_VIEW_ID_SEPARATOR, $element->_id);
-		if (count($explodedId) === 2) {
-			return $explodedId[1];
-		}
-		return '';
-	}
-
-	/**
-	 * Overloaded bab_TreeView method called when an element is appended in the treeview.
-	 *
-	 * @param bab_TreeViewElement $element
-	 */
-	function onElementAppended(&$element)
-	{
-		$groupId = bab_GroupTreeView::getGroupId($element);
-		if ($groupId !== '') {
-			$element->addCheckBox('select[' . $groupId . ']', isset($this->_selectedGroups[$groupId]));
-		}
-	}
-
-	/**
 	 * @access private
 	 */
 	function _updateTree()
@@ -2820,7 +3010,6 @@ class bab_GroupTreeView extends bab_TreeView
 		if ($this->_upToDate) {
 			return;
 		}
-		$this->_categories = array();
 		$this->_addGroups();
 
 		parent::_updateTree();
