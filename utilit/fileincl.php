@@ -1912,7 +1912,7 @@ class BAB_BaseSet extends BAB_MySqlResultIterator
 		$this->sTableName . ' ' .
 		$sWhereClause . ' ' . $sOrder . ' ' . $sLimit;
 
-		bab_debug($sQuery);
+//		bab_debug($sQuery);
 		return $sQuery;
 	}
 
