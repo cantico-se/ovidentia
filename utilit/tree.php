@@ -2152,6 +2152,7 @@ class bab_FileTreeView extends bab_TreeView
 		$sql .= ' AND file.state<>\'D\'';
 		$sql .= ' ORDER BY file.name';
 
+		bab_debug(__METHOD__ . ' ' . $sql);
 
 		$directoryType = 'folder';
 		if (!($this->_attributes & BAB_TREE_VIEW_MULTISELECT)
@@ -2166,17 +2167,33 @@ class bab_FileTreeView extends bab_TreeView
 			$groupFileType .= ' clickable';
 		}
 		$files = $babDB->db_query($sql);
+
+
+		$folders = new BAB_FmFolderSet();
+		
+		$oRelativePath =& $folders->aField['sRelativePath']; 
+		$oName =& $folders->aField['sName']; 
+
 		while ($file = $babDB->db_fetch_array($files)) {
 
-
+			bab_debug('(1) ' . $file['path']);
 
 			$filePath = removeFirstPath($file['path']);
 
 			$subdirs = explode('/', $filePath);
 
+
 			if ($file['bgroup'] == 'Y') {
 				$fileId = 'g' . BAB_TREE_VIEW_ID_SEPARATOR . $file['id'];
-				$rootId = 'd' . BAB_TREE_VIEW_ID_SEPARATOR . $file['id_owner'];
+				$rootFolderName = getFirstPath($file['path']);
+
+				$oCriteria = $oRelativePath->in($babDB->db_escape_like(''));
+				$oCriteria = $oCriteria->_and($oName->in($rootFolderName));
+
+				$folder = $folders->get($oCriteria);
+				
+				
+				$rootId = 'd' . BAB_TREE_VIEW_ID_SEPARATOR . $folder->getId(); // $file['id_owner'];
 //				$parentId = 'd' . BAB_TREE_VIEW_ID_SEPARATOR . $file['id_owner'];
 				$fileType =& $groupFileType;
 			} else {
