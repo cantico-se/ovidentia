@@ -314,7 +314,7 @@ function fileNotifyMembers($file, $path, $idgrp, $msg, $bnew = true)
 	$mail->mailBody($message, "html");
 	$mail->mailAltBody($messagetxt);
 
-	$users = aclGetAccessUsers(BAB_FMDOWNLOAD_GROUPS_TBL, $idgrp);
+	$users = aclGetAccessUsers(BAB_FMNOTIFY_GROUPS_TBL, $idgrp);
 
 	$arrusers = array();
 	$count = 0;

@@ -3543,7 +3543,25 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$babDB->db_query("ALTER TABLE ".BAB_FM_FOLDERS_TBL." ADD `sRelativePath` TEXT NOT NULL AFTER `id`");
 		fileManagerUpgrade();
 	}
+
+	if (!bab_isTable(BAB_FMNOTIFY_GROUPS_TBL)) 
+	{
+
+	$babDB->db_query("
 	
+			CREATE TABLE ".BAB_FMNOTIFY_GROUPS_TBL." (
+			  id int(11) unsigned NOT NULL auto_increment,
+			  id_object int(11) unsigned NOT NULL default '0',
+			  id_group int(11) unsigned NOT NULL default '0',
+			  PRIMARY KEY  (id),
+			  KEY id_object (id_object),
+			  KEY id_group (id_group)
+			)
+		
+			");
+	$babDB->db_query("insert into ".BAB_FMNOTIFY_GROUPS_TBL." select * from ".BAB_FMDOWNLOAD_GROUPS_TBL."");
+
+	}
 	return true;
 }
 ?>

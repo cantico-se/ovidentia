@@ -3667,3 +3667,17 @@ CREATE TABLE bab_dg_acl_groups (
    KEY id_object (id_object),
    KEY id_group (id_group)
 );
+
+# --------------------------------------------------------
+#
+# Structure de la table 'bab_fmnotify_groups'
+#
+
+CREATE TABLE bab_fmnotify_groups (
+   id int(11) unsigned NOT NULL auto_increment,
+   id_object int(11) unsigned DEFAULT '0' NOT NULL,
+   id_group int(11) unsigned DEFAULT '0' NOT NULL,
+   PRIMARY KEY (id),
+   KEY id_object (id_object),
+   KEY id_group (id_group)
+);

@@ -407,6 +407,7 @@ function displayRightForm($fid)
 	$macl->addtable( BAB_FMUPDATE_GROUPS_TBL,bab_translate("Update"));
 	$macl->addtable( BAB_FMMANAGERS_GROUPS_TBL,bab_translate("Manage"));
 	$macl->filter(0,0,1,1,1);
+	$macl->addtable( BAB_FMNOTIFY_GROUPS_TBL,bab_translate("Who is notified when a new file is uploaded or updated?"));
 	$macl->babecho();
 	
 	$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
