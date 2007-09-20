@@ -182,8 +182,20 @@ function mapTagsImportFile($file, $tmpfile, $wsepar, $separ)
 	$babBody->babecho(	bab_printTemplate($temp,"thesaurus.html", "tagsmapfile"));
 	}
 
+function outPutTagsToJson()
+{
+	global $babBody, $babDB;
+	$like = bab_rp('like', '');
+	$res = $babDB->db_query("select * from ".BAB_TAGS_TBL." where tag_name like '%".$babDB->db_escape_like($like)."%' order by tag_name asc");
 
+	$ret = array();
+	while( $arr = $babDB->db_fetch_array($res))
+	{
+		$ret[] = '{"id": "'.$arr['id'].'", "tagname": "'.bab_toHtml($arr['tag_name']).'"}';		
+	}
 
+	print '['.join(',', $ret).']';
+}
 
 function updateTags()
 {
@@ -263,13 +275,8 @@ function processImportTagsFile()
 		}
 }
 
-/* main */
-if( !bab_isAccessValid(BAB_TAGSMAN_GROUPS_TBL, 1) )
-{
-	$babBody->msgerror = bab_translate("Access denied");
-	return;
-}
 
+/* main */
 $idx = bab_rp('idx', 'tagsman');
 
 
@@ -288,28 +295,53 @@ if( isset($updtags) )
 
 switch($idx)
 	{
+	case 'tagsjson':
+		outPutTagsToJson();
+		exit;
+		break;
 
 	case "tagsimp":
+		if( bab_isAccessValid(BAB_TAGSMAN_GROUPS_TBL, 1) )
+		{
 		$babBody->title = bab_translate("Tags import");
 		$babBody->addItemMenu("tagsman", bab_translate("Thesaurus"), $GLOBALS['babUrlScript']."?tg=thesaurus&idx=tagsman");
 		$babBody->addItemMenu("tagsimp", bab_translate("Import"), $GLOBALS['babUrlScript']."?tg=thesaurus&idx=tagsimp");
 		importTagsFile();
+		}
+		else
+		{
+		$babBody->msgerror = bab_translate("Access denied");
+		}
 		break;
 
 	case "impmap":
+		if( bab_isAccessValid(BAB_TAGSMAN_GROUPS_TBL, 1) )
+		{
 		$babBody->title = bab_translate("Tags import");
 		$babBody->addItemMenu("tagsman", bab_translate("Thesaurus"), $GLOBALS['babUrlScript']."?tg=thesaurus&idx=tagsman");
 		$babBody->addItemMenu("impmap", bab_translate("Import"), $GLOBALS['babUrlScript']."?tg=thesaurus&idx=tagsimp");
 		mapTagsImportFile($uploadf_name, $uploadf, $wsepar, $separ);
+		}
+		else
+		{
+		$babBody->msgerror = bab_translate("Access denied");
+		}
 		break;
 
 
 	case "tagsman":
 	default:
+		if( bab_isAccessValid(BAB_TAGSMAN_GROUPS_TBL, 1) )
+		{
 		$babBody->title = bab_translate("Tags management");
 		$babBody->addItemMenu("tagsman", bab_translate("Thesaurus"), $GLOBALS['babUrlScript']."?tg=thesaurus&idx=tagsman");
 		$babBody->addItemMenu("tagsimp", bab_translate("Import"), $GLOBALS['babUrlScript']."?tg=thesaurus&idx=tagsimp");
 		displayTags();
+		}
+		else
+		{
+		$babBody->msgerror = bab_translate("Access denied");
+		}
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);

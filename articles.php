@@ -1303,21 +1303,6 @@ function getDocumentArticle($idf, $topics)
 	}
 }
 
-function outPutTagsToJson()
-{
-	global $babBody, $babDB;
-	$like = bab_rp('like', '');
-	$res = $babDB->db_query("select * from ".BAB_TAGS_TBL." where tag_name like '%".$babDB->db_escape_like($like)."%' order by tag_name asc");
-
-	$ret = array();
-	while( $arr = $babDB->db_fetch_array($res))
-	{
-		$ret[] = '{"id": "'.$arr['id'].'", "tagname": "'.bab_toHtml($arr['tag_name']).'"}';		
-	}
-
-	print '['.join(',', $ret).']';
-}
-
 /* main */
 $arrtop = array();
 
@@ -1354,11 +1339,6 @@ $supp_rfurl = isset($_REQUEST['rfurl']) ? '&rfurl='.urlencode($_REQUEST['rfurl']
 
 switch($idx)
 	{
-	case 'tagsjson':
-		outPutTagsToJson();
-		exit;
-		break;
-
 	case "unload":
 		if( !isset($popupmessage)) { $popupmessage ='';}
 		if( !isset($refreshurl)) { $refreshurl ='';}
