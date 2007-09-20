@@ -1378,6 +1378,7 @@ function listFiles()
 				$arr = $babDB->db_fetch_array($this->res);
 				$this->bconfirmed = 0;
 				$this->updateFileInfo($arr);
+				$this->description = bab_toHTML($arr['description']);
 				$ufile = urlencode($arr['name']);
 				$upath = urlencode($this->path);
 				$this->url = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=upd&id=".$this->id."&gr=".$this->gr."&path=".$upath."&file=".$ufile);
@@ -1434,6 +1435,7 @@ function listFiles()
 				$arr = $babDB->db_fetch_array($this->reswf);
 				$this->bconfirmed = 1;
 				$this->updateFileInfo($arr);
+				$this->description = bab_toHTML($arr['description']);
 				$ufile = urlencode($arr['name']);
 				$upath = urlencode($this->path);
 				$this->url = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=upd&id=".$this->id."&gr=".$this->gr."&path=".$upath."&file=".$ufile);
@@ -1459,6 +1461,7 @@ function listFiles()
 				$arr = $babDB->db_fetch_array($this->xres);
 				$this->bconfirmed = 0;
 				$this->updateFileInfo($arr);
+				$this->description = bab_toHTML($arr['description']);
 				$ufile = urlencode($arr['name']);
 				
 				$upath = urlencode((string) substr($arr['path'], strlen($this->oFileManagerEnv->sRootFolderPath), -1));
