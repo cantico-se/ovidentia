@@ -1,0 +1,139 @@
+<!--#begin tagsman -->
+<script type="text/javascript">
+<!--
+function updateModifyForm(tag, tagid) {
+document.forms.ftagupd.tagname.value = tag;
+document.forms.ftagupd.tagid.value = tagid;
+var v = document.getElementById('tagupdateid');
+v.innerHTML = '<b>'+tag+'</b>';
+}
+//-->
+</script>
+<form name="ftagupd" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="thesaurus">
+<input type="hidden" name="idx" value="tagsman">
+<input type="hidden" name="updtags" value="updtags">
+<table  border="0" width="99%" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+	<table class="BabLoginMenuBackground"  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+	<tr> 
+	<td >{ tags_txt }:</td>
+	<td >{ tag_txt }:</td>
+	</tr> 
+	<tr> 
+	<td > 
+	<input type="text" name="tagsname" value="{ tagsvalue }" size="60">
+	</td>
+	<td > 
+	<input type="text" name="tagname" value="{ tagvalue }" size="20">
+	<input type="hidden" name="tagid" value="{ tagidvalue }">
+	</td>
+	</tr>
+	<tr> 
+	<td align="center"> 
+	<input type="submit" name="updtag" value="{ update_txt }">
+	</td>
+	<td id="tagupdateid">
+	</td>
+	</tr>
+	</table>
+</td>
+</tr>
+</table>
+</form>
+<br>
+<div style="margin:10px 25px">
+<!--#in getnexttag -->
+<!--#if big -->
+<big>
+<a href="#" onclick="javascript: updateModifyForm(this.innerHTML, { tagid });" style="text-decoration:none;color:black">{ tagname }</a>
+<!--#else big -->
+<a href="#" onclick="javascript: updateModifyForm(this.innerHTML, { tagid });" >{ tagname }</a>
+<!--#endif big -->
+<!--#if big -->
+</big>
+<!--#endif big -->
+&nbsp; &nbsp;
+<!--#endin getnexttag --> 
+</div>
+<!--#end tagsman -->
+
+
+<!--#begin tagsimpfile -->
+<form method="post" action="{ babPhpSelf }" enctype="multipart/form-data">
+<input type="hidden" name="MAX_FILE_SIZE" value="1000000">
+<input type="hidden" name="tg" value="thesaurus">
+<input type="hidden" name="idx" value="impmap">
+<table  width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table class="BabLoginMenuBackground"  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td align="right" nowrap valign="middle">{ name }</td>
+<td> 
+<input type="file" name="uploadf" size="40" maxlength="255" value="">
+</td>
+</tr>
+<tr> 
+<td align="right" nowrap valign="middle">{ separator }</td>
+<td > 
+<select name="wsepar">
+<option value="0">{ other }</option>
+<option value="1" selected >{ comma }</option>
+<option value="2">{ tab }</option>
+</select>&nbsp;&nbsp;
+<input type="text" name="separ" size="1" maxlength="1" value="">
+</td>
+</tr>
+<tr>
+<td >&nbsp;</td>
+<td > 
+<input type="submit" name="Submit" value="{ import }">
+<br>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</form>
+<!--#end tagsimpfile -->
+
+<!--#begin tagsmapfile -->
+<form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="thesaurus">
+<input type="hidden" name="idx" value="tagsman">
+<input type="hidden" name="separ" value="{ separ }">
+<input type="hidden" name="pfile" value="{ pfile }">
+<input type="hidden" name="updtags" value="imptags">
+<table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td width="50%" align="center" nowrap valign="middle" colspan="2">&nbsp;{ helpfields }</td>
+</tr>
+<tr> 
+<td  align="right">{ ofieldname }&nbsp;</td>
+<td>
+<select name="tagcol">
+<!--#in getnextval -->
+<option value="{ ffieldid }">{ ffieldname }</option>
+<!--#endin getnextval -->
+</select>
+</td>
+</tr>
+<tr>
+	<td>&nbsp;</td>
+	<td> 
+		<input type="submit" name="Submit" value="{ process }" />
+		<br />
+	</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</form>
+<!--#end tagsmapfile -->
