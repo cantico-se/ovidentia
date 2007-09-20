@@ -10,15 +10,10 @@ function add_field()
 
 	f.files_fields.value = n  + 1;
 
-	var p = document.createElement("p");
-	d.appendChild(p);
-
-	var input = document.createElement("input");
-	input.type = 'file';
-	input.size = '50';
-	input.name = 'uploadf'+(n+1);
-
-	p.appendChild(input);
+	d.innerHTML = d.innerHTML + tableHTML;
+	f = document.getElementById('uploadfx');
+	f.name = 'uploadf'+n;
+	f.id = 'uploadf'+n;
 	d = document.getElementById('urlremovefile');
 	d.style.display='inline';
 	}
@@ -28,7 +23,7 @@ function remove_field()
 	var f = document.forms['ffileupload'];
 	var d = document.getElementById('post_addfiles');
 	var n = parseInt(f.files_fields.value);
-	var inputs = d.getElementsByTagName('p');
+	var inputs = d.getElementsByTagName('table');
 	if (n > 1)
 		{
 		f.files_fields.value = n - 1;
@@ -62,56 +57,69 @@ function remove_field()
 		<td align="center" colspan="2"><b>{ t_warnmaxsize }: { maxsize }</b></td>
 	</tr>
 	<tr> 
-		<td align="right">{ name }</td>
-		<td>
-			<p><input type="file" name="uploadf0" size="50" /></p>
-		<p>
-			<a href="javascript:add_field()">{ t_add_field }</a>
-		</p>
+		<td align="center">
+		<div id="post_addfiles">
+		<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+			<tr> 
+				<td align="right">{ name }</td>
+				<td><input type="file" name="uploadfx" size="50" id="uploadfx" />
+				</td>
+			</tr>
+			<tr> 
+				<td align="right">{ description }</td>
+				<td><input type="text" name="description[]" size="45" maxlength="255" value="{ descval }"></td>
+			</tr>
+			<tr> 
+				<td align="right">{ keywords }</td>
+				<td><input type="text" name="keywords[]" size="45" maxlength="255" value="{ keysval }"></td>
+			</tr>
+			<!--#in getnextfield -->
+			<tr> 
+				<td align="right">{ fieldname }</td>
+				<td><input type="text" name="{ field }[]" size="45" maxlength="255" value="{ fieldval }"></td>
+			</tr>
+			<!--#endin getnextfield -->
+			<tr> 
+				<td  align="right">{ attribute }</td>
+				<td> 
+				<select name="readonly[]">
+					<option value="N" selected>{ no }</option>
+					<option value="Y" >{ yes }</option>
+				</select>
+				</td>
+			</tr>
+			<tr> 
+				<td  colspan="2">&nbsp;</td>
+			</tr>
+		</table>
+		</div>
 		</td>
 	</tr>
+	
 	<tr> 
-		<td align="right"></td>
-		<td>
-		<div id="post_addfiles">
-		</div>
+		<td align="center">
 		<p>
+			<a href="javascript:add_field()">{ t_add_field }</a>&nbsp;&nbsp;
 			<a id="urlremovefile" href="javascript:remove_field()" style="display:none">{ t_remove_field }</a>
 		</p>
 		</td>
 	</tr>
-	<tr> 
-		<td align="right">{ description }</td>
-		<td><input type="text" name="description" size="45" maxlength="255" value="{ descval }"></td>
-	</tr>
-	<tr> 
-		<td align="right">{ keywords }</td>
-		<td><input type="text" name="keywords" size="45" maxlength="255" value="{ keysval }"></td>
-	</tr>
-	<!--#in getnextfield -->
-	<tr> 
-		<td align="right">{ fieldname }</td>
-		<td><input type="text" name="{ field }" size="45" maxlength="255" value="{ fieldval }"></td>
-	</tr>
-	<!--#endin getnextfield -->
-	<tr> 
-		<td  align="right">{ attribute }</td>
-		<td> 
-		<select name="readonly">
-			<option value="N" selected>{ no }</option>
-			<option value="Y" >{ yes }</option>
-		</select>
-		</td>
-	</tr>
 	<tr>
-		<td>&nbsp;</td>
-		<td><input type="submit" name="Submit" value="{ add }"></td>
+		<td align="center"><input type="submit" name="Submit" value="{ add }"></td>
 	</tr>
 	</table>
 </td>
 </tr>
 </table>
 </form>
+<script type="text/javascript">
+<!--
+var d = document.getElementById('post_addfiles');
+var tableHTML = d.innerHTML;
+f = document.getElementById('uploadfx');
+f.name = 'uploadf0';
+-->
+</script>
 <!--#end addfile -->
 
 <!--#begin fileslist -->

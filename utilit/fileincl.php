@@ -529,6 +529,7 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 	$okfiles = array();
 	$errfiles = array();
 
+	$count = 0;
 	foreach($fmFiles as $fmFile)
 	{
 		$file = array(
@@ -657,9 +658,9 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 		include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
 		$index_status = bab_indexOnLoadFiles(array($pathx.$osfname), 'bab_files');
 
-		if($readonly != 'Y')
+		if($readonly[$count] != 'Y')
 		{
-			$readonly = 'N';
+			$readonly[$count] = 'N';
 		}
 
 		if($bexist)
@@ -684,7 +685,7 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 		{
 			$req = "insert into ".BAB_FILES_TBL."
 			(name, description, keywords, path, id_owner, bgroup, link, readonly, state, created, author, modified, modifiedby, confirmed, index_status) values ";
-			$req .= "('" .$babDB->db_escape_string($name). "', '" . $babDB->db_escape_string($description). "', '" . $babDB->db_escape_string($keywords). "', '" .$babDB->db_escape_string($sRelativePath). "', '" . $babDB->db_escape_string($iIdOwner). "', '" . $babDB->db_escape_string($gr). "', '0', '" . $babDB->db_escape_string($readonly). "', '', now(), '" . $babDB->db_escape_string($idcreator). "', now(), '" . $babDB->db_escape_string($idcreator). "', '". $babDB->db_escape_string($confirmed)."', '".$babDB->db_escape_string($index_status)."')";
+			$req .= "('" .$babDB->db_escape_string($name). "', '" . $babDB->db_escape_string($description[$count]). "', '" . $babDB->db_escape_string($keywords[$count]). "', '" .$babDB->db_escape_string($sRelativePath). "', '" . $babDB->db_escape_string($iIdOwner). "', '" . $babDB->db_escape_string($gr). "', '0', '" . $babDB->db_escape_string($readonly[$count]). "', '', now(), '" . $babDB->db_escape_string($idcreator). "', now(), '" . $babDB->db_escape_string($idcreator). "', '". $babDB->db_escape_string($confirmed)."', '".$babDB->db_escape_string($index_status)."')";
 			$babDB->db_query($req);
 			$idf = $babDB->db_insert_id();
 		}
@@ -710,7 +711,7 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 				$fd = 'field'.$arr['id'];
 				if(isset($GLOBALS[$fd]))
 				{
-					$fval = $babDB->db_escape_string($GLOBALS[$fd]);
+					$fval = $babDB->db_escape_string($GLOBALS[$fd][$count]);
 
 					$res2 = $babDB->db_query("select id from ".BAB_FM_FIELDSVAL_TBL." where id_file='".$babDB->db_escape_string($idf)."' and id_field='".$babDB->db_escape_string($arr['id'])."'");
 					if($res2 && $babDB->db_num_rows($res2) > 0)
@@ -733,6 +734,7 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 				fileNotifyMembers($osfname, $path, $iIdOwner, bab_translate("A new file has been uploaded"));
 			}
 		}
+	$count++;
 	}
 
 	if(count($errfiles))
@@ -749,7 +751,6 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 		$babBody->msgerror = bab_translate("Please select a file to upload");
 		return false;
 	}
-
 	return true;
 }
 
@@ -830,20 +831,20 @@ function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonl
 		$bmodified = false;
 		if(!empty($uploadf_name) && $uploadf_name != "none")
 		{
-			if($size > $GLOBALS['babMaxFileSize'])
+			if($uploadf_size > $GLOBALS['babMaxFileSize'])
 			{
 				$babBody->msgerror = bab_translate("The file was greater than the maximum allowed") ." :". $GLOBALS['babMaxFileSize'];
 				return false;
 			}
 			$totalsize = getDirSize($GLOBALS['babUploadPath']);
-			if($size + $totalsize > $GLOBALS['babMaxTotalSize'])
+			if($uploadf_size + $totalsize > $GLOBALS['babMaxTotalSize'])
 			{
 				$babBody->msgerror = bab_translate("There is not enough free space");
 				return false;
 			}
 
 			$totalsize = getDirSize($sUploadPath . $oFolderFile->getPathName());
-			if($size + $totalsize > ('Y' === $oFolderFile->getGroup() ? $GLOBALS['babMaxGroupSize']: $GLOBALS['babMaxUserSize']))
+			if($uploadf_size + $totalsize > ('Y' === $oFolderFile->getGroup() ? $GLOBALS['babMaxGroupSize']: $GLOBALS['babMaxUserSize']))
 			{
 				$babBody->msgerror = bab_translate("There is not enough free space");
 				return false;
