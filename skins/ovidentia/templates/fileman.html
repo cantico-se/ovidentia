@@ -843,14 +843,11 @@ function showHide()
 	var oType = document.getElementById('sType');
 	if(null != oType)
 	{
-		var sSimple = '{ m_datas[sSimple] }';
-		var sCollective = '{ m_datas[sCollective] }';
-		
-		if(sSimple == oType.value)
+		if(oType.checked)
 		{
 			hide();
 		}
-		else if(sCollective == oType.value)
+		else
 		{
 			show();
 		}
@@ -908,32 +905,22 @@ function hide(aNode)
 <!--#end displayFolderForm -->
 
 <!--#begin collectiveDir -->
-<table border="0" width="50%" cellspacing="0" cellpadding="2" align="center">
+<table border="0" width="90%" cellspacing="0" cellpadding="2" align="center">
 	<tr> 
 		<td class="BabLoginCadreBackground">
 			<table width="100%" border="0" cellspacing="2" cellpadding="5" align="center" class="BabLoginMenuBackground">
 				<tr> 
-					<td align="right">
-						{ m_captions[sType] }
+					<td width="40%" align="right">
+						{ m_captions[sDirName] }
 					</td>
-					<td>
-						<select name="sType" id="sType" onchange="showHide()"> 
-						<!--#if m_datas[isCollective] -->
-							<option value="{ m_datas[sSimple] }">{ m_captions[sSimple] }</option>
-							<option value="{ m_datas[sCollective] }" selected="selected">{ m_captions[sCollective] }</option>
-						<!--#else m_datas[isCollective] -->
-							<option value="{ m_datas[sSimple] }" selected="selected">{ m_captions[sSimple] }</option>
-							<option value="{ m_datas[sCollective] }">{ m_captions[sCollective] }</option>
-						<!--#endif m_datas[isCollective] -->
-						</select>
+					<td width="60%">
+						<input type="text" name="sDirName" size="40" maxlength="255" value="{ m_datas[sDirName] }" />
 					</td>
 				</tr>
 				<tr> 
-					<td align="right">
-						{ m_captions[sDirName] }
-					</td>
+					<td align="right">&nbsp;</td>
 					<td>
-						<input type="text" name="sDirName" size="25" maxlength="255" value="{ m_datas[sDirName] }" />
+					<input type="checkbox" id="sType" name="sType" value="{ m_datas[sSimple] }" onclick="showHide()" checked />{ m_captions[sConfRights] }
 					</td>
 				</tr>
 				<tr class="showHide"> 
@@ -1049,16 +1036,16 @@ function hide(aNode)
 <!--#end collectiveDir -->
 
 <!--#begin userDir -->
-<table border="0" width="50%" cellspacing="0" cellpadding="2" align="center">
+<table border="0" width="90%" cellspacing="0" cellpadding="2" align="center">
 	<tr> 
 		<td class="BabLoginCadreBackground">
 			<table width="100%" border="0" cellspacing="2" cellpadding="5" align="center" class="BabLoginMenuBackground">
 				<tr> 
-					<td align="right">
+					<td width="40%" align="right">
 						{ m_captions[sDirName] }
 					</td>
-					<td>
-						<input type="text" name="sDirName" size="25" maxlength="255" value="{ m_datas[sDirName] }" />
+					<td width="60%">
+						<input type="text" name="sDirName" size="40" maxlength="255" value="{ m_datas[sDirName] }" />
 					</td>
 				</tr>
 				<tr> 

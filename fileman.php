@@ -702,6 +702,7 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 		$this->set_caption('sNo', bab_translate("No"));
 		$this->set_caption('sNone', bab_translate("None"));
 		$this->set_caption('sAdd', bab_translate("Add"));
+		$this->set_caption('sConfRights', bab_translate("Inherit the rights and the options of the parent directory"));
 		
 	}
 	
@@ -2625,7 +2626,7 @@ function createEditFolderForCollectiveDir($iIdFolder, $sPath)
 		{
 			if(isset($_POST['sCreateEditFolder']))
 			{
-				$sType					= (string) bab_pp('sType', '');
+				$sType					= (string) bab_pp('sType', 'collective');
 				$sActive				= (string) bab_pp('sActive', 'Y');
 				$iIdApprobationScheme	= (int) bab_pp('iIdApprobationScheme', 0);
 				$sAutoApprobation		= (string) bab_pp('sAutoApprobation', 'N');
