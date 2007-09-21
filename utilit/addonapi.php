@@ -503,6 +503,7 @@ function bab_getPrimaryGroupId($userid)
 		}
 	}
 
+
 function bab_getGroupsMembers($ids)
 	{
 	global $babDB;
@@ -861,7 +862,7 @@ function bab_mkdir($path, $mode='')
 	}
 	$res = mkdir($path, $mode);
 	if (!$res) {
-		include_once 'devtools.php';
+		include_once $GLOBALS['babInstallPath'] . 'utilit/devtools.php';
 		bab_debug_print_backtrace();
 	}
 	umask($umask);
@@ -918,7 +919,11 @@ function bab_printTemplate( &$class, $file, $section="")
 		{
 		if( empty($section))
 			{
-			return $tpl->printTemplate($class,$filepath, '');
+//				$start = microtime(true);
+//				$t = $tpl->printTemplate($class,$filepath, '');
+//				echo $file . ':' . $section . '=' . (int)((microtime(true) - $start) * 1000000) . "\n";
+//				return $t;
+				return $tpl->printTemplate($class,$filepath, '');
 			}
 
 		$arr = $tpl->getTemplates($filepath);
@@ -939,7 +944,11 @@ function bab_printTemplate( &$class, $file, $section="")
 			{
 			if( empty($section))
 				{
-				return $tpl->printTemplate($class,$filepath, '');
+//					$start = microtime(true);
+//					$t = $tpl->printTemplate($class,$filepath, '');
+//					echo $file . ':' . $section . '=' . (int)((microtime(true) - $start) * 1000000) . "\n";
+//					return $t;
+					return $tpl->printTemplate($class,$filepath, '');
 				}
 
 			$arr = $tpl->getTemplates($filepath);
@@ -962,7 +971,11 @@ function bab_printTemplate( &$class, $file, $section="")
 			{
 			if( empty($section))
 				{
-				return $tpl->printTemplate($class,$filepath, '');
+//					$start = microtime(true);
+//					$t = $tpl->printTemplate($class,$filepath, '');
+//					echo $file . ':' . $section . '=' . (int)((microtime(true) - $start) * 1000000) . "\n";
+//					return $t;
+					return $tpl->printTemplate($class,$filepath, '');
 				}
 
 			$arr = $tpl->getTemplates($filepath);
@@ -978,12 +991,16 @@ function bab_printTemplate( &$class, $file, $section="")
 
 		}
 
-	if( $tplfound )
-		return $tpl->printTemplate($class,$filepath, $section);
-	else
+	if( $tplfound ) {
+		$start = microtime(true);
+		$t = $tpl->printTemplate($class,$filepath, $section);
+		bab_debug($filepath . ':' . $section . '=' . (int)((microtime(true) - $start) * 1000000));
+		return $t;
+//		return $tpl->printTemplate($class,$filepath, $section);
+	} else {
 		return '';
 	}
-
+}
 function bab_getActiveSessions()
 {
 	global $babDB;
@@ -1230,9 +1247,10 @@ function bab_updateUserById($id, $info, &$error)
 	return bab_userModify::updateUserById($id, $info, $error);
 }
 
-/*
-* Because of a typing error, we must keep compatibility
-*/
+/**
+ * Because of a typing error, we must keep compatibility
+ * @deprecated
+ */
 function bab_uppdateUserById($id, $info, &$error)
 {
 	return bab_updateUserById($id, $info, $error);
@@ -1249,42 +1267,59 @@ function bab_updateUserByNickname($nickname, $info, &$error)
 		$error = bab_translate("Unknown user");
 		return false;
 	}
-	return bab_uppdateUserById($id_user, $info, $error);
+	return bab_updateUserById($id_user, $info, $error);
 }
 
-/**
- * push some content into the debug console
- * @param int|string|array|object
+
+
+/**#@+
+ * Severity levels for bab_debug
  */
-function bab_debug($str)
+define('DBG_TRACE',		 1);
+define('DBG_DEBUG',		 2);
+define('DBG_INFO',		 4);
+define('DBG_WARNING',	 8);
+define('DBG_ERROR',		16);
+define('DBG_FATAL',		32);
+/**#@-*/
+
+
+/**
+ * Log information.
+ * 
+ * @param mixed	$data		The data to log. If not a string $data is transformed through print_r.
+ * @param int	$severity	The severity of the logged information.
+ */
+function bab_debug($data, $severity = DBG_DEBUG)
 {
-	if (isset($_COOKIE['bab_debug'])) {
-		if (!is_string($str)) {
+	if (isset($_COOKIE['bab_debug']) && ((int)$_COOKIE['bab_debug'] & $severity)) {
+		if (!is_string($data)) {
 			ob_start();
-			print_r($str);
-			$str = ob_get_contents();
+			print_r($data);
+			$data = ob_get_contents();
 			ob_end_clean();
 		}
 		if (isset($GLOBALS['bab_debug_messages'])) {
-			$GLOBALS['bab_debug_messages'][] = $str;
+			$GLOBALS['bab_debug_messages'][] = $data;
 		} else {
-			$GLOBALS['bab_debug_messages'] = array($str);
+			$GLOBALS['bab_debug_messages'] = array($data);
 		}
 	}
 
 	if (file_exists('bab_debug.txt') && is_writable('bab_debug.txt')) {
-		if (!is_string($str)) {
-			$str = print_r($str, true);
+		if (!is_string($data)) {
+			$data = print_r($data, true);
 		}
 		$h = fopen('bab_debug.txt', 'a');
-		fwrite($h, date('d/m/Y H:i:s')."\n\n".$str."\n\n\n------------------------\n");
+		fwrite($h, date('d/m/Y H:i:s')."\n\n".$data."\n\n\n------------------------\n");
 		fclose($h);
 	}
 }
 
 /**
- * return the html for the debug console, usefull for popups
- * @return html
+ * Returns the html for the debug console, useful for popups
+ * 
+ * @return string	
  */
 function bab_getDebug() {
 	if (bab_isUserAdministrator() && isset($GLOBALS['bab_debug_messages'])) {
@@ -1436,17 +1471,19 @@ function bab_getFileContentDisposition() {
  * @param	array	$args
  * @return	string	html
  */
-function bab_printOvmlTemplate( $file, $args=array())
+function bab_printOvmlTemplate($file, $args=array())
 {
 	global $babInstallPath, $babSkinPath, $babOvmlPath;
+
 	if ((false !== strstr($file, '..')) || strtolower(substr($file, 0, 4)) == 'http')
 	{
 		return '<!-- ERROR filename: '.bab_toHtml($file).' -->';
 	}
+
 	$filepath = $babOvmlPath.$file;
 	if (!file_exists($filepath))
 	{
-		$filepath = $babSkinPath.'ovml/'. $file;
+		$filepath = $babSkinPath.'ovml/'.$file;
 		if (!file_exists($filepath))
 		{
 			$filepath = $babInstallPath.'skins/ovidentia/ovml/'.$file;
@@ -1463,6 +1500,7 @@ function bab_printOvmlTemplate( $file, $args=array())
 	$tpl = new babOvTemplate($args);
 	return $tpl->printout(implode('', file($filepath)));
 }
+
 
 /**
  * Abbreviate text with 2 types
