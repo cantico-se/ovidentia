@@ -2064,6 +2064,7 @@ class bab_Files extends bab_handler
 	var $res;
 	var $index;
 	var $count;
+	var $tags = array();
 
 	var $oFmFolderSet = null;
 	var $oFolderFileSet = null;
@@ -2081,7 +2082,7 @@ class bab_Files extends bab_handler
 		$this->sPath	= (string) $ctx->get_value('path');
 		$iLength		= strlen(trim($this->sPath));
 		
-		if('/' === $this->sPath{$iLength - 1})
+		if($iLength && '/' === $this->sPath{$iLength - 1})
 		{
 			$this->sPath = substr($sEncodedPath, 0, -1); 
 		}
@@ -2107,7 +2108,7 @@ class bab_Files extends bab_handler
 //					' sRootFolderName ==> ' . getFirstPath($sRelativePath));
 	
 				$sRootFolderName = getFirstPath($sRelativePath);
-				$sRelativePath = $sRootFolderName . '/' . $this->sPath . '/';
+				$sRelativePath = $sRootFolderName . '/' . ($iLength? $this->sPath . '/': '');
 				
 				$this->initRootFolderId($sRootFolderName);
 				
@@ -2131,10 +2132,15 @@ class bab_Files extends bab_handler
 				}
 				
 				$this->oFolderFileSet->select($oCriteria, array('sName' => 'ASC'), $aLimit);
-				
 				while(null !== ($oFolderFile = $this->oFolderFileSet->next()))
 				{
 					$this->IdEntries[] = $oFolderFile->getId();
+					$this->tags[$oFolderFile->getId()] = array();
+					$rs = $babDB->db_query("select tag_name from ".BAB_TAGS_TBL." tt left join ".BAB_FILES_TAGS_TBL." ftt on tt.id = ftt.id_tag WHERE id_file='".$oFolderFile->getId()."'");
+					while( $rr = $babDB->db_fetch_array($rs))
+					{
+						$this->tags[$oFolderFile->getId()][] = $rr['tag_name'];
+					}
 				}
 				$this->oFolderFileSet->rewind() ;
 				$this->count = count($this->IdEntries);
@@ -2169,7 +2175,7 @@ class bab_Files extends bab_handler
 				$this->ctx->curctx->push('CIndex', $this->idx);
 				$this->ctx->curctx->push('FileName', $oFolderFile->getName());
 				$this->ctx->curctx->push('FileDescription', $oFolderFile->getDescription());
-				$this->ctx->curctx->push('FileKeywords', $oFolderFile->getKeywords());
+				$this->ctx->curctx->push('FileKeywords', implode(' ', $this->tags[$oFolderFile->getId()]));
 				$this->ctx->curctx->push('FileId', $oFolderFile->getId());
 				$this->ctx->curctx->push('FileFolderId', $oFolderFile->getOwnerId());
 				$this->ctx->curctx->push('FileDate', bab_mktime($oFolderFile->getModifiedDate()));
@@ -2219,6 +2225,7 @@ class bab_File extends bab_handler
 	var $count;
 	var $oFolderFile = null;
 	var $iIdRootFolder = 0;
+	var $tags = array();
 	
 	function bab_File(&$ctx)
 	{
@@ -2240,7 +2247,13 @@ class bab_File extends bab_handler
 			{
 				if('Y' === $this->oFolderFile->getGroup() && '' === $this->oFolderFile->getState() && 'Y' === $this->oFolderFile->getConfirmed() && bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $this->oFolderFile->getOwnerId()))
 				{
-					$this->count = 1;	
+					$this->count = 1;
+					
+					$rs = $babDB->db_query("select tag_name from ".BAB_TAGS_TBL." tt left join ".BAB_FILES_TAGS_TBL." ftt on tt.id = ftt.id_tag WHERE id_file='".$this->oFolderFile->getId()."'");
+					while( $rr = $babDB->db_fetch_array($rs))
+					{
+						$this->tags[] = $rr['tag_name'];
+					}
 				}
 			}
 		}
@@ -2259,7 +2272,7 @@ class bab_File extends bab_handler
 				$this->ctx->curctx->push('CIndex', $this->idx);
 				$this->ctx->curctx->push('FileName', $this->oFolderFile->getName());
 				$this->ctx->curctx->push('FileDescription', $this->oFolderFile->getDescription());
-				$this->ctx->curctx->push('FileKeywords', $this->oFolderFile->getKeywords());
+				$this->ctx->curctx->push('FileKeywords', implode(' ', $this->tags));
 				$this->ctx->curctx->push('FileId', $this->oFolderFile->getId());
 				$this->ctx->curctx->push('FileFolderId', $this->oFolderFile->getOwnerId());
 				$this->ctx->curctx->push('FileDate', bab_mktime($this->oFolderFile->getModifiedDate()));

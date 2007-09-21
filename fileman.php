@@ -549,7 +549,6 @@ class listFiles
 					$oFolderFile->setConfirmed('Y');
 					
 					$oFolderFile->setDescription('');
-					$oFolderFile->setKeywords('');
 					$oFolderFile->setLinkId(0);
 					$oFolderFile->setReadOnly('N');
 					$oFolderFile->setState('');
@@ -1542,7 +1541,7 @@ function addFile($id, $gr, $path, $description, $keywords)
 
 		function temp($id, $gr, $path, $description, $keywords)
 		{
-			global $babDB;
+			global $babBody, $babDB;
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
 			$this->keywords = bab_translate("Keywords");
@@ -1565,8 +1564,8 @@ function addFile($id, $gr, $path, $description, $keywords)
 			$this->path = bab_toHtml($path);
 			$this->gr = $gr;
 			$this->maxfilesize = $GLOBALS['babMaxFileSize'];
-			$this->descval = isset($description) ? bab_toHtml($description) : "";
-			$this->keysval = isset($keywords) ? bab_toHtml($keywords) : "";
+			$this->descval = isset($description[0]) ? bab_toHtml($description[0]) : "";
+			$this->keysval = isset($keywords[0]) ? bab_toHtml($keywords[0]) : "";
 			if($gr == 'Y')
 			{
 				$this->res = $babDB->db_query("select * from ".BAB_FM_FIELDS_TBL." where id_folder='".$babDB->db_escape_string($id)."'");
@@ -1576,6 +1575,9 @@ function addFile($id, $gr, $path, $description, $keywords)
 			{
 				$this->count = 0;
 			}
+			$babBody->addJavascriptFile($GLOBALS['babScriptPath']."prototype/prototype.js");
+			$babBody->addJavascriptFile($GLOBALS['babScriptPath']."scriptaculous/scriptaculous.js");
+			$babBody->addStyleSheet('ajax.css');
 		}
 		
 
@@ -1971,7 +1973,7 @@ function viewFile($idf, $id, $path)
 
 		function temp($oFmFolder, $oFolderFile, $id, $path, $bmanager, $access, $bconfirm, $bupdate, $bdownload, $bversion)
 		{
-			global $babDB;
+			global $babBody, $babDB;
 			$this->access = $access;
 			if($access)
 			{
@@ -2004,9 +2006,16 @@ function viewFile($idf, $id, $path)
 				$this->file = bab_toHtml($oFolderFile->getName());
 				$GLOBALS['babBody']->setTitle($oFolderFile->getName() .( ($bversion == 'Y') ? ' (' . $oFolderFile->getMajorVer() . '.' . $oFolderFile->getMinorVer() . ')' : '' ));
 				$this->descval = $oFolderFile->getDescription();
-				$this->keysval = $oFolderFile->getKeywords();
 				$this->descvalhtml = bab_toHtml($oFolderFile->getDescription());
-				$this->keysvalhtml = bab_toHtml($oFolderFile->getKeywords());
+
+				$this->keysval = '';
+				$res = $babDB->db_query("select tag_name from ".BAB_TAGS_TBL." tt left join ".BAB_FILES_TAGS_TBL." ftt on tt.id=ftt.id_tag where id_file=".$babDB->quote($this->idf)." order by tag_name asc");
+				while( $rr = $babDB->db_fetch_array($res))
+					{
+					$this->keysval .= $rr['tag_name'].', ';
+					}
+
+				$this->keysvalhtml = bab_toHtml($this->keysval);
 
 				$this->fsizetxt = bab_translate("Size");
 				
@@ -2186,6 +2195,9 @@ function viewFile($idf, $id, $path)
 			{
 				$GLOBALS['babBody']->title = bab_translate("Access denied");
 			}
+			$babBody->addJavascriptFile($GLOBALS['babScriptPath']."prototype/prototype.js");
+			$babBody->addJavascriptFile($GLOBALS['babScriptPath']."scriptaculous/scriptaculous.js");
+			$babBody->addStyleSheet('ajax.css');
 		}
 
 		function getnextfm()

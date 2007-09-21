@@ -246,7 +246,7 @@ function bab_importFmFile($fmFile, $id_owner, $path, $bgroup)
 		
 			// update a file
 			return saveUpdateFile($oFolderFile->getId(), $fmFile, $fmFile->filename, 
-				$oFolderFile->getDescription(), $oFolderFile->getKeywords(), 
+				$oFolderFile->getDescription(), '', 
 				$oFolderFile->getReadOnly(), 'Y', false, false, false);
 		}
 		return false;

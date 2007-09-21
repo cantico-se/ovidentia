@@ -3562,6 +3562,54 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	$babDB->db_query("insert into ".BAB_FMNOTIFY_GROUPS_TBL." select * from ".BAB_FMDOWNLOAD_GROUPS_TBL."");
 
 	}
+
+	if (!bab_isTable(BAB_FILES_TAGS_TBL)) {
+
+		$babDB->db_query("
+		
+				CREATE TABLE ".BAB_FILES_TAGS_TBL." (
+				  id_file int(11) unsigned NOT NULL default '0',
+				  id_tag int(11) unsigned NOT NULL default '0',
+				  KEY id_file (id_file),
+				  KEY id_tag (id_tag)
+				)
+			
+		");
+
+		$res = $babDB->db_query("select * from ".BAB_TAGS_TBL."");
+		$tags = array();
+		while( $arr = $babDB->db_fetch_array($res))
+		{
+			$tags[$arr['tag_name']] = $arr['id'];
+		}
+		
+		$res = $babDB->db_query("select id, keywords from ".BAB_FILES_TBL."");
+		while( $arr = $babDB->db_fetch_array($res))
+		{
+			$rr = explode(' ', $arr['keywords']);
+			for( $i=0; $i < count($rr); $i++ )
+			{
+			$rr[$i] = trim($rr[$i]);
+			if( !empty($rr[$i]))
+				{
+				if( !isset($tags[$rr[$i]]))
+					{
+					$babDB->db_query("insert into ".BAB_TAGS_TBL." (tag_name) values ('".$rr[$i]."')");
+					$idtag = $babDB->db_insert_id();
+					$tags[$rr[$i]] = $idtag;
+					}
+				else
+					{
+					$idtag = $tags[$rr[$i]];
+					}
+				$babDB->db_query("insert into ".BAB_FILES_TAGS_TBL." (id_file, id_tag) values ('".$arr['id']."', '".$idtag."')");
+				}
+			}
+		}
+
+	$babDB->db_query("ALTER TABLE ".BAB_FILES_TBL." DROP keywords");
+	}
+
 	return true;
 }
 ?>

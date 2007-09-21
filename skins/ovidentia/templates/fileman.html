@@ -2,19 +2,52 @@
 <!--#begin addfile -->
 <script type="text/javascript">
 <!--
+aTokens = [','];
+aConfiguration = {tokens: aTokens, minChars: 1, fullSearch: false, choices: 10};
+
+function aR(idx)
+{
+var rAjax = new Ajax.Request(
+'index.php?tg=thesaurus&idx=tagsjson',
+{
+  method: 'get',
+  onSuccess: function(xhr)
+  {
+	aConfiguration.afterUpdateElement = function() { $('idtags'+idx).value += ', ' };
+	eval("var tags = " + xhr.responseText);
+	atags = [];
+	for(i=0;i<tags.length;i++) {
+		atags.push(tags[i].tagname + '');
+	}
+	new Autocompleter.Local('idtags'+idx, 'tags-ac'+idx, atags, aConfiguration)
+  }
+}
+);
+}
+
 function add_field()
 	{
 	var f = document.forms['ffileupload'];
-	var d = document.getElementById('post_addfiles');
+	var d = $('post_addfiles');
 	var n = parseInt(f.files_fields.value);
 
 	f.files_fields.value = n  + 1;
 
-	d.innerHTML = d.innerHTML + tableHTML;
-	f = document.getElementById('uploadfx');
+	f = $('tupload'+(n-1));
+	new Insertion.After(f, tableHTML);
+	f = $('uploadfx');
 	f.name = 'uploadf'+n;
 	f.id = 'uploadf'+n;
-	d = document.getElementById('urlremovefile');
+
+	f = $('tuploadx');
+	f.id = 'tupload'+n;
+
+	f = $('idtagsx');
+	f.id = 'idtags'+n;
+	f = $('tags-acx');
+	f.id = 'tags-ac'+n;
+	aR(n);
+	d = $('urlremovefile');
 	d.style.display='inline';
 	}
 
@@ -59,7 +92,7 @@ function remove_field()
 	<tr> 
 		<td align="center">
 		<div id="post_addfiles">
-		<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+		<table id="tuploadx" class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 			<tr> 
 				<td align="right">{ name }</td>
 				<td><input type="file" name="uploadfx" size="50" id="uploadfx" />
@@ -67,16 +100,19 @@ function remove_field()
 			</tr>
 			<tr> 
 				<td align="right">{ description }</td>
-				<td><input type="text" name="description[]" size="45" maxlength="255" value="{ descval }"></td>
+				<td><input type="text" name="description[]" size="50" maxlength="255" value="{ descval }"></td>
 			</tr>
 			<tr> 
 				<td align="right">{ keywords }</td>
-				<td><input type="text" name="keywords[]" size="45" maxlength="255" value="{ keysval }"></td>
+				<td>
+				<input type="text" id="idtagsx" name="keywords[]" size="50" maxlength="255" value="{ keysval }" />
+				<div align="left" id="tags-acx" class="auto_complete">
+				</td>
 			</tr>
 			<!--#in getnextfield -->
 			<tr> 
 				<td align="right">{ fieldname }</td>
-				<td><input type="text" name="{ field }[]" size="45" maxlength="255" value="{ fieldval }"></td>
+				<td><input type="text" name="{ field }[]" size="50" maxlength="255" value="{ fieldval }"></td>
 			</tr>
 			<!--#endin getnextfield -->
 			<tr> 
@@ -115,9 +151,18 @@ function remove_field()
 <script type="text/javascript">
 <!--
 var d = document.getElementById('post_addfiles');
-var tableHTML = d.innerHTML;
-f = document.getElementById('uploadfx');
+var tableHTML = $('post_addfiles').innerHTML;
+f = $('uploadfx');
 f.name = 'uploadf0';
+f = $('tuploadx');
+f.id = 'tupload0';
+f = $('idtagsx');
+f.id = 'idtags0';
+f = $('tags-acx');
+f.id = 'tags-ac0';
+
+aR(0);
+  
 -->
 </script>
 <!--#end addfile -->
@@ -591,7 +636,8 @@ window.focus();
 <tr> 
 <td align="right">{ keywords }</td>
 <td>
-<input type="text" name="keywords" size="60" maxlength="255" value="{ keysvalhtml }" />
+<input type="text" id="idtags" name="keywords" size="60" maxlength="255" value="{ keysvalhtml }" />
+<div align="left" id="tags-ac" class="auto_complete">
 </td>
 </tr>
 <!--#in getnextfield -->
@@ -710,6 +756,36 @@ window.focus();
 </table>
 </form>
 <!--#endif index -->
+<script type="text/javascript">
+<!--
+
+//window.onload = function()
+//{
+
+  aTokens = [','];
+  aConfiguration = {tokens: aTokens, minChars: 1, fullSearch: false, choices: 10};
+  
+  var rAjax = new Ajax.Request(
+    'index.php?tg=thesaurus&idx=tagsjson',
+    {
+      method: 'get',
+      onSuccess: function(xhr)
+      {
+		atags = [];
+		aConfiguration.afterUpdateElement = function() { $('idtags').value += ', ' };
+		eval("var tags = " + xhr.responseText);
+		for(i=0;i<tags.length;i++) {
+			atags.push(tags[i].tagname + '');
+		}
+		new Autocompleter.Local("idtags", "tags-ac", atags, aConfiguration)
+      }
+    }
+  );
+  
+//}
+
+//-->
+</script>
 
 <!--#end viewfile -->
 

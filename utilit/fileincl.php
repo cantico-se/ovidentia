@@ -620,6 +620,49 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 		}
 
 
+		if( !is_array($keywords))
+		{
+			$tags = trim($keywords);
+		}
+		else
+		{
+			$tags = trim($keywords[$count]);
+		}
+
+		if( !empty($tags))
+		{
+			$atags = explode(',', $tags);
+			$message = '';
+			for( $k = 0; $k < count($atags); $k++ )
+			{
+				$tag = trim($atags[$k]);
+				if( !empty($tag) )
+				{
+					$res = $babDB->db_query("select id from ".BAB_TAGS_TBL." where tag_name='".$babDB->db_escape_string($tag)."'");
+					if( $res && $babDB->db_num_rows($res))
+					{
+						$arr = $babDB->db_fetch_array($res);
+						if( !isset($otags[$arr['id']]))
+						{
+						$otags[$arr['id']] = $arr['id'];
+						}
+
+					}
+					else
+					{
+						$message = bab_translate("Some tags doesn't exist");
+						break;
+					}
+				}
+			}
+
+			if( $message )
+			{
+			$errfiles[] = array('error'=> $message, 'file' => $file['name']);
+			continue;
+			}
+		}
+
 		if(empty($BAB_SESS_USERID))
 		{
 			$idcreator = 0;
@@ -663,12 +706,13 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 			$readonly[$count] = 'N';
 		}
 
+
+
 		if($bexist)
 		{
 			$req = "
 			UPDATE ".BAB_FILES_TBL." set 
 				description='".$babDB->db_escape_string($description)."', 
-				keywords='".$babDB->db_escape_string($keywords)."', 
 				readonly='".$babDB->db_escape_string($readonly)."', 
 				confirmed='".$babDB->db_escape_string($confirmed)."', 
 				modified=now(), 
@@ -680,14 +724,23 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 				id='".$babDB->db_escape_string($arr['id'])."'";
 			$babDB->db_query($req);
 			$idf = $arr['id'];
+			$babDB->db_query("delete from ".BAB_FILES_TAGS_TBL." where id_file='".$babDB->db_escape_string($idf)."'");
 		}
 		else
 		{
 			$req = "insert into ".BAB_FILES_TBL."
-			(name, description, keywords, path, id_owner, bgroup, link, readonly, state, created, author, modified, modifiedby, confirmed, index_status) values ";
-			$req .= "('" .$babDB->db_escape_string($name). "', '" . $babDB->db_escape_string($description[$count]). "', '" . $babDB->db_escape_string($keywords[$count]). "', '" .$babDB->db_escape_string($sRelativePath). "', '" . $babDB->db_escape_string($iIdOwner). "', '" . $babDB->db_escape_string($gr). "', '0', '" . $babDB->db_escape_string($readonly[$count]). "', '', now(), '" . $babDB->db_escape_string($idcreator). "', now(), '" . $babDB->db_escape_string($idcreator). "', '". $babDB->db_escape_string($confirmed)."', '".$babDB->db_escape_string($index_status)."')";
+			(name, description, path, id_owner, bgroup, link, readonly, state, created, author, modified, modifiedby, confirmed, index_status) values ";
+			$req .= "('" .$babDB->db_escape_string($name). "', '" . $babDB->db_escape_string($description[$count]). "', '".$babDB->db_escape_string($sRelativePath). "', '" . $babDB->db_escape_string($iIdOwner). "', '" . $babDB->db_escape_string($gr). "', '0', '" . $babDB->db_escape_string($readonly[$count]). "', '', now(), '" . $babDB->db_escape_string($idcreator). "', now(), '" . $babDB->db_escape_string($idcreator). "', '". $babDB->db_escape_string($confirmed)."', '".$babDB->db_escape_string($index_status)."')";
 			$babDB->db_query($req);
 			$idf = $babDB->db_insert_id();
+		}
+
+		if( count($otags))
+		{
+			foreach( $otags as $k => $v )
+				{
+				$babDB->db_query("insert into ".BAB_FILES_TAGS_TBL." (id_file ,id_tag) values ('".$babDB->db_escape_string($idf)."','".$babDB->db_escape_string($k)."')");
+				}
 		}
 
 		$okfiles[] = $idf;
@@ -784,6 +837,35 @@ function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonl
 	{
 		$uploadf_name = '';
 		$uploadf_size = '';
+	}
+
+	$otags = array();
+	$tags = trim($keywords);
+	if( !empty($tags))
+	{
+		$atags = explode(',', $tags);
+		for( $k = 0; $k < count($atags); $k++ )
+		{
+			$tag = trim($atags[$k]);
+			if( !empty($tag) )
+			{
+				$res = $babDB->db_query("select id from ".BAB_TAGS_TBL." where tag_name='".$babDB->db_escape_string($tag)."'");
+				if( $res && $babDB->db_num_rows($res))
+				{
+					$arr = $babDB->db_fetch_array($res);
+					if( !isset($otags[$arr['id']]))
+					{
+					$otags[$arr['id']] = $arr['id'];
+					}
+
+				}
+				else
+				{
+					$babBody->msgerror = bab_translate("Some tags doesn't exist");
+					return false;
+				}
+			}
+		}
 	}
 
 	$oFolderFileSet = new BAB_FolderFileSet();
@@ -914,8 +996,18 @@ function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonl
 		if($descup)
 		{
 			$tmp[] = "description='".$babDB->db_escape_string($description)."'";
-			$tmp[] = "keywords='".$babDB->db_escape_string($keywords)."'";
+
+			$babDB->db_query("delete from ".BAB_FILES_TAGS_TBL." where id_file='".$babDB->db_escape_string($idf)."'");
+			if( count($otags))
+			{
+				foreach( $otags as $k => $v )
+					{
+					$babDB->db_query("insert into ".BAB_FILES_TAGS_TBL." (id_file ,id_tag) values ('".$babDB->db_escape_string($idf)."','".$babDB->db_escape_string($k)."')");
+					}
+			}
+
 		}
+
 		if($bmodified)
 		{
 			$tmp[] = "modified=now()";
@@ -2186,7 +2278,6 @@ class BAB_FolderFileSet extends BAB_BaseSet
 		'iId' => new BAB_IntField('`id`'),
 		'sName' => new BAB_StringField('`name`'),
 		'sDescription' => new BAB_StringField('`description`'),
-		'sKeywords' => new BAB_StringField('`keywords`'),
 		'sPathName' => new BAB_StringField('`path`'),
 		'iIdOwner' => new BAB_IntField('`id_owner`'),
 		'sGroup' => new BAB_StringField('`bgroup`'),
@@ -2640,16 +2731,6 @@ class BAB_FolderFile extends BAB_DbRecord
 	function getDescription()
 	{
 		return $this->_sGet('sDescription');
-	}
-
-	function setKeywords($sKeywords)
-	{
-		$this->_set('sKeywords', $sKeywords);
-	}
-
-	function getKeywords()
-	{
-		return $this->_sGet('sKeywords');
 	}
 
 	function setPathName($sPathName)

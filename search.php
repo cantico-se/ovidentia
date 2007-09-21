@@ -1262,14 +1262,37 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$plus = "";
 				$temp1 = finder($this->like, "F.name",		$option,$this->like2);
 				$temp2 = finder($this->like, "description", $option,$this->like2);
-				$temp3 = finder($this->like, "keywords",	$option,$this->like2);
-				$temp4 = finder($this->like, "F.path",		$option,$this->like2);
-				$temp5 = finder($this->like, "R.folder",	$option,$this->like2);
-				$temp6 = finder($this->like, "M.fvalue",	$option,$this->like2);
+				$temp3 = finder($this->like, "F.path",		$option,$this->like2);
+				$temp4 = finder($this->like, "R.folder",	$option,$this->like2);
+				$temp5 = finder($this->like, "M.fvalue",	$option,$this->like2);
+				$temp6 = finder($this->like, "tag_name",	$option,$this->like2);
 
-				if ($temp1 != "" && $temp2 != "" && $temp3 != "" && $temp4 != "" && $temp5 != "")
-					$plus = "( ".$temp1." or ".$temp2." or ".$temp3." or ".$temp4." or ".$temp5." ) and ";
-				else $plus = "";
+				$tidfiles = array();
+				if( $temp6 )
+					{
+					$rs = $babDB->db_query("select id_file from ".BAB_FILES_TAGS_TBL." ftt left join ".BAB_TAGS_TBL." tt on tt.id = ftt.id_tag WHERE ".$temp6);
+					while( $rr = $babDB->db_fetch_array($rs))
+						{
+						if( !isset($tidfiles[$rr['id_file']]))
+							{
+							$tidfiles[$rr['id_file']] = $rr['id_file'];
+							}
+						}
+					}
+
+				if( count($tidfiles ))
+					{
+					$idfiles = implode(',', $tidfiles);
+					}
+				else
+					{
+					$idfiles = '';
+					}
+
+				if ($temp1 != "" && $temp2 != "" && $temp3 != "" && $temp4 != "" && $idfiles != '')
+					$plus = "( ".$temp1." or ".$temp2." or ".$temp3." or ".$temp4." or F.id in(".$idfiles.")) and ";
+				else 
+					$plus = "";
 
                 if ($idfile != "") 
 					{
@@ -1419,11 +1442,10 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 							AND F.id NOT IN('".implode("','",$this->tmp_inserted_id)."') 
 						GROUP BY 
 							F.id ";
-
                     $babDB->db_query($req);
 					
 					// additional fields
-					if ($temp6 != "")
+					if ($temp5 != "")
 						{
 						$this->tmptable_inserted_id('filresults');
 
@@ -1448,7 +1470,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 							LEFT JOIN ".BAB_USERS_TBL." U 
 							ON F.author=U.id 
 						WHERE 
-							".$temp6." 
+							".$temp5." 
 							AND M.id_file=F.id 
 							AND (F.id_owner=R.id OR F.bgroup='N') 
 							AND F.id_owner in (".substr($idfile,0,-1).") ". $grpfiles ." 
@@ -2714,6 +2736,13 @@ function viewFile($id, $w)
 				{
 				$GLOBALS['babBody']->title = bab_toHtml($this->arr['name']);
 				$this->arr['description'] = highlightWord( $w, bab_toHtml($this->arr['description']));
+				$res = $babDB->db_query("select tag_name from ".BAB_TAGS_TBL." tt left join ".BAB_FILES_TAGS_TBL." ftt on tt.id=ftt.id_tag where id_file=".$babDB->quote($id)." order by tag_name asc");
+				$this->arr['keywords'] = '';
+				while( $rr = $babDB->db_fetch_array($res))
+					{
+					$this->arr['keywords'] .= $rr['tag_name'].', ';
+					}
+
 				$this->arr['keywords'] = highlightWord( $w, bab_toHtml($this->arr['keywords']));
 				$this->modified = bab_toHtml(bab_shortDate(bab_mktime($this->arr['modified']), true));
 				$this->created = bab_toHtml(bab_shortDate(bab_mktime($this->arr['created']), true));
@@ -2722,7 +2751,7 @@ function viewFile($id, $w)
 				
 				$sPath = removeFirstPath($this->arr['path']);
 				$iLength = strlen(trim($sPath));
-				if('/' === $sPath{$iLength - 1})
+				if($iLength && '/' === $sPath{$iLength - 1})
 				{
 					$sPath = substr($sPath, 0, -1);
 				}
