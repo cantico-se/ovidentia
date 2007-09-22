@@ -2095,10 +2095,9 @@ class BAB_FmFolderSet extends BAB_BaseSet
 			aclDeleteGroup(BAB_FMUPDATE_GROUPS_TBL, $oFmFolder->getId());
 			aclDeleteGroup(BAB_FMMANAGERS_GROUPS_TBL, $oFmFolder->getId());
 
+			$oFolderFileSet = new BAB_FolderFileSet();
 			if(true === $bDbRecordOnly)
 			{
-				$oFolderFileSet = new BAB_FolderFileSet();
-				
 				if(strlen(trim($oFmFolder->getRelativePath())) > 0)
 				{
 					$oFirstFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($oFmFolder->getRelativePath());
@@ -3570,6 +3569,7 @@ class BAB_FileManagerEnv
 	var $sGr = '';
 	var $sPath = '';
 	var $iIdObject = 0;
+	var $iId = 0;
 	
 	var $iPathLength = 0;
 	
@@ -3605,7 +3605,9 @@ class BAB_FileManagerEnv
 		{
 			$this->iIdObject = (int) bab_rp('id', 0);
 		}
-				
+
+		$this->iId = $this->iIdObject;
+			
 		if('Y' === $this->sGr)
 		{
 			$oFmFolder = null;

@@ -34,14 +34,12 @@ class listFiles
 	var $db;
 	var $res;
 	var $count;
-	var $fullpath;
 	var $id;
 	var $gr;
 	var $path;
 	var $jpath;
 	var $countmgrp;
 	var $countwf;
-//	var $arrmgrp = array();
 	var $reswf;
 	var $arrdir = array();
 	var $buaf;
@@ -91,10 +89,8 @@ class listFiles
 		$this->oFileManagerEnv =& getEnvObject();
 
 		$sGr = $this->oFileManagerEnv->sGr;
-		$iId = $this->oFileManagerEnv->iIdObject;
+		$iId = $this->oFileManagerEnv->iId;
 		$sPath = $this->oFileManagerEnv->sPath;
-
-		$this->fullpath = bab_getUploadFullPath($sGr, $iId);
 
 		$this->path = $sPath;
 		$this->jpath = bab_toHtml($sPath, BAB_HTML_JS);
@@ -105,7 +101,6 @@ class listFiles
 		$this->countwf = 0;
 
 //		bab_debug($this->oFileManagerEnv);
-		
 		$iPathLength = $this->oFileManagerEnv->iPathLength;
 		
 		if('Y' === $sGr)
@@ -218,6 +213,7 @@ class listFiles
 	
 	function simpleDirectoryCallback($sPathName, $sEntry)
 	{
+//		bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sPathName ==> ' . $sPathName . ' sEntry ==> ' . $sEntry);
 		if(is_dir($sPathName . $sEntry)) 
 		{
 			$bInClipBoard = $this->oRegHlp->exist($this->oFileManagerEnv->sRelativePath . $sEntry . '/');
@@ -237,32 +233,24 @@ class listFiles
 	function collectiveDirectoryCallback($sPathName, $sEntry)
 	{
 //		bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sPathName ==> ' . $sPathName);
-//		bab_debug('sPathName ==> ' . $sPathName . ' sName ==> ' . $sEntry);
 		
 		$sPath = $this->oFileManagerEnv->sRelativePath . $sEntry ;
-//		bab_debug('sPath ==> ' . $sPath);
-//
-//		bab_debug($this->aCuttedFolder);
-
-//		if(!array_key_exists($sPath, $this->aCuttedFolder))
+		$oFmFolderSet = new BAB_FmFolderSet();
+		$oName =& $oFmFolderSet->aField['sName'];
+		$oRelativePath =& $oFmFolderSet->aField['sRelativePath'];
+		
+		$oCriteria = $oName->in($sEntry);
+		$oCriteria = $oCriteria->_and($oRelativePath->in($this->oFileManagerEnv->sRelativePath));
+		
+		$oFmFolder = $oFmFolderSet->get($oCriteria);
+		if(!is_null($oFmFolder))
 		{
-			$oFmFolderSet = new BAB_FmFolderSet();
-			$oName =& $oFmFolderSet->aField['sName'];
-			$oRelativePath =& $oFmFolderSet->aField['sRelativePath'];
-			
-			$oCriteria = $oName->in($sEntry);
-			$oCriteria = $oCriteria->_and($oRelativePath->in($this->oFileManagerEnv->sRelativePath));
-			
-			$oFmFolder = $oFmFolderSet->get($oCriteria);
-			if(!is_null($oFmFolder))
-			{
-				$sUrlPath = $oFmFolder->getRelativePath() . $oFmFolder->getName() . '/';
-				$this->addCollectiveDirectory($oFmFolder, $this->id, $sUrlPath);
-			}
-			else 
-			{
-				$this->simpleDirectoryCallback($sPathName, $sEntry);
-			}
+			$sUrlPath = $oFmFolder->getRelativePath() . $oFmFolder->getName() . '/';
+			$this->addCollectiveDirectory($oFmFolder, $this->id, $sUrlPath);
+		}
+		else 
+		{
+			$this->simpleDirectoryCallback($sPathName, $sEntry);
 		}
 	}
 	
@@ -487,6 +475,7 @@ class listFiles
 		$oCriteria = $oCriteria->_and($oPathName->in($this->oFileManagerEnv->sRelativePath));
 		$oCriteria = $oCriteria->_and($oConfirmed->in('Y'));
 //		bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__);
+//		bab_debug($this->oFolderFileSet->getSelectQuery($oCriteria));
 		$this->oFolderFileSet->select($oCriteria);
 		$this->res = $this->oFolderFileSet->_oResult;
 		$this->count = $this->oFolderFileSet->count();
@@ -501,7 +490,6 @@ class listFiles
 	function autoadd_files() 
 	{
 		global $babDB;
-
 		if(!isset($GLOBALS['babAutoAddFilesAuthorId']) || empty($GLOBALS['babAutoAddFilesAuthorId']))
 		{
 			return;
@@ -531,8 +519,6 @@ class listFiles
 //				bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__);
 				
 				$this->oFolderFileSet->select($oCriteria);
-				
-//				bab_debug('iCount ==> ' . $this->oFolderFileSet->count());
 				
 				if(0 === $this->oFolderFileSet->count())
 				{
@@ -587,7 +573,7 @@ class DisplayFolderFormBase extends BAB_BaseFormProcessing
 		$this->setCaption();
 		
 		$oFileManagerEnv =& getEnvObject();
-		$this->set_data('iId', $oFileManagerEnv->iIdObject);
+		$this->set_data('iId', $oFileManagerEnv->iId);
 		$this->set_data('sPath', $oFileManagerEnv->sPath);
 		$this->set_data('sGr', $oFileManagerEnv->sGr);
 		
@@ -676,7 +662,6 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 		$this->setCaption();
 		$this->set_data('sYes', 'Y');
 		$this->set_data('sNo', 'N');
-		$this->set_data('iNone', 0);
 		$this->set_data('iNone', 0);
 		
 		$this->set_data('iAppSchemeId', 0);
@@ -1108,6 +1093,7 @@ function listFiles()
 		var $sFolderFormAdd;
 		var $sFolderFormEdit;
 		var $sFolderFormUrl;
+		var $sAddFolderFormUrl;
 		var $bFolderUrl;
 		
 		var $sRight;
@@ -1166,7 +1152,7 @@ function listFiles()
 			$this->refreshurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$this->id."&gr=".$this->gr."&path=".urlencode($this->path));
 			$this->urldiskspace = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=disk&id=".$this->id."&gr=".$this->gr."&path=".urlencode($this->path));
 			
-			$this->sFolderFormUrl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=displayFolderForm&sAction=createFolder&id=".$this->id."&gr=".$this->gr."&path=".urlencode($this->path));
+			$this->sAddFolderFormUrl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=displayFolderForm&sAction=createFolder&id=".$this->id."&gr=".$this->gr."&path=".urlencode($this->path));
 
 			$this->sCutFolderUrl = '#'; 
 			$this->bCutFolderUrl = false;
@@ -1491,7 +1477,7 @@ function listFiles()
 
 	$temp = new temp();
 	$babBody->title = bab_translate("File manager");
-	$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$oFileManagerEnv->iIdObject."&gr=".$oFileManagerEnv->sGr."&path=".urlencode($oFileManagerEnv->sPath));
+	$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$oFileManagerEnv->iId."&gr=".$oFileManagerEnv->sGr."&path=".urlencode($oFileManagerEnv->sPath));
 	
 	if('Y' === $oFileManagerEnv->sGr || ('N' === $oFileManagerEnv->sGr && 0 !== $oFileManagerEnv->iPathLength))
 	{
@@ -2456,9 +2442,9 @@ function displayFolderForm()
 	$oFileManagerEnv =& getEnvObject();
 	
 	$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript'] . '?tg=fileman&idx=list&id=' . 
-		$oFileManagerEnv->iIdObject . '&gr=' . $oFileManagerEnv->sGr . '&path=' . urlencode($oFileManagerEnv->sPath));
+		$oFileManagerEnv->iId . '&gr=' . $oFileManagerEnv->sGr . '&path=' . urlencode($oFileManagerEnv->sPath));
 	$babBody->addItemMenu('displayFolderForm', bab_translate("Create a folder"), $GLOBALS['babUrlScript'] . 
-		'?tg=fileman&idx=displayFolderForm&id=' . $oFileManagerEnv->iIdObject . '&gr=' . $oFileManagerEnv->sGr . 
+		'?tg=fileman&idx=displayFolderForm&id=' . $oFileManagerEnv->iId . '&gr=' . $oFileManagerEnv->sGr . 
 		'&path=' . urlencode($oFileManagerEnv->sPath));
 	
 	if($oFileManagerEnv->oAclFm->haveManagerRight())
@@ -2487,7 +2473,7 @@ function processFolderCommand(&$sIdx)
 
 	$oFileManagerEnv =& getEnvObject();
 	
-	$iId = $oFileManagerEnv->iIdObject; 
+	$iId = $oFileManagerEnv->iId; 
 	$sGr = $oFileManagerEnv->sGr; 
 	$sPath = $oFileManagerEnv->sPath;
 	
@@ -2616,7 +2602,6 @@ function createEditFolderForCollectiveDir($iIdFolder, $sPath)
 	global $babBody;
 	
 	$sAction = (string) bab_pp('sAction', '');
-
 	$oFileManagerEnv =& getEnvObject();
 	if($oFileManagerEnv->oAclFm->haveManagerRight())
 	{
@@ -2636,8 +2621,8 @@ function createEditFolderForCollectiveDir($iIdFolder, $sPath)
 				$sPathName				= (string) '';
 				
 				$sRelativePath = '';
-//				$oFmFolder = BAB_FmFolderHelper::getFmFolderById($iIdFolder);
-				$oFmFolder = $oFileManagerEnv->oFmFolder;
+				$oFmFolder = BAB_FmFolderHelper::getFmFolderById($iIdFolder);
+//				$oFmFolder = $oFileManagerEnv->oFmFolder;
 				if(!is_null($oFmFolder))
 				{
 					$sRelativePath = $oFmFolder->getName() . '/';
@@ -2652,10 +2637,10 @@ function createEditFolderForCollectiveDir($iIdFolder, $sPath)
 					{
 						$sFullPathName = $sUploadPath . $sRelativePath . $sDirName;
 	
-	//					bab_debug('sUploadPath ==> ' . $sUploadPath);
-	//					bab_debug('sFullPathName ==> ' .  $sFullPathName);
-	//					bab_debug('sRelativePath ==> ' . $sRelativePath);
-	
+//						bab_debug('sUploadPath ==> ' . $sUploadPath);
+//						bab_debug('sFullPathName ==> ' .  $sFullPathName);
+//						bab_debug('sRelativePath ==> ' . $sRelativePath);
+//return;
 						if(BAB_FmFolderHelper::createDirectory($sUploadPath, $sFullPathName))
 						{
 							if('collective' === $sType)
@@ -2777,8 +2762,25 @@ function createEditFolderForCollectiveDir($iIdFolder, $sPath)
 			else if(isset($_POST['sDeleteFolder']))
 			{
 				$iIdFld	= (int) bab_pp('iIdFolder', 0); 
-				require_once $GLOBALS['babInstallPath'] . 'utilit/delincl.php';
-				bab_deleteFolder($iIdFld);
+				if(0 !== $iIdFld)
+				{
+					require_once $GLOBALS['babInstallPath'] . 'utilit/delincl.php';
+					bab_deleteFolder($iIdFld);
+				}
+				else 
+				{
+					global $babDB;
+					$sUploadPath = BAB_FmFolderHelper::getUploadPath();
+					$sPathName = $oFileManagerEnv->sRelativePath . $sDirName . '/';
+					$sFullPathName = $sUploadPath . $sPathName;
+					
+					$oFolderFileSet = new BAB_FolderFileSet();
+					$oPathName =& $oFolderFileSet->aField['sPathName'];
+					$oFolderFileSet->remove($oPathName->like($babDB->db_escape_like($sPathName) . '%'));
+					
+					$oFmFolderSet = new BAB_FmFolderSet();
+					$oFmFolderSet->removeDir($sFullPathName);
+				}
 			}			
 		}
 	}
@@ -3270,7 +3272,7 @@ if(false === $oFileManagerEnv->accessValid())
 $idx = bab_rp('idx','list');
 $path = $oFileManagerEnv->sPath;
 $gr = $oFileManagerEnv->sGr;
-$id = $oFileManagerEnv->iIdObject;
+$id = $oFileManagerEnv->iId;
 $bmanager = $oFileManagerEnv->oAclFm->haveManagerRight();
 $upload = $oFileManagerEnv->oAclFm->haveUploadRight();
 
