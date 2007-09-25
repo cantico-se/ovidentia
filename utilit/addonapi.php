@@ -992,9 +992,9 @@ function bab_printTemplate( &$class, $file, $section="")
 		}
 
 	if( $tplfound ) {
-		$start = microtime(true);
+//		$start = microtime(true);
 		$t = $tpl->printTemplate($class,$filepath, $section);
-		bab_debug($filepath . ':' . $section . '=' . (int)((microtime(true) - $start) * 1000000));
+//		bab_debug($filepath . ':' . $section . '=' . (int)((microtime(true) - $start) * 1000000));
 		return $t;
 //		return $tpl->printTemplate($class,$filepath, $section);
 	} else {
