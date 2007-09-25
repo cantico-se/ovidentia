@@ -2910,7 +2910,7 @@ class bab_GroupTreeViewElement extends bab_TreeViewElement
 	 */
 	function bab_GroupTreeViewElement($groupId, $type, $title, $description, $link)
 	{
-		parent::bab_TreeViewElement('group' . BAB_TREE_VIEW_ID_SEPARATOR . $id,  $type, $title, $description, $link);
+		parent::bab_TreeViewElement($groupId,  $type, $title, $description, $link);
 		$this->_groupId = $groupId;
 	}
 
@@ -3007,9 +3007,14 @@ class bab_GroupTreeView extends bab_TreeView
 		$groups = $tree->getGroups(BAB_ALLUSERS_GROUP, '');
 
 		foreach ($groups as $group) {
+			if ($group['id'] <= BAB_ADMINISTRATOR_GROUP) {
+				$groupName = bab_translate($group['name']);
+			} else {
+				$groupName = $group['name'];
+			}
 			$element =& $this->createElement('group' . BAB_TREE_VIEW_ID_SEPARATOR . $group['id'],
 											 'group',
-											 bab_toHtml(bab_translate($group['name'])),
+											 bab_toHtml($groupName),
 											 '',
 											 '');
 			$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
