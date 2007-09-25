@@ -532,6 +532,8 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 	$count = 0;
 	foreach($fmFiles as $fmFile)
 	{
+		$otags = array();
+
 		$file = array(
 		'name' => trim($fmFile->filename),
 		'size' => $fmFile->size
