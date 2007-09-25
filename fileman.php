@@ -699,6 +699,7 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 		$this->set_data('isFileNotify', false);
 		$this->set_data('isVersioning', false);
 		$this->set_data('isShow', true);
+		$this->set_data('sChecked', 'checked');
 	}
 	
 	function handleEdition()
@@ -709,6 +710,7 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 		$this->set_data('isFileNotify', false);
 		$this->set_data('isVersioning', false);
 		$this->set_data('isShow', true);
+		$this->set_data('sChecked', 'checked');
 
 		$this->get_data('iId', $iId);
 		$this->get_data('sPath', $sPath);
@@ -728,6 +730,7 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 			$this->set_data('isShow', ('Y' === $oFmFolder->getHide()) ? false : true);
 			$this->set_data('iIdFolder', $oFmFolder->getId());
 			$this->set_data('sOldDirName', $oFmFolder->getName());
+			$this->set_data('sChecked', '');
 		}
 
 		$oFileManagerEnv =& getEnvObject();
@@ -2360,6 +2363,7 @@ function displayRightForm($bmanager, $upload, $path, $id, $gr)
 	$macl->addtable( BAB_FMUPDATE_GROUPS_TBL,bab_translate("Update"));
 	$macl->addtable( BAB_FMMANAGERS_GROUPS_TBL,bab_translate("Manage"));
 	$macl->filter(0,0,1,1,1);
+	$macl->addtable( BAB_FMNOTIFY_GROUPS_TBL,bab_translate("Who is notified when a new file is uploaded or updated?"));
 	$macl->babecho();
 	
 }

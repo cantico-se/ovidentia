@@ -176,7 +176,7 @@ aR(0);
 			<td align="left" valign="middle" class="BabsiteFileCurentFolder" >
 				<img src="{ babSkinPath }images/Puces/folder.gif" alt="" border="0" /> 
 	                  : { sRootFolderPath }{ path }&nbsp;<a href="{ rooturl }"><img src="{ babSkinPath }images/Puces/root.gif" border="0" alt="{ root }"  /></a>&nbsp;<a href="{ refreshurl }"><img src="{ babSkinPath }images/Puces/refresh.gif" alt="{ 
-	            refresh }" border="0" /></a><!--#if bmanager -->&nbsp;<a href="{ sFolderFormUrl }" title="{ sFolderFormAdd }"><img src="{ babSkinPath }images/Puces/folder_add.png" border="0" alt="{ sFolderFormAdd }"  /></a><!--#endif bmanager -->
+	            refresh }" border="0" /></a><!--#if bmanager -->&nbsp;<a href="{ sAddFolderFormUrl }" title="{ sFolderFormAdd }"><img src="{ babSkinPath }images/Puces/folder_add.png" border="0" alt="{ sFolderFormAdd }"  /></a><!--#endif bmanager -->
 	       	</td>
 		</tr>
 	</table>
@@ -920,7 +920,7 @@ function hide(aNode)
 				<tr> 
 					<td align="right">&nbsp;</td>
 					<td>
-					<input type="checkbox" id="sType" name="sType" value="{ m_datas[sSimple] }" onclick="showHide()" checked />{ m_captions[sConfRights] }
+					<input type="checkbox" id="sType" name="sType" value="{ m_datas[sSimple] }" onclick="showHide()" { m_datas[sChecked] } />{ m_captions[sConfRights] }
 					</td>
 				</tr>
 				<tr class="showHide"> 
