@@ -146,7 +146,7 @@ class listFiles
 			$this->initUserFolderCuttedDir();
 		}
 		
-		
+//		bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sListFunctionName ==> ' . $this->sListFunctionName);
 		
 		$sPath = '';
 		$aPath = explode('/', $this->path);
@@ -1486,11 +1486,11 @@ function listFiles()
 	{
 		if($oFileManagerEnv->oAclFm->haveUploadRight()) 
 		{
-			$babBody->addItemMenu("add", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=fileman&idx=add&id=".$oFileManagerEnv->iIdObject."&gr=".$oFileManagerEnv->sGr."&path=".urlencode($oFileManagerEnv->sPath));
+			$babBody->addItemMenu("add", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=fileman&idx=add&id=".$oFileManagerEnv->iId."&gr=".$oFileManagerEnv->sGr."&path=".urlencode($oFileManagerEnv->sPath));
 		}
 		if($oFileManagerEnv->oAclFm->haveManagerRight()) 
 		{
-			$babBody->addItemMenu("trash", bab_translate("Trash"), $GLOBALS['babUrlScript']."?tg=fileman&idx=trash&id=".$oFileManagerEnv->iIdObject."&gr=".$oFileManagerEnv->sGr."&path=".urlencode($oFileManagerEnv->sPath));
+			$babBody->addItemMenu("trash", bab_translate("Trash"), $GLOBALS['babUrlScript']."?tg=fileman&idx=trash&id=".$oFileManagerEnv->iId."&gr=".$oFileManagerEnv->sGr."&path=".urlencode($oFileManagerEnv->sPath));
 		}
 	}
 
