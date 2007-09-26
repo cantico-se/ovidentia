@@ -861,7 +861,7 @@ function bab_mkdir($path, $mode='')
 	}
 	$res = mkdir($path, $mode);
 	if (!$res) {
-		include_once 'devtools.php';
+		include_once $GLOBALS['babInstallPath'].'utilit/devtools.php';
 		bab_debug_print_backtrace();
 	}
 	umask($umask);
