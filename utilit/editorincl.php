@@ -380,19 +380,20 @@ class bab_eventEditors extends bab_event {
  * Register core editor instances
  */
 function bab_onEventEditors(&$event) {
-	$event->addEditor('bab_note'			, bab_translate('Note')				, bab_translate('Note creation and modification'));
-	$event->addEditor('bab_article_head'	, bab_translate('Article head')		, bab_translate('Article head'));
-	$event->addEditor('bab_article_body'	, bab_translate('Article body')		, bab_translate('Article body'));
-	$event->addEditor('bab_article_comment'	, bab_translate('Article comment')	, bab_translate('Article comment'));
-	$event->addEditor('bab_calendar_event'	, bab_translate('Calendar event')	, bab_translate('Calendar event description'));
-	$event->addEditor('bab_forum_post'		, bab_translate('Forum post')		, bab_translate('Forum thread or post'));
-	$event->addEditor('bab_topic'			, bab_translate('Article topic')	, bab_translate('Article topic description'));
-	$event->addEditor('bab_faq'				, bab_translate('Faq')				, bab_translate('Faq description'));
-	$event->addEditor('bab_faq_response'	, bab_translate('Faq response')		, bab_translate('Faq response'));
-	$event->addEditor('bab_section'			, bab_translate('Section')			, bab_translate('Section content'));
-	$event->addEditor('bab_mail_signature'	, bab_translate('Mail signature')	, bab_translate('Mail signature'));
-	$event->addEditor('bab_mail_message'	, bab_translate('Mail body')		, bab_translate('Mail body'));
-	$event->addEditor('bab_disclaimer'		, bab_translate('Disclaimer')		, bab_translate('Disclaimer creation and modification'));
+	$event->addEditor('bab_note'					, bab_translate('Note')							, bab_translate('Note creation and modification'));
+	$event->addEditor('bab_article_head'			, bab_translate('Article head')					, bab_translate('Article head'));
+	$event->addEditor('bab_article_body'			, bab_translate('Article body')					, bab_translate('Article body'));
+	$event->addEditor('bab_article_comment'			, bab_translate('Article comment')				, bab_translate('Article comment'));
+	$event->addEditor('bab_calendar_event'			, bab_translate('Calendar event')				, bab_translate('Calendar event description'));
+	$event->addEditor('bab_forum_post'				, bab_translate('Forum post')					, bab_translate('Forum thread or post'));
+	$event->addEditor('bab_topic'					, bab_translate('Article topic')				, bab_translate('Article topic description'));
+	$event->addEditor('bab_faq'						, bab_translate('Faq')							, bab_translate('Faq description'));
+	$event->addEditor('bab_faq_response'			, bab_translate('Faq response')					, bab_translate('Faq response'));
+	$event->addEditor('bab_section'					, bab_translate('Section')						, bab_translate('Section content'));
+	$event->addEditor('bab_mail_signature'			, bab_translate('Mail signature')				, bab_translate('Mail signature'));
+	$event->addEditor('bab_mail_message'			, bab_translate('Mail body')					, bab_translate('Mail body'));
+	$event->addEditor('bab_disclaimer'				, bab_translate('Disclaimer')					, bab_translate('Disclaimer creation and modification'));
+	$event->addEditor('bab_taskManagerDescription'	, bab_translate('Task manager description')		, bab_translate('Task manager description'));
 }
 
 

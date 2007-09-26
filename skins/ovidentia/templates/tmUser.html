@@ -609,15 +609,6 @@ function showHideElement(sIdElement, iShow)
 	{
 		oElement.style.display = (g_tskMgrHide == iShow) ? 'none' : '';
 	}
-	else
-	{
-		/*
-		if('oLiPredecessors' == sIdElement)
-		{
-			alert('NULL oLiPredecessors');
-		}
-		*/
-	}
 }
 
 function processStartDate()
@@ -640,7 +631,6 @@ function check_all(strCtrlName, checked)
 
 	var i;
 	var objCtrl;
-
 
 	for (i = 0; i < form.elements.length; i++)
 	{
@@ -674,6 +664,7 @@ function check_all(strCtrlName, checked)
 	<input type="hidden" name="selectedMenu" value="" />
 	<input type="hidden" name="sFromIdx" value="{ m_datas[sFromIdx] }" />
 	<input type="hidden" name="isProject" value="{ m_datas[isProject] }" />
+	<input type="hidden" name="iUseEditor" value="{ m_iUseEditor }" />
 	
 	<div class="BabSiteAdminTitleFontBackground" align="center">
 		<!--#if m_datas[bIsProjectSpace] --><h4>{ m_captions[sProjectSpace] }:&nbsp;{ m_datas[sProjectSpace] }&nbsp;&nbsp;</h4><!--#endif m_datas[bIsProjectSpace] --><h5>{ m_captions[sProject] }:&nbsp;{ m_datas[sProject] }</h5>
@@ -738,13 +729,23 @@ function check_all(strCtrlName, checked)
 					</td>
 				</tr>
 				<tr>
-					<td colspan="2"><label for="sDescription">{ m_captions[sDescription] }</label></td>
-				</tr>
-				<tr>
 					<td colspan="2">
-						<textarea name="sDescription" id="sDescription" { m_datas[sReadonlyDescription] } cols="50" rows="10" style="width:100%">{ m_datas[sDescription] }</textarea>
+						{ m_captions[sDescription] }<!--#if m_bDisplayEditorLink -->&nbsp;&nbsp;<a href="{ m_sEditTaskDescriptionUrl }">{ m_captions[sModify] }</a><!--#endif m_bDisplayEditorLink -->
 					</td>
 				</tr>
+				<!--#if m_iUseEditor -->
+				<tr>
+					<td colspan="2">
+						{ m_datas[sDescription] }
+					</td>
+				</tr>
+				<!--#else m_iUseEditor -->
+				<tr>
+					<td colspan="2" style="background-color:white">
+						{ m_datas[sDescription] }
+					</td>
+				</tr>
+				<!--#endif m_iUseEditor -->
 			<!--#if m_datas[isLinkable] -->
 				<tr id="oTrLinkedTask">
 					<td>
@@ -1008,6 +1009,7 @@ onClassChanged(document.forms.taskForm['iClass']);
 //-->
 </script>
 <!--#end taskForm -->
+
 
 <!--#begin taskCommentariesList -->
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">

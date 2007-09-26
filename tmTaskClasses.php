@@ -214,6 +214,7 @@
 			$this->set_caption('sAnwser', bab_translate("Do you accept the task ?"));
 			$this->set_caption('sProjectSpace', bab_translate("Project space"));
 			$this->set_caption('sProject', bab_translate("Project"));
+			$this->set_caption('sModify', bab_translate("Modify"));
 		}
 
 		function initDatas()
@@ -435,6 +436,10 @@
 
 		var $m_aRelation;
 
+		var $m_bDisplayEditorLink = false;
+		var $m_sEditTaskDescriptionUrl = '#';
+		var $m_iUseEditor = 0;
+		
 		function BAB_TaskForm()
 		{
 			parent::BAB_TaskFormBase();
@@ -456,6 +461,16 @@
 			$this->set_data('isModifiable', $bIsModifiable);
 			
 			$this->set_data('isDeletable', ($this->m_bIsManager));
+			
+			$this->m_iUseEditor = (int) bab_rp('iUseEditor', 0);
+			$isProject = (int) bab_rp('isProject', 0);
+			$this->m_bDisplayEditorLink = (0 === $this->m_iUseEditor && $this->m_bIsManager);
+			
+			$this->m_sEditTaskDescriptionUrl = $GLOBALS['babUrlScript'] . '?tg=' . urlencode('usrTskMgr') . 
+				'&idx=' . urlencode(BAB_TM_IDX_DISPLAY_TASK_FORM) . '&iIdProjectSpace=' . 
+				urlencode($this->m_iIdProjectSpace) . '&iIdProject=' . urlencode($this->m_iIdProject) .
+				'&iIdTask=' . urlencode($this->m_iIdTask) . '&iUseEditor=1&$isProject=' . $isProject;
+			
 			
 			//A faire ds les classes spécialisées
 			/*
@@ -554,8 +569,20 @@
 
 		function initDescription($sDescription)
 		{
-			$this->set_data('sDescription', $sDescription);
-			$this->set_data('sReadonlyDescription', $this->m_bIsManager ? '' : 'disabled="disabled"');
+			require_once $GLOBALS['babInstallPath'] . 'utilit/editorincl.php';
+			$oEditor = new bab_contentEditor('bab_taskManagerDescription');
+			$oEditor->setContent($sDescription);
+			
+			if(1 === $this->m_iUseEditor)			
+			{
+				$this->set_data('sDescription', $oEditor->getEditor());	
+			}
+			else 
+			{
+				$this->set_data('sDescription', $oEditor->getHtml());
+			}
+			
+			$this->set_data('sReadonlyDescription', 'disabled="disabled"');
 		}
 
 		function initShortDescription($sShortDescription)
@@ -1017,7 +1044,19 @@
 			$this->m_oTask =& new BAB_TM_Task();
 			
 			$this->m_sTaskNumber			= trim(bab_rp('sTaskNumber', ''));
-			$this->m_sDescription			= trim(bab_rp('sDescription', ''));
+
+			$iUseEditor = (int) bab_rp('iUseEditor', 0);
+			if(1 === $iUseEditor)
+			{
+				require_once $GLOBALS['babInstallPath'] . 'utilit/editorincl.php';
+				$oEditor = new bab_contentEditor('bab_taskManagerDescription');
+				$this->m_sDescription = $oEditor->getContent();
+			}
+			else 
+			{
+				$this->m_sDescription = $this->m_oTask->m_aTask['sDescription'];
+			}
+			
 			$this->m_sShortDescription		= trim(bab_rp('sShortDescription', ''));
 			$this->m_iIdCategory			= (int) bab_rp('iIdCategory', 0);
 			$this->m_sCreated				= date("Y-m-d H:i:s");
