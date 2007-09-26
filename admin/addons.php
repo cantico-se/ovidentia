@@ -436,7 +436,7 @@ function export($id)
 				}
 			}
 		}
-	$zip->Add($addarr,0);
+	$zip->Add($addarr,1);
 	header("Content-Type:application/zip");
 	header("Content-Disposition: attachment; filename=".$row['title'].'-'.$version.".zip");
 	die($zip->get_file());
