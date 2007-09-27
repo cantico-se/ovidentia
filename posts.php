@@ -823,7 +823,7 @@ function newReply($forum, $thread, $post)
 			$this->ismanager = bab_isAccessValid(BAB_FORUMSMAN_GROUPS_TBL, $forum );
 			$this->displayIndex = bab_isUserAdministrator();
 
-			$this->maxfilesize = bab_toHtml($babBody->babsite['maxfilesize']);
+			$this->maxfilesize = $GLOBALS['babMaxFileSize'];
 			$this->files = bab_getPostFiles($this->forum,$post);
 			$this->allow_post_files = bab_isAccessValid(BAB_FORUMSFILES_GROUPS_TBL,$forum);
 			}

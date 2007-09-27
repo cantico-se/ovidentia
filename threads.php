@@ -433,7 +433,7 @@ function newThread($forum)
 			$this->editor = $editor->getEditor();
 
 			$this->allow_post_files = bab_isAccessValid(BAB_FORUMSFILES_GROUPS_TBL,$forum);
-			$this->maxfilesize = bab_toHtml($babBody->babsite['maxfilesize']);
+			$this->maxfilesize = $GLOBALS['babMaxFileSize'];
 
 			if( bab_isForumModerated($forum))
 				$this->noteforum = bab_translate("Note: Posts are moderate and consequently your post will not be visible immediately");
