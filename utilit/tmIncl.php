@@ -1010,7 +1010,7 @@ function bab_getAllTaskIndexedById($iIdProject, &$aTasks)
 		'WHERE ' . 
 			'idProject = \'' . $babDB->db_escape_string($iIdProject) . '\'';
 			
-	//bab_debug($query);
+//	bab_debug($query);
 
 	$result = $babDB->db_query($query);
 	$iNumRows = $babDB->db_num_rows($result);
@@ -1563,7 +1563,7 @@ function bab_getTaskResponsibles($iIdTask, &$aTaskResponsible)
 		'WHERE ' . 
 			'idTask =\'' . $babDB->db_escape_string($iIdTask) . '\'';
 	
-	//bab_debug($query);
+//	bab_debug($query);
 	$result = $babDB->db_query($query);
 	$iNumRows = $babDB->db_num_rows($result);
 	$iIndex = 0;
@@ -1945,7 +1945,7 @@ function bab_selectOwnedTaskQueryByDate($sStartDate, $sEndDate, $iTaskFilter = n
 }
 //*/
 
-function bab_selectTaskQuery($aFilters)
+function bab_selectTaskQuery($aFilters, $aOrder = array())
 {
 	global $babDB;
 	
@@ -2002,12 +2002,12 @@ function bab_selectTaskQuery($aFilters)
 
 	if(isset($aFilters['sStartDate']))
 	{
-		$query .= 'AND t.startDate < \'' . $babDB->db_escape_string($aFilters['sEndDate']) . '\' ';
+		$query .= 'AND t.startDate >= \'' . $babDB->db_escape_string($aFilters['sStartDate']) . '\' ';
 	}
 
 	if(isset($aFilters['sEndDate']))
 	{
-		$query .= 'AND t.endDate > \'' . $babDB->db_escape_string($aFilters['sStartDate']) . '\' ';
+		$query .= 'AND t.endDate <= \'' . $babDB->db_escape_string($aFilters['sEndDate']) . '\' ';
 	}
 
 	if(isset($aFilters['iTaskClass']))
@@ -2024,12 +2024,18 @@ function bab_selectTaskQuery($aFilters)
 	{
 		$query .= 'AND t.participationStatus <> \'' . $babDB->db_escape_string(BAB_TM_REFUSED) . '\' ';
 	}
-
+	
 	$query .= 
 		'GROUP BY ' .
-			'sProjectSpaceName ASC, sProjectName ASC, sTaskNumber ASC';
+			'sProjectSpaceName ASC, sProjectName ASC, sTaskNumber ASC ';
 
-	//bab_debug($query);
+	if(count($aOrder) > 0)
+	{
+		$query .= 'ORDER BY ' . $aOrder['sName'] . ' ' . $aOrder['sOrder'] . ' ';
+	}
+	
+
+	bab_debug($query);
 	//echo $query . '<br />';
 	return $query;
 }

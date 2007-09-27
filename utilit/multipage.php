@@ -198,6 +198,33 @@ class BAB_MultiPageBase
 		{
 			if($this->bIsColumnHeaderUrl)
 			{
+				$sOrderBy = (string) bab_rp('sOrderBy', '');
+				$sOrder = (string) bab_rp('sOrder', '');
+				
+				$this->sColumnHeaderUrl = $this->buildPageUrl($this->iPage, false);
+				$this->sColumnHeaderUrl = ereg_replace('&sOrderBy=[^&.]+', '', $this->sColumnHeaderUrl);
+				$this->sColumnHeaderUrl = ereg_replace('&sOrder=[^&.]+', '', $this->sColumnHeaderUrl);
+				$this->sColumnHeaderUrl .= '&sOrderBy=' . $aDatas['value']['sDataSourceFieldName'];
+				
+				if($sOrderBy === (string) $aDatas['value']['sDataSourceFieldName'])
+				{
+					if($sOrder === (string) 'ASC')
+					{
+						$this->sColumnHeaderUrl .= '&sOrder=' . 'DESC';
+					}
+					else 
+					{
+						$this->sColumnHeaderUrl .= '&sOrder=' . 'ASC';
+					}
+				}
+				else 
+				{
+					$this->sColumnHeaderUrl .= '&sOrder=' . 'ASC';
+				}
+				$this->sColumnHeaderUrl = htmlentities($this->sColumnHeaderUrl);
+			}
+			else 
+			{
 				$this->sColumnHeaderUrl = '#';
 			}
 			
@@ -478,7 +505,7 @@ bab_debug('8 heures de train');
 		return $url;	
 	}			
 
-	function buildPageUrl($iPageNumber)
+	function buildPageUrl($iPageNumber, $bUseHtmlEntities = true)
 	{
 		$sPageUrl = ereg_replace('\?tg=[^&.]+', '', $_SERVER['REQUEST_URI']);
 		$sPageUrl = ereg_replace('&iPage=[^&.]+', '', $sPageUrl);
@@ -493,7 +520,14 @@ bab_debug('8 heures de train');
 		}
 		$sPageUrl = '?tg=' . urlencode($this->sTg);
 		
-		return htmlentities($sPageUrl .= '&iPage=' . urlencode($iPageNumber) . '&iNbRowsPerPage=' . urlencode($this->iNbRowsPerPage) . $sExtraParams);
+		if(true === $bUseHtmlEntities)
+		{
+			return htmlentities($sPageUrl .= '&iPage=' . urlencode($iPageNumber) . '&iNbRowsPerPage=' . urlencode($this->iNbRowsPerPage) . $sExtraParams);
+		}
+		else 
+		{
+			return $sPageUrl .= '&iPage=' . urlencode($iPageNumber) . '&iNbRowsPerPage=' . urlencode($this->iNbRowsPerPage) . $sExtraParams;
+		}
 	}
 	
 	function getPagination()

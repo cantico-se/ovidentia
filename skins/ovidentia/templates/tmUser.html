@@ -996,7 +996,7 @@ function check_all(strCtrlName, checked)
 			<!--#if m_datas[isDeletable] -->
 			<input type="submit" value="{ m_captions[sDelete] }" onclick="on_btn_clicked('{ m_datas[iDeleteIdx] }', '{ m_datas[iDeleteAction] }')" />
 			<!--#endif m_datas[isDeletable] -->
-			<!--#endif m_iIdTask -->
+		<!--#endif m_iIdTask -->
 		</div>
 	</div>
 </form>
@@ -1115,8 +1115,24 @@ function onTaskFilterChanged(oCtrl, sHiddenName)
 	}
 	
 }
+
+function setDateValue(aDate)
+{
+	var form = document.forms.taskListFilter;
+	form[form.selectedDateFieldName.value].value =  aDate['day'] + '-' + aDate['month'] + '-' + aDate['year'];
+}
+
+function dateCallback(sFieldName)
+{
+	var form = document.forms.taskListFilter;
+	form.selectedDateFieldName.value = sFieldName;
+	bab_dialog.selectdate(setDateValue);
+}
 //-->
 </script>
+
+<script type="text/javascript" src="{ babInstallPath }scripts/bab_dialog.js"></script>
+
 
 <form name="taskListFilter" method="get" action="{ babPhpSelf }" onsubmit="return(submit_form())">
 	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
@@ -1124,6 +1140,8 @@ function onTaskFilterChanged(oCtrl, sHiddenName)
 	<input type="hidden" name="iIdProjectSpace" value="{ m_datas[iIdProjectSpace] }" />
 	<input type="hidden" name="iIdProject" value="{ m_datas[iIdProject] }" />
 	<input type="hidden" name="isProject" value="{ m_datas[isProject] }" />
+	<input type="hidden" name="selectedDateFieldName" value="" />
+	
 	
 	<table width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
 		<tr> 
@@ -1152,6 +1170,48 @@ function onTaskFilterChanged(oCtrl, sHiddenName)
 						</select>
 					</td>
 				</tr>
+				<tr id="oTrStartDate">
+					<td>
+						<label for="sStartDate">{ m_captions[sStartDate] }</label>
+					</td>
+					<td>
+						<input type="text" name="sStartDate" id="sStartDate" maxlength="20" value="{ m_datas[sStartDate] }" size="10" />
+						<a href="javascript:dateCallback('sStartDate');">
+							<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/calendar.gif" alt="{ m_captions[sStartDate] }" />
+						</a>
+					</td>
+					<td>
+						<label for="sEndDate">{ m_captions[sEndDate] }</label>
+					</td>
+					<td>
+						<input type="text" name="sEndDate" id="sEndDate" maxlength="20" value="{ m_datas[sEndDate] }" size="10" />
+						<a href="javascript:dateCallback('sEndDate');">
+							<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/calendar.gif" alt="{ m_captions[sEndDate] }" />
+						</a>
+					</td>
+				</tr>
+				<!--#if isProject -->
+				<tr id="oTrStartDate">
+					<td>
+						<label for="iIdOwner">{ m_captions[sTaskResponsible] }</label>
+					</td>
+					<td>
+						<select name="iIdOwner">
+								<option value=""></option>
+							<!--#in getNextTaskResponsible -->
+								<option { m_datas[sSelectedUserName] } value="{ m_datas[idResponsible] }">{ m_datas[sUserName] }</option>
+							<!--#endin getNextTaskResponsible -->
+						</select>
+					</td>
+					<!--#endif isProject -->
+					<td>
+						&nbsp;
+					</td>
+					<td>
+						&nbsp;
+					</td>
+				</tr>
+				
 				<tr>
 					<td colspan="4">
 						&nbsp;

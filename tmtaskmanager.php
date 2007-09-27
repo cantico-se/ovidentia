@@ -851,6 +851,8 @@ function displayTaskList()
 		var $m_aSelectedFilterValues;
 		var $m_sGanttViewUrl;
 		
+		var $m_aTask = array();
+		
 		function BAB_TM_TaskFilterForm()
 		{
 			$this->set_data('tg', bab_rp('tg', 'usrTskMgr'));				
@@ -859,12 +861,17 @@ function displayTaskList()
 			$this->set_caption('sAddTask', bab_translate("Add a task"));
 			$this->set_caption('sFilter', bab_translate("Filter"));
 			$this->set_caption('ganttView', bab_translate("Display the gantt View"));
+			$this->set_caption('sStartDate', bab_translate("Start Date"));
+			$this->set_caption('sEndDate', bab_translate("End Date"));
+			$this->set_caption('sTaskResponsible', bab_translate("Task Responsible"));
 			
 			$this->set_data('sFilterIdx', BAB_TM_IDX_DISPLAY_TASK_LIST);
 			$this->set_data('sFilterAction', '');
 			$this->set_data('sAddTaskIdx', BAB_TM_IDX_DISPLAY_TASK_FORM);
 			$this->set_data('sAddTaskAction', '');
 			$this->set_data('bIsAddButton', false);
+			$this->set_data('sStartDate', bab_rp('sStartDate', ''));
+			$this->set_data('sEndDate', bab_rp('sEndDate', ''));
 
 			$this->set_data('isProjectDisplayed', (0 === (int) bab_rp('isProject', 0)));
 			$this->get_data('isProjectDisplayed', $isProjectDisplayed);
@@ -905,6 +912,11 @@ function displayTaskList()
 				
 			$this->initTaskFilter();
 			
+			if(1 === (int) bab_rp('isProject', 0))
+			{
+				$this->set_data('iIdOwner', (int) bab_rp('iIdOwner', 0));
+				$this->initTaskResponsible();
+			}
 			
 			if(-1 != $this->m_aSelectedFilterValues['id'])
 			{
@@ -954,6 +966,47 @@ function displayTaskList()
 			
 			reset($this->m_aTasksFilter);
 			//bab_debug($this->m_aTasksFilter);
+		}
+		
+		function initTaskResponsible()
+		{
+			bab_getAllTaskIndexedById($this->m_aSelectedFilterValues['iIdProject'], $this->m_aTask);
+		}
+		
+		function getNextTaskResponsible(&$skip)
+		{
+			static $aProcessed = array();
+			
+			$this->set_data('sSelectedUserName', '');
+			$this->get_data('iIdOwner', $iIdOwner);
+			
+			$datas = each($this->m_aTask);
+			if(false != $datas)
+			{
+				if(!isset($aProcessed[$datas['value']['id']]))
+				{
+//bab_debug('!!!!!!!!!!!!!!!!');
+					$aProcessed[$datas['value']['id']] = $datas['value']['id'];
+					$aTaskResponsible = array();
+					bab_getTaskResponsibles($datas['value']['id'], $aTaskResponsible);
+					if(count($aTaskResponsible) > 0)
+					{
+						$aTaskResponsible = each($aTaskResponsible);
+						$aTaskResponsible = $aTaskResponsible['value'];
+						
+						$this->set_data('idResponsible', $aTaskResponsible['id']);
+						$this->set_data('sSelectedUserName', (($iIdOwner === (int) $aTaskResponsible['id']) ? 'selected="selected"' : ''));
+						$this->set_data('sUserName', bab_toHtml($aTaskResponsible['name']));
+					}
+				}
+				else 
+				{
+//bab_debug('****************');
+					$skip = true;
+				}
+				return true;
+			}			
+			return false;
 		}
 		
 		function getNextTaskFilter()
@@ -1034,6 +1087,30 @@ function displayTaskList()
 		$sGanttViewUrl .= '&iIdOwner=' . urlencode($GLOBALS['BAB_SESS_USERID']);
 	}
 	
+	global $babInstallPath;
+	require_once($babInstallPath . 'tmTaskClasses.php');
+	
+	$sStartDate = (string) bab_rp('sStartDate', '');
+	$sEndDate = (string) bab_rp('sEndDate', '');
+
+	if(strlen(trim($sStartDate)) > 0)
+	{
+		BAB_TM_TaskValidatorBase::frenchDateToIso($sStartDate);
+		$aFilters['sStartDate'] = $sStartDate . ' 00:00:00';
+	}
+
+	if(strlen(trim($sEndDate)) > 0)
+	{
+		BAB_TM_TaskValidatorBase::frenchDateToIso($sEndDate);
+		$aFilters['sEndDate'] = $sEndDate . ' 23:59:59';
+	}
+	
+	$iIdOwner = (int) bab_rp('iIdOwner', 0);
+	if(0 !== $iIdOwner)
+	{
+		$aFilters['iIdOwner'] = $iIdOwner;
+	}
+	
 	//Une personne non gestionnaire ne doit pas voir les tâches qu'elle
 	//à refusée
 	$iUserProfil = (int) $oTmCtx->getUserProfil();
@@ -1092,11 +1169,25 @@ function displayTaskList()
 	$oMultiPage->addPaginationAndFormParameters('isProject', $isProject);
 	$oMultiPage->addPaginationAndFormParameters('iIdProject', $iIdProject);
 	
+	$aOrder = array();
+	$sOrderBy = (string) bab_rp('sOrderBy', '');
+	if(strlen(trim($sOrderBy)) > 0)
+	{
+		$oMultiPage->addPaginationAndFormParameters('sOrderBy', $sOrderBy);
+	
+		$sOrder = (string) bab_rp('sOrder', '');
+		if(strlen(trim($sOrder)) > 0)
+		{
+			$oMultiPage->addPaginationAndFormParameters('sOrder', $sOrder);
+			$aOrder = array('sName' => $sOrderBy, 'sOrder' => $sOrder);
+		}
+	}
+	
 	$oMultiPage->sIdx = BAB_TM_IDX_DISPLAY_TASK_LIST;
-
+//	$oMultiPage->iNbRowsPerPage = (int) 2;
 //	bab_debug($oMultiPage->m_aAdditionnalPaginationAndFormParameters);
 	
-	$oMultiPage->setColumnDataSource(new BAB_TaskDS(bab_selectTaskQuery($aFilters), 
+	$oMultiPage->setColumnDataSource(new BAB_TaskDS(bab_selectTaskQuery($aFilters, $aOrder), 
 		(int) bab_rp('iPage', 1), $oMultiPage->iNbRowsPerPage));
 	
 	$oMultiPage->addColumnHeader(0, bab_translate("Short description"), 'sShortDescription');
@@ -1108,7 +1199,9 @@ function displayTaskList()
 	{
 		$oMultiPage->addColumnHeader(4, bab_translate("Responsible"), 'idOwner');
 	}
-		
+
+	$oMultiPage->bIsColumnHeaderUrl = true;
+	
 	$sTg = bab_rp('tg', 'admTskMgr');
 	$sLink = $GLOBALS['babUrlScript'] . '?tg=' . urlencode($sTg) . '&idx=' . urlencode(BAB_TM_IDX_DISPLAY_TASK_FORM) .
 		'&sFromIdx=' . urlencode(BAB_TM_IDX_DISPLAY_TASK_LIST) . '&isProject=' . urlencode($isProject);
