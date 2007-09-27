@@ -788,13 +788,16 @@ if( !isset($_SESSION['bab_groupAccess']['acltables'][$table]))
 function bab_getUsersAccess($table)
 {
 	global $babBody, $babDB;
+	
+	trigger_error('deprecated function bab_getUsersAccess');
+	$babBody->addError('deprecated function bab_getUsersAccess');
 
 	$ids = array();
 
 	$res = $babDB->db_query("select id_group from ".$babDB->db_escape_string($table));
 	while($row = $babDB->db_fetch_array($res))
 		{
-		$ids[] = $row['id_group'] - BAB_ACL_GROUP_TREE;
+		$ids[] = $row['id_group'];
 		}
 	return bab_getGroupsMembers($ids);
 }
