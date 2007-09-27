@@ -61,6 +61,13 @@ class bab_registry {
 	 * @return 0|1|2
 	 */
 	function setKeyValue($key, $value) {
+		
+		if (false !== strpos($key, '/')) {
+			trigger_error('"/" are forbidden in the key parameter of setKeyValue');
+			return 0;
+		}
+		
+		
 		$dirkey = $this->dir.$key;
 
 		$value_type = gettype($value);
