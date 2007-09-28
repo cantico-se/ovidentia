@@ -391,11 +391,12 @@ function searchKeyword($item , $option = "OR")
 					}
 				}
 			$this->acces['d'] = $GLOBALS['BAB_SESS_LOGGED'] && bab_notesAccess();
-			bab_fileManagerAccessLevel();
-			if( $babBody->ustorage || count($babBody->aclfm) > 0 )
-				{
+			
+			$oFileManagerEnv =& getEnvObject();
+			if($oFileManagerEnv->oAclFm->userHaveStorage() || $oFileManagerEnv->oAclFm->haveRightOnCollectiveFolder())
+			{
 				$this->acces['e'] = true;
-				}
+			}
 
 			foreach ($babSearchItems as $key => $value)
 				{
@@ -1241,23 +1242,62 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$babDB->db_query($req);
 				bab_fileManagerAccessLevel();
 				$private = false;
-				$idfile = "";
-				$grpfiles = " and F.bgroup='Y' ";
 
-				if (isset($babBody->aclfm['id']) && is_array($babBody->aclfm['id']))
-				for( $i = 0; $i < count($babBody->aclfm['id']); $i++)
+				$sFolderWhereClauseItem = '';
+				{
+					$aCollectiveFolderRelativePath = array();
+					$aCollectiveFolderId = array();
+					$aUserFolderRelativePath = array();
 					{
-					if( $babBody->aclfm['down'][$i] == 1 || $babBody->aclfm['ma'][$i] == 1)
+						$aIdFolder = array();
+						$aDownload = bab_getUserIdObjects(BAB_FMDOWNLOAD_GROUPS_TBL);
+						if(is_array($aDownload) && count($aDownload) > 0)
 						{
-						$idfile .= $babBody->aclfm['id'][$i].',';						
+							$aIdFolder = $aDownload;
+						}
+						
+						$aManager = bab_getUserIdObjects(BAB_FMMANAGERS_GROUPS_TBL);
+						if(is_array($aManager) && count($aManager) > 0)
+						{
+							$aIdFolder += $aManager;
+						}
+						
+						foreach($aIdFolder as $iIdFolder)
+						{
+							$oFmFolder = BAB_FmFolderHelper::getFmFolderById($iIdFolder);
+							if(!is_null($oFmFolder))
+							{
+								$sRelativePath = (strlen(trim($oFmFolder->getRelativePath())) > 0 ? $oFmFolder->getRelativePath() : $oFmFolder->getName() . '/');
+								$aCollectiveFolderId[$iIdFolder] = $iIdFolder;
+								$aCollectiveFolderRelativePath[$sRelativePath] = 'F.path LIKE \'' . $babDB->db_escape_like($sRelativePath) . '%\'';
+							}
+						}
+						
+						$oFileManagerEnv =& getEnvObject();
+						if($oFileManagerEnv->oAclFm->userHaveStorage())
+						{
+							$aUserFolderRelativePath[$BAB_SESS_USERID] = 'U' . $BAB_SESS_USERID . '/';
 						}
 					}
-
-				if( $babBody->ustorage)
+					
+					$aFolderWhereClauseItem = array();
+					if(count($aCollectiveFolderRelativePath) > 0)
 					{
-					$idfile .= $BAB_SESS_USERID.',';
-					$grpfiles = "";
+						$aFolderWhereClauseItem[] = '(F.id_owner in (' . $babDB->quote($aCollectiveFolderId) . 
+							') AND (' . implode(' OR ', $aCollectiveFolderRelativePath) . '))';
 					}
+					
+					if(count($aUserFolderRelativePath) > 0)
+					{
+						$aFolderWhereClauseItem[] = '(F.id_owner in (' . $babDB->quote(array_keys($aUserFolderRelativePath)) . 
+							') AND (F.path LIKE \'' . $babDB->db_escape_like($aUserFolderRelativePath[$BAB_SESS_USERID]) . '%\'' . '))';
+					}
+					
+					if(count($aFolderWhereClauseItem) > 0)
+					{
+						$sFolderWhereClauseItem = 'AND (' . implode(' OR ', $aFolderWhereClauseItem) . ')';
+					}
+				}
 
 				$plus = "";
 				$temp1 = finder($this->like, "F.name",		$option,$this->like2);
@@ -1294,7 +1334,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				else 
 					$plus = "";
 
-                if ($idfile != "") 
+                if ($sFolderWhereClauseItem != "") 
 					{
 
 					// indexation
@@ -1331,7 +1371,6 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 							
 							if ($current_version) {
-
 								// match found in last version
 								$req = "INSERT INTO filresults 
 										SELECT 
@@ -1354,13 +1393,9 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 										WHERE 
 											(F.id_owner=R.id OR F.bgroup='N') 
 											AND (".implode(' OR ',$current_version).")  
-											AND F.id_owner in (".substr($idfile,0,-1).") 
-											". $grpfiles ." 
+											$sFolderWhereClauseItem 
 											and state='' and confirmed='Y' 
-											
-										GROUP BY F.id 
-										";
-
+										GROUP BY F.id";
 
 								bab_debug($req);
 
@@ -1399,8 +1434,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 										AND v.id_file = F.id 
 										AND a.id_object = v.id 
 										AND a.file_path IN('".implode("', '",$old_version)."') 
-										AND F.id_owner in (".substr($idfile,0,-1).") 
-										". $grpfiles ." 
+										$sFolderWhereClauseItem 
 										and state='' 
 										and F.confirmed='Y' 
 										
@@ -1415,7 +1449,9 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					}
 
 					$this->tmptable_inserted_id('filresults');
-
+					
+					$sPlus = (strlen($plus) > 0) ? 'and ' . $plus . ' ' : ' ';
+					
 					$req = "INSERT INTO filresults 
 						SELECT 
 							F.id, 
@@ -1436,8 +1472,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 							ON F.author=U.id 
 						WHERE 
 							(F.id_owner=R.id OR F.bgroup='N') 
-							and ".$plus." F.id_owner in (".substr($idfile,0,-1).") 
-							". $grpfiles ." 
+							$sPlus $sFolderWhereClauseItem 
 							AND state='' and confirmed='Y' 
 							AND F.id NOT IN('".implode("','",$this->tmp_inserted_id)."') 
 						GROUP BY 
@@ -1473,7 +1508,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 							".$temp5." 
 							AND M.id_file=F.id 
 							AND (F.id_owner=R.id OR F.bgroup='N') 
-							AND F.id_owner in (".substr($idfile,0,-1).") ". $grpfiles ." 
+							$sFolderWhereClauseItem 
 							AND state='' and confirmed='Y' 
 							AND F.id NOT IN('".implode("','",$this->tmp_inserted_id)."') 
 						GROUP BY 
