@@ -1240,7 +1240,6 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$babDB->db_query($req);
 				$req = "ALTER TABLE filresults add unique (id)";
 				$babDB->db_query($req);
-				bab_fileManagerAccessLevel();
 				$private = false;
 
 				$sFolderWhereClauseItem = '';

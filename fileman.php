@@ -926,7 +926,6 @@ function showDiskSpace($id, $gr, $path)
 
 		function temp($id, $gr, $path)
 			{
-				
 			global $babBody;
 			$this->id = $id;
 			$this->gr = $gr;
@@ -938,21 +937,29 @@ function showDiskSpace($id, $gr, $path)
 			$this->bytes = bab_translate("bytes");
 			$this->kilooctet = " ".bab_translate("Kb");
 			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
-			for( $i = 0; $i < count($babBody->aclfm['id']); $i++)
-				{
-				if( $babBody->aclfm['ma'][$i] == 0)
-					$this->arrgrp[] = $babBody->aclfm['id'][$i];
 
-				if( $babBody->aclfm['ma'][$i] == 1)
-					{
-					$this->arrmgrp[] = $babBody->aclfm['id'][$i];
-					}
+			$oFmFolderSet = new BAB_FmFolderSet();
+			$oRelativePath =& $oFmFolderSet->aField['sRelativePath'];
+			$oFmFolderSet->select($oRelativePath->in(''));
+			
+			while(null !== ($oFmFolder = $oFmFolderSet->next()))
+			{
+				if(bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oFmFolder->getId()))
+				{
+					$this->arrmgrp[] = 	$oFmFolder->getId();
 				}
-			if( !empty($GLOBALS['BAB_SESS_USERID'] ) && $babBody->ustorage)
+				else 
+				{
+					$this->arrgrp[] = 	$oFmFolder->getId();
+				}
+			}
+				
+			$oFileManagerEnv =& getEnvObject();
+			if(!empty($GLOBALS['BAB_SESS_USERID']) && $oFileManagerEnv->oAclFm->userHaveStorage())
 				$this->diskp = 1;
 			else
 				$this->diskp = 0;
-			if( !empty($GLOBALS['BAB_SESS_USERID'] ) && bab_isUserAdministrator() )
+			if(!empty($GLOBALS['BAB_SESS_USERID'] ) && bab_isUserAdministrator())
 				$this->diskg = 1;
 			else
 				$this->diskg = 0;
@@ -1494,9 +1501,9 @@ function listFiles()
 		}
 	}
 
-	if(0 !== $oFileManagerEnv->iIdObject && $oFileManagerEnv->sGr == "Y")
+	if(0 !== $oFileManagerEnv->iId && $oFileManagerEnv->sGr == "Y")
 	{
-		$GLOBALS['babWebStat']->addFolder($oFileManagerEnv->iIdObject);
+		$GLOBALS['babWebStat']->addFolder($oFileManagerEnv->iId);
 	}
 	
 	$babBody->babecho(bab_printTemplate($temp,"fileman.html", "fileslist"));
@@ -1591,28 +1598,8 @@ function addFile($id, $gr, $path, $description, $keywords)
 		}
 	}
 
-	$access = false;
-	if($gr == "N" && !empty($BAB_SESS_USERID))
-	{
-		if($babBody->ustorage) 
-		{
-			$access = true;
-		}
-	}
-
-	if($gr == "Y" && !empty($BAB_SESS_USERID))
-	{
-		for($i = 0; $i < count($babBody->aclfm['id']); $i++)
-		{
-			if($babBody->aclfm['id'][$i] == $id && ($babBody->aclfm['uplo'][$i] || $babBody->aclfm['ma'][$i] == 1))
-			{
-				$access = true;
-				break;
-			}
-		}
-	}
-
-	if(!$access)
+	$oFileManagerEnv =& getEnvObject();
+	if(!$oFileManagerEnv->oAclFm->haveUploadRight())
 	{
 		$babBody->msgerror = bab_translate("Access denied");
 		return;
@@ -2275,12 +2262,14 @@ function viewFile($idf, $id, $path)
 	$oCriteria = $oCriteria->_and($oState->in(''));
 	
 	$oFolderFile = $oFolderFileSet->get($oCriteria);
-	
+
 	if(!is_null($oFolderFile))
 	{
+		$oFileManagerEnv =& getEnvObject();
+		
 		if('N' === $oFolderFile->getGroup())
 		{
-			if($babBody->ustorage && $BAB_SESS_USERID == $oFolderFile->getOwnerId())
+			if($oFileManagerEnv->oAclFm->userHaveStorage() && $BAB_SESS_USERID == $oFolderFile->getOwnerId())
 			{
 				$access = true;
 				$bmanager = true;
@@ -2298,8 +2287,7 @@ function viewFile($idf, $id, $path)
 					$bconfirm = true;
 				}
 			}
-
-			$oFileManagerEnv =& getEnvObject();
+			
 			$access = (!is_null($oFileManagerEnv->oFmFolder));
 			$bdownload = $oFileManagerEnv->oAclFm->haveDownloadRight();
 			$bmanager = $oFileManagerEnv->oAclFm->haveManagerRight();
@@ -2504,7 +2492,8 @@ function createEditFolderForUserDir($iIdUser, $sPath)
 {
 	global $babBody;
 	
-	if(BAB_FmFolderHelper::accessValidForUserDir($iIdUser))
+	$oFileManagerEnv =& getEnvObject();
+	if($oFileManagerEnv->oAclFm->userHaveStorage())
 	{
 		$sDirName = (string) bab_pp('sDirName', '');
 		

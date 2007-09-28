@@ -324,11 +324,11 @@ function ref(&$txt)
 							$path_object = isset($param[1]) ? $param[1] : '';
 							$title_object = isset($param[2]) ? $param[2] : '';
 							$res = $babDB->db_query("select id,folder from ".BAB_FM_FOLDERS_TBL." where id='".$babDB->db_escape_string($id_object)."' and active='Y'");
-							bab_fileManagerAccessLevel();
 							if( $res && $babDB->db_num_rows($res) > 0)
 								{
 								$arr = $babDB->db_fetch_array($res);
-								if ( in_array($arr['id'],$babBody->aclfm['id']) )
+								require_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
+								if (!is_null(BAB_FmFolderHelper::getFmFolderById($arr['id'])))
 									{
 									$title_object = empty($title_object) ? $arr['folder'] : $title_object;
 									$title_object = $this->_make_link($GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$arr['id']."&gr=Y&path=".urlencode($path_object),$title_object);

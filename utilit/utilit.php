@@ -1360,11 +1360,6 @@ function bab_updateUserSettings()
 
 			$babBody->lastlog = $arr['lastlog'];
 
-			
-			
-
-			bab_fileManagerAccessLevel();
-
 
 
 			if( $babBody->ovgroups[BAB_ADMINISTRATOR_GROUP]['member'] == 'Y') {

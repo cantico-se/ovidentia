@@ -24,7 +24,6 @@
 include_once 'base.php';
 require_once $GLOBALS['babInstallPath'] . 'utilit/criteria.class.php';
 
-
 define('BAB_FVERSION_FOLDER', 'OVF');
 
 /* 0 -> other, 1 -> edit, 2 -> unedit, 3 -> commit */
@@ -483,35 +482,27 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 	$sRelativePath	= '';
 	$sFullUploadPath = '';
 
+	$oFileManagerEnv =& getEnvObject();
+	
 	if(!empty($BAB_SESS_USERID))
 	{
-		if('N' === $gr)
+		if('N' === $gr && $oFileManagerEnv->oAclFm->userHaveStorage())
 		{
-			if($babBody->ustorage)
-			{
-				$access = true;
-				$confirmed = "Y";
+			$access = true;
+			$confirmed = 'Y';
 
-				$sRelativePath = BAB_FmFolderHelper::getUserDirUploadPath($id) . $path . '/';
-				$sFullUploadPath = BAB_FmFolderHelper::getUploadPath() . $sRelativePath;
-			}
+			$sRelativePath = BAB_FmFolderHelper::getUserDirUploadPath($id) . $path . '/';
+			$sFullUploadPath = BAB_FmFolderHelper::getUploadPath() . $sRelativePath;
 		}
 		else if('Y' === $gr)
 		{
-			for($i = 0; $i < count($babBody->aclfm['id']); $i++)
+			$oFmFolder = null;
+			$access = BAB_FmFolderHelper::getFileInfoForCollectiveDir($id, $path, $iIdOwner, $sRelativePath, $oFmFolder);
+			$sFullUploadPath = BAB_FmFolderHelper::getUploadPath() . $sRelativePath;
+			
+			if(bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $iIdOwner) || bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $iIdOwner))
 			{
-				if($babBody->aclfm['id'][$i] == $id && ($babBody->aclfm['uplo'][$i] || $babBody->aclfm['ma'][$i] == 1))
-				{
-					$access = true;
-					break;
-				}
-			}
-
-			if(true === $access)
-			{
-				$oFmFolder = null;
-				$access = BAB_FmFolderHelper::getFileInfoForCollectiveDir($id, $path, $iIdOwner, $sRelativePath, $oFmFolder);
-				$sFullUploadPath = BAB_FmFolderHelper::getUploadPath() . $sRelativePath;
+				$access = true;
 			}
 		}
 	}
@@ -878,27 +869,19 @@ function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonl
 	{
 		if('Y' === $oFolderFile->getGroup())
 		{
-			for($i = 0; $i < count($babBody->aclfm['id']); $i++)
+			$bManager = bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oFolderFile->getOwnerId());
+			$bUpdate = bab_isAccessValid(BAB_FMUPDATE_GROUPS_TBL, $oFolderFile->getOwnerId());
+			if(!($bManager || $bUpdate))
 			{
-				if($babBody->aclfm['id'][$i] == $oFolderFile->getOwnerId())
+				$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
+				if(count($arrschi) > 0 && in_array($oFolderFile->getFlowApprobationInstanceId(), $arrschi))
 				{
-					if($babBody->aclfm['upda'][$i] || $babBody->aclfm['ma'][$i] == 1)
-					{
-						break;
-					}
-					else
-					{
-						$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
-						if(count($arrschi) > 0 && in_array($oFolderFile->getFlowApprobationInstanceId(), $arrschi))
-						{
-							break;
-						}
-						else
-						{
-							$babBody->msgerror = bab_translate("Access denied");
-							return false;
-						}
-					}
+					break;
+				}
+				else
+				{
+					$babBody->msgerror = bab_translate("Access denied");
+					return false;
 				}
 			}
 		}
@@ -3254,27 +3237,6 @@ class BAB_FmFolderHelper
 		return "U" . $iIdUser . '/';
 	}
 
-	function accessValidForUserDir($iIdUser)
-	{
-		global $babBody, $BAB_SESS_USERID;
-		return ($BAB_SESS_USERID == $iIdUser && $babBody->ustorage);
-	}
-
-	function accessValidForCollectiveDir($iIdFolder)
-	{
-		global $babBody, $BAB_SESS_USERID, $aclfm;
-
-		$iCount = count($babBody->aclfm['id']);
-		for($i = 0; $i < $iCount; $i++)
-		{
-			if($babBody->aclfm['id'][$i] == $iIdFolder && $babBody->aclfm['ma'][$i] == 1)
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-
 	function createDirectory($sUplaodPath, $sFullPathName)
 	{
 		global $babBody;
@@ -3599,7 +3561,7 @@ class BAB_FileManagerEnv
 		global $BAB_SESS_USERID, $babBody;
 		
 		
-		if(!empty($BAB_SESS_USERID) && $babBody->ustorage)
+		if(!empty($BAB_SESS_USERID))
 		{
 			$this->iIdObject = (int) bab_rp('id', $BAB_SESS_USERID);
 		}
@@ -3709,6 +3671,8 @@ class BAB_AclFm
 	var $bUpdate	= false;
 	var $bUpload	= false;
 	
+	var $aFolderCache = null;
+	
 	function BAB_AclFm()
 	{
 	}
@@ -3780,8 +3744,42 @@ class BAB_AclFm
 	{
 		return $this->bManager;
 	}
+	
+	function userHaveStorage()
+	{
+		global $BAB_SESS_USERID;
+		$sFullUserPathname = BAB_FmFolderHelper::getUploadPath() . 'U' . $BAB_SESS_USERID;	
+		return(file_exists($sFullUserPathname));	
+	}
+	
+	function haveRightOnCollectiveFolder()
+	{
+		$aIdObject = bab_getUserIdObjects(BAB_FMUPLOAD_GROUPS_TBL);
+		if(is_array($aIdObject) && count($aIdObject) > 0)
+		{
+			return true;
+		}
+		
+		$aIdObject = bab_getUserIdObjects(BAB_FMDOWNLOAD_GROUPS_TBL);
+		if(is_array($aIdObject) && count($aIdObject) > 0)
+		{
+			return true;
+		}
+		
+		$aIdObject = bab_getUserIdObjects(BAB_FMUPDATE_GROUPS_TBL);
+		if(is_array($aIdObject) && count($aIdObject) > 0)
+		{
+			return true;
+		}
+		
+		$aIdObject = bab_getUserIdObjects(BAB_FMMANAGERS_GROUPS_TBL);
+		if(is_array($aIdObject) && count($aIdObject) > 0)
+		{
+			return true;
+		}
+		return false;
+	}
 }
-
 
 function getUrlPath($sRelativePath)
 {

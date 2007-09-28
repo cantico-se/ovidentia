@@ -455,11 +455,13 @@ function babUserSection($close)
 		{
 		$this->array_urls[bab_translate("Contacts")] = $GLOBALS['babUrlScript']."?tg=contacts";
 		}
-	bab_fileManagerAccessLevel();
-	if( $babBody->ustorage || (count($babBody->aclfm) > 0 && $babBody->aclfm['bshowfm']))
-		{
+	
+	require_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
+	$oFileManagerEnv =& getEnvObject();
+	if($oFileManagerEnv->oAclFm->userHaveStorage() || $oFileManagerEnv->oAclFm->haveRightOnCollectiveFolder())
+	{
 		$this->array_urls[bab_translate("File manager")] = $GLOBALS['babUrlScript']."?tg=fileman";
-		}
+	}
 
 	$bdiradd = false;
 	$res = $babDB->db_query("select id, id_group from ".BAB_DB_DIRECTORIES_TBL."");
