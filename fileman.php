@@ -954,8 +954,7 @@ function showDiskSpace($id, $gr, $path)
 				}
 			}
 				
-			$oFileManagerEnv =& getEnvObject();
-			if(!empty($GLOBALS['BAB_SESS_USERID']) && $oFileManagerEnv->oAclFm->userHaveStorage())
+			if(!empty($GLOBALS['BAB_SESS_USERID']) && $babBody->ustorage)
 				$this->diskp = 1;
 			else
 				$this->diskp = 0;
