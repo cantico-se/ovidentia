@@ -2049,20 +2049,6 @@ class bab_FileTreeView extends bab_TreeView
 		$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/collective_folder.png');
 		$this->appendElement($element, null);
 
-		if (!isset($babBody->aclfm['id']) || !is_array($babBody->aclfm['id'])) {
-			return;
-		}
-		$aclFlip = array_flip($babBody->aclfm['id']);
-		$directoriesDownloadAcl = array();
-		$directoriesUploadAcl = array();
-		$directoriesUpdateAcl = array();
-		$directoriesManageAcl = array();
-		$directoriesHide = array();
-		foreach ($babBody->aclfm['id'] as $directoryId) {
-			$directoriesDownloadAcl[$directoryId] = $babBody->aclfm['down'][$aclFlip[$directoryId]];
-			$directoriesManageAcl[$directoryId] = $babBody->aclfm['ma'][$aclFlip[$directoryId]];
-		}
-
 		$folders = new BAB_FmFolderSet();
 		
 		$oRelativePath =& $folders->aField['sRelativePath']; 
@@ -2088,10 +2074,13 @@ class bab_FileTreeView extends bab_TreeView
 			$elementType .= ' clickable';
 		}
 
-		while (null !== ($folder = $folders->next())) {
-			if ($this->_adminView
-				|| isset($directoriesDownloadAcl[$folder->getId()]) && $directoriesDownloadAcl[$folder->getId()]
-				|| isset($directoriesManageAcl[$folder->getId()]) && $directoriesManageAcl[$folder->getId()]) {
+		while (null !== ($folder = $folders->next())) 
+		{
+			$bManager = bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $folder->getId());
+			$bDownload = bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $folder->getId());
+			
+			if($this->_adminView || $bManager || $bDownload)
+			{
 				$element =& $this->createElement('d' . BAB_TREE_VIEW_ID_SEPARATOR . $folder->getId(),
 												 $elementType,
 												 bab_toHtml($folder->getName()),
