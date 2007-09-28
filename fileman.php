@@ -954,7 +954,8 @@ function showDiskSpace($id, $gr, $path)
 				}
 			}
 				
-			if(!empty($GLOBALS['BAB_SESS_USERID']) && $babBody->ustorage)
+			$oFileManagerEnv =& getEnvObject();
+			if(!empty($GLOBALS['BAB_SESS_USERID']) && $oFileManagerEnv->oAclFm->userHaveStorage())
 				$this->diskp = 1;
 			else
 				$this->diskp = 0;
@@ -1150,7 +1151,7 @@ function listFiles()
             $this->altreadonly =  bab_translate("Read only");
             $this->sFolderFormAdd = bab_translate("Create a folder"); 
             $this->sFolderFormEdit = bab_translate("Edit folder"); 
-            $this->sRight = bab_translate("Right"); 
+            $this->sRight = bab_translate("Rights"); 
             $this->sCutFolder = bab_translate("Cut"); 
             $this->altfilelog =  bab_translate("View log");
             $this->altfilelock =  bab_translate("Edit file");
