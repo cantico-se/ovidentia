@@ -1114,7 +1114,9 @@ function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonl
 				switch($res)
 				{
 					case 0:
-						deleteFile($oFolderFile->getId());
+						$oFolderFileSet = new BAB_FolderFileSet();
+						$oId =& $oFolderFileSet->aField['iId'];
+						$oFolderFileSet->remove($oId->in($oFolderFile->getId()));
 						notifyFileAuthor(bab_translate("Your file has been refused"),"", $oFolderFile->getAuthorId(), $oFolderFile->getName());
 						break;
 					case 1:
