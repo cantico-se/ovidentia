@@ -2165,7 +2165,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				if ($arr['bgroup'] == 'N')
 					$this->arttopic = bab_translate("Private folder")."/".bab_toHtml($arr['path']);
 				else
-					$this->arttopic = bab_toHtml($arr['folder'])."/".bab_toHtml($arr['path']);
+					$this->arttopic = bab_toHtml($arr['path']);
 
 				$this->arttopicid = $arr['id_owner'];
 				$this->bgroup = $arr['bgroup'];
