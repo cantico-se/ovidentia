@@ -1318,7 +1318,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 							}
 						}
 					}
-
+				$idfiles = '';
 				if( count($tidfiles ))
 					{
 					$idfiles = implode(',', $tidfiles);
@@ -1328,10 +1328,21 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					$idfiles = '';
 					}
 
-				if ($temp1 != "" && $temp2 != "" && $temp3 != "" && $temp4 != "" && $idfiles != '')
-					$plus = "( ".$temp1." or ".$temp2." or ".$temp3." or ".$temp4." or F.id in(".$idfiles.")) and ";
-				else 
+				if ($temp1 != "" && $temp2 != "" && $temp3 != "" && $temp4 != "")
+				{
+					$plus = "
+				(
+					".$temp1." 
+					or ".$temp2." 
+					or ".$temp3." 
+					or ".$temp4."
+				) 
+			 ";
+				}
+				else
+				{ 
 					$plus = "";
+				}
 
                 if ($sFolderWhereClauseItem != "") 
 					{
@@ -1476,6 +1487,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 							AND F.id NOT IN('".implode("','",$this->tmp_inserted_id)."') 
 						GROUP BY 
 							F.id ";
+					bab_debug($req);
                     $babDB->db_query($req);
 					
 					// additional fields
@@ -1513,7 +1525,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 						GROUP BY 
 							F.id ";
 
-						
+						bab_debug($req);
 						$babDB->db_query($req);
 						}
 
