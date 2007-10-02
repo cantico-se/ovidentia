@@ -1979,7 +1979,7 @@ function viewFile($idf, $id, $path)
 
 				$this->id = $oFolderFile->getOwnerId();
 				$this->gr = $oFolderFile->getGroup();
-				$this->path = bab_toHtml($oFmFolder->getRelativePath());
+				$this->path = bab_toHtml($oFmFolder->getPathName());
 				$this->file = bab_toHtml($oFolderFile->getName());
 				$GLOBALS['babBody']->setTitle($oFolderFile->getName() .( ($bversion == 'Y') ? ' (' . $oFolderFile->getMajorVer() . '.' . $oFolderFile->getMinorVer() . ')' : '' ));
 				$this->descval = $oFolderFile->getDescription();
