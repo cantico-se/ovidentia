@@ -3594,7 +3594,7 @@ function ovidentia_upgrade($version_base,$version_ini) {
 				{
 				if( !isset($tags[$rr[$i]]))
 					{
-					$babDB->db_query("insert into ".BAB_TAGS_TBL." (tag_name) values ('".$rr[$i]."')");
+					$babDB->db_query("insert into ".BAB_TAGS_TBL." (tag_name) values ('".$babDB->db_escape_string($rr[$i])."')");
 					$idtag = $babDB->db_insert_id();
 					$tags[$rr[$i]] = $idtag;
 					}
