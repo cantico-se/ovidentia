@@ -491,7 +491,7 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 			$access = true;
 			$confirmed = 'Y';
 
-			$sRelativePath = BAB_FmFolderHelper::getUserDirUploadPath($id) . $path . '/';
+			$sRelativePath = $oFileManagerEnv->sRelativePath;
 			$sFullUploadPath = BAB_FmFolderHelper::getUploadPath() . $sRelativePath;
 		}
 		else if('Y' === $gr)
@@ -506,7 +506,6 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 			}
 		}
 	}
-
 	//bab_debug('iIdOwner ==> ' . $iIdOwner . ' sRelativePath ==> ' . $sRelativePath . ' sUploadPath ==> ' . $sUploadPath);
 
 	if(!$access)
@@ -572,7 +571,6 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 		}
 
 		$name = $osfname;
-
 		$bexist = false;
 		if(file_exists($pathx.$osfname))
 		{
@@ -1611,61 +1609,63 @@ function indexAllFmFiles($status, $prepare) {
 
 	global $babDB;
 
-	$res = $babDB->db_query("
-	
-		SELECT 
+	$sQuery = 
+		'SELECT  
 			f.id,
 			f.name,
 			f.path, 
 			f.id_owner, 
 			f.bgroup, 
 			d.id version 
-
 		FROM 
-			".BAB_FILES_TBL." f 
-			LEFT JOIN ".BAB_FM_FOLDERS_TBL." d ON d.id = f.id_owner AND f.bgroup ='Y' AND d.version ='Y'
+			' . BAB_FILES_TBL . ' f 
+		LEFT JOIN ' . 
+			BAB_FM_FOLDERS_TBL . ' d ON d.id = f.id_owner AND f.bgroup =\'Y\' AND d.version =\'Y\'
 		WHERE 
-			f.index_status IN(".$babDB->quote($status).")
-		
-	");
+			f.index_status IN(' . $babDB->quote($status) . ')';
 
+	//bab_debug($sQuery);
+	$res = $babDB->db_query($sQuery);
 
 	$files = array();
 	$rights = array();
 
 	while ($arr = $babDB->db_fetch_assoc($res)) {
-
-		$pathx = bab_getUploadFullPath($arr['bgroup'], $arr['id_owner'], $arr['path']);
-		$pathy = bab_getUploadFmPath($arr['bgroup'], $arr['id_owner']);
-
-		if (!empty($arr['path'])) {
-			$arr['path'] .= '/';
-		}
-
-		$files[] = $pathx.$arr['name'];
-		$rights[$pathy.$arr['path'].$arr['name']] = array(
+		$pathx = BAB_FmFolderHelper::getUploadPath();
+		
+//		bab_debug('sFullPathName ==> ' . $pathx . $arr['path'] . $arr['name']);
+		
+		$files[] = $pathx . $arr['path'] . $arr['name'];
+		$rights[ $arr['path'] . $arr['name'] ] = array(
 		'id' => $arr['id'],
 		'id_owner' => $arr['id_owner']
 		);
 
-		if (null != $arr['version']) {
-			$resv = $babDB->db_query("
-			
-				SELECT 
+		if(null != $arr['version']) 
+		{
+			$sQuery = 
+				'SELECT 
 					id,	
 					ver_major, 
 					ver_minor 
-				FROM ".BAB_FM_FILESVER_TBL." 
+				FROM 
+					' . BAB_FM_FILESVER_TBL . ' 
 				WHERE 
-					id_file='".$babDB->db_escape_string($arr['id'])."' 
-					AND index_status IN(".$babDB->quote($status).")
-			");
+					id_file= \'' . $babDB->db_escape_string($arr['id']) . '\' 
+					AND index_status IN(' . $babDB->quote($status) . ')';
+			
+			//bab_debug($sQuery);
+			$resv = $babDB->db_query($sQuery);
 
-			while ($arrv = $babDB->db_fetch_assoc($resv)) {
-				if( is_dir($pathx.BAB_FVERSION_FOLDER)) {
+			while($arrv = $babDB->db_fetch_assoc($resv)) 
+			{
+				//bab_debug('sVersion ==> ' . $pathx . $arr['path'] . BAB_FVERSION_FOLDER);
+				if(is_dir( $pathx . $arr['path'] . BAB_FVERSION_FOLDER)) 
+				{
 					$file = BAB_FVERSION_FOLDER."/".$arrv['ver_major'].",".$arrv['ver_minor'].",".$arr['name'];
-					$files[] = $pathx.$file;
-					$rights[$pathy.$file] = array(
+					$files[] = $pathx . $arr['path'] . $file;
+					//bab_debug('sFile ==> ' . $pathx . $arr['path'] . $file);
+					$rights[$arr['path'] . $file] = array(
 					'id' => $arrv['id'],
 					'id_owner' => $arr['id_owner']
 					);
@@ -1674,6 +1674,8 @@ function indexAllFmFiles($status, $prepare) {
 		}
 	}
 
+//	bab_debug($rights);
+	
 	include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
 
 

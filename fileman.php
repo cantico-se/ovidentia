@@ -813,7 +813,8 @@ function listTrashFiles($id, $gr, $path)
 			$iIdOwner = $this->id;
 			if('N' === $this->gr)
 			{
-				$sRelativePath = BAB_FmFolderHelper::getUserDirUploadPath($this->id) . $this->sPath . '/';
+				$oFileManagerEnv =& getEnvObject();
+				$this->sRelativePath = $oFileManagerEnv->sRelativePath;
 			}
 			else 
 			{
@@ -821,34 +822,20 @@ function listTrashFiles($id, $gr, $path)
 				BAB_FmFolderHelper::getFileInfoForCollectiveDir($this->id, $this->sPath, $iIdOwner, $this->sRelativePath, $oFmFolder);
 			}
 			
-			$this->sEndSlash = '';
-			if(strlen(trim($this->sPath)) > 0)
-			{
-				$this->sEndSlash = '/';
-			}
-			
-			 $this->selectTrashFile($this->sPath);
+			$this->selectTrashFile($this->sRelativePath);
 		}
 
-		function selectTrashFile($path)
+		function selectTrashFile($sPathName)
 		{
-			$sFolderName = '';
-			$oFmFolder = BAB_FmFolderHelper::getFmFolderById($this->id);
-			if(!is_null($oFmFolder))
-			{
-				global $babDB;
-				
-				$sPathName = $oFmFolder->getName() . '/' . $path . $this->sEndSlash;
+			global $babDB;
+			$this->oFolderFileSet = new BAB_FolderFileSet();
+			$oState =& $this->oFolderFileSet->aField['sState'];
+			$oPathName =& $this->oFolderFileSet->aField['sPathName'];
 			
-				$this->oFolderFileSet = new BAB_FolderFileSet();
-				$oState =& $this->oFolderFileSet->aField['sState'];
-				$oPathName =& $this->oFolderFileSet->aField['sPathName'];
-				
-				$oCriteria = $oState->in('D');
-				$oCriteria = $oCriteria->_and($oPathName->like($babDB->db_escape_like($sPathName)));
-				
-				$this->oFolderFileSet->select($oCriteria, array('sName' => 'ASC'));
-			}
+			$oCriteria = $oState->in('D');
+			$oCriteria = $oCriteria->_and($oPathName->like($babDB->db_escape_like($sPathName)));
+			
+			$this->oFolderFileSet->select($oCriteria, array('sName' => 'ASC'));
 		}
 		
 		
@@ -1489,7 +1476,7 @@ function listFiles()
 	$babBody->title = bab_translate("File manager");
 	$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$oFileManagerEnv->iId."&gr=".$oFileManagerEnv->sGr."&path=".urlencode($oFileManagerEnv->sPath));
 	
-	if('Y' === $oFileManagerEnv->sGr || ('N' === $oFileManagerEnv->sGr && 0 !== $oFileManagerEnv->iPathLength))
+//	if('Y' === $oFileManagerEnv->sGr || ('N' === $oFileManagerEnv->sGr && 0 !== $oFileManagerEnv->iPathLength))
 	{
 		if($oFileManagerEnv->oAclFm->haveUploadRight()) 
 		{
@@ -1709,14 +1696,15 @@ function cutFile($file, $id, $gr, $path, $bmanager)
 	
 	if('N' === $gr)
 	{
-		$sRelativePath = BAB_FmFolderHelper::getUserDirUploadPath($id) . $path . '/';
+		$oFileManagerEnv =& getEnvObject();
+		$sRelativePath = $oFileManagerEnv->sRelativePath;
 	}
 	else 
 	{
 		$oFmFolder = null;
 		BAB_FmFolderHelper::getFileInfoForCollectiveDir($id, $path, $iIdOwner, $sRelativePath, $oFmFolder);
 	}
-
+	
 	$oFolderFileSet = new BAB_FolderFileSet();
 	
 	$oIdOwner =& $oFolderFileSet->aField['iIdOwner'];
@@ -1757,7 +1745,9 @@ function delFile($file, $id, $gr, $path, $bmanager)
 	
 	if('N' === $gr)
 	{
-		$sRelativePath = BAB_FmFolderHelper::getUserDirUploadPath($id) . $path . '/';
+//		$sRelativePath = BAB_FmFolderHelper::getUserDirUploadPath($id) . $path . '/';
+		$oFileManagerEnv =& getEnvObject();
+		$sRelativePath = $oFileManagerEnv->sRelativePath;
 	}
 	else 
 	{
@@ -1813,8 +1803,13 @@ function pasteFile($file, $id, $gr, $path, $tp, $bmanager)
 	
 	if('N' === $gr)
 	{
-		$sOldRelativePath = BAB_FmFolderHelper::getUserDirUploadPath($id) . $path . '/';
-		$sNewRelativePath = BAB_FmFolderHelper::getUserDirUploadPath($id) . $tp . '/';
+		$oFileManagerEnv =& getEnvObject();
+
+		$sOldEndPath = (strlen(trim($path)) > 0) ? '/' : '';
+		$sNewEndPath = (strlen(trim($tp)) > 0) ? '/' : '';
+		
+		$sOldRelativePath = $oFileManagerEnv->sRootFolderPath . $path . $sOldEndPath;
+		$sNewRelativePath = $oFileManagerEnv->sRootFolderPath . $tp . $sNewEndPath;
 	}
 	else 
 	{
