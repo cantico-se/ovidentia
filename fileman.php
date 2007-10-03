@@ -2327,7 +2327,7 @@ function displayRightForm($bmanager, $upload, $path, $id, $gr)
 	{
 		$babBody->addItemMenu("trash", bab_translate("Trash"), $GLOBALS['babUrlScript']."?tg=fileman&idx=trash&id=".$id."&gr=".$gr."&path=".urlencode($path));
 	}
-	$babBody->addItemMenu("displayRightForm", bab_translate("Right"), $GLOBALS['babUrlScript']."?tg=fileman&idx=displayRightForm&id=".$id."&gr=".$gr."&path=".urlencode($path) . 
+	$babBody->addItemMenu("displayRightForm", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=fileman&idx=displayRightForm&id=".$id."&gr=".$gr."&path=".urlencode($path) . 
 		'&iIdFolder=' . $iIdFolder);
 	
 	$babBody->title = bab_translate("Rights of directory") . ' ' . $sFolderName;

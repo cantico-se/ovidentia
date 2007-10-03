@@ -25,6 +25,24 @@
 
 //Test sz
 
+function getUploadPathFromDataBase()	
+{
+	$db = &$GLOBALS['babDB'];
+	
+	$aData = $db->db_fetch_array($db->db_query('SELECT uploadpath FROM ' . BAB_SITES_TBL));
+	if(false != $aData)
+	{
+		$sUploadPath = $aData['uploadpath'];
+		$iLength = strlen(trim($sUploadPath));
+		if('/' !== $sUploadPath{$iLength - 1})
+		{
+			$sUploadPath .= '/';
+			return $sUploadPath;
+		}
+		return $sUploadPath;
+	}
+}	
+
 
 
 function fileManagerUpgrade()
@@ -33,7 +51,7 @@ function fileManagerUpgrade()
 	
 	global $babDB;
 	
-	$sUploadPath = BAB_FmFolderHelper::getUploadPath();
+	$sUploadPath = getUploadPathFromDataBase();
 	
 	$oFolderFileSet = new BAB_FolderFileSet();
 	$oIdOwner =& $oFolderFileSet->aField['iIdOwner'];
