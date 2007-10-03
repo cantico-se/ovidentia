@@ -2458,4 +2458,5 @@
 <string id="Move thread">Déplacer le sujet</string>
 <string id="Move to">Déplacer vers</string>
 <string id="Who is notified when a new file is uploaded or updated?">Qui est notifié lors d'un chargement de fichier ou d'une mise à jour?</string>
+<string id="Inherit the rights and the options of the parent directory">Hérite les droits et les options du répertoire parent</string>
 </fr>
