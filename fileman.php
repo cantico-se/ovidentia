@@ -1292,7 +1292,7 @@ function listFiles()
 				$iIdRootFolder				= $aItem['iIdUrl'];
 				$sEncodedName				= urlencode($this->name);
 				$sEncodedPath				= urlencode($aItem['sUrlPath']);
-				$this->bRightUrl			= (1 === $aItem['ma'] && 'Y' === $this->gr);
+				$this->bRightUrl			= (1 === $aItem['ma'] && 'Y' === $this->gr && 0 !== (int) $aItem['id']);
 				$this->bFolderFormUrl		= (1 === $aItem['ma']);
 				$this->bCutFolderUrl		= false;
 				$this->bCollectiveFolder	= ((int) $aItem['id'] === (int) $aItem['iIdOwner']);
