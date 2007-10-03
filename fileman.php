@@ -1954,6 +1954,8 @@ function viewFile($idf, $id, $path)
 			$this->access = $access;
 			if($access)
 			{
+				$oFileManagerEnv =& getEnvObject();
+				
 				$this->bmanager = $bmanager;
 				$this->bconfirm = $bconfirm;
 				$this->bupdate = $bupdate;
@@ -1979,7 +1981,7 @@ function viewFile($idf, $id, $path)
 
 				$this->id = $oFolderFile->getOwnerId();
 				$this->gr = $oFolderFile->getGroup();
-				$this->path = bab_toHtml($oFmFolder->getPathName());
+				$this->path = bab_toHtml($oFileManagerEnv->sRelativePath);
 				$this->file = bab_toHtml($oFolderFile->getName());
 				$GLOBALS['babBody']->setTitle($oFolderFile->getName() .( ($bversion == 'Y') ? ' (' . $oFolderFile->getMajorVer() . '.' . $oFolderFile->getMinorVer() . ')' : '' ));
 				$this->descval = $oFolderFile->getDescription();
@@ -2057,58 +2059,53 @@ function viewFile($idf, $id, $path)
 				$this->no = bab_translate("No");
 				$this->bviewnf = false;
 
-
-//				$rr = $babDB->db_fetch_array($babDB->db_query("select filenotify, version from ".BAB_FM_FOLDERS_TBL." where id='".$babDB->db_escape_string($arr['id_owner'])."'"));
-
-				if('Y' === $oFmFolder->getVersioning()) 
+				$this->versions = false;
+				$this->yesnfselected = "";
+				$this->nonfselected = "";
+				$this->countff = 0;	
+						
+				if(!is_null($oFmFolder))
 				{
-					$this->versions = true;
-				} 
-				else
-				{
-					$this->versions = false;
-				}
-
-				
-				if('Y' === $oFolderFile->getGroup() && $this->bupdate)
-				{
-					if('N' === $oFmFolder->getFileNotify())
+					if('Y' === $oFmFolder->getVersioning()) 
 					{
-						$this->nonfselected = "selected";
-						$this->yesnfselected = "";
-					}
-					else
-					{
-						$this->yesnfselected = "selected";
-						$this->nonfselected = "";
-					}
-
-					$this->bviewnf = true;
-
-					$this->arrfolders = array();
-					$this->movetofolder = bab_translate("Move to folder");
+						$this->versions = true;
+					} 
 					
-					$this->oFmFolderSet = new BAB_FmFolderSet();
-					$oId =& $this->oFmFolderSet->aField['iId'];
-			
-					$this->oFmFolderSet->select($oId->notIn($oFolderFile->getOwnerId()));
-				}
+					if('Y' === $oFolderFile->getGroup() && $this->bupdate)
+					{
+						if('N' === $oFmFolder->getFileNotify())
+						{
+							$this->nonfselected = "selected";
+							$this->yesnfselected = "";
+						}
+						else
+						{
+							$this->yesnfselected = "selected";
+							$this->nonfselected = "";
+						}
+	
+						$this->bviewnf = true;
+	
+						$this->arrfolders = array();
+						$this->movetofolder = bab_translate("Move to folder");
+						
+						$this->oFmFolderSet = new BAB_FmFolderSet();
+						$oId =& $this->oFmFolderSet->aField['iId'];
 				
-				if('Y' === $oFolderFile->getGroup())
-				{
-					$this->resff = $babDB->db_query("select * from ".BAB_FM_FIELDS_TBL." where id_folder='".$babDB->db_escape_string($oFolderFile->getOwnerId())."'");
-					$this->countff = $babDB->db_num_rows($this->resff);
+						$this->oFmFolderSet->select($oId->notIn($oFolderFile->getOwnerId()));
+					}
+					
+					if('Y' === $oFolderFile->getGroup())
+					{
+						$this->resff = $babDB->db_query("select * from ".BAB_FM_FIELDS_TBL." where id_folder='".$babDB->db_escape_string($oFolderFile->getOwnerId())."'");
+						$this->countff = $babDB->db_num_rows($this->resff);
+					}
 				}
-				else
-				{
-					$this->countff = 0;
-				}
-
 				// indexation
 
 				
 
-				if(bab_isFileIndex($fullpath) && bab_isUserAdministrator()) 
+				if('Y' === $oFileManagerEnv->sGr && bab_isFileIndex($fullpath) && bab_isUserAdministrator()) 
 				{
 						$engine = bab_searchEngineInfos();
 						
@@ -2306,7 +2303,7 @@ function viewFile($idf, $id, $path)
 			}
 		}
 	}
-
+	
 	$temp = new temp($oFileManagerEnv->oFmFolder, $oFolderFile, $id, $path, $bmanager, $access, $bconfirm, $bupdate, $bdownload,$bversion);
 	$babBody->babpopup(bab_printTemplate($temp,"fileman.html", "viewfile"));
 }
