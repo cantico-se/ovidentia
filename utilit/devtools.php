@@ -423,10 +423,11 @@ function bab_execSqlFile($file) {
 		return false;
 	}
 	
-	$reg = "/((INSERT|CREATE|UPDATE|DELETE|DROP|ALTER|TRUNCATE).*?)\;/s";
+	// match sql query, split with ; but ignore ; in content strings
+	$reg = "/\w(?:[^';]*'(?:[^']|\\\\'|'')*')*[^';]*;/";
 	if (preg_match_all($reg, $content, $m)) {
-		for ($k = 0; $k < count($m[1]); $k++ ) {
-			$query = trim($m[1][$k]);
+		for ($k = 0; $k < count($m[0]); $k++ ) {
+			$query = trim($m[0][$k]);
 			if (!empty($query)) {
 				if (!$babDB->db_query($query)) {
 					return false;
