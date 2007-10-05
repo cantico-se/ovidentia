@@ -1293,8 +1293,9 @@ define('DBG_FATAL',		32);
  * @param mixed	$data		The data to log. If not a string $data is transformed through print_r.
  * @param int	$severity	The severity of the logged information.
  */
-function bab_debug($data, $severity = DBG_DEBUG)
+function bab_debug($data, $severity = DBG_TRACE)
 {
+
 	if (isset($_COOKIE['bab_debug']) && ((int)$_COOKIE['bab_debug'] & $severity)) {
 		if (!is_string($data)) {
 			ob_start();
