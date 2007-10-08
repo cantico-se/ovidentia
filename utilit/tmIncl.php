@@ -2042,7 +2042,7 @@ function bab_selectTaskQuery($aFilters, $aOrder = array())
 
 	if(count($aOrder) > 0)
 	{
-		$query .= 'ORDER BY ' . $babDB->backTick($aOrder['sName']) . ' ' . $babDB->backTick($aOrder['sOrder']) . ' ';
+		$query .= 'ORDER BY ' . $babDB->backTick($aOrder['sName']) . ' ' . $aOrder['sOrder'] . ' ';
 	}
 	
 

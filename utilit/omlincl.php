@@ -5159,6 +5159,10 @@ function handle_tag( $handler, $txt, $args, $fprint = 'printout' )
 			{
 			include_once $GLOBALS['babInstallPath']."utilit/ovmldeleg.php";
 			}
+		elseif( !strncmp($handler, 'bab_Tm', strlen('bab_Tm')))
+			{
+			include_once $GLOBALS['babInstallPath'].'utilit/ovmltm.php';
+			}
 		}
 
 
