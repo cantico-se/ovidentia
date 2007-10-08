@@ -113,7 +113,7 @@ class bab_TmSpaces extends bab_handler
 
 
 /**
- * OVML Container <OCTmProjects space="id_space">
+ * OVML Container <OCTmProjects spaceid="id_space">
  *
  * This container returns the list of projects from the specified project space.
  *
@@ -138,7 +138,7 @@ class bab_TmProjects extends bab_handler
 		global $babDB, $babBody;
 
 		$this->bab_handler($ctx);
-		$spaceId = $ctx->get_value('space');
+		$spaceId = $ctx->get_value('spaceid');
 
 		$this->res = bab_selectProjectList($spaceId);
 		$this->count = $babDB->db_num_rows($this->res);
