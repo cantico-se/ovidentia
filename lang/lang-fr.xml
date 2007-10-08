@@ -221,6 +221,7 @@
 <string id="Default group for confirmed users">Groupe par défaut des utilisateurs confirmés</string>
 <string id="Default number of messages to display per screen">Nombre de messages par page affichés dans la liste</string>
 <string id="Default password">Mot de passe par défaut</string>
+<string id="Default password (at least 6 characters)">Mot de passe par défaut ( au moins 6 caractères )</string>
 <string id="Delete Comment">Supprimer le commentaire</string>
 <string id="Delete Contacts">Supprimer les contacts</string>
 <string id="Delete Database Directory">Supprimer l'annuaire</string>
@@ -2459,4 +2460,5 @@
 <string id="Move to">Déplacer vers</string>
 <string id="Who is notified when a new file is uploaded or updated?">Qui est notifié lors d'un chargement de fichier ou d'une mise à jour?</string>
 <string id="Inherit the rights and the options of the parent directory">Hérite des droits et des options du répertoire parent</string>
+<string id="Or use this field as password if filled">Ou, si renseigné, utiliser ce champ pour mot de passe</string>
 </fr>
