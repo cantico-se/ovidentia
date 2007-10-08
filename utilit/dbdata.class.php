@@ -282,6 +282,7 @@ class bab_dbdata {
 	/**
 	 * Count rows into table with same values as $this->row
 	 * if the filter parameter is used, only keys defined as key in the filter array will be used in were clause
+	 * @since 6.5.1
 	 * @param	array|false		[$filter]
 	 * @return 	int
 	 */
@@ -299,7 +300,7 @@ class bab_dbdata {
 		
 		$res = $babDB->db_query('
 			SELECT COUNT(*) FROM '.$babDB->backTick($this->tablename).' 
-			WHERE '.implode(',',$keys).' 
+			WHERE '.implode(' AND ',$keys).' 
 		');
 		
 		if ($res) {
@@ -344,6 +345,7 @@ class bab_dbdata {
 	
 	
 	/**
+	 * @since 6.6.0
 	 * Delete row with autoincremented column
 	 */
 	function deleteDbRow() {
@@ -361,6 +363,7 @@ class bab_dbdata {
 	}
 	
 	/**
+	 * @since 6.6.0
 	 * @param	string	$ikey
 	 */
 	function deleteDbRowByKey($ikey) {
