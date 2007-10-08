@@ -23,6 +23,7 @@
 ************************************************************************/
 include "base.php";
 require_once $GLOBALS['babInstallPath'] . 'utilit/workinghoursincl.php';
+require_once $GLOBALS['babInstallPath'] . 'utilit/tmdefines.php';
 
 
 //Project space functions
@@ -64,7 +65,8 @@ function bab_getProjectSpaceList(&$aProjectSpaceList)
 	}
 }
 
-function bab_getProjectSpace($iIdProjectSpace, &$aProjectSpace)
+
+function bab_selectProjectSpace($iIdProjectSpace)
 {
 	global $babDB;
 
@@ -81,21 +83,30 @@ function bab_getProjectSpace($iIdProjectSpace, &$aProjectSpace)
 			BAB_TSKMGR_PROJECTS_SPACES_TBL . ' ' .
 		'WHERE ' . 
 			'id =\'' . $babDB->db_escape_string($iIdProjectSpace) . '\'';
+
+	return $babDB->db_query($query);
+}
+
+
+function bab_getProjectSpace($iIdProjectSpace, &$aProjectSpace)
+{
+	global $babDB;
 	
-	//bab_debug($query);
-	
-	$res = $babDB->db_query($query);
+	$res = bab_selectProjectSpace($iIdProjectSpace);
 	if(false != $res)
 	{
 		if(false != ($datas = $babDB->db_fetch_assoc($res)))
 		{
-			$aProjectSpace = array('id' => $datas['id'], 'name' => $datas['name'], 
-				'description' => $datas['description'], 'refCount' => $datas['refCount']);
+			$aProjectSpace = array('id' => $datas['id'],
+								   'name' => $datas['name'], 
+								   'description' => $datas['description'],
+								   'refCount' => $datas['refCount']);
 			return true;
 		}
 	}
 	return false;
 }
+
 
 function bab_isProjectSpaceExist($iIdDelegation, $sName)
 {
@@ -1992,37 +2003,37 @@ function bab_selectTaskQuery($aFilters, $aOrder = array())
 
 	if(isset($aFilters['iIdProject']))
 	{
-		$query .= 'AND t.idProject = \'' . $babDB->db_escape_string((int) $aFilters['iIdProject']) . '\' ';
+		$query .= 'AND t.idProject = ' . $babDB->quote((int) $aFilters['iIdProject']) . ' ';
 	}
 
 	if(isset($aFilters['iIdOwner']))
 	{
-		$query .= 'AND ti.idOwner = \'' . $babDB->db_escape_string((int) $aFilters['iIdOwner']) . '\' ';
+		$query .= 'AND ti.idOwner = ' . $babDB->quote((int) $aFilters['iIdOwner']) . ' ';
 	}
 
 	if(isset($aFilters['sStartDate']))
 	{
-		$query .= 'AND t.startDate >= \'' . $babDB->db_escape_string($aFilters['sStartDate']) . '\' ';
+		$query .= 'AND t.startDate >= ' . $babDB->quote($aFilters['sStartDate']) . ' ';
 	}
 
 	if(isset($aFilters['sEndDate']))
 	{
-		$query .= 'AND t.endDate <= \'' . $babDB->db_escape_string($aFilters['sEndDate']) . '\' ';
+		$query .= 'AND t.endDate <= ' . $babDB->quote($aFilters['sEndDate']) . ' ';
 	}
 
 	if(isset($aFilters['iTaskClass']))
 	{
-		$query .= 'AND t.class = \'' . $babDB->db_escape_string((int) $aFilters['iTaskClass']) . '\' ';
+		$query .= 'AND t.class = ' . $babDB->quote((int) $aFilters['iTaskClass']) . ' ';
 	}
 
 	if(isset($aFilters['isPersonnal']))
 	{
-		$query .= 'AND ti.isPersonnal = \'' . $babDB->db_escape_string(BAB_TM_YES) . '\' ';
+		$query .= 'AND ti.isPersonnal = ' . $babDB->quote(BAB_TM_YES) . ' ';
 	}
 	
-	if(isset($aFilters['bIsManger']) && false === $aFilters['bIsManger'])
+	if(isset($aFilters['bIsManager']) && false === $aFilters['bIsManager'])
 	{
-		$query .= 'AND t.participationStatus <> \'' . $babDB->db_escape_string(BAB_TM_REFUSED) . '\' ';
+		$query .= 'AND t.participationStatus <> ' . $babDB->quote(BAB_TM_REFUSED) . ' ';
 	}
 	
 	$query .= 
@@ -2031,7 +2042,7 @@ function bab_selectTaskQuery($aFilters, $aOrder = array())
 
 	if(count($aOrder) > 0)
 	{
-		$query .= 'ORDER BY ' . $aOrder['sName'] . ' ' . $aOrder['sOrder'] . ' ';
+		$query .= 'ORDER BY ' . $babDB->backTick($aOrder['sName']) . ' ' . $babDB->backTick($aOrder['sOrder']) . ' ';
 	}
 	
 
