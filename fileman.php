@@ -1250,11 +1250,12 @@ function listFiles()
 //				bab_debug($aItem);
 				$sRelativePath			= $aItem['key'];
 				$aItem					= $aItem['value'];
+				$bHaveManagerRight		= (1 == $aItem['ma']);
 				$iIdRootFolder			= $aItem['iIdUrl'];
 				$iIdFolder				= $aItem['id'];
-				$this->bRightUrl		= $this->oFileManagerEnv->oAclFm->haveManagerRight();
-				$this->bCutFolderUrl	= ($this->oFileManagerEnv->oAclFm->haveManagerRight() && 'Y' === $this->oFileManagerEnv->sGr && false === $this->oRegHlp->exist($sRelativePath));
-				$this->bFolderFormUrl	= $this->oFileManagerEnv->oAclFm->haveManagerRight();
+				$this->bRightUrl		= $bHaveManagerRight;
+				$this->bCutFolderUrl	= ($bHaveManagerRight && 'Y' === $this->oFileManagerEnv->sGr && false === $this->oRegHlp->exist($sRelativePath));
+				$this->bFolderFormUrl	= $bHaveManagerRight;
 				$sEncodedPath			= urlencode($this->path);
 				$sEncodedName			= urlencode($aItem['folder']);
 				$sUrlEncodedPath		= urlencode($aItem['sUrlPath']);
