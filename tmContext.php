@@ -21,8 +21,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-	include "base.php";
-	require_once($babInstallPath . 'utilit/tableWrapperClass.php');
+include 'base.php';
+require_once $GLOBALS['babInstallPath'] . 'utilit/tableWrapperClass.php';
 
 class BAB_TM_Context
 {
@@ -188,6 +188,11 @@ class BAB_TM_Context
 		return $this->m_oTblWr;
 	}
 	
+	/**
+	 * Returns the list of project spaces that can be visualized by the current user.
+	 *
+	 * @return array	An array where the keys represent the id's of visualizable project spaces 
+	 */
 	function getVisualisedIdProjectSpace()
 	{
 		if(is_null($this->m_bIsProjectVisualizer))
@@ -228,6 +233,14 @@ class BAB_TM_Context
 		}
 	}
 
+	/**
+	 * Determines the projets and project spaces that can be visualised by the current user.
+	 * 
+	 * A user can view a project space for which he is a default project visualiser or if is
+	 * a project visualiser of a project contained in this space.
+	 * 
+	 * @access private
+	 */
 	function queryVisualisedObject()
 	{
 		require_once($GLOBALS['babInstallPath'] . 'admin/acl.php');
