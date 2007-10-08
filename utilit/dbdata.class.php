@@ -249,7 +249,7 @@ class bab_dbdata {
 	
 	/**
 	 * Update row into table
-	 * @param	string	$ikey
+	 * 
 	 * @return boolean
 	 */
 	function updateDbRowByKey($ikey) {
@@ -282,6 +282,7 @@ class bab_dbdata {
 	/**
 	 * Count rows into table with same values as $this->row
 	 * if the filter parameter is used, only keys defined as key in the filter array will be used in were clause
+	 * @since 6.5.1
 	 * @param	array|false		[$filter]
 	 * @return 	int
 	 */
@@ -299,7 +300,7 @@ class bab_dbdata {
 		
 		$res = $babDB->db_query('
 			SELECT COUNT(*) FROM '.$babDB->backTick($this->tablename).' 
-			WHERE '.implode(',',$keys).' 
+			WHERE '.implode(' AND ',$keys).' 
 		');
 		
 		if ($res) {
@@ -340,40 +341,6 @@ class bab_dbdata {
 				unset($this->row[$key]);
 			}
 		}
-	}
-	
-	
-	/**
-	 * Delete row with autoincremented column
-	 */
-	function deleteDbRow() {
-		global $babDB;
-		
-		$id = $this->getPrimaryAutoIncremented();
-		
-		if ($id) {
-			$res = $babDB->db_query('DELETE FROM '.$babDB->backTick($this->tablename).' WHERE '.$babDB->backTick($this->primaryautoincremented).' = '.$babDB->quote($id).'');
-			
-			return 1 === $babDB->db_affected_rows($res);
-		}
-		
-		return false;
-	}
-	
-	/**
-	 * @param	string	$ikey
-	 */
-	function deleteDbRowByKey($ikey) {
-		global $babDB;
-		
-		$id = $this->getValue($ikey);
-		if ($id) {
-			$res = $babDB->db_query('DELETE FROM '.$babDB->backTick($this->tablename).' WHERE '.$babDB->backTick($ikey).' = '.$babDB->quote($id).'');
-			
-			return 1 === $babDB->db_affected_rows($res);
-		}
-		
-		return false;
 	}
 }
 
