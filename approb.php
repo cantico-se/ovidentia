@@ -342,7 +342,7 @@ function listWaitingFiles()
 				$this->filepath = bab_toHtml($arr['path']);
 				$this->filetitle = bab_toHtml($arr['name']);
 				$this->author = bab_toHtml(bab_getUserName($arr['author']));
-				$this->fileviewurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=viewfile&idf=".$arr['id']."&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path'])."&file=".urlencode($arr['name']));
+				$this->fileviewurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=viewfile&idf=".$arr['id']."&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($this->cleanFmPath($arr['path']))."&file=".urlencode($arr['name']));
 				$this->altbg = !$this->altbg;
 				$i++;
 				return true;
@@ -353,8 +353,28 @@ function listWaitingFiles()
 				}
 
 			}
-		}
 
+		function cleanFmPath($sPath)
+			{
+			$iLength = strlen(trim($sPath));
+			if($iLength > 0)
+			{
+				$aPath = explode('/', $sPath);
+				if(is_array($aPath))
+				{
+					$iCount = count($aPath);
+					if($iCount >= 2)
+					{
+		//				bab_debug($aPath);
+						unset($aPath[0]);
+						return substr(implode('/', $aPath), 0, -1);
+					}
+				}
+			}
+			return $sPath;	
+			}
+		}
+		
 	$temp = new listWaitingFilesCls();
 	$babBody->babecho( bab_printTemplate($temp, "approb.html", "waitingfiles"));
 }
