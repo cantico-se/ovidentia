@@ -128,6 +128,7 @@ class bab_TmProjects extends bab_handler
 	var $count;
 	var $res;
 
+	var $projectIds;
 
 	/**
 	 * @param bab_Context	$ctx
@@ -140,8 +141,33 @@ class bab_TmProjects extends bab_handler
 		$this->bab_handler($ctx);
 		$spaceId = $ctx->get_value('spaceid');
 
-		$this->res = bab_selectProjectList($spaceId);
-		$this->count = $babDB->db_num_rows($this->res);
+		// We look for all the project for which the user has visualisation rights.
+		$this->projectIds = array();
+		$res = bab_selectProjectList($spaceId);
+		while ($project = $babDB->db_fetch_array($res))
+		{
+			if (bab_isAccessValid(BAB_TSKMGR_PROJECTS_VISUALIZERS_GROUPS_TBL, $project['id']))
+			{
+				array_push($this->projectIds, $project['id']);
+			}
+		}
+		
+		$this->count = count($this->projectIds);
+		if ($this->count > 0)
+		{
+				$sql = 
+				'SELECT ' .
+					'* ' .
+				' FROM ' .
+					BAB_TSKMGR_PROJECTS_TBL .
+				' WHERE ' . 
+					'id IN (' . $babDB->quote($this->projectIds) . ')' .
+				' ORDER BY id';
+			
+			$this->res = $babDB->db_query($sql);
+			$this->count = $babDB->db_num_rows($this->res);
+		}
+		
 		$this->ctx->curctx->push('CCount', $this->count);
 	}
 
@@ -151,7 +177,7 @@ class bab_TmProjects extends bab_handler
 	 *
 	 * @return bool		FALSE if there are no more elements.
 	 */
-	function getnext(&$skip)
+	function getnext()
 	{
 		global $babDB;
 
@@ -193,10 +219,10 @@ class bab_TmProjects extends bab_handler
  *
  * Returned OVML variables are:
  * - OVTaskId					The task id
- * - OVTaskProjectId			The project id of the task
+ * - OVTaskProjectId			The id of the task's project
  * - OVTaskNumber				The task number
- * - OVTaskShortDescription
- * - OVTaskStartDate
+ * - OVTaskShortDescription		The task short description
+ * - OVTaskStartDate			
  * - OVTaskEndDate
  * - OVTaskCategoryId			The category id
  * - OVTaskCategoryName			The category name
@@ -241,7 +267,7 @@ class bab_TmTasks extends bab_handler
 			// If the parameter 'projectid' is specified we will return the tasks belonging
 			// to this project if the user has visibility on the project.
 			$aFilter['iIdProject'] = $idProject;
-			if (!bab_isAccessValid(BAB_TSKMGR_PROJECTS_VISUALIZERS_GROUPS_TBL, $aFilter['iIdProject']))
+			if (!bab_isAccessValid(BAB_TSKMGR_PROJECTS_VISUALIZERS_GROUPS_TBL, $idProject))
 			{
 				$this->count = 0;
 				$this->ctx->curctx->push('CCount', $this->count);
@@ -297,23 +323,20 @@ class bab_TmTasks extends bab_handler
 		if ($this->idx < $this->count)
 		{
 			$task = $babDB->db_fetch_array($this->res);
-			{
-				$this->ctx->curctx->push('CIndex', $this->idx);
-				$this->ctx->curctx->push('TaskId', $task['iIdTask']);
-				$this->ctx->curctx->push('TaskProjectId', $task['iIdProject']);
-				$this->ctx->curctx->push('TaskNumber', $task['sTaskNumber']);
-				$this->ctx->curctx->push('TaskShortDescription', $task['sShortDescription']);
-				$this->ctx->curctx->push('TaskStartDate', bab_mktime($task['startDate']));
-				$this->ctx->curctx->push('TaskEndDate', bab_mktime($task['endDate']));
-				$this->ctx->curctx->push('TaskCategoryId', $task['iIdCategory']);
-				$this->ctx->curctx->push('TaskCategoryName', $task['sCategoryName']);
-				$this->ctx->curctx->push('TaskCompletion', $task['iCompletion']);
-				$this->ctx->curctx->push('TaskOwnerId', $task['idOwner']);
-				$this->ctx->curctx->push('TaskClass', $task['iClass']);
-//				$this->ctx->curctx->push('Created', $task['created']);
-				$this->idx++;
-				$this->index = $this->idx;
-			}
+			$this->ctx->curctx->push('CIndex', $this->idx);
+			$this->ctx->curctx->push('TaskId', $task['iIdTask']);
+			$this->ctx->curctx->push('TaskProjectId', $task['iIdProject']);
+			$this->ctx->curctx->push('TaskNumber', $task['sTaskNumber']);
+			$this->ctx->curctx->push('TaskShortDescription', $task['sShortDescription']);
+			$this->ctx->curctx->push('TaskStartDate', bab_mktime($task['startDate']));
+			$this->ctx->curctx->push('TaskEndDate', bab_mktime($task['endDate']));
+			$this->ctx->curctx->push('TaskCategoryId', $task['iIdCategory']);
+			$this->ctx->curctx->push('TaskCategoryName', $task['sCategoryName']);
+			$this->ctx->curctx->push('TaskCompletion', $task['iCompletion']);
+			$this->ctx->curctx->push('TaskOwnerId', $task['idOwner']);
+			$this->ctx->curctx->push('TaskClass', $task['iClass']);
+			$this->idx++;
+			$this->index = $this->idx;
 			return true;
 		}
 		else
