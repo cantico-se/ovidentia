@@ -646,11 +646,15 @@
 			{
 				$iParticipationStatus =& $this->m_oTask->m_aTask['iParticipationStatus'];
 				$bIsParticipationStatusOk = 
-					(BAB_TM_ACCEPTED == $iParticipationStatus || $iParticipationStatus == BAB_TM_IN_PROGRESS);
+					((BAB_TM_ACCEPTED == $iParticipationStatus || $iParticipationStatus == BAB_TM_IN_PROGRESS) && $this->m_bIsManager);
 			}
+			
+			$bIsToDoOrCheckpoint = ($this->m_oTask->m_aTask['iClass'] == BAB_TM_CHECKPOINT || 
+				$this->m_oTask->m_aTask['iClass'] == BAB_TM_TODO);
+			
 			$this->set_data('isCompletionEnabled', 
-				(($this->m_bIsManager || BAB_TM_TASK_RESPONSIBLE == $this->m_iUserProfil && BAB_TM_YES == $this->m_aCfg['tskUpdateByMgr'] 
-					) && $bIsParticipationStatusOk));
+				((($this->m_bIsManager || BAB_TM_TASK_RESPONSIBLE == $this->m_iUserProfil && BAB_TM_YES == $this->m_aCfg['tskUpdateByMgr'] 
+					) && $bIsParticipationStatusOk) || $bIsToDoOrCheckpoint));
 		}
 		
 		function initPredecessor($iPredecessor, $iLinkType)
@@ -2072,7 +2076,7 @@ bab_debug('A terminer, PB avec la date butoir de fin');
 				$aTask['iMinorVersion']			= $this->m_iMinorVersion;
 				$aTask['sColor']				= $this->m_sColor;
 				$aTask['iPosition']				= $this->m_iPosition;
-				$aTask['iCompletion']			= 0;
+				$aTask['iCompletion']			= $this->m_iCompletion;
 				
 				$this->getIsoDatesFromEndDate($sStartDate, $sEndDate);
 				
@@ -2120,7 +2124,7 @@ bab_debug('A terminer, PB avec la date butoir de fin');
 				$aTask['iMinorVersion']			= $this->m_iMinorVersion;
 				$aTask['sColor']				= $this->m_sColor;
 				$aTask['iPosition']				= $this->m_iPosition;
-				$aTask['iCompletion']			= 0;
+				$aTask['iCompletion']			= $this->m_iCompletion;
 				
 				$this->getIsoDatesFromEndDate($sStartDate, $sEndDate);
 				

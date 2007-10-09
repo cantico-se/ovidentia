@@ -853,6 +853,8 @@ function displayTaskList()
 		
 		var $m_aTask = array();
 		
+		var $m_aCompletion = array();
+		
 		function BAB_TM_TaskFilterForm()
 		{
 			$this->set_data('tg', bab_rp('tg', 'usrTskMgr'));				
@@ -864,6 +866,7 @@ function displayTaskList()
 			$this->set_caption('sStartDate', bab_translate("Start Date"));
 			$this->set_caption('sEndDate', bab_translate("End Date"));
 			$this->set_caption('sTaskResponsible', bab_translate("Task Responsible"));
+			$this->set_caption('sCompletion', bab_translate("Completion"));
 			
 			$this->set_data('sFilterIdx', BAB_TM_IDX_DISPLAY_TASK_LIST);
 			$this->set_data('sFilterAction', '');
@@ -911,6 +914,18 @@ function displayTaskList()
 			);
 				
 			$this->initTaskFilter();
+			
+//			bab_debug($this->m_aSelectedFilterValues);
+			
+			$this->m_aSelectedFilterValues['iTaskCompletion'] = (int) bab_rp('iCompletion', $this->m_aSelectedFilterValues['iTaskCompletion']);
+			$this->set_data('iCompletion', $this->m_aSelectedFilterValues['iTaskCompletion']);
+			$this->set_data('sSelectedTaskCompletion', '');
+			$this->m_aCompletion = array(
+				array('value' => -1, 'text' => bab_translate("All")),
+				array('value' => BAB_TM_IN_PROGRESS, 'text' => bab_translate("In progress")),
+				array('value' => BAB_TM_ENDED, 'text' => bab_translate("Ended")),
+			);
+			
 			
 			if(1 === (int) bab_rp('isProject', 0))
 			{
@@ -1041,6 +1056,23 @@ function displayTaskList()
 			return false;
 		}
 		
+			
+		function getNextTaskCompletion()
+		{
+			$datas = each($this->m_aCompletion);
+			if(false != $datas)
+			{
+				$this->get_data('iCompletion', $iCompletion);
+				$this->set_data('sSelectedTaskCompletion', (($iCompletion == $datas['value']['value']) ? 'selected="selected"' : ''));
+				
+				$this->set_data('iTaskCompletionValue', bab_toHtml($datas['value']['value']));				
+				$this->set_data('sTaskCompletionText', bab_toHtml($datas['value']['text']));
+				
+				return true;				
+			}
+			return false;
+		}
+		
 		function printTemplate()
 		{
 			return bab_printTemplate($this, 'tmUser.html', 'taskListFilter');
@@ -1054,6 +1086,7 @@ function displayTaskList()
 	$GLOBALS['babBody']->babecho($oTaskFilterForm->printTemplate());
 	$iTaskFilter =& $oTaskFilterForm->m_aSelectedFilterValues['iIdProject'];
 	$iTaskClass =& $oTaskFilterForm->m_aSelectedFilterValues['iTaskClass'];
+	$iTaskCompletion =& $oTaskFilterForm->m_aSelectedFilterValues['iTaskCompletion'];
 
 	global $babUrlScript;
 	$sGanttViewUrl = $babUrlScript . '?tg=' . urlencode('usrTskMgr') . '&idx=' . urlencode(BAB_TM_IDX_DISPLAY_GANTT_CHART);
@@ -1085,6 +1118,11 @@ function displayTaskList()
 		$aFilters['iIdOwner'] = $GLOBALS['BAB_SESS_USERID'];
 		
 		$sGanttViewUrl .= '&iIdOwner=' . urlencode($GLOBALS['BAB_SESS_USERID']);
+	}
+	
+	if(-1 !== $iTaskCompletion)
+	{
+		$aFilters['iCompletion'] = $iTaskCompletion;
 	}
 	
 	global $babInstallPath;

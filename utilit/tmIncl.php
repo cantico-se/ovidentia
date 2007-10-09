@@ -2036,6 +2036,17 @@ function bab_selectTaskQuery($aFilters, $aOrder = array())
 		$query .= 'AND t.participationStatus <> ' . $babDB->quote(BAB_TM_REFUSED) . ' ';
 	}
 	
+	if(isset($aFilters['iCompletion']) && -1 !== (int) $aFilters['iCompletion'])
+	{
+		$sCompletion = '= ' . $babDB->quote('100');
+		if(BAB_TM_IN_PROGRESS === (int) $aFilters['iCompletion'])
+		{
+			$sCompletion = '<> ' . $babDB->quote('100'); 
+		}
+		
+		$query .= 'AND t.completion ' . $sCompletion . ' ';
+	}
+	
 	$query .= 
 		'GROUP BY ' .
 			'sProjectSpaceName ASC, sProjectName ASC, sTaskNumber ASC ';
@@ -2784,12 +2795,13 @@ function bab_getTaskListFilter($iIdUser, &$aTaskFilters)
 		if(false != $datas)
 		{
 			$aTaskFilters = array('id' => $datas['id'], 'iIdUser' => $datas['idUser'], 
-				'iIdProject' => $datas['idProject'], 'iTaskClass' => $datas['iTaskClass']);
+				'iIdProject' => $datas['idProject'], 'iTaskClass' => $datas['iTaskClass'],
+				'iTaskCompletion' => $datas['iTaskCompletion']);
 		}
 	}
 	else 
 	{
-		$aTaskFilters = array('id' => -1, 'iIdUser' => $iIdUser, 'iIdProject' => -1, 'iTaskClass' => -1);
+		$aTaskFilters = array('id' => -1, 'iIdUser' => $iIdUser, 'iIdProject' => -1, 'iTaskClass' => -1, 'iTaskCompletion' => -1);
 	}
 }
 
@@ -2801,13 +2813,14 @@ function bab_createTaskListFilter($iIdUser, $aTaskFilters)
 		'INSERT INTO ' . BAB_TSKMGR_TASK_LIST_FILTER_TBL . ' ' .
 			'(' .
 				'`id`, ' .
-				'`idUser`, `idProject`, `iTaskClass`' .
+				'`idUser`, `idProject`, `iTaskClass`, `iTaskCompletion`' .
 			') ' .
 		'VALUES ' . 
 			'(\'\', \'' . 
 				$babDB->db_escape_string($aTaskFilters['iIdUser']) . '\', \'' . 
 				$babDB->db_escape_string($aTaskFilters['iIdProject']) . '\', \'' . 
-				$babDB->db_escape_string($aTaskFilters['iTaskClass']) . 
+				$babDB->db_escape_string($aTaskFilters['iTaskClass']) . '\', \'' . 
+				$babDB->db_escape_string($aTaskFilters['iTaskCompletion']) . 
 			'\')'; 
 
 	//bab_debug($query);
@@ -2822,7 +2835,8 @@ function bab_updateTaskListFilter($iIdUser, $aTaskFilters)
 			BAB_TSKMGR_TASK_LIST_FILTER_TBL . ' ' .
 		'SET ' .
 			'idProject = \'' . $babDB->db_escape_string($aTaskFilters['iIdProject']) . '\', ' .
-			'iTaskClass = \'' . $babDB->db_escape_string($aTaskFilters['iTaskClass']) . '\' ' .
+			'iTaskClass = \'' . $babDB->db_escape_string($aTaskFilters['iTaskClass']) . '\', ' .
+			'iTaskCompletion = \'' . $babDB->db_escape_string($aTaskFilters['iTaskCompletion']) . '\' ' .
 		'WHERE ' .
 			'idUser = \'' . $babDB->db_escape_string($iIdUser) . '\'';
 

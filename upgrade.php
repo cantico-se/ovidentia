@@ -3628,6 +3628,11 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	$babDB->db_query("ALTER TABLE ".BAB_FILES_TBL." DROP keywords");
 	}
 
+	if(!bab_isTableField(BAB_TSKMGR_TASK_LIST_FILTER_TBL, 'iTaskCompletion')) 
+	{
+		$babDB->db_query("ALTER TABLE ".BAB_TSKMGR_TASK_LIST_FILTER_TBL." ADD `iTaskCompletion` INT(11) NOT NULL default '-1'");
+	}
+
 	return true;
 }
 ?>
