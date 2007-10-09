@@ -3601,19 +3601,20 @@ class BAB_FileManagerEnv
 			
 			if('N' === $this->sGr)
 			{
-				if(0 === $this->iPathLength)
+				if(true === $this->oAclFm->haveRightOnCollectiveFolder() || true === $this->oAclFm->userHaveStorage())
 				{
-					//list root folders
-					return true;
-				}
-				else 
-				{
-					if(true === bab_userIsloggedin())
+					if(0 === $this->iPathLength)
 					{
-						if(is_dir(realpath($sUploadPath . $this->sRelativePath)))
+						return true;
+					}
+					else 
+					{
+						if(true === bab_userIsloggedin())
 						{
-							//list user dir
-							return true;
+							if(is_dir(realpath($sUploadPath . $this->sRelativePath)))
+							{
+								return true;
+							}
 						}
 					}
 				}
@@ -3720,7 +3721,7 @@ class BAB_AclFm
 		global $BAB_SESS_USERID;
 		if(0 !== $iIdObject)
 		{
-			if($iIdObject === (int) $BAB_SESS_USERID)
+			if($this->bUserHaveStorage && $iIdObject === (int) $BAB_SESS_USERID)
 			{
 				$this->bManager = true;
 				$this->bDownload = true;
@@ -3806,6 +3807,7 @@ class BAB_AclFm
 			$iIndex = 0;
 			while($iIndex < $iNumRows && false !== ($aDatas = $babDB->db_fetch_array($oResult)))
 			{
+				$iIndex++;
 				if(bab_isMemberOfGroup($aDatas['id']))
 				{
 					$this->bUserHaveStorage = true;
