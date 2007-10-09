@@ -854,6 +854,7 @@ function displayTaskList()
 		var $m_aTask = array();
 		
 		var $m_aCompletion = array();
+		var $m_aTaskResponsible = array();
 		
 		function BAB_TM_TaskFilterForm()
 		{
@@ -986,39 +987,46 @@ function displayTaskList()
 		function initTaskResponsible()
 		{
 			bab_getAllTaskIndexedById($this->m_aSelectedFilterValues['iIdProject'], $this->m_aTask);
+			
+			while(false != ($datas = each($this->m_aTask)))
+			{
+				$aTaskResponsible = array();
+				bab_getTaskResponsibles($datas['value']['id'], $aTaskResponsible);
+				if(count($aTaskResponsible) > 0)
+				{
+					$aTaskResponsible = each($aTaskResponsible);
+					$aTaskResponsible = $aTaskResponsible['value'];
+					$iIdResponsible = (int) $aTaskResponsible['id'];
+					$sName			= (string) $aTaskResponsible['name'];
+					
+					if(false === array_key_exists($iIdResponsible, $this->m_aTaskResponsible))
+					{
+						$this->m_aTaskResponsible[$iIdResponsible] = array('iIdResponsable' => $iIdResponsible,
+							'sName' => $sName);
+					}
+				}
+			}
+			reset($this->m_aTask);			
 		}
 		
-		function getNextTaskResponsible(&$skip)
+		function getNextTaskResponsible()
 		{
-			static $aProcessed = array();
-			
 			$this->set_data('sSelectedUserName', '');
 			$this->get_data('iIdOwner', $iIdOwner);
 			
-			$datas = each($this->m_aTask);
-			if(false != $datas)
+			$this->set_data('idResponsible', 0);
+			$this->set_data('sSelectedUserName', '');
+			$this->set_data('sUserName', '');
+			
+			$datas = each($this->m_aTaskResponsible);
+			if(false !== $datas)
 			{
-				if(!isset($aProcessed[$datas['value']['id']]))
-				{
-//bab_debug('!!!!!!!!!!!!!!!!');
-					$aProcessed[$datas['value']['id']] = $datas['value']['id'];
-					$aTaskResponsible = array();
-					bab_getTaskResponsibles($datas['value']['id'], $aTaskResponsible);
-					if(count($aTaskResponsible) > 0)
-					{
-						$aTaskResponsible = each($aTaskResponsible);
-						$aTaskResponsible = $aTaskResponsible['value'];
-						
-						$this->set_data('idResponsible', $aTaskResponsible['id']);
-						$this->set_data('sSelectedUserName', (($iIdOwner === (int) $aTaskResponsible['id']) ? 'selected="selected"' : ''));
-						$this->set_data('sUserName', bab_toHtml($aTaskResponsible['name']));
-					}
-				}
-				else 
-				{
-//bab_debug('****************');
-					$skip = true;
-				}
+				$iIdResponsible = (int) $datas['value']['iIdResponsable'];
+				$sName			= (string) $datas['value']['sName'];
+				
+				$this->set_data('idResponsible', $iIdResponsible);
+				$this->set_data('sSelectedUserName', (($iIdOwner === $iIdResponsible) ? 'selected="selected"' : ''));
+				$this->set_data('sUserName', bab_toHtml($sName));
 				return true;
 			}			
 			return false;
