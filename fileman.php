@@ -1977,7 +1977,7 @@ function viewFile($idf, $id, $path)
 
 				$this->id = $oFolderFile->getOwnerId();
 				$this->gr = $oFolderFile->getGroup();
-				$this->path = bab_toHtml($oFileManagerEnv->sRelativePath);
+				$this->path = bab_toHtml($path);
 				$this->file = bab_toHtml($oFolderFile->getName());
 				$GLOBALS['babBody']->setTitle($oFolderFile->getName() .( ($bversion == 'Y') ? ' (' . $oFolderFile->getMajorVer() . '.' . $oFolderFile->getMinorVer() . ')' : '' ));
 				$this->descval = $oFolderFile->getDescription();
@@ -2101,7 +2101,7 @@ function viewFile($idf, $id, $path)
 
 				
 
-				if('Y' === $oFileManagerEnv->sGr && bab_isFileIndex($fullpath) && bab_isUserAdministrator()) 
+				if(bab_isFileIndex($fullpath) && bab_isUserAdministrator()) 
 				{
 						$engine = bab_searchEngineInfos();
 						
