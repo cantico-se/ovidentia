@@ -533,7 +533,7 @@ function onClassChanged(oSelect)
 			showHideElement('oTrStartDate', g_tskMgrHide);
 			showHideElement('oTrEndDate', g_tskMgrShow);
 			showHideElement('oTrProposable', g_tskMgrHide);
-			showHideElement('oTrCompletion', g_tskMgrHide);
+			showHideElement('oTrCompletion', g_tskMgrShow);
 			showHideElement('oLiPredecessors', g_tskMgrHide);
 			showHideElement('oTrAnswerEnable', g_tskMgrHide);
 			showHideElement('oTrTaskResponsible', g_tskMgrHide);
@@ -548,7 +548,7 @@ function onClassChanged(oSelect)
 			showHideElement('oTrStartDate', g_tskMgrHide);
 			showHideElement('oTrEndDate', g_tskMgrShow);
 			showHideElement('oTrProposable', g_tskMgrHide);
-			showHideElement('oTrCompletion', g_tskMgrHide);
+			showHideElement('oTrCompletion', g_tskMgrShow);
 			showHideElement('oLiPredecessors', g_tskMgrHide);
 			showHideElement('oTrAnswerEnable', g_tskMgrHide);
 			showHideElement('oTrTaskResponsible', g_tskMgrHide);
@@ -1142,6 +1142,7 @@ function dateCallback(sFieldName)
 	<input type="hidden" name="isProject" value="{ m_datas[isProject] }" />
 	<input type="hidden" name="selectedDateFieldName" value="" />
 	<input type="hidden" name="iUseEditor" value="1" />
+	<input type="hidden" name="iCompletion" value="{ m_datas[iCompletion] }" />
 	
 	
 	<table width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
@@ -1171,7 +1172,7 @@ function dateCallback(sFieldName)
 						</select>
 					</td>
 				</tr>
-				<tr id="oTrStartDate">
+				<tr>
 					<td>
 						<label for="sStartDate">{ m_captions[sStartDate] }</label>
 					</td>
@@ -1191,8 +1192,9 @@ function dateCallback(sFieldName)
 						</a>
 					</td>
 				</tr>
-				<!--#if isProject -->
-				<tr id="oTrStartDate">
+				
+				<tr>
+					<!--#if isProject -->
 					<td>
 						<label for="iIdOwner">{ m_captions[sTaskResponsible] }</label>
 					</td>
@@ -1204,12 +1206,23 @@ function dateCallback(sFieldName)
 							<!--#endin getNextTaskResponsible -->
 						</select>
 					</td>
-					<!--#endif isProject -->
+					<!--#else isProject -->
 					<td>
 						&nbsp;
 					</td>
 					<td>
 						&nbsp;
+					</td>
+					<!--#endif isProject -->
+					<td>
+						<label for="iCompletion">{ m_captions[sCompletion] }</label>
+					</td>
+					<td>
+						<select name="iCompletion">
+							<!--#in getNextTaskCompletion -->
+								<option { m_datas[sSelectedTaskCompletion] } value="{ m_datas[iTaskCompletionValue] }">{ m_datas[sTaskCompletionText] }</option>
+							<!--#endin getNextTaskCompletion -->
+						</select>
 					</td>
 				</tr>
 				
