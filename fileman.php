@@ -635,7 +635,7 @@ class DisplayUserFolderForm extends DisplayFolderFormBase
 		
 		global $BAB_SESS_USERID;
 		$this->get_data('iId', $iId);
-		$this->set_data('bDelete', (($iId === $BAB_SESS_USERID) ? true : false));
+		$this->set_data('bDelete', (((int) $iId === (int) $BAB_SESS_USERID) ? true : false));
 	}
 	
 	function printTemplate()
