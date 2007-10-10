@@ -215,6 +215,8 @@
 			$this->set_caption('sProjectSpace', bab_translate("Project space"));
 			$this->set_caption('sProject', bab_translate("Project"));
 			$this->set_caption('sModify', bab_translate("Modify"));
+			$this->set_caption('sCheckAll', bab_translate("Check all"));
+			$this->set_caption('sUncheckAll', bab_translate("Uncheck all"));
 		}
 
 		function initDatas()
