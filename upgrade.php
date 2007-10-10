@@ -3604,24 +3604,25 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$res = $babDB->db_query("select id, keywords from ".BAB_FILES_TBL."");
 		while( $arr = $babDB->db_fetch_array($res))
 		{
-			$rr = explode(' ', $arr['keywords']);
-			for( $i=0; $i < count($rr); $i++ )
+			$tok = strtok($arr['keywords'], ' ,');
+			while($tok !== false )
 			{
-			$rr[$i] = trim($rr[$i]);
-			if( !empty($rr[$i]))
-				{
-				if( !isset($tags[$rr[$i]]))
+				$tok = trim($tok);
+				if( !empty($tok))
 					{
-					$babDB->db_query("insert into ".BAB_TAGS_TBL." (tag_name) values ('".$babDB->db_escape_string($rr[$i])."')");
-					$idtag = $babDB->db_insert_id();
-					$tags[$rr[$i]] = $idtag;
+					if( !isset($tags[$tok]))
+						{
+						$babDB->db_query("insert into ".BAB_TAGS_TBL." (tag_name) values ('".$babDB->db_escape_string($tok)."')");
+						$idtag = $babDB->db_insert_id();
+						$tags[$tok] = $idtag;
+						}
+					else
+						{
+						$idtag = $tags[$tok];
+						}
+					$babDB->db_query("insert into ".BAB_FILES_TAGS_TBL." (id_file, id_tag) values ('".$arr['id']."', '".$idtag."')");
 					}
-				else
-					{
-					$idtag = $tags[$rr[$i]];
-					}
-				$babDB->db_query("insert into ".BAB_FILES_TAGS_TBL." (id_file, id_tag) values ('".$arr['id']."', '".$idtag."')");
-				}
+				$tok = strtok(' ,');
 			}
 		}
 
