@@ -26,6 +26,25 @@
 include_once 'base.php';
 
 
+// The function debug_backtrace is only available since PHP 4.3.0
+if (version_compare(phpversion(), '4.3.0') >= 0)
+{
+	function bab_debug_backtrace()
+	{
+		return debug_backtrace();
+	}
+}
+else
+{
+	function bab_debug_backtrace()
+	{
+		return array(0 => array('line' => 0));
+	}
+}
+
+
+
+
 function &bab_TemplateCache_getStore()
 {
 	static $cacheStore = null;
@@ -35,6 +54,13 @@ function &bab_TemplateCache_getStore()
 	return $cacheStore;
 }
 
+
+/**
+ * White-list of global variables accessible by a template.
+ *
+ * @param string $var	The name of the global variable.
+ * @return string	
+ */
 function getGlobalVariable($var)
 {
 	switch($var)
@@ -73,7 +99,6 @@ function getGlobalVariable($var)
 		case 'babAddonFolder' : return bab_toHtml($GLOBALS['babAddonFolder']);
 		case 'tg': return bab_toHtml($GLOBALS['tg']);
 		case 'idx': return bab_toHtml($GLOBALS['idx']);
-		
 	}
 	return NULL;
 }
@@ -199,7 +224,9 @@ class bab_Template
 	
 	/**
 	 * Format a template so that it can be displayed for debugging purpose.
+	 * 
 	 * Returns a string containing the formatted template.
+	 * 
 	 * @param	string	$templateString			The Ovidentia template.
 	 * @param	int		$highlightLineNumber	The line number to highlight or -1 if no line to hightlight.
 	 * @return	string							The formatted template.
@@ -227,7 +254,11 @@ class bab_Template
 	}
 
 	/**
+	 * Removes all errors associated to the template $templateObject
+	 * 
+	 * @param	object	$templateObject		The template object.
 	 * @access private
+	 * @static
 	 */
 	function resetErrors(&$templateObject)
 	{
@@ -235,9 +266,16 @@ class bab_Template
 	}
 
 	/**
+	 * Adds an error to the template $templateObject
+	 * 
+	 * @param	object	$templateObject		The template object.
+	 * @param	string	$errorMessage		The message associated to the error
+	 * @param	int		$lineNumber			The line number where the error occured in the template
+	 * 										or -1 for no specific line number
 	 * @access private
+	 * @static
 	 */
-	function addError(&$templateObject, $errorMessage, $lineNumber)
+	function addError(&$templateObject, $errorMessage, $lineNumber = -1)
 	{
 		if (!isset($templateObject->_errors)) {
 			$templateObject->_errors = array();
@@ -248,6 +286,7 @@ class bab_Template
 
 	/**
 	 * Returns a string containing the processed template.
+	 * 
 	 * @param	object	$template	The template object.
 	 * @param	string	$filename	The path to the template file.
 	 * @param	string	$section	The optional section name in the template file.
@@ -298,10 +337,14 @@ class bab_Template
 	}
 
 	/**
+	 * Returns a string containing the processed template.
+	 * 
 	 * @param	string	$filename	The path to the template file.
 	 * @param	string	$section	The optional section name in the template file.
+	 * 								If not specified or empty, the whole template file is
+	 * 								processed.
+	 * @return	string|null			The processed template or null.
 	 * @access public
-	 * @return	string
 	 */
 	function process($filename, $section = '')
 	{
@@ -310,6 +353,10 @@ class bab_Template
 
 
 	/**
+	 * Returns the php code to get the value of the property.
+	 * 
+	 * This method is used during template parsing.
+	 * 
 	 * @access private
 	 * @static
 	 */
@@ -319,15 +366,21 @@ class bab_Template
 	}
 
 	/**
+	 * Returns the php code to get the value of the indexed array property.
+	 * 
+	 * This method is used during template parsing.
+	 * 
 	 * @access private
 	 * @static
 	 */
 	function valueArray($templateObjectName, $propertyName, $indexValue)
 	{
 		return 'bab_Template::getValueArray(' . $templateObjectName . ', "' .  $propertyName . '", "' . $indexValue . '")';
-			}
+	}
 
 	/**
+	 * This method is used during template parsing.
+	 * 
 	 * @access private
 	 * @static
 	 */
@@ -337,6 +390,8 @@ class bab_Template
 	}
 
 	/**
+	 * This method is used during template parsing.
+	 * 
 	 * @access private
 	 * @static
 	 */
@@ -346,6 +401,8 @@ class bab_Template
 	}
 
 	/**
+	 * This method is used during template parsing.
+	 * 
 	 * @access private
 	 * @static
 	 */
@@ -355,6 +412,8 @@ class bab_Template
 	}
 
 	/**
+	 * This method is used during template execution.
+	 * 
 	 * @access private
 	 * @static
 	 */
@@ -364,6 +423,8 @@ class bab_Template
 	}
 
 	/**
+	 * This method is used during template execution.
+	 * 
 	 * @access private
 	 * @static
 	 */
@@ -379,6 +440,8 @@ class bab_Template
 	}
 
 	/**
+	 * This method is used during template execution.
+	 * 
 	 * @access private
 	 * @static
 	 */
@@ -392,8 +455,7 @@ class bab_Template
 			return '';
 		}
 		
-		$calls = debug_backtrace();
-		$call = reset($calls); // $call will contain debug info about the line in the script where this function was called.
+		$call = reset(bab_debug_backtrace()); // $call will contain debug info about the line in the script where this function was called.
 		bab_Template::addError($templateObject, 'Unknown property (' . $propertyName . '[' . $index . '])', $call['line']);
 		return '';
 	}
@@ -423,7 +485,7 @@ class bab_Template
 			return $tr;
 		}
 
-		$call = reset(debug_backtrace()); // $call will contain debug info about the line in the script where this function was called.
+		$call = reset(bab_debug_backtrace()); // $call will contain debug info about the line in the script where this function was called.
 		bab_Template::addError($templateObject, 'Unknown property or global variable (' . $propertyName . ')', $call['line']);
 		return '{ ' . $propertyName . ' }';
 	}
@@ -437,7 +499,7 @@ class bab_Template
 		if (@isset($templateObject->{$propertyName}[$index])) {
 			return $templateObject->{$propertyName}[$index];
 		}
-		$call = reset(debug_backtrace()); // $call will contain debug info about the line in the script where this function was called.
+		$call = reset(bab_debug_backtrace()); // $call will contain debug info about the line in the script where this function was called.
 		bab_Template::addError($templateObject, 'Unknown property (' . $propertyName . '[' . $index . '])', $call['line']);
 		return '{ ' . $propertyName . '[' . $index . '] }';
 	}
@@ -465,7 +527,6 @@ class bab_Template
 						'/<!--#in\s+(\w+)\s+-->/',
 						'/<!--#endin\s+(?:(?:\w+)\s+)?-->/',
 						'/\{\s+\$OVML\(([^)]+)\)\s+\}/',
-/*						'/\{\s+([^{}]+{([^}]+)}.*)\s+\}/', */
 						'/\{\s+(\w+)\s+\}/',
 						'/\{\s+(\w+)\[((?:\w+\s*)+)\]\s+\}/');
 		$replace = array('<?php if (' . bab_Template::lvalue($templateObjectName, '$1') . '): ?>',
@@ -477,7 +538,6 @@ class bab_Template
 						 '<?php $$1skip = false; while (' . $templateObjectName . '->$1($$1skip)): if ($$1skip) { $$1skip = false; continue; } ?>',
 						 '<?php endwhile; ?>',
 						 '<?php $params = explode(\',\', \'$1\'); $ovml = array_shift($params); $args = array(); foreach ($params as $param) { $tmp = explode(\'=\', $param); if (is_array($tmp) && count($tmp) == 2) { $var = trim($tmp[1], \'"\'); $var = isset(' . $templateObjectName . '->$var) ? ' . $templateObjectName . '->$var : $var; $args[trim($tmp[0])] = $var; } } print(bab_printOvmlTemplate($ovml, $args)); ?>',
-/*						 'TOTO($1)($2)TOTO', */
 						 '<?php @print(' . bab_Template::value($templateObjectName, '$1') . '); ?>',
 						 '<?php @print(' . bab_Template::valueArray($templateObjectName, '$1', '$2') . '); ?>');
 		$templatePhp = preg_replace($search, $replace, $templateString);
