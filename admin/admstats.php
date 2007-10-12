@@ -94,7 +94,7 @@ function editConnectionLogSettings()
 		function ConnectionLoggingSetupTemplate()
 		{
 			$registry = bab_getRegistryInstance();
-			$registry->changeDirectory('/statistics');
+			$registry->changeDirectory('/bab/statistics');
 			$this->t_log_activated = $registry->getValue('logConnections', false);
 			$this->t_log_deactivated = !$this->t_log_activated;
 			
@@ -118,7 +118,7 @@ function editConnectionLogSettings()
 function saveConnectionLogSettings($activate, $deleteBefore = null)
 {
 	$registry = bab_getRegistryInstance();
-	$registry->changeDirectory('/statistics');
+	$registry->changeDirectory('/bab/statistics');
 	$registry->setKeyValue('logConnections', $activate);
 	
 	if (!is_null($deleteBefore)) {

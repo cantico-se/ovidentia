@@ -399,7 +399,7 @@ function signOn( $nickname, $password,$lifetime)
 	// Here we log the connection.
 	if ($GLOBALS['babStatOnOff'] == 'Y') {
 		$registry = bab_getRegistryInstance();
-		$registry->changeDirectory('/statistics');
+		$registry->changeDirectory('/bab/statistics');
 		if ($registry->getValue('logConnections')) {
 			bab_logUserConnectionTime($BAB_SESS_USERID, session_id());
 		}

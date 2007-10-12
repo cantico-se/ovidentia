@@ -3634,6 +3634,23 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$babDB->db_query("ALTER TABLE ".BAB_TSKMGR_TASK_LIST_FILTER_TBL." ADD `iTaskCompletion` INT(11) NOT NULL default '-1'");
 	}
 
+	/**
+	 * Upgrade to 6.5.91
+	 */
+
+	// There was still a few registry information related to the kernel not
+	// placed under the /bab/ node.
+	$registry = bab_getRegistryInstance();
+	
+	if ($registry)
+	{
+		// Registry about orgcharts is now in "/bab/orgchart/"
+		$registry->moveDirectory('/orgchart/', '/bab/orgchart/');
+	
+		// Registry about statistics is now in "/bab/statistics/"
+		$registry->moveDirectory('/statistics/', '/bab/statistics/');
+	}
+	
 	return true;
 }
 ?>
