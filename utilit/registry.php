@@ -1,56 +1,85 @@
 <?php
-/************************************************************************
- * OVIDENTIA http://www.ovidentia.org                                   *
- ************************************************************************
- * Copyright (c) 2003 by CANTICO ( http://www.cantico.fr )              *
- *                                                                      *
- * This file is part of Ovidentia.                                      *
- *                                                                      *
- * Ovidentia is free software; you can redistribute it and/or modify    *
- * it under the terms of the GNU General Public License as published by *
- * the Free Software Foundation; either version 2, or (at your option)  *
- * any later version.													*
- *																		*
- * This program is distributed in the hope that it will be useful, but  *
- * WITHOUT ANY WARRANTY; without even the implied warranty of			*
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.					*
- * See the  GNU General Public License for more details.				*
- *																		*
- * You should have received a copy of the GNU General Public License	*
- * along with this program; if not, write to the Free Software			*
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
- * USA.																	*
-************************************************************************/
-include_once "base.php";
+//-------------------------------------------------------------------------
+// OVIDENTIA http://www.ovidentia.org
+//
+// Ovidentia is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2, or (at your option)
+// any later version.
+// 
+// This program is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+// USA.
+//-------------------------------------------------------------------------
+/**
+ * @license http://opensource.org/licenses/gpl-license.php GNU General Public License (GPL)
+ * @copyright Copyright (c) 2006 by CANTICO ({@link http://www.cantico.fr})
+ */
+include_once 'base.php';
 
 
-class bab_registry {
+class bab_Registry
+{
 
 	var $dir = '/';
 
-	function bab_registry() {
-		$this->db = &$GLOBALS['babDB'];
-	}
-
 	/**
-	 * Set a directory into the registry, others functions depends on this directory
-	 * @param string $dir
+	 * This constructor should not be used directly.
+	 * Use function bab_getRegistryInstance instead.
+	 * 
+	 * @see bab_getRegistryInstance
+	 * @return bab_Registry
 	 */
-	function changeDirectory($dir) {
-		if ('/' === substr($dir,0,1)) {
-			$this->dir = $dir;
-		} else {
-			$this->dir .= $dir;
-		}
-
-		if ('/' !== substr($dir,-1)) {
-			$this->dir .= '/';
-		}
+	function bab_Registry()
+	{
+//		$this->db = &$GLOBALS['babDB'];
 	}
 
+
 	/**
-	 * Insert or Update a value with a key parameter
+	 * Returns the full path terminated with a '/' of directory $path
+	 * whether $path is itself an absolute or relative path.
+	 * getFullPath does not checks that the path actually exists in
+	 * the registry.
+	 *
+	 * @since 6.5.91
+	 * @param string	$path		An absolute or relative path.
+	 * @return string				The corresponding absolute path terminated with a '/'.
+	 */
+	function getFullPath($path)
+	{
+		if ('/' !== substr($path, 0, 1)) {
+			$path = $this->dir . $path;
+		}
+		if ('/' !== substr($path, -1)) {
+			$path .= '/';
+		}
+		return $path;
+	}
+
+
+	/**
+	 * Sets the current directory of the registry
+	 * Most other registry methods work relatively to this directory.
+	 * 
+	 * @param string	$path		An absolute or relative path.
+	 */
+	function changeDirectory($path)
+	{
+		$this->dir = $this->getFullPath($path);
+	}
+
+
+	/**
+	 * Inserts or updates a value with a key parameter
 	 * The key will be inserted into the current directory
+	 * Possible return values are:
 	 * 0 : the function has done nothing
 	 * 1 : the value has been updated
 	 * 2 : the value has been inserted
@@ -60,8 +89,10 @@ class bab_registry {
 	 * @see bab_registry::changeDirectory()
 	 * @return 0|1|2
 	 */
-	function setKeyValue($key, $value) {
-		
+	function setKeyValue($key, $value)
+	{
+		global $babDB;
+
 		if (false !== strpos($key, '/')) {
 			trigger_error('"/" are forbidden in the key parameter of setKeyValue');
 			return 0;
@@ -84,31 +115,31 @@ class bab_registry {
 				break;
 		}
 
-		$res = $this->db->db_query("SELECT COUNT(*) FROM ".BAB_REGISTRY_TBL." WHERE dirkey='".$this->db->db_escape_string($dirkey)."'");
+		$res = $babDB->db_query("SELECT COUNT(*) FROM ".BAB_REGISTRY_TBL." WHERE dirkey=".$babDB->quote($dirkey));
 
-		list($n) = $this->db->db_fetch_array($res);
+		list($n) = $babDB->db_fetch_array($res);
 
 		if ($n > 0) {
 
-			$res = $this->db->db_query("
+			$res = $babDB->db_query("
 			
 			UPDATE ".BAB_REGISTRY_TBL." 
 				SET
-					value			= '".$this->db->db_escape_string($value)."', 
-					value_type		= '".$this->db->db_escape_string($value_type)."', 
-					update_id_user	= '".$this->db->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', 
+					value			= ".$babDB->quote($value).", 
+					value_type		= ".$babDB->quote($value_type).", 
+					update_id_user	= ".$babDB->quote($GLOBALS['BAB_SESS_USERID']).", 
 					lastupdate		= NOW() 
 				WHERE 
-					dirkey			= '".$this->db->db_escape_string($dirkey)."'
+					dirkey			= ".$babDB->quote($dirkey)."
 			");
 
-			if (0 < $this->db->db_affected_rows($res)) {
+			if (0 < $babDB->db_affected_rows($res)) {
 				return 1;
 			}
 
 		} else {
 
-			$this->db->db_query("
+			$babDB->db_query("
 			
 			INSERT INTO ".BAB_REGISTRY_TBL." 
 				(
@@ -122,11 +153,11 @@ class bab_registry {
 				) 
 			VALUES 
 				(
-					'".$this->db->db_escape_string($dirkey)."',
-					'".$this->db->db_escape_string($value)."',
-					'".$this->db->db_escape_string($value_type)."',
-					'".$this->db->db_escape_string($GLOBALS['BAB_SESS_USERID'])."',
-					'".$this->db->db_escape_string($GLOBALS['BAB_SESS_USERID'])."',
+					".$babDB->quote($dirkey).",
+					".$babDB->quote($value).",
+					".$babDB->quote($value_type).",
+					".$babDB->quote($GLOBALS['BAB_SESS_USERID']).",
+					".$babDB->quote($GLOBALS['BAB_SESS_USERID']).",
 					NOW(),
 					NOW()
 				)
@@ -146,12 +177,14 @@ class bab_registry {
 	 * @return boolean
 	 * @see bab_registry::changeDirectory()
 	 */
-	function removeKey($key) {
+	function removeKey($key)
+	{
+		global $babDB;
 
 		$dirkey = $this->dir.$key;
-		$res = $this->db->db_query("DELETE FROM ".BAB_REGISTRY_TBL." WHERE dirkey = '".$this->db->db_escape_string($dirkey)."'");
+		$res = $babDB->db_query("DELETE FROM ".BAB_REGISTRY_TBL." WHERE dirkey = ".$babDB->quote($dirkey));
 
-		return 0 < $this->db->db_affected_rows($res);
+		return 0 < $babDB->db_affected_rows($res);
 	}
 
 
@@ -159,7 +192,8 @@ class bab_registry {
 	 * Get current path
 	 * @return string
 	 */
-	function getDirectory() {
+	function getDirectory()
+	{
 		return $this->dir;
 	}
 
@@ -172,8 +206,8 @@ class bab_registry {
 	 * @param mixed $default_create
 	 * @return mixed|null
 	 */
-	function getValue($key, $default_create = NULL) {
-		
+	function getValue($key, $default_create = NULL)
+	{	
 		$arr = $this->getValueEx($key);
 		if (NULL !== $arr) {
 			return $arr['value'];
@@ -193,9 +227,12 @@ class bab_registry {
 	 * @param string $key
 	 * @return array|null
 	 */
-	function getValueEx($key) {
+	function getValueEx($key)
+	{
+		global $babDB;
+
 		$dirkey = $this->dir.$key;
-		$res = $this->db->db_query("
+		$res = $babDB->db_query("
 			SELECT 
 				value,
 				value_type,
@@ -205,10 +242,10 @@ class bab_registry {
 				UNIX_TIMESTAMP(lastupdate) lastupdate 
 			FROM ".BAB_REGISTRY_TBL." 
 			WHERE 
-				dirkey = '".$this->db->db_escape_string($dirkey)."'
+				dirkey = ".$babDB->quote($dirkey)."
 		");
 
-		if ($arr = $this->db->db_fetch_assoc($res)) {
+		if ($arr = $babDB->db_fetch_assoc($res)) {
 
 			switch($arr['value_type']) {
 				
@@ -242,17 +279,73 @@ class bab_registry {
 	 * Delete the current directory
 	 * @return int affected rows
 	 */
-	function deleteDirectory() {
+	function deleteDirectory()
+	{
+		global $babDB;
 
 		$l = strlen($this->dir);
 
-		$res = $this->db->db_query("
+		$res = $babDB->db_query("
 			DELETE 
 			FROM ".BAB_REGISTRY_TBL." 
-			WHERE LEFT(dirkey,'".$l."') = '".$this->db->db_escape_string($this->dir)."'
-		");
+			WHERE LEFT(dirkey,'".$l."') = " . $babDB->quote($this->dir)
+		);
 
-		return $this->db->db_affected_rows($res);
+		return $babDB->db_affected_rows($res);
+	}
+
+	
+	/**
+	 * Checks whether the path (absolute or not) is an existing directory.
+	 *
+	 * @since 6.5.91
+	 * @param string $path
+	 * @return bool
+	 */
+	function isDirectory($path)
+	{
+		global $babDB;
+
+		$path = $this->getFullPath($path);
+
+		$sql = '
+			SELECT dirkey FROM ' . BAB_REGISTRY_TBL . '
+			WHERE LEFT(dirkey, ' . $babDB->quote(strlen($path)) . ') = ' . $babDB->quote($path);
+		
+		$res = $babDB->db_query($sql);
+		return ($babDB->db_num_rows($res) > 0);
+	}
+
+
+	/**
+	 * Moves the directory $source to $dest
+	 *
+	 * @since 6.5.91
+	 * @param string	$source		The absolute or relative path of the source directory.
+	 * @param string	$dest		The absolute or relative path of the destination directory.
+	 * @return bool		TRUE if the directory was moved, FALSE otherwise.
+	 */
+	function moveDirectory($source, $dest)
+	{
+		global $babDB;
+
+		// If destination directory already exists we return with error.
+		if ($this->isDirectory($dest)) {
+			return false;
+		}
+
+		$source = $this->getFullPath($source);
+		$dest = $this->getFullPath($dest);
+
+		$sourceLength = strlen($source);
+
+		$sql = '
+			UPDATE ' . BAB_REGISTRY_TBL . '
+			SET dirkey = CONCAT(' . $babDB->quote($dest) . ', SUBSTR(dirkey, ' . $babDB->quote($sourceLength + 1) . '))
+			WHERE LEFT(dirkey, ' . $babDB->quote($sourceLength) . ') = ' . $babDB->quote($source);
+		
+		$res = $babDB->db_query($sql);
+		return ($babDB->db_affected_rows($res) > 0);
 	}
 
 
@@ -260,26 +353,29 @@ class bab_registry {
 	 * get next subfolder
 	 * @return string|false
 	 */
-	function fetchChildDir() {
+	function fetchChildDir()
+	{
+		global $babDB;
+
 		static $r = array();
 		if (!isset($r[$this->dir])) {
 			$l = strlen($this->dir);
-			$r[$this->dir] = $this->db->db_query("
+			$r[$this->dir] = $babDB->db_query("
 			
 			SELECT DISTINCT 
 				LEFT(RIGHT(dirkey,LENGTH(dirkey)-'$l'), LOCATE('/',RIGHT(dirkey,LENGTH(dirkey)-'$l')) ) dirkey  
 			FROM ".BAB_REGISTRY_TBL." 
-				WHERE dirkey REGEXP ".$this->db->quote('^'.$this->dir.'[^/]+/.+$')." 
+				WHERE dirkey REGEXP ".$babDB->quote('^'.$this->dir.'[^/]+/.+$')." 
 
 				");
 		}
 
-		if ($arr = $this->db->db_fetch_assoc($r[$this->dir])) {
+		if ($arr = $babDB->db_fetch_assoc($r[$this->dir])) {
 			return $arr['dirkey'];
 		}
 
-		if (0 < $this->db->db_num_rows($r[$this->dir])) {
-			$this->db->db_data_seek($r[$this->dir], 0);
+		if (0 < $babDB->db_num_rows($r[$this->dir])) {
+			$babDB->db_data_seek($r[$this->dir], 0);
 		}
 		return false;
 	}
@@ -289,26 +385,29 @@ class bab_registry {
 	 * get next child key from current directory
 	 * @return string|false
 	 */
-	function fetchChildKey() {
+	function fetchChildKey() 
+	{
+		global $babDB;
+		
 		static $r = array();
 		if (!isset($r[$this->dir])) {
 			$l = strlen($this->dir);
-			$r[$this->dir] = $this->db->db_query("
+			$r[$this->dir] = $babDB->db_query("
 			
 			SELECT 
 				RIGHT(dirkey,LENGTH(dirkey)-'$l') dirkey  
 			FROM ".BAB_REGISTRY_TBL." 
-				WHERE dirkey REGEXP ".$this->db->quote('^'.$this->dir.'[^/]+$')." 
+				WHERE dirkey REGEXP ".$babDB->quote('^'.$this->dir.'[^/]+$')." 
 
 				");
 		}
 
-		if ($arr = $this->db->db_fetch_assoc($r[$this->dir])) {
+		if ($arr = $babDB->db_fetch_assoc($r[$this->dir])) {
 			return $arr['dirkey'];
 		}
 
-		if (0 < $this->db->db_num_rows($r[$this->dir])) {
-			$this->db->db_data_seek($r[$this->dir], 0);
+		if (0 < $babDB->db_num_rows($r[$this->dir])) {
+			$babDB->db_data_seek($r[$this->dir], 0);
 		}
 		return false;
 	}
