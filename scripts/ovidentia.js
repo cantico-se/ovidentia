@@ -165,7 +165,7 @@ function bab_tooltipPosition(e)
 	var tooltip = window.bab_currentTooltip;
 	
 	if (!tooltip) {
-		return false;
+		return true;
 	}
 
 	var offsetX = -tooltip.offsetWidth / 2, offsetY = 20;
