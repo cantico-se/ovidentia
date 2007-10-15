@@ -250,6 +250,7 @@ bab_dialog.selectforum = function(action, attributes) {
  * <li>selectable_collective_directories: collective directories can be selected</li>
  * <li>selectable_sub_directories: sub-directories can be selected</li>
  * <li>selectable_files: files can be selected</li>
+ * <li>multi: more than 1 item can be selected (there will be a checkboxes and a "select" button)</li>
  * </ul>
  * @param action  function receiving an associative array with keys "id", "type" and "content" as parameter.
  * @param string attributes	list of '&' separated attributes for the folders/files tree selector.
