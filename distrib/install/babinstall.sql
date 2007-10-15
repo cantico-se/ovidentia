@@ -3446,6 +3446,7 @@ CREATE TABLE bab_tskmgr_task_list_filter (
  `idUser` INT UNSIGNED NOT NULL,
  `idProject` INT NOT NULL,
  `iTaskClass` INT NOT NULL,
+ `iTaskCompletion` INT(11) NOT NULL default '-1',
  PRIMARY KEY(`id`),
  INDEX `idUser`(`idUser`)
 );
