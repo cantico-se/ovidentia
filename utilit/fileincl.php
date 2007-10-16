@@ -89,7 +89,7 @@ function bab_getUploadFmPath($gr, $id)
 		$oFmFolder = $oFmFolderSet->get($oId->in($id));
 		if(!is_null($oFmFolder))
 		{
-			return $oFmFolder->getRelativePath() . '/';
+			return $oFmFolder->getRelativePath() . '/'.$oFmFolder->getName().'/';
 		}
 	}
 	else
