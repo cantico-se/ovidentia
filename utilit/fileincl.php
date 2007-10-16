@@ -2079,10 +2079,10 @@ class BAB_FmFolderSet extends BAB_BaseSet
 		if(is_a($oFmFolder, 'BAB_FmFolder'))
 		{
 			require_once $GLOBALS['babInstallPath'].'admin/acl.php';
-			aclDeleteGroup(BAB_FMUPLOAD_GROUPS_TBL, $oFmFolder->getId());
-			aclDeleteGroup(BAB_FMDOWNLOAD_GROUPS_TBL, $oFmFolder->getId());
-			aclDeleteGroup(BAB_FMUPDATE_GROUPS_TBL, $oFmFolder->getId());
-			aclDeleteGroup(BAB_FMMANAGERS_GROUPS_TBL, $oFmFolder->getId());
+			aclDelete(BAB_FMUPLOAD_GROUPS_TBL, $oFmFolder->getId());
+			aclDelete(BAB_FMDOWNLOAD_GROUPS_TBL, $oFmFolder->getId());
+			aclDelete(BAB_FMUPDATE_GROUPS_TBL, $oFmFolder->getId());
+			aclDelete(BAB_FMMANAGERS_GROUPS_TBL, $oFmFolder->getId());
 
 			$oFolderFileSet = new BAB_FolderFileSet();
 			if(true === $bDbRecordOnly)
@@ -2135,7 +2135,7 @@ class BAB_FmFolderSet extends BAB_BaseSet
 	}
 	
 	
-	function save($oFmFolder)
+	function save(&$oFmFolder)
 	{
 		if(is_a($oFmFolder, 'BAB_FmFolder'))
 		{

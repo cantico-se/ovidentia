@@ -261,7 +261,14 @@ class listFiles
 //		bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sPathName ==> ' . $sPathName);
 		
 		$bInClipBoard = $this->oRegHlp->exist($sPathName);
+		if( empty($sUrlPath))
+		{
 		$bFolderManager = bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oFmFolder->getId());
+		}
+		else
+		{
+		$bFolderManager = $this->oFileManagerEnv->oAclFm->haveManagerRight();
+		}
 
 		if(false === $bInClipBoard || (true == $bInClipBoard && (false === $bFolderManager || false === $this->oFileManagerEnv->oAclFm->haveManagerRight())))
 		{
@@ -329,7 +336,7 @@ class listFiles
 //						' bFolderManager ==> ' . (($bFolderManager) ? 'Yes' : 'No') .
 //						' haveManagerRight ==> ' . (($oAclFm->haveManagerRight()) ? 'Yes' : 'No'));
 					
-					if($bFolderManager && $oAclFm->haveManagerRight())
+				if( $oAclFm->haveManagerRight())
 					{
 						$aItem = array(
 							'id' => $oFmFolder->getId(), 
@@ -2719,11 +2726,9 @@ function createEditFolderForCollectiveDir($iIdFolder, $sPath)
 							$oFmFolder->setName($sDirName);
 							$oFmFolder->setActive($sActive);
 							$oFmFolder->setApprobationSchemeId($iIdApprobationScheme);
-							$oFmFolder->setAutoApprobation($sAutoApprobation);
 							$oFmFolder->setDelegationOwnerId((int) $babBody->currentAdmGroup);
 							$oFmFolder->setFileNotify($sNotification);
 							$oFmFolder->setHide($sDisplay);
-							$oFmFolder->setName($sDirName);
 							$oFmFolder->setRelativePath($sRelativePath);
 							$oFmFolder->setVersioning($sVersioning);
 							$oFmFolder->setAutoApprobation($sAutoApprobation);
@@ -2736,7 +2741,6 @@ function createEditFolderForCollectiveDir($iIdFolder, $sPath)
 								$oFirstFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($sRelativePath);
 								
 	//bab_debug('sRelativePath ==> ' . $sRelativePath . ' iIdOldFolder ==> ' . $oFirstFmFolder->getId());							
-	
 								$oFolderFileSet = new BAB_FolderFileSet();
 								$sPathName = $oFmFolder->getRelativePath() . $oFmFolder->getName() . '/';
 								$oFolderFileSet->setOwnerId($sPathName, $oFirstFmFolder->getId(), $oFmFolder->getId());
@@ -3016,141 +3020,134 @@ function pasteCollectiveDir($iIdRootFolder)
 				$sPath = substr($sFullTrgPath, 0, strlen($sFullSrcPath));
 				if($sPath !== $sFullSrcPath)
 				{
-					if(bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $iSrcIdOwner))
+					if(bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $iTrgIdOwner))
 					{
-						if(bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $iTrgIdOwner))
-						{
-							$bSrcValid = ((realpath(substr($sFullSrcPath, 0, strlen($sUploadPath))) === (string) realpath($sUploadPath)) && is_readable($sFullSrcPath));
-							$bTrgValid = ((realpath(substr($sFullTrgPath, 0, strlen($sUploadPath))) === (string) realpath($sUploadPath)) && is_writable($sFullTrgPath));
+						$bSrcValid = ((realpath(substr($sFullSrcPath, 0, strlen($sUploadPath))) === (string) realpath($sUploadPath)) && is_readable($sFullSrcPath));
+						$bTrgValid = ((realpath(substr($sFullTrgPath, 0, strlen($sUploadPath))) === (string) realpath($sUploadPath)) && is_writable($sFullTrgPath));
 
-							if($bSrcValid && $bTrgValid)
-							{
-								$sLastRelativePath = $sRelativeSrcPath;
-								$sNewRelativePath = $sRelativeTrgPath . getLastPath($sRelativeSrcPath) . '/';
-								
-//								bab_debug('sLastRelativePath ==> ' . $sLastRelativePath . ' sNewRelativePath ==> ' . $sNewRelativePath);
+						if($bSrcValid && $bTrgValid)
+						{
+							$sLastRelativePath = $sRelativeSrcPath;
+							$sNewRelativePath = $sRelativeTrgPath . getLastPath($sRelativeSrcPath) . '/';
 							
-								global $babDB;
-								$oFolderFileSet = new BAB_FolderFileSet();
-								$oPathName =& $oFolderFileSet->aField['sPathName'];
-								
-								$oFmFolderSet = new BAB_FmFolderSet();
-								$oRelativePath =& $oFmFolderSet->aField['sRelativePath'];
+//								bab_debug('sLastRelativePath ==> ' . $sLastRelativePath . ' sNewRelativePath ==> ' . $sNewRelativePath);
+						
+							global $babDB;
+							$oFolderFileSet = new BAB_FolderFileSet();
+							$oPathName =& $oFolderFileSet->aField['sPathName'];
+							
+							$oFmFolderSet = new BAB_FmFolderSet();
+							$oRelativePath =& $oFmFolderSet->aField['sRelativePath'];
+									
+							$aCollectiveFolder = array();
+							
+							if(false === $bSrcPathCollective)
+							{
+								 if(false === $bTrgPathHaveVersioning)
+								 {
+									global $babDB;
+									
+									//Suppression des versions pour les répertoires qui ne sont pas contenus dans des 
+									//répertoires collectifs
+									{
+										$oCriteria = $oPathName->like($babDB->db_escape_like($sSrcPathName) . '%');
+										$oFmFolderSet->select($oRelativePath->like($babDB->db_escape_like($sLastRelativePath) . '%'));
+										while(null !== ($oFmFolder = $oFmFolderSet->next()))
+										{
+											$sNewFolderRelPath = $sNewRelativePath . substr($oFmFolder->getRelativePath(), strlen($sLastRelativePath));
+											$oCriteria = $oCriteria->_and($oPathName->notLike(
+												$babDB->db_escape_like($oFmFolder->getRelativePath() . $oFmFolder->getName() . '/') . '%'));		
+											$oFmFolder->setRelativePath($sNewFolderRelPath);
+											$aCollectiveFolder[] = $oFmFolder;
+										}
+										$oFolderFileSet->removeVersions($oCriteria);
 										
-								$aCollectiveFolder = array();
-								
-								if(false === $bSrcPathCollective)
-								{
-									 if(false === $bTrgPathHaveVersioning)
-									 {
-										global $babDB;
-										
-									 	//Suppression des versions pour les répertoires qui ne sont pas contenus dans des 
-									 	//répertoires collectifs
-									 	{
-											$oCriteria = $oPathName->like($babDB->db_escape_like($sSrcPathName) . '%');
-											$oFmFolderSet->select($oRelativePath->like($babDB->db_escape_like($sLastRelativePath) . '%'));
-											while(null !== ($oFmFolder = $oFmFolderSet->next()))
-											{
-												$sNewFolderRelPath = $sNewRelativePath . substr($oFmFolder->getRelativePath(), strlen($sLastRelativePath));
-												$oCriteria = $oCriteria->_and($oPathName->notLike(
-													$babDB->db_escape_like($oFmFolder->getRelativePath() . $oFmFolder->getName() . '/') . '%'));		
-												$oFmFolder->setRelativePath($sNewFolderRelPath);
-												$aCollectiveFolder[] = $oFmFolder;
-											}
-											$oFolderFileSet->removeVersions($oCriteria);
-											
-											bab_debug($oFolderFileSet->getSelectQuery($oCriteria));
-											$oFolderFileSet->select($oCriteria);
-											while(null !== ($oFolderFile = $oFolderFileSet->next()))
-											{
-												$oFolderFile->setMajorVer(1);
-												$oFolderFile->setMinorVer(0);
+										bab_debug($oFolderFileSet->getSelectQuery($oCriteria));
+										$oFolderFileSet->select($oCriteria);
+										while(null !== ($oFolderFile = $oFolderFileSet->next()))
+										{
+											$oFolderFile->setMajorVer(1);
+											$oFolderFile->setMinorVer(0);
 //												$oFolderFile->setFlowApprobationInstanceId(0);
 //												$oFolderFile->setConfirmed('Y');
-												$oFolderFile->save();
-											}
-									 	}
-									 }
-								}								
+											$oFolderFile->save();
+										}
+									}
+								 }
+							}								
 
-								if(rename($sFullSrcPath, $sFullTrgPath . '/' . getLastPath($sSrcPath) . '/'))
+							if(rename($sFullSrcPath, $sFullTrgPath . '/' . getLastPath($sSrcPath) . '/'))
+							{
+								$sName = getLastPath($sSrcPath);
+
+								$oRegHlp->removeItem($sLastRelativePath);
+								$aDatas = array();
+								foreach($oRegHlp->aDatas as $sKey => $aItem)
 								{
-									$sName = getLastPath($sSrcPath);
-
-									$oRegHlp->removeItem($sLastRelativePath);
-									$aDatas = array();
-									foreach($oRegHlp->aDatas as $sKey => $aItem)
+									$sString = substr($sKey, 0, strlen($sLastRelativePath));
+									if($sString === $sLastRelativePath)
 									{
-										$sString = substr($sKey, 0, strlen($sLastRelativePath));
-										if($sString === $sLastRelativePath)
-										{
-											$sNewRelPath = $sNewRelativePath . substr($sKey, strlen($sLastRelativePath));
-											$aItem['sRelativePath'] = $sNewRelPath;
-											$aDatas[$sNewRelPath] = $aItem;
-										}
-										else 
-										{
-											$aDatas[$sKey] = $aItem;
-										}
+										$sNewRelPath = $sNewRelativePath . substr($sKey, strlen($sLastRelativePath));
+										$aItem['sRelativePath'] = $sNewRelPath;
+										$aDatas[$sNewRelPath] = $aItem;
 									}
-									$oRegHlp->aDatas = $aDatas;
-									$oRegHlp->save();
-									
-//									bab_debug($oRegHlp->aDatas);
-									
-									$sOldRelativePath = substr($sLastRelativePath, 0, - (strlen($sName) + 1));
-//									bab_debug('sName ==> ' . $sName . ' sOldRelativePath ==> ' . $sOldRelativePath);
-
-									//Mise à jour des répertoires en base
-									{									
-										$oName =& $oFmFolderSet->aField['sName'];
-										$oCriteria = $oRelativePath->in($sOldRelativePath);
-										$oCriteria = $oCriteria->_and($oName->in($sName));
-										$_oFmFolder = $oFmFolderSet->get($oCriteria);
-										if(!is_null($_oFmFolder))
-										{
-											$_oFmFolder->setRelativePath($sNewRelativePath);
-											$aCollectiveFolder[] = $_oFmFolder;
-										}
-//										bab_debug($aCollectiveFolder);
-										
-										foreach($aCollectiveFolder as $_oFmFolder)
-										{
-											$_oFmFolder->save();
-										}
-									}
-
-									$aProcessedPath = array();
-									$oFolderFileSet->select($oPathName->like($babDB->db_escape_like($sLastRelativePath) . '%'));
-									while(null !== ($oFolderFile = $oFolderFileSet->next()))
+									else 
 									{
-										$sOldPathName = $oFolderFile->getPathName();
-										$sNewPathName = $sNewRelativePath . substr($sOldPathName, strlen($sLastRelativePath));
-										
-										if(false === array_key_exists($sNewPathName, $aProcessedPath))
-										{
-											$sUrlPath = substr($sNewPathName, strlen($oRootFmFolder->getName() . '/'), -1);
-	//										bab_debug('sUrlPath ==> ' . $sUrlPath);
-											$iIdOwner = 0;
-											$sRelativePath = '';
-											$_oFmFolder = null;
-											BAB_FmFolderHelper::getFileInfoForCollectiveDir($iIdRootFolder, $sUrlPath, $iIdOwner, $sRelativePath, $_oFmFolder);
-											$aProcessedPath[$sNewPathName] = $iIdOwner;
-										}
-										$oFolderFile->setPathName($sNewPathName);
-										$oFolderFile->setOwnerId($aProcessedPath[$sNewPathName]);
-										$oFolderFile->save();
-										
-//										bab_debug('sOldPathName ==> ' . $sOldPathName . ' sNewPathName ==> ' . $sNewPathName . ' sFileName ==> ' . $oFolderFile->getName());
-										bab_debug('iIdFile ==> ' . $oFolderFile->getId() . ' iIdOwner ==> ' . $oFolderFile->getOwnerId());
+										$aDatas[$sKey] = $aItem;
 									}
 								}
+								$oRegHlp->aDatas = $aDatas;
+								$oRegHlp->save();
+								
+//									bab_debug($oRegHlp->aDatas);
+								
+								$sOldRelativePath = substr($sLastRelativePath, 0, - (strlen($sName) + 1));
+//									bab_debug('sName ==> ' . $sName . ' sOldRelativePath ==> ' . $sOldRelativePath);
+
+								//Mise à jour des répertoires en base
+								{									
+									$oName =& $oFmFolderSet->aField['sName'];
+									$oCriteria = $oRelativePath->in($sOldRelativePath);
+									$oCriteria = $oCriteria->_and($oName->in($sName));
+									$_oFmFolder = $oFmFolderSet->get($oCriteria);
+									if(!is_null($_oFmFolder))
+									{
+										$_oFmFolder->setRelativePath($sRelativeTrgPath);
+										$aCollectiveFolder[] = $_oFmFolder;
+									}
+//										bab_debug($aCollectiveFolder);
+									
+									foreach($aCollectiveFolder as $_oFmFolder)
+									{
+										$_oFmFolder->save();
+									}
+								}
+
+								$aProcessedPath = array();
+								$oFolderFileSet->select($oPathName->like($babDB->db_escape_like($sLastRelativePath) . '%'));
+								while(null !== ($oFolderFile = $oFolderFileSet->next()))
+								{
+									$sOldPathName = $oFolderFile->getPathName();
+									$sNewPathName = $sNewRelativePath . substr($sOldPathName, strlen($sLastRelativePath));
+									
+									if(false === array_key_exists($sNewPathName, $aProcessedPath))
+									{
+										$sUrlPath = substr($sNewPathName, strlen($oRootFmFolder->getName() . '/'), -1);
+//										bab_debug('sUrlPath ==> ' . $sUrlPath);
+										$iIdOwner = 0;
+										$sRelativePath = '';
+										$_oFmFolder = null;
+										BAB_FmFolderHelper::getFileInfoForCollectiveDir($iIdRootFolder, $sUrlPath, $iIdOwner, $sRelativePath, $_oFmFolder);
+										$aProcessedPath[$sNewPathName] = $iIdOwner;
+									}
+									$oFolderFile->setPathName($sNewPathName);
+									$oFolderFile->setOwnerId($aProcessedPath[$sNewPathName]);
+									$oFolderFile->save();
+									
+//										bab_debug('sOldPathName ==> ' . $sOldPathName . ' sNewPathName ==> ' . $sNewPathName . ' sFileName ==> ' . $oFolderFile->getName());
+									bab_debug('iIdFile ==> ' . $oFolderFile->getId() . ' iIdOwner ==> ' . $oFolderFile->getOwnerId());
+								}
 							}
-						}
-						else 
-						{
-							$babBody->msgerror = bab_translate("Access denied");
 						}
 					}
 					else 
@@ -3170,7 +3167,7 @@ function pasteUserFolder($iIdRootFolder, $sPath)
 {
 //	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__);
 
-	global $babBody;
+	global $babBody, $babDB;
 	$sSrcPath = (string) bab_gp('sSrcPath', '');
 	$sTrgPath = (string) bab_gp('path', '');
 	
@@ -3237,6 +3234,19 @@ function pasteUserFolder($iIdRootFolder, $sPath)
 						}
 						$oRegHlp->aDatas = $aDatas;
 						$oRegHlp->save();
+
+						// update database files
+						$oFolderFileSet = new BAB_FolderFileSet();
+						$oPathName =& $oFolderFileSet->aField['sPathName'];
+						$oFolderFileSet->select($oPathName->like($babDB->db_escape_like($sLastRelativePath) . '%'));
+						$iL = strlen($sLastRelativePath);
+						while(null !== ($oFolderFile = $oFolderFileSet->next()))
+						{
+							$opath = $oFolderFile->getPathName();
+							$oFolderFile->setPathName($sNewRelativePath.substr($opath, $iL ));
+							$oFolderFile->save();
+						}
+
 					}
 				}
 			}
