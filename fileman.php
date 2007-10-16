@@ -707,6 +707,7 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 		$this->set_data('isVersioning', false);
 		$this->set_data('isShow', true);
 		$this->set_data('sChecked', 'checked');
+		$this->set_data('sDisabled', '');
 	}
 	
 	function handleEdition()
@@ -718,6 +719,7 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 		$this->set_data('isVersioning', false);
 		$this->set_data('isShow', true);
 		$this->set_data('sChecked', 'checked');
+		$this->set_data('sDisabled', '');
 
 		$this->get_data('iId', $iId);
 		$this->get_data('sPath', $sPath);
@@ -738,6 +740,10 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 			$this->set_data('iIdFolder', $oFmFolder->getId());
 			$this->set_data('sOldDirName', $oFmFolder->getName());
 			$this->set_data('sChecked', '');
+			if( $oFmFolder->getRelativePath() == ''  )
+			{
+				$this->set_data('sDisabled', 'disabled');
+			}
 		}
 
 		$oFileManagerEnv =& getEnvObject();
