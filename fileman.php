@@ -1981,7 +1981,7 @@ function viewFile($idf, $id, $path)
 
 				$this->description = bab_translate("Description");
 				$this->t_keywords = bab_translate("Keywords");
-				$this->keywords = bab_translate("Keywords (separated by spaces)");
+				$this->keywords = bab_translate("Keywords");
 				$this->notify = bab_translate("Notify members group");
 				$this->t_yes = bab_translate("Yes");
 				$this->t_no = bab_translate("No");
