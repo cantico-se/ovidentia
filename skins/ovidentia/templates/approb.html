@@ -268,6 +268,29 @@ window.focus();
 <td align="right"><a href="{ fileviewurl }" onclick="bab_popup(this.href);return false;"><img src="{ babSkinPath }images/Puces/confirm.gif" border="0" alt=""></a></td>
 </tr>
 <!--#endin getnextfile -->
+<!--#in getnextfilever -->
+<!--#if altbg -->
+<tr class="BabSiteAdminFontBackground">
+<!--#else altbg -->
+<tr class="BabForumBackground1">
+<!--#endif altbg -->
+<td width="120">{ filedate }</td>
+<td align="left" colspan="3"><span style="font-Size:9">{ filepath }</span>
+</td>
+</tr>
+<!--#if altbg -->
+<tr class="BabSiteAdminFontBackground">
+<!--#else altbg -->
+<tr class="BabForumBackground1">
+<!--#endif altbg -->
+<td>&nbsp;</td>
+<td align="left"><a class="BabSummaryLinkColor" href="{ fileviewurl }" onclick="bab_popup(this.href);return false;">{ filetitle }</a>
+&nbsp;&nbsp;{ fileversion }
+</td>
+<td>{ author }</td>
+<td align="right"><a href="{ fileviewurl }" onclick="bab_popup(this.href);return false;"><img src="{ babSkinPath }images/Puces/confirm.gif" border="0" alt=""></a></td>
+</tr>
+<!--#endin getnextfilever -->
 </table>
 </td>
 </tr>

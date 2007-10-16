@@ -319,13 +319,19 @@ function listWaitingFiles()
 				$req = "select * from ".BAB_FILES_TBL." where bgroup='Y' and confirmed='N' and idfai IN(".$babDB->quote($arrschi).") order by created desc";
 				$this->wfilesres = $babDB->db_query($req);
 				$this->wfilescount = $babDB->db_num_rows($this->wfilesres);
-				if( $this->wfilescount > 0 )
+
+				$req = "select fft.*, ft.path, ft.name from ".BAB_FM_FILESVER_TBL." fft left join ".BAB_FILES_TBL." ft on ft.id=fft.id_file where fft.confirmed='N' and fft.idfai IN(".$babDB->quote($arrschi).") order by date desc";
+				$this->wfilesverres = $babDB->db_query($req);
+				$this->wfilesvercount = $babDB->db_num_rows($this->wfilesverres);
+				if( $this->wfilesvercount > 0 || $this->wfilescount > 0 )
 					{
 					$this->waitingfilestxt = bab_translate("Waiting files");
 					$this->filedatetxt = bab_translate("Date");
 					$this->filenametxt = bab_translate("File");
 					$this->authortxt = bab_translate("Author");
 					}
+
+				
 				}
 			$this->altbg = true;
 			}
@@ -354,6 +360,46 @@ function listWaitingFiles()
 
 			}
 
+		function getnextfilever()
+			{
+			global $babDB;
+			static $i = 0;
+			if( $i < $this->wfilesvercount)
+				{
+				$arr = $babDB->db_fetch_array($this->wfilesverres);
+
+				$this->filedate = $arr['date'] == '0000-00-00 00:00:00'? '':bab_toHtml(bab_shortDate(bab_mktime($arr['date']), true));
+				$this->filepath = bab_toHtml($arr['path']);
+				$this->filetitle = bab_toHtml($arr['name']);
+				$this->fileversion = bab_toHtml($arr['ver_major'].".".$arr['ver_minor']);
+				$this->author = bab_toHtml(bab_getUserName($arr['author']));
+
+				include_once $GLOBALS['babInstallPath']."utilit/fileincl.php";
+				$fm_file = fm_getFileAccess($arr['id_file']);
+				$oFmFolder =& $fm_file['oFmFolder'];
+				$oFolderFile =& $fm_file['oFolderFile'];
+				$sPathName = getUrlPath($oFolderFile->getPathName());	
+				$iIdUrl = $oFmFolder->getId();
+				if(strlen($oFmFolder->getRelativePath()) > 0)
+				{
+					$oRootFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($oFmFolder->getRelativePath());
+					if(!is_null($oRootFmFolder))
+					{
+						$iIdUrl = $oRootFmFolder->getId();
+					}
+				}
+
+				$this->fileviewurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=filever&idx=conf&id=".$iIdUrl."&gr=".$oFolderFile->getGroup()."&path=".urlencode($sPathName)."&idf=".$arr['id_file']);
+				$this->altbg = !$this->altbg;
+				$i++;
+				return true;
+				}
+			else
+				{
+				return false;
+				}
+
+			}
 		function cleanFmPath($sPath)
 			{
 			$iLength = strlen(trim($sPath));
