@@ -341,7 +341,7 @@ class bab_Registry
 
 		$sql = '
 			UPDATE ' . BAB_REGISTRY_TBL . '
-			SET dirkey = CONCAT(' . $babDB->quote($dest) . ', SUBSTR(dirkey, ' . $babDB->quote($sourceLength + 1) . '))
+			SET dirkey = CONCAT(' . $babDB->quote($dest) . ', SUBSTRING(dirkey, ' . $babDB->quote($sourceLength + 1) . '))
 			WHERE LEFT(dirkey, ' . $babDB->quote($sourceLength) . ') = ' . $babDB->quote($source);
 		
 		$res = $babDB->db_query($sql);
