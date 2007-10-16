@@ -703,8 +703,8 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 		{
 			$req = "
 			UPDATE ".BAB_FILES_TBL." set 
-				description='".$babDB->db_escape_string($description)."', 
-				readonly='".$babDB->db_escape_string($readonly)."', 
+				description='".$babDB->db_escape_string($description[$count])."', 
+				readonly='".$babDB->db_escape_string($readonly[$count])."', 
 				confirmed='".$babDB->db_escape_string($confirmed)."', 
 				modified=now(), 
 				hits='0', 
