@@ -2567,7 +2567,7 @@ function createEditFolderForUserDir($iIdUser, $sPath)
 				global $babDB;
 //				bab_debug('delete folder ==> ' . $sUplaodPath . $sUserDirPath . $sDirName);
 			
-				$sPathName = $sUserDirPath . $sDirName . '/';
+				$sPathName = $sUserDirPath . $sPath.'/'.$sDirName . '/';
 				$sFullPathName = $sUplaodPath . $sPathName;
 				
 				$oFolderFileSet = new BAB_FolderFileSet();
