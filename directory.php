@@ -2820,7 +2820,7 @@ if( '' != ($modify = bab_pp('modify')))
 			{
 			$photo_name = isset( $_FILES['photof']['name'] )?  $_FILES['photof']['name']: '';
 			$photof = isset( $_FILES['photof']['tmp_name'] )?  $_FILES['photof']['tmp_name']: '';
-			$ret = confirmAddDbContact($id, bab_pp('fields', array()), $photo_name,$photof, bab_pp('password1'), bab_pp('password2'), bab_pp('nickname'), bab_pp('$notifyuser'), bab_pp('$sendpwd'));
+			$ret = confirmAddDbContact($id, bab_pp('fields', array()), $photo_name,$photof, bab_pp('password1'), bab_pp('password2'), bab_pp('nickname'), bab_pp('notifyuser'), bab_pp('sendpwd'));
 			switch($ret)
 				{
 				case 2:
