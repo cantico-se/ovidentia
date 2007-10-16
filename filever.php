@@ -212,7 +212,8 @@ function showConfirmFile($idf)
 					$this->yes = bab_translate("Yes");
 		
 					$this->idf = bab_toHtml($idf);
-					$babBody->setTitle($oFolderFile->getName() . ' ' . $oFolderFileVersion->getMajorVer() . "." . $oFolderFileVersion->getMinorVer());
+					$this->filename = $oFolderFile->getName() . ' ' . $oFolderFileVersion->getMajorVer() . "." . $oFolderFileVersion->getMinorVer();
+					$babBody->setTitle($this->filename);
 					$this->comment = bab_toHtml($oFolderFileVersion->getComment());
 					$this->urlget = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=filever&idx=get&idf=' . 
 						$idf . '&vmaj=' . $oFolderFileVersion->getMajorVer() . '&vmin=' . $oFolderFileVersion->getMinorVer());
@@ -685,16 +686,15 @@ function confirmFile($idf, $bconfirm)
 					case 0:
 						$sUploadPath = BAB_FmFolderHelper::getUploadPath();
 						
-						$sFullPathName = $sUploadPath . BAB_FVERSION_FOLDER . '/' . 
+						$sFullPathName = $sUploadPath .$oFolderFile->getPathName() . BAB_FVERSION_FOLDER . '/' . 
 							$oFolderFileVersion->getMajorVer() . '.' . $oFolderFileVersion->getMinorVer() . ',' . $oFolderFile->getName();	
 							
-						unlink($sFullPathName);
+						//unlink($sFullPathName);
 				
 						$oFolderFile->setFolderFileVersionId(0);
 						$oFolderFile->save();
-						
 						$oId =& $oFolderFileVersionSet->aField['iId'];
-						$oFolderFileVersionSet->remove($oId->in($oFolderFile->getFolderFileVersionId()));
+						$oFolderFileVersionSet->remove($oId->in($oFolderFileVersion->getId()), $sUploadPath .$oFolderFile->getPathName(), $oFolderFile->getName());
 						
 						$oFolderFileLog = new BAB_FolderFileLog();
 						$oFolderFileLog->setIdFile($idf);
