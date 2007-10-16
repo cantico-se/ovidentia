@@ -263,7 +263,7 @@ class listFiles
 		$bInClipBoard = $this->oRegHlp->exist($sPathName);
 		if( empty($sUrlPath))
 		{
-		$bFolderManager = bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oFmFolder->getId());
+		$bFolderManager = bab_isUserAdministrator();
 		}
 		else
 		{
