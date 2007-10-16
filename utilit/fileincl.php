@@ -2892,7 +2892,7 @@ class BAB_FolderFile extends BAB_DbRecord
 
 	function getCommentVer()
 	{
-		return $this->_sGet('iVerMinor');
+		return $this->_sGet('sVerComment');
 	}
 
 	function setStatusIndex($iIndexStatus)
