@@ -1225,7 +1225,7 @@ function listFiles()
 				$this->bCutFolderUrl	= false;
 				static $aExcludedDir	= array('.', '..', '. .');
 				
-				$sEncodedName	= urlencode($this->name);
+				$sEncodedName	= urlencode($this->arrdir[$i]);
 				$sEncodedPath	= urlencode($this->path);
 				$sPath			= $sEncodedPath;
 				
