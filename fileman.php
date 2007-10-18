@@ -1991,7 +1991,7 @@ function viewFile($idf, $id, $path)
 				$this->t_change_all = bab_translate("Change status for all versions");
 				$this->tabIndexStatus = array(BAB_INDEX_STATUS_NOINDEX, BAB_INDEX_STATUS_INDEXED, BAB_INDEX_STATUS_TOINDEX);
 
-				$this->id = $oFolderFile->getOwnerId();
+				$this->id = $id;
 				$this->gr = $oFolderFile->getGroup();
 				$this->path = bab_toHtml($path);
 				$this->file = bab_toHtml($oFolderFile->getName());
