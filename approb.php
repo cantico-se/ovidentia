@@ -321,9 +321,10 @@ function listWaitingFiles()
 				$this->wfilesnorcount = $babDB->db_num_rows($this->wfilesres);
 
 				$req = "select fft.*, ft.path, ft.name from ".BAB_FM_FILESVER_TBL." fft left join ".BAB_FILES_TBL." ft on ft.id=fft.id_file where fft.confirmed='N' and fft.idfai IN(".$babDB->quote($arrschi).") order by date desc";
+
 				$this->wfilesverres = $babDB->db_query($req);
 				$this->wfilesvercount = $babDB->db_num_rows($this->wfilesverres);
-				if( $this->wfilesvercount > 0 || $this->wfilescount > 0 )
+				if( $this->wfilesvercount > 0 || $this->wfilesnorcount > 0 )
 					{
 					$this->wfilescount = true;
 					$this->waitingfilestxt = bab_translate("Waiting files");
