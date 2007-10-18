@@ -630,7 +630,7 @@ function fileUnload($idf)
 				$iIdUrl = $oFmFolder->getId();
 				if(strlen($oFmFolder->getRelativePath()) > 0)
 				{
-					$oRootFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($oFmFolder->getRelativePath());
+					$oRootFmFolder = BAB_FmFolderSet::getRootCollectiveFolder($oFmFolder->getRelativePath());
 					if(!is_null($oRootFmFolder))
 					{
 						$iIdUrl = $oRootFmFolder->getId();
