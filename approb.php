@@ -313,18 +313,19 @@ function listWaitingFiles()
 			global $babDB;
 			$this->validationtxt = bab_translate("Validation");
 			$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
-			$this->wfilescount = 0;
+			$this->wfilescount = false;
 			if( count($arrschi) > 0 )
 				{
 				$req = "select * from ".BAB_FILES_TBL." where bgroup='Y' and confirmed='N' and idfai IN(".$babDB->quote($arrschi).") order by created desc";
 				$this->wfilesres = $babDB->db_query($req);
-				$this->wfilescount = $babDB->db_num_rows($this->wfilesres);
+				$this->wfilesnorcount = $babDB->db_num_rows($this->wfilesres);
 
 				$req = "select fft.*, ft.path, ft.name from ".BAB_FM_FILESVER_TBL." fft left join ".BAB_FILES_TBL." ft on ft.id=fft.id_file where fft.confirmed='N' and fft.idfai IN(".$babDB->quote($arrschi).") order by date desc";
 				$this->wfilesverres = $babDB->db_query($req);
 				$this->wfilesvercount = $babDB->db_num_rows($this->wfilesverres);
 				if( $this->wfilesvercount > 0 || $this->wfilescount > 0 )
 					{
+					$this->wfilescount = true;
 					$this->waitingfilestxt = bab_translate("Waiting files");
 					$this->filedatetxt = bab_translate("Date");
 					$this->filenametxt = bab_translate("File");
@@ -340,7 +341,7 @@ function listWaitingFiles()
 			{
 			global $babDB;
 			static $i = 0;
-			if( $i < $this->wfilescount)
+			if( $i < $this->wfilesnorcount)
 				{
 				$arr = $babDB->db_fetch_array($this->wfilesres);
 

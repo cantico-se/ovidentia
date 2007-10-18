@@ -261,6 +261,7 @@ class listFiles
 //		bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sPathName ==> ' . $sPathName);
 		
 		$bInClipBoard = $this->oRegHlp->exist($sPathName);
+
 		if( empty($sUrlPath))
 		{
 		$bFolderManager = bab_isUserAdministrator();
@@ -2320,7 +2321,7 @@ function viewFile($idf, $id, $path)
 function displayRightForm($bmanager, $upload, $path, $id, $gr)
 {
 	global $babBody;
-	
+
 	$iIdFolder = (int) bab_gp('iIdFolder', 0);
 	
 	$sFolderName = '';
@@ -2330,7 +2331,6 @@ function displayRightForm($bmanager, $upload, $path, $id, $gr)
 		$sFolderName = $oFmFolder->getName();
 	}
 
-	require_once $GLOBALS['babInstallPath'] . 'admin/acl.php';
 	
 	$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".urlencode($path));
 	if($upload) 
@@ -2345,6 +2345,11 @@ function displayRightForm($bmanager, $upload, $path, $id, $gr)
 		'&iIdFolder=' . $iIdFolder);
 	
 	$babBody->title = bab_translate("Rights of directory") . ' ' . $sFolderName;
+	
+	$oFileManagerEnv =& getEnvObject();
+	if($oFileManagerEnv->oAclFm->haveManagerRight())
+	{
+	require_once $GLOBALS['babInstallPath'] . 'admin/acl.php';
 	$macl = new macl("fileman", "setRight", $iIdFolder, "aclview");
 	
 	$macl->set_hidden_field('path', $path);
@@ -2359,6 +2364,11 @@ function displayRightForm($bmanager, $upload, $path, $id, $gr)
 	$macl->filter(0,0,1,1,1);
 	$macl->addtable( BAB_FMNOTIFY_GROUPS_TBL,bab_translate("Who is notified when a new file is uploaded or updated?"));
 	$macl->babecho();
+	}
+	else 
+	{
+		$babBody->msgerror = bab_translate("Access denied");
+	}
 	
 }
 
