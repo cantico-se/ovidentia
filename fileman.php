@@ -271,7 +271,9 @@ class listFiles
 		$bFolderManager = $this->oFileManagerEnv->oAclFm->haveManagerRight();
 		}
 
-		if(false === $bInClipBoard || (true == $bInClipBoard && (false === $bFolderManager || false === $this->oFileManagerEnv->oAclFm->haveManagerRight())))
+		$bAccess = bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $oFmFolder->getId()) || bab_isAccessValid(BAB_FMUPLOAD_GROUPS_TBL, $oFmFolder->getId()) || bab_isAccessValid(BAB_FMUPDATE_GROUPS_TBL, $oFmFolder->getId()) || $bFolderManager;
+
+		if($bAccess || (true == $bInClipBoard && false === $bFolderManager) )
 		{
 			$aItem = array(
 				'id' => $oFmFolder->getId(), 
