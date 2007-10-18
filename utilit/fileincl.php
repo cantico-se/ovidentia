@@ -2315,6 +2315,7 @@ class BAB_FolderFileSet extends BAB_BaseSet
 
 			if(0 !== $oFolderFile->getFlowApprobationInstanceId())
 			{
+				include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 				deleteFlowInstance($oFolderFile->getFlowApprobationInstanceId());
 			}
 
@@ -2359,6 +2360,7 @@ class BAB_FolderFileSet extends BAB_BaseSet
 
 			if(0 !== $oFolderFile->getFlowApprobationInstanceId())
 			{
+				include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 				deleteFlowInstance($oFolderFile->getFlowApprobationInstanceId());
 			}
 			
@@ -2472,6 +2474,7 @@ class BAB_FolderFileVersionSet extends BAB_BaseSet
 
 			if(0 !== $oFolderFileVersion->getFlowApprobationInstanceId())
 			{
+				include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 				deleteFlowInstance($oFolderFileVersion->getFlowApprobationInstanceId());
 			}
 		}
