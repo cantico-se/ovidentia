@@ -2802,13 +2802,23 @@ function viewFile($id, $w)
 					$sPath = substr($sPath, 0, -1);
 				}
 				
-				$this->geturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$this->arr['id_owner']."&gr=".$this->arr['bgroup']."&path=".urlencode($sPath)."&file=".urlencode($this->arr['name']));
+				$iid = $this->arr['id_owner'];
 				
 				$sUploadPath = BAB_FmFolderHelper::getUploadPath();
 				if($this->arr['bgroup'] == "Y")
+					{
 					$fstat = stat($sUploadPath . $this->arr['path'] . $this->arr['name']);
+					$oFmFolder = BAB_FmFolderSet::getRootCollectiveFolder($this->arr['path']);
+					if(!is_null($oFmFolder))
+						{
+							$iid = $oFmFolder->getId();
+						}
+					}
 				else
+					{
 					$fstat = stat($sUploadPath . $this->arr['path'] . $this->arr['name']);
+					}
+				$this->geturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$iid."&gr=".$this->arr['bgroup']."&path=".urlencode($sPath)."&file=".urlencode($this->arr['name']));
 				$this->size = bab_formatSizeFile($fstat[7])." ".bab_translate("Kb");
 				if( $this->arr['bgroup'] == "Y") {
 					$this->rootpath = '';
