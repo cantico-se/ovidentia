@@ -308,7 +308,7 @@ function ref(&$txt)
 				
 										$sPath = removeFirstPath($arr['path']);
 										$iLength = strlen(trim($sPath));
-										if('/' === $sPath{$iLength - 1})
+										if($iLength && '/' === $sPath{$iLength - 1})
 										{
 											$sPath = substr($sPath, 0, -1);
 										}
