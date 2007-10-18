@@ -747,13 +747,13 @@ function deleteFileVersions($idf, $versions)
 			$oVerMajor =& $oFolderFileVersionSet->aField['iVerMajor'];
 			$oVerMinor =& $oFolderFileVersionSet->aField['iVerMinor'];
 			
-			$oCriteria = $oCriteria->_and($oVerMajor->in($idf));
+			//$oCriteria = $oCriteria->_and($oVerMajor->in($idf));
 			
 			for($i = 0; $i < $count; $i++ )
 			{
 				$aVersion	= explode(".", $versions[$i]);
-				$iVerMajor	= (int) $r[0];
-				$iVerMinor	= (int) $r[1];
+				$iVerMajor	= (int) $aVersion[0];
+				$iVerMinor	= (int) $aVersion[1];
 				$oCriteria	= $oVerMajor->in($iVerMajor);
 				$oCriteria	= $oVerMinor->in($iVerMinor);
 				
@@ -763,12 +763,12 @@ function deleteFileVersions($idf, $versions)
 				{
 					$sUploadPath = BAB_FmFolderHelper::getUploadPath();
 					
-					$sFullPathName = $sUploadPath . BAB_FVERSION_FOLDER . '/' . 
+					$sFullPathName = $sUploadPath .$oFolderFile->getPathName() . BAB_FVERSION_FOLDER . '/' . 
 						$iVerMajor . '.' . $iVerMinor . ',' . $oFolderFile->getName();	
 						
 					unlink($sFullPathName);
 					
-					$oFolderFileVersionSet->remove($oId->in($oFolderFileVersion->getId()));
+					$oFolderFileVersionSet->remove($oId->in($oFolderFileVersion->getId()), $sUploadPath .$oFolderFile->getPathName(), $oFolderFile->getName());
 						
 					$oFolderFileLog = new BAB_FolderFileLog();
 					$oFolderFileLog->setIdFile($idf);
