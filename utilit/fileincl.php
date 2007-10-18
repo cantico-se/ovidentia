@@ -352,12 +352,11 @@ function acceptFileVersion($oFolderFile, $oFolderFileVersion, $bnotify)
 	$sTrgFile = $sUploadPath . $oFolderFile->getPathName() . BAB_FVERSION_FOLDER . '/' .
 	$oFolderFile->getMajorVer() . '.' . $oFolderFile->getMinorVer() . ',' . $oFolderFile->getName();
 	copy($sSrcFile, $sTrgFile);
-
+	
 	$sSrcFile = $sUploadPath . $oFolderFile->getPathName() . BAB_FVERSION_FOLDER . '/' .
 	$oFolderFileVersion->getMajorVer() . '.' . $oFolderFileVersion->getMinorVer() . ',' . $oFolderFile->getName();
 	$sTrgFile = $sUploadPath . $oFolderFile->getPathName() . $oFolderFile->getName();
-	copy($sTrgFile, $sSrcFile);
-
+	copy($sSrcFile, $sTrgFile);
 	unlink($sSrcFile);
 
 	$iOldMajorVer = $oFolderFile->getMajorVer();
