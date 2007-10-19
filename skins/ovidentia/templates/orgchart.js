@@ -59,8 +59,8 @@ function bab_toggleCollapsed()
 		this.controlledElement.style.display = 'none';
 		this.className = 'switch_closed';
 	}
+	this.orgChart.saveStateInCookie();
 	bab_refresh(this.orgChart);
-//	this.orgChart.saveStateInCookie();
 }
 
 
@@ -106,11 +106,23 @@ function bab_getOpenMembers()
 
 function bab_setOpenNodes(entityIds)
 {
-	var switchDivs = document.getElementsByClassName('switch_open', this);
+	var switchDivs = document.getElementsByClassName('switch_open');
 	switchDivs.each(function(switchDiv) {
-		switchDiv.className = 'switch_closed';
-		switchDiv.controlledElement.style.display = 'none';
+		if (!entityIds.contains(switchDiv.controlledElement.parentEntity.id)) {
+			switchDiv.className = 'switch_closed';
+			switchDiv.controlledElement.style.display = 'none';
+		}
 	});
+
+	switchDivs = document.getElementsByClassName('switch_closed');
+	switchDivs.each(function(switchDiv) {
+		if (entityIds.contains(switchDiv.controlledElement.parentEntity.id)) {
+			switchDiv.className = 'switch_open';
+			switchDiv.controlledElement.style.display = '';
+		}
+	});
+
+	/*
 	for (var i = 0; i < entityIds.length; i++) {
 		var entity = document.getElementById(entityIds[i]);
 		if (entity) {
@@ -119,11 +131,12 @@ function bab_setOpenNodes(entityIds)
 			switchDiv.controlledElement.style.display = '';
 		}
 	}
+	*/
 }
 
 function bab_setOpenMembers(memberIds)
 {
-	var membersList = document.getElementsByClassName('members', this);
+	var membersList = document.getElementsByClassName('members');
 	membersList.each(function(members) {
 		members.style.display = 'none';
 	});
@@ -140,6 +153,7 @@ function bab_setOpenMembers(memberIds)
 
 function bab_saveStateInCookie()
 {
+//	console.log('bab_saveStateInCookie');
 	var cookiePath = '/';
 	var entityIds = this.getOpenNodes();
 	var memberIds = this.getOpenMembers();
@@ -158,10 +172,10 @@ function bab_loadStateFromCookie()
 	for (var i = 0; i < pairs.length; i++) {
 		var keyValue = pairs[i].split('=');
 		if (keyValue[1] != '') {
-/*			if (keyValue[0] == this.id + 'nodes') {
+			if (keyValue[0] == this.id + 'nodes') {
 				var nodeIds = unescape(keyValue[1]).split('/');
 				this.setOpenNodes(nodeIds);
-			} else */if (keyValue[0] == this.id + 'members') {
+			} else if (keyValue[0] == this.id + 'members') {
 				var memberIds = unescape(keyValue[1]).split('/');
 				this.setOpenMembers(memberIds);
 			} else if (keyValue[0] == this.id + 'zoom') {
@@ -218,7 +232,7 @@ function bab_setLevel()
 	}
 	bab_refresh(orgChartDiv);
 
-//	orgChartDiv.saveStateInCookie();
+	orgChartDiv.saveStateInCookie();
 	//console && console.timeEnd('bab_setLevel');
 }
 
@@ -264,7 +278,7 @@ function bab_toggleMembers(action) {
 	if( typeof(members) != 'undefined' ) {
 		members.style.display = (members.style.display == 'none' ? '' : 'none');
 	}
-//	entity.orgChart.saveStateInCookie();
+	entity.orgChart.saveStateInCookie();
 	return false;
 }
 
@@ -316,6 +330,7 @@ function bab_restoreState()
 	document.cookie = orgChartDiv.id + 'zoom=' + escape(null)
 						+ '; expires=' + expiryDate.toGMTString()
 						+ '; path=' + cookiePath;
+	window.onunload = function() {	};
 	window.location = '?tg=frchart&idx=list&disp=disp3&ocid=' + orgChartDiv.orgChartId + '&oeid=' + orgChartDiv.entityId + '&iduser=' + orgChartDiv.userId;
 }
 
@@ -515,24 +530,17 @@ function bab_initOrgChart(orgChartDiv)
 	//console && console.timeEnd('entities');
 
 
-//	orgChartDiv.updateDisplay = bab_updateDisplay;
-//	orgChartDiv.zoomFactor = 1.0;
 
 	orgChartDiv.levelSelect.value = '-';
-//	orgChartDiv.levelSelect.onchange();
 
-//	orgChartDiv.setOpenNodes(orgChartDiv.bab_openNodes);
-	orgChartDiv.setOpenMembers(orgChartDiv.bab_openMembers);
-
-	orgChartDiv.loadStateFromCookie();
+	window.setTimeout('bab_setOpenNodes(window.bab_orgChart.bab_openNodes);'
+						+ 'bab_setOpenMembers(window.bab_orgChart.bab_openMembers);'
+						+ 'window.bab_orgChart.loadStateFromCookie()',
+						10);
 
 	bab_resizeOrgChartContainer();
-//	window.setTimeout('bab_resizeOrgChartContainer()', 500);
+	
 	window.onresize = bab_resizeOrgChartContainer;
-
-	window.onunload = function() {
-		window.bab_orgChart.saveStateInCookie();
-	};
 
 	document.getElementById("bab_loading").style.display = 'none';
 }
