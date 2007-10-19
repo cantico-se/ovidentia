@@ -2176,14 +2176,14 @@ function viewFile($idf, $id, $path)
 							}
 						}
 					}
+				$babBody->addJavascriptFile($GLOBALS['babScriptPath']."prototype/prototype.js");
+				$babBody->addJavascriptFile($GLOBALS['babScriptPath']."scriptaculous/scriptaculous.js");
+				$babBody->addStyleSheet('ajax.css');
 				}
 			else
 			{
 				$GLOBALS['babBody']->title = bab_translate("Access denied");
 			}
-			$babBody->addJavascriptFile($GLOBALS['babScriptPath']."prototype/prototype.js");
-			$babBody->addJavascriptFile($GLOBALS['babScriptPath']."scriptaculous/scriptaculous.js");
-			$babBody->addStyleSheet('ajax.css');
 		}
 
 		function getnextfm()
@@ -2316,7 +2316,14 @@ function viewFile($idf, $id, $path)
 		}
 	}
 	
-	$temp = new temp($oFileManagerEnv->oFmFolder, $oFolderFile, $id, $path, $bmanager, $access, $bconfirm, $bupdate, $bdownload,$bversion);
+	if( $access )
+		{
+		$temp = new temp($oFileManagerEnv->oFmFolder, $oFolderFile, $id, $path, $bmanager, $access, $bconfirm, $bupdate, $bdownload,$bversion);
+		}
+	else
+		{
+		$temp = new temp(null, $oFolderFile, $id, $path, $bmanager, $access, $bconfirm, $bupdate, $bdownload,$bversion);
+		}
 	$babBody->babpopup(bab_printTemplate($temp,"fileman.html", "viewfile"));
 }
 
