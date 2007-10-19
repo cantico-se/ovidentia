@@ -280,7 +280,8 @@ function processImportTagsFile()
 $idx = bab_rp('idx', 'tagsman');
 
 
-if( isset($updtags) )
+$updtags = bab_rp('updtags', '');
+if( $updtags )
 	{
 		if( $updtags == 'updtags' )
 		{
@@ -320,7 +321,9 @@ switch($idx)
 		$babBody->title = bab_translate("Tags import");
 		$babBody->addItemMenu("tagsman", bab_translate("Thesaurus"), $GLOBALS['babUrlScript']."?tg=thesaurus&idx=tagsman");
 		$babBody->addItemMenu("impmap", bab_translate("Import"), $GLOBALS['babUrlScript']."?tg=thesaurus&idx=tagsimp");
-		mapTagsImportFile($uploadf_name, $uploadf, $wsepar, $separ);
+		$wsepar = bab_rp('wsepar', 0);
+		$separ = bab_rp('separ', ';');
+		mapTagsImportFile($_FILES['uploadf']['name'], $_FILES['uploadf']['tmp_name'], $wsepar, $separ);
 		}
 		else
 		{
