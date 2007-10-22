@@ -3045,7 +3045,7 @@ class bab_RecentFiles extends bab_handler
 				}
 			if( $path != '' )
 				{
-				$req .= " and f.path='".$babDB->db_escape_string($path)."'";
+				$req .= " and f.path like '%".$babDB->db_escape_like($path.'/')."'";
 				}
 
 			$req .= " and f.id_owner IN (".$babDB->quote($arrid).")";
@@ -3077,6 +3077,7 @@ class bab_RecentFiles extends bab_handler
 				{
 				$req .= " limit 0, ".$babDB->db_escape_string($this->last);
 				}
+
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
 			}
@@ -3092,6 +3093,18 @@ class bab_RecentFiles extends bab_handler
 		if( $this->idx < $this->count )
 			{
 			$arr = $babDB->db_fetch_array($this->res);
+
+			$sPath = removeFirstPath($arr['path']);
+			$iLength = strlen(trim($sPath));
+			if($iLength && '/' === $sPath{$iLength - 1})
+			{
+				$sPath = substr($sPath, 0, -1);
+			}
+			
+			$iid = $arr['id_owner'];
+			$oFmFolder = BAB_FmFolderSet::getRootCollectiveFolder($arr['path']);
+			$iid = $oFmFolder->getId();
+
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('FileId', $arr['id']);
 			$this->ctx->curctx->push('FileName', $arr['name']);
@@ -3099,7 +3112,7 @@ class bab_RecentFiles extends bab_handler
 			$this->ctx->curctx->push('FileDescription', $arr['description']);
 			$this->ctx->curctx->push('FileUrl', $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path']));
 			$this->ctx->curctx->push('FilePopupUrl', $GLOBALS['babUrlScript']."?tg=fileman&idx=viewfile&idf=".$arr['id']."&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path'])."&file=".urlencode($arr['name']));
-			$this->ctx->curctx->push('FileUrlGet', $GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path'])."&file=".urlencode($arr['name']));
+			$this->ctx->curctx->push('FileUrlGet', $GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$iid."&gr=".$arr['bgroup']."&path=".urlencode($sPath)."&file=".urlencode($arr['name']));
 			$this->ctx->curctx->push('FileAuthor', $arr['author']);
 			$this->ctx->curctx->push('FileModifiedBy', $arr['modifiedby']);
 			$this->ctx->curctx->push('FileDate', bab_mktime($arr['modified']));
