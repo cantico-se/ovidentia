@@ -262,13 +262,13 @@ class listFiles
 		
 		$bInClipBoard = $this->oRegHlp->exist($sPathName);
 
-		if( empty($sUrlPath))
+		if( !empty($sUrlPath))
 		{
-		$bFolderManager = bab_isUserAdministrator();
+		$bFolderManager = $this->oFileManagerEnv->oAclFm->haveManagerRight();
 		}
 		else
 		{
-		$bFolderManager = $this->oFileManagerEnv->oAclFm->haveManagerRight();
+		$bFolderManager = false;
 		}
 
 		$bAccess = bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $oFmFolder->getId()) || bab_isAccessValid(BAB_FMUPLOAD_GROUPS_TBL, $oFmFolder->getId()) || bab_isAccessValid(BAB_FMUPDATE_GROUPS_TBL, $oFmFolder->getId()) || $bFolderManager;

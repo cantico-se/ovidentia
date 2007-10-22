@@ -1353,23 +1353,17 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 						if (!$engine['indexes']['bab_files']['index_disabled']) {
 
 							$found_files = bab_searchIndexedFiles($this->like2, $this->like, $option, 'bab_files');
-
 							$current_version = array();
 							$old_version = array();
 							foreach($found_files as $arr) {
 								$fullpath = bab_removeUploadPath($arr['file']);
 
-								
-								$path = substr(strstr($fullpath,'/'),1);
-
-
-								if (false === strpos($path, '/')) {
-									$path = '';
-								} else {
-									$path = dirname($path);
-								}
 								$name = basename($fullpath);
-								
+								$path = dirname($fullpath);
+								if( !empty($path) && '/' !== $path{strlen($path) - 1}) 
+								{
+									$path .='/';
+								}
 								
 								$current_version[] = '(F.path=\''.$babDB->db_escape_string($path).'\' AND F.name=\''. $babDB->db_escape_string($name)."')";
 
@@ -1379,7 +1373,6 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 							}
 
 
-							
 							if ($current_version) {
 								// match found in last version
 								$req = "INSERT INTO filresults 

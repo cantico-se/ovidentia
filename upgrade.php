@@ -34,7 +34,7 @@ function getUploadPathFromDataBase()
 	{
 		$sUploadPath = $aData['uploadpath'];
 		$iLength = strlen(trim($sUploadPath));
-		if('/' !== $sUploadPath{$iLength - 1})
+		if($iLength && '/' !== $sUploadPath{$iLength - 1})
 		{
 			$sUploadPath .= '/';
 			return $sUploadPath;
@@ -67,12 +67,12 @@ function fileManagerUpgrade()
 		$sSrc = $sUploadPath . 'G' . $oFmFolder->getId();
 		$sTrg = $sUploadPath . $sDirName;
 		
-		if(true === is_dir($sSrc))
+		if(true == is_dir($sSrc))
 		{
 			$oFmFolder->setName($sDirName);
 			$oFmFolder->save();
 			
-			if(true === rename($sSrc, $sTrg))
+			if(true == rename($sSrc, $sTrg))
 			{
 				$oCriteria = $oIdOwner->in($oFmFolder->getId());
 				$oCriteria = $oCriteria->_and($oGroup->in('Y'));
