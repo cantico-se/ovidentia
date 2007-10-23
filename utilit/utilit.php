@@ -337,47 +337,54 @@ function babLoadLanguage($lang, $folder, &$arr)
 	}
 
 
-
-function bab_callAddonsFunction($func)
+/**
+ * Calls a function defined in init.php for each addon.
+ * 
+ * For each addon, the string $functionName will be prefixed by the addon name and an underscore
+ * if this function is defined in the addon's init.php, it will be called with
+ * all the additional parameters passed to bab_callAddonsFunction.
+ *
+ * @param string $functionName	The addon function to call (without addon prefix)
+ */
+function bab_callAddonsFunction($functionName)
 {
-	$babBody = & $GLOBALS['babBody'];
+	global $babBody;
 
-	$oldBabAddonFolder = isset($GLOBALS['babAddonFolder'])? $GLOBALS['babAddonFolder']: '';
-	$oldBabAddonTarget = isset($GLOBALS['babAddonTarget'])? $GLOBALS['babAddonTarget']: '';
-	$oldBabAddonUrl =  isset($GLOBALS['babAddonUrl'])? $GLOBALS['babAddonUrl']: '';
-	$oldBabAddonPhpPath =  isset($GLOBALS['babAddonPhpPath'])? $GLOBALS['babAddonPhpPath']: '';
-	$oldBabAddonHtmlPath =  isset($GLOBALS['babAddonHtmlPath'])? $GLOBALS['babAddonHtmlPath']: '';
-	$oldBabAddonUpload =  isset($GLOBALS['babAddonUpload'])? $GLOBALS['babAddonUpload']: '';
+	// We store addon-related global variables 
+	$oldBabAddonFolder = isset($GLOBALS['babAddonFolder']) ? $GLOBALS['babAddonFolder'] : null;
+	$oldBabAddonTarget = isset($GLOBALS['babAddonTarget']) ? $GLOBALS['babAddonTarget'] : null;
+	$oldBabAddonUrl =  isset($GLOBALS['babAddonUrl']) ? $GLOBALS['babAddonUrl'] : null;
+	$oldBabAddonPhpPath =  isset($GLOBALS['babAddonPhpPath']) ? $GLOBALS['babAddonPhpPath'] : null;
+	$oldBabAddonHtmlPath =  isset($GLOBALS['babAddonHtmlPath']) ? $GLOBALS['babAddonHtmlPath'] : null;
+	$oldBabAddonUpload =  isset($GLOBALS['babAddonUpload']) ? $GLOBALS['babAddonUpload'] : null;
 
-	foreach($babBody->babaddons as $key => $row)
-		{ 
-		if($row['access'])
+	foreach ($babBody->babaddons as $key => $row)
+	{ 
+		if ($row['access'])
+		{
+			$addonPath = $GLOBALS['babAddonsPath'] . $row['title'];
+			if (is_file($addonPath . '/init.php'))
 			{
-			$addonpath = $GLOBALS['babAddonsPath'].$row['title'];
-			if( is_file($addonpath.'/init.php' ))
-				{
 				$GLOBALS['babAddonFolder'] = $row['title'];
 				$GLOBALS['babAddonTarget'] = 'addon/'.$row['id'];
 				$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript'].'?tg=addon/'.$row['id'].'/';
 				$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath'].'addons/'.$row['title'].'/';
 				$GLOBALS['babAddonHtmlPath'] = 'addons/'.$row['title'].'/';
 				$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath'].'/addons/'.$row['title'].'/';
-				require_once( $addonpath.'/init.php' );
-				$call = $row['title'].'_'.$func;
-				if( !empty($call)  && function_exists($call) )
-					{
+
+				require_once $addonPath . '/init.php';
+				$addonFunctionName = $row['title'] . '_' . $functionName;
+				if (!empty($addonFunctionName) && function_exists($addonFunctionName))
+				{
 					$args = func_get_args();
-					$call .= '(';
-					for($k=1; $k < sizeof($args); $k++)
-						eval ( "\$call .= \"$args[$k],\";");
-					$call = substr($call, 0, -1);
-					$call .= ')';
-					eval ( "\$retval = $call;");
-					}
+					array_shift($args);
+					call_user_func_array($addonFunctionName, $args);
 				}
 			}
 		}
+	}
 
+	// We restore addon-related global variables 
 	$GLOBALS['babAddonFolder'] = $oldBabAddonFolder;
 	$GLOBALS['babAddonTarget'] = $oldBabAddonTarget;
 	$GLOBALS['babAddonUrl'] = $oldBabAddonUrl;
@@ -474,14 +481,14 @@ var $menu;
 
 /**
  * error message as html
- * @public
+ * @access public
  */
 var $msgerror;
 
 /**
  * List of errors as text
  * @see babBody::addError()
- * @public
+ * @access public
  */
 var $errors = array();
 
@@ -489,7 +496,7 @@ var $content;
 
 /**
  * Page title
- * @public
+ * @access public
  */
 var $title;
 
@@ -1365,22 +1372,21 @@ function bab_updateUserSettings()
 			if( $babBody->ovgroups[BAB_ADMINISTRATOR_GROUP]['member'] == 'Y') {
 				$babBody->isSuperAdmin = true;
 				
-				if (isset($_GET['debug']))
-					{
-					if (1 == $_GET['debug'])
-						setcookie('bab_debug','1',time()+31536000); // 1 year
-					if (0 == $_GET['debug'])
-						setcookie('bab_debug','',time()-31536000); // remove
+				if (isset($_GET['debug'])) {
+					if (0 == $_GET['debug']) {
+						setcookie('bab_debug', '', time() - 31536000); // remove
+					} else {
+						setcookie('bab_debug', $_GET['debug'], time() + 31536000); // 1 year
 					}
 				}
+			}
 
 			$res = $babDB->db_query("SELECT dg.id FROM ".BAB_DG_ADMIN_TBL." da,".BAB_DG_GROUPS_TBL." dg where da.id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."' AND da.id_dg=dg.id AND dg.id_group >= '0'");
-			while( $arr = $babDB->db_fetch_array($res) )
-				{
+			while( $arr = $babDB->db_fetch_array($res) ) {
 				$babBody->dgAdmGroups[] = $arr['id'];
-				}
-			
 			}
+			
+		}
 
 		$res = $babDB->db_query("select id_user, id_substitute from ".BAB_USERS_UNAVAILABILITY_TBL." where curdate() between start_date and end_date");
 		if( $res && $babDB->db_num_rows($res) > 0 )
