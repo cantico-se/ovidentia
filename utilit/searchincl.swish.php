@@ -319,11 +319,17 @@ class bab_indexFilesCls extends swishCls
 		/**
 		 * Register shutdown function
 		 * wget http://users.ugent.be/~bpuype/wget/
+		 * @since 6.5.91
 		 */
 		function addEOF() {
 			$bat = new bab_batchFile($this->batchFile);
 			$bat->init();
-			$bat->addCmd('wget -q --spider '.escapeshellarg($GLOBALS['babUrlScript'].'?tg=usrindex&cmd=EOF'));
+
+			if (!defined('BAB_SWISHE_WGET_URL')) {
+				define('BAB_SWISHE_WGET_URL', 'wget -q --spider %s');
+			}
+			
+			$bat->addCmd(sprintf(BAB_SWISHE_WGET_URL, escapeshellarg($GLOBALS['babUrlScript'].'?tg=usrindex&cmd=EOF')));
 			$bat->close();
 		}
 
