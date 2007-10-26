@@ -1328,16 +1328,9 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					$idfiles = '';
 					}
 
-				if ($temp1 != "" && $temp2 != "" && $temp3 != "" && $temp4 != "")
+				if ($temp1 != "" && $temp2 != "" && $temp3 != "" && $temp4 != "" && $idfiles != '')
 				{
-					$plus = "
-				(
-					".$temp1." 
-					or ".$temp2." 
-					or ".$temp3." 
-					or ".$temp4."
-				) 
-			 ";
+					$plus = "( ".$temp1." or ".$temp2." or ".$temp3." or ".$temp4." or F.id in(".$idfiles.")) ";
 				}
 				else
 				{ 
