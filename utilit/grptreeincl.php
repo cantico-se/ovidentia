@@ -67,6 +67,14 @@ class bab_grptree extends bab_dbtree
 		}
 	}
 
+	/**
+	 * Returns an array containing information about groups.
+	 *
+	 * @param int		$id_parent
+	 * @param string	$format
+	 * @param bool		$all
+	 * @return array
+	 */
 	function getGroups($id_parent, $format = '%2$s > ', $all = true)
 	{
 	$grp = array();
@@ -83,7 +91,7 @@ class bab_grptree extends bab_dbtree
 		{
 		foreach ($groups as $arr)
 			{
-			if ($arr['id'] < 4)
+			if ($arr['id'] <= BAB_ADMINISTRATOR_GROUP)
 				{
 				$arr['name'] = bab_translate($arr['name']);
 				}
