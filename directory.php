@@ -1297,8 +1297,9 @@ function mapDbFile($id, $file, $tmpfile, $wsepar, $separ)
 				$this->t_dupinfo = bab_translate("Entries with the same nickname or the same firstname/lastname are duplicates");
 				$this->buserinfo = true;
 				$this->nickname = bab_translate("Nickname");
-				$this->password = bab_translate("Default password");
+				$this->password = bab_translate("Default password (at least 6 characters)");
 				$this->repassword = bab_translate("Retype default password");
+				$this->altpassword = bab_translate("Or use this field as password if filled");
 				$this->notifyuser = bab_translate("Notify users");
 				$this->sendpassword = bab_translate("Send password with email");
 				$this->yes = bab_translate("Yes");
@@ -1877,7 +1878,6 @@ function processImportDbFile( $pfile, $id, $separ )
 	if( $fd )
 		{
 		$arr = fgetcsv($fd, 4096, $separ);
-
 		while ($arr = fgetcsv($fd, 4096, $separ))
 			{
 			switch($GLOBALS['duphand'])
@@ -1943,7 +1943,16 @@ function processImportDbFile( $pfile, $id, $separ )
 									}
 								}
 
-							$babDB->db_query("update ".BAB_USERS_TBL." set nickname='".$babDB->db_escape_string($arr[$GLOBALS['nickname']])."', firstname='".$babDB->db_escape_string($arr[$GLOBALS['givenname']])."', lastname='".$babDB->db_escape_string($arr[$GLOBALS['sn']])."', email='".$babDB->db_escape_string($arr[$GLOBALS['email']])."', hashname='".$babDB->db_escape_string($hashname)."' where id='".$babDB->db_escape_string($rrr['id'])."'");
+							if( $GLOBALS['password3'] !== '' && strlen($arr[$GLOBALS['password3']]) >= 6)
+								{
+								$pwd=md5($arr[$GLOBALS['password3']]);
+								}
+							else
+								{
+								$pwd = $password1;
+								}
+							$hash=md5($arr[$GLOBALS['nickname']].$GLOBALS['BAB_HASH_VAR']);
+							$babDB->db_query("update ".BAB_USERS_TBL." set nickname='".$babDB->db_escape_string($arr[$GLOBALS['nickname']])."', firstname='".$babDB->db_escape_string($arr[$GLOBALS['givenname']])."', lastname='".$babDB->db_escape_string($arr[$GLOBALS['sn']])."', email='".$babDB->db_escape_string($arr[$GLOBALS['email']])."', hashname='".$babDB->db_escape_string($hashname)."', confirm_hash='".$babDB->db_escape_string($hash)."', password='".$babDB->db_escape_string($pwd)."' where id='".$babDB->db_escape_string($rrr['id'])."'");
 							if( $bupdate )
 								{
 								$babDB->db_query("update ".BAB_DBDIR_ENTRIES_TBL." set date_modification=now(), id_modifiedby='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' where id_directory='0' and id_user='".$babDB->db_escape_string($rrr['id'])."'");
@@ -2038,7 +2047,16 @@ function processImportDbFile( $pfile, $id, $separ )
 							$replace = array( " " => "", "-" => "");
 							$hashname = md5(strtolower(strtr($arr[$GLOBALS['givenname']].$arr[$GLOBALS['mn']].$arr[$GLOBALS['sn']], $replace)));
 							$hash=md5($arr[$GLOBALS['nickname']].$GLOBALS['BAB_HASH_VAR']);
-							$babDB->db_query("insert into ".BAB_USERS_TBL." set nickname='".$babDB->db_escape_string($arr[$GLOBALS['nickname']])."', firstname='".$babDB->db_escape_string($arr[$GLOBALS['givenname']])."', lastname='".$babDB->db_escape_string($arr[$GLOBALS['sn']])."', email='".$babDB->db_escape_string($arr[$GLOBALS['email']])."', hashname='".$hashname."', password='".$babDB->db_escape_string($password1)."', confirm_hash='".$babDB->db_escape_string($hash)."', date=now(), is_confirmed='1', changepwd='1', lang='".$babDB->db_escape_string($GLOBALS['babLanguage'])."'");
+							if( $GLOBALS['password3'] !== '' && strlen($arr[$GLOBALS['password3']]) >= 6)
+								{
+								$pwd=md5($arr[$GLOBALS['password3']]);
+								}
+							else
+								{
+								$pwd = $password1;
+								}
+
+							$babDB->db_query("insert into ".BAB_USERS_TBL." set nickname='".$babDB->db_escape_string($arr[$GLOBALS['nickname']])."', firstname='".$babDB->db_escape_string($arr[$GLOBALS['givenname']])."', lastname='".$babDB->db_escape_string($arr[$GLOBALS['sn']])."', email='".$babDB->db_escape_string($arr[$GLOBALS['email']])."', hashname='".$hashname."', password='".$babDB->db_escape_string($pwd)."', confirm_hash='".$babDB->db_escape_string($hash)."', date=now(), is_confirmed='1', changepwd='1', lang='".$babDB->db_escape_string($GLOBALS['babLanguage'])."'");
 							$iduser = $babDB->db_insert_id();
 							$babDB->db_query("insert into ".BAB_CALENDAR_TBL." (owner, type) values ('".$babDB->db_escape_string($iduser)."', '1')");
 							$babDB->db_query("update ".BAB_DBDIR_ENTRIES_TBL." set id_user='".$babDB->db_escape_string($iduser)."' where id='".$babDB->db_escape_string($idu)."'");
@@ -2802,7 +2820,7 @@ if( '' != ($modify = bab_pp('modify')))
 			{
 			$photo_name = isset( $_FILES['photof']['name'] )?  $_FILES['photof']['name']: '';
 			$photof = isset( $_FILES['photof']['tmp_name'] )?  $_FILES['photof']['tmp_name']: '';
-			$ret = confirmAddDbContact($id, bab_pp('fields', array()), $photo_name,$photof, bab_pp('password1'), bab_pp('password2'), bab_pp('nickname'), bab_pp('$notifyuser'), bab_pp('$sendpwd'));
+			$ret = confirmAddDbContact($id, bab_pp('fields', array()), $photo_name,$photof, bab_pp('password1'), bab_pp('password2'), bab_pp('nickname'), bab_pp('notifyuser'), bab_pp('sendpwd'));
 			switch($ret)
 				{
 				case 2:
