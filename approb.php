@@ -719,7 +719,7 @@ function listWaitingAddons()
 						
 						$title = $row['title'];
 						$arr = array();
-						call_user_func_array($this->call, array($title, $arr));
+						call_user_func_array($this->call, array(&$title, &$arr));
 						if (count($arr) > 0) {
 								$key = strtolower(substr($title,0,3));
 								$this->arrObjects[$key.$row['id']] = array(
