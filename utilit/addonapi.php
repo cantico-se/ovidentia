@@ -1566,6 +1566,12 @@ function bab_locale() {
 		global $babLanguage;
 		
 		
+		if (function_exists('textdomain')) {
+			// clear gettext cache for mo files modifications
+			textdomain(textdomain(NULL));
+		}
+		
+		
 		switch(strtolower($babLanguage)) {
 			case 'fr':
 				$arrLoc = array('fr_FR', 'fr');
