@@ -23,16 +23,16 @@
 ************************************************************************/
 
 
-//Test sz
 
 function getUploadPathFromDataBase()	
 {
-	$db = &$GLOBALS['babDB'];
+	$babDB = &$GLOBALS['babDB'];
 	
-	$aData = $db->db_fetch_array($db->db_query('SELECT uploadpath FROM ' . BAB_SITES_TBL));
+	$aData = $babDB->db_fetch_array($babDB->db_query('SELECT uploadpath FROM ' . BAB_SITES_TBL));
 	if(false != $aData)
 	{
-		$sUploadPath = $aData['uploadpath'];
+		$sUploadPath = (string) $aData['uploadpath'];
+		$sUploadPath = realpath($sUploadPath);
 		$iLength = strlen(trim($sUploadPath));
 		if($iLength && '/' !== $sUploadPath{$iLength - 1})
 		{
@@ -43,69 +43,256 @@ function getUploadPathFromDataBase()
 	}
 }	
 
-
-
-function fileManagerUpgrade()
+function createFmDirectories($sUploadPath)
 {
-	require_once $GLOBALS['babInstallPath'] . 'utilit/fileincl.php';
+	$sCollectiveUploadPath = $sUploadPath . 'fileManager/collectives/';
+	$sUserUploadPath = $sUploadPath . 'fileManager/users/';
 	
-	global $babDB;
-	
-	$sUploadPath = getUploadPathFromDataBase();
-	
-	$oFolderFileSet = new BAB_FolderFileSet();
-	$oIdOwner =& $oFolderFileSet->aField['iIdOwner'];
-	$oGroup =& $oFolderFileSet->aField['sGroup'];
-	
-	$oFmFolderSet = new BAB_FmFolderSet();
-	$oRelativePath =& $oFmFolderSet->aField['sRelativePath'];
-	$oFmFolderSet->select($oRelativePath->in(''));
-	while(null !== ($oFmFolder = $oFmFolderSet->next()))
+	if(!is_dir($sUploadPath . 'fileManager'))
 	{
-		$sDirName = processDirName($sUploadPath, $oFmFolder->getName());
-		
-		$sSrc = $sUploadPath . 'G' . $oFmFolder->getId();
-		$sTrg = $sUploadPath . $sDirName;
-		
-		if(true == is_dir($sSrc))
+		$bCollDirCreated = false;
+		$bUserDirCreated = false;
+		if(mkdir($sUploadPath . 'fileManager'))
 		{
-			$oFmFolder->setName($sDirName);
-			$oFmFolder->save();
-			
-			if(true == rename($sSrc, $sTrg))
+			$bCollDirCreated = mkdir($sUploadPath . 'fileManager/collectives');
+			$bUserDirCreated = mkdir($sUploadPath . 'fileManager/users');
+		}
+		return ($bCollDirCreated && $bUserDirCreated);
+	}
+	return false;
+}
+
+/**
+ * Upgrade the file manager
+ *
+ */
+function fmUpgrade()
+{
+	$babDB = &$GLOBALS['babDB'];
+	$sUploadPath = getUploadPathFromDataBase();
+
+	if(is_dir($sUploadPath))
+	{
+		if(createFmDirectories($sUploadPath))
+		{
+			$sQuery = 
+				'SELECT 
+					`id` iId,
+					`folder` sName,
+					`sRelativePath` sRelativePath,
+					`id_dgowner` iIdDgOwner
+				FROM ' .
+					BAB_FM_FOLDERS_TBL;
+		
+			$oResult = $babDB->db_query($sQuery);
+			if(false !== $oResult)
 			{
-				$oCriteria = $oIdOwner->in($oFmFolder->getId());
-				$oCriteria = $oCriteria->_and($oGroup->in('Y'));
-				
-				$oFolderFileSet->select($oCriteria);
-				while(null !== ($oFolderFile = $oFolderFileSet->next()))
+				$aDatas = array();
+				while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
 				{
-					$sPathName = $sDirName . '/' . $oFolderFile->getPathName();
-					if(strlen(trim($oFolderFile->getPathName())) > 0)
+					$sOldPath = $sUploadPath . 'G' . $aDatas['iId'];
+					if(is_dir($sOldPath))
 					{
-						$sPathName .= '/';
+						$sDelegationId	= (string) $aDatas['iIdDgOwner'];
+						$sNewPath		= $sCollectiveUploadPath . 'G' . $sDelegationId;
+						
+						if(!is_dir($sNewPath))
+						{
+							mkdir($sNewPath);
+						}
+						
+						if(is_dir($sNewPath))
+						{
+							$sFolderName = $aDatas['sName'];
+							$sFolderName = processDirName($sNewPath, $sFolderName);
+							$sNewPath .= '/' .  $sFolderName;
+
+							if(true == rename($sOldPath, $sNewPath))
+							{
+								$sQuery = 
+									'UPDATE ' . 
+										BAB_FM_FOLDERS_TBL . '
+									SET 
+										`folder` = \'' . $babDB->db_escape_string($sFolderName) . '\' 
+									WHERE 
+										`id` = \'' . $babDB->db_escape_string($aDatas['iId']) . '\'';
+								
+								$babDB->db_query($sQuery);
+								
+								updateFolderFilePathName($aDatas['iId'], 'Y', $aDatas['sName']);
+							}
+						}
 					}
-					$oFolderFile->setPathName($sPathName);
-					$oFolderFile->save();
 				}
 			}
+			updateUsersFolderFilePathName();
 		}
 	}
+}
+
+function updateFolderFilePathName($iIdOwner, $sGroup, $sDirName)
+{
+	$babDB = &$GLOBALS['babDB'];
 	
-	
-	$oFolderFileSet = new BAB_FolderFileSet();
-	$oGroup =& $oFolderFileSet->aField['sGroup'];
-	$oFolderFileSet->select($oGroup->in('N'));
-	while(null !== ($oFolderFile = $oFolderFileSet->next()))
+	$sQuery = 
+		'SELECT 
+			`id` iId,
+			`path` sPathName
+		FROM ' .
+			BAB_FILES_TBL . '
+		WHERE 
+			`id_owner` = \'' . $babDB->db_escape_string($iIdOwner) . '\',
+			`bgroup` = \'' . $babDB->db_escape_string($sGroup) . '\'';
+
+	$oResult = $babDB->db_query($sQuery);
+	if(false !== $oResult)
 	{
-		$sPathName = 'U' . $oFolderFile->getOwnerId() . '/' . $oFolderFile->getPathName();
-		if(strlen(trim($oFolderFile->getPathName())) > 0)
+		$aDatas = array();
+		while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
 		{
-			$sPathName .= '/';
-		}
-		$oFolderFile->setPathName($sPathName);
-		$oFolderFile->save();
+			$sPathName = $sDirName . '/' . $aDatas['sPathName'];
+			if(strlen(trim($aDatas['sPathName'])) > 0)
+			{
+				$sPathName .= '/';
+			}
+			
+			$sQuery = 
+				'UPDATE ' . 
+					BAB_FILES_TBL . '
+				SET 
+					`path` = \'' . $babDB->db_escape_string($sPathName) . '\' 
+				WHERE 
+					`id` = \'' . $babDB->db_escape_string($aDatas['iId']) . '\'';
+			
+			$babDB->db_query($sQuery);
+		}		
 	}
+}
+
+function updateUsersFolderFilePathName()
+{
+	$babDB = &$GLOBALS['babDB'];
+	
+	$sQuery = 
+		'SELECT 
+			`id` iId,
+			`path` sPathName
+		FROM ' .
+			BAB_FILES_TBL . '
+		WHERE 
+			`bgroup` = \'' . $babDB->db_escape_string('N') . '\'';
+
+	$oResult = $babDB->db_query($sQuery);
+	if(false !== $oResult)
+	{
+		$aDatas = array();
+		while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
+		{
+			if(strlen(trim($aDatas['sPathName'])) > 0)
+			{
+				$sPathName .= '/';
+			}
+			
+			$sQuery = 
+				'UPDATE ' . 
+					BAB_FILES_TBL . '
+				SET 
+					`path` = \'' . $babDB->db_escape_string($sPathName) . '\' 
+				WHERE 
+					`id` = \'' . $babDB->db_escape_string($aDatas['iId']) . '\'';
+					
+			$babDB->db_query($sQuery);
+		}		
+	}
+}
+
+
+function updateFmFromPreviousUpgrade()
+{
+	$babDB = &$GLOBALS['babDB'];
+	$sUploadPath = getUploadPathFromDataBase();
+
+	if(is_dir($sUploadPath))
+	{
+		if(createFmDirectories($sUploadPath))
+		{
+			$sQuery = 
+				'SELECT 
+					`id` iId,
+					`folder` sName,
+					`id_dgowner` iIdDgOwner
+				FROM ' .
+					BAB_FM_FOLDERS_TBL . '
+				WHERE 
+					`sRelativePath` = \'' . $babDB->db_escape_string('') . '\'';
+		
+			$oResult = $babDB->db_query($sQuery);
+			if(false !== $oResult)
+			{
+				$aDatas = array();
+				while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
+				{
+					$sOldPath = $sUploadPath . $aDatas['sName'];
+					if(is_dir($sOldPath))
+					{
+						$sDelegationId			= $aDatas['iIdDgOwner'];
+						$sCollectiveUploadPath 	= $sUploadPath . 'fileManager/collectives/';						
+						$sNewPath				= $sCollectiveUploadPath . 'G' . $sDelegationId;
+						
+						if(!is_dir($sNewPath))
+						{
+							mkdir($sNewPath);
+						}
+						
+						if(is_dir($sNewPath))
+						{
+							$sNewPath .= '/' .  $aDatas['sName'];
+							rename($sOldPath, $sNewPath);
+						}						
+					}					
+				}
+			}
+			
+			$sQuery = 
+				'SELECT 
+					`id` iId,
+					`path` sPathName
+				FROM ' .
+					BAB_FILES_TBL . '
+				WHERE 
+					`bgroup` = \'' . $babDB->db_escape_string('N') . '\'';
+			
+			$oResult = $babDB->db_query($sQuery);
+			if(false !== $oResult)
+			{
+				$aBuffer = array();
+				while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
+				{
+					if(preg_match('/(U\d+\/)(.*)/', $aDatas['sPathName'], $aBuffer))
+					{
+						$sPathName = $aBuffer[2];
+						$sQuery = 
+							'UPDATE ' . 
+								BAB_FILES_TBL . '
+							SET 
+								`path` = \'' . $babDB->db_escape_string($sPathName) . '\' 
+							WHERE 
+								`id` = \'' . $babDB->db_escape_string($aDatas['iId']) . '\'';
+						
+						$babDB->db_query($sQuery);
+						
+						$sOldPath = $sUploadPath . $aBuffer[1];
+						if(is_dir(realpath($sOldPath)))
+						{
+							$sUserUploadPath = $sUploadPath . 'fileManager/users/';
+							$sNewPath = $sUserUploadPath . $aBuffer[1];
+							rename(realpath($sOldPath), $sNewPath);
+						}
+					}
+				}		
+			}
+		}
+	}	
 }
 
 function processDirName($sUploadPath, $sDirName)
@@ -3556,12 +3743,6 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$babDB->db_query("ALTER TABLE ".BAB_SITES_TBL." DROP ldap_basedn");
 		}
 
-	if(!bab_isTableField(BAB_FM_FOLDERS_TBL, 'sRelativePath')) 
-	{
-		$babDB->db_query("ALTER TABLE ".BAB_FM_FOLDERS_TBL." ADD `sRelativePath` TEXT NOT NULL AFTER `id`");
-		fileManagerUpgrade();
-	}
-
 	if (!bab_isTable(BAB_FMNOTIFY_GROUPS_TBL)) 
 	{
 
@@ -3661,6 +3842,16 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$babDB->db_query("ALTER TABLE ".BAB_FM_FOLDERS_TBL." ADD baddtags ENUM('Y','N') DEFAULT 'Y' NOT NULL");
 	}
 
+
+	if(!bab_isTableField(BAB_FM_FOLDERS_TBL, 'sRelativePath')) 
+	{
+		$babDB->db_query("ALTER TABLE ".BAB_FM_FOLDERS_TBL." ADD `sRelativePath` TEXT NOT NULL AFTER `id`");
+		fmUpgrade();
+	}
+	else 
+	{
+		updateFmFromPreviousUpgrade();
+	}
 	return true;
 }
 ?>
