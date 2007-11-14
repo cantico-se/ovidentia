@@ -2463,4 +2463,5 @@
 <string id="Or use this field as password if filled">Si ce champ n'est pas vide l'utilser comme mot de passe</string>
 <string id="In progress">En cours</string>
 <string id="Ended">Achevées</string>
+<string id="Users can add new tags">Les utilisateurs peuvent ajouter de nouveaux mots clés dans le thesaurus</string>
 </fr>
