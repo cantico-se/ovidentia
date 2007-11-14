@@ -69,6 +69,7 @@ function modifyFolder($fid)
 			$this->del = bab_translate("Delete");
 			$this->active = bab_translate("Active");
 			$this->display = bab_translate("Visible in file manager?");
+			$this->addtags_txt = bab_translate("Users can add new tags");
 			$this->autoapprobationtxt = bab_translate("Automatically approve author if he belongs to approbation schema");
 			$this->fid = $fid;
 			$this->none = bab_translate("None");
@@ -120,6 +121,14 @@ function modifyFolder($fid)
 					$this->autoappnsel = '';
 				}
 				
+				$this->ntagssel = '';
+				$this->ytagssel = 'selected';
+				if('Y' === $oFmFolder->getAddTags())
+				{
+					$this->ntagssel = 'selected';
+					$this->ytagssel = '';
+				}
+
 				$this->safm = $oFmFolder->getApprobationSchemeId();
 				
 				list($n) = $babDB->db_fetch_array($babDB->db_query("select COUNT(i.id) from ".BAB_FA_INSTANCES_TBL." i, ".BAB_FILES_TBL." f where i.idsch='".$this->safm."' AND i.id=f.idfai"));
@@ -465,7 +474,7 @@ function deleteFieldsFolder($fid, $fields)
 	}
 
 
-function updateFolder($fid, $fname, $active, $said, $notification, $version, $bhide, $bautoapp)
+function updateFolder($fid, $fname, $active, $said, $notification, $version, $bhide, $bautoapp, $baddtags)
 {
 	global $babBody, $babDB;
 	if(empty($fname))
@@ -607,6 +616,7 @@ function updateFolder($fid, $fname, $active, $said, $notification, $version, $bh
 			$oFmFolder->setActive($active);
 			$oFmFolder->setVersioning($version);
 			$oFmFolder->setHide($bhide);
+			$oFmFolder->setAddTags($baddtags);
 			$oFmFolder->setAutoApprobation($bautoapp);
 			$oFmFolder->save();
 		}		
@@ -687,7 +697,7 @@ if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['filemanager'] != 'Y')
 if( isset($mod) && $mod == "modfolder")
 {
 	if( isset($bupdate))
-		updateFolder($fid, $fname, $active, $said, $notification, $version, $bhide, $bautoapp);
+		updateFolder($fid, $fname, $active, $said, $notification, $version, $bhide, $bautoapp, $baddtags);
 	else if(isset($bdel))
 		$idx = "delf";
 }

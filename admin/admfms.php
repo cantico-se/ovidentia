@@ -60,6 +60,7 @@ function addFolder()
 			$this->none = bab_translate("None");
 			$this->display = bab_translate("Visible in file manager?");
 			$this->autoapprobationtxt = bab_translate("Automatically approve author if he belongs to approbation schema");
+			$this->addtags_txt = bab_translate("Users can add new tags");
 			$this->sares = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babBody->currentAdmGroup."' order by name asc");
 			if( !$this->sares )
 				$this->sacount = 0;
@@ -203,7 +204,7 @@ function listFolders()
 	return $temp->count();
 }
 
-function saveFolder($fname, $active, $said, $notification, $version, $bhide, $bautoapp)
+function saveFolder($fname, $active, $said, $notification, $version, $bhide, $bautoapp, $baddtags)
 {
 	global $babBody, $babDB;
 	if(empty($fname))
@@ -232,6 +233,7 @@ function saveFolder($fname, $active, $said, $notification, $version, $bhide, $ba
 		$oFmFolder->setRelativePath('');
 		$oFmFolder->setFileNotify($notification);
 		$oFmFolder->setActive($active);
+		$oFmFolder->setAddTags($baddtags);
 		$oFmFolder->setVersioning($version);
 		$oFmFolder->setHide($bhide);
 		$oFmFolder->setAutoApprobation($bautoapp);
@@ -308,7 +310,7 @@ if( !isset($idx))
 	$idx = "list";
 
 if( isset($add) && $add == "addfolder")
-	if (!saveFolder($fname, $active, $said, $notification, $version, $bhide, $bautoapp))
+	if (!saveFolder($fname, $active, $said, $notification, $version, $bhide, $bautoapp, $baddtags))
 		$idx = "addf";
 
 if( isset($update) && $update == "folders")

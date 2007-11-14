@@ -3651,6 +3651,16 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$registry->moveDirectory('/statistics/', '/bab/statistics/');
 	}
 	
+	/**
+	 * Upgrade to 6.5.92
+	 */
+
+	 /* this flag allow admin to specify if users can add tags to thesaurus or not */
+	if(!bab_isTableField(BAB_FM_FOLDERS_TBL, 'baddtags')) 
+	{
+		$babDB->db_query("ALTER TABLE ".BAB_FM_FOLDERS_TBL." ADD baddtags ENUM('Y','N') DEFAULT 'Y' NOT NULL");
+	}
+
 	return true;
 }
 ?>

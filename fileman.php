@@ -691,6 +691,7 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 		$this->set_caption('sNotification', bab_translate("Notification") . ': ');
 		$this->set_caption('sVersioning', bab_translate("Versioning") . ': ');
 		$this->set_caption('sDisplay', bab_translate("Visible in file manager?") . ': ');
+		$this->set_caption('sAddTags', bab_translate("Users can add new tags") . ': ');
 		$this->set_caption('sSimple', bab_translate("Simple"));
 		$this->set_caption('sCollective', bab_translate("Collectif"));
 		$this->set_caption('sYes', bab_translate("Yes"));
@@ -709,6 +710,7 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 		$this->set_data('isFileNotify', false);
 		$this->set_data('isVersioning', false);
 		$this->set_data('isShow', true);
+		$this->set_data('isAddTags', true);
 		$this->set_data('sChecked', 'checked');
 		$this->set_data('sDisabled', '');
 	}
@@ -721,6 +723,7 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 		$this->set_data('isFileNotify', false);
 		$this->set_data('isVersioning', false);
 		$this->set_data('isShow', true);
+		$this->set_data('isAddTags', true);
 		$this->set_data('sChecked', 'checked');
 		$this->set_data('sDisabled', '');
 
@@ -739,7 +742,8 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 			$this->set_data('isAutoApprobation', ('Y' === $oFmFolder->getAutoApprobation()) ? true : false);
 			$this->set_data('isFileNotify', ('Y' === $oFmFolder->getFileNotify()) ? true : false);
 			$this->set_data('isVersioning', ('Y' === $oFmFolder->getVersioning()) ? true : false);
-			$this->set_data('isShow', ('Y' === $oFmFolder->getHide()) ? false : true);
+			$this->set_data('isShow', ('Y' === $oFmFolder->getHide()) ? true : false);
+			$this->set_data('isAddTags', ('Y' === $oFmFolder->getAddTags()) ? true : false);
 			$this->set_data('iIdFolder', $oFmFolder->getId());
 			$this->set_data('sOldDirName', $oFmFolder->getName());
 			$this->set_data('sChecked', '');
@@ -2636,6 +2640,7 @@ function createEditFolderForCollectiveDir($iIdFolder, $sPath)
 				$sNotification			= (string) bab_pp('sNotification', 'N');
 				$sVersioning			= (string) bab_pp('sVersioning', 'N');
 				$sDisplay				= (string) bab_pp('sDisplay', 'N');
+				$sAddTags				= (string) bab_pp('sAddTags', 'Y');
 				$sPathName				= (string) '';
 				
 				$sRelativePath = '';
@@ -2671,6 +2676,7 @@ function createEditFolderForCollectiveDir($iIdFolder, $sPath)
 								$oFmFolder->setFileNotify($sNotification);
 								$oFmFolder->setHide($sDisplay);
 								$oFmFolder->setName($sDirName);
+								$oFmFolder->setAddTags($sAddTags);
 								$oFmFolder->setRelativePath($sRelativePath);
 								$oFmFolder->setVersioning($sVersioning);
 								$oFmFolder->setAutoApprobation($sAutoApprobation);
@@ -2755,6 +2761,7 @@ function createEditFolderForCollectiveDir($iIdFolder, $sPath)
 							$oFmFolder->setFileNotify($sNotification);
 							$oFmFolder->setHide($sDisplay);
 							$oFmFolder->setRelativePath($sRelativePath);
+							$oFmFolder->setAddTags($sAddTags);
 							$oFmFolder->setVersioning($sVersioning);
 							$oFmFolder->setAutoApprobation($sAutoApprobation);
 							$oFmFolder->save();

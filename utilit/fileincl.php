@@ -492,9 +492,13 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 
 			$sRelativePath = $oFileManagerEnv->sRelativePath;
 			$sFullUploadPath = BAB_FmFolderHelper::getUploadPath() . $sRelativePath;
+			$baddtags = 'N';
 		}
 		else if('Y' === $gr)
 		{
+			$rr = $babDB->db_fetch_array($babDB->db_query("select baddtags from ".BAB_FM_FOLDERS_TBL." where id='".$babDB->db_escape_string($iIdOwner)."'"));
+			$baddtags = $rr['baddtags'];
+			
 			$oFmFolder = null;
 			$access = BAB_FmFolderHelper::getFileInfoForCollectiveDir($id, $path, $iIdOwner, $sRelativePath, $oFmFolder);
 			$sFullUploadPath = BAB_FmFolderHelper::getUploadPath() . $sRelativePath;
@@ -640,8 +644,17 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 					}
 					else
 					{
+						if( $baddtags == 'Y')
+						{
+						$babDB->db_query("insert into ".BAB_TAGS_TBL." (tag_name) values ('".$babDB->db_escape_string($tag)."')");
+						$iidtag = $babDB->db_insert_id();
+						$otags[$iidtag] = $iidtag;
+						}
+						else
+						{
 						$message = bab_translate("Some tags doesn't exist");
 						break;
+						}
 					}
 				}
 			}
@@ -829,34 +842,7 @@ function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonl
 		$uploadf_size = '';
 	}
 
-	$otags = array();
-	$tags = trim($keywords);
-	if( !empty($tags))
-	{
-		$atags = explode(',', $tags);
-		for( $k = 0; $k < count($atags); $k++ )
-		{
-			$tag = trim($atags[$k]);
-			if( !empty($tag) )
-			{
-				$res = $babDB->db_query("select id from ".BAB_TAGS_TBL." where tag_name='".$babDB->db_escape_string($tag)."'");
-				if( $res && $babDB->db_num_rows($res))
-				{
-					$arr = $babDB->db_fetch_array($res);
-					if( !isset($otags[$arr['id']]))
-					{
-					$otags[$arr['id']] = $arr['id'];
-					}
 
-				}
-				else
-				{
-					$babBody->msgerror = bab_translate("Some tags doesn't exist");
-					return false;
-				}
-			}
-		}
-	}
 
 	$oFolderFileSet = new BAB_FolderFileSet();
 	$oId =& $oFolderFileSet->aField['iId'];
@@ -864,6 +850,55 @@ function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonl
 
 	if(!is_null($oFolderFile))
 	{
+
+		if('Y' === $oFolderFile->getGroup())
+		{
+		$rr = $babDB->db_fetch_array($babDB->db_query("select baddtags from ".BAB_FM_FOLDERS_TBL." where id='".$babDB->db_escape_string($oFolderFile->getOwnerId())."'"));
+		}
+		else
+		{
+		$rr['baddtags'] = 'N';
+		}
+
+		$otags = array();
+		$tags = trim($keywords);
+		if( !empty($tags))
+		{
+			$atags = explode(',', $tags);
+			for( $k = 0; $k < count($atags); $k++ )
+			{
+				$tag = trim($atags[$k]);
+				if( !empty($tag) )
+				{
+					$res = $babDB->db_query("select id from ".BAB_TAGS_TBL." where tag_name='".$babDB->db_escape_string($tag)."'");
+					if( $res && $babDB->db_num_rows($res))
+					{
+						$arr = $babDB->db_fetch_array($res);
+						if( !isset($otags[$arr['id']]))
+						{
+						$otags[$arr['id']] = $arr['id'];
+						}
+
+					}
+					else
+					{
+						if( $rr['baddtags'] == 'Y' )
+						{
+						$babDB->db_query("insert into ".BAB_TAGS_TBL." (tag_name) values ('".$babDB->db_escape_string($tag)."')");
+						$iidtag = $babDB->db_insert_id();
+						$otags[$iidtag] = $iidtag;
+						}
+						else
+						{
+						$babBody->msgerror = bab_translate("Some tags doesn't exist");
+						return false;
+						}
+					}
+				}
+			}
+		}
+		
+		
 		if('Y' === $oFolderFile->getGroup())
 		{
 			$bManager = bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oFolderFile->getOwnerId());
@@ -2059,6 +2094,7 @@ class BAB_FmFolderSet extends BAB_BaseSet
 		'sVersioning' => new BAB_StringField('`version`'),
 		'iIdDgOwner' => new BAB_IntField('`id_dgowner`'),
 		'sHide' => new BAB_StringField('`bhide`'),
+		'sAddTags' => new BAB_StringField('`baddtags`'),
 		'sAutoApprobation' => new BAB_StringField('`auto_approbation`')
 		);
 	}
@@ -2666,6 +2702,16 @@ class BAB_FmFolder extends BAB_DbRecord
 	function getHide()
 	{
 		return $this->_sGet('sHide');
+	}
+
+	function setAddTags($sAddTags)
+	{
+		$this->_set('sAddTags', $sAddTags);
+	}
+
+	function getAddTags()
+	{
+		return $this->_sGet('sAddTags');
 	}
 
 	function setAutoApprobation($sAutoApprobation)

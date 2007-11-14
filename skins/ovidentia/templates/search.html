@@ -89,7 +89,9 @@ function prepareSQL()
 	<!--#if item "!= a" -->
 	<!--#if item "!= g" -->
 	<!--#if item "!= h" -->
+	<!--#if item "!= e" -->
 	if (sf.what.value.length < 1 && sf.what2.value.length < 1) return false;
+	<!--#endif item -->
 	<!--#endif item -->
 	<!--#endif item -->
 	<!--#endif item -->
@@ -427,6 +429,31 @@ setselects(document.forms.searchForm.g_directory);
 <!--#endif item -->
 
 <!--#if item "== e" --><!-- FILES -->
+<table  width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr>
+<td>
+	<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr>
+	<td align="right">{ tags_txt }</td>
+	<td nowrap="nowrap">
+	<input type="text" id="idtags" name="tagsname" size="30" maxlength="255" value="{ fields[tagsname] }" />
+	<div align="left" id="tags-ac" class="auto_complete">
+	</div>&nbsp;&nbsp;
+	<select name="optags">
+	<!--#if fields[optags] "== 0" -->
+	<option value="1">{ atleastone_txt }</option>
+	<option value="0" selected="selected">{ all_txt }</option>
+	<!--#else fields[optags] -->
+	<option value="1" selected="selected">{ atleastone_txt }</option>
+	<option value="0">{ all_txt }</option>
+	<!--#endif fields[optags] -->
+	</select>
+	</td>
+	</tr>
+	</table>
+</td>
+</tr>
+</table>
 <!--#if index -->
 <p>
 	<label for="bab_index_priority">{ t_index_priority }</label> : <input type="checkbox" id="bab_index_priority"  name="index_priority" value="1" <!--#if index_priority --> checked="checked"<!--#endif index_priority --> />

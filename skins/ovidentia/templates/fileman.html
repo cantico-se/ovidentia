@@ -1007,12 +1007,28 @@ function hide(aNode)
 					<td>
 						<select name="sDisplay"> 
 						<!--#if m_datas[isShow] -->
-							<option value="{ m_datas[sNo] }" selected="selected">{ m_captions[sYes] }</option>
-							<option value="{ m_datas[sYes] }">{ m_captions[sNo] }</option>
+							<option value="{ m_datas[sYes] }" selected="selected">{ m_captions[sYes] }</option>
+							<option value="{ m_datas[sNo] }">{ m_captions[sNo] }</option>
 						<!--#else m_datas[isShow] -->
-							<option value="{ m_datas[sYes] }">{ m_captions[sYes] }</option>
 							<option value="{ m_datas[sNo] }" selected="selected">{ m_captions[sNo] }</option>
+							<option value="{ m_datas[sYes] }">{ m_captions[sYes] }</option>
 						<!--#endif m_datas[isShow] -->
+						</select>
+					</td>
+				</tr>
+				<tr class="showHide"> 
+					<td align="right">
+						{ m_captions[sAddTags] }
+					</td>
+					<td>
+						<select name="sAddTags"> 
+						<!--#if m_datas[isAddTags] -->
+							<option value="{ m_datas[sYes] }" selected="selected">{ m_captions[sYes] }</option>
+							<option value="{ m_datas[sNo] }">{ m_captions[sNo] }</option>
+						<!--#else m_datas[isAddTags] -->
+							<option value="{ m_datas[sNo] }" selected="selected">{ m_captions[sNo] }</option>
+							<option value="{ m_datas[sYes] }">{ m_captions[sYes] }</option>
+						<!--#endif m_datas[isAddTags] -->
 						</select>
 					</td>
 				</tr>

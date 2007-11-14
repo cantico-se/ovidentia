@@ -306,6 +306,12 @@ function searchKeyword($item , $option = "OR")
 				}
 
 			$this->counttopicscategories = count($this->arrtopicscategories);
+
+			if( $item == 'e') // Files
+				{
+				$this->busetags = true;
+				}
+
 			if( $this->busetags )
 				{
 				$babBody->addJavascriptFile($GLOBALS['babScriptPath']."prototype/prototype.js");
@@ -1304,20 +1310,45 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$temp3 = finder($this->like, "F.path",		$option,$this->like2);
 				$temp4 = finder($this->like, "R.folder",	$option,$this->like2);
 				$temp5 = finder($this->like, "M.fvalue",	$option,$this->like2);
-				$temp6 = finder($this->like, "tag_name",	$option,$this->like2);
-
+				//$temp6 = finder($this->like, "tag_name",	$option,$this->like2);
+				$this->fields['tagsname'] = isset($this->fields['tagsname'])?trim($this->fields['tagsname']):'';
 				$tidfiles = array();
-				if( $temp6 )
+				if( !empty($this->fields['tagsname']))
 					{
-					$rs = $babDB->db_query("select id_file from ".BAB_FILES_TAGS_TBL." ftt left join ".BAB_TAGS_TBL." tt on tt.id = ftt.id_tag WHERE ".$temp6);
-					while( $rr = $babDB->db_fetch_array($rs))
-						{
-						if( !isset($tidfiles[$rr['id_file']]))
+					$maptags = array();
+					$tags = array();
+					$atags = explode(',', $this->fields['tagsname']);
+					for( $k = 0; $k < count($atags); $k++ )
+					{
+						$atags[$k] = trim($atags[$k]);
+						if( !empty($atags[$k]))
 							{
-							$tidfiles[$rr['id_file']] = $rr['id_file'];
+							$maptags[$atags[$k]] = array();
+							$tags[] = "'".$babDB->db_escape_string($atags[$k])."'";
+							}
+
+					}
+					if( count($tags))
+						{
+						$res = $babDB->db_query("select id_file, tag_name from ".BAB_FILES_TAGS_TBL." att left join ".BAB_TAGS_TBL." tt on tt.id = att.id_tag WHERE tag_name = ".implode(' or tag_name = ', $tags));
+						while( $rr = $babDB->db_fetch_array($res))
+							{
+							$maptags[$rr['tag_name']][] = $rr['id_file'];
+							$tidfiles[] = $rr['id_file'];
+							}
+						$optags = intval(bab_pp('optags', 1));
+						if( $optags == 0 && count($maptags))
+							{
+							list(,$tidfiles) = each($maptags);
+							while( list(,$t) = each($maptags) )
+								{
+								$tidfiles = array_intersect($tidfiles, $t);
+								}
 							}
 						}
+
 					}
+
 				$idfiles = '';
 				if( count($tidfiles ))
 					{
@@ -1327,17 +1358,28 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					{
 					$idfiles = '';
 					}
-
-				if ($temp1 != "" && $temp2 != "" && $temp3 != "" && $temp4 != "" && $idfiles != '')
+				if (($temp1 != '' ) || $idfiles != '')
 				{
-					$plus = "( ".$temp1." or ".$temp2." or ".$temp3." or ".$temp4." or F.id in(".$idfiles.")) ";
+					if( $temp1 )
+						{
+						$plus = "( ".$temp1." or ".$temp2." or ".$temp3." or ".$temp4."";
+						if( $idfiles )
+							{
+							$plus .= " or F.id in(".$idfiles.")";
+							}
+						$plus .= ") ";
+						}
+					else
+						{
+						$plus = "(F.id in(".$idfiles."))";
+						}
 				}
 				else
 				{ 
-					$plus = "";
+					$plus = '';
 				}
 
-                if ($sFolderWhereClauseItem != "") 
+                if ($plus && $sFolderWhereClauseItem != "") 
 					{
 
 					// indexation
