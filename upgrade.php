@@ -94,7 +94,7 @@ function fmUpgrade()
 					if(is_dir($sOldPath))
 					{
 						$sDelegationId	= (string) $aDatas['iIdDgOwner'];
-						$sNewPath		= $sCollectiveUploadPath . 'G' . $sDelegationId;
+						$sNewPath		= $sCollectiveUploadPath . 'DG' . $sDelegationId;
 						
 						if(!is_dir($sNewPath))
 						{
@@ -237,7 +237,7 @@ function updateFmFromPreviousUpgrade()
 					{
 						$sDelegationId			= $aDatas['iIdDgOwner'];
 						$sCollectiveUploadPath 	= $sUploadPath . 'fileManager/collectives/';						
-						$sNewPath				= $sCollectiveUploadPath . 'G' . $sDelegationId;
+						$sNewPath				= $sCollectiveUploadPath . 'DG' . $sDelegationId;
 						
 						if(!is_dir($sNewPath))
 						{
