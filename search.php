@@ -26,6 +26,7 @@ include_once $babInstallPath."utilit/topincl.php";
 include_once $babInstallPath."utilit/forumincl.php";
 include_once $babInstallPath."utilit/fileincl.php";
 include_once $babInstallPath."utilit/calincl.php";
+include_once $babInstallPath."utilit/calapi.php";
 include_once $babInstallPath."utilit/dirincl.php";
 include_once $babInstallPath."utilit/searchincl.php";
 
@@ -1901,7 +1902,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				
 				if ($this->like || $this->like2)
 					{
-					$reqsup = "(ceo.id_cal=".$babDB->quote($GLOBALS['BAB_SESS_USERID'])." OR ce.bprivate='N') AND (".
+					$reqsup = "(ceo.id_cal=".$babDB->quote(bab_getPersonalCalendar($GLOBALS['BAB_SESS_USERID']))." OR ce.bprivate='N') AND (".
 						finder($this->like,"ce.title",$option,$this->like2)." or ".
 						finder($this->like,"ce.description",$option,$this->like2)." or ".
 						finder($this->like,"cct.description",$option,$this->like2)." or ".
@@ -2360,7 +2361,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$this->ageend_date = $this->dateformat(bab_mktime($arr['end_date']));
 				$iarr = $babBody->icalendars->getCalendarInfo($arr['id_cal']);
 				$this->agecreator = $iarr['name'];
-				$this->private = $arr['bprivate'] == 'Y' && $arr['owner'] != $GLOBALS['BAB_SESS_USERID'];
+				$this->private = $arr['bprivate'] == 'Y' && $arr['owner'] != bab_getPersonalCalendar($GLOBALS['BAB_SESS_USERID']);
 				switch ($iarr['type'])
 					{
 					case BAB_CAL_USER_TYPE:
