@@ -485,7 +485,7 @@ class bab_Template
 			return $tr;
 		}
 
-		$call = next(reset(bab_debug_backtrace())); // $call will contain debug info about the line in the script where this function was called.
+		$call = reset(bab_debug_backtrace()); // $call will contain debug info about the line in the script where this function was called.
 		bab_Template::addError($templateObject, 'Unknown property or global variable (' . $propertyName . ')', $call['line']);
 		return '{ ' . $propertyName . ' }';
 	}
