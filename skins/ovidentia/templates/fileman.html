@@ -209,12 +209,16 @@ aR(0);
 					</tr>
 				<!--#endif bParentUrl -->
 					
-					<!--#in getnextgrpdir -->
+				
+				
+					<!--#in getNextFolder -->
 				<!--#if altbg -->
 					<tr class="BabSiteAdminFontBackground">
 				<!--#else altbg -->
 					<tr class="BabForumBackground1">
 				<!--#endif altbg -->
+				
+				<!--#if bCollectiveFolder -->
 						<td width="1%" align="center">
 					<!--#if ma -->
 						{ manfolderimg }
@@ -222,6 +226,9 @@ aR(0);
 						{ grpfolderimg }
 					<!--#endif ma -->
 						</td>
+				<!--#else bCollectiveFolder -->
+						<td width="1%" align="center">{ usrfolderimg }</td>
+				<!--#endif bCollectiveFolder -->
 						<td align="left"><a href="{ url }">{ name }</a></td>
 						<td colspan="4">&nbsp;</td>
 						<td width="10%" nowrap="nowrap">
@@ -237,25 +244,10 @@ aR(0);
 						</td>
 						<td>&nbsp;</td>
 					</tr>
-					<!--#endin getnextgrpdir -->
-					
-					
-					<!--#in getnextdir -->
-					<tr class="BabSiteAdminFontBackground"> 
-						<td width="1%" align="center">{ usrfolderimg }</td>
-						<td><a href="{ url }">{ name }</a></td>
-						<td colspan="4">&nbsp;</td>
-						<td width="10%" nowrap="nowrap">
-					<!--#if bFolderFormUrl -->
-						<a href="{ sFolderFormUrl }" title="{ sFolderFormEdit }"><img src="{ babSkinPath }images/Puces/edit.png" border="0" alt="{ sFolderFormEdit }" align="middle" /></a>
-					<!--#endif bFolderFormUrl -->
-					<!--#if bCutFolderUrl -->
-						<a href="{ sCutFolderUrl }" title="{ sCutFolder }"><img src="{ babSkinPath }images/Puces/cut.gif" alt="{ sCutFolder }" border="0" align="middle" /></a>
-					<!--#endif bCutFolderUrl -->&nbsp;
-						</td>
-						<td>&nbsp;</td>
-					</tr>
-					<!--#endin getnextdir -->
+					<!--#endin getNextFolder -->
+				
+				
+
 						
 					<!--#in getNextCuttedFolder -->
 					<tr class="BabSiteAdminFontBackground"> 

@@ -41,10 +41,7 @@ class listFiles
 	var $countmgrp;
 	var $countwf;
 	var $reswf;
-	var $arrdir = array();
 	var $buaf;
-	
-	var $aGrpFolder = array(); 
 	
 	var $oRegHlp = null;
 	var $oFolderFileSet = null;
@@ -66,6 +63,8 @@ class listFiles
 	 */
 	var $files_from_dir = array();
 
+	var $aFolders = array();
+	
 	function listFiles($what="list")
 	{
 		global $babBody, $babDB, $BAB_SESS_USERID;
@@ -77,6 +76,7 @@ class listFiles
 		$this->initEnv();
 
 		$this->{$this->sListFunctionName}();
+		ksort($this->aFolders);
 		
 		$this->prepare();
 		$this->autoadd_files();
@@ -181,7 +181,6 @@ class listFiles
 	{
 		$sUploadPath = BAB_FmFolderHelper::getUploadPath();
 		$this->walkDirectory($sUploadPath . $this->oFileManagerEnv->sRelativePath, 'simpleDirectoryCallback');
-		natcasesort($this->arrdir);
 	}
 	
 	function listCollectiveFolder()
@@ -220,7 +219,24 @@ class listFiles
 		
 			if(false === $bInClipBoard || (true == $bInClipBoard && (0 === $this->aCuttedDir[$this->oFileManagerEnv->sRelativePath . $sEntry . '/']['ma'] || false === $this->oFileManagerEnv->oAclFm->haveManagerRight())))
 			{
-				$this->arrdir[] = $sEntry;
+				$bCutFolderUrl = ('N' === $this->oFileManagerEnv->sGr && $this->oFileManagerEnv->iPathLength !== 0 ||
+					'Y' === $this->oFileManagerEnv->sGr && $this->oFileManagerEnv->oAclFm->haveManagerRight()) &&
+					!$bInClipBoard;
+				
+				$aItem = array(
+					'iId' => 0, 
+					'bManager' => ($this->oFileManagerEnv->oAclFm->haveManagerRight()) ? 1 : 0, 
+					'bFolderFormUrl' => ($this->oFileManagerEnv->oAclFm->haveManagerRight()) ? 1 : 0, 
+					'bCutFolderUrl' => ($bCutFolderUrl) ? 1 : 0, 
+					'bRightUrl' => 0, 
+					'sName' => $sEntry, 
+					'sGr' => $this->oFileManagerEnv->sGr, 
+					'sCollective' => 'N', 
+					'sHide' => 'N',
+					'sUrlPath' => $this->path,
+					'iIdUrl' => $this->oFileManagerEnv->iId);
+					
+				$this->aFolders[] = $aItem;
 			}
 		} 
 		else 
@@ -264,11 +280,11 @@ class listFiles
 
 		if( !empty($sUrlPath))
 		{
-		$bFolderManager = $this->oFileManagerEnv->oAclFm->haveManagerRight();
+			$bFolderManager = $this->oFileManagerEnv->oAclFm->haveManagerRight();
 		}
 		else
 		{
-		$bFolderManager = false;
+			$bFolderManager = false;
 		}
 
 		$bAccess = bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $oFmFolder->getId()) || bab_isAccessValid(BAB_FMUPLOAD_GROUPS_TBL, $oFmFolder->getId()) || bab_isAccessValid(BAB_FMUPDATE_GROUPS_TBL, $oFmFolder->getId()) || $bFolderManager;
@@ -276,15 +292,19 @@ class listFiles
 		if($bAccess || (true == $bInClipBoard && false === $bFolderManager) )
 		{
 			$aItem = array(
-				'id' => $oFmFolder->getId(), 
-				'ma' => ($bFolderManager) ? 1 : 0, 
-				'folder' => $oFmFolder->getName(), 
-				'hide' => ('Y' === $oFmFolder->getHide() && false === $bFolderManager) ? true :  false,
+				'iId' => $oFmFolder->getId(), 
+				'bManager' => ($bFolderManager) ? 1 : 0, 
+				'bFolderFormUrl' => ($bFolderManager) ? 1 : 0, 
+				'bCutFolderUrl' => ($bFolderManager && !$bInClipBoard) ? 1 : 0, 
+				'bRightUrl' => ($bFolderManager) ? 1 : 0, 
+				'sName' => $oFmFolder->getName(), 
+				'sGr' => 'Y', 
+				'sCollective' => 'Y', 
+				'sHide' => ('Y' === $oFmFolder->getHide() && false === $bFolderManager) ? true :  false,
 				'sUrlPath' => getUrlPath($sUrlPath),
 				'iIdUrl' => $iIdRootFolder);
-			
-//			bab_debug($aItem);		
-			$this->aGrpFolder[$sPathName] = $aItem;
+				
+			$this->aFolders[] = $aItem;
 		}
 	}
 		
@@ -1221,80 +1241,52 @@ function listFiles()
 			}
 		}
 
-		function getnextdir()
+		function getNextFolder()
 		{
-			static $i = 0;
-			if($i < count($this->arrdir))
-			{
-				$this->altbg			= !$this->altbg;
-				$this->name				= bab_toHtml($this->arrdir[$i]);
-				$this->bFolderFormUrl	= false;
-				$this->bCutFolderUrl	= false;
-				static $aExcludedDir	= array('.', '..', '. .');
-				
-				$sEncodedName	= urlencode($this->arrdir[$i]);
-				$sEncodedPath	= urlencode($this->path);
-				$sPath			= $sEncodedPath;
-				
-				if(!in_array($this->name, $aExcludedDir))	
-				{	
-					$this->bFolderFormUrl	= $this->oFileManagerEnv->oAclFm->haveManagerRight();
-					$this->bCutFolderUrl	= ('N' === $this->oFileManagerEnv->sGr && $this->oFileManagerEnv->iPathLength !== 0 || 'Y' === $this->oFileManagerEnv->sGr && $this->oFileManagerEnv->oAclFm->haveManagerRight());
-//					$this->bCutFolderUrl	= $this->oFileManagerEnv->oAclFm->haveManagerRight();
-					
-					$this->sFolderFormUrl = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&idx=displayFolderForm&sAction=editFolder&id=' . $this->id . 
-						'&gr=' . $this->gr . '&path=' . $sEncodedPath . '&sDirName=' . $sEncodedName);
-					
-					$this->sCutFolderUrl = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&idx=cutFolder&id=' . $this->id . 
-						'&gr=' . $this->gr . '&path=' . $sEncodedPath . '&sDirName=' . $sEncodedName);
-				
-					$sPath .= $this->oFileManagerEnv->sEndSlash . $sEncodedName;
-				}
-				$this->url = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&idx=' . urlencode($this->sProcessedIdx) . '&id=' . $this->id . 
-					'&gr=' . $this->gr . '&path=' . $sPath);
-				
-				$i++;
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-		}
-		
-		function getnextgrpdir(&$skip)
-		{
-			$aItem = each($this->aGrpFolder);
+			$aItem = each($this->aFolders);
 			if(false !== $aItem)
 			{
-//				bab_debug($aItem);
-				$sRelativePath			= $aItem['key'];
-				$aItem					= $aItem['value'];
-				$bHaveManagerRight		= (1 == $aItem['ma']);
-				$iIdRootFolder			= $aItem['iIdUrl'];
-				$iIdFolder				= $aItem['id'];
-				$this->bRightUrl		= $bHaveManagerRight;
-				$this->bCutFolderUrl	= ($bHaveManagerRight && 'Y' === $this->oFileManagerEnv->sGr && false === $this->oRegHlp->exist($sRelativePath));
-				$this->bFolderFormUrl	= $bHaveManagerRight;
-				$sEncodedPath			= urlencode($this->path);
-				$sEncodedName			= urlencode($aItem['folder']);
-				$sUrlEncodedPath		= urlencode($aItem['sUrlPath']);
+				$aItem						= $aItem['value'];
+				$bHaveManagerRight			= (1 == $aItem['bManager']);
+				$iIdRootFolder				= $aItem['iIdUrl'];
+				$iIdFolder					= $aItem['iId'];
+				$this->bRightUrl			= $aItem['bRightUrl'];
+				$this->bCutFolderUrl		= $aItem['bCutFolderUrl'];
+				$this->bFolderFormUrl		= $aItem['bFolderFormUrl'];
+				$this->bCollectiveFolder	= ('Y' == $aItem['sCollective']);
+				$sEncodedPath				= urlencode($this->path);
+				$sEncodedName				= urlencode($aItem['sName']);
+				$sUrlEncodedPath			= urlencode($aItem['sUrlPath']);
+				$this->ma					= ('Y' === $aItem['sGr'] && 1 == $aItem['bManager']);
+				$sGr						= $aItem['sGr'];
+				$sCollective				= $aItem['sCollective'];
+				
 				
 				$this->sRightUrl = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&idx=displayRightForm&id=' . $iIdRootFolder . 
-					'&gr=Y&path=' . $sEncodedPath . '&iIdFolder=' . $iIdFolder);
+					'&gr=' . $sGr . '&path=' . $sEncodedPath . '&iIdFolder=' . $iIdFolder);
 
 				$this->sFolderFormUrl = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&idx=displayFolderForm&sAction=editFolder&id=' . $iIdRootFolder . 
-					'&gr=Y&path=' . $sEncodedPath . '&sDirName=' . $sEncodedName . '&iIdFolder=' . $iIdFolder);
+					'&gr=' . $sGr . '&path=' . $sEncodedPath . '&sDirName=' . $sEncodedName);
 					
 				$this->sCutFolderUrl = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&idx=cutFolder&id=' . $iIdRootFolder . 
-					'&gr=Y&path=' . $sEncodedPath . '&sDirName=' . $sEncodedName);
+					'&gr=' . $sGr . '&path=' . $sEncodedPath . '&sDirName=' . $sEncodedName);
 
+				$this->url = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&idx=list&id=' . $iIdRootFolder . '&gr=' . $sGr);
+				
 				$this->altbg = !$this->altbg;
-				$this->name = $aItem['folder'];
+				$this->name = $aItem['sName'];
 				
-				$this->url = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&idx=list&id=' . $iIdRootFolder . '&gr=Y&path=' . $sUrlEncodedPath);
+				if('Y' === $sGr && 'Y' === $sCollective)
+				{
+					$this->sFolderFormUrl .= bab_toHtml('&iIdFolder=' . $iIdFolder);
+					$this->url .= bab_toHtml('&path=' . $sUrlEncodedPath);
+				}
+				else 
+				{
+					$this->url .= bab_toHtml('&path=' . urlencode($this->path . $this->oFileManagerEnv->sEndSlash . $aItem['sName']));
+				}
 				
-				$this->ma = $aItem['ma'];
+				$this->ma = $bHaveManagerRight;
 				return true;
 			}
 			return false;
@@ -1305,8 +1297,6 @@ function listFiles()
 			$aItem = each($this->aCuttedDir);
 			if(false !== $aItem)
 			{
-//				bab_debug($aItem);
-				
 				$aItem 						= $aItem['value'];
 				$this->name					= $aItem['folder'];
 				$iIdFolder					= $aItem['id'];
