@@ -2465,4 +2465,9 @@
 <string id="Ended">Achevées</string>
 <string id="Users can add new tags">Les utilisateurs peuvent ajouter de nouveaux mots clés dans le thesaurus</string>
 <string id="Edit folder">Editer le répertoire</string>
+<string id="Unhandled action">Action non traitée</string>
+<string id="The root folder cannot be cutted">Le répertoire racine ne peut être coupé</string>
+<string id="This folder does not exists">Ce répertoire n'existe pas</string>
+<string id="The upload path is not set">Le répertoire d'upload n'est pas défini</string>
+<string id="The upload path is not a dir">Le chemin du répertoire d'upload n'est pas valide</string> 
 </fr>
