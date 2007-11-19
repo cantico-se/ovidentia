@@ -471,7 +471,7 @@
 			$this->m_sEditTaskDescriptionUrl = $GLOBALS['babUrlScript'] . '?tg=' . urlencode('usrTskMgr') . 
 				'&idx=' . urlencode(BAB_TM_IDX_DISPLAY_TASK_FORM) . '&iIdProjectSpace=' . 
 				urlencode($this->m_iIdProjectSpace) . '&iIdProject=' . urlencode($this->m_iIdProject) .
-				'&iIdTask=' . urlencode($this->m_iIdTask) . '&iUseEditor=1&$isProject=' . $isProject;
+				'&iIdTask=' . urlencode($this->m_iIdTask) . '&iUseEditor=1&isProject=' . $isProject;
 			
 			
 			//A faire ds les classes spécialisées
