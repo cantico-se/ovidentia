@@ -1742,7 +1742,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				if ($navitem != "g") $navpos = 0;
 				$this->navbar_g = navbar($babLimit,$nbrows,"g",$navpos);
 				$tmp = explode(" ",$order);
-				if (in_array("title",$tmp)) $order_tmp = "order by sn ASC, givenname ASC";
+				if (in_array("`title`",$tmp)) $order_tmp = "order by sn ASC, givenname ASC";
 				else $order_tmp = "order by ".$babDB->db_escape_string($order);
 
 				$req .= " ".$order_tmp." LIMIT ".$navpos.", ".$babLimit;
