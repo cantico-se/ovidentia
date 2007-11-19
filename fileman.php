@@ -236,7 +236,7 @@ class listFiles
 					'sUrlPath' => $this->path,
 					'iIdUrl' => $this->oFileManagerEnv->iId);
 					
-				$this->aFolders[] = $aItem;
+				$this->aFolders[realpath($sPathName . $sEntry)] = $aItem;
 			}
 		} 
 		else 
@@ -272,6 +272,7 @@ class listFiles
 	
 	function addCollectiveDirectory($oFmFolder, $iIdRootFolder, $sUrlPath)
 	{
+		$sUploadPath = BAB_FmFolderHelper::getUploadPath();
 		$sPathName = $oFmFolder->getRelativePath() . $oFmFolder->getName() . '/';
 		
 //		bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sPathName ==> ' . $sPathName);
@@ -304,7 +305,7 @@ class listFiles
 				'sUrlPath' => getUrlPath($sUrlPath),
 				'iIdUrl' => $iIdRootFolder);
 				
-			$this->aFolders[] = $aItem;
+			$this->aFolders[realpath($sUploadPath . $oFmFolder->getRelativePath() . $oFmFolder->getName())] = $aItem;
 		}
 	}
 		
@@ -1239,6 +1240,8 @@ function listFiles()
 			{
 				$this->xcount = 0;
 			}
+			
+//			bab_debug($this->aFolders);
 		}
 
 		function getNextFolder()
