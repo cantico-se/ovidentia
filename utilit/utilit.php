@@ -566,7 +566,7 @@ function babBody()
 		$res = $babDB->db_query("select remote_addr, grp_change, schi_change from ".BAB_USERS_LOG_TBL." where sessid='".session_id()."'");
 		if( $res && $babDB->db_num_rows($res) > 0 )
 			{
-			$arr = $babDB->db_fetch_array($res);
+			$arr = $babDB->db_fetch_assoc($res);
 			if ((!isset($GLOBALS['babCheckIpAddress']) || $GLOBALS['babCheckIpAddress'] == true) && $arr['remote_addr'] != $GLOBALS['REMOTE_ADDR'])
 				{
 				die(bab_translate("Access denied, your session id has been created by another ip address than yours"));
