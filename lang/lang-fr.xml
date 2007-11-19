@@ -2470,4 +2470,8 @@
 <string id="This folder does not exists">Ce répertoire n'existe pas</string>
 <string id="The upload path is not set">Le répertoire d'upload n'est pas défini</string>
 <string id="The upload path is not a dir">Le chemin du répertoire d'upload n'est pas valide</string> 
+<string id="Groups directories">Annuaires de groupes</string>
+<string id="Acess denied">Accès refusé</string>
+<string id="View directory entry for">Visualiser la fiche annuaire pour</string>
+<string id="Categories, topics and articles">Catégories, thèmes et articles</string>
 </fr>
