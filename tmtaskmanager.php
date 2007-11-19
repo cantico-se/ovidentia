@@ -1157,10 +1157,9 @@ function displayTaskList()
 		$aFilters['iIdOwner'] = $iIdOwner;
 	}
 	
-	//Une personne non gestionnaire ne doit pas voir les tâches qu'elle
-	//à refusée
+	// A non-manager user must not see the tasks he refused.
 	$iUserProfil = (int) $oTmCtx->getUserProfil();
-	$aFilters['bIsManger'] = ($iUserProfil === BAB_TM_PROJECT_MANAGER);
+	$aFilters['bIsManager'] = ($iUserProfil === BAB_TM_PROJECT_MANAGER);
 	
 	$oTaskFilterForm->m_sGanttViewUrl = bab_toHtml($sGanttViewUrl);
 
@@ -1214,6 +1213,7 @@ function displayTaskList()
 	$oMultiPage->addPaginationAndFormParameters('sFromIdx', BAB_TM_IDX_DISPLAY_TASK_LIST);
 	$oMultiPage->addPaginationAndFormParameters('isProject', $isProject);
 	$oMultiPage->addPaginationAndFormParameters('iIdProject', $iIdProject);
+	$oMultiPage->addPaginationAndFormParameters('iIdOwner', $iIdOwner);
 	
 	$aOrder = array();
 	$sOrderBy = (string) bab_rp('sOrderBy', '');
