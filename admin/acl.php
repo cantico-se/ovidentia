@@ -92,6 +92,7 @@ class macl
 				$this->aclgroups[BAB_UNREGISTERED_GROUP] = true;
 				$this->aclgroups[BAB_ALLUSERS_GROUP] = true;
 				$this->aclgroups[BAB_REGISTERED_GROUP] = true;
+				unset($this->df_groups[BAB_REGISTERED_GROUP]);
 				$childs = $this->tree->getChilds(BAB_REGISTERED_GROUP);
 				for( $k = 0; $k < count($childs); $k++ )
 					{
