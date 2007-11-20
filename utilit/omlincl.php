@@ -1851,7 +1851,7 @@ class bab_Folder extends bab_handler
 		
 		if(0 !== $folderid && bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $folderid))
 		{
-			$this->oFmFolderSet->select($oId->in(/*$folderid*/12));
+			$this->oFmFolderSet->select($oId->in($folderid));
 			$this->count = $this->oFmFolderSet->count();
 			$this->ctx->curctx->push('CCount', $this->count);
 		}
