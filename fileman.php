@@ -277,31 +277,25 @@ class listFiles
 		
 //		bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sPathName ==> ' . $sPathName);
 		
-		$bInClipBoard = $this->oRegHlp->exist($sPathName);
-
-		if( !empty($sUrlPath))
-		{
-			$bFolderManager = $this->oFileManagerEnv->oAclFm->haveManagerRight();
-		}
-		else
-		{
-			$bFolderManager = false;
-		}
-
-		$bAccess = bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $oFmFolder->getId()) || bab_isAccessValid(BAB_FMUPLOAD_GROUPS_TBL, $oFmFolder->getId()) || bab_isAccessValid(BAB_FMUPDATE_GROUPS_TBL, $oFmFolder->getId()) || $bFolderManager;
-
-		if($bAccess || (true == $bInClipBoard && false === $bFolderManager) )
+		$bInClipBoard			= $this->oRegHlp->exist($sPathName);
+		$bFolderManager			= bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oFmFolder->getId());
+		$bParentFolderManager	= $this->oFileManagerEnv->oAclFm->haveManagerRight();
+		$bHaveAccessOnFolder	= bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $oFmFolder->getId()) || 
+			bab_isAccessValid(BAB_FMUPLOAD_GROUPS_TBL, $oFmFolder->getId()) || 
+			bab_isAccessValid(BAB_FMUPDATE_GROUPS_TBL, $oFmFolder->getId());
+		
+		if(false === $bInClipBoard || (true == $bInClipBoard && (false === $bFolderManager || false === $bParentFolderManager)))
 		{
 			$aItem = array(
 				'iId' => $oFmFolder->getId(), 
-				'bManager' => ($bFolderManager) ? 1 : 0, 
-				'bFolderFormUrl' => ($bFolderManager) ? 1 : 0, 
-				'bCutFolderUrl' => ($bFolderManager && !$bInClipBoard) ? 1 : 0, 
-				'bRightUrl' => ($bFolderManager) ? 1 : 0, 
+				'bManager' => ($bParentFolderManager) ? 1 : 0, 
+				'bFolderFormUrl' => ($bFolderManager || $bHaveAccessOnFolder) ? 1 : 0, 
+				'bCutFolderUrl' => ($bParentFolderManager && !$bInClipBoard) ? 1 : 0, 
+				'bRightUrl' => ($bParentFolderManager) ? 1 : 0, 
 				'sName' => $oFmFolder->getName(), 
 				'sGr' => 'Y', 
 				'sCollective' => 'Y', 
-				'sHide' => ('Y' === $oFmFolder->getHide() && false === $bFolderManager) ? true :  false,
+				'sHide' => ('Y' === $oFmFolder->getHide() && false === $bParentFolderManager) ? true :  false,
 				'sUrlPath' => getUrlPath($sUrlPath),
 				'iIdUrl' => $iIdRootFolder);
 				
@@ -507,7 +501,8 @@ class listFiles
 		$oCriteria = $oCriteria->_and($oConfirmed->in('Y'));
 //		bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__);
 //		bab_debug($this->oFolderFileSet->getSelectQuery($oCriteria));
-		$this->oFolderFileSet->select($oCriteria);
+		$aOrder = array('sName' => 'ASC');
+		$this->oFolderFileSet->select($oCriteria, $aOrder);
 		$this->res = $this->oFolderFileSet->_oResult;
 		$this->count = $this->oFolderFileSet->count();
 //		bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' iCount ==> ' . $this->count);
