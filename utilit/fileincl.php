@@ -1263,56 +1263,6 @@ function fm_getFileAccess($idf)
 	}
 
 	return $result[$idf];
-
-
-	/*
-	global $babDB;
-
-	$res = $babDB->db_query("select * from ".BAB_FILES_TBL." where id='".$babDB->db_escape_string($idf)."' and state=''");
-	if( $res && $babDB->db_num_rows($res) > 0 )
-	{
-	$arrfile = $babDB->db_fetch_assoc($res);
-	if( $arrfile['bgroup'] == 'Y' && $arrfile['confirmed'] == 'Y')
-	{
-	$res = $babDB->db_query("select * from ".BAB_FM_FOLDERS_TBL." where id='".$babDB->db_escape_string($arrfile['id_owner'])."'");
-	$arrfold = $babDB->db_fetch_array($res);
-
-	if( $arrfold['version'] ==  'Y' )
-	{
-	if(bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $arrfold['id']) || bab_isAccessValid(BAB_FMUPDATE_GROUPS_TBL, $arrfile['id_owner']))
-	{
-	$bupdate = true;
-	if( $arrfile['edit'] != 0 ) {
-	list($lockauthor) = $babDB->db_fetch_array($babDB->db_query("select author from ".BAB_FM_FILESVER_TBL." where id='".$babDB->db_escape_string($arrfile['edit'])."'"));
-	}
-	}
-
-	if(bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $arrfile['id_owner'])) {
-	$bdownload = true;
-	}
-	}
-	} elseif ('N' == $arrfile['bgroup']) {
-
-
-
-	if( $GLOBALS['babBody']->ustorage && !empty($BAB_SESS_USERID) && $BAB_SESS_USERID == $arrfile['id_owner'] ) {
-	$bupdate = true;
-	$bdownload = true;
-	}
-	}
-	}
-
-	$result[$idf] = array(
-	'arrfile' => $arrfile,
-	'arrfold' => $arrfold,
-	'bupdate' => $bupdate,
-	'bdownload' => $bdownload,
-	'lockauthor' => $lockauthor
-	);
-	}
-
-	return $result[$idf];
-	//*/
 }
 
 
@@ -3570,8 +3520,6 @@ class BAB_RegitryHelper
 			$oRegHlp->save();
 		}
 	}
-	
-//	function update
 }
 
 
@@ -3745,8 +3693,6 @@ class BAB_AclFm
 	
 	function initRightForCollectiveDir($iIdObject)
 	{
-//		bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ );
-		
 		$this->bManager = bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $iIdObject);
 		if(true === $this->bManager)
 		{
@@ -3764,8 +3710,6 @@ class BAB_AclFm
 	
 	function initRigthForUserDir($iIdObject)
 	{
-//		bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ );
-		
 		global $BAB_SESS_USERID;
 		if(0 !== $iIdObject)
 		{
@@ -3801,9 +3745,6 @@ class BAB_AclFm
 	
 	function userHaveStorage()
 	{
-//		global $BAB_SESS_USERID;
-//		$sFullUserPathname = BAB_FmFolderHelper::getUploadPath() . 'U' . $BAB_SESS_USERID;	
-//		return(file_exists($sFullUserPathname));	
 		return $this->bUserHaveStorage;
 	}
 	
@@ -3847,7 +3788,6 @@ class BAB_AclFm
 			WHERE 
 				ustorage IN(' . $babDB->quote('Y') . ')';
 	
-		//bab_debug($sQuery);
 		$oResult = $babDB->db_query($sQuery);
 		if(false !== $oResult)
 		{
@@ -3937,7 +3877,6 @@ function removeFirstPath($sPath)
 			$iCount = count($aPath);
 			if($iCount >= 2)
 			{
-//				bab_debug($aPath);
 				unset($aPath[0]);
 				return implode('/', $aPath);
 			}
@@ -4011,4 +3950,301 @@ function &getEnvObject()
 	return $GLOBALS['babFmEnvObject'];
 }
 
+
+/**
+ * This method allow to know if the connected user can set right
+ * on the object that is represented by the pass.
+ * Users are allowed to set rigth on a folder if they have manager
+ * right on the parent folder.
+ * For a collective folder the first path must be 'collectives/'.
+ * For a user folder the first path must be 'users/'.
+ * 
+ * @param string $sPath	The relative path of the folder
+ * 	 
+ * @return boolean True if the user can set rigth, false otherwise
+ **/
+function canSetRight($sPath)
+{
+	return canEdit($sPath);
+}
+
+
+/**
+ * This method allow to know if the connected user can cut
+ * the folder that is represented by the pass.
+ * Users are allowed to cut folder if they have manager
+ * right on the parent folder.
+ * For a collective folder the first path must be 'collectives/'.
+ * For a user folder the first path must be 'users/'.
+ * 
+ * @param string $sPath	The relative path of the folder
+ * 	 
+ * @return boolean True if the user can cut the folder, false otherwise
+ **/
+function canCut($sPath)
+{
+	static $aPath = array();
+	
+	$oFileManagerEnv =& getEnvObject();
+
+	if(!array_key_exists($sPath, $aPath))
+	{
+		$sCollective	= 'collectives/';
+		$sUser			= 'users/';
+		
+		if($sCollective === (string) substr($sPath, 0, strlen($sCollective)))
+		{
+			$sRelativePath = '';
+			$sName = '';
+			
+			getRelativePathAndFolderName($sPath, $sRelativePath, $sName);
+			
+			if('' === $sRelativePath)
+			{
+				$aPath[$sPath] = false;
+			}
+			else 
+			{
+				$oFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($sRelativePath);
+				$aPath[$sPath] = bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oFmFolder->getId());
+			}
+		}
+		else if($sUser === (string) substr($sPath, 0, strlen($sUser)))
+		{
+			if(isUserFolder($sPath) && 0 !== $oFileManagerEnv->iPathLength)			
+			{
+				$aPath[$sPath] = true;
+			}
+			else 
+			{
+				$aPath[$sPath] = false;
+			}
+		}
+	}
+	return $aPath[$sPath];
+}
+
+
+
+/**
+ * This method allow to know if the connected user can edit
+ * the folder that is represented by the pass.
+ * Users are allowed to edit folder if they have manager
+ * right on the parent folder.
+ * For a collective folder the first path must be 'collectives/'.
+ * For a user folder the first path must be 'users/'.
+ * 
+ * @param string $sPath	The relative path of the folder
+ * 	 
+ * @return boolean True if the user can edit the folder, false otherwise
+ **/
+function canEdit($sPath)
+{
+	static $aPath = array();
+	
+	$oFileManagerEnv =& getEnvObject();
+
+	if(!array_key_exists($sPath, $aPath))
+	{
+		$sCollective	= 'collectives/';
+		$sUser			= 'users/';
+		
+		if($sCollective === (string) substr($sPath, 0, strlen($sCollective)))
+		{
+			$sRelativePath = '';
+			$sName = '';
+			
+			getRelativePathAndFolderName($sPath, $sRelativePath, $sName);
+			
+			if('' === $sRelativePath)
+			{
+				$aPath[$sPath] = bab_isUserAdministrator();
+			}
+			else 
+			{
+				$oFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($sRelativePath);
+				$aPath[$sPath] = bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oFmFolder->getId());
+			}
+		}
+		else if($sUser === (string) substr($sPath, 0, strlen($sUser)))
+		{
+			$aPath[$sPath] = isUserFolder($sPath);
+		}
+	}
+	return $aPath[$sPath];
+}
+	
+	
+/**
+ * This method allow to know if the connected user can browse
+ * the folder that is represented by the pass.
+ * Users are allowed to browse folder if they are manager
+ * of the folder or if they can download, upload, update the folder
+ * For a collective folder the first path must be 'collectives/'.
+ * For a user folder the first path must be 'users/'.
+ * 
+ * @param string $sPath	The relative path of the folder
+ * 	 
+ * @return boolean True if the user can browse the folder, false otherwise
+ **/
+function canBrowse($sPath)
+{
+	static $aPath = array();
+
+	if(!array_key_exists($sPath, $aPath))
+	{
+		$sCollective	= 'collectives/';
+		$sUser			= 'users/';
+		
+		if($sCollective === (string) substr($sPath, 0, strlen($sCollective)))
+		{
+			$sRelativePath = removeFirstPath($sPath);
+				
+			$oFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($sRelativePath);
+			if(!is_null($oFmFolder))
+			{
+				$aPath[$sPath] = bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $oFmFolder->getId()) || 
+					bab_isAccessValid(BAB_FMUPLOAD_GROUPS_TBL, $oFmFolder->getId()) || 
+					bab_isAccessValid(BAB_FMUPDATE_GROUPS_TBL, $oFmFolder->getId()) || 
+					bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oFmFolder->getId());
+			}
+			else
+			{
+				$aPath[$sPath] = false;
+			}
+		}
+		else if($sUser === (string) substr($sPath, 0, strlen($sUser)))
+		{
+			$aPath[$sPath] = isUserFolder($sPath);
+		}
+	}
+	return $aPath[$sPath];
+}
+
+
+function canPaste($sPath)
+{
+	static $aPath = array();
+	
+	if(!array_key_exists($sPath, $aPath))
+	{
+		$sCollective		= 'collectives/';
+		$sUser				= 'users/';
+		$sUploadPath		= BAB_FmFolderHelper::getUploadPath();
+		$oFileManagerEnv	=& getEnvObject();
+		
+		if($sCollective === (string) substr($sPath, 0, strlen($sCollective)))
+		{
+			$sRelativePath = '';
+			$sName = '';
+			
+			//Permet de savoir si on est dans le répertoire root
+			getRelativePathAndFolderName($sPath, $sRelativePath, $sName);
+			
+			if('' !== $sRelativePath)
+			{
+				$sPathToPaste = removeFirstPath($sPath);
+				if(isFolderPastable($sPathToPaste))
+				{
+					//Récupération des droits sur le répertoire parent du répertoire que l'on veut coller
+					$oFmFolderToPaste = BAB_FmFolderSet::getFirstCollectiveFolder(removeLastPath($sPathToPaste));
+					//bab_debug($oFmFolderToCut);
+					
+					//Récupération des droits sur le répertoire courant
+					$oFmFolderParent = BAB_FmFolderSet::getFirstCollectiveFolder($oFileManagerEnv->sRelativePath);
+					//bab_debug($oFmFolderParent);
+					if(!is_null($oFmFolderToPaste) && !is_null($oFmFolderParent))
+					{
+						$aPath[$sPath] = bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oFmFolderToPaste->getId()) &&
+							bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oFmFolderParent->getId());
+					}
+					else 
+					{
+						$aPath[$sPath] = false;
+					}
+				}
+				else 
+				{
+					$aPath[$sPath] = false;
+				}
+			}
+			else 
+			{
+				$aPath[$sPath] = false;
+			}
+		}
+		else if($sUser === (string) substr($sPath, 0, strlen($sUser)))
+		{
+			if(isUserFolder($sPath) && 0 !== $oFileManagerEnv->iPathLength)			
+			{
+				$aPath[$sPath] = isFolderPastable(removeFirstPath($sPath));
+			}
+			else 
+			{
+				$aPath[$sPath] = false;
+			}
+		}
+	}
+	return $aPath[$sPath];
+}
+
+
+function canDelete($sPath)
+{
+	
+}
+
+
+function canUpload($sPath)
+{
+	
+}
+
+function isFolderPastable($sRelativePathToPaste)
+{
+	$oFileManagerEnv	=& getEnvObject();
+	$sUploadPath		= BAB_FmFolderHelper::getUploadPath();
+	$sFullCurrFolder	= realpath($sUploadPath . $oFileManagerEnv->sRelativePath);
+	$sFullPathToPaste	= realpath($sUploadPath . $sRelativePathToPaste);
+	$sFullParentPath	= substr($sFullCurrFolder, 0, strlen($sFullPathToPaste));
+	
+	/*				
+	bab_debug(
+		'sRelativePathToPaste ==> ' . $sRelativePathToPaste . 
+		' sFullPathToPaste ==> ' . $sFullPathToPaste . 
+		' sFullParentPath ==> ' . $sFullParentPath . 				
+		' sFullCurrFolder ==> ' . $sFullCurrFolder);				
+	//*/
+	
+	//On ne peut coller la source que si la cible et un répertoire
+	//parent ou le même
+	return ($sFullParentPath !== $sFullPathToPaste);
+}
+
+function isUserFolder($sPath)
+{
+	global $BAB_SESS_USERID;
+	
+	$oFileManagerEnv =& getEnvObject();
+	$sRelativePath = '';
+	$sName = '';
+	
+	getRelativePathAndFolderName($sPath, $sRelativePath, $sName);
+	$sFirstPath = getFirstPath($sRelativePath);
+	
+	$aBuffer = array();
+	if(preg_match('/(U)(\d+)/', $sFirstPath, $aBuffer))
+	{
+		$iIdUser = (int) $aBuffer[2];
+		return ($iIdUser === (int) $oFileManagerEnv->iIdObject);
+	}
+	return false;
+}
+
+function getRelativePathAndFolderName($sPath, &$sRelativePath, &$sName)
+{
+	$sPath = removeFirstPath($sPath);
+	$sName = getLastPath($sPath);
+	$sRelativePath = (string) substr($sPath, 0, - (strlen($sName) + 1));
+}
 ?>

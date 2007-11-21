@@ -229,18 +229,24 @@ aR(0);
 				<!--#else bCollectiveFolder -->
 						<td width="1%" align="center">{ usrfolderimg }</td>
 				<!--#endif bCollectiveFolder -->
-						<td align="left"><a href="{ url }">{ name }</a></td>
+						<td align="left">
+					<!--#if bCanBrowse -->
+							<a href="{ url }">{ name }</a>
+					<!--#else bCanBrowse -->
+							{ name }
+					<!--#endif bCanBrowse -->
+						</td>
 						<td colspan="4">&nbsp;</td>
 						<td width="10%" nowrap="nowrap">
-					<!--#if bFolderFormUrl -->
+					<!--#if bCanEdit -->
 						<a href="{ sFolderFormUrl }" title="{ sFolderFormEdit }"><img src="{ babSkinPath }images/Puces/edit.png" border="0" align="middle" alt="{ sFolderFormEdit }"  /></a>
-					<!--#endif bFolderFormUrl -->
-					<!--#if bRightUrl -->
+					<!--#endif bCanEdit -->
+					<!--#if bCanSetRight -->
 						<a href="{ sRightUrl }" title="{ sRight }"><img src="{ babSkinPath }images/Puces/access.png" border="0" alt="{ sRight }" align="middle"  /></a>
-					<!--#endif bRightUrl -->
-					<!--#if bCutFolderUrl -->
+					<!--#endif bCanSetRight -->
+					<!--#if bCanCut -->
 						<a href="{ sCutFolderUrl }" title="{ sCutFolder }"><img src="{ babSkinPath }images/Puces/cut.gif" alt="{ sCutFolder }" border="0" align="middle" /></a>
-					<!--#endif bCutFolderUrl -->&nbsp;
+					<!--#endif bCanCut -->&nbsp;
 						</td>
 						<td>&nbsp;</td>
 					</tr>
