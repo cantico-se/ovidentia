@@ -67,6 +67,15 @@ class listFiles
 	
 	function listFiles($what="list")
 	{
+		function bab_compareFmFiles($f1, $f2)
+		{
+			if ($f1['sCollective'] == $f2['sCollective']) {
+				return strcmp($f1['sName'], $f2['sName']);
+			} else {
+				return strcmp($f2['sCollective'], $f1['sCollective']);
+			}
+		}
+		
 		global $babBody, $babDB, $BAB_SESS_USERID;
 		include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 		
@@ -74,9 +83,9 @@ class listFiles
 		
 		$this->sProcessedIdx = $what;
 		$this->initEnv();
-
+	
 		$this->{$this->sListFunctionName}();
-		ksort($this->aFolders);
+		uasort($this->aFolders, 'bab_compareFmFiles');
 		
 		$this->prepare();
 		$this->autoadd_files();
@@ -240,7 +249,7 @@ class listFiles
 					'sUrlPath' => $this->path,
 					'iIdUrl' => $this->oFileManagerEnv->iId);
 					
-				$this->aFolders[realpath($sPathName . $sEntry)] = $aItem;
+				$this->aFolders[] = $aItem;
 			}
 		} 
 		else 
@@ -303,7 +312,7 @@ class listFiles
 				'sUrlPath' => getUrlPath($sUrlPath),
 				'iIdUrl' => $iIdRootFolder);
 				
-			$this->aFolders[realpath($sUploadPath . $oFmFolder->getRelativePath() . $oFmFolder->getName())] = $aItem;
+			$this->aFolders[] = $aItem;
 		}
 	}
 		
