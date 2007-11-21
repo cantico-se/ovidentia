@@ -3616,7 +3616,6 @@ class BAB_FileManagerEnv
 			{
 				if(!is_null($this->oFmFolder))
 				{
-					$oFileManagerEnv =& getEnvObject();
 					$sParentPath = 'collectives/' . $oFileManagerEnv->sRelativePath;
 					if(true === canManage($sParentPath))
 					{
