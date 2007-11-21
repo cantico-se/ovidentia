@@ -457,8 +457,7 @@ function babUserSection($close)
 		}
 	
 	require_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
-	$oFileManagerEnv =& getEnvObject();
-	if($oFileManagerEnv->oAclFm->userHaveStorage() || $oFileManagerEnv->oAclFm->haveRightOnCollectiveFolder())
+	if(userHavePersonnalStorage() || userHaveRightOnCollectiveFolder())
 	{
 		$this->array_urls[bab_translate("File manager")] = $GLOBALS['babUrlScript']."?tg=fileman";
 	}

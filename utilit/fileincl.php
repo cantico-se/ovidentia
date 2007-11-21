@@ -485,7 +485,7 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 	
 	if(!empty($BAB_SESS_USERID))
 	{
-		if('N' === $gr && $oFileManagerEnv->oAclFm->userHaveStorage())
+		if('N' === $gr && userHavePersonnalStorage())
 		{
 			$access = true;
 			$confirmed = 'Y';
@@ -3538,11 +3538,10 @@ class BAB_FileManagerEnv
 	var $iPathLength = 0;
 	
 	var $oFmFolder = null;
-	var $oAclFm	   = null;
 	
 	function BAB_FileManagerEnv()
 	{
-		$this->oAclFm = new BAB_AclFm();
+		
 	}
 	
 	function init()
@@ -3585,8 +3584,6 @@ class BAB_FileManagerEnv
 			$this->sRootFolderPath = 'U' . $this->iIdObject . '/';
 			$this->sRelativePath = 'U' . $this->iIdObject . '/' . $this->sPath . $this->sEndSlash;
 		}
-		
-		$this->oAclFm->init($this->sGr, $this->iIdObject);
 	}
 	
 	function accessValid()
@@ -3597,7 +3594,7 @@ class BAB_FileManagerEnv
 			
 			if('N' === $this->sGr)
 			{
-				if(true === $this->oAclFm->haveRightOnCollectiveFolder() || true === $this->oAclFm->userHaveStorage())
+				if(true === userHaveRightOnCollectiveFolder() || true === userHavePersonnalStorage())
 				{
 					if(0 === $this->iPathLength)
 					{
@@ -3619,11 +3616,13 @@ class BAB_FileManagerEnv
 			{
 				if(!is_null($this->oFmFolder))
 				{
-					if(true === $this->oAclFm->haveManagerRight())
+					$oFileManagerEnv =& getEnvObject();
+					$sParentPath = 'collectives/' . $oFileManagerEnv->sRelativePath;
+					if(true === canManage($sParentPath))
 					{
 						return true;
 					}
-					else if(true === $this->oAclFm->haveUploadRight() || true === $this->oAclFm->haveDownloadRight() || true === $this->oAclFm->haveUpdateRight())
+					else if(true === canUpload($sParentPath) || true === canDownload($sParentPath) || true === canUpdate($sParentPath))
 					{
 						return true;						
 					}
@@ -3664,146 +3663,6 @@ class BAB_FileManagerEnv
 
 
 
-
-class BAB_AclFm
-{
-	var $bManager	= false;
-	var $bDownload	= false;
-	var $bUpdate	= false;
-	var $bUpload	= false;
-	
-	var $bUserHaveStorage = false;
-	
-	function BAB_AclFm()
-	{
-		$this->checkIfUserCanHaveStorage();
-	}
-
-	function init($sGR, $iIdObject)
-	{
-		if('Y' === $sGR)
-		{
-			$this->initRightForCollectiveDir($iIdObject);
-		}
-		else if('N' === $sGR)
-		{
-			$this->initRigthForUserDir($iIdObject);
-		}
-	}
-	
-	function initRightForCollectiveDir($iIdObject)
-	{
-		$this->bManager = bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $iIdObject);
-		if(true === $this->bManager)
-		{
-			$this->bDownload = true;
-			$this->bUpdate = true;
-			$this->bUpload = true;
-		}
-		else 
-		{
-			$this->bDownload = bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $iIdObject);
-			$this->bUpdate = bab_isAccessValid(BAB_FMUPDATE_GROUPS_TBL, $iIdObject);
-			$this->bUpload = bab_isAccessValid(BAB_FMUPLOAD_GROUPS_TBL, $iIdObject);
-		}
-	}
-	
-	function initRigthForUserDir($iIdObject)
-	{
-		global $BAB_SESS_USERID;
-		if(0 !== $iIdObject)
-		{
-			if($this->bUserHaveStorage && $iIdObject === (int) $BAB_SESS_USERID)
-			{
-				$this->bManager = true;
-				$this->bDownload = true;
-				$this->bUpdate = true;
-				$this->bUpload = true;
-			}
-		}
-	}
-			
-	function haveUploadRight()
-	{
-		return $this->bUpload;
-	}
-	
-	function haveDownloadRight()
-	{
-		return $this->bDownload;
-	}
-		
-	function haveUpdateRight()
-	{
-		return $this->bUpdate;
-	}
-	
-	function haveManagerRight()
-	{
-		return $this->bManager;
-	}
-	
-	function userHaveStorage()
-	{
-		return $this->bUserHaveStorage;
-	}
-	
-	function haveRightOnCollectiveFolder()
-	{
-		$aIdObject = bab_getUserIdObjects(BAB_FMUPLOAD_GROUPS_TBL);
-		if(is_array($aIdObject) && count($aIdObject) > 0)
-		{
-			return true;
-		}
-		
-		$aIdObject = bab_getUserIdObjects(BAB_FMDOWNLOAD_GROUPS_TBL);
-		if(is_array($aIdObject) && count($aIdObject) > 0)
-		{
-			return true;
-		}
-		
-		$aIdObject = bab_getUserIdObjects(BAB_FMUPDATE_GROUPS_TBL);
-		if(is_array($aIdObject) && count($aIdObject) > 0)
-		{
-			return true;
-		}
-		
-		$aIdObject = bab_getUserIdObjects(BAB_FMMANAGERS_GROUPS_TBL);
-		if(is_array($aIdObject) && count($aIdObject) > 0)
-		{
-			return true;
-		}
-		return false;
-	}
-	
-	function checkIfUserCanHaveStorage()
-	{
-		global $babDB;
-	
-		$sQuery = 
-			'SELECT  
-				id
-			FROM 
-				' . BAB_GROUPS_TBL . '
-			WHERE 
-				ustorage IN(' . $babDB->quote('Y') . ')';
-	
-		$oResult = $babDB->db_query($sQuery);
-		if(false !== $oResult)
-		{
-			$iNumRows = $babDB->db_num_rows($oResult);
-			$iIndex = 0;
-			while($iIndex < $iNumRows && false !== ($aDatas = $babDB->db_fetch_array($oResult)))
-			{
-				$iIndex++;
-				if(bab_isMemberOfGroup($aDatas['id']))
-				{
-					$this->bUserHaveStorage = true;
-				}
-			}
-		}
-	}
-}
 
 function getUrlPath($sRelativePath)
 {
@@ -4089,6 +3948,8 @@ function canEdit($sPath)
  **/
 function canBrowse($sPath)
 {
+//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sPath ==> ' . $sPath);
+
 	static $aPath = array();
 
 	if(!array_key_exists($sPath, $aPath))
@@ -4189,15 +4050,175 @@ function canPaste($sPath)
 }
 
 
-function canDelete($sPath)
+function canDownload($sPath)
 {
+//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sPath ==> ' . $sPath);
 	
+	static $aPath = array();
+	
+	if(!array_key_exists($sPath, $aPath))
+	{
+		$sCollective		= 'collectives/';
+		$sUser				= 'users/';
+		$sUploadPath		= BAB_FmFolderHelper::getUploadPath();
+		$oFileManagerEnv	=& getEnvObject();
+		
+		$sId = (string) substr($sPath, 0, strlen($sCollective));
+		$sRelativePath = (string) substr($sPath, strlen($sId)); 
+		
+		if($sCollective === $sId)
+		{
+//			bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
+//				' sRelativePath ==> ' . $sRelativePath);
+				
+			$oFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($sRelativePath);
+			$aPath[$sPath] = bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $oFmFolder->getId());
+		}
+		else if($sUser === (string) substr($sPath, 0, strlen($sUser)))
+		{
+//			bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
+//				' sRelativePath ==> ' . $sRelativePath);
+				
+			if(isUserFolder($sPath))			
+			{
+				$aPath[$sPath] = true;
+			}
+			else 
+			{
+				$aPath[$sPath] = false;
+			}
+		}
+	}
+	return $aPath[$sPath];	
 }
 
 
 function canUpload($sPath)
 {
+//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sPath ==> ' . $sPath);
 	
+	static $aPath = array();
+	
+	if(!array_key_exists($sPath, $aPath))
+	{
+		$sCollective		= 'collectives/';
+		$sUser				= 'users/';
+		$sUploadPath		= BAB_FmFolderHelper::getUploadPath();
+		$oFileManagerEnv	=& getEnvObject();
+		
+		$sId = (string) substr($sPath, 0, strlen($sCollective));
+		$sRelativePath = (string) substr($sPath, strlen($sId)); 
+		
+		if($sCollective === $sId)
+		{
+//			bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
+//				' sRelativePath ==> ' . $sRelativePath);
+				
+			$oFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($sRelativePath);
+			$aPath[$sPath] = bab_isAccessValid(BAB_FMUPLOAD_GROUPS_TBL, $oFmFolder->getId());
+		}
+		else if($sUser === (string) substr($sPath, 0, strlen($sUser)))
+		{
+//			bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
+//				' sRelativePath ==> ' . $sRelativePath);
+				
+			if(isUserFolder($sPath))			
+			{
+				$aPath[$sPath] = true;
+			}
+			else 
+			{
+				$aPath[$sPath] = false;
+			}
+		}
+	}
+	return $aPath[$sPath];	
+}
+
+
+function canUpdate($sPath)
+{
+//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sPath ==> ' . $sPath);
+	
+	static $aPath = array();
+	
+	if(!array_key_exists($sPath, $aPath))
+	{
+		$sCollective		= 'collectives/';
+		$sUser				= 'users/';
+		$sUploadPath		= BAB_FmFolderHelper::getUploadPath();
+		$oFileManagerEnv	=& getEnvObject();
+		
+		$sId = (string) substr($sPath, 0, strlen($sCollective));
+		$sRelativePath = (string) substr($sPath, strlen($sId)); 
+		
+		if($sCollective === $sId)
+		{
+			if('' !== $sRelativePath)
+			{
+				$oFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($sRelativePath);
+				$aPath[$sPath] = bab_isAccessValid(BAB_FMUPDATE_GROUPS_TBL, $oFmFolder->getId());
+			}
+			else 
+			{
+				$aPath[$sPath] = false;
+			}
+		}
+		else if($sUser === (string) substr($sPath, 0, strlen($sUser)))
+		{
+			$aPath[$sPath] = false;
+		}
+	}
+	return $aPath[$sPath];		
+}
+
+function canManage($sPath)
+{
+//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sPath ==> ' . $sPath);
+	
+	static $aPath = array();
+	
+	if(!array_key_exists($sPath, $aPath))
+	{
+		$sCollective		= 'collectives/';
+		$sUser				= 'users/';
+		$sUploadPath		= BAB_FmFolderHelper::getUploadPath();
+		$oFileManagerEnv	=& getEnvObject();
+		
+		$sId = (string) substr($sPath, 0, strlen($sCollective));
+		$sRelativePath = (string) substr($sPath, strlen($sId)); 
+		
+		if($sCollective === $sId)
+		{
+//			bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
+//				' sRelativePath ==> ' . $sRelativePath);
+				
+			if('' === $sRelativePath)
+			{
+				$aPath[$sPath] = bab_isUserAdministrator();
+			}
+			else 
+			{
+				$oFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($sRelativePath);
+				$aPath[$sPath] = bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oFmFolder->getId());
+			}
+		}
+		else if($sUser === (string) substr($sPath, 0, strlen($sUser)))
+		{
+//			bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
+//				' sRelativePath ==> ' . $sRelativePath);
+				
+			if(isUserFolder($sPath))			
+			{
+				$aPath[$sPath] = true;
+			}
+			else 
+			{
+				$aPath[$sPath] = false;
+			}
+		}
+	}
+	return $aPath[$sPath];	
 }
 
 function isFolderPastable($sRelativePathToPaste)
@@ -4223,19 +4244,22 @@ function isFolderPastable($sRelativePathToPaste)
 
 function isUserFolder($sPath)
 {
-	global $BAB_SESS_USERID;
+//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sPath ==> ' . $sPath);
+//	global $BAB_SESS_USERID;
 	
-	$oFileManagerEnv =& getEnvObject();
-	$sRelativePath = '';
-	$sName = '';
-	
-	getRelativePathAndFolderName($sPath, $sRelativePath, $sName);
-	$sFirstPath = getFirstPath($sRelativePath);
-	
+	$sPath = removeFirstPath($sPath);
+	$sFirstPath = getFirstPath($sPath);
+
 	$aBuffer = array();
 	if(preg_match('/(U)(\d+)/', $sFirstPath, $aBuffer))
 	{
 		$iIdUser = (int) $aBuffer[2];
+		
+//		bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
+//			' sFirstPath ==> ' . $sFirstPath .
+//			' bResult ==> ' . (($iIdUser === (int) $oFileManagerEnv->iIdObject) ? 'Yes' : 'No'));
+			
+		$oFileManagerEnv =& getEnvObject();
 		return ($iIdUser === (int) $oFileManagerEnv->iIdObject);
 	}
 	return false;
@@ -4247,4 +4271,79 @@ function getRelativePathAndFolderName($sPath, &$sRelativePath, &$sName)
 	$sName = getLastPath($sPath);
 	$sRelativePath = (string) substr($sPath, 0, - (strlen($sName) + 1));
 }
+
+
+function userHavePersonnalStorage()
+{
+	static $bHavePersonnalStorage = null;
+
+	if(is_null($bHavePersonnalStorage))	
+	{
+		global $babDB;
+	
+		$sQuery = 
+			'SELECT  
+				id
+			FROM 
+				' . BAB_GROUPS_TBL . '
+			WHERE 
+				ustorage IN(' . $babDB->quote('Y') . ')';
+	
+		//bab_debug($sQuery);
+		$oResult = $babDB->db_query($sQuery);
+		if(false !== $oResult)
+		{
+			$iNumRows = $babDB->db_num_rows($oResult);
+			$iIndex = 0;
+			while($iIndex < $iNumRows && false !== ($aDatas = $babDB->db_fetch_array($oResult)))
+			{
+				$iIndex++;
+				if(bab_isMemberOfGroup($aDatas['id']))
+				{
+					$bHavePersonnalStorage = true;
+				}
+			}
+		}
+	}
+	return $bHavePersonnalStorage;
+}
+
+	
+function userHaveRightOnCollectiveFolder()
+{
+	static $bHaveRightOnCollectiveFolder = null;
+
+	if(is_null($bHaveRightOnCollectiveFolder))	
+	{
+		$aIdObject = bab_getUserIdObjects(BAB_FMUPLOAD_GROUPS_TBL);
+		if(is_array($aIdObject) && count($aIdObject) > 0)
+		{
+			$bHaveRightOnCollectiveFolder = true;
+			break;
+		}
+		
+		$aIdObject = bab_getUserIdObjects(BAB_FMDOWNLOAD_GROUPS_TBL);
+		if(is_array($aIdObject) && count($aIdObject) > 0)
+		{
+			$bHaveRightOnCollectiveFolder = true;
+			break;
+		}
+		
+		$aIdObject = bab_getUserIdObjects(BAB_FMUPDATE_GROUPS_TBL);
+		if(is_array($aIdObject) && count($aIdObject) > 0)
+		{
+			$bHaveRightOnCollectiveFolder = true;
+			break;
+		}
+		
+		$aIdObject = bab_getUserIdObjects(BAB_FMMANAGERS_GROUPS_TBL);
+		if(is_array($aIdObject) && count($aIdObject) > 0)
+		{
+			$bHaveRightOnCollectiveFolder = true;
+			break;
+		}
+	}
+	return $bHaveRightOnCollectiveFolder;
+}
+
 ?>

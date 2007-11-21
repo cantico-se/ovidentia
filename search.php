@@ -399,8 +399,7 @@ function searchKeyword($item , $option = "OR")
 				}
 			$this->acces['d'] = $GLOBALS['BAB_SESS_LOGGED'] && bab_notesAccess();
 			
-			$oFileManagerEnv =& getEnvObject();
-			if($oFileManagerEnv->oAclFm->userHaveStorage() || $oFileManagerEnv->oAclFm->haveRightOnCollectiveFolder())
+			if(userHavePersonnalStorage() || userHaveRightOnCollectiveFolder())
 			{
 				$this->acces['e'] = true;
 			}
@@ -1279,8 +1278,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 							}
 						}
 						
-						$oFileManagerEnv =& getEnvObject();
-						if($oFileManagerEnv->oAclFm->userHaveStorage())
+						if(userHavePersonnalStorage())
 						{
 							$aUserFolderRelativePath[$BAB_SESS_USERID] = 'U' . $BAB_SESS_USERID . '/';
 						}
