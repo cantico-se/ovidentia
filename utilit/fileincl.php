@@ -4318,31 +4318,38 @@ function userHaveRightOnCollectiveFolder()
 		$aIdObject = bab_getUserIdObjects(BAB_FMUPLOAD_GROUPS_TBL);
 		if(is_array($aIdObject) && count($aIdObject) > 0)
 		{
+//			bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' BAB_FMUPLOAD_GROUPS_TBL');
 			$bHaveRightOnCollectiveFolder = true;
-			return;
+			return true;
 		}
 		
 		$aIdObject = bab_getUserIdObjects(BAB_FMDOWNLOAD_GROUPS_TBL);
 		if(is_array($aIdObject) && count($aIdObject) > 0)
 		{
+//			bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' BAB_FMDOWNLOAD_GROUPS_TBL');
 			$bHaveRightOnCollectiveFolder = true;
-			return;
+			return true;
 		}
 		
 		$aIdObject = bab_getUserIdObjects(BAB_FMUPDATE_GROUPS_TBL);
 		if(is_array($aIdObject) && count($aIdObject) > 0)
 		{
+//			bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' BAB_FMUPDATE_GROUPS_TBL');
 			$bHaveRightOnCollectiveFolder = true;
-			return;
+			return true;
 		}
 		
 		$aIdObject = bab_getUserIdObjects(BAB_FMMANAGERS_GROUPS_TBL);
 		if(is_array($aIdObject) && count($aIdObject) > 0)
 		{
+//			bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' BAB_FMMANAGERS_GROUPS_TBL');
 			$bHaveRightOnCollectiveFolder = true;
-			return;
+			return true;
 		}
 	}
+//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
+//		' bHaveRightOnCollectiveFolder ==> ' . ($bHaveRightOnCollectiveFolder ? 'Yes' : 'No'));
+
 	return $bHaveRightOnCollectiveFolder;
 }
 
