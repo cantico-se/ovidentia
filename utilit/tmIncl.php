@@ -1537,8 +1537,21 @@ function bab_getNextTaskPosition($iIdProject, &$iPosition)
 	}
 }
 
+/**
+ * Fills the $aTaskResponsible array with the list of task responsible users for project $iIdProject.
+ * 
+ * The array is sorted alphabetically on user names.
+ *
+ * @param int $iIdProject
+ * @param array $aTaskResponsible
+ */
 function bab_getAvailableTaskResponsibles($iIdProject, &$aTaskResponsible)
 {
+	function bab_compareTaskResponsibles($r1, $r2)
+	{
+		return strcmp($r1['name'], $r2['name']);
+	}
+
 	$aTaskResponsible = array();
 	
 	$aIdObject = bab_getGroupsAccess(BAB_TSKMGR_TASK_RESPONSIBLE_GROUPS_TBL, $iIdProject);
@@ -1558,7 +1571,9 @@ function bab_getAvailableTaskResponsibles($iIdProject, &$aTaskResponsible)
 			}
 		}
 	}
+	uasort($aTaskResponsible, 'bab_compareTaskResponsibles');
 }
+
 
 function bab_getTaskResponsibles($iIdTask, &$aTaskResponsible)
 {
