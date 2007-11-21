@@ -3284,13 +3284,12 @@ function pasteUserFolder($iIdRootFolder, $sPath)
 initEnvObject();
 
 $oFileManagerEnv =& getEnvObject();
-/*
 if(false === $oFileManagerEnv->accessValid())
 {
-	$babBody->addError(bab_translate("Access denied 66"));
+	$babBody->addError(bab_translate("Access denied"));
 	return;	
 }
-//*/
+
 
 $idx = bab_rp('idx','list');
 $path = $oFileManagerEnv->sPath;

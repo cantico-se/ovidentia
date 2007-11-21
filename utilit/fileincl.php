@@ -3616,6 +3616,7 @@ class BAB_FileManagerEnv
 			{
 				if(!is_null($this->oFmFolder))
 				{
+					$oFileManagerEnv =& getEnvObject();
 					$sParentPath = 'collectives/' . $oFileManagerEnv->sRelativePath;
 					if(true === canManage($sParentPath))
 					{
@@ -4318,28 +4319,28 @@ function userHaveRightOnCollectiveFolder()
 		if(is_array($aIdObject) && count($aIdObject) > 0)
 		{
 			$bHaveRightOnCollectiveFolder = true;
-			break;
+			return;
 		}
 		
 		$aIdObject = bab_getUserIdObjects(BAB_FMDOWNLOAD_GROUPS_TBL);
 		if(is_array($aIdObject) && count($aIdObject) > 0)
 		{
 			$bHaveRightOnCollectiveFolder = true;
-			break;
+			return;
 		}
 		
 		$aIdObject = bab_getUserIdObjects(BAB_FMUPDATE_GROUPS_TBL);
 		if(is_array($aIdObject) && count($aIdObject) > 0)
 		{
 			$bHaveRightOnCollectiveFolder = true;
-			break;
+			return;
 		}
 		
 		$aIdObject = bab_getUserIdObjects(BAB_FMMANAGERS_GROUPS_TBL);
 		if(is_array($aIdObject) && count($aIdObject) > 0)
 		{
 			$bHaveRightOnCollectiveFolder = true;
-			break;
+			return;
 		}
 	}
 	return $bHaveRightOnCollectiveFolder;
