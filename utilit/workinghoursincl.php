@@ -667,6 +667,11 @@ class bab_userWorkingHours {
 		}
 		return $r;
 	}
+	
+	
+	
+
+	
 
 	/**
 	 * Find available periods
@@ -681,8 +686,32 @@ class bab_userWorkingHours {
 		
 		$test_begin = $this->begin->getTimeStamp();
 		$test_end = $this->end->getTimeStamp();
+		
+		
+		// si pas d'agenda utilisateur
+		if (!$this->id_users) {
 
+			$available = true;
+			
+			foreach($this->boundaries as $ts => $events) {
+				foreach($events as $event) {
+					if ($event->ts_end > $test_begin && $event->ts_begin < $test_end) {
+						if (!$event->isAvailable()) {
+							$available = false;
+						}
+					}
+				}
+			}
 
+			if ($available) {
+				$period_availability = true;
+				$periods[$test_begin.'.'.$test_end] = new bab_calendarPeriod($test_begin, $test_end, BAB_PERIOD_NONWORKING);
+				return $periods;
+			}
+		}
+		
+		
+		
 		foreach($this->boundaries as $ts => $events) {
 
 			// toutes les personnes disponibles
@@ -703,12 +732,15 @@ class bab_userWorkingHours {
 						// periode de dispo utilisateur
 						$id_users = array($data['id_user']);
 						$working_period = true;
+						
 					} elseif (isset($data['iduser_owners'])) {
 						// evenement, liste des utilisateurs associés
 						$id_users = $data['iduser_owners'];
+						
 					} else {
 						// autres, ex jours feriés, considérer l'utilisateur courrant comme associé à l'evenement
 						$id_users = array($GLOBALS['BAB_SESS_USERID']);
+						
 					}
 					
 					if ($event->isAvailable()) {

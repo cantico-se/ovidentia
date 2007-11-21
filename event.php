@@ -1411,6 +1411,7 @@ function eventAvariabilityCheck(&$avariability_message)
 	bab_debug("periode teste : $sdate, $edate");
 	
 	$whObj = bab_mcalendars::create_events($sdate, $edate, $calid);
+	
 	while ($event = $whObj->getNextEvent(BAB_PERIOD_CALEVENT)) {
 		$data = $event->getData();
 		
@@ -1433,22 +1434,7 @@ function eventAvariabilityCheck(&$avariability_message)
 	if (false === $availability) {
 		$avariability_message = bab_translate("The event is in conflict with a calendar");
 	} 
-	
-	
 
-
-	$availability = NULL;
-	$arr = $whObj->getAvailability($availability);
-	
-	// debug
-	foreach($arr as $obj) {
-		bab_debug('periode dispo : '.bab_shortDate($obj->ts_begin).' '.bab_shortDate($obj->ts_end));
-	}
-	
-	if (false === $availability) {
-		$avariability_message = bab_translate("The event is in conflict with a calendar");
-	} 
-	
 
 	// events tests
 	$mcals = & new bab_mcalendars($sdate, $edate, $calid);
