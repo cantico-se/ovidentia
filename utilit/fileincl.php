@@ -3899,6 +3899,8 @@ function canCut($sPath)
  **/
 function canEdit($sPath)
 {
+//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sPath ==> ' . $sPath);
+
 	static $aPath = array();
 	
 	$oFileManagerEnv =& getEnvObject();
@@ -4260,7 +4262,7 @@ function isUserFolder($sPath)
 //			' bResult ==> ' . (($iIdUser === (int) $oFileManagerEnv->iIdObject) ? 'Yes' : 'No'));
 			
 		$oFileManagerEnv =& getEnvObject();
-		return ($iIdUser === (int) $oFileManagerEnv->iIdObject);
+		return (0 !== $iIdUser && $iIdUser === (int) $oFileManagerEnv->iIdObject);
 	}
 	return false;
 }
