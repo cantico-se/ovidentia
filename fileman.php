@@ -574,6 +574,8 @@ class DisplayFolderFormBase extends BAB_BaseFormProcessing
 		$this->set_data('sPath', $oFileManagerEnv->sPath);
 		$this->set_data('sGr', $oFileManagerEnv->sGr);
 		
+//		bab_debug($oFileManagerEnv);
+		
 		$this->set_data('sDirName', $sDirName);
 		$this->set_data('sOldDirName', '');
 		$this->set_data('iIdFolder', 0);
@@ -742,7 +744,7 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 
 		$oFileManagerEnv =& getEnvObject();
 		$sParentPath = 'collectives/' . $oFileManagerEnv->sRelativePath;
-		$this->set_data('bDelete', canManage($sParentPath));
+		$this->set_data('bDelete', canEdit($sParentPath));
 	}
 	
 	function getNextApprobationScheme()
@@ -1591,7 +1593,7 @@ function addFile($id, $gr, $path, $description, $keywords)
 
 	$oFileManagerEnv =& getEnvObject();
 	$sParentPath = (('Y' === $oFileManagerEnv->sGr) ? 'collectives/' : 'users/') . $oFileManagerEnv->sRelativePath;
-	if(!canManage($sParentPath))
+	if(!canUpload($sParentPath))
 	{
 		$babBody->msgerror = bab_translate("Access denied");
 		return;
@@ -2446,6 +2448,8 @@ function restoreFiles($items)
 	
 function displayFolderForm()
 {
+//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__);
+
 	global $babBody;
 
 	$oFileManagerEnv =& getEnvObject();
@@ -2503,15 +2507,29 @@ function processFolderCommand(&$sIdx)
 	
 	if('Y' === $sGr)
 	{
-		createEditFolderForCollectiveDir($iId, $sPath);
-		$sIdx = 'list';
-		listFiles($iId, $sGr, $sPath);
+		if(isset($_POST['sDeleteFolder']))
+		{
+			displayDeleteFolderConfirm();
+		}
+		else 
+		{
+			createEditFolderForCollectiveDir($iId, $sPath);
+			$sIdx = 'list';
+			listFiles($iId, $sGr, $sPath);
+		}
 	}
 	else if('N' === $sGr)
 	{
-		createEditFolderForUserDir($iId, $sPath);
-		$sIdx = 'list';
-		listFiles($iId, $sGr, $sPath);
+		if(isset($_POST['sDeleteFolder']))
+		{
+			displayDeleteFolderConfirm();
+		}
+		else 
+		{
+			createEditFolderForUserDir($iId, $sPath);
+			$sIdx = 'list';
+			listFiles($iId, $sGr, $sPath);
+		}
 	}
 	else 
 	{
@@ -2520,7 +2538,7 @@ function processFolderCommand(&$sIdx)
 }
 
 
-function createEditFolderForUserDir($iIdUser, $sPath)
+function createEditFolderForUserDir($iIdUser, &$sPath)
 {
 	global $babBody;
 	
@@ -2588,20 +2606,49 @@ function createEditFolderForUserDir($iIdUser, $sPath)
 					$babBody->addError(bab_translate("Unhandled action"));
 				}
 			}
-			else if(isset($_POST['sDeleteFolder']))
+			else
 			{
-				global $babDB;
-//				bab_debug('delete folder ==> ' . $sUplaodPath . $sUserDirPath . $sDirName);
-			
-				$sPathName = $sUserDirPath . $sPath.'/'.$sDirName . '/';
-				$sFullPathName = $sUplaodPath . $sPathName;
+				$sAction = (string) bab_pp('sAction', '');
+				if('deleteFolder' === $sAction)
+				{				
+					global $babDB;
+	//				bab_debug('delete folder ==> ' . $sUplaodPath . $sUserDirPath . $sDirName);
 				
-				$oFolderFileSet = new BAB_FolderFileSet();
-				$oPathName =& $oFolderFileSet->aField['sPathName'];
-				$oFolderFileSet->remove($oPathName->like($babDB->db_escape_like($sPathName) . '%'));
+					$sPathName = $sUserDirPath . $sPath.'/'.$sDirName . '/';
+					$sFullPathName = $sUplaodPath . $sPathName;
+					
+					$oFolderFileSet = new BAB_FolderFileSet();
+					$oPathName =& $oFolderFileSet->aField['sPathName'];
+					$oFolderFileSet->remove($oPathName->like($babDB->db_escape_like($sPathName) . '%'));
+					
+					$oFmFolderSet = new BAB_FmFolderSet();
+					$oFmFolderSet->removeDir($sFullPathName);
+				}
 				
-				$oFmFolderSet = new BAB_FmFolderSet();
-				$oFmFolderSet->removeDir($sFullPathName);
+				global $BAB_SESS_USERID;
+				
+				$sPathName = (string) bab_pp('sPathName', '');
+				$sUrl = $GLOBALS['babUrlScript'] . '?tg=fileman';
+				
+				if('U' . $oFileManagerEnv->iId . '/' === $sPathName) //on supprime le root folder
+				{
+					Header('Location: ' . $sUrl);
+				}
+				else 
+				{
+					$sUrl .= '&id=' . $oFileManagerEnv->iId . '&gr=N';
+					
+					if('' === $oFileManagerEnv->sPath)
+					{
+						
+						Header("Location: ". $sUrl);
+					}
+					else 
+					{
+						$sUrl .= '&path=' . $oFileManagerEnv->sPath;
+						Header("Location: ". $sUrl);
+					}
+				}
 			}
 		}
 		else 
@@ -2622,7 +2669,7 @@ function createEditFolderForUserDir($iIdUser, $sPath)
 	}
 }
 
-function createEditFolderForCollectiveDir($iIdFolder, $sPath)
+function createEditFolderForCollectiveDir($iIdFolder, &$sPath)
 {
 	global $babBody;
 	
@@ -2630,7 +2677,7 @@ function createEditFolderForCollectiveDir($iIdFolder, $sPath)
 	$sDirName	= (string) bab_pp('sDirName', '');
 	
 	$oFileManagerEnv =& getEnvObject();
-	$sFolderPath = 'collectives/' . $oFileManagerEnv->sRelativePath . $sDirName;
+	$sFolderPath = 'collectives/' . $oFileManagerEnv->sRelativePath;
 	if(canEdit($sFolderPath))
 	{
 		if(strlen(trim($sDirName)) > 0)
@@ -2769,13 +2816,9 @@ function createEditFolderForCollectiveDir($iIdFolder, $sPath)
 							$oFmFolder->setAutoApprobation($sAutoApprobation);
 							$oFmFolder->save();
 	
-	//bab_debug('iIdFolder ==> ' . $oFmFolder->getId());
-	
 							if($bChangeFileIdOwner)
 							{
 								$oFirstFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($sRelativePath);
-								
-	//bab_debug('sRelativePath ==> ' . $sRelativePath . ' iIdOldFolder ==> ' . $oFirstFmFolder->getId());							
 								$oFolderFileSet = new BAB_FolderFileSet();
 								$sPathName = $oFmFolder->getRelativePath() . $oFmFolder->getName() . '/';
 								$oFolderFileSet->setOwnerId($sPathName, $oFirstFmFolder->getId(), $oFmFolder->getId());
@@ -2784,29 +2827,55 @@ function createEditFolderForCollectiveDir($iIdFolder, $sPath)
 					}
 				}
 			}
-			else if(isset($_POST['sDeleteFolder']))
+			else
 			{
-				$iIdFld	= (int) bab_pp('iIdFolder', 0); 
-				if(0 !== $iIdFld)
-				{
-					require_once $GLOBALS['babInstallPath'] . 'utilit/delincl.php';
-					bab_deleteFolder($iIdFld);
-				}
-				else 
-				{
-					global $babDB;
-					$sUploadPath = BAB_FmFolderHelper::getUploadPath();
-					$sPathName = $oFileManagerEnv->sRelativePath . $sDirName . '/';
-					$sFullPathName = $sUploadPath . $sPathName;
+				$sAction = (string) bab_pp('sAction', '');
+				if('deleteFolder' === $sAction)
+				{				
+					$iIdFld	= (int) bab_pp('iIdFolder', 0); 
+					if(0 !== $iIdFld)
+					{
+						require_once $GLOBALS['babInstallPath'] . 'utilit/delincl.php';
+						bab_deleteFolder($iIdFld);
+					}
+					else 
+					{
+						global $babDB;
+						$sUploadPath = BAB_FmFolderHelper::getUploadPath();
+						$sPathName = $oFileManagerEnv->sRelativePath . $sDirName . '/';
+						$sFullPathName = $sUploadPath . $sPathName;
+						
+						$oFolderFileSet = new BAB_FolderFileSet();
+						$oPathName =& $oFolderFileSet->aField['sPathName'];
+						$oFolderFileSet->remove($oPathName->like($babDB->db_escape_like($sPathName) . '%'));
+						
+						$oFmFolderSet = new BAB_FmFolderSet();
+						$oFmFolderSet->removeDir($sFullPathName);
+					}						
 					
-					$oFolderFileSet = new BAB_FolderFileSet();
-					$oPathName =& $oFolderFileSet->aField['sPathName'];
-					$oFolderFileSet->remove($oPathName->like($babDB->db_escape_like($sPathName) . '%'));
+					$sUrl = $GLOBALS['babUrlScript'] . '?tg=fileman';
 					
-					$oFmFolderSet = new BAB_FmFolderSet();
-					$oFmFolderSet->removeDir($sFullPathName);
+					if($iIdFld === $oFileManagerEnv->iId) //on supprime le root folder
+					{
+						Header('Location: ' . $sUrl);
+					}
+					else 
+					{
+						$sUrl .= '&id=' . $oFileManagerEnv->iId . '&gr=Y';
+						
+						if('' === $oFileManagerEnv->sPath)
+						{
+							
+							Header("Location: ". $sUrl);
+						}
+						else 
+						{
+							$sUrl .= '&path=' . $oFileManagerEnv->sPath;
+							Header("Location: ". $sUrl);
+						}
+					}
 				}
-			}			
+			}
 		}
 	}
 	else 
@@ -2819,6 +2888,47 @@ function createEditFolderForCollectiveDir($iIdFolder, $sPath)
 		{
 			$babBody->addError(bab_translate("You don't have permission to rename directory"));
 		}
+	}
+}
+
+
+function displayDeleteFolderConfirm()
+{
+	global $babBody;
+	
+	$oFileManagerEnv =& getEnvObject();
+	
+	$sPath			= (string) bab_rp('path', '');
+	$sDirName		= (string) bab_rp('sDirName', '');
+	$iIdFld			= (int) bab_rp('iIdFolder', 0); 
+	$sFolderPath	= (('Y' === $oFileManagerEnv->sGr) ? 'collectives/' : 'users/') . $oFileManagerEnv->sRelativePath;
+	
+	if(canEdit($sFolderPath))
+	{
+		$oBfp = new BAB_BaseFormProcessing();
+		
+		$oBfp->set_caption('yes', bab_translate("Yes"));
+		$oBfp->set_caption('no', bab_translate("No"));
+		$oBfp->set_caption('warning', bab_translate("CAUTION: This will permanently remove this directory and all subdirectories files on it !"));
+		$oBfp->set_caption('message', bab_translate("You sure you want to delete this directory ?"));
+		$oBfp->set_caption('title', $sDirName);
+		
+		$oBfp->set_data('sTg', 'fileman');
+		$oBfp->set_data('sIdx', 'processFolderCommand');
+		$oBfp->set_data('sAction', 'deleteFolder');
+		$oBfp->set_data('sDirName', $sDirName);
+		$oBfp->set_data('iIdFolder', $iIdFld);
+		$oBfp->set_data('iId', $oFileManagerEnv->iId);
+		$oBfp->set_data('sPath', $sPath);
+		$oBfp->set_data('sPathName', $oFileManagerEnv->sRelativePath);
+		$oBfp->set_data('sGr', $oFileManagerEnv->sGr);
+		
+		$babBody->babecho(bab_printTemplate($oBfp, 'fileman.html', 'warningyesno'));
+	}
+	else
+	{
+		$babBody->msgerror = bab_toHtml(bab_translate("Access denied"));
+		return;
 	}
 }
 

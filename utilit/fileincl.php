@@ -3616,15 +3616,22 @@ class BAB_FileManagerEnv
 			{
 				if(!is_null($this->oFmFolder))
 				{
-					$oFileManagerEnv =& getEnvObject();
-					$sParentPath = 'collectives/' . $oFileManagerEnv->sRelativePath;
-					if(true === canManage($sParentPath))
+					if(0 !== $this->iPathLength)					
+					{
+						$oFileManagerEnv =& getEnvObject();
+						$sParentPath = 'collectives/' . $oFileManagerEnv->sRelativePath;
+						if(true === canManage($sParentPath))
+						{
+							return true;
+						}
+						else if(true === canUpload($sParentPath) || true === canDownload($sParentPath) || true === canUpdate($sParentPath))
+						{
+							return true;						
+						}
+					}
+					else 
 					{
 						return true;
-					}
-					else if(true === canUpload($sParentPath) || true === canDownload($sParentPath) || true === canUpdate($sParentPath))
-					{
-						return true;						
 					}
 				}
 			}
@@ -3900,6 +3907,9 @@ function canCut($sPath)
 function canEdit($sPath)
 {
 //	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sPath ==> ' . $sPath);
+//	
+//	require_once $GLOBALS['babInstallPath'] . 'utilit/devtools.php';
+//	bab_debug_print_backtrace();
 
 	static $aPath = array();
 	
@@ -3917,6 +3927,9 @@ function canEdit($sPath)
 			
 			getRelativePathAndFolderName($sPath, $sRelativePath, $sName);
 			
+//			bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
+//				' sRelativePath ==> ' . $sRelativePath);
+			
 			if('' === $sRelativePath)
 			{
 				$aPath[$sPath] = bab_isUserAdministrator();
@@ -3932,6 +3945,10 @@ function canEdit($sPath)
 			$aPath[$sPath] = isUserFolder($sPath);
 		}
 	}
+			
+//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
+//		' canEdit ==> ' . ($aPath[$sPath] ? 'Yes' : 'No'));
+		
 	return $aPath[$sPath];
 }
 	
@@ -4055,14 +4072,16 @@ function canPaste($sPath)
 function canDownload($sPath)
 {
 //	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sPath ==> ' . $sPath);
-	
+//	
+//	require_once $GLOBALS['babInstallPath'] . 'utilit/devtools.php';
+//	bab_debug_print_backtrace();
+
 	static $aPath = array();
 	
 	if(!array_key_exists($sPath, $aPath))
 	{
 		$sCollective		= 'collectives/';
 		$sUser				= 'users/';
-		$sUploadPath		= BAB_FmFolderHelper::getUploadPath();
 		$oFileManagerEnv	=& getEnvObject();
 		
 		$sId = (string) substr($sPath, 0, strlen($sCollective));
@@ -4078,9 +4097,6 @@ function canDownload($sPath)
 		}
 		else if($sUser === (string) substr($sPath, 0, strlen($sUser)))
 		{
-//			bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
-//				' sRelativePath ==> ' . $sRelativePath);
-				
 			if(isUserFolder($sPath))			
 			{
 				$aPath[$sPath] = true;

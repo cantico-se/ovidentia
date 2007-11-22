@@ -2474,4 +2474,6 @@
 <string id="Acess denied">Accès refusé</string>
 <string id="View directory entry for">Visualiser la fiche annuaire pour</string>
 <string id="Categories, topics and articles">Catégories, thèmes et articles</string>
+<string id="CAUTION: This will permanently remove this directory and all subdirectories files on it !">ATTENTION : Cette opération supprime définitivement ce répertoire, les sous-répertoires et tous les fichiers qu'il contient !</string>
+<string id="You sure you want to delete this directory ?">Confirmez-vous la suppression de ce répertoire ?</string>
 </fr>
