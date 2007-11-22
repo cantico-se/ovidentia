@@ -2690,7 +2690,7 @@ function createEditFolderForCollectiveDir($iIdFolder, &$sPath)
 	$oFileManagerEnv =& getEnvObject();
 	$sFolderPath = 'collectives/' . $oFileManagerEnv->sRelativePath;
 	
-	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' ** sFolderPath ==> ' . $sFolderPath);
+//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' ** sFolderPath ==> ' . $sFolderPath);
 	
 	if(canCreateFolder($sFolderPath))
 	{

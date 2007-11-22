@@ -3928,7 +3928,7 @@ function canEdit($sPath)
 			getRelativePathAndFolderName($sPath, $sRelativePath, $sName);
 			
 //			bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
-//				' sRelativePath ==> ' . $sRelativePath);
+//				' sRelativePath ==> ' . $sRelativePath . 'sName ==> ' . $sName);
 			
 			if('' === $sRelativePath)
 			{
@@ -3951,7 +3951,55 @@ function canEdit($sPath)
 		
 	return $aPath[$sPath];
 }
+
+
+function canCreateFolder($sPath)
+{
+//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sPath ==> ' . $sPath);
+//	
+//	require_once $GLOBALS['babInstallPath'] . 'utilit/devtools.php';
+//	bab_debug_print_backtrace();
+
+	static $aPath = array();
 	
+	$oFileManagerEnv =& getEnvObject();
+
+	if(!array_key_exists($sPath, $aPath))
+	{
+		$sCollective	= 'collectives/';
+		$sUser			= 'users/';
+		
+		if($sCollective === (string) substr($sPath, 0, strlen($sCollective)))
+		{
+			$sRelativePath = '';
+			$sName = '';
+			
+			getRelativePathAndFolderName($sPath, $sRelativePath, $sName);
+			
+//			bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
+//				' sRelativePath ==> ' . $sRelativePath . 'sName ==> ' . $sName);
+			
+			if('' === $sRelativePath)
+			{
+				$sRelativePath = $sName . '/';
+			}
+			
+			$oFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($sRelativePath);
+			$aPath[$sPath] = bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oFmFolder->getId());
+		}
+		else if($sUser === (string) substr($sPath, 0, strlen($sUser)))
+		{
+			$aPath[$sPath] = isUserFolder($sPath);
+		}
+	}
+			
+//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
+//		' canEdit ==> ' . ($aPath[$sPath] ? 'Yes' : 'No'));
+		
+	return $aPath[$sPath];
+	
+}
+
 	
 /**
  * This method allow to know if the connected user can browse
