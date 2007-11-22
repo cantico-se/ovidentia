@@ -1080,3 +1080,69 @@ function hide(aNode)
 	</tr>
 </table>	
 <!--#end userDir -->
+
+
+<!--#begin warningyesno -->
+<script type="text/javascript">
+//<![CDATA[
+function on_delete()
+{
+	document.warningyesno.submit();
+}
+
+function on_cancel()
+{
+	var form = document.forms.warningyesno;
+	form.idx.value = '';
+	form.sAction.value = '';
+	form.submit();
+}
+//]]>
+</script>
+
+<form name="warningyesno" method="post" action="{ babPhpSelf }">
+	<input type="hidden" name="tg" value="{ m_datas[sTg] }" />
+	<input type="hidden" name="idx" value="{ m_datas[sIdx] }" />
+	<input type="hidden" name="sAction" value="{ m_datas[sAction] }" />
+	<input type="hidden" name="sDirName" value="{ m_datas[sDirName] }" />
+	<input type="hidden" name="iIdFolder" value="{ m_datas[iIdFolder] }" />
+	<input type="hidden" name="id" value="{ m_datas[iId] }" />
+	<input type="hidden" name="path" value="{ m_datas[sPath] }" />
+	<input type="hidden" name="sPathName" value="{ m_datas[sPathName] }" />
+	<input type="hidden" name="gr" value="{ m_datas[sGr] }" />
+
+
+	<table border="0" width="50%" cellpadding="3" cellspacing="0" align="center">
+		<tr>
+			<td class="BabWarningTitleBackground" align="center">
+				{ m_captions[warning] }
+			</td>
+		</tr>
+		<tr>
+			<td class="BabWarningBodyBackground">
+				<br />
+			</td>
+		</tr>
+		<tr>
+			<td class="BabWarningBodyBackground" align="center">
+				{ m_captions[message] }
+			</td>
+		</tr>
+		<tr>
+			<td class="BabWarningBodyBackground">
+				<br />
+			</td>
+		</tr>
+		<tr>
+			<td class="BabWarningObjectBackground" align="center">
+				{ m_captions[title] }<br />
+			</td>
+		</tr>
+		<tr>
+			<td class="BabWarningBodyBackground" align="center">
+				<a class="BabWarningLinkColor" href="#" onclick="on_delete()">{ m_captions[yes] }</a> | <a class="BabWarningLinkColor" href="#" onclick="on_cancel()">{ m_captions[no] }</a>
+			</td>
+		</tr>
+	</table>
+</form>
+<!--#end warningyesno -->
