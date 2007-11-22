@@ -947,7 +947,7 @@ function showDiskSpace($id, $gr, $path)
 				else 
 				{
 					$sFolderPath = $sPath . $oFmFolder->getName() . '/';
-					if(canUpload($sFolderPath) || canUpdate($sFolderPath))
+					if(canUpload($sFolderPath) || canUpdate($sFolderPath) || canDownload($sFolderPath))
 					{
 						$this->arrgrp[] = 	$oFmFolder->getId();
 					}
