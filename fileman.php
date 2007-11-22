@@ -744,7 +744,7 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 
 		$oFileManagerEnv =& getEnvObject();
 		$sParentPath = 'collectives/' . $oFileManagerEnv->sRelativePath;
-		$this->set_data('bDelete', canEdit($sParentPath));
+		$this->set_data('bDelete', canCreateFolder($sParentPath));
 	}
 	
 	function getNextApprobationScheme()
@@ -2464,10 +2464,21 @@ function displayFolderForm()
 	
 	if('Y' === $oFileManagerEnv->sGr)
 	{
-		$sPath = 'collectives/' . (($sName . '/' !== $oFileManagerEnv->sRelativePath) ? 
-			$oFileManagerEnv->sRelativePath . $sName . '/' : $sName . '/');
-			
-		if(canEdit($sPath))
+		$sPath = 'collectives/';
+		
+		if(strlen((trim($sName))) === 0) //Si edition
+		{
+			$sPath .= $oFileManagerEnv->sRelativePath;
+		}
+		else 
+		{
+			$sPath .= (($sName . '/' !== $oFileManagerEnv->sRelativePath) ? 
+				$oFileManagerEnv->sRelativePath . $sName . '/' : $sName . '/');
+		}
+		
+//		bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sPath ==> ' . $sPath);
+				
+		if(canCreateFolder($sPath))
 		{
 			$oDspFldForm = new DisplayCollectiveFolderForm();
 			$babBody->babecho($oDspFldForm->printTemplate());
@@ -2482,7 +2493,7 @@ function displayFolderForm()
 		$sPath = 'users/' . (($sName !== $oFileManagerEnv->sRelativePath) ? 
 			$oFileManagerEnv->sRelativePath . $sName . '/' : $sName . '/');
 
-		if(canEdit($sPath))
+		if(canCreateFolder($sPath))
 		{
 			$oDspFldForm = new DisplayUserFolderForm();
 			$babBody->babecho($oDspFldForm->printTemplate());
@@ -2678,7 +2689,10 @@ function createEditFolderForCollectiveDir($iIdFolder, &$sPath)
 	
 	$oFileManagerEnv =& getEnvObject();
 	$sFolderPath = 'collectives/' . $oFileManagerEnv->sRelativePath;
-	if(canEdit($sFolderPath))
+	
+	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' ** sFolderPath ==> ' . $sFolderPath);
+	
+	if(canCreateFolder($sFolderPath))
 	{
 		if(strlen(trim($sDirName)) > 0)
 		{
@@ -2903,7 +2917,7 @@ function displayDeleteFolderConfirm()
 	$iIdFld			= (int) bab_rp('iIdFolder', 0); 
 	$sFolderPath	= (('Y' === $oFileManagerEnv->sGr) ? 'collectives/' : 'users/') . $oFileManagerEnv->sRelativePath;
 	
-	if(canEdit($sFolderPath))
+	if(canCreateFolder($sFolderPath))
 	{
 		$oBfp = new BAB_BaseFormProcessing();
 		
