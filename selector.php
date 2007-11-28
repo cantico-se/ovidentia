@@ -139,6 +139,10 @@ function selectFiles($folderId = null, $path = '')
 		$urlAttributes .= '&show_files=1';
 		$attributes |= BAB_FILE_TREE_VIEW_SHOW_FILES;
 	}
+	if (bab_rp('show_only_delegation', false)) {
+		$urlAttributes .= '&show_only_delegation=1';
+		$attributes |= BAB_FILE_TREE_VIEW_SHOW_ONLY_DELEGATION;
+	}
 	if (bab_rp('selectable_collective_directories', false)) {
 		$urlAttributes .= '&selectable_collective_directories=1';
 		$attributes |= BAB_FILE_TREE_VIEW_SELECTABLE_COLLECTIVE_DIRECTORIES;
@@ -146,10 +150,6 @@ function selectFiles($folderId = null, $path = '')
 	if (bab_rp('selectable_sub_directories', false)) {
 		$urlAttributes .= '&selectable_sub_directories=1';
 		$attributes |= BAB_FILE_TREE_VIEW_SELECTABLE_SUB_DIRECTORIES;
-	}
-	if (bab_rp('selectable_files', false)) {
-		$urlAttributes .= '&selectable_files=1';
-		$attributes |= BAB_FILE_TREE_VIEW_SELECTABLE_FILES;
 	}
 	
 	if (bab_rp('multi', false)) {

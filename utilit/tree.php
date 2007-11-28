@@ -1865,6 +1865,10 @@ define('BAB_FILE_TREE_VIEW_SHOW_PERSONAL_DIRECTORIES',		 	 4);
 define('BAB_FILE_TREE_VIEW_SELECTABLE_COLLECTIVE_DIRECTORIES',	 8);
 define('BAB_FILE_TREE_VIEW_SELECTABLE_SUB_DIRECTORIES',	 		16);
 define('BAB_FILE_TREE_VIEW_SELECTABLE_FILES',					32);
+/**
+ * Only displays files and folders managed by the current delegation.
+ */
+define('BAB_FILE_TREE_VIEW_SHOW_ONLY_DELEGATION',	 		   256);
 
 
 class bab_FileTreeView extends bab_TreeView
@@ -2032,7 +2036,7 @@ class bab_FileTreeView extends bab_TreeView
 		if (!is_null($folderId)) {
 			$where[] = ' folder.id=' . $babDB->quote($folderId);
 		}
-		if ($babBody->currentAdmGroup != 0)	{
+		if ($babBody->currentAdmGroup != 0 && ($this->_attributes & BAB_FILE_TREE_VIEW_ONLY_CURRENT_DELEGATION))	{
 			$where[] = ' folder.id_dgowner=' . $babDB->quote($babBody->currentAdmGroup);
 		}
 		$sql .= 'WHERE ' . implode(' AND ', $where) . ' ORDER BY folder.folder';
@@ -2077,7 +2081,7 @@ class bab_FileTreeView extends bab_TreeView
 		global $babDB, $babBody;
 		
 		$sql = 'SELECT file.id, file.path, file.name, file.id_owner, file.bgroup FROM ' . BAB_FILES_TBL . ' file';
-		if ($babBody->currentAdmGroup != 0) {
+		if ($babBody->currentAdmGroup != 0 && ($this->_attributes & BAB_FILE_TREE_VIEW_ONLY_CURRENT_DELEGATION)) {
 			$sql .= ' LEFT JOIN ' . BAB_FM_FOLDERS_TBL . ' folder ON file.id_owner=folder.id ';
 			$sql .= ' WHERE file.bgroup=\'Y\' AND folder.id_dgowner = ' . $babDB->quote($babBody->currentAdmGroup);
 		} elseif ($this->_attributes & BAB_FILE_TREE_VIEW_SHOW_PERSONAL_DIRECTORIES) {
@@ -2625,7 +2629,7 @@ class bab_FaqTreeView extends bab_TreeView
 						$element->setInfo((int)$element->_info + (int)$faq['hits']);
 						$element->setRank((int)$element->_rank + (int)$faq['hits']);
 					}
-					$node =& $node->parentNode();			
+					$node =& $node->parentNode();
 				}
 			}
 		}

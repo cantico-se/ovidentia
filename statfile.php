@@ -821,6 +821,7 @@ function displayFileTree($startDay, $endDay)
 {
 	require_once $GLOBALS['babInstallPath'] . 'utilit/tree.php';
 	$treeView = new bab_FileTreeView('file', 'N', '0');
+	$treeView->addAttributes(BAB_FILE_TREE_VIEW_SHOW_ONLY_DELEGATION);
 	$treeView->addStatistics($startDay, $endDay);
 	$treeView->sort();
 	$t = $treeView->printTemplate();
