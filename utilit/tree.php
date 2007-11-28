@@ -2036,7 +2036,7 @@ class bab_FileTreeView extends bab_TreeView
 		if (!is_null($folderId)) {
 			$where[] = ' folder.id=' . $babDB->quote($folderId);
 		}
-		if ($babBody->currentAdmGroup != 0 && ($this->_attributes & BAB_FILE_TREE_VIEW_ONLY_CURRENT_DELEGATION))	{
+		if ($babBody->currentAdmGroup != 0 && ($this->_attributes & BAB_FILE_TREE_VIEW_SHOW_ONLY_DELEGATION))	{
 			$where[] = ' folder.id_dgowner=' . $babDB->quote($babBody->currentAdmGroup);
 		}
 		$sql .= 'WHERE ' . implode(' AND ', $where) . ' ORDER BY folder.folder';
@@ -2081,7 +2081,7 @@ class bab_FileTreeView extends bab_TreeView
 		global $babDB, $babBody;
 		
 		$sql = 'SELECT file.id, file.path, file.name, file.id_owner, file.bgroup FROM ' . BAB_FILES_TBL . ' file';
-		if ($babBody->currentAdmGroup != 0 && ($this->_attributes & BAB_FILE_TREE_VIEW_ONLY_CURRENT_DELEGATION)) {
+		if ($babBody->currentAdmGroup != 0 && ($this->_attributes & BAB_FILE_TREE_VIEW_SHOW_ONLY_DELEGATION)) {
 			$sql .= ' LEFT JOIN ' . BAB_FM_FOLDERS_TBL . ' folder ON file.id_owner=folder.id ';
 			$sql .= ' WHERE file.bgroup=\'Y\' AND folder.id_dgowner = ' . $babDB->quote($babBody->currentAdmGroup);
 		} elseif ($this->_attributes & BAB_FILE_TREE_VIEW_SHOW_PERSONAL_DIRECTORIES) {
