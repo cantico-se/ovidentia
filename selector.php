@@ -151,6 +151,10 @@ function selectFiles($folderId = null, $path = '')
 		$urlAttributes .= '&selectable_sub_directories=1';
 		$attributes |= BAB_FILE_TREE_VIEW_SELECTABLE_SUB_DIRECTORIES;
 	}
+	if (bab_rp('selectable_files', false)) {
+		$urlAttributes .= '&selectable_files=1';
+		$attributes |= BAB_FILE_TREE_VIEW_SELECTABLE_FILES;
+	}
 	
 	if (bab_rp('multi', false)) {
 		$urlAttributes .= '&multi=1';
