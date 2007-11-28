@@ -139,6 +139,10 @@ function selectFiles($folderId = null, $path = '')
 		$urlAttributes .= '&show_files=1';
 		$attributes |= BAB_FILE_TREE_VIEW_SHOW_FILES;
 	}
+	if (bab_rp('show_only_delegation', false)) {
+		$urlAttributes .= '&show_only_delegation=1';
+		$attributes |= BAB_FILE_TREE_VIEW_SHOW_ONLY_DELEGATION;
+	}
 	if (bab_rp('selectable_collective_directories', false)) {
 		$urlAttributes .= '&selectable_collective_directories=1';
 		$attributes |= BAB_FILE_TREE_VIEW_SELECTABLE_COLLECTIVE_DIRECTORIES;
