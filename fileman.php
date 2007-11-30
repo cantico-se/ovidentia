@@ -2367,6 +2367,7 @@ function displayRightForm($bmanager, $upload, $path, $id, $gr)
 		$macl->addtable( BAB_FMMANAGERS_GROUPS_TBL,bab_translate("Manage"));
 		$macl->filter(0,0,1,1,1);
 		$macl->addtable( BAB_FMNOTIFY_GROUPS_TBL,bab_translate("Who is notified when a new file is uploaded or updated?"));
+		$macl->filter(0,0,1,0,1);
 		$macl->babecho();
 	}
 	else 
