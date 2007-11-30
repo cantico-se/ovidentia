@@ -298,11 +298,70 @@ class bab_synchronizeSql
 				}
 			}
 		}
+		
+		
+	function getTableKeysDetail($tablename) {
+		global $babDB;
+		
+		$res = $babDB->db_query('SHOW INDEX FROM '.$babDB->backTick($tablename));
+		$fields = array();
+		$key_type = array();
+		$non_unique = array();
+		while ($arr = $babDB->db_fetch_assoc($res)) {
+
+			if (isset($fields[$arr['Key_name']])) {
+				$fields[$arr['Key_name']][] = $babDB->backTick($arr['Column_name']);
+			} else {
+				$fields[$arr['Key_name']] = array($babDB->backTick($arr['Column_name']));
+			}
+			
+			if (!empty($this->tables[$tablename][$arr['Column_name']]['Key'])) {
+				$key_type[$arr['Key_name']] = $this->tables[$tablename][$arr['Column_name']]['Key'];
+			}
+			
+			$non_unique[$arr['Key_name']] = (int) $arr['Non_unique'];
+		}
+		
+		
+		$keys = array();
+		foreach($key_type as $Key_name => $type) {
+		
+			switch($type) {
+				case 'PRI':
+					$colname = trim($fields[$Key_name][0],'`');
+					$keys[$colname] = 'PRIMARY KEY ('.implode(', ', $fields[$Key_name]).')';
+				break;
+				
+				case 'MUL':
+				case 'UNI':
+					if ($non_unique[$Key_name]) {
+						$keys[$Key_name] = 'KEY '.$babDB->backTick($Key_name).' ('.implode(', ', $fields[$Key_name]).')';
+					} else {
+						$keys[$Key_name] = 'UNIQUE KEY '.$babDB->backTick($Key_name).' ('.implode(', ', $fields[$Key_name]).')';
+					}
+				break;
+			}
+		}
+		
+		return $keys;
+	}
+	
+	
+	/**
+	 * Add key on table
+	 *
+	 */
+	function addKey($table, $key, $keydetail) {
+		global $babDB;
+		$babDB->db_queryWem('ALTER TABLE '.$babDB->backTick($table).' ADD '.$keydetail);
+	}
+	
 
 
 	function checkFields($table)
 		{
 		$return = false;
+
 
 		foreach($this->create[$table]['fields'] as $field => $options)
 			{
@@ -313,7 +372,24 @@ class bab_synchronizeSql
 				}
 			else
 				{
-				$this->db->db_query("ALTER TABLE `".$this->db->db_escape_string($table)."` ADD `".$this->db->db_escape_string($field)."` ".$options);
+				$this->db->db_query("ALTER TABLE ".$this->db->backTick($table)." ADD ".$this->db->backTick($field)." ".$options);
+				$return = true;
+				}
+			}
+			
+		foreach($this->create[$table]['keys'] as $key => $keydetail) 
+			{
+			$keys = $this->getTableKeysDetail($table);
+			
+			if (isset($keys[$key]))
+				{
+				if ($this->checkKeyDetail($table, $key, $keys[$key], $keydetail)) {
+					$return = true;
+					}
+				}
+			else
+				{
+				$this->addKey($table, $key, $keydetail);
 				$return = true;
 				}
 			}
@@ -322,7 +398,7 @@ class bab_synchronizeSql
 			{
 			if (!isset($this->create[$table]['fields'][$field]))
 				{
-				$this->db->db_query("ALTER TABLE `".$this->db->db_escape_string($table)."` DROP `".$this->db->db_escape_string($field)."`");
+				$this->db->db_query("ALTER TABLE ".$this->db->backTick($table)." DROP ".$this->db->backTick($field));
 				$return = true;
 				}
 			}
@@ -347,6 +423,31 @@ class bab_synchronizeSql
 
 		return false;
 		}
+		
+		
+	function trimall($str, $charlist = " \t\n\r\0\x0B")
+		{
+	  return str_replace(str_split($charlist), '', $str);
+	}
+		
+	/**
+	 * verify key
+	 * if key is different, drop and create
+	 */
+	function checkKeyDetail($table, $key_name, $existing_key, $new_key) {
+		
+		
+		
+		$old = $this->trimall($existing_key);
+		$new = $this->trimall($new_key);
+		
+		if ($old != $new) {
+			
+			global $babDB;
+			$babDB->db_query('ALTER TABLE '.$babDB->backTick($table).' DROP KEY '.$babDB->backTick($key_name));
+			$this->addKey($table, $key_name, $new_key);
+		}
+	}
 
 	
 	function isWorkedTable($table)
