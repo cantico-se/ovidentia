@@ -497,13 +497,12 @@ function listPostsFlat($forum, $thread, $open, $pos)
 			$this->search_url = bab_toHtml($GLOBALS['babUrlScript']."?tg=forumsuser&idx=search&forum=".urlencode($forum));
 			$this->altbg = true;
 
+			$res = $babDB->db_query("select * from ".BAB_THREADS_TBL." where id='".$babDB->db_escape_string($thread)."'");
+			$this->arrthread = $babDB->db_fetch_array($res);
 			if( $views == "1")
 				{
 				//update views
-				$req = "select * from ".BAB_THREADS_TBL." where id='".$babDB->db_escape_string($thread)."'";
-				$res = $babDB->db_query($req);
-				$row = $babDB->db_fetch_array($res);
-				$views = $row["views"];
+				$views = $this->arrthread["views"];
 				$views += 1;
 				$req = "update ".BAB_THREADS_TBL." set views='".$babDB->db_escape_string($views)."' where id='".$babDB->db_escape_string($thread)."'";
 				$res = $babDB->db_query($req);
@@ -628,7 +627,7 @@ function listPostsFlat($forum, $thread, $open, $pos)
 					$this->deletename = bab_translate("Refuse");
 					}
 
-				if( ($moderator && $this->arrforum['bupdatemoderator'] == 'Y') || ($BAB_SESS_USERID && $this->arrforum['bupdateauthor'] == 'Y' && $BAB_SESS_USERID == $arr['id_author']))
+				if( ($moderator && $this->arrforum['bupdatemoderator'] == 'Y') || ($this->arrthread["active"] == 'Y' && $BAB_SESS_USERID && $this->arrforum['bupdateauthor'] == 'Y' && $BAB_SESS_USERID == $arr['id_author']))
 					{
 					$this->moreurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=posts&idx=Modify&forum=".urlencode($this->forum)."&thread=".urlencode($this->thread)."&post=".urlencode($arr['id'])."&flat=".urlencode($flat));
 					$this->morename = bab_translate("Edit");
