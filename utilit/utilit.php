@@ -632,6 +632,25 @@ function getGroupPathName($id_group, $id_parent = BAB_REGISTERED_GROUP)
 	return isset($this->groupPathName[$id_parent][$id_group]) ? $this->groupPathName[$id_parent][$id_group] : '';
 }
 
+function getSetOfGroupName($id_group)
+{
+	static $groupset = array();
+	global $babDB;
+
+	if (isset($groupset[$id_group]))
+		{
+		return $groupset[$id_group];
+		}
+	
+	$res = $babDB->db_query("SELECT id, name FROM ".BAB_GROUPS_TBL." WHERE nb_groups>='0'");
+	while( $arr = $babDB->db_fetch_array($res))
+	{
+		$groupset[$arr['id']] = bab_translate("Sets of groups").' > '.$arr['name'];
+	}
+	return isset($groupset[$id_group]) ? $groupset[$id_group] : '';
+}
+
+
 function resetContent()
 {
 	$this->content = '';
@@ -1277,7 +1296,7 @@ function bab_updateUserSettings()
 				$babBody->ovgroups[$arr['id_group']]['primary'] = $arr['isprimary'];
 				}
 
-			$res=$babDB->db_query("select id_group, id_set from ".BAB_GROUPS_SET_ASSOC_TBL." where id_group IN(".$babDB->quote($babBody->usergroups).")");
+			$res=$babDB->db_query("select distinct id_set from ".BAB_GROUPS_SET_ASSOC_TBL." where id_group IN(".$babDB->quote($babBody->usergroups).")");
 			while( $arr = $babDB->db_fetch_array($res))
 				{
 				$babBody->usergroups[] = $arr['id_set'];

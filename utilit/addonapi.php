@@ -669,7 +669,12 @@ function bab_getUserGroups($id = "")
 			if( $babBody->usergroups[$i] != BAB_REGISTERED_GROUP && $babBody->usergroups[$i] != BAB_UNREGISTERED_GROUP && $babBody->usergroups[$i] != BAB_ALLUSERS_GROUP)
 				{
 				$arr['id'][] = $babBody->usergroups[$i];
-				$arr['name'][] = $babBody->getGroupPathName($babBody->usergroups[$i]);
+				$nm = $babBody->getGroupPathName($babBody->usergroups[$i]);
+				if( empty($nm))
+					{
+					$nm =  $babBody->getSetOfGroupName($babBody->usergroups[$i]);
+					}
+				$arr['name'][] = $nm;
 				}
 			}
 		return $arr;
@@ -682,7 +687,12 @@ function bab_getUserGroups($id = "")
 			while( $r = $babDB->db_fetch_array($res))
 				{
 				$arr['id'][] = $r['id_group'];
-				$arr['name'][] = $babBody->getGroupPathName($r['id_group']);
+				$nm = $babBody->getGroupPathName($r['id_group']);
+				if( empty($nm))
+					{
+					$nm =  $babBody->getSetOfGroupName($r['id_group']);
+					}
+				$arr['name'][] = $nm;
 				}
 			}
 		}
