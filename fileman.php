@@ -3207,14 +3207,12 @@ function createFolderForCollectiveDir()
 			if(!is_null($oFmFolder))
 			{
 				$sRelativePath	= $oFileManagerEnv->sRelativePath;
-				$sUploadPath	= BAB_FmFolderHelper::getUploadPath();
 				$sFullPathName	= $oFileManagerEnv->getCurrentFmPath() . $sDirName;
 
-//				bab_debug('sUploadPath ==> ' . $sUploadPath);
 //				bab_debug('sFullPathName ==> ' .  $sFullPathName);
 //				bab_debug('sRelativePath ==> ' . $sRelativePath);
 
-				if(BAB_FmFolderHelper::createDirectory($sUploadPath, $sFullPathName))
+				if(BAB_FmFolderHelper::createDirectory($sFullPathName))
 				{
 					if('collective' === $sType)
 					{
@@ -3265,14 +3263,10 @@ function createFolderForUserDir()
 		
 		if(strlen(trim($sDirName)) > 0)
 		{
-			$sUploadPath	= BAB_FmFolderHelper::getUploadPath();
-			$sFullPathName	= $oFileManagerEnv->getCurrentFmPath() . $sDirName;
-			
-//			bab_debug('sUploadPath ==> ' . $sUploadPath);
 //			bab_debug('sFullPathName ==> ' .  $sFullPathName);
 //			bab_debug('sRelativePath ==> ' . $oFileManagerEnv->sRelativePath);
-
-			BAB_FmFolderHelper::createDirectory($sUploadPath, $sFullPathName);
+			$sFullPathName	= $oFileManagerEnv->getCurrentFmPath() . $sDirName;
+			BAB_FmFolderHelper::createDirectory($sFullPathName);
 		}
 		else 
 		{
