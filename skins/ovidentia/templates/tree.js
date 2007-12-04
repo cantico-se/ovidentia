@@ -61,6 +61,7 @@ function bab_loadSubTree(li, url)
 			} else {
 				li.className = bab_Tree.prototype.NODE_LEAF;
 			}
+			bab_refreshAllTreeNodes(li.parentNode);
 		}
 	}
 	li.className = bab_Tree.prototype.NODE_LOADING;
@@ -308,6 +309,21 @@ function bab_onItemMouseOut()
 	} catch(e) {}
 }
 
+
+function bab_refreshAllTreeNodes(ul)
+{
+	var lis = ul.getElementsByTagName('LI');
+	var nbLis = lis.length;
+	for (var i = 0; i < nbLis; i++)
+	{
+		var li = lis[i];
+		if (li.className == bab_Tree.prototype.NODE_OPEN) {
+			li.className = li.className;
+		}
+	}
+}
+
+
 function bab_onNodeClick()
 {
 	var li = this.parentNode.parentNode;
@@ -317,6 +333,8 @@ function bab_onNodeClick()
 		li.className = bab_Tree.prototype.NODE_OPEN;
 	}
 	this.tree.saveState();
+	bab_refreshAllTreeNodes(this.tree.rootList);
+
 	return false;
 }
 
