@@ -2477,4 +2477,5 @@
 <string id="CAUTION: This will permanently remove this directory and all subdirectories files on it !">ATTENTION : Cette opération supprime définitivement ce répertoire, les sous-répertoires et tous les fichiers qu'il contient !</string>
 <string id="You sure you want to delete this directory ?">Confirmez-vous la suppression de ce répertoire ?</string>
 <string id="Invalid directory">Répertoire invalide</string>
+<string id="Personal Folder">Répertoire personnel</string>
 </fr>

@@ -69,16 +69,6 @@ class listFiles
 		function bab_compareFmFiles($f1, $f2)
 		{
 			return strcmp($f1['sName'], $f2['sName']);
-			/*
-			if($f1['sCollective'] == $f2['sCollective']) 
-			{
-				return strcmp($f1['sName'], $f2['sName']);
-			}
-			else
-			{
-				return strcmp($f2['sCollective'], $f1['sCollective']);
-			}
-			//*/
 		}
 		
 		global $babBody, $babDB, $BAB_SESS_USERID;
@@ -91,7 +81,7 @@ class listFiles
 	
 		$this->{$this->sListFunctionName}();
 //		bab_debug($this->aFolders);
-		uasort($this->aFolders, 'bab_compareFmFiles');
+//		uasort($this->aFolders, 'bab_compareFmFiles');
 //		bab_debug($this->aFolders);
 		
 		$this->prepare();
@@ -163,6 +153,7 @@ class listFiles
 		{
 			$this->addCollectiveDirectory($oFmFolder, $oFmFolder->getId());
 		}
+		uasort($this->aFolders, 'bab_compareFmFiles');
 		
 		//Add the personnal folder
 		{
@@ -173,7 +164,7 @@ class listFiles
 				'bCanEditFolder' => false, 
 				'bCanSetRightOnFolder' => false,
 				'bCanCutFolder' => false, 
-				'sName' => bab_translate("Personnal Folder"), 
+				'sName' => bab_translate("Personal Folder"), 
 				'sGr' => 'N', 
 				'sCollective' => 'N', 
 				'sHide' => 'N',
@@ -194,6 +185,7 @@ class listFiles
 		{
 			$this->walkDirectory($sFullPathname, 'simpleDirectoryCallback');
 		}
+		uasort($this->aFolders, 'bab_compareFmFiles');
 	}
 
 	function listCollectiveFolder()
@@ -206,6 +198,7 @@ class listFiles
 		{
 			$this->walkDirectory($sFullPathname, 'collectiveDirectoryCallback');
 		}
+		uasort($this->aFolders, 'bab_compareFmFiles');
 	}
 	
 	function walkDirectory($sPathName, $sCallbackFunction)
