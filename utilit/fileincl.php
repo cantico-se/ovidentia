@@ -4047,6 +4047,11 @@ class BAB_FileManagerEnv
 				$this->sFmRootPath		= $this->sFmUploadPath . 'users/U' . $BAB_SESS_USERID . '/';
 				$this->sFmPersonnalPath	= $this->sFmRootPath;
 				
+				if(!is_dir($this->sFmPersonnalPath))
+				{
+					BAB_FmFolderHelper::createDirectory($this->sFmPersonnalPath);
+				}
+				
 				if(0 !== strlen(trim($this->sPath)))
 				{
 					$this->sFmPersonnalPath .= $this->sRelativePath;
@@ -4447,6 +4452,8 @@ function canManage($sPath)
 	static $aPath = array();
 	if(!array_key_exists($sPath, $aPath))
 	{
+		$oFileManagerEnv =& getEnvObject();
+		$sPath = $oFileManagerEnv->getCurrentFmPath() . $sPath;
 		$aPath[$sPath] = haveRightOnParent($sPath, BAB_FMMANAGERS_GROUPS_TBL);
 	}	
 	return $aPath[$sPath];
@@ -4458,6 +4465,8 @@ function canUpload($sPath)
 	static $aPath = array();
 	if(!array_key_exists($sPath, $aPath))
 	{
+		$oFileManagerEnv =& getEnvObject();
+		$sPath = $oFileManagerEnv->getCurrentFmPath() . $sPath;
 		$aPath[$sPath] = haveRightOn($sPath, BAB_FMUPLOAD_GROUPS_TBL);
 	}	
 	return $aPath[$sPath];
@@ -4469,6 +4478,8 @@ function canDownload($sPath)
 	static $aPath = array();
 	if(!array_key_exists($sPath, $aPath))
 	{
+		$oFileManagerEnv =& getEnvObject();
+		$sPath = $oFileManagerEnv->getCurrentFmPath() . $sPath;
 		$aPath[$sPath] = haveRightOn($sPath, BAB_FMDOWNLOAD_GROUPS_TBL);
 	}	
 	return $aPath[$sPath];
@@ -4480,6 +4491,8 @@ function canUpdate($sPath)
 	static $aPath = array();
 	if(!array_key_exists($sPath, $aPath))
 	{
+		$oFileManagerEnv =& getEnvObject();
+		$sPath = $oFileManagerEnv->getCurrentFmPath() . $sPath;
 		$aPath[$sPath] = haveRightOn($sPath, BAB_FMUPDATE_GROUPS_TBL);
 	}	
 	return $aPath[$sPath];
@@ -4491,6 +4504,8 @@ function canBrowse($sPath)
 	static $aPath = array();
 	if(!array_key_exists($sPath, $aPath))
 	{
+		$oFileManagerEnv =& getEnvObject();
+		$sPath = $oFileManagerEnv->getCurrentFmPath() . $sPath;
 		$aPath[$sPath] = canManage($sPath) || canUpload($sPath) ||
 			canDownload($sPath) || canUpdate($sPath);
 	}	
@@ -4522,6 +4537,8 @@ function canCutFile($sPath)
 	static $aPath = array();
 	if(!array_key_exists($sPath, $aPath))
 	{
+		$oFileManagerEnv =& getEnvObject();
+		$sPath = $oFileManagerEnv->getCurrentFmPath() . $sPath;
 		$aPath[$sPath] = haveRightOn($sPath, BAB_FMMANAGERS_GROUPS_TBL);
 	}	
 	return $aPath[$sPath];
@@ -4835,7 +4852,12 @@ function haveRightOn($sPath, $sTableName)
 	}
 	else if($oFileManagerEnv->userIsInPersonnalFolder())
 	{
-		return isUserFolder($sPath);
+		$bAccess = isUserFolder($sPath);
+		/*
+		bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
+			' user ' . ((true === $bAccess) ? 'have right' : 'have not right') . ' on ' . $sTableName);
+		//*/	
+		return $bAccess;
 	}
 	else 
 	{
@@ -4860,11 +4882,17 @@ function isUserFolder($sPath)
 		if(preg_match('/(U)(\d+)/', $sPathName, $aBuffer))
 		{
 			$iIdUser = (int) $aBuffer[2];
+			/*
+			bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
+				' T1 ==> ' . ((0 !== $iIdUser) ? 'Yes' : 'No') .
+				' T2 ==> ' . (($iIdUser === (int) $oFileManagerEnv->iIdObject) ? 'Yes' : 'No') .
+				' T3 ==> ' . (((int) $BAB_SESS_USERID === (int) $iIdUser) ? 'Yes' : 'No') .
+				' bResult ==> ' . ((0 !== $iIdUser && $iIdUser === (int) $oFileManagerEnv->iIdObject && (int) $BAB_SESS_USERID === (int) $iIdUser) ? 'Yes' : 'No'));
+			$bAccess = (0 !== $iIdUser && $iIdUser === (int) $oFileManagerEnv->iIdObject && (int) $BAB_SESS_USERID === $iIdUser);
+			var_dump($bAccess);
+			//*/
 			
-//			bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
-//				' bResult ==> ' . (($iIdUser === (int) $oFileManagerEnv->iIdObject) ? 'Yes' : 'No'));
-				
-			return (0 !== $iIdUser && $iIdUser === (int) $oFileManagerEnv->iIdObject && $BAB_SESS_USERID === $iIdUser);
+			return (0 !== $iIdUser && $iIdUser === (int) $oFileManagerEnv->iIdObject && (int) $BAB_SESS_USERID === $iIdUser);
 		}
 	}
 	return false;

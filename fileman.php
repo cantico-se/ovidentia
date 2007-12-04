@@ -155,7 +155,7 @@ class listFiles
 		}
 		uasort($this->aFolders, 'bab_compareFmFiles');
 		
-		//Add the personnal folder
+		if(userHavePersonnalStorage())
 		{
 			$aItem = array(
 				'iId' => 0, 
@@ -1610,6 +1610,7 @@ function listFiles()
 	{
 		$babBody->addItemMenu("add", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=fileman&idx=add&id=".$oFileManagerEnv->iId."&gr=".$oFileManagerEnv->sGr."&path=".urlencode($oFileManagerEnv->sPath));
 	}
+	
 	if(canManage($sParentPath)) 
 	{
 		$babBody->addItemMenu("trash", bab_translate("Trash"), $GLOBALS['babUrlScript']."?tg=fileman&idx=trash&id=".$oFileManagerEnv->iId."&gr=".$oFileManagerEnv->sGr."&path=".urlencode($oFileManagerEnv->sPath));
