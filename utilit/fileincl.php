@@ -4142,17 +4142,17 @@ class BAB_FileManagerEnv
 	
 	function userIsInRootFolder()
 	{
-		return ('' === $this->sGr && 0 === $this->iPathLength);
+		return ('' === (string) $this->sGr && 0 === (int) $this->iPathLength);
 	}
 	
 	function userIsInCollectiveFolder()
 	{
-		return ('Y' === $this->sGr);
+		return ('Y' === (string) $this->sGr);
 	}
 	
 	function userIsInPersonnalFolder()
 	{
-		return ('N' === $this->sGr);
+		return ('N' === (string) $this->sGr);
 	}
 	
 	function accessValid()
@@ -4183,11 +4183,12 @@ class BAB_FileManagerEnv
 			{
 				$oFileManagerEnv =& getEnvObject();
 				$sParentPath = $oFileManagerEnv->sRelativePath;
+				
 				if(true === canManage($sParentPath))
 				{
 					return true;
 				}
-				else if(true === canUpload($sParentPath) || true === canDownload($sParentPath) || true === canUpdate($sParentPath))
+				else if(true === haveRightOn($sParentPath, BAB_FMMANAGERS_GROUPS_TBL) || true === canUpload($sParentPath) || true === canDownload($sParentPath) || true === canUpdate($sParentPath))
 				{
 					return true;						
 				}
@@ -4447,69 +4448,80 @@ function &getEnvObject()
 
 /////// ACL For the filemanager
 
+
 function canManage($sPath)
 {
+	$oFileManagerEnv =& getEnvObject();
+	$sFullPath = $oFileManagerEnv->getRootFmPath() . $sPath;
+	
 	static $aPath = array();
-	if(!array_key_exists($sPath, $aPath))
+	if(!array_key_exists($sFullPath, $aPath))
 	{
-		$oFileManagerEnv =& getEnvObject();
-		$sPath = $oFileManagerEnv->getCurrentFmPath() . $sPath;
-		$aPath[$sPath] = haveRightOnParent($sPath, BAB_FMMANAGERS_GROUPS_TBL);
-	}	
-	return $aPath[$sPath];
+//		require_once $GLOBALS['babInstallPath'] . 'utilit/devtools.php';
+//		bab_debug_print_backtrace();
+//	
+//		bab_debug(__FUNCTION__ . ' sPath ==> ' . $sPath . ' CurrentFmPath ==> ' . $sFullPath);
+
+		$aPath[$sFullPath] = haveRightOnParent($sPath, BAB_FMMANAGERS_GROUPS_TBL);
+	}
+	return $aPath[$sFullPath];
 }
 
 
 function canUpload($sPath)
 {
+	$oFileManagerEnv =& getEnvObject();
+	$sFullPath = $oFileManagerEnv->getRootFmPath() . $sPath;
+	
 	static $aPath = array();
-	if(!array_key_exists($sPath, $aPath))
+	if(!array_key_exists($sFullPath, $aPath))
 	{
-		$oFileManagerEnv =& getEnvObject();
-		$sPath = $oFileManagerEnv->getCurrentFmPath() . $sPath;
-		$aPath[$sPath] = haveRightOn($sPath, BAB_FMUPLOAD_GROUPS_TBL);
+		$aPath[$sFullPath] = haveRightOn($sPath, BAB_FMUPLOAD_GROUPS_TBL);
 	}	
-	return $aPath[$sPath];
+	return $aPath[$sFullPath];
 }
 
 
 function canDownload($sPath)
 {
+	$oFileManagerEnv =& getEnvObject();
+	$sFullPath = $oFileManagerEnv->getRootFmPath() . $sPath;
+	
 	static $aPath = array();
-	if(!array_key_exists($sPath, $aPath))
+	if(!array_key_exists($sFullPath, $aPath))
 	{
-		$oFileManagerEnv =& getEnvObject();
-		$sPath = $oFileManagerEnv->getCurrentFmPath() . $sPath;
-		$aPath[$sPath] = haveRightOn($sPath, BAB_FMDOWNLOAD_GROUPS_TBL);
+		$aPath[$sFullPath] = haveRightOn($sPath, BAB_FMDOWNLOAD_GROUPS_TBL);
 	}	
-	return $aPath[$sPath];
+	return $aPath[$sFullPath];
 }
 
 
 function canUpdate($sPath)
 {
+	$oFileManagerEnv =& getEnvObject();
+	$sFullPath = $oFileManagerEnv->getRootFmPath() . $sPath;
+	
 	static $aPath = array();
 	if(!array_key_exists($sPath, $aPath))
 	{
-		$oFileManagerEnv =& getEnvObject();
-		$sPath = $oFileManagerEnv->getCurrentFmPath() . $sPath;
-		$aPath[$sPath] = haveRightOn($sPath, BAB_FMUPDATE_GROUPS_TBL);
+		$aPath[$sFullPath] = haveRightOn($sPath, BAB_FMUPDATE_GROUPS_TBL);
 	}	
-	return $aPath[$sPath];
+	return $aPath[$sFullPath];
 }
 
 
 function canBrowse($sPath)
 {
+	$oFileManagerEnv =& getEnvObject();
+	$sFullPath = $oFileManagerEnv->getRootFmPath() . $sPath;
+	
 	static $aPath = array();
-	if(!array_key_exists($sPath, $aPath))
+	if(!array_key_exists($sFullPath, $aPath))
 	{
-		$oFileManagerEnv =& getEnvObject();
-		$sPath = $oFileManagerEnv->getCurrentFmPath() . $sPath;
-		$aPath[$sPath] = canManage($sPath) || canUpload($sPath) ||
+		$aPath[$sFullPath] = haveRightOn($sPath, BAB_FMMANAGERS_GROUPS_TBL) || canUpload($sPath) ||
 			canDownload($sPath) || canUpdate($sPath);
-	}	
-	return $aPath[$sPath];
+	}
+	return $aPath[$sFullPath];
 
 }
 
@@ -4534,14 +4546,15 @@ function canCutFolder($sPath)
 
 function canCutFile($sPath)
 {
+	$oFileManagerEnv =& getEnvObject();
+	$sFullPath = $oFileManagerEnv->getRootFmPath() . $sPath;
+	
 	static $aPath = array();
-	if(!array_key_exists($sPath, $aPath))
+	if(!array_key_exists($sFullPath, $aPath))
 	{
-		$oFileManagerEnv =& getEnvObject();
-		$sPath = $oFileManagerEnv->getCurrentFmPath() . $sPath;
-		$aPath[$sPath] = haveRightOn($sPath, BAB_FMMANAGERS_GROUPS_TBL);
+		$aPath[$sFullPath] = haveRightOn($sPath, BAB_FMMANAGERS_GROUPS_TBL);
 	}	
-	return $aPath[$sPath];
+	return $aPath[$sFullPath];
 }
 
 
@@ -4553,14 +4566,6 @@ function canDelFile($sPath)
 
 function canCreateFolder($sPath)
 {
-	/*
-	static $aPath = array();
-	if(!array_key_exists($sPath, $aPath))
-	{
-		$aPath[$sPath] = haveRightOn($sPath, BAB_FMMANAGERS_GROUPS_TBL);
-	}	
-	return $aPath[$sPath];
-	//*/
 	return canManage($sPath);
 }
 
@@ -4784,11 +4789,6 @@ function canPasteFile($iIdSrcRootFolder, $sSrcPath, $iIdTrgRootFolder, $sTrgPath
 
 function haveRightOnParent($sPath, $sTableName)
 {
-//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sPath ==> ' . $sPath . ' sTableName ==> ' . $sTableName);
-	
-//	require_once $GLOBALS['babInstallPath'] . 'utilit/devtools.php';
-//	bab_debug_print_backtrace();
-	
 	$oFileManagerEnv =& getEnvObject();
 	
 	if($oFileManagerEnv->userIsInCollectiveFolder())
@@ -4807,7 +4807,6 @@ function haveRightOnParent($sPath, $sTableName)
 			}
 			else 
 			{
-//				bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' ERROR Collective path not found sPath ==> ' . $sPath . ' sTableName ==> ' . $sTableName);
 				return false;
 			}
 		}
@@ -4829,35 +4828,22 @@ function haveRightOnParent($sPath, $sTableName)
 
 function haveRightOn($sPath, $sTableName)
 {
-//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sPath ==> ' . $sPath . ' sTableName ==> ' . $sTableName);
-	
-//	require_once $GLOBALS['babInstallPath'] . 'utilit/devtools.php';
-//	bab_debug_print_backtrace();
-	
 	$oFileManagerEnv =& getEnvObject();
-	
 	if($oFileManagerEnv->userIsInCollectiveFolder() || $oFileManagerEnv->userIsInRootFolder())
 	{
 		$oFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($sPath);
 		if(!is_null($oFmFolder))
 		{
-//			bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' iIdOwner ==> ' . $oFmFolder->getId() . ' sPath ==> ' . $sPath . ' sTableName ==> ' . $sTableName);
 			return bab_isAccessValid($sTableName, $oFmFolder->getId());
 		}
 		else 
 		{
-//			bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' ERROR Collective path not found sPath ==> ' . $sPath . ' sTableName ==> ' . $sTableName);
 			return false;
 		}
 	}
 	else if($oFileManagerEnv->userIsInPersonnalFolder())
 	{
-		$bAccess = isUserFolder($sPath);
-		/*
-		bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
-			' user ' . ((true === $bAccess) ? 'have right' : 'have not right') . ' on ' . $sTableName);
-		//*/	
-		return $bAccess;
+		return isUserFolder($sPath);
 	}
 	else 
 	{
@@ -4868,13 +4854,10 @@ function haveRightOn($sPath, $sTableName)
 
 function isUserFolder($sPath)
 {
-//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sPath ==> ' . $sPath);
 	global $BAB_SESS_USERID;
 	
 	$oFileManagerEnv =& getEnvObject();
 	$sPathName = $oFileManagerEnv->getCurrentFmPath();
-	
-//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sPathName ==> ' . $sPathName);
 	
 	if(userHavePersonnalStorage() && is_dir($sPathName))
 	{
@@ -4882,16 +4865,6 @@ function isUserFolder($sPath)
 		if(preg_match('/(U)(\d+)/', $sPathName, $aBuffer))
 		{
 			$iIdUser = (int) $aBuffer[2];
-			/*
-			bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
-				' T1 ==> ' . ((0 !== $iIdUser) ? 'Yes' : 'No') .
-				' T2 ==> ' . (($iIdUser === (int) $oFileManagerEnv->iIdObject) ? 'Yes' : 'No') .
-				' T3 ==> ' . (((int) $BAB_SESS_USERID === (int) $iIdUser) ? 'Yes' : 'No') .
-				' bResult ==> ' . ((0 !== $iIdUser && $iIdUser === (int) $oFileManagerEnv->iIdObject && (int) $BAB_SESS_USERID === (int) $iIdUser) ? 'Yes' : 'No'));
-			$bAccess = (0 !== $iIdUser && $iIdUser === (int) $oFileManagerEnv->iIdObject && (int) $BAB_SESS_USERID === $iIdUser);
-			var_dump($bAccess);
-			//*/
-			
 			return (0 !== $iIdUser && $iIdUser === (int) $oFileManagerEnv->iIdObject && (int) $BAB_SESS_USERID === $iIdUser);
 		}
 	}
@@ -4944,7 +4917,6 @@ function userHaveRightOnCollectiveFolder()
 		$aIdObject = bab_getUserIdObjects(BAB_FMUPLOAD_GROUPS_TBL);
 		if(is_array($aIdObject) && count($aIdObject) > 0)
 		{
-//			bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' BAB_FMUPLOAD_GROUPS_TBL');
 			$bHaveRightOnCollectiveFolder = true;
 			return true;
 		}
@@ -4952,7 +4924,6 @@ function userHaveRightOnCollectiveFolder()
 		$aIdObject = bab_getUserIdObjects(BAB_FMDOWNLOAD_GROUPS_TBL);
 		if(is_array($aIdObject) && count($aIdObject) > 0)
 		{
-//			bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' BAB_FMDOWNLOAD_GROUPS_TBL');
 			$bHaveRightOnCollectiveFolder = true;
 			return true;
 		}
@@ -4960,7 +4931,6 @@ function userHaveRightOnCollectiveFolder()
 		$aIdObject = bab_getUserIdObjects(BAB_FMUPDATE_GROUPS_TBL);
 		if(is_array($aIdObject) && count($aIdObject) > 0)
 		{
-//			bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' BAB_FMUPDATE_GROUPS_TBL');
 			$bHaveRightOnCollectiveFolder = true;
 			return true;
 		}
@@ -4968,14 +4938,10 @@ function userHaveRightOnCollectiveFolder()
 		$aIdObject = bab_getUserIdObjects(BAB_FMMANAGERS_GROUPS_TBL);
 		if(is_array($aIdObject) && count($aIdObject) > 0)
 		{
-//			bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' BAB_FMMANAGERS_GROUPS_TBL');
 			$bHaveRightOnCollectiveFolder = true;
 			return true;
 		}
 	}
-//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
-//		' bHaveRightOnCollectiveFolder ==> ' . ($bHaveRightOnCollectiveFolder ? 'Yes' : 'No'));
-
 	return $bHaveRightOnCollectiveFolder;
 }
 

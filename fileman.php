@@ -80,14 +80,9 @@ class listFiles
 		$this->initEnv();
 	
 		$this->{$this->sListFunctionName}();
-//		bab_debug($this->aFolders);
-//		uasort($this->aFolders, 'bab_compareFmFiles');
-//		bab_debug($this->aFolders);
 		
 		$this->prepare();
 		$this->autoadd_files();
-//		bab_debug($this->files_from_dir);
-//		bab_debug($this->aCuttedDir);
 	}
 	
 	function initEnv()
@@ -178,9 +173,6 @@ class listFiles
 	function listPersonnalFolder()
 	{
 		$sFullPathname = (string) $this->oFileManagerEnv->getPersonnalFolderPath();
-		
-//		bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sFullPathname ==> ' . $sFullPathname);
-
 		if(is_dir(realpath($sFullPathname)))
 		{
 			$this->walkDirectory($sFullPathname, 'simpleDirectoryCallback');
@@ -191,9 +183,6 @@ class listFiles
 	function listCollectiveFolder()
 	{
 		$sFullPathname = (string) $this->oFileManagerEnv->getCollectiveFolderPath();
-		
-//		bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sFullPathname ==> ' . $sFullPathname);
-		
 		if(is_dir(realpath($sFullPathname)))
 		{
 			$this->walkDirectory($sFullPathname, 'collectiveDirectoryCallback');
@@ -203,8 +192,6 @@ class listFiles
 	
 	function walkDirectory($sPathName, $sCallbackFunction)
 	{
-//		bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sPathName ==> ' . $sPathName);
-		
 		if(is_dir($sPathName))
 		{
 			$oDir = dir($sPathName);
@@ -224,8 +211,6 @@ class listFiles
 	
 	function simpleDirectoryCallback($sPathName, $sEntry)
 	{
-//		bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sPathName ==> ' . $sPathName . ' sEntry ==> ' . $sEntry);
-
 		if(is_dir($sPathName . $sEntry)) 
 		{
 			$bInClipBoard = false;
@@ -255,17 +240,11 @@ class listFiles
 			{
 				$sRelativePath = $this->oFileManagerEnv->sRelativePath . $sEntry . '/';
 		
-//				bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sRelativePath ==> ' . $sRelativePath . ' canUpload ==> ' . ((canUpload($sRelativePath)) ? 'Yes' : 'No'));
-//				bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sRelativePath ==> ' . $sRelativePath . ' canDownload ==> ' . ((canDownload($sRelativePath)) ? 'Yes' : 'No'));
-//				bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sRelativePath ==> ' . $sRelativePath . ' canUpdate ==> ' . ((canUpdate($sRelativePath)) ? 'Yes' : 'No'));
-//				bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sRelativePath ==> ' . $sRelativePath . ' canManage ==> ' . ((canManage($sRelativePath)) ? 'Yes' : 'No'));
-//				bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sRelativePath ==> ' . $sRelativePath . ' canBrowse ==> ' . ((canBrowse($sRelativePath)) ? 'Yes' : 'No'));
-		
-				if(canManage($sRelativePath) || canDownload($sRelativePath) || canUpload($sRelativePath) || canUpdate($sRelativePath))
+				if(canManage($sRelativePath) || canBrowse($sRelativePath))
 				{
 					$aItem = array(
 						'iId' => 0, 
-						'bCanManageFolder' => canManage($sRelativePath),
+						'bCanManageFolder' => haveRightOn($sRelativePath, BAB_FMMANAGERS_GROUPS_TBL),
 						'bCanBrowseFolder' => canBrowse($sRelativePath),
 						'bCanEditFolder' => canEdit($sRelativePath), 
 						'bCanSetRightOnFolder' => false,
@@ -290,7 +269,6 @@ class listFiles
 
 	function collectiveDirectoryCallback($sPathName, $sEntry)
 	{
-//		bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sPathName ==> ' . $sPathName . ' sEntry ==> ' . $sEntry);
 		global $babBody;
 		
 		$oFmFolderSet = new BAB_FmFolderSet();
@@ -319,26 +297,18 @@ class listFiles
 	{
 		$sRelativePath = $oFmFolder->getRelativePath() . $oFmFolder->getName() . '/';
 		
-//		bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sRelativePath ==> ' . $sRelativePath);
-		
 		$sRootFmPath = $this->oFileManagerEnv->getCollectiveRootFmPath();
 		$sFullPathName = $sRootFmPath . $oFmFolder->getRelativePath() . $oFmFolder->getName();
 		
 		$bInClipBoard = (bool) array_key_exists($sFullPathName, $this->aCuttedDir);
 		
-//		bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sRelativePath ==> ' . $sRelativePath . ' canUpload ==> ' . ((canUpload($sRelativePath)) ? 'Yes' : 'No'));
-//		bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sRelativePath ==> ' . $sRelativePath . ' canDownload ==> ' . ((canDownload($sRelativePath)) ? 'Yes' : 'No'));
-//		bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sRelativePath ==> ' . $sRelativePath . ' canUpdate ==> ' . ((canUpdate($sRelativePath)) ? 'Yes' : 'No'));
-//		bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sRelativePath ==> ' . $sRelativePath . ' canManage ==> ' . ((canManage($sRelativePath)) ? 'Yes' : 'No'));
-//		bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sRelativePath ==> ' . $sRelativePath . ' canBrowse ==> ' . ((canBrowse($sRelativePath)) ? 'Yes' : 'No'));
-		
 		if(false === $bInClipBoard)
 		{
-			if(canManage($sRelativePath) || canDownload($sRelativePath) || canUpload($sRelativePath) || canUpdate($sRelativePath))
+			if(canManage($sRelativePath) || canBrowse($sRelativePath))
 			{
 				$aItem = array(
 					'iId' => $oFmFolder->getId(), 
-					'bCanManageFolder' => canManage($sRelativePath), 
+					'bCanManageFolder' => haveRightOn($sRelativePath, BAB_FMMANAGERS_GROUPS_TBL), 
 					'bCanBrowseFolder' => canBrowse($sRelativePath),
 					'bCanEditFolder' => canEdit($sRelativePath), 
 					'bCanSetRightOnFolder' => canSetRight($sRelativePath),
@@ -358,8 +328,6 @@ class listFiles
 	
 	function getClipboardFolder()
 	{
-//		bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__);
-
 		global $babBody;
 		
 		$sRootFmPath = '';
@@ -403,12 +371,9 @@ class listFiles
 			
 			if(canPasteFolder($iIdSrcRootFolder, $sSrcPath, $bSrcPathIsCollective, $iIdTrgRootFolder, $sTrgPath))
 			{
-//				bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
-//					' iIdSrcRootFolder ==> ' . $iIdSrcRootFolder . ' sSrcPath ==> ' . $sSrcPath . ' ** GOOD **');
-
 				$aItem = array(
 					'iId' => $oFmFolderCliboard->getFolderId(), 
-					'bCanManageFolder' => canManage($sRelativePath), 
+					'bCanManageFolder' => haveRightOn($sRelativePath, BAB_FMMANAGERS_GROUPS_TBL), 
 					'bCanBrowseFolder' => canBrowse($sRelativePath),
 					'bCanEditFolder' => false, 
 					'bCanSetRightOnFolder' => false,
@@ -527,15 +492,10 @@ class listFiles
 				$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
 				$oCriteria = $oCriteria->_and($oIdOwner->in($iIdOwner));
 				
-//				bab_debug($this->oFolderFileSet->getSelectQuery($oCriteria));
-//				bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__);
-				
 				$this->oFolderFileSet->select($oCriteria);
 				
 				if(0 === $this->oFolderFileSet->count())
 				{
-//					bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__);
-					
 					$oFolderFile->setName($dir_file);
 					$oFolderFile->setPathName($this->oFileManagerEnv->sRelativePath);
 					
@@ -770,7 +730,7 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 			$sRightFunction = 'canCreateFolder';
 		}
 		
-		$this->set_data('bDelete', $sRightFunction($oFileManagerEnv->sRelativePath));
+		$this->set_data('bDelete', $sRightFunction($oFileManagerEnv->sRelativePath . $sDirName));
 	}
 	
 	function getNextApprobationScheme()
@@ -1262,10 +1222,14 @@ function listFiles()
 			
 			$sRelativePath = $this->oFileManagerEnv->sRelativePath;
 			
-			$this->bCanManageCurrentFolder = canManage($sRelativePath);
+//			$this->bCanManageCurrentFolder = canManage($sRelativePath);
+			$this->bCanManageCurrentFolder = haveRightOn($sRelativePath, BAB_FMMANAGERS_GROUPS_TBL);
 			$this->bDownload = canDownload($sRelativePath); 
 			$this->bUpdate = canUpdate($sRelativePath);  
 			$this->bCanCreateFolder = canCreateFolder($sRelativePath);
+
+			bab_debug($this->oFileManagerEnv);
+			
 			$this->bVersion = (!is_null($this->oFileManagerEnv->oFmFolder) && 'Y' === $this->oFileManagerEnv->oFmFolder->getVersioning());
 			
 			
@@ -1282,14 +1246,6 @@ function listFiles()
 			{
 				$this->selectCuttedFiles();
 			}
-			
-			/*
-			if(!empty($path) && count($this->aFolders) <= 1 && $this->count == 0 && canDownload($sRelativePath))
-			{
-				$this->bdel = true;
-			}
-			//*/
-//			bab_debug($this->aFolders);
 		}
 
 		function selectCuttedFiles()
@@ -1611,7 +1567,7 @@ function listFiles()
 		$babBody->addItemMenu("add", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=fileman&idx=add&id=".$oFileManagerEnv->iId."&gr=".$oFileManagerEnv->sGr."&path=".urlencode($oFileManagerEnv->sPath));
 	}
 	
-	if(canManage($sParentPath)) 
+	if(haveRightOn($sParentPath, BAB_FMMANAGERS_GROUPS_TBL)) 
 	{
 		$babBody->addItemMenu("trash", bab_translate("Trash"), $GLOBALS['babUrlScript']."?tg=fileman&idx=trash&id=".$oFileManagerEnv->iId."&gr=".$oFileManagerEnv->sGr."&path=".urlencode($oFileManagerEnv->sPath));
 	}
@@ -1922,7 +1878,7 @@ function pasteFile()
 	$sSrcPath			= (string) bab_gp('sSrcPath', '');
 	$sTrgPath			= $oFileManagerEnv->sPath; 
 	$sFileName			=  (string) bab_gp('file', '');
-	$sUpLoadPath		= $oFileManagerEnv->getCurrentFmPath();
+	$sUpLoadPath		= $oFileManagerEnv->getRootFmPath();
 	
 	if(canPasteFile($iIdSrcRootFolder, $sSrcPath, $iIdTrgRootFolder, $sTrgPath, $sFileName))
 	{
@@ -1946,8 +1902,6 @@ function pasteFile()
 			$oFmFolder = null;
 			BAB_FmFolderHelper::getFileInfoForCollectiveDir($iIdSrcRootFolder, $sSrcPath, $iOldIdOwner, $sOldRelativePath, $oFmFolder);
 			BAB_FmFolderHelper::getFileInfoForCollectiveDir($iIdTrgRootFolder, $sTrgPath, $iNewIdOwner, $sNewRelativePath, $oFmFolder);
-			
-			$sUpLoadPath = $oFileManagerEnv->getRootFmPath();
 		}
 		
 		$sOldFullPathName = $sUpLoadPath . $sOldRelativePath . $sFileName;
@@ -1959,6 +1913,7 @@ function pasteFile()
 //			
 //		bab_debug('sOldFullPathName ==> ' . $sUpLoadPath . $sOldRelativePath . $sFileName);
 //		bab_debug('sNewFullPathName ==> ' . $sUpLoadPath . $sNewRelativePath . $sFileName);
+//		bab_debug('sUpLoadPath ==> ' . $sUpLoadPath);
 		
 		$oFolderFileSet	= new BAB_FolderFileSet();
 		$oIdOwner		=& $oFolderFileSet->aField['iIdOwner'];
@@ -2628,7 +2583,7 @@ function displayFolderForm()
 	
 	if($oFileManagerEnv->userIsInCollectiveFolder() || $oFileManagerEnv->userIsInRootFolder())
 	{
-		if($sRightFunction($oFileManagerEnv->sRelativePath))
+		if($sRightFunction($oFileManagerEnv->sRelativePath . $sName))
 		{
 			$oDspFldForm = new DisplayCollectiveFolderForm();
 			$babBody->babecho($oDspFldForm->printTemplate());
@@ -2640,7 +2595,7 @@ function displayFolderForm()
 	}
 	else if($oFileManagerEnv->userIsInPersonnalFolder())
 	{
-		if($sRightFunction($oFileManagerEnv->sRelativePath))
+		if($sRightFunction($oFileManagerEnv->sRelativePath . $sName))
 		{
 			$oDspFldForm = new DisplayUserFolderForm();
 			$babBody->babecho($oDspFldForm->printTemplate());
@@ -3291,10 +3246,10 @@ function editFolderForCollectiveDir()
 	$oFileManagerEnv =& getEnvObject();
 	
 //	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sRelativePath ==> ' . $oFileManagerEnv->sRelativePath);
+	$sDirName = (string) bab_pp('sDirName', '');
 
-	if(canEdit($oFileManagerEnv->sRelativePath))
+	if(canEdit($oFileManagerEnv->sRelativePath . $sDirName))
 	{	
-		$sDirName = (string) bab_pp('sDirName', '');
 //bab_debug('Rajouter un test qui permet d\'être que c\'est répertoire collectif ou pas');
 		if(strlen(trim($sDirName)) > 0)
 		{
@@ -3473,9 +3428,10 @@ function deleteFolderForCollectiveDir()
 {
 	global $babBody, $babDB;
 	$oFileManagerEnv =& getEnvObject();
-	if(canCreateFolder($oFileManagerEnv->sRelativePath))
+	
+	$sDirName = (string) bab_pp('sDirName', '');
+	if(strlen(trim($sDirName)) > 0 && canCreateFolder($oFileManagerEnv->sRelativePath))
 	{
-		$sDirName	= (string) bab_pp('sDirName', '');
 		$iIdFld	= (int) bab_pp('iIdFolder', 0); 
 		if(0 !== $iIdFld)
 		{
@@ -3525,10 +3481,10 @@ function deleteFolderForUserDir()
 	global $babBody;
 	
 	$oFileManagerEnv =& getEnvObject();
+	$sDirName = (string) bab_pp('sDirName', '');
+	
 	if(userHavePersonnalStorage() && canCreateFolder($oFileManagerEnv->sRelativePath))
 	{
-		$sDirName = (string) bab_pp('sDirName', '');
-		
 		if(strlen(trim($sDirName)) > 0)
 		{
 			$sCurrentFmPath = $oFileManagerEnv->getCurrentFmPath();
