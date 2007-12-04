@@ -48,10 +48,10 @@ function createFmDirectories($sUploadPath)
 	$sCollectiveUploadPath = $sUploadPath . 'fileManager/collectives/';
 	$sUserUploadPath = $sUploadPath . 'fileManager/users/';
 	
-	if(!is_writable($sUploadPath . 'fileManager'))
+	if(!is_writable($sUploadPath))
 	{
 		echo __LINE__ . ' ' . basename(__FILE__) . ' ' .  
-			' The directory ' . $sUploadPath . 'fileManager is not writable <br />';
+			' The directory ' . $sUploadPath . ' is not writable <br />';
 		return false;
 	}
 	
