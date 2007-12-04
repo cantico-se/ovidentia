@@ -180,6 +180,7 @@ define("BAB_FM_FIELDSVAL_TBL", "bab_fm_fieldsval");
 define("BAB_FM_FILESLOG_TBL", "bab_fm_fileslog");
 define("BAB_FM_FILESVER_TBL", "bab_fm_filesver");
 define("BAB_FM_FOLDERS_TBL", "bab_fm_folders");
+define("BAB_FM_FOLDERS_CLIPBOARD_TBL", "bab_fm_folders_clipboard");
 define("BAB_FMUPLOAD_GROUPS_TBL", "bab_fmupload_groups");
 define("BAB_FMDOWNLOAD_GROUPS_TBL", "bab_fmdownload_groups");
 define("BAB_FMUPDATE_GROUPS_TBL", "bab_fmupdate_groups");

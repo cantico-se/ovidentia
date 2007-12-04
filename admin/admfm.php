@@ -419,7 +419,6 @@ function displayRightForm($fid)
 	$macl->addtable( BAB_FMNOTIFY_GROUPS_TBL,bab_translate("Who is notified when a new file is uploaded or updated?"));
 	$macl->filter(0,0,1,0,1);
 	$macl->babecho();
-	
 	$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
 	$babBody->addItemMenu("addf", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admfms&idx=addf");
 	$babBody->addItemMenu("modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admfm&idx=modify&fid=".$fid);
@@ -603,12 +602,12 @@ function updateFolder($fid, $fname, $active, $said, $notification, $version, $bh
 				}
 			}
 			
-			$sUploadPath = BAB_FmFolderHelper::getUploadPath();
+			$oFileManagerEnv =& getEnvObject();
+			$sRootFmPath = $oFileManagerEnv->getCollectiveFolderPath();
 			$sRelativePath = '';
-			BAB_FmFolderHelper::updateSubFolderPathName($sUploadPath, $sRelativePath, $oFmFolder->getName(), $fname);
-			
-			$bCollective = true;
-			BAB_FolderFileSet::setPathName($oFmFolder->getName() . '/', $fname, $bCollective);
+			BAB_FmFolderSet::rename($sRootFmPath, $sRelativePath, $oFmFolder->getName(), $fname);
+			BAB_FmFolderCliboardSet::rename($sRelativePath, $oFmFolder->getName(), $fname, 'Y');
+			BAB_FolderFileSet::renameFolder($oFmFolder->getName() . '/', $fname, 'Y');
 			
 			$oFmFolder->setName($fname);
 			$oFmFolder->setRelativePath('');

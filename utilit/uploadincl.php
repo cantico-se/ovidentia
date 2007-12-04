@@ -188,7 +188,7 @@ class bab_fmFile {
  */
 function bab_importFmFile($fmFile, $id_owner, $path, $bgroup) 
 {
-	global $babDB;
+	global $babDB, $babBody;
 	include_once $GLOBALS['babInstallPath'] . 'utilit/fileincl.php';
 
 	$gr = $bgroup ? 'Y' : 'N';
@@ -207,24 +207,28 @@ function bab_importFmFile($fmFile, $id_owner, $path, $bgroup)
 	}
 	else 
 	{
-		$sPathName = 'U' . $id_owner . '/' . $path . $sEndSlash;
+		$sPathName = $path . $sEndSlash;
 	}
 	
-	$sFullPathNane = BAB_FmFolderHelper::getUploadPath() . $sPathName . $fmFile->filename;
+	$oFileManagerEnv =& getEnvObject();
+	$sFullPathNane = $oFileManagerEnv->getRootFmPath() . $sPathName . $fmFile->filename;
 	
 	if(file_exists($sFullPathNane)) 
 	{
 		$oFolderFileSet = new BAB_FolderFileSet();
 		
-		$oPathName =& $oFolderFileSet->aField['sPathName'];
-		$oName =& $oFolderFileSet->aField['sName'];
-		$oIdOwner =& $oFolderFileSet->aField['iIdOwner'];
-		$oGroup =& $oFolderFileSet->aField['sGroup'];
+		$oPathName	=& $oFolderFileSet->aField['sPathName'];
+		$oName		=& $oFolderFileSet->aField['sName'];
+		$oIdOwner	=& $oFolderFileSet->aField['iIdOwner'];
+		$oGroup		=& $oFolderFileSet->aField['sGroup'];
+		$oIdDgOwner	=& $oFolderFileSet->aField['iIdDgOwner'];
 				
 		$oCriteria = $oPathName->in($sPathName);
 		$oCriteria = $oCriteria->_and($oName->in($fmFile->filename));
 		$oCriteria = $oCriteria->_and($oIdOwner->in($id_owner));
 		$oCriteria = $oCriteria->_and($oGroup->in($gr));
+		$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
+		
 		$oFolderFile = $oFolderFileSet->get($oCriteria);
 		
 		if(!is_null($oFolderFile))

@@ -939,6 +939,7 @@ CREATE TABLE bab_files (
   ver_minor smallint(5) unsigned NOT NULL default '0',
   ver_comment tinytext NOT NULL,
   index_status tinyint(1) unsigned NOT NULL default '0',
+  iIdDgOwner int(11) unsigned NOT NULL,
   PRIMARY KEY  (id),
   KEY id_owner (id_owner),
   KEY index_status (index_status),
@@ -1126,6 +1127,28 @@ CREATE TABLE bab_fm_folders (
   PRIMARY KEY  (id),
   KEY folder (folder),
   KEY id_dgowner (id_dgowner)
+);
+
+#
+# Structure de la table `bab_fm_folders_clipboard`
+#
+
+CREATE TABLE bab_fm_folders_clipboard (
+  `iId` int(11) unsigned NOT NULL auto_increment,
+  `iIdDgOwner` int(11) unsigned NOT NULL,
+  `iIdRootFolder` int(11) unsigned NOT NULL,
+  `iIdFolder` int(11) unsigned NOT NULL,
+  `sName`  varchar(255) NOT NULL,
+  `sRelativePath` TEXT NOT NULL,
+  `sGroup` ENUM('Y','N') NOT NULL,
+  `sCollective` ENUM('Y','N') NOT NULL,
+  `iIdOwner` int(11) unsigned NOT NULL,
+  `sCheckSum` CHAR( 32 ) NOT NULL,
+  PRIMARY KEY  (`iId`),
+  UNIQUE `sFolder` (`sGroup`, `sCollective`, `sCheckSum`, `iIdOwner`),
+  KEY `iIdDgOwner` (`iIdDgOwner`),
+  KEY `iIdFolder` (`iIdFolder`),
+  KEY `sCollective` (`sCollective`)
 );
 
 #

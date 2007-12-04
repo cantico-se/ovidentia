@@ -76,7 +76,7 @@ function remove_field()
 <input type="hidden" name="MAX_FILE_SIZE" value="{ maxfilesize }">
 <input type="hidden" name="tg" value="fileman">
 <input type="hidden" name="idx" value="list">
-<input type="hidden" name="addf" value="add">
+<input type="hidden" name="sAction" value="saveFile">
 <input type="hidden" name="id" value="{ id }">
 <input type="hidden" name="gr" value="{ gr }">
 <input type="hidden" name="path" value="{ path }">
@@ -176,7 +176,7 @@ aR(0);
 			<td align="left" valign="middle" class="BabsiteFileCurentFolder" >
 				<img src="{ babSkinPath }images/Puces/folder.gif" alt="" border="0" align="middle" /> 
 	                  <span style="vertical-align: middle"> : { sRootFolderPath }{ path }&nbsp;</span><a href="{ rooturl }"><img src="{ babSkinPath }images/Puces/root.gif" border="0" align="middle" alt="{ root }"  /></a>&nbsp;<a href="{ refreshurl }"><img src="{ babSkinPath }images/Puces/refresh.gif" alt="{ 
-	            refresh }" border="0" align="middle" /></a><!--#if bmanager -->&nbsp;<a href="{ sAddFolderFormUrl }" title="{ sFolderFormAdd }"><img src="{ babSkinPath }images/Puces/folder_add.png" border="0" align="middle" alt="{ sFolderFormAdd }"  /></a><!--#endif bmanager -->
+	            refresh }" border="0" align="middle" /></a><!--#if bCanCreateFolder -->&nbsp;<a href="{ sAddFolderFormUrl }" title="{ sFolderFormAdd }"><img src="{ babSkinPath }images/Puces/folder_add.png" border="0" align="middle" alt="{ sFolderFormAdd }"  /></a><!--#endif bCanCreateFolder -->
 	       	</td>
 		</tr>
 	</table>
@@ -220,69 +220,74 @@ aR(0);
 				
 				<!--#if bCollectiveFolder -->
 						<td width="1%" align="center">
-					<!--#if ma -->
+					<!--#if bCanManageFolder -->
 						{ manfolderimg }
-					<!--#else ma -->
+					<!--#else bCanManageFolder -->
 						{ grpfolderimg }
-					<!--#endif ma -->
+					<!--#endif bCanManageFolder -->
 						</td>
 				<!--#else bCollectiveFolder -->
 						<td width="1%" align="center">{ usrfolderimg }</td>
 				<!--#endif bCollectiveFolder -->
 						<td align="left">
-					<!--#if bCanBrowse -->
+					<!--#if bCanBrowseFolder -->
 							<a href="{ url }">{ name }</a>
-					<!--#else bCanBrowse -->
+					<!--#else bCanBrowseFolder -->
 							{ name }
-					<!--#endif bCanBrowse -->
+					<!--#endif bCanBrowseFolder -->
 						</td>
 						<td colspan="4">&nbsp;</td>
 						<td width="10%" nowrap="nowrap">
-					<!--#if bCanEdit -->
+					<!--#if bCanEditFolder -->
 						<a href="{ sFolderFormUrl }" title="{ sFolderFormEdit }"><img src="{ babSkinPath }images/Puces/edit.png" border="0" align="middle" alt="{ sFolderFormEdit }"  /></a>
-					<!--#endif bCanEdit -->
-					<!--#if bCanSetRight -->
+					<!--#endif bCanEditFolder -->
+					<!--#if bCanSetRightOnFolder -->
 						<a href="{ sRightUrl }" title="{ sRight }"><img src="{ babSkinPath }images/Puces/access.png" border="0" alt="{ sRight }" align="middle"  /></a>
-					<!--#endif bCanSetRight -->
-					<!--#if bCanCut -->
+					<!--#endif bCanSetRightOnFolder -->
+					<!--#if bCanCutFolder -->
 						<a href="{ sCutFolderUrl }" title="{ sCutFolder }"><img src="{ babSkinPath }images/Puces/cut.gif" alt="{ sCutFolder }" border="0" align="middle" /></a>
-					<!--#endif bCanCut -->&nbsp;
+					<!--#endif bCanCutFolder -->&nbsp;
 						</td>
 						<td>&nbsp;</td>
 					</tr>
 					<!--#endin getNextFolder -->
 				
 				
-
-						
 					<!--#in getNextCuttedFolder -->
 					<tr class="BabSiteAdminFontBackground"> 
 						<td width="1%" align="center"> 
 					<!--#if bCollectiveFolder -->
-						<!--#if ma -->
+						<!--#if bCanManageFolder -->
 							{ manfolderimg }
-						<!--#else ma -->
+						<!--#else bCanManageFolder -->
 							{ grpfolderimg }
-						<!--#endif ma -->
+						<!--#endif bCanManageFolder -->
 					<!--#else bCollectiveFolder -->
 						{ usrfolderimg }
 					<!--#endif bCollectiveFolder -->
 						</td>
-						<td><a href="{ url }">{ name }</a></td>
+						<td>
+					<!--#if bCanBrowseFolder -->
+							<a href="{ url }">{ name }</a>
+					<!--#else bCanBrowseFolder -->
+							{ name }
+					<!--#endif bCanBrowseFolder -->
+						</td>
 						<td colspan="4">&nbsp;</td>
 						
 						<td width="10%" nowrap="nowrap">
-					<!--#if bRightUrl -->
+					<!--#if bCanSetRightOnFolder -->
 						<a href="{ sRightUrl }" title="{ sRight }"><img src="{ babSkinPath }images/Puces/access.png" border="0" align="middle" alt="{ sRight }"  /></a>
-					<!--#endif bRightUrl -->
-					<!--#if bFolderFormUrl -->
+					<!--#endif bCanSetRightOnFolder -->
+					<!--#if bCanEditFolder -->
 						<a href="{ sFolderFormUrl }" title="{ sFolderFormEdit }"><img src="{ babSkinPath }images/Puces/edit.png" border="0" align="middle" alt="{ sFolderFormEdit }"  /></a>
-					<!--#endif bFolderFormUrl -->
+					<!--#endif bCanEditFolder -->
 						<a href="{ pasteurl }"><img src="{ babSkinPath }images/Puces/paste.gif" alt="{ paste }" border="0" align="middle" /></a>
 						</td>
 						<td>&nbsp;</td>
 					</tr>
 					<!--#endin getNextCuttedFolder -->
+
 					
 					<!--#in getnextfile -->
 				<!--#if altbg -->
@@ -292,11 +297,11 @@ aR(0);
 				<!--#endif altbg -->
 						<td width="1%" align="center">{ fileimage }</td>
 						<td><a href="{ viewurl }" title="{ description }" onclick="bab_popup(this.href,4);return false;">{ name }</a>
-					<!--#if bManager -->
+					<!--#if bCanManageCurrentFolder -->
 						<!--#if bconfirmed "== 1" -->
 						<a href="{ viewurl }" onclick="bab_popup(this.href,4);return false;"><img src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" border="0" align="middle"></a> 
 						<!--#endif bconfirmed -->
-					<!--#endif bManager -->
+					<!--#endif bCanManageCurrentFolder -->
 						</td>
 						<td>
 						
@@ -317,12 +322,12 @@ aR(0);
 						<img src="{ babSkinPath }images/Puces/FileLock.gif" alt="{ altfileunlock }" border="0" align="middle" />
 						</a>
 									<!--#else blockauth -->
-										<!--#if bManager -->
+										<!--#if bCanManageCurrentFolder -->
 						<a href="{ ovfurl }" onclick="bab_popup(this.href,4);return false;" title="{ altfileunlock }">
 						<img src="{ babSkinPath }images/Puces/FileLock.gif" alt="{ altfileunlock }" border="0" align="middle" />
-										<!--#else bManager -->
+										<!--#else bCanManageCurrentFolder -->
 						<img src="{ babSkinPath }images/Puces/FileLock.gif" alt="{ altfilelock }" border="0" align="middle" />
-										<!--#endif bManager -->
+										<!--#endif bCanManageCurrentFolder -->
 									<!--#endif blockauth -->
 								<!--#else block -->
 						<a href="{ ovfurl }" onclick="bab_popup(this.href,4);return false;" title="{ altfilelock }">
@@ -349,9 +354,9 @@ aR(0);
 						<td align="center">{ postedby }</td>
 						<td align="left" nowrap="nowrap">
 						<!--#if bDownload --><a href="{ urlget }" title="{ download }"><img src="{ babSkinPath }images/Puces/download.gif" alt="{ download }" border="0" align="middle" /></a>&nbsp;<!--#endif bDownload -->
-						<!--#if bManager --><a href="{ cuturl }" title="{ cuttxt }"><img src="{ babSkinPath }images/Puces/cut.gif" alt="{ cuttxt }" border="0" align="middle" /></a>&nbsp;<a href="{ delurl }" title="{ deltxt }"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deltxt }" border="0" align="middle" /></a><!--#endif bManager -->
+						<!--#if bCanManageCurrentFolder --><a href="{ cuturl }" title="{ cuttxt }"><img src="{ babSkinPath }images/Puces/cut.gif" alt="{ cuttxt }" border="0" align="middle" /></a>&nbsp;<a href="{ delurl }" title="{ deltxt }"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deltxt }" border="0" align="middle" /></a><!--#endif bCanManageCurrentFolder -->
 						</td>
-						<td align="center"><!--#if bManager -->{ hits }<!--#endif bManager -->&nbsp;</td>
+						<td align="center"><!--#if bCanManageCurrentFolder -->{ hits }<!--#endif bCanManageCurrentFolder -->&nbsp;</td>
 					</tr>
 					<!--#endin getnextfile -->
 					
@@ -374,56 +379,61 @@ aR(0);
 						<!--#endif readonly -->
 						</td>
 						<td>{ sizef }</td>
-						<td>{ modified }</td>
-						<td>{ postedby }</td>
+						<td align="center">{ modified }</td>
+						<td align="center">{ postedby }</td>
 						<td nowrap="nowrap">
 							<a href="{ urlget }"><img src="{ babSkinPath }images/Puces/download.gif" alt="{ download }" border="0" align="middle" /></a>
-						<!--#if bManager -->
+						<!--#if bCanManageCurrentFolder -->
 							<a href="{ cuturl }"><img src="{ babSkinPath }images/Puces/cut.gif" alt="{ cuttxt }" border="0" align="middle" /></a>
 							<a href="{ delurl }"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deltxt }" border="0" align="middle" /></a>
-						<!--#endif bManager -->
+						<!--#endif bCanManageCurrentFolder -->
 						</td>
 						<td>
-						<!--#if bManager -->{ hits }<!--#endif bManager -->&nbsp;
+						<!--#if bCanManageCurrentFolder -->{ hits }<!--#endif bManager -->&nbsp;
 						</td>
 					</tr>
 					<!--#endin getnextwfile -->	
 						
 					<!--#in getnextxfile -->
-					<!--#if altbg -->
+				<!--#if altbg -->
 					<tr class="BabSiteAdminFontBackground">
-					<!--#else altbg -->
+				<!--#else altbg -->
 					<tr class="BabForumBackground1">
-					<!--#endif altbg -->
+				<!--#endif altbg -->
 						<td width="1%">{ fileimage }</td>
 						<td>
-					<!--#if bManager -->
+				<!--#if bCanManageCurrentFolder -->
 						{ name }
-						<!--#if bconfirmed "== 1" --><a href="{ url }"><img src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" border="0" align="middle" /></a><!--#endif bconfirmed -->
-					<!--#else bManager -->
+					<!--#if bconfirmed "== 1" -->
+						<a href="{ url }"><img src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" border="0" align="middle" /></a>
+					<!--#endif bconfirmed -->
+				<!--#else bCanManageCurrentFolder -->
 						{ name } 
-					<!--#endif bManager -->
+				<!--#endif bCanManageCurrentFolder -->
 						</td>
 						<td>&nbsp;</td>
 						<td>{ sizef }</td>
-						<td>{ modified }</td>
-						<td>{ postedby }</td>
+						<td align="center">{ modified }</td>
+						<td align="center">{ postedby }</td>
 						<td nowrap="nowrap">
-						<!--#if bDownload -->
+					<!--#if bDownload -->
 						<a href="{ urlget }"><img src="{ babSkinPath }images/Puces/download.gif" alt="{ download }" border="0" align="middle" /></a>
-						<!--#endif bDownload -->
-						<!--#if bManager -->
+					<!--#endif bDownload -->
+					<!--#if bCanManageCurrentFolder -->
 						<a href="{ pasteurl }"><img src="{ babSkinPath }images/Puces/paste.gif" alt="{ paste }" border="0" align="middle" /></a>
-						<!--#endif bManager -->
+					<!--#endif bCanManageCurrentFolder -->
 						</td>
-						<td><!--#if bManager --><!--#endif bManager -->&nbsp;</td>
+						<td>
+					<!--#if bCanManageCurrentFolder -->
+							{ hits }<!--#endif bCanManageCurrentFolder -->&nbsp;
+						</td>
 					</tr>
 					<!--#endin getnextxfile -->
 				</table>
 			</td>
 		</tr>
 	</table>
-<!--#if bManager -->
+<!--#if bCanManageCurrentFolder -->
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
     <tr>
 		<td align="right" valign="middle">
@@ -431,7 +441,7 @@ aR(0);
 		</td>
     </tr>
 </table>
-<!--#endif bManager -->
+<!--#endif bCanManageCurrentFolder -->
 </td>
 </tr>
 </table>
@@ -443,8 +453,9 @@ aR(0);
 <input type="hidden" name="tg" value="fileman">
 <input type="hidden" name="idx" value="list">
 <input type="hidden" name="id" value="{ id }">
+<input type="hidden" name="path" value="{ sPath }">
 <input type="hidden" name="gr" value="{ gr }">
-<input type="hidden" name="cdel" value="update">
+<input type="hidden" name="sAction" value="deleteRestoreFile">
 <table width="90%" border="0" cellspacing="0" cellpadding="0" align="center">
 <tr>
 	<td class="BabMailBackground" align="center">
@@ -600,7 +611,7 @@ window.focus();
 <input type="hidden" name="MAX_FILE_SIZE" value="{ babMaxFileSize }" />
 <input type="hidden" name="tg" value="fileman" />
 <input type="hidden" name="idx" value="list" />
-<input type="hidden" name="updf" value="upd" />
+<input type="hidden" name="sAction" value="updateFile" />
 <input type="hidden" name="id" value="{ id }" />
 <input type="hidden" name="gr" value="{ gr }" />
 <input type="hidden" name="path" value="{ path }" />
@@ -711,7 +722,7 @@ window.focus();
 <!--#if index -->
 <form method="post" name="fupdate" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="fileman" />
-<input type="hidden" name="idx" value="viewfile" />
+<input type="hidden" name="idx" value="viewFile" />
 <input type="hidden" name="updf" value="updindex" />
 <input type="hidden" name="id" value="{ id }" />
 <input type="hidden" name="gr" value="{ gr }" />

@@ -573,9 +573,10 @@ function getFile( $idf, $vmajor, $vminor )
 			$inl = bab_getFileContentDisposition() == 1? 1: ''; 
 		}
 	
+		$oFileManagerEnv =& getEnvObject();
 		$mime = bab_getFileMimeType($oFolderFile->getName());
-	
-		$fullpath = BAB_FmFolderHelper::getUploadPath()	. $oFolderFile->getPathName();
+
+		$fullpath = $oFileManagerEnv->getCollectiveFolderPath() . $oFolderFile->getPathName();
 		
 		$fullpath .= BAB_FVERSION_FOLDER."/".$vmajor.".".$vminor.",".$oFolderFile->getName();
 		$fsize = filesize($fullpath);
@@ -626,7 +627,13 @@ function fileUnload($idf)
 			
 			if(!is_null($oFolderFile) && !is_null($oFmFolder))
 			{
-				$sPathName = getUrlPath($oFolderFile->getPathName());	
+				$sPathName = $oFolderFile->getPathName();	
+				$iLength = (int) strlen(trim($sPathName));
+				if(0 !== $iLength)
+				{
+					$sPathName = substr($sPathName, 0, -1);
+				}
+				
 				$iIdUrl = $oFmFolder->getId();
 				if(strlen($oFmFolder->getRelativePath()) > 0)
 				{
@@ -684,12 +691,10 @@ function confirmFile($idf, $bconfirm)
 				switch($res)
 				{
 					case 0:
-						$sUploadPath = BAB_FmFolderHelper::getUploadPath();
-						
+						$oFileManagerEnv =& getEnvObject();
+						$sUploadPath = $oFileManagerEnv->getCollectiveFolderPath();
 						$sFullPathName = $sUploadPath .$oFolderFile->getPathName() . BAB_FVERSION_FOLDER . '/' . 
 							$oFolderFileVersion->getMajorVer() . '.' . $oFolderFileVersion->getMinorVer() . ',' . $oFolderFile->getName();	
-							
-						//unlink($sFullPathName);
 				
 						$oFolderFile->setFolderFileVersionId(0);
 						$oFolderFile->save();
@@ -742,12 +747,12 @@ function deleteFileVersions($idf, $versions)
 		if($count > 0)
 		{
 			$oFolderFileVersionSet = new BAB_FolderFileVersionSet();
-			$oId =& $oFolderFileVersionSet->aField['iId'];
 			$oIdFile =& $oFolderFileVersionSet->aField['iIdFile'];
 			$oVerMajor =& $oFolderFileVersionSet->aField['iVerMajor'];
 			$oVerMinor =& $oFolderFileVersionSet->aField['iVerMinor'];
 			
-			//$oCriteria = $oCriteria->_and($oVerMajor->in($idf));
+			$oFileManagerEnv =& getEnvObject();
+			$sUploadPath = $oFileManagerEnv->getCollectiveFolderPath();
 			
 			for($i = 0; $i < $count; $i++ )
 			{
@@ -756,29 +761,17 @@ function deleteFileVersions($idf, $versions)
 				$iVerMinor	= (int) $aVersion[1];
 				$oCriteria	= $oVerMajor->in($iVerMajor);
 				$oCriteria	= $oVerMinor->in($iVerMinor);
+				$oCriteria	= $oCriteria->_and($oIdFile->in($idf));
+				$oFolderFileVersionSet->remove($oCriteria, $sUploadPath . $oFolderFile->getPathName(), $oFolderFile->getName());
 				
-				$oFolderFileVersion = $oFolderFileVersionSet->get($oCriteria);
-	
-				if(!is_null($oFolderFileVersion))
-				{
-					$sUploadPath = BAB_FmFolderHelper::getUploadPath();
-					
-					$sFullPathName = $sUploadPath .$oFolderFile->getPathName() . BAB_FVERSION_FOLDER . '/' . 
-						$iVerMajor . '.' . $iVerMinor . ',' . $oFolderFile->getName();	
-						
-					unlink($sFullPathName);
-					
-					$oFolderFileVersionSet->remove($oId->in($oFolderFileVersion->getId()), $sUploadPath .$oFolderFile->getPathName(), $oFolderFile->getName());
-						
-					$oFolderFileLog = new BAB_FolderFileLog();
-					$oFolderFileLog->setIdFile($idf);
-					$oFolderFileLog->setCreationDate(date("Y-m-d H:i:s"));
-					$oFolderFileLog->setAuthorId($GLOBALS['BAB_SESS_USERID']);
-					$oFolderFileLog->setAction(BAB_FACTION_OTHER);
-					$oFolderFileLog->setComment(bab_translate("File deleted"));
-					$oFolderFileLog->setVersion($iVerMajor . '.' . $iVerMinor);
-					$oFolderFileLog->save();
-				}
+				$oFolderFileLog = new BAB_FolderFileLog();
+				$oFolderFileLog->setIdFile($idf);
+				$oFolderFileLog->setCreationDate(date("Y-m-d H:i:s"));
+				$oFolderFileLog->setAuthorId($GLOBALS['BAB_SESS_USERID']);
+				$oFolderFileLog->setAction(BAB_FACTION_OTHER);
+				$oFolderFileLog->setComment(bab_translate("File deleted"));
+				$oFolderFileLog->setVersion($iVerMajor . '.' . $iVerMinor);
+				$oFolderFileLog->save();
 			}
 		}
 	}

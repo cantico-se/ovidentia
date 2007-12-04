@@ -343,9 +343,9 @@ function bab_deleteFolder($fid)
 	$oFmFolder = $oFmFolderSet->get($oId->in($fid));
 	if(!is_null($oFmFolder))
 	{
-//		bab_debug($oFmFolder);
 		$oCriteria = $oId->in($fid);
 		$oCriteria = $oCriteria->_or($oRelativePath->like($babDB->db_escape_like($oFmFolder->getRelativePath() . $oFmFolder->getName() . '/') . '%'));
+		//bab_debug($oFmFolderSet->getSelectQuery($oCriteria));
 		$oFmFolderSet->remove($oCriteria, $bDbRecordOnly);
 	}
 }

@@ -346,7 +346,8 @@ function fileNotifyMembers($file, $path, $idgrp, $msg, $bnew = true)
 
 function acceptFileVersion($oFolderFile, $oFolderFileVersion, $bnotify)
 {
-	$sUploadPath = BAB_FmFolderHelper::getUploadPath();
+	$oFileManagerEnv	=& getEnvObject();
+	$sUploadPath		= $oFileManagerEnv->getCollectiveFolderPath();
 
 	$sSrcFile = $sUploadPath . $oFolderFile->getPathName() . $oFolderFile->getName();
 	$sTrgFile = $sUploadPath . $oFolderFile->getPathName() . BAB_FVERSION_FOLDER . '/' .
@@ -491,7 +492,7 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 			$confirmed = 'Y';
 
 			$sRelativePath = $oFileManagerEnv->sRelativePath;
-			$sFullUploadPath = BAB_FmFolderHelper::getUploadPath() . $sRelativePath;
+			$sFullUploadPath = $oFileManagerEnv->getCurrentFmPath();
 			$baddtags = 'N';
 		}
 		else if('Y' === $gr)
@@ -500,16 +501,21 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 			$baddtags = $rr['baddtags'];
 			
 			$oFmFolder = null;
-			$access = BAB_FmFolderHelper::getFileInfoForCollectiveDir($id, $path, $iIdOwner, $sRelativePath, $oFmFolder);
-			$sFullUploadPath = BAB_FmFolderHelper::getUploadPath() . $sRelativePath;
-			
-			if(bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $iIdOwner) || bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $iIdOwner))
+			$access = BAB_FmFolderHelper::getInfoFromCollectivePath($oFileManagerEnv->sPath, $iIdRootFolder, $oFmFolder);
+			if($access)
 			{
-				$access = true;
+				$iIdOwner = $oFmFolder->getId();
+				$sFullUploadPath = $oFileManagerEnv->getCurrentFmPath();
+				$sRelativePath = $oFileManagerEnv->sRelativePath;
+				
+				if(canManage($oFileManagerEnv->sRelativePath) || canDownload($oFileManagerEnv->sRelativePath))
+				{
+					$access = true;
+				}
 			}
 		}
 	}
-	//bab_debug('iIdOwner ==> ' . $iIdOwner . ' sRelativePath ==> ' . $sRelativePath . ' sUploadPath ==> ' . $sUploadPath);
+//	bab_debug('iIdOwner ==> ' . $iIdOwner . ' sRelativePath ==> ' . $sRelativePath . ' sFullUploadPath ==> ' . $sFullUploadPath);
 
 	if(!$access)
 	{
@@ -732,8 +738,8 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 		else
 		{
 			$req = "insert into ".BAB_FILES_TBL."
-			(name, description, path, id_owner, bgroup, link, readonly, state, created, author, modified, modifiedby, confirmed, index_status) values ";
-			$req .= "('" .$babDB->db_escape_string($name). "', '" . $babDB->db_escape_string($description[$count]). "', '".$babDB->db_escape_string($sRelativePath). "', '" . $babDB->db_escape_string($iIdOwner). "', '" . $babDB->db_escape_string($gr). "', '0', '" . $babDB->db_escape_string($readonly[$count]). "', '', now(), '" . $babDB->db_escape_string($idcreator). "', now(), '" . $babDB->db_escape_string($idcreator). "', '". $babDB->db_escape_string($confirmed)."', '".$babDB->db_escape_string($index_status)."')";
+			(name, description, path, id_owner, bgroup, link, readonly, state, created, author, modified, modifiedby, confirmed, index_status, iIdDgOwner) values ";
+			$req .= "('" .$babDB->db_escape_string($name). "', '" . $babDB->db_escape_string($description[$count]). "', '".$babDB->db_escape_string($sRelativePath). "', '" . $babDB->db_escape_string($iIdOwner). "', '" . $babDB->db_escape_string($gr). "', '0', '" . $babDB->db_escape_string($readonly[$count]). "', '', now(), '" . $babDB->db_escape_string($idcreator). "', now(), '" . $babDB->db_escape_string($idcreator). "', '". $babDB->db_escape_string($confirmed)."', '".$babDB->db_escape_string($index_status)."', '".$babDB->db_escape_string($babBody->currentAdmGroup)."')";
 			$babDB->db_query($req);
 			$idf = $babDB->db_insert_id();
 		}
@@ -908,7 +914,7 @@ function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonl
 				$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
 				if(count($arrschi) > 0 && in_array($oFolderFile->getFlowApprobationInstanceId(), $arrschi))
 				{
-					break;
+//					break;
 				}
 				else
 				{
@@ -918,7 +924,8 @@ function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonl
 			}
 		}
 
-		$sUploadPath = BAB_FmFolderHelper::getUploadPath();
+		$oFileManagerEnv =& getEnvObject();
+		$sUploadPath = $oFileManagerEnv->getRootFmPath();
 		$sFullPathName = $sUploadPath . $oFolderFile->getPathName() . $oFolderFile->getName();
 
 		if(!file_exists($sFullPathName))
@@ -1321,7 +1328,7 @@ function fm_lockFile($idf, $comment)
  * @param	int		$idf
  * @param	string	$comment
  */
-function fm_unlockFile($idf, $comment )
+function fm_unlockFile($idf, $comment)
 {
 	global $babBody, $babDB;
 
@@ -1349,7 +1356,8 @@ function fm_unlockFile($idf, $comment )
 				$oId =& $oFolderFileVersionSet->aField['iId'];
 				$oFolderFileVersion = $oFolderFileVersionSet->get($oId->in($oFolderFile->getFolderFileVersionId()));
 
-				$sUploadPath = BAB_FmFolderHelper::getUploadPath();
+				$oFileManagerEnv =& getEnvObject();
+				$sUploadPath = $oFileManagerEnv->getCollectiveRootFmPath();
 
 				if(!is_null($oFolderFileVersion) && 0 !== $oFolderFileVersion->getFlowApprobationInstanceId())
 				{
@@ -1431,8 +1439,9 @@ function fm_commitFile($idf, $comment, $vermajor, $fmFile)
 			return false;
 		}
 
-		$sUploadPath = BAB_FmFolderHelper::getUploadPath();
-		$sFullPathName = $sUploadPath . $oFolderFile->getPathName();
+		$oFileManagerEnv	=& getEnvObject();
+		$sUploadPath		= $oFileManagerEnv->getCollectiveFolderPath();
+		$sFullPathName		= $sUploadPath . $oFolderFile->getPathName();
 
 		$totalsize = getDirSize($sFullPathName);
 		if($size + $totalsize > $GLOBALS['babMaxGroupSize'] )
@@ -1613,9 +1622,11 @@ function indexAllFmFiles($status, $prepare) {
 
 	$files = array();
 	$rights = array();
+			
+	$oFileManagerEnv =& getEnvObject();
 
 	while ($arr = $babDB->db_fetch_assoc($res)) {
-		$pathx = BAB_FmFolderHelper::getUploadPath();
+		$pathx = $oFileManagerEnv->getCollectiveRootFmPath();
 		
 //		bab_debug('sFullPathName ==> ' . $pathx . $arr['path'] . $arr['name']);
 		
@@ -1941,7 +1952,7 @@ class BAB_BaseSet extends BAB_MySqlResultIterator
 		{
 			global $babDB;
 			$sQuery = 'DELETE FROM ' . $this->sTableName . ' ' . $sWhereClause;
-			//			bab_debug($sQuery);
+//			bab_debug($sQuery);
 			return $babDB->db_query($sQuery);
 		}
 		return false;
@@ -2063,6 +2074,8 @@ class BAB_FmFolderSet extends BAB_BaseSet
 	{
 		if(is_a($oFmFolder, 'BAB_FmFolder'))
 		{
+			$oFileManagerEnv =& getEnvObject();
+			
 			require_once $GLOBALS['babInstallPath'].'admin/acl.php';
 			aclDelete(BAB_FMUPLOAD_GROUPS_TBL, $oFmFolder->getId());
 			aclDelete(BAB_FMDOWNLOAD_GROUPS_TBL, $oFmFolder->getId());
@@ -2077,13 +2090,19 @@ class BAB_FmFolderSet extends BAB_BaseSet
 					$oFirstFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($oFmFolder->getRelativePath());
 					$sPathName = $oFmFolder->getRelativePath() . $oFmFolder->getName() . '/';
 					$oFolderFileSet->setOwnerId($sPathName, $oFmFolder->getId(), $oFirstFmFolder->getId());
+					
+					$oFmFolderCliboardSet = new BAB_FmFolderCliboardSet();
+					$oFmFolderCliboardSet->setOwnerId($sPathName, $oFmFolder->getId(), $oFirstFmFolder->getId());
 				}
 				
-				$sUploadPath = BAB_FmFolderHelper::getUploadPath();
+				$sUploadPath = $oFileManagerEnv->getCollectiveRootFmPath();
 
 				$oIdOwner =& $oFolderFileSet->aField['iIdOwner'];
 				$oPathName =& $oFolderFileSet->aField['sPathName'];
-				$oCriteria = $oIdOwner->in($oFirstFmFolder->getId());
+				$oIdDgOwner =& $oFolderFileSet->aField['iIdDgOwner'];
+				
+				$oCriteria = $oIdDgOwner->in($babBody->currentAdmGroup);
+				$oCriteria = $oCriteria->_and($oIdOwner->in($oFirstFmFolder->getId()));
 				$oCriteria = $oCriteria->_and($oPathName->in($oFmFolder->getRelativePath() . $oFmFolder->getName() . '/'));
 
 				$oFolderFileSet->select($oCriteria);
@@ -2106,12 +2125,21 @@ class BAB_FmFolderSet extends BAB_BaseSet
 			}
 			else if(false === $bDbRecordOnly)
 			{
-				global $babDB;
-				$oPathName =& $oFolderFileSet->aField['sPathName'];
-				$oFolderFileSet->remove($oPathName->like($babDB->db_escape_like($oFmFolder->getRelativePath() . $oFmFolder->getName() . '/') . '%'));
+				global $babDB, $babBody;
 				
-				$sFullPathNane = BAB_FmFolderHelper::getUploadPath() . $oFmFolder->getRelativePath() . $oFmFolder->getName();
+				$oPathName =& $oFolderFileSet->aField['sPathName'];
+				$oIdDgOwner =& $oFolderFileSet->aField['iIdDgOwner'];
+				
+				$oCriteria = $oIdDgOwner->in($babBody->currentAdmGroup);
+				$oCriteria = $oCriteria->_and($oPathName->like($babDB->db_escape_like($oFmFolder->getRelativePath() . $oFmFolder->getName() . '/') . '%'));
+				$oFolderFileSet->remove($oCriteria);
+				
+				$sFullPathNane = $oFileManagerEnv->getCollectiveRootFmPath() . $oFmFolder->getRelativePath() . $oFmFolder->getName();
+				//bab_debug($sFullPathNane);
 				$this->removeDir($sFullPathNane);
+
+				$oFmFolderCliboardSet = new BAB_FmFolderCliboardSet();
+				$oFmFolderCliboardSet->deleteFolder($oFmFolder->getName(), $oFmFolder->getRelativePath(), 'Y');
 			}
 
 			$oId =& $this->aField['iId'];
@@ -2130,9 +2158,17 @@ class BAB_FmFolderSet extends BAB_BaseSet
 
 
 	//--------------------------------------
+	function getFirstCollectiveParentFolder($sRelativePath)
+	{
+//		bab_debug(__FUNCTION__ . ' sRelativePath ==> ' . removeLastPath($sRelativePath));
+		return BAB_FmFolderSet::getFirstCollectiveFolder(removeLastPath($sRelativePath));
+	}
+
 	function getFirstCollectiveFolder($sRelativePath)
 	{
-		//		bab_debug(__FUNCTION__ . ' sRelativePath ==> ' . $sRelativePath);
+//		bab_debug(__FUNCTION__ . ' sRelativePath ==> ' . $sRelativePath);
+		global $babBody;
+		
 		$aPath = explode('/', $sRelativePath);
 		if(is_array($aPath))
 		{
@@ -2144,9 +2180,10 @@ class BAB_FmFolderSet extends BAB_BaseSet
 				$bFinded	= false;
 				global $babDB;
 
-				//				bab_debug($aPath);
+				//bab_debug($aPath);
 				$oFmFolderSet = new BAB_FmFolderSet();
 				$oRelativePath =& $oFmFolderSet->aField['sRelativePath'];
+				$oIdDgOwner =& $oFmFolderSet->aField['iIdDgOwner'];
 				$oName =& $oFmFolderSet->aField['sName'];
 
 				do
@@ -2162,6 +2199,7 @@ class BAB_FmFolderSet extends BAB_BaseSet
 
 					$oCriteria = $oRelativePath->like($babDB->db_escape_like($sRelativePath));
 					$oCriteria = $oCriteria->_and($oName->in($sFolderName));
+					$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
 					$oFmFolder = $oFmFolderSet->get($oCriteria);
 
 					if(!is_null($oFmFolder))
@@ -2183,33 +2221,37 @@ class BAB_FmFolderSet extends BAB_BaseSet
 		}
 		return null;
 	}
-
+	
 	function getRootCollectiveFolder($sRelativePath)
 	{
+		global $babBody;
+		
 		$aPath = explode('/', $sRelativePath);
 		if(is_array($aPath))
 		{
 			$iLength = count($aPath);
 			if($iLength >= 1)
 			{
-				$sFolderName = $aPath[0];
+				$sName = $aPath[0];
 
 				$oFmFolderSet = new BAB_FmFolderSet();
 				$oRelativePath =& $oFmFolderSet->aField['sRelativePath'];
 				$oName =& $oFmFolderSet->aField['sName'];
+				$oIdDgOwner =& $oFmFolderSet->aField['iIdDgOwner'];
 
 				global $babDB;
 				$oCriteria = $oRelativePath->like($babDB->db_escape_like(''));
-				$oCriteria = $oCriteria->_and($oName->in($sFolderName));
+				$oCriteria = $oCriteria->_and($oName->in($sName));
+				$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
 				$oFmFolder = $oFmFolderSet->get($oCriteria);
 
 				if(!is_null($oFmFolder))
 				{
 					return $oFmFolder;
 				}
-				return null;
 			}
 		}
+		return null;
 	}
 
 	function removeDir($sFullPathName)
@@ -2238,8 +2280,289 @@ class BAB_FmFolderSet extends BAB_BaseSet
 			}
 		}
 	}
+	
+	
+	function rename($sUploadPath, $sRelativePath, $sOldName, $sNewName)
+	{
+//		bab_debug(__FUNCTION__);
+//		bab_debug('sUploadPath ==> ' . $sUploadPath);
+//		bab_debug('sRelativePath ==> ' . $sRelativePath);
+//		bab_debug('sOldName ==> ' . $sOldName);
+//		bab_debug('sNewName ==> ' . $sNewName);
+		
+		if(BAB_FmFolderHelper::renameDirectory($sUploadPath, $sRelativePath, $sOldName, $sNewName))
+		{
+			global $babBody, $babBody;
+			
+			$sOldRelativePath = $sRelativePath . $sOldName . '/';
+			$sNewRelativePath = $sRelativePath . $sNewName . '/';
+
+//			$sOldRelativePath = $sRelativePath . $sOldName . ((strlen(trim($sOldName)) !== 0) ? '/' : '');
+//			$sNewRelativePath = $sRelativePath . $sNewName . ((strlen(trim($sNewName)) !== 0) ? '/' : '');
+
+//			bab_debug('sOldRelativePath ==> ' . $sOldRelativePath);
+//			bab_debug('sNewRelativePath ==> ' . $sNewRelativePath);
+
+			global $babDB;
+			$oFmFolderSet = new BAB_FmFolderSet();
+			$oRelativePath =& $oFmFolderSet->aField['sRelativePath'];
+			$oIdDgOwner =& $oFmFolderSet->aField['iIdDgOwner'];
+			
+			$oCriteria = $oIdDgOwner->in($babBody->currentAdmGroup);
+			$oCriteria = $oRelativePath->like($babDB->db_escape_like($sOldRelativePath) . '%');
+			
+			$oFmFolderSet = $oFmFolderSet->select($oCriteria);
+			while(null !== ($oFmFolder = $oFmFolderSet->next()))
+			{
+				$sRelPath = $sNewRelativePath . substr($oFmFolder->getRelativePath(), strlen($sOldRelativePath));
+//				bab_debug('sRelPath ==> ' . $sRelPath);
+				$oFmFolder->setRelativePath($sRelPath);
+				$oFmFolder->save();
+			}
+			return true;
+		}
+		return false;
+	}
+	
+	
+	function move($sUploadPath, $sOldRelativePath, $sNewRelativePath)
+	{
+		$sSrc = removeEndSlah($sUploadPath . $sOldRelativePath);
+		$sTrg = removeEndSlah($sUploadPath . $sNewRelativePath);
+		
+		if(rename($sSrc, $sTrg))
+		{
+			global $babBody, $babDB;
+			$oFmFolderSet = new BAB_FmFolderSet();
+			
+			$oIdDgOwner		= $oFmFolderSet->aField['iIdDgOwner'];
+			$oName			= $oFmFolderSet->aField['sName'];
+			$oRelativePath	= $oFmFolderSet->aField['sRelativePath'];
+
+			//1 changer le répertoire
+			$sName = getLastPath($sOldRelativePath);
+			$sRelativePath = removeLastPath($sOldRelativePath);
+			$sRelativePath .= (strlen(trim($sRelativePath)) !== 0 ) ? '/' : '';
+			
+			$oCriteria = $oIdDgOwner->in($babBody->currentAdmGroup);
+			$oCriteria = $oCriteria->_and($oName->in($sName));
+			$oCriteria = $oCriteria->_and($oRelativePath->in($sRelativePath));
+			
+//			bab_debug($oFmFolderSet->getSelectQuery($oCriteria));
+			$oFmFolder = $oFmFolderSet->get($oCriteria);
+			if(!is_null($oFmFolder))
+			{
+				$sNewRelPath = removeLastPath($sNewRelativePath);
+				$sNewRelPath .= (strlen(trim($sNewRelPath)) !== 0 ) ? '/' : '';
+				$oFmFolder->setRelativePath($sNewRelPath);
+				$oFmFolder->save();
+			}
+			
+			//2 changer les sous répertoires
+			$oCriteria = $oRelativePath->like($babDB->db_escape_like($sOldRelativePath) . '%');
+			$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
+			
+//			bab_debug($oFmFolderSet->getSelectQuery($oCriteria));
+			$oFmFolderSet->select($oCriteria);
+			while(null !== ($oFmFolder = $oFmFolderSet->next()))
+			{
+				$sNewRelativePath = $sNewRelativePath . substr($oFmFolder->getRelativePath(), strlen($sOldRelativePath));
+				$oFmFolder->setRelativePath($sNewRelativePath);
+				$oFmFolder->save();
+			}
+			return true;
+		}
+		return false;
+	}
 }
 
+
+class BAB_FmFolderCliboardSet extends BAB_BaseSet
+{
+	function BAB_FmFolderCliboardSet()
+	{
+		parent::BAB_BaseSet(BAB_FM_FOLDERS_CLIPBOARD_TBL);
+
+		$this->aField = array(
+		'iId' => new BAB_IntField('`iId`'),
+		'iIdDgOwner' => new BAB_IntField('`iIdDgOwner`'),
+		'iIdRootFolder' => new BAB_IntField('`iIdRootFolder`'),
+		'iIdFolder' => new BAB_IntField('`iIdFolder`'),
+		'sName' => new BAB_StringField('`sName`'),
+		'sRelativePath' => new BAB_StringField('`sRelativePath`'),
+		'sGroup' => new BAB_StringField('`sGroup`'),
+		'sCollective' => new BAB_StringField('`sCollective`'),
+		'iIdOwner' => new BAB_IntField('`iIdOwner`'),
+		'sCheckSum' => new BAB_IntField('`sCheckSum`')
+		);
+	}
+	
+
+	function rename($sRelativePath, $sOldName, $sNewName, $sGr)
+	{
+//		bab_debug(__FUNCTION__ . ' sRelativePath ==> ' . $sRelativePath . ' sOldName ==> ' . $sOldName . ' sNewName ==> ' . $sNewName);
+		$iOffset = 2;
+		
+		global $babBody, $babDB, $BAB_SESS_USERID;
+		
+		$oFileManagerEnv =& getEnvObject();
+		
+		$oFmFolderCliboardSet = new BAB_FmFolderCliboardSet();
+		$oRelativePath	=& $oFmFolderCliboardSet->aField['sRelativePath'];
+		$oIdDgOwner		=& $oFmFolderCliboardSet->aField['iIdDgOwner'];
+		$oGroup			=& $oFmFolderCliboardSet->aField['sGroup'];
+		$oIdOwner		=& $oFmFolderCliboardSet->aField['iIdOwner'];
+		$oName			=& $oFmFolderCliboardSet->aField['sName'];
+		
+		$oCriteria = $oRelativePath->like($babDB->db_escape_like($sRelativePath . $sOldName . '/') . '%');
+		$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
+		$oCriteria = $oCriteria->_and($oGroup->in($sGr));
+		if('N' === $sGr)
+		{
+			$oCriteria = $oCriteria->_and($oIdOwner->in($BAB_SESS_USERID));
+		}
+		
+//		bab_debug($oFmFolderCliboardSet->getSelectQuery($oCriteria));
+		
+		$oFmFolderCliboardSet->select($oCriteria);
+
+		$sRelPath = $sRelativePath . $sOldName . '/';
+		$iLength = strlen(trim($sRelPath));
+		
+		while(null !== ($oFmFolderCliboard = $oFmFolderCliboardSet->next()))
+		{
+			$sBegin = substr($oFmFolderCliboard->getRelativePath(), 0, $iLength);
+			$sEnd = (string) substr($oFmFolderCliboard->getRelativePath(), strlen($sBegin), strlen($oFmFolderCliboard->getRelativePath()));
+
+			$aPath = explode('/', $sBegin);
+			if(is_array($aPath))
+			{
+				$sNewRelativePath = '';
+
+				$iCount = count($aPath);
+				if($iCount >= $iOffset)
+				{
+					$aPath[$iCount - $iOffset] = $sNewName;
+					$sNewRelativePath = implode('/', $aPath) . $sEnd;
+				}
+
+				//bab_debug('sRelativePath ==> ' . $oFmFolderCliboard->getRelativePath() . ' sBegin ==> ' . $sBegin . ' sEnd ==> ' . $sEnd . ' sNewRelativePath ==> ' . $sNewRelativePath);
+				$oFmFolderCliboard->setRelativePath($sNewRelativePath);
+				$oFmFolderCliboard->save();
+			}
+		}
+	}
+	
+	function setOwnerId($sPathName, $iOldIdOwner, $iNewIdOwner)
+	{
+		global $babBody, $babDB;
+		$oIdDgOwner =& $this->aField['iIdDgOwner'];
+		$oRelativePath =& $this->aField['sRelativePath'];
+		$oIdOwner =& $this->aField['iIdOwner'];
+
+		$oCriteria = $oRelativePath->like($babDB->db_escape_like($sPathName) . '%');
+		$oCriteria = $oCriteria->_and($oIdOwner->in($iOldIdOwner));
+		$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
+		$this->select($oCriteria);
+
+//		bab_debug($this->getSelectQuery($oCriteria));
+		
+		while(null !== ($oFmFolderCliboard = $this->next()))
+		{
+			$oFmFolderCliboard->setOwnerId($iNewIdOwner);
+			$oFmFolderCliboard->save();
+		}
+	}
+	
+	function deleteEntry($sName, $sRelativePath, $sGroup)
+	{
+		$oIdDgOwner		= $this->aField['iIdDgOwner'];
+		$oGroup 		= $this->aField['sGroup'];
+		$oName 			= $this->aField['sName'];
+		$oRelativePath	= $this->aField['sRelativePath'];
+		
+		global $babBody;
+		$oCriteria = $oIdDgOwner->in($babBody->currentAdmGroup);
+		$oCriteria = $oCriteria->_and($oGroup->in($sGroup));
+		$oCriteria = $oCriteria->_and($oName->in($sName));
+		$oCriteria = $oCriteria->_and($oRelativePath->in($sRelativePath));
+		
+//		bab_debug($this->getSelectQuery($oCriteria));
+		
+		$this->remove($oCriteria);
+	}
+	
+	function deleteFolder($sName, $sRelativePath, $sGroup)
+	{
+		$oIdDgOwner = $this->aField['iIdDgOwner'];
+		$oIdOwner = $this->aField['iIdOwner'];
+		$oName = $this->aField['sName'];
+		$oRelativePath = $this->aField['sRelativePath'];
+		$oGroup = $this->aField['sGroup'];
+		
+		global $babBody, $babDB;
+		$oCriteria = $oIdDgOwner->in($babBody->currentAdmGroup);
+		$oCriteria = $oCriteria->_and($oRelativePath->like($babDB->db_escape_like($sRelativePath . $sName . '/') . '%'));
+		$oCriteria = $oCriteria->_and($oGroup->in('Y'));
+//		bab_debug($this->getSelectQuery($oCriteria));
+		$this->remove($oCriteria);
+		
+		$oCriteria = $oCriteria->_and($oName->in($sName));
+		$oCriteria = $oIdDgOwner->in($babBody->currentAdmGroup);
+		$oCriteria = $oCriteria->_and($oRelativePath->like($babDB->db_escape_like($sRelativePath)));
+		$oCriteria = $oCriteria->_and($oGroup->in('Y'));
+//		bab_debug($this->getSelectQuery($oCriteria));
+		$this->remove($oCriteria);
+	}
+	
+	function move($sOldRelativePath, $sNewRelativePath, $sGr)
+	{
+		$oIdDgOwner		= $this->aField['iIdDgOwner'];
+		$oIdOwner		= $this->aField['iIdOwner'];
+		$oGroup 		= $this->aField['sGroup'];
+		$oName 			= $this->aField['sName'];
+		$oRelativePath	= $this->aField['sRelativePath'];
+		
+		global $babBody, $babDB, $BAB_SESS_USERID;
+		
+		$oCriteria = $oRelativePath->like($babDB->db_escape_like($sOldRelativePath) . '%');
+		$oCriteria = $oCriteria->_and($oGroup->in($sGr));
+		$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
+		if('N' === $sGr)
+		{
+			$oCriteria = $oCriteria->_and($oIdOwner->in($BAB_SESS_USERID));
+		}
+
+//		bab_debug($this->getSelectQuery($oCriteria));
+		$aProcessedPath = array();
+		$iIdRootFolder = 0;
+		$this->select($oCriteria);
+		while(null !== ($oFmFolderCliboard = $this->next()))
+		{
+			$sOldRelPath = $oFmFolderCliboard->getRelativePath();
+			$sNewRelPath = $sNewRelativePath . substr($sOldRelPath, strlen($sOldRelativePath));
+			
+			if(false === array_key_exists($sNewRelPath, $aProcessedPath))
+			{
+				if('Y' === $sGr)
+				{
+					$_oFmFolder = null;
+					BAB_FmFolderHelper::getInfoFromCollectivePath($sNewRelPath, $iIdRootFolder, $_oFmFolder);							
+					$iIdOwner = $_oFmFolder->getId();
+				}
+				else 
+				{
+					$iIdOwner = $BAB_SESS_USERID;
+				}
+				$aProcessedPath[$sNewRelPath] = array('iIdRootFolder' => $iIdRootFolder, 'iIdOwner' => $iIdOwner);
+			}
+			$oFmFolderCliboard->setRelativePath($sNewRelPath);
+			$oFmFolderCliboard->setOwnerId($aProcessedPath[$sNewRelPath]['iIdOwner']);
+			$oFmFolderCliboard->setRootFolderId($aProcessedPath[$sNewRelPath]['iIdRootFolder']);
+			$this->save($oFmFolderCliboard);
+		}
+	}
+}
 
 class BAB_FolderFileSet extends BAB_BaseSet
 {
@@ -2268,15 +2591,17 @@ class BAB_FolderFileSet extends BAB_BaseSet
 		'iVerMajor' => new BAB_IntField('`ver_major`'),
 		'iVerMinor' => new BAB_IntField('`ver_minor`'),
 		'sVerComment' => new BAB_StringField('`ver_comment`'),
-		'iIndexStatus' => new BAB_IntField('`index_status`')
+		'iIndexStatus' => new BAB_IntField('`index_status`'),
+		'iIdDgOwner' => new BAB_IntField('`iIdDgOwner`')
 		);
 	}
 
 	function remove($oCriteria)
 	{
-		//		bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__);
-
-		$sUploadPath = BAB_FmFolderHelper::getUploadPath();
+//		bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__);
+		$oFileManagerEnv =& getEnvObject();
+		
+		$sUploadPath = $oFileManagerEnv->getRootFmPath();
 
 		$this->select($oCriteria);
 
@@ -2290,8 +2615,7 @@ class BAB_FolderFileSet extends BAB_BaseSet
 			$sFullPathName = $sUploadPath . $oFolderFile->getPathName() . $oFolderFile->getName();
 			if(file_exists($sFullPathName))
 			{
-				//				bab_debug('unlink ==> ' . $sFullPathName);
-
+//				bab_debug('unlink ==> ' . $sFullPathName);
 				unlink($sFullPathName);
 			}
 
@@ -2320,7 +2644,8 @@ class BAB_FolderFileSet extends BAB_BaseSet
 
 	function removeVersions($oCriteria)
 	{
-		$sUploadPath = BAB_FmFolderHelper::getUploadPath();
+		$oFileManagerEnv =& getEnvObject();
+		$sUploadPath = $oFileManagerEnv->getCollectiveRootFmPath();
 		
 //		bab_debug($this->getSelectQuery($oCriteria));
 		$this->select($oCriteria);
@@ -2373,17 +2698,30 @@ class BAB_FolderFileSet extends BAB_BaseSet
 		}
 	}
 
-	function setPathName($sRelativePath, $sNewName, $bCollective)
+	function renameFolder($sRelativePath, $sNewName, $sGr)
 	{
-		//		bab_debug(__FUNCTION__ . ' sRelativePath ==> ' . $sRelativePath . ' sNewName ==> ' . $sNewName);
-
-		$iOffset = ($bCollective) ? 2 : 1;
-
-		$oFolderFileSet = new BAB_FolderFileSet();
-		$oPathName =& $oFolderFileSet->aField['sPathName'];
-
-		global $babDB;
-		$oFolderFileSet->select($oPathName->like($babDB->db_escape_like($sRelativePath) . '%'));
+//		bab_debug(__FUNCTION__ . ' sRelativePath ==> ' . $sRelativePath . ' sNewName ==> ' . $sNewName);
+		$iOffset = 2; //pour le slash à la fin
+		
+		global $babBody, $babDB, $BAB_SESS_USERID;
+		
+		$oFolderFileSet	= new BAB_FolderFileSet();
+		$oPathName		=& $oFolderFileSet->aField['sPathName'];
+		$oIdDgOwner		=& $oFolderFileSet->aField['iIdDgOwner'];
+		$oGroup			=& $oFolderFileSet->aField['sGroup'];
+		$oIdOwner		=& $oFolderFileSet->aField['iIdOwner'];
+		
+		$oCriteria = $oPathName->like($babDB->db_escape_like($sRelativePath) . '%');
+		$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
+		$oCriteria = $oCriteria->_and($oGroup->in($sGr));
+		if('N' === $sGr)
+		{
+			$oCriteria = $oCriteria->_and($oIdOwner->in($BAB_SESS_USERID));
+		}
+		
+//		bab_debug($oFolderFileSet->getSelectQuery($oCriteria));
+		
+		$oFolderFileSet->select($oCriteria);
 
 		while(null !== ($oFolderFile = $oFolderFileSet->next()))
 		{
@@ -2398,19 +2736,52 @@ class BAB_FolderFileSet extends BAB_BaseSet
 				$iCount = count($aPath);
 				if($iCount >= $iOffset)
 				{
-					//					bab_debug($aPath);
-
-					//sRelativePath is always xxx/xxx/
-					//at the minimum is xxx/ and count of explode of that is $iOffset
 					$aPath[$iCount - $iOffset] = $sNewName;
 					$sNewPathName = implode('/', $aPath) . $sEnd;
 				}
 
-				//				bab_debug('sBegin ==> ' . $sBegin . ' sEnd ==> ' . $sEnd . ' sNewPathName ==> ' . $sNewPathName);
-				//				bab_debug('sFullPathName ==> ' . $sNewPathName . $oFolderFile->getName());
+//				bab_debug('sBegin ==> ' . $sBegin . ' sEnd ==> ' . $sEnd . ' sNewPathName ==> ' . $sNewPathName);
+//				bab_debug('sFullPathName ==> ' . $sNewPathName . $oFolderFile->getName());
 				$oFolderFile->setPathName($sNewPathName);
 				$oFolderFile->save();
 			}
+		}
+	}
+	
+	
+	function move($sOldRelativePath, $sNewRelativePath, $sGr)
+	{
+		global $babBody, $babDB;
+		
+		$oFolderFileSet	= new BAB_FolderFileSet();
+		$oPathName		=& $oFolderFileSet->aField['sPathName'];
+		$oIdDgOwner		=& $oFolderFileSet->aField['iIdDgOwner'];
+		$oGroup			=& $oFolderFileSet->aField['sGroup'];
+
+		$oCriteria = $oPathName->like($babDB->db_escape_like($sOldRelativePath) . '%');
+		$oCriteria = $oCriteria->_and($oGroup->in($sGr));
+		$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
+
+//		bab_debug($oFmFolderSet->getSelectQuery($oCriteria));
+		$aProcessedPath = array();
+		$oFolderFileSet->select($oCriteria);
+		while(null !== ($oFolderFile = $oFolderFileSet->next()))
+		{
+			$sOldPathName = $oFolderFile->getPathName();
+			$sNewPathName = $sNewRelativePath . substr($sOldPathName, strlen($sOldRelativePath));
+			
+			if(false === array_key_exists($sNewPathName, $aProcessedPath))
+			{
+				$iIdRootFolder = 0;
+				$_oFmFolder = null;
+				BAB_FmFolderHelper::getInfoFromCollectivePath($sNewPathName, $iIdRootFolder, $_oFmFolder);							
+				$iIdOwner = $_oFmFolder->getId();
+				
+				$aProcessedPath[$sNewPathName] = $iIdOwner;
+			}
+			$oFolderFile->setPathName($sNewPathName);
+			$oFolderFile->setOwnerId($aProcessedPath[$sNewPathName]);
+			$oFolderFile->save();
 		}
 	}
 }
@@ -2438,7 +2809,7 @@ class BAB_FolderFileVersionSet extends BAB_BaseSet
 
 	function remove($oCriteria, $sPathName, $sFileName)
 	{
-		//		bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__);
+		//bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__);
 
 		$this->select($oCriteria);
 		while(null !== ($oFolderFileVersion = $this->next()))
@@ -2448,13 +2819,12 @@ class BAB_FolderFileVersionSet extends BAB_BaseSet
 
 			if(file_exists($sFullPathName))
 			{
-				//				bab_debug('unlink ==> ' . $sFullPathName);
-
+//				bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' unlink(' . $sFullPathName . ')');
 				unlink($sFullPathName);
 			}
 			else
 			{
-				bab_debug('ERROR ==> ' . $sFullPathName);
+				bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' ERROR ==> ' . $sFullPathName);
 			}
 
 			if(0 !== $oFolderFileVersion->getFlowApprobationInstanceId())
@@ -2463,7 +2833,6 @@ class BAB_FolderFileVersionSet extends BAB_BaseSet
 				deleteFlowInstance($oFolderFileVersion->getFlowApprobationInstanceId());
 			}
 		}
-		
 		parent::remove($oCriteria);
 	}
 }
@@ -2678,6 +3047,126 @@ class BAB_FmFolder extends BAB_DbRecord
 	{
 		$oFmFolderSet = new BAB_FmFolderSet();
 		return $oFmFolderSet->save($this);
+	}
+}
+
+
+class BAB_FmFolderCliboard extends BAB_DbRecord
+{
+	function BAB_FmFolderCliboard()
+	{
+		parent::BAB_DbRecord();
+	}
+
+	function setId($iId)
+	{
+		$this->_set('iId', $iId);
+	}
+
+	function getId()
+	{
+		return $this->_iGet('iId');
+	}
+
+	function setDelegationOwnerId($iId)
+	{
+		$this->_set('iIdDgOwner', $iId);
+	}
+
+	function getDelegationOwnerId()
+	{
+		return $this->_iGet('iIdDgOwner');
+	}
+
+	function setRootFolderId($iId)
+	{
+		$this->_set('iIdRootFolder', $iId);
+	}
+
+	function getRootFolderId()
+	{
+		return $this->_iGet('iIdRootFolder');
+	}
+
+	function setFolderId($iId)
+	{
+		$this->_set('iIdFolder', $iId);
+	}
+
+	function getFolderId()
+	{
+		return $this->_iGet('iIdFolder');
+	}
+
+	function setName($sName)
+	{
+		$this->_set('sName', $sName);
+	}
+
+	function getName()
+	{
+		return $this->_sGet('sName');
+	}
+
+	function setRelativePath($sRelativePath)
+	{
+		if(isset($GLOBALS['babFileNameTranslation']))
+		{
+			$sRelativePath = strtr($sRelativePath, $GLOBALS['babFileNameTranslation']);
+		}
+		$this->_set('sRelativePath', $sRelativePath);
+	}
+
+	function getRelativePath()
+	{
+		return $this->_sGet('sRelativePath');
+	}
+
+	function setGroup($sGroup)
+	{
+		$this->_set('sGroup', $sGroup);
+	}
+
+	function getGroup()
+	{
+		return $this->_sGet('sGroup');
+	}
+
+	function setCollective($sCollective)
+	{
+		$this->_set('sCollective', $sCollective);
+	}
+
+	function getCollective()
+	{
+		return $this->_sGet('sCollective');
+	}
+
+	function setOwnerId($iIdOwner)
+	{
+		$this->_set('iIdOwner', $iIdOwner);
+	}
+
+	function getOwnerId()
+	{
+		return $this->_iGet('iIdOwner');
+	}
+
+	function setCheckSum($sCheckSum)
+	{
+		$this->_set('sCheckSum', $sCheckSum);
+	}
+
+	function getCheckSum()
+	{
+		return $this->_sGet('sCheckSum');
+	}
+
+
+	function save()
+	{
+		$oFmFolderCliboardSet = new BAB_FmFolderCliboardSet();
+		return $oFmFolderCliboardSet->save($this);
 	}
 }
 
@@ -2901,6 +3390,16 @@ class BAB_FolderFile extends BAB_DbRecord
 	function getStatusIndex()
 	{
 		return $this->_iGet('iIndexStatus');
+	}
+
+	function setDelegationOwnerId($iId)
+	{
+		$this->_set('iIdDgOwner', $iId);
+	}
+
+	function getDelegationOwnerId()
+	{
+		return $this->_iGet('iIdDgOwner');
 	}
 
 	function save()
@@ -3179,9 +3678,16 @@ class BAB_FmFolderHelper
 
 	function getFmFolderById($iId)
 	{
+		global $babBody;
+		
 		$oFmFolderSet = new BAB_FmFolderSet();
 		$oId =& $oFmFolderSet->aField['iId'];
-		return $oFmFolderSet->get($oId->in($iId));
+		$oIdDgOwner =& $oFmFolderSet->aField['iIdDgOwner'];
+		
+		$oCriteria = $oId->in($iId);
+		$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
+		
+		return $oFmFolderSet->get($oCriteria);
 	}
 
 	function getFileInfoForCollectiveDir($iIdFolder, $sPath, &$iIdOwner, &$sRelativePath, &$oFmFolder)
@@ -3191,14 +3697,15 @@ class BAB_FmFolderHelper
 		$oFmFolder = BAB_FmFolderHelper::getFmFolderById($iIdFolder);
 		if(!is_null($oFmFolder))
 		{
-			//If the method getRelativePath return an empty string so this is a root folder
 			$iIdOwner = $oFmFolder->getId();
-			$sRelativePath = (strlen(trim($oFmFolder->getRelativePath())) === 0) ? $oFmFolder->getName() . '/' : '';
-
-			$iLength = strlen(trim($sPath));
-			if($iLength > 0)
+			
+			if($oFmFolder->getName() === $sPath || '' === $sPath)
 			{
-				$sRelativePath .= $oFmFolder->getRelativePath() . $sPath . (($sPath{$iLength - 1} !== '/') ? '/' : '');
+				$sRelativePath = $oFmFolder->getName() . '/';
+			}
+			else 
+			{
+				$sRelativePath = $sPath . (($sPath{strlen($sPath) - 1} !== '/') ? '/' : '');
 
 				$oFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($sRelativePath);
 				if(!is_null($oFmFolder))
@@ -3215,10 +3722,40 @@ class BAB_FmFolderHelper
 		{
 			$bSuccess = false;
 		}
-
 		return $bSuccess;
 	}
 
+	function getInfoFromCollectivePath($sPath, &$iIdRootFolder, &$oFmFolder, $bParentPath = false)
+	{
+		$bSuccess = false;
+		
+		$oRootFmFolder = BAB_FmFolderSet::getRootCollectiveFolder($sPath);
+		if(!is_null($oRootFmFolder))
+		{
+			$iIdRootFolder = $oRootFmFolder->getId();
+
+			$sRelativePath = canonizePath($sPath);
+
+			$oFmFolder = null;
+
+			if(false === $bParentPath)
+			{
+				$oFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($sRelativePath);
+			}
+			else 
+			{
+				$oFmFolder = BAB_FmFolderSet::getFirstCollectiveParentFolder($sRelativePath);
+			}
+				
+			if(!is_null($oFmFolder))
+			{
+				$iIdOwner = $oFmFolder->getId();
+				$bSuccess = true;
+			}
+		}
+		return $bSuccess;
+	}
+	
 	function getUploadPath()
 	{
 		$iLength = strlen(trim($GLOBALS['babUploadPath']));
@@ -3284,30 +3821,31 @@ class BAB_FmFolderHelper
 			$sOldPathName = '';
 			$sNewPathName = '';
 
-			//$sRelativePath est vide si c'est un repertoire à la racine du répertoire d'upload
-
-			$sUploadPath = realpath($sUploadPath);
+			$sUploadPath = canonizePath(realpath($sUploadPath));
 			if(strlen(trim($sRelativePath)) > 0)
 			{
-				$sPathName		= realpath($sUploadPath . '/' . $sRelativePath);
-				$sOldPathName	= realpath($sPathName . '/' . $sOldName);
-//								bab_debug('*** sUploadPath ==> ' . $sUploadPath);
-//								bab_debug('*** sRelativePath ==> ' . $sRelativePath);
-//								bab_debug('*** sPathName ==> ' . $sPathName);
-				$sNewPathName	= $sPathName . '/' . $sNewName;
+				$sPathName		= canonizePath(realpath($sUploadPath . $sRelativePath));
+				$sOldPathName	= canonizePath(realpath($sPathName . $sOldName));
+//				bab_debug('*** sUploadPath ==> ' . $sUploadPath);
+//				bab_debug('*** sRelativePath ==> ' . $sRelativePath);
+//				bab_debug('*** sPathName ==> ' . $sPathName);
+				$sNewPathName	= $sPathName . $sNewName;
 			}
 			else
 			{
-				$sOldPathName	= realpath($sUploadPath . '/' . $sOldName);
-				$sNewPathName	= $sUploadPath . '/' . $sNewName;
+				$sOldPathName	= canonizePath(realpath($sUploadPath . $sOldName));
+				$sNewPathName	= $sUploadPath . $sNewName;
 			}
 
-//						bab_debug('sUploadPath ==> ' . $sUploadPath);
-//						bab_debug('sRelativePath ==> ' . $sRelativePath);
-//						bab_debug('sOldPathName ==> ' . $sOldPathName);
-//						bab_debug('sNewPathName ==> ' . $sNewPathName);
-
-			$bOldPathNameValid = (substr($sOldPathName, 0, strlen($sUploadPath)) === $sUploadPath);
+			/*
+			bab_debug('sUploadPath ==> ' . $sUploadPath);
+			bab_debug('sRelativePath ==> ' . $sRelativePath);
+			bab_debug('sOldPathName ==> ' . $sOldPathName);
+			bab_debug('sNewPathName ==> ' . $sNewPathName);
+			//*/
+			
+			$sUploadPath = realpath($sUploadPath);
+			$bOldPathNameValid = (realpath(substr($sOldPathName, 0, strlen($sUploadPath))) === $sUploadPath);
 
 			if($bOldPathNameValid)
 			{
@@ -3342,202 +3880,106 @@ class BAB_FmFolderHelper
 		}
 		return $bSuccess;
 	}
-
-	//Rename changer le nom de la fonction
-	function updateSubFolderPathName($sUploadPath, $sRelativePath, $sOldName, $sNewName)
-	{
-		//bab_debug(__FUNCTION__);
-		//bab_debug('sUploadPath ==> ' . $sUploadPath);
-		//bab_debug('sRelativePath ==> ' . $sRelativePath);
-		//bab_debug('sOldName ==> ' . $sOldName);
-		//bab_debug('sNewName ==> ' . $sNewName);
-		
-		if(BAB_FmFolderHelper::renameDirectory($sUploadPath, $sRelativePath, $sOldName, $sNewName))
-		{
-			$sOldRelativePath = $sRelativePath . $sOldName . '/';
-			$sNewRelativePath = $sRelativePath . $sNewName . '/';
-
-//			$sOldRelativePath = $sRelativePath . $sOldName . ((strlen(trim($sOldName)) !== 0) ? '/' : '');
-//			$sNewRelativePath = $sRelativePath . $sNewName . ((strlen(trim($sNewName)) !== 0) ? '/' : '');
-
-//			bab_debug('sOldRelativePath ==> ' . $sOldRelativePath);
-//			bab_debug('sNewRelativePath ==> ' . $sNewRelativePath);
-
-			global $babDB;
-			$oFmFolderSet = new BAB_FmFolderSet();
-			$oRelativePath =& $oFmFolderSet->aField['sRelativePath'];
-			$oFmFolderSet = $oFmFolderSet->select($oRelativePath->like($babDB->db_escape_like($sOldRelativePath) . '%'));
-			while(null !== ($oFmFolder = $oFmFolderSet->next()))
-			{
-				$sRelPath = $sNewRelativePath . substr($oFmFolder->getRelativePath(), strlen($sOldRelativePath));
-//				bab_debug('sRelPath ==> ' . $sRelPath);
-				$oFmFolder->setRelativePath($sRelPath);
-				$oFmFolder->save();
-			}
-
-			BAB_RegitryHelper::update($sRelativePath, $sOldName, $sNewName);		
-			
-			return true;
-		}
-		return false;
-	}
-}
-
-class BAB_RegitryHelper
-{
-	var $sDirectory = '';
-	var $sKey = '';
-	var $oRegistry = null;
-	var $aDatas = array();
-	
-	function BAB_RegitryHelper($sDirectory, $sKey)
-	{
-		$this->sDirectory = $sDirectory;
-		$this->sKey = $sKey;
-
-		$this->oRegistry = bab_getRegistryInstance();
-		$this->oRegistry->changeDirectory($sDirectory);
-
-		$this->aDatas = $this->oRegistry->getValue($this->sKey);
-		if(is_null($this->aDatas))
-		{
-			$this->aDatas = array();
-		}
-	}
-	
-	function removeKey($sKey)
-	{
-		$this->oRegistry->removeKey($sKey);
-	}
-	
-	function setKey($sKey)
-	{
-		$this->sKey = $sKey;
-	}
-	
-	function getDatas()
-	{
-		return $this->aDatas;
-	}
-	
-	function addItem($aItem)
-	{
-		if(array_key_exists('sRelativePath', $aItem) && array_key_exists('sName', $aItem))
-		{
-			$this->aDatas[$aItem['sRelativePath']] = $aItem;
-		}
-	}
-	
-	function removeItem($sKey)
-	{
-		if($this->exist($sKey))
-		{
-			unset($this->aDatas[$sKey]);
-		}
-	}
-	
-	function exist($sRelativePath)
-	{
-//		bab_debug($sRelativePath);
-//		require_once $GLOBALS['babInstallPath'] . 'utilit/devtools.php';
-//		bab_debug_print_backtrace();
-		return array_key_exists($sRelativePath, $this->aDatas);
-	}
-	
-	function save()
-	{
-		if(is_array($this->aDatas) && count($this->aDatas) > 0)
-		{
-			$this->oRegistry->setKeyValue($this->sKey, $this->aDatas);
-		}
-		else 
-		{
-			$this->oRegistry->removeKey($this->sKey);
-		}
-	}
-	
-	function update($sRelativePath, $sOldName, $sNewName)
-	{
-//		bab_debug(__FUNCTION__);
-//		bab_debug('sRelativePath ==> ' . $sRelativePath);
-//		bab_debug('sOldName ==> ' . $sOldName);
-//		bab_debug('sNewName ==> ' . $sNewName);
-
-		$sOldRelativePath	= $sRelativePath . $sOldName . '/';
-		$sNewRelativePath	= $sRelativePath . $sNewName . '/';
-		$bUpdateRegistry	= false;
-		$aCuttedFolder		= array();
-		$sOldRootFolder		= '';
-		$sNewRootFolder		= '';
-		$sOldRegKey			= '';
-		$sNewRegKey			= '';
-		$aOldPath			= explode('/', $sOldRelativePath);
-		$aNewPath			= explode('/', $sNewRelativePath);
-		$sDirectory			= '/bab/fileManager/cuttedFolder/';
-		
-		if(is_array($aOldPath) && count($aOldPath) >= 1 && is_array($aNewPath) && count($aNewPath) >= 1)
-		{
-			$sOldRootFolder = $aOldPath[0] . '/';
-			$sOldRegKey = md5($sOldRootFolder);
-
-			$sNewRootFolder = $aNewPath[0] . '/';
-			$sNewRegKey = md5($sNewRootFolder);
-			
-//			bab_debug('sRegKey ==> ' . $sRegKey . ' sRootFolder ==> ' . $sRootFolder . ' sDirectory ==> ' . $sDirectory);
-		
-			$oRegHlp = new BAB_RegitryHelper($sDirectory, $sOldRegKey);
-			$oRegHlp->removeKey($sOldRegKey);
-			$oRegHlp->setKey($sNewRegKey);
-			$aDatas = $oRegHlp->getDatas();
-			
-			foreach($aDatas as $sKey => $aValue)
-			{
-				$sSearch = substr($sKey, 0, strlen($sOldRelativePath));
-				$sToAdd = substr($sKey, strlen($sOldRelativePath)); 
-				if($sOldRelativePath === $sSearch)
-				{
-					$bUpdateRegistry = true;
-					$sRelPath = $sNewRelativePath . $sToAdd;
-					
-//					bab_debug('sKey ==> ' . $sKey . ' sRelPath ==> ' . $sRelPath);
-					
-					$oRegHlp->removeItem($sKey);
-					
-					if($sKey === $sOldRelativePath)
-					{
-						$oRegHlp->addItem(array('sRelativePath' => $sRelPath, 'sName' => $sNewName));
-					}
-					else 
-					{
-						$oRegHlp->addItem(array('sRelativePath' => $sRelPath, 'sName' => $aDatas[$sKey]['sName']));
-					}
-				}
-				else 
-				{
-					$oRegHlp->addItem(array('sRelativePath' => $aDatas[$sKey]['sRelativePath'], 'sName' => $aDatas[$sKey]['sName']));
-				}
-			}
-			$oRegHlp->save();
-		}
-	}
 }
 
 
-
+/**
+ * This class give information about the environment of the file manager.
+ * The path, the acl
+ * 
+ */
 class BAB_FileManagerEnv
 {
-	var $sRootFolderPath = '';
-	var $sRelativePath = '';
-	var $sEndSlah = '';
+ 	/**
+	 * Upload path of the file manager, the upload path
+	 * contain two folders the root collectives folders and
+	 * the root user personnals folders
+	 * 
+	 * @access private 
+	 * @var string Upload path of the file manager
+	 */
+	var $sFmUploadPath = null;
 	
-	var $sGr = '';
-	var $sPath = '';
-	var $iIdObject = 0;
-	var $iId = 0;
+	var $sFmRootPath = null;
 	
-	var $iPathLength = 0;
+ 	/**
+	 * Path of the collective folder where is the user
+	 * 
+	 * @access private 
+	 * @var string The full path name
+	 */
+	var $sFmCollectivePath = null;
 	
+	
+ 	/**
+	 * Path of the user folder where is the user
+	 * 
+	 * @access private 
+	 * @var string The full path name
+	 */
+	var $sFmPersonnalPath = null;
+
+
+ 	/**
+	 * Allow to know if the directory currently processed is a collective or user
+	 * 
+	 * @access private 
+	 * @var string Y if this is a collective folder, N if this is a user folder
+	 */
+	var $sGr = null;
+
+
+ 	/**
+	 * Relative path of folder where the user is.
+	 * 
+	 * @access private 
+	 * @var string The relative path
+	 */
+	var $sPath = null;
+
+
+ 	/**
+	 * If $sGr == 'Y' so this variable is the identifier of the first collective folder
+	 * If $sGr == 'N' so this variable is the identifier of the user
+	 * 
+	 * @access private 
+	 * @var integer
+	 */
+	var $iId = null;
+
+
+ 	/**
+	 * If $sGr == 'Y' so this variable is the identifier of the collective folder or the identifier 
+	 * of the first collective parent folder
+	 * 
+	 * @access private 
+	 * @var integer
+	 */
+	var $iIdObject = null;
+
+
+ 	/**
+	 * Is the connected user have a personnal storage
+	 * 
+	 * @access private 
+	 * @var boolean True if the user have a personnal storage, false otherwise
+	 */
+	var $bUserHaveStorage = false;
+
+
+ 	/**
+	 * The first directory collective compared to the position of the user
+	 * 
+	 * @access private 
+	 * @var BAB_FmFolder The first directory collective compared to the position of the user or null
+	 */
 	var $oFmFolder = null;
+	
+	var $sEndSlash = '';
+	var $iPathLength = 0;
+	var $sRelativePath = '';
+	var $oAclFm	= null;
+	var $sFmCollectiveRootPath = '';
 	
 	function BAB_FileManagerEnv()
 	{
@@ -3546,20 +3988,18 @@ class BAB_FileManagerEnv
 	
 	function init()
 	{
-		$this->sPath	= (string) bab_rp('path');
-		$this->sGr		= (string) bab_rp('gr', 'N');
+		global $BAB_SESS_USERID, $babBody;
+				
+		$this->sPath = (string) bab_rp('path');
+		$this->sGr = (string) bab_rp('gr', '');
 		
 		$this->iPathLength = strlen(trim($this->sPath));
-		
 		$this->sEndSlash = '';
 		if($this->iPathLength > 0)
 		{
 			$this->sEndSlash = '/';
 		}	
-		
-		global $BAB_SESS_USERID, $babBody;
-		
-		
+
 		if(!empty($BAB_SESS_USERID))
 		{
 			$this->iIdObject = (int) bab_rp('id', $BAB_SESS_USERID);
@@ -3569,29 +4009,126 @@ class BAB_FileManagerEnv
 			$this->iIdObject = (int) bab_rp('id', 0);
 		}
 
-		$this->iId = $this->iIdObject;
-			
+		$this->iId						= $this->iIdObject;
+		$this->sFmUploadPath			= BAB_FmFolderHelper::getUploadPath() . 'fileManager/';
+		$this->sFmCollectiveRootPath	= $this->sFmUploadPath . 'collectives/DG' . $babBody->currentAdmGroup . '/';		
+		$this->sFmCollectivePath		= $this->sFmCollectiveRootPath;
+		$this->sRelativePath			= $this->sPath . $this->sEndSlash;
+		
+		if('N' === $this->sGr)
+		{
+			if(userHavePersonnalStorage())
+			{
+				$this->sFmRootPath		= $this->sFmUploadPath . 'users/U' . $BAB_SESS_USERID . '/';
+				$this->sFmPersonnalPath	= $this->sFmRootPath;
+				
+				if(0 !== strlen(trim($this->sPath)))
+				{
+					$this->sFmPersonnalPath .= $this->sRelativePath;
+				}
+			}
+		}
+		else if('Y' === $this->sGr)
+		{
+			BAB_FmFolderHelper::getInfoFromCollectivePath($this->sPath, $this->iId, $this->oFmFolder);
+			if(!is_null($this->oFmFolder))
+			{
+				$this->iIdObject = $this->oFmFolder->getId();
+			}
+			$this->sFmRootPath = $this->sFmCollectivePath;
+			$this->sFmCollectivePath .= $this->sRelativePath;
+		}
+		if('' === $this->sGr)
+		{
+			if(userHavePersonnalStorage())
+			{
+				$this->sFmPersonnalPath = $this->sFmUploadPath . 'users/';
+			}
+		}
+	}
+	
+	function setParentPath(&$sUrl)
+	{
+		if(0 !== $this->iPathLength) 
+		{
+			$sParentPath = removeLastPath($this->sPath);
+			if('N' === $this->sGr)
+			{
+				if($sParentPath !== $this->sPath)
+				{
+					$sUrl .= $sParentPath;
+				}
+				return true;
+			}
+			else if('Y' === $this->sGr)
+			{
+				if($sParentPath !== $this->sPath)
+				{
+					$sUrl .= $sParentPath;
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	function getParentPath()
+	{
+		return $this->sParentPath;
+	}
+	
+	function getPersonnalFolderPath()
+	{
+		return $this->sFmPersonnalPath;
+	}
+	
+	function getCollectiveFolderPath()
+	{
+		return $this->sFmCollectivePath;
+	}
+	
+	function getCurrentFmPath()
+	{
 		if('Y' === $this->sGr)
 		{
-			$oFmFolder = null;
-			BAB_FmFolderHelper::getFileInfoForCollectiveDir($this->iIdObject, $this->sPath, 
-				$this->iIdObject, $this->sRelativePath, $this->oFmFolder);
-				
-			$this->sRootFolderPath = getFirstPath($this->sRelativePath) . '/';
-		}		
+			return $this->getCollectiveFolderPath();
+		}
 		else if('N' === $this->sGr)
 		{
-			$this->sRootFolderPath = 'U' . $this->iIdObject . '/';
-			$this->sRelativePath = 'U' . $this->iIdObject . '/' . $this->sPath . $this->sEndSlash;
+			return $this->getPersonnalFolderPath();
 		}
+		return '';
+	}
+	
+	function getRootFmPath()
+	{
+		return $this->sFmRootPath;
+	}
+	
+	function getCollectiveRootFmPath()
+	{
+		return $this->sFmCollectiveRootPath;
+	}
+	
+	function userIsInRootFolder()
+	{
+		return ('' === $this->sGr && 0 === $this->iPathLength);
+	}
+	
+	function userIsInCollectiveFolder()
+	{
+		return ('Y' === $this->sGr);
+	}
+	
+	function userIsInPersonnalFolder()
+	{
+		return ('N' === $this->sGr);
 	}
 	
 	function accessValid()
 	{
 		if($this->pathValid())
 		{
-			$sUploadPath = BAB_FmFolderHelper::getUploadPath();
-			
 			if('N' === $this->sGr)
 			{
 				if(true === userHaveRightOnCollectiveFolder() || true === userHavePersonnalStorage())
@@ -3604,7 +4141,7 @@ class BAB_FileManagerEnv
 					{
 						if(true === bab_userIsloggedin())
 						{
-							if(is_dir(realpath($sUploadPath . $this->sRelativePath)))
+							if(is_dir(realpath($this->sFmPersonnalPath)))
 							{
 								return true;
 							}
@@ -3614,22 +4151,22 @@ class BAB_FileManagerEnv
 			}
 			else if('Y' === $this->sGr)
 			{
-				if(!is_null($this->oFmFolder))
+				$oFileManagerEnv =& getEnvObject();
+				$sParentPath = $oFileManagerEnv->sRelativePath;
+				if(true === canManage($sParentPath))
 				{
-					if(0 !== $this->iPathLength)					
-					{
-						$oFileManagerEnv =& getEnvObject();
-						$sParentPath = 'collectives/' . $oFileManagerEnv->sRelativePath;
-						if(true === canManage($sParentPath))
-						{
-							return true;
-						}
-						else if(true === canUpload($sParentPath) || true === canDownload($sParentPath) || true === canUpdate($sParentPath))
-						{
-							return true;						
-						}
-					}
-					else 
+					return true;
+				}
+				else if(true === canUpload($sParentPath) || true === canDownload($sParentPath) || true === canUpdate($sParentPath))
+				{
+					return true;						
+				}
+			}
+			else if('' === $this->sGr)
+			{
+				if(true === userHaveRightOnCollectiveFolder() || true === userHavePersonnalStorage())
+				{
+					if(0 === $this->iPathLength)
 					{
 						return true;
 					}
@@ -3666,6 +4203,66 @@ class BAB_FileManagerEnv
 		}
 		return true;
 	}
+}
+		
+function canonizePath($sPath)
+{
+	return addEndSlash(removeEndSlashes($sPath));
+}
+
+function addEndSlash($sPath)
+{
+	if(is_string($sPath))
+	{
+		$iLength = strlen(trim($sPath));
+		if($iLength > 0)
+		{
+			if($sPath{$iLength - 1} !== '/' && $sPath{$iLength - 1} !== '\\')
+			{
+				$sPath .= '/';
+			}
+		}
+	}
+	return $sPath;
+}
+
+function removeEndSlah($sPath)
+{
+	if(is_string($sPath))
+	{
+		$iLength = strlen(trim($sPath));
+		if($iLength > 0)
+		{
+			if($sPath{$iLength - 1} === '/' || $sPath{$iLength - 1} === '\\')
+			{
+				return substr($sPath, 0, -1);
+			}
+		}
+	}
+	return $sPath;
+}
+
+
+function haveEndSlash($sPath)
+{
+	$iLength = strlen(trim($sPath));
+	if($iLength > 0)
+	{
+		return ($sPath{$iLength - 1} === '/' || $sPath{$iLength - 1} === '\\');
+	}
+	return false;	
+}
+
+
+
+
+function removeEndSlashes($sPath)
+{
+	while(haveEndSlash($sPath))
+	{
+		$sPath = removeEndSlah($sPath);
+	}
+	return $sPath;
 }
 
 
@@ -3719,7 +4316,7 @@ function getLastPath($sPath)
 			{
 				if('/' === $sPath{$iLength - 1})
 				{
-					unset($aPath[$iCount - 1]);
+//					unset($aPath[$iCount - 1]);
 					return $aPath[$iCount - 2];
 				}
 				else 
@@ -3817,525 +4414,435 @@ function &getEnvObject()
 }
 
 
-/**
- * This method allow to know if the connected user can set right
- * on the object that is represented by the pass.
- * Users are allowed to set rigth on a folder if they have manager
- * right on the parent folder.
- * For a collective folder the first path must be 'collectives/'.
- * For a user folder the first path must be 'users/'.
- * 
- * @param string $sPath	The relative path of the folder
- * 	 
- * @return boolean True if the user can set rigth, false otherwise
- **/
-function canSetRight($sPath)
-{
-	return canEdit($sPath);
-}
 
+/////// ACL For the filemanager
 
-/**
- * This method allow to know if the connected user can cut
- * the folder that is represented by the pass.
- * Users are allowed to cut folder if they have manager
- * right on the parent folder.
- * For a collective folder the first path must be 'collectives/'.
- * For a user folder the first path must be 'users/'.
- * 
- * @param string $sPath	The relative path of the folder
- * 	 
- * @return boolean True if the user can cut the folder, false otherwise
- **/
-function canCut($sPath)
+function canManage($sPath)
 {
 	static $aPath = array();
-	
-	$oFileManagerEnv =& getEnvObject();
-
 	if(!array_key_exists($sPath, $aPath))
 	{
-		$sCollective	= 'collectives/';
-		$sUser			= 'users/';
-		
-		if($sCollective === (string) substr($sPath, 0, strlen($sCollective)))
-		{
-			$sRelativePath = '';
-			$sName = '';
-			
-			getRelativePathAndFolderName($sPath, $sRelativePath, $sName);
-			
-			if('' === $sRelativePath)
-			{
-				$aPath[$sPath] = false;
-			}
-			else 
-			{
-				$oFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($sRelativePath);
-				$aPath[$sPath] = bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oFmFolder->getId());
-			}
-		}
-		else if($sUser === (string) substr($sPath, 0, strlen($sUser)))
-		{
-			if(isUserFolder($sPath) && 0 !== $oFileManagerEnv->iPathLength)			
-			{
-				$aPath[$sPath] = true;
-			}
-			else 
-			{
-				$aPath[$sPath] = false;
-			}
-		}
-	}
+		$aPath[$sPath] = haveRightOnParent($sPath, BAB_FMMANAGERS_GROUPS_TBL);
+	}	
 	return $aPath[$sPath];
 }
 
 
-
-/**
- * This method allow to know if the connected user can edit
- * the folder that is represented by the pass.
- * Users are allowed to edit folder if they have manager
- * right on the parent folder.
- * For a collective folder the first path must be 'collectives/'.
- * For a user folder the first path must be 'users/'.
- * 
- * @param string $sPath	The relative path of the folder
- * 	 
- * @return boolean True if the user can edit the folder, false otherwise
- **/
-function canEdit($sPath)
-{
-//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sPath ==> ' . $sPath);
-//	
-//	require_once $GLOBALS['babInstallPath'] . 'utilit/devtools.php';
-//	bab_debug_print_backtrace();
-
-	static $aPath = array();
-	
-	$oFileManagerEnv =& getEnvObject();
-
-	if(!array_key_exists($sPath, $aPath))
-	{
-		$sCollective	= 'collectives/';
-		$sUser			= 'users/';
-		
-		if($sCollective === (string) substr($sPath, 0, strlen($sCollective)))
-		{
-			$sRelativePath = '';
-			$sName = '';
-			
-			getRelativePathAndFolderName($sPath, $sRelativePath, $sName);
-			
-//			bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
-//				' sRelativePath ==> ' . $sRelativePath . 'sName ==> ' . $sName);
-			
-			if('' === $sRelativePath)
-			{
-				$aPath[$sPath] = bab_isUserAdministrator();
-			}
-			else 
-			{
-				$oFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($sRelativePath);
-				$aPath[$sPath] = bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oFmFolder->getId());
-			}
-		}
-		else if($sUser === (string) substr($sPath, 0, strlen($sUser)))
-		{
-			$aPath[$sPath] = isUserFolder($sPath);
-		}
-	}
-			
-//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
-//		' canEdit ==> ' . ($aPath[$sPath] ? 'Yes' : 'No'));
-		
-	return $aPath[$sPath];
-}
-
-
-function canCreateFolder($sPath)
-{
-//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sPath ==> ' . $sPath);
-//	
-//	require_once $GLOBALS['babInstallPath'] . 'utilit/devtools.php';
-//	bab_debug_print_backtrace();
-
-	static $aPath = array();
-	
-	$oFileManagerEnv =& getEnvObject();
-
-	if(!array_key_exists($sPath, $aPath))
-	{
-		$sCollective	= 'collectives/';
-		$sUser			= 'users/';
-		
-		if($sCollective === (string) substr($sPath, 0, strlen($sCollective)))
-		{
-			$sRelativePath = '';
-			$sName = '';
-			
-			getRelativePathAndFolderName($sPath, $sRelativePath, $sName);
-			
-//			bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
-//				' sRelativePath ==> ' . $sRelativePath . 'sName ==> ' . $sName);
-			
-			if('' === $sRelativePath)
-			{
-				$sRelativePath = $sName . '/';
-			}
-			
-			$oFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($sRelativePath);
-			$aPath[$sPath] = bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oFmFolder->getId());
-		}
-		else if($sUser === (string) substr($sPath, 0, strlen($sUser)))
-		{
-			$aPath[$sPath] = isUserFolder($sPath);
-		}
-	}
-			
-//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
-//		' canEdit ==> ' . ($aPath[$sPath] ? 'Yes' : 'No'));
-		
-	return $aPath[$sPath];
-	
-}
-
-	
-/**
- * This method allow to know if the connected user can browse
- * the folder that is represented by the pass.
- * Users are allowed to browse folder if they are manager
- * of the folder or if they can download, upload, update the folder
- * For a collective folder the first path must be 'collectives/'.
- * For a user folder the first path must be 'users/'.
- * 
- * @param string $sPath	The relative path of the folder
- * 	 
- * @return boolean True if the user can browse the folder, false otherwise
- **/
-function canBrowse($sPath)
-{
-//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sPath ==> ' . $sPath);
-
-	static $aPath = array();
-
-	if(!array_key_exists($sPath, $aPath))
-	{
-		$sCollective	= 'collectives/';
-		$sUser			= 'users/';
-		
-		if($sCollective === (string) substr($sPath, 0, strlen($sCollective)))
-		{
-			$sRelativePath = removeFirstPath($sPath);
-				
-			$oFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($sRelativePath);
-			if(!is_null($oFmFolder))
-			{
-				$aPath[$sPath] = bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $oFmFolder->getId()) || 
-					bab_isAccessValid(BAB_FMUPLOAD_GROUPS_TBL, $oFmFolder->getId()) || 
-					bab_isAccessValid(BAB_FMUPDATE_GROUPS_TBL, $oFmFolder->getId()) || 
-					bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oFmFolder->getId());
-			}
-			else
-			{
-				$aPath[$sPath] = false;
-			}
-		}
-		else if($sUser === (string) substr($sPath, 0, strlen($sUser)))
-		{
-			$aPath[$sPath] = isUserFolder($sPath);
-		}
-	}
-	return $aPath[$sPath];
-}
-
-
-function canPaste($sPath)
+function canUpload($sPath)
 {
 	static $aPath = array();
-	
 	if(!array_key_exists($sPath, $aPath))
 	{
-		$sCollective		= 'collectives/';
-		$sUser				= 'users/';
-		$sUploadPath		= BAB_FmFolderHelper::getUploadPath();
-		$oFileManagerEnv	=& getEnvObject();
-		
-		if($sCollective === (string) substr($sPath, 0, strlen($sCollective)))
-		{
-			$sRelativePath = '';
-			$sName = '';
-			
-			//Permet de savoir si on est dans le répertoire root
-			getRelativePathAndFolderName($sPath, $sRelativePath, $sName);
-			
-			if('' !== $sRelativePath)
-			{
-				$sPathToPaste = removeFirstPath($sPath);
-				if(isFolderPastable($sPathToPaste))
-				{
-					//Récupération des droits sur le répertoire parent du répertoire que l'on veut coller
-					$oFmFolderToPaste = BAB_FmFolderSet::getFirstCollectiveFolder(removeLastPath($sPathToPaste));
-					//bab_debug($oFmFolderToCut);
-					
-					//Récupération des droits sur le répertoire courant
-					$oFmFolderParent = BAB_FmFolderSet::getFirstCollectiveFolder($oFileManagerEnv->sRelativePath);
-					//bab_debug($oFmFolderParent);
-					if(!is_null($oFmFolderToPaste) && !is_null($oFmFolderParent))
-					{
-						$aPath[$sPath] = bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oFmFolderToPaste->getId()) &&
-							bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oFmFolderParent->getId());
-					}
-					else 
-					{
-						$aPath[$sPath] = false;
-					}
-				}
-				else 
-				{
-					$aPath[$sPath] = false;
-				}
-			}
-			else 
-			{
-				$aPath[$sPath] = false;
-			}
-		}
-		else if($sUser === (string) substr($sPath, 0, strlen($sUser)))
-		{
-			if(isUserFolder($sPath) && 0 !== $oFileManagerEnv->iPathLength)			
-			{
-				$aPath[$sPath] = isFolderPastable(removeFirstPath($sPath));
-			}
-			else 
-			{
-				$aPath[$sPath] = false;
-			}
-		}
-	}
+		$aPath[$sPath] = haveRightOn($sPath, BAB_FMUPLOAD_GROUPS_TBL);
+	}	
 	return $aPath[$sPath];
 }
 
 
 function canDownload($sPath)
 {
-//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sPath ==> ' . $sPath);
-//	
-//	require_once $GLOBALS['babInstallPath'] . 'utilit/devtools.php';
-//	bab_debug_print_backtrace();
-
 	static $aPath = array();
-	
 	if(!array_key_exists($sPath, $aPath))
 	{
-		$sCollective		= 'collectives/';
-		$sUser				= 'users/';
-		$oFileManagerEnv	=& getEnvObject();
-		
-		$sId = (string) substr($sPath, 0, strlen($sCollective));
-		$sRelativePath = (string) substr($sPath, strlen($sId)); 
-		
-		if($sCollective === $sId)
-		{
-//			bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
-//				' sRelativePath ==> ' . $sRelativePath);
-				
-			$oFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($sRelativePath);
-			$aPath[$sPath] = bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $oFmFolder->getId());
-		}
-		else if($sUser === (string) substr($sPath, 0, strlen($sUser)))
-		{
-			if(isUserFolder($sPath))			
-			{
-				$aPath[$sPath] = true;
-			}
-			else 
-			{
-				$aPath[$sPath] = false;
-			}
-		}
-	}
-	return $aPath[$sPath];	
-}
-
-
-function canUpload($sPath)
-{
-//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sPath ==> ' . $sPath);
-	
-	static $aPath = array();
-	
-	if(!array_key_exists($sPath, $aPath))
-	{
-		$sCollective		= 'collectives/';
-		$sUser				= 'users/';
-		$sUploadPath		= BAB_FmFolderHelper::getUploadPath();
-		$oFileManagerEnv	=& getEnvObject();
-		
-		$sId = (string) substr($sPath, 0, strlen($sCollective));
-		$sRelativePath = (string) substr($sPath, strlen($sId)); 
-		
-		if($sCollective === $sId)
-		{
-//			bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
-//				' sRelativePath ==> ' . $sRelativePath);
-				
-			$oFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($sRelativePath);
-			$aPath[$sPath] = bab_isAccessValid(BAB_FMUPLOAD_GROUPS_TBL, $oFmFolder->getId());
-		}
-		else if($sUser === (string) substr($sPath, 0, strlen($sUser)))
-		{
-//			bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
-//				' sRelativePath ==> ' . $sRelativePath);
-				
-			if(isUserFolder($sPath))			
-			{
-				$aPath[$sPath] = true;
-			}
-			else 
-			{
-				$aPath[$sPath] = false;
-			}
-		}
-	}
-	return $aPath[$sPath];	
+		$aPath[$sPath] = haveRightOn($sPath, BAB_FMDOWNLOAD_GROUPS_TBL);
+	}	
+	return $aPath[$sPath];
 }
 
 
 function canUpdate($sPath)
 {
-//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sPath ==> ' . $sPath);
-	
 	static $aPath = array();
-	
 	if(!array_key_exists($sPath, $aPath))
 	{
-		$sCollective		= 'collectives/';
-		$sUser				= 'users/';
-		$sUploadPath		= BAB_FmFolderHelper::getUploadPath();
-		$oFileManagerEnv	=& getEnvObject();
-		
-		$sId = (string) substr($sPath, 0, strlen($sCollective));
-		$sRelativePath = (string) substr($sPath, strlen($sId)); 
-		
-		if($sCollective === $sId)
-		{
-			if('' !== $sRelativePath)
-			{
-				$oFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($sRelativePath);
-				$aPath[$sPath] = bab_isAccessValid(BAB_FMUPDATE_GROUPS_TBL, $oFmFolder->getId());
-			}
-			else 
-			{
-				$aPath[$sPath] = false;
-			}
-		}
-		else if($sUser === (string) substr($sPath, 0, strlen($sUser)))
-		{
-			$aPath[$sPath] = false;
-		}
-	}
-	return $aPath[$sPath];		
+		$aPath[$sPath] = haveRightOn($sPath, BAB_FMUPDATE_GROUPS_TBL);
+	}	
+	return $aPath[$sPath];
 }
 
-function canManage($sPath)
+
+function canBrowse($sPath)
 {
-//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sPath ==> ' . $sPath);
-	
 	static $aPath = array();
-	
 	if(!array_key_exists($sPath, $aPath))
 	{
-		$sCollective		= 'collectives/';
-		$sUser				= 'users/';
-		$sUploadPath		= BAB_FmFolderHelper::getUploadPath();
-		$oFileManagerEnv	=& getEnvObject();
-		
-		$sId = (string) substr($sPath, 0, strlen($sCollective));
-		$sRelativePath = (string) substr($sPath, strlen($sId)); 
-		
-		if($sCollective === $sId)
-		{
-//			bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
-//				' sRelativePath ==> ' . $sRelativePath);
-				
-			if('' === $sRelativePath)
-			{
-				$aPath[$sPath] = bab_isUserAdministrator();
-			}
-			else 
-			{
-				$oFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($sRelativePath);
-				$aPath[$sPath] = bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oFmFolder->getId());
-			}
-		}
-		else if($sUser === (string) substr($sPath, 0, strlen($sUser)))
-		{
-//			bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
-//				' sRelativePath ==> ' . $sRelativePath);
-				
-			if(isUserFolder($sPath))			
-			{
-				$aPath[$sPath] = true;
-			}
-			else 
-			{
-				$aPath[$sPath] = false;
-			}
-		}
-	}
-	return $aPath[$sPath];	
+		$aPath[$sPath] = canManage($sPath) || canUpload($sPath) ||
+			canDownload($sPath) || canUpdate($sPath);
+	}	
+	return $aPath[$sPath];
+
 }
 
-function isFolderPastable($sRelativePathToPaste)
+
+function canEdit($sPath)
 {
-	$oFileManagerEnv	=& getEnvObject();
-	$sUploadPath		= BAB_FmFolderHelper::getUploadPath();
-	$sFullCurrFolder	= realpath($sUploadPath . $oFileManagerEnv->sRelativePath);
-	$sFullPathToPaste	= realpath($sUploadPath . $sRelativePathToPaste);
-	$sFullParentPath	= substr($sFullCurrFolder, 0, strlen($sFullPathToPaste));
-	
-	/*				
-	bab_debug(
-		'sRelativePathToPaste ==> ' . $sRelativePathToPaste . 
-		' sFullPathToPaste ==> ' . $sFullPathToPaste . 
-		' sFullParentPath ==> ' . $sFullParentPath . 				
-		' sFullCurrFolder ==> ' . $sFullCurrFolder);				
+	return canManage($sPath);
+}
+
+
+function canSetRight($sPath)
+{
+	return canManage($sPath);
+}
+
+
+function canCutFolder($sPath)
+{
+	return canManage($sPath);
+}
+
+
+function canCutFile($sPath)
+{
+	static $aPath = array();
+	if(!array_key_exists($sPath, $aPath))
+	{
+		$aPath[$sPath] = haveRightOn($sPath, BAB_FMMANAGERS_GROUPS_TBL);
+	}	
+	return $aPath[$sPath];
+}
+
+
+function canDelFile($sPath)
+{
+	return canCutFile($sPath);
+}
+
+
+function canCreateFolder($sPath)
+{
+	/*
+	static $aPath = array();
+	if(!array_key_exists($sPath, $aPath))
+	{
+		$aPath[$sPath] = haveRightOn($sPath, BAB_FMMANAGERS_GROUPS_TBL);
+	}	
+	return $aPath[$sPath];
 	//*/
-	
-	//On ne peut coller la source que si la cible et un répertoire
-	//parent ou le même
-	return ($sFullParentPath !== $sFullPathToPaste);
+	return canManage($sPath);
 }
 
-function isUserFolder($sPath)
-{
-//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sPath ==> ' . $sPath);
-//	global $BAB_SESS_USERID;
-	
-	$sPath = removeFirstPath($sPath);
-	$sFirstPath = getFirstPath($sPath);
 
-	$aBuffer = array();
-	if(preg_match('/(U)(\d+)/', $sFirstPath, $aBuffer))
+function canPasteFolder($iIdSrcRootFolder, $sSrcPath, $bSrcPathIsCollective, $iIdTrgRootFolder, $sTrgPath)
+{
+//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
+//		' iIdSrcRootFolder ==> ' . $iIdSrcRootFolder . ' sSrcPath ==> ' . $sSrcPath .
+//		' iIdTrgRootFolder ==> ' . $iIdTrgRootFolder . ' sTrgPath ==> ' . $sTrgPath);
+	
+	$oFileManagerEnv		=& getEnvObject();
+	$bHaveRightOnSrc		= false;
+	$bHaveRightOnTrg		= false;
+	$bFileExistOnTrgPath	= false;
+	$iIdLocalSrcRootFolder	= 0;
+	
+	if($oFileManagerEnv->userIsInCollectiveFolder() || ($oFileManagerEnv->userIsInRootFolder() && $bSrcPathIsCollective))
 	{
-		$iIdUser = (int) $aBuffer[2];
+		$sRootFmPath = $oFileManagerEnv->getCollectiveRootFmPath();
+		$oOwnerSrcFmFolder = null;
+		$bParentPath = true;
 		
-//		bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
-//			' sFirstPath ==> ' . $sFirstPath .
-//			' bResult ==> ' . (($iIdUser === (int) $oFileManagerEnv->iIdObject) ? 'Yes' : 'No'));
+		$sSrcPath = canonizePath($sSrcPath);
+		
+		$bIsRootFolder = ('' === removeLastPath($sSrcPath));
+		
+		if(false === $bIsRootFolder)
+		{
+			$bSuccess = BAB_FmFolderHelper::getInfoFromCollectivePath($sSrcPath, $iIdLocalSrcRootFolder, $oOwnerSrcFmFolder, $bParentPath);
 			
-		$oFileManagerEnv =& getEnvObject();
-		return (0 !== $iIdUser && $iIdUser === (int) $oFileManagerEnv->iIdObject);
+			if($bSuccess)
+			{
+				if(0 !== $iIdLocalSrcRootFolder && $iIdLocalSrcRootFolder === $iIdSrcRootFolder)
+				{
+					if($iIdLocalSrcRootFolder === $oOwnerSrcFmFolder->getId())
+					{
+						$bHaveRightOnSrc = bab_isUserAdministrator();
+					}
+					else 
+					{
+						$bHaveRightOnSrc = bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oOwnerSrcFmFolder->getId());
+					}
+				}
+				else 
+				{
+//					bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
+//						' Bad root folder id iIdRootFolder ==> ' . $iIdRootFolder .
+//						' iIdSrcRootFolder ==> ' . $iIdSrcRootFolder);
+					return false;
+				}
+			}
+			else 
+			{
+//				bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
+//					' Cannot get info for  iIdSrcRootFolder ==> ' . $iIdSrcRootFolder .
+//					' sSrcPath ==> ' . $sSrcPath);
+				return false;
+			}
+		}
+		else 
+		{
+			$bHaveRightOnSrc = bab_isUserAdministrator();
+		}
+
+		
+		if(!$oFileManagerEnv->userIsInRootFolder())
+		{
+			$iIdRootFolder = 0;
+			$oOwnerTrgFmFolder = null;
+			$sTrgPath = canonizePath($sTrgPath);
+			
+			$bIsRootFolder = ('' === removeLastPath($sTrgPath));
+			
+			if(false === $bIsRootFolder)
+			{
+				$bSuccess = BAB_FmFolderHelper::getInfoFromCollectivePath($sTrgPath, $iIdRootFolder, $oOwnerTrgFmFolder, $bParentPath);
+				if($bSuccess)
+				{
+					if(0 !== $iIdRootFolder && $iIdRootFolder === $iIdTrgRootFolder && !is_null($oOwnerTrgFmFolder))
+					{
+						$bHaveRightOnTrg = bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oOwnerTrgFmFolder->getId());
+					}
+					else 
+					{
+//						bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' PAS GLOP For sTrgPath 1 ==> ' . $sTrgPath);
+						return false;
+					}
+				}
+				else 
+				{
+//					bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' PAS GLOP For sTrgPath 2 ==> ' . $sTrgPath);
+					return false;
+				}
+			}
+			else 
+			{
+				$bHaveRightOnTrg = bab_isUserAdministrator();
+			}
+		}
+		else 
+		{
+			$bHaveRightOnTrg = bab_isUserAdministrator();
+		}
+	}
+	else if($oFileManagerEnv->userIsInPersonnalFolder())
+	{
+		$sRootFmPath = $oFileManagerEnv->getRootFmPath();
+		$bHaveRightOnSrc = isUserFolder($sSrcPath);
+		$bHaveRightOnTrg = isUserFolder($sTrgPath);
+	}	
+	
+//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' bHaveRightOnSrc ==> ' . (($bHaveRightOnSrc) ? 'Yes' : 'No') . ' bHaveRightOnTrg ==> ' . (($bHaveRightOnTrg) ? 'Yes' : 'No'));
+	
+	if($bHaveRightOnSrc && $bHaveRightOnTrg)
+	{
+		$sFullCurrFolder	= removeEndSlah(realpath($sRootFmPath . $sTrgPath));
+		$sFullPathToPaste	= removeEndSlah(realpath($sRootFmPath . $sSrcPath));
+		$sFullParentPath	= substr($sFullCurrFolder, 0, strlen($sFullPathToPaste));
+		
+		/*
+		bab_debug('sRootFmPath ==> ' . $sRootFmPath);
+		bab_debug('sSrcPath ==> ' . $sSrcPath);
+		bab_debug('sTrgPath ==> ' . $sTrgPath);
+		bab_debug('sFullCurrFolder ==> ' . $sFullCurrFolder);
+		bab_debug('sFullPathToPaste ==> ' . $sFullPathToPaste);
+		bab_debug('sFullParentPath ==> ' . $sFullParentPath);
+		//*/
+		
+		//Est ce que dans le répertoire courant il y a un répertoire de même nom ?
+		$bSameDir = true;
+		$sTrgFullPathName = $sRootFmPath . $sTrgPath . getLastPath($sSrcPath);
+		$sSrcFullPathName = $sRootFmPath . removeEndSlah($sSrcPath);
+		if(is_dir($sTrgFullPathName))
+		{
+			$bSameDir = ($sSrcFullPathName === $sTrgFullPathName);
+		}
+		
+		/*
+		bab_debug(
+			'bRetVal ==> ' .  (($sFullParentPath !== $sFullPathToPaste && $bSameDir) ? 'Yes' : 'No') . 
+			' bSameDir ==> ' .  (($bSameDir) ? 'Yes' : 'No') . 
+			' sSrcFullPathName ==> ' .  $sSrcFullPathName . 
+			' sTrgFullPathName ==> ' .  $sTrgFullPathName . 
+			' sFullParentPath !== sFullPathToPaste ==> ' .  (($sFullParentPath !== $sFullPathToPaste) ? 'Yes' : 'No'));
+		//*/
+		return ($sFullParentPath !== $sFullPathToPaste && $bSameDir);
 	}
 	return false;
 }
 
-function getRelativePathAndFolderName($sPath, &$sRelativePath, &$sName)
+
+function canPasteFile($iIdSrcRootFolder, $sSrcPath, $iIdTrgRootFolder, $sTrgPath, $sFilename)
 {
-	$sPath = removeFirstPath($sPath);
-	$sName = getLastPath($sPath);
-	$sRelativePath = (string) substr($sPath, 0, - (strlen($sName) + 1));
+	$oFileManagerEnv		=& getEnvObject();
+	$sUpLoadPath			= $oFileManagerEnv->getCurrentFmPath();
+	$bHaveRightOnSrc		= false;
+	$bHaveRightOnTrg		= false;
+	$bFileExistOnTrgPath	= false;
+	
+	if($oFileManagerEnv->userIsInCollectiveFolder())
+	{
+		$iIdRootFolder = 0;
+		$oOwnerSrcFmFolder = null;
+		BAB_FmFolderHelper::getInfoFromCollectivePath($sSrcPath, $iIdRootFolder, $oOwnerSrcFmFolder);
+		if($iIdRootFolder !== $iIdSrcRootFolder || is_null($oOwnerSrcFmFolder))
+		{
+			//bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' PAS GLOP For sSrcPath');
+			return false;
+		}
+		
+		$iIdRootFolder = 0;
+		$oOwnerTrgFmFolder = null;
+		BAB_FmFolderHelper::getInfoFromCollectivePath($sTrgPath, $iIdRootFolder, $oOwnerTrgFmFolder);
+		if($iIdRootFolder !== $iIdTrgRootFolder || is_null($oOwnerTrgFmFolder))
+		{
+			//bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' PAS GLOP For sTrgPath');
+			return false;
+		}
+	
+		$bHaveRightOnSrc = bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oOwnerSrcFmFolder->getId());
+		$bHaveRightOnTrg = bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oOwnerTrgFmFolder->getId());
+		
+//		bab_debug($oOwnerSrcFmFolder);
+//		bab_debug($oOwnerTrgFmFolder);
+	}
+	else if($oFileManagerEnv->userIsInPersonnalFolder())
+	{
+		$bHaveRightOnSrc = isUserFolder($sSrcPath);
+		$bHaveRightOnTrg = isUserFolder($sTrgPath);
+	}
+	
+	if(!is_null($sFilename))
+	{
+		$sFullPathname = $sUpLoadPath . $sFilename;
+		$bFileExistOnTrgPath = file_exists($sFullPathname);
+		
+	}
+	
+	$iLength = strlen(trim($sSrcPath));
+	if($iLength > 0 &&  '/' === $sSrcPath{$iLength - 1})
+	{
+		$sSrcPath = substr($sSrcPath, 0, -1);
+	}
+	
+	$iLength = strlen(trim($sTrgPath));
+	if($iLength > 0 && '/' === $sTrgPath{$iLength - 1})
+	{
+		$sTrgPath = substr($sTrgPath, 0, -1);
+	}
+	
+//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' bHaveRightOnSrc ==> ' . (($bHaveRightOnSrc) ? 'Yes' : 'No') . ' bHaveRightOnTrg ==> ' . (($bHaveRightOnTrg) ? 'Yes' : 'No'));
+//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sUpLoadPath ==> ' . $sUpLoadPath);
+//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' file_exists ==> ' . (($bFileExistOnTrgPath) ? 'Yes' : 'No'));
+//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' iIdSrcRootFolder ==> ' . $iIdSrcRootFolder . ' iIdTrgRootFolder ==> ' . $iIdTrgRootFolder);
+//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sSrcPath ==> ' . $sSrcPath . ' sTrgPath ==> ' . $sTrgPath);
+//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sFullPathname ==> ' . $sFullPathname);
+	
+	return ($bHaveRightOnSrc && $bHaveRightOnTrg && (!$bFileExistOnTrgPath || ($iIdSrcRootFolder === $iIdTrgRootFolder && $sSrcPath === $sTrgPath)));
+}
+
+
+function haveRightOnParent($sPath, $sTableName)
+{
+//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sPath ==> ' . $sPath . ' sTableName ==> ' . $sTableName);
+	
+//	require_once $GLOBALS['babInstallPath'] . 'utilit/devtools.php';
+//	bab_debug_print_backtrace();
+	
+	$oFileManagerEnv =& getEnvObject();
+	
+	if($oFileManagerEnv->userIsInCollectiveFolder())
+	{
+		$sRelativePath = removeLastPath($sPath);
+		if($sRelativePath === '')
+		{
+			return bab_isUserAdministrator();
+		}
+		else 
+		{
+			$oFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($sRelativePath);
+			if(!is_null($oFmFolder))
+			{
+				return bab_isAccessValid($sTableName, $oFmFolder->getId());
+			}
+			else 
+			{
+//				bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' ERROR Collective path not found sPath ==> ' . $sPath . ' sTableName ==> ' . $sTableName);
+				return false;
+			}
+		}
+	}
+	else if($oFileManagerEnv->userIsInRootFolder())
+	{
+		return bab_isUserAdministrator();
+	}
+	else if($oFileManagerEnv->userIsInPersonnalFolder())
+	{
+		return isUserFolder($sPath);
+	}
+	else 
+	{
+		return false;
+	}
+}
+
+
+function haveRightOn($sPath, $sTableName)
+{
+//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sPath ==> ' . $sPath . ' sTableName ==> ' . $sTableName);
+	
+//	require_once $GLOBALS['babInstallPath'] . 'utilit/devtools.php';
+//	bab_debug_print_backtrace();
+	
+	$oFileManagerEnv =& getEnvObject();
+	
+	if($oFileManagerEnv->userIsInCollectiveFolder() || $oFileManagerEnv->userIsInRootFolder())
+	{
+		$oFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($sPath);
+		if(!is_null($oFmFolder))
+		{
+//			bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' iIdOwner ==> ' . $oFmFolder->getId() . ' sPath ==> ' . $sPath . ' sTableName ==> ' . $sTableName);
+			return bab_isAccessValid($sTableName, $oFmFolder->getId());
+		}
+		else 
+		{
+//			bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' ERROR Collective path not found sPath ==> ' . $sPath . ' sTableName ==> ' . $sTableName);
+			return false;
+		}
+	}
+	else if($oFileManagerEnv->userIsInPersonnalFolder())
+	{
+		return isUserFolder($sPath);
+	}
+	else 
+	{
+		return false;
+	}
+}
+
+
+function isUserFolder($sPath)
+{
+//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sPath ==> ' . $sPath);
+	global $BAB_SESS_USERID;
+	
+	$oFileManagerEnv =& getEnvObject();
+	$sPathName = $oFileManagerEnv->getCurrentFmPath();
+	
+//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sPathName ==> ' . $sPathName);
+	
+	if(userHavePersonnalStorage() && is_dir($sPathName))
+	{
+		$aBuffer = array();
+		if(preg_match('/(U)(\d+)/', $sPathName, $aBuffer))
+		{
+			$iIdUser = (int) $aBuffer[2];
+			
+//			bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
+//				' bResult ==> ' . (($iIdUser === (int) $oFileManagerEnv->iIdObject) ? 'Yes' : 'No'));
+				
+			return (0 !== $iIdUser && $iIdUser === (int) $oFileManagerEnv->iIdObject && $BAB_SESS_USERID === $iIdUser);
+		}
+	}
+	return false;
 }
 
 
