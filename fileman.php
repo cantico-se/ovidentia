@@ -105,7 +105,8 @@ class listFiles
 		global $BAB_SESS_USERID;
 		
 		$this->oFileManagerEnv =& getEnvObject();
-		
+		$this->countwf = 0;
+
 		if($this->oFileManagerEnv->userIsInRootFolder())
 		{
 			$this->sListFunctionName = 'listRootFolders';
@@ -126,7 +127,7 @@ class listFiles
 							$this->buaf = isUserApproverFlow($oFmFolder->getApprobationSchemeId(), $BAB_SESS_USERID);
 							if($this->buaf)
 							{
-								$this->selectWaitingFile($oFmFolder->getRelativePath());
+								$this->selectWaitingFile();
 							}
 						}
 					}
@@ -465,10 +466,6 @@ class listFiles
 			$this->reswf = $this->oFolderFileSet->_oResult;
 			$this->countwf = $this->oFolderFileSet->count();
 			$this->oFolderFileSet->bUseAlias = true;
-		}
-		else
-		{
-			$this->countwf = 0;
 		}
 	}
 		
