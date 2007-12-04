@@ -50,7 +50,7 @@ function createFmDirectories($sUploadPath)
 	
 	if(!is_writable($sUploadPath . 'fileManager'))
 	{
-		echo __LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
+		echo __LINE__ . ' ' . basename(__FILE__) . ' ' .  
 			' The directory ' . $sUploadPath . 'fileManager is not writable <br />';
 		return false;
 	}
@@ -65,27 +65,27 @@ function createFmDirectories($sUploadPath)
 			$bCollDirCreated = mkdir($sUploadPath . 'fileManager/collectives', 0777);
 			if(false === $bCollDirCreated)
 			{
-				echo __LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
+				echo __LINE__ . ' ' . basename(__FILE__) . ' ' .
 					' The directory: ' . $sUploadPath . 'fileManager/collectives have not been created <br />';
 			}
 			
 			$bUserDirCreated = mkdir($sUploadPath . 'fileManager/users', 0777);
 			if(false === $bCollDirCreated)
 			{
-				echo __LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
+				echo __LINE__ . ' ' . basename(__FILE__) . ' ' . 
 					' The directory: ' . $sUploadPath . 'fileManager/users have not been created <br />';
 			}
 		}
 		else
 		{
-			echo __LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
+			echo __LINE__ . ' ' . basename(__FILE__) . ' ' . 
 				' The directory: ' . $sUploadPath . 'fileManager have not been created <br />';
 		}
 		return ($bCollDirCreated && $bUserDirCreated);
 	}
 	else 
 	{
-		echo __LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
+		echo __LINE__ . ' ' . basename(__FILE__) . ' ' . 
 			' The upgrade of the file manager have not been made because the directory ' . 
 			$sUploadPath . 'fileManager already exist <br />';
 	}
@@ -130,7 +130,7 @@ function fmUpgrade()
 						{
 							if(false === mkdir($sNewPath, 0777))
 							{
-								echo __LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
+								echo __LINE__ . ' ' . basename(__FILE__) . ' ' . 
 									' The directory: ' . $sNewPath . ' have not been created <br />';
 							}
 						}
@@ -157,7 +157,7 @@ function fmUpgrade()
 							}
 							else 
 							{
-								echo __LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
+								echo __LINE__ . ' ' . basename(__FILE__) . ' ' .
 									' The directory : ' . $sOldPath . ' have not been renamed to ' . $sNewPath . '<br />';
 							}
 						}
@@ -169,7 +169,7 @@ function fmUpgrade()
 	}
 	else 
 	{
-		echo __LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
+		echo __LINE__ . ' ' . basename(__FILE__) . ' ' . 
 			' The upload path: ' . $sUploadPath . ' is not valid <br />';
 	}
 }
@@ -291,7 +291,7 @@ function updateFmFromPreviousUpgrade()
 						{
 							if(false === mkdir($sNewPath, 0777))
 							{
-								echo __LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
+								echo __LINE__ . ' ' . basename(__FILE__) . ' ' . 
 									' The directory: ' . $sNewPath . ' have not been created <br />';
 							}
 						}
@@ -301,7 +301,7 @@ function updateFmFromPreviousUpgrade()
 							$sNewPath .= '/' .  $aDatas['sName'];
 							if(false === rename($sOldPath, $sNewPath))
 							{
-								echo __LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
+								echo __LINE__ . ' ' . basename(__FILE__) . ' ' . 
 									' The directory : ' . $sOldPath . ' have not been renamed to ' . $sNewPath . '<br />';
 							}
 						}						
@@ -373,7 +373,7 @@ function updateFmFromPreviousUpgrade()
 							$sNewPath = $sUserUploadPath . $aBuffer[1];
 							if(false === rename(realpath($sOldPath), $sNewPath))
 							{
-								echo __LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
+								echo __LINE__ . ' ' . basename(__FILE__) . ' ' . 
 									' The directory : ' . $sOldPath . ' have not been renamed to ' . $sNewPath . '<br />';
 							}
 						}
@@ -407,7 +407,7 @@ function updateFmFromPreviousUpgrade()
 								{
 									if(false === rename(realpath($sOldPath), $sNewPath))
 									{
-										echo __LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
+										echo __LINE__ . ' ' . basename(__FILE__) . ' ' .
 											' The directory : ' . $sOldPath . ' have not been renamed to ' . $sNewPath . '<br />';
 									}
 								}
@@ -421,7 +421,7 @@ function updateFmFromPreviousUpgrade()
 	}	
 	else 
 	{
-		echo __LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
+		echo __LINE__ . ' ' . basename(__FILE__) . ' ' .
 			' The upload path: ' . $sUploadPath . ' is not valid <br />';
 	}
 }
