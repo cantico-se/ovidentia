@@ -1592,25 +1592,6 @@ function listFiles()
 	}
 	$oFileManagerEnv =& getEnvObject();
 
-//*
-	if($oFileManagerEnv->iIdObject != 0)
-	{
-		$pathx = $oFileManagerEnv->getCurrentFmPath();
-		if('' != $pathx)
-		{
-			if(substr($pathx, -1) == "/")
-			{
-				$pathx = substr($pathx, 0, -1);
-			}
-			if(!is_dir($pathx) && !bab_mkdir($pathx, $GLOBALS['babMkdirMode'])) 
-			{
-				$babBody->msgerror = bab_translate("Can't create directory: ").$pathx;
-			}
-		}
-	}
-//*/
-
-
 	$temp = new temp();
 	$babBody->title = bab_translate("File manager");
 	$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$oFileManagerEnv->iId."&gr=".$oFileManagerEnv->sGr."&path=".urlencode($oFileManagerEnv->sPath));

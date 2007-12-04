@@ -3776,13 +3776,11 @@ class BAB_FmFolderHelper
 		return "U" . $iIdUser . '/';
 	}
 
-	function createDirectory($sUplaodPath, $sFullPathName)
+	function createDirectory($sFullPathName)
 	{
 		global $babBody;
 		$bSuccess = true;
-
-		$sUplaodPath = realpath($sUplaodPath);
-
+		
 		if(strlen(trim($sFullPathName)) > 0 && false === strstr($sFullPathName, '..'))
 		{
 			if(isset($GLOBALS['babFileNameTranslation']))
@@ -3792,7 +3790,9 @@ class BAB_FmFolderHelper
 
 			if(!is_dir($sFullPathName))
 			{
-				$bSuccess = bab_mkdir($sFullPathName, $GLOBALS['babMkdirMode']);
+				$sUploadPath = BAB_FmFolderHelper::getUploadPath();
+				$sRelativePath = substr($sFullPathName, strlen($sUploadPath));
+				$bSuccess = BAB_FmFolderHelper::makeDirectory($sUploadPath, $sRelativePath);
 			}
 			else
 			{
@@ -3808,6 +3808,31 @@ class BAB_FmFolderHelper
 		return $bSuccess;
 	}
 
+	function makeDirectory($sUploadPath, $sRelativePath)
+	{
+		$aPaths = explode('/', $sRelativePath);
+		if(is_array($aPaths) && count($aPaths) > 0)
+		{
+			$sPath = removeEndSlah($sUploadPath);
+			foreach($aPaths as $sPathItem)
+			{
+				if(strlen(trim($sPathItem)) !== 0)
+				{
+					$sPath .= '/' . $sPathItem;
+					if(!is_dir($sPath))
+					{
+						if(!bab_mkdir($sPath, $GLOBALS['babMkdirMode']))
+						{
+							return false;
+						}
+					}
+				}
+			}
+			return true;
+		}
+		return false;
+	}
+	
 	function renameDirectory($sUploadPath, $sRelativePath, $sOldName, $sNewName)
 	{
 		global $babBody;

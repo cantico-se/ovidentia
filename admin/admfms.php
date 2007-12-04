@@ -212,7 +212,13 @@ function saveFolder($fname, $active, $said, $notification, $version, $bhide, $ba
 		$babBody->msgerror = bab_translate("ERROR: You must provide a name !!");
 		return false;
 	}
-			
+	$oFileManagerEnv =& getEnvObject();
+
+	if(!$oFileManagerEnv->pathValid())
+	{
+		return false;
+	}
+	
 	$oFmFolderSet = new BAB_FmFolderSet();
 	
 	$oName =& $oFmFolderSet->aField['sName']; 
@@ -227,17 +233,24 @@ function saveFolder($fname, $active, $said, $notification, $version, $bhide, $ba
 		{
 			$said = 0;
 		}
-		$oFmFolder = new BAB_FmFolder();
-		$oFmFolder->setApprobationSchemeId($said);
-		$oFmFolder->setName($fname);
-		$oFmFolder->setRelativePath('');
-		$oFmFolder->setFileNotify($notification);
-		$oFmFolder->setActive($active);
-		$oFmFolder->setAddTags($baddtags);
-		$oFmFolder->setVersioning($version);
-		$oFmFolder->setHide($bhide);
-		$oFmFolder->setAutoApprobation($bautoapp);
-		return $oFmFolder->save();
+
+		$sFullPathName = $oFileManagerEnv->getCollectiveRootFmPath() . $fname;
+		
+		if(BAB_FmFolderHelper::createDirectory($sFullPathName))
+		{
+			$oFmFolder = new BAB_FmFolder();
+			$oFmFolder->setApprobationSchemeId($said);
+			$oFmFolder->setName($fname);
+			$oFmFolder->setRelativePath('');
+			$oFmFolder->setFileNotify($notification);
+			$oFmFolder->setActive($active);
+			$oFmFolder->setAddTags($baddtags);
+			$oFmFolder->setVersioning($version);
+			$oFmFolder->setHide($bhide);
+			$oFmFolder->setAutoApprobation($bautoapp);
+			return $oFmFolder->save();
+		}
+		return false;
 	}
 	else 
 	{
