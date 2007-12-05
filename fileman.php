@@ -244,7 +244,7 @@ class listFiles
 				{
 					$aItem = array(
 						'iId' => 0, 
-						'bCanManageFolder' => haveRightOn($sRelativePath, BAB_FMMANAGERS_GROUPS_TBL),
+						'bCanManageFolder' => haveRight($sRelativePath, BAB_FMMANAGERS_GROUPS_TBL),
 						'bCanBrowseFolder' => canBrowse($sRelativePath),
 						'bCanEditFolder' => canEdit($sRelativePath), 
 						'bCanSetRightOnFolder' => false,
@@ -374,7 +374,7 @@ class listFiles
 			{
 				$aItem = array(
 					'iId' => $oFmFolderCliboard->getFolderId(), 
-					'bCanManageFolder' => haveRightOn($sRelativePath, BAB_FMMANAGERS_GROUPS_TBL), 
+					'bCanManageFolder' => haveRight($sRelativePath, BAB_FMMANAGERS_GROUPS_TBL), 
 					'bCanBrowseFolder' => canBrowse($sRelativePath),
 					'bCanEditFolder' => false, 
 					'bCanSetRightOnFolder' => false,
@@ -2551,8 +2551,6 @@ function restoreFiles($items)
 	
 function displayFolderForm()
 {
-//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__);
-
 	global $babBody;
 	
 	$oFileManagerEnv =& getEnvObject();
@@ -2564,29 +2562,8 @@ function displayFolderForm()
 		'?tg=fileman&idx=displayFolderForm&id=' . $oFileManagerEnv->iId . '&gr=' . $oFileManagerEnv->sGr . 
 		'&path=' . urlencode($oFileManagerEnv->sPath));
 	
-	
-	$sName = (string) bab_gp('sDirName', '');
-	$sFunction = (string) bab_gp('sFunction', '');
-	$sRightFunction = '';
-	
-	/*
-	if('editFolder' === $sFunction)
-	{
-		$sRightFunction = 'canEdit';
-	}
-	else if('createFolder' === $sFunction)
-	{
-		$sRightFunction = 'canCreateFolder';
-	}
-	//*/
-	
-//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
-//		' sRightFunction ==> ' . $sRightFunction . ' sRelativePath ==> ' . $oFileManagerEnv->sRelativePath .
-//		' sGr ==> ' . $oFileManagerEnv->sGr);
-	
 	if($oFileManagerEnv->userIsInCollectiveFolder() || $oFileManagerEnv->userIsInRootFolder())
 	{
-//		if($sRightFunction($oFileManagerEnv->sRelativePath . $sName))
 		if(canCreateFolder($oFileManagerEnv->sRelativePath))
 		{
 			$oDspFldForm = new DisplayCollectiveFolderForm();
@@ -2599,7 +2576,6 @@ function displayFolderForm()
 	}
 	else if($oFileManagerEnv->userIsInPersonnalFolder())
 	{
-//		if($sRightFunction($oFileManagerEnv->sRelativePath . $sName))
 		if(canCreateFolder($oFileManagerEnv->sRelativePath))
 		{
 			$oDspFldForm = new DisplayUserFolderForm();
@@ -2619,12 +2595,12 @@ function displayDeleteFolderConfirm()
 	
 	$oFileManagerEnv =& getEnvObject();
 	
-	$sPath			= (string) bab_rp('path', '');
-	$sDirName		= (string) bab_rp('sDirName', '');
-	$iIdFld			= (int) bab_rp('iIdFolder', 0); 
-	
-	if(canCreateFolder($oFileManagerEnv->sRelativePath . $sDirName))
+	if(canCreateFolder($oFileManagerEnv->sRelativePath))
 	{
+		$sPath		= (string) bab_rp('path', '');
+		$sDirName	= (string) bab_rp('sDirName', '');
+		$iIdFld		= (int) bab_rp('iIdFolder', 0); 
+		
 		$oBfp = new BAB_BaseFormProcessing();
 		
 		$oBfp->set_caption('yes', bab_translate("Yes"));
@@ -2655,8 +2631,6 @@ function displayDeleteFolderConfirm()
 	
 function cutFolder()
 {
-//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__);
-	
 	$oFileManagerEnv =& getEnvObject();
 	if($oFileManagerEnv->userIsInRootFolder() || $oFileManagerEnv->userIsInCollectiveFolder())
 	{
@@ -2675,8 +2649,6 @@ function cutFolder()
 
 function cutCollectiveDir()
 {
-//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__);
-
 	global $babBody;
 	$oFileManagerEnv =& getEnvObject();
 	
