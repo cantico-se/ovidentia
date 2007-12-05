@@ -62,6 +62,13 @@ function summaryFileManager($col, $order)
 			$this->nbfilesvt = 0;
 			$this->diskspacet = 0;
 			$this->arrinfo = array();
+			
+			require_once $GLOBALS['babInstallPath'] . 'utilit/fileincl.php';
+			$oFileManagerEnv =& getEnvObject();
+			
+			$sCollectiveRootFmPath = $oFileManagerEnv->getCollectiveRootFmPath();
+			$sRootFmPath = $oFileManagerEnv->getFmUploadPath();
+			
 			while($arr = $babDB->db_fetch_array($res))
 				{
 				$tmparr = array();
@@ -69,8 +76,10 @@ function summaryFileManager($col, $order)
 				$tmparr['folder'] = $arr['folder'];
 				$tmparr['dgname'] = isset($arr['dgname'])? $arr['dgname']: '';
 				$tmparr['files'] = isset($arr['files'])? $arr['files']: 0;
-				$pathx = bab_getUploadFullPath("Y", $arr['id']);
-				$tmparr['diskspace'] = getDirSize($pathx);
+				
+				$sFullPathName = $sCollectiveRootFmPath . $arr['sRelativePath'] . $arr['folder'];
+				
+				$tmparr['diskspace'] = getDirSize($sFullPathName);
 				$rr = $babDB->db_fetch_array($babDB->db_query("SELECT count( ffvt.id ) as total FROM bab_fm_filesver ffvt LEFT  JOIN bab_files ft ON ffvt.id_file = ft.id WHERE ft.id_owner =  '".$arr['id']."' AND ft.bgroup =  'Y'"));
 				$tmparr['versions'] = isset($rr['total'])? $rr['total']: 0;
 				$this->arrinfo[] = $tmparr;
@@ -78,18 +87,19 @@ function summaryFileManager($col, $order)
 				$this->nbfilesvt += $tmparr['versions'];
 				$this->diskspacet += $tmparr['diskspace'];
 				}
-
-			$h = opendir($GLOBALS['babUploadPath']);
+				
+			$sUsersRootFmPath = $sRootFmPath . 'users/';
+			$h = opendir($sUsersRootFmPath);
 			$size = 0;
 			while (($f = readdir($h)) != false)
 				{
 				if ($f != "." and $f != "..") 
 					{
-					if (is_dir($GLOBALS['babUploadPath']."/".$f))
+					if (is_dir($sUsersRootFmPath.$f))
 						{
 						if( $f{0} == 'U' && is_numeric(substr($f, 1)))
 							{
-							$size += getDirSize($GLOBALS['babUploadPath']."/".$f);
+							$size += getDirSize($sUsersRootFmPath.$f);
 							}
 						}
 					}
