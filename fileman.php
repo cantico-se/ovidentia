@@ -1123,7 +1123,6 @@ function listFiles()
         var $usrfolderimg;
         var $grpfolderimg;
         var $manfolderimg;
-        var $bdel;
         var $xres;
         var $xcount;
 		var $block;
@@ -1217,8 +1216,6 @@ function listFiles()
 			$this->usrfolderimg = bab_printTemplate($this, "config.html", "userfolder");
 			$this->grpfolderimg = bab_printTemplate($this, "config.html", "groupfolder");
 			$this->manfolderimg = bab_printTemplate($this, "config.html", "managerfolder");
-
-			$this->bdel = false;
 			
 			$sRelativePath = $this->oFileManagerEnv->sRelativePath;
 			
@@ -1226,10 +1223,8 @@ function listFiles()
 			$this->bCanManageCurrentFolder = haveRightOn($sRelativePath, BAB_FMMANAGERS_GROUPS_TBL);
 			$this->bDownload = canDownload($sRelativePath); 
 			$this->bUpdate = canUpdate($sRelativePath);  
-			$this->bCanCreateFolder = canCreateFolder($sRelativePath);
+			$this->bCanCreateFolder = canCreateFolder($sRelativePath . 'dummy');
 
-			bab_debug($this->oFileManagerEnv);
-			
 			$this->bVersion = (!is_null($this->oFileManagerEnv->oFmFolder) && 'Y' === $this->oFileManagerEnv->oFmFolder->getVersioning());
 			
 			
@@ -2618,7 +2613,7 @@ function displayDeleteFolderConfirm()
 	$sDirName		= (string) bab_rp('sDirName', '');
 	$iIdFld			= (int) bab_rp('iIdFolder', 0); 
 	
-	if(canCreateFolder($oFileManagerEnv->sRelativePath))
+	if(canCreateFolder($oFileManagerEnv->sRelativePath . $sDirName))
 	{
 		$oBfp = new BAB_BaseFormProcessing();
 		
@@ -3120,11 +3115,9 @@ function createFolderForCollectiveDir()
 	$oFileManagerEnv =& getEnvObject();
 	
 //	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sRelativePath ==> ' . $oFileManagerEnv->sRelativePath);
-	
-	if(canCreateFolder($oFileManagerEnv->sRelativePath))
+	$sDirName = (string) bab_pp('sDirName', '');
+	if(canCreateFolder($oFileManagerEnv->sRelativePath . $sDirName))
 	{	
-		$sDirName = (string) bab_pp('sDirName', '');
-
 		if(strlen(trim($sDirName)) > 0)
 		{
 			$sType					= (string) bab_pp('sType', 'collective');
@@ -3194,10 +3187,9 @@ function createFolderForUserDir()
 //	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sRelativePath ==> ' . $oFileManagerEnv->sRelativePath);
 	
 	$oFileManagerEnv =& getEnvObject();
-	if(canCreateFolder($oFileManagerEnv->sRelativePath))
+	$sDirName = (string) bab_pp('sDirName', '');
+	if(canCreateFolder($oFileManagerEnv->sRelativePath . $sDirName))
 	{
-		$sDirName = (string) bab_pp('sDirName', '');
-		
 		if(strlen(trim($sDirName)) > 0)
 		{
 //			bab_debug('sFullPathName ==> ' .  $sFullPathName);
@@ -3369,7 +3361,7 @@ function editFolderForUserDir()
 	$oFileManagerEnv =& getEnvObject();
 	$sRelativePath = $oFileManagerEnv->sRelativePath;
 	
-	if(canEdit($sRelativePath))
+	if(canEdit($sRelativePath . $sDirName))
 	{
 		$sDirName = (string) bab_pp('sDirName', '');
 		$sOldDirName = (string) bab_pp('sOldDirName', '');
@@ -3430,7 +3422,7 @@ function deleteFolderForCollectiveDir()
 	$oFileManagerEnv =& getEnvObject();
 	
 	$sDirName = (string) bab_pp('sDirName', '');
-	if(strlen(trim($sDirName)) > 0 && canCreateFolder($oFileManagerEnv->sRelativePath))
+	if(strlen(trim($sDirName)) > 0 && canCreateFolder($oFileManagerEnv->sRelativePath . $sDirName))
 	{
 		$iIdFld	= (int) bab_pp('iIdFolder', 0); 
 		if(0 !== $iIdFld)
@@ -3483,7 +3475,7 @@ function deleteFolderForUserDir()
 	$oFileManagerEnv =& getEnvObject();
 	$sDirName = (string) bab_pp('sDirName', '');
 	
-	if(userHavePersonnalStorage() && canCreateFolder($oFileManagerEnv->sRelativePath))
+	if(userHavePersonnalStorage() && canCreateFolder($oFileManagerEnv->sRelativePath . $sDirName))
 	{
 		if(strlen(trim($sDirName)) > 0)
 		{
