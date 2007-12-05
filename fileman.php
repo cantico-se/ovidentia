@@ -780,7 +780,7 @@ function listTrashFiles()
 	if(canUpload($oFileManagerEnv->sRelativePath))
 	{
 		$babBody->addItemMenu("add", bab_translate("Upload"), $GLOBALS['babUrlScript'] . 
-			'?tg=fileman&idx=add&id=' . $oFileManagerEnv->iId . 
+			'?tg=fileman&idx=displayAddFileForm&id=' . $oFileManagerEnv->iId . 
 			'&gr=' . $oFileManagerEnv->sGr . '&path=' . urlencode($oFileManagerEnv->sPath));
 	}
 	
@@ -910,7 +910,7 @@ function showDiskSpace()
 	if(canUpload($oFileManagerEnv->sRelativePath))
 	{
 		$babBody->addItemMenu("add", bab_translate("Upload"), $GLOBALS['babUrlScript'] . 
-			'?tg=fileman&idx=add&id=' . $oFileManagerEnv->iId . 
+			'?tg=fileman&idx=displayAddFileForm&id=' . $oFileManagerEnv->iId . 
 			'&gr=' . $oFileManagerEnv->sGr . '&path=' . urlencode($oFileManagerEnv->sPath));
 	}
 	
@@ -1566,7 +1566,7 @@ function listFiles()
 	
 	if(canUpload($sParentPath)) 
 	{
-		$babBody->addItemMenu("add", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=fileman&idx=add&id=".$oFileManagerEnv->iId."&gr=".$oFileManagerEnv->sGr."&path=".urlencode($oFileManagerEnv->sPath));
+		$babBody->addItemMenu("add", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=fileman&idx=displayAddFileForm&id=".$oFileManagerEnv->iId."&gr=".$oFileManagerEnv->sGr."&path=".urlencode($oFileManagerEnv->sPath));
 	}
 	
 	if(haveRightOn($sParentPath, BAB_FMMANAGERS_GROUPS_TBL)) 
@@ -1579,20 +1579,23 @@ function listFiles()
 }
 
 
-function addFile()
+function displayAddFileForm()
 {
 	global $babBody, $BAB_SESS_USERID;
 
 	$oFileManagerEnv =& getEnvObject();
 	$babBody->title = bab_translate("Upload file to") . ' ' . $oFileManagerEnv->sRelativePath;
 
-	if(canUpload($oFileManagerEnv->sRelativePath)) 
+	if(!canUpload($oFileManagerEnv->sRelativePath))
 	{
-		$babBody->addItemMenu("add", bab_translate("Upload"), $GLOBALS['babUrlScript'] . 
-			'?tg=fileman&idx=add&id=' . $oFileManagerEnv->iId . '&gr=' . $oFileManagerEnv->sGr . 
-			'&path=' . urlencode($oFileManagerEnv->sPath));
+		$babBody->msgerror = bab_translate("Access denied");
+		return;
 	}
-	
+
+	$babBody->addItemMenu("displayAddFileForm", bab_translate("Upload"), $GLOBALS['babUrlScript'] . 
+		'?tg=fileman&idx=displayAddFileForm&id=' . $oFileManagerEnv->iId . '&gr=' . $oFileManagerEnv->sGr . 
+		'&path=' . urlencode($oFileManagerEnv->sPath));
+		
 	if(canManage($oFileManagerEnv->sRelativePath)) 
 	{
 		$babBody->addItemMenu("trash", bab_translate("Trash"), $GLOBALS['babUrlScript'] . 
@@ -1603,12 +1606,6 @@ function addFile()
 	$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript'] . 
 		'?tg=fileman&idx=list&id=' . $oFileManagerEnv->iId . "&gr=" . $oFileManagerEnv->sGr . 
 		'&path=' . urlencode($oFileManagerEnv->sPath));
-
-	if(!canUpload($oFileManagerEnv->sRelativePath))
-	{
-		$babBody->msgerror = bab_translate("Access denied");
-		return;
-	}
 		
 	class temp
 	{
@@ -1674,8 +1671,8 @@ function addFile()
 			{
 				$this->count = 0;
 			}
-			$babBody->addJavascriptFile($GLOBALS['babScriptPath']."prototype/prototype.js");
-			$babBody->addJavascriptFile($GLOBALS['babScriptPath']."scriptaculous/scriptaculous.js");
+			$babBody->addJavascriptFile($GLOBALS['babScriptPath'].'prototype/prototype.js');
+			$babBody->addJavascriptFile($GLOBALS['babScriptPath'].'scriptaculous/scriptaculous.js');
 			$babBody->addStyleSheet('ajax.css');
 		}
 		
@@ -2424,7 +2421,7 @@ function displayRightForm()
 		$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$oFileManagerEnv->iId."&gr=".$oFileManagerEnv->sGr."&path=".urlencode($oFileManagerEnv->sPath));
 		if(canUpload($oFmFolder->getRelativePath() . $oFmFolder->getName() . '/')) 
 		{
-			$babBody->addItemMenu("add", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=fileman&idx=add&id=".$oFileManagerEnv->iId."&gr=".$oFileManagerEnv->sGr."&path=".urlencode($oFileManagerEnv->sPath));
+			$babBody->addItemMenu("add", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=fileman&idx=displayAddFileForm&id=".$oFileManagerEnv->iId."&gr=".$oFileManagerEnv->sGr."&path=".urlencode($oFileManagerEnv->sPath));
 		}
 		if(canManage($oFmFolder->getRelativePath() . $oFmFolder->getName() . '/')) 
 		{
@@ -2722,13 +2719,13 @@ function cutUserFolder()
 	global $babBody;
 	$oFileManagerEnv =& getEnvObject();
 	
-	if(!canCutFolder($oFileManagerEnv->sRelativePath))
+	$sDirName = (string) bab_gp('sDirName', '');
+	
+	if(!canCutFolder($oFileManagerEnv->sRelativePath . $sDirName . '/'))
 	{
 		$babBody->msgerror = bab_translate("Access denied");
 		return;
 	}
-	
-	$sDirName = (string) bab_gp('sDirName', '');
 	
 	if(strlen(trim($sDirName)) > 0)
 	{
@@ -3629,8 +3626,8 @@ switch($idx)
 		displayRightForm();
 		break;
 		
-	case 'add':
-		addFile();
+	case 'displayAddFileForm':
+		displayAddFileForm();
 		break;
 
 	case 'trash':
