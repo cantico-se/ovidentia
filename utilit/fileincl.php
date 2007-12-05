@@ -4232,6 +4232,33 @@ class BAB_FileManagerEnv
 			$babBody->addError(bab_translate("Access denied"));
 			return false;
 		}
+		
+		if(false === $this->userIsInRootFolder())
+		{
+			
+		}
+	
+		$sRootFmPath = '';
+		if($this->userIsInCollectiveFolder())
+		{
+			
+		}
+	
+		if(false === $this->userIsInRootFolder())
+		{
+			$sRootFmPath = $this->getRootFmPath();
+			
+			if(!is_dir(realpath($this->getCurrentFmPath())))
+			{
+				$babBody->addError(bab_translate("The folder does not exist"));
+				
+				if(bab_isUserAdministrator())
+				{
+					$babBody->addError(bab_translate("Folder path") . ' : ' . $this->getCurrentFmPath());
+				}
+				return false;
+			}
+		}
 		return true;
 	}
 }
@@ -4347,7 +4374,6 @@ function getLastPath($sPath)
 			{
 				if('/' === $sPath{$iLength - 1})
 				{
-//					unset($aPath[$iCount - 1]);
 					return $aPath[$iCount - 2];
 				}
 				else 
@@ -4553,7 +4579,6 @@ function canSetRight($sPath)
 
 function canCutFolder($sPath)
 {
-//	return canCreateFolder($sPath);
 	return canManage($sPath);
 }
 
@@ -4657,13 +4682,13 @@ function canPasteFolder($iIdSrcRootFolder, $sSrcPath, $bSrcPathIsCollective, $iI
 					}
 					else 
 					{
-						bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' PAS GLOP For sTrgPath 1 ==> ' . $sTrgPath);
+//						bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' PAS GLOP For sTrgPath 1 ==> ' . $sTrgPath);
 						return false;
 					}
 				}
 				else 
 				{
-					bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' PAS GLOP For sTrgPath 2 ==> ' . $sTrgPath);
+//					bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' PAS GLOP For sTrgPath 2 ==> ' . $sTrgPath);
 					return false;
 				}
 			}
