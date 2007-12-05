@@ -1237,6 +1237,7 @@ function listFiles()
 				$this->sUploadPath = $this->oFileManagerEnv->getCollectiveRootFmPath();
 			}
 			
+			$this->xcount = 0;
 			if($this->bCanManageCurrentFolder)
 			{
 				$this->selectCuttedFiles();
