@@ -3771,11 +3771,6 @@ class BAB_FmFolderHelper
 		return $GLOBALS['babUploadPath'];
 	}
 
-	function getUserDirUploadPath($iIdUser)
-	{
-		return "U" . $iIdUser . '/';
-	}
-
 	function createDirectory($sFullPathName)
 	{
 		global $babBody;
@@ -4130,6 +4125,11 @@ class BAB_FileManagerEnv
 		return '';
 	}
 	
+	function getFmUploadPath()
+	{
+		return $this->sFmUploadPath;
+	}
+	
 	function getRootFmPath()
 	{
 		return $this->sFmRootPath;
@@ -4233,17 +4233,6 @@ class BAB_FileManagerEnv
 			return false;
 		}
 		
-		if(false === $this->userIsInRootFolder())
-		{
-			
-		}
-	
-		$sRootFmPath = '';
-		if($this->userIsInCollectiveFolder())
-		{
-			
-		}
-	
 		if(false === $this->userIsInRootFolder())
 		{
 			$sRootFmPath = $this->getRootFmPath();
