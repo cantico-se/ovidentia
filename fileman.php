@@ -308,7 +308,7 @@ class listFiles
 			{
 				$aItem = array(
 					'iId' => $oFmFolder->getId(), 
-					'bCanManageFolder' => haveRightOn($sRelativePath, BAB_FMMANAGERS_GROUPS_TBL), 
+					'bCanManageFolder' => haveRight($sRelativePath, BAB_FMMANAGERS_GROUPS_TBL),
 					'bCanBrowseFolder' => canBrowse($sRelativePath),
 					'bCanEditFolder' => canEdit($sRelativePath), 
 					'bCanSetRightOnFolder' => canSetRight($sRelativePath),
@@ -350,6 +350,7 @@ class listFiles
 		
 		$oFmFolderCliboardSet = new BAB_FmFolderCliboardSet();
 		$oIdDgOwner = $oFmFolderCliboardSet->aField['iIdDgOwner'];
+		$oIdOwner = $oFmFolderCliboardSet->aField['iIdOwner'];
 		$oGroup = $oFmFolderCliboardSet->aField['sGroup'];
 		
 		$oCriteria = $oIdDgOwner->in($babBody->currentAdmGroup);
@@ -677,6 +678,13 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 		$this->set_data('isAddTags', true);
 		$this->set_data('sChecked', 'checked');
 		$this->set_data('sDisabled', '');
+		
+		$oFileManagerEnv =& getEnvObject();
+		if($oFileManagerEnv->userIsInRootFolder())
+		{
+			$this->set_data('isCollective', true);
+			$this->set_data('sDisabled', 'disabled');
+		}
 	}
 	
 	function handleEdition()
@@ -697,6 +705,7 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 		$this->set_data('sOldDirName', $sDirName);
 		$this->get_data('iIdFolder', $iIdFolder);
 		
+		$oFileManagerEnv =& getEnvObject();
 		$oFmFolder = $oFmFolder = BAB_FmFolderHelper::getFmFolderById($iIdFolder);
 		if(!is_null($oFmFolder))
 		{
@@ -711,26 +720,14 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 			$this->set_data('iIdFolder', $oFmFolder->getId());
 			$this->set_data('sOldDirName', $oFmFolder->getName());
 			$this->set_data('sChecked', '');
-			if( $oFmFolder->getRelativePath() == ''  )
+			
+//			if($oFmFolder->getRelativePath() === '')
+			if($oFileManagerEnv->userIsInRootFolder())
 			{
 				$this->set_data('sDisabled', 'disabled');
 			}
 		}
-
-		$this->get_data('sAction', $sAction);
-		$oFileManagerEnv =& getEnvObject();
-	
-		$sRightFunction = '';
-		if('editFolder' === $sAction)
-		{
-			$sRightFunction = 'canEdit';
-		}
-		else if('createFolder' === $sAction)
-		{
-			$sRightFunction = 'canCreateFolder';
-		}
-		
-		$this->set_data('bDelete', $sRightFunction($oFileManagerEnv->sRelativePath . $sDirName));
+		$this->set_data('bDelete', canCreateFolder($oFileManagerEnv->sRelativePath));
 	}
 	
 	function getNextApprobationScheme()
@@ -1221,9 +1218,12 @@ function listFiles()
 			
 //			$this->bCanManageCurrentFolder = canManage($sRelativePath);
 			$this->bCanManageCurrentFolder = haveRightOn($sRelativePath, BAB_FMMANAGERS_GROUPS_TBL);
+
+
 			$this->bDownload = canDownload($sRelativePath); 
 			$this->bUpdate = canUpdate($sRelativePath);  
-			$this->bCanCreateFolder = canCreateFolder($sRelativePath . 'dummy');
+			$this->bCanCreateFolder = canCreateFolder($sRelativePath);
+
 
 			$this->bVersion = (!is_null($this->oFileManagerEnv->oFmFolder) && 'Y' === $this->oFileManagerEnv->oFmFolder->getVersioning());
 			
@@ -1251,11 +1251,17 @@ function listFiles()
 			$oState = $this->oFolderFileSet->aField['sState'];
 			$oGroup = $this->oFolderFileSet->aField['sGroup'];
 			$oIdDgOwner = $this->oFolderFileSet->aField['iIdDgOwner'];
+			$oIdOwner = $this->oFolderFileSet->aField['iIdOwner'];
 			
 			global $babDB;
 			$oCriteria = $oGroup->in($this->oFileManagerEnv->sGr);
 			$oCriteria = $oCriteria->_and($oState->in('X'));
 			$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
+			
+			if($this->oFileManagerEnv->userIsInPersonnalFolder())
+			{
+				$oCriteria = $oCriteria->_and($oIdOwner->in($this->oFileManagerEnv->iId));
+			}
 			
 			$this->oFolderFileSet->select($oCriteria);
 //			bab_debug($this->oFolderFileSet->getSelectQuery()); 
@@ -1272,7 +1278,7 @@ function listFiles()
 				$aItem						= $aItem['value'];
 				$iIdRootFolder				= $aItem['iIdUrl'];
 				$iIdFolder					= $aItem['iId'];
-				$this->bCollectiveFolder	= ('Y' == $aItem['sCollective']);
+				$this->bCollectiveFolder	= ('Y' === $aItem['sCollective']);
 				$sEncodedPath				= urlencode($this->path);
 				$sEncodedName				= urlencode($aItem['sName']);
 				$sUrlEncodedPath			= urlencode($aItem['sUrlPath']);
@@ -1284,7 +1290,7 @@ function listFiles()
 				$this->bCanSetRightOnFolder	= $aItem['bCanSetRightOnFolder'];
 				$this->bCanCutFolder		= $aItem['bCanCutFolder'];
 				$this->bCanManageFolder		= $aItem['bCanManageFolder'];
-		
+
 				$this->sRightUrl = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&idx=displayRightForm&id=' . $iIdRootFolder . 
 					'&gr=' . $this->oFileManagerEnv->sGr . '&path=' . $sEncodedPath . '&iIdFolder=' . $iIdFolder);
 
@@ -2563,6 +2569,7 @@ function displayFolderForm()
 	$sFunction = (string) bab_gp('sFunction', '');
 	$sRightFunction = '';
 	
+	/*
 	if('editFolder' === $sFunction)
 	{
 		$sRightFunction = 'canEdit';
@@ -2571,6 +2578,7 @@ function displayFolderForm()
 	{
 		$sRightFunction = 'canCreateFolder';
 	}
+	//*/
 	
 //	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
 //		' sRightFunction ==> ' . $sRightFunction . ' sRelativePath ==> ' . $oFileManagerEnv->sRelativePath .
@@ -2578,7 +2586,8 @@ function displayFolderForm()
 	
 	if($oFileManagerEnv->userIsInCollectiveFolder() || $oFileManagerEnv->userIsInRootFolder())
 	{
-		if($sRightFunction($oFileManagerEnv->sRelativePath . $sName))
+//		if($sRightFunction($oFileManagerEnv->sRelativePath . $sName))
+		if(canCreateFolder($oFileManagerEnv->sRelativePath))
 		{
 			$oDspFldForm = new DisplayCollectiveFolderForm();
 			$babBody->babecho($oDspFldForm->printTemplate());
@@ -2590,7 +2599,8 @@ function displayFolderForm()
 	}
 	else if($oFileManagerEnv->userIsInPersonnalFolder())
 	{
-		if($sRightFunction($oFileManagerEnv->sRelativePath . $sName))
+//		if($sRightFunction($oFileManagerEnv->sRelativePath . $sName))
+		if(canCreateFolder($oFileManagerEnv->sRelativePath))
 		{
 			$oDspFldForm = new DisplayUserFolderForm();
 			$babBody->babecho($oDspFldForm->printTemplate());
@@ -2670,16 +2680,16 @@ function cutCollectiveDir()
 	global $babBody;
 	$oFileManagerEnv =& getEnvObject();
 	
-	if(!canCutFolder($oFileManagerEnv->sRelativePath))
-	{
-		$babBody->msgerror = bab_translate("Access denied");
-		return;
-	}
-	
 	$sDirName = (string) bab_gp('sDirName', '');
 	
 	if(strlen(trim($sDirName)) > 0)
 	{
+		if(!canCutFolder($oFileManagerEnv->sRelativePath . $sDirName . '/'))
+		{
+			$babBody->msgerror = bab_translate("Access denied");
+			return;
+		}
+		
 		$sUploadPath = $oFileManagerEnv->getCollectiveRootFmPath();
 		$sFullPathName = realpath($oFileManagerEnv->getCollectiveRootFmPath() . $oFileManagerEnv->sRelativePath . $sDirName);
 		
@@ -3113,11 +3123,9 @@ function createFolderForCollectiveDir()
 	global $babBody;
 	
 	$oFileManagerEnv =& getEnvObject();
-	
-//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sRelativePath ==> ' . $oFileManagerEnv->sRelativePath);
-	$sDirName = (string) bab_pp('sDirName', '');
-	if(canCreateFolder($oFileManagerEnv->sRelativePath . $sDirName))
+	if(canCreateFolder($oFileManagerEnv->sRelativePath))
 	{	
+		$sDirName = (string) bab_pp('sDirName', '');
 		if(strlen(trim($sDirName)) > 0)
 		{
 			$sType					= (string) bab_pp('sType', 'collective');
@@ -3134,17 +3142,17 @@ function createFolderForCollectiveDir()
 			
 			$sRelativePath = '';
 			$oFmFolder = BAB_FmFolderHelper::getFmFolderById($iIdFolder);
-			if(!is_null($oFmFolder))
+			if(!is_null($oFmFolder) || $oFileManagerEnv->userIsInRootFolder())
 			{
 				$sRelativePath	= $oFileManagerEnv->sRelativePath;
-				$sFullPathName	= $oFileManagerEnv->getCurrentFmPath() . $sDirName;
+				$sFullPathName	= $oFileManagerEnv->getCollectiveRootFmPath() . $sRelativePath . $sDirName;
 
 //				bab_debug('sFullPathName ==> ' .  $sFullPathName);
 //				bab_debug('sRelativePath ==> ' . $sRelativePath);
 
 				if(BAB_FmFolderHelper::createDirectory($sFullPathName))
 				{
-					if('collective' === $sType)
+					if('collective' === $sType || $oFileManagerEnv->userIsInRootFolder())
 					{
 						$oFmFolder = new BAB_FmFolder();
 						$oFmFolder->setActive($sActive);
@@ -3187,9 +3195,10 @@ function createFolderForUserDir()
 //	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sRelativePath ==> ' . $oFileManagerEnv->sRelativePath);
 	
 	$oFileManagerEnv =& getEnvObject();
-	$sDirName = (string) bab_pp('sDirName', '');
-	if(canCreateFolder($oFileManagerEnv->sRelativePath . $sDirName))
+	
+	if(canCreateFolder($oFileManagerEnv->sRelativePath))
 	{
+		$sDirName = (string) bab_pp('sDirName', '');
 		if(strlen(trim($sDirName)) > 0)
 		{
 //			bab_debug('sFullPathName ==> ' .  $sFullPathName);
@@ -3238,11 +3247,13 @@ function editFolderForCollectiveDir()
 	$oFileManagerEnv =& getEnvObject();
 	
 //	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sRelativePath ==> ' . $oFileManagerEnv->sRelativePath);
-	$sDirName = (string) bab_pp('sDirName', '');
+	
 
-	if(canEdit($oFileManagerEnv->sRelativePath . $sDirName))
+//	if(canEdit($oFileManagerEnv->sRelativePath))
+	if(canCreateFolder($oFileManagerEnv->sRelativePath))
 	{	
 //bab_debug('Rajouter un test qui permet d\'être que c\'est répertoire collectif ou pas');
+		$sDirName = (string) bab_pp('sDirName', '');
 		if(strlen(trim($sDirName)) > 0)
 		{
 			$sType				= (string) bab_pp('sType', 'collective');
@@ -3361,7 +3372,8 @@ function editFolderForUserDir()
 	$oFileManagerEnv =& getEnvObject();
 	$sRelativePath = $oFileManagerEnv->sRelativePath;
 	
-	if(canEdit($sRelativePath . $sDirName))
+//	if(canEdit($sRelativePath))
+	if(canCreateFolder($oFileManagerEnv->sRelativePath))
 	{
 		$sDirName = (string) bab_pp('sDirName', '');
 		$sOldDirName = (string) bab_pp('sOldDirName', '');
@@ -3422,7 +3434,7 @@ function deleteFolderForCollectiveDir()
 	$oFileManagerEnv =& getEnvObject();
 	
 	$sDirName = (string) bab_pp('sDirName', '');
-	if(strlen(trim($sDirName)) > 0 && canCreateFolder($oFileManagerEnv->sRelativePath . $sDirName))
+	if(strlen(trim($sDirName)) > 0 && canCreateFolder($oFileManagerEnv->sRelativePath))
 	{
 		$iIdFld	= (int) bab_pp('iIdFolder', 0); 
 		if(0 !== $iIdFld)
@@ -3473,10 +3485,10 @@ function deleteFolderForUserDir()
 	global $babBody;
 	
 	$oFileManagerEnv =& getEnvObject();
-	$sDirName = (string) bab_pp('sDirName', '');
 	
-	if(userHavePersonnalStorage() && canCreateFolder($oFileManagerEnv->sRelativePath . $sDirName))
+	if(userHavePersonnalStorage() && canCreateFolder($oFileManagerEnv->sRelativePath))
 	{
+		$sDirName = (string) bab_pp('sDirName', '');
 		if(strlen(trim($sDirName)) > 0)
 		{
 			$sCurrentFmPath = $oFileManagerEnv->getCurrentFmPath();

@@ -4522,7 +4522,20 @@ function canBrowse($sPath)
 			canDownload($sPath) || canUpdate($sPath);
 	}
 	return $aPath[$sFullPath];
+}
 
+
+function canCreateFolder($sPath)
+{
+	$oFileManagerEnv =& getEnvObject();
+	$sFullPath = $oFileManagerEnv->getRootFmPath() . $sPath;
+	
+	static $aPath = array();
+	if(!array_key_exists($sFullPath, $aPath))
+	{
+		$aPath[$sFullPath] = haveRight($sPath, BAB_FMMANAGERS_GROUPS_TBL);
+	}
+	return $aPath[$sFullPath];
 }
 
 
@@ -4540,6 +4553,7 @@ function canSetRight($sPath)
 
 function canCutFolder($sPath)
 {
+//	return canCreateFolder($sPath);
 	return canManage($sPath);
 }
 
@@ -4561,12 +4575,6 @@ function canCutFile($sPath)
 function canDelFile($sPath)
 {
 	return canCutFile($sPath);
-}
-
-
-function canCreateFolder($sPath)
-{
-	return canManage($sPath);
 }
 
 
@@ -4595,12 +4603,11 @@ function canPasteFolder($iIdSrcRootFolder, $sSrcPath, $bSrcPathIsCollective, $iI
 		if(false === $bIsRootFolder)
 		{
 			$bSuccess = BAB_FmFolderHelper::getInfoFromCollectivePath($sSrcPath, $iIdLocalSrcRootFolder, $oOwnerSrcFmFolder, $bParentPath);
-			
 			if($bSuccess)
 			{
 				if(0 !== $iIdLocalSrcRootFolder && $iIdLocalSrcRootFolder === $iIdSrcRootFolder)
 				{
-					if($iIdLocalSrcRootFolder === $oOwnerSrcFmFolder->getId())
+					if($iIdLocalSrcRootFolder === $oOwnerSrcFmFolder->getId() && $oFileManagerEnv->userIsInRootFolder())
 					{
 						$bHaveRightOnSrc = bab_isUserAdministrator();
 					}
@@ -4650,19 +4657,20 @@ function canPasteFolder($iIdSrcRootFolder, $sSrcPath, $bSrcPathIsCollective, $iI
 					}
 					else 
 					{
-//						bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' PAS GLOP For sTrgPath 1 ==> ' . $sTrgPath);
+						bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' PAS GLOP For sTrgPath 1 ==> ' . $sTrgPath);
 						return false;
 					}
 				}
 				else 
 				{
-//					bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' PAS GLOP For sTrgPath 2 ==> ' . $sTrgPath);
+					bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' PAS GLOP For sTrgPath 2 ==> ' . $sTrgPath);
 					return false;
 				}
 			}
 			else 
 			{
-				$bHaveRightOnTrg = bab_isUserAdministrator();
+//				$bHaveRightOnTrg = bab_isUserAdministrator();
+				$bHaveRightOnTrg = haveRight($sTrgPath, BAB_FMMANAGERS_GROUPS_TBL);
 			}
 		}
 		else 
@@ -4784,6 +4792,38 @@ function canPasteFile($iIdSrcRootFolder, $sSrcPath, $iIdTrgRootFolder, $sTrgPath
 //	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sFullPathname ==> ' . $sFullPathname);
 	
 	return ($bHaveRightOnSrc && $bHaveRightOnTrg && (!$bFileExistOnTrgPath || ($iIdSrcRootFolder === $iIdTrgRootFolder && $sSrcPath === $sTrgPath)));
+}
+
+
+function haveRight($sPath, $sTableName)
+{
+	$oFileManagerEnv =& getEnvObject();
+	$bHaveAdminRight = bab_isUserAdministrator();
+	
+	if($oFileManagerEnv->userIsInCollectiveFolder() || ($oFileManagerEnv->userIsInRootFolder() && !$bHaveAdminRight))
+	{
+		$oFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($sPath);
+		if(!is_null($oFmFolder))
+		{
+			return bab_isAccessValid($sTableName, $oFmFolder->getId());
+		}
+		else 
+		{
+			return false;
+		}
+	}
+	else if($bHaveAdminRight && $oFileManagerEnv->userIsInRootFolder())
+	{
+		return $bHaveAdminRight;
+	}
+	else if($oFileManagerEnv->userIsInPersonnalFolder())
+	{
+		return isUserFolder($sPath);
+	}
+	else 
+	{
+		return false;
+	}
 }
 
 
