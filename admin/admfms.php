@@ -247,7 +247,7 @@ function saveFolder($fname, $active, $said, $notification, $version, $bhide, $ba
 		{
 			$oFmFolder = new BAB_FmFolder();
 			$oFmFolder->setApprobationSchemeId($said);
-			$oFmFolder->setDelegationOwnerId($babBody->currentAdmGroup);
+			$oFmFolder->setDelegationOwnerId($iCurrentUserDelegation);
 			$oFmFolder->setName($fname);
 			$oFmFolder->setRelativePath('');
 			$oFmFolder->setFileNotify($notification);
