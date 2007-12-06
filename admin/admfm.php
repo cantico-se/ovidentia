@@ -21,9 +21,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
-include_once $babInstallPath."admin/acl.php";
-include_once $babInstallPath."utilit/fileincl.php";
+include_once 'base.php';
+include_once $GLOBALS['babInstallPath'] . 'admin/acl.php';
+include_once $GLOBALS['babInstallPath'] . 'utilit/fileincl.php';
+
 
 function modifyFolder($fid)
 	{
@@ -690,6 +691,8 @@ if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['filemanager'] != 'Y')
 	$babBody->msgerror = bab_translate("Access denied");
 	return;
 }
+
+
 
 //bab_debug(__FILE__);
 //bab_debug($_POST);

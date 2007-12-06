@@ -38,4 +38,19 @@ $GLOBALS['babDG'] = array(	array("users", bab_translate("Users")),
 				array("taskmanager", bab_translate("Task Manager"))
 				);
 
+function bab_setCurrentUserDelegation($iIdDelegation)
+{
+	$_SESSION['babCurrentUserDelegation'] = (int) $iIdDelegation;
+}
+
+
+function bab_getCurrentUserDelegation()
+{
+	if(!array_key_exists('babCurrentUserDelegation', $_SESSION))
+	{
+		global $babBody;
+		$_SESSION['babCurrentUserDelegation'] = 0;
+	}
+	return (int) $_SESSION['babCurrentUserDelegation'];
+}
 ?>

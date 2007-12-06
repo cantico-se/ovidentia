@@ -21,8 +21,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
-include_once $babInstallPath."utilit/fileincl.php";
+include_once 'base.php';
+include_once $GLOBALS['babInstallPath'] . 'utilit/fileincl.php';
+
 
 function addFolder()
 	{
@@ -61,6 +62,8 @@ function addFolder()
 			$this->display = bab_translate("Visible in file manager?");
 			$this->autoapprobationtxt = bab_translate("Automatically approve author if he belongs to approbation schema");
 			$this->addtags_txt = bab_translate("Users can add new tags");
+			
+			
 			$this->sares = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babBody->currentAdmGroup."' order by name asc");
 			if( !$this->sares )
 				$this->sacount = 0;
@@ -135,7 +138,7 @@ function listFolders()
 			$this->uncheckall = bab_translate("Uncheck all");
 			$this->checkall = bab_translate("Check all");
 
-			
+			global $babBody;
 			$this->oFmFolderSet = new BAB_FmFolderSet();
 			
 			$oRelativePath =& $this->oFmFolderSet->aField['sRelativePath']; 
@@ -219,6 +222,8 @@ function saveFolder($fname, $active, $said, $notification, $version, $bhide, $ba
 		return false;
 	}
 	
+	global $babBody;
+	
 	$oFmFolderSet = new BAB_FmFolderSet();
 	
 	$oName =& $oFmFolderSet->aField['sName']; 
@@ -235,11 +240,14 @@ function saveFolder($fname, $active, $said, $notification, $version, $bhide, $ba
 		}
 
 		$sFullPathName = $oFileManagerEnv->getCollectiveRootFmPath() . $fname;
+
+//		bab_debug($sFullPathName);
 		
 		if(BAB_FmFolderHelper::createDirectory($sFullPathName))
 		{
 			$oFmFolder = new BAB_FmFolder();
 			$oFmFolder->setApprobationSchemeId($said);
+			$oFmFolder->setDelegationOwnerId($babBody->currentAdmGroup);
 			$oFmFolder->setName($fname);
 			$oFmFolder->setRelativePath('');
 			$oFmFolder->setFileNotify($notification);
