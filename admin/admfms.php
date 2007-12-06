@@ -215,8 +215,10 @@ function saveFolder($fname, $active, $said, $notification, $version, $bhide, $ba
 		$babBody->msgerror = bab_translate("ERROR: You must provide a name !!");
 		return false;
 	}
+	
+	include_once $GLOBALS['babInstallPath'] . 'utilit/delegincl.php';
+	bab_setCurrentUserDelegation($babBody->currentAdmGroup);
 	$oFileManagerEnv =& getEnvObject();
-
 	if(!$oFileManagerEnv->pathValid())
 	{
 		return false;
@@ -247,7 +249,7 @@ function saveFolder($fname, $active, $said, $notification, $version, $bhide, $ba
 		{
 			$oFmFolder = new BAB_FmFolder();
 			$oFmFolder->setApprobationSchemeId($said);
-			$oFmFolder->setDelegationOwnerId($iCurrentUserDelegation);
+			$oFmFolder->setDelegationOwnerId($babBody->currentAdmGroup);
 			$oFmFolder->setName($fname);
 			$oFmFolder->setRelativePath('');
 			$oFmFolder->setFileNotify($notification);

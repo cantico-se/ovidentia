@@ -22,11 +22,11 @@
  * USA.																	*
 ************************************************************************/
 require_once 'base.php';
+require_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
 require_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
 require_once $GLOBALS['babInstallPath'].'utilit/uploadincl.php';
 require_once $GLOBALS['babInstallPath'].'utilit/indexincl.php';
 require_once $GLOBALS['babInstallPath'].'utilit/baseFormProcessingClass.php';
-
 
 
 class listFiles
@@ -132,6 +132,9 @@ class listFiles
 		
 		$sPath = $this->oFileManagerEnv->sPath;
 		$this->path = $sPath;
+		$this->id = $this->oFileManagerEnv->iId;
+		$this->gr = $this->oFileManagerEnv->sGr;
+		
 		$this->jpath = bab_toHtml($sPath, BAB_HTML_JS);
 	}
 	
@@ -142,7 +145,12 @@ class listFiles
 		
 		$oFmFolderSet = new BAB_FmFolderSet();
 		$oRelativePath =& $oFmFolderSet->aField['sRelativePath'];
-		$oFmFolderSet->select($oRelativePath->in(''));
+		$oIdDgOwner =& $oFmFolderSet->aField['iIdDgOwner'];
+		
+		$oCriteria = $oRelativePath->in('');
+		$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
+		
+		$oFmFolderSet->select($oCriteria);
 		
 		while(null !== ($oFmFolder = $oFmFolderSet->next()))
 		{
@@ -278,7 +286,7 @@ class listFiles
 		
 		$oCriteria = $oName->in($sEntry);
 		$oCriteria = $oCriteria->_and($oRelativePath->in($this->oFileManagerEnv->sRelativePath));
-		$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
+		$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
 
 		$oFmFolder = $oFmFolderSet->get($oCriteria);
 		if(!is_null($oFmFolder))
@@ -353,7 +361,7 @@ class listFiles
 		$oIdOwner = $oFmFolderCliboardSet->aField['iIdOwner'];
 		$oGroup = $oFmFolderCliboardSet->aField['sGroup'];
 		
-		$oCriteria = $oIdDgOwner->in($babBody->currentAdmGroup);
+		$oCriteria = $oIdDgOwner->in(bab_getCurrentUserDelegation());
 		$oCriteria = $oCriteria->_and($oGroup->in($sGr));
 		
 		$aOrder = array('sName' => 'ASC');
@@ -419,7 +427,7 @@ class listFiles
 			$oCriteria = $oCriteria->_and($oPathName->in($this->oFileManagerEnv->sRelativePath));
 			$oCriteria = $oCriteria->_and($oConfirmed->in('N'));
 			$oCriteria = $oCriteria->_and($oIdFlowApprobationInstance->in($aWaitingAppInstanceId));
-			$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
+			$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
 			
 			$this->oFolderFileSet->select($oCriteria);
 			$this->reswf = $this->oFolderFileSet->_oResult;
@@ -447,7 +455,7 @@ class listFiles
 		$oCriteria = $oCriteria->_and($oState->in(''));
 		$oCriteria = $oCriteria->_and($oPathName->in($this->oFileManagerEnv->sRelativePath));
 		$oCriteria = $oCriteria->_and($oConfirmed->in('Y'));
-		$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
+		$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
 		
 		$aOrder = array('sName' => 'ASC');
 		$this->oFolderFileSet->select($oCriteria, $aOrder);
@@ -490,7 +498,7 @@ class listFiles
 				$oCriteria = $oPathName->in($this->oFileManagerEnv->sRelativePath);
 				$oCriteria = $oCriteria->_and($oGroup->in($this->oFileManagerEnv->sGr));
 				$oCriteria = $oCriteria->_and($oName->in($dir_file));
-				$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
+				$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
 				$oCriteria = $oCriteria->_and($oIdOwner->in($iIdOwner));
 				
 				$this->oFolderFileSet->select($oCriteria);
@@ -519,7 +527,7 @@ class listFiles
 					$oFolderFile->setMinorVer(0);
 					$oFolderFile->setCommentVer('');
 					$oFolderFile->setStatusIndex(0);
-					$oFolderFile->setDelegationOwnerId($babBody->currentAdmGroup);
+					$oFolderFile->setDelegationOwnerId(bab_getCurrentUserDelegation());
 					
 					$oFolderFile->save();
 					$oFolderFile->setId(null);
@@ -721,7 +729,6 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 			$this->set_data('sOldDirName', $oFmFolder->getName());
 			$this->set_data('sChecked', '');
 			
-//			if($oFmFolder->getRelativePath() === '')
 			if($oFileManagerEnv->userIsInRootFolder())
 			{
 				$this->set_data('sDisabled', 'disabled');
@@ -844,7 +851,7 @@ function listTrashFiles()
 			$oCriteria = $oCriteria->_and($oPathName->like($babDB->db_escape_like($this->oFileManagerEnv->sRelativePath)));
 			$oCriteria = $oCriteria->_and($oIdOwner->in($this->oFileManagerEnv->iIdObject));
 			$oCriteria = $oCriteria->_and($oGroup->in($this->oFileManagerEnv->sGr));
-			$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
+			$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
 			
 			$this->oFolderFileSet->select($oCriteria, array('sName' => 'ASC'));
 		}
@@ -1159,12 +1166,19 @@ function listFiles()
 		var $altfilewrite;
 		var $altbg = false;
 
-		
 		var $bCanManageCurrentFolder = false;
 		var $bDownload = false;
 		var $bUpdate = false;
 
 		var $sUploadPath = '';
+		
+		var $iCurrentUserDelegation = 0;
+		var $bDisplayDelegationSelect = false;
+		var $aVisibleDelegation = array();
+		var $iIdDelegation = 0;
+		var $sDelegationName = '';
+		var $sDelegationSelected = '';
+		var $sSubmit = 'Soumettre';
 		
 		function temp()
 		{
@@ -1242,8 +1256,35 @@ function listFiles()
 			{
 				$this->selectCuttedFiles();
 			}
+			
+			$this->aVisibleDelegation = getVisibleDelegation();
+			$this->bDisplayDelegationSelect = (count($this->aVisibleDelegation) > 0);
+			$this->iCurrentUserDelegation = bab_getCurrentUserDelegation();
 		}
-
+		
+		
+		function getVisibleDelegation()
+		{
+			$aItem = each($this->aVisibleDelegation);
+			if(false !== $aItem)
+			{
+				$aItem = $aItem['value'];
+				$this->iIdDelegation = $aItem['iId'];
+				$this->sDelegationName = $aItem['sName'];
+				$this->sDelegationSelected = '';
+				global $babBody;
+				
+				if((int) $this->iCurrentUserDelegation === (int) $this->iIdDelegation)
+				{
+					$this->sDelegationSelected = 'selected="selected"';
+				}
+				
+				return true;
+			}
+			return false;
+		}
+		
+		
 		function selectCuttedFiles()
 		{
 			global $babBody;
@@ -1257,7 +1298,7 @@ function listFiles()
 			global $babDB;
 			$oCriteria = $oGroup->in($this->oFileManagerEnv->sGr);
 			$oCriteria = $oCriteria->_and($oState->in('X'));
-			$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
+			$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
 			
 			if($this->oFileManagerEnv->userIsInPersonnalFolder())
 			{
@@ -1813,7 +1854,7 @@ function cutFile()
 	$oCriteria = $oCriteria->_and($oState->in(''));
 	$oCriteria = $oCriteria->_and($oPathName->in($oFileManagerEnv->sRelativePath));
 	$oCriteria = $oCriteria->_and($oName->in($file));
-	$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
+	$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
 	
 	$oFolderFile = $oFolderFileSet->get($oCriteria);
 	if(!is_null($oFolderFile))
@@ -1927,7 +1968,7 @@ function pasteFile()
 			$oCriteria = $oCriteria->_and($oGroup->in($oFileManagerEnv->sGr));
 			$oCriteria = $oCriteria->_and($oPathName->in($sOldRelativePath));
 			$oCriteria = $oCriteria->_and($oName->in($sFileName));
-			$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
+			$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
 			
 			$oFolderFile = $oFolderFileSet->get($oCriteria);
 			if(!is_null($oFolderFile))
@@ -1944,7 +1985,7 @@ function pasteFile()
 			$oCriteria = $oCriteria->_and($oGroup->in($oFileManagerEnv->sGr));
 			$oCriteria = $oCriteria->_and($oPathName->in($sOldRelativePath));
 			$oCriteria = $oCriteria->_and($oName->in($sFileName));
-			$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
+			$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
 			
 			$oFolderFile = $oFolderFileSet->get($oCriteria);
 			if(!is_null($oFolderFile))
@@ -2342,7 +2383,7 @@ function viewFile()
 
 	$oCriteria = $oId->in($idf);
 	$oCriteria = $oCriteria->_and($oState->in(''));
-	$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
+	$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
 	
 	$oFolderFile = $oFolderFileSet->get($oCriteria);
 
@@ -2683,7 +2724,7 @@ function cutCollectiveDir()
 		
 		$oCriteria = $oName->in($sDirName);
 		$oCriteria = $oCriteria->_and($oRelativePath->in($oFileManagerEnv->sRelativePath));
-		$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
+		$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
 		
 		$oFmFolder = $oFmFolderSet->get($oCriteria);
 		if(!is_null($oFmFolder))
@@ -2699,7 +2740,7 @@ function cutCollectiveDir()
 		$oFmFolderCliboard->setGroup($sGroup);
 		$oFmFolderCliboard->setCollective($sCollective);
 		$oFmFolderCliboard->setOwnerId($iIdOwner);
-		$oFmFolderCliboard->setDelegationOwnerId($babBody->currentAdmGroup);
+		$oFmFolderCliboard->setDelegationOwnerId(bab_getCurrentUserDelegation());
 		$oFmFolderCliboard->setCheckSum($sCheckSum);
 		$oFmFolderCliboard->setName($sDirName);
 		$oFmFolderCliboard->setRelativePath($oFileManagerEnv->sRelativePath);
@@ -2750,7 +2791,7 @@ function cutUserFolder()
 		$oFmFolderCliboard->setGroup($sGroup);
 		$oFmFolderCliboard->setCollective($sCollective);
 		$oFmFolderCliboard->setOwnerId($iIdRootFolder);
-		$oFmFolderCliboard->setDelegationOwnerId($babBody->currentAdmGroup);
+		$oFmFolderCliboard->setDelegationOwnerId(0);
 		$oFmFolderCliboard->setCheckSum($sCheckSum);
 		$oFmFolderCliboard->setName($sDirName);
 		$oFmFolderCliboard->setRelativePath($oFileManagerEnv->sRelativePath);
@@ -2839,7 +2880,7 @@ function pasteCollectiveDir()
 			$oName			= $oFmFolderSet->aField['sName'];
 			$oRelativePath	= $oFmFolderSet->aField['sRelativePath'];
 
-			$oCriteria = $oIdDgOwner->in($babBody->currentAdmGroup);
+			$oCriteria = $oIdDgOwner->in(bab_getCurrentUserDelegation());
 			$oCriteria = $oCriteria->_and($oName->in($sName));
 			$oCriteria = $oCriteria->_and($oRelativePath->in($sSrcPathRelativePath));
 
@@ -2864,7 +2905,7 @@ function pasteCollectiveDir()
 				$oFmFolder->setRelativePath('');
 				$oFmFolder->setActive('Y');
 				$oFmFolder->setApprobationSchemeId(0);
-				$oFmFolder->setDelegationOwnerId((int) $babBody->currentAdmGroup);
+				$oFmFolder->setDelegationOwnerId((int) bab_getCurrentUserDelegation());
 				$oFmFolder->setFileNotify('N');
 				$oFmFolder->setHide('N');
 				$oFmFolder->setAddTags('Y');
@@ -2927,11 +2968,11 @@ function pasteCollectiveDir()
 							//Sélection de tous les fichiers qui contiennent dans leurs chemins le répertoire à déplacer
 							$oCriteriaFile = $oPathName->like($babDB->db_escape_like($sLastRelativePath) . '%');
 							$oCriteriaFile = $oCriteriaFile->_and($oGroup->in('Y'));
-							$oCriteriaFile = $oCriteriaFile->_and($oIdDgOwnerFile->in($babBody->currentAdmGroup));
+							$oCriteriaFile = $oCriteriaFile->_and($oIdDgOwnerFile->in(bab_getCurrentUserDelegation()));
 							
 							//Sélection des répertoires collectifs
 							$oCriteriaFolder = $oRelativePath->like($babDB->db_escape_like($sLastRelativePath) . '%');
-							$oCriteriaFolder = $oCriteriaFolder->_and($oIdDgOwnerFolder->in($babBody->currentAdmGroup));
+							$oCriteriaFolder = $oCriteriaFolder->_and($oIdDgOwnerFolder->in(bab_getCurrentUserDelegation()));
 							$oFmFolderSet->select($oCriteriaFolder);
 							while(null !== ($oFmFolder = $oFmFolderSet->next()))
 							{
@@ -3036,8 +3077,6 @@ function pasteUserFolder()
 						$oFmFolderCliboardSet->move($sLastRelativePath, $sNewRelativePath, 'N');
 						
 						
-						//BAB_FolderFileSet::move($sLastRelativePath, $sNewRelativePath, 'N');
-						
 						global $babBody, $babDB, $BAB_SESS_USERID;
 						// update database files
 						$oFolderFileSet = new BAB_FolderFileSet();
@@ -3048,7 +3087,7 @@ function pasteUserFolder()
 
 						$oCriteria = $oPathName->like($babDB->db_escape_like($sLastRelativePath) . '%');
 						$oCriteria = $oCriteria->_and($oGroup->in('N'));
-						$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
+						$oCriteria = $oCriteria->_and($oIdDgOwner->in(0));
 						$oCriteria = $oCriteria->_and($oIdOwner->in($BAB_SESS_USERID));
 						
 						$oFolderFileSet->select($oCriteria);
@@ -3128,7 +3167,7 @@ function createFolderForCollectiveDir()
 						$oFmFolder->setActive($sActive);
 						$oFmFolder->setApprobationSchemeId($iIdApprobationScheme);
 						$oFmFolder->setAutoApprobation($sAutoApprobation);
-						$oFmFolder->setDelegationOwnerId((int) $babBody->currentAdmGroup);
+						$oFmFolder->setDelegationOwnerId(bab_getCurrentUserDelegation());
 						$oFmFolder->setFileNotify($sNotification);
 						$oFmFolder->setHide($sDisplay);
 						$oFmFolder->setName($sDirName);
@@ -3302,7 +3341,7 @@ function editFolderForCollectiveDir()
 				$oFmFolder->setName($sDirName);
 				$oFmFolder->setActive($sActive);
 				$oFmFolder->setApprobationSchemeId($iIdApprobationScheme);
-				$oFmFolder->setDelegationOwnerId((int) $babBody->currentAdmGroup);
+				$oFmFolder->setDelegationOwnerId(bab_getCurrentUserDelegation());
 				$oFmFolder->setFileNotify($sNotification);
 				$oFmFolder->setHide($sDisplay);
 				$oFmFolder->setRelativePath($sRelativePath);
@@ -3420,7 +3459,7 @@ function deleteFolderForCollectiveDir()
 			$oIdDgOwner =& $oFmFolderSet->aField['iIdDgOwner'];
 			$oName =& $oFmFolderSet->aField['sName'];
 			
-			$oCriteria = $oIdDgOwner->in($babBody->currentAdmGroup);
+			$oCriteria = $oIdDgOwner->in(bab_getCurrentUserDelegation());
 			$oCriteria = $oCriteria->_and($oRelativePath->like($babDB->db_escape_like($oFileManagerEnv->sRelativePath . $sDirName . '/') . '%'));
 			//bab_debug($oFmFolderSet->getSelectQuery($oCriteria));
 			$oFmFolderSet->remove($oCriteria, $bDbRecordOnly);
@@ -3487,6 +3526,16 @@ function deleteFolderForUserDir()
 }
 
 
+function changeDelegation()
+{
+	$aVisibleDelegation = getVisibleDelegation();
+	$iDelegation = (int) bab_pp('iDelegation', 0);
+	
+	if(array_key_exists($iDelegation, $aVisibleDelegation))
+	{
+		bab_setCurrentUserDelegation($iDelegation);
+	}
+}
 
 
 /* main */
@@ -3498,7 +3547,6 @@ if(false === $oFileManagerEnv->accessValid())
 	$babBody->addError(bab_translate("Access denied"));
 	return;	
 }
-
 
 $idx = bab_rp('idx','list');
 
@@ -3597,6 +3645,10 @@ switch($sAction)
 		
 	case 'delFile':
 		delFile();
+		break;
+		
+	case 'changeDelegation':
+		changeDelegation();
 		break;
 }
 //*/

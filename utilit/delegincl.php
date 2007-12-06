@@ -49,7 +49,14 @@ function bab_getCurrentUserDelegation()
 	if(!array_key_exists('babCurrentUserDelegation', $_SESSION))
 	{
 		global $babBody;
-		$_SESSION['babCurrentUserDelegation'] = 0;
+		if(0 !== $babBody->currentAdmGroup)
+		{
+			$_SESSION['babCurrentUserDelegation'] = $babBody->currentAdmGroup;
+		}
+		else 
+		{
+			$_SESSION['babCurrentUserDelegation'] = 0;
+		}
 	}
 	return (int) $_SESSION['babCurrentUserDelegation'];
 }

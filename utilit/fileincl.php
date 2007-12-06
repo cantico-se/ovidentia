@@ -23,6 +23,7 @@
 ************************************************************************/
 include_once 'base.php';
 require_once $GLOBALS['babInstallPath'] . 'utilit/criteria.class.php';
+require_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
 
 define('BAB_FVERSION_FOLDER', 'OVF');
 
@@ -739,7 +740,7 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 		{
 			$req = "insert into ".BAB_FILES_TBL."
 			(name, description, path, id_owner, bgroup, link, readonly, state, created, author, modified, modifiedby, confirmed, index_status, iIdDgOwner) values ";
-			$req .= "('" .$babDB->db_escape_string($name). "', '" . $babDB->db_escape_string($description[$count]). "', '".$babDB->db_escape_string($sRelativePath). "', '" . $babDB->db_escape_string($iIdOwner). "', '" . $babDB->db_escape_string($gr). "', '0', '" . $babDB->db_escape_string($readonly[$count]). "', '', now(), '" . $babDB->db_escape_string($idcreator). "', now(), '" . $babDB->db_escape_string($idcreator). "', '". $babDB->db_escape_string($confirmed)."', '".$babDB->db_escape_string($index_status)."', '".$babDB->db_escape_string($babBody->currentAdmGroup)."')";
+			$req .= "('" .$babDB->db_escape_string($name). "', '" . $babDB->db_escape_string($description[$count]). "', '".$babDB->db_escape_string($sRelativePath). "', '" . $babDB->db_escape_string($iIdOwner). "', '" . $babDB->db_escape_string($gr). "', '0', '" . $babDB->db_escape_string($readonly[$count]). "', '', now(), '" . $babDB->db_escape_string($idcreator). "', now(), '" . $babDB->db_escape_string($idcreator). "', '". $babDB->db_escape_string($confirmed)."', '".$babDB->db_escape_string($index_status)."', '".$babDB->db_escape_string(bab_getCurrentUserDelegation())."')";
 			$babDB->db_query($req);
 			$idf = $babDB->db_insert_id();
 		}
@@ -2101,7 +2102,7 @@ class BAB_FmFolderSet extends BAB_BaseSet
 				$oPathName =& $oFolderFileSet->aField['sPathName'];
 				$oIdDgOwner =& $oFolderFileSet->aField['iIdDgOwner'];
 				
-				$oCriteria = $oIdDgOwner->in($babBody->currentAdmGroup);
+				$oCriteria = $oIdDgOwner->in(bab_getCurrentUserDelegation());
 				$oCriteria = $oCriteria->_and($oIdOwner->in($oFirstFmFolder->getId()));
 				$oCriteria = $oCriteria->_and($oPathName->in($oFmFolder->getRelativePath() . $oFmFolder->getName() . '/'));
 
@@ -2130,7 +2131,7 @@ class BAB_FmFolderSet extends BAB_BaseSet
 				$oPathName =& $oFolderFileSet->aField['sPathName'];
 				$oIdDgOwner =& $oFolderFileSet->aField['iIdDgOwner'];
 				
-				$oCriteria = $oIdDgOwner->in($babBody->currentAdmGroup);
+				$oCriteria = $oIdDgOwner->in(bab_getCurrentUserDelegation());
 				$oCriteria = $oCriteria->_and($oPathName->like($babDB->db_escape_like($oFmFolder->getRelativePath() . $oFmFolder->getName() . '/') . '%'));
 				$oFolderFileSet->remove($oCriteria);
 				
@@ -2199,7 +2200,7 @@ class BAB_FmFolderSet extends BAB_BaseSet
 
 					$oCriteria = $oRelativePath->like($babDB->db_escape_like($sRelativePath));
 					$oCriteria = $oCriteria->_and($oName->in($sFolderName));
-					$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
+					$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
 					$oFmFolder = $oFmFolderSet->get($oCriteria);
 
 					if(!is_null($oFmFolder))
@@ -2242,7 +2243,7 @@ class BAB_FmFolderSet extends BAB_BaseSet
 				global $babDB;
 				$oCriteria = $oRelativePath->like($babDB->db_escape_like(''));
 				$oCriteria = $oCriteria->_and($oName->in($sName));
-				$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
+				$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
 				$oFmFolder = $oFmFolderSet->get($oCriteria);
 
 				if(!is_null($oFmFolder))
@@ -2308,7 +2309,7 @@ class BAB_FmFolderSet extends BAB_BaseSet
 			$oRelativePath =& $oFmFolderSet->aField['sRelativePath'];
 			$oIdDgOwner =& $oFmFolderSet->aField['iIdDgOwner'];
 			
-			$oCriteria = $oIdDgOwner->in($babBody->currentAdmGroup);
+			$oCriteria = $oIdDgOwner->in(bab_getCurrentUserDelegation());
 			$oCriteria = $oRelativePath->like($babDB->db_escape_like($sOldRelativePath) . '%');
 			
 			$oFmFolderSet = $oFmFolderSet->select($oCriteria);
@@ -2344,7 +2345,7 @@ class BAB_FmFolderSet extends BAB_BaseSet
 			$sRelativePath = removeLastPath($sOldRelativePath);
 			$sRelativePath .= (strlen(trim($sRelativePath)) !== 0 ) ? '/' : '';
 			
-			$oCriteria = $oIdDgOwner->in($babBody->currentAdmGroup);
+			$oCriteria = $oIdDgOwner->in(bab_getCurrentUserDelegation());
 			$oCriteria = $oCriteria->_and($oName->in($sName));
 			$oCriteria = $oCriteria->_and($oRelativePath->in($sRelativePath));
 			
@@ -2415,11 +2416,16 @@ class BAB_FmFolderCliboardSet extends BAB_BaseSet
 		$oName			=& $oFmFolderCliboardSet->aField['sName'];
 		
 		$oCriteria = $oRelativePath->like($babDB->db_escape_like($sRelativePath . $sOldName . '/') . '%');
-		$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
+		
 		$oCriteria = $oCriteria->_and($oGroup->in($sGr));
 		if('N' === $sGr)
 		{
 			$oCriteria = $oCriteria->_and($oIdOwner->in($BAB_SESS_USERID));
+			$oCriteria = $oCriteria->_and($oIdDgOwner->in(0));
+		}
+		else 
+		{
+			$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
 		}
 		
 //		bab_debug($oFmFolderCliboardSet->getSelectQuery($oCriteria));
@@ -2456,13 +2462,13 @@ class BAB_FmFolderCliboardSet extends BAB_BaseSet
 	function setOwnerId($sPathName, $iOldIdOwner, $iNewIdOwner)
 	{
 		global $babBody, $babDB;
-		$oIdDgOwner =& $this->aField['iIdDgOwner'];
+//		$oIdDgOwner =& $this->aField['iIdDgOwner'];
 		$oRelativePath =& $this->aField['sRelativePath'];
 		$oIdOwner =& $this->aField['iIdOwner'];
 
 		$oCriteria = $oRelativePath->like($babDB->db_escape_like($sPathName) . '%');
 		$oCriteria = $oCriteria->_and($oIdOwner->in($iOldIdOwner));
-		$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
+//		$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
 		$this->select($oCriteria);
 
 //		bab_debug($this->getSelectQuery($oCriteria));
@@ -2481,8 +2487,10 @@ class BAB_FmFolderCliboardSet extends BAB_BaseSet
 		$oName 			= $this->aField['sName'];
 		$oRelativePath	= $this->aField['sRelativePath'];
 		
+		$iDelegation = ('Y' === $sGroup) ? bab_getCurrentUserDelegation() : 0;
+		
 		global $babBody;
-		$oCriteria = $oIdDgOwner->in($babBody->currentAdmGroup);
+		$oCriteria = $oIdDgOwner->in($iDelegation);
 		$oCriteria = $oCriteria->_and($oGroup->in($sGroup));
 		$oCriteria = $oCriteria->_and($oName->in($sName));
 		$oCriteria = $oCriteria->_and($oRelativePath->in($sRelativePath));
@@ -2500,15 +2508,17 @@ class BAB_FmFolderCliboardSet extends BAB_BaseSet
 		$oRelativePath = $this->aField['sRelativePath'];
 		$oGroup = $this->aField['sGroup'];
 		
+		$iDelegation = ('Y' === $sGroup) ? bab_getCurrentUserDelegation() : 0;
+		
 		global $babBody, $babDB;
-		$oCriteria = $oIdDgOwner->in($babBody->currentAdmGroup);
+		$oCriteria = $oIdDgOwner->in($iDelegation);
 		$oCriteria = $oCriteria->_and($oRelativePath->like($babDB->db_escape_like($sRelativePath . $sName . '/') . '%'));
 		$oCriteria = $oCriteria->_and($oGroup->in('Y'));
 //		bab_debug($this->getSelectQuery($oCriteria));
 		$this->remove($oCriteria);
 		
 		$oCriteria = $oCriteria->_and($oName->in($sName));
-		$oCriteria = $oIdDgOwner->in($babBody->currentAdmGroup);
+		$oCriteria = $oIdDgOwner->in($iDelegation);
 		$oCriteria = $oCriteria->_and($oRelativePath->like($babDB->db_escape_like($sRelativePath)));
 		$oCriteria = $oCriteria->_and($oGroup->in('Y'));
 //		bab_debug($this->getSelectQuery($oCriteria));
@@ -2527,12 +2537,16 @@ class BAB_FmFolderCliboardSet extends BAB_BaseSet
 		
 		$oCriteria = $oRelativePath->like($babDB->db_escape_like($sOldRelativePath) . '%');
 		$oCriteria = $oCriteria->_and($oGroup->in($sGr));
-		$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
 		if('N' === $sGr)
 		{
 			$oCriteria = $oCriteria->_and($oIdOwner->in($BAB_SESS_USERID));
+			$oCriteria = $oCriteria->_and($oIdDgOwner->in(0));
 		}
-
+		else 
+		{
+			$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
+		}
+		
 //		bab_debug($this->getSelectQuery($oCriteria));
 		$aProcessedPath = array();
 		$iIdRootFolder = 0;
@@ -2712,7 +2726,7 @@ class BAB_FolderFileSet extends BAB_BaseSet
 		$oIdOwner		=& $oFolderFileSet->aField['iIdOwner'];
 		
 		$oCriteria = $oPathName->like($babDB->db_escape_like($sRelativePath) . '%');
-		$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
+		$oCriteria = $oCriteria->_and($oIdDgOwner->in( (('Y' === $sGr) ? bab_getCurrentUserDelegation() : 0) ));
 		$oCriteria = $oCriteria->_and($oGroup->in($sGr));
 		if('N' === $sGr)
 		{
@@ -2760,7 +2774,7 @@ class BAB_FolderFileSet extends BAB_BaseSet
 
 		$oCriteria = $oPathName->like($babDB->db_escape_like($sOldRelativePath) . '%');
 		$oCriteria = $oCriteria->_and($oGroup->in($sGr));
-		$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
+		$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
 
 //		bab_debug($oFmFolderSet->getSelectQuery($oCriteria));
 		$aProcessedPath = array();
@@ -3682,12 +3696,7 @@ class BAB_FmFolderHelper
 		
 		$oFmFolderSet = new BAB_FmFolderSet();
 		$oId =& $oFmFolderSet->aField['iId'];
-		$oIdDgOwner =& $oFmFolderSet->aField['iIdDgOwner'];
-		
-		$oCriteria = $oId->in($iId);
-		$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
-		
-		return $oFmFolderSet->get($oCriteria);
+		return $oFmFolderSet->get($oId->in($iId));
 	}
 
 	function getFileInfoForCollectiveDir($iIdFolder, $sPath, &$iIdOwner, &$sRelativePath, &$oFmFolder)
@@ -4009,7 +4018,7 @@ class BAB_FileManagerEnv
 	function init()
 	{
 		global $BAB_SESS_USERID, $babBody;
-				
+
 		$this->sPath = (string) bab_rp('path');
 		$this->sGr = (string) bab_rp('gr', '');
 		
@@ -4031,10 +4040,10 @@ class BAB_FileManagerEnv
 
 		$this->iId						= $this->iIdObject;
 		$this->sFmUploadPath			= BAB_FmFolderHelper::getUploadPath() . 'fileManager/';
-		$this->sFmCollectiveRootPath	= $this->sFmUploadPath . 'collectives/DG' . $babBody->currentAdmGroup . '/';		
+		$this->sFmCollectiveRootPath	= $this->sFmUploadPath . 'collectives/DG' . bab_getCurrentUserDelegation() . '/';		
 		$this->sFmCollectivePath		= $this->sFmCollectiveRootPath;
 		$this->sRelativePath			= $this->sPath . $this->sEndSlash;
-		
+	
 		if('N' === $this->sGr)
 		{
 			if(userHavePersonnalStorage())
@@ -4071,6 +4080,7 @@ class BAB_FileManagerEnv
 			}
 		}
 	}
+	
 	
 	function setParentPath(&$sUrl)
 	{
@@ -4623,7 +4633,8 @@ function canPasteFolder($iIdSrcRootFolder, $sSrcPath, $bSrcPathIsCollective, $iI
 				{
 					if($iIdLocalSrcRootFolder === $oOwnerSrcFmFolder->getId() && $oFileManagerEnv->userIsInRootFolder())
 					{
-						$bHaveRightOnSrc = bab_isUserAdministrator();
+//						$bHaveRightOnSrc = bab_isUserAdministrator();
+						$bHaveRightOnSrc = haveAdministratorRight();
 					}
 					else 
 					{
@@ -4648,7 +4659,8 @@ function canPasteFolder($iIdSrcRootFolder, $sSrcPath, $bSrcPathIsCollective, $iI
 		}
 		else 
 		{
-			$bHaveRightOnSrc = bab_isUserAdministrator();
+//			$bHaveRightOnSrc = bab_isUserAdministrator();
+			$bHaveRightOnSrc = haveAdministratorRight();
 		}
 
 		
@@ -4689,7 +4701,8 @@ function canPasteFolder($iIdSrcRootFolder, $sSrcPath, $bSrcPathIsCollective, $iI
 		}
 		else 
 		{
-			$bHaveRightOnTrg = bab_isUserAdministrator();
+//			$bHaveRightOnTrg = bab_isUserAdministrator();
+			$bHaveRightOnTrg = haveAdministratorRight();
 		}
 	}
 	else if($oFileManagerEnv->userIsInPersonnalFolder())
@@ -4812,7 +4825,8 @@ function canPasteFile($iIdSrcRootFolder, $sSrcPath, $iIdTrgRootFolder, $sTrgPath
 function haveRight($sPath, $sTableName)
 {
 	$oFileManagerEnv =& getEnvObject();
-	$bHaveAdminRight = bab_isUserAdministrator();
+//	$bHaveAdminRight = bab_isUserAdministrator();
+	$bHaveAdminRight = haveAdministratorRight();
 	
 	if($oFileManagerEnv->userIsInCollectiveFolder() || ($oFileManagerEnv->userIsInRootFolder() && !$bHaveAdminRight))
 	{
@@ -4867,7 +4881,7 @@ function haveRightOnParent($sPath, $sTableName)
 	}
 	else if($oFileManagerEnv->userIsInRootFolder())
 	{
-		return bab_isUserAdministrator();
+		return haveAdministratorRight();
 	}
 	else if($oFileManagerEnv->userIsInPersonnalFolder())
 	{
@@ -4902,6 +4916,20 @@ function haveRightOn($sPath, $sTableName)
 	else 
 	{
 		return false;
+	}
+}
+
+/* A utiliser seulement pour les fonction haveRightxxx quand on est à la racine*/
+function haveAdministratorRight()
+{
+	global $babBody;
+	if(0 === (int) $babBody->currentAdmGroup)
+	{
+		return bab_isUserAdministrator();
+	}
+	else 
+	{
+		return array_key_exists(bab_getCurrentUserDelegation(), array_flip($babBody->dgAdmGroups));
 	}
 }
 
@@ -4998,5 +5026,89 @@ function userHaveRightOnCollectiveFolder()
 	}
 	return $bHaveRightOnCollectiveFolder;
 }
+
+
+function getVisibleDelegation()
+{
+	static $aVisibleDelegation = null;
+	
+	if(is_null($aVisibleDelegation))
+	{
+		$aVisibleDelegation		= array();
+		$aProcessedDelegation	= array();
+		$iMainDelegation		= (int) 0;
+		
+		if(bab_isUserAdministrator())
+		{
+			$aProcessedDelegation[$iMainDelegation] = $iMainDelegation;
+			$aVisibleDelegation[$iMainDelegation] = array('iId' => $iMainDelegation, 'sName' => bab_translate("All site"));
+		}
+		
+		global $babBody;
+		foreach($babBody->dgAdmGroups as $iKey => $iIdDelegation);
+		{
+			$aProcessedDelegation[$iIdDelegation] = $iIdDelegation;
+		}
+		
+		$oFmFolderSet = new BAB_FmFolderSet();
+		$oRelativePath =& $oFmFolderSet->aField['sRelativePath'];
+		$oIdDgOwner =& $oFmFolderSet->aField['iIdDgOwner'];
+		
+		$oCriteria = $oIdDgOwner->notIn($aProcessedDelegation);
+		$oCriteria = $oCriteria->_and($oRelativePath->in(''));
+		
+		//bab_debug($oFmFolderSet->getSelectQuery($oCriteria));
+		$oFmFolderSet->select($oCriteria);
+		
+		while(null !== ($oFmFolder = $oFmFolderSet->next()))
+		{
+			if(!array_key_exists($oFmFolder->getDelegationOwnerId(), $aProcessedDelegation))
+			{
+				$bManager = bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oFmFolder->getId());
+				$bUpdate = bab_isAccessValid(BAB_FMUPDATE_GROUPS_TBL, $oFmFolder->getId());
+				$bDownload = bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $oFmFolder->getId());
+				$bUpload = bab_isAccessValid(BAB_FMUPLOAD_GROUPS_TBL, $oFmFolder->getId());
+				
+				/*
+				bab_debug('sName ==> ' . $oFmFolder->getName() . ' iIdDgOwner ==> ' . $oFmFolder->getDelegationOwnerId() . 
+				 (($bManager) ? ' Yes' : ' No') . (($bUpdate) ? ' Yes' : ' No') . (($bDownload) ? ' Yes' : ' No') . (($bUpload) ? ' Yes' : ' No'));
+				//*/
+				
+				if($bManager || $bUpdate || $bDownload || $bUpload)
+				{
+					$aProcessedDelegation[$oFmFolder->getDelegationOwnerId()] = $oFmFolder->getDelegationOwnerId();
+					if(0 === $oFmFolder->getDelegationOwnerId())
+					{
+						$aVisibleDelegation[$iMainDelegation] = array('iId' => $iMainDelegation, 'sName' => bab_translate("All site"));
+					}
+				}
+			}
+		}
+	
+		global $babDB;
+		
+		$sQuery =
+			'SELECT ' .
+				'id iId, ' .
+				'name sName ' .
+			'FROM ' .
+				BAB_DG_GROUPS_TBL . ' ' .
+			'WHERE ' .
+				'id IN(' . $babDB->quote($aProcessedDelegation) . ')';
+			
+		//bab_debug($sQuery);	
+		$oResult = $babDB->db_query($sQuery);
+		$iNumRows = $babDB->db_num_rows($oResult);
+		$iIndex = 0;
+	
+		while($iIndex < $iNumRows && null !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
+		{
+			$iIndex++;
+			$aVisibleDelegation[$aDatas['iId']] = array('iId' => $aDatas['iId'], 'sName' => $aDatas['sName']);
+		}
+	}
+	return $aVisibleDelegation;
+}
+
 
 ?>
