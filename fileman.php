@@ -724,7 +724,7 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 			$this->set_data('isAutoApprobation', ('Y' === $oFmFolder->getAutoApprobation()) ? true : false);
 			$this->set_data('isFileNotify', ('Y' === $oFmFolder->getFileNotify()) ? true : false);
 			$this->set_data('isVersioning', ('Y' === $oFmFolder->getVersioning()) ? true : false);
-			$this->set_data('isShow', ('Y' === $oFmFolder->getHide()) ? true : false);
+			$this->set_data('isShow', ('Y' === $oFmFolder->getHide()) ? false : true);
 			$this->set_data('isAddTags', ('Y' === $oFmFolder->getAddTags()) ? true : false);
 			$this->set_data('iIdFolder', $oFmFolder->getId());
 			$this->set_data('sOldDirName', $oFmFolder->getName());
@@ -3343,7 +3343,7 @@ function editFolderForCollectiveDir()
 				$oFmFolder->setApprobationSchemeId($iIdApprobationScheme);
 				$oFmFolder->setDelegationOwnerId(bab_getCurrentUserDelegation());
 				$oFmFolder->setFileNotify($sNotification);
-				$oFmFolder->setHide($sDisplay);
+				$oFmFolder->setHide((('Y' === $sDisplay) ? 'N' : 'Y'));
 				$oFmFolder->setRelativePath($sRelativePath);
 				$oFmFolder->setAddTags($sAddTags);
 				$oFmFolder->setVersioning($sVersioning);
