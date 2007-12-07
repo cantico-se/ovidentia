@@ -61,7 +61,7 @@ mod_gettext="Available"
 upload_max_file_size=30M
 mysql_character_set_database="latin1"
 mysql_collation_database="latin1_swedish_ci"
-mysql_max_allowed_packet=16M
+mysql_max_allowed_packet=15M
 mysql_sql_mode="Undefined"
 
 ;*/?>

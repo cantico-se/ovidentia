@@ -390,7 +390,7 @@ class bab_inifile_requirements {
 			$charset = strtolower($arr[1]);
 		} else {
 			// undefined on old mysql version
-			$collation = 'latin1';
+			$charset = 'latin1';
 		}
 
 		return array(
