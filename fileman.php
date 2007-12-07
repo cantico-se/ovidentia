@@ -313,24 +313,29 @@ class listFiles
 		
 		if(false === $bInClipBoard)
 		{
-			if(canManage($sRelativePath) || canBrowse($sRelativePath))
-			{
-				$aItem = array(
-					'iId' => $oFmFolder->getId(), 
-					'bCanManageFolder' => haveRight($sRelativePath, BAB_FMMANAGERS_GROUPS_TBL),
-					'bCanBrowseFolder' => canBrowse($sRelativePath),
-					'bCanEditFolder' => canEdit($sRelativePath), 
-					'bCanSetRightOnFolder' => canSetRight($sRelativePath),
-					'bCanCutFolder' => canCutFolder($sRelativePath), 
-					'sName' => $oFmFolder->getName(), 
-					'sGr' => 'Y', 
-					'sCollective' => 'Y', 
-					'sHide' => ('Y' === $oFmFolder->getHide() && false === canManage($sRelativePath)),
-					'sUrlPath' => $oFmFolder->getRelativePath() . $oFmFolder->getName(),
-					'iIdUrl' => $iIdRootFolder);
-					
-				$this->aFolders[] = $aItem;
-			}
+			$bCanManage = canManage($sRelativePath);
+			$bCanBrowse = canBrowse($sRelativePath);
+			
+				if($bCanManage || ($bCanBrowse && 'N' === $oFmFolder->getHide()))
+//				if(canManage($sRelativePath) || canBrowse($sRelativePath))
+				{
+					$aItem = array(
+						'iId' => $oFmFolder->getId(), 
+						'bCanManageFolder' => haveRight($sRelativePath, BAB_FMMANAGERS_GROUPS_TBL),
+						'bCanBrowseFolder' => canBrowse($sRelativePath),
+						'bCanEditFolder' => canEdit($sRelativePath), 
+						'bCanSetRightOnFolder' => canSetRight($sRelativePath),
+						'bCanCutFolder' => canCutFolder($sRelativePath), 
+						'sName' => $oFmFolder->getName(), 
+						'sGr' => 'Y', 
+						'sCollective' => 'Y', 
+//						'sHide' => ('Y' === $oFmFolder->getHide() && false === canManage($sRelativePath)),
+						'sHide' => $oFmFolder->getHide(),
+						'sUrlPath' => $oFmFolder->getRelativePath() . $oFmFolder->getName(),
+						'iIdUrl' => $iIdRootFolder);
+						
+					$this->aFolders[] = $aItem;
+				}
 		}
 	}
 		
@@ -3552,12 +3557,15 @@ $iUsrDg = bab_getCurrentUserDelegation();
 if(0 === $iUsrDg)
 {
 	$aCurrUsrDg = bab_getUserFmVisibleDelegations();
-	if(!array_key_exists(0, $aCurrUsrDg))
+	if(count($aCurrUsrDg) > 0 && !array_key_exists(0, $aCurrUsrDg))
 	{
-		bab_setCurrentUserDelegation($aCurrUsrDg[0]);		
+		$aItem = each($aCurrUsrDg);
+		if(false !== $aItem)
+		{
+			bab_setCurrentUserDelegation($aItem['key']);		
+		}
 	}
 }
-
 
 initEnvObject();
 
