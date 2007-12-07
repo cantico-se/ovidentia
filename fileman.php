@@ -1258,13 +1258,13 @@ function listFiles()
 				$this->selectCuttedFiles();
 			}
 			
-			$this->aVisibleDelegation = getVisibleDelegation();
+			$this->aVisibleDelegation = bab_getUserFmVisibleDelegations();
 			$this->bDisplayDelegationSelect = (count($this->aVisibleDelegation) > 1);
 			$this->iCurrentUserDelegation = bab_getCurrentUserDelegation();
 		}
 		
 		
-		function getVisibleDelegation()
+		function getNextUserFmVisibleDelegation()
 		{
 			$aItem = each($this->aVisibleDelegation);
 			if(false !== $aItem)

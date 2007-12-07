@@ -5028,7 +5028,7 @@ function userHaveRightOnCollectiveFolder()
 }
 
 
-function getVisibleDelegation()
+function bab_getUserFmVisibleDelegations()
 {
 	static $aVisibleDelegation = null;
 	

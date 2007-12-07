@@ -199,9 +199,9 @@ function hideDelegationSubmitBtn()
 				<td align="left" valign="middle" class="BabsiteFileCurentFolder" >
 				<!--#if bDisplayDelegationSelect -->
 					<select name="iDelegation" onchange="onDelegationChanged()"> 
-						<!--#in getVisibleDelegation -->
+						<!--#in getNextUserFmVisibleDelegation -->
 						<option value="{ iIdDelegation }" { sDelegationSelected }>{ sDelegationName }</option>
-						<!--#endin getVisibleDelegation -->
+						<!--#endin getNextUserFmVisibleDelegation -->
 					</select>
 					<input type="submit" name='sDelegationBtn' value="{ sSubmit }" />	
 				<!--#endif bDisplayDelegationSelect -->

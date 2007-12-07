@@ -40,24 +40,24 @@ $GLOBALS['babDG'] = array(	array("users", bab_translate("Users")),
 
 function bab_setCurrentUserDelegation($iIdDelegation)
 {
-	$_SESSION['babCurrentUserDelegation'] = (int) $iIdDelegation;
+	$_SESSION['babCurrentDelegation'] = (int) $iIdDelegation;
 }
 
 
 function bab_getCurrentUserDelegation()
 {
-	if(!array_key_exists('babCurrentUserDelegation', $_SESSION))
+	if(!array_key_exists('babCurrentDelegation', $_SESSION))
 	{
 		global $babBody;
 		if(0 !== $babBody->currentAdmGroup)
 		{
-			$_SESSION['babCurrentUserDelegation'] = $babBody->currentAdmGroup;
+			$_SESSION['babCurrentDelegation'] = $babBody->currentAdmGroup;
 		}
 		else 
 		{
-			$_SESSION['babCurrentUserDelegation'] = 0;
+			$_SESSION['babCurrentDelegation'] = 0;
 		}
 	}
-	return (int) $_SESSION['babCurrentUserDelegation'];
+	return (int) $_SESSION['babCurrentDelegation'];
 }
 ?>
