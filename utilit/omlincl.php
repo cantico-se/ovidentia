@@ -1952,8 +1952,11 @@ class bab_SubFolders extends bab_handler
 		if(0 !== $folderid)
 		{
 			$oFmFolder = $this->oFmFolderSet->get($oId->in($folderid));
+//			bab_debug($this->oFmFolderSet->getSelectQuery($oId->in($folderid)));
 			if(!is_null($oFmFolder))
 			{
+				bab_setCurrentUserDelegation($oFmFolder->getDelegationOwnerId());
+				
 				$iRelativePathLength = strlen($oFmFolder->getRelativePath());
 				$sRelativePath = ($iRelativePathLength === 0) ? $oFmFolder->getName() : $oFmFolder->getRelativePath();
 				
@@ -1961,11 +1964,12 @@ class bab_SubFolders extends bab_handler
 //					' sRootFolderName ==> ' . getFirstPath($sRelativePath));
 	
 				$sRootFolderName = getFirstPath($sRelativePath);
-				if($this->accessValid($sRootFolderName, $sPath))
+				if($this->accessValid($sRootFolderName, $oFmFolder->getName() . '/' . $sPath))
 				{				
 					$sRelativePath = $sRootFolderName . '/' . $sPath . '/';
 					
-					$sUploadPath = BAB_FmFolderHelper::getUploadPath();
+					$oFileManagerEnv =& getEnvObject();
+					$sUploadPath = $oFileManagerEnv->getCollectiveRootFmPath();;
 					
 					$sFullPathName = realpath($sUploadPath . $sRelativePath);
 					
@@ -2025,9 +2029,10 @@ class bab_SubFolders extends bab_handler
 		{
 			$iIdOwner = 0;
 			$sRelativePath = '';
-			
+
 			BAB_FmFolderHelper::getFileInfoForCollectiveDir($oFmFolder->getId(), $sPath, 
 				$iIdOwner, $sRelativePath, $oFmFolder);		
+
 				
 			return 	bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $iIdOwner);
 		}
@@ -2036,7 +2041,7 @@ class bab_SubFolders extends bab_handler
 	
 	function walkDirectory($sFullPathName)
 	{
-//		bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sPathName ==> ' . $sPathName);
+//		bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sPathName ==> ' . $sFullPathName);
 		if(is_dir($sFullPathName))
 		{
 			$oDir = dir($sFullPathName);
@@ -2101,6 +2106,8 @@ class bab_Files extends bab_handler
 			$oFmFolder = $this->oFmFolderSet->get($oId->in($folderid));
 			if(!is_null($oFmFolder))
 			{
+				bab_setCurrentUserDelegation($oFmFolder->getDelegationOwnerId());
+				
 				$iRelativePathLength = strlen($oFmFolder->getRelativePath());
 				$sRelativePath = ($iRelativePathLength === 0) ? $oFmFolder->getName() : $oFmFolder->getRelativePath();
 				
@@ -2119,11 +2126,13 @@ class bab_Files extends bab_handler
 				$oState		= $this->oFolderFileSet->aField['sState'];
 				$oPathName	= $this->oFolderFileSet->aField['sPathName'];
 				$oConfirmed	= $this->oFolderFileSet->aField['sConfirmed'];
+				$oIdDgOwner	= $this->oFolderFileSet->aField['iIdDgOwner'];
 				
 				$oCriteria = $oGroup->in('Y');
 				$oCriteria = $oCriteria->_and($oState->in(''));
 				$oCriteria = $oCriteria->_and($oPathName->in($sRelativePath));
 				$oCriteria = $oCriteria->_and($oConfirmed->in('Y'));
+				$oCriteria = $oCriteria->_and($oIdDgOwner->in($oFmFolder->getDelegationOwnerId()));
 				
 				$aLimit = array();
 				if(0 !== $rows)
@@ -2153,9 +2162,11 @@ class bab_Files extends bab_handler
 	{
 		$oName = $this->oFmFolderSet->aField['sName'];
 		$oRelativePath = $this->oFmFolderSet->aField['sRelativePath'];
+		$oIdDgOwner	= $this->oFmFolderSet->aField['iIdDgOwner'];
 		
 		$oCriteria = $oName->in($sRootFolderName);
 		$oCriteria = $oCriteria->_and($oRelativePath->in(''));
+		$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
 		
 		//Get the root folder
 		$oFmFolder = $this->oFmFolderSet->get($oCriteria);
@@ -2192,7 +2203,8 @@ class bab_Files extends bab_handler
 				$this->ctx->curctx->push('FileUrlGet', $GLOBALS['babUrlScript'] . '?tg=fileman&idx=get&id=' . $oFolderFile->getOwnerId() . '&gr=' . 
 					$sGroup . '&path=' . $this->sEncodedPath . '&file=' . urlencode($oFolderFile->getName()));
 					
-				$sUploadPath = BAB_FmFolderHelper::getUploadPath();
+				$oFileManagerEnv =& getEnvObject();
+				$sUploadPath = $oFileManagerEnv->getCollectiveRootFmPath();;
 				
 				$sFullPathName = $sUploadPath . $oFolderFile->getPathName() . $oFolderFile->getName();
 				if(file_exists($sFullPathName))
@@ -2269,6 +2281,8 @@ class bab_File extends bab_handler
 			$iIndex++;
 			if(null !== $this->oFolderFile)
 			{
+				bab_setCurrentUserDelegation($this->oFolderFile->getDelegationOwnerId());
+				
 				$this->ctx->curctx->push('CIndex', $this->idx);
 				$this->ctx->curctx->push('FileName', $this->oFolderFile->getName());
 				$this->ctx->curctx->push('FileDescription', $this->oFolderFile->getDescription());
@@ -2294,7 +2308,8 @@ class bab_File extends bab_handler
 				$this->ctx->curctx->push('FileUrlGet', $GLOBALS['babUrlScript'] . '?tg=fileman&idx=get&id=' . $this->oFolderFile->getOwnerId() . '&gr=' . 
 					$sGroup . '&path=' . $sEncodedPath . '&file=' . urlencode($this->oFolderFile->getName()));
 					
-				$sUploadPath = BAB_FmFolderHelper::getUploadPath();
+				$oFileManagerEnv =& getEnvObject();
+				$sUploadPath = $oFileManagerEnv->getCollectiveRootFmPath();
 				
 				$sFullPathName = $sUploadPath . $this->oFolderFile->getPathName() . $this->oFolderFile->getName();
 				if(file_exists($sFullPathName))
@@ -2319,9 +2334,11 @@ class bab_File extends bab_handler
 		$oFmFolderSet = new BAB_FmFolderSet();
 		$oName = $oFmFolderSet->aField['sName'];
 		$oRelativePath = $oFmFolderSet->aField['sRelativePath'];
+		$oIdDgOwner	= $oFmFolderSet->aField['iIdDgOwner'];
 		
 		$oCriteria = $oName->in($sRootFolderName);
 		$oCriteria = $oCriteria->_and($oRelativePath->in(''));
+		$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
 		
 		//Get the root folder
 		$oFmFolder = $oFmFolderSet->get($oCriteria);
