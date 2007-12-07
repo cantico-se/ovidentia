@@ -16,9 +16,9 @@
 			<!--#endif t_fetchContentScript -->
 			<!--#if t_nodeIcon --><img src="{ t_nodeIcon }" alt="" /><!--#else t_nodeIcon --><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" /><!--#endif t_nodeIcon -->
 			<!--#if t_link -->
-			<a href="{ t_link }"><span class="level{ t_previousLevel } { t_type }">{ t_title }</span></a>
+			<a href="{ t_link }"><span class="level{ t_offsetPreviousLevel } { t_type }">{ t_title }</span></a>
 			<!--#else t_link -->
-			<span class="level{ t_previousLevel } { t_type }">{ t_title }</span>
+			<span class="level{ t_offsetPreviousLevel } { t_type }">{ t_title }</span>
 			<!--#endif t_link -->
 			<!--#if t_showRightElements -->
 			<span class="right_elements">{ t_info }
@@ -409,4 +409,3 @@ document.write('</div>');
 <!-- END ORGCHART -->
 
 <!--#end orgchart -->
-

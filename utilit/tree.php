@@ -976,6 +976,9 @@ class bab_TreeView
 	var $t_levelVariation;
 	var $t_level;
 	var $t_previousLevel;
+	var $t_offsetLevel;
+	var $t_offsetPreviousLevel;
+	var $t_baseLevel;
 	
 	var $t_isFirstChild;
 	var $t_isMiddleChild;
@@ -1033,6 +1036,7 @@ class bab_TreeView
 
 		$this->t_level = null;
 		$this->t_previousLevel = null;
+		$this->t_baseLevel = 0;
 
 		$this->t_layout = 'horizontal';
 
@@ -1050,6 +1054,7 @@ class bab_TreeView
 
 		$this->t_memorizeOpenNodes = true;
 		$this->t_isMultiSelect = false;
+		$this->t_fetchContentScript = false;
 	}
 
 	/**
@@ -1165,11 +1170,14 @@ class bab_TreeView
 			$this->_iterator->nextNode();
 			$this->t_level = $this->_iterator->level();
 			$this->t_previousLevel = $this->t_level - 1;
+			$this->t_offsetLevel = $this->t_level + $this->t_baseLevel;
+			$this->t_offsetPreviousLevel = $this->t_previousLevel + $this->t_baseLevel;
 		}
 		$this->t_levelVariation = $this->t_level - $this->t_previousLevel;
 		if ($this->t_levelVariation < -1) {
 //			$this->t_previousLayout = ($this->t_previousLevel >= 3 ? 'vertical' : 'horizontal');
 			$this->t_previousLevel--;
+			$this->t_offsetPreviousLevel = $this->t_previousLevel + $this->t_baseLevel;
 //			$this->t_layout = ($this->t_previousLevel >= 3 ? 'vertical' : 'horizontal');
 			return true;
 		}
@@ -1177,6 +1185,7 @@ class bab_TreeView
 //		$this->t_previousLayout = ($this->t_previousLevel >= 3 ? 'vertical' : 'horizontal');
 		
 		$this->t_previousLevel = $this->t_level;
+		$this->t_offsetPreviousLevel = $this->t_previousLevel + $this->t_baseLevel;
 
 //		$this->t_layout = ($this->t_previousLevel >= 3 ? 'vertical' : 'horizontal');
 
@@ -1187,6 +1196,7 @@ class bab_TreeView
 			$this->t_isSingleChild = ($node->isFirstChild() && $node->isLastChild());
 
 			$this->t_level = $this->_iterator->level();
+			$this->t_offsetLevel = $this->t_level + $this->t_baseLevel;
 			$element =& $node->getData();
 			$this->t_fetchContentScript = $element->_fetchContentScript;
 			$this->t_highlighted = isset($this->_highlightedElements[$element->_id]);
@@ -1209,6 +1219,7 @@ class bab_TreeView
 		}
 		if ($this->t_level > -1) {
 			$this->t_level = -1;
+			$this->t_offsetLevel = $this->t_level + $this->t_baseLevel;
 			return $this->getNextElement();
 		}
 		$this->_iterator = null;
@@ -2000,13 +2011,19 @@ class bab_FileTreeView extends bab_TreeView
 	var $_startPath;
 	var $_updateBaseUrl;
 
+	/**
+	 * @var array _visibleDelegations
+     */
+	var $_visibleDelegations;
+
 	var $_directories;
 	/**#@-*/
 
 
 	function bab_FileTreeView($id, $adminView = true)
 	{
-		require_once $GLOBALS['babInstallPath'] . 'utilit/fileincl.php';
+		require_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
+		require_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
 		parent::bab_TreeView($id);
 
 		$this->_attributes = BAB_FILE_TREE_VIEW_SHOW_FILES;
@@ -2033,6 +2050,37 @@ class bab_FileTreeView extends bab_TreeView
 	}
 
 
+	/**
+	 * 
+	 * @access private
+	 */
+	function _addVisibleDelegations()
+	{
+		global $babBody;
+
+		$this->_visibleDelegations = bab_getUserFmVisibleDelegations();
+
+		
+		// When the tree is displayed for administrative purpose, we only
+		// display the currently administered delegation.
+		if ($this->_attributes & BAB_FILE_TREE_VIEW_SHOW_ONLY_DELEGATION)
+		{
+			$this->_visibleDelegations = array($babBody->currentAdmGroup => $this->_visibleDelegations[$babBody->currentAdmGroup]);
+		}
+
+		// We create a first-level node for each visible delegation.
+		foreach ($this->_visibleDelegations as $delegationId => $delegationName)
+		{
+			$element =& $this->createElement('d' . $delegationId,
+											 'foldercategory',
+											 $delegationName,
+											 '',
+											 '');
+			$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/collective_folder.png');
+			$this->appendElement($element, null);
+		}
+	}
+
 
 	/**
 	 * Add files and subdirectories for the personal folder.
@@ -2045,10 +2093,10 @@ class bab_FileTreeView extends bab_TreeView
 			
 		$rootPath = '';
 
-		$sql = 'SELECT file.id, file.path, file.name, file.id_owner, file.bgroup FROM ' . BAB_FILES_TBL . ' file';
-		$sql .= ' WHERE file.bgroup=\'N\' AND file.id_owner=' . $babDB->quote($GLOBALS['BAB_SESS_USERID']);
-		$sql .= ' AND file.state <> \'D\'';
-		$sql .= ' ORDER BY file.name';
+		$sql = 'SELECT file.id, file.path, file.name, file.id_owner, file.bgroup FROM ' . BAB_FILES_TBL . ' file'
+			 . ' WHERE file.bgroup=\'N\' AND file.id_owner=' . $babDB->quote($GLOBALS['BAB_SESS_USERID'])
+			 . ' AND file.state <> \'D\''
+			 . ' ORDER BY file.name';
 
 		$directoryType = 'folder';
 		if (!($this->_attributes & BAB_TREE_VIEW_MULTISELECT)
@@ -2096,8 +2144,8 @@ class bab_FileTreeView extends bab_TreeView
 					$subdirMd5Id = sprintf(':%x', crc32($parentId . ':' . $subdir));
 					if (is_null($this->_rootNode->getNodeById($rootId . $subdirMd5Id /*$parentId . ':' . $subdir*/))) {
 						$element =& $this->createElement($rootId . $subdirMd5Id /*$parentId . ':' . $subdir*/,
-						$directoryType,
-						$subdir,
+														 $directoryType,
+														 $subdir,
 														 '',
 														 '');
 						//						$element->setFetchContentScript('bab_loadSubTree(this, \'' . $this->_updateBaseUrl . '&start=' . $file['id_owner'] . ':' . $subdir . '\')');
@@ -2131,16 +2179,7 @@ class bab_FileTreeView extends bab_TreeView
 	 */
 	function _addCollectiveDirectories($folderId = null)
 	{
-		require_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
 		global $babDB, $babBody;
-
-		$element =& $this->createElement('cd',
-										 'foldercategory',
-		bab_translate("Collective folders"),
-										 '',
-										 '');
-		$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/collective_folder.png');
-		$this->appendElement($element, null);
 
 		$folders = new BAB_FmFolderSet();
 
@@ -2151,17 +2190,14 @@ class bab_FileTreeView extends bab_TreeView
 		$oId =& $folders->aField['iId'];
 
 		$oCriteria = $oRelativePath->in($babDB->db_escape_like(''));
-		if ($babBody->currentAdmGroup != 0 && ($this->_attributes & BAB_FILE_TREE_VIEW_SHOW_ONLY_DELEGATION)) {
-			$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
-		}
+		$oCriteria = $oCriteria->_and($oIdDgOwner->in(array_keys($this->_visibleDelegations)));
+
 		$oCriteria = $oCriteria->_and($oActive->in('Y'));
 		$oCriteria = $oCriteria->_and($oHide->in('N'));
 		if (!is_null($folderId)) {
 			$oCriteria = $oCriteria->_and($oId->in($folderId));
 		}
-		$folders->select($oCriteria);
-
-
+		$folders->select($oCriteria, array('sName' => 'ASC'));
 
 		$elementType = 'folder';
 		if (!($this->_attributes & BAB_TREE_VIEW_MULTISELECT)
@@ -2177,17 +2213,20 @@ class bab_FileTreeView extends bab_TreeView
 			if($this->_adminView || $bManager || $bDownload)
 			{
 				$element =& $this->createElement('d' . BAB_TREE_VIEW_ID_SEPARATOR . $folder->getId(),
-				$elementType,
-				bab_toHtml($folder->getName()),
+												 $elementType,
+												 bab_toHtml($folder->getName()),
 												 '',
 												 '');
-				$element->setFetchContentScript(bab_toHtml("bab_loadSubTree(document.getElementById('li" . $this->_id . '.' . $element->_id .  "'), '" . $this->_updateBaseUrl . "&start=" . $folder->getId() . "')"));
+				if ($this->_updateBaseUrl)
+				{
+					$element->setFetchContentScript(bab_toHtml("bab_loadSubTree(document.getElementById('li" . $this->_id . '.' . $element->_id .  "'), '" . $this->_updateBaseUrl . "&start=" . $folder->getId() . "')"));
+				}
 				$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
 				if (($this->_attributes & BAB_FILE_TREE_VIEW_SELECTABLE_COLLECTIVE_DIRECTORIES)
 				&& ($this->_attributes & BAB_TREE_VIEW_MULTISELECT)) {
 					$element->addCheckBox('select');
 				}
-				$this->appendElement($element, 'cd');
+				$this->appendElement($element, 'd' . $folder->getDelegationOwnerId());
 			}
 		}
 	}
@@ -2201,7 +2240,6 @@ class bab_FileTreeView extends bab_TreeView
 	 */
 	function _addCollectiveFiles($folderId = null, $path = '')
 	{
-		require_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
 		global $babDB, $babBody;
 
 		$sEndSlash = (strlen(trim($path)) > 0 ) ? '/' : '' ;
@@ -2267,6 +2305,9 @@ class bab_FileTreeView extends bab_TreeView
 			$oCriteria = $oCriteria->_and($oName->in($rootFolderName));
 
 			$folder = $folders->get($oCriteria);
+			if (!$folder) {
+				continue;
+			}
 			$rootId = 'd' . BAB_TREE_VIEW_ID_SEPARATOR . $folder->getId(); // $file['id_owner'];
 			//				$parentId = 'd' . BAB_TREE_VIEW_ID_SEPARATOR . $file['id_owner'];
 			$fileType =& $groupFileType;
@@ -2280,8 +2321,8 @@ class bab_FileTreeView extends bab_TreeView
 					$subdirMd5Id = sprintf(':%x', crc32($parentId . ':' . $subdir));
 					if (is_null($this->_rootNode->getNodeById($rootId . $subdirMd5Id /*$parentId . ':' . $subdir*/))) {
 						$element =& $this->createElement($rootId . $subdirMd5Id /*$parentId . ':' . $subdir*/,
-						$directoryType,
-						$subdir,
+														 $directoryType,
+														 $subdir,
 														 '',
 														 '');
 						//						$element->setFetchContentScript('bab_loadSubTree(this, \'' . $this->_updateBaseUrl . '&start=' . $file['id_owner'] . ':' . $subdir . '\')');
@@ -2297,8 +2338,8 @@ class bab_FileTreeView extends bab_TreeView
 			}
 			if ($this->_attributes & BAB_FILE_TREE_VIEW_SHOW_FILES) {
 				$element =& $this->createElement($fileId,
-				$fileType,
-				$file['name'],
+												 $fileType,
+												 $file['name'],
 												 '',
 												 '');
 				$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/file.png');
@@ -2371,6 +2412,8 @@ class bab_FileTreeView extends bab_TreeView
 			return;
 		}
 
+		$this->_addVisibleDelegations();
+
 		$this->_addCollectiveDirectories($this->_startFolderId);
 
 		if ($this->_attributes & BAB_FILE_TREE_VIEW_SHOW_FILES
@@ -2385,20 +2428,13 @@ class bab_FileTreeView extends bab_TreeView
 
 		if (!is_null($this->_startFolderId))
 		{
-			$this->_iterator = $this->_rootNode->createNodeIterator($this->_rootNode);
-				
-			if ($this->_startPath !== '') {
-				$subdirs = explode('/', $this->_startPath);
-				$nbSubDirs = count($subdirs) + 1;
-			} else {
-				$nbSubDirs = 1;
-			}
-			while ($nbSubDirs-- >= 0) {
-				$this->_iterator->nextNode();
-			}
+			$nodeId = 'd' . BAB_TREE_VIEW_ID_SEPARATOR . $this->_startFolderId;
+			$node =& $this->_rootNode->getNodeById($nodeId);
+			$this->_iterator = $this->_rootNode->createNodeIterator($node);
 			$this->_iterator->nextNode();
-			$this->t_level = $this->_iterator->level();
-			$this->t_previousLevel = $this->t_level - 1;
+			$this->t_baseLevel = $this->_iterator->level() + 1;
+			$this->t_level = 1;
+			$this->t_previousLevel = 0;
 		}
 		parent::_updateTree();
 	}

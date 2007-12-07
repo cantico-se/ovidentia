@@ -62,6 +62,8 @@ function bab_loadSubTree(li, url)
 				li.className = bab_Tree.prototype.NODE_LEAF;
 			}
 			bab_refreshAllTreeNodes(li.parentNode);
+		} else if (xhr.readyState == 4 && xhr.status == 404) {
+			li.className = bab_Tree.prototype.NODE_LEAF;
 		}
 	}
 	li.className = bab_Tree.prototype.NODE_LOADING;
