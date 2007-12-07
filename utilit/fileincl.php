@@ -4194,7 +4194,7 @@ class BAB_FileManagerEnv
 				$oFileManagerEnv =& getEnvObject();
 				$sParentPath = $oFileManagerEnv->sRelativePath;
 				
-				if(!is_null($this->oFmFolder) && 'N' === $this->oFmFolder->getHide() && 'Y' === $this->oFmFolder->getActive())
+				if(!is_null($this->oFmFolder))
 				{
 					if(true === canManage($sParentPath) || true === haveRightOn($sParentPath, BAB_FMMANAGERS_GROUPS_TBL))
 					{
@@ -4202,7 +4202,10 @@ class BAB_FileManagerEnv
 					}
 					else if(true === canUpload($sParentPath) || true === canDownload($sParentPath) || true === canUpdate($sParentPath))
 					{
-						return true;
+						if('N' === $this->oFmFolder->getHide() && 'Y' === $this->oFmFolder->getActive())
+						{					
+							return true;
+						}
 					}
 				}
 			}

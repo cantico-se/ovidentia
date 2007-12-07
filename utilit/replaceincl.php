@@ -305,15 +305,8 @@ function ref(&$txt)
 										$inl ='';
 										}
 
-				
-										$sPath = removeFirstPath($arr['path']);
-										$iLength = strlen(trim($sPath));
-										if($iLength && '/' === $sPath{$iLength - 1})
-										{
-											$sPath = substr($sPath, 0, -1);
-										}
-										
-										$title_object = $this->_make_link($GLOBALS['babUrlScript']."?tg=fileman&idx=get".$inl."&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($sPath)."&file=".urlencode($arr['name']),$title_object,2);
+										$sPath = removeEndSlah($arr['path']);
+										$title_object = $this->_make_link($GLOBALS['babUrlScript']."?tg=fileman&sAction=getFile".$inl."&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($sPath)."&file=".urlencode($arr['name']),$title_object,2);
 									}
 								}
 							bab_replace::_var($txt,$var,$title_object);
@@ -323,17 +316,28 @@ function ref(&$txt)
 							$id_object = (int) $param[0];
 							$path_object = isset($param[1]) ? $param[1] : '';
 							$title_object = isset($param[2]) ? $param[2] : '';
+							
 							$res = $babDB->db_query("select id,folder from ".BAB_FM_FOLDERS_TBL." where id='".$babDB->db_escape_string($id_object)."' and active='Y'");
 							if( $res && $babDB->db_num_rows($res) > 0)
-								{
+							{
 								$arr = $babDB->db_fetch_array($res);
 								require_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
-								if (!is_null(BAB_FmFolderHelper::getFmFolderById($arr['id'])))
+								
+								$oFmFolder = BAB_FmFolderHelper::getFmFolderById($arr['id']);
+								if (!is_null($oFmFolder))
+								{
+									$oOwnerFmFolder = null;
+									$sPath = $oFmFolder->getName() . ((strlen(trim($path_object)) > 0 ) ? '/' . $path_object : '');
+									
+									BAB_FmFolderHelper::getInfoFromCollectivePath($sPath, $oFmFolder->getId(), $oOwnerFmFolder);
+									
+									if(!is_null($oOwnerFmFolder) && (bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $oOwnerFmFolder->getId()) || bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oOwnerFmFolder->getId())))
 									{
-									$title_object = empty($title_object) ? $arr['folder'] : $title_object;
-									$title_object = $this->_make_link($GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$arr['id']."&gr=Y&path=".urlencode($path_object),$title_object);
+										$title_object = empty($title_object) ? $arr['folder'] : $title_object;
+										$title_object = $this->_make_link($GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$arr['id']."&gr=Y&path=".urlencode($sPath),$title_object);
 									}
 								}
+							}
 							bab_replace::_var($txt,$var,$title_object);
 							break;
 							
