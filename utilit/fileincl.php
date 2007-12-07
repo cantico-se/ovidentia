@@ -5045,19 +5045,25 @@ function getVisibleDelegation()
 		}
 		
 		global $babBody;
-		foreach($babBody->dgAdmGroups as $iKey => $iIdDelegation);
+		if(is_array($babBody->dgAdmGroups) && count($babBody->dgAdmGroups) > 0)
 		{
-			$aProcessedDelegation[$iIdDelegation] = $iIdDelegation;
+			foreach($babBody->dgAdmGroups as $iKey => $iIdDelegation);
+			{
+				$aProcessedDelegation[$iIdDelegation] = $iIdDelegation;
+			}
 		}
 		
 		$oFmFolderSet = new BAB_FmFolderSet();
 		$oRelativePath =& $oFmFolderSet->aField['sRelativePath'];
 		$oIdDgOwner =& $oFmFolderSet->aField['iIdDgOwner'];
 		
-		$oCriteria = $oIdDgOwner->notIn($aProcessedDelegation);
-		$oCriteria = $oCriteria->_and($oRelativePath->in(''));
+		$oCriteria = $oRelativePath->in('');
+		if(count($aProcessedDelegation) > 0)
+		{
+			$oCriteria = $oCriteria->_and($oIdDgOwner->notIn($aProcessedDelegation));
+		}
 		
-		//bab_debug($oFmFolderSet->getSelectQuery($oCriteria));
+//		bab_debug($oFmFolderSet->getSelectQuery($oCriteria));
 		$oFmFolderSet->select($oCriteria);
 		
 		while(null !== ($oFmFolder = $oFmFolderSet->next()))
@@ -5096,7 +5102,7 @@ function getVisibleDelegation()
 			'WHERE ' .
 				'id IN(' . $babDB->quote($aProcessedDelegation) . ')';
 			
-		//bab_debug($sQuery);	
+//		bab_debug($sQuery);	
 		$oResult = $babDB->db_query($sQuery);
 		$iNumRows = $babDB->db_num_rows($oResult);
 		$iIndex = 0;

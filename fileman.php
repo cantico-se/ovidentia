@@ -150,6 +150,7 @@ class listFiles
 		$oCriteria = $oRelativePath->in('');
 		$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
 		
+//		bab_debug($oFmFolderSet->getSelectQuery($oCriteria));
 		$oFmFolderSet->select($oCriteria);
 		
 		while(null !== ($oFmFolder = $oFmFolderSet->next()))
@@ -1258,7 +1259,7 @@ function listFiles()
 			}
 			
 			$this->aVisibleDelegation = getVisibleDelegation();
-			$this->bDisplayDelegationSelect = (count($this->aVisibleDelegation) > 0);
+			$this->bDisplayDelegationSelect = (count($this->aVisibleDelegation) > 1);
 			$this->iCurrentUserDelegation = bab_getCurrentUserDelegation();
 		}
 		
