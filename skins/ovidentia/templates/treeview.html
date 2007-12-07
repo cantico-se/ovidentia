@@ -10,7 +10,7 @@
 		<!--#if t_fetchContentScript --><li id="li{ t_id }" class="bab_ul_tree_not_loaded"><!--#else t_fetchContentScript --><li id="li{ t_id }" class="bab_ul_tree_leaf"><!--#endif t_fetchContentScript -->
 		<!--#if t_highlighted --><div class="line" style="background-color: #EEEEEE"><!--#else t_highlighted --><div class="line"><!--#endif t_highlighted -->
 			<!--#if t_fetchContentScript -->
-			<img class="bullet" src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="20" height="16" alt="" onclick="{ t_fetchContentScript }; this.onclick=''" />
+			<img class="bullet" src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="20" height="16" alt="" onclick="if (hasClass(this.parentNode.parentNode, 'bab_ul_tree_not_loaded')) { t_fetchContentScript }" />
 			<!--#else t_fetchContentScript -->
 			<img class="bullet" src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="20" height="16" alt="" />
 			<!--#endif t_fetchContentScript -->
