@@ -172,6 +172,7 @@ function selectFiles($folderId = null, $path = '')
 	if (!is_null($folderId)) {
 		$treeView->setStartPath($folderId, $path);
 		$treeView->setAttributes($attributes);
+		header('Content-type: text/html; charset=ISO-8859-15');
 		echo($treeView->printSubTree());
 		die();
 	}
