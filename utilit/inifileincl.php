@@ -388,6 +388,9 @@ class bab_inifile_requirements {
 		
 		if ($arr = $babDB->db_fetch_array($res)) {
 			$charset = strtolower($arr[1]);
+		} else {
+			// undefined on old mysql version
+			$collation = 'latin1';
 		}
 
 		return array(
@@ -406,10 +409,13 @@ class bab_inifile_requirements {
 		$res = $babDB->db_queryWem("show variables like 'collation_database'");
 		
 		
-		$collation = 'Undefined';
+		$collation = false;
 		
 		if ($arr = $babDB->db_fetch_array($res)) {
 			$collation = strtolower($arr[1]);
+		} else {
+			// undefined on old mysql version
+			$collation = 'latin1_swedish_ci';
 		}
 
 		return array(
@@ -437,7 +443,7 @@ class bab_inifile_requirements {
 		return array(
 			'description'	=> bab_translate("MySQL server variable max_allowed_packet"),
 			'current'		=> sprintf("%dM",$max_allowed_packet/1024/1024),
-			'result'		=> $value >= $max_allowed_packet
+			'result'		=> $value <= $max_allowed_packet
 		);
 	}
 	
