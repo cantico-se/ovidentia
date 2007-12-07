@@ -4767,7 +4767,7 @@ function canPasteFile($iIdSrcRootFolder, $sSrcPath, $iIdTrgRootFolder, $sTrgPath
 		BAB_FmFolderHelper::getInfoFromCollectivePath($sSrcPath, $iIdRootFolder, $oOwnerSrcFmFolder);
 		if($iIdRootFolder !== $iIdSrcRootFolder || is_null($oOwnerSrcFmFolder))
 		{
-			//bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' PAS GLOP For sSrcPath');
+			bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' PAS GLOP For sSrcPath');
 			return false;
 		}
 		
@@ -4776,15 +4776,15 @@ function canPasteFile($iIdSrcRootFolder, $sSrcPath, $iIdTrgRootFolder, $sTrgPath
 		BAB_FmFolderHelper::getInfoFromCollectivePath($sTrgPath, $iIdRootFolder, $oOwnerTrgFmFolder);
 		if($iIdRootFolder !== $iIdTrgRootFolder || is_null($oOwnerTrgFmFolder))
 		{
-			//bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' PAS GLOP For sTrgPath');
+			bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' PAS GLOP For sTrgPath');
 			return false;
 		}
 	
 		$bHaveRightOnSrc = bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oOwnerSrcFmFolder->getId());
 		$bHaveRightOnTrg = bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oOwnerTrgFmFolder->getId());
 		
-//		bab_debug($oOwnerSrcFmFolder);
-//		bab_debug($oOwnerTrgFmFolder);
+		bab_debug($oOwnerSrcFmFolder);
+		bab_debug($oOwnerTrgFmFolder);
 	}
 	else if($oFileManagerEnv->userIsInPersonnalFolder())
 	{

@@ -341,15 +341,27 @@ class listFiles
 		
 		$sRootFmPath = '';
 		$sGr = '';
+		
+		$oFmFolderCliboardSet = new BAB_FmFolderCliboardSet();
+		$oIdDgOwner = $oFmFolderCliboardSet->aField['iIdDgOwner'];
+		$oIdOwner = $oFmFolderCliboardSet->aField['iIdOwner'];
+		$oGroup = $oFmFolderCliboardSet->aField['sGroup'];
+		
+		$oCriteria = null;
+		
 		if($this->oFileManagerEnv->userIsInCollectiveFolder() || $this->oFileManagerEnv->userIsInRootFolder())
 		{
 			$sGr = 'Y';
 			$sRootFmPath = $this->oFileManagerEnv->getCollectiveRootFmPath();
+			
+			$oCriteria = $oIdDgOwner->in(bab_getCurrentUserDelegation());
 		}
 		else if($this->oFileManagerEnv->userIsInPersonnalFolder())
 		{
 			$sGr = 'N';
 			$sRootFmPath = $this->oFileManagerEnv->getPersonnalFolderPath();
+			
+			$oCriteria = $oIdDgOwner->in(0);
 		}
 		else 
 		{
@@ -357,14 +369,7 @@ class listFiles
 		}
 		
 		
-		$oFmFolderCliboardSet = new BAB_FmFolderCliboardSet();
-		$oIdDgOwner = $oFmFolderCliboardSet->aField['iIdDgOwner'];
-		$oIdOwner = $oFmFolderCliboardSet->aField['iIdOwner'];
-		$oGroup = $oFmFolderCliboardSet->aField['sGroup'];
-		
-		$oCriteria = $oIdDgOwner->in(bab_getCurrentUserDelegation());
 		$oCriteria = $oCriteria->_and($oGroup->in($sGr));
-		
 		$aOrder = array('sName' => 'ASC');
 		$oFmFolderCliboardSet->select($oCriteria, $aOrder);
 		
@@ -1298,15 +1303,19 @@ function listFiles()
 			global $babDB;
 			$oCriteria = $oGroup->in($this->oFileManagerEnv->sGr);
 			$oCriteria = $oCriteria->_and($oState->in('X'));
-			$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
 			
 			if($this->oFileManagerEnv->userIsInPersonnalFolder())
 			{
 				$oCriteria = $oCriteria->_and($oIdOwner->in($this->oFileManagerEnv->iId));
+				$oCriteria = $oCriteria->_and($oIdDgOwner->in(0));
+			}
+			else 
+			{
+				$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
 			}
 			
 			$this->oFolderFileSet->select($oCriteria);
-//			bab_debug($this->oFolderFileSet->getSelectQuery()); 
+//			bab_debug($this->oFolderFileSet->getSelectQuery($oCriteria)); 
 			$this->xres = $this->oFolderFileSet->_oResult;
 			$this->xcount = $this->oFolderFileSet->count();
 			$this->oFolderFileSet->bUseAlias = true;
