@@ -374,6 +374,95 @@ class bab_inifile_requirements {
 			'result'		=> $status
 		);
 	}
+	
+	
+	function require_mysql_character_set_database($value) {
+
+		$value = strtolower($value);
+		
+		global $babDB;
+		$res = $babDB->db_queryWem("show variables like 'character_set_database'");
+		
+		
+		$charset = 'Undefined';
+		
+		if ($arr = $babDB->db_fetch_array($res)) {
+			$charset = strtolower($arr[1]);
+		}
+
+		return array(
+			'description'	=> bab_translate("MySQL database charset"),
+			'current'		=> $charset,
+			'result'		=> $value === $charset
+		);
+	}
+	
+	
+	function require_mysql_collation_database($value) {
+
+		$value = strtolower($value);
+		
+		global $babDB;
+		$res = $babDB->db_queryWem("show variables like 'collation_database'");
+		
+		
+		$collation = 'Undefined';
+		
+		if ($arr = $babDB->db_fetch_array($res)) {
+			$collation = strtolower($arr[1]);
+		}
+
+		return array(
+			'description'	=> bab_translate("MySQL database collation"),
+			'current'		=> $collation,
+			'result'		=> $value === $collation
+		);
+	}
+	
+	
+	function require_mysql_max_allowed_packet($value) {
+
+		$value = $this->return_bytes($value);
+		
+		global $babDB;
+		$res = $babDB->db_queryWem("show variables like 'max_allowed_packet'");
+		
+		
+		$max_allowed_packet = 'Undefined';
+		
+		if ($arr = $babDB->db_fetch_array($res)) {
+			$max_allowed_packet = (int) $arr[1];
+		}
+
+		return array(
+			'description'	=> bab_translate("MySQL server variable max_allowed_packet"),
+			'current'		=> sprintf("%dM",$max_allowed_packet/1024/1024),
+			'result'		=> $value >= $max_allowed_packet
+		);
+	}
+	
+	
+	function require_mysql_sql_mode($value) {
+
+		
+		global $babDB;
+		$res = $babDB->db_queryWem("show variables like 'sql_mode'");
+		
+		
+		$current = 'Undefined';
+		
+		if ($arr = $babDB->db_fetch_array($res)) {
+			if (!empty($arr[1])) {
+				$current = strtolower($arr[1]);
+			}
+		}
+
+		return array(
+			'description'	=> bab_translate("MySQL server variable : sql_mode"),
+			'current'		=> bab_translate($current),
+			'result'		=> $value === $current
+		);
+	}
 }
 
 

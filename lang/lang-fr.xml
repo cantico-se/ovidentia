@@ -2206,7 +2206,7 @@
 <string id="Images directory for articles">Répertoire images pour les articles</string>
 <string id="Available">Disponible</string>
 <string id="Unavailable">Indisponible</string>
-<string id="Writable directory for upgrades">Répertoire accessible en écriture pour les mises à jour</string>
+<string id="Writable directory for upgrades">Répertoire racine accessible en écriture pour les mises à jour</string>
 <string id="%s php module">Module %s de php</string>
 <string id="Recommended">Recommandé</string>
 <string id="Writable lang directory">Répertoire "lang" accessible en écriture</string>
@@ -2428,7 +2428,7 @@
 <string id="The addon files are not deleteable">Les fichiers du module ne sont pas supprimables</string>
 <string id="Reply(ies)">Contribution(s)</string>
 <string id="File(s)">Fichier(s)</string>
-<string id="Writable upload directory, absolute path">Répertoire des fichiers accessible en écriture, avec un chemin absolu</string>
+<string id="Writable upload directory, absolute path">Répertoire des téléchargements accessible en écriture, avec un chemin absolu</string>
 <string id="Error on upgrade">Erreur lors de la mise à jour</string>
 <string id="The calendar %s has been removed from an appointement">L'agenda %s a été retiré d'un événement</string>
 <string id="An appointement has been removed">Un événement a été supprimé</string>
@@ -2480,4 +2480,9 @@
 <string id="Personal Folder">Répertoire personnel</string>
 <string id="The folder does not exist">Le répertoire n'existe pas</string>
 <string id="Folder path">Chemin du répertoire</string>
+<string id="MySQL database charset">Code de caractères de la base de donnés MySQL</string>
+<string id="MySQL database collation">Collation de la base de donnés MySQL</string>
+<string id="MySQL server variable max_allowed_packet">Variable du serveur MySQL : max_allowed_packet</string>
+<string id="MySQL server variable : sql_mode">Variable du serveur MySQL : sql_mode</string>
+<string id="Undefined">Non défini</string>
 </fr>

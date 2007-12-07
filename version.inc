@@ -59,6 +59,9 @@ mod_gettext="Available"
 ; mod_ftp="Available"
 ; mod_curl="Available"
 upload_max_file_size=30M
-
+mysql_character_set_database="latin1"
+mysql_collation_database="latin1_swedish_ci"
+mysql_max_allowed_packet=16M
+mysql_sql_mode="Undefined"
 
 ;*/?>
