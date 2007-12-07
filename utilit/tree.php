@@ -2140,21 +2140,18 @@ class bab_FileTreeView extends bab_TreeView
 
 			foreach ($subdirs as $subdir) {
 				if (trim($subdir) !== '') {
-					$previousMd5Id = $subdirMd5Id;
-					$subdirMd5Id = sprintf(':%x', crc32($parentId . ':' . $subdir));
-					if (is_null($this->_rootNode->getNodeById($rootId . $subdirMd5Id /*$parentId . ':' . $subdir*/))) {
-						$element =& $this->createElement($rootId . $subdirMd5Id /*$parentId . ':' . $subdir*/,
+					if (is_null($this->_rootNode->getNodeById($rootId . $parentId . ':' . $subdir))) {
+						$element =& $this->createElement($rootId . $parentId . ':' . $subdir,
 														 $directoryType,
 														 $subdir,
 														 '',
 														 '');
-						//						$element->setFetchContentScript('bab_loadSubTree(this, \'' . $this->_updateBaseUrl . '&start=' . $file['id_owner'] . ':' . $subdir . '\')');
 						$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
 						if (($this->_attributes & BAB_FILE_TREE_VIEW_SELECTABLE_SUB_DIRECTORIES)
 						&& ($this->_attributes & BAB_TREE_VIEW_MULTISELECT)) {
 							$element->addCheckBox('select');
 						}
-						$this->appendElement($element, $rootId . $previousMd5Id /*$parentId*/);
+						$this->appendElement($element, $parentId);
 					}
 					$parentId .= ':' . $subdir;
 				}
@@ -2169,7 +2166,7 @@ class bab_FileTreeView extends bab_TreeView
 			&& ($this->_attributes & BAB_TREE_VIEW_MULTISELECT)) {
 				$element->addCheckBox('select');
 			}
-			$this->appendElement($element, $rootId . $subdirMd5Id /*$parentId*/);
+			$this->appendElement($element, $parentId);
 		}
 	}
 
@@ -2209,7 +2206,7 @@ class bab_FileTreeView extends bab_TreeView
 		{
 			$bManager = bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $folder->getId());
 			$bDownload = bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $folder->getId());
-				
+
 			if($this->_adminView || $bManager || $bDownload)
 			{
 				$element =& $this->createElement('d' . BAB_TREE_VIEW_ID_SEPARATOR . $folder->getId(),
@@ -2262,10 +2259,8 @@ class bab_FileTreeView extends bab_TreeView
 		if ($babBody->currentAdmGroup != 0 && ($this->_attributes & BAB_FILE_TREE_VIEW_SHOW_ONLY_DELEGATION)) {
 			$sql .= ' LEFT JOIN ' . BAB_FM_FOLDERS_TBL . ' folder ON file.id_owner=folder.id ';
 			$sql .= ' WHERE file.bgroup=\'Y\' AND folder.id_dgowner = ' . $babDB->quote($babBody->currentAdmGroup);
-		} /* elseif ($this->_attributes & BAB_FILE_TREE_VIEW_SHOW_PERSONAL_DIRECTORIES) {
-		$sql .= ' WHERE (file.bgroup=\'Y\' OR (file.bgroup=\'N\' AND file.id_owner=' . $babDB->quote($GLOBALS['BAB_SESS_USERID']) . '))';
-		} */ else {
-		$sql .= ' WHERE file.bgroup=\'Y\'';
+		} else {
+			$sql .= ' WHERE file.bgroup=\'Y\'';
 		}
 		if ($rootPath . $path . $sEndSlash !== '') {
 			$sql .= ' AND file.path LIKE ' . $babDB->quote($rootPath . $path . $sEndSlash . '%');
@@ -2295,7 +2290,8 @@ class bab_FileTreeView extends bab_TreeView
 		while ($file = $babDB->db_fetch_array($files)) {
 
 			$filePath = removeFirstPath($file['path']);
-
+			echo $filePath . ' ' . $file['name'] . "\n";
+//			$filePath = $file['path'];
 			$subdirs = explode('/', $filePath);
 
 			$fileId = 'g' . BAB_TREE_VIEW_ID_SEPARATOR . $file['id'];
@@ -2309,29 +2305,25 @@ class bab_FileTreeView extends bab_TreeView
 				continue;
 			}
 			$rootId = 'd' . BAB_TREE_VIEW_ID_SEPARATOR . $folder->getId(); // $file['id_owner'];
-			//				$parentId = 'd' . BAB_TREE_VIEW_ID_SEPARATOR . $file['id_owner'];
 			$fileType =& $groupFileType;
 
-			$parentId = '';
-			$subdirMd5Id = '';
+			$parentId = $rootId;
+//			die($parentId);
 
 			foreach ($subdirs as $subdir) {
 				if (trim($subdir) !== '') {
-					$previousMd5Id = $subdirMd5Id;
-					$subdirMd5Id = sprintf(':%x', crc32($parentId . ':' . $subdir));
-					if (is_null($this->_rootNode->getNodeById($rootId . $subdirMd5Id /*$parentId . ':' . $subdir*/))) {
-						$element =& $this->createElement($rootId . $subdirMd5Id /*$parentId . ':' . $subdir*/,
+					if (is_null($this->_rootNode->getNodeById($parentId . ':' . $subdir))) {
+						$element =& $this->createElement($parentId . ':' . $subdir,
 														 $directoryType,
 														 $subdir,
 														 '',
 														 '');
-						//						$element->setFetchContentScript('bab_loadSubTree(this, \'' . $this->_updateBaseUrl . '&start=' . $file['id_owner'] . ':' . $subdir . '\')');
 						$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
 						if (($this->_attributes & BAB_FILE_TREE_VIEW_SELECTABLE_SUB_DIRECTORIES)
 						&& ($this->_attributes & BAB_TREE_VIEW_MULTISELECT)) {
 							$element->addCheckBox('select');
 						}
-						$this->appendElement($element, $rootId . $previousMd5Id /*$parentId*/);
+						$this->appendElement($element, $parentId);
 					}
 					$parentId .= ':' . $subdir;
 				}
@@ -2347,7 +2339,7 @@ class bab_FileTreeView extends bab_TreeView
 				&& ($this->_attributes & BAB_TREE_VIEW_MULTISELECT)) {
 					$element->addCheckBox('select');
 				}
-				$this->appendElement($element, $rootId . $subdirMd5Id /*$parentId*/);
+				$this->appendElement($element, $parentId);
 			}
 		}
 	}
