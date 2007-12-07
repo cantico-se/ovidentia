@@ -192,6 +192,7 @@ class listFiles
 	function listCollectiveFolder()
 	{
 		$sFullPathname = (string) $this->oFileManagerEnv->getCollectiveFolderPath();
+		
 		if(is_dir(realpath($sFullPathname)))
 		{
 			$this->walkDirectory($sFullPathname, 'collectiveDirectoryCallback');
@@ -222,39 +223,44 @@ class listFiles
 	{
 		if(is_dir($sPathName . $sEntry)) 
 		{
-			$bInClipBoard = false;
-		
-			$sRootFmPath = '';
-			$sGr = '';
+			$sGr				= '';
+			$sRootFmPath		= '';
+			$sRelativePath		= $this->oFileManagerEnv->sRelativePath . $sEntry . '/';
+			$bCanManage			= canManage($sRelativePath);
+			$bCanBrowse			= canBrowse($sRelativePath);
+			$bAccessValid		= false;
+			$bCanBrowseFolder	= false;
+						
 			if($this->oFileManagerEnv->userIsInCollectiveFolder() || $this->oFileManagerEnv->userIsInRootFolder())
 			{
-				$sRootFmPath = $this->oFileManagerEnv->getCollectiveRootFmPath();
-				$sGr = 'Y';
+				$sRootFmPath		= $this->oFileManagerEnv->getCollectiveRootFmPath();
+				$sGr				= 'Y';
+				$bAccessValid		= ($bCanManage || ($bCanBrowse && 'N' === $this->oFileManagerEnv->oFmFolder->getHide()));
+				$bCanBrowseFolder	= ($bCanBrowse && 'Y' === $this->oFileManagerEnv->oFmFolder->getActive());
 			}
 			else if($this->oFileManagerEnv->userIsInPersonnalFolder())
 			{
-				$sRootFmPath = $this->oFileManagerEnv->getPersonnalFolderPath();
-				$sGr = 'N';
+				$sRootFmPath		= $this->oFileManagerEnv->getPersonnalFolderPath();
+				$sGr				= 'N';
+				$bAccessValid		= $bCanManage || $bCanBrowse;
+				$bCanBrowseFolder	= $bCanBrowse;
 			}
 			else 
 			{
 				return;
 			}
+				
+			$sFullPathName	= $sRootFmPath . $this->oFileManagerEnv->sRelativePath . $sEntry;
+			$bInClipBoard	= (bool) array_key_exists($sFullPathName, $this->aCuttedDir);
 			
-			$sFullPathName = $sRootFmPath . $this->oFileManagerEnv->sRelativePath . $sEntry;
-			
-			$bInClipBoard = (bool) array_key_exists($sFullPathName, $this->aCuttedDir);
-		
 			if(false === $bInClipBoard)
 			{
-				$sRelativePath = $this->oFileManagerEnv->sRelativePath . $sEntry . '/';
-		
-				if(canManage($sRelativePath) || canBrowse($sRelativePath))
+				if($bAccessValid)
 				{
 					$aItem = array(
 						'iId' => 0, 
 						'bCanManageFolder' => haveRight($sRelativePath, BAB_FMMANAGERS_GROUPS_TBL),
-						'bCanBrowseFolder' => canBrowse($sRelativePath),
+						'bCanBrowseFolder' => $bCanBrowseFolder,
 						'bCanEditFolder' => canEdit($sRelativePath), 
 						'bCanSetRightOnFolder' => false,
 						'bCanCutFolder' => (!$bInClipBoard && canCutFolder($sRelativePath)), 
@@ -274,7 +280,6 @@ class listFiles
 			$this->files_from_dir[] = $sEntry;
 		}
 	}
-
 
 	function collectiveDirectoryCallback($sPathName, $sEntry)
 	{
@@ -316,26 +321,24 @@ class listFiles
 			$bCanManage = canManage($sRelativePath);
 			$bCanBrowse = canBrowse($sRelativePath);
 			
-				if($bCanManage || ($bCanBrowse && 'N' === $oFmFolder->getHide()))
-//				if(canManage($sRelativePath) || canBrowse($sRelativePath))
-				{
-					$aItem = array(
-						'iId' => $oFmFolder->getId(), 
-						'bCanManageFolder' => haveRight($sRelativePath, BAB_FMMANAGERS_GROUPS_TBL),
-						'bCanBrowseFolder' => canBrowse($sRelativePath),
-						'bCanEditFolder' => canEdit($sRelativePath), 
-						'bCanSetRightOnFolder' => canSetRight($sRelativePath),
-						'bCanCutFolder' => canCutFolder($sRelativePath), 
-						'sName' => $oFmFolder->getName(), 
-						'sGr' => 'Y', 
-						'sCollective' => 'Y', 
-//						'sHide' => ('Y' === $oFmFolder->getHide() && false === canManage($sRelativePath)),
-						'sHide' => $oFmFolder->getHide(),
-						'sUrlPath' => $oFmFolder->getRelativePath() . $oFmFolder->getName(),
-						'iIdUrl' => $iIdRootFolder);
-						
-					$this->aFolders[] = $aItem;
-				}
+			if($bCanManage || ($bCanBrowse && 'N' === $oFmFolder->getHide()))
+			{
+				$aItem = array(
+					'iId' => $oFmFolder->getId(), 
+					'bCanManageFolder' => haveRight($sRelativePath, BAB_FMMANAGERS_GROUPS_TBL),
+					'bCanBrowseFolder' => (canBrowse($sRelativePath) && 'Y' === $oFmFolder->getActive()),
+					'bCanEditFolder' => canEdit($sRelativePath), 
+					'bCanSetRightOnFolder' => canSetRight($sRelativePath),
+					'bCanCutFolder' => canCutFolder($sRelativePath), 
+					'sName' => $oFmFolder->getName(), 
+					'sGr' => 'Y', 
+					'sCollective' => 'Y', 
+					'sHide' => $oFmFolder->getHide(),
+					'sUrlPath' => $oFmFolder->getRelativePath() . $oFmFolder->getName(),
+					'iIdUrl' => $iIdRootFolder);
+					
+				$this->aFolders[] = $aItem;
+			}
 		}
 	}
 		
@@ -401,7 +404,6 @@ class listFiles
 					'sName' => $oFmFolderCliboard->getName(), 
 					'sGr' => $sGr, 
 					'sCollective' => $oFmFolderCliboard->getCollective(), 
-//					'sHide' => ('Y' === $oFmFolder->getHide() && false === canManage($sRelativePath)),
 					'sUrlPath' => $sTrgPath,
 					'iIdUrl' => $this->oFileManagerEnv->iId,
 					'iIdSrcRootFolder' => $iIdSrcRootFolder,
@@ -1240,8 +1242,6 @@ function listFiles()
 			$this->manfolderimg = bab_printTemplate($this, "config.html", "managerfolder");
 			
 			$sRelativePath = $this->oFileManagerEnv->sRelativePath;
-			
-//			$this->bCanManageCurrentFolder = canManage($sRelativePath);
 			$this->bCanManageCurrentFolder = haveRightOn($sRelativePath, BAB_FMMANAGERS_GROUPS_TBL);
 
 
