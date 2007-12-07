@@ -1269,9 +1269,8 @@ function listFiles()
 			$aItem = each($this->aVisibleDelegation);
 			if(false !== $aItem)
 			{
-				$aItem = $aItem['value'];
-				$this->iIdDelegation = $aItem['iId'];
-				$this->sDelegationName = $aItem['sName'];
+				$this->iIdDelegation = $aItem['key'];
+				$this->sDelegationName = $aItem['value'];
 				$this->sDelegationSelected = '';
 				global $babBody;
 				
@@ -3529,7 +3528,7 @@ function deleteFolderForUserDir()
 
 function changeDelegation()
 {
-	$aVisibleDelegation = getVisibleDelegation();
+	$aVisibleDelegation = bab_getUserFmVisibleDelegations();
 	$iDelegation = (int) bab_pp('iDelegation', 0);
 	
 	if(array_key_exists($iDelegation, $aVisibleDelegation))
@@ -3540,6 +3539,17 @@ function changeDelegation()
 
 
 /* main */
+$iUsrDg = bab_getCurrentUserDelegation();
+if(0 === $iUsrDg)
+{
+	$aCurrUsrDg = bab_getUserFmVisibleDelegations();
+	if(!array_key_exists(0, $aCurrUsrDg))
+	{
+		bab_setCurrentUserDelegation($aCurrUsrDg[0]);		
+	}
+}
+
+
 initEnvObject();
 
 $oFileManagerEnv =& getEnvObject();

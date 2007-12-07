@@ -5036,18 +5036,19 @@ function bab_getUserFmVisibleDelegations()
 	{
 		$aVisibleDelegation		= array();
 		$aProcessedDelegation	= array();
+		$bMainSite				= false;
 		$iMainDelegation		= (int) 0;
 		
 		if(bab_isUserAdministrator())
 		{
 			$aProcessedDelegation[$iMainDelegation] = $iMainDelegation;
-			$aVisibleDelegation[$iMainDelegation] = array('iId' => $iMainDelegation, 'sName' => bab_translate("All site"));
+			$bMainSite = true;
 		}
 		
 		global $babBody;
 		if(is_array($babBody->dgAdmGroups) && count($babBody->dgAdmGroups) > 0)
 		{
-			foreach($babBody->dgAdmGroups as $iKey => $iIdDelegation);
+			foreach($babBody->dgAdmGroups as $iKey => $iIdDelegation)
 			{
 				$aProcessedDelegation[$iIdDelegation] = $iIdDelegation;
 			}
@@ -5085,7 +5086,7 @@ function bab_getUserFmVisibleDelegations()
 					$aProcessedDelegation[$oFmFolder->getDelegationOwnerId()] = $oFmFolder->getDelegationOwnerId();
 					if(0 === $oFmFolder->getDelegationOwnerId())
 					{
-						$aVisibleDelegation[$iMainDelegation] = array('iId' => $iMainDelegation, 'sName' => bab_translate("All site"));
+						$bMainSite = true;
 					}
 				}
 			}
@@ -5110,7 +5111,14 @@ function bab_getUserFmVisibleDelegations()
 		while($iIndex < $iNumRows && null !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
 		{
 			$iIndex++;
-			$aVisibleDelegation[$aDatas['iId']] = array('iId' => $aDatas['iId'], 'sName' => $aDatas['sName']);
+			$aVisibleDelegation[$aDatas['iId']] =  $aDatas['sName'];
+		}
+		
+		natcasesort($aVisibleDelegation);
+		
+		if($bMainSite)
+		{
+			$aVisibleDelegation = array(0 => bab_translate("All site")) + $aVisibleDelegation;
 		}
 	}
 	return $aVisibleDelegation;
