@@ -857,7 +857,7 @@ function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonl
 
 	if(!is_null($oFolderFile))
 	{
-
+		bab_setCurrentUserDelegation($oFolderFile->getDelegationOwnerId());
 		if('Y' === $oFolderFile->getGroup())
 		{
 		$rr = $babDB->db_fetch_array($babDB->db_query("select baddtags from ".BAB_FM_FOLDERS_TBL." where id='".$babDB->db_escape_string($oFolderFile->getOwnerId())."'"));
