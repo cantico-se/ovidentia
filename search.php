@@ -2822,16 +2822,14 @@ function viewFile($id, $w)
 				$this->postedby = bab_toHtml(bab_getUserName($this->arr['author']));
 				$this->modifiedby = bab_toHtml(bab_getUserName($this->arr['modifiedby']));
 				
-				$sPath = removeFirstPath($this->arr['path']);
-				$iLength = strlen(trim($sPath));
-				if($iLength && '/' === $sPath{$iLength - 1})
-				{
-					$sPath = substr($sPath, 0, -1);
-				}
+				$sPath = removeEndSlah($this->arr['path']);
 				
 				$iid = $this->arr['id_owner'];
 				
-				$sUploadPath = BAB_FmFolderHelper::getUploadPath();
+				bab_setCurrentUserDelegation($this->arr['iIdDgOwner']);
+				$oFileManagerEnv =& getEnvObject();
+				
+				$sUploadPath = $oFileManagerEnv->getCollectiveRootFmPath();
 				if($this->arr['bgroup'] == "Y")
 					{
 					$fstat = stat($sUploadPath . $this->arr['path'] . $this->arr['name']);
@@ -2845,7 +2843,7 @@ function viewFile($id, $w)
 					{
 					$fstat = stat($sUploadPath . $this->arr['path'] . $this->arr['name']);
 					}
-				$this->geturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$iid."&gr=".$this->arr['bgroup']."&path=".urlencode($sPath)."&file=".urlencode($this->arr['name']));
+				$this->geturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&sAction=getFile&id=".$iid."&gr=".$this->arr['bgroup']."&path=".urlencode($sPath)."&file=".urlencode($this->arr['name']).'&idf='.$this->arr['id']);
 				$this->size = bab_formatSizeFile($fstat[7])." ".bab_translate("Kb");
 				if( $this->arr['bgroup'] == "Y") {
 					$this->rootpath = '';

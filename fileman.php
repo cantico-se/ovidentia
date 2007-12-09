@@ -1540,7 +1540,7 @@ function listFiles()
 				$upath = urlencode($this->path);
 				$this->url = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=upd&id=".$iId."&gr=".$sGr."&path=".$upath."&file=".$ufile);
 				$this->viewurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=viewFile&idf=".$arr['id']."&id=".$iId."&gr=".$sGr."&path=".$upath."&file=".$ufile);
-				$this->urlget = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&sAction=getFile&id=' . $iId . '&gr=' . $sGr . '&path=' . $upath . '&file=' . $ufile);
+				$this->urlget = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&sAction=getFile&id=' . $iId . '&gr=' . $sGr . '&path=' . $upath . '&file=' . $ufile.'&idf='.$arr['id']);
 				$this->cuturl = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&sAction=cutFile&id=' . $iId . '&gr=' . $sGr . '&path=' . $upath . '&file=' . $ufile);
 				$this->delurl = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&sAction=delFile&id=' . $iId . '&gr=' . $sGr . '&path=' . $upath . '&file=' . $ufile);
 				$i++;
@@ -1590,7 +1590,7 @@ function listFiles()
 						$upath = urlencode((string) substr($arr['path'], 0, -1));
 					}
 					$this->url = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=upd&id=".$iId."&gr=".$sGr."&path=".$upath."&file=".$ufile);
-					$this->urlget = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$iId."&gr=".$sGr."&path=".$upath."&file=".$ufile);
+					$this->urlget = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&sAction=getFile&id=".$iId."&gr=".$sGr."&path=".$upath."&file=".$ufile.'&idf='.$arr['id']);
 					
 					$this->pasteurl = bab_toHtml($GLOBALS['babUrlScript'].'?tg=fileman&idx=list&sAction=pasteFile&id=' . $iId . '&gr=' . $sGr . 
 						'&path=' . $this->path . '&iIdSrcRootFolder=' . $iIdSrcRootFolder . '&sSrcPath=' . $upath . '&file=' . $ufile);
@@ -1767,32 +1767,25 @@ function getFile()
 		$inl = bab_getFileContentDisposition() == 1 ? 1 : '';
 	}
 	
-	$oFileManagerEnv =& getEnvObject();
-	if(canDownload($oFileManagerEnv->sRelativePath))
+	$iIdFile = (int) bab_rp('idf', 0);
+	
+	//OVML ne positionne pas la délégation
+	$oFolderFileSet = new BAB_FolderFileSet();
+	$oId = $oFolderFileSet->aField['iId'];
+	$oFolderFile = $oFolderFileSet->get($oId->in($iIdFile));
+	if(!is_null($oFolderFile))
 	{
-		$sName = (string) stripslashes(bab_rp('file', ''));
-		
-		$oFolderFileSet = new BAB_FolderFileSet();
-				
-		$oGroup		= $oFolderFileSet->aField['sGroup'];
-		$oIdOwner	= $oFolderFileSet->aField['iIdOwner'];
-		$oPathName	= $oFolderFileSet->aField['sPathName'];
-		$oName		= $oFolderFileSet->aField['sName'];
-		
-		$oCriteria = $oGroup->in($oFileManagerEnv->sGr);
-		$oCriteria = $oCriteria->_and($oPathName->in($oFileManagerEnv->sRelativePath));
-		$oCriteria = $oCriteria->_and($oName->in($sName));
-		$oCriteria = $oCriteria->_and($oIdOwner->in($oFileManagerEnv->iIdObject));
-		
-		$oFolderFile = $oFolderFileSet->get($oCriteria);
-		if(!is_null($oFolderFile))
+		bab_setCurrentUserDelegation($oFolderFile->getDelegationOwnerId());
+		$oFileManagerEnv =& getEnvObject();
+
+		if(canDownload($oFileManagerEnv->sRelativePath))
 		{
 			$oFolderFile->setHits($oFolderFile->getHits() + 1);
 			$oFolderFile->save();
 
 			$GLOBALS['babWebStat']->addFilesManagerFile($oFolderFile->getId());
 			
-			$sFullPathName = $oFileManagerEnv->getCurrentFmPath() . $oFolderFile->getName();
+			$sFullPathName = $oFileManagerEnv->getCollectiveRootFmPath() . $oFolderFile->getPathName() . $oFolderFile->getName();
 			$mime = bab_getFileMimeType($sFullPathName);
 			
 			if(file_exists($sFullPathName))
@@ -1802,7 +1795,7 @@ function getFile()
 				{
 					header('Cache-Control: public');
 				}
-				
+				$sName = $oFolderFile->getName();
 				if($inl == "1")
 				{
 					header("Content-Disposition: inline; filename=\"$sName\""."\n");
@@ -1831,11 +1824,15 @@ function getFile()
 				$babBody->msgerror = bab_translate("The file is not on the server");
 			}
 		}
-	}
-	else 
+		else 
+		{
+			echo bab_translate("Access denied");
+			return;
+		}
+	}	
+	else
 	{
-		echo bab_translate("Access denied");
-		return;
+		$babBody->msgerror = bab_translate("The file is not on the server");
 	}
 }
 
@@ -2118,6 +2115,7 @@ function viewFile()
 				$this->tabIndexStatus = array(BAB_INDEX_STATUS_NOINDEX, BAB_INDEX_STATUS_INDEXED, BAB_INDEX_STATUS_TOINDEX);
 
 				$this->id = $oFileManagerEnv->iId;
+				
 				$this->gr = $oFolderFile->getGroup();
 				$this->path = bab_toHtml($oFileManagerEnv->sPath);
 				$this->file = bab_toHtml($oFolderFile->getName());
@@ -2136,7 +2134,7 @@ function viewFile()
 
 				$this->fsizetxt = bab_translate("Size");
 				
-				$fullpath = $oFileManagerEnv->getCurrentFmPath() . $oFolderFile->getName();
+				$fullpath = $oFileManagerEnv->getCollectiveRootFmPath() . $oFolderFile->getPathName() . $oFolderFile->getName();
 				if(file_exists($fullpath)) 
 				{
 					$fstat = stat($fullpath);
@@ -2158,7 +2156,7 @@ function viewFile()
 				$this->fpostedbytxt = bab_translate("Posted by");
 				$this->fpostedby = bab_toHtml(bab_getUserName($oFolderFile->getModifierId() == 0 ? $oFolderFile->getAuthorId() : $oFolderFile->getModifierId()));
 
-				$this->geturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&sAction=getFile&id=".$this->id."&gr=".$oFolderFile->getGroup()."&path=".urlencode($this->path)."&file=".urlencode($oFolderFile->getName()));
+				$this->geturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&sAction=getFile&id=".$this->id."&gr=".$oFolderFile->getGroup()."&path=".urlencode($this->path)."&file=".urlencode($oFolderFile->getName()).'&idf='.$oFolderFile->getId());
 				$this->download = bab_translate("Download");
 
 				$this->file = bab_translate("File");
@@ -2397,12 +2395,13 @@ function viewFile()
 
 	$oCriteria = $oId->in($idf);
 	$oCriteria = $oCriteria->_and($oState->in(''));
-	$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
 	
 	$oFolderFile = $oFolderFileSet->get($oCriteria);
 
 	if(!is_null($oFolderFile))
 	{
+		//A cause de OVML
+		bab_setCurrentUserDelegation($oFolderFile->getDelegationOwnerId());
 		$oFileManagerEnv =& getEnvObject();
 		
 		if('N' === $oFolderFile->getGroup())

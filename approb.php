@@ -351,9 +351,7 @@ function listWaitingFiles()
 				$this->filetitle = bab_toHtml($arr['name']);
 				$this->author = bab_toHtml(bab_getUserName($arr['author']));
 				
-				bab_debug($arr['path']);
-				
-				$this->fileviewurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=viewfile&idf=".$arr['id']."&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($this->cleanFmPath($arr['path']))."&file=".urlencode($arr['name']));
+				$this->fileviewurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=viewFile&idf=".$arr['id']."&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($this->cleanFmPath($arr['path']))."&file=".urlencode($arr['name']));
 				$this->altbg = !$this->altbg;
 				$i++;
 				return true;

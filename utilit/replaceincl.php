@@ -306,7 +306,7 @@ function ref(&$txt)
 										}
 
 										$sPath = removeEndSlah($arr['path']);
-										$title_object = $this->_make_link($GLOBALS['babUrlScript']."?tg=fileman&sAction=getFile".$inl."&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($sPath)."&file=".urlencode($arr['name']),$title_object,2);
+										$title_object = $this->_make_link($GLOBALS['babUrlScript']."?tg=fileman&sAction=getFile".$inl."&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($sPath)."&file=".urlencode($arr['name']).'&idf='.$arr['id'],$title_object,2);
 									}
 								}
 							bab_replace::_var($txt,$var,$title_object);

@@ -293,7 +293,6 @@ function newFiles($nbdays)
 				$req .= " and f.modified >= '".$babDB->db_escape_string($babBody->lastlog)."'";
 
 			$req .= " group by f.id";
-		
 
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
@@ -331,6 +330,8 @@ function newFiles($nbdays)
 	$temp = new temp6($nbdays);
 	$babBody->babecho(	bab_printTemplate($temp,"calview.html", "fileslist"));
 }
+
+
 
 /* main */
 if(!isset($idx))
