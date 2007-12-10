@@ -3327,6 +3327,7 @@ function editFolderForCollectiveDir()
 			bab_debug('sOldDirName ==> ' . $sOldDirName);
 			bab_debug('sDirName ==> ' . $sDirName);
 			//*/
+
 			if($bFolderRenamed)
 			{
 				if(strlen(trim($sOldDirName)) > 0)
