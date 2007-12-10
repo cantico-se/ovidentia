@@ -604,8 +604,9 @@ function updateFolder($fid, $fname, $active, $said, $notification, $version, $bh
 			}
 			
 			$oFileManagerEnv =& getEnvObject();
-			$sRootFmPath = $oFileManagerEnv->getCollectiveFolderPath();
+			$sRootFmPath = BAB_FileManagerEnv::getCollectivePath($oFmFolder->getDelegationOwnerId());
 			$sRelativePath = '';
+			
 			BAB_FmFolderSet::rename($sRootFmPath, $sRelativePath, $oFmFolder->getName(), $fname);
 			BAB_FmFolderCliboardSet::rename($sRelativePath, $oFmFolder->getName(), $fname, 'Y');
 			BAB_FolderFileSet::renameFolder($oFmFolder->getName() . '/', $fname, 'Y');

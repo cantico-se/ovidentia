@@ -3319,7 +3319,7 @@ function editFolderForCollectiveDir()
 			}
 			
 			$sRootFmPath = $oFileManagerEnv->getCollectiveRootFmPath();
-			//*
+			/*
 			bab_debug('sRootFmPath ==> ' . $sRootFmPath);
 			bab_debug('sRelativePath ==> ' . $sRelativePath);
 			bab_debug('sOldDirName ==> ' . $sOldDirName);
