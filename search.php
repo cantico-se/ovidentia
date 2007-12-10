@@ -2826,10 +2826,10 @@ function viewFile($id, $w)
 				
 				$iid = $this->arr['id_owner'];
 				
-				bab_setCurrentUserDelegation($this->arr['iIdDgOwner']);
-				$oFileManagerEnv =& getEnvObject();
 				
-				$sUploadPath = $oFileManagerEnv->getCollectiveRootFmPath();
+
+				
+				$sUploadPath = BAB_FileManagerEnv::getCollectivePath($this->arr['iIdDgOwner']);
 				if($this->arr['bgroup'] == "Y")
 					{
 					$fstat = stat($sUploadPath . $this->arr['path'] . $this->arr['name']);

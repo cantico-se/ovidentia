@@ -1775,7 +1775,7 @@ function getFile()
 	$oFolderFile = $oFolderFileSet->get($oId->in($iIdFile));
 	if(!is_null($oFolderFile))
 	{
-		bab_setCurrentUserDelegation($oFolderFile->getDelegationOwnerId());
+
 		$oFileManagerEnv =& getEnvObject();
 
 		if(canDownload($oFileManagerEnv->sRelativePath))
@@ -2134,7 +2134,7 @@ function viewFile()
 
 				$this->fsizetxt = bab_translate("Size");
 				
-				$fullpath = $oFileManagerEnv->getCollectiveRootFmPath() . $oFolderFile->getPathName() . $oFolderFile->getName();
+				$fullpath = BAB_FileManagerEnv::getCollectivePath($oFolderFile->getDelegationOwnerId()) . $oFolderFile->getPathName() . $oFolderFile->getName();
 				if(file_exists($fullpath)) 
 				{
 					$fstat = stat($fullpath);

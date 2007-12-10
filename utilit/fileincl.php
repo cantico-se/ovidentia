@@ -857,7 +857,7 @@ function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonl
 
 	if(!is_null($oFolderFile))
 	{
-		bab_setCurrentUserDelegation($oFolderFile->getDelegationOwnerId());
+
 		if('Y' === $oFolderFile->getGroup())
 		{
 		$rr = $babDB->db_fetch_array($babDB->db_query("select baddtags from ".BAB_FM_FOLDERS_TBL." where id='".$babDB->db_escape_string($oFolderFile->getOwnerId())."'"));
@@ -4038,11 +4038,9 @@ class BAB_FileManagerEnv
 			$this->iIdObject = (int) bab_rp('id', 0);
 		}
 
-		$this->iId						= $this->iIdObject;
-		$this->sFmUploadPath			= BAB_FmFolderHelper::getUploadPath() . 'fileManager/';
-		$this->sFmCollectiveRootPath	= $this->sFmUploadPath . 'collectives/DG' . bab_getCurrentUserDelegation() . '/';		
-		$this->sFmCollectivePath		= $this->sFmCollectiveRootPath;
-		$this->sRelativePath			= $this->sPath . $this->sEndSlash;
+		$this->iId				= $this->iIdObject;
+		$this->sFmUploadPath	= BAB_FmFolderHelper::getUploadPath() . 'fileManager/';
+		$this->sRelativePath	= $this->sPath . $this->sEndSlash;
 	
 		if('N' === $this->sGr)
 		{
@@ -4064,13 +4062,15 @@ class BAB_FileManagerEnv
 		}
 		else if('Y' === $this->sGr)
 		{
-			BAB_FmFolderHelper::getInfoFromCollectivePath($this->sPath, $this->iId, $this->oFmFolder);
+			$this->oFmFolder = BAB_FmFolderHelper::getFmFolderById($this->iIdObject);			
 			if(!is_null($this->oFmFolder))
 			{
 				$this->iIdObject = $this->oFmFolder->getId();
 			}
-			$this->sFmRootPath = $this->sFmCollectivePath;
-			$this->sFmCollectivePath .= $this->sRelativePath;
+			$this->sFmCollectiveRootPath	= $this->sFmUploadPath . 'collectives/DG' . $this->oFmFolder->getDelegationOwnerId() . '/';	
+			$this->sFmCollectivePath		= $this->sFmCollectiveRootPath;
+			$this->sFmRootPath				= $this->sFmCollectivePath;
+			$this->sFmCollectivePath		.= $this->sRelativePath;
 		}
 		if('' === $this->sGr)
 		{
@@ -4150,6 +4150,11 @@ class BAB_FileManagerEnv
 		return $this->sFmCollectiveRootPath;
 	}
 	
+	function getCollectivePath($iIdDelegation)
+	{
+		return BAB_FmFolderHelper::getUploadPath() . 'fileManager/collectives/DG' . $iIdDelegation . '/';
+	}
+	
 	function userIsInRootFolder()
 	{
 		return ('' === (string) $this->sGr && 0 === (int) $this->iPathLength);
@@ -4191,9 +4196,7 @@ class BAB_FileManagerEnv
 			}
 			else if('Y' === $this->sGr)
 			{
-				$oFileManagerEnv =& getEnvObject();
-				$sParentPath = $oFileManagerEnv->sRelativePath;
-				
+				$sParentPath = $this->sRelativePath;
 				if(!is_null($this->oFmFolder))
 				{
 					if(true === canManage($sParentPath) || true === haveRightOn($sParentPath, BAB_FMMANAGERS_GROUPS_TBL))
