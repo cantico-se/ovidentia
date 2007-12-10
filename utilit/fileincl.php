@@ -4010,6 +4010,8 @@ class BAB_FileManagerEnv
 	var $oAclFm	= null;
 	var $sFmCollectiveRootPath = '';
 	
+	var $oFmRootFolder = null;
+	
 	function BAB_FileManagerEnv()
 	{
 		
@@ -4037,11 +4039,27 @@ class BAB_FileManagerEnv
 		{
 			$this->iIdObject = (int) bab_rp('id', 0);
 		}
-
-		$this->iId				= $this->iIdObject;
-		$this->sFmUploadPath	= BAB_FmFolderHelper::getUploadPath() . 'fileManager/';
-		$this->sRelativePath	= $this->sPath . $this->sEndSlash;
+		
+		//
+		{
+			$this->iId				= $this->iIdObject;
+			$this->sFmUploadPath	= BAB_FmFolderHelper::getUploadPath() . 'fileManager/';
+			$this->sRelativePath	= $this->sPath . $this->sEndSlash;
 	
+			$this->oFmRootFolder = BAB_FmFolderHelper::getFmFolderById($this->iIdObject);			
+			if(!is_null($this->oFmRootFolder))
+			{
+				$this->iIdObject = $this->oFmRootFolder->getId();
+				
+				$this->sFmCollectiveRootPath	= $this->sFmUploadPath . 'collectives/DG' . $this->oFmRootFolder->getDelegationOwnerId() . '/';	
+				$this->sFmCollectivePath		= $this->sFmCollectiveRootPath;
+				$this->sFmRootPath				= $this->sFmCollectivePath;
+				$this->sFmCollectivePath		.= $this->sRelativePath;
+				
+				BAB_FmFolderHelper::getInfoFromCollectivePath($this->sPath, $this->iIdObject, $this->oFmFolder);
+			}
+		}
+		
 		if('N' === $this->sGr)
 		{
 			if(userHavePersonnalStorage())
@@ -4062,15 +4080,12 @@ class BAB_FileManagerEnv
 		}
 		else if('Y' === $this->sGr)
 		{
-			$this->oFmFolder = BAB_FmFolderHelper::getFmFolderById($this->iIdObject);			
-			if(!is_null($this->oFmFolder))
-			{
-				$this->iIdObject = $this->oFmFolder->getId();
-			}
-			$this->sFmCollectiveRootPath	= $this->sFmUploadPath . 'collectives/DG' . $this->oFmFolder->getDelegationOwnerId() . '/';	
-			$this->sFmCollectivePath		= $this->sFmCollectiveRootPath;
-			$this->sFmRootPath				= $this->sFmCollectivePath;
-			$this->sFmCollectivePath		.= $this->sRelativePath;
+//			$this->sFmCollectiveRootPath	= $this->sFmUploadPath . 'collectives/DG' . $oFmFolder->getDelegationOwnerId() . '/';	
+//			$this->sFmCollectivePath		= $this->sFmCollectiveRootPath;
+//			$this->sFmRootPath				= $this->sFmCollectivePath;
+//			$this->sFmCollectivePath		.= $this->sRelativePath;
+//			
+//			BAB_FmFolderHelper::getInfoFromCollectivePath($this->sPath, $this->iIdObject, $this->oFmFolder);
 		}
 		if('' === $this->sGr)
 		{
