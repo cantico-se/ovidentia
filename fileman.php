@@ -3269,9 +3269,7 @@ function editFolderForCollectiveDir()
 	$oFileManagerEnv =& getEnvObject();
 	
 //	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sRelativePath ==> ' . $oFileManagerEnv->sRelativePath);
-	
 
-//	if(canEdit($oFileManagerEnv->sRelativePath))
 	if(canCreateFolder($oFileManagerEnv->sRelativePath))
 	{	
 //bab_debug('Rajouter un test qui permet d\'être que c\'est répertoire collectif ou pas');
@@ -3321,7 +3319,7 @@ function editFolderForCollectiveDir()
 			}
 			
 			$sRootFmPath = $oFileManagerEnv->getCollectiveRootFmPath();
-			/*
+			//*
 			bab_debug('sRootFmPath ==> ' . $sRootFmPath);
 			bab_debug('sRelativePath ==> ' . $sRelativePath);
 			bab_debug('sOldDirName ==> ' . $sOldDirName);
