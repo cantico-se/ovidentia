@@ -186,7 +186,7 @@ function updateFolderFilePathName($iIdDgOwner, $iIdOwner, $sGroup, $sDirName)
 		FROM ' .
 			BAB_FILES_TBL . '
 		WHERE 
-			`id_owner` = \'' . $babDB->db_escape_string($iIdOwner) . '\',
+			`id_owner` = \'' . $babDB->db_escape_string($iIdOwner) . '\ AND 
 			`bgroup` = \'' . $babDB->db_escape_string($sGroup) . '\'';
 
 	$oResult = $babDB->db_query($sQuery);
@@ -259,6 +259,7 @@ function updateFmFromPreviousUpgrade()
 {
 	$babDB = &$GLOBALS['babDB'];
 	$sUploadPath = getUploadPathFromDataBase();
+	$sCollectiveUploadPath 	= $sUploadPath . 'fileManager/collectives/';
 
 	if(is_dir($sUploadPath))
 	{
@@ -285,9 +286,8 @@ function updateFmFromPreviousUpgrade()
 					$sOldPath = $sUploadPath . $aDatas['sName'];
 					if(is_dir($sOldPath))
 					{
-						$sDelegationId			= $aDatas['iIdDgOwner'];
-						$sCollectiveUploadPath 	= $sUploadPath . 'fileManager/collectives/';						
-						$sNewPath				= $sCollectiveUploadPath . 'DG' . $sDelegationId;
+						$sDelegationId	= $aDatas['iIdDgOwner'];
+						$sNewPath		= $sCollectiveUploadPath . 'DG' . $sDelegationId;
 						
 						if(!is_dir($sNewPath))
 						{
