@@ -4932,7 +4932,7 @@ function haveRightOn($sPath, $sTableName)
 function haveAdministratorRight()
 {
 	global $babBody;
-	if(0 === (int) $babBody->currentAdmGroup)
+	if(0 === bab_getCurrentUserDelegation())
 	{
 		return bab_isUserAdministrator();
 	}
