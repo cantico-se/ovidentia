@@ -100,6 +100,7 @@ function fmUpgrade()
 {
 	$babDB = &$GLOBALS['babDB'];
 	$sUploadPath = getUploadPathFromDataBase();
+	$sCollectiveUploadPath 	= $sUploadPath . 'fileManager/collectives/';
 
 	if(is_dir($sUploadPath))
 	{
