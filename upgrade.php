@@ -233,7 +233,8 @@ function updateUsersFolderFilePathName()
 		$aDatas = array();
 		while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
 		{
-			if(strlen(trim($aDatas['sPathName'])) > 0)
+			$sPathName = $aDatas['sPathName'];
+			if(strlen(trim($sPathName)) > 0)
 			{
 				$sPathName .= '/';
 			}

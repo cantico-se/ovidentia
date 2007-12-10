@@ -3570,7 +3570,7 @@ initEnvObject();
 $oFileManagerEnv =& getEnvObject();
 if(false === $oFileManagerEnv->accessValid())
 {
-	$babBody->addError(bab_translate("Access denied 888"));
+	$babBody->addError(bab_translate("Access denied"));
 	return;	
 }
 
