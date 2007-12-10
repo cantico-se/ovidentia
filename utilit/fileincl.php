@@ -4056,7 +4056,10 @@ class BAB_FileManagerEnv
 				$this->sFmRootPath				= $this->sFmCollectivePath;
 				$this->sFmCollectivePath		.= $this->sRelativePath;
 				
+				$iIdDelegation = bab_getCurrentUserDelegation();
+				bab_setCurrentUserDelegation($this->oFmRootFolder->getDelegationOwnerId());
 				BAB_FmFolderHelper::getInfoFromCollectivePath($this->sPath, $this->iIdObject, $this->oFmFolder);
+				bab_setCurrentUserDelegation($iIdDelegation);
 			}
 		}
 		
