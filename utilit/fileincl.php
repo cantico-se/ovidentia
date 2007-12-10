@@ -352,11 +352,11 @@ function acceptFileVersion($oFolderFile, $oFolderFileVersion, $bnotify)
 
 	$sSrcFile = $sUploadPath . $oFolderFile->getPathName() . $oFolderFile->getName();
 	$sTrgFile = $sUploadPath . $oFolderFile->getPathName() . BAB_FVERSION_FOLDER . '/' .
-	$oFolderFile->getMajorVer() . '.' . $oFolderFile->getMinorVer() . ',' . $oFolderFile->getName();
+	$oFolderFile->getMajorVer() . ',' . $oFolderFile->getMinorVer() . ',' . $oFolderFile->getName();
 	copy($sSrcFile, $sTrgFile);
 	
 	$sSrcFile = $sUploadPath . $oFolderFile->getPathName() . BAB_FVERSION_FOLDER . '/' .
-	$oFolderFileVersion->getMajorVer() . '.' . $oFolderFileVersion->getMinorVer() . ',' . $oFolderFile->getName();
+	$oFolderFileVersion->getMajorVer() . ',' . $oFolderFileVersion->getMinorVer() . ',' . $oFolderFile->getName();
 	$sTrgFile = $sUploadPath . $oFolderFile->getPathName() . $oFolderFile->getName();
 	copy($sSrcFile, $sTrgFile);
 	unlink($sSrcFile);
@@ -993,11 +993,11 @@ function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonl
 					while(null !== ($oFolderFileVersion = $oFolderFileVersionSet->next()))
 					{
 						$sSrc = $sUploadPath . $oFolderFile->getPathName() . BAB_FVERSION_FOLDER . '/' .
-						$oFolderFileVersion->getMajorVer() . '.' . $oFolderFileVersion->getMinorVer() .
+						$oFolderFileVersion->getMajorVer() . ',' . $oFolderFileVersion->getMinorVer() .
 						',' . $oFolderFile->getName();
 
 						$sTrg = $sUploadPath . $oFolderFile->getPathName() . BAB_FVERSION_FOLDER . '/' .
-						$oFolderFileVersion->getMajorVer() . '.' . $oFolderFileVersion->getMinorVer() .
+						$oFolderFileVersion->getMajorVer() . ',' . $oFolderFileVersion->getMinorVer() .
 						',' . $osfname;
 
 						rename($sSrc, $sTrg);
@@ -1097,7 +1097,7 @@ function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonl
 
 						while(null !== ($oFolderFileVersion = $oFolderFileVersionSet->next()))
 						{
-							$sFileName = $oFolderFileVersion->getMajorVer() . '.' . $oFolderFileVersion->getMinorVer() . ',' . $osfname;
+							$sFileName = $oFolderFileVersion->getMajorVer() . ',' . $oFolderFileVersion->getMinorVer() . ',' . $osfname;
 
 							$sSrc = $sUploadPath . $oFolderFile->getPathName() . BAB_FVERSION_FOLDER . '/' . $sFileName;
 
@@ -1366,7 +1366,7 @@ function fm_unlockFile($idf, $comment)
 					deleteFlowInstance($oFolderFileVersion->getFlowApprobationInstanceId());
 
 					$sFullPathName = $sUploadPath . $oFolderFile->getPathName() . BAB_FVERSION_FOLDER . '/' .
-					$oFolderFileVersion->getMajorVer() . '.' . $oFolderFileVersion->getMinorVer() . ',' . $oFolderFile->getName();
+					$oFolderFileVersion->getMajorVer() . ',' . $oFolderFileVersion->getMinorVer() . ',' . $oFolderFile->getName();
 
 					unlink($sFullPathName);
 				}
@@ -1466,7 +1466,7 @@ function fm_commitFile($idf, $comment, $vermajor, $fmFile)
 			$vmajor = $oFolderFile->getMajorVer();
 			$vminor = ($oFolderFile->getMinorVer() + 1);
 		}
-		if(!$fmFile->import($sFullPathName . BAB_FVERSION_FOLDER . '/' . $vmajor . '.' . $vminor . ',' . $oFolderFile->getName()))
+		if(!$fmFile->import($sFullPathName . BAB_FVERSION_FOLDER . '/' . $vmajor . ',' . $vminor . ',' . $oFolderFile->getName()))
 		{
 			$babBody->msgerror = bab_translate("The file could not be uploaded");
 			return false;
@@ -1498,10 +1498,10 @@ function fm_commitFile($idf, $comment, $vermajor, $fmFile)
 
 			$sSrc = $sFullPathName . $oFolderFile->getName();
 			$sTrg = $sFullPathName . BAB_FVERSION_FOLDER . '/'. $oFolderFile->getMajorVer() .
-			'.' . $oFolderFile->getMinorVer() . ',' . $oFolderFile->getName();
+			',' . $oFolderFile->getMinorVer() . ',' . $oFolderFile->getName();
 			copy($sSrc, $sTrg);
 
-			$sSrc = $sFullPathName . BAB_FVERSION_FOLDER . '/'. $vmajor . '.' . $vminor .
+			$sSrc = $sFullPathName . BAB_FVERSION_FOLDER . '/'. $vmajor . ',' . $vminor .
 			',' . $oFolderFile->getName();
 			$sTrg = $sFullPathName . $oFolderFile->getName();
 			copy($sSrc, $sTrg);
@@ -1513,7 +1513,7 @@ function fm_commitFile($idf, $comment, $vermajor, $fmFile)
 			$index_status = bab_indexOnLoadFiles(
 			array($sFullPathName . $oFolderFile->getName(),
 			$sFullPathName . BAB_FVERSION_FOLDER . '/'. $oFolderFile->getMajorVer() .
-			'.' . $oFolderFile->getMinorVer() . ',' . $oFolderFile->getName()),
+			',' . $oFolderFile->getMinorVer() . ',' . $oFolderFile->getName()),
 			'bab_files'
 			);
 
@@ -1537,7 +1537,7 @@ function fm_commitFile($idf, $comment, $vermajor, $fmFile)
 				$obj = new bab_indexObject('bab_files');
 				$obj->setIdObjectFile($oFolderFile->getPathName() . $oFolderFile->getName(), $idf, $oFolderFile->getOwnerId());
 				$obj->setIdObjectFile($oFolderFile->getPathName() . BAB_FVERSION_FOLDER . '/' .
-				$oFolderFile->getMajorVer() . '.' . $oFolderFile->getMinorVer() . ',' .
+				$oFolderFile->getMajorVer() . ',' . $oFolderFile->getMinorVer() . ',' .
 				$oFolderFile->getName(), $idf, $oFolderFile->getOwnerId());
 			}
 
@@ -2829,7 +2829,7 @@ class BAB_FolderFileVersionSet extends BAB_BaseSet
 		while(null !== ($oFolderFileVersion = $this->next()))
 		{
 			$sFullPathName = $sPathName . BAB_FVERSION_FOLDER . '/' . $oFolderFileVersion->getMajorVer() .
-			'.' . $oFolderFileVersion->getMinorVer() . ',' . $sFileName;
+			',' . $oFolderFileVersion->getMinorVer() . ',' . $sFileName;
 
 			if(file_exists($sFullPathName))
 			{

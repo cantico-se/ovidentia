@@ -576,9 +576,9 @@ function getFile( $idf, $vmajor, $vminor )
 		$oFileManagerEnv =& getEnvObject();
 		$mime = bab_getFileMimeType($oFolderFile->getName());
 
-		$fullpath = $oFileManagerEnv->getCollectiveFolderPath() . $oFolderFile->getPathName();
-		
-		$fullpath .= BAB_FVERSION_FOLDER."/".$vmajor.".".$vminor.",".$oFolderFile->getName();
+		$fullpath = BAB_FileManagerEnv::getCollectivePath($oFolderFile->getDelegationOwnerId()) . $oFolderFile->getPathName();
+
+		$fullpath .= BAB_FVERSION_FOLDER."/".$vmajor.",".$vminor.",".$oFolderFile->getName();
 		$fsize = filesize($fullpath);
 		if(strtolower(bab_browserAgent()) == "msie")
 		{
@@ -694,7 +694,7 @@ function confirmFile($idf, $bconfirm)
 						$oFileManagerEnv =& getEnvObject();
 						$sUploadPath = $oFileManagerEnv->getCollectiveFolderPath();
 						$sFullPathName = $sUploadPath .$oFolderFile->getPathName() . BAB_FVERSION_FOLDER . '/' . 
-							$oFolderFileVersion->getMajorVer() . '.' . $oFolderFileVersion->getMinorVer() . ',' . $oFolderFile->getName();	
+							$oFolderFileVersion->getMajorVer() . ',' . $oFolderFileVersion->getMinorVer() . ',' . $oFolderFile->getName();	
 				
 						$oFolderFile->setFolderFileVersionId(0);
 						$oFolderFile->save();
