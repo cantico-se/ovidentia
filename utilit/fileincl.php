@@ -4210,6 +4210,11 @@ class BAB_FileManagerEnv
 							return true;
 						}
 					}
+					else
+					{
+						$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
+						return (is_array($arrschi) && count($arrschi) > 0);
+					}
 				}
 			}
 			else if('' === $this->sGr)
