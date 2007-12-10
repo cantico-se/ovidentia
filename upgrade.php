@@ -4008,7 +4008,11 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	}
 	else 
 	{
-		updateFmFromPreviousUpgrade();
+		$sUploadPath = getUploadPathFromDataBase();
+		if(!is_dir($sUploadPath . 'fileManager'))
+		{
+			updateFmFromPreviousUpgrade();
+		}
 	}
 
 	return true;
