@@ -2202,7 +2202,7 @@ class BAB_FmFolderSet extends BAB_BaseSet
 					$oCriteria = $oCriteria->_and($oName->in($sFolderName));
 					$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
 					$oFmFolder = $oFmFolderSet->get($oCriteria);
-
+//					bab_debug($oFmFolderSet->getSelectQuery($oCriteria));
 					if(!is_null($oFmFolder))
 					{
 						return $oFmFolder;
@@ -3749,6 +3749,10 @@ class BAB_FmFolderHelper
 
 			if(false === $bParentPath)
 			{
+//				require_once $GLOBALS['babInstallPath'] . 'utilit/devtools.php';
+//				bab_debug_print_backtrace();
+//				bab_debug('sRelativePath ==> ' . $sRelativePath);
+								
 				$oFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($sRelativePath);
 			}
 			else 
@@ -3758,7 +3762,7 @@ class BAB_FmFolderHelper
 				
 			if(!is_null($oFmFolder))
 			{
-				$iIdOwner = $oFmFolder->getId();
+				$iIdRootFolder = $oFmFolder->getId();
 				$bSuccess = true;
 			}
 		}
