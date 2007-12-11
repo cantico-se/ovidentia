@@ -3168,7 +3168,7 @@ function createFolderForCollectiveDir()
 			if(!is_null($oFmFolder) || $oFileManagerEnv->userIsInRootFolder())
 			{
 				$sRelativePath	= $oFileManagerEnv->sRelativePath;
-				$sFullPathName	= $oFileManagerEnv->getCollectiveRootFmPath() . $sRelativePath . $sDirName;
+				$sFullPathName	= $sUploadPath = BAB_FileManagerEnv::getCollectivePath(bab_getCurrentUserDelegation()) . $sRelativePath . $sDirName;
 
 //				bab_debug('sFullPathName ==> ' .  $sFullPathName);
 //				bab_debug('sRelativePath ==> ' . $sRelativePath);
