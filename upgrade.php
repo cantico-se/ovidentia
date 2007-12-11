@@ -428,6 +428,7 @@ function updateFmFromPreviousUpgrade()
 	}
 }
 
+
 function processDirName($sUploadPath, $sDirName)
 {
 	if(isset($GLOBALS['babFileNameTranslation']))
@@ -445,6 +446,88 @@ function processDirName($sUploadPath, $sDirName)
 	}
 	return $sTempDirName;
 }
+
+
+function __walkDirectoryRecursive($sPathName, $sCallbackFunction)
+{
+	if(is_dir($sPathName))
+	{
+		$oDir = dir($sPathName);
+		while(false !== ($sEntry = $oDir->read())) 
+		{
+			if($sEntry == '.' || $sEntry == '..')
+			{
+				continue;
+			}
+			else
+			{
+				$sFullPathName = $sPathName . '/' . $sEntry;
+				if(is_dir($sFullPathName)) 
+				{
+					if($sEntry != 'OVF')
+					{
+						__walkDirectoryRecursive($sFullPathName, $sCallbackFunction);	
+					}
+					else 
+					{
+						$sCallbackFunction($sFullPathName);
+					}
+				}
+			}
+		}
+		$oDir->close();
+	}
+}
+
+
+function __renameFmFileVersion($sPathName)
+{
+	if(is_dir($sPathName))
+	{
+		$oDir = dir($sPathName);
+		while(false !== ($sEntry = $oDir->read())) 
+		{
+			$sFullPathName = $sPathName . '/' . $sEntry;
+
+			if($sEntry == '.' || $sEntry == '..' || is_dir($sFullPathName)) 
+			{
+				continue;
+			}
+			else 
+			{
+				$iLength = strlen($sEntry);
+				if(3 >= $iLength && '.' === (string) $sEntry{1})
+				{
+					$sFirst	= substr($sEntry, 0, 1);
+					$sEnd	= substr($sEntry, 2);
+					
+					if(false !== $sFirst && false !== $sEnd)
+					{
+						$sVersionName = $sFirst . ',' . $sEnd;
+						
+						$sSrc = $sFullPathName;
+						$sTrg = $sPathName . '/' . $sVersionName;
+						if(!file_exists($sTrg))
+						{
+							rename($sSrc, $sTrg);
+						}
+					}
+				}
+			}
+		}
+		$oDir->close();
+	}
+}
+
+function __renameFmFilesVersions()
+{
+	$sUploadPath = getUploadPathFromDataBase();
+	$sCollectiveUploadPath 	= $sUploadPath . 'fileManager/collectives';
+	
+	$sCallbackFunction = '__renameFmFileVersion';
+	 __walkDirectoryRecursive($sCollectiveUploadPath, $sCallbackFunction);
+}
+
 
 
 function upgrade553to554()
@@ -4007,6 +4090,7 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	{
 		$babDB->db_query("ALTER TABLE ".BAB_FM_FOLDERS_TBL." ADD `sRelativePath` TEXT NOT NULL AFTER `id`");
 		fmUpgrade();
+		__renameFmFilesVersions();
 	}
 	else 
 	{
@@ -4014,6 +4098,7 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		if(!is_dir($sUploadPath . 'fileManager'))
 		{
 			updateFmFromPreviousUpgrade();
+			__renameFmFilesVersions();
 		}
 	}
 
