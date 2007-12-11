@@ -212,7 +212,6 @@ class listFiles
 				{
 					continue;
 				}
-	
 				$this->$sCallbackFunction($sPathName, $sEntry);
 			}
 			$oDir->close();
@@ -472,6 +471,7 @@ class listFiles
 		
 		$aOrder = array('sName' => 'ASC');
 		$this->oFolderFileSet->select($oCriteria, $aOrder);
+		
 		$this->res = $this->oFolderFileSet->_oResult;
 		$this->count = $this->oFolderFileSet->count();
 		$this->oFolderFileSet->bUseAlias = true;
