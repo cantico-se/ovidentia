@@ -2856,8 +2856,6 @@ function pasteCollectiveDir()
 	 
 	if(canPasteFolder($iIdSrcRootFolder, $sSrcPath, $bSrcPathIsCollective, $iIdTrgRootFolder, $sTrgPath))
 	{
-//		bab_debug('Laurent tu me déçoit beaucoup !!!');
-		
 		//Nom du répertoire à coller
 		$sName = getLastPath($sSrcPath); 
 		
@@ -2933,8 +2931,8 @@ function pasteCollectiveDir()
 		$sFullSrcPath = realpath((string) $sUploadPath . $sSrcPath);
 		$sFullTrgPath = realpath((string) $sUploadPath . $sTrgPath);
 		
-		bab_debug('sFullSrcPath ==> ' . $sFullSrcPath . ' versioning ' . (($bSrcPathHaveVersioning) ? 'Yes' : 'No') . ' bSrcPathCollective ' . (($bSrcPathCollective) ? 'Yes' : 'No'));
-		bab_debug('sFullTrgPath ==> ' . $sFullTrgPath . ' versioning ' . (($bTrgPathHaveVersioning) ? 'Yes' : 'No'));
+//		bab_debug('sFullSrcPath ==> ' . $sFullSrcPath . ' versioning ' . (($bSrcPathHaveVersioning) ? 'Yes' : 'No') . ' bSrcPathCollective ' . (($bSrcPathCollective) ? 'Yes' : 'No'));
+//		bab_debug('sFullTrgPath ==> ' . $sFullTrgPath . ' versioning ' . (($bTrgPathHaveVersioning) ? 'Yes' : 'No'));
 
 //		$sPath = substr($sFullTrgPath, 0, strlen($sFullSrcPath));
 //		if($sPath !== $sFullSrcPath)
@@ -2942,8 +2940,8 @@ function pasteCollectiveDir()
 			$bSrcValid = ((realpath(substr($sFullSrcPath, 0, strlen($sUploadPath))) === (string) realpath($sUploadPath)) && is_readable($sFullSrcPath));
 			$bTrgValid = ((realpath(substr($sFullTrgPath, 0, strlen($sUploadPath))) === (string) realpath($sUploadPath)) && is_writable($sFullTrgPath));
 
-			bab_debug('bSrcValid ' . (($bSrcValid) ? 'Yes' : 'No'));
-			bab_debug('bTrgValid ' . (($bTrgValid) ? 'Yes' : 'No'));
+//			bab_debug('bSrcValid ' . (($bSrcValid) ? 'Yes' : 'No'));
+//			bab_debug('bTrgValid ' . (($bTrgValid) ? 'Yes' : 'No'));
 			
 			if($bSrcValid && $bTrgValid)
 			{
@@ -3412,11 +3410,15 @@ function editFolderForUserDir()
 //			bab_debug('sOldDirName ==> ' . $sOldDirName);
 //			bab_debug('sDirName ==> ' . $sDirName);
 //			bab_debug('sPathName ==> ' . $sPathName);
-	
-			if(BAB_FmFolderHelper::renameDirectory($sRootFmPath, $sRelativePath, $sOldDirName, $sDirName))
+			$bFolderRenamed	= ($sDirName !== $sOldDirName) ? true : false;
+			
+			if($bFolderRenamed)
 			{
-				BAB_FolderFileSet::renameFolder($sPathName, $sDirName, 'N');
-				BAB_FmFolderCliboardSet::rename($sRelativePath, $sOldDirName, $sDirName, 'N');
+				if(BAB_FmFolderHelper::renameDirectory($sRootFmPath, $sRelativePath, $sOldDirName, $sDirName))
+				{
+					BAB_FolderFileSet::renameFolder($sPathName, $sDirName, 'N');
+					BAB_FmFolderCliboardSet::rename($sRelativePath, $sOldDirName, $sDirName, 'N');
+				}
 			}
 		}
 		else 
