@@ -495,8 +495,10 @@ function __renameFmFileVersion($sPathName)
 			}
 			else 
 			{
+
 				$iLength = strlen($sEntry);
-				if(3 >= $iLength && '.' === (string) $sEntry{1})
+
+				if(3 <= $iLength && '.' === (string) $sEntry{1})
 				{
 					$sFirst	= substr($sEntry, 0, 1);
 					$sEnd	= substr($sEntry, 2);
@@ -518,6 +520,7 @@ function __renameFmFileVersion($sPathName)
 		$oDir->close();
 	}
 }
+
 
 function __renameFmFilesVersions()
 {
