@@ -2856,13 +2856,14 @@ function pasteCollectiveDir()
 	 
 	if(canPasteFolder($iIdSrcRootFolder, $sSrcPath, $bSrcPathIsCollective, $iIdTrgRootFolder, $sTrgPath))
 	{
+//		bab_debug('Laurent tu me déçoit beaucoup !!!');
+		
 		//Nom du répertoire à coller
 		$sName = getLastPath($sSrcPath); 
 		
 		//Emplacement du répertoire à coller
 		$sSrcPathRelativePath = addEndSlash(removeLastPath($sSrcPath . '/'));
-		$sUploadPath = $oFileManagerEnv->getCollectiveRootFmPath();
-	
+
 		$bSrcPathHaveVersioning = false;
 		$bTrgPathHaveVersioning = false;
 		$bSrcPathCollective		= false;
@@ -2927,11 +2928,13 @@ function pasteCollectiveDir()
 			}
 		}
 
+		$sUploadPath = BAB_FileManagerEnv::getCollectivePath(bab_getCurrentUserDelegation());
+		
 		$sFullSrcPath = realpath((string) $sUploadPath . $sSrcPath);
 		$sFullTrgPath = realpath((string) $sUploadPath . $sTrgPath);
 		
-//		bab_debug('sFullSrcPath ==> ' . $sFullSrcPath . ' versioning ' . (($bSrcPathHaveVersioning) ? 'Yes' : 'No') . ' bSrcPathCollective ' . (($bSrcPathCollective) ? 'Yes' : 'No'));
-//		bab_debug('sFullTrgPath ==> ' . $sFullTrgPath . ' versioning ' . (($bTrgPathHaveVersioning) ? 'Yes' : 'No'));
+		bab_debug('sFullSrcPath ==> ' . $sFullSrcPath . ' versioning ' . (($bSrcPathHaveVersioning) ? 'Yes' : 'No') . ' bSrcPathCollective ' . (($bSrcPathCollective) ? 'Yes' : 'No'));
+		bab_debug('sFullTrgPath ==> ' . $sFullTrgPath . ' versioning ' . (($bTrgPathHaveVersioning) ? 'Yes' : 'No'));
 
 //		$sPath = substr($sFullTrgPath, 0, strlen($sFullSrcPath));
 //		if($sPath !== $sFullSrcPath)
@@ -2939,8 +2942,8 @@ function pasteCollectiveDir()
 			$bSrcValid = ((realpath(substr($sFullSrcPath, 0, strlen($sUploadPath))) === (string) realpath($sUploadPath)) && is_readable($sFullSrcPath));
 			$bTrgValid = ((realpath(substr($sFullTrgPath, 0, strlen($sUploadPath))) === (string) realpath($sUploadPath)) && is_writable($sFullTrgPath));
 
-//			bab_debug('bSrcValid ' . (($bSrcValid) ? 'Yes' : 'No'));
-//			bab_debug('bTrgValid ' . (($bTrgValid) ? 'Yes' : 'No'));
+			bab_debug('bSrcValid ' . (($bSrcValid) ? 'Yes' : 'No'));
+			bab_debug('bTrgValid ' . (($bTrgValid) ? 'Yes' : 'No'));
 			
 			if($bSrcValid && $bTrgValid)
 			{
