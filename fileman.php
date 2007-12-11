@@ -205,7 +205,7 @@ class listFiles
 		if(is_dir($sPathName))
 		{
 			$oDir = dir($sPathName);
-			while(false !== $sEntry = $oDir->read()) 
+			while(false !== ($sEntry = $oDir->read())) 
 			{
 				// Skip pointers
 				if($sEntry == '.' || $sEntry == '..' || $sEntry == BAB_FVERSION_FOLDER) 
