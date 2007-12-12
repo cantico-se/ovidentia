@@ -249,6 +249,79 @@ function renameFile()
 	}
 	
 	
+function _createFmDirectories()
+{
+	global $error, $succes, $trans;
+	
+	$sUploadPath = $_POST['babUploadPath'];
+	$sLastChar = (string) sustr($sUploadPath, 0, -1);
+	
+	if('\\' !== $sLastChar && '/' !== $sLastChar)
+	{
+		$sUploadPath .= '/';
+	}
+	
+	$sFmUploadPath			= $sUploadPath . 'fileManager';
+	$sCollectiveUploadPath	= $sFmUploadPath . '/collectives';
+	$sUserUploadPath		= $sFmUploadPath . '/users';
+	
+	if(!is_writable($sUploadPath))
+	{
+		$error = __LINE__ . ' ' . basename(__FILE__) . ' ' .  
+			sprintf($trans->str(' The directory: %s is not writable'), $sUploadPath);
+		return false;
+	}
+	
+	$bCollDirCreated = false;
+	$bUserDirCreated = false;
+	
+	if(!is_dir($sFmUploadPath))
+	{
+		if(!@mkdir($sFmUploadPath, 0777))
+		{
+			$error = __LINE__ . ' ' . basename(__FILE__) . ' ' . 
+				sprintf($trans->str(' The directory: %s have not been created'), $sFmUploadPath);
+			return false;
+		}
+	}
+	else 
+	{
+		if(!is_dir($sCollectiveUploadPath))
+		{
+			$bCollDirCreated = @mkdir($sCollectiveUploadPath, 0777);
+			if(false === $bCollDirCreated)
+			{
+				$error = __LINE__ . ' ' . basename(__FILE__) . ' ' .
+					sprintf($trans->str(' The directory: %s have not been created'), $sCollectiveUploadPath);
+				return false;
+			}
+		}
+		else 
+		{
+			$bCollDirCreated = true;
+		}
+		
+		if(!is_dir($sUserUploadPath))
+		{
+			$bUserDirCreated = @mkdir($sUserUploadPath, 0777);
+			if(false === $bCollDirCreated)
+			{
+				$error = __LINE__ . ' ' . basename(__FILE__) . ' ' . 
+					sprintf($trans->str(' The directory: %s have not been created'), $sUserUploadPath);
+				return false;
+			}
+		}
+		else 
+		{
+			$bUserDirCreated = true;
+		}
+		
+		return ($bCollDirCreated && $bUserDirCreated);
+	}
+	return false;
+}
+	
+	
 function testVars()
 	{
 	global $error,$succes,$trans;
@@ -265,6 +338,13 @@ function testVars()
 			{
 			$error = $trans->str('can\'t create upload directory');
 			return false;
+			}
+		else 
+			{
+				if (!_createFmDirectories())
+					{
+					return false;
+					}
 			}
 		}
 		

@@ -2485,4 +2485,6 @@
 <string id="MySQL server variable max_allowed_packet">Variable du serveur MySQL : max_allowed_packet</string>
 <string id="MySQL server variable : sql_mode">Variable du serveur MySQL : sql_mode</string>
 <string id="Undefined">Non défini</string>
+<string id=" The directory: %s have not been created"> Le répertoire: %s n'a pas été créé</string>
+<string id=" The directory: %s is not writable"> Le répertoire: %s n'est pas accessible en écriture</string>
 </fr>

@@ -3762,7 +3762,7 @@ class BAB_FmFolderHelper
 				
 			if(!is_null($oFmFolder))
 			{
-				$iIdRootFolder = $oFmFolder->getId();
+//				$iIdRootFolder = $oFmFolder->getId();
 				$bSuccess = true;
 			}
 		}
@@ -4061,7 +4061,12 @@ class BAB_FileManagerEnv
 				$this->sFmCollectivePath		.= $this->sRelativePath;
 				
 				bab_setCurrentUserDelegation($this->oFmRootFolder->getDelegationOwnerId());
-				BAB_FmFolderHelper::getInfoFromCollectivePath($this->sPath, $this->iIdObject, $this->oFmFolder);
+				$iIdRootFolder = 0;
+				BAB_FmFolderHelper::getInfoFromCollectivePath($this->sPath, $iIdRootFolder, $this->oFmFolder);
+				if(!is_null($this->oFmFolder))
+				{
+					$this->iIdObject = $this->oFmFolder->getId();
+				}
 			}
 		}
 		
@@ -4667,7 +4672,6 @@ function canPasteFolder($iIdSrcRootFolder, $sSrcPath, $bSrcPathIsCollective, $iI
 				{
 					if($iIdLocalSrcRootFolder === $oOwnerSrcFmFolder->getId() && $oFileManagerEnv->userIsInRootFolder())
 					{
-//						$bHaveRightOnSrc = bab_isUserAdministrator();
 						$bHaveRightOnSrc = haveAdministratorRight();
 					}
 					else 
@@ -4678,7 +4682,7 @@ function canPasteFolder($iIdSrcRootFolder, $sSrcPath, $bSrcPathIsCollective, $iI
 				else 
 				{
 //					bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
-//						' Bad root folder id iIdRootFolder ==> ' . $iIdRootFolder .
+//						' Bad root folder id iIdRootFolder ==> ' . $iIdLocalSrcRootFolder .
 //						' iIdSrcRootFolder ==> ' . $iIdSrcRootFolder);
 					return false;
 				}
@@ -4693,11 +4697,9 @@ function canPasteFolder($iIdSrcRootFolder, $sSrcPath, $bSrcPathIsCollective, $iI
 		}
 		else 
 		{
-//			$bHaveRightOnSrc = bab_isUserAdministrator();
 			$bHaveRightOnSrc = haveAdministratorRight();
 		}
 
-		
 		if(!$oFileManagerEnv->userIsInRootFolder())
 		{
 			$iIdRootFolder = 0;
@@ -4717,25 +4719,23 @@ function canPasteFolder($iIdSrcRootFolder, $sSrcPath, $bSrcPathIsCollective, $iI
 					}
 					else 
 					{
-//						bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' PAS GLOP For sTrgPath 1 ==> ' . $sTrgPath);
+						bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' PAS GLOP For sTrgPath 1 ==> ' . $sTrgPath);
 						return false;
 					}
 				}
 				else 
 				{
-//					bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' PAS GLOP For sTrgPath 2 ==> ' . $sTrgPath);
+					bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' PAS GLOP For sTrgPath 2 ==> ' . $sTrgPath);
 					return false;
 				}
 			}
 			else 
 			{
-//				$bHaveRightOnTrg = bab_isUserAdministrator();
 				$bHaveRightOnTrg = haveRight($sTrgPath, BAB_FMMANAGERS_GROUPS_TBL);
 			}
 		}
 		else 
 		{
-//			$bHaveRightOnTrg = bab_isUserAdministrator();
 			$bHaveRightOnTrg = haveAdministratorRight();
 		}
 	}

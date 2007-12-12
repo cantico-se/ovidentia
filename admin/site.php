@@ -1701,6 +1701,49 @@ function siteUpdate_menu4()
 	where id='".$babDB->db_escape_string($_POST['item'])."'";
 	$babDB->db_query($req);
 
+	
+	global $babBody;
+	$iLength = strlen(trim($uploadpath));
+	if($iLength > 0)
+	{
+		$sUploadPath = str_replace('\\', '/', $uploadpath);
+		$iLength = strlen(trim($sUploadPath));
+		if($iLength > 0)
+		{
+			if('\\' === (string) $sUploadPath{$iLength - 1} && '/' === (string) $sUploadPath{$iLength - 1})
+			{
+				$sUploadPath = substr($sUploadPath, 0, -1);
+			}
+	
+			$aPaths = explode('/', $sUploadPath);
+			if(is_array($aPaths) && count($aPaths) > 0)
+			{
+				$sPath = '';
+				foreach($aPaths as $sPathItem)
+				{
+					if(strlen(trim($sPathItem)) !== 0)
+					{
+						if(strlen(trim($sPath)) !== 0)
+						{
+							$sPath .= '/' . $sPathItem;
+						}
+						else 
+						{
+							$sPath .= $sPathItem;
+						}
+						
+						if(!is_dir($sPath))
+						{
+							if(!@mkdir($sPath, 0777))
+							{
+								$babBody->addError(bab_translate(sprintf(' The directory: %s have not been created', $sPath)));
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 	return true;
 }
 
