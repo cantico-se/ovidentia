@@ -1059,8 +1059,9 @@ function showDiskSpace()
 			static $i = 0;
 			if($i < $this->countgrp)
 			{
-				$this->groupname = '';
+				$this->groupname = 'B';
 				$oFmFolder = BAB_FmFolderHelper::getFmFolderById($this->arrgrp[$i]);
+				$i++;
 				if(is_null($oFmFolder))
 				{
 					$bSkip = true;
@@ -1072,9 +1073,6 @@ function showDiskSpace()
 				$this->diskspace = bab_toHtml(bab_formatSizeFile($size).$this->kilooctet);
 				$this->allowedspace =  bab_toHtml(bab_formatSizeFile($GLOBALS['babMaxGroupSize']).$this->kilooctet);
 				$this->remainingspace =  bab_toHtml(bab_formatSizeFile($GLOBALS['babMaxGroupSize'] - $size).$this->kilooctet);
-				$this->groupname = '';
-					
-				$i++;
 				return true;
 			}
 			else
@@ -1088,8 +1086,9 @@ function showDiskSpace()
 			static $i = 0;
 			if($i < $this->countmgrp)
 			{
-				$this->groupname = '';
+				$this->groupname = 'A';
 				$oFmFolder = BAB_FmFolderHelper::getFmFolderById($this->arrmgrp[$i]);
+				$i++;
 				if(is_null($oFmFolder))
 				{
 					$bSkip = true;
@@ -1102,7 +1101,6 @@ function showDiskSpace()
 				$this->diskspace = bab_toHtml(bab_formatSizeFile($size).$this->kilooctet);
 				$this->allowedspace =  bab_toHtml(bab_formatSizeFile($GLOBALS['babMaxGroupSize']).$this->kilooctet);
 				$this->remainingspace =  bab_toHtml(bab_formatSizeFile($GLOBALS['babMaxGroupSize'] - $size).$this->kilooctet);
-				$i++;
 				return true;
 			}
 			else
