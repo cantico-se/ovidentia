@@ -3578,7 +3578,11 @@ if(0 === $iUsrDg)
 	}
 }
 
+$iUsrDg = bab_getCurrentUserDelegation();
+
 initEnvObject();
+
+bab_setCurrentUserDelegation($iUsrDg);
 
 $oFileManagerEnv =& getEnvObject();
 if(false === $oFileManagerEnv->accessValid())

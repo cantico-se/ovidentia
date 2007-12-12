@@ -48,15 +48,19 @@ function bab_getCurrentUserDelegation()
 {
 	if(!array_key_exists('babCurrentDelegation', $_SESSION))
 	{
+		$_SESSION['babCurrentDelegation'] = 0;
+
 		global $babBody;
-		if(0 !== $babBody->currentAdmGroup)
+		$aCurrUsrDg = bab_getUserFmVisibleDelegations();
+		if(count($aCurrUsrDg) > 0)
 		{
-			$_SESSION['babCurrentDelegation'] = $babBody->currentAdmGroup;
+			$aItem = each($aCurrUsrDg);
+			if(false !== $aItem)
+			{
+				$_SESSION['babCurrentDelegation'] = $aItem['key'];
+			}
 		}
-		else 
-		{
-			$_SESSION['babCurrentDelegation'] = 0;
-		}
+
 	}
 	return (int) $_SESSION['babCurrentDelegation'];
 }
