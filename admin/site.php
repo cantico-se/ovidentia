@@ -1742,10 +1742,67 @@ function siteUpdate_menu4()
 					}
 				}
 			}
+
+			if(is_dir($sUploadPath))
+			{
+				$sFmUploadPath				= $sUploadPath . '/fileManager';
+				$sCollectiveUploadPath		= $sFmUploadPath . '/collectives';
+				$sUserUploadPath			= $sFmUploadPath . '/users';
+				$sCollectiveDgUploadPath	= $sCollectiveUploadPath . '/DG' . $babBody->currentAdmGroup;
+
+				if(!is_writable($sUploadPath))
+				{
+					$error = __LINE__ . ' ' . basename(__FILE__) . ' ' .  
+						sprintf(bab_translate(" The directory: %s is not writable"), $sUploadPath);
+					$babBody->addError($error);
+					return false;
+				}
+				
+				if(!is_dir($sFmUploadPath))
+				{
+					if(!@mkdir($sFmUploadPath, 0777))
+					{
+						$error = __LINE__ . ' ' . basename(__FILE__) . ' ' . 
+							sprintf(bab_translate(" The directory: %s have not been created"), $sFmUploadPath);
+						$babBody->addError($error);
+					}
+				}
+
+				if(!is_dir($sCollectiveUploadPath))
+				{
+					if(!@mkdir($sCollectiveUploadPath, 0777))
+					{
+						$error = __LINE__ . ' ' . basename(__FILE__) . ' ' .
+							sprintf(bab_translate(" The directory: %s have not been created"), $sCollectiveUploadPath);
+						$babBody->addError($error);
+					}
+				}
+
+				if(!is_dir($sCollectiveDgUploadPath))
+				{
+					if(!@mkdir($sCollectiveDgUploadPath, 0777))
+					{
+						$error = __LINE__ . ' ' . basename(__FILE__) . ' ' .
+							sprintf(bab_translate(" The directory: %s have not been created"), $sCollectiveDgUploadPath);
+						$babBody->addError($error);
+					}
+				}
+				
+				if(!is_dir($sUserUploadPath))
+				{
+					if(!@mkdir($sUserUploadPath, 0777))
+					{
+						$error = __LINE__ . ' ' . basename(__FILE__) . ' ' . 
+							sprintf(bab_translate(" The directory: %s have not been created"), $sUserUploadPath);
+						$babBody->addError($error);
+					}
+				}
+			}
 		}
 	}
 	return true;
 }
+
 
 
 function siteUpdate_menu5($item,$datelformat, $datesformat, $timeformat)

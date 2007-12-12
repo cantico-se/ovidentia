@@ -241,9 +241,9 @@ function saveFolder($fname, $active, $said, $notification, $version, $bhide, $ba
 			$said = 0;
 		}
 
-		$sFullPathName = $oFileManagerEnv->getCollectiveRootFmPath() . $fname;
+		$sFullPathName = BAB_FileManagerEnv::getCollectivePath($babBody->currentAdmGroup) . $fname;
 
-//		bab_debug($sFullPathName);
+		//bab_debug($sFullPathName);
 		
 		if(BAB_FmFolderHelper::createDirectory($sFullPathName))
 		{
