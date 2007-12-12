@@ -254,7 +254,7 @@ function _createFmDirectories()
 	global $error, $succes, $trans;
 	
 	$sUploadPath = $_POST['babUploadPath'];
-	$sLastChar = (string) sustr($sUploadPath, 0, -1);
+	$sLastChar = (string) substr($sUploadPath, 0, -1);
 	
 	if('\\' !== $sLastChar && '/' !== $sLastChar)
 	{
