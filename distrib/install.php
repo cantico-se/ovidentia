@@ -284,41 +284,38 @@ function _createFmDirectories()
 			return false;
 		}
 	}
+
+	if(!is_dir($sCollectiveUploadPath))
+	{
+		$bCollDirCreated = @mkdir($sCollectiveUploadPath, 0777);
+		if(false === $bCollDirCreated)
+		{
+			$error = __LINE__ . ' ' . basename(__FILE__) . ' ' .
+				sprintf($trans->str(' The directory: %s have not been created'), $sCollectiveUploadPath);
+			return false;
+		}
+	}
 	else 
 	{
-		if(!is_dir($sCollectiveUploadPath))
-		{
-			$bCollDirCreated = @mkdir($sCollectiveUploadPath, 0777);
-			if(false === $bCollDirCreated)
-			{
-				$error = __LINE__ . ' ' . basename(__FILE__) . ' ' .
-					sprintf($trans->str(' The directory: %s have not been created'), $sCollectiveUploadPath);
-				return false;
-			}
-		}
-		else 
-		{
-			$bCollDirCreated = true;
-		}
-		
-		if(!is_dir($sUserUploadPath))
-		{
-			$bUserDirCreated = @mkdir($sUserUploadPath, 0777);
-			if(false === $bCollDirCreated)
-			{
-				$error = __LINE__ . ' ' . basename(__FILE__) . ' ' . 
-					sprintf($trans->str(' The directory: %s have not been created'), $sUserUploadPath);
-				return false;
-			}
-		}
-		else 
-		{
-			$bUserDirCreated = true;
-		}
-		
-		return ($bCollDirCreated && $bUserDirCreated);
+		$bCollDirCreated = true;
 	}
-	return false;
+	
+	if(!is_dir($sUserUploadPath))
+	{
+		$bUserDirCreated = @mkdir($sUserUploadPath, 0777);
+		if(false === $bCollDirCreated)
+		{
+			$error = __LINE__ . ' ' . basename(__FILE__) . ' ' . 
+				sprintf($trans->str(' The directory: %s have not been created'), $sUserUploadPath);
+			return false;
+		}
+	}
+	else 
+	{
+		$bUserDirCreated = true;
+	}
+	
+	return ($bCollDirCreated && $bUserDirCreated);
 }
 	
 	
