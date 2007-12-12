@@ -965,7 +965,7 @@ function showDiskSpace()
 		var $diskspacetxt;
 		var $allowedspacetxt;
 		var $remainingspacetxt;
-
+		var $oFileManagerEnv;
 		function temp()
 			{
 			global $babBody;
@@ -983,6 +983,8 @@ function showDiskSpace()
 			$this->bytes = bab_translate("bytes");
 			$this->kilooctet = " ".bab_translate("Kb");
 			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
+			
+			$this->oFileManagerEnv =& getEnvObject();
 
 			$oFmFolderSet = new BAB_FmFolderSet();
 			$oRelativePath =& $oFmFolderSet->aField['sRelativePath'];
@@ -1022,7 +1024,7 @@ function showDiskSpace()
 			static $i = 0;
 			if( $i < $this->diskp)
 				{
-				$pathx = bab_getUploadFullPath("N", $GLOBALS['BAB_SESS_USERID']);
+				$pathx = $this->oFileManagerEnv->getPersonnalFolderPath();
 				$size = getDirSize($pathx);
 				$this->diskspace = bab_toHtml(bab_formatSizeFile($size).$this->kilooctet);
 				$this->allowedspace =  bab_toHtml(bab_formatSizeFile($GLOBALS['babMaxUserSize']).$this->kilooctet);
@@ -1040,7 +1042,7 @@ function showDiskSpace()
 			static $i = 0;
 			if( $i < $this->diskg)
 				{
-				$size = getDirSize($GLOBALS['babUploadPath']);
+				$size = getDirSize($this->oFileManagerEnv->getFmUploadPath());
 				$this->diskspace = bab_toHtml(bab_formatSizeFile($size).$this->kilooctet);
 				$this->allowedspace =  bab_toHtml(bab_formatSizeFile($GLOBALS['babMaxTotalSize']).$this->kilooctet);
 				$this->remainingspace =  bab_toHtml(bab_formatSizeFile($GLOBALS['babMaxTotalSize'] - $size).$this->kilooctet);
@@ -1052,54 +1054,62 @@ function showDiskSpace()
 				return false;
 			}
 
-		function getnextgrp()
-			{
+		function getnextgrp(&$bSkip)
+		{
 			static $i = 0;
-			if( $i < $this->countgrp)
-				{
-				$pathx = bab_getUploadFullPath("Y", $this->arrgrp[$i]);
-				$size = getDirSize($pathx);
-				
-				$this->diskspace = bab_toHtml(bab_formatSizeFile($size).$this->kilooctet);
-				$this->allowedspace =  bab_toHtml(bab_formatSizeFile($GLOBALS['babMaxGroupSize']).$this->kilooctet);
-				$this->remainingspace =  bab_toHtml(bab_formatSizeFile($GLOBALS['babMaxGroupSize'] - $size).$this->kilooctet);
+			if($i < $this->countgrp)
+			{
 				$this->groupname = '';
 				$oFmFolder = BAB_FmFolderHelper::getFmFolderById($this->arrgrp[$i]);
-				if(!is_null($oFmFolder))
+				if(is_null($oFmFolder))
 				{
-					$this->groupname = $oFmFolder->getName();
+					$bSkip = true;
+					return true;
 				}
+				$this->groupname = $oFmFolder->getName();
+				$pathx = BAB_FileManagerEnv::getCollectivePath($oFmFolder->getDelegationOwnerId()) . $oFmFolder->getName();
+				$size = getDirSize($pathx);
+				$this->diskspace = bab_toHtml(bab_formatSizeFile($size).$this->kilooctet);
+				$this->allowedspace =  bab_toHtml(bab_formatSizeFile($GLOBALS['babMaxGroupSize']).$this->kilooctet);
+				$this->remainingspace =  bab_toHtml(bab_formatSizeFile($GLOBALS['babMaxGroupSize'] - $size).$this->kilooctet);
+				$this->groupname = '';
 					
 				$i++;
 				return true;
-				}
+			}
 			else
+			{
 				return false;
 			}
+		}
 
-		function getnextmgrp()
-			{
+		function getnextmgrp(&$bSkip)
+		{
 			static $i = 0;
-			if( $i < $this->countmgrp)
-				{
+			if($i < $this->countmgrp)
+			{
 				$this->groupname = '';
 				$oFmFolder = BAB_FmFolderHelper::getFmFolderById($this->arrmgrp[$i]);
-				if(!is_null($oFmFolder))
+				if(is_null($oFmFolder))
 				{
-					$this->groupname = $oFmFolder->getName();
+					$bSkip = true;
+					return true;
 				}
 					
-				$pathx = bab_getUploadFullPath("Y", $this->arrmgrp[$i]);
+				$this->groupname = $oFmFolder->getName();
+				$pathx = BAB_FileManagerEnv::getCollectivePath($oFmFolder->getDelegationOwnerId()) . $oFmFolder->getName();
 				$size = getDirSize($pathx);
 				$this->diskspace = bab_toHtml(bab_formatSizeFile($size).$this->kilooctet);
 				$this->allowedspace =  bab_toHtml(bab_formatSizeFile($GLOBALS['babMaxGroupSize']).$this->kilooctet);
 				$this->remainingspace =  bab_toHtml(bab_formatSizeFile($GLOBALS['babMaxGroupSize'] - $size).$this->kilooctet);
 				$i++;
 				return true;
-				}
+			}
 			else
+			{
 				return false;
 			}
+		}
 
 		}
 
