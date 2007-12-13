@@ -186,7 +186,7 @@ function updateFolderFilePathName($iIdDgOwner, $iIdOwner, $sGroup, $sDirName)
 		FROM ' .
 			BAB_FILES_TBL . '
 		WHERE 
-			`id_owner` = \'' . $babDB->db_escape_string($iIdOwner) . '\ AND 
+			`id_owner` = \'' . $babDB->db_escape_string($iIdOwner) . '\' AND 
 			`bgroup` = \'' . $babDB->db_escape_string($sGroup) . '\'';
 
 	$oResult = $babDB->db_query($sQuery);
