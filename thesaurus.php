@@ -98,6 +98,7 @@ function importTagsFile()
 			$this->other = bab_translate("Other");
 			$this->comma = bab_translate("Comma");
 			$this->tab = bab_translate("Tab");
+			$this->maxfilesize = $GLOBALS['babMaxFileSize'];
 			}
 		}
 
