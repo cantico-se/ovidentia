@@ -68,7 +68,7 @@ class listFiles
 	{
 		function bab_compareFmFiles($f1, $f2)
 		{
-			return strcmp($f1['sName'], $f2['sName']);
+			return strcasecmp($f1['sName'], $f2['sName']);
 		}
 		
 		global $babBody, $babDB, $BAB_SESS_USERID;
