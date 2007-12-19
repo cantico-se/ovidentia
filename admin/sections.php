@@ -70,6 +70,7 @@ function sectionsList()
 		var $groups;
 		var $opttxt;
 		var $altbg = true;
+		var $sections = array();
 
 		function temp()
 			{
@@ -84,114 +85,97 @@ function sectionsList()
 			$this->groups = bab_translate("View");
 			$this->opttxt = bab_translate("Optional(fem)");
 			$this->db = &$GLOBALS['babDB'];
+			
+
 			$req = "select * from ".BAB_SECTIONS_TBL." where id_dgowner='".$babBody->currentAdmGroup."'";
-			$this->res = $this->db->db_query($req);
-			$this->count = $this->db->db_num_rows($this->res);
+			$res = $this->db->db_query($req);
+			$this->processres($res, '-2');
 
 			/* don't get Administrator section */
 			if( $babBody->currentAdmGroup == 0 )
 				{
-				$this->resa = $this->db->db_query("select * from ".BAB_PRIVATE_SECTIONS_TBL." where id > '1'");
-				$this->counta = $this->db->db_num_rows($this->resa);
+				$resa = $this->db->db_query("select * from ".BAB_PRIVATE_SECTIONS_TBL." where id > '1'");
+				$this->processres($resa, '-1');
 				}
 			else
 				$this->counta = 0;
 
-			$this->rescat = $this->db->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."'");
-			$this->countcat = $this->db->db_num_rows($this->rescat);
+			$rescat = $this->db->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."'");
+			$this->processres($rescat, '-3');
+			
+			ksort($this->sections);
 			}
-
-		function getnextp()
-			{
-			static $i = 0;
-			if( $i < $this->counta)
-				{
-				$this->altbg = $this->altbg ? false : true;
-				$this->arr = $this->db->db_fetch_array($this->resa);
-				$this->arr['title'] = bab_translate($this->arr['title']);
-				$this->arr['description'] = bab_translate($this->arr['description']);
-				$this->idvalue = $this->arr['id']."-1";
+			
+		function processres($res, $suffix) {
+			while ($arr = $this->db->db_fetch_array($res)) {
+				$arr['title'] = bab_translate($arr['title']);
+				$arr['description'] = bab_translate($arr['description']);
+				$idvalue = $arr['id'].$suffix;
 				
-				$this->opt = 5 != $this->arr['id'];
+				$opt = 5 != $arr['id'];
 				
-				if( $this->arr['enabled'] == "N")
-					$this->secchecked = "checked";
+				if( $arr['enabled'] == "N")
+					$secchecked = "checked";
 				else
-					$this->secchecked = "";
-				if( $this->arr['optional'] == "Y")
-					$this->optchecked = "checked";
+					$secchecked = "";
+				if( $arr['optional'] == "Y")
+					$optchecked = "checked";
 				else
-					$this->optchecked = "";
-				$i++;
-				return true;
+					$optchecked = "";
+					
+				if ('-2' === $suffix) {
+					$url 		= bab_toHtml($GLOBALS['babUrlScript'].'?tg=section&idx=Modify&item='.$arr['id']);
+					$accessurl 	= bab_toHtml($GLOBALS['babUrlScript'].'?tg=section&idx=Groups&item='.$arr['id']);
+				} else {
+					$url 		= false;
+					$accessurl 	= false;
 				}
-			else
-				return false;
-
-			}
-
-		function getnextcat()
-			{
-			static $i = 0;
-			if( $i < $this->countcat)
-				{
-				$this->altbg = $this->altbg ? false : true;
-				$this->arr = $this->db->db_fetch_array($this->rescat);
-				$this->arr['title'] = $this->arr['title'];
-				$this->arr['description'] = $this->arr['description'];
-				$this->idvalue = $this->arr['id']."-3";
-				if( $this->arr['enabled'] == "N")
-					$this->secchecked = "checked";
-				else
-					$this->secchecked = "";
-				if( $this->arr['optional'] == "Y")
-					$this->optchecked = "checked";
-				else
-					$this->optchecked = "";
-				$i++;
-				return true;
-				}
-			else
-				return false;
-
-			}
-
-		function getnext()
-			{
-			static $i = 0;
-			if( $i < $this->count)
-				{
-				$this->altbg = !$this->altbg;
-				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->url = $GLOBALS['babUrlScript']."?tg=section&idx=Modify&item=".$this->arr['id'];
-				$this->accessurl = $GLOBALS['babUrlScript']."?tg=section&idx=Groups&item=".$this->arr['id'];
-				$this->idvalue = $this->arr['id']."-2";
-				
-				if( $this->arr['enabled'] == "N")
-					$this->secchecked = "checked";
-				else
-					$this->secchecked = "";
-				if( $this->arr['optional'] == "Y")
-					$this->optchecked = "checked";
-				else
-					$this->optchecked = "";
-				$i++;
-				return true;
-				}
-			else
-				return false;
-
+					
+					
+				$this->sections[strtolower($arr['title']).$idvalue] = array(
+					'title' 		=> $arr['title'],
+					'description' 	=> $arr['description'],
+					'idvalue'		=> $idvalue,
+					'opt'			=> $opt,
+					'secchecked'	=> $secchecked,
+					'optchecked'	=> $optchecked,
+					'url'			=> $url,
+					'accessurl'		=> $accessurl
+				);
 			}
 		}
+			
+		function getnext() {
+			if (list(,$arr) = each($this->sections)) {
+				
+				$this->altbg 		= !$this->altbg;
+				$this->title 		= $arr['title'];
+				$this->description 	= $arr['description'];
+				$this->idvalue 		= $arr['idvalue'];
+				$this->opt			= $arr['opt'];
+				$this->secchecked 	= $arr['secchecked'];
+				$this->optchecked 	= $arr['optchecked'];
+				$this->url 			= $arr['url'];
+				$this->accessurl 	= $arr['accessurl'];
+				
+				return true;
+			}
+			
+			return false;
+		}
+		
+
+		
+	}
 
 	$temp = new temp();
-	if( $temp->count == 0 && $temp->counta == 0 && $temp->countcat == 0)
+	if(0 === count($temp->sections))
 		{
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=sections&idx=ch");
 		exit;
 		}
 	$babBody->babecho(	bab_printTemplate($temp, "sections.html", "sectionslist"));
-	return $temp->count + $temp->countcat + $temp->counta;
+	return count($temp->sections);
 	}
 
 function sectionsOrder()
