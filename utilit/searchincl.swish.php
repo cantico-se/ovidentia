@@ -59,9 +59,71 @@ class swishCls
 		$this->catdoc = $arr['catdoc'];
 		$this->unzip = $arr['unzip'];
 		}
+	
+	
+	if (empty($this->swishCmd)) {
+		if ('windows' === bab_browserOS()) {
+			$this->swishCmd = 'C:/Progra~1/SWISH-E/swish-e.exe';
+		} else {
+			$this->swishCmd = $this->getDefaultCommand('swish-e');
+		}
+	}
+	
+	
+	if (empty($this->pdftotext)) {
+		if ('windows' === bab_browserOS()) {
+			$this->pdftotext = 'C:/Progra~1/SWISH-E/lib/swish-e/pdftotext.exe';
+		} else {
+			$this->pdftotext = $this->getDefaultCommand('pdftotext');
+		}
+	}
+	
+	if (empty($this->xls2csv)) {
+		if ('windows' === bab_browserOS()) {
+			$this->xls2csv = 'C:/Progra~1/SWISH-E/lib/swish-e/xls2csv.exe';
+		} else {
+			$this->xls2csv = $this->getDefaultCommand('xls2csv');
+		}
+	}
+	
+	if (empty($this->catdoc)) {
+		if ('windows' === bab_browserOS()) {
+			$this->catdoc = 'C:/Progra~1/SWISH-E/lib/swish-e/catdoc.exe';
+		} else {
+			$this->catdoc = $this->getDefaultCommand('catdoc');
+		}
+	}
+	
+	if (empty($this->unzip)) {
+		if ('windows' === bab_browserOS()) {
+			$this->unzip = 'C:/Progra~1/SWISH-E/lib/swish-e/unzip.exe';
+		} else {
+			$this->unzip = $this->getDefaultCommand('unzip');
+		}
+	}
 
 	$this->object = $object;
 	}
+	
+	
+	/**
+	 * Find executable on linux
+	 */
+	function getDefaultCommand($command) {
+		
+		$obj = $this->execCmd('whereis -b '.$command);
+		while ($str = $obj->getNextDebug()) {
+			if (preg_match("/\/[\/\w+\-]+/", $str, $m)) {
+				if (isset($m[0])) {
+					return $m[0];
+				}
+			}
+		}
+		
+		return '/usr/bin/'.$command;
+	}
+	
+	
 
 
 	/**
