@@ -717,7 +717,7 @@ function import()
 
 		function create_directory($path)
 			{
-			if (!is_dir($path) && !@bab_mkdir($path))
+			if (!is_dir($path) && !bab_mkdir($path))
 				{
 				$path = trim($path,'/.');
 				$l = strlen($path) - strlen(strrchr($path, '/'));
