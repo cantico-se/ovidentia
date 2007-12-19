@@ -2135,8 +2135,9 @@ class BAB_FmFolderSet extends BAB_BaseSet
 				$oCriteria = $oCriteria->_and($oPathName->like($babDB->db_escape_like($oFmFolder->getRelativePath() . $oFmFolder->getName() . '/') . '%'));
 				$oFolderFileSet->remove($oCriteria);
 				
-				$sFullPathNane = $oFileManagerEnv->getCollectiveRootFmPath() . $oFmFolder->getRelativePath() . $oFmFolder->getName();
-				//bab_debug($sFullPathNane);
+				$sRootFmPath = BAB_FileManagerEnv::getCollectivePath($oFmFolder->getDelegationOwnerId());
+				$sFullPathNane = $sRootFmPath . $oFmFolder->getRelativePath() . $oFmFolder->getName();
+//				bab_debug(__FUNCTION__ . ' ' . $sFullPathNane);
 				$this->removeDir($sFullPathNane);
 
 				$oFmFolderCliboardSet = new BAB_FmFolderCliboardSet();
