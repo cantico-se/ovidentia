@@ -1440,8 +1440,7 @@ function fm_commitFile($idf, $comment, $vermajor, $fmFile)
 			return false;
 		}
 
-		$oFileManagerEnv	=& getEnvObject();
-		$sUploadPath		= $oFileManagerEnv->getCollectiveFolderPath();
+		$sUploadPath		= BAB_FileManagerEnv::getCollectivePath($oFmFolder->getDelegationOwnerId());
 		$sFullPathName		= $sUploadPath . $oFolderFile->getPathName();
 
 		$totalsize = getDirSize($sFullPathName);
