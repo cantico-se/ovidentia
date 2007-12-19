@@ -123,7 +123,7 @@ function updatePopupNotifier()
 			$this->altbg = true;
 			$this->datetxt = bab_translate("Date");
 			$this->eventtxt = bab_translate("Appointment");
-			$this->dismisstxt = bab_translate("Dismiss");
+			$this->dismisstxt = bab_translate("Dismiss the notification");
 			$this->notifiertxt = bab_translate("Event notifier");
 			}
 

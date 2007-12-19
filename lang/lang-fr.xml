@@ -1745,7 +1745,7 @@
 <string id="Add personal note">Ajouter une annotation personnelle</string>
 <string id="Personal notes">Annotations personnelles</string>
 <string id="Event reminder">Rappel d'un événement</string>
-<string id="Dismiss">Cacher</string>
+<string id="Dismiss the notification">Cacher ce rappel</string>
 <string id="Event notifier">Rappel d'événements</string>
 <string id="Open notifier">Ouvrir le Notifier</string>
 <string id="Reminder">Rappel</string>
