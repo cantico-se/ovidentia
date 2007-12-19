@@ -188,8 +188,11 @@ class bab_fmFile {
  */
 function bab_importFmFile($fmFile, $id_owner, $path, $bgroup) 
 {
-	global $babDB, $babBody;
+	global $babDB, $babBody, $BAB_SESS_USERID;
 	include_once $GLOBALS['babInstallPath'] . 'utilit/fileincl.php';
+
+
+	
 
 	$gr = $bgroup ? 'Y' : 'N';
 	
@@ -200,8 +203,19 @@ function bab_importFmFile($fmFile, $id_owner, $path, $bgroup)
 	}
 	
 	$sPathName = '';
-	if('Y' === $gr)
+	if('Y' === (string) $gr)
 	{
+		$oFmRootFolder = BAB_FmFolderHelper::getFmFolderById($id_owner);			
+		if(is_null($oFmRootFolder))
+			{
+			bab_debug('erreur');
+			return false;
+			}
+	
+		$path = $oFmRootFolder->getName().'/'.$path;
+		
+		bab_debug($path);
+	
 		$oFmFolder = null;
 		BAB_FmFolderHelper::getFileInfoForCollectiveDir($id_owner, $path, $id_owner, $sPathName, $oFmFolder);
 	}
@@ -210,9 +224,26 @@ function bab_importFmFile($fmFile, $id_owner, $path, $bgroup)
 		$sPathName = $path . $sEndSlash;
 	}
 	
-	$oFileManagerEnv =& getEnvObject();
-	$sFullPathNane = $oFileManagerEnv->getRootFmPath() . $sPathName . $fmFile->filename;
 	
+	$oFileManagerEnv =& getEnvObject();
+	
+	$oFileManagerEnv->sPath = removeEndSlashes($sPathName);
+	$oFileManagerEnv->sGr = $gr;
+
+	if(!empty($BAB_SESS_USERID))
+	{
+		$oFileManagerEnv->iIdObject = empty($id_owner) ?  $BAB_SESS_USERID : $id_owner;
+	}
+	else
+	{
+		$oFileManagerEnv->iIdObject = empty($id_owner) ?  0 : $id_owner;
+	}
+	
+	$oFileManagerEnv->init();
+	
+
+	$sFullPathNane = BAB_FileManagerEnv::getCollectivePath(bab_getCurrentUserDelegation()) . $sPathName . $fmFile->filename;
+
 	if(file_exists($sFullPathNane)) 
 	{
 		$oFolderFileSet = new BAB_FolderFileSet();
@@ -227,7 +258,7 @@ function bab_importFmFile($fmFile, $id_owner, $path, $bgroup)
 		$oCriteria = $oCriteria->_and($oName->in($fmFile->filename));
 		$oCriteria = $oCriteria->_and($oIdOwner->in($id_owner));
 		$oCriteria = $oCriteria->_and($oGroup->in($gr));
-		$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
+		$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
 		
 		$oFolderFile = $oFolderFileSet->get($oCriteria);
 		

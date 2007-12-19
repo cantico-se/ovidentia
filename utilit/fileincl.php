@@ -4021,19 +4021,12 @@ class BAB_FileManagerEnv
 		
 	}
 	
-	function init()
-	{
+	
+	function getValuesFromRequest() {
 		global $BAB_SESS_USERID, $babBody;
 
 		$this->sPath = (string) bab_rp('path');
 		$this->sGr = (string) bab_rp('gr', '');
-		
-		$this->iPathLength = strlen(trim($this->sPath));
-		$this->sEndSlash = '';
-		if($this->iPathLength > 0)
-		{
-			$this->sEndSlash = '/';
-		}	
 
 		if(!empty($BAB_SESS_USERID))
 		{
@@ -4043,7 +4036,21 @@ class BAB_FileManagerEnv
 		{
 			$this->iIdObject = (int) bab_rp('id', 0);
 		}
+	}
+	
+	
+	
+	function init()
+	{
+		global $BAB_SESS_USERID, $babBody;
 		
+		$this->iPathLength = strlen(trim($this->sPath));
+		$this->sEndSlash = '';
+		if($this->iPathLength > 0)
+		{
+			$this->sEndSlash = '/';
+		}	
+
 		//
 		{
 			$this->iId				= $this->iIdObject;
@@ -4495,6 +4502,7 @@ if(!function_exists('is_a'))
 function initEnvObject()
 {
 	$oFileManagerEnv =& getEnvObject();
+	$oFileManagerEnv->getValuesFromRequest();
 	$oFileManagerEnv->init();
 }
 
