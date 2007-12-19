@@ -3191,7 +3191,7 @@ function createFolderForCollectiveDir()
 						$oFmFolder->setAutoApprobation($sAutoApprobation);
 						$oFmFolder->setDelegationOwnerId(bab_getCurrentUserDelegation());
 						$oFmFolder->setFileNotify($sNotification);
-						$oFmFolder->setHide($sDisplay);
+						$oFmFolder->setHide((($sDisplay === 'Y') ? 'N' : 'Y'));
 						$oFmFolder->setName($sDirName);
 						$oFmFolder->setAddTags($sAddTags);
 						$oFmFolder->setRelativePath($sRelativePath);
