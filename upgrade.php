@@ -4105,6 +4105,93 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		}
 	}
 
+	/**
+	 * Upgrade to 6.5.100
+	 */
+	if (!bab_isTable(BAB_DEF_TOPCATCOM_GROUPS_TBL)) 
+	{
+
+	$babDB->db_query("
+	
+			CREATE TABLE ".BAB_DEF_TOPCATCOM_GROUPS_TBL." (
+			  id int(11) unsigned NOT NULL auto_increment,
+			  id_object int(11) unsigned NOT NULL default '0',
+			  id_group int(11) unsigned NOT NULL default '0',
+			  PRIMARY KEY  (id),
+			  KEY id_object (id_object),
+			  KEY id_group (id_group)
+			)
+		
+			");
+	}
+
+	if (!bab_isTable(BAB_DEF_TOPCATMAN_GROUPS_TBL)) 
+	{
+
+	$babDB->db_query("
+	
+			CREATE TABLE ".BAB_DEF_TOPCATMAN_GROUPS_TBL." (
+			  id int(11) unsigned NOT NULL auto_increment,
+			  id_object int(11) unsigned NOT NULL default '0',
+			  id_group int(11) unsigned NOT NULL default '0',
+			  PRIMARY KEY  (id),
+			  KEY id_object (id_object),
+			  KEY id_group (id_group)
+			)
+		
+			");
+	}
+	
+	if (!bab_isTable(BAB_DEF_TOPCATMOD_GROUPS_TBL)) 
+	{
+
+	$babDB->db_query("
+	
+			CREATE TABLE ".BAB_DEF_TOPCATMOD_GROUPS_TBL." (
+			  id int(11) unsigned NOT NULL auto_increment,
+			  id_object int(11) unsigned NOT NULL default '0',
+			  id_group int(11) unsigned NOT NULL default '0',
+			  PRIMARY KEY  (id),
+			  KEY id_object (id_object),
+			  KEY id_group (id_group)
+			)
+		
+			");
+	}
+
+	if (!bab_isTable(BAB_DEF_TOPCATSUB_GROUPS_TBL)) 
+	{
+
+	$babDB->db_query("
+	
+			CREATE TABLE ".BAB_DEF_TOPCATSUB_GROUPS_TBL." (
+			  id int(11) unsigned NOT NULL auto_increment,
+			  id_object int(11) unsigned NOT NULL default '0',
+			  id_group int(11) unsigned NOT NULL default '0',
+			  PRIMARY KEY  (id),
+			  KEY id_object (id_object),
+			  KEY id_group (id_group)
+			)
+		
+			");
+	}
+
+	if (!bab_isTable(BAB_DEF_TOPCATVIEW_GROUPS_TBL)) 
+	{
+
+	$babDB->db_query("
+	
+			CREATE TABLE ".BAB_DEF_TOPCATVIEW_GROUPS_TBL." (
+			  id int(11) unsigned NOT NULL auto_increment,
+			  id_object int(11) unsigned NOT NULL default '0',
+			  id_group int(11) unsigned NOT NULL default '0',
+			  PRIMARY KEY  (id),
+			  KEY id_object (id_object),
+			  KEY id_group (id_group)
+			)
+		
+			");
+	}
 	return true;
 }
 ?>

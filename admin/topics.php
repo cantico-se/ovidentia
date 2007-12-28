@@ -682,6 +682,13 @@ function saveCategory($category, $cat, $sacom, $saart, $saupd, $bnotif, $lang, $
 	else
 		$ord = 1;
 	$babDB->db_query("insert into ".BAB_TOPCAT_ORDER_TBL." (id_topcat, type, ordering, id_parent) VALUES ('" .$babDB->db_escape_string($id). "', '2', '" . $babDB->db_escape_string($ord). "', '".$babDB->db_escape_string($cat)."')");
+
+	/* update default rights */
+	aclCloneRights(BAB_DEF_TOPCATVIEW_GROUPS_TBL, $cat, BAB_TOPICSVIEW_GROUPS_TBL, $id);
+	aclCloneRights(BAB_DEF_TOPCATSUB_GROUPS_TBL, $cat, BAB_TOPICSSUB_GROUPS_TBL, $id);
+	aclCloneRights(BAB_DEF_TOPCATCOM_GROUPS_TBL, $cat, BAB_TOPICSCOM_GROUPS_TBL, $id);
+	aclCloneRights(BAB_DEF_TOPCATMOD_GROUPS_TBL, $cat, BAB_TOPICSMOD_GROUPS_TBL, $id);
+	aclCloneRights(BAB_DEF_TOPCATMAN_GROUPS_TBL, $cat, BAB_TOPICSMAN_GROUPS_TBL, $id);
 	
 	return true;
 	}

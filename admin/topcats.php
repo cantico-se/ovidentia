@@ -94,6 +94,11 @@ class bab_AdmArticleTreeView extends bab_ArticleTreeView
 					$GLOBALS['babSkinPath'] . 'images/Puces/action_fail.gif', $sEnableDisableUrl, '');
 			}
 
+			$sRightUrl = $GLOBALS['babUrlScript'] . '?tg=topcat&idx=rights&item=' . $iId;
+			$oElement->addAction(
+				'right', bab_toHtml(bab_translate("Default rights")), 
+				$GLOBALS['babSkinPath'] . 'images/Puces/access.png', $sRightUrl, '');
+
 
 			$oElement->setLink($GLOBALS['babUrlScript'] . '?tg=topcat&idx=Modify&item=' . $iId . '&idp=' . $iIdParent);
 		}

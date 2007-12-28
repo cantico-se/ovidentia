@@ -355,6 +355,13 @@ function bab_addTopicsCategory($name, $description, $benabled, $template, $dispt
 			$ord = 1;
 		$babDB->db_query("insert into ".BAB_TOPCAT_ORDER_TBL." (id_topcat, type, ordering, id_parent) VALUES ('" .$babDB->db_escape_string($id). "', '1', '" . $babDB->db_escape_string($ord). "', '".$babDB->db_escape_string($topcatid)."')");
 
+		/* update default rights */
+		include_once $GLOBALS['babInstallPath'].'admin/acl.php';
+		aclCloneRights(BAB_DEF_TOPCATVIEW_GROUPS_TBL, $topcatid, BAB_DEF_TOPCATVIEW_GROUPS_TBL, $id);
+		aclCloneRights(BAB_DEF_TOPCATSUB_GROUPS_TBL, $topcatid, BAB_DEF_TOPCATSUB_GROUPS_TBL, $id);
+		aclCloneRights(BAB_DEF_TOPCATCOM_GROUPS_TBL, $topcatid, BAB_DEF_TOPCATCOM_GROUPS_TBL, $id);
+		aclCloneRights(BAB_DEF_TOPCATMOD_GROUPS_TBL, $topcatid, BAB_DEF_TOPCATMOD_GROUPS_TBL, $id);
+		aclCloneRights(BAB_DEF_TOPCATMAN_GROUPS_TBL, $topcatid, BAB_DEF_TOPCATMAN_GROUPS_TBL, $id);		
 		return $id;
 		}
 	}

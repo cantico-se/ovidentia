@@ -2487,4 +2487,17 @@
 <string id="Undefined">Non défini</string>
 <string id=" The directory: %s have not been created"> Le répertoire: %s n'a pas été créé</string>
 <string id=" The directory: %s is not writable"> Le répertoire: %s n'est pas accessible en écriture</string>
+<string id="Default rights">Droits par défaut</string>
+<string id="Default rights for">Droits par défaut pour</string>
+<string id="Who can read articles ?">Qui peut lire les articles ?</string>
+<string id="Who can submit new articles ?">Qui peut soumettre de nouveaux articles ?</string>
+<string id="Who can post comment ?">Qui peut soumettre des commentaires ?</string>
+<string id="Who can modify articles ?">Qui peut modifier les articles ?</string>
+<string id="Who can manage ?">Qui peut gérer ?</string>
+<string id="On which elements do you want to set those new rights">Sur quels éléments souhaitez-vous appliquer ces nouveaux droits</string>
+<string id="Topics of this category">Les thèmes de cette catégorie</string>
+<string id="Subcategories first level">Les sous catégories de premier niveau</string>
+<string id="Topics of subcategories first level">Les thèmes des sous catégories de premier niveau</string>
+<string id="All child ( subcategories and topics )">Tous ( sous catégories ainsi que les thèmes )</string>
+<string id="Apply">Appliquer</string>
 </fr>

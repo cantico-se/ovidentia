@@ -1045,7 +1045,7 @@ CREATE TABLE bab_ini (
 
 INSERT INTO bab_ini VALUES ('ver_major', '6');
 INSERT INTO bab_ini VALUES ('ver_minor', '5');
-INSERT INTO bab_ini VALUES ('ver_build', '93');
+INSERT INTO bab_ini VALUES ('ver_build', '100');
 INSERT INTO bab_ini VALUES ('ver_prod', 'E');
 
 #
@@ -3711,4 +3711,73 @@ CREATE TABLE bab_files_tags (
   id_tag int(11) unsigned NOT NULL default '0',
   KEY id_file (id_file),
   KEY id_tag (id_tag)
+);
+
+
+#
+# Structure de la table bab_def_topcatcom_groups
+#
+
+CREATE TABLE bab_def_topcatcom_groups (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group)
+);
+
+
+#
+# Structure de la table bab_def_topcatman_groups
+#
+
+CREATE TABLE bab_def_topcatman_groups (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group)
+);
+
+
+#
+# Structure de la table bab_def_topcatmod_groups
+#
+
+CREATE TABLE bab_def_topcatmod_groups (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group)
+);
+
+
+#
+# Structure de la table bab_def_topcatsub_groups
+#
+
+CREATE TABLE bab_def_topcatsub_groups (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group)
+);
+
+#
+# Structure de la table bab_def_topcatview_groups
+#
+
+CREATE TABLE bab_def_topcatview_groups (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group)
 );

@@ -22,6 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
+include_once $babInstallPath."admin/acl.php";
 include_once $babInstallPath."utilit/topincl.php";
 
 function topcatModify($id)
@@ -272,6 +273,31 @@ function topcatDelete($id, $idp)
 	return true;
 	}
 
+function howToUseDefaultRights($id)
+	{
+	global $babBody;
+	
+	class temp
+		{
+		function temp($id)
+			{
+			$this->item = $id;
+			$this->t_with_selected = bab_translate("On which elements do you want to set those new rights").'?';
+			$this->title = bab_getTopicCategoryTitle($id);
+
+			$this->t_topics = bab_translate("Topics of this category");
+			$this->t_subcategories = bab_translate("Subcategories first level");
+			$this->t_topicssubcategories = bab_translate("Topics of subcategories first level");
+			$this->t_all = bab_translate("All child ( subcategories and topics )");
+			$this->t_update = bab_translate("Apply");
+			}
+		}
+
+	$temp = new temp($id);
+	$babBody->babecho(bab_printTemplate($temp,"topcats.html", "howtousedefaultrights"));
+	return true;
+	}
+	
 function modifyTopcat($oldname, $name, $description, $benabled, $id, $template, $disptmpl, $topcatid)
 	{
 	global $babBody;
@@ -341,6 +367,99 @@ function confirmDeleteTopcat($id)
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats");
 	}
 
+function updateDefaultRightsTopics($idcatsrc, $idcat)
+{
+	global $babDB;
+
+	$res = $babDB->db_query("select id from ".BAB_TOPICS_TBL." where id_cat='".$babDB->db_escape_string($idcat)."'");
+	while( $arr = $babDB->db_fetch_array($res))
+	{
+		aclCloneRights(BAB_DEF_TOPCATVIEW_GROUPS_TBL, $idcatsrc, BAB_TOPICSVIEW_GROUPS_TBL, $arr['id']);
+		aclCloneRights(BAB_DEF_TOPCATSUB_GROUPS_TBL, $idcatsrc, BAB_TOPICSSUB_GROUPS_TBL, $arr['id']);
+		aclCloneRights(BAB_DEF_TOPCATCOM_GROUPS_TBL, $idcatsrc, BAB_TOPICSCOM_GROUPS_TBL, $arr['id']);
+		aclCloneRights(BAB_DEF_TOPCATMOD_GROUPS_TBL, $idcatsrc, BAB_TOPICSMOD_GROUPS_TBL, $arr['id']);
+		aclCloneRights(BAB_DEF_TOPCATMAN_GROUPS_TBL, $idcatsrc, BAB_TOPICSMAN_GROUPS_TBL, $arr['id']);
+	}
+}
+
+function updateDefaultRightsSubCategory($idcat, $idchild)
+{
+	aclCloneRights(BAB_DEF_TOPCATVIEW_GROUPS_TBL, $idcat, BAB_DEF_TOPCATVIEW_GROUPS_TBL, $idchild);
+	aclCloneRights(BAB_DEF_TOPCATSUB_GROUPS_TBL, $idcat, BAB_DEF_TOPCATSUB_GROUPS_TBL, $idchild);
+	aclCloneRights(BAB_DEF_TOPCATCOM_GROUPS_TBL, $idcat, BAB_DEF_TOPCATCOM_GROUPS_TBL, $idchild);
+	aclCloneRights(BAB_DEF_TOPCATMOD_GROUPS_TBL, $idcat, BAB_DEF_TOPCATMOD_GROUPS_TBL, $idchild);
+	aclCloneRights(BAB_DEF_TOPCATMAN_GROUPS_TBL, $idcat, BAB_DEF_TOPCATMAN_GROUPS_TBL, $idchild);
+}
+
+function updateDefaultRightsChild($item)
+{
+	global $babDB;
+
+	$res = $babDB->db_query("select id from ".BAB_TOPICS_CATEGORIES_TBL." where id_parent='".$babDB->db_escape_string($item)."'");
+	while( $arr = $babDB->db_fetch_array($res))
+	{
+		updateDefaultRightsSubCategory($item, $arr['id']);
+		updateDefaultRightsTopics($arr['id'], $arr['id']);
+		updateDefaultRightsChild($arr['id']);
+	}
+}
+
+function updateDefaultRights($item, $opt)
+{
+	global $babDB;
+	
+	if( in_array(4, $opt )) // All child
+	{
+		updateDefaultRightsTopics($item, $item);
+		updateDefaultRightsChild($item);
+	}
+	else
+	{
+		if( in_array(1, $opt)) // Topics of this category
+		{
+			updateDefaultRightsTopics($item, $item);
+		}
+		if( in_array(2, $opt)) // Subcategories first level
+		{
+			$res = $babDB->db_query("select id from ".BAB_TOPICS_CATEGORIES_TBL." where id_parent='".$babDB->db_escape_string($item)."'");
+			while( $arr = $babDB->db_fetch_array($res))
+			{
+				updateDefaultRightsSubCategory($item, $arr['id']);
+			}
+		}
+		if( in_array(3, $opt)) // Topics of subcategories first level
+		{
+			$res = $babDB->db_query("select id from ".BAB_TOPICS_CATEGORIES_TBL." where id_parent='".$babDB->db_escape_string($item)."'");
+			while( $arr = $babDB->db_fetch_array($res))
+			{
+				updateDefaultRightsTopics($item, $arr['id']);
+			}
+		}
+	}
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats");
+}
+
+
+function updateAclGroups()
+{
+	global $babDB;
+
+	maclGroups();
+	$item = bab_pp('item', '');
+
+	list($nbcat) = $babDB->db_fetch_row($babDB->db_query("select count(id) from ".BAB_TOPICS_CATEGORIES_TBL." where id_parent='".$babDB->db_escape_string($item)."'"));
+
+	list($nbtop) = $babDB->db_fetch_row($babDB->db_query("select count(id) from ".BAB_TOPICS_TBL." where id_cat='".$babDB->db_escape_string($item)."'"));
+
+	if( $nbcat || $nbtop )
+	{
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcat&idx=crights&item=".$item);
+		exit;
+	}
+	
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats");
+}
+
 /* main */
 if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['articles'] != 'Y')
 {
@@ -348,9 +467,7 @@ if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['articles'] != 'Y')
 	return;
 }
 
-
-if( !isset($idx))
-	$idx = "Modify";
+$idx = bab_rp('idx', 'Modify');
 
 if( isset($modify))
 	{
@@ -363,17 +480,52 @@ if( isset($modify))
 		$idx = "Delete";
 	}
 
-if( isset($action) && $action == "Yes")
+if( isset($action))
 	{
-	if($idx == "Delete")
+	switch($action)
 		{
-		confirmDeleteTopcat($group);
+		case 'Yes':
+			if($idx == "Delete")
+				{
+				confirmDeleteTopcat($group);
+				}
+			break;
+		case 'updrights':
+			$opt = bab_pp('opt', array());
+			updateDefaultRights($item, $opt);
+			Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats");
+			break;
 		}
 	}
 
+if( isset($aclview) )
+	{
+	updateAclGroups();
+	}
+
+
 switch($idx)
 	{
-	case "Delete":
+	case 'crights':
+		howToUseDefaultRights($item);
+		$babBody->title = bab_translate("Default rights for").": ".bab_getTopicCategoryTitle($item);
+		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats");
+		$babBody->addItemMenu("rights", bab_translate("Default rights"), $GLOBALS['babUrlScript']."?tg=topcat&idx=rights&item=".$item);
+		break;
+	case 'rights':
+		$babBody->title = bab_translate("Default rights for").": ".bab_getTopicCategoryTitle($item);
+		$macl = new macl("topcat", "crights", $item, "aclview");
+        $macl->addtable( BAB_DEF_TOPCATVIEW_GROUPS_TBL,bab_translate("Who can read articles ?"));
+        $macl->addtable( BAB_DEF_TOPCATSUB_GROUPS_TBL,bab_translate("Who can submit new articles ?"));
+		$macl->addtable( BAB_DEF_TOPCATCOM_GROUPS_TBL,bab_translate("Who can post comment ?"));
+		$macl->addtable( BAB_DEF_TOPCATMOD_GROUPS_TBL,bab_translate("Who can modify articles ?"));
+        $macl->addtable( BAB_DEF_TOPCATMAN_GROUPS_TBL,bab_translate("Who can manage ?"));
+		$macl->filter(0,0,1,1,1);
+        $macl->babecho();
+		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats");
+		$babBody->addItemMenu("rights", bab_translate("Default rights"), $GLOBALS['babUrlScript']."?tg=topcat&idx=rights&item=".$item);
+		break;
+	case 'Delete':
 		if(topcatDelete($item, $idp))
 			{
 			$babBody->title = bab_translate("Delete topic category");
@@ -382,8 +534,8 @@ switch($idx)
 			break;
 			}
 		/* no break; */
-		$idx = "Modify";
-	case "Modify":
+		$idx = 'Modify';
+	case 'Modify':
 	default:
 		topcatModify($item);
 		$babBody->title = bab_translate("Modify topic category");
