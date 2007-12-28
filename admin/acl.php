@@ -611,10 +611,7 @@ function aclGetAccessUsers($table, $id_object) {
  * @param   int		$trgIdObject	new affected rights id_object 
  * 
  */function aclDuplicateRights($srcTable, $srcIdObject, $trgTable, $trgIdObject) {
-	global $babBody,$babDB;
-	
-	$tree = & new bab_grptree();
-	$groups = array();
+	global $babDB;
 	
 	$res = $babDB->db_query('SELECT id_group FROM '.$babDB->db_escape_string($srcTable).' WHERE id_object='.$babDB->quote($srcIdObject));
 	while ($arr = $babDB->db_fetch_assoc($res)) {
@@ -623,4 +620,23 @@ function aclGetAccessUsers($table, $id_object) {
 	
 	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 }
+
+/**
+ * Clone rights from a source table with a certain id_object to a 
+ * target table with an another id_object
+ * 
+ * @access  public 
+ * @param   string	$srcTable		right table to duplicate
+ * @param   int		$srcIdObject	id of object from which the corresponding rights will duplicated  
+ * @param   string	$trgTable		duplicated rights table
+ * @param   int		$trgIdObject	new affected rights id_object 
+ * 
+ */function aclCloneRights($srcTable, $srcIdObject, $trgTable, $trgIdObject) {
+	global $babDB;
+	
+	$babDB->db_query('delete from '.$babDB->db_escape_string($trgTable).' where id_object='.$babDB->quote($trgIdObject));
+
+	aclDuplicateRights($srcTable, $srcIdObject, $trgTable, $trgIdObject);
+}
+
 ?>
