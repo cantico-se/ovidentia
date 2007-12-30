@@ -663,6 +663,8 @@ CREATE TABLE bab_cal_events (
   bprivate enum('Y','N') NOT NULL default 'N',
   block enum('Y','N') NOT NULL default 'N',
   bfree enum('Y','N') NOT NULL default 'N',
+  date_modification datetime NOT NULL default '0000-00-00 00:00:00',
+  id_modifiedby int(11) unsigned NOT NULL default '0',
   PRIMARY KEY  (id),
   KEY start_date (start_date),
   KEY end_date (end_date)
@@ -870,6 +872,7 @@ CREATE TABLE `bab_sites` (
   allday enum('Y','N') NOT NULL default 'Y',
   usebgcolor enum('Y','N') NOT NULL default 'Y',
   `stat_log` enum('Y','N') NOT NULL default 'N',
+  show_update_info enum('Y','N') NOT NULL default 'Y',
   PRIMARY KEY  (`id`),
   KEY `name` (`name`)
 );
@@ -2338,6 +2341,7 @@ CREATE TABLE bab_cal_user_options (
   start_time time default NULL,
   end_time time default NULL,
   user_calendarids varchar(255) NOT NULL default '',
+  show_update_info enum('N','Y') NOT NULL default 'N',
   PRIMARY KEY  (id),
   KEY id_user (id_user)
 );

@@ -316,7 +316,7 @@ function createEvent($idcals,$id_owner, $title, $description, $location, $startd
 
 
 	$babDB->db_query("insert into ".BAB_CAL_EVENTS_TBL." 
-	( title, description, location, start_date, end_date, id_cat, id_creator, color, bprivate, block, bfree, hash) 
+	( title, description, location, start_date, end_date, id_cat, id_creator, color, bprivate, block, bfree, hash, date_modification, id_modifiedby) 
 	
 	values (
 		".$babDB->quote($title).", 
@@ -330,7 +330,9 @@ function createEvent($idcals,$id_owner, $title, $description, $location, $startd
 		".$babDB->quote($private).", 
 		".$babDB->quote($lock).", 
 		".$babDB->quote($free).", 
-		".$babDB->quote($hash)."
+		".$babDB->quote($hash).",
+		now(),
+		".$babDB->quote($id_owner)."
 	)
 		");
 	

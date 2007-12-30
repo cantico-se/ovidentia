@@ -347,6 +347,14 @@ ed();
 
 
 <!--#begin modifyevent -->
+<!--#if bshowupadetinfo -->
+<table border="0" width="100%" cellpadding="1" cellspacing="0" align="center">
+<tr>
+<td align="center">{ modifiedontxt }:&nbsp;<b>{ updatedate }</b>&nbsp;{ bytxt }&nbsp;<b>{ updateauthor }</b>
+</td>
+</tr>
+</table>
+<!--#endif bshowupadetinfo -->
 <form name="vacform" method="post" action="{ babPhpSelf }" onsubmit="return(submitCtrl(this,'vacform'))">
 <input type="hidden" name="tg" value="event" />
 <input type="hidden" name="idx" value="unload" />

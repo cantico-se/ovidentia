@@ -266,10 +266,10 @@ function calendarOptions($calid, $urla)
 			$this->defaultview = bab_translate("Calendar default view");
 			$this->t_dispday = bab_translate("Display this day in the calendar");
 			$this->calweekwork = 'Y' == $GLOBALS['babBody']->babsite['user_workdays'];
+			$this->showupdateinfo = bab_translate("Show the date and the author of the updated event");
 			$req = "select * from ".BAB_CAL_USER_OPTIONS_TBL." where id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
 			$res = $babDB->db_query($req);
 			$this->arr = $babDB->db_fetch_array($res);
-			
 			
 			$this->halfday = bab_rp('halfday',1);
 			
@@ -541,7 +541,7 @@ function unload()
 
 	}
 
-function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor, $elapstime, $defaultview)
+function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor, $elapstime, $defaultview, $showupdateinfo)
 	{
 	global $babDB, $BAB_SESS_USERID;
 
@@ -568,6 +568,7 @@ function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor,
 			elapstime	=".$babDB->quote($elapstime).", 
 			defaultview	=".$babDB->quote($defaultview).", 
 			dispdays	=".$babDB->quote($dispdays).", 
+			show_update_info =".$babDB->quote($showupdateinfo).", 
 			week_numbers='Y' 
 		WHERE 
 			id_user=".$babDB->quote($BAB_SESS_USERID)."
@@ -586,6 +587,7 @@ function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor,
 				elapstime, 
 				defaultview, 
 				dispdays, 
+				show_update_info, 
 				week_numbers
 			) 
 		VALUES ";
@@ -600,6 +602,7 @@ function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor,
 			".$babDB->quote($elapstime).",
 			".$babDB->quote($defaultview).",
 			".$babDB->quote($dispdays).",
+			".$babDB->quote($showupdateinfo).",
 			'Y')
 		";
 		}
@@ -769,7 +772,7 @@ if( isset($add) && $add == "addu" && $idcal == bab_getCalendarId($BAB_SESS_USERI
 	updateAccessUsers($users, $idcal, $urla);
 }elseif( isset($modify) && $modify == "options" && $BAB_SESS_USERID != '')
 	{
-	updateCalOptions($_POST['startday'], $_POST['starttime'], $_POST['endtime'], $_POST['allday'], $_POST['usebgcolor'], $_POST['elapstime'], $_POST['defaultview'] );
+	updateCalOptions($_POST['startday'], $_POST['starttime'], $_POST['endtime'], $_POST['allday'], $_POST['usebgcolor'], $_POST['elapstime'], $_POST['defaultview'], $_POST['showupdateinfo'] );
 	}
 
 $babBody->addItemMenu("global", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=options&idx=global");

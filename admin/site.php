@@ -536,6 +536,7 @@ function site_menu6($id)
 			$this->elapstime = bab_translate("Time scale");
 			$this->defaultview = bab_translate("Calendar default view");
 			$this->minutes = bab_translate("Minutes");
+			$this->showupdateinfo = bab_translate("Show the date and the author of the updated event");
 			
 			$this->site_configuration_cls($id);
 
@@ -569,6 +570,17 @@ function site_menu6($id)
 				{
 				$this->nusebgcolor = 'selected';
 				$this->yusebgcolor = '';
+				}
+
+			if( $GLOBALS['babBody']->babsite['show_update_info'] ==  'Y')
+				{
+				$this->yshowupdateinfo = 'selected';
+				$this->nshowupdateinfo = '';
+				}
+			else
+				{
+				$this->nshowupdateinfo = 'selected';
+				$this->yshowupdateinfo = '';
 				}
 			}
 
@@ -1873,6 +1885,11 @@ function siteUpdate_menu6($item)
 	if (isset($_POST['defaultview']) )
 		{
 		$reqarr[] = "defaultview='".$babDB->db_escape_string($_POST['defaultview'])."'";
+		}
+
+	if (isset($_POST['showupdateinfo']) )
+		{
+		$reqarr[] = "show_update_info='".$babDB->db_escape_string($_POST['showupdateinfo'])."'";
 		}
 
 	$babDB->db_query("update ".BAB_SITES_TBL." set ".implode(',',$reqarr)." where id='".$babDB->db_escape_string($item)."'");

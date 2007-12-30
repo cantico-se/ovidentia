@@ -121,6 +121,15 @@
 		</td>
 	</tr>
 	<tr> 
+		<td align="right">{ showupdateinfo }</td>
+		<td> 
+			<select name="showupdateinfo">
+				<option value="Y" <!--#if arr[show_update_info] "== Y" -->selected<!--#endif arr[show_update_info] -->>{ yes }</option>
+				<option value="N" <!--#if arr[show_update_info] "== N" -->selected<!--#endif arr[show_update_info] -->>{ no }</option>
+			</select>
+		</td>
+	</tr>
+	<tr> 
 		<td align="right">{ elapstime }</td>
 		<td> 
 			<select name="elapstime">

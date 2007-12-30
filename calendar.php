@@ -293,6 +293,23 @@ function displayEventDetail($evtid, $idcal)
 						{
 						$this->category = "";
 						}
+
+					list($bshowui) = $babDB->db_fetch_array($babDB->db_query("select show_update_info from ".BAB_CAL_USER_OPTIONS_TBL." where id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'"));
+					if( empty($bshowui))
+						{
+						$bshowui = $babBody->babsite['show_update_info'];
+						}
+
+					$this->bshowupadetinfo = false;
+					if( $bshowui == 'Y' && $arr['id_modifiedby'] )
+						{
+						$this->bshowupadetinfo = true;
+						$this->modifiedontxt = bab_translate("Created/Updated on");
+						$this->bytxt = bab_translate("By");
+						$this->updatedate = bab_toHtml(bab_shortDate(bab_mktime($arr['date_modification']), true));
+						$this->updateauthor = bab_toHtml(bab_getUserName($arr['id_modifiedby']));
+						}
+
 					}
 				else
 					{

@@ -654,6 +654,22 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 				{
 				$this->brecevt = false;
 				}
+
+			list($bshowui) = $babDB->db_fetch_array($babDB->db_query("select show_update_info from ".BAB_CAL_USER_OPTIONS_TBL." where id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'"));
+			if( empty($bshowui))
+				{
+				$bshowui = $babBody->babsite['show_update_info'];
+				}
+
+			$this->bshowupadetinfo = false;
+			if( $bshowui == 'Y' && $this->evtarr['id_modifiedby'] )
+				{
+				$this->bshowupadetinfo = true;
+				$this->modifiedontxt = bab_translate("Created/Updated on");
+				$this->bytxt = bab_translate("By");
+				$this->updatedate = bab_toHtml(bab_shortDate(bab_mktime($this->evtarr['date_modification']), true));
+				$this->updateauthor = bab_toHtml(bab_getUserName($this->evtarr['id_modifiedby']));
+				}
 				
 			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 
@@ -1241,7 +1257,9 @@ function updateEvent(&$message)
 		color			=".$babDB->quote($_POST['color']).", 
 		bprivate		=".$babDB->quote($_POST['bprivate']).", 
 		block			=".$babDB->quote($_POST['block']).", 
-		bfree			=".$babDB->quote($_POST['bfree'])."
+		bfree			=".$babDB->quote($_POST['bfree']).",
+		date_modification=now(),
+		id_modifiedby	=".$babDB->quote($GLOBALS['BAB_SESS_USERID'])."
 	";
 	
 	
