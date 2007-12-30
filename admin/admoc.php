@@ -67,6 +67,9 @@ function modifyOrgChart($id)
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
 			$this->update = bab_translate("Update");
+			$this->t_duplicatetxt = bab_translate("Duplicate this chart as");
+			$this->t_name = bab_translate("New name");
+			$this->duplicate = bab_translate("Duplicate");
 			$this->delete = bab_translate("Delete");
 			$this->db = $GLOBALS['babDB'];
 			$this->res = $this->db->db_query("select * from ".BAB_ORG_CHARTS_TBL." where id='".$id."'");
@@ -323,6 +326,64 @@ function updateOrgChart($id, $name, $description)
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admocs&idx=list");
 	}
 
+function duplicateOrgChart($id, $name, $description)
+	{
+	global $babBody, $babDB;
+	if( empty($name))
+		{
+		$babBody->msgerror = bab_translate("ERROR: You must provide a name")." !!";
+		return;
+		}
+
+	$res = $babDB->db_query("select * from ".BAB_ORG_CHARTS_TBL." where id='".$babDB->db_escape_string($id)."' and id_dgowner='".$babDB->db_escape_string($babBody->currentAdmGroup)."'");
+	if( !$res || $babDB->db_num_rows($res) == 0)
+		{
+		$babBody->msgerror = bab_translate("Unknown organization chart")." !!";
+		return;
+		}
+	
+	$arr = $babDB->db_fetch_array($res);
+	$idocsrc = $arr['id'];
+
+	$query = "insert into ".BAB_ORG_CHARTS_TBL." (name, description, id_directory, type, id_dgowner) values ('" .$babDB->db_escape_string($name). "', '" . $babDB->db_escape_string($description). "', '" . $babDB->db_escape_string($arr['id_directory']). "', '" . $babDB->db_escape_string($arr['type']). "', '" . $babDB->db_escape_string($babBody->currentAdmGroup). "')";
+	$babDB->db_query($query);
+	$idnewoc = $babDB->db_insert_id();
+
+	$res = $babDB->db_query("select * from ".BAB_OC_TREES_TBL." where id_user='".$babDB->db_escape_string($idocsrc)."' order by lf asc");
+	$parents = array();
+	$entities = array();
+	$parents[0] = 0; 
+	while( $arr = $babDB->db_fetch_array($res))
+		{
+		$babDB->db_query("insert into ".BAB_OC_TREES_TBL." (lf, lr, id_parent, info_user, id_user) values ('".$babDB->db_escape_string($arr['lf'])."', '".$babDB->db_escape_string($arr['lr'])."', '".$babDB->db_escape_string($parents[$arr['id_parent']])."', '".$babDB->db_escape_string($arr['info_user'])."', '".$idnewoc."')");
+
+		$idnewnode = $babDB->db_insert_id();
+		$parents[$arr['id']] = $idnewnode; 
+
+		$rs = $babDB->db_query("select * from ".BAB_OC_ENTITIES_TBL." where id_oc='".$babDB->db_escape_string($idocsrc)."' and id_node='".$babDB->db_escape_string($arr['id'])."'");
+		while( $rr = $babDB->db_fetch_array($rs)) // only one record
+			{
+			$babDB->db_query("insert into ".BAB_OC_ENTITIES_TBL." (name, description, id_node, e_note, id_oc) values ('".$babDB->db_escape_string($rr['name'])."', '".$babDB->db_escape_string($rr['description'])."', '".$babDB->db_escape_string($idnewnode)."', '".$babDB->db_escape_string($rr['e_note'])."', '".$idnewoc."')");
+			$entities[$rr['id']] = $babDB->db_insert_id();
+			}
+		}
+
+
+	$res = $babDB->db_query("select * from ".BAB_OC_ROLES_TBL." where id_oc='".$babDB->db_escape_string($idocsrc)."'");
+	while( $arr = $babDB->db_fetch_array($res))
+		{
+		$babDB->db_query("insert into ".BAB_OC_ROLES_TBL." (name, description, id_entity, type, cardinality, id_oc) values ('".$babDB->db_escape_string($arr['name'])."', '".$babDB->db_escape_string($arr['description'])."', '".$babDB->db_escape_string($entities[$arr['id_entity']])."', '".$babDB->db_escape_string($arr['type'])."', '".$babDB->db_escape_string($arr['cardinality'])."', '".$idnewoc."')");
+		$idnewrole = $babDB->db_insert_id();
+		$rs = $babDB->db_query("select * from ".BAB_OC_ROLES_USERS_TBL." where id_role='".$babDB->db_escape_string($arr['id'])."'");
+		while( $rr = $babDB->db_fetch_array($rs))
+			{
+			$babDB->db_query("insert into ".BAB_OC_ROLES_USERS_TBL." (id_role, id_user, isprimary) values ('".$babDB->db_escape_string($idnewrole)."', '".$babDB->db_escape_string($rr['id_user'])."', '".$babDB->db_escape_string($rr['isprimary'])."')");
+			}
+		}
+
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admocs&idx=list");
+	}
+
 function confirmDeleteOrgChart($id)
 	{
 	include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
@@ -337,20 +398,28 @@ if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['orgchart'] != 'Y')
 	return;
 }
 
-if(!isset($idx))
-	{
-	$idx = "modify";
-	}
+$idx = bab_rp('idx', 'modify');
 
-if( isset($update) && $update == "updateoc")
+if( '' != ($update = bab_pp('update')))
 	{
-	if( isset($submit))
-		updateOrgChart($item, $fname, $description);
-	else if( isset($bdelete))
-		{
-		$idx = "delete";
+    switch ($update)
+        {
+        case 'updateoc':
+			if( isset($submit))
+				updateOrgChart($item, $fname, $description);
+			else if( isset($bdelete))
+				{
+				$idx = "delete";
+				}
+			break;
+		case 'duplicateoc':
+			$ocnname = bab_pp('ocnname', '');
+			$ocndesc = bab_pp('ocndesc', '');
+			duplicateOrgChart($item, $ocnname, $ocndesc);
+			break;
 		}
 	}
+
 
 if( isset($aclview))
 	{

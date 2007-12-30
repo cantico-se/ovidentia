@@ -87,6 +87,48 @@ valign="middle">{  name }:</td>
 </table>
 </center>
 </form>
+<br />
+<br />
+
+<form name="ocduplicate" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="admoc">
+<input type="hidden" name="idx" value="modify">
+<input type="hidden" name="item" value="{ id }">
+<input type="hidden" name="update" value="duplicateoc">
+<center>
+<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabLoginMenuBackground" align="center" colspan="2"nowrap valign="middle">{ t_duplicatetxt }:</td>
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ t_name }:</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="text" name="ocnname" size="30" maxlength="60" value="">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ description }:</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="text" name="ocndesc" size="30" maxlength="60" value="">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" nowrap>&nbsp;</td>
+<td class="BabLoginMenuBackground" valign="middle">
+<input type="submit" name="submit" value="{ duplicate }">
+<br>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</center>
+</form>
 <br>
 <!--#end ocmodify -->
 

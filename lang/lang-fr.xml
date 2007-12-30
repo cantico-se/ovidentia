@@ -2500,4 +2500,8 @@
 <string id="Topics of subcategories first level">Les thèmes des sous catégories de premier niveau</string>
 <string id="All child ( subcategories and topics )">Tous ( sous catégories ainsi que les thèmes )</string>
 <string id="Apply">Appliquer</string>
+<string id="Unknown organization chart">Organigramme inconnu</string>
+<string id="Duplicate this chart as">Dupliquer cet organigramme en tant que</string>
+<string id="Duplicate">Dupliquer</string>
+<string id="New name">Nouveau nom</string>
 </fr>
