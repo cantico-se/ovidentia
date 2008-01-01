@@ -48,7 +48,7 @@ function ListArticles($idgroup)
 			{
 			global $babBody, $babDB;
 			$this->idgroup = $idgroup;
-			$req = "select at.id, at.id_topic ,at.id_author, at.date, at.date_modification, at.title, at.head , LENGTH(at.body) as blen, at.restriction   from ".BAB_HOMEPAGES_TBL." ht left join ".BAB_ARTICLES_TBL." at on ht.id_article=at.id where ht.id_group='".$babDB->db_escape_string($idgroup)."' and ht.id_site='".$babDB->db_escape_string($babBody->babsite['id'])."' and ht.ordering!='0' order by ht.ordering asc";
+			$req = "select at.id, at.id_topic ,at.id_author, at.date, at.date_modification, at.title, at.head , LENGTH(at.body) as blen, at.restriction   from ".BAB_HOMEPAGES_TBL." ht left join ".BAB_ARTICLES_TBL." at on ht.id_article=at.id where ht.id_group='".$babDB->db_escape_string($idgroup)."' and ht.id_site='".$babDB->db_escape_string($babBody->babsite['id'])."'  and (at.date_publication='0000-00-00 00:00:00' or at.date_publication <= now()) and ht.ordering!='0' order by ht.ordering asc";
 			$this->res = $babDB->db_query($req);
 			$this->countres = $babDB->db_num_rows($this->res);
 			$this->morename = bab_translate("Read More");
