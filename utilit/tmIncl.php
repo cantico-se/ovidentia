@@ -1547,9 +1547,12 @@ function bab_getNextTaskPosition($iIdProject, &$iPosition)
  */
 function bab_getAvailableTaskResponsibles($iIdProject, &$aTaskResponsible)
 {
-	function bab_compareTaskResponsibles($r1, $r2)
+	if(!function_exists('bab_compareTaskResponsibles'))
 	{
-		return strcmp($r1['name'], $r2['name']);
+		function bab_compareTaskResponsibles($r1, $r2)
+		{
+			return strcmp($r1['name'], $r2['name']);
+		}
 	}
 
 	$aTaskResponsible = array();
