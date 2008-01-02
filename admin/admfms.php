@@ -146,7 +146,8 @@ function listFolders()
 			
 			$oCriteria = $oRelativePath->in($babDB->db_escape_like(''));
 			$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
-			$this->oFmFolderSet->select($oCriteria);
+			$aOrder = array('sName' => 'ASC');
+			$this->oFmFolderSet->select($oCriteria, $aOrder);
 		}
 
 		function getnext()
