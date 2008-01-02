@@ -2497,7 +2497,7 @@ function displayRightForm()
 		if(canSetRight($oFmFolder->getRelativePath() . $oFmFolder->getName() . '/'))
 		{
 			require_once $GLOBALS['babInstallPath'] . 'admin/acl.php';
-			$macl = new macl("fileman", 'list', $iIdFolder, 'setRight');
+			$macl = new macl("fileman", 'list', $iIdFolder, 'setRight', true, $oFmFolder->getDelegationOwnerId());
 			
 			$macl->set_hidden_field('path', $oFileManagerEnv->sPath);
 			$macl->set_hidden_field('sAction', 'setRight');

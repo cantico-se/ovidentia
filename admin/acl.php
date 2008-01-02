@@ -40,8 +40,10 @@ class macl
 	
 	var $sHiddenFieldName = '';
 	var $sHiddenFieldValue = '';
-		
-	function macl($target, $index,$id_object, $return, $bsetofgroups=true)
+
+	var $iIdDelegation = null;
+	
+	function macl($target, $index,$id_object, $return, $bsetofgroups=true, $iIdDelegation=NULL)
 		{
 		global $babBody, $babDB;
 		$this->target = &$target;
@@ -67,10 +69,13 @@ class macl
 			}
 
 		$this->tree = & new bab_arraytree(BAB_GROUPS_TBL, null);
-		if ($babBody->currentAdmGroup > 0)
+		
+		$this->iIdDelegation = (!is_null($iIdDelegation)) ? $iIdDelegation : $babBody->currentAdmGroup;
+		
+		if ($this->iIdDelegation > 0)
 			{
 			$this->aclgroups = array();
-			$res = $babDB->db_query("select id_group from ".BAB_DG_ACL_GROUPS_TBL." where id_object='".$babBody->currentAdmGroup."'");
+			$res = $babDB->db_query("select id_group from ".BAB_DG_ACL_GROUPS_TBL." where id_object='".$this->iIdDelegation."'");
 			while( $arr = $babDB->db_fetch_array($res))
 				{
 				$this->aclgroups[$arr['id_group']] = true;
