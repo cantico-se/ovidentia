@@ -5399,7 +5399,7 @@ function vars_replace($txt)
 		return $txt;
 		}
 
-	if(preg_match_all("/<(".BAB_TAG_FUNCTION."|".BAB_TAG_VARIABLE.")([^\s>]*)\s*(\w+\s*=\s*[\"].*?\")*\s*>/", $txt, $m))
+	if(preg_match_all("/<(".BAB_TAG_FUNCTION."|".BAB_TAG_VARIABLE.")([^\s>]*)\s*(\w+\s*=\s*[\"].*?\")*\s*>/s", $txt, $m))
 		{
 		for( $i = 0; $i< count($m[1]); $i++)
 			{
@@ -5425,6 +5425,7 @@ function vars_replace($txt)
 				case BAB_TAG_VARIABLE:
 					if( preg_match_all("/(.*?)\[([^\]]+)\]/", $m[2][$i], $m2) > 0)
 					{
+						print_r($m2);
 						$val = $this->get_value($m2[1][0]);
 						for( $t=0; $t < count($m2[2]); $t++)
 							{
@@ -5492,7 +5493,7 @@ function handle_text($txt)
 
 function match_args(&$args, &$mm)
 	{
-	return preg_match_all("/(\w+)\s*=\s*([\"'])(.*?)\\2/", $args, $mm);
+	return preg_match_all("/(\w+)\s*=\s*([\"'])(.*?)\\2/s", $args, $mm);
 	}
 
 /* translate text */
