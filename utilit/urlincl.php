@@ -38,10 +38,9 @@ class bab_url {
 	 * @return string $url
 	 */
 	function mod($url, $param, $value) {
-		$n = 0;
-		$url = preg_replace('/(&|\?)'.preg_quote($param, '/').'=[^&]*/','\\1'.$param.'='.urlencode($value),$url,1, $n);
-		if (1 == $n) {
-			return $url;
+		$newurl = preg_replace('/(&|\?)'.preg_quote($param, '/').'=[^&]*/','\\1'.$param.'='.urlencode($value),$url,1);
+		if ($newurl !== $url) {
+			return $newurl;
 		} elseif (false === strpos($url,'?')) {
 			$url .= '?'.$param.'='.urlencode($value);
 		} else {
