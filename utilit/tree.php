@@ -2290,7 +2290,7 @@ class bab_FileTreeView extends bab_TreeView
 		while ($file = $babDB->db_fetch_array($files)) {
 
 			$filePath = removeFirstPath($file['path']);
-			echo $filePath . ' ' . $file['name'] . "\n";
+			//echo $filePath . ' ' . $file['name'] . "\n";
 //			$filePath = $file['path'];
 			$subdirs = explode('/', $filePath);
 
