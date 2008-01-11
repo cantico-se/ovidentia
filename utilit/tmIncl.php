@@ -2075,8 +2075,69 @@ function bab_selectTaskQuery($aFilters, $aOrder = array())
 	}
 	
 
-	bab_debug($query);
-	//echo $query . '<br />';
+//	bab_debug($query);
+//	echo $query . '<br />';
+	return $query;
+}
+
+
+function bab_selectForGantt($sStartDate, $sEndDate, $aOrder = array())
+{
+	global $babDB;
+	
+	$query = 
+		'SELECT ' . 
+			'IFNULL(ps.id, 0) iIdProjectSpace, ' .
+			'IFNULL(ps.name, \'\') sProjectSpaceName, ' .
+			'IFNULL(p.id, 0) iIdProject, ' .
+			'IFNULL(p.name, \'\') sProjectName, ' .
+			't.id iIdTask, ' .
+			't.taskNumber sTaskNumber, ' .
+			't.shortDescription sShortDescription, ' .
+			't.class iClass, ' .
+		'CASE t.class ' .
+			'WHEN \'' . BAB_TM_CHECKPOINT . '\' THEN \'ganttCheckpoint\' ' . 
+			'WHEN \'' . BAB_TM_TODO . '\' THEN \'ganttToDo\' ' .
+			'ELSE \'\' ' .
+		'END AS sAdditionnalClass, ' .
+		'CASE t.class ' .			
+			'WHEN \'' . BAB_TM_TASK . '\' THEN \'' . bab_translate("Task") . '\' ' .
+			'WHEN \'' . BAB_TM_CHECKPOINT . '\' THEN \'' . bab_translate("Checkpoint") . '\' ' .
+			'WHEN \'' . BAB_TM_TODO . '\' THEN \'' . bab_translate("ToDo") . '\' ' .
+			'ELSE \'???\' ' .
+		'END AS sClass, ' .
+			't.completion iCompletion, ' .
+			't.startDate startDate, ' .
+			't.endDate endDate, ' .
+			'ti.idOwner idOwner, ' .
+			'cat.id iIdCategory, ' .
+			'cat.name sCategoryName, ' .
+			'IFNULL(cat.bgColor, \'\' ) sBgColor, ' .
+			'IFNULL(cat.color, \'\' ) sColor ' .
+		'FROM ' . 
+			BAB_TSKMGR_TASKS_INFO_TBL . ' ti, ' .
+			BAB_TSKMGR_TASKS_TBL . ' t ' .
+		'LEFT JOIN ' . 
+			BAB_TSKMGR_CATEGORIES_TBL . ' cat ON cat.id = t.idCategory ' .
+		'LEFT JOIN ' . 
+			BAB_TSKMGR_PROJECTS_TBL . ' p ON p.id = t.idProject ' .
+		'LEFT JOIN ' . 
+			BAB_TSKMGR_PROJECTS_SPACES_TBL . ' ps ON ps.id = p.idProjectSpace ' .
+		'WHERE ' . 
+			't.id = ti.idTask AND ' .
+			't.endDate > ' . $babDB->quote($sStartDate) . ' AND ' .
+			't.startDate < ' . $babDB->quote($sEndDate) . ' ' .
+		'GROUP BY ' .
+			'sProjectSpaceName ASC, sProjectName ASC, sTaskNumber ASC ';
+
+	if(count($aOrder) > 0)
+	{
+		$query .= 'ORDER BY ' . $babDB->backTick($aOrder['sName']) . ' ' . $aOrder['sOrder'] . ' ';
+	}
+	
+
+//	bab_debug($query);
+//	echo '*** ' . $query . '<br />';
 	return $query;
 }
 

@@ -197,13 +197,11 @@ class BAB_TM_GanttBase
 		
 			$this->initDates($sStartDate, $iStartWeekDay);
 
-			$aFilters['sStartDate'] = date("Y-m-d H:i:s", $this->m_aDisplayedStartDate[0]);
-			$aFilters['sEndDate'] = date("Y-m-d H:i:s", $this->m_aDisplayedEndDate[0]);
+			$sStartDate = date("Y-m-d H:i:s", $this->m_aDisplayedStartDate[0]);
+			$sEndDate = date("Y-m-d H:i:s", $this->m_aDisplayedEndDate[0]);
 			
 			global $babDB;
-			bab_selectTaskQuery($aFilters);
-			
-			$this->m_result = $babDB->db_query(bab_selectTaskQuery($aFilters));
+			$this->m_result = $babDB->db_query(bab_selectForGantt($sStartDate, $sEndDate));
 		}
 		
 		if(false != $this->m_result)	
