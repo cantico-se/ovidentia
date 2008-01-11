@@ -489,13 +489,13 @@ function showVersionHistoricFile($idf, $pos)
 					}
 	
 					$next = $pos + BAB_FM_MAXLOGS;
-					if($next < $total)
+					if($next < $iCount)
 					{
 						$this->nexturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=filever&idx=lvers&idf=".$idf."&pos=".$next);
 						$this->nextname = "&gt;";
-						if($next + BAB_FM_MAXLOGS < $total)
+						if($next + BAB_FM_MAXLOGS < $iCount)
 						{
-							$bottom = $total - BAB_FM_MAXLOGS;
+							$bottom = $iCount - BAB_FM_MAXLOGS;
 						}
 						else
 						{
