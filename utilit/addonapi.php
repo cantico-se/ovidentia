@@ -910,6 +910,20 @@ function bab_getAvailableLanguages()
 			} 
 		}
 	closedir($h);
+
+	$h = opendir("lang/"); 
+	while ( $file = readdir($h))
+		{ 
+		if ($file != "." && $file != "..")
+			{
+			if( eregi("lang-([^.]*)", $file, $regs))
+				{
+				if( $file == "lang-".$regs[1].".xml" && !in_array($regs[1], $langs))
+					$langs[] = $regs[1]; 
+				}
+			} 
+		}
+	closedir($h);
 	return $langs;
 	}
 
