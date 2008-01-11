@@ -706,7 +706,7 @@ function displayUsersList($ocid, $oeid, $update, $pos, $xf, $q)
 					if( $this->xf == "" )
 						$this->xf = $tmp[0];
 
-					$req = $this->request." and ".$this->xf." like '".$this->pos."%'";
+					$req = $this->request." and e.".$this->xf." like '".$this->pos."%'";
 
 					if( !empty($this->like))
 						{
