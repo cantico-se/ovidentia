@@ -2192,7 +2192,7 @@ class bab_Files extends bab_handler
 				$this->ctx->curctx->push('FileId', $oFolderFile->getId());
 				$this->ctx->curctx->push('FileFolderId', $oFolderFile->getOwnerId());
 				$this->ctx->curctx->push('FileDate', bab_mktime($oFolderFile->getModifiedDate()));
-				$this->ctx->curctx->push('FileAuthor', bab_getUserName($iIdAuthor));
+				$this->ctx->curctx->push('FileAuthor', $iIdAuthor);
 				
 /*
 bab_debug(
@@ -2301,7 +2301,7 @@ class bab_File extends bab_handler
 				$this->ctx->curctx->push('FileId', $this->oFolderFile->getId());
 				$this->ctx->curctx->push('FileFolderId', $this->oFolderFile->getOwnerId());
 				$this->ctx->curctx->push('FileDate', bab_mktime($this->oFolderFile->getModifiedDate()));
-				$this->ctx->curctx->push('FileAuthor', bab_getUserName($iIdAuthor));
+				$this->ctx->curctx->push('FileAuthor', $iIdAuthor);
 
 				$sRootFolderName = getFirstPath($this->oFolderFile->getPathName());
 				$this->initRootFolderId($sRootFolderName);
