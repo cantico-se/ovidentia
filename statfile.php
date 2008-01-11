@@ -47,7 +47,7 @@ function summaryFileManager($col, $order)
 			$this->filestxt = bab_translate("Files");
 			$this->versionstxt = bab_translate("Versions");
 			$this->kilooctet = " ".bab_translate("Kb");
-			$req = "select fft.*, dg.name as dgname, count(ft.id) as files from ".BAB_FM_FOLDERS_TBL." fft left join ".BAB_DG_GROUPS_TBL." dg on fft.id_dgowner=dg.id left join ".BAB_FILES_TBL." ft on ft.id_owner=fft.id";		
+			$req = "select fft.*, dg.name as dgname, fft.id_dgowner as iIdDgOwner, count(ft.id) as files from ".BAB_FM_FOLDERS_TBL." fft left join ".BAB_DG_GROUPS_TBL." dg on fft.id_dgowner=dg.id left join ".BAB_FILES_TBL." ft on ft.id_owner=fft.id";		
 			if( $babBody->currentAdmGroup != 0 )
 				{
 				$req .= " where fft.id_dgowner='".$babBody->currentAdmGroup."'";
@@ -66,9 +66,8 @@ function summaryFileManager($col, $order)
 			require_once $GLOBALS['babInstallPath'] . 'utilit/fileincl.php';
 			$oFileManagerEnv =& getEnvObject();
 			
-			$sCollectiveRootFmPath = $oFileManagerEnv->getCollectiveRootFmPath();
 			$sRootFmPath = $oFileManagerEnv->getFmUploadPath();
-			
+
 			while($arr = $babDB->db_fetch_array($res))
 				{
 				$tmparr = array();
@@ -76,8 +75,9 @@ function summaryFileManager($col, $order)
 				$tmparr['folder'] = $arr['folder'];
 				$tmparr['dgname'] = isset($arr['dgname'])? $arr['dgname']: '';
 				$tmparr['files'] = isset($arr['files'])? $arr['files']: 0;
+				$tmparr['iIdDgOwner'] = isset($arr['iIdDgOwner'])? $arr['iIdDgOwner']: 0;
 				
-				$sFullPathName = $sCollectiveRootFmPath . $arr['sRelativePath'] . $arr['folder'];
+				$sFullPathName = BAB_FileManagerEnv::getCollectivePath($tmparr['iIdDgOwner']) . $arr['sRelativePath'] . $arr['folder'];
 				
 				$tmparr['diskspace'] = getDirSize($sFullPathName);
 				$rr = $babDB->db_fetch_array($babDB->db_query("SELECT count( ffvt.id ) as total FROM bab_fm_filesver ffvt LEFT  JOIN bab_files ft ON ffvt.id_file = ft.id WHERE ft.id_owner =  '".$arr['id']."' AND ft.bgroup =  'Y'"));
