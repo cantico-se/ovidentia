@@ -4212,6 +4212,10 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$babDB->db_query("ALTER TABLE ".BAB_CAL_EVENTS_TBL." ADD id_modifiedby INT( 11 ) UNSIGNED DEFAULT '0' NOT NULL");
 	}
 	
+	/**
+	 * Upgrade to 6.6.0
+	 */
+
 	return true;
 }
 ?>
