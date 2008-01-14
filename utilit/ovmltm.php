@@ -226,9 +226,9 @@ class bab_TmProjects extends bab_handler
  * - OVTaskEndDate
  * - OVTaskCategoryId			The category id
  * - OVTaskCategoryName			The category name
- * - OVTaskCompletion			The task completion (in percent)
+ * - OVTaskCompletion			The task completion (integer in percent)
  * - OVTaskOwnerId				The user id of the task owner
- * - OVTaskClass
+ * - OVTaskClass				The task class (integer : 0 = task, 1 = checkpoint, 2 = todo)
  */
 class bab_TmTasks extends bab_handler
 {
@@ -256,58 +256,58 @@ class bab_TmTasks extends bab_handler
 						'TaskCategoryName' => 'sCategoryName',
 						'TaskCompletion' => 'iCompletion',
 						'TaskOwnerId' => 'idOwner',
-						'TaskClass' => 'idClass'
+						'TaskClass' => 'iClass'
 						);
 
-						$this->bab_handler($ctx);
-						$aFilter = array();
+		$this->bab_handler($ctx);
+		$aFilter = array();
 
-						if ($idProject = $ctx->get_value('projectid'))
-						{
-							// If the parameter 'projectid' is specified we will return the tasks belonging
-							// to this project if the user has visibility on the project.
-							$aFilter['iIdProject'] = $idProject;
-							if (!bab_isAccessValid(BAB_TSKMGR_PROJECTS_VISUALIZERS_GROUPS_TBL, $idProject))
-							{
-								$this->count = 0;
-								$this->ctx->curctx->push('CCount', $this->count);
-								return;
-							}
-						}
-						else
-						{
-							// If the parameter 'projectid' is NOT specified we return the user's personal tasks.
-							$aFilter['iIdOwner'] = $GLOBALS['BAB_SESS_USERID'];
-							$aFilter['isPersonnal'] = true;
-						}
-						if ($startDate = $ctx->get_value('startdate'))
-						{
-							$aFilter['sStartDate'] = $startDate;
-						}
-						if ($endDate = $ctx->get_value('enddate'))
-						{
-							$aFilter['sEndDate'] = $endDate;
-						}
+		if ($idProject = $ctx->get_value('projectid'))
+		{
+			// If the parameter 'projectid' is specified we will return the tasks belonging
+			// to this project if the user has visibility on the project.
+			$aFilter['iIdProject'] = $idProject;
+			if (!bab_isAccessValid(BAB_TSKMGR_PROJECTS_VISUALIZERS_GROUPS_TBL, $idProject))
+			{
+				$this->count = 0;
+				$this->ctx->curctx->push('CCount', $this->count);
+				return;
+			}
+		}
+		else
+		{
+			// If the parameter 'projectid' is NOT specified we return the user's personal tasks.
+			$aFilter['iIdOwner'] = $GLOBALS['BAB_SESS_USERID'];
+			$aFilter['isPersonnal'] = true;
+		}
+		if ($startDate = $ctx->get_value('startdate'))
+		{
+			$aFilter['sStartDate'] = $startDate;
+		}
+		if ($endDate = $ctx->get_value('enddate'))
+		{
+			$aFilter['sEndDate'] = $endDate;
+		}
 
-						// The default ordering is ascending on field 'TaskNumber'.
-						$sortFields = array('sName' => 'sTaskNumber', 'sOrder' => 'ASC');
+		// The default ordering is ascending on field 'TaskNumber'.
+		$sortFields = array('sName' => 'sTaskNumber', 'sOrder' => 'ASC');
 
-						// The 'orderby' parameter must contain the name of the column (OVML variable name without OV prefix) on which
-						// the container should be ordered.
-						if (($orderBy = $ctx->get_value('orderby')) && array_key_exists($orderBy, $columnNames))
-						{
-							$sortFields['sName'] = $columnNames[$orderBy];
-						}
-						// The 'order' parameter must contain 'asc' or 'desc'.
-						if (($order = $ctx->get_value('order')) && (strtoupper($order) == 'ASC' || strtoupper($order) == 'DESC'))
-						{
-							$sortFields['sOrder'] = strtoupper($order);
-						}
+		// The 'orderby' parameter must contain the name of the column (OVML variable name without OV prefix) on which
+		// the container should be ordered.
+		if (($orderBy = $ctx->get_value('orderby')) && array_key_exists($orderBy, $columnNames))
+		{
+			$sortFields['sName'] = $columnNames[$orderBy];
+		}
+		// The 'order' parameter must contain 'asc' or 'desc'.
+		if (($order = $ctx->get_value('order')) && (strtoupper($order) == 'ASC' || strtoupper($order) == 'DESC'))
+		{
+			$sortFields['sOrder'] = strtoupper($order);
+		}
 
-						$sql = bab_selectTaskQuery($aFilter, $sortFields);
-						$this->res = $babDB->db_query($sql);
-						$this->count = $babDB->db_num_rows($this->res);
-						$this->ctx->curctx->push('CCount', $this->count);
+		$sql = bab_selectTaskQuery($aFilter, $sortFields);
+		$this->res = $babDB->db_query($sql);
+		$this->count = $babDB->db_num_rows($this->res);
+		$this->ctx->curctx->push('CCount', $this->count);
 	}
 
 
