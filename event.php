@@ -1262,6 +1262,14 @@ function updateEvent(&$message)
 		id_modifiedby	=".$babDB->quote($GLOBALS['BAB_SESS_USERID'])."
 	";
 	
+	if (isset($_POST['event_owner']) && !empty($_POST['event_owner']) )
+		{
+		$arr = $babDB->db_fetch_array($babDB->db_query("SELECT owner FROM ".BAB_CALENDAR_TBL." WHERE id='".$babDB->db_escape_string($_POST['event_owner'])."'"));
+		if( isset($arr['owner']))
+			{
+			$req .= ", id_creator=".$babDB->quote($arr['owner'])."";
+			}
+		}
 	
 	
 	foreach($arrupdate as $key => $val)
