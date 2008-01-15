@@ -2256,7 +2256,7 @@ class bab_File extends bab_handler
 		require_once $GLOBALS['babInstallPath'] . 'utilit/fileincl.php';
 
 		$this->oFolderFileSet = new BAB_FolderFileSet();
-		$oId = $oFolderFileSet->aField['iId'];
+		$oId = $this->oFolderFileSet->aField['iId'];
 
 		$this->bab_handler($ctx);
 		$this->count = 0;
