@@ -244,7 +244,7 @@ function delete_glist()
 		{
 		$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 
-		$db->db_query("DELETE FROM ".BAB_GROUPS_SET_ASSOC_TBL." WHERE id_set='".$db->db_escape_strin($_POST['sid'])."' AND id_group IN('".implode("','",$_POST['groups'])."')");
+		$db->db_query("DELETE FROM ".BAB_GROUPS_SET_ASSOC_TBL." WHERE id_set='".$db->db_escape_string($_POST['sid'])."' AND id_group IN('".implode("','",$_POST['groups'])."')");
 
 		$db->db_query("UPDATE ".BAB_GROUPS_TBL." SET nb_set=nb_set-'1' WHERE id IN(".$db->quote($_POST['groups']).")");
 		$db->db_query("UPDATE ".BAB_GROUPS_TBL." SET nb_groups=nb_groups-'".$db->db_escape_string($_POST['groups'])."' WHERE id='".$db->db_escape_string($_POST['sid'])."' AND nb_groups>='0'");
