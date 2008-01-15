@@ -415,7 +415,7 @@ function displayChartTree($ocid, $oeid, $iduser, $adminMode)
 
 	// 
 	$registry = bab_getRegistryInstance();
-	$registry->changeDirectory('/orgchart/' . $ocid);
+	$registry->changeDirectory('/bab/orgchart/' . $ocid);
 
 	$openNodes = $registry->getValue('open_nodes');
 	if (!is_array($openNodes)) {
@@ -1205,7 +1205,8 @@ else if ($idx == 'save_state')
 		$openMembers = explode(',', bab_rp('open_members', ''));
 		$zoomFactor = bab_rp('zoom_factor', 1.0);
 		$registry = bab_getRegistryInstance();
-		$registry->changeDirectory('/orgchart/' . $ocid);
+
+		$registry->changeDirectory('/bab/orgchart/' . $ocid);
 		$registry->setKeyValue('open_nodes', $openNodes);
 		$registry->setKeyValue('open_members', $openMembers);
 		$registry->setKeyValue('zoom_factor', $zoomFactor);
