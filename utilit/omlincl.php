@@ -2249,7 +2249,6 @@ class bab_File extends bab_handler
 	var $iIdRootFolder = 0;
 	var $tags = array();
 	var $oFolderFileSet = null;
-	var $oFolderFile = null;
 	
 	function bab_File(&$ctx)
 	{
