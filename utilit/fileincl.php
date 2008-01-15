@@ -3185,6 +3185,10 @@ class BAB_FmFolderCliboard extends BAB_DbRecord
 }
 
 
+/**
+ * Corresponds to a file
+ *
+ */
 class BAB_FolderFile extends BAB_DbRecord
 {
 	function BAB_FolderFile()
@@ -3192,36 +3196,72 @@ class BAB_FolderFile extends BAB_DbRecord
 		parent::BAB_DbRecord();
 	}
 
+	/**
+	 * Set the file identifier
+	 *
+	 * @param int $iId The file identifier
+	 */
 	function setId($iId)
 	{
 		$this->_set('iId', $iId);
 	}
 
+	/**
+	 * Get the file identifier
+	 *
+	 * @return int The file identifier
+	 */
 	function getId()
 	{
 		return $this->_iGet('iId');
 	}
 
+	/**
+	 * Set the filename
+	 *
+	 * @param string $sName The filename
+	 */
 	function setName($sName)
 	{
 		$this->_set('sName', $sName);
 	}
 
+	/**
+	 * Get the filename
+	 *
+	 * @return string The filename
+	 */
 	function getName()
 	{
 		return $this->_sGet('sName');
 	}
 
+	/**
+	 * Set the file description
+	 *
+	 * @param string $sDescription The file description
+	 */
 	function setDescription($sDescription)
 	{
 		$this->_set('sDescription', $sDescription);
 	}
 
+	/**
+	 * Get the file description
+	 *
+	 * @return string The file description
+	 */
 	function getDescription()
 	{
 		return $this->_sGet('sDescription');
 	}
 
+	/**
+	 * Set the relative pathname of the file, the pathname must not begin with a slash
+	 * and must ending with a slash i.e(F1/F1.1/F1.1.1/)
+	 *
+	 * @param string $sPathName The relative pathname of the file
+	 */
 	function setPathName($sPathName)
 	{
 		if(isset($GLOBALS['babFileNameTranslation']))
@@ -3231,26 +3271,53 @@ class BAB_FolderFile extends BAB_DbRecord
 		$this->_set('sPathName', $sPathName);
 	}
 
+	/**
+	 * Get the relative pathname of the file
+	 *
+	 * @return string The relative pathname of the file
+	 */
 	function getPathName()
 	{
 		return $this->_sGet('sPathName');
 	}
 
+	/**
+	 * Set the first parent collective path identifier that the file belong to
+	 *
+	 * @param int $iIdOwner The first parent collective path identifier that the file belong to
+	 */
 	function setOwnerId($iIdOwner)
 	{
 		$this->_set('iIdOwner', $iIdOwner);
 	}
 
+	/**
+	 * Get the first parent collective path identifier that the file belong to
+	 *
+	 * @return int The first parent collective path identifier that the file belong to
+	 */
 	function getOwnerId()
 	{
 		return $this->_iGet('iIdOwner');
 	}
 
+	/**
+	 * Set if the file is a personnal file or a file manager file
+	 * 'Y' for a file manager.
+	 * 'N' for a personnal file.
+	 *
+	 * @param string $sGroup 'Y' if the file is a file manager file. 'N' if the file is a personnal file
+	 */
 	function setGroup($sGroup)
 	{
 		$this->_set('sGroup', $sGroup);
 	}
 
+	/**
+	 * Get if the file is a personnal file or a file manager file
+	 *
+	 * @return string 'Y' if the file is a file manager file. 'N' if the file is a personnal file
+	 */
 	function getGroup()
 	{
 		return $this->_sGet('sGroup');
@@ -3266,11 +3333,26 @@ class BAB_FolderFile extends BAB_DbRecord
 		return $this->_iGet('iIdLink');
 	}
 
+
+	/**
+	 * Set the read only status of the file
+	 * 'Y' if the file is read only
+	 * 'N' if the file is not read only
+	 * 
+	 * @param string $sReadOnly The read only flag of the file
+	 */
 	function setReadOnly($sReadOnly)
 	{
 		$this->_set('sReadOnly', $sReadOnly);
 	}
 
+	/**
+	 * Get the read only status of the file
+	 * 'Y' if the file is read only
+	 * 'N' if the file is not read only
+	 * 
+	 * @return string 'Y' if the file is read only. 'N' if the file is not read only
+	 */
 	function getReadOnly()
 	{
 		return $this->_sGet('sReadOnly');
@@ -3286,140 +3368,285 @@ class BAB_FolderFile extends BAB_DbRecord
 		return $this->_sGet('sState');
 	}
 
+	/**
+	 * Set the creation date of the file in ISO format
+	 *
+	 * @param string $sCreation ISO datetime
+	 */
 	function setCreationDate($sCreation)
 	{
 		$this->_set('sCreation', $sCreation);
 	}
 
+	/**
+	 * Set the creation date of the file in ISO
+	 * 
+	 * @return string The ISO datetime
+	 */
 	function getCreationDate()
 	{
 		return $this->_sGet('sCreation');
 	}
 
+	/**
+	 * Set the author identifier of the file
+	 *
+	 * @param int $iIdAuthor Identifier of the author
+	 */
 	function setAuthorId($iIdAuthor)
 	{
 		$this->_set('iIdAuthor', $iIdAuthor);
 	}
 
+	/**
+	 * Get the identifier of the file author
+	 *
+	 * @return int The identifier of the file author
+	 */
 	function getAuthorId()
 	{
 		return $this->_iGet('iIdAuthor');
 	}
 
+	/**
+	 * Set the modified date of the file in ISO format
+	 *
+	 * @param string $sModified The modified date of the file in ISO format
+	 */
 	function setModifiedDate($sModified)
 	{
 		$this->_set('sModified', $sModified);
 	}
 
+	/**
+	 * Get the modified date of the file in ISO format
+	 *
+	 * @return string  The modified date of the file in ISO format
+	 */
 	function getModifiedDate()
 	{
 		return $this->_sGet('sModified');
 	}
 
+	/**
+	 * Set the user identifier of the file modifier 
+	 *
+	 * @param int $iIdModifier The user identifier of the file modifier
+	 */
 	function setModifierId($iIdModifier)
 	{
 		$this->_set('iIdModifier', $iIdModifier);
 	}
 
+	/**
+	 * Get the user identifier of the file modifier 
+	 *
+	 * @return int The user identifier of the file modifier
+	 */
 	function getModifierId()
 	{
 		return $this->_iGet('iIdModifier');
 	}
 
+	/**
+	 * Set the file approbation status
+	 *
+	 * @param string $sConfirmed The file approbation status. 'Y' the file is approuved. 'N' the is waiting for approbation
+	 */
 	function setConfirmed($sConfirmed)
 	{
 		$this->_set('sConfirmed', $sConfirmed);
 	}
 
+	/**
+	 * Get the file approbation status
+	 *
+	 * @return string The file approbation status. 'Y' the file is approuved. 'N' the is waiting for approbation
+	 */
 	function getConfirmed()
 	{
 		return $this->_sGet('sConfirmed');
 	}
 
+	/**
+	 * Set the hits number of the file
+	 *
+	 * @param int $iHits The hit number
+	 */
 	function setHits($iHits)
 	{
 		$this->_set('iHits', $iHits);
 	}
 
+	/**
+	 * Get the hits number of the file
+	 *
+	 * @return int The hit number of the file
+	 */
 	function getHits()
 	{
 		return $this->_iGet('iHits');
 	}
 
+	/**
+	 * Set the identifier of the approbation scheme
+	 *
+	 * @param int $iIdFlowApprobationInstance The identifier of the approbation scheme
+	 */
 	function setFlowApprobationInstanceId($iIdFlowApprobationInstance)
 	{
 		$this->_set('iIdFlowApprobationInstance', $iIdFlowApprobationInstance);
 	}
 
+	/**
+	 * Get the identifier of the approbation scheme
+	 *
+	 * @return int The identifier of the approbation scheme
+	 */
 	function getFlowApprobationInstanceId()
 	{
 		return $this->_iGet('iIdFlowApprobationInstance');
 	}
 
+	/**
+	 * Set the identifier of the file version
+	 *
+	 * @param int $iIdFolderFileVersion The identifier of the file version
+	 */
 	function setFolderFileVersionId($iIdFolderFileVersion)
 	{
 		$this->_set('iIdFolderFileVersion', $iIdFolderFileVersion);
 	}
 
+	/**
+	 * Get the identifier of the file version
+	 *
+	 * @return int The identifier of the file version
+	 */
 	function getFolderFileVersionId()
 	{
 		return $this->_iGet('iIdFolderFileVersion');
 	}
 
+	/**
+	 * Set the major version of the file
+	 *
+	 * @param int $iVerMajor The major version of the file
+	 */
 	function setMajorVer($iVerMajor)
 	{
 		$this->_set('iVerMajor', $iVerMajor);
 	}
 
+	/**
+	 * Get the major version of the file
+	 *
+	 * @return int The major version of the file
+	 */
 	function getMajorVer()
 	{
 		return $this->_iGet('iVerMajor');
 	}
 
+	/**
+	 * Set the minor version of the file
+	 *
+	 * @param int $iVerMinor The minor version of the file
+	 */
 	function setMinorVer($iVerMinor)
 	{
 		$this->_set('iVerMinor', $iVerMinor);
 	}
 
+	/**
+	 * Get the minor version of the file
+	 *
+	 * @return int The minor version of the file
+	 */
 	function getMinorVer()
 	{
 		return $this->_iGet('iVerMinor');
 	}
 
+	/**
+	 * Set the comment of the file
+	 *
+	 * @param string $sVerComment The comment of the file
+	 */
 	function setCommentVer($sVerComment)
 	{
 		$this->_set('sVerComment', $sVerComment);
 	}
 
+	/**
+	 * Get the comment of the file
+	 *
+	 * @return string The comment of the file
+	 */
 	function getCommentVer()
 	{
 		return $this->_sGet('sVerComment');
 	}
 
+	/**
+	 * Set the status index of the file
+	 *
+	 * @param int $iIndexStatus The status index of the file
+	 */
 	function setStatusIndex($iIndexStatus)
 	{
 		$this->_set('iIndexStatus', $iIndexStatus);
 	}
 
+	/**
+	 * Get the status index of the file
+	 *
+	 * @return int The status index of the file
+	 */
 	function getStatusIndex()
 	{
 		return $this->_iGet('iIndexStatus');
 	}
 
+	/**
+	 * Set the delegation identifier of the file
+	 *
+	 * @param int $iId The delagation identifier
+	 */
 	function setDelegationOwnerId($iId)
 	{
 		$this->_set('iIdDgOwner', $iId);
 	}
 
+	/**
+	 * Get the delegation identifier of the file
+	 *
+	 * @return int The delagation identifier 
+	 */
 	function getDelegationOwnerId()
 	{
 		return $this->_iGet('iIdDgOwner');
 	}
 
+	/**
+	 * Save the file
+	 *
+	 */
 	function save()
 	{
 		$oFolderFileSet = new BAB_FolderFileSet();
 		$oFolderFileSet->save($this);
+	}
+	
+	/**
+	 * Returns the full pathname of the file
+	 * 
+	 * @return string
+	 */
+	function getFullPathname()
+	{
+		$sFmPath = BAB_FileManagerEnv::getCollectivePath($this->getDelegationOwnerId());
+		return $sFmPath . $this->getPathName() . $this->getName();
 	}
 }
 
