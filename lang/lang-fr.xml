@@ -2480,8 +2480,8 @@
 <string id="Personal Folder">Répertoire personnel</string>
 <string id="The folder does not exist">Le répertoire n'existe pas</string>
 <string id="Folder path">Chemin du répertoire</string>
-<string id="MySQL database charset">Code de caractères de la base de donnés MySQL</string>
-<string id="MySQL database collation">Collation de la base de donnés MySQL</string>
+<string id="MySQL database charset">Code de caractères de la base de données MySQL</string>
+<string id="MySQL database collation">Collation de la base de données MySQL</string>
 <string id="MySQL server variable max_allowed_packet">Variable du serveur MySQL : max_allowed_packet</string>
 <string id="MySQL server variable : sql_mode">Variable du serveur MySQL : sql_mode</string>
 <string id="Undefined">Non défini</string>
