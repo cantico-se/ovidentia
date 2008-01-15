@@ -2293,6 +2293,7 @@ class bab_File extends bab_handler
 			
 			if(true === $bHaveFileAcess)
 			{
+				global $babBody, $babDB;
 				$rs = $babDB->db_query("select tag_name from ".BAB_TAGS_TBL." tt left join ".BAB_FILES_TAGS_TBL." ftt on tt.id = ftt.id_tag WHERE id_file='".$this->oFolderFile->getId()."'");
 				while( $rr = $babDB->db_fetch_array($rs))
 				{
