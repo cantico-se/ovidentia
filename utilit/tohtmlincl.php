@@ -40,7 +40,7 @@ function bab_f_toHtml($pee, $opt) {
 	}
 	
 	/**
-	 * the original javascript string must be into simple quotes
+	 * the original javascript string must be enclosed in simple quotes
 	 */
 	if (BAB_HTML_JS === ($opt & BAB_HTML_JS)) {
 		$pee = str_replace('\\', '\\\\', $pee);
@@ -50,7 +50,7 @@ function bab_f_toHtml($pee, $opt) {
 
 	if (BAB_HTML_ENTITIES === ($opt & BAB_HTML_ENTITIES))
 		$pee = htmlentities($pee);
-
+		
 	if (BAB_HTML_LINKS === ($opt & BAB_HTML_LINKS)) {
 		$pee = preg_replace_callback('/(http|https|ftp):(\/\/){0,1}([^\"\s]*)/i','bab_parseUri',$pee);
 		$pee = ereg_replace("[_a-zA-Z0-9\-]+(\.[_a-zA-Z0-9\-]+)*\@[_a-zA-Z0-9\-]+(\.[_a-zA-Z0-9\-]+)*(\.[a-zA-Z]{1,5})+", "<a class=\"mailto\" href=\"mailto:\\0\">\\0</a>", $pee);
