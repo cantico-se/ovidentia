@@ -2260,10 +2260,11 @@ class bab_File extends bab_handler
 
 		$this->bab_handler($ctx);
 		$this->count = 0;
-		$fileid = (int) $ctx->get_value('fileid');
-		if(0 !== $fileid)
+		$sFileId = $ctx->get_value('fileid');
+		if(0 !== strlen(trim($sFileId)))
 		{
-			$this->oFolderFile = $oFolderFileSet->get($oId->in($fileid));
+			$aFileId = explode(',', $sFileId);
+			$this->oFolderFile = $oFolderFileSet->get($oId->in($aFileId));
 			if(!is_null($this->oFolderFile))
 			{
 				if('Y' === $this->oFolderFile->getGroup() && '' === $this->oFolderFile->getState() && 'Y' === $this->oFolderFile->getConfirmed() && bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $this->oFolderFile->getOwnerId()))
