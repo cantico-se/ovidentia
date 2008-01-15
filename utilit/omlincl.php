@@ -2253,8 +2253,6 @@ class bab_File extends bab_handler
 	function bab_File(&$ctx)
 	{
 		global $babBody, $babDB;
-		include_once $GLOBALS['babInstallPath']."utilit/fileincl.php";
-		
 		require_once $GLOBALS['babInstallPath'] . 'utilit/fileincl.php';
 
 		$oFolderFileSet = new BAB_FolderFileSet();
@@ -2317,12 +2315,12 @@ class bab_File extends bab_handler
 					'&id=' . $this->iIdRootFolder . '&gr=' . $sGroup . '&path=' . $sEncodedPath . '&file=' . urlencode($this->oFolderFile->getName()));
 					
 				$this->ctx->curctx->push('FileUrlGet', $GLOBALS['babUrlScript'] . '?tg=fileman&sAction=getFile&id=' . $this->oFolderFile->getOwnerId() . '&gr=' . 
-					$sGroup . '&path=' . $sEncodedPath . '&file=' . urlencode($this->oFolderFile->getName()) . '&idf=' . $oFolderFile->getId());
+					$sGroup . '&path=' . $sEncodedPath . '&file=' . urlencode($this->oFolderFile->getName()) . '&idf=' . $this->oFolderFile->getId());
 					
 //				$oFileManagerEnv =& getEnvObject();
 //				$sUploadPath = $oFileManagerEnv->getCollectiveRootFmPath();
 				
-				$sFullPathName = BAB_FileManagerEnv::getCollectivePath($oFmFolder->getDelegationOwnerId()) . $this->oFolderFile->getPathName() . $this->oFolderFile->getName();
+				$sFullPathName = BAB_FileManagerEnv::getCollectivePath($this->oFolderFile->getDelegationOwnerId()) . $this->oFolderFile->getPathName() . $this->oFolderFile->getName();
 				if(file_exists($sFullPathName))
 				{
 					$this->ctx->curctx->push('FileSize', bab_formatSizeFile(filesize($sFullPathName)));
