@@ -476,7 +476,8 @@ class cal_wmdbaseCls
 
 		$this->commonurl = $GLOBALS['babUrlScript']."?tg=".$tg."&idx=".$idx."&calid=".$this->currentidcals;
 		
-		if (false !== bab_rp('print',false)) {
+		$bprint = bab_rp('print',false);
+		if (false !== $bprint) {
 			$this->commonurl .= '&print=1';
 		}
 
@@ -519,18 +520,30 @@ class cal_wmdbaseCls
 				$this->dayurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calday&idx=".$idx."&calid=".$this->currentidcals."&date=".$date);
 				$this->weekurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calweek&idx=".$idx."&calid=".$this->currentidcals."&date=".$date);
 				$this->currentview = 'viewm';
+				if (false !== $bprint) {
+					$this->weekurl .= '&print=1';
+					$this->dayurl .= '&print=1';
+				}
 				break;
 			case "calday":
 				$this->monthurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calmonth&idx=".$idx."&calid=".$this->currentidcals."&date=".$date);
 				$this->dayurl = "";
 				$this->weekurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calweek&idx=".$idx."&calid=".$this->currentidcals."&date=".$date);
 				$this->currentview = 'viewd';
+				if (false !== $bprint) {
+					$this->weekurl .= '&print=1';
+					$this->monthurl .= '&print=1';
+				}
 				break;
 			case "calweek":
 				$this->monthurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calmonth&idx=".$idx."&calid=".$this->currentidcals."&date=".$date);
 				$this->dayurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calday&idx=".$idx."&calid=".$this->currentidcals."&date=".$date);
 				$this->weekurl = "";
 				$this->currentview = 'viewq';
+				if (false !== $bprint) {
+					$this->dayurl .= '&print=1';
+					$this->monthurl .= '&print=1';
+				}
 				break;
 		}
 
