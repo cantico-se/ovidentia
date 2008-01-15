@@ -2244,42 +2244,31 @@ bab_debug(
 class bab_File extends bab_handler
 {
 	var $arr;
-	var $index;
 	var $count;
 	var $oFolderFile = null;
 	var $iIdRootFolder = 0;
 	var $tags = array();
+	var $oFolderFileSet = null;
+	var $oFolderFile = null;
 	
 	function bab_File(&$ctx)
 	{
 		global $babBody, $babDB;
 		require_once $GLOBALS['babInstallPath'] . 'utilit/fileincl.php';
 
-		$oFolderFileSet = new BAB_FolderFileSet();
+		$this->oFolderFileSet = new BAB_FolderFileSet();
 		$oId = $oFolderFileSet->aField['iId'];
 
 		$this->bab_handler($ctx);
 		$this->count = 0;
-		$sFileId = $ctx->get_value('fileid');
+		$sFileId = (string) $ctx->get_value('fileid');
 		if(0 !== strlen(trim($sFileId)))
 		{
 			$aFileId = explode(',', $sFileId);
-			$this->oFolderFile = $oFolderFileSet->get($oId->in($aFileId));
-			if(!is_null($this->oFolderFile))
-			{
-				if('Y' === $this->oFolderFile->getGroup() && '' === $this->oFolderFile->getState() && 'Y' === $this->oFolderFile->getConfirmed() && bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $this->oFolderFile->getOwnerId()))
-				{
-					$this->count = 1;
-					
-					$rs = $babDB->db_query("select tag_name from ".BAB_TAGS_TBL." tt left join ".BAB_FILES_TAGS_TBL." ftt on tt.id = ftt.id_tag WHERE id_file='".$this->oFolderFile->getId()."'");
-					while( $rr = $babDB->db_fetch_array($rs))
-					{
-						$this->tags[] = $rr['tag_name'];
-					}
-				}
-			}
+			$this->oFolderFileSet->select($oId->in($aFileId));
+			$this->count = $this->oFolderFileSet->count();
+			$this->ctx->curctx->push('CCount', $this->count);
 		}
-		$this->ctx->curctx->push('CCount', $this->count);
 	}
 
 	function getnext()
@@ -2288,9 +2277,29 @@ class bab_File extends bab_handler
 		
 		if($iIndex < $this->count)
 		{
-			$iIndex++;
-			if(null !== $this->oFolderFile)
+			$bHaveFileAcess = false;
+			
+			while($iIndex < $this->count &&  false === $bHaveFileAcess)
 			{
+				$iIndex++;
+				$this->oFolderFile = $this->oFolderFileSet->next();
+				if(!is_null($this->oFolderFile))
+				{
+					if('Y' === $this->oFolderFile->getGroup() && '' === $this->oFolderFile->getState() && 'Y' === $this->oFolderFile->getConfirmed() && bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $this->oFolderFile->getOwnerId()))
+					{
+						$bHaveFileAcess = true;
+					}
+				}
+			}
+			
+			if(true === $bHaveFileAcess)
+			{
+				$rs = $babDB->db_query("select tag_name from ".BAB_TAGS_TBL." tt left join ".BAB_FILES_TAGS_TBL." ftt on tt.id = ftt.id_tag WHERE id_file='".$this->oFolderFile->getId()."'");
+				while( $rr = $babDB->db_fetch_array($rs))
+				{
+					$this->tags[] = $rr['tag_name'];
+				}
+				
 				$iIdAuthor = (0 === $this->oFolderFile->getModifierId() ? $this->oFolderFile->getAuthorId() : $this->oFolderFile->getModifierId());
 				
 				$this->ctx->curctx->push('CIndex', $this->idx);
@@ -2318,9 +2327,6 @@ class bab_File extends bab_handler
 				$this->ctx->curctx->push('FileUrlGet', $GLOBALS['babUrlScript'] . '?tg=fileman&sAction=getFile&id=' . $this->oFolderFile->getOwnerId() . '&gr=' . 
 					$sGroup . '&path=' . $sEncodedPath . '&file=' . urlencode($this->oFolderFile->getName()) . '&idf=' . $this->oFolderFile->getId());
 					
-//				$oFileManagerEnv =& getEnvObject();
-//				$sUploadPath = $oFileManagerEnv->getCollectiveRootFmPath();
-				
 				$sFullPathName = BAB_FileManagerEnv::getCollectivePath($this->oFolderFile->getDelegationOwnerId()) . $this->oFolderFile->getPathName() . $this->oFolderFile->getName();
 				if(file_exists($sFullPathName))
 				{
