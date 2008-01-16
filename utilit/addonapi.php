@@ -1646,4 +1646,80 @@ function bab_locale() {
 	}
 }
 
+
+
+
+
+
+
+/**
+ * Functionality interface
+ * Functionalities are inherited from this object, to instanciate a functionality use the static method
+ * @see bab_functionality::get($path)
+ * @since 6.6.0
+ */
+class bab_functionality {
+
+	/**
+	 * @access public
+	 * @static
+	 * @param	string	$path
+	 * @return boolean
+	 */
+	function includefile($path) {
+		return include_once dirname($_SERVER['SCRIPT_FILENAME']).'/'.BAB_FUNCTIONALITY_ROOT_DIRNAME.'/'.$path.'/'.BAB_FUNCTIONALITY_LINK_FILENAME;
+	}
+	
+	/**
+	 * Get functionality object
+	 * @access public
+	 * @static
+	 * @param	string	$path
+	 * @return false|object
+	 */
+	function get($path) {
+		if (bab_functionality::includefile($path)) {
+			$class = str_replace('/', '_', $path);
+			return new $class();
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * get functionalities compatible with the interface
+	 * @access public
+	 * @static
+	 * @param	string	$path
+	 * @return array
+	 */
+	function getFunctionalities($path) {
+		include_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
+		$obj = new bab_functionalities();
+		return $obj->getChilds($path);
+	}
+	
+	/**
+	 * Default method to create in inherited functionalities
+	 * @access protected
+	 * @return string
+	 */
+	function getDescription() {
+		return '';
+	}
+	
+	/**
+	 * Default method to create in inherited functionalities
+	 * @access protected
+	 * @return array
+	 */
+	function getCallableMethods() {
+		return array(
+		);
+	}
+}
+
+
+
+
 ?>

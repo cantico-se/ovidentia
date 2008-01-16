@@ -30,29 +30,7 @@
 include_once 'base.php';
 include_once $babInstallPath.'admin/register.php';
 
-function isEmailPassword()
-{
-	global $babBody;
-	if( $GLOBALS['babEmailPassword'] )
-	{
-	switch($babBody->babsite['authentification'])
-		{
-		case BAB_AUTHENTIFICATION_AD:
-			return false;
-			break;
-		case BAB_AUTHENTIFICATION_LDAP:
-			if( !empty($babBody->babsite['ldap_encryptiontype']))
-				{
-				return true;
-				}
-			break;
-		default:
-			return true;
-			break;
-		}
-	}
-	return false;
-}
+
 
 function displayLogin($url)
 	{
@@ -694,75 +672,56 @@ function addNewUser( $nickname, $password1, $password2)
 	return true;
 	}
 
-function loginRedirect($url)
-{
 
-	if( isset($GLOBALS['babLoginRedirect']) && $GLOBALS['babLoginRedirect'] == false )
-	{
-		class loginRedirectCls 
-			{
-			function loginRedirectCls($url)
-				{
-				$this->url = $url;
-				}
-			}
 
-		$lrc = new loginRedirectCls($url);
-		echo bab_printTemplate($lrc, "login.html", "javaredirect");
-		exit;
-	}
-	else
-	{
-		Header("Location:". $url);
-	}
-}
+
+
+
 /* main */
 
 $cmd = bab_rp('cmd','signon');
 
-if('login' === bab_pp('login'))
+if('register' === bab_pp('adduser') && $babBody->babsite['registration'] == 'Y')
+{
+	if(!addNewUser(bab_pp('nickname'), bab_pp('password1'), bab_pp('password2'))) 
 	{
-	if(!signOn(bab_pp('nickname'), bab_pp('password'), bab_pp('lifetime', 0))) {
-		$cmd = 'signon';
-		}
-	else
-		{
-		$url = bab_rp('referer');
-		if (substr_count($url,'tg=login&cmd=') == 0) {
-			loginRedirect($url);
-			}
-		else {
-			loginRedirect($GLOBALS['babUrlScript']);
-			}
-		}
-	}
-else if( 'register' === bab_pp('adduser') && $babBody->babsite['registration'] == 'Y')
-	{
-	if( !addNewUser( bab_pp('nickname'), bab_pp('password1'), bab_pp('password2'))) {
 		$cmd = 'register';
-		}
-	elseif( 2 == $babBody->babsite['email_confirm'] )
-		{
-		if( !signOn( bab_pp('nickname'), bab_pp('password1'), bab_pp('lifetime', 0)))
-			{
-			$cmd = 'signon';
-			}
-		else
-			{
-			Header("Location: ". $GLOBALS['babUrlScript']);
-			}
-		}
 	}
-else if( 'send' === bab_pp('sendpassword'))
+	elseif(2 == $babBody->babsite['email_confirm'])
 	{
-	sendPassword(bab_pp('nickname'));
+		$sLogin		= (string) bab_pp('nickname');
+		$sPassword	= (string) bab_pp('password1');
+		$iLifeTime	= (int) bab_pp('lifetime', 0);
+		
+		$iIdUser = authenticateUserByLoginPassword($sLogin, $sPassword);
+		if(!is_null($iIdUser) && userCanLogin($iIdUser))
+		{
+			userLogin($iIdUser);
+			bab_logUserConnectionToStat($iIdUser);
+			bab_updateUserConnectionDate($iIdUser);
+			bab_createReversableUserPassword($iIdUser, $sPassword);
+			bab_addUserCookie($iIdUser, $sLogin, 0);
+			$cmd = 'signon';
+		}
+		else
+		{
+			Header("Location: ". $GLOBALS['babUrlScript']);
+		}
 	}
+}
+else if('send' === bab_pp('sendpassword'))
+{
+	sendPassword(bab_pp('nickname'));
+}
+
+
 
 switch($cmd)
 	{
 	case 'signoff':
-		signOff();
-		loginRedirect($GLOBALS['babPhpSelf']);
+		require_once $GLOBALS['babInstallPath'] . 'utilit/eventAuthentication.php';
+		$oEvent = new bab_eventLogout();
+		bab_fireEvent($oEvent);
 		break;
 
 	case "showdp":
@@ -785,8 +744,6 @@ switch($cmd)
 		if ($GLOBALS['babEmailPassword'] ) {
 			$babBody->addItemMenu("emailpwd", bab_translate("Lost Password"), $GLOBALS['babUrlScript']."?tg=login&cmd=emailpwd");
 		}
-
-		
 		break;
 
 	case "emailpwd":
@@ -815,27 +772,9 @@ switch($cmd)
 		
 	case "signon":
 	default:
-		if (
-			!empty($_SERVER['HTTP_HOST']) 
-			&& !isset($_GET['redirected']) 
-			&& substr_count($GLOBALS['babUrl'],$_SERVER['HTTP_HOST']) == 0 
-			&& !$GLOBALS['BAB_SESS_LOGGED'])
-			{
-			header('location:'.$GLOBALS['babUrlScript'].'?tg=login&cmd=signon&redirected=1');
-			}
-		$babBody->title = bab_translate("Login");
-		$babBody->addItemMenu("signon", bab_translate("Login"), $GLOBALS['babUrlScript']."?tg=login&cmd=signon");
-		if( $babBody->babsite['registration'] == 'Y')
-			$babBody->addItemMenu("register", bab_translate("Register"), $GLOBALS['babUrlScript']."?tg=login&cmd=register");
-		if (isEmailPassword() ) {
-			$babBody->addItemMenu("emailpwd", bab_translate("Lost Password"), $GLOBALS['babUrlScript']."?tg=login&cmd=emailpwd");
-		}
-		if (!isset($_REQUEST['referer'])) {
-			$referer = !empty($GLOBALS['HTTP_REFERER']) ? $GLOBALS['HTTP_REFERER'] : '';
-		} else {
-			$referer = $_REQUEST['referer'];
-		}
-		displayLogin($referer);
+		require_once $GLOBALS['babInstallPath'] . 'utilit/eventAuthentication.php';
+		$oEvent = new bab_eventLogin();
+		bab_fireEvent($oEvent);
 		break;
 	}
 $babBody->setCurrentItemMenu($cmd);

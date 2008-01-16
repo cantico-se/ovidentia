@@ -186,8 +186,14 @@ function login($nickname, $password)
 
 	if( $access )
 		{
-		if( signOn($nickname, $password, 0))
+		$iIdUser = authenticateUserByLoginPassword($nickname, $password);
+		if(!is_null($iIdUser) && userCanLogin($iIdUser))
 			{
+			userLogin($iIdUser);
+			bab_logUserConnectionToStat($iIdUser);
+			bab_updateUserConnectionDate($iIdUser);
+			bab_createReversableUserPassword($iIdUser, $password);
+			bab_addUserCookie($iIdUser, $nickname, 0);
 			$_SESSION['BAB_SESS_WSUSER'] = true;
 			return array('id'=>session_id(), 'error'=>$error);	
 			}

@@ -4213,8 +4213,18 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	}
 	
 	/**
-	 * Upgrade to 6.6.0
+	 * Upgrade to 6.6.90
 	 */
+
+
+	require_once $GLOBALS['babInstallPath'] . 'utilit/eventincl.php';
+	
+	bab_addEventListener('bab_eventLogin', 'bab_onEventLogin', 
+		'utilit/eventAuthentication.php', BAB_ADDON_CORE_NAME, 0);
+	
+	bab_addEventListener('bab_eventLogout', 'bab_onEventLogout', 
+		'utilit/eventAuthentication.php', BAB_ADDON_CORE_NAME, 0);
+		
 
 	return true;
 }

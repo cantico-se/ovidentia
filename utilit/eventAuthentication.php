@@ -25,21 +25,75 @@ require_once 'base.php';
 require_once $GLOBALS['babInstallPath'].'utilit/eventincl.php';
 
 
-class BAB_EventAuthentication extends bab_event
+
+class bab_eventAuthBase extends bab_event
 {
-	var $sAuthenticationType = '';
+	var $bStopPropagation = false;
 	
-	function BAB_EventAuthentication($sAuthenticationType)
+	function bab_eventAuthBase()
 	{
-//		$sMsg = __FUNCTION__ . ' sAuthenticationType ==> ' . $sAuthenticationType;
-//		echo $sMsg . '<br />';
-//		bab_debug($sMsg);
-		$this->sAuthenticationType = $sAuthenticationType;
+		
 	}
 	
-	function getAuthenticationType()
+	function setStopPropagation($bStopPropagation)
 	{
-		return $this->sAuthenticationType;
+		$this->bStopPropagation = (bool) $bStopPropagation;
+	}
+	
+	function haveBeenStopped()
+	{
+		return $this->bStopPropagation;
+	}
+}
+
+
+class bab_eventLogin extends bab_eventAuthBase
+{
+	var $bSignedOn = false;
+	
+	function bab_eventLogin()
+	{
+		parent::bab_eventAuthBase();
+	}
+	
+	function setSignedOn($bSignedOn)
+	{
+		$this->bSignedOn = (bool) $bSignedOn;
+	}
+	
+	function haveSignedOn()
+	{
+		return $this->bSignedOn;
+	}
+}
+
+
+class bab_eventLogout extends bab_eventAuthBase
+{
+	function bab_eventAuthenticate()
+	{
+		parent::bab_eventAuthBase();
+	}
+}
+
+
+
+
+function bab_onEventLogin(&$oEvent)
+{
+	if(false === $oEvent->haveBeenStopped())
+	{
+		require_once $GLOBALS['babInstallPath'] . 'utilit/loginIncl.php';
+		bab_login($oEvent);
+	}
+}
+
+function bab_onEventLogout(&$oEvent)
+{
+	if(false === $oEvent->haveBeenStopped())
+	{
+		require_once $GLOBALS['babInstallPath'] . 'utilit/loginIncl.php';
+		bab_logout($oEvent);
 	}
 }
 ?>

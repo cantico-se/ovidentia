@@ -21,16 +21,23 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
+include_once 'base.php';
 
-if (isset($_COOKIE['c_password'])) {
+if(isset($_COOKIE['c_password'])) 
+{
 	$token = trim($_COOKIE['c_password']);
 	
-	if (!empty($token) && !$GLOBALS['BAB_SESS_USERID'])
+	if(!empty($token) && !$GLOBALS['BAB_SESS_USERID'])
+	{
+		require_once $GLOBALS['babInstallPath'] . 'admin/register.php';
+		
+		$iIdUser = authenticateUserByCookie($token);
+		if(!is_null($iIdUser) && userCanLogin($iIdUser))
 		{
-		$error = '';
-		include_once $babInstallPath.'admin/register.php';
-		if (!userLogin('','', $error, $token)) {
+			userLogin($iIdUser);
+		}
+		else 
+		{
 			destroyAuthCookie();
 		}
 	}

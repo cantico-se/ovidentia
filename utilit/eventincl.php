@@ -211,7 +211,6 @@ function bab_fireEvent(&$event_obj) {
 				ORDER BY l.priority DESC'
 			);
 
-			
 			if (0 < $babDB->db_num_rows($res)) {
 				while ($arr = $babDB->db_fetch_assoc($res)) {
 	

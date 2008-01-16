@@ -375,81 +375,7 @@ function destroyAuthCookie() {
 	}
 	setcookie('c_password','');
 }
-	
-	
 
-function signOn( $nickname, $password,$lifetime)
-	{
-	
-	$nickname = trim($nickname);
-	$password = trim($password);
-	$lifetime = (int) $lifetime;
-	
-	global $babBody, $babDB, $BAB_SESS_USER, $BAB_SESS_USERID;
-	if( empty($nickname) || empty($password))
-		{
-		$babBody->msgerror = bab_translate("You must complete all fields !!");
-		return false;
-		}
-
-	if( !userLogin($nickname, $password, $babBody->msgerror ,false)) {
-		return false;
-	}
-
-	// Here we log the connection.
-	if ($GLOBALS['babStatOnOff'] == 'Y') {
-		$registry = bab_getRegistryInstance();
-		$registry->changeDirectory('/bab/statistics');
-		if ($registry->getValue('logConnections')) {
-			bab_logUserConnectionTime($BAB_SESS_USERID, session_id());
-		}
-	}
-		
-	$res=$babDB->db_query("select datelog, cookie_id from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($BAB_SESS_USERID)."'");
-	if( $res && $babDB->db_num_rows($res) > 0)
-		{
-		$arr = $babDB->db_fetch_array($res);
-		$old_token = $arr['cookie_id'];
-		$babDB->db_query("update ".BAB_USERS_TBL." set datelog=now(), lastlog='".$babDB->db_escape_string($arr['datelog'])."' where id='".$babDB->db_escape_string($BAB_SESS_USERID)."'");
-		}
-
-	$res=$babDB->db_query("select * from ".BAB_USERS_LOG_TBL." where id_user='0' and sessid='".session_id()."'");
-	if( $res && $babDB->db_num_rows($res) > 0)
-		{
-		$arr = $babDB->db_fetch_array($res);
-		$cpw = '';
-		if( 
-			extension_loaded('mcrypt') 
-			&& isset($GLOBALS['babEncryptionKey']) 
-			&& !empty($GLOBALS['babEncryptionKey']) 
-			&& !isset($_REQUEST['babEncryptionKey']))
-			{
-			$cpw = bab_encrypt($password, md5($arr['id'].$arr['sessid'].$BAB_SESS_USERID.$GLOBALS['babEncryptionKey']));
-			}
-		$babDB->db_query("update ".BAB_USERS_LOG_TBL." set id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."', cpw='".$babDB->db_escape_string($cpw)."' where id='".$babDB->db_escape_string($arr['id'])."'");
-		}
-
-	// ajout cookie
-	if ( $lifetime > 0 )
-		{
-		$cookie_validity = time()+$lifetime;
-		
-		if (true === $GLOBALS['babCookieIdent']) {
-			$token = empty($old_token) ? md5(uniqid(rand(), true)) : $old_token;
-			setcookie('c_password', $token, $cookie_validity);
-			
-			$babDB->db_query("UPDATE ".BAB_USERS_TBL." SET 
-				cookie_validity='".$babDB->db_escape_string(date('Y-m-d H:i:s',$cookie_validity))."', 
-				cookie_id='".$babDB->db_escape_string($token)."' 
-			WHERE id='".$babDB->db_escape_string($BAB_SESS_USERID)."'");
-			}
-			
-		if ('login' === $GLOBALS['babCookieIdent']) {
-			setcookie('c_nickname',$nickname,$cookie_validity);
-			}
-		}
-	return true;
-	}
 
 function sendPassword ($nickname)
 	{
@@ -554,363 +480,55 @@ function sendPassword ($nickname)
 		}
 }
 
-/**
- * Authentication
- * @param 	string 			$nickname
- * @param 	string 			$password (clear)
- * @param	string			&$error
- * @param	string|false	[$cookie_id] if cookie_id is defined, authentication type is BAB_AUTHENTIFICATION_OVIDENTIA
- * @return 	boolean
- */
-function userLogin($nickname,$password, &$msgerror, $cookie_id = false)
-	{
+
+function userCanLogin($iIdUser)
+{
 	global $babBody, $babDB;
-	$iduser = 0;
-	$logok = true;
-	$authtype = BAB_AUTHENTIFICATION_OVIDENTIA;
-	if (isset($babBody->babsite['authentification']) && false === $cookie_id) {
-		$authtype = $babBody->babsite['authentification'];
-	}
 
 	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET cnx_try=cnx_try+1 WHERE sessid='".session_id()."'");
 	list($cnx_try) = $babDB->db_fetch_array($babDB->db_query("SELECT cnx_try FROM ".BAB_USERS_LOG_TBL." WHERE sessid='".session_id()."'"));
-	if( $cnx_try > 5)
-		{
+	if($cnx_try > 5)
+	{
 		$msgerror = bab_translate("Maximum connexion attempts has been reached");
 		return false;
-		}
-
-	
-	if (false === $cookie_id) {
-		$authentication_condition = "nickname='".$babDB->db_escape_string($nickname)."' and password='". $babDB->db_escape_string(md5(strtolower($password))) ."'";
-	} else {
-		$authentication_condition = "cookie_id='". $babDB->db_escape_string($cookie_id) ."' AND cookie_validity>NOW()";
 	}
 	
-	$res = $babDB->db_query("select * from ".BAB_USERS_TBL." WHERE ".$authentication_condition);
-	if( $res && $babDB->db_num_rows($res) > 0 )
+	require_once $GLOBALS['babInstallPath'] . 'utilit/loginIncl.php';
+	$aUser = bab_getUserById($iIdUser);
+	if(!is_null($aUser))
+	{
+		if($aUser['disabled'] == '1')
 		{
-		$arruser = $babDB->db_fetch_array($res);
-		if( $arruser['db_authentification'] == 'Y')
-			{
-			$authtype = BAB_AUTHENTIFICATION_OVIDENTIA;
-			}
-		}
-
-
-	if( $authtype != BAB_AUTHENTIFICATION_OVIDENTIA )
-		{
-		// ldap authentification
-		include_once $GLOBALS['babInstallPath']."utilit/ldap.php";
-		$ldap = new babLDAP($babBody->babsite['ldap_host'], "", false);
-		$ret = $ldap->connect();
-		if( $ret === false )
-			{
-			$msgerror = bab_translate("LDAP connection failed. Please contact your administrator");
-			$logok = false;
-			}
-
-		if( $logok )
-			{
-			$updattributes = array();
-			$res = $babDB->db_query("select sfrt.*, sfxt.id as idfx from ".BAB_LDAP_SITES_FIELDS_TBL." sfrt left join ".BAB_DBDIR_FIELDSEXTRA_TBL." sfxt on sfxt.id_field=sfrt.id_field where sfrt.id_site='".$babDB->db_escape_string($babBody->babsite['id'])."' and sfxt.id_directory='0'");
-			$arridfx = array();
-
-			while( $arr = $babDB->db_fetch_array($res))
-				{
-				if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
-					{
-					$rr = $babDB->db_fetch_array($babDB->db_query("select name, description from ".BAB_DBDIR_FIELDS_TBL." where id='".$babDB->db_escape_string($arr['id_field'])."'"));
-					$fieldname = $rr['name'];
-					}
-				else
-					{
-					$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string(($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
-					$fieldname = "babdirf".$arr['id'];
-					$arridfx[$arr['id']] = $arr['idfx'];
-					}
-
-				if( !empty($arr['x_name']) )
-					{
-					$updattributes[$arr['x_name']] = strtolower($fieldname);
-					}
-				}
-			
-			$attributes = array("dn", "modifyTimestamp", $babBody->babsite['ldap_attribute'], "cn");
-			reset($updattributes);
-			while(list($key, $val) = each($updattributes))
-				{
-				if( !in_array($key, $attributes))
-					{
-					$attributes[] = $key;
-					}
-				}
-
-			if( !isset($updattributes['sn']))
-				{
-				$attributes[] = "sn";
-				}
-
-			if( !isset($updattributes['mail']))
-				{
-				$attributes[] = "mail";
-				}
-			if( !isset($updattributes['givenname']))
-				{
-				$attributes[] = "givenname";
-				}
-			switch($authtype)
-				{
-				case BAB_AUTHENTIFICATION_AD: // Active Directory
-					if( isset($GLOBALS['babAdLdapOptions']))
-					{
-						for( $k=0; $k < count($GLOBALS['babAdLdapOptions']); $k++)
-						{						
-						$ldap->set_option($GLOBALS['babAdLdapOptions'][$k][0],$GLOBALS['babAdLdapOptions'][$k][1]);
-						}
-					}
-
-					$ret = $ldap->bind($nickname."@".$babBody->babsite['ldap_domainname'], $password);
-					if( !$ret )
-						{
-						$msgerror = bab_translate("LDAP bind failed. Please contact your administrator");
-						$logok = false;
-						}
-					else
-						{
-						if( isset($babBody->babsite['ldap_filter']) && !empty($babBody->babsite['ldap_filter']))
-							{
-							$filter = str_replace('%NICKNAME', ldap_escapefilter($nickname), $babBody->babsite['ldap_filter']);
-							}
-						else
-							{
-							$filter = "(|(samaccountname=".ldap_escapefilter($nickname)."))";
-							}
-						$entries = $ldap->search($babBody->babsite['ldap_searchdn'], $filter, $attributes);
-						}
-					break;
-				default:
-					if( isset($babBody->babsite['ldap_userdn']) && !empty($babBody->babsite['ldap_userdn']))
-					{
-					$userdn = str_replace('%UID', ldap_escapefilter($babBody->babsite['ldap_attribute']), $babBody->babsite['ldap_userdn']);
-					$userdn = str_replace('%NICKNAME', ldap_escapefilter($nickname), $userdn);
-					$ret = $ldap->bind($userdn, $password);
-					if( !$ret )
-						{
-						$msgerror = bab_translate("LDAP bind failed. Please contact your administrator");
-						$logok = false;
-						}
-					else
-						{
-						$entries = $ldap->search($userdn, '(objectclass=*)', $attributes);
-
-						if( $entries === false || $entries['count'] == 0 )
-							{
-							$babBody->msgerror = bab_translate("LDAP search failed");
-							$logok = false;
-							}
-						}
-					}
-					else
-					{
-						if( isset($babBody->babsite['ldap_filter']) && !empty($babBody->babsite['ldap_filter']))
-							{
-							$filter = str_replace('%UID', ldap_escapefilter($babBody->babsite['ldap_attribute']), $babBody->babsite['ldap_filter']);
-							$filter = str_replace('%NICKNAME', ldap_escapefilter($nickname), $filter);
-							}
-						else
-							{
-							$filter = "(|(".ldap_escapefilter($babBody->babsite['ldap_attribute'])."=".ldap_escapefilter($nickname)."))";
-							}
-						$entries = $ldap->search($babBody->babsite['ldap_searchdn'], $filter, $attributes);
-
-						if( $entries !== false && $entries['count'] > 0 && isset($entries[0]['dn']) )
-							{
-							$ret = $ldap->bind($entries[0]['dn'], $password);
-							if( !$ret )
-								{
-								$msgerror = bab_translate("LDAP bind failed. Please contact your administrator");
-								$logok = false;
-								}
-							}
-						else
-							{
-							$logok = false;
-							}
-					}
-					break;
-				}
-
-			if( !isset($entries) || $entries === false )
-				{
-				$msgerror = bab_translate("LDAP authentification failed. Please verify your nickname and your password");
-				$logok = false;
-				}
-
-			if( $logok )
-				{
-				$req = "select * from ".BAB_USERS_TBL." where nickname='".$babDB->db_escape_string($nickname)."'";
-				$res=$babDB->db_query($req);
-				if( $res && $babDB->db_num_rows($res) > 0 )
-					{
-					$arruser = $babDB->db_fetch_array($res);
-					$iduser = $arruser['id'];
-					if( $arruser['disabled'] == '1')
-						{
-						$msgerror = bab_translate("Sorry, your account is disabled. Please contact your administrator");
-						return false;
-						}
-					}
-				else
-					{
-					$givenname = isset($updattributes['givenname'])?$entries[0][$updattributes['givenname']][0]:$entries[0]['givenname'][0];
-					$sn = isset($updattributes['sn'])?$entries[0][$updattributes['sn']][0]:$entries[0]['sn'][0];
-					$mn = isset($updattributes['mn'])?$entries[0][$updattributes['mn']][0]:'';
-					$mail = isset($updattributes['email'])?$entries[0][$updattributes['email']][0]:$entries[0]['mail'][0];
-					
-					$iduser = registerUser(auth_decode($givenname), auth_decode($sn), auth_decode($mn), auth_decode($mail),$nickname, $password, $password, true);
-					if( $iduser === false )
-						{
-						return false;
-						}
-					$arruser = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($iduser)."'"));
-					}
-				}
-			}
-
-		if( $logok )
-			{
-			$req = "update ".BAB_USERS_TBL." set password='".md5(strtolower($password))."'";
-			reset($updattributes);
-			while(list($key, $val) = each($updattributes))
-				{
-				switch($key)
-					{
-					case "sn":
-						$req .= ", lastname='".$babDB->db_escape_string(auth_decode($entries[0][$key][0]))."'";
-						break;
-					case "givenname":
-						$req .= ", firstname='".$babDB->db_escape_string(auth_decode($entries[0][$key][0]))."'";
-						break;
-					case "mail":
-						$req .= ", email='".$babDB->db_escape_string(auth_decode($entries[0][$key][0]))."'";
-						break;
-					default:
-						break;
-					}
-				}
-			$req .= " where id='".$babDB->db_escape_string($iduser)."'";
-			$babDB->db_query($req);
-			$req = '';
-
-			list($idu) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_TBL." where id_user='".$babDB->db_escape_string($iduser)."' and id_directory='0'"));
-			if( count($updattributes) > 0 )
-				{
-				reset($updattributes);
-				while(list($key, $val) = each($updattributes))
-					{
-					switch($key)
-						{
-						case "jpegphoto":
-							$res = $ldap->read($entries[0]['dn'], "objectClass=*", array("jpegphoto"));
-							if( $res)
-								{
-								$ei = $ldap->first_entry($res);
-								if( $ei)
-									{
-									$info = $ldap->get_values_len($ei, "jpegphoto");
-									if( $info && is_array($info))
-										{
-										$req .= ", photo_data='".$babDB->db_escape_string($info[0])."'";
-										}
-									}
-								}
-							break;
-						case "mail":
-							$req .= ", email='".$babDB->db_escape_string(auth_decode($entries[0][$key][0]))."'";
-							break;
-						default:
-							if( substr($val, 0, strlen("babdirf")) == 'babdirf' )
-								{
-								$tmp = substr($val, strlen("babdirf"));
-								$rs = $babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$babDB->db_escape_string($arridfx[$tmp])."' and  id_entry='".$babDB->db_escape_string($idu)."'");
-								if( $rs && $babDB->db_num_rows($rs) > 0 )
-									{
-									$babDB->db_query("update ".BAB_DBDIR_ENTRIES_EXTRA_TBL." set field_value='".$babDB->db_escape_string(auth_decode($entries[0][$key][0]))."' where id_fieldx='".$babDB->db_escape_string($arridfx[$tmp])."' and id_entry='".$babDB->db_escape_string($idu)."'");
-									}
-								else
-									{
-									$babDB->db_query("insert into ".BAB_DBDIR_ENTRIES_EXTRA_TBL." ( field_value, id_fieldx, id_entry) values ('".$babDB->db_escape_string(auth_decode($entries[0][$key][0]))."', '".$babDB->db_escape_string($arridfx[$tmp])."', '".$babDB->db_escape_string($idu)."')");
-									}
-								}
-							else
-								{
-								$req .= ", ".$val."='".$babDB->db_escape_string(auth_decode($entries[0][$key][0]))."'";
-								}
-							break;
-						}
-					}
-
-				$req = "update ".BAB_DBDIR_ENTRIES_TBL." set ".substr($req, 1);
-				$req .= " where id_directory='0' and id_user='".$babDB->db_escape_string($iduser)."'";
-				$babDB->db_query($req);
-				}
-			}
-
-		if( $logok)
-			{
-			$ldap->close();
-			}
-		}
-
-	if( $authtype == BAB_AUTHENTIFICATION_OVIDENTIA || (!$logok && $babBody->babsite['ldap_allowadmincnx'] == 'Y') )
-		{
-		if( isset($arruser) )
-			{
-			$iduser = $arruser['id'];
-			if( !$logok && $babBody->babsite['ldap_allowadmincnx'] == 'Y' )
-				{
-				$res = $babDB->db_query("select id from ".BAB_USERS_GROUPS_TBL." where id_object='".$babDB->db_escape_string($iduser)."' and id_group='3'");
-				if( $babDB->db_num_rows($res) == 0)
-					{
-					$msgerror = bab_translate("LDAP authentification failed. Please verify your nickname and your password");
-					return false;
-					}
-				}
-
-			if( $arruser['disabled'] == '1')
-				{
-				$msgerror = bab_translate("Sorry, your account is disabled. Please contact your administrator");
-				return false;
-				}
-			$logok = true;
-			}
-		else
-			{
-			$msgerror = bab_translate("User not found or password incorrect");
+			$babBody->addError(bab_translate("Sorry, your account is disabled. Please contact your administrator"));
 			return false;
-			}
 		}
-	
-	if( !$logok )
+		else if($aUser['is_confirmed'] != '1')
 		{
-		return false;
+			$babBody->addError(bab_translate("Sorry - You haven't Confirmed Your Account Yet"));
+			return false;
 		}
+		return true;
+	}
+	return false;
+}
 
-	$msgerror = "";
-	if ($arruser['is_confirmed'] == '1')
-		{
-		
-		$_SESSION['BAB_SESS_NICKNAME'] = $arruser['nickname'];
-		$_SESSION['BAB_SESS_USER'] = bab_composeUserName($arruser['firstname'], $arruser['lastname']);
-		$_SESSION['BAB_SESS_FIRSTNAME'] = $arruser['firstname'];
-		$_SESSION['BAB_SESS_LASTNAME'] = $arruser['lastname'];
-		$_SESSION['BAB_SESS_EMAIL'] = $arruser['email'];
-		$_SESSION['BAB_SESS_USERID'] = $arruser['id'];
-		$_SESSION['BAB_SESS_HASHID'] = $arruser['confirm_hash'];
-		$_SESSION['BAB_SESS_GROUPID'] = bab_getPrimaryGroupId($arruser['id']);
-		$_SESSION['BAB_SESS_GROUPNAME'] = bab_getGroupName($_SESSION['BAB_SESS_GROUPID']);
+
+function userLogin($iIdUser)
+{
+	require_once $GLOBALS['babInstallPath'] . 'utilit/loginIncl.php';
+	$aUser = bab_getUserById($iIdUser);
+	if(!is_null($aUser))
+	{
+		$_SESSION['BAB_SESS_NICKNAME']	= $aUser['nickname'];
+		$_SESSION['BAB_SESS_USER']		= bab_composeUserName($aUser['firstname'], $aUser['lastname']);
+		$_SESSION['BAB_SESS_FIRSTNAME'] = $aUser['firstname'];
+		$_SESSION['BAB_SESS_LASTNAME']	= $aUser['lastname'];
+		$_SESSION['BAB_SESS_EMAIL']		= $aUser['email'];
+		$_SESSION['BAB_SESS_USERID']	= $aUser['id'];
+		$_SESSION['BAB_SESS_HASHID']	= $aUser['confirm_hash'];
+		$_SESSION['BAB_SESS_GROUPID']	= bab_getPrimaryGroupId($aUser['id']);
+		$_SESSION['BAB_SESS_GROUPNAME']	= bab_getGroupName($_SESSION['BAB_SESS_GROUPID']);
 		
 		$GLOBALS['BAB_SESS_NICKNAME'] 	= $_SESSION['BAB_SESS_NICKNAME'];
 		$GLOBALS['BAB_SESS_USER'] 		= $_SESSION['BAB_SESS_USER'];
@@ -919,19 +537,310 @@ function userLogin($nickname,$password, &$msgerror, $cookie_id = false)
 		$GLOBALS['BAB_SESS_EMAIL'] 		= $_SESSION['BAB_SESS_EMAIL'];
 		$GLOBALS['BAB_SESS_USERID'] 	= $_SESSION['BAB_SESS_USERID'];
 		$GLOBALS['BAB_SESS_HASHID'] 	= $_SESSION['BAB_SESS_HASHID'];
-		
+	}
+}
 
-		return true;
-		}
-	else
+
+function authenticateUserByLoginPassword($sLogin, $sPassword)
+{
+	global $babBody;
+
+	require_once $GLOBALS['babInstallPath'] . 'utilit/loginIncl.php';
+	$aUser = bab_getUserByLoginPassword($sLogin, $sPassword);
+	if(!is_null($aUser))
+	{
+		return (int) $aUser['id'];
+	}
+	else 
+	{
+		$babBody->addError(bab_translate("User not found or password incorrect"));
+	}
+	return false;
+}
+
+
+function authenticateUserByCookie($sCookie)
+{
+	require_once $GLOBALS['babInstallPath'] . 'utilit/loginIncl.php';
+
+	$aUser = bab_getUserByCookie($sCookie);
+	if(!is_null($aUser))
+	{
+		return (int) $aUser['id'];
+	}
+	return null;
+}
+
+
+function authenticateUserByLDAP($sLogin, $sPassword)
+{
+	global $babBody;
+	
+	include_once $GLOBALS['babInstallPath'] . 'utilit/ldap.php';
+	$oLdap = new babLDAP($babBody->babsite['ldap_host'], '', false);
+	if(false === $oLdap->connect())
+	{
+		$babBody->addError(bab_translate("LDAP connection failed. Please contact your administrator"));
+		return null;
+	}
+	
+	$aAttributes		= array('dn', 'modifyTimestamp', $babBody->babsite['ldap_attribute'], 'cn');
+	$aUpdateAttributes	= array();
+	$aExtraFieldId		= array();
+	
+	bab_getLdapExtraFieldIdAndUpdateAttributes($aAttributes, $aUpdateAttributes, $aExtraFieldId);
+	
+	$bLdapOk = true;
+	$aEntries = array();
+	
+	//LDAP
+	{
+		if(isset($babBody->babsite['ldap_userdn']) && !empty($babBody->babsite['ldap_userdn']))
 		{
-		$msgerror =  bab_translate("Sorry - You haven't Confirmed Your Account Yet");
-		return false;
+			$sUserdn = str_replace('%UID', ldap_escapefilter($babBody->babsite['ldap_attribute']), $babBody->babsite['ldap_userdn']);
+			$sUserdn = str_replace('%NICKNAME', ldap_escapefilter($sLogin), $sUserdn);
+			if(false === $ldap->bind($sUserdn, $sPassword))
+			{
+				$aError[] = bab_translate("LDAP bind failed. Please contact your administrator");
+				$bLdapOk = false;
+			}
+			else
+			{
+				$aEntries = $oLdap->search($sUserdn, '(objectclass=*)', $aAttributes);
+				if($aEntries === false || $aEntries['count'] == 0)
+				{
+					$babBody->addError(bab_translate("LDAP search failed"));
+					$bLdapOk = false;
+				}
+			}
+		}
+		else
+		{
+			$sFilter = '';
+			if(isset($babBody->babsite['ldap_filter']) && !empty($babBody->babsite['ldap_filter']))
+			{
+				$sFilter = str_replace('%UID', ldap_escapefilter($babBody->babsite['ldap_attribute']), $babBody->babsite['ldap_filter']);
+				$sFilter = str_replace('%NICKNAME', ldap_escapefilter($sLogin), $sFilter);
+			}
+			else
+			{
+				$sFilter = "(|(".ldap_escapefilter($babBody->babsite['ldap_attribute'])."=".ldap_escapefilter($sLogin)."))";
+			}
+			
+			$aEntries = $oLdap->search($babBody->babsite['ldap_searchdn'], $sFilter, $aAttributes);
+
+			if($aEntries !== false && $aEntries['count'] > 0 && isset($aEntries[0]['dn']))
+			{
+				if(isset($GLOBALS['babAdLdapOptions']))
+				{
+					for($k=0; $k < count($GLOBALS['babAdLdapOptions']); $k++)
+					{						
+						$oLdap->set_option($GLOBALS['babAdLdapOptions'][$k][0],$GLOBALS['babAdLdapOptions'][$k][1]);
+					}
+				}
+				
+				if(false === $oLdap->bind($aEntries[0]['dn'], $sPassword))
+				{
+					$babBody->addError(bab_translate("LDAP bind failed. Please contact your administrator"));
+					$bLdapOk = false;
+				}
+			}
+			else 
+			{
+				$bLdapOk = false;
+			}
 		}
 	}
+	
+	
+	
+	$iIdUser = false;
+	if(!isset($aEntries) || $aEntries === false)
+	{
+		$babBody->addError(bab_translate("LDAP authentification failed. Please verify your nickname and your password"));
+		$bLdapOk = false;
+	}
+	
+	$iIdUser = bab_registerUserIfNotExist($sLogin, $sPassword, $aEntries, $aUpdateAttributes);
+	if(false === $iIdUser)
+	{
+		$oLdap->close();
+		return null;
+	}
+	else 
+	{
+		if($aEntries['count'] > 0)
+		{
+			bab_ldapEntryToOvEntry($oLdap, $iIdUser, $sPassword, $aEntries, $aUpdateAttributes, $aExtraFieldId);
+		}
+	}
+		
+	$oLdap->close();
+	
+	if(false === $bLdapOk)
+	{
+		if($babBody->babsite['ldap_allowadmincnx'] == 'Y')
+		{
+			$bLdapOk = bab_haveAdministratorRight($iIdUser);
+			if(false === $bLdapOk)
+			{
+				$babBody->addError(bab_translate("LDAP authentification failed. Please verify your nickname and your password"));
+			}
+		}
+	}
+	
+	if(false !== $iIdUser)
+	{
+		$babBody->msgerror = '';
+		return $iIdUser;
+	}
+	
+	return null;
+}
+
+
+function authenticateUserByActiveDirectory($sLogin, $sPassword)
+{
+	global $babBody;
+	
+	include_once $GLOBALS['babInstallPath'] . 'utilit/ldap.php';
+	$oLdap = new babLDAP($babBody->babsite['ldap_host'], '', false);
+	if(false === $oLdap->connect())
+	{
+		$babBody->addError(bab_translate("LDAP connection failed. Please contact your administrator"));
+		return null;
+	}
+	
+	$aAttributes		= array('dn', 'modifyTimestamp', $babBody->babsite['ldap_attribute'], 'cn');
+	$aUpdateAttributes	= array();
+	$aExtraFieldId		= array();
+	
+	bab_getLdapExtraFieldIdAndUpdateAttributes($aAttributes, $aUpdateAttributes, $aExtraFieldId);
+	
+	$bLdapOk = true;
+	$aEntries = array();
+	
+	//Active directory
+	{
+		if(isset($GLOBALS['babAdLdapOptions']))
+		{
+			for( $k=0; $k < count($GLOBALS['babAdLdapOptions']); $k++)
+			{						
+				$oLdap->set_option($GLOBALS['babAdLdapOptions'][$k][0],$GLOBALS['babAdLdapOptions'][$k][1]);
+			}
+		}
+
+		if(false === $oLdap->bind($sLogin."@".$babBody->babsite['ldap_domainname'], $sPassword))
+		{
+			$babBody->addError(bab_translate("LDAP bind failed. Please contact your administrator"));
+			$bLdapOk = false;
+		}
+		else
+		{
+			$sFilter = '';
+			if(isset($babBody->babsite['ldap_filter']) && !empty($babBody->babsite['ldap_filter']))
+			{
+				$sFilter = str_replace('%NICKNAME', ldap_escapefilter($sLogin), $babBody->babsite['ldap_filter']);
+			}
+			else
+			{
+				$sFilter = "(|(samaccountname=".ldap_escapefilter($sLogin)."))";
+			}
+			$aEntries = $oLdap->search($babBody->babsite['ldap_searchdn'], $sFilter, $aAttributes);
+		}
+	}
+	
+	
+	$iIdUser = false;
+	if(!isset($aEntries) || $aEntries === false)
+	{
+		$babBody->addError(bab_translate("LDAP authentification failed. Please verify your nickname and your password"));
+		$bLdapOk = false;
+	}
+	
+	$iIdUser = bab_registerUserIfNotExist($sLogin, $sPassword, $aEntries, $aUpdateAttributes);
+	if(false === $iIdUser)
+	{
+		$oLdap->close();
+		return null;
+	}
+	else 
+	{
+		if($aEntries['count'] > 0)
+		{
+			bab_ldapEntryToOvEntry($oLdap, $iIdUser, $sPassword, $aEntries, $aUpdateAttributes, $aExtraFieldId);
+		}
+	}
+		
+	$oLdap->close();
+	
+	if(false === $bLdapOk)
+	{
+		if($babBody->babsite['ldap_allowadmincnx'] == 'Y')
+		{
+			$bLdapOk = bab_haveAdministratorRight($iIdUser);
+			if(false === $bLdapOk)
+			{
+				$babBody->addError(bab_translate("LDAP authentification failed. Please verify your nickname and your password"));
+			}
+		}
+	}
+	
+	if(false !== $iIdUser)
+	{
+		$babBody->msgerror = '';
+		return $iIdUser;
+	}
+	
+	return null;
+}
+
+
+function signOn()
+{
+	global $babBody;
+
+	$sLogin		= (string) bab_pp('nickname');
+	$sPassword	= (string) bab_pp('password');
+	$iLifeTime	= (int) bab_pp('lifetime', 0);	
+	
+	if(!empty($sLogin) && !empty($sPassword))
+	{
+		$iIdUser = null;
+		$iAuthenticationType = (int) $babBody->babsite['authentification'];	
+		switch($iAuthenticationType)
+		{
+			case BAB_AUTHENTIFICATION_OVIDENTIA:
+				$iIdUser = authenticateUserByLoginPassword($sLogin, $sPassword);
+				break;
+			case BAB_AUTHENTIFICATION_LDAP:
+				$iIdUser = authenticateUserByLDAP($sLogin, $sPassword);
+				break;
+			case BAB_AUTHENTIFICATION_AD:
+				$iIdUser = authenticateUserByActiveDirectory($sLogin, $sPassword);
+				break;
+		}
+		
+		if(!is_null($iIdUser) && userCanLogin($iIdUser))
+		{
+			userLogin($iIdUser);
+			bab_logUserConnectionToStat($iIdUser);
+			bab_updateUserConnectionDate($iIdUser);
+			bab_createReversableUserPassword($iIdUser, $sPassword);
+			bab_addUserCookie($iIdUser, $sLogin, $iLifeTime);
+			return true;
+		}
+	}	
+	else
+	{
+		$babBody->addError(bab_translate("You must complete all fields !!"));
+	}
+	return false;
+}
+
 
 function signOff()
-	{
+{
 	global $babBody, $babDB, $BAB_HASH_VAR, $BAB_SESS_USER, $BAB_SESS_EMAIL, $BAB_SESS_USERID, $BAB_SESS_HASHID,$BAB_SESS_LOGGED;
 	
 	$babDB->db_query("delete from ".BAB_USERS_LOG_TBL." where id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."' and sessid='".$babDB->db_escape_string(session_id())."'");
@@ -959,11 +868,12 @@ function signOff()
 
 
 	// We destroy the session cookie. A new one will be created at the next session.
-	if (isset($_COOKIE[session_name()])) {
+	if(isset($_COOKIE[session_name()])) 
+	{
 	   setcookie(session_name(), '', time()-42000, '/');
 	}
 	session_destroy();
 	destroyAuthCookie();
-	}
+}
 
 ?>

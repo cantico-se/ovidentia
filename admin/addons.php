@@ -774,6 +774,73 @@ function history($item)
 	$temp = new temp($item);
 	$babBody->babpopup(bab_printTemplate($temp, "addons.html", "history"));
 	}
+	
+	
+	
+	
+function functionalities() {
+	require_once $GLOBALS['babInstallPath'] . 'utilit/tree.php';
+	require_once $GLOBALS['babInstallPath'] . 'utilit/functionalityincl.php';
+	
+	
+	$func = new bab_functionalities();
+	$func->cleanTree();
+	
+	$tree = new bab_TreeView('bab_functionalities');
+
+	$root = & $tree->createElement( 'R', 'directory', bab_translate('Root'), '', '');
+	$root->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
+	/*
+	$root->addAction('add',
+			reg_translate('Add'),
+			$GLOBALS['babSkinPath'] . 'images/Puces/edit_add.png',
+			$GLOBALS['babAddonUrl'].'edit&directory=/',
+			'');
+	*/						
+	$tree->appendElement($root, NULL);
+
+
+	function buid_nodeLevel(&$tree, $node, $id, $path) {
+		$func = new bab_functionalities();
+		$childs = $func->getChilds($path);
+
+		$i = 1;
+		foreach ($childs as $dir) {
+		
+			$obj = bab_functionality::get($path.'/'.$dir);
+		
+			$element = & $tree->createElement( $id.'.'.$i, 'directory', $dir.' : '.$obj->getDescription(), '', '');
+			$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
+			/*
+			$element->addAction('add',
+								reg_translate('Add'),
+								$GLOBALS['babSkinPath'] . 'images/Puces/edit_add.png',
+								$GLOBALS['babAddonUrl'].'edit&directory='.urlencode($path.$dir),
+								'');
+			*/
+			$tree->appendElement($element, $id);
+
+			buid_nodeLevel($tree, $element, $id.'.'.$i, $path.'/'.$dir);
+
+			
+			$i++;
+		}
+
+	}
+
+	buid_nodeLevel($tree, $root, 'R' , '');
+
+	global $babBody;
+
+	$babBody->setTitle(bab_translate('Functionalities'));
+	$babBody->babecho($tree->printTemplate());
+}
+	
+	
+	
+	
+	
+	
 
 /* main */
 if( !$babBody->isSuperAdmin )
@@ -840,6 +907,10 @@ switch($idx)
 
 	case "history":
 		history($_GET['item']);
+		break;
+		
+	case 'functionalities':
+		functionalities();
 		break;
 
 	case "upgrade":
