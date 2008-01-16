@@ -1014,6 +1014,8 @@ function userChangePassword($oldpwd, $newpwd)
 	else
 		{
 		include_once $GLOBALS['babInstallPath']."utilit/eventdirectory.php";
+		include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
+		
 		$event = new bab_eventUserModified($BAB_SESS_USERID);
 		bab_fireEvent($event);
 		
@@ -1066,8 +1068,18 @@ function updateLanguage($lang, $langfilter)
     global $babDB, $BAB_SESS_USERID;
 	if( !empty($lang) && !empty($BAB_SESS_USERID))
 		{
-		$req = "update ".BAB_USERS_TBL." set lang='".$babDB->db_escape_string($lang)."', langfilter='" .$babDB->db_escape_string($langfilter). "' where id='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
+		$req = "update ".BAB_USERS_TBL." 
+		set 
+			lang='".$babDB->db_escape_string($lang)."', 
+			langfilter='" .$babDB->db_escape_string($langfilter). "' 
+		where 
+			id='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
         $res = $babDB->db_query($req);
+        
+        
+        if (0 < $babDB->db_affected_rows($res)) {
+			bab_siteMap::clear();
+			}
 
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=options&idx=global");
@@ -1080,78 +1092,15 @@ function updateSkin($skin, $style)
 		{
         $req = "update ".BAB_USERS_TBL." set skin='".$babDB->db_escape_string($skin)."', style='".$babDB->db_escape_string($style)."' where id='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
         $res = $babDB->db_query($req);
+        
+        if (0 < $babDB->db_affected_rows($res)) {
+			bab_siteMap::clear();
+			}
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=options&idx=global");
 	}
 
-/*
 
-function updateUserInfo($password, $firstname, $middlename, $lastname, $nickname, $email)
-	{
-	global $babBody, $babDB, $BAB_HASH_VAR, $BAB_SESS_NICKNAME, $BAB_SESS_USERID, $BAB_SESS_USER, $BAB_SESS_EMAIL;
-
-	if( empty($GLOBALS['BAB_SESS_USERID']))
-		return false;
-
-	$password = strtolower($password);
-	$req = "select id from ".BAB_USERS_TBL." where nickname='".$babDB->db_escape_string($BAB_SESS_NICKNAME)."' and password='". md5($password) ."'";
-	$res = $babDB->db_query($req);
-	if (!$res || $babDB->db_num_rows($res) < 1)
-		{
-		$babBody->msgerror = bab_translate("Password incorrect");
-		return false;
-		}
-	else
-		{
-		$arr = $babDB->db_fetch_array($res);
-		if( empty($firstname) || empty($lastname) || empty($email))
-			{
-			$babBody->msgerror = bab_translate( "You must complete all fields !!");
-			return false;
-			}
-
-		if ( !bab_isEmailValid($email))
-			{
-			$babBody->msgerror = bab_translate("Your email is not valid !!");
-			return false;
-			}
-		
-		if( $BAB_SESS_NICKNAME != $nickname )
-			{
-			$req = "select id from ".BAB_USERS_TBL." where nickname='".$babDB->db_escape_string($nickname)."'";	
-			$res = $babDB->db_query($req);
-			if( $babDB->db_num_rows($res) > 0)
-				{
-				$babBody->msgerror = bab_translate("This nickname already exists !!");
-				return false;
-				}
-			}
-
-		$replace = array( " " => "", "-" => "");
-		$hashname = md5(strtolower(strtr($firstname.$middlename.$lastname, $replace)));
-		$query = "select id from ".BAB_USERS_TBL." where hashname='".$hashname."' and id!='".$babDB->db_escape_string($BAB_SESS_USERID)."'";	
-		$res = $babDB->db_query($query);
-		if( $babDB->db_num_rows($res) > 0)
-			{
-			$babBody->msgerror = bab_translate("Firstname and Lastname already exists !!");
-			return false;
-			}
-
-		$hash=md5($nickname.$BAB_HASH_VAR);
-		$req = "update ".BAB_USERS_TBL." set firstname='".$babDB->db_escape_string($firstname)."', lastname='".$babDB->db_escape_string($lastname)."', nickname='".$babDB->db_escape_string($nickname)."', email='".$babDB->db_escape_string($email)."', confirm_hash='".$babDB->db_escape_string($hash)."', hashname='".$babDB->db_escape_string($hashname)."' where id='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
-		$res = $babDB->db_query($req);
-
-		$req = "update ".BAB_DBDIR_ENTRIES_TBL." set givenname='".$babDB->db_escape_string($firstname)."', mn='".$babDB->db_escape_string($middlename)."', sn='".$babDB->db_escape_string($lastname)."', email='".$babDB->db_escape_string($email)."', date_modification=now(), id_modifiedby='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' where id_directory='0' and id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
-		$res = $babDB->db_query($req);
-
-		$BAB_SESS_NICKNAME = $nickname;
-		$BAB_SESS_USER = bab_composeUserName($firstname, $lastname);
-		$BAB_SESS_EMAIL = $email;
-		$BAB_SESS_HASHID = $hash;
-		return true;
-		}
-	}
-*/
 
 function updateNickname($password, $nickname)
 	{

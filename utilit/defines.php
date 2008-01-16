@@ -110,6 +110,9 @@ define('BAB_SECTIONS_SITE'		,BAB_SECTIONS_CORE << 2);
 define('BAB_SECTIONS_ADDONS'	,BAB_SECTIONS_CORE << 3);
 define('BAB_SECTIONS_ALL'		,BAB_SECTIONS_CORE | BAB_SECTIONS_ARTICLES | BAB_SECTIONS_SITE | BAB_SECTIONS_ADDONS);
 
+/* Sitemap */
+define('BAB_UNREGISTERED_SITEMAP_PROFILE'	,1);
+
 
 define("BAB_ADDONS_GROUPS_TBL", "bab_addons_groups");
 define("BAB_ADDONS_TBL", "bab_addons");
@@ -231,6 +234,13 @@ define("BAB_SECTIONS_TBL", "bab_sections");
 define("BAB_SECTIONS_GROUPS_TBL", "bab_sections_groups");
 define("BAB_SECTIONS_ORDER_TBL", "bab_sections_order");
 define("BAB_SECTIONS_STATES_TBL", "bab_sections_states");
+
+define("BAB_SITEMAP_TBL", "bab_sitemap");
+define("BAB_SITEMAP_FUNCTION_PROFILE_TBL", "bab_sitemap_function_profile");
+define("BAB_SITEMAP_FUNCTIONS_TBL", "bab_sitemap_functions");
+define("BAB_SITEMAP_FUNCTION_LABELS_TBL", "bab_sitemap_function_labels");
+define("BAB_SITEMAP_PROFILES_TBL", "bab_sitemap_profiles");
+
 define("BAB_SITES_TBL", "bab_sites");
 define("BAB_SITES_HPMAN_GROUPS_TBL", "bab_sites_hpman_groups");
 define("BAB_SITES_FIELDS_REGISTRATION_TBL", "bab_sites_fields_registration");

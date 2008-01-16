@@ -175,6 +175,7 @@ class bab_userModify {
 			/**
 			 * @deprecated
 			 */
+			include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
 			bab_callAddonsFunction('onUserCreate', $id);
 			return $id;
 			}

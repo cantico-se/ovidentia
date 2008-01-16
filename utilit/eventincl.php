@@ -143,6 +143,8 @@ class bab_fireEvent_Obj {
 			return;
 		}
 		
+		include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
+		
 		if (!empty($GLOBALS['babAddonFolder'])) {
 			$arr = array();
 			$arr[1] = $GLOBALS['babAddonFolder'];
@@ -152,13 +154,7 @@ class bab_fireEvent_Obj {
 			bab_fireEvent_addonCtxStack($arr);
 		}
 		
-		$GLOBALS['babAddonFolder'] = $addon_name;
-		$GLOBALS['babAddonTarget'] = "addon/".$addon_id;
-		$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$addon_id."/";
-		$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$addon_name."/";
-		$GLOBALS['babAddonHtmlPath'] = "addons/".$addon_name."/";
-		$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath']."/addons/".$addon_name."/";
-		
+		bab_setAddonGlobals($addon_id);
 	}
 	
 	
@@ -181,6 +177,7 @@ class bab_fireEvent_Obj {
  */
 function bab_fireEvent(&$event_obj) {
 
+	
 	global $babDB, $babBody;
 	
 	$obj = new bab_fireEvent_Obj;
@@ -251,7 +248,6 @@ function bab_fireEvent(&$event_obj) {
 	
 	
 	
-			
 	foreach($calls[$classkey] as $arr) {
 
 		$obj->setAddonCtx($arr['addon_id'], $arr['addon_name']);

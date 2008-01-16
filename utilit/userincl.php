@@ -720,6 +720,7 @@ function bab_addUserToGroup($iduser, $idgroup, $oc = true)
 	/**
 	 * @deprecated
 	 */
+	include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
 	bab_callAddonsFunction('onUserAssignedToGroup', $iduser, $idgroup);
 }
 
@@ -753,6 +754,7 @@ function bab_removeUserFromGroup($iduser, $idgroup)
 	/**
 	 * @deprecated
 	 */
+	include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
 	bab_callAddonsFunction('onUserUnassignedFromGroup', $iduser, $idgroup);
 }
 

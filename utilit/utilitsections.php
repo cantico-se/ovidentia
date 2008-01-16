@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-
+include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
 
 
 function bab_getAddonsMenus($row, $what)
@@ -32,12 +32,8 @@ function bab_getAddonsMenus($row, $what)
 	$addonpath = $GLOBALS['babAddonsPath'].$row['title'];
 	if( is_file($addonpath."/init.php" ))
 		{
-		$GLOBALS['babAddonFolder'] = $row['title'];
-		$GLOBALS['babAddonTarget'] = "addon/".$row['id'];
-		$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$row['id']."/";
-		$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$row['title']."/";
-		$GLOBALS['babAddonHtmlPath'] = "addons/".$row['title']."/";
-		$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath']."/addons/".$row['title']."/";
+		bab_setAddonGlobals($row['id']);
+		
 		require_once( $addonpath."/init.php" );
 		$func = $row['title']."_".$what;
 		if( !empty($func) && function_exists($func))
@@ -202,128 +198,57 @@ function babAdminSection($close)
 	if( $close )
 		return;
 
-	if( ($dgcnt = count($babBody->dgAdmGroups)) > 0 )
-		{
-		if( $babBody->isSuperAdmin || $dgcnt > 1 )
-			{
-			$this->array_urls[bab_translate("Change administration")] = $GLOBALS['babUrlScript']."?tg=delegusr";
-			}
-		}
-
-	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0)
-		{
-		$this->array_urls[bab_translate("Delegation")] = $GLOBALS['babUrlScript']."?tg=delegat";
-		$this->array_urls[bab_translate("Sites")] = $GLOBALS['babUrlScript']."?tg=sites";
-		}
-
-	$this->array_urls[bab_translate("Users")] = $GLOBALS['babUrlScript']."?tg=users&amp;bupd=0";
-	//if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['groups'] == 'Y')
-		$this->array_urls[bab_translate("Groups")] = $GLOBALS['babUrlScript']."?tg=groups";
-	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['sections'] == 'Y')
-		$this->array_urls[bab_translate("Sections")] = $GLOBALS['babUrlScript']."?tg=sections";
-	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['faqs'] == 'Y')
-		$this->array_urls[bab_translate("Faq")] = $GLOBALS['babUrlScript']."?tg=admfaqs";
-	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['articles'] == 'Y')
-		$this->array_urls[bab_translate("Articles")] = $GLOBALS['babUrlScript']."?tg=topcats";
-	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['forums'] == 'Y')
-		$this->array_urls[bab_translate("Forums")] = $GLOBALS['babUrlScript']."?tg=forums";
-	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
-		$this->array_urls[bab_translate("Vacation")] = $GLOBALS['babUrlScript']."?tg=admvacs";
-	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['calendars'] == 'Y')
-		$this->array_urls[bab_translate("Calendar")] = $GLOBALS['babUrlScript']."?tg=admcals";
-	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['mails'] == 'Y')
-		$this->array_urls[bab_translate("Mail")] = $GLOBALS['babUrlScript']."?tg=maildoms&amp;userid=0&amp;bgrp=y";
-	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['filemanager'] == 'Y')
-		$this->array_urls[bab_translate("File manager")] = $GLOBALS['babUrlScript']."?tg=admfms";
-	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['approbations'] == 'Y')
-		$this->array_urls[bab_translate("Approbations")] = $GLOBALS['babUrlScript']."?tg=apprflow";
-	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['directories'] == 'Y')
-		$this->array_urls[bab_translate("Directories")] = $GLOBALS['babUrlScript']."?tg=admdir";
-	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || (isset($babBody->currentDGGroup['orgchart']) && $babBody->currentDGGroup['orgchart'] == 'Y'))
-		$this->array_urls[bab_translate("Charts")] = $GLOBALS['babUrlScript']."?tg=admocs";
-	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['taskmanager'] == 'Y')
-		$this->array_urls[bab_translate("Task Manager")] = $GLOBALS['babUrlScript'].'?tg=admTskMgr';
+	$rootNode = bab_siteMap::get();
+	$this->babAdminSection = $rootNode->getNodeById('babAdminSection');
 	
-	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
-		$this->array_urls[bab_translate("Add-ons")] = $GLOBALS['babUrlScript']."?tg=addons";
-	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
-		$this->array_urls[bab_translate("Statistics")] = $GLOBALS['babUrlScript']."?tg=admstats";
-	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
-		$this->array_urls[bab_translate("Thesaurus")] = $GLOBALS['babUrlScript']."?tg=admthesaurus";
+	if ($this->babAdminSection) {
+		$item = $this->babAdminSection->getData();
+		$this->head = $item->description;
+		$this->babAdminSection = $this->babAdminSection->firstChild();
+	}
+	
+	$this->babAdminSectionAddons = $rootNode->getNodeById('babAdminSectionAddons');
+	if ($this->babAdminSectionAddons) {
+		$this->babAdminSectionAddons = $this->babAdminSectionAddons->firstChild();
+	}
 
-	$engine = bab_searchEngineInfos();
-
-	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 && false !== $engine && $engine['indexes'] )
-		$this->array_urls[bab_translate("Search indexes")] = $GLOBALS['babUrlScript']."?tg=admindex";
-
-	$this->head = bab_translate("Currently you administer ");
-	if( $babBody->currentAdmGroup == 0 )
-		$this->head .= bab_translate("all site");
-	else
-		$this->head .= $babBody->currentDGGroup['name'];
 	$this->foot = "";
 
-	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
-		{
-		foreach($babBody->babaddons as $row)
-			{
-			if($row['access'])
-				{
-				$addonpath = $GLOBALS['babAddonsPath'].$row['title'];
-				if( is_dir($addonpath))
-					{
-					$arr = bab_getAddonsMenus($row, "getAdminSectionMenus");
-					reset ($arr);
-					while (list ($txt, $url) = each ($arr))
-						{
-						$this->addon_urls[$txt] = htmlentities($url);
-						}
-					}
-				}
-			}
-		}
-	ksort($this->array_urls);
-	ksort($this->addon_urls);
+
 	}
 
 function addUrl()
 	{
-	static $i = 0;
-	if( $i < count($this->array_urls))
-		{
-		$array_keys = array_keys($this->array_urls);
-		$array_vals = array_values($this->array_urls);
-		$this->val = $array_vals[$i];
-		$this->key = $array_keys[$i];
-		$i++;
-		return true;
-		}
-	else
+	if (!$this->babAdminSection) {
 		return false;
+	}
+
+	$item = $this->babAdminSection->getData();
+	$this->val = bab_toHtml($item->url);
+	$this->key = bab_toHtml($item->name);
+	$this->description = bab_toHtml($item->description);
+	$this->babAdminSection = $this->babAdminSection->nextSibling();
+	return true; 
+	
 	}
 
 function addAddonUrl()
 	{
-	static $i = 0;
-	if( $i < count($this->addon_urls))
-		{
-		$array_keys = array_keys($this->addon_urls);
-		$array_vals = array_values($this->addon_urls);
-		$this->val = $array_vals[$i];
-		$this->key = $array_keys[$i];
-		$i++;
-		return true;
-		}
-	else
+	if (!$this->babAdminSectionAddons) {
 		return false;
+	}
+
+	$item = $this->babAdminSectionAddons->getData();
+	$this->url = bab_toHtml($item->url);
+	$this->text = bab_toHtml($item->name);
+	$this->babAdminSectionAddons = $this->babAdminSectionAddons->nextSibling();
+	return true;
 	}
 
 }
 
 class babUserSection extends babSectionTemplate
 {
-var $array_urls = array();
-var $addon_urls = array();
 var $head;
 var $foot;
 var $key;
@@ -335,8 +260,8 @@ var $blogged;
 var $aidetxt;
 var $vacwaiting;
 
-function babUserSection($close)
-	{
+function babUserSection($close) {
+
 	global $babDB, $babBody, $BAB_SESS_USERID;
 	$this->babSectionTemplate("usersection.html", "template");
 	$this->title = bab_translate("User's section");
@@ -363,225 +288,53 @@ function babUserSection($close)
 	$this->aidetxt = bab_translate("Since your last connection:");
 
 	$this->blogged = false;
-	$faq = false;
-	$req = "select id from ".BAB_FAQCAT_TBL."";
-	$res = $babDB->db_query($req);
-	while( $row = $babDB->db_fetch_array($res))
-		{
-		if(bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $row['id']))
-			{
-			$faq = true;
-			break;
-			}
-		}
 	
-	$vac = false;
-	$bemail = false;
-	$idcal = 0;
-	if( !empty($GLOBALS['BAB_SESS_USER']))
+	if(!empty($GLOBALS['BAB_SESS_USER']))
 		{
 		$this->blogged = true;
-		$vacacc = bab_vacationsAccess();
-		if( count($vacacc) > 0)
-			{
-			$this->vacwaiting = isset($vacacc['approver']) ? $vacacc['approver'] : '';
-			$vac = true;
-			}
 
-		$bemail = bab_mailAccessLevel();
-		if( $bemail == 1 || $bemail == 2)
-			$bemail = true;
-		}
-
-
-	if( !empty($GLOBALS['BAB_SESS_USER']))
-		{
-		if( count($babBody->topsub) > 0  || count($babBody->topmod) > 0 )
-			{
-			$this->array_urls[bab_translate("Publication")] = $GLOBALS['babUrlScript']."?tg=artedit";
-			}
-
-		$babBody->waitapprobations = bab_isWaitingApprobations();
-		if( $babBody->waitapprobations )
-			{
-			$this->array_urls[bab_translate("Approbations")] = $GLOBALS['babUrlScript']."?tg=approb";
-			}
-		}
-
-	if( count($babBody->topman) > 0 || bab_isAccessValid(BAB_SITES_HPMAN_GROUPS_TBL, $babBody->babsite['id']))
-		{
-		$this->array_urls[bab_translate("Articles management")] = $GLOBALS['babUrlScript']."?tg=topman";
-		}
-
-	if( !empty($GLOBALS['BAB_SESS_USER']))
-		{
-		$this->array_urls[bab_translate("Summary")] = $GLOBALS['babUrlScript']."?tg=calview";
-		$this->array_urls[bab_translate("Options")] = $GLOBALS['babUrlScript']."?tg=options";
-		if( bab_notesAccess())
-		$this->array_urls[bab_translate("Notes")] = $GLOBALS['babUrlScript']."?tg=notes";
-		}
-
-	if( $faq )
-		{
-		$this->array_urls[bab_translate("Faq")] = $GLOBALS['babUrlScript']."?tg=faq";
-		}
-	if( $vac )
-		{
-		$this->array_urls[bab_translate("Vacation")] = $GLOBALS['babUrlScript']."?tg=vacuser";
-		}
-
-	if( $babBody->icalendars->calendarAccess())
-		{
-		$babBody->calaccess = true;
-		switch($babBody->icalendars->defaultview)
-			{
-			case BAB_CAL_VIEW_DAY: $view='calday';	break;
-			case BAB_CAL_VIEW_WEEK: $view='calweek'; break;
-			default: $view='calmonth'; break;
-			}
-		if( empty($babBody->icalendars->user_calendarids))
-			{
-			$babBody->icalendars->initializeCalendars();
-			}
-		$idcals = $babBody->icalendars->user_calendarids;
-		$this->array_urls[bab_translate("Calendar")] = $GLOBALS['babUrlScript']."?tg=".$view."&amp;calid=".$idcals;
-		}
-
-	if( $bemail )
-		{
-		$this->array_urls[bab_translate("Mail")] = $GLOBALS['babUrlScript']."?tg=inbox";
-		}
-	if( !empty($GLOBALS['BAB_SESS_USER']) && bab_contactsAccess())
-		{
-		$this->array_urls[bab_translate("Contacts")] = $GLOBALS['babUrlScript']."?tg=contacts";
-		}
-	
-	require_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
-	if(userHavePersonnalStorage() || userHaveRightOnCollectiveFolder())
-	{
-		$this->array_urls[bab_translate("File manager")] = $GLOBALS['babUrlScript']."?tg=fileman";
 	}
-
-	$bdiradd = false;
-	$res = $babDB->db_query("select id, id_group from ".BAB_DB_DIRECTORIES_TBL."");
-	while( $row = $babDB->db_fetch_array($res))
-		{
-		if( $row['id_group'] != 0 )
-			{
-			list($bdiraccess) = $babDB->db_fetch_row($babDB->db_query("select directory from ".BAB_GROUPS_TBL." where id='".$row['id_group']."'"));
-			}
-		else
-			$bdiraccess = 'Y';
-		if($bdiraccess == 'Y' && bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $row['id']))
-			{
-			$bdiradd = true;
-			break;
-			}
-		}
-
-	if( $bdiradd === false )
-		{
-		$res = $babDB->db_query("select id from ".BAB_LDAP_DIRECTORIES_TBL."");
-		while( $row = $babDB->db_fetch_array($res))
-			{
-			if(bab_isAccessValid(BAB_LDAPDIRVIEW_GROUPS_TBL, $row['id']))
-				{
-				$this->array_urls[bab_translate("Directories")] = $GLOBALS['babUrlScript']."?tg=directory";
-				break;
-				}
-			}
-		}
-
-	if( $bdiradd )
-		{
-		$this->array_urls[bab_translate("Directories")] = $GLOBALS['babUrlScript']."?tg=directory";
-		}
-
-	if( count($babBody->ocids) > 0 )
-		{
-		$this->array_urls[bab_translate("Charts")] = $GLOBALS['babUrlScript']."?tg=charts";
-		}
-
-	if ( bab_statisticsAccess() != -1 )
-		{
-		$this->array_urls[bab_translate("Statistics")] = $GLOBALS['babUrlScript']."?tg=stat";
-		}
-
-		
-	global $babInstallPath;
-	require_once($babInstallPath . 'tmContext.php');
-
-	$context =& getTskMgrContext();
 	
-	$bIsAccessValid = ($context->isUserProjectVisualizer() || $context->isUserCanCreateProject() || $context->isUserProjectManager() 
-		|| $context->isUserSuperviseProject() || $context->isUserManageTask() || $context->isUserPersonnalTaskOwner());
-			
-	if($bIsAccessValid)
-		{
-		$this->array_urls[bab_translate("Task Manager")] = $GLOBALS['babUrlScript'].'?tg=usrTskMgr';
-		}
-		
-	$forums = $babBody->get_forums();
-	if(count($forums))
-		{
-		$this->array_urls[bab_translate("Forums")] = $GLOBALS['babUrlScript'].'?tg=forumsuser';
-		}
-
-	if( bab_isAccessValid(BAB_TAGSMAN_GROUPS_TBL, 1) )
-		{
-		$this->array_urls[bab_translate("Thesaurus")] = $GLOBALS['babUrlScript'].'?tg=thesaurus';
-		}
-
-	foreach( $babBody->babaddons as $row ) 
-		{
-		if($row['access'])
-			{
-			$addonpath = $GLOBALS['babAddonsPath'].$row['title'];
-			if( is_dir($addonpath))
-				{
-				$arr = bab_getAddonsMenus($row, 'getUserSectionMenus');
-				reset ($arr);
-				while (list ($txt, $url) = each ($arr))
-					{
-					$this->addon_urls[$txt] = htmlentities($url);
-					}
-				}
-			}
-		}
-	ksort($this->array_urls);
-	ksort($this->addon_urls);
+	$rootNode = bab_siteMap::get();
+	$this->babUserSection = $rootNode->getNodeById('babUserSection');
+	if ($this->babUserSection) {
+		$this->babUserSection = $this->babUserSection->firstChild();
 	}
+	
+	$this->babUserSectionAddons = $rootNode->getNodeById('babUserSectionAddons');
+	if ($this->babUserSectionAddons) {
+		$this->babUserSectionAddons = $this->babUserSectionAddons->firstChild();
+	}
+	
+}
 
-function addUrl()
-	{
-	static $i = 0;
-	if( $i < count($this->array_urls))
-		{
-		$array_keys = array_keys($this->array_urls);
-		$array_vals = array_values($this->array_urls);
-		$this->url = $array_vals[$i];
-		$this->text = $array_keys[$i];
-		$i++;
-		return true;
-		}
-	else
+
+function addUrl() {
+
+	if (!$this->babUserSection) {
 		return false;
 	}
+
+	$item = $this->babUserSection->getData();
+	$this->url = bab_toHtml($item->url);
+	$this->text = bab_toHtml($item->name);
+	$this->description = bab_toHtml($item->description);
+	$this->babUserSection = $this->babUserSection->nextSibling();
+	return true;
+}
 
 function addAddonUrl()
 	{
-	static $i = 0;
-	if( $i < count($this->addon_urls))
-		{
-		$array_keys = array_keys($this->addon_urls);
-		$array_vals = array_values($this->addon_urls);
-		$this->url = $array_vals[$i];
-		$this->text = $array_keys[$i];
-		$i++;
-		return true;
-		}
-	else
+	if (!$this->babUserSectionAddons) {
 		return false;
+	}
+
+	$item = $this->babUserSectionAddons->getData();
+	$this->url = bab_toHtml($item->url);
+	$this->text = bab_toHtml($item->name);
+	$this->babUserSectionAddons = $this->babUserSectionAddons->nextSibling();
+	return true; 
+
 	}
 
 function getnextnew()

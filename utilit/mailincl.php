@@ -22,8 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-include_once $babInstallPath."utilit/class.phpmailer.php";
-include_once $babInstallPath."utilit/class.smtp.php";
+
 
 function bab_getMimeType($type, $subtype)
 	{ 
@@ -118,6 +117,9 @@ class babMail
 
 	function babMail()
 	{
+		include_once $babInstallPath."utilit/class.phpmailer.php";
+		include_once $babInstallPath."utilit/class.smtp.php";
+		
 		$this->mail = new phpmailer();
 		$this->mail->PluginDir = $GLOBALS['babInstallPath']."utilit/";
 		$this->mail->From = $GLOBALS['babAdminEmail'];

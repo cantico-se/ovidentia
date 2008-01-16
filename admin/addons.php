@@ -65,15 +65,13 @@ function getAddonName($id)
 function callSingleAddonFunction($id,$name,$func)
 {
 
+	include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
+	
 	$addonpath = $GLOBALS['babAddonsPath'].$name;
 	if( is_file($addonpath."/init.php" ))
 		{
-		$GLOBALS['babAddonFolder'] = $name;
-		$GLOBALS['babAddonTarget'] = "addon/".$id;
-		$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$id."/";
-		$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$name."/";
-		$GLOBALS['babAddonHtmlPath'] = "addons/".$name."/";
-		$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath']."/addons/".$name."/";
+		bab_setAddonGlobals($id);
+		
 		require_once( $addonpath."/init.php" );
 		$call = $name."_".$func;
 		if( function_exists($call) )
@@ -108,6 +106,8 @@ function addonsList($upgradeall)
 
 		function temp($upgradeall)
 			{
+			include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
+			
 			$this->name = bab_translate("Name");
 			$this->desctxt = bab_translate("Description");
 			$this->upgradetxt = bab_translate("Upgrade");
@@ -132,10 +132,14 @@ function addonsList($upgradeall)
 					{
 					if (is_dir($GLOBALS['babAddonsPath'].$f) && is_file($GLOBALS['babAddonsPath'].$f."/init.php"))
 						{
-						$res = $this->db->db_query("select * from ".BAB_ADDONS_TBL." where title='".$f."' ORDER BY title ASC");
+						$res = $this->db->db_query("SELECT * FROM ".BAB_ADDONS_TBL." 
+						where title='".$this->db->db_escape_string($f)."' ORDER BY title ASC");
 						if( $res && $this->db->db_num_rows($res) < 1)
 							{
-							$this->db->db_query("insert into ".BAB_ADDONS_TBL." (title, enabled) values ('".$f."', 'Y')");
+								$this->db->db_query("
+								INSERT INTO ".BAB_ADDONS_TBL." (title, enabled) 
+								VALUES ('".$this->db->db_escape_string($f)."', 'Y')
+								");
 							}
 						}
 					}
@@ -149,14 +153,18 @@ function addonsList($upgradeall)
 				{
 				if (!is_dir($GLOBALS['babAddonsPath'].$row['title']) || !is_file($GLOBALS['babAddonsPath'].$row['title']."/init.php"))
 					{
-					$this->db->db_query("delete from ".BAB_ADDONS_TBL." where id='".$row['id']."'");
+					$this->db->db_query("delete from ".BAB_ADDONS_TBL." where id='".$this->db->db_escape_string($row['id'])."'");
 					aclDelete(BAB_ADDONS_GROUPS_TBL, $row['id']);
-					$this->db->db_query("delete from ".BAB_SECTIONS_ORDER_TBL." where id_section='".$row['id']."' and type='4'");
-					$this->db->db_query("delete from ".BAB_SECTIONS_STATES_TBL." where id_section='".$row['id']."' and type='4'");
+					$this->db->db_query("delete from ".BAB_SECTIONS_ORDER_TBL." where id_section='".$this->db->db_escape_string($row['id'])."' and type='4'");
+					$this->db->db_query("delete from ".BAB_SECTIONS_STATES_TBL." where id_section='".$this->db->db_escape_string($row['id'])."' and type='4'");
 					}
 				}
 			$this->res = $this->db->db_query("select * from ".BAB_ADDONS_TBL." ORDER BY title ASC");
 			$this->count = $this->db->db_num_rows($this->res);
+			
+			
+			bab_addonsInfos::clear();
+			
 			}
 
 		function getnext()
@@ -187,27 +195,22 @@ function addonsList($upgradeall)
 						$func_name = $this->arr['title']."_upgrade";
 						if (is_file($GLOBALS['babAddonsPath'].$this->arr['title']."/init.php"))
 							{
-							$GLOBALS['babAddonFolder'] = $this->arr['title'];
-							$GLOBALS['babAddonTarget'] = "addon/".$this->arr['id'];
-							$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$this->arr['id']."/";
-							$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$this->arr['title']."/";
-							$GLOBALS['babAddonHtmlPath'] = "addons/".$this->arr['title']."/";
-							$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath']."/addons/".$this->arr['title']."/";
-
-							require_once( $GLOBALS['babAddonsPath'].$this->arr['title']."/init.php" );
-
-							if (!function_exists($func_name))
-								{
-								$req = "update ".BAB_ADDONS_TBL." set version='".$arr_ini['version']."', installed='Y' where id='".$this->arr['id']."'";
-								$this->db->db_query($req);
-								$this->addversion = $arr_ini['version'];
-								$this->arr['installed'] = 'Y';
-								}
-							else
-								{
-								if ($this->arr['installed'] == 'Y') {
-									$this->db->db_query("UPDATE ".BAB_ADDONS_TBL." set installed='N' WHERE id='".$this->arr['id']."'");
-									$this->arr['installed'] = 'N';
+							if (bab_setAddonGlobals($this->arr['id'])) {
+								require_once( $GLOBALS['babAddonsPath'].$this->arr['title']."/init.php" );
+								
+								if (!function_exists($func_name))
+									{
+									$req = "update ".BAB_ADDONS_TBL." set version='".$arr_ini['version']."', installed='Y' where id='".$this->arr['id']."'";
+									$this->db->db_query($req);
+									$this->addversion = $arr_ini['version'];
+									$this->arr['installed'] = 'Y';
+									}
+								else
+									{
+									if ($this->arr['installed'] == 'Y') {
+										$this->db->db_query("UPDATE ".BAB_ADDONS_TBL." set installed='N' WHERE id='".$this->arr['id']."'");
+										$this->arr['installed'] = 'N';
+										}
 									}
 								}
 							}
@@ -253,7 +256,7 @@ function disableAddons($addons)
 		}
 		
 	$db->db_query("TRUNCATE bab_vac_calendar");
-
+	bab_siteMap::clearAll();
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=addons&idx=list");
 	exit;
 	}
@@ -271,6 +274,7 @@ function upgrade($id)
 		{
 		include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
 		include_once $GLOBALS['babInstallPath'].'utilit/upgradeincl.php';
+		include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
 
 		/*
 
@@ -303,25 +307,21 @@ function upgrade($id)
 			$func_name = $row['title']."_upgrade";
 			if ( '' == $row['version'] || version_compare($row['version'],$ini_version, '<') )
 				{
-				$GLOBALS['babAddonFolder'] = $row['title'];
-				$GLOBALS['babAddonTarget'] = "addon/".$row['id'];
-				$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$row['id']."/";
-				$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$row['title']."/";
-				$GLOBALS['babAddonHtmlPath'] = "addons/".$row['title']."/";
-				$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath']."/addons/".$row['title']."/";
-				require_once( $GLOBALS['babAddonsPath'].$row['title']."/init.php" );
-				if ((function_exists($func_name) && $func_name($row['version'],$ini_version)) || !function_exists($func_name))
-					{
-					$babDB->db_query("UPDATE ".BAB_ADDONS_TBL." set version='".$babDB->db_escape_string($ini_version)."',installed='Y' where id='".$babDB->db_escape_string($id)."'");
-
-					if (empty($row['version'])) {
-						$from_version = '0.0';
-					} else {
-						$from_version = $row['version'];
-					}
-					bab_setUpgradeLogMsg($row['title'], sprintf('The addon has been updated from %s to %s', $from_version, $ini_version));
-
-					return true;
+				if (bab_setAddonGlobals($row['id'])) {
+					require_once( $GLOBALS['babAddonsPath'].$row['title']."/init.php" );
+					if ((function_exists($func_name) && $func_name($row['version'],$ini_version)) || !function_exists($func_name))
+						{
+						$babDB->db_query("UPDATE ".BAB_ADDONS_TBL." set version='".$babDB->db_escape_string($ini_version)."',installed='Y' where id='".$babDB->db_escape_string($id)."'");
+	
+						if (empty($row['version'])) {
+							$from_version = '0.0';
+						} else {
+							$from_version = $row['version'];
+						}
+						bab_setUpgradeLogMsg($row['title'], sprintf('The addon has been updated from %s to %s', $from_version, $ini_version));
+	
+						return true;
+						}
 					}
 				}
 			else 

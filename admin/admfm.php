@@ -730,6 +730,7 @@ else if( isset($aclview))
 	{
 	maclGroups();
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
+	exit;
 	}
 
 switch($idx)

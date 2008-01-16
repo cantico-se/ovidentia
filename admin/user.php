@@ -570,7 +570,16 @@ function updatePassword($item, $newpwd1, $newpwd2)
 
 	$babDB->db_query("update ".BAB_USERS_TBL." set password='". md5(strtolower($newpwd1)). "' where id='". $item . "'");
 	$error = '';
-	bab_callAddonsFunctionArray('onUserChangePassword', array('id'=>$item, 'nickname'=>$nickname, 'password'=>$newpwd1, 'error'=>&$error));
+	
+	include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
+	bab_callAddonsFunctionArray('onUserChangePassword', array(
+		'id'=>$item, 
+		'nickname'=>$nickname, 
+		'password'=>$newpwd1, 
+		'error'=>&$error
+		)
+	);
+	
 	if( !empty($error))
 		{
 		$babBody->msgerror = $error;

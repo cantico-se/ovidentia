@@ -4225,6 +4225,80 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	bab_addEventListener('bab_eventLogout', 'bab_onEventLogout', 
 		'utilit/eventAuthentication.php', BAB_ADDON_CORE_NAME, 0);
 		
+	bab_addEventListener('bab_eventBeforeSiteMapCreated', 'bab_onBeforeSiteMapCreated', 
+		'utilit/sitemap_build.php', BAB_ADDON_CORE_NAME, 0);
+		
+		
+		
+	if (!bab_isTable(BAB_SITEMAP_TBL))  {
+		$babDB->db_query("
+			CREATE TABLE ".BAB_SITEMAP_TBL." (
+			   `id` int(11) unsigned NOT NULL auto_increment,
+			   `id_parent` int(11) unsigned DEFAULT '0' NOT NULL,
+			   `lf` int(11) unsigned DEFAULT '0' NOT NULL,
+			   `lr` int(11) unsigned DEFAULT '0' NOT NULL,
+			   `id_function` varchar(64) NOT NULL,
+			   PRIMARY KEY (`id`),
+			   KEY `id_parent` (`id_parent`),
+			   KEY `id_function` (`id_function`),
+			   KEY `lf` (`lf`),
+			   KEY `lr` (`lr`)
+			)
+		");
+	}
+	
+	
+	if (!bab_isTable(BAB_SITEMAP_FUNCTION_PROFILE_TBL))  {
+		$babDB->db_query("
+			CREATE TABLE ".BAB_SITEMAP_FUNCTION_PROFILE_TBL." (
+			   `id_function` varchar(64) NOT NULL,
+			   `id_profile` int(11) unsigned DEFAULT '0' NOT NULL,
+			   PRIMARY KEY (`id_function`, `id_profile`)
+			)
+		");
+	}
+	
+	
+	if (!bab_isTable(BAB_SITEMAP_FUNCTIONS_TBL))  {
+		$babDB->db_query("
+			CREATE TABLE ".BAB_SITEMAP_FUNCTIONS_TBL." (
+			   `id_function` varchar(64) NOT NULL,
+			   `url` varchar(255) NOT NULL,
+			   `onclick` varchar(255) NOT NULL,
+			   `folder` tinyint(1) unsigned NOT NULL default '0',
+			   PRIMARY KEY (`id_function`)
+			)
+		");
+	}
+	
+	
+	if (!bab_isTable(BAB_SITEMAP_FUNCTION_LABELS_TBL))  {
+		$babDB->db_query("
+			CREATE TABLE ".BAB_SITEMAP_FUNCTION_LABELS_TBL." (
+			   `id_function` varchar(64) NOT NULL,
+			   `lang` varchar(32) NOT NULL,
+			   `name` varchar(255) NOT NULL,
+			   `description` TEXT NOT NULL,
+			   PRIMARY KEY (`id_function`,`lang`)
+			)
+		");
+	}
+	
+	
+	if (!bab_isTable(BAB_SITEMAP_PROFILES_TBL))  {
+		$babDB->db_query("
+			CREATE TABLE ".BAB_SITEMAP_PROFILES_TBL." (
+			   `id` int(11) unsigned NOT NULL auto_increment,
+			   `uid_functions` int(11) unsigned NOT NULL,
+			   PRIMARY KEY (`id`)
+			)
+		");
+	}
+	
+	if (!bab_isTableField(BAB_USERS_TBL, 'id_sitemap_profile'))  {
+		$babDB->db_query("ALTER TABLE `".BAB_USERS_TBL."` ADD id_sitemap_profile int(11) unsigned NOT NULL");
+	}
+	
 
 	return true;
 }

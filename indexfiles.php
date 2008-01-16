@@ -67,9 +67,9 @@ function bab_indexJobs($idx, $object) {
 				break;
 
 			default:	// Addon
-				/*$addon_jobs = array();*/
-				bab_callAddonsFunction('onIndexObject', $object, $idx/*, $addon_jobs*/);
-				//$job = implode("\n", $addon_jobs);
+
+				include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
+				bab_callAddonsFunction('onIndexObject', $object, $idx);
 				break;
 		}
 

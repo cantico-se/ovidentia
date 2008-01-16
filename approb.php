@@ -723,13 +723,8 @@ function listWaitingAddons()
 
 		function _setGlobals($id,$title)
 			{
-			$GLOBALS['babAddonFolder'] = $title;
-			$GLOBALS['babAddonTarget'] = "addon/".$id;
-			$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$id."/";
-			$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$title."/";
-			$GLOBALS['babAddonHtmlPath'] = "addons/".$title."/";
-			$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath']."/addons/".$title."/";
-
+			include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
+			bab_setAddonGlobals($id);
 			$this->call = $title."_getWaitingItems";
 			}
 

@@ -32,6 +32,7 @@ include_once $babInstallPath.'utilit/addonapi.php';
 include_once $babInstallPath.'utilit/template.php';
 include_once $babInstallPath.'utilit/userincl.php';
 include_once $babInstallPath.'utilit/mailincl.php';
+include_once $babInstallPath.'utilit/sitemap.php';
 
 $babLdapEncodingTypes = array(0 => '', BAB_LDAP_UTF8_ISO_8859_1 => 'UTF8 -> ISO_8859_1', BAB_LDAP_T61_ISO_8859_1 => 'T61 -> ISO_8859_1');
 
@@ -337,101 +338,6 @@ function babLoadLanguage($lang, $folder, &$arr)
 	}
 
 
-/**
- * Calls a function defined in init.php for each addon.
- * 
- * For each addon, the string $functionName will be prefixed by the addon name and an underscore
- * if this function is defined in the addon's init.php, it will be called with
- * all the additional parameters passed to bab_callAddonsFunction.
- *
- * @param string $functionName	The addon function to call (without addon prefix)
- */
-function bab_callAddonsFunction($functionName)
-{
-	global $babBody;
-
-	// We store addon-related global variables 
-	$oldBabAddonFolder = isset($GLOBALS['babAddonFolder']) ? $GLOBALS['babAddonFolder'] : null;
-	$oldBabAddonTarget = isset($GLOBALS['babAddonTarget']) ? $GLOBALS['babAddonTarget'] : null;
-	$oldBabAddonUrl =  isset($GLOBALS['babAddonUrl']) ? $GLOBALS['babAddonUrl'] : null;
-	$oldBabAddonPhpPath =  isset($GLOBALS['babAddonPhpPath']) ? $GLOBALS['babAddonPhpPath'] : null;
-	$oldBabAddonHtmlPath =  isset($GLOBALS['babAddonHtmlPath']) ? $GLOBALS['babAddonHtmlPath'] : null;
-	$oldBabAddonUpload =  isset($GLOBALS['babAddonUpload']) ? $GLOBALS['babAddonUpload'] : null;
-
-	foreach ($babBody->babaddons as $key => $row)
-	{ 
-		if ($row['access'])
-		{
-			$addonPath = $GLOBALS['babAddonsPath'] . $row['title'];
-			if (is_file($addonPath . '/init.php'))
-			{
-				$GLOBALS['babAddonFolder'] = $row['title'];
-				$GLOBALS['babAddonTarget'] = 'addon/'.$row['id'];
-				$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript'].'?tg=addon/'.$row['id'].'/';
-				$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath'].'addons/'.$row['title'].'/';
-				$GLOBALS['babAddonHtmlPath'] = 'addons/'.$row['title'].'/';
-				$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath'].'/addons/'.$row['title'].'/';
-
-				require_once $addonPath . '/init.php';
-				$addonFunctionName = $row['title'] . '_' . $functionName;
-				if (!empty($addonFunctionName) && function_exists($addonFunctionName))
-				{
-					$args = func_get_args();
-					array_shift($args);
-					call_user_func_array($addonFunctionName, $args);
-				}
-			}
-		}
-	}
-
-	// We restore addon-related global variables 
-	$GLOBALS['babAddonFolder'] = $oldBabAddonFolder;
-	$GLOBALS['babAddonTarget'] = $oldBabAddonTarget;
-	$GLOBALS['babAddonUrl'] = $oldBabAddonUrl;
-	$GLOBALS['babAddonPhpPath'] = $oldBabAddonPhpPath;
-	$GLOBALS['babAddonHtmlPath'] = $oldBabAddonHtmlPath;
-	$GLOBALS['babAddonUpload'] = $oldBabAddonUpload;
-}
-
-
-function bab_callAddonsFunctionArray($func, $args)
-{
-	$babBody = & $GLOBALS['babBody'];
-
-	$oldBabAddonFolder = isset($GLOBALS['babAddonFolder'])? $GLOBALS['babAddonFolder']: '';
-	$oldBabAddonTarget = isset($GLOBALS['babAddonTarget'])? $GLOBALS['babAddonTarget']: '';
-	$oldBabAddonUrl =  isset($GLOBALS['babAddonUrl'])? $GLOBALS['babAddonUrl']: '';
-	$oldBabAddonPhpPath =  isset($GLOBALS['babAddonPhpPath'])? $GLOBALS['babAddonPhpPath']: '';
-	$oldBabAddonHtmlPath =  isset($GLOBALS['babAddonHtmlPath'])? $GLOBALS['babAddonHtmlPath']: '';
-	$oldBabAddonUpload =  isset($GLOBALS['babAddonUpload'])? $GLOBALS['babAddonUpload']: '';
-
-	foreach($babBody->babaddons as $key => $row)
-		{ 
-		$addonpath = $GLOBALS['babAddonsPath'].$row['title'];
-		if( is_file($addonpath.'/init.php' ))
-			{
-			$GLOBALS['babAddonFolder'] = $row['title'];
-			$GLOBALS['babAddonTarget'] = 'addon/'.$row['id'];
-			$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript'].'?tg=addon/'.$row['id'].'/';
-			$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath'].'addons/'.$row['title'].'/';
-			$GLOBALS['babAddonHtmlPath'] = 'addons/'.$row['title'].'/';
-			$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath'].'/addons/'.$row['title'].'/';
-			require_once( $addonpath.'/init.php' );
-			$call = $row['title'].'_'.$func;
-			if( function_exists($call) )
-				{
-				$call($args);
-				}
-			}
-		}
-
-	$GLOBALS['babAddonFolder'] = $oldBabAddonFolder;
-	$GLOBALS['babAddonTarget'] = $oldBabAddonTarget;
-	$GLOBALS['babAddonUrl'] = $oldBabAddonUrl;
-	$GLOBALS['babAddonPhpPath'] = $oldBabAddonPhpPath;
-	$GLOBALS['babAddonHtmlPath'] = $oldBabAddonHtmlPath;
-	$GLOBALS['babAddonUpload'] = $oldBabAddonUpload;
-}
 
 
 
@@ -699,7 +605,7 @@ function babpopup($txt) {
 function loadSections()
 {
 	
-	include $GLOBALS['babInstallPath'].'utilit/utilitsections.php';
+	include_once $GLOBALS['babInstallPath'].'utilit/utilitsections.php';
 	
 	global $babDB, $babBody, $BAB_SESS_LOGGED, $BAB_SESS_USERID;
 	$babSectionsType = isset($_SESSION['babSectionsType'])? $_SESSION['babSectionsType']:BAB_SECTIONS_ALL;
@@ -845,20 +751,15 @@ function loadSections()
 		$at = array_keys($arrsectionsbytype[$type]);
 		for($i=0; $i < count($at); $i++)
 			{
-				if( isset($babBody->babaddons[$at[$i]]))
+				if($arr2 = bab_addonsInfos::getRow($at[$i]))
 				{
-				$arr2 = $babBody->babaddons[$at[$i]];
 				$sectionid = $arr2['id'];
 				$objectid = $arrsectionsbytype[$type][$sectionid];
 
 				if( $arr2['access'] && is_file($GLOBALS['babAddonsPath'].$arr2['title'].'/init.php'))
 					{
-					$GLOBALS['babAddonFolder'] = $arr2['title'];
-					$GLOBALS['babAddonTarget'] = 'addon/'.$sectionid;
-					$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript'].'?tg=addon/'.$sectionid.'/';
-					$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath'].'addons/'.$arr2['title'].'/';
-					$GLOBALS['babAddonHtmlPath'] = 'addons/'.$arr2['title'].'/';
-					$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath'].'/addons/'.$arr2['title'].'/';
+					bab_setAddonGlobals($arr2['id']);
+					
 					require_once( $GLOBALS['babAddonsPath'].$arr2['title'].'/init.php' );
 					$func = $arr2['title'].'_onSectionCreate';
 					if(function_exists($func))
@@ -1878,4 +1779,8 @@ class babLanguageFilter
 $babBody = new babBody();
 $BAB_HASH_VAR='aqhjlongsmp';
 $babLangFilter = new babLanguageFilter();
+
+
+
+
 ?>

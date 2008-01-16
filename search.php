@@ -96,6 +96,8 @@ class bab_addonsSearch
 		{
 		global $babDB;
 		
+		include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
+		
 		$res = $babDB->db_query("select id,title from ".BAB_ADDONS_TBL." where enabled='Y' AND installed='Y'");
 		while (list($id,$title) = $babDB->db_fetch_array($res))
 			{
@@ -106,7 +108,7 @@ class bab_addonsSearch
 				$func_results = $title."_searchresults";
 
 				$this->titleAddons[$id] = $title;
-				$this->defineAddonGlobals($id);
+				bab_setAddonGlobals($id);
 
 				require_once($GLOBALS['babAddonsPath'].$title."/init.php");
 				if (function_exists($func_infos))
@@ -135,17 +137,6 @@ class bab_addonsSearch
 					}
 				}
 			}
-		}
-
-	function defineAddonGlobals($id)
-		{
-		$title = $this->titleAddons[$id];
-		$GLOBALS['babAddonFolder'] = $title;
-		$GLOBALS['babAddonTarget'] = "addon/".$id;
-		$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$id."/";
-		$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$title."/";
-		$GLOBALS['babAddonHtmlPath'] = "addons/".$title."/";
-		$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath']."/addons/".$title."/";
 		}
 
 	function getmenuarray()
@@ -190,7 +181,7 @@ class bab_addonsSearch
 			return false;
 		$this->i[$id]++;
 
-		$this->defineAddonGlobals($id);
+		bab_setAddonGlobals($id);
 		$func = $this->func_results[$id];
 		return $func($this->q1, $this->q2, $this->option, $this->pos[$id], $this->nb_result);
 		}

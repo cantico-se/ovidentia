@@ -1074,6 +1074,8 @@ function confirmDeletePersonnel($items)
 				$babDB->db_query("delete from ".BAB_VAC_ENTRIES_TBL." where id='".$babDB->db_escape_string($row['id_right'])."'");
 			}
 		$babDB->db_query("delete from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$babDB->db_escape_string($arr[$i])."'");
+		
+		bab_siteMap::clear($arr[$i]);
 		}
 	}
 

@@ -2,7 +2,7 @@
 <h5>{ head }</h5>
 	<ul>
 	<!--#in addUrl -->
-		<li><a href="{ val }">{ key }</a></li>
+		<li><a href="{ val }" <!--#if description --> title="{ description }"<!--#endif description -->>{ key }</a></li>
 	<!--#endin addUrl -->
 	<!--#in addAddonUrl -->
 		<li class="addon"><a href="{ val }">{ key }</a></li>
@@ -16,7 +16,7 @@
 <h5>{ login } <!--#if BAB_SESS_USER --> <strong> { BAB_SESS_USER }</strong><!--#endif BAB_SESS_USER --></h5>
 <ul>
 	<!--#in addUrl -->
-	<li><a href="{ url }">{ text }</a></li>
+	<li><a href="{ url }" <!--#if description --> title="{ description }"<!--#endif description -->>{ text }</a></li>
 	<!--#endin addUrl -->
 	<!--#in addAddonUrl -->
 	<li class="addon"><a href="{ url }">{ text }</a></li>

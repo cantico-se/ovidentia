@@ -830,6 +830,7 @@
 <string id="Vacation rights of:">Droits de congé de :</string>
 <string id="Vacation type">Type de congés</string>
 <string id="Vacation">Congés</string>
+<string id="Vacations">Congés</string>
 <string id="Vacations rights">Droits de congés</string>
 <string id="Vacations type's collections">Liste des régimes de congés</string>
 <string id="Vacations types">Types de congés</string>
@@ -1091,7 +1092,7 @@
 <string id="View log">Afficher l'historique du fichier</string>
 <string id="Change group">Changer de groupe</string>
 <string id="Delegation">Délégation</string>
-<string id="Currently you administer ">Vous administrez </string>
+<string id="Currently you administer %s">Vous administrez %s</string>
 <string id="all site">tout le site</string>
 <string id="Delegation group">Groupe de délégation</string>
 <string id="Are you sure you want to delete this group and all its objects">Êtes-vous sûr de vouloir supprimer ce groupe et tous ses objets</string>
@@ -2506,4 +2507,12 @@
 <string id="New name">Nouveau nom</string>
 <string id="Created/Updated on">Créé/Modifié le</string>
 <string id="Show the date and the author of the updated event">Afficher la date et l'auteur de la modification de l'événement</string>
+<string id="Validate waiting items">Valider les éléments en attente</string>
+<string id="List article topics where i am manager">Lister les thèmes d'articles que je gère</string>
+<string id="Last published items">Les derniers éléments publiés</string>
+<string id="Frequently Asked Questions">Questions les plus fréquemment posées</string>
+<string id="Access to file manager">Accès au gestionnaire de fichiers</string>
+<string id="Change administration delegation">Changer la délégation d'administration</string>
+<string id="Users management">Gestion des utilisateurs</string>
+<string id="Categories and topics management">Gestion des catégories et des thèmes</string>
 </fr>

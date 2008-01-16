@@ -195,6 +195,15 @@ if( $tg != "version" || !isset($idx) || $idx != "upgrade")
 	bab_isUserLogged();
 	bab_updateUserSettings();
 	$babLangFilter->translateTexts();
+	
+
+	/*
+	if (isset($_GET['clear'])) {
+		bab_siteMap::clearAll();
+		}
+	*/
+	
+	
 	}
 else
 	{
@@ -1096,6 +1105,8 @@ switch($tg)
 		$arr = explode("/", $tg);
 		if( sizeof($arr) >= 3 && $arr[0] == "addon")
 			{
+			include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
+			
 			if (!is_numeric($arr[1]))
 				{
 				foreach($GLOBALS['babBody']->babaddons as $k => $v)
@@ -1107,34 +1118,20 @@ switch($tg)
 						}
 					}
 				}
-			if(bab_isAccessValid(BAB_ADDONS_GROUPS_TBL, $arr[1]))
+			if(bab_isAddonAccessValid($arr[1]))
 				{
-				if( isset($babBody->babaddons[$arr[1]]))
-					{
-					$row = &$babBody->babaddons[$arr[1]];
+				$row = &$babBody->babaddons[$arr[1]];
+				$incl = "addons/".$row['title'];
 
-					$incl = "addons/".$row['title'];
-					if( is_dir( $GLOBALS['babInstallPath'].$incl))
-						{
-						$module = "";
-						for($i = 2; $i < sizeof($arr); $i++) {
-							$module .= "/".preg_replace("/[^A-Za-z0-9_\-]/", "", $arr[$i]);
-						}
-						$GLOBALS['babAddonFolder'] = $row['title'];
-						$GLOBALS['babAddonTarget'] = "addon/".$arr[1];
-						$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$arr[1]."/";
-						$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$row['title']."/";
-						$GLOBALS['babAddonHtmlPath'] = "addons/".$row['title']."/";
-						$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath']."/addons/".$row['title']."/";
-						$babWebStat->addon($row['title']);
-						$babWebStat->module($module);
-						$incl .= $module;
-						}
-					else
-						$incl = "entry";
-					}
-				else
-					$babBody->msgerror = bab_translate("The addon is disabled or not installed");
+				$module = "";
+				for($i = 2; $i < sizeof($arr); $i++) {
+					$module .= "/".preg_replace("/[^A-Za-z0-9_\-]/", "", $arr[$i]);
+				}
+				
+				bab_setAddonGlobals($arr[1]);
+				$babWebStat->addon($row['title']);
+				$babWebStat->module($module);
+				$incl .= $module;
 				}
 			else
 				$babBody->msgerror = bab_translate("Access denied");
@@ -1161,13 +1158,18 @@ switch($tg)
 		}
 		break;
 	}
+	
 
 if( !empty($incl))
 	{
 	include $babInstallPath."$incl.php";
 	}
 
+
 $babBody->loadSections();
+
+//bab_debug(get_included_files());
+
 printBody();
 unset($tg);
 ?>

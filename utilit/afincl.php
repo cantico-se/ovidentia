@@ -69,6 +69,7 @@ function updateSchemaInstance($idschi)
 			$babDB->db_query("insert into ".BAB_FAR_INSTANCES_TBL." (idschi, iduser, far_order) VALUES ('".$babDB->db_escape_string($idschi)."', '".$babDB->db_escape_string($rr[$j])."', '".$i."')");
 			}
 		$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET schi_change='1'");
+		bab_siteMap::clearAll();
 		}
 }
 
@@ -204,6 +205,7 @@ function deleteFlowInstance($idschi)
 	$babDB->db_query("delete from ".BAB_FAR_INSTANCES_TBL." where idschi='".$babDB->db_escape_string($idschi)."'");
 	$babDB->db_query("delete from ".BAB_FA_INSTANCES_TBL." where id='".$babDB->db_escape_string($idschi)."'");
 	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET schi_change='1'");
+	bab_siteMap::clearAll();
 }
 
 function updateFlowInstance($idschi, $iduser, $bool)
@@ -334,6 +336,7 @@ function updateFlowInstance($idschi, $iduser, $bool)
 
 	}
 	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET schi_change='1'");
+	bab_siteMap::clearAll();
 	return evalFlowInstance($idschi);
 }
 
@@ -414,6 +417,7 @@ function getWaitingIdsFlowInstance($scinfo, $idschi, $notify=false)
 	if( $notify)
 	{
 		$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET schi_change='1'");
+		bab_siteMap::clearAll();
 		return $notifytab;
 	}
 	else

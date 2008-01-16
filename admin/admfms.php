@@ -315,8 +315,14 @@ function updateFolders($notifies, $actives, $versions, $bhides)
 		{
 			$oFmFolder->setHide('N');	
 		}
+		
+		
+		
 		$oFmFolder->save();
 	}
+	
+	bab_siteMap::clearAll();
+	header('location:'.$GLOBALS['babUrlScript']."?tg=admfms&idx=list");
 }
 
 

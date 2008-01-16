@@ -500,6 +500,7 @@ function bab_deleteGroup($id)
 	/**
 	 * @deprecated
 	 */
+	include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
 	bab_callAddonsFunction('onGroupDelete', $id);
 }
 
@@ -523,6 +524,7 @@ function bab_deleteSetOfGroup($id)
 	$id += BAB_ACL_GROUP_TREE;
 
 	bab_deleteGroupAclTables($id);
+	include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
 	bab_callAddonsFunction('onGroupDelete', $id);
 	}
 
@@ -609,6 +611,7 @@ function bab_deleteUser($id)
 	/**
 	 * @deprecated
 	 */
+	include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
 	bab_callAddonsFunction('onUserDelete', $id);
 	
 	

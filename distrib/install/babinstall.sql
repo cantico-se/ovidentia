@@ -341,7 +341,7 @@ INSERT INTO bab_private_sections VALUES ('1', '0', 'Administration', 'This secti
 INSERT INTO bab_private_sections VALUES ('2', '1', 'Month', 'This section shows calendar month', 'Y', 'N');
 INSERT INTO bab_private_sections VALUES ('3', '0', 'Topics categories', 'This section lists topics', 'Y', 'N');
 INSERT INTO bab_private_sections VALUES ('4', '0', 'Forums', 'This section lists forums', 'Y', 'N');
-INSERT INTO bab_private_sections VALUES ('5', '1', 'User\'s section', 'This section is for User', 'Y', 'N');
+INSERT INTO bab_private_sections VALUES ('5', '1', 'User''s section', 'This section is for User', 'Y', 'N');
 
 # --------------------------------------------------------
 #
@@ -566,6 +566,7 @@ CREATE TABLE bab_users (
    db_authentification enum('N','Y') DEFAULT 'N' NOT NULL,
    cookie_validity datetime DEFAULT '0000-00-00 00:00:00',
    cookie_id varchar(255),
+   id_sitemap_profile int(11) unsigned NOT NULL,
    PRIMARY KEY (id),
    KEY nickname (nickname),
    KEY firstname (firstname),
@@ -573,7 +574,7 @@ CREATE TABLE bab_users (
    KEY hashname (hashname)
 );
 
-INSERT INTO bab_users VALUES ( '1', 'admin@admin.bab', 'Administrator', '', '200ceb26807d6bf99fd6f4f0d1ca54d4', 'admin@admin.bab', '2001-04-03 00:00:00', '22975d8a5ed1b91445f6c55ac121505b', '1', '', '0da8f2a37b9e7926e08196a6bd1baa29', '1', '0', '', '', '', '0000-00-00 00:00:00', '0000-00-00 00:00:00', '0', '', '', '','N','0000-00-00 00:00:00','');
+INSERT INTO bab_users VALUES ( '1', 'admin@admin.bab', 'Administrator', '', '200ceb26807d6bf99fd6f4f0d1ca54d4', 'admin@admin.bab', '2001-04-03 00:00:00', '22975d8a5ed1b91445f6c55ac121505b', '1', '', '0da8f2a37b9e7926e08196a6bd1baa29', '1', '0', '', '', '', '0000-00-00 00:00:00', '0000-00-00 00:00:00', '0', '', '', '','N','0000-00-00 00:00:00','','0');
 
 # --------------------------------------------------------
 #
@@ -3663,15 +3664,17 @@ CREATE TABLE `bab_event_listeners` (
 
 
 INSERT INTO `bab_event_listeners` (`id`, `event_class_name`, `function_name`, `require_file`, `addon_name`, `priority`) VALUES 
-(1, 'bab_eventBeforePeriodsCreated', 'bab_NWD_onCreatePeriods', 'utilit/nwdaysincl.php', 'core', 0),
-(2, 'bab_eventPeriodModified', 'bab_vac_onModifyPeriod', 'utilit/vacincl.php', 'core', 0),
-(3, 'bab_eventEditors', 'bab_onEventEditors', 'utilit/editorincl.php', 'core', 0),
-(4, 'bab_eventEditorFunctions', 'bab_onEditorFunctions', 'utilit/editorincl.php', 'core', 0),
-(5, 'bab_eventEditorContentToEditor', 'htmlarea_onContentToEditor', 'utilit/htmlareaincl.php', 'core', 100),
-(6, 'bab_eventEditorRequestToContent', 'htmlarea_onRequestToContent', 'utilit/htmlareaincl.php', 'core', 100),
-(7, 'bab_eventEditorContentToHtml', 'htmlarea_onContentToHtml', 'utilit/htmlareaincl.php', 'core', 100),
-(8, 'bab_eventLogin', 'bab_onEventLogin', 'utilit/eventAuthentication.php', 'core', 0),
-(9, 'bab_eventLogout', 'bab_onEventLogout', 'utilit/eventAuthentication.php', 'core', 0);
+(1, 'bab_eventBeforePeriodsCreated'		, 'bab_NWD_onCreatePeriods'			, 'utilit/nwdaysincl.php'			, 'core', 0),
+(2, 'bab_eventPeriodModified'			, 'bab_vac_onModifyPeriod'			, 'utilit/vacincl.php'				, 'core', 0),
+(3, 'bab_eventEditors'					, 'bab_onEventEditors'				, 'utilit/editorincl.php'			, 'core', 0),
+(4, 'bab_eventEditorFunctions'			, 'bab_onEditorFunctions'			, 'utilit/editorincl.php'			, 'core', 0),
+(5, 'bab_eventEditorContentToEditor'	, 'htmlarea_onContentToEditor'		, 'utilit/htmlareaincl.php'			, 'core', 100),
+(6, 'bab_eventEditorRequestToContent'	, 'htmlarea_onRequestToContent'		, 'utilit/htmlareaincl.php'			, 'core', 100),
+(7, 'bab_eventEditorContentToHtml'		, 'htmlarea_onContentToHtml'		, 'utilit/htmlareaincl.php'			, 'core', 100),
+(8, 'bab_eventLogin'					, 'bab_onEventLogin'				, 'utilit/eventAuthentication.php'	, 'core', 0),
+(9, 'bab_eventLogout'					, 'bab_onEventLogout'				, 'utilit/eventAuthentication.php'	, 'core', 0);
+(10,'bab_eventBeforeSiteMapCreated'		, 'bab_onBeforeSiteMapCreated'		, 'utilit/sitemap_build.php'		, 'core', 0);
+
 
 
 CREATE TABLE `bab_upgrade_messages` (
@@ -3697,6 +3700,7 @@ CREATE TABLE bab_dg_acl_groups (
    KEY id_object (id_object),
    KEY id_group (id_group)
 );
+
 
 # --------------------------------------------------------
 #
@@ -3786,4 +3790,58 @@ CREATE TABLE bab_def_topcatview_groups (
   PRIMARY KEY  (id),
   KEY id_object (id_object),
   KEY id_group (id_group)
+);
+
+
+
+
+# --------------------------------------------------------
+#
+# Sitemap
+#
+
+CREATE TABLE bab_sitemap (
+   `id` int(11) unsigned NOT NULL auto_increment,
+   `id_parent` int(11) unsigned DEFAULT '0' NOT NULL,
+   `lf` int(11) unsigned DEFAULT '0' NOT NULL,
+   `lr` int(11) unsigned DEFAULT '0' NOT NULL,
+   `id_function` varchar(64) NOT NULL,
+   PRIMARY KEY (`id`),
+   KEY `id_parent` (`id_parent`),
+   KEY `id_function` (`id_function`),
+   KEY `lf` (`lf`),
+   KEY `lr` (`lr`)
+);
+
+
+
+CREATE TABLE bab_sitemap_function_profile (
+   `id_function` varchar(64) NOT NULL,
+   `id_profile` int(11) unsigned DEFAULT '0' NOT NULL,
+   PRIMARY KEY (`id_function`, `id_profile`)
+);
+
+
+CREATE TABLE bab_sitemap_functions (
+   `id_function` varchar(64) NOT NULL,
+   `url` varchar(255) NOT NULL,
+   `onclick` varchar(255) NOT NULL,
+   `folder` tinyint(1) unsigned NOT NULL default '0',
+   PRIMARY KEY (`id_function`)
+);
+
+
+CREATE TABLE bab_sitemap_function_labels (
+   `id_function` varchar(64) NOT NULL,
+   `lang` varchar(32) NOT NULL,
+   `name` varchar(255) NOT NULL,
+   `description` TEXT NOT NULL,
+   PRIMARY KEY (`id_function`,`lang`)
+);
+
+
+CREATE TABLE bab_sitemap_profiles (
+   `id` int(11) unsigned NOT NULL auto_increment,
+   `uid_functions` int(11) unsigned NOT NULL,
+   PRIMARY KEY (`id`)
 );

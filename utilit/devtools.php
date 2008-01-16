@@ -96,22 +96,22 @@ function getHtml()
 // Used in addons from 5.4.2
 function bab_isAddonInstalled($name = '')
 {
-if (empty($name))
-	$name = $GLOBALS['babAddonFolder'];
-foreach ($GLOBALS['babBody']->babaddons as $value)
-	if ($value['title'] == $name)
-		{
-		$version_base = $value['version'];
-		break;
-		}
-
-if (isset($version_base))
-	{
-	$arr_ini = @parse_ini_file( $GLOBALS['babAddonsPath'].$name.'/addonini.php');
-	if ($arr_ini['version'] == $version_base)
-		return true;
+	include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
+	if (empty($name)) {
+		$name = $GLOBALS['babAddonFolder'];
 	}
-return false;
+		
+	$addons = bab_addonsInfos::getRows();
+		
+	foreach ($addons as $value) {
+	
+		if ($value['title'] == $name) {
+			return bab_isAddonAccessValid($value['id']);
+		}
+	}
+	
+
+	return false;
 }
 
 // Used in addons from 5.4.2

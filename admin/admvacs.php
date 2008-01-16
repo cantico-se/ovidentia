@@ -85,6 +85,8 @@ function recordVacationManager($userids, $params)
 	foreach($userids as $id) {
 		$babDB->db_query("INSERT into ".BAB_VAC_MANAGERS_TBL." (id_user) values (".$babDB->quote($id).")");
 	}
+	
+	bab_siteMap::clearAll();
 }
 
 

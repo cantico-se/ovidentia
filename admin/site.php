@@ -1622,7 +1622,10 @@ function siteUpdate_menu1()
 			
 		where id='".$babDB->db_escape_string($_POST['item'])."'";
 
-	$babDB->db_query($req);
+	$res = $babDB->db_query($req);
+	if (0 != $babDB->db_affected_rows($res)) {
+		bab_siteMap::clearAll();
+	}
 
 	return $_POST['item'];
 }

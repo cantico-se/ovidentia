@@ -284,8 +284,10 @@ class bab_Addon extends bab_handler
 				break;
 				}
 			}
+			
+		include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
 
-		if( $addonid && isset($babBody->babaddons[$addonid]) && $babBody->babaddons[$addonid]['access'] )
+		if( $addonid && bab_isAddonAccessValid($addonid))
 			{
 			$addonpath = $GLOBALS['babAddonsPath'].$babBody->babaddons[$addonid]['title'];
 			if( is_file($addonpath."/ovml.php" ))
@@ -298,12 +300,7 @@ class bab_Addon extends bab_handler
 				$this->AddonHtmlPath =  isset($GLOBALS['babAddonHtmlPath'])? $GLOBALS['babAddonHtmlPath']: '';
 				$this->AddonUpload =  isset($GLOBALS['babAddonUpload'])? $GLOBALS['babAddonUpload']: '';
 
-				$GLOBALS['babAddonFolder'] = $babBody->babaddons[$addonid]['title'];
-				$GLOBALS['babAddonTarget'] = "addon/".$addonid;
-				$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$addonid."/";
-				$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$babBody->babaddons[$addonid]['title']."/";
-				$GLOBALS['babAddonHtmlPath'] = "addons/".$babBody->babaddons[$addonid]['title']."/";
-				$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath']."/addons/".$babBody->babaddons[$addonid]['title']."/";
+				bab_setAddonGlobals($addonid);
 				require_once( $addonpath."/ovml.php" );
 
 				$call = $babBody->babaddons[$addonid]['title']."_ovml";
@@ -6050,12 +6047,7 @@ function bab_Addon($args)
 				$oldAddonHtmlPath =  isset($GLOBALS['babAddonHtmlPath'])? $GLOBALS['babAddonHtmlPath']: '';
 				$oldAddonUpload =  isset($GLOBALS['babAddonUpload'])? $GLOBALS['babAddonUpload']: '';
 
-				$GLOBALS['babAddonFolder'] = $babBody->babaddons[$addonid]['title'];
-				$GLOBALS['babAddonTarget'] = "addon/".$addonid;
-				$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$addonid."/";
-				$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$babBody->babaddons[$addonid]['title']."/";
-				$GLOBALS['babAddonHtmlPath'] = "addons/".$babBody->babaddons[$addonid]['title']."/";
-				$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath']."/addons/".$babBody->babaddons[$addonid]['title']."/";
+				bab_setAddonGlobals($addonid);
 				require_once( $addonpath."/ovml.php" );
 
 				$call = $babBody->babaddons[$addonid]['title']."_".$function;

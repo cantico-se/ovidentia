@@ -418,6 +418,7 @@ function maclGroups()
 
 	unset($_SESSION['bab_groupAccess']['acltables']);
 	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
+	bab_siteMap::clearAll();
 	
 	if (!isset($_SESSION['bab_acl_tablelist'])) {
 		return;
@@ -514,6 +515,7 @@ function aclDelete($table, $id_object)
 	global $babDB;
 	$babDB->db_query("DELETE FROM ".$babDB->db_escape_string($table)." WHERE id_object='".$babDB->db_escape_string($id_object)."'");
 	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
+	bab_siteMap::clearAll();
 	}
 
 /**
@@ -532,6 +534,7 @@ function aclSetGroups_all($table, $id_object)
 	global $babDB;
 	$babDB->db_query("INSERT INTO ".$babDB->db_escape_string($table)."  (id_object, id_group) VALUES ('".$babDB->db_escape_string($id_object)."', '".BAB_ALLUSERS_GROUP."')");
 	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
+	bab_siteMap::clearAll();
 	}
 
 function aclSetGroups_registered($table, $id_object)
@@ -539,6 +542,7 @@ function aclSetGroups_registered($table, $id_object)
 	global $babDB;
 	$babDB->db_query("INSERT INTO ".$babDB->db_escape_string($table)."  (id_object, id_group) VALUES ('".$babDB->db_escape_string($id_object)."', '".BAB_REGISTERED_GROUP."')");
 	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
+	bab_siteMap::clearAll();
 	}
 
 function aclSetGroups_unregistered($table, $id_object)
@@ -546,6 +550,7 @@ function aclSetGroups_unregistered($table, $id_object)
 	global $babDB;
 	$babDB->db_query("INSERT INTO ".$babDB->db_escape_string($table)."  (id_object, id_group) VALUES ('".$babDB->db_escape_string($id_object)."', '".BAB_UNREGISTERED_GROUP."')");
 	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
+	bab_siteMap::clearAll();
 	}
 
 
@@ -624,6 +629,7 @@ function aclGetAccessUsers($table, $id_object) {
 	}
 	
 	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
+	bab_siteMap::clearAll();
 }
 
 /**
