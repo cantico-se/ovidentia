@@ -51,6 +51,7 @@ class listFiles
 	var $sListFunctionName = '';
 	
 	var $bParentUrl = false;
+	var $sParentTitle = '';
 	var $sParent = '. .';
 	var $bVersion = false;
 
@@ -66,10 +67,15 @@ class listFiles
 	
 	function listFiles($what="list")
 	{
-		function bab_compareFmFiles($f1, $f2)
-		{
-			return strcasecmp($f1['sName'], $f2['sName']);
+		if(!function_exists('bab_compareFmFiles'))
+		{		
+			function bab_compareFmFiles($f1, $f2)
+			{
+				return strcasecmp($f1['sName'], $f2['sName']);
+			}
 		}
+		
+		$this->sParentTitle = bab_translate("Parent");
 		
 		global $babBody, $babDB, $BAB_SESS_USERID;
 		include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
