@@ -197,11 +197,11 @@ if( $tg != "version" || !isset($idx) || $idx != "upgrade")
 	$babLangFilter->translateTexts();
 	
 
-	///*
+	/*
 	if (isset($_GET['clear'])) {
 		bab_siteMap::clearAll();
 		}
-	//*/
+	*/
 	
 	
 	}

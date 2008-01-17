@@ -183,8 +183,7 @@ function printout()
 
 class babAdminSection extends babSectionTemplate
 {
-var $array_urls = array();
-var $addon_urls = array();
+
 var $head;
 var $foot;
 var $key;
@@ -234,13 +233,16 @@ function addUrl()
 
 function addAddonUrl()
 	{
+	
+	
+	
 	if (!$this->babAdminSectionAddons) {
 		return false;
 	}
 
 	$item = $this->babAdminSectionAddons->getData();
-	$this->url = bab_toHtml($item->url);
-	$this->text = bab_toHtml($item->name);
+	$this->val = bab_toHtml($item->url);
+	$this->key = bab_toHtml($item->name);
 	$this->babAdminSectionAddons = $this->babAdminSectionAddons->nextSibling();
 	return true;
 	}

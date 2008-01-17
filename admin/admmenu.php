@@ -243,9 +243,12 @@ function bab_sitemap_adminSection(&$event) {
 					{
 					$arr = bab_getAddonsMenus($row, "getAdminSectionMenus");
 					reset ($arr);
-					while (list ($txt, $url) = each ($arr))
+					while (list ($txt, $url) = each($arr))
 						{
-						$addon_urls[$txt] = $url;
+						$addon_urls[$txt] = array(
+							'url' => $url,
+							'uid' => $row['title'].sprintf('_%u',crc32($url))
+							);
 						}
 					}
 				}
