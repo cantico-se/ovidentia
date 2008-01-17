@@ -1044,10 +1044,6 @@ window.onload = function()
 	</p>
 	</td>
 	</tr>
-	<tr> 
-		<td colspan="2" align="center"><input type="submit" name="badd" value="{ addtxt }" onclick="javascript:stepSubmitForm('fadd','propform');">
-		</td>
-	</tr>
 	<!--#if countfiles -->
 	<tr class="BabSiteAdminTitleFontBackground">
 		<td><b>{ t_file }</b></td>
@@ -1059,14 +1055,19 @@ window.onload = function()
 	<!--#in getnextfile -->
 		<li id="file_{ idfile }">
 		<span class="handle"><img src="{ babSkinPath }images/Puces/PuceArrowDown.gif" alt="{ t_dragmessage }" border="0" title="{ t_dragmessage }" style="cursor:move;"></span>
-		<a title="{ deletetxt }" href="{ deleteurl }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/del.gif" alt="{ deletetxt }" border="0"></a>&nbsp;&nbsp;<a href="{ urlfile }">{ name }</a>&nbsp;&nbsp;{ docdesc }
+		<input type="checkbox" name="dfiles[]" value="{ idfile }"} />&nbsp;&nbsp;<a href="{ urlfile }">{ name }</a>&nbsp;&nbsp;{ docdesc }
 		</li>
 	<!--#endin getnextfile -->
 		</ul>
+		<br />{ t_deletemessage_user }&nbsp;!
 		<br />{ t_dragmessage_user }&nbsp;!
 		</td>
 	</tr>
 	<!--#endif countfiles -->
+	<tr> 
+		<td colspan="2" align="center"><input type="submit" name="badd" value="{ addtxt }" onclick="javascript:stepSubmitForm('fadd','propform');">
+		</td>
+	</tr>
 	</table>
 </td>
 </tr>

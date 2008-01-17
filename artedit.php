@@ -881,6 +881,7 @@ function showSetArticleProperties($idart)
 				$this->t_description = bab_translate("Description");
 				$this->t_dragmessage = bab_translate("To order files, drag and drop here");
 				$this->t_dragmessage_user = bab_translate("To order files, drag and drop and don't forget to save");
+				$this->t_deletemessage_user = bab_translate("To delete files use checkboxes");
 				$this->t_index_status = bab_translate("Indexation");
 
 				if( $arr['id_topic'] != 0 && bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $arr['id_topic']))
@@ -1029,6 +1030,18 @@ function showSetArticleProperties($idart)
 						$this->notifymembers = true;
 						$this->notifytitle = bab_translate("Notification");
 						$this->notifmtxt = bab_translate("Notify users once the article is published ");
+						if( isset($_POST['updstep3']) ) 
+							{
+							if( isset($_POST['notifm']) && $_POST['notifm'] == 'Y')
+								{
+								$arr['notify_members'] = 'Y';
+								}
+							else
+								{
+								$arr['notify_members'] = 'N';
+								}
+							}
+
 						if( $arr['notify_members'] == 'Y')
 							{
 							$this->cnotifmcheck = 'checked';
@@ -1054,6 +1067,18 @@ function showSetArticleProperties($idart)
 						$this->resgrp = $babDB->db_query("select r.* from ".BAB_TOPICSVIEW_GROUPS_TBL." r,".BAB_GROUPS_TBL." g where r.id_object='".$babDB->db_escape_string($this->drafttopic)."' AND r.id_group = g.id AND g.lf>='3'");
 						if( $this->resgrp )
 							{
+							if( isset($_POST['updstep3'])) 
+								{
+								if( isset($_POST['notifm']) && $_POST['notifm'] == 'Y')
+									{
+									$arr['notify_members'] = 'Y';
+									}
+								else
+									{
+									$arr['notify_members'] = 'N';
+									}
+								}
+
 							$this->countgrp = $babDB->db_num_rows($this->resgrp);
 							if( strchr($arr['restriction'], "&"))
 								{
@@ -1099,6 +1124,26 @@ function showSetArticleProperties($idart)
 						$this->hpagestitle = bab_translate("Home pages");
 						$this->hpage0txt = bab_translate("Add to unregistered users home page");
 						$this->hpage1txt = bab_translate("Add to registered users home page");
+						if( isset($_POST['updstep3'])) 
+							{
+							if( isset($_POST['hpage0']) && $_POST['hpage0'] == 'Y')
+								{
+								$arr['hpage_private'] = 'Y';
+								}
+							else
+								{
+								$arr['hpage_private'] = 'N';
+								}
+							if( isset($_POST['hpage1']) && $_POST['hpage0'] == 'Y')
+								{
+								$arr['hpage_public'] = 'Y';
+								}
+							else
+								{
+								$arr['hpage_public'] = 'N';
+								}
+							}
+
 						if( $arr['hpage_private'] == 'Y' )
 							{
 							$this->chpage0check = "checked";
@@ -1178,7 +1223,7 @@ function showSetArticleProperties($idart)
 					if( $arrtop['allow_attachments'] == 'Y' )
 						{
 						$this->allowattachments  = true;
-						$this->addtxt = bab_translate("Add");
+						$this->addtxt = bab_translate("Update");
 						$this->filetxt = bab_translate("File");
 						$this->desctxt = bab_translate("Description");
 						$this->filetitle = bab_translate("Associated documents");
@@ -1509,7 +1554,7 @@ function delDocumentArticleDraft( $idart, $idf )
 	if( !$access )
 		{
 		echo bab_translate("Access denied");
-		return;
+		return false;
 		}
 
 	$res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_FILES_TBL." where id='".$babDB->db_escape_string($idf)."' and id_draft='".$babDB->db_escape_string($idart)."'");
@@ -1521,6 +1566,7 @@ function delDocumentArticleDraft( $idart, $idf )
 		unlink($fullpath);
 		$babDB->db_query("delete from ".BAB_ART_DRAFTS_FILES_TBL." where id='".$babDB->db_escape_string($idf)."'");
 		}
+	return true;
 	}
 
 
@@ -1741,7 +1787,7 @@ function updateArticleDraft($idart, $title,  $lang, $approbid, &$message)
 }
 
 
-function addDocumentArticleDraft($idart, &$message)
+function updateDocumentsArticleDraft($idart, &$message)
 {
 	global $babDB, $BAB_SESS_USERID, $babMaxFileSize;
 	$res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_TBL." where id='".$babDB->db_escape_string($idart)."' and id_author='".$babDB->db_escape_string($BAB_SESS_USERID)."'");
@@ -1751,6 +1797,16 @@ function addDocumentArticleDraft($idart, &$message)
 		include_once $GLOBALS['babInstallPath']."utilit/fileincl.php";
 
 		$okfiles = 0;
+		$dfiles = bab_pp('dfiles', array());
+		if( count($dfiles))
+			{
+			for( $i = 0; $i < count($dfiles); $i++ )
+				{
+				delDocumentArticleDraft($idart, $dfiles[$i]);
+				$okfiles++;
+				}
+			}
+
 		$errfiles = array();
 		foreach ($_FILES as $file) 
 			{
@@ -2369,7 +2425,7 @@ elseif( $updstep3 = bab_rp('updstep3') )
 		if( isset($_POST['idart']) && $_POST['idart'] != 0 )
 		{
 		$message = '';
-		if( addDocumentArticleDraft($_POST['idart'], $message) )
+		if( updateDocumentsArticleDraft($_POST['idart'], $message) )
 			{
 			//Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=s3&idart=".$_POST['idart']);
 			//exit;
@@ -2387,7 +2443,7 @@ elseif( $updstep3 = bab_rp('updstep3') )
 		if( isset($_GET['idart']) && $_GET['idart'] != 0 )
 		{
 		delDocumentArticleDraft( $_GET['idart'], $_GET['idf'] );
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=s3&idart=".$_GET['idart']);
+		//Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=s3&idart=".$_GET['idart']);
 		}
 		$idx='s3';
 	}
