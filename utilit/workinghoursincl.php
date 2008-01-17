@@ -690,32 +690,70 @@ class bab_userWorkingHours {
 		
 		// si pas d'agenda utilisateur
 		if (!$this->id_users) {
+		
 
-			$available = true;
-			
 			foreach($this->boundaries as $ts => $events) {
+				
+				$nb_unAvailable = 0;
 				foreach($events as $event) {
 					if ($event->ts_end > $test_begin && $event->ts_begin < $test_end) {
 						if (!$event->isAvailable()) {
-							$available = false;
+							$nb_unAvailable++;
 						}
 					}
 				}
+				
+				if ($nb_unAvailable > 0 && NULL === $previous) {
+					// autoriser la creation d'une nouvelle periode à partir de $test_begin
+					$previous = $test_begin;
+				}
+				
+				
+				if (0 === $nb_unAvailable) {
+					// autoriser la creation d'une nouvelle periode à partir de $ts
+					$previous = $ts;
+				}
+				
+				
+				if ($nb_unAvailable > 0 && false !== $previous && $previous < $ts) {
+					
+					$periods[$previous.'.'.$ts] = new bab_calendarPeriod($previous, $ts, BAB_PERIOD_NONWORKING);
+					
+					// tant que les boundaries sont unavailable, interdire la creation de nouvelles periodes
+					$previous = false;
+				}
 			}
-
-			if ($available) {
+			
+			
+			// si $previous est encore = à NULL, il n'y a aucun evenements qui genere de la non disponibilité
+			if (NULL === $previous) {
+			
 				$period_availability = true;
-				$periods[$test_begin.'.'.$test_end] = new bab_calendarPeriod($test_begin, $test_end, BAB_PERIOD_NONWORKING);
-				return $periods;
+		
+				// autoriser la creation d'une nouvelle periode à partir de $test_begin
+				$previous = $test_begin;
 			}
+			
+
+			if (false !== $previous && $previous < $test_end) {
+				$periods[$previous.'.'.$test_end] = new bab_calendarPeriod($previous, $test_end, BAB_PERIOD_NONWORKING);
+			}
+			
+			return $periods;
 		}
 		
 		
 		
+		// si agenda utilisateur
+		
 		foreach($this->boundaries as $ts => $events) {
 
-			// toutes les personnes disponibles
-			$users_non_available = $this->id_users;
+			// toutes les personnes disponibles sur le boundary
+			if ($this->id_users) {
+				$users_non_available = $this->id_users;
+			} else {
+				$users_non_available = array();
+			}
 			$working_period = false;
 
 			
@@ -740,15 +778,16 @@ class bab_userWorkingHours {
 					} else {
 						// autres, ex jours feriés, considérer l'utilisateur courrant comme associé à l'evenement
 						$id_users = array($GLOBALS['BAB_SESS_USERID']);
-						
 					}
+					
+					
 					
 					if ($event->isAvailable()) {
 						// l'evenement est dispo, retirer les utilisateurs de l'evenement de la liste des utilisateurs non dispo du boundary
 						foreach($id_users as $id_user) {
 							if (isset($users_non_available[$id_user]) 
-							&& true !== $users_non_available[$id_user]) {
-							
+											&& true !== $users_non_available[$id_user]) {
+											
 								unset($users_non_available[$id_user]);
 							}
 						}
@@ -763,17 +802,13 @@ class bab_userWorkingHours {
 				}
 			}
 			
+			// boolean : le boundary est disponible pour tout le monde
 			$boundary_free_for_all = 0 === count($users_non_available) && $working_period;
 
-
-
-			// bab_debug($ts.' -- '.bab_shortDate($ts).' --> '.$current.' -- count users_non_available : '.count($users_non_available));
-
-
+			// bab_debug($ts.' -- '.bab_shortDate($ts).' --- '.$previous.' -->  count users_non_available : '.count($users_non_available));
 
 			if (!$boundary_free_for_all && NULL !== $previous) {
 
-			
 				// au moins 1 evenement pas dispo dans le boundary, fermer la periode de dispo
 			
 				$tmp_begin 	= $previous < $test_begin ? $test_begin : $previous; 
@@ -783,14 +818,14 @@ class bab_userWorkingHours {
 					$periods[$tmp_begin.'.'.$tmp_end] = new bab_calendarPeriod($tmp_begin, $tmp_end, BAB_PERIOD_NONWORKING);
 				}
 				$previous = NULL;
-				//bab_debug('non-free '.bab_shortDate($ts));
+				// bab_debug('non-free '.bab_shortDate($ts));
 			}
 
 
 			if ($boundary_free_for_all && NULL === $previous) {
 				// tout les utilisateurs sont dispo sur tout les evenements du boundary, démarrer la periode de dispo
 				$previous = $ts; 
-				//bab_debug('free '.bab_shortDate($ts));
+				// bab_debug('free '.bab_shortDate($ts));
 			}
 		}
 		

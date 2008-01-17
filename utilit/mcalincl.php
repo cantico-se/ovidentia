@@ -245,6 +245,10 @@ class bab_mcalendars
 	 */
 	function getNextFreeEvent($whObj, $startdate, $enddate, &$arr, $gap=0)
 		{
+		
+		
+		
+		
 		static $freeevents = array();
 		if (!isset($freeevents[$startdate.$enddate])) {
 			$freeevents[$startdate.$enddate] = $whObj->getAvailabilityBetween(bab_mktime($startdate), bab_mktime($enddate), $gap);
