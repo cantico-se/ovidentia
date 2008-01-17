@@ -133,7 +133,13 @@
 <!--#end postcreate -->
 
 <!--#begin postedit -->
-<form name="posted" method="post" action="{ babPhpSelf }">
+<!--#if allow_post_files -->
+<form name="postcr" method="post" action="{ babPhpSelf }" enctype="multipart/form-data">
+<input type="hidden" name="MAX_FILE_SIZE" value="{ maxfilesize }">
+<input type="hidden" name="files_fields" value="1">
+<!--#else allow_post_files -->
+<form name="postcr" method="post" action="{ babPhpSelf }">
+<!--#endif allow_post_files -->
 <input type="hidden" name="tg" value="posts">
 <input type="hidden" name="idx" value="Waiting">
 <input type="hidden" name="forum" value="{ forum }">
@@ -158,6 +164,62 @@
 	<tr>
 		<td colspan="2">
 			{ editor }
+<!--#if allow_post_files -->
+		<script type="text/javascript">
+		<!--
+		function add_field()
+			{
+			var f = document.forms['postcr'];
+			var d = document.getElementById('post_addfiles');
+			var n = parseInt(f.files_fields.value);
+
+			f.files_fields.value = n  + 1;
+
+			var p = document.createElement("p");
+			d.appendChild(p);
+
+			var input = document.createElement("input");
+			input.type = 'file';
+			input.name = 'file'+(n+1);
+			input.size = 60;
+
+			p.appendChild(input);
+			}
+
+		function remove_field()
+			{
+			var f = document.forms['postcr'];
+			var d = document.getElementById('post_addfiles');
+			var n = parseInt(f.files_fields.value);
+			var inputs = d.getElementsByTagName('p');
+			if (n > 0)
+				{
+				f.files_fields.value = n - 1;
+				
+				d.removeChild(inputs[(inputs.length-1)]);
+				}
+			}
+		//-->
+		</script>
+
+		<h4>{ t_files }:</h4>
+		<!--#if countfiles -->
+		{ t_files_delete_txt }
+		<!--#in getnextfile -->
+		<dd>
+			<input type="checkbox" name="dfiles[]" value="{ file_name }"} /><a href="{ file_url }">{ file_name }</a> 
+			<span>( { file_size } )</span>
+		</dd>
+		<!--#endin getnextfile -->
+		<!--#endif countfiles -->
+		<div id="post_addfiles">
+			<p><input type="file" name="file0" size="60"/></p>
+		</div>
+		<p>
+			<a href="javascript:add_field()">{ t_add_field }</a> - 
+			<a href="javascript:remove_field()">{ t_remove_field }</a>
+		</p>
+<!--#endif allow_post_files -->
 		</td>
 	</tr>
 	<tr>

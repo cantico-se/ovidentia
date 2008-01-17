@@ -876,6 +876,10 @@ function editPost($forum, $thread, $post)
 				$this->name = bab_translate("Name");
 				$this->message = bab_translate("Message");
 				$this->update = bab_translate("Update reply");
+				$this->t_files = bab_translate("Dependent files");
+				$this->t_add_field = bab_translate("Add field");
+				$this->t_remove_field = bab_translate("Remove field");
+				$this->t_files_delete_txt = bab_translate("To delete files use checkboxes");
 				$this->forum = bab_toHtml($forum);
 				$this->thread = bab_toHtml($thread);
 				$this->post = bab_toHtml($post);
@@ -890,11 +894,31 @@ function editPost($forum, $thread, $post)
 				$this->access = 1;
 				$this->author = bab_toHtml($this->arr['author']);
 				$this->subjectval = bab_toHtml($this->arr['subject']);
+
+				$this->maxfilesize = $GLOBALS['babMaxFileSize'];
+				$this->files = bab_getPostFiles($forum,$post);
+				$this->countfiles = count($this->files);
+				$this->allow_post_files = bab_isAccessValid(BAB_FORUMSFILES_GROUPS_TBL,$forum);
 				}
 			else
 				{
 				$this->access = 0;
 				}
+			}
+
+		function getnextfile()
+			{
+			if ($this->file = current($this->files))
+				{
+				$this->file_url = bab_toHtml($this->file['url']);
+				$this->file_name = bab_toHtml($this->file['name']);
+				$this->file_size = bab_toHtml($this->file['size']);
+				$this->file_index_label = bab_toHtml($this->file['index_label']);
+				next($this->files);
+				return true;
+				}
+			else
+				return false;
 			}
 		}
 
@@ -1140,6 +1164,23 @@ function updateReply($forum, $thread, $subject, $post)
 		$req = "UPDATE ".BAB_POSTS_TBL." set message='".$babDB->db_escape_string($message)."', subject='".$babDB->db_escape_string($subject)."', dateupdate=now() where id='".$babDB->db_escape_string($post)."'";
 
 		$res = $babDB->db_query($req);
+
+		if (bab_isAccessValid(BAB_FORUMSFILES_GROUPS_TBL,$forum))
+			{
+			$dfiles = bab_pp('dfiles', array());
+			if( count($dfiles))
+				{
+				$files = bab_getPostFiles($forum,$post);
+				foreach($files as $f)
+					{
+					if( in_array($f['name'], $dfiles))
+						{
+						@unlink($f['path']);
+						}
+					}
+				}
+			bab_uploadPostFiles($post, $forum);
+			}
 		}
 
 	}
