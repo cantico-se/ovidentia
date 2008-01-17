@@ -4237,7 +4237,7 @@ class BAB_FileManagerEnv
 					}
 					else if(true === canUpload($sParentPath) || true === canDownload($sParentPath) || true === canUpdate($sParentPath))
 					{
-						if('N' === $this->oFmFolder->getHide() && 'Y' === $this->oFmFolder->getActive())
+						if(/*'N' === $this->oFmFolder->getHide() &&*/ 'Y' === $this->oFmFolder->getActive())
 						{					
 							return true;
 						}
