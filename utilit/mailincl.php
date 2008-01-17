@@ -117,8 +117,8 @@ class babMail
 
 	function babMail()
 	{
-		include_once $babInstallPath."utilit/class.phpmailer.php";
-		include_once $babInstallPath."utilit/class.smtp.php";
+		include_once $GLOBALS['babInstallPath']."utilit/class.phpmailer.php";
+		include_once $GLOBALS['babInstallPath']."utilit/class.smtp.php";
 		
 		$this->mail = new phpmailer();
 		$this->mail->PluginDir = $GLOBALS['babInstallPath']."utilit/";
