@@ -244,16 +244,32 @@
 
 
 				function bab_calopt_clearclass(td) {
+					
+					ctd = td;
 					cc = td.className;
-					while (cc == td.className) {
-						td = td.previousSibling;
+					
+					while (ctd) {
+						if (ctd.nodeName == 'TD' && cc != ctd.className) {
+							break;
+						}
+						ctd = ctd.previousSibling;
 					}
 
-					td = td.nextSibling;
+					if (ctd) {
+						ctd = ctd.nextSibling;
+					} else {
+						ctd = td.parentNode.firstChild;
+					}
+					
 
-					while (cc == td.className) {
-						td.className = '';
-						td = td.nextSibling;
+					while (ctd) {
+						if (ctd.nodeName == 'TD') {
+							if (cc != ctd.className) {
+								break;
+							}
+							ctd.className = '';
+						}
+						ctd = ctd.nextSibling;
 					}
 				}
 				
@@ -469,6 +485,15 @@
 			<select name="usebgcolor">
 				<option value="Y" <!--#if arr[usebgcolor] "== Y" -->selected<!--#endif arr[usebgcolor] -->>{ yes }</option>
 				<option value="N" <!--#if arr[usebgcolor] "== N" -->selected<!--#endif arr[usebgcolor] -->>{ no }</option>
+			</select>
+		</td>
+	</tr>
+	<tr> 
+		<td align="right">{ showupdateinfo }</td>
+		<td> 
+			<select name="showupdateinfo">
+				<option value="Y" <!--#if arr[show_update_info] "== Y" -->selected<!--#endif arr[show_update_info] -->>{ yes }</option>
+				<option value="N" <!--#if arr[show_update_info] "== N" -->selected<!--#endif arr[show_update_info] -->>{ no }</option>
 			</select>
 		</td>
 	</tr>
