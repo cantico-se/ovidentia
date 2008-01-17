@@ -32,6 +32,7 @@ include_once $babInstallPath.'utilit/artincl.php';
 include_once $babInstallPath.'utilit/vacincl.php';
 include_once $babInstallPath.'utilit/evtincl.php';
 include_once $babInstallPath.'utilit/calincl.php';
+include_once $babInstallPath.'utilit/forumincl.php';
 
 include_once $babInstallPath.'utilit/eventincl.php';
 
@@ -1251,22 +1252,22 @@ function updateConfirmationWaitingPost($thread, $post)
 	$post = intval($post);
 	if( $thread && $post )
 		{
-		$babDB->db_query("update ".BAB_THREADS_TBL." set lastpost='".$babDB->db_escape_string($post)."' where id='".$babDB->db_escape_string($thread)."'");
-		$babDB->db_query("update ".BAB_POSTS_TBL." set confirmed='Y', date_confirm=now() where id='".$babDB->db_escape_string($post)."'");
-
 		$res = $babDB->db_query("select tt.forum, tt.starter, tt.notify, pt.subject from ".BAB_THREADS_TBL." tt left join ".BAB_POSTS_TBL." pt on tt.post=pt.id where tt.id='".$babDB->db_escape_string($thread)."'");
 		$arrf = $babDB->db_fetch_array($res);
-		$arrpost = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_POSTS_TBL." where id='".$babDB->db_escape_string($post)."'"));
-		include_once $GLOBALS['babInstallPath']."utilit/forumincl.php";
-		if( $arrf['notify'] == "Y" && $arrf['starter'] != 0)
+		$action = bab_pp('action', '');
+
+		if( $action !== '' )
 			{
-			$res = $babDB->db_query("select email from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($arrf['starter'])."'");
-			$arr = $babDB->db_fetch_array($res);
-			$email = $arr['email'];
-			notifyThreadAuthor($arrf['subject'], $email, $arrpost['author']);
+			if( $action == 1 ) // Confirm
+				{
+					bab_confirmPost($arrf['forum'], $thread, $post);
+				}
+			else // refuse
+				{
+					bab_deletePost($arrf['forum'], $post);
+				}
 			}
-		$url = $GLOBALS['babUrlScript'] ."?tg=posts&idx=List&forum=".$arrf['forum']."&thread=".$thread."&flat=1&views=1";
-		notifyForumGroups($arrf['forum'], $arrpost['subject'], $arrpost['author'], bab_getForumName($arrf['forum']), array(BAB_FORUMSNOTIFY_GROUPS_TBL), $url);
+
 		}
 	}
 

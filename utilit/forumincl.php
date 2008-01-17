@@ -596,4 +596,71 @@ function bab_generatePagination( $num_items, $per_page, $start_item, $add_prevne
 	return $page_array;
 }
 
+
+function bab_confirmPost($forum, $thread, $post)
+	{
+	global $babDB;
+	$req = "update ".BAB_THREADS_TBL." set lastpost='".$babDB->db_escape_string($post)."' where id='".$babDB->db_escape_string($thread)."'";
+	$res = $babDB->db_query($req);
+
+	$req = "update ".BAB_POSTS_TBL." set confirmed='Y', date_confirm=now() where id='".$babDB->db_escape_string($post)."'";
+	$res = $babDB->db_query($req);
+
+	$req = "select * from ".BAB_THREADS_TBL." where id='".$babDB->db_escape_string($thread)."'";
+	$res = $babDB->db_query($req);
+	$arr = $babDB->db_fetch_array($res);
+
+	$arrpost = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_POSTS_TBL." where id='".$babDB->db_escape_string($post)."'"));
+
+	if( $arr['notify'] == "Y" && $arr['starter'] != 0)
+		{
+		$req = "select email from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($arr['starter'])."'";
+		$res = $babDB->db_query($req);
+		$arr = $babDB->db_fetch_array($res);
+		$email = $arr['email'];
+
+		notifyThreadAuthor(bab_getForumThreadTitle($thread), $email, $arrpost['author']);
+		}
+	$url = $GLOBALS['babUrlScript'] ."?tg=posts&idx=List&forum=".$forum."&thread=".$thread."&flat=1&views=1";
+	notifyForumGroups($forum, $arrpost['subject'], $arrpost['author'], bab_getForumName($forum), array(BAB_FORUMSNOTIFY_GROUPS_TBL), $url);
+	}
+
+function bab_deletePost($forum, $post)
+	{
+	global $babDB;
+
+	include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
+	$req = "select * from ".BAB_POSTS_TBL." where id='".$babDB->db_escape_string($post)."'";
+	$res = $babDB->db_query($req);
+	$arr = $babDB->db_fetch_array($res);
+	
+
+	if( $arr['id_parent'] == 0)
+		{
+		/* if it's the only post in the thread, delete the thread also */
+		bab_deleteThread($forum, $arr['id_thread']);
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=threads&forum=".$forum);
+		}
+	else
+		{
+		bab_deletePostFiles($forum, $post);
+		$req = "delete from ".BAB_POSTS_TBL." where id = '".$babDB->db_escape_string($post)."'";
+		$res = $babDB->db_query($req);
+
+		$req = "select lastpost from ".BAB_THREADS_TBL." where id='".$babDB->db_escape_string($arr['id_thread'])."'";
+		$res = $babDB->db_query($req);
+		$arr2 = $babDB->db_fetch_array($res);
+		if( $arr2['lastpost'] == $post ) // it's the lastpost
+			{
+			$req = "select id from ".BAB_POSTS_TBL." where id_thread='".$babDB->db_escape_string($arr['id_thread'])."' order by date desc";
+			$res = $babDB->db_query($req);
+			$arr2 = $babDB->db_fetch_array($res);
+			$req = "update ".BAB_THREADS_TBL." set lastpost='".$babDB->db_escape_string($arr2['id'])."' where id='".$babDB->db_escape_string($arr['id_thread'])."'";
+			$res = $babDB->db_query($req);
+			}
+
+		}
+
+	}
+
 ?>
