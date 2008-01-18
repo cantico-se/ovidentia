@@ -1514,6 +1514,11 @@ function updateVacationRight()
 					}
 				}
 			}
+			
+			
+		if (!isset($post['active'])) {
+			$post['active'] = 'N';
+		}
 
 		$babDB->db_query("
 		
@@ -1587,6 +1592,10 @@ function updateVacationRight()
 		if( 0 === count($idusers) ) {
 			$babBody->msgerror = bab_translate("The personnel assignement is empty");
 			return false;
+		}
+		
+		if (!isset($post['active'])) {
+			$post['active'] = 'N';
 		}
 
     
