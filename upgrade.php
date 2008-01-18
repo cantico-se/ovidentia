@@ -34,7 +34,7 @@ function getUploadPathFromDataBase()
 		$sUploadPath = (string) $aData['uploadpath'];
 		$sUploadPath = realpath($sUploadPath);
 		$iLength = strlen(trim($sUploadPath));
-		if($iLength && '/' !== $sUploadPath{$iLength - 1})
+		if($iLength && '/' !== $sUploadPath{$iLength - 1} && '\\' !== $sUploadPath{$iLength - 1})
 		{
 			$sUploadPath .= '/';
 			return $sUploadPath;
@@ -113,7 +113,7 @@ function fmUpgrade()
 					`id_dgowner` iIdDgOwner
 				FROM ' .
 					BAB_FM_FOLDERS_TBL;
-		
+
 			$oResult = $babDB->db_query($sQuery);
 			if(false !== $oResult)
 			{
@@ -164,7 +164,8 @@ function fmUpgrade()
 					}
 				}
 			}
-			updateUsersFolderFilePathName();
+
+			updateUsersFolderFilePathName($sUploadPath);
 			return true;
 		}
 	}
@@ -216,10 +217,10 @@ function updateFolderFilePathName($iIdDgOwner, $iIdOwner, $sGroup, $sDirName)
 	return true;
 }
 
-function updateUsersFolderFilePathName()
+function updateUsersFolderFilePathName($sUploadPath)
 {
 	$babDB = &$GLOBALS['babDB'];
-	
+
 	$sQuery = 
 		'SELECT 
 			`id` iId,
@@ -228,31 +229,79 @@ function updateUsersFolderFilePathName()
 			BAB_FILES_TBL . '
 		WHERE 
 			`bgroup` = \'' . $babDB->db_escape_string('N') . '\'';
-
+	
 	$oResult = $babDB->db_query($sQuery);
 	if(false !== $oResult)
 	{
-		$aDatas = array();
+		$aBuffer = array();
 		while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
 		{
-			$sPathName = $aDatas['sPathName'];
-			if(strlen(trim($sPathName)) > 0)
+			if(preg_match('/(U\d+\/)(.*)/', $aDatas['sPathName'], $aBuffer))
 			{
-				$sPathName .= '/';
+				$sPathName = $aBuffer[2];
+				$sQuery = 
+					'UPDATE ' . 
+						BAB_FILES_TBL . '
+					SET 
+						`path` = \'' . $babDB->db_escape_string($sPathName) . '\', 
+						`iIdDgOwner` = \'' . $babDB->db_escape_string(0) . '\' 
+					WHERE 
+						`id` = \'' . $babDB->db_escape_string($aDatas['iId']) . '\'';
+				
+				$babDB->db_query($sQuery);
+				
+				$sOldPath = $sUploadPath . $aBuffer[1];
+				if(is_dir(realpath($sOldPath)))
+				{
+					$sUserUploadPath = $sUploadPath . 'fileManager/users/';
+					$sNewPath = $sUserUploadPath . $aBuffer[1];
+					if(false === rename(realpath($sOldPath), $sNewPath))
+					{
+						$babBody->addError('The directory: ' . $sOldPath . ' have not been renamed to ' . $sNewPath);
+						return false;
+					}
+				}
 			}
-			
-			$sQuery = 
-				'UPDATE ' . 
-					BAB_FILES_TBL . '
-				SET 
-					`path` = \'' . $babDB->db_escape_string($sPathName) . '\', 
-					`iIdDgOwner` = \'' . $babDB->db_escape_string(0) . '\' 
-				WHERE 
-					`id` = \'' . $babDB->db_escape_string($aDatas['iId']) . '\'';
-					
-			$babDB->db_query($sQuery);
 		}		
 	}
+	
+	
+	//Just to be sure to process all the personnal folder, the auto_add_file will do the remaining 
+	{
+		$aBuffer = array();
+		
+		$oDir = dir($sUploadPath);
+		while(false !== ($sEntry = $oDir->read())) 
+		{
+			// Skip pointers
+			if($sEntry == '.' || $sEntry == '..') 
+			{
+				continue;
+			}
+			else if(is_dir($sUploadPath . $sEntry))
+			{
+				if(preg_match('/(U\d+)/', $sEntry, $aBuffer))
+				{
+					$sOldPath = $sUploadPath . $aBuffer[1];
+					if(is_dir(realpath($sOldPath)))
+					{
+						$sUserUploadPath = $sUploadPath . 'fileManager/users/';
+						$sNewPath = $sUserUploadPath . $aBuffer[1];
+						if(!is_dir($sNewPath))
+						{
+							if(false === rename(realpath($sOldPath), $sNewPath))
+							{
+								$babBody->addError('The directory: ' . $sOldPath . ' have not been renamed to ' . $sNewPath);
+								return false;
+							}
+						}
+					}
+				}
+			}
+		}
+		$oDir->close();
+	}
+
 	return true;
 }
 
@@ -342,87 +391,7 @@ function updateFmFromPreviousUpgrade()
 			
 			
 			//Personnal folders processing
-			
-			$sQuery = 
-				'SELECT 
-					`id` iId,
-					`path` sPathName
-				FROM ' .
-					BAB_FILES_TBL . '
-				WHERE 
-					`bgroup` = \'' . $babDB->db_escape_string('N') . '\'';
-			
-			$oResult = $babDB->db_query($sQuery);
-			if(false !== $oResult)
-			{
-				$aBuffer = array();
-				while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
-				{
-					if(preg_match('/(U\d+\/)(.*)/', $aDatas['sPathName'], $aBuffer))
-					{
-						$sPathName = $aBuffer[2];
-						$sQuery = 
-							'UPDATE ' . 
-								BAB_FILES_TBL . '
-							SET 
-								`path` = \'' . $babDB->db_escape_string($sPathName) . '\', 
-								`iIdDgOwner` = \'' . $babDB->db_escape_string(0) . '\' 
-							WHERE 
-								`id` = \'' . $babDB->db_escape_string($aDatas['iId']) . '\'';
-						
-						$babDB->db_query($sQuery);
-						
-						$sOldPath = $sUploadPath . $aBuffer[1];
-						if(is_dir(realpath($sOldPath)))
-						{
-							$sUserUploadPath = $sUploadPath . 'fileManager/users/';
-							$sNewPath = $sUserUploadPath . $aBuffer[1];
-							if(false === rename(realpath($sOldPath), $sNewPath))
-							{
-								$babBody->addError('The directory: ' . $sOldPath . ' have not been renamed to ' . $sNewPath);
-								return false;
-							}
-						}
-					}
-				}		
-			}
-			
-			
-			//Just to be sure to process all the personnal folder, the auto_add_file will do the remaining 
-			{
-				$aBuffer = array();
-				
-				$oDir = dir($sUploadPath);
-				while(false !== ($sEntry = $oDir->read())) 
-				{
-					// Skip pointers
-					if($sEntry == '.' || $sEntry == '..') 
-					{
-						continue;
-					}
-					else if(is_dir($sUploadPath . $sEntry))
-					{
-						if(preg_match('/(U\d+)/', $sEntry, $aBuffer))
-						{
-							$sOldPath = $sUploadPath . $aBuffer[1];
-							if(is_dir(realpath($sOldPath)))
-							{
-								$sUserUploadPath = $sUploadPath . 'fileManager/users/';
-								$sNewPath = $sUserUploadPath . $aBuffer[1];
-								if(!is_dir($sNewPath))
-								{
-									if(false === rename(realpath($sOldPath), $sNewPath))
-									{
-										$babBody->addError('The directory: ' . $sOldPath . ' have not been renamed to ' . $sNewPath);
-										return false;
-									}
-								}
-							}
-						}
-					}
-				}
-				$oDir->close();
-			}
+			updateUsersFolderFilePathName($sUploadPath);			
 		}
 	}	
 	else 
