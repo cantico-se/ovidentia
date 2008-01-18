@@ -73,10 +73,17 @@ class bab_siteMap_item {
 	
 	/**
 	 * Set link attributes
+	 * record a relative url
+	 *
 	 * @param	string	$href
 	 * @param	string	$onclick
 	 */
 	function setLink($href, $onclick = '') {
+	
+		if (0 === strpos($href, $GLOBALS['babUrl'])) {
+			$href = substr($href, strlen($GLOBALS['babUrl']));
+		}
+	
 		$this->href = $href;
 		$this->onclick = $onclick;
 	}
