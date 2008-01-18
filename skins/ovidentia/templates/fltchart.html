@@ -156,31 +156,12 @@ top.document.frames['fr'].document.location.reload();
 <table border="0" cellpadding="0" cellspacing="3" align="center" class="BabLoginCadreBackground">
 <tr>
 <td> 
-<img name="photo" src="{ urlimg }" border="0" alt="{ name }">
+	<img name="photo" src="{ urlimg }" border="0" alt="{ name }" width="200" />
 </td>
 </tr>
 </table>
 </center>
-<script type="text/javascript">
-<!--
-function redimimg()
-	{
-	var w = 200;
-	var photo = document.images['photo'];
-	if (photo.width < w || typeof photo.width != 'number')
-		{
-		setTimeout('redimimg()',200);
-		return;
-		}
-	if (photo.width > w)
-		{
-		photo.height = (w*photo.height)/photo.width;
-		photo.width = w;
-		}
-	}
-	redimimg();
-//-->
-</script>
+
 <!--#endif showph -->
 <!--#if access -->
 <br>
