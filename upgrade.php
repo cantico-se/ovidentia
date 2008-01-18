@@ -4105,6 +4105,7 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		}
 		else 
 		{
+			$babDB->db_query("ALTER TABLE ".BAB_FM_FOLDERS_TBL." DROP `sRelativePath`");
 			return false;
 		}
 	}
