@@ -574,27 +574,7 @@ function selectAll(list)
 <tr align="center"> 
 <td colspan="2" class="BabSiteAdminFontBackground">
 <!--#if showph -->
-<img name="photo" src="{ urlimg }" border="0" alt="{ name }">
-<script type="text/javascript">
-<!--
-function redimimg()
-		{
-		var w = 200;
-		var photo = document.images['photo'];
-		if (photo.width < w || typeof photo.width != 'number')
-			{
-			setTimeout('redimimg()',200);
-			return;
-			}
-		if (photo.width > w)
-			{
-			photo.height = (w*photo.height)/photo.width;
-			photo.width = w;
-			}
-		}
-		redimimg();
-//-->
-</script>
+<img name="photo" src="{ urlimg }" border="0" alt="{ name }" width="200" />
 <!--#endif showph --></td>
 </tr>
 <!--#in getnextfield -->
@@ -761,30 +741,11 @@ window.focus();
 		<td align="center" colspan="2">
 		<br>
 		<!--#if showph -->
-		<img name="photo" src="{ urlimg }" border="0" alt="{ name }" /><br />
+		<img name="photo" src="{ urlimg }" border="0" alt="{ name }" width="200" /><br />
 		<!--#if delph -->
 		<b>{ delete }&nbsp;:</b>&nbsp;&nbsp;<input type="checkbox" name="photod" value="delete" />
 		<!--#endif delph -->
-		<script type="text/javascript">
-		<!--
-		function redimimg()
-		{
-		var w = 200;
-		var photo = document.images['photo'];
-		if (photo.width < w || typeof photo.width != 'number')
-			{
-			setTimeout('redimimg()',200);
-			return;
-			}
-		if (photo.width > w)
-			{
-			photo.height = (w*photo.height)/photo.width;
-			photo.width = w;
-			}
-		}
-		redimimg();
-		//-->
-		</script>
+		
 		<!--#endif showph -->
 		<!--#if modify -->
 		<p><b><!--#if phrequired "== Y" -->*&nbsp;<!--#endif phrequired -->{ file }:</b>&nbsp;&nbsp;<input type="file" name="photof" size="40" maxlength="255" value="" /></p>
