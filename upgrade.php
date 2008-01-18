@@ -34,7 +34,7 @@ function getUploadPathFromDataBase()
 		$sUploadPath = (string) $aData['uploadpath'];
 		$sUploadPath = realpath($sUploadPath);
 		$iLength = strlen(trim($sUploadPath));
-		if($iLength && '/' !== $sUploadPath{$iLength - 1})
+		if($iLength && '/' !== $sUploadPath{$iLength - 1} && '\\' !== $sUploadPath{$iLength - 1})
 		{
 			$sUploadPath .= '/';
 			return $sUploadPath;
@@ -48,10 +48,11 @@ function createFmDirectories($sUploadPath)
 	$sCollectiveUploadPath = $sUploadPath . 'fileManager/collectives/';
 	$sUserUploadPath = $sUploadPath . 'fileManager/users/';
 	
+	global $babBody;
+	
 	if(!is_writable($sUploadPath))
 	{
-		echo __LINE__ . ' ' . basename(__FILE__) . ' ' .  
-			' The directory ' . $sUploadPath . ' is not writable <br />';
+		$babBody->addError('The directory ' . $sUploadPath . ' is not writable');
 		return false;
 	}
 	
@@ -65,29 +66,25 @@ function createFmDirectories($sUploadPath)
 			$bCollDirCreated = mkdir($sUploadPath . 'fileManager/collectives', 0777);
 			if(false === $bCollDirCreated)
 			{
-				echo __LINE__ . ' ' . basename(__FILE__) . ' ' .
-					' The directory: ' . $sUploadPath . 'fileManager/collectives have not been created <br />';
+				$babBody->addError('The directory: ' . $sUploadPath . 'fileManager/collectives have not been created');
 			}
 			
 			$bUserDirCreated = mkdir($sUploadPath . 'fileManager/users', 0777);
 			if(false === $bCollDirCreated)
 			{
-				echo __LINE__ . ' ' . basename(__FILE__) . ' ' . 
-					' The directory: ' . $sUploadPath . 'fileManager/users have not been created <br />';
+				$babBody->addError('The directory: ' . $sUploadPath . 'fileManager/users have not been created');
 			}
 		}
 		else
 		{
-			echo __LINE__ . ' ' . basename(__FILE__) . ' ' . 
-				' The directory: ' . $sUploadPath . 'fileManager have not been created <br />';
+			$babBody->addError('The directory: ' . $sUploadPath . 'fileManager have not been created');
 		}
 		return ($bCollDirCreated && $bUserDirCreated);
 	}
 	else 
 	{
-		echo __LINE__ . ' ' . basename(__FILE__) . ' ' . 
-			' The upgrade of the file manager have not been made because the directory ' . 
-			$sUploadPath . 'fileManager already exist <br />';
+		$babBody->addError('The upgrade of the file manager have not been made because the directory ' . 
+			$sUploadPath . 'fileManager already exist');
 	}
 	return false;
 }
@@ -100,11 +97,13 @@ function fmUpgrade()
 {
 	$babDB = &$GLOBALS['babDB'];
 	$sUploadPath = getUploadPathFromDataBase();
-	$sCollectiveUploadPath 	= $sUploadPath . 'fileManager/collectives/';
+	$sCollectiveUploadPath = $sUploadPath . 'fileManager/collectives/';
+
+	global $babBody;
 
 	if(is_dir($sUploadPath))
 	{
-		if(createFmDirectories($sUploadPath))
+		if(true === createFmDirectories($sUploadPath))
 		{
 			$sQuery = 
 				'SELECT 
@@ -114,7 +113,7 @@ function fmUpgrade()
 					`id_dgowner` iIdDgOwner
 				FROM ' .
 					BAB_FM_FOLDERS_TBL;
-		
+
 			$oResult = $babDB->db_query($sQuery);
 			if(false !== $oResult)
 			{
@@ -131,8 +130,8 @@ function fmUpgrade()
 						{
 							if(false === mkdir($sNewPath, 0777))
 							{
-								echo __LINE__ . ' ' . basename(__FILE__) . ' ' . 
-									' The directory: ' . $sNewPath . ' have not been created <br />';
+								$babBody->addError('The directory: ' . $sNewPath . ' have not been created');
+								return false;
 							}
 						}
 						
@@ -158,21 +157,23 @@ function fmUpgrade()
 							}
 							else 
 							{
-								echo __LINE__ . ' ' . basename(__FILE__) . ' ' .
-									' The directory : ' . $sOldPath . ' have not been renamed to ' . $sNewPath . '<br />';
+								$babBody->addError('The directory : ' . $sOldPath . ' have not been renamed to ' . $sNewPath);
+								return false;
 							}
 						}
 					}
 				}
 			}
-			updateUsersFolderFilePathName();
+
+			updateUsersFolderFilePathName($sUploadPath);
+			return true;
 		}
 	}
 	else 
 	{
-		echo __LINE__ . ' ' . basename(__FILE__) . ' ' . 
-			' The upload path: ' . $sUploadPath . ' is not valid <br />';
+		$babBody->addError('The upload path: ' . $sUploadPath . ' is not valid');
 	}
+	return false;
 }
 
 function updateFolderFilePathName($iIdDgOwner, $iIdOwner, $sGroup, $sDirName)
@@ -213,12 +214,13 @@ function updateFolderFilePathName($iIdDgOwner, $iIdOwner, $sGroup, $sDirName)
 			$babDB->db_query($sQuery);
 		}		
 	}
+	return true;
 }
 
-function updateUsersFolderFilePathName()
+function updateUsersFolderFilePathName($sUploadPath)
 {
 	$babDB = &$GLOBALS['babDB'];
-	
+
 	$sQuery = 
 		'SELECT 
 			`id` iId,
@@ -227,31 +229,80 @@ function updateUsersFolderFilePathName()
 			BAB_FILES_TBL . '
 		WHERE 
 			`bgroup` = \'' . $babDB->db_escape_string('N') . '\'';
-
+	
 	$oResult = $babDB->db_query($sQuery);
 	if(false !== $oResult)
 	{
-		$aDatas = array();
+		$aBuffer = array();
 		while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
 		{
-			$sPathName = $aDatas['sPathName'];
-			if(strlen(trim($sPathName)) > 0)
+			if(preg_match('/(U\d+\/)(.*)/', $aDatas['sPathName'], $aBuffer))
 			{
-				$sPathName .= '/';
+				$sPathName = $aBuffer[2];
+				$sQuery = 
+					'UPDATE ' . 
+						BAB_FILES_TBL . '
+					SET 
+						`path` = \'' . $babDB->db_escape_string($sPathName) . '\', 
+						`iIdDgOwner` = \'' . $babDB->db_escape_string(0) . '\' 
+					WHERE 
+						`id` = \'' . $babDB->db_escape_string($aDatas['iId']) . '\'';
+				
+				$babDB->db_query($sQuery);
+				
+				$sOldPath = $sUploadPath . $aBuffer[1];
+				if(is_dir(realpath($sOldPath)))
+				{
+					$sUserUploadPath = $sUploadPath . 'fileManager/users/';
+					$sNewPath = $sUserUploadPath . $aBuffer[1];
+					if(false === rename(realpath($sOldPath), $sNewPath))
+					{
+						$babBody->addError('The directory: ' . $sOldPath . ' have not been renamed to ' . $sNewPath);
+						return false;
+					}
+				}
 			}
-			
-			$sQuery = 
-				'UPDATE ' . 
-					BAB_FILES_TBL . '
-				SET 
-					`path` = \'' . $babDB->db_escape_string($sPathName) . '\', 
-					`iIdDgOwner` = \'' . $babDB->db_escape_string(0) . '\' 
-				WHERE 
-					`id` = \'' . $babDB->db_escape_string($aDatas['iId']) . '\'';
-					
-			$babDB->db_query($sQuery);
 		}		
 	}
+	
+	
+	//Just to be sure to process all the personnal folder, the auto_add_file will do the remaining 
+	{
+		$aBuffer = array();
+		
+		$oDir = dir($sUploadPath);
+		while(false !== ($sEntry = $oDir->read())) 
+		{
+			// Skip pointers
+			if($sEntry == '.' || $sEntry == '..') 
+			{
+				continue;
+			}
+			else if(is_dir($sUploadPath . $sEntry))
+			{
+				if(preg_match('/(U\d+)/', $sEntry, $aBuffer))
+				{
+					$sOldPath = $sUploadPath . $aBuffer[1];
+					if(is_dir(realpath($sOldPath)))
+					{
+						$sUserUploadPath = $sUploadPath . 'fileManager/users/';
+						$sNewPath = $sUserUploadPath . $aBuffer[1];
+						if(!is_dir($sNewPath))
+						{
+							if(false === rename(realpath($sOldPath), $sNewPath))
+							{
+								$babBody->addError('The directory: ' . $sOldPath . ' have not been renamed to ' . $sNewPath);
+								return false;
+							}
+						}
+					}
+				}
+			}
+		}
+		$oDir->close();
+	}
+
+	return true;
 }
 
 
@@ -261,9 +312,11 @@ function updateFmFromPreviousUpgrade()
 	$sUploadPath = getUploadPathFromDataBase();
 	$sCollectiveUploadPath 	= $sUploadPath . 'fileManager/collectives/';
 
+	global $babBody;
+	
 	if(is_dir($sUploadPath))
 	{
-		if(createFmDirectories($sUploadPath))
+		if(true === createFmDirectories($sUploadPath))
 		{
 			//Collective folders processing
 			
@@ -293,8 +346,8 @@ function updateFmFromPreviousUpgrade()
 						{
 							if(false === mkdir($sNewPath, 0777))
 							{
-								echo __LINE__ . ' ' . basename(__FILE__) . ' ' . 
-									' The directory: ' . $sNewPath . ' have not been created <br />';
+								$babBody->addError('The directory: ' . $sNewPath . ' have not been created');
+								return false;
 							}
 						}
 						
@@ -303,8 +356,8 @@ function updateFmFromPreviousUpgrade()
 							$sNewPath .= '/' .  $aDatas['sName'];
 							if(false === rename($sOldPath, $sNewPath))
 							{
-								echo __LINE__ . ' ' . basename(__FILE__) . ' ' . 
-									' The directory : ' . $sOldPath . ' have not been renamed to ' . $sNewPath . '<br />';
+								$babBody->addError('The directory: ' . $sOldPath . ' have not been renamed to ' . $sNewPath);
+								return false;
 							}
 						}						
 					}					
@@ -338,94 +391,15 @@ function updateFmFromPreviousUpgrade()
 			
 			
 			//Personnal folders processing
-			
-			$sQuery = 
-				'SELECT 
-					`id` iId,
-					`path` sPathName
-				FROM ' .
-					BAB_FILES_TBL . '
-				WHERE 
-					`bgroup` = \'' . $babDB->db_escape_string('N') . '\'';
-			
-			$oResult = $babDB->db_query($sQuery);
-			if(false !== $oResult)
-			{
-				$aBuffer = array();
-				while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
-				{
-					if(preg_match('/(U\d+\/)(.*)/', $aDatas['sPathName'], $aBuffer))
-					{
-						$sPathName = $aBuffer[2];
-						$sQuery = 
-							'UPDATE ' . 
-								BAB_FILES_TBL . '
-							SET 
-								`path` = \'' . $babDB->db_escape_string($sPathName) . '\', 
-								`iIdDgOwner` = \'' . $babDB->db_escape_string(0) . '\' 
-							WHERE 
-								`id` = \'' . $babDB->db_escape_string($aDatas['iId']) . '\'';
-						
-						$babDB->db_query($sQuery);
-						
-						$sOldPath = $sUploadPath . $aBuffer[1];
-						if(is_dir(realpath($sOldPath)))
-						{
-							$sUserUploadPath = $sUploadPath . 'fileManager/users/';
-							$sNewPath = $sUserUploadPath . $aBuffer[1];
-							if(false === rename(realpath($sOldPath), $sNewPath))
-							{
-								echo __LINE__ . ' ' . basename(__FILE__) . ' ' . 
-									' The directory : ' . $sOldPath . ' have not been renamed to ' . $sNewPath . '<br />';
-							}
-						}
-					}
-				}		
-			}
-			
-			
-			//Just to be sure to process all the personnal folder, the auto_add_file will do the remaining 
-			{
-				$aBuffer = array();
-				
-				$oDir = dir($sUploadPath);
-				while(false !== ($sEntry = $oDir->read())) 
-				{
-					// Skip pointers
-					if($sEntry == '.' || $sEntry == '..') 
-					{
-						continue;
-					}
-					else if(is_dir($sUploadPath . $sEntry))
-					{
-						if(preg_match('/(U\d+)/', $sEntry, $aBuffer))
-						{
-							$sOldPath = $sUploadPath . $aBuffer[1];
-							if(is_dir(realpath($sOldPath)))
-							{
-								$sUserUploadPath = $sUploadPath . 'fileManager/users/';
-								$sNewPath = $sUserUploadPath . $aBuffer[1];
-								if(!is_dir($sNewPath))
-								{
-									if(false === rename(realpath($sOldPath), $sNewPath))
-									{
-										echo __LINE__ . ' ' . basename(__FILE__) . ' ' .
-											' The directory : ' . $sOldPath . ' have not been renamed to ' . $sNewPath . '<br />';
-									}
-								}
-							}
-						}
-					}
-				}
-				$oDir->close();
-			}
+			updateUsersFolderFilePathName($sUploadPath);			
 		}
 	}	
 	else 
 	{
-		echo __LINE__ . ' ' . basename(__FILE__) . ' ' .
-			' The upload path: ' . $sUploadPath . ' is not valid <br />';
+		$babBody->addError('The upload path: ' . $sUploadPath . ' is not valid');
+		return false;
 	}
+	return true;
 }
 
 
@@ -4089,21 +4063,38 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$babDB->db_query("ALTER TABLE ". BAB_FILES_TBL." ADD `iIdDgOwner` int(11) unsigned NOT NULL");
 	}
 
+
 	if(!bab_isTableField(BAB_FM_FOLDERS_TBL, 'sRelativePath')) 
 	{
 		$babDB->db_query("ALTER TABLE ".BAB_FM_FOLDERS_TBL." ADD `sRelativePath` TEXT NOT NULL AFTER `id`");
-		fmUpgrade();
-		__renameFmFilesVersions();
+		if(true === fmUpgrade())
+		{
+			__renameFmFilesVersions();
+			bab_setUpgradeLogMsg(BAB_ADDON_CORE_NAME, 'The file manager upgrade was successfully completed', 'bab660FmUpgradeDone');
+		}
+		else 
+		{
+			$babDB->db_query("ALTER TABLE ".BAB_FM_FOLDERS_TBL." DROP `sRelativePath`");
+			return false;
+		}
 	}
 	else 
 	{
-		$sUploadPath = getUploadPathFromDataBase();
-		if(!is_dir($sUploadPath . 'fileManager'))
+		$ret = bab_getUpgradeLogMsg(BAB_ADDON_CORE_NAME, 'bab660FmUpgradeDone');
+		if(false === $ret)
 		{
-			updateFmFromPreviousUpgrade();
-			__renameFmFilesVersions();
+			if(true === updateFmFromPreviousUpgrade())
+			{
+				__renameFmFilesVersions();
+				bab_setUpgradeLogMsg(BAB_ADDON_CORE_NAME, 'The file manager upgrade was successfully completed', 'bab660FmUpgradeDone');
+			}
+			else 
+			{
+				return false;
+			}
 		}
 	}
+
 
 	/**
 	 * Upgrade to 6.5.100
