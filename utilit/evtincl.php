@@ -373,6 +373,9 @@ function createEvent($idcals,$id_owner, $title, $description, $location, $startd
 
 
 /**
+ *
+ * @param	array		$args
+ *
  *	$args['startdate'] 	: array('month', 'day', 'year', 'hours', 'minutes')
  *	$args['enddate'] 	: array('month', 'day', 'year', 'hours', 'minutes')
  *	$args['owner'] 		: id of the owner
@@ -387,26 +390,52 @@ function createEvent($idcals,$id_owner, $title, $description, $location, $startd
  *	$args['lock'] 		: to lock the event
  *	$args['free'] 		: free event
  *	$args['alert'] 		: array('day', 'hour', 'minute', 'email'=>'Y')
+ *	$args['selected_calendars']
+ *
+ * @param	string		&$msgerror
+ * @param	string		[$action_function]
  */
-function bab_createEvent($idcals, $args, &$msgerror)
+function bab_createEvent($args, &$msgerror, $action_function = 'createEvent')
 	{
 	global $babBody;
+	
+	$idcals = $args['selected_calendars'];
 
-	$begin = mktime( $args['startdate']['hours'],$args['startdate']['minutes'],0,$args['startdate']['month'], $args['startdate']['day'], $args['startdate']['year'] );
-	$end = mktime( $args['enddate']['hours'],$args['enddate']['minutes'],0,$args['enddate']['month'], $args['enddate']['day'], $args['enddate']['year'] );
 
-
-	if( isset($args['rrule']) && $args['rrule'] != 0 )
+	$begin 	= bab_event_posted::getTimestamp($args['startdate']);
+	$end 	= bab_event_posted::getTimestamp($args['enddate']);
+	
+	
+	if( empty($args['title']))
 		{
-		$repeatdate = mktime( 23,59,59, $args['until']['month'], $args['until']['day'], $args['until']['year'] );
+		$msgerror = bab_translate("You must provide a title");
+		return false;
+	}
+	
+	
+	if (isset($args['until'])) {
+		$repeatdate = 86400 + bab_event_posted::getTimestamp($args['until']);
+			
+		if( $repeatdate < $end) {
+			$msgerror = bab_translate("Repeat date must be older than end date");
+			return false;
 		}
+	}
 
 
 	if( $begin > $end)
 		{
-		$msgerror = bab_translate("End date must be older")." !";
+		$msgerror = bab_translate("End date must be older");
 		return false;
 		}
+		
+	if(0 === count($idcals))
+		{
+		$msgerror = bab_translate("You must select at least one calendar type");
+		return false;
+	}
+	
+	
 
 	$arrnotify = array();
 
@@ -479,7 +508,7 @@ function bab_createEvent($idcals, $args, &$msgerror)
 					$time = mktime( $args['startdate']['hours'],$args['startdate']['minutes'],0,$args['startdate']['month'], $day, $args['startdate']['year'] );
 					do
 						{
-						$arrf = createEvent($idcals, $args['owner'], $args['title'], $args['description'], $args['location'], $time, $time + $duration, $args['category'], $args['color'], $args['private'], $args['lock'], $args['free'], $hash, $args['alert']);
+						$arrf = call_user_func($action_function, $idcals, $args['owner'], $args['title'], $args['description'], $args['location'], $time, $time + $duration, $args['category'], $args['color'], $args['private'], $args['lock'], $args['free'], $hash, $args['alert']);
 						$arrnotify = array_unique(array_merge($arrnotify, $arrf));
 						$day += 7*$args['nweeks'];
 						$time = mktime( $args['startdate']['hours'],$args['startdate']['minutes'],0,$args['startdate']['month'], $day, $args['startdate']['year'] );
@@ -506,7 +535,7 @@ function bab_createEvent($idcals, $args, &$msgerror)
 						$time = mktime( $args['startdate']['hours'],$args['startdate']['minutes'],0,$args['startdate']['month'], $day, $args['startdate']['year']);
 						do
 							{
-							$arrf = createEvent($idcals, $args['owner'], $args['title'], $args['description'], $args['location'], $time, $time + $duration, $args['category'], $args['color'], $args['private'], $args['lock'], $args['free'], $hash, $args['alert']);
+							$arrf = call_user_func($action_function, $idcals, $args['owner'], $args['title'], $args['description'], $args['location'], $time, $time + $duration, $args['category'], $args['color'], $args['private'], $args['lock'], $args['free'], $hash, $args['alert']);
 							$day += 7*$args['nweeks'];					
 							$arrnotify = array_unique(array_merge($arrnotify, $arrf));
 							$time = mktime( $args['startdate']['hours'],$args['startdate']['minutes'],0,$args['startdate']['month'], $day, $args['startdate']['year'] );
@@ -531,7 +560,7 @@ function bab_createEvent($idcals, $args, &$msgerror)
 				$time = $begin;
 				do
 					{
-					$arrf = createEvent($idcals, $args['owner'], $args['title'], $args['description'], $args['location'], $time, $time + $duration, $args['category'], $args['color'], $args['private'], $args['lock'], $args['free'], $hash, $args['alert']);
+					$arrf = call_user_func($action_function, $idcals, $args['owner'], $args['title'], $args['description'], $args['location'], $time, $time + $duration, $args['category'], $args['color'], $args['private'], $args['lock'], $args['free'], $hash, $args['alert']);
 					$time = mktime( $args['startdate']['hours'],$args['startdate']['minutes'],0,date("m", $time)+$args['nmonths'], date("j", $time), date("Y", $time) );
 					$arrnotify = array_unique(array_merge($arrnotify, $arrf));
 					}
@@ -550,7 +579,7 @@ function bab_createEvent($idcals, $args, &$msgerror)
 				$time = $begin;
 				do
 					{
-					$arrf = createEvent($idcals, $args['owner'], $args['title'], $args['description'], $args['location'], $time, $time + $duration, $args['category'], $args['color'], $args['private'], $args['lock'], $args['free'], $hash, $args['alert']);
+					$arrf = call_user_func($action_function, $idcals, $args['owner'], $args['title'], $args['description'], $args['location'], $time, $time + $duration, $args['category'], $args['color'], $args['private'], $args['lock'], $args['free'], $hash, $args['alert']);
 					$time = mktime( $args['startdate']['hours'],$args['startdate']['minutes'],0,date("m", $time), date("j", $time), date("Y", $time)+$args['nyears'] );
 					$arrnotify = array_unique(array_merge($arrnotify, $arrf));
 					}
@@ -574,7 +603,7 @@ function bab_createEvent($idcals, $args, &$msgerror)
 				$time = mktime( $args['startdate']['hours'],$args['startdate']['minutes'],0,$args['startdate']['month'], $day, $args['startdate']['year']  );
 				do
 					{
-					$arrf = createEvent($idcals, $args['owner'], $args['title'], $args['description'], $args['location'], $time, $time + $duration, $args['category'], $args['color'], $args['private'], $args['lock'], $args['free'], $hash, $args['alert']);
+					$arrf = call_user_func($action_function, $idcals, $args['owner'], $args['title'], $args['description'], $args['location'], $time, $time + $duration, $args['category'], $args['color'], $args['private'], $args['lock'], $args['free'], $hash, $args['alert']);
 					$day += $args['ndays'];
 					$arrnotify = array_unique(array_merge($arrnotify, $arrf));
 					$time = mktime( $args['startdate']['hours'],$args['startdate']['minutes'],0,$args['startdate']['month'], $day, $args['startdate']['year']);
@@ -586,19 +615,22 @@ function bab_createEvent($idcals, $args, &$msgerror)
 		}
 	else
 		{
-		$arrnotify = createEvent($idcals, $args['owner'], $args['title'], $args['description'], $args['location'], $begin, $end, $args['category'], $args['color'], $args['private'], $args['lock'], $args['free'], '', $args['alert']);
+		$arrnotify = call_user_func($action_function, $idcals, $args['owner'], $args['title'], $args['description'], $args['location'], $begin, $end, $args['category'], $args['color'], $args['private'], $args['lock'], $args['free'], '', $args['alert']);
 		
 		
 		}
 		
 		
-	include_once $GLOBALS['babInstallPath'].'utilit/eventperiod.php';
-	$endperiod = isset($repeatdate) ? $repeatdate : $end;
-	$event = new bab_eventPeriodModified($begin, $endperiod, false);
-	$event->types = BAB_PERIOD_CALEVENT;
-	bab_fireEvent($event);
+	// if event creation, call event period modified
+	if ('createEvent' === $action_function) { 
 
+		include_once $GLOBALS['babInstallPath'].'utilit/eventperiod.php';
+		$endperiod = isset($repeatdate) ? $repeatdate : $end;
+		$event = new bab_eventPeriodModified($begin, $endperiod, false);
+		$event->types = BAB_PERIOD_CALEVENT;
+		bab_fireEvent($event);
 
+	}
 	
 		
 	return true;	
@@ -1410,5 +1442,364 @@ function bab_deleteEvent($idevent)
 	$babDB->db_query("delete from ".BAB_CAL_EVENTS_NOTES_TBL." where id_event=".$babDB->quote($idevent));
 	$babDB->db_query("delete from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_event=".$babDB->quote($idevent));
 }
+
+
+
+
+
+
+class bab_event_posted {
+
+	/**
+	 * @public
+	 */
+	var $args = array();
+
+
+
+	/**
+	 * Get timestamp from date as array with keys
+	 * <ul>
+	 *	<li>year</li>
+	 *	<li>month<li>
+	 *	<li>day</li>
+	 *	<li>hours (optional)</li>
+	 *	<li>minutes (optional)</li>
+	 * <ul>
+	 *
+	 * @static
+	 *
+	 * @param	array	$arr
+	 * @return 	int		Timestamp
+	 */
+	function getTimestamp($arr) {
+	
+		if (!isset($arr['hours'])) {
+			$arr['hours'] = 0;
+		}
+		
+		if (!isset($arr['minutes'])) {
+			$arr['minutes'] = 0;
+		}
+		
+		return mktime( $arr['hours'], $arr['minutes'], 0, $arr['month'], $arr['day'], $arr['year'] );
+	}
+
+
+
+	/**
+	 * Populate $this->args from POST data
+	 */
+	function createArgsData() {
+	
+		global $babBody, $babDB;
+		
+		if (isset($_POST['selected_calendars'])) {
+			$this->args['selected_calendars'] = $_POST['selected_calendars'];
+		}
+	
+	
+		if( !empty($GLOBALS['BAB_SESS_USERID']) && isset($_POST['creminder']) && $_POST['creminder'] == 'Y')
+			{
+			$this->args['alert']['day'] = $_POST['rday'];
+			$this->args['alert']['hour'] = $_POST['rhour'];
+			$this->args['alert']['minute'] = $_POST['rminute'];
+			$this->args['alert']['email'] = isset($_POST['remail'])? $_POST['remail']: 'N';
+			}
+		
+		include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+				
+		$editor = new bab_contentEditor('bab_calendar_event');
+		$this->args['description'] = $editor->getContent();
+		
+		$this->args['title'] = bab_pp('title');
+		$this->args['location'] = bab_pp('location');
+			
+		$this->args['category'] = empty($_POST['category']) ? '0' : $_POST['category'];
+		$this->args['color'] = empty($_POST['color']) ? '' : $_POST['color'];
+	
+		$this->args['startdate']['year'] = $_POST['yearbegin'];
+		$this->args['startdate']['month'] = $_POST['monthbegin'];
+		$this->args['startdate']['day'] = $_POST['daybegin'];
+		
+		if (isset($_POST['timebegin'])) {
+			$timebegin = $_POST['timebegin'];
+		} else {
+			$timebegin = $babBody->icalendars->starttime;
+		}
+		
+		$tb = explode(':',$timebegin);
+		$this->args['startdate']['hours'] = $tb[0];
+		$this->args['startdate']['minutes'] = $tb[1];
+	
+		$this->args['enddate']['year'] = $_POST['yearend'];
+		$this->args['enddate']['month'] = $_POST['monthend'];
+		$this->args['enddate']['day'] = $_POST['dayend'];
+		
+		if (isset($_POST['timeend'])) {
+			$timeend = $_POST['timeend'];
+		} else {
+			if ($babBody->icalendars->endtime > $timebegin) {
+				$timeend = $babBody->icalendars->endtime;
+			} else {
+				$timeend = '23:59:59';
+			}
+		}
+		
+		$tb = explode(':',$timeend);
+		$this->args['enddate']['hours'] = $tb[0];
+		$this->args['enddate']['minutes'] = $tb[1];
+	
+	
+		if( isset($_POST['bprivate']) && $_POST['bprivate'] ==  'Y' )
+			{
+			$this->args['private'] = true;
+			}
+		else
+			{
+			$this->args['private'] = false;
+			}
+	
+		if( isset($_POST['block']) && $_POST['block'] ==  'Y' )
+			{
+			$this->args['lock'] = true;
+			}
+		else
+			{
+			$this->args['lock'] = false;
+			}
+	
+		if( isset($_POST['bfree']) && $_POST['bfree'] ==  'Y' )
+			{
+			$this->args['free'] = true;
+			}
+		else
+			{
+			$this->args['free'] = false;
+			}
+	
+		$id_owner = $GLOBALS['BAB_SESS_USERID'];
+	
+		if (isset($_POST['event_owner']) && isset($babBody->icalendars->usercal[$_POST['event_owner']]) )
+			{
+			$arr = $babDB->db_fetch_array(
+				$babDB->db_query("
+					SELECT 
+						owner 
+					
+					FROM ".BAB_CALENDAR_TBL." 
+						WHERE 
+						id='".$babDB->db_escape_string($_POST['event_owner'])."'
+					"
+				)
+			);
+			$id_owner = isset($arr['owner']) ? $arr['owner'] : $GLOBALS['BAB_SESS_USERID'];
+			}
+		$this->args['owner'] = $id_owner;
+	
+
+
+	
+		if( isset($_POST['repeat_cb']) && $_POST['repeat_cb'] != 0) {
+
+			
+			$this->args['until'] = array(
+				'year'	=> (int) $_POST['repeat_yearend'], 
+				'month'	=> (int) $_POST['repeat_monthend'], 
+				'day'	=> (int) $_POST['repeat_dayend']
+			);
+			
+			switch($_POST['repeat'] )
+				{
+				case BAB_CAL_RECUR_WEEKLY: /* weekly */
+					$this->args['rrule'] = BAB_CAL_RECUR_WEEKLY;
+					if( empty($_POST['repeat_n_2']))
+						{
+						$_POST['repeat_n_2'] = 1;
+						}
+	
+					$this->args['nweeks'] = $_POST['repeat_n_2'];
+	
+					if( isset($_POST['repeat_wd']) )
+						{
+						$this->args['rdays'] = $_POST['repeat_wd'];
+						}
+	
+					break;
+				case BAB_CAL_RECUR_MONTHLY: /* monthly */
+					$this->args['rrule'] = BAB_CAL_RECUR_MONTHLY;
+					if( empty($_POST['repeat_n_3']))
+						{
+						$_POST['repeat_n_3'] = 1;
+						}
+	
+					$this->args['nmonths'] = $_POST['repeat_n_3'];
+					break;
+				case BAB_CAL_RECUR_YEARLY: /* yearly */
+					$this->args['rrule'] = BAB_CAL_RECUR_YEARLY;
+					if( empty($_POST['repeat_n_4']))
+						{
+						$_POST['repeat_n_4'] = 1;
+						}
+					$this->args['nyears'] = $_POST['repeat_n_4'];
+					break;
+				case BAB_CAL_RECUR_DAILY: /* daily */
+				default:
+					$this->args['rrule'] = BAB_CAL_RECUR_DAILY;
+					if( empty($_POST['repeat_n_1']))
+						{
+						$_POST['repeat_n_1'] = 1;
+						}
+	
+					$this->args['ndays'] = $_POST['repeat_n_1'];
+					$rtime = 24*3600*$_POST['repeat_n_1'];
+					break;
+			}
+		}
+	}
+	
+	
+	
+	
+	/**
+	 * Verify form data and 
+	 * test availability on all events
+	 *
+	 * @param	string	&$avariability_message
+	 * @param	string	&$message
+	 * @return boolean
+	 */
+	function availabilityCheckAllEvents(&$avariability_message, &$message) {
+		if (false === bab_createEvent($this->args, $message, array($this, 'availabilityCheckCallback'))) {
+			return false;
+		}
+		
+		if (!empty($GLOBALS['avariability'])) {
+			$avariability_message = bab_translate("The event is in conflict with a calendar");
+			return false;
+		}
+		
+		return true;
+	}
+	
+	
+	/**
+	 * callback function for bab_createEvent
+	 * @see bab_createEvent
+	 * 
+	 * @return array
+	 */
+	function availabilityCheckCallback($idcals,$id_owner, $title, $description, $location, $startdate, $enddate, $category, $color, $private, $lock, $free, $hash, $arralert) {
+	
+		if ('Y' === $free) {
+			return array();
+		}
+		
+		$dummy = '';
+
+		bab_event_posted::availabilityCheck($idcals, $startdate, $enddate, false, $dummy);
+		
+		return array();
+	}
+	
+	
+	/**
+	 * @static
+	 */
+	function availabilityCheck($calid, $begin, $end, $evtid, &$avariability_message) {
+	
+		if (!isset($GLOBALS['avariability']) || !is_array($GLOBALS['avariability'])) {
+			$GLOBALS['avariability'] = array();
+		}
+		
+		
+		$sdate = sprintf("%04s-%02s-%02s %02s:%02s:%02s", date('Y',$begin), date('m',$begin), date('d',$begin), date('H',$begin), date('i',$begin), date('s',$begin));
+		$edate = sprintf("%04s-%02s-%02s %02s:%02s:%02s",  date('Y',$end), date('m',$end), date('d',$end),date('H',$end),date('i',$end), date('s',$end));
+	
+	
+		// working hours test
+	
+	
+		bab_debug("periode teste : $sdate, $edate");
+		
+		$whObj = bab_mcalendars::create_events($sdate, $edate, $calid);
+		
+		while ($event = $whObj->getNextEvent(BAB_PERIOD_CALEVENT)) {
+			$data = $event->getData();
+			
+			if ($evtid) {
+				if ((int) $data['id_event'] === (int) $evtid) {
+					// considérer l'evenement modifie comme disponible
+					$whObj->setAvailability($event, true);
+				}
+			}
+		}
+	
+		$availability = NULL;
+		$arr = $whObj->getAvailability($availability);
+		
+		// debug
+		foreach($arr as $obj) {
+			bab_debug('periode dispo : '.bab_shortDate($obj->ts_begin).' '.bab_shortDate($obj->ts_end));
+		}
+		
+		if (false === $availability) {
+			$avariability_message = bab_translate("The event is in conflict with a calendar");
+		} 
+	
+	
+		// events tests
+		$mcals = & new bab_mcalendars($sdate, $edate, $calid);
+		
+		while ($cal = current($mcals->objcals)) 
+			{
+			$arr = array();
+			$cal->getEvents($sdate, $edate, $arr);
+			foreach ($arr as $calPeriod)
+				{
+				$event = $calPeriod->getData();
+	
+				if (isset($event['bfree']) && $event['bfree'] !='Y' && (!isset($_POST['evtid']) || $_POST['evtid'] != $event['id_event']))
+					{
+					global $babBody;
+					$title = bab_translate("Private");
+					if( 
+						(
+							'PUBLIC' !== $calPeriod->getProperty('CLASS') 
+							&& $event['id_cal'] == $babBody->icalendars->id_percal
+						) 
+						|| 'PUBLIC' === $calPeriod->getProperty('CLASS'))
+					{
+						$title = $calPeriod->getProperty('SUMMARY');
+					}
+	
+					$GLOBALS['avariability'][] = $cal->cal_name.' '.bab_translate("on the event").' : '. $title .' ('.bab_shortDate(bab_mktime($calPeriod->getProperty('DTSTART')),false).')';
+	
+					}
+				}
+			next($mcals->objcals);
+			}
+	
+	
+		if ($avariability_message || (is_array($GLOBALS['avariability']) && count($GLOBALS['avariability']) > 0 ))
+			{
+			return false;
+			}
+		else
+			{
+			
+			$GLOBALS['avariability'] = 0;
+			return true;
+			}
+	}
+}
+
+
+
+
+
+
+
+
 
 ?>

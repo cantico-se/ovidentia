@@ -272,10 +272,20 @@ function bab_getFreeEvents($idcals, $sdate, $edate, $gap, $bopt)
 }
 
 
+/**
+ * Create new event
+ * @see bab_createEvent
+ * 
+ * @param	array	$idcals
+ * @param	array	$args
+ * @param	string	&$msgerror		empty string
+ */
 function bab_newEvent($idcals, $args, &$msgerror)
 {
+	$args['selected_calendars'] = $idcals;
+
 	include_once $GLOBALS['babInstallPath'].'utilit/evtincl.php';
-	return bab_createEvent($idcals,$args, $msgerror);
+	return bab_createEvent($args, $msgerror);
 }
 
 function bab_deleteEventById( $evtid )

@@ -994,183 +994,15 @@ function deleteEvent()
 
 
 
-function addEvent(&$message)
+function addEvent(&$avariability_message, &$message)
 	{
-	global $babBody, $babDB;
-	
-	if( empty($_POST['title']))
-		{
-		$message = bab_translate("You must provide a title")." !!";
-		return false;
-		}
-
-	if( !isset($GLOBALS['calid']) || count($GLOBALS['calid']) == 0 )
-		{
-		$message = bab_translate("You must select at least one calendar type")." !!";
-		return false;
-		}
-
-	$args = array();
-
-	if( !empty($GLOBALS['BAB_SESS_USERID']) && isset($_POST['creminder']) && $_POST['creminder'] == 'Y')
-		{
-		$args['alert']['day'] = $_POST['rday'];
-		$args['alert']['hour'] = $_POST['rhour'];
-		$args['alert']['minute'] = $_POST['rminute'];
-		$args['alert']['email'] = isset($_POST['remail'])? $_POST['remail']: 'N';
-		}
-	
-	include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
-			
-	$editor = new bab_contentEditor('bab_calendar_event');
-	$args['description'] = $editor->getContent();
-	
-	$args['title'] = bab_pp('title');
-	$args['location'] = bab_pp('location');
-		
-	$args['category'] = empty($_POST['category']) ? '0' : $_POST['category'];
-	$args['color'] = empty($_POST['color']) ? '' : $_POST['color'];
-
-	$args['startdate']['year'] = $_POST['yearbegin'];
-	$args['startdate']['month'] = $_POST['monthbegin'];
-	$args['startdate']['day'] = $_POST['daybegin'];
-	if (isset($_POST['timebegin'])) {
-		$timebegin = $_POST['timebegin'];
-	} else {
-		$timebegin = $babBody->icalendars->starttime;
+	$posted = new bab_event_posted();
+	$posted->createArgsData();
+	if ($posted->availabilityCheckAllEvents($avariability_message, $message)) {
+		return bab_createEvent($posted->args, $message);
 	}
-	$tb = explode(':',$timebegin);
-	$args['startdate']['hours'] = $tb[0];
-	$args['startdate']['minutes'] = $tb[1];
-
-	$args['enddate']['year'] = $_POST['yearend'];
-	$args['enddate']['month'] = $_POST['monthend'];
-	$args['enddate']['day'] = $_POST['dayend'];
-	if (isset($_POST['timeend'])) {
-		$timeend = $_POST['timeend'];
-	} else {
-		if ($babBody->icalendars->endtime > $timebegin) {
-			$timeend = $babBody->icalendars->endtime;
-		} else {
-			$timeend = '23:59:59';
-		}
-	}
-	
-	$tb = explode(':',$timeend);
-	$args['enddate']['hours'] = $tb[0];
-	$args['enddate']['minutes'] = $tb[1];
-
-
-	if( isset($_POST['bprivate']) && $_POST['bprivate'] ==  'Y' )
-		{
-		$args['private'] = true;
-		}
-	else
-		{
-		$args['private'] = false;
-		}
-
-	if( isset($_POST['block']) && $_POST['block'] ==  'Y' )
-		{
-		$args['lock'] = true;
-		}
-	else
-		{
-		$args['lock'] = false;
-		}
-
-	if( isset($_POST['bfree']) && $_POST['bfree'] ==  'Y' )
-		{
-		$args['free'] = true;
-		}
-	else
-		{
-		$args['free'] = false;
-		}
-
-	$id_owner = $GLOBALS['BAB_SESS_USERID'];
-
-	if (isset($_POST['event_owner']) && isset($babBody->icalendars->usercal[$_POST['event_owner']]) )
-		{
-		$arr = $babDB->db_fetch_array($babDB->db_query("SELECT owner FROM ".BAB_CALENDAR_TBL." WHERE id='".$babDB->db_escape_string($_POST['event_owner'])."'"));
-		$id_owner = isset($arr['owner']) ? $arr['owner'] : $GLOBALS['BAB_SESS_USERID'];
-		}
-	$args['owner'] = $id_owner;
-
-	$begin = mktime( $args['startdate']['hours'],$args['startdate']['minutes'],0,$args['startdate']['month'], $args['startdate']['day'], $args['startdate']['year'] );
-	$end = mktime( $args['enddate']['hours'],$args['enddate']['minutes'],0,$args['enddate']['month'], $args['enddate']['day'], $args['enddate']['year'] );
-	$repeatdate = mktime( 23,59,59,$_POST['repeat_monthend'], $_POST['repeat_dayend'], $_POST['repeat_yearend'] );
-
-	if( $begin >= $end)
-		{
-		$message = bab_translate("End date must be older")." !";
-		return false;
-		}
-	
-
-
-	if( isset($_POST['repeat_cb']) && $_POST['repeat_cb'] != 0)
-		{
-		
-			
-		if( $repeatdate < $end)
-			{
-			$message = bab_translate("Repeat date must be older than end date");
-			return false;
-			}
-		
-		$args['until'] = array('year'=>$_POST['repeat_yearend'], 'month'=>$_POST['repeat_monthend'], 'day'=>$_POST['repeat_dayend']);
-		switch($_POST['repeat'] )
-			{
-			case BAB_CAL_RECUR_WEEKLY: /* weekly */
-				$args['rrule'] = BAB_CAL_RECUR_WEEKLY;
-				if( empty($_POST['repeat_n_2']))
-					{
-					$_POST['repeat_n_2'] = 1;
-					}
-
-				$args['nweeks'] = $_POST['repeat_n_2'];
-
-				if( isset($_POST['repeat_wd']) )
-					{
-					$args['rdays'] = $_POST['repeat_wd'];
-					}
-
-				break;
-			case BAB_CAL_RECUR_MONTHLY: /* monthly */
-				$args['rrule'] = BAB_CAL_RECUR_MONTHLY;
-				if( empty($_POST['repeat_n_3']))
-					{
-					$_POST['repeat_n_3'] = 1;
-					}
-
-				$args['nmonths'] = $_POST['repeat_n_3'];
-				break;
-			case BAB_CAL_RECUR_YEARLY: /* yearly */
-				$args['rrule'] = BAB_CAL_RECUR_YEARLY;
-				if( empty($_POST['repeat_n_4']))
-					{
-					$_POST['repeat_n_4'] = 1;
-					}
-				$args['nyears'] = $_POST['repeat_n_4'];
-				break;
-			case BAB_CAL_RECUR_DAILY: /* daily */
-			default:
-				$args['rrule'] = BAB_CAL_RECUR_DAILY;
-				if( empty($_POST['repeat_n_1']))
-					{
-					$_POST['repeat_n_1'] = 1;
-					}
-
-				$args['ndays'] = $_POST['repeat_n_1'];
-				$rtime = 24*3600*$_POST['repeat_n_1'];
-				break;
-			}
-
-		}
-		
-	return bab_createEvent($_POST['selected_calendars'], $args, $message);
-	}
+	return false;
+}
 
 
 
@@ -1425,87 +1257,8 @@ function eventAvariabilityCheck(&$avariability_message)
 	$begin = mktime( $tb[0],$tb[1],0,$_POST['monthbegin'], $_POST['daybegin'], $_POST['yearbegin'] );
 	$end = mktime( $te[0],$te[1],0,$_POST['monthend'], $_POST['dayend'], $_POST['yearend'] );
 
-	$begin_day = mktime( 0,0,0,$_POST['monthbegin'], $_POST['daybegin'], $_POST['yearbegin'] );
 
-	$sdate = sprintf("%04s-%02s-%02s %02s:%02s:%02s", date('Y',$begin), date('m',$begin), date('d',$begin), date('H',$begin), date('i',$begin), date('s',$begin));
-	$edate = sprintf("%04s-%02s-%02s %02s:%02s:%02s",  date('Y',$end), date('m',$end), date('d',$end),date('H',$end),date('i',$end), date('s',$end));
-
-
-	// working hours test
-
-
-	bab_debug("periode teste : $sdate, $edate");
-	
-	$whObj = bab_mcalendars::create_events($sdate, $edate, $calid);
-	
-	while ($event = $whObj->getNextEvent(BAB_PERIOD_CALEVENT)) {
-		$data = $event->getData();
-		
-		if (isset($_POST['evtid'])) {
-			if ((int) $data['id_event'] === (int) $_POST['evtid']) {
-				// considérer l'evenement modifie comme disponible
-				$whObj->setAvailability($event, true);
-			}
-		}
-	}
-
-	$availability = NULL;
-	$arr = $whObj->getAvailability($availability);
-	
-	// debug
-	foreach($arr as $obj) {
-		bab_debug('periode dispo : '.bab_shortDate($obj->ts_begin).' '.bab_shortDate($obj->ts_end));
-	}
-	
-	if (false === $availability) {
-		$avariability_message = bab_translate("The event is in conflict with a calendar");
-	} 
-
-
-	// events tests
-	$mcals = & new bab_mcalendars($sdate, $edate, $calid);
-	$GLOBALS['avariability'] = array();
-	while ($cal = current($mcals->objcals)) 
-		{
-		$arr = array();
-		$cal->getEvents($sdate, $edate, $arr);
-		foreach ($arr as $calPeriod)
-			{
-			$event = $calPeriod->getData();
-
-			if (isset($event['bfree']) && $event['bfree'] !='Y' && (!isset($_POST['evtid']) || $_POST['evtid'] != $event['id_event']))
-				{
-				global $babBody;
-				$title = bab_translate("Private");
-				if( 
-					(
-						'PUBLIC' !== $calPeriod->getProperty('CLASS') 
-						&& $event['id_cal'] == $babBody->icalendars->id_percal
-					) 
-					|| 'PUBLIC' === $calPeriod->getProperty('CLASS'))
-				{
-					$title = $calPeriod->getProperty('SUMMARY');
-				}
-
-				$GLOBALS['avariability'][] = $cal->cal_name.' '.bab_translate("on the event").' : '. $title .' ('.bab_shortDate(bab_mktime($calPeriod->getProperty('DTSTART')),false).')';
-
-				}
-			}
-		next($mcals->objcals);
-		}
-
-	
-
-	if ($avariability_message || (is_array($GLOBALS['avariability']) && count($GLOBALS['avariability']) > 0 ))
-		{
-		return false;
-		}
-	else
-		{
-		
-		$GLOBALS['avariability'] = 0;
-		return true;
-		}
+	return bab_event_posted::availabilityCheck($calid, $begin, $end, bab_pp('evtid', false), $avariability_message);
 	}
 
 /* main */
@@ -1536,7 +1289,7 @@ if (isset($_REQUEST['action']))
 
 		case 'addevent':
 			$message = '';
-			if (eventAvariabilityCheck($avariability_message) && addEvent($message))
+			if (addEvent($avariability_message, $message))
 				{
 				$idx = "unload";
 				}
