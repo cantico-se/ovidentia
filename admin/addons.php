@@ -566,7 +566,7 @@ function test_requirements()
 	class temp {
 		function temp()
 			{
-
+			$this->item = bab_rp('item');
 			
 			$ini = new bab_inifile();
 			if (isset($_FILES['uploadf'])) {
