@@ -3184,7 +3184,9 @@ function createFolderForCollectiveDir()
 			if(!is_null($oFmFolder) || $oFileManagerEnv->userIsInRootFolder())
 			{
 				$sRelativePath	= $oFileManagerEnv->sRelativePath;
-				$sFullPathName	= $sUploadPath = BAB_FileManagerEnv::getCollectivePath(bab_getCurrentUserDelegation()) . $sRelativePath . $sDirName;
+				$sUploadPath	= BAB_FileManagerEnv::getCollectivePath(bab_getCurrentUserDelegation()) . $sRelativePath;
+				$sDirName		= replaceInvalidFolderNameChar($sDirName);
+				$sFullPathName	= $sUploadPath . $sRelativePath . $sDirName;
 
 //				bab_debug('sFullPathName ==> ' .  $sFullPathName);
 //				bab_debug('sRelativePath ==> ' . $sRelativePath);
@@ -3242,7 +3244,10 @@ function createFolderForUserDir()
 		{
 //			bab_debug('sFullPathName ==> ' .  $sFullPathName);
 //			bab_debug('sRelativePath ==> ' . $oFileManagerEnv->sRelativePath);
-			$sFullPathName	= $oFileManagerEnv->getCurrentFmPath() . $sDirName;
+
+			$sUploadPath	= $oFileManagerEnv->getCurrentFmPath();
+			$sDirName		= replaceInvalidFolderNameChar($sDirName);
+			$sFullPathName	= $sUploadPath . $sDirName;
 			BAB_FmFolderHelper::createDirectory($sFullPathName);
 		}
 		else 
@@ -3347,9 +3352,18 @@ function editFolderForCollectiveDir()
 			{
 				if(strlen(trim($sOldDirName)) > 0)
 				{
-					BAB_FmFolderSet::rename($sRootFmPath, $sRelativePath, $sOldDirName, $sDirName);
-					BAB_FolderFileSet::renameFolder($sRelativePath . $sOldDirName . '/', $sDirName, 'Y');
-					BAB_FmFolderCliboardSet::rename($sRelativePath, $sOldDirName, $sDirName, 'Y');
+					$sLocalDirName = replaceInvalidFolderNameChar($sDirName);
+					$bSuccess = BAB_FmFolderSet::rename($sRootFmPath, $sRelativePath, $sOldDirName, $sDirName);
+					if(false !== $bSuccess)
+					{
+						$sDirName = $sLocalDirName;
+						BAB_FolderFileSet::renameFolder($sRelativePath . $sOldDirName . '/', $sDirName, 'Y');
+						BAB_FmFolderCliboardSet::rename($sRelativePath, $sOldDirName, $sDirName, 'Y');
+					}
+					else
+					{
+						$sDirName = $sOldDirName;
+					}
 				}
 				else 
 				{
@@ -3430,6 +3444,7 @@ function editFolderForUserDir()
 			
 			if($bFolderRenamed)
 			{
+				$sDirName = replaceInvalidFolderNameChar($sDirName);
 				if(BAB_FmFolderHelper::renameDirectory($sRootFmPath, $sRelativePath, $sOldDirName, $sDirName))
 				{
 					BAB_FolderFileSet::renameFolder($sPathName, $sDirName, 'N');

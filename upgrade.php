@@ -264,7 +264,6 @@ function updateUsersFolderFilePathName($sUploadPath)
 			}
 		}		
 	}
-	
 	//Just to be sure to process all the personnal folder, the auto_add_file will do the remaining 
 	{
 		$aBuffer = array();
@@ -300,7 +299,6 @@ function updateUsersFolderFilePathName($sUploadPath)
 		}
 		$oDir->close();
 	}
-
 	return true;
 }
 
@@ -409,6 +407,10 @@ function processDirName($sUploadPath, $sDirName)
 		$sDirName = strtr($sDirName, $GLOBALS['babFileNameTranslation']);
 	}
 
+	static $aTranslation = array('\\' => '_', '/' => '_', ':' => '_', '*' => '_', '?' => '_', '<' => '_', '>' => '_', '|' => '_');
+
+	$sDirName = strtr($sDirName, $aTranslation);
+	
 	$iIdx = 0;
 	
 	$sTempDirName = $sDirName;
