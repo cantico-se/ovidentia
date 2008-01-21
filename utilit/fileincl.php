@@ -4313,6 +4313,38 @@ function canonizePath($sPath)
 	return addEndSlash(removeEndSlashes($sPath));
 }
 
+
+function replaceInvalidFolderNameChar($sName)
+{
+	if(is_string($sName) && strlen(trim($sName)) > 0)
+	{
+		if(isset($GLOBALS['babFileNameTranslation']))
+		{
+			$sName = strtr($sName, $GLOBALS['babFileNameTranslation']);
+		}
+		
+		static $aTranslation = array('\\' => '_', '/' => '_', ':' => '_', '*' => '_', '?' => '_', '<' => '_', '>' => '_', '|' => '_');
+		$sName = strtr($sName, $aTranslation);
+	}
+	return $sName;
+}
+
+function processFolderName($sUploadPath, $sName)
+{
+	$sName = replaceInvalidFolderNameChar($sName);
+
+	$iIdx = 0;
+	
+	$sTempDirName = $sName;
+	while(is_dir($sUploadPath . $sTempDirName))
+	{
+		$sTempDirName = $sName . ((string) $iIdx);
+		$iIdx++;
+	}
+	return $sTempDirName;
+}
+
+
 function addEndSlash($sPath)
 {
 	if(is_string($sPath))

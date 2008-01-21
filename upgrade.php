@@ -410,6 +410,10 @@ function processDirName($sUploadPath, $sDirName)
 		$sDirName = strtr($sDirName, $GLOBALS['babFileNameTranslation']);
 	}
 
+	static $aTranslation = array('\\' => '_', '/' => '_', ':' => '_', '*' => '_', '?' => '_', '<' => '_', '>' => '_', '|' => '_');
+
+	$sDirName = strtr($sDirName, $aTranslation);
+	
 	$iIdx = 0;
 	
 	$sTempDirName = $sDirName;
