@@ -61,15 +61,15 @@ function createFmDirectories($sUploadPath)
 	{
 		$bCollDirCreated = false;
 		$bUserDirCreated = false;
-		if(mkdir($sUploadPath . 'fileManager', 0777))
+		if(@mkdir($sUploadPath . 'fileManager', 0777))
 		{
-			$bCollDirCreated = mkdir($sUploadPath . 'fileManager/collectives', 0777);
+			$bCollDirCreated = @mkdir($sUploadPath . 'fileManager/collectives', 0777);
 			if(false === $bCollDirCreated)
 			{
 				$babBody->addError('The directory: ' . $sUploadPath . 'fileManager/collectives have not been created');
 			}
 			
-			$bUserDirCreated = mkdir($sUploadPath . 'fileManager/users', 0777);
+			$bUserDirCreated = @mkdir($sUploadPath . 'fileManager/users', 0777);
 			if(false === $bCollDirCreated)
 			{
 				$babBody->addError('The directory: ' . $sUploadPath . 'fileManager/users have not been created');
@@ -128,7 +128,7 @@ function fmUpgrade()
 						
 						if(!is_dir($sNewPath))
 						{
-							if(false === mkdir($sNewPath, 0777))
+							if(false === @mkdir($sNewPath, 0777))
 							{
 								$babBody->addError('The directory: ' . $sNewPath . ' have not been created');
 								return false;
@@ -141,7 +141,7 @@ function fmUpgrade()
 							$sFolderName = processDirName($sNewPath, $sFolderName);
 							$sNewPath .= '/' .  $sFolderName;
 
-							if(true === rename($sOldPath, $sNewPath))
+							if(true === @rename($sOldPath, $sNewPath))
 							{
 								$sQuery = 
 									'UPDATE ' . 
@@ -255,7 +255,7 @@ function updateUsersFolderFilePathName($sUploadPath)
 				{
 					$sUserUploadPath = $sUploadPath . 'fileManager/users/';
 					$sNewPath = $sUserUploadPath . $aBuffer[1];
-					if(false === rename(realpath($sOldPath), $sNewPath))
+					if(false === @rename(realpath($sOldPath), $sNewPath))
 					{
 						$babBody->addError('The directory: ' . $sOldPath . ' have not been renamed to ' . $sNewPath);
 						return false;
@@ -264,7 +264,6 @@ function updateUsersFolderFilePathName($sUploadPath)
 			}
 		}		
 	}
-	
 	
 	//Just to be sure to process all the personnal folder, the auto_add_file will do the remaining 
 	{
@@ -289,7 +288,7 @@ function updateUsersFolderFilePathName($sUploadPath)
 						$sNewPath = $sUserUploadPath . $aBuffer[1];
 						if(!is_dir($sNewPath))
 						{
-							if(false === rename(realpath($sOldPath), $sNewPath))
+							if(false === @rename(realpath($sOldPath), $sNewPath))
 							{
 								$babBody->addError('The directory: ' . $sOldPath . ' have not been renamed to ' . $sNewPath);
 								return false;
@@ -344,7 +343,7 @@ function updateFmFromPreviousUpgrade()
 						
 						if(!is_dir($sNewPath))
 						{
-							if(false === mkdir($sNewPath, 0777))
+							if(false === @mkdir($sNewPath, 0777))
 							{
 								$babBody->addError('The directory: ' . $sNewPath . ' have not been created');
 								return false;
@@ -354,7 +353,7 @@ function updateFmFromPreviousUpgrade()
 						if(is_dir($sNewPath))
 						{
 							$sNewPath .= '/' .  $aDatas['sName'];
-							if(false === rename($sOldPath, $sNewPath))
+							if(false === @rename($sOldPath, $sNewPath))
 							{
 								$babBody->addError('The directory: ' . $sOldPath . ' have not been renamed to ' . $sNewPath);
 								return false;
@@ -483,7 +482,7 @@ function __renameFmFileVersion($sPathName)
 						
 						$sSrc = $sFullPathName;
 						$sTrg = $sPathName . '/' . $sVersionName;
-						if(!file_exists($sTrg))
+						if(file_exists($sSrc) && !file_exists($sTrg))
 						{
 							rename($sSrc, $sTrg);
 						}
