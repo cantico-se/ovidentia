@@ -3353,12 +3353,12 @@ function editFolderForCollectiveDir()
 				if(strlen(trim($sOldDirName)) > 0)
 				{
 					$sLocalDirName = replaceInvalidFolderNameChar($sDirName);
-					$bSuccess = BAB_FmFolderSet::rename($sRootFmPath, $sRelativePath, $sOldDirName, $sDirName);
+					$bSuccess = BAB_FmFolderSet::rename($sRootFmPath, $sRelativePath, $sOldDirName, $sLocalDirName);
 					if(false !== $bSuccess)
 					{
 						$sDirName = $sLocalDirName;
-						BAB_FolderFileSet::renameFolder($sRelativePath . $sOldDirName . '/', $sDirName, 'Y');
-						BAB_FmFolderCliboardSet::rename($sRelativePath, $sOldDirName, $sDirName, 'Y');
+						BAB_FolderFileSet::renameFolder($sRelativePath . $sOldDirName . '/', $sLocalDirName, 'Y');
+						BAB_FmFolderCliboardSet::rename($sRelativePath, $sOldDirName, $sLocalDirName, 'Y');
 					}
 					else
 					{
