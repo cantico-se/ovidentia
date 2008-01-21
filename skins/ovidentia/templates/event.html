@@ -418,8 +418,13 @@ ed();
 			-->
 			</script>
 			<select name="bupdrec" onchange="bupdrec_onchange(this)">
+				<!--#if bupdrec "== 2" -->
 				<option value="1">{ all }</option>
-				<option value="2" selected>{ thisone }</option>
+				<option value="2" selected="selected">{ thisone }</option>
+				<!--#else bupdrec -->
+				<option value="1" selected="selected">{ all }</option>
+				<option value="2">{ thisone }</option>
+				<!--#endif bupdrec -->
 			</select>
 		</td>
 	</tr>
@@ -596,6 +601,7 @@ ed();
 </form>
 <script type="text/javascript">
 <!--
+bupdrec_onchange(document.forms['vacform'].bupdrec);
 check_avariability();
 -->
 </script>

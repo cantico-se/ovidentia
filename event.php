@@ -606,6 +606,8 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 			$this->curview = $view;
 			$this->curdate = $date;
 			
+			$this->bupdrec = bab_rp('bupdrec', 1);
+			
 			$resown = $babDB->db_query('
 				SELECT id_cal FROM '.BAB_CAL_EVENTS_OWNERS_TBL.' WHERE id_event='.$babDB->quote($this->evtid).'
 			');
@@ -686,28 +688,56 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 					$this->evtarr[$k] = bab_pp($k);
 					}
 				$this->evtarr['id_cat'] = $_POST['category'];
-
+				}
+				
+			if (isset($this->evtarr['yearbegin'])) {	
 				$this->yearbegin = $this->evtarr['yearbegin'];
-				$this->daybegin =$this->evtarr['daybegin'];
-				$this->monthbegin = $this->evtarr['monthbegin'];
-				$this->yearend = $this->evtarr['yearend'];
-				$this->dayend = $this->evtarr['dayend'];
-				$this->monthend = $this->evtarr['monthend'];
-				$this->timebegin = $this->evtarr['timebegin'];
-				$this->timeend = $this->evtarr['timeend'];
-
-				}
-			else
-				{
+			} else {
 				$this->yearbegin = substr($this->evtarr['start_date'], 0,4 );
+			}
+			
+			if (isset($this->evtarr['daybegin'])) {
+				$this->daybegin = $this->evtarr['daybegin'];
+			} else {
 				$this->daybegin = substr($this->evtarr['start_date'], 8, 2);
+			}
+			
+			if (isset($this->evtarr['monthbegin'])) {
+				$this->monthbegin = $this->evtarr['monthbegin'];
+			} else {
 				$this->monthbegin = substr($this->evtarr['start_date'], 5, 2);
+			}
+			
+			if (isset($this->evtarr['yearend'])) {
+				$this->yearend = $this->evtarr['yearend'];
+			} else {
 				$this->yearend = substr($this->evtarr['end_date'], 0,4 );
+			}
+			
+			if (isset($this->evtarr['dayend'])) {
+				$this->dayend = $this->evtarr['dayend'];
+			} else {
 				$this->dayend = substr($this->evtarr['end_date'], 8, 2);
+			}
+			
+			if (isset($this->evtarr['monthend'])) {
+				$this->monthend = $this->evtarr['monthend'];
+			} else {
 				$this->monthend = substr($this->evtarr['end_date'], 5, 2);
+			}
+			
+			if (isset($this->evtarr['timebegin'])) {
+				$this->timebegin = $this->evtarr['timebegin'];
+			} else {
 				$this->timebegin = substr($this->evtarr['start_date'], 11, 5);
+			}
+			
+			if (isset($this->evtarr['timeend'])) {
+				$this->timeend = $this->evtarr['timeend'];
+			} else {
 				$this->timeend = substr($this->evtarr['end_date'], 11, 5);
-				}
+			}
+			
 
 			$tmp = explode(':',$this->timebegin);
 			$this->minbegin = $tmp[0]*60+$tmp[1];
@@ -1231,35 +1261,78 @@ function calendarquerystring()
 function eventAvariabilityCheck(&$avariability_message)
 	{
 	global $babDB, $babBody;
-	if( !isset($_POST['monthbegin']))
-		{
-		return true; /* to rmove php warnings. This function must be rewrited */
-		}
-
-	if (isset($_POST['test_conflicts']))
+	
+	
+	if (isset($_POST['test_conflicts'])) {
 		$_POST['avariability'] = 0;
+	}
 
-	if (!isset($_POST['avariability']) || $_POST['avariability'] == 1 || (isset($_POST['bfree']) && $_POST['bfree'] == 'Y' ))
-		{
+	if (!isset($_POST['avariability']) || $_POST['avariability'] == 1 || (isset($_POST['bfree']) && $_POST['bfree'] == 'Y' )) {
 		$GLOBALS['avariability'] = 0;
 		return true;
-		}
-	$calid = explode(',',$GLOBALS['calid']);
-
-	$bfree = isset($_POST['bfree']) ? $_POST['bfree'] : 'N';
-
-	$timebegin = isset($_POST['timebegin']) ? $_POST['timebegin'] : $babBody->icalendars->starttime;
-	$timeend = isset($_POST['timeend']) ? $_POST['timeend'] : $babBody->icalendars->endtime;
-	
-	$tb = explode(':',$timebegin);
-	$te = explode(':',$timeend);
-
-	$begin = mktime( $tb[0],$tb[1],0,$_POST['monthbegin'], $_POST['daybegin'], $_POST['yearbegin'] );
-	$end = mktime( $te[0],$te[1],0,$_POST['monthend'], $_POST['dayend'], $_POST['yearend'] );
-
-
-	return bab_event_posted::availabilityCheck($calid, $begin, $end, bab_pp('evtid', false), $avariability_message);
 	}
+	
+	
+	$calid = explode(',',$GLOBALS['calid']);
+	$bfree = isset($_POST['bfree']) ? $_POST['bfree'] : 'N';
+	
+	
+	if( isset($_POST['monthbegin'])) {
+	
+		// one event or multiple event in creation
+		
+
+		$timebegin = isset($_POST['timebegin']) ? $_POST['timebegin'] : $babBody->icalendars->starttime;
+		$timeend = isset($_POST['timeend']) ? $_POST['timeend'] : $babBody->icalendars->endtime;
+		
+		$tb = explode(':',$timebegin);
+		$te = explode(':',$timeend);
+	
+		$begin = mktime( $tb[0],$tb[1],0,$_POST['monthbegin'], $_POST['daybegin'], $_POST['yearbegin'] );
+		$end = mktime( $te[0],$te[1],0,$_POST['monthend'], $_POST['dayend'], $_POST['yearend'] );
+		
+		return bab_event_posted::availabilityCheck($calid, $begin, $end, bab_pp('evtid', false), $avariability_message);
+		
+	}
+	else {
+		// multiple events in modification
+
+		$evtid = bab_pp('evtid', false);
+		if (empty($evtid)) {
+			trigger_error('Unexpected error, missing evtid');
+			return false;
+		}
+		
+		$returnvalue = true;
+		
+		$res = $babDB->db_query('SELECT hash FROM '.BAB_CAL_EVENTS_TBL.' WHERE id='.$babDB->quote($evtid));
+		if ($arr = $babDB->db_fetch_assoc($res)) {
+			$res = $babDB->db_query('SELECT id, start_date, end_date FROM '.BAB_CAL_EVENTS_TBL.' WHERE hash='.$babDB->quote($arr['hash']));
+			while ($arr = $babDB->db_fetch_assoc($res)) {
+				$evtid 	= $arr['id'];
+				$begin 	= bab_mktime($arr['start_date']);
+				$end 	= bab_mktime($arr['end_date']);
+				
+				if (false === bab_event_posted::availabilityCheck($calid, $begin, $end, $evtid, $avariability_message)) {
+					$returnvalue = false;
+				}
+			}
+			
+			return $returnvalue;
+		}
+	}
+	
+	return false;
+}
+
+
+
+
+
+
+
+
+
 
 /* main */
 $idx = bab_rp('idx','newevent');
