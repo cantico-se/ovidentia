@@ -57,6 +57,9 @@ function calendarsCategories()
 			$this->nametxt = bab_translate("Name");
 			$this->desctxt = bab_translate("Description");
 			$this->bgcolortxt = bab_translate("Color");
+			$this->add = bab_translate("Add");
+			$this->urladdcat = $GLOBALS['babUrlScript'].'?tg=admcals&idx=addc';
+			
 			$this->t_delete = bab_translate("Delete");
 			$this->res = $babDB->db_query("select * from ".BAB_CAL_CATEGORIES_TBL." ORDER BY name,description ");
 			$this->countcal = $babDB->db_num_rows($this->res);
@@ -146,6 +149,8 @@ function calendarsPublic()
 			$this->disabledtxt = bab_translate("Disabled");
 			$this->rightstxt = bab_translate("Rights");
 			$this->t_delete = bab_translate("Delete");
+			$this->add = bab_translate("Add");
+			$this->urladdcal = $GLOBALS['babUrlScript'].'?tg=admcals&idx=addp';
 			$this->uncheckall = bab_translate("Uncheck all");
 			$this->checkall = bab_translate("Check all");
 			$this->update = bab_translate("Update");
@@ -209,6 +214,8 @@ function calendarsResource()
 			$this->disabledtxt = bab_translate("Disabled");
 			$this->rightstxt = bab_translate("Rights");
 			$this->t_delete = bab_translate("Delete");
+			$this->add = bab_translate("Add");
+			$this->urladdcal = $GLOBALS['babUrlScript'].'?tg=admcals&idx=addr';
 			$this->uncheckall = bab_translate("Uncheck all");
 			$this->checkall = bab_translate("Check all");
 			$this->update = bab_translate("Update");
@@ -628,7 +635,7 @@ switch($idx)
 		$babBody->addItemMenu("pub", bab_translate("Public"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
 		$babBody->addItemMenu("res", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
 		$babBody->addItemMenu("cats", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=admcals&idx=cats");
-		$babBody->addItemMenu("addc", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admcals&idx=addc");
+		/*$babBody->addItemMenu("addc", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admcals&idx=addc");*/
 		}
 		break;
 
@@ -683,7 +690,7 @@ switch($idx)
 		$babBody->title = bab_translate("Resources calendars List");
 		$babBody->addItemMenu("pub", bab_translate("PublicCalendar"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
 		$babBody->addItemMenu("res", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
-		$babBody->addItemMenu("addr", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admcals&idx=addr");
+		/*$babBody->addItemMenu("addr", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admcals&idx=addr");*/
 		if( $babBody->isSuperAdmin )
 		{
 		$babBody->addItemMenu("cats", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=admcals&idx=cats");
@@ -694,7 +701,7 @@ switch($idx)
 		calendarsPublic();
 		$babBody->title = bab_translate("Public calendars List");
 		$babBody->addItemMenu("pub", bab_translate("PublicCalendar"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
-		$babBody->addItemMenu("addp", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admcals&idx=addp");
+		/*$babBody->addItemMenu("addp", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admcals&idx=addp");*/
 		$babBody->addItemMenu("res", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
 		if( $babBody->isSuperAdmin )
 		{
