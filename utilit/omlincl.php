@@ -1303,7 +1303,7 @@ class bab_ArticleFiles extends bab_handler
 			$this->count = count($this->IdEntries);
 			if( $this->count > 0 )
 				{
-				$this->res = $babDB->db_query("select aft.*, at.id_topic from ".BAB_ART_FILES_TBL." aft left join ".BAB_ARTICLES_TBL." at on aft.id_article=at.id where aft.id_article IN (".$babDB->quote($this->IdEntries).")");
+				$this->res = $babDB->db_query("select aft.*, at.id_topic from ".BAB_ART_FILES_TBL." aft left join ".BAB_ARTICLES_TBL." at on aft.id_article=at.id where aft.id_article IN (".$babDB->quote($this->IdEntries).") ORDER BY aft.ordering");
 				$this->count = $babDB->db_num_rows($this->res);
 				}
 		}
