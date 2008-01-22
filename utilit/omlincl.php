@@ -3144,28 +3144,46 @@ class bab_RecentFiles extends bab_handler
 			$oCriteria = $oCriteria->_and($oIdDgOwner->in($arr['iIdDgOwner']));
 			
 			$oFmFolder = $this->oFmFolderSet->get($oCriteria);
-			$iId = $oFmFolder->getId();
-
-			$this->ctx->curctx->push('CIndex', $this->idx);
-			$this->ctx->curctx->push('FileId', $arr['id']);
-			$this->ctx->curctx->push('FileName', $arr['name']);
-			$this->ctx->curctx->push('FilePath', $arr['path']);
-			$this->ctx->curctx->push('FileDescription', $arr['description']);
-			$this->ctx->curctx->push('FileUrl', $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$iId."&gr=".$arr['bgroup']."&path=".urlencode($sPath));
-			$this->ctx->curctx->push('FilePopupUrl', $GLOBALS['babUrlScript']."?tg=fileman&idx=viewFile&idf=".$arr['id']."&id=".$iId."&gr=".$arr['bgroup']."&path=".urlencode($sPath)."&file=".urlencode($arr['name']));
-			$this->ctx->curctx->push('FileUrlGet', $GLOBALS['babUrlScript']."?tg=fileman&sAction=getFile&id=".$iId."&gr=".$arr['bgroup']."&path=".urlencode($sPath)."&file=".urlencode($arr['name']) . '&idf=' . $arr['id']);
-			$this->ctx->curctx->push('FileAuthor', $arr['author']);
-			$this->ctx->curctx->push('FileModifiedBy', $arr['modifiedby']);
-			$this->ctx->curctx->push('FileDate', bab_mktime($arr['modified']));
-			
-			$sFullPathname = BAB_FileManagerEnv::getCollectivePath($oFmFolder->getDelegationOwnerId()) . $arr['path'] . $arr['name'];
-			if (file_exists($sFullPathname))
+			if(!is_null($oFmFolder))
 			{
-				$this->ctx->curctx->push('FileSize', bab_formatSizeFile(filesize($sFullPathname)));
+				$iId = $oFmFolder->getId();
+	
+				$this->ctx->curctx->push('CIndex', $this->idx);
+				$this->ctx->curctx->push('FileId', $arr['id']);
+				$this->ctx->curctx->push('FileName', $arr['name']);
+				$this->ctx->curctx->push('FilePath', $arr['path']);
+				$this->ctx->curctx->push('FileDescription', $arr['description']);
+				$this->ctx->curctx->push('FileUrl', $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$iId."&gr=".$arr['bgroup']."&path=".urlencode($sPath));
+				$this->ctx->curctx->push('FilePopupUrl', $GLOBALS['babUrlScript']."?tg=fileman&idx=viewFile&idf=".$arr['id']."&id=".$iId."&gr=".$arr['bgroup']."&path=".urlencode($sPath)."&file=".urlencode($arr['name']));
+				$this->ctx->curctx->push('FileUrlGet', $GLOBALS['babUrlScript']."?tg=fileman&sAction=getFile&id=".$iId."&gr=".$arr['bgroup']."&path=".urlencode($sPath)."&file=".urlencode($arr['name']) . '&idf=' . $arr['id']);
+				$this->ctx->curctx->push('FileAuthor', $arr['author']);
+				$this->ctx->curctx->push('FileModifiedBy', $arr['modifiedby']);
+				$this->ctx->curctx->push('FileDate', bab_mktime($arr['modified']));
+				
+				$sFullPathname = BAB_FileManagerEnv::getCollectivePath($oFmFolder->getDelegationOwnerId()) . $arr['path'] . $arr['name'];
+				if (file_exists($sFullPathname))
+				{
+					$this->ctx->curctx->push('FileSize', bab_formatSizeFile(filesize($sFullPathname)));
+				}
+				else
+				{
+					$this->ctx->curctx->push('FileSize', '???');
+				}
 			}
-			else
+			else 
 			{
-				$this->ctx->curctx->push('FileSize', '???');
+				$this->ctx->curctx->push('CIndex', $this->idx);
+				$this->ctx->curctx->push('FileId', 0);
+				$this->ctx->curctx->push('FileName', '');
+				$this->ctx->curctx->push('FilePath', '');
+				$this->ctx->curctx->push('FileDescription', '');
+				$this->ctx->curctx->push('FileUrl', '');
+				$this->ctx->curctx->push('FilePopupUrl', '');
+				$this->ctx->curctx->push('FileUrlGet', '');
+				$this->ctx->curctx->push('FileAuthor', '');
+				$this->ctx->curctx->push('FileModifiedBy', '');
+				$this->ctx->curctx->push('FileDate', '');
+				$this->ctx->curctx->push('FileSize', '');
 			}
 			$this->ctx->curctx->push('FileFolderId', $arr['id_owner']);
 			$this->idx++;
