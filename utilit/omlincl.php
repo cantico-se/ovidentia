@@ -6065,6 +6065,7 @@ function bab_Addon($args)
 				$oldAddonHtmlPath =  isset($GLOBALS['babAddonHtmlPath'])? $GLOBALS['babAddonHtmlPath']: '';
 				$oldAddonUpload =  isset($GLOBALS['babAddonUpload'])? $GLOBALS['babAddonUpload']: '';
 
+				include_once $GLOBALS['babInstallPath']."utilit/addonsincl.php";
 				bab_setAddonGlobals($addonid);
 				require_once( $addonpath."/ovml.php" );
 
