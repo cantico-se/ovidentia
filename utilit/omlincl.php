@@ -2244,43 +2244,30 @@ bab_debug(
 class bab_File extends bab_handler
 {
 	var $arr;
-	var $index;
 	var $count;
 	var $oFolderFile = null;
 	var $iIdRootFolder = 0;
 	var $tags = array();
+	var $oFolderFileSet = null;
 	
 	function bab_File(&$ctx)
 	{
 		global $babBody, $babDB;
-		include_once $GLOBALS['babInstallPath']."utilit/fileincl.php";
-		
 		require_once $GLOBALS['babInstallPath'] . 'utilit/fileincl.php';
 
-		$oFolderFileSet = new BAB_FolderFileSet();
-		$oId = $oFolderFileSet->aField['iId'];
+		$this->oFolderFileSet = new BAB_FolderFileSet();
+		$oId = $this->oFolderFileSet->aField['iId'];
 
 		$this->bab_handler($ctx);
 		$this->count = 0;
-		$fileid = (int) $ctx->get_value('fileid');
-		if(0 !== $fileid)
+		$sFileId = (string) $ctx->get_value('fileid');
+		if(0 !== strlen(trim($sFileId)))
 		{
-			$this->oFolderFile = $oFolderFileSet->get($oId->in($fileid));
-			if(!is_null($this->oFolderFile))
-			{
-				if('Y' === $this->oFolderFile->getGroup() && '' === $this->oFolderFile->getState() && 'Y' === $this->oFolderFile->getConfirmed() && bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $this->oFolderFile->getOwnerId()))
-				{
-					$this->count = 1;
-					
-					$rs = $babDB->db_query("select tag_name from ".BAB_TAGS_TBL." tt left join ".BAB_FILES_TAGS_TBL." ftt on tt.id = ftt.id_tag WHERE id_file='".$this->oFolderFile->getId()."'");
-					while( $rr = $babDB->db_fetch_array($rs))
-					{
-						$this->tags[] = $rr['tag_name'];
-					}
-				}
-			}
+			$aFileId = explode(',', $sFileId);
+			$this->oFolderFileSet->select($oId->in($aFileId));
+			$this->count = $this->oFolderFileSet->count();
+			$this->ctx->curctx->push('CCount', $this->count);
 		}
-		$this->ctx->curctx->push('CCount', $this->count);
 	}
 
 	function getnext()
@@ -2289,9 +2276,30 @@ class bab_File extends bab_handler
 		
 		if($iIndex < $this->count)
 		{
-			$iIndex++;
-			if(null !== $this->oFolderFile)
+			$bHaveFileAcess = false;
+			
+			while($iIndex < $this->count &&  false === $bHaveFileAcess)
 			{
+				$iIndex++;
+				$this->oFolderFile = $this->oFolderFileSet->next();
+				if(!is_null($this->oFolderFile))
+				{
+					if('Y' === $this->oFolderFile->getGroup() && '' === $this->oFolderFile->getState() && 'Y' === $this->oFolderFile->getConfirmed() && bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $this->oFolderFile->getOwnerId()))
+					{
+						$bHaveFileAcess = true;
+					}
+				}
+			}
+			
+			if(true === $bHaveFileAcess)
+			{
+				global $babBody, $babDB;
+				$rs = $babDB->db_query("select tag_name from ".BAB_TAGS_TBL." tt left join ".BAB_FILES_TAGS_TBL." ftt on tt.id = ftt.id_tag WHERE id_file='".$this->oFolderFile->getId()."'");
+				while( $rr = $babDB->db_fetch_array($rs))
+				{
+					$this->tags[] = $rr['tag_name'];
+				}
+				
 				$iIdAuthor = (0 === $this->oFolderFile->getModifierId() ? $this->oFolderFile->getAuthorId() : $this->oFolderFile->getModifierId());
 				
 				$this->ctx->curctx->push('CIndex', $this->idx);
@@ -2317,12 +2325,9 @@ class bab_File extends bab_handler
 					'&id=' . $this->iIdRootFolder . '&gr=' . $sGroup . '&path=' . $sEncodedPath . '&file=' . urlencode($this->oFolderFile->getName()));
 					
 				$this->ctx->curctx->push('FileUrlGet', $GLOBALS['babUrlScript'] . '?tg=fileman&sAction=getFile&id=' . $this->oFolderFile->getOwnerId() . '&gr=' . 
-					$sGroup . '&path=' . $sEncodedPath . '&file=' . urlencode($this->oFolderFile->getName()) . '&idf=' . $oFolderFile->getId());
+					$sGroup . '&path=' . $sEncodedPath . '&file=' . urlencode($this->oFolderFile->getName()) . '&idf=' . $this->oFolderFile->getId());
 					
-//				$oFileManagerEnv =& getEnvObject();
-//				$sUploadPath = $oFileManagerEnv->getCollectiveRootFmPath();
-				
-				$sFullPathName = BAB_FileManagerEnv::getCollectivePath($oFmFolder->getDelegationOwnerId()) . $this->oFolderFile->getPathName() . $this->oFolderFile->getName();
+				$sFullPathName = BAB_FileManagerEnv::getCollectivePath($this->oFolderFile->getDelegationOwnerId()) . $this->oFolderFile->getPathName() . $this->oFolderFile->getName();
 				if(file_exists($sFullPathName))
 				{
 					$this->ctx->curctx->push('FileSize', bab_formatSizeFile(filesize($sFullPathName)));
