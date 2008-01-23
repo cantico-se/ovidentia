@@ -26,20 +26,23 @@ include_once $babInstallPath."admin/acl.php";
 
 $GLOBALS['addons_files_location'] = 
 array('loc_in' => array(
-				"addons",
-				"lang/addons",
-				"styles/addons",
-				"skins/ovidentia/templates/addons",
-				"skins/ovidentia/ovml/addons",
-				"skins/ovidentia/images/addons"
-				),			
+				$GLOBALS['babInstallPath'].'addons',
+				$GLOBALS['babInstallPath'].'lang/addons',
+				$GLOBALS['babInstallPath'].'styles/addons',
+				$GLOBALS['babInstallPath'].'skins/ovidentia/templates/addons',
+				$GLOBALS['babInstallPath'].'skins/ovidentia/ovml/addons',
+				$GLOBALS['babInstallPath'].'skins/ovidentia/images/addons',
+				'skins'
+				),	
+
 	'loc_out' => array(
 				"programs",
 				"langfiles",
 				"styles",
 				"skins/ovidentia/templates",
 				"skins/ovidentia/ovml",
-				"skins/ovidentia/images"
+				"skins/ovidentia/images",
+				'theme'
 				)
 			);
 
@@ -416,8 +419,8 @@ function export($id)
 	$res = array();
 	foreach ($loc_in as $k => $path)
 		{
-		$res = rd($GLOBALS['babInstallPath'].$path.'/'.$row['title']);
-		$len = strlen($GLOBALS['babInstallPath'].$path.'/'.$row['title']);
+		$res = rd($path.'/'.$row['title']);
+		$len = strlen($path.'/'.$row['title']);
 		foreach ($res as $file)
 			{
 			if (is_file($file))
@@ -492,8 +495,8 @@ function del($id)
 			
 			foreach ($loc_in as $path)
 				{
-				if (is_dir($GLOBALS['babInstallPath'].$path.'/'.$row['title'])) {
-					if (false === deldir($GLOBALS['babInstallPath'].$path.'/'.$row['title'])) {
+				if (is_dir($path.'/'.$row['title'])) {
+					if (false === deldir($path.'/'.$row['title'])) {
 
 						$babBody->addError(bab_translate('The addon files are not deleteable'));
 						return false;
@@ -684,9 +687,9 @@ function import()
 		
 		foreach ($loc_in as $directory)
 			{
-			if (!is_dir($GLOBALS['babInstallPath'].$directory))
+			if (!is_dir($directory))
 				{
-				bab_mkdir($GLOBALS['babInstallPath'].$directory,$GLOBALS['babMkdirMode']);
+				bab_mkdir($directory);
 				}
 			}
 		
@@ -730,7 +733,7 @@ function import()
 		
 		foreach ($file_zipid as $arr)
 			{
-			$path = $GLOBALS['babInstallPath'].$loc_in[$arr[0]].'/'.$addon_name;
+			$path = $loc_in[$arr[0]].'/'.$addon_name;
 			$subdir = dirname(substr($zipcontents[$arr[2]]['filename'],strlen($loc_out[$arr[0]])+1));
 			$subdir = isset($subdir) && $subdir != '.' ? '/'.$subdir : '';
 			create_directory($path.$subdir);
