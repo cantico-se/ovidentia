@@ -33,7 +33,7 @@ function listPosts($forum, $thread, $post)
 	{
 	global $babBody;
 
-	class temp
+	class listPostsCls
 		{
 	
 		var $arr = array();
@@ -58,7 +58,7 @@ function listPosts($forum, $thread, $post)
 		var $brecent;
 		var $altrecentposts;
 
-		function temp($forum, $thread, $post)
+		function listPostsCls($forum, $thread, $post)
 			{
 			global $babBody, $babDB, $moderator, $views, $flat;
 			$this->subject = bab_translate("Subject");
@@ -427,7 +427,7 @@ function listPosts($forum, $thread, $post)
 
 		}
 	
-	$temp = new temp($forum, $thread, $post);
+	$temp = new listPostsCls($forum, $thread, $post);
 	$babBody->babecho(	bab_printTemplate($temp,"posts.html", "newpostslist"));
 	return $temp->count;
 	}
@@ -437,7 +437,7 @@ function listPostsFlat($forum, $thread, $open, $pos)
 	{
 	global $babBody;
 
-	class temp
+	class listPostsFlatCls
 		{
 	
 		var $arr = array();
@@ -466,7 +466,7 @@ function listPostsFlat($forum, $thread, $open, $pos)
 		var $altrecentposts;
 
 
-		function temp($forum, $thread, $open, $pos)
+		function listPostsFlatCls($forum, $thread, $open, $pos)
 			{
 			global $babBody, $babDB, $moderator, $views, $idx;
 			$this->subject = bab_translate("Subject");
@@ -734,7 +734,7 @@ function listPostsFlat($forum, $thread, $open, $pos)
 			}
 		}
 	
-	$temp = new temp($forum, $thread, $open, $pos);
+	$temp = new listPostsFlatCls($forum, $thread, $open, $pos);
 	$babBody->babecho(	bab_printTemplate($temp,"posts.html", "postslistflat"));
 	return $temp->count;
 	}
@@ -744,7 +744,7 @@ function newReply($forum, $thread, $post)
 	{
 	global $babBody;
 	
-	class temp
+	class newReplyCls
 		{
 		var $subject;
 		var $name;
@@ -759,7 +759,7 @@ function newReply($forum, $thread, $post)
 		var $noteforum;
 		
 
-		function temp($forum, $thread, $post)
+		function newReplyCls($forum, $thread, $post)
 			{
 			global $babBody, $BAB_SESS_USER, $babDB, $flat;
 			$this->subject = bab_translate("Subject");
@@ -843,7 +843,7 @@ function newReply($forum, $thread, $post)
 			}
 		}
 
-	$temp = new temp($forum, $thread, $post);
+	$temp = new newReplyCls($forum, $thread, $post);
 	$babBody->babecho(	bab_printTemplate($temp,"posts.html", "postcreate"));
 	}
 
@@ -851,7 +851,7 @@ function editPost($forum, $thread, $post)
 	{
 	global $babBody;
 	
-	class temp
+	class editPostCls
 		{
 		var $subject;
 		var $name;
@@ -863,7 +863,7 @@ function editPost($forum, $thread, $post)
 		var $newpost;
 		var $arr = array();
 
-		function temp($forum, $thread, $post)
+		function editPostCls($forum, $thread, $post)
 			{
 			global $babBody, $babDB, $BAB_SESS_USERID, $flat, $moderator;
 			$forums = $babBody->get_forums();
@@ -922,7 +922,7 @@ function editPost($forum, $thread, $post)
 			}
 		}
 
-	$temp = new temp($forum, $thread, $post);
+	$temp = new editPostCls($forum, $thread, $post);
 	if( $temp->access )
 		{
 		$babBody->babecho(	bab_printTemplate($temp,"posts.html", "postedit"));
@@ -935,7 +935,7 @@ function deleteThread($forum, $thread)
 	{
 	global $babBody;
 
-	class temp
+	class deleteThreadCls
 		{
 		var $warning;
 		var $message;
@@ -947,7 +947,7 @@ function deleteThread($forum, $thread)
 		var $topics;
 		var $article;
 
-		function temp($forum, $thread)
+		function deleteThreadCls($forum, $thread)
 			{
 			global $flat;
 			$this->message = bab_translate("Are you sure you want to delete this thread");
@@ -960,7 +960,7 @@ function deleteThread($forum, $thread)
 			}
 		}
 
-	$temp = new temp($forum, $thread);
+	$temp = new deleteThreadCls($forum, $thread);
 	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
 
@@ -1015,7 +1015,7 @@ function viewPost($thread, $post)
 	{
 	global $babBody;
 
-	class temp
+	class viewPostCls
 		{
 	
 		var $postmessage;
@@ -1025,7 +1025,7 @@ function viewPost($thread, $post)
 		var $title;
 		var $close;
 
-		function temp($thread, $post)
+		function viewPostCls($thread, $post)
 			{
 			global $babDB;
 			$req = "select forum from ".BAB_THREADS_TBL." where id='".$babDB->db_escape_string($thread)."'";
@@ -1046,7 +1046,7 @@ function viewPost($thread, $post)
 			}
 		}
 	
-	$temp = new temp($thread, $post);
+	$temp = new viewPostCls($thread, $post);
 	echo bab_printTemplate($temp,"posts.html", "postview");
 	}
 
