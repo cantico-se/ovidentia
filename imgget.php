@@ -33,8 +33,8 @@ function getFmImage($idf, $w, $h)
 	if( $res && $babDB->db_num_rows($res) > 0 )
 	{
 		$file = $babDB->db_fetch_assoc($res);
-		$uploadpath = bab_FmFolderHelper::getUploadPath();
-		$fullpath = $uploadpath . $file['path'] . $file['name'];
+		$sUploadPath = BAB_FileManagerEnv::getCollectivePath(bab_getCurrentUserDelegation());
+		$fullpath = $sUploadPath . $file['path'] . $file['name'];
 
 		return bab_getResizedImage($fullpath, $w, $h);
 	}
