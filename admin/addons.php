@@ -715,18 +715,22 @@ function import()
 			return false;
 
 
-		function create_directory($path)
-			{
-			if (!is_dir($path) && !bab_mkdir($path))
-				{
-				$path = trim($path,'/.');
-				$l = strlen($path) - strlen(strrchr($path, '/'));
-				$path = substr($path, 0,$l);
-				create_directory($path);
-				if (!is_dir($path))
-					bab_mkdir($path);
+		function create_directory($str) {
+			$path = explode('/',$str);
+			$created = '';
+			foreach($path as $d) {
+			
+				if (!empty($created)) {
+					$created .= '/';
+				}
+			
+				$created.= $d;
+				if (!is_dir($created)) {
+					bab_mkdir($created);
 				}
 			}
+		}
+		
 		
 		foreach ($file_zipid as $arr)
 			{
