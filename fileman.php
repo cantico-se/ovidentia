@@ -1799,7 +1799,17 @@ function getFile()
 
 			$GLOBALS['babWebStat']->addFilesManagerFile($oFolderFile->getId());
 			
-			$sFullPathName = $oFileManagerEnv->getCollectiveRootFmPath() . $oFolderFile->getPathName() . $oFolderFile->getName();
+			$sUploadPath = '';
+			if(!$oFileManagerEnv->userIsInPersonnalFolder())
+			{
+				$sUploadPath = $oFileManagerEnv->getCollectiveRootFmPath();
+			}
+			else 
+			{
+				$sUploadPath = $oFileManagerEnv->getPersonnalFolderPath();
+			}
+			
+			$sFullPathName = $sUploadPath . $oFolderFile->getPathName() . $oFolderFile->getName();
 			$mime = bab_getFileMimeType($sFullPathName);
 			
 			if(file_exists($sFullPathName))
