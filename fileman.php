@@ -2180,7 +2180,7 @@ function viewFile()
 				$this->fpostedbytxt = bab_translate("Posted by");
 				$this->fpostedby = bab_toHtml(bab_getUserName($oFolderFile->getModifierId() == 0 ? $oFolderFile->getAuthorId() : $oFolderFile->getModifierId()));
 
-				$this->geturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&sAction=getFile&id=".$this->id."&gr=".$oFolderFile->getGroup()."&path=".urlencode($this->path)."&file=".urlencode($oFolderFile->getName()).'&idf='.$oFolderFile->getId());
+				$this->geturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&sAction=getFile&id=".$this->id."&gr=".$oFolderFile->getGroup()."&path=".urlencode($oFileManagerEnv->sPath)."&file=".urlencode($oFolderFile->getName()).'&idf='.$oFolderFile->getId());
 				$this->download = bab_translate("Download");
 
 				$this->file = bab_translate("File");
