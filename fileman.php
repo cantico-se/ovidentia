@@ -1719,8 +1719,8 @@ function displayAddFileForm()
 				$this->maxsize =  floor($GLOBALS['babMaxFileSize'] / 1000000 )." ".bab_translate("Mb");
 			}
 			
-			$description = bab_pp('description');
-			$keywords = bab_pp('keywords');
+			$description = bab_pp('description', null);
+			$keywords = bab_pp('keywords', null);
 			
 			$oFileManagerEnv =& getEnvObject();
 			
@@ -1729,8 +1729,8 @@ function displayAddFileForm()
 			$this->gr = $oFileManagerEnv->sGr;
 			
 			$this->maxfilesize = $GLOBALS['babMaxFileSize'];
-			$this->descval = isset($description[0]) ? bab_toHtml($description[0]) : "";
-			$this->keysval = isset($keywords[0]) ? bab_toHtml($keywords[0]) : "";
+			$this->descval = (!is_null($description)) ? bab_toHtml($description[0]) : '';
+			$this->keysval = (!is_null($keywords)) ? bab_toHtml($keywords[0]) : '';
 			if($this->gr == 'Y')
 			{
 				$this->res = $babDB->db_query("select * from ".BAB_FM_FIELDS_TBL." where id_folder='".$babDB->db_escape_string($this->id)."'");
