@@ -120,7 +120,7 @@ function listFolders()
 		var $urlupdaname;
 		var $version;
 		var $altbg = true;
-		
+		var $add = '';
 		var $oFmFolderSet = null;
 
 		function temp()
@@ -137,6 +137,7 @@ function listFolders()
 			$this->urlrightsname = bab_translate("Rights");
 			$this->uncheckall = bab_translate("Uncheck all");
 			$this->checkall = bab_translate("Check all");
+			$this->add = bab_translate("Add");
 
 			global $babBody;
 			$this->oFmFolderSet = new BAB_FmFolderSet();
