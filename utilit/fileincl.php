@@ -4922,7 +4922,7 @@ function canPasteFolder($iIdSrcRootFolder, $sSrcPath, $bSrcPathIsCollective, $iI
 	
 	if($oFileManagerEnv->userIsInCollectiveFolder() || ($oFileManagerEnv->userIsInRootFolder() && $bSrcPathIsCollective))
 	{
-		$sRootFmPath = $oFileManagerEnv->getCollectiveRootFmPath();
+		$sRootFmPath = BAB_FileManagerEnv::getCollectivePath(bab_getCurrentUserDelegation());
 		$oOwnerSrcFmFolder = null;
 		$bParentPath = true;
 		
