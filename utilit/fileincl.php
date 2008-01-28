@@ -834,7 +834,7 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
  * @param	int			$newfolder
  * @param	boolean		$descup			Update description & keywords
  */
-function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonly, $confirm, $bnotify, $newfolder, $descup)
+function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonly, $confirm, $bnotify, $descup)
 {
 	global $babBody, $babDB, $BAB_SESS_USERID;
 
@@ -1054,65 +1054,6 @@ function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonl
 				$readonly = 'N';
 			}
 			$tmp[] = "readonly='".$babDB->db_escape_string($readonly)."'";
-		}
-
-
-		if(!empty($newfolder))
-		{
-			$oFmFolderSet = new BAB_FmFolderSet();
-			$oId =& $oFmFolderSet->aField['iId'];
-
-			$oFmFolder = $oFmFolderSet->get($oId->in($newfolder));
-			if(!is_null($oFmFolder))
-			{
-				$sRelativePath = (strlen(trim($oFmFolder->getRelativePath())) === 0) ? $oFmFolder->getName() . '/' :
-				$oFmFolder->getRelativePath();
-
-				$sNewPathName = $sUploadPath . $sRelativePath;
-				if(!is_dir($sNewPathName))
-				{
-					bab_mkdir($sNewPathName, $GLOBALS['babMkdirMode']);
-				}
-
-				if(rename($sFullPathName, $sNewPathName . $osfname))
-				{
-					$oFolderFileFieldValueSet = new BAB_FolderFileFieldValueSet();
-					$oIdFile =& $oFolderFileFieldValueSet->aField['iIdFile'];
-					$oFolderFileFieldValueSet->remove($oIdFile->in($idf));
-
-					$tmp[] = "id_owner='".$babDB->db_escape_string($newfolder)."'";
-					$tmp[] = "path=''";
-					$arr['id_owner'] = $newfolder;
-
-					if(is_dir($sUploadPath . $oFolderFile->getPathName() . BAB_FVERSION_FOLDER . '/'))
-					{
-						if(!is_dir($sNewPathName . BAB_FVERSION_FOLDER . '/'))
-						{
-							bab_mkdir($sNewPathName . BAB_FVERSION_FOLDER, $GLOBALS['babMkdirMode']);
-						}
-
-						$oFolderFileVersionSet = new BAB_FolderFileVersionSet();
-						$oIdFile =& $oFolderFileVersionSet->aField['iIdFile'];
-						$oFolderFileVersionSet->select($oIdFile->in($idf));
-
-						while(null !== ($oFolderFileVersion = $oFolderFileVersionSet->next()))
-						{
-							$sFileName = $oFolderFileVersion->getMajorVer() . ',' . $oFolderFileVersion->getMinorVer() . ',' . $osfname;
-
-							$sSrc = $sUploadPath . $oFolderFile->getPathName() . BAB_FVERSION_FOLDER . '/' . $sFileName;
-
-							$sTrg = $sUploadPath . $sNewPathName . BAB_FVERSION_FOLDER . '/' . $sFileName;
-
-							rename($sSrc, $sTrg);
-						}
-					}
-				}
-			}
-		}
-
-		if(count($tmp) > 0)
-		{
-			$babDB->db_query("update ".BAB_FILES_TBL." set ".implode(", ", $tmp)." where id='".$babDB->db_escape_string($idf)."'");
 		}
 
 		if('Y' === $oFolderFile->getGroup())
