@@ -32,7 +32,13 @@ function deladdon(id)
 			<td align="center">
 			<!--#if upgradeurl --><a href="{ upgradeurl }"><img border="0" src="{ babSkinPath }images/Puces/exe.gif"></a><!--#endif upgradeurl -->&nbsp;</td>
 			<td align="center">{ addversion }</td>
-			<td align="center"><a class="BabSiteAdminListLink" href="{ viewurl }">{ view }</a></td>
+			<td align="center">
+				<!--#if access_control -->
+				<a class="BabSiteAdminListLink" href="{ viewurl }">{ view }</a>
+				<!--#else access_control -->
+				&nbsp;
+				<!--#endif access_control -->
+			</td>
 			<td align="center"><a href="{ exporturl }" title="{ t_download }"><img alt="{ t_download }" border="0" src="{ babSkinPath }images/Puces/download.gif"></a></td>
 			<td align="center">
 				<!--#if history -->
@@ -47,7 +53,11 @@ function deladdon(id)
 				<!--#endif delete -->
 			</td>
 			<td valign="middle" width="0%" align="center"> 
-			<input type="checkbox" name="addons[]" { catchecked } value="{ arr[id] }">
+				<!--#if access_control -->
+				<input type="checkbox" name="addons[]" { catchecked } value="{ arr[id] }">
+				<!--#else access_control -->
+				&nbsp;
+				<!--#endif access_control -->
 			</td>
 			</tr>
 			<!--#endin getnext -->

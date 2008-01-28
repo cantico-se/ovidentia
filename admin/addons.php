@@ -186,6 +186,8 @@ function addonsList($upgradeall)
 				else
 					$this->catchecked = "";
 				$arr_ini = @parse_ini_file( $GLOBALS['babAddonsPath'].$this->arr['title']."/addonini.php");
+				
+				$this->access_control = isset($arr_ini['addon_access_control']) ? (int) $arr_ini['addon_access_control']: 1;
 				$this->delete = isset($arr_ini['delete']) && $arr_ini['delete']==1 ? true : false;
 				$this->addversion = "";
 				$this->description = "";
@@ -203,7 +205,11 @@ function addonsList($upgradeall)
 								
 								if (!function_exists($func_name))
 									{
-									$req = "update ".BAB_ADDONS_TBL." set version='".$arr_ini['version']."', installed='Y' where id='".$this->arr['id']."'";
+									$req = "update ".BAB_ADDONS_TBL." set 
+										version=".$this->db->quote($arr_ini['version']).", 
+										installed='Y' 
+										where id=".$this->db->quote($this->arr['id']);
+										
 									$this->db->db_query($req);
 									$this->addversion = $arr_ini['version'];
 									$this->arr['installed'] = 'Y';
