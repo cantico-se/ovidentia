@@ -2245,14 +2245,6 @@ function viewFile()
 						}
 	
 						$this->bviewnf = true;
-	
-						$this->arrfolders = array();
-						$this->movetofolder = bab_translate("Move to folder");
-						
-						$this->oFmFolderSet = new BAB_FmFolderSet();
-						$oId =& $this->oFmFolderSet->aField['iId'];
-				
-						$this->oFmFolderSet->select($oId->notIn($oFolderFile->getOwnerId()));
 					}
 					
 					if('Y' === $oFolderFile->getGroup())
@@ -2332,21 +2324,6 @@ function viewFile()
 			{
 				$GLOBALS['babBody']->title = bab_translate("Access denied");
 			}
-		}
-
-		function getnextfm()
-		{
-			if(!is_null($this->oFmFolderSet) && $this->oFmFolderSet->count() > 0)
-			{
-				$oFmFolder = $this->oFmFolderSet->next();
-				if(!is_null($oFmFolder))
-				{
-					$this->folder = bab_toHtml($oFmFolder->getName());
-					$this->folderid = $oFmFolder->getId();
-					return true;
-				}
-			}
-			return false;
 		}
 
 		function getnextfield()
@@ -2638,8 +2615,6 @@ function displayFolderForm()
 		'?tg=fileman&idx=displayFolderForm&id=' . $oFileManagerEnv->iId . '&gr=' . $oFileManagerEnv->sGr . 
 		'&path=' . urlencode($oFileManagerEnv->sPath));
 	
-	$babBody->title = bab_translate("Add a new folder");
-		
 	if($oFileManagerEnv->userIsInCollectiveFolder() || $oFileManagerEnv->userIsInRootFolder())
 	{
 		if(canCreateFolder($oFileManagerEnv->sRelativePath))
@@ -3696,7 +3671,7 @@ switch($sAction)
 		$bSuccess = saveUpdateFile(bab_pp('idf'), bab_fmFile::upload('uploadf'), 
 			bab_pp('fname'), bab_pp('description'), bab_pp('keywords'), 
 			bab_pp('readonly'), bab_pp('confirm'), bab_pp('bnotify'), 
-			bab_pp('newfolder'), isset($_POST['description']));
+			isset($_POST['description']));
 		if(false === $bSuccess)
 		{
 			$idx = 'viewFile';
