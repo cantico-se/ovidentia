@@ -3365,6 +3365,24 @@ function editFolderForCollectiveDir()
 				$sVersioning			= (string) bab_pp('sVersioning', 'N');
 				$sDisplay				= (string) bab_pp('sDisplay', 'N');
 				$sAddTags				= (string) bab_pp('sAddTags', 'Y');
+
+				$iIdOwner				= 0;
+				//simpleToCollective
+				if('collective' === $sType)
+				{
+					$oFirstCollectiveParent = BAB_FmFolderSet::getFirstCollectiveFolder(removeLastPath($sRelativePath));
+					if(!is_null($oFirstCollectiveParent))
+					{		
+						$iIdOwner				= (int) $oFirstCollectiveParent->getId();			
+						$sActive				= (string) $oFirstCollectiveParent->getActive();
+						$iIdApprobationScheme	= (int) $oFirstCollectiveParent->getApprobationSchemeId();
+						$sAutoApprobation		= (string) $oFirstCollectiveParent->getAutoApprobation();
+						$sNotification			= (string) $oFirstCollectiveParent->getFileNotify();
+						$sVersioning			= (string) $oFirstCollectiveParent->getVersioning();
+						$sDisplay				= (string) $oFirstCollectiveParent->getHide();
+						$sAddTags				= (string) $oFirstCollectiveParent->getAddTags();
+					}
+				}
 				
 				$oFmFolder->setName($sDirName);
 				$oFmFolder->setActive($sActive);
@@ -3376,7 +3394,14 @@ function editFolderForCollectiveDir()
 				$oFmFolder->setAddTags($sAddTags);
 				$oFmFolder->setVersioning($sVersioning);
 				$oFmFolder->setAutoApprobation($sAutoApprobation);
-				$oFmFolder->save();
+				if(true === $oFmFolder->save() && 0 !== $iIdOwner)
+				{
+					aclDuplicateRights(BAB_FMUPLOAD_GROUPS_TBL, $iIdOwner, BAB_FMUPLOAD_GROUPS_TBL, $oFmFolder->getId());
+					aclDuplicateRights(BAB_FMDOWNLOAD_GROUPS_TBL, $iIdOwner, BAB_FMDOWNLOAD_GROUPS_TBL, $oFmFolder->getId());
+					aclDuplicateRights(BAB_FMUPDATE_GROUPS_TBL, $iIdOwner, BAB_FMUPDATE_GROUPS_TBL, $oFmFolder->getId());
+					aclDuplicateRights(BAB_FMMANAGERS_GROUPS_TBL, $iIdOwner, BAB_FMMANAGERS_GROUPS_TBL, $oFmFolder->getId());
+					aclDuplicateRights(BAB_FMNOTIFY_GROUPS_TBL, $iIdOwner, BAB_FMNOTIFY_GROUPS_TBL, $oFmFolder->getId());
+				}
 				
 				if($bChangeFileIdOwner)
 				{
