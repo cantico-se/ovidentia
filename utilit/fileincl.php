@@ -1055,7 +1055,12 @@ function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonl
 			}
 			$tmp[] = "readonly='".$babDB->db_escape_string($readonly)."'";
 		}
-
+		
+		if(count($tmp) > 0)
+		{
+			$babDB->db_query("update ".BAB_FILES_TBL." set ".implode(", ", $tmp)." where id='".$babDB->db_escape_string($idf)."'");
+		}
+		
 		if('Y' === $oFolderFile->getGroup())
 		{
 			$res = $babDB->db_query("select id from ".BAB_FM_FIELDS_TBL." where id_folder='".$babDB->db_escape_string($oFolderFile->getOwnerId())."'");
