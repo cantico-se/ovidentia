@@ -595,10 +595,13 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 
 			if($res && $babDB->db_num_rows($res) > 0)
 			{
+				
 				$arr = $babDB->db_fetch_array($res);
 				if($arr['state'] == "D")
 				{
-					$bexist = true;
+					//$bexist = true;
+					$errfiles[] = array('error'=> bab_translate("A file with the same name already exists in the basket"), 'file' => $file['name']);
+					continue;
 				}
 			}
 
