@@ -2516,5 +2516,5 @@
 <string id="Users management">Gestion des utilisateurs</string>
 <string id="Categories and topics management">Gestion des catégories et des thèmes</string>
 <string id="To delete files use checkboxes">Pour supprimer des fichiers utiliser les cases à cocher</string>
-<string id="A file with the same name already exists">Il existe déjà un fichier portant ce nom dans la corbeille</string>
+<string id="A file with the same name already exists in the basket">Il existe déjà un fichier portant ce nom dans la corbeille</string>
 </fr>
