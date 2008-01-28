@@ -2507,4 +2507,5 @@
 <string id="Created/Updated on">Créé/Modifié le</string>
 <string id="Show the date and the author of the updated event">Afficher la date et l'auteur de la modification de l'événement</string>
 <string id="To delete files use checkboxes">Pour supprimer des fichiers utiliser les cases à cocher</string>
+<string id="A file with the same name already exists">Il existe déjà un fichier portant ce nom dans la corbeille</string>
 </fr>
