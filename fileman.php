@@ -240,7 +240,7 @@ class listFiles
 			{
 				$sRootFmPath		= $this->oFileManagerEnv->getCollectiveRootFmPath();
 				$sGr				= 'Y';
-				$bAccessValid		= ($bCanManage || canUpdate($sRelativePath) || ($bCanBrowse && 'N' === $this->oFileManagerEnv->oFmFolder->getHide()));
+				$bAccessValid		= ($bCanManage || canUpload($sRelativePath) || ($bCanBrowse && 'N' === $this->oFileManagerEnv->oFmFolder->getHide()));
 				$bCanBrowseFolder	= ($bCanBrowse && 'Y' === $this->oFileManagerEnv->oFmFolder->getActive());
 			}
 			else if($this->oFileManagerEnv->userIsInPersonnalFolder())
@@ -326,7 +326,7 @@ class listFiles
 			$bCanManage = canManage($sRelativePath);
 			$bCanBrowse = canBrowse($sRelativePath);
 			
-			if($bCanManage || canUpdate($sRelativePath) || ($bCanBrowse && 'N' === $oFmFolder->getHide()))
+			if($bCanManage || canUpload($sRelativePath) || ($bCanBrowse && 'N' === $oFmFolder->getHide()))
 			{
 				$aItem = array(
 					'iId' => $oFmFolder->getId(), 
