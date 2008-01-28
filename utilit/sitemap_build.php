@@ -591,6 +591,8 @@ function bab_siteMap_insertFunctionLabel($node) {
 function bab_siteMap_build() {
 
 	global $babBody;
+	include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
+	include_once $GLOBALS['babInstallPath'].'utilit/utilitsections.php';
 	include_once $GLOBALS['babInstallPath'].'utilit/eventincl.php';
 	
 	$event = new bab_eventBeforeSiteMapCreated;
