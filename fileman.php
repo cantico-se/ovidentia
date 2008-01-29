@@ -2645,6 +2645,8 @@ function displayFolderForm()
 		'?tg=fileman&idx=displayFolderForm&id=' . $oFileManagerEnv->iId . '&gr=' . $oFileManagerEnv->sGr . 
 		'&path=' . urlencode($oFileManagerEnv->sPath));
 	
+	$babBody->title = bab_translate("Add a new folder");
+	
 	if($oFileManagerEnv->userIsInCollectiveFolder() || $oFileManagerEnv->userIsInRootFolder())
 	{
 		if(canCreateFolder($oFileManagerEnv->sRelativePath))
