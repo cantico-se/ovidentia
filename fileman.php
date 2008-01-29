@@ -3441,7 +3441,7 @@ function editFolderForCollectiveDir()
 				}
 				
 				//Call header for the branch patches-6-6-0
-				//bab_siteMap::build(); For the head
+				bab_siteMap::build();
 			}
 		}
 		else 
