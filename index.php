@@ -70,7 +70,7 @@ function bab_cleanGpc() {
 	if (get_magic_quotes_gpc())	{
 		bab_slashes($_GET);
 		bab_slashes($_POST);
-		bab_slashes($_COOKIES);
+		bab_slashes($_COOKIE);
 		bab_slashes($_REQUEST);
 		if (!empty($_FILES))
 			{
@@ -197,11 +197,11 @@ if( $tg != "version" || !isset($idx) || $idx != "upgrade")
 	$babLangFilter->translateTexts();
 	
 
-	/*
-	if (isset($_GET['clear'])) {
+	
+	if (isset($_GET['clear']) && isset($_COOKIE['bab_debug'])) {
 		bab_siteMap::clearAll();
 		}
-	*/
+	
 	
 	
 	}

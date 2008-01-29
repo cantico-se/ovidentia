@@ -301,6 +301,8 @@ function bab_siteMap_deleteFunction($id_function, $tree = false) {
  */
 function bab_siteMap_insertTree($rootNode, $nodeList) {
 
+
+	
 	global $babDB;
 
 	$crc = abs(crc32(serialize($rootNode)));
@@ -370,6 +372,8 @@ function bab_siteMap_insertTree($rootNode, $nodeList) {
 	$previous_node = 'root';
 	$previous_id = 1;
 	
+	$nodes_start_time = bab_getMicrotime();
+
 	
 	$debug_str = '';
 	
@@ -399,7 +403,10 @@ function bab_siteMap_insertTree($rootNode, $nodeList) {
 		}
 	}
 	
-	bab_debug($debug_str);
+	//bab_debug($debug_str);
+	
+	$nodes_stop_time = bab_getMicrotime();
+	
 	
 
 
@@ -446,6 +453,19 @@ function bab_siteMap_insertTree($rootNode, $nodeList) {
 				break;
 		}
 	}
+	
+	
+	$profile_stop_time = bab_getMicrotime();
+	
+	
+	bab_debug(
+		sprintf('
+	insert function, function label : %s s
+	insert node, profile : %s s', 
+		($nodes_stop_time - $nodes_start_time), 
+		($profile_stop_time - $nodes_stop_time)
+		)
+	);
 }
 
 
@@ -584,11 +604,26 @@ function bab_siteMap_insertFunctionLabel($node) {
 }
 
 
+
+
+function bab_getMicrotime() {
+	list($usec, $sec) = explode(" ", microtime());
+    return ((float)$usec + (float)$sec);
+
+}
+
+
+
+
 /**
  * @see bab_siteMap::build()
  * @return boolean
  */
 function bab_siteMap_build() {
+
+
+    $start_time = bab_getMicrotime();
+
 
 	global $babBody;
 	include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
@@ -619,10 +654,23 @@ function bab_siteMap_build() {
 		$event->buidtree($newNode);
 	}
 	
-	
+	 $insert_time = bab_getMicrotime();
 
 	// insert tree into database
 	bab_siteMap_insertTree($rootNode, $event->nodes);
+
+
+    $stop_time = bab_getMicrotime();
+    
+    bab_debug(sprintf("
+    
+    tree : %s s
+    insert : %s s 
+    bab_siteMap_build : %s s", 
+    
+    ($insert_time - $start_time),
+    ($stop_time - $insert_time),
+    ($stop_time - $start_time) ));
 
 	return $event->propagation_status;
 }
