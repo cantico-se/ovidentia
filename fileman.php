@@ -696,13 +696,35 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 	
 	function handleCreation()
 	{
+		$sActive				= 'Y';
+		$iIdApprobationScheme	= 0;
+		$sAutoApprobation		= 'N';
+		$sNotification			= 'N';
+		$sVersioning			= 'N';
+		$sDisplay				= 'N';
+		$sAddTags				= 'Y';
+
+		$oFileManagerEnv =& getEnvObject();
+		$oFirstCollectiveParent = BAB_FmFolderSet::getFirstCollectiveFolder($oFileManagerEnv->sRelativePath);
+		if(!is_null($oFirstCollectiveParent))
+		{		
+			$sActive				= (string) $oFirstCollectiveParent->getActive();
+			$iIdApprobationScheme	= (int) $oFirstCollectiveParent->getApprobationSchemeId();
+			$sAutoApprobation		= (string) $oFirstCollectiveParent->getAutoApprobation();
+			$sNotification			= (string) $oFirstCollectiveParent->getFileNotify();
+			$sVersioning			= (string) $oFirstCollectiveParent->getVersioning();
+			$sDisplay				= (string) $oFirstCollectiveParent->getHide();
+			$sAddTags				= (string) $oFirstCollectiveParent->getAddTags();
+		}
+		
+		$this->iApprobationSchemeId = $iIdApprobationScheme;
 		$this->set_data('isCollective', false);
-		$this->set_data('isActive', true);
-		$this->set_data('isAutoApprobation', false);
-		$this->set_data('isFileNotify', false);
-		$this->set_data('isVersioning', false);
-		$this->set_data('isShow', true);
-		$this->set_data('isAddTags', true);
+		$this->set_data('isActive', ('Y' === $sActive) ? true : false);
+		$this->set_data('isAutoApprobation', ('Y' === $sAutoApprobation) ? true : false);
+		$this->set_data('isFileNotify', ('Y' === $sNotification) ? true : false);
+		$this->set_data('isVersioning', ('Y' === $sVersioning) ? true : false);
+		$this->set_data('isShow', ('Y' === $sDisplay) ? false : true);
+		$this->set_data('isAddTags', ('Y' === $sAddTags) ? true : false);
 		$this->set_data('sChecked', 'checked');
 		$this->set_data('sDisabled', '');
 		
@@ -736,14 +758,22 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 		$oFmFolder = $oFmFolder = BAB_FmFolderHelper::getFmFolderById($iIdFolder);
 		if(!is_null($oFmFolder))
 		{
-			$this->iApprobationSchemeId = $oFmFolder->getApprobationSchemeId();
+			$sActive				= (string) $oFmFolder->getActive();
+			$iIdApprobationScheme	= (int) $oFmFolder->getApprobationSchemeId();
+			$sAutoApprobation		= (string) $oFmFolder->getAutoApprobation();
+			$sNotification			= (string) $oFmFolder->getFileNotify();
+			$sVersioning			= (string) $oFmFolder->getVersioning();
+			$sDisplay				= (string) $oFmFolder->getHide();
+			$sAddTags				= (string) $oFmFolder->getAddTags();
+
+			$this->iApprobationSchemeId = $iIdApprobationScheme;
 			$this->set_data('isCollective', true);
-			$this->set_data('isActive', ('Y' === $oFmFolder->getActive()) ? true : false);
-			$this->set_data('isAutoApprobation', ('Y' === $oFmFolder->getAutoApprobation()) ? true : false);
-			$this->set_data('isFileNotify', ('Y' === $oFmFolder->getFileNotify()) ? true : false);
-			$this->set_data('isVersioning', ('Y' === $oFmFolder->getVersioning()) ? true : false);
-			$this->set_data('isShow', ('Y' === $oFmFolder->getHide()) ? false : true);
-			$this->set_data('isAddTags', ('Y' === $oFmFolder->getAddTags()) ? true : false);
+			$this->set_data('isActive', ('Y' === $sActive) ? true : false);
+			$this->set_data('isAutoApprobation', ('Y' === $sAutoApprobation) ? true : false);
+			$this->set_data('isFileNotify', ('Y' === $sNotification) ? true : false);
+			$this->set_data('isVersioning', ('Y' === $sVersioning) ? true : false);
+			$this->set_data('isShow', ('Y' === $sDisplay) ? false : true);
+			$this->set_data('isAddTags', ('Y' === $sAddTags) ? true : false);
 			$this->set_data('iIdFolder', $oFmFolder->getId());
 			$this->set_data('sOldDirName', $oFmFolder->getName());
 			$this->set_data('sChecked', '');
@@ -3365,6 +3395,18 @@ function editFolderForCollectiveDir()
 				$sVersioning			= (string) bab_pp('sVersioning', 'N');
 				$sDisplay				= (string) bab_pp('sDisplay', 'N');
 				$sAddTags				= (string) bab_pp('sAddTags', 'Y');
+
+				$iIdOwner				= 0;
+				//simpleToCollective
+				if('collective' === $sType)
+				{
+					$oFirstCollectiveParent = BAB_FmFolderSet::getFirstCollectiveFolder($sRelativePath);
+					
+					if(!is_null($oFirstCollectiveParent))
+					{		
+						$iIdOwner = (int) $oFirstCollectiveParent->getId();
+					}
+				}
 				
 				$oFmFolder->setName($sDirName);
 				$oFmFolder->setActive($sActive);
@@ -3376,7 +3418,16 @@ function editFolderForCollectiveDir()
 				$oFmFolder->setAddTags($sAddTags);
 				$oFmFolder->setVersioning($sVersioning);
 				$oFmFolder->setAutoApprobation($sAutoApprobation);
-				$oFmFolder->save();
+				if(true === $oFmFolder->save() && 0 !== $iIdOwner)
+				{
+					require_once $GLOBALS['babInstallPath'] . 'admin/acl.php';
+					
+					aclDuplicateRights(BAB_FMUPLOAD_GROUPS_TBL, $iIdOwner, BAB_FMUPLOAD_GROUPS_TBL, $oFmFolder->getId());
+					aclDuplicateRights(BAB_FMDOWNLOAD_GROUPS_TBL, $iIdOwner, BAB_FMDOWNLOAD_GROUPS_TBL, $oFmFolder->getId());
+					aclDuplicateRights(BAB_FMUPDATE_GROUPS_TBL, $iIdOwner, BAB_FMUPDATE_GROUPS_TBL, $oFmFolder->getId());
+					aclDuplicateRights(BAB_FMMANAGERS_GROUPS_TBL, $iIdOwner, BAB_FMMANAGERS_GROUPS_TBL, $oFmFolder->getId());
+					aclDuplicateRights(BAB_FMNOTIFY_GROUPS_TBL, $iIdOwner, BAB_FMNOTIFY_GROUPS_TBL, $oFmFolder->getId());
+				}
 				
 				if($bChangeFileIdOwner)
 				{
@@ -3388,6 +3439,9 @@ function editFolderForCollectiveDir()
 					$soFmFolderCliboardSet = new BAB_FmFolderCliboardSet();
 					$soFmFolderCliboardSet->setOwnerId($sPathName, $oFirstFmFolder->getId(), $oFmFolder->getId());
 				}
+				
+				//Call header for the branch patches-6-6-0
+				bab_siteMap::build();
 			}
 		}
 		else 
