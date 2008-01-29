@@ -3420,8 +3420,14 @@ function editFolderForCollectiveDir()
 				$oFmFolder->setAddTags($sAddTags);
 				$oFmFolder->setVersioning($sVersioning);
 				$oFmFolder->setAutoApprobation($sAutoApprobation);
+				
+				$bRedirect = false;
+				
 				if(true === $oFmFolder->save() && 0 !== $iIdOwner)
 				{
+					//To rebuild sitemap
+					$bRedirect = true;
+					
 					require_once $GLOBALS['babInstallPath'] . 'admin/acl.php';
 					
 					aclDuplicateRights(BAB_FMUPLOAD_GROUPS_TBL, $iIdOwner, BAB_FMUPLOAD_GROUPS_TBL, $oFmFolder->getId());
@@ -3442,8 +3448,15 @@ function editFolderForCollectiveDir()
 					$soFmFolderCliboardSet->setOwnerId($sPathName, $oFirstFmFolder->getId(), $oFmFolder->getId());
 				}
 				
-				//Call header for the branch patches-6-6-0
-				bab_siteMap::build();
+				//bab_siteMap::build();
+
+				if(true === $bRedirect)
+				{
+					$sUrl = $GLOBALS['babUrlScript'] . '?tg=fileman&idx=list&id=' . $oFileManagerEnv->iId . 
+						'&gr=' . $oFileManagerEnv->sGr . '&path=' . urlencode($oFileManagerEnv->sPath);
+					
+					header('Location: ' . $sUrl);
+				}
 			}
 		}
 		else 
