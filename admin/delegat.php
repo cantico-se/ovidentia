@@ -106,6 +106,8 @@ function groupDelegatMembers($id)
 			$this->addtxt = bab_translate("Add");
 			$this->fullname = bab_translate("Fullname");
 			$this->delusers = bab_translate("Delete users");
+			$this->checkall = bab_translate("Check all");
+			$this->uncheckall = bab_translate("Uncheck all");
 			$this->res = $babDB->db_query("select * from ".BAB_DG_ADMIN_TBL." where id_dg=".$id);
 			$this->count = $babDB->db_num_rows($this->res);
 			}
@@ -430,6 +432,13 @@ function updateDelegatMembers()
 		}
 
 	$db->db_query("INSERT INTO ".BAB_DG_ADMIN_TBL." (id_dg,id_user) VALUES ('".$_POST['id']."','".$_POST['nuserid']."')");
+	
+	bab_siteMap::clearAll();
+	
+	include_once $GLOBALS['babInstallPath'].'utilit/urlincl.php';
+	header('location:'.bab_url::request('tg', 'idx', 'id'));
+	exit;
+	
 	return true;
 	}
 	
@@ -443,6 +452,14 @@ function deleteDelegatMembers()
 	{
 	$db->db_query("DELETE FROM ".BAB_DG_ADMIN_TBL." WHERE id_dg='".$_POST['id']."' AND id_user IN('".implode("','",$_POST['users'])."')");
 	}
+	
+	
+	
+	bab_siteMap::clearAll();
+	
+	include_once $GLOBALS['babInstallPath'].'utilit/urlincl.php';
+	header('location:'.bab_url::request('tg', 'idx', 'id'));
+	exit;
 }
 
 function confirmDeleteDelegatGroup($id)

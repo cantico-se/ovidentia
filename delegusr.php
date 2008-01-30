@@ -103,7 +103,10 @@ function updateAdmGroup($grpdg)
 		}
 
 	$babDB->db_query("update ".BAB_USERS_LOG_TBL." set id_dg='".$babDB->db_escape_string($grpdg)."' where sessid='".session_id()."'");
-	Header('Location: '. $GLOBALS['babUrlScript'].'?tg=delegusr');
+	
+	bab_siteMap::clear();
+	
+	header('Location: '. $GLOBALS['babUrlScript'].'?tg=delegusr');
 		
 }
 
@@ -116,7 +119,7 @@ if( count($babBody->dgAdmGroups) < 1)
 	
 $idx = bab_rp('idx', 'chgdg');
 
-if( 'moddg' == bab_rp('mod'))
+if('moddg' == bab_rp('mod'))
 {
 	updateAdmGroup(bab_rp('grpdg'));
 }
@@ -127,7 +130,6 @@ switch($idx)
 	default:
 		$babBody->title = bab_translate("Change administration");
 		changeAdmGroup();
-		break;
 		break;
 	}
 

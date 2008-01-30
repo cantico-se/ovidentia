@@ -61,7 +61,7 @@ class bab_siteMap {
 		if (($GLOBALS['BAB_SESS_LOGGED'] && false === $id_user) || false !== $id_user) {
 		
 			if (false === $id_user) {
-				$id_user = $GLOBALS['BAB_SESS_LOGGED'];
+				$id_user = $GLOBALS['BAB_SESS_USERID'];
 			}
 		
 			// delete profile link
@@ -71,6 +71,7 @@ class bab_siteMap {
 			);
 			
 			$arr = $babDB->db_fetch_assoc($res);
+
 			if ($arr) {
 				$res = $babDB->db_query('SELECT COUNT(*) FROM '.BAB_USERS_TBL.' 
 				WHERE id_sitemap_profile='.$babDB->quote($arr['id_sitemap_profile']));
