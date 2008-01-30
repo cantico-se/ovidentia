@@ -279,21 +279,55 @@ class bab_sitemap_tree extends bab_dbtree
 
 
 
-function bab_sitemap_addFuncToProfile($id_function, $id_profile) {
-	global $babDB;
+/**
+ * Add function to profile
+ */
+class bab_sitemap_addFuncToProfile {
+
+	var $arr = array();
+
+	function add($id_function, $id_profile) {
+		
+		$this->arr[] = array(
+			'id_function' => $id_function,
+			'id_profile' => $id_profile
+		);
+	}
 	
-	$babDB->db_query('
-		INSERT INTO '.BAB_SITEMAP_FUNCTION_PROFILE_TBL.' 
-			(id_function, id_profile) 
-		VALUES 
-			(
-				'.$babDB->quote($id_function).', 
-				'.$babDB->quote($id_profile).'
-			)
-	');
+	function commit() {
 	
-	
+		global $babDB;
+		
+		$start = 0;
+		$length = 50;
+		
+		while ($arr = array_slice($this->arr, $start, $length)) {
+		
+			$values = array();
+			foreach($arr as $row) {
+				$values[] = '('.$babDB->quote($row['id_function']).','.$babDB->quote($row['id_profile']).')';
+			}
+			
+			$babDB->db_query('
+				INSERT INTO '.BAB_SITEMAP_FUNCTION_PROFILE_TBL.' 
+					(id_function, id_profile) 
+				VALUES 
+						'.implode(",\n ",$values).' 
+			');
+			
+			$start += $length;
+		}
+	}
 }
+
+
+
+
+
+
+
+
+
 
 function bab_sitemap_removeFuncFromProfile(&$tree, $id_function, $id_profile) {
 	global $babDB;
@@ -375,8 +409,6 @@ class bab_siteMap_insertFunctionObj {
 	
 	function commit() {
 		global $babDB;
-		
-			
 		
 		$start = 0;
 		$length = 50;
@@ -564,6 +596,9 @@ function bab_siteMap_insertTree($rootNode, $nodeList) {
 	
 	if (false !== $tree->getNodeInfo(1)) {
 		// tree is not empty
+		
+		$addFuncToProfile = new bab_sitemap_addFuncToProfile();
+		
 
 		foreach($functions as $id_function => $val) {
 		
@@ -582,7 +617,7 @@ function bab_siteMap_insertTree($rootNode, $nodeList) {
 							);
 						}
 						
-						bab_sitemap_addFuncToProfile($id_function, $id_profile);
+						$addFuncToProfile->add($id_function, $id_profile);
 					}
 					break;
 					
@@ -590,7 +625,7 @@ function bab_siteMap_insertTree($rootNode, $nodeList) {
 					// la fonction est liée à l'arbre
 					if (isset($missing_profile[$id_function]) && isset($nodeList[$id_function])) {
 						// mais n'est pas dans le profile
-						bab_sitemap_addFuncToProfile($id_function, $id_profile);
+						$addFuncToProfile->add($id_function, $id_profile);
 					}
 					break;
 				
@@ -600,6 +635,9 @@ function bab_siteMap_insertTree($rootNode, $nodeList) {
 					break;
 			}
 		}
+		
+		$addFuncToProfile->commit();
+		
 	} else {
 		// the tree is empty, build from scratch
 		
@@ -644,21 +682,24 @@ function bab_siteMap_insertTree($rootNode, $nodeList) {
 				.")";
 			}
 			
-			bab_debug($req);
-			
+			//bab_debug($req);
 			$babDB->db_query($req);
 			
 			$start += $length;
 		}
 		
 		
+		$addFuncToProfile = new bab_sitemap_addFuncToProfile();
+		
 		foreach($functions as $id_function => $val) {
 
 			// la fonction n'est pas liée à l'arbre
 			if (isset($nodeList[$id_function])) {
-				bab_sitemap_addFuncToProfile($id_function, $id_profile);
+				$addFuncToProfile->add($id_function, $id_profile);
 			}
 		}
+		
+		$addFuncToProfile->commit();
 		
 	}
 	
