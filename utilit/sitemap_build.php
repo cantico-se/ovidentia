@@ -231,6 +231,50 @@ class bab_sitemap_tree extends bab_dbtree
 			SET id_function='.$babDB->quote($str).' 
 			WHERE id='.$babDB->quote($id_node) );
 	}
+	
+
+	
+	
+	
+	/**
+	 * Get childnodes from this node with collumn to insert
+	 *
+	 * @param	bab_siteMap_item	$node
+	 * @param	int					&$id
+	 * @param	int					$id_parent
+	 * @param	array				&$insertlist		(id, id_parent, lf, lr, id_function)
+	 *
+	 */
+	function getLevelToInsert($node, &$id, $id_parent, &$insertlist) {
+	
+		
+		$lf = 1 + $insertlist[count($insertlist) - 1]['lf'];
+
+		foreach($node->childNodes as $childNode) {
+		
+			$id++;
+			$current_id = $id;
+			$key = count($insertlist);
+			
+			$insertlist[$key] = array(
+				'id' => $id,
+				'id_parent' => $id_parent,
+				'lf' => $lf,
+				'lr' => 1 + $lf,
+				'id_function' => $childNode->uid
+			);
+			
+			if (0 < count($childNode->childNodes)) {
+				$this->getLevelToInsert($childNode, $id, $id, $insertlist);
+				
+				$nb_inserted = $id - $current_id;
+				$insertlist[$key]['lr'] = $lf + 1 + (2*$nb_inserted);
+			}
+			
+			$lf = 1 + $insertlist[$key]['lr'];
+		}
+		
+	}
 }
 
 
@@ -412,46 +456,104 @@ function bab_siteMap_insertTree($rootNode, $nodeList) {
 
 	$tree = new bab_sitemap_tree();
 	
-	if (false === $tree->getNodeInfo(1)) {
-		$tree->add(0,0,true,1);
-		$tree->setFunction(1, $rootNode->uid);
-	}
-	
-	
-	foreach($functions as $id_function => $val) {
-	
+	if (false !== $tree->getNodeInfo(1)) {
+		// tree is not empty
 
-		switch($val) {
-			case true:
-				// la fonction n'est pas liée à l'arbre
-				if (isset($nodeList[$id_function])) {
-				
-					if ('root' != $id_function) {
-						bab_sitemap_insertNode(
-							$tree, 
-							$nodeList[$id_function],
-							0,
-							0
-						);
-					}
+		foreach($functions as $id_function => $val) {
+		
+	
+			switch($val) {
+				case true:
+					// la fonction n'est pas liée à l'arbre
+					if (isset($nodeList[$id_function])) {
 					
-					bab_sitemap_addFuncToProfile($id_function, $id_profile);
-				}
-				break;
+						if ('root' != $id_function) {
+							bab_sitemap_insertNode(
+								$tree, 
+								$nodeList[$id_function],
+								0,
+								0
+							);
+						}
+						
+						bab_sitemap_addFuncToProfile($id_function, $id_profile);
+					}
+					break;
+					
+				case false:
+					// la fonction est liée à l'arbre
+					if (isset($missing_profile[$id_function]) && isset($nodeList[$id_function])) {
+						// mais n'est pas dans le profile
+						bab_sitemap_addFuncToProfile($id_function, $id_profile);
+					}
+					break;
 				
-			case false:
-				// la fonction est liée à l'arbre
-				if (isset($missing_profile[$id_function]) && isset($nodeList[$id_function])) {
-					// mais n'est pas dans le profile
-					bab_sitemap_addFuncToProfile($id_function, $id_profile);
-				}
-				break;
-			
-			default:
-				// la fonction n'est plus dans le profile
-				bab_sitemap_removeFuncFromProfile($tree, $id_function, $id_profile);
-				break;
+				default:
+					// la fonction n'est plus dans le profile
+					bab_sitemap_removeFuncFromProfile($tree, $id_function, $id_profile);
+					break;
+			}
 		}
+	} else {
+		// the tree is empty, build from scratch
+		
+		$id = 1;
+		
+		$insertlist = array();
+
+		// root node
+		$insertlist[0] = array(
+			'id' => $id,
+			'id_parent' => 0,
+			'lf' => 1,
+			'lr' => 0,
+			'id_function' => $rootNode->uid
+		);
+		
+		$tree->getLevelToInsert($rootNode, $id, 1, $insertlist);
+		
+		$insertlist[0]['lr'] = 2 + (2*(count($insertlist) - 1));
+		
+		// insert
+		
+		$start = 0;
+		$length = 50;
+		
+		while ($arr = array_slice($insertlist, $start, $length)) {
+		
+			
+			
+			$req = 'INSERT INTO '.BAB_SITEMAP_TBL.' (id, id_parent, lf, lr, id_function) VALUES '."\n";
+			foreach($arr as $key => $row) {
+			
+				if (0 < $key) {
+					$req.= ",\n";
+				}
+
+				$req.= '('.$babDB->quote($row['id'])
+				.','.$babDB->quote($row['id_parent'])
+				.','.$babDB->quote($row['lf'])
+				.','.$babDB->quote($row['lr'])
+				.','.$babDB->quote($row['id_function'])
+				.")";
+			}
+			
+			bab_debug($req);
+			
+			$babDB->db_query($req);
+			
+			$start += $length;
+		}
+		
+		
+		foreach($functions as $id_function => $val) {
+
+			// la fonction n'est pas liée à l'arbre
+			if (isset($nodeList[$id_function])) {
+				bab_sitemap_addFuncToProfile($id_function, $id_profile);
+			}
+		}
+		
 	}
 	
 	
