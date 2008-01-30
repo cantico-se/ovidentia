@@ -338,6 +338,110 @@ function bab_siteMap_deleteFunction($id_function, $tree = false) {
 
 
 
+
+
+
+
+
+
+
+/**
+ * insert functions into tables
+ */
+class bab_siteMap_insertFunctionObj {
+
+	var $functions = array();
+	var $labels = array();
+
+	/**
+	 * Insert function into database
+	 * @param	bab_siteMap_item	$node
+	 */
+	function insertFunction($node) {
+	
+		$this->functions[] = $node;
+	
+		$this->insertFunctionLabel($node);
+	}
+	
+	/**
+	 * Insert function label for current language into database
+	 * @param	bab_siteMap_item	$node
+	 */
+	function insertFunctionLabel($node) {
+		$this->labels[] = $node;
+	}
+	
+	
+	function commit() {
+		global $babDB;
+		
+			
+		
+		$start = 0;
+		$length = 50;
+		
+		while ($arr = array_slice($this->functions, $start, $length)) {
+		
+			$values = array();
+			foreach($arr as $node) {
+				$folder = $node->folder ? '1' : '0';
+				$values[] = '('.$babDB->quote($node->uid).','.$babDB->quote($node->href).','.$babDB->quote($node->onclick).','.$babDB->quote($folder).')';
+			}
+			
+			$babDB->db_query('
+				INSERT INTO '.BAB_SITEMAP_FUNCTIONS_TBL.' 
+					(
+						id_function,
+						url,
+						onclick,
+						folder
+					)
+				VALUES 
+					'.implode(",\n ",$values).'
+			');
+			
+			$start += $length;
+		}
+		
+		
+		
+		$start = 0;
+		
+		while ($arr = array_slice($this->labels, $start, $length)) {
+			
+			$values = array();
+			foreach($arr as $node) {
+				$values[] = '('.$babDB->quote($node->uid).','.$babDB->quote($node->lang).','.$babDB->quote($node->label).','.$babDB->quote($node->description).')';
+			}
+	
+			$babDB->db_query('
+				INSERT INTO '.BAB_SITEMAP_FUNCTION_LABELS_TBL.' 
+					(
+						id_function,
+						lang,
+						name,
+						description
+					)
+					
+				VALUES 
+					'.implode(",\n ",$values).'
+			');
+			
+			$start += $length;
+		}
+	}
+}
+
+
+
+
+
+
+
+
+
+
 /**
  * Insert node and childs into database
  * @param	bab_siteMap_item	$rootNode
@@ -421,6 +525,8 @@ function bab_siteMap_insertTree($rootNode, $nodeList) {
 	
 	$debug_str = '';
 	
+	$insertFunc = new bab_siteMap_insertFunctionObj();
+	
 	foreach($nodeList as $node) {
 
 		$debug_str .= implode('/',$node->position).'/'.$node->uid."\n";
@@ -438,15 +544,15 @@ function bab_siteMap_insertTree($rootNode, $nodeList) {
 		} else {
 			// !isset : la fonction n'existe pas
 			// bab_debug('sitemap add : '.$node->uid.' ('.$node->label.')');
-			bab_siteMap_insertFunction($node);
+			$insertFunc->insertFunction($node);
 			$functions[$node->uid] = true;
 		}
 		
 		if (isset($missing_labels[$node->uid])) {
-			bab_siteMap_insertFunctionLabel($node);
+			$insertFunc->insertFunctionLabel($node);
 		}
 	}
-	
+	$insertFunc->commit();
 	//bab_debug($debug_str);
 	
 	$nodes_stop_time = bab_getMicrotime();
@@ -648,62 +754,8 @@ function bab_sitemap_countChilds($node, $n = 0) {
 	return $n;
 }
 
-/**
- * Insert function into database
- * @param	bab_siteMap_item	$node
- */
-function bab_siteMap_insertFunction($node) {
-	global $babDB;
-	
-	$folder = $node->folder ? '1' : '0';
-	
-	$babDB->db_query('
-		INSERT INTO '.BAB_SITEMAP_FUNCTIONS_TBL.' 
-			(
-				id_function,
-				url,
-				onclick,
-				folder
-			)
-			
-		VALUES 
-			(
-				'.$babDB->quote($node->uid).',
-				'.$babDB->quote($node->href).',
-				'.$babDB->quote($node->onclick).',
-				'.$babDB->quote($folder).'
-			)
-	');
-	
-	bab_siteMap_insertFunctionLabel($node);
-}
 
-/**
- * Insert function label for current language into database
- * @param	bab_siteMap_item	$node
- */
-function bab_siteMap_insertFunctionLabel($node) {
-	
-	global $babDB;
-	
-	$babDB->db_query('
-		INSERT INTO '.BAB_SITEMAP_FUNCTION_LABELS_TBL.' 
-			(
-				id_function,
-				lang,
-				name,
-				description
-			)
-			
-		VALUES 
-			(
-				'.$babDB->quote($node->uid).',
-				'.$babDB->quote($node->lang).',
-				'.$babDB->quote($node->label).',
-				'.$babDB->quote($node->description).'
-			)
-	');
-}
+
 
 
 
