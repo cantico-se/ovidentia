@@ -356,6 +356,17 @@ class bab_inifile_requirements {
 			'result'		=> $status
 		);
 	}
+	
+	
+	function require_mod_expect($value) {
+		
+		$status = extension_loaded('expect');
+		return array(
+			'description'	=> sprintf(bab_translate("%s php module"),'expect'),
+			'current'		=> $status ? bab_translate("Available") : bab_translate("Unavailable"),
+			'result'		=> $status
+		);
+	}
 
 
 	function require_mod_gd2($value) {
