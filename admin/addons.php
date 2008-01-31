@@ -23,28 +23,9 @@
 ************************************************************************/
 include_once "base.php";
 include_once $babInstallPath."admin/acl.php";
+include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
 
-$GLOBALS['addons_files_location'] = 
-array('loc_in' => array(
-				$GLOBALS['babInstallPath'].'addons',
-				$GLOBALS['babInstallPath'].'lang/addons',
-				$GLOBALS['babInstallPath'].'styles/addons',
-				$GLOBALS['babInstallPath'].'skins/ovidentia/templates/addons',
-				$GLOBALS['babInstallPath'].'skins/ovidentia/ovml/addons',
-				$GLOBALS['babInstallPath'].'skins/ovidentia/images/addons',
-				'skins'
-				),	
 
-	'loc_out' => array(
-				"programs",
-				"langfiles",
-				"styles",
-				"skins/ovidentia/templates",
-				"skins/ovidentia/ovml",
-				"skins/ovidentia/images",
-				'theme'
-				)
-			);
 
 
 
@@ -67,8 +48,6 @@ function getAddonName($id)
 
 function callSingleAddonFunction($id,$name,$func)
 {
-
-	include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
 	
 	$addonpath = $GLOBALS['babAddonsPath'].$name;
 	if( is_file($addonpath."/init.php" ))
@@ -416,9 +395,11 @@ function export($id)
 		$addon_txt = bab_printTemplate($temp, "addons.html", "addon_txt");
 		$addarr[] = array('description.html',$addon_txt);
 		}
+		
+	$addons_files_location = bab_getAddonsFilePath();
 	
-	$loc_in = $GLOBALS['addons_files_location']['loc_in'];
-	$loc_out = $GLOBALS['addons_files_location']['loc_out'];
+	$loc_in = $addons_files_location['loc_in'];
+	$loc_out = $addons_files_location['loc_out'];
 			
 	include_once $GLOBALS['babInstallPath']."utilit/zip.lib.php";
 	$zip = new Zip;
@@ -496,8 +477,11 @@ function del($id)
 				  rmdir($dir);
 					return true;
 				}
+				
 			
-			$loc_in = $GLOBALS['addons_files_location']['loc_in'];	
+			$addons_files_location = bab_getAddonsFilePath();
+			
+			$loc_in = $addons_files_location['loc_in'];	
 			
 			foreach ($loc_in as $path)
 				{
@@ -688,8 +672,10 @@ function import()
 		$zip = new Zip;
 		$zipcontents = $zip->get_List($ul);
 		
-		$loc_in = $GLOBALS['addons_files_location']['loc_in'];
-		$loc_out = $GLOBALS['addons_files_location']['loc_out'];
+		$addons_files_location = bab_getAddonsFilePath();
+		
+		$loc_in = $addons_files_location['loc_in'];
+		$loc_out = $addons_files_location['loc_out'];
 		
 		foreach ($loc_in as $directory)
 			{

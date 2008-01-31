@@ -281,4 +281,35 @@ function bab_callAddonsFunctionArray($func, $args)
 
 
 
+
+
+function bab_getAddonsFilePath() {
+	
+	
+	return array(
+	
+	'loc_in' => array(
+				$GLOBALS['babInstallPath'].'addons',
+				$GLOBALS['babInstallPath'].'lang/addons',
+				$GLOBALS['babInstallPath'].'styles/addons',
+				$GLOBALS['babInstallPath'].'skins/ovidentia/templates/addons',
+				$GLOBALS['babInstallPath'].'skins/ovidentia/ovml/addons',
+				$GLOBALS['babInstallPath'].'skins/ovidentia/images/addons',
+				'skins'
+				),	
+
+	'loc_out' => array(
+				"programs",
+				"langfiles",
+				"styles",
+				"skins/ovidentia/templates",
+				"skins/ovidentia/ovml",
+				"skins/ovidentia/images",
+				'theme'
+				)
+	);
+
+}
+
+
 ?>
