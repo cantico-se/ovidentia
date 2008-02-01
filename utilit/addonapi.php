@@ -1147,8 +1147,19 @@ function bab_getUserDirEntryLink($id = false, $type = BAB_DIR_ENTRY_ID_USER, $id
 
 
 /* API Groups */
+
+/**
+ * Get group name
+ * @param	int			$id
+ * @param	boolean		[$fpn]	full path name
+ *
+ * @return string
+ */
 function bab_getGroupName($id, $fpn=true)
 	{
+	
+	$id = (int) $id;
+	
 	global $babBody;
 	if($fpn)
 		{
@@ -1156,6 +1167,12 @@ function bab_getGroupName($id, $fpn=true)
 		}
 	else
 		{
+		
+		if (BAB_ALLUSERS_GROUP === $id || BAB_REGISTERED_GROUP === $id || BAB_UNREGISTERED_GROUP === $id || BAB_ADMINISTRATOR_GROUP === $id) {
+			return bab_translate($babBody->ovgroups[$id]['name']);
+		}
+		
+		
 		return $babBody->ovgroups[$id]['name'];
 		}
 	}
