@@ -26,7 +26,7 @@ include_once 'base.php';
 /**
  * manage the functionality tree
  * register and unregister functionalities
- * @since 6.6.0
+ * @since 6.6.90
  */
 class bab_functionalities {
 

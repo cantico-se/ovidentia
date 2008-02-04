@@ -1673,7 +1673,7 @@ function bab_locale() {
  * Functionality interface
  * Functionalities are inherited from this object, to instanciate a functionality use the static method
  * @see bab_functionality::get($path)
- * @since 6.6.0
+ * @since 6.6.90
  */
 class bab_functionality {
 
