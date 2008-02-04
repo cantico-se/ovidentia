@@ -508,7 +508,7 @@ function bab_siteMap_insertTree($rootNode, $nodeList) {
 			
 		}
 		
-		$babDB->db_query('UPDATE '.BAB_USERS_TBL.' u 
+		$babDB->db_query('UPDATE '.BAB_USERS_TBL.'  
 			SET id_sitemap_profile='.$babDB->quote($id_profile).' 
 			WHERE id='.$babDB->quote($GLOBALS['BAB_SESS_USERID']));
 		
