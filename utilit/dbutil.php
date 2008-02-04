@@ -398,10 +398,13 @@ class babDatabase extends bab_database
 	function quote($param) 
 		{
 			if (is_array($param)) {
-				foreach($param as $key => $value) {
-					$param[$key] = $this->db_escape_string($value);
+
+				$keys = array_keys($param); 
+			
+				foreach($keys as $key) {
+					$param[$key] = $this->db_escape_string($param[$key]);
 				}
-				
+
 				return "'".implode("','",$param)."'";
 			} else {
 				return "'".parent::db_escape_string($param)."'";
