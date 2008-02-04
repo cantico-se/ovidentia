@@ -145,7 +145,7 @@ class bab_siteMap {
 	/**
 	 * Get sitemap for current user
 	 * @static
-	 * @return bab_siteMapTree
+	 * @return bab_OrphanRootNode
 	 */
 	function get() {
 	
