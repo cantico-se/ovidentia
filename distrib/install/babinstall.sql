@@ -3672,7 +3672,7 @@ INSERT INTO `bab_event_listeners` (`id`, `event_class_name`, `function_name`, `r
 (6, 'bab_eventEditorRequestToContent'	, 'htmlarea_onRequestToContent'		, 'utilit/htmlareaincl.php'			, 'core', 100),
 (7, 'bab_eventEditorContentToHtml'		, 'htmlarea_onContentToHtml'		, 'utilit/htmlareaincl.php'			, 'core', 100),
 (8, 'bab_eventLogin'					, 'bab_onEventLogin'				, 'utilit/eventAuthentication.php'	, 'core', 0),
-(9, 'bab_eventLogout'					, 'bab_onEventLogout'				, 'utilit/eventAuthentication.php'	, 'core', 0);
+(9, 'bab_eventLogout'					, 'bab_onEventLogout'				, 'utilit/eventAuthentication.php'	, 'core', 0),
 (10,'bab_eventBeforeSiteMapCreated'		, 'bab_onBeforeSiteMapCreated'		, 'utilit/sitemap_build.php'		, 'core', 0);
 
 
