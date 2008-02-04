@@ -124,8 +124,8 @@ class bab_siteMap_item {
 	/**
 	 * @param	bab_siteMap_item	$obj
 	 */
-	function addChildNode($obj) {
-		$this->childNodes[$obj->uid] = $obj;
+	function addChildNode(&$obj) {
+		$this->childNodes[$obj->uid] = & $obj;
 	}
 	
 }
@@ -417,8 +417,12 @@ class bab_siteMap_insertFunctionObj {
 		
 			$values = array();
 			foreach($arr as $node) {
+
+				$onclick 	= isset($node->onclick)	? 	$node->onclick 	: '';
+				$href		= isset($node->href)	?	$node->href		: '';
+			
 				$folder = $node->folder ? '1' : '0';
-				$values[] = '('.$babDB->quote($node->uid).','.$babDB->quote($node->href).','.$babDB->quote($node->onclick).','.$babDB->quote($folder).')';
+				$values[] = '('.$babDB->quote($node->uid).','.$babDB->quote($href).','.$babDB->quote($onclick).','.$babDB->quote($folder).')';
 			}
 			
 			$babDB->db_query('
@@ -833,7 +837,7 @@ function bab_siteMap_build() {
 	$rootNode->setLink('?');
 	$rootNode->folder = 1;
 	
-	$event->nodes[$rootNode->uid] = $rootNode;
+	$event->nodes[$rootNode->uid] = & $rootNode;
 	
 	bab_fireEvent($event);
 	
