@@ -2530,6 +2530,7 @@ function displayRightForm()
 			$macl->set_hidden_field('iIdFolder', $iIdFolder);
 			
 			$macl->addtable( BAB_FMUPLOAD_GROUPS_TBL,bab_translate("Upload"));
+			$macl->filter(0,0,1,0,1);
 			$macl->addtable( BAB_FMDOWNLOAD_GROUPS_TBL,bab_translate("Download"));
 			$macl->addtable( BAB_FMUPDATE_GROUPS_TBL,bab_translate("Update"));
 			$macl->addtable( BAB_FMMANAGERS_GROUPS_TBL,bab_translate("Manage"));
