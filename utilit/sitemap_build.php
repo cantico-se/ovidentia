@@ -147,7 +147,7 @@ class bab_eventBeforeSiteMapCreated extends bab_event {
 	 * @param	string	$uid	(64 characters)
 	 * @return 	bab_siteMap_item
 	 */
-	function & createItem($uid) {
+	function createItem($uid) {
 		
 		return new bab_siteMap_item($uid);
 	}
