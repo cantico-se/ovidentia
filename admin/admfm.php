@@ -416,6 +416,7 @@ function displayRightForm($fid)
 	$macl->filter(0,0,1,0,1);
 	$macl->addtable( BAB_FMDOWNLOAD_GROUPS_TBL,bab_translate("Download"));
 	$macl->addtable( BAB_FMUPDATE_GROUPS_TBL,bab_translate("Update"));
+	$macl->filter(0,0,1,0,1);
 	$macl->addtable( BAB_FMMANAGERS_GROUPS_TBL,bab_translate("Manage"));
 	$macl->filter(0,0,1,1,1);
 	$macl->addtable( BAB_FMNOTIFY_GROUPS_TBL,bab_translate("Who is notified when a new file is uploaded or updated?"));
