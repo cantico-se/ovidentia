@@ -195,7 +195,7 @@ function writeConfig()
 	$txt = fread($file, filesize(CONFIG));
 	fclose($file);
 	
-	$config = array('babDBHost','babDBLogin','babDBPasswd','babDBName','babInstallPath','babUrl');
+	$config = array('babDBHost','babDBLogin','babDBPasswd','babDBName','babInstallPath'); 		// ,'babUrl'
 	
 	foreach ($config as $var)
 		{
@@ -549,7 +549,9 @@ a:hover {
 				<fieldset>
 					<legend>Ovidentia</legend>
 					<dt><label for="babInstallPath"><?php echo $trans->str('Relative path to ovidentia core') ?> :</label><input type="text" id="babInstallPath" name="babInstallPath" value="<?php if(isset($_POST['babInstallPath'])) echo $_POST['babInstallPath']; else echo 'ovidentia/';?>" /></dt>
+					<!--
 					<dt><label for="babUrl"><?php echo $trans->str('Base url') ?> :</label><input type="text" id="babUrl" name="babUrl" value="<?php echo $babUrl ?>" /></dt>
+					-->
 					<dt><label for="babUploadPath"><?php echo $trans->str('Upload directory') ?> :</label><input type="text" id="babUploadPath" name="babUploadPath" value="<?php if(isset($_POST['babUploadPath'])) echo $_POST['babUploadPath']; else echo '/home/upload';?>" /></dt>
 						<dd><?php echo $trans->str('Full path to upload the files (example : c:\\path-to\\upload-directory\\ for Windows, /home/upload for linux)') ?></dd>
 				</fieldset>
