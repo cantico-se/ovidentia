@@ -147,7 +147,7 @@ class bab_eventBeforeSiteMapCreated extends bab_event {
 	 * @param	string	$uid	(64 characters)
 	 * @return 	bab_siteMap_item
 	 */
-	function createItem($uid) {
+	function & createItem($uid) {
 		
 		return new bab_siteMap_item($uid);
 	}
@@ -195,7 +195,7 @@ class bab_eventBeforeSiteMapCreated extends bab_event {
 	function buidtree(&$obj) {
 		if (isset($this->nodes[$obj->parentNode_str])) {
 			$obj->parentNode = & $this->nodes[$obj->parentNode_str];
-			$obj->parentNode->addChildNode($obj);
+			$obj->parentNode->addChildNode($this->nodes[$obj->uid]);
 		} else {
 			$this->queue[$obj->parentNode_str] = $obj->uid;
 		}
