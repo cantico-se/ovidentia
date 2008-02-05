@@ -782,7 +782,6 @@ function functionalities() {
 	
 	
 	$func = new bab_functionalities();
-	$func->cleanTree();
 	
 	$tree = new bab_TreeView('bab_functionalities');
 
@@ -801,11 +800,12 @@ function functionalities() {
 	function buid_nodeLevel(&$tree, $node, $id, $path) {
 		$func = new bab_functionalities();
 		$childs = $func->getChilds($path);
-
+		
 		$i = 1;
 		foreach ($childs as $dir) {
 		
-			$obj = bab_functionality::get($path.'/'.$dir);
+			$funcpath = trim($path.'/'.$dir, '/');
+			$obj = bab_functionality::get($funcpath);
 		
 			$element = & $tree->createElement( $id.'.'.$i, 'directory', $dir.' : '.$obj->getDescription(), '', '');
 			$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
@@ -818,7 +818,7 @@ function functionalities() {
 			*/
 			$tree->appendElement($element, $id);
 
-			buid_nodeLevel($tree, $element, $id.'.'.$i, $path.'/'.$dir);
+			buid_nodeLevel($tree, $element, $id.'.'.$i, $funcpath);
 
 			
 			$i++;
