@@ -158,6 +158,7 @@ function bab_login(&$oEvent)
 		{
 			if(signOn())
 			{
+				
 				$oEvent->setSignedOn(true);
 				
 				$sUrl = (string) bab_rp('referer');
@@ -244,12 +245,13 @@ function loginRedirect($url)
 
 		$lrc = new loginRedirectCls($url);
 		echo bab_printTemplate($lrc, "login.html", "javaredirect");
-		exit;
 	}
 	else
 	{
 		Header("Location:". $url);
 	}
+	
+	exit;
 }
 
 
