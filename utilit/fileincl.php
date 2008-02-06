@@ -1558,6 +1558,7 @@ function indexAllFmFiles($status, $prepare) {
 			f.path, 
 			f.id_owner, 
 			f.bgroup, 
+			f.iIdDgOwner,
 			d.id version 
 		FROM 
 			' . BAB_FILES_TBL . ' f 
@@ -1572,10 +1573,11 @@ function indexAllFmFiles($status, $prepare) {
 	$files = array();
 	$rights = array();
 			
-	$oFileManagerEnv =& getEnvObject();
-
+	
 	while ($arr = $babDB->db_fetch_assoc($res)) {
-		$pathx = $oFileManagerEnv->getCollectiveRootFmPath();
+		//$pathx = $oFileManagerEnv->getCollectiveRootFmPath();
+		
+		$pathx = BAB_FileManagerEnv::getCollectivePath($arr['iIdDgOwner']);
 		
 //		bab_debug('sFullPathName ==> ' . $pathx . $arr['path'] . $arr['name']);
 		
