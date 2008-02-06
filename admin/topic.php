@@ -1084,6 +1084,7 @@ if( isset($aclview) )
 	{
 	maclGroups();
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats");
+	exit;
 	}
 
 if( isset($upart) && $upart == "articles")
@@ -1107,12 +1108,14 @@ if( isset($action) && $action == "Yes")
 		include_once $babInstallPath."utilit/delincl.php";
 		bab_confirmDeleteTopic($category);
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats");
+		exit;
 		}
 	else if( $idx == "Deletea")
 		{
 		include_once $babInstallPath."utilit/delincl.php";
 		bab_confirmDeleteArticles($items);
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats");
+		exit;
 		}
 	}
 
