@@ -1574,9 +1574,8 @@ function indexAllFmFiles($status, $prepare) {
 	$oFileManagerEnv =& getEnvObject();
 
 	while ($arr = $babDB->db_fetch_assoc($res)) {
-		$pathx = $oFileManagerEnv->getCollectiveRootFmPath();
 		
-//		bab_debug('sFullPathName ==> ' . $pathx . $arr['path'] . $arr['name']);
+		$pathx = BAB_FileManagerEnv::getCollectivePath($arr['iIdDgOwner']);
 		
 		$files[] = $pathx . $arr['path'] . $arr['name'];
 		$rights[ $arr['path'] . $arr['name'] ] = array(
