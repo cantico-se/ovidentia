@@ -2058,6 +2058,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			if( $i < $this->countart)
 				{
 				$arr = $babDB->db_fetch_array($this->resart);
+				$this->articleid = $arr['id'];
 				$this->article = put_text($arr['title']);
 				$this->artdate = bab_shortDate($arr['date'], true);
 				$this->artauthor = empty($arr['author']) ? bab_translate("Anonymous") : bab_toHtml($arr['author']);
@@ -2143,6 +2144,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			if( $i < $this->countfor)
 				{
 				$arr = $babDB->db_fetch_array($this->resfor);
+				$this->postid = $arr['id'];
 				$this->post = bab_toHtml($arr['title']);
 				$this->postauthor = bab_toHtml($arr['author']);
 				$this->postdate = bab_toHtml(bab_shortDate($arr['date'], true));
@@ -2195,6 +2197,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$this->altbg = !$this->altbg;
 				$arr = $babDB->db_fetch_array($this->resfil);
 				$this->file = bab_toHtml($arr['title']);
+				$this->fileid = $arr['id'];
 				$this->update = bab_toHtml(bab_shortDate($arr['datem'], true));
 				$this->created = bab_toHtml(bab_shortDate($arr['datec'], true));
                 $this->artauthor = bab_toHtml($arr['author']);
