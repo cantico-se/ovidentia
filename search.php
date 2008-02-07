@@ -1390,7 +1390,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 							$current_version = array();
 							$old_version = array();
 							foreach($found_files as $arr) {
-								$fullpath = bab_removeUploadPath($arr['file']);
+								$fullpath = bab_removeFmUploadPath($arr['file']);
 
 								$name = basename($fullpath);
 								$path = dirname($fullpath);
@@ -2885,7 +2885,7 @@ function viewFile($id, $w)
 						
 						
 						foreach($found_files as $arr) {
-							$this->found_in_index[bab_removeUploadPath($arr['file'])] = 1;
+							$this->found_in_index[bab_removeFmUploadPath($arr['file'])] = 1;
 						}
 					}
 				}
