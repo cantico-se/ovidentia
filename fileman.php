@@ -1511,6 +1511,7 @@ function listFiles()
 				$this->urlget	= bab_toHtml($sUrlFile . '&sAction=getFile');
 				$this->cuturl	= bab_toHtml($sUrlFile . '&sAction=cutFile');
 				$this->delurl	= bab_toHtml($sUrlFile . '&sAction=delFile');
+				$this->fileid	= $arr['id'];
 				
 				$this->updateFileInfo($arr);
 				
