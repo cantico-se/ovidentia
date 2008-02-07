@@ -1684,7 +1684,7 @@ class bab_functionality {
 	 * @return boolean
 	 */
 	function includefile($path) {
-		return include_once dirname($_SERVER['SCRIPT_FILENAME']).'/'.BAB_FUNCTIONALITY_ROOT_DIRNAME.'/'.$path.'/'.BAB_FUNCTIONALITY_LINK_FILENAME;
+		return @include dirname($_SERVER['SCRIPT_FILENAME']).'/'.BAB_FUNCTIONALITY_ROOT_DIRNAME.'/'.$path.'/'.BAB_FUNCTIONALITY_LINK_FILENAME;
 	}
 	
 	/**
@@ -1695,9 +1695,8 @@ class bab_functionality {
 	 * @return false|object
 	 */
 	function get($path) {
-		if (bab_functionality::includefile($path)) {
-			$class = str_replace('/', '_', $path);
-			return new $class();
+		if ($classname = bab_functionality::includefile($path)) {
+			return new $classname();
 		}
 		
 		return false;
@@ -1733,6 +1732,11 @@ class bab_functionality {
 	function getCallableMethods() {
 		return array(
 		);
+	}
+	
+	
+	function getPath() {
+		return str_replace('_','/',get_class($this));
 	}
 }
 

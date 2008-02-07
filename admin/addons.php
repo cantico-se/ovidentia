@@ -779,21 +779,29 @@ function history($item)
 function functionalities() {
 	require_once $GLOBALS['babInstallPath'] . 'utilit/tree.php';
 	require_once $GLOBALS['babInstallPath'] . 'utilit/functionalityincl.php';
+	require_once $GLOBALS['babInstallPath'] . 'utilit/urlincl.php';
+	
 	
 	
 	$func = new bab_functionalities();
 	
+	
+	if ($uppath = bab_gp('uppath', false)) {
+	
+		$func->copyToParent($uppath);
+	
+		header('location:'.bab_url::request('tg', 'idx'));
+		exit;
+	}
+	
+	
+	
+	
+	
 	$tree = new bab_TreeView('bab_functionalities');
 
 	$root = & $tree->createElement( 'R', 'directory', bab_translate('Root'), '', '');
-	$root->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
-	/*
-	$root->addAction('add',
-			reg_translate('Add'),
-			$GLOBALS['babSkinPath'] . 'images/Puces/edit_add.png',
-			$GLOBALS['babAddonUrl'].'edit&directory=/',
-			'');
-	*/						
+	$root->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/category.png');					
 	$tree->appendElement($root, NULL);
 
 
@@ -806,23 +814,43 @@ function functionalities() {
 		
 			$funcpath = trim($path.'/'.$dir, '/');
 			$obj = bab_functionality::get($funcpath);
-		
+			
 			$element = & $tree->createElement( $id.'.'.$i, 'directory', $dir.' : '.$obj->getDescription(), '', '');
-			$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
-			/*
-			$element->addAction('add',
-								reg_translate('Add'),
-								$GLOBALS['babSkinPath'] . 'images/Puces/edit_add.png',
-								$GLOBALS['babAddonUrl'].'edit&directory='.urlencode($path.$dir),
-								'');
-			*/
+		
+		
+			if (0 < substr_count($funcpath, '/')) {
+			
+				$parent_path = $func->getParentPath($funcpath);
+				$parent_obj = bab_functionality::get($parent_path);
+				
+				if ($parent_obj->getPath() !== $funcpath) {
+					
+
+					$element->addAction('moveup',
+									bab_translate('Move up'),
+									$GLOBALS['babSkinPath'] . 'images/Puces/go-up.png',
+									$GLOBALS['babUrlScript'].'?tg=addons&idx=functionalities&uppath='.urlencode($funcpath),
+									'');
+				
+				}
+			}
+
+			
+			
+			if (false === buid_nodeLevel($tree, $element, $id.'.'.$i, $funcpath)) {
+				$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/topic.png');
+			
+			} else {
+				$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
+			
+			}
+			
 			$tree->appendElement($element, $id);
-
-			buid_nodeLevel($tree, $element, $id.'.'.$i, $funcpath);
-
 			
 			$i++;
 		}
+		
+		return 0 < count($childs);
 
 	}
 

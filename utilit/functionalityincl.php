@@ -74,24 +74,26 @@ class bab_functionalities {
 	 * the directory must be present
 	 * @access	private
 	 * @param	string	$path			path to the link
+	 * @param	string	$funcpath		path to functionality
 	 * @param	string	$include_file	file to include before calling this functionality
 	 * @return 	boolean
 	 */
-	function recordLink($path, $include_file) {
+	function recordLink($path, $funcpath, $include_file) {
 	
-		if (file_exists($path.$this->filename)) {
+		if (file_exists($this->treeRootPath.$path.'/'.$this->filename)) {
 			return false;
 		}
 		
-		if ($this->treeRootPath === $path) {
+		if ('' === $path) {
 			return false;
 		}
 	
 		// replace core directory with a variable
 		$include_file = str_replace($GLOBALS['babInstallPath'], '\'.$GLOBALS[\'babInstallPath\'].\'', $include_file);
-		$content = '<?php return @include_once \''.$include_file.'\'; ?>';
+		$classname = str_replace('/','_',$funcpath);
+		$content = '<?php if (false === @include_once \''.$include_file.'\') { return false; } else { return \''.$classname.'\'; } ?>';
 		
-		if ($handle = fopen($path.'/'.$this->filename, 'w')) {
+		if ($handle = fopen($this->treeRootPath.$path.'/'.$this->filename, 'w')) {
 			
 			if (false !== fwrite($handle, $content)) {
 				fclose($handle);
@@ -99,7 +101,7 @@ class bab_functionalities {
 			}
 			
 			fclose($handle);
-			$this->onInsertNode($path.'/'.$this->filename);
+			$this->onInsertNode($this->treeRootPath.$path.'/'.$this->filename);
 		}
 
 		return false;
@@ -155,7 +157,7 @@ class bab_functionalities {
 	}
 	
 	/** 
-	 * @access	private
+	 * @access	public
 	 * @param	array $func_path
 	 * @return 	false|string
 	 */
@@ -168,6 +170,31 @@ class bab_functionalities {
 		
 		array_pop($arr);
 		return implode('/', $arr);
+	}
+	
+	
+	/** 
+	 * @access	public
+	 * @param	array $func_path
+	 * @return 	boolean
+	 */
+	function copyToParent($func_path) {
+		$parent_path = $this->getParentPath($func_path);
+		
+		if (false === $parent_path) {
+			return false;
+		}
+		
+		
+		if (!unlink($this->treeRootPath.$parent_path.'/'.$this->filename)) {
+			return false;
+		}
+		
+		if (!copy($this->treeRootPath.$func_path.'/'.$this->filename, $this->treeRootPath.$parent_path.'/'.$this->filename)) {
+			return false;
+		}
+		
+		return true;
 	}
 	
 	
@@ -246,12 +273,16 @@ class bab_functionalities {
 		}
 		
 		// verify interface
+		
+		/*
 		if ($parent = $this->getParentPath($func_path)) {
 			if (!$this->compare($parent, $func_path)) {
 				trigger_error(sprintf('The functionality %s does not implement interface from parent functionality %s', $parent, $func_path));
 				return false;
 			}
 		}
+		*/
+		
 		
 		
 		// link upgrade
@@ -259,7 +290,7 @@ class bab_functionalities {
 			if (file_exists($this->treeRootPath.$func_path.'/'.$this->filename)) {
 				unlink($this->treeRootPath.$func_path.'/'.$this->filename);
 			}
-			$this->recordLink($this->treeRootPath.$func_path, $include_file);
+			$this->recordLink($func_path, $func_path, $include_file);
 			return true;
 		}
 	
@@ -280,7 +311,7 @@ class bab_functionalities {
 		
 		do {
 			$path = implode('/', $arr);
-		} while ($this->recordLink($this->treeRootPath.$path, $include_file) && null !== array_pop($arr));
+		} while ($this->recordLink($path, $func_path, $include_file) && null !== array_pop($arr));
 		
 		return true;
 	}
