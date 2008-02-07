@@ -53,25 +53,27 @@ function _var(&$txt,$var,$new)
 	}
 	
 /**
- * @private
+ * @access private
  */
-function _make_link($url,$text,$popup = 0,$url_popup = false)
+function _make_link($url,$text,$popup = 0,$url_popup = false,$classname = false)
 	{
 	if (isset($this->ext_url)) {
 		$url = $GLOBALS['babUrlScript']."?tg=login&cmd=detect&referer=".urlencode($url);
 		$popup = 0;
 		}
-
+	if ($classname !== false) {
+		$classname = 'class="' . $classname . '"';
+	}
 	$url = ($popup == 1 || $popup == true) && $url_popup != false ? $url_popup : $url;
 	if ($popup == 1 || $popup === true)
 		{
-		return '<a href="'.bab_toHtml($url).'" onclick="bab_popup(this.href);return false;">'.$text.'</a>';
+		return '<a ' . $classname . ' href="'.bab_toHtml($url).'" onclick="bab_popup(this.href);return false;">'.$text.'</a>';
 		}
 	elseif ($popup == 2) {
-		return '<a target="_blank" href="'.bab_toHtml($url).'">'.$text.'</a>';
+		return '<a ' . $classname . ' target="_blank" href="'.bab_toHtml($url).'">'.$text.'</a>';
 		}
 	else {
-		return '<a href="'.bab_toHtml($url).'">'.$text.'</a>';
+		return '<a ' . $classname . ' href="'.bab_toHtml($url).'">'.$text.'</a>';
 		}
 	}
 	
@@ -170,11 +172,11 @@ function ref(&$txt)
 								$title_object = empty($title_object) ? $arr['title'] : $title_object;
 								if(bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $arr['id_topic']) && ($arr['restriction'] == '' || bab_articleAccessByRestriction($arr['restriction'])))
 									{
-									$title_object = $this->_make_link($GLOBALS['babUrlScript']."?tg=articles&idx=More&article=".$arr['id']."&topics=".$arr['id_topic'],$title_object,$popup,$GLOBALS['babUrlScript']."?tg=articles&idx=viewa&topics=".$arr['id_topic']."&article=".$arr['id']);
+									$title_object = $this->_make_link($GLOBALS['babUrlScript']."?tg=articles&idx=More&article=".$arr['id']."&topics=".$arr['id_topic'],$title_object,$popup,$GLOBALS['babUrlScript']."?tg=articles&idx=viewa&topics=".$arr['id_topic']."&article=".$arr['id'],'bab-article-'.$arr['id']);
 									}
 								elseif (!$GLOBALS['BAB_SESS_LOGGED'] && $connect)
 									{
-									$title_object = $this->_make_link($GLOBALS['babUrlScript']."?tg=login&cmd=detect&referer=".urlencode($GLOBALS['babUrlScript']."?tg=articles&idx=More&article=".$arr['id']."&topics=".$arr['id_topic']),$title_object);
+									$title_object = $this->_make_link($GLOBALS['babUrlScript']."?tg=login&cmd=detect&referer=".urlencode($GLOBALS['babUrlScript']."?tg=articles&idx=More&article=".$arr['id']."&topics=".$arr['id_topic']),$title_object,0,false,'bab-article-'.$arr['id']);
 									}
 
 								}
@@ -306,7 +308,7 @@ function ref(&$txt)
 										}
 
 										$sPath = removeEndSlah($arr['path']);
-										$title_object = $this->_make_link($GLOBALS['babUrlScript']."?tg=fileman&sAction=getFile".$inl."&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($sPath)."&file=".urlencode($arr['name']).'&idf='.$arr['id'],$title_object,2);
+										$title_object = $this->_make_link($GLOBALS['babUrlScript']."?tg=fileman&sAction=getFile".$inl."&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($sPath)."&file=".urlencode($arr['name']).'&idf='.$arr['id'],$title_object,2,false,'bab-file-' . $arr['id']);
 									}
 								}
 							bab_replace::_var($txt,$var,$title_object);
