@@ -1557,6 +1557,7 @@ function indexAllFmFiles($status, $prepare) {
 			f.path, 
 			f.id_owner, 
 			f.bgroup, 
+			f.iIdDgOwner,
 			d.id version 
 		FROM 
 			' . BAB_FILES_TBL . ' f 
