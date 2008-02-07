@@ -303,4 +303,20 @@ function bab_removeUploadPath($str) {
 	}
 }
 
+
+/**
+ * Remove 3 directories
+ */
+function bab_removeFmUploadPath($str) {
+	$path = bab_removeUploadPath($str);
+	
+	$arr = explode('/', $path);
+	
+	unset($arr[0]);
+	unset($arr[1]);
+	unset($arr[2]);
+	
+	return implode('/', $arr);
+}
+
 ?>
