@@ -823,7 +823,7 @@ function functionalities() {
 				$parent_path = $func->getParentPath($funcpath);
 				$parent_obj = bab_functionality::get($parent_path);
 				
-				if ($parent_obj->getPath() !== $funcpath) {
+				if ($parent_obj->getPath() !== $obj->getPath()) {
 					
 
 					$element->addAction('moveup',

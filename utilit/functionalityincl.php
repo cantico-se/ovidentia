@@ -233,9 +233,16 @@ class bab_functionalities {
 	 * return true if $path2 contain methods from $path1
 	 * @return boolean
 	 */
-	function compare($path1, $path2) {
+	function compare($path1, $path2, $include_file) {
 		$parent = bab_functionality::get($path1);
-		$child = bab_functionality::get($path2);
+		
+		
+		if (!include_once $include_file) {
+			return false;
+		}
+		
+		$classname = str_replace('/', '_', $path2);
+		$child = new $classname();
 		
 		if (!$parent || !$child) {
 			return false;
@@ -274,14 +281,14 @@ class bab_functionalities {
 		
 		// verify interface
 		
-		/*
+		
 		if ($parent = $this->getParentPath($func_path)) {
-			if (!$this->compare($parent, $func_path)) {
-				trigger_error(sprintf('The functionality %s does not implement interface from parent functionality %s', $parent, $func_path));
+			if (false !== bab_functionality::get($parent) && !$this->compare($parent, $func_path, $include_file)) {
+				trigger_error(sprintf('The functionality %s does not implement interface from parent functionality %s', $func_path, $parent));
 				return false;
 			}
 		}
-		*/
+		
 		
 		
 		
