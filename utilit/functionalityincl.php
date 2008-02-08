@@ -97,11 +97,11 @@ class bab_functionalities {
 			
 			if (false !== fwrite($handle, $content)) {
 				fclose($handle);
+				$this->onInsertNode($this->treeRootPath.$path.'/'.$this->filename);
 				return true;
+			} else {
+				return false;
 			}
-			
-			fclose($handle);
-			$this->onInsertNode($this->treeRootPath.$path.'/'.$this->filename);
 		}
 
 		return false;
@@ -153,6 +153,11 @@ class bab_functionalities {
 		$path = trim($func_path,'/ ');
 		$link = $this->treeRootPath.$func_path.'/'.$this->filename;
 		$file = file($link);
+		
+		if (!isset($file[0])) {
+			return 0;
+		}
+		
 		return abs(crc32($file[0]));
 	}
 	
@@ -218,7 +223,7 @@ class bab_functionalities {
 		if (0 === count($childs)) {
 			rmdir($this->treeRootPath.$func_path);
 		} else {
-			copy($this->treeRootPath.$func_path.'/'.$childs[0], $this->treeRootPath.$func_path.'/'.$this->filename);
+			copy($this->treeRootPath.$func_path.'/'.$childs[0].'/'.$this->filename, $this->treeRootPath.$func_path.'/'.$this->filename);
 		}
 
 		$parent = $this->getParentPath($func_path);
@@ -297,7 +302,11 @@ class bab_functionalities {
 			if (file_exists($this->treeRootPath.$func_path.'/'.$this->filename)) {
 				unlink($this->treeRootPath.$func_path.'/'.$this->filename);
 			}
-			$this->recordLink($func_path, $func_path, $include_file);
+			
+			if (false === $this->recordLink($func_path, $func_path, $include_file)) {
+				return false;
+			}
+			
 			return true;
 		}
 	
