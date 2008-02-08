@@ -4211,6 +4211,14 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	 * Upgrade to 6.6.0
 	 */
 
+	/**
+	 * Upgrade to 6.6.1
+	 */
+
+	/**
+	 * Upgrade to 6.6.2
+	 */
+
 	return true;
 }
 ?>
