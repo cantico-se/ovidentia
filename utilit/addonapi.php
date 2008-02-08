@@ -1734,7 +1734,10 @@ class bab_functionality {
 		);
 	}
 	
-	
+	/**
+	 * Get path to functionality at this node witch is the current path or a reference to a childnode
+	 * @return string
+	 */
 	function getPath() {
 		return str_replace('_','/',get_class($this));
 	}
