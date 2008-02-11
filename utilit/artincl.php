@@ -281,7 +281,7 @@ function notifyArticleHomePage($top, $title, $homepage0, $homepage1)
 				$this->site = bab_translate("Web site");
 				$this->sitename = $babSiteName;
 				$this->date = bab_translate("Date");
-				$this->dateval = bab_strftime(mktime());
+				$this->dateval = bab_longDate(time());
 				if( !empty($BAB_SESS_USER))
 					$this->author = $BAB_SESS_USER;
 				else
