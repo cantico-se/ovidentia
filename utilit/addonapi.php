@@ -504,6 +504,11 @@ function bab_getPrimaryGroupId($userid)
 	}
 
 
+/**
+ * Get groups members
+ * @param	int|array	$ids	id_group or an array of id_group
+ * @return false|array
+ */
 function bab_getGroupsMembers($ids)
 	{
 	global $babDB;
@@ -553,7 +558,7 @@ function bab_getGroupsMembers($ids)
 			return $users;
 			}
 		}
-	else
+
 		return false;
 	}
 
