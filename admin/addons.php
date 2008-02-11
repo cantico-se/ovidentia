@@ -816,9 +816,33 @@ function functionalities() {
 			$obj = bab_functionality::get($funcpath);
 			$original = $func->getOriginal($funcpath);
 			
-			$element = & $tree->createElement( $id.'.'.$i, 'directory', $dir.' : '.$original->getDescription(), '', '');
+			$labelpath = $obj->getPath();
+			if (false !== strpos($labelpath,'/')) {
+				$labelpath = substr(strrchr($labelpath,'/'),1);
+			}
+			
+			if ($labelpath !== $dir) {
+				$labelpath = $dir . ' ('.$labelpath.')';
+			}
+			
+			$element = & $tree->createElement( $id.'.'.$i, 'directory', $labelpath.' : '.$original->getDescription(), '', '');
 		
 		
+			
+			
+			
+			
+			
+			if (false === buid_nodeLevel($tree, $element, $id.'.'.$i, $funcpath)) {
+				$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/topic.png');
+			
+			} else {
+				$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
+			}
+			
+			
+			
+			
 			if (0 < substr_count($funcpath, '/')) {
 			
 				$parent_path = $func->getParentPath($funcpath);
@@ -834,21 +858,10 @@ function functionalities() {
 				
 				} 
 				
-			} 
-			
-			// $nodeInfo = false === strpos($obj->getPath(),'/') ? $obj->getPath() : substr(strrchr($obj->getPath(),'/'), 1);
-			$element->setInfo($obj->getPath());
-			
-
-			
-			
-			if (false === buid_nodeLevel($tree, $element, $id.'.'.$i, $funcpath)) {
-				$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/topic.png');
-			
-			} else {
-				$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
-			
 			}
+			
+			
+			
 			
 			$tree->appendElement($element, $id);
 			
