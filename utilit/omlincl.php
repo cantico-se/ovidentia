@@ -2597,7 +2597,7 @@ class bab_RecentArticles extends bab_handler
 			$this->count = count($this->IdEntries);
 			if( $this->count > 0 )
 				{
-				$this->res = $babDB->db_query("select at.*, count(aft.id) as nfiles from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_FILES_TBL." aft on at.id=aft.id_article where at.id IN (".$babDB->quote($this->IdEntries).") group by at.id order by ".$order);
+				$this->res = $babDB->db_query("select at.*, atc.id_dgowner, count(aft.id) as nfiles from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_FILES_TBL." aft on at.id=aft.id_article left join ".BAB_TOPICS_TBL." att on at.id_topic=att.id left join ".BAB_TOPICS_CATEGORIES_TBL." atc on att.id_cat=atc.id where at.id IN (".$babDB->quote($this->IdEntries).") group by at.id order by ".$order);
 				$this->count = $babDB->db_num_rows($this->res);
 				}
 			}
@@ -2659,6 +2659,7 @@ class bab_RecentArticles extends bab_handler
 			$this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
 			$this->ctx->curctx->push('ArticleLanguage', $arr['lang']);
 			$this->ctx->curctx->push('ArticleFiles', $arr['nfiles']);
+			$this->ctx->curctx->push('ArticleDelegationId', $arr['id_dgowner']);
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -2839,7 +2840,7 @@ class bab_RecentPosts extends bab_handler
 			}
 
 		
-			$req = "SELECT p.*, f.id id_forum FROM ".BAB_POSTS_TBL." p LEFT JOIN ".BAB_THREADS_TBL." t on p.id_thread = t.id LEFT JOIN ".BAB_FORUMS_TBL." f on f.id = t.forum WHERE f.active='Y'" . $sDelegation . "and t.forum IN (".$babDB->quote($arr).") and p.confirmed='Y'";	
+			$req = "SELECT p.*, f.id id_forum, f.id_dgowner FROM ".BAB_POSTS_TBL." p LEFT JOIN ".BAB_THREADS_TBL." t on p.id_thread = t.id LEFT JOIN ".BAB_FORUMS_TBL." f on f.id = t.forum WHERE f.active='Y'" . $sDelegation . "and t.forum IN (".$babDB->quote($arr).") and p.confirmed='Y'";	
 
 			if( $this->nbdays !== false)
 				{
@@ -2892,6 +2893,7 @@ class bab_RecentPosts extends bab_handler
 			$this->ctx->curctx->push('PostDate', bab_mktime($arr['date']));
 			$this->ctx->curctx->push('PostUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$arr['id_forum']."&thread=".$arr['id_thread']."&post=".$arr['id'].'&views=1');
 			$this->ctx->curctx->push('PostPopupUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=viewp&forum=".$arr['id_forum']."&thread=".$arr['id_thread']."&post=".$arr['id'].'&views=1');
+			$this->ctx->curctx->push('PostDelegationId', $arr['id_dgowner']);
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -2978,7 +2980,7 @@ class bab_RecentThreads extends bab_handler
 		$this->count = count($this->arrid);
 		if( $this->count > 0 )
 			{
-			$this->res = $babDB->db_query("select * from ".BAB_POSTS_TBL." p where id IN (".$babDB->quote($this->arrid).") order by ".$order);
+			$this->res = $babDB->db_query("select p.*, f.id_dgowner from ".BAB_POSTS_TBL." p LEFT JOIN bab_threads t on p.id_thread = t.id LEFT JOIN bab_forums f on f.id = t.forum where p.id IN (".$babDB->quote($this->arrid).") order by ".$order);
 			$this->count = $babDB->db_num_rows($this->res);
 			}
 		$this->ctx->curctx->push('CCount', $this->count);
@@ -3001,6 +3003,7 @@ class bab_RecentThreads extends bab_handler
 			$this->ctx->curctx->push('PostDate', bab_mktime($arr['date']));
 			$this->ctx->curctx->push('PostUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$this->arrfid[$this->idx]."&thread=".$arr['id_thread']."&post=".$arr['id']);
 			$this->ctx->curctx->push('PostPopupUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=viewp&forum=".$this->arrfid[$this->idx]."&thread=".$arr['id_thread']."&post=".$arr['id']);
+			$this->ctx->curctx->push('PostDelegationId', $arr['id_dgowner']);
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -3172,6 +3175,7 @@ class bab_RecentFiles extends bab_handler
 				{
 					$this->ctx->curctx->push('FileSize', '???');
 				}
+				$this->ctx->curctx->push('FileDelegationId', $arr['iIdDgOwner']);
 			}
 			else 
 			{
@@ -3187,6 +3191,7 @@ class bab_RecentFiles extends bab_handler
 				$this->ctx->curctx->push('FileModifiedBy', '');
 				$this->ctx->curctx->push('FileDate', '');
 				$this->ctx->curctx->push('FileSize', '');
+				$this->ctx->curctx->push('FileDelegationId', '');
 			}
 			$this->ctx->curctx->push('FileFolderId', $arr['id_owner']);
 			$this->idx++;
@@ -5459,7 +5464,7 @@ function vars_replace($txt)
 				case BAB_TAG_VARIABLE:
 					if( preg_match_all("/(.*?)\[([^\]]+)\]/", $m[2][$i], $m2) > 0)
 					{
-						print_r($m2);
+						//print_r($m2);
 						$val = $this->get_value($m2[1][0]);
 						for( $t=0; $t < count($m2[2]); $t++)
 							{
