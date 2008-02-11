@@ -45,29 +45,22 @@ function sendReminders()
 
 		if(!class_exists("clsCalEventReminder"))
 			{
-			class clsCalEventReminder
+			
+			include_once $GLOBALS['babInstallPath'].'utilit/evtincl.php';
+			class clsCalEventReminder extends clsNotifyEvent
 				{
-				var $title;
-				var $message;
-				var $description;
-				var $startdate;
-				var $enddate;
-				var $descriptiontxt;
-				var $titletxt;
-				var $startdatetxt;
-				var $enddatetxt;
+				
 
-				function clsCalEventReminder($title, $description, $startdate, $enddate)
+				function clsCalEventReminder($title, $description, $location, $startdate, $enddate)
 					{
-					$this->title = $title;
-					$this->message = bab_translate("Event reminder");
-					$this->description = $description;
-					$this->startdate = $startdate;
-					$this->enddate = $enddate;
-					$this->descriptiontxt = bab_translate("Description");
-					$this->titletxt = bab_translate("Title");
-					$this->startdatetxt = bab_translate("Begin date");
-					$this->enddatetxt = bab_translate("End date");
+					$message = bab_translate("Event reminder");
+					
+					$this->vars['title'] 		= $title;
+					$this->vars['description'] 	= $description;
+					$this->vars['startdate'] 	= $startdate;
+					$this->vars['enddate'] 		= $enddate;
+					$this->vars['message'] 		= $message;
+					$this->vars['location'] 	= $location;
 					}
 				}
 			}
@@ -89,19 +82,27 @@ function sendReminders()
 			$tempc = new clsCalEventReminder(
 				$arr['title'], 
 				$editor->getHtml(), 
+				$arr['location'],
 				bab_longDate(bab_mktime($arr['start_date'])), 
 				bab_longDate(bab_mktime($arr['end_date']))
 			);
+			
+			$tempc->asHtml();
 			
 			$message = $mail->mailTemplate(bab_printTemplate($tempc,"mailinfo.html", "eventreminder"));
 			$mail->mailSubject(bab_translate("Event reminder"));
 			$mail->mailBody($message, "html");
 
+			$tempc->asText();
+
 			$message = bab_printTemplate($tempc,"mailinfo.html", "eventremindertxt");
 			$mail->mailAltBody($message);
 
-			$mail->send();
-			$babDB->db_query("update ".BAB_CAL_EVENTS_REMINDERS_TBL." set processed='Y' where id_event='".$babDB->db_escape_string($arr['id_event'])."' and id_user='".$babDB->db_escape_string($arr['id_user'])."'");
+			if ($mail->send()) {
+				$babDB->db_query("update ".BAB_CAL_EVENTS_REMINDERS_TBL." set processed='Y' where id_event='".$babDB->db_escape_string($arr['id_event'])."' and id_user='".$babDB->db_escape_string($arr['id_user'])."'");
+				
+				echo 'remainder sent to '.$email.'<br />';
+			}
 		}
 	}
 }

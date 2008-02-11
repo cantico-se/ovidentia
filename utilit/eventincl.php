@@ -210,7 +210,7 @@ function bab_fireEvent(&$event_obj) {
 
 			if (0 < $babDB->db_num_rows($res)) {
 				while ($arr = $babDB->db_fetch_assoc($res)) {
-	
+
 					$id_addon = $arr['id_addon'];
 				
 					if (BAB_ADDON_CORE_NAME === $arr['addon_name'] || 
