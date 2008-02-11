@@ -32,6 +32,7 @@ class bab_functionalities {
 
 	var $treeRootPath;
 	var $filename;
+	var $original;
 	var $rootDirName;
 	
 	var $treeLinks = array();
@@ -43,6 +44,7 @@ class bab_functionalities {
 	 */
 	function bab_functionalities() {
 		$this->filename = BAB_FUNCTIONALITY_LINK_FILENAME;
+		$this->original = BAB_FUNCTIONALITY_LINK_ORIGINAL_FILENAME;
 		$this->rootDirName = BAB_FUNCTIONALITY_ROOT_DIRNAME;
 		$this->treeRootPath = dirname($_SERVER['SCRIPT_FILENAME']).'/'.$this->rootDirName.'/';
 		
@@ -73,14 +75,15 @@ class bab_functionalities {
 	 * Record link into tree
 	 * the directory must be present
 	 * @access	private
-	 * @param	string	$path			path to the link
+	 * @param	string	$path			destination path to record the link
 	 * @param	string	$funcpath		path to functionality
 	 * @param	string	$include_file	file to include before calling this functionality
+	 * @param	string	$linkfilename	Link file name
 	 * @return 	boolean
 	 */
-	function recordLink($path, $funcpath, $include_file) {
+	function recordLink($path, $funcpath, $include_file, $linkfilename) {
 	
-		if (file_exists($this->treeRootPath.$path.'/'.$this->filename)) {
+		if (file_exists($this->treeRootPath.$path.'/'.$linkfilename)) {
 			return false;
 		}
 		
@@ -91,7 +94,44 @@ class bab_functionalities {
 		// replace core directory with a variable
 		$include_file = str_replace($GLOBALS['babInstallPath'], '\'.$GLOBALS[\'babInstallPath\'].\'', $include_file);
 		$classname = str_replace('/','_',$funcpath);
-		$content = '<?php if (false === @include_once \''.$include_file.'\') { return false; } else { return \''.$classname.'\'; } ?>';
+		$content = '<?php if (false === include_once \''.$include_file.'\') { return false; } else { return \''.$classname.'\'; } ?>';
+		
+		if ($handle = fopen($this->treeRootPath.$path.'/'.$linkfilename, 'w')) {
+			
+			if (false !== fwrite($handle, $content)) {
+				fclose($handle);
+				$this->onInsertNode($this->treeRootPath.$path.'/'.$linkfilename);
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		return false;
+	}
+	
+	
+	/**
+	 * Record link into tree, target is a link
+	 * @private
+	 *
+	 * @param	string		$path 		destination path to record the link
+	 * @param	string		$funcpath	path to functionality
+	 *
+	 * @return boolean
+	 */
+	function recordLinkToLink($path, $funcpath) {
+		
+		if (file_exists($this->treeRootPath.$path.'/'.$this->filename)) {
+			return false;
+		}
+		
+		if ('' === $path) {
+			return false;
+		}
+		
+		$content = '<?php return include \''.$this->rootDirName.'/'.$funcpath.'/'.$this->filename.'\';  ?>';
+		
 		
 		if ($handle = fopen($this->treeRootPath.$path.'/'.$this->filename, 'w')) {
 			
@@ -106,6 +146,7 @@ class bab_functionalities {
 
 		return false;
 	}
+	
 	
 
 	
@@ -146,12 +187,13 @@ class bab_functionalities {
 	/**
 	 * Get CRC 32 for function
 	 * @access	private
-	 * @param	array $func_path
+	 * @param	string	$func_path
+	 * @param	string	$filename
 	 * @return 	int
 	 */
-	function getCrc($func_path) {
+	function getCrc($func_path, $filename) {
 		$path = trim($func_path,'/ ');
-		$link = $this->treeRootPath.$func_path.'/'.$this->filename;
+		$link = $this->treeRootPath.$func_path.'/'.$filename;
 		$file = file($link);
 		
 		if (!isset($file[0])) {
@@ -160,6 +202,8 @@ class bab_functionalities {
 		
 		return abs(crc32($file[0]));
 	}
+	
+	
 	
 	/** 
 	 * @access	public
@@ -179,6 +223,7 @@ class bab_functionalities {
 	
 	
 	/** 
+	 * Force copy to parent manually
 	 * @access	public
 	 * @param	array $func_path
 	 * @return 	boolean
@@ -195,7 +240,7 @@ class bab_functionalities {
 			return false;
 		}
 		
-		if (!copy($this->treeRootPath.$func_path.'/'.$this->filename, $this->treeRootPath.$parent_path.'/'.$this->filename)) {
+		if ($this->recordLinkToLink($parent_path, $func_path)) {
 			return false;
 		}
 		
@@ -205,17 +250,12 @@ class bab_functionalities {
 	
 		
 	/**
-	 * Delete or replace with first child recursively from bottom to top
-	 * while functionality has same crc
+	 * Delete or replace with first child
 	 * @access	private
-	 * @param	int		$crc		crc to delete or replace
 	 * @param	string	$func_path	
 	 */
-	function deleteOrReplaceWithFirstChild($crc, $func_path) {
+	function deleteOrReplaceWithFirstChild($func_path) {
 		
-		if ($crc !== $this->getCrc($func_path)) {
-			return;
-		}
 		
 		$childs = $this->getChilds($func_path);
 		unlink($this->treeRootPath.$func_path.'/'.$this->filename);
@@ -223,24 +263,46 @@ class bab_functionalities {
 		if (0 === count($childs)) {
 			rmdir($this->treeRootPath.$func_path);
 		} else {
-			copy($this->treeRootPath.$func_path.'/'.$childs[0].'/'.$this->filename, $this->treeRootPath.$func_path.'/'.$this->filename);
+			$this->recordLinkToLink($func_path, $func_path.'/'.$childs[0]);
 		}
 
-		$parent = $this->getParentPath($func_path);
-		if ($parent) {
-			$this->deleteOrReplaceWithFirstChild($crc, $parent);
+	}
+	
+	
+	/**
+	 * Get functionality object with original link
+	 * @access public
+	 * @static
+	 * @param	string	$path
+	 * @return false|object
+	 */
+	function getOriginal($path) {
+
+		if ($classname = @include $this->treeRootPath.$path.'/'.$this->original) {
+			return new $classname();
 		}
+		
+		return false;
 	}
 	
 	
 	/**
 	 * test if $path1 is a correct parent path for $path2
 	 * return true if $path2 contain methods from $path1
+	 *
+	 * @param	string	$path1			path to existing functionality
+	 * @param	string	$path2			path to functionality not created
+	 * @param	string	$include_file	file to include for path2 object
+	 *
 	 * @return boolean
 	 */
 	function compare($path1, $path2, $include_file) {
-		$parent = bab_functionality::get($path1);
 		
+		$parent = $this->getOriginal($path1);
+		if (false === $parent) {
+			bab_debug(sprintf('bab_functionalities::compare() : the path "%s" does not exists', $path1));
+			return false;
+		}
 		
 		if (!include_once $include_file) {
 			return false;
@@ -249,7 +311,7 @@ class bab_functionalities {
 		$classname = str_replace('/', '_', $path2);
 		$child = new $classname();
 		
-		if (!$parent || !$child) {
+		if (false === $child) {
 			return false;
 		}
 		
@@ -268,7 +330,7 @@ class bab_functionalities {
 	
 	/**
 	 * Register functionality into functionality tree
-	 * duplicate registration link into parent directories will nothing is registered
+	 * duplicate registration link into parent directories while nothing is registered
 	 *
 	 * @access	public
 	 * @param	string	$func_path		path to functionality
@@ -294,23 +356,7 @@ class bab_functionalities {
 			}
 		}
 		
-		
-		
-		
-		// link upgrade
-		if (is_dir($this->treeRootPath.$func_path)) {
-			if (file_exists($this->treeRootPath.$func_path.'/'.$this->filename)) {
-				unlink($this->treeRootPath.$func_path.'/'.$this->filename);
-			}
-			
-			if (false === $this->recordLink($func_path, $func_path, $include_file)) {
-				return false;
-			}
-			
-			return true;
-		}
-	
-		
+		// create directory if not exists
 		$arr = explode('/',$func_path);
 		$path = $this->treeRootPath;
 		foreach($arr as $directory) {
@@ -325,17 +371,64 @@ class bab_functionalities {
 		}
 		
 		
-		do {
-			$path = implode('/', $arr);
-		} while ($this->recordLink($path, $func_path, $include_file) && null !== array_pop($arr));
+		// link upgrade
+		if (is_dir($this->treeRootPath.$func_path)) {
+		
+			if (file_exists($this->treeRootPath.$func_path.'/'.$this->original)) {
+				unlink($this->treeRootPath.$func_path.'/'.$this->original);
+			}
+
+			if (false === $this->recordLink($func_path, $func_path, $include_file, $this->original)) {
+				return false;
+			}
+			
+			if (file_exists($this->treeRootPath.$func_path.'/'.$this->filename)) {
+				unlink($this->treeRootPath.$func_path.'/'.$this->filename);
+			}
+			
+			if (false === $this->recordLink($func_path, $func_path, $include_file, $this->filename)) {
+				return false;
+			}
+		}
+	
+		$this->normalizeNodeWithChild($this->getParentPath($func_path), $func_path);
 		
 		return true;
 	}
 	
 	
+	/**
+	 * Test link validity
+	 * @param	string	$funcPath
+	 *
+	 * @return boolean
+	 */
+	function isValidLinks($funcPath) {
+		return (file_exists($this->treeRootPath.$funcPath.'/'.$this->filename) && file_exists($this->treeRootPath.$funcPath.'/'.$this->original));
+	}
+	
+	
 
-	
-	
+	/**
+	 * @param	string	$verifyPath		path to verifiy : if link is the same as original, link it to child
+	 * @param	string	$childPath
+	 *
+	 * @return boolean
+	 */
+	function normalizeNodeWithChild($verifyPath, $childPath) {
+		
+		if ($this->isValidLinks($verifyPath)) {
+			if ($this->getCrc($verifyPath, $this->filename) === $this->getCrc($verifyPath, $this->original)) {
+			
+				unlink($this->treeRootPath.$verifyPath.'/'.$this->filename);
+			
+				$this->recordLinkToLink($verifyPath, $childPath);
+				
+				$parentPath = $this->getParentPath($verifyPath);
+				$this->normalizeNodeWithChild($parentPath, $verifyPath);
+			}
+		}
+	}
 	
 	
 	
@@ -357,9 +450,8 @@ class bab_functionalities {
 		if (!file_exists($this->treeRootPath.$link)) {
 			return false;
 		}
-		
-		$crc = $this->getCrc($func_path);
-		$this->deleteOrReplaceWithFirstChild($crc, $func_path);
+
+		$this->deleteOrReplaceWithFirstChild($func_path);
 
 		return true;
 	}

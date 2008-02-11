@@ -814,8 +814,9 @@ function functionalities() {
 		
 			$funcpath = trim($path.'/'.$dir, '/');
 			$obj = bab_functionality::get($funcpath);
+			$original = $func->getOriginal($funcpath);
 			
-			$element = & $tree->createElement( $id.'.'.$i, 'directory', $dir.' : '.$obj->getDescription(), '', '');
+			$element = & $tree->createElement( $id.'.'.$i, 'directory', $dir.' : '.$original->getDescription(), '', '');
 		
 		
 			if (0 < substr_count($funcpath, '/')) {
@@ -824,7 +825,6 @@ function functionalities() {
 				$parent_obj = bab_functionality::get($parent_path);
 				
 				if ($parent_obj->getPath() !== $obj->getPath()) {
-					
 
 					$element->addAction('moveup',
 									bab_translate('Move up'),
@@ -832,8 +832,13 @@ function functionalities() {
 									$GLOBALS['babUrlScript'].'?tg=addons&idx=functionalities&uppath='.urlencode($funcpath),
 									'');
 				
-				}
-			}
+				} 
+				
+			} 
+			
+			// $nodeInfo = false === strpos($obj->getPath(),'/') ? $obj->getPath() : substr(strrchr($obj->getPath(),'/'), 1);
+			$element->setInfo($obj->getPath());
+			
 
 			
 			

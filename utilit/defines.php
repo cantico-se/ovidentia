@@ -61,6 +61,7 @@ define('BAB_HTML_ALL'			,BAB_HTML_ENTITIES | BAB_HTML_P | BAB_HTML_BR | BAB_HTML
 
 define('BAB_ADDON_CORE_NAME', 'core');
 define('BAB_FUNCTIONALITY_LINK_FILENAME', 'link.inc');
+define('BAB_FUNCTIONALITY_LINK_ORIGINAL_FILENAME', 'link.inc.original');
 define('BAB_FUNCTIONALITY_ROOT_DIRNAME', 'functionalities');
 
 define('BAB_ABBR_FULL_WORDS'	, 1);
