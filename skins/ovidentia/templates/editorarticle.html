@@ -23,7 +23,7 @@ function func(articleid,title)
 	
 	opener.bab_dialog._return({
 		'callback' 	: 'editorInsertText',
-		'param'		: '$ARTICLEID('+articleid+','+title+','+target+')'
+		'param'		: '$ARTICLEID('+articleid+','+opener.bab_macroEncodeParam(title)+','+target+')'
 	});
 	
 	window.close();

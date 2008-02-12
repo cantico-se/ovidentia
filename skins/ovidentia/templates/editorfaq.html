@@ -18,7 +18,7 @@ function func(faqid,title)
 	
 	opener.bab_dialog._return({
 		'callback' 	: 'editorInsertText',
-		'param'		: '$FAQID('+faqid+','+title+','+target+')'
+		'param'		: '$FAQID('+faqid+','+opener.bab_macroEncodeParam(title)+','+target+')'
 	});
 	
 	window.close();

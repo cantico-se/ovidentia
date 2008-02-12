@@ -78,6 +78,22 @@ function editorInsertText(text) {
 }
 
 
+
+
+/**
+ * Encode string for macro parameter
+ * like $XXX(a,b,c)
+ *
+ * @param	string	text
+ * @return string
+ */
+function bab_macroEncodeParam(text) {
+	return text.replace(/(\(|\))/g, '-');
+}
+
+
+
+
 /**
  * Callback for external function
  * Image insertion
@@ -107,11 +123,11 @@ function EditorOnInsertFiles(files)
 	for (var i = 0; i < files.length; i++) {
 		var file = files[i];
 		if (file.type != 'folder') {
-			insertedItems.push('$FILE(' + file.id + ',' + file.content + ')');
+			insertedItems.push('$FILE(' + file.id + ',' + bab_macroEncodeParam(file.content) + ')');
 		} else {
 			var path = file.id.split(':');
 			var id = path[0];
-			insertedItems.push('$FOLDER(' + id + ',' + path.slice(1).join('/') + ',' + file.content + ')');
+			insertedItems.push('$FOLDER(' + id + ',' + path.slice(1).join('/') + ',' + bab_macroEncodeParam(file.content) + ')');
 		}
 	}
 	if (insertedItems.length > 0) {
