@@ -2508,4 +2508,6 @@
 <string id="Show the date and the author of the updated event">Afficher la date et l'auteur de la modification de l'événement</string>
 <string id="To delete files use checkboxes">Pour supprimer des fichiers utiliser les cases à cocher</string>
 <string id="A file with the same name already exists in the basket">Il existe déjà un fichier portant ce nom dans la corbeille</string>
+<string id="Open in a popup">Ouvrir dans une popup</string>
+<string id="The result of your search stay in current window">Les résultats de votre recherche seront conservés dans la fenêtre actuelle</string>
 </fr>

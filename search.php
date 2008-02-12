@@ -714,7 +714,8 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			$this->dirtitle = bab_translate("Directories");
 			$this->agebigtitle = bab_translate("Calendar");
 			$this->total = bab_translate("Number of results in research");
-			$this->popup = bab_translate("Popup");
+			$this->popup = bab_translate("Open in a popup");
+			$this->t_popup_help = bab_translate("The result of your search stay in current window");
 			$this->lastname= bab_translate("Lastname");
 			$this->firstname= bab_translate("Firstname");
 			$this->email = bab_translate("Email");
