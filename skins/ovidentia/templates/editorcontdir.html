@@ -13,7 +13,7 @@ function func(contid,txt)
 	
 	opener.bab_dialog._return({
 		'callback' 	: 'editorInsertText',
-		'param'		: '$CONTACTID('+contid+','+txt+')'
+		'param'		: '$CONTACTID('+contid+','+opener.bab_macroEncodeParam(txt)+')'
 	});
 	
 	
@@ -59,7 +59,7 @@ function func(uid,txt,iddir)
 	
 	opener.bab_dialog._return({
 		'callback' 	: 'editorInsertText',
-		'param'		: '$DIRECTORYID('+uid+','+txt+','+iddir+')'
+		'param'		: '$DIRECTORYID('+uid+','+opener.bab_macroEncodeParam(txt)+','+iddir+')'
 	});
 	
 	window.close();
