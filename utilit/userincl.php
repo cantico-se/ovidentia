@@ -717,6 +717,8 @@ function bab_addUserToGroup($iduser, $idgroup, $oc = true)
 	$event = new bab_eventUserAttachedToGroup($iduser, $idgroup);
 	bab_fireEvent($event);
 	
+	bab_siteMap::clear($iduser);
+	
 	/**
 	 * @deprecated
 	 */
@@ -750,6 +752,8 @@ function bab_removeUserFromGroup($iduser, $idgroup)
 	require_once($GLOBALS['babInstallPath']."utilit/eventdirectory.php");
 	$event = new bab_eventUserDetachedFromGroup($iduser, $idgroup);
 	bab_fireEvent($event);
+	
+	bab_siteMap::clear($iduser);
 	
 	/**
 	 * @deprecated
