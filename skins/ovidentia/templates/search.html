@@ -545,9 +545,11 @@ setselects(document.forms.searchForm.g_directory);
 	<!--#in getnextart -->
 	<li>
 	<p>
-	<strong>{ arttopic }&gt; 
-	<a class="BabFaqLink" href="{ articleurl }">{ article }</a> 
-	[ <a href="javascript: bab_popup('{ articleurlpop }');">{ popup }</a> ]</strong> <!--#if archive --> ({ t_archive })<!--#endif archive --><br />
+	<strong>{ arttopic }
+	<span class="bab-article-{ articleid }"></span>
+	&gt; 
+	<a class="BabFaqLink" href="{ articleurl }">{ article }</a></strong> 
+	- <a href="javascript: bab_popup('{ articleurlpop }');" title="{ t_popup_help }">{ popup }</a>  <!--#if archive --> ({ t_archive })<!--#endif archive --><br />
 	 { intro }<br />
 	 
 	<!--#if BAB_SESS_LOGGED -->
@@ -593,7 +595,8 @@ setselects(document.forms.searchForm.g_directory);
 	<p>
 	<strong>
 	<a class="BabSummaryLinkColor" href="{ forumurl }">{ forum }</a> &gt; 
-	<a class="BabFaqLink" href="{ posturl }">{ post }</a> 
+	<a class="BabFaqLink" href="{ posturl }">{ post }</a>
+	<span class="bab-post-{ postid }"></span>
 	[ <a href="javascript: Start('{ posturlpop }', 'OviSearchA', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ popup }</a> ]</strong><br />
 	 { intro }<br />
 	 { postauthor } - <em>{ postdate }</em>
@@ -651,7 +654,7 @@ setselects(document.forms.searchForm.g_directory);
     <td><a href="javascript: bab_popup('{ fileurl }');" <!--#if version_count --> title="{ version_count }" <!--#endif version_count --> ><strong>{ file }</strong></a></td>
     <td>{ filedesc }</td>
     <td>{ artauthor }</td>
-    <td>{ update }</td>
+    <td>{ update } <span class="bab-file-{ fileid }"></span></td>
   </tr>
   <!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
 	<td colspan="4">
@@ -872,7 +875,7 @@ setselects(document.forms.searchForm.g_directory);
 <!--#endif countcom -->
 
 <p align="center">
-	<a href="javascript:this.close()">{ close }</a>
+	<a href="javascript:this.close()">{ close }</a><span class="bab-article-{ articleid }"></span>
 </p>
 
 <!--#end viewart -->
