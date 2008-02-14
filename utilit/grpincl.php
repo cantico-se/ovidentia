@@ -128,7 +128,16 @@ function bab_updateGroupInfo($id, $name, $description, $managerid, $grpdg = 0)
 	return true;
 	}
 
-/* moveoption 1 only item , 2 item with all childs */
+/**
+ * Move group
+ *
+ * @param	int		$id
+ * @param	int		$id_parent
+ * @param	1|2		$moveoption 	1 only item , 2 item with all childs 
+ * @param	string	$groupname
+ *
+ * @return boolean
+ */
 function bab_moveGroup($id, $id_parent, $moveoption, $groupname)
 	{
 	include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
@@ -150,6 +159,12 @@ function bab_moveGroup($id, $id_parent, $moveoption, $groupname)
 			$id_parent = 0;
 			break;
 		}
+		
+		
+	// move a group with members can add or remove access rights on the members
+	bab_siteMap::clearAll();
+	
+		
 
 	if ($node['id_parent'] != $id_parent)
 		{
