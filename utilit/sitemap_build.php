@@ -80,8 +80,8 @@ class bab_siteMap_item {
 	 */
 	function setLink($href, $onclick = '') {
 	
-		if (0 === strpos($href, $GLOBALS['babUrl'])) {
-			$href = substr($href, strlen($GLOBALS['babUrl']));
+		if (0 === strpos($href, $GLOBALS['babUrl'].$GLOBALS['babPhpSelf'])) {
+			$href = substr($href, strlen($GLOBALS['babUrl'].$GLOBALS['babPhpSelf']));
 		}
 	
 		$this->href = $href;
@@ -1008,9 +1008,9 @@ function bab_sitemap_userSection(&$event) {
 			{
 			$babBody->icalendars->initializeCalendars();
 			}
-		$idcals = $babBody->icalendars->user_calendarids;
+			
 		$array_urls[bab_translate("Calendar")] = array(
-			'url' =>  $GLOBALS['babUrlScript']."?tg=".$view."&calid=".$idcals,
+			'url' =>  $GLOBALS['babUrlScript']."?tg=".$view,
 			'uid' => 'babUserCal'
 			);
 		}
