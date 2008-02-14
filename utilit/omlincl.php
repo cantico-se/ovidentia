@@ -5025,6 +5025,65 @@ class bab_Soap extends bab_handler
 	}
 }
 
+class bab_SitemapEntries extends bab_handler
+{
+	var $IdEntries = array();
+	var $index;
+	var $count;
+	var $data;
+
+	function bab_SitemapEntries( &$ctx)
+	{
+		$this->count = 0;
+		$this->bab_handler($ctx);
+		$node = $ctx->get_value('node');
+
+		$rootNode = bab_siteMap::get();
+		$node = $rootNode->getNodeById($node);
+		if ($node) {
+			$node = $node->firstChild();
+			while($node)
+				{
+				$item = $node->getData();
+				$tmp = array();
+				$tmp['url'] = bab_toHtml($item->url);
+				$tmp['text'] = bab_toHtml($item->name);
+				$tmp['description'] = bab_toHtml($item->description);
+				$tmp['id'] = bab_toHtml($item->id_function);
+				$tmp['onclick'] = bab_toHtml($item->onclick);
+				$tmp['folder'] = bab_toHtml($item->folder);
+				$this->IdEntries[] = $tmp;
+				$node = $node->nextSibling();
+				}
+		}
+		
+		$this->count = count($this->IdEntries);
+		$this->ctx->curctx->push('CCount', $this->count);
+
+	}
+
+	function getnext()
+	{
+		if( $this->idx < $this->count )
+		{
+			$this->ctx->curctx->push('CIndex', $this->idx);
+			$this->ctx->curctx->push('SitemapEntryUrl', $this->IdEntries[$this->idx]['url']);
+			$this->ctx->curctx->push('SitemapEntryText', $this->IdEntries[$this->idx]['text']);
+			$this->ctx->curctx->push('SitemapEntryDescription', $this->IdEntries[$this->idx]['description']);
+			$this->ctx->curctx->push('SitemapEntryId', $this->IdEntries[$this->idx]['id']);
+			$this->ctx->curctx->push('SitemapEntryOnclick', $this->IdEntries[$this->idx]['onclick']);
+			$this->ctx->curctx->push('SitemapEntryFolder', $this->IdEntries[$this->idx]['folder']);
+			$this->idx++;
+			$this->index = $this->idx;
+			return true;
+		}
+		else
+		{
+			$this->idx=0;
+			return false;
+		}
+	}
+}
 
 class bab_context
 {
