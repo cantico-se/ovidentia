@@ -23,16 +23,16 @@
 ************************************************************************/
 include_once 'base.php';
 
-define('BAB_FMFILE_UPLOAD'	, 1);
-define('BAB_FMFILE_MOVE'	, 2);
-define('BAB_FMFILE_COPY'	, 3);
+define('BAB_FILEHANDLER_UPLOAD'	, 1);
+define('BAB_FILEHANDLER_MOVE'	, 2);
+define('BAB_FILEHANDLER_COPY'	, 3);
 
 
 /**
  * Wrapper for file manager insertion
- * Instance of this object is the source to create a file in the filemanager
+ * Instance of this object is the source to create a file
  */
-class bab_fmFile {
+class bab_fileHandler {
 
 	/**#@+
 	 * @private
@@ -52,9 +52,9 @@ class bab_fmFile {
 	/**
 	 * @private
 	 * Create object with specified type
-	 * @param	int		$type		BAB_FMFILE_UPLOAD, BAB_FMFILE_MOVE, BAB_FMFILE_COPY
+	 * @param	int		$type		BAB_FILEHANDLER_UPLOAD, BAB_FILEHANDLER_MOVE, BAB_FILEHANDLER_COPY
 	 */
-	function bab_fmFile($type, $source) {
+	function bab_fileHandler($type, $source) {
 		$this->type = $type;
 		$this->source = $source;
 		$this->error = false;
@@ -114,7 +114,7 @@ class bab_fmFile {
 			}
 		}
 		
-		$obj = new bab_fmFile(BAB_FMFILE_UPLOAD, $_FILES[$fieldname]['tmp_name']);
+		$obj = new bab_fileHandler(BAB_FILEHANDLER_UPLOAD, $_FILES[$fieldname]['tmp_name']);
 		$obj->filename 	= $_FILES[$fieldname]['name'];
 		$obj->size	 	= $_FILES[$fieldname]['size'];
 		$obj->error		= $tmp_error;
@@ -128,7 +128,7 @@ class bab_fmFile {
 	 * @param	string	$sourcefile
 	 */
 	function copy($sourcefile) {
-		$obj = new bab_fmFile(BAB_FMFILE_COPY, $sourcefile);
+		$obj = new bab_fileHandler(BAB_FILEHANDLER_COPY, $sourcefile);
 		$obj->filename 	= basename($sourcefile);
 		$obj->size	 	= filesize($sourcefile);
 		return $obj;
@@ -141,7 +141,7 @@ class bab_fmFile {
 	 * @param	string	$sourcefile
 	 */
 	function move($sourcefile) {
-		$obj = new bab_fmFile(BAB_FMFILE_MOVE, $sourcefile);
+		$obj = new bab_fileHandler(BAB_FILEHANDLER_MOVE, $sourcefile);
 		$obj->filename 	= basename($sourcefile);
 		$obj->size	 	= filesize($sourcefile);
 		return $obj;
@@ -159,20 +159,67 @@ class bab_fmFile {
 		}
 	
 		switch($this->type) {
-			case BAB_FMFILE_UPLOAD:
+			case BAB_FILEHANDLER_UPLOAD:
 				return move_uploaded_file($this->source, $destination);
 				break;
 				
-			case BAB_FMFILE_COPY:
+			case BAB_FILEHANDLER_COPY:
 				return copy($this->source, $destination);
 				break;
 				
-			case BAB_FMFILE_MOVE:
+			case BAB_FILEHANDLER_MOVE:
 				return move($this->source, $destination);
 				break;
 		}
 	}
+	
+	
+	/**
+	 * Create a temporary file and change import type to : BAB_FILEHANDLER_MOVE
+	 * If the file allready exists, overright it
+	 *
+	 * @return false|string		temporaryPathToFile
+	 */
+	function importTemporary() {
+	
+		$temporaryPathToFile = $GLOBALS['babUploadPath'].'/tmp/'.session_id().'_'.$this->filename;
+		if ($this->import($temporaryPathToFile)) {
+			$this->source = $temporaryPathToFile;
+			$this->type = BAB_FILEHANDLER_MOVE;
+			return $temporaryPathToFile;
+		}
+		
+		return false;
+	}
 }
+
+
+
+
+
+
+
+
+
+
+/**
+ * Wrapper for file manager insertion
+ * Instance of this object is the source to create a file in the filemanager
+ */
+class bab_fmFile extends bab_fileHandler {
+
+
+
+}
+
+
+
+
+
+
+
+
+
 
 
 
