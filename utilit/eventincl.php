@@ -178,7 +178,7 @@ class bab_fireEvent_Obj {
 function bab_fireEvent(&$event_obj) {
 
 	
-	global $babDB, $babBody;
+	global $babDB;
 	
 	$obj = new bab_fireEvent_Obj;
 	$obj->push_obj($event_obj);
@@ -212,12 +212,11 @@ function bab_fireEvent(&$event_obj) {
 				while ($arr = $babDB->db_fetch_assoc($res)) {
 
 					$id_addon = $arr['id_addon'];
-				
 					if (BAB_ADDON_CORE_NAME === $arr['addon_name'] || 
-					(isset($babBody->babaddons[$id_addon]) && bab_isAccessValid(BAB_ADDONS_GROUPS_TBL, $id_addon))) {
-		
+					bab_isAddonAccessValid($id_addon)) {
+						
 						if (is_file($GLOBALS['babInstallPath'].$arr['require_file'])) {
-
+							
 							$calls[$classkey][] = array(
 								'require_file' => $arr['require_file'],
 								'function_name' => $arr['function_name'],

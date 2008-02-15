@@ -1213,29 +1213,11 @@ function bab_updateUserSettings()
 		}
 
 
-	
+	include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
+	$addons = new bab_addonsInfos;
+	$addons->getRows();
 
-	$res = $babDB->db_query("select * from ".BAB_ADDONS_TBL." where enabled='Y' AND installed='Y'");
-	while( $arr = $babDB->db_fetch_array($res))
-		{
-		$arr_ini = @parse_ini_file( $GLOBALS['babAddonsPath'].$arr['title'].'/addonini.php');
-		$access_control = isset($arr_ini['addon_access_control']) ? (int) $arr_ini['addon_access_control'] : 1;
-		
-		$arr['access'] = false;
-		if (0 === $access_control || bab_isAccessValid(BAB_ADDONS_GROUPS_TBL, $arr['id']))
-			{
-			if( !empty($arr_ini['version']))
-				{
-				if ($arr_ini['version'] == $arr['version']) {
-					$arr['access'] = true;
-					}
-				else {
-					$babDB->db_query("UPDATE ".BAB_ADDONS_TBL." SET installed='N' WHERE id='".$babDB->db_escape_string($arr['id'])."'");
-					}
-				}
-			}
-		$babBody->babaddons[$arr['id']] = $arr;
-		}
+	
 
 
 	$babBody->topman = bab_getUserIdObjects(BAB_TOPICSMAN_GROUPS_TBL);

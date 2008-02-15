@@ -43,10 +43,13 @@ class bab_addonsInfos {
 	
 			$res = $babDB->db_query("select * from ".BAB_ADDONS_TBL." where enabled='Y' AND installed='Y'");
 			while( $arr = $babDB->db_fetch_array($res)) {
+			
+				$arr_ini = @parse_ini_file( $GLOBALS['babAddonsPath'].$arr['title'].'/addonini.php');
+				$access_control = isset($arr_ini['addon_access_control']) ? (int) $arr_ini['addon_access_control'] : 1;
+			
 				$arr['access'] = false;
-				if (bab_isAccessValid(BAB_ADDONS_GROUPS_TBL, $arr['id']))
+				if (0 === $access_control || bab_isAccessValid(BAB_ADDONS_GROUPS_TBL, $arr['id']))
 					{
-					$arr_ini = @parse_ini_file( $GLOBALS['babAddonsPath'].$arr['title'].'/addonini.php');
 					if( !empty($arr_ini['version']))
 						{
 						if ($arr_ini['version'] == $arr['version']) {
