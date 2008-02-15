@@ -2292,7 +2292,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 						$this->dirurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=search&idx=g&id=".$this->dir['id']."&w=".$this->what);
 						$this->popup = true;
 						break;
-					case 'mfunction':
+					case 'email':
 						$this->dirvalue = isset($this->dir[$this->name]) ? bab_toHtml($this->dir[$this->name])  : '';
 						$this->dirurl = 'mailto:'.$this->dirvalue;
 						$this->popup = false;
