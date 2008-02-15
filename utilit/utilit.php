@@ -33,6 +33,7 @@ include_once $babInstallPath.'utilit/template.php';
 include_once $babInstallPath.'utilit/userincl.php';
 include_once $babInstallPath.'utilit/mailincl.php';
 include_once $babInstallPath.'utilit/sitemap.php';
+include_once $babInstallPath.'utilit/eventincl.php';
 
 $babLdapEncodingTypes = array(0 => '', BAB_LDAP_UTF8_ISO_8859_1 => 'UTF8 -> ISO_8859_1', BAB_LDAP_T61_ISO_8859_1 => 'T61 -> ISO_8859_1');
 

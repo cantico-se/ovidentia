@@ -1164,11 +1164,15 @@ if( !empty($incl))
 	{
 	include $babInstallPath."$incl.php";
 	}
+	
+	
 
+class bab_eventPageRefreshed extends bab_event { }
+$event = new bab_eventPageRefreshed;
+bab_fireEvent($event);
 
 $babBody->loadSections();
 
-//bab_debug(get_included_files());
 
 printBody();
 unset($tg);
