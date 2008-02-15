@@ -63,7 +63,7 @@ class bab_functionalities {
 	 * @param	string	$location
 	 */
 	function onInsertNode($location) {
-		chmod($location, 0777);
+		chmod($location, 0666);
 	}
 	
 	
