@@ -671,12 +671,8 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 				$this->updateauthor = bab_toHtml(bab_getUserName($this->evtarr['id_modifiedby']));
 				}
 				
-			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
-
-			$editor = new bab_contentEditor('bab_calendar_event');
-			$editor->setContent($this->evtarr['description']);
-			$this->evtarr['description'] = $editor->getHtml();
-
+			
+			
 			$this->ymin = 2;
 			$this->ymax = 5;
 			if (isset($_POST) && count($_POST) > 0)
@@ -736,11 +732,12 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 			$this->category = bab_translate("Category");
 			$this->descurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=event&idx=updesc&calid=".$this->calid."&evtid=".$evtid);
 
+			
+			
 			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
-			
-			
-			
+
 			$editor = new bab_contentEditor('bab_calendar_event');
+			
 			
 			$tmp = $editor->getContent();
 			if (!empty($tmp)) {
@@ -997,7 +994,7 @@ function deleteEvent()
 function addEvent(&$message)
 	{
 	global $babBody, $babDB;
-	
+
 	if( empty($_POST['title']))
 		{
 		$message = bab_translate("You must provide a title")." !!";
@@ -1187,8 +1184,7 @@ function updateEvent(&$message)
 	
 	$title = bab_pp('title');
 	$location = bab_pp('location');
-	
-	
+
 	include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 			
 	$editor = new bab_contentEditor('bab_calendar_event');
