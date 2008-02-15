@@ -1513,7 +1513,11 @@ class bab_FileTreeView extends bab_TreeView
 		$oCriteria = $oCriteria->_and($oIdDgOwner->in(array_keys($this->_visibleDelegations)));
 
 		$oCriteria = $oCriteria->_and($oActive->in('Y'));
-		$oCriteria = $oCriteria->_and($oHide->in('N'));
+		
+		// hidden directories must be visibles in popup 
+		// this functionality allow users to publish files throw articles while the real file in file manager is not visible
+		// $oCriteria = $oCriteria->_and($oHide->in('N'));
+		
 		if (!is_null($folderId)) {
 			$oCriteria = $oCriteria->_and($oId->in($folderId));
 		}
