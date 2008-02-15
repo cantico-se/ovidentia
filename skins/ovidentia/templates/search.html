@@ -714,11 +714,7 @@ setselects(document.forms.searchForm.g_directory);
 	<!--#in getnextdirfield -->
 	<td>
 	<!--#if dirurl -->
-		<!--#if popup -->
-		<a class="BabFaqLink" href="javascript: Start('{ dirurl }', 'OviSearchB', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ dirvalue }</a>
-		<!--#else popup -->
-		<a class="BabFaqLink" href="{ dirurl }">{ dirvalue }</a>
-		<!--#endif popup -->
+		<a href="{ dirurl }" class="{ name }" <!--#if popup --> onclick="bab_popup(this.href);return false;" <!--#endif popup -->>{ dirvalue }</a>
 	<!--#else dirurl -->
 		{ dirvalue }
 	<!--#endif dirurl -->
