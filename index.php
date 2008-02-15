@@ -1166,7 +1166,10 @@ if( !empty($incl))
 	}
 	
 	
-
+/**
+ * Event page refreshed
+ * @since 6.6.90
+ */
 class bab_eventPageRefreshed extends bab_event { }
 $event = new bab_eventPageRefreshed;
 bab_fireEvent($event);
