@@ -1273,7 +1273,7 @@ function exportDbFile($id)
 	$babBody->babecho(	bab_printTemplate($temp,"directory.html", "dbexpfile"));
 	}
 
-function mapDbFile($id, $file, $tmpfile, $wsepar, $separ)
+function mapDbFile($id, $wsepar, $separ)
 	{
 	global $babBody;
 	class temp
@@ -1402,19 +1402,19 @@ function mapDbFile($id, $file, $tmpfile, $wsepar, $separ)
 			}
 
 		}
-
-	$tmpdir = get_cfg_var('upload_tmp_dir');
-	if( empty($tmpdir))
-		$tmpdir = session_save_path();
-
-	$tf = new babTempFiles($tmpdir);
-	$nf = $tf->tempfile($tmpfile, $file);
-	if( empty($nf))
-		{
+		
+		
+	include_once $GLOBALS['babInstallPath'].'utilit/uploadincl.php';
+		
+	$fileObj = bab_fileHandler::upload('uploadf');
+	$tmpfile = $fileObj->importTemporary();
+	if (false === $tmpfile) {
 		$babBody->msgerror = bab_translate("Cannot create temporary file");
 		return;
-		}
-	$temp = new temp($id, $nf, $wsepar, $separ);
+	}
+
+	
+	$temp = new temp($id, $tmpfile, $wsepar, $separ);
 	$babBody->babecho(	bab_printTemplate($temp,"directory.html", "dbmapfile"));
 	}
 
@@ -3059,7 +3059,7 @@ switch($idx)
 		$babBody->addItemMenu('sdb', bab_translate("Browse"), $GLOBALS['babUrlScript']."?tg=directory&idx=sdb&id=".$id."&pos=".$pos);
 		if(bab_isAccessValid(BAB_DBDIRIMPORT_GROUPS_TBL, $id))
 			{
-			mapDbFile($id, $_FILES['uploadf']['name'], $_FILES['uploadf']['tmp_name'], $wsepar, $separ);
+			mapDbFile($id, $wsepar, $separ);
 			$babBody->addItemMenu('dbimp', bab_translate("Import"), $GLOBALS['babUrlScript']."?tg=directory&idx=dbimp&id=".$id);
 			}
 		
