@@ -219,6 +219,7 @@ function groupList()
 
 	$temp = new temp();
 	$babBody->addStyleSheet('groups.css');
+	$babBody->addStyleSheet('tree.css');
 	$babBody->babecho(bab_printTemplate($temp, "groups.html", "grp_maintree"));
 	}
 

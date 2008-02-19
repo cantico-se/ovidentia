@@ -303,6 +303,8 @@ class macl
 		{
 		global $babBody;
 		$babBody->addStyleSheet('groups.css');
+		$babBody->addStyleSheet('tree.css');
+		$babBody->addStyleSheet('acl.css');
 		$html = bab_printTemplate($babBody,"uiutil.html", "styleSheet");
 		$html .= bab_printTemplate($this, "acl.html", "grp_maintree");
 		return $html;
@@ -312,7 +314,10 @@ class macl
 	function babecho()
 		{
 		global $babBody;
+		
 		$babBody->addStyleSheet('groups.css');
+		$babBody->addStyleSheet('tree.css');
+		$babBody->addStyleSheet('acl.css');
 		$babBody->babecho(	bab_printTemplate($this, "acl.html", "grp_maintree"));
 		}
 

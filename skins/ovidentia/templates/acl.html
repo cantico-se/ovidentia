@@ -70,9 +70,9 @@ function macl_switch_view_on(table, tablenum)
 		tablenum = 1;
 		}
 
-	document.getElementById('macl_link_table_'+table).className = 'BabMenuActiveBackground';
+	document.getElementById('macl_link_table_'+table).className = 'bab_tree BabMenuActiveBackground';
 	
-	document.getElementById('bab_groups_tree').className = 'BabLoginCadreBackground displaytable'+tablenum;
+	document.getElementById('bab_groups_tree').className = 'bab_tree BabLoginCadreBackground displaytable'+tablenum;
 }
 
 
@@ -97,66 +97,74 @@ function hideNonMultipleTable()
 <!--#endin get_next_hidden_field -->
 
 <div id="bab_groups_acl" class="BabLoginCadreBackground">
-<ul class="BabLoginMenuBackground">
-	<!--#in getnexttable -->
-	<li id="macl_link_table_{ table }" onclick="macl_switch_view_on('{ table }',{ tablenum })">{ title }
-	<!--#if msgerror -->
-	&nbsp;<img src="{ babSkinPath }images/Puces/broken.png" alt="{ t_broken }" title="{ t_broken }" />
-	<!--#endif msgerror -->
-	</li>
-	<!--#endin getnexttable -->
-</ul>
+	<ul class="BabLoginMenuBackground">
+		<!--#in getnexttable -->
+		<li id="macl_link_table_{ table }" onclick="macl_switch_view_on('{ table }',{ tablenum })">{ title }
+		<!--#if msgerror -->
+		&nbsp;<img src="{ babSkinPath }images/Puces/broken.png" alt="{ t_broken }" title="{ t_broken }" />
+		<!--#endif msgerror -->
+		</li>
+		<!--#endin getnexttable -->
+	</ul>
 </div>
 
+<br />
 
 
-<div id="bab_groups_tree" class="BabLoginCadreBackground">
-	<p class="BabSiteAdminTitleFontBackground">
+
+
+<div id="bab_groups_tree" class="bab_tree BabLoginCadreBackground" style="padding: 1px">
+
+<p class="BabSiteAdminTitleFontBackground">
 	<a href="javascript:tree.expand();" class="expand">{ t_expand_all }</a> 
 	<a href="javascript:tree.collapse();" class="collapse">{ t_collapse_all }</a>
 	<a href="javascript:tree.expandChecked();" class="expandchecked">{ t_expand_checked }</a>
-	</p>
-	<div class="tree">
-		<ul class="first">
+</p>
+
+
+	<div  class="tree"  style="position: relative">
+	
+		<ul>
 		<!--#in firstnode -->
 			<li id="bab_ovgroup_{ arr[id] }">
 				<div class="line">
 				
 				<img src="{ babSkinPath }images/Puces/folder_group.gif" alt="{ t_group }" />
 				{ arr[name] }
-
-					<div class="right">
+	
+					<span class="right_elements">
 						<!--#in getnexttable -->
 						<input type="checkbox" class="tablecol{ tablenum }" name="group[{ table }][]" value="{ id_group }" <!--#if checked --> checked="checked" <!--#endif checked --> <!--#if disabled --> disabled="disabled" <!--#endif disabled --> />
 						<!--#endin getnexttable -->
-					</div>
+					</span>
 				</div>
 				{ tpl_tree }
 			</li>
 		<!--#endin firstnode -->
 		</ul>
-	<br />
 	</div>
-	<!--#if countsets -->
-	<p class="BabSiteAdminTitleFontBackground">{ t_sets_of_groups }</p>
-	<div class="tree sets">
-	<ul>
-	<!--#in getnextset -->
-		<!--#if altbg --><li class="BabSiteAdminFontBackground"><!--#else altbg --><li class="BabForumBackground1"><!--#endif altbg -->
-			<div class="line">
-			{ arr[name] }
-				<div class="right">
-				<!--#in getnexttable -->
-				<input type="checkbox" class="tablecol{ tablenum }" name="group[{ table }][]" value="{ id_group }" <!--#if checked --> checked="checked" <!--#endif checked --> <!--#if disabled --> disabled="disabled" <!--#endif disabled --> />
-				<!--#endin getnexttable -->
-				</div>
-			</div>
-		</li>
-	<!--#endin getnextset -->
-	</ul><br />
-	</div>
-	<!--#endif countsets -->
 </div>
+
+<!--#if countsets -->
+<p class="BabSiteAdminTitleFontBackground">{ t_sets_of_groups }</p>
+<div class="tree sets">
+<ul>
+<!--#in getnextset -->
+	<!--#if altbg --><li class="BabSiteAdminFontBackground"><!--#else altbg --><li class="BabForumBackground1"><!--#endif altbg -->
+		<div class="line">
+		{ arr[name] }
+			<span class="right_elements">
+			<!--#in getnexttable -->
+			<input type="checkbox" class="tablecol{ tablenum }" name="group[{ table }][]" value="{ id_group }" <!--#if checked --> checked="checked" <!--#endif checked --> <!--#if disabled --> disabled="disabled" <!--#endif disabled --> />
+			<!--#endin getnexttable -->
+			</span>
+		</div>
+	</li>
+<!--#endin getnextset -->
+</ul><br />
+</div>
+<!--#endif countsets -->
+
 
 <div align="center">
 	<input type="submit" value="{ t_record }" />
@@ -201,7 +209,7 @@ window.console && window.console.timeEnd('full init');
 	<ul>
 		<!--#in getnextgroup -->
 		<li id="bab_ovgroup_{ arr[id] }">
-			<div>
+			<div class="line">
 			<img src="{ babSkinPath }images/Puces/folder_group.gif" alt="{ t_group }" />
 			<!--#in getnexttable -->
 			<!--#if id_group "> 2" --><input type="checkbox" class="tablecol{ tablenum }" name="tree[{ table }][]" value="{ arr[id] }" <!--#if treechecked --> checked="checked" <!--#endif treechecked --> /><!--#endif id_group -->
@@ -209,11 +217,11 @@ window.console && window.console.timeEnd('full init');
 			
 			{ arr[name] }
 
-			<div class="right">
+			<span class="right_elements">
 				<!--#in getnexttable -->
 				<input type="checkbox" class="tablecol{ tablenum }" name="group[{ table }][]" value="{ id_group }" <!--#if checked --> checked="checked" <!--#endif checked --> <!--#if disabled --> disabled="disabled" <!--#endif disabled --> />
 				<!--#endin getnexttable -->
-			</div>
+			</span>
 
 			</div>
 			{ subtree }

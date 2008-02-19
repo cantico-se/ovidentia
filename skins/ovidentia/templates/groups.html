@@ -246,16 +246,18 @@ else
 
 <!--#begin grp_maintree -->
 <script type="text/javascript" src="{ babInstallPath }scripts/ul_tree.js"></script>
-<div id="bab_groups_tree" class="BabLoginCadreBackground">
+
+<div id="bab_groups_tree" class="bab_tree BabLoginCadreBackground" style="padding: 1px">
 	<p class="BabSiteAdminTitleFontBackground">
-	<a href="javascript:tree.expand();" class="expand">{ t_expand_all }</a> 
-	<a href="javascript:tree.collapse();" class="collapse">{ t_collapse_all }</a>
-		<!--#if bupdate -->
-	<a href="{ babUrlScript }?tg=groups&amp;idx=Create" onclick="return load_clear();" class="newgroup">{ t_newgroup }</a>
-		<!--#endif bupdate -->
+		<a href="javascript:tree.expand();" class="expand">{ t_expand_all }</a> 
+		<a href="javascript:tree.collapse();" class="collapse">{ t_collapse_all }</a>
+			<!--#if bupdate -->
+		<a href="{ babUrlScript }?tg=groups&amp;idx=Create" onclick="return load_clear();" class="newgroup">{ t_newgroup }</a>
+			<!--#endif bupdate -->
 	</p>
-	<div class="tree">
-	<ul class="first">
+	
+<div class="tree"  style="position: relative">
+	<ul>
 	<li id="bab_ovgroup_{ arr[id] }">
 		<div class="line">
 		<!--#if delegat -->
@@ -271,9 +273,9 @@ else
 			<input type="hidden" id="bab_ovgroup_{ arr[id] }_manager" value="{ arr[manager] }" />
 			<input type="hidden" id="bab_ovgroup_{ arr[id] }_managerval" value="{ arr[managerval] }" />
 		<!--#if arr[id] "> 2" -->
-		<div class="right">
+		<span class="right_elements">
 			<a href="{ babUrlScript }?tg=group&amp;idx=Members&amp;item={ arr[id] }" title="{ t_group_members }"><img src="{ babSkinPath }images/Puces/head.gif" alt="{ t_group_members }" /> { t_members }</a>
-		</div>
+		</span>
 		<!--#endif arr[id] -->
 		</div>
 		{ tpl_tree }
@@ -368,6 +370,9 @@ function load_clear()
 </script>
 
 <a name="bab_groups_tree_end"></a>
+
+<br />
+<br />
 <!--#end grp_maintree -->
 
 <!--#begin grp_childs -->
@@ -396,9 +401,9 @@ function load_clear()
 			<input type="hidden" id="bab_ovgroup_{ arr[id] }_manager" value="{ arr[manager] }" />
 			<input type="hidden" id="bab_ovgroup_{ arr[id] }_managerval" value="{ arr[managerval] }" />
 			<!--#if arr[id] "> 2" -->
-			<div class="right">
+			<span class="right_elements">
 				<a href="{ babUrlScript }?tg=group&amp;idx=Members&amp;item={ arr[id] }" title="{ t_group_members }"><img src="{ babSkinPath }images/Puces/head.gif" alt="{ t_group_members }" /> { t_members }</a>
-			</div>
+			</span>
 			<!--#endif arr[id] -->
 			</div>
 			{ subtree }
