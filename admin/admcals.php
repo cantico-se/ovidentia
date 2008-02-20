@@ -58,9 +58,20 @@ function calendarsCategories()
 			$this->desctxt = bab_translate("Description");
 			$this->bgcolortxt = bab_translate("Color");
 			$this->add = bab_translate("Add");
+			$this->t_delete = bab_translate('Delete');
+			$this->t_delete_checked = bab_translate("Delete checked items");
+			$this->t_confirm_delete = bab_translate("Do you want to delete selected items?");
 			$this->urladdcat = $GLOBALS['babUrlScript'].'?tg=admcals&idx=addc';
 			
-			$this->t_delete = bab_translate("Delete");
+			if ($delete_category = bab_pp('delete_category')) {
+				foreach($delete_category as $id_category) {
+					deleteCalendarCategory($id_category);
+				}
+				
+				Header("Location:". $GLOBALS['babUrlScript']."?tg=admcals&idx=cats");
+				exit;
+			}
+			
 			$this->res = $babDB->db_query("select * from ".BAB_CAL_CATEGORIES_TBL." ORDER BY name,description ");
 			$this->countcal = $babDB->db_num_rows($this->res);
 			}
@@ -77,7 +88,7 @@ function calendarsCategories()
 				$this->urlname = bab_toHtml($this->arr['name']);
 				$this->desc = bab_toHtml($this->arr['description']);
 				$this->bgcolor = bab_toHtml($this->arr['bgcolor']);
-				$this->delurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=admcals&idx=delc&idcat=".$this->arr['id']);
+				$this->id_category = (int) $this->arr['id'];
 				$i++;
 				return true;
 				}
@@ -538,7 +549,6 @@ function deleteCalendarCategory($idcat)
 	$babDB->db_query("delete from ".BAB_CAL_CATEGORIES_TBL." WHERE id=".$babDB->quote($idcat));
 	$babDB->db_query("update ".BAB_CAL_EVENTS_TBL." set id_cat='0' WHERE id_cat=".$babDB->quote($idcat));
 	$babDB->db_query("update ".BAB_VAC_COLLECTIONS_TBL." set id_cat='0' WHERE id_cat=".$babDB->quote($idcat));
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admcals&idx=cats");
 }
 
 /* main */
@@ -606,12 +616,6 @@ elseif( "addcat" == bab_rp('add') && $babBody->isSuperAdmin)
 	{
 		$idx = "addc";
 	}
-}
-elseif( $idx == "delc"  && $babBody->isSuperAdmin )
-{
-	deleteCalendarCategory(bab_rp('idcat'));
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admcals&idx=cats");
-	exit;
 }
 
 switch($idx)

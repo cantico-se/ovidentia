@@ -84,41 +84,41 @@
 
 <!--#begin calendaradd -->
 <form name="calcreate" method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="{ tgval }">
-<input type="hidden" name="idcal" value="{ idcal }">
-<input type="hidden" name="addc" value="{ add }">
+<input type="hidden" name="tg" value="{ tgval }" />
+<input type="hidden" name="idcal" value="{ idcal }" />
+<input type="hidden" name="addc" value="{ add }" />
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ nametxt }:</td>
-<td class="BabLoginMenuBackground" width="70%" valign="middle"> 
-<input type="text" name="calname" size="40" maxlength="255" value="{ calname }">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ desctxt }:</td>
-<td class="BabLoginMenuBackground" width="70%" valign="middle"> 
-<input type="text" name="caldesc" size="50" maxlength="255" value="{ caldesc }">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ approbationtxt }:</td>
-<td class="BabLoginMenuBackground" valign="middle">
-<select name="calidsa">
-<option value="0">{ nonetxt }</option>
-<!--#in getnextschapp -->
-<option value="{ said }" { selected }>{ saname }</option>
- <!--#endin getnextschapp -->
-</select>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground">&nbsp;</td>
-<td class="BabLoginMenuBackground" valign="middle"><input type="submit" name="submit" value="{ addtxt }"></td>
-</tr>
-</table>
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+		<tr> 
+		<td  width="30%" align="right" nowrap valign="middle">{ nametxt }:</td>
+		<td  width="70%" valign="middle"> 
+			<input type="text" name="calname" size="40" maxlength="255" value="{ calname }">
+		</td>
+		</tr>
+		<tr> 
+		<td  width="30%" align="right" nowrap valign="middle">{ desctxt }:</td>
+		<td  width="70%" valign="middle"> 
+			<input type="text" name="caldesc" size="50" maxlength="255" value="{ caldesc }">
+		</td>
+		</tr>
+		<tr> 
+		<td  align="right" nowrap valign="middle">{ approbationtxt }:</td>
+		<td  valign="middle">
+			<select name="calidsa">
+				<option value="0">{ nonetxt }</option>
+				<!--#in getnextschapp -->
+				<option value="{ said }" { selected }>{ saname }</option>
+				 <!--#endin getnextschapp -->
+			</select>
+		</td>
+		</tr>
+		<tr> 
+		<td >&nbsp;</td>
+		<td  valign="middle"><input type="submit" name="submit" value="{ addtxt }"></td>
+		</tr>
+	</table>
 </td>
 </tr>
 </table>
@@ -128,35 +128,44 @@
 
 <!--#begin categorieslist -->
 
-<table width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" width="44%" valign="middle"><b>{ nametxt }</b></td>
-<td class="BabSiteAdminTitleFontBackground" width="44%" valign="middle"><b>{ desctxt }</b></td>
-<td class="BabSiteAdminTitleFontBackground" width="10%" valign="middle"><b>{ bgcolortxt }</b></td>
-<td class="BabSiteAdminTitleFontBackground" width="2%" valign="middle">&nbsp;</td>
-</tr>
-<!--#in getnext -->
-<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg --> 
-<td valign="middle" nowrap> 
-<a class="BabSiteAdminListLink" href="{ url }">{ urlname }</a> 
-</td>
-<td valign="middle">{ desc }</td>
-<td valign="middle" bgcolor="#{ bgcolor }"><span class="BabSiteAdminFont">{ bgcolor }</span></td>
-<td align="center"><a href="{ delurl }" title="{ t_delete }"><img alt="{ t_delete }" border="0" src="{ babSkinPath }images/Puces/del.gif"></a></td>
-</tr>
-<!--#endin getnext -->
-<tr class="BabSiteAdminTitleFontBackground">
-<td><a href="{ urladdcat }">{ add }</td>
-<td colspan="3">&nbsp;</td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
-<br>
+<form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="admcals" />
+<input type="hidden" name="idx" value="cats" />
+
+	<table width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+	<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+	<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+	<tr class="BabSiteAdminTitleFontBackground"> 
+	<td  width="44%">{ nametxt }</td>
+	<td  width="44%">{ desctxt }</td>
+	<td  width="10%">{ bgcolortxt }</td>
+	<td  width="2%">{ t_delete }</td>
+	</tr>
+	<!--#in getnext -->
+	<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg --> 
+	<td valign="middle" nowrap> 
+	<a class="BabSiteAdminListLink" href="{ url }">{ urlname }</a> 
+	</td>
+	<td valign="middle">{ desc }</td>
+	<td valign="middle" bgcolor="#{ bgcolor }"><span class="BabSiteAdminFont">{ bgcolor }</span></td>
+	<td align="center"><input type="checkbox" name="delete_category[]" value="{ id_category }" /></td>
+	</tr>
+	<!--#endin getnext -->
+	<tr class="BabSiteAdminTitleFontBackground">
+	<td><a href="{ urladdcat }">{ add }</td>
+	<td colspan="3">&nbsp;</td>
+	</tr>
+	</table>
+	</td>
+	</tr>
+	</table>
+	
+	<p style="text-align:center">
+		<input type="submit" value="{ t_delete_checked }" onclick="return confirm(this.title)" title="{ t_confirm_delete }" />
+	</p>
+	
+</form>
 <!--#end categorieslist -->
 
 <!--#begin categorycreate -->
