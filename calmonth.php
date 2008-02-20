@@ -122,16 +122,20 @@ class cal_monthCls extends cal_wmdbaseCls
 		if( $d < count($this->workdays))
 			{
 			$this->mday = (7 * ($this->w-1)) + $this->dworkdays[$this->workdays[$d]];
+			$mktime = mktime(0,0,0,$this->month, $this->mday,$this->year);
+			
 			if( $this->mday <= 0 || $this->mday > $this->totaldays)
 				{
 				$this->currentmonth = 0;
+				$this->daynumbername = date("d/m", $mktime);
 				}
 			else
 				{
 				$this->currentmonth = 1;
+				$this->daynumbername = date("d", $mktime);
 				}
 
-			$mktime = mktime(0,0,0,$this->month, $this->mday,$this->year);
+			
 			$dday = date("j", $mktime);
 			$this->week = bab_toHtml(bab_translate("Week").' '.date('W', $mktime));
 			$this->cdate = sprintf("%04s-%02s-%02s", date("Y", $mktime), date("n", $mktime), date("j", $mktime));
@@ -143,7 +147,7 @@ class cal_monthCls extends cal_wmdbaseCls
 				{
 				$this->currentday = 0;
 				}
-			$this->daynumbername = $dday;
+			
 			$this->daynumberurl = bab_toHtml($this->commonurl."&date=".date("Y", $mktime).",".date("n", $mktime).",".$dday);
 			$this->dayviewurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calday&calid=".implode(',',$this->idcals)."&date=".date("Y", $mktime).",".date("n", $mktime).",".$dday);
 			$this->dayfreeviewurl = $this->dayviewurl."&amp;idx=free";
