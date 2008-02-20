@@ -27,7 +27,7 @@
 	<tbody id="main_form">
 	<tr> 
 		<td align="right">
-			<a class="BabEventFaqLink" href="javascript: Start('{ datebeginurl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ datebegintxt }</a>:
+			{ datebegintxt }:
 		</td>
 		<td nowrap> 
 			<select name="daybegin">
@@ -53,11 +53,15 @@
 			<option value="{ timeval }" { selected }>{ time }</option>
 			<!--#endin getnexttime -->
 			</select >
+			
+			<a href="javascript: Start('{ datebeginurl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');"><img src="{ babSkinPath }images/Puces/calendar.gif" alt="{ datebegintxt }" /></a>
+			
+			
 		</td>
 	</tr>
 	<tr> 
 		<td align="right">
-			<a class="BabEventFaqLink" href="javascript: Start('{ dateendurl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ dateendtxt }</a>:
+			{ dateendtxt }:
 		</td>
 		<td nowrap> 
 			<select name="dayend">
@@ -83,6 +87,8 @@
 			<option value="{ timeval }" { selected }>{ time }</option>
 			<!--#endin getnexttime -->
 			</select >
+			
+			<a href="javascript: Start('{ dateendurl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');"><img src="{ babSkinPath }images/Puces/calendar.gif" alt="{ dateendtxt }" /></a>
 		</td>
 	</tr>
 	<tr> 
@@ -145,7 +151,7 @@
 		</td>
 	</tr>
 	<tr id="repeat_enddate"> 
-	<td align="right" nowrap valign="middle"><a class="BabEventFaqLink" href="javascript: Start('{ repeat_dateend }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ repeat_dateendtxt }</a>:</td>
+	<td align="right" nowrap valign="middle">{ repeat_dateendtxt }:</td>
 	<td valign="middle"> 
 		<select name="repeat_dayend">
 		<!--#in getnextday -->
@@ -164,6 +170,8 @@
 		<option value="{ yearid }"  { selected }>{ yearidval }</option>
 		<!--#endin getnextyear -->
 		</select>
+		
+		<a href="javascript: Start('{ repeat_dateend }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');"><img src="{ babSkinPath }images/Puces/calendar.gif" alt="{ repeat_dateendtxt }" /></a>
 
 		<script type="text/javascript">
 		<!--
@@ -204,9 +212,12 @@
 	</tr>
 	<!--#endif rescat -->
 	<tr id="color_tr"> 
-		<td align="right"><a href="javascript: Start('{ babUrlScript }?tg=selectcolor&idx=popup&callback=evtSetColor', 'ColorWindow', 'width=250,height=200,status=no,resizable=no,top=200,left=200');">{ t_color }</a>:</td>
+		<td align="right">{ t_color }:</td>
 		<td nowrap> 
 			<div id="evtColor" style="width:30px;height:15px;border:#000 1px solid;background-color:#<!--#if colorvalue -->{ colorvalue }<!--#else colorvalue -->fff<!--#endif colorvalue -->;float:left"></div><input type="hidden" name="color" value="{ colorvalue }" />
+			
+			&nbsp;<a href="javascript: Start('{ babUrlScript }?tg=selectcolor&amp;idx=popup&amp;callback=evtSetColor', 'ColorWindow', 'width=250,height=200,status=no,resizable=no,top=200,left=200');"><img src="{ babSkinPath }images/Puces/colorize.png" alt="{ t_color }" border="0" /></a>
+			
 			&nbsp;<a href="javascript:evtSetColor('')"><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" /></a>
 		</td>
 	</tr>
@@ -431,7 +442,7 @@ ed();
 	<!--#endif brecevt -->
 	
 	<tr> 
-		<td align="right" nowrap width="25%" valign="middle"><a class="BabEventFaqLink" href="javascript: Start('{ datebegin }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ datebegintxt }</a>:</td>
+		<td align="right" nowrap width="25%" valign="middle">{ datebegintxt }:</td>
 		<td> 
 			<select name="daybegin">
 			<!--#in getnextday -->
@@ -456,11 +467,12 @@ ed();
 			<option value="{ timeval }" { selected }>{ time }</option>
 			<!--#endin getnexttime -->
 			</select >
+			
+			<a href="javascript: Start('{ datebegin }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');"><img src="{ babSkinPath }images/Puces/calendar.gif" alt="{ datebegintxt }" /></a>
 		</td>
 	</tr>
 	<tr> 
-		<td align="right" nowrap valign="middle"><a class="BabEventFaqLink" href="javascript: Start('{ dateend }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ 
-		dateendtxt }</a>:</td>
+		<td align="right" nowrap valign="middle">{ dateendtxt }:</td>
 		<td> 
 			<select name="dayend">
 			<!--#in getnextday -->
@@ -485,6 +497,8 @@ ed();
 			<option value="{ timeval }" { selected }>{ time }</option>
 			<!--#endin getnexttime -->
 			</select >
+			
+			<a href="javascript: Start('{ dateend }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');"><img src="{ babSkinPath }images/Puces/calendar.gif" alt="{ datebegintxt }" /></a>
 		</td>
 	</tr>
 	
@@ -511,8 +525,11 @@ ed();
 	</tr>
 	<!--#endif rescount -->
 	<tr id="color_tr"> 
-		<td align="right"><a href="javascript: Start('{ babUrlScript }?tg=selectcolor&idx=popup&callback=evtSetColor', 'ColorWindow', 'width=250,height=200,status=no,resizable=no,top=200,left=200');">{ t_color }</a>:</td>
+		<td align="right">{ t_color }:</td>
 		<td><div id="evtColor" style="width:30px;height:15px;border:#000 1px solid;background-color:#{ colorvalue };float:left"></div><input type="hidden" name="color" value="{ colorvalue }" />
+		
+		&nbsp;<a href="javascript: Start('{ babUrlScript }?tg=selectcolor&amp;idx=popup&amp;callback=evtSetColor', 'ColorWindow', 'width=250,height=200,status=no,resizable=no,top=200,left=200');"><img src="{ babSkinPath }images/Puces/colorize.png" alt="{ t_color }" border="0" /></a>
+		
 		&nbsp;<a href="javascript:evtSetColor('')"><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" /></a>
 		</td>
 	</tr>
