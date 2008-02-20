@@ -211,9 +211,7 @@ window.console && window.console.timeEnd('full init');
 		<li id="bab_ovgroup_{ arr[id] }">
 			<div class="line">
 			<img src="{ babSkinPath }images/Puces/folder_group.gif" alt="{ t_group }" />
-			<!--#in getnexttable -->
-			<!--#if id_group "> 2" --><input type="checkbox" class="tablecol{ tablenum }" name="tree[{ table }][]" value="{ arr[id] }" <!--#if treechecked --> checked="checked" <!--#endif treechecked --> /><!--#endif id_group -->
-			<!--#endin getnexttable -->
+			<!--#in getnexttable --><!--#if id_group "> 2" --><input type="checkbox" class="tablecol{ tablenum }" name="tree[{ table }][]" value="{ arr[id] }" <!--#if treechecked --> checked="checked" <!--#endif treechecked --> /><!--#endif id_group --><!--#endin getnexttable -->
 			
 			{ arr[name] }
 
