@@ -787,7 +787,7 @@ function loadSections()
 			}
 		}
 
-	// user's sections
+	// personnalized sections
 	$type = 'users';
 	if(!empty($arrsectionsbytype[$type]) && ($babSectionsType & BAB_SECTIONS_SITE))
 		{
@@ -795,7 +795,7 @@ function loadSections()
 			$req = "SELECT * FROM ".BAB_SECTIONS_TBL." WHERE id IN(".$babDB->quote(array_keys($arrsectionsbytype[$type])).") and enabled='Y'";
 			if( count($langFilterValues) > 0 )
 				{
-					$req .= " AND SUBSTRING(lang, 1, 2 ) IN (".$babDB->quote($langFilterValues).")";
+					$req .= " AND SUBSTRING(lang, 1, 2 ) IN ('*',".$babDB->quote($langFilterValues).")";
 				}
 			if( isset($_SESSION['babCurrentDelegation']) && $_SESSION['babCurrentDelegation'] !== '')
 			{
