@@ -3950,6 +3950,16 @@ class bab_FaqQuestions extends bab_handler
 			$this->ctx->curctx->push('FaqQuestionId', $arr['id']);
 			$this->ctx->curctx->push('FaqQuestionUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewq&item=".$arr['idcat']."&idscat=".$arr['id_subcat']."&idq=".$arr['id']);
 			$this->ctx->curctx->push('FaqQuestionPopupUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewpq&idcat=".$arr['idcat']."&idscat=".$arr['id_subcat']."&idq=".$arr['id']);
+			if( $arr['id_modifiedby'] )
+			{
+			$this->ctx->curctx->push('FaqQuestionDate', bab_mktime($arr['date_modification']));
+			$this->ctx->curctx->push('FaqQuestionAuthor', bab_getUserName($arr['id_modifiedby']));
+			}
+			else
+			{
+			$this->ctx->curctx->push('FaqQuestionDate', '');
+			$this->ctx->curctx->push('FaqQuestionAuthor', '');
+			}
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -3994,6 +4004,16 @@ class bab_FaqQuestion extends bab_handler
 			$this->ctx->curctx->push('FaqQuestionId', $arr['id']);
 			$this->ctx->curctx->push('FaqQuestionUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewq&item=".$arr['idcat']."&idscat=".$arr['id_subcat']."&idq=".$arr['id']);
 			$this->ctx->curctx->push('FaqQuestionPopupUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewpq&item=".$arr['idcat']."&idscat=".$arr['id_subcat']."&idq=".$arr['id']);
+			if( $arr['id_modifiedby'] )
+			{
+			$this->ctx->curctx->push('FaqQuestionDate', bab_mktime($arr['date_modification']));
+			$this->ctx->curctx->push('FaqQuestionAuthor', bab_getUserName($arr['id_modifiedby']));
+			}
+			else
+			{
+			$this->ctx->curctx->push('FaqQuestionDate', '');
+			$this->ctx->curctx->push('FaqQuestionAuthor', '');
+			}
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -4048,6 +4068,96 @@ class bab_FaqQuestionNext extends bab_FaqQuestion
 
 }
 
+
+class bab_RecentFaqQuestions extends bab_handler
+{
+	var $res;
+	var $IdEntries = array();
+	var $index;
+	var $count;
+
+	function bab_RecentFaqQuestions( &$ctx)
+	{
+		global $babBody, $babDB;
+		$this->bab_handler($ctx);
+		$this->nbdays = $ctx->get_value('from_lastlog');
+		$this->last = $ctx->get_value('last');
+		$faqid = $ctx->get_value('faqid');
+		$faqsubcatid = $ctx->get_value('faqsubcatid');
+		$req = "select id, idcat from ".BAB_FAQQR_TBL;
+		if( $faqid !== false && $faqid !== '' )
+			{
+			$req .= " where idcat IN (".$babDB->quote(explode(',', $faqid)).")";
+			if( $faqsubcatid !== false && $faqsubcatid !== '' )
+				{
+				$req .= " and id_subcat IN (".$babDB->quote(explode(',', $faqsubcatid)).")";
+				}
+			}
+		elseif( $faqsubcatid !== false && $faqsubcatid !== '' )
+			{
+			$req .= " where id_subcat IN (".$babDB->quote(explode(',', $faqsubcatid)).")";
+			}
+
+		if( $this->nbdays !== false)
+			{
+			$req .= " AND date_modification >= DATE_ADD(\"".$babDB->db_escape_string($babBody->lastlog)."\", INTERVAL -".$babDB->db_escape_string($this->nbdays)." DAY)";
+			}
+
+		if( $this->last !== false)
+			$req .= ' LIMIT 0, ' . $babDB->db_escape_string($this->last);
+
+		$res = $babDB->db_query($req);
+		while( $row = $babDB->db_fetch_array($res))
+			{
+			if(bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $row['idcat']))
+				{
+				array_push($this->IdEntries, $row['id']);
+				}
+			}
+
+		$this->count = count($this->IdEntries);
+		if( $this->count > 0 )
+			{
+			$this->res = $babDB->db_query("select * from ".BAB_FAQQR_TBL." where id IN (".$babDB->quote($this->IdEntries).")");
+			$this->count = $babDB->db_num_rows($this->res);
+			}
+		$this->ctx->curctx->push('CCount', $this->count);
+	}
+
+	function getnext()
+	{
+		global $babDB;
+		if( $this->idx < $this->count)
+		{
+			$arr = $babDB->db_fetch_array($this->res);
+			$this->ctx->curctx->push('CIndex', $this->idx);
+			$this->ctx->curctx->push('FaqQuestion', $arr['question']);
+			$this->replace_ref($arr['response'], 'bab_faq_response');
+			$this->ctx->curctx->push('FaqResponse', $arr['response']);
+			$this->ctx->curctx->push('FaqQuestionId', $arr['id']);
+			$this->ctx->curctx->push('FaqQuestionUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewq&item=".$arr['idcat']."&idscat=".$arr['id_subcat']."&idq=".$arr['id']);
+			$this->ctx->curctx->push('FaqQuestionPopupUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewpq&idcat=".$arr['idcat']."&idscat=".$arr['id_subcat']."&idq=".$arr['id']);
+			if( $arr['id_modifiedby'] )
+			{
+			$this->ctx->curctx->push('FaqQuestionDate', bab_mktime($arr['date_modification']));
+			$this->ctx->curctx->push('FaqQuestionAuthor', bab_getUserName($arr['id_modifiedby']));
+			}
+			else
+			{
+			$this->ctx->curctx->push('FaqQuestionDate', '');
+			$this->ctx->curctx->push('FaqQuestionAuthor', '');
+			}
+			$this->idx++;
+			$this->index = $this->idx;
+			return true;
+		}
+		else
+		{
+			$this->idx=0;
+			return false;
+		}
+	}
+}
 
 class bab_Calendars extends bab_handler
 {
