@@ -194,7 +194,9 @@ macl_switch_view_on();
 window.console && console.timeEnd('switchViewOn');
 
 window.console && console.time('expandChecked');
-tree.expandChecked();
+if (!tree.expandChecked()) {
+	tree.expandToItem('bab_ovgroup_1');
+}
 window.console && console.timeEnd('expandChecked');
 
 document.getElementById('bab_groups_tree').display = '';

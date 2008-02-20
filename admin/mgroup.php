@@ -90,6 +90,7 @@ class mgroups
 	$this->tpl_tree = bab_grp_node_html($tree, $this->arr['id'], 'mgroup.html', 'grp_childs', $this->options);
 
 	global $babBody;
+	$babBody->addStyleSheet('tree.css');
 	$babBody->addStyleSheet('groups.css');
 	$babBody->babecho(bab_printTemplate($this, "mgroup.html", "grp_maintree"));
 	}

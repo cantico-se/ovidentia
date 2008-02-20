@@ -230,7 +230,8 @@ bab_ul_tree.prototype.expandChecked = function()
 {
 	this.collapse();
 	var inputs = this.treeId.getElementsByTagName('INPUT');
-	var nbInputs =  inputs.length
+	var nbInputs = inputs.length
+	var jobDone = false;
 	for (var i = 0; i < nbInputs; i++) {
 		var input = inputs[i];
 		if (input.checked && !input.disabled) {
@@ -239,8 +240,11 @@ bab_ul_tree.prototype.expandChecked = function()
 				li = li.parentNode;
 			}
 			this.expandCollapseListItem(li, this.nodeOpenClass);
+			jobDone = true;
 		}
 	}
+	
+	return jobDone;
 }
 
 

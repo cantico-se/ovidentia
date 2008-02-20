@@ -7,14 +7,14 @@
 <input type="hidden" name="{ field[0] }" value="{ field[1] }" />
 <!--#endin getNextField -->
 
-<div id="bab_groups_tree" class="BabLoginCadreBackground">
+<div id="bab_groups_tree" class="bab_tree BabLoginCadreBackground"  style="padding: 1px">
 	<p class="BabSiteAdminTitleFontBackground">
 	<a href="javascript:tree.expand();" class="expand">{ t_expand_all }</a> 
 	<a href="javascript:tree.collapse();" class="collapse">{ t_collapse_all }</a>
 	<a href="javascript:tree.expandChecked();" class="expandchecked">{ t_expand_checked }</a>
 	</p>
-	<div class="tree">
-	<ul class="first">
+	<div class="tree"  style="position: relative">
+	<ul>
 	<li id="bab_ovgroup_{ arr[id] }">
 		<div>
 			<!--#if delegat -->
@@ -23,7 +23,9 @@
 			<img src="{ babSkinPath }images/Puces/folder_group.gif" alt="{ t_group }" />
 			<!--#endif delegat -->
 			<label for="bab_group_chk_{ arr[id] }">{ arr[name] }</label>
-			<div class="right"><input type="checkbox" id="bab_group_chk_{ arr[id] }" name="mgroups[]" value="{ arr[id] }" <!--#if option[checked] --> checked="checked" <!--#endif option[checked] --> <!--#if option[disabled] --> disabled="disabled" <!--#endif option[disabled] --> /></div>
+			<span class="right_elements">
+				<input type="checkbox" id="bab_group_chk_{ arr[id] }" name="mgroups[]" value="{ arr[id] }" <!--#if option[checked] --> checked="checked" <!--#endif option[checked] --> <!--#if option[disabled] --> disabled="disabled" <!--#endif option[disabled] --> />
+			</span>
 		</div>
 		{ tpl_tree }
 		</li>
@@ -69,7 +71,9 @@ tree.expandToItem('bab_ovgroup_{ id_expand_to }');
 					<!--#endif arr[nb_set] -->
 				<!--#endif delegat -->
 				<label for="bab_group_chk_{ arr[id] }">{ arr[name] }</label>
-				<div class="right"><input type="checkbox" id="bab_group_chk_{ arr[id] }" name="mgroups[]" value="{ arr[id] }" <!--#if option[checked] --> checked="checked" <!--#endif option[checked] --> <!--#if option[disabled] --> disabled="disabled" <!--#endif option[disabled] --> /></div>
+				<span class="right_elements">
+					<input type="checkbox" id="bab_group_chk_{ arr[id] }" name="mgroups[]" value="{ arr[id] }" <!--#if option[checked] --> checked="checked" <!--#endif option[checked] --> <!--#if option[disabled] --> disabled="disabled" <!--#endif option[disabled] --> />
+				</span>
 			</div>
 			{ subtree }
 		</li>
