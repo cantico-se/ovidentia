@@ -4292,6 +4292,17 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	}
 	
 
+	if(!bab_isTableField(BAB_FAQQR_TBL, 'date_modification')) 
+	{
+		$babDB->db_query("ALTER TABLE ".BAB_FAQQR_TBL." ADD date_modification DATETIME DEFAULT '0000-00-00 00:00:00' NOT NULL");
+	}
+
+	if(!bab_isTableField(BAB_FAQQR_TBL, 'id_modifiedby')) 
+	{
+		$babDB->db_query("ALTER TABLE ".BAB_FAQQR_TBL." ADD id_modifiedby INT( 11 ) UNSIGNED DEFAULT '0' NOT NULL");
+	}
+
+
 	return true;
 }
 ?>

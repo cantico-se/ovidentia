@@ -118,6 +118,8 @@ CREATE TABLE bab_faqqr (
    id_subcat int(11) unsigned DEFAULT '0' NOT NULL,
    question text NOT NULL,
    response text NOT NULL,
+   date_modification datetime NOT NULL default '0000-00-00 00:00:00',
+   id_modifiedby int(11) unsigned NOT NULL default '0',
    PRIMARY KEY (id)
 );
 

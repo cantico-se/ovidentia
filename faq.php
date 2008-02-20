@@ -1005,15 +1005,12 @@ function saveQuestion($item, $idscat, $question)
 		$idscat = $faqinfo['id_root'];
 		}
 
-	$query = "insert into ".BAB_FAQQR_TBL." (idcat, id_subcat, question) values ('" .$babDB->db_escape_string($item). "', '" .$babDB->db_escape_string($idscat). "', '" .$babDB->db_escape_string($question). "')";
+	$query = "insert into ".BAB_FAQQR_TBL." (idcat, id_subcat, question, date_modification, id_modifiedby) values ('" .$babDB->db_escape_string($item). "', '" .$babDB->db_escape_string($idscat). "', '" .$babDB->db_escape_string($question). "', now(), '" .$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID']). "')";
 	$babDB->db_query($query);
 	$id = $babDB->db_insert_id();
 
 	$ar = array();
-	
-
-	
-	
+		
 	$response = imagesReplace($response, $id."_faq_", $ar);
 
 	$query = "update ".BAB_FAQQR_TBL." set response='".$babDB->db_escape_string($response)."' where id='".$babDB->db_escape_string($id)."'";
@@ -1094,7 +1091,7 @@ function updateQuestion($idq, $newidscat, $question)
 	$response = imagesReplace($response, $idq."_faq_", $ar);
 
 
-	$query = "update ".BAB_FAQQR_TBL." set question='".$babDB->db_escape_string($question)."', response='".$babDB->db_escape_string($response)."', id_subcat='".$babDB->db_escape_string($newidscat)."' where id = '".$babDB->db_escape_string($idq)."'";
+	$query = "update ".BAB_FAQQR_TBL." set question='".$babDB->db_escape_string($question)."', response='".$babDB->db_escape_string($response)."', id_subcat='".$babDB->db_escape_string($newidscat)."', date_modification=now(), id_modifiedby='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' where id = '".$babDB->db_escape_string($idq)."'";
 	$babDB->db_query($query);
 
 	}
