@@ -496,14 +496,7 @@ ed();
 		<td align="right">{ location }:</td>
 		<td><input type="text" name="location" size="50" maxlength="255" value="{ evtarr[location] }" /></td>
 	</tr>
-	<tr> 
-		<td colspan="2"><p align="center">{ description }:</p>
-		{ editor }
-		</td>
-	</tr>
-	<tr> 
-		<td colspan="2">&nbsp;</td>
-	</tr>
+	
 	<!--#if rescount -->
 	<tr> 
 		<td align="right">{ category }:</td>
@@ -562,7 +555,9 @@ ed();
 		</td>
 	</tr>
 	<tr> 
-		<td colspan="2">&nbsp;</td>
+		<td colspan="2"><p align="center">{ description }:</p>
+		{ editor }
+		</td>
 	</tr>
 	<tr id="event_owner">
 		<td align="right">{ t_event_owner }</td>
@@ -601,7 +596,9 @@ ed();
 </form>
 <script type="text/javascript">
 <!--
-bupdrec_onchange(document.forms['vacform'].bupdrec);
+if (typeof bupdrec_onchange != 'undefined') {
+	bupdrec_onchange(document.forms['vacform'].bupdrec);
+}
 check_avariability();
 -->
 </script>
