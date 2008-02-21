@@ -5195,6 +5195,104 @@ class bab_SitemapEntries extends bab_handler
 	}
 }
 
+
+class bab_MultiPages extends bab_handler
+{
+	var $IdEntries = array();
+	var $index;
+	var $count;
+	var $data;
+
+	function bab_MultiPages( &$ctx)
+	{
+		$this->count = 0;
+		$this->bab_handler($ctx);
+		$total = $ctx->get_value('total');
+
+		$maxpages = $ctx->get_value('maxpages');
+		$perpage = $ctx->get_value('perpage');
+		$currentpage = $ctx->get_value('currentpage');
+		if (false === $currentpage || !is_numeric($currentpage))
+		{
+			$currentpage = 1;
+		}
+
+		if (false !== $total && is_numeric($total))
+			{
+			if (false === $perpage || !is_numeric($perpage))
+				{
+				$perpage = $total;
+				}
+
+			$total_pages = ceil($total/$perpage);
+
+			if (false === $maxpages || !is_numeric($maxpages))
+				{
+					$maxpages = $total_pages;
+				}
+
+			for( $k = 0; $k < $maxpages && $currentpage + $k <= $total_pages; $k++ )
+				{
+				$tmp['CurrentPageNumber'] = $currentpage + $k;
+				if( $currentpage + $k + 1 > $total_pages )
+					{
+					$tmp['NextPageNumber'] = '';
+					}
+				else
+					{
+					$tmp['NextPageNumber'] = $currentpage + $k + 1;
+					}
+				if( $currentpage + $k > 1 && $total_pages > 1 )
+					{
+					$tmp['PreviousPageNumber'] = $currentpage + $k - 1;
+					}
+				else
+					{
+					$tmp['PreviousPageNumber'] = '';
+					}
+
+				$tmp['TotalPages'] = $total_pages;
+				$tmp['ResultFirst'] = (($currentpage+$k-1) * $perpage) + 1;
+				if( $currentpage + $k < $total_pages )
+					{
+					$tmp['ResultLast'] = $tmp['ResultFirst'] + $perpage -1;
+					}
+				else
+					{
+					$tmp['ResultLast'] = $total;
+					}
+
+				$tmp['ResultsPage'] = $tmp['ResultLast'] - $tmp['ResultFirst'] + 1;
+				$this->IdEntries[] = $tmp;
+				}
+			}
+
+		$this->count = count($this->IdEntries);
+		$this->ctx->curctx->push('CCount', $this->count);
+
+	}
+
+	function getnext()
+	{
+		if( $this->idx < $this->count )
+		{
+			$this->ctx->curctx->push('CIndex', $this->idx);
+			foreach( $this->IdEntries[$this->idx] as $key => $val )
+			{
+				$this->ctx->curctx->push($key, $val);
+			}
+			$this->idx++;
+			$this->index = $this->idx;
+			return true;
+		}
+		else
+		{
+			$this->idx=0;
+			return false;
+		}
+	}
+}
+
 class bab_context
 {
 	var $name;
