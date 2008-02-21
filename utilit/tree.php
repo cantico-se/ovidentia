@@ -1118,7 +1118,7 @@ class bab_ArticleTreeView extends bab_TreeView
 				
 					list($nbarcharticles) = $babDB->db_fetch_row($babDB->db_query("select count(id) from ".BAB_ARTICLES_TBL." where id_topic='".$babDB->db_escape_string($topic['id'])."' and archive='Y'"));
 				
-					$element->setInfo(sprintf('%d Online article(s) | %d Old article(s)', $nbarticles, $nbarcharticles));
+					$element->setInfo(sprintf(bab_translate('%d Online article(s) | %d Old article(s)'), $nbarticles, $nbarcharticles));
 					
 				}
 				
