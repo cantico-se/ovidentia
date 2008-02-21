@@ -1,55 +1,4 @@
-<!--#begin categorylist -->
-<!--#in getnextcat -->
-<br>
-<table width="95%" cellpadding="0" cellspacing="0" align="center">
-<tr> 
-<td> 
-<span style="background-color:#D1D1D9">&nbsp;{ catname }&nbsp;</span>
-</td>
-</tr>
-</table>
-<table style="border:2px #D1D1D9 solid" width="95%" cellpadding="0" cellspacing="0" align="center">
-<tr> 
-<td> <br>
-<!--#in getnext -->
-	<table width="97%" border="0" cellspacing="0" cellpadding="2" align="center">
-	<tr>
-	<td class="BabLoginCadreBackground">
-		<table  border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
-			<tr class="BabSiteAdminTitleFontBackground"> 
-				<td width="97%" valign="top">
-					<!--#if urlarticles  -->
-					<a class="BabTopicsAdminTitleLink" href="{ urlarticles }">{ namecategory }</a>
-					<!--#else urlarticles -->
-					{ namecategory }
-					<!--#endif urlarticles -->
-					 <br />
-		{ nbarticles }&nbsp;{ onlinearticles }&nbsp;|&nbsp;{ nbarcharticles }&nbsp;{ archarticles }
-				<!--#if newac "> 0" -->
-				<br /><strong>{ waiting } :</strong>
-					&nbsp;<img src="{ babSkinPath }images/Puces/PuceSectionContribArticle.png" alt="" align="absmiddle">&nbsp;{ newa }&nbsp;{ articles } |
-					&nbsp;<img src="{ babSkinPath }images/Puces/PuceSectionContribComment.png" alt="" align="absmiddle">&nbsp;{ newc }&nbsp;{ comments }
-			   <!--#endif newac -->
-			   </td>
-			</tr>
-			<!--#if arr[description] -->
-			<tr class="BabSiteAdminFontBackground">
-				<td> { arr[description] } </td>
-			</tr>
-			<!--#endif arr[description] -->
-		</table>
-	</td>
-	</tr>
-	</table>
-<br>
-<!--#endin getnext -->
-</td>
-</tr>
-</table>
-<!--#endin getnextcat -->
-<!--#end categorylist -->
-<br>
-<br><br><br><br>
+
 <!--#begin articleslist -->
 <script type="text/javascript">
 function submitCtrl() {
@@ -79,12 +28,12 @@ function submitCtrl() {
 
 
 <script type="text/javascript" src="{ babInstallPath }scripts/ul_tree.js"></script>
-<div id="bab_groups_tree" class="BabLoginCadreBackground">
+<div id="bab_groups_tree" class="bab_tree BabLoginCadreBackground"  style="padding: 1px">
 	<p class="BabSiteAdminTitleFontBackground">
 	<a href="javascript:tree.expand();" class="expand">{ t_expand_all }</a> 
 	<a href="javascript:tree.collapse();" class="collapse">{ t_collapse_all }</a>
 	</p>
-	<div class="tree">
+	<div class="tree"  style="position: relative">
 	<ul class="first">
 	<li>
 		<div>
@@ -175,7 +124,6 @@ function submitCtrl() {
 		</ul>
 		</li>
 	</ul>
-	<br />
 	</div>
 </div>
 
@@ -185,7 +133,7 @@ tree.processList();
 tree.expandToItem('bab_art{ articleid }');
 </script>
 
-
+<br /><br />
 
 <table border="0" width="55%" cellpadding="2" cellspacing="0" align="center" class="BabLoginCadreBackground">
 <tr>
@@ -235,8 +183,7 @@ window.focus();
 <br>
 <table class="BabMailBackground" border="0" width="100%" cellpadding="5" cellspacing="0">
 <tr>
-<td class="BabSiteAdminTitleFontBackground" align="center" nowrap><b>{ arr[title] 
-}</b></td>
+<td class="BabSiteAdminTitleFontBackground" align="center" nowrap><b>{ arr[title] }</b></td>
 </tr>
 <tr><td>{ head }</td></tr>
 <tr>

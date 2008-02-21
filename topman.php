@@ -28,111 +28,26 @@ include_once $babInstallPath.'utilit/artincl.php';
 
 function listCategories()
 	{
+
 	global $babBody;
-	class temp
-		{
-		
-		var $id;
-		var $arr = array();
-		var $db;
-		var $count;
-		var $res;
-		var $approver;
-		var $namecategory;
-		var $articles;
-		var $urlarticles;
-		var $nbarticles;
-		var $waiting;
-		var $newa;
-		var $newc;
-		var $urlwaitinga;
-		var $urlwaitingc;
-		var $newac;
+	
+	require_once $GLOBALS['babInstallPath'] . 'utilit/tree.php';
+	
+	$topicTree = new bab_ArticleTreeView('article_topics_tree' . BAB_ARTICLE_TREE_VIEW_MANAGE_TOPIC);
+	$topicTree->setAttributes(BAB_ARTICLE_TREE_VIEW_SHOW_TOPICS
+							| BAB_ARTICLE_TREE_VIEW_SELECTABLE_TOPICS
+							| BAB_ARTICLE_TREE_VIEW_HIDE_EMPTY_TOPICS_AND_CATEGORIES);
+	$topicTree->setAction(BAB_ARTICLE_TREE_VIEW_MANAGE_TOPIC);
+	$topicTree->setLink($GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=%s");
+	$topicTree->order();
+	$topicTree->sort();
+	
+	$babBody->babecho($topicTree->printTemplate());
 
-		function temp()
-			{
-			global $babBody, $babDB, $BAB_SESS_USERID;
-			$this->onlinearticles = bab_translate("Online article(s)");
-			$this->articles = bab_translate("Article(s)");
-			$this->archarticles = bab_translate("Old article(s)");
-			$this->comments = bab_translate("Comment(s)");
-			$this->waiting = bab_translate("Waiting");
-			if( count($babBody->topman) > 0 )
-				{
-				$this->rescat = $babDB->db_query("SELECT DISTINCT(o.id_topcat) id, c.title title FROM ".BAB_TOPCAT_ORDER_TBL." o , ".BAB_TOPICS_CATEGORIES_TBL." c, ".BAB_TOPICS_TBL." t WHERE c.id=o.id_topcat AND t.id_cat=c.id AND t.id IN (".$babDB->quote(array_keys($babBody->topman)).") GROUP BY o.id_topcat ORDER BY o.ordering");
-				$this->countcat = $babDB->db_num_rows($this->rescat);
-				}
-			else
-				{
-				$this->countcat = 0;
-				}
-			}
-
-		function getnextcat()
-			{
-			global $babBody, $babDB;
-			static $j = 0;
-			if( $j < $this->countcat)
-				{
-				$arr = $babDB->db_fetch_array($this->rescat);
-				$this->catname = $arr['title'];
-				$req = "select * from ".BAB_TOPICS_TBL." where id_cat='".$babDB->db_escape_string($arr['id'])."' and id IN (".$babDB->quote(array_keys($babBody->topman)).") ORDER BY category";
-				$this->res = $babDB->db_query($req);
-				$this->count = $babDB->db_num_rows($this->res);
-				$j++;
-				return true;
-				}
-			else
-				return false;
-			}
-
-		function getnext()
-			{
-			global $babDB;
-			static $i = 0;
-			if( $i < $this->count)
-				{
-				$this->arr = $babDB->db_fetch_array($this->res);
-				$this->namecategory = viewCategoriesHierarchy_txt($this->arr['id']);
-				$req = "select count(*) as total from ".BAB_ARTICLES_TBL." where id_topic='".$babDB->db_escape_string($this->arr['id'])."' and archive='N'";
-				$res = $babDB->db_query($req);
-				$arr2 = $babDB->db_fetch_array($res);
-				$this->nbarticles = $arr2['total'];
-				list($this->newa) = $babDB->db_fetch_row($babDB->db_query("select count(id) from ".BAB_ART_DRAFTS_TBL." where id_topic='".$babDB->db_escape_string($this->arr['id'])."' and result='".BAB_ART_STATUS_WAIT."'"));
-
-				list($this->newc) = $babDB->db_fetch_row($babDB->db_query("select count(id) as totalc from ".BAB_COMMENTS_TBL." where id_topic='".$babDB->db_escape_string($this->arr['id'])."' and confirmed='N'"));
-
-				$this->newac = $this->newa + $this->newc;
-
-				list($this->nbarcharticles) = $babDB->db_fetch_row($babDB->db_query("select count(id) from ".BAB_ARTICLES_TBL." where id_topic='".$babDB->db_escape_string($this->arr['id'])."' and archive='Y'"));
-
-				if( $this->nbarticles > 0 )
-					{
-					$this->urlarticles = $GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=".$this->arr['id'];
-					}
-				elseif( $this->nbarcharticles > 0 )
-					{
-					$this->urlarticles = $GLOBALS['babUrlScript']."?tg=topman&idx=alist&item=".$this->arr['id'];
-					}
-				else
-					{
-					$this->urlarticles = '';
-					}
-
-				$i++;
-				return true;
-				}
-			else
-				{
-				$i=0;
-				return false;
-				}
-			}
-		}
-	$temp = new temp();
-	$babBody->babecho(bab_printTemplate($temp,"topman.html", "categorylist"));
-	return $temp->count;
 	}
+	
+	
+	
 
 function listArticles($id)
 	{
@@ -328,6 +243,7 @@ function listArticles($id)
 		}
 
 	$temp = new temp($id);
+	$babBody->addStyleSheet('tree.css');
 	$babBody->addStyleSheet('groups.css');
 	$babBody->babecho(bab_printTemplate($temp,"topman.html", "articleslist"));
 	}

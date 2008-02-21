@@ -1031,14 +1031,19 @@ class bab_ArticleTreeView extends bab_TreeView
 		switch ($this->_action)
 		{
 			case BAB_ARTICLE_TREE_VIEW_MODIFY_ARTICLES:
-				if (count($babBody->topsub) > 0  || count($babBody->topman) > 0 || count($babBody->topmod) > 0)
+			
+				$topsub = bab_getUserIdObjects(BAB_TOPICSSUB_GROUPS_TBL);
+				$topman = bab_getUserIdObjects(BAB_TOPICSMAN_GROUPS_TBL);
+				$topmod = bab_getUserIdObjects(BAB_TOPICSMOD_GROUPS_TBL);
+			
+				if (count($topsub) > 0  || count($topman) > 0 || count($topmod) > 0)
 				{
 					if (count($babBody->topsub) > 0)
-						$tmp[] = '(topics.id IN (' . $babDB->quote(array_keys($babBody->topsub)) . ") AND topics.allow_update != '0')";
+						$tmp[] = '(topics.id IN (' . $babDB->quote(array_keys($topsub)) . ") AND topics.allow_update != '0')";
 					if( count($babBody->topman) > 0 )
-						$tmp[] = '(topics.id IN (' . $babDB->quote(array_keys($babBody->topman)) . ") AND topics.allow_manupdate != '0')";
+						$tmp[] = '(topics.id IN (' . $babDB->quote(array_keys($topman)) . ") AND topics.allow_manupdate != '0')";
 					if( count($babBody->topmod) > 0 )
-						$tmp[] = '(topics.id IN (' . $babDB->quote(array_keys($babBody->topmod)) . '))';
+						$tmp[] = '(topics.id IN (' . $babDB->quote(array_keys($topmod)) . '))';
 					$sql = 'SELECT DISTINCT topics.id, topics.id_cat, topics.description, topics.category'
 						. ' FROM ' . BAB_ARTICLES_TBL . ' AS articles'
 						. ' LEFT JOIN ' . BAB_TOPICS_TBL . ' AS topics ON topics.id = articles.id_topic'
@@ -1054,13 +1059,28 @@ class bab_ArticleTreeView extends bab_TreeView
 					$sql .= ' LEFT JOIN ' . BAB_TOPICS_CATEGORIES_TBL . ' AS categories ON topics.id_cat=categories.id';
 					$where[] = 'categories.id_dgowner=' . $babDB->quote($babBody->currentAdmGroup);
 				}
-				$where[] = 'topics.id IN (' . $babDB->quote(array_keys($babBody->topsub)) . ')';
+				$where[] = 'topics.id IN (' . $babDB->quote(array_keys(bab_getUserIdObjects(BAB_TOPICSSUB_GROUPS_TBL))) . ')';
 				$sql .= ' WHERE ' . implode(' AND ', $where);
 
 				break;
+				
+			case BAB_ARTICLE_TREE_VIEW_MANAGE_TOPIC:
+				$where = array();
+				$sql = 'SELECT topics.id, topics.id_cat, topics.description, topics.category';
+				$sql .= ' FROM ' . BAB_TOPICS_TBL . ' topics';
+				if ($this->_attributes & BAB_ARTICLE_TREE_VIEW_HIDE_DELEGATIONS) {
+					$sql .= ' LEFT JOIN ' . BAB_TOPICS_CATEGORIES_TBL . ' AS categories ON topics.id_cat=categories.id';
+					$where[] = 'categories.id_dgowner=' . $babDB->quote($babBody->currentAdmGroup);
+				}
+				$where[] = 'topics.id IN (' . $babDB->quote(array_keys(bab_getUserIdObjects(BAB_TOPICSMAN_GROUPS_TBL))) . ')';
+				$sql .= ' WHERE ' . implode(' AND ', $where);
+				break;
+
 
 			case BAB_ARTICLE_TREE_VIEW_READ_ARTICLES:
 			case BAB_ARTICLE_TREE_VIEW_SUBMIT_COMMENTS:
+				
+				// admin rights view of topics
 			default:
 				$sql = 'SELECT topics.id, topics.id_cat, topics.description, topics.category'
 				    . ' FROM ' . BAB_TOPICS_TBL . ' AS topics';
@@ -1090,7 +1110,18 @@ class bab_ArticleTreeView extends bab_TreeView
 												 bab_toHtml($topic['category']),
 												 ''/*$topic['description']*/,
 												 $link);
-				$element->setInfo(''/*$topic['description']*/);
+				
+				
+				if (BAB_ARTICLE_TREE_VIEW_MANAGE_TOPIC === $this->_action) {
+				
+					list($nbarticles)= $babDB->db_fetch_row($babDB->db_query("select count(*) as total from ".BAB_ARTICLES_TBL." where id_topic='".$babDB->db_escape_string($topic['id'])."' and archive='N'"));
+				
+					list($nbarcharticles) = $babDB->db_fetch_row($babDB->db_query("select count(id) from ".BAB_ARTICLES_TBL." where id_topic='".$babDB->db_escape_string($topic['id'])."' and archive='Y'"));
+				
+					$element->setInfo(sprintf('%d Online article(s) | %d Old article(s)', $nbarticles, $nbarcharticles));
+					
+				}
+				
 				$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/topic.png');
 				$parentId = ($topic['id_cat'] === '0' ? null :
 													'c' . BAB_TREE_VIEW_ID_SEPARATOR . $topic['id_cat']);

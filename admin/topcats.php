@@ -580,7 +580,7 @@ switch($idx)
 		$oArtTV = new bab_AdmArticleTreeView('oArtTV');
 		$oArtTV->setAttributes(BAB_ARTICLE_TREE_VIEW_SHOW_CATEGORIES | BAB_ARTICLE_TREE_VIEW_SHOW_TOPICS | 
 			BAB_TREE_VIEW_MEMORIZE_OPEN_NODES | BAB_ARTICLE_TREE_VIEW_SHOW_ROOT_NODE | BAB_ARTICLE_TREE_VIEW_HIDE_DELEGATIONS);
-		$oArtTV->setAction(BAB_ARTICLE_TREE_VIEW_MANAGE_TOPIC);
+		$oArtTV->setAction('');
 		$oArtTV->order();
 		$oArtTV->sort();
 		$babBody->babecho($oArtTV->printTemplate());

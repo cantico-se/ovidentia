@@ -1368,8 +1368,7 @@
 <string id="Article historic">Historique de l'article</string>
 <string id="Historic">Historique</string>
 <string id="Modify article">Modifier l'article</string>
-<string id="Online article(s)">Article(s) en ligne</string>
-<string id="Old article(s)">Article(s) archivés</string>
+<string id="%d Online article(s) | %d Old article(s)">%d Article(s) en ligne | %d Article(s) archivés</string>
 <string id="Date of publication">Date de publication</string>
 <string id="Article properties">Propriétés de l'article</string>
 <string id="Order of articles">Ordonner les articles</string>
