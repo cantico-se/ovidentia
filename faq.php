@@ -93,12 +93,12 @@ function listCategories()
 		{
 		case 2:
 			$req = "select * from ".BAB_FAQCAT_TBL." where lang='".$babDB->db_escape_string($GLOBALS['babLanguage'])."' or lang='*' or lang = ''";
-			if ($GLOBALS['babApplyLanguageFilter'] == 'loose')
+			if (isset($GLOBALS['babApplyLanguageFilter']) && $GLOBALS['babApplyLanguageFilter'] == 'loose')
 				$req.= " or id_manager = '" .$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID']). "'";
 			break;
 		case 1:
 			$req = "select * from ".BAB_FAQCAT_TBL." where lang like '". $babDB->db_escape_like(substr($GLOBALS['babLanguage'], 0, 2)) ."%' or lang='*' or lang = ''";
-			if ($GLOBALS['babApplyLanguageFilter'] == 'loose')
+			if (isset($GLOBALS['babApplyLanguageFilter']) && $GLOBALS['babApplyLanguageFilter'] == 'loose')
 				$req.= " or id_manager = '" .$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID']). "'";
 			break;
 		case 0:
