@@ -1693,10 +1693,7 @@ switch($idx)
 	case "list":
 		$babBody->title = bab_translate("List of managed topics");
 		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topman");
-		if( listCategories() == 0 )
-			{
-			$babBody->title = bab_translate("There is no topic");
-			}
+		listCategories();
 		if( bab_isAccessValid(BAB_SITES_HPMAN_GROUPS_TBL, $babBody->babsite['id']) )
 		{
 			$babBody->addItemMenu("hman", bab_translate("Home pages"), $GLOBALS['babUrlScript']."?tg=topman&idx=hpriv&ids=".$babBody->babsite['id']);

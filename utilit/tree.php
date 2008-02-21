@@ -1018,6 +1018,30 @@ class bab_ArticleTreeView extends bab_TreeView
 	{
 		$this->_link = $link;
 	}
+	
+	
+	/**
+	 * @return string	SQL query
+	 */
+	function getQueryByRight($tablename) {
+	
+		global $babDB;
+	
+	
+		$where = array();
+		$sql = 'SELECT topics.id, topics.id_cat, topics.description, topics.category';
+		$sql .= ' FROM ' . BAB_TOPICS_TBL . ' topics';
+		if ($this->_attributes & BAB_ARTICLE_TREE_VIEW_HIDE_DELEGATIONS) {
+			$sql .= ' LEFT JOIN ' . BAB_TOPICS_CATEGORIES_TBL . ' AS categories ON topics.id_cat=categories.id';
+			$where[] = 'categories.id_dgowner=' . $babDB->quote($babBody->currentAdmGroup);
+		}
+		$where[] = 'topics.id IN (' . $babDB->quote(array_keys(bab_getUserIdObjects($tablename))) . ')';
+		$sql .= ' WHERE ' . implode(' AND ', $where);
+		
+		return $sql;
+	}
+	
+	
 
 	/**
 	 * Add article topics to the tree.
@@ -1052,35 +1076,24 @@ class bab_ArticleTreeView extends bab_TreeView
 				break;
 
 			case BAB_ARTICLE_TREE_VIEW_SUBMIT_ARTICLES:
-				$where = array();
-				$sql = 'SELECT topics.id, topics.id_cat, topics.description, topics.category';
-				$sql .= ' FROM ' . BAB_TOPICS_TBL . ' topics';
-				if ($this->_attributes & BAB_ARTICLE_TREE_VIEW_HIDE_DELEGATIONS) {
-					$sql .= ' LEFT JOIN ' . BAB_TOPICS_CATEGORIES_TBL . ' AS categories ON topics.id_cat=categories.id';
-					$where[] = 'categories.id_dgowner=' . $babDB->quote($babBody->currentAdmGroup);
-				}
-				$where[] = 'topics.id IN (' . $babDB->quote(array_keys(bab_getUserIdObjects(BAB_TOPICSSUB_GROUPS_TBL))) . ')';
-				$sql .= ' WHERE ' . implode(' AND ', $where);
-
+				$sql = $this->getQueryByRight(BAB_TOPICSSUB_GROUPS_TBL);
 				break;
 				
 			case BAB_ARTICLE_TREE_VIEW_MANAGE_TOPIC:
-				$where = array();
-				$sql = 'SELECT topics.id, topics.id_cat, topics.description, topics.category';
-				$sql .= ' FROM ' . BAB_TOPICS_TBL . ' topics';
-				if ($this->_attributes & BAB_ARTICLE_TREE_VIEW_HIDE_DELEGATIONS) {
-					$sql .= ' LEFT JOIN ' . BAB_TOPICS_CATEGORIES_TBL . ' AS categories ON topics.id_cat=categories.id';
-					$where[] = 'categories.id_dgowner=' . $babDB->quote($babBody->currentAdmGroup);
-				}
-				$where[] = 'topics.id IN (' . $babDB->quote(array_keys(bab_getUserIdObjects(BAB_TOPICSMAN_GROUPS_TBL))) . ')';
-				$sql .= ' WHERE ' . implode(' AND ', $where);
+				$sql = $this->getQueryByRight(BAB_TOPICSMAN_GROUPS_TBL);
 				break;
 
 
 			case BAB_ARTICLE_TREE_VIEW_READ_ARTICLES:
-			case BAB_ARTICLE_TREE_VIEW_SUBMIT_COMMENTS:
+				$sql = $this->getQueryByRight(BAB_TOPICSVIEW_GROUPS_TBL);
+				break;
 				
-				// admin rights view of topics
+			// list topic by submit comments right seem to be not very usefull
+			// case BAB_ARTICLE_TREE_VIEW_SUBMIT_COMMENTS:
+				
+				
+				
+			// admin rights view of topics (view all topics by delegation)
 			default:
 				$sql = 'SELECT topics.id, topics.id_cat, topics.description, topics.category'
 				    . ' FROM ' . BAB_TOPICS_TBL . ' AS topics';

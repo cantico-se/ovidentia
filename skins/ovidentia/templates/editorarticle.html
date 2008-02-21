@@ -30,47 +30,27 @@ function func(articleid,title)
 	}
 //-->
 </script>
-
-<!--#if parentscount -->
 <p>
-	<!--#in getnextparent -->
-	<!--#if burl -->
-	<a  href="{ parenturl }">{ parentname }</a>&nbsp;/&nbsp;
-	<!--#else burl -->
-	{ parentname }
-	<!--#endif burl -->
-	<!--#endin getnextparent -->
+	<a href="{ babUrlScript }?tg=editorarticle&amp;idx=browse">{ t_tree_view }</a>
 </p>
-<!--#endif parentscount -->
+
+<!--#if noarticles -->
+<p style="text-align:center">
+	{ t_noarticles }
+</p>
+<!--#endif noarticles -->
 
 <ul id="bab_editor_functions">
-	<!--#in getnextcat -->
-	<!--#if displaycat -->
-	<li>
-		<a href="{ url }"><img src="{ babSkinPath }images/Puces/category.gif" alt="" align="absmiddle" /> { title }</a>
-	</li>
-	<!--#endif displaycat -->
-	<!--#endin getnextcat -->
-	<!--#in getnexttop -->
-	<!--#if displaytop -->
-	<li>
-		<a href="{ url }"><img src="{ babSkinPath }images/Puces/topic.gif" alt="" align="absmiddle" /> { title }</a>
-	</li>
-	<!--#endif displaytop -->
-	<!--#endin getnexttop -->
-	
 	<!--#in getnextarticle -->
-	<!--#if display -->
 	<li>
 		<a href="#" title="{ content }" onclick="func({ articleid },'{ title }');return false;"><img src="{ babSkinPath }images/Puces/defaut.gif" alt="" align="absmiddle" /> { titledisp }</a>
 	</li>
-	<!--#endif display -->
 	<!--#endin getnextarticle -->
 </ul>
-<!--#if display -->
+
 <p>
 	<input type="checkbox" id="tg" name="tg" checked="checked" /> { target_txt }
-	</p>
-<!--#endif display -->
+</p>
+
 
 <!--#end editorarticle -->

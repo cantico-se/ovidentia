@@ -215,11 +215,139 @@ function browse($topics,$cat)
 	$babBody->babPopup(bab_printTemplate($temp,'editorarticle.html', 'editorarticle'));
 	}
 
-if(!isset($idx))
-	{
-	$idx = 'browse';
-	}
 
+
+
+
+function browseTopicsTree() {
+
+	global $babBody;
+	
+	require_once $GLOBALS['babInstallPath'] . 'utilit/tree.php';
+	
+	$topicTree = new bab_ArticleTreeView('article_topics_tree' . BAB_ARTICLE_TREE_VIEW_READ_ARTICLES);
+	$topicTree->setAttributes(BAB_ARTICLE_TREE_VIEW_SHOW_TOPICS
+							| BAB_ARTICLE_TREE_VIEW_SELECTABLE_TOPICS
+							| BAB_ARTICLE_TREE_VIEW_HIDE_EMPTY_TOPICS_AND_CATEGORIES);
+	$topicTree->setAction(BAB_ARTICLE_TREE_VIEW_READ_ARTICLES);
+	$topicTree->setLink($GLOBALS['babUrlScript']."?tg=editorarticle&idx=articles&id_topic=%s");
+	$topicTree->order();
+	$topicTree->sort();
+	
+	$babBody->babPopup($topicTree->printTemplate());
+}
+
+
+
+
+
+function browseArticles() {
+
+	global $babBody, $babDB;
+
+	class temp
+		{
+	
+		var $db;
+		var $count;
+		var $res;
+
+		function temp()
+			{
+			global $babDB;
+			
+			$id_topic = bab_rp('id_topic');
+
+			if (!$id_topic) {
+				die('error, missing topic');
+			}
+			
+			if (!bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $id_topic)) {
+				die(bab_translate('Access denied'));
+			}
+
+			$req = "
+				SELECT 
+					id, 
+					id_topic, 
+					id_author, 
+					date, 
+					title, 
+					head, 
+					restriction 
+				FROM 
+					".BAB_ARTICLES_TBL." 
+				WHERE 
+					id_topic='".$babDB->db_escape_string($id_topic)."' 
+					ORDER BY date desc
+			";
+			
+			$this->resart = $babDB->db_query($req);
+			$this->countarticles = $babDB->db_num_rows($this->resart);
+			
+			$this->t_tree_view = bab_translate("Browse topics");
+			$this->target_txt = bab_translate("popup");
+			$this->t_noarticles = bab_translate("This topic is empty");
+			$this->noarticles = 0 === (int) $this->countarticles;
+			}
+
+
+		function getnextarticle()
+			{
+			global $babBody, $babDB;
+			static $i = 0;
+			if( $i < $this->countarticles)
+				{
+				$arr = $babDB->db_fetch_array($this->resart);
+				if( $arr['restriction'] != '' && !bab_articleAccessByRestriction($arr['restriction']))
+					{
+					$skip = true;
+					$i++;
+					return true;
+					}
+
+				if( $arr['id_author'] != 0 && (($author = bab_getUserName($arr['id_author'])) != ''))
+					$this->articleauthor = $author;
+				else
+					$this->articleauthor = bab_translate("Anonymous");
+					
+				$this->articledate = bab_strftime(bab_mktime($arr['date']));
+				$this->author = bab_translate("by") . ' '. $this->articleauthor. ' - '. $this->articledate;
+				$this->content = '';
+				$this->titledisp = bab_toHtml($arr['title']);
+				$this->title = bab_toHtml($arr['title'], BAB_HTML_JS);
+				$this->articleid = $arr['id'];
+				
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+		}
+		
+	$babBody->setTitle(bab_translate('Articles'));
+	$babBody->addStyleSheet('text_toolbar.css');
+
+	$temp = new temp();
+	$babBody->babPopup(bab_printTemplate($temp,'editorarticle.html', 'editorarticle'));
+}
+
+
+
+
+
+
+
+
+
+
+
+
+	
+$idx = bab_rp('idx', 'browse');
+
+/*
 if(!isset($cat))
 	{
 	$cat = 0;
@@ -230,13 +358,20 @@ if(!isset($topics))
 	$topics = 0;
 	}
 
+*/
 
 
 switch($idx)
 	{
+	
+	case 'articles':
+		browseArticles();
+		break;
+	
 	default:
 	case 'browse':
-		browse($topics,$cat);
+		// browse($topics,$cat);
+		browseTopicsTree();
 		exit;
 	}
 ?>
